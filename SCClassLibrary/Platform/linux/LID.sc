@@ -1,18 +1,38 @@
 LIDInfo {
 	var <name, <bustype, <vendor, <product, <version, <physical, <unique;
+	var <>path;
 
 	printOn { | stream |
 		super.printOn(stream);
-		stream << $( << name << ", ";
+		stream << $( << name << ", " << path << ", ";
 		[
-			bustype,
 			vendor,
 			product,
 			version,
-
+			bustype
 		].collect({ | x | "0x" ++ x.asHexString(4) }).printItemsOn(stream);
 		stream << ", " << physical << ", " << unique;
 		stream.put($));
+	}
+
+	postInfo {
+		"\tName: \t%\n".postf( name );
+		"\tVendor and product ID: \t%, %\n".postf( vendor, product );
+		"\tPath: \t%\n".postf( path );
+		"\tPhysical: \t%\n".postf( physical );
+		"\tVersion and bustype: \t%, %\n".postf( version, bustype );
+		"\tUnique: \t%\n".postf( unique );
+		// "\tUsage name and page: \t%, \t%\n".postf( this.usageName, this.pageName );
+		// "\tVendor name: \t%\n".postf( vendor );
+		// "\tProduct name: \t%\n".postf( product );
+	}
+
+	open{
+		^LID.new( path );
+	}
+
+	findArgs {
+		^[vendor, product, path, version, physical, unique]
 	}
 }
 
@@ -33,12 +53,20 @@ LIDAbsInfo {
 LID {
 	var dataPtr, <path, <info, <caps, <spec, <slots, <isGrabbed=false, <>action;
 	var <>closeAction;
-	classvar all, eventTypes, <>specs, <>deviceRoot = "/dev/input", deviceList;
-	classvar < eventLoopIsRunning = true;
+	var <debugAction;
+	classvar openDevices, eventTypes, <>specs, <>deviceRoot = "/dev/input", <available;
+	classvar <eventLoopIsRunning = false;
+	classvar <globalDebugAction;
+
 
 	*initClass {
-		all = [];
+		// all = []; // becomes openDevices
 		specs = IdentityDictionary.new;
+
+		available = IdentityDictionary.new;
+		openDevices = [];
+		// availableUsages = IdentityDictionary.new;
+
 		eventTypes = [
 			// maps event type (index) to max code value
 			0x0001,		// EV_SYN
@@ -65,19 +93,54 @@ LID {
 			nil, nil, nil, nil,
 			nil, nil, nil
 		];
+	}
+
+	*initializeLID{
+		"starting LID eventloop".postln;
+		this.prStartEventLoop;
+		eventLoopIsRunning = true;
 		ShutDown.add {
 			this.closeAll;
 			this.prStopEventLoop;
 		};
-		this.prStartEventLoop;
 	}
 
-	*deviceList{
-		^deviceList;
+	*findAvailable{ |name|
+		var devicePaths, d, open;
+		if ( eventLoopIsRunning.not ){ this.initializeLID; };
+		name = name ? "event";
+		devicePaths = (deviceRoot++"/"++name++"*").pathMatch;
+		// deviceList = Array.fill( devices.size, 0 );
+
+		available = IdentityDictionary.new;
+
+		devicePaths.do{ |it,i|
+			open = false;
+			if ( openDevices.detect({ | dev | dev.path == it }).notNil, {open = true});
+			d = try { LID( it ) };
+			if ( d != nil,
+				{
+					d.info.path_( it );
+					available.put( i, d.info ); // why did I need the slots already here? d.slots
+					if ( open.not, {d.close} );
+				},{
+					// just print that device is not openable, and don't add it to the available list
+					("LID: could not open device with path"+ it + "\n" ).warn;
+				}
+			);
+		};
+		"LID: found % devices\n".postf( available.size );
+		^available
 	}
 
-	*buildDeviceList{ |name|
+	*postAvailable {
+		this.available.sortedKeysValuesDo { |k, v| "%: ".postf( k ); v.postInfo; };
+	}
+
+	/*
+	*buildDeviceList{ |name| //TODO: deprecate and do findAvailable
 		var table, devices, d, open;
+		if ( eventLoopIsRunning.not ){ this.initializeLID; };
 		name = name ? "event";
 		devices = (deviceRoot++"/"++name++"*").pathMatch;
 		deviceList = Array.fill( devices.size, 0 );
@@ -97,6 +160,11 @@ LID {
 				});
 		};
 		^deviceList;
+	}
+	*/
+
+	*register { | name, spec |
+		specs[name] = spec;
 	}
 
 	*mouseDeviceSpec {
@@ -287,15 +355,74 @@ LID {
 			documents: [1, 235]
 		)
 	}
-	*all {
-		^all.copy
+
+	// *all {
+	// 	^all.copy
+	// }
+
+	*openDevices{
+		^openDevices.copy;
 	}
+
 	*closeAll {
-		all.copy.do({ | dev | dev.close });
+		openDevices.copy.do{ |dev| dev.close };
+		this.prStopEventLoop;
+		eventLoopIsRunning = false;
 	}
-	*register { | name, spec |
-		specs[name] = spec;
+
+	*openAt{ |index|
+		^available.at( index ).open;
 	}
+
+	*findBy{ |vendorID, productID, path, version, physical, unique|
+		if ( [vendorID, productID, path, version, physical, unique].every( _.isNil ) ) {
+			^nil;
+		};
+		^LID.available.select{ |info|
+			vendorID.isNil or: { info.vendor == vendorID } and:
+			{ productID.isNil or: { info.product == productID } } and:
+			{ path.isNil or: { info.path == path } } and:
+			{ version.isNil or: { info.version == version } } and:
+			{ physical.isNil or: { info.physical == physical } } and:
+			{ unique.isNil or: { info.unique == unique } }
+		};
+	}
+
+	*open{ |vendorID, productID, path, version, physical, unique|
+		var devInfo, device;
+		devInfo = this.findBy( vendorID, productID, path, version, physical, unique );
+		if ( devInfo.isNil ){
+			("LID: could not find device" + vendorID + "," + productID + "," + path + "\n").error;
+			^nil;
+		};
+		devInfo = devInfo.asArray.first;
+		device = LID.new( devInfo.path );
+		// merge usageDict?
+		^device;
+	}
+
+	*openPath { |path|
+		// "LID: Opening device %\n".postf( path );
+		^LID.new( path );
+	}
+
+	/*
+	*mergeUsageDict { |dev|
+		dev.usages.keysValuesDo { |key, val|
+			if ( availableUsages.at( key ).isNil ) {
+				availableUsages.put( key, IdentityDictionary.new );
+			};
+			availableUsages.at( key ).put( dev.id, val );
+		};
+	}
+
+	*removeUsageDict { |dev| // when device is closed
+		availableUsages.do { |val|
+			val.removeAt( dev.id );
+		};
+	}
+	*/
+
 	*new { | path |
 		path = PathName(path);
 		if (path.isRelativePath) {
@@ -303,17 +430,24 @@ LID {
 		}{
 			path = path.fullPath;
 		};
-		^all.detect({ | dev | dev.path == path }) ?? { super.new.prInit(path) }
+		^openDevices.detect({ | dev | dev.path == path }) ?? { super.new.prInit(path) }
 	}
+
+	postInfo{
+		this.info.postInfo;
+	}
+
 	isOpen {
 		^dataPtr.notNil
 	}
+
 	close {
 		if (this.isOpen) {
 			this.prClose;
-			all.remove(this);
+			openDevices.remove(this);
 		};
 	}
+
 	dumpCaps {
 		caps.keys.do { | evtType |
 			Post << "0x" << evtType.asHexString << ":\n";
@@ -322,11 +456,17 @@ LID {
 			}
 		}
 	}
-	dumpEvents {
-		action = { | evtType, evtCode, value |
-			[evtType.asHexString, evtCode.asHexString, value].postln;
+
+	debug_{ |onoff|
+		if ( onoff ){
+			debugAction =  { | evtType, evtCode, value |
+				[this.info.name, evtType, evtCode, value].postln;
+			};
+		}{
+			debugAction = nil;
 		}
 	}
+
 	slot { | evtType, evtCode |
 		^slots.atFail(evtType, {
 			Error("event type not supported").throw
@@ -339,6 +479,7 @@ LID {
 			Error("invalid control name").throw
 		}))
 	}
+
 	getAbsInfo { | evtCode |
 		^this.prGetAbsInfo(evtCode, LIDAbsInfo.new)
 	}
@@ -354,6 +495,7 @@ LID {
 	setMSCState { |evtCode, evtValue |
 		^this.prSetMscState( evtCode, evtValue )
 	}
+
 	grab { | flag = true |
 		// useful when using mouse or keyboard. be sure to have an
 		// 'exit point', or your desktop will be rendered useless ...
@@ -364,6 +506,16 @@ LID {
 	}
 	ungrab {
 		this.grab(false)
+	}
+
+	*debug_{ |onoff = true|
+		if ( onoff ){
+			globalDebugAction = { | device, evtType, evtCode, value |
+				[device.info.name, evtType, evtCode, value].postln;
+			};
+		}{
+			globalDebugAction = nil;
+		}
 	}
 
 	// PRIVATE
@@ -377,10 +529,12 @@ LID {
 	}
 	prInit { | argPath |
 		this.prOpen(argPath);
-		all = all.add(this);
+		openDevices = openDevices.add(this);
 		closeAction = {};
 		path = argPath;
 		info = this.prGetInfo(LIDInfo.new);
+		info.path_( path );
+		("LID: Opened device: %\n".postf( this.info ) );
 		spec = specs.atFail(info.name, { IdentityDictionary.new });
 		caps = IdentityDictionary.new;
 		slots = IdentityDictionary.new;
@@ -434,12 +588,20 @@ LID {
 		^this.primitiveFailed
 	}
 	prHandleEvent { | evtType, evtCode, evtValue |
-		// not either or for the device action. Do slot actions in any case:
-		slots[evtType][evtCode].value_(evtValue);
-		// event callback
-		if (action.notNil) {
-			action.value(evtType, evtCode, evtValue, slots[evtType][evtCode].value);
+		if ( debugAction.notNil ){
+			debugAction.value( evtType, evtCode, evtValue );
 		};
+		if ( globalDebugAction.notNil ){
+			globalDebugAction.value( this, evtType, evtCode, evtValue );
+		};
+		if ( slots.notNil ){
+			// not either or for the device action. Do slot actions in any case:
+			slots[evtType][evtCode].value_(evtValue);
+			// event callback
+			if (action.notNil) {
+				action.value(evtType, evtCode, evtValue, slots[evtType][evtCode].value);
+			};
+		}
 	}
 
 	// this prevents a high cpu cycle when device was detached; added by marije
@@ -464,31 +626,45 @@ LID {
 LIDSlot {
 	var <device, <type, <code, value=0, <spec, <>action;
 	classvar slotTypeMap, <slotTypeStrings;
+	var <bus, <busAction;
+	var <debugAction;
+	var <>key;
+
 
 	*initClass {
 		slotTypeMap = IdentityDictionary.new.addAll([
 			0x0001 -> LIDKeySlot,
 			0x0002 -> LIDRelSlot,
 			0x0003 -> LIDAbsSlot,
-			0x0011 -> LIDLedSlot
+			0x0004 -> LIDMscSlot,
+			0x0011 -> LIDLedSlot,
 		]);
 		slotTypeStrings = IdentityDictionary.new.addAll([
 			0x0000 -> "Syn",
 			0x0001 -> "Button",
 			0x0002 -> "Relative",
 			0x0003 -> "Absolute",
-			0x0004 -> "MSC",
+			0x0004 -> "Miscellaneous",
 			0x0011 -> "LED",
 			0x0012 -> "Sound",
 			0x0014 -> "Rep",
 			0x0015 -> "Force Feedback",
 			0x0016 -> "Power",
-			0x0017 -> "Force Feedback Status"
+			0x0017 -> "Force Feedback Status",
+			0x0FFF -> "Linear"
 		]);
+
 	}
 	*new { | device, evtType, evtCode |
-		^(slotTypeMap[evtType] ? this).newCopyArgs(device, evtType, evtCode).initSpec
+		^(slotTypeMap[evtType] ? this).newCopyArgs(device, evtType, evtCode).init.initSpec
 	}
+
+	init{
+		busAction = {};
+		debugAction = {};
+		action = {};
+	}
+
 	initSpec {
 		spec = ControlSpec(0, 1, \lin, 1, 0);
 	}
@@ -501,9 +677,47 @@ LIDSlot {
 	value_ { | rawValue |
 		value = rawValue;
 		action.value(this);
+		busAction.value( this );
+		debugAction.value( this );
 	}
 	next {
 		^this.value
+	}
+
+	debug_{ |onoff|
+		if ( onoff, {
+			debugAction = { |slot| [ slot.type, slot.code, slot.value, slot.key ].postln; };
+		}, {
+			debugAction = {};
+		});
+	}
+
+	createBus { |s|
+		s = s ? Server.default;
+		if ( bus.isNil, {
+			bus = Bus.control( s, 1 );
+		}, {
+			if ( bus.index.isNil, {
+				bus = Bus.control( s, 1 );
+			});
+		});
+		/*		if ( s.serverRunning.not and: s.isLocal, {
+			"Server seems not running, so bus will be invalid".warn;
+		});*/
+		busAction = { |v| bus.set( v.value ); };
+		//	devSlot.action = { |v| action.value(v); busAction.value(v); };
+	}
+
+	freeBus {
+		busAction = {};
+		bus.free;
+		bus = nil;
+	}
+
+	// JITLib support
+	kr {
+		this.createBus;
+		^In.kr( bus );
 	}
 }
 
@@ -523,10 +737,22 @@ LIDRelSlot : LIDSlot {
 		delta = dta;
 		value = value + delta;
 		action.value(this);
+		busAction.value( this );
+		debugAction.value( this );
 		deltaAction.value(this);
 	}
 
 	delta { ^delta }
+
+	debug_{ |onoff|
+		if ( onoff, {
+			debugAction = { |slot| [ slot.type, slot.code, slot.value, slot.delta, slot.key ].postln; };
+		}, {
+			debugAction = {};
+		});
+	}
+
+
 }
 
 LIDLedSlot : LIDSlot {
@@ -537,6 +763,21 @@ LIDLedSlot : LIDSlot {
 		value = v;
 		device.setLEDState( code, value );
 		action.value(this);
+		busAction.value( this );
+		debugAction.value( this );
+	}
+}
+
+LIDMscSlot : LIDSlot {
+
+	initSpec { }
+	value { ^value }
+	value_ { | v |
+		value = v;
+		device.setMSCState( code, value );
+		action.value(this);
+		busAction.value( this );
+		debugAction.value( this );
 	}
 }
 
