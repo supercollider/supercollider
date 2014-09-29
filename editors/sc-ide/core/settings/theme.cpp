@@ -209,16 +209,18 @@ void Theme::setFormat(const QString & key, const QTextCharFormat & newFormat)
 {
     QMap<QString, QTextCharFormat *>::iterator i = mFormats.find(key);
     QTextCharFormat *format = i.value();
+    bool fontWeight = (newFormat.fontWeight() == QFont::Bold) ? true : false;
+    QColor bg = (newFormat.background() == Qt::NoBrush) ?
+                    QColor(Qt::transparent): newFormat.background().color();
 
     if (i == mFormats.end()) {
         qDebug() << __func__ << "Failed to find key " << key;
         return;
     }
 
-    format->setBackground(newFormat.background());
-    format->setForeground(newFormat.foreground());
-    format->setFontWeight(newFormat.fontWeight());
-    format->setFontItalic(newFormat.fontItalic());
+    mFormats.remove(key);
+    addToTheme(mFormats, key.toStdString().c_str(), newFormat.foreground().color(),
+               bg, fontWeight, newFormat.fontItalic());
 }
 
 const QTextCharFormat & Theme::format(const QString & key)
