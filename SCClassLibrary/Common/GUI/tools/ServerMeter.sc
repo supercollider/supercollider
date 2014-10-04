@@ -1,20 +1,20 @@
 ServerMeterView {
 
-	classvar serverMeterViews, 	updateFreq = 10, dBLow = -80, meterWidth = 15, gapWidth = 4, <height = 230;
+	classvar serverMeterViews, updateFreq = 10, dBLow = -80, meterWidth = 15, gapWidth = 4, <height = 230;
 	classvar serverCleanupFuncs;
 
 	var <view;
 	var inresp, outresp, synthFunc, responderFunc, server, numIns, numOuts, inmeters, outmeters, startResponderFunc;
 
-	*new { |aserver,parent,leftUp,numIns,numOuts|
-		^super.new.init(aserver,parent,leftUp,numIns,numOuts)
+	*new { |aserver, parent, leftUp, numIns, numOuts|
+		^super.new.init(aserver, parent, leftUp, numIns, numOuts)
 	}
 
-	*getWidth { arg numIns,numOuts, server;
+	*getWidth { arg numIns, numOuts, server;
 		^20+((numIns + numOuts + 2) * (meterWidth + gapWidth))
 	}
 
-	init { arg aserver, parent, leftUp, anumIns,anumOuts;
+	init { arg aserver, parent, leftUp, anumIns, anumOuts;
 		var innerView, viewWidth, levelIndic, palette;
 
 		server = aserver;
@@ -22,17 +22,17 @@ ServerMeterView {
 		numIns = anumIns ?? { server.options.numInputBusChannels };
 		numOuts = anumOuts ?? { server.options.numOutputBusChannels };
 
-		viewWidth= this.class.getWidth(anumIns,anumOuts);
+		viewWidth= this.class.getWidth(anumIns, anumOuts);
 
 		leftUp = leftUp ? (0@0);
 
-		view = CompositeView(parent, Rect(leftUp.x,leftUp.y, viewWidth, height) );
+		view = CompositeView(parent, Rect(leftUp.x, leftUp.y, viewWidth, height) );
 		view.onClose_( { this.stop });
-		innerView = CompositeView(view, Rect(10,25, viewWidth, height) );
+		innerView = CompositeView(view, Rect(10, 25, viewWidth, height) );
 		innerView.addFlowLayout(0@0, gapWidth@gapWidth);
 
 		// dB scale
-		UserView(innerView, Rect(0,0,meterWidth,195)).drawFunc_( {
+		UserView(innerView, Rect(0, 0, meterWidth, 195)).drawFunc_( {
 			try {
 				Pen.color = \QPalette.asClass.new.windowText;
 			} {
@@ -50,11 +50,11 @@ ServerMeterView {
 			.string_("Inputs");
 			inmeters = Array.fill( numIns, { arg i;
 				var comp;
-				comp = CompositeView(innerView, Rect(0,0,meterWidth,195)).resize_(5);
+				comp = CompositeView(innerView, Rect(0, 0, meterWidth, 195)).resize_(5);
 				StaticText(comp, Rect(0, 180, meterWidth, 15))
 				.font_(Font.sansSerif(9).boldVariant)
 				.string_(i.asString);
-				levelIndic = LevelIndicator( comp, Rect(0,0,meterWidth,180) ).warning_(0.9).critical_(1.0)
+				levelIndic = LevelIndicator( comp, Rect(0, 0, meterWidth, 180) ).warning_(0.9).critical_(1.0)
 				.drawsPeak_(true)
 				.numTicks_(9)
 				.numMajorTicks_(3);
@@ -63,7 +63,7 @@ ServerMeterView {
 
 		if((numIns > 0) && (numOuts > 0)) {
 			// divider
-			UserView(innerView, Rect(0,0,meterWidth,180)).drawFunc_( {
+			UserView(innerView, Rect(0, 0, meterWidth, 180)).drawFunc_( {
 				try {
 					Pen.color = \QPalette.asClass.new.windowText;
 				} {
@@ -76,16 +76,16 @@ ServerMeterView {
 
 		// outs
 		if(numOuts > 0) {
-			StaticText(view, Rect(10 + if(numIns > 0 , ((numIns + 2) * (meterWidth + gapWidth)), 0), 5, 100, 15))
+			StaticText(view, Rect(10 + if(numIns > 0) { (numIns + 2) * (meterWidth + gapWidth) } { 0 }, 5, 100, 15))
 			.font_(Font.sansSerif(10).boldVariant)
 			.string_("Outputs");
 			outmeters = Array.fill( numOuts, { arg i;
 				var comp;
-				comp = CompositeView(innerView, Rect(0,0,meterWidth,195));
+				comp = CompositeView(innerView, Rect(0, 0, meterWidth, 195));
 				StaticText(comp, Rect(0, 180, meterWidth, 15))
 				.font_(Font.sansSerif(9).boldVariant)
 				.string_(i.asString);
-				levelIndic = LevelIndicator( comp, Rect(0,0,meterWidth,180) ).warning_(0.9).critical_(1.0)
+				levelIndic = LevelIndicator( comp, Rect(0, 0, meterWidth, 180) ).warning_(0.9).critical_(1.0)
 				.drawsPeak_(true)
 				.numTicks_(9)
 				.numMajorTicks_(3);
@@ -168,7 +168,7 @@ ServerMeterView {
 			outresp = OSCFunc( {|msg|
 				 {
 					try {
-						var channelCount =  min(msg.size - 3 / 2, numOuts);
+						var channelCount = min(msg.size - 3 / 2, numOuts);
 
 						channelCount.do {|channel|
 							var baseIndex = 3 + (2*channel);
@@ -239,7 +239,7 @@ ServerMeter {
 		numOuts = numOuts ?? { server.options.numOutputBusChannels };
 
 		window = Window.new(server.name ++ " levels (dBFS)",
-			Rect(5, 305, ServerMeterView.getWidth(numIns,numOuts), ServerMeterView.height),
+			Rect(5, 305, ServerMeterView.getWidth(numIns, numOuts), ServerMeterView.height),
 			false);
 
 		meterView = ServerMeterView(server, window, 0@0, numIns, numOuts);
@@ -252,7 +252,7 @@ ServerMeter {
 
 		window.front;
 
-		^super.newCopyArgs(window,meterView)
+		^super.newCopyArgs(window, meterView)
 
 	}
 }
