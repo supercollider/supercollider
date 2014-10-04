@@ -144,7 +144,7 @@ ServerMeterView {
 			inresp = OSCFunc( {|msg|
 				 {
 					try {
-						var channelCount = msg.size - 3 / 2;
+						var channelCount = min(msg.size - 3 / 2, numIns);
 
 						channelCount.do {|channel|
 							var baseIndex = 3 + (2*channel);
@@ -168,7 +168,7 @@ ServerMeterView {
 			outresp = OSCFunc( {|msg|
 				 {
 					try {
-						var channelCount = msg.size - 3 / 2;
+						var channelCount =  min(msg.size - 3 / 2, numOuts);
 
 						channelCount.do {|channel|
 							var baseIndex = 3 + (2*channel);
