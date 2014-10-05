@@ -1,4 +1,4 @@
-GeneralHID{
+GeneralHID {
 	classvar <>all, <>verbose=false;
 	classvar <scheme, <schemes;
 
@@ -57,9 +57,9 @@ GeneralHID{
 		if( newScheme.notNil, {
 			scheme = newScheme;
 		}, {
-			if(thisProcess.platform.name != \windows){ // on win we know it's not yet supported
-				("GeneralHID.fromID : The HID scheme '" ++ id ++ "' is not installed\n" ++
-				"The current scheme is still '" ++ if( scheme.notNil, { scheme.id }) ++ "'!").warn;
+			if(thisProcess.platform.name == \linux) { // only supported on linux right now
+				"GeneralHID.fromID : The HID scheme '%' is not installed\n"
+				"The current scheme is still '%'.\n".format(id, scheme !? { scheme.id }).warn
 			}
 		});
 		^scheme;
@@ -77,17 +77,17 @@ GeneralHID{
 	}
 }
 
-GeneralHIDInfo{
+GeneralHIDInfo {
 	var <name, <bustype, <vendor, <product, <version, <physical, <unique;
 
-	*new{arg  name="", bustype=0, vendor=0, product=0, version=0, physical=0, unique=0;
+	*new {arg name="", bustype=0, vendor=0, product=0, version=0, physical=0, unique=0;
 		^super.newCopyArgs( name, bustype, vendor, product, version, physical, unique ).init;
 	}
 
-	init{
+	init {
 	}
 
-	findArgs{
+	findArgs {
 		^[ vendor, product, physical, version ];
 	}
 
@@ -106,7 +106,7 @@ GeneralHIDInfo{
 	}
 }
 
-GeneralHIDDevice{
+GeneralHIDDevice {
 	classvar all;
 	var <slots, <spec;
 	var <device, <info;
@@ -127,127 +127,127 @@ GeneralHIDDevice{
 	*new { |newDevice|
 		^all.detect({ | dev | dev.device == newDevice }) ?? { super.new.init(newDevice) }
 	}
-	init{ |newDevice|
+	init { |newDevice|
 		device = newDevice;
 		slots = device.getSlots;
 		info = device.getInfo;
 		spec = GeneralHIDSpec.new( this );
 	}
-	close{
+	close {
 		device.close;
 	}
-	isOpen{
+	isOpen {
 		^device.isOpen;
 	}
-	/*	info{
+	/*	info {
 		^device.info;
 		}
 	*/
-	debug_{ |onoff,allslots=true|
+	debug_ { |onoff, allslots=true|
 		device.class.debug_( onoff );
 		// is this necessary? to also turn on/off all the slot debugging?
-		if ( allslots ){
-			slots.do{ |sl|
-				sl.do{ |slt| slt.debug_( onoff ) }
+		if ( allslots ) {
+			slots.do { |sl|
+				sl.do { |slt| slt.debug_( onoff ) }
 			};
 		};
 	}
-	caps{
-		slots.do{ |sl|
+	caps {
+		slots.do { |sl|
 			"".postln;
-			sl.do{ |slt| "\t".post; slt.asString.postln; } };
+			sl.do { |slt| "\t".post; slt.asString.postln; } };
 	}
-	grab{
+	grab {
 		device.grab;
 	}
-	ungrab{
+	ungrab {
 		device.ungrab;
 	}
 
-	hidDeviceAction_{ |func|
+	hidDeviceAction_ { |func|
 		device.hidDeviceAction = func;
 	}
 
-	hidDeviceAction{
+	hidDeviceAction {
 		^device.hidDeviceAction;
 	}
 
 	// spec support
-	findSpec{
+	findSpec {
 		^spec.find;
 	}
 
-	setSpec{ |name|
-		if ( name.isKindOf( Array ) ){
+	setSpec { |name|
+		if ( name.isKindOf( Array ) ) {
 			spec.fromFile( name.first )
-		}{
+		} {
 			spec.fromFile( name );
 		}
 	}
 
-	hasSlot{ |slotid|
-		if ( slots.at( slotid[0] ).notNil ){
-			if ( slots[ slotid[0] ].at( slotid[1] ).notNil ){
+	hasSlot { |slotid|
+		if ( slots.at( slotid[0] ).notNil ) {
+			if ( slots[ slotid[0] ].at( slotid[1] ).notNil ) {
 				^true;
 			}
 		};
 		^false;
 	}
 
-	add{ |key, slot|
-		if ( this.hasSlot( slot ) ){
+	add { |key, slot|
+		if ( this.hasSlot( slot ) ) {
 			spec.add( key, slot );
-		}{
+		} {
 			"slot does not exist!".warn;
 		}
 	}
 
-	at{ |key|
+	at { |key|
 		^spec.at( key );
 	}
 
-	value{ |key|
+	value { |key|
 		^spec.value( key );
 	}
 
-	bus{ |key|
+	bus { |key|
 		^spec.bus( key );
 	}
 
-	value_{ |key,value|
+	value_ { |key, value|
 		spec.value_( key, value );
 	}
 
-	action_{ |key,action|
-		if ( (key.class == Function) and: action.isNil,{
+	action_ { |key, action|
+		if ( (key.class == Function) and: action.isNil, {
 			device.action = key;
-		},{
+		}, {
 			spec.action_( key, action );
 		});
 	}
 
-	createBus{ |name,server|
+	createBus { |name, server|
 		spec.createBus( name, server );
 	}
 
-	freeBus{ |name|
+	freeBus { |name|
 		spec.freeBus( name );
 	}
 
-	createAllBuses{ |server|
+	createAllBuses { |server|
 		spec.createAllBuses( server );
 	}
 
-	freeAllBuses{
+	freeAllBuses {
 		spec.freeAllBuses;
 	}
 
-	makeGui{
+	makeGui {
 		^GeneralHIDDeviceGUI.new( this );
 	}
 }
 
-GeneralHIDSlot{
+GeneralHIDSlot {
 	var <type, <id, <device, <devSlot;
 	classvar <typeMap;
 	var <action;
@@ -255,7 +255,7 @@ GeneralHIDSlot{
 	var <debugAction;
 	var <>key;
 
-	*initClass{
+	*initClass {
 		// typeMap is modeled after Linux input system.
 		// to get the Mac work in a similar way, some tricks will be needed
 		typeMap = IdentityDictionary.new.addAll([
@@ -274,11 +274,11 @@ GeneralHIDSlot{
 		]);
 	}
 
-	*new{ |type,id,device,devSlot|
+	*new { |type, id, device, devSlot|
 		^super.newCopyArgs( type, id, device, devSlot ).init;
 	}
 
-	init{
+	init {
 		busAction = {};
 		debugAction = {};
 		action = {};
@@ -297,30 +297,30 @@ GeneralHIDSlot{
 		devSlot.value_( v );
 	}
 
-	debug_{ |onoff|
+	debug_ { |onoff|
 		if ( onoff, {
 			//	this.action_({ |slot| [ slot.type, slot.code, slot.value, key ].postln; });
 			this.debugAction_({ |slot| [ slot.type, slot.code, slot.value, key ].postln; });
-		},{
+		}, {
 			//	this.action_({});
 			this.debugAction_({});
 		});
 	}
 
-	debugAction_{ |actionFunc|
+	debugAction_ { |actionFunc|
 		debugAction = actionFunc;
 	}
 
-	action_{ |actionFunc|
+	action_ { |actionFunc|
 		action = actionFunc;
 		//	devSlot.action = { |v| this.action.value(v); this.busAction.value(v); this.debugAction.value(v) };
 	}
 
-	createBus{ |s|
+	createBus { |s|
 		s = s ? Server.default;
 		if ( bus.isNil, {
 			bus = Bus.control( s, 1 );
-		},{
+		}, {
 			if ( bus.index.isNil, {
 				bus = Bus.control( s, 1 );
 			});
@@ -332,7 +332,7 @@ GeneralHIDSlot{
 		//	devSlot.action = { |v| action.value(v); busAction.value(v); };
 	}
 
-	freeBus{
+	freeBus {
 		busAction = {};
 		bus.free;
 	}
@@ -347,7 +347,7 @@ GeneralHIDSlot{
 	}
 
 // JITLib support
-	kr{
+	kr {
 		this.createBus;
 		^In.kr( bus );
 	}

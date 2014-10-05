@@ -126,7 +126,6 @@ void ScServer::createActions(Settings::Manager * settings)
     mActions[DumpOSC] = action = new QAction(tr("Server Dump OSC"), this);
     action->setCheckable(true);
     connect(action, SIGNAL(triggered(bool)), this, SLOT(sendDumpingOSC(bool)));
-    connect(action, SIGNAL(toggled(bool)), this, SIGNAL(sendDumpingOSC(bool)));
     settings->addAction( action, "synth-server-dumpOSC", synthServerCategory);
 
     mActions[Mute] = action = new QAction(tr("Mute"), this);
@@ -380,6 +379,9 @@ void ScServer::onScLangReponse( const QString & selector, const QString & data )
     static QString unmutedSelector("serverUnmuted");
     static QString ampSelector("serverAmp");
     static QString ampRangeSelector("serverAmpRange");
+	static QString startDumpOSCSelector("dumpOSCStarted");
+	static QString stopDumpOSCSelector("dumpOSCStopped");
+
 
     if (selector == defaultServerRunningChangedSelector)
         handleRuningStateChangedMsg(data);
@@ -387,6 +389,12 @@ void ScServer::onScLangReponse( const QString & selector, const QString & data )
         mActions[Mute]->setChecked(true);
     } else if (selector == unmutedSelector) {
         mActions[Mute]->setChecked(false);
+    }
+	else if (selector == startDumpOSCSelector) {
+        mActions[DumpOSC]->setChecked(true);
+    }
+	else if (selector == stopDumpOSCSelector) {
+        mActions[DumpOSC]->setChecked(false);
     }
     else if (selector == ampSelector) {
         bool ok;

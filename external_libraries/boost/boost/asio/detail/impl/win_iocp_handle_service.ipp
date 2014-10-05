@@ -2,7 +2,7 @@
 // detail/impl/win_iocp_handle_service.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2013 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Copyright (c) 2008 Rep Invariant Systems, Inc. (info@repinvariant.com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
@@ -46,7 +46,8 @@ public:
       // As documented in GetQueuedCompletionStatus, setting the low order
       // bit of this event prevents our synchronous writes from being treated
       // as completion port events.
-      *reinterpret_cast<DWORD_PTR*>(&hEvent) |= 1;
+      DWORD_PTR tmp = reinterpret_cast<DWORD_PTR>(hEvent);
+      hEvent = reinterpret_cast<HANDLE>(tmp | 1);
     }
     else
     {
@@ -440,19 +441,16 @@ size_t win_iocp_handle_service::do_read(
   if (!ok)
   {
     DWORD last_error = ::GetLastError();
-    if (last_error != ERROR_MORE_DATA)
+    if (last_error == ERROR_HANDLE_EOF)
     {
-      if (last_error == ERROR_HANDLE_EOF)
-      {
-        ec = boost::asio::error::eof;
-      }
-      else
-      {
-        ec = boost::system::error_code(last_error,
-            boost::asio::error::get_system_category());
-      }
+      ec = boost::asio::error::eof;
     }
-    return 0;
+    else
+    {
+      ec = boost::system::error_code(last_error,
+          boost::asio::error::get_system_category());
+    }
+    return (last_error == ERROR_MORE_DATA) ? bytes_transferred : 0;
   }
 
   ec = boost::system::error_code();

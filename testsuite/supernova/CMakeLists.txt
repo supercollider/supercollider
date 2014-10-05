@@ -31,57 +31,15 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
     )
 endif()
 
-find_package(Sndfile REQUIRED)
-
-include_directories(${CMAKE_SOURCE_DIR}/include/common
-                    ${CMAKE_SOURCE_DIR}/include/plugin_interface
-                    ${CMAKE_SOURCE_DIR}/include/server
-                    ${CMAKE_SOURCE_DIR}/server/supernova
-                    ${CMAKE_SOURCE_DIR}/external_libraries/boost
-                    ${CMAKE_SOURCE_DIR}/external_libraries/boost_endian
-                    ${CMAKE_SOURCE_DIR}/external_libraries/oscpack_1_1_0
-                    ${CMAKE_SOURCE_DIR}/external_libraries/
-                    ${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
-                    ${CMAKE_SOURCE_DIR}/external_libraries/TLSF-2.4.6/src
-                    ${SNDFILE_INCLUDE_DIR}
-                    )
-
-if (WIN32 OR APPLE)
-    find_package(Portaudio)
-    if(NOT PORTAUDIO_FOUND)
-        message(FATAL_ERROR "Portaudio missing")
-    endif()
-    add_definitions(-DPORTAUDIO_BACKEND ${PORTAUDIO_DEFINITIONS})
-    include_directories(${PORTAUDIO_INCLUDE_DIRS})
-else()
-    find_library(JACK NAMES jack)
-    if (JACK)
-        add_definitions(-DJACK_BACKEND)
-        include_directories(${JACK_INCLUDE_DIRS})
-    endif()
-endif()
-
-
 add_library(boost_test STATIC boost_test.cpp)
+target_include_directories(boost_test PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/boost)
 
 # run simple tests
 foreach(test ${simple_tests})
   string(REPLACE .cpp "" test_name ${test} )
   add_executable(${test_name} ${test})
 
-  if (Boost_FOUND)
-    target_link_libraries(${test_name}  ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_TEST_LIBRARY})
-  else()
-    target_link_libraries(${test_name} boost_thread boost_system boost_test)
-  endif()
-  target_link_libraries(${test_name} oscpack tlsf)
-  target_link_libraries(${test_name} ${PTHREADS_LIBRARY})
-  target_link_libraries(${test_name} ${SNDFILE_LIBRARIES})
-  target_link_libraries(${test_name} libsupernova)
-
-  if(APPLE)
-    target_link_libraries(${test_name} "-framework CoreAudio")
-  endif()
+  target_link_libraries(${test_name} libsupernova boost_test)
 
   add_test(${test_name}_run ${EXECUTABLE_OUTPUT_PATH}/${test_name})
 endforeach(test)

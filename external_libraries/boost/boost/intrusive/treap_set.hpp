@@ -36,15 +36,16 @@ namespace intrusive {
 #if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
 template<class T, class ...Options>
 #else
-template<class ValueTraits, class VoidOrKeyComp, class VoidOrPrioComp, class SizeType, bool ConstantTimeSize>
+template<class ValueTraits, class VoidOrKeyComp, class VoidOrPrioComp, class SizeType, bool ConstantTimeSize, typename HeaderHolder>
 #endif
 class treap_set_impl
 #ifndef BOOST_INTRUSIVE_DOXYGEN_INVOKED
-   : public treap_impl<ValueTraits, VoidOrKeyComp, VoidOrPrioComp, SizeType, ConstantTimeSize>
+   : public treap_impl<ValueTraits, VoidOrKeyComp, VoidOrPrioComp, SizeType, ConstantTimeSize, HeaderHolder>
 #endif
 {
    /// @cond
-   typedef treap_impl<ValueTraits, VoidOrKeyComp, VoidOrPrioComp, SizeType, ConstantTimeSize> tree_type;
+   public:
+   typedef treap_impl<ValueTraits, VoidOrKeyComp, VoidOrPrioComp, SizeType, ConstantTimeSize, HeaderHolder> tree_type;
    BOOST_MOVABLE_BUT_NOT_COPYABLE(treap_set_impl)
 
    typedef tree_type implementation_defined;
@@ -291,13 +292,19 @@ class treap_set_impl
    template<class Disposer>
    void clear_and_dispose(Disposer disposer);
 
+   #endif   //   #ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
+
    //! @copydoc ::boost::intrusive::treap::count(const_reference)const
-   size_type count(const_reference value) const;
+   size_type count(const_reference value) const
+   {  return static_cast<size_type>(this->tree_type::find(value) != this->tree_type::cend()); }
 
    //! @copydoc ::boost::intrusive::treap::count(const KeyType&,KeyValueCompare)const
    template<class KeyType, class KeyValueCompare>
-   size_type count(const KeyType& key, KeyValueCompare comp) const;
-   
+   size_type count(const KeyType& key, KeyValueCompare comp) const
+   {  return static_cast<size_type>(this->tree_type::find(key, comp) != this->tree_type::cend()); }
+
+   #ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
+
    //! @copydoc ::boost::intrusive::treap::lower_bound(const_reference)
    iterator lower_bound(const_reference value);
    
@@ -340,21 +347,29 @@ class treap_set_impl
    template<class KeyType, class KeyValueCompare>
    const_iterator find(const KeyType& key, KeyValueCompare comp) const;
 
-   //! @copydoc ::boost::intrusive::treap::equal_range(const_reference)
-   std::pair<iterator,iterator> equal_range(const_reference value);
+   #endif   //   #ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
 
-   //! @copydoc ::boost::intrusive::treap::equal_range(const KeyType&,KeyValueCompare)
+   //! @copydoc ::boost::intrusive::rbtree::equal_range(const_reference)
+   std::pair<iterator,iterator> equal_range(const_reference value)
+   {  return this->tree_type::lower_bound_range(value); }
+
+   //! @copydoc ::boost::intrusive::rbtree::equal_range(const KeyType&,KeyValueCompare)
    template<class KeyType, class KeyValueCompare>
-   std::pair<iterator,iterator> equal_range(const KeyType& key, KeyValueCompare comp);
+   std::pair<iterator,iterator> equal_range(const KeyType& key, KeyValueCompare comp)
+   {  return this->tree_type::lower_bound_range(key, comp); }
 
-   //! @copydoc ::boost::intrusive::treap::equal_range(const_reference)const
+   //! @copydoc ::boost::intrusive::rbtree::equal_range(const_reference)const
    std::pair<const_iterator, const_iterator>
-      equal_range(const_reference value) const;
+      equal_range(const_reference value) const
+   {  return this->tree_type::lower_bound_range(value); }
 
-   //! @copydoc ::boost::intrusive::treap::equal_range(const KeyType&,KeyValueCompare)const
+   //! @copydoc ::boost::intrusive::rbtree::equal_range(const KeyType&,KeyValueCompare)const
    template<class KeyType, class KeyValueCompare>
    std::pair<const_iterator, const_iterator>
-      equal_range(const KeyType& key, KeyValueCompare comp) const;
+      equal_range(const KeyType& key, KeyValueCompare comp) const
+   {  return this->tree_type::lower_bound_range(key, comp); }
+
+   #ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
 
    //! @copydoc ::boost::intrusive::treap::bounded_range(const_reference,const_reference,bool,bool)
    std::pair<iterator,iterator> bounded_range
@@ -408,14 +423,15 @@ class treap_set_impl
 template<class T, class ...Options>
 #else
 template<class T, class O1 = void, class O2 = void
-                , class O3 = void, class O4 = void>
+                , class O3 = void, class O4 = void
+                , class O5 = void>
 #endif
 struct make_treap_set
 {
    typedef typename pack_options
       < treap_defaults,
       #if !defined(BOOST_INTRUSIVE_VARIADIC_TEMPLATES)
-      O1, O2, O3, O4
+      O1, O2, O3, O4, O5
       #else
       Options...
       #endif
@@ -423,6 +439,8 @@ struct make_treap_set
 
    typedef typename detail::get_value_traits
       <T, typename packed_options::proto_value_traits>::type value_traits;
+   typedef typename detail::get_header_holder_type
+      < value_traits, typename packed_options::header_holder_type >::type header_holder_type;
 
    typedef treap_set_impl
          < value_traits
@@ -430,6 +448,7 @@ struct make_treap_set
          , typename packed_options::priority
          , typename packed_options::size_type
          , packed_options::constant_time_size
+         , header_holder_type
          > implementation_defined;
    /// @endcond
    typedef implementation_defined type;
@@ -438,14 +457,14 @@ struct make_treap_set
 #ifndef BOOST_INTRUSIVE_DOXYGEN_INVOKED
 
 #if !defined(BOOST_INTRUSIVE_VARIADIC_TEMPLATES)
-template<class T, class O1, class O2, class O3, class O4>
+template<class T, class O1, class O2, class O3, class O4, class O5>
 #else
 template<class T, class ...Options>
 #endif
 class treap_set
    :  public make_treap_set<T,
       #if !defined(BOOST_INTRUSIVE_VARIADIC_TEMPLATES)
-      O1, O2, O3, O4
+      O1, O2, O3, O4, O5
       #else
       Options...
       #endif
@@ -454,7 +473,7 @@ class treap_set
    typedef typename make_treap_set
       <T,
       #if !defined(BOOST_INTRUSIVE_VARIADIC_TEMPLATES)
-      O1, O2, O3, O4
+      O1, O2, O3, O4, O5
       #else
       Options...
       #endif
@@ -521,15 +540,15 @@ class treap_set
 #if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
 template<class T, class ...Options>
 #else
-template<class ValueTraits, class VoidOrKeyComp, class VoidOrPrioComp, class SizeType, bool ConstantTimeSize>
+template<class ValueTraits, class VoidOrKeyComp, class VoidOrPrioComp, class SizeType, bool ConstantTimeSize, typename HeaderHolder>
 #endif
 class treap_multiset_impl
 #ifndef BOOST_INTRUSIVE_DOXYGEN_INVOKED
-   : public treap_impl<ValueTraits, VoidOrKeyComp, VoidOrPrioComp, SizeType, ConstantTimeSize>
+   : public treap_impl<ValueTraits, VoidOrKeyComp, VoidOrPrioComp, SizeType, ConstantTimeSize, HeaderHolder>
 #endif
 {
    /// @cond
-   typedef treap_impl<ValueTraits, VoidOrKeyComp, VoidOrPrioComp, SizeType, ConstantTimeSize> tree_type;
+   typedef treap_impl<ValueTraits, VoidOrKeyComp, VoidOrPrioComp, SizeType, ConstantTimeSize, HeaderHolder> tree_type;
    BOOST_MOVABLE_BUT_NOT_COPYABLE(treap_multiset_impl)
 
    typedef tree_type implementation_defined;
@@ -874,14 +893,15 @@ class treap_multiset_impl
 template<class T, class ...Options>
 #else
 template<class T, class O1 = void, class O2 = void
-                , class O3 = void, class O4 = void>
+                , class O3 = void, class O4 = void
+                , class O5 = void>
 #endif
 struct make_treap_multiset
 {
    typedef typename pack_options
       < treap_defaults,
       #if !defined(BOOST_INTRUSIVE_VARIADIC_TEMPLATES)
-      O1, O2, O3, O4
+      O1, O2, O3, O4, O5
       #else
       Options...
       #endif
@@ -889,6 +909,8 @@ struct make_treap_multiset
 
    typedef typename detail::get_value_traits
       <T, typename packed_options::proto_value_traits>::type value_traits;
+   typedef typename detail::get_header_holder_type
+      < value_traits, typename packed_options::header_holder_type >::type header_holder_type;
 
    typedef treap_multiset_impl
          < value_traits
@@ -896,6 +918,7 @@ struct make_treap_multiset
          , typename packed_options::priority
          , typename packed_options::size_type
          , packed_options::constant_time_size
+         , header_holder_type
          > implementation_defined;
    /// @endcond
    typedef implementation_defined type;
@@ -904,14 +927,14 @@ struct make_treap_multiset
 #ifndef BOOST_INTRUSIVE_DOXYGEN_INVOKED
 
 #if !defined(BOOST_INTRUSIVE_VARIADIC_TEMPLATES)
-template<class T, class O1, class O2, class O3, class O4>
+template<class T, class O1, class O2, class O3, class O4, class O5>
 #else
 template<class T, class ...Options>
 #endif
 class treap_multiset
    :  public make_treap_multiset<T,
       #if !defined(BOOST_INTRUSIVE_VARIADIC_TEMPLATES)
-      O1, O2, O3, O4
+      O1, O2, O3, O4, O5
       #else
       Options...
       #endif
@@ -920,7 +943,7 @@ class treap_multiset
    typedef typename make_treap_multiset
       <T,
       #if !defined(BOOST_INTRUSIVE_VARIADIC_TEMPLATES)
-      O1, O2, O3, O4
+      O1, O2, O3, O4, O5
       #else
       Options...
       #endif
