@@ -74,8 +74,12 @@
 
 //
 // gcc has "long long"
+// Except on Darwin with standard compliance enabled (-pedantic)
+// Apple gcc helpfully defines this macro we can query
 //
-#define BOOST_HAS_LONG_LONG
+#if !defined(__DARWIN_NO_LONG_LONG)
+# define BOOST_HAS_LONG_LONG
+#endif
 
 //
 // gcc implements the named return value optimization since version 3.1
@@ -228,6 +232,7 @@
 //
 #if (__GNUC__*10000 + __GNUC_MINOR__*100 + __GNUC_PATCHLEVEL__ < 40801) || !defined(__GXX_EXPERIMENTAL_CXX0X__)
 #  define BOOST_NO_CXX11_DECLTYPE_N3276
+#  define BOOST_NO_CXX11_REF_QUALIFIERS
 #endif
 
 #ifndef BOOST_COMPILER

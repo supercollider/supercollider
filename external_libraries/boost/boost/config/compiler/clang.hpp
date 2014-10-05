@@ -10,6 +10,14 @@
 
 #define BOOST_HAS_PRAGMA_ONCE
 
+// When compiling with clang before __has_extension was defined,
+// even if one writes 'defined(__has_extension) && __has_extension(xxx)',
+// clang reports a compiler error. So the only workaround found is:
+
+#ifndef __has_extension
+#define __has_extension __has_feature
+#endif
+
 #if !__has_feature(cxx_exceptions) && !defined(BOOST_NO_EXCEPTIONS)
 #  define BOOST_NO_EXCEPTIONS
 #endif
@@ -39,6 +47,11 @@
 // Clang supports "long long" in all compilation modes.
 #define BOOST_HAS_LONG_LONG
 
+#if defined(__SIZEOF_INT128__)
+#  define BOOST_HAS_INT128
+#endif
+
+
 //
 // Dynamic shared object (DSO) and dynamic-link library (DLL) support
 //
@@ -63,7 +76,10 @@
 #  define BOOST_NO_CXX11_AUTO_MULTIDECLARATIONS
 #endif
 
-#if !(defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L)
+//
+// Currently clang on Windows using VC++ RTL does not support C++11's char16_t or char32_t
+//
+#if defined(_MSC_VER) || !(defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L)
 #  define BOOST_NO_CXX11_CHAR16_T
 #  define BOOST_NO_CXX11_CHAR32_T
 #endif
@@ -122,6 +138,10 @@
 
 #if !__has_feature(cxx_raw_string_literals)
 #  define BOOST_NO_CXX11_RAW_LITERALS
+#endif
+
+#if !__has_feature(cxx_reference_qualified_functions)
+#  define BOOST_NO_CXX11_REF_QUALIFIERS
 #endif
 
 #if !__has_feature(cxx_generalized_initializers)

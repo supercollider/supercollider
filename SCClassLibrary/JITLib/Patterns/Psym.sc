@@ -10,7 +10,7 @@ Psym : FilterPattern {
 	lookupClass { ^Pdef }
 
 	lookUp { arg key;
-		^(dict ?? { this.lookupClass.all }).at(key) ?? { this.lookupClass.default }
+		^(dict ?? { this.lookupClass.all }).at(key.asSymbol) ?? { this.lookupClass.default }
 	}
 
 	embedInStream { arg inval;
@@ -31,12 +31,12 @@ Psym : FilterPattern {
 		^if(key.isSequenceableCollection) {
 			this.lookupClass.parallelise(
 				key.collect {|each|
-					this.lookUp(each.asSymbol)
+					this.lookUp(each)
 				}
 			);
 		} {
-			this.lookUp(key.asSymbol)
-		};
+			this.lookUp(key)
+		}
 	}
 
 }

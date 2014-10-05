@@ -396,7 +396,7 @@ class SC_TcpInPort
 	thread mRendezvousThread;
 #endif
 
-	boost::atomic<int> mAvailableConnections;
+	std::atomic<int> mAvailableConnections;
 	friend class SC_TcpConnection;
 
 public:

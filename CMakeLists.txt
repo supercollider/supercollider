@@ -81,7 +81,7 @@ if(APPLE)
 	set_property(DIRECTORY
 		APPEND
 		PROPERTY COMPILE_DEFINITIONS SC_DARWIN)
-elseif(CMAKE_SYSTEM_NAME MATCHES "Linux" OR CMAKE_SYSTEM_NAME MATCHES "FreeBSD" OR CMAKE_SYSTEM_NAME MATCHES "OpenBSD")
+elseif(UNIX)
 	add_definitions(-DSC_DATA_DIR="${CMAKE_INSTALL_PREFIX}/share/SuperCollider")
 endif()
 
@@ -139,7 +139,7 @@ option(ENABLE_TESTSUITE "Compile testsuite." ON)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     option(SUPERNOVA "Build with supernova as optional audio synthesis server" ON)
-elseif()
+else()
     option(SUPERNOVA "Build with supernova as optional audio synthesis server" OFF)
 endif()
 
@@ -292,12 +292,18 @@ endif()
 configure_file(common/SC_Version.hpp.in common/SC_Version.hpp)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/common)
 
+file(GLOB_RECURSE ClassLibrary SCClassLibrary/*sc)
+file(GLOB_RECURSE HelpSource   HelpSource/*)
+file(GLOB_RECURSE Sounds       sounds/*)
+file(GLOB_RECURSE Examples     examples/*)
+
+
 add_subdirectory(server)
 add_subdirectory(lang)
-add_subdirectory(editors)
 add_subdirectory(platform)
+add_subdirectory(editors)
 
-if(CMAKE_SYSTEM_NAME MATCHES "Linux" OR CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
+if(UNIX AND NOT APPLE)
     install(DIRECTORY include/common include/plugin_interface include/server include/lang
         DESTINATION ${CMAKE_INSTALL_PREFIX}/include/SuperCollider
 	FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
@@ -307,18 +313,11 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux" OR CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
     )
 endif()
 
-if(APPLE)
-	# determines the app name and app install location (scappbundlename, scappdir):
-	include (cmake_modules/MacAppFolder.cmake)
-
-	set(auxresourcesdir ${scappauxresourcesdir})
-
-	# Some aux files which go in the app's folder
-	install(FILES README.md README_OS_X.md ChangeLog COPYING AUTHORS MOVED_STUFF.txt
-		DESTINATION ${scappbundlename}
-	)
-elseif (WIN32)
+if (WIN32)
 	set(auxresourcesdir "SuperCollider")
+elseif(APPLE)
+	include(cmake_modules/MacAppFolder.cmake)
+	set(auxresourcesdir ${scappbundlename})
 else()
 	set(auxresourcesdir "share/SuperCollider")
 endif()
@@ -356,24 +355,6 @@ if(APPLE)
 					"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/${onedirectory} ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary/${onedirectory} )" )
 			endif()
 		endforeach(onedirectory)
-	else()
-		message(STATUS "Will copy SCCLassLibrary to ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}")
-
-		#if directory contains symlinks, unlink them.
-		if(EXISTS "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary")
-			file(GLOB classlibraryfolders "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary/[^.]*")
-			foreach(onedirectory ${classlibraryfolders})
-				if(IS_SYMLINK "${onedirectory}")
-					message(STATUS "Unlinking ${onedirectory}")
-					install( CODE "EXECUTE_PROCESS(COMMAND unlink ${onedirectory} )" )
-				endif()
-			endforeach(onedirectory)
-		endif()
-
-		install(DIRECTORY SCClassLibrary
-			DESTINATION ${auxresourcesdir}
-			REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
-		)
 	endif()
 else()
 	install(DIRECTORY SCClassLibrary
@@ -384,21 +365,21 @@ else()
 	)
 endif()
 
-install(DIRECTORY sounds
-	DESTINATION ${auxresourcesdir}
-)
-
-if(APPLE AND ("${standalone}" STREQUAL ""))
-	set(exampledir "${scappbundlename}")
-else()
-	set(exampledir "${auxresourcesdir}")
+if(NOT APPLE)
+	install(DIRECTORY sounds DESTINATION ${auxresourcesdir})
 endif()
 
-install(DIRECTORY examples
-	DESTINATION ${exampledir}
-	PATTERN "*~" EXCLUDE
-	PATTERN "*#" EXCLUDE
-)
+set( AdditionalInstallFiles
+     README.md
+     README_OS_X.md
+     ChangeLog
+     COPYING
+     AUTHORS
+     MOVED_STUFF.txt
+    )
+
+install(DIRECTORY examples              DESTINATION ${auxresourcesdir})
+install(FILES ${AdditionalInstallFiles} DESTINATION ${auxresourcesdir})
 
 if(INSTALL_HELP)
 	if(SC_SYMLINK_CLASSLIB AND APPLE)
@@ -409,31 +390,15 @@ if(INSTALL_HELP)
 		install( CODE
 					"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/HelpSource ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource )" )
 	else()
-		message(STATUS "Will copy HelpSource to ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}")
-		if(APPLE)
-			if(EXISTS "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource")
-				if(IS_SYMLINK "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource")
-					message(STATUS "Unlinking ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource")
-					install( CODE "EXECUTE_PROCESS(COMMAND unlink ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource )" )
-				endif()
-			endif()
-		endif()
 		install(DIRECTORY HelpSource
 			DESTINATION ${auxresourcesdir}
+			REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
 			PATTERN "*~" EXCLUDE
 			PATTERN "*#" EXCLUDE
 		)
 	endif()
 endif()
 
-
-#hid resources directory:
-set(HID_HUT_PATH ${auxresourcesdir}/SCClassLibrary/Common/Control/HID_support)
-
-install(DIRECTORY external_libraries/hidapi/hut
-        DESTINATION ${HID_HUT_PATH}
-	FILES_MATCHING PATTERN "*.yaml"
-)
 
 #############################################
 #

@@ -823,6 +823,7 @@ Server {
 		*/
 		dumpMode = code;
 		this.sendMsg(\dumpOSC, code);
+		this.changed(\dumpOSC, code);
 	}
 
 	quit {

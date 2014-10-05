@@ -32,7 +32,7 @@
 #include "MsgFifo.h"
 #include <map>
 
-#include "nova-tt/semaphore.hpp"
+#include "boost/sync/semaphore.hpp"
 
 #include "../../common/server_shm.hpp"
 
@@ -98,8 +98,8 @@ struct HiddenWorld
 	GrafDefTable *mGraphDefLib;
 	uint32 mNumUsers, mMaxUsers;
 	ReplyAddress *mUsers;
-    uint32 *mClientIDs, mClientIDTop;
-    ClientIDDict *mClientIDdict;
+	uint32 *mClientIDs, mClientIDTop;
+	ClientIDDict *mClientIDdict;
 
 	class SC_AudioDriver *mAudioDriver;
 	char mPassword[32];
@@ -112,7 +112,7 @@ struct HiddenWorld
 	NodeEndsFifo mNodeEnds;
 	DeleteGraphDefsFifo mDeleteGraphDefs;
 
-	nova::semaphore * mQuitProgram;
+	boost::sync::semaphore * mQuitProgram;
 	bool mTerminating;
 
 #ifndef NO_LIBSNDFILE

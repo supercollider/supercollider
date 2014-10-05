@@ -388,7 +388,7 @@ static int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
 		SC_TcpClientPort *comPort = new SC_TcpClientPort(addr, port, netAddrTcpClientNotifyFunc, netAddrObj);
 		SetPtr(netAddrObj->slots + ivxNetAddr_Socket, comPort);
 	} catch (std::exception const & e) {
-		scprintf("NetAddr-Connect failed with exception: %s\n", e.what());
+		printf("NetAddr-Connect failed with exception: %s\n", e.what());
 		return errFailed;
 	}
 

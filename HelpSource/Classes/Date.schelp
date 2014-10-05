@@ -13,7 +13,7 @@ Get current date from system and create a date object from it.
 code::
 (
 var a = Date.getDate;
-a.bootSeconds.postln;
+a.rawSeconds.postln;
 a.dayOfWeek.postln;
 a
 )

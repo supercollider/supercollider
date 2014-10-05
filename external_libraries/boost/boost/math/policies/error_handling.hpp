@@ -78,6 +78,27 @@ inline std::string do_format(Formatter f, const Group& g)
    return (f % g).str();
 }
 
+template <class T>
+inline const char* name_of()
+{
+#ifndef BOOST_NO_RTTI
+   return typeid(T).name();
+#else
+   return "unknown";
+#endif
+}
+template <> inline const char* name_of<float>(){ return "float"; }
+template <> inline const char* name_of<double>(){ return "double"; }
+template <> inline const char* name_of<long double>(){ return "long double"; }
+
+#ifdef BOOST_MATH_USE_FLOAT128
+template <>
+inline const char* name_of<BOOST_MATH_FLOAT128_TYPE>()
+{
+   return "__float128";
+}
+#endif
+
 template <class E, class T>
 void raise_error(const char* function, const char* message)
 {
@@ -87,7 +108,11 @@ void raise_error(const char* function, const char* message)
        message = "Cause unknown";
 
   std::string msg("Error in function ");
-  msg += (boost::format(function) % typeid(T).name()).str();
+#ifndef BOOST_NO_RTTI
+  msg += (boost::format(function) % boost::math::policies::detail::name_of<T>()).str();
+#else
+  msg += function;
+#endif
   msg += ": ";
   msg += message;
 
@@ -104,7 +129,11 @@ void raise_error(const char* function, const char* message, const T& val)
      message = "Cause unknown: error caused by bad argument with value %1%";
 
   std::string msg("Error in function ");
-  msg += (boost::format(function) % typeid(T).name()).str();
+#ifndef BOOST_NO_RTTI
+  msg += (boost::format(function) % boost::math::policies::detail::name_of<T>()).str();
+#else
+  msg += function;
+#endif
   msg += ": ";
   msg += message;
 
@@ -241,6 +270,31 @@ template <class T>
 inline T raise_overflow_error(
            const char* ,
            const char* ,
+           const T&,
+           const  ::boost::math::policies::overflow_error< ::boost::math::policies::ignore_error>&)
+{
+   // This may or may not do the right thing, but the user asked for the error
+   // to be ignored so here we go anyway:
+   return std::numeric_limits<T>::has_infinity ? std::numeric_limits<T>::infinity() : boost::math::tools::max_value<T>();
+}
+
+template <class T>
+inline T raise_overflow_error(
+           const char* ,
+           const char* ,
+           const  ::boost::math::policies::overflow_error< ::boost::math::policies::errno_on_error>&)
+{
+   errno = ERANGE;
+   // This may or may not do the right thing, but the user asked for the error
+   // to be silent so here we go anyway:
+   return std::numeric_limits<T>::has_infinity ? std::numeric_limits<T>::infinity() : boost::math::tools::max_value<T>();
+}
+
+template <class T>
+inline T raise_overflow_error(
+           const char* ,
+           const char* ,
+           const T&,
            const  ::boost::math::policies::overflow_error< ::boost::math::policies::errno_on_error>&)
 {
    errno = ERANGE;
@@ -258,6 +312,23 @@ inline T raise_overflow_error(
    return user_overflow_error(function, message, std::numeric_limits<T>::infinity());
 }
 
+template <class T>
+inline T raise_overflow_error(
+           const char* function,
+           const char* message,
+           const T& val,
+           const  ::boost::math::policies::overflow_error< ::boost::math::policies::user_error>&)
+{
+   std::string fmsg("Error in function ");
+#ifndef BOOST_NO_RTTI
+   fmsg += (boost::format(function) % boost::math::policies::detail::name_of<T>()).str();
+#else
+   fmsg += function;
+#endif
+   int prec = 2 + (boost::math::policies::digits<T, boost::math::policies::policy<> >() * 30103UL) / 100000UL;
+   std::string msg = do_format(boost::format(message), boost::io::group(std::setprecision(prec), val));
+   return user_overflow_error(fmsg.c_str(), msg.c_str(), std::numeric_limits<T>::infinity());
+}
 
 template <class T>
 inline T raise_underflow_error(
@@ -596,7 +667,8 @@ inline bool check_overflow(T val, R* result, const char* function, const Policy&
    BOOST_MATH_STD_USING
    if(fabs(val) > tools::max_value<R>())
    {
-      *result = static_cast<R>(boost::math::policies::detail::raise_overflow_error<R>(function, 0, pol));
+      boost::math::policies::detail::raise_overflow_error<R>(function, 0, pol);
+      *result = static_cast<R>(val);
       return true;
    }
    return false;
@@ -708,6 +780,20 @@ inline void check_root_iterations(const char* function, boost::uintmax_t max_ite
 }
 
 } //namespace policies
+
+namespace detail{
+
+//
+// Simple helper function to assist in returning a pair from a single value,
+// that value usually comes from one of the error handlers above:
+//
+template <class T>
+std::pair<T, T> pair_from_single(const T& val)
+{
+   return std::make_pair(val, val);
+}
+
+}
 
 #ifdef BOOST_MSVC
 #  pragma warning(pop)

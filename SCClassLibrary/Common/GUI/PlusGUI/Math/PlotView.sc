@@ -656,7 +656,6 @@ Plotter {
 				var list = data.at(i);
 				if(list.notNil) {
 					spec = spec.looseRange(list, defaultRange, *ranges.wrapAt(i));
-					spec.postcs;
 				} {
 					spec
 				};
@@ -677,7 +676,9 @@ Plotter {
 
 	// interaction
 	pointIsInWhichPlot { |point|
-		var res = plots.detectIndex { |plot|
+		var res;
+		if(plots.isNil) { ^nil };
+		res = plots.detectIndex { |plot|
 			point.y.exclusivelyBetween(plot.bounds.top, plot.bounds.bottom)
 		};
 		^res ?? {
