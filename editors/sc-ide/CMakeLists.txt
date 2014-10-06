@@ -3,6 +3,7 @@ cmake_minimum_required( VERSION 2.8.11 )
 find_package(Qt5Core)
 find_package(Qt5Gui) 
 find_package(Qt5WebKit)
+find_package(Qt5WebKitWidgets)
 find_package(Qt5Network)
 find_package(Qt5Widgets)
 find_package(Qt5LinguistTools)
@@ -241,7 +242,7 @@ else()
     set_target_properties(SuperCollider PROPERTIES OUTPUT_NAME "scide")
 endif()
 
-target_link_libraries( SuperCollider ${QT_LIBRARIES} ${QT_QTNETWORK_LIBRARY} ${YAMLCPP_LIBRARY} )
+target_link_libraries( SuperCollider Qt5::Core Qt5::Gui Qt5::WebKit Qt5::WebKitWidgets Qt5::Network Qt5::Widgets ${YAMLCPP_LIBRARY} )
 
 if(Boost_FOUND)
     target_link_libraries( SuperCollider ${Boost_SYSTEM_LIBRARY} )
@@ -287,15 +288,15 @@ endif()
 if(APPLE)
     add_dependencies(SuperCollider sclang scsynth ${plugins} ${supernova_plugins})
     add_custom_command(TARGET SuperCollider POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:sclang> $<TARGET_FILE_DIR:SuperCollider>/../Resources)
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:sclang> $<TARGET_FILE_DIR:SuperCollider>/../MacOS)
 
     add_custom_command(TARGET SuperCollider POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:scsynth> $<TARGET_FILE_DIR:SuperCollider>/../Resources)
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:scsynth> $<TARGET_FILE_DIR:SuperCollider>/../MacOS)
 
     if(TARGET supernova)
         add_dependencies(SuperCollider supernova)
         add_custom_command(TARGET SuperCollider POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:supernova> $<TARGET_FILE_DIR:SuperCollider>/../Resources)
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:supernova> $<TARGET_FILE_DIR:SuperCollider>/../MacOS)
     endif()
 
     foreach(plugin ${plugins} ${supernova_plugins})
@@ -338,6 +339,7 @@ if(APPLE)
                   \"${plugin_dest_dir}/*.dylib\")
                 include(BundleUtilities)
                 fixup_bundle(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\" \"\${QTPLUGINS}\" \"${QT_LIBRARY_DIR}\")
+                #fixup_qt5_executable(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\")
                 " COMPONENT Runtime)
 
 
