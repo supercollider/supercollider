@@ -7,6 +7,15 @@ os:
 
 cache: apt
 
+addons:
+  artifacts:
+    bucket: supercollider
+    key: AKIAIBHMBUYHDWO65DKA
+    secret: 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
+  paths:
+    - $PWD/Install.zip
+  debug: true
+
 before_install:
  - ifmac () { if [[ $TRAVIS_OS_NAME == osx ]]; then eval $@; fi; }
  - iflin () { if [[ $TRAVIS_OS_NAME == linux ]]; then eval $@; fi; }
@@ -28,7 +37,9 @@ before_script:
  - iflin cmake -DSC_EL=no -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/qt4/ -DCMAKE_INSTALL_PREFIX:PATH=$PWD/Install -DCMAKE_BUILD_TYPE=Release .. --debug-output
  - iflin aptitude why libqt4-dev
 
-script: make
+script: 
+ - make
+ - zip -r Install.zip $PWD/Install
 
 notifications:
  email:
