@@ -20,7 +20,7 @@ deploy:
   secret_access_key:
     secure: FKC5QzVrfD7J86ia939RK+H/0aIA5k7mh/v6cTR5mVeRPUldomQnjc669CvIp2XGP+MSbfFaAPyRlO9KrmdZZevnhwYjWdv3OmkMzNgeklVYEzsSzC1NOYphxhC3aKJqnVtQj37wmmUeer0GLXwVwgoLESKYJvgz336pdX5vUEw=
   bucket: supercollider
-  local-dir: sounds
+  local-dir: artifacts
   acl: !ruby/string:HighLine::String |-
     cHJpdmF0ZQ==
   on:
@@ -44,7 +44,8 @@ before_install:
   /usr/bin/g++ g++ /usr/bin/g++-4.7
 - iflin sudo update-alternatives --auto gcc
 script:
-- zip -r Install.zip sounds
+- mkdir artifacts
+- zip -r artifacts/Install.zip sounds
 notifications:
   email:
   - scott@artificia.org
