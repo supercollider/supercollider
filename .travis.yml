@@ -20,7 +20,7 @@ deploy:
   secret_access_key:
     secure: FKC5QzVrfD7J86ia939RK+H/0aIA5k7mh/v6cTR5mVeRPUldomQnjc669CvIp2XGP+MSbfFaAPyRlO9KrmdZZevnhwYjWdv3OmkMzNgeklVYEzsSzC1NOYphxhC3aKJqnVtQj37wmmUeer0GLXwVwgoLESKYJvgz336pdX5vUEw=
   bucket: supercollider
-  local-dir: INSTALL.zip
+  local-dir: sounds
   acl: !ruby/string:HighLine::String |-
     cHJpdmF0ZQ==
   on:
