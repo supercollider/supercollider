@@ -33,6 +33,10 @@
 #include <QKeyEvent>
 #include <QIcon>
 
+#ifdef Q_WS_MAC
+#include "../../common/SC_Apple.hpp"
+#endif
+
 extern bool compiledOK;
 extern const char * gIdeName;
 
@@ -76,6 +80,12 @@ QcApplication::QcApplication( int & argc, char ** argv )
     icon.addFile(":/icons/sc-cube-16");
     setWindowIcon(icon);
   }
+  
+#ifdef Q_WS_MAC
+  // On Mac, we may need to disable "App Nap", so we aren't put to sleep unexpectedly
+  SC::Apple::disableAppNap();
+#endif
+  
 
   _handleCmdPeriod = strcmp(gIdeName, "scapp") != 0;
 }

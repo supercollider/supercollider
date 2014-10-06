@@ -84,6 +84,9 @@ set(sclang_sources
 
 if(APPLE)
 	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
+	
+	list(APPEND sclang_sources ${CMAKE_SOURCE_DIR}/common/SC_Apple.mm)
+	set_source_files_properties(${CMAKE_SOURCE_DIR}/common/SC_Apple.mm PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-exceptions")
 endif()
 
 if (NOT Boost_FOUND)
