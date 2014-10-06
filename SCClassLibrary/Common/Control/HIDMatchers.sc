@@ -1,5 +1,5 @@
 // used for matching an HID device, matches should be passed an instance of HID
-HIDProto{
+HIDProto {
 
 	var <>id;
 
@@ -15,76 +15,76 @@ HIDProto{
 
 	var <shouldMatch;
 
-	*new{
+	*new {
 		^super.new.init;
 	}
 
-	*newType{ |uName,pName| // from HIDFunc.usage
-		^super.new.init.addTypeMatch(uName,pName);
+	*newType { |uName, pName| // from HIDFunc.usage
+		^super.new.init.addTypeMatch(uName, pName);
 	}
 
-	*newProduct{ |pName,vName| // from HIDFunc.usageID, .device, .element
-		^super.new.init.addProductMatch(pName,vName);
+	*newProduct { |pName, vName| // from HIDFunc.usageID, .device, .element
+		^super.new.init.addProductMatch(pName, vName);
 	}
 
-	*newFromDict{ |dict| // from any HIDFunc matcher
+	*newFromDict { |dict| // from any HIDFunc matcher
 		^super.new.init.addDictionaryMatch( dict );
 	}
 
-	init{
+	init {
 		shouldMatch = Set[];
 	}
 
-	addTypeMatch{ |uName, pName|
-		if ( uName.notNil ){
+	addTypeMatch { |uName, pName|
+		if ( uName.notNil ) {
 			shouldMatch.add( \usageName );
 			usageName = uName;
 		};
-		if ( pName.notNil ){
+		if ( pName.notNil ) {
 			shouldMatch.add( \pageName );
 			pageName = pName;
 		}
 	}
 
-	addProductMatch{ |pName, vName|
-		if ( pName.notNil ){
+	addProductMatch { |pName, vName|
+		if ( pName.notNil ) {
 			shouldMatch.add( \productName );
 			productName = pName;
 		};
-		if ( vName.notNil ){
+		if ( vName.notNil ) {
 			shouldMatch.add( \vendorName );
 			vendorName = vName;
 		}
 	}
 
-	addDictionaryMatch{ |dict|
-		dict.keysValuesArrayDo{ |key,val|
+	addDictionaryMatch { |dict|
+		dict.keysValuesArrayDo { |key, val|
 			shouldMatch.add( key );
 			this.performList( (key ++ "_").asSymbol, [ val ] );
 		}
 	}
 
-	matches{ |hid|
+	matches { |hid|
 		var matches = true; // check all until a match is false
 		var keysToMatch, keyMatches;
 		var newShouldMatch;
-		shouldMatch.copy.do{ |key|
-			if ( key != \id ){
+		shouldMatch.copy.do { |key|
+			if ( key != \id ) {
 				keysToMatch = this.perform( key );
-				if ( keysToMatch.isNil ){
-					shouldMatch = shouldMatch.reject{ |it| it == key };
-				}{
-					if ( keysToMatch.isKindOf( Array ) ){
+				if ( keysToMatch.isNil ) {
+					shouldMatch = shouldMatch.reject { |it| it == key };
+				} {
+					if ( keysToMatch.isKindOf( Array ) ) {
 						keyMatches = false;
-						keysToMatch.do{ |it|
+						keysToMatch.do { |it|
 							keyMatches = keyMatches or: ( it == hid.info.perform( key ) );
 						};
 						matches = matches and: keyMatches;
-					}{ // not an array
+					} { // not an array
 						matches = matches and: ( keysToMatch == hid.info.perform( key ) );
 					}
 				}
-			}{
+			} {
 				matches = matches and: ( this.id.matchItem( hid.id ) );
 			};
 		};
@@ -94,7 +94,7 @@ HIDProto{
 }
 
 // used for matching an HID device element, matches should be passed an instance of HIDElement
-HIDElementProto{
+HIDElementProto {
 
 	var <id;
 	var <ioType, <type;
@@ -104,115 +104,115 @@ HIDElementProto{
 
 	var <shouldMatch;
 
-	*new{
+	*new {
 		^super.new.init;
 	}
 
-	*newType{ |uName,pName| // from HIDFunc.usage
-		^super.new.init.addTypeMatch(uName,pName);
+	*newType { |uName, pName| // from HIDFunc.usage
+		^super.new.init.addTypeMatch(uName, pName);
 	}
 
-	*newTypeID{ |uID,pID| // from HIDFunc.usage
-		^super.new.init.addTypeIDMatch(uID,pID);
+	*newTypeID { |uID, pID| // from HIDFunc.usage
+		^super.new.init.addTypeIDMatch(uID, pID);
 	}
 
-	*newFromDict{ |dict| // from any HIDFunc matcher
+	*newFromDict { |dict| // from any HIDFunc matcher
 		^super.new.init.addDictionaryMatch( dict );
 	}
 
-	init{
+	init {
 		shouldMatch = Set[];
 	}
 
-	id_{ |argid|
+	id_ { |argid|
 		id = argid;
 		shouldMatch.add( \id );
 	}
 
-	ioType_{ |argio|
+	ioType_ { |argio|
 		ioType = argio;
 		shouldMatch.add( \ioType );
 	}
 
-	type_{ |argio|
+	type_ { |argio|
 		type = argio;
 		shouldMatch.add( \type );
 	}
 
-	usagePage_{ |argup|
+	usagePage_ { |argup|
 		usagePage = argup;
 		shouldMatch.add( \usagePage );
 	}
 
-	usage_{ |argu|
+	usage_ { |argu|
 		usage = argu;
 		shouldMatch.add( \usage );
 	}
 
-	usageMin_{ |argup|
+	usageMin_ { |argup|
 		usageMin = argup;
 		shouldMatch.add( \usageMin );
 	}
 
-	usageMax_{ |argup|
+	usageMax_ { |argup|
 		usageMax = argup;
 		shouldMatch.add( \usageMax );
 	}
 
-	pageName_{ |argup|
+	pageName_ { |argup|
 		pageName = argup;
 		shouldMatch.add( \pageName );
 	}
 
-	usageName_{ |argup|
+	usageName_ { |argup|
 		usageName = argup;
 		shouldMatch.add( \usageName );
 	}
 
-	iotypeName_{ |argup|
+	iotypeName_ { |argup|
 		iotypeName = argup;
 		shouldMatch.add( \iotypeName );
 	}
 
-	typeSpec_{ |argup|
+	typeSpec_ { |argup|
 		typeSpec = argup;
 		shouldMatch.add( \typeSpec );
 	}
 
-	addTypeMatch{ |uName, pName|
-		if ( uName.notNil ){
+	addTypeMatch { |uName, pName|
+		if ( uName.notNil ) {
 			this.usageName = uName;
 		};
-		if ( pName.notNil ){
+		if ( pName.notNil ) {
 			this.pageName = pName;
 		}
 	}
 
-	addTypeIDMatch{ |uID,pID|
-		if ( uID.notNil ){
+	addTypeIDMatch { |uID, pID|
+		if ( uID.notNil ) {
 			this.usage = uID;
 		};
-		if ( pID.notNil ){
+		if ( pID.notNil ) {
 			this.usagePage = pID;
 		}
 	}
 
-	addDictionaryMatch{ |dict|
-		dict.keysValuesArrayDo{ |key,val|
+	addDictionaryMatch { |dict|
+		dict.keysValuesArrayDo { |key, val|
 			this.performList( (key ++ "_").asSymbol, [ val ] );
 		}
 	}
 
-	matches{ |ele|
+	matches { |ele|
 		var matches = true; // check all until a match is false
-		shouldMatch.copy.do{ |key|
-			this.perform( key ).isNil{
-				shouldMatch = shouldMatch.reject{ |it| it == key };
-			}{
+		shouldMatch.copy.do { |key|
+			this.perform( key ).isNil {
+				shouldMatch = shouldMatch.reject { |it| it == key };
+			} {
 				switch( key,
 					\usageMin, { matches = matches and: ( ele.usage >= this.usageMin ) },
 					\usageMax, { matches = matches and: ( ele.usage <= this.usageMax ) },
-					{ // default
+					 { // default
 						matches = matches and: ( this.perform( key ).matchItem( ele.perform( key ) ) )
 					}
 				);

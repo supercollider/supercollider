@@ -33,9 +33,9 @@ enum base_hook_type
 ,  SlistBaseHookId
 ,  RbTreeBaseHookId
 ,  HashBaseHookId
-,  SplayTreeBaseHookId
 ,  AvlTreeBaseHookId
 ,  BsTreeBaseHookId
+,  TreapTreeBaseHookId
 ,  AnyBaseHookId
 };
 
@@ -58,10 +58,6 @@ struct hook_tags_definer<HookTags, RbTreeBaseHookId>
 template <class HookTags>
 struct hook_tags_definer<HookTags, HashBaseHookId>
 {  typedef HookTags default_hashtable_hook;  };
-
-template <class HookTags>
-struct hook_tags_definer<HookTags, SplayTreeBaseHookId>
-{  typedef HookTags default_splaytree_hook;  };
 
 template <class HookTags>
 struct hook_tags_definer<HookTags, AvlTreeBaseHookId>

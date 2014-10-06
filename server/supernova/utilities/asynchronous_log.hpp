@@ -19,16 +19,16 @@
 #ifndef UTILITIES_ASYNCHRONOUS_LOG_HPP
 #define UTILITIES_ASYNCHRONOUS_LOG_HPP
 
+#include <array>
 #include <cstring>
 #include <cstdio>
 #include <cstdarg>
-
 #include <thread>
-#include <array>
+
+
 #include <boost/lockfree/spsc_queue.hpp>
 #include <boost/mpl/if.hpp>
-
-#include <nova-tt/semaphore.hpp>
+#include <boost/sync/semaphore.hpp>
 
 namespace nova {
 namespace asynchronous_log_impl {
@@ -120,7 +120,7 @@ struct asynchronous_log:
 
 private:
     boost::lockfree::spsc_queue<char, boost::lockfree::capacity<262144> > buffer;
-    nova::semaphore sem;
+    boost::sync::semaphore sem;
 };
 
 struct asynchronous_log_thread:
@@ -161,7 +161,7 @@ public:
     }
 
 private:
-    boost::atomic_bool running_flag;
+    std::atomic_bool running_flag;
     std::thread thread_;
     std::array<char, 4096> out_buffer;
 };

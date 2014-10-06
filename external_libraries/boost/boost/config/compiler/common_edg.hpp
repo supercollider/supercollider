@@ -104,6 +104,7 @@
 #define BOOST_NO_CXX11_ALIGNAS
 #define BOOST_NO_CXX11_TRAILING_RESULT_TYPES
 #define BOOST_NO_CXX11_INLINE_NAMESPACES
+#define BOOST_NO_CXX11_REF_QUALIFIERS
 
 #ifdef c_plusplus
 // EDG has "long long" in non-strict mode

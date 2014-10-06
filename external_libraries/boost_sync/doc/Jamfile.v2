@@ -1,0 +1,156 @@
+#
+#             Copyright Andrey Semashev 2013.
+# Distributed under the Boost Software License, Version 1.0.
+#    (See accompanying file LICENSE_1_0.txt or copy at
+#          http://www.boost.org/LICENSE_1_0.txt)
+#
+
+using quickbook ;
+using boostbook ;
+using doxygen ;
+using xsltproc ;
+
+import set ;
+import doxygen ;
+import xsltproc ;
+import notfile ;
+import path ;
+
+project boost/libs/sync/doc ;
+
+path-constant images_location : html ;
+
+# NOTE: At least Doxygen 1.8.2 is needed to generate docs correctly. Older versions don't support C++11 constructs correctly and generate misleading docs.
+local doxygen_params =
+        <doxygen:param>RECURSIVE=YES
+        <doxygen:param>ALPHABETICAL_INDEX=YES
+        <doxygen:param>REPEAT_BRIEF=YES
+        <doxygen:param>ALWAYS_DETAILED_SEC=YES
+        <doxygen:param>BRIEF_MEMBER_DESC=NO
+        <doxygen:param>ABBREVIATE_BRIEF=YES
+        <doxygen:param>INHERIT_DOCS=YES
+        <doxygen:param>HIDE_UNDOC_MEMBERS=YES
+        <doxygen:param>HIDE_UNDOC_CLASSES=YES
+        <doxygen:param>HIDE_SCOPE_NAMES=YES
+        <doxygen:param>EXTRACT_ALL=NO
+        <doxygen:param>EXTRACT_PRIVATE=NO
+        <doxygen:param>BUILTIN_STL_SUPPORT=YES
+        <doxygen:param>ENABLE_PREPROCESSING=YES
+        <doxygen:param>MACRO_EXPANSION=YES
+        <doxygen:param>TAB_SIZE=4
+        <doxygen:param>SOURCE_BROWSER=YES
+        <doxygen:param>VERBATIM_HEADERS=NO
+#        <doxygen:param>SEARCH_INCLUDES=YES
+#        <doxygen:param>"INCLUDE_PATH=../../.."
+#        <doxygen:param>EXCLUDE_SYMBOLS="aux aux::*"
+        <doxygen:param>"PREDEFINED=BOOST_SYNC_DETAIL_DOXYGEN \\
+                        BOOST_SYNC_API= \\
+                        BOOST_SYMBOL_VISIBLE= \\
+                        BOOST_FORCEINLINE=inline \\
+                        BOOST_STATIC_ASSERT(x)= \\
+                        BOOST_STATIC_ASSERT_MSG(x,y)= \\
+                        BOOST_RV_REF(x)=\"x&&\" \\
+                        BOOST_NESTED_TEMPLATE=template \\
+                        BOOST_CONSTEXPR=constexpr \\
+                        BOOST_CONSTEXPR_OR_CONST=constexpr \\
+                        BOOST_NOEXCEPT=noexcept \\
+                        BOOST_NOEXCEPT_IF(x)=noexcept(x) \\
+                        BOOST_NOEXCEPT_OR_NOTHROW=noexcept \\
+                        BOOST_COPY_ASSIGN_REF(x)=\"x const&\" \\
+                        BOOST_APPEND_EXPLICIT_TEMPLATE_TYPE(x)= \\
+                        BOOST_DEFAULTED_FUNCTION(x,y)=\"x = default;\" \\
+                        BOOST_DELETED_FUNCTION(x)=\"x = delete;\" \\
+                        BOOST_SCOPED_ENUM_DECLARE_BEGIN(x)=\"enum class x\" \\
+                        BOOST_SCOPED_ENUM_DECLARE_END(x)=\";\" \\
+                        BOOST_EXPLICIT_OPERATOR_BOOL()=\"explicit operator bool() const;\" "
+        <xsl:param>boost.doxygen.detailns=detail
+#        <xsl:param>boost.doxygen.detail=implementation_
+    ;
+
+
+local top_level_includes =
+    [ glob
+        ../../../boost/sync/*.hpp
+    ] ;
+
+local locks_includes =
+    [ glob
+        ../../../boost/sync/locks/*.hpp
+    ] ;
+
+local support_includes =
+    [ glob
+        ../../../boost/sync/support/*.hpp
+    ] ;
+
+
+# This rule generates *.qbk files with macros with references to files, classes, etc. from the doxygen resulting *.xml files.
+rule gen-references ( target : source : properties * )
+{
+    DEPENDS target : source ;
+    local source-path = [ path.make [ on $(source) return $(LOCATE) ] ] ;
+    STYLESHEET on $(target) = [ path.native [ path.join $(source-path) gen_references.xsl ] ] ;
+    local target-name = $(source:B) ;
+    TARGET on $(target) = [ path.native [ path.join $(source-path) $(target-name:S=.qbk) ] ] ;
+}
+actions gen-references
+{
+#    echo "*** Executing " $(NAME:E=xsltproc) -o "$(TARGET)" "$(STYLESHEET)" "$(>)"
+    $(NAME:E=xsltproc) -o "$(TARGET)" "$(STYLESHEET)" "$(>)"
+}
+
+
+doxygen top_level_reference
+    :
+        $(top_level_includes)
+    :
+        $(doxygen_params)
+        <xsl:param>"boost.doxygen.reftitle=Top level headers"
+    ;
+
+notfile top_level_refs : @gen-references : top_level_reference.xml ;
+
+doxygen locks_reference
+    :
+        $(locks_includes)
+    :
+        $(doxygen_params)
+        <xsl:param>"boost.doxygen.reftitle=Locks"
+    ;
+
+notfile locks_refs : @gen-references : locks_reference.xml ;
+
+doxygen support_reference
+    :
+        $(support_includes)
+    :
+        $(doxygen_params)
+        <xsl:param>"boost.doxygen.reftitle=Other libraries support layer"
+    ;
+
+notfile support_refs : @gen-references : support_reference.xml ;
+
+
+xml sync_doc
+    :
+        sync.qbk
+    :
+        <dependency>top_level_refs
+        <dependency>locks_refs
+        <dependency>support_refs
+    ;
+
+boostbook sync
+    :
+        sync_doc
+    :
+        <xsl:param>boost.root=../../../..
+        <xsl:param>boost.libraries=../../../libs/libraries.htm
+        <xsl:param>nav.layout=none
+        <xsl:param>boost.image=Boost
+        <xsl:param>navig.graphics=1
+        <xsl:param>chunk.section.depth=2
+        <xsl:param>boost.compact.function=0
+        <format>pdf:<xsl:param>boost.url.prefix=http://www.boost.org/doc/libs/release/libs/sync/doc/html
+        <format>pdf:<xsl:param>img.src.path=$(images_location)/
+    ;

@@ -7,7 +7,7 @@
 //
 //  File        : $RCSfile$
 //
-//  Version     : $Revision: 49313 $
+//  Version     : $Revision$
 //
 //  Description : forwarding source
 // ***************************************************************************

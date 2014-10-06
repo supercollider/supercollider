@@ -65,7 +65,7 @@ namespace boost {
 namespace interprocess {
 namespace ipcdetail{
 
-#if (defined BOOST_INTERPROCESS_WINDOWS)
+#if defined (BOOST_INTERPROCESS_WINDOWS)
 
 typedef unsigned long OS_process_id_t;
 typedef unsigned long OS_thread_id_t;
@@ -153,7 +153,7 @@ inline OS_highres_count_t system_highres_count_subtract(const OS_highres_count_t
 {  return l - r;  }
 
 inline bool system_highres_count_less(const OS_highres_count_t &l, const OS_highres_count_t &r)
-{  return l < r;  } 
+{  return l < r;  }
 
 inline bool system_highres_count_less_ul(const OS_highres_count_t &l, unsigned long r)
 {  return l < static_cast<OS_highres_count_t>(r);  }
@@ -165,7 +165,7 @@ inline void thread_yield()
 {  winapi::sched_yield();  }
 
 inline void thread_sleep(unsigned int ms)
-{  winapi::Sleep(ms);  }
+{  winapi::sleep(ms);  }
 
 //systemwide thread
 inline OS_systemwide_thread_id_t get_current_systemwide_thread_id()
@@ -210,7 +210,7 @@ inline unsigned int get_num_cores()
    return static_cast<unsigned>(sysinfo.dwNumberOfProcessors);
 }
 
-#else    //#if (defined BOOST_INTERPROCESS_WINDOWS)
+#else    //#if defined (BOOST_INTERPROCESS_WINDOWS)
 
 typedef pthread_t OS_thread_t;
 typedef pthread_t OS_thread_id_t;
@@ -305,8 +305,8 @@ inline unsigned long get_system_tick_in_highres_counts()
    mach_timebase_info(&info);
             //ns
    return static_cast<unsigned long>
-   (  
-      static_cast<double>(get_system_tick_ns()) 
+   (
+      static_cast<double>(get_system_tick_ns())
          / (static_cast<double>(info.numer) / info.denom)
    );
    #endif
@@ -349,11 +349,11 @@ inline OS_highres_count_t system_highres_count_subtract(const OS_highres_count_t
    OS_highres_count_t res;
 
    if (l.tv_nsec < r.tv_nsec){
-      res.tv_nsec = 1000000000 + l.tv_nsec - r.tv_nsec;        
+      res.tv_nsec = 1000000000 + l.tv_nsec - r.tv_nsec;
       res.tv_sec  = l.tv_sec - 1 - r.tv_sec;
    }
    else{
-      res.tv_nsec = l.tv_nsec - r.tv_nsec;        
+      res.tv_nsec = l.tv_nsec - r.tv_nsec;
       res.tv_sec  = l.tv_sec - r.tv_sec;
    }
 
@@ -364,7 +364,7 @@ inline bool system_highres_count_less(const OS_highres_count_t &l, const OS_high
 {  return l.tv_sec < r.tv_sec || (l.tv_sec == r.tv_sec && l.tv_nsec < r.tv_nsec);  }
 
 inline bool system_highres_count_less_ul(const OS_highres_count_t &l, unsigned long r)
-{  return !l.tv_sec && (static_cast<unsigned long>(l.tv_nsec) < r);  } 
+{  return !l.tv_sec && (static_cast<unsigned long>(l.tv_nsec) < r);  }
 
 #else
 
@@ -467,7 +467,7 @@ inline int thread_create(OS_thread_t * thread, void *(*start_routine)(void*), vo
 inline void thread_join(OS_thread_t thread)
 {  (void)pthread_join(thread, 0);  }
 
-#endif   //#if (defined BOOST_INTERPROCESS_WINDOWS)
+#endif   //#if defined (BOOST_INTERPROCESS_WINDOWS)
 
 typedef char pid_str_t[sizeof(OS_process_id_t)*3+1];
 
@@ -510,11 +510,35 @@ class abstract_thread
    virtual void run() = 0;
 };
 
+template<class T>
+class os_thread_func_ptr_deleter
+{
+   public:
+   explicit os_thread_func_ptr_deleter(T* p)
+      : m_p(p)
+   {}
+
+   T *release()
+   {  T *p = m_p; m_p = 0; return p;  }
+
+   T *get() const
+   {  return m_p;  }
+
+   T *operator ->() const
+   {  return m_p;  }
+
+   ~os_thread_func_ptr_deleter()
+   {  delete m_p; }
+
+   private:
+   T *m_p;
+};
+
 #if defined(BOOST_INTERPROCESS_WINDOWS)
 
 inline unsigned __stdcall launch_thread_routine( void * pv )
 {
-   std::auto_ptr<abstract_thread> pt( static_cast<abstract_thread *>( pv ) );
+   os_thread_func_ptr_deleter<abstract_thread> pt( static_cast<abstract_thread *>( pv ) );
    pt->run();
    return 0;
 }
@@ -525,7 +549,7 @@ extern "C" void * launch_thread_routine( void * pv );
 
 inline void * launch_thread_routine( void * pv )
 {
-   std::auto_ptr<abstract_thread> pt( static_cast<abstract_thread *>( pv ) );
+   os_thread_func_ptr_deleter<abstract_thread> pt( static_cast<abstract_thread *>( pv ) );
    pt->run();
    return 0;
 }
@@ -551,7 +575,7 @@ class launch_thread_impl
 template<class F>
 inline int thread_launch( OS_thread_t & pt, F f )
 {
-   std::auto_ptr<abstract_thread> p( new launch_thread_impl<F>( f ) );
+   os_thread_func_ptr_deleter<abstract_thread> p( new launch_thread_impl<F>( f ) );
 
    int r = thread_create(&pt, launch_thread_routine, p.get());
    if( r == 0 ){

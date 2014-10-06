@@ -178,7 +178,7 @@ Dictionary : Set {
 
 	merge {|that, func, fill = true|
 		var commonKeys, myKeys = this.keys, otherKeys = that.keys;
-		var res = ();
+		var res = this.species.new;
 
 		if (myKeys == otherKeys) {
 			commonKeys = myKeys

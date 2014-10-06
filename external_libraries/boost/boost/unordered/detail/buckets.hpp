@@ -7,8 +7,9 @@
 #ifndef BOOST_UNORDERED_DETAIL_MANAGER_HPP_INCLUDED
 #define BOOST_UNORDERED_DETAIL_MANAGER_HPP_INCLUDED
 
-#if defined(_MSC_VER) && (_MSC_VER >= 1020)
-# pragma once
+#include <boost/config.hpp>
+#if defined(BOOST_HAS_PRAGMA_ONCE)
+#pragma once
 #endif
 
 #include <boost/unordered/detail/util.hpp>
@@ -401,7 +402,7 @@ namespace boost { namespace unordered { namespace detail {
             }
 
             if (node_constructed_) {
-                node_allocator_traits::destroy(alloc_,
+                boost::unordered::detail::func::destroy(
                     boost::addressof(*node_));
             }
 
@@ -418,8 +419,7 @@ namespace boost { namespace unordered { namespace detail {
 
             node_ = node_allocator_traits::allocate(alloc_, 1);
 
-            node_allocator_traits::construct(alloc_,
-                boost::addressof(*node_), node());
+            new ((void*) boost::addressof(*node_)) node();
             node_->init(node_);
             node_constructed_ = true;
         }
@@ -547,7 +547,7 @@ namespace boost { namespace unordered { namespace detail {
 
             boost::unordered::detail::func::destroy_value_impl(this->alloc_,
                 p->value_ptr());
-            node_allocator_traits::destroy(this->alloc_, boost::addressof(*p));
+            boost::unordered::detail::func::destroy(boost::addressof(*p));
             node_allocator_traits::deallocate(this->alloc_, p, 1);
         }
     }
@@ -665,10 +665,50 @@ namespace boost { namespace unordered { namespace detail {
         typedef mix64_policy<std::size_t> type;
     };
 
+    template <typename T>
     struct pick_policy :
         pick_policy_impl<
             std::numeric_limits<std::size_t>::digits,
             std::numeric_limits<std::size_t>::radix> {};
+
+    // While the mix policy is generally faster, the prime policy is a lot
+    // faster when a large number consecutive integers are used, because
+    // there are no collisions. Since that is probably quite common, use
+    // prime policy for integeral types. But not the smaller ones, as they
+    // don't have enough unique values for this to be an issue.
+
+    template <>
+    struct pick_policy<int> {
+        typedef prime_policy<std::size_t> type;
+    };
+
+    template <>
+    struct pick_policy<unsigned int> {
+        typedef prime_policy<std::size_t> type;
+    };
+
+    template <>
+    struct pick_policy<long> {
+        typedef prime_policy<std::size_t> type;
+    };
+
+    template <>
+    struct pick_policy<unsigned long> {
+        typedef prime_policy<std::size_t> type;
+    };
+
+    // TODO: Maybe not if std::size_t is smaller than long long.
+#if !defined(BOOST_NO_LONG_LONG)
+    template <>
+    struct pick_policy<long long> {
+        typedef prime_policy<std::size_t> type;
+    };
+
+    template <>
+    struct pick_policy<unsigned long long> {
+        typedef prime_policy<std::size_t> type;
+    };
+#endif
 
     ////////////////////////////////////////////////////////////////////////////
     // Functions

@@ -10,31 +10,6 @@
 // See http://www.boost.org/libs/intrusive for documentation.
 //
 /////////////////////////////////////////////////////////////////////////////
-// The internal implementation of red-black trees is based on that of SGI STL
-// stl_tree.h file:
-//
-// Copyright (c) 1996,1997
-// Silicon Graphics Computer Systems, Inc.
-//
-// Permission to use, copy, modify, distribute and sell this software
-// and its documentation for any purpose is hereby granted without fee,
-// provided that the above copyright notice appear in all copies and
-// that both that copyright notice and this permission notice appear
-// in supporting documentation.  Silicon Graphics makes no
-// representations about the suitability of this software for any
-// purpose.  It is provided "as is" without express or implied warranty.
-//
-//
-// Copyright (c) 1994
-// Hewlett-Packard Company
-//
-// Permission to use, copy, modify, distribute and sell this software
-// and its documentation for any purpose is hereby granted without fee,
-// provided that the above copyright notice appear in all copies and
-// that both that copyright notice and this permission notice appear
-// in supporting documentation.  Hewlett-Packard Company makes no
-// representations about the suitability of this software for any
-// purpose.  It is provided "as is" without express or implied warranty.
 //
 // The tree destruction algorithm is based on Julienne Walker and The EC Team code:
 //
@@ -49,9 +24,9 @@
 #define BOOST_INTRUSIVE_RBTREE_ALGORITHMS_HPP
 
 #include <boost/intrusive/detail/config_begin.hpp>
+#include <boost/intrusive/intrusive_fwd.hpp>
 
 #include <cstddef>
-#include <boost/intrusive/intrusive_fwd.hpp>
 
 #include <boost/intrusive/detail/assert.hpp>
 #include <boost/intrusive/detail/utilities.hpp>
@@ -79,21 +54,6 @@ struct rbtree_node_cloner
       node_ptr n = base_t::get()(p);
       NodeTraits::set_color(n, NodeTraits::get_color(p));
       return n;
-   }
-};
-
-template<class NodeTraits>
-struct rbtree_erase_fixup
-{
-   typedef typename NodeTraits::node_ptr  node_ptr;
-   typedef typename NodeTraits::color     color;
-
-   void operator()(const node_ptr & to_erase, const node_ptr & successor)
-   {
-      //Swap color of y and z
-      color tmp(NodeTraits::get_color(successor));
-      NodeTraits::set_color(successor, NodeTraits::get_color(to_erase));
-      NodeTraits::set_color(to_erase, tmp);
    }
 };
 
@@ -270,10 +230,18 @@ class rbtree_algorithms
    static node_ptr erase(const node_ptr & header, const node_ptr & z)
    {
       typename bstree_algo::data_for_rebalance info;
-      bstree_algo::erase(header, z, rbtree_erase_fixup<NodeTraits>(), info);
+      bstree_algo::erase(header, z, info);
 
-      //Rebalance rbtree
-      if(NodeTraits::get_color(z) != NodeTraits::red()){
+      color new_z_color;
+      if(info.y != z){
+         new_z_color = NodeTraits::get_color(info.y);
+         NodeTraits::set_color(info.y, NodeTraits::get_color(z));
+      }
+      else{
+         new_z_color = NodeTraits::get_color(z);
+      }
+      //Rebalance rbtree if needed
+      if(new_z_color != NodeTraits::red()){
          rebalance_after_erasure(header, info.x, info.x_parent);
       }
       return z;
@@ -322,6 +290,7 @@ class rbtree_algorithms
    //! @copydoc ::boost::intrusive::bstree_algorithms::count(const const_node_ptr&,const KeyType&,KeyNodePtrCompare)
    template<class KeyType, class KeyNodePtrCompare>
    static std::size_t count(const const_node_ptr & header, const KeyType &key, KeyNodePtrCompare comp);
+
    #endif   //#ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
 
    //! @copydoc ::boost::intrusive::bstree_algorithms::insert_equal_upper_bound(const node_ptr&,const node_ptr&,NodePtrCompare)
@@ -411,64 +380,76 @@ class rbtree_algorithms
 
    static void rebalance_after_erasure(const node_ptr & header, node_ptr x, node_ptr x_parent)
    {
-      while(x != NodeTraits::get_parent(header) && (!x || NodeTraits::get_color(x) == NodeTraits::black())){
-         if(x == NodeTraits::get_left(x_parent)){
+      while(1){
+         if(x_parent == header || (x && NodeTraits::get_color(x) != NodeTraits::black())){
+            break;
+         }
+         //Don't cache x_is_leftchild or similar because x can be null and
+         //equal to both x_parent_left and x_parent_right
+         const node_ptr x_parent_left(NodeTraits::get_left(x_parent));
+         if(x == x_parent_left){ //x is left child
             node_ptr w = NodeTraits::get_right(x_parent);
             BOOST_ASSERT(w);
             if(NodeTraits::get_color(w) == NodeTraits::red()){
                NodeTraits::set_color(w, NodeTraits::black());
                NodeTraits::set_color(x_parent, NodeTraits::red());
-               bstree_algo::rotate_left(x_parent, header);
+               bstree_algo::rotate_left(x_parent, w, NodeTraits::get_parent(x_parent), header);
                w = NodeTraits::get_right(x_parent);
             }
-            if((!NodeTraits::get_left(w) || NodeTraits::get_color(NodeTraits::get_left(w))  == NodeTraits::black()) &&
-               (!NodeTraits::get_right(w) || NodeTraits::get_color(NodeTraits::get_right(w)) == NodeTraits::black())){
+            node_ptr const w_left (NodeTraits::get_left(w));
+            node_ptr const w_right(NodeTraits::get_right(w));
+            if((!w_left  || NodeTraits::get_color(w_left)  == NodeTraits::black()) &&
+               (!w_right || NodeTraits::get_color(w_right) == NodeTraits::black())){
                NodeTraits::set_color(w, NodeTraits::red());
                x = x_parent;
                x_parent = NodeTraits::get_parent(x_parent);
             }
             else {
-               if(!NodeTraits::get_right(w) || NodeTraits::get_color(NodeTraits::get_right(w)) == NodeTraits::black()){
-                  NodeTraits::set_color(NodeTraits::get_left(w), NodeTraits::black());
+               if(!w_right || NodeTraits::get_color(w_right) == NodeTraits::black()){
+                  NodeTraits::set_color(w_left, NodeTraits::black());
                   NodeTraits::set_color(w, NodeTraits::red());
-                  bstree_algo::rotate_right(w, header);
+                  bstree_algo::rotate_right(w, w_left, NodeTraits::get_parent(w), header);
                   w = NodeTraits::get_right(x_parent);
                }
                NodeTraits::set_color(w, NodeTraits::get_color(x_parent));
                NodeTraits::set_color(x_parent, NodeTraits::black());
-               if(NodeTraits::get_right(w))
-                  NodeTraits::set_color(NodeTraits::get_right(w), NodeTraits::black());
-               bstree_algo::rotate_left(x_parent, header);
+               const node_ptr new_wright(NodeTraits::get_right(w));
+               if(new_wright)
+                  NodeTraits::set_color(new_wright, NodeTraits::black());
+               bstree_algo::rotate_left(x_parent, NodeTraits::get_right(x_parent), NodeTraits::get_parent(x_parent), header);
                break;
             }
          }
          else {
             // same as above, with right_ <-> left_.
-            node_ptr w = NodeTraits::get_left(x_parent);
+            node_ptr w = x_parent_left;
             if(NodeTraits::get_color(w) == NodeTraits::red()){
                NodeTraits::set_color(w, NodeTraits::black());
                NodeTraits::set_color(x_parent, NodeTraits::red());
-               bstree_algo::rotate_right(x_parent, header);
+               bstree_algo::rotate_right(x_parent, w, NodeTraits::get_parent(x_parent), header);
                w = NodeTraits::get_left(x_parent);
             }
-            if((!NodeTraits::get_right(w) || NodeTraits::get_color(NodeTraits::get_right(w)) == NodeTraits::black()) &&
-               (!NodeTraits::get_left(w) || NodeTraits::get_color(NodeTraits::get_left(w)) == NodeTraits::black())){
+            node_ptr const w_left (NodeTraits::get_left(w));
+            node_ptr const w_right(NodeTraits::get_right(w));
+            if((!w_right || NodeTraits::get_color(w_right) == NodeTraits::black()) &&
+               (!w_left  || NodeTraits::get_color(w_left)  == NodeTraits::black())){
                NodeTraits::set_color(w, NodeTraits::red());
                x = x_parent;
                x_parent = NodeTraits::get_parent(x_parent);
             }
             else {
-               if(!NodeTraits::get_left(w) || NodeTraits::get_color(NodeTraits::get_left(w)) == NodeTraits::black()){
-                  NodeTraits::set_color(NodeTraits::get_right(w), NodeTraits::black());
+               if(!w_left || NodeTraits::get_color(w_left) == NodeTraits::black()){
+                  NodeTraits::set_color(w_right, NodeTraits::black());
                   NodeTraits::set_color(w, NodeTraits::red());
-                  bstree_algo::rotate_left(w, header);
+                  bstree_algo::rotate_left(w, w_right, NodeTraits::get_parent(w), header);
                   w = NodeTraits::get_left(x_parent);
                }
                NodeTraits::set_color(w, NodeTraits::get_color(x_parent));
                NodeTraits::set_color(x_parent, NodeTraits::black());
-               if(NodeTraits::get_left(w))
-                  NodeTraits::set_color(NodeTraits::get_left(w), NodeTraits::black());
-               bstree_algo::rotate_right(x_parent, header);
+               const node_ptr new_wleft(NodeTraits::get_left(w));
+               if(new_wleft)
+                  NodeTraits::set_color(new_wleft, NodeTraits::black());
+               bstree_algo::rotate_right(x_parent, NodeTraits::get_left(x_parent), NodeTraits::get_parent(x_parent), header);
                break;
             }
          }
@@ -480,48 +461,49 @@ class rbtree_algorithms
    static void rebalance_after_insertion(const node_ptr & header, node_ptr p)
    {
       NodeTraits::set_color(p, NodeTraits::red());
-      while(p != NodeTraits::get_parent(header) && NodeTraits::get_color(NodeTraits::get_parent(p)) == NodeTraits::red()){
+      while(1){
          node_ptr p_parent(NodeTraits::get_parent(p));
-         node_ptr p_parent_parent(NodeTraits::get_parent(p_parent));
-         if(bstree_algo::is_left_child(p_parent)){
-            node_ptr x = NodeTraits::get_right(p_parent_parent);
-            if(x && NodeTraits::get_color(x) == NodeTraits::red()){
-               NodeTraits::set_color(p_parent, NodeTraits::black());
-               NodeTraits::set_color(p_parent_parent, NodeTraits::red());
-               NodeTraits::set_color(x, NodeTraits::black());
-               p = p_parent_parent;
-            }
-            else {
-               if(!bstree_algo::is_left_child(p)){
-                  p = p_parent;
-                  bstree_algo::rotate_left(p, header);
-               }
-               node_ptr new_p_parent(NodeTraits::get_parent(p));
-               node_ptr new_p_parent_parent(NodeTraits::get_parent(new_p_parent));
-               NodeTraits::set_color(new_p_parent, NodeTraits::black());
-               NodeTraits::set_color(new_p_parent_parent, NodeTraits::red());
-               bstree_algo::rotate_right(new_p_parent_parent, header);
-            }
+         const node_ptr p_grandparent(NodeTraits::get_parent(p_parent));
+         if(p_parent == header || NodeTraits::get_color(p_parent) == NodeTraits::black() || p_grandparent == header){
+            break;
          }
-         else{
-            node_ptr x = NodeTraits::get_left(p_parent_parent);
-            if(x && NodeTraits::get_color(x) == NodeTraits::red()){
-               NodeTraits::set_color(p_parent, NodeTraits::black());
-               NodeTraits::set_color(p_parent_parent, NodeTraits::red());
-               NodeTraits::set_color(x, NodeTraits::black());
-               p = p_parent_parent;
-            }
-            else{
-               if(bstree_algo::is_left_child(p)){
-                  p = p_parent;
-                  bstree_algo::rotate_right(p, header);
+
+         NodeTraits::set_color(p_grandparent, NodeTraits::red());
+         node_ptr const p_grandparent_left (NodeTraits::get_left (p_grandparent));
+         bool const p_parent_is_left_child = p_parent == p_grandparent_left;
+         node_ptr const x(p_parent_is_left_child ? NodeTraits::get_right(p_grandparent) : p_grandparent_left);
+
+         if(x && NodeTraits::get_color(x) == NodeTraits::red()){
+            NodeTraits::set_color(x, NodeTraits::black());
+            NodeTraits::set_color(p_parent, NodeTraits::black());
+            p = p_grandparent;
+         }
+         else{ //Final step
+            const bool p_is_left_child(NodeTraits::get_left(p_parent) == p);
+            if(p_parent_is_left_child){ //p_parent is left child
+               if(!p_is_left_child){ //p is right child
+                  bstree_algo::rotate_left_no_parent_fix(p_parent, p);
+                  //No need to link p and p_grandparent:
+                  //    [NodeTraits::set_parent(p, p_grandparent) + NodeTraits::set_left(p_grandparent, p)]
+                  //as p_grandparent is not the header, another rotation is coming and p_parent
+                  //will be the left child of p_grandparent
+                  p_parent = p;
                }
-               node_ptr new_p_parent(NodeTraits::get_parent(p));
-               node_ptr new_p_parent_parent(NodeTraits::get_parent(new_p_parent));
-               NodeTraits::set_color(new_p_parent, NodeTraits::black());
-               NodeTraits::set_color(new_p_parent_parent, NodeTraits::red());
-               bstree_algo::rotate_left(new_p_parent_parent, header);
+               bstree_algo::rotate_right(p_grandparent, p_parent, NodeTraits::get_parent(p_grandparent), header);
             }
+            else{  //p_parent is right child
+               if(p_is_left_child){ //p is left child
+                  bstree_algo::rotate_right_no_parent_fix(p_parent, p);
+                  //No need to link p and p_grandparent:
+                  //    [NodeTraits::set_parent(p, p_grandparent) + NodeTraits::set_right(p_grandparent, p)]
+                  //as p_grandparent is not the header, another rotation is coming and p_parent
+                  //will be the right child of p_grandparent
+                  p_parent = p;
+               }
+               bstree_algo::rotate_left(p_grandparent, p_parent, NodeTraits::get_parent(p_grandparent), header);
+            }
+            NodeTraits::set_color(p_parent, NodeTraits::black());
+            break;
          }
       }
       NodeTraits::set_color(NodeTraits::get_parent(header), NodeTraits::black());

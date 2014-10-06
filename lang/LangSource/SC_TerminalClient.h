@@ -30,10 +30,10 @@
 #include "SC_LanguageClient.h"
 #include "SC_StringBuffer.h"
 #include "SC_Lock.h"
-#include "nova-tt/semaphore.hpp"
 
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
+#include <boost/sync/semaphore.hpp>
 
 // =====================================================================
 // SC_TerminalClient - command line sclang client.
@@ -183,7 +183,7 @@ private:
 
 	// command input
 	bool mUseReadline;
-	nova::semaphore mReadlineSem;
+	boost::sync::semaphore mReadlineSem;
 };
 
 #endif // SC_TERMINALCLIENT_H_INCLUDED

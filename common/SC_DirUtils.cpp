@@ -152,7 +152,7 @@ bool sc_IsNonHostPlatformDir(const char *name)
 	const char a[] = "linux", b[] = "windows", c[]="iphone";
 #elif defined(__linux__)
 	const char a[] = "osx", b[] = "windows", c[]="iphone";
-#elif defined(__FreeBSD__) || defined(__OpenBSD__)
+#elif defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__)
 	const char a[] = "osx", b[] = "windows", c[]="iphone";
 #elif defined(_WIN32)
 	const char a[] = "osx", b[] = "linux", c[]="iphone";

@@ -130,6 +130,21 @@ w = Window.new(bounds:Rect(100,100,300,300)).layout_(
 )
 ::
 
+The minimum size of a view is especially important for UserViews which doesn't have by default a minimum size. In the example the first UserView is invisible.
+
+code::
+(
+w = Window.new(bounds:Rect(100,100,200,200)).layout_(
+	VLayout(
+		UserView.new.background_(Color.rand),
+		TextField().string_("Super").maxWidth_(100),
+		UserView.new.background_(Color.rand).minSize_(200@200),
+		TextField().string_("Collider").maxWidth_(100)
+	)
+).front;
+)
+::
+
 subsection:: Alignment
 
 The combination of size constraints and preferences of all items in a layout hierarchy may result in a larger amount of space given to an item than its own constraints allow. In that case the item will only grow up to its maximum allowed size, and its position within its extra available space may be controlled by user by assigning alignment to an item.

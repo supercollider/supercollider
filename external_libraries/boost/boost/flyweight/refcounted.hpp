@@ -1,4 +1,4 @@
-/* Copyright 2006-2013 Joaquin M Lopez Munoz.
+/* Copyright 2006-2014 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -9,7 +9,7 @@
 #ifndef BOOST_FLYWEIGHT_REFCOUNTED_HPP
 #define BOOST_FLYWEIGHT_REFCOUNTED_HPP
 
-#if defined(_MSC_VER)&&(_MSC_VER>=1200)
+#if defined(_MSC_VER)
 #pragma once
 #endif
 
@@ -20,6 +20,10 @@
 #include <boost/flyweight/refcounted_fwd.hpp>
 #include <boost/flyweight/tracking_tag.hpp>
 #include <boost/utility/swap.hpp>
+
+#if !defined(BOOST_NO_CXX11_RVALUE_REFERENCES)
+#include <utility>
+#endif
 
 /* Refcounting tracking policy.
  * The implementation deserves some explanation; values are equipped with two
@@ -63,6 +67,22 @@ public:
     x=r.x;
     return *this;
   }
+
+#if !defined(BOOST_NO_CXX11_RVALUE_REFERENCES)
+  explicit refcounted_value(Value&& x_):
+    x(std::move(x_)),ref(0),del_ref(0)
+  {}
+
+  refcounted_value(refcounted_value&& r):
+    x(std::move(r.x)),ref(0),del_ref(0)
+  {}
+
+  refcounted_value& operator=(refcounted_value&& r)
+  {
+    x=std::move(r.x);
+    return *this;
+  }
+#endif
   
   operator const Value&()const{return x;}
   operator const Key&()const{return x;}

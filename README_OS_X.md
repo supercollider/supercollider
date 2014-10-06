@@ -92,7 +92,7 @@ in release/commit history:
 
 Since at least SC 3.6.5 it has not been possible any more to use the OSX supplied 
 readline to build sclang with readline interface. Therefore GNU Readline >= 5.0 needs
-to be intalled on the build system.
+to be installed on the build system.
 
 SC 3.6.6 was built using the following cmake arguments:
 
