@@ -1,5 +1,5 @@
 compiler:
-- gcc
+- gcc  
 os:
 - linux
 - osx
@@ -40,7 +40,7 @@ before_script:
 - iflin aptitude why libqt4-dev
 script:
 - make
-- zip -r Install.zip $PWD/Install
+- zip -r Install.zip $PWD
 notifications:
   email:
     - scott@artificia.org
