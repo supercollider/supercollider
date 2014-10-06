@@ -24,6 +24,7 @@
 #include "highlighter.hpp"
 #include "../../core/main.hpp"
 #include "../../core/settings/manager.hpp"
+#include "../../core/settings/theme.hpp"
 
 #include <QApplication>
 
@@ -48,26 +49,24 @@ SyntaxHighlighterGlobals::SyntaxHighlighterGlobals( Main *main, Settings::Manage
 
 void SyntaxHighlighterGlobals::applySettings( Settings::Manager *s )
 {
-    QString key("IDE/editor/highlighting");
-    applySettings( s, key + "/whitespace", WhitespaceFormat );
-    applySettings( s, key + "/normal", PlainFormat );
-    applySettings( s, key + "/keyword", KeywordFormat );
-    applySettings( s, key + "/built-in", BuiltinFormat );
-    applySettings( s, key + "/primitive", PrimitiveFormat );
-    applySettings( s, key + "/class", ClassFormat );
-    applySettings( s, key + "/number", NumberFormat );
-    applySettings( s, key + "/symbol", SymbolFormat );
-    applySettings( s, key + "/env-var", EnvVarFormat );
-    applySettings( s, key + "/string", StringFormat );
-    applySettings( s, key + "/char", CharFormat );
-    applySettings( s, key + "/comment", CommentFormat );
+    applySettings( s, "whitespace", WhitespaceFormat );
+    applySettings( s, "keyword", KeywordFormat );
+    applySettings( s, "built-in", BuiltinFormat );
+    applySettings( s, "primitive", PrimitiveFormat );
+    applySettings( s, "class", ClassFormat );
+    applySettings( s, "number", NumberFormat );
+    applySettings( s, "symbol", SymbolFormat );
+    applySettings( s, "env-var", EnvVarFormat );
+    applySettings( s, "string", StringFormat );
+    applySettings( s, "char", CharFormat );
+    applySettings( s, "comment", CommentFormat );
 
     Q_EMIT(syntaxFormatsChanged());
 }
 
 void SyntaxHighlighterGlobals::applySettings( Settings::Manager *s, const QString &key, SyntaxFormat type )
 {
-    mFormats[type] = s->value(key).value<QTextCharFormat>();
+    mFormats[type] = s->getThemeVal(key);
 }
 
 SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent):

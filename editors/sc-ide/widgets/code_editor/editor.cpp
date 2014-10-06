@@ -25,6 +25,7 @@
 #include "../../core/main.hpp"
 #include "../../core/doc_manager.hpp"
 #include "../../core/settings/manager.hpp"
+#include "../../core/settings/theme.hpp"
 #include "../main_window.hpp"
 
 #include <QApplication>
@@ -118,43 +119,33 @@ void GenericCodeEditor::applySettings( Settings::Manager *settings )
 
     QPalette palette;
 
-    settings->beginGroup("colors");
+    const QTextCharFormat *format = &settings->getThemeVal("text");
+    QBrush bg = format->background();
+    QBrush fg = format->foreground();
+    if (bg.style() != Qt::NoBrush)
+        palette.setBrush(QPalette::Base, bg);
+    if (fg.style() != Qt::NoBrush)
+        palette.setBrush(QPalette::Text, fg);
 
-    if (settings->contains("text")) {
-        QTextCharFormat format = settings->value("text").value<QTextCharFormat>();
-        QBrush bg = format.background();
-        QBrush fg = format.foreground();
-        if (bg.style() != Qt::NoBrush)
-            palette.setBrush(QPalette::Base, bg);
-        if (fg.style() != Qt::NoBrush)
-            palette.setBrush(QPalette::Text, fg);
-    }
+    // NOTE: the line number widget will inherit the palette from the editor
+    format = &settings->getThemeVal("lineNumbers");
+    bg = format->background();
+    fg = format->foreground();
+    if (bg.style() != Qt::NoBrush)
+        palette.setBrush(QPalette::Mid, bg);
+    if (fg.style() != Qt::NoBrush)
+        palette.setBrush(QPalette::ButtonText, fg);
 
-    if (settings->contains("lineNumbers")) {
-        // NOTE: the line number widget will inherit the palette from the editor
-        QTextCharFormat format = settings->value("lineNumbers").value<QTextCharFormat>();
-        QBrush bg = format.background();
-        QBrush fg = format.foreground();
-        if (bg.style() != Qt::NoBrush)
-            palette.setBrush(QPalette::Mid, bg);
-        if (fg.style() != Qt::NoBrush)
-            palette.setBrush(QPalette::ButtonText, fg);
-    }
+    format = &settings->getThemeVal("selection");
+    bg = format->background();
+    fg = format->foreground();
+    if (bg.style() != Qt::NoBrush)
+        palette.setBrush(QPalette::Highlight, bg);
+    if (fg.style() != Qt::NoBrush)
+        palette.setBrush(QPalette::HighlightedText, fg);
 
-    if (settings->contains("selection")) {
-        QTextCharFormat format = settings->value("selection").value<QTextCharFormat>();
-        QBrush bg = format.background();
-        QBrush fg = format.foreground();
-        if (bg.style() != Qt::NoBrush)
-            palette.setBrush(QPalette::Highlight, bg);
-        if (fg.style() != Qt::NoBrush)
-            palette.setBrush(QPalette::HighlightedText, fg);
-    }
-
-    mCurrentLineTextFormat = settings->value("currentLine").value<QTextCharFormat>();
-    mSearchResultTextFormat = settings->value("searchResult").value<QTextCharFormat>();
-
-    settings->endGroup(); // colors
+    mCurrentLineTextFormat = settings->getThemeVal("currentLine");
+    mSearchResultTextFormat = settings->getThemeVal("searchResult");
 
     mHighlightCurrentLine = settings->value("highlightCurrentLine").toBool();
     updateCurrentLineHighlighting();
