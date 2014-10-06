@@ -12,7 +12,7 @@ addons:
     secret: 
       secure: K46S3x2ldyF82ojlo73xZHG7sHgRmBADiDPsGMq26D4Hbt6fjdcE78HXbv7gG9MB/hokytoQkedWkIxYfLuG9WqDzrt2rjRKDZuX9dpiJsX+1LhsR3SZP+csDE2l4Hul3y4nQggZ0cGlpjdYixtqQ9v5Bj4WkGsFLJARIv14E34=
   paths:
-  - $PWD/Install.zip
+    - $PWD/Install.zip
   debug: true
 before_install:
 - ifmac () { if [[ $TRAVIS_OS_NAME == osx ]]; then eval $@; fi; }
