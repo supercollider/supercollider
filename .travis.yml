@@ -25,6 +25,8 @@ deploy:
   region: us-west-2
   endpoint: s3-us-west-2.amazonaws.com
   upload-dir: Install.zip
+  on:
+    all_branches: true
 before_install:
 - ifmac () { if [[ $TRAVIS_OS_NAME == osx ]]; then eval $@; fi; }
 - iflin () { if [[ $TRAVIS_OS_NAME == linux ]]; then eval $@; fi; }
