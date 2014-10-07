@@ -1,53 +1,37 @@
 compiler:
-- gcc
+ - gcc
+
 os:
-- linux
-- osx
+ - linux
+ - osx
+
 cache: apt
-addons:
-  artifacts:
-    bucket: supercollider
-    key:
-      secure: MAnIEPkqlfAAuJqkQ1ylwr6/T9T23s1kb0U84whVyRnGxB0Is0Z7G5G2I0rqsGQ47bko1i7YFJNsAfqWQasc3Tb0Uribx+ehHlmK9C9BRXGKUdKijQhdgNrxLJbkEsGngpSKV+9tR7fRSeAqbiThOkTHXuD4exBnOi96EEsrDaI=
-    secret:
-      secure: K46S3x2ldyF82ojlo73xZHG7sHgRmBADiDPsGMq26D4Hbt6fjdcE78HXbv7gG9MB/hokytoQkedWkIxYfLuG9WqDzrt2rjRKDZuX9dpiJsX+1LhsR3SZP+csDE2l4Hul3y4nQggZ0cGlpjdYixtqQ9v5Bj4WkGsFLJARIv14E34=
-    paths:
-    - $PWD/Install.zip
-    debug: true
-deploy:
-  provider: s3
-  access_key_id: AKIAJJHRJG4Y6SVYKUKA
-  secret_access_key:
-    secure: FKC5QzVrfD7J86ia939RK+H/0aIA5k7mh/v6cTR5mVeRPUldomQnjc669CvIp2XGP+MSbfFaAPyRlO9KrmdZZevnhwYjWdv3OmkMzNgeklVYEzsSzC1NOYphxhC3aKJqnVtQj37wmmUeer0GLXwVwgoLESKYJvgz336pdX5vUEw=
-  bucket: supercollider
-  local-dir: $HOME/artifacts
-  acl: !ruby/string:HighLine::String |-
-    cHJpdmF0ZQ==
-  on:
-    repo: scztt/supercollider
-    branch: travis-testing
+
 before_install:
-- ifmac () { if [[ $TRAVIS_OS_NAME == osx ]]; then eval $@; fi; }
-- iflin () { if [[ $TRAVIS_OS_NAME == linux ]]; then eval $@; fi; }
-- ifmac brew update
-- ifmac brew install cmake qt4 || true
-- iflin sudo apt-add-repository -y ppa:ubuntu-sdk-team/ppa
-- iflin sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-- iflin sudo add-apt-repository -y ppa:andykimpe/cmake
-- iflin sudo apt-get update
-- iflin sudo apt-get install gcc-4.7 g++-4.7 aptitude build-essential libqt4-dev libqtwebkit-dev
-  libjack-dev libsndfile1-dev libasound2-dev libavahi-client-dev libicu-dev libreadline6-dev
-  libfftw3-dev libxt-dev libudev-dev pkg-config cmake=2.8.12.2-3 subversion libstdc++5
-- iflin sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.6 40 --slave
-  /usr/bin/g++ g++ /usr/bin/g++-4.6
-- iflin sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.7 60 --slave
-  /usr/bin/g++ g++ /usr/bin/g++-4.7
-- iflin sudo update-alternatives --auto gcc
-script:
-- mkdir $HOME/artifacts
-- zip -r $HOME/artifacts/Install.zip sounds
+ - ifmac () { if [[ $TRAVIS_OS_NAME == osx ]]; then eval $@; fi; }
+ - iflin () { if [[ $TRAVIS_OS_NAME == linux ]]; then eval $@; fi; }
+ - ifmac brew update
+ - ifmac brew install cmake qt5
+ - iflin sudo apt-add-repository -y ppa:ubuntu-sdk-team/ppa
+ - iflin sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+ - iflin sudo add-apt-repository -y ppa:andykimpe/cmake  # backport of cmake 2.8.12
+ - iflin sudo apt-get update
+ - iflin sudo apt-get install gcc-4.7 g++-4.7 aptitude build-essential libjack-dev libsndfile1-dev libasound2-dev libavahi-client-dev libicu-dev libreadline6-dev libfftw3-dev libxt-dev libudev-dev pkg-config cmake=2.8.12.2-3 subversion libstdc++5 qtbase5-dev qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5webkit5-dev libudev-dev 
+ - iflin sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.6 40 --slave /usr/bin/g++ g++ /usr/bin/g++-4.6 
+ - iflin sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.7 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.7 
+ - iflin sudo update-alternatives --auto gcc
+
+before_script:
+ - mkdir BUILD
+ - cd BUILD
+ - ifmac cmake -DCMAKE_PREFIX_PATH=/usr/local/Cellar/qt/5.3.0 -DSC_QT=1 .. --debug-output
+ - iflin cmake -DSC_EL=no -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/qt5/ -DCMAKE_INSTALL_PREFIX:PATH=$PWD/Install -DCMAKE_BUILD_TYPE=Release .. --debug-output
+ - iflin aptitude why libqt4-dev
+
+script: make
+
 notifications:
-  email:
-  - scott@artificia.org
-  on_success: change
-  on_failure: always
+ email:
+   - scott@artificia.org
+ on_success: change
+ on_failure: always
