@@ -30,7 +30,7 @@ before_install:
 
 script: 
  - mkdir $HOME/artifacts
- - zip -r $HOME/artifacts/SC-$TRAVIS_COMMIT.zip $HOME/sounds
+ - zip -r $HOME/artifacts/SC-$TRAVIS_COMMIT.zip sounds
 
 deploy:
   provider: s3
