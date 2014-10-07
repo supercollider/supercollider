@@ -52,6 +52,7 @@ deploy:
    api_key:
      secure: K3X3Ja+j4iKwb6SOpxebV5acVBl5C8tXoTBWb3bO9iwJjYpzIYFi7Mr5zUIz/0hx8pgyr2eNrWEL/YOOyg7BzfPG7wiSfjDPpsPRYvx4XQslXOivsfljKy/rK4wN1edj5ZK7ydlygBaNkrlxH2JQDjTNvveYr+b6LHrD7N0mWqE=
    file: $HOME/artifacts/SC-$COMMIT_NAME.zip
+   tag_name: current
    on:
      repo: scztt/supercollider
      branch: travis-testing
