@@ -10,6 +10,7 @@ cache: apt
 before_install:
  - ifmac () { if [[ $TRAVIS_OS_NAME == osx ]]; then eval $@; fi; }
  - iflin () { if [[ $TRAVIS_OS_NAME == linux ]]; then eval $@; fi; }
+ - export COMMIT_NAME=`echo $TRAVIS_COMMIT | cut -c1-7`
 # - ifmac brew update
 # - ifmac brew install cmake qt5
 # - iflin sudo apt-add-repository -y ppa:ubuntu-sdk-team/ppa
@@ -30,7 +31,7 @@ before_install:
 
 script: 
  - mkdir $HOME/artifacts
- - zip -r $HOME/artifacts/SC-$TRAVIS_COMMIT.zip sounds
+ - zip -r $HOME/artifacts/SC-$COMMIT_NAME.zip sounds
 
 deploy:
   provider: s3
