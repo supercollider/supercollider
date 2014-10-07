@@ -32,10 +32,10 @@ before_install:
 script: 
  - mkdir $HOME/artifacts
  - zip -r $HOME/artifacts/SC-$COMMIT_NAME.zip sounds
- 
+
 before_deploy:
  - git fetch --tags
- 
+
 deploy:
  - provider: s3
    access_key_id: AKIAJJHRJG4Y6SVYKUKA
