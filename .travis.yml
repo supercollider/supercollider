@@ -34,20 +34,28 @@ script:
  - zip -r $HOME/artifacts/SC-$COMMIT_NAME.zip sounds
 
 deploy:
-  provider: s3
-  access_key_id: AKIAJJHRJG4Y6SVYKUKA
-  secret_access_key:
-    secure: jWZbN5Nmlbv1RNZgRRsb1gkTflzSGUXDJGUUgIaQR3zYYb/3K9vHoX25HPckbJ6djnAu5vWXyBuMKA4ftaHRzBkg/+9sNN3sJi4xLdM5TfCSpbazO1n5cuDlVJ0uXB0wsiwGWvYP7PiXnw0vlxe94mScuesExK6IbGCzFc14PIc=
-  bucket: supercollider
-  local-dir: $HOME/artifacts
-  upload-dir: builds/$TRAVIS_BUILD_NUMBER-$TRAVIS_OS_NAME
-  region: us-west-2
-  skip_cleanup: true
-  endpoint: s3-us-west-2.amazonaws.com
-  acl: public_read
-  on:
-    repo: scztt/supercollider
-    branch: travis-testing
+  - provider: s3
+    access_key_id: AKIAJJHRJG4Y6SVYKUKA
+    secret_access_key:
+      secure: jWZbN5Nmlbv1RNZgRRsb1gkTflzSGUXDJGUUgIaQR3zYYb/3K9vHoX25HPckbJ6djnAu5vWXyBuMKA4ftaHRzBkg/+9sNN3sJi4xLdM5TfCSpbazO1n5cuDlVJ0uXB0wsiwGWvYP7PiXnw0vlxe94mScuesExK6IbGCzFc14PIc=
+    bucket: supercollider
+    local-dir: $HOME/artifacts
+    upload-dir: builds/$TRAVIS_BUILD_NUMBER-$TRAVIS_OS_NAME
+    region: us-west-2
+    skip_cleanup: true
+    endpoint: s3-us-west-2.amazonaws.com
+    acl: public_read
+    on:
+      repo: scztt/supercollider
+      branch: travis-testing
+ - provider: releases
+    api_key:
+      secure: K3X3Ja+j4iKwb6SOpxebV5acVBl5C8tXoTBWb3bO9iwJjYpzIYFi7Mr5zUIz/0hx8pgyr2eNrWEL/YOOyg7BzfPG7wiSfjDPpsPRYvx4XQslXOivsfljKy/rK4wN1edj5ZK7ydlygBaNkrlxH2JQDjTNvveYr+b6LHrD7N0mWqE=
+    file: $HOME/artifacts/SC-$COMMIT_NAME.zip
+    on:
+      repo: scztt/supercollider
+      branch: travis-testing
+
 
 notifications:
  email:
