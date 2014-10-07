@@ -204,7 +204,7 @@ else()
 endif()
 
 if(SYSTEM_YAMLCPP)
-  find_package(YamlCpp)
+  find_package(YamlCpp 0.3 EXACT)
 else()
   set(YAMLCPP_FOUND OFF)
 endif()
