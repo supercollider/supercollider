@@ -62,7 +62,8 @@ deploy:
    skip_cleanup: true
    on:
      repo: scztt/supercollider
-     branch: travis-testing
+     tags: true
+     all_branches: true
 
 notifications:
  email:
