@@ -30,8 +30,7 @@ before_install:
 
 script: 
  - mkdir $HOME/artifacts
- - echo ART > $HOME/artifacts/thing.txt
- - zip -r Install.zip $HOME/artifacts
+ - zip -r $HOME/artifacts/SC-$TRAVIS_COMMIT.zip $HOME/sounds
 
 deploy:
   provider: s3
@@ -40,6 +39,7 @@ deploy:
     secure: jWZbN5Nmlbv1RNZgRRsb1gkTflzSGUXDJGUUgIaQR3zYYb/3K9vHoX25HPckbJ6djnAu5vWXyBuMKA4ftaHRzBkg/+9sNN3sJi4xLdM5TfCSpbazO1n5cuDlVJ0uXB0wsiwGWvYP7PiXnw0vlxe94mScuesExK6IbGCzFc14PIc=
   bucket: supercollider
   local-dir: $HOME/artifacts
+  upload-dir: builds/$TRAVIS_BUILD_NUMBER-$TRAVIS_OS_NAME
   region: us-west-2
   skip_cleanup: true
   endpoint: s3-us-west-2.amazonaws.com
