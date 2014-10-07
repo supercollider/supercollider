@@ -28,7 +28,21 @@ before_script:
  - iflin cmake -DSC_EL=no -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/qt5/ -DCMAKE_INSTALL_PREFIX:PATH=$PWD/Install -DCMAKE_BUILD_TYPE=Release .. --debug-output
  - iflin aptitude why libqt4-dev
 
-script: make
+#script: make
+deploy:
+  provider: s3
+  access_key_id: AKIAJJHRJG4Y6SVYKUKA
+  secret_access_key:
+    secure: FKC5QzVrfD7J86ia939RK+H/0aIA5k7mh/v6cTR5mVeRPUldomQnjc669CvIp2XGP+MSbfFaAPyRlO9KrmdZZevnhwYjWdv3OmkMzNgeklVYEzsSzC1NOYphxhC3aKJqnVtQj37wmmUeer0GLXwVwgoLESKYJvgz336pdX5vUEw=
+  bucket: supercollider
+  local-dir: $HOME/artifacts
+  region: us-west-2
+  endpoint: s3-us-west-2.amazonaws.com
+  acl: !ruby/string:HighLine::String |-
+    cHJpdmF0ZQ==
+  on:
+    repo: scztt/supercollider
+    branch: travis-testing
 
 notifications:
  email:
