@@ -41,6 +41,7 @@ deploy:
   bucket: supercollider
   local-dir: $HOME/artifacts
   region: us-west-2
+  skip_cleanup: true
   endpoint: s3-us-west-2.amazonaws.com
   acl: !ruby/string:HighLine::String |-
     cHJpdmF0ZQ==
