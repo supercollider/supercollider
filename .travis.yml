@@ -48,9 +48,8 @@ before_deploy:
 deploy:
  # s3 upload - every commit
  - provider: s3
-   access_key_id: AKIAJJHRJG4Y6SVYKUKA
-   secret_access_key:
-     secure: Ma3TNLhSRtrY9649SYQr1nSqgWuXZcnAegsC4ScOwh5kvejzveig2Tu35/eT2hccAyC8QeAik8oKMtNRFiRfm262/y9mjPFQO9A1TDuwEy9sKQsRFJsIX5IE25oNkGWOPWACgOURJkXS0OtrCIWup3kAKWIpfIiUMcIVEfnGRn4=
+   access_key_id: $AWS_KEY
+   secret_access_key: $AWS_SECRET
    bucket: supercollider
    local-dir: $HOME/artifacts
    upload-dir: builds/$BUILD_PREFIX
