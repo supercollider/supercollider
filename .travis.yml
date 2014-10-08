@@ -26,7 +26,7 @@ before_script:
  - iflin aptitude why libqt4-dev
  - mkdir BUILD
  - cd BUILD
- - ifmac cmake -DCMAKE_PREFIX_PATH=/usr/local/Cellar/qt/5.3.0 -DSC_QT=1 .. --debug-output
+ - ifmac cmake -DCMAKE_PREFIX_PATH=`brew --prefix qt5` -DSC_QT=1 .. --debug-output
  - iflin cmake -DSC_EL=no -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/qt5/ -DCMAKE_INSTALL_PREFIX:PATH=$PWD/Install -DCMAKE_BUILD_TYPE=Release .. --debug-output
 
 script:
