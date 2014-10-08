@@ -384,16 +384,12 @@ NodeProxy : BusPlug {
 	}
 
 	setNodeMap { | map, xfade = true |
-		var bundle, old, fadeTime;
+		var bundle;
 		if(map.isNil) { ^this.unmap };
 		map.set(\fadeTime, this.fadeTime); // keep old fadeTime
-		bundle = MixedBundle.new;
-		old = nodeMap;
-		nodeMap = map;
-		old.clear;
-		this.linkNodeMap;
-		//this.nodeMapChanged;
+		nodeMap.clear; nodeMap = map; this.linkNodeMap;
 		if(this.isPlaying) {
+			bundle = MixedBundle.new;
 			if(xfade) { this.sendEach(nil,true) }
 			{
 				this.unsetToBundle(bundle); // unmap old
@@ -534,8 +530,7 @@ NodeProxy : BusPlug {
 		loaded = false;
 
 		proxy.objects.keysValuesDo { |key, val| objects[key] = val.copy };
-		nodeMap = proxy.nodeMap.copy.proxy_(this);
-		this.linkNodeMap;
+		this.nodeMap = proxy.nodeMap.copy;
 
 		awake = proxy.awake; paused = proxy.paused;
 		clock = proxy.clock; quant = proxy.quant;
