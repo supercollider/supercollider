@@ -136,7 +136,7 @@ list( APPEND QT_COLLIDER_SRCS
 
 add_definitions(-DSC_QT -DQT_COLLIDER_EXPORTING -DQT_NO_KEYWORDS)
 
-set (QT_COLLIDER_LIBS ${QT_LIBRARIES} ${MATH_LIBRARY})
+set (QT_COLLIDER_LIBS Qt5::Core Qt5::Gui Qt5::WebKit Qt5::WebKitWidgets Qt5::Network Qt5::Widgets Qt5::PrintSupport ${MATH_LIBRARY})
 
 if(APPLE)
   list(APPEND QT_COLLIDER_LIBS "-framework Cocoa" )
