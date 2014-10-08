@@ -290,7 +290,7 @@ SynthControl : AbstractPlayControl {
 SynthDefControl : SynthControl {
 
 	var <synthDef, <parents;
-	var prevBundle;
+	var prevBundle, <bytes;
 
 	readyForPlay { ^synthDef.notNil }
 
@@ -320,9 +320,12 @@ SynthDefControl : SynthControl {
 	}
 
 	loadToBundle { | bundle, server |
-		var bytes, size, path;
+		var size, path;
 
-		bytes = synthDef.asBytes;
+		// cache rendered synth def, so it can be copied if necessary (see: copyData)
+		// We need to keep the bytes here, because some other instance may have deleted it from the server (see: freeToBundle)
+		// the resulting synthDef will have the same name, because the name is encoded in the data (bytes).
+		bytes = bytes ?? { synthDef.asBytes }; // here the work for sclang is done.
 		size = bytes.size;
 		size = size - (size bitAnd: 3) + 84; // 4 + 4 + 16 + 16 // appx path length size + overhead
 		if(server.options.protocol === \tcp or: { size < 16383}) {
@@ -344,7 +347,7 @@ SynthDefControl : SynthControl {
 	freeToBundle { | bundle, proxy |
 		if(synthDef.notNil) { bundle.addPrepare([53, synthDef.name]) }; // "/d_free"
 		parents.do { |x| x.removeChild(proxy) };
-		parents = nil;
+		bytes = parents = nil;
 		prevBundle !? { prevBundle.cancel };
 	}
 
@@ -375,6 +378,7 @@ SynthDefControl : SynthControl {
 		super.copyState(control);
 		synthDef = control.synthDef;
 		parents = control.parents.copy;
+		bytes = control.bytes; // copy cached data
 	}
 
 
