@@ -48,6 +48,16 @@ AbstractPlayControl {
 	parents { ^nil }
 	store {}
 
+	copy {
+		^this.class.new.copyState(this)
+	}
+
+	copyState { |control|
+		source = control.source; // source is not copied, assumed to be stateless
+		channelOffset = control.channelOffset;
+		paused = control.paused;
+	}
+
 
 }
 
@@ -57,7 +67,7 @@ AbstractPlayControl {
 
 StreamControl : AbstractPlayControl {
 
-	var stream, clock;
+	var stream, <clock;
 
 	playToBundle { | bundle |
 		// no latency (latency is in stream already)
@@ -87,6 +97,17 @@ StreamControl : AbstractPlayControl {
 	}
 	stop { stream.stop }
 
+	copyState { |control|
+		// stream can't be copied.
+		// control has to be rebuilt (see: NodeProxy:copyState)
+		super.copyState(control);
+		clock = control.clock;
+	}
+
+	copyRequiresRebuild {
+		^true
+	}
+
 }
 
 
@@ -95,7 +116,7 @@ PatternControl : StreamControl {
 	var fadeTime, <array;
 
 	playStream { | str |
-		var dt = fadeTime.value;
+		var dt = fadeTime.value ? 0.0;
 		if(dt <= 0.02) {
 			str.play(clock, false, 0.0)
 		} {
@@ -172,6 +193,7 @@ SynthControl : AbstractPlayControl {
 
 	var <server, <>nodeID;
 	var <canReleaseSynth=false, <canFreeSynth=false;
+
 
 	loadToBundle {} // assumes that SynthDef is loaded in the server
 
@@ -254,6 +276,13 @@ SynthControl : AbstractPlayControl {
 	synthDefPath { ^SynthDef.synthDefDir ++ this.asDefName ++ ".scsyndef" }
 
 	store { SynthDescLib.global.read(this.synthDefPath) }
+
+	copyState { |control|
+		super.copyState(control);
+		server = control.server;
+		canReleaseSynth = control.canReleaseSynth;
+		canFreeSynth = control.canFreeSynth;
+	}
 
 }
 
@@ -341,5 +370,12 @@ SynthDefControl : SynthControl {
 	}
 
 	controlNames { ^synthDef.allControlNames }
+
+	copyState { |control|
+		super.copyState(control);
+		synthDef = control.synthDef;
+		parents = control.parents.copy;
+	}
+
 
 }
