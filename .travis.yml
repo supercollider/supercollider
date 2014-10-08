@@ -11,27 +11,29 @@ before_install:
  - ifmac () { if [[ $TRAVIS_OS_NAME == osx ]]; then eval $@; fi; }
  - iflin () { if [[ $TRAVIS_OS_NAME == linux ]]; then eval $@; fi; }
  - export COMMIT_NAME=`echo $TRAVIS_COMMIT | cut -c1-7`
-# - ifmac brew update
-# - ifmac brew install cmake qt5
-# - iflin sudo apt-add-repository -y ppa:ubuntu-sdk-team/ppa
-# - iflin sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-# - iflin sudo add-apt-repository -y ppa:andykimpe/cmake  # backport of cmake 2.8.12
-# - iflin sudo apt-get update
-# - iflin sudo apt-get install gcc-4.7 g++-4.7 aptitude build-essential libjack-dev libsndfile1-dev libasound2-dev libavahi-client-dev libicu-dev libreadline6-dev libfftw3-dev libxt-dev libudev-dev pkg-config cmake=2.8.12.2-3 subversion libstdc++5 qtbase5-dev qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5webkit5-dev libudev-dev 
-# - iflin sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.6 40 --slave /usr/bin/g++ g++ /usr/bin/g++-4.6 
-# - iflin sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.7 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.7 
-# - iflin sudo update-alternatives --auto gcc
+ - ifmac brew update
+ - ifmac brew install cmake qt5
+ - iflin sudo apt-add-repository -y ppa:ubuntu-sdk-team/ppa
+ - iflin sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+ - iflin sudo add-apt-repository -y ppa:andykimpe/cmake  # backport of cmake 2.8.12
+ - iflin sudo apt-get update
+ - iflin sudo apt-get install gcc-4.7 g++-4.7 aptitude build-essential libjack-dev libsndfile1-dev libasound2-dev libavahi-client-dev libicu-dev libreadline6-dev libfftw3-dev libxt-dev libudev-dev pkg-config cmake=2.8.12.2-3 subversion libstdc++5 qtbase5-dev qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5webkit5-dev libudev-dev 
+ - iflin sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.6 40 --slave /usr/bin/g++ g++ /usr/bin/g++-4.6 
+ - iflin sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.7 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.7 
+ - iflin sudo update-alternatives --auto gcc
 
-#before_script:
-# - iflin aptitude why libqt4-dev
-# - mkdir BUILD
-# - cd BUILD
-# - ifmac cmake -DCMAKE_PREFIX_PATH=/usr/local/Cellar/qt/5.3.0 -DSC_QT=1 .. --debug-output
-# - iflin cmake -DSC_EL=no -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/qt5/ -DCMAKE_INSTALL_PREFIX:PATH=$PWD/Install -DCMAKE_BUILD_TYPE=Release .. --debug-output
+before_script:
+ - iflin aptitude why libqt4-dev
+ - mkdir BUILD
+ - cd BUILD
+ - ifmac cmake -DCMAKE_PREFIX_PATH=/usr/local/Cellar/qt/5.3.0 -DSC_QT=1 .. --debug-output
+ - iflin cmake -DSC_EL=no -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/qt5/ -DCMAKE_INSTALL_PREFIX:PATH=$PWD/Install -DCMAKE_BUILD_TYPE=Release .. --debug-output
 
-script: 
+script:
+ - make > build_log.txt
  - mkdir $HOME/artifacts
- - zip -r $HOME/artifacts/SC-$COMMIT_NAME.zip sounds
+ - mv build_log.txt $HOME/artifacts/build_log.txt
+ - zip -r $HOME/artifacts/SC-$COMMIT_NAME.zip $PWD/Install/
 
 before_deploy:
  - git fetch --tags
@@ -50,7 +52,6 @@ deploy:
    acl: public_read
    on:
      repo: scztt/supercollider
-     branch: travis-testing
  - provider: releases
    api_key:
      secure: K3X3Ja+j4iKwb6SOpxebV5acVBl5C8tXoTBWb3bO9iwJjYpzIYFi7Mr5zUIz/0hx8pgyr2eNrWEL/YOOyg7BzfPG7wiSfjDPpsPRYvx4XQslXOivsfljKy/rK4wN1edj5ZK7ydlygBaNkrlxH2JQDjTNvveYr+b6LHrD7N0mWqE=
