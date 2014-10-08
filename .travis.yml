@@ -30,7 +30,7 @@ before_script:
  - iflin cmake -DSC_EL=no -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/qt5/ -DCMAKE_INSTALL_PREFIX:PATH=$PWD/Install -DCMAKE_BUILD_TYPE=Release .. --debug-output
 
 script:
- - make
+ - make install
  - mkdir $HOME/artifacts
 # - mv build_log.txt $HOME/artifacts/build_log.txt
  - zip -r $HOME/artifacts/SC-$COMMIT_NAME.zip $PWD/Install/
