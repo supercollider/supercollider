@@ -220,6 +220,15 @@ LazyEnvir : EnvironmentRedirect {
 		this.at(key).source_(obj);
 	}
 
+	copy {
+		var result = this.class.new;
+		dispatch !? { result.dispatch = dispatch };
+		envir.keysValuesDo { |key, val|
+			result.envir[key] = val.copy;
+		};
+		^result
+	}
+
 	storeOn { | stream |
 		if (stream.atLimit) { ^this };
 		stream << this.class.name << ".newFrom([" ;

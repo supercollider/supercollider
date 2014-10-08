@@ -13,6 +13,7 @@ NodeProxy : BusPlug {
 		^res
 	}
 
+
 	init {
 		nodeMap = ProxyNodeMap.new;
 		objects = Order.new;
@@ -519,8 +520,27 @@ NodeProxy : BusPlug {
 		bundle.schedSend(server, clock ? TempoClock.default, quant)
 	}
 
+	// making copies
 
+	copy {
+		^this.class.new(server).copyState(this)
+	}
 
+	copyState { |proxy|
+
+		super.copyState(proxy);
+
+		//loaded = objects.any { |x| x.isKindOf(StreamControl) }.not;
+		loaded = false;
+
+		proxy.objects.keysValuesDo { |key, val| objects[key] = val.copy };
+		nodeMap = proxy.nodeMap.copy.proxy_(this);
+		this.linkNodeMap;
+
+		awake = proxy.awake; paused = proxy.paused;
+		clock = proxy.clock; quant = proxy.quant;
+
+	}
 
 	// gui support
 
@@ -1020,6 +1040,10 @@ Ndef : NodeProxy {
 			dict.registerServer;
 		};
 		^dict
+	}
+
+	copy {
+		^this.shouldNotImplement(thisMethod)
 	}
 
 	proxyspace {

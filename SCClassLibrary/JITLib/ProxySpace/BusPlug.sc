@@ -332,6 +332,22 @@ BusPlug : AbstractFunction {
 		if(this.isPlaying.not) { this.wakeUpToBundle(bundle) };
 	}
 
+	// making copies
+
+	copy {
+		^this.class.new(server).copyState(this)
+	}
+
+	copyState { | proxy |
+		var proxyBus = proxy.bus;
+		parentGroup = proxy.parentGroup;
+		reshaping = proxy.reshaping;
+		proxyBus !? {
+			bus = Bus.alloc(proxyBus.rate, proxyBus.server, proxyBus.numChannels);
+			this.makeBusArg;
+		}
+	}
+
 	// server state
 
 	serverQuit {
