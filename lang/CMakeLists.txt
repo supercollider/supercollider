@@ -174,6 +174,7 @@ if(SC_IDE OR SC_QT)
 	find_package(Qt5Core REQUIRED)
 	find_package(Qt5Network REQUIRED)
 	find_package(Qt5Gui REQUIRED)
+	find_package(Qt5PrintSupport REQUIRED)
 endif()
 
 if(SC_IDE)
