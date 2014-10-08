@@ -51,6 +51,7 @@ deploy:
    endpoint: s3-us-west-2.amazonaws.com
    acl: public_read
    on:
+     condition: $TRAVIS_OS_NAME = osx
      repo: scztt/supercollider
  - provider: releases
    api_key:
@@ -59,6 +60,7 @@ deploy:
    prerelease: true
    skip_cleanup: true
    on:
+     condition: $TRAVIS_OS_NAME = osx
      repo: scztt/supercollider
      tags: true
      all_branches: true
