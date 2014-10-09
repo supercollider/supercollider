@@ -5,12 +5,13 @@ os:
  - linux
  - osx
 
-cache: apt
+cache: 
+ - apt
+ - bundler
 
 before_install:
  - ifmac () { if [[ $TRAVIS_OS_NAME == osx ]]; then eval $@; fi; }
  - iflin () { if [[ $TRAVIS_OS_NAME == linux ]]; then eval $@; fi; }
- - export COMMIT_NAME=`echo $TRAVIS_COMMIT | cut -c1-7`
  - ifmac brew update
  - ifmac brew install cmake qt5
  - iflin sudo apt-add-repository -y ppa:ubuntu-sdk-team/ppa
@@ -23,29 +24,36 @@ before_install:
  - iflin sudo update-alternatives --auto gcc
 
 before_script:
- - iflin aptitude why libqt4-dev
  - mkdir BUILD
  - cd BUILD
  - ifmac cmake -DCMAKE_PREFIX_PATH=`brew --prefix qt5` -DSC_QT=1 .. --debug-output
  - iflin cmake -DSC_EL=no -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/qt5/ -DCMAKE_INSTALL_PREFIX:PATH=$PWD/Install -DCMAKE_BUILD_TYPE=Release .. --debug-output
 
 script:
- - make
- - mkdir $HOME/artifacts
-# - mv build_log.txt $HOME/artifacts/build_log.txt
- - zip -r $HOME/artifacts/SC-$COMMIT_NAME.zip $PWD/Install/
-
+script: 
+ - make install
+ 
 before_deploy:
+ # required for github releases
  - git fetch --tags
+ - export COMMIT_NAME=$TRAVIS_COMMIT
+ - export BUILD_PREFIX=$TRAVIS_REPO_SLUG/$TRAVIS_OS_NAME
+ - export FWD_HTML='<html><head><meta http-equiv="refresh" content="0; url=SC-'$COMMIT_NAME'.zip" /></head></html>'
+ # put everything to be archived in artifacts/
+ - mkdir $HOME/artifacts
+ - cd Install
+ - zip -r $HOME/artifacts/SC-$COMMIT_NAME.zip SuperCollider
+ - echo $FWD_HTML > $HOME/artifacts/$TRAVIS_BRANCH-latest.html
+ - 'if [[ $TRAVIS_TAG != "head" ]]; then echo $FWD_HTML > $HOME/artifacts/$TRAVIS_TAG.html; fi;'
 
 deploy:
+ # s3 upload - every commit
  - provider: s3
-   access_key_id: AKIAJJHRJG4Y6SVYKUKA
-   secret_access_key:
-     secure: jWZbN5Nmlbv1RNZgRRsb1gkTflzSGUXDJGUUgIaQR3zYYb/3K9vHoX25HPckbJ6djnAu5vWXyBuMKA4ftaHRzBkg/+9sNN3sJi4xLdM5TfCSpbazO1n5cuDlVJ0uXB0wsiwGWvYP7PiXnw0vlxe94mScuesExK6IbGCzFc14PIc=
+   access_key_id: $AWS_KEY
+   secret_access_key: $AWS_SECRET
    bucket: supercollider
    local-dir: $HOME/artifacts
-   upload-dir: builds/$TRAVIS_BUILD_NUMBER-$TRAVIS_OS_NAME
+   upload-dir: builds/$BUILD_PREFIX
    region: us-west-2
    skip_cleanup: true
    endpoint: s3-us-west-2.amazonaws.com
@@ -53,6 +61,8 @@ deploy:
    on:
      condition: $TRAVIS_OS_NAME = osx
      repo: scztt/supercollider
+     all_branches: true
+ # github releases - only tags
  - provider: releases
    api_key:
      secure: K3X3Ja+j4iKwb6SOpxebV5acVBl5C8tXoTBWb3bO9iwJjYpzIYFi7Mr5zUIz/0hx8pgyr2eNrWEL/YOOyg7BzfPG7wiSfjDPpsPRYvx4XQslXOivsfljKy/rK4wN1edj5ZK7ydlygBaNkrlxH2JQDjTNvveYr+b6LHrD7N0mWqE=
