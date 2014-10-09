@@ -170,10 +170,10 @@ if(SC_WII)
 	endif()
 endif()
 
-if(SC_IDE OR SC_QT)
-	find_package(Qt5Core REQUIRED)
-	find_package(Qt5Network REQUIRED)
-	find_package(Qt5Gui REQUIRED)
+if(SC_QT OR SC_IDE)
+	set(QT_COLLIDER_LANG_CLIENT ON)
+	include(../QtCollider/CMakeLists.txt)
+	list(APPEND sclang_sources ${QT_COLLIDER_SRCS})
 endif()
 
 if(SC_IDE)
@@ -182,12 +182,6 @@ if(SC_IDE)
 	qt5_wrap_cpp( SCLANG_MOC_SRCS ../editors/sc-ide/primitives/sc_ipc_client.hpp )
 	list(APPEND sclang_sources ../editors/sc-ide/primitives/sc_ipc_client.cpp)
 	list(APPEND sclang_sources ${SCLANG_MOC_SRCS})
-endif()
-
-if(SC_QT)
-	set(QT_COLLIDER_LANG_CLIENT ON)
-	include(../QtCollider/CMakeLists.txt)
-	list(APPEND sclang_sources ${QT_COLLIDER_SRCS})
 endif()
 
 include(../SCDoc/CMakeLists.txt)
@@ -204,10 +198,7 @@ target_compile_definitions(libsclang PRIVATE YYSTACK_USE_ALLOC BUILDING_SUPERCOL
 target_link_libraries(libsclang tlsf ${PTHREADS_LIBRARIES})
 
 if(SC_IDE OR SC_QT)
-	qt5_use_modules(libsclang Core Network Gui WebKit Widgets WebKitWidgets)
-	if (APPLE)
-		qt5_use_modules(libsclang MacExtras)
-	endif()
+	target_link_libraries(libsclang ${QT_COLLIDER_LIBS})
 endif()
 
 set_property(TARGET libsclang
@@ -306,14 +297,6 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 endif()
 
 target_link_libraries(libsclang ${YAMLCPP_LIBRARY})
-
-if(SC_QT)
-	target_link_libraries(libsclang ${QT_COLLIDER_LIBS})
-endif()
-
-if(SC_IDE)
-	target_link_libraries( libsclang ${QT_LIBRARIES} )
-endif()
 
 add_executable(sclang LangSource/cmdLineFuncs.cpp ${RES_FILES})
 target_link_libraries(sclang libsclang)
