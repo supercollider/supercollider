@@ -340,6 +340,7 @@ BusPlug : AbstractFunction {
 
 	copyState { | proxy |
 		var proxyBus = proxy.bus;
+		if(this.isNeutral.not) { this.clear };
 		parentGroup = proxy.parentGroup;
 		reshaping = proxy.reshaping;
 		proxyBus !? {
