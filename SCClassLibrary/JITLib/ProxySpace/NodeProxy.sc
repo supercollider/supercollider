@@ -1037,8 +1037,9 @@ Ndef : NodeProxy {
 		^dict
 	}
 
-	copy {
-		^this.shouldNotImplement(thisMethod)
+	copy { |toKey|
+		if(key == toKey) { Error("cannot copy to identical key").throw };
+		^this.class.new(toKey).copyState(this)
 	}
 
 	proxyspace {
