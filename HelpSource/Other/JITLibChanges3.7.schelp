@@ -1147,6 +1147,14 @@ f.(p, { |proxy| proxy.nodeMap.at(\freq) }) != f.(q, { |proxy| proxy.nodeMap.at(\
 p.use { ~x = -100 };
 f.(p, { |proxy| proxy.source }) == f.(q, { |proxy| proxy.source });
 
+Ndef(\x).set(\freq, 900);
+Ndef(\x, 7);
+a = Ndef(\y);
+Ndef(\x).copy(\y);
+Ndef(\y) === a;
+Ndef(\y).nodeMap.at(\freq) == 900;
+Ndef(\y).source == 7;
+
 
 // various objects
 Ndef.clear;
@@ -1566,6 +1574,12 @@ f.(a) != f.(b);
 b.source = Pseq([1, 2, 3, 4], inf);
 f.(a) == f.(b);
 
+Pdefn(\a, { |envir| Pseq([1, 2, 3], inf) + envir[\x] }).set(\x, 0);
+Pdefn(\a).copy(\b);
+f = { |x| Pdefn(x).asStream.nextN(8).postln };
+f.(\a) == f.(\b);
+Pdefn(\a).set(\x, 16);
+f.(\a) != f.(\b);
 
 // event pattern proxy
 a = EventPatternProxy({ Pbind(\note, Pseq([1, 2, 3], inf)) }).set(\x, 0);
@@ -1581,7 +1595,6 @@ a.source = Pbind(\note, 7);
 f.(a) != f.(b);
 b.source = Pbind(\note, 7);
 f.(a) == f.(b);
-
 
 
 
