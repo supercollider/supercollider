@@ -22,7 +22,7 @@ before_install:
  - iflin sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.6 40 --slave /usr/bin/g++ g++ /usr/bin/g++-4.6 
  - iflin sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.7 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.7 
  - iflin sudo update-alternatives --auto gcc
- - iflin "curl https://launchpad.net/~ondrej/+archive/ubuntu/php5/+files/libicu-dev_52.1-1%2Bdebphp.org~precise%2B1_amd64.deb -O icu.deb & sudo dpkg -r icu.deb" 
+ - iflin "curl https://launchpad.net/~ondrej/+archive/ubuntu/php5/+files/libicu-dev_52.1-1%2Bdebphp.org~precise%2B1_amd64.deb -O icu.deb & sudo dpkg -i icu.deb" 
  - iflin "curl https://s3-us-west-2.amazonaws.com/supercollider/build-tools/linux/qt-5.3.2.zip -O qt.zip & unzip qt.zip -d $HOME/qt"
 
 before_script:
