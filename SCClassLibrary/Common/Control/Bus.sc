@@ -33,6 +33,13 @@ Bus {
 		^super.newCopyArgs(rate,index,numChannels,server ? Server.default)
 	}
 
+	*newFrom { arg bus, offset, numChannels=1;
+		if(offset > bus.numChannels or: { numChannels + offset > bus.numChannels }) {
+			Error("Bus:newFrom tried to reach outside the channel range of %".format( bus )).throw
+		};
+		^this.new(bus.rate, bus.index + offset, numChannels)
+	}
+
 	isSettable {
 		^rate != \audio
 	}
@@ -250,15 +257,8 @@ Bus {
 		}
 	}
 
-	*newFrom { arg bus, offset, numChannels=1;
-		if(offset > bus.numChannels or: { numChannels + offset > bus.numChannels }) {
-			Error("Bus:newFrom tried to reach outside the channel range of %".format( bus )).throw
-		};
-		^Bus.new(bus.rate, bus.index + offset, numChannels)
-	}
-
 	subBus { arg offset, numChannels=1;
-		^Bus.newFrom( this, offset, numChannels );
+		^this.class.newFrom(this, offset, numChannels);
 	}
 
 }
