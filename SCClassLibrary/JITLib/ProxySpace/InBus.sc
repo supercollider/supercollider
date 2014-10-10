@@ -87,9 +87,12 @@ XInFeedback {
 Monitor {
 
 	var <ins, <outs, <amps, <fadeTimes;
-	var <vol = 1.0;
+	var <vol = 1.0, defaults;
 	var <group, synthIDs;
-	var defaults;
+
+	copy {
+		^this.class.newCopyArgs(*[ins, outs, amps, fadeTimes, vol, defaults].deepCopy)
+	}
 
 	// mapping between multiple contiguous channels
 
