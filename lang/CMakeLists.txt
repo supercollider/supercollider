@@ -1,3 +1,8 @@
+cmake_minimum_required(VERSION 2.8.11)
+
+SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/include/lang
                     ${CMAKE_SOURCE_DIR}/include/plugin_interface
@@ -198,7 +203,16 @@ target_compile_definitions(libsclang PRIVATE YYSTACK_USE_ALLOC BUILDING_SUPERCOL
 target_link_libraries(libsclang tlsf ${PTHREADS_LIBRARIES})
 
 if(SC_IDE OR SC_QT)
+	message("libsclang qt libs:" ${QT_COLLIDER_LIBS})
+	#qt5_use_modules(libsclang Core)
+	find_package(Qt5Core)
+	get_target_property(QtCore_location Qt5::Core LOCATION)
+	message("core: " ${QtCore_location} )
+
+	#include_directories(${Qt5Core_INCLUDE_DIRS})
+	#target_link_libraries(libsclang Qt5::Core)
 	target_link_libraries(libsclang ${QT_COLLIDER_LIBS})
+	#qt5_use_modules(libsclang Core Network Gui WebKit Widgets WebKitWidgets)
 endif()
 
 set_property(TARGET libsclang
@@ -227,7 +241,7 @@ endif()
 
 
 if (Boost_FOUND)
-	target_include_directories(libsclang PUBLIC ${Boost_INCLUDE_DIRS})
+	target_include_directoriesf(libsclang PUBLIC ${Boost_INCLUDE_DIRS})
 	target_link_libraries(libsclang ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_REGEX_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
 else()
 	target_include_directories(libsclang PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/boost)
@@ -300,6 +314,7 @@ target_link_libraries(libsclang ${YAMLCPP_LIBRARY})
 
 add_executable(sclang LangSource/cmdLineFuncs.cpp ${RES_FILES})
 target_link_libraries(sclang libsclang)
+target_link_libraries(sclang ${ICU_LIBRARIES})
 
 target_compile_definitions(sclang PUBLIC USE_SC_TERMINAL_CLIENT)
 
