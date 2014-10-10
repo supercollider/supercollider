@@ -217,7 +217,7 @@ Bus {
 		^(rate === \audio and: {index < server.options.firstPrivateBus})
 	}
 
-	ar { |numChannels=(this.numChannels), offset=0|
+	ar { arg numChannels=(this.numChannels), offset=0;
 		if(rate == \audio,{
 			^In.ar(index + offset, numChannels)
 		},{
@@ -225,7 +225,7 @@ Bus {
 			^K2A.ar( In.kr(index + offset, numChannels) )
 		})
 	}
-	kr { |numChannels=(this.numChannels), offset=0|
+	kr { arg numChannels=(this.numChannels), offset=0;
 		if(rate == \audio,{
 			^A2K.kr( In.ar(index + offset, numChannels) )
 		},{
@@ -250,19 +250,14 @@ Bus {
 		}
 	}
 
-	// added by nescivi; gets a subbus from another bus
-
-	*newFrom { |bus, offset, numChannels=1|
-		if ( offset > bus.numChannels or: {numChannels + offset >
-			bus.numChannels} )
-		{
-			Error( "Bus:newFrom tried to reach outside the channel range of
-%".format( bus )).throw
+	*newFrom { arg bus, offset, numChannels=1;
+		if(offset > bus.numChannels or: { numChannels + offset > bus.numChannels }) {
+			Error("Bus:newFrom tried to reach outside the channel range of %".format( bus )).throw
 		};
-		^Bus.new( bus.rate, bus.index + offset, numChannels);
+		^Bus.new(bus.rate, bus.index + offset, numChannels)
 	}
 
-	subBus{|offset, numChannels=1|
+	subBus { arg offset, numChannels=1;
 		^Bus.newFrom( this, offset, numChannels );
 	}
 
