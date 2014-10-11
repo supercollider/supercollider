@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.8.11)
 
+# This makes sclang/scide work with a Qt installation at a fixed location.
 SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
@@ -108,11 +109,8 @@ endif()
 
 if(WIN32)
 	list(APPEND sclang_sources ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
-endif()
-
-if(WIN32)
-	include_directories(../platform/windows/compat_stuff)
 	list(APPEND sclang_sources ../platform/windows/compat_stuff/getopt.c)
+	include_directories(../platform/windows/compat_stuff)
 endif()
 
 set(sclang_parser_source LangSource/Bison/lang11d_tab.cpp)
