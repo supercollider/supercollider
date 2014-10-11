@@ -31,11 +31,14 @@ before_script:
  - export QT_PREFIX=$HOME/qt/gcc_64
  - ifmac cmake -DCMAKE_PREFIX_PATH=`brew --prefix qt5` -DSC_QT=1 .. --debug-output
  - iflin cmake -DSC_EL=no -DCMAKE_PREFIX_PATH=$QT_PREFIX -DCMAKE_INSTALL_PREFIX:PATH=$PWD/Install -DCMAKE_BUILD_TYPE=Release -DSC_QT=1 .. --debug-output
+# some paths
+ - ifmac export SCLANG=$TRAVIS_BUILD_DIR/BUILD/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
+ - iflin export SCLANG=$TRAVIS_BUILD_DIR/BUILD/Install/bin/sclang
 
 script:
-script: 
  - make install
- 
+ - $TRAVIS_BUILD_DIR/testsuite/sclang/launch_test $SCLANG
+
 before_deploy:
  # required for github releases
  - git fetch --tags
