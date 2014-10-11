@@ -112,7 +112,7 @@ void GenericLookupDialog::currentChanged(const QModelIndex &item, const QModelIn
     if (cpath.isEmpty()) {
       MainWindow::instance()->showStatusMessage (
                                                  tr("Cannot open file: %1 (file does not exist)").arg(path) );
-      return 0;
+      return;
     }
     
     // Open the file
@@ -120,7 +120,7 @@ void GenericLookupDialog::currentChanged(const QModelIndex &item, const QModelIn
     if(!file.open(QIODevice::ReadOnly)) {
       MainWindow::instance()->showStatusMessage(
                                                 tr("Cannot open file for reading: %1").arg(cpath));
-      return 0;
+      return;
     }
     QByteArray bytes( file.readAll() );
     file.close();
