@@ -1,15 +1,22 @@
+# mac related files
 .DS_Store
 platform/mac/Intermediate Build Files
 platform/mac/*.xcodeproj/*.mode1
 platform/mac/*.xcodeproj/*.pbxuser
 platform/mac/*.xcodeproj/*.mode1v3
 platform/mac/build
+
+# Windows related files
 *Thumbs.db
 CMakeLists.txt.user
+
+# working files made by packager script
 common/Packager/LinuxExclusions.txt
 common/Packager/SuperCollider*.tar.gz
 common/Packager/SuperCollider*.dmg
+
+#build directories
 /build*
+
 *~
 *.orig
-qt5-current

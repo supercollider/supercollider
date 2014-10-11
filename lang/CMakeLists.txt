@@ -1,3 +1,9 @@
+cmake_minimum_required(VERSION 2.8.11)
+
+# This makes sclang/scide work with a Qt installation at a fixed location.
+SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/include/lang
                     ${CMAKE_SOURCE_DIR}/include/plugin_interface
@@ -103,11 +109,8 @@ endif()
 
 if(WIN32)
 	list(APPEND sclang_sources ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
-endif()
-
-if(WIN32)
-	include_directories(../platform/windows/compat_stuff)
 	list(APPEND sclang_sources ../platform/windows/compat_stuff/getopt.c)
+	include_directories(../platform/windows/compat_stuff)
 endif()
 
 set(sclang_parser_source LangSource/Bison/lang11d_tab.cpp)
@@ -170,10 +173,10 @@ if(SC_WII)
 	endif()
 endif()
 
-if(SC_IDE OR SC_QT)
-	find_package(Qt5Core REQUIRED)
-	find_package(Qt5Network REQUIRED)
-	find_package(Qt5Gui REQUIRED)
+if(SC_QT OR SC_IDE)
+	set(QT_COLLIDER_LANG_CLIENT ON)
+	include(../QtCollider/CMakeLists.txt)
+	list(APPEND sclang_sources ${QT_COLLIDER_SRCS})
 endif()
 
 if(SC_IDE)
@@ -182,12 +185,6 @@ if(SC_IDE)
 	qt5_wrap_cpp( SCLANG_MOC_SRCS ../editors/sc-ide/primitives/sc_ipc_client.hpp )
 	list(APPEND sclang_sources ../editors/sc-ide/primitives/sc_ipc_client.cpp)
 	list(APPEND sclang_sources ${SCLANG_MOC_SRCS})
-endif()
-
-if(SC_QT)
-	set(QT_COLLIDER_LANG_CLIENT ON)
-	include(../QtCollider/CMakeLists.txt)
-	list(APPEND sclang_sources ${QT_COLLIDER_SRCS})
 endif()
 
 include(../SCDoc/CMakeLists.txt)
@@ -204,10 +201,16 @@ target_compile_definitions(libsclang PRIVATE YYSTACK_USE_ALLOC BUILDING_SUPERCOL
 target_link_libraries(libsclang tlsf ${PTHREADS_LIBRARIES})
 
 if(SC_IDE OR SC_QT)
-	qt5_use_modules(libsclang Core Network Gui WebKit Widgets WebKitWidgets)
-	if (APPLE)
-		qt5_use_modules(libsclang MacExtras)
-	endif()
+	message("libsclang qt libs:" ${QT_COLLIDER_LIBS})
+	#qt5_use_modules(libsclang Core)
+	find_package(Qt5Core)
+	get_target_property(QtCore_location Qt5::Core LOCATION)
+	message("core: " ${QtCore_location} )
+
+	#include_directories(${Qt5Core_INCLUDE_DIRS})
+	#target_link_libraries(libsclang Qt5::Core)
+	target_link_libraries(libsclang ${QT_COLLIDER_LIBS})
+	#qt5_use_modules(libsclang Core Network Gui WebKit Widgets WebKitWidgets)
 endif()
 
 set_property(TARGET libsclang
@@ -236,7 +239,7 @@ endif()
 
 
 if (Boost_FOUND)
-	target_include_directories(libsclang PUBLIC ${Boost_INCLUDE_DIRS})
+	target_include_directoriesf(libsclang PUBLIC ${Boost_INCLUDE_DIRS})
 	target_link_libraries(libsclang ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_REGEX_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
 else()
 	target_include_directories(libsclang PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/boost)
@@ -307,16 +310,9 @@ endif()
 
 target_link_libraries(libsclang ${YAMLCPP_LIBRARY})
 
-if(SC_QT)
-	target_link_libraries(libsclang ${QT_COLLIDER_LIBS})
-endif()
-
-if(SC_IDE)
-	target_link_libraries( libsclang ${QT_LIBRARIES} )
-endif()
-
 add_executable(sclang LangSource/cmdLineFuncs.cpp ${RES_FILES})
 target_link_libraries(sclang libsclang)
+target_link_libraries(sclang ${ICU_LIBRARIES})
 
 target_compile_definitions(sclang PUBLIC USE_SC_TERMINAL_CLIENT)
 
