@@ -1,8 +1,29 @@
+cmake_minimum_required(VERSION 2.8.11)
+
 set(required_qt_version 5.2)
 
 find_package(Qt5Core)
-find_package(Qt5Gui) 
+find_package(Qt5Widgets) 
+find_package(Qt5Network) 
 find_package(Qt5WebKit)
+find_package(Qt5WebKitWidgets)
+find_package(Qt5PrintSupport)
+find_package(Qt5OpenGL)
+find_package(Qt5Sensors)
+find_package(Qt5Quick)
+find_package(Qt5Qml)
+find_package(Qt5Sql)
+find_package(Qt5Positioning)
+
+set (QT_COLLIDER_LIBS 
+  Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::WebKit Qt5::WebKitWidgets Qt5::PrintSupport 
+  Qt5::OpenGL Qt5::Sensors Qt5::Quick Qt5::Qml Qt5::Sql Qt5::Positioning
+  ${MATH_LIBRARY})
+
+if (APPLE)
+  find_package(Qt5MacExtras)
+  list(APPEND QT_COLLIDER_LIBS Qt5::MacExtras)  
+endif()
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}  -DQC_DEBUG")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}  -DQC_DEBUG")
@@ -135,8 +156,6 @@ list( APPEND QT_COLLIDER_SRCS
 )
 
 add_definitions(-DSC_QT -DQT_COLLIDER_EXPORTING -DQT_NO_KEYWORDS)
-
-set (QT_COLLIDER_LIBS ${QT_LIBRARIES} ${MATH_LIBRARY})
 
 if(APPLE)
   list(APPEND QT_COLLIDER_LIBS "-framework Cocoa" )

@@ -1,12 +1,23 @@
 cmake_minimum_required( VERSION 2.8.11 )
 
+# This makes sclang/scide work with a Qt installation at a fixed, non-system location.
+SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 find_package(Qt5Core)
-find_package(Qt5Gui) 
-find_package(Qt5WebKit)
-find_package(Qt5WebKitWidgets)
-find_package(Qt5Network)
 find_package(Qt5Widgets)
 find_package(Qt5LinguistTools)
+find_package(Qt5WebKitWidgets)
+find_package(Qt5OpenGL)
+find_package(Qt5PrintSupport)
+find_package(Qt5Sensors)
+find_package(Qt5Quick)
+find_package(Qt5Qml)
+find_package(Qt5Sql)
+find_package(Qt5Positioning)
+
+set(QT_IDE_LIBRARIES 
+    Qt5::Core Qt5::WebKitWidgets Qt5::OpenGL Qt5::PrintSupport Qt5::Sensors Qt5::Quick Qt5::Qml Qt5::Sql Qt5::Positioning)
 
 if(${CMAKE_COMPILER_IS_GNUCXX})
     add_definitions(-Wreorder)
@@ -242,7 +253,8 @@ else()
     set_target_properties(SuperCollider PROPERTIES OUTPUT_NAME "scide")
 endif()
 
-target_link_libraries( SuperCollider Qt5::Core Qt5::Gui Qt5::WebKit Qt5::WebKitWidgets Qt5::Network Qt5::Widgets ${YAMLCPP_LIBRARY} )
+target_link_libraries(SuperCollider ${QT_IDE_LIBRARIES})
+target_link_libraries(SuperCollider ${YAMLCPP_LIBRARY})
 
 if(Boost_FOUND)
     target_link_libraries( SuperCollider ${Boost_SYSTEM_LIBRARY} )
