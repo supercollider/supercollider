@@ -8,7 +8,7 @@ Table of contents
  * Introduction
  * NOTE: OS X Mavericks (10.9)
  * Obtaining the SC source
- * The SC 3.6.6 release
+ * The SC 3.7 release
  * Quick steps (Read this if nothing else!)
  * Generic build instructions
  * Frequently used cmake settings
@@ -70,88 +70,44 @@ The following assumes that you have installed git locally and use the clone from
 Github repository.
 
 
-The SC 3.6.6 release
---------------------
+SuperCollider v3.7 dependencies
+-------------------------------
 
-The release of SC v3.6.6 was built on OS X Snow Leopard (10.6.8) using the
-following tools and dependencies:
+SC v3.7 is build tested on OS X Mavericks (10.9). The following dependencies must be installed:
 
-  * Cmake 2.8.11
-  * Xcode 4.2 Snow Leopard shipping with gcc 4.2.1 (llvmgcc42)
-  * Qt libraries 4.8.5 as provided by MacPorts (universal build)
-  * Readline 6.2 as provided by MacPorts (universal build)
+  * Xcode 5.0 or above
+  * Cmake 2.8.11 (via homebrew)
+  * Qt libraries 5.3.2 (via homebrew)
+  * Readline 6.3 (via homebrew)
 
-It should be possible to build SC 3.6 using the tools as shown below, but this has not
-been verified for a long time, so you will have to experiment and might have to go back
-in release/commit history:
+If you've installed homebrew (http://brew.sh/), this should do it:
+`brew update`
+`brew install cmake qt5 readline`
 
-  * Mac OS X 10.4.9 or greater
-  * Cmake 2.7 or greater
-  * Xcode Tools 2.4.1 or greater
-  * Qt libraries 4.7 or greater: http://qt-project.org/downloads
-
-Since at least SC 3.6.5 it has not been possible any more to use the OSX supplied 
-readline to build sclang with readline interface. Therefore GNU Readline >= 5.0 needs
-to be installed on the build system.
-
-SC 3.6.6 was built using the following cmake arguments:
-
-`cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES='i386;x86_64' 
--DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -DCMAKE_OSX_SYSROOT=/Developer/SDKs/MacOSX10.6.sdk/ 
--DCMAKE_INSTALL_PREFIX=./install -DREADLINE_INCLUDE_DIR=/opt/local/include 
--DREADLINE_LIBRARY=/opt/local/lib/libreadline.dylib -DSSE=ON -DSYSTEM_YAMLCPP=OFF ..`
-
-This should create a universal build running on any intel based 32- and 64-bit Apple 
-hardware using OSX 10.6 and later (see remarks on Mavericks above). 
-
-In order to reproduce this build exactly you either have to use the source snapshot
-distributed through SourceForge or checkout the tag `Version-3.6.6` from the SC Github repo.
-Make sure the dependencies (Qt and Readline) are universal builds.
+In general, incremental builds are kept stable. The .travis.yml file reflect the exact commands used to build SuperCollider on a clean system (look for lines starting with 'ifmac'), and may be more up to date than documentation. If you have build problems, start with that as a basis (or, check https://travis-ci.org/supercollider/supercollider to see if it's an authentic build breakage).
 
 
-Quick steps
------------
+Simple build instructions
+-------------------------
 
-Assuming tools (cmake, Xcode) and dependencies (Qt, Readline) are in place and up to 
-date (using Readline from MacPorts), assuming further that you just cloned the SC 
-source into a folder `supercollider`, do this:
-
-For SC 3.6:
-
-	$>	cd supercollider
-	$>	git submodule init
-	$>	git checkout -b 3.6 origin/3.6
-	$>	git submodule update
-	$>	mkdir build
-	$>	cd build
-	$>	cmake -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -DREADLINE_INCLUDE_DIR=/opt/local/include  
-	        -DREADLINE_LIBRARY=/opt/local/lib/libreadline.dylib ..
-	$>	make install
+One dependencies are in place, and you have cloned the supercollider git repo, the following should build:
 
 For SC 3.7:
+  $>  cd supercollider
+  $>  mkdir build
+  $>  cd build
+  $>  cmake -DCMAKE_PREFIX_PATH=`brew --prefix qt5` -DCMAKE_INSTALL_PREFIX=./Install -DREADLINE_INCLUDE_DIR=/opt/local/include  
+          -DREADLINE_LIBRARY=/usr/local/opt/readline/lib/libreadline.dylib ..
+  $>  make install
 
-	$>	cd supercollider
-	$>	git submodule init
-	$>	git checkout master
-	$>	mkdir build
-	$>	cd build
-	$>	cmake -DREADLINE_INCLUDE_DIR=/opt/local/include	 
-	        -DREADLINE_LIBRARY=/opt/local/lib/libreadline.dylib ..
-	$>	make install
+To use XCode as your development environment, add `-G Xcode`:
+  $>  cmake -DCMAKE_PREFIX_PATH=`brew --prefix qt5` -DCMAKE_INSTALL_PREFIX=./Install -DREADLINE_INCLUDE_DIR=/opt/local/include  
+          -DREADLINE_LIBRARY=/usr/local/opt/readline/lib/libreadline.dylib -G Xcode ..
+This will produce an .xcodeproj, where you can build the Install target, or other targets as neccesary.
 
-At the end, in each case you should find a folder "Install/SuperCollider" containing the
-SC application bundle and a few more files.
-
-For building with Xcode, configure the build adding -GXcode to the cmake command-line:
-
-	$>	cmake -GXcode -DREADLINE_INCLUDE_DIR=/opt/local/include
-			-DREADLINE_LIBRARY=/opt/local/lib/libreadline.dylib ..
-
-This will generate a Xcode project file in the build folder. Open it in Xcode, select
-the `install` target, and build.
-
-*Note:* The `/opt/local` paths used in the commands above are pointing to the macports
-version of Readline. You will need to adjust those paths if not using macports.
+At the end of a successful build, you should find a folder "Install/SuperCollider" containing the
+SC application bundle and a few more files. If you're unsure about your build or run into problems, it's always safe to delete
+your /build folder and start again from scratch.
 
 
 Generic build instructions
@@ -252,6 +208,44 @@ caches previously set arguments in the file CMakeCache.txt. This is helpful, but
 also something to keep in mind if unexpected things happen. If you feel uncomfortable 
 with the command line, you might want to try cmake frontends like  `ccmake` or 
 `cmake-gui`. You can also configure your build by manually editing build/CMakeCache.txt. 
+
+The SC 3.6.6 release
+--------------------
+
+The release of SC v3.6.6 was built on OS X Snow Leopard (10.6.8) using the
+following tools and dependencies:
+
+  * Cmake 2.8.11
+  * Xcode 4.2 Snow Leopard shipping with gcc 4.2.1 (llvmgcc42)
+  * Qt libraries 4.8.5 as provided by MacPorts (universal build)
+  * Readline 6.2 as provided by MacPorts (universal build)
+
+It should be possible to build SC 3.6 using the tools as shown below, but this has not
+been verified for a long time, so you will have to experiment and might have to go back
+in release/commit history:
+
+  * Mac OS X 10.4.9 or greater
+  * Cmake 2.7 or greater
+  * Xcode Tools 2.4.1 or greater
+  * Qt libraries 4.7 or greater: http://qt-project.org/downloads
+
+Since at least SC 3.6.5 it has not been possible any more to use the OSX supplied 
+readline to build sclang with readline interface. Therefore GNU Readline >= 5.0 needs
+to be installed on the build system.
+
+SC 3.6.6 was built using the following cmake arguments:
+
+`cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES='i386;x86_64' 
+-DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -DCMAKE_OSX_SYSROOT=/Developer/SDKs/MacOSX10.6.sdk/ 
+-DCMAKE_INSTALL_PREFIX=./install -DREADLINE_INCLUDE_DIR=/opt/local/include 
+-DREADLINE_LIBRARY=/opt/local/lib/libreadline.dylib -DSSE=ON -DSYSTEM_YAMLCPP=OFF ..`
+
+This should create a universal build running on any intel based 32- and 64-bit Apple 
+hardware using OSX 10.6 and later (see remarks on Mavericks above). 
+
+In order to reproduce this build exactly you either have to use the source snapshot
+distributed through SourceForge or checkout the tag `Version-3.6.6` from the SC Github repo.
+Make sure the dependencies (Qt and Readline) are universal builds.
 
 
 Frequently used cmake settings
