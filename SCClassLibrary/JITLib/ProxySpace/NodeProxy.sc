@@ -526,12 +526,11 @@ NodeProxy : BusPlug {
 
 		super.copyState(proxy);
 
-		//loaded = objects.any { |x| x.isKindOf(StreamControl) }.not;
-		loaded = false;
-
 		proxy.objects.keysValuesDo { |key, val| objects[key] = val.copy };
 		this.nodeMap = proxy.nodeMap.copy;
+		monitor = proxy.monitor.copy;
 
+		loaded = false;
 		awake = proxy.awake; paused = proxy.paused;
 		clock = proxy.clock; quant = proxy.quant;
 
