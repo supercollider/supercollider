@@ -24,10 +24,11 @@ before_install:
  - iflin sudo update-alternatives --auto gcc
 
 before_script:
+ - export BUILD_TYPE=RelWithDebInfo
  - mkdir BUILD
  - cd BUILD
- - ifmac cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=`brew --prefix qt` -DSC_QT=1 .. --debug-output
- - iflin cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/qt4/ -DCMAKE_INSTALL_PREFIX:PATH=$PWD/Install -DSC_EL=no .. --debug-output
+ - ifmac cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_PREFIX_PATH=`brew --prefix qt` -DCMAKE_INSTALL_PREFIX:PATH=$PWD/Install .. --debug-output
+ - iflin cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/qt4/ -DCMAKE_INSTALL_PREFIX:PATH=$PWD/Install -DSC_EL=no .. --debug-output
 
 script: 
  - make install
