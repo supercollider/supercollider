@@ -39,6 +39,10 @@
 # include <windows.h>
 #endif
 
+#ifdef __APPLE__
+#include "../../common/SC_Apple.hpp"
+#endif
+
 #ifdef HAVE_READLINE
 # include <readline/readline.h>
 # include <readline/history.h>
@@ -663,6 +667,10 @@ SC_DLLEXPORT SC_LanguageClient * createLanguageClient(const char * name)
 {
 	if (SC_LanguageClient::instance())
 		return NULL;
+
+#ifdef __APPLE__
+	SC::Apple::disableAppNap();
+#endif
 
 #ifdef SC_QT
 	return new QtCollider::LangClient(name);

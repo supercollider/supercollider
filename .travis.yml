@@ -67,7 +67,6 @@ deploy:
    acl: public_read
    on:
      condition: $TRAVIS_OS_NAME = osx
-     repo: scztt/supercollider
      all_branches: true
  # github releases - only tags
  - provider: releases
@@ -78,7 +77,6 @@ deploy:
    skip_cleanup: true
    on:
      condition: $TRAVIS_OS_NAME = osx
-     repo: scztt/supercollider
      tags: true
      all_branches: true
 
