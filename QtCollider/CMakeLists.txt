@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 2.8.11)
 
 set(required_qt_version 5.2)
 
-
 find_package(Qt5Core)
 find_package(Qt5Widgets) 
 find_package(Qt5Network) 
@@ -16,22 +15,15 @@ find_package(Qt5Qml)
 find_package(Qt5Sql)
 find_package(Qt5Positioning)
 
-set (QT_COLLIDER_LIBS Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::WebKit Qt5::WebKitWidgets Qt5::PrintSupport 
+set (QT_COLLIDER_LIBS 
+  Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::WebKit Qt5::WebKitWidgets Qt5::PrintSupport 
   Qt5::OpenGL Qt5::Sensors Qt5::Quick Qt5::Qml Qt5::Sql Qt5::Positioning
   ${MATH_LIBRARY})
-
-set (QT_COLLIDER_INCLUDES ${Qt5Core__INCLUDE_DIRS})
-
-#include(../cmake_modules/FindICU.cmake)
-#find_package(ICU 4.4 REQUIRED)
-#list(APPEND QT_COLLIDER_LIBS ${ICU_LIBRARIES})
 
 if (APPLE)
   find_package(Qt5MacExtras)
   list(APPEND QT_COLLIDER_LIBS Qt5::MacExtras)  
 endif()
-
-message("qt collider libs expected: " ${QT_COLLIDER_LIBS})
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}  -DQC_DEBUG")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}  -DQC_DEBUG")
