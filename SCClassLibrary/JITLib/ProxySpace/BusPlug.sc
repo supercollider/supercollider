@@ -343,6 +343,7 @@ BusPlug : AbstractFunction {
 		if(this.isNeutral.not) { this.clear };
 		parentGroup = proxy.parentGroup;
 		reshaping = proxy.reshaping;
+		monitor = proxy.monitor.copy;
 		proxyBus !? {
 			bus = Bus.alloc(proxyBus.rate, proxyBus.server, proxyBus.numChannels);
 			this.makeBusArg;

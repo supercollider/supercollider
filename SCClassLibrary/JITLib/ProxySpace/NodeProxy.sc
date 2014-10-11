@@ -528,7 +528,6 @@ NodeProxy : BusPlug {
 
 		proxy.objects.keysValuesDo { |key, val| objects[key] = val.copy };
 		this.nodeMap = proxy.nodeMap.copy;
-		monitor = proxy.monitor.copy;
 
 		loaded = false;
 		awake = proxy.awake; paused = proxy.paused;
