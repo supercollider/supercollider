@@ -29,7 +29,11 @@ timeout = 30
 sclang_path = sys.argv[1]
 assert os.path.exists(sclang_path)
 
-proc = subprocess.Popen([sclang_path, '-i' 'python'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
+env = dict(os.environ)
+env['QT_PLATFORM_PLUGIN'] = 'offscreen'
+proc = subprocess.Popen([sclang_path, '-i' 'python'], 
+	stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE,
+	env=env)
 
 launched_string = "*** Welcome to SuperCollider"
 start_time = time.time()
