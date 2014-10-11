@@ -39,6 +39,7 @@
 #include <QFileOpenEvent>
 #include <QLibraryInfo>
 #include <QTranslator>
+#include <QMessageBox>
 #include <QDebug>
 
 using namespace ScIDE;
@@ -230,7 +231,26 @@ bool Main::eventFilter(QObject *object, QEvent *event)
     {
         // open the file dragged onto the application icon on Mac
         QFileOpenEvent *openEvent = static_cast<QFileOpenEvent*>(event);
-        mDocManager->open(openEvent->file());
+        QFileInfo fileInfo(openEvent->file());
+        QString ext = fileInfo.completeSuffix();
+        
+        if (ext == "sclang.yaml" || ext == "sclang.yml") {
+            QMessageBox msgBox;
+            msgBox.setText("You have opened a new sclang config.");
+            msgBox.setInformativeText("This will not take effect until you restart sclang. Restart now?");
+            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+            msgBox.setDefaultButton(QMessageBox::Yes);
+            int ret = msgBox.exec();
+            if (ret != QMessageBox::Cancel) {
+                settings()->setValue("IDE/interpreter/configFile", openEvent->file());
+                if (ret == QMessageBox::Yes) {
+                    mScProcess->action(ScProcess::Restart)->trigger();
+                }
+            }
+        } else {
+            mDocManager->open(openEvent->file());
+        }
+        
         return true;
     }
 

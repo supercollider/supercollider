@@ -79,12 +79,17 @@ void SclangPage::load( Manager *s )
 
     QStringList availConfigFiles = availableLanguageConfigFiles();
     QString configSelectedLanguageConfigFile = s->value("configFile").toString();
+    int index = availConfigFiles.indexOf(configSelectedLanguageConfigFile);
+    if (index == -1) {
+        availConfigFiles.push_back(configSelectedLanguageConfigFile);
+        index = availConfigFiles.indexOf(configSelectedLanguageConfigFile);
+    }
 
     ui->activeConfigFileComboBox->clear();
     ui->activeConfigFileComboBox->addItems(availConfigFiles);
-    int index = availConfigFiles.indexOf(configSelectedLanguageConfigFile);
     if (index != -1)
         ui->activeConfigFileComboBox->setCurrentIndex(index);
+    
     selectedLanguageConfigFile = configSelectedLanguageConfigFile; // Happens after setting the combobox entries, since the code triggers stateChanged event.
 
     s->endGroup();
@@ -161,6 +166,7 @@ void SclangPage::readLanguageConfig()
 
         Node doc;
         while(parser.GetNextDocument(doc)) {
+            ui->sclang_include_directories->clear();
             const Node * includePaths = doc.FindValue("includePaths");
             if (includePaths && includePaths->Type() == NodeType::Sequence) {
                 ui->sclang_include_directories->clear();
@@ -174,6 +180,7 @@ void SclangPage::readLanguageConfig()
                 }
             }
 
+            ui->sclang_exclude_directories->clear();
             const Node * excludePaths = doc.FindValue("excludePaths");
             if (excludePaths && excludePaths->Type() == NodeType::Sequence) {
                 ui->sclang_exclude_directories->clear();
@@ -188,14 +195,15 @@ void SclangPage::readLanguageConfig()
             }
 
             const Node * inlineWarnings = doc.FindValue("postInlineWarnings");
+            bool postInlineWarnings = false;
             if (inlineWarnings) {
                 try {
-                    bool postInlineWarnings = inlineWarnings->to<bool>();
-                    ui->sclang_post_inline_warnings->setChecked(postInlineWarnings);
+                    postInlineWarnings = inlineWarnings->to<bool>();
                 } catch(...) {
                     qDebug() << "Warning: Cannot parse config file entry \"postInlineWarnings\"";
                 }
             }
+            ui->sclang_post_inline_warnings->setChecked(postInlineWarnings);
         }
     } catch (std::exception & e) {
     }

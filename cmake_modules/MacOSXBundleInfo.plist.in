@@ -60,6 +60,21 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>yml</string>
+				<string>yaml</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>scd</string>
+			<key>CFBundleTypeName</key>
+			<string>Plain Text</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSTypeIsPackage</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>sc</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
