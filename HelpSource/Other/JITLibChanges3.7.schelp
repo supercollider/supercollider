@@ -1120,7 +1120,6 @@ Ndef(\x, { Dust2.kr(Line.kr(0, 200, 10)) });
 
 
 // copying
-// Ndef don't allow copying (yet), because their names would clash
 
 a = NodeProxy(s);
 a.set(\gg, 910);
