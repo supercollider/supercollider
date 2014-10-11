@@ -40,8 +40,12 @@ while not(launched_string in output):
 
 	output = non_block_read(proc.stdout)
 	error = non_block_read(proc.stderr)
-	if error: 
-		print "ERROR\n" + error
+	if error:
+		# read the rest of the error
+		for i in range(0, 20): 
+			error += non_block_read(proc.stderr)
+			time.sleep(0.1)
+		print "ERROR:\n" + error
 		sys.exit(error)
 	elif output:
 		sc_output_print(output)
@@ -61,7 +65,11 @@ while proc.poll() and time.time() < (start_time + timeout):
 	#error = non_block_read(proc.stderr)
 
 	if error: 
-		print "ERROR\n" + error
+		# read the rest of the error
+		for i in range(0, 20): 
+			error += non_block_read(proc.stderr)
+			time.sleep(0.1)
+		print "ERROR:\n" + error
 		sys.exit(error)
 	elif output:
 		sc_output_print(output) 
