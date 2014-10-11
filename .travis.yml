@@ -37,7 +37,7 @@ before_script:
 
 script:
  - make install
- - $TRAVIS_BUILD_DIR/testsuite/sclang/launch_test $SCLANG
+ - $TRAVIS_BUILD_DIR/testsuite/sclang/launch_test.py $SCLANG
 
 before_deploy:
  # required for github releases
