@@ -15,6 +15,12 @@ HID {
 	var <>action, <>deviceAction, <>closeAction;
 	var <>debug = false, <isOpen = false;
 
+	*initClass {
+		//Spec.initClassTree; ControlSpec.initClassTree;
+		available = IdentityDictionary.new;
+		openDevices = IdentityDictionary.new;
+		availableUsages = IdentityDictionary.new;
+	}
 
 	*addRecvFunc { |function|
 		if ( prAction.isNil ) {
@@ -52,13 +58,6 @@ HID {
 		};
 		deviceAction = function;
 		this.addDevFunc( function );
-	}
-
-	*initClass {
-		//Spec.initClass; ControlSpec.initClass;
-		available = IdentityDictionary.new;
-		openDevices = IdentityDictionary.new;
-		availableUsages = IdentityDictionary.new;
 	}
 
 	*findAvailable {
