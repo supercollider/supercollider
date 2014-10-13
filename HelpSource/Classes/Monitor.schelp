@@ -184,6 +184,9 @@ Return the group in which all mapping synths are running.
 method::numChannels
 Return the number of input channels.
 
+method::copy
+Return a copy of the receiver, with the same channel setting, but not running. You can run it with the settings by sending it the link::#play:: message, and pass in any modifications you want to make.
+
 
 method::playToBundle
 Adds all playing osc messages to a bundle, passed as an argument. The bundle object should implement the method strong::.add::
