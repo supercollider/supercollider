@@ -176,17 +176,18 @@ If needed, you can also copy parts of a proxy, such as the link::Classes/Monitor
 ::
 
 code::
-s.scope;
+s.scope(4);
 a = NodeProxy(s);
-a.source = { |freq = 444| Blip.ar(freq * [1, 1.03], 200) * 0.1 };
-a.playN([0, 2, 3], [0.04, 0.3, 0.1], vol: 0.2); // some complicated routing
-a.set(\freq, 451);
+a.source = { |freq = 234| Blip.ar(freq * [1, 1.03], 20) * 0.5 };
+a.playN([0, 1, 3], [0.04, 0.3, 0.1], vol: 1); // some complicated routing
+a.set(\freq, 123);
+
 b = NodeProxy(s);
-b.source = { |freq = 1000| SinOsc.ar(freq * {{ rrand(0.9, 1.1) }.dup(8) }.dup(2)).mean * 0.1 };
+b.source = { |freq = 1000| SinOsc.ar(freq * 3 * {{ rrand(0.9, 1.1) }.dup(8) }.dup(2)).mean * 0.5 };
 b.monitor = a.monitor.copy;
 b.nodeMap = a.nodeMap.copy;
-a.stop;
 b.play;
+a.stop;
 ::
 
 
