@@ -137,7 +137,7 @@ free all proxies that are not needed in order to play the ones passed in with 't
 subsection::making copies
 
 method::copy
-Copies the environment into a new one, with each proxy being copied as well (See: link::Classes/NodeProxy#copy::). Also the instance variables that determine the ProxySpace behaviour are included, such as server, fadeTime, quant, reshaping (this happens in the code::copyState:: method).
+Copies the environment into a new one, with each proxy being copied as well (See: link::Classes/NodeProxy#-copy::). Also the instance variables that determine the ProxySpace behaviour are included, such as server, fadeTime, quant, reshaping (this happens in the code::copyState:: method).
 
 code::
 p = ProxySpace.push(s.boot);
