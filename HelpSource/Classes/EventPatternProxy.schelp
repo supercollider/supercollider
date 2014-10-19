@@ -48,15 +48,30 @@ method::play
 starts the EventPatternProxy and creates a player. if you want to play multiple instances, use link::#-fork::.
 
 argument::argClock
-play on a certain clock.
+play on a certain clock, e.g. a link::Classes/TempoClock::.
 
 argument::protoEvent
+an event to be used as a first input to the chain
 
 argument::quant
-can be an array of [quant, phase, offset, outset]
+can be an array of [quant, phase, offset, outset], or an instance of link::Classes/Quant::.
 
 argument::doReset
-a link::Classes/Boolean::
+if set to true, play will restart the stream if already running (a link::Classes/Boolean::).
+
+code::
+// using a protoEvent
+Pdef(\x, Pbind(\dur, 0.1));
+Pdef(\x).trace.play(protoEvent: (freq: 1000));
+::
+
+code::
+// using a different clock: here a Scheduler
+Pdef(\x, Pbind(\dur, Pwhite(0.1, 0.2, inf), \count, Pseries()));
+a = Scheduler(TempoClock.default);
+Pdef(\x).trace.play(a);
+a.advance(0.2);
+::
 
 method::stop
 stops the player

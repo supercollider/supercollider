@@ -156,10 +156,7 @@ subsection::Pdef as EventStreamPlayer
 For live coding, each Pdef also may control one instance that plays one stream off it. This is an link::Classes/EventStreamPlayer::, accessible in the instance variable link::#-player::.
 
 method::play
-Starts the Pdef and creates a player.
-
-argument::quant
-can be an array of [quant, phase, offset] or a link::Classes/Quant:: value.
+Starts the Pdef and creates a player. (See: link::Classes/EventPatternProxy#-play::)
 
 method::stop
 Stops the player
