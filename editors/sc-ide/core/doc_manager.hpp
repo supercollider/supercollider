@@ -180,6 +180,7 @@ private:
     void handleOpenFileScRequest( const QString & data );
     void handleGetDocTextScRequest( const QString & data );
     void handleSetDocTextScRequest( const QString & data );
+    void handleSetDocSelectionScRequest( const QString & data );
     void handleSetCurrentDocScRequest( const QString & data );
     void handleCloseDocScRequest( const QString & data );
     void handleSetDocTitleScRequest( const QString & data );

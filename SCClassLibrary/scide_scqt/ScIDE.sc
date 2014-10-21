@@ -350,6 +350,10 @@ ScIDE {
 	*setTextByQUuid {|quuid, funcID, text, start = 0, range = -1|
 		this.prSend(\setDocumentText, [quuid, funcID, text, start, range]);
 	}
+    
+    *setSelectionByQUuid {|quuid, start, length|
+        this.prSend(\setDocumentSelection, [quuid, start, length]);
+    }
 
 	*setCurrentDocumentByQUuid {|quuid|
 		this.prSend(\setCurrentDocument, [quuid]);
@@ -866,8 +870,10 @@ Document {
 	}
 
 	selectRange { | start=0, length=0 |
-		^this.notYetImplemented
-	}
+		this.prSetSelectionMirror(quuid, start, length); // set the backend mirror
+        ScIDE.setSelectionByQUuid(quuid, start, length); // set the IDE doc
+    }
+    
 
 	editable_ { | abool=true |
 		editable = abool;
