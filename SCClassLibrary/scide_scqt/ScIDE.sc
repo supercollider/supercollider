@@ -441,19 +441,19 @@ Document {
 		^doc
 	}
 
-	*syncFromIDE {|quuid, title, chars, isEdited, path|
+	*syncFromIDE {|quuid, title, chars, isEdited, path, selStart, selSize|
 		var doc;
 		isEdited = isEdited.booleanValue;
 		chars = String.fill(chars.size, {|i| chars[i].asAscii});
 		title = String.fill(title.size, {|i| title[i].asAscii});
 		path = String.fill(path.size, {|i| path[i].asAscii});
 		if((doc = this.findByQUuid(quuid)).isNil, {
-			doc = super.new.initFromIDE(quuid, title, chars, isEdited, path);
+			doc = super.new.initFromIDE(quuid, title, chars, isEdited, path, selStart, selSize);
 			allDocuments = allDocuments.add(doc);
 		}, {doc.initFromIDE(quuid, title, chars, isEdited, path)});
 	}
 
-	*syncDocs {|docInfo| // [quuid, title, string, isEdited, path]
+	*syncDocs {|docInfo| // [quuid, title, string, isEdited, path, selStart, selSize]
 		docInfo.do({|info| this.syncFromIDE(*info) });
 	}
 
@@ -553,10 +553,11 @@ Document {
 		isEdited = argisEdited;
 	}
 
-	initFromIDE {|id, argtitle, argstring, argisEdited, argPath|
+    initFromIDE {|id, argtitle, argstring, argisEdited, argPath, selStart, selSize|
 		quuid = id;
 		title = argtitle;
 		this.prSetTextMirror(id, argstring, 0, -1);
+        this.prSetSelectionMirror(id, selStart, selSize);
 		isEdited = argisEdited;
 		path = argPath;
 	}
@@ -612,6 +613,11 @@ Document {
 	// set the backend mirror
 	prSetTextMirror {|quuid, text, start, range|
 		_ScIDE_SetDocTextMirror
+		this.primitiveFailed
+	}
+    
+    prSetSelectionMirror {|quuid, start, size|
+		_ScIDE_SetDocSelectionMirror
 		this.primitiveFailed
 	}
 
@@ -750,11 +756,19 @@ Document {
 	}
 
 	selectionStart {
-		^this.selectedRangeLocation
+		^this.prGetSelectionStart(quuid)
+	}
+
+	prGetSelectionStart {|id|
+		_ScIDE_GetDocSelectionStart
 	}
 
 	selectionSize {
-		^this.selectedRangeSize
+		^this.prGetSelectionRange(quuid)
+	}
+
+	prGetSelectionRange {|id|
+		_ScIDE_GetDocSelectionRange
 	}
 
 	string { | rangestart, rangesize = 1 |
@@ -883,4 +897,3 @@ Document {
 	// probably still needed for compatibility
 	*implementationClass { ^this }
 }
-

@@ -21,6 +21,7 @@
 #ifndef SCIDE_DOC_MANAGER_HPP_INCLUDED
 #define SCIDE_DOC_MANAGER_HPP_INCLUDED
 
+#include "../widgets/code_editor/editor.hpp"
 #include <QDateTime>
 #include <QFileSystemWatcher>
 #include <QHash>
@@ -49,7 +50,7 @@ class Document : public QObject
 public:
     Document( bool isPlainText, const QByteArray & id = QByteArray(),
               const QString & title = QString(),
-              const QString & text = QString() );
+             const QString & text = QString());
 
     QTextDocument *textDocument() { return mDoc; }
     const QByteArray & id() { return mId; }
@@ -79,12 +80,17 @@ public:
     bool mouseDownActionEnabled() { return mMouseDownActionEnabled; }
     bool mouseUpActionEnabled() { return mMouseUpActionEnabled; }
     bool textChangedActionEnabled() { return mTextChangedActionEnabled; }
+    GenericCodeEditor * lastActiveEditor() { return mLastActiveEditor; }
+    int initialSelectionStart() { return mInitialSelectionStart; }
+    int initialSelectionRange() { return mInitialSelectionRange; }
     
     void setKeyDownActionEnabled(bool enabled) { mKeyDownActionEnabled = enabled; }
     void setKeyUpActionEnabled(bool enabled) {  mKeyUpActionEnabled = enabled; }
     void setMouseDownActionEnabled(bool enabled) {  mMouseDownActionEnabled = enabled; }
     void setMouseUpActionEnabled(bool enabled) {  mMouseUpActionEnabled = enabled; }
     void setTextChangedActionEnabled(bool enabled) {  mTextChangedActionEnabled = enabled; }
+    void setLastActiveEditor(GenericCodeEditor * lastActive) {  mLastActiveEditor = lastActive; }
+    void setInitialSelection(int start, int range) { mInitialSelectionStart = start; mInitialSelectionRange = range; }
 
 public slots:
     void applySettings( Settings::Manager * );
@@ -108,6 +114,8 @@ private:
     bool mMouseDownActionEnabled;
     bool mMouseUpActionEnabled;
     bool mTextChangedActionEnabled;
+    GenericCodeEditor * mLastActiveEditor;
+    int mInitialSelectionStart, mInitialSelectionRange;
 };
 
 class DocumentManager : public QObject

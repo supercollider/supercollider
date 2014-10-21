@@ -94,6 +94,7 @@ GenericCodeEditor::GenericCodeEditor( Document *doc, QWidget *parent ):
 
     connect( this, SIGNAL(selectionChanged()),
              mLineIndicator, SLOT(update()) );
+    connect(this, SIGNAL(selectionChanged()), this, SLOT(updateDocLastSelection()));
     connect( this, SIGNAL(cursorPositionChanged()),
              this, SLOT(onCursorPositionChanged()) );
 
@@ -103,6 +104,7 @@ GenericCodeEditor::GenericCodeEditor( Document *doc, QWidget *parent ):
     QTextDocument *tdoc = doc->textDocument();
     QPlainTextEdit::setDocument(tdoc);
     onDocumentFontChanged();
+    doc->setLastActiveEditor(this);
 
     applySettings( Main::settings() );
 }
@@ -849,6 +851,14 @@ void GenericCodeEditor::onCursorPositionChanged()
         updateCurrentLineHighlighting();
     mLastCursorBlock = textCursor().blockNumber();
 }
+    
+void GenericCodeEditor::updateDocLastSelection()
+{
+    QTextCursor cursor = textCursor();
+    int start = cursor.selectionStart();
+    int range = cursor.selectionEnd() - start;
+    Main::scProcess()->updateSelectionMirrorForDocument(mDoc, start, range);
+}
 
 void GenericCodeEditor::updateCurrentLineHighlighting()
 {
@@ -1198,6 +1208,7 @@ void GenericCodeEditor::hideMouseCursor()
 
 void GenericCodeEditor::setActiveAppearance(bool active)
 {
+    if(active) mDoc->setLastActiveEditor(this);
     mOverlayAnimator->setActiveAppearance(active);
     mEditorBoxIsActive = active;
 }

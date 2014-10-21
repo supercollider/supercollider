@@ -49,7 +49,10 @@ Document::Document(bool isPlainText, const QByteArray & id,
     mKeyUpActionEnabled(false),
     mMouseDownActionEnabled(false),
     mMouseUpActionEnabled(false),
-    mTextChangedActionEnabled(false)
+    mTextChangedActionEnabled(false),
+    mLastActiveEditor(0),
+    mInitialSelectionStart(0),
+    mInitialSelectionRange(0)
 {
     if (mId.isEmpty())
         mId = QUuid::createUuid().toString().toLatin1();
@@ -276,12 +279,15 @@ Document *DocumentManager::open( const QString & path, int initialCursorPosition
     doc->mFilePath = filePath;
     doc->mTitle = info.fileName();
     doc->mSaveTime = info.lastModified();
+    doc->setInitialSelection(initialCursorPosition, selectionLength);
 
     if (!isRTF)
         mFsWatcher.addPath(cpath);
 
     // if this was opened from the lang we don't need to sync
-    if(syncLang) syncLangDocument(doc);
+    if(syncLang) {
+        syncLangDocument(doc);
+    }
     Q_EMIT( opened(doc, initialCursorPosition, selectionLength) );
 
     if (toRecent) this->addToRecent(doc);
@@ -558,12 +564,23 @@ void DocumentManager::handleDocListScRequest()
     QString command = QString("Document.syncDocs([");
     for (it = docs.begin(); it != docs.end(); ++it) {
         Document * doc = *it;
-        QString docData = QString("[\'%1\', %2, %3, %4, %5],")
+        int start, range;
+        if(doc->lastActiveEditor()){ // we might have changed selection before sync happened
+            QTextCursor cursor = doc->lastActiveEditor()->textCursor();
+            start = cursor.selectionStart();
+            range = cursor.selectionEnd() - start;
+        } else {
+            start = doc->initialSelectionStart();
+            range = doc->initialSelectionRange();
+        }
+        QString docData = QString("[\'%1\', %2, %3, %4, %5, %6, %7],")
             .arg(doc->id().constData())
             .arg(doc->titleAsSCArrayOfCharCodes())
             .arg(doc->textAsSCArrayOfCharCodes(0, -1))
             .arg(doc->isModified())
-            .arg(doc->pathAsSCArrayOfCharCodes());
+            .arg(doc->pathAsSCArrayOfCharCodes())
+            .arg(start)
+            .arg(range);
         command = command.append(docData);
     }
     command = command.append("]);");
@@ -945,6 +962,7 @@ void DocumentManager::handleEnableTextMirrorScRequest( const QString & data )
             for (it = docs.begin(); it != docs.end(); ++it) {
                 Document * doc = *it;
                 Main::scProcess()->updateTextMirrorForDocument(doc, 0, -1, doc->textDocument()->characterCount());
+                doc->lastActiveEditor()->updateDocLastSelection();
             }
         } else {
             // this sets the mirror to empty strings
@@ -961,13 +979,24 @@ void DocumentManager::handleEnableTextMirrorScRequest( const QString & data )
 
 void DocumentManager::syncLangDocument(Document *doc)
 {
+    int start, range;
+    if(doc->lastActiveEditor()){ // we might have changed selection before sync happened
+        QTextCursor cursor = doc->lastActiveEditor()->textCursor();
+        start = cursor.selectionStart();
+        range = cursor.selectionEnd() - start;
+    } else {
+        start = doc->initialSelectionStart();
+        range = doc->initialSelectionRange();
+    }
     QString command =
-            QString("Document.syncFromIDE(\'%1\', %2, %3, %4, \'%5\')")
+            QString("Document.syncFromIDE(\'%1\', %2, %3, %4, \'%5\', %6, %7)")
             .arg(doc->id().constData())
             .arg(doc->titleAsSCArrayOfCharCodes())
             .arg(doc->textAsSCArrayOfCharCodes(0, -1))
             .arg(doc->isModified())
-            .arg(doc->pathAsSCArrayOfCharCodes());
+            .arg(doc->pathAsSCArrayOfCharCodes())
+            .arg(start)
+            .arg(range);
     Main::evaluateCode ( command, true );
 }
 
