@@ -8,10 +8,17 @@ Function : AbstractFunction {
 	isFunction { ^true }
 	isClosed { ^def.sourceCode.notNil }
 
-	storeOn { arg stream; stream << (def.sourceCode ? "{ \"open Function\" }"); }
+
 	archiveAsCompileString { ^true }
 	archiveAsObject { ^true }
 	checkCanArchive { if (def.sourceCode.isNil) { "cannot archive open Functions".warn } }
+	storeOn { arg stream;
+		var args;
+		stream << (def.sourceCode ?? {
+			args = def.argumentString;
+			"{ %\"open Function\" }".format(if(args.notNil) { "| % | ".format(args) } { "" })
+		})
+	}
 
 	shallowCopy { ^this }
 
