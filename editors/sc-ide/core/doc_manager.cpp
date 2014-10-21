@@ -504,6 +504,7 @@ void DocumentManager::handleScLangMessage( const QString &selector, const QStrin
     static QString openFileSelector("openFile");
     static QString getDocTextSelector("getDocumentText");
     static QString setDocTextSelector("setDocumentText");
+    static QString setDocSelectionSelector("setDocumentSelection");
     static QString setCurrentDocSelector("setCurrentDocument");
     static QString closeDocSelector("closeDocument");
     static QString setDocTitleSelector("setDocumentTitle");
@@ -528,6 +529,9 @@ void DocumentManager::handleScLangMessage( const QString &selector, const QStrin
 
     if (selector == setDocTextSelector)
         handleSetDocTextScRequest(data);
+    
+    if (selector == setDocSelectionSelector)
+        handleSetDocSelectionScRequest(data);
 
     if (selector == setCurrentDocSelector)
         handleSetCurrentDocScRequest(data);
@@ -752,6 +756,41 @@ void DocumentManager::handleSetDocTextScRequest( const QString & data )
             Main::evaluateCode ( command, true );
         }
 
+    }
+}
+
+void DocumentManager::handleSetDocSelectionScRequest( const QString & data )
+{
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
+    YAML::Parser parser(stream);
+    
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+        
+        std::string id;
+        bool success = doc[0].Read(id);
+        if (!success)
+            return;
+        
+        int start;
+        success = doc[1].Read(start);
+        if (!success)
+            return;
+        
+        int range;
+        success = doc[2].Read(range);
+        if (!success)
+            return;
+        
+        Document *document = documentForId(id.c_str());
+        if(document){
+            if(document->lastActiveEditor()){
+                document->lastActiveEditor()->showPosition(start, range);
+            }
+        }
     }
 }
 
