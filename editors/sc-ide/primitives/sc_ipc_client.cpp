@@ -84,9 +84,12 @@ void SCIpcClient::readIDEData() {
 void SCIpcClient::onResponse( const QString & selector, const QVariantList & argList )
 {
     static QString upDateDocTextSelector("updateDocText");
+    static QString upDateDocSelectionSelector("updateDocSelection");
     
     if (selector == upDateDocTextSelector)
         updateDocText(argList);
+    if (selector == upDateDocSelectionSelector)
+        updateDocSelection(argList);
 }
 
 void SCIpcClient::updateDocText( const QVariantList & argList )
@@ -96,6 +99,14 @@ void SCIpcClient::updateDocText( const QVariantList & argList )
     int charsRemoved = argList[2].toInt();
     QString newChars = argList[3].toString();
     setTextMirrorForDocument(quuid, newChars, pos, charsRemoved);
+}
+
+void SCIpcClient::updateDocSelection( const QVariantList & argList )
+{
+    QByteArray quuid = argList[0].toByteArray();
+    int start = argList[1].toInt();
+    int range = argList[2].toInt();
+    setSelectionMirrorForDocument(quuid, start, range);
 }
 
 QString SCIpcClient::getTextMirrorForDocument(QByteArray & id, int pos, int range)
@@ -139,6 +150,27 @@ void SCIpcClient::setTextMirrorForDocument(QByteArray & id, const QString & text
             post("WARNING: Attempted to modify missing Text Mirror for Document %s\n", id.constData());
         }
     }
+}
+
+QPair<int, int> SCIpcClient::getSelectionMirrorForDocument(QByteArray & id)
+{
+    QPair<int, int> selection;
+    if (mDocumentSelectionMirrors.contains(id)) {
+        mSelMirrorHashMutex.lock();
+        selection = mDocumentSelectionMirrors[id];
+        mSelMirrorHashMutex.unlock();
+    } else {
+        post("WARNING: Attempted to access missing Selection Mirror for Document %s\n", id.constData());
+        selection = qMakePair(0, 0);
+    }
+    return selection;
+}
+
+void SCIpcClient::setSelectionMirrorForDocument(QByteArray & id, int start, int range)
+{
+    mSelMirrorHashMutex.lock();
+    mDocumentSelectionMirrors[id] = qMakePair(start, range);
+    mSelMirrorHashMutex.unlock();
 }
 
 static SCIpcClient * gIpcClient = NULL;
@@ -368,6 +400,79 @@ int ScIDE_SetDocTextMirror(struct VMGlobals *g, int numArgsPushed)
     return errNone;
 }
 
+int ScIDE_GetDocSelectionStart(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!gIpcClient) {
+        error("ScIDE not connected\n");
+        return errFailed;
+    }
+    
+    PyrSlot * returnSlot = g->sp - numArgsPushed + 1;
+    
+    PyrSlot * docIDSlot = g->sp;
+    char id[255];
+    if (slotStrVal( docIDSlot, id, 255 ))
+        return errWrongType;
+    
+    QByteArray key = QByteArray(id);
+    
+    QPair<int, int>selection = gIpcClient->getSelectionMirrorForDocument(key);
+    
+    SetInt(returnSlot, selection.first);
+    
+    return errNone;
+}
+
+int ScIDE_GetDocSelectionRange(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!gIpcClient) {
+        error("ScIDE not connected\n");
+        return errFailed;
+    }
+    
+    PyrSlot * returnSlot = g->sp - numArgsPushed + 1;
+    
+    PyrSlot * docIDSlot = g->sp;
+    char id[255];
+    if (slotStrVal( docIDSlot, id, 255 ))
+        return errWrongType;
+    
+    QByteArray key = QByteArray(id);
+    
+    QPair<int, int>selection = gIpcClient->getSelectionMirrorForDocument(key);
+    
+    SetInt(returnSlot, selection.second);
+    
+    return errNone;
+}
+
+int ScIDE_SetDocSelectionMirror(struct VMGlobals *g, int numArgsPushed)
+{
+    if (!gIpcClient) {
+        error("ScIDE not connected\n");
+        return errFailed;
+    }
+    
+    PyrSlot * docIDSlot = g->sp - 2;
+    char id[255];
+    if (slotStrVal( docIDSlot, id, 255 ))
+        return errWrongType;
+    
+    int start, range, err = errNone;
+    PyrSlot * startSlot = g->sp-1;
+    err = slotIntVal(startSlot, &start);
+    if (err) return err;
+    
+    PyrSlot * rangeSlot = g->sp;
+    err = slotIntVal(rangeSlot, &range);
+    if (err) return err;
+    
+    QByteArray key = QByteArray(id);
+    
+    gIpcClient->setSelectionMirrorForDocument(key, start, range);
+    
+    return errNone;
+}
 
 void initScIDEPrimitives()
 {
@@ -379,4 +484,7 @@ void initScIDEPrimitives()
     definePrimitive(base, index++, "_ScIDE_GetQUuid", ScIDE_GetQUuid, 0, 0);
     definePrimitive(base, index++, "_ScIDE_GetDocTextMirror", ScIDE_GetDocTextMirror, 4, 0);
     definePrimitive(base, index++, "_ScIDE_SetDocTextMirror", ScIDE_SetDocTextMirror, 5, 0);
+    definePrimitive(base, index++, "_ScIDE_GetDocSelectionStart", ScIDE_GetDocSelectionStart, 2, 0);
+    definePrimitive(base, index++, "_ScIDE_GetDocSelectionRange", ScIDE_GetDocSelectionRange, 2, 0);
+    definePrimitive(base, index++, "_ScIDE_SetDocSelectionMirror", ScIDE_SetDocSelectionMirror, 4, 0);
 }
