@@ -356,4 +356,5 @@ FunctionList : AbstractFunction {
 		if(flopped.not) {array = array.collect(_.envirFlop) }; flopped = true;
 	}
 	storeArgs { ^[array] }
+	copy { ^super.copy.array_(array.copy) }
 }

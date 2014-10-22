@@ -129,7 +129,7 @@ AbstractWrappingDispatcher :  AbstractDispatcher {
 		func = this.wrapFunc(funcProxy);
 		wrappedFuncs[funcProxy] = func;
 		keys = this.getKeysForFuncProxy(funcProxy);
-		keys.do({|key| active[key] = active[key].addFunc(func) }); // support multiple keys
+		keys.do({|key| active[key] = active[key].copy.addFunc(func) }); // support multiple keys
 		if(registered.not, {this.register});
 	}
 
@@ -138,7 +138,7 @@ AbstractWrappingDispatcher :  AbstractDispatcher {
 		funcProxy.removeDependant(this);
 		keys = this.getKeysForFuncProxy(funcProxy);
 		func = wrappedFuncs[funcProxy];
-		keys.do({|key| active[key] = active[key].removeFunc(func) }); // support multiple keys
+		keys.do({|key| active[key] = active[key].copy.removeFunc(func) }); // support multiple keys
 		wrappedFuncs[funcProxy] = nil;
 		if(active.size == 0, {this.unregister});
 	}
@@ -150,7 +150,7 @@ AbstractWrappingDispatcher :  AbstractDispatcher {
 		oldFunc = wrappedFuncs[funcProxy];
 		wrappedFuncs[funcProxy] = func;
 		keys = this.getKeysForFuncProxy(funcProxy);
-		keys.do({|key| active[key] = active[key].replaceFunc(oldFunc, func) }); // support multiple keys
+		keys.do({|key| active[key] = active[key].copy.replaceFunc(oldFunc, func) }); // support multiple keys
 	}
 
 	wrapFunc { this.subclassResponsibility(thisMethod) }
