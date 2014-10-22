@@ -55,6 +55,8 @@ ScServer::ScServer(ScProcess *scLang, Settings::Manager *settings, QObject *pare
         if (success)
             break;
     }
+
+    connect( mUdpSocket, SIGNAL(readyRead()), this, SLOT(onServerStatusResponse()) );
     startTimer(333);
 
     mRecordTimer.setInterval(1000);
@@ -459,36 +461,6 @@ void ScServer::handleRuningStateChangedMsg( const QString & data )
 
 void ScServer::timerEvent(QTimerEvent * event)
 {
-    if (mUdpSocket->hasPendingDatagrams()) {
-        size_t datagramSize = mUdpSocket->pendingDatagramSize();
-        QByteArray array(datagramSize, 0);
-        mUdpSocket->readDatagram(array.data(), datagramSize);
-
-        if (!mPort)
-            return;
-
-        if (array[0]) {
-            char *addr = array.data();
-            const char * data = OSCstrskip(array.data());
-            int size = datagramSize - (data - addr);
-
-            if (strcmp(addr, "/status.reply") == 0) {
-                sc_msg_iter reply(size, data);
-                int	unused     = reply.geti();
-                int	ugenCount  = reply.geti();
-                int	synthCount = reply.geti();
-                int	groupCount = reply.geti();
-                int	defCount   = reply.geti();
-                float avgCPU   = reply.getf();
-                float peakCPU  = reply.getf();
-                double srNom   = reply.getd();
-                double srAct   = reply.getd();
-
-                emit updateServerStatus(ugenCount, synthCount, groupCount, defCount, avgCPU, peakCPU);
-            }
-        }
-    }
-
     if (mPort) {
         small_scpacket packet;
         packet.BeginMsg();
@@ -498,6 +470,34 @@ void ScServer::timerEvent(QTimerEvent * event)
         packet.EndMsg();
 
         mUdpSocket->writeDatagram(packet.data(), packet.size(), mServerAddress, mPort);
+    }
+}
+
+void ScServer::onServerStatusResponse()
+{
+    size_t datagramSize = mUdpSocket->pendingDatagramSize();
+    QByteArray array(datagramSize, 0);
+    mUdpSocket->readDatagram(array.data(), datagramSize);
+
+    if (array[0]) {
+        char *addr = array.data();
+        const char * data = OSCstrskip(array.data());
+        int size = datagramSize - (data - addr);
+
+        if (strcmp(addr, "/status.reply") == 0) {
+            sc_msg_iter reply(size, data);
+            int	unused     = reply.geti();
+            int	ugenCount  = reply.geti();
+            int	synthCount = reply.geti();
+            int	groupCount = reply.geti();
+            int	defCount   = reply.geti();
+            float avgCPU   = reply.getf();
+            float peakCPU  = reply.getf();
+            double srNom   = reply.getd();
+            double srAct   = reply.getd();
+
+            emit updateServerStatus(ugenCount, synthCount, groupCount, defCount, avgCPU, peakCPU);
+        }
     }
 }
 
