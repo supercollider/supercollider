@@ -358,6 +358,10 @@ ScIDE {
 	*setEditablebyQUuid {|quuid, editable|
 		this.prSend(\setDocumentEditable, [quuid, editable]);
 	}
+	
+	*setPromptsToSavebyQUuid {|quuid, prompts|
+		this.prSend(\setDocumentPromptsToSave, [quuid, prompts]);
+	}
 
 	*setCurrentDocumentByQUuid {|quuid|
 		this.prSend(\setCurrentDocument, [quuid]);
@@ -420,7 +424,7 @@ Document {
 	var <>toFrontAction, <>endFrontAction, <>onClose, <textChangedAction;
 
 	var <envir, savedEnvir;
-	var <editable = true;
+	var <editable = true, <promptToSave = true;
 
 	*initClass{
 		asyncActions = IdentityDictionary.new;
