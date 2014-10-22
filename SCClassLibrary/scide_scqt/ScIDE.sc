@@ -354,6 +354,10 @@ ScIDE {
     *setSelectionByQUuid {|quuid, start, length|
         this.prSend(\setDocumentSelection, [quuid, start, length]);
     }
+	
+	*setEditablebyQUuid {|quuid, editable|
+		this.prSend(\setDocumentEditable, [quuid, editable]);
+	}
 
 	*setCurrentDocumentByQUuid {|quuid|
 		this.prSend(\setCurrentDocument, [quuid]);
@@ -416,7 +420,7 @@ Document {
 	var <>toFrontAction, <>endFrontAction, <>onClose, <textChangedAction;
 
 	var <envir, savedEnvir;
-	var <editable;
+	var <editable = true;
 
 	*initClass{
 		asyncActions = IdentityDictionary.new;
@@ -880,22 +884,19 @@ Document {
         ScIDE.setSelectionByQUuid(quuid, start, length); // set the IDE doc
     }
     
-	// not yet implemented
-	
-	editable_ { | abool=true |
-		editable = abool;
-		this.notYetImplemented
+	editable_ { | bool=true |
+		editable = bool;
+		ScIDE.setEditablebyQUuid(quuid, bool);
 	}
+	
+	promptToSave_ { | bool |
+		promptToSave = bool;
+		ScIDE.setPromptsToSavebyQUuid(quuid, bool);
+	}
+	
+	// not yet implemented
 
 	removeUndo {
-		^this.notYetImplemented
-	}
-
-	promptToSave_ { | bool |
-		^this.notYetImplemented
-	}
-
-	promptToSave {
 		^this.notYetImplemented
 	}
 

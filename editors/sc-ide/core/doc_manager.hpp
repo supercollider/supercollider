@@ -83,6 +83,7 @@ public:
     GenericCodeEditor * lastActiveEditor() { return mLastActiveEditor; }
     int initialSelectionStart() { return mInitialSelectionStart; }
     int initialSelectionRange() { return mInitialSelectionRange; }
+    bool editable() { return mEditable; }
     
     void setKeyDownActionEnabled(bool enabled) { mKeyDownActionEnabled = enabled; }
     void setKeyUpActionEnabled(bool enabled) {  mKeyUpActionEnabled = enabled; }
@@ -91,6 +92,7 @@ public:
     void setTextChangedActionEnabled(bool enabled) {  mTextChangedActionEnabled = enabled; }
     void setLastActiveEditor(GenericCodeEditor * lastActive) {  mLastActiveEditor = lastActive; }
     void setInitialSelection(int start, int range) { mInitialSelectionStart = start; mInitialSelectionRange = range; }
+    void setEditable(bool editable) { mEditable = editable; }
 
 public slots:
     void applySettings( Settings::Manager * );
@@ -116,6 +118,7 @@ private:
     bool mTextChangedActionEnabled;
     GenericCodeEditor * mLastActiveEditor;
     int mInitialSelectionStart, mInitialSelectionRange;
+    bool mEditable;
 };
 
 class DocumentManager : public QObject
@@ -181,6 +184,7 @@ private:
     void handleGetDocTextScRequest( const QString & data );
     void handleSetDocTextScRequest( const QString & data );
     void handleSetDocSelectionScRequest( const QString & data );
+    void handleSetDocEditableScRequest( const QString & data );
     void handleSetCurrentDocScRequest( const QString & data );
     void handleCloseDocScRequest( const QString & data );
     void handleSetDocTitleScRequest( const QString & data );
