@@ -366,6 +366,10 @@ ScIDE {
 	*setCurrentDocumentByQUuid {|quuid|
 		this.prSend(\setCurrentDocument, [quuid]);
 	}
+	
+	*removeDocUndoByQUuid {|quuid|
+		this.prSend(\removeDocUndo, [quuid]);
+	}
 
 	*close {|quuid|
 		this.prSend(\closeDocument, [quuid]);
@@ -897,11 +901,9 @@ Document {
 		promptToSave = bool;
 		ScIDE.setPromptsToSavebyQUuid(quuid, bool);
 	}
-	
-	// not yet implemented
 
 	removeUndo {
-		^this.notYetImplemented
+		ScIDE.removeDocUndoByQUuid(quuid);
 	}
 
 	// probably still needed for compatibility

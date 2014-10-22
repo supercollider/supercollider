@@ -190,6 +190,7 @@ private:
     void handleSetDocEditableScRequest( const QString & data );
     void handleSetDocPromptsToSaveScRequest( const QString & data );
     void handleSetCurrentDocScRequest( const QString & data );
+    void handleRemoveDocUndoScRequest( const QString & data );
     void handleCloseDocScRequest( const QString & data );
     void handleSetDocTitleScRequest( const QString & data );
     

@@ -510,6 +510,7 @@ void DocumentManager::handleScLangMessage( const QString &selector, const QStrin
     static QString setDocEditableSelector("setDocumentEditable");
     static QString setDocPromptsToSaveSelector("setDocumentPromptsToSave");
     static QString setCurrentDocSelector("setCurrentDocument");
+    static QString removeDocUndoSelector("removeDocUndo");
     static QString closeDocSelector("closeDocument");
     static QString setDocTitleSelector("setDocumentTitle");
     static QString enableKeyDownSelector("enableDocumentKeyDownAction");
@@ -545,7 +546,10 @@ void DocumentManager::handleScLangMessage( const QString &selector, const QStrin
 
     if (selector == setCurrentDocSelector)
         handleSetCurrentDocScRequest(data);
-
+    
+    if (selector == removeDocUndoSelector)
+        handleRemoveDocUndoScRequest(data);
+    
     if (selector == closeDocSelector)
         handleCloseDocScRequest(data);
 
@@ -884,6 +888,32 @@ void DocumentManager::handleSetCurrentDocScRequest( const QString & data )
             Q_EMIT( showRequest(document) );
     }
 
+}
+
+void DocumentManager::handleRemoveDocUndoScRequest( const QString & data )
+{
+    std::stringstream stream;
+    stream << data.toStdString();
+    YAML::Parser parser(stream);
+    
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+        
+        std::string id;
+        bool success = doc[0].Read(id);
+        if (!success)
+            return;
+        
+        Document *document = documentForId(id.c_str());
+        if(document){
+            QTextDocument *textDoc = document->textDocument();
+            textDoc->clearUndoRedoStacks();
+            textDoc->setModified(false);
+        }
+    }
+    
 }
 
 void DocumentManager::handleCloseDocScRequest( const QString & data )
