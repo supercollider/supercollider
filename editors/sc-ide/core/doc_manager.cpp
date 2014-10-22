@@ -53,7 +53,8 @@ Document::Document(bool isPlainText, const QByteArray & id,
     mLastActiveEditor(0),
     mInitialSelectionStart(0),
     mInitialSelectionRange(0),
-    mEditable(true)
+    mEditable(true),
+    mPromptsToSave(true)
 {
     if (mId.isEmpty())
         mId = QUuid::createUuid().toString().toLatin1();
@@ -507,6 +508,7 @@ void DocumentManager::handleScLangMessage( const QString &selector, const QStrin
     static QString setDocTextSelector("setDocumentText");
     static QString setDocSelectionSelector("setDocumentSelection");
     static QString setDocEditableSelector("setDocumentEditable");
+    static QString setDocPromptsToSaveSelector("setDocumentPromptsToSave");
     static QString setCurrentDocSelector("setCurrentDocument");
     static QString closeDocSelector("closeDocument");
     static QString setDocTitleSelector("setDocumentTitle");
@@ -537,6 +539,9 @@ void DocumentManager::handleScLangMessage( const QString &selector, const QStrin
     
     if (selector == setDocEditableSelector)
         handleSetDocEditableScRequest(data);
+    
+    if (selector == setDocPromptsToSaveSelector)
+        handleSetDocPromptsToSaveScRequest(data);
 
     if (selector == setCurrentDocSelector)
         handleSetCurrentDocScRequest(data);
@@ -826,6 +831,34 @@ void DocumentManager::handleSetDocEditableScRequest( const QString & data )
             if(document->lastActiveEditor()){
                 document->lastActiveEditor()->setReadOnly(!editable);
             }
+        }
+    }
+}
+
+void DocumentManager::handleSetDocPromptsToSaveScRequest( const QString & data )
+{
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
+    YAML::Parser parser(stream);
+    
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+        
+        std::string id;
+        bool success = doc[0].Read(id);
+        if (!success)
+            return;
+        
+        bool promptsToSave;
+        success = doc[1].Read(promptsToSave);
+        if (!success)
+            return;
+        
+        Document *document = documentForId(id.c_str());
+        if(document){
+            document->setPromptsToSave(promptsToSave);
         }
     }
 }
