@@ -52,7 +52,8 @@ Document::Document(bool isPlainText, const QByteArray & id,
     mTextChangedActionEnabled(false),
     mLastActiveEditor(0),
     mInitialSelectionStart(0),
-    mInitialSelectionRange(0)
+    mInitialSelectionRange(0),
+    mEditable(true)
 {
     if (mId.isEmpty())
         mId = QUuid::createUuid().toString().toLatin1();
@@ -505,6 +506,7 @@ void DocumentManager::handleScLangMessage( const QString &selector, const QStrin
     static QString getDocTextSelector("getDocumentText");
     static QString setDocTextSelector("setDocumentText");
     static QString setDocSelectionSelector("setDocumentSelection");
+    static QString setDocEditableSelector("setDocumentEditable");
     static QString setCurrentDocSelector("setCurrentDocument");
     static QString closeDocSelector("closeDocument");
     static QString setDocTitleSelector("setDocumentTitle");
@@ -532,6 +534,9 @@ void DocumentManager::handleScLangMessage( const QString &selector, const QStrin
     
     if (selector == setDocSelectionSelector)
         handleSetDocSelectionScRequest(data);
+    
+    if (selector == setDocEditableSelector)
+        handleSetDocEditableScRequest(data);
 
     if (selector == setCurrentDocSelector)
         handleSetCurrentDocScRequest(data);
@@ -789,6 +794,37 @@ void DocumentManager::handleSetDocSelectionScRequest( const QString & data )
         if(document){
             if(document->lastActiveEditor()){
                 document->lastActiveEditor()->showPosition(start, range);
+            }
+        }
+    }
+}
+
+void DocumentManager::handleSetDocEditableScRequest( const QString & data )
+{
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
+    YAML::Parser parser(stream);
+    
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+        
+        std::string id;
+        bool success = doc[0].Read(id);
+        if (!success)
+            return;
+        
+        bool editable;
+        success = doc[1].Read(editable);
+        if (!success)
+            return;
+        
+        Document *document = documentForId(id.c_str());
+        if(document){
+            document->setEditable(editable);
+            if(document->lastActiveEditor()){
+                document->lastActiveEditor()->setReadOnly(!editable);
             }
         }
     }

@@ -68,6 +68,7 @@ void CodeEditorBox::setDocument(Document *doc, int pos, int selectionLength)
             mHistory.prepend(editor);
         }
         editor->setActiveAppearance(this->isActive());
+        editor->setReadOnly(!doc->editable());
         mLayout->setCurrentWidget(editor);
         setFocusProxy(editor);
     }
