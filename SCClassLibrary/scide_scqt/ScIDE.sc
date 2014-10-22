@@ -783,15 +783,15 @@ Document {
 	}
 
 	string_ { | string, rangestart = -1, rangesize = 1 |
-		this.insertTextRange(string, rangestart, rangesize);
+		this.prSetText(string, nil, rangestart, rangesize);
 	}
 
 	selectedString {
-		^this.selectedText
+		^this.rangeText(this.selectionStart, this.selectionSize);
 	}
 
 	selectedString_ { | txt |
-		this.prinsertText(txt)
+		this.prSetText(txt, nil, this.selectionStart, this.selectionSize);
 	}
 
 	currentLine {
@@ -863,10 +863,16 @@ Document {
 		}
 	}
 
-	// not yet implemented
-
 	selectLine { | line |
-		this.notYetImplemented
+		var text, breaks, numLines, start = 0, end;
+		if(line < 1, { line = 1 });
+		text = this.text;
+		breaks = text.findAll("\n");
+		numLines = breaks.size + 1;
+		line = min(line, numLines);
+		if(line > 1, { start = breaks[line - 2] + 1});
+		end = breaks[line - 1] ?? { text.size -1 };
+		this.selectRange(start, end - start);
 	}
 
 	selectRange { | start=0, length=0 |
@@ -874,7 +880,8 @@ Document {
         ScIDE.setSelectionByQUuid(quuid, start, length); // set the IDE doc
     }
     
-
+	// not yet implemented
+	
 	editable_ { | abool=true |
 		editable = abool;
 		this.notYetImplemented
@@ -889,14 +896,6 @@ Document {
 	}
 
 	promptToSave {
-		^this.notYetImplemented
-	}
-
-	prinsertText { | dataPtr, txt |
-		^this.notYetImplemented
-	}
-
-	insertTextRange { | string, rangestart, rangesize |
 		^this.notYetImplemented
 	}
 
