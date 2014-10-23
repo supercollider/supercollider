@@ -386,6 +386,14 @@ ScIDE {
 	*setDocumentKeyUpEnabled {|quuid, bool|
 		this.prSend(\enableDocumentKeyUpAction, [quuid, bool]);
 	}
+	
+	*setDocumentGlobalKeyDownEnabled {|bool|
+		this.prSend(\enableDocumentGlobalKeyDownAction, [bool]);
+	}
+	
+	*setDocumentGlobalKeyUpEnabled {|bool|
+		this.prSend(\enableDocumentGlobalKeyUpAction, [bool]);
+	}
 
 	*setDocumentMouseDownEnabled {|quuid, bool|
 		this.prSend(\enableDocumentMouseDownAction, [quuid, bool]);
@@ -698,12 +706,12 @@ Document {
 
 	keyDownAction_ {|action|
 		keyDownAction = action;
-		ScIDE.setDocumentKeyDownEnabled(quuid, action.notNil || globalKeyDownAction.notNil);
+		ScIDE.setDocumentKeyDownEnabled(quuid, action.notNil);
 	}
 
 	keyUpAction_ {|action|
 		keyUpAction = action;
-		ScIDE.setDocumentKeyUpEnabled(quuid, action.notNil  || globalKeyUpAction.notNil);
+		ScIDE.setDocumentKeyUpEnabled(quuid, action.notNil);
 	}
 
 	mouseDownAction_ {|action|
@@ -723,16 +731,12 @@ Document {
 
 	*globalKeyDownAction_ {|action|
 		globalKeyDownAction = action;
-		allDocuments.do({|doc|
-			ScIDE.setDocumentKeyDownEnabled(doc.quuid, action.notNil || doc.keyDownAction.notNil);
-		});
+		ScIDE.setDocumentGlobalKeyDownEnabled(action.notNil);
 	}
 
 	*globalKeyUpAction_ {|action|
 		globalKeyUpAction = action;
-		allDocuments.do({|doc|
-			ScIDE.setDocumentKeyUpEnabled(doc.quuid, action.notNil || doc.keyUpAction.notNil);
-		});
+		ScIDE.setDocumentGlobalKeyUpEnabled(action.notNil);
 	}
 
 	title_ {|newTitle|

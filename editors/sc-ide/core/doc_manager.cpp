@@ -198,7 +198,7 @@ void Document::setTextInRange(const QString text, int start, int range)
 
 
 DocumentManager::DocumentManager( Main *main, Settings::Manager * settings ):
-QObject(main), mTextMirrorEnabled(true), mCurrentDocument(NULL)
+QObject(main), mTextMirrorEnabled(true), mCurrentDocument(NULL), mGlobalKeyDownEnabled(false), mGlobalKeyUpEnabled(false)
 {
     connect(&mFsWatcher, SIGNAL(fileChanged(QString)), this, SLOT(onFileChanged(QString)));
 
@@ -513,6 +513,8 @@ void DocumentManager::handleScLangMessage( const QString &selector, const QStrin
     static QString removeDocUndoSelector("removeDocUndo");
     static QString closeDocSelector("closeDocument");
     static QString setDocTitleSelector("setDocumentTitle");
+    static QString enableGlobalKeyDownSelector("enableDocumentGlobalKeyDownAction");
+    static QString enableGlobalKeyUpSelector("enableDocumentGlobalKeyUpAction");
     static QString enableKeyDownSelector("enableDocumentKeyDownAction");
     static QString enableKeyUpSelector("enableDocumentKeyUpAction");
     static QString enableMouseDownSelector("enableDocumentMouseDownAction");
@@ -561,6 +563,12 @@ void DocumentManager::handleScLangMessage( const QString &selector, const QStrin
     
     if (selector == enableKeyUpSelector)
         handleEnableKeyUpScRequest( data );
+    
+    if (selector == enableGlobalKeyDownSelector)
+        handleEnableGlobalKeyDownScRequest( data );
+    
+    if (selector == enableGlobalKeyUpSelector)
+        handleEnableGlobalKeyUpScRequest( data );
   
     if (selector == enableMouseDownSelector)
         handleEnableMouseDownScRequest( data );
@@ -1027,6 +1035,48 @@ void DocumentManager::handleEnableKeyUpScRequest( const QString & data )
             document->setKeyUpActionEnabled(enabled);
         }
         
+    }
+    
+}
+
+void DocumentManager::handleEnableGlobalKeyDownScRequest( const QString & data )
+{
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
+    YAML::Parser parser(stream);
+    
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+        
+        bool enabled;
+        bool success = doc[0].Read(enabled);
+        if (!success)
+            return;
+        
+        mGlobalKeyDownEnabled = enabled;
+    }
+    
+}
+
+void DocumentManager::handleEnableGlobalKeyUpScRequest( const QString & data )
+{
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
+    YAML::Parser parser(stream);
+    
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+        
+        bool enabled;
+        bool success = doc[0].Read(enabled);
+        if (!success)
+            return;
+        
+        mGlobalKeyUpEnabled = enabled;
     }
     
 }

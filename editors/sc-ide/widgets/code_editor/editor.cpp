@@ -586,12 +586,12 @@ void GenericCodeEditor::keyPressEvent(QKeyEvent * e)
         setTextCursor( cursor );
         ensureCursorVisible();
     }
-    if (mDoc->keyDownActionEnabled()) doKeyAction(e);
+    if (mDoc->keyDownActionEnabled() || Main::documentManager()->globalKeyDownActionEnabled()) doKeyAction(e);
 }
     
 void GenericCodeEditor::keyReleaseEvent(QKeyEvent * e)
 {
-    if(mDoc->keyUpActionEnabled()) doKeyAction(e);
+    if(mDoc->keyUpActionEnabled() || Main::documentManager()->globalKeyUpActionEnabled()) doKeyAction(e);
 }
     
 void GenericCodeEditor::doKeyAction( QKeyEvent * ke )
