@@ -150,6 +150,8 @@ public:
     void setActiveDocument(class Document *);
     void sendActiveDocument();
     Document * activeDocument() { return mCurrentDocument; }
+    bool globalKeyDownActionEnabled() { return mGlobalKeyDownEnabled; }
+    bool globalKeyUpActionEnabled() { return mGlobalKeyUpEnabled; }
 
 public slots:
     // initialCursorPosition -1 means "don't change position if already open"
@@ -197,6 +199,8 @@ private:
     bool parseActionEnabledRequest( const QString & data, std::string *idString, bool *en);
     void handleEnableKeyDownScRequest( const QString & data );
     void handleEnableKeyUpScRequest( const QString & data );
+    void handleEnableGlobalKeyDownScRequest( const QString & data );
+    void handleEnableGlobalKeyUpScRequest( const QString & data );
     void handleEnableMouseDownScRequest( const QString & data );
     void handleEnableMouseUpScRequest( const QString & data );
     void handleEnableTextChangedScRequest( const QString & data );
@@ -214,6 +218,7 @@ private:
     bool mTextMirrorEnabled;
     QString mCurrentDocumentPath;
     class Document * mCurrentDocument;
+    bool mGlobalKeyDownEnabled, mGlobalKeyUpEnabled;
 };
 
 } // namespace ScIDE
