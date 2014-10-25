@@ -525,8 +525,6 @@ void ScServer::processServerStatusMessage(const osc::ReceivedMessage &message )
     int	defCount;
     float avgCPU;
     float peakCPU;
-    double srNom;
-    double srAct;
 
     auto args = message.ArgumentStream();
 
@@ -538,9 +536,7 @@ void ScServer::processServerStatusMessage(const osc::ReceivedMessage &message )
              >> groupCount
              >> defCount
              >> avgCPU
-             >> peakCPU
-             >> srNom
-             >> srAct;
+             >> peakCPU;
     }
     catch (osc::MissingArgumentException)
     {
