@@ -265,7 +265,7 @@ endif()
 
 if(APPLE)
     target_link_libraries( ${ide_name} "-framework CoreServices -framework Foundation")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -F/Library/Frameworks")
+    target_link_libraries( ${ide_name} "-framework Cocoa" )
 elseif(WIN32)
     target_link_libraries( SuperCollider wsock32 )
     # The following prevents a Windows console from showing up

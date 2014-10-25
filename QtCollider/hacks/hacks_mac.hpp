@@ -27,6 +27,8 @@
 namespace QtCollider {
 namespace Mac {
 
+bool IsCmdPeriodKeyUp(void * event);
+bool IsCmdPeriodKeyDown(void * event);
 bool isKeyWindow ( QWidget *w );
 void activateApp ();
     
