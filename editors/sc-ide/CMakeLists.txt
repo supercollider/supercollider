@@ -147,6 +147,7 @@ set ( ide_src
     widgets/style/style.cpp
 
     ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.cpp
+    ${CMAKE_SOURCE_DIR}/QtCollider/hacks/hacks_mac.mm
 
     ${CMAKE_SOURCE_DIR}/common/SC_TextUtils.cpp
 )
