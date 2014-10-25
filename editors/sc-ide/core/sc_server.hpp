@@ -103,7 +103,9 @@ public slots:
 
 signals:
     void runningStateChange( bool running, QString const & hostName, int port );
-    void updateServerStatus (int ugenCount, int synthCount, int groupCount, int defCount, float avgCPU, float peakCPU);
+    void updateServerStatus (int ugenCount, int synthCount,
+                             int groupCount, int defCount,
+                             float avgCPU, float peakCPU);
     void volumeChanged( float volume );
     void mutedChanged( bool muted );
     void recordingChanged( bool recording );
@@ -111,6 +113,7 @@ signals:
 private slots:
     void onScLangStateChanged( QProcess::ProcessState );
     void onScLangReponse( const QString & selector, const QString & data );
+    void onServerDataArrived();
     void updateToggleRunningAction();
     void updateRecordingAction();
     void updateEnabledActions();
