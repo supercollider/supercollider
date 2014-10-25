@@ -33,7 +33,7 @@ class PopupTextInput : public QInputDialog
 
 public:
     PopupTextInput(QString const & labelText, QWidget * parent):
-        QInputDialog(parent, Qt::Popup)
+        QInputDialog(parent, Qt::Dialog | Qt::FramelessWindowHint)
     {
         setOption(QInputDialog::NoButtons);
         setInputMode(QInputDialog::TextInput);
