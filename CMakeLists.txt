@@ -302,6 +302,13 @@ file(GLOB_RECURSE Sounds       sounds/*)
 file(GLOB_RECURSE Examples     examples/*)
 
 
+if(APPLE)
+  include(cmake_modules/MacAppFolder.cmake)
+  set(ide_name ${scappbundlename})
+else()
+  set(ide_name scide)
+endif()
+
 add_subdirectory(server)
 add_subdirectory(lang)
 add_subdirectory(platform)
@@ -320,7 +327,6 @@ endif()
 if (WIN32)
 	set(auxresourcesdir "SuperCollider")
 elseif(APPLE)
-	include(cmake_modules/MacAppFolder.cmake)
 	set(auxresourcesdir ${scappbundlename})
 else()
 	set(auxresourcesdir "share/SuperCollider")
@@ -370,7 +376,8 @@ else()
 endif()
 
 if(NOT APPLE)
-	install(DIRECTORY sounds DESTINATION ${auxresourcesdir})
+  install(DIRECTORY sounds   DESTINATION ${auxresourcesdir})
+  install(DIRECTORY examples DESTINATION ${auxresourcesdir})
 endif()
 
 set( AdditionalInstallFiles
@@ -382,7 +389,6 @@ set( AdditionalInstallFiles
      MOVED_STUFF.txt
     )
 
-install(DIRECTORY examples              DESTINATION ${auxresourcesdir})
 install(FILES ${AdditionalInstallFiles} DESTINATION ${auxresourcesdir})
 
 if(INSTALL_HELP)
@@ -393,13 +399,6 @@ if(INSTALL_HELP)
 		endif()
 		install( CODE
 					"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/HelpSource ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource )" )
-	else()
-		install(DIRECTORY HelpSource
-			DESTINATION ${auxresourcesdir}
-			REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
-			PATTERN "*~" EXCLUDE
-			PATTERN "*#" EXCLUDE
-		)
 	endif()
 endif()
 
