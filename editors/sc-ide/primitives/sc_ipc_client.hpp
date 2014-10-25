@@ -38,8 +38,10 @@ public:
     QLocalSocket * mSocket;
     
     QString getTextMirrorForDocument(QByteArray & id, int pos = 0, int range = -1);
+    QPair<int, int> getSelectionMirrorForDocument(QByteArray & id);
     
     void setTextMirrorForDocument(QByteArray & id, const QString & text, int pos = 0, int range = -1);
+    void setSelectionMirrorForDocument(QByteArray & id, int start = 0, int range = 0);
 
 private Q_SLOTS:
     
@@ -50,10 +52,13 @@ private:
     void onResponse( const QString & selector, const QVariantList & argList );
     
     void updateDocText( const QVariantList & argList );
+    void updateDocSelection( const QVariantList & argList );
     
     QByteArray mIpcData;
     QHash<QByteArray, QString> mDocumentTextMirrors;
+    QHash<QByteArray, QPair<int, int>> mDocumentSelectionMirrors;
     QMutex mTextMirrorHashMutex;
+    QMutex mSelMirrorHashMutex;
 };
 
 

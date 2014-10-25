@@ -78,6 +78,7 @@ public:
     
     void post(QString & text) { scPost(text); }
     void updateTextMirrorForDocument ( class Document * doc, int position, int charsRemoved, int charsAdded );
+    void updateSelectionMirrorForDocument ( class Document * doc, int start, int range);
 
 public slots:
     void toggleRunning();
