@@ -26,7 +26,7 @@ before_install:
 before_script:
  - mkdir BUILD
  - cd BUILD
- - ifmac cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=`brew --prefix qt` -DSC_QT=1 .. --debug-output
+ - ifmac cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=`brew --prefix qt` -DSC_QT=1 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 .. --debug-output
  - iflin cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/qt4/ -DCMAKE_INSTALL_PREFIX:PATH=$PWD/Install -DSC_EL=no .. --debug-output
 
 script: 
