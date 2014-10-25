@@ -26,15 +26,14 @@
 #include "main.hpp"
 #include "../widgets/util/volume_widget.hpp"
 
-#include "scsynthsend.h"
-#include "sc_msg_iter.h"
-
 #include "yaml-cpp/node.h"
 #include "yaml-cpp/parser.h"
 
 #include <sstream>
 #include <iomanip>
 #include <boost/chrono/chrono_io.hpp>
+#include <osc/OscReceivedElements.h>
+#include <osc/OscOutboundPacketStream.h>
 
 using namespace std;
 using namespace boost::chrono;
@@ -461,15 +460,17 @@ void ScServer::handleRuningStateChangedMsg( const QString & data )
 
 void ScServer::timerEvent(QTimerEvent * event)
 {
-    if (mPort) {
-        small_scpacket packet;
-        packet.BeginMsg();
-        packet.adds_slpre("status");
-        packet.maketags(1);
-        packet.addtag(',');
-        packet.EndMsg();
+    if (mPort)
+    {
+        char buffer[512];
+        osc::OutboundPacketStream stream(buffer, 512);
+        stream << osc::BeginMessage("status");
+        stream << osc::MessageTerminator();
 
-        mUdpSocket->writeDatagram(packet.data(), packet.size(), mServerAddress, mPort);
+        qint64 sentSize = mUdpSocket->writeDatagram(stream.Data(), stream.Size(),
+                                                    mServerAddress, mPort);
+        if (sentSize == -1)
+            qCritical("Failed to send server status request.");
     }
 }
 
@@ -496,31 +497,60 @@ void ScServer::onServerDataArrived()
     {
         size_t datagramSize = mUdpSocket->pendingDatagramSize();
         QByteArray array(datagramSize, 0);
-        mUdpSocket->readDatagram(array.data(), datagramSize);
+        qint64 readSize = mUdpSocket->readDatagram(array.data(), datagramSize);
+        if (readSize == -1)
+            continue;
 
-        if (array[0]) {
-            char *addr = array.data();
-            const char * data = OSCstrskip(array.data());
-            int size = datagramSize - (data - addr);
-
-            if (strcmp(addr, "/status.reply") == 0 && isRunning()) {
-                sc_msg_iter reply(size, data);
-                int	unused     = reply.geti();
-                int	ugenCount  = reply.geti();
-                int	synthCount = reply.geti();
-                int	groupCount = reply.geti();
-                int	defCount   = reply.geti();
-                float avgCPU   = reply.getf();
-                float peakCPU  = reply.getf();
-                double srNom   = reply.getd();
-                double srAct   = reply.getd();
-
-                emit updateServerStatus(ugenCount, synthCount,
-                                        groupCount, defCount,
-                                        avgCPU, peakCPU);
-            }
-        }
+        processOscPacket( osc::ReceivedPacket(array.data(), datagramSize) );
     }
+}
+
+void ScServer::processOscMessage( const osc::ReceivedMessage & message )
+{
+    if (strcmp(message.AddressPattern(), "/status.reply") == 0)
+    {
+        processServerStatusMessage(message);
+    }
+}
+
+void ScServer::processServerStatusMessage(const osc::ReceivedMessage &message )
+{
+    if (!isRunning())
+        return;
+
+    int	unused;
+    int	ugenCount;
+    int	synthCount;
+    int	groupCount;
+    int	defCount;
+    float avgCPU;
+    float peakCPU;
+    double srNom;
+    double srAct;
+
+    auto args = message.ArgumentStream();
+
+    try
+    {
+        args >> unused
+             >> ugenCount
+             >> synthCount
+             >> groupCount
+             >> defCount
+             >> avgCPU
+             >> peakCPU
+             >> srNom
+             >> srAct;
+    }
+    catch (osc::MissingArgumentException)
+    {
+        qCritical("Misformatted server status message.");
+        return;
+    }
+
+    emit updateServerStatus(ugenCount, synthCount,
+                            groupCount, defCount,
+                            avgCPU, peakCPU);
 }
 
 void ScServer::updateEnabledActions()
