@@ -27,6 +27,7 @@
 #include <QProcess>
 #include <QTimer>
 #include <boost/chrono/system_clocks.hpp>
+#include <osc/OscReceivedElements.h>
 
 namespace ScIDE {
 
@@ -128,6 +129,30 @@ private:
     void createActions( Settings::Manager * );
     void handleRuningStateChangedMsg( const QString & data );
     void onRunningStateChanged( bool running, QString const & hostName, int port );
+
+    void processServerStatusMessage( const osc::ReceivedMessage & );
+
+    void processOscMessage( const osc::ReceivedMessage & );
+
+    void processOscPacket( const osc::ReceivedPacket & packet )
+    {
+        if (packet.IsMessage())
+            processOscMessage( osc::ReceivedMessage(packet) );
+        else
+            processOscBundle( osc::ReceivedBundle(packet) );
+    }
+
+    void processOscBundle( const osc::ReceivedBundle & bundle )
+    {
+        for (auto iter = bundle.ElementsBegin(); iter != bundle.ElementsEnd(); ++iter)
+        {
+            const osc::ReceivedBundleElement & element = *iter;
+            if (element.IsMessage())
+                processOscMessage( osc::ReceivedMessage(element) );
+            else
+                processOscBundle( osc::ReceivedBundle(element) );
+        }
+    }
 
     ScProcess *mLang;
 
