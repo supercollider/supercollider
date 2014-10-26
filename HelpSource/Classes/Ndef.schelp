@@ -128,6 +128,21 @@ Ndef(\a) <<>.phase nil;	// unmap
 Ndef.clear(3);		// fade out and clear all Ndefs
 ::
 
+subsection::Making Copies
+
+method::copy
+Because an Ndef is a unique instance for a given key, it can be copied only by supplying a new key.
+See also: link::Classes/NodeProxy#-copy::.
+
+code::
+Ndef(\x, { SinOsc.ar(Rand(500, 900)) * 0.1 }).play;
+Ndef(\x).copy(\y);
+Ndef(\y).play;
+::
+
+argument::newKey
+A valid new key, usually a link::CLasses/Symbol::
+
 subsection::Recursion
 
 Ndefs can be used recursively. A structure like the following works:

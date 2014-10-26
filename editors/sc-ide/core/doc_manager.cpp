@@ -49,7 +49,12 @@ Document::Document(bool isPlainText, const QByteArray & id,
     mKeyUpActionEnabled(false),
     mMouseDownActionEnabled(false),
     mMouseUpActionEnabled(false),
-    mTextChangedActionEnabled(false)
+    mTextChangedActionEnabled(false),
+    mLastActiveEditor(0),
+    mInitialSelectionStart(0),
+    mInitialSelectionRange(0),
+    mEditable(true),
+    mPromptsToSave(true)
 {
     if (mId.isEmpty())
         mId = QUuid::createUuid().toString().toLatin1();
@@ -193,7 +198,7 @@ void Document::setTextInRange(const QString text, int start, int range)
 
 
 DocumentManager::DocumentManager( Main *main, Settings::Manager * settings ):
-QObject(main), mTextMirrorEnabled(true), mCurrentDocument(NULL)
+QObject(main), mTextMirrorEnabled(true), mCurrentDocument(NULL), mGlobalKeyDownEnabled(false), mGlobalKeyUpEnabled(false)
 {
     connect(&mFsWatcher, SIGNAL(fileChanged(QString)), this, SLOT(onFileChanged(QString)));
 
@@ -276,12 +281,15 @@ Document *DocumentManager::open( const QString & path, int initialCursorPosition
     doc->mFilePath = filePath;
     doc->mTitle = info.fileName();
     doc->mSaveTime = info.lastModified();
+    doc->setInitialSelection(initialCursorPosition, selectionLength);
 
     if (!isRTF)
         mFsWatcher.addPath(cpath);
 
     // if this was opened from the lang we don't need to sync
-    if(syncLang) syncLangDocument(doc);
+    if(syncLang) {
+        syncLangDocument(doc);
+    }
     Q_EMIT( opened(doc, initialCursorPosition, selectionLength) );
 
     if (toRecent) this->addToRecent(doc);
@@ -498,9 +506,15 @@ void DocumentManager::handleScLangMessage( const QString &selector, const QStrin
     static QString openFileSelector("openFile");
     static QString getDocTextSelector("getDocumentText");
     static QString setDocTextSelector("setDocumentText");
+    static QString setDocSelectionSelector("setDocumentSelection");
+    static QString setDocEditableSelector("setDocumentEditable");
+    static QString setDocPromptsToSaveSelector("setDocumentPromptsToSave");
     static QString setCurrentDocSelector("setCurrentDocument");
+    static QString removeDocUndoSelector("removeDocUndo");
     static QString closeDocSelector("closeDocument");
     static QString setDocTitleSelector("setDocumentTitle");
+    static QString enableGlobalKeyDownSelector("enableDocumentGlobalKeyDownAction");
+    static QString enableGlobalKeyUpSelector("enableDocumentGlobalKeyUpAction");
     static QString enableKeyDownSelector("enableDocumentKeyDownAction");
     static QString enableKeyUpSelector("enableDocumentKeyUpAction");
     static QString enableMouseDownSelector("enableDocumentMouseDownAction");
@@ -522,10 +536,22 @@ void DocumentManager::handleScLangMessage( const QString &selector, const QStrin
 
     if (selector == setDocTextSelector)
         handleSetDocTextScRequest(data);
+    
+    if (selector == setDocSelectionSelector)
+        handleSetDocSelectionScRequest(data);
+    
+    if (selector == setDocEditableSelector)
+        handleSetDocEditableScRequest(data);
+    
+    if (selector == setDocPromptsToSaveSelector)
+        handleSetDocPromptsToSaveScRequest(data);
 
     if (selector == setCurrentDocSelector)
         handleSetCurrentDocScRequest(data);
-
+    
+    if (selector == removeDocUndoSelector)
+        handleRemoveDocUndoScRequest(data);
+    
     if (selector == closeDocSelector)
         handleCloseDocScRequest(data);
 
@@ -537,6 +563,12 @@ void DocumentManager::handleScLangMessage( const QString &selector, const QStrin
     
     if (selector == enableKeyUpSelector)
         handleEnableKeyUpScRequest( data );
+    
+    if (selector == enableGlobalKeyDownSelector)
+        handleEnableGlobalKeyDownScRequest( data );
+    
+    if (selector == enableGlobalKeyUpSelector)
+        handleEnableGlobalKeyUpScRequest( data );
   
     if (selector == enableMouseDownSelector)
         handleEnableMouseDownScRequest( data );
@@ -558,12 +590,23 @@ void DocumentManager::handleDocListScRequest()
     QString command = QString("Document.syncDocs([");
     for (it = docs.begin(); it != docs.end(); ++it) {
         Document * doc = *it;
-        QString docData = QString("[\'%1\', %2, %3, %4, %5],")
+        int start, range;
+        if(doc->lastActiveEditor()){ // we might have changed selection before sync happened
+            QTextCursor cursor = doc->lastActiveEditor()->textCursor();
+            start = cursor.selectionStart();
+            range = cursor.selectionEnd() - start;
+        } else {
+            start = doc->initialSelectionStart();
+            range = doc->initialSelectionRange();
+        }
+        QString docData = QString("[\'%1\', %2, %3, %4, %5, %6, %7],")
             .arg(doc->id().constData())
             .arg(doc->titleAsSCArrayOfCharCodes())
             .arg(doc->textAsSCArrayOfCharCodes(0, -1))
             .arg(doc->isModified())
-            .arg(doc->pathAsSCArrayOfCharCodes());
+            .arg(doc->pathAsSCArrayOfCharCodes())
+            .arg(start)
+            .arg(range);
         command = command.append(docData);
     }
     command = command.append("]);");
@@ -738,6 +781,100 @@ void DocumentManager::handleSetDocTextScRequest( const QString & data )
     }
 }
 
+void DocumentManager::handleSetDocSelectionScRequest( const QString & data )
+{
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
+    YAML::Parser parser(stream);
+    
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+        
+        std::string id;
+        bool success = doc[0].Read(id);
+        if (!success)
+            return;
+        
+        int start;
+        success = doc[1].Read(start);
+        if (!success)
+            return;
+        
+        int range;
+        success = doc[2].Read(range);
+        if (!success)
+            return;
+        
+        Document *document = documentForId(id.c_str());
+        if(document){
+            if(document->lastActiveEditor()){
+                document->lastActiveEditor()->showPosition(start, range);
+            }
+        }
+    }
+}
+
+void DocumentManager::handleSetDocEditableScRequest( const QString & data )
+{
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
+    YAML::Parser parser(stream);
+    
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+        
+        std::string id;
+        bool success = doc[0].Read(id);
+        if (!success)
+            return;
+        
+        bool editable;
+        success = doc[1].Read(editable);
+        if (!success)
+            return;
+        
+        Document *document = documentForId(id.c_str());
+        if(document){
+            document->setEditable(editable);
+            if(document->lastActiveEditor()){
+                document->lastActiveEditor()->setReadOnly(!editable);
+            }
+        }
+    }
+}
+
+void DocumentManager::handleSetDocPromptsToSaveScRequest( const QString & data )
+{
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
+    YAML::Parser parser(stream);
+    
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+        
+        std::string id;
+        bool success = doc[0].Read(id);
+        if (!success)
+            return;
+        
+        bool promptsToSave;
+        success = doc[1].Read(promptsToSave);
+        if (!success)
+            return;
+        
+        Document *document = documentForId(id.c_str());
+        if(document){
+            document->setPromptsToSave(promptsToSave);
+        }
+    }
+}
+
 void DocumentManager::handleSetCurrentDocScRequest( const QString & data )
 {
     std::stringstream stream;
@@ -759,6 +896,32 @@ void DocumentManager::handleSetCurrentDocScRequest( const QString & data )
             Q_EMIT( showRequest(document) );
     }
 
+}
+
+void DocumentManager::handleRemoveDocUndoScRequest( const QString & data )
+{
+    std::stringstream stream;
+    stream << data.toStdString();
+    YAML::Parser parser(stream);
+    
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+        
+        std::string id;
+        bool success = doc[0].Read(id);
+        if (!success)
+            return;
+        
+        Document *document = documentForId(id.c_str());
+        if(document){
+            QTextDocument *textDoc = document->textDocument();
+            textDoc->clearUndoRedoStacks();
+            textDoc->setModified(false);
+        }
+    }
+    
 }
 
 void DocumentManager::handleCloseDocScRequest( const QString & data )
@@ -876,6 +1039,48 @@ void DocumentManager::handleEnableKeyUpScRequest( const QString & data )
     
 }
 
+void DocumentManager::handleEnableGlobalKeyDownScRequest( const QString & data )
+{
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
+    YAML::Parser parser(stream);
+    
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+        
+        bool enabled;
+        bool success = doc[0].Read(enabled);
+        if (!success)
+            return;
+        
+        mGlobalKeyDownEnabled = enabled;
+    }
+    
+}
+
+void DocumentManager::handleEnableGlobalKeyUpScRequest( const QString & data )
+{
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
+    YAML::Parser parser(stream);
+    
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+        
+        bool enabled;
+        bool success = doc[0].Read(enabled);
+        if (!success)
+            return;
+        
+        mGlobalKeyUpEnabled = enabled;
+    }
+    
+}
+
 void DocumentManager::handleEnableMouseDownScRequest( const QString & data )
 {
     std::string id;
@@ -945,6 +1150,7 @@ void DocumentManager::handleEnableTextMirrorScRequest( const QString & data )
             for (it = docs.begin(); it != docs.end(); ++it) {
                 Document * doc = *it;
                 Main::scProcess()->updateTextMirrorForDocument(doc, 0, -1, doc->textDocument()->characterCount());
+                doc->lastActiveEditor()->updateDocLastSelection();
             }
         } else {
             // this sets the mirror to empty strings
@@ -961,13 +1167,24 @@ void DocumentManager::handleEnableTextMirrorScRequest( const QString & data )
 
 void DocumentManager::syncLangDocument(Document *doc)
 {
+    int start, range;
+    if(doc->lastActiveEditor()){ // we might have changed selection before sync happened
+        QTextCursor cursor = doc->lastActiveEditor()->textCursor();
+        start = cursor.selectionStart();
+        range = cursor.selectionEnd() - start;
+    } else {
+        start = doc->initialSelectionStart();
+        range = doc->initialSelectionRange();
+    }
     QString command =
-            QString("Document.syncFromIDE(\'%1\', %2, %3, %4, \'%5\')")
+            QString("Document.syncFromIDE(\'%1\', %2, %3, %4, \'%5\', %6, %7)")
             .arg(doc->id().constData())
             .arg(doc->titleAsSCArrayOfCharCodes())
             .arg(doc->textAsSCArrayOfCharCodes(0, -1))
             .arg(doc->isModified())
-            .arg(doc->pathAsSCArrayOfCharCodes());
+            .arg(doc->pathAsSCArrayOfCharCodes())
+            .arg(start)
+            .arg(range);
     Main::evaluateCode ( command, true );
 }
 

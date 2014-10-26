@@ -89,6 +89,7 @@ public slots:
     void gotoPreviousEmptyLine();
     void gotoNextEmptyLine();
     void setActiveAppearance(bool active);
+    void updateDocLastSelection();
 
 protected slots:
     void updateLayout();

@@ -49,6 +49,19 @@ Return the server that the BusPlug runs on.
 method::clear
 Free the bus, end the monitor
 
+
+subsection::Making copies
+
+method::copy
+copies the hidden internal state to make the new BusPlug independent of the old, running on a new link::Classes/Bus::. By design, the link::Classes/Monitor:: is copied, but is not running (use play to start it in the same configuration). If needed, you can also copy the link::Classes/Monitor:: only (see: link::Classes/NodeProxy#copy::).
+
+method::copyState
+Copy the internal settings of one proxy into another. Old state is cleared, the bus is freed.
+
+argument::proxy
+The object whose internal state is being copied.
+
+
 method::reshaping
 Determines how to behave when link::#initBus:: is called.
 Current options:

@@ -13,6 +13,7 @@ NodeProxy : BusPlug {
 		^res
 	}
 
+
 	init {
 		nodeMap = ProxyNodeMap.new;
 		objects = Order.new;
@@ -383,16 +384,12 @@ NodeProxy : BusPlug {
 	}
 
 	setNodeMap { | map, xfade = true |
-		var bundle, old, fadeTime;
+		var bundle;
 		if(map.isNil) { ^this.unmap };
 		map.set(\fadeTime, this.fadeTime); // keep old fadeTime
-		bundle = MixedBundle.new;
-		old = nodeMap;
-		nodeMap = map;
-		old.clear;
-		this.linkNodeMap;
-		//this.nodeMapChanged;
+		nodeMap.clear; nodeMap = map; this.linkNodeMap;
 		if(this.isPlaying) {
+			bundle = MixedBundle.new;
 			if(xfade) { this.sendEach(nil,true) }
 			{
 				this.unsetToBundle(bundle); // unmap old
@@ -519,8 +516,24 @@ NodeProxy : BusPlug {
 		bundle.schedSend(server, clock ? TempoClock.default, quant)
 	}
 
+	// making copies
 
+	copy {
+		^this.class.new(server).copyState(this)
+	}
 
+	copyState { |proxy|
+
+		super.copyState(proxy);
+
+		proxy.objects.keysValuesDo { |key, val| objects[key] = val.copy };
+		this.nodeMap = proxy.nodeMap.copy;
+
+		loaded = false;
+		awake = proxy.awake; paused = proxy.paused;
+		clock = proxy.clock; quant = proxy.quant;
+
+	}
 
 	// gui support
 
@@ -1020,6 +1033,11 @@ Ndef : NodeProxy {
 			dict.registerServer;
 		};
 		^dict
+	}
+
+	copy { |toKey|
+		if(key == toKey) { Error("cannot copy to identical key").throw };
+		^this.class.new(toKey).copyState(this)
 	}
 
 	proxyspace {

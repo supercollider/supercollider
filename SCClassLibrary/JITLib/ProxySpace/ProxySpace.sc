@@ -242,6 +242,30 @@ ProxySpace : LazyEnvir {
 
 	doFunctionPerform { |selector| ^this[selector] }
 
+	// making copies
+
+	copy {
+		^super.copy.copyState(this)
+	}
+
+	copyState { |proxySpace|
+		server = proxySpace.server;
+		fadeTime = proxySpace.fadeTime;
+		quant = proxySpace.quant;
+		reshaping = proxySpace.reshaping;
+		awake = proxySpace.awake;
+		group = proxySpace.group;
+		if(proxySpace.clock.isKindOf(TempoBusClock)) {
+			this.makeTempoClock(
+				proxySpace.clock.tempo,
+				proxySpace.clock.beats,
+				proxySpace.clock.seconds
+			)
+		} {
+			clock = proxySpace.clock;
+		}
+	}
+
 	// global access
 
 	add {
