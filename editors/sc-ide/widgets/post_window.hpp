@@ -106,6 +106,8 @@ private:
     QAction * mLineWrapAction;*/
     QSize mSizeHint;
     bool autohide;
+    QChar previousChar;
+    QTextCharFormat currentFormat;
 };
 
 
