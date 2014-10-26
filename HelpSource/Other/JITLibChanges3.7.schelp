@@ -60,6 +60,7 @@ list::
 ## Note that when rebuilding children, the timing (clock, quant and fadeTime) of the parent is used for all others. If you need different time bases of related proxies, mold dosn't keep their timing. Set the molded proxy's quant to a smallest common multiple of the two quants in this case.
 ## You can now use NodeMap directly as arguments in Synth objects.
 ## NodeProxy can be used as argument in a Synth directly, it will either return its bus index or by asMap its bus mapping argument. Note that when reshaping is allowed, the synth won't update automatically. You can register a dependency on \bus.
+## node proxies and pattern proxies can be copied now: this will copy the hidden internal state to make the copy independent, but will keep the reference to the source object. In NodeProxy, the rendered SynthDef is cached, which makes the copy efficient. A ProxySpace or LazyEnvir can be copied and then modified independently.
 ::
 
 subsection:: node proxy elastic behaviour setting:
@@ -1118,6 +1119,41 @@ Ndef(\x).kr(2);
 Ndef(\x, { Dust2.kr(Line.kr(0, 200, 10)) });
 
 
+// copying
+
+a = NodeProxy(s);
+a.set(\gg, 910);
+a.source = 6;
+b = a.copy;
+a.bus !== b.bus;
+a.nodeMap.at(\gg) == b.nodeMap.at(\gg);
+a.source == b.source;
+b.source = 10;
+a.source != b.source;
+a.nodeMap.at(\gg) == b.nodeMap.at(\gg);
+b.set(\gg, 723);
+a.nodeMap.at(\gg) != b.nodeMap.at(\gg);
+
+p = ProxySpace(s);
+p.use { ~x = 891; ~y = 71; ~x.set(\freq, 661) };
+q = p.copy;
+f = { |x, func| x.envir.keys.as(Array).sort.collect { |key| func.(x.envir.at(key)) } };
+f.(p, { |proxy| proxy.source }) == f.(q, { |proxy| proxy.source });
+f.(p, { |proxy| proxy.nodeMap.at(\freq) }) == f.(q, { |proxy| proxy.nodeMap.at(\freq) });
+f.(p, { |proxy| proxy.objects }) != f.(q, { |proxy| proxy.objects });
+p.use { ~x.set(\freq, 0) };
+f.(p, { |proxy| proxy.nodeMap.at(\freq) }) != f.(q, { |proxy| proxy.nodeMap.at(\freq) });
+p.use { ~x = -100 };
+f.(p, { |proxy| proxy.source }) == f.(q, { |proxy| proxy.source });
+
+Ndef(\x).set(\freq, 900);
+Ndef(\x, 7);
+a = Ndef(\y);
+Ndef(\x).copy(\y);
+Ndef(\y) === a;
+Ndef(\y).nodeMap.at(\freq) == 900;
+Ndef(\y).source == 7;
+
 
 // various objects
 Ndef.clear;
@@ -1517,4 +1553,49 @@ fork { 15.do { Pdef(\foo, Pmono(\default, \dur, 1/8, \degree, Pseq([5,4,3,2,1],i
 
 Tdef(\x, { loop { 1.wait; "wesew".postln } }).play;
 Tdef(\x, { loop { 0.1.wait; "wesew".postln } }).play;
+
+// testing copy
+
+// pattern proxy
+a = PatternProxy({ |envir| Pseq([1, 2, 3], inf) + envir[\x] }).set(\x, 0);
+b = a.copy;
+f = { |x| x.asStream.nextN(8).postln };
+
+f.(a) == f.(b);
+a.set(\x, 16);
+f.(a) != f.(b);
+
+a = PatternProxy({ |envir| Pseq([1, 2, 3], inf) + envir[\x] }).set(\x, 0);
+b = a.copy;
+f.(a) == f.(b);
+a.source = Pseq([1, 2, 3, 4], inf);
+f.(a) != f.(b);
+b.source = Pseq([1, 2, 3, 4], inf);
+f.(a) == f.(b);
+
+Pdefn(\a, { |envir| Pseq([1, 2, 3], inf) + envir[\x] }).set(\x, 0);
+Pdefn(\a).copy(\b);
+f = { |x| Pdefn(x).asStream.nextN(8).postln };
+f.(\a) == f.(\b);
+Pdefn(\a).set(\x, 16);
+f.(\a) != f.(\b);
+
+// event pattern proxy
+a = EventPatternProxy({ Pbind(\note, Pseq([1, 2, 3], inf)) }).set(\x, 0);
+b = a.copy;
+f = { |x| Pevent(x).asStream.nextN(8).postln };
+f.(a) == f.(b);
+a.set(\x, 16);
+f.(a) != f.(b);
+
+b = a.copy;
+f.(a) == f.(b);
+a.source = Pbind(\note, 7);
+f.(a) != f.(b);
+b.source = Pbind(\note, 7);
+f.(a) == f.(b);
+
+
+
+
 ::

@@ -48,6 +48,16 @@ AbstractPlayControl {
 	parents { ^nil }
 	store {}
 
+	copy {
+		^this.class.new.copyState(this)
+	}
+
+	copyState { |control|
+		source = control.source; // source is not copied, assumed to be stateless
+		channelOffset = control.channelOffset;
+		paused = control.paused;
+	}
+
 
 }
 
@@ -57,7 +67,7 @@ AbstractPlayControl {
 
 StreamControl : AbstractPlayControl {
 
-	var stream, clock;
+	var stream, <clock;
 
 	playToBundle { | bundle |
 		// no latency (latency is in stream already)
@@ -87,6 +97,17 @@ StreamControl : AbstractPlayControl {
 	}
 	stop { stream.stop }
 
+	copyState { |control|
+		// stream can't be copied.
+		// control has to be rebuilt (see: NodeProxy:copyState)
+		super.copyState(control);
+		clock = control.clock;
+	}
+
+	copyRequiresRebuild {
+		^true
+	}
+
 }
 
 
@@ -95,7 +116,7 @@ PatternControl : StreamControl {
 	var fadeTime, <array;
 
 	playStream { | str |
-		var dt = fadeTime.value;
+		var dt = fadeTime.value ? 0.0;
 		if(dt <= 0.02) {
 			str.play(clock, false, 0.0)
 		} {
@@ -172,6 +193,7 @@ SynthControl : AbstractPlayControl {
 
 	var <server, <>nodeID;
 	var <canReleaseSynth=false, <canFreeSynth=false;
+
 
 	loadToBundle {} // assumes that SynthDef is loaded in the server
 
@@ -255,13 +277,20 @@ SynthControl : AbstractPlayControl {
 
 	store { SynthDescLib.global.read(this.synthDefPath) }
 
+	copyState { |control|
+		super.copyState(control);
+		server = control.server;
+		canReleaseSynth = control.canReleaseSynth;
+		canFreeSynth = control.canFreeSynth;
+	}
+
 }
 
 
 SynthDefControl : SynthControl {
 
 	var <synthDef, <parents;
-	var prevBundle;
+	var prevBundle, <bytes;
 
 	readyForPlay { ^synthDef.notNil }
 
@@ -291,9 +320,12 @@ SynthDefControl : SynthControl {
 	}
 
 	loadToBundle { | bundle, server |
-		var bytes, size, path;
+		var size, path;
 
-		bytes = synthDef.asBytes;
+		// cache rendered synth def, so it can be copied if necessary (see: copyData)
+		// We need to keep the bytes here, because some other instance may have deleted it from the server (see: freeToBundle)
+		// the resulting synthDef will have the same name, because the name is encoded in the data (bytes).
+		bytes = bytes ?? { synthDef.asBytes }; // here the work for sclang is done.
 		size = bytes.size;
 		size = size - (size bitAnd: 3) + 84; // 4 + 4 + 16 + 16 // appx path length size + overhead
 		if(server.options.protocol === \tcp or: { size < 16383}) {
@@ -315,7 +347,7 @@ SynthDefControl : SynthControl {
 	freeToBundle { | bundle, proxy |
 		if(synthDef.notNil) { bundle.addPrepare([53, synthDef.name]) }; // "/d_free"
 		parents.do { |x| x.removeChild(proxy) };
-		parents = nil;
+		bytes = parents = nil;
 		prevBundle !? { prevBundle.cancel };
 	}
 
@@ -341,5 +373,13 @@ SynthDefControl : SynthControl {
 	}
 
 	controlNames { ^synthDef.allControlNames }
+
+	copyState { |control|
+		super.copyState(control);
+		synthDef = control.synthDef;
+		parents = control.parents.copy;
+		bytes = control.bytes; // copy cached data
+	}
+
 
 }

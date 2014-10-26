@@ -21,6 +21,7 @@
 #ifndef SCIDE_DOC_MANAGER_HPP_INCLUDED
 #define SCIDE_DOC_MANAGER_HPP_INCLUDED
 
+#include "../widgets/code_editor/editor.hpp"
 #include <QDateTime>
 #include <QFileSystemWatcher>
 #include <QHash>
@@ -49,7 +50,7 @@ class Document : public QObject
 public:
     Document( bool isPlainText, const QByteArray & id = QByteArray(),
               const QString & title = QString(),
-              const QString & text = QString() );
+             const QString & text = QString());
 
     QTextDocument *textDocument() { return mDoc; }
     const QByteArray & id() { return mId; }
@@ -79,12 +80,21 @@ public:
     bool mouseDownActionEnabled() { return mMouseDownActionEnabled; }
     bool mouseUpActionEnabled() { return mMouseUpActionEnabled; }
     bool textChangedActionEnabled() { return mTextChangedActionEnabled; }
+    GenericCodeEditor * lastActiveEditor() { return mLastActiveEditor; }
+    int initialSelectionStart() { return mInitialSelectionStart; }
+    int initialSelectionRange() { return mInitialSelectionRange; }
+    bool editable() { return mEditable; }
+    bool promptsToSave() { return mPromptsToSave; }
     
     void setKeyDownActionEnabled(bool enabled) { mKeyDownActionEnabled = enabled; }
     void setKeyUpActionEnabled(bool enabled) {  mKeyUpActionEnabled = enabled; }
     void setMouseDownActionEnabled(bool enabled) {  mMouseDownActionEnabled = enabled; }
     void setMouseUpActionEnabled(bool enabled) {  mMouseUpActionEnabled = enabled; }
     void setTextChangedActionEnabled(bool enabled) {  mTextChangedActionEnabled = enabled; }
+    void setLastActiveEditor(GenericCodeEditor * lastActive) {  mLastActiveEditor = lastActive; }
+    void setInitialSelection(int start, int range) { mInitialSelectionStart = start; mInitialSelectionRange = range; }
+    void setEditable(bool editable) { mEditable = editable; }
+    void setPromptsToSave(bool prompts) { mPromptsToSave = prompts; }
 
 public slots:
     void applySettings( Settings::Manager * );
@@ -108,6 +118,10 @@ private:
     bool mMouseDownActionEnabled;
     bool mMouseUpActionEnabled;
     bool mTextChangedActionEnabled;
+    GenericCodeEditor * mLastActiveEditor;
+    int mInitialSelectionStart, mInitialSelectionRange;
+    bool mEditable;
+    bool mPromptsToSave;
 };
 
 class DocumentManager : public QObject
@@ -136,6 +150,8 @@ public:
     void setActiveDocument(class Document *);
     void sendActiveDocument();
     Document * activeDocument() { return mCurrentDocument; }
+    bool globalKeyDownActionEnabled() { return mGlobalKeyDownEnabled; }
+    bool globalKeyUpActionEnabled() { return mGlobalKeyUpEnabled; }
 
 public slots:
     // initialCursorPosition -1 means "don't change position if already open"
@@ -172,13 +188,19 @@ private:
     void handleOpenFileScRequest( const QString & data );
     void handleGetDocTextScRequest( const QString & data );
     void handleSetDocTextScRequest( const QString & data );
+    void handleSetDocSelectionScRequest( const QString & data );
+    void handleSetDocEditableScRequest( const QString & data );
+    void handleSetDocPromptsToSaveScRequest( const QString & data );
     void handleSetCurrentDocScRequest( const QString & data );
+    void handleRemoveDocUndoScRequest( const QString & data );
     void handleCloseDocScRequest( const QString & data );
     void handleSetDocTitleScRequest( const QString & data );
     
     bool parseActionEnabledRequest( const QString & data, std::string *idString, bool *en);
     void handleEnableKeyDownScRequest( const QString & data );
     void handleEnableKeyUpScRequest( const QString & data );
+    void handleEnableGlobalKeyDownScRequest( const QString & data );
+    void handleEnableGlobalKeyUpScRequest( const QString & data );
     void handleEnableMouseDownScRequest( const QString & data );
     void handleEnableMouseUpScRequest( const QString & data );
     void handleEnableTextChangedScRequest( const QString & data );
@@ -196,6 +218,7 @@ private:
     bool mTextMirrorEnabled;
     QString mCurrentDocumentPath;
     class Document * mCurrentDocument;
+    bool mGlobalKeyDownEnabled, mGlobalKeyUpEnabled;
 };
 
 } // namespace ScIDE
