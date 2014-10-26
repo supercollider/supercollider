@@ -658,7 +658,7 @@ static PyrObject* ConvertReplyAddress(ReplyAddress *inReply)
 	PyrObject *obj = instantiateObject(g->gc, s_netaddr->u.classobj, 2, true, false);
 	PyrSlot *slots = obj->slots;
 	SetInt(slots+0, inReply->mAddress.to_v4().to_ulong());
-	SetInt(slots+1, sc_ntohs(inReply->mPort));
+	SetInt(slots+1, inReply->mPort);
 	return obj;
 }
 
