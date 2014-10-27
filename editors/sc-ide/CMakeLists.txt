@@ -147,7 +147,6 @@ set ( ide_src
     widgets/style/style.cpp
 
     ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.cpp
-    ${CMAKE_SOURCE_DIR}/QtCollider/hacks/hacks_mac.mm
 
     ${CMAKE_SOURCE_DIR}/common/SC_TextUtils.cpp
 )
@@ -174,7 +173,10 @@ if(APPLE)
 endif()
 
 if(APPLE)
-	list(APPEND ide_src ${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp)
+	list(APPEND ide_src 
+        ${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp
+        ${CMAKE_SOURCE_DIR}/QtCollider/hacks/hacks_mac.mm
+    )
 elseif(WIN32)
     list(APPEND ide_src ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
 endif()
