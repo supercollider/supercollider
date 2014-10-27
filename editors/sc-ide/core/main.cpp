@@ -251,6 +251,7 @@ bool Main::nativeEventFilter(const QByteArray &, void * message, long *)
 {
     bool result = false;
 
+#ifdef APPLE
     if (QtCollider::Mac::IsCmdPeriodKeyDown(reinterpret_cast<void *>(message)))
     {
 //        QKeyEvent event(QEvent::KeyPress, Qt::Key_Period, Qt::ControlModifier, ".");
@@ -262,7 +263,8 @@ bool Main::nativeEventFilter(const QByteArray &, void * message, long *)
     {
         result = true;
     }
-
+#endif 
+  
     return result;
 }
 
