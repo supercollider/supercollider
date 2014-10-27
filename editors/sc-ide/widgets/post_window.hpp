@@ -101,6 +101,8 @@ private:
     QAction * mClearAction;
     QAction * mLineWrapAction;*/
     QSize mSizeHint;
+    QChar previousChar;
+    QTextCharFormat currentFormat;
 };
 
 

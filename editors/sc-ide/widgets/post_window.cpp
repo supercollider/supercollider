@@ -44,6 +44,7 @@ PostWindow::PostWindow(QWidget* parent):
     setReadOnly(true);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     setFrameShape( QFrame::NoFrame );
+    previousChar = QChar('\n');
 
     viewport()->setAttribute( Qt::WA_MacNoClickThrough, true );
 
@@ -202,19 +203,28 @@ QString PostWindow::symbolUnderCursor()
 void PostWindow::post(const QString &text)
 {
     bool scroll = mActions[AutoScroll]->isChecked();
-    QTextCursor c(document());
-    
-    int startPos = 0, length = 0;
+    QTextCursor cursor(document());
     QChar linebreak = QChar('\n');
+  
+    int startPos = 0, position = 0;
     foreach(const QChar chr, text) {
-        ++length;
-        if (chr == linebreak && length > 0) {
-            QStringRef newLine(&text, startPos, length);
-            c.movePosition(QTextCursor::End);
-            c.insertText(newLine.toString(), formatForPostLine(newLine));
-            startPos += length;
-            length = 0;
+        if (previousChar == linebreak) {
+            cursor.movePosition(QTextCursor::End);
+            cursor.insertText(QStringRef(&text, startPos, position - startPos).toString(), currentFormat);
+            startPos = position;
+            
+            QStringRef newLine(&text, position, text.length() - 1);
+            currentFormat = formatForPostLine(newLine);
         }
+        
+        previousChar = chr;
+        position++;
+    }
+  
+    // handle remaining chars if not \n terminated
+    if (startPos < text.length()) {
+        cursor.movePosition(QTextCursor::End);
+        cursor.insertText(QStringRef(&text, startPos, text.length() - startPos).toString(), currentFormat);
     }
 
     if (scroll)
@@ -235,15 +245,13 @@ QTextCharFormat PostWindow::formatForPostLine(QStringRef line)
     
     if (line.startsWith("ERROR:", Qt::CaseInsensitive) || line.startsWith("!"))
         format.merge(postWindowError);
-    
-    if (line.startsWith("WARNING:", Qt::CaseInsensitive) || line.startsWith("?"))
+    else if (line.startsWith("WARNING:", Qt::CaseInsensitive) || line.startsWith("?"))
         format.merge(postWindowWarning);
-    
-    if (line.startsWith("->"))
+    else if (line.startsWith("->"))
         format.merge(postWindowSuccess);
-    
-    if (line.startsWith("***"))
+    else if (line.startsWith("***"))
         format.merge(postWindowEmphasis);
+    // else no format
     
     return format;
 }
