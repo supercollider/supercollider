@@ -81,7 +81,5 @@ deploy:
      all_branches: true
 
 notifications:
- email:
-   - scott@artificia.org
  on_success: change
- on_failure: always
+ on_failure: change
