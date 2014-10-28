@@ -4,7 +4,7 @@ else()
     set(required_qt_version 4.7)
 endif()
 
-find_package (Qt4 ${required_qt_version} COMPONENTS QtCore QtGui QtWebKit)
+find_package (Qt4 ${required_qt_version} COMPONENTS QtCore QtGui QtWebKit QtNetwork)
 
 if (NOT QT4_FOUND)
     set(FIND_QT_ERROR_MSG "You are trying to compile with Qt GUI support, but a suitable version of Qt or one of its components could not be found:")
