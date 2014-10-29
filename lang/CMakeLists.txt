@@ -315,8 +315,13 @@ if(LTO)
 endif()
 
 if(APPLE)
-    set_property(TARGET sclang
-                 PROPERTY RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/editors/sc-ide/${ide_name}.app/Contents/Resources/")
+    if(CMAKE_GENERATOR MATCHES Xcode)
+        set_property(TARGET sclang PROPERTY RUNTIME_OUTPUT_DIRECTORY_DEBUG   "${CMAKE_BINARY_DIR}/editors/sc-ide/Debug/${ide_name}.app/Contents/Resources/")
+        set_property(TARGET sclang PROPERTY RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/editors/sc-ide/Release/${ide_name}.app/Contents/Resources/")
+    else()
+        set_property(TARGET sclang
+                     PROPERTY RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/editors/sc-ide/${ide_name}.app/Contents/Resources/")
+    endif()
 elseif(WIN32)
 	install(TARGETS sclang
 			DESTINATION "SuperCollider"
