@@ -45,8 +45,8 @@ if(APPLE)
         set_source_files_properties(${file} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/${PathInBundle})
     endforeach()
 
-    set( Icons ../../icons/SCcube.icns)
-    set_source_files_properties(../../icons/SCcube.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+    file(GLOB Icons "../../icons/*.icns")
+    set_source_files_properties(${Icons} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 
     set(AdditionalBundleSources ${ClassLibrary} ${HelpSource} ${BundleResources} ${Examples} ${Sounds} ${Icons})
 endif()
@@ -325,7 +325,7 @@ if(APPLE)
     endif()
 
     # set how it shows up in the Info.plist file
-    SET(MACOSX_BUNDLE_ICON_FILE ../../icons/SCcube.icns)
+    SET(MACOSX_BUNDLE_ICON_FILE ../../icons/sc_ide.icns)
 
     install(TARGETS SuperCollider
         DESTINATION ${scappbundlename}
