@@ -185,8 +185,9 @@ if (WIN32)
 	target_link_libraries(libscsynth wsock32 ws2_32 winmm)
 endif()
 
-
-set_property(TARGET libscsynth PROPERTY OUTPUT_NAME scsynth)
+if(NOT WIN32)
+  set_property(TARGET libscsynth PROPERTY OUTPUT_NAME scsynth)
+endif()
 
 if (LIBSCSYNTH)
 	# These two properties are ABI version info, not sc version:
