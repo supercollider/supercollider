@@ -5,7 +5,9 @@ os:
  - linux
  - osx
 
-cache: apt
+cache: 
+ - apt
+ - bundler
 
 before_install:
  - ifmac () { if [[ $TRAVIS_OS_NAME == osx ]]; then eval $@; fi; }
@@ -14,8 +16,9 @@ before_install:
  - ifmac brew install cmake qt4 || true
  - iflin sudo apt-add-repository -y ppa:ubuntu-sdk-team/ppa
  - iflin sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+ - iflin sudo add-apt-repository -y ppa:andykimpe/cmake  # backport of cmake 2.8.12
  - iflin sudo apt-get update
- - iflin sudo apt-get install gcc-4.7 g++-4.7 aptitude build-essential libqt4-dev libqtwebkit-dev libjack-dev libsndfile1-dev libasound2-dev libavahi-client-dev libicu-dev libreadline6-dev libfftw3-dev libxt-dev libudev-dev pkg-config cmake subversion libstdc++5
+ - iflin sudo apt-get install gcc-4.7 g++-4.7 aptitude build-essential libqt4-dev libqtwebkit-dev libjack-dev libsndfile1-dev libasound2-dev libavahi-client-dev libicu-dev libreadline6-dev libfftw3-dev libxt-dev libudev-dev pkg-config cmake=2.8.12.2-3 subversion libstdc++5
  - iflin sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.6 40 --slave /usr/bin/g++ g++ /usr/bin/g++-4.6 
  - iflin sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.7 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.7 
  - iflin sudo update-alternatives --auto gcc
@@ -23,14 +26,54 @@ before_install:
 before_script:
  - mkdir BUILD
  - cd BUILD
- - ifmac cmake -DCMAKE_PREFIX_PATH=/usr/local/Cellar/qt/4.8.5 -DSC_QT=1 .. --debug-output
- - iflin cmake -DSC_EL=no -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/qt4/ -DCMAKE_INSTALL_PREFIX:PATH=$PWD/Install -DCMAKE_BUILD_TYPE=Release .. --debug-output
- - iflin aptitude why libqt4-dev
+ - ifmac cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=`brew --prefix qt` -DSC_QT=1 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 .. --debug-output
+ - iflin cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/qt4/ -DCMAKE_INSTALL_PREFIX:PATH=$PWD/Install -DSC_EL=no .. --debug-output
 
-script: make
+script: 
+ - make install
+ 
+before_deploy:
+ # required for github releases
+ - git fetch --tags
+ - export COMMIT_NAME=$TRAVIS_COMMIT
+ - export BUILD_PREFIX=$TRAVIS_REPO_SLUG/$TRAVIS_OS_NAME
+ - export FWD_HTML='<html><head><meta http-equiv="refresh" content="0; url=SC-'$COMMIT_NAME'.zip" /></head></html>'
+ # put everything to be archived in artifacts/
+ - mkdir $HOME/artifacts
+ - cd Install
+ - zip -r $HOME/artifacts/SC-$COMMIT_NAME.zip SuperCollider
+ - echo $FWD_HTML > $HOME/artifacts/$TRAVIS_BRANCH-latest.html
+ - 'if [[ $TRAVIS_TAG != "head" ]]; then echo $FWD_HTML > $HOME/artifacts/$TRAVIS_TAG.html; fi;'
+
+deploy:
+ # s3 upload - every commit
+ - provider: s3
+   access_key_id: $AWS_KEY
+   secret_access_key: $AWS_SECRET
+   bucket: supercollider
+   local-dir: $HOME/artifacts
+   upload-dir: builds/$BUILD_PREFIX
+   region: us-west-2
+   skip_cleanup: true
+   endpoint: s3-us-west-2.amazonaws.com
+   acl: public_read
+   on:
+     condition: $TRAVIS_OS_NAME = osx
+     repo: supercollider/supercollider
+     all_branches: true
+ # github releases - only tags
+ - provider: releases
+   api_key:
+     secure: dT+wMo2ICRxBp0oIw/Iao+mUJLHDNcFtOrRUdU/5jX6ENdtabt2CDX+OJX3/SJNdDuNOaR+R1fr7qypQmxx/sHAuzH3uqYMuMH6z95zRHH8iS0iZgLOVfJ7U/O3EpgNLSqlqkRGwl2nDXqCvUJrnDnsXpEy4pbqQXHX5tzM9cQs=
+   file: $HOME/artifacts/SC-$COMMIT_NAME.zip
+   prerelease: true
+   skip_cleanup: true
+   on:
+     condition: $TRAVIS_OS_NAME = osx
+     repo: supercollider/supercollider
+     tags: true
+     all_branches: true
 
 notifications:
- email:
-   - scott@artificia.org
  on_success: change
- on_failure: always
+ on_failure: change

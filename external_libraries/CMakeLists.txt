@@ -44,7 +44,7 @@ if(NOT Boost_FOUND) # we compile boost ourselves
 		target_include_directories(boost_thread PUBLIC ${PTHREADS_INCLUDE_DIR})
 	endif()
 	if(WIN32)
-		target_add_definitions( boost_thread PRIVATE BOOST_THREAD_BUILD_LIB)
+		target_compile_definitions( boost_thread PRIVATE BOOST_THREAD_BUILD_LIB)
 	endif()
 
 
@@ -89,9 +89,11 @@ if(NOT YAMLCPP_FOUND)
 
   add_library(yaml STATIC ${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp)
   target_include_directories(yaml PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include)
+  set_property( TARGET yaml PROPERTY FOLDER 3rdparty )
 endif()
 
 
+set_property( TARGET oscpack tlsf boost_thread boost_program_options boost_system boost_filesystem PROPERTY FOLDER 3rdparty )
 
 
 ##### HID_API #######

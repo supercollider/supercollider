@@ -912,7 +912,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 bool MainWindow::close( Document *doc )
 {
-    if (doc->textDocument()->isModified())
+    if (doc->textDocument()->isModified() && doc->promptsToSave())
     {
         QMessageBox::StandardButton ret;
         ret = QMessageBox::warning(
@@ -1241,7 +1241,7 @@ bool MainWindow::promptSaveDocs()
     QList<Document*> docs = mMain->documentManager()->documents();
     QList<Document*> unsavedDocs;
     foreach(Document* doc, docs)
-        if(doc->textDocument()->isModified())
+        if(doc->textDocument()->isModified() && doc->promptsToSave())
             unsavedDocs.append(doc);
 
     if (!unsavedDocs.isEmpty()) {

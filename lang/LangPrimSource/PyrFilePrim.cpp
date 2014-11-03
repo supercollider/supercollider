@@ -321,23 +321,15 @@ int prFilePos(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a;
 	PyrFile *pfile;
 	FILE *file;
-	fpos_t pos;
-	int length;
+	long length;
 
 	a = g->sp;
 	pfile = (PyrFile*)slotRawObject(a);
 	file = (FILE*)slotRawPtr(&pfile->fileptr);
 	if (file == NULL) return errFailed;
-	if (fgetpos(file, &pos)) return errFailed;
+	if ((length=ftell(file)) == -1) return errFailed;
 
-#ifdef __linux__
-	// sk: hack alert!
-	length = pos.__pos;
-#else
-	length = pos;
-#endif
-
-	SetInt(a, length);
+	SetInt(a, (int)length);
 	return errNone;
 }
 

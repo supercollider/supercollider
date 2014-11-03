@@ -6,13 +6,6 @@ if(${CMAKE_COMPILER_IS_GNUCXX})
     add_definitions(-Wreorder)
 endif()
 
-if (APPLE)
-  include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
-  set(ide_name ${scappbundlename})
-else()
-  set(ide_name scide)
-endif()
-
 if(APPLE)
     if(NOT SC_SYMLINK_CLASSLIB)
         foreach(file ${ClassLibrary} ${HelpSource})
@@ -238,7 +231,12 @@ else()
     set_target_properties(SuperCollider PROPERTIES OUTPUT_NAME "scide")
 endif()
 
-target_link_libraries( SuperCollider ${QT_LIBRARIES} ${QT_QTNETWORK_LIBRARY} ${YAMLCPP_LIBRARY} )
+target_link_libraries( SuperCollider
+    ${QT_LIBRARIES}
+    ${QT_QTNETWORK_LIBRARY}
+    ${YAMLCPP_LIBRARY}
+    oscpack
+)
 
 if(Boost_FOUND)
     target_link_libraries( SuperCollider ${Boost_SYSTEM_LIBRARY} )
@@ -282,25 +280,6 @@ endif()
 # Installation
 
 if(APPLE)
-    add_dependencies(SuperCollider sclang scsynth ${plugins} ${supernova_plugins})
-    add_custom_command(TARGET SuperCollider POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:sclang> $<TARGET_FILE_DIR:SuperCollider>/../Resources)
-
-    add_custom_command(TARGET SuperCollider POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:scsynth> $<TARGET_FILE_DIR:SuperCollider>/../Resources)
-
-    if(TARGET supernova)
-        add_dependencies(SuperCollider supernova)
-        add_custom_command(TARGET SuperCollider POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:supernova> $<TARGET_FILE_DIR:SuperCollider>/../Resources)
-    endif()
-
-    foreach(plugin ${plugins} ${supernova_plugins})
-        add_custom_command(TARGET SuperCollider POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../Resources/plugins/
-            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${plugin}> $<TARGET_FILE_DIR:SuperCollider>/../Resources/plugins/)
-    endforeach()
-
 
     if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
         set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install" CACHE PATH "Install path prefix" FORCE)

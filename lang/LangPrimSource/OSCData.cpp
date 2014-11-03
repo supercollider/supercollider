@@ -388,7 +388,7 @@ static int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
 		SC_TcpClientPort *comPort = new SC_TcpClientPort(addr, port, netAddrTcpClientNotifyFunc, netAddrObj);
 		SetPtr(netAddrObj->slots + ivxNetAddr_Socket, comPort);
 	} catch (std::exception const & e) {
-		scprintf("NetAddr-Connect failed with exception: %s\n", e.what());
+		printf("NetAddr-Connect failed with exception: %s\n", e.what());
 		return errFailed;
 	}
 
@@ -658,7 +658,7 @@ static PyrObject* ConvertReplyAddress(ReplyAddress *inReply)
 	PyrObject *obj = instantiateObject(g->gc, s_netaddr->u.classobj, 2, true, false);
 	PyrSlot *slots = obj->slots;
 	SetInt(slots+0, inReply->mAddress.to_v4().to_ulong());
-	SetInt(slots+1, sc_ntohs(inReply->mPort));
+	SetInt(slots+1, inReply->mPort);
 	return obj;
 }
 

@@ -24,7 +24,7 @@ Scale {
 	}
 
 	*newFromKey { |key, tuning|
-		var scale = this.at(key);
+		var scale = this.at(key).deepCopy;
 		scale ?? { ("Unknown scale " ++ key.asString).warn; ^nil };
 		tuning !? { scale.tuning_(tuning.asTuning) };
 		^scale

@@ -22,6 +22,11 @@
 #include "SC_Win32Utils.h"
 #endif
 
+#ifdef __APPLE__
+#include "../../common/SC_Apple.hpp"
+#endif
+
+
 #include "SC_World.h"
 #include "SC_WorldOptions.h"
 #include "SC_HiddenWorld.h"
@@ -460,6 +465,12 @@ SC_DLLEXPORT_C World* World_New(WorldOptions *inOptions)
 				scprintf("start audio failed.\n");
 				return 0;
 			}
+			
+#ifdef __APPLE__
+			SC::Apple::disableAppNap();
+#endif
+			
+			
 		} else {
 			hw->mAudioDriver = 0;
 		}

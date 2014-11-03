@@ -85,7 +85,7 @@ if(APPLE)
 	set_property(DIRECTORY
 		APPEND
 		PROPERTY COMPILE_DEFINITIONS SC_DARWIN)
-elseif(CMAKE_SYSTEM_NAME MATCHES "Linux" OR CMAKE_SYSTEM_NAME MATCHES "FreeBSD" OR CMAKE_SYSTEM_NAME MATCHES "OpenBSD")
+elseif(UNIX)
 	add_definitions(-DSC_DATA_DIR="${CMAKE_INSTALL_PREFIX}/share/SuperCollider")
 endif()
 
@@ -204,7 +204,7 @@ else()
 endif()
 
 if(SYSTEM_YAMLCPP)
-  find_package(YamlCpp)
+  find_package(YamlCpp 0.3 EXACT)
 else()
   set(YAMLCPP_FOUND OFF)
 endif()
@@ -302,12 +302,19 @@ file(GLOB_RECURSE Sounds       sounds/*)
 file(GLOB_RECURSE Examples     examples/*)
 
 
+if(APPLE)
+  include(cmake_modules/MacAppFolder.cmake)
+  set(ide_name ${scappbundlename})
+else()
+  set(ide_name scide)
+endif()
+
 add_subdirectory(server)
 add_subdirectory(lang)
 add_subdirectory(platform)
 add_subdirectory(editors)
 
-if(CMAKE_SYSTEM_NAME MATCHES "Linux" OR CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
+if(UNIX AND NOT APPLE)
     install(DIRECTORY include/common include/plugin_interface include/server include/lang
         DESTINATION ${CMAKE_INSTALL_PREFIX}/include/SuperCollider
 	FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
@@ -320,7 +327,6 @@ endif()
 if (WIN32)
 	set(auxresourcesdir "SuperCollider")
 elseif(APPLE)
-	include(cmake_modules/MacAppFolder.cmake)
 	set(auxresourcesdir ${scappbundlename})
 else()
 	set(auxresourcesdir "share/SuperCollider")
@@ -370,7 +376,8 @@ else()
 endif()
 
 if(NOT APPLE)
-	install(DIRECTORY sounds DESTINATION ${auxresourcesdir})
+  install(DIRECTORY sounds   DESTINATION ${auxresourcesdir})
+  install(DIRECTORY examples DESTINATION ${auxresourcesdir})
 endif()
 
 set( AdditionalInstallFiles
@@ -382,7 +389,6 @@ set( AdditionalInstallFiles
      MOVED_STUFF.txt
     )
 
-install(DIRECTORY examples              DESTINATION ${auxresourcesdir})
 install(FILES ${AdditionalInstallFiles} DESTINATION ${auxresourcesdir})
 
 if(INSTALL_HELP)
@@ -393,13 +399,6 @@ if(INSTALL_HELP)
 		endif()
 		install( CODE
 					"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/HelpSource ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource )" )
-	else()
-		install(DIRECTORY HelpSource
-			DESTINATION ${auxresourcesdir}
-			REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
-			PATTERN "*~" EXCLUDE
-			PATTERN "*#" EXCLUDE
-		)
 	endif()
 endif()
 

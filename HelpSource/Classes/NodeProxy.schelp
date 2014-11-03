@@ -154,6 +154,51 @@ argument::obj
 can be one of the supported inputs (see link::#Supported sources::)
 
 
+
+
+subsection::Making copies
+
+method::copy
+copies the hidden internal state to make the new proxy independent of the old, but will keep the reference to the source object. The rendered SynthDef is cached, which makes this method more efficient than simply assigning the same function to a new proxy. By design, the monitor is copied, but is not running (use play to start it in the same configuration).
+
+code::
+a = NodeProxy(s);
+a.source = { |freq = 444| Blip.ar(freq * [1, 1.03], 200) * 0.1 };
+a.play;
+a.set(\freq, 555);
+b = a.copy;
+b.play;
+b.set(\freq, 222);
+::
+
+note::
+If needed, you can also copy parts of a proxy, such as the link::Classes/Monitor:: (which usually routs the output back onto hardware busses) and the link::Classes/NodeMap::, which keeps a mapping and setting scope.
+::
+
+code::
+s.scope(4);
+a = NodeProxy(s);
+a.source = { |freq = 234| Blip.ar(freq * [1, 1.03], 20) * 0.5 };
+a.playN([0, 1, 3], [0.04, 0.3, 0.1], vol: 1); // some complicated routing
+a.set(\freq, 123);
+
+b = NodeProxy(s);
+b.source = { |freq = 1000| SinOsc.ar(freq * 3 * {{ rrand(0.9, 1.1) }.dup(8) }.dup(2)).mean * 0.5 };
+b.monitor = a.monitor.copy;
+b.nodeMap = a.nodeMap.copy;
+b.play;
+a.stop;
+::
+
+
+method::copyState
+Copy the internal settings of one proxy into another. Old state is cleared.
+
+argument::proxy
+The proxy whose internal state is copied.
+
+
+
 subsection::Reshaping
 
 method::reshaping

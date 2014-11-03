@@ -73,6 +73,13 @@ set(scsynth_sources
 
 if(APPLE)
 	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
+	
+	list(APPEND scsynth_sources 
+		${CMAKE_SOURCE_DIR}/common/SC_Apple.mm
+	)
+	set_source_files_properties( ${CMAKE_SOURCE_DIR}/common/SC_Apple.mm
+	    PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-exceptions"
+	)
 endif()
 
 if(WIN32)
@@ -139,7 +146,7 @@ elseif(NOT NO_LIBSNDFILE)
 	message(SEND_ERROR "Cannot find libsndfile")
 endif(SNDFILE_FOUND)
 
-if(CMAKE_SYSTEM_NAME MATCHES "Linux" OR CMAKE_SYSTEM_NAME MATCHES "FreeBSD" OR CMAKE_SYSTEM_NAME MATCHES "OpenBSD")
+if(UNIX AND NOT APPLE)
 	target_compile_definitions(libscsynth PUBLIC "SC_PLUGIN_DIR=\"${CMAKE_INSTALL_PREFIX}/lib/SuperCollider/plugins\"")
 endif()
 
@@ -225,13 +232,13 @@ else()
 endif()
 
 if(APPLE)
-	# TODO allow apple users to install to fhs-ish path if INSTALL_FHS option is enabled
-	# determines the app name and app install location (scappbundlename, scappdir):
-	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
-	install(TARGETS ${INSTALL_TARGETS}
-			RUNTIME DESTINATION "${scappauxresourcesdir}"
-			LIBRARY DESTINATION "${scappauxresourcesdir}"
-			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE OWNER_WRITE)
+    if(CMAKE_GENERATOR MATCHES Xcode)
+        set_property(TARGET scsynth PROPERTY RUNTIME_OUTPUT_DIRECTORY_DEBUG   "${CMAKE_BINARY_DIR}/editors/sc-ide/Debug/${ide_name}.app/Contents/Resources/")
+        set_property(TARGET scsynth PROPERTY RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/editors/sc-ide/Release/${ide_name}.app/Contents/Resources/")
+    else()
+        set_property(TARGET scsynth
+                     PROPERTY RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/editors/sc-ide/${ide_name}.app/Contents/Resources/")
+    endif()
 elseif(WIN32)
 	install(TARGETS ${INSTALL_TARGETS}
 			DESTINATION "SuperCollider"

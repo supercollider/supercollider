@@ -57,7 +57,7 @@ public:
 
     void post() BOOST_NOEXCEPT
     {
-        unsigned int old_state = m_state.load(detail::atomic_ns::memory_order_acquire);
+        unsigned int old_state = m_state.load(detail::atomic_ns::memory_order_relaxed);
         unsigned int waiters, posts;
         while (true)
         {
@@ -65,13 +65,16 @@ public:
             posts = old_state >> post_count_lowest_bit;
             if (waiters >= posts)
             {
-                if (m_state.compare_exchange_weak(old_state, old_state + post_count_one, detail::atomic_ns::memory_order_acquire, detail::atomic_ns::memory_order_release))
+                if (m_state.compare_exchange_weak(old_state, old_state + post_count_one, detail::atomic_ns::memory_order_release, detail::atomic_ns::memory_order_relaxed))
                     break;
 
                 detail::pause();
             }
             else
+            {
+                detail::atomic_ns::atomic_thread_fence(detail::atomic_ns::memory_order_release);
                 return; // the event is already set (enough times so that all waiters are released and the event is still left signalled)
+            }
         }
 
         if (waiters > 0)
@@ -85,7 +88,7 @@ public:
             return;
 
         // Add one waiter
-        unsigned int old_state = m_state.fetch_add(1, detail::atomic_ns::memory_order_acq_rel);
+        unsigned int old_state = m_state.fetch_add(1, detail::atomic_ns::memory_order_relaxed);
         while (true)
         {
             unsigned int posts = old_state >> post_count_lowest_bit;
@@ -109,25 +112,25 @@ public:
                     }
                 }
 
-                old_state = m_state.load(detail::atomic_ns::memory_order_acquire);
+                old_state = m_state.load(detail::atomic_ns::memory_order_relaxed);
                 posts = old_state >> post_count_lowest_bit;
                 if (posts == 0)
                     goto again;
             }
 
             // Remove one post and one waiter from the counters
-            if (m_state.compare_exchange_strong(old_state, old_state - (post_count_one + 1u), detail::atomic_ns::memory_order_acquire, detail::atomic_ns::memory_order_release))
+            if (m_state.compare_exchange_strong(old_state, old_state - (post_count_one + 1u), detail::atomic_ns::memory_order_acquire, detail::atomic_ns::memory_order_relaxed))
                 break;
         }
     }
 
     bool try_wait() BOOST_NOEXCEPT
     {
-        unsigned int old_state = m_state.load(detail::atomic_ns::memory_order_acquire);
+        unsigned int old_state = m_state.load(detail::atomic_ns::memory_order_relaxed);
 
         for (unsigned int posts = old_state >> post_count_lowest_bit; posts > 0; posts = old_state >> post_count_lowest_bit)
         {
-            if (m_state.compare_exchange_weak(old_state, old_state - post_count_one, detail::atomic_ns::memory_order_acquire, detail::atomic_ns::memory_order_release))
+            if (m_state.compare_exchange_weak(old_state, old_state - post_count_one, detail::atomic_ns::memory_order_acquire, detail::atomic_ns::memory_order_relaxed))
                 return true;
 
             detail::pause();
@@ -162,7 +165,7 @@ private:
             return true;
 
         // Add one waiter
-        unsigned int old_state = m_state.fetch_add(1, detail::atomic_ns::memory_order_acq_rel);
+        unsigned int old_state = m_state.fetch_add(1, detail::atomic_ns::memory_order_relaxed);
         while (true)
         {
             unsigned int posts = old_state >> post_count_lowest_bit;
@@ -192,14 +195,14 @@ private:
                     }
                 }
 
-                old_state = m_state.load(detail::atomic_ns::memory_order_acquire);
+                old_state = m_state.load(detail::atomic_ns::memory_order_relaxed);
                 posts = old_state >> post_count_lowest_bit;
                 if (posts == 0)
                     goto again;
             }
 
             // Remove one post and one waiter from the counters
-            if (m_state.compare_exchange_strong(old_state, old_state - (post_count_one + 1u), detail::atomic_ns::memory_order_acquire, detail::atomic_ns::memory_order_release))
+            if (m_state.compare_exchange_strong(old_state, old_state - (post_count_one + 1u), detail::atomic_ns::memory_order_acquire, detail::atomic_ns::memory_order_relaxed))
                 break;
         }
 
@@ -217,7 +220,7 @@ private:
             return false;
 
         // Add one waiter
-        unsigned int old_state = m_state.fetch_add(1, detail::atomic_ns::memory_order_acq_rel);
+        unsigned int old_state = m_state.fetch_add(1, detail::atomic_ns::memory_order_relaxed);
         while (true)
         {
             unsigned int posts = old_state >> post_count_lowest_bit;
@@ -244,14 +247,14 @@ private:
                     }
                 }
 
-                old_state = m_state.load(detail::atomic_ns::memory_order_acquire);
+                old_state = m_state.load(detail::atomic_ns::memory_order_relaxed);
                 posts = old_state >> post_count_lowest_bit;
                 if (posts == 0)
                     goto again;
             }
 
             // Remove one post and one waiter from the counters
-            if (m_state.compare_exchange_strong(old_state, old_state - (post_count_one + 1u), detail::atomic_ns::memory_order_acquire, detail::atomic_ns::memory_order_release))
+            if (m_state.compare_exchange_strong(old_state, old_state - (post_count_one + 1u), detail::atomic_ns::memory_order_acquire, detail::atomic_ns::memory_order_relaxed))
                 break;
         }
 
@@ -278,20 +281,20 @@ private:
 
     bool on_wait_timed_out()
     {
-        unsigned int old_state = m_state.load(detail::atomic_ns::memory_order_acquire);
+        unsigned int old_state = m_state.load(detail::atomic_ns::memory_order_relaxed);
         while (true)
         {
             unsigned int posts = old_state >> post_count_lowest_bit;
             if (posts == 0)
             {
                 // Remove one waiter
-                if (m_state.compare_exchange_weak(old_state, old_state - 1u, detail::atomic_ns::memory_order_acquire, detail::atomic_ns::memory_order_release))
+                if (m_state.compare_exchange_weak(old_state, old_state - 1u, detail::atomic_ns::memory_order_relaxed, detail::atomic_ns::memory_order_relaxed))
                     return false;
             }
             else
             {
                 // Remove one post and one waiter from the counters
-                if (m_state.compare_exchange_weak(old_state, old_state - (post_count_one + 1u), detail::atomic_ns::memory_order_acquire, detail::atomic_ns::memory_order_release))
+                if (m_state.compare_exchange_weak(old_state, old_state - (post_count_one + 1u), detail::atomic_ns::memory_order_acquire, detail::atomic_ns::memory_order_relaxed))
                     return true;
             }
 

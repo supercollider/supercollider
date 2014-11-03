@@ -255,11 +255,23 @@ if (WIN32)
 	install(TARGETS ${plugins} ${supernova_plugins}
 			DESTINATION "SuperCollider/plugins"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+elseif(APPLE)
+
+    if(CMAKE_GENERATOR MATCHES Xcode)
+        set_property(TARGET  ${plugins} ${supernova_plugins} PROPERTY LIBRARY_OUTPUT_DIRECTORY_DEBUG   "${CMAKE_BINARY_DIR}/editors/sc-ide/Debug/${ide_name}.app/Contents/Resources/plugins/")
+        set_property(TARGET  ${plugins} ${supernova_plugins} PROPERTY LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/editors/sc-ide/Release/${ide_name}.app/Contents/Resources/plugins/")
+    else()
+        set_property(TARGET  ${plugins} ${supernova_plugins}
+                     PROPERTY LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/editors/sc-ide/${ide_name}.app/Contents/Resources/plugins/")
+    endif()
+
 elseif(NOT APPLE)
 	install(TARGETS ${plugins} ${supernova_plugins}
 			DESTINATION "lib/SuperCollider/plugins"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endif()
+
+set_property(TARGET ${plugins} ${supernova_plugins} PROPERTY FOLDER UnitGenerators)
 
 set(plugins "${plugins}" PARENT_SCOPE)
 set(supernova_plugins "${supernova_plugins}" PARENT_SCOPE)

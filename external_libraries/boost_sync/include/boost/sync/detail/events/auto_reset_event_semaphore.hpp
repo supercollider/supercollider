@@ -42,12 +42,12 @@ public:
 
     void post() BOOST_NOEXCEPT
     {
-        int32_t old_state = m_state.load(detail::atomic_ns::memory_order_acquire);
+        int32_t old_state = m_state.load(detail::atomic_ns::memory_order_relaxed);
         if (old_state >= 0)
         {
             for (;;)
             {
-                if (m_state.compare_exchange_weak(old_state, old_state - 1, detail::atomic_ns::memory_order_release, detail::atomic_ns::memory_order_acquire))
+                if (m_state.compare_exchange_weak(old_state, old_state - 1, detail::atomic_ns::memory_order_release, detail::atomic_ns::memory_order_relaxed))
                 {
                     m_sem.post();
                     return; // avoid unnecessary fence

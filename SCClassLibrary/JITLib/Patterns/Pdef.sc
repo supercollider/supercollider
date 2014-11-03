@@ -149,6 +149,15 @@ PatternProxy : Pattern {
 
 	storeArgs { ^[pattern] }
 
+	copy {
+		^super.copy.copyState(this)
+	}
+
+	copyState { |proxy|
+		envir = proxy.envir.copy;
+		this.source = proxy.source;
+	}
+
 
 	// these following methods are factored out for the benefit of subclasses
 	// they only work for Pdef/Tdef/Pdefn.
@@ -259,6 +268,10 @@ Pdefn : PatternProxy {
 	}
 
 	storeArgs { ^[key] } // assume it was created globally
+	copy { |toKey|
+		if(key == toKey) { Error("cannot copy to identical key").throw };
+		^this.class.new(toKey).copyState(this)
+	}
 
 	prAdd { arg argKey;
 		key = argKey;
@@ -395,6 +408,11 @@ Tdef : TaskProxy {
 	}
 
 	storeArgs { ^[key] }
+
+	copy { |toKey|
+		if(key == toKey) { Error("cannot copy to identical key").throw };
+		^this.class.new(toKey).copyState(this)
+	}
 
 	prAdd { arg argKey;
 		key = argKey;
@@ -581,6 +599,11 @@ Pdef : EventPatternProxy {
 	prAdd { arg argKey;
 		key = argKey;
 		all.put(argKey, this);
+	}
+
+	copy { |toKey|
+		if(key == toKey) { Error("cannot copy to identical key").throw };
+		^this.class.new(toKey).copyState(this)
 	}
 
 	*hasGlobalDictionary { ^true }

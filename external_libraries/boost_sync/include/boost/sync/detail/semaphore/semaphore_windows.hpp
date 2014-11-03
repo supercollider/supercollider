@@ -19,8 +19,9 @@
 #include <boost/detail/winapi/handles.hpp>
 #include <boost/sync/detail/config.hpp>
 #include <boost/sync/detail/throw_exception.hpp>
-#include <boost/sync/exceptions/resource_error.hpp>
+#include <boost/sync/exceptions/lock_error.hpp>
 #include <boost/sync/exceptions/overflow_error.hpp>
+#include <boost/sync/exceptions/resource_error.hpp>
 #include <boost/sync/exceptions/wait_error.hpp>
 #include <boost/sync/detail/time_traits.hpp>
 #include <boost/sync/detail/time_units.hpp>

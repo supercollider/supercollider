@@ -52,7 +52,7 @@
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 
 #if (__GNUC__ * 100 + __GNUC_MINOR__) >= 407
-// typedef ‘foo’ locally defined but not used
+// typedef 'foo' locally defined but not used
 #pragma GCC diagnostic ignored "-Wunused-local-typedefs"
 #endif
 

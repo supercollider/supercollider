@@ -187,7 +187,7 @@ public:
         mLabel->setTextFormat( Qt::RichText );
         mLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-#ifdef Q_WS_X11
+#if defined(Q_WS_X11) && !defined(__NetBSD__)
         QStyle *style = this->style();
         if (QProxyStyle *proxyStyle = qobject_cast<QProxyStyle*>(style))
             style = proxyStyle->baseStyle();
