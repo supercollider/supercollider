@@ -199,7 +199,7 @@ else()
 	add_library(libsclang STATIC ${sclang_sources} ${sclang_parser_source})
 endif()
 
-target_compile_definitions(libsclang PRIVATE YYSTACK_USE_ALLOC BUILDING_SUPERCOLLIDER)
+target_compile_definitions(libsclang PRIVATE YYSTACK_USE_ALLOC)
 target_link_libraries(libsclang tlsf ${PTHREADS_LIBRARIES})
 
 if(SC_IDE OR SC_QT)

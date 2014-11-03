@@ -112,7 +112,7 @@ endif()
 
 set (FINAL_BUILD 0) # disable final build for scsynth
 
-if (LIBSCSYNTH)
+if(LIBSCSYNTH)
 	set (LIBSCSYNTH_TYPE SHARED)
 else()
 	set (LIBSCSYNTH_TYPE STATIC)
@@ -127,7 +127,12 @@ else()
 	add_library(libscsynth ${LIBSCSYNTH_TYPE} ${scsynth_sources} ${all_headers})
 endif()
 
-target_compile_definitions(libscsynth PRIVATE BUILDING_SUPERCOLLIDER)
+
+if(LIBSCSYNTH)
+        target_compile_definitions(libscsynth PRIVATE   BUILDING_SUPERCOLLIDER)
+        target_compile_definitions(libscsynth INTERFACE USING_SUPERCOLLIDER)
+endif()
+
 target_compile_definitions(libscsynth PUBLIC  SC_MEMORY_ALIGNMENT=32)
 
 target_link_libraries(libscsynth tlsf)
