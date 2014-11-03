@@ -42,9 +42,12 @@
 #ifdef BUILDING_SUPERCOLLIDER // if SuperCollider is being built, instead of used
 #  define SC_DLLEXPORT_C C_LINKAGE SC_API_EXPORT
 #  define SC_DLLEXPORT SC_API_EXPORT
-#else
+#elif defined(USING_SUPERCOLLIDER)
 #  define SC_DLLEXPORT_C C_LINKAGE SC_API_IMPORT
 #  define SC_DLLEXPORT SC_API_IMPORT
+#else
+#  define SC_DLLEXPORT_C C_LINKAGE
+#  define SC_DLLEXPORT /*SC_API_IMPORT*/
 #endif
 
 #endif
