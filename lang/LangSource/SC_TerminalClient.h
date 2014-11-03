@@ -176,7 +176,7 @@ private:
 #ifndef _WIN32
 	boost::asio::posix::stream_descriptor   mStdIn;
 #else
-	boost::asio::windows::stream_descriptor mStdIn;
+	boost::asio::windows::stream_handle mStdIn;
 #endif
 	void startInputRead();
 	void onInputRead(const boost::system::error_code& error, std::size_t bytes_transferred);

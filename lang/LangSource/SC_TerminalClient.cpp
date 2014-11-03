@@ -508,9 +508,11 @@ void SC_TerminalClient::readlineInit()
 
 void SC_TerminalClient::startInputRead()
 {
+#ifdef HAVE_READLINE
 	if (mUseReadline)
 		mStdIn.async_read_some(boost::asio::null_buffers(), boost::bind(&SC_TerminalClient::onInputRead, this, _1, _2));
 	else
+#endif
 		mStdIn.async_read_some(boost::asio::buffer(inputBuffer), boost::bind(&SC_TerminalClient::onInputRead, this, _1, _2));
 }
 
