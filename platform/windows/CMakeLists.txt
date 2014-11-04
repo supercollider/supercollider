@@ -2,9 +2,9 @@ install(FILES ${CMAKE_SOURCE_DIR}/COPYING
     DESTINATION SuperCollider
     RENAME LICENSE.txt
 )
-install(FILES ${CMAKE_SOURCE_DIR}/README_WINDOWS.txt
+install(FILES ${CMAKE_SOURCE_DIR}/README_WINDOWS.md
     DESTINATION SuperCollider
-    RENAME README.txt
+    RENAME README.md
 )
 install(FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/sc_cube.ico
     DESTINATION .
