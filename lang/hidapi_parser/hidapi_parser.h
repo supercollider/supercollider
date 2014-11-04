@@ -182,6 +182,12 @@ int hid_parse_input_elements_values( unsigned char* buf, struct hid_dev_desc * d
 void hid_parse_element_info( struct hid_dev_desc * devdesc );
 #endif
 
+#ifdef WIN32
+int hid_send_element_output( struct hid_dev_desc * devdesc, struct hid_device_element * element );
+int hid_parse_input_elements_values( unsigned char* buf, struct hid_dev_desc * devdesc );
+void hid_parse_element_info( struct hid_dev_desc * devdesc );
+#endif
+
 #ifdef __cplusplus /* If this is a C++ compiler, end C linkage */
 }
 #endif

@@ -877,7 +877,11 @@ int hid_parse_input_report( unsigned char* buf, int size, struct hid_dev_desc * 
 
 #ifdef APPLE  
   return hid_parse_input_elements_values( buf, devdesc );
-#else
+#endif
+#ifdef WIN32
+  return hid_parse_input_elements_values( buf, devdesc );
+#endif
+#ifdef LINUX_FREEBSD
   struct hid_parsing_byte pbyte; 
   pbyte.nextVal = 0;
   pbyte.currentSize = 10;
@@ -1117,7 +1121,14 @@ struct hid_dev_desc * hid_read_descriptor( hid_device * devd ){
   desc->device = devd;
   hid_parse_element_info( desc );
   return desc;
-#else  
+#endif
+#ifdef WIN32
+  desc = (struct hid_dev_desc *) malloc( sizeof( struct hid_dev_desc ) );
+  desc->device = devd;
+  hid_parse_element_info( desc );
+  return desc;
+#endif
+#ifdef LINUX_FREEBSD
   unsigned char descr_buf[HIDAPI_MAX_DESCRIPTOR_SIZE];
   int res;
   res = hid_get_report_descriptor( devd, descr_buf, HIDAPI_MAX_DESCRIPTOR_SIZE );
@@ -1209,10 +1220,28 @@ void hid_element_set_output_value( struct hid_dev_desc * devdesc, struct hid_dev
     element->value = value;
 #ifdef APPLE    
     hid_send_element_output( devdesc, element );
-#else
+#endif
+#ifdef WIN32
+    hid_send_element_output( devdesc, element );
+#endif
+#ifdef LINUX_FREEBSD
     hid_send_output_report( devdesc, element->report_id );
 #endif
 }
+
+
+#ifdef WIN32
+int hid_send_element_output( struct hid_dev_desc * devdesc, struct hid_device_element * element ){
+
+}
+int hid_parse_input_elements_values( unsigned char* buf, struct hid_dev_desc * devdesc ){
+
+}
+void hid_parse_element_info( struct hid_dev_desc * devdesc ){
+
+}
+#endif
+
 
 #ifdef APPLE
 
