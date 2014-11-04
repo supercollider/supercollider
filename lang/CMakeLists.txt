@@ -90,7 +90,7 @@ set(sclang_sources
 
 if(APPLE)
 	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
-	
+
 	list(APPEND sclang_sources ${CMAKE_SOURCE_DIR}/common/SC_Apple.mm)
 	set_source_files_properties(${CMAKE_SOURCE_DIR}/common/SC_Apple.mm PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-exceptions")
 endif()
@@ -327,12 +327,13 @@ if(LTO)
 endif()
 
 if(APPLE)
-	# determines the app name and app install location (scappbundlename, scappdir):
-	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
-
-	install(TARGETS sclang
-			DESTINATION "${scappbindir}"
-			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+    if(CMAKE_GENERATOR MATCHES Xcode)
+        set_property(TARGET sclang PROPERTY RUNTIME_OUTPUT_DIRECTORY_DEBUG   "${CMAKE_BINARY_DIR}/editors/sc-ide/Debug/${ide_name}.app/Contents/Resources/")
+        set_property(TARGET sclang PROPERTY RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/editors/sc-ide/Release/${ide_name}.app/Contents/Resources/")
+    else()
+        set_property(TARGET sclang
+                     PROPERTY RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/editors/sc-ide/${ide_name}.app/Contents/Resources/")
+    endif()
 elseif(WIN32)
 	install(TARGETS sclang
 			DESTINATION "SuperCollider"

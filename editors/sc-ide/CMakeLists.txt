@@ -16,7 +16,7 @@ find_package(Qt5Qml)
 find_package(Qt5Sql)
 find_package(Qt5Positioning)
 
-set(QT_IDE_LIBRARIES 
+set(QT_IDE_LIBRARIES
     Qt5::Core Qt5::WebKitWidgets Qt5::OpenGL Qt5::PrintSupport Qt5::Sensors Qt5::Quick Qt5::Qml Qt5::Sql Qt5::Positioning)
 
 if(${CMAKE_COMPILER_IS_GNUCXX})
@@ -173,7 +173,7 @@ if(APPLE)
 endif()
 
 if(APPLE)
-	list(APPEND ide_src 
+	list(APPEND ide_src
         ${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp
         ${CMAKE_SOURCE_DIR}/QtCollider/hacks/hacks_mac.mm
     )
@@ -256,8 +256,11 @@ else()
     set_target_properties(SuperCollider PROPERTIES OUTPUT_NAME "scide")
 endif()
 
-target_link_libraries(SuperCollider ${QT_IDE_LIBRARIES})
-target_link_libraries(SuperCollider ${YAMLCPP_LIBRARY})
+target_link_libraries( SuperCollider
+    ${QT_IDE_LIBRARIES}
+    ${YAMLCPP_LIBRARY}
+    oscpack
+)
 
 if(Boost_FOUND)
     target_link_libraries( SuperCollider ${Boost_SYSTEM_LIBRARY} )
