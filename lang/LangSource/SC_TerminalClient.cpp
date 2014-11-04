@@ -665,7 +665,7 @@ int SC_TerminalClient::prRecompile(struct VMGlobals *, int)
 	return errNone;
 }
 
-SC_DLLEXPORT SC_LanguageClient * createLanguageClient(const char * name)
+SCLANG_DLLEXPORT SC_LanguageClient * createLanguageClient(const char * name)
 {
 	if (SC_LanguageClient::instance())
 		return NULL;
@@ -681,7 +681,7 @@ SC_DLLEXPORT SC_LanguageClient * createLanguageClient(const char * name)
 #endif
 }
 
-SC_DLLEXPORT void destroyLanguageClient(class SC_LanguageClient * languageClient)
+SCLANG_DLLEXPORT void destroyLanguageClient(class SC_LanguageClient * languageClient)
 {
 	delete languageClient;
 }

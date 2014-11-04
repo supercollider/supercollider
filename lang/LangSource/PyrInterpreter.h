@@ -43,6 +43,6 @@ void DumpFrame(struct PyrFrame *frame);
 bool FrameSanity(PyrFrame *frame, const char *tagstr);
 struct PyrProcess* newPyrProcess(VMGlobals *g, struct PyrClass *classobj);
 void startProcess(VMGlobals *g, PyrSymbol *selector);
-SC_DLLEXPORT_C void runInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed);
+SCLANG_DLLEXPORT_C void runInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed);
 
 #endif
