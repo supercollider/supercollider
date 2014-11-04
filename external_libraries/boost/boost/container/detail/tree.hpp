@@ -11,6 +11,10 @@
 #ifndef BOOST_CONTAINER_TREE_HPP
 #define BOOST_CONTAINER_TREE_HPP
 
+#if defined(_MSC_VER)
+#  pragma once
+#endif
+
 #include <boost/container/detail/config_begin.hpp>
 #include <boost/container/detail/workaround.hpp>
 #include <boost/container/container_fwd.hpp>
@@ -32,9 +36,9 @@
 #include <boost/intrusive/splaytree.hpp>
 #include <boost/intrusive/sgtree.hpp>
 //
-#include <boost/move/utility.hpp>
+#include <boost/move/utility_core.hpp>
 #include <boost/type_traits/has_trivial_destructor.hpp>
-#include <boost/detail/no_exceptions_support.hpp>
+#include <boost/core/no_exceptions_support.hpp>
 //
 #ifndef BOOST_CONTAINER_PERFECT_FORWARDING
 #include <boost/container/detail/preprocessor.hpp>
@@ -214,6 +218,11 @@ struct tree_node
    template<class V>
    void do_move_assign(V &v)
    {  m_data = ::boost::move(v); }
+};
+
+template <class T, class VoidPointer, boost::container::tree_type_enum tree_type_value, bool OptimizeSize>
+struct iiterator_node_value_type< tree_node<T, VoidPointer, tree_type_value, OptimizeSize> > {
+  typedef T type;
 };
 
 template<class Node, class Icont>
@@ -510,10 +519,10 @@ class tree
    typedef key_node_compare<value_compare, Node>  KeyNodeCompare;
 
    public:
-   typedef container_detail::iterator<iiterator, false>  iterator;
-   typedef container_detail::iterator<iiterator, true >  const_iterator;
-   typedef std::reverse_iterator<iterator>        reverse_iterator;
-   typedef std::reverse_iterator<const_iterator>  const_reverse_iterator;
+   typedef container_detail::iterator<iiterator, false>        iterator;
+   typedef container_detail::iterator<iiterator, true >        const_iterator;
+   typedef container_detail::reverse_iterator<iterator>        reverse_iterator;
+   typedef container_detail::reverse_iterator<const_iterator>  const_reverse_iterator;
 
    tree()
       : AllocHolder(ValComp(key_compare()))

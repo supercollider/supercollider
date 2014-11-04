@@ -11,6 +11,10 @@
 #ifndef BOOST_INTERPROCESS_DETAIL_PTIME_TO_TIMESPEC_HPP
 #define BOOST_INTERPROCESS_DETAIL_PTIME_TO_TIMESPEC_HPP
 
+#if defined(_MSC_VER)
+#  pragma once
+#endif
+
 #include <boost/interprocess/detail/posix_time_types_wrk.hpp>
 
 namespace boost {

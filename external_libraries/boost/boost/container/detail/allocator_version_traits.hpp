@@ -26,7 +26,7 @@
 #include <boost/container/detail/mpl.hpp>                   //integral_constant
 #include <boost/intrusive/pointer_traits.hpp>               //pointer_traits
 #include <utility>                                          //pair
-#include <boost/detail/no_exceptions_support.hpp>           //BOOST_TRY
+#include <boost/core/no_exceptions_support.hpp>             //BOOST_TRY
 
 namespace boost {
 namespace container {

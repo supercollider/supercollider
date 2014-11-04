@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2007-2013
+// (C) Copyright Ion Gaztanaga 2007-2014
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -18,12 +18,15 @@
 #ifndef BOOST_INTRUSIVE_SGTREE_HPP
 #define BOOST_INTRUSIVE_SGTREE_HPP
 
+#if defined(_MSC_VER)
+#  pragma once
+#endif
+
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/intrusive_fwd.hpp>
 #include <algorithm>
 #include <cstddef>
 #include <functional>
-#include <iterator>
 #include <utility>
 #include <cmath>
 #include <cstddef>
@@ -32,14 +35,14 @@
 #include <boost/intrusive/bs_set_hook.hpp>
 #include <boost/intrusive/bstree.hpp>
 #include <boost/intrusive/detail/tree_node.hpp>
-#include <boost/intrusive/detail/ebo_functor_holder.hpp>
 #include <boost/intrusive/pointer_traits.hpp>
 #include <boost/intrusive/detail/mpl.hpp>
-#include <boost/intrusive/detail/utilities.hpp>
-#include <boost/intrusive/options.hpp>
+#include <boost/intrusive/detail/math.hpp>
+#include <boost/intrusive/detail/get_value_traits.hpp>
 #include <boost/intrusive/sgtree_algorithms.hpp>
+#include <boost/intrusive/detail/key_nodeptr_comp.hpp>
 #include <boost/intrusive/link_mode.hpp>
-#include <boost/move/move.hpp>
+#include <boost/move/utility_core.hpp>
 
 namespace boost {
 namespace intrusive {
@@ -192,7 +195,7 @@ struct alpha_holder<false, SizeType>
 
 struct sgtree_defaults
 {
-   typedef detail::default_bstree_hook proto_value_traits;
+   typedef default_bstree_hook_applier proto_value_traits;
    static const bool constant_time_size = true;
    typedef std::size_t size_type;
    typedef void compare;

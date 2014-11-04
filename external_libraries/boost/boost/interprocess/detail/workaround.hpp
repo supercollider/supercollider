@@ -11,6 +11,10 @@
 #ifndef BOOST_INTERPROCESS_DETAIL_WORKAROUND_HPP
 #define BOOST_INTERPROCESS_DETAIL_WORKAROUND_HPP
 
+#if defined(_MSC_VER)
+#  pragma once
+#endif
+
 #include <boost/interprocess/detail/config_begin.hpp>
 
 #if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
@@ -176,6 +180,10 @@
 #elif defined (__GNUC__)
    #define BOOST_INTERPROCESS_NEVER_INLINE __attribute__((__noinline__))
 #endif
+
+//Macros for documentation purposes. For code, expands to the argument
+#define BOOST_INTERPROCESS_IMPDEF(TYPE) TYPE
+#define BOOST_INTERPROCESS_SEEDOC(TYPE) TYPE
 
 #if defined(BOOST_NO_CXX11_NOEXCEPT)
    #if defined(BOOST_MSVC)

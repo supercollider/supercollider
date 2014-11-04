@@ -22,7 +22,9 @@
 #ifndef BOOST_INTRUSIVE_DETAIL_FUNCTION_DETECTOR_HPP
 #define BOOST_INTRUSIVE_DETAIL_FUNCTION_DETECTOR_HPP
 
-#include <boost/intrusive/detail/config_begin.hpp>
+#if defined(_MSC_VER)
+#  pragma once
+#endif
 
 namespace boost {
 namespace intrusive {
@@ -82,7 +84,5 @@ namespace function_detector {
                                          ReturnType (Class::*)Params const,\
                                          ReturnType (*)Params \
                                        >::check
-
-#include <boost/intrusive/detail/config_end.hpp>
 
 #endif   //@ifndef BOOST_INTRUSIVE_DETAIL_FUNCTION_DETECTOR_HPP
