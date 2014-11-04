@@ -40,7 +40,7 @@
 // =====================================================================
 
 // TODO: move locks & thread out of the header, possibly using pimpl
-class SC_DLLEXPORT SC_TerminalClient : public SC_LanguageClient
+class SCLANG_DLLEXPORT SC_TerminalClient : public SC_LanguageClient
 {
 public:
 	enum

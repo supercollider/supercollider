@@ -61,7 +61,7 @@ void traverseDepTree2(ClassDependancy *classdep, int level);
 void compileClassExtensions();
 void compileClass(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset);
 
-SC_DLLEXPORT_C void runLibrary(PyrSymbol* selector);
+SCLANG_DLLEXPORT_C void runLibrary(PyrSymbol* selector);
 
 void interpretCmdLine(const char *textbuf, int textlen, char *methodname);
 

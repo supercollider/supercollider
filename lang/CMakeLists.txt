@@ -215,9 +215,10 @@ if(SC_IDE OR SC_QT)
 	#qt5_use_modules(libsclang Core Network Gui WebKit Widgets WebKitWidgets)
 endif()
 
-set_property(TARGET libsclang
-	APPEND
-	PROPERTY COMPILE_DEFINITIONS BUILDING_SUPERCOLLIDER)
+if(FALSE) # libsclang is a shared library
+  target_compile_definitions(libsclang PRIVATE   BUILDING_SCLANG)
+  target_compile_definitions(libsclang INTERFACE BUILDING_SCLANG)
+endif()
 
 target_compile_definitions(libsclang PRIVATE HAVE_HIDAPI)
 

@@ -129,8 +129,8 @@ endif()
 
 
 if(LIBSCSYNTH)
-        target_compile_definitions(libscsynth PRIVATE   BUILDING_SUPERCOLLIDER)
-        target_compile_definitions(libscsynth INTERFACE USING_SUPERCOLLIDER)
+        target_compile_definitions(libscsynth PRIVATE   BUILDING_SCSYNTH)
+        target_compile_definitions(libscsynth INTERFACE BUILDING_SCSYNTH)
 endif()
 
 target_compile_definitions(libscsynth PUBLIC  SC_MEMORY_ALIGNMENT=32)
