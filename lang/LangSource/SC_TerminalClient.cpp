@@ -508,9 +508,11 @@ void SC_TerminalClient::readlineInit()
 
 void SC_TerminalClient::startInputRead()
 {
+#ifdef HAVE_READLINE
 	if (mUseReadline)
 		mStdIn.async_read_some(boost::asio::null_buffers(), boost::bind(&SC_TerminalClient::onInputRead, this, _1, _2));
 	else
+#endif
 		mStdIn.async_read_some(boost::asio::buffer(inputBuffer), boost::bind(&SC_TerminalClient::onInputRead, this, _1, _2));
 }
 
@@ -663,7 +665,7 @@ int SC_TerminalClient::prRecompile(struct VMGlobals *, int)
 	return errNone;
 }
 
-SC_DLLEXPORT SC_LanguageClient * createLanguageClient(const char * name)
+SCLANG_DLLEXPORT SC_LanguageClient * createLanguageClient(const char * name)
 {
 	if (SC_LanguageClient::instance())
 		return NULL;
@@ -679,7 +681,7 @@ SC_DLLEXPORT SC_LanguageClient * createLanguageClient(const char * name)
 #endif
 }
 
-SC_DLLEXPORT void destroyLanguageClient(class SC_LanguageClient * languageClient)
+SCLANG_DLLEXPORT void destroyLanguageClient(class SC_LanguageClient * languageClient)
 {
 	delete languageClient;
 }
