@@ -128,8 +128,8 @@ struct if_
 template <class Pair>
 struct select1st
 {
-	typedef Pair                        argument_type;
-	typedef typename Pair::first_type   result_type;
+   typedef Pair                        argument_type;
+   typedef typename Pair::first_type   result_type;
 
    template<class OtherPair>
    const typename Pair::first_type& operator()(const OtherPair& x) const
@@ -143,8 +143,8 @@ struct select1st
 template <class T>
 struct identity
 {
-	typedef T   argument_type;
-	typedef T   result_type;
+   typedef T   argument_type;
+   typedef T   result_type;
 
    typedef T type;
    const T& operator()(const T& x) const

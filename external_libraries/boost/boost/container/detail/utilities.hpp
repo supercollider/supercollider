@@ -11,36 +11,37 @@
 #ifndef BOOST_CONTAINER_DETAIL_UTILITIES_HPP
 #define BOOST_CONTAINER_DETAIL_UTILITIES_HPP
 
+#if defined(_MSC_VER)
+#  pragma once
+#endif
+
 #include <boost/container/detail/config_begin.hpp>
 #include <boost/container/detail/workaround.hpp>
 
 #include <cstdio>
 #include <cstring> //for ::memmove / ::memcpy
-#include <boost/type_traits/is_fundamental.hpp>
 #include <boost/type_traits/is_pointer.hpp>
 #include <boost/type_traits/is_enum.hpp>
-#include <boost/type_traits/is_member_pointer.hpp>
 #include <boost/type_traits/is_class.hpp>
 #include <boost/type_traits/is_integral.hpp>
 #include <boost/type_traits/is_floating_point.hpp>
-#include <boost/type_traits/is_pointer.hpp>
+#include <boost/type_traits/is_copy_constructible.hpp>
 #include <boost/type_traits/has_trivial_destructor.hpp>
 #include <boost/type_traits/has_trivial_copy.hpp>
 #include <boost/type_traits/has_trivial_assign.hpp>
 #include <boost/type_traits/is_pod.hpp>
 #include <boost/move/core.hpp>
-#include <boost/move/utility.hpp>
+#include <boost/move/utility_core.hpp>
 #include <boost/move/iterator.hpp>
 #include <boost/assert.hpp>
 #include <boost/container/throw_exception.hpp>
 #include <boost/container/detail/mpl.hpp>
 #include <boost/container/detail/type_traits.hpp>
 #include <boost/container/allocator_traits.hpp>
-#include <boost/detail/no_exceptions_support.hpp>
+#include <boost/core/no_exceptions_support.hpp>
 #include <boost/container/detail/memory_util.hpp>
 #include <boost/intrusive/pointer_traits.hpp>
 #include <boost/aligned_storage.hpp>
-#include <algorithm>
 #include <iterator>
 #include <utility>   //std::distance
 
@@ -80,14 +81,14 @@ swap_dispatch(T &left, T &right)   //swap using member swap
 
 template<class T> inline
 typename container_detail::enable_if_c
-      <!container_swap::has_member_swap<T>::value && boost::has_move_emulation_enabled<T>::value, void>::type
+      <!container_swap::has_member_swap<T>::value/* && boost::has_move_emulation_enabled<T>::value*/, void>::type
    swap_dispatch(T &left, T &right)
 {
    T temp(boost::move(left)); // may throw
    left = boost::move(right); // may throw
    right = boost::move(temp); // may throw
 }
-
+/*
 template<class T> inline
 typename container_detail::enable_if_c
       <!container_swap::has_member_swap<T>::value && !boost::has_move_emulation_enabled<T>::value, void>::type
@@ -96,15 +97,15 @@ typename container_detail::enable_if_c
    using std::swap;
    swap(left, right);   // may throw
 }
-
+*/
 namespace container_detail {
 
 template <typename T>
 inline T* addressof(T& obj)
 {
    return static_cast<T*>(
-	   static_cast<void*>(
-	      const_cast<char*>(
+      static_cast<void*>(
+         const_cast<char*>(
             &reinterpret_cast<const char&>(obj)
    )));
 }
@@ -451,10 +452,10 @@ inline typename container_detail::disable_if_memtransfer_copy_constructible<I, F
       }
    }
    BOOST_CATCH(...){
-	   for (; back != r; ++back){
+      for (; back != r; ++back){
          allocator_traits<A>::destroy(a, container_detail::iterator_to_raw_pointer(back));
       }
-	   BOOST_RETHROW;
+      BOOST_RETHROW;
    }
    BOOST_CATCH_END
    return r;
@@ -496,10 +497,10 @@ inline typename container_detail::disable_if_memtransfer_copy_constructible<I, F
       }
    }
    BOOST_CATCH(...){
-	   for (; back != r; ++back){
+      for (; back != r; ++back){
          allocator_traits<A>::destroy(a, container_detail::iterator_to_raw_pointer(back));
       }
-	   BOOST_RETHROW;
+      BOOST_RETHROW;
    }
    BOOST_CATCH_END
    return r;
@@ -541,10 +542,10 @@ inline typename container_detail::disable_if_memtransfer_copy_constructible<I, F
       }
    }
    BOOST_CATCH(...){
-	   for (; back != r; ++back){
+      for (; back != r; ++back){
          allocator_traits<A>::destroy(a, container_detail::iterator_to_raw_pointer(back));
       }
-	   BOOST_RETHROW;
+      BOOST_RETHROW;
    }
    BOOST_CATCH_END
    return f;
@@ -586,10 +587,10 @@ inline typename container_detail::disable_if_memtransfer_copy_constructible<I, F
       }
    }
    BOOST_CATCH(...){
-	   for (; back != r; ++back){
+      for (; back != r; ++back){
          allocator_traits<A>::destroy(a, container_detail::iterator_to_raw_pointer(back));
       }
-	   BOOST_RETHROW;
+      BOOST_RETHROW;
    }
    BOOST_CATCH_END
    return r;
@@ -631,10 +632,10 @@ inline typename container_detail::disable_if_memtransfer_copy_constructible<I, F
       }
    }
    BOOST_CATCH(...){
-	   for (; back != r; ++back){
+      for (; back != r; ++back){
          allocator_traits<A>::destroy(a, container_detail::iterator_to_raw_pointer(back));
       }
-	   BOOST_RETHROW;
+      BOOST_RETHROW;
    }
    BOOST_CATCH_END
    return r;
@@ -676,10 +677,10 @@ inline typename container_detail::disable_if_memtransfer_copy_constructible<I, F
       }
    }
    BOOST_CATCH(...){
-	   for (; back != r; ++back){
+      for (; back != r; ++back){
          allocator_traits<A>::destroy(a, container_detail::iterator_to_raw_pointer(back));
       }
-	   BOOST_RETHROW;
+      BOOST_RETHROW;
    }
    BOOST_CATCH_END
    return f;
@@ -720,10 +721,10 @@ inline typename container_detail::disable_if_memzero_initializable<F, F>::type
       }
    }
    BOOST_CATCH(...){
-	   for (; back != r; ++back){
+      for (; back != r; ++back){
          allocator_traits<A>::destroy(a, container_detail::iterator_to_raw_pointer(back));
       }
-	   BOOST_RETHROW;
+      BOOST_RETHROW;
    }
    BOOST_CATCH_END
    return r;
@@ -767,10 +768,10 @@ inline F uninitialized_default_init_alloc_n(A &a, typename allocator_traits<A>::
       }
    }
    BOOST_CATCH(...){
-	   for (; back != r; ++back){
+      for (; back != r; ++back){
          allocator_traits<A>::destroy(a, container_detail::iterator_to_raw_pointer(back));
       }
-	   BOOST_RETHROW;
+      BOOST_RETHROW;
    }
    BOOST_CATCH_END
    return r;
@@ -803,10 +804,10 @@ inline void uninitialized_fill_alloc(A &a, F f, F l, const T &t)
       }
    }
    BOOST_CATCH(...){
-	   for (; back != l; ++back){
+      for (; back != l; ++back){
          allocator_traits<A>::destroy(a, container_detail::iterator_to_raw_pointer(back));
       }
-	   BOOST_RETHROW;
+      BOOST_RETHROW;
    }
    BOOST_CATCH_END
 }
@@ -839,10 +840,10 @@ inline F uninitialized_fill_alloc_n(A &a, const T &v, typename allocator_traits<
       }
    }
    BOOST_CATCH(...){
-	   for (; back != r; ++back){
+      for (; back != r; ++back){
          allocator_traits<A>::destroy(a, container_detail::iterator_to_raw_pointer(back));
       }
-	   BOOST_RETHROW;
+      BOOST_RETHROW;
    }
    BOOST_CATCH_END
    return r;

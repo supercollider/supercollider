@@ -11,6 +11,10 @@
 #ifndef BOOST_CONTAINER_STRING_HPP
 #define BOOST_CONTAINER_STRING_HPP
 
+#if defined(_MSC_VER)
+#  pragma once
+#endif
+
 #include <boost/container/detail/config_begin.hpp>
 #include <boost/container/detail/workaround.hpp>
 
@@ -25,11 +29,11 @@
 #include <boost/container/allocator_traits.hpp>
 #include <boost/container/detail/allocator_version_traits.hpp>
 #include <boost/container/detail/mpl.hpp>
-#include <boost/move/utility.hpp>
+#include <boost/move/utility_core.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/functional/hash.hpp>
 #include <boost/intrusive/pointer_traits.hpp>
-#include <boost/detail/no_exceptions_support.hpp>
+#include <boost/core/no_exceptions_support.hpp>
 
 #include <functional>
 #include <string>
@@ -45,9 +49,9 @@
 #include <cstddef>
 #include <climits>
 #include <boost/container/detail/type_traits.hpp>
-#include <boost/detail/no_exceptions_support.hpp>
 #include <boost/type_traits/has_trivial_destructor.hpp>
 #include <boost/aligned_storage.hpp>
+#include <boost/move/traits.hpp>
 
 namespace boost {
 namespace container {
@@ -67,11 +71,12 @@ namespace container_detail {
 template <class Allocator>
 class basic_string_base
 {
-   BOOST_MOVABLE_BUT_NOT_COPYABLE(basic_string_base)
+   basic_string_base & operator=(const basic_string_base &);
+   basic_string_base(const basic_string_base &);
 
    typedef allocator_traits<Allocator> allocator_traits_type;
  public:
-   typedef Allocator                                  allocator_type;
+   typedef Allocator                                   allocator_type;
    typedef allocator_type                              stored_allocator_type;
    typedef typename allocator_traits_type::pointer     pointer;
    typedef typename allocator_traits_type::value_type  value_type;
@@ -86,18 +91,15 @@ class basic_string_base
       : members_(a)
    {  init(); }
 
+   basic_string_base(BOOST_RV_REF(allocator_type) a)
+      :  members_(boost::move(a))
+   {  this->init();  }
+
    basic_string_base(const allocator_type& a, size_type n)
       : members_(a)
    {
       this->init();
       this->allocate_initial_block(n);
-   }
-
-   basic_string_base(BOOST_RV_REF(basic_string_base) b)
-      :  members_(boost::move(b.alloc()))
-   {
-      this->init();
-      this->swap_data(b);
    }
 
    ~basic_string_base()
@@ -494,9 +496,9 @@ class basic_string
    struct Eq_traits
    {
       //Compatibility with std::binary_function
-	   typedef typename Tr::char_type   first_argument_type;
-	   typedef typename Tr::char_type   second_argument_type;
-	   typedef bool   result_type;
+      typedef typename Tr::char_type   first_argument_type;
+      typedef typename Tr::char_type   second_argument_type;
+      typedef bool   result_type;
 
       bool operator()(const first_argument_type& x, const second_argument_type& y) const
          { return Tr::eq(x, y); }
@@ -505,8 +507,8 @@ class basic_string
    template <class Tr>
    struct Not_within_traits
    {
-	   typedef typename Tr::char_type   argument_type;
-	   typedef bool                     result_type;
+      typedef typename Tr::char_type   argument_type;
+      typedef bool                     result_type;
 
       typedef const typename Tr::char_type* Pointer;
       const Pointer m_first;
@@ -541,8 +543,8 @@ class basic_string
    typedef BOOST_CONTAINER_IMPDEF(allocator_type)                                      stored_allocator_type;
    typedef BOOST_CONTAINER_IMPDEF(pointer)                                             iterator;
    typedef BOOST_CONTAINER_IMPDEF(const_pointer)                                       const_iterator;
-   typedef BOOST_CONTAINER_IMPDEF(std::reverse_iterator<iterator>)                     reverse_iterator;
-   typedef BOOST_CONTAINER_IMPDEF(std::reverse_iterator<const_iterator>)               const_reverse_iterator;
+   typedef BOOST_CONTAINER_IMPDEF(container_detail::reverse_iterator<iterator>)        reverse_iterator;
+   typedef BOOST_CONTAINER_IMPDEF(container_detail::reverse_iterator<const_iterator>)  const_reverse_iterator;
    static const size_type npos = size_type(-1);
 
    #ifndef BOOST_CONTAINER_DOXYGEN_INVOKED
@@ -606,8 +608,15 @@ class basic_string
    //!
    //! <b>Complexity</b>: Constant.
    basic_string(BOOST_RV_REF(basic_string) s) BOOST_CONTAINER_NOEXCEPT
-      : base_t(boost::move((base_t&)s))
-   {}
+      : base_t(boost::move(s.alloc()))
+   {
+      if(s.alloc() == this->alloc()){
+         this->swap_data(s);
+      }
+      else{
+         this->assign(s.begin(), s.end());
+      }
+   }
 
    //! <b>Effects</b>: Copy constructs a basic_string using the specified allocator.
    //!
@@ -1256,18 +1265,18 @@ class basic_string
    {  return this->assign(cvalue_iterator(c, n), cvalue_iterator()); }
 
    //! <b>Effects</b>: Equivalent to assign(basic_string(first, last)).
- 	//!
- 	//! <b>Returns</b>: *this
- 	basic_string& assign(const CharT* first, const CharT* last)
- 	{
- 	   size_type n = static_cast<size_type>(last - first);
- 	   this->reserve(n);
- 	   CharT* ptr = container_detail::to_raw_pointer(this->priv_addr());
- 	   Traits::copy(ptr, first, n);
- 	   this->priv_construct_null(ptr + n);
- 	   this->priv_size(n);
- 	   return *this;
- 	}
+    //!
+    //! <b>Returns</b>: *this
+    basic_string& assign(const CharT* first, const CharT* last)
+    {
+       size_type n = static_cast<size_type>(last - first);
+       this->reserve(n);
+       CharT* ptr = container_detail::to_raw_pointer(this->priv_addr());
+       Traits::copy(ptr, first, n);
+       this->priv_construct_null(ptr + n);
+       this->priv_size(n);
+       return *this;
+    }
 
    //! <b>Effects</b>: Equivalent to assign(basic_string(first, last)).
    //!
@@ -2889,6 +2898,9 @@ inline std::size_t hash_value(basic_string<Ch, std::char_traits<Ch>, Allocator> 
 #ifndef BOOST_CONTAINER_DOXYGEN_INVOKED
 
 namespace boost {
+
+template <class T>
+struct has_trivial_destructor_after_move;
 
 //!has_trivial_destructor_after_move<> == true_type
 //!specialization for optimizations

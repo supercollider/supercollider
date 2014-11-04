@@ -1359,7 +1359,7 @@ socket_type socket(int af, int type, int protocol,
 {
   clear_last_error();
 #if defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
-  socket_type s = error_wrapper(::WSASocket(af, type, protocol, 0, 0,
+  socket_type s = error_wrapper(::WSASocketW(af, type, protocol, 0, 0,
         WSA_FLAG_OVERLAPPED), ec);
   if (s == invalid_socket)
     return s;
@@ -1965,7 +1965,8 @@ const char* inet_ntop(int af, const void* src, char* dest, size_t length,
   LPWSTR string_buffer = (LPWSTR)_alloca(length * sizeof(WCHAR));
   int result = error_wrapper(::WSAAddressToStringW(&address.base,
         address_length, 0, string_buffer, &string_length), ec);
-  ::WideCharToMultiByte(CP_ACP, 0, string_buffer, -1, dest, length, 0, 0);
+  ::WideCharToMultiByte(CP_ACP, 0, string_buffer, -1,
+      dest, static_cast<int>(length), 0, 0);
 #else
   int result = error_wrapper(::WSAAddressToStringA(
         &address.base, address_length, 0, dest, &string_length), ec);
@@ -2169,7 +2170,7 @@ int inet_pton(int af, const char* src, void* dest,
   } address;
   int address_length = sizeof(sockaddr_storage_type);
 #if defined(BOOST_NO_ANSI_APIS) || (defined(_MSC_VER) && (_MSC_VER >= 1800))
-  int num_wide_chars = strlen(src) + 1;
+  int num_wide_chars = static_cast<int>(strlen(src)) + 1;
   LPWSTR wide_buffer = (LPWSTR)_alloca(num_wide_chars * sizeof(WCHAR));
   ::MultiByteToWideChar(CP_ACP, 0, src, -1, wide_buffer, num_wide_chars);
   int result = error_wrapper(::WSAStringToAddressW(
@@ -3364,8 +3365,8 @@ u_short_type network_to_host_short(u_short_type value)
 {
 #if defined(BOOST_ASIO_WINDOWS_RUNTIME)
   unsigned char* value_p = reinterpret_cast<unsigned char*>(&value);
-  u_short_type result = (static_cast<u_long_type>(value_p[0]) << 8)
-    | static_cast<u_long_type>(value_p[1]);
+  u_short_type result = (static_cast<u_short_type>(value_p[0]) << 8)
+    | static_cast<u_short_type>(value_p[1]);
   return result;
 #else // defined(BOOST_ASIO_WINDOWS_RUNTIME)
   return ntohs(value);
@@ -3375,7 +3376,7 @@ u_short_type network_to_host_short(u_short_type value)
 u_short_type host_to_network_short(u_short_type value)
 {
 #if defined(BOOST_ASIO_WINDOWS_RUNTIME)
-  u_long_type result;
+  u_short_type result;
   unsigned char* result_p = reinterpret_cast<unsigned char*>(&result);
   result_p[0] = static_cast<unsigned char>((value >> 8) & 0xFF);
   result_p[1] = static_cast<unsigned char>(value & 0xFF);

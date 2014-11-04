@@ -940,7 +940,7 @@ T ibeta_imp(T a, T b, T x, const Policy& pol, bool inv, bool normalised, T* p_de
       // We have an arcsine distribution:
       if(p_derivative)
       {
-         *p_derivative = (invert ? -1 : 1) / constants::pi<T>() * sqrt(y * x);
+         *p_derivative = 1 / constants::pi<T>() * sqrt(y * x);
       }
       T p = invert ? asin(sqrt(y)) / constants::half_pi<T>() : asin(sqrt(x)) / constants::half_pi<T>();
       if(!normalised)
@@ -961,13 +961,13 @@ T ibeta_imp(T a, T b, T x, const Policy& pol, bool inv, bool normalised, T* p_de
       if(a == 1)
       {
          if(p_derivative)
-            *p_derivative = invert ? -1 : 1;
+            *p_derivative = 1;
          return invert ? y : x;
       }
       
       if(p_derivative)
       {
-         *p_derivative = (invert ? -1 : 1) * a * pow(x, a - 1);
+         *p_derivative = a * pow(x, a - 1);
       }
       T p;
       if(y < 0.5)

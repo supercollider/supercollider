@@ -19,7 +19,7 @@
 #include <boost/container/detail/workaround.hpp>
 
 #include <boost/container/detail/preprocessor.hpp>
-#include <boost/intrusive/detail/memory_util.hpp>
+#include <boost/intrusive/detail/mpl.hpp>
 #include <boost/intrusive/detail/has_member_function_callable_with.hpp>
 
 
@@ -50,7 +50,11 @@
 #define BOOST_INTRUSIVE_HAS_MEMBER_FUNCTION_CALLABLE_WITH_FUNCNAME construct
 #define BOOST_INTRUSIVE_HAS_MEMBER_FUNCTION_CALLABLE_WITH_NS_BEGIN namespace boost { namespace container { namespace container_detail {
 #define BOOST_INTRUSIVE_HAS_MEMBER_FUNCTION_CALLABLE_WITH_NS_END   }}}
-#define BOOST_PP_ITERATION_PARAMS_1 (3, (1, BOOST_CONTAINER_MAX_CONSTRUCTOR_PARAMETERS+1, <boost/intrusive/detail/has_member_function_callable_with.hpp>))
+#ifdef BOOST_INTRUSIVE_HAS_MEMBER_FUNCTION_CALLABLE_WITH_SINGLE_ITERATION
+#  define BOOST_PP_ITERATION_PARAMS_1 (3, (1, 1, <boost/intrusive/detail/has_member_function_callable_with.hpp>))
+#else
+#  define BOOST_PP_ITERATION_PARAMS_1 (3, (1, BOOST_CONTAINER_MAX_CONSTRUCTOR_PARAMETERS+1, <boost/intrusive/detail/has_member_function_callable_with.hpp>))
+#endif
 #include BOOST_PP_ITERATE()
 
 #define BOOST_INTRUSIVE_HAS_MEMBER_FUNCTION_CALLABLE_WITH_FUNCNAME swap

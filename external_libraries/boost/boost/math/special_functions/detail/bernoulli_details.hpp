@@ -9,6 +9,7 @@
 
 #include <boost/config.hpp>
 #include <boost/detail/lightweight_mutex.hpp>
+#include <boost/utility/enable_if.hpp>
 #include <boost/math/tools/toms748_solve.hpp>
 
 #ifdef BOOST_HAS_THREADS
