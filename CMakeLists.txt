@@ -113,13 +113,7 @@ option(SSE2 "Compile with support for SSE2 instructions." ON)
 
 set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio})")
 
-if(NOT WIN32)
-	option(LIBSCSYNTH "Compile libscsynth as shared library" OFF)
-else()
-	# libscsynth has unresolved symbols, which are resolved when linked with server executable.
-	# On Windows, this is not supported for static libraries, so we build dynamic by default.
-	option(LIBSCSYNTH "Compile libscsynth as shared library" ON)
-endif()
+option(LIBSCSYNTH "Compile libscsynth as shared library" OFF)
 
 option(INSTALL_HELP "Install help docs and examples along with the software" ON)
 option(SC_DOC_RENDER "Pre-render SCDoc documentation. (For putting online, etc)" OFF)
