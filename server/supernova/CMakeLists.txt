@@ -57,8 +57,10 @@ else()
   add_library (libsupernova STATIC ${libsupernova_src})
 endif()
 
-set_property(TARGET libsupernova
-             PROPERTY OUTPUT_NAME supernova)
+if(NOT WIN32)
+  set_property(TARGET libsupernova
+               PROPERTY OUTPUT_NAME supernova)
+endif()
 
 target_link_libraries(libsupernova oscpack tlsf ${PTHREADS_LIBRARIES})
 

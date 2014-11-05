@@ -166,7 +166,7 @@ struct DiskIOThread
 	boost::lockfree::spsc_queue<DiskIOMsg, boost::lockfree::capacity<256> > mDiskFifo;
 #endif
 
-	std::atomic_bool mRunning;
+	std::atomic<bool> mRunning;
 	thread mThread;
 
 	DiskIOThread():
