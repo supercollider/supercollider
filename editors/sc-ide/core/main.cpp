@@ -222,6 +222,7 @@ Main::Main(void) :
 void Main::quit() {
     mSessionManager->saveSession();
     storeSettings();
+    mScProcess->stopLanguage();
     QApplication::quit();
 }
 
