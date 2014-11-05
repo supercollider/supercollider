@@ -395,25 +395,26 @@ void fire_notification(movable_array<char> & msg)
     instance->send_notification(msg.data(), msg.size());
 }
 
-sc_notify_observers::error_code sc_notify_observers::add_observer(endpoint_ptr const & ep)
+int sc_notify_observers::add_observer(endpoint_ptr const & ep)
 {
     observer_vector::iterator it = find(ep);
     if (it != observers.end())
         return already_registered;
 
     observers.push_back(ep);
-    return no_error;
+    return observers.size() - 1;
 }
 
-sc_notify_observers::error_code sc_notify_observers::remove_observer(endpoint_ptr const & ep)
+int sc_notify_observers::remove_observer(endpoint_ptr const & ep)
 {
     observer_vector::iterator it = find(ep);
 
     if (it == observers.end())
         return not_registered;
 
+    const int observerIndex = it - observers.begin();
     observers.erase(it);
-    return no_error;
+    return observerIndex;
 }
 
 const char * sc_notify_observers::error_string(error_code error)
@@ -938,17 +939,22 @@ void handle_notify(received_message const & message, endpoint_ptr endpoint)
     int enable = first_arg_as_int(message);
 
     cmd_dispatcher<realtime>::fire_system_callback( [=]() {
+
+        int observer = 0;
+
         if (enable) {
-            auto error_code = instance->add_observer(endpoint);
-            if (error_code)
-                send_fail_message(endpoint, "/notify", sc_notify_observers::error_string(error_code));
+            observer = instance->add_observer(endpoint);
+
+            if (observer < 0)
+                send_fail_message(endpoint, "/notify", sc_notify_observers::error_string( (sc_notify_observers::error_code)observer ));
         } else {
-            auto error_code = instance->remove_observer(endpoint);
-            if (error_code)
-                send_fail_message(endpoint, "/notify", sc_notify_observers::error_string(error_code));
+            observer = instance->remove_observer(endpoint);
+            if (observer < 0)
+                send_fail_message(endpoint, "/notify", sc_notify_observers::error_string( (sc_notify_observers::error_code)observer ));
         }
 
-        send_done_message(endpoint, "/notify");
+        if (observer >= 0)
+            send_done_message(endpoint, "/notify", observer);
     });
 }
 

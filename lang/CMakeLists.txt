@@ -133,14 +133,14 @@ endif(UNIX)
 
 if(WIN32)
         list(APPEND sclang_sources ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
-        include_directories(../platform/windows/compat_stuff)
+	include_directories (../platform/windows/compat_stuff)
         if(NOT MINGW)
                 # mingw-w64 provides getopt
                 list(APPEND sclang_sources ../platform/windows/compat_stuff/getopt/getopt.c)
                 include_directories(../platform/windows/compat_stuff/getopt)
         endif()
 
-        if(PORTMIDI_FOUND)
+	if(PORTMIDI_FOUND)
 		include_directories (${PORTMIDI_INCLUDE_DIRS})
 		add_definitions(-DHAVE_PORTMIDI)
 		list(APPEND sclang_sources LangPrimSource/SC_PortMidi.cpp)
