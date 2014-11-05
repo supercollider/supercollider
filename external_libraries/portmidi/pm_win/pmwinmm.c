@@ -36,6 +36,12 @@
 #define MIDI_SYSEX      0xf0
 #define MIDI_EOX        0xf7
 
+
+static int32_t max( int32_t a, int32_t b)
+{
+	return (a > b) ? a : b;
+}
+
 /* callback routines */
 static void CALLBACK winmm_in_callback(HMIDIIN hMidiIn,
                                        UINT wMsg, DWORD_PTR dwInstance, 
