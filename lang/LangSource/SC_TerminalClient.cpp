@@ -31,7 +31,7 @@
 
 #include <boost/bind.hpp>
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 # define __GNU_LIBRARY__
 # include "getopt.h"
 # include "SC_Win32Utils.h"
