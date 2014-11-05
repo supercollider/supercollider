@@ -1240,6 +1240,75 @@ int hid_parse_input_elements_values( unsigned char* buf, struct hid_dev_desc * d
 }
 void hid_parse_element_info( struct hid_dev_desc * devdesc ){
 
+    hid_device * dev = devdesc->device;
+
+    struct hid_device_collection * device_collection = hid_new_collection();
+    devdesc->device_collection = device_collection;
+
+    struct hid_device_collection * parent_collection = devdesc->device_collection;
+    struct hid_device_collection * prev_collection;
+    struct hid_device_element * prev_element;
+
+    device_collection->num_collections = 0;
+    device_collection->num_elements = 0;
+
+    int numreports = 1;
+    int report_lengths[256];
+    int report_ids[256];
+    report_ids[0] = 0;
+    report_lengths[0] = 0;
+
+
+    int numColls = 0;
+
+    int nt_res, nt_res2;
+    /* Get the Usage Page and Usage for this device. */
+    res = HidD_GetPreparsedData(write_handle, &pp_data);
+    if (res) {
+        nt_res = HidP_GetCaps(pp_data, &caps);
+        if (nt_res == HIDP_STATUS_SUCCESS) {
+            numColls = caps.NumberLinkCollectionNodes;
+
+            device_collection->num_collections = numColls;
+            device_collection->usage_page = caps.UsagePage;
+            device_collection->usage = caps.Usage;
+
+            device_collection->index = 0;
+            // type
+            // num_elements
+            // usage_min , usage_max
+            // parent_collection
+            // next_collection
+            // first_collection
+            // first_element
+
+            // num_elements:
+            // NumberInputButtonCaps + NumberInputValueCaps +
+            // NumberOutputButtonCaps + NumberOutputValueCaps +
+            // NumberFeatureButtonCaps + NumberFeatureValueCaps
+            device_collection->num_elements =
+                    caps.NumberInputButtonCaps + caps.NumberInputValueCaps +
+                    caps.NumberOutputButtonCaps + caps.NumberOutputValueCaps +
+                    caps.NumberFeatureButtonCaps + caps.NumberFeatureValueCaps;
+
+
+            PHIDP_LINK_COLLECTION_NODE linkCollectionNodes[ numColls ];
+            nt_res2 = HidP_GetLinkCollectionNodes( linkCollectionNodes, numColls, pp_data );
+            if (nt_res2 == HIDP_STATUS_SUCCESS) {
+                // then I have the linkCollectionNodes
+            }
+            // input
+            int numValueCaps = caps.NumberInputValueCaps;
+            PHIDP_VALUE_CAPS pInputValueCaps[ numValueCaps ];
+            nt_res2 = HidP_GetValueCaps( HidP_Input, pInputValueCaps, numValueCaps, pp_data );
+            // output
+            // feature
+        }
+
+        HidD_FreePreparsedData(pp_data);
+    }
+
+
 }
 #endif
 
