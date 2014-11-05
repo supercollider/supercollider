@@ -88,7 +88,7 @@ endif()
 if(WIN32)
     set_property(DIRECTORY
                  APPEND
-                 PROPERTY COMPILE_DEFINITIONS SC_WIN32 NOMINMAX _WIN32_WINNT=0x0500)
+                 PROPERTY COMPILE_DEFINITIONS NOMINMAX _WIN32_WINNT=0x0500)
 
     add_definitions(-DWIN32_LEAN_AND_MEAN)
 
