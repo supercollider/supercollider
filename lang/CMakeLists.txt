@@ -110,12 +110,6 @@ if(NOT WIN32)
 	list(APPEND sclang_sources LangPrimSource/PyrSerialPrim.cpp)
 endif()
 
-if(WIN32)
-	list(APPEND sclang_sources ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
-	list(APPEND sclang_sources ../platform/windows/compat_stuff/getopt.c)
-	include_directories(../platform/windows/compat_stuff)
-endif()
-
 set(sclang_parser_source LangSource/Bison/lang11d_tab.cpp)
 
 if(UNIX)
@@ -135,13 +129,18 @@ if(UNIX)
 			add_definitions(-DHAVE_LID)
 		endif(LINUX)
 	endif(APPLE)
-else(UNIX)
 endif(UNIX)
 
 if(WIN32)
-	include_directories (../platform/windows/compat_stuff)
-	list(APPEND sclang_sources ../platform/windows/compat_stuff/getopt.c)
-	if(PORTMIDI_FOUND)
+        list(APPEND sclang_sources ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
+        include_directories(../platform/windows/compat_stuff)
+        if(NOT MINGW)
+                # mingw-w64 provides getopt
+                list(APPEND sclang_sources ../platform/windows/compat_stuff/getopt/getopt.c)
+                include_directories(../platform/windows/compat_stuff/getopt)
+        endif()
+
+        if(PORTMIDI_FOUND)
 		include_directories (${PORTMIDI_INCLUDE_DIRS})
 		add_definitions(-DHAVE_PORTMIDI)
 		list(APPEND sclang_sources LangPrimSource/SC_PortMidi.cpp)
@@ -200,7 +199,7 @@ else()
 	add_library(libsclang STATIC ${sclang_sources} ${sclang_parser_source})
 endif()
 
-target_compile_definitions(libsclang PRIVATE YYSTACK_USE_ALLOC BUILDING_SUPERCOLLIDER)
+target_compile_definitions(libsclang PRIVATE YYSTACK_USE_ALLOC)
 target_link_libraries(libsclang tlsf ${PTHREADS_LIBRARIES})
 
 if(SC_IDE OR SC_QT)
@@ -216,9 +215,10 @@ if(SC_IDE OR SC_QT)
 	#qt5_use_modules(libsclang Core Network Gui WebKit Widgets WebKitWidgets)
 endif()
 
-set_property(TARGET libsclang
-	APPEND
-	PROPERTY COMPILE_DEFINITIONS BUILDING_SUPERCOLLIDER)
+if(FALSE) # libsclang is a shared library
+  target_compile_definitions(libsclang PRIVATE   BUILDING_SCLANG)
+  target_compile_definitions(libsclang INTERFACE BUILDING_SCLANG)
+endif()
 
 target_compile_definitions(libsclang PRIVATE HAVE_HIDAPI)
 

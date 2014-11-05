@@ -112,7 +112,7 @@ endif()
 
 set (FINAL_BUILD 0) # disable final build for scsynth
 
-if (LIBSCSYNTH)
+if(LIBSCSYNTH)
 	set (LIBSCSYNTH_TYPE SHARED)
 else()
 	set (LIBSCSYNTH_TYPE STATIC)
@@ -127,7 +127,12 @@ else()
 	add_library(libscsynth ${LIBSCSYNTH_TYPE} ${scsynth_sources} ${all_headers})
 endif()
 
-target_compile_definitions(libscsynth PRIVATE BUILDING_SUPERCOLLIDER)
+
+if(LIBSCSYNTH)
+        target_compile_definitions(libscsynth PRIVATE   BUILDING_SCSYNTH)
+        target_compile_definitions(libscsynth INTERFACE BUILDING_SCSYNTH)
+endif()
+
 target_compile_definitions(libscsynth PUBLIC  SC_MEMORY_ALIGNMENT=32)
 
 target_link_libraries(libscsynth tlsf)
@@ -185,8 +190,9 @@ if (WIN32)
 	target_link_libraries(libscsynth wsock32 ws2_32 winmm)
 endif()
 
-
-set_property(TARGET libscsynth PROPERTY OUTPUT_NAME scsynth)
+if(NOT WIN32)
+  set_property(TARGET libscsynth PROPERTY OUTPUT_NAME scsynth)
+endif()
 
 if (LIBSCSYNTH)
 	# These two properties are ABI version info, not sc version:
