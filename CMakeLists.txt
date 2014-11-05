@@ -86,16 +86,12 @@ elseif(UNIX)
 endif()
 
 if(WIN32)
-    set_property(DIRECTORY
-                 APPEND
-                 PROPERTY COMPILE_DEFINITIONS NOMINMAX _WIN32_WINNT=0x0500)
-
-    add_definitions(-DWIN32_LEAN_AND_MEAN)
+    add_definitions(-DWIN32_LEAN_AND_MEAN -DNOMINMAX -D_WIN32_WINNT=0x0500)
 
     # correctly link the static Boost Thread library:
     add_definitions(-DBOOST_THREAD_USE_LIB)
-	#avoid unnecesary autolink
-	add_definitions(-DBOOST_DATE_TIME_NO_LIB -DBOOST_ALL_NO_LIB)
+    #avoid unnecesary autolink
+    add_definitions(-DBOOST_DATE_TIME_NO_LIB -DBOOST_ALL_NO_LIB)
 
 endif()
 
