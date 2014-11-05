@@ -112,7 +112,7 @@ endif()
 
 set (FINAL_BUILD 0) # disable final build for scsynth
 
-if(LIBSCSYNTH)
+if (LIBSCSYNTH)
 	set (LIBSCSYNTH_TYPE SHARED)
 else()
 	set (LIBSCSYNTH_TYPE STATIC)
@@ -191,7 +191,7 @@ if (WIN32)
 endif()
 
 if(NOT WIN32)
-  set_property(TARGET libscsynth PROPERTY OUTPUT_NAME scsynth)
+set_property(TARGET libscsynth PROPERTY OUTPUT_NAME scsynth)
 endif()
 
 if (LIBSCSYNTH)

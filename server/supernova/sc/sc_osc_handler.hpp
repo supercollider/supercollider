@@ -90,16 +90,16 @@ class sc_notify_observers
 public:
     typedef enum {
         no_error = 0,
-        already_registered,
-        not_registered
+        already_registered = -1,
+        not_registered = -2
     } error_code;
 
     sc_notify_observers(boost::asio::io_service & io_service):
         udp_socket(io_service)
     {}
 
-    error_code add_observer(endpoint_ptr const & ep);
-    error_code remove_observer(endpoint_ptr const & ep);
+    int add_observer(endpoint_ptr const & ep);
+    int remove_observer(endpoint_ptr const & ep);
 
     /* @{ */
     /** notifications, should be called from the real-time thread */

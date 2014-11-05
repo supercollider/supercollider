@@ -298,6 +298,12 @@ BusPlug : AbstractFunction {
 		if(this.isNeutral.not) { ^bus.scope(bufsize, zoom) } { "Can't scope unintitialized bus".warn }
 	}
 
+	plot { | duration = 0.01, bounds, minval, maxval, separately = false |
+		^if(this.isNeutral.not) {
+			this.wakeUp;
+			bus.plot(duration, bounds, minval, maxval, separately);
+		} { "Can't plot unintitialized bus".warn; nil }
+	}
 
 
 	// bundling messages

@@ -256,8 +256,11 @@ else()
     set_target_properties(SuperCollider PROPERTIES OUTPUT_NAME "scide")
 endif()
 
-target_link_libraries(SuperCollider ${QT_IDE_LIBRARIES})
-target_link_libraries(SuperCollider ${YAMLCPP_LIBRARY})
+target_link_libraries( SuperCollider
+    ${QT_IDE_LIBRARIES}
+    ${YAMLCPP_LIBRARY}
+    oscpack
+)
 
 if(Boost_FOUND)
     target_link_libraries( SuperCollider ${Boost_SYSTEM_LIBRARY} )
