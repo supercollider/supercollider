@@ -55,8 +55,12 @@ void QcLevelIndicator::paintEvent( QPaintEvent *e )
   float length = vertical ? height() : width();
 
   if (!vertical) {
+    p.scale(-1, 1);
+    p.translate(0, 0);
     p.rotate(90);
-    p.translate(0, -width());
+  } else {
+    p.scale(1, -1);
+    p.translate(0, -height());
   }
 
   QPalette plt = palette();
@@ -87,7 +91,8 @@ void QcLevelIndicator::paintEvent( QPaintEvent *e )
   QRectF r;
 
   r.setWidth( groove );
-  r.setY( (1.f - _value) * length );
+  r.setY(0);
+  r.setHeight( _value * length );
 
   p.setRenderHint(QPainter::Antialiasing, true);
 
@@ -97,68 +102,37 @@ void QcLevelIndicator::paintEvent( QPaintEvent *e )
       break;
     }
     case 1: {
-      float ledBaseline = length;
+      float ledBaseline = 0;
       float spaceWidth = _stepWidth <= 3 ? 1 : 2;
       float cornerWidth = _stepWidth <= 3 ? 0 : 1.2;
 
       r.setHeight(_stepWidth);
-      r.moveBottom(ledBaseline);
       QPainterPath path;
       path.addRoundedRect(r, cornerWidth, cornerWidth);
       
-      while (ledBaseline > length * (1 - _value)) {
-        float normValue = (1 - (ledBaseline / length));
+      while (ledBaseline < length * _value) {
+        float normValue = (ledBaseline / length);
+        float nextValue = ((ledBaseline + _stepWidth + spaceWidth) / length);
         if(normValue > _critical)
           c = QColor(255,100,0);
         else if(normValue > _warning)
-          c = QColor( 255, 255, 0 );
+          c = QColor(255, 255, 0);
         else
-          c = QColor( 0, 255, 0 );
+          c = QColor(0, 255, 0);
+          
+        if (nextValue > _value) // last cell
+          c.setAlpha(128 + 128 * ((_value - normValue) / (nextValue - normValue)));
 
         p.fillPath(path, QBrush(c));
-        ledBaseline -= (_stepWidth + spaceWidth);
-        path.translate(0, -(_stepWidth + spaceWidth));
+        ledBaseline += (_stepWidth + spaceWidth);
+        path.translate(0, _stepWidth + spaceWidth);
       }
+        
       break;
     }
   }
   
   p.setRenderHint(QPainter::Antialiasing, false);
-
-#if 0
-
-  float y = 0.f;
-  float v = 1.f;
-
-  if( v > _value ) {
-    y = (1.f - _value) * h;
-    r.setBottom( y );
-    p.fillRect( r, QColor( 130,130,130 ) );
-    v = _value;
-  }
-
-  if( v > _critical ) {
-    r.moveTop( y );
-    y = (1.f - _critical) * h;
-    r.setBottom( y );
-    p.fillRect( r, QColor(255,100,0) );
-    v = _critical;
-  }
-
-  if( v > _warning ) {
-    r.moveTop( y );
-    y = (1.f - _warning) * h;
-    r.setBottom( y );
-    p.fillRect( r, QColor( 255, 255, 0 ) );
-    v = _warning;
-  }
-
-  if( v > 0.f ) {
-    r.moveTop( y );
-    r.setBottom( h );
-    p.fillRect( r, QColor( 0, 255, 0 ) );
-  }
-#endif
 
   if( _drawPeak && _peak > 0.f ) {
     float peak = vertical ? _peak : 1 - _peak;
