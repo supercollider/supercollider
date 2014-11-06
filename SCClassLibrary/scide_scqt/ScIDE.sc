@@ -887,7 +887,7 @@ Document {
 		numLines = breaks.size + 1;
 		line = min(line, numLines);
 		if(line > 1, { start = breaks[line - 2] + 1});
-		end = breaks[line - 1] ?? { text.size -1 };
+		end = breaks[line - 1] ?? { text.size };
 		this.selectRange(start, end - start);
 	}
 
