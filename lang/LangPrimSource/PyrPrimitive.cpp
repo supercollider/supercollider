@@ -4281,6 +4281,11 @@ void deinitPrimitives()
 	void deinitHIDAPIPrimitives();
 	deinitHIDAPIPrimitives();
 
+#if defined(HAVE_PORTMIDI)
+void deinitMIDIPrimitives();
+	deinitMIDIPrimitives();
+#endif
+
 }
 
 
