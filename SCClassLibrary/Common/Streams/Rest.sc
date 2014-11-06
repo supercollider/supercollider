@@ -33,7 +33,7 @@ Rest {
 			}
 		})
 	}
-
+	value { ^dur }
 	storeOn { |stream| stream << "Rest(" << dur << ")" }
 }
 
