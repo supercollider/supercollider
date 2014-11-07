@@ -33,9 +33,9 @@ InstallDirRegKey HKCU "Software\SuperCollider\${SC_VERSION}" ""
 !define MUI_PAGE_HEADER_TEXT "Read me!"
 !define MUI_PAGE_HEADER_SUBTEXT "Find below useful information regarding installation and usage"
 !define MUI_LICENSEPAGE_TEXT_TOP "Press Page Down to see the rest of the information"
-!define MUI_LICENSEPAGE_TEXT_BOTTOM "This information will be available in your SuperCollider application folder as README.txt"
+!define MUI_LICENSEPAGE_TEXT_BOTTOM "This information will be available in your SuperCollider application folder as README.md"
 !define MUI_LICENSEPAGE_BUTTON "Next >"
-!insertmacro MUI_PAGE_LICENSE SuperCollider\README.txt
+!insertmacro MUI_PAGE_LICENSE SuperCollider\README.md
 
 !insertmacro MUI_PAGE_DIRECTORY
 
