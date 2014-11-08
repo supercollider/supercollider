@@ -96,8 +96,6 @@ set ( ide_moc_hdr
     widgets/util/color_widget.hpp
     widgets/util/docklet.hpp
     widgets/util/volume_widget.hpp
-
-    ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.hpp
 )
 
 file (GLOB_RECURSE all_hdr *hpp)
@@ -145,10 +143,6 @@ set ( ide_src
     widgets/util/volume_widget.cpp
     widgets/util/status_box.cpp
     widgets/style/style.cpp
-
-    ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.cpp
-
-    ${CMAKE_SOURCE_DIR}/common/SC_TextUtils.cpp
 )
 
 set( ide_forms
@@ -159,40 +153,57 @@ set( ide_forms
     forms/settings_shortcuts.ui
 )
 
+####################################################################
 # QtCollider shared sources:
 list(APPEND ide_moc_hdr
     ${CMAKE_SOURCE_DIR}/QtCollider/layouts/stack_layout.hpp
+    ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.hpp
 )
+
 list(APPEND ide_src
     ${CMAKE_SOURCE_DIR}/QtCollider/layouts/stack_layout.cpp
+    ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.cpp
 )
 
-list(APPEND ide_src ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp)
-if(APPLE)
-	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
+if (APPLE)
+    list(APPEND ide_src ${CMAKE_SOURCE_DIR}/QtCollider/hacks/hacks_mac.mm)
 endif()
 
+####################################################################
+# Common shared sources:
+list(APPEND ide_src 
+    ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp
+    ${CMAKE_SOURCE_DIR}/common/SC_TextUtils.cpp
+)
+
 if(APPLE)
+	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
+
 	list(APPEND ide_src 
         ${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp
-        ${CMAKE_SOURCE_DIR}/QtCollider/hacks/hacks_mac.mm
     )
 elseif(WIN32)
     list(APPEND ide_src ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
 endif()
 
+####################################################################
+# Includes
 include_directories(${CMAKE_SOURCE_DIR}/include/common)
 include_directories(${CMAKE_SOURCE_DIR}/common)
 include_directories(${CMAKE_SOURCE_DIR}/include/plugin_interface)
 include_directories(${YAMLCPP_INCLUDE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost)
+
 # For QtCollider headers:
 include_directories(${CMAKE_SOURCE_DIR})
+
 # Needed for auto-generated forms headers:
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/widgets/util)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/widgets)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
+
+####################################################################
 # Translation files
 set( translation_src
     ${CMAKE_CURRENT_SOURCE_DIR}/translations/scide_de.ts
@@ -217,13 +228,14 @@ add_custom_target( update_ide_translations
             -no-obsolete -pluralonly
 )
 
+####################################################################
+# Generated files
 qt5_wrap_cpp( ide_moc_src ${ide_moc_hdr} )
-qt5_wrap_ui( ide_forms_src ${ide_forms} )
 qt5_add_resources( ide_rcc resources.qrc )
+qt5_wrap_ui( ide_forms_src ${ide_forms} )
 qt5_add_translation( translations ${translation_src} ${native_translation_src} )
 
 set(ide_sources ${ide_src} ${all_hdr} )
-
 set(ide_rc_sources ${ide_moc_src} ${ide_forms_src} ${ide_rcc} ${translations})
 
 if(APPLE)
@@ -231,6 +243,11 @@ if(APPLE)
         set_source_files_properties(${file} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/translations)
     endforeach()
 endif()
+
+source_group("Header Files\\generated" FILES ${ide_forms_src})
+source_group("Source Files\\generated" FILES ${ide_moc_src} ${ide_rcc})
+
+
 
 # This sets up the exe icon for windows under mingw.
 if(MINGW)
