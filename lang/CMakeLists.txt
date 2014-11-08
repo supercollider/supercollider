@@ -95,16 +95,21 @@ if(APPLE)
 	set_source_files_properties(${CMAKE_SOURCE_DIR}/common/SC_Apple.mm PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-exceptions")
 endif()
 
+file(GLOB_RECURSE headers ../include/*.h* )
+file(GLOB_RECURSE external_headers ../external_libraries/*.h* )
+list(APPEND sclang_headers ${headers} ${external_headers}) # make qt creator happy
+source_group("include" FILES ${headers})
+source_group("external\\include" FILES ${external_headers})
+
 if (NOT Boost_FOUND)
 	file(GLOB boost_system_sources ../external_libraries/boost/libs/system/src/*cpp)
 	file(GLOB boost_fs_sources ../external_libraries/boost/libs/filesystem/src/*cpp)
 	file(GLOB boost_regex_sources ../external_libraries/boost/libs/regex/src/*cpp)
+	file(GLOB_RECURSE boost_headers ../external_libraries/boost/*.h*)
 	list(APPEND sclang_sources ${boost_fs_sources} ${boost_system_sources} ${boost_regex_sources})
+	source_group("boost\\src" REGULAR_EXPRESSION "external_libraries/boost/.*\\.cpp")
+	source_group("boost\\include" FILES ${boost_headers})
 endif()
-
-file(GLOB_RECURSE headers ../include/*.h* )
-file(GLOB_RECURSE external_headers ../external_libraries/*.h* )
-list(APPEND sclang_sources ${headers} ${external_headers}) # make qt creator happy
 
 if(NOT WIN32)
 	list(APPEND sclang_sources LangPrimSource/PyrSerialPrim.cpp)
@@ -118,7 +123,7 @@ if(UNIX)
 			LangPrimSource/SC_CoreMIDI.cpp
 			LangPrimSource/SC_CoreAudioPrim.cpp
 			LangPrimSource/SC_Speech.mm
-			)
+		)
 		add_definitions(-DHAVE_SPEECH)
 	else(APPLE)
 		if(ALSA_FOUND)
@@ -132,13 +137,14 @@ if(UNIX)
 endif(UNIX)
 
 if(WIN32)
-        list(APPEND sclang_sources ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
+    list(APPEND sclang_sources ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
 	include_directories (../platform/windows/compat_stuff)
-        if(NOT MINGW)
-                # mingw-w64 provides getopt
-                list(APPEND sclang_sources ../platform/windows/compat_stuff/getopt/getopt.c)
-                include_directories(../platform/windows/compat_stuff/getopt)
-        endif()
+
+    if(NOT MINGW)
+        # mingw-w64 provides getopt
+        list(APPEND sclang_sources ../platform/windows/compat_stuff/getopt/getopt.c)
+        include_directories(../platform/windows/compat_stuff/getopt)
+    endif()
 
 	if(PORTMIDI_FOUND)
 		include_directories (${PORTMIDI_INCLUDE_DIRS})
@@ -169,9 +175,9 @@ if(SC_WII)
 			message(SEND_ERROR "Cannot find libcwiid or libbluetooth.\n (If Wii support is not required, then set SC_WII=no)")
 		endif()
 	elseif(APPLE)
-                add_definitions(-DHAVE_WII)
-                list(APPEND sclang_sources LangPrimSource/WiiMote_OSX/wiiremote.c)
-                include_directories(LangPrimSource/WiiMote_OSX)
+		add_definitions(-DHAVE_WII)
+		list(APPEND sclang_sources LangPrimSource/WiiMote_OSX/wiiremote.c)
+include_directories(LangPrimSource/WiiMote_OSX)
 	endif()
 endif()
 
@@ -184,19 +190,21 @@ endif()
 if(SC_IDE)
 	add_definitions(-DSC_IDE -DQT_NO_KEYWORDS)
 
-	qt5_wrap_cpp( SCLANG_MOC_SRCS ../editors/sc-ide/primitives/sc_ipc_client.hpp )
+	qt5_wrap_cpp(sclang_moc_srcs ../editors/sc-ide/primitives/sc_ipc_client.hpp)
 	list(APPEND sclang_sources ../editors/sc-ide/primitives/sc_ipc_client.cpp)
-	list(APPEND sclang_sources ${SCLANG_MOC_SRCS})
+	list(APPEND sclang_headers ../editors/sc-ide/primitives/sc_ipc_client.hpp)
+	list(APPEND sclang_sources ${sclang_moc_srcs})
 endif()
 
 include(../SCDoc/CMakeLists.txt)
 list(APPEND sclang_sources ${SCDOC_SRCS})
+list(APPEND sclang_headers ${SCDOC_HDRS})
 
 if(0 AND FINAL_BUILD) # sclang final-builds are broken
 	CREATE_FINAL_FILE(libsclang_final.cpp ${sclang_sources})
 	add_library(libsclang STATIC libsclang_final.cpp ${sclang_parser_source})
 else()
-	add_library(libsclang STATIC ${sclang_sources} ${sclang_parser_source})
+	add_library(libsclang STATIC ${sclang_sources} ${sclang_headers} ${sclang_parser_source})
 endif()
 
 target_compile_definitions(libsclang PRIVATE YYSTACK_USE_ALLOC)
@@ -204,7 +212,6 @@ target_link_libraries(libsclang tlsf ${PTHREADS_LIBRARIES})
 
 if(SC_IDE OR SC_QT)
 	message("libsclang qt libs:" ${QT_COLLIDER_LIBS})
-	#qt5_use_modules(libsclang Core)
 	find_package(Qt5Core)
 	get_target_property(QtCore_location Qt5::Core LOCATION)
 	message("core: " ${QtCore_location} )
