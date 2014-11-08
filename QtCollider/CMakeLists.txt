@@ -137,17 +137,21 @@ qt5_add_resources( QT_COLLIDER_RCC ${QT_COLLIDER_DIR}/resources.qrc )
 if(APPLE)
 	qt5_wrap_cpp( QT_COLLIDER_OBJ_MOC_SRCS ${QT_COLLIDER_DIR}/widgets/QcQuartzComposerView.h )
 	list(APPEND QT_COLLIDER_HDRS ${QT_COLLIDER_DIR}/widgets/QcQuartzComposerView.h )
-  	set( QT_COLLIDER_OBJCPP_SRCS
+  set( QT_COLLIDER_OBJCPP_SRCS
   		${QT_COLLIDER_OBJ_MOC_SRCS}
-		${QT_COLLIDER_DIR}/hacks/hacks_mac.mm
-		${QT_COLLIDER_DIR}/widgets/QcQuartzComposerView.mm
-		${QT_COLLIDER_DIR}/primitives/prim_QQuartzComposer.mm
-  	)
+		  ${QT_COLLIDER_DIR}/hacks/hacks_mac.mm
+		  ${QT_COLLIDER_DIR}/widgets/QcQuartzComposerView.mm
+		  ${QT_COLLIDER_DIR}/primitives/prim_QQuartzComposer.mm
+  )
 endif()
 
 set_source_files_properties( ${QT_COLLIDER_OBJCPP_SRCS}
     PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-exceptions"
 )
+
+source_group("QT\\include" FILES ${QT_COLLIDER_HDRS})
+source_group("QT\\src" FILES ${QT_COLLIDER_SRCS} ${QT_COLLIDER_OBJCPP_SRCS})
+source_group("QT\\src\\generated" FILES ${QT_COLLIDER_MOC_SRCS} ${QT_COLLIDER_OBJ_MOC_SRCS} ${QT_COLLIDER_RCC})
 
 list( APPEND QT_COLLIDER_SRCS
   ${QT_COLLIDER_OBJCPP_SRCS}
