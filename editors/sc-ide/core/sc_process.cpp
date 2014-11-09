@@ -140,7 +140,7 @@ void ScProcess::startLanguage (void)
 
     QString sclangCommand;
 #ifdef Q_OS_MAC
-    sclangCommand = standardDirectory(ScResourceDir) + "/../MacOS/sclang";
+    sclangCommand = standardDirectory(ScResourceDir) + "/../MacOS/sclang.app/Contents/MacOS/sclang";
 #else
     sclangCommand = "sclang";
 #endif
