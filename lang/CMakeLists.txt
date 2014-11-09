@@ -88,10 +88,12 @@ set(sclang_sources
 	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
 )
 
+set(ide_name scide)
+
 if(APPLE)
 	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
 	
-	list(APPEND sclang_sources ${CMAKE_SOURCE_DIR}/common/SC_Apple.mm)
+	list(APPEND  ${CMAKE_SOURCE_DIR}/common/SC_Apple.mm)
 	set_source_files_properties(${CMAKE_SOURCE_DIR}/common/SC_Apple.mm PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-exceptions")
 endif()
 
@@ -155,11 +157,11 @@ endif()
 
 # This sets up the exe icon for windows under mingw.
 if(MINGW)
- set(RES_FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/sclang.rc)
- set(CMAKE_RC_COMPILER_INIT windres)
- ENABLE_LANGUAGE(RC)
- SET(CMAKE_RC_COMPILE_OBJECT
- "<CMAKE_RC_COMPILER> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
+	set(RES_FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/sclang.rc)
+	set(CMAKE_RC_COMPILER_INIT windres)
+	ENABLE_LANGUAGE(RC)
+	SET(CMAKE_RC_COMPILE_OBJECT
+		"<CMAKE_RC_COMPILER> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
 endif(MINGW)
 
 if(SC_WII)
@@ -185,6 +187,7 @@ if(SC_QT OR SC_IDE)
 	set(QT_COLLIDER_LANG_CLIENT ON)
 	include(../QtCollider/CMakeLists.txt)
 	list(APPEND sclang_sources ${QT_COLLIDER_SRCS})
+	list(APPEND sclang_headers ${QT_COLLIDER_HDRS})
 endif()
 
 if(SC_IDE)
@@ -320,7 +323,44 @@ endif()
 
 target_link_libraries(libsclang ${YAMLCPP_LIBRARY})
 
-add_executable(sclang LangSource/cmdLineFuncs.cpp ${RES_FILES})
+set(Icons ../../icons/SCcube.icns)
+set_source_files_properties(${Icons} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+SET(MACOSX_BUNDLE_ICON_FILE ../../icons/SCcube.icns)
+list(APPEND RES_FILES ${Icons})
+
+if(APPLE AND SC_QT)
+	# determines the app name and app install location (scappbundlename, scappdir):
+	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
+	set(sclang_name ${scappbundlename})
+
+    if(NOT SC_SYMLINK_CLASSLIB)
+        foreach(file ${ClassLibrary} ${HelpSource})
+            string(REPLACE ${CMAKE_SOURCE_DIR} "" PathInBundle ${file} )
+            get_filename_component(PathInBundle "${PathInBundle}" DIRECTORY)
+            set_source_files_properties(${file} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/${PathInBundle})
+        endforeach()
+    endif()
+
+    foreach(file ${Sounds})
+        string(REPLACE ${CMAKE_SOURCE_DIR} "" PathInBundle ${file} )
+        get_filename_component(PathInBundle "${PathInBundle}" DIRECTORY)
+        set_source_files_properties(${file} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/${PathInBundle})
+    endforeach()
+
+    set(AdditionalBundleSources ${ClassLibrary} ${HelpSource} ${BundleResources} ${Examples} ${Sounds} ${Icons})
+endif()
+
+if(APPLE AND SC_QT)
+	add_executable(sclang MACOSX_BUNDLE
+		LangSource/cmdLineFuncs.cpp 
+		${RES_FILES}
+		${AdditionalBundleSources}
+	)
+	set(MACOSX_BUNDLE_BUNDLE_NAME sclang)
+else()
+	add_executable(sclang LangSource/cmdLineFuncs.cpp ${RES_FILES})
+endif()
+
 target_link_libraries(sclang libsclang)
 target_link_libraries(sclang ${ICU_LIBRARIES})
 
@@ -333,10 +373,7 @@ if(LTO)
 					APPEND PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program")
 endif()
 
-if(APPLE)
-	# determines the app name and app install location (scappbundlename, scappdir):
-	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
-
+if(APPLE AND SC_QT)
 	install(TARGETS sclang
 			DESTINATION "${scappbindir}"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
@@ -349,3 +386,5 @@ elseif(NOT APPLE)
 			RUNTIME DESTINATION "bin"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endif()
+
+

@@ -23,35 +23,10 @@ if(${CMAKE_COMPILER_IS_GNUCXX})
     add_definitions(-Wreorder)
 endif()
 
-if (APPLE)
-  include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
-  set(ide_name ${scappbundlename})
-else()
-  set(ide_name scide)
-endif()
-
 if(APPLE)
-    if(NOT SC_SYMLINK_CLASSLIB)
-        foreach(file ${ClassLibrary} ${HelpSource})
-            string(REPLACE ${CMAKE_SOURCE_DIR} "" PathInBundle ${file} )
-            get_filename_component(PathInBundle "${PathInBundle}" DIRECTORY)
-            set_source_files_properties(${file} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/${PathInBundle})
-        endforeach()
-    endif()
-
-    foreach(file ${Sounds})
-        string(REPLACE ${CMAKE_SOURCE_DIR} "" PathInBundle ${file} )
-        get_filename_component(PathInBundle "${PathInBundle}" DIRECTORY)
-        set_source_files_properties(${file} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/${PathInBundle})
-    endforeach()
-
     set( Icons ../../icons/SCcube.icns)
     set_source_files_properties(../../icons/SCcube.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
-
-    set(AdditionalBundleSources ${ClassLibrary} ${HelpSource} ${BundleResources} ${Examples} ${Sounds} ${Icons})
 endif()
-
-
 
 set ( ide_moc_hdr
     core/main.hpp
@@ -267,11 +242,7 @@ else()
   add_executable( SuperCollider MACOSX_BUNDLE ${ide_sources} ${ide_rc_sources} ${RES_FILES} ${AdditionalBundleSources})
 endif()
 
-if(APPLE)
-    set_target_properties(SuperCollider PROPERTIES OUTPUT_NAME "${ide_name}")
-else()
-    set_target_properties(SuperCollider PROPERTIES OUTPUT_NAME "scide")
-endif()
+set_target_properties(SuperCollider PROPERTIES OUTPUT_NAME "SuperCollider")
 
 target_link_libraries( SuperCollider
     ${QT_IDE_LIBRARIES}
@@ -319,7 +290,6 @@ endif()
 
 
 # Installation
-
 if(APPLE)
     add_dependencies(SuperCollider sclang scsynth ${plugins} ${supernova_plugins})
     add_custom_command(TARGET SuperCollider POST_BUILD
