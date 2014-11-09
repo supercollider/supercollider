@@ -193,6 +193,7 @@ SynthControl : AbstractPlayControl {
 
 	var <server, <>nodeID;
 	var <canReleaseSynth=false, <canFreeSynth=false;
+	var prevBundle;
 
 
 	loadToBundle {} // assumes that SynthDef is loaded in the server
@@ -224,6 +225,7 @@ SynthControl : AbstractPlayControl {
 		nodeID = server.nextNodeID;
 		bundle.addCancel([9, this.asDefName, nodeID, addAction, group.nodeID]++extraArgs.asOSCArgArray);
 		if(paused) { bundle.addCancel(["/n_run", nodeID, 0]) };
+		prevBundle = bundle;
 		^nodeID
 	}
 
@@ -239,6 +241,10 @@ SynthControl : AbstractPlayControl {
 			};
 			nodeID = nil;
 		}
+	}
+
+	freeToBundle {
+		prevBundle !? { prevBundle.cancel };
 	}
 
 	set { | ... args |
@@ -290,7 +296,7 @@ SynthControl : AbstractPlayControl {
 SynthDefControl : SynthControl {
 
 	var <synthDef, <parents;
-	var prevBundle, <bytes;
+	var <bytes;
 
 	readyForPlay { ^synthDef.notNil }
 
