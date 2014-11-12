@@ -1,21 +1,21 @@
 /*
 	SuperCollider real time audio synthesis system
-    Copyright (c) 2002 James McCartney. All rights reserved.
+	Copyright (c) 2002 James McCartney. All rights reserved.
 	http://www.audiosynth.com
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 /*
 
@@ -256,8 +256,9 @@ class regex_lru_cache
 	}
 
 public:
-    regex_lru_cache(int regex_flags = boost::regex_constants::ECMAScript):
-		re_set(bucket_traits(buckets, 128))
+	regex_lru_cache(int regex_flags = boost::regex_constants::ECMAScript):
+		re_set(bucket_traits(buckets, 128)),
+		re_list()
 	{}
 
 	~regex_lru_cache()
@@ -364,7 +365,10 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *b = g->sp - 1; // pattern
 	PyrSlot *c = g->sp;     // offset
 
-	if (!isKindOfSlot(b, class_string) || (NotInt(c))) return errWrongType;
+	if (!isKindOfSlot(b, class_string) || (NotInt(c))) {
+		SetNil(a);
+		return errWrongType;
+	}
 
 	int offset = slotRawInt(c);
 	int stringlen = std::max(slotRawObject(a)->size - offset, 0);
@@ -397,6 +401,7 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 		}
 	} catch (std::exception const & e) {
 		postfl("Warning: Exception in _String_FindRegexp - %s\n", e.what());
+		SetNil(a);
 		return errFailed;
 	}
 
@@ -426,6 +431,66 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 		SetObject(array->slots+1, matched_string);
 		g->gc->GCWrite(array, matched_string);
 	};
+
+	return errNone;
+}
+
+static int prString_FirstRegexp(struct VMGlobals *g, int numArgsPushed)
+{
+	/* not reentrant */
+	static detail::regex_lru_cache regex_lru_cache(boost::regex_constants::ECMAScript);
+
+	using namespace boost;
+
+	PyrSlot *a = g->sp - 2; // source string
+	PyrSlot *b = g->sp - 1; // pattern
+	PyrSlot *c = g->sp;     // offset
+
+	if (!isKindOfSlot(b, class_string) || (NotInt(c))) {
+		SetNil(a);
+		return errWrongType;
+	}
+
+	int offset = slotRawInt(c);
+	int stringlen = std::max(slotRawObject(a)->size - offset, 0);
+
+	int matched_len = 0;
+
+	const char* const stringBegin = slotRawString(a)->s + offset;
+	try {
+		regex const & pattern = regex_lru_cache.get_regex(slotRawString(b)->s, slotRawObject(b)->size);
+
+		// match_continuous: the match must begin at the offset start
+		match_flag_type flags = match_continuous;
+
+		match_results<const char*> what;
+		const char* start = stringBegin;
+		const char* end = start + stringlen;
+		if (regex_search(start, end, what, pattern, flags))
+		{
+			assert(what[0].first == stringBegin);
+			matched_len = what[0].second - what[0].first;
+		}
+		else
+		{
+			SetNil(a);
+			return errNone;
+		}
+	} catch (std::exception const & e) {
+		postfl("Warning: Exception in _String_FirstRegexp - %s\n", e.what());
+		return errFailed;
+	}
+
+	PyrObject *array = newPyrArray(g->gc, 2, 0, true);
+	SetObject(a, array);
+
+	PyrString *matched_string = newPyrStringN(g->gc, matched_len, 0, true);
+	memcpy(matched_string->s, stringBegin, (size_t) matched_len);
+
+	array->size = 2;
+	SetInt(array->slots+1, matched_len);
+	SetObject(array->slots, matched_string);
+	g->gc->GCWrite(array, matched_string);
 
 	return errNone;
 }
@@ -541,19 +606,19 @@ int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
 
   hFind = ::FindFirstFile(pattern, &findData);
   if (hFind == INVALID_HANDLE_VALUE) {
-    nbPaths = 0;
+	nbPaths = 0;
   }
 
   if (hFind == INVALID_HANDLE_VALUE) {
 	// This is what happens when no matches. So we create an empty array to return.
-    PyrObject* array = newPyrArray(g->gc, 0, 0, true);
+	PyrObject* array = newPyrArray(g->gc, 0, 0, true);
 	SetObject(a, array);
-    return errNone;
+	return errNone;
   }
 
   do {
 	  if(strcmp(findData.cFileName, "..")!=0 && strcmp(findData.cFileName, "..")!=0){
-	    nbPaths++;
+		nbPaths++;
 	  }
   } while( ::FindNextFile(hFind, &findData));
   ::FindClose(hFind);
@@ -562,29 +627,29 @@ int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
 
   hFind = ::FindFirstFile(pattern, &findData);
   if (hFind == INVALID_HANDLE_VALUE) {
-    nbPaths = 0;
+	nbPaths = 0;
   }
 
   PyrObject* array = newPyrArray(g->gc, nbPaths , 0, true);
   SetObject(a, array);
   if (hFind == INVALID_HANDLE_VALUE) {
-    return errNone;
+	return errNone;
   }
 
   int i = 0;
   do {
 	if(strcmp(findData.cFileName, "..")!=0 && strcmp(findData.cFileName, ".")!=0){
-      std::string strPath(folder);
-      strPath += std::string(findData.cFileName);
-  	  if(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY){
+	  std::string strPath(folder);
+	  strPath += std::string(findData.cFileName);
+	  if(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY){
 		strPath += std::string("\\"); // Append trailing slash, to match behaviour on unix (used by sclang to detect folderness)
 	  }
-      const char* fullPath = strPath.c_str();
+	  const char* fullPath = strPath.c_str();
 	  PyrObject *string = (PyrObject*)newPyrString(g->gc, fullPath, 0, true);
 	  SetObject(array->slots+i, string);
 	  g->gc->GCWrite(array, string);
 	  array->size++;
-      i++;
+	  i++;
 	}
   } while( ::FindNextFile(hFind, &findData));
   ::FindClose(hFind);
@@ -1000,12 +1065,13 @@ void initStringPrimitives()
 	definePrimitive(base, index++, "_String_AsFloat", prString_AsFloat, 1, 0);
 	definePrimitive(base, index++, "_String_AsCompileString", prString_AsCompileString, 1, 0);
 	definePrimitive(base, index++, "_String_Getenv", prString_Getenv, 1, 0);
-    definePrimitive(base, index++, "_String_Setenv", prString_Setenv, 2, 0);
-    definePrimitive(base, index++, "_String_Find", prString_Find, 4, 0);
+	definePrimitive(base, index++, "_String_Setenv", prString_Setenv, 2, 0);
+	definePrimitive(base, index++, "_String_Find", prString_Find, 4, 0);
 	definePrimitive(base, index++, "_String_FindBackwards", prString_FindBackwards, 4, 0);
-    definePrimitive(base, index++, "_String_Format", prString_Format, 2, 0);
+	definePrimitive(base, index++, "_String_Format", prString_Format, 2, 0);
 	definePrimitive(base, index++, "_String_Regexp", prString_Regexp, 4, 0);
 	definePrimitive(base, index++, "_String_FindRegexp", prString_FindRegexp, 3, 0);
+	definePrimitive(base, index++, "_String_FirstRegexp", prString_FirstRegexp, 3, 0);
 	definePrimitive(base, index++, "_StripRtf", prStripRtf, 1, 0);
 	definePrimitive(base, index++, "_StripHtml", prStripHtml, 1, 0);
 	definePrimitive(base, index++, "_String_StandardizePath", prString_StandardizePath, 1, 0);
