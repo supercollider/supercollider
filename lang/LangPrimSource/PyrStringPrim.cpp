@@ -583,16 +583,16 @@ int prStringPathMatch(struct VMGlobals *g, int numArgsPushed);
 
 int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a = g->sp;
+  PyrSlot *a = g->sp;
 
-	char pattern[1024];
-	int err = slotStrVal(a, pattern, 1023);
-	if (err) return err;
+  char pattern[1024];
+  int err = slotStrVal(a, pattern, 1023);
+  if (err) return err;
 
   win32_ReplaceCharInString(pattern,1024,'/','\\');
   // Remove trailing slash if found, to allow folders to be matched
   if(pattern[strlen(pattern)-1]=='\\'){
-	  pattern[strlen(pattern)-1] = 0;
+    pattern[strlen(pattern)-1] = 0;
   }
   // extract the containing folder, including backslash
   char folder[1024];
@@ -617,9 +617,9 @@ int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
   }
 
   do {
-	  if(strcmp(findData.cFileName, "..")!=0 && strcmp(findData.cFileName, "..")!=0){
-		nbPaths++;
-	  }
+    if(strcmp(findData.cFileName, "..")!=0 && strcmp(findData.cFileName, "..")!=0){
+      nbPaths++;
+    }
   } while( ::FindNextFile(hFind, &findData));
   ::FindClose(hFind);
 
@@ -627,33 +627,33 @@ int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
 
   hFind = ::FindFirstFile(pattern, &findData);
   if (hFind == INVALID_HANDLE_VALUE) {
-	nbPaths = 0;
+    nbPaths = 0;
   }
 
   PyrObject* array = newPyrArray(g->gc, nbPaths , 0, true);
   SetObject(a, array);
   if (hFind == INVALID_HANDLE_VALUE) {
-	return errNone;
+    return errNone;
   }
 
   int i = 0;
   do {
-	if(strcmp(findData.cFileName, "..")!=0 && strcmp(findData.cFileName, ".")!=0){
-	  std::string strPath(folder);
-	  strPath += std::string(findData.cFileName);
-	  if(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY){
-		strPath += std::string("\\"); // Append trailing slash, to match behaviour on unix (used by sclang to detect folderness)
-	  }
-	  const char* fullPath = strPath.c_str();
-	  PyrObject *string = (PyrObject*)newPyrString(g->gc, fullPath, 0, true);
-	  SetObject(array->slots+i, string);
-	  g->gc->GCWrite(array, string);
-	  array->size++;
-	  i++;
-	}
+    if(strcmp(findData.cFileName, "..")!=0 && strcmp(findData.cFileName, ".")!=0){
+      std::string strPath(folder);
+      strPath += std::string(findData.cFileName);
+      if(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY){
+        strPath += std::string("\\"); // Append trailing slash, to match behaviour on unix (used by sclang to detect folderness)
+      }
+      const char* fullPath = strPath.c_str();
+      PyrObject *string = (PyrObject*)newPyrString(g->gc, fullPath, 0, true);
+      SetObject(array->slots+i, string);
+      g->gc->GCWrite(array, string);
+      array->size++;
+      i++;
+    }
   } while( ::FindNextFile(hFind, &findData));
   ::FindClose(hFind);
-	return errNone;
+  return errNone;
 }
 #endif //#ifndef SC_WIN32
 
