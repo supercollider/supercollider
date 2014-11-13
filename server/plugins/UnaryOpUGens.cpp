@@ -171,11 +171,11 @@ enum {
 	opSinH,
 	opCosH,
 	opTanH,
+	
 	opRand,
 	opRand2,
 	opLinRand,
 	opBiLinRand,
-
 	opSum3Rand,
 
 	opDistort,
@@ -494,6 +494,46 @@ void thru_d(UnaryOpUGen *unit, int inNumSamples)
 	}
 }
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+#define DEFINE_UNARY_OP_RANDOM_FUNCS(name, function)		\
+extern "C" void name##_a(UnaryOpUGen *unit, int inNumSamples)	\
+{													\
+	float *out = ZOUT(0);							\
+	float *a = ZIN(0);								\
+	RGen& rgen = *unit->mParent->mRGen;				\
+	LOOP1(inNumSamples,								\
+		ZXP(out) = rgen.function() * ZXP(a);		\
+	);												\
+}													\
+													\
+extern "C" void name##_1(UnaryOpUGen *unit, int inNumSamples)	\
+{													\
+	RGen& rgen = *unit->mParent->mRGen;				\
+    ZOUT0(0) = rgen.function() * ZIN0(0);			\
+}													\
+													\
+extern "C" void name##_d(UnaryOpUGen *unit, int inNumSamples)	\
+{													\
+	if (inNumSamples) {								\
+		float x = DEMANDINPUT_A(0, inNumSamples);	\
+        RGen& rgen = *unit->mParent->mRGen;				\
+		OUT0(0) = sc_isnan(x) ? NAN : (rgen.function() * x);	\
+	} else {										\
+		RESETINPUT(0);								\
+	}												\
+}
+
+DEFINE_UNARY_OP_RANDOM_FUNCS(rand, frand);
+DEFINE_UNARY_OP_RANDOM_FUNCS(rand2, frand2);
+DEFINE_UNARY_OP_RANDOM_FUNCS(linrand, flinrand);
+DEFINE_UNARY_OP_RANDOM_FUNCS(bilinrand, fbilinrand);
+DEFINE_UNARY_OP_RANDOM_FUNCS(sum3rand, fsum3rand);
+DEFINE_UNARY_OP_RANDOM_FUNCS(coin, fcoin);
+
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 static UnaryOpFunc ChooseNormalFunc(UnaryOpUGen *unit)
@@ -536,6 +576,13 @@ static UnaryOpFunc ChooseNormalFunc(UnaryOpUGen *unit)
 		case opSinH : func = &sinh_a; break;
 		case opCosH : func = &cosh_a; break;
 		case opTanH : func = &tanh_a; break;
+			
+		case opRand : func = &rand_a; break;
+		case opRand2 : func = &rand2_a; break;
+		case opLinRand : func = &linrand_a; break;
+		case opBiLinRand : func = &bilinrand_a; break;
+		case opSum3Rand : func = &sum3rand_a; break;
+		case opCoin : func = &coin_a; break;
 
 		case opDistort : func = &distort_a; break;
 		case opSoftClip : func = &softclip_a; break;
@@ -593,6 +640,13 @@ static UnaryOpFunc ChooseOneFunc(UnaryOpUGen *unit)
 		case opSinH : func = &sinh_1; break;
 		case opCosH : func = &cosh_1; break;
 		case opTanH : func = &tanh_1; break;
+			
+		case opRand : func = &rand_1; break;
+		case opRand2 : func = &rand2_1; break;
+		case opLinRand : func = &linrand_1; break;
+		case opBiLinRand : func = &bilinrand_1; break;
+		case opSum3Rand : func = &sum3rand_1; break;
+		case opCoin : func = &coin_1; break;
 
 		case opDistort : func = &distort_1; break;
 		case opSoftClip : func = &softclip_1; break;
@@ -604,6 +658,8 @@ static UnaryOpFunc ChooseOneFunc(UnaryOpUGen *unit)
 
 		case opSCurve : func = &scurve_1; break;
 		case opRamp : func = &ramp_1; break;
+			
+		
 
 		default : func = &thru_a; break;
 	}
@@ -651,6 +707,13 @@ static UnaryOpFunc ChooseDemandFunc(UnaryOpUGen *unit)
 		case opSinH : func = &sinh_d; break;
 		case opCosH : func = &cosh_d; break;
 		case opTanH : func = &tanh_d; break;
+		
+		case opRand : func = &rand_d; break;
+		case opRand2 : func = &rand2_d; break;
+		case opLinRand : func = &linrand_d; break;
+		case opBiLinRand : func = &bilinrand_d; break;
+		case opSum3Rand : func = &sum3rand_d; break;
+		case opCoin : func = &coin_d; break;
 
 		case opDistort : func = &distort_d; break;
 		case opSoftClip : func = &softclip_d; break;
@@ -662,6 +725,7 @@ static UnaryOpFunc ChooseDemandFunc(UnaryOpUGen *unit)
 
 		case opSCurve : func = &scurve_d; break;
 		case opRamp : func = &ramp_d; break;
+			
 
 		default : func = &thru_d; break;
 	}
