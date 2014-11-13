@@ -53,6 +53,9 @@ struct key_nodeptr_comp
    const T & key_forward(const T &key, typename enable_if_c<!is_node_ptr<T>::value>::type* = 0) const
    {  return key;  }
 
+   template<class T>
+   T & key_forward(T &key, typename enable_if_c<!is_node_ptr<T>::value>::type* = 0) const
+   {  return key;  }
 
    template<class KeyType, class KeyType2>
    bool operator()(const KeyType &key1, const KeyType2 &key2) const
@@ -60,6 +63,10 @@ struct key_nodeptr_comp
 
    template<class KeyType>
    bool operator()(const KeyType &key1) const
+   {  return base_t::get()(this->key_forward(key1));  }
+
+   template<class KeyType>
+   bool operator()(KeyType &key1)
    {  return base_t::get()(this->key_forward(key1));  }
 
    const ValueTraits *const traits_;
