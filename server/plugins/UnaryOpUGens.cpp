@@ -530,7 +530,36 @@ DEFINE_UNARY_OP_RANDOM_FUNCS(rand2, frand2);
 DEFINE_UNARY_OP_RANDOM_FUNCS(linrand, flinrand);
 DEFINE_UNARY_OP_RANDOM_FUNCS(bilinrand, fbilinrand);
 DEFINE_UNARY_OP_RANDOM_FUNCS(sum3rand, fsum3rand);
-DEFINE_UNARY_OP_RANDOM_FUNCS(coin, fcoin);
+
+
+void coin_a(UnaryOpUGen *unit, int inNumSamples)
+{												
+	float *out = ZOUT(0);
+	float *a = ZIN(0);
+	RGen& rgen = *unit->mParent->mRGen;			
+	LOOP1(inNumSamples,
+		  ZXP(out) = (rgen.frand() < ZXP(a)) ? 1.f : 0.f;
+	);
+}												
+												
+void coin_1(UnaryOpUGen *unit, int inNumSamples)
+{
+	RGen& rgen = *unit->mParent->mRGen;
+	float x = ZIN0(0);
+    ZOUT0(0) = (rgen.frand() < x) ? 1.f : 0.f;
+}												
+												
+void coin_d(UnaryOpUGen *unit, int inNumSamples)
+{
+	if (inNumSamples) {
+		float x = DEMANDINPUT_A(0, inNumSamples);
+        RGen& rgen = *unit->mParent->mRGen;
+		float val = (rgen.frand() < x) ? 1.f : 0.f;
+		OUT0(0) = sc_isnan(x) ? NAN : val;
+	} else {
+		RESETINPUT(0);
+	}											
+}
 
 
 
