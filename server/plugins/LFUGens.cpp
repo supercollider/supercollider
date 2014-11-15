@@ -2703,42 +2703,7 @@ enum {
 void EnvGen_next_ak_nova(EnvGen *unit, int inNumSamples);
 #endif
 
-void EnvGen_Ctor(EnvGen *unit)
-{
-	//Print("EnvGen_Ctor A\n");
-	if (unit->mCalcRate == calc_FullRate) {
-		if (INRATE(0) == calc_FullRate) {
-			SETCALC(EnvGen_next_aa);
-		} else {
-#ifdef NOVA_SIMD
-			if (!(BUFLENGTH & 15))
-				SETCALC(EnvGen_next_ak_nova);
-			else
-#endif
-			SETCALC(EnvGen_next_ak);
-		}
-	} else {
-		SETCALC(EnvGen_next_k);
-	}
 
-	// gate = 1.0, levelScale = 1.0, levelBias = 0.0, timeScale
-	// level0, numstages, releaseNode, loopNode,
-	// [level, dur, shape, curve]
-
-	unit->m_endLevel = unit->m_level = ZIN0(kEnvGen_initLevel) * ZIN0(kEnvGen_levelScale) + ZIN0(kEnvGen_levelBias);
-	unit->m_counter = 0;
-	unit->m_stage = 1000000000;
-	unit->m_prevGate = 0.f;
-	unit->m_released = false;
-	unit->m_releaseNode = (int)ZIN0(kEnvGen_releaseNode);
-
-	float** envPtr  = unit->mInBuf + kEnvGen_nodeOffset;
-	const int initialShape = (int32)*envPtr[2];
-	if (initialShape == shape_Hold)
-		unit->m_level = *envPtr[0]; // we start at the end level;
-
-	EnvGen_next_k(unit, 1);
-}
 
 static inline bool check_gate(EnvGen * unit, float prevGate, float gate, int & counter, double level, int counterOffset = 0)
 {
@@ -2782,6 +2747,44 @@ static inline bool check_gate_ar(EnvGen * unit, int i, float & prevGate, float *
 	}
 	prevGate = gate;
 	return result;
+}
+
+void EnvGen_Ctor(EnvGen *unit)
+{
+	//Print("EnvGen_Ctor A\n");
+	if (unit->mCalcRate == calc_FullRate) {
+		if (INRATE(0) == calc_FullRate) {
+			SETCALC(EnvGen_next_aa);
+		} else {
+#ifdef NOVA_SIMD
+			if (!(BUFLENGTH & 15))
+				SETCALC(EnvGen_next_ak_nova);
+			else
+#endif
+				SETCALC(EnvGen_next_ak);
+		}
+	} else {
+		SETCALC(EnvGen_next_k);
+	}
+	
+	// gate = 1.0, levelScale = 1.0, levelBias = 0.0, timeScale
+	// level0, numstages, releaseNode, loopNode,
+	// [level, dur, shape, curve]
+	
+	unit->m_endLevel = unit->m_level = ZIN0(kEnvGen_initLevel) * ZIN0(kEnvGen_levelScale) + ZIN0(kEnvGen_levelBias);
+	unit->m_counter = 0;
+	unit->m_stage = 1000000000;
+	unit->m_prevGate = 0.f;
+	unit->m_released = false;
+	unit->m_releaseNode = (int)ZIN0(kEnvGen_releaseNode);
+	
+	float** envPtr  = unit->mInBuf + kEnvGen_nodeOffset;
+	const int initialShape = (int32)*envPtr[2];
+	if (initialShape == shape_Hold)
+		unit->m_level = *envPtr[0]; // we start at the end level;
+	check_gate(unit, 0.f, ZIN0(kEnvGen_gate), unit->m_counter, unit->m_level, 0);
+	
+	EnvGen_next_k(unit, 1);
 }
 
 static inline bool EnvGen_nextSegment(EnvGen * unit, int & counter, double & level)
