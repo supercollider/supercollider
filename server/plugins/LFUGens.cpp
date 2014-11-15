@@ -3189,6 +3189,7 @@ void Linen_Ctor(Linen *unit)
 	unit->m_level = 0.f;
 	unit->m_stage = 4;
 	unit->m_prevGate = 0.f;
+	if(ZIN0(0) <= 0.f) { unit->m_stage = 1; } // early release
 	Linen_next_k(unit, 1);
 }
 
