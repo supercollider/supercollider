@@ -553,7 +553,7 @@ void coin_d(UnaryOpUGen *unit, int inNumSamples)
 {
 	if (inNumSamples) {
 		float x = DEMANDINPUT_A(0, inNumSamples);
-        RGen& rgen = *unit->mParent->mRGen;
+		RGen& rgen = *unit->mParent->mRGen;
 		float val = (rgen.frand() < x) ? 1.f : 0.f;
 		OUT0(0) = sc_isnan(x) ? NAN : val;
 	} else {
@@ -687,8 +687,6 @@ static UnaryOpFunc ChooseOneFunc(UnaryOpUGen *unit)
 
 		case opSCurve : func = &scurve_1; break;
 		case opRamp : func = &ramp_1; break;
-			
-		
 
 		default : func = &thru_a; break;
 	}
