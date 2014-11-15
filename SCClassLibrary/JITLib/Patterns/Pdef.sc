@@ -30,6 +30,12 @@ PatternProxy : Pattern {
 		this.changed(\source, obj);
 	}
 
+	setSource { arg obj;
+		pattern = obj;
+		source = obj; // keep original here.
+		this.changed(\source, obj);
+	}
+
 	count { arg n=1;
 		condition = { |val,i| i % n == 0 }
 	}
@@ -691,7 +697,7 @@ PbindProxy : Pattern {
 	init {
 		forBy(0, pairs.size-1, 2) { arg i;
 			var proxy = PatternProxy.new;
-			proxy.source = pairs[i+1];
+			proxy.setSource(pairs[i+1]);
 			pairs[i+1] = proxy
 		};
 		source = EventPatternProxy(Pbind(*pairs));
@@ -727,10 +733,10 @@ PbindProxy : Pattern {
 					pairs.removeAt(i);
 					changedPairs = true;
 				}{
-					pairs[i+1].quant_(quant).source_(val)
+					pairs[i+1].quant_(quant).setSource(val)
 				};
 			}{
-				pairs = pairs ++ [key, PatternProxy.new.quant_(quant).source_(val)];
+				pairs = pairs ++ [key, PatternProxy.new.quant_(quant).setSource(val)];
 				changedPairs = true;
 			};
 
