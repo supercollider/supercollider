@@ -804,6 +804,13 @@ static UnaryOpFunc ChooseNovaSimdFunc(UnaryOpUGen *unit)
 		case opCosH : func = &cosh_a; break;
 		case opTanH : func = &tanh_nova; break;
 
+		case opRand : func = &rand_a; break;
+		case opRand2 : func = &rand2_a; break;
+		case opLinRand : func = &linrand_a; break;
+		case opBiLinRand : func = &bilinrand_a; break;
+		case opSum3Rand : func = &sum3rand_a; break;
+		case opCoin : func = &coin_a; break;
+
 		case opDistort : func = &distort_nova_64; break;
 		case opSoftClip : func = &softclip_nova_64; break;
 
@@ -853,6 +860,13 @@ static UnaryOpFunc ChooseNovaSimdFunc(UnaryOpUGen *unit)
 		case opSinH : func = &sinh_a; break;
 		case opCosH : func = &cosh_a; break;
 		case opTanH : func = &tanh_nova; break;
+
+		case opRand : func = &rand_a; break;
+		case opRand2 : func = &rand2_a; break;
+		case opLinRand : func = &linrand_a; break;
+		case opBiLinRand : func = &bilinrand_a; break;
+		case opSum3Rand : func = &sum3rand_a; break;
+		case opCoin : func = &coin_a; break;
 
 		case opDistort : func = &distort_nova; break;
 		case opSoftClip : func = &softclip_nova; break;
