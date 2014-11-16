@@ -850,6 +850,7 @@ void GenericCodeEditor::onCursorPositionChanged()
     if (mHighlightCurrentLine)
         updateCurrentLineHighlighting();
     mLastCursorBlock = textCursor().blockNumber();
+    updateDocLastSelection();
 }
     
 void GenericCodeEditor::updateDocLastSelection()
