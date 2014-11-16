@@ -2703,6 +2703,8 @@ enum {
 void EnvGen_next_ak_nova(EnvGen *unit, int inNumSamples);
 #endif
 
+static bool check_gate(EnvGen * unit, float prevGate, float gate, int & counter, double level, int counterOffset);
+
 void EnvGen_Ctor(EnvGen *unit)
 {
 	//Print("EnvGen_Ctor A\n");
@@ -2736,11 +2738,12 @@ void EnvGen_Ctor(EnvGen *unit)
 	const int initialShape = (int32)*envPtr[2];
 	if (initialShape == shape_Hold)
 		unit->m_level = *envPtr[0]; // we start at the end level;
+	check_gate(unit, 0.f, ZIN0(kEnvGen_gate), unit->m_counter, unit->m_level, 0);
 
 	EnvGen_next_k(unit, 1);
 }
 
-static inline bool check_gate(EnvGen * unit, float prevGate, float gate, int & counter, double level, int counterOffset = 0)
+static bool check_gate(EnvGen * unit, float prevGate, float gate, int & counter, double level, int counterOffset = 0)
 {
 	if (prevGate <= 0.f && gate > 0.f) {
 		unit->m_stage = -1;
@@ -3186,6 +3189,7 @@ void Linen_Ctor(Linen *unit)
 	unit->m_level = 0.f;
 	unit->m_stage = 4;
 	unit->m_prevGate = 0.f;
+	if(ZIN0(0) <= -1.f) { unit->m_stage = 1; } // early release
 	Linen_next_k(unit, 1);
 }
 
