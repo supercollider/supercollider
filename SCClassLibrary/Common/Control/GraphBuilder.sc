@@ -38,7 +38,7 @@ GraphBuilder {
 EnvGate {
 
 	*new { arg i_level=1, gate, fadeTime, doneAction=2, curve='sin';
-		var synthGate = gate ?? { NamedControl.kr(\gate, 1.0) + Impulse.kr(0) };
+		var synthGate = gate ?? { NamedControl.kr(\gate, 1.0) };
 		var synthFadeTime = fadeTime ?? { NamedControl.kr(\fadeTime, 0.02) };
 		var startVal = (synthFadeTime <= 0);
 		^EnvGen.kr(
