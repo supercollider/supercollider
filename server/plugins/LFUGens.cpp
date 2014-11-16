@@ -2703,8 +2703,6 @@ enum {
 void EnvGen_next_ak_nova(EnvGen *unit, int inNumSamples);
 #endif
 
-static bool check_gate(EnvGen * unit, float prevGate, float gate, int & counter, double level, int counterOffset);
-
 void EnvGen_Ctor(EnvGen *unit)
 {
 	//Print("EnvGen_Ctor A\n");
@@ -2738,7 +2736,6 @@ void EnvGen_Ctor(EnvGen *unit)
 	const int initialShape = (int32)*envPtr[2];
 	if (initialShape == shape_Hold)
 		unit->m_level = *envPtr[0]; // we start at the end level;
-	check_gate(unit, 0.f, ZIN0(kEnvGen_gate), unit->m_counter, unit->m_level, 0);
 
 	EnvGen_next_k(unit, 1);
 }
