@@ -232,7 +232,7 @@ SynthControl : AbstractPlayControl {
 	stopToBundle { | bundle, fadeTime |
 		if(nodeID.notNil) {
 			if(canReleaseSynth) {
-				bundle.addAll([['/error', -1], [15, nodeID, \gate, 0.0, \fadeTime, fadeTime], ['/error', -2]]);
+				bundle.addAll([['/error', -1], [15, nodeID, \gate, -1.0 - fadeTime, \fadeTime, fadeTime], ['/error', -2]]);
 			} {
 				if(canFreeSynth.not) { //"/n_free"
 					bundle.addAll([['/error', -1], [11, nodeID], ['/error', -2]]);
