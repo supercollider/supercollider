@@ -654,6 +654,7 @@ SequenceableCollection : Collection {
 
 	isSequenceableCollection { ^true }
 	containsSeqColl { ^this.any(_.isSequenceableCollection) }
+	hasAssociations { ^this.at(0).isKindOf(Association) }
 
 	// unary math ops
 	neg { ^this.performUnaryOp('neg') }

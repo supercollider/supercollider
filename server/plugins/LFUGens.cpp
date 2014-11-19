@@ -2740,7 +2740,7 @@ void EnvGen_Ctor(EnvGen *unit)
 	EnvGen_next_k(unit, 1);
 }
 
-static inline bool check_gate(EnvGen * unit, float prevGate, float gate, int & counter, double level, int counterOffset = 0)
+static bool check_gate(EnvGen * unit, float prevGate, float gate, int & counter, double level, int counterOffset = 0)
 {
 	if (prevGate <= 0.f && gate > 0.f) {
 		unit->m_stage = -1;
@@ -3186,6 +3186,7 @@ void Linen_Ctor(Linen *unit)
 	unit->m_level = 0.f;
 	unit->m_stage = 4;
 	unit->m_prevGate = 0.f;
+	if(ZIN0(0) <= -1.f) { unit->m_stage = 1; } // early release
 	Linen_next_k(unit, 1);
 }
 
