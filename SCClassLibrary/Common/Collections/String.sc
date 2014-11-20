@@ -198,6 +198,11 @@ String[char] : RawArray {
 		^this.find(string, true, offset).notNil
 	}
 
+	firstRegexp { arg regexp, offset = 0;
+	   _String_FirstRegexp
+	   ^this.primitiveFailed
+	}
+
 	findRegexp { arg regexp, offset = 0;
        _String_FindRegexp
        ^this.primitiveFailed
