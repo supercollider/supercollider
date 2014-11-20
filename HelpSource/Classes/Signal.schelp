@@ -117,21 +117,37 @@ the server on which to load the signal into a buffer.
 
 method::waveFill
 Fill the Signal with a function evaluated over an interval.
+
+argument::function
+a function that should calculate the value of a sample.
 code::
 (
-a = Signal.newClear(512);
-a.waveFill({ arg x, i; sin(x).max(0) }, 0, 3pi);
+a = Signal.newClear(256);
+a.waveFill({ arg x, old, i; sin(x)}, 0, 3pi);
+a.waveFill({ arg x, old, i; old * sin(11 * x + 0.3) }, 0, 3pi);
+a.waveFill({ arg x, old, i; old * (x % 4) }, 0, 3pi);
+
 a.plot;
 )
 ::
-argument::function
-a function that should calculate the value of a sample.
 
-The function is called with two arguments:
+
+The function is called with three arguments:
 definitionList::
 ## x || the value along the interval.
+## old || the old value (if the signal is overwritten)
 ## i || the sample index.
 ::
+As arguments, three values are passed to the function: the current input value (abscissa), the old value (if the signal is overwritten), and the index.
+code::
+(
+a = Signal.newClear(16);
+a.waveFill({ arg x, prev, i; [x, prev, i].postln; sin(x).max(0) }, 0, 3pi);
+a.plot;
+)
+::
+
+
 
 argument::start
 the starting value of the interval.
