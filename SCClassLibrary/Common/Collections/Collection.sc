@@ -548,49 +548,49 @@ Collection {
 	asSortedList { | function | ^SortedList.new(this.size, function).addAll(this) }
 
 	asAssociations {
-        var res;
-        if(this.hasAssociations) { ^this };
-        res = Array.new(this.size div: 2);
-        this.pairsDo { |key, val| res.add(key -> val) }
-        ^res
-    }
+		var res;
+		if(this.hasAssociations) { ^this };
+		res = Array.new(this.size div: 2);
+		this.pairsDo { |key, val| res.add(key -> val) }
+		^res
+	}
 
-    asPairs {
-        var res;
-        if(this.hasAssociations.not) { ^this };
-        res = Array.new(this.size div: 2);
-        this.do { |assoc| res.add(assoc.key).add(assoc.value) }
-        ^res
-    }
+	asPairs {
+		var res;
+		if(this.hasAssociations.not) { ^this };
+		res = Array.new(this.size div: 2);
+		this.do { |assoc| res.add(assoc.key).add(assoc.value) }
+		^res
+	}
 
-    asDict { |mergeFunc|
-        var res = IdentityDictionary.new; // another dispute: Dictionary would default to a very inefficient lookup.
-        if(mergeFunc.notNil) { ^this.asDictWith(mergeFunc) };
-        if(this.hasAssociations) {
-            this.do { |assoc|
-                res.put(assoc.key, assoc.value)
-            }
-        } {
-            this.pairsDo { |key, val|
-                res.put(key, val)
-            }
-        };
-        ^res
-    }
+	asDict { |mergeFunc|
+		var res = IdentityDictionary.new; // another dispute: Dictionary would default to a very inefficient lookup.
+		if(mergeFunc.notNil) { ^this.asDictWith(mergeFunc) };
+		if(this.hasAssociations) {
+			this.do { |assoc|
+				res.put(assoc.key, assoc.value)
+			}
+		} {
+			this.pairsDo { |key, val|
+				res.put(key, val)
+			}
+		};
+		^res
+	}
 
-    asDictWith { |mergeFunc|
-        var res = IdentityDictionary.new;
-        if(this.hasAssociations) {
-            this.do { |assoc|
-                res.mergeItem(assoc.key, assoc.value, mergeFunc)
-            }
-        } {
-            this.pairsDo { |key, val|
-                res.mergeItem(key, val, mergeFunc)
-            }
-        };
-        ^res
-    }
+	asDictWith { |mergeFunc|
+		var res = IdentityDictionary.new;
+		if(this.hasAssociations) {
+			this.do { |assoc|
+				res.mergeItem(assoc.key, assoc.value, mergeFunc)
+			}
+		} {
+			this.pairsDo { |key, val|
+				res.mergeItem(key, val, mergeFunc)
+			}
+		};
+		^res
+	}
 
 	powerset {
 		var species = this.species;
