@@ -291,7 +291,7 @@ Dictionary : Set {
 		^array
 	}
 
-	hasAssociations { ^false }
+	isAssociationArray { ^false }
 
 	asPairs {
 		^this.getPairs
