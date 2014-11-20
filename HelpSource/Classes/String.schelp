@@ -313,6 +313,21 @@ code::
 "aaaabaaa".findAllRegexp("a+");
 ::
 
+method::firstRegexp
+Match a regular expression, at given offset, returning the match and the length of the match in an Array, or nil when there's no matches.
+Will not search entire string.
+
+code::
+"foobaroob".firstRegexp("o*b+", 0); // nil
+"foobaroob".firstRegexp("o*b+", 1); // [ oob, 3 ]
+"foobaroob".firstRegexp("o*b+", 2); // [ ob,  2 ]
+"foobaroob".firstRegexp("o*b+", 3); // [ b,   1 ]
+"foobaroob".firstRegexp("o*b+", 4); // nil
+"foobaroob".firstRegexp("o*b+", 5); // nil
+"foobaroob".firstRegexp("o*b+", 6); // [ oob, 3 ]
+"foobaroob".firstRegexp("o*b+", 7); // [ ob,  2 ]
+::
+
 subsection:: Searching strings
 
 method::find
