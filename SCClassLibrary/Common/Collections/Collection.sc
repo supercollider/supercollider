@@ -101,7 +101,7 @@ Collection {
 	notEmpty { ^this.size > 0 }
 	asCollection { ^this }
 	isCollection { ^true }
-	hasAssociations { ^this.subclassResponsibility(thisMethod) }
+	isAssociationArray { ^this.subclassResponsibility(thisMethod) }
 
 	add { ^this.subclassResponsibility(thisMethod) }
 	addAll { | aCollection | aCollection.asCollection.do { | item | this.add(item) } }
@@ -549,7 +549,7 @@ Collection {
 
 	asAssociations {
 		var res;
-		if(this.hasAssociations) { ^this };
+		if(this.isAssociationArray) { ^this };
 		res = Array.new(this.size div: 2);
 		this.pairsDo { |key, val| res.add(key -> val) }
 		^res
@@ -557,7 +557,7 @@ Collection {
 
 	asPairs {
 		var res;
-		if(this.hasAssociations.not) { ^this };
+		if(this.isAssociationArray.not) { ^this };
 		res = Array.new(this.size div: 2);
 		this.do { |assoc| res.add(assoc.key).add(assoc.value) }
 		^res
@@ -566,7 +566,7 @@ Collection {
 	asDict { |mergeFunc|
 		var res = IdentityDictionary.new; // another dispute: Dictionary would default to a very inefficient lookup.
 		if(mergeFunc.notNil) { ^this.asDictWith(mergeFunc) };
-		if(this.hasAssociations) {
+		if(this.isAssociationArray) {
 			this.do { |assoc|
 				res.put(assoc.key, assoc.value)
 			}
@@ -580,7 +580,7 @@ Collection {
 
 	asDictWith { |mergeFunc|
 		var res = IdentityDictionary.new;
-		if(this.hasAssociations) {
+		if(this.isAssociationArray) {
 			this.do { |assoc|
 				res.mergeItem(assoc.key, assoc.value, mergeFunc)
 			}
