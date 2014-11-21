@@ -12,12 +12,15 @@
 #ifndef BOOST_INTRUSIVE_TREAP_HPP
 #define BOOST_INTRUSIVE_TREAP_HPP
 
+#if defined(_MSC_VER)
+#  pragma once
+#endif
+
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/intrusive_fwd.hpp>
 #include <algorithm>
 #include <cstddef>
 #include <functional>
-#include <iterator>
 #include <utility>
 
 #include <boost/intrusive/detail/assert.hpp>
@@ -27,14 +30,14 @@
 #include <boost/intrusive/detail/tree_node.hpp>
 #include <boost/intrusive/detail/ebo_functor_holder.hpp>
 #include <boost/intrusive/pointer_traits.hpp>
-#include <boost/intrusive/detail/utilities.hpp>
-#include <boost/intrusive/pointer_traits.hpp>
-#include <boost/intrusive/options.hpp>
+#include <boost/intrusive/detail/get_value_traits.hpp>
 #include <boost/intrusive/detail/mpl.hpp>
 #include <boost/intrusive/treap_algorithms.hpp>
 #include <boost/intrusive/link_mode.hpp>
-#include <boost/move/move.hpp>
+#include <boost/move/utility_core.hpp>
 #include <boost/intrusive/priority_compare.hpp>
+#include <boost/intrusive/detail/node_cloner_disposer.hpp>
+#include <boost/intrusive/detail/key_nodeptr_comp.hpp>
 
 namespace boost {
 namespace intrusive {
@@ -43,7 +46,7 @@ namespace intrusive {
 
 struct treap_defaults
 {
-   typedef detail::default_bstree_hook proto_value_traits;
+   typedef default_bstree_hook_applier proto_value_traits;
    static const bool constant_time_size = true;
    typedef std::size_t size_type;
    typedef void compare;
@@ -903,6 +906,19 @@ class treap_impl
       node_algorithms::init_header(this->tree_type::header_ptr());
       this->tree_type::sz_traits().set_size(0);
    }
+
+   //! @copydoc ::boost::intrusive::bstree::check(ExtraChecker)const
+   template <class ExtraChecker>
+   void check(ExtraChecker extra_checker) const
+   {
+      typedef detail::key_nodeptr_comp<priority_compare, value_traits> nodeptr_prio_comp_t;
+      nodeptr_prio_comp_t nodeptr_prio_comp(priv_pcomp(), &this->get_value_traits());
+      tree_type::check(detail::treap_node_extra_checker<ValueTraits, nodeptr_prio_comp_t, ExtraChecker>(nodeptr_prio_comp, extra_checker));
+   }
+
+   //! @copydoc ::boost::intrusive::bstree::check()const
+   void check() const
+   {  check(detail::empty_node_checker<ValueTraits>());  }
 
    #ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
    //! @copydoc ::boost::intrusive::bstree::count(const_reference)const

@@ -60,7 +60,7 @@ namespace boost { namespace unordered { namespace iterator_detail {
             std::forward_iterator_tag,
             typename Node::value_type,
             std::ptrdiff_t,
-            typename Node::node_pointer,
+            typename Node::value_type*,
             typename Node::value_type&>
     {
 #if !defined(BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
@@ -120,7 +120,7 @@ namespace boost { namespace unordered { namespace iterator_detail {
             std::forward_iterator_tag,
             typename Node::value_type,
             std::ptrdiff_t,
-            ConstNodePointer,
+            typename Node::value_type const*,
             typename Node::value_type const&>
     {
         friend struct boost::unordered::iterator_detail::l_iterator
@@ -188,7 +188,7 @@ namespace boost { namespace unordered { namespace iterator_detail {
             std::forward_iterator_tag,
             typename Node::value_type,
             std::ptrdiff_t,
-            typename Node::node_pointer,
+            typename Node::value_type*,
             typename Node::value_type&>
     {
 #if !defined(BOOST_NO_MEMBER_TEMPLATE_FRIENDS)
@@ -252,7 +252,7 @@ namespace boost { namespace unordered { namespace iterator_detail {
             std::forward_iterator_tag,
             typename Node::value_type,
             std::ptrdiff_t,
-            ConstNodePointer,
+            typename Node::value_type const*,
             typename Node::value_type const&>
     {
         friend struct boost::unordered::iterator_detail::iterator<Node>;

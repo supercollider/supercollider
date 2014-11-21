@@ -49,7 +49,7 @@ template<class T> struct addressof_impl
 
 #if !defined( BOOST_NO_CXX11_NULLPTR )
 
-#if defined( __clang__ ) && !defined( _LIBCPP_VERSION ) && !defined( BOOST_NO_CXX11_DECLTYPE )
+#if !defined( BOOST_NO_CXX11_DECLTYPE ) && ( ( defined( __clang__ ) && !defined( _LIBCPP_VERSION ) ) || defined( __INTEL_COMPILER ) )
 
     typedef decltype(nullptr) addr_nullptr_t;
 

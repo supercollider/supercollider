@@ -15,7 +15,7 @@
 #define BOOST_MOVE_ITERATOR_HPP
 
 #include <boost/move/detail/config_begin.hpp>
-#include <boost/move/utility.hpp>
+#include <boost/move/utility_core.hpp>
 #include <iterator>  //std::iterator
 
 namespace boost {
@@ -142,14 +142,14 @@ namespace move_detail {
 
 template <class I>
 struct is_move_iterator
-   : public ::boost::move_detail::integral_constant<bool, false>
 {
+   static const bool value = false;
 };
 
 template <class I>
 struct is_move_iterator< ::boost::move_iterator<I> >
-   : public ::boost::move_detail::integral_constant<bool, true>
 {
+   static const bool value = true;
 };
 
 }  //namespace move_detail {
@@ -177,14 +177,16 @@ inline move_iterator<It> make_move_iterator(const It &it)
 //! back of a container
 template <typename C> // C models Container
 class back_move_insert_iterator
-   : public std::iterator<std::output_iterator_tag, void, void, void, void>
 {
    C* container_m;
 
    public:
-   typedef C                        container_type;
-   typedef typename C::value_type   value_type;
-   typedef typename C::reference    reference;
+   typedef C                           container_type;
+   typedef typename C::value_type      value_type;
+   typedef typename C::reference       reference;
+   typedef typename C::pointer         pointer;
+   typedef typename C::difference_type difference_type;
+   typedef std::output_iterator_tag    iterator_category;
 
    explicit back_move_insert_iterator(C& x) : container_m(&x) { }
 
@@ -217,14 +219,16 @@ inline back_move_insert_iterator<C> back_move_inserter(C& x)
 //! front of a container
 template <typename C> // C models Container
 class front_move_insert_iterator
-   : public std::iterator<std::output_iterator_tag, void, void, void, void>
 {
    C* container_m;
 
 public:
-   typedef C                        container_type;
-   typedef typename C::value_type   value_type;
-   typedef typename C::reference    reference;
+   typedef C                           container_type;
+   typedef typename C::value_type      value_type;
+   typedef typename C::reference       reference;
+   typedef typename C::pointer         pointer;
+   typedef typename C::difference_type difference_type;
+   typedef std::output_iterator_tag    iterator_category;
 
    explicit front_move_insert_iterator(C& x) : container_m(&x) { }
 
@@ -254,15 +258,17 @@ inline front_move_insert_iterator<C> front_move_inserter(C& x)
 //////////////////////////////////////////////////////////////////////////////
 template <typename C> // C models Container
 class move_insert_iterator
-   : public std::iterator<std::output_iterator_tag, void, void, void, void>
 {
    C* container_m;
    typename C::iterator pos_;
 
    public:
-   typedef C                        container_type;
-   typedef typename C::value_type   value_type;
-   typedef typename C::reference    reference;
+   typedef C                           container_type;
+   typedef typename C::value_type      value_type;
+   typedef typename C::reference       reference;
+   typedef typename C::pointer         pointer;
+   typedef typename C::difference_type difference_type;
+   typedef std::output_iterator_tag    iterator_category;
 
    explicit move_insert_iterator(C& x, typename C::iterator pos)
       : container_m(&x), pos_(pos)

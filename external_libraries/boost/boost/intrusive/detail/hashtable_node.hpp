@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga  2007-2013
+// (C) Copyright Ion Gaztanaga  2007-2014
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -13,15 +13,15 @@
 #ifndef BOOST_INTRUSIVE_HASHTABLE_NODE_HPP
 #define BOOST_INTRUSIVE_HASHTABLE_NODE_HPP
 
-#include <boost/intrusive/detail/config_begin.hpp>
-#include <iterator>
+#if defined(_MSC_VER)
+#  pragma once
+#endif
+
 #include <boost/intrusive/detail/assert.hpp>
 #include <boost/intrusive/pointer_traits.hpp>
-#include <boost/intrusive/circular_list_algorithms.hpp>
 #include <boost/intrusive/detail/mpl.hpp>
-#include <boost/intrusive/detail/utilities.hpp>
-#include <boost/intrusive/slist.hpp> //make_slist
 #include <boost/intrusive/trivial_value_traits.hpp>
+#include <boost/intrusive/slist.hpp> //make_slist
 #include <cstddef>
 #include <climits>
 #include <boost/move/core.hpp>
@@ -30,71 +30,6 @@
 namespace boost {
 namespace intrusive {
 namespace detail {
-
-template<int Dummy = 0>
-struct prime_list_holder
-{
-   static const std::size_t prime_list[];
-   static const std::size_t prime_list_size;
-};
-
-//We only support LLP64(Win64) or LP64(most Unix) data models
-#ifdef _WIN64  //In 64 bit windows sizeof(size_t) == sizeof(unsigned long long)
-   #define BOOST_INTRUSIVE_PRIME_C(NUMBER) NUMBER##ULL
-   #define BOOST_INTRUSIVE_64_BIT_SIZE_T 1
-#else //In 32 bit windows and 32/64 bit unixes sizeof(size_t) == sizeof(unsigned long)
-   #define BOOST_INTRUSIVE_PRIME_C(NUMBER) NUMBER##UL
-   #define BOOST_INTRUSIVE_64_BIT_SIZE_T (((((ULONG_MAX>>16)>>16)>>16)>>15) != 0)
-#endif
-
-template<int Dummy>
-const std::size_t prime_list_holder<Dummy>::prime_list[] = {
-   BOOST_INTRUSIVE_PRIME_C(3),                     BOOST_INTRUSIVE_PRIME_C(7),
-   BOOST_INTRUSIVE_PRIME_C(11),                    BOOST_INTRUSIVE_PRIME_C(17),
-   BOOST_INTRUSIVE_PRIME_C(29),                    BOOST_INTRUSIVE_PRIME_C(53),
-   BOOST_INTRUSIVE_PRIME_C(97),                    BOOST_INTRUSIVE_PRIME_C(193),
-   BOOST_INTRUSIVE_PRIME_C(389),                   BOOST_INTRUSIVE_PRIME_C(769),
-   BOOST_INTRUSIVE_PRIME_C(1543),                  BOOST_INTRUSIVE_PRIME_C(3079),
-   BOOST_INTRUSIVE_PRIME_C(6151),                  BOOST_INTRUSIVE_PRIME_C(12289),
-   BOOST_INTRUSIVE_PRIME_C(24593),                 BOOST_INTRUSIVE_PRIME_C(49157),
-   BOOST_INTRUSIVE_PRIME_C(98317),                 BOOST_INTRUSIVE_PRIME_C(196613),
-   BOOST_INTRUSIVE_PRIME_C(393241),                BOOST_INTRUSIVE_PRIME_C(786433),
-   BOOST_INTRUSIVE_PRIME_C(1572869),               BOOST_INTRUSIVE_PRIME_C(3145739),
-   BOOST_INTRUSIVE_PRIME_C(6291469),               BOOST_INTRUSIVE_PRIME_C(12582917),
-   BOOST_INTRUSIVE_PRIME_C(25165843),              BOOST_INTRUSIVE_PRIME_C(50331653),
-   BOOST_INTRUSIVE_PRIME_C(100663319),             BOOST_INTRUSIVE_PRIME_C(201326611),
-   BOOST_INTRUSIVE_PRIME_C(402653189),             BOOST_INTRUSIVE_PRIME_C(805306457),
-   BOOST_INTRUSIVE_PRIME_C(1610612741),            BOOST_INTRUSIVE_PRIME_C(3221225473),
-#if BOOST_INTRUSIVE_64_BIT_SIZE_T
-   //Taken from Boost.MultiIndex code, thanks to Joaquin M Lopez Munoz.
-   BOOST_INTRUSIVE_PRIME_C(6442450939),            BOOST_INTRUSIVE_PRIME_C(12884901893),
-   BOOST_INTRUSIVE_PRIME_C(25769803751),           BOOST_INTRUSIVE_PRIME_C(51539607551),
-   BOOST_INTRUSIVE_PRIME_C(103079215111),          BOOST_INTRUSIVE_PRIME_C(206158430209),
-   BOOST_INTRUSIVE_PRIME_C(412316860441),          BOOST_INTRUSIVE_PRIME_C(824633720831),
-   BOOST_INTRUSIVE_PRIME_C(1649267441651),         BOOST_INTRUSIVE_PRIME_C(3298534883309),
-   BOOST_INTRUSIVE_PRIME_C(6597069766657),         BOOST_INTRUSIVE_PRIME_C(13194139533299),
-   BOOST_INTRUSIVE_PRIME_C(26388279066623),        BOOST_INTRUSIVE_PRIME_C(52776558133303),
-   BOOST_INTRUSIVE_PRIME_C(105553116266489),       BOOST_INTRUSIVE_PRIME_C(211106232532969),
-   BOOST_INTRUSIVE_PRIME_C(422212465066001),       BOOST_INTRUSIVE_PRIME_C(844424930131963),
-   BOOST_INTRUSIVE_PRIME_C(1688849860263953),      BOOST_INTRUSIVE_PRIME_C(3377699720527861),
-   BOOST_INTRUSIVE_PRIME_C(6755399441055731),      BOOST_INTRUSIVE_PRIME_C(13510798882111483),
-   BOOST_INTRUSIVE_PRIME_C(27021597764222939),     BOOST_INTRUSIVE_PRIME_C(54043195528445957),
-   BOOST_INTRUSIVE_PRIME_C(108086391056891903),    BOOST_INTRUSIVE_PRIME_C(216172782113783843),
-   BOOST_INTRUSIVE_PRIME_C(432345564227567621),    BOOST_INTRUSIVE_PRIME_C(864691128455135207),
-   BOOST_INTRUSIVE_PRIME_C(1729382256910270481),   BOOST_INTRUSIVE_PRIME_C(3458764513820540933),
-   BOOST_INTRUSIVE_PRIME_C(6917529027641081903),   BOOST_INTRUSIVE_PRIME_C(13835058055282163729),
-   BOOST_INTRUSIVE_PRIME_C(18446744073709551557)
-#else
-   BOOST_INTRUSIVE_PRIME_C(4294967291)
-#endif
-   };
-
-#undef BOOST_INTRUSIVE_PRIME_C
-#undef BOOST_INTRUSIVE_64_BIT_SIZE_T
-
-template<int Dummy>
-const std::size_t prime_list_holder<Dummy>::prime_list_size
-   = sizeof(prime_list)/sizeof(std::size_t);
 
 template <class Slist>
 struct bucket_impl : public Slist
@@ -205,7 +140,7 @@ struct get_slist_impl
       < typename NodeTraits::node
       , boost::intrusive::value_traits<trivial_traits>
       , boost::intrusive::constant_time_size<false>
-	   , boost::intrusive::size_type<std::size_t>
+      , boost::intrusive::size_type<std::size_t>
       >::type
    {};
 };
@@ -215,7 +150,7 @@ struct get_slist_impl
 template<class BucketValueTraits, bool IsConst>
 class hashtable_iterator
 {
-   typedef std::iterator
+   typedef boost::intrusive::iterator
          < std::forward_iterator_tag
          , typename BucketValueTraits::value_traits::value_type
          , typename pointer_traits<typename BucketValueTraits::value_traits::value_type*>::difference_type
@@ -256,6 +191,7 @@ class hashtable_iterator
    typedef typename iterator_traits::iterator_category  iterator_category;
 
    hashtable_iterator ()
+      : slist_it_()  //Value initialization to achieve "null iterators" (N3644)
    {}
 
    explicit hashtable_iterator(siterator ptr, const BucketValueTraits *cont)

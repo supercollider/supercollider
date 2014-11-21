@@ -11,6 +11,10 @@
 #ifndef BOOST_CONTAINER_DETAIL_MULTIALLOCATION_CHAIN_HPP
 #define BOOST_CONTAINER_DETAIL_MULTIALLOCATION_CHAIN_HPP
 
+#if defined(_MSC_VER)
+#  pragma once
+#endif
+
 #include <boost/container/detail/config_begin.hpp>
 #include <boost/container/detail/workaround.hpp>
 
@@ -21,7 +25,7 @@
 #include <boost/intrusive/slist.hpp>
 #include <boost/intrusive/pointer_traits.hpp>
 #include <boost/type_traits/make_unsigned.hpp>
-#include <boost/move/utility.hpp>
+#include <boost/move/utility_core.hpp>
 
 namespace boost {
 namespace container {
