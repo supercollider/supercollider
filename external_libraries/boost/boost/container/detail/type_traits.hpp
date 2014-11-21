@@ -22,8 +22,6 @@
 #include <boost/container/detail/config_begin.hpp>
 #include <boost/container/detail/workaround.hpp>
 
-#include <boost/move/utility.hpp>
-
 namespace boost {
 namespace container {
 namespace container_detail {
@@ -101,6 +99,15 @@ struct remove_reference<T&&>
 
 #else
 
+} // namespace container_detail {
+}  //namespace container {
+
+template<class T>
+class rv;
+
+namespace container {
+namespace container_detail {
+
 template<class T>
 struct remove_reference< ::boost::rv<T> >
 {
@@ -165,6 +172,10 @@ template <class T>
 struct add_const_reference<T&>
 {  typedef T& type;   };
 
+template <class T>
+struct add_const
+{  typedef const T type;   };
+
 template <typename T, typename U>
 struct is_same
 {
@@ -201,6 +212,21 @@ struct remove_ref_const
 {
    typedef typename remove_const< typename remove_reference<T>::type >::type type;
 };
+
+template <class T>
+struct make_unsigned
+{
+   typedef T type;
+};
+
+template <> struct make_unsigned<bool> {};
+template <> struct make_unsigned<signed char>      {typedef unsigned char      type;};
+template <> struct make_unsigned<signed short>     {typedef unsigned short     type;};
+template <> struct make_unsigned<signed int>       {typedef unsigned int       type;};
+template <> struct make_unsigned<signed long>      {typedef unsigned long      type;};
+#ifdef BOOST_HAS_LONG_LONG
+template <> struct make_unsigned<signed long long> {typedef unsigned long long type;};
+#endif
 
 } // namespace container_detail
 }  //namespace container {

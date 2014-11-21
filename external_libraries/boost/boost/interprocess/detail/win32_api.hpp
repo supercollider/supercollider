@@ -8,8 +8,12 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-#ifndef BOOST_INTERPROCESS_WIN32_PRIMITIVES_HPP
-#define BOOST_INTERPROCESS_WIN32_PRIMITIVES_HPP
+#ifndef BOOST_INTERPROCESS_WIN32_API_HPP
+#define BOOST_INTERPROCESS_WIN32_API_HPP
+
+#if defined(_MSC_VER)
+#  pragma once
+#endif
 
 #include <boost/interprocess/detail/config_begin.hpp>
 #include <boost/interprocess/detail/workaround.hpp>
@@ -2330,4 +2334,4 @@ inline unsigned long get_tick_count()
 
 #include <boost/interprocess/detail/config_end.hpp>
 
-#endif //#ifdef BOOST_INTERPROCESS_WIN32_PRIMITIVES_HPP
+#endif //#ifdef BOOST_INTERPROCESS_WIN32_API_HPP

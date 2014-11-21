@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2005-2013. Distributed under the Boost
+// (C) Copyright Ion Gaztanaga 2005-2014. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying file
 // LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
@@ -41,11 +41,12 @@
 //!
 //! And finally it defines the following types
 
-//////////////////////////////////////////////////////////////////////////////
-//                        Standard predeclarations
-//////////////////////////////////////////////////////////////////////////////
-
 #ifndef BOOST_CONTAINER_DOXYGEN_INVOKED
+
+//Std forward declarations
+#ifndef BOOST_CONTAINER_DETAIL_STD_FWD_HPP
+   #include <boost/container/detail/std_fwd.hpp>
+#endif
 
 namespace boost{
 namespace intrusive{
@@ -53,17 +54,10 @@ namespace intrusive{
 }}
 
 namespace boost{ namespace container{ namespace container_detail{
-
-namespace bi = boost::intrusive;
-
+   namespace bi = boost::intrusive;
 }}}
 
 #include <cstddef>
-#include <utility>
-#include <memory>
-#include <functional>
-#include <iosfwd>
-#include <string>
 
 #endif   //#ifndef BOOST_CONTAINER_DOXYGEN_INVOKED
 
@@ -267,6 +261,7 @@ struct dummy
 };
 
 }  //detail_really_deep_namespace {
+
 
 #endif   //#ifndef BOOST_CONTAINER_DOXYGEN_INVOKED
 

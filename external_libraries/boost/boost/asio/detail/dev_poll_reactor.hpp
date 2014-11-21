@@ -161,10 +161,6 @@ private:
   BOOST_ASIO_DECL void cancel_ops_unlocked(socket_type descriptor,
       const boost::system::error_code& ec);
 
-  // Helper class used to reregister descriptors after a fork.
-  class fork_helper;
-  friend class fork_helper;
-
   // Add a pending event entry for the given descriptor.
   BOOST_ASIO_DECL ::pollfd& add_pending_event_change(int descriptor);
 

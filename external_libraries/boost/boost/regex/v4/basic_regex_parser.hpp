@@ -346,8 +346,13 @@ bool basic_regex_parser<charT, traits>::parse_extended()
       ++m_position;
       return parse_repeat_range(false);
    case regex_constants::syntax_close_brace:
-      fail(regex_constants::error_brace, this->m_position - this->m_base, "Found a closing repetition operator } with no corresponding {.");
-      return false;
+      if((this->flags() & regbase::no_perl_ex) == regbase::no_perl_ex)
+      {
+         fail(regex_constants::error_brace, this->m_position - this->m_base, "Found a closing repetition operator } with no corresponding {.");
+         return false;
+      }
+      result = parse_literal();
+      break;
    case regex_constants::syntax_or:
       return parse_alt();
    case regex_constants::syntax_open_set:

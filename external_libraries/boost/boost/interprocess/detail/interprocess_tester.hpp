@@ -11,6 +11,10 @@
 #ifndef BOOST_INTERPROCESS_DETAIL_INTERPROCESS_TESTER_HPP
 #define BOOST_INTERPROCESS_DETAIL_INTERPROCESS_TESTER_HPP
 
+#if defined(_MSC_VER)
+#  pragma once
+#endif
+
 namespace boost{
 namespace interprocess{
 namespace ipcdetail{

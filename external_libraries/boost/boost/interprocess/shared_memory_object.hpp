@@ -11,11 +11,15 @@
 #ifndef BOOST_INTERPROCESS_SHARED_MEMORY_OBJECT_HPP
 #define BOOST_INTERPROCESS_SHARED_MEMORY_OBJECT_HPP
 
+#if defined(_MSC_VER)
+#  pragma once
+#endif
+
 #include <boost/interprocess/detail/config_begin.hpp>
 #include <boost/interprocess/detail/workaround.hpp>
 #include <boost/interprocess/creation_tags.hpp>
 #include <boost/interprocess/exceptions.hpp>
-#include <boost/move/move.hpp>
+#include <boost/move/utility_core.hpp>
 #include <boost/interprocess/interprocess_fwd.hpp>
 #include <boost/interprocess/exceptions.hpp>
 #include <boost/interprocess/detail/os_file_functions.hpp>
@@ -51,10 +55,10 @@ namespace interprocess {
 //!create mapped regions from the mapped files
 class shared_memory_object
 {
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
    //Non-copyable and non-assignable
    BOOST_MOVABLE_BUT_NOT_COPYABLE(shared_memory_object)
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 
    public:
    //!Default constructor. Represents an empty shared_memory_object.
@@ -126,22 +130,22 @@ class shared_memory_object
    //!Returns mapping handle. Never throws.
    mapping_handle_t get_mapping_handle() const;
 
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
    private:
 
    //!Closes a previously opened file mapping. Never throws.
    void priv_close();
 
-   //!Closes a previously opened file mapping. Never throws.
+   //!Opens or creates a shared memory object.
    bool priv_open_or_create(ipcdetail::create_enum_t type, const char *filename, mode_t mode, const permissions &perm);
 
    file_handle_t  m_handle;
    mode_t         m_mode;
    std::string    m_filename;
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 };
 
-/// @cond
+#if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
 
 inline shared_memory_object::shared_memory_object()
    :  m_handle(file_handle_t(ipcdetail::invalid_file()))
@@ -404,8 +408,6 @@ inline void shared_memory_object::priv_close()
 
 #endif
 
-///@endcond
-
 //!A class that stores the name of a shared memory
 //!and calls shared_memory_object::remove(name) in its destructor
 //!Useful to remove temporary shared memory objects in the presence
@@ -421,6 +423,8 @@ class remove_shared_memory_on_destroy
    ~remove_shared_memory_on_destroy()
    {  shared_memory_object::remove(m_name);  }
 };
+
+#endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 
 }  //namespace interprocess {
 }  //namespace boost {

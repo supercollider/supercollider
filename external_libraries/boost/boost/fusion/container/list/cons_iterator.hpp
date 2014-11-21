@@ -55,45 +55,45 @@ namespace boost { namespace fusion
         typedef cons_iterator_identity<
             add_const<nil_>::type> 
         identity;
-        BOOST_FUSION_GPU_ENABLED
+        BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
         nil_iterator() {}
-        BOOST_FUSION_GPU_ENABLED
+        BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
         explicit nil_iterator(nil_ const&) {}
     };
 
     template <>
     struct cons_iterator<nil_> : nil_iterator 
     {
-        BOOST_FUSION_GPU_ENABLED
+        BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
         cons_iterator() {}
-        BOOST_FUSION_GPU_ENABLED
+        BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
         explicit cons_iterator(nil_ const&) {}
     };
 
     template <>
     struct cons_iterator<nil_ const> : nil_iterator 
     {
-        BOOST_FUSION_GPU_ENABLED
+        BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
         cons_iterator() {}
-        BOOST_FUSION_GPU_ENABLED
+        BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
         explicit cons_iterator(nil_ const&) {}
     };
 
     template <>
     struct cons_iterator<list<> > : nil_iterator 
     {
-        BOOST_FUSION_GPU_ENABLED
+        BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
         cons_iterator() {}
-        BOOST_FUSION_GPU_ENABLED
+        BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
         explicit cons_iterator(nil_ const&) {}
     };
 
     template <>
     struct cons_iterator<list<> const> : nil_iterator 
     {
-        BOOST_FUSION_GPU_ENABLED
+        BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
         cons_iterator() {}
-        BOOST_FUSION_GPU_ENABLED
+        BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
         explicit cons_iterator(nil_ const&) {}
     };
 }}

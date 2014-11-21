@@ -204,7 +204,7 @@ struct scoped_destructor_n
       if(!m_p) return;
       value_type *raw_ptr = container_detail::to_raw_pointer(m_p);
       while(m_n--){
-         AllocTraits::destroy(m_a, raw_ptr);
+         AllocTraits::destroy(m_a, raw_ptr++);
       }
    }
 
