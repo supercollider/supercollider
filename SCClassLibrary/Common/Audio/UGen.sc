@@ -322,8 +322,8 @@ UGen : AbstractFunction {
 			("   " ++ (this.argNameForInputAt(ini) ? ini.asString)++":" + in + in.class).postln
 		});
 	}
-	degreeToKey { arg bufnum, stepsPerOctave=12, mul=1, add=0;
-		^DegreeToKey.kr(bufnum, this, stepsPerOctave, mul, add)
+	degreeToKey { arg bufnum, stepsPerOctave=12;
+		^DegreeToKey.kr(bufnum, this, stepsPerOctave)
 	}
 
 	outputIndex { ^0 }
