@@ -38,6 +38,7 @@
 #include <QUrl>
 #include <QMimeData>
 #include <QScrollBar>
+#include <QClipboard>
 
 #ifdef Q_WS_X11
 # include <QX11Info>
@@ -1078,6 +1079,38 @@ void GenericCodeEditor::copyLineDown()
 void GenericCodeEditor::copyLineUp()
 {
     copyUpDown(true);
+}
+
+void GenericCodeEditor::copyKillLine(bool kill)
+{
+    QTextCursor cur = textCursor();
+    QClipboard *clip = QApplication::clipboard();
+
+    cur.beginEditBlock();
+
+    cur.movePosition(QTextCursor::StartOfLine);
+    cur.movePosition(QTextCursor::EndOfLine, QTextCursor::KeepAnchor);
+
+    clip->setText("\n" + cur.selectedText());
+
+    if (kill) {
+        // the first delete the selection
+        // the next one removes the empty line
+        cur.deletePreviousChar();
+        cur.deletePreviousChar();
+    }
+
+    cur.endEditBlock();
+}
+
+void GenericCodeEditor::copyLine()
+{
+    copyKillLine(false);
+}
+
+void GenericCodeEditor::killLine()
+{
+    copyKillLine(true);
 }
 
 void GenericCodeEditor::moveLineUpDown(bool up)
