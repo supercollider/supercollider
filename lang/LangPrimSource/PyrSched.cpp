@@ -227,6 +227,9 @@ static void syncOSCOffsetWithTimeOfDay();
 void resyncThread();
 #endif // SC_DARWIN
 
+// Use the highest resolution clock available for monotonic clock time
+typedef typename std::conditional<chrono::high_resolution_clock::is_steady, chrono::high_resolution_clock, chrono::steady_clock>::type monotonic_clock;
+
 static chrono::high_resolution_clock::time_point hrTimeOfInitialization;
 
 template <typename DurationType>
@@ -267,6 +270,11 @@ double elapsedTime()
 #else
 	return DurToFloat(chrono::system_clock::now().time_since_epoch());
 #endif
+}
+
+double monotonicClockTime()
+{
+	return DurToFloat(monotonic_clock::now().time_since_epoch());
 }
 
 double elapsedRealTime()
@@ -1373,6 +1381,12 @@ int prElapsedTime(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prmonotonicClockTime(struct VMGlobals *g, int numArgsPushed)
+{
+	SetFloat(g->sp, monotonicClockTime());
+	return errNone;
+}
+
 void initSchedPrimitives()
 {
 	int base, index=0;
@@ -1401,4 +1415,5 @@ void initSchedPrimitives()
 	definePrimitive(base, index++, "_SystemClock_SchedAbs", prSystemClock_SchedAbs, 3, 0);
 
 	definePrimitive(base, index++, "_ElapsedTime", prElapsedTime, 1, 0);
+    definePrimitive(base, index++, "_monotonicClockTime", prmonotonicClockTime, 1, 0);
 }
