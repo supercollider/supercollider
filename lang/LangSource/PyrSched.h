@@ -29,7 +29,6 @@
 extern timed_mutex gLangMutex;
 
 double elapsedTime();
-double elapsedRealTime();
 double monotonicClockTime();
 int64 OSCTime();
 
