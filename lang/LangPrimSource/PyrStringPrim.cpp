@@ -435,7 +435,7 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-static int prString_FirstRegexp(struct VMGlobals *g, int numArgsPushed)
+static int prString_FindRegexpAt(struct VMGlobals *g, int numArgsPushed)
 {
 	/* not reentrant */
 	static detail::regex_lru_cache regex_lru_cache(boost::regex_constants::ECMAScript);
@@ -477,7 +477,7 @@ static int prString_FirstRegexp(struct VMGlobals *g, int numArgsPushed)
 			return errNone;
 		}
 	} catch (std::exception const & e) {
-		postfl("Warning: Exception in _String_FirstRegexp - %s\n", e.what());
+		postfl("Warning: Exception in _String_FindRegexpAt - %s\n", e.what());
 		return errFailed;
 	}
 
@@ -1071,7 +1071,7 @@ void initStringPrimitives()
 	definePrimitive(base, index++, "_String_Format", prString_Format, 2, 0);
 	definePrimitive(base, index++, "_String_Regexp", prString_Regexp, 4, 0);
 	definePrimitive(base, index++, "_String_FindRegexp", prString_FindRegexp, 3, 0);
-	definePrimitive(base, index++, "_String_FirstRegexp", prString_FirstRegexp, 3, 0);
+	definePrimitive(base, index++, "_String_FindRegexpAt", prString_FindRegexpAt, 3, 0);
 	definePrimitive(base, index++, "_StripRtf", prStripRtf, 1, 0);
 	definePrimitive(base, index++, "_StripHtml", prStripHtml, 1, 0);
 	definePrimitive(base, index++, "_String_StandardizePath", prString_StandardizePath, 1, 0);
