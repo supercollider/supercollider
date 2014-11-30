@@ -30,6 +30,7 @@ struct ParamSpec
 	int32 mName[kSCNameLen];
 	int32 mIndex;
 	int32 mHash;
+	int32 mNumChannels;
 };
 
 typedef HashTable<ParamSpec, Malloc> ParamSpecTable;
