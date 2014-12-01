@@ -827,6 +827,8 @@ bool MainWindow::quit()
     if (!promptSaveDocs())
         return false;
 
+    Main::instance()->documentManager()->deleteRestore();
+
     saveWindowState();
 
     mMain->quit();
