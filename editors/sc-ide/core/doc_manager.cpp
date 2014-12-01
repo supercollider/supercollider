@@ -211,6 +211,7 @@ void Document::onTmpCoalUsecs()
 void Document::storeTmpFile()
 {
     QString path, name;
+    QDir tmpFilesDir = standardDirectory(ScConfigUserDir);
     int i = 0;
 
     if (!textDocument()->isModified())
@@ -233,11 +234,15 @@ void Document::storeTmpFile()
     else
         name = QFileInfo(mFilePath).baseName();
 
-    path = QString("%1/%2.bak").arg(standardDirectory(ScConfigUserDir))
+    if (!tmpFilesDir.exists("tmp"))
+        tmpFilesDir.mkdir("tmp");
+    tmpFilesDir.cd("tmp");
+
+    path = QString("%1/%2.bak").arg(tmpFilesDir.absolutePath())
                                .arg(name);
     while (QFile(path).exists())
         path = QString("%1/%2-%3.bak")
-                               .arg(standardDirectory(ScConfigUserDir))
+                               .arg(tmpFilesDir.absolutePath())
                                .arg(name)
                                .arg(++i);
     mTmpFilePath = path;
@@ -398,7 +403,7 @@ bool DocumentManager::reload( Document *doc )
 
 QStringList DocumentManager::tmpFiles()
 {
-    QDir tmpFilesDir = standardDirectory(ScConfigUserDir);
+    QDir tmpFilesDir = standardDirectory(ScConfigUserDir) + "/tmp";
     QStringList files = tmpFilesDir.entryList(QStringList("*.bak"), QDir::Files);
     int i;
 
