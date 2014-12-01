@@ -32,6 +32,10 @@
 #include <QTextDocument>
 #include <QPlainTextDocumentLayout>
 #include <QUuid>
+#include <QTimer>
+
+#define RESTORE_COAL 100
+#define RESTORE_COAL_MSECS 60000
 
 namespace ScIDE {
 
@@ -102,6 +106,7 @@ public slots:
     void applySettings( Settings::Manager * );
     void resetDefaultFont();
     void storeTmpFile();
+    void onTmpCoalUsecs();
 
 signals:
     void defaultFontChanged();
@@ -114,6 +119,8 @@ private:
     QString mFilePath;
     QString mTitle;
     QString mTmpFilePath;
+    int mTmpCoalCount;
+    QTimer mTmpCoalTimer;
     QDateTime mSaveTime;
     int mIndentWidth;
     SyntaxHighlighter * mHighlighter;
