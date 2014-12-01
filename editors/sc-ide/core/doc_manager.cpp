@@ -57,6 +57,11 @@ Document::Document(bool isPlainText, const QByteArray & id,
     mEditable(true),
     mPromptsToSave(true)
 {
+    mTmpCoalCount = 0;
+    mTmpCoalTimer.setInterval(RESTORE_COAL_MSECS);
+    mTmpCoalTimer.setSingleShot(true);
+    connect(&mTmpCoalTimer, SIGNAL(timeout()), this, SLOT(onTmpCoalUsecs()));
+
     if (mId.isEmpty())
         mId = QUuid::createUuid().toString().toLatin1();
     if (mTitle.isEmpty())
@@ -197,6 +202,12 @@ void Document::setTextInRange(const QString text, int start, int range)
     cursor.insertText(text);
 }
 
+void Document::onTmpCoalUsecs()
+{
+    mTmpCoalCount = RESTORE_COAL;
+    storeTmpFile();
+}
+
 void Document::storeTmpFile()
 {
     QString path, name;
@@ -204,6 +215,13 @@ void Document::storeTmpFile()
 
     if (!textDocument()->isModified())
         return;
+
+    if (++mTmpCoalCount < RESTORE_COAL) {
+        mTmpCoalTimer.start();
+        return;
+    }
+
+    mTmpCoalCount = 0;
 
     if (!mTmpFilePath.isEmpty()) {
         path = mTmpFilePath;
