@@ -86,6 +86,7 @@ public slots:
     void copyLineDown();
     void moveLineUp();
     void moveLineDown();
+    void deleteWord();
     void gotoPreviousEmptyLine();
     void gotoNextEmptyLine();
     void setActiveAppearance(bool active);

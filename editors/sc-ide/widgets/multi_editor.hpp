@@ -72,6 +72,10 @@ public:
         MoveLineUp,
         MoveLineDown,
 
+#ifdef Q_OS_MAC
+	DeleteWord,
+#endif
+
         GotoPreviousBlock,
         GotoNextBlock,
         SelectEnclosingBlock,
