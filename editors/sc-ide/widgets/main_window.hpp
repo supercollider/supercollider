@@ -172,7 +172,7 @@ private Q_SLOTS:
     void onDocumentChangedExternally( Document * );
     void onDocDialogFinished();
     void updateRecentDocsMenu();
-    void onRecentDocAction( QAction * );
+    void onOpenRecentDocument( QAction * );
     void onOpenSessionAction( QAction * );
     void updateWindowTitle();
     void toggleFullScreen();
