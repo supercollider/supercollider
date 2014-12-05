@@ -436,7 +436,7 @@ void MainWindow::createActions()
     settings->addAction( action, "ide-lookup-references-for-cursor", ideCategory);
 
     // Settings
-    mActions[ShowSettings] = action = new QAction(tr("&Preferences"), this);
+    mActions[ShowSettings] = action = new QAction(tr("Preferences"), this);
 #ifdef Q_OS_MAC
     action->setShortcut(tr("Ctrl+,", "Show configuration dialog"));
 #endif
