@@ -71,6 +71,9 @@ struct RGen
 	float frand2();
 	float frand0();
 	float frand8();
+	float flinrand();
+	float fbilinrand();
+	float fsum3rand();
 	double drand();
 	double drand2(double scale);
 	double linrand(double scale);
@@ -165,6 +168,27 @@ inline float RGen::fcoin()
 	u.i = 0x3F800000 | (0x80000000 & trand());
 	return u.f;
 }
+
+inline float RGen::flinrand()
+{
+	float a = frand();
+	float b = frand();
+	return sc_min(a,b);
+}
+
+inline float RGen::fbilinrand()
+{
+	float a = frand();
+	float b = frand();
+	return a - b;
+}
+
+inline float RGen::fsum3rand()
+{
+	// larry polansky's poor man's gaussian generator
+	return (frand() + frand() + frand() - 1.5) * 0.666666667;
+}
+
 
 inline int32 RGen::irand(int32 scale)
 {
@@ -280,6 +304,8 @@ inline float fcoin( uint32& s1, uint32& s2, uint32& s3 )
 	u.i = 0x3F800000 | (0x80000000 & trand(s1,s2,s3));
 	return u.f;
 }
+
+
 
 #endif
 
