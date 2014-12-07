@@ -386,14 +386,14 @@ void MultiEditor::createActions()
     mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(moveLineDown()));
     settings->addAction( action, "editor-move-line-down", editorCategory);
 
-#ifdef Q_OS_MAC
     mActions[DeleteWord] = action = new QAction(
         QIcon::fromTheme("edit-deleteword"), tr("Delete Word"), this);
+#ifdef Q_OS_MAC
     action->setShortcut(tr("Meta+W", "Delete Word"));
+#endif
     action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(deleteWord()));
     settings->addAction(action, "delete-word", editorCategory);
-#endif
 
     mActions[GotoPreviousBlock] = action = new QAction(
         QIcon::fromTheme("edit-gotopreviousblock"), tr("Go to Previous Block"), this);
@@ -609,9 +609,7 @@ void MultiEditor::createActions()
     addAction(mActions[CopyLineDown]);
     addAction(mActions[MoveLineUp]);
     addAction(mActions[MoveLineDown]);
-#ifdef Q_OS_MAC
     addAction(mActions[DeleteWord]);
-#endif
     addAction(mActions[GotoPreviousBlock]);
     addAction(mActions[GotoNextBlock]);
     addAction(mActions[SelectEnclosingBlock]);
@@ -638,9 +636,7 @@ void MultiEditor::updateActions()
     mActions[CopyLineDown]->setEnabled( editor );
     mActions[MoveLineUp]->setEnabled( editor );
     mActions[MoveLineDown]->setEnabled( editor );
-#ifdef Q_OS_MAC
     mActions[DeleteWord]->setEnabled( editor );
-#endif
     mActions[GotoPreviousEmptyLine]->setEnabled( editor );
     mActions[GotoNextEmptyLine]->setEnabled( editor );
     mActions[DocClose]->setEnabled( editor );
