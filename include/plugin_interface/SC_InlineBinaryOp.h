@@ -342,10 +342,15 @@ inline int sc_fold(int in, int lo, int hi)
 inline int sc_gcd(int a, int b)
 {
 	int t;
-	if (a == 0 || b == 0) return 0;
+	
 	const bool negative = (a <= 0 && b <= 0);
+	
 	a = sc_abs(a);
 	b = sc_abs(b);
+	
+	if (a == 0) return b;
+	if (b == 0) return a;
+	
 	if (a == 1 || b == 1) {
 		if(negative) {
 			return -1;
@@ -374,10 +379,15 @@ inline int sc_lcm(int a, int b)
 inline long sc_gcd(long a, long b)
 {
 	long t;
-	if (a == 0 || b == 0) return (long)0;
+
 	const bool negative = (a <= 0 && b <= 0);
+
 	a = sc_abs(a);
 	b = sc_abs(b);
+
+	if (a == 0) return b;
+	if (b == 0) return a;
+
 	if (a == 1 || b == 1) {
 		if(negative) {
 			return (long)-1;
