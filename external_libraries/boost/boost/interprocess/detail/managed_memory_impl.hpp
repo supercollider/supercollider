@@ -90,7 +90,7 @@ class basic_managed_memory_impl
    typedef typename segment_manager::
       const_unique_iterator                           const_unique_iterator;
 
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
 
    typedef typename
            segment_manager::char_ptr_holder_t         char_ptr_holder_t;
@@ -98,7 +98,7 @@ class basic_managed_memory_impl
 
    typedef typename segment_manager::multiallocation_chain  multiallocation_chain;
 
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 
    static const size_type PayloadPerAllocation = segment_manager::PayloadPerAllocation;
 
@@ -303,7 +303,7 @@ class basic_managed_memory_impl
    void * allocate_aligned(size_type nbytes, size_type alignment)
    {   return mp_header->allocate_aligned(nbytes, alignment);  }
 
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
 
    //Experimental. Don't use.
 
@@ -333,7 +333,7 @@ class basic_managed_memory_impl
    void deallocate_many(multiallocation_chain &chain)
    {  mp_header->deallocate_many(chain); }
 
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 
    //!Marks previously allocated memory as free. Never throws.
    void  deallocate           (void *addr)
@@ -703,14 +703,14 @@ class basic_managed_memory_impl
       get_deleter()
    {   return mp_header->template get_deleter<T>(); }
 
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
    //!Tries to find a previous named allocation address. Returns a memory
    //!buffer and the object count. If not found returned pointer is 0.
    //!Never throws.
    template <class T>
    std::pair<T*, size_type> find_no_lock  (char_ptr_holder_t name)
    {   return mp_header->template find_no_lock<T>(name); }
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 
    protected:
    //!Swaps the segment manager's managed by this managed memory segment.

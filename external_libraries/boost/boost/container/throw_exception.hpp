@@ -11,12 +11,12 @@
 #ifndef BOOST_CONTAINER_THROW_EXCEPTION_HPP
 #define BOOST_CONTAINER_THROW_EXCEPTION_HPP
 
-#include <boost/container/detail/config_begin.hpp>
-#include <boost/container/detail/workaround.hpp>
-
 #if defined(_MSC_VER)
 #  pragma once
 #endif
+
+#include <boost/container/detail/config_begin.hpp>
+#include <boost/container/detail/workaround.hpp>
 
 #ifndef BOOST_NO_EXCEPTIONS
    #include <stdexcept> //for std exception types

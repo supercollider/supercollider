@@ -47,7 +47,7 @@ template<class T>
 struct placement_destroy :  public in_place_interface
 {
    placement_destroy()
-	   :  in_place_interface(::boost::alignment_of<T>::value, sizeof(T), typeid(T).name())
+      :  in_place_interface(::boost::alignment_of<T>::value, sizeof(T), typeid(T).name())
    {}
 
    virtual void destroy_n(void *mem, std::size_t num, std::size_t &destroyed)

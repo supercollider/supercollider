@@ -40,8 +40,17 @@ SessionSwitchDialog::SessionSwitchDialog(QWidget * parent):
     contentBox->addWidget(mSessions);
     setLayout(contentBox);
 
-    QStringList sessions = Main::sessionManager()->availableSessions();
+    SessionManager * sessionManager = Main::sessionManager();
+    QStringList sessions = sessionManager->availableSessions();
     mSessions->addItems(sessions);
+
+    const Session * currentSession = sessionManager->currentSession();
+    if(!currentSession)
+        return;
+
+    const int currentSessionIndex = sessions.indexOf( currentSession->name() );
+    if (currentSessionIndex != -1)
+        mSessions->setCurrentRow(currentSessionIndex);
 
     connect(mSessions, SIGNAL(itemActivated(QListWidgetItem*)), this, SLOT(onItemActivated(QListWidgetItem*)));
 }

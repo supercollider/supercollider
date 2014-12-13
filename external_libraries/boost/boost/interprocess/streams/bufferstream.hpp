@@ -35,6 +35,10 @@
 #ifndef BOOST_INTERPROCESS_BUFFERSTREAM_HPP
 #define BOOST_INTERPROCESS_BUFFERSTREAM_HPP
 
+#if defined(_MSC_VER)
+#  pragma once
+#endif
+
 #include <boost/interprocess/detail/config_begin.hpp>
 #include <boost/interprocess/detail/workaround.hpp>
 
@@ -93,7 +97,7 @@ class basic_bufferbuf
    void buffer(CharT *buf, std::size_t length)
       {  m_buffer = buf;   m_length = length;   this->set_pointers();   }
 
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
    private:
    void set_pointers()
    {
@@ -245,16 +249,16 @@ class basic_bufferbuf
    std::ios_base::openmode m_mode;
    CharT *                 m_buffer;
    std::size_t             m_length;
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 };
 
 //!A basic_istream class that uses a fixed size character buffer
 //!as its formatting buffer.
 template <class CharT, class CharTraits>
 class basic_ibufferstream :
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
    private basic_bufferbuf<CharT, CharTraits>,
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
    public std::basic_istream<CharT, CharTraits>
 {
    public:                         // Typedefs
@@ -265,14 +269,14 @@ class basic_ibufferstream :
    typedef typename std::basic_ios<char_type, CharTraits>::off_type     off_type;
    typedef typename std::basic_ios<char_type, CharTraits>::traits_type  traits_type;
 
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
    private:
    typedef basic_bufferbuf<CharT, CharTraits>         bufferbuf_t;
    typedef std::basic_ios<char_type, CharTraits>      basic_ios_t;
    typedef std::basic_istream<char_type, CharTraits>  base_t;
    bufferbuf_t &       get_buf()      {  return *this;  }
    const bufferbuf_t & get_buf() const{  return *this;  }
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 
    public:
    //!Constructor.
@@ -323,9 +327,9 @@ class basic_ibufferstream :
 //!as its formatting buffer.
 template <class CharT, class CharTraits>
 class basic_obufferstream :
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
    private basic_bufferbuf<CharT, CharTraits>,
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
    public std::basic_ostream<CharT, CharTraits>
 {
    public:
@@ -336,14 +340,14 @@ class basic_obufferstream :
    typedef typename std::basic_ios<char_type, CharTraits>::off_type     off_type;
    typedef typename std::basic_ios<char_type, CharTraits>::traits_type  traits_type;
 
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
    private:
    typedef basic_bufferbuf<CharT, CharTraits>         bufferbuf_t;
    typedef std::basic_ios<char_type, CharTraits>      basic_ios_t;
    typedef std::basic_ostream<char_type, CharTraits>  base_t;
    bufferbuf_t &       get_buf()      {  return *this;  }
    const bufferbuf_t & get_buf() const{  return *this;  }
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 
    public:
    //!Constructor.
@@ -395,9 +399,9 @@ class basic_obufferstream :
 //!as its formatting buffer.
 template <class CharT, class CharTraits>
 class basic_bufferstream :
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
    private basic_bufferbuf<CharT, CharTraits>,
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
    public std::basic_iostream<CharT, CharTraits>
 {
    public:                         // Typedefs
@@ -408,14 +412,14 @@ class basic_bufferstream :
    typedef typename std::basic_ios<char_type, CharTraits>::off_type     off_type;
    typedef typename std::basic_ios<char_type, CharTraits>::traits_type  traits_type;
 
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
    private:
    typedef basic_bufferbuf<CharT, CharTraits>         bufferbuf_t;
    typedef std::basic_ios<char_type, CharTraits>      basic_ios_t;
    typedef std::basic_iostream<char_type, CharTraits> base_t;
    bufferbuf_t &       get_buf()      {  return *this;  }
    const bufferbuf_t & get_buf() const{  return *this;  }
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 
    public:
    //!Constructor.

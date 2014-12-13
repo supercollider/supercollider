@@ -65,6 +65,7 @@ public:
         DocOpenSupportDir,
         DocSave,
         DocSaveAs,
+        DocSaveAsExtension,
         DocSaveAll,
         DocCloseAll,
         DocReload,
@@ -126,7 +127,7 @@ public:
     Settings::Manager *setting();
 
     static bool close( Document * );
-    static bool save( Document *, bool forceChoose = false );
+    static bool save( Document *, bool forceChoose = false, bool saveInExtensionFolder = false );
     static bool reload( Document * );
 
 public Q_SLOTS:
@@ -138,6 +139,7 @@ public Q_SLOTS:
     void openDocument();
     void saveDocument();
     void saveDocumentAs();
+    void saveDocumentAsExtension();
     void saveAllDocuments();
     void reloadDocument();
     void closeDocument();
@@ -170,7 +172,7 @@ private Q_SLOTS:
     void onDocumentChangedExternally( Document * );
     void onDocDialogFinished();
     void updateRecentDocsMenu();
-    void onRecentDocAction( QAction * );
+    void onOpenRecentDocument( QAction * );
     void onOpenSessionAction( QAction * );
     void updateWindowTitle();
     void toggleFullScreen();

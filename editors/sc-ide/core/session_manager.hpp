@@ -37,7 +37,7 @@ struct Session : public QSettings
         mName(name)
     {}
 
-    const QString & name() { return mName; }
+    const QString & name() const { return mName; }
 
 private:
     QString mName;

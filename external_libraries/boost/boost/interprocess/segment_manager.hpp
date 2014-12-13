@@ -32,7 +32,7 @@
 #include <boost/interprocess/exceptions.hpp>
 #include <boost/interprocess/allocators/allocator.hpp>
 #include <boost/interprocess/smart_ptr/deleter.hpp>
-#include <boost/move/move.hpp>
+#include <boost/move/utility_core.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
 #include <cstddef>   //std::size_t
 #include <string>    //char_traits
@@ -70,14 +70,14 @@ class segment_manager_base
    typedef typename MemoryAlgorithm::mutex_family  mutex_family;
    typedef MemoryAlgorithm memory_algorithm;
 
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
 
    //Experimental. Don't use
    typedef typename MemoryAlgorithm::multiallocation_chain    multiallocation_chain;
    typedef typename MemoryAlgorithm::difference_type  difference_type;
    typedef typename MemoryAlgorithm::size_type        size_type;
 
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 
    //!This constant indicates the payload size
    //!associated with each allocation of the memory algorithm
@@ -120,7 +120,7 @@ class segment_manager_base
    void * allocate (size_type nbytes, std::nothrow_t)
    {  return MemoryAlgorithm::allocate(nbytes);   }
 
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
 
    //Experimental. Dont' use.
    //!Allocates n_elements of elem_bytes bytes.
@@ -161,7 +161,7 @@ class segment_manager_base
    void deallocate_many(multiallocation_chain &chain)
    {  MemoryAlgorithm::deallocate_many(chain); }
 
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 
    //!Allocates nbytes bytes. Throws boost::interprocess::bad_alloc
    //!on failure
@@ -188,7 +188,7 @@ class segment_manager_base
       return ret;
    }
 
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
 
    template<class T>
    std::pair<T *, bool>
@@ -217,7 +217,7 @@ class segment_manager_base
       return ret;
    }
 
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 
    //!Deallocates the bytes allocated with allocate/allocate_many()
    //!pointed by addr
@@ -253,7 +253,7 @@ class segment_manager_base
    size_type size(const void *ptr) const
    {   return MemoryAlgorithm::size(ptr); }
 
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
    protected:
    void * prot_anonymous_construct
       (size_type num, bool dothrow, ipcdetail::in_place_interface &table)
@@ -317,7 +317,7 @@ class segment_manager_base
      table.destroy_n(const_cast<void*>(object), ctrl_data->m_value_bytes/table.size, destroyed);
       this->deallocate(ctrl_data);
    }
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 };
 
 //!This object is placed in the beginning of memory segment and
@@ -342,13 +342,13 @@ template<class CharType
 class segment_manager
    :  public segment_manager_base<MemoryAlgorithm>
 {
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
    //Non-copyable
    segment_manager();
    segment_manager(const segment_manager &);
    segment_manager &operator=(const segment_manager &);
    typedef segment_manager_base<MemoryAlgorithm> segment_manager_base_t;
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 
    public:
    typedef MemoryAlgorithm                                  memory_algorithm;
@@ -361,7 +361,7 @@ class segment_manager
 
    static const size_type PayloadPerAllocation = segment_manager_base_t::PayloadPerAllocation;
 
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
    private:
    typedef ipcdetail::block_header<size_type> block_header_t;
    typedef ipcdetail::index_config<CharType, MemoryAlgorithm>  index_config_named;
@@ -381,7 +381,7 @@ class segment_manager
    typedef ipcdetail::segment_manager_iterator_transform
       <typename unique_index_t::const_iterator
       ,is_intrusive_index<index_type>::value>   unique_transform;
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 
    typedef typename segment_manager_base_t::mutex_family       mutex_family;
 
@@ -390,7 +390,7 @@ class segment_manager
    typedef transform_iterator
       <typename unique_index_t::const_iterator, unique_transform> const_unique_iterator;
 
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
 
    //!Constructor proxy object definition helper class
    template<class T>
@@ -406,7 +406,7 @@ class segment_manager
       typedef ipcdetail::named_proxy<segment_manager, T, true>   type;
    };
 
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 
    //!Constructor of the segment manager
    //!"size" is the size of the memory segment where
@@ -686,7 +686,7 @@ class segment_manager
       get_deleter()
    {   return typename deleter<T>::type(this); }
 
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
 
    //!Generic named/anonymous new function. Offers all the possibilities,
    //!such as throwing, search before creating, and the constructor is
@@ -1329,7 +1329,7 @@ class segment_manager
       {}
    }  m_header;
 
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 };
 
 

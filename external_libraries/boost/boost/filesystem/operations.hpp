@@ -302,7 +302,7 @@ namespace boost
   };
 
   BOOST_SCOPED_ENUM_START(copy_option)
-    {none, fail_if_exists = none, overwrite_if_exists};
+    {none=0, fail_if_exists = none, overwrite_if_exists};
   BOOST_SCOPED_ENUM_END
 
 //--------------------------------------------------------------------------------------//
@@ -311,6 +311,11 @@ namespace boost
 
   namespace detail
   {
+    //  We cannot pass a BOOST_SCOPED_ENUM to a compled function because it will result
+    //  in an undefined reference if the library is compled with -std=c++0x but the use
+    //  is compiled in C++03 mode, or visa versa. See tickets 6124, 6779, 10038.
+    enum copy_option {none=0, fail_if_exists = none, overwrite_if_exists};
+
     BOOST_FILESYSTEM_DECL
     file_status status(const path&p, system::error_code* ec=0);
     BOOST_FILESYSTEM_DECL
@@ -326,9 +331,8 @@ namespace boost
     BOOST_FILESYSTEM_DECL
     void copy_directory(const path& from, const path& to, system::error_code* ec=0);
     BOOST_FILESYSTEM_DECL
-    void copy_file(const path& from, const path& to,
-                    BOOST_SCOPED_ENUM(copy_option) option,  // See ticket #2925
-                    system::error_code* ec=0);
+    void copy_file(const path& from, const path& to,  // See ticket #2925
+                   detail::copy_option option, system::error_code* ec=0);
     BOOST_FILESYSTEM_DECL
     void copy_symlink(const path& existing_symlink, const path& new_symlink, system::error_code* ec=0);
     BOOST_FILESYSTEM_DECL
@@ -489,19 +493,28 @@ namespace boost
   inline
   void copy_file(const path& from, const path& to,   // See ticket #2925
                  BOOST_SCOPED_ENUM(copy_option) option)
-                                       {detail::copy_file(from, to, option);}
+  {
+    detail::copy_file(from, to, static_cast<detail::copy_option>(option));
+  }
   inline
   void copy_file(const path& from, const path& to)
-                                       {detail::copy_file(from, to, copy_option::fail_if_exists);}
+  {
+    detail::copy_file(from, to, detail::fail_if_exists);
+  }
   inline
   void copy_file(const path& from, const path& to,   // See ticket #2925
                  BOOST_SCOPED_ENUM(copy_option) option, system::error_code& ec)
-                                       {detail::copy_file(from, to, option, &ec);}
+  {
+    detail::copy_file(from, to, static_cast<detail::copy_option>(option), &ec);
+  }
   inline
   void copy_file(const path& from, const path& to, system::error_code& ec)
-                                       {detail::copy_file(from, to, copy_option::fail_if_exists, &ec);}
+  {
+    detail::copy_file(from, to, detail::fail_if_exists, &ec);
+  }
   inline
-  void copy_symlink(const path& existing_symlink, const path& new_symlink) {detail::copy_symlink(existing_symlink, new_symlink);}
+  void copy_symlink(const path& existing_symlink,
+                    const path& new_symlink) {detail::copy_symlink(existing_symlink, new_symlink);}
 
   inline
   void copy_symlink(const path& existing_symlink, const path& new_symlink, system::error_code& ec)

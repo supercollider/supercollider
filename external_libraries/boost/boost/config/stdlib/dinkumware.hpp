@@ -147,6 +147,12 @@
 #  define BOOST_NO_CXX11_STD_ALIGN
 #endif
 
+#if defined(BOOST_INTEL) && (BOOST_INTEL <= 1400)
+// Intel's compiler can't handle this header yet:
+#  define BOOST_NO_CXX11_HDR_ATOMIC
+#endif
+
+
 //  520..610 have std::addressof, but it doesn't support functions
 //
 #  define BOOST_NO_CXX11_ADDRESSOF
