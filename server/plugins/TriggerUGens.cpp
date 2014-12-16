@@ -764,14 +764,15 @@ void SendTrig_next(SendTrig *unit, int inNumSamples)
 void SendTrig_next_aka(SendTrig *unit, int inNumSamples)
 {
 	float *trig = ZIN(0);
-        float *value = ZIN(2);
+	int id = (int)ZIN0(1);
+	float *value = ZIN(2);
 	float prevtrig = unit->m_prevtrig;
 
 	LOOP1(inNumSamples,
 		float curtrig = ZXP(trig);
-                float curval = ZXP(value);
+		float curval = ZXP(value);
 		if (curtrig > 0.f && prevtrig <= 0.f) {
-			SendTrigger(&unit->mParent->mNode, (int)ZIN0(1), curval);
+			SendTrigger(&unit->mParent->mNode, id, curval);
 		}
 		prevtrig = curtrig;
 	);

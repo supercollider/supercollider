@@ -556,6 +556,8 @@ void TRand_next_k(TRand* unit, int inNumSamples)
 
 void TRand_next_a(TRand* unit, int inNumSamples)
 {
+	float lo = ZIN0(0);
+	float hi = ZIN0(1);
 	float *trig = ZIN(2);
 	float prev = unit->m_trig;
 	float *out = ZOUT(0);
@@ -565,8 +567,6 @@ void TRand_next_a(TRand* unit, int inNumSamples)
 	LOOP1(inNumSamples,
 		next = ZXP(trig);
 		if (next > 0.f &&  prev <= 0.f) {
-			float lo = ZIN0(0);
-			float hi = ZIN0(1);
 			float range = hi - lo;
 			RGen& rgen = *unit->mParent->mRGen;
 			ZXP(out) = outval = rgen.frand() * range + lo;
@@ -611,6 +611,8 @@ void TExpRand_next_k(TExpRand* unit, int inNumSamples)
 
 void TExpRand_next_a(TExpRand* unit, int inNumSamples)
 {
+	float lo = ZIN0(0);
+	float hi = ZIN0(1);
 	float *trig = ZIN(2);
 	float prev = unit->m_trig;
 	float *out = ZOUT(0);
@@ -620,8 +622,6 @@ void TExpRand_next_a(TExpRand* unit, int inNumSamples)
 	LOOP1(inNumSamples,
 		next = ZXP(trig);
 		if (next > 0.f && prev <= 0.f) {
-			float lo = ZIN0(0);
-			float hi = ZIN0(1);
 			float ratio = hi / lo;
 			RGen& rgen = *unit->mParent->mRGen;
 			ZXP(out) = outval = pow(ratio, rgen.frand()) * lo;
@@ -677,6 +677,8 @@ void TIRand_next_k(TIRand* unit, int inNumSamples)
 
 void TIRand_next_a(TIRand* unit, int inNumSamples)
 {
+	int lo = (int)ZIN0(0);
+	int hi = (int)ZIN0(1);
 	float *trig = ZIN(2);
 	float prev = unit->m_trig;
 	float *out = ZOUT(0);
@@ -686,8 +688,6 @@ void TIRand_next_a(TIRand* unit, int inNumSamples)
 	LOOP1(inNumSamples,
 		next = ZXP(trig);
 		if (next > 0.f && prev <= 0.f) {
-			int lo = (int)ZIN0(0);
-			int hi = (int)ZIN0(1);
 			int range = hi - lo + 1;
 			RGen& rgen = *unit->mParent->mRGen;
 			ZXP(out) = outval = (float)(rgen.irand(range) + lo);
