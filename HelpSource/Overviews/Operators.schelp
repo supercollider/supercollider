@@ -303,10 +303,14 @@ Exponentiation.
 method:: lcm
 Least common multiple. This definition extends the usual definition and returns a negative number if strong::any of the operands:: is negative. This makes it consistent with the lattice-theoretical interpretation and its idempotency, commutative, associative, absorption laws.
 
+Following the example of the programming language J (see: link::Guides/J-concepts-in-SC::), lcm is analogous to logical strong::and::.
+
 code::
 lcm(4, 6);
+lcm(1, 1); // and
 lcm(1624, 26);
 lcm(1624, -26);
+lcm(-1624, -26);
 lcm(513, gcd(513, 44)) // absorption law -> 513.
 ::
 code::
@@ -321,12 +325,19 @@ code::
 
 method:: gcd
 Greatest common divisor. This definition extends the usual definition and returns a negative number if strong::both operands:: are negative. This makes it consistent with the lattice-theoretical interpretation and its idempotency, commutative, associative, absorption laws.
+
+"greater" means "divisible by" in this interpretation, so code::gcd(-1, -1):: returns a negative number. This is necessary to make the whole system consistent (fundamental law of arithmetics, idempotency and absorption laws would fail).
+
+Following the example of the programming language J (see: link::Guides/J-concepts-in-SC::), gcd is analogous to logical strong::or::.
+
 code::
 gcd(4, 6);
+gcd(0, 1); // or
 gcd(1024, 256);
 gcd(1024, -256);
-gcd(-1024, -256);
+gcd(-1024, -256); // "greater" means "divisible by" in this case, so this returns a negative number.
 gcd(-1024, lcm(-1024, 256)) // absorption law -> -1024.
+gcd(66, 54) * lcm(66, 54) == (66 * 54); // true
 ::
 
 code::
