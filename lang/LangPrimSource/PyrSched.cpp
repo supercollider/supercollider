@@ -426,11 +426,11 @@ static void schedRunFunc()
 		//postfl("wait until an event is ready\n");
 
 		// wait until an event is ready
-        chrono::nanoseconds schedSecs;
+        chrono::high_resolution_clock::duration schedSecs;
         chrono::high_resolution_clock::time_point now, schedPoint;
 		do {
             now = chrono::high_resolution_clock::now();
-            schedSecs = chrono::duration_cast<chrono::nanoseconds>(chrono::duration<double>(slotRawFloat(inQueue->slots + 1)));
+            schedSecs = chrono::duration_cast<chrono::high_resolution_clock::duration>(chrono::duration<double>(slotRawFloat(inQueue->slots + 1)));
             schedPoint = hrTimeOfInitialization + schedSecs;
             if(now >= schedPoint) break;
 			//postfl("wait until an event is ready\n");
@@ -443,7 +443,7 @@ static void schedRunFunc()
 
 		// perform all events that are ready
 		//postfl("perform all events that are ready\n");
-		while ((inQueue->size > 1) && now >= hrTimeOfInitialization + chrono::duration_cast<chrono::nanoseconds>(chrono::duration<double>(slotRawFloat(inQueue->slots + 1)))) {
+		while ((inQueue->size > 1) && now >= hrTimeOfInitialization + chrono::duration_cast<chrono::high_resolution_clock::duration>(chrono::duration<double>(slotRawFloat(inQueue->slots + 1)))) {
 			double schedtime, delta;
 			PyrSlot task;
 
@@ -842,7 +842,7 @@ void* TempoClock::Run()
 
 		// wait until an event is ready
 		double elapsedBeats;
-        chrono::nanoseconds schedSecs;
+        chrono::high_resolution_clock::duration schedSecs;
         chrono::high_resolution_clock::time_point schedPoint;
 		do {
 			elapsedBeats = ElapsedBeats();
@@ -851,7 +851,7 @@ void* TempoClock::Run()
 			//printf("event ready at %g . elapsed beats %g\n", mQueue->slots->uf, elapsedBeats);
 			double wakeTime = BeatsToSecs(slotRawFloat(mQueue->slots));
             
-            schedSecs = chrono::duration_cast<chrono::nanoseconds>(chrono::duration<double>(wakeTime));
+            schedSecs = chrono::duration_cast<chrono::high_resolution_clock::duration>(chrono::duration<double>(wakeTime));
             schedPoint = hrTimeOfInitialization + schedSecs;
 
 			//printf("wait until an event is ready. wake %g  now %g\n", wakeTime, elapsedTime());
