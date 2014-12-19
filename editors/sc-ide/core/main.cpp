@@ -118,6 +118,8 @@ int main( int argc, char *argv[] )
         main->documentManager()->open(argument);
     }
 
+    win->restoreDocuments();
+
     bool startInterpreter = settings->value("IDE/interpreter/autoStart").toBool();
     if (startInterpreter)
         main->scProcess()->startLanguage();
