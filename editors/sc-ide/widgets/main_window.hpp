@@ -130,6 +130,8 @@ public:
     static bool save( Document *, bool forceChoose = false, bool saveInExtensionFolder = false );
     static bool reload( Document * );
 
+    void restoreDocuments();
+
 public Q_SLOTS:
     void newSession();
     void saveCurrentSessionAs();
