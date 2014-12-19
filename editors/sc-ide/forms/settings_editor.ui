@@ -445,8 +445,8 @@
           <property name="title">
            <string>Colors</string>
           </property>
-          <layout class="QHBoxLayout" name="horizontalLayout_5">
-           <item>
+          <layout class="QGridLayout" name="gridLayout_5">
+           <item row="1" column="0">
             <widget class="QTreeWidget" name="textFormats">
              <property name="rootIsDecorated">
               <bool>false</bool>
@@ -464,7 +464,7 @@
              </column>
             </widget>
            </item>
-           <item>
+           <item row="1" column="1">
             <widget class="QWidget" name="textFormatEdit" native="true">
              <layout class="QVBoxLayout" name="verticalLayout_2">
               <item>
@@ -576,6 +576,27 @@
               </item>
              </layout>
             </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QComboBox" name="themeCombo"/>
+           </item>
+           <item row="0" column="1">
+            <layout class="QHBoxLayout" name="horizontalLayout_5">
+             <item>
+              <widget class="QPushButton" name="themeCopyBtn">
+               <property name="text">
+                <string>copy ...</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="themeDeleteBtn">
+               <property name="text">
+                <string>delete</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </widget>
