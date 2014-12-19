@@ -842,18 +842,20 @@ void* TempoClock::Run()
 
 		// wait until an event is ready
 		double elapsedBeats;
+        chrono::nanoseconds schedSecs;
+        chrono::high_resolution_clock::time_point schedPoint;
 		do {
 			elapsedBeats = ElapsedBeats();
 			if (elapsedBeats >= slotRawFloat(mQueue->slots)) break;
 
-			chrono::system_clock::time_point absTime;
-
 			//printf("event ready at %g . elapsed beats %g\n", mQueue->slots->uf, elapsedBeats);
 			double wakeTime = BeatsToSecs(slotRawFloat(mQueue->slots));
-			ElapsedTimeToChrono(wakeTime, absTime);
+            
+            schedSecs = chrono::duration_cast<chrono::nanoseconds>(chrono::duration<double>(wakeTime));
+            schedPoint = hrTimeOfInitialization + schedSecs;
 
 			//printf("wait until an event is ready. wake %g  now %g\n", wakeTime, elapsedTime());
-			mCondition.wait_until(lock, absTime);
+			mCondition.wait_until(lock, schedPoint);
 			//printf("mRun b %d\n", mRun);
 			if (!mRun) goto leave;
 			//printf("time diff %g\n", elapsedTime() - mQueue->slots->uf);
