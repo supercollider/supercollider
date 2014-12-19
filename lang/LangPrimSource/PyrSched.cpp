@@ -426,16 +426,15 @@ static void schedRunFunc()
 		//postfl("wait until an event is ready\n");
 
 		// wait until an event is ready
-		double elapsed;
+        chrono::nanoseconds schedSecs;
+        chrono::high_resolution_clock::time_point now, schedPoint;
 		do {
-			elapsed = elapsedTime();
-			if (elapsed >= slotRawFloat(inQueue->slots + 1)) break;
-			chrono::system_clock::time_point absTime;
-
-			ElapsedTimeToChrono(slotRawFloat(inQueue->slots + 1), absTime);
-
+            now = chrono::high_resolution_clock::now();
+            schedSecs = chrono::duration_cast<chrono::nanoseconds>(chrono::duration<double>(slotRawFloat(inQueue->slots + 1)));
+            schedPoint = hrTimeOfInitialization + schedSecs;
+            if(now >= schedPoint) break;
 			//postfl("wait until an event is ready\n");
-			gSchedCond.wait_until(lock, absTime);
+			gSchedCond.wait_until(lock, schedPoint);
 			if (!gRunSched) goto leave;
 			//postfl("time diff %g\n", elapsedTime() - inQueue->slots->uf);
 		} while (inQueue->size > 1);
@@ -444,7 +443,7 @@ static void schedRunFunc()
 
 		// perform all events that are ready
 		//postfl("perform all events that are ready\n");
-		while ((inQueue->size > 1) && elapsed >= slotRawFloat(inQueue->slots + 1)) {
+		while ((inQueue->size > 1) && now >= hrTimeOfInitialization + chrono::duration_cast<chrono::nanoseconds>(chrono::duration<double>(slotRawFloat(inQueue->slots + 1)))) {
 			double schedtime, delta;
 			PyrSlot task;
 
