@@ -354,15 +354,18 @@ inline int sc_gcd(int a, int b)
 	if (a == 1 || b == 1) {
 		if(negative) {
 			return -1;
-		} {
+		} else {
 			return 1;
 		}
 	}
+
 	if (a < b) { t = a; a = b; b = t; }
 	while (b > 0) {
 		t = a % b; a = b; b = t;
 	}
+
 	if(negative) { a = 0 - a; }
+
 	return a;
 }
 
@@ -391,15 +394,18 @@ inline long sc_gcd(long a, long b)
 	if (a == 1 || b == 1) {
 		if(negative) {
 			return (long)-1;
-		} {
+		} else {
 			return (long)1;
 		}
 	}
+
 	if (a < b) { t = a; a = b; b = t; }
 	while (b > 0) {
 		t = a % b; a = b; b = t;
 	}
+
 	if(negative) { a = 0 - a; }
+
 	return a;
 }
 
