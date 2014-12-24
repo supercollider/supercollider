@@ -893,7 +893,7 @@ class esft2_deleter_wrapper
 {
 private:
 
-    shared_ptr<void> deleter_;
+    shared_ptr<void const volatile> deleter_;
 
 public:
 

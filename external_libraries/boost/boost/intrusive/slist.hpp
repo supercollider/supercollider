@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 //
 // (C) Copyright Olaf Krzikalla 2004-2006.
-// (C) Copyright Ion Gaztanaga  2006-2013
+// (C) Copyright Ion Gaztanaga  2006-2014
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -14,23 +14,39 @@
 #ifndef BOOST_INTRUSIVE_SLIST_HPP
 #define BOOST_INTRUSIVE_SLIST_HPP
 
+#if defined(_MSC_VER)
+#  pragma once
+#endif
+
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/intrusive_fwd.hpp>
-#include <boost/static_assert.hpp>
+
 #include <boost/intrusive/detail/assert.hpp>
 #include <boost/intrusive/slist_hook.hpp>
 #include <boost/intrusive/circular_slist_algorithms.hpp>
 #include <boost/intrusive/linear_slist_algorithms.hpp>
 #include <boost/intrusive/pointer_traits.hpp>
 #include <boost/intrusive/link_mode.hpp>
-#include <boost/intrusive/options.hpp>
-#include <boost/intrusive/detail/utilities.hpp>
-#include <iterator>
+#include <boost/intrusive/detail/get_value_traits.hpp>
+#include <boost/intrusive/detail/is_stateful_value_traits.hpp>
+#include <boost/intrusive/detail/default_header_holder.hpp>
+#include <boost/intrusive/detail/uncast.hpp>
+#include <boost/intrusive/detail/mpl.hpp>
+#include <boost/intrusive/detail/slist_iterator.hpp>
+#include <boost/intrusive/detail/array_initializer.hpp>
+#include <boost/intrusive/detail/exception_disposer.hpp>
+#include <boost/intrusive/detail/equal_to_value.hpp>
+#include <boost/intrusive/detail/key_nodeptr_comp.hpp>
+#include <boost/intrusive/detail/simple_disposers.hpp>
+#include <boost/intrusive/detail/size_holder.hpp>
+
+#include <boost/move/utility_core.hpp>
+#include <boost/static_assert.hpp>
+
 #include <functional>
 #include <algorithm>
 #include <cstddef>   //std::size_t
 #include <utility>   //std::pair
-#include <boost/move/move.hpp>
 
 namespace boost {
 namespace intrusive {
@@ -50,9 +66,16 @@ struct header_holder_plus_last<HeaderHolder, NodePtr, false>
    HeaderHolder header_holder_;
 };
 
+struct default_slist_hook_applier
+{  template <class T> struct apply{ typedef typename T::default_slist_hook type;  };  };
+
+template<>
+struct is_default_hook_tag<default_slist_hook_applier>
+{  static const bool value = true;  };
+
 struct slist_defaults
 {
-   typedef detail::default_slist_hook proto_value_traits;
+   typedef default_slist_hook_applier proto_value_traits;
    static const bool constant_time_size = true;
    static const bool linear = false;
    typedef std::size_t size_type;
@@ -123,7 +146,7 @@ class slist_impl
    static const bool linear = 0 != (BoolFlags & slist_bool_flags::linear_pos);
    static const bool cache_last = 0 != (BoolFlags & slist_bool_flags::cache_last_pos);
    static const bool has_container_from_iterator =
-        boost::is_same< header_holder_type, detail::default_header_holder< node_traits > >::value;
+        detail::is_same< header_holder_type, detail::default_header_holder< node_traits > >::value;
 
    typedef typename detail::if_c
       < linear
@@ -899,7 +922,7 @@ class slist_impl
    //!   erased element.
    iterator erase_after(const_iterator before_f, const_iterator l, size_type n)
    {
-      BOOST_INTRUSIVE_INVARIANT_ASSERT(std::distance(++const_iterator(before_f), l) == difference_type(n));
+      BOOST_INTRUSIVE_INVARIANT_ASSERT(node_algorithms::distance((++const_iterator(before_f)).pointed_node(), l.pointed_node()) == n);
       if(safemode_or_autounlink){
          return this->erase_after(before_f, l);
       }
@@ -1233,7 +1256,7 @@ class slist_impl
    void splice_after(const_iterator prev_pos, slist_impl &x, const_iterator before_f, const_iterator before_l)
    {
       if(constant_time_size)
-         this->splice_after(prev_pos, x, before_f, before_l, std::distance(before_f, before_l));
+         this->splice_after(prev_pos, x, before_f, before_l, node_algorithms::distance(before_f.pointed_node(), before_l.pointed_node()));
       else
          this->priv_splice_after
             (prev_pos.pointed_node(), x, before_f.pointed_node(), before_l.pointed_node());
@@ -1255,7 +1278,7 @@ class slist_impl
    //!   list. Iterators of this list and all the references are not invalidated.
    void splice_after(const_iterator prev_pos, slist_impl &x, const_iterator before_f, const_iterator before_l, size_type n)
    {
-      BOOST_INTRUSIVE_INVARIANT_ASSERT(std::distance(before_f, before_l) == difference_type(n));
+      BOOST_INTRUSIVE_INVARIANT_ASSERT(node_algorithms::distance(before_f.pointed_node(), before_l.pointed_node()) == n);
       this->priv_splice_after
          (prev_pos.pointed_node(), x, before_f.pointed_node(), before_l.pointed_node());
       if(constant_time_size){
@@ -1537,7 +1560,20 @@ class slist_impl
    //!   and iterators to elements that are not removed remain valid.
    template<class Pred>
    void remove_if(Pred pred)
-   {  this->remove_and_dispose_if(pred, detail::null_disposer());   }
+   {
+      const node_ptr bbeg = this->get_root_node();
+      typename node_algorithms::stable_partition_info info;
+      node_algorithms::stable_partition
+         (bbeg, this->get_end_node(), detail::key_nodeptr_comp<Pred, value_traits>(pred, &this->priv_value_traits()), info);
+      //After cache last is set, slist invariants are preserved...
+      if(cache_last){
+         this->set_last_node(info.new_last_node);
+      }
+      //...so erase can be safely called
+      this->erase_after( const_iterator(bbeg, this->priv_value_traits_ptr())
+                       , const_iterator(info.beg_2st_partition, this->priv_value_traits_ptr())
+                       , info.num_1st_partition);
+   }
 
    //! <b>Requires</b>: Disposer::operator()(pointer) shouldn't throw.
    //!
@@ -1554,20 +1590,18 @@ class slist_impl
    template<class Pred, class Disposer>
    void remove_and_dispose_if(Pred pred, Disposer disposer)
    {
-      const_iterator bcur(this->before_begin()), cur(this->begin()), e(this->end());
-
-      while(cur != e){
-         if (pred(*cur)){
-            cur = this->erase_after_and_dispose(bcur, disposer);
-         }
-         else{
-            bcur = cur;
-            ++cur;
-         }
-      }
+      const node_ptr bbeg = this->get_root_node();
+      typename node_algorithms::stable_partition_info info;
+      node_algorithms::stable_partition
+         (bbeg, this->get_end_node(), detail::key_nodeptr_comp<Pred, value_traits>(pred, &this->priv_value_traits()), info);
+      //After cache last is set, slist invariants are preserved...
       if(cache_last){
-         this->set_last_node(bcur.pointed_node());
+         this->set_last_node(info.new_last_node);
       }
+      //...so erase can be safely called
+      this->erase_after_and_dispose( const_iterator(bbeg, this->priv_value_traits_ptr())
+                                   , const_iterator(info.beg_2st_partition, this->priv_value_traits_ptr())
+                                   , disposer);
    }
 
    //! <b>Effects</b>: Removes adjacent duplicate elements or adjacent
@@ -1787,7 +1821,7 @@ class slist_impl
    void incorporate_after(const_iterator prev_pos, const node_ptr & f, const node_ptr & before_l)
    {
       if(constant_time_size)
-         this->incorporate_after(prev_pos, f, before_l, std::distance(f, before_l)+1);
+         this->incorporate_after(prev_pos, f, before_l, node_algorithms::distance(f.pointed_node(), before_l.pointed_node())+1);
       else
          this->priv_incorporate_after(prev_pos.pointed_node(), f, before_l);
    }
@@ -1825,6 +1859,49 @@ class slist_impl
    }
 
    ///@endcond
+
+   //! <b>Effects</b>: Asserts the integrity of the container.
+   //!
+   //! <b>Complexity</b>: Linear time.
+   //!
+   //! <b>Note</b>: The method has no effect when asserts are turned off (e.g., with NDEBUG).
+   //!   Experimental function, interface might change in future versions.
+   void check() const
+   {
+      const_node_ptr header_ptr = get_root_node();
+      // header's next is never null
+      BOOST_INTRUSIVE_INVARIANT_ASSERT(node_traits::get_next(header_ptr));
+      if (node_traits::get_next(header_ptr) == header_ptr)
+      {
+         if (constant_time_size)
+            BOOST_INTRUSIVE_INVARIANT_ASSERT(this->priv_size_traits().get_size() == 0);
+         return;
+      }
+      size_t node_count = 0;
+      const_node_ptr p = header_ptr;
+      while (true)
+      {
+         const_node_ptr next_p = node_traits::get_next(p);
+         if (!linear)
+         {
+            BOOST_INTRUSIVE_INVARIANT_ASSERT(next_p);
+         }
+         else
+         {
+            BOOST_INTRUSIVE_INVARIANT_ASSERT(next_p != header_ptr);
+         }
+         if ((!linear && next_p == header_ptr) || (linear && !next_p))
+         {
+            if (cache_last)
+               BOOST_INTRUSIVE_INVARIANT_ASSERT(get_last_node() == p);
+            break;
+         }
+         p = next_p;
+         ++node_count;
+      }
+      if (constant_time_size)
+         BOOST_INTRUSIVE_INVARIANT_ASSERT(this->priv_size_traits().get_size() == node_count);
+   }
 
    private:
    void priv_splice_after(const node_ptr & prev_pos_n, slist_impl &x, const node_ptr & before_f_n, const node_ptr & before_l_n)

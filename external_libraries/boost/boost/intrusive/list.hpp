@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 //
 // (C) Copyright Olaf Krzikalla 2004-2006.
-// (C) Copyright Ion Gaztanaga  2006-2013
+// (C) Copyright Ion Gaztanaga  2006-2014
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -14,6 +14,10 @@
 #ifndef BOOST_INTRUSIVE_LIST_HPP
 #define BOOST_INTRUSIVE_LIST_HPP
 
+#if defined(_MSC_VER)
+#  pragma once
+#endif
+
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/intrusive_fwd.hpp>
 #include <boost/intrusive/detail/assert.hpp>
@@ -22,24 +26,41 @@
 #include <boost/intrusive/pointer_traits.hpp>
 #include <boost/intrusive/detail/mpl.hpp>
 #include <boost/intrusive/link_mode.hpp>
+#include <boost/intrusive/detail/get_value_traits.hpp>
+#include <boost/intrusive/detail/is_stateful_value_traits.hpp>
+#include <boost/intrusive/detail/default_header_holder.hpp>
+#include <boost/intrusive/detail/reverse_iterator.hpp>
+#include <boost/intrusive/detail/uncast.hpp>
+#include <boost/intrusive/detail/list_iterator.hpp>
+#include <boost/intrusive/detail/array_initializer.hpp>
+#include <boost/intrusive/detail/exception_disposer.hpp>
+#include <boost/intrusive/detail/equal_to_value.hpp>
+#include <boost/intrusive/detail/key_nodeptr_comp.hpp>
+#include <boost/intrusive/detail/simple_disposers.hpp>
+#include <boost/intrusive/detail/size_holder.hpp>
+
+#include <boost/move/utility_core.hpp>
 #include <boost/static_assert.hpp>
-#include <boost/intrusive/options.hpp>
-#include <boost/intrusive/pointer_traits.hpp>
-#include <boost/intrusive/detail/utilities.hpp>
-#include <iterator>
+
 #include <algorithm>
 #include <functional>
 #include <cstddef>
-#include <boost/move/move.hpp>
 
 namespace boost {
 namespace intrusive {
 
 /// @cond
 
+struct default_list_hook_applier
+{  template <class T> struct apply{ typedef typename T::default_list_hook type;  };  };
+
+template<>
+struct is_default_hook_tag<default_list_hook_applier>
+{  static const bool value = true;  };
+
 struct list_defaults
 {
-   typedef detail::default_list_hook proto_value_traits;
+   typedef default_list_hook_applier proto_value_traits;
    static const bool constant_time_size = true;
    typedef std::size_t size_type;
    typedef void header_holder_type;
@@ -88,7 +109,7 @@ class list_impl
    static const bool constant_time_size = ConstantTimeSize;
    static const bool stateful_value_traits = detail::is_stateful_value_traits<value_traits>::value;
    static const bool has_container_from_iterator =
-        boost::is_same< header_holder_type, detail::default_header_holder< node_traits > >::value;
+        detail::is_same< header_holder_type, detail::default_header_holder< node_traits > >::value;
 
    /// @cond
 
@@ -597,9 +618,9 @@ class list_impl
    //!
    //! <b>Note</b>: Invalidates the iterators (but not the references) to the
    //!   erased elements.
-   iterator erase(const_iterator b, const_iterator e, difference_type n)
+   iterator erase(const_iterator b, const_iterator e, size_type n)
    {
-      BOOST_INTRUSIVE_INVARIANT_ASSERT(std::distance(b, e) == difference_type(n));
+      BOOST_INTRUSIVE_INVARIANT_ASSERT(node_algorithms::distance(b.pointed_node(), e.pointed_node()) == n);
       if(safemode_or_autounlink || constant_time_size){
          return this->erase_and_dispose(b, e, detail::null_disposer());
       }
@@ -891,7 +912,7 @@ class list_impl
    void splice(const_iterator p, list_impl&x, const_iterator f, const_iterator e)
    {
       if(constant_time_size)
-         this->splice(p, x, f, e, std::distance(f, e));
+         this->splice(p, x, f, e, node_algorithms::distance(f.pointed_node(), e.pointed_node()));
       else
          this->splice(p, x, f, e, 1);//distance is a dummy value
    }
@@ -909,11 +930,11 @@ class list_impl
    //!
    //! <b>Note</b>: Iterators of values obtained from list x now point to elements of this
    //!   list. Iterators of this list and all the references are not invalidated.
-   void splice(const_iterator p, list_impl&x, const_iterator f, const_iterator e, difference_type n)
+   void splice(const_iterator p, list_impl&x, const_iterator f, const_iterator e, size_type n)
    {
       if(n){
          if(constant_time_size){
-            BOOST_INTRUSIVE_INVARIANT_ASSERT(n == std::distance(f, e));
+            BOOST_INTRUSIVE_INVARIANT_ASSERT(n == node_algorithms::distance(f.pointed_node(), e.pointed_node()));
             node_algorithms::transfer(p.pointed_node(), f.pointed_node(), e.pointed_node());
             size_traits &thist = this->priv_size_traits();
             size_traits &xt = x.priv_size_traits();
@@ -1081,7 +1102,17 @@ class list_impl
    //!   and iterators to elements that are not removed remain valid.
    template<class Pred>
    void remove_if(Pred pred)
-   {  this->remove_and_dispose_if(pred, detail::null_disposer());   }
+   {
+      const node_ptr root_node = this->get_root_node();
+      typename node_algorithms::stable_partition_info info;
+      node_algorithms::stable_partition
+         (node_traits::get_next(root_node), root_node, detail::key_nodeptr_comp<Pred, value_traits>(pred, &this->priv_value_traits()), info);
+      //Invariants preserved by stable_partition so erase can be safely called
+      //The first element might have changed so calculate it again
+      this->erase( const_iterator(node_traits::get_next(root_node), this->priv_value_traits_ptr())
+                 , const_iterator(info.beg_2st_partition, this->priv_value_traits_ptr())
+                 , info.num_1st_partition);
+   }
 
    //! <b>Requires</b>: Disposer::operator()(pointer) shouldn't throw.
    //!
@@ -1098,16 +1129,15 @@ class list_impl
    template<class Pred, class Disposer>
    void remove_and_dispose_if(Pred pred, Disposer disposer)
    {
-      const_iterator cur(this->cbegin());
-      const_iterator last(this->cend());
-      while(cur != last) {
-         if(pred(*cur)){
-            cur = this->erase_and_dispose(cur, disposer);
-         }
-         else{
-            ++cur;
-         }
-      }
+      const node_ptr root_node = this->get_root_node();
+      typename node_algorithms::stable_partition_info info;
+      node_algorithms::stable_partition
+         (node_traits::get_next(root_node), root_node, detail::key_nodeptr_comp<Pred, value_traits>(pred, &this->priv_value_traits()), info);
+      //Invariants preserved by stable_partition so erase can be safely called
+      //The first element might have changed so calculate it again
+      this->erase_and_dispose( const_iterator(node_traits::get_next(root_node), this->priv_value_traits_ptr())
+                             , const_iterator(info.beg_2st_partition, this->priv_value_traits_ptr())
+                             , disposer);
    }
 
    //! <b>Effects</b>: Removes adjacent duplicate elements or adjacent
@@ -1251,6 +1281,42 @@ class list_impl
       reference r = *pointer_traits<pointer>::const_cast_from(pointer_traits<const_pointer>::pointer_to(value));
       BOOST_INTRUSIVE_INVARIANT_ASSERT(!node_algorithms::inited(this->priv_value_traits().to_node_ptr(r)));
       return const_iterator(this->priv_value_traits().to_node_ptr(r), this->priv_value_traits_ptr());
+   }
+
+   //! <b>Effects</b>: Asserts the integrity of the container.
+   //!
+   //! <b>Complexity</b>: Linear time.
+   //!
+   //! <b>Note</b>: The method has no effect when asserts are turned off (e.g., with NDEBUG).
+   //!   Experimental function, interface might change in future versions.
+   void check() const
+   {
+      const_node_ptr header_ptr = get_root_node();
+      // header's next and prev are never null
+      BOOST_INTRUSIVE_INVARIANT_ASSERT(node_traits::get_next(header_ptr));
+      BOOST_INTRUSIVE_INVARIANT_ASSERT(node_traits::get_previous(header_ptr));
+      // header's next and prev either both point to header (empty list) or neither does
+      BOOST_INTRUSIVE_INVARIANT_ASSERT((node_traits::get_next(header_ptr) == header_ptr)
+         == (node_traits::get_previous(header_ptr) == header_ptr));
+      if (node_traits::get_next(header_ptr) == header_ptr)
+      {
+         if (constant_time_size)
+            BOOST_INTRUSIVE_INVARIANT_ASSERT(this->priv_size_traits().get_size() == 0);
+         return;
+      }
+      size_t node_count = 0;
+      const_node_ptr p = header_ptr;
+      while (true)
+      {
+         const_node_ptr next_p = node_traits::get_next(p);
+         BOOST_INTRUSIVE_INVARIANT_ASSERT(next_p);
+         BOOST_INTRUSIVE_INVARIANT_ASSERT(node_traits::get_previous(next_p) == p);
+         p = next_p;
+         if (p == header_ptr) break;
+         ++node_count;
+      }
+      if (constant_time_size)
+         BOOST_INTRUSIVE_INVARIANT_ASSERT(this->priv_size_traits().get_size() == node_count);
    }
 
    /// @cond

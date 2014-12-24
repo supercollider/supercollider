@@ -187,11 +187,13 @@ public:
   };
 
   /* construct/copy/destroy */
+
+  flyweight():h(core::insert()){}
   
 #define BOOST_FLYWEIGHT_PERFECT_FWD_CTR_BODY(args) \
   :h(core::insert(BOOST_FLYWEIGHT_FORWARD(args))){}
 
-  BOOST_FLYWEIGHT_PERFECT_FWD(
+  BOOST_FLYWEIGHT_PERFECT_FWD_WITH_ARGS(
     explicit flyweight,
     BOOST_FLYWEIGHT_PERFECT_FWD_CTR_BODY)
 

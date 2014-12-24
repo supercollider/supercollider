@@ -60,6 +60,14 @@ struct consume_via_copy
     T & out_;
 };
 
+struct consume_noop
+{
+    template <typename U>
+    void operator()(const U &)
+    {
+    }
+};
+
 
 }}}
 

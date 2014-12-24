@@ -145,7 +145,15 @@ add_executable(supernova server/main.cpp ${supernova_headers})
 target_link_libraries(supernova libsupernova)
 
 
-if(WIN32)
+if(APPLE)
+    if(CMAKE_GENERATOR MATCHES Xcode)
+        set_property(TARGET supernova PROPERTY RUNTIME_OUTPUT_DIRECTORY_DEBUG   "${CMAKE_BINARY_DIR}/editors/sc-ide/Debug/${ide_name}.app/Contents/Resources/")
+        set_property(TARGET supernova PROPERTY RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/editors/sc-ide/Release/${ide_name}.app/Contents/Resources/")
+    else()
+        set_property(TARGET supernova
+                     PROPERTY RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/editors/sc-ide/${ide_name}.app/Contents/Resources/")
+    endif()
+elseif(WIN32)
 	install(TARGETS supernova
         DESTINATION "SuperCollider"
         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)

@@ -474,7 +474,7 @@ Document {
 		if((doc = this.findByQUuid(quuid)).isNil, {
 			doc = super.new.initFromIDE(quuid, title, chars, isEdited, path, selStart, selSize);
 			allDocuments = allDocuments.add(doc);
-		}, {doc.initFromIDE(quuid, title, chars, isEdited, path)});
+		}, {doc.initFromIDE(quuid, title, chars, isEdited, path, selStart, selSize)});
 	}
 
 	*syncDocs {|docInfo| // [quuid, title, string, isEdited, path, selStart, selSize]
@@ -887,7 +887,7 @@ Document {
 		numLines = breaks.size + 1;
 		line = min(line, numLines);
 		if(line > 1, { start = breaks[line - 2] + 1});
-		end = breaks[line - 1] ?? { text.size -1 };
+		end = breaks[line - 1] ?? { text.size };
 		this.selectRange(start, end - start);
 	}
 

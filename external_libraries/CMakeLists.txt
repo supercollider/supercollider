@@ -89,9 +89,16 @@ if(NOT YAMLCPP_FOUND)
 
   add_library(yaml STATIC ${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp)
   target_include_directories(yaml PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include)
+  set_property( TARGET yaml PROPERTY FOLDER 3rdparty )
+
+  if(CMAKE_COMPILER_IS_GNUCXX)
+    target_compile_options(yaml PRIVATE -Wno-deprecated-declarations)
+  endif()
+
 endif()
 
 
+set_property( TARGET oscpack tlsf boost_thread boost_program_options boost_system boost_filesystem PROPERTY FOLDER 3rdparty )
 
 
 ##### HID_API #######
@@ -107,3 +114,22 @@ endif()
 set( EXAMPLE_TEST OFF )
 set( EXAMPLE_OSC OFF )
 add_subdirectory(hidapi)
+
+if(WIN32)
+  add_library(portmidi portmidi/pm_common/pminternal.h
+                       portmidi/pm_common/pmutil.c
+                       portmidi/pm_common/pmutil.h
+                       portmidi/pm_common/portmidi.c
+                       portmidi/pm_common/portmidi.h
+                       portmidi/pm_win/pmwin.c
+                       portmidi/pm_win/pmwinmm.c
+                       portmidi/pm_win/pmwinmm.h
+                       portmidi/porttime/porttime.c
+                       portmidi/porttime/porttime.h
+                       portmidi/porttime/ptwinmm.c)
+  target_include_directories(portmidi PUBLIC  portmidi/pm_common portmidi/porttime)
+  target_include_directories(portmidi PRIVATE portmidi/pm_win)
+
+  target_link_libraries(portmidi PRIVATE winmm.lib)
+  target_compile_definitions(portmidi INTERFACE HAVE_PORTMIDI)
+endif()

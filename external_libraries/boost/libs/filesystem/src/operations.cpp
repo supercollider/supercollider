@@ -1,6 +1,6 @@
 //  operations.cpp  --------------------------------------------------------------------//
 
-//  Copyright 2002-2009 Beman Dawes
+//  Copyright 2002-2009, 2014 Beman Dawes
 //  Copyright 2001 Dietmar Kuehl
 
 //  Distributed under the Boost Software License, Version 1.0.
@@ -69,8 +69,6 @@ using std::wstring;
 
 # ifdef BOOST_POSIX_API
 
-    const fs::path dot_path(".");
-    const fs::path dot_dot_path("..");
 #   include <sys/types.h>
 #   include <sys/stat.h>
 #   if !defined(__APPLE__) && !defined(__OpenBSD__) && !defined(__ANDROID__)
@@ -95,8 +93,6 @@ using std::wstring;
 
 # else // BOOST_WINDOW_API
 
-    const fs::path dot_path(L".");
-    const fs::path dot_dot_path(L"..");
 #   if (defined(__MINGW32__) || defined(__CYGWIN__)) && !defined(WINVER)
       // Versions of MinGW or Cygwin that support Filesystem V3 support at least WINVER 0x501.
       // See MinGW's windef.h
@@ -247,7 +243,6 @@ namespace
 
   boost::filesystem::directory_iterator end_dir_itr;
 
-  const std::size_t buf_size(128);
   const error_code ok;
 
   bool error(bool was_error, error_code* ec, const string& message)
@@ -482,6 +477,8 @@ namespace
 //                                                                                      //
 //--------------------------------------------------------------------------------------//
 
+  const std::size_t buf_size=128;
+
   const wchar_t dot = L'.';
 
   bool not_found_error(int errval)
@@ -586,9 +583,18 @@ namespace
     BOOL result = ::DeviceIoControl(h.handle, FSCTL_GET_REPARSE_POINT, NULL, 0, buf.get(),
       MAXIMUM_REPARSE_DATA_BUFFER_SIZE, &dwRetLen, NULL);
     if (!result) return false;
- 
-    return reinterpret_cast<const REPARSE_DATA_BUFFER*>(buf.get())
-      ->ReparseTag == IO_REPARSE_TAG_SYMLINK;
+
+    return reinterpret_cast<const REPARSE_DATA_BUFFER*>(buf.get())->ReparseTag
+        == IO_REPARSE_TAG_SYMLINK
+        // Issue 9016 asked that NTFS directory junctions be recognized as directories.
+        // That is equivalent to recognizing them as symlinks, and then the normal symlink
+        // mechanism will take care of recognizing them as directories.
+        //
+        // Directory junctions are very similar to symlinks, but have some performance
+        // and other advantages over symlinks. They can be created from the command line
+        // with "mklink /j junction-name target-path".
+      || reinterpret_cast<const REPARSE_DATA_BUFFER*>(buf.get())->ReparseTag
+        == IO_REPARSE_TAG_MOUNT_POINT;  // aka "directory junction" or "junction"
   }
 
   inline std::size_t get_full_path_name(
@@ -806,9 +812,9 @@ namespace detail
       result.clear();
       for (path::iterator itr = source.begin(); itr != source.end(); ++itr)
       {
-        if (*itr == dot_path)
+        if (*itr == dot_path())
           continue;
-        if (*itr == dot_dot_path)
+        if (*itr == dot_dot_path())
         {
           if (result != root)
             result.remove_filename();
@@ -869,7 +875,7 @@ namespace detail
     }
     else if(is_regular_file(s))
     {
-      copy_file(from, to, copy_option::fail_if_exists, *ec);
+      copy_file(from, to, fs::copy_option::fail_if_exists, *ec);
     }
     else
     {
@@ -891,12 +897,10 @@ namespace detail
   }
 
   BOOST_FILESYSTEM_DECL
-  void copy_file(const path& from, const path& to,
-                  BOOST_SCOPED_ENUM(copy_option)option,
-                  error_code* ec)
+  void copy_file(const path& from, const path& to, copy_option option, error_code* ec)
   {
     error(!BOOST_COPY_FILE(from.c_str(), to.c_str(),
-      option == copy_option::fail_if_exists),
+      option == fail_if_exists),
         from, to, ec, "boost::filesystem::copy_file");
   }
 
@@ -1876,15 +1880,25 @@ namespace path_traits
 {
   void dispatch(const directory_entry & de,
 #                ifdef BOOST_WINDOWS_API
-                 std::wstring& to,
+    std::wstring& to,
 #                else   
-                 std::string& to,
+    std::string& to,
 #                endif
-                 const codecvt_type &)
+    const codecvt_type &)
   {
     to = de.path().native();
   }
 
+  void dispatch(const directory_entry & de,
+#                ifdef BOOST_WINDOWS_API
+    std::wstring& to
+#                else   
+    std::string& to
+#                endif
+    )
+  {
+    to = de.path().native();
+  }
 }  // namespace path_traits
 } // namespace filesystem
 } // namespace boost

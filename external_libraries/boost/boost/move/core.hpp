@@ -9,7 +9,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 
-//! \file core.hpp
+//! \file
 //! This header implements macros to define movable classes and
 //! move-aware functions
 
@@ -20,7 +20,7 @@
 
 //boost_move_no_copy_constructor_or_assign typedef
 //used to detect noncopyable types for other Boost libraries.
-#ifdef BOOST_NO_CXX11_DELETED_FUNCTIONS
+#if defined(BOOST_NO_CXX11_DELETED_FUNCTIONS) || defined(BOOST_NO_CXX11_RVALUE_REFERENCES)
    #define BOOST_MOVE_IMPL_NO_COPY_CTOR_OR_ASSIGN(TYPE) \
       private:\
       TYPE(TYPE &);\
@@ -45,7 +45,11 @@
    #include <boost/move/detail/meta_utils.hpp>
 
    //Move emulation rv breaks standard aliasing rules so add workarounds for some compilers
-   #if defined(__GNUC__) && (__GNUC__ >= 4)
+   #if defined(__GNUC__) && (__GNUC__ >= 4) && \
+      (\
+         defined(BOOST_GCC) ||   \
+         (defined(BOOST_INTEL) && (BOOST_INTEL_CXX_VERSION >= 1300)) \
+      )
       #define BOOST_MOVE_ATTRIBUTE_MAY_ALIAS __attribute__((__may_alias__))
    #else
       #define BOOST_MOVE_ATTRIBUTE_MAY_ALIAS
@@ -63,11 +67,11 @@
       : public ::boost::move_detail::if_c
          < ::boost::move_detail::is_class_or_union<T>::value
          , T
-         , ::boost::move_detail::empty
+         , ::boost::move_detail::nat
          >::type
    {
       rv();
-      ~rv();
+      ~rv() throw();
       rv(rv const&);
       void operator=(rv const&);
    } BOOST_MOVE_ATTRIBUTE_MAY_ALIAS;
@@ -75,7 +79,7 @@
 
    //////////////////////////////////////////////////////////////////////////////
    //
-   //                            move_detail::is_rv
+   //                            is_rv
    //
    //////////////////////////////////////////////////////////////////////////////
 
@@ -83,17 +87,9 @@
 
    template <class T>
    struct is_rv
-      : ::boost::move_detail::integral_constant<bool, false>
-   {};
-
-   template <class T>
-   struct is_rv< rv<T> >
-      : ::boost::move_detail::integral_constant<bool, true>
-   {};
-
-   template <class T>
-   struct is_rv< const rv<T> >
-      : ::boost::move_detail::integral_constant<bool, true>
+        //Derive from integral constant because some Boost code assummes it has
+        //a "type" internal typedef
+      : integral_constant<bool, ::boost::move_detail::is_rv_impl<T>::value >
    {};
 
    }  //namespace move_detail {
@@ -105,17 +101,7 @@
    //////////////////////////////////////////////////////////////////////////////
    template<class T>
    struct has_move_emulation_enabled
-      : ::boost::move_detail::is_convertible< T, ::boost::rv<T>& >
-   {};
-
-   template<class T>
-   struct has_move_emulation_enabled<T&>
-      : ::boost::move_detail::integral_constant<bool, false>
-   {};
-
-   template<class T>
-   struct has_move_emulation_enabled< ::boost::rv<T> >
-      : ::boost::move_detail::integral_constant<bool, false>
+      : ::boost::move_detail::has_move_emulation_enabled_impl<T>
    {};
 
    }  //namespace boost {
@@ -250,6 +236,19 @@
       private:\
    //
 
+   namespace boost{
+   namespace move_detail{
+
+   template< class T>
+   struct forward_type
+   { typedef const T &type; };
+
+   template< class T>
+   struct forward_type< boost::rv<T> >
+   { typedef T type; };
+
+   }}
+
 #else    //BOOST_NO_CXX11_RVALUE_REFERENCES
 
    //Compiler workaround detection
@@ -376,8 +375,8 @@
    #if !defined(BOOST_MOVE_MSVC_AUTO_MOVE_RETURN_BUG) || defined(BOOST_MOVE_DOXYGEN_INVOKED)
 
       //!This macro is used to achieve portable move return semantics.
-      //!The Standard allows implicit move returns when the object to be returned 
-      //!is designated by an lvalue and:
+      //!The C++11 Standard allows implicit move returns when the object to be returned
+      //!is designated by a lvalue and:
       //!   - The criteria for elision of a copy operation are met OR
       //!   - The criteria would be met save for the fact that the source object is a function parameter
       //!
@@ -391,12 +390,12 @@
       //!For non-conforming compilers with rvalue references like Visual 2010 & 2012,
       //!an explicit move is performed if RET_TYPE is not a reference.
       //!
-      //! <b>Caution</b>: When using this macro in a non-conforming or C++03
+      //! <b>Caution</b>: When using this macro in non-conforming or C++03
       //!compilers, a move will be performed even if the C++11 standard does not allow it
       //!(e.g. returning a static variable). The user is responsible for using this macro
-      //!only used to return local objects that met C++11 criteria.
+      //!only to return local objects that met C++11 criteria.
       #define BOOST_MOVE_RET(RET_TYPE, REF)\
-         (REF)
+         REF
       //
 
    #else //!defined(BOOST_MOVE_MSVC_AUTO_MOVE_RETURN_BUG) || defined(BOOST_MOVE_DOXYGEN_INVOKED)
@@ -432,6 +431,13 @@
       //
 
    #endif   //!defined(BOOST_MOVE_MSVC_AUTO_MOVE_RETURN_BUG) || defined(BOOST_MOVE_DOXYGEN_INVOKED)
+
+   namespace boost {
+   namespace move_detail {
+
+   template< class T> struct forward_type { typedef T type; };
+
+   }}
 
 #endif   //BOOST_NO_CXX11_RVALUE_REFERENCES
 

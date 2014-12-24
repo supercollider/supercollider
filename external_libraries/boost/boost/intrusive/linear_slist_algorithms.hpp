@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 //
 // (C) Copyright Olaf Krzikalla 2004-2006.
-// (C) Copyright Ion Gaztanaga  2006-2013
+// (C) Copyright Ion Gaztanaga  2006-2014
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -14,10 +14,14 @@
 #ifndef BOOST_INTRUSIVE_LINEAR_SLIST_ALGORITHMS_HPP
 #define BOOST_INTRUSIVE_LINEAR_SLIST_ALGORITHMS_HPP
 
+#if defined(_MSC_VER)
+#  pragma once
+#endif
+
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/intrusive_fwd.hpp>
 #include <boost/intrusive/detail/common_slist_algorithms.hpp>
-#include <boost/intrusive/detail/utilities.hpp>
+#include <boost/intrusive/detail/algo_type.hpp>
 #include <cstddef>
 #include <utility>
 

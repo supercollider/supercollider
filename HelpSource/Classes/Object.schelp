@@ -724,6 +724,9 @@ method:: reset
 Does nothing; simply returns the object itself.
 
 
+
+
+
 subsection::Routine Support
 
 Objects support the basic interface of Stream, just returning itself in respone to the following messages:
@@ -794,6 +797,23 @@ code::
 a = (0..3).iter.loop;
 a.nextN(9)
 ::
+
+method:: nextN
+
+Returns an array with the results of calling link::#-next:: a given number of times
+
+argument:: n
+
+Number of message calls
+
+argument:: inval
+
+argument passed to the next messagy
+
+code::
+Routine { inf.do { |i| i.rand.yield } }.nextN(8)
+::
+
 
 method::streamArg
 	Dependent on whether an object that is passed to a stream the object will behave differently: it may be embedded in the stream or used as stream directly.

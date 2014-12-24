@@ -12,8 +12,9 @@ Requirements
 
 - vim
 - supercollider (sclang)
-- ruby
+- ruby (sclangpipe_app, scvim)
 - cmake
+- pidof (for killing spawned processes, when closing)
 
 ### Optional:
 
@@ -85,7 +86,9 @@ Defaults (most work in both command and insert mode):
 (if you want to recompile the supercollider library just type `:SClangStart` and you'll
 kill the current interpreter, start up a new one and have a recompiled library)
 `:SClangKill` kills the xterm/interpreter (exiting vim also kills the interpreter)
+`:SCresize [-]N` resizes the sclang output if scvim is used from within terminal multiplexers like tmux or screen by N lines
 
+`F1` calls the SuperCollider Help on the keyword under the current cursor
 `F5` sends a whole block (looks for the outermost parens and sends that data)
 `F6` sends a single line (the line the cursor is currently on)
 `F7` calls `TempoClock.default.clear;`

@@ -86,16 +86,12 @@ elseif(UNIX)
 endif()
 
 if(WIN32)
-    set_property(DIRECTORY
-                 APPEND
-                 PROPERTY COMPILE_DEFINITIONS SC_WIN32 NOMINMAX _WIN32_WINNT=0x0500)
-
-    add_definitions(-DWIN32_LEAN_AND_MEAN)
+    add_definitions(-DWIN32_LEAN_AND_MEAN -DNOMINMAX -D_WIN32_WINNT=0x0500)
 
     # correctly link the static Boost Thread library:
     add_definitions(-DBOOST_THREAD_USE_LIB)
-	#avoid unnecesary autolink
-	add_definitions(-DBOOST_DATE_TIME_NO_LIB -DBOOST_ALL_NO_LIB)
+    #avoid unnecesary autolink
+    add_definitions(-DBOOST_DATE_TIME_NO_LIB -DBOOST_ALL_NO_LIB)
 
 endif()
 
@@ -113,13 +109,7 @@ option(SSE2 "Compile with support for SSE2 instructions." ON)
 
 set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio})")
 
-if(NOT WIN32)
-	option(LIBSCSYNTH "Compile libscsynth as shared library" OFF)
-else()
-	# libscsynth has unresolved symbols, which are resolved when linked with server executable.
-	# On Windows, this is not supported for static libraries, so we build dynamic by default.
-	option(LIBSCSYNTH "Compile libscsynth as shared library" ON)
-endif()
+option(LIBSCSYNTH "Compile libscsynth as shared library" OFF)
 
 option(INSTALL_HELP "Install help docs and examples along with the software" ON)
 option(SC_DOC_RENDER "Pre-render SCDoc documentation. (For putting online, etc)" OFF)

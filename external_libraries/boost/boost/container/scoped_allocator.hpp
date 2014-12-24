@@ -30,8 +30,8 @@
 #include <boost/container/detail/utilities.hpp>
 #include <utility>
 #include <boost/container/detail/pair.hpp>
-#include <boost/move/utility.hpp>
-#include <boost/detail/no_exceptions_support.hpp>
+#include <boost/move/utility_core.hpp>
+#include <boost/core/no_exceptions_support.hpp>
 
 namespace boost { namespace container {
 
@@ -292,7 +292,7 @@ namespace container_detail {
 
    #else // #if !defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)
 
-   //Without variadic templates, we need to use de preprocessor to generate
+   //Without variadic templates, we need to use the preprocessor to generate
    //some specializations.
 
    #define BOOST_CONTAINER_MAX_IS_CONSTRUCTIBLE_PARAMETERS \
