@@ -461,10 +461,9 @@ void ScServer::timerEvent(QTimerEvent * event)
         stream << osc::BeginMessage("status");
         stream << osc::MessageTerminator();
 
-        qint64 sentSize = mUdpSocket->writeDatagram(stream.Data(), stream.Size(),
-                                                    mServerAddress, mPort);
+        qint64 sentSize = mUdpSocket->write(stream.Data(), stream.Size());
         if (sentSize == -1)
-            qCritical("Failed to send server status request.");
+            qCritical() << "Failed to send server status request:" << mUdpSocket->errorString();
     }
 }
 
