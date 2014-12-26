@@ -26,8 +26,8 @@
 #include "PyrSymbol.h"
 #ifdef SC_DARWIN
 # include <CoreAudio/HostTime.h>
-# include <sys/time.h>
 #endif
+#include <sys/time.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
