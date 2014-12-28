@@ -259,7 +259,7 @@ int hid_element_get_signed_value( int inputvalue, int bytesize ){
 }
 
 // int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_device_descriptor * descriptor ){
-int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc * device_desc ){
+int hid_parse_report_descriptor( unsigned char* descr_buf, int size, struct hid_dev_desc * device_desc ){
   struct hid_device_collection * device_collection = hid_new_collection();
   device_desc->device_collection = device_collection;
   
@@ -278,8 +278,8 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
   
   int current_report_count = 0;
 
-  char current_input;
-  char current_output;
+//   unsigned char current_input;
+//   unsigned char current_output;
   int collection_nesting = 0;
   
   int next_byte_tag = -1;
@@ -313,9 +313,10 @@ int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc 
 #endif
 	  if ( next_byte_tag != -1 ){
 // 	      unsigned char ubyte = (unsigned char) descr_buf[i];
-	      char sbyte = descr_buf[i]; // descr_buf is signed already
+// 	      char sbyte = descr_buf[i]; // descr_buf is signed already
 	      int shift = byte_count*8;
-	      next_val |= (int)(((unsigned char)(descr_buf[i])) << shift);
+	      int bufval = (int) descr_buf[i];
+	      next_val |= (bufval << shift);
 #ifdef DEBUG_PARSER
 	      printf("\t nextval shift: %i", next_val);
 #endif

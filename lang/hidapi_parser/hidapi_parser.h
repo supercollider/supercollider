@@ -151,7 +151,7 @@ void hid_set_descriptor_callback(  struct hid_dev_desc * devd, hid_descriptor_ca
 void hid_set_readerror_callback(  struct hid_dev_desc * devd, hid_device_readerror_callback cb, void *user_data );
 void hid_set_element_callback(  struct hid_dev_desc * devd, hid_element_callback cb, void *user_data );
 
-int hid_parse_report_descriptor( char* descr_buf, int size, struct hid_dev_desc * device_desc );
+int hid_parse_report_descriptor( unsigned char* descr_buf, int size, struct hid_dev_desc * device_desc );
 
 struct hid_device_element * hid_get_next_input_element( struct hid_device_element * curel );
 struct hid_device_element * hid_get_next_input_element_with_reportid( struct hid_device_element * curel, int reportid );
