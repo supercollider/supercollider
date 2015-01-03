@@ -439,26 +439,31 @@ FunctionDef {
 	archiveAsCompileString { ^true }
 
 	argumentString { arg withDefaultValues=true;
-		var res, last;
-		if(argNames.isNil) { ^nil };
-		res = "";
-		last = argNames.size-1;
-		argNames.do { |name, i|
+		var res = "", pairs = this.keyValuePairsFromArgs;
+		var last;
+		if(pairs.isEmpty) { ^nil };
+		last = pairs.lastIndex;
+		pairs.pairsDo { |name, defaultValue, i|
 			var value;
 			res = res ++ name;
-			if(withDefaultValues and: { value = prototypeFrame[i]; value.notNil }) {
-				res = res ++ " = " ++ value.asCompileString
+			if(withDefaultValues and: { defaultValue.notNil }) {
+				res = res ++ " = " ++ defaultValue.asCompileString
 			};
-			if(i != last) { res = res ++ ", " };
+			if(i + 1 != last) { res = res ++ ", " };
 		}
 		^res
 	}
 
-	makeEnvirFromArgs {
+	keyValuePairsFromArgs {
 		var argNames, argVals;
 		argNames = this.argNames;
+		if(argNames.isNil) { ^[] };
 		argVals = this.prototypeFrame.keep(argNames.size);
-		^().putPairs([argNames, argVals].flop.flatten)
+		^[argNames, argVals].flop.flatten
+	}
+
+	makeEnvirFromArgs {
+		^().putPairs(this.keyValuePairsFromArgs)
 	}
 
 }
@@ -498,6 +503,11 @@ Method : FunctionDef {
 		});
 		functionRefs.notNil.if({references = references.add(this)});
 		^references
+	}
+	keyValuePairsFromArgs {
+		var argNames = this.argNames.drop(1); // first argName is "this"
+		var argVals = this.prototypeFrame.drop(1).keep(argNames.size);
+		^[argNames, argVals].flop.flatten
 	}
 }
 
