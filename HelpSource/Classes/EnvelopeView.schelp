@@ -92,7 +92,10 @@ METHOD:: setString
 
 	note:: In order for the label to be visible, you might need to ensure that the link::#-strokeColor:: contrasts the link::#-fillColor:: (depending on how the view draws the nodes and the labels).::
 
-	argument::
+	argument::index
+	the index of the node.
+
+	argument::string
 		A String.
 
 METHOD:: setFillColor
@@ -135,9 +138,9 @@ METHOD:: setThumbSize
 METHOD:: connect
 	Removes any connections created when the link::#-value:: was set, and then creates new ones from the node at index given in the first argument to each of the nodes at indexes given in the second argument.
 
-	argument:: index
+	argument:: source
 		An Integer - the index of the node to become one end of all the new connections.
-	argument:: connections
+	argument:: targets
 		An Array of Integers - indexes of nodes, each to become the second end to a new connection created.
 
 METHOD:: selection
@@ -369,6 +372,7 @@ w.front;
 )
 
 // show grid
+b.grid = Point(0.2, 0.2);
 b.gridOn_(true);
 
 // show Env
