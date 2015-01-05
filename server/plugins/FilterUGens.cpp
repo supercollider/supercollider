@@ -305,7 +305,7 @@ struct Amplitude : public Unit
 struct DetectSilence : public Unit
 {
 	float mThresh;
-	int32 mCounter, mEndCounter;
+	int32 mCounter, mEndCounter, mDoneAction;
 };
 
 struct Hilbert : public Unit
@@ -4492,13 +4492,14 @@ void Amplitude_next_atok_kk(Amplitude* unit, int inNumSamples)
 void DetectSilence_Ctor(DetectSilence* unit)
 {
 	//printf("DetectSilence_Reset\n");
-	if(INRATE(1) == calc_ScalarRate && INRATE(2) == calc_ScalarRate) {
+	if(INRATE(1) == calc_ScalarRate && INRATE(2) == calc_ScalarRate) {
 		unit->mThresh = ZIN0(1);
 		unit->mEndCounter = (int32)(SAMPLERATE * ZIN0(2));
 		SETCALC(DetectSilence_next);
 	} else {
 		SETCALC(DetectSilence_next_k);
 	}
+	unit->mDoneAction = ZIN0(3);
 	unit->mCounter = -1;
 }
 
@@ -4533,8 +4534,7 @@ void DetectSilence_next(DetectSilence* unit, int inNumSamples)
 			*out++ = 0.f;
 		} else if (counter >= 0) {
 			if (++counter >= unit->mEndCounter) {
-				int doneAction = (int)ZIN0(3);
-				DoneAction(doneAction, unit);
+				DoneAction(unit->mDoneAction, unit);
 				*out++ = 1.f;
 //				SETCALC(DetectSilence_done);
 			} else {
@@ -4554,7 +4554,7 @@ void DetectSilence_next_k(DetectSilence* unit, int inNumSamples)
 	int counter = unit->mCounter;
 	float val;
 	float *in = IN(0);
-    float *out = OUT(0);
+	float *out = OUT(0);
 
 	for (int i=0; i<inNumSamples; ++i) {
 		val = std::abs(*in++);
@@ -4563,8 +4563,7 @@ void DetectSilence_next_k(DetectSilence* unit, int inNumSamples)
 			*out++ = 0.f;
 		} else if (counter >= 0) {
 			if (++counter >= endCounter) {
-				int doneAction = (int)ZIN0(3);
-				DoneAction(doneAction, unit);
+				DoneAction(unit->mDoneAction, unit);
 				*out++ = 1.f;
 			} else {
                 *out++ = 0.f;
