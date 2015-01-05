@@ -495,7 +495,7 @@ extern "C"
 	void Amplitude_Ctor(Amplitude* unit);
 
 	void DetectSilence_next(DetectSilence *unit, int inNumSamples);
-    void DetectSilence_next_k(DetectSilence *unit, int inNumSamples);
+	void DetectSilence_next_k(DetectSilence *unit, int inNumSamples);
 	//void DetectSilence_done(DetectSilence *unit, int inNumSamples);
 	void DetectSilence_Ctor(DetectSilence* unit);
 
