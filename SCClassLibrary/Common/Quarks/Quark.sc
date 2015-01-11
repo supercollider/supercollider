@@ -1,6 +1,7 @@
 
 Quark {
 	var <name, <url, <refspec, data;
+	var <changed = false;
 
 	*new { |name, refspec|
 		var url;
@@ -41,10 +42,13 @@ Quark {
 	}
 
 	install {
-		Quarks.installQuark(this)
+		Quarks.installQuark(this);
+		changed = true;
+		data = nil;
 	}
 	uninstall {
-		Quarks.uninstall(this.name)
+		Quarks.uninstall(this.name);
+		changed = true;
 	}
 
 	checkout {
@@ -63,9 +67,13 @@ Quark {
 		});
 		if(this.isDownloaded.not, {
 			Git.clone(url, localPath);
+			changed = true;
+			data = nil;
 		});
 		if(refspec.notNil, {
 			Git.checkout(refspec, localPath);
+			changed = true;
+			data = nil;
 		});
 	}
 

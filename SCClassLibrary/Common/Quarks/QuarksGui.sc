@@ -8,7 +8,8 @@ QuarksGui {
 		quarkRows,
 		infoView,
 		palette,
-		lblMsg;
+		lblMsg,
+		btnRecompile;
 
 	*new { ^super.new.init }
 
@@ -55,6 +56,11 @@ QuarksGui {
 			.toolTip_("Open the local Quarks directory")
 			.action_({ model.openFolder });
 
+		btnRecompile = Button().states_([["Recompile class library"]])
+			.toolTip_("Compile class library after making any changes")
+			.action_({ thisProcess.recompile })
+			.enabled_(false);
+
 		lblMsg = StaticText().font_(GUI.font.new(size:12, usePointSize:true));
 
 		treeView = TreeView()
@@ -68,7 +74,7 @@ QuarksGui {
 				curItem = v.currentItem;
 				selectedQuark = nil;
 				if(curItem.notNil) {
-					curView = quarkRows.detect({ |view| view.treeItem == curItem });
+					curView = quarkRows.values().detect({ |view| view.treeItem == curItem });
 					if(curView.notNil) {
 						selectedQuark = curView.quark;
 						// make a formatting method here
@@ -209,26 +215,35 @@ QuarksGui {
 		window.layout =
 			VLayout(
 				lblCaption,
-				HLayout(btnUpdateDirectory, btnOpenFolder, btnQuarksHelp, nil),
+				HLayout(btnUpdateDirectory, btnOpenFolder, btnQuarksHelp, btnRecompile, nil),
 				lblMsg,
 				HLayout([lblExplanation, s:1]).margins_(0),
 				[treeView, s:5],
 				[infoView, s:2]
 			);
 
+		quarkRows = Dictionary.new;
 		this.update;
 		window.front;
 	}
 	update {
-		treeView.invokeMethod(\clear);
+		var recompile = false;
 		treeView.canSort = false;
-		quarkRows = model.all.collect({ |quark|
-			QuarkRowView(treeView, quark)
+		model.all.do({ |quark|
+			var qrv;
+			qrv = quarkRows.at(quark.name);
+			if(qrv.isNil, {
+				quarkRows[quark.name] = QuarkRowView(treeView, quark, this);
+			}, {
+				qrv.update;
+				if(qrv.quark.changed, { recompile = true });
+			});
 		});
 		treeView.canSort = true;
 		treeView.sort(1);
 		treeView.invokeMethod(\resizeColumnToContents, 0);
 		treeView.invokeMethod(\resizeColumnToContents, 1);
+		btnRecompile.enabled = recompile;
 	}
 	setMsg { |msg, color|
 		lblMsg.background = palette.button.blend(Color.perform(color), 0.2);
@@ -239,21 +254,22 @@ QuarksGui {
 
 QuarkRowView {
 
-	var <quark, <treeItem;
+	var <quark, <treeItem, quarksGui;
 	var btn;
 
-	*new { |parent, quark|
-		^super.new.init(parent, quark)
+	*new { |parent, quark, quarksGui|
+		^super.new.init(parent, quark, quarksGui)
 	}
 
-	init { |parent, aQuark|
+	init { |parent, aQuark, qg|
 		quark = aQuark;
+		quarksGui = qg;
 
 		btn = Button().fixedSize_(Size(20, 20));
 		treeItem = parent.addItem([
 			nil,
-			quark.name,
-			quark.summary !? { quark.summary.replace("\n"," ").replace("\t","") }
+			"",
+			""
 		]).setView(0, btn);
 
 		btn.action = { |btn|
@@ -262,12 +278,8 @@ QuarkRowView {
 			}, {
 				quark.uninstall
 			});
-			// actually should update all
-			// because dependencies will have changed
-			// or use a model/view dependency and all can update when quark changes state
-			this.update;
+			quarksGui.update;
 		};
-
 		this.update;
 	}
 
@@ -286,6 +298,9 @@ QuarkRowView {
 			["✓", nil, green],
 		];
 
-		btn.value = quark.isInstalled.binaryValue
+		btn.value = quark.isInstalled.binaryValue;
+
+		treeItem.setString(1, quark.name ? "");
+		treeItem.setString(2, (quark.summary !? { quark.summary.replace("\n"," ").replace("\t","") }) ? "");
 	}
 }
