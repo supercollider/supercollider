@@ -1,27 +1,28 @@
+
 + Main {
-	// a package is either a quark or a folder in SCClassLibrary or extensions folders
-
-	// a class is in a 'package' determined by where its Class file is
-	// all folders in class library :
-		// Common
-		// JITlib
-		// crucial
-		// your own
-	// all folders in system extension
-	// all folders in user extension
-	// all quarks
-	// any loose files are placed in a packaged calle SCClassLibrary or Extensions
-		// possiblity for error: if you have loose files in user extensions and system extensions
-		// they will both be placed in the same package: Extensions
-
-	// [ name -> folderPath, name -> folderPath ... ]
 	*packages {
+		// a package is either a quark or a folder in SCClassLibrary or extensions folders
 
-		var platform,scClassLibrary,looseFiles;
-		var packages,f;
+		// a class is in a 'package' determined by where its Class file is
+		// all folders in class library:
+			// Common
+			// JITlib
+			// crucial
+			// your own
+		// all folders in system extension
+		// all folders in user extension
+		// all quarks
+		// any loose files are placed in a packaged calle SCClassLibrary or Extensions
+			// possiblity for error: if you have loose files in user extensions and system extensions
+			// they will both be placed in the same package: Extensions
+
+		// [ name -> folderPath, name -> folderPath ... ]
+
+		var platform;
+		var packages, f;
 
 		// cache
-		packages = Library.at(Quarks,\packages);
+		packages = Library.at(Quarks, \packages);
 		if(packages.notNil,{ ^packages });
 
 		platform = thisProcess.platform;
@@ -33,9 +34,9 @@
 			folders = paths.reject({ |p| p.last != slash or: {p.basename == "quarks"} });
 			files = paths.select({ |p| p.last != slash });
 			packages = folders.collect({ |p| p.basename.asSymbol -> p });
-			if(files.notEmpty,{
-				// if there are any loose files then create a package called dir
-				packages = packages.add( dir.basename.asSymbol -> dir )
+			if(files.notEmpty, {
+				// collect any loose files in a package called dir
+				packages = packages.add(dir.basename.asSymbol -> dir)
 			});
 			packages
 		};
@@ -53,12 +54,12 @@
 	}
 }
 
+
 + Class {
 	package {
-		var path;
-		path = this.filenameSymbol.asString;
+		var path = this.filenameSymbol.asString;
 		Main.packages.do({ |namepath|
-			if(path.copyRange(0,namepath.value.size-1) == namepath.value,{
+			if(path.copyRange(0, namepath.value.size - 1) == namepath.value, {
 				^namepath.key
 			})
 		});
@@ -66,11 +67,7 @@
 	}
 }
 
-/*
-	method
-		extensions:
-			may not be the package that its class is in
-*/
+
 + Method {
 	package {
 		var path;
@@ -86,7 +83,6 @@
 
 
 + Quark {
-
 	definesClasses {
 		var localPath = this.localPath;
 		^Class.allClasses.select({ |class|
@@ -107,26 +103,22 @@
 				}
 			})
 	}
-	// of the classes you defined, what packages are the superclasses in ?
-	// of the extension methods you defined, what packages are the super classes in ?
-	/*	checkDependencies {
-
-	}*/
 }
 
+
 + Quarks {
-	// the equivalent to Quark-definesClasses
-	// but works for non-quarks like Quarks.classesInPackage("JITlib")
 	*classesInPackage { |packageName|
-		var myPath,end,package;
+		// the equivalent to Quark-definesClasses
+		// but works for non-quarks like Quarks.classesInPackage("JITlib")
+		var myPath, end, package;
 		package = Main.packages.detect({ |pk| pk.key == packageName });
 		if(package.isNil,{ Error("Package not found:"+packageName).throw });
 
 		myPath = package.value;
-		end = myPath.size-1;
+		end = myPath.size - 1;
 		^Class.allClasses.select({ |class|
 			class.isMetaClass.not and: {
-				class.filenameSymbol.asString.copyRange(0,end) == myPath
+				class.filenameSymbol.asString.copyRange(0, end) == myPath
 			}
 		})
 	}
