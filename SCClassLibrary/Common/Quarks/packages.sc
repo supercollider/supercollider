@@ -27,11 +27,11 @@
 		platform = thisProcess.platform;
 
 		f = { arg dir;
-			var folders,packages,paths,files;
+			var folders, packages, paths, files, slash = platform.pathSeparator;
 			dir = dir.withTrailingSlash;
-			paths = (dir++"*").pathMatch;
-			folders = paths.reject({ |p| p.last != $/ or: {p.basename == "quarks"} });
-			files = paths.select({ |p| p.last != $/ });
+			paths = (dir ++ "*").pathMatch;
+			folders = paths.reject({ |p| p.last != slash or: {p.basename == "quarks"} });
+			files = paths.select({ |p| p.last != slash });
 			packages = folders.collect({ |p| p.basename.asSymbol -> p });
 			if(files.notEmpty,{
 				// if there are any loose files then create a package called dir
