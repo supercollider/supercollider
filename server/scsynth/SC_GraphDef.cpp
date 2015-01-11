@@ -249,12 +249,12 @@ void GraphDef_ReadVariant(World *inWorld, char*& buffer, GraphDef* inGraphDef, G
 
 typedef struct IndexMap {
 	uint32 index;
-	uint32 mIndex;
+	uint32 paramSpecIndex;
 } IndexMap;
 
 static inline bool sortIndexMaps(IndexMap map1, IndexMap map2)
 {
-	return map1.mIndex < map2.mIndex;
+	return map1.paramSpecIndex < map2.paramSpecIndex;
 }
 
 inline static void calcParamSpecs(GraphDef* graphDef, char*& buffer)
@@ -272,7 +272,7 @@ inline static void calcParamSpecs(GraphDef* graphDef, char*& buffer)
 			graphDef->mParamSpecTable->Add(paramSpec);
 			IndexMap *tempMap = tempMaps + i;
 			tempMap->index = i;
-			tempMap->mIndex = paramSpec->mIndex;
+			tempMap->paramSpecIndex = paramSpec->mIndex;
 		}
 		// calculate numChannels for each spec
 		// printf("\n\n**************\n");
@@ -281,13 +281,13 @@ inline static void calcParamSpecs(GraphDef* graphDef, char*& buffer)
 			IndexMap *tempMap = tempMaps + i;
 			IndexMap *nextTempMap = tempMap + 1;
 			ParamSpec *paramSpec = graphDef->mParamSpecs + tempMap->index;
-			paramSpec->mNumChannels = nextTempMap->mIndex - tempMap->mIndex;
+			paramSpec->mNumChannels = nextTempMap->paramSpecIndex - tempMap->paramSpecIndex;
 			// printf("%s: numChannels = %i\n", paramSpec->mName, paramSpec->mNumChannels);
 		}
 
 		IndexMap *tempMap = tempMaps + nSpecs - 1;
 		ParamSpec *paramSpec = graphDef->mParamSpecs + tempMap->index;
-		paramSpec->mNumChannels = graphDef->mNumControls - tempMap->mIndex;
+		paramSpec->mNumChannels = graphDef->mNumControls - tempMap->paramSpecIndex;
 
 		// printf("%s: numChannels = %i\n", paramSpec->mName, paramSpec->mNumChannels, paramSpec->mIndex);
 
