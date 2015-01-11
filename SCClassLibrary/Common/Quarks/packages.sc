@@ -40,24 +40,15 @@
 			packages
 		};
 
-		packages =
-			(f.value(platform.classLibraryDir)
-
-			++
-
-			f.value(platform.systemExtensionDir)
-
-			++
-
-			Quarks.installed.collect({ |q|
-				q.name.asSymbol -> (Platform.userExtensionDir +/+ "quarks" +/+ q.path.withTrailingSlash)
-			}))
-			.sort({ |a,b| a.value.size > b.value.size }) // sort longer paths first
-
-			++
-
-			f.value(platform.userExtensionDir);
-		Library.put(Quarks,\packages,packages);
+		packages = (
+			f.value(platform.classLibraryDir)
+			++ f.value(platform.systemExtensionDir)
+			++ Quarks.installed.collect({ |q|
+					q.name.asSymbol -> q.localPath.withTrailingSlash
+				})
+		).sort({ |a, b| a.value.size > b.value.size }) // sort longer paths first
+		++ f.value(platform.userExtensionDir);
+		Library.put(Quarks, \packages, packages);
 		^packages
 	}
 }
@@ -97,24 +88,22 @@
 + Quark {
 
 	definesClasses {
-		var myPath,end;
-		myPath = Platform.userExtensionDir +/+ "quarks" +/+ this.path;
-		end = myPath.size-1;
-		^Class.allClasses.reject(_.isMetaClass).select({ |class|
-			class.filenameSymbol.asString.copyRange(0,end) == myPath
+		var localPath = this.localPath;
+		^Class.allClasses.select({ |class|
+			class.isMetaClass.not and: {
+				class.filenameSymbol.asString.beginsWith(localPath)
+			}
 		})
 	}
 	definesExtensionMethods {
 		// all methods whose path is in this quark folder
 		// where the class is not in this quark
-		var myPath,end;
-		myPath = Platform.userExtensionDir +/+ "quarks" +/+  this.path;
-		end = myPath.size-1;
+		var localPath = this.localPath;
 		^Class.allClasses.collect({ |c| c.methods }).reject(_.isNil).flat
 			.select({ |method|
-				method.filenameSymbol.asString.copyRange(0,end) == myPath
+				method.filenameSymbol.asString.beginsWith(localPath)
 				and: {
-					method.ownerClass.filenameSymbol.asString.copyRange(0,end) != myPath
+					method.ownerClass.filenameSymbol.asString.beginsWith(localPath)
 				}
 			})
 	}
