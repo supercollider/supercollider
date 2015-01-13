@@ -382,6 +382,8 @@ Process {
 	shallowCopy { ^this }
 
 	*elapsedTime { _ElapsedTime }
+    
+    *monotonicClockTime { _monotonicClockTime }
 
 	storeOn { arg stream;
 		stream << "thisProcess";
