@@ -26,8 +26,8 @@
 #include "PyrSymbol.h"
 #ifdef SC_DARWIN
 # include <CoreAudio/HostTime.h>
-# include <sys/time.h>
 #endif
+#include <sys/time.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
@@ -212,20 +212,19 @@ thread gResyncThread;
 condition_variable_any gSchedCond;
 timed_mutex gLangMutex;
 
-#ifdef SC_DARWIN
 int64 gHostOSCoffset = 0;
 int64 gHostStartNanos = 0;
-#endif
 
 int64 gElapsedOSCoffset = 0;
 
 const int32 kSECONDS_FROM_1900_to_1970 = (int32)2208988800UL; /* 17 leap years */
 const double fSECONDS_FROM_1900_to_1970 = 2208988800.; /* 17 leap years */
 
-#ifdef SC_DARWIN
 static void syncOSCOffsetWithTimeOfDay();
 void resyncThread();
-#endif // SC_DARWIN
+
+// Use the highest resolution clock available for monotonic clock time
+typedef typename std::conditional<chrono::high_resolution_clock::is_steady, chrono::high_resolution_clock, chrono::steady_clock>::type monotonic_clock;
 
 static chrono::high_resolution_clock::time_point hrTimeOfInitialization;
 
@@ -241,19 +240,15 @@ inline double DurToFloat(DurationType dur)
 
 SC_DLLEXPORT_C void schedInit()
 {
-	hrTimeOfInitialization     = chrono::high_resolution_clock::now();
+	using namespace chrono;
+    hrTimeOfInitialization     = high_resolution_clock::now();
 
-#ifdef SC_DARWIN
 	syncOSCOffsetWithTimeOfDay();
 	thread thread(resyncThread);
 	gResyncThread = std::move(thread);
 
-	gHostStartNanos = AudioConvertHostTimeToNanos(AudioGetCurrentHostTime());
+	gHostStartNanos = duration_cast<nanoseconds>(hrTimeOfInitialization.time_since_epoch()).count();
 	gElapsedOSCoffset = (int64)(gHostStartNanos * kNanosToOSC) + gHostOSCoffset;
-#else
-	gElapsedOSCoffset = (int64)kSECONDS_FROM_1900_to_1970 << 32;
-#endif
-
 }
 
 SC_DLLEXPORT_C void schedCleanup()
@@ -262,22 +257,13 @@ SC_DLLEXPORT_C void schedCleanup()
 
 double elapsedTime()
 {
-#ifdef SC_DARWIN
-	return 1e-9 * (double)(AudioConvertHostTimeToNanos(AudioGetCurrentHostTime()) - gHostStartNanos);
-#else
-	return DurToFloat(chrono::system_clock::now().time_since_epoch());
-#endif
+return DurToFloat(chrono::high_resolution_clock::now() - hrTimeOfInitialization);
 }
 
-double elapsedRealTime()
+double monotonicClockTime()
 {
-#ifdef SC_DARWIN
-	return 1e-9 * (double)(AudioConvertHostTimeToNanos(AudioGetCurrentHostTime()) - gHostStartNanos);
-#else
-	return DurToFloat(chrono::high_resolution_clock::now() - hrTimeOfInitialization);
-#endif
+	return DurToFloat(monotonic_clock::now().time_since_epoch());
 }
-
 
 int64 ElapsedTimeToOSC(double elapsed)
 {
@@ -312,7 +298,6 @@ int64 OSCTime()
 	return ElapsedTimeToOSC(elapsedTime());
 }
 
-#ifdef SC_DARWIN
 void syncOSCOffsetWithTimeOfDay()
 {
 	// generate a value gHostOSCoffset such that
@@ -321,25 +306,26 @@ void syncOSCOffsetWithTimeOfDay()
 	// Then if this machine is synced via NTP, we are synced with the world.
 	// more accurate way to do this??
 
+    using namespace chrono;
 	struct timeval tv;
 
-	int64 systemTimeBefore, systemTimeAfter, diff;
-	int64 minDiff = 0x7fffFFFFffffFFFFLL;
+    nanoseconds systemTimeBefore, systemTimeAfter;
+	int64 diff, minDiff = 0x7fffFFFFffffFFFFLL;
 
 	// take best of several tries
 	const int numberOfTries = 8;
 	int64 newOffset = gHostOSCoffset;
 	for (int i=0; i<numberOfTries; ++i) {
-		systemTimeBefore = AudioGetCurrentHostTime();
+		systemTimeBefore = high_resolution_clock::now().time_since_epoch();
 		gettimeofday(&tv, 0);
-		systemTimeAfter = AudioGetCurrentHostTime();
+		systemTimeAfter = high_resolution_clock::now().time_since_epoch();
 
-		diff = systemTimeAfter - systemTimeBefore;
+		diff = (systemTimeAfter - systemTimeBefore).count();
 		if (diff < minDiff) {
 			minDiff = diff;
-			// assume that gettimeofday happens halfway between AudioGetCurrentHostTime calls
-			int64 systemTimeBetween = systemTimeBefore + diff/2;
-			int64 systemTimeInOSCunits = (int64)((double)AudioConvertHostTimeToNanos(systemTimeBetween) * kNanosToOSC);
+			// assume that gettimeofday happens halfway between high_resolution_clock::now() calls
+			int64 systemTimeBetween = systemTimeBefore.count() + diff/2;
+			int64 systemTimeInOSCunits = (int64)((double)systemTimeBetween * kNanosToOSC);
 			int64 timeOfDayInOSCunits  = ((int64)(tv.tv_sec + kSECONDS_FROM_1900_to_1970) << 32)
                                             + (int64)(tv.tv_usec * kMicrosToOSC);
 			newOffset = timeOfDayInOSCunits - systemTimeInOSCunits;
@@ -349,7 +335,7 @@ void syncOSCOffsetWithTimeOfDay()
 	gHostOSCoffset = newOffset;
 	//postfl("gHostOSCoffset %016llX\n", gHostOSCoffset);
 }
-#endif
+
 
 void schedAdd(VMGlobals *g, PyrObject* inQueue, double inSeconds, PyrSlot* inTask);
 void schedAdd(VMGlobals *g, PyrObject* inQueue, double inSeconds, PyrSlot* inTask)
@@ -406,7 +392,6 @@ void schedClearUnsafe()
 
 void post(const char *fmt, ...);
 
-#ifdef SC_DARWIN
 void resyncThread()
 {
 	while (true) {
@@ -416,7 +401,6 @@ void resyncThread()
 		gElapsedOSCoffset = (int64)(gHostStartNanos * kNanosToOSC) + gHostOSCoffset;
 	}
 }
-#endif
 
 extern bool gTraceInterpreter;
 
@@ -442,16 +426,15 @@ static void schedRunFunc()
 		//postfl("wait until an event is ready\n");
 
 		// wait until an event is ready
-		double elapsed;
+        chrono::high_resolution_clock::duration schedSecs;
+        chrono::high_resolution_clock::time_point now, schedPoint;
 		do {
-			elapsed = elapsedTime();
-			if (elapsed >= slotRawFloat(inQueue->slots + 1)) break;
-			chrono::system_clock::time_point absTime;
-
-			ElapsedTimeToChrono(slotRawFloat(inQueue->slots + 1), absTime);
-
+            now = chrono::high_resolution_clock::now();
+            schedSecs = chrono::duration_cast<chrono::high_resolution_clock::duration>(chrono::duration<double>(slotRawFloat(inQueue->slots + 1)));
+            schedPoint = hrTimeOfInitialization + schedSecs;
+            if(now >= schedPoint) break;
 			//postfl("wait until an event is ready\n");
-			gSchedCond.wait_until(lock, absTime);
+			gSchedCond.wait_until(lock, schedPoint);
 			if (!gRunSched) goto leave;
 			//postfl("time diff %g\n", elapsedTime() - inQueue->slots->uf);
 		} while (inQueue->size > 1);
@@ -460,7 +443,7 @@ static void schedRunFunc()
 
 		// perform all events that are ready
 		//postfl("perform all events that are ready\n");
-		while ((inQueue->size > 1) && elapsed >= slotRawFloat(inQueue->slots + 1)) {
+		while ((inQueue->size > 1) && now >= hrTimeOfInitialization + chrono::duration_cast<chrono::high_resolution_clock::duration>(chrono::duration<double>(slotRawFloat(inQueue->slots + 1)))) {
 			double schedtime, delta;
 			PyrSlot task;
 
@@ -859,18 +842,20 @@ void* TempoClock::Run()
 
 		// wait until an event is ready
 		double elapsedBeats;
+        chrono::high_resolution_clock::duration schedSecs;
+        chrono::high_resolution_clock::time_point schedPoint;
 		do {
 			elapsedBeats = ElapsedBeats();
 			if (elapsedBeats >= slotRawFloat(mQueue->slots)) break;
 
-			chrono::system_clock::time_point absTime;
-
 			//printf("event ready at %g . elapsed beats %g\n", mQueue->slots->uf, elapsedBeats);
 			double wakeTime = BeatsToSecs(slotRawFloat(mQueue->slots));
-			ElapsedTimeToChrono(wakeTime, absTime);
+            
+            schedSecs = chrono::duration_cast<chrono::high_resolution_clock::duration>(chrono::duration<double>(wakeTime));
+            schedPoint = hrTimeOfInitialization + schedSecs;
 
 			//printf("wait until an event is ready. wake %g  now %g\n", wakeTime, elapsedTime());
-			mCondition.wait_until(lock, absTime);
+			mCondition.wait_until(lock, schedPoint);
 			//printf("mRun b %d\n", mRun);
 			if (!mRun) goto leave;
 			//printf("time diff %g\n", elapsedTime() - mQueue->slots->uf);
@@ -1373,6 +1358,12 @@ int prElapsedTime(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prmonotonicClockTime(struct VMGlobals *g, int numArgsPushed)
+{
+	SetFloat(g->sp, monotonicClockTime());
+	return errNone;
+}
+
 void initSchedPrimitives()
 {
 	int base, index=0;
@@ -1401,4 +1392,5 @@ void initSchedPrimitives()
 	definePrimitive(base, index++, "_SystemClock_SchedAbs", prSystemClock_SchedAbs, 3, 0);
 
 	definePrimitive(base, index++, "_ElapsedTime", prElapsedTime, 1, 0);
+    definePrimitive(base, index++, "_monotonicClockTime", prmonotonicClockTime, 1, 0);
 }

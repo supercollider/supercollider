@@ -81,25 +81,26 @@ static void syncOSCOffsetWithTimeOfDay()
 	// Then if this machine is synced via NTP, we are synced with the world.
 	// more accurate way to do this??
 
+    using namespace chrono;
 	struct timeval tv;
 
-	int64 systemTimeBefore, systemTimeAfter, diff;
-	int64 minDiff = 0x7fffFFFFffffFFFFLL;
+    nanoseconds systemTimeBefore, systemTimeAfter;
+    int64 diff, minDiff = 0x7fffFFFFffffFFFFLL;
 
 	// take best of several tries
 	const int numberOfTries = 5;
 	int64 newOffset = gOSCoffset;
 	for (int i=0; i<numberOfTries; ++i) {
-		systemTimeBefore = AudioGetCurrentHostTime();
+		systemTimeBefore = high_resolution_clock::now().time_since_epoch();
 		gettimeofday(&tv, 0);
-		systemTimeAfter = AudioGetCurrentHostTime();
+		systemTimeAfter = high_resolution_clock::now().time_since_epoch();
 
-		diff = systemTimeAfter - systemTimeBefore;
+		diff = (systemTimeAfter - systemTimeBefore).count();
 		if (diff < minDiff) {
 			minDiff = diff;
-			// assume that gettimeofday happens halfway between AudioGetCurrentHostTime calls
-			int64 systemTimeBetween = systemTimeBefore + diff/2;
-			int64 systemTimeInOSCunits = (int64)((double)AudioConvertHostTimeToNanos(systemTimeBetween) * kNanosToOSCunits);
+            // assume that gettimeofday happens halfway between high_resolution_clock::now() calls
+            int64 systemTimeBetween = systemTimeBefore.count() + diff/2;
+            int64 systemTimeInOSCunits = (int64)((double)systemTimeBetween * kNanosToOSCunits);
 			int64 timeOfDayInOSCunits  = ((int64)(tv.tv_sec + kSECONDS_FROM_1900_to_1970) << 32)
 								    + (int64)(tv.tv_usec * kMicrosToOSCunits);
 			newOffset = timeOfDayInOSCunits - systemTimeInOSCunits;
