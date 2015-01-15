@@ -998,7 +998,7 @@ Ndef : NodeProxy {
 			};
 			key = key.key;
 		} {
-			server = Server.default;
+			server = defaultServer ? Server.default;
 		};
 
 		dict = this.dictFor(server);
