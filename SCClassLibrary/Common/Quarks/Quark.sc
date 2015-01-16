@@ -29,10 +29,9 @@ Quark {
 		localPath = argLocalPath ?? {Quarks.folder +/+ name};
 	}
 	data {
-		if(data.isNil, {
-			data = this.parseQuarkFile ?? { IdentityDictionary.new }
-		});
-		^data
+		^data ?? {
+			data = this.parseQuarkFile() ?? { IdentityDictionary.new }
+		}
 	}
 	version {
 		^this.data['version']
