@@ -1,6 +1,6 @@
 
 Quark {
-	var <name, <url, <refspec, data;
+	var <name, <url, <refspec, data, <localPath;
 	var <changed = false;
 
 	*new { |name, refspec|
@@ -8,15 +8,25 @@ Quark {
 		# name, url, refspec = Quark.parseQuarkName(name, refspec);
 		^super.new.init(name, url, refspec)
 	}
+	*fromLocalPath { |path|
+		var name, url, refspec;
+		name = path.basename;
+		if(Git.isGit(path), {
+			url = Git.remote(path);
+		});
+		// refspec if git
+		^super.new.init(name, url, refspec, path)
+	}
 	*fromDirectoryEntry { |name, quarkUrl|
 		var url, refspec;
 		# url, refspec = quarkUrl.split($@);
 		^super.new.init(name, url, refspec)
 	}
-	init { |argName, argUrl, argRefspec|
+	init { |argName, argUrl, argRefspec, argLocalPath|
 		name = argName;
 		url = argUrl;
 		refspec = argRefspec;
+		localPath = argLocalPath ?? {Quarks.folder +/+ name};
 	}
 	data {
 		if(data.isNil, {
@@ -114,8 +124,8 @@ Quark {
 	}
 
 	*parseQuarkName { |name, refspec|
-		var quarkUrl, url, localPath;
 		// parse any URLS and @tags
+		var quarkUrl, url, localPath;
 		if(name.contains("://"), {
 			url = name;
 			name = PathName(url).fileNameWithoutExtension();
@@ -158,9 +168,6 @@ Quark {
 	printOn { arg stream;
 		stream << "Quark: " << name;
 		if(this.version.notNil,{ stream << " [" << this.version << "]"; });
-	}
-	localPath {
-		^Quarks.folder +/+ this.name
 	}
 	help {
 		var p = this.data.schelp;
