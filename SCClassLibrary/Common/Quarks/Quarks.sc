@@ -30,13 +30,14 @@ Quarks {
 			});
 		});
 		deps.do({ |dep|
-			this.link(dep.name);
+			this.link(dep.localPath);
 		});
-		this.link(quark.name);
+		this.link(quark.localPath);
 		(quark.name + "installed").inform;
 	}
 	*uninstall { |name|
-		this.unlink(name);
+		var q = Quark(name);
+		this.unlink(q.localPath);
 		// TODO and uninstall all dependencies not in use by others
 	}
 	*update { |name|
@@ -44,14 +45,12 @@ Quarks {
 	}
 	*installed {
 		^LanguageConfig.includePaths
-			.select(_.beginsWith(Quarks.folder))
-			.collect(Quark(_))
+			// .select(_.beginsWith(Quarks.folder))
+			.collect(Quark.fromLocalPath(_))
 	}
 	*isInstalled { |name|
 		^LanguageConfig.includePaths.any({ |path|
-			path.endsWith(name) and: {
-				path.beginsWith(Quarks.folder)
-			}
+			path.withoutTrailingSlash.endsWith(name)
 		})
 	}
 	/*
@@ -71,8 +70,7 @@ Quarks {
 	}
 	*/
 
-	*link { |name|
-		var path = Quarks.folder +/+ name.asString;
+	*link { |path|
 		if(LanguageConfig.includePaths.includesEqual(path).not, {
 			path.debug("adding");
 			LanguageConfig.addIncludePath(path);
@@ -81,8 +79,7 @@ Quarks {
 		});
 		^false
 	}
-	*unlink { |name|
-		var path = Quarks.folder +/+ name.asString;
+	*unlink { |path|
 		if(LanguageConfig.includePaths.includesEqual(path), {
 			path.debug("removing");
 			LanguageConfig.removeIncludePath(path);
@@ -113,12 +110,25 @@ Quarks {
 	}
 	*all {
 		// all known quarks
-		var list = List.new;
+		var all = Dictionary.new, f;
+		// those in index
 		this.directory.keysValuesDo({ |name, quarkURL|
-			list.add(Quark.fromDirectoryEntry(name, quarkURL))
+			all[name] = Quark.fromDirectoryEntry(name, quarkURL);
 		});
-		// TODO: make a union of directory and any others found in quarks folder
-		^list
+		f = { |path|
+			var quark;
+			if(File.type(path) == \directory, {
+				quark = Quark.fromLocalPath(path);
+				all[quark.name] = quark;
+			});
+		};
+
+		// this means alternate versions are hidden
+		// those checked out in folder or linked in language config
+		(Quarks.folder +/+ "*").pathMatch.do(f);
+		// running many duplicates, but do not want to miss any that were linked
+		LanguageConfig.includePaths.do(f);
+		^all.values
 	}
 	*fetchDirectory { |force=true|
 		// TODO: needs a cross platform download
@@ -134,7 +144,8 @@ Quarks {
 			this.prReadFile(fetch, dirCachePath);
 		}.try({ arg err;
 			("Failed to fetch quarks directory listing: % %".format(if(fetch, directoryUrl, dirCachePath), err)).error;
-			// fall back to the other method
+			// if fetch failed, try read from cache
+			// if read from cache failed, try fetching
 			if(fetch, {
 				 if(File.exists(dirCachePath), {
 					this.prReadFile(false, dirCachePath);
