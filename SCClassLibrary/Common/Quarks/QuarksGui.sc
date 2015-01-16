@@ -53,11 +53,11 @@ QuarksGui {
 			.action_({ HelpBrowser.openBrowsePage("Quarks") });
 
 		btnOpenFolder = Button().states_([["Open Quarks Folder"]])
-			.toolTip_("Open the local Quarks directory")
+			.toolTip_("Open" + model.folder)
 			.action_({ model.openFolder });
 
 		btnRecompile = Button().states_([["Recompile class library"]])
-			.toolTip_("Compile class library after making any changes")
+			.toolTip_("You will need to recompile the class library after making any changes")
 			.action_({ thisProcess.recompile })
 			.enabled_(false);
 
@@ -70,18 +70,19 @@ QuarksGui {
 				infoView.visible = true;
 			})
 			.onItemChanged_({ |v|
-				var curItem, curView;
+				var curItem, curView, isInstalled;
 				curItem = v.currentItem;
 				selectedQuark = nil;
 				if(curItem.notNil) {
+					// update
 					curView = quarkRows.values().detect({ |view| view.treeItem == curItem });
 					if(curView.notNil) {
 						selectedQuark = curView.quark;
-						// make a formatting method here
-						// txtDescription.string = selectedQuark.longDesc;
+						txtDescription.string = QuarksGui.descriptionForQuark(selectedQuark);
 						btnQuarkOpen.enabled = selectedQuark.isDownloaded;
-						btnQuarkClasses.enabled = curView.quark.isInstalled;
-						btnQuarkMethods.enabled = curView.quark.isInstalled;
+						isInstalled = selectedQuark.isInstalled;
+						btnQuarkClasses.enabled = isInstalled;
+						btnQuarkMethods.enabled = isInstalled;
 					}
 				}{
 					infoView.visible = false
@@ -108,7 +109,7 @@ QuarksGui {
 			.states_([["Open Folder"]])
 			.toolTip_("Open source folder for this quark")
 			.action_({
-				openOS(selectedQuark.localPath);
+				selectedQuark.localPath.openOS;
 			});
 
 		btnQuarkClasses = Button()
@@ -248,6 +249,30 @@ QuarksGui {
 	setMsg { |msg, color|
 		lblMsg.background = palette.button.blend(Color.perform(color), 0.2);
 		lblMsg.string = msg;
+	}
+	*descriptionForQuark { |quark|
+		var lines, dependencies;
+		lines = [
+			quark.asString,
+			"downloaded:" + quark.isDownloaded,
+			"installed:" + quark.isInstalled,
+			"path:" + quark.localPath,
+			"url:" + quark.url
+		];
+		quark.data.keysValuesDo({ |k, v|
+			if(k !== \name) {
+				lines = lines.add(k.asString ++ ":" + v.asString);
+			}
+		});
+		dependencies = quark.dependencies;
+		if(dependencies.notEmpty) {
+			lines = lines ++ ["Dependencies:"] ++ dependencies.collect(_.asString);
+		};
+		lines = lines ++ [
+			Char.nl,
+			quark.summary
+		];
+		^lines.join(Char.nl);
 	}
 }
 
