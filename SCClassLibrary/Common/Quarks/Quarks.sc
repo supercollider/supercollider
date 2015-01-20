@@ -38,6 +38,7 @@ Quarks {
 			if(dep.isCompatible().not, {
 				^incompatible.value(dep.name);
 			});
+			dep.checkout();
 		});
 		deps.do({ |dep|
 			this.link(dep.localPath);
