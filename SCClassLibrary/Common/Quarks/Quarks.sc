@@ -19,6 +19,32 @@ Quarks {
 			this.link(path);
 		});
 	}
+	*uninstall { |name|
+		// by quark name or by supplying a local path
+		// resolving / ~/ ./
+		this.unlink(this.quarkNameAsLocalPath(name));
+	}
+	*update { |name|
+		// by quark name or by supplying a local path
+		// resolving / ~/ ./
+		Git.update(this.quarkNameAsLocalPath(name));
+	}
+	*installed {
+		^LanguageConfig.includePaths
+			.collect(Quark.fromLocalPath(_))
+	}
+	*isInstalled { |name|
+		^LanguageConfig.includePaths.any({ |path|
+			path.withoutTrailingSlash.endsWith(name)
+		})
+	}
+	*openFolder {
+		this.folder.openOS;
+	}
+	*gui {
+		^QuarksGui.new
+	}
+
 	*installQuark { |quark|
 		var
 			deps,
@@ -46,41 +72,6 @@ Quarks {
 		this.link(quark.localPath);
 		(quark.name + "installed").inform;
 	}
-	*uninstall { |name|
-		// by quark name or by supplying a local path
-		// resolving / ~/ ./
-		this.unlink(this.quarkNameAsLocalPath(name));
-	}
-	*update { |name|
-		// by quark name or by supplying a local path
-		// resolving / ~/ ./
-		Git.update(this.quarkNameAsLocalPath(name));
-	}
-	*installed {
-		^LanguageConfig.includePaths
-			.collect(Quark.fromLocalPath(_))
-	}
-	*isInstalled { |name|
-		^LanguageConfig.includePaths.any({ |path|
-			path.withoutTrailingSlash.endsWith(name)
-		})
-	}
-	/*
-	*purge { |name, force=false|
-		var localPath = Quarks.folder +/+ name;
-		if(File.exists(localPath), {
-			if(force.not, {
-				if(Git.isGit(localPath) and: {Git.isDirty(localPath)}, {
-					"Quark has changes. Use Quarks.purge(name, force=true) to force deletion".error;
-					^this
-				});
-			});
-			// 	File.delete does not remove directories
-			File.delete(localPath);
-			("Deleted" + localPath).inform;
-		});
-	}
-	*/
 
 	*link { |path|
 		if(LanguageConfig.includePaths.includesEqual(path).not, {
@@ -106,9 +97,6 @@ Quarks {
 		if(File.exists(folder).not, {
 			folder.mkdir();
 		});
-	}
-	*openFolder {
-		this.folder.openOS;
 	}
 	*findQuarkURL { arg name;
 		^this.directory[name]
@@ -215,7 +203,4 @@ Quarks {
 	}
 	// quarks fetch all available quark specs
 	// directory.json
-	*gui {
-		^QuarksGui.new
-	}
 }
