@@ -7,7 +7,17 @@ Quarks {
 		<>directoryUrl="https://raw.githubusercontent.com/supercollider-quarks/quarks/master/directory.txt";
 
 	*install { |name, refspec|
-		this.installQuark(Quark(name, refspec));
+		var path;
+		if(name.findRegexp("^[~\.]?/").size == 0, {
+			this.installQuark(Quark(name, refspec));
+		}, {
+			// local path / ~/ ./
+			path = this.asAbsolutePath(name);
+			if(File.exists(path).not, {
+				("Path does not exist" + path).warn;
+			});
+			this.link(path);
+		});
 	}
 	*installQuark { |quark|
 		var
@@ -36,16 +46,17 @@ Quarks {
 		(quark.name + "installed").inform;
 	}
 	*uninstall { |name|
-		var q = Quark(name);
-		this.unlink(q.localPath);
-		// TODO and uninstall all dependencies not in use by others
+		// by quark name or by supplying a local path
+		// resolving / ~/ ./
+		this.unlink(this.quarkNameAsLocalPath(name));
 	}
 	*update { |name|
-		GitQuarks.update(name);
+		// by quark name or by supplying a local path
+		// resolving / ~/ ./
+		Git.update(this.quarkNameAsLocalPath(name));
 	}
 	*installed {
 		^LanguageConfig.includePaths
-			// .select(_.beginsWith(Quarks.folder))
 			.collect(Quark.fromLocalPath(_))
 	}
 	*isInstalled { |name|
@@ -178,6 +189,28 @@ Quarks {
 			dirCachePath.debug("writing");
 			File.open(dirCachePath, "w").put(cached.join(Char.nl)).close();
 		});
+	}
+	*quarkNameAsLocalPath { |name|
+		^if(name.findRegexp("^[~\.]?/").size == 0, {
+			Quark(name).localPath
+		}, {
+			this.asAbsolutePath(name)
+		});
+	}
+	*asAbsolutePath { |path, relativeTo|
+		^if(path.at(0).isPathSeparator, {
+			path
+		}, {
+			if(path.at(0) == $~, {
+				^path.standardizePath
+			});
+			// scroot is the cwd at startup
+			if(path.beginsWith("./"), {
+				^(relativeTo ?? {PathName.scroot}) +/+ path.copyToEnd(2)
+			});
+			// probably wrong
+			(relativeTo ?? {PathName.scroot}) +/+ path
+		})
 	}
 	// quarks fetch all available quark specs
 	// directory.json
