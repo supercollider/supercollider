@@ -1,6 +1,6 @@
 
 Quark {
-	var <name, <url, refspec, data, <localPath;
+	var <name, <url, >refspec, data, <localPath;
 	var <changed = false;
 
 	*new { |name, refspec|
@@ -44,6 +44,9 @@ Quark {
 			Git.refspec(this.localPath)
 		}
 	}
+	tags {
+		^Git.tags(this.localPath)
+	}
 	isDownloaded {
 		^File.exists(this.localPath)
 	}
@@ -80,6 +83,8 @@ Quark {
 		});
 		if(this.isDownloaded.not, {
 			Git.clone(url, localPath);
+			// get tags etc
+			Git.fetch(localPath);
 			changed = true;
 			data = nil;
 		});

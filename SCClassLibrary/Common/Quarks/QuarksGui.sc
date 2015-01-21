@@ -9,7 +9,17 @@ QuarksGui {
 		infoView,
 		palette,
 		lblMsg,
-		btnRecompile;
+		btnRecompile,
+		selectVersion,
+		btnQuarkMethods,
+		txtDescription,
+		btnCloseDetails,
+		btnQuarkHelp,
+		btnQuarkOpenFolder,
+		btnQuarkClasses,
+		btnQuarkOpenWebpage,
+		btnQuarkOpenGithub,
+		btnUpdateQuark;
 
 	*new { ^super.new.init }
 
@@ -17,8 +27,6 @@ QuarksGui {
 		var bounds;
 		var btnUpdateDirectory, btnQuarksHelp, btnOpenFolder,
 			lblCaption, lblExplanation,
-			btnQuarkHelp, btnQuarkOpen, btnQuarkClasses,
-			btnQuarkMethods, txtDescription, btnCloseDetails,
 			gizmo;
 
 		model = Quarks;
@@ -69,20 +77,16 @@ QuarksGui {
 			.itemPressedAction_({ |v|
 				infoView.visible = true;
 			})
+			// open detail view
 			.onItemChanged_({ |v|
-				var curItem, curView, isInstalled;
+				var curItem, curView;
 				curItem = v.currentItem;
 				selectedQuark = nil;
 				if(curItem.notNil) {
-					// update
 					curView = quarkRows.values().detect({ |view| view.treeItem == curItem });
 					if(curView.notNil) {
 						selectedQuark = curView.quark;
-						txtDescription.string = QuarksGui.descriptionForQuark(selectedQuark);
-						btnQuarkOpen.enabled = selectedQuark.isDownloaded;
-						isInstalled = selectedQuark.isInstalled;
-						btnQuarkClasses.enabled = isInstalled;
-						btnQuarkMethods.enabled = isInstalled;
+						this.updateDetailView();
 					}
 				}{
 					infoView.visible = false
@@ -105,11 +109,56 @@ QuarksGui {
 				selectedQuark.help
 			});
 
-		btnQuarkOpen = Button()
+		btnQuarkOpenFolder = Button()
 			.states_([["Open Folder"]])
-			.toolTip_("Open source folder for this quark")
 			.action_({
 				selectedQuark.localPath.openOS;
+			});
+
+		btnQuarkOpenWebpage = Button()
+			.states_([["Open Webpage"]])
+			.action_({
+				var url = selectedQuark.data['url'] ? selectedQuark.url;
+				if(url.notNil, {
+					if(url.beginsWith("git:"), {
+						url = "https:" ++ url.copyToEnd(4)
+					});
+					// windows: start
+					// linux: xdg-open
+					("open" + url).unixCmd;
+				});
+			});
+
+		btnQuarkOpenGithub = Button()
+			.states_([["Github"]])
+			.action_({
+				var url = selectedQuark.url;
+				if(url.notNil, {
+					if(url.beginsWith("git:"), {
+						url = "https:" ++ url.copyToEnd(4)
+					});
+					// windows: start
+					// linux: xdg-open
+					("open" + url).unixCmd;
+				});
+			});
+
+		selectVersion = PopUpMenu();
+
+		btnUpdateQuark = Button()
+			.states_([["Checkout"]])
+			.action_({
+				var refspec = selectVersion.items.at(selectVersion.value ? -1);
+				if(selectedQuark.isInstalled, {
+					// reinstall possibly with different dependencies
+					selectedQuark.uninstall;
+					Quarks.install(selectedQuark.url, refspec);
+				}, {
+					selectedQuark.refspec = refspec;
+					selectedQuark.checkout;
+				});
+				this.update;
+				this.setMsg(selectedQuark.name + "has checked out" + selectedQuark.version);
 			});
 
 		btnQuarkClasses = Button()
@@ -188,13 +237,6 @@ QuarksGui {
 				tree.invokeMethod(\resizeColumnToContents, 1);
 			});
 
-		// TODO
-		// open homepage or github
-		// checkout if not yet downloaded
-		// update
-		//
-		// switch versions
-
 		btnCloseDetails = StaticText()
 			.string_("X")
 			.align_(\center)
@@ -208,7 +250,10 @@ QuarksGui {
 
 		infoView = View();
 		infoView.layout = VLayout(
-			HLayout(btnQuarkHelp, btnQuarkOpen, btnQuarkClasses, btnQuarkMethods, btnCloseDetails, nil).margins_(0),
+			HLayout(btnQuarkOpenWebpage, btnQuarkOpenGithub, btnQuarkHelp,
+				btnQuarkOpenFolder, btnQuarkClasses, btnQuarkMethods,
+				selectVersion, btnUpdateQuark, btnCloseDetails,
+				nil).margins_(0),
 			txtDescription
 		).spacing_(0).margins_(0);
 		infoView.visible = false;
@@ -245,9 +290,50 @@ QuarksGui {
 		treeView.invokeMethod(\resizeColumnToContents, 0);
 		treeView.invokeMethod(\resizeColumnToContents, 1);
 		btnRecompile.enabled = recompile;
+		this.updateDetailView();
 	}
+	updateDetailView {
+		var tags, refspec, isInstalled = false, isDownloaded = false, url;
+		if(selectedQuark.notNil, {
+			txtDescription.string = QuarksGui.descriptionForQuark(selectedQuark) ? "";
+			isInstalled = selectedQuark.isInstalled;
+			isDownloaded = selectedQuark.isDownloaded;
+			url = selectedQuark.url;
+			// if webpage is different than the github url
+			selectedQuark.data['url'].debug(url);
+			btnQuarkOpenWebpage.enabled = selectedQuark.data['url'] != url and: {url.notNil};
+			btnQuarkOpenGithub.enabled = url.notNil;
+		}, {
+			txtDescription.string = "";
+		});
+		btnQuarkClasses.enabled = isInstalled;
+		btnQuarkMethods.enabled = isInstalled;
+		btnQuarkHelp.enabled = isInstalled;
+		btnQuarkOpenFolder.enabled = isDownloaded;
+
+		if(selectedQuark.isNil or: {Git.isGit(selectedQuark.localPath).not}, {
+			selectVersion.items = [];
+			selectVersion.enabled = false;
+		}, {
+			tags = selectedQuark.tags.collect({ |t| "tags/" ++ t });
+			refspec = Git.refspec(selectedQuark.localPath);
+			if(tags.indexOfEqual(refspec).isNil, {
+				tags = tags.add(refspec);
+			});
+			if(Git.isDirty(selectedQuark.localPath), {
+				selectVersion.enabled = false;
+				refspec = "DIRTY";
+				tags = tags.add("DIRTY");
+			}, {
+				selectVersion.enabled = true;
+			});
+			selectVersion.items = tags;
+			selectVersion.value = tags.indexOfEqual(refspec);
+		});
+	}
+
 	setMsg { |msg, color|
-		lblMsg.background = palette.button.blend(Color.perform(color), 0.2);
+		lblMsg.background = palette.button.blend(Color.perform(color ? 'yellow'), 0.2);
 		lblMsg.string = msg;
 	}
 	*descriptionForQuark { |quark|
