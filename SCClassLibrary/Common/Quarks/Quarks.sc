@@ -141,8 +141,9 @@ Quarks {
 	}
 
 	*link { |path|
+		path = path.withoutTrailingSlash;
 		if(LanguageConfig.includePaths.includesEqual(path).not, {
-			path.debug("adding");
+			path.debug("Adding path");
 			LanguageConfig.addIncludePath(path);
 			LanguageConfig.store();
 			^true
@@ -150,8 +151,9 @@ Quarks {
 		^false
 	}
 	*unlink { |path|
+		path = path.withoutTrailingSlash;
 		if(LanguageConfig.includePaths.includesEqual(path), {
-			path.debug("removing");
+			path.debug("Removing path");
 			LanguageConfig.removeIncludePath(path);
 			LanguageConfig.store();
 			^true
