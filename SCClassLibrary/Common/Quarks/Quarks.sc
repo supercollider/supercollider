@@ -58,11 +58,16 @@ Quarks {
 		file = File.open(path, "w");
 		dir = path.dirname;
 		this.installed.do({ |quark|
-			var qpath, d;
+			var qpath, d, refspec;
 			if(Git.isGit(quark.localPath), {
 				// quark name if in directory and is using same repo
 				// else git url
-				file.write("%=%\n".format(quark.url, quark.refspec));
+				qpath = quark.url;
+				if(Git.isDirty(quark.localPath), {
+					("Working copy is dirty" + quark.localPath).warn;
+				}, {
+					refspec = quark.refspec;
+				});
 			}, {
 				// ./path if quark is inside the folder where the quark file is
 				if(quark.localPath.beginsWith(dir), {
@@ -76,8 +81,11 @@ Quarks {
 						// absolute path
 						qpath = quark.localPath;
 					});
-
 				});
+			});
+			if(refspec.notNil, {
+				file.write("%=%\n".format(qpath, refspec));
+			}, {
 				file.write("%\n".format(qpath));
 			});
 		});
