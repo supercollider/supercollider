@@ -1,6 +1,6 @@
 
 Quark {
-	var <name, <url, <refspec, data, <localPath;
+	var <name, <url, refspec, data, <localPath;
 	var <changed = false;
 
 	*new { |name, refspec|
@@ -39,7 +39,11 @@ Quark {
 	summary {
 		^this.data['summary']
 	}
-
+	refspec {
+		^refspec ?? {
+			Git.refspec(this.localPath)
+		}
+	}
 	isDownloaded {
 		^File.exists(this.localPath)
 	}

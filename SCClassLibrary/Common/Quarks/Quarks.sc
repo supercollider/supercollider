@@ -24,6 +24,65 @@ Quarks {
 		// resolving / ~/ ./
 		this.unlink(this.quarkNameAsLocalPath(name));
 	}
+	*clear {
+		this.installed.do({ |quark|
+			LanguageConfig.removeIncludePath(quark.localPath);
+		});
+		LanguageConfig.store();
+	}
+	*load { |path|
+		// install a list of quarks from a text file
+		var file, line, dir;
+		this.clear();
+		path = this.asAbsolutePath(path);
+		dir = path.dirname;
+		file = File.open(path, "r");
+		while({
+			line = file.getLine();
+			line.notNil;
+		}, {
+			var name, refspec;
+			// resolve any paths relative to the quark file
+			# name, refspec = line.split($=);
+			if(name.findRegexp("^[~\.]?/").size != 0, {
+				this.install(this.asAbsolutePath(name, dir), refspec);
+			}, {
+				this.install(name, refspec);
+			});
+		});
+	}
+	*save { |path|
+		// save currently installed quarks to a text file
+		var file, dir;
+		path = this.asAbsolutePath(path);
+		file = File.open(path, "w");
+		dir = path.dirname;
+		this.installed.do({ |quark|
+			var qpath, d;
+			if(Git.isGit(quark.localPath), {
+				// quark name if in directory and is using same repo
+				// else git url
+				file.write("%=%\n".format(quark.url, quark.refspec));
+			}, {
+				// ./path if quark is inside the folder where the quark file is
+				if(quark.localPath.beginsWith(dir), {
+					qpath = "." ++ quark.localPath.copyToEnd(dir.size);
+				}, {
+					d = Platform.userHomeDir;
+					// ~/path if in home
+					if(quark.localPath.beginsWith(d), {
+						qpath = "~" ++ quark.localPath.copyToEnd(d.size);
+					}, {
+						// absolute path
+						qpath = quark.localPath;
+					});
+
+				});
+				file.write("%\n".format(qpath));
+			});
+		});
+		file.close();
+	}
 	*update { |name|
 		// by quark name or by supplying a local path
 		// resolving / ~/ ./
@@ -197,7 +256,6 @@ Quarks {
 			if(path.beginsWith("./"), {
 				^(relativeTo ?? {PathName.scroot}) +/+ path.copyToEnd(2)
 			});
-			// probably wrong
 			(relativeTo ?? {PathName.scroot}) +/+ path
 		})
 	}
