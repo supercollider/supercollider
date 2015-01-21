@@ -36,14 +36,19 @@ Git {
 		});
 		^nil
 	}
-	/*
-	tag {
-		git describe
-		var out = GitQuarks.git(["log --pretty=format:'%d' --abbrev-commit --date=short -1"]);
-		// match
-		tag: 4.1.4,
+	*refspec { |localPath|
+		var
+			out = this.git(
+				["log --pretty=format:'%d' --abbrev-commit --date=short -1 | cat"],
+				localPath,
+				true),
+			match = out.findRegexp("tag: ([^,]+)");
+		if(match.size > 0, {
+			^"tags/" ++ match[1][1]
+		});
+		out = this.git(["rev-parse HEAD"], localPath, true);
+		^out.copyRange(0, out.size - 2)
 	}
-	*/
 	*git { |args, cd, getOutput=false|
 		var cmd;
 		if(cd.notNil,{
