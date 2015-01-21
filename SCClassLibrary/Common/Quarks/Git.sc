@@ -9,10 +9,13 @@ Git {
 		]);
 	}
 	*pull { |localPath|
-		this.git(["pull"], localPath);
+		this.git(["pull"], localPath)
 	}
 	*checkout { |refspec, localPath|
-		this.git(["checkout", refspec], localPath);
+		this.git(["checkout", refspec], localPath)
+	}
+	*fetch { |localPath|
+		this.git(["fetch"], localPath)
 	}
 	*isGit { |localPath|
 		^File.exists(localPath +/+ ".git")
@@ -42,12 +45,15 @@ Git {
 				["log --pretty=format:'%d' --abbrev-commit --date=short -1 | cat"],
 				localPath,
 				true),
-			match = out.findRegexp("tag: ([^,]+)");
+			match = out.findRegexp("tag: ([a-zA-Z0-9\.\-_]+)");
 		if(match.size > 0, {
 			^"tags/" ++ match[1][1]
 		});
 		out = this.git(["rev-parse HEAD"], localPath, true);
 		^out.copyRange(0, out.size - 2)
+	}
+	*tags { |localPath|
+		^this.git(["tag"], localPath, true).split(Char.nl).select({ |t| t.size != 0 })
 	}
 	*git { |args, cd, getOutput=false|
 		var cmd;
