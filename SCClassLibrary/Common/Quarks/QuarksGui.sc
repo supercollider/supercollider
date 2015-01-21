@@ -34,13 +34,13 @@ QuarksGui {
 		palette = GUI.current.palette;
 
 		bounds = Window.flipY(Window.availableBounds);
-		window = Window("Quarks", Rect(0, 0, 700, bounds.height * 0.9).center_(bounds.center));
+		window = Window("Quarks", Rect(0, 0, min(bounds.width * 0.75, 1000), bounds.height * 0.9).center_(bounds.center));
 
 		lblCaption = StaticText().font_(GUI.font.new(size:16, usePointSize:true)).string_("Quarks");
 
 		btnUpdateDirectory = Button()
 			.states_([["Refresh Quarks directory"]])
-			.toolTip_("Download directory listing from" + Quarks.directoryUrl)
+			.toolTip_("Download directory listing from" + Quarks.directoryUrl + "(auto-refreshes every 4 hours)")
 			.action_({
 				treeView.enabled = false;
 				this.setMsg("Fetching" + Quarks.directoryUrl, \yellow);
@@ -64,7 +64,10 @@ QuarksGui {
 			.toolTip_("Open" + model.folder)
 			.action_({ model.openFolder });
 
-		btnRecompile = Button().states_([["Recompile class library"]])
+		btnRecompile = Button().states_([
+				["Recompile class library"],
+				["Recompile class library", Color.black, Color.yellow]
+			])
 			.toolTip_("You will need to recompile the class library after making any changes")
 			.action_({ thisProcess.recompile })
 			.enabled_(false);
@@ -94,17 +97,15 @@ QuarksGui {
 			});
 
 		txtDescription = TextView(bounds:10@10)
-			.font_(GUI.font.new(size:10, usePointSize:true))
+			.font_(GUI.font.new(size:11, usePointSize:true))
 			.tabWidth_(15)
 			.autohidesScrollers_(true)
 			.hasVerticalScroller_(true)
 			.editable_(false)
-			//.minSize_(Size(0,0));
 			.minHeight_(50);
 
 		btnQuarkHelp = Button()
 			.states_([["Help"]])
-			.toolTip_("Show help for this Quark")
 			.action_({
 				selectedQuark.help
 			});
@@ -290,6 +291,7 @@ QuarksGui {
 		treeView.invokeMethod(\resizeColumnToContents, 0);
 		treeView.invokeMethod(\resizeColumnToContents, 1);
 		btnRecompile.enabled = recompile;
+		btnRecompile.value = recompile.if(1, 0);
 		this.updateDetailView();
 	}
 	updateDetailView {
@@ -385,9 +387,11 @@ QuarkRowView {
 
 		btn.action = { |btn|
 			if(btn.value > 0, {
-				quark.install
+				quark.install;
+				quarksGui.setMsg("Installed" + quark, \green);
 			}, {
-				quark.uninstall
+				quark.uninstall;
+				quarksGui.setMsg("Uninstalled" + quark, \yellow);
 			});
 			quarksGui.update;
 		};
@@ -412,6 +416,6 @@ QuarkRowView {
 		btn.value = quark.isInstalled.binaryValue;
 
 		treeItem.setString(1, quark.name ? "");
-		treeItem.setString(2, (quark.summary !? { quark.summary.replace("\n"," ").replace("\t","") }) ? "");
+		treeItem.setString(2, (quark.summary !? { quark.summary.replace(Char.nl," ").replace(Char.tab, "") }) ? "");
 	}
 }
