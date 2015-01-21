@@ -173,13 +173,13 @@ Quark {
 		if(this.version.notNil,{ stream << " [" << this.version << "]"; });
 	}
 	help {
-		var p = this.data.schelp;
+		var p = this.data['schelp'];
 		// explicit pointer to a help file in quark data
 		if(p.notNil, {
 			^HelpBrowser.openHelpFor(p);
 		});
 		// old html help doc
-		p = this.data.helpdoc;
+		p = this.data['helpdoc'];
 		if(p.notNil, {
 			^HelpBrowser.goTo(URI.fromLocalPath(this.localPath +/+ p).asString);
 		});
