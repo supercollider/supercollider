@@ -97,9 +97,8 @@
 		var localPath = this.localPath;
 		^Class.allClasses.collect({ |c| c.methods }).reject(_.isNil).flat
 			.select({ |method|
-				method.filenameSymbol.asString.beginsWith(localPath)
-				and: {
-					method.ownerClass.filenameSymbol.asString.beginsWith(localPath)
+				method.filenameSymbol.asString.beginsWith(localPath) and: {
+					method.ownerClass.filenameSymbol.asString.beginsWith(localPath).not
 				}
 			})
 	}
