@@ -104,26 +104,33 @@ Quark {
 		^deps.collect({ |dep| this.parseDependency(dep) });
 	}
 	deepDependencies {
-		var deps = this.dependencies, all = List.new;
-		all.addAll(deps);
-		deps.do { |q|
+		var deps = Dictionary.new;
+		this.dependencies.do({ |q|
 			q.checkout();
-			all.addAll(q.deepDependencies);
-		};
-		^all
+			q.deepDependencies.debug(q).do({ |qb|
+				deps[qb.name] = qb;
+			});
+			deps[q.name] = q;
+		});
+		^deps.values
 	}
 	parseDependency { arg dep;
 		// (1) string
+		var name, version, url, q;
+		if(dep.isString, {
+			^Quarks.at(dep)
+		});
 		// support older styles:
 		// (2) name->version
-		// (3) [name, version, url]
-		var name, version, url;
-		if(dep.isString, {
-			^Quark(dep)
-		});
 		if(dep.isKindOf(Association), {
-			^Quark(dep.key.asString, dep.value)
+			name = dep.key.asString;
+			version = dep.value;
+			q = Quarks.at(name);
+			// and what if version is different ?
+			^Quark(name)
 		});
+		// (3) [name, version, url]
+		// url is likely to be an svn repo
 		if(dep.isSequenceableCollection, {
 			# name, version, url = dep;
 			^Quark(url + name, version);

@@ -4,7 +4,8 @@ Quarks {
 	classvar
 		<folder,
 		directory,
-		<>directoryUrl="https://raw.githubusercontent.com/supercollider-quarks/quarks/master/directory.txt";
+		<>directoryUrl="https://raw.githubusercontent.com/supercollider-quarks/quarks/master/directory.txt",
+		cache;
 
 	*install { |name, refspec|
 		var path;
@@ -29,6 +30,7 @@ Quarks {
 			LanguageConfig.removeIncludePath(quark.localPath);
 		});
 		LanguageConfig.store();
+		cache = Dictionary.new;
 	}
 	*load { |path|
 		// install a list of quarks from a text file
@@ -166,8 +168,16 @@ Quarks {
 		if(File.exists(folder).not, {
 			folder.mkdir();
 		});
+		cache = Dictionary.new;
 	}
-	*findQuarkURL { arg name;
+	*at { |name|
+		^cache[name] ?? {
+			var q = Quark(name);
+			cache.put(name, q);
+			q
+		}
+	}
+	*findQuarkURL { |name|
 		^this.directory[name]
 	}
 	*directory {
