@@ -21,7 +21,7 @@ Git {
 		^File.exists(localPath +/+ ".git")
 	}
 	*isDirty { |localPath|
-		var out = this.git(["--no-pager diff HEAD --"], localPath, true);
+		var out = this.git(["--no-pager diff HEAD --"], localPath);
 		if(out.size != 0, {
 			out.debug;
 			^true
@@ -32,7 +32,7 @@ Git {
 		// detect origin of repo or nil
 		// origin	git://github.com/supercollider-quarks/MathLib (fetch)
 		// origin	git://github.com/supercollider-quarks/MathLib (push)
-		var out = this.git(["remote -v"], localPath, true),
+		var out = this.git(["remote -v"], localPath),
 			match = out.findRegexp("^origin\t([^ ]+) \\(fetch\\)");
 		if(match.size > 0, {
 			^match[1][1]
@@ -49,32 +49,24 @@ Git {
 		if(match.size > 0, {
 			^"tags/" ++ match[1][1]
 		});
-		out = this.git(["rev-parse HEAD"], localPath, true);
+		out = this.git(["rev-parse HEAD"], localPath);
 		^out.copyRange(0, out.size - 2)
 	}
 	*remoteLatest { |localPath|
-		var out = this.git(["rev-parse origin/master"], localPath, true);
+		var out = this.git(["rev-parse origin/master"], localPath);
 		^out.copyRange(0, out.size - 2)
 	}
 	*tags { |localPath|
-		^this.git(["tag"], localPath, true).split(Char.nl).select({ |t| t.size != 0 })
+		^this.git(["tag"], localPath).split(Char.nl).select({ |t| t.size != 0 })
 	}
-	*git { |args, cd, getOutput=false|
+	*git { |args, cd|
 		var cmd;
-		if(cd.notNil,{
+		if(cd.notNil, {
 			cmd = ["cd", cd.escapeChar($ ), "&&", "git"];
 		},{
 			cmd = ["git"];
 		});
 		cmd = (cmd ++ args).join(" ");
-		if(getOutput, {
-			// no way of knowing if there was an error
-			^cmd.debug.unixCmdGetStdOut;
-		});
-		cmd.debug.unixCmd({ |result|
-			if(result != 0, {
-				("Git command failed [" ++ result ++ "]:" + cmd).error;
-			})
-		});
+		^cmd.debug.unixCmdGetStdOut;
 	}
 }
