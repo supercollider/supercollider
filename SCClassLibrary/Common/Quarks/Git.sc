@@ -1,68 +1,69 @@
 
 Git {
+	var <>localPath;
 
-	*clone { |url, localPath|
+	*isGit { |localPath|
+		^File.exists(localPath +/+ ".git")
+	}
+	*new { |localPath|
+		^super.new.localPath_(localPath)
+	}
+	clone { |url|
 		this.git([
 			"clone",
 			url,
 			localPath.escapeChar($ )
-		]);
+		], false);
 	}
-	*pull { |localPath|
-		this.git(["pull"], localPath)
+	pull {
+		this.git(["pull"])
 	}
-	*checkout { |refspec, localPath|
-		this.git(["checkout", refspec], localPath)
+	checkout { |refspec|
+		this.git(["checkout", refspec])
 	}
-	*fetch { |localPath|
-		this.git(["fetch"], localPath)
+	fetch {
+		this.git(["fetch"])
 	}
-	*isGit { |localPath|
-		^File.exists(localPath +/+ ".git")
-	}
-	*isDirty { |localPath|
-		var out = this.git(["--no-pager diff HEAD --"], localPath);
+	isDirty {
+		var out = this.git(["--no-pager diff HEAD --"]);
 		if(out.size != 0, {
 			out.debug;
 			^true
 		});
 		^false
 	}
-	*remote { |localPath|
+	remote {
 		// detect origin of repo or nil
 		// origin	git://github.com/supercollider-quarks/MathLib (fetch)
 		// origin	git://github.com/supercollider-quarks/MathLib (push)
-		var out = this.git(["remote -v"], localPath),
+		var out = this.git(["remote -v"]),
 			match = out.findRegexp("^origin\t([^ ]+) \\(fetch\\)");
 		if(match.size > 0, {
 			^match[1][1]
 		});
 		^nil
 	}
-	*refspec { |localPath|
+	refspec {
 		var
-			out = this.git(
-				["log --pretty=format:'%d' --abbrev-commit --date=short -1 | cat"],
-				localPath,
-				true),
+			out = this.git(["log --pretty=format:'%d' --abbrev-commit --date=short -1 | cat"]),
 			match = out.findRegexp("tag: ([a-zA-Z0-9\.\-_]+)");
 		if(match.size > 0, {
 			^"tags/" ++ match[1][1]
 		});
-		out = this.git(["rev-parse HEAD"], localPath);
+		out = this.git(["rev-parse HEAD"]);
 		^out.copyRange(0, out.size - 2)
 	}
-	*remoteLatest { |localPath|
-		var out = this.git(["rev-parse origin/master"], localPath);
+	remoteLatest {
+		var out = this.git(["rev-parse origin/master"]);
 		^out.copyRange(0, out.size - 2)
 	}
-	*tags { |localPath|
-		^this.git(["tag"], localPath).split(Char.nl).select({ |t| t.size != 0 })
+	tags {
+		^this.git(["tag"]).split(Char.nl).select({ |t| t.size != 0 })
 	}
-	*git { |args, cd|
+	git { |args, cd=true|
 		var cmd;
-		if(cd.notNil, {
-			cmd = ["cd", cd.escapeChar($ ), "&&", "git"];
+		if(cd, {
+			cmd = ["cd", localPath.escapeChar($ ), "&&", "git"];
 		},{
 			cmd = ["git"];
 		});

@@ -1,7 +1,7 @@
 
 Quark {
 	var <name, <url, >refspec, data, <localPath;
-	var <changed = false;
+	var <changed = false, <git;
 
 	*new { |name, refspec|
 		var url;
@@ -11,10 +11,6 @@ Quark {
 	*fromLocalPath { |path|
 		var name, url, refspec;
 		name = path.basename;
-		if(Git.isGit(path), {
-			url = Git.remote(path);
-		});
-		// refspec if git
 		^super.new.init(name, url, refspec, path)
 	}
 	*fromDirectoryEntry { |name, quarkUrl|
@@ -27,6 +23,10 @@ Quark {
 		url = argUrl;
 		refspec = argRefspec;
 		localPath = argLocalPath ?? {Quarks.folder +/+ name};
+		if(Git.isGit(localPath), {
+			git = Git(localPath);
+			url = url ?? {git.remote};
+		});
 	}
 	data {
 		^data ?? {
@@ -41,11 +41,11 @@ Quark {
 	}
 	refspec {
 		^refspec ?? {
-			Git.refspec(this.localPath)
+			git.refspec
 		}
 	}
 	tags {
-		^Git.tags(this.localPath)
+		^git.tags
 	}
 	isDownloaded {
 		^File.exists(this.localPath)
@@ -68,28 +68,27 @@ Quark {
 	}
 
 	checkout {
-		var localPath = this.localPath;
 		if(this.isDownloaded
-			and: {Git.isGit(localPath)}
-			and: {Git.isDirty(localPath)},
+			and: {git.notNil}
+			and: {git.isDirty},
 		{
 			Error("% has uncommited changes, cannot checkout %".format(name, refspec ? "")).throw;
 		});
-		if(url.isNil and: {Git.isGit(localPath)}, {
-			url = Git.remote(localPath);
+		if(url.isNil and: {git.notNil}, {
+			url = git.remote;
 			if(url.isNil, {
 				Error("No git url, cannot checkout quark" + this).throw;
 			});
 		});
 		if(this.isDownloaded.not, {
-			Git.clone(url, localPath);
+			git.clone(url);
 			// get tags etc
-			Git.fetch(localPath);
+			git.fetch();
 			changed = true;
 			data = nil;
 		});
 		if(refspec.notNil, {
-			Git.checkout(refspec, localPath);
+			git.checkout(refspec);
 			changed = true;
 			data = nil;
 		});
@@ -148,15 +147,13 @@ Quark {
 			// lookup url in directory
 			quarkUrl = Quarks.findQuarkURL(name);
 			if(quarkUrl.isNil, {
+				// look in Quarks.folder
 				localPath = Quarks.folder +/+ name;
 				if(File.exists(localPath), {
 					// a quark not in the index
 					// referred to by just its name
 					// so assumed to be downloaded or previously cloned
 					// or we are offline and there is no cached directory.txt
-					if(Git.isGit(localPath), {
-						url = Git.remote(localPath);
-					});
 					^[name, url, refspec]
 				}, {
 					Error("% not found".format(name)).throw;
