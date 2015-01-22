@@ -1,11 +1,13 @@
 title:: Using Quarks
 summary:: A guide to Quarks
 categories:: Quarks
-related:: Classes/Quark, Classes/Quarks
+related:: Classes/Quarks, Classes/Quark, Classes/Git
 
-Quarks are packages of SuperCollider code containing classes, extension methods, documentation and server UGen plugins. The Quarks system manages downloading these packages and installing or uninstalling them.
+Quarks are packages of SuperCollider code containing classes, extension methods, documentation and server UGen plugins. The Quarks class manages downloading these packages and installing or uninstalling them.
 
 section:: Installing quarks
+
+subsection::using the GUI
 
 You can install Quarks using the interface:
 
@@ -15,30 +17,16 @@ Quarks.gui
 
 This offers many community contributed packages most of which are hosted on github.
 
-When you install one it is cloned using git into:
+subsection::by name
 
-code::
-Quarks.folder;
-// open the folder and have a look
-Quarks.openFolder;
-::
-
-and this path is added to the link::Classes/LanguageConfig:: includePaths so that the classes are in SuperCollider's class compile path when you recompile the library.
-
-To see the changes you've made open Preferences > Interpreter > Include Paths. All the paths you've added are visible there.
-
-You can also see or edit these settings in the file sclang_config.yaml
-
-If the Quark is in the community directory then you can (un)install it using just the name:
+You can (un)install a Quark by name:
 
 code::
 Quarks.install("UnitTesting");
 Quarks.uninstall("UnitTesting");
 ::
 
-This consults the directory (fetching if needed) to obtain the git url and most recently tagged version.
-
-You may also install any package from any git URL:
+subsection::by git URL
 
 code::
 Quarks.install("https://github.com/supercollider-quarks/UnitTesting.git");
@@ -46,8 +34,9 @@ Quarks.install("https://github.com/supercollider-quarks/UnitTesting.git");
 Quarks.uninstall("https://github.com/supercollider-quarks/UnitTesting.git");
 ::
 
+subsection::from a local folder
 
-You can install any local folder:
+and you can install any local folder:
 
 code::
 // add your own classes
@@ -56,7 +45,9 @@ Quarks.install("~/supercollider/quarks/my-thing");
 Quarks.install("~/Downloads/something-i-found");
 ::
 
-After installing or uninstalling you need to Language > Recompile Class Library
+subsection::Recompile the class library
+
+After installing or uninstalling you need to strong::Language > Recompile Class Library::
 
 If you've made a bit of a mess:
 
@@ -66,121 +57,209 @@ Quarks.clear
 ::
 
 
-section:: Fixing Conflicts
+subsection::Internals
+
+When you install one it is cloned using git into:
+
+code::
+Quarks.folder;
+// open the folder and have a look
+Quarks.openFolder;
+::
+
+and this path is added to the link::Classes/LanguageConfig:: includePaths so that the classes are in SuperCollider's class path when you recompile the library.
+
+You can view and edit the current include paths via strong::Preferences > Interpreter > Include Paths::.
+
+code::
+LanguageConfig.includePaths
+::
+
+You can also see or edit these settings in the file sclang_config.yaml
+
+
+subsection:: Fixing Conflicts
 
 SuperCollider does not allow duplicate class definitions and will fail to compile if you've accidentally installed conflicting packages.
 
 The Quarks interface can only work if SuperCollider is compiled and running, so if something goes wrong then you have to fix it manually.
 
-If you are using the SC IDE then open Preferences > Interpreter and remove the paths from the Include Paths.
+If you are using the SC IDE then open strong::Preferences > Interpreter:: and remove the paths from the Include Paths.
 
-You can also manually edit sclang_config.yaml
+You can also manually edit teletype::sclang_config.yaml::
 
 
 
-section:: Saving and Loading quarks files
+section:: Saving and Loading sets of Quarks
 
 To make project work simpler you can save and later reload your currently installed Quarks to and from a quarks.txt file.
-This is similar to what the LanguageConfig does, but this also downloads the Quarks if needed and resolves dependencies.
+This is similar to what the LanguageConfig does but this also downloads the Quarks if needed and installs all dependencies.
 
 This is very useful for projects because you can pin the exact releases of each Quark that your project depends on and you should be able to reload them exactly even years in the future.
 
 code::
 // save your current state
 Quarks.save("~/supercollider/quarks.txt");
-// load
+// reload it later
 Quarks.load("~/supercollider/quarks.txt");
 ::
 
 This saves both what quarks you have and what git revision they are on.
-If you have uncommited changes in one of the quarks then it will warn you.
-
-If you have installed local paths that are not under git source control (your own work or things you have downloaded) then the paths will be saved without any version or refspec.
+If you have uncommitted changes in one of the quarks then it will warn you that its dirty.
 
 The save format specifies the revisions using git tags with a fall back to the full sha hash that specifies the revision. In git terminology this is known as a refspec.
+
+If you have installed local paths that are not under git source control (your own work or things you have downloaded) then the paths will be saved without any version or refspec.
 
 The file format looks like this:
 
 code::
-git://github.com/crucialfelix/crucial-library=tags/4.1.4
-git://github.com/supercollider-quarks/ddwCommon=8ae156b460dcb08285013265cf3a1c7172bba665
+git://github.com/crucialfelix/crucial-library@tags/4.1.4
+git://github.com/supercollider-quarks/ddwCommon@8ae156b460dcb08285013265cf3a1c7172bba665
 ~/supercollider/quarks/my-thing
 ::
 
 Note that in this case crucial-library was checked out to the tag 4.1.4, and ddwCommon was not on a tag so the refspec is the SHA hash. In both cases this results in an exact reference.
 
-Any packages not under git source control are specified by path, abreviated to the most logical path relative to the quark file, the home directory of by absolute path. They do not have a version or refspec.
+Even if a quark was installed by name using the directory, the full repository URL will be saved to ensure that the reference is unvarying (the directory.txt could be edited and the URL changed, and that might then point to different source code).
+
+Any packages not under git source control are specified by path, abbreviated to the most logical path relative to the quark file, the home directory or by absolute path. They do not have a version or refspec.
 
 
-section:: Making your own Quark
+section:: Making your own Quarks
 
-Packages are a natural way to store your work. You can start by just installing a path,
+Packages are a natural way to store your work.
 
-Commiting your code to git is optional, but you should consider using it early on. Even if you do not intend to share your code with anyone else, git provides a backup system and a time machine if you break something. Bitbucket offers free hosting for private repositories, but you don't even need an externally hosted respository to use git.
+Install any source code folder as a Quark:
+
+code::
+Quarks.install("~/path/to/my-quark")
+::
+
+Managing your code with git is optional, but you should consider using it early on. Even if you do not intend to share your code with anyone else, git provides a backup system and a time machine if you break something.
 
 code::
 # in the terminal, its easy as this:
 git init
 ::
 
+Bitbucket offers free hosting for private repositories, and you can setup your own git host on any machine that you have SSH access to.  But you don't even need an externally hosted repository to use git.
 
 section:: Publishing a Quark
 
-Make a git repo and push it to github, bitbucket or any publically accessible git host.
+Make a git repository and push it to github, bitbucket or any publicly accessible git host.
 
-tag your releases. The name of the tag is the name of the release version. Using semver (eg "1.0.1") is recommended. The provides the Quarks system with a way to checkout a version and also provides a downloadable version on your github releases page.
+tag your releases. The name of the tag is the name of the release version. Using semver (eg "1.0.1") is recommended. This provides the Quarks system with a way to list versions in the interface and to checkout a version and for people to pin dependencies to a stable release. it also provides a downloadable version on your github releases page.
 
-Add your quark to the community index. The index is this file:
+If its on github then anybody can install your quark.
+
+You can also add your quark to the community directory:
 
 https://github.com/supercollider-quarks/quarks/blob/master/directory.txt
 
-Where you specify the name, the git url and the most recent version as @tags/{version-name}
+Simply click teletype::edit::, make any changes and it submit a pull request.
+
+You specify the name, the git url and optionally the most recent version as @tags/{version-name}
 
 code::
-cruciallib=git://github.com/crucialfelix/crucial-library@tags/4.1.4
+crucial-library=git://github.com/crucialfelix/crucial-library@tags/4.1.4
 ::
 
-Simply click edit on github, make any changes and this will submit a pull request.
+subsection::Migrated Quarks from SVN
 
+I (felix) migrated the old SVN repository to github and preserved all the commits and authorship.
+You may find your old work in one of these quarks:
+
+https://github.com/supercollider-quarks
+
+Contact me to transfer ownership to your own github account. You may also just fork any repo there, or if you've already moved your code to github then just edit the directory to point to your preferred newer version.
+
+Quarks with spaces in the name had to have those spaces removed. Quarks nested inside other quarks (dewdrop_lib) are now un-nested.
 
 subsection::git branches
 
-The default branch for releases is master. If you have wish to release something that is not on master, then just tag it. The tag refers to a specific commit regardless of what branch it is on.
-
+Releases are specified with a git tag which refers to a specific commit regardless of what branch it is on. The default branch is master, but the branch does not really matter, only the tag. If you are not tagging specific releases then Quarks will fetch the master branch.
 
 section:: Quark file
 
-The quark file is a SuperCollider code file containing authorship, version, copyright and dependency information. It's just like package.json in NPM (JavaScript package manager) or bower.json in Bower (web/frontend package manager).
+The quark file is a SuperCollider code file containing authorship, version, copyright and dependency information. It is optional but recommended. None of the fields are required and you may include any custom fields you like.
 
+The most important feature is to specify dependencies, version, summary and to specify the help file.
 
-TODO - work in progress
+It's similar to the package.json file in npm (JavaScript package manager) or bower.json for Bower (web/frontend package manager).
 
-required info
-dependencies
+The file name is the name of the quark followed by the .quark extension:
+
+code::
+{quark name}.quark
+::
+
+and is a supercollider file that returns an IdentifyDictionary
+
+code::
+(
+  name: "DemonWidgets",
+  summary: "Widgets, gadgets and arcane devices for summoning demons.",
+  version: "1.0.0",
+  schelp: "DemonWidgets",
+  dependencies: ["Bjorkland", "Canvas3D", "cruciallib@tags/4.1.4"],
+  license: "GPL",
+  copyright: "Frank Furter, Dr.-Ing. 2015"
+)
+::
+
+Common fields
+
+list::
+## name
+## summary
+## author
+## copyright
+## license - default is GPL
+## version - semver compatible string is preferred eg. "1.0.0"
+## schelp - title  of the primary help file
+## url - home page, defaults to the github/bitbucket url
+## dependencies - see below
+## isCompatible - a function returning a Boolean. Can check for presence of classes, features, version numbers.
+## organization
+## country
+## since
+## ext_dependancy - text describing external software like "PD" or "processing"
+::
+
+dependencies is a list of Quarks or git urls with optional an @refspec
+
+code::
+Bjorkland
+cruciallib@tags/4.1.4
+::
+
+subsection::Deprecated/ignored fields
+
+teletype::path:: was used for SVN
+
+teletype::helpdoc:: specifies an html help file in the Quark. It will still work and will load the helpfile, but schelp is preferred.
 
 section:: Contributing fixes to a quark
 
-work on it in place vs. clone it separately
-make a pull request
+If the quark is not yours, then you might have to fork and make your changes there.
 
-
-section:: Offline
-
-can download a release of everything
-
-"https://github.com/supercollider-quarks/quarks/releases"
-
-when a quark is cloned it can switch versions even if offline.
-
-
-
-section:: Useful API
+Invaluable tool: https://hub.github.com/
 
 code::
-Quarks.installed
-Quarks.openFolder
-
-Quark(name).definesClasses
-Quark(name).definesExtensionMethods
+# in terminal
+hub fork
 ::
 
+You can also just clone the quark manually and then install it using the path.
+
+
+section:: Offline Usage
+
+Quarks should be useable even when offline.
+The directory is cached, refreshed every four hours.
+Cloned quarks can switch versions without needing to be online.
+
+You can download a zipped release of all quarks:
+
+https://github.com/supercollider-quarks/quarks/releases
