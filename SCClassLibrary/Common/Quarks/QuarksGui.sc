@@ -322,7 +322,6 @@ QuarkDetailView {
 			isDownloaded = model.isDownloaded;
 			url = model.url;
 			// if webpage is different than the github url
-			model.data['url'].debug(url);
 			btnOpenWebpage.enabled = model.data['url'] != url and: {url.notNil};
 			btnOpenGithub.enabled = url.notNil;
 			btnClasses.enabled = isInstalled;
@@ -330,16 +329,19 @@ QuarkDetailView {
 			btnHelp.enabled = isInstalled;
 			btnOpenFolder.enabled = isDownloaded;
 
-			if(Git.isGit(model.localPath).not, {
+			if(model.git.isNil, {
 				selectVersion.items = [];
 				selectVersion.enabled = false;
 			}, {
 				tags = model.tags.collect({ |t| "tags/" ++ t });
-				refspec = Git.refspec(model.localPath);
+				refspec = model.git.refspec;
 				if(tags.indexOfEqual(refspec).isNil, {
 					tags = tags.add(refspec);
 				});
-				if(Git.isDirty(model.localPath), {
+				// if model.git.remoteLatest != current
+				// show that you can update
+				tags = tags.add("HEAD");
+				if(model.git.isDirty, {
 					selectVersion.enabled = false;
 					refspec = "DIRTY";
 					tags = tags.add("DIRTY");
