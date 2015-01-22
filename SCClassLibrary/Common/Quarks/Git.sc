@@ -52,6 +52,10 @@ Git {
 		out = this.git(["rev-parse HEAD"], localPath, true);
 		^out.copyRange(0, out.size - 2)
 	}
+	*remoteLatest { |localPath|
+		var out = this.git(["rev-parse origin/master"], localPath, true);
+		^out.copyRange(0, out.size - 2)
+	}
 	*tags { |localPath|
 		^this.git(["tag"], localPath, true).split(Char.nl).select({ |t| t.size != 0 })
 	}
