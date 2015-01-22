@@ -1,6 +1,6 @@
 
 Git {
-	var <>localPath;
+	var <>localPath, >url, tag, sha, remoteLatest, tags;
 
 	*isGit { |localPath|
 		^File.exists(localPath +/+ ".git")
@@ -14,6 +14,7 @@ Git {
 			url,
 			localPath.escapeChar($ )
 		], false);
+		this.url = url;
 	}
 	pull {
 		this.git(["pull"])
@@ -25,12 +26,12 @@ Git {
 		this.git(["fetch"])
 	}
 	isDirty {
-		var out = this.git(["--no-pager diff HEAD --"]);
-		if(out.size != 0, {
-			out.debug;
-			^true
-		});
-		^false
+		^this.git(["--no-pager diff HEAD --"]).size != 0
+	}
+	url {
+		^url ?? {
+			url = this.remote;
+		}
 	}
 	remote {
 		// detect origin of repo or nil
@@ -44,21 +45,35 @@ Git {
 		^nil
 	}
 	refspec {
-		var
-			out = this.git(["log --pretty=format:'%d' --abbrev-commit --date=short -1 | cat"]),
-			match = out.findRegexp("tag: ([a-zA-Z0-9\.\-_]+)");
-		if(match.size > 0, {
-			^"tags/" ++ match[1][1]
-		});
-		out = this.git(["rev-parse HEAD"]);
-		^out.copyRange(0, out.size - 2)
+		^this.tag ?? { this.sha }
+	}
+	tag {
+		^tag ?? {
+			var
+				out = this.git(["log --pretty=format:'%d' --abbrev-commit --date=short -1 | cat"]),
+				match = out.findRegexp("tag: ([a-zA-Z0-9\.\-_]+)");
+			if(match.size > 0, {
+				tag = "tags/" ++ match[1][1]
+			});
+			tag
+		}
+	}
+	sha {
+		^sha ?? {
+			var out = this.git(["rev-parse HEAD"]);
+			sha = out.copyRange(0, out.size - 2)
+		}
 	}
 	remoteLatest {
-		var out = this.git(["rev-parse origin/master"]);
-		^out.copyRange(0, out.size - 2)
+		remoteLatest ?? {
+			var out = this.git(["rev-parse origin/master"]);
+			remoteLatest = out.copyRange(0, out.size - 2)
+		}
 	}
 	tags {
-		^this.git(["tag"]).split(Char.nl).select({ |t| t.size != 0 })
+		^tags ?? {
+			tags = this.git(["tag"]).split(Char.nl).select({ |t| t.size != 0 })
+		}
 	}
 	git { |args, cd=true|
 		var cmd;
