@@ -1,6 +1,6 @@
 
 Quark {
-	var <name, <url, >refspec, data, <localPath;
+	var <name, url, >refspec, data, <localPath;
 	var <changed = false, <git;
 
 	*new { |name, refspec|
@@ -25,7 +25,6 @@ Quark {
 		localPath = argLocalPath ?? {Quarks.folder +/+ name};
 		if(Git.isGit(localPath), {
 			git = Git(localPath);
-			url = url ?? {git.remote};
 		});
 	}
 	data {
@@ -38,6 +37,11 @@ Quark {
 	}
 	summary {
 		^this.data['summary']
+	}
+	url {
+		^url ?? {
+			url = git !? { git.url }
+		}
 	}
 	refspec {
 		^refspec ?? {
@@ -81,6 +85,7 @@ Quark {
 			});
 		});
 		if(this.isDownloaded.not, {
+			git = Git(localPath);
 			git.clone(url);
 			// get tags etc
 			git.fetch();
