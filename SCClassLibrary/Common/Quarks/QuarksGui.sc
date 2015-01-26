@@ -175,9 +175,7 @@ QuarkDetailView {
 					if(url.beginsWith("git:"), {
 						url = "https:" ++ url.copyToEnd(4)
 					});
-					// windows: start
-					// linux: xdg-open
-					("open" + url).unixCmd;
+					openOS(url);
 				});
 			});
 
@@ -189,9 +187,7 @@ QuarkDetailView {
 					if(url.beginsWith("git:"), {
 						url = "https:" ++ url.copyToEnd(4)
 					});
-					// windows: start
-					// linux: xdg-open
-					("open" + url).unixCmd;
+					openOS(url);
 				});
 			});
 
