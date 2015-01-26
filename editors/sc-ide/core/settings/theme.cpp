@@ -46,7 +46,8 @@ int legacyTheme(Manager * settings)
 
     QList<QString> keys;
     keys << "evaluatedCode" << "lineNumbers" << "matchingBrackets"
-         << "searchResult" << "selection" << "text";
+         << "searchResult" << "selection" << "text" << "currentLine"
+         << "matchingBrackets" << "postwindowtext";
 
     foreach(QString key, keys) {
         if (settings->contains(group + key)) {
@@ -60,7 +61,9 @@ int legacyTheme(Manager * settings)
     keys.clear();
 
     keys << "keyword" << "built-in" << "env-var" << "class" << "number"
-         << "symbol" << "string" << "char" << "comment" << "primitive";
+         << "symbol" << "string" << "char" << "comment" << "primitive"
+         << "postwindowemphasis" << "postwindowerror" << "postwindowsuccess"
+         << "postwindowwarning" << "whitespace";
 
     foreach(QString key, keys) {
         if (settings->contains(group + key)) {
