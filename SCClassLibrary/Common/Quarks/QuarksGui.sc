@@ -323,7 +323,8 @@ QuarkDetailView {
 			btnClasses.enabled = isInstalled;
 			btnMethods.enabled = isInstalled;
 			btnHelp.enabled = isInstalled;
-			btnOpenFolder.enabled = isDownloaded;
+			btnOpenFolder.enabled = isDownloaded or: isInstalled;
+			btnCheckout.enabled = model.url.notNil;
 
 			if(model.git.isNil, {
 				selectVersion.items = [];
@@ -360,16 +361,23 @@ QuarkDetailView {
 		view.visible = bool;
 	}
 	descriptionForQuark { |quark|
-		var lines, dependencies;
+		var lines,
+			dependencies,
+			isInstalled = quark.isInstalled,
+			isDownloaded = quark.isDownloaded;
 		lines = [
 			quark.name,
-			"downloaded:" + quark.isDownloaded,
-			"installed:" + quark.isInstalled,
-			"path:" + quark.localPath,
-			"url:" + quark.url
+			"url:" + quark.url,
+			"installed:" + isInstalled,
+			if(quark.url.notNil, { "downloaded:" + isDownloaded }),
+			if(isDownloaded or: isInstalled, { "path:" + quark.localPath })
 		];
+		if(isInstalled and: { File.exists(quark.localPath).not }, {
+			lines = lines.add("ERROR: path does not exist");
+		});
+
 		quark.data.keysValuesDo({ |k, v|
-			if([\name, \summary, \url, \path].includes(k).not) {
+			if([\name, \summary, \url, \path, \dependencies].includes(k).not) {
 				lines = lines.add(k.asString ++ ":" + v.asString);
 			}
 		});
@@ -383,7 +391,7 @@ QuarkDetailView {
 				quark.summary
 			];
 		});
-		^lines.join(Char.nl);
+		^lines.select(_.notNil).join(Char.nl);
 	}
 }
 
