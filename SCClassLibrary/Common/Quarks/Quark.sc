@@ -93,7 +93,14 @@ Quark {
 			data = nil;
 		});
 		if(refspec.notNil, {
-			git.checkout(refspec);
+			if(refspec == "HEAD", {
+				git.pull()
+			}, {
+				// when do you have to fetch ?
+				// if offline then you do not want to fetch
+				// just checkout. fast switching
+				git.checkout(refspec)
+			});
 			changed = true;
 			data = nil;
 		});
