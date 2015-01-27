@@ -66,7 +66,7 @@ QuarksGui {
 
 		treeView = TreeView()
 			.setProperty(\rootIsDecorated, false)
-			.columns_(["Install", "Name", "Summary"])
+			.columns_(["", "", "Name", "Version", "Summary"])
 			.itemPressedAction_({ |v|
 				detailView.visible = true;
 			})
@@ -115,7 +115,7 @@ QuarksGui {
 			});
 		});
 		treeView.canSort = true;
-		treeView.sort(1);
+		treeView.sort(1, true);
 		treeView.invokeMethod(\resizeColumnToContents, 0);
 		treeView.invokeMethod(\resizeColumnToContents, 1);
 		btnRecompile.enabled = recompile;
@@ -404,6 +404,8 @@ QuarkRowView {
 		treeItem = parent.addItem([
 			nil,
 			"",
+			"",
+			"",
 			""
 		]).setView(0, btn);
 
@@ -424,7 +426,8 @@ QuarkRowView {
 		var palette = GUI.current.tryPerform(\palette),
 			c = palette !? {palette.button},
 			green = c.notNil.if({Color.green.blend(c, 0.5)}, {Color.green(1, 0.5)}),
-			grey = c.notNil.if({Color.grey.blend(c, 0.5)}, {Color.grey(1, 0.5)});
+			grey = c.notNil.if({Color.grey.blend(c, 0.5)}, {Color.grey(1, 0.5)}),
+			isInstalled;
 
 		btn.states = [
 			if(quark.isDownloaded, {
@@ -435,10 +438,13 @@ QuarkRowView {
 			["✓", nil, green],
 		];
 
-		btn.value = quark.isInstalled.binaryValue;
+		isInstalled = quark.isInstalled;
+		btn.value = isInstalled.binaryValue;
 
-		treeItem.setString(1, quark.name ? "");
-		treeItem.setString(2,
+		treeItem.setString(1, isInstalled.if("Y", { quark.isDownloaded.if("N", "") }));
+		treeItem.setString(2, quark.name ? "");
+		treeItem.setString(3, (quark.version ? "").asString);
+		treeItem.setString(4,
 			if(quark.summary.isNil, {
 				""
 			}, {
