@@ -417,6 +417,7 @@ void EditorPage::updateTextFormatEdit()
         ui->fgPicker->setEnabled(enable);
         ui->italicOption->setEnabled(enable);
         ui->boldOption->setEnabled(enable);
+        ui->fgClearBtn->setEnabled(enable);
     }
 }
 
