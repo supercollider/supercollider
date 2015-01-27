@@ -107,6 +107,12 @@ Quarks {
 			path.withoutTrailingSlash.endsWith(name)
 		})
 	}
+	*pathIsInstalled{ |path|
+		path = path.withoutTrailingSlash;
+		^LanguageConfig.includePaths.any({ |apath|
+			apath.withoutTrailingSlash == path
+		})
+	}
 	*openFolder {
 		this.folder.openOS;
 	}
@@ -192,20 +198,17 @@ Quarks {
 		var all = Dictionary.new, f;
 		// those in index
 		this.directory.keysValuesDo({ |name, quarkURL|
-			all[name] = Quark.fromDirectoryEntry(name, quarkURL);
+			var q = Quark.fromDirectoryEntry(name, quarkURL);
+			all[q.localPath] = q;
 		});
+
 		f = { |path|
-			var quark;
-			if(File.type(path) == \directory, {
-				quark = Quark.fromLocalPath(path);
-				all[quark.name] = quark;
+			// \directory or \not_found, but not a file
+			if(File.type(path) !== \regular, {
+				all[path] = Quark.fromLocalPath(path);
 			});
 		};
-
-		// this means alternate versions are hidden
-		// those checked out in folder or linked in language config
 		(Quarks.folder +/+ "*").pathMatch.do(f);
-		// running many duplicates, but do not want to miss any that were linked
 		LanguageConfig.includePaths.do(f);
 		^all.values
 	}
