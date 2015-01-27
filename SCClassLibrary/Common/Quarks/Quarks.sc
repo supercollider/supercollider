@@ -65,7 +65,7 @@ Quarks {
 				// quark name if in directory and is using same repo
 				// else git url
 				qpath = quark.url;
-				if(Git.isDirty(quark.localPath), {
+				if(Git(quark.localPath).isDirty, {
 					("Working copy is dirty" + quark.localPath).warn;
 				}, {
 					refspec = quark.refspec;
