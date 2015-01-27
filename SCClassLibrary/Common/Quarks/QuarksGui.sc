@@ -18,7 +18,10 @@ QuarksGui {
 			btnUpdateDirectory,
 			btnQuarksHelp,
 			btnOpenFolder,
-			lblCaption;
+			lblCaption,
+			btnClear,
+			btnLoad,
+			btnSave;
 
 		model = Quarks;
 		palette = GUI.current.palette;
@@ -54,12 +57,33 @@ QuarksGui {
 			.toolTip_("Open" + model.folder)
 			.action_({ model.openFolder });
 
+		btnClear = Button().states_([["Uninstall all"]])
+			.toolTip_("Uninstall all")
+			.action_({ model.clear; this.update; });
+
+		btnLoad = Button().states_([["Load Quarks file"]])
+			.toolTip_("Install a set of quarks from a file")
+			.action_({
+				Dialog.openPanel({ |path|
+					model.load(path);
+					this.update;
+				})
+			});
+
+		btnSave = Button().states_([["Save Quarks file"]])
+			.toolTip_("Save currently installed quarks to a file")
+			.action_({
+				Dialog.savePanel({ |path|
+					model.save(path)
+				})
+			});
+
 		btnRecompile = Button().states_([
 				["Recompile class library"],
 				["Recompile class library", Color.black, Color.yellow]
 			])
 			.toolTip_("You will need to recompile the class library after making any changes")
-			.action_({ thisProcess.recompile })
+			.action_({ thisProcess.platform.recompile })
 			.enabled_(false);
 
 		lblMsg = StaticText().font_(GUI.font.new(size:12, usePointSize:true));
@@ -91,7 +115,7 @@ QuarksGui {
 		window.layout =
 			VLayout(
 				lblCaption,
-				HLayout(btnUpdateDirectory, btnOpenFolder, btnQuarksHelp, btnRecompile, nil),
+				HLayout(btnUpdateDirectory, btnOpenFolder, btnQuarksHelp, btnClear, btnSave, btnLoad, btnRecompile, nil),
 				lblMsg,
 				[treeView, s:5],
 				[detailView.makeView(this), s:2]
