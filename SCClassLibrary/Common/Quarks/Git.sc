@@ -50,7 +50,7 @@ Git {
 	tag {
 		^tag ?? {
 			var
-				out = this.git(["log --pretty=format:'%d' --abbrev-commit --date=short -1 | cat"]),
+				out = this.git(["--no-pager log --pretty=format:'%d' --abbrev-commit --date=short -1"]),
 				match = out.findRegexp("tag: ([a-zA-Z0-9\.\-_]+)");
 			if(match.size > 0, {
 				tag = "tags/" ++ match[1][1]
