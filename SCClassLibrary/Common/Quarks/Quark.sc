@@ -202,7 +202,8 @@ Quark {
 		// old html help doc
 		p = this.data['helpdoc'];
 		if(p.notNil, {
-			^HelpBrowser.goTo(URI.fromLocalPath(this.localPath +/+ p).asString);
+			(this.localPath +/+ p).openOS;
+			// ^HelpBrowser.goTo(URI.fromLocalPath(this.localPath +/+ p).asString);
 		});
 		HelpBrowser.openBrowsePage("Quarks>" ++ name);
 	}

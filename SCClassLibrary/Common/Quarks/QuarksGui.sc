@@ -346,7 +346,9 @@ QuarkDetailView {
 			btnOpenGithub.enabled = url.notNil;
 			btnClasses.enabled = isInstalled;
 			btnMethods.enabled = isInstalled;
-			btnHelp.enabled = isInstalled;
+			btnHelp.enabled = isInstalled or: {
+				isDownloaded and: {model.data['helpdoc'].isString}
+			};
 			btnOpenFolder.enabled = isDownloaded or: isInstalled;
 			btnCheckout.enabled = model.url.notNil;
 
