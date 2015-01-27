@@ -55,7 +55,7 @@ Quark {
 		^File.exists(this.localPath)
 	}
 	isInstalled {
-		^Quarks.isInstalled(name)
+		^Quarks.pathIsInstalled(this.localPath)
 	}
 	isCompatible {
 		^this.data['isCompatible'].value !== false
