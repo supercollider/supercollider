@@ -105,7 +105,7 @@ Quark {
 			("Invalid dependencies " + this + deps).warn;
 			^[]
 		});
-		^deps.collect({ |dep| this.parseDependency(dep) });
+		^deps.collect({ |dep| this.parseDependency(dep) }).select(_.notNil);
 	}
 	deepDependencies {
 		var deps = Dictionary.new;
@@ -122,7 +122,14 @@ Quark {
 		// (1) string
 		var name, version, url, q;
 		if(dep.isString, {
-			^Quarks.at(dep)
+			{
+				q = Quarks.at(dep)
+			}.try({ |err|
+				// bad name, or quark not found
+				err.errorString.postln;
+				(this.asString + "failed to find dependency" + dep.asCompileString).warn;
+			});
+			^q
 		});
 		// support older styles:
 		// (2) name->version
