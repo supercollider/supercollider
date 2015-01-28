@@ -214,6 +214,7 @@ Quarks {
 		f = { |path|
 			// \directory or \not_found, but not a file
 			if(File.type(path) !== \regular, {
+				path = path.withoutTrailingSlash;
 				all[path] = Quark.fromLocalPath(path);
 			});
 		};

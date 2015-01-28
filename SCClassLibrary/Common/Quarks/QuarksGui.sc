@@ -129,10 +129,10 @@ QuarksGui {
 		var recompile = false;
 		treeView.canSort = false;
 		model.all.do({ |quark|
-			var qrv;
-			qrv = quarkRows.at(quark.name);
+			var qrv, lp = quark.localPath;
+			qrv = quarkRows.at(lp);
 			if(qrv.isNil, {
-				quarkRows[quark.name] = QuarkRowView(treeView, quark, this);
+				quarkRows[lp] = QuarkRowView(treeView, quark, this);
 			}, {
 				qrv.update;
 				if(qrv.quark.changed, { recompile = true });
@@ -142,6 +142,8 @@ QuarksGui {
 		treeView.sort(1, true);
 		treeView.invokeMethod(\resizeColumnToContents, 0);
 		treeView.invokeMethod(\resizeColumnToContents, 1);
+		treeView.invokeMethod(\resizeColumnToContents, 2);
+		treeView.invokeMethod(\resizeColumnToContents, 3);
 		btnRecompile.enabled = recompile;
 		btnRecompile.value = recompile.if(1, 0);
 		detailView.update();
