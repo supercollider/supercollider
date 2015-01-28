@@ -39,6 +39,13 @@ METHOD:: clear
 Uninstall all Quarks, by setting LanguageConfig.installedPaths to empty.
 returns:: this
 
+METHOD:: addFolder
+ARGUMENT:: path
+In addition to the default downloaded-quarks
+add folders that contain quarks to offer on the menu for installation.
+These may be private quarks, cloned working copies or folders where you have manually downloaded quarks.
+returns:: this
+
 METHOD:: all
 All Quarks whether downloaded or installed or not. Includes any Quarks that were installed by path.
 returns:: Array of Quarks

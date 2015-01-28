@@ -17,6 +17,15 @@ Quarks.gui
 
 This offers many community contributed packages most of which are hosted on github.
 
+You can also add additional folders where you keep your personally developed quarks or those you have forked or downloaded.
+These will also be shown on the GUI as options for installing.
+
+code::
+// put this in your startup.scd
+Quarks.addFolder("~/supercollider/quarks");
+::
+
+
 subsection::by name
 
 You can (un)install a Quark by name:
@@ -136,6 +145,14 @@ code::
 Quarks.install("~/path/to/my-quark")
 ::
 
+Or create a folder where you do your development work and add that to the additional folders:
+
+code::
+Quarks.addFolder("~/supercollider/quarks");
+::
+
+Now you can (un)install your own packages from your local folder.
+
 Managing your code with git is optional, but you should consider using it early on. Even if you do not intend to share your code with anyone else, git provides a backup system and a time machine if you break something.
 
 code::
@@ -144,6 +161,8 @@ git init
 ::
 
 Bitbucket offers free hosting for private repositories, and you can setup your own git host on any machine that you have SSH access to.  But you don't even need an externally hosted repository to use git.
+
+Hard drives die, backups fail, people make mistakes. If you keep a copy on bitbucket then your work is that much safer.
 
 section:: Publishing a Quark
 
@@ -242,17 +261,19 @@ teletype::helpdoc:: specifies an html help file in the Quark. It will still work
 
 section:: Contributing fixes to a quark
 
-If the quark is not yours, then you might have to fork and make your changes there.
-
-Invaluable tool: https://hub.github.com/
+Best practice is to clone the quark into a folder where you do your development work.
+Make a ~/supercollider/quarks (or wherever you want it) and add this to the Quarks folders:
 
 code::
-# in terminal
-hub fork
+Quarks.addFolder("~/supercollider/quarks");
 ::
 
-You can also just clone the quark manually and then install it using the path.
+git clone the quark into that folder. You can do your development work / hacking there
+and submit a pull request to the repository owner.
 
+There is a git extension that is quite useful for working with github repositories is https://hub.github.com
+
+If you use Quarks.gui you should now be able to see both the downloaded version of the quark and also your own cloned version.
 
 section:: Offline Usage
 
