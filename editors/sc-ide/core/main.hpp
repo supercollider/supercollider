@@ -21,6 +21,7 @@
 #ifndef SCIDE_MAIN_HPP_INCLUDED
 #define SCIDE_MAIN_HPP_INCLUDED
 
+#include <QAbstractNativeEventFilter>
 #include <QAction>
 #include <QObject>
 
@@ -62,7 +63,7 @@ private:
 };
 
 class Main:
-        public QObject
+    public QObject, public QAbstractNativeEventFilter
 {
     Q_OBJECT
 
@@ -115,6 +116,7 @@ Q_SIGNALS:
 private:
     Main(void);
     bool eventFilter(QObject *obj, QEvent *event);
+    bool nativeEventFilter(const QByteArray&, void* message, long*);
     
     Settings::Manager *mSettings;
     ScProcess * mScProcess;

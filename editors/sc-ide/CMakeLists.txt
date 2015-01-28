@@ -175,7 +175,10 @@ if(APPLE)
 endif()
 
 if(APPLE)
-	list(APPEND ide_src ${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp)
+	list(APPEND ide_src 
+        ${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp
+        ${CMAKE_SOURCE_DIR}/QtCollider/hacks/hacks_mac.mm
+    )
 elseif(WIN32)
     list(APPEND ide_src ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
 endif()
@@ -255,8 +258,11 @@ else()
     set_target_properties(SuperCollider PROPERTIES OUTPUT_NAME "scide")
 endif()
 
-target_link_libraries(SuperCollider ${QT_IDE_LIBRARIES})
-target_link_libraries(SuperCollider ${YAMLCPP_LIBRARY})
+target_link_libraries( SuperCollider
+    ${QT_IDE_LIBRARIES}
+    ${YAMLCPP_LIBRARY}
+    oscpack
+)
 
 if(Boost_FOUND)
     target_link_libraries( SuperCollider ${Boost_SYSTEM_LIBRARY} )
@@ -267,7 +273,7 @@ endif()
 
 if(APPLE)
     target_link_libraries( ${ide_name} "-framework CoreServices -framework Foundation")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -F/Library/Frameworks")
+    target_link_libraries( ${ide_name} "-framework Cocoa" )
 elseif(WIN32)
     target_link_libraries( SuperCollider wsock32 )
     # The following prevents a Windows console from showing up

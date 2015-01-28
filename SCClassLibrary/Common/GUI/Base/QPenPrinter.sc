@@ -60,4 +60,6 @@ QPenPrinter : QObject {
 	fromPage { ^this.getProperty(\fromPage) }
 	toPage { ^this.getProperty(\toPage) }
 	pageSize { ^this.pageRect.size }
+
+	bounds { ^this.pageRect }
 }

@@ -11,6 +11,10 @@
 #ifndef BOOST_INTERPROCESS_MANAGED_OPEN_OR_CREATE_IMPL
 #define BOOST_INTERPROCESS_MANAGED_OPEN_OR_CREATE_IMPL
 
+#if defined(_MSC_VER)
+#  pragma once
+#endif
+
 #include <boost/interprocess/detail/config_begin.hpp>
 #include <boost/interprocess/detail/os_thread_functions.hpp>
 #include <boost/interprocess/detail/os_file_functions.hpp>
@@ -32,7 +36,7 @@
 namespace boost {
 namespace interprocess {
 
-/// @cond
+#if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
 namespace ipcdetail{ class interprocess_tester; }
 
 
@@ -55,7 +59,7 @@ struct managed_open_or_create_impl_device_id_t<xsi_shared_memory_file_wrapper>
 
 #endif   //BOOST_INTERPROCESS_XSI_SHARED_MEMORY_OBJECTS
 
-/// @endcond
+#endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 
 namespace ipcdetail {
 

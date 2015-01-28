@@ -195,8 +195,8 @@ ScrollView : AbstractScroll {
 StaticText : TextViewBase {
 	*qtClass { ^'QLabel' }
 
-	*new { arg aParent, aBounds;
-		var obj = super.new( aParent, aBounds );
+	*new { arg parent, bounds;
+		var obj = super.new( parent, bounds );
 		obj.setProperty(\wordWrap, true);
 		^obj;
 	}

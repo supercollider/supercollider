@@ -57,8 +57,10 @@ else()
   add_library (libsupernova STATIC ${libsupernova_src})
 endif()
 
-set_property(TARGET libsupernova
-             PROPERTY OUTPUT_NAME supernova)
+if(NOT WIN32)
+  set_property(TARGET libsupernova
+               PROPERTY OUTPUT_NAME supernova)
+endif()
 
 target_link_libraries(libsupernova oscpack tlsf ${PTHREADS_LIBRARIES})
 
@@ -143,24 +145,14 @@ add_executable(supernova server/main.cpp ${supernova_headers})
 target_link_libraries(supernova libsupernova)
 
 
-if(APPLE)
-	# determines the app name and app install location (scappbundlename, scappdir):
-	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
-
-	install(TARGETS supernova
-			DESTINATION ${scappauxresourcesdir}
-			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE OWNER_WRITE)
-
-elseif(WIN32)
+if(WIN32)
 	install(TARGETS supernova
         DESTINATION "SuperCollider"
         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-
-else()
-
-install(TARGETS supernova
-        DESTINATION "bin"
-        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+elseif(NOT APPLE)
+  install(TARGETS supernova
+          DESTINATION "bin"
+          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endif()
 
 if(LTO)

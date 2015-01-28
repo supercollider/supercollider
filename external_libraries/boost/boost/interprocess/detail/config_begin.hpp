@@ -13,10 +13,6 @@
 #endif
 
 #ifdef BOOST_MSVC
-   #ifndef _CRT_SECURE_NO_DEPRECATE
-   #define  BOOST_INTERPROCESS_CRT_SECURE_NO_DEPRECATE
-   #define _CRT_SECURE_NO_DEPRECATE
-   #endif
    #pragma warning (push)
    #pragma warning (disable : 4702) // unreachable code
    #pragma warning (disable : 4706) // assignment within conditional expression

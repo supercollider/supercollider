@@ -1334,6 +1334,7 @@ void ScCodeEditor::evaluateLine()
         if( mStepForwardEvaluation ) {
             QTextCursor newCursor = cursor;
             newCursor.movePosition(QTextCursor::NextBlock);
+            newCursor.setVerticalMovementX( cursor.verticalMovementX() );
             setTextCursor(newCursor);
         }
 
@@ -1372,6 +1373,7 @@ void ScCodeEditor::evaluateRegion()
             if( mStepForwardEvaluation ) {
                 QTextCursor newCursor = cursor;
                 newCursor.movePosition(QTextCursor::NextBlock);
+                newCursor.setVerticalMovementX( cursor.verticalMovementX() );
                 setTextCursor(newCursor);
             }
             // Adjust cursor for code blinking:

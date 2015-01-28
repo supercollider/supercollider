@@ -90,4 +90,10 @@ Font {
 		_QFont_DefaultFamilyForStyle
 		^this.primitiveFailed;
 	}
+
+	printOn { |aStream|
+		this.storeOn(aStream);
+	}
+
+	storeArgs { ^[name, size] }
 }

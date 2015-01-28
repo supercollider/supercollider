@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2007-2013
+// (C) Copyright Ion Gaztanaga 2007-2014
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -9,15 +9,19 @@
 // See http://www.boost.org/libs/intrusive for documentation.
 //
 /////////////////////////////////////////////////////////////////////////////
-#ifndef BOOST_INTRUSIVE_TRIE_SET_HPP
-#define BOOST_INTRUSIVE_TRIE_SET_HPP
+#ifndef BOOST_INTRUSIVE_TREAP_SET_HPP
+#define BOOST_INTRUSIVE_TREAP_SET_HPP
+
+#if defined(_MSC_VER)
+#  pragma once
+#endif
 
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/intrusive_fwd.hpp>
 #include <boost/intrusive/treap.hpp>
 #include <boost/intrusive/detail/mpl.hpp>
-#include <boost/move/move.hpp>
-#include <iterator>
+#include <boost/move/utility_core.hpp>
+#include <boost/static_assert.hpp>
 
 namespace boost {
 namespace intrusive {
@@ -1001,4 +1005,4 @@ class treap_multiset
 
 #include <boost/intrusive/detail/config_end.hpp>
 
-#endif //BOOST_INTRUSIVE_TRIE_SET_HPP
+#endif //BOOST_INTRUSIVE_TREAP_SET_HPP

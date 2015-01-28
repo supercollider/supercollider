@@ -59,6 +59,10 @@ namespace boost { namespace unordered { namespace detail {
             sizeof(value_type),
             boost::alignment_of<value_type>::value>::type data_;
 
+        value_base() :
+            data_()
+        {}
+
         void* address() {
             return this;
         }

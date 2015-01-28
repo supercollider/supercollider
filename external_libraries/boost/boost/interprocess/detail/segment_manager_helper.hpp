@@ -73,7 +73,6 @@ class mem_algo_deallocator
    {  if(m_ptr) m_algo.deallocate(m_ptr);  }
 };
 
-/// @cond
 template<class size_type>
 struct block_header
 {
@@ -116,7 +115,7 @@ struct block_header
    {
       return get_rounded_size
                ( size_type(sizeof(Header))
-			   , size_type(::boost::alignment_of<block_header<size_type> >::value))
+            , size_type(::boost::alignment_of<block_header<size_type> >::value))
            + total_size();
    }
 
@@ -190,7 +189,7 @@ struct block_header
    {
       block_header<size_type> * hdr =
          reinterpret_cast<block_header<size_type>*>(reinterpret_cast<char*>(header) +
-		 get_rounded_size(size_type(sizeof(Header)), size_type(::boost::alignment_of<block_header<size_type> >::value)));
+       get_rounded_size(size_type(sizeof(Header)), size_type(::boost::alignment_of<block_header<size_type> >::value)));
       //Some sanity checks
       return hdr;
    }
@@ -200,7 +199,7 @@ struct block_header
    {
       Header * hdr =
          reinterpret_cast<Header*>(reinterpret_cast<char*>(bheader) -
-		 get_rounded_size(size_type(sizeof(Header)), size_type(::boost::alignment_of<block_header<size_type> >::value)));
+       get_rounded_size(size_type(sizeof(Header)), size_type(::boost::alignment_of<block_header<size_type> >::value)));
       //Some sanity checks
       return hdr;
    }

@@ -87,9 +87,12 @@ XInFeedback {
 Monitor {
 
 	var <ins, <outs, <amps, <fadeTimes;
-	var <vol = 1.0;
+	var <vol = 1.0, defaults;
 	var <group, synthIDs;
-	var defaults;
+
+	copy {
+		^this.class.newCopyArgs(*[ins, outs, amps, fadeTimes, vol, defaults].deepCopy)
+	}
 
 	// mapping between multiple contiguous channels
 
@@ -232,13 +235,20 @@ Monitor {
 			fadeTimes ? #[0.02]
 		].asControlInput.flop;
 
+		inGroup = this.updateDefault(\inGroup, inGroup) ? inGroup;
+		inGroup = inGroup.asGroup;
+
 		if(this.isPlaying) {
-			if(multi.not) { this.stopToBundle(bundle, argFadeTime) }
+			if(multi.not) {
+				this.stopToBundle(bundle, argFadeTime);
+				if(group.group != inGroup) {
+					this.newGroupToBundle(bundle, inGroup, addAction)
+				}
+			}
 		} {
 			this.newGroupToBundle(bundle, inGroup, addAction)
 		};
 
-		inGroup = inGroup.asGroup;
 		server = group.server;
 
 		synthArgs.do { | array, i |
@@ -287,6 +297,7 @@ Monitor {
 		};
 		ins = this.updateDefault(\offsetIns, ins);
 		outs = this.updateDefault(\outs, outs) ? 0;
+
 
 		if (outs.unbubble.isNumber) { outs = (0 .. bus.numChannels - 1) + outs };
 

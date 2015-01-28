@@ -12,7 +12,7 @@ code::
 (freq ± (beats / 2)).
 ::
 
-Due to summing, the peak amplitude is twice that of the wavetable.
+Due to summing, the peak amplitude is not the same as the wavetable and can be twice of that.
 
 
 classmethods::

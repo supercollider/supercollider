@@ -299,6 +299,12 @@ void MainWindow::createActions()
     connect(action, SIGNAL(triggered()), this, SLOT(saveDocumentAs()));
     settings->addAction( action, "ide-document-save-as", ideCategory);
 
+    mActions[DocSaveAsExtension] = action = new QAction(
+        QIcon::fromTheme("document-save-as"), tr("Save As Extension..."), this);
+    action->setStatusTip(tr("Save the current document into a different file in the extensions folder"));
+    connect(action, SIGNAL(triggered()), this, SLOT(saveDocumentAsExtension()));
+    settings->addAction( action, "ide-document-save-as-extension", ideCategory);
+
     mActions[DocSaveAll] = action = new QAction(
         QIcon::fromTheme("document-save"), tr("Save All..."), this);
     action->setShortcut(tr("Ctrl+Alt+S", "Save all documents"));
@@ -431,7 +437,7 @@ void MainWindow::createActions()
     settings->addAction( action, "ide-lookup-references-for-cursor", ideCategory);
 
     // Settings
-    mActions[ShowSettings] = action = new QAction(tr("&Preferences"), this);
+    mActions[ShowSettings] = action = new QAction(tr("Preferences"), this);
 #ifdef Q_OS_MAC
     action->setShortcut(tr("Ctrl+,", "Show configuration dialog"));
 #endif
@@ -535,11 +541,12 @@ void MainWindow::createMenus()
     menu->addAction( mActions[DocOpen] );
     mRecentDocsMenu = menu->addMenu(tr("Open Recent", "Open a recent document"));
     connect(mRecentDocsMenu, SIGNAL(triggered(QAction*)),
-            this, SLOT(onRecentDocAction(QAction*)));
+            this, SLOT(onOpenRecentDocument(QAction*)));
     menu->addAction( mActions[DocOpenStartup] );
     menu->addAction( mActions[DocOpenSupportDir] );
     menu->addAction( mActions[DocSave] );
     menu->addAction( mActions[DocSaveAs] );
+    menu->addAction( mActions[DocSaveAsExtension] );
     menu->addAction( mActions[DocSaveAll] );
     menu->addSeparator();
     menu->addAction( mActions[DocReload] );
@@ -828,6 +835,8 @@ bool MainWindow::quit()
     if (!promptSaveDocs())
         return false;
 
+    Main::instance()->documentManager()->deleteRestore();
+
     saveWindowState();
 
     mMain->quit();
@@ -848,6 +857,7 @@ void MainWindow::onCurrentDocumentChanged( Document * doc )
     mActions[DocReload]->setEnabled(doc);
     mActions[DocSave]->setEnabled(doc);
     mActions[DocSaveAs]->setEnabled(doc);
+    mActions[DocSaveAsExtension]->setEnabled(doc);
 
     GenericCodeEditor *editor = mEditors->currentEditor();
     mFindReplaceTool->setEditor( editor );
@@ -886,7 +896,7 @@ void MainWindow::updateRecentDocsMenu()
     }
 }
 
-void MainWindow::onRecentDocAction( QAction *action )
+void MainWindow::onOpenRecentDocument( QAction *action )
 {
     mMain->documentManager()->open(action->text());
 }
@@ -913,7 +923,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 bool MainWindow::close( Document *doc )
 {
-    if (doc->textDocument()->isModified())
+    if (doc->textDocument()->isModified() && doc->promptsToSave())
     {
         QMessageBox::StandardButton ret;
         ret = QMessageBox::warning(
@@ -979,7 +989,7 @@ QString MainWindow::documentSavePath( Document *document ) const
     return QStandardPaths::standardLocations( QStandardPaths::HomeLocation )[0];
 }
 
-bool MainWindow::save( Document *doc, bool forceChoose )
+bool MainWindow::save( Document *doc, bool forceChoose, bool saveInExtensionFolder )
 {
     const bool documentHasPath = !doc->filePath().isEmpty();
 
@@ -1015,19 +1025,23 @@ bool MainWindow::save( Document *doc, bool forceChoose )
 
         dialog.setNameFilters(filters);
 
-        QString path = mInstance->documentSavePath(doc);
-        QFileInfo path_info(path);
+        if (saveInExtensionFolder) {
+            dialog.setDirectory( standardDirectory(ScExtensionUserDir) );
+        } else {
+            QString path = mInstance->documentSavePath(doc);
+            QFileInfo path_info(path);
 
-        if (path_info.isDir())
-            // FIXME:
-            // KDE native file dialog shows parent directory instead (KDE bug 229375)
-            dialog.setDirectory(path);
-        else
-            dialog.selectFile(path);
+            if (path_info.isDir())
+                // FIXME:
+                // KDE native file dialog shows parent directory instead (KDE bug 229375)
+                dialog.setDirectory(path);
+            else
+                dialog.selectFile(path);
 
-        // NOTE: do not use QFileDialog::setDefaultSuffix(), because it only adds
-        // the suffix after the dialog is closed, without showing a warning if the
-        // filepath with added suffix already exists!
+            // NOTE: do not use QFileDialog::setDefaultSuffix(), because it only adds
+            // the suffix after the dialog is closed, without showing a warning if the
+            // filepath with added suffix already exists!
+        }
 
 #ifdef Q_OS_MAC
         QWidget *last_active_window = QApplication::activeWindow();
@@ -1069,7 +1083,8 @@ bool MainWindow::save( Document *doc, bool forceChoose )
         }
 
         if (!save_path.isEmpty()) {
-            mInstance->mLastDocumentSavePath = save_path;
+            if( !saveInExtensionFolder )
+                mInstance->mLastDocumentSavePath = save_path;
             return documentManager->saveAs(doc, save_path);
         } else {
             return false;
@@ -1145,6 +1160,23 @@ void MainWindow::openDocument()
 #endif
 }
 
+void MainWindow::restoreDocuments()
+{
+    DocumentManager *docMng = Main::instance()->documentManager();
+
+    if (docMng->needRestore()) {
+        QString msg = tr("Supercollider doesn't quit properly previously\n"
+                         "Do you want to restore previous files?");
+        QMessageBox::StandardButton restore =
+                          QMessageBox::warning(mInstance, tr("Restore files?"),
+                                    msg, QMessageBox::Yes | QMessageBox::No);
+        if (restore == QMessageBox::Yes)
+            docMng->restore();
+        else
+            docMng->deleteRestore();
+    }
+}
+
 void MainWindow::openStartupFile()
 {
     QString configDir = standardDirectory(ScConfigUserDir);
@@ -1169,7 +1201,7 @@ void MainWindow::openStartupFile()
         file.close();
     }
 
-    mMain->documentManager()->open( filePath );
+    mMain->documentManager()->open( filePath, -1, 0, false );
 }
 
 void MainWindow::openUserSupportDirectory()
@@ -1198,6 +1230,17 @@ void MainWindow::saveDocumentAs()
     Q_ASSERT(doc);
 
     MainWindow::save(doc, true);
+}
+
+void MainWindow::saveDocumentAsExtension()
+{
+    GenericCodeEditor *editor = mEditors->currentEditor();
+    if(!editor) return;
+
+    Document *doc = editor->document();
+    Q_ASSERT(doc);
+
+    MainWindow::save(doc, true, true);
 }
 
 void MainWindow::saveAllDocuments()
@@ -1242,7 +1285,7 @@ bool MainWindow::promptSaveDocs()
     QList<Document*> docs = mMain->documentManager()->documents();
     QList<Document*> unsavedDocs;
     foreach(Document* doc, docs)
-        if(doc->textDocument()->isModified())
+        if(doc->textDocument()->isModified() && doc->promptsToSave())
             unsavedDocs.append(doc);
 
     if (!unsavedDocs.isEmpty()) {

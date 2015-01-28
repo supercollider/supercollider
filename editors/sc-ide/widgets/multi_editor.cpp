@@ -55,7 +55,7 @@ class DocumentSelectPopUp : public QDialog
 {
 public:
     DocumentSelectPopUp(const CodeEditorBox::History & history, QWidget * parent):
-        QDialog(parent, Qt::Popup)
+        QDialog(parent, Qt::Dialog | Qt::FramelessWindowHint)
     {
         mModel = new QStandardItemModel(this);
         populateModel(history);
@@ -193,6 +193,88 @@ private:
     QStandardItemModel *mModel;
 };
 
+EditorTabBar::EditorTabBar(QWidget *parent):
+    QTabBar(parent)
+{
+    setDocumentMode(true);
+    setTabsClosable(true);
+    setMovable(true);
+    setUsesScrollButtons(true);
+    setDrawBase(true);
+    setElideMode(Qt::ElideNone);
+}
+
+void EditorTabBar::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::RightButton) {
+        showContextMenu(event);
+        event->accept();
+        return;
+    }
+
+    QTabBar::mousePressEvent(event);
+}
+
+
+void EditorTabBar::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton) {
+        if (tabAt(event->pos()) == -1) { // no tab under cursor
+            MainWindow::instance()->newDocument();
+            event->accept();
+            return;
+        }
+    }
+
+    QTabBar::mouseDoubleClickEvent(event);
+}
+
+void EditorTabBar::showContextMenu(QMouseEvent * event)
+{
+    mTabUnderCursor = tabAt(event->pos());
+
+    QMenu * menu = new QMenu(this);
+
+    menu->addAction(tr("Close"),                   this, SLOT(onCloseTab())           );
+    menu->addAction(tr("Close Other Tabs"),        this, SLOT(onCloseOtherTabs())     );
+    menu->addAction(tr("Close Tabs to the Right"), this, SLOT(onCloseTabsToTheRight()));
+
+    menu->popup(event->pos());
+}
+
+void EditorTabBar::onCloseTab()
+{
+    Document* doc = tabData(mTabUnderCursor).value<Document*>();
+    assert(doc);
+
+    MainWindow::close(doc);
+}
+
+void EditorTabBar::onCloseOtherTabs()
+{
+    QVector<Document*> docsToClose;
+
+    for(int currentTab = 0; currentTab != count(); ++currentTab) {
+        if (currentTab != mTabUnderCursor)
+            docsToClose.append(tabData(currentTab).value<Document*>());
+    }
+
+    for( Document * doc : docsToClose )
+        MainWindow::close(doc);
+}
+
+void EditorTabBar::onCloseTabsToTheRight()
+{
+    QVector<Document*> docsToClose;
+
+    for(int currentTab = mTabUnderCursor + 1; currentTab != count(); ++currentTab)
+        docsToClose.append(tabData(currentTab).value<Document*>());
+
+    for( Document * doc : docsToClose )
+        MainWindow::close(doc);
+}
+
+
 MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     QWidget(parent),
     mEditorSigMux(new SignalMultiplexer(this)),
@@ -203,13 +285,7 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     mDocModifiedIcon( QIcon::fromTheme("document-save") )
 #endif
 {
-    mTabs = new QTabBar;
-    mTabs->setDocumentMode(true);
-    mTabs->setTabsClosable(true);
-    mTabs->setMovable(true);
-    mTabs->setUsesScrollButtons(true);
-    mTabs->setDrawBase(true);
-    mTabs->setElideMode(Qt::ElideNone);
+    mTabs = new EditorTabBar;
 
     CodeEditorBox *defaultBox = newBox();
 

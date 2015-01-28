@@ -95,6 +95,7 @@ GenericCodeEditor::GenericCodeEditor( Document *doc, QWidget *parent ):
 
     connect( this, SIGNAL(selectionChanged()),
              mLineIndicator, SLOT(update()) );
+    connect(this, SIGNAL(selectionChanged()), this, SLOT(updateDocLastSelection()));
     connect( this, SIGNAL(cursorPositionChanged()),
              this, SLOT(onCursorPositionChanged()) );
 
@@ -104,6 +105,7 @@ GenericCodeEditor::GenericCodeEditor( Document *doc, QWidget *parent ):
     QTextDocument *tdoc = doc->textDocument();
     QPlainTextEdit::setDocument(tdoc);
     onDocumentFontChanged();
+    doc->setLastActiveEditor(this);
 
     applySettings( Main::settings() );
 }
@@ -575,12 +577,12 @@ void GenericCodeEditor::keyPressEvent(QKeyEvent * e)
         setTextCursor( cursor );
         ensureCursorVisible();
     }
-    if (mDoc->keyDownActionEnabled()) doKeyAction(e);
+    if (mDoc->keyDownActionEnabled() || Main::documentManager()->globalKeyDownActionEnabled()) doKeyAction(e);
 }
     
 void GenericCodeEditor::keyReleaseEvent(QKeyEvent * e)
 {
-    if(mDoc->keyUpActionEnabled()) doKeyAction(e);
+    if(mDoc->keyUpActionEnabled() || Main::documentManager()->globalKeyUpActionEnabled()) doKeyAction(e);
 }
     
 void GenericCodeEditor::doKeyAction( QKeyEvent * ke )
@@ -839,6 +841,15 @@ void GenericCodeEditor::onCursorPositionChanged()
     if (mHighlightCurrentLine)
         updateCurrentLineHighlighting();
     mLastCursorBlock = textCursor().blockNumber();
+    updateDocLastSelection();
+}
+    
+void GenericCodeEditor::updateDocLastSelection()
+{
+    QTextCursor cursor = textCursor();
+    int start = cursor.selectionStart();
+    int range = cursor.selectionEnd() - start;
+    Main::scProcess()->updateSelectionMirrorForDocument(mDoc, start, range);
 }
 
 void GenericCodeEditor::updateCurrentLineHighlighting()
@@ -1189,6 +1200,7 @@ void GenericCodeEditor::hideMouseCursor()
 
 void GenericCodeEditor::setActiveAppearance(bool active)
 {
+    if(active) mDoc->setLastActiveEditor(this);
     mOverlayAnimator->setActiveAppearance(active);
     mEditorBoxIsActive = active;
 }
