@@ -51,9 +51,8 @@ GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
   
     mPreviewDocument = new Document(false);
     mPreviewEditor = new ScCodeEditor(mPreviewDocument);
+    mPreviewEditor->setReadOnly(true);
   
-    QHBoxLayout *hlayout = new QHBoxLayout;
-    hlayout->setMargin(0);
     QVBoxLayout *layout = new QVBoxLayout;
     layout->setContentsMargins(0,0,0,0);
     layout->setSpacing(1);
@@ -111,7 +110,7 @@ void GenericLookupDialog::currentChanged(const QModelIndex &item, const QModelIn
     
     if (cpath.isEmpty()) {
       MainWindow::instance()->showStatusMessage (
-                                                 tr("Cannot open file: %1 (file does not exist)").arg(path) );
+        tr("Cannot open file: %1 (file does not exist)").arg(path) );
       return;
     }
     
@@ -119,9 +118,10 @@ void GenericLookupDialog::currentChanged(const QModelIndex &item, const QModelIn
     QFile file(cpath);
     if(!file.open(QIODevice::ReadOnly)) {
       MainWindow::instance()->showStatusMessage(
-                                                tr("Cannot open file for reading: %1").arg(cpath));
+        tr("Cannot open file for reading: %1").arg(cpath));
       return;
     }
+  
     QByteArray bytes( file.readAll() );
     file.close();
   
@@ -129,11 +129,7 @@ void GenericLookupDialog::currentChanged(const QModelIndex &item, const QModelIn
     stream.setCodec("UTF-8");
     stream.setAutoDetectUnicode(true);
 
-    mPreviewDocument->setTextInRange( stream.readAll(), 0, -1 );
-//    mPreviewDocument->setModified(false);
-//    mPreviewDocument->mFilePath = filePath;
-//    mPreviewDocument->setTitle("");
-  
+    mPreviewDocument->setTextInRange( stream.readAll(), 0, -1 );  
     mPreviewEditor->showPosition(pos, 0);
     mPreviewEditor->selectCurrentRegion();
 }
