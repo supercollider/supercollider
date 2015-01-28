@@ -3,6 +3,7 @@ Quarks {
 
 	classvar
 		<folder,
+		<>additionalFolders,
 		directory,
 		<>directoryUrl="https://raw.githubusercontent.com/supercollider-quarks/quarks/master/directory.txt",
 		cache;
@@ -171,6 +172,7 @@ Quarks {
 
 	*initClass {
 		folder = Platform.userAppSupportDir +/+ "downloaded-quarks";
+		additionalFolders = additionalFolders ? [];
 		if(File.exists(folder).not, {
 			folder.mkdir();
 		});
@@ -193,6 +195,13 @@ Quarks {
 		});
 		^directory
 	}
+	*addFolder { |path|
+		// in addition to the default downloaded-quarks
+		// add folders that contain quarks to offer on the menu for installation
+		// these may be private quarks, cloned working copies or folders where you
+		// have manually downloaded quarks
+		additionalFolders = additionalFolders.add(path.standardizePath);
+	}
 	*all {
 		// all known quarks
 		var all = Dictionary.new, f;
@@ -209,6 +218,9 @@ Quarks {
 			});
 		};
 		(Quarks.folder +/+ "*").pathMatch.do(f);
+		additionalFolders.do({ |folder|
+			(folder +/+ "*").pathMatch.do(f);
+		});
 		LanguageConfig.includePaths.do(f);
 		^all.values
 	}
