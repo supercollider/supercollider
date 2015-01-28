@@ -45,6 +45,14 @@ void QcLevelIndicator::clipTimeout()
   update();
 }
 
+QColor QcLevelIndicator::valueColor(float value) {
+  if(value > _critical)
+    return QColor(255,100,0);
+  else if(value > _warning)
+    return QColor(255, 255, 0);
+  else
+    return QColor(0, 255, 0);
+}
 
 void QcLevelIndicator::paintEvent( QPaintEvent *e )
 {
@@ -78,54 +86,64 @@ void QcLevelIndicator::paintEvent( QPaintEvent *e )
     _clipTimer->start();
   }
 
-  QColor c;
-  if( _clipped )
-    c = QColor(255,100,0);
-  else if( colorValue > _warning )
-    c = QColor( 255, 255, 0 );
-  else
-    c = QColor( 0, 255, 0 );
-
   p.fillRect( QRectF(0, 0, groove, length), grooveColor());
 
   QRectF r;
-
   r.setWidth( groove );
   r.setY(0);
-  r.setHeight( _value * length );
 
   p.setRenderHint(QPainter::Antialiasing, true);
 
   switch (_style) {
     case 0: {
-      p.fillRect( r, c );
+      r.setHeight( _value * length );
+      p.fillRect( r, valueColor(colorValue) );
+      if( _drawPeak && _peak > 0.f ) {
+        // compensate for border and peak line width
+        float val = _peak * ( length  - 4 ) + 2;
+
+        QPen pen( valueColor(_peak) );
+        pen.setWidth( 2 );
+        pen.setCapStyle( Qt::FlatCap );
+        p.setPen( pen );
+        p.drawLine( 0.f, val, groove, val );
+      }
+		
       break;
     }
     case 1: {
       float ledBaseline = 0;
       float spaceWidth = _stepWidth <= 3 ? 1 : 2;
       float cornerWidth = _stepWidth <= 3 ? 0 : 1.2;
+      float stepSpacing = _stepWidth + spaceWidth;
+      float adjustedLength = std::floor(length / stepSpacing) * stepSpacing;
 
       r.setHeight(_stepWidth);
       QPainterPath path;
       path.addRoundedRect(r, cornerWidth, cornerWidth);
       
-      while (ledBaseline < length * _value) {
-        float normValue = (ledBaseline / length);
-        float nextValue = ((ledBaseline + _stepWidth + spaceWidth) / length);
-        if(normValue > _critical)
-          c = QColor(255,100,0);
-        else if(normValue > _warning)
-          c = QColor(255, 255, 0);
-        else
-          c = QColor(0, 255, 0);
-          
+      while (ledBaseline < adjustedLength * _value) {
+        float normValue = (ledBaseline / adjustedLength);   // 0..1 scaled value of the BOTTOM of the rect
+        float nextValue = ((ledBaseline + _stepWidth + spaceWidth) / adjustedLength);
+
+        QColor c = valueColor(normValue);
         if (nextValue > _value) // last cell
           c.setAlpha(128 + 128 * ((_value - normValue) / (nextValue - normValue)));
-
+        
         p.fillPath(path, QBrush(c));
-        ledBaseline += (_stepWidth + spaceWidth);
-        path.translate(0, _stepWidth + spaceWidth);
+        ledBaseline += stepSpacing;
+        path.translate(0, stepSpacing);
+      }
+      
+      if( _drawPeak && _peak > 0.f ) {
+        float peak = std::floor(_peak * adjustedLength / stepSpacing) * stepSpacing;
+        peak = std::min(peak, adjustedLength - stepSpacing);  // For _peak == 1, don't run off edge of widget
+
+        QPainterPath peakPath;
+        peakPath.addRoundedRect(r, cornerWidth, cornerWidth);
+        peakPath.translate(0, peak);
+        
+        p.fillPath(peakPath, QBrush(valueColor(_peak)));
       }
         
       break;
@@ -133,23 +151,6 @@ void QcLevelIndicator::paintEvent( QPaintEvent *e )
   }
   
   p.setRenderHint(QPainter::Antialiasing, false);
-
-  if( _drawPeak && _peak > 0.f ) {
-    float peak = vertical ? _peak : 1 - _peak;
-
-    // compensate for border and peak line width
-    float val = (1.f - peak)
-          * ( length  - 4 )
-          + 2;
-    QPen pen( QColor( 255, 200, 0 ) );
-    pen.setWidth( 2 );
-    pen.setCapStyle( Qt::FlatCap );
-    p.setPen( pen );
-    if( vertical )
-      p.drawLine( 0.f, val, groove, val );
-    else
-      p.drawLine( val, 0.f, val, groove );
-  }
 
   if( _ticks ) {
     QPen pen( plt.color(QPalette::WindowText) );
