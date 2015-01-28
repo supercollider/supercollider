@@ -11,6 +11,10 @@
 #ifndef BOOST_CONTAINER_DETAIL_WORKAROUND_HPP
 #define BOOST_CONTAINER_DETAIL_WORKAROUND_HPP
 
+#if defined(_MSC_VER)
+#  pragma once
+#endif
+
 #include <boost/container/detail/config_begin.hpp>
 
 #if    !defined(BOOST_NO_CXX11_RVALUE_REFERENCES) && !defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)\
@@ -57,6 +61,11 @@
 #ifndef BOOST_CONTAINER_MEMZEROED_POINTER_IS_NOT_NULL
 #define BOOST_CONTAINER_MEMZEROED_POINTER_IS_NULL
 #endif
+
+#define BOOST_CONTAINER_DOC1ST(TYPE1, TYPE2) TYPE2
+#define BOOST_CONTAINER_I ,
+#define BOOST_CONTAINER_DOCIGN(T) T
+#define BOOST_CONTAINER_DOCONLY(T)
 
 #include <boost/container/detail/config_end.hpp>
 

@@ -48,22 +48,23 @@ Examples::
 code::
 
 (
-SynthDef("detectSilence-help", { arg out;
+SynthDef("detectSilence-help", { arg out;
 	var z;
-	z = SinOsc.ar(Rand(400, 700), 0, LFNoise2.kr(8, 0.2).max(0));
+	z = SinOsc.ar(Rand(400, 700), 0, LFDNoise3.kr(8).max(0)).softclip * 0.3;
 	DetectSilence.ar(z, doneAction:2);
 	Out.ar(out, z);
-}).send(s);
+}).add;
 )
 
-s.sendMsg("/s_new", "detectSilence-help", -1);
-s.sendMsg("/s_new", "detectSilence-help", -1);
-s.sendMsg("/s_new", "detectSilence-help", -1);
+Synth("detectSilence-help");
+Synth("detectSilence-help");
+Synth("detectSilence-help");
+
 
 (
 Task({
 	loop({
-		s.sendMsg("/s_new", "detectSilence-help", -1);
+		Synth("detectSilence-help");
 		[0.5, 1].choose.wait;
 	})
 }).play;

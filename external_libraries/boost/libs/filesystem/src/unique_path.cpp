@@ -18,6 +18,7 @@
 #endif
 
 #include <boost/filesystem/operations.hpp>
+#include <cassert>
 
 # ifdef BOOST_POSIX_API
 #   include <fcntl.h>
@@ -112,9 +113,10 @@ path unique_path(const path& model, system::error_code* ec)
 {
   std::wstring s (model.wstring());  // std::string ng for MBCS encoded POSIX
   const wchar_t hex[] = L"0123456789abcdef";
-  const int n_ran = 16;
-  const int max_nibbles = 2 * n_ran;   // 4-bits per nibble
-  char ran[n_ran];
+  char ran[] = "123456789abcdef";  // init to avoid clang static analyzer message
+                                   // see ticket #8954
+  assert(sizeof(ran) == 16);
+  const int max_nibbles = 2 * sizeof(ran);   // 4-bits per nibble
 
   int nibbles_used = max_nibbles;
   for(std::wstring::size_type i=0; i < s.size(); ++i)

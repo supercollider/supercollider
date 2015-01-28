@@ -13,8 +13,11 @@
 #ifndef BOOST_INTRUSIVE_DETAIL_TRANSFORM_ITERATOR_HPP
 #define BOOST_INTRUSIVE_DETAIL_TRANSFORM_ITERATOR_HPP
 
+#if defined(_MSC_VER)
+#  pragma once
+#endif
+
 #include <boost/intrusive/detail/config_begin.hpp>
-#include <iterator>
 #include <boost/intrusive/detail/mpl.hpp>
 
 namespace boost {
@@ -51,7 +54,7 @@ struct operator_arrow_proxy<T&>
 
 template <class Iterator, class UnaryFunction>
 class transform_iterator
-   : public std::iterator
+   : public boost::intrusive::iterator
       < typename Iterator::iterator_category
       , typename detail::remove_reference<typename UnaryFunction::result_type>::type
       , typename Iterator::difference_type
@@ -158,10 +161,10 @@ class transform_iterator
    { return members_(*members_.m_it); }
 
    void advance(typename Iterator::difference_type n)
-   {  std::advance(members_.m_it, n); }
+   {  boost::intrusive::iterator_advance(members_.m_it, n); }
 
    typename Iterator::difference_type distance_to(const transform_iterator &other)const
-   {  return std::distance(other.members_.m_it, members_.m_it); }
+   {  return boost::intrusive::iterator_distance(other.members_.m_it, members_.m_it); }
 };
 
 } //namespace detail

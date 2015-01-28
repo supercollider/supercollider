@@ -32,12 +32,12 @@ namespace ipcdetail {
 
 class winapi_semaphore_functions
 {
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
 
    //Non-copyable
    winapi_semaphore_functions(const winapi_semaphore_functions &);
    winapi_semaphore_functions &operator=(const winapi_semaphore_functions &);
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 
    public:
    winapi_semaphore_functions(void *hnd)
@@ -75,10 +75,10 @@ class winapi_semaphore_functions
       return l_limit;
    }
 
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
    protected:
    void *m_sem_hnd;
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 };
 
 

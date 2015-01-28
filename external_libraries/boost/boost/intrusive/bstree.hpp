@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga  2013-2013
+// (C) Copyright Ion Gaztanaga  2013-2014
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -12,38 +12,60 @@
 #ifndef BOOST_INTRUSIVE_BSTREE_HPP
 #define BOOST_INTRUSIVE_BSTREE_HPP
 
+#if defined(_MSC_VER)
+#  pragma once
+#endif
+
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/intrusive_fwd.hpp>
-#include <algorithm>
-#include <cstddef>
-#include <functional>
-#include <iterator>
-#include <utility>
 
 #include <boost/intrusive/detail/assert.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/intrusive/intrusive_fwd.hpp>
 #include <boost/intrusive/bs_set_hook.hpp>
 #include <boost/intrusive/detail/tree_node.hpp>
+#include <boost/intrusive/detail/tree_iterator.hpp>
 #include <boost/intrusive/detail/ebo_functor_holder.hpp>
 #include <boost/intrusive/detail/mpl.hpp>
 #include <boost/intrusive/pointer_traits.hpp>
-#include <boost/intrusive/detail/function_detector.hpp>
-#include <boost/intrusive/detail/utilities.hpp>
-#include <boost/intrusive/options.hpp>
+#include <boost/intrusive/detail/is_stateful_value_traits.hpp>
+#include <boost/intrusive/detail/empty_node_checker.hpp>
+#include <boost/intrusive/detail/default_header_holder.hpp>
+#include <boost/intrusive/detail/reverse_iterator.hpp>
+#include <boost/intrusive/detail/exception_disposer.hpp>
+#include <boost/intrusive/detail/node_cloner_disposer.hpp>
+#include <boost/intrusive/detail/key_nodeptr_comp.hpp>
+#include <boost/intrusive/detail/simple_disposers.hpp>
+#include <boost/intrusive/detail/size_holder.hpp>
+#include <boost/intrusive/detail/algo_type.hpp>
+
+#include <boost/intrusive/detail/get_value_traits.hpp>
 #include <boost/intrusive/bstree_algorithms.hpp>
 #include <boost/intrusive/link_mode.hpp>
 #include <boost/intrusive/parent_from_member.hpp>
-#include <boost/move/move.hpp>
+#include <boost/move/utility_core.hpp>
+
+#include <utility>   //pair,lexicographical_compare
+#include <algorithm> //swap
+#include <cstddef>   //size_t...
+#include <functional>//less, equal_to
+
 
 namespace boost {
 namespace intrusive {
 
 /// @cond
 
+struct default_bstree_hook_applier
+{  template <class T> struct apply{ typedef typename T::default_bstree_hook type;  };  };
+
+template<>
+struct is_default_hook_tag<default_bstree_hook_applier>
+{  static const bool value = true;  };
+
 struct bstree_defaults
 {
-   typedef detail::default_bstree_hook proto_value_traits;
+   typedef default_bstree_hook_applier proto_value_traits;
    static const bool constant_time_size = true;
    typedef std::size_t size_type;
    typedef void compare;
@@ -77,7 +99,7 @@ struct bstbase3
    static const bool safemode_or_autounlink = is_safe_autounlink<value_traits::link_mode>::value;
    static const bool stateful_value_traits = detail::is_stateful_value_traits<value_traits>::value;
    static const bool has_container_from_iterator =
-        boost::is_same< header_holder_type, detail::default_header_holder< node_traits > >::value;
+        detail::is_same< header_holder_type, detail::default_header_holder< node_traits > >::value;
 
    struct holder_t : public ValueTraits
    {
@@ -202,6 +224,18 @@ struct bstbase3
    static void init_node(reference value)
    { node_algorithms::init(value_traits::to_node_ptr(value)); }
 
+};
+
+template<class Less, class T>
+struct get_less
+{
+   typedef Less type;
+};
+
+template<class T>
+struct get_less<void, T>
+{
+   typedef ::std::less<T> type;
 };
 
 template<class ValueTraits, class VoidOrKeyComp, algo_types AlgoType, typename HeaderHolder>
@@ -1456,7 +1490,9 @@ class bstree_impl
    size_type count(const KeyType &key, KeyValueCompare comp) const
    {
       std::pair<const_iterator, const_iterator> ret = this->equal_range(key, comp);
-      return size_type(std::distance(ret.first, ret.second));
+      size_type n = 0;
+      for(; ret.first != ret.second; ++ret.first){ ++n; }
+      return n;
    }
 
    #if !defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
@@ -1470,7 +1506,9 @@ class bstree_impl
    size_type count(const KeyType &key, KeyValueCompare comp)
    {
       std::pair<const_iterator, const_iterator> ret = this->equal_range(key, comp);
-      return size_type(std::distance(ret.first, ret.second));
+      size_type n = 0;
+      for(; ret.first != ret.second; ++ret.first){ ++n; }
+      return n;
    }
 
    #else //defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
@@ -1851,6 +1889,35 @@ class bstree_impl
       node_algorithms::unlink(to_remove);
       if(safemode_or_autounlink)
          node_algorithms::init(to_remove);
+   }
+
+   //! <b>Effects</b>: Asserts the integrity of the container with additional checks provided by the user.
+   //!
+   //! <b>Complexity</b>: Linear time.
+   //!
+   //! <b>Note</b>: The method might not have effect when asserts are turned off (e.g., with NDEBUG).
+   //!   Experimental function, interface might change in future versions.
+   template <class ExtraChecker>
+   void check(ExtraChecker extra_checker) const
+   {
+      typedef detail::key_nodeptr_comp<value_compare, value_traits> nodeptr_comp_t;
+      nodeptr_comp_t nodeptr_comp(this->comp(), &this->get_value_traits());
+      typedef typename get_node_checker<AlgoType, ValueTraits, nodeptr_comp_t, ExtraChecker>::type node_checker_t;
+      typename node_checker_t::return_type checker_return;
+      node_algorithms::check(this->header_ptr(), node_checker_t(nodeptr_comp, extra_checker), checker_return);
+      if (constant_time_size)
+         BOOST_INTRUSIVE_INVARIANT_ASSERT(this->sz_traits().get_size() == checker_return.node_count);
+   }
+
+   //! <b>Effects</b>: Asserts the integrity of the container.
+   //!
+   //! <b>Complexity</b>: Linear time.
+   //!
+   //! <b>Note</b>: The method has no effect when asserts are turned off (e.g., with NDEBUG).
+   //!   Experimental function, interface might change in future versions.
+   void check() const
+   {
+      check(detail::empty_node_checker<ValueTraits>());
    }
 
    /// @cond

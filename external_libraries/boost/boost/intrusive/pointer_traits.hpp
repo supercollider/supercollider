@@ -25,6 +25,8 @@
 #include <boost/intrusive/intrusive_fwd.hpp>
 #include <boost/intrusive/detail/workaround.hpp>
 #include <boost/intrusive/detail/memory_util.hpp>
+#include <boost/intrusive/pointer_rebind.hpp>
+#include <boost/intrusive/detail/pointer_element.hpp>
 #include <boost/intrusive/detail/mpl.hpp>
 #include <cstddef>
 
@@ -62,7 +64,7 @@ struct pointer_traits
 
       //!Ptr::reference if such a type exists (non-standard extension); otherwise, element_type &
       //!
-      typedef element_type &reference;
+      typedef unspecified_type reference;
    #else
       typedef Ptr                                                             pointer;
       //
@@ -78,11 +80,11 @@ struct pointer_traits
       //
       template <class U> struct rebind_pointer
       {
-         typedef typename boost::intrusive::detail::type_rebinder<Ptr, U>::type  type;
+         typedef typename boost::intrusive::pointer_rebind<Ptr, U>::type  type;
       };
 
       #if !defined(BOOST_NO_CXX11_TEMPLATE_ALIASES)
-         template <class U> using rebind = typename boost::intrusive::detail::type_rebinder<Ptr, U>::type;
+         template <class U> using rebind = typename boost::intrusive::pointer_rebind<Ptr, U>::type;
       #endif
    #endif   //#if !defined(BOOST_NO_CXX11_TEMPLATE_ALIASES)
 
@@ -190,12 +192,12 @@ struct pointer_traits
    static pointer priv_dynamic_cast_from(boost::intrusive::detail::false_, const UPtr &uptr)
    {
       element_type *p = dynamic_cast<element_type*>(&*uptr);
-	  if(!p){
-		  return pointer();
-	  }
-	  else{
-		  return pointer_to(*p);
-	  }
+     if(!p){
+        return pointer();
+     }
+     else{
+        return pointer_to(*p);
+     }
    }
    ///@endcond
 };

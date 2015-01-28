@@ -386,22 +386,22 @@ void ScProcess::updateTextMirrorForDocument ( Document * doc, int position, int 
 }
     
 void ScProcess::updateSelectionMirrorForDocument ( Document * doc, int start, int range )
-    {
-        QVariantList argList;
-        
-        argList.append(QVariant(doc->id()));
-        argList.append(QVariant(start));
-        argList.append(QVariant(range));
-        
-        try {
-            QDataStream stream(mIpcSocket);
-            stream.setVersion(QDataStream::Qt_4_6);
-            stream << QString("updateDocSelection");
-            stream << argList;
-        } catch (std::exception const & e) {
-            scPost(QString("Exception during ScIDE_Send: %1\n").arg(e.what()));
-        }
+{
+    QVariantList argList;
+    
+    argList.append(QVariant(doc->id()));
+    argList.append(QVariant(start));
+    argList.append(QVariant(range));
+    
+    try {
+        QDataStream stream(mIpcSocket);
+        stream.setVersion(QDataStream::Qt_4_6);
+        stream << QString("updateDocSelection");
+        stream << argList;
+    } catch (std::exception const & e) {
+        scPost(QString("Exception during ScIDE_Send: %1\n").arg(e.what()));
     }
+}
 
 void ScIntrospectionParserWorker::process(const QString &input)
 {

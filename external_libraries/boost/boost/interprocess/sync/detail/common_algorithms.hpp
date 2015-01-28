@@ -11,6 +11,10 @@
 #ifndef BOOST_INTERPROCESS_SYNC_DETAIL_COMMON_ALGORITHMS_HPP
 #define BOOST_INTERPROCESS_SYNC_DETAIL_COMMON_ALGORITHMS_HPP
 
+#if defined(_MSC_VER)
+#  pragma once
+#endif
+
 #include <boost/interprocess/detail/config_begin.hpp>
 #include <boost/interprocess/detail/workaround.hpp>
 

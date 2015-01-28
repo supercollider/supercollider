@@ -240,11 +240,12 @@
 				~proxy = proxy;
 				~server = server;
 				~group = group;
-				~out = out;
+				~out = out.value;
 				finish = ~finish;
 				~finish = {
 					finish.value;
 					proxy.nodeMap.addToEvent(currentEnvironment);
+					~out = out.value;
 				}
 			});
 			this

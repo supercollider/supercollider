@@ -13,6 +13,10 @@
 #ifndef BOOST_CONTAINER_OPTIONS_HPP
 #define BOOST_CONTAINER_OPTIONS_HPP
 
+#if defined(_MSC_VER)
+#  pragma once
+#endif
+
 #include <boost/container/detail/config_begin.hpp>
 #include <boost/container/container_fwd.hpp>
 #include <boost/intrusive/pack_options.hpp>

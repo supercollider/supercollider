@@ -61,7 +61,7 @@ double timeNow();
 
 int32 timeseed()
 {
-	using namespace boost::chrono;
+	using namespace chrono;
 
 	high_resolution_clock::time_point now = high_resolution_clock::now();
 	high_resolution_clock::duration since_epoch = now.time_since_epoch();
@@ -69,7 +69,7 @@ int32 timeseed()
 	seconds     secs     = duration_cast<seconds>(since_epoch);
 	nanoseconds nanosecs = since_epoch - secs;
 
-	boost::int_least64_t seed = secs.count() ^ nanosecs.count();
+	int_least64_t seed = secs.count() ^ nanosecs.count();
 
 	return (int32)seed;
 }

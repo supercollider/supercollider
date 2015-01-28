@@ -228,6 +228,9 @@ Object  {
 
 	repeat { arg repeats = inf; ^Pn(this, repeats).asStream }
 	loop { ^this.repeat(inf) }
+	nextN { arg n, inval;
+		^Array.fill(n, { this.next(inval) });
+	}
 
 	asStream { ^this }
 	streamArg { arg embed = false;

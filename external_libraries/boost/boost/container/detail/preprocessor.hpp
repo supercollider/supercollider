@@ -17,7 +17,7 @@
 
 #include <boost/container/detail/config_begin.hpp>
 #include <boost/container/detail/workaround.hpp>
-#include <boost/move/utility.hpp>
+#include <boost/move/utility_core.hpp>
 
 #ifdef BOOST_CONTAINER_PERFECT_FORWARDING
 //#error "This file is not needed when perfect forwarding is available"
@@ -32,14 +32,10 @@
 #include <boost/preprocessor/repetition/enum_params.hpp>
 #include <boost/preprocessor/repetition/enum_trailing_params.hpp>
 #include <boost/preprocessor/repetition/enum_trailing.hpp>
-#include <boost/preprocessor/repetition/enum_shifted_params.hpp>
-#include <boost/preprocessor/repetition/enum_shifted.hpp>
 #include <boost/preprocessor/repetition/repeat.hpp>
-#include <boost/preprocessor/logical/not.hpp>
 #include <boost/preprocessor/arithmetic/sub.hpp>
 #include <boost/preprocessor/arithmetic/add.hpp>
 #include <boost/preprocessor/iteration/iterate.hpp>
-#include <boost/move/utility.hpp>
 
 #define BOOST_CONTAINER_MAX_CONSTRUCTOR_PARAMETERS 10
 
