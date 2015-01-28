@@ -59,6 +59,7 @@ public:
 private Q_SLOTS:
   void clipTimeout();
 private:
+  QColor valueColor(float value);
   void paintEvent( QPaintEvent *e );
   float _value;
   float _warning;
