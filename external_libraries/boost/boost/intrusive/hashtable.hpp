@@ -12,6 +12,10 @@
 #ifndef BOOST_INTRUSIVE_HASHTABLE_HPP
 #define BOOST_INTRUSIVE_HASHTABLE_HPP
 
+#if defined(_MSC_VER)
+#  pragma once
+#endif
+
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/intrusive_fwd.hpp>
 //std C++
@@ -28,18 +32,89 @@
 #include <boost/intrusive/detail/transform_iterator.hpp>
 #include <boost/intrusive/link_mode.hpp>
 #include <boost/intrusive/detail/ebo_functor_holder.hpp>
-#include <boost/intrusive/detail/utilities.hpp>
+#include <boost/intrusive/detail/is_stateful_value_traits.hpp>
+#include <boost/intrusive/detail/node_to_value.hpp>
+#include <boost/intrusive/detail/exception_disposer.hpp>
+#include <boost/intrusive/detail/node_cloner_disposer.hpp>
+#include <boost/intrusive/detail/simple_disposers.hpp>
+#include <boost/intrusive/detail/size_holder.hpp>
+
 //Implementation utilities
 #include <boost/intrusive/unordered_set_hook.hpp>
 #include <boost/intrusive/slist.hpp>
 #include <boost/intrusive/pointer_traits.hpp>
 #include <boost/intrusive/detail/mpl.hpp>
-#include <boost/move/move.hpp>
+#include <boost/move/utility_core.hpp>
 
 namespace boost {
 namespace intrusive {
 
 /// @cond
+
+template<int Dummy = 0>
+struct prime_list_holder
+{
+   static const std::size_t prime_list[];
+   static const std::size_t prime_list_size;
+};
+
+//We only support LLP64(Win64) or LP64(most Unix) data models
+#ifdef _WIN64  //In 64 bit windows sizeof(size_t) == sizeof(unsigned long long)
+   #define BOOST_INTRUSIVE_PRIME_C(NUMBER) NUMBER##ULL
+   #define BOOST_INTRUSIVE_64_BIT_SIZE_T 1
+#else //In 32 bit windows and 32/64 bit unixes sizeof(size_t) == sizeof(unsigned long)
+   #define BOOST_INTRUSIVE_PRIME_C(NUMBER) NUMBER##UL
+   #define BOOST_INTRUSIVE_64_BIT_SIZE_T (((((ULONG_MAX>>16)>>16)>>16)>>15) != 0)
+#endif
+
+template<int Dummy>
+const std::size_t prime_list_holder<Dummy>::prime_list[] = {
+   BOOST_INTRUSIVE_PRIME_C(3),                     BOOST_INTRUSIVE_PRIME_C(7),
+   BOOST_INTRUSIVE_PRIME_C(11),                    BOOST_INTRUSIVE_PRIME_C(17),
+   BOOST_INTRUSIVE_PRIME_C(29),                    BOOST_INTRUSIVE_PRIME_C(53),
+   BOOST_INTRUSIVE_PRIME_C(97),                    BOOST_INTRUSIVE_PRIME_C(193),
+   BOOST_INTRUSIVE_PRIME_C(389),                   BOOST_INTRUSIVE_PRIME_C(769),
+   BOOST_INTRUSIVE_PRIME_C(1543),                  BOOST_INTRUSIVE_PRIME_C(3079),
+   BOOST_INTRUSIVE_PRIME_C(6151),                  BOOST_INTRUSIVE_PRIME_C(12289),
+   BOOST_INTRUSIVE_PRIME_C(24593),                 BOOST_INTRUSIVE_PRIME_C(49157),
+   BOOST_INTRUSIVE_PRIME_C(98317),                 BOOST_INTRUSIVE_PRIME_C(196613),
+   BOOST_INTRUSIVE_PRIME_C(393241),                BOOST_INTRUSIVE_PRIME_C(786433),
+   BOOST_INTRUSIVE_PRIME_C(1572869),               BOOST_INTRUSIVE_PRIME_C(3145739),
+   BOOST_INTRUSIVE_PRIME_C(6291469),               BOOST_INTRUSIVE_PRIME_C(12582917),
+   BOOST_INTRUSIVE_PRIME_C(25165843),              BOOST_INTRUSIVE_PRIME_C(50331653),
+   BOOST_INTRUSIVE_PRIME_C(100663319),             BOOST_INTRUSIVE_PRIME_C(201326611),
+   BOOST_INTRUSIVE_PRIME_C(402653189),             BOOST_INTRUSIVE_PRIME_C(805306457),
+   BOOST_INTRUSIVE_PRIME_C(1610612741),            BOOST_INTRUSIVE_PRIME_C(3221225473),
+#if BOOST_INTRUSIVE_64_BIT_SIZE_T
+   //Taken from Boost.MultiIndex code, thanks to Joaquin M Lopez Munoz.
+   BOOST_INTRUSIVE_PRIME_C(6442450939),            BOOST_INTRUSIVE_PRIME_C(12884901893),
+   BOOST_INTRUSIVE_PRIME_C(25769803751),           BOOST_INTRUSIVE_PRIME_C(51539607551),
+   BOOST_INTRUSIVE_PRIME_C(103079215111),          BOOST_INTRUSIVE_PRIME_C(206158430209),
+   BOOST_INTRUSIVE_PRIME_C(412316860441),          BOOST_INTRUSIVE_PRIME_C(824633720831),
+   BOOST_INTRUSIVE_PRIME_C(1649267441651),         BOOST_INTRUSIVE_PRIME_C(3298534883309),
+   BOOST_INTRUSIVE_PRIME_C(6597069766657),         BOOST_INTRUSIVE_PRIME_C(13194139533299),
+   BOOST_INTRUSIVE_PRIME_C(26388279066623),        BOOST_INTRUSIVE_PRIME_C(52776558133303),
+   BOOST_INTRUSIVE_PRIME_C(105553116266489),       BOOST_INTRUSIVE_PRIME_C(211106232532969),
+   BOOST_INTRUSIVE_PRIME_C(422212465066001),       BOOST_INTRUSIVE_PRIME_C(844424930131963),
+   BOOST_INTRUSIVE_PRIME_C(1688849860263953),      BOOST_INTRUSIVE_PRIME_C(3377699720527861),
+   BOOST_INTRUSIVE_PRIME_C(6755399441055731),      BOOST_INTRUSIVE_PRIME_C(13510798882111483),
+   BOOST_INTRUSIVE_PRIME_C(27021597764222939),     BOOST_INTRUSIVE_PRIME_C(54043195528445957),
+   BOOST_INTRUSIVE_PRIME_C(108086391056891903),    BOOST_INTRUSIVE_PRIME_C(216172782113783843),
+   BOOST_INTRUSIVE_PRIME_C(432345564227567621),    BOOST_INTRUSIVE_PRIME_C(864691128455135207),
+   BOOST_INTRUSIVE_PRIME_C(1729382256910270481),   BOOST_INTRUSIVE_PRIME_C(3458764513820540933),
+   BOOST_INTRUSIVE_PRIME_C(6917529027641081903),   BOOST_INTRUSIVE_PRIME_C(13835058055282163729),
+   BOOST_INTRUSIVE_PRIME_C(18446744073709551557)
+#else
+   BOOST_INTRUSIVE_PRIME_C(4294967291)
+#endif
+   };
+
+#undef BOOST_INTRUSIVE_PRIME_C
+#undef BOOST_INTRUSIVE_64_BIT_SIZE_T
+
+template<int Dummy>
+const std::size_t prime_list_holder<Dummy>::prime_list_size
+   = sizeof(prime_list)/sizeof(std::size_t);
 
 struct hash_bool_flags
 {
@@ -253,7 +328,7 @@ struct group_functions
          if(group_algorithms::unique(first_in_group))
             group_algorithms::link_after(first_in_group, n);
          else{
-            group_algorithms::link_after(group_algorithms::node_traits::get_next(first_in_group), n);
+            group_algorithms::link_after(node_traits::get_next(first_in_group), n);
          }
       }
       else{
@@ -272,8 +347,8 @@ struct group_functions
 
       //It's the last in group if the next_node is a bucket
       slist_node_ptr nxt(node_traits::get_next(elem));
-      bool last_in_group = (first_end_ptr <= nxt && nxt <= last_end_ptr)/* ||
-                            (group_traits::get_next(nxt) != elem)*/;
+      bool last_in_group = (first_end_ptr <= nxt && nxt <= last_end_ptr) ||
+                            (group_traits::get_next(detail::dcast_bucket_ptr<node>(nxt)) != elem);
       //It's the first in group if group_previous's next_node is not
       //itself, as group list does not link bucket
       node_ptr prev_in_group(group_traits::get_next(elem));
@@ -388,7 +463,7 @@ template<class ValueTraitsOrHookOption>
 struct unordered_bucket
    : public detail::unordered_bucket_impl
       <typename ValueTraitsOrHookOption::
-         template pack<none>::proto_value_traits
+         template pack<empty>::proto_value_traits
       >
 {};
 
@@ -397,10 +472,10 @@ struct unordered_bucket
 //!a hash container.
 template<class ValueTraitsOrHookOption>
 struct unordered_bucket_ptr
-   :  public detail::unordered_bucket_ptr_impl
-         <typename ValueTraitsOrHookOption::
-          template pack<none>::proto_value_traits
-         >
+   : public detail::unordered_bucket_ptr_impl
+      <typename ValueTraitsOrHookOption::
+         template pack<empty>::proto_value_traits
+      >
 {};
 
 //!This metafunction will obtain the type of the default bucket traits
@@ -411,7 +486,7 @@ template<class ValueTraitsOrHookOption>
 struct unordered_default_bucket_traits
 {
    typedef typename ValueTraitsOrHookOption::
-      template pack<none>::proto_value_traits   supposed_value_traits;
+      template pack<empty>::proto_value_traits   supposed_value_traits;
    typedef typename detail::
       get_slist_impl_from_supposed_value_traits
          <supposed_value_traits>::type          slist_impl;
@@ -422,9 +497,17 @@ struct unordered_default_bucket_traits
 
 struct default_bucket_traits;
 
+//hashtable default hook traits
+struct default_hashtable_hook_applier
+{  template <class T> struct apply{ typedef typename T::default_hashtable_hook type;  };  };
+
+template<>
+struct is_default_hook_tag<default_hashtable_hook_applier>
+{  static const bool value = true;  };
+
 struct hashtable_defaults
 {
-   typedef detail::default_hashtable_hook   proto_value_traits;
+   typedef default_hashtable_hook_applier   proto_value_traits;
    typedef std::size_t                 size_type;
    typedef void                        equal;
    typedef void                        hash;
@@ -701,6 +784,18 @@ struct bucket_plus_vtraits : public ValueTraits
    bucket_traits bucket_traits_;
 };
 
+template<class Hash, class T>
+struct get_hash
+{
+   typedef Hash type;
+};
+
+template<class T>
+struct get_hash<void, T>
+{
+   typedef ::boost::hash<T> type;
+};
+
 //bucket_hash_t
 //Stores bucket_plus_vtraits plust the hash function
 template<class VoidOrKeyHash, class ValueTraits, class BucketTraits>
@@ -737,6 +832,20 @@ struct bucket_hash_t
 
    bucket_plus_vtraits_t internal;  //4
 };
+
+
+template<class EqualTo, class T>
+struct get_equal_to
+{
+   typedef EqualTo type;
+};
+
+template<class T>
+struct get_equal_to<void, T>
+{
+   typedef ::std::equal_to<T> type;
+};
+
 
 //bucket_hash_equal_t
 //Stores bucket_hash_t and the equality function when the first
@@ -2634,8 +2743,8 @@ class hashtable_impl
    //! <b>Throws</b>: Nothing.
    static size_type suggested_upper_bucket_count(size_type n)
    {
-      const std::size_t *primes     = &detail::prime_list_holder<0>::prime_list[0];
-      const std::size_t *primes_end = primes + detail::prime_list_holder<0>::prime_list_size;
+      const std::size_t *primes     = &prime_list_holder<0>::prime_list[0];
+      const std::size_t *primes_end = primes + prime_list_holder<0>::prime_list_size;
       std::size_t const* bound = std::lower_bound(primes, primes_end, n);
       bound -= (bound == primes_end);
       return size_type(*bound);
@@ -2652,13 +2761,14 @@ class hashtable_impl
    //! <b>Throws</b>: Nothing.
    static size_type suggested_lower_bucket_count(size_type n)
    {
-      const std::size_t *primes     = &detail::prime_list_holder<0>::prime_list[0];
-      const std::size_t *primes_end = primes + detail::prime_list_holder<0>::prime_list_size;
+      const std::size_t *primes     = &prime_list_holder<0>::prime_list[0];
+      const std::size_t *primes_end = primes + prime_list_holder<0>::prime_list_size;
       size_type const* bound = std::upper_bound(primes, primes_end, n);
       bound -= (bound != primes);
       return size_type(*bound);
    }
    /// @cond
+   void check() const {}
    private:
    size_traits &priv_size_traits()
    {  return static_cast<size_traits&>(static_cast<data_type&>(*this));  }
@@ -2999,7 +3109,9 @@ class hashtable_impl
             to_return.second = bucket_type::s_iterator_to
                (*node_traits::get_next(group_functions_t::get_last_in_group
                   (detail::dcast_bucket_ptr<node>(it.pointed_node()), optimize_multikey_t())));
-            cnt = std::distance(it, to_return.second);
+
+            cnt = 0;
+            for(; it != to_return.second; ++it){ ++cnt; }
             if(to_return.second !=  b.end()){
                bucket_number_second = bucket_number_first;
                return to_return;

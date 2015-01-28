@@ -16,6 +16,10 @@
 #ifndef BOOST_INTERPROCESS_DETAIL_MATH_FUNCTIONS_HPP
 #define BOOST_INTERPROCESS_DETAIL_MATH_FUNCTIONS_HPP
 
+#if defined(_MSC_VER)
+#  pragma once
+#endif
+
 #include <climits>
 #include <boost/static_assert.hpp>
 

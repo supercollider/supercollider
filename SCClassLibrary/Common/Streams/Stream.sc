@@ -10,9 +10,6 @@ Stream : AbstractFunction {
 	value { arg inval; ^this.next(inval) }
 	valueArray { ^this.next }
 
-	nextN { arg n, inval;
-		^Array.fill(n, { this.next(inval) });
-	}
 	all { arg inval;
 		// don't do this on infinite streams.
 		var array;

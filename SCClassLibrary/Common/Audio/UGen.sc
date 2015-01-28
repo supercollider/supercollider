@@ -328,6 +328,7 @@ UGen : AbstractFunction {
 
 	outputIndex { ^0 }
 	writesToBus { ^false }
+	isUGen { ^true }
 
 	poll { arg trig = 10, label, trigid = -1;
           ^Poll(trig, this, label, trigid)

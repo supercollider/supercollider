@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga  2007-2013
+// (C) Copyright Ion Gaztanaga  2007-2014
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -30,13 +30,18 @@
 #ifndef BOOST_INTRUSIVE_SPLAYTREE_ALGORITHMS_HPP
 #define BOOST_INTRUSIVE_SPLAYTREE_ALGORITHMS_HPP
 
+#if defined(_MSC_VER)
+#  pragma once
+#endif
+
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/intrusive_fwd.hpp>
 #include <boost/intrusive/detail/assert.hpp>
-#include <boost/intrusive/pointer_traits.hpp>
-#include <cstddef>
-#include <boost/intrusive/detail/utilities.hpp>
+#include <boost/intrusive/detail/algo_type.hpp>
+#include <boost/intrusive/detail/uncast.hpp>
 #include <boost/intrusive/bstree_algorithms.hpp>
+
+#include <cstddef>
 
 namespace boost {
 namespace intrusive {
@@ -704,6 +709,12 @@ template<class NodeTraits>
 struct get_algo<SplayTreeAlgorithms, NodeTraits>
 {
    typedef splaytree_algorithms<NodeTraits> type;
+};
+
+template <class ValueTraits, class NodePtrCompare, class ExtraChecker>
+struct get_node_checker<SplayTreeAlgorithms, ValueTraits, NodePtrCompare, ExtraChecker>
+{
+   typedef detail::bstree_node_checker<ValueTraits, NodePtrCompare, ExtraChecker> type;
 };
 
 /// @endcond

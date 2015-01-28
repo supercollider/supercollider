@@ -23,6 +23,7 @@
 
 #include "editor.hpp"
 #include "tokens.hpp"
+#include "../core/settings/theme.hpp"
 
 #include <QTextBlock>
 #include <utility>

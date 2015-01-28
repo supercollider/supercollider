@@ -13,6 +13,10 @@
 #ifndef BOOST_INTRUSIVE_FWD_HPP
 #define BOOST_INTRUSIVE_FWD_HPP
 
+#if defined(_MSC_VER)
+#  pragma once
+#endif
+
 //! \file
 //! This header file forward declares most Intrusive classes.
 //!

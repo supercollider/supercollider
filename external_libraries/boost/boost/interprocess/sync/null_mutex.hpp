@@ -24,8 +24,12 @@
 
 namespace boost {
 
+#if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
+
 namespace posix_time
 {  class ptime;   }
+
+#endif   //#if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
 
 namespace interprocess {
 
@@ -33,10 +37,10 @@ namespace interprocess {
 //!simulates a successful operation.
 class null_mutex
 {
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
    null_mutex(const null_mutex&);
    null_mutex &operator= (const null_mutex&);
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
    public:
 
    //!Constructor.

@@ -12,15 +12,16 @@
 #ifndef BOOST_INTRUSIVE_AVLTREE_HPP
 #define BOOST_INTRUSIVE_AVLTREE_HPP
 
+#if defined(_MSC_VER)
+#  pragma once
+#endif
+
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/intrusive_fwd.hpp>
-#include <algorithm>
 #include <cstddef>
 #include <functional>
-#include <iterator>
 #include <utility>
 
-#include <boost/intrusive/detail/assert.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/intrusive/avl_set_hook.hpp>
 #include <boost/intrusive/detail/avltree_node.hpp>
@@ -29,21 +30,26 @@
 #include <boost/intrusive/detail/ebo_functor_holder.hpp>
 #include <boost/intrusive/detail/mpl.hpp>
 #include <boost/intrusive/pointer_traits.hpp>
-#include <boost/intrusive/pointer_traits.hpp>
-#include <boost/intrusive/options.hpp>
-#include <boost/intrusive/detail/utilities.hpp>
+#include <boost/intrusive/detail/get_value_traits.hpp>
 #include <boost/intrusive/avltree_algorithms.hpp>
 #include <boost/intrusive/link_mode.hpp>
-#include <boost/move/move.hpp>
+#include <boost/move/utility_core.hpp>
 
 namespace boost {
 namespace intrusive {
 
 /// @cond
 
+struct default_avltree_hook_applier
+{  template <class T> struct apply{ typedef typename T::default_avltree_hook type;  };  };
+
+template<>
+struct is_default_hook_tag<default_avltree_hook_applier>
+{  static const bool value = true;  };
+
 struct avltree_defaults
 {
-   typedef detail::default_avltree_hook proto_value_traits;
+   typedef default_avltree_hook_applier proto_value_traits;
    static const bool constant_time_size = true;
    typedef std::size_t size_type;
    typedef void compare;

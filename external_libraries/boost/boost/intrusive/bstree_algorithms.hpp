@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga  2007-2013
+// (C) Copyright Ion Gaztanaga  2007-2014
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -13,12 +13,18 @@
 #ifndef BOOST_INTRUSIVE_BSTREE_ALGORITHMS_HPP
 #define BOOST_INTRUSIVE_BSTREE_ALGORITHMS_HPP
 
+#if defined(_MSC_VER)
+#  pragma once
+#endif
+
+#include <cstddef>
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/intrusive_fwd.hpp>
 #include <boost/intrusive/detail/assert.hpp>
-#include <cstddef>
-#include <boost/intrusive/detail/utilities.hpp>
-#include <boost/intrusive/pointer_traits.hpp>
+#include <boost/intrusive/detail/uncast.hpp>
+#include <boost/intrusive/detail/math.hpp>
+#include <boost/intrusive/detail/algo_type.hpp>
+#include <utility>
 
 namespace boost {
 namespace intrusive {
@@ -44,6 +50,50 @@ struct data_for_rebalance_t
    NodePtr  x_parent;
    NodePtr  y;
 };
+
+namespace detail {
+
+template<class ValueTraits, class NodePtrCompare, class ExtraChecker>
+struct bstree_node_checker
+   : public ExtraChecker
+{
+   typedef ExtraChecker                            base_checker_t;
+   typedef ValueTraits                             value_traits;
+   typedef typename value_traits::node_traits      node_traits;
+   typedef typename node_traits::const_node_ptr    const_node_ptr;
+
+   struct return_type
+      : public base_checker_t::return_type
+   {
+      return_type() : min_key_node_ptr(const_node_ptr()), max_key_node_ptr(const_node_ptr()), node_count(0) {}
+
+      const_node_ptr min_key_node_ptr;
+      const_node_ptr max_key_node_ptr;
+      size_t   node_count;
+   };
+
+   bstree_node_checker(const NodePtrCompare& comp, ExtraChecker extra_checker)
+      : base_checker_t(extra_checker), comp_(comp)
+   {}
+
+   void operator () (const const_node_ptr& p,
+                     const return_type& check_return_left, const return_type& check_return_right,
+                     return_type& check_return)
+   {
+      if (check_return_left.max_key_node_ptr)
+         BOOST_INTRUSIVE_INVARIANT_ASSERT(!comp_(p, check_return_left.max_key_node_ptr));
+      if (check_return_right.min_key_node_ptr)
+         BOOST_INTRUSIVE_INVARIANT_ASSERT(!comp_(check_return_right.min_key_node_ptr, p));
+      check_return.min_key_node_ptr = node_traits::get_left(p)? check_return_left.min_key_node_ptr : p;
+      check_return.max_key_node_ptr = node_traits::get_right(p)? check_return_right.max_key_node_ptr : p;
+      check_return.node_count = check_return_left.node_count + check_return_right.node_count + 1;
+      base_checker_t::operator()(p, check_return_left, check_return_right, check_return);
+   }
+
+   const NodePtrCompare comp_;
+};
+
+} // namespace detail
 
 /// @endcond
 
@@ -1442,6 +1492,40 @@ class bstree_algorithms
       return new_root;
    }
 
+   //! <b>Effects</b>: Asserts the integrity of the container with additional checks provided by the user.
+   //!
+   //! <b>Requires</b>: header must be the header of a tree.
+   //!
+   //! <b>Complexity</b>: Linear time.
+   //!
+   //! <b>Note</b>: The method might not have effect when asserts are turned off (e.g., with NDEBUG).
+   //!   Experimental function, interface might change in future versions.
+   template<class Checker>
+   static void check(const const_node_ptr& header, Checker checker, typename Checker::return_type& checker_return)
+   {
+       const_node_ptr root_node_ptr = NodeTraits::get_parent(header);
+       if (!root_node_ptr)
+       {
+           // check left&right header pointers
+           BOOST_INTRUSIVE_INVARIANT_ASSERT(NodeTraits::get_left(header) == header);
+           BOOST_INTRUSIVE_INVARIANT_ASSERT(NodeTraits::get_right(header) == header);
+       }
+       else
+       {
+           // check parent pointer of root node
+           BOOST_INTRUSIVE_INVARIANT_ASSERT(NodeTraits::get_parent(root_node_ptr) == header);
+           // check subtree from root
+           check_subtree(root_node_ptr, checker, checker_return);
+           // check left&right header pointers
+           const_node_ptr p = root_node_ptr;
+           while (NodeTraits::get_left(p)) { p = NodeTraits::get_left(p); }
+           BOOST_INTRUSIVE_INVARIANT_ASSERT(NodeTraits::get_left(header) == p);
+           p = root_node_ptr;
+           while (NodeTraits::get_right(p)) { p = NodeTraits::get_right(p); }
+           BOOST_INTRUSIVE_INVARIANT_ASSERT(NodeTraits::get_right(header) == p);
+       }
+   }
+
    protected:
    static void erase(const node_ptr & header, const node_ptr & z, data_for_rebalance &info)
    {
@@ -1997,6 +2081,26 @@ class bstree_algorithms
       }
       return y;
    }
+
+   template<class Checker>
+   static void check_subtree(const const_node_ptr& node, Checker checker, typename Checker::return_type& check_return)
+   {
+      const_node_ptr left = NodeTraits::get_left(node);
+      const_node_ptr right = NodeTraits::get_right(node);
+      typename Checker::return_type check_return_left;
+      typename Checker::return_type check_return_right;
+      if (left)
+      {
+         BOOST_INTRUSIVE_INVARIANT_ASSERT(NodeTraits::get_parent(left) == node);
+         check_subtree(left, checker, check_return_left);
+      }
+      if (right)
+      {
+         BOOST_INTRUSIVE_INVARIANT_ASSERT(NodeTraits::get_parent(right) == node);
+         check_subtree(right, checker, check_return_right);
+      }
+      checker(node, check_return_left, check_return_right, check_return);
+   }
 };
 
 /// @cond
@@ -2005,6 +2109,12 @@ template<class NodeTraits>
 struct get_algo<BsTreeAlgorithms, NodeTraits>
 {
    typedef bstree_algorithms<NodeTraits> type;
+};
+
+template <class ValueTraits, class NodePtrCompare, class ExtraChecker>
+struct get_node_checker<BsTreeAlgorithms, ValueTraits, NodePtrCompare, ExtraChecker>
+{
+   typedef detail::bstree_node_checker<ValueTraits, NodePtrCompare, ExtraChecker> type;
 };
 
 /// @endcond

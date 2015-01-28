@@ -32,6 +32,10 @@
 #include <QTextDocument>
 #include <QPlainTextDocumentLayout>
 #include <QUuid>
+#include <QTimer>
+
+#define RESTORE_COAL 100
+#define RESTORE_COAL_MSECS 60000
 
 namespace ScIDE {
 
@@ -96,9 +100,13 @@ public:
     void setEditable(bool editable) { mEditable = editable; }
     void setPromptsToSave(bool prompts) { mPromptsToSave = prompts; }
 
+    void removeTmpFile();
+
 public slots:
     void applySettings( Settings::Manager * );
     void resetDefaultFont();
+    void storeTmpFile();
+    void onTmpCoalUsecs();
 
 signals:
     void defaultFontChanged();
@@ -110,6 +118,9 @@ private:
     QTextDocument *mDoc;
     QString mFilePath;
     QString mTitle;
+    QString mTmpFilePath;
+    int mTmpCoalCount;
+    QTimer mTmpCoalTimer;
     QDateTime mSaveTime;
     int mIndentWidth;
     SyntaxHighlighter * mHighlighter;
@@ -144,6 +155,9 @@ public:
     bool save( Document * );
     bool saveAs( Document *, const QString & path );
     bool reload( Document * );
+    bool needRestore();
+    void restore();
+    void deleteRestore();
     const QStringList & recents() const { return mRecent; }
     Document * documentForId(const QByteArray id);
     bool textMirrorEnabled() { return mTextMirrorEnabled; }
@@ -181,6 +195,7 @@ private:
     bool doSaveAs( Document *, const QString & path );
     void addToRecent( Document * );
     void loadRecentDocuments( Settings::Manager * );
+    QStringList tmpFiles();
     void closeSingleUntitledIfUnmodified();
     QString decodeDocument(QByteArray const &);
     void handleDocListScRequest();

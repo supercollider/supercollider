@@ -24,6 +24,7 @@
 #include "settings/manager.hpp"
 #include "../widgets/code_editor/highlighter.hpp"
 #include "../../common/SC_TextUtils.hpp"
+#include "util/standard_dirs.hpp"
 
 #include <QPlainTextDocumentLayout>
 #include <QDebug>
@@ -56,6 +57,11 @@ Document::Document(bool isPlainText, const QByteArray & id,
     mEditable(true),
     mPromptsToSave(true)
 {
+    mTmpCoalCount = 0;
+    mTmpCoalTimer.setInterval(RESTORE_COAL_MSECS);
+    mTmpCoalTimer.setSingleShot(true);
+    connect(&mTmpCoalTimer, SIGNAL(timeout()), this, SLOT(onTmpCoalUsecs()));
+
     if (mId.isEmpty())
         mId = QUuid::createUuid().toString().toLatin1();
     if (mTitle.isEmpty())
@@ -196,6 +202,73 @@ void Document::setTextInRange(const QString text, int start, int range)
     cursor.insertText(text);
 }
 
+void Document::onTmpCoalUsecs()
+{
+    mTmpCoalCount = RESTORE_COAL;
+    storeTmpFile();
+}
+
+void Document::storeTmpFile()
+{
+    QString path, name;
+    QDir tmpFilesDir = standardDirectory(ScConfigUserDir);
+    int i = 0;
+
+    if (!textDocument()->isModified())
+        return;
+
+    if (++mTmpCoalCount < RESTORE_COAL) {
+        mTmpCoalTimer.start();
+        return;
+    }
+
+    mTmpCoalCount = 0;
+
+    if (!mTmpFilePath.isEmpty()) {
+        path = mTmpFilePath;
+        goto store;
+    }
+
+    if (mFilePath.isEmpty())
+        name = QString("Untitled");
+    else
+        name = QFileInfo(mFilePath).baseName();
+
+    if (!tmpFilesDir.exists("tmp"))
+        tmpFilesDir.mkdir("tmp");
+    tmpFilesDir.cd("tmp");
+
+    path = QString("%1/%2.bak").arg(tmpFilesDir.absolutePath())
+                               .arg(name);
+    while (QFile(path).exists())
+        path = QString("%1/%2-%3.bak")
+                               .arg(tmpFilesDir.absolutePath())
+                               .arg(name)
+                               .arg(++i);
+    mTmpFilePath = path;
+
+store:
+    QFile file(path);
+    if(!file.open(QIODevice::WriteOnly)) {
+        qWarning() << "DocumentManager: the file" << path << "could not be opened for writing.";
+        return;
+    }
+
+    QString str = textDocument()->toPlainText();
+    file.write(str.toUtf8());
+    file.close();
+}
+
+void Document::removeTmpFile()
+{
+    if (mTmpFilePath.isEmpty())
+        return;
+
+    if(!QFile(mTmpFilePath).remove())
+        qWarning() << "DocumentManager: the file" << mTmpFilePath
+                   << "could not be removed.'";
+    mTmpFilePath = "";
+}
 
 DocumentManager::DocumentManager( Main *main, Settings::Manager * settings ):
 QObject(main), mTextMirrorEnabled(true), mCurrentDocument(NULL), mGlobalKeyDownEnabled(false), mGlobalKeyUpEnabled(false)
@@ -220,6 +293,7 @@ void DocumentManager::create()
 {
     Document *doc = createDocument();
 
+    connect(doc->textDocument(), SIGNAL(contentsChanged()), doc, SLOT(storeTmpFile()));
     syncLangDocument(doc);
     Q_EMIT( opened(doc, 0, 0) );
 }
@@ -282,6 +356,7 @@ Document *DocumentManager::open( const QString & path, int initialCursorPosition
     doc->mTitle = info.fileName();
     doc->mSaveTime = info.lastModified();
     doc->setInitialSelection(initialCursorPosition, selectionLength);
+    connect(doc->textDocument(), SIGNAL(contentsChanged()), doc, SLOT(storeTmpFile()));
 
     if (!isRTF)
         mFsWatcher.addPath(cpath);
@@ -326,6 +401,48 @@ bool DocumentManager::reload( Document *doc )
     return true;
 }
 
+QStringList DocumentManager::tmpFiles()
+{
+    QDir tmpFilesDir = standardDirectory(ScConfigUserDir) + "/tmp";
+    QStringList files = tmpFilesDir.entryList(QStringList("*.bak"), QDir::Files);
+    int i;
+
+    for (i = 0; i < files.size(); i++)
+        files.replace(i, tmpFilesDir.absolutePath() + "/" + files[i]);
+
+    return files;
+}
+
+bool DocumentManager::needRestore()
+{
+    return (!tmpFiles().isEmpty());
+}
+
+void DocumentManager::restore()
+{
+    foreach(QString path, tmpFiles()) {
+        QFile file(path);
+        if (!file.open(QIODevice::ReadOnly))
+            MainWindow::instance()->showStatusMessage(
+                        tr("Cannot open file for reading: %1").arg(path));
+        QByteArray bytes(file.readAll());
+        file.close();
+        Document *doc = createDocument(false, QByteArray(),
+                                       QFileInfo(path).baseName(),
+                                       decodeDocument(bytes));
+        doc->mTmpFilePath = path;
+        syncLangDocument(doc);
+        Q_EMIT(opened(doc, 0, 0));
+        connect(doc->textDocument(), SIGNAL(contentsChanged()), doc, SLOT(storeTmpFile()));
+    }
+}
+
+void DocumentManager::deleteRestore()
+{
+    foreach(QString file, tmpFiles())
+        QFile(file).remove();
+}
+
 Document * DocumentManager::documentForId(const QByteArray docID)
 {
     Document * doc = mDocHash.value(docID);
@@ -344,6 +461,8 @@ QString DocumentManager::decodeDocument(const QByteArray & bytes)
 void DocumentManager::close( Document *doc )
 {
     Q_ASSERT(doc);
+
+    doc->removeTmpFile();
 
     if( mDocHash.remove(doc->id()) == 0 ) {
         qWarning("DocumentManager: trying to close an unmanaged document.");
@@ -420,6 +539,7 @@ bool DocumentManager::doSaveAs( Document *doc, const QString & path )
     doc->mDoc->setModified(false);
     doc->mSaveTime = info.lastModified();
     doc->setPlainText(fileIsPlainText);
+    doc->removeTmpFile();
 
     // Always try to start watching, because the file could have been removed:
     if (!mFsWatcher.files().contains(cpath))
