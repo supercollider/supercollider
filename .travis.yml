@@ -50,6 +50,7 @@ before_deploy:
  - mkdir $HOME/artifacts
  - cd Install
  - zip -r $HOME/artifacts/SC-$COMMIT_NAME.zip SuperCollider
+ - mkdir -p "${TRAVIS_BRANCH%/*}"
  - echo $FWD_HTML > $HOME/artifacts/$TRAVIS_BRANCH-latest.html
  - 'if [[ $TRAVIS_TAG != "head" ]]; then echo $FWD_HTML > $HOME/artifacts/$TRAVIS_TAG.html; fi;'
 

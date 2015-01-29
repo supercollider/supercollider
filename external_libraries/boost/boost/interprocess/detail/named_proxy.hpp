@@ -26,7 +26,7 @@
 #ifndef BOOST_INTERPROCESS_PERFECT_FORWARDING
 #include <boost/interprocess/detail/preprocessor.hpp>
 #else
-#include <boost/move/move.hpp>
+#include <boost/move/utility_core.hpp>
 #include <boost/interprocess/detail/variadic_templates_tools.hpp>
 #endif   //#ifdef BOOST_INTERPROCESS_PERFECT_FORWARDING
 

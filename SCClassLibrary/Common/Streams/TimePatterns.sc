@@ -15,7 +15,7 @@ Pstep : Pattern {
 		repeats.value(inval).do { | i |
 			stream = Ptuple([list, durs]).asStream;
 			while (
-				{ #val, dur = stream.next(inval) ? [nil, nil];
+				{ #val, dur = stream.next(inval) ?? { #[nil, nil] };
 					val.notNil;
 				},
 				{

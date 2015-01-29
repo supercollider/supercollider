@@ -66,6 +66,7 @@ public:
 
     mutex mutex_;
     int descriptor_;
+    int num_kevents_; // 1 == read only, 2 == read and write
     op_queue<reactor_op> op_queue_[max_ops];
     bool shutdown_;
   };

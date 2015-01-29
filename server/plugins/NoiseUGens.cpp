@@ -556,6 +556,8 @@ void TRand_next_k(TRand* unit, int inNumSamples)
 
 void TRand_next_a(TRand* unit, int inNumSamples)
 {
+	float lo = ZIN0(0);
+	float hi = ZIN0(1);
 	float *trig = ZIN(2);
 	float prev = unit->m_trig;
 	float *out = ZOUT(0);
@@ -565,8 +567,6 @@ void TRand_next_a(TRand* unit, int inNumSamples)
 	LOOP1(inNumSamples,
 		next = ZXP(trig);
 		if (next > 0.f &&  prev <= 0.f) {
-			float lo = ZIN0(0);
-			float hi = ZIN0(1);
 			float range = hi - lo;
 			RGen& rgen = *unit->mParent->mRGen;
 			ZXP(out) = outval = rgen.frand() * range + lo;
@@ -580,6 +580,33 @@ void TRand_next_a(TRand* unit, int inNumSamples)
 	unit->m_value = outval;
 }
 
+void TRand_next_aa(TRand* unit, int inNumSamples)
+{
+	float *lo = ZIN(0);
+	float *hi = ZIN(1);
+	float *trig = ZIN(2);
+	float prev = unit->m_trig;
+	float *out = ZOUT(0);
+	float outval = unit->m_value;
+	float next;
+	
+	LOOP1(inNumSamples,
+		  next = ZXP(trig);
+		  if (next > 0.f &&  prev <= 0.f) {
+			  float loval = ZXP(lo);
+			  float range = ZXP(hi) - loval;
+			  RGen& rgen = *unit->mParent->mRGen;
+			  ZXP(out) = outval = rgen.frand() * range + loval;
+		  } else {
+			  ZXP(out) = outval;
+		  };
+		  prev = next;
+		  )
+	
+	unit->m_trig = next;
+	unit->m_value = outval;
+}
+
 void TRand_Ctor(TRand* unit)
 {
 	float lo = ZIN0(0);
@@ -587,7 +614,11 @@ void TRand_Ctor(TRand* unit)
 	float range = hi - lo;
 	RGen& rgen = *unit->mParent->mRGen;
 	ZOUT0(0) = unit->m_value = rgen.frand() * range + lo;
-	if(unit->mCalcRate == calc_FullRate){ SETCALC(TRand_next_a); } else { SETCALC(TRand_next_k); }
+	if(unit->mCalcRate == calc_FullRate) {
+		if(INRATE(0) == calc_FullRate) {
+			SETCALC(TRand_next_aa);
+		} else { SETCALC(TRand_next_a); }
+	} else { SETCALC(TRand_next_k); }
 	unit->m_trig = ZIN0(2);
 }
 
@@ -611,6 +642,8 @@ void TExpRand_next_k(TExpRand* unit, int inNumSamples)
 
 void TExpRand_next_a(TExpRand* unit, int inNumSamples)
 {
+	float lo = ZIN0(0);
+	float hi = ZIN0(1);
 	float *trig = ZIN(2);
 	float prev = unit->m_trig;
 	float *out = ZOUT(0);
@@ -620,8 +653,6 @@ void TExpRand_next_a(TExpRand* unit, int inNumSamples)
 	LOOP1(inNumSamples,
 		next = ZXP(trig);
 		if (next > 0.f && prev <= 0.f) {
-			float lo = ZIN0(0);
-			float hi = ZIN0(1);
 			float ratio = hi / lo;
 			RGen& rgen = *unit->mParent->mRGen;
 			ZXP(out) = outval = pow(ratio, rgen.frand()) * lo;
@@ -634,6 +665,32 @@ void TExpRand_next_a(TExpRand* unit, int inNumSamples)
 	unit->m_value = outval;
 }
 
+void TExpRand_next_aa(TExpRand* unit, int inNumSamples)
+{
+	float *lo = ZIN(0);
+	float *hi = ZIN(1);
+	float *trig = ZIN(2);
+	float prev = unit->m_trig;
+	float *out = ZOUT(0);
+	float outval = unit->m_value;
+	float next;
+	
+	LOOP1(inNumSamples,
+		  next = ZXP(trig);
+		  if (next > 0.f && prev <= 0.f) {
+			  float loval = ZXP(lo);
+			  float ratio = ZXP(hi) / loval;
+			  RGen& rgen = *unit->mParent->mRGen;
+			  ZXP(out) = outval = pow(ratio, rgen.frand()) * loval;
+		  } else {
+			  ZXP(out) = outval;
+		  }
+		  )
+	
+	unit->m_trig = next;
+	unit->m_value = outval;
+}
+
 void TExpRand_Ctor(TExpRand* unit)
 {
 	float lo = ZIN0(0);
@@ -642,7 +699,11 @@ void TExpRand_Ctor(TExpRand* unit)
 	RGen& rgen = *unit->mParent->mRGen;
 
 	ZOUT0(0) = unit->m_value = pow(ratio, rgen.frand()) * lo;
-	if(unit->mCalcRate == calc_FullRate){ SETCALC(TExpRand_next_a); } else { SETCALC(TExpRand_next_k); }
+	if(unit->mCalcRate == calc_FullRate) {
+		if(INRATE(0) == calc_FullRate) {
+			SETCALC(TExpRand_next_aa);
+		} else { SETCALC(TExpRand_next_a); }
+	} else { SETCALC(TExpRand_next_k); }
 	unit->m_trig = ZIN0(2);
 }
 
@@ -677,6 +738,8 @@ void TIRand_next_k(TIRand* unit, int inNumSamples)
 
 void TIRand_next_a(TIRand* unit, int inNumSamples)
 {
+	int lo = (int)ZIN0(0);
+	int hi = (int)ZIN0(1);
 	float *trig = ZIN(2);
 	float prev = unit->m_trig;
 	float *out = ZOUT(0);
@@ -686,8 +749,6 @@ void TIRand_next_a(TIRand* unit, int inNumSamples)
 	LOOP1(inNumSamples,
 		next = ZXP(trig);
 		if (next > 0.f && prev <= 0.f) {
-			int lo = (int)ZIN0(0);
-			int hi = (int)ZIN0(1);
 			int range = hi - lo + 1;
 			RGen& rgen = *unit->mParent->mRGen;
 			ZXP(out) = outval = (float)(rgen.irand(range) + lo);
@@ -700,6 +761,33 @@ void TIRand_next_a(TIRand* unit, int inNumSamples)
 	unit->m_value = outval;
 }
 
+void TIRand_next_aa(TIRand* unit, int inNumSamples)
+{
+	float *lo = ZIN(0);
+	float *hi = ZIN(1);
+	float *trig = ZIN(2);
+	float prev = unit->m_trig;
+	float *out = ZOUT(0);
+	float outval = unit->m_value;
+	float next;
+	
+	LOOP1(inNumSamples,
+		  next = ZXP(trig);
+		  if (next > 0.f && prev <= 0.f) {
+			  int loval = (int)ZXP(lo);
+			  int range = (int)ZXP(hi) - loval + 1;
+			  
+			  RGen& rgen = *unit->mParent->mRGen;
+			  ZXP(out) = outval = (float)(rgen.irand(range) + loval);
+		  } else {
+			  ZXP(out) = outval;
+		  }
+		  )
+	
+	unit->m_trig = next;
+	unit->m_value = outval;
+}
+
 
 void TIRand_Ctor(TIRand* unit)
 {
@@ -708,7 +796,11 @@ void TIRand_Ctor(TIRand* unit)
 	int range = hi - lo + 1;
 	RGen& rgen = *unit->mParent->mRGen;
 	ZOUT0(0) = unit->m_value = (float)(rgen.irand(range) + lo);
-	if(unit->mCalcRate == calc_FullRate){ SETCALC(TIRand_next_a); } else { SETCALC(TIRand_next_k); }
+	if(unit->mCalcRate == calc_FullRate) {
+		if(INRATE(0) == calc_FullRate) {
+			SETCALC(TIRand_next_aa);
+		} else { SETCALC(TIRand_next_a); }
+	} else { SETCALC(TIRand_next_k); }
 	unit->m_trig = ZIN0(2);
 }
 

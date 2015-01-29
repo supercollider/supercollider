@@ -2740,7 +2740,7 @@ void EnvGen_Ctor(EnvGen *unit)
 	EnvGen_next_k(unit, 1);
 }
 
-static inline bool check_gate(EnvGen * unit, float prevGate, float gate, int & counter, double level, int counterOffset = 0)
+static bool check_gate(EnvGen * unit, float prevGate, float gate, int & counter, double level, int counterOffset = 0)
 {
 	if (prevGate <= 0.f && gate > 0.f) {
 		unit->m_stage = -1;
@@ -2825,6 +2825,7 @@ initSegment:
 			return false;
 		}
 
+		float previousEndLevel = unit->m_endLevel;
 		float** envPtr  = unit->mInBuf + stageOffset;
 		double endLevel = *envPtr[0] * ZIN0(kEnvGen_levelScale) + ZIN0(kEnvGen_levelBias); // scale levels
 		double dur      = *envPtr[1] * ZIN0(kEnvGen_timeScale);
@@ -2844,8 +2845,7 @@ initSegment:
 			level = endLevel;
 		} break;
 		case shape_Hold : {
-			level = unit->m_y1;
-			unit->m_y1 = endLevel;
+			level = previousEndLevel;
 		} break;
 		case shape_Linear : {
 			unit->m_grow = (endLevel - level) / counter;
@@ -3186,6 +3186,7 @@ void Linen_Ctor(Linen *unit)
 	unit->m_level = 0.f;
 	unit->m_stage = 4;
 	unit->m_prevGate = 0.f;
+	if(ZIN0(0) <= -1.f) { unit->m_stage = 1; } // early release
 	Linen_next_k(unit, 1);
 }
 

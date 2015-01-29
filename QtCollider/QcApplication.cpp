@@ -33,7 +33,7 @@
 #include <QKeyEvent>
 #include <QIcon>
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
 #include "../../common/SC_Apple.hpp"
 #endif
 
@@ -81,7 +81,7 @@ QcApplication::QcApplication( int & argc, char ** argv )
     setWindowIcon(icon);
   }
   
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
   // On Mac, we may need to disable "App Nap", so we aren't put to sleep unexpectedly
   SC::Apple::disableAppNap();
 #endif

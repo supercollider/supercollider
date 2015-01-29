@@ -41,7 +41,7 @@ class SessionsDialog : public QDialog
 public:
     SessionsDialog ( SessionManager *mng, QWidget *parent = 0 ):
         QDialog(parent),
-        mMng(mng)
+        mSessionManager(mng)
     {
         setWindowTitle("Sessions");
 
@@ -91,7 +91,7 @@ private slots:
                 QMessageBox::Yes
             ) == QMessageBox::Yes )
         {
-            mMng->removeSession(name);
+            mSessionManager->removeSession(name);
             updateSessions();
         }
     }
@@ -113,7 +113,7 @@ private slots:
         if (newName.isEmpty() || newName == oldName )
             return;
 
-        mMng->renameSession(oldName, newName);
+        mSessionManager->renameSession(oldName, newName);
         updateSessions();
     }
 
@@ -121,12 +121,20 @@ private:
     void updateSessions()
     {
         mList->clear();
-        QStringList sessions = mMng->availableSessions();
+        QStringList sessions = mSessionManager->availableSessions();
         mList->addItems(sessions);
+
+        const Session * currentSession = mSessionManager->currentSession();
+        if(!currentSession)
+            return;
+
+        const int currentSessionIndex = sessions.indexOf( currentSession->name() );
+        if (currentSessionIndex != -1)
+            mList->setCurrentRow(currentSessionIndex);
     }
 
     QListWidget *mList;
-    SessionManager *mMng;
+    SessionManager *mSessionManager;
 };
 
 } // namespace ScIDE

@@ -313,6 +313,21 @@ code::
 "aaaabaaa".findAllRegexp("a+");
 ::
 
+method::findRegexpAt
+Match a regular expression at the given offset, returning the match and the length of the match in an Array, or nil if it doesn't match.
+The match must begin right at the offset.
+
+code::
+"foobaroob".findRegexpAt("o*b+", 0); // nil
+"foobaroob".findRegexpAt("o*b+", 1); // [ oob, 3 ]
+"foobaroob".findRegexpAt("o*b+", 2); // [ ob,  2 ]
+"foobaroob".findRegexpAt("o*b+", 3); // [ b,   1 ]
+"foobaroob".findRegexpAt("o*b+", 4); // nil
+"foobaroob".findRegexpAt("o*b+", 5); // nil
+"foobaroob".findRegexpAt("o*b+", 6); // [ oob, 3 ]
+"foobaroob".findRegexpAt("o*b+", 7); // [ ob,  2 ]
+::
+
 subsection:: Searching strings
 
 method::find

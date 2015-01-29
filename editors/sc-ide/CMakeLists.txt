@@ -35,6 +35,7 @@ set ( ide_moc_hdr
     core/sc_server.hpp
     core/doc_manager.hpp
     core/settings/manager.hpp
+    core/settings/theme.hpp
     core/session_manager.hpp
     widgets/cmd_line.hpp
     widgets/doc_list.hpp
@@ -85,6 +86,7 @@ set ( ide_src
     core/sc_lexer.cpp
     core/settings/serialization.cpp
     core/settings/manager.cpp
+    core/settings/theme.cpp
     core/session_manager.cpp
     core/util/standard_dirs.cpp
     widgets/cmd_line.cpp

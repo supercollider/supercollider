@@ -1764,7 +1764,7 @@ void traverseFullDepTree2()
 			post("\tByte Code Size %d\n", totalByteCodes);
 			//elapsed = TickCount() - compileStartTime;
 			//elapsed = 0;
-			elapsed = elapsedRealTime() - compileStartTime;
+			elapsed = elapsedTime() - compileStartTime;
 			post("\tcompiled %d files in %.2f seconds\n",
 				 gNumCompiledFiles, elapsed );
 			if(numOverwrites == 1){
@@ -2121,7 +2121,7 @@ SCLANG_DLLEXPORT_C bool compileLibrary(bool standalone)
 
 	SC_LanguageConfig::readLibraryConfig(standalone);
 
-	compileStartTime = elapsedRealTime();
+	compileStartTime = elapsedTime();
 
 	totalByteCodes = 0;
 

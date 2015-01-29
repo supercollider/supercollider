@@ -182,7 +182,7 @@ Pfuncn : Pattern {
 	storeArgs { ^[func,repeats] }
 	embedInStream {  arg inval;
 		repeats.value(inval).do({
-			inval = func.value(inval).yield;
+			inval = func.value(inval).processRest(inval).yield;
 		});
 		^inval
 	}
