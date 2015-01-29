@@ -349,7 +349,7 @@ if(APPLE AND SC_QT)
 
     set(AdditionalBundleSources ${ClassLibrary} ${HelpSource} ${BundleResources} ${Examples} ${Sounds} ${Icons})
 endif()
-
+ 
 if(APPLE AND SC_QT)
 	add_executable(sclang MACOSX_BUNDLE
 		LangSource/cmdLineFuncs.cpp 
@@ -381,7 +381,22 @@ if(APPLE AND SC_QT)
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 	)
 
-    install_qt5_executable("${scappbindir}/sclang.app")
+    add_custom_command(TARGET sclang POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:scsynth> $<TARGET_FILE_DIR:sclang>/../Resources)
+
+    if(TARGET supernova)
+        add_dependencies(sclang supernova)
+        add_custom_command(TARGET sclang POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:supernova> $<TARGET_FILE_DIR:sclang>/../Resources)
+    endif()
+
+    foreach(plugin ${plugins} ${supernova_plugins})
+        add_custom_command(TARGET sclang POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:sclang>/../Resources/plugins/
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${plugin}> $<TARGET_FILE_DIR:sclang>/../Resources/plugins/)
+    endforeach()
+
+    install_qt5_executable("${scappbindir}/sclang.app" "" "" "${CMAKE_BINARY_DIR}/server/scsynth;")
 elseif(WIN32)
 	install(TARGETS sclang
 			DESTINATION "SuperCollider"

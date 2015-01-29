@@ -183,6 +183,7 @@ private:
 
 	// command input
 	bool mUseReadline;
+  bool mHasStdIn;
 	boost::sync::semaphore mReadlineSem;
 };
 

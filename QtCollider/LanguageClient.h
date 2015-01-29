@@ -52,11 +52,13 @@ protected:
   virtual void commandLoop();
   virtual void daemonLoop();
 
-  virtual void onQuit( int exitCode );
   virtual void onLibraryShutdown();
 
   virtual void customEvent( QEvent * );
   virtual void timerEvent( QTimerEvent * );
+
+protected Q_SLOTS:
+  virtual void onQuit( int exitCode = 0 );
 private:
   void tick();
   QBasicTimer appClockTimer;

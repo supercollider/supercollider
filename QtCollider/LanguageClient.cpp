@@ -29,6 +29,8 @@
 
 #include <qmath.h>
 #include <QWidget>
+#include <QMainWindow>
+#include <QMenuBar>
 
 extern double elapsedTime();
 
@@ -41,6 +43,10 @@ LangClient::LangClient( const char* name )
 
 void LangClient::commandLoop()
 {
+  QMainWindow *win = new QMainWindow();
+  
+  QObject::connect(QcApplication::instance(), SIGNAL(aboutToQuit()), this, SLOT(onQuit()) );
+
   int exit_code = QcApplication::instance()->exec();
   SC_TerminalClient::quit(exit_code);
 }

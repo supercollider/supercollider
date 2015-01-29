@@ -292,23 +292,23 @@ endif()
 # Installation
 if(APPLE)
     add_dependencies(SuperCollider sclang scsynth ${plugins} ${supernova_plugins})
-    add_custom_command(TARGET SuperCollider POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:sclang> $<TARGET_FILE_DIR:SuperCollider>/../MacOS)
+#    add_custom_command(TARGET SuperCollider POST_BUILD
+#        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:sclang> $<TARGET_FILE_DIR:SuperCollider>/../MacOS)
 
-    add_custom_command(TARGET SuperCollider POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:scsynth> $<TARGET_FILE_DIR:SuperCollider>/../MacOS)
+#    add_custom_command(TARGET SuperCollider POST_BUILD
+#        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:scsynth> $<TARGET_FILE_DIR:SuperCollider>/../MacOS)
 
-    if(TARGET supernova)
-        add_dependencies(SuperCollider supernova)
-        add_custom_command(TARGET SuperCollider POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:supernova> $<TARGET_FILE_DIR:SuperCollider>/../MacOS)
-    endif()
+#    if(TARGET supernova)
+#        add_dependencies(SuperCollider supernova)
+#        add_custom_command(TARGET SuperCollider POST_BUILD
+#            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:supernova> $<TARGET_FILE_DIR:SuperCollider>/../MacOS)
+#    endif()
 
-    foreach(plugin ${plugins} ${supernova_plugins})
-        add_custom_command(TARGET SuperCollider POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../Resources/plugins/
-            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${plugin}> $<TARGET_FILE_DIR:SuperCollider>/../Resources/plugins/)
-    endforeach()
+#    foreach(plugin ${plugins} ${supernova_plugins})
+#        add_custom_command(TARGET SuperCollider POST_BUILD
+#            COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../Resources/plugins/
+#            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${plugin}> $<TARGET_FILE_DIR:SuperCollider>/../Resources/plugins/)
+#    endforeach()
 
 
     if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
@@ -316,7 +316,7 @@ if(APPLE)
     endif()
 
     # set how it shows up in the Info.plist file
-    SET(MACOSX_BUNDLE_ICON_FILE ../../icons/SCcube.icns)
+    SET(MACOSX_BUNDLE_ICON_FILE ../../icons/sc_ide.icns)
 
     install(TARGETS SuperCollider
         DESTINATION ${scappbundlename}
@@ -331,7 +331,7 @@ if(APPLE)
     include(InstallRequiredSystemLibraries)
 
     include(DeployQt5)
-    install_qt5_executable("${scappbundlename}/${scappbundlename}.app" "" "" "${CMAKE_BINARY_DIR}/lang/sclang;${CMAKE_BINARY_DIR}/server/scsynth;${CMAKE_BINARY_DIR}/external_libraries")
+    install_qt5_executable("${scappbundlename}/${scappbundlename}.app" "" "" "${CMAKE_BINARY_DIR}/lang/sclang;${CMAKE_BINARY_DIR}/external_libraries")
 
     # install Qt plugins (adapted from kvirc)
     set(plugin_dest_dir ${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Plugins)

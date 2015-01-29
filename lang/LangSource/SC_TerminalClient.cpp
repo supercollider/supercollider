@@ -66,6 +66,7 @@ SC_TerminalClient::SC_TerminalClient(const char* name)
 	  mUseReadline(false),
       mWork(mIoService),
 	  mTimer(mIoService),
+    mHasStdIn(false),
 #ifndef _WIN32
 	  mStdIn(mInputService)
 #else
@@ -74,6 +75,7 @@ SC_TerminalClient::SC_TerminalClient(const char* name)
 {
 	try {
 		mStdIn = boost::asio::posix::stream_descriptor(mInputService, STDIN_FILENO);
+    mHasStdIn = true;
 	} catch (boost::system::system_error& e) {
 		// we're in a state where we can't get stdin, likely being run in an .app bundle - this is fine.
 	}
@@ -561,11 +563,12 @@ void SC_TerminalClient::inputThreadFn()
 	if (mUseReadline)
 		readlineInit();
 #endif
+  if (mHasStdIn) {
+    startInputRead();
 
-	startInputRead();
-
-	boost::asio::io_service::work work(mInputService);
-	mInputService.run();
+    boost::asio::io_service::work work(mInputService);
+    mInputService.run();
+  }
 }
 
 
