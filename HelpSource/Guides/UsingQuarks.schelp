@@ -123,12 +123,13 @@ If you have installed local paths that are not under git source control (your ow
 The file format looks like this:
 
 code::
-git://github.com/crucialfelix/crucial-library@tags/4.1.4
+git://github.com/author/quarkname@tags/4.1.4
 git://github.com/supercollider-quarks/ddwCommon@8ae156b460dcb08285013265cf3a1c7172bba665
 ~/supercollider/quarks/my-thing
 ::
 
-Note that in this case crucial-library was checked out to the tag 4.1.4, and ddwCommon was not on a tag so the refspec is the SHA hash. In both cases this results in an exact reference.
+Note that in this case `quarkname` was checked out to the tag 4.1.4, and `ddwCommon` was not on a tag so the refspec is the SHA hash. In both cases this results in an exact reference.
+`~/supercollider/quarks/my-thing` was not a git repo so the best it can do is to specify the path.
 
 Even if a quark was installed by name using the directory, the full repository URL will be saved to ensure that the reference is unvarying (the directory.txt could be edited and the URL changed, and that might then point to different source code).
 
@@ -176,12 +177,12 @@ You can also add your quark to the community directory:
 
 https://github.com/supercollider-quarks/quarks/blob/master/directory.txt
 
-Simply click teletype::edit::, make any changes and it submit a pull request.
+Simply click teletype::edit::, make any changes and submit a pull request.
 
 You specify the name, the git url and optionally the most recent version as @tags/{version-name}
 
 code::
-crucial-library=git://github.com/crucialfelix/crucial-library@tags/4.1.4
+quarkname=git://github.com/author/quarkname@tags/4.1.4
 ::
 
 subsection::Migrated Quarks from SVN
