@@ -134,10 +134,10 @@ void GenericCodeEditor::applySettings( Settings::Manager *settings )
     mLineIndicator->setFont(format->font());
     bg = format->background();
     fg = format->foreground();
-    if (bg.style() != Qt::NoBrush)
-        palette.setBrush(QPalette::Mid, bg);
-    if (fg.style() != Qt::NoBrush)
-        palette.setBrush(QPalette::ButtonText, fg);
+    palette.setBrush(QPalette::Mid,
+                            bg.style() != Qt::NoBrush ? bg : palette.base());
+    palette.setBrush(QPalette::ButtonText,
+                            fg.style() != Qt::NoBrush ? fg : palette.base());
 
     format = &settings->getThemeVal("selection");
     bg = format->background();
