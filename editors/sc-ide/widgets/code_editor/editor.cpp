@@ -727,27 +727,6 @@ void GenericCodeEditor::wheelEvent( QWheelEvent * e )
 #endif
 }
     
-void GenericCodeEditor::focusInEvent( QFocusEvent *e )
-{
-    if(mFocusRect){
-        mFocusRect->setRect(viewport()->rect().adjusted(0, 0, -1, -1));
-        mFocusRect->setVisible(true);
-    } else {
-        QColor rectColor = palette().color(QPalette::Text);
-        rectColor.setAlpha(80);
-        mFocusRect = mOverlay->addRect(viewport()->rect().adjusted(0, 0, -1, -1), rectColor);
-    }
-    QPlainTextEdit::focusInEvent(e);
-}
-    
-void GenericCodeEditor::focusOutEvent( QFocusEvent *e )
-{
-    if (mFocusRect) {
-        mFocusRect->setVisible(false);
-    }
-    QPlainTextEdit::focusOutEvent(e);
-}
-
 void GenericCodeEditor::dragEnterEvent( QDragEnterEvent * event )
 {
     const QMimeData * data = event->mimeData();
