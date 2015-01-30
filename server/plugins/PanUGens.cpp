@@ -703,7 +703,7 @@ void LinXFade2_next_a(LinXFade2 *unit, int inNumSamples)
 FLATTEN void LinXFade2_next_i_nova(LinXFade2 *unit, int inNumSamples)
 {
 	float amp = unit->m_amp;
-	nova::mix_vec_simd(OUT(0), IN(0), amp, IN(1), 1.f - amp, inNumSamples);
+	nova::mix_vec_simd(OUT(0), IN(0), 1.f - amp, IN(1), amp, inNumSamples);
 }
 
 FLATTEN void LinXFade2_next_k_nova(LinXFade2 *unit, int inNumSamples)
@@ -713,23 +713,24 @@ FLATTEN void LinXFade2_next_k_nova(LinXFade2 *unit, int inNumSamples)
 
 	if (pos != unit->m_pos) {
 		float oldAmpLeft  = amp;
-		float oldAmpRight = 1.f  - amp;
+		float oldAmpRight = 1.f - amp;
 
 		pos = sc_clip(pos, -1.f, 1.f);
 
-		float nextAmpRight  = pos * 0.5f + 0.5f;
-		float nextAmpLeft = 1.f - nextAmpRight;
+		float nextAmpRight = pos * 0.5f + 0.5f;
+		float nextAmpLeft  = 1.f - nextAmpRight;
 
-		float leftSlope = CALCSLOPE(nextAmpLeft, oldAmpLeft);
+		float leftSlope =  CALCSLOPE(nextAmpLeft, oldAmpLeft);
 		float rightSlope = CALCSLOPE(nextAmpRight, oldAmpRight);
 
 		unit->m_amp = nextAmpLeft;
 		unit->m_pos = pos;
+
 		nova::mix_vec_simd(OUT(0), IN(0), nova::slope_argument(oldAmpLeft, leftSlope),
 						   IN(1), nova::slope_argument(oldAmpRight, rightSlope),
 						   inNumSamples);
 	} else
-		nova::mix_vec_simd(OUT(0), IN(0), amp, IN(1), 1.f - amp, inNumSamples);
+		nova::mix_vec_simd(OUT(0), IN(0), 1.f - amp, IN(1), amp, inNumSamples);
 }
 
 #endif
@@ -758,7 +759,7 @@ void LinXFade2_Ctor(LinXFade2 *unit)
 
 	unit->m_pos = ZIN0(2);
 	unit->m_pos = sc_clip(unit->m_pos, -1.f, 1.f);
-	unit->m_amp = 1.f - (unit->m_pos * 0.5f + 0.5f);
+	unit->m_amp = unit->m_pos * 0.5f + 0.5f;
 
 	LinXFade2_next_a(unit, 1);
 }
