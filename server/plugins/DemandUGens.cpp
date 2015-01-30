@@ -499,10 +499,9 @@ void Duty_next_da(Duty *unit, int inNumSamples)
 			out[i] = x;
 
 		} else {
-			count--;
 			out[i] = prevout;
 		}
-
+		count--;
 		prevreset = zreset;
 	}
 
