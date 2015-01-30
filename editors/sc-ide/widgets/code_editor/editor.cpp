@@ -887,10 +887,6 @@ void GenericCodeEditor::paintLineIndicator( QPaintEvent *e )
     QPainter p( mLineIndicator );
 
     p.fillRect( r, plt.color( QPalette::Mid ) );
-    p.setPen( plt.color(QPalette::Dark) );
-    p.drawLine( r.topRight(), r.bottomRight() );
-
-    p.setPen( plt.color(QPalette::ButtonText) );
 
     QTextDocument *doc = QPlainTextEdit::document();
     QTextCursor cursor(textCursor());
