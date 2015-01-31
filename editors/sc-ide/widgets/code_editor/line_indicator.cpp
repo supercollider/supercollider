@@ -93,7 +93,7 @@ int LineIndicator::widthForLineCount( int lineCount )
         ++digits;
     }
 
-    return 6 + fontMetrics().width('9') * digits;
+    return 22 + fontMetrics().width('9') * digits;
 }
 
 void LineIndicator::setHideLineIndicator( bool hide )
