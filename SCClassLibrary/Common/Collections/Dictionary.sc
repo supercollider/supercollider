@@ -197,6 +197,18 @@ Dictionary : Set {
 		^res
 	}
 
+
+	mergeItem { |key, val, func|
+		var old;
+		if(func.notNil) {
+			old = this.at(key);
+			if(old.notNil) {
+				 val = func.value(val, old)
+			}
+		};
+		this.put(key, val)
+	}
+
 	blend { |that, blend = 0.5, fill = true, specs|
 
 		^this.merge(that, { |a, b, key|
@@ -278,6 +290,17 @@ Dictionary : Set {
 		this.keysValuesDo { |key, val| array.add(key); array.add(val) };
 		^array
 	}
+
+	isAssociationArray { ^false }
+
+	asPairs {
+		^this.getPairs
+	}
+
+	asDict {
+		^this
+	}
+
 
 	// PRIVATE IMPLEMENTATION
 	keysValuesArrayDo { arg argArray, function;
