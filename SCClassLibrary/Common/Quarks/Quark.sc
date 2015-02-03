@@ -72,12 +72,6 @@ Quark {
 	}
 
 	checkout {
-		if(this.isDownloaded
-			and: {git.notNil}
-			and: {git.isDirty},
-		{
-			Error("% has uncommited changes, cannot checkout %".format(name, refspec ? "")).throw;
-		});
 		if(url.isNil and: {git.notNil}, {
 			url = git.remote;
 			if(url.isNil, {
@@ -93,13 +87,20 @@ Quark {
 			data = nil;
 		});
 		if(refspec.notNil, {
-			if(refspec == "HEAD", {
-				git.pull()
+			if(this.isDownloaded
+				and: {git.notNil}
+				and: {git.isDirty},
+			{
+				("% has uncommited changes, cannot checkout %".format(name, refspec ? "")).warn;
 			}, {
-				// when do you have to fetch ?
-				// if offline then you do not want to fetch
-				// just checkout. fast switching
-				git.checkout(refspec)
+				if(refspec == "HEAD", {
+					git.pull()
+				}, {
+					// when do you have to fetch ?
+					// if offline then you do not want to fetch
+					// just checkout. fast switching
+					git.checkout(refspec)
+				});
 			});
 			changed = true;
 			data = nil;
