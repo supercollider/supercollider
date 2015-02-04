@@ -83,6 +83,6 @@ Git {
 			cmd = ["git"];
 		});
 		cmd = (cmd ++ args).join(" ");
-		^cmd.debug.unixCmdGetStdOut;
+		^cmd.unixCmdGetStdOut;
 	}
 }
