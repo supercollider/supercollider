@@ -41,64 +41,81 @@ Quarks {
 	}
 	*load { |path|
 		// install a list of quarks from a text file
-		var file, line, dir;
-		this.clear();
+		var file, line, dir,
+			// localPath=url[@refspec]
+			re = "^([^=]+)=?([^@]+)@?(.*)$",
+			// quarkname[@refspec]
+			nameRe = "^([^@]+)@?(.*)$";
 		path = this.asAbsolutePath(path);
 		dir = path.dirname;
+		if(File.exists(path).not, {
+			^("Path does not exist" + path).error;
+		});
+		this.clear();
 		file = File.open(path, "r");
 		while({
 			line = file.getLine();
-			line.notNil;
+			line.notNil
 		}, {
-			var name, refspec;
+			var match, localPath, url, name, refspec;
 			// resolve any paths relative to the quark file
-			# name, refspec = line.split($=);
-			if(Quarks.isPath(name), {
-				this.install(this.asAbsolutePath(name, dir), refspec);
+			match = line.findRegexp(re);
+			if(match.size > 0, {
+				localPath = match[1][1];
+				name = localPath.basename;
+				url = match[2][1];
+				refspec = match[3];
+				if(refspec.notNil, {
+					refspec = refspec[1];
+				});
+				this.install(this.asAbsolutePath(localPath, dir), refspec);
 			}, {
-				this.install(name, refspec);
+				match = line.findRegexp(nameRe);
+				if(match.size > 0, {
+					name = match[1][1];
+					refspec = match[2];
+					if(refspec.notNil, {
+						refspec = refspec[1];
+					});
+					if(Quarks.isPath(name), {
+						this.install(this.asAbsolutePath(name, dir), refspec);
+					}, {
+						this.install(name, refspec);
+					});
+				}, {
+					"Unreadable line: %".format(line).error;
+				});
 			});
 		});
 	}
 	*save { |path|
 		// save currently installed quarks to a text file
-		var file, dir;
+		// localPath=url[@refspec]
+		var file, dir, lines;
 		path = this.asAbsolutePath(path);
-		file = File.open(path, "w");
 		dir = path.dirname;
-		this.installed.do({ |quark|
-			var qpath, d, refspec;
+		lines = this.installed.collect({ |quark|
+			var localPath, url="", refspec;
+			localPath = this.asRelativePath(quark.localPath);
 			if(Git.isGit(quark.localPath), {
-				// quark name if in directory and is using same repo
-				// else git url
-				qpath = quark.url;
+				url = quark.url;
 				if(Git(quark.localPath).isDirty, {
 					("Working copy is dirty" + quark.localPath).warn;
 				}, {
 					refspec = quark.refspec;
 				});
-			}, {
-				// ./path if quark is inside the folder where the quark file is
-				if(quark.localPath.beginsWith(dir), {
-					qpath = "." ++ quark.localPath.copyToEnd(dir.size);
-				}, {
-					d = Platform.userHomeDir;
-					// ~/path if in home
-					if(quark.localPath.beginsWith(d), {
-						qpath = "~" ++ quark.localPath.copyToEnd(d.size);
-					}, {
-						// absolute path
-						qpath = quark.localPath;
-					});
-				});
 			});
 			if(refspec.notNil, {
-				file.write("%=%\n".format(qpath, refspec));
+				"%=%@%".format(localPath, url, refspec)
 			}, {
-				file.write("%\n".format(qpath));
+				"%=%".format(localPath, url)
 			});
 		});
+		file = File.open(path, "w");
+		lines = lines.join(Char.nl);
+		file.write(lines);
 		file.close();
+		^lines
 	}
 	*update { |name|
 		// by quark name or by supplying a local path
@@ -310,6 +327,18 @@ Quarks {
 			});
 			(relativeTo ?? {PathName.scroot}) +/+ path
 		})
+	}
+	*asRelativePath { |path, relativeToDir|
+		var d;
+		if(path.beginsWith(relativeToDir), {
+			^"." ++ path.copyToEnd(relativeToDir)
+		});
+		d = Platform.userHomeDir;
+		// ~/path if in home
+		if(path.beginsWith(d), {
+			^"~" ++ path.copyToEnd(d.size)
+		});
+		^path
 	}
 	// quarks fetch all available quark specs
 	// directory.json
