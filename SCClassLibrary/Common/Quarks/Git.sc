@@ -37,8 +37,10 @@ Git {
 		// detect origin of repo or nil
 		// origin	git://github.com/supercollider-quarks/MathLib (fetch)
 		// origin	git://github.com/supercollider-quarks/MathLib (push)
+		// problem: if more than one remote then this will just detect the first
+		// should favor 'origin' if more than one
 		var out = this.git(["remote -v"]),
-			match = out.findRegexp("^origin\t([^ ]+) \\(fetch\\)");
+			match = out.findRegexp("^[a-zA-Z0-9]+\t([^ ]+) \\(fetch\\)");
 		if(match.size > 0, {
 			^match[1][1]
 		});
