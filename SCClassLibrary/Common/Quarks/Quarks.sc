@@ -10,7 +10,7 @@ Quarks {
 
 	*install { |name, refspec|
 		var path;
-		if(name.findRegexp("^[~\.]?/").size == 0, {
+		if(Quarks.isPath(name).not, {
 			this.installQuark(Quark(name, refspec));
 		}, {
 			// local path / ~/ ./
@@ -22,9 +22,15 @@ Quarks {
 		});
 	}
 	*uninstall { |name|
-		// by quark name or by supplying a local path
-		// resolving / ~/ ./
-		this.unlink(this.quarkNameAsLocalPath(name));
+		// by quark name or local path
+		this.installed.do { |q|
+			if(q.name == name, {
+				this.unlink(q.localPath)
+			});
+		};
+	}
+	*uninstallQuark { |quark|
+		this.unlink(quark.localPath);
 	}
 	*clear {
 		this.installed.do({ |quark|
@@ -47,7 +53,7 @@ Quarks {
 			var name, refspec;
 			// resolve any paths relative to the quark file
 			# name, refspec = line.split($=);
-			if(name.findRegexp("^[~\.]?/").size != 0, {
+			if(Quarks.isPath(name), {
 				this.install(this.asAbsolutePath(name, dir), refspec);
 			}, {
 				this.install(name, refspec);
@@ -275,11 +281,14 @@ Quarks {
 		});
 	}
 	*quarkNameAsLocalPath { |name|
-		^if(name.findRegexp("^[~\.]?/").size == 0, {
-			Quark(name).localPath
-		}, {
+		^if(this.isPath(name), {
 			this.asAbsolutePath(name)
+		}, {
+			Quark(name).localPath
 		});
+	}
+	*isPath { |string|
+		^string.findRegexp("^[~\.]?/").size != 0
 	}
 	*asAbsolutePath { |path, relativeTo|
 		^if(path.at(0).isPathSeparator, {
