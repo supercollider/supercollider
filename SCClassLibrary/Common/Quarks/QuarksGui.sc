@@ -222,17 +222,22 @@ QuarkDetailView {
 		btnCheckout = Button()
 			.states_([["Checkout"]])
 			.action_({
-				var refspec = selectVersion.items.at(selectVersion.value ? -1);
+				var refspec = selectVersion.items.at(selectVersion.value ? -1),
+					ok=true;
 				if(model.isInstalled, {
 					// reinstall possibly with different dependencies
 					model.uninstall;
-					Quarks.install(model.url, refspec);
+					ok = Quarks.install(model.url, refspec);
 				}, {
 					model.refspec = refspec;
 					model.checkout;
 				});
 				this.update;
-				quarksGui.setMsg(model.name + "has checked out" + model.version);
+				if(ok, {
+					quarksGui.setMsg(model.name + "has checked out" + model.version, \green);
+				}, {
+					quarksGui.setMsg(model.name + "could not checkout" + model.version, \yellow);
+				});
 			});
 
 		btnClasses = Button()
@@ -446,16 +451,31 @@ QuarkRowView {
 		]).setView(0, btn);
 
 		btn.action = { |btn|
-			if(btn.value > 0, {
-				quark.install;
-				quarksGui.setMsg("Installed" + quark, \green);
-			}, {
-				quark.uninstall;
-				quarksGui.setMsg("Uninstalled" + quark, \yellow);
-			});
-			quarksGui.update;
+			this.install(btn.value > 0);
 		};
 		this.update;
+	}
+	install { |bool|
+		var prev, ok;
+		if(bool, {
+			// if any other is installed by same name
+			// then just uinstall that first
+			prev = Quarks.installed.detect({ |q| q.name == quark.name });
+			if(prev.notNil, {
+				"Uninstalling other version % %".format(prev, prev.localPath).warn;
+				prev.uninstall;
+			});
+			ok = quark.install;
+			if(ok, {
+				quarksGui.setMsg("Installed" + quark, \green);
+			}, {
+				quarksGui.setMsg("Error while installing" + quark, \red);
+			});
+		}, {
+			quark.uninstall;
+			quarksGui.setMsg("Uninstalled" + quark, \yellow);
+		});
+		quarksGui.update;
 	}
 
 	update {

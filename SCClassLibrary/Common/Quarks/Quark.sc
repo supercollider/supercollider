@@ -61,23 +61,21 @@ Quark {
 	}
 
 	install {
-		Quarks.installQuark(this);
+		var success = Quarks.installQuark(this);
 		changed = true;
 		data = nil;
+		^success
 	}
 	uninstall {
-		Quarks.uninstall(this.name);
+		Quarks.uninstallQuark(this);
 		changed = true;
 	}
 
 	checkout {
-		if(url.isNil and: {git.notNil}, {
-			url = git.remote;
-			if(url.isNil, {
+		if(this.isDownloaded.not, {
+			if(this.url.isNil, {
 				Error("No git url, cannot checkout quark" + this).throw;
 			});
-		});
-		if(this.isDownloaded.not, {
 			git = Git(localPath);
 			git.clone(url);
 			// get tags etc
