@@ -135,8 +135,14 @@ Quarks {
 					+ "reports an incompatibility with this Super Collider version"
 					+ "or with other already installed quarks."
 				).inform;
-			};
+				false
+			},
+			prev = this.installed.detect({ |q| q.name == quark.name });
 
+		if(prev.notNil and: {prev.localPath != quark.localPath}, {
+			("A version of % is already installed at %".format(quark, prev.localPath)).error;
+			^false
+		});
 		quark.checkout();
 		if(quark.isCompatible().not, {
 			^incompatible.value(quark.name);
@@ -153,6 +159,7 @@ Quarks {
 		});
 		this.link(quark.localPath);
 		(quark.name + "installed").inform;
+		^true
 	}
 
 	*link { |path|
