@@ -4,18 +4,17 @@ Quark {
 	var <changed = false, <git;
 
 	*new { |name, refspec|
-		var url;
-		# name, url, refspec = Quark.parseQuarkName(name, refspec);
-		^super.new.init(name, url, refspec)
+		^super.new.init(*Quark.parseQuarkName(name, refspec))
 	}
 	*fromLocalPath { |path|
 		var name, url, refspec;
+		path= Quarks.quarkNameAsLocalPath(path);
 		name = path.basename;
 		^super.new.init(name, url, refspec, path)
 	}
-	*fromDirectoryEntry { |name, quarkUrl|
+	*fromDirectoryEntry { |name, directoryEntry|
 		var url, refspec;
-		# url, refspec = quarkUrl.split($@);
+		# url, refspec = directoryEntry.split($@);
 		^super.new.init(name, url, refspec)
 	}
 	init { |argName, argUrl, argRefspec, argLocalPath|
@@ -158,32 +157,31 @@ Quark {
 	}
 
 	*parseQuarkName { |name, refspec|
-		// parse any URLS and @tags
-		var quarkUrl, url, localPath;
+		// determine which quark the string 'name' refers to
+		// and return name, url, refspec, localPath
+		// name is one of: quarkname, url, localPath
+		var directoryEntry;
 		if(name.contains("://"), {
-			url = name;
-			name = PathName(url).fileNameWithoutExtension();
-		}, {
-			// lookup url in directory
-			quarkUrl = Quarks.findQuarkURL(name);
-			if(quarkUrl.isNil, {
-				// look in Quarks.folder
-				localPath = Quarks.folder +/+ name;
-				if(File.exists(localPath), {
-					// a quark not in the index
-					// referred to by just its name
-					// so assumed to be downloaded or previously cloned
-					// or we are offline and there is no cached directory.txt
-					^[name, url, refspec]
-				}, {
-					Error("% not found".format(name)).throw;
-				});
-			});
-			quarkUrl = quarkUrl.split($@);
-			url = quarkUrl[0];
-			refspec = refspec ? quarkUrl[1];
+			^[PathName(name).fileNameWithoutExtension(), name, refspec, nil]
 		});
-		^[name, url, refspec]
+		if(Quarks.isPath(name), {
+			// url can be determined later by the Quark
+			^[name.basename, nil, refspec, name]
+		});
+		// search Quarks folders
+		(Quarks.additionalFolders ++ [Quarks.folder]).do({ |f|
+			var localPath = f +/+ name, url;
+			if(File.exists(localPath), {
+				^[name, nil, refspec, localPath]
+			});
+		});
+		// lookup url in directory
+		directoryEntry = Quarks.findQuarkURL(name);
+		if(directoryEntry.notNil, {
+			directoryEntry = directoryEntry.split($@);
+			^[name, directoryEntry[0], refspec ? directoryEntry[1], nil]
+		});
+		Error("% not found".format(name)).throw;
 	}
 	parseQuarkFile {
 		var qfp = this.localPath +/+ name ++ ".quark",
