@@ -1,84 +1,138 @@
-class:: Quark
-summary:: Package of SC classes and extensions
+TITLE:: Quark
+summary:: Object for managing a Quark - a package of source code
 categories:: Quarks
 related:: Guides/UsingQuarks, Classes/Quarks
 
-description::
+DESCRIPTION::
+A Quark is a folder of source code, a package. It may be cloned from a git repository, or maybe not.
+This class is used by the Quarks class and you will not usually want to use it directly.
 
-A Quark is a package of SC classes, helpfiles and other SC code.
+CLASSMETHODS::
 
-A Quark object is created from the quark file found at code::Quarks.local.path +/+ "DIRECTORY" +/+ nameOfQuark ++ ".quark"::.
-These Quark objects are mostly used just by the link::Classes/Quarks:: class, and you usually don't need to deal with them at all. But to publish a quark, you do need to make the quark file.
+METHOD:: new
+ARGUMENT:: name
+Quark name, git url or local path (absolute or relative)
+ARGUMENT:: refspec
+returns:: this
 
-subsection:: Format of the .quark file
+METHOD:: fromLocalPath
+alternate constructor
+ARGUMENT:: path
+returns:: this
 
-This quarkfile is written in sc code, and should contain a dictionary with basic information about the package.
+METHOD:: fromDirectoryEntry
+alternate constructor
+ARGUMENT:: name
+ARGUMENT:: quarkUrl
+returns:: this
 
-code::
-(
-// required:
-    \name:           "theName",
-    \path:           "foldername", // almost always the same as the quark name
-    \summary:        "Human readable summary",
-    \author:         "My Name",
+METHOD:: parseQuarkName
+ARGUMENT:: name
+ARGUMENT:: refspec
+returns:: this
 
-// optional:
-    \version:        1.0, // must be a float
-    \organization:   "My Organization",
-    \country:        "My Country",
-    \since:          "2004",
-    \schelp:         "Classes/MyClass",
-    \ext_dependancy: "Information on additional software needed to run this quark properly",
-    \url:            "http://www.strangeQuark.de",
 
-// If the quark depends on other quarks, you can specify it as a list containing:
-// (1) strings (just the quark name)
-    \dependencies:   "nameOfDependantQuark"
-// (2) key->value pairs (name->version)
-//  \dependencies:   [("nameOfDependantQuark" -> 1.0)]
-// or (3) arrays with info in this order: [name, version, repositoryBaseUrl]
-//  \dependencies:   [["nameOfDependantQuark", 1.0, "https://svn.weirdserver.be/trunk/weirdquarks"]]
+INSTANCEMETHODS::
 
-)
-::
+METHOD:: name
+returns:: String
 
-Of particular importance for the Quarks interface class is the PATH. This is the path relative to the quark directory.
-In most cases this is simply the name of the quark and also the name of the folder. However, you may wish to create a parent folder and then keep several quarks inside that, in which case your path would be: parentfolder/quarkname
+METHOD:: dependencies
+Based on the dependencies list in the quark file, returns an array of Quarks.
+returns:: Array of Quark
 
-It may even be possible to nest quarks inside of quarks (a kind of aggregate package), though a better way to do that would be to define an empty quark (the aggregate) and specify the other sub quarks as dependencies.
+METHOD:: deepDependencies
+Declared dependencies of this Quark and those of each dependency.
+This will check out all dependencies.
+returns:: Array of Quarks
 
-The value of code::\schelp:: optionally sets the main help file for the quark. It is a help path relative to an included teletype::HelpSource:: folder.
-For example, if the quark contains teletype::HelpSource/Reference/MyQuark.schelp:: one could use:
-code::
-    \schelp: "Reference/MyQuark"
-::
-It is used by link::#-help::. If no code::\schelp:: is given, it will open the category browser showing all helpfiles for the quark.
+METHOD:: data
+Lazily parses the quark file (if found) and caches it
+returns:: Dictionary - the contents of the quark file
 
-note::
-The old help system (sc version 3.4) used code::\helpdoc::, and the new help system (link::Classes/SCDoc::) uses code::\schelp:: instead to be able to support both old and new helpfiles during the transition to the new help system.
-::
+METHOD:: refspec
+Git refspec (tag or sha hash)
+returns:: this
 
-warning:: Please test that you don't have any syntax errors in your quark file before commiting it.::
+METHOD:: localPath
+Absolute path where the Quark is located
+returns:: this
 
-classmethods::
-method:: find
-Return the Quark object with specified name, if found.
+METHOD:: summary
+Summary text from the quark file
+returns:: this
 
-instancemethods::
-method:: name
-The name of the quark.
-method:: summary
-The summary of the quark.
-method:: version
-The version of the quark.
-method:: author
-The author of the quark.
-method:: path
-The path of the quark.
-method:: info
-The whole info blob as given in the .quark file.
-method:: help
-Open the main helpfile for this quark as given by the code::\schelp:: key in the directory file,
-or the category browser page showing all helpfiles for this quark if no main helpfile was specified.
-This method falls back to opening the old help as given by code::\helpdoc:: if above fails.
+METHOD:: url
+Git repository url. If not declared when creating, it will examine the checked out git source
+and get the origin.
+returns:: this
 
+METHOD:: isDownloaded
+returns:: Boolean
+
+METHOD:: isInstalled
+returns:: Boolean
+
+METHOD:: git
+Quarks that have git repos have a Git object that can be used for checking out, listing tags etc.
+returns:: a Git object
+
+METHOD:: init
+private
+ARGUMENT:: argName
+ARGUMENT:: argUrl
+ARGUMENT:: argRefspec
+ARGUMENT:: argLocalPath
+returns:: this
+
+METHOD:: install
+returns:: this
+
+METHOD:: uninstall
+returns:: this
+
+METHOD:: checkout
+Clone and checkout the url and refspec.
+Used by install and for switching versions.
+returns:: this
+
+METHOD:: version
+returns:: String
+
+METHOD:: tags
+returns:: Array of Strings
+
+METHOD:: isCompatible
+Evaluates the 'isCompatible' function in the quarkfile, if there is one.
+This allows a quarkfile to check its environment and raise an alarm before it gets installed and breaks something.
+returns:: Boolean
+
+METHOD:: definesClasses
+Classes that are defined by this Quark
+returns:: Array of Classes
+
+METHOD:: definesExtensionMethods
+Methods that this Quark defines that overwrite implementations in other packages including in Common.
+returns:: Array of Methods
+
+METHOD:: help
+Open the help file. Either as specified in the quark file as 'schelp' or searches by the name of the quark.
+returns:: this
+
+METHOD:: changed
+After un/installing or checking out, state is set to changed.
+code smell: this is for the gui
+returns:: Boolean
+
+METHOD:: parseDependency
+private
+ARGUMENT:: dep
+returns:: this
+
+METHOD:: printOn
+ARGUMENT:: stream
+returns:: this
+
+METHOD:: parseQuarkFile
+private
+returns:: this
