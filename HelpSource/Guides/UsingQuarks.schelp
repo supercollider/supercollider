@@ -54,6 +54,14 @@ Quarks.install("~/supercollider/quarks/my-thing");
 Quarks.install("~/Downloads/something-i-found");
 ::
 
+You can also add a folder where you keep your development quarks (your own and things you have forked):
+
+code::
+Quarks.addFolder("~/supercollider/quarks");
+::
+
+Now each quark inside that folder will appear on the GUI for you to un/install.
+
 subsection::Recompile the class library
 
 After installing or uninstalling you need to strong::Language > Recompile Class Library::
