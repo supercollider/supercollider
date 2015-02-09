@@ -389,7 +389,7 @@ if(APPLE AND SC_QT)
             COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${plugin}> $<TARGET_FILE_DIR:sclang>/../Resources/plugins/)
     endforeach()
 
-    install_qt5_executable("${scappbindir}/sclang.app" "" "" "${CMAKE_BINARY_DIR}/server/scsynth;")
+    install_qt5_executable("${scappbundlename}/sclang.app" "libqcocoa.dylib" "" "${CMAKE_BINARY_DIR}/server/scsynth;")
 elseif(WIN32)
 	install(TARGETS sclang
 			DESTINATION "SuperCollider"
