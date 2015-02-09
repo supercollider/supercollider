@@ -77,7 +77,10 @@ public Q_SLOTS:
         int result = dialog->exec();
         if (result == QDialog::Accepted && textField) {
             QStringList paths = dialog->selectedFiles();
-            textField->setText(paths.count() ? paths[0] : "");
+            if (paths.count()) {
+                QString path = paths[0];
+                textField->setText(path);
+            }
         }
     }
 
