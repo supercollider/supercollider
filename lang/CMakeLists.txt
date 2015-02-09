@@ -215,14 +215,7 @@ target_link_libraries(libsclang tlsf ${PTHREADS_LIBRARIES})
 
 if(SC_IDE OR SC_QT)
 	message("libsclang qt libs:" ${QT_COLLIDER_LIBS})
-	find_package(Qt5Core)
-	get_target_property(QtCore_location Qt5::Core LOCATION)
-	message("core: " ${QtCore_location} )
-
-	#include_directories(${Qt5Core_INCLUDE_DIRS})
-	#target_link_libraries(libsclang Qt5::Core)
 	target_link_libraries(libsclang ${QT_COLLIDER_LIBS})
-	#qt5_use_modules(libsclang Core Network Gui WebKit Widgets WebKitWidgets)
 endif()
 
 if(FALSE) # libsclang is a shared library
