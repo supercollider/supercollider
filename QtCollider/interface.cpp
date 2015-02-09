@@ -62,10 +62,6 @@ void QtCollider::init() {
     XInitThreads();
 #endif
 
-#ifdef Q_OS_MAC
-    QApplication::setAttribute( Qt::AA_MacPluginApplication, true );
-#endif
-
     static int qcArgc = 1;
     static char qcArg0[] = "SuperCollider";
     static char *qcArgv[1] = {qcArg0};
