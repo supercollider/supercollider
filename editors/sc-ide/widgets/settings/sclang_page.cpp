@@ -50,7 +50,7 @@ SclangPage::SclangPage(QWidget *parent) :
     ui->sclang_add_exclude->setIcon( QIcon::fromTheme("list-add") );
     ui->sclang_remove_exclude->setIcon( QIcon::fromTheme("list-remove") );
 
-    ui->runtimeDir->setFileMode(QFileDialog::Directory);
+    ui->runtimeDir->setFileMode(QFileDialog::ExistingFile);
 
     connect(ui->activeConfigFileComboBox, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(changeSelectedLanguageConfig(const QString &)));
     connect(ui->sclang_add_configfile, SIGNAL(clicked()), this, SLOT(dialogCreateNewConfigFile()));
