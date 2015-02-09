@@ -140,20 +140,21 @@ void ScProcess::startLanguage (void)
     settings->endGroup();
 
     QString sclangCommand = "sclang";
+    QString sclangDevFile = "sclang-dev.txt";
     
 #ifdef Q_OS_MAC
     QDir devFilePath(QCoreApplication::applicationDirPath());
     devFilePath.cd("../../..");
     
-    if (devFilePath.exists("sclang-dev.txt")) {
-        QFile file(devFilePath.filePath("sclang-dev.txt"));
+    if (devFilePath.exists(sclangDevFile)) {
+        QFile file(devFilePath.filePath(sclangDevFile));
         if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
             QString sclangPath = QString(file.readAll());
             if (devFilePath.cd(sclangPath)) {
                 workingDirectory = devFilePath.absolutePath();
-                scPost(tr("dev.txt file present, working directory is: %1\n").arg(workingDirectory));
+                scPost(tr("%1 file present, working directory is: %1\n").arg(sclangDevFile).arg(workingDirectory));
             } else {
-                scPost(tr("dev.txt file present, but path doesn't exist: %1\n").arg(devFilePath.absolutePath()));
+                scPost(tr("%1 file present, but path doesn't exist: %1\n").arg(sclangDevFile).arg(devFilePath.absolutePath()));
             }
         }
     }
