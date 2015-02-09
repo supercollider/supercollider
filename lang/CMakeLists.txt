@@ -318,7 +318,7 @@ target_link_libraries(libsclang ${YAMLCPP_LIBRARY})
 
 set(Icons ../../icons/SCcube.icns)
 set_source_files_properties(${Icons} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
-SET(MACOSX_BUNDLE_ICON_FILE ../../icons/SCcube.icns)
+SET(MACOSX_BUNDLE_ICON_FILE SCcube.icns)
 list(APPEND RES_FILES ${Icons})
 
 if(APPLE AND SC_QT)
