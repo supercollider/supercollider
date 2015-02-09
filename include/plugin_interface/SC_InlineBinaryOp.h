@@ -337,26 +337,102 @@ inline int sc_fold(int in, int lo, int hi)
 	return c + lo;
 }
 
+
+
 inline int sc_gcd(int a, int b)
 {
 	int t;
+	
+	const bool negative = (a <= 0 && b <= 0);
+	
 	a = sc_abs(a);
 	b = sc_abs(b);
-	if (a == 1 || b == 1) return 1;
+	
+	if (a == 0) return b;
+	if (b == 0) return a;
+	
+	if (a == 1 || b == 1) {
+		if(negative) {
+			return -1;
+		} else {
+			return 1;
+		}
+	}
+
 	if (a < b) { t = a; a = b; b = t; }
 	while (b > 0) {
 		t = a % b; a = b; b = t;
 	}
+
+	if(negative) { a = 0 - a; }
+
 	return a;
 }
+
 
 inline int sc_lcm(int a, int b)
 {
     if (a == 0 || b == 0)
         return 0;
     else
-        return sc_abs(a * b) / sc_gcd(a, b);
+        return (a * b) / sc_gcd(a, b);
 }
+
+
+inline long sc_gcd(long a, long b)
+{
+	long t;
+
+	const bool negative = (a <= 0 && b <= 0);
+
+	a = sc_abs(a);
+	b = sc_abs(b);
+
+	if (a == 0) return b;
+	if (b == 0) return a;
+
+	if (a == 1 || b == 1) {
+		if(negative) {
+			return (long)-1;
+		} else {
+			return (long)1;
+		}
+	}
+
+	if (a < b) { t = a; a = b; b = t; }
+	while (b > 0) {
+		t = a % b; a = b; b = t;
+	}
+
+	if(negative) { a = 0 - a; }
+
+	return a;
+}
+
+
+inline long sc_lcm(long a, long b)
+{
+    if (a == 0 || b == 0)
+        return (long)0;
+    else
+        return (a * b) / sc_gcd(a, b);
+}
+
+
+
+inline float sc_gcd(float u, float v)
+{
+	return (float) sc_gcd((long) std::trunc(u), (long) std::trunc(v));
+}
+
+
+inline float sc_lcm(float u, float v)
+{
+    return (float) sc_lcm((long) std::trunc(u), (long) std::trunc(v));
+}
+
+
+
 
 inline int sc_bitAnd(int a, int b)
 {
@@ -590,24 +666,6 @@ inline long sc_rightShift(long a, long b)
 inline long sc_unsignedRightShift(long a, long b)
 {
 	return (unsigned long)a >> b;
-}
-
-inline long sc_gcd(long u, long v)
-{
-	long t;
-	u = sc_abs(u);
-	v = sc_abs(v);
-	if (u <= 1 || v <= 1) return 1;
-	while (u>0) {
-		if (u<v) { t=u; u=v; v=t; }
-		u = u % v;
-	}
-	return v;
-}
-
-inline long sc_lcm(long u, long v)
-{
-	return (u * v)/sc_gcd(u,v);
 }
 
 inline long sc_round(long x, long quant)
