@@ -370,7 +370,7 @@ if(APPLE AND SC_QT)
     include(DeployQt5)
     include(InstallRequiredSystemLibraries)
 	install(TARGETS sclang
-			DESTINATION "${scappbindir}"
+			DESTINATION "${scappbundlename}"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
 	)
 
