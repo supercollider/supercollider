@@ -50,10 +50,10 @@ Git {
 		^this.tag ?? { this.sha }
 	}
 	tag {
+		var out, match;
 		^tag ?? {
-			var
-				out = this.git(["--no-pager log --pretty=format:'%d' --abbrev-commit --date=short -1"]),
-				match = out.findRegexp("tag: ([a-zA-Z0-9\.\-_]+)");
+			out = this.git(["--no-pager log --pretty=format:'%d' --abbrev-commit --date=short -1"]);
+			match = out.findRegexp("tag: ([a-zA-Z0-9\.\-_]+)");
 			if(match.size > 0, {
 				tag = "tags/" ++ match[1][1]
 			});
@@ -61,14 +61,16 @@ Git {
 		}
 	}
 	sha {
+		var out;
 		^sha ?? {
-			var out = this.git(["rev-parse HEAD"]);
+			out = this.git(["rev-parse HEAD"]);
 			sha = out.copyRange(0, out.size - 2)
 		}
 	}
 	remoteLatest {
+		var out;
 		remoteLatest ?? {
-			var out = this.git(["rev-parse origin/master"]);
+			out = this.git(["rev-parse origin/master"]);
 			remoteLatest = out.copyRange(0, out.size - 2)
 		}
 	}
