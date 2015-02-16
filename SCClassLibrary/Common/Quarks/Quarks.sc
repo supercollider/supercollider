@@ -41,11 +41,12 @@ Quarks {
 	}
 	*load { |path|
 		// install a list of quarks from a text file
-		var file, line, dir,
-			// localPath=url[@refspec]
-			re = "^([^=]+)=?([^@]+)@?(.*)$",
-			// quarkname[@refspec]
-			nameRe = "^([^@]+)@?(.*)$";
+		var file, line, dir,re, nameRe;
+		var match, localPath, url, name, refspec;
+		// localPath=url[@refspec]
+		re = "^([^=]+)=?([^@]+)@?(.*)$";
+		// quarkname[@refspec]
+		nameRe = "^([^@]+)@?(.*)$";
 		path = this.asAbsolutePath(path);
 		dir = path.dirname;
 		if(File.exists(path).not, {
@@ -57,7 +58,6 @@ Quarks {
 			line = file.getLine();
 			line.notNil
 		}, {
-			var match, localPath, url, name, refspec;
 			// resolve any paths relative to the quark file
 			match = line.findRegexp(re);
 			if(match.size > 0, {
@@ -209,8 +209,9 @@ Quarks {
 		cache = Dictionary.new;
 	}
 	*at { |name|
+		var q;
 		^cache[name] ?? {
-			var q = Quark(name);
+			q = Quark(name);
 			cache.put(name, q);
 			q
 		}
