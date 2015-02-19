@@ -59,6 +59,7 @@ public:
     uint32_t udp_port, tcp_port;
     uint32_t control_busses, audio_busses;
     uint32_t blocksize, samplerate;
+	int32_t hardware_buffer_size;
     uint32_t buffers, max_nodes, max_synthdefs;
 
     uint32_t rt_pool_size;

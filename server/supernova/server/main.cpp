@@ -178,7 +178,7 @@ void start_audio_backend(server_arguments const & args)
 
 
     bool success = instance->open_stream(input_device, input_channels, output_device, output_channels,
-        args.samplerate, args.blocksize, args.blocksize);
+        args.samplerate, args.blocksize, args.hardware_buffer_size);
 
     if (!success) {
         cout << "could not open portaudio device name: " << input_device << " / " << output_device << endl;
@@ -186,6 +186,9 @@ void start_audio_backend(server_arguments const & args)
     }
     cout << "opened portaudio device name: ";
     cout << input_device << " / " << output_device << endl;
+	
+	instance->report_latency();
+	
     instance->prepare_backend();
     instance->activate_audio();
 }
