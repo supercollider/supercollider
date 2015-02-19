@@ -501,7 +501,7 @@ SCDoc {
         ^documents;
     }
     *helpSourceDirs {
-        var find;
+        var find, rootPaths;
         if(helpSourceDirs.isNil) {
             this.postMsg("locating HelpSource folders...",2);
             helpSourceDirs = [helpSourceDir]; // Note: an array will keep the order.
@@ -514,7 +514,9 @@ SCDoc {
                     };
                 }
             };
-            [thisProcess.platform.userExtensionDir, thisProcess.platform.systemExtensionDir].do {|dir|
+			rootPaths = [thisProcess.platform.userExtensionDir, thisProcess.platform.systemExtensionDir];
+			rootPaths = rootPaths.addAll(LanguageConfig.includePaths);
+			rootPaths.do {|dir|
                 find.(PathName(dir));
             };
        };
