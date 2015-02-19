@@ -303,7 +303,7 @@ ScIDE {
 		var configFilePath = Platform.userAppSupportDir +/+ "sc_ide_conf.yaml";
 		^try {
 			configFilePath.parseYAMLFile["IDE"]["interpreter"]["configFile"]
-		}
+		} ? "sclang_conf.yaml"
 	}
 
 	*cmdPeriod { docRoutine.play(AppClock) }
