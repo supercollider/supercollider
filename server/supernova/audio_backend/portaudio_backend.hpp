@@ -125,14 +125,14 @@ public:
         }
         return false;
     }
-	void report_latency()
-	{
-		const PaStreamInfo *psi = Pa_GetStreamInfo(stream);
-		if (psi){
-			fprintf(stdout,"  Sample rate: %.3f\n", psi->sampleRate);
-			fprintf(stdout,"  Latency (in/out): %.3f / %.3f sec\n", psi->inputLatency, psi->outputLatency); 
-		}
-	}
+    void report_latency()
+    {
+        const PaStreamInfo *psi = Pa_GetStreamInfo(stream);
+        if (psi){
+            fprintf(stdout,"  Sample rate: %.3f\n", psi->sampleRate);
+            fprintf(stdout,"  Latency (in/out): %.3f / %.3f sec\n", psi->inputLatency, psi->outputLatency); 
+        }
+    }
     bool open_stream(std::string const & input_device, unsigned int inchans,
                      std::string const & output_device, unsigned int outchans,
                      unsigned int samplerate, unsigned int pa_blocksize, int h_blocksize)
@@ -142,22 +142,22 @@ public:
             return false;
 
         PaStreamParameters in_parameters, out_parameters;
-		PaTime suggestedLatencyIn, suggestedLatencyOut;
-		
-		if (h_blocksize == 0){
-			if (inchans)
-				suggestedLatencyIn = Pa_GetDeviceInfo(input_device_index)->defaultHighInputLatency;
-			if (outchans)
-				suggestedLatencyOut = Pa_GetDeviceInfo(output_device_index)->defaultHighOutputLatency;
-		}else{
-			if(h_blocksize < 0){
-				if (inchans)
-					suggestedLatencyIn = Pa_GetDeviceInfo(input_device_index)->defaultLowInputLatency;
-				if (outchans)
-					suggestedLatencyOut = Pa_GetDeviceInfo(output_device_index)->defaultLowOutputLatency;
-			}else
-				suggestedLatencyIn = suggestedLatencyOut = (double)h_blocksize / (double)samplerate;
-		}
+        PaTime suggestedLatencyIn, suggestedLatencyOut;
+        
+        if (h_blocksize == 0){
+            if (inchans)
+                suggestedLatencyIn = Pa_GetDeviceInfo(input_device_index)->defaultHighInputLatency;
+            if (outchans)
+                suggestedLatencyOut = Pa_GetDeviceInfo(output_device_index)->defaultHighOutputLatency;
+        }else{
+            if(h_blocksize < 0){
+                if (inchans)
+                    suggestedLatencyIn = Pa_GetDeviceInfo(input_device_index)->defaultLowInputLatency;
+                if (outchans)
+                    suggestedLatencyOut = Pa_GetDeviceInfo(output_device_index)->defaultLowOutputLatency;
+            }else
+                suggestedLatencyIn = suggestedLatencyOut = (double)h_blocksize / (double)samplerate;
+        }
 
         if (inchans) {
             const PaDeviceInfo* device_info = Pa_GetDeviceInfo(input_device_index);

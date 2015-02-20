@@ -186,9 +186,9 @@ void start_audio_backend(server_arguments const & args)
     }
     cout << "opened portaudio device name: ";
     cout << input_device << " / " << output_device << endl;
-	
-	instance->report_latency();
-	
+    
+    instance->report_latency();
+    
     instance->prepare_backend();
     instance->activate_audio();
 }
