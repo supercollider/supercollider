@@ -29,6 +29,7 @@ NumInputBuses : InfoUGenBase {}
 NumAudioBuses : InfoUGenBase {}
 NumControlBuses : InfoUGenBase {}
 NumBuffers : InfoUGenBase {}
+ThisSynthID : InfoUGenBase {}
 NumRunningSynths : InfoUGenBase {
 	*kr {
 		^this.multiNew('control')
