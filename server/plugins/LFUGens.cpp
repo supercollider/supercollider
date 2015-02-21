@@ -866,7 +866,6 @@ void LFGauss_Ctor(LFGauss* unit)
 				SETCALC(LFGauss_next_aa);
 		} else {
 				SETCALC(LFGauss_next_a);
-				printf("LFGauss_next_a\n");
 		}
 	} else {
 		SETCALC(LFGauss_next_k);
