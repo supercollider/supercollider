@@ -458,9 +458,9 @@ FunctionDef {
 
 	keyValuePairsFromArgs {
 		var argNames, argVals;
-		argNames = this.argNames;
-		if(argNames.isNil) { ^[] };
-		argVals = this.prototypeFrame.keep(argNames.size);
+		if(this.argNames.isNil, { ^[] });
+		argNames = this.argNames.drop(1); // first argName is "this"
+		argVals = this.prototypeFrame.drop(1).keep(argNames.size);
 		^[argNames, argVals].flop.flatten
 	}
 
@@ -506,9 +506,12 @@ Method : FunctionDef {
 		functionRefs.notNil.if({references = references.add(this)});
 		^references
 	}
+
 	keyValuePairsFromArgs {
-		var argNames = this.argNames.drop(1); // first argName is "this"
-		var argVals = this.prototypeFrame.drop(1).keep(argNames.size);
+		var argNames, argVals;
+		if(this.argNames.isNil, { ^[] });
+		argNames = this.argNames.drop(1); // first argName is "this"
+		argVals = this.prototypeFrame.drop(1).keep(argNames.size);
 		^[argNames, argVals].flop.flatten
 	}
 }
