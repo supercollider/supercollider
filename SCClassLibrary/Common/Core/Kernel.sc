@@ -458,9 +458,9 @@ FunctionDef {
 
 	keyValuePairsFromArgs {
 		var argNames, argVals;
-		argNames = this.argNames;
-		if(argNames.isNil) { ^[] };
-		argVals = this.prototypeFrame.keep(argNames.size);
+		if(this.argNames.isNil, { ^[] });
+		argNames = this.argNames.drop(1); // first argName is "this"
+		argVals = this.prototypeFrame.drop(1).keep(argNames.size);
 		^[argNames, argVals].flop.flatten
 	}
 
