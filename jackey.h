@@ -59,3 +59,14 @@
    channels can be found at http://lv2plug.in/ns/ext/port-groups
 */
 #define JACKEY_DESIGNATION "http://lv2plug.in/ns/lv2core#designation"
+
+/**
+   Order for a port.
+
+   This is used to specify the best order to show ports in user interfaces.
+   The value MUST be an integer.  There are no other requirements, so there may
+   be gaps in the orders for several ports.  Applications should compare the
+   orders of ports to determine their relative order, but must not assign any
+   other relevance to order values.
+*/
+#define JACKEY_ORDER "http://jackaudio.org/metadata/order"
