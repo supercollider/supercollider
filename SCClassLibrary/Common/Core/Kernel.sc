@@ -382,7 +382,7 @@ Process {
 	shallowCopy { ^this }
 
 	*elapsedTime { _ElapsedTime }
-    
+
     *monotonicClockTime { _monotonicClockTime }
 
 	storeOn { arg stream;
@@ -457,11 +457,10 @@ FunctionDef {
 	}
 
 	keyValuePairsFromArgs {
-		var argNames, argVals;
-		argNames = this.argNames;
+		var values;
 		if(argNames.isNil) { ^[] };
-		argVals = this.prototypeFrame.keep(argNames.size);
-		^[argNames, argVals].flop.flatten
+		values = this.prototypeFrame.keep(argNames.size);
+		^[argNames, values].flop.flatten
 	}
 
 	makeEnvirFromArgs {
@@ -506,11 +505,15 @@ Method : FunctionDef {
 		functionRefs.notNil.if({references = references.add(this)});
 		^references
 	}
+
 	keyValuePairsFromArgs {
-		var argNames = this.argNames.drop(1); // first argName is "this"
-		var argVals = this.prototypeFrame.drop(1).keep(argNames.size);
-		^[argNames, argVals].flop.flatten
+		var names, values;
+		if(argNames.isNil, { ^[] });
+		names = argNames.drop(1); // first argName is "this"
+		values = this.prototypeFrame.drop(1).keep(names.size);
+		^[names, values].flop.flatten
 	}
+
 }
 
 Frame {
