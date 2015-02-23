@@ -169,7 +169,9 @@ bool SC_TerminalClient::parseOptions(int& argc, char**& argv, Options& opt)
 				opt.mCallRun = true;
 				break;
 			case 'V':
-				goto optPrintVersion;
+				fprintf(stdout, "sclang %s\n", SC_VersionString().c_str());
+				quit(0);
+				return false;
 				break;
 			case 's':
 				opt.mCallStop = true;
@@ -206,11 +208,6 @@ bool SC_TerminalClient::parseOptions(int& argc, char**& argv, Options& opt)
 
  help:
 	printUsage();
-	quit(0);
-	return false;
-
-optPrintVersion:
-	fprintf(stdout, "sclang %s\n", SC_VersionString().c_str());
 	quit(0);
 	return false;
 
