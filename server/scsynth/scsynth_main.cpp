@@ -282,7 +282,7 @@ int main(int argc, char* argv[])
 				break;
 			case 'V' :
 				scprintf("scsynth %s\n", SC_VersionString().c_str());
-				exit(1);
+				exit(0);
 				break;
 			case 'R' :
 				checkNumArgs(2);
