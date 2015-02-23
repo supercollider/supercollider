@@ -57,6 +57,7 @@
 #include "VMGlobals.h"
 #include "SC_DirUtils.h"   // for gIdeName
 #include "SC_LanguageConfig.hpp"
+#include "SC_Version.hpp"
 
 static FILE* gPostDest = stdout;
 
@@ -122,7 +123,8 @@ void SC_TerminalClient::printUsage()
 			"   -s                             Call Main.stop on shutdown\n"
 			"   -u <network-port-number>       Set UDP listening port (default %d)\n"
 			"   -i <ide-name>                  Specify IDE name (for enabling IDE-specific class code, default \"%s\")\n"
-			"   -a                             Standalone mode\n",
+			"   -a                             Standalone mode\n"
+			"   -V                             Print supercollider version and exit\n",
 			memGrowBuf,
 			memSpaceBuf,
 			opt.mPort,
@@ -132,7 +134,7 @@ void SC_TerminalClient::printUsage()
 
 bool SC_TerminalClient::parseOptions(int& argc, char**& argv, Options& opt)
 {
-	const char* optstr = ":d:Dg:hl:m:rsu:i:a";
+	const char* optstr = ":d:Dg:hl:m:rsu:i:aV";
 	int c;
 
 	// inhibit error reporting
@@ -165,6 +167,13 @@ bool SC_TerminalClient::parseOptions(int& argc, char**& argv, Options& opt)
 				break;
 			case 'r':
 				opt.mCallRun = true;
+				break;
+			case 'V':
+				fprintf(stdout, "sclang %s\n", SC_VersionString().c_str());
+				//scprintf("sclang %s\n", SC_VersionString().c_str());
+				//fprintf(stdout, "Usage:\n   %s [options] [file..] [-]\n\n", getName());
+				quit(0);
+				return false;
 				break;
 			case 's':
 				opt.mCallStop = true;
