@@ -170,8 +170,6 @@ bool SC_TerminalClient::parseOptions(int& argc, char**& argv, Options& opt)
 				break;
 			case 'V':
 				fprintf(stdout, "sclang %s\n", SC_VersionString().c_str());
-				//scprintf("sclang %s\n", SC_VersionString().c_str());
-				//fprintf(stdout, "Usage:\n   %s [options] [file..] [-]\n\n", getName());
 				quit(0);
 				return false;
 				break;
