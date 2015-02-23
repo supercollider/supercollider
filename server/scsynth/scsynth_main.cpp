@@ -20,6 +20,7 @@
 
 
 #include "SC_WorldOptions.h"
+#include "SC_Version.hpp"
 
 #include <cstring>
 #include <stdio.h>
@@ -88,6 +89,7 @@ void Usage()
 		"          0 is normal behaviour\n"
 		"          -1 suppresses informational messages\n"
 		"          -2 suppresses informational and many error messages\n"
+		"   -V print the supercollider version and exit\n"
 		"   -U <ugen-plugins-path>    a colon-separated list of paths\n"
 		"          if -U is specified, the standard paths are NOT searched for plugins.\n"
 		"   -P <restricted-path>    \n"
@@ -144,7 +146,7 @@ int main(int argc, char* argv[])
 	WorldOptions options = kDefaultWorldOptions;
 
 	for (int i=1; i<argc;) {
-		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utaioczblndpmwZrNSDIOMHvRUhPL", argv[i][1]) == 0) {
+		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utaioczblndpmwZrNSDIOMHvVRUhPL", argv[i][1]) == 0) {
 			scprintf("ERROR: Invalid option %s\n", argv[i]);
 			Usage();
 		}
@@ -277,6 +279,10 @@ int main(int argc, char* argv[])
 			case 'v' :
 				checkNumArgs(2);
 				options.mVerbosity = atoi(argv[j+1]);
+				break;
+			case 'V' :
+				scprintf("scsynth %s\n", SC_VersionString().c_str());
+				exit(1);
 				break;
 			case 'R' :
 				checkNumArgs(2);
