@@ -835,6 +835,8 @@ bool MainWindow::quit()
     if (!promptSaveDocs())
         return false;
 
+    Main::instance()->documentManager()->deleteRestore();
+
     saveWindowState();
 
     mMain->quit();
@@ -1156,6 +1158,23 @@ void MainWindow::openDocument()
     if (last_active_window)
         last_active_window->activateWindow();
 #endif
+}
+
+void MainWindow::restoreDocuments()
+{
+    DocumentManager *docMng = Main::instance()->documentManager();
+
+    if (docMng->needRestore()) {
+        QString msg = tr("Supercollider doesn't quit properly previously\n"
+                         "Do you want to restore previous files?");
+        QMessageBox::StandardButton restore =
+                          QMessageBox::warning(mInstance, tr("Restore files?"),
+                                    msg, QMessageBox::Yes | QMessageBox::No);
+        if (restore == QMessageBox::Yes)
+            docMng->restore();
+        else
+            docMng->deleteRestore();
+    }
 }
 
 void MainWindow::openStartupFile()

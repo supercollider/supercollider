@@ -28,7 +28,7 @@
 
 namespace ScIDE {
 
-namespace Settings { class Manager; }
+namespace Settings { class Manager; class Theme; }
 
 class Main;
 
@@ -78,7 +78,7 @@ Q_SIGNALS:
 private:
     friend class SyntaxHighlighter;
 
-    void applySettings( Settings::Manager*, const QString &key, SyntaxFormat );
+    void applySettings( Settings::Manager *s, const QString &key, SyntaxFormat );
 
     QTextCharFormat mFormats[FormatCount];
 

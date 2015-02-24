@@ -383,6 +383,8 @@ Process {
 
 	*elapsedTime { _ElapsedTime }
 
+    *monotonicClockTime { _monotonicClockTime }
+
 	storeOn { arg stream;
 		stream << "thisProcess";
 	}
@@ -439,26 +441,30 @@ FunctionDef {
 	archiveAsCompileString { ^true }
 
 	argumentString { arg withDefaultValues=true;
-		var res, last;
-		if(argNames.isNil) { ^nil };
-		res = "";
-		last = argNames.size-1;
-		argNames.do { |name, i|
+		var res = "", pairs = this.keyValuePairsFromArgs;
+		var last;
+		if(pairs.isEmpty) { ^nil };
+		last = pairs.lastIndex;
+		pairs.pairsDo { |name, defaultValue, i|
 			var value;
 			res = res ++ name;
-			if(withDefaultValues and: { value = prototypeFrame[i]; value.notNil }) {
-				res = res ++ " = " ++ value.asCompileString
+			if(withDefaultValues and: { defaultValue.notNil }) {
+				res = res ++ " = " ++ defaultValue.asCompileString
 			};
-			if(i != last) { res = res ++ ", " };
+			if(i + 1 != last) { res = res ++ ", " };
 		}
 		^res
 	}
 
+	keyValuePairsFromArgs {
+		var values;
+		if(argNames.isNil) { ^[] };
+		values = this.prototypeFrame.keep(argNames.size);
+		^[argNames, values].flop.flatten
+	}
+
 	makeEnvirFromArgs {
-		var argNames, argVals;
-		argNames = this.argNames;
-		argVals = this.prototypeFrame.keep(argNames.size);
-		^().putPairs([argNames, argVals].flop.flatten)
+		^().putPairs(this.keyValuePairsFromArgs)
 	}
 
 }
@@ -499,6 +505,15 @@ Method : FunctionDef {
 		functionRefs.notNil.if({references = references.add(this)});
 		^references
 	}
+
+	keyValuePairsFromArgs {
+		var names, values;
+		if(argNames.isNil, { ^[] });
+		names = argNames.drop(1); // first argName is "this"
+		values = this.prototypeFrame.drop(1).keep(names.size);
+		^[names, values].flop.flatten
+	}
+
 }
 
 Frame {

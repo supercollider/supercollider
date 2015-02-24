@@ -164,6 +164,12 @@ Dstutter : DUGen {
 	}
 }
 
+Dconst : DUGen {
+	*new { arg sum, in, tolerance = 0.001;
+		^this.multiNew('demand', sum, in, tolerance);
+	}
+}
+
 Donce : DUGen {
 	*new { arg in;
 		^this.multiNew('demand', in)
