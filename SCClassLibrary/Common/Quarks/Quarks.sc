@@ -36,7 +36,7 @@ Quarks {
 		this.installed.do({ |quark|
 			LanguageConfig.removeIncludePath(quark.localPath);
 		});
-		LanguageConfig.store();
+		LanguageConfig.store(Platform.languageConfigFilePath);
 		cache = Dictionary.new;
 	}
 	*load { |path|
@@ -184,7 +184,7 @@ Quarks {
 		if(LanguageConfig.includePaths.includesEqual(path).not, {
 			path.debug("Adding path");
 			LanguageConfig.addIncludePath(path);
-			LanguageConfig.store();
+			LanguageConfig.store(Platform.languageConfigFilePath);
 			^true
 		});
 		^false
@@ -194,7 +194,7 @@ Quarks {
 		if(LanguageConfig.includePaths.includesEqual(path), {
 			path.debug("Removing path");
 			LanguageConfig.removeIncludePath(path);
-			LanguageConfig.store();
+			LanguageConfig.store(Platform.languageConfigFilePath);
 			^true
 		});
 		^false
