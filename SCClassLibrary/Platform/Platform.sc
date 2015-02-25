@@ -6,7 +6,7 @@ Platform
 	classvar <>makeServerWindowAction, <>makeSynthDescWindowAction, <>openHelpFileAction, <>openHTMLFileAction;
 
 	var <classLibraryDir, <helpDir, <>recordingsDir, features;
-	var <>devpath;
+	var <>devpath, <>configFilePath;
 
 	*initClass {
 		defaultStartupFile = this.userConfigDir +/+ "startup.scd"
@@ -70,6 +70,17 @@ Platform
 
 	clearMetadata { |path| ^this.subclassResponsibility }
 	*clearMetadata { |path| ^thisProcess.platform.clearMetadata(path) }
+
+	languageConfigFilePath {
+		var path = configFilePath ?? { this.userAppSupportDir +/+ "sc_ide_conf.yaml" };
+		^try {
+			path.parseYAMLFile["IDE"]["interpreter"]["configFile"]
+		} ? "sclang_conf.yaml"
+	}
+	*languageConfigFilePath {
+		^thisProcess.platform.languageConfigFilePath
+	}
+
 
 	// startup/shutdown hooks
 	startup { }
