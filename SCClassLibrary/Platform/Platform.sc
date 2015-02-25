@@ -72,7 +72,9 @@ Platform
 	*clearMetadata { |path| ^thisProcess.platform.clearMetadata(path) }
 
 	languageConfigFilePath {
-		var path = configFilePath ?? { this.userAppSupportDir +/+ "sc_ide_conf.yaml" };
+		var path;
+		if(configFilePath.notNil) { ^configFilePath };
+		path = this.userAppSupportDir +/+ "sc_ide_conf.yaml";
 		^try {
 			path.parseYAMLFile["IDE"]["interpreter"]["configFile"]
 		} ? "sclang_conf.yaml"
