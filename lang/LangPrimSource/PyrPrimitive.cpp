@@ -3528,6 +3528,14 @@ static int prLanguageConfig_removeExcludePath(struct VMGlobals * g, int numArgsP
 	return prLanguageConfig_removeLibraryPath(g, numArgsPushed, excludePaths);
 }
 
+static int prLanguageConfig_getCurrentConfigPath(struct VMGlobals * g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+	PyrString* string = newPyrString(g->gc, gLanguageConfig->getCurrentConfigPath(), 0, false);
+	SetObject(a, string);
+	return errNone;
+}
+
 static int prLanguageConfig_writeConfigFile(struct VMGlobals * g, int numArgsPushed)
 {
 	PyrSlot *fileString = g->sp;
@@ -4145,6 +4153,7 @@ void initPrimitives()
 	definePrimitive(base, index++, "_MainOverwriteMsg", prOverwriteMsg, 1, 0);
 
 	definePrimitive(base, index++, "_AppClock_SchedNotify", prAppClockSchedNotify, 1, 0);
+	definePrimitive(base, index++, "_LanguageConfig_getCurrentConfigPath", prLanguageConfig_getCurrentConfigPath, 1, 0);
 	definePrimitive(base, index++, "_LanguageConfig_getIncludePaths", prLanguageConfig_getIncludePaths, 1, 0);
 	definePrimitive(base, index++, "_LanguageConfig_getExcludePaths", prLanguageConfig_getExcludePaths, 1, 0);
 	definePrimitive(base, index++, "_LanguageConfig_addIncludePath", prLanguageConfig_addIncludePath, 2, 0);

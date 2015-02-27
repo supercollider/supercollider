@@ -152,6 +152,11 @@ void SC_LanguageConfig::removeExcludedDirectory(const char *path)
 	mExcludedDirectories.erase(end, mExcludedDirectories.end());
 }
 
+const char* SC_LanguageConfig::getCurrentConfigPath()
+{
+	return gConfigFile.c_str();
+}
+
 extern bool gPostInlineWarnings;
 bool SC_LanguageConfig::readLibraryConfigYAML(const char* fileName, bool standalone)
 {
