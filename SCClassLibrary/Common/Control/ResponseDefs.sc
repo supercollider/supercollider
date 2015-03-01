@@ -166,11 +166,15 @@ AbstractWrappingDispatcher :  AbstractDispatcher {
 // The default dispatchers below store by the 'most significant' message argument for fast lookup
 // These are for use when more than just the 'most significant' argument needs to be matched
 AbstractMessageMatcher {
-	var <>func;
+	var <func;
 
 	value { this.subclassResponsibility(thisMethod) }
 
-	valueArray {arg args; ^this.value(*args) } // needed to work in FunctionLists
+    // valueArray and copy needed to work in FunctionLists
+    
+	valueArray {arg args; ^this.value(*args) }
+    
+    copy { ^this }
 
 }
 
