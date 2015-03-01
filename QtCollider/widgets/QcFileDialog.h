@@ -37,7 +37,7 @@ public:
                             int acceptMode = QFileDialog::AcceptOpen );
 
   ~QcFileDialog() {
-    delete dialog;
+    if (dialog) { dialog->deleteLater(); };
   }
 
   QFileDialog *theDialog() { return dialog; }
@@ -51,7 +51,7 @@ private Q_SLOTS:
 
   void show() {
     dialog->exec();
-    delete dialog;
+    dialog->deleteLater();
   }
 
   void onFinished( int res ) {

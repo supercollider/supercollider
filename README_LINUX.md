@@ -33,7 +33,7 @@ Build requirements
    * http://www.mega-nerd.com/libsndfile
    * _the_ soundfile i/o library
 
- * cmake >= 2.8
+ * cmake >= 2.8.11
    * http://www.cmake.org
    * cross-platform build system
 
@@ -49,9 +49,10 @@ Build requirements (optional features)
 --------------------------------------
 (most of these will be available in your linux distribution as packages)
 
- * Qt >= 4.7 (+ qtwebkit)
+ * Qt >= 5.3 (+ qtwebkit)
    * http://qt-project.org
    * cross-platform graphical user interface library, for Qt IDE and sclang's Qt GUI kit
+   * Qt >= 5.0 should work, but build-test is done against 5.3
 
  * alsa
    * http://www.alsa-project.org
@@ -91,8 +92,6 @@ On debian (unstable) you can install the following packages and be set
 for building supercollider:
 
  - build-essential
- - libqt4-dev
- - libqtwebkit-dev
  - libjack-dev or libjack-jackd2-dev
  - libsndfile1-dev
  - libasound2-dev
@@ -104,9 +103,10 @@ for building supercollider:
  - libudev-dev
  - libcwiid-dev (for wiimote support)
  - pkg-config
- - cmake
  - subversion (required by the Quarks class at run-time)
-
+ - cmake (on some platforms, cmake >= 2.9 may require manual build)
+ - qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5webkit5-dev
+ 
 
 Building
 --------
@@ -117,7 +117,7 @@ builds in a specific build directory:
    ```
    $> mkdir build
    $> cd build
-   $> cmake ..
+   $> cmake -DCMAKE_PREFIX_PATH=/path/to/qt5 ..
    ```
 
  - to run the build process run:

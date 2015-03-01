@@ -11,6 +11,7 @@ if(APPLE)
 	endif()
 
 	set(scappauxresourcesdir "${scappbundlename}/${scappbundlename}.app/Contents/Resources")
+	set(scappbindir "${scappbundlename}/${scappbundlename}.app/Contents/MacOS")
 
 	###### Allow user to select a FHS-style install
 	# TODO not yet used

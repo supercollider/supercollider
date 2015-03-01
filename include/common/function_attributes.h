@@ -47,7 +47,7 @@
 #endif
 
 
-#ifndef _WIN32
+#ifdef _MSC_VER
 #ifndef PURE
 #define PURE /*PURE*/
 #endif

@@ -33,19 +33,19 @@ class PopupTextInput : public QInputDialog
 
 public:
     PopupTextInput(QString const & labelText, QWidget * parent):
-        QInputDialog(parent, Qt::Popup)
+        QInputDialog(parent, Qt::Dialog | Qt::FramelessWindowHint)
     {
         setOption(QInputDialog::NoButtons);
         setInputMode(QInputDialog::TextInput);
         setLabelText(labelText);
-        setModal(true);
-
+        
         if (parent) {
             QRect position = rect();
             position.moveCenter(parent->rect().center());
             resize(position.size());
             move(parent->mapToGlobal(position.topLeft()));
         }
+        this->show();
     }
 
 private:

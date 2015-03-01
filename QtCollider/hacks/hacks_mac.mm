@@ -31,5 +31,37 @@ bool isKeyWindow ( QWidget *w )
   return [[reinterpret_cast<NSView *>(w->winId()) window] isKeyWindow];
 }
 
+bool IsCmdPeriodKeyDown(void * event)
+{
+   NSEvent * nsevent = reinterpret_cast<NSEvent *>(event);
+   if ([nsevent type] == NSKeyDown)
+   {
+       if ([nsevent modifierFlags] & NSCommandKeyMask)
+       {
+           NSString * chars = [nsevent charactersIgnoringModifiers];
+           return [chars characterAtIndex:0] == 0x2E;					// Unicode encoding for period
+       }
+   }
+   return false;
+}
+
+bool IsCmdPeriodKeyUp(void * event)
+{
+    NSEvent * nsevent = reinterpret_cast<NSEvent *>(event);
+    if ([nsevent type] == NSKeyUp)
+    {
+        if ([nsevent modifierFlags] & NSCommandKeyMask)
+        {
+            NSString * chars = [nsevent charactersIgnoringModifiers];
+            return [chars characterAtIndex:0] == 0x2E;
+        }
+    }
+    return false;
+}
+
+void activateApp() {
+    [NSApp activateIgnoringOtherApps:YES];
+}
+
 } // namespace Mac
 } // namespace QtCollider
