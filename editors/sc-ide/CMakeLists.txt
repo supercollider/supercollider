@@ -1,9 +1,33 @@
 cmake_minimum_required( VERSION 2.8.11 )
 
-find_package(Qt4 4.7 REQUIRED QtCore QtGui QtWebKit QtNetwork)
+# This makes sclang/scide work with a Qt installation at a fixed, non-system location.
+SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+find_package(Qt5Core)
+find_package(Qt5Widgets)
+find_package(Qt5LinguistTools)
+find_package(Qt5WebKitWidgets)
+find_package(Qt5OpenGL)
+find_package(Qt5PrintSupport)
+find_package(Qt5Sensors)
+find_package(Qt5Quick)
+find_package(Qt5Qml)
+find_package(Qt5Sql)
+find_package(Qt5Positioning)
+
+set(QT_IDE_LIBRARIES 
+    Qt5::Core Qt5::WebKitWidgets Qt5::OpenGL Qt5::PrintSupport Qt5::Sensors Qt5::Quick Qt5::Qml Qt5::Sql Qt5::Positioning)
 
 if(${CMAKE_COMPILER_IS_GNUCXX})
     add_definitions(-Wreorder)
+endif()
+
+if (APPLE)
+  include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
+  set(ide_name ${scappbundlename})
+else()
+  set(ide_name scide)
 endif()
 
 if(APPLE)
@@ -151,7 +175,10 @@ if(APPLE)
 endif()
 
 if(APPLE)
-	list(APPEND ide_src ${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp)
+	list(APPEND ide_src 
+        ${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp
+        ${CMAKE_SOURCE_DIR}/QtCollider/hacks/hacks_mac.mm
+    )
 elseif(WIN32)
     list(APPEND ide_src ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
 endif()
@@ -192,12 +219,10 @@ add_custom_target( update_ide_translations
             -no-obsolete -pluralonly
 )
 
-include( ${QT_USE_FILE} )
-
-qt4_wrap_cpp( ide_moc_src ${ide_moc_hdr} )
-qt4_wrap_ui( ide_forms_src ${ide_forms} )
-qt4_add_resources( ide_rcc resources.qrc )
-qt4_add_translation( translations ${translation_src} ${native_translation_src} )
+qt5_wrap_cpp( ide_moc_src ${ide_moc_hdr} )
+qt5_wrap_ui( ide_forms_src ${ide_forms} )
+qt5_add_resources( ide_rcc resources.qrc )
+qt5_add_translation( translations ${translation_src} ${native_translation_src} )
 
 set(ide_sources ${ide_src} ${all_hdr} )
 
@@ -234,8 +259,7 @@ else()
 endif()
 
 target_link_libraries( SuperCollider
-    ${QT_LIBRARIES}
-    ${QT_QTNETWORK_LIBRARY}
+    ${QT_IDE_LIBRARIES}
     ${YAMLCPP_LIBRARY}
     oscpack
 )
@@ -248,8 +272,8 @@ else()
 endif()
 
 if(APPLE)
-    target_link_libraries( SuperCollider "-framework CoreServices -framework Foundation")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -F/Library/Frameworks")
+    target_link_libraries( ${ide_name} "-framework CoreServices -framework Foundation")
+    target_link_libraries( ${ide_name} "-framework Cocoa" )
 elseif(WIN32)
     target_link_libraries( SuperCollider wsock32 )
     # The following prevents a Windows console from showing up
@@ -282,6 +306,25 @@ endif()
 # Installation
 
 if(APPLE)
+    add_dependencies(SuperCollider sclang scsynth ${plugins} ${supernova_plugins})
+    add_custom_command(TARGET SuperCollider POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:sclang> $<TARGET_FILE_DIR:SuperCollider>/../MacOS)
+
+    add_custom_command(TARGET SuperCollider POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:scsynth> $<TARGET_FILE_DIR:SuperCollider>/../MacOS)
+
+    if(TARGET supernova)
+        add_dependencies(SuperCollider supernova)
+        add_custom_command(TARGET SuperCollider POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:supernova> $<TARGET_FILE_DIR:SuperCollider>/../MacOS)
+    endif()
+
+    foreach(plugin ${plugins} ${supernova_plugins})
+        add_custom_command(TARGET SuperCollider POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../Resources/plugins/
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${plugin}> $<TARGET_FILE_DIR:SuperCollider>/../Resources/plugins/)
+    endforeach()
+
 
     if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
         set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install" CACHE PATH "Install path prefix" FORCE)
@@ -302,8 +345,23 @@ if(APPLE)
 
     include(InstallRequiredSystemLibraries)
 
-    include(DeployQt4)
-    install_qt4_executable("${scappbundlename}/${scappbundlename}.app" "" "" "${CMAKE_BINARY_DIR}/server/scsynth;${CMAKE_BINARY_DIR}/external_libraries")
+    include(DeployQt5)
+    install_qt5_executable("${scappbundlename}/${scappbundlename}.app" "" "" "${CMAKE_BINARY_DIR}/lang/sclang;${CMAKE_BINARY_DIR}/server/scsynth;${CMAKE_BINARY_DIR}/external_libraries")
+
+    # install Qt plugins (adapted from kvirc)
+    set(plugin_dest_dir ${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Plugins)
+    set(QT_PLUGINS_DIR "${Qt5Widgets_DIR}/../../../plugins")
+    install(DIRECTORY "${QT_PLUGINS_DIR}/" DESTINATION ${plugin_dest_dir} COMPONENT Runtime
+                       FILES_MATCHING REGEX "(platforms)/[^_]*\\.dylib")
+
+    install(CODE "
+           file(GLOB_RECURSE QTPLUGINS
+                  \"${plugin_dest_dir}/*.dylib\")
+                include(BundleUtilities)
+                fixup_bundle(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\" \"\${QTPLUGINS}\" \"${QT_LIBRARY_DIR}\")
+                #fixup_qt5_executable(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\")
+                " COMPONENT Runtime)
+
 
 elseif(WIN32)
 	install(TARGETS SuperCollider

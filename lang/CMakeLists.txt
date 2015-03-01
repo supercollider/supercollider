@@ -1,3 +1,9 @@
+cmake_minimum_required(VERSION 2.8.11)
+
+# This makes sclang/scide work with a Qt installation at a fixed location.
+SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/include/lang
                     ${CMAKE_SOURCE_DIR}/include/plugin_interface
@@ -104,15 +110,6 @@ if(NOT WIN32)
 	list(APPEND sclang_sources LangPrimSource/PyrSerialPrim.cpp)
 endif()
 
-if(WIN32)
-	list(APPEND sclang_sources ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
-endif()
-
-if(WIN32)
-	include_directories(../platform/windows/compat_stuff)
-	list(APPEND sclang_sources ../platform/windows/compat_stuff/getopt.c)
-endif()
-
 set(sclang_parser_source LangSource/Bison/lang11d_tab.cpp)
 
 if(UNIX)
@@ -132,12 +129,17 @@ if(UNIX)
 			add_definitions(-DHAVE_LID)
 		endif(LINUX)
 	endif(APPLE)
-else(UNIX)
 endif(UNIX)
 
 if(WIN32)
+        list(APPEND sclang_sources ${CMAKE_SOURCE_DIR}/common/SC_Win32Utils.cpp)
 	include_directories (../platform/windows/compat_stuff)
-	list(APPEND sclang_sources ../platform/windows/compat_stuff/getopt.c)
+        if(NOT MINGW)
+                # mingw-w64 provides getopt
+                list(APPEND sclang_sources ../platform/windows/compat_stuff/getopt/getopt.c)
+                include_directories(../platform/windows/compat_stuff/getopt)
+        endif()
+
 	if(PORTMIDI_FOUND)
 		include_directories (${PORTMIDI_INCLUDE_DIRS})
 		add_definitions(-DHAVE_PORTMIDI)
@@ -173,23 +175,22 @@ if(SC_WII)
 	endif()
 endif()
 
-include(../SCDoc/CMakeLists.txt)
-list(APPEND sclang_sources ${SCDOC_SRCS})
-
-if(SC_IDE)
-	add_definitions(-DSC_IDE -DQT_NO_KEYWORDS)
-	find_package( Qt4 4.7 REQUIRED QtCore QtNetwork QtGui)
-	include( ${QT_USE_FILE} )
-	qt4_wrap_cpp( SCLANG_MOC_SRCS ../editors/sc-ide/primitives/sc_ipc_client.hpp )
-	list(APPEND sclang_sources ../editors/sc-ide/primitives/sc_ipc_client.cpp)
-	list(APPEND sclang_sources ${SCLANG_MOC_SRCS})
-endif()
-
-if(SC_QT)
+if(SC_QT OR SC_IDE)
 	set(QT_COLLIDER_LANG_CLIENT ON)
 	include(../QtCollider/CMakeLists.txt)
 	list(APPEND sclang_sources ${QT_COLLIDER_SRCS})
 endif()
+
+if(SC_IDE)
+	add_definitions(-DSC_IDE -DQT_NO_KEYWORDS)
+
+	qt5_wrap_cpp( SCLANG_MOC_SRCS ../editors/sc-ide/primitives/sc_ipc_client.hpp )
+	list(APPEND sclang_sources ../editors/sc-ide/primitives/sc_ipc_client.cpp)
+	list(APPEND sclang_sources ${SCLANG_MOC_SRCS})
+endif()
+
+include(../SCDoc/CMakeLists.txt)
+list(APPEND sclang_sources ${SCDOC_SRCS})
 
 if(0 AND FINAL_BUILD) # sclang final-builds are broken
 	CREATE_FINAL_FILE(libsclang_final.cpp ${sclang_sources})
@@ -198,8 +199,26 @@ else()
 	add_library(libsclang STATIC ${sclang_sources} ${sclang_parser_source})
 endif()
 
-target_compile_definitions(libsclang PRIVATE YYSTACK_USE_ALLOC BUILDING_SUPERCOLLIDER)
+target_compile_definitions(libsclang PRIVATE YYSTACK_USE_ALLOC)
 target_link_libraries(libsclang tlsf ${PTHREADS_LIBRARIES})
+
+if(SC_IDE OR SC_QT)
+	message("libsclang qt libs:" ${QT_COLLIDER_LIBS})
+	#qt5_use_modules(libsclang Core)
+	find_package(Qt5Core)
+	get_target_property(QtCore_location Qt5::Core LOCATION)
+	message("core: " ${QtCore_location} )
+
+	#include_directories(${Qt5Core_INCLUDE_DIRS})
+	#target_link_libraries(libsclang Qt5::Core)
+	target_link_libraries(libsclang ${QT_COLLIDER_LIBS})
+	#qt5_use_modules(libsclang Core Network Gui WebKit Widgets WebKitWidgets)
+endif()
+
+if(FALSE) # libsclang is a shared library
+  target_compile_definitions(libsclang PRIVATE   BUILDING_SCLANG)
+  target_compile_definitions(libsclang INTERFACE BUILDING_SCLANG)
+endif()
 
 target_compile_definitions(libsclang PRIVATE HAVE_HIDAPI)
 
@@ -223,7 +242,7 @@ endif()
 
 
 if (Boost_FOUND)
-	target_include_directories(libsclang PUBLIC ${Boost_INCLUDE_DIRS})
+	target_include_directoriesf(libsclang PUBLIC ${Boost_INCLUDE_DIRS})
 	target_link_libraries(libsclang ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_REGEX_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
 else()
 	target_include_directories(libsclang PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/boost)
@@ -294,16 +313,9 @@ endif()
 
 target_link_libraries(libsclang ${YAMLCPP_LIBRARY})
 
-if(SC_QT)
-	target_link_libraries(libsclang ${QT_COLLIDER_LIBS})
-endif()
-
-if(SC_IDE)
-	target_link_libraries( libsclang ${QT_LIBRARIES} )
-endif()
-
 add_executable(sclang LangSource/cmdLineFuncs.cpp ${RES_FILES})
 target_link_libraries(sclang libsclang)
+target_link_libraries(sclang ${ICU_LIBRARIES})
 
 target_compile_definitions(sclang PUBLIC USE_SC_TERMINAL_CLIENT)
 
@@ -315,18 +327,17 @@ if(LTO)
 endif()
 
 if(APPLE)
-    if(CMAKE_GENERATOR MATCHES Xcode)
-        set_property(TARGET sclang PROPERTY RUNTIME_OUTPUT_DIRECTORY_DEBUG   "${CMAKE_BINARY_DIR}/editors/sc-ide/Debug/${ide_name}.app/Contents/Resources/")
-        set_property(TARGET sclang PROPERTY RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/editors/sc-ide/Release/${ide_name}.app/Contents/Resources/")
-    else()
-        set_property(TARGET sclang
-                     PROPERTY RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/editors/sc-ide/${ide_name}.app/Contents/Resources/")
-    endif()
+	# determines the app name and app install location (scappbundlename, scappdir):
+	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
+
+	install(TARGETS sclang
+			DESTINATION "${scappbindir}"
+			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 elseif(WIN32)
 	install(TARGETS sclang
 			DESTINATION "SuperCollider"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-else()
+elseif(NOT APPLE)
 	install(TARGETS sclang
 			RUNTIME DESTINATION "bin"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)

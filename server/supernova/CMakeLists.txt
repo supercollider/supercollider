@@ -57,8 +57,10 @@ else()
   add_library (libsupernova STATIC ${libsupernova_src})
 endif()
 
-set_property(TARGET libsupernova
-             PROPERTY OUTPUT_NAME supernova)
+if(NOT WIN32)
+  set_property(TARGET libsupernova
+               PROPERTY OUTPUT_NAME supernova)
+endif()
 
 target_link_libraries(libsupernova oscpack tlsf ${PTHREADS_LIBRARIES})
 
@@ -143,19 +145,11 @@ add_executable(supernova server/main.cpp ${supernova_headers})
 target_link_libraries(supernova libsupernova)
 
 
-if(APPLE)
-    if(CMAKE_GENERATOR MATCHES Xcode)
-        set_property(TARGET supernova PROPERTY RUNTIME_OUTPUT_DIRECTORY_DEBUG   "${CMAKE_BINARY_DIR}/editors/sc-ide/Debug/${ide_name}.app/Contents/Resources/")
-        set_property(TARGET supernova PROPERTY RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/editors/sc-ide/Release/${ide_name}.app/Contents/Resources/")
-    else()
-        set_property(TARGET supernova
-                     PROPERTY RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/editors/sc-ide/${ide_name}.app/Contents/Resources/")
-    endif()
-elseif(WIN32)
+if(WIN32)
 	install(TARGETS supernova
         DESTINATION "SuperCollider"
         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-else()
+elseif(NOT APPLE)
   install(TARGETS supernova
           DESTINATION "bin"
           PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)

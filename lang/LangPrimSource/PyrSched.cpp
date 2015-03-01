@@ -238,7 +238,7 @@ inline double DurToFloat(DurationType dur)
 	return secs.count() + 1.0e-9 * nanosecs.count();
 }
 
-SC_DLLEXPORT_C void schedInit()
+SCLANG_DLLEXPORT_C void schedInit()
 {
 	using namespace chrono;
     hrTimeOfInitialization     = high_resolution_clock::now();
@@ -251,7 +251,7 @@ SC_DLLEXPORT_C void schedInit()
 	gElapsedOSCoffset = (int64)(gHostStartNanos * kNanosToOSC) + gHostOSCoffset;
 }
 
-SC_DLLEXPORT_C void schedCleanup()
+SCLANG_DLLEXPORT_C void schedCleanup()
 {
 }
 
@@ -354,7 +354,7 @@ void schedAdd(VMGlobals *g, PyrObject* inQueue, double inSeconds, PyrSlot* inTas
 	}
 }
 
-SC_DLLEXPORT_C void schedStop()
+SCLANG_DLLEXPORT_C void schedStop()
 {
 	//printf("->schedStop\n");
 	gLangMutex.lock();
@@ -371,7 +371,7 @@ SC_DLLEXPORT_C void schedStop()
 
 void schedClearUnsafe();
 
-SC_DLLEXPORT_C void schedClear()
+SCLANG_DLLEXPORT_C void schedClear()
 {
 	gLangMutex.lock();
 	schedClearUnsafe();
@@ -590,7 +590,7 @@ static void SC_LinuxSetRealtimePriority(pthread_t thread, int priority)
 #endif // __linux__
 
 
-SC_DLLEXPORT_C void schedRun()
+SCLANG_DLLEXPORT_C void schedRun()
 {
 	thread thread(schedRunFunc);
 	gSchedThread = std::move(thread);

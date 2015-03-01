@@ -333,7 +333,7 @@ void PostWindow::wheelEvent( QWheelEvent * e )
     QPlainTextEdit::wheelEvent(e);
 #endif
 }
-
+    
 void PostWindow::focusOutEvent( QFocusEvent * event )
 {
     if (event->reason() == Qt::TabFocusReason)
@@ -411,5 +411,5 @@ void PostDocklet::onFloatingChanged(bool floating)
     if (floating)
         dockWidget()->resize(dockWidget()->size() - QSize(1,1));
 }
-
+    
 } // namespace ScIDE

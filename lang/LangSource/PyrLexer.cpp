@@ -2110,7 +2110,7 @@ void shutdownLibrary()
 	SC_LanguageConfig::freeLibraryConfig();
 }
 
-SC_DLLEXPORT_C bool compileLibrary(bool standalone)
+SCLANG_DLLEXPORT_C bool compileLibrary(bool standalone)
 {
 	//printf("->compileLibrary\n");
 	shutdownLibrary();
@@ -2163,7 +2163,7 @@ void signal_init_globs();
 
 void dumpByteCodes(PyrBlock *theBlock);
 
-SC_DLLEXPORT_C void runLibrary(PyrSymbol* selector)
+SCLANG_DLLEXPORT_C void runLibrary(PyrSymbol* selector)
 {
 	VMGlobals *g = gMainVMGlobals;
 	g->canCallOS = true;
