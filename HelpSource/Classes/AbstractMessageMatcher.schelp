@@ -4,7 +4,7 @@ categories:: External Control>Abstract Classes
 related:: Classes/AbstractResponderFunc, Classes/AbstractWrappingDispatcher
 
 DESCRIPTION::
-Instances of subclasses of AbstractMessageMatcher are used by subclasses of link::Classes/AbstractWrappingDispatcher:: to match multiple parameters of incoming messages (i.e. OSC or MIDI) to instances of subclasses of link::Classes/AbstractResponderFunc::. This class and its subclasses are private and generally users should not need to address them directly.
+Instances of subclasses of AbstractMessageMatcher are used internally by subclasses of link::Classes/AbstractWrappingDispatcher:: to match multiple parameters of incoming messages (i.e. OSC or MIDI) to instances of subclasses of link::Classes/AbstractResponderFunc::. This class and its subclasses are private and generally users should not need to address them directly. Note that these objects are effectively immutable, and link::#-copy:: returns the receiver
 
 
 CLASSMETHODS::
@@ -25,3 +25,6 @@ As link::#-value:: above, but with the arguments passed as a single link::Classe
 
 argument:: args
 An link::Classes/Array:: containing the message and appropriate arguments.
+
+METHOD:: copy
+Returns the receiver.
