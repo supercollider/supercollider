@@ -942,7 +942,7 @@ void GenericCodeEditor::paintLineIndicator( QPaintEvent *e )
 
             QString number = QString::number(num + 1);
             p.setPen(plt.color(QPalette::ButtonText));
-            p.drawText(0, top, mLineIndicator->width() - 10, bottom - top,
+            p.drawText(0, top, mLineIndicator->width() - 4, bottom - top,
                        Qt::AlignRight, number);
 
             p.restore();
