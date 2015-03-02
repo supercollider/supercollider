@@ -36,7 +36,6 @@ set ( ide_moc_hdr
     core/sc_server.hpp
     core/doc_manager.hpp
     core/settings/manager.hpp
-    core/settings/theme.hpp
     core/session_manager.hpp
     widgets/cmd_line.hpp
     widgets/doc_list.hpp
