@@ -364,16 +364,36 @@ endif()
 if(NOT APPLE)
   install(DIRECTORY sounds   DESTINATION ${auxresourcesdir})
   install(DIRECTORY examples DESTINATION ${auxresourcesdir})
+elseif(APPLE)
+  install(DIRECTORY examples DESTINATION ${auxresourcesdir})
 endif()
 
-set( AdditionalInstallFiles
-     README.md
-     README_OS_X.md
-     ChangeLog
-     COPYING
-     AUTHORS
-     MOVED_STUFF.txt
-    )
+if (WIN32)
+  set( AdditionalInstallFiles
+    README.md
+    README_WINDOWS.md
+    ChangeLog
+    COPYING
+    AUTHORS
+  )
+elseif(APPLE)
+  set( AdditionalInstallFiles
+    README.md
+    README_OS_X.md
+    ChangeLog
+    COPYING
+    AUTHORS
+    MOVED_STUFF.txt
+  )
+else()
+  set( AdditionalInstallFiles
+    README.md
+    README_LINUX.md
+    ChangeLog
+    COPYING
+    AUTHORS
+  )
+endif()
 
 install(FILES ${AdditionalInstallFiles} DESTINATION ${auxresourcesdir})
 
