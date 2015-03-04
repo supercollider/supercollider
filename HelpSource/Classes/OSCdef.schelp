@@ -108,7 +108,7 @@ AbstractResponderFunc.allDisabled
 
 // change funcs
 OSCdef(\test).enable;
-OSCdef(\test, {|msg, time, addr, recvPort 'Changed Unmatching'.postln}, '/chat', n); // replace at key \test
+OSCdef(\test, {|msg, time, addr, recvPort| 'Changed Unmatching'.postln}, '/chat', n); // replace at key \test
 m.sendMsg("/chat", "Hello App 1");
 OSCdef(\test).add(f = {\foo.postln}); // add another func
 m.sendMsg("/chat", "Hello App 1");
