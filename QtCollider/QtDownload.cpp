@@ -78,7 +78,7 @@ void QtDownload::download() {
 		QObject::connect(m_reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(replyError(QNetworkReply::NetworkError)));
 		bool fin = QObject::connect(m_reply, SIGNAL(finished()),this, SLOT(downloadFinished()));
 		if (!fin) {
-			printf("Download could not connect\n");
+			qWarning("Download could not connect");
 		}
 	}
 }
@@ -92,9 +92,8 @@ void QtDownload::cancel() {
 
 void QtDownload::replyError(QNetworkReply::NetworkError errorCode)
 {
-	printf(m_reply->errorString().toStdString().c_str());
-	printf("\n");
-	
+	qWarning() << m_reply->errorString();
+
 	// call action
 	Q_EMIT( doError() );
 }
