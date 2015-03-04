@@ -362,37 +362,37 @@ else()
 endif()
 
 if(NOT APPLE)
-  install(DIRECTORY sounds   DESTINATION ${auxresourcesdir})
-  install(DIRECTORY examples DESTINATION ${auxresourcesdir})
+	install(DIRECTORY sounds   DESTINATION ${auxresourcesdir})
+	install(DIRECTORY examples DESTINATION ${auxresourcesdir})
 elseif(APPLE)
-  install(DIRECTORY examples DESTINATION ${auxresourcesdir})
+	install(DIRECTORY examples DESTINATION ${auxresourcesdir})
 endif()
 
 if (WIN32)
-  set( AdditionalInstallFiles
-    README.md
-    README_WINDOWS.md
-    ChangeLog
-    COPYING
-    AUTHORS
-  )
+	set( AdditionalInstallFiles
+		README.md
+		README_WINDOWS.md
+		ChangeLog
+		COPYING
+		AUTHORS
+	)
 elseif(APPLE)
-  set( AdditionalInstallFiles
-    README.md
-    README_OS_X.md
-    ChangeLog
-    COPYING
-    AUTHORS
-    MOVED_STUFF.txt
-  )
+	set( AdditionalInstallFiles
+		README.md
+		README_OS_X.md
+		ChangeLog
+		COPYING
+		AUTHORS
+		MOVED_STUFF.txt
+	)
 else()
-  set( AdditionalInstallFiles
-    README.md
-    README_LINUX.md
-    ChangeLog
-    COPYING
-    AUTHORS
-  )
+	set( AdditionalInstallFiles
+		README.md
+		README_LINUX.md
+		ChangeLog
+		COPYING
+		AUTHORS
+	)
 endif()
 
 install(FILES ${AdditionalInstallFiles} DESTINATION ${auxresourcesdir})
@@ -405,7 +405,7 @@ if(INSTALL_HELP)
 		endif()
 		install( CODE
 					"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/HelpSource ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource )" )
-	else()
+	elseif(NOT APPLE)
 		install(DIRECTORY HelpSource
 			DESTINATION ${auxresourcesdir}
 			REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
