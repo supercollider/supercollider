@@ -31,7 +31,7 @@ static bool dumpOSCmsg(int inSize, char* inData, bool skipStatus = false)
 	if (inData[0]) {
 		const char *addr = inData;
 		if (skipStatus) {
-			if (strcmp(addr, "/status") == 0) // skip /status messages
+			if (strcmp(addr, "/status") == 0 || strcmp(addr, "status") == 0) // skip /status messages
 				return false; // nothing has been printed
 		}
 
