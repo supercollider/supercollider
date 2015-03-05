@@ -49,12 +49,6 @@ ScServer::ScServer(ScProcess *scLang, Settings::Manager *settings, QObject *pare
     createActions(settings);
 
     mUdpSocket = new QUdpSocket(this);
-    for (int port = 57140; port != 57150; ++port) {
-        bool success = mUdpSocket->bind(port);
-        if (success)
-            break;
-    }
-
     startTimer(333);
 
     mRecordTimer.setInterval(1000);
@@ -479,11 +473,13 @@ void ScServer::onRunningStateChanged( bool running, QString const & hostName, in
     if (running) {
         mServerAddress = QHostAddress(hostName);
         mPort = port;
+        mUdpSocket->connectToHost(mServerAddress, mPort);
     } else {
         mServerAddress.clear();
         mPort = 0;
         mIsRecording = false;
         mRecordTimer.stop();
+        mUdpSocket->disconnectFromHost();
     }
 
     updateToggleRunningAction();

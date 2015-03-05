@@ -192,6 +192,9 @@ void QcScopeShm::paint1D( bool overlapped, int chanCount, int maxFrames, int fra
   if( !overlapped ) yRatio /= chanCount;
   float yHeight = area.height();
   if( !overlapped ) yHeight /= chanCount;
+  QPen pen;
+  pen.setWidth(0);  // width==0 means width 1 regardless of transformations
+  pen.setCapStyle( Qt::FlatCap );
 
   if( frameCount < area.width() )
   {
@@ -200,12 +203,12 @@ void QcScopeShm::paint1D( bool overlapped, int chanCount, int maxFrames, int fra
     for( int ch = 0; ch < chanCount; ch++ ) {
       float *frameData = _data + (ch * maxFrames); //frame vector
       float yOrigin = yHeight * (overlapped ? 0.5 : ch + 0.5);
-      QColor color = ( ch < colors.count() ? colors[ch] : QColor(255,255,255) );
+      pen.setColor( ch < colors.count() ? colors[ch] : QColor(255,255,255) );
 
       painter.save();
       painter.translate( area.x(), area.y() + yOrigin );
       painter.scale( xRatio, yRatio );
-      painter.setPen(color);
+      painter.setPen(pen);
 
       QPainterPath path;
       path.moveTo( xOffset, frameData[0] );
@@ -227,12 +230,10 @@ void QcScopeShm::paint1D( bool overlapped, int chanCount, int maxFrames, int fra
     {
       float *frameData = _data + (ch * maxFrames); //frame vector
       float yOrigin = yHeight * (overlapped ? 0.5 : ch + 0.5);
-      QColor color = ( ch < colors.count() ? colors[ch] : QColor(255,255,255) );
+      pen.setColor( ch < colors.count() ? colors[ch] : QColor(255,255,255) );
 
       painter.save();
       painter.translate( area.x(), area.y() + yOrigin );
-      QPen pen(color);
-      pen.setCapStyle( Qt::FlatCap );
       painter.setPen(pen);
 
       QPainterPath path;
@@ -274,15 +275,17 @@ void QcScopeShm::paint1D( bool overlapped, int chanCount, int maxFrames, int fra
 void QcScopeShm::paint2D( int chanCount, int maxFrames, int frameCount,
                           const QRect &area, QPainter & painter )
 {
-  QColor color = colors.count() ? colors[0] : QColor(255,255,255);
-
   int minSize = qMin( area.width(), area.height() );
   // NOTE: use yZoom for both axis, since both represent value, as opposed to index
   float xRatio = yZoom * minSize * 0.5;
   float yRatio = -yZoom * minSize * 0.5;
   QPoint center = area.center();
-
-  painter.setPen(color);
+  QPen pen;
+  pen.setWidth(0);  // width==0 means width 1 regardless of transformations
+  pen.setCapStyle( Qt::FlatCap );
+  pen.setColor(colors.count() ? colors[0] : QColor(255,255,255));
+    
+  painter.setPen(pen);
   painter.translate( center.x(), center.y() );
   painter.scale( xRatio, yRatio );
 

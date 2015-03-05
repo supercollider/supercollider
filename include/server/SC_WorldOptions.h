@@ -100,16 +100,16 @@ const struct WorldOptions kDefaultWorldOptions =
 
 struct SndBuf;
 
-SC_DLLEXPORT_C void SetPrintFunc(PrintFunc func);
-SC_DLLEXPORT_C struct World* World_New(struct WorldOptions *inOptions);
-SC_DLLEXPORT_C void World_Cleanup(struct World *inWorld);
-SC_DLLEXPORT_C void World_NonRealTimeSynthesis(struct World *inWorld, struct WorldOptions *inOptions);
-SC_DLLEXPORT_C int World_OpenUDP(struct World *inWorld, int inPort);
-SC_DLLEXPORT_C int World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog);
-SC_DLLEXPORT_C void World_WaitForQuit(struct World *inWorld);
-SC_DLLEXPORT_C bool World_SendPacket(struct World *inWorld, int inSize, char *inData, ReplyFunc inFunc);
-SC_DLLEXPORT_C bool World_SendPacketWithContext(struct World *inWorld, int inSize, char *inData, ReplyFunc inFunc, void *inContext);
-SC_DLLEXPORT_C int World_CopySndBuf(struct World *world, uint32 index, struct SndBuf *outBuf, bool onlyIfChanged, bool *didChange);
-SC_DLLEXPORT_C int scprintf(const char *fmt, ...);
+SCSYNTH_DLLEXPORT_C void SetPrintFunc(PrintFunc func);
+SCSYNTH_DLLEXPORT_C struct World* World_New(struct WorldOptions *inOptions);
+SCSYNTH_DLLEXPORT_C void World_Cleanup(struct World *inWorld);
+SCSYNTH_DLLEXPORT_C void World_NonRealTimeSynthesis(struct World *inWorld, struct WorldOptions *inOptions);
+SCSYNTH_DLLEXPORT_C int World_OpenUDP(struct World *inWorld, int inPort);
+SCSYNTH_DLLEXPORT_C int World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog);
+SCSYNTH_DLLEXPORT_C void World_WaitForQuit(struct World *inWorld);
+SCSYNTH_DLLEXPORT_C bool World_SendPacket(struct World *inWorld, int inSize, char *inData, ReplyFunc inFunc);
+SCSYNTH_DLLEXPORT_C bool World_SendPacketWithContext(struct World *inWorld, int inSize, char *inData, ReplyFunc inFunc, void *inContext);
+SCSYNTH_DLLEXPORT_C int World_CopySndBuf(struct World *world, uint32 index, struct SndBuf *outBuf, bool onlyIfChanged, bool *didChange);
+SCSYNTH_DLLEXPORT_C int scprintf(const char *fmt, ...);
 
 #endif // _SC_WorldOptions_

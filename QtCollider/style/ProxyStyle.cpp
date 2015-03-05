@@ -44,6 +44,8 @@ int ProxyStyle::styleHint ( StyleHint hint, const QStyleOption * option,
       return Qt::LeftButton;
     case QStyle::SH_Slider_PageSetButtons:
       return Qt::NoButton;
+    case QStyle::SH_ScrollBar_Transient:
+      return 1;
     default:
       return QProxyStyle::styleHint( hint, option, widget, returnData );
   }

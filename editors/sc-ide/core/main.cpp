@@ -27,6 +27,7 @@
 #include "../widgets/lookup_dialog.hpp"
 #include "../widgets/code_editor/highlighter.hpp"
 #include "../widgets/style/style.hpp"
+#include "../../../QtCollider/hacks/hacks_mac.hpp"
 
 #include "yaml-cpp/node.h"
 #include "yaml-cpp/parser.h"
@@ -217,6 +218,7 @@ Main::Main(void) :
             mDocManager, SLOT(handleScLangMessage(QString,QString)));
 
     qApp->installEventFilter(this);
+    qApp->installNativeEventFilter(this);
 }
 
 void Main::quit() {
@@ -246,6 +248,28 @@ bool Main::eventFilter(QObject *object, QEvent *event)
 
     return QObject::eventFilter(object, event);
 }
+
+bool Main::nativeEventFilter(const QByteArray &, void * message, long *)
+{
+    bool result = false;
+
+#ifdef APPLE
+    if (QtCollider::Mac::IsCmdPeriodKeyDown(reinterpret_cast<void *>(message)))
+    {
+//        QKeyEvent event(QEvent::KeyPress, Qt::Key_Period, Qt::ControlModifier, ".");
+//        QApplication::sendEvent(this, &event);
+        mScProcess->stopMain(); // we completely bypass the shortcut handling
+        result = true;
+    }
+    else if (QtCollider::Mac::IsCmdPeriodKeyUp(reinterpret_cast<void *>(message)))
+    {
+        result = true;
+    }
+#endif 
+  
+    return result;
+}
+
 
 bool Main::openDocumentation(const QString & string)
 {

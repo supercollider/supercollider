@@ -48,7 +48,7 @@ public:
 public:
 
   static void setGlobalEventEnabled ( GlobalEvent ev, bool b ) {
-    int mask = _globalEventMask;
+    int mask = _globalEventMask.load();
     if(b)
       mask |= ev;
     else

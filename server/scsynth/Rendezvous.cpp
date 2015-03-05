@@ -32,7 +32,7 @@
 #include "Rendezvous.h"
 #include "SC_Export.h"
 
-SC_DLLEXPORT_C int scprintf(const char *fmt, ...);
+SCSYNTH_DLLEXPORT_C int scprintf(const char *fmt, ...);
 
 #ifndef __APPLE__
 static const char* kSCRendezvousServiceName = "SuperCollider";

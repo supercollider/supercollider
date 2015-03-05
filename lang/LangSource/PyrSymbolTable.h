@@ -28,8 +28,8 @@
 #define STRINGCHUNK 32000
 #define SYMBOLCHUNK 32000
 
-SC_DLLEXPORT_C PyrSymbol* getsym(const char *name);
-SC_DLLEXPORT_C PyrSymbol* findsym(const char *name);
+SCLANG_DLLEXPORT_C PyrSymbol* getsym(const char *name);
+SCLANG_DLLEXPORT_C PyrSymbol* findsym(const char *name);
 
 class SymbolSpace
 {

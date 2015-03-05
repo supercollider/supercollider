@@ -110,7 +110,7 @@ extern PyrClass *gClassList;
 static void endInterpreter(VMGlobals *g);
 
 
-SC_DLLEXPORT_C void runInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed)
+SCLANG_DLLEXPORT_C void runInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed)
 {
 		//postfl("->runInterpreter\n");
 #ifdef GC_SANITYCHECK

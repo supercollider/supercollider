@@ -107,11 +107,12 @@ void QcScope::paint1D( bool overlapped, QPainter & p )
   int c, f, s;
   QPointF pt1;
   QPointF pt2;
+  QPen pen;
+  pen.setWidth(0);  // width==0 means width 1 regardless of transformations
 
   for( c = 0; c < buffer.channels; c++ ) {
-
-    if( c < colors.count() ) p.setPen( colors[c] );
-    else p.setPen( QColor(255,255,255) );
+    pen.setColor(c < colors.count() ? colors[c] : QColor(255,255,255));
+    p.setPen(pen);
 
     float yCenter = area.height() * 0.5;
     if( !overlapped ) {
@@ -135,8 +136,9 @@ void QcScope::paint1D( bool overlapped, QPainter & p )
 
 void QcScope::paint2D( QPainter & p )
 {
-  if( colors.count() ) p.setPen( colors[0] );
-  else p.setPen( QColor(255,255,255) );
+  QPen pen;
+  pen.setWidth(0);  // width==0 means width 1 regardless of transformations
+  pen.setColor(colors.count() ? colors[0] : QColor(255,255,255));
 
   QRect area = rect();
   int minSize = qMin( area.width(), area.height() );
