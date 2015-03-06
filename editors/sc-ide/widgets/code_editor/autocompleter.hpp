@@ -26,16 +26,15 @@
 #include <QStack>
 #include <QKeyEvent>
 #include <QStringList>
-#include <QSortFilterProxyModel>
 #include <QPointer>
 
 #include "tokens.hpp"
+#include "completion_menu.hpp"
 
 namespace ScIDE {
 
 class ScCodeEditor;
 class TokenIterator;
-class CompletionMenu;
 class MethodCallWidget;
 
 namespace ScLanguage { struct Method; struct Class; }
