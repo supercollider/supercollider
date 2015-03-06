@@ -60,6 +60,7 @@ private slots:
     void onContentsChange(int pos, int removed, int added);
     void onCursorChanged();
     void onCompletionMenuFinished( int result );
+    void updateCompletionMenuInfo();
     void clearMethodCallStack();
     void hideWidgets();
 

@@ -509,6 +509,11 @@ void AutoCompleter::showCompletionMenu(bool forceShow)
     menu->popup( popupTargetRect );
 
     updateCompletionMenu(forceShow);
+
+    if (mCompletion.type == ClassCompletion) {
+        connect(menu, SIGNAL(itemChanged(int)), this, SLOT(updateCompletionMenuInfo()));
+        updateCompletionMenuInfo();
+    }
 }
 
 CompletionMenu * AutoCompleter::menuForClassCompletion(CompletionDescription const & completion,
@@ -747,6 +752,9 @@ void AutoCompleter::updateCompletionMenu(bool forceShow)
             menu->hide();
     } else
         menu->hide();
+
+    if (mCompletion.type == ClassCompletion)
+        updateCompletionMenuInfo();
 }
 
 void AutoCompleter::onCompletionMenuFinished( int result )
@@ -775,6 +783,22 @@ void AutoCompleter::onCompletionMenuFinished( int result )
     // It could be hidden because of current filter yielding 0 results.
 
     //quitCompletion("cancelled");
+}
+
+void AutoCompleter::updateCompletionMenuInfo()
+{
+    DocNode *node = parseHelpClass(findHelpClass(mCompletion.menu->currentText()));
+    if (!node) {
+        mCompletion.menu->addInfo(QString());
+        return;
+    }
+
+    QString infos = QString("<h4>%1</h4>%2<h4>Examples</h4><pre><code>%3")
+                    .arg(parseClassElement(node, "SUMMARY"))
+                    .arg(parseClassElement(node, "DESCRIPTION"))
+                    .arg(parseClassElement(node, "EXAMPLES"));
+    mCompletion.menu->addInfo(infos);
+    doc_node_free_tree(node);
 }
 
 void AutoCompleter::triggerMethodCallAid( bool explicitTrigger )
