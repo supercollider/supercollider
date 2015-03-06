@@ -26,6 +26,7 @@
 #include "../../core/sc_introspection.hpp"
 #include "../../core/sc_process.hpp"
 #include "../../core/main.hpp"
+#include "../../core/util/standard_dirs.hpp"
 
 #include "yaml-cpp/node.h"
 #include "yaml-cpp/parser.h"
@@ -1191,6 +1192,51 @@ QRect AutoCompleter::globalCursorRect( int cursorPosition )
     QRect r = mEditor->cursorRect(cursor);
     r.moveTopLeft( mEditor->viewport()->mapToGlobal( r.topLeft() ) );
     return r;
+}
+
+QString AutoCompleter::findHelpClass(QString klass)
+{
+    QString file = standardDirectory(ScResourceDir)
+                                    .append("/HelpSource/Classes/")
+                                    .append(klass).append(".schelp");
+    if (QFile::exists(file))
+        return file;
+
+    return QString();
+}
+
+DocNode * AutoCompleter::parseHelpClass(QString file)
+{
+    if (file.isEmpty())
+        return NULL;
+
+    return scdoc_parse_file(file.toStdString().c_str(), 0);
+}
+
+QString AutoCompleter::parseClassElement(DocNode *node, QString element)
+{
+    if (QString(node->id) == element) {
+        QString str;
+        parseClassNode(node, &str);
+        return str;
+    }
+
+    for (int i = 0; i < node->n_childs; i++) {
+        QString ret = parseClassElement(node->children[i], element);
+        if (!ret.isEmpty())
+            return ret;
+    }
+
+    return QString();
+}
+
+void AutoCompleter::parseClassNode(DocNode *node, QString *str)
+{
+    if (node->text)
+        str->append(node->text);
+
+    for (int i = 0; i < node->n_childs; i++)
+        parseClassNode(node->children[i], str);
 }
 
 } // namespace ScIDE
