@@ -31,6 +31,8 @@
 #include "tokens.hpp"
 #include "completion_menu.hpp"
 
+#include "SCDoc/SCDoc.h"
+
 namespace ScIDE {
 
 class ScCodeEditor;
@@ -130,6 +132,10 @@ private:
 
     QString tokenText( TokenIterator & it );
     QRect globalCursorRect( int cursorPosition );
+    static QString findHelpClass(QString klass);
+    static DocNode * parseHelpClass(QString file);
+    static QString parseClassElement(DocNode *node, QString element);
+    static void parseClassNode(DocNode *node, QString *str);
 
     // data
 
