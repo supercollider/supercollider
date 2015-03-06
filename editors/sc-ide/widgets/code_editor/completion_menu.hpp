@@ -25,6 +25,7 @@ public:
 
     CompletionMenu(QWidget * parent = 0);
     void addItem(QStandardItem * item);
+    void addInfo(QString info);
     void setCompletionRole(int role);
     QString currentText();
     const ScLanguage::Method * currentMethod();
@@ -39,8 +40,12 @@ private:
     QListView *mListView;
     QStandardItemModel *mModel;
     QSortFilterProxyModel *mFilterModel;
+    QTextEdit *mTextEdit;
     QHBoxLayout *mLayout;
     int mCompletionRole;
+
+signals:
+    void itemChanged(int item);
 };
 
 } // namespace ScIDE
