@@ -23,7 +23,6 @@
 #include "autocompleter.hpp"
 #include "sc_editor.hpp"
 #include "tokens.hpp"
-#include "../util/popup_widget.hpp"
 #include "../../core/sc_introspection.hpp"
 #include "../../core/sc_process.hpp"
 #include "../../core/main.hpp"
@@ -33,10 +32,6 @@
 
 #include <QDebug>
 #include <QLabel>
-#include <QListView>
-#include <QStandardItemModel>
-#include <QStandardItem>
-#include <QHBoxLayout>
 #include <QScrollBar>
 #include <QApplication>
 #include <QDesktopWidget>
@@ -63,119 +58,6 @@ static QString incrementedString( const QString & other )
     str[pos] = QChar( str[pos].unicode() + 1 );
     return str;
 }
-
-class CompletionMenu : public PopUpWidget
-{
-public:
-    enum DataRole {
-        CompletionRole = Qt::UserRole,
-        MethodRole
-    };
-
-    CompletionMenu( QWidget * parent = 0 ):
-        PopUpWidget(parent),
-        mCompletionRole( Qt::DisplayRole )
-    {
-        mModel = new QStandardItemModel(this);
-        mFilterModel = new QSortFilterProxyModel(this);
-        mFilterModel->setSourceModel(mModel);
-
-        mListView = new QListView();
-        mListView->setModel(mFilterModel);
-        mListView->setFrameShape(QFrame::NoFrame);
-
-        QHBoxLayout *layout = new QHBoxLayout(this);
-        layout->addWidget(mListView);
-        layout->setContentsMargins(1,1,1,1);
-
-        connect(mListView, SIGNAL(clicked(QModelIndex)), this, SLOT(accept()));
-
-        mListView->setFocus(Qt::OtherFocusReason);
-
-        resize(200, 200);
-
-        parent->installEventFilter(this);
-    }
-
-    void addItem( QStandardItem * item )
-    {
-        mModel->appendRow( item );
-    }
-
-    void setCompletionRole( int role )
-    {
-        mFilterModel->setFilterRole(role);
-        mFilterModel->setSortRole(role);
-        mCompletionRole = role;
-    }
-
-    QString currentText()
-    {
-        QStandardItem *item =
-            mModel->itemFromIndex (
-                mFilterModel->mapToSource (
-                    mListView->currentIndex()));
-        if (item)
-            return item->data(mCompletionRole).toString();
-
-        return QString();
-    }
-
-    const ScLanguage::Method * currentMethod()
-    {
-        QStandardItem *item =
-            mModel->itemFromIndex (
-                mFilterModel->mapToSource (
-                    mListView->currentIndex()));
-
-        return item ? item->data(MethodRole).value<const ScLanguage::Method*>() : 0;
-    }
-
-    QString exec( const QRect & rect )
-    {
-        QString result;
-        QPointer<CompletionMenu> self = this;
-        if (PopUpWidget::exec(rect)) {
-            if (!self.isNull())
-                result = currentText();
-        }
-        return result;
-    }
-
-    QSortFilterProxyModel *model() { return mFilterModel; }
-
-    QListView *view() { return mListView; }
-
-protected:
-    virtual bool eventFilter( QObject * obj, QEvent * ev )
-    {
-        if (isVisible() && obj == parentWidget() && ev->type() == QEvent::KeyPress)
-        {
-            QKeyEvent *kev = static_cast<QKeyEvent*>(ev);
-            switch(kev->key())
-            {
-            case Qt::Key_Up:
-            case Qt::Key_Down:
-            case Qt::Key_PageUp:
-            case Qt::Key_PageDown:
-                QApplication::sendEvent( mListView, ev );
-                return true;
-            case Qt::Key_Return:
-            case Qt::Key_Enter:
-                accept();
-                return true;
-            }
-        }
-
-        return PopUpWidget::eventFilter(obj, ev);
-    }
-
-private:
-    QListView *mListView;
-    QStandardItemModel *mModel;
-    QSortFilterProxyModel *mFilterModel;
-    int mCompletionRole;
-};
 
 class MethodCallWidget : public QWidget
 {
