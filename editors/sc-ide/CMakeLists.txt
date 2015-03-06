@@ -92,6 +92,7 @@ set ( ide_src
     core/settings/theme.cpp
     core/session_manager.cpp
     core/util/standard_dirs.cpp
+    core/util/scdoc_log.cpp
     widgets/cmd_line.cpp
     widgets/doc_list.cpp
     widgets/documents_dialog.cpp
@@ -127,6 +128,10 @@ set ( ide_src
     ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.cpp
 
     ${CMAKE_SOURCE_DIR}/common/SC_TextUtils.cpp
+
+    ${CMAKE_SOURCE_DIR}/SCDoc/SCDoc.cpp
+    ${CMAKE_SOURCE_DIR}/SCDoc/SCDoc.tab.cpp
+    ${CMAKE_SOURCE_DIR}/SCDoc/lex.scdoc.cpp
 )
 
 set( ide_forms
@@ -167,6 +172,8 @@ include_directories(${CMAKE_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/widgets/util)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/widgets)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
+include(${CMAKE_SOURCE_DIR}/SCDoc/CMakeLists.txt)
 
 # Translation files
 set( translation_src
