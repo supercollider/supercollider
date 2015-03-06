@@ -18,8 +18,14 @@ CompletionMenu::CompletionMenu(QWidget * parent):
     mListView->setModel(mFilterModel);
     mListView->setFrameShape(QFrame::NoFrame);
 
+    mTextEdit = new QTextEdit();
+    mTextEdit->setFrameShape(QFrame::NoFrame);
+    mTextEdit->setReadOnly(true);
+    mTextEdit->setFixedSize(0, 200);
+
     mLayout = new QHBoxLayout(this);
     mLayout->addWidget(mListView);
+    mLayout->addWidget(mTextEdit);
     mLayout->setContentsMargins(1,1,1,1);
 
     connect(mListView, SIGNAL(clicked(QModelIndex)), this, SLOT(accept()));
@@ -35,6 +41,12 @@ void CompletionMenu::addItem(QStandardItem * item)
 {
     mModel->appendRow(item);
     mListView->setFixedWidth(mListView->sizeHintForColumn(0));
+}
+
+void CompletionMenu::addInfo(QString info)
+{
+    mTextEdit->setText(info);
+    mTextEdit->setFixedSize(500, 400);
 }
 
 void CompletionMenu::setCompletionRole(int role)
@@ -101,6 +113,13 @@ bool CompletionMenu::eventFilter(QObject * obj, QEvent * ev)
         case Qt::Key_PageUp:
         case Qt::Key_PageDown:
             QApplication::sendEvent(mListView, ev);
+
+            static int oldIndex = 0;
+            if (oldIndex != mListView->currentIndex().row()) {
+                emit itemChanged(mListView->currentIndex().row());
+                oldIndex = mListView->currentIndex().row();
+            }
+
             return true;
         case Qt::Key_Return:
         case Qt::Key_Enter:
