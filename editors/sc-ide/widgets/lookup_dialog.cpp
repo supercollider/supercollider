@@ -52,6 +52,7 @@ GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
     mPreviewDocument = new Document(false);
     mPreviewEditor = new ScCodeEditor(mPreviewDocument);
     mPreviewEditor->setReadOnly(true);
+    mPreviewEditor->setVisible(false);
   
     QVBoxLayout *layout = new QVBoxLayout;
     layout->setContentsMargins(0,0,0,0);
@@ -259,12 +260,16 @@ void LookupDialog::performQuery()
     mIsPartialQuery = false;
     if (queryString[0].isUpper()) {
         bool success = performClassQuery(queryString);
+        mPreviewEditor->setVisible(success);
+
         if (success) {
             focusResults();
             return;
         }
     } else {
         bool success = performMethodQuery(queryString);
+        mPreviewEditor->setVisible(success);
+
         if (success) {
             focusResults();
             return;
@@ -272,6 +277,7 @@ void LookupDialog::performQuery()
     }
 
     bool success = performPartialQuery(queryString);
+    mPreviewEditor->setVisible(success);
     if (success)
         focusResults();
 }
