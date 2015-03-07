@@ -41,21 +41,21 @@ METHOD:: style
 Sets the style of the view.
 
 argument:: val
-An link::Classes/Integer:: from 0 to 1. 0 = colored bar; 1 = LED style (see link::#-stepWidth::)
+An link::Classes/QLevelIndicatorStyle:: \continuous or \led (see link::#-stepWidth::)
 
 code::
 (
 w = Window().front.layout_(
 	HLayout(
-		LevelIndicator().style_(0).value_(1/3),
-		LevelIndicator().style_(1).value_(2/3),
+		LevelIndicator().style_(\continuous).value_(1/3),
+		LevelIndicator().style_(\led).value_(2/3),
 	)
 )
 )
 ::
 
 METHOD:: stepWidth
-The width of each led light, for style 1.
+The width of each led light, for \led.
 
 argument:: val
 An positive link::Classes/Integer::.
@@ -63,16 +63,16 @@ An positive link::Classes/Integer::.
 code::
 (
 w = Window().front.layout_(HLayout(
-	LevelIndicator().style_(1).value_(0.8).stepWidth_(1),
-	LevelIndicator().style_(1).value_(0.8).stepWidth_(3),
-	LevelIndicator().style_(1).value_(0.8).stepWidth_(10),
-	LevelIndicator().style_(1).value_(0.8).stepWidth_(50),
+	LevelIndicator().style_(\led).value_(0.8).stepWidth_(1),
+	LevelIndicator().style_(\led).value_(0.8).stepWidth_(3),
+	LevelIndicator().style_(\led).value_(0.8).stepWidth_(10),
+	LevelIndicator().style_(\led).value_(0.8).stepWidth_(50),
 ));
 )
 ::
 
 METHOD:: numSteps
-The number of steps used in style 1.
+The number of steps used in \led style.
 
 argument:: val
 An positive link::Classes/Integer::.
@@ -81,7 +81,7 @@ code::
 (
 a = LevelIndicator(bounds:Rect(10, 10, 80, 400)).front();
 a.value = 1;
-a.style = 1;
+a.style = \led;
 a.numSteps = 4;
 )
 ::
@@ -136,8 +136,8 @@ A link::Classes/Boolean::. By default the peak is not drawn.
 code::
 (
 w = Window().front().layout_(HLayout(
-	LevelIndicator().style_(0).value_(0.75).drawsPeak_(true).peakLevel_(0.9),
-	LevelIndicator().style_(1).value_(0.75).drawsPeak_(true).peakLevel_(0.9)
+	LevelIndicator().style_(\continuous).value_(0.75).drawsPeak_(true).peakLevel_(0.9),
+	LevelIndicator().style_(\led).value_(0.75).drawsPeak_(true).peakLevel_(0.9)
 ))
 )
 ::
@@ -151,10 +151,10 @@ A link::Classes/Float::.
 code::
 (
 w = Window().front().layout_(HLayout(
-	LevelIndicator().style_(0).value_(0.1).drawsPeak_(true).peakLevel_(0.3),
-	LevelIndicator().style_(0).value_(0.1).drawsPeak_(true).peakLevel_(0.5),
-	LevelIndicator().style_(0).value_(0.1).drawsPeak_(true).peakLevel_(0.7),
-	LevelIndicator().style_(0).value_(0.1).drawsPeak_(true).peakLevel_(0.9),
+	LevelIndicator().style_(\continuous).value_(0.1).drawsPeak_(true).peakLevel_(0.3),
+	LevelIndicator().style_(\continuous).value_(0.1).drawsPeak_(true).peakLevel_(0.5),
+	LevelIndicator().style_(\continuous).value_(0.1).drawsPeak_(true).peakLevel_(0.7),
+	LevelIndicator().style_(\continuous).value_(0.1).drawsPeak_(true).peakLevel_(0.9),
 ))
 )
 ::
@@ -169,7 +169,7 @@ A link::Classes/Color::.
 
 code::
 (
-l = LevelIndicator(bounds:Rect(100, 100, 100, 400)).front().value_(1).style_(1);
+l = LevelIndicator(bounds:Rect(100, 100, 100, 400)).front().value_(1).style_(\led);
 l.meterColor = Color.blue(0.9);
 l.warningColor = Color.blue(0.7);
 l.criticalColor = Color.blue(0.5);
@@ -222,9 +222,8 @@ a.critical = -3.dbamp;
 // optionally show peak level
 a.drawsPeak = true;
 
-// style 1 is led
 (
-a.style = 1;
+a.style = \led;
 a.stepWidth = 3;
 )
 
@@ -242,7 +241,7 @@ a.numTicks = 11; // includes 0;
 
 // Single blinking square level indicator
 (
-a.style = 1;
+a.style = \led;
 a.numTicks = 0;
 a.drawsPeak = false;
 a.bounds = a.bounds.resizeTo(90, 90);

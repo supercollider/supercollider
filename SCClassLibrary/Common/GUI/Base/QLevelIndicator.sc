@@ -22,7 +22,7 @@ LevelIndicator : View {
 	}
 
 	style_ {arg val;
-		this.setProperty(\style, val);
+		this.setProperty(\style, QLevelIndicatorStyle(val));
 	}
 
 	stepWidth_{arg val;

@@ -30,7 +30,7 @@ QcLevelIndicator::QcLevelIndicator() :
   QtCollider::Style::Client(this),
   _value( 0.f ), _warning(0.6), _critical(0.8),
   _peak( 0.f ), _drawPeak( false ),
-  _ticks(0), _majorTicks(0), _stepWidth(10), _style(0),
+  _ticks(0), _majorTicks(0), _stepWidth(10), _style(LevelIndicatorStyle::Continuous),
   _clipped(false),
   _meterColor(0, 255, 0), _warningColor(255, 255, 0), _criticalColor(255,100,0)
 {
@@ -96,7 +96,7 @@ void QcLevelIndicator::paintEvent( QPaintEvent *e )
   p.setRenderHint(QPainter::Antialiasing, true);
 
   switch (_style) {
-    case 0: {
+    case Continuous: {
       r.setHeight( _value * length );
       p.fillRect( r, valueColor(colorValue) );
       if( _drawPeak && _peak > 0.f ) {
@@ -112,7 +112,7 @@ void QcLevelIndicator::paintEvent( QPaintEvent *e )
 		
       break;
     }
-    case 1: {
+    case LED: {
       float ledBaseline = 0;
       float spaceWidth = _stepWidth <= 3 ? 1 : 2;
       float cornerWidth = _stepWidth <= 3 ? 0 : 1.2;
@@ -151,6 +151,7 @@ void QcLevelIndicator::paintEvent( QPaintEvent *e )
         
       break;
     }
+    default: break;
   }
   
   p.setRenderHint(QPainter::Antialiasing, false);
