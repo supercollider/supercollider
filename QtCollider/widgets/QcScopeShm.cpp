@@ -50,8 +50,6 @@ QcScopeShm::QcScopeShm() :
   setAutoFillBackground(false);
 
   setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
-  int ratio = windowHandle()->devicePixelRatio();
-  QGLWidget::resizeGL(width() * ratio, height() * ratio);
   
   timer = new QTimer( this );
   timer->setInterval( 50 );

@@ -27,7 +27,6 @@
 #include <SC_Types.h>
 
 #include <QWidget>
-#include <QGLWidget>
 
 // FIXME: Due to Qt bug #22829, moc can not process headers that include
 // boost/type_traits/detail/has_binary_operator.hp from boost 1.48, so
@@ -40,7 +39,7 @@ namespace QtCollider
 
 using QtCollider::ScopeShm;
 
-class QcScopeShm : public QGLWidget, QcHelper
+class QcScopeShm : public QWidget, QcHelper
 {
   Q_OBJECT
   Q_PROPERTY( int serverPort READ serverPort WRITE setServerPort );
