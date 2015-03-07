@@ -1,6 +1,6 @@
 ScopeView : View {
 	var <bufnum;
-	var <xZoom=1.0, <yZoom=1.0, <x=0.0, <y=0.0;
+	var <xZoom=1.0, <yZoom=1.0, <x=0.0, <y=0.0, <fill=true;
 	var <waveColors;
 
 	*qtClass { ^'QcScopeShm' }
@@ -44,6 +44,12 @@ ScopeView : View {
 	y_ { arg aFloat;
 		y = aFloat;
 		this.setProperty( \yOffset, aFloat );
+	}
+
+	fill_ {
+		arg aFill;
+		fill = aFill;
+		this.setProperty( \fill, aFill );
 	}
 
 	waveColors_ { arg aColorArray;
