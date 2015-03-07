@@ -28,8 +28,6 @@
 #include <QWidget>
 #include <QTimer>
 
-static const double PI = 3.14159265358979323846264338327950288419717;
-
 class QcLevelIndicator : public QWidget, QcHelper, QtCollider::Style::Client
 {
   Q_OBJECT
