@@ -86,7 +86,7 @@ private slots:
     void onAccepted(QModelIndex);
 
 private:
-    QStandardItemModel * modelForClass(const QString & className);
+    QStandardItemModel * modelForClass(const QString & className, const QString & methodName = QString());
     QStandardItemModel * modelForMethod(const QString & methodName);
     QStandardItemModel * modelForPartialQuery(const QString & queryString);
     bool performClassQuery(const QString & className);
