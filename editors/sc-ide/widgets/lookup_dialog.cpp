@@ -53,6 +53,7 @@ GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
     mPreviewEditor = new ScCodeEditor(mPreviewDocument);
     mPreviewEditor->setReadOnly(true);
     mPreviewEditor->setVisible(false);
+    mPreviewEditor->setTabChangesFocus(true);
   
     QVBoxLayout *layout = new QVBoxLayout;
     layout->setContentsMargins(0,0,0,0);
