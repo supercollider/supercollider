@@ -41,7 +41,7 @@ endif()
 
 
 if (FFT_GREEN)
-	list(APPEND libsupernova_src ../../common/fftlib.c)
+	list(APPEND libsupernova_src ${CMAKE_SOURCE_DIR}/common/fftlib.c)
 endif()
 
 if(WIN32)

@@ -80,7 +80,7 @@ list(APPEND plugins UIUGens)
 
 if (WIN32)
     if(MSVC)
-        include_directories (../../platform/windows/compat_stuff) # for stdbool.h
+        include_directories (${CMAKE_SOURCE_DIR}/platform/windows/compat_stuff) # for stdbool.h
     endif()
 endif()
 

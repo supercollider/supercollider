@@ -25,7 +25,7 @@ if(${CMAKE_COMPILER_IS_GNUCXX})
 endif()
 
 if(APPLE)
-    set(Icons ../../icons/sc_ide.icns)
+    set(Icons ${CMAKE_SOURCE_DIR}/icons/sc_ide.icns)
     set_source_files_properties(${Icons} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
     SET(MACOSX_BUNDLE_ICON_FILE sc_ide.icns)
     list(APPEND RES_FILES ${Icons})
