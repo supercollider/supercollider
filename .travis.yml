@@ -33,7 +33,7 @@ before_script:
  - ifmac cmake -DCMAKE_PREFIX_PATH=`brew --prefix qt5` -DSC_QT=1 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 .. --debug-output
  - iflin cmake -DSC_EL=no -DCMAKE_PREFIX_PATH=$QT_PREFIX -DCMAKE_INSTALL_PREFIX:PATH=$PWD/Install -DCMAKE_BUILD_TYPE=Release -DSC_QT=1 .. --debug-output
 # some paths
- - ifmac export SCLANG=$TRAVIS_BUILD_DIR/BUILD/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
+ - ifmac export SCLANG=$TRAVIS_BUILD_DIR/BUILD/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang.app/Contents/MacOS/sclang
  - iflin export SCLANG=$TRAVIS_BUILD_DIR/BUILD/Install/bin/sclang
 
 script:
