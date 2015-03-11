@@ -163,7 +163,13 @@ NdefParamGui : EnvirGui {
 	}
 
 	setFunc { |key|
-		^{ |sl| object.set(key, sl.value) }
+		^{ |sl|
+			if(key == 'number-source') {
+				object.source = sl.value
+			} {
+				object.set(key, sl.value)
+			}
+		}
 	}
 
 	clearField { |index|

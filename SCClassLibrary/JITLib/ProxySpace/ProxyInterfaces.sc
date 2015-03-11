@@ -108,6 +108,12 @@ StreamControl : AbstractPlayControl {
 		^true
 	}
 
+	controlNames {
+		^if(source.isNumber or: { source.isArray }) {
+			ControlName('number-source', defaultValue:source)
+		}
+	}
+
 }
 
 
