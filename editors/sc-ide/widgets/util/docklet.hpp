@@ -21,12 +21,26 @@
 #ifndef SCIDE_WIDGETS_UTIL_DOCK_WIDGET_TITLE_BAR_HPP_INCLUDED
 #define SCIDE_WIDGETS_UTIL_DOCK_WIDGET_TITLE_BAR_HPP_INCLUDED
 
-#include <QWidget>
-#include <QToolButton>
 #include <QAction>
 #include <QDockWidget>
+#include <QMouseEvent>
+#include <QToolButton>
+#include <QWidget>
 
 namespace ScIDE {
+
+class DocketToolButton : public QToolButton
+{
+    Q_OBJECT
+
+public:
+    explicit DocketToolButton(QWidget * parent = nullptr);
+
+private:
+    // overrides to hide unwanted effects
+    void mouseDoubleClickEvent(QMouseEvent * event) override final;
+    void mousePressEvent(QMouseEvent * event)       override final;
+};
 
 class DockletToolBar : public QWidget
 {

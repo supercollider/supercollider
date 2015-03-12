@@ -118,14 +118,21 @@ else()
 	set (LIBSCSYNTH_TYPE STATIC)
 endif()
 
+file(GLOB_RECURSE all_headers ./*.h*)
+
 if (FINAL_BUILD)
-	CREATE_FINAL_FILE(libscsynth_final.cpp ${scsynth_sources})
+	CREATE_FINAL_FILE(libscsynth_final.cpp ${scsynth_sources} ${all_headers})
 	add_library(libscsynth ${LIBSCSYNTH_TYPE} libscsynth_final.cpp)
 else()
-	add_library(libscsynth ${LIBSCSYNTH_TYPE} ${scsynth_sources})
+	add_library(libscsynth ${LIBSCSYNTH_TYPE} ${scsynth_sources} ${all_headers})
 endif()
 
-target_compile_definitions(libscsynth PRIVATE BUILDING_SUPERCOLLIDER)
+
+if(LIBSCSYNTH)
+        target_compile_definitions(libscsynth PRIVATE   BUILDING_SCSYNTH)
+        target_compile_definitions(libscsynth INTERFACE BUILDING_SCSYNTH)
+endif()
+
 target_compile_definitions(libscsynth PUBLIC  SC_MEMORY_ALIGNMENT=32)
 
 target_link_libraries(libscsynth tlsf)
@@ -183,8 +190,9 @@ if (WIN32)
 	target_link_libraries(libscsynth wsock32 ws2_32 winmm)
 endif()
 
-
+if(NOT WIN32)
 set_property(TARGET libscsynth PROPERTY OUTPUT_NAME scsynth)
+endif()
 
 if (LIBSCSYNTH)
 	# These two properties are ABI version info, not sc version:
@@ -205,9 +213,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	target_link_libraries(libscsynth rt)
 endif()
 
-file(GLOB_RECURSE all_headers ../../*hpp)
-
-add_executable(scsynth scsynth_main.cpp ${all_headers})
+add_executable(scsynth scsynth_main.cpp)
 target_link_libraries(scsynth libscsynth)
 
 if (PTHREADS_FOUND)
@@ -232,13 +238,13 @@ else()
 endif()
 
 if(APPLE)
-    if(CMAKE_GENERATOR MATCHES Xcode)
-        set_property(TARGET scsynth PROPERTY RUNTIME_OUTPUT_DIRECTORY_DEBUG   "${CMAKE_BINARY_DIR}/editors/sc-ide/Debug/${ide_name}.app/Contents/Resources/")
-        set_property(TARGET scsynth PROPERTY RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/editors/sc-ide/Release/${ide_name}.app/Contents/Resources/")
-    else()
-        set_property(TARGET scsynth
-                     PROPERTY RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/editors/sc-ide/${ide_name}.app/Contents/Resources/")
-    endif()
+	# TODO allow apple users to install to fhs-ish path if INSTALL_FHS option is enabled
+	# determines the app name and app install location (scappbundlename, scappdir):
+	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
+	install(TARGETS ${INSTALL_TARGETS}
+			RUNTIME DESTINATION "${scappbindir}"
+			LIBRARY DESTINATION "${scappauxresourcesdir}"
+			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE OWNER_WRITE)
 elseif(WIN32)
 	install(TARGETS ${INSTALL_TARGETS}
 			DESTINATION "SuperCollider"

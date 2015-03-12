@@ -40,7 +40,7 @@
 // =====================================================================
 
 // TODO: move locks & thread out of the header, possibly using pimpl
-class SC_DLLEXPORT SC_TerminalClient : public SC_LanguageClient
+class SCLANG_DLLEXPORT SC_TerminalClient : public SC_LanguageClient
 {
 public:
 	enum
@@ -176,7 +176,7 @@ private:
 #ifndef _WIN32
 	boost::asio::posix::stream_descriptor   mStdIn;
 #else
-	boost::asio::windows::stream_descriptor mStdIn;
+	boost::asio::windows::object_handle mStdIn;
 #endif
 	void startInputRead();
 	void onInputRead(const boost::system::error_code& error, std::size_t bytes_transferred);

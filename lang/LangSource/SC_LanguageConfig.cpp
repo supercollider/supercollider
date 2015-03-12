@@ -31,7 +31,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
-#ifdef SC_WIN32
+#ifdef _WIN32
 # include "SC_Win32Utils.h"
 #else
 # include <sys/param.h>

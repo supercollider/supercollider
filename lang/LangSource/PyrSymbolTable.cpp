@@ -27,7 +27,7 @@
 #include "VMGlobals.h"
 #include "Hash.h"
 
-SC_DLLEXPORT_C PyrSymbol* getsym(const char *name)
+SCLANG_DLLEXPORT_C PyrSymbol* getsym(const char *name)
 {
 	PyrSymbol* symbol = gMainVMGlobals->symbolTable->Make(name);
 	if (!symbol) {
@@ -37,7 +37,7 @@ SC_DLLEXPORT_C PyrSymbol* getsym(const char *name)
 	return symbol;
 }
 
-SC_DLLEXPORT_C PyrSymbol* getmetasym(const char *name)
+SCLANG_DLLEXPORT_C PyrSymbol* getmetasym(const char *name)
 {
 	char str[256];
 	strcpy(str, "Meta_");
@@ -45,7 +45,7 @@ SC_DLLEXPORT_C PyrSymbol* getmetasym(const char *name)
 	return getsym(str);
 }
 
-SC_DLLEXPORT_C PyrSymbol* findsym(const char *name)
+SCLANG_DLLEXPORT_C PyrSymbol* findsym(const char *name)
 {
 	PyrSymbol* symbol = gMainVMGlobals->symbolTable->Find(name);
 	return symbol;

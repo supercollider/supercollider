@@ -35,10 +35,10 @@
 // SC_LanguageClient - abstract sclang client.
 // =====================================================================
 
-SC_DLLEXPORT class SC_LanguageClient * createLanguageClient(const char * name);
-SC_DLLEXPORT void destroyLanguageClient(class SC_LanguageClient *);
+SCLANG_DLLEXPORT class SC_LanguageClient * createLanguageClient(const char * name);
+SCLANG_DLLEXPORT void destroyLanguageClient(class SC_LanguageClient *);
 
-class SC_DLLEXPORT SC_LanguageClient
+class SCLANG_DLLEXPORT SC_LanguageClient
 {
 public:
 	struct Options
@@ -68,8 +68,8 @@ public:
 	static void unlockInstance();
 
 	// return the singleton instance
-	static SC_LanguageClient* instance() { return gInstance; }
-	static SC_LanguageClient* lockedInstance() { lockInstance(); return gInstance; }
+	static SC_LanguageClient* instance();
+	static SC_LanguageClient* lockedInstance() { lockInstance(); return instance(); }
 
 	// initialize language runtime
 	void initRuntime(const Options& opt=Options());
@@ -151,7 +151,6 @@ private:
 
 private:
 	struct HiddenLanguageClient * mHiddenClient;
-	static SC_LanguageClient*	gInstance;
 };
 
 // =====================================================================
