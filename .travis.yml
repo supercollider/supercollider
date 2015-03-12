@@ -84,3 +84,11 @@ deploy:
 notifications:
  on_success: change
  on_failure: change
+ 
+webhooks:
+ urls:
+   - https://webhooks.gitter.im/e/51b9b53ca50a7bfca97d
+ on_success: change
+ on_failure: always
+  
+ 

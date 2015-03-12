@@ -104,4 +104,21 @@ this.preProcessor = { |code| code.replace("SinOsc", "Saw") };
 preProcessor = nil; // reset to nil.
 ::
 
+method::a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z
+
+Predefined interpreter variables for interactive programming.
+
+code::
+// typical usage
+a = 4;
+b = 3;
+b = b + a;
+
+// some sound
+a = Synth(\default);
+g = fork { loop { 0.1.wait; a.set(\freq, 200 + 20.0.rand2.postln) } };
+g.stop; a.free;
+::
+
+note::Use with care, as these effectively represent global state. The variable code::s:: is by convention bound to the default server (link::Classes/Server::) and should not be changed.::
 
