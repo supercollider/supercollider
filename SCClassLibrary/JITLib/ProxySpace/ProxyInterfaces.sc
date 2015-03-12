@@ -68,6 +68,7 @@ AbstractPlayControl {
 StreamControl : AbstractPlayControl {
 
 	var stream, <clock;
+	var controlName;
 
 	playToBundle { | bundle |
 		// no latency (latency is in stream already)
@@ -79,6 +80,9 @@ StreamControl : AbstractPlayControl {
 		clock = proxy.clock;
 		paused = proxy.paused;
 		stream = source.buildForProxy(proxy, channelOffset, orderIndex);
+		if(source.isNumber) {
+			controlName = ControlName(proxy.key ?? { \value }, orderIndex, \control, source);
+		};
 		^true;
 	}
 
@@ -96,6 +100,13 @@ StreamControl : AbstractPlayControl {
 		}
 	}
 	stop { stream.stop }
+
+	// Numeric StreamControls must provide a GUI-able control
+	controlNames {
+		if(controlName.notNil) {
+			^[controlName]
+		} { ^nil };
+	}
 
 	copyState { |control|
 		// stream can't be copied.
