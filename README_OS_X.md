@@ -1,4 +1,4 @@
-Supercollider 3.6 for OS X
+Supercollider 3.7 for OS X
 ==========================
 
 
@@ -6,10 +6,9 @@ Table of contents
 -----------------
 
  * Introduction
- * NOTE: OS X Mavericks (10.9)
+ * The SC 3.7 release
  * Obtaining the SC source
- * The SC 3.6.6 release
- * Quick steps (Read this if nothing else!)
+ * **Quick steps**
  * Generic build instructions
  * Frequently used cmake settings
  * Using cmake with Xcode or QtCreator
@@ -18,7 +17,6 @@ Table of contents
  * Standalones
  * On libsndfile
  * Special characters on mac
- * Problem getting Quarks?
  * Outro
 
 
@@ -29,29 +27,37 @@ This is the Mac OS X version of James McCartney's SuperCollider synthesis engine
 (scsynth) and programming language (sclang). http://supercollider.github.io/
 
 The help files contain a lot of useful information and tutorials for getting
-started. If a help-window is not visible when you open SC, try to access if from
-the menu (Help/Show Help Browser). If you are not using an editor, open the file 
-"Help.html" in the user application support folder as an entry point:
+started. If you are using the SuperCollider ide, you can find the documentation using Cmd+D, or via the Help -> 	Show Help Browser menu.
 
-`/Users/<username>/Library/Application Support/SuperCollider/Help.html`
+In a non-IDE context, you must generate the help files first, by running:
+`SCDoc.indexAllDocuments`
+Help files will be created in the app support dir (on Mac, `~/Library/Application Support/SuperCollider/Help`)
 
 To get further information on SuperCollider usage or development, you should subscribe 
 to the mailing lists:
 
 http://www.beast.bham.ac.uk/research/sc_mailing_lists.shtml
 
+The SC 3.7 release
+--------------------
 
-NOTE: OS X Mavericks (10.9)
----------------------------
+The release of SC v3.7 was built on OS X Mavericks (10.9.5) using the following tools and dependencies:
 
-The 3.6.6-build of SC has not been adjusted to Mavericks yet. Please expect some rough
-edges. Most importantly: "App Nap", a new energy saving feature for background applications,
-causes the SC language interpreter to slow down dramatically after a while, if no sc-gui
-window is in the foreground. It is therefore strongly recommended to switch off App Nap
-for SuperCollider. The easiest way to do this, is to right-click SuperCollider.app and
-select `Get Info` from the popup menu. Then choose `Prevent App Nap` in the list of start
-options.
+  * Cmake 2.8.11
+  * Xcode 6.1, using apple clang v6.0
+  * Qt libraries 5.4.1 as provided by homebrew
 
+SuperCollider 3.7 has been verified to build with Qt versions back to 5.2 (possibly earlier) - however, there is risk of SC-affecting bugs in prior releases of Qt.
+
+SC 3.7 mac was built using travis-ci with following cmake arguments:
+
+    cmake -DCMAKE_PREFIX_PATH=`brew --prefix qt5` -DSC_QT=1 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 .. --debug-output`
+
+These are specified in the .travis.yml file - this file represents a known-good set of steps to build in a clean development environment.
+
+To produce a 3.7 release build, sync to the `Version-3.7` tag in github.  Prerelease-ready builds will be produced from `Version-3.7-beta` series of tags. 
+
+***Note**: the Version-3.7 tag will not exist until a final official build has been released.*
 
 Obtaining the SC source
 -----------------------
@@ -62,210 +68,110 @@ Get a copy of the source code with:
 
 `git clone --recursive https://github.com/supercollider/supercollider.git`
 
-Snapshots of release-versions are available from Sourceforge:
+Snapshots of release-versions are available as GitHub releases:
 
-http://sourceforge.net/projects/supercollider/files/Source/
+https://github.com/supercollider/supercollider/releases
 
-The following assumes that you have installed git locally and use the clone from the 
+All build instructions assume that you have installed git locally and use the clone from the 
 Github repository.
-
-
-The SC 3.6.6 release
---------------------
-
-The release of SC v3.6.6 was built on OS X Snow Leopard (10.6.8) using the
-following tools and dependencies:
-
-  * Cmake 2.8.11
-  * Xcode 4.2 Snow Leopard shipping with gcc 4.2.1 (llvmgcc42)
-  * Qt libraries 4.8.5 as provided by MacPorts (universal build)
-  * Readline 6.2 as provided by MacPorts (universal build)
-
-It should be possible to build SC 3.6 using the tools as shown below, but this has not
-been verified for a long time, so you will have to experiment and might have to go back
-in release/commit history:
-
-  * Mac OS X 10.4.9 or greater
-  * Cmake 2.7 or greater
-  * Xcode Tools 2.4.1 or greater
-  * Qt libraries 4.7 or greater: http://qt-project.org/downloads
-
-Since at least SC 3.6.5 it has not been possible any more to use the OSX supplied 
-readline to build sclang with readline interface. Therefore GNU Readline >= 5.0 needs
-to be installed on the build system.
-
-SC 3.6.6 was built using the following cmake arguments:
-
-`cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES='i386;x86_64' 
--DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -DCMAKE_OSX_SYSROOT=/Developer/SDKs/MacOSX10.6.sdk/ 
--DCMAKE_INSTALL_PREFIX=./install -DREADLINE_INCLUDE_DIR=/opt/local/include 
--DREADLINE_LIBRARY=/opt/local/lib/libreadline.dylib -DSSE=ON -DSYSTEM_YAMLCPP=OFF ..`
-
-This should create a universal build running on any intel based 32- and 64-bit Apple 
-hardware using OSX 10.6 and later (see remarks on Mavericks above). 
-
-In order to reproduce this build exactly you either have to use the source snapshot
-distributed through SourceForge or checkout the tag `Version-3.6.6` from the SC Github repo.
-Make sure the dependencies (Qt and Readline) are universal builds.
-
 
 Quick steps
 -----------
 
-Assuming tools (cmake, Xcode) and dependencies (Qt, Readline) are in place and up to 
-date (using Readline from MacPorts), assuming further that you just cloned the SC 
-source into a folder `supercollider`, do this:
+**Prerequisites:**
 
-For SC 3.6:
+- **Xcode 6.1** can be installed free from the Apple App Store, or downloaded from http://developer.apple.com
+- **Xcode command line tools** must be installed - after installing Xcode, this can be done from the Xcode preferences, or from the command line using: `xcode-select --install`
+- **[homebrew](http://brew.sh)** is recommended to easily install required libraries:
+ `ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"`
+- **git, cmake, readline, and qt5**, installed via homebrew: `brew install git cmake readline qt5`:
+ 
+Once those dependencies are satisfied, the following steps will build Supercollider: 
 
+	$>	git clone --recursive https://github.com/supercollider/supercollider.git
 	$>	cd supercollider
-	$>	git submodule init
-	$>	git checkout -b 3.6 origin/3.6
-	$>	git submodule update
-	$>	mkdir build
-	$>	cd build
-	$>	cmake -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -DREADLINE_INCLUDE_DIR=/opt/local/include  
-	        -DREADLINE_LIBRARY=/opt/local/lib/libreadline.dylib ..
-	$>	make install
+	$>	mkdir build; cd build
+	$>	cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt5`  .. --debug-output`
+	$>	xcodebuild -scheme install
 
-For SC 3.7:
+A successful build will result in a SuperCollider.app and components at `build/Install/SuperCollider`
 
-	$>	cd supercollider
-	$>	git submodule init
-	$>	git checkout master
-	$>	mkdir build
-	$>	cd build
-	$>	cmake -DREADLINE_INCLUDE_DIR=/opt/local/include	 
-	        -DREADLINE_LIBRARY=/opt/local/lib/libreadline.dylib ..
-	$>	make install
+**Note**: You can also open the produced SuperCollider.xcodeproj in Xcode, and build the "Install" scheme in place of the last step.
 
-At the end, in each case you should find a folder "Install/SuperCollider" containing the
-SC application bundle and a few more files.
-
-For building with Xcode, configure the build adding -GXcode to the cmake command-line:
-
-	$>	cmake -GXcode -DREADLINE_INCLUDE_DIR=/opt/local/include
-			-DREADLINE_LIBRARY=/opt/local/lib/libreadline.dylib ..
-
-This will generate a Xcode project file in the build folder. Open it in Xcode, select
-the `install` target, and build.
-
-*Note:* The `/opt/local` paths used in the commands above are pointing to the macports
-version of Readline. You will need to adjust those paths if not using macports.
+**Note**: For a manually installed version of Qt5, use a full path to that Qt install in place of the `` `brew --prefix qt5` ``
 
 
-Generic build instructions
---------------------------
+Diagnosing Build Problems
+------------------------------
 
-To build SuperCollider with Cmake, it is recommended to create a "build"
-folder in the root folder of the SuperCollider source (i.e. inside the folder
-created when you cloned SC from git).
+The most common build problems are related to incorrect versions of the core dependencies, or dirty states in your build folder.
 
-A dedicated build folder is created to separate build files from the source. 
-This will leave the source alone (git monitors all activities in the source 
-tree) and makes it easy to delete all build files without touching the 
-source if you require a guaranteed clean build.
+### Checking component versions:
 
-So after cloning the SC source into the folder supercollider (default), do:
+**Xcode**: `xcodebuild -version`, or the "About" dialog of the Xcode application. Any build from the 5.x and 6.x series should generally work. 
 
-	$>	cd supercollider
-	$>	mkdir build
-	$>	cd build
+**cmake, qt5, readline**: `brew info ____` will show you what you have installed - for example, `brew info qt5` should show you the Qt5 version information.
 
-Then run the following command to to configure the build (`cmake`) and to point
-to the root folder of the SC source (`..`):
+`brew upgrade _____` will update the dependency to a newer version. Be cautious!  Homebrew is not set up to allow easy installation of older versions, so only upgrade when you need to. Other homebrew problems can be fixed using `brew doctor`. 
 
-	$>	cmake ..
+When asking for build help, always check and mention the installed versions any components you used to build SC!
 
-After the build configuration finished, and if no errors were returned, do:
+### Dirty build states
 
-	$>	make install
+While it's generally safe to re-use your build folder, changing branches, build tools, cmake settings, or the versions of your dependencies can sometimes put you in a state where you can no longer build. The solution is to clean your build folder - the common ways to do this, in order of severity:
 
-This will build the software and "install" it to a folder "SuperCollider" in 
-`<build-directory>/Install`. You would usually move this folder into the folder 
-`/Applications` manually.
+1. `rm CMakeCache.txt` (delete your cmake settings for that build)
+2. `xcodebuild clean -scheme install` or `make clean` (clean your intermediate build files)
+2. `rm -r ./Install` (delete the output of your build)
+3. `cd ..; rm -r ./build` (delete your entire build folder)
 
-If you would like to create a disk image for distribution, run the following command 
-and find the .dmg file in your build folder:
+Generally, clearing the CMakeCache.txt should be enough to fix many build problems. After each one of these, you must re-run the cmake command and rebuild. It's recommended that you create a new build folder for each branch you're building. In practice, though, you can usually switch between similar branches and rebuild by simply deleting your CMakeCache.txt.
 
-	$>	make package
+### Someone else's fault...
+If you're *sure* you're doing everything right and you're still failing, check the travis-ci status page:
+[https://travis-ci.org/supercollider/supercollider]()
 
-While this would ideally be sufficient to build SC on OSX, currently the following
-cmake arguments are required:
+Travis does incremental mac and linux builds for every git commit, and can show you if the place you are currently synced (`git log -n 1`) is actually just plain *broken*. If the build status looks bad, it's easy to work around:
 
-If building SC 3.6 for Snow Leopard:
+- locate the most recent green build on the travis, 
+- find it's git commit id (e.g. `595b956`), and 
+- check out that change in git: `git checkout 595b956`
+- build
 
-`-DCMAKE_OSX_DEPLOYMENT_TARGET=10.6`
 
-Which results in this build command:
 
-	$>	cmake -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 ..
+Frequently used cmake settings
+------------------------------
 
-In all SC-versions, in order to enable *building* the readline interface, you will need 
-to install it on your build system first (this is *not* required for running SC). It 
-is advisable to use a package manager like Homebrew or MacPorts. Homebrew is a comparatively
-recent, very flexible and modern package manager with broad community support. MacPorts is
-the old (Apple backed) workhorse that might still be a bit more reliable, especially on
-elder systems. Both are reported to work for the relatively slim requirements of building
-SC on a OSX system (required: Qt, readline, optional: libsndfile, portaudio, possible: 
-fftw3). If you run into problems with one of the packages it is more likely a problem with 
-your local system than with one of the packages.
-
-After you installed readline you need to tell the build system where to find the required 
-headers and libraries. When using MacPorts, the paths are likely to be:
-
-`-DREADLINE_INCLUDE_DIR=/opt/local/include` 
-`-DREADLINE_LIBRARY=/opt/local/lib/libreadline.dylib`
-
-For Homebrew the default locations are (Apr 2014):
-
-`-DREADLINE_INCLUDE_DIR=/usr/local/Cellar/readline/6.3.3/include` 
-`-DREADLINE_LIBRARY=/usr/local/Cellar/readline/6.3.3/lib/libreadline.dylib`
-
-So a full cmake configure command, specifying a build target and including readline
-(from MacPorts) would look like this:
-
-	$>	cmake -DCMAKE_OSX_DEPLOYMENT_TARGET=10.6 -DREADLINE_INCLUDE_DIR=/opt/local/include -DREADLINE_LIBRARY=/opt/local/lib/libreadline.dylib ..
-
-The Qt libraries also need to be installed in your system at build time, but usually 
-cmake finds them automatically. It does so by looking for the file `qmake` in your system 
-path and expects to find other Qt files relative to that location. In case you want to 
-use a Qt install in a nonstandard location, you can specify the `qmake`-location like 
-so:
-
-`-DQT_QMAKE_EXECUTABLE=/yourQmakePath/qmake`
-
-There are more settings in the build configuration you are likely to want to adjust. 
+There are more settings in the build configuration you may want to adjust. 
 In order to see a useful list of your options, you can run: 
 
 	$>	cmake -L ..
 
 This configure the build using default settings or settings stored in the file 
 build/CMakeCache.txt, print explanatory return statements and produce a list of 
-variables the value of which you might want to change. In order to see all the command
-line options `cmake` offers, type:
+variables the value of which you might want to change. In order to see all the command line options `cmake` offers, type:
 
 	$>	cmake --help
 
-It is not necessary to pass in all required arguments each time you run cmake, as cmake 
-caches previously set arguments in the file CMakeCache.txt. This is helpful, but
-also something to keep in mind if unexpected things happen. If you feel uncomfortable 
-with the command line, you might want to try cmake frontends like  `ccmake` or 
-`cmake-gui`. You can also configure your build by manually editing build/CMakeCache.txt. 
+It is not necessary to pass in all required arguments each time you run cmake, as cmake caches previously set arguments in the file CMakeCache.txt. This is helpful, but also something to keep in mind if unexpected things happen. If you feel uncomfortable with the command line, you might want to try cmake frontends like  `ccmake` or `cmake-gui`. You can also configure your build by manually editing build/CMakeCache.txt. 
 
+  * by default the SCClassLibrary is installed into the application bundle. There is a 
+    cmake option to create symlinks of the SCClassLibrary in the source instead. This way, 
+    if you change your classes, the changes will show up in your SC git-repository. To turn 
+    on this symlinking add:
 
-Frequently used cmake settings
-------------------------------
+    `-DSC_SYMLINK_CLASSLIB=ON`
+
+  * you can choose three build types (Release (optimised), Debug and RelWithDebInfo):
+
+    `-DCMAKE_BUILD_TYPE=Debug`
 
   * the location "install"-folder, i.e. the location of the SuperCollider folder including
     the application bundle. The following line moves it to the Applications folder 
     (which means you need to use `sudo`):
 
     `-DCMAKE_INSTALL_PREFIX=/Applications`
-
-  * you can choose three build types (Release (optimised), Debug and RelWithDebInfo):
-
-    `-DCMAKE_BUILD_TYPE=Debug`
 
   * make sure to get the best optimizations for your local system
  
@@ -293,20 +199,16 @@ Frequently used cmake settings
 
     `-DCMAKE_OSX_ARCHITECTURES='i386'`
 
-  * or combine a 32- and 64-bit version into a bundle (i.e. build a universal binary). 
+    or combine a 32- and 64-bit version into a bundle (i.e. build a universal binary). 
     This is only possible up until OSX 10.6 and requires the dependencies (Qtlibs & 
     readline) to be universal builds too:
 
     `-DCMAKE_OSX_ARCHITECTURES='i386;x86_64'`
+
+ * Normally, homebrew installations of readline are detected automatically, and building with readline is only required if you plan to use SuperCollider from the terminal. To link to a non-standard version of readline, you can use:
+    `-DREADLINE_INCLUDE_DIR='/path/to/readline/include'`
+    `-DREADLINE_LIBRARY='/path/to/readline/lib/libreadline.dylib'`
  
-
-  * by default the SCClassLibrary is installed into the application bundle. There is a 
-    cmake option to create symlinks of the SCClassLibrary in the source instead. This way, 
-    if you change your classes, the changes will show up in your SC git-repository. To turn 
-    on this symlinking add:
-
-    `-DSC_SYMLINK_CLASSLIB=ON`
-
   * If you run into trouble on a 10.8 system using an older version of the master branch, 
     you might want to try passing in the root folder of to 10.7 SDK as compiler flag `isysroot`. 
     This was reported to have helped complete building successfully in the past, but is not 
@@ -319,38 +221,15 @@ Frequently used cmake settings
 Using cmake with Xcode or QtCreator
 -----------------------------------
 
-If you want to use Xcode, you can use cmake to generate project files by adding the
-cmake flag -G followed by the generator name:
+Xcode projects are generated by appending: `-G Xcode`. The build instructions above use the Xcode toolchain, which is well-tested and generally recommended if you're planning to debug or hack on SC.
 
-`-GXcode`
-
-You might also want to make the expected SDK-Version and location explicit:
-
+You may also want to make the expected SDK-Version and location explicit, using:
 `-DCMAKE_OSX_SYSROOT=`
+This is often useful to point to an older SDK even with a newer Xcode installed. These are generally located in the `/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs` of an Xcode.app package.
 
-Depending on your XCode version this will either be a subfolder of the `/Applications`- or 
-the `/Developer`-folders. On Xcode 5 the path to SDK 10.8 is:
+You can build without an IDE using `make`, by omitting the `-G Xcode` - in this case, your build command is `make` rather than `xcodebuild`
 
-`/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/`
-
-On Xcode 4.2 Snow Leopard the path to the SDK 10.6 is:
-
-`/Developer/SDKs/MacOSX10.6.sdk/`
-
-So to target 10.8 on a Mavericks system (10.9) using the SDK for 10.8, you would run:
-
-`cmake -GXcode -DCMAKE_OSX_DEPLOYMENT_TARGET=10.8 -DCMAKE_OSX_SYSROOT=/Applications/
-Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/ ..`
-
-Using cmake as generator for a Xcode project file is not done often within the sc 
-developer-community, it is therefore not unlikely that you run into trouble when trying
-to do so, especially if you try it outside the master branch and on a source older than 
-August 2013. 
-
-With current prominence of Qt in SC the likelihood to build successfully in a graphical 
-IDE is far higher if you use Qt Creator. Qt Creator has very good `cmake` integration and 
-can build `cmake` projects without requiring a `cmake` generated project file. 
-Give it a try...
+Qt Creator has very good `cmake` integration and can build `cmake` projects without requiring a `cmake` generated project file. If you have Qt5 via homebrew installed, you can install Qt Creator by running `brew linkapps qt5`
 
 
 Remarks on different SC versions
@@ -420,8 +299,9 @@ on the mailing lists is useful.
 Qt vs. Cocoa, IDE vs. Editor "classic"
 --------------------------------------
 
-Qtlibs are used for the SC-IDE, and to provide a graphical toolkit for SC. While Qtlibs 
-is the default toolkit for both SC 3.6 and 3.7, it is still possible to build SC 3.6 using 
+The Qt framework is used for the SC-IDE, and to provide a graphical toolkit for SC. 
+
+While Qt is the default toolkit for both SC 3.6 and 3.7, it is still possible to build SC 3.6 using 
 Cocoa and the old SC editor. This is controlled by a cmake switch for the IDE, which 
 implicitly toggles building the old editor:
 
@@ -439,6 +319,8 @@ and switchable toolkit to either of them in 3.6.
 
 Standalones
 ------------
+
+**NOTE**: *Standalone support has fallen behind in the 3.7 release. These instructions may not fully work on recent versions of master. They should still apply to older versions of SuperCollider.*
 
 To create a "standalone" app using cmake, you need to use the "standalone" flag. For 
 example, to create a standalone whose name is MyFabApp:
@@ -496,20 +378,6 @@ Special characters on mac
 Please do not use non-ASCII characters (above code point 127) in your
 SuperCollider program path (i.e. the names of the folders containing SuperCollider).
 Doing so will break options to open class or method files.
-
-Problem getting Quarks?
------------------------
-
-If you can't download Quarks via `Quarks.gui`, the reason might be that you need to 
-install a subversion client. If that doesn't help, check where SC believes svn is 
-located on your system by evaluating:
-
-`QuarkSVNRepository.svnpath`
-
-If it is pointing to the wrong file (or none at all), one cure would be to assign the 
-correct value and add it to your sc startup file, for example:
-
-`QuarksSVNRepository.svnpath = "/opt/local/bin/svn"`
 
 
 Outro
