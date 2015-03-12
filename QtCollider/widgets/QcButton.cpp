@@ -22,10 +22,6 @@
 #include "QcButton.h"
 #include "../QcWidgetFactory.h"
 
-#ifdef Q_WS_MAC
-# include <QMacStyle>
-#endif
-
 QC_DECLARE_QWIDGET_FACTORY(QcButton);
 
 QcButton::QcButton():
@@ -34,21 +30,6 @@ QcButton::QcButton():
 {
   connect( this, SIGNAL(clicked()), this, SLOT(doAction()) );
 }
-
-#ifdef Q_WS_MAC
-bool QcButton::hitButton( const QPoint & pos ) const
-{
-  // FIXME: This is a workaround for Qt Bug 15936:
-  // incorrect QPushButton hit area.
-
-  QMacStyle *macStyle = qobject_cast<QMacStyle *>(style());
-
-  if( !macStyle || isFlat() )
-    return QAbstractButton::hitButton(pos);
-  else
-    return QPushButton::hitButton(pos);
-}
-#endif
 
 void QcButton::setStates( const QVariantList & statesArg )
 {

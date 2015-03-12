@@ -31,7 +31,7 @@
 
 #include <boost/bind.hpp>
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 # define __GNU_LIBRARY__
 # include "getopt.h"
 # include "SC_Win32Utils.h"
@@ -508,10 +508,28 @@ void SC_TerminalClient::readlineInit()
 
 void SC_TerminalClient::startInputRead()
 {
+#ifndef _WIN32
 	if (mUseReadline)
 		mStdIn.async_read_some(boost::asio::null_buffers(), boost::bind(&SC_TerminalClient::onInputRead, this, _1, _2));
 	else
 		mStdIn.async_read_some(boost::asio::buffer(inputBuffer), boost::bind(&SC_TerminalClient::onInputRead, this, _1, _2));
+#else
+	mStdIn.async_wait( [&] (const boost::system::error_code & error) {
+		if(error)
+			onInputRead(error, 0);
+		else {
+			DWORD bytes_transferred;
+
+			::ReadFile(GetStdHandle(STD_INPUT_HANDLE),
+					   inputBuffer.data(),
+					   inputBuffer.size(),
+					   &bytes_transferred,
+					   nullptr);
+
+			onInputRead(error, bytes_transferred);
+		}
+	});
+#endif
 }
 
 void SC_TerminalClient::onInputRead(const boost::system::error_code &error, std::size_t bytes_transferred)
@@ -663,7 +681,7 @@ int SC_TerminalClient::prRecompile(struct VMGlobals *, int)
 	return errNone;
 }
 
-SC_DLLEXPORT SC_LanguageClient * createLanguageClient(const char * name)
+SCLANG_DLLEXPORT SC_LanguageClient * createLanguageClient(const char * name)
 {
 	if (SC_LanguageClient::instance())
 		return NULL;
@@ -679,7 +697,7 @@ SC_DLLEXPORT SC_LanguageClient * createLanguageClient(const char * name)
 #endif
 }
 
-SC_DLLEXPORT void destroyLanguageClient(class SC_LanguageClient * languageClient)
+SCLANG_DLLEXPORT void destroyLanguageClient(class SC_LanguageClient * languageClient)
 {
 	delete languageClient;
 }

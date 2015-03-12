@@ -447,7 +447,7 @@ int prIsPrime(VMGlobals *g, int numArgsPushed)
 		if (i >= 0) { SetTrue(a); }
 		else { SetFalse(a); }
 	} else {
-#ifdef SC_WIN32
+#ifdef _WIN32
 		sqrtn = (int)sqrt(static_cast<double>(n));
 #else
 		sqrtn = (int)sqrt(n);

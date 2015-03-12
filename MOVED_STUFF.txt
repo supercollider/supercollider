@@ -1,5 +1,8 @@
-SuperCollider class library, help files, sclang and scsynth
-HAS BEEN MOVED into SuperCollider.app/Contents/Resources.
+sclang, scsynth and (if available) supernova HAVE BEEN MOVED into
+SuperCollider.app/Contents/MacOS.
+
+The SuperCollider class library and help files have been moved into
+SuperCollider.app/Contents/Resources.
 
 In previous versions of SuperCollider, these resources lived in the
 top folder next to SuperCollider.app. To make a standard self-contained
@@ -13,18 +16,22 @@ To access them in the Terminal, simply:
 
   $ cd path/to/SuperCollider.app/Contents/Resources
 
+or
+
+  $ cd path/to/SuperCollider.app/Contents/MacOS
+
 To have sclang and scsynth available system-wide, you can put wrapper-
 scripts into a folder in your PATH, like /usr/local/bin
 For sclang:
 
   #!/bin/sh
-  cd /full/path/to/SuperCollider.app/Contents/Resources
+  cd /full/path/to/SuperCollider.app/Contents/MacOS
   exec ./sclang $*
 
 And for scsynth:
 
   #!/bin/sh
-  cd /full/path/to/SuperCollider.app/Contents/Resources
+  cd /full/path/to/SuperCollider.app/Contents/MacOS
   exec ./scsynth $*
 
 NOTE: Why not symlinking them instead? Because:

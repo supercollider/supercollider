@@ -594,7 +594,7 @@ void GenericCodeEditor::doKeyAction( QKeyEvent * ke )
     
     QChar character;
     
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     bool isLetter = key >= Qt::Key_A && key <= Qt::Key_Z;
     if (mods & Qt::MetaModifier && isLetter)
     {

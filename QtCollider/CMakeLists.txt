@@ -1,27 +1,28 @@
-if(APPLE)
-    set(required_qt_version 4.8.5)
-else()
-    set(required_qt_version 4.7)
-endif()
+cmake_minimum_required(VERSION 2.8.11)
 
-find_package (Qt4 ${required_qt_version} COMPONENTS QtCore QtGui QtWebKit QtNetwork)
+set(required_qt_version 5.2)
 
-if (NOT QT4_FOUND)
-    set(FIND_QT_ERROR_MSG "You are trying to compile with Qt GUI support, but a suitable version of Qt or one of its components could not be found:")
+find_package(Qt5Core)
+find_package(Qt5Widgets)
+find_package(Qt5Network)
+find_package(Qt5WebKit)
+find_package(Qt5WebKitWidgets)
+find_package(Qt5PrintSupport)
+find_package(Qt5OpenGL)
+find_package(Qt5Sensors)
+find_package(Qt5Quick)
+find_package(Qt5Qml)
+find_package(Qt5Sql)
+find_package(Qt5Positioning)
 
-    if(NOT QT_QTCORE_FOUND)
-      set(FIND_QT_ERROR_MSG "${FIND_QT_ERROR_MSG}\n-- Missing component: QtCore")
-    endif()
-    if(NOT QT_QTGUI_FOUND)
-      set(FIND_QT_ERROR_MSG "${FIND_QT_ERROR_MSG}\n-- Missing component: QtGui")
-    endif()
-    if(NOT QT_QTWEBKIT_FOUND)
-      set(FIND_QT_ERROR_MSG "${FIND_QT_ERROR_MSG}\n-- Missing component: QtWebKit")
-    endif()
+set (QT_COLLIDER_LIBS
+  Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::WebKit Qt5::WebKitWidgets Qt5::PrintSupport
+  Qt5::OpenGL Qt5::Sensors Qt5::Quick Qt5::Qml Qt5::Sql Qt5::Positioning
+  ${MATH_LIBRARY})
 
-    set(FIND_QT_ERROR_MSG "${FIND_QT_ERROR_MSG}\nPlease either install Qt (version ${required_qt_version} or greater), or compile without Qt GUI support (add -DSC_QT=OFF to the cmake command line).")
-
-    message(FATAL_ERROR ${FIND_QT_ERROR_MSG})
+if (APPLE)
+  find_package(Qt5MacExtras)
+  list(APPEND QT_COLLIDER_LIBS Qt5::MacExtras)
 endif()
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}  -DQC_DEBUG")
@@ -126,18 +127,15 @@ if(QT_COLLIDER_LANG_CLIENT)
     list(APPEND QT_COLLIDER_HDRS ${QT_COLLIDER_DIR}/LanguageClient.h)
     list(APPEND QT_COLLIDER_SRCS ${QT_COLLIDER_DIR}/LanguageClient.cpp)
 endif()
-	
+
 
 set( QT_USE_QTWEBKIT TRUE )
 
-
-include(${QT_USE_FILE})
-
-qt4_wrap_cpp( QT_COLLIDER_MOC_SRCS ${QT_COLLIDER_HDRS} )
-qt4_add_resources( QT_COLLIDER_RCC ${QT_COLLIDER_DIR}/resources.qrc )
+qt5_wrap_cpp( QT_COLLIDER_MOC_SRCS ${QT_COLLIDER_HDRS} )
+qt5_add_resources( QT_COLLIDER_RCC ${QT_COLLIDER_DIR}/resources.qrc )
 
 if(APPLE)
-	qt4_wrap_cpp( QT_COLLIDER_OBJ_MOC_SRCS ${QT_COLLIDER_DIR}/widgets/QcQuartzComposerView.h )
+	qt5_wrap_cpp( QT_COLLIDER_OBJ_MOC_SRCS ${QT_COLLIDER_DIR}/widgets/QcQuartzComposerView.h )
 	list(APPEND QT_COLLIDER_HDRS ${QT_COLLIDER_DIR}/widgets/QcQuartzComposerView.h )
   	set( QT_COLLIDER_OBJCPP_SRCS
   		${QT_COLLIDER_OBJ_MOC_SRCS}
@@ -158,8 +156,6 @@ list( APPEND QT_COLLIDER_SRCS
 )
 
 add_definitions(-DSC_QT -DQT_COLLIDER_EXPORTING -DQT_NO_KEYWORDS)
-
-set (QT_COLLIDER_LIBS ${QT_LIBRARIES} ${MATH_LIBRARY})
 
 if(APPLE)
   list(APPEND QT_COLLIDER_LIBS "-framework Cocoa" )

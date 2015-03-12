@@ -51,6 +51,7 @@
 #include <QAction>
 #include <QApplication>
 #include <QDesktopServices>
+#include <QStandardPaths>
 #include <QDesktopWidget>
 #include <QFileDialog>
 #include <QFileInfo>
@@ -985,7 +986,7 @@ QString MainWindow::documentSavePath( Document *document ) const
     if (!interpreterWorkingDir.isEmpty())
         return interpreterWorkingDir;
 
-    return QDesktopServices::storageLocation( QDesktopServices::HomeLocation );
+    return QStandardPaths::standardLocations( QStandardPaths::HomeLocation )[0];
 }
 
 bool MainWindow::save( Document *doc, bool forceChoose, bool saveInExtensionFolder )
@@ -1115,7 +1116,7 @@ QString MainWindow::documentOpenPath() const
     if (!interpreterWorkingDir.isEmpty())
         return interpreterWorkingDir;
 
-    return QDesktopServices::storageLocation( QDesktopServices::HomeLocation );
+    return QStandardPaths::standardLocations( QStandardPaths::HomeLocation )[0];
 }
 
 void MainWindow::openDocument()

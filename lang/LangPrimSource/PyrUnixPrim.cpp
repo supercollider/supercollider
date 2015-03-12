@@ -40,7 +40,7 @@ Primitives for Unix.
 
 #include "SC_Lock.h"
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 #include "SC_Win32Utils.h"
 #else
 #include <libgen.h>
@@ -193,7 +193,7 @@ int prPidRunning(VMGlobals *g, int numArgsPushed)
 
 	a = g->sp;
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 	HANDLE handle;
 
 	handle = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, slotRawInt(a));
@@ -359,7 +359,7 @@ int prGetPid(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
 	SetInt(a,
-#ifndef SC_WIN32
+#ifndef _WIN32
 		getpid()
 #else
 		GetCurrentProcessId()

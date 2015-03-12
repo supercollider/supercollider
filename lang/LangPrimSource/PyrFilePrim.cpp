@@ -244,20 +244,20 @@ int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 	memcpy(mode, slotRawString(c)->s, slotRawObject(c)->size);
 	mode[slotRawString(c)->size] = 0;
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 	win32_ReplaceCharInString(filename,PATH_MAX,'/','\\');
 	if(strcmp(mode,"w") == 0)
 	strcpy(mode,"wb");
 	if(strcmp(mode,"r") == 0)
 	strcpy(mode,"rb");
 #endif
-	//SC_WIN32
+	//_WIN32
 	file = fopen(filename, mode);
 	if (file) {
 		SetPtr(&pfile->fileptr, file);
 		SetTrue(a);
 	} else {
-#ifdef SC_WIN32
+#ifdef _WIN32
 		// check if directory exisits
 		// create a temporary file (somewhere) for a handle
 		// the file is deleted automatically when closed
@@ -1387,7 +1387,7 @@ int headerFormatToString(struct SF_INFO *info, const char **string){
 				*string = "FLAC";
 				break ;
 // TODO allow other platforms to know vorbis once libsndfile 1.0.18 is established
-#if SC_DARWIN || SC_WIN32 || LIBSNDFILE_1018
+#if SC_DARWIN || _WIN32 || LIBSNDFILE_1018
 		case SF_FORMAT_VORBIS :
 				*string = "vorbis";
 				break ;
@@ -1520,7 +1520,7 @@ int prSFOpenWrite(struct VMGlobals *g, int numArgsPushed)
 	memcpy(filename, slotRawString(b)->s, slotRawObject(b)->size);
 	filename[slotRawString(b)->size] = 0;
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 	char* headerFormat = (char *)malloc(slotRawObject(headerSlot)->size);
 #else
 	char headerFormat[slotRawString(headerSlot)->size];
@@ -1528,7 +1528,7 @@ int prSFOpenWrite(struct VMGlobals *g, int numArgsPushed)
 	memcpy(headerFormat, slotRawString(headerSlot)->s, slotRawObject(headerSlot)->size);
 	headerFormat[slotRawString(headerSlot)->size] = 0;
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 	char* sampleFormat = (char *)malloc(slotRawString(formatSlot)->size);
 #else
 	char sampleFormat[slotRawString(formatSlot)->size];
@@ -1538,7 +1538,7 @@ int prSFOpenWrite(struct VMGlobals *g, int numArgsPushed)
 
 	error = sndfileFormatInfoFromStrings(&info, headerFormat, sampleFormat);
 	if(error) {
-#ifdef SC_WIN32
+#ifdef _WIN32
 		free(sampleFormat);
 		free(headerFormat);
 #endif
