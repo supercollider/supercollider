@@ -91,7 +91,7 @@ Once those dependencies are satisfied, the following steps will build Supercolli
 	$>	git clone --recursive https://github.com/supercollider/supercollider.git
 	$>	cd supercollider
 	$>	mkdir build; cd build
-	$>	cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt5`  .. --debug-output`
+	$>	cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt5`  ..
 	$>	xcodebuild -scheme install
 
 A successful build will result in a SuperCollider.app and components at `build/Install/SuperCollider`
