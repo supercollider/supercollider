@@ -295,6 +295,19 @@ Button : View {
 		super.setProperty( \states, stateArray );
 	}
 
+	string_ { arg string;
+		if(states.isNil) {
+			this.states = [[string]]
+		} {
+			states[this.value][0] = string;
+			this.states = states;
+		}
+	}
+
+	string {
+		^states !? { states[this.value][0] }
+	}
+
 	action_ { arg func;
 		this.manageMethodConnection( action, func, 'action(int)', \prDoAction );
 		action = func;
