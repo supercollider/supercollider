@@ -78,6 +78,16 @@ Sets the button to display the item at index strong::anInt:: of the states array
 argument:: anInt
 The index of an item in the states array.
 
+method:: string
+Sets or gets the text of the currently active state.
+code::
+(
+w = Window("but", Rect(300, 300, 200, 200)).front;
+b = Button(w, Rect(30, 40, 140, 50));
+b.string = "hello button";
+)
+::
+
 method:: font
 Sets the Font of the button. Default value is the default font: Font.default .
 argument:: f
