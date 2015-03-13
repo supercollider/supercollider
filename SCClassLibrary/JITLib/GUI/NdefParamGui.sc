@@ -164,7 +164,8 @@ NdefParamGui : EnvirGui {
 
 	setFunc { |key|
 		^{ |sl|
-			if(key == 'number-source') {
+			// this special key (#) allows to set the source from a slider
+			if(key == '#') {
 				object.source = sl.value
 			} {
 				object.set(key, sl.value)
