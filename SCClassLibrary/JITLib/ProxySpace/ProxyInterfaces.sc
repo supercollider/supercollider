@@ -108,6 +108,13 @@ StreamControl : AbstractPlayControl {
 		^true
 	}
 
+	controlNames {
+		^if(source.isNumber or: { source.isArray }) {
+			// this special key (#) allows to set the source from a slider
+			ControlName('#', defaultValue:source)
+		}
+	}
+
 }
 
 
