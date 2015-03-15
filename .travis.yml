@@ -73,7 +73,7 @@ deploy:
  # github releases - only tags
  - provider: releases
    api_key:
-     secure: K3X3Ja+j4iKwb6SOpxebV5acVBl5C8tXoTBWb3bO9iwJjYpzIYFi7Mr5zUIz/0hx8pgyr2eNrWEL/YOOyg7BzfPG7wiSfjDPpsPRYvx4XQslXOivsfljKy/rK4wN1edj5ZK7ydlygBaNkrlxH2JQDjTNvveYr+b6LHrD7N0mWqE=
+     secure: YN33x5V66b6xepehiEoIm2+UNdbjAPvgrg713F5FdTmWfmuPbLYX6a9zYQYYQ0ZO6w5kofBuWZKL1arw0ABYgUE9kmnNFgx8nR//wsfOnCcgvhGHMXpImzhWX3tPelCW4gyEBF0w8tmN9o4CCC5dcjgHJcpz/q8+eCfg0VeZOZE=
    file: $HOME/artifacts/SC-$COMMIT_NAME.zip
    prerelease: true
    skip_cleanup: true
