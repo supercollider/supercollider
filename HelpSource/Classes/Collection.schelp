@@ -243,6 +243,20 @@ code::
 [1,2,3,4,5].inject([], _++_); // [ 1, 2, 3, 4, 5 ]
 ::
 
+method::collectInPlace
+Iterate over the collection and replace each item with a new one, returned by the function. This can be useful when one wants to aviod creating a new array in memory. In most cases, it is better to use link::#-collect::.
+
+code::
+a = [1, 5, 3, 4];
+a.collectInPlace { |x| 2 ** x };
+a; // changed
+
+// compare:
+a = [1, 5, 3, 4];
+a.collect { |x| 2 ** x };
+a; // remains unchanged
+::
+
 method::any
 Answer whether strong::function:: answers link::Classes/True:: for any item in the receiver. The function is passed two arguments, the item and an integer index.
 code::
