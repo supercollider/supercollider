@@ -92,9 +92,11 @@ Once those dependencies are satisfied, the following steps will build Supercolli
 	$>	cd supercollider
 	$>	mkdir build; cd build
 	$>	cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt5`  ..
-	$>	xcodebuild -target install
+  $>  cmake --build . --target install --config Debug
 
 A successful build will result in a SuperCollider.app and components at `build/Install/SuperCollider`
+
+**Note**: By default, Xcode builds will be Debug - the four possible build configs are Debug, RelWithDebInfo, Release, and MinSizeRel.
 
 **Note**: You can also open the produced SuperCollider.xcodeproj in Xcode, and build the "Install" scheme in place of the last step.
 
