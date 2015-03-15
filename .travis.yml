@@ -40,9 +40,9 @@ script:
  - make install
  - $TRAVIS_BUILD_DIR/testsuite/sclang/launch_test.py $SCLANG
 
- - mkdir -p $HOME/artifacts
  - export COMMIT_NAME=$TRAVIS_COMMIT
- - (cd Install; zip -r $HOME/artifacts/SC-$COMMIT_NAME.zip SuperCollider)
+ - ifmac mkdir -p $HOME/artifacts
+ - ifmac (cd Install; zip -r $HOME/artifacts/SC-$COMMIT_NAME.zip SuperCollider)
 
 before_deploy:
  # required for github releases
