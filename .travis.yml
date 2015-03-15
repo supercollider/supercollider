@@ -42,7 +42,7 @@ script:
 
  - export COMMIT_NAME=$TRAVIS_COMMIT
  - ifmac mkdir -p $HOME/artifacts
- - ifmac (cd Install; zip -r $HOME/artifacts/SC-$COMMIT_NAME.zip SuperCollider)
+ - (ifmac cd Install; ifmac zip -r $HOME/artifacts/SC-$COMMIT_NAME.zip SuperCollider)
 
 before_deploy:
  # required for github releases
