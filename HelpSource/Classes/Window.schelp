@@ -351,6 +351,48 @@ x.close;
 y.free;
 ::
 
+subsection:: Using Layouts
+
+Layouts are used to organize view sizes automatically. See: link::Guides/GUI-Layout-Management::.
+
+note:: Only in Cocoa GUI ::
+
+code::
+// make a window and a layout
+(
+w = Window(bounds:Rect(700,200,200,200));
+h = HLayout();
+v = VLayout(h);
+w.layout =  v;
+w.front;
+w.alwaysOnTop = true;
+)
+
+// add views step by step
+
+v.add(k = Slider());
+h.add(Slider());
+h.add(Slider());
+k.orientation = \horizontal;
+
+
+h.add(g = VLayout(), 2, \left);
+g.add(TextView());
+g.add(TextView().string_("sand and hand"));
+
+v.add(Button());
+v.add(Button());
+v.add(Button());
+g.add(Button());
+
+g.margins = [1, 1, 1, 1];
+h.margins = [1, 1, 1, 1] * 23;
+v.margins = [1, 1, 1, 1] * 5;
+
+h.add(g = VLayout(), 1, \left);
+g.add(g = HLayout(), 1, \left);
+5.do { g.add(Slider().orientation_(\vertical)) };
+::
 
 subsection:: Drawing on Window with Pen
 
