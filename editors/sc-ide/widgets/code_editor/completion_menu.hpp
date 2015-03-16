@@ -26,6 +26,7 @@ public:
     CompletionMenu(QWidget * parent = 0);
     void addItem(QStandardItem * item);
     void addInfo(QString info);
+    void adapt();
     void setCompletionRole(int role);
     QString currentText();
     const ScLanguage::Method * currentMethod();

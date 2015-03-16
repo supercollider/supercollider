@@ -542,6 +542,8 @@ CompletionMenu * AutoCompleter::menuForClassCompletion(CompletionDescription con
         menu->addItem( new QStandardItem(klass->name) );
     }
 
+    menu->adapt();
+
     return menu;
 }
 
@@ -606,6 +608,8 @@ CompletionMenu * AutoCompleter::menuForClassMethodCompletion(CompletionDescripti
         menu->addItem(item);
     }
 
+    menu->adapt();
+
     return menu;
 }
 
@@ -655,6 +659,9 @@ CompletionMenu * AutoCompleter::menuForMethodCompletion(CompletionDescription co
 
         it = range.second;
     }
+
+    menu->adapt();
+
     return menu;
 }
 
@@ -963,6 +970,8 @@ const ScLanguage::Method *AutoCompleter::disambiguateMethod
             item->setData( QVariant::fromValue(method), CompletionMenu::MethodRole );
             menu->addItem(item);
         }
+
+        menu->adapt();
 
         QRect popupTargetRect = globalCursorRect( cursorPos ).adjusted(0,-5,0,5);
 
