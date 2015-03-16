@@ -63,6 +63,7 @@ private slots:
     void updateCompletionMenuInfo();
     void clearMethodCallStack();
     void hideWidgets();
+    void gotoHelp(QString symbol);
 
 private:
     friend class MethodCallWidget;

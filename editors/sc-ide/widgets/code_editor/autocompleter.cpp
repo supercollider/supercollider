@@ -27,6 +27,8 @@
 #include "../../core/sc_process.hpp"
 #include "../../core/main.hpp"
 #include "../../core/util/standard_dirs.hpp"
+#include "../main_window.hpp"
+#include "../help_browser.hpp"
 
 #include "yaml-cpp/node.h"
 #include "yaml-cpp/parser.h"
@@ -513,6 +515,7 @@ void AutoCompleter::showCompletionMenu(bool forceShow)
     if (mCompletion.type == ClassCompletion &&
             Main::settings()->value("IDE/editor/showAutocompleteHelp").toBool()) {
         connect(menu, SIGNAL(itemChanged(int)), this, SLOT(updateCompletionMenuInfo()));
+        connect(menu, SIGNAL(infoClicked(QString)), this, SLOT(gotoHelp(QString)));
         updateCompletionMenuInfo();
     }
 }
@@ -802,10 +805,12 @@ void AutoCompleter::updateCompletionMenuInfo()
         return;
     }
 
-    QString infos = QString("<h4>%1</h4>%2<h4>Examples</h4><pre><code>%3")
+    QString infos = QString("<h4>%1</h4>%2<h4>Examples</h4><pre><code>%3</code>"
+                            "<p><a href=\"%4\">go to help</a>")
                     .arg(parseClassElement(node, "SUMMARY"))
                     .arg(parseClassElement(node, "DESCRIPTION"))
-                    .arg(parseClassElement(node, "EXAMPLES"));
+                    .arg(parseClassElement(node, "EXAMPLES"))
+                    .arg(mCompletion.menu->currentText());
     mCompletion.menu->addInfo(infos);
     doc_node_free_tree(node);
 }
@@ -1272,6 +1277,12 @@ void AutoCompleter::parseClassNode(DocNode *node, QString *str)
 
     for (int i = 0; i < node->n_childs; i++)
         parseClassNode(node->children[i], str);
+}
+
+void AutoCompleter::gotoHelp(QString symbol)
+{
+    HelpBrowserDocklet *helpDock = MainWindow::instance()->helpBrowserDocklet();
+    helpDock->browser()->gotoHelpFor(symbol);
 }
 
 } // namespace ScIDE
