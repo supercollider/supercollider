@@ -30,7 +30,7 @@
 #include <QListView>
 #include <QHBoxLayout>
 #include <QSortFilterProxyModel>
-#include <QTextEdit>
+#include <QTextBrowser>
 
 namespace ScIDE {
 
@@ -64,7 +64,7 @@ private:
     QListView *mListView;
     QStandardItemModel *mModel;
     QSortFilterProxyModel *mFilterModel;
-    QTextEdit *mTextEdit;
+    QTextBrowser *mTextBrowser;
     QHBoxLayout *mLayout;
     int mCompletionRole;
 
