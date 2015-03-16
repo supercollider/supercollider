@@ -1272,8 +1272,17 @@ QString AutoCompleter::parseClassElement(DocNode *node, QString element)
 
 void AutoCompleter::parseClassNode(DocNode *node, QString *str)
 {
-    if (node->text)
-        str->append(node->text);
+    if (node->id == "NOTE")
+        str->append("<br><br>Note:<br>");
+
+    if (node->text) {
+        if (node->id == "LINK") {
+            QString link = QString(node->text).split('/').last();
+            str->append(QString("<a href=\"%1\">%1</a>").arg(link));
+        } else {
+            str->append(node->text);
+        }
+    }
 
     for (int i = 0; i < node->n_childs; i++)
         parseClassNode(node->children[i], str);
