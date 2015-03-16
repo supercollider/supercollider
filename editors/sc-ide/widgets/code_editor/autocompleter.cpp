@@ -510,7 +510,8 @@ void AutoCompleter::showCompletionMenu(bool forceShow)
 
     updateCompletionMenu(forceShow);
 
-    if (mCompletion.type == ClassCompletion) {
+    if (mCompletion.type == ClassCompletion &&
+            Main::settings()->value("IDE/editor/showAutocompleteHelp").toBool()) {
         connect(menu, SIGNAL(itemChanged(int)), this, SLOT(updateCompletionMenuInfo()));
         updateCompletionMenuInfo();
     }
@@ -760,7 +761,8 @@ void AutoCompleter::updateCompletionMenu(bool forceShow)
     } else
         menu->hide();
 
-    if (mCompletion.type == ClassCompletion)
+    if (mCompletion.type == ClassCompletion &&
+            Main::settings()->value("IDE/editor/showAutocompleteHelp").toBool())
         updateCompletionMenuInfo();
 }
 
