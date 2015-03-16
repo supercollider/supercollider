@@ -9,12 +9,11 @@ Table of contents
  * The SC 3.7 release
  * Obtaining the SC source
  * **Quick steps**
- * Generic build instructions
+ * Diagnosing build problems
  * Frequently used cmake settings
  * Using cmake with Xcode or QtCreator
  * Remarks on different SC versions
  * Qt vs. Cocoa, IDE vs. Editor "classic"
- * Standalones
  * On libsndfile
  * Special characters on mac
  * Outro
@@ -104,7 +103,7 @@ A successful build will result in a SuperCollider.app and components at `build/I
 
 
 Diagnosing Build Problems
-------------------------------
+-------------------------
 
 The most common build problems are related to incorrect versions of the core dependencies, or dirty states in your build folder.
 
@@ -139,7 +138,6 @@ Travis does incremental mac and linux builds for every git commit, and can show 
 - find it's git commit id (e.g. `595b956`), and 
 - check out that change in git: `git checkout 595b956`
 - build
-
 
 
 Frequently used cmake settings
