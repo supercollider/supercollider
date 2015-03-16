@@ -38,14 +38,15 @@ CompletionMenu::CompletionMenu(QWidget * parent):
     mListView->setModel(mFilterModel);
     mListView->setFrameShape(QFrame::NoFrame);
 
-    mTextEdit = new QTextEdit();
-    mTextEdit->setFrameShape(QFrame::NoFrame);
-    mTextEdit->setReadOnly(true);
-    mTextEdit->setFixedSize(0, 200);
+    mTextBrowser = new QTextBrowser();
+    mTextBrowser->setFrameShape(QFrame::NoFrame);
+    mTextBrowser->setReadOnly(true);
+    mTextBrowser->setFixedSize(0, 200);
+    mTextBrowser->setOpenLinks(false);
 
     mLayout = new QHBoxLayout(this);
     mLayout->addWidget(mListView);
-    mLayout->addWidget(mTextEdit);
+    mLayout->addWidget(mTextBrowser);
     mLayout->setContentsMargins(1,1,1,1);
 
     connect(mListView, SIGNAL(clicked(QModelIndex)), this, SLOT(accept()));
@@ -68,8 +69,8 @@ void CompletionMenu::adapt()
 
 void CompletionMenu::addInfo(QString info)
 {
-    mTextEdit->setText(info);
-    mTextEdit->setFixedSize(500, 400);
+    mTextBrowser->setText(info);
+    mTextBrowser->setFixedSize(500, 400);
 }
 
 void CompletionMenu::setCompletionRole(int role)
