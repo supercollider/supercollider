@@ -381,6 +381,7 @@ elseif(APPLE)
 		README_OS_X.md
 		ChangeLog
 		AUTHORS
+		COPYING
 		MOVED_STUFF.txt
 	)
 else()
@@ -389,11 +390,15 @@ else()
 		README_LINUX.md
 		ChangeLog
 		AUTHORS
+		COPYING
 	)
 endif()
 
 install(FILES ${AdditionalInstallFiles} DESTINATION ${auxresourcesdir})
-install(FILES ${CMAKE_SOURCE_DIR}/COPYING DESTINATION ${auxresourcesdir} RENAME LICENSE.txt)
+
+if(WIN32)
+	install(FILES COPYING DESTINATION ${auxresourcesdir} RENAME LICENSE.txt)
+endif()
 
 
 if(INSTALL_HELP)
