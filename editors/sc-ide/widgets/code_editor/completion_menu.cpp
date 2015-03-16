@@ -50,6 +50,7 @@ CompletionMenu::CompletionMenu(QWidget * parent):
     mLayout->setContentsMargins(1,1,1,1);
 
     connect(mListView, SIGNAL(clicked(QModelIndex)), this, SLOT(accept()));
+    connect(mTextBrowser, SIGNAL(anchorClicked(const QUrl)), this, SLOT(onAnchorClicked(const QUrl)));
 
     mListView->setFocus(Qt::OtherFocusReason);
 
@@ -153,6 +154,11 @@ bool CompletionMenu::eventFilter(QObject * obj, QEvent * ev)
     }
 
     return PopUpWidget::eventFilter(obj, ev);
+}
+
+void CompletionMenu::onAnchorClicked(QUrl url)
+{
+    emit infoClicked(QString(url.path()));
 }
 
 } // namespace ScIDE

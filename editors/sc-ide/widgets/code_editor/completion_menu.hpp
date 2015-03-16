@@ -68,8 +68,12 @@ private:
     QHBoxLayout *mLayout;
     int mCompletionRole;
 
+private slots:
+    void onAnchorClicked(const QUrl url);
+
 signals:
     void itemChanged(int item);
+    void infoClicked(QString info);
 };
 
 } // namespace ScIDE
