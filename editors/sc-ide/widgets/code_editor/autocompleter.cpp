@@ -1272,11 +1272,11 @@ QString AutoCompleter::parseClassElement(DocNode *node, QString element)
 
 void AutoCompleter::parseClassNode(DocNode *node, QString *str)
 {
-    if (node->id == "NOTE")
+    if (QString(node->id) == "NOTE")
         str->append("<br><br>Note:<br>");
 
     if (node->text) {
-        if (node->id == "LINK") {
+        if (QString(node->id) == "LINK") {
             QString link = QString(node->text).split('/').last();
             str->append(QString("<a href=\"%1\">%1</a>").arg(link));
         } else {
