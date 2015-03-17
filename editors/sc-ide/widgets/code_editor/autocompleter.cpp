@@ -1308,6 +1308,7 @@ void AutoCompleter::gotoHelp(QString symbol)
 {
     HelpBrowserDocklet *helpDock = MainWindow::instance()->helpBrowserDocklet();
     helpDock->browser()->gotoHelpFor(symbol);
+    helpDock->focus();
 }
 
 } // namespace ScIDE
