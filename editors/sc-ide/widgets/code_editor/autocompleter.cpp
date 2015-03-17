@@ -805,7 +805,7 @@ void AutoCompleter::updateCompletionMenuInfo()
         return;
     }
 
-    QString infos = QString("<h4>%1</h4>%2<h4>Examples</h4><pre><code>%3</code>"
+    QString infos = QString("<h4>%1</h4>%2<h4>Examples</h4>%3"
                             "<p><a href=\"%4\">go to help</a>")
                     .arg(parseClassElement(node, "SUMMARY"))
                     .arg(parseClassElement(node, "DESCRIPTION"))
@@ -1272,13 +1272,19 @@ QString AutoCompleter::parseClassElement(DocNode *node, QString element)
 
 void AutoCompleter::parseClassNode(DocNode *node, QString *str)
 {
-    if (QString(node->id) == "NOTE")
+    QString id = node->id;
+
+    if (id == "NOTE")
         str->append("<br><br>Note:<br>");
 
     if (node->text) {
-        if (QString(node->id) == "LINK") {
+        if (id == "LINK") {
             QString link = QString(node->text).split('/').last();
             str->append(QString("<a href=\"%1\">%1</a>").arg(link));
+        } else if (id == "CODE")  {
+            str->append(QString("<code>%1</code>").arg(node->text));
+        } else if (id == "CODEBLOCK")  {
+            str->append(QString("<pre><code>%1</code></pre>").arg(node->text));
         } else {
             str->append(node->text);
         }
