@@ -805,11 +805,15 @@ void AutoCompleter::updateCompletionMenuInfo()
         return;
     }
 
-    QString infos = QString("<h4>%1</h4>%2<h4>Examples</h4>%3"
+    QString examples = parseClassElement(node, "EXAMPLES");
+    if (!examples.isEmpty())
+        examples.prepend("<h4>Examples</h4>");
+
+    QString infos = QString("<h4>%1</h4>%2%3"
                             "<p><a href=\"%4\">go to help</a>")
                     .arg(parseClassElement(node, "SUMMARY"))
                     .arg(parseClassElement(node, "DESCRIPTION"))
-                    .arg(parseClassElement(node, "EXAMPLES"))
+                    .arg(examples)
                     .arg(mCompletion.menu->currentText());
     mCompletion.menu->addInfo(infos);
     doc_node_free_tree(node);
