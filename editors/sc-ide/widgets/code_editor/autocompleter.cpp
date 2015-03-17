@@ -1279,8 +1279,14 @@ void AutoCompleter::parseClassNode(DocNode *node, QString *str)
 
     if (node->text) {
         if (id == "LINK") {
-            QString link = QString(node->text).split('/').last();
-            str->append(QString("<a href=\"%1\">%1</a>").arg(link));
+            QStringList locations = QString(node->text).split('/').last().split('#');
+
+            /* if empty, the link is on the same page. No HTML link */
+            if (locations.first().isEmpty())
+                str->append(QString(" %1 ").arg(locations.first()));
+            else
+                str->append(QString("<a href=\"%1\">%2</a>").arg(locations.first())
+                                                            .arg(locations.last()));
         } else if (id == "CODE")  {
             str->append(QString("<code>%1</code>").arg(node->text));
         } else if (id == "CODEBLOCK")  {
