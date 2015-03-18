@@ -778,17 +778,23 @@ METHOD:: mouseLeave
 
 METHOD:: defaultGetDrag
 
+note::Not yet implemented::
+
 	The view's default method to determine the content of the drag&drop operation just initiated.
 
 	returns:: The object to be set as link::#*currentDrag::. If nil is returned, the drag&drop operation will not begin.
 
 METHOD:: defaultCanReceiveDrag
 
+note::Not yet implemented::
+
 	The view's default evaluation whether the content of the ongoing drag&drop operation can be accepted.
 
 	returns:: A Boolean stating whether link::#*currentDrag:: is useful. If false is returned, the drop will not be handled by this view.
 
 METHOD:: defaultReceiveDrag
+
+note::Not yet implemented::
 
 	The view's default handling of the data dropped on it (stored in link::#*currentDrag::).
 
