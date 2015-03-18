@@ -8,7 +8,9 @@ DESCRIPTION::
 
 A sound file viewer with numerous options.
 
-In strong::Qt GUI:: you can strong::zoom:: in and out using Shift + right-click + mouse-up/down; likewise, you can strong::scroll:: using right-click + mouse-left/right.
+Zoom in and out using Shift + right-click + mouse-up/down;
+
+Scroll using right-click + mouse-left/right.
 
 CLASSMETHODS::
 
@@ -29,7 +31,7 @@ METHOD:: read
 
     Reads a section of the link::#-soundfile:: and displays it in the view. For large files, you may want to use readWithTask instead.
 
-    note:: In Qt GUI, the 'block' argument has no effect; the display resolution is infinite. ::
+    The 'block' argument has no effect; the display resolution is infinite.
 
     argument:: startFrame
         The beginning of the section, in frames.
@@ -48,7 +50,7 @@ METHOD:: readFile
 
     Reads a section of an open instance of SoundFile, and displays it in the view. For large files, you may want to use the method readWithTask instead.
 
-    note:: In Qt GUI, the 'block' argument has no effect; the display resolution is infinite. ::
+   The 'block' argument has no effect; the display resolution is infinite.
 
     argument:: soundfile
         An open instance of SoundFile.
@@ -69,10 +71,7 @@ METHOD:: readWithTask
 
     Reads a section of the link::#-soundfile:: asynchronously (in the background), updating the link::#-readProgress:: along the way. If the code::showProgress:: argument is code::true::, a SoundFileViewProgressWindow opens to show the progress.
 
-    note:: In Qt GUI:
-        The 'block' argument has no effect; the display resolution is infinite.
-        The 'showProgress' argument has no effect; the view always displays reading progress within itself.
-    ::
+   The 'block' argument has no effect; the display resolution is infinite. The 'showProgress' argument has no effect; the view always displays reading progress within itself.
 
     argument:: startFrame
         The beginning of the section, in frames.
@@ -94,7 +93,6 @@ METHOD:: readFileWithTask
 
     Reads a section of an open instance of SoundFile asynchronously (in the background), updating the link::#-readProgress:: along the way. If the code::showProgress:: argument is code::true::, a SoundFileViewProgressWindow opens to show the progress.
 
-    note:: In Qt GUI:
         The 'block' argument has no effect; the display resolution is infinite.
         The 'showProgress' argument has no effect; the view always displays reading progress within itself.
     ::
@@ -121,7 +119,7 @@ METHOD:: data
 
     Gets the display data, or sets custom data instead of a sound file.
 
-    note:: In Qt and SwingOSC it is not possible to get the data. ::
+    It is not possible to get the data.
 
     In Cocoa and SwingOSC, setting this property is equivalent to link::#-setData:: with number of channels and sample rate of the current link::#-soundfile:: (if any), while in Qt it always assumes 1 channel and sample rate of 44100 Hz. Use link::#-setData:: instead if you want more control.
 
