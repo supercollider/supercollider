@@ -29,7 +29,7 @@ QTreeView, QTreeWidget, QListView, QListWidget {
 
 /* active */
 QTabBar::tab::selected  {
-	background-color: hsv(220, 5, 244);
+	background-color: #ECEEF1; /* almost hsv(220, 5, 244) */
 	color: hsv(220, 5, 50);
 }
 
