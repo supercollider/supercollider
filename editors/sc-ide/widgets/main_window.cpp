@@ -410,6 +410,13 @@ void MainWindow::createActions()
     connect(action, SIGNAL(triggered()), mPostDocklet, SLOT(focus()));
     settings->addAction( action, "post-focus", ideCategory);
 
+	mActions[ReloadStyleSheet] = action = new QAction( tr("Reload Stylesheet"), this);
+	action->setStatusTip(tr("reload the style sheet"));
+	action->setShortcut(tr("Ctrl+L", "reload stylesheet"));
+	connect(action, SIGNAL(triggered()), this, SLOT(reloadStyleSheet()));
+	settings->addAction( action, "reload-stylesheet", ideCategory);
+
+
     // Language
     mActions[LookupImplementation] = action = new QAction(
         QIcon::fromTheme("window-lookupdefinition"), tr("Look Up Implementations..."), this);
