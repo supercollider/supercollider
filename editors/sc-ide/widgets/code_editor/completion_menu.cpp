@@ -37,11 +37,13 @@ CompletionMenu::CompletionMenu(QWidget * parent):
     mListView = new QListView();
     mListView->setModel(mFilterModel);
     mListView->setFrameShape(QFrame::NoFrame);
+    mListView->setFixedHeight(200);
 
     mTextBrowser = new QTextBrowser();
     mTextBrowser->setFrameShape(QFrame::NoFrame);
     mTextBrowser->setReadOnly(true);
-    mTextBrowser->setFixedSize(0, 200);
+    mTextBrowser->setFixedSize(500, 400);
+    mTextBrowser->hide();
     mTextBrowser->setOpenLinks(false);
 
     mLayout = new QHBoxLayout(this);
@@ -71,7 +73,8 @@ void CompletionMenu::adapt()
 void CompletionMenu::addInfo(QString info)
 {
     mTextBrowser->setText(info);
-    mTextBrowser->setFixedSize(500, 400);
+    mListView->setFixedHeight(400);
+    mTextBrowser->show();
 }
 
 void CompletionMenu::setCompletionRole(int role)
