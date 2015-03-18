@@ -117,9 +117,9 @@ void AudioStatusBox::wheelEvent(QWheelEvent * event)
 {
     if (event->orientation() == Qt::Vertical) {
         if (event->delta() > 0)
-            mServer->changeVolume(0.2);
+            mServer->changeVolume(event->delta() * 0.01);
         else
-            mServer->changeVolume(-0.2);
+            mServer->changeVolume(event->delta() * 0.01);
     }
     StatusBox::wheelEvent(event);
 }
