@@ -36,6 +36,7 @@
 #include <QFontMetrics>
 #include <QEvent>
 #include <QDebug>
+#include <QStyleOption>
 
 namespace ScIDE {
 
