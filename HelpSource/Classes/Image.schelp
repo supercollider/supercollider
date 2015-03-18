@@ -1,11 +1,11 @@
 class:: Image
 summary:: image component
 categories:: GUI>Views
-related:: View
+related:: Classes/View
 
 DESCRIPTION::
 
-Image enables the drawing of images in the SuperCollider GUI. 
+Image enables the drawing of images in the SuperCollider GUI.
 
 
 CLASSMETHODS::
@@ -554,7 +554,7 @@ NOTE::
 Compositing operations are currently disabled for tileInRect
 ::
 
-ARGUMENT::fraction
+ARGUMENT::opacity
 the opacity to use, ranging from 0.0 (fully transparent) to 1.0 (fully opaque)
 
 SUBSECTION::Instance Methods / accessing and setting pixels
@@ -692,7 +692,7 @@ code::
 ARGUMENT::array
 an link::Classes/Int32Array:: of size strong::rect::.width * strong::rect::.height containing all pixel values as 32bit Integer
 
-ARGUMENT::rect
+ARGUMENT::region
 a rectangle defining the portion to update in the receiver. By default strong::rect:: is nil, meaning full image size.
 
 ARGUMENT::start
