@@ -332,6 +332,8 @@ method::matchItem
 Interface shared with other classes that implements pattern matching. See also: matchItem.
 Function.matchItem evaluates the function with the item as argument, expecting a Boolean as reply.
 
+See also link::Reference/matchItem::.
+
 code::
 { |x| x > 5 }.matchItem(6); // true
 ::
