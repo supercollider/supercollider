@@ -54,16 +54,32 @@ GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
   
     mPreviewDocument = new Document(false);
     mPreviewEditor = new ScCodeEditor(mPreviewDocument);
+    mPreviewEditor->setLineWrapMode(QPlainTextEdit::NoWrap);
     mPreviewEditor->setReadOnly(true);
     mPreviewEditor->setVisible(false);
     mPreviewEditor->setTabChangesFocus(true);
   
+    mFilenameLabel = new QLabel();
+  
+    QVBoxLayout *queryLayout = new QVBoxLayout;
+    queryLayout->setMargin(0);
+    queryLayout->setSpacing(4);
+    queryLayout->addWidget(mQueryEdit);
+    queryLayout->addWidget(mResult);
+  
+    QHBoxLayout *topLayout = new QHBoxLayout;
+    topLayout->setSpacing(4);
+    topLayout->addLayout(queryLayout, 1);
+    topLayout->addWidget(mPreviewEditor, 3);
+
     QVBoxLayout *layout = new QVBoxLayout;
     layout->setContentsMargins(8, 8, 8, 8);
-    layout->setSpacing(4);
-    layout->addWidget(mQueryEdit);
-    layout->addWidget(mResult);
-    layout->addWidget(mPreviewEditor, 1);
+    layout->setSpacing(2);
+    layout->addLayout(layout, 1);
+  
+    layout->addLayout(topLayout);
+    layout->addWidget(mFilenameLabel);
+  
     setLayout(layout);
 
     connect(mQueryEdit, SIGNAL(returnPressed()), this, SLOT(performQuery()));
@@ -72,7 +88,7 @@ GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
 
     mResult->installEventFilter(this);
 
-    QRect bounds(0,0,600,300);
+    QRect bounds(0,0,800,350);
     if (parent) {
         QRect parentRect = parent->rect();
         bounds.moveCenter( parent->mapToGlobal( parentRect.center() ) );
@@ -94,13 +110,23 @@ void GenericLookupDialog::setModel(QStandardItemModel* model) {
     }
   
     mResult->setModel(model);
+
+    if (model) {
+      for (int i = 1; i < model->columnCount(); i++)
+        mResult->hideColumn(i);
+    } else {
+      mFilenameLabel->setText("");
+    }
   
     if (mResult->selectionModel()) {
+      
       mPreviewEditor->setActiveAppearance(true);
+      mPreviewEditor->setVisible(true);
       connect(mResult->selectionModel(), SIGNAL(currentChanged(const QModelIndex &, const QModelIndex &)),
             this, SLOT(currentChanged(const QModelIndex &, const QModelIndex &)));
     } else {
       mPreviewEditor->setActiveAppearance(false);
+      mPreviewEditor->setVisible(false);
     }
 }
   
@@ -137,6 +163,11 @@ void GenericLookupDialog::currentChanged(const QModelIndex &item, const QModelIn
     mPreviewDocument->setTextInRange( stream.readAll(), 0, -1 );  
     mPreviewEditor->showPosition(pos, 0);
     mPreviewEditor->selectCurrentRegion();
+  
+    QFontMetrics metrics(mFilenameLabel->font());
+    QString elidedPath = path + QString(":") + QString::number(pos);
+    elidedPath = metrics.elidedText(elidedPath, Qt::ElideMiddle, mFilenameLabel->width());
+    mFilenameLabel->setText(elidedPath);
 }
 
 bool GenericLookupDialog::openDocumentation()
@@ -263,16 +294,12 @@ void LookupDialog::performQuery()
     mIsPartialQuery = false;
     if (queryString[0].isUpper()) {
         bool success = performClassQuery(queryString);
-        mPreviewEditor->setVisible(success);
-
         if (success) {
             focusResults();
             return;
         }
     } else {
         bool success = performMethodQuery(queryString);
-        mPreviewEditor->setVisible(success);
-
         if (success) {
             focusResults();
             return;
@@ -280,7 +307,6 @@ void LookupDialog::performQuery()
     }
 
     bool success = performPartialQuery(queryString);
-    mPreviewEditor->setVisible(success);
     if (success)
         focusResults();
 }

@@ -25,6 +25,7 @@
 #include <QLineEdit>
 #include <QStandardItemModel>
 #include <QTreeWidget>
+#include <QLabel>
 
 #include "../core/sc_process.hpp"
 #include "code_editor/sc_editor.hpp"
@@ -72,6 +73,7 @@ protected:
     QLineEdit *mQueryEdit;
     Document *mPreviewDocument;
     ScCodeEditor *mPreviewEditor;
+    QLabel* mFilenameLabel;
 };
 
 class LookupDialog : public GenericLookupDialog
