@@ -15,16 +15,20 @@ QDialog {
 	background-color: hsv(220, 5, 244);
 }
 
-QLineEdit, QComboBox, QSpinBox, QLis {
-	background-color: hsv(220, 5, 190);
+QLineEdit, QComboBox, QSpinBox {
+	background-color: hsv(220, 5, 200);
 }
 
 QTreeView, QTreeWidget, QListView, QListWidget {
-	background-color: hsv(220, 5, 190);
+	background-color: hsv(220, 5, 220);
 }
 
-#toolbox, QTabWidget::pane, QTabBar {
+#toolbox, QTabBar {
 	background-color: hsv(220, 5, 220);
+}
+
+QTabWidget::pane {
+	background-color: #ECEEF1; /* hsv(220, 5, 244); */
 }
 
 /* active */
@@ -179,13 +183,13 @@ QToolButton {
 }
 
 QPushButton {
-    _background-color: rgb(200, 200, 200);
 	border: 1px solid rgba(0, 0, 0, 20);
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                stop:0 rgb(200, 200, 200), 
-                stop: 0.1 rgb(190, 190, 190), 
-                stop: 0.9 rgb(190, 190, 190),
-                stop: 1 rgb(180, 180, 180));
+                stop:0 hsv(220, 5, 225), 
+                stop: 0.1 hsv(220, 5, 220), 
+                stop: 0.9 hsv(220, 5, 220), 
+                stop: 1 hsv(220, 5, 215)
+            ); 
     padding: 2px;
     min-width: 80px;
 }
