@@ -29,6 +29,7 @@
 #include <QDesktopWidget>
 #include <QApplication>
 #include <QPainter>
+#include <QFileInfo>
 
 #include "yaml-cpp/node.h"
 #include "yaml-cpp/parser.h"
@@ -42,7 +43,7 @@ GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
     hide();
     
     addAction(MainWindow::instance()->action(MainWindow::LookupDocumentationForCursor));
-    
+
     mQueryEdit = new QLineEdit(this);
 
     mResult = new QTreeView(this);
@@ -50,12 +51,19 @@ GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
     mResult->setAllColumnsShowFocus(true);
     mResult->setHeaderHidden(true);
     mResult->header()->setStretchLastSection(false);
-
+  
+    mPreviewDocument = new Document(false);
+    mPreviewEditor = new ScCodeEditor(mPreviewDocument);
+    mPreviewEditor->setReadOnly(true);
+    mPreviewEditor->setVisible(false);
+    mPreviewEditor->setTabChangesFocus(true);
+  
     QVBoxLayout *layout = new QVBoxLayout;
     layout->setContentsMargins(8, 8, 8, 8);
     layout->setSpacing(4);
     layout->addWidget(mQueryEdit);
     layout->addWidget(mResult);
+    layout->addWidget(mPreviewEditor, 1);
     setLayout(layout);
 
     connect(mQueryEdit, SIGNAL(returnPressed()), this, SLOT(performQuery()));
@@ -77,6 +85,58 @@ GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
 
     mQueryEdit->setFocus( Qt::OtherFocusReason );
     show();
+}
+  
+void GenericLookupDialog::setModel(QStandardItemModel* model) {
+    if (mResult->selectionModel()) {
+      disconnect(mResult->selectionModel(), SIGNAL(currentChanged(const QModelIndex &, const QModelIndex &)),
+              this, SLOT(currentChanged(const QModelIndex &, const QModelIndex &)));
+    }
+  
+    mResult->setModel(model);
+  
+    if (mResult->selectionModel()) {
+      mPreviewEditor->setActiveAppearance(true);
+      connect(mResult->selectionModel(), SIGNAL(currentChanged(const QModelIndex &, const QModelIndex &)),
+            this, SLOT(currentChanged(const QModelIndex &, const QModelIndex &)));
+    } else {
+      mPreviewEditor->setActiveAppearance(false);
+    }
+}
+  
+void GenericLookupDialog::currentChanged(const QModelIndex &item, const QModelIndex &oldItem)
+{
+    QString path = item.data( PathRole ).toString();
+    int pos      = item.data( CharPosRole ).toInt();
+    
+    QFileInfo info(path);
+    QString cpath = info.canonicalFilePath();
+    info.setFile(cpath);
+    
+    if (cpath.isEmpty()) {
+      MainWindow::instance()->showStatusMessage (
+        tr("Cannot open file: %1 (file does not exist)").arg(path) );
+      return;
+    }
+    
+    // Open the file
+    QFile file(cpath);
+    if(!file.open(QIODevice::ReadOnly)) {
+      MainWindow::instance()->showStatusMessage(
+        tr("Cannot open file for reading: %1").arg(cpath));
+      return;
+    }
+  
+    QByteArray bytes( file.readAll() );
+    file.close();
+  
+    QTextStream stream(bytes);
+    stream.setCodec("UTF-8");
+    stream.setAutoDetectUnicode(true);
+
+    mPreviewDocument->setTextInRange( stream.readAll(), 0, -1 );  
+    mPreviewEditor->showPosition(pos, 0);
+    mPreviewEditor->selectCurrentRegion();
 }
 
 bool GenericLookupDialog::openDocumentation()
@@ -190,7 +250,7 @@ void LookupDialog::performQuery()
     QString queryString = mQueryEdit->text();
 
     if (queryString.isEmpty()) {
-        mResult->setModel(NULL);
+        setModel(NULL);
         return;
     }
 
@@ -203,12 +263,16 @@ void LookupDialog::performQuery()
     mIsPartialQuery = false;
     if (queryString[0].isUpper()) {
         bool success = performClassQuery(queryString);
+        mPreviewEditor->setVisible(success);
+
         if (success) {
             focusResults();
             return;
         }
     } else {
         bool success = performMethodQuery(queryString);
+        mPreviewEditor->setVisible(success);
+
         if (success) {
             focusResults();
             return;
@@ -216,6 +280,7 @@ void LookupDialog::performQuery()
     }
 
     bool success = performPartialQuery(queryString);
+    mPreviewEditor->setVisible(success);
     if (success)
         focusResults();
 }
@@ -268,7 +333,7 @@ QList<QStandardItem*> GenericLookupDialog::makeDialogItem( QString const & displ
     return ret;
 }
 
-QStandardItemModel * LookupDialog::modelForClass(const QString &className)
+QStandardItemModel * LookupDialog::modelForClass(const QString &className, const QString &methodName)
 {
     const Introspection & introspection = Main::scProcess()->introspection();
     const Class *klass = introspection.findClass(className);
@@ -284,32 +349,39 @@ QStandardItemModel * LookupDialog::modelForClass(const QString &className)
 
         QString displayPath = introspection.compactLibraryPath(klass->definition.path);
 
-        parentItem->appendRow(makeDialogItem(klass->name.get(), displayPath,
-                                             klass->definition.path.get(),
-                                             klass->definition.position,
-                                             klass->name.get(), QString(""),
-                                             true ));
+        if (methodName.isEmpty()) {
+            parentItem->appendRow(makeDialogItem(klass->name.get(), displayPath,
+                                                 klass->definition.path.get(),
+                                                 klass->definition.position,
+                                                 klass->name.get(), QString(""),
+                                                 true ));
+        }
 
         foreach (const Method * method, metaClass->methods) {
             QString signature = method->signature( Method::SignatureWithoutArguments );
             QString displayPath = introspection.compactLibraryPath(method->definition.path);
-
-            parentItem->appendRow(makeDialogItem( signature, displayPath,
-                                                  method->definition.path.get(),
-                                                  method->definition.position,
-                                                  metaClass->name.get(), method->name.get(),
-                                                  false ));
+          
+            if (method->matches(methodName)) {
+                parentItem->appendRow(makeDialogItem( signature, displayPath,
+                                                      method->definition.path.get(),
+                                                      method->definition.position,
+                                                      metaClass->name.get(), method->name.get(),
+                                                      false ));
+            }
         }
 
         foreach (const Method * method, klass->methods) {
             QString signature = method->signature( Method::SignatureWithoutArguments );
             QString displayPath = introspection.compactLibraryPath(method->definition.path);
 
-            parentItem->appendRow(makeDialogItem( signature, displayPath,
-                                                  method->definition.path.get(),
-                                                  method->definition.position,
-                                                  klass->name.get(), method->name.get(),
-                                                  false ));
+
+            if (method->matches(methodName)) {
+                parentItem->appendRow(makeDialogItem( signature, displayPath,
+                                                      method->definition.path.get(),
+                                                      method->definition.position,
+                                                      klass->name.get(), method->name.get(),
+                                                      false ));
+            }
         }
 
         klass = klass->superClass;
@@ -397,22 +469,28 @@ QStandardItemModel * LookupDialog::modelForPartialQuery(const QString & queryStr
 
 bool LookupDialog::performClassQuery(const QString & className)
 {
-    QStandardItemModel * model = modelForClass(className);
-    mResult->setModel(model);
+    QStandardItemModel * model;
+    if (className.contains(QChar(':'))) {
+        QStringList split = className.split(":");
+        model = modelForClass(split[0].trimmed(), split[1].trimmed());
+    } else {
+        model = modelForClass(className);
+    }
+    setModel(model);
     return model;
 }
 
 bool LookupDialog::performMethodQuery(const QString & methodName)
 {
     QStandardItemModel * model = modelForMethod(methodName);
-    mResult->setModel(model);
+    setModel(model);
     return model;
 }
 
 bool LookupDialog::performPartialQuery(const QString & queryString)
 {
     QStandardItemModel * model = modelForPartialQuery(queryString);
-    mResult->setModel(model);
+    setModel(model);
     return model;
 }
 
@@ -434,7 +512,7 @@ void ReferencesDialog::performQuery()
     QString queryString = mQueryEdit->text();
 
     if (queryString.isEmpty()) {
-        mResult->setModel(NULL);
+        setModel(NULL);
         return;
     }
 
@@ -443,13 +521,13 @@ void ReferencesDialog::performQuery()
 
 void ReferencesDialog::requestCancelled()
 {
-    mResult->setModel(NULL);
+    setModel(NULL);
 }
 
 void ReferencesDialog::onResposeFromLanguage(const QString &, const QString &responseData)
 {
     QStandardItemModel * model = parse(responseData);
-    mResult->setModel(model);
+    setModel(model);
 
     if (model)
         focusResults();
