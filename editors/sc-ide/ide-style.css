@@ -29,7 +29,7 @@ QTreeView, QTreeWidget, QListView, QListWidget {
 
 /* active */
 QTabBar::tab::selected  {
-	background: hsv(220, 5, 244);
+	background-color: hsv(220, 5, 244);
 	color: hsv(220, 5, 50);
 }
 
@@ -51,10 +51,6 @@ QTabBar::tab::hover:!selected {
 
 QTabBar {
 	qproperty-drawBase: 0;
-}
-
-QTabWidget {
-	background-color: black;
 }
 
 #docklettoolbar {
@@ -91,7 +87,6 @@ QDockWidget {
 }
 
 #docklettoolbar > QLineEdit {
-	border: 1px solid palette(shadow);
 	margin-right: 3px;
 }
 
@@ -123,7 +118,7 @@ QComboBox::down-arrow {
 }
 
 QLineEdit {
-	border: 1px solid palette(shadow);
+	border: 1px solid rgba(0, 0, 0, 20);
 }
 
 #multieditor {
@@ -201,7 +196,6 @@ QListWidget#configPageList {
 
 QRadioButton::indicator::pressed, QCheckBox::indicator::pressed, QPushButton::pressed {
     border: 1px solid rgba(0, 0, 0, 90);
-	_background-color: palette(shadow);
 	background-color: hsv(220, 5, 160)
 }
 
