@@ -25,16 +25,13 @@ namespace ScIDE {
 StatusLabel::StatusLabel(QWidget *parent):
     QLabel(parent)
 {
-    setAutoFillBackground(true);
-    setMargin(3);
-    setAlignment(Qt::AlignCenter);
-    setBackground(Qt::black);
-    setTextColor(Qt::white);
-
-    QFont font("Monospace");
-    font.setStyleHint(QFont::Monospace);
-    font.setBold(true);
-    setFont(font);
+    setObjectName("statusLabel");
+    setStyleSheet(
+        "                                  "
+        "   margin: 3px;                    "
+        "   background-color: black;        "
+        "                                  "
+    );
 }
 
 void StatusLabel::setBackground(const QBrush & brush)
@@ -55,7 +52,7 @@ StatusBox::StatusBox(QWidget *parent):
     QWidget(parent),
     mMenu(0)
 {
-
+    setObjectName("statusBox");
 }
 
 void StatusBox::showContextMenu()
