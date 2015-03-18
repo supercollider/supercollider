@@ -43,9 +43,6 @@ GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
     
     addAction(MainWindow::instance()->action(MainWindow::LookupDocumentationForCursor));
     
-    hide();
-    setWindowFlags(Qt::Tool);
-
     mQueryEdit = new QLineEdit(this);
 
     mResult = new QTreeView(this);
