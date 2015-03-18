@@ -320,6 +320,7 @@ int GenericCodeEditor::findAll( const QRegExp &expr, QTextDocument::FindFlags op
 
     QTextEdit::ExtraSelection selection;
     selection.format = mSearchResultTextFormat;
+    selection.format.setUnderlineStyle(QTextCharFormat::DotLine);
 
     QTextDocument *doc = QPlainTextEdit::document();
     QTextBlock block = doc->begin();
