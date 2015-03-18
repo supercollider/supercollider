@@ -29,6 +29,8 @@
 #include <QToolButton>
 #include <QStyle>
 #include <QHBoxLayout>
+#include <QStyleOption>
+#include <QPainter>
 
 namespace ScIDE {
 
