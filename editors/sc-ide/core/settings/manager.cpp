@@ -142,6 +142,14 @@ QString Manager::keyForAction ( QAction *action )
 
 QFont Manager::codeFont()
 {
+    // This may be called inside a beginGroup/endGroup
+    // Save current group state, and then restore later, so we can use abs keys
+    QStringList oldGroup;
+    while (!group().isEmpty()) {
+        oldGroup.push_front(group());
+        endGroup();
+    }
+    
     QString fontFamily = value("IDE/editor/font/family").toString();
     int fontSize = value("IDE/editor/font/size").toInt();
     bool fontAntialas = value("IDE/editor/font/antialias").toBool();
@@ -154,6 +162,11 @@ QFont Manager::codeFont()
 
     if (!fontAntialas)
         font.setStyleStrategy(QFont::StyleStrategy(font.styleStrategy() | QFont::NoAntialias));
+    
+    // restore group stack
+    foreach(const QString& group, oldGroup) {
+        beginGroup(group);
+    }
 
     return font;
 }
