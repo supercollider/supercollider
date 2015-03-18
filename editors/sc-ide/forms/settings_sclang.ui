@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>613</width>
-    <height>421</height>
+    <height>432</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,7 +23,7 @@
       <item row="0" column="1">
        <widget class="QCheckBox" name="autoStart">
         <property name="text">
-         <string>Start Interpreter With IDE</string>
+         <string>Launch interpreter on start</string>
         </property>
        </widget>
       </item>
@@ -33,9 +33,6 @@
          <string>Runtime Directory:</string>
         </property>
        </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="ScIDE::PathChooserWidget" name="runtimeDir"/>
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="activeConfigFileLabel">
@@ -64,6 +61,12 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="maximumSize">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
           <property name="toolTip">
            <string>Save a new config file</string>
           </property>
@@ -80,12 +83,28 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="maximumSize">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
           <property name="text">
            <string>-</string>
           </property>
          </widget>
         </item>
        </layout>
+      </item>
+      <item row="1" column="1">
+       <widget class="ScIDE::PathChooserWidget" name="runtimeDir">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -117,8 +136,89 @@
       <property name="fieldGrowthPolicy">
        <enum>QFormLayout::ExpandingFieldsGrow</enum>
       </property>
+      <item row="3" column="1">
+       <widget class="QWidget" name="widget_2" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_2">
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <item row="3" column="1">
+          <widget class="QCheckBox" name="sclang_post_inline_warnings">
+           <property name="text">
+            <string>Post Inline Warnings</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1" rowspan="3">
+          <widget class="QListWidget" name="sclang_exclude_directories"/>
+         </item>
+         <item row="0" column="3" rowspan="3">
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item>
+            <widget class="QToolButton" name="sclang_add_exclude">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>20</width>
+               <height>20</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>+</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="sclang_remove_exclude">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>20</width>
+               <height>20</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>-</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="excludeLabel">
+        <property name="text">
+         <string>Exclude:</string>
+        </property>
+       </widget>
+      </item>
       <item row="2" column="0">
-       <widget class="QLabel" name="label">
+       <widget class="QLabel" name="includeName">
         <property name="text">
          <string>Include:</string>
         </property>
@@ -136,15 +236,21 @@
          <property name="sizeConstraint">
           <enum>QLayout::SetDefaultConstraint</enum>
          </property>
-         <item row="0" column="0" rowspan="2">
-          <widget class="QListWidget" name="sclang_include_directories"/>
-         </item>
-         <item row="0" column="2">
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <item row="0" column="2" rowspan="2">
           <layout class="QVBoxLayout" name="verticalLayout_3">
            <item>
             <widget class="QToolButton" name="sclang_add_include">
              <property name="enabled">
               <bool>true</bool>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>20</width>
+               <height>20</height>
+              </size>
              </property>
              <property name="text">
               <string>+</string>
@@ -156,67 +262,36 @@
              <property name="enabled">
               <bool>true</bool>
              </property>
-             <property name="text">
-              <string>-</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="excludeLabel">
-        <property name="text">
-         <string>Exclude:</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QWidget" name="widget_2" native="true">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_2">
-         <item row="0" column="1" rowspan="3">
-          <widget class="QListWidget" name="sclang_exclude_directories"/>
-         </item>
-         <item row="0" column="3">
-          <layout class="QVBoxLayout" name="verticalLayout_2">
-           <item>
-            <widget class="QToolButton" name="sclang_add_exclude">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <property name="text">
-              <string>+</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QToolButton" name="sclang_remove_exclude">
-             <property name="enabled">
-              <bool>true</bool>
+             <property name="maximumSize">
+              <size>
+               <width>20</width>
+               <height>20</height>
+              </size>
              </property>
              <property name="text">
               <string>-</string>
              </property>
             </widget>
            </item>
+           <item>
+            <spacer name="verticalSpacer">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
           </layout>
          </item>
+         <item row="0" column="0" rowspan="2">
+          <widget class="QListWidget" name="sclang_include_directories"/>
+         </item>
         </layout>
-       </widget>
-      </item>
-      <item row="4" column="1">
-       <widget class="QCheckBox" name="sclang_post_inline_warnings">
-        <property name="text">
-         <string>Post Inline Warnings</string>
-        </property>
        </widget>
       </item>
      </layout>
