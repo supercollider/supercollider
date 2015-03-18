@@ -33,6 +33,8 @@
 #include <QTextDocument>
 #include <QSplitter>
 #include <QSignalMapper>
+#include <QStyleOption>
+#include <QPainter>
 
 namespace ScIDE {
 
@@ -53,6 +55,7 @@ class EditorTabBar : public QTabBar
 
 public:
     explicit EditorTabBar(QWidget* parent = nullptr);
+    void paintEvent( QPaintEvent *event );
 
 private slots:
     void onCloseTab();
@@ -145,7 +148,15 @@ public:
 
     void saveSession( Session * );
     void switchSession( Session * );
-
+    
+    void paintEvent( QPaintEvent *event )
+    {
+        QStyleOption opt;
+        opt.init(this);
+        QPainter p(this);
+        style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+    }
+    
 signals:
     void currentDocumentChanged( Document * );
 
