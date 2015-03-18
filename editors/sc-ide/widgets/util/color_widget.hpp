@@ -79,7 +79,7 @@ signals:
 protected:
     virtual void mouseReleaseEvent (QMouseEvent *)
     {
-        QColor c = QColorDialog::getColor(color(), this);
+        QColor c = QColorDialog::getColor(color(), this, QString(), QColorDialog::ShowAlphaChannel);
         if (c.isValid()) {
             setColor(c);
             emit colorPicked( c );
