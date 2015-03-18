@@ -135,21 +135,22 @@ MainWindow::MainWindow(Main * main) :
     mToolBox->addWidget(mCmdLine);
     mToolBox->addWidget(mFindReplaceTool);
     mToolBox->addWidget(mGoToLineTool);
+    
     mToolBox->hide();
 
     // Docks
     mDocumentsDocklet = new DocumentsDocklet(main->documentManager(), this);
-    mDocumentsDocklet->setObjectName("documents-dock");
+    mDocumentsDocklet->setObjectName("documentsDock");
     addDockWidget(Qt::LeftDockWidgetArea, mDocumentsDocklet->dockWidget());
     mDocumentsDocklet->hide();
 
     mHelpBrowserDocklet = new HelpBrowserDocklet(this);
-    mHelpBrowserDocklet->setObjectName("help-dock");
+    mHelpBrowserDocklet->setObjectName("helpDock");
     addDockWidget(Qt::RightDockWidgetArea, mHelpBrowserDocklet->dockWidget());
     //mHelpBrowserDockable->hide();
 
     mPostDocklet = new PostDocklet(this);
-    mPostDocklet->setObjectName("post-dock");
+    mPostDocklet->setObjectName("postDock");
     addDockWidget(Qt::RightDockWidgetArea, mPostDocklet->dockWidget());
 
     // Layout
