@@ -624,7 +624,7 @@ void AutoCompleter::showCompletionMenu(bool forceShow)
 
     connect(menu, SIGNAL(finished(int)), this, SLOT(onCompletionMenuFinished(int)));
 
-    QRect popupTargetRect = globalCursorRect(mCompletion.pos).adjusted(0,-5,0,5);
+    QRect popupTargetRect = globalCursorRect(mCompletion.pos).adjusted(-6,-9,0,5);
 
     menu->popup( popupTargetRect );
 
