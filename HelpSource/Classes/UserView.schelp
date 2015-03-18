@@ -82,11 +82,8 @@ METHOD:: animate
 		A Boolean.
 
 METHOD:: frameRate
-	The interval at which the view regularily redraws itself, if link::#-animate:: is code::true::.
+	The interval at which the view regularily redraws itself, if link::#-animate:: is code::true::. You can change the desired frame rate by setting this variable.
 
-	In strong:: Qt GUI :: you can change the desired frame rate by setting this variable.
-
-	In strong:: Cocoa GUI :: this variable is not settable. Instead, use code::thisProcess.setDeferredTaskInterval(1/fps):: to change the global interval used for animation frame rate.
 
 	The default frame rate is 60fps.
 

@@ -5,8 +5,6 @@ related:: Classes/HLayout, Classes/VLayout, Classes/GridLayout, Guides/GUI-Layou
 
 DESCRIPTION::
 
-note:: StackLayout is only implemented in strong::Qt GUI:: ::
-
 StackLayout manages several views stacked into the same space. It has two modes: it can either switch the view that is visible, hiding the others, or it can keep all of them visible, switching the one that is on top.
 
 The second mode is useful for example for overlaying a view with a link::Classes/UserView::, on which you can then draw additional information. If you still want to be able to interact with the view below using the mouse, you can make the one above ignore the mouse using link::Classes/View#-acceptsMouse::. See the link::#examples#example:: below.

@@ -31,7 +31,6 @@ METHOD:: items
 		An Array of Strings, each String defining the text to represent an item.
 
 METHOD:: clear
-    note:: Only available in Qt GUI ::
     Removes all items.
 
 METHOD:: value
@@ -44,7 +43,6 @@ METHOD:: valueAction
 	Sets link::#-value:: and triggers the link::#-action::.
 
 METHOD:: selection
-	note::Only in Qt GUI::
 	An array of all selected indexes. When setting selection, either an array or a single integer may be used.
 
 	Note that this may be different than link::#-value:: when link::#-selectionMode:: allows multiple items to be selected. When setting selection in single-item selection mode, only the last index will remain selected.
@@ -82,7 +80,6 @@ METHOD:: hiliteColor
 SUBSECTION:: Interaction
 
 METHOD:: selectionMode
-	note:: Only available in Qt GUI ::
 
 	The allowed mode of item selection, according to the following table:
 
@@ -106,8 +103,8 @@ METHOD:: action
 	The action object evaluated whenever the user changes the emphasis::current:: item, i.e. when link::#-value:: changes as a result of GUI interaction.
 
 METHOD:: selectionAction
-	note::Only in Qt GUI::
-	The action object evaluated whenever link::#-selection:: changes.
+
+The action object evaluated whenever link::#-selection:: changes.
 
 METHOD:: enterKeyAction
 	The action object evaluated whenever the user presses the Enter (Return) key.
