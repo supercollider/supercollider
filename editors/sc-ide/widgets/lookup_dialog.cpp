@@ -38,6 +38,9 @@ namespace ScIDE {
 GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
     QDialog(parent)
 {
+    setWindowFlags(Qt::Popup);
+    hide();
+    
     addAction(MainWindow::instance()->action(MainWindow::LookupDocumentationForCursor));
 
     mQueryEdit = new QLineEdit(this);
@@ -49,8 +52,8 @@ GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
     mResult->header()->setStretchLastSection(false);
 
     QVBoxLayout *layout = new QVBoxLayout;
-    layout->setContentsMargins(0,0,0,0);
-    layout->setSpacing(1);
+    layout->setContentsMargins(8, 8, 8, 8);
+    layout->setSpacing(4);
     layout->addWidget(mQueryEdit);
     layout->addWidget(mResult);
     setLayout(layout);
@@ -73,6 +76,7 @@ GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
     setGeometry(bounds);
 
     mQueryEdit->setFocus( Qt::OtherFocusReason );
+    show();
 }
 
 bool GenericLookupDialog::openDocumentation()
