@@ -130,8 +130,12 @@ void GenericCodeEditor::applySettings( Settings::Manager *settings )
         palette.setBrush(QPalette::Text, fg);
 
     // NOTE: the line number widget will inherit the palette from the editor
+    QFont font = settings->codeFont();
     format = &settings->getThemeVal("lineNumbers");
-    mLineIndicator->setFont(format->font());
+    font.setItalic(format->font().italic());
+    font.setWeight(format->font().weight());
+
+    mLineIndicator->setFont(font);
     bg = format->background();
     fg = format->foreground();
     palette.setBrush(QPalette::Mid,
@@ -160,6 +164,7 @@ void GenericCodeEditor::applySettings( Settings::Manager *settings )
     setShowLinenumber( showLinenumber );
     mLineIndicator->setLineCount(blockCount());
     setPalette(palette);
+    mLineIndicator->setPalette(palette);
     
     setActiveAppearance(hasFocus());
 }
@@ -920,6 +925,7 @@ void GenericCodeEditor::paintLineIndicator( QPaintEvent *e )
             }
 
             QString number = QString::number(num + 1);
+            p.setFont(mLineIndicator->font());
             p.setPen(plt.color(QPalette::ButtonText));
             p.drawText(0, top, mLineIndicator->width() - 10, bottom - top,
                        Qt::AlignRight, number);
