@@ -13,7 +13,7 @@ The view places the children onto a emphasis::canvas::, which may then be scroll
 
 The size of the canvas is always equal to the collective bounds of the children, and automatically adjusts when they are added, moved, resized and removed. If you wish to set it to a particular size, you could do so by first placing e.g. a link::Classes/CompositeView:: (or another container) of desired size, and then placing all the other views into that container.
 
-Exceptionally though, in strong::Qt GUI:: you can strong::replace the canvas:: with any other view (e.g. simply with link::Classes/View::), which allows you to install a link::Classes/Layout##layout:: on it. In that case, the canvas will fill the whole visible area of the ScrollView, if the layout contents allow so, or a larger area, if the layout contents demand so. Effectively, the strong::contents will resize:: together with the ScrollView, unless their size constraints prevent that, and if link::#-autohidesScrollers:: is code::true::, a scrollbar will only be shown if the contents can not be resized small enough in the scrollbar's direction. See link::#-canvas:: for further explanation.
+Exceptionally though, you can strong::replace the canvas:: with any other view (e.g. simply with link::Classes/View::), which allows you to install a link::Classes/Layout##layout:: on it. In that case, the canvas will fill the whole visible area of the ScrollView, if the layout contents allow so, or a larger area, if the layout contents demand so. Effectively, the strong::contents will resize:: together with the ScrollView, unless their size constraints prevent that, and if link::#-autohidesScrollers:: is code::true::, a scrollbar will only be shown if the contents can not be resized small enough in the scrollbar's direction. See link::#-canvas:: for further explanation.
 
 subsection:: Restrictions
 
@@ -35,7 +35,6 @@ INSTANCEMETHODS::
 SUBSECTION:: Geometry
 
 METHOD:: canvas
-    note:: Only in Qt GUI ::
 
     Returns the current canvas that carries the child views, or replaces it with another.
 
@@ -89,7 +88,6 @@ METHOD:: hasVerticalScroller
 
 METHOD:: autoScrolls
 
-    note:: Not implemented yet in Qt GUI ::
 
     Sets or gets whether the view scrolls automatically when you drag on a child view past the edge of visible bounds.
 
@@ -114,7 +112,6 @@ EXAMPLES::
 
 SUBSECTION:: Layout management on the canvas
 
-note:: Only works with Qt GUI ::
 
 By replacing the canvas of the ScrollView with a View, and installing a layout on it, the contents will expand to the edge of the ScrollView, and only exceed the edge if necessary.
 

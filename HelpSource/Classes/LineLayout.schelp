@@ -1,6 +1,6 @@
 CLASS:: LineLayout
 summary:: Superclass of layouts that distribute views in a line
-categories:: GUI>Kits>Qt
+categories:: GUI>Layout
 related:: Classes/HLayout, Classes/VLayout, Classes/GridLayout, Classes/StackLayout, Guides/GUI-Layout-Management
 
 DESCRIPTION::
