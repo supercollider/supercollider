@@ -141,10 +141,13 @@ void TextFindReplacePanel::setMode( Mode mode )
     mMode = mode;
 
     bool visible = mMode == Replace;
+
+    setUpdatesEnabled(false);
     mReplaceLabel->setVisible(visible);
     mReplaceField->setVisible(visible);
     mReplaceBtn->setVisible(visible);
     mReplaceAllBtn->setVisible(visible);
+    setUpdatesEnabled(true);
 }
 
 void TextFindReplacePanel::initiate()
