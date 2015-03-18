@@ -62,6 +62,7 @@ void DocketToolButton::mousePressEvent(QMouseEvent *event)
 DockletToolBar::DockletToolBar(const QString &title)
 {
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    setObjectName(QString("docklettoolbar"));
 
     mOptionsMenu = new QMenu(this);
 
@@ -108,13 +109,11 @@ void DockletToolBar::paintEvent( QPaintEvent *event )
 
     QRect r = rect();
 
-    painter.setBrush( palette().color(QPalette::Mid) );
-    painter.setPen(Qt::NoPen);
-    painter.drawRect(r);
-
-    painter.setPen( palette().color(QPalette::Shadow) );
-    painter.drawLine( r.bottomLeft(), r.bottomRight() );
-
+    QStyleOption opt;
+    opt.init(this);
+    QPainter p(this);
+    style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+    
     //painter.setPen( palette().color(QPalette::Mid).lighter(120) );
     //painter.drawLine( r.topLeft(), r.topRight() );
 }
