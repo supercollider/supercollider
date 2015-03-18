@@ -42,6 +42,9 @@ GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
     hide();
     
     addAction(MainWindow::instance()->action(MainWindow::LookupDocumentationForCursor));
+    
+    hide();
+    setWindowFlags(Qt::Tool);
 
     mQueryEdit = new QLineEdit(this);
 
@@ -182,8 +185,7 @@ LookupDialog::LookupDialog( QWidget * parent ):
 {
     setWindowTitle(tr("Look Up Implementations"));
 
-    mQueryEdit->setText(tr("Enter class or method name..."));
-    mQueryEdit->selectAll();
+    mQueryEdit->setPlaceholderText(tr("Enter class or method name..."));
 }
 
 void LookupDialog::performQuery()
@@ -427,8 +429,7 @@ ReferencesDialog::ReferencesDialog(QWidget * parent):
 
     setWindowTitle(tr("Look Up References"));
 
-    mQueryEdit->setText(tr("Enter class or method name..."));
-    mQueryEdit->selectAll();
+    mQueryEdit->setPlaceholderText(tr("Enter class or method name..."));
 }
 
 void ReferencesDialog::performQuery()
