@@ -1,6 +1,6 @@
 Class:: Layout
 summary:: Superclass of all GUI layouts
-categories:: GUI>Kits>Qt
+categories:: GUI>Layout
 related:: Classes/HLayout, Classes/VLayout, Classes/GridLayout, Classes/StackLayout, Guides/GUI-Layout-Management
 
 description::

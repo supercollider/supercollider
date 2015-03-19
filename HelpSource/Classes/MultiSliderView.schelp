@@ -19,14 +19,9 @@ PRIVATE:: key
 
 METHOD:: new
 
-	note:: strong:: In Qt GUI: ::
 
 	A new MultiSliderView is created empty, without any columns. link::#-size:: or link::#-value:: has to be set in order to create some columns.
 	::
-
-	note:: strong:: Other GUI kits: ::
-
-	A new MultiSliderView is created with code::bounds.width/12:: sliders. However, the default link::#-thumbSize:: is 12 and the default link::#-gap:: is 1. The view width has to be code::13*n+2:: for all the sliders to automatically fit in the view.
 
 	So if you want a specific number of sliders, then it is best to specify the link::#-size:: and set link::#-elasticMode:: to 1. Then you will get a MultiSliderView which distributes link::#-size:: amount of sliders over code::bounds.width::, where the slider widths are at maximum link::#-indexThumbSize:: (default 12) and the link::#-gap:: is adjusted accordingly.
 	::
@@ -229,8 +224,8 @@ METHOD:: defaultKeyDownAction
 
 	table::
 	## strong::Key::   || strong::Effect::
-	## up arrow        || Qt: increment -currentValue by -step; Cocoa: decrement -gap by 1
-	## down arrow      || Qt: decrement -currentValue by -step; Cocoa: increment -gap by 1
+	## up arrow        || increment -currentValue by -step
+	## down arrow      || decrement -currentValue by -step
 	## right arrow     || increment -index by 1
 	## left arrow      || decrement -index by 1
 	::
