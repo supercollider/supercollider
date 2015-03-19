@@ -26,7 +26,6 @@ METHOD:: items
 		An Array of Strings or Symbols.
 
 METHOD:: clear
- note:: Only available in Qt GUI ::
  Removes all items.
 
 METHOD:: item

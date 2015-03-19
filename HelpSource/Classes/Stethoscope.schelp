@@ -119,11 +119,7 @@ METHOD:: numChannels
         An Integer.
 
 METHOD:: bufsize
-    The size of the scoping buffer.
-
-    In strong::Swing:: and strong::Cococa:: GUI kits, this is the amount of signal frames that will be accumulated before they are displayed. However, it is strong::NOT ensured:: that the onsets of displayed portions of signals fall within any constant period. In other words, it is undefined how many frames will pass between one displayed portion, and another.
-
-    In strong::Qt:: GUI, this is not the issue; code::bufsize:: only defines the maximum allowed link::#-cycle::.
+   Defines the maximum allowed link::#-cycle::.
 
 METHOD:: cycle
     note:: Only available in Qt GUI ::
@@ -154,7 +150,7 @@ METHOD:: zoom
 METHOD:: xZoom
     Magnifies the displayed wave horizontally to the given factor.
 
-    In strong::Qt GUI::, this sets link::#-cycle:: to code::1024 * xZoom.reciprocal::.
+    This sets link::#-cycle:: to code::1024 * xZoom.reciprocal::.
 
     argument::
         A Float.

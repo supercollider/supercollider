@@ -441,7 +441,6 @@ w.refresh;
 
 method:: matrix
 Gets or sets the coordinate system transformation matrix.
-note::Getter only available in Qt GUI::
 
 See link::#Matrix example:: for an example.
 

@@ -5,8 +5,6 @@ related:: Classes/HLayout, Classes/VLayout, Classes/StackLayout, Guides/GUI-Layo
 
 DESCRIPTION::
 
-note:: GridLayout is only implemented in strong::Qt GUI:: ::
-
 GridLayout distributes its space into a strong::grid of rows and columns::, where each item can occupy strong::one or more cells::.
 
 You can construct the layout in two ways using link::#*rows:: and link::#*columns::. In the former constructor you pass arrays of items by rows, and in the latter by columns. Items can also be added later using link::#-add:: and link::#-addSpanning::. To remove an item, simply use link::Classes/View#-remove:: for views, or link::Classes/QObject#-destroy:: for views or layouts.
