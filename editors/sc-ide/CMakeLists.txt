@@ -221,7 +221,7 @@ add_custom_target( update_ide_translations
 
 qt5_wrap_cpp( ide_moc_src ${ide_moc_hdr} )
 qt5_wrap_ui( ide_forms_src ${ide_forms} )
-qt5_add_resources( ide_rcc resources.qrc )
+qt5_add_resources( ide_rcc resources.qrc fonts/source-code-pro.qrc fonts/mplus-2p.qrc )
 qt5_add_translation( translations ${translation_src} ${native_translation_src} )
 
 set(ide_sources ${ide_src} ${all_hdr} )
