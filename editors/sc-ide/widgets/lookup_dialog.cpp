@@ -90,8 +90,9 @@ GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
 
     QRect bounds(0,0,800,350);
     if (parent) {
-        QRect parentRect = parent->rect();
-        bounds.moveCenter( parent->mapToGlobal( parentRect.center() ) );
+        QWidget* window = parent->topLevelWidget();
+        QRect parentRect = window->rect();
+        bounds.moveCenter( parentRect.center() );
     } else {
         QRect availableBounds = QApplication::desktop()->availableGeometry(this);
         bounds.moveCenter( availableBounds.center() );
