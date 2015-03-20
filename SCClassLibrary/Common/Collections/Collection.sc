@@ -177,6 +177,9 @@ Collection {
 		}
 		^res;
 	}
+	collectInPlace { |function |
+		this.do { |item, i| this.put(i, function.value(item, i)) }
+	}
 	detect { | function |
 		this.do {|elem, i| if (function.value(elem, i)) { ^elem } }
 		^nil;
