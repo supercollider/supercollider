@@ -80,41 +80,41 @@ Complex : Number {
 
 	neg { ^Complex.new(real.neg, imag.neg) }
 	conjugate { ^Complex.new(real, imag.neg) }
-	
+
 	squared { ^this * this }
 	cubed { ^this * this * this }
 	exp { ^exp(real) * Complex.new(cos(imag), sin(imag)) }
-	
+
 	pow { arg aNumber; // return(this ** aNumber)
-		
+
 		// Notation below:
 		// t=this, p=power, i=sqrt(-1)
 		// Derivation:
 		// t ** p = exp(p*log(t)) = ... = r*exp(i*a)
-		
+
 		var p_real, p_imag, t_mag, t_phase, t_maglog;
 		var mag, phase;
-		
+
 		aNumber = aNumber.asComplex;
-		
+
 		p_real = aNumber.real;
 		p_imag = aNumber.imag;
 		if(p_real == 0.0 and: { p_imag == 0 }) { ^Complex(1.0, 0.0) };
 		if(p_imag == 0.0 and: { imag == 0.0 } and: { real > 0.0 }) {
 			^Complex(real ** p_real, 0.0)
 		};
-		
+
 		t_mag = this.magnitude;
 		if(t_mag == 0.0) { ^Complex(0.0, 0.0) };
-		t_maglog = 0.5 * log(t_mag);
+		t_maglog = log(t_mag);
 		t_phase = this.phase;
-		
+
 		mag = exp((p_real * t_maglog) - (p_imag * t_phase));
 		phase = (p_imag * t_maglog) + (p_real * t_phase);
-		
+
 		^Complex(mag * cos(phase), mag * sin(phase))
 	}
-	 	
+
 	magnitude { ^hypot(real, imag) }
 	abs { ^hypot(real, imag) }
 	rho { ^hypot(real, imag) }
