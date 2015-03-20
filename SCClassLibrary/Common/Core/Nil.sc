@@ -33,6 +33,7 @@ Nil {
 	collectAs {}
 	selectAs {}
 	rejectAs {}
+	collectInPlace {}
 
 	// dependancy operators are no-ops
 	dependants {
