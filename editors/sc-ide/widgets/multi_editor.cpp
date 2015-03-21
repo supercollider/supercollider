@@ -567,6 +567,11 @@ void MultiEditor::createActions()
     connect(action, SIGNAL(triggered(bool)), this, SLOT(setShowLinenumber(bool)));
     settings->addAction( action, "editor-toggle-show-line-number", editorCategory);
 
+    mActions[ShowAutocompleteHelp] = action = new QAction(tr("Show Autocomplete Help"), this);
+    action->setCheckable(true);
+    connect(action, SIGNAL(triggered(bool)), this, SLOT(setShowAutocompleteHelp(bool)));
+    settings->addAction( action, "editor-toggle-show-autocomplete-help", editorCategory);
+
     mActions[IndentWithSpaces] = action = new QAction(tr("Use Spaces for Indentation"), this);
     action->setCheckable(true);
     action->setStatusTip( tr("Indent with spaces instead of tabs") );
@@ -731,8 +736,10 @@ void MultiEditor::applySettings( Settings::Manager * settings )
 {
     bool show_whitespace = settings->value("IDE/editor/showWhitespace").toBool();
     bool show_linenumber = settings->value("IDE/editor/showLinenumber").toBool();
+    bool show_autocompletehelp = settings->value("IDE/editor/showAutocompleteHelp").toBool();
     mActions[ShowWhitespace]->setChecked( show_whitespace );
     mActions[ShowLinenumber]->setChecked( show_linenumber );
+    mActions[ShowAutocompleteHelp]->setChecked(show_autocompletehelp);
 }
 
 static QVariantList saveBoxState( CodeEditorBox *box, const QList<Document*> & documentList )
@@ -1182,6 +1189,11 @@ void MultiEditor::setShowLinenumber(bool showLinenumber)
 {
     Main::settings()->setValue("IDE/editor/showLinenumber", showLinenumber);
     Main::instance()->applySettings();
+}
+
+void MultiEditor::setShowAutocompleteHelp(bool showAutocompleteHelp)
+{
+    Main::settings()->setValue("IDE/editor/showAutocompleteHelp", showAutocompleteHelp);
 }
 
 } // namespace ScIDE
