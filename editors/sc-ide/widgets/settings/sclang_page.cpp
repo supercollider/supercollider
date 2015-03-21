@@ -92,12 +92,26 @@ void SclangPage::load( Manager *s )
     readLanguageConfig();
 }
 
+#define RECENTRUNTIMESCOUNT 20
+    
 void SclangPage::store( Manager *s )
 {
     s->beginGroup("IDE/interpreter");
+    
     s->setValue("autoStart", ui->autoStart->isChecked());
     s->setValue("runtimeDir", ui->runtimeDir->text());
     s->setValue("configFile", ui->activeConfigFileComboBox->currentText());
+
+    QStringList recents = ui->runtimeDir->recentPaths();
+    recents.push_front(ui->runtimeDir->text());
+    recents.removeDuplicates();
+    if (recents.size() > RECENTRUNTIMESCOUNT) { recents = recents.mid(0, RECENTRUNTIMESCOUNT); }
+
+    QVariantList recentsList;
+    foreach (const QString & path, recents)
+        recentsList << QVariant(path);
+    s->setValue("runtimeDirRecent", QVariant::fromValue<QVariantList>(recentsList));
+
     s->endGroup();
 
     writeLanguageConfig();

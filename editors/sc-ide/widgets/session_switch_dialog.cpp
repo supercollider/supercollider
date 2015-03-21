@@ -33,6 +33,8 @@ SessionSwitchDialog::SessionSwitchDialog(QWidget * parent):
     QDialog(parent)
 {
     setWindowTitle(tr("Switch Session"));
+    setWindowFlags(Qt::Popup);
+    hide();
 
     mSessions = new QListWidget(this);
 
@@ -53,6 +55,8 @@ SessionSwitchDialog::SessionSwitchDialog(QWidget * parent):
         mSessions->setCurrentRow(currentSessionIndex);
 
     connect(mSessions, SIGNAL(itemActivated(QListWidgetItem*)), this, SLOT(onItemActivated(QListWidgetItem*)));
+    mSessions->setFocus(Qt::PopupFocusReason);
+    show();
 }
 
 void SessionSwitchDialog::onItemActivated(QListWidgetItem* item)

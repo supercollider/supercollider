@@ -29,6 +29,8 @@
 #include <QToolButton>
 #include <QStyle>
 #include <QHBoxLayout>
+#include <QStyleOption>
+#include <QPainter>
 
 namespace ScIDE {
 
@@ -38,8 +40,12 @@ TextFindReplacePanel::TextFindReplacePanel( QWidget * parent ):
     mEditor(0),
     mSearchPosition(-1)
 {
+    setObjectName("findReplacePanel");
+    
     mFindField = new QLineEdit;
+    mFindField->setPlaceholderText(tr("Find..."));
     mReplaceField = new QLineEdit;
+    mReplaceField->setPlaceholderText(tr("Replace with..."));
 
     mNextBtn = new QToolButton();
     mNextBtn->setIcon( style()->standardIcon( QStyle::SP_ArrowForward ) );
@@ -58,6 +64,7 @@ TextFindReplacePanel::TextFindReplacePanel( QWidget * parent ):
     mOptionsBtn->setText(tr("Options"));
     mOptionsBtn->setIcon( QIcon::fromTheme("preferences-other") );
     mOptionsBtn->setPopupMode(QToolButton::InstantPopup);
+    mOptionsBtn->setArrowType(Qt::NoArrow);
 
     QMenu *optMenu = new QMenu(this);
     mMatchCaseAction = optMenu->addAction(tr("Match Case"));
@@ -68,14 +75,10 @@ TextFindReplacePanel::TextFindReplacePanel( QWidget * parent ):
     mWholeWordAction->setCheckable(true);
     mOptionsBtn->setMenu(optMenu);
 
-    mFindLabel = new QLabel(tr("Find:"));
-    mFindLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    mReplaceLabel = new QLabel(tr("Replace:"));
-    mReplaceLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-
     mGrid = new QGridLayout();
     mGrid->setContentsMargins(0,0,0,0);
-    mGrid->setSpacing(2);
+    mGrid->setSpacing(4);
+    mGrid->setMargin(4);
 
     QHBoxLayout *findBtnLayout = new QHBoxLayout();
     findBtnLayout->setContentsMargins(0,0,0,0);
@@ -85,7 +88,6 @@ TextFindReplacePanel::TextFindReplacePanel( QWidget * parent ):
     findBtnLayout->addStretch(0);
     findBtnLayout->addWidget(mOptionsBtn);
 
-    mGrid->addWidget(mFindLabel, 0, 0);
     mGrid->addWidget(mFindField, 0, 1);
     mGrid->addLayout(findBtnLayout, 0, 2);
 
@@ -96,7 +98,6 @@ TextFindReplacePanel::TextFindReplacePanel( QWidget * parent ):
     replaceBtnLayout->addWidget(mReplaceAllBtn);
     replaceBtnLayout->addStretch(0);
 
-    mGrid->addWidget(mReplaceLabel, 1, 0);
     mGrid->addWidget(mReplaceField, 1, 1);
     mGrid->addLayout(replaceBtnLayout, 1, 2);
 
@@ -141,10 +142,12 @@ void TextFindReplacePanel::setMode( Mode mode )
     mMode = mode;
 
     bool visible = mMode == Replace;
-    mReplaceLabel->setVisible(visible);
+
+    setUpdatesEnabled(false);
     mReplaceField->setVisible(visible);
     mReplaceBtn->setVisible(visible);
     mReplaceAllBtn->setVisible(visible);
+    setUpdatesEnabled(true);
 }
 
 void TextFindReplacePanel::initiate()

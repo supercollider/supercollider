@@ -67,6 +67,9 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
 
     mLoadProgressIndicator = new LoadProgressIndicator;
     mLoadProgressIndicator->setIndent(10);
+    QFont font = mLoadProgressIndicator->font();
+    font.setPointSize(10);
+    mLoadProgressIndicator->setFont(font);
 
     QVBoxLayout *layout = new QVBoxLayout;
     layout->setContentsMargins(0,0,0,0);

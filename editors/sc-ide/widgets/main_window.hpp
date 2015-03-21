@@ -88,7 +88,8 @@ public:
         CloseToolBox,
         ShowFullScreen,
         FocusPostWindow,
-
+        ReloadStyleSheet,
+        
         // Settings
         ShowSettings,
 

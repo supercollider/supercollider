@@ -1,0 +1,11 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file alias="fonts/mplus-2p-black.ttf">./mplus-2p-black.ttf</file>
+    <file alias="fonts/mplus-2p-bold.ttf">./mplus-2p-bold.ttf</file>
+    <file alias="fonts/mplus-2p-heavy.ttf">./mplus-2p-heavy.ttf</file>
+    <file alias="fonts/mplus-2p-light.ttf">./mplus-2p-light.ttf</file>
+    <file alias="fonts/mplus-2p-medium.ttf">./mplus-2p-medium.ttf</file>
+    <file alias="fonts/mplus-2p-regular.ttf">./mplus-2p-regular.ttf</file>
+    <file alias="fonts/mplus-2p-thin.ttf">./mplus-2p-thin.ttf</file>
+</qresource>
+</RCC>

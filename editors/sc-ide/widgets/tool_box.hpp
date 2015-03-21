@@ -27,6 +27,8 @@
 #include <QToolButton>
 #include <QHBoxLayout>
 #include <QStyle>
+#include <QStyleOption>
+#include <QPainter>
 
 namespace ScIDE {
 
@@ -37,16 +39,21 @@ class ToolBox : public QWidget
 public:
     ToolBox( QWidget * parent = 0 ): QWidget(parent)
     {
+        setObjectName("toolbox");
+        
         mCloseBtn = new QToolButton;
         mCloseBtn->setIcon( style()->standardIcon(QStyle::SP_TitleBarCloseButton) );
         mCloseBtn->setText("X");
         mCloseBtn->setAutoRaise(true);
+        mCloseBtn->setMaximumSize(28, 28);
 
         mStack = new QtCollider::StackLayout;
 
         QHBoxLayout *layout = new QHBoxLayout;
-        layout->setContentsMargins(2,2,2,2);
-        layout->addWidget(mCloseBtn, 0, Qt::AlignTop | Qt::AlignLeft);
+        layout->setMargin(2);
+        layout->setSpacing(0);
+        layout->setContentsMargins(2, 2, 2, 2);
+        layout->addWidget(mCloseBtn, 0, Qt::AlignTop);
         layout->addLayout(mStack);
 
         setLayout(layout);
@@ -64,6 +71,13 @@ public:
 
     void setCurrentIndex ( int i ) { mStack->setCurrentIndex(i); }
 
+    void paintEvent( QPaintEvent *event )
+    {
+        QStyleOption opt;
+        opt.init(this);
+        QPainter p(this);
+        style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+    }
 private:
     QtCollider::StackLayout *mStack;
     QToolButton *mCloseBtn;

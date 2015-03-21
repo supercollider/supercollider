@@ -84,6 +84,75 @@ int main( int argc, char *argv[] )
 
     app.setStyle( new ScIDE::Style(app.style()) );
 
+    QFile f(":/css/ide-style.css");
+    f.open(QFile::ReadOnly | QFile::Text);
+    QTextStream ts(&f);
+    qApp->setStyleSheet(ts.readAll());
+  
+    // load fonts
+    // this is ugly, but works for the time being.
+    QFontDatabase::addApplicationFont(":/fonts/SourceCodePro-Black.otf");
+    QFontDatabase::addApplicationFont(":/fonts/SourceCodePro-Bold.otf");
+    QFontDatabase::addApplicationFont(":/fonts/SourceCodePro-ExtraLight.otf");
+    QFontDatabase::addApplicationFont(":/fonts/SourceCodePro-Light.otf");
+    QFontDatabase::addApplicationFont(":/fonts/SourceCodePro-Regular.otf");
+    QFontDatabase::addApplicationFont(":/fonts/SourceCodePro-Semibold.otf");
+    QFontDatabase::addApplicationFont(":/fonts/SourceSansPro-Black.otf");
+    QFontDatabase::addApplicationFont(":/fonts/SourceSansPro-BlackIt.otf");
+    QFontDatabase::addApplicationFont(":/fonts/SourceSansPro-Bold.otf");
+    QFontDatabase::addApplicationFont(":/fonts/SourceSansPro-BoldIt.otf");
+    QFontDatabase::addApplicationFont(":/fonts/SourceSansPro-ExtraLight.otf");
+    QFontDatabase::addApplicationFont(":/fonts/SourceSansPro-ExtraLightIt.otf");
+    QFontDatabase::addApplicationFont(":/fonts/SourceSansPro-It.otf");
+    QFontDatabase::addApplicationFont(":/fonts/SourceSansPro-Light.otf");
+    QFontDatabase::addApplicationFont(":/fonts/SourceSansPro-LightIt.otf");
+    QFontDatabase::addApplicationFont(":/fonts/SourceSansPro-Regular.otf");
+    QFontDatabase::addApplicationFont(":/fonts/SourceSansPro-Semibold.otf");
+    QFontDatabase::addApplicationFont(":/fonts/SourceSansPro-SemiboldIt.otf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-1c-black.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-1c-bold.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-1c-heavy.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-1c-light.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-1c-medium.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-1c-regular.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-1c-thin.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-1m-bold.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-1m-light.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-1m-medium.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-1m-regular.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-1m-thin.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-1mn-bold.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-1mn-light.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-1mn-medium.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-1mn-regular.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-1mn-thin.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-1p-black.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-1p-bold.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-1p-heavy.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-1p-light.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-1p-medium.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-1p-regular.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-1p-thin.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-2c-black.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-2c-bold.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-2c-heavy.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-2c-light.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-2c-medium.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-2c-regular.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-2c-thin.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-2m-bold.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-2m-light.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-2m-medium.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-2m-regular.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-2m-thin.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-2p-black.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-2p-bold.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-2p-heavy.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-2p-light.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-2p-medium.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-2p-regular.ttf");
+    QFontDatabase::addApplicationFont(":/fonts/mplus-2p-thin.ttf");
+
     // Go...
 
     Main * main = Main::instance();

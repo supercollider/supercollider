@@ -1,0 +1,10 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file alias="fonts/SourceCodePro-Black.otf">./SourceCodePro-Black.otf</file>
+    <file alias="fonts/SourceCodePro-Bold.otf">./SourceCodePro-Bold.otf</file>
+    <file alias="fonts/SourceCodePro-ExtraLight.otf">./SourceCodePro-ExtraLight.otf</file>
+    <file alias="fonts/SourceCodePro-Light.otf">./SourceCodePro-Light.otf</file>
+    <file alias="fonts/SourceCodePro-Regular.otf">./SourceCodePro-Regular.otf</file>
+    <file alias="fonts/SourceCodePro-Semibold.otf">./SourceCodePro-Semibold.otf</file>
+</qresource>
+</RCC>

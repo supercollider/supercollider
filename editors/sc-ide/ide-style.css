@@ -1,0 +1,292 @@
+
+QWidget {
+	_selection-background-color: rgb(33, 127, 236);
+	_selection-background-color: palette(highlight);
+	_selection-color: palette(text);
+}
+
+QTreeView, QTreeWidget, QListWidget, QPushButton, QToolButton, QTabBar::tab, QLabel, QLineEdit, QComboBox, QGroupBox {
+	font: 11px;
+	font-family: "M+ 2p";
+}
+
+/* colors */
+QDialog {
+	background-color: hsv(220, 5, 244);
+}
+
+QLineEdit, QComboBox, QSpinBox {
+	background-color: hsv(220, 5, 200);
+}
+
+QTreeView, QTreeWidget, QListView, QListWidget {
+	background-color: hsv(220, 5, 220);
+}
+
+#toolbox, QTabBar {
+	background-color: hsv(220, 5, 220);
+}
+
+QTabWidget::pane {
+	background-color: #ECEEF1; /* hsv(220, 5, 244); */
+}
+
+/* active */
+QTabBar::tab::selected  {
+	background-color: #ECEEF1; /* almost hsv(220, 5, 244) */
+	color: hsv(220, 5, 50);
+}
+
+/* inactive / backgrounded */
+QTabBar::tab {
+	background-color: hsv(220, 5, 220);
+	color: hsv(220, 5, 100);
+}
+
+/* hovers */
+QComboBox::drop-down::hover, QCheckBox::indicator::hover, QRadioButton::indicator::hover, QPushButton::hover {
+	background: hsv(220, 5, 0, 30);
+}
+
+QTabBar::tab::hover:!selected {
+	background: hsv(220, 5, 255, 50);
+	color: hsv(220, 5, 130);
+}
+
+QTabBar {
+	qproperty-drawBase: 0;
+}
+
+#docklettoolbar {
+	padding: 4px;
+	background-color: hsv(220, 5, 220);
+	border-bottom: 1px solid hsv(220, 5, 0, 60);
+}
+
+#dockletToolButton {
+	background-color: black;
+}
+
+QDockWidget {
+	border: 2px solid hsv(220, 5, 0);
+}
+
+#docklettoolbar > QLabel {
+	padding: 2px;
+    border-radius: 0px;
+	font: 13px;
+	font-weight: 500;
+	font-family: "M+ 2p";
+}
+
+#docklettoolbar > QToolButton::hover {
+	border-left-color: hsv(220, 5, 40, 10);
+	border-right-color: hsv(220, 5, 40, 10);
+}
+
+#docklettoolbar > QToolButton {
+	border-left: 1px solid transparent;
+	border-right: 1px solid transparent;
+	font: 11px;
+}
+
+#docklettoolbar > QLineEdit {
+	margin-right: 3px;
+}
+
+QGroupBox {
+	font: 13px;
+	font-weight: 600;
+}
+QGroupBox::title {
+    border-radius: 4px;
+}
+
+
+#helpbrowser > QLineEdit, #helpbrowser > QLabel, QSpinBox, QLineEdit, QComboBox {
+}
+
+
+QComboBox {
+    border: 1px solid gray;
+    border-radius: 3px;
+    padding: 1px 18px 1px 3px;
+    min-width: 6em;
+}
+
+QComboBox::drop-down {
+	border-left: 1px solid rgba(0, 0, 0, 20);
+}
+QComboBox::down-arrow {
+    image: url("/c/open-iconic/svg/caret-bottom.svg");
+}
+
+QLineEdit {
+	border: 1px solid rgba(0, 0, 0, 20);
+}
+
+#multieditor {
+	background-color; black;
+}
+
+QTabBar::tab {
+	font: 11px;
+	border-bottom-left-radius: 0px;
+	border-bottom-right-radius: 0px;
+	border-left: 1px solid rgba(0, 0, 0, 20);
+	padding: 4px;
+	_min-height: 24px;
+	font-weight: 400;
+}
+QTabBar::tab:selected {
+	border-left: 1px solid rgba(0, 0, 0, 45);
+	border-right: 1px solid rgba(0, 0, 0, 45);
+	font-weight: 600;
+	padding-bottom: 0px;
+	margin-left: -1px;
+	margin-right: -1px;
+	min-height: 26px;
+}
+
+QTabBar::close-button {
+	margin: 20px;
+	image: url("/Users/fsc/Documents/_code/SuperCollider-qt-compilation/build-qt5-current/editors/sc-ide/Debug/SuperCollider.app/Contents/Resources/open-iconic/svg/ion/ios-close-empty.svg");
+}
+QTabBar::close-button::selected {
+	margin: 0px;
+	image: url("/Users/fsc/Documents/_code/SuperCollider-qt-compilation/build-qt5-current/editors/sc-ide/Debug/SuperCollider.app/Contents/Resources/open-iconic/svg/ion/ios-close-empty.svg");
+    background-position: center center;
+    background-repeat: none;
+}
+
+QTabBar::tab::first 	{ _border-left: none;  }
+QTabBar::tab::last 		{ _border-right: none; }
+
+QTabBar::tab:bottom:selected {
+	padding-top: 2px;
+	border-bottom: 2px solid palette(highlight);
+}
+
+QTabBar::tab:top:selected {
+	padding-top: -2px;
+	border-top: 2px solid palette(highlight);
+}
+
+QPushButton, QToolButton {
+  border: 0px solid palette(button);
+  border-radius: 0px;
+  padding: 4px;
+}
+
+QToolButton {
+	_border: 1px solid palette(mid);
+}
+
+QPushButton {
+	border: 1px solid rgba(0, 0, 0, 20);
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                stop:0 hsv(220, 5, 225), 
+                stop: 0.1 hsv(220, 5, 220), 
+                stop: 0.9 hsv(220, 5, 220), 
+                stop: 1 hsv(220, 5, 215)
+            ); 
+    padding: 2px;
+    min-width: 80px;
+}
+
+QListWidget#configPageList {
+	font: 13px;
+}
+
+QRadioButton::indicator::pressed, QCheckBox::indicator::pressed, QPushButton::pressed {
+    border: 1px solid rgba(0, 0, 0, 90);
+	background-color: hsv(220, 5, 160)
+}
+
+QToolButton::pressed {
+	background-color: hsv(220, 5, 0, 30);
+	border: 1px solid hsv(220, 5, 0, 50);
+	border-radius: 2;
+}
+
+QSpinBox::down-button::pressed, QSpinBox::up-button::pressed {
+	background-color: palette(shadow);
+}
+
+QCheckBox, QRadioButton
+{
+    border-radius: 1px;
+}
+
+QRadioButton::indicator, QCheckBox::indicator
+{
+    border: 1px solid rgb(150, 150, 150);
+    border-radius: 0px;
+	background: rgb(0,0,0,50);
+    margin: 2px;
+    width: 8px;
+    height: 8px;
+    padding: 0.5px;
+}
+
+QCheckBox::indicator:checked {
+	padding: 0.5px;
+    background-image: url("/c/open-iconic/svg/check.svg");
+    background-position: center center;
+    background-repeat: none;
+    background-size: 16px;
+}
+
+QRadioButton::indicator:checked {
+	border-width: 2px;
+	padding: 0px;
+    background-color: palette(highlight);
+    background-clip: content;
+}
+
+QSpinBox {
+	padding-right: 20px;
+}
+
+
+QSpinBox::up-button, QSpinBox::down-button {
+	border-left: 1px solid rbg(0, 0, 0, 40);
+    width: 12px;
+    height: 11px;
+}
+
+QSpinBox::up-button {
+    background: url("/c/open-iconic/svg/caret-top.svg");
+    background-repeat: none;
+    background-position: center top;
+}
+QSpinBox::down-button {
+    background: url("/c/open-iconic/svg/caret-bottom.svg");
+    background-repeat: none;
+    background-position: center bottom;
+	border-top: 1px solid rbg(0, 0, 0, 40);
+}
+
+QToolButton::menu-indicator {
+	image: none;
+	border-radius: 2;
+	margin: 5px;
+	right: -2px;
+	bottom: -2px;
+	background-color: hsva(0, 0, 0, 50);
+}
+
+#toolbox {
+	border: 0px solid rgb(0, 0, 0, 60);
+	border-bottom: 0px solid;
+}
+
+
+#findReplacePanel > QToolButton {
+	font: 11px;
+	font-family: "M+ 2p";
+	padding-top: 1px;
+	padding-bottom: 1px;
+}
+
+#

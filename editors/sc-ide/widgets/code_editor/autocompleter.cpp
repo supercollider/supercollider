@@ -83,6 +83,9 @@ public:
         mListView = new QListView();
         mListView->setModel(mFilterModel);
         mListView->setFrameShape(QFrame::NoFrame);
+        Settings::Manager *settings = Main::settings();
+        mListView->setFont(settings->codeFont());
+
 
         QHBoxLayout *layout = new QHBoxLayout(this);
         layout->addWidget(mListView);
@@ -621,7 +624,7 @@ void AutoCompleter::showCompletionMenu(bool forceShow)
 
     connect(menu, SIGNAL(finished(int)), this, SLOT(onCompletionMenuFinished(int)));
 
-    QRect popupTargetRect = globalCursorRect(mCompletion.pos).adjusted(0,-5,0,5);
+    QRect popupTargetRect = globalCursorRect(mCompletion.pos).adjusted(-6,-9,0,5);
 
     menu->popup( popupTargetRect );
 
@@ -709,7 +712,7 @@ CompletionMenu * AutoCompleter::menuForClassMethodCompletion(CompletionDescripti
 
     foreach(const Method *method, methodList) {
         QString methodName = method->name.get();
-        QString detail(" [ %1 ]");
+        QString detail(" [%1]");
 
         QStandardItem *item = new QStandardItem();
         item->setText( methodName + detail.arg(method->ownerClass->name) );
@@ -754,7 +757,7 @@ CompletionMenu * AutoCompleter::menuForMethodCompletion(CompletionDescription co
         QStandardItem *item = new QStandardItem();
 
         QString methodName = method->name.get();
-        QString detail(" [ %1 ]");
+        QString detail(" [%1]");
         if (count == 1) {
             item->setText( methodName + detail.arg(method->ownerClass->name) );
             item->setData( QVariant::fromValue(method), CompletionMenu::MethodRole );

@@ -135,21 +135,22 @@ MainWindow::MainWindow(Main * main) :
     mToolBox->addWidget(mCmdLine);
     mToolBox->addWidget(mFindReplaceTool);
     mToolBox->addWidget(mGoToLineTool);
+    
     mToolBox->hide();
 
     // Docks
     mDocumentsDocklet = new DocumentsDocklet(main->documentManager(), this);
-    mDocumentsDocklet->setObjectName("documents-dock");
+    mDocumentsDocklet->setObjectName("documentsDock");
     addDockWidget(Qt::LeftDockWidgetArea, mDocumentsDocklet->dockWidget());
     mDocumentsDocklet->hide();
 
     mHelpBrowserDocklet = new HelpBrowserDocklet(this);
-    mHelpBrowserDocklet->setObjectName("help-dock");
+    mHelpBrowserDocklet->setObjectName("helpDock");
     addDockWidget(Qt::RightDockWidgetArea, mHelpBrowserDocklet->dockWidget());
     //mHelpBrowserDockable->hide();
 
     mPostDocklet = new PostDocklet(this);
-    mPostDocklet->setObjectName("post-dock");
+    mPostDocklet->setObjectName("postDock");
     addDockWidget(Qt::RightDockWidgetArea, mPostDocklet->dockWidget());
 
     // Layout
@@ -408,6 +409,13 @@ void MainWindow::createActions()
     action->setShortcut(tr("Ctrl+P", "Focus post window"));
     connect(action, SIGNAL(triggered()), mPostDocklet, SLOT(focus()));
     settings->addAction( action, "post-focus", ideCategory);
+
+	mActions[ReloadStyleSheet] = action = new QAction( tr("Reload Stylesheet"), this);
+	action->setStatusTip(tr("reload the style sheet"));
+	action->setShortcut(tr("Ctrl+L", "reload stylesheet"));
+	connect(action, SIGNAL(triggered()), this, SLOT(reloadStyleSheet()));
+	settings->addAction( action, "reload-stylesheet", ideCategory);
+
 
     // Language
     mActions[LookupImplementation] = action = new QAction(

@@ -95,53 +95,30 @@ static void addToTheme(QMap<QString, QTextCharFormat *> & map, const char *key,
 
 void Theme::fillDefault()
 {
-    addToTheme(mFormats, "text", QColor(Qt::black), QColor(Qt::white));
-
-    QPalette appPlt(QApplication::palette());
-    QColor bkg = appPlt.color(QPalette::Base);
-    int value = bkg.value();
-    if (value > 40)
-        bkg.setHsv(bkg.hue(), bkg.saturation(), value - 11);
-    else
-        bkg.setHsv(bkg.hue(), bkg.saturation(), value + 20);
-    addToTheme(mFormats, "currentLine", QColor(Qt::black), bkg.toRgb());
-    addToTheme(mFormats, "searchResult",
-               appPlt.color(QPalette::HighlightedText).darker(200),
-               appPlt.color(QPalette::Highlight).darker(200));
-    addToTheme(mFormats, "matchingBrackets", QColor("#ffff7f"), Qt::red, true);
-    addToTheme(mFormats, "mismatchedBrackets", Qt::white, QColor(150,0,0));
-    addToTheme(mFormats, "evaluatedCode", Qt::black, QColor("#F8A200"));
-
-    QPalette plt(QApplication::palette());
-    QColor base = plt.color(QPalette::Base);
-    QColor text = plt.color(QPalette::Text);
-    int shade = (base.red() + base.green() + base.blue() < 380) ? 160 : 100;
-
-    QColor whitespace_color((base.red() + text.red()) / 2,
-                            (base.green() + text.green()) / 2,
-                            (base.blue() + text.blue()) / 2);
-
-    addToTheme(mFormats, "whitespace", whitespace_color);
-    addToTheme(mFormats, "keyword", QColor(0,0,230).lighter(shade),
-                                    QColor(Qt::transparent), true);
-    addToTheme(mFormats, "built-in", QColor(51,51,191).lighter(shade));
-    addToTheme(mFormats, "env-var", QColor(140,70,20).lighter(shade));
-    addToTheme(mFormats, "class", QColor(0,0,210).lighter(shade));
-    addToTheme(mFormats, "number", QColor(152,0,153).lighter(shade));
-    addToTheme(mFormats, "symbol", QColor(0,115,0).lighter(shade));
-    addToTheme(mFormats, "string", QColor(95,95,95).lighter(shade));
-    addToTheme(mFormats, "char", QColor(0,115,0).lighter(shade));
-    addToTheme(mFormats, "comment", QColor(191,0,0).lighter(shade));
-    addToTheme(mFormats, "primitive", QColor(51,51,191).lighter(shade));
-    addToTheme(mFormats, "lineNumbers", plt.color(QPalette::ButtonText), 
-                                        plt.color(QPalette::Mid));
-    addToTheme(mFormats, "selection", plt.color(QPalette::HighlightedText),
-                                      plt.color(QPalette::Highlight));
-    addToTheme(mFormats, "postwindowtext", plt.color(QPalette::ButtonText));
-    addToTheme(mFormats, "postwindowerror", QColor(209, 28, 36));
-    addToTheme(mFormats, "postwindowwarning", QColor(165, 119, 6));
-    addToTheme(mFormats, "postwindowsuccess", QColor(115, 138, 5));
-    addToTheme(mFormats, "postwindowemphasis", Qt::black, Qt::transparent, true);
+    addToTheme(mFormats,  "built-in" ,  "#ff8f9d6a" ,  Qt::transparent,  false,  false );
+    addToTheme(mFormats,  "char" ,  "#ffcda869" ,  Qt::transparent,  false,  false );
+    addToTheme(mFormats,  "class" ,  "#ffcf6a4c" ,  Qt::transparent,  true ,  false );
+    addToTheme(mFormats,  "comment" ,  "#ff979dac" ,  Qt::transparent,  false,  true );
+    addToTheme(mFormats,  "currentLine" ,  "#ff000000" ,  Qt::transparent,  false,  false );
+    addToTheme(mFormats,  "env-var" ,  "#ff323537" ,  Qt::transparent,  true ,  false );
+    addToTheme(mFormats,  "evaluatedCode" ,  "#ff000000" ,  "#fff8a200" ,  false,  false );
+    addToTheme(mFormats,  "keyword" ,  "#ff7587a6" ,  Qt::transparent,  true ,  false );
+    addToTheme(mFormats,  "lineNumbers" ,  "#ffa7a7a7" ,  Qt::transparent,  false,  false );
+    addToTheme(mFormats,  "matchingBrackets" ,  "#ff8f9d6a" ,  "#385f5a60" ,  false,  false );
+    addToTheme(mFormats,  "mismatchedBrackets" ,  "#fffc0006" ,  "#47960000" ,  false,  false );
+    addToTheme(mFormats,  "number" ,  "#ff9b703f" ,  Qt::transparent,  false,  false );
+    addToTheme(mFormats,  "postwindowemphasis" ,  "#ff000000" ,  Qt::transparent,  true ,  false );
+    addToTheme(mFormats,  "postwindowerror" ,  "#ffd11c24" ,  Qt::transparent,  true ,  false );
+    addToTheme(mFormats,  "postwindowsuccess" ,  "#ff738a05" ,  Qt::transparent,  false,  false );
+    addToTheme(mFormats,  "postwindowtext" ,  "#ff000000" ,  Qt::transparent,  false,  false );
+    addToTheme(mFormats,  "postwindowwarning" ,  "#ffa57706" ,  Qt::transparent,  false,  false );
+    addToTheme(mFormats,  "primitive" ,  "#ffa4799d" ,  Qt::transparent,  false,  false );
+    addToTheme(mFormats,  "searchResult" ,  "#ffcf6a4c" ,  "#fff3f3f3" ,  false,  false );
+    addToTheme(mFormats,  "selection" ,  "#ff000000" ,  "#ffffa300" ,  false,  false );
+    addToTheme(mFormats,  "string" ,  "#ff8f9d6a" ,  Qt::transparent,  false,  false );
+    addToTheme(mFormats,  "symbol" ,  "#ff7d8fa4" ,  Qt::transparent,  false,  false );
+    addToTheme(mFormats,  "text" ,  "#ff323537" ,  "#ffeceef1" ,  false,  false );
+    addToTheme(mFormats,  "whitespace" ,  "#ffadb3ba" ,  Qt::transparent,  false,  false );
 }
 
 void Theme::fillUser(const QString & name, const Manager *settings)

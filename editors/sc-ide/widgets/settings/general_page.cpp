@@ -21,6 +21,8 @@
 #include "general_page.hpp"
 #include "ui_settings_general.h"
 #include "../../core/settings/manager.hpp"
+#include "../../core/main.hpp"
+#include "../../core/session_manager.hpp"
 
 Q_DECLARE_METATYPE(QAction*)
 Q_DECLARE_METATYPE(QKeySequence)
@@ -32,8 +34,11 @@ GeneralPage::GeneralPage(QWidget *parent) :
     ui( new Ui::GeneralConfigPage )
 {
     ui->setupUi(this);
+    
+    QStringList sessions = Main::instance()->sessionManager()->availableSessions();
+    ui->startSessionName->addItems(sessions);
 
-    connect( ui->startSessionName, SIGNAL(textChanged(QString)),
+    connect( ui->startSessionName, SIGNAL(currentIndexChanged(QString)),
              this, SLOT(onStartSessionNameChanged(QString)) );
 }
 
@@ -51,7 +56,7 @@ void GeneralPage::load( Manager *settings )
         ui->startLastSessionOption->setChecked(true);
     else {
         ui->startNamedSessionOption->setChecked(true);
-        ui->startSessionName->setText(startSessionName);
+        ui->startSessionName->setCurrentText(startSessionName);
     }
 }
 
@@ -65,9 +70,9 @@ void GeneralPage::store( Manager *settings )
         settings->setValue("startWithSession", "last");
     }
     else if (checkedOption == ui->startNamedSessionOption &&
-             !ui->startSessionName->text().isEmpty())
+             !ui->startSessionName->currentText().isEmpty())
     {
-        settings->setValue("startWithSession", ui->startSessionName->text());
+        settings->setValue("startWithSession", ui->startSessionName->currentText());
     }
     else {
         settings->setValue("startWithSession", "");

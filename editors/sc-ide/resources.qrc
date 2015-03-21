@@ -14,5 +14,6 @@
     <file alias="icons/sc-ide-256">../../icons/sc_ide_256.png</file>
     <file alias="icons/sc-ide-512">../../icons/sc_ide_512.png</file>
     <file alias="icons/sc-ide-1024">../../icons/sc_ide_1024.png</file>
+    <file alias="css/ide-style.css">./ide-style.css</file>
 </qresource>
 </RCC>

@@ -196,12 +196,14 @@ private:
 EditorTabBar::EditorTabBar(QWidget *parent):
     QTabBar(parent)
 {
+    setObjectName("editortabbar");
     setDocumentMode(true);
     setTabsClosable(true);
     setMovable(true);
     setUsesScrollButtons(true);
     setDrawBase(true);
     setElideMode(Qt::ElideNone);
+    setDrawBase(false);
 }
 
 void EditorTabBar::mousePressEvent(QMouseEvent *event)
@@ -273,6 +275,16 @@ void EditorTabBar::onCloseTabsToTheRight()
     for( Document * doc : docsToClose )
         MainWindow::close(doc);
 }
+    
+void EditorTabBar::paintEvent( QPaintEvent *event )
+{
+    QStyleOption opt;
+    opt.init(this);
+    QPainter p(this);
+    style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+    
+    QTabBar::paintEvent(event);
+}
 
 
 MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
@@ -285,6 +297,8 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     mDocModifiedIcon( QIcon::fromTheme("document-save") )
 #endif
 {
+    setObjectName("multieditor");
+    
     mTabs = new EditorTabBar;
 
     CodeEditorBox *defaultBox = newBox();

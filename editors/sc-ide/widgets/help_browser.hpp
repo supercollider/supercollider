@@ -60,13 +60,18 @@ protected:
             return;
 
         ++mDotCount;
-        if (mDotCount > 6)
+        if (mDotCount > 4)
             mDotCount = 1;
 
         QString string(mDotCount, '.');
-        string.prepend(mMsg);
-
-        setText(string);
+        
+        QFontMetrics metrics(font());
+        if (metrics.boundingRect(mMsg + string).width() > width()) {
+            setText(string);
+        } else {
+            string.prepend(mMsg);
+            setText(string);
+        }
     }
 
 private:

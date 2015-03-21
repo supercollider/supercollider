@@ -29,6 +29,7 @@
 #include <QDesktopWidget>
 #include <QApplication>
 #include <QPainter>
+#include <QFileInfo>
 
 #include "yaml-cpp/node.h"
 #include "yaml-cpp/parser.h"
@@ -38,6 +39,9 @@ namespace ScIDE {
 GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
     QDialog(parent)
 {
+    setWindowFlags(Qt::Popup);
+    hide();
+    
     addAction(MainWindow::instance()->action(MainWindow::LookupDocumentationForCursor));
 
     mQueryEdit = new QLineEdit(this);
@@ -47,12 +51,35 @@ GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
     mResult->setAllColumnsShowFocus(true);
     mResult->setHeaderHidden(true);
     mResult->header()->setStretchLastSection(false);
+  
+    mPreviewDocument = new Document(false);
+    mPreviewEditor = new ScCodeEditor(mPreviewDocument);
+    mPreviewEditor->setLineWrapMode(QPlainTextEdit::NoWrap);
+    mPreviewEditor->setReadOnly(true);
+    mPreviewEditor->setVisible(false);
+    mPreviewEditor->setTabChangesFocus(true);
+  
+    mFilenameLabel = new QLabel();
+  
+    QVBoxLayout *queryLayout = new QVBoxLayout;
+    queryLayout->setMargin(0);
+    queryLayout->setSpacing(4);
+    queryLayout->addWidget(mQueryEdit);
+    queryLayout->addWidget(mResult);
+  
+    QHBoxLayout *topLayout = new QHBoxLayout;
+    topLayout->setSpacing(4);
+    topLayout->addLayout(queryLayout, 1);
+    topLayout->addWidget(mPreviewEditor, 3);
 
     QVBoxLayout *layout = new QVBoxLayout;
-    layout->setContentsMargins(0,0,0,0);
-    layout->setSpacing(1);
-    layout->addWidget(mQueryEdit);
-    layout->addWidget(mResult);
+    layout->setContentsMargins(8, 8, 8, 8);
+    layout->setSpacing(2);
+    layout->addLayout(layout, 1);
+  
+    layout->addLayout(topLayout);
+    layout->addWidget(mFilenameLabel);
+  
     setLayout(layout);
 
     connect(mQueryEdit, SIGNAL(returnPressed()), this, SLOT(performQuery()));
@@ -61,10 +88,11 @@ GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
 
     mResult->installEventFilter(this);
 
-    QRect bounds(0,0,600,300);
+    QRect bounds(0,0,800,350);
     if (parent) {
-        QRect parentRect = parent->rect();
-        bounds.moveCenter( parent->mapToGlobal( parentRect.center() ) );
+        QWidget* window = parent->topLevelWidget();
+        QRect parentRect = window->rect();
+        bounds.moveCenter( parentRect.center() );
     } else {
         QRect availableBounds = QApplication::desktop()->availableGeometry(this);
         bounds.moveCenter( availableBounds.center() );
@@ -73,6 +101,74 @@ GenericLookupDialog::GenericLookupDialog( QWidget * parent ):
     setGeometry(bounds);
 
     mQueryEdit->setFocus( Qt::OtherFocusReason );
+    show();
+}
+  
+void GenericLookupDialog::setModel(QStandardItemModel* model) {
+    if (mResult->selectionModel()) {
+      disconnect(mResult->selectionModel(), SIGNAL(currentChanged(const QModelIndex &, const QModelIndex &)),
+              this, SLOT(currentChanged(const QModelIndex &, const QModelIndex &)));
+    }
+  
+    mResult->setModel(model);
+
+    if (model) {
+      for (int i = 1; i < model->columnCount(); i++)
+        mResult->hideColumn(i);
+    } else {
+      mFilenameLabel->setText("");
+    }
+  
+    if (mResult->selectionModel()) {
+      
+      mPreviewEditor->setActiveAppearance(true);
+      mPreviewEditor->setVisible(true);
+      connect(mResult->selectionModel(), SIGNAL(currentChanged(const QModelIndex &, const QModelIndex &)),
+            this, SLOT(currentChanged(const QModelIndex &, const QModelIndex &)));
+    } else {
+      mPreviewEditor->setActiveAppearance(false);
+      mPreviewEditor->setVisible(false);
+    }
+}
+  
+void GenericLookupDialog::currentChanged(const QModelIndex &item, const QModelIndex &oldItem)
+{
+    QString path = item.data( PathRole ).toString();
+    int pos      = item.data( CharPosRole ).toInt();
+    
+    QFileInfo info(path);
+    QString cpath = info.canonicalFilePath();
+    info.setFile(cpath);
+    
+    if (cpath.isEmpty()) {
+      MainWindow::instance()->showStatusMessage (
+        tr("Cannot open file: %1 (file does not exist)").arg(path) );
+      return;
+    }
+    
+    // Open the file
+    QFile file(cpath);
+    if(!file.open(QIODevice::ReadOnly)) {
+      MainWindow::instance()->showStatusMessage(
+        tr("Cannot open file for reading: %1").arg(cpath));
+      return;
+    }
+  
+    QByteArray bytes( file.readAll() );
+    file.close();
+  
+    QTextStream stream(bytes);
+    stream.setCodec("UTF-8");
+    stream.setAutoDetectUnicode(true);
+
+    mPreviewDocument->setTextInRange( stream.readAll(), 0, -1 );  
+    mPreviewEditor->showPosition(pos, 0);
+    mPreviewEditor->selectCurrentRegion();
+  
+    QFontMetrics metrics(mFilenameLabel->font());
+    QString elidedPath = path + QString(":") + QString::number(pos);
+    elidedPath = metrics.elidedText(elidedPath, Qt::ElideMiddle, mFilenameLabel->width());
+    mFilenameLabel->setText(elidedPath);
 }
 
 bool GenericLookupDialog::openDocumentation()
@@ -178,8 +274,7 @@ LookupDialog::LookupDialog( QWidget * parent ):
 {
     setWindowTitle(tr("Look Up Implementations"));
 
-    mQueryEdit->setText(tr("Enter class or method name..."));
-    mQueryEdit->selectAll();
+    mQueryEdit->setPlaceholderText(tr("Enter class or method name..."));
 }
 
 void LookupDialog::performQuery()
@@ -187,7 +282,7 @@ void LookupDialog::performQuery()
     QString queryString = mQueryEdit->text();
 
     if (queryString.isEmpty()) {
-        mResult->setModel(NULL);
+        setModel(NULL);
         return;
     }
 
@@ -265,7 +360,7 @@ QList<QStandardItem*> GenericLookupDialog::makeDialogItem( QString const & displ
     return ret;
 }
 
-QStandardItemModel * LookupDialog::modelForClass(const QString &className)
+QStandardItemModel * LookupDialog::modelForClass(const QString &className, const QString &methodName)
 {
     const Introspection & introspection = Main::scProcess()->introspection();
     const Class *klass = introspection.findClass(className);
@@ -281,32 +376,39 @@ QStandardItemModel * LookupDialog::modelForClass(const QString &className)
 
         QString displayPath = introspection.compactLibraryPath(klass->definition.path);
 
-        parentItem->appendRow(makeDialogItem(klass->name.get(), displayPath,
-                                             klass->definition.path.get(),
-                                             klass->definition.position,
-                                             klass->name.get(), QString(""),
-                                             true ));
+        if (methodName.isEmpty()) {
+            parentItem->appendRow(makeDialogItem(klass->name.get(), displayPath,
+                                                 klass->definition.path.get(),
+                                                 klass->definition.position,
+                                                 klass->name.get(), QString(""),
+                                                 true ));
+        }
 
         foreach (const Method * method, metaClass->methods) {
             QString signature = method->signature( Method::SignatureWithoutArguments );
             QString displayPath = introspection.compactLibraryPath(method->definition.path);
-
-            parentItem->appendRow(makeDialogItem( signature, displayPath,
-                                                  method->definition.path.get(),
-                                                  method->definition.position,
-                                                  metaClass->name.get(), method->name.get(),
-                                                  false ));
+          
+            if (method->matches(methodName)) {
+                parentItem->appendRow(makeDialogItem( signature, displayPath,
+                                                      method->definition.path.get(),
+                                                      method->definition.position,
+                                                      metaClass->name.get(), method->name.get(),
+                                                      false ));
+            }
         }
 
         foreach (const Method * method, klass->methods) {
             QString signature = method->signature( Method::SignatureWithoutArguments );
             QString displayPath = introspection.compactLibraryPath(method->definition.path);
 
-            parentItem->appendRow(makeDialogItem( signature, displayPath,
-                                                  method->definition.path.get(),
-                                                  method->definition.position,
-                                                  klass->name.get(), method->name.get(),
-                                                  false ));
+
+            if (method->matches(methodName)) {
+                parentItem->appendRow(makeDialogItem( signature, displayPath,
+                                                      method->definition.path.get(),
+                                                      method->definition.position,
+                                                      klass->name.get(), method->name.get(),
+                                                      false ));
+            }
         }
 
         klass = klass->superClass;
@@ -394,22 +496,28 @@ QStandardItemModel * LookupDialog::modelForPartialQuery(const QString & queryStr
 
 bool LookupDialog::performClassQuery(const QString & className)
 {
-    QStandardItemModel * model = modelForClass(className);
-    mResult->setModel(model);
+    QStandardItemModel * model;
+    if (className.contains(QChar(':'))) {
+        QStringList split = className.split(":");
+        model = modelForClass(split[0].trimmed(), split[1].trimmed());
+    } else {
+        model = modelForClass(className);
+    }
+    setModel(model);
     return model;
 }
 
 bool LookupDialog::performMethodQuery(const QString & methodName)
 {
     QStandardItemModel * model = modelForMethod(methodName);
-    mResult->setModel(model);
+    setModel(model);
     return model;
 }
 
 bool LookupDialog::performPartialQuery(const QString & queryString)
 {
     QStandardItemModel * model = modelForPartialQuery(queryString);
-    mResult->setModel(model);
+    setModel(model);
     return model;
 }
 
@@ -423,8 +531,7 @@ ReferencesDialog::ReferencesDialog(QWidget * parent):
 
     setWindowTitle(tr("Look Up References"));
 
-    mQueryEdit->setText(tr("Enter class or method name..."));
-    mQueryEdit->selectAll();
+    mQueryEdit->setPlaceholderText(tr("Enter class or method name..."));
 }
 
 void ReferencesDialog::performQuery()
@@ -432,7 +539,7 @@ void ReferencesDialog::performQuery()
     QString queryString = mQueryEdit->text();
 
     if (queryString.isEmpty()) {
-        mResult->setModel(NULL);
+        setModel(NULL);
         return;
     }
 
@@ -441,13 +548,13 @@ void ReferencesDialog::performQuery()
 
 void ReferencesDialog::requestCancelled()
 {
-    mResult->setModel(NULL);
+    setModel(NULL);
 }
 
 void ReferencesDialog::onResposeFromLanguage(const QString &, const QString &responseData)
 {
     QStandardItemModel * model = parse(responseData);
-    mResult->setModel(model);
+    setModel(model);
 
     if (model)
         focusResults();

@@ -84,9 +84,11 @@ bool ScCodeEditor::event( QEvent *e )
         QKeyEvent *ke = static_cast<QKeyEvent*>(e);
         switch (ke->key()) {
         case Qt::Key_Tab:
-            indent();
-            e->accept();
-            return true;
+            if (!tabChangesFocus()) {
+                indent();
+                e->accept();
+                return true;
+            }
         default:
             break;
         }

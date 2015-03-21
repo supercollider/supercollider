@@ -203,12 +203,12 @@ static void writeTextFormat( const QTextCharFormat &fm, YAML::Emitter &out )
 
     if (fm.hasProperty(QTextFormat::ForegroundBrush)) {
         out << YAML::Key << "color";
-        out << YAML::Value << fm.foreground().color().name().toStdString();
+        out << YAML::Value << fm.foreground().color().name(QColor::HexArgb).toStdString();
     }
 
     if (fm.hasProperty(QTextFormat::BackgroundBrush)) {
         out << YAML::Key << "background";
-        out << YAML::Value << fm.background().color().name().toStdString();
+        out << YAML::Value << fm.background().color().name(QColor::HexArgb).toStdString();
     }
 
     if (fm.hasProperty(QTextFormat::FontWeight)) {
