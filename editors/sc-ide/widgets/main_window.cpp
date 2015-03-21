@@ -620,6 +620,8 @@ void MainWindow::createMenus()
     menu->addAction( mEditors->action(MultiEditor::ShowWhitespace) );
     menu->addAction( mEditors->action(MultiEditor::ShowLinenumber) );
     menu->addSeparator();
+    menu->addAction(mEditors->action(MultiEditor::ShowAutocompleteHelp));
+    menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::NextDocument) );
     menu->addAction( mEditors->action(MultiEditor::PreviousDocument) );
     menu->addAction( mEditors->action(MultiEditor::SwitchDocument) );

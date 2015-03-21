@@ -27,7 +27,7 @@ DocNode * scdoc_parse_run(int partial);
 void scdocrestart (FILE *input_file);
 int scdoclex_destroy(void);
 
-char * scdoc_current_file = NULL;
+const char * scdoc_current_file = NULL;
 
 const char * NODE_TEXT = "TEXT";
 const char * NODE_NL = "NL";
@@ -187,7 +187,7 @@ void doc_node_dump(DocNode *n) {
 
 extern void error(const char *fmt, ...);
 
-DocNode * scdoc_parse_file(char *fn, int mode) {
+DocNode * scdoc_parse_file(const char *fn, int mode) {
     FILE *fp;
     DocNode *n;
 
