@@ -331,19 +331,19 @@ FunctionList : AbstractFunction {
 	}
 
 	value { arg ... args;
-		var res = array.copy.collectInPlace(_.valueArray(args));
+		var res = array.collectCopy(_.valueArray(args));
 		^if(flopped) { res.flop } { res }
 	}
 	valueArray { arg args;
-		var res = array.copy.collectInPlace(_.valueArray(args));
+		var res = array.collectCopy(_.valueArray(args));
 		^if(flopped) { res.flop } { res }
 	}
 	valueEnvir { arg ... args;
-		var res = array.copy.collectInPlace(_.valueArrayEnvir(args));
+		var res = array.collectCopy(_.valueArrayEnvir(args));
 		^if(flopped) { res.flop } { res }
 	}
 	valueArrayEnvir { arg args;
-		var res = array.copy.collectInPlace(_.valueArrayEnvir(args));
+		var res = array.collectCopy(_.valueArrayEnvir(args));
 		^if(flopped) { res.flop } { res }
 	}
 	do { arg function;
