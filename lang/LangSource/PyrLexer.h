@@ -22,6 +22,7 @@
 #ifndef _PYRLEXER_H_
 #define _PYRLEXER_H_
 
+#include "PyrSlot.h"
 #include "PyrSymbol.h"
 #include "SC_Export.h"
 #include "SCBase.h"
@@ -123,7 +124,8 @@ extern int yylen;
 extern int lexCmdLine;
 extern bool compilingCmdLine;
 extern bool compilingCmdLineErrorWindow;
-extern long zzval;
+extern ptr_sized_int zzval;
+extern ptr_sized_int gParserResult;
 
 extern int lineno, charno, linepos;
 extern int *linestarts;

@@ -1,27 +1,5 @@
-﻿Build started 2015-03-22 11:45:38 PM.
-     1>Project "C:\Users\lucas\Documents\GitHub\supercollider\vs\build\external_libraries\boost_thread.vcxproj" on node 2 (Rebuild target(s)).
-     1>CustomBuild:
-         Building Custom Rule C:/Users/lucas/Documents/GitHub/supercollider/external_libraries/CMakeLists.txt
-         CMake does not need to re-run because C:\Users\lucas\Documents\GitHub\supercollider\vs\build\external_libraries\CMakeFiles\generate.stamp is up-to-date.
-       ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /IC:\Users\lucas\Documents\GitHub\supercollider\external_libraries\boost /Zi /nologo /W3 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D _DEBUG /D BOOST_THREAD_BUILD_LIB /D WIN32_LEAN_AND_MEAN /D NOMINMAX /D _WIN32_WINNT=0x0500 /D BOOST_THREAD_USE_LIB /D BOOST_DATE_TIME_NO_LIB /D BOOST_ALL_NO_LIB /D BOOST_CHRONO_HEADER_ONLY /D _CRT_SECURE_NO_WARNINGS /D _SCL_SECURE_NO_WARNINGS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo"boost_thread.dir\Debug\\" /Fd"boost_thread.dir\Debug\vc120.pdb" /Gd /TP /wd4018 /wd4102 /wd4267 /wd4244 /wd4305 /wd4309 /wd4800 /wd4996 /errorReport:prompt C:\Users\lucas\Documents\GitHub\supercollider\external_libraries\boost\libs\thread\src\future.cpp C:\Users\lucas\Documents\GitHub\supercollider\external_libraries\boost\libs\thread\src\tss_null.cpp C:\Users\lucas\Documents\GitHub\supercollider\external_libraries\boost\libs\thread\src\win32\thread.cpp C:\Users\lucas\Documents\GitHub\supercollider\external_libraries\boost\libs\thread\src\win32\tss_dll.cpp C:\Users\lucas\Documents\GitHub\supercollider\external_libraries\boost\libs\thread\src\win32\tss_pe.cpp
-         future.cpp
-         tss_null.cpp
-         thread.cpp
-         tss_dll.cpp
-         tss_pe.cpp
-     1>C:\Users\lucas\Documents\GitHub\supercollider\external_libraries\boost\libs\thread\src\win32\tss_pe.cpp(80): warning C4005: 'WIN32_LEAN_AND_MEAN' : macro redefinition
-                 command-line arguments :  see previous definition of 'WIN32_LEAN_AND_MEAN'
-         Generating Code...
-       Lib:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\Lib.exe /OUT:"C:\Users\lucas\Documents\GitHub\supercollider\vs\build\external_libraries\Debug\boost_thread.lib" /NOLOGO /MACHINE:X64 boost_thread.dir\Debug\future.obj
-         boost_thread.dir\Debug\tss_null.obj
-         boost_thread.dir\Debug\thread.obj
-         boost_thread.dir\Debug\tss_dll.obj
-         boost_thread.dir\Debug\tss_pe.obj
-         boost_thread.vcxproj -> C:\Users\lucas\Documents\GitHub\supercollider\vs\build\external_libraries\Debug\boost_thread.lib
-     1>Done Building Project "C:\Users\lucas\Documents\GitHub\supercollider\vs\build\external_libraries\boost_thread.vcxproj" (Rebuild target(s)).
+﻿Build started 2015-03-23 11:17:43 PM.
 
 Build succeeded.
 
-Time Elapsed 00:00:06.55
+Time Elapsed 00:00:00.02

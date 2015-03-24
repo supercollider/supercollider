@@ -20,17 +20,17 @@
 
 #ifndef LANG_SIMPLESTACK_H
 #define LANG_SIMPLESTACK_H
-
+#include <PyrSlot.h>
 typedef struct {
-	long *stak;
+	ptr_sized_int *stak;
 	short num, maxsize;
 } LongStack;
 
 void initLongStack(LongStack *self) ;
 void freeLongStack(LongStack *self);
 void growLongStack(LongStack *self);
-void pushls(LongStack *self, long value);
-long popls(LongStack *self);
+void pushls(LongStack *self, ptr_sized_int value);
+ptr_sized_int popls(LongStack *self);
 int emptyls(LongStack *self);
 
 #endif

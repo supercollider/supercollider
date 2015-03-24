@@ -1,27 +1,5 @@
-﻿Build started 2015-03-22 11:45:46 PM.
-     1>Project "C:\Users\lucas\Documents\GitHub\supercollider\vs\build\external_libraries\portmidi.vcxproj" on node 2 (Rebuild target(s)).
-     1>CustomBuild:
-         Building Custom Rule C:/Users/lucas/Documents/GitHub/supercollider/external_libraries/CMakeLists.txt
-         CMake does not need to re-run because C:\Users\lucas\Documents\GitHub\supercollider\vs\build\external_libraries\CMakeFiles\generate.stamp is up-to-date.
-       ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /IC:\Users\lucas\Documents\GitHub\supercollider\external_libraries\portmidi\pm_common /IC:\Users\lucas\Documents\GitHub\supercollider\external_libraries\portmidi\porttime /IC:\Users\lucas\Documents\GitHub\supercollider\external_libraries\portmidi\pm_win /Zi /nologo /W3 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D _DEBUG /D WIN32_LEAN_AND_MEAN /D NOMINMAX /D _WIN32_WINNT=0x0500 /D BOOST_THREAD_USE_LIB /D BOOST_DATE_TIME_NO_LIB /D BOOST_ALL_NO_LIB /D BOOST_CHRONO_HEADER_ONLY /D _CRT_SECURE_NO_WARNINGS /D _SCL_SECURE_NO_WARNINGS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"portmidi.dir\Debug\\" /Fd"portmidi.dir\Debug\vc120.pdb" /Gd /TC /wd4018 /wd4102 /wd4267 /wd4244 /wd4305 /wd4309 /wd4800 /wd4996 /errorReport:prompt C:\Users\lucas\Documents\GitHub\supercollider\external_libraries\portmidi\pm_common\pmutil.c C:\Users\lucas\Documents\GitHub\supercollider\external_libraries\portmidi\pm_common\portmidi.c C:\Users\lucas\Documents\GitHub\supercollider\external_libraries\portmidi\pm_win\pmwin.c C:\Users\lucas\Documents\GitHub\supercollider\external_libraries\portmidi\pm_win\pmwinmm.c C:\Users\lucas\Documents\GitHub\supercollider\external_libraries\portmidi\porttime\porttime.c C:\Users\lucas\Documents\GitHub\supercollider\external_libraries\portmidi\porttime\ptwinmm.c
-         pmutil.c
-         portmidi.c
-         pmwin.c
-         pmwinmm.c
-         porttime.c
-         ptwinmm.c
-         Generating Code...
-       Lib:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\Lib.exe /OUT:"C:\Users\lucas\Documents\GitHub\supercollider\vs\build\external_libraries\Debug\portmidi.lib" /NOLOGO /MACHINE:X64 portmidi.dir\Debug\pmutil.obj
-         portmidi.dir\Debug\portmidi.obj
-         portmidi.dir\Debug\pmwin.obj
-         portmidi.dir\Debug\pmwinmm.obj
-         portmidi.dir\Debug\porttime.obj
-         portmidi.dir\Debug\ptwinmm.obj
-         portmidi.vcxproj -> C:\Users\lucas\Documents\GitHub\supercollider\vs\build\external_libraries\Debug\portmidi.lib
-     1>Done Building Project "C:\Users\lucas\Documents\GitHub\supercollider\vs\build\external_libraries\portmidi.vcxproj" (Rebuild target(s)).
+﻿Build started 2015-03-23 11:17:42 PM.
 
 Build succeeded.
 
-Time Elapsed 00:00:01.80
+Time Elapsed 00:00:00.02

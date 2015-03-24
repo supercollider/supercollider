@@ -1,16 +1,5 @@
-﻿Build started 2015-03-22 11:45:32 PM.
-     1>Project "C:\Users\lucas\Documents\GitHub\supercollider\vs\build\external_libraries\boost_system.vcxproj" on node 2 (Rebuild target(s)).
-     1>CustomBuild:
-         Building Custom Rule C:/Users/lucas/Documents/GitHub/supercollider/external_libraries/CMakeLists.txt
-         CMake does not need to re-run because C:\Users\lucas\Documents\GitHub\supercollider\vs\build\external_libraries\CMakeFiles\generate.stamp is up-to-date.
-       ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /IC:\Users\lucas\Documents\GitHub\supercollider\external_libraries\boost /Zi /nologo /W3 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D _DEBUG /D WIN32_LEAN_AND_MEAN /D NOMINMAX /D _WIN32_WINNT=0x0500 /D BOOST_THREAD_USE_LIB /D BOOST_DATE_TIME_NO_LIB /D BOOST_ALL_NO_LIB /D BOOST_CHRONO_HEADER_ONLY /D _CRT_SECURE_NO_WARNINGS /D _SCL_SECURE_NO_WARNINGS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo"boost_system.dir\Debug\\" /Fd"boost_system.dir\Debug\vc120.pdb" /Gd /TP /wd4018 /wd4102 /wd4267 /wd4244 /wd4305 /wd4309 /wd4800 /wd4996 /errorReport:prompt C:\Users\lucas\Documents\GitHub\supercollider\external_libraries\boost\libs\system\src\error_code.cpp
-         error_code.cpp
-       Lib:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\Lib.exe /OUT:"C:\Users\lucas\Documents\GitHub\supercollider\vs\build\external_libraries\Debug\boost_system.lib" /NOLOGO /MACHINE:X64 boost_system.dir\Debug\error_code.obj
-         boost_system.vcxproj -> C:\Users\lucas\Documents\GitHub\supercollider\vs\build\external_libraries\Debug\boost_system.lib
-     1>Done Building Project "C:\Users\lucas\Documents\GitHub\supercollider\vs\build\external_libraries\boost_system.vcxproj" (Rebuild target(s)).
+﻿Build started 2015-03-23 11:17:43 PM.
 
 Build succeeded.
 
-Time Elapsed 00:00:02.08
+Time Elapsed 00:00:00.02

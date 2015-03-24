@@ -1,5 +1,5 @@
 #ifndef YYSTYPE
-#define YYSTYPE int
+#define YYSTYPE ptr_sized_int
 #endif
 #define NAME 258
 #define INTEGER 259

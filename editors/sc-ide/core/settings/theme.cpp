@@ -214,8 +214,14 @@ void Theme::setFormat(const QString & key, const QTextCharFormat & newFormat)
                     QColor(Qt::transparent): newFormat.background().color();
 
     if (i == mFormats.end()) {
-        qDebug() << __func__ << "Failed to find key " << key;
-        return;
+        qDebug() << 
+#ifndef WIN32
+			__func__ <<
+#else
+			"Theme::setFormat" <<
+#endif
+			"Failed to find key " << key;
+		return;
     }
 
     mFormats.remove(key);
