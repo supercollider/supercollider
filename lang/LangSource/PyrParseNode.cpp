@@ -48,7 +48,7 @@ PyrSymbol* gSpecialClasses[op_NumSpecialClasses];
 PyrSlot gSpecialValues[svNumSpecialValues];
 
 PyrParseNode* gRootParseNode;
-int gParserResult;
+ptr_sized_int gParserResult;
 
 int conjureConstantIndex(PyrParseNode *node, PyrBlock* func, PyrSlot *slot);
 void compilePushConstant(PyrParseNode* node, PyrSlot *slot);
@@ -3469,6 +3469,7 @@ void compileAssignVar(PyrParseNode* node, PyrSymbol* varName, bool drop)
 					} else {
 						compileByte(opStoreClassVar);
 						assert(false);
+						vindex = 0;
 						compileByte(vindex); // FIXME: vindex is not initalized!!!!
 						compileByte(index);
 						compileByte((opSpecialOpcode<<4) | opcDrop);
@@ -4102,9 +4103,9 @@ void PyrBlockNode::compile(PyrSlot* slotResult)
 			PyrString* string = newPyrStringN(compileGC(), stringLength, flags, false);
 			memcpy(string->s, text+mBeginCharNo, stringLength);
 			SetObject(&block->sourceCode, string);
-			//static int totalLength = 0, totalStrings = 0;
-			//totalLength += stringLength;
-			//totalStrings++;
+			static int totalLength = 0, totalStrings = 0;
+			totalLength += stringLength;
+			totalStrings++;
 			//post("cf %4d %4d %6d %s:%s \n", totalStrings, stringLength, totalLength, slotRawSymbol(&gCompilingClass->name)->name, slotRawSymbol(&gCompilingMethod->name)->name);
 	}
 

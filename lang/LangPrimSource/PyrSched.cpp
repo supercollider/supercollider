@@ -27,7 +27,11 @@
 #ifdef SC_DARWIN
 # include <CoreAudio/HostTime.h>
 #endif
+#ifdef WIN32
+#include "wintime.h"
+#else
 #include <sys/time.h>
+#endif
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
@@ -224,7 +228,11 @@ static void syncOSCOffsetWithTimeOfDay();
 void resyncThread();
 
 // Use the highest resolution clock available for monotonic clock time
-typedef typename std::conditional<chrono::high_resolution_clock::is_steady, chrono::high_resolution_clock, chrono::steady_clock>::type monotonic_clock;
+typedef 
+#ifndef WIN32
+typename 
+#endif
+std::conditional<chrono::high_resolution_clock::is_steady, chrono::high_resolution_clock, chrono::steady_clock>::type monotonic_clock;
 
 static chrono::high_resolution_clock::time_point hrTimeOfInitialization;
 
