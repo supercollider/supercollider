@@ -47,26 +47,26 @@ void freeLongStack(LongStack *self)
 void growLongStack(LongStack *self)
 {
 	if (self->maxsize) {
-		long *oldstak;
+		ptr_sized_int *oldstak;
 		self->maxsize += self->maxsize >> 1; // grow by 50%
 		oldstak = self->stak;
 	// pyrmalloc:
 	// lifetime: kill after compile.
-		self->stak = (long*)pyr_pool_compile->Alloc(self->maxsize * sizeof(long));
+		self->stak = (ptr_sized_int*)pyr_pool_compile->Alloc(self->maxsize * sizeof(ptr_sized_int));
 		MEMFAIL(self->stak);
-		//BlockMoveData(oldstak, self->stak, self->num * sizeof(long));
-		memcpy(self->stak, oldstak, self->num * sizeof(long));
+		//BlockMoveData(oldstak, self->stak, self->num * sizeof(ptr_sized_int));
+		memcpy(self->stak, oldstak, self->num * sizeof(ptr_sized_int));
 		pyr_pool_compile->Free((void*)oldstak);
 	} else {
 		self->maxsize = 32;
-		self->stak = (long*)pyr_pool_compile->Alloc(self->maxsize * sizeof(long));
+		self->stak = (ptr_sized_int*)pyr_pool_compile->Alloc(self->maxsize * sizeof(ptr_sized_int));
 		MEMFAIL(self->stak);
 	}
 }
 
 
 void
-pushls(LongStack *self, long value) {
+pushls(LongStack *self, ptr_sized_int value) {
 	//dbg2("pushls %lX", value);
 	if (self->num+1 > self->maxsize) {
 		growLongStack(self);
@@ -74,7 +74,7 @@ pushls(LongStack *self, long value) {
 	self->stak[self->num++] = value;
 }
 
-long
+ptr_sized_int
 popls(LongStack *self) {
 	if (self->num > 0) return self->stak[--self->num];
 	else {

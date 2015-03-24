@@ -39,55 +39,76 @@ else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
     )
     set(PORTAUDIO_FOUND TRUE)
   else (PORTAUDIO2_FOUND)
-    find_path(PORTAUDIO_INCLUDE_DIR
-      NAMES
-        portaudio.h
-      PATHS
-        /usr/include
-        /usr/local/include
-        /opt/local/include
-        /sw/include
-    )
-   
-    find_library(PORTAUDIO_LIBRARY
-      NAMES
-        portaudio
-      PATHS
-        /usr/lib
-        /usr/local/lib
-        /opt/local/lib
-        /sw/lib
-    )
-   
-    find_path(PORTAUDIO_LIBRARY_DIR
-      NAMES
-        portaudio
-      PATHS
-        /usr/lib
-        /usr/local/lib
-        /opt/local/lib
-        /sw/lib
-    )
-   
-    set(PORTAUDIO_INCLUDE_DIRS
-      ${PORTAUDIO_INCLUDE_DIR}
-    )
-    set(PORTAUDIO_LIBRARIES
-      ${PORTAUDIO_LIBRARY}
-    )
-   
-    set(PORTAUDIO_LIBRARY_DIRS
-      ${PORTAUDIO_LIBRARY_DIR}
-    )
-   
-    set(PORTAUDIO_VERSION
-      18
-    )
-   
+
+    if (NOT WIN32)
+      find_path(PORTAUDIO_INCLUDE_DIR
+        NAMES
+          portaudio.h
+        PATHS
+          /usr/include
+          /usr/local/include
+          /opt/local/include
+          /sw/include
+      )
+
+      find_library(PORTAUDIO_LIBRARY
+        NAMES
+          portaudio portaudio_x64
+        PATHS
+          /usr/lib
+          /usr/local/lib
+          /opt/local/lib
+          /sw/lib
+      )
+
+      find_path(PORTAUDIO_LIBRARY_DIR
+        NAMES
+          portaudio
+        PATHS
+          /usr/lib
+          /usr/local/lib
+          /opt/local/lib
+          /sw/lib
+      )
+
+      set(PORTAUDIO_INCLUDE_DIRS
+        ${PORTAUDIO_INCLUDE_DIR}
+      )
+      set(PORTAUDIO_LIBRARIES
+        ${PORTAUDIO_LIBRARY}
+      )
+
+      set(PORTAUDIO_LIBRARY_DIRS
+        ${PORTAUDIO_LIBRARY_DIR}
+      )
+
+      set(PORTAUDIO_VERSION
+        18
+      )
+    else (NOT WIN32)
+      set(PORTAUDIO_VERSION
+        19
+      )
+      set(PORTAUDIO_INCLUDE_DIRS
+        /portaudio/include
+      )
+      set(PORTAUDIO_LIBRARIES
+        /portaudio/lib/x64/portaudio_x64.lib
+      )
+
+      set(PORTAUDIO_LIBRARY_DIRS
+        /portaudio/lib/x64
+      )
+
+      message(STATUS "Hereeeeee")
+
+
+    endif (NOT WIN32)
+
     if (PORTAUDIO_INCLUDE_DIRS AND PORTAUDIO_LIBRARIES)
        set(PORTAUDIO_FOUND TRUE)
     endif (PORTAUDIO_INCLUDE_DIRS AND PORTAUDIO_LIBRARIES)
-   
+
     if (PORTAUDIO_FOUND)
       if (NOT Portaudio_FIND_QUIETLY)
         message(STATUS "Found Portaudio: ${PORTAUDIO_LIBRARIES}")
@@ -104,4 +125,3 @@ else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
   mark_as_advanced(PORTAUDIO_INCLUDE_DIRS PORTAUDIO_LIBRARIES)
 
 endif (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
-

@@ -383,7 +383,7 @@ struct PyrLitDictNode : public PyrParseNode {
 } ;
 
 extern PyrParseNode* gRootParseNode;
-extern int gParserResult;
+extern ptr_sized_int gParserResult;
 extern bool gIsTailCodeBranch;
 extern bool gTailIsMethodReturn;
 
@@ -536,7 +536,7 @@ extern int compileErrors;
 extern int numOverwrites;
 extern std::string overwriteMsg;
 
-extern long zzval;
+extern ptr_sized_int zzval;
 extern PyrSymbol *ps_newlist;
 extern PyrSymbol *gSpecialUnarySelectors[opNumUnarySelectors];
 extern PyrSymbol *gSpecialBinarySelectors[opNumBinarySelectors];
@@ -555,6 +555,6 @@ extern PyrBlock *gCompilingBlock;
 	inlining of IF, WHILE, AND, OR
 */
 
-#define YYSTYPE long
+#define YYSTYPE ptr_sized_int
 
 #endif

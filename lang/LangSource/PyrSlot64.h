@@ -284,4 +284,10 @@ inline void slotCopy(PyrSlot *dst, const PyrSlot *src, int num)
 		slotCopy(dst + i, src + i);
 }
 
+#ifdef _WIN64
+typedef long long ptr_sized_int;
+#else
+typedef long ptr_sized_int;
+#endif
+
 #endif
