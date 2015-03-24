@@ -174,7 +174,7 @@ Ndef(\y).play;
 ::
 
 argument::newKey
-A valid new key, usually a link::CLasses/Symbol::
+A valid new key, usually a link::Classes/Symbol::
 
 subsection::Recursion
 
