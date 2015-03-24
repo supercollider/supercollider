@@ -1,0 +1,37 @@
+﻿Build started 2015-03-22 11:45:55 PM.
+     1>Project "C:\Users\lucas\Documents\GitHub\supercollider\vs\build\external_libraries\boost_program_options.vcxproj" on node 5 (Rebuild target(s)).
+     1>CustomBuild:
+         Building Custom Rule C:/Users/lucas/Documents/GitHub/supercollider/external_libraries/CMakeLists.txt
+         CMake does not need to re-run because C:\Users\lucas\Documents\GitHub\supercollider\vs\build\external_libraries\CMakeFiles\generate.stamp is up-to-date.
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /IC:\Users\lucas\Documents\GitHub\supercollider\external_libraries\boost /Zi /nologo /W3 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D _DEBUG /D WIN32_LEAN_AND_MEAN /D NOMINMAX /D _WIN32_WINNT=0x0500 /D BOOST_THREAD_USE_LIB /D BOOST_DATE_TIME_NO_LIB /D BOOST_ALL_NO_LIB /D BOOST_CHRONO_HEADER_ONLY /D _CRT_SECURE_NO_WARNINGS /D _SCL_SECURE_NO_WARNINGS /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo"boost_program_options.dir\Debug\\" /Fd"boost_program_options.dir\Debug\vc120.pdb" /Gd /TP /wd4018 /wd4102 /wd4267 /wd4244 /wd4305 /wd4309 /wd4800 /wd4996 /errorReport:prompt C:\Users\lucas\Documents\GitHub\supercollider\external_libraries\boost\libs\program_options\src\cmdline.cpp C:\Users\lucas\Documents\GitHub\supercollider\external_libraries\boost\libs\program_options\src\config_file.cpp C:\Users\lucas\Documents\GitHub\supercollider\external_libraries\boost\libs\program_options\src\convert.cpp C:\Users\lucas\Documents\GitHub\supercollider\external_libraries\boost\libs\program_options\src\options_description.cpp C:\Users\lucas\Documents\GitHub\supercollider\external_libraries\boost\libs\program_options\src\parsers.cpp C:\Users\lucas\Documents\GitHub\supercollider\external_libraries\boost\libs\program_options\src\positional_options.cpp C:\Users\lucas\Documents\GitHub\supercollider\external_libraries\boost\libs\program_options\src\split.cpp C:\Users\lucas\Documents\GitHub\supercollider\external_libraries\boost\libs\program_options\src\utf8_codecvt_facet.cpp C:\Users\lucas\Documents\GitHub\supercollider\external_libraries\boost\libs\program_options\src\value_semantic.cpp C:\Users\lucas\Documents\GitHub\supercollider\external_libraries\boost\libs\program_options\src\variables_map.cpp C:\Users\lucas\Documents\GitHub\supercollider\external_libraries\boost\libs\program_options\src\winmain.cpp
+         cmdline.cpp
+         config_file.cpp
+         convert.cpp
+         options_description.cpp
+         parsers.cpp
+         positional_options.cpp
+         split.cpp
+         utf8_codecvt_facet.cpp
+         value_semantic.cpp
+         variables_map.cpp
+         winmain.cpp
+         Generating Code...
+       Lib:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\Lib.exe /OUT:"C:\Users\lucas\Documents\GitHub\supercollider\vs\build\external_libraries\Debug\boost_program_options.lib" /NOLOGO /MACHINE:X64 boost_program_options.dir\Debug\cmdline.obj
+         boost_program_options.dir\Debug\config_file.obj
+         boost_program_options.dir\Debug\convert.obj
+         boost_program_options.dir\Debug\options_description.obj
+         boost_program_options.dir\Debug\parsers.obj
+         boost_program_options.dir\Debug\positional_options.obj
+         boost_program_options.dir\Debug\split.obj
+         boost_program_options.dir\Debug\utf8_codecvt_facet.obj
+         boost_program_options.dir\Debug\value_semantic.obj
+         boost_program_options.dir\Debug\variables_map.obj
+         boost_program_options.dir\Debug\winmain.obj
+         boost_program_options.vcxproj -> C:\Users\lucas\Documents\GitHub\supercollider\vs\build\external_libraries\Debug\boost_program_options.lib
+     1>Done Building Project "C:\Users\lucas\Documents\GitHub\supercollider\vs\build\external_libraries\boost_program_options.vcxproj" (Rebuild target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:30.65

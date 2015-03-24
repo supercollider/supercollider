@@ -1,0 +1,392 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{0A6A5A3C-3148-4033-967D-D5B61A77D5E1}</ProjectGUID>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>x64</Platform>
+    <ProjectName>libscsynth</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)\server\scsynth\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">libscsynth.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">libscsynth</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)\server\scsynth\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">libscsynth.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">libscsynth</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(SolutionDir)\server\scsynth\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">libscsynth.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">libscsynth</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(SolutionDir)\server\scsynth\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">libscsynth.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">libscsynth</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)\common;$(SolutionDir)\..\..\\external_libraries;$(SolutionDir)\..\..\\external_libraries\nova-simd;$(SolutionDir)\..\..\\external_libraries\nova-tt;$(SolutionDir)\..\..\\external_libraries\boost;$(SolutionDir)\..\..\\include\common;$(SolutionDir)\..\..\\common;$(SolutionDir)\..\..\\include\server;$(SolutionDir)\..\..\\include\plugin_interface;$(SolutionDir)\..\..\\server\scsynth\.;$(SolutionDir)\..\..\\external_libraries\boost_sync\include;\portaudio\include;C:\Program Files (x86)\Mega-Nerd\libsndfile\include;$(SolutionDir)\..\..\\external_libraries\TLSF-2.4.6\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4018;4102;4267;4244;4305;4309;4800;4996</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;SC_MEMORY_ALIGNMENT=32;NOVA_SIMD;WIN32_LEAN_AND_MEAN;NOMINMAX;_WIN32_WINNT=0x0500;BOOST_THREAD_USE_LIB;BOOST_DATE_TIME_NO_LIB;BOOST_ALL_NO_LIB;BOOST_CHRONO_HEADER_ONLY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;SC_FFT_GREEN;SC_AUDIO_API=SC_AUDIO_API_PORTAUDIO;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;SC_MEMORY_ALIGNMENT=32;NOVA_SIMD;WIN32_LEAN_AND_MEAN;NOMINMAX;_WIN32_WINNT=0x0500;BOOST_THREAD_USE_LIB;BOOST_DATE_TIME_NO_LIB;BOOST_ALL_NO_LIB;BOOST_CHRONO_HEADER_ONLY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;SC_FFT_GREEN;SC_AUDIO_API=SC_AUDIO_API_PORTAUDIO;CMAKE_INTDIR=\"Debug\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)\common;$(SolutionDir)\..\..\\external_libraries;$(SolutionDir)\..\..\\external_libraries\nova-simd;$(SolutionDir)\..\..\\external_libraries\nova-tt;$(SolutionDir)\..\..\\external_libraries\boost;$(SolutionDir)\..\..\\include\common;$(SolutionDir)\..\..\\common;$(SolutionDir)\..\..\\include\server;$(SolutionDir)\..\..\\include\plugin_interface;$(SolutionDir)\..\..\\server\scsynth\.;$(SolutionDir)\..\..\\external_libraries\boost_sync\include;\portaudio\include;C:\Program Files (x86)\Mega-Nerd\libsndfile\include;$(SolutionDir)\..\..\\external_libraries\TLSF-2.4.6\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>$(SolutionDir)\common;$(SolutionDir)\..\..\\external_libraries;$(SolutionDir)\..\..\\external_libraries\nova-simd;$(SolutionDir)\..\..\\external_libraries\nova-tt;$(SolutionDir)\..\..\\external_libraries\boost;$(SolutionDir)\..\..\\include\common;$(SolutionDir)\..\..\\common;$(SolutionDir)\..\..\\include\server;$(SolutionDir)\..\..\\include\plugin_interface;$(SolutionDir)\..\..\\server\scsynth\.;$(SolutionDir)\..\..\\external_libraries\boost_sync\include;\portaudio\include;C:\Program Files (x86)\Mega-Nerd\libsndfile\include;$(SolutionDir)\..\..\\external_libraries\TLSF-2.4.6\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)\common;$(SolutionDir)\..\..\\external_libraries;$(SolutionDir)\..\..\\external_libraries\nova-simd;$(SolutionDir)\..\..\\external_libraries\nova-tt;$(SolutionDir)\..\..\\external_libraries\boost;$(SolutionDir)\..\..\\include\common;$(SolutionDir)\..\..\\common;$(SolutionDir)\..\..\\include\server;$(SolutionDir)\..\..\\include\plugin_interface;$(SolutionDir)\..\..\\server\scsynth\.;$(SolutionDir)\..\..\\external_libraries\boost_sync\include;\portaudio\include;C:\Program Files (x86)\Mega-Nerd\libsndfile\include;$(SolutionDir)\..\..\\external_libraries\TLSF-2.4.6\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DisableSpecificWarnings>4018;4102;4267;4244;4305;4309;4800;4996</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;SC_MEMORY_ALIGNMENT=32;NOVA_SIMD;WIN32_LEAN_AND_MEAN;NOMINMAX;_WIN32_WINNT=0x0500;BOOST_THREAD_USE_LIB;BOOST_DATE_TIME_NO_LIB;BOOST_ALL_NO_LIB;BOOST_CHRONO_HEADER_ONLY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;SC_FFT_GREEN;SC_AUDIO_API=SC_AUDIO_API_PORTAUDIO;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;SC_MEMORY_ALIGNMENT=32;NOVA_SIMD;WIN32_LEAN_AND_MEAN;NOMINMAX;_WIN32_WINNT=0x0500;BOOST_THREAD_USE_LIB;BOOST_DATE_TIME_NO_LIB;BOOST_ALL_NO_LIB;BOOST_CHRONO_HEADER_ONLY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;SC_FFT_GREEN;SC_AUDIO_API=SC_AUDIO_API_PORTAUDIO;CMAKE_INTDIR=\"Release\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)\common;$(SolutionDir)\..\..\\external_libraries;$(SolutionDir)\..\..\\external_libraries\nova-simd;$(SolutionDir)\..\..\\external_libraries\nova-tt;$(SolutionDir)\..\..\\external_libraries\boost;$(SolutionDir)\..\..\\include\common;$(SolutionDir)\..\..\\common;$(SolutionDir)\..\..\\include\server;$(SolutionDir)\..\..\\include\plugin_interface;$(SolutionDir)\..\..\\server\scsynth\.;$(SolutionDir)\..\..\\external_libraries\boost_sync\include;\portaudio\include;C:\Program Files (x86)\Mega-Nerd\libsndfile\include;$(SolutionDir)\..\..\\external_libraries\TLSF-2.4.6\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>$(SolutionDir)\common;$(SolutionDir)\..\..\\external_libraries;$(SolutionDir)\..\..\\external_libraries\nova-simd;$(SolutionDir)\..\..\\external_libraries\nova-tt;$(SolutionDir)\..\..\\external_libraries\boost;$(SolutionDir)\..\..\\include\common;$(SolutionDir)\..\..\\common;$(SolutionDir)\..\..\\include\server;$(SolutionDir)\..\..\\include\plugin_interface;$(SolutionDir)\..\..\\server\scsynth\.;$(SolutionDir)\..\..\\external_libraries\boost_sync\include;\portaudio\include;C:\Program Files (x86)\Mega-Nerd\libsndfile\include;$(SolutionDir)\..\..\\external_libraries\TLSF-2.4.6\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)\common;$(SolutionDir)\..\..\\external_libraries;$(SolutionDir)\..\..\\external_libraries\nova-simd;$(SolutionDir)\..\..\\external_libraries\nova-tt;$(SolutionDir)\..\..\\external_libraries\boost;$(SolutionDir)\..\..\\include\common;$(SolutionDir)\..\..\\common;$(SolutionDir)\..\..\\include\server;$(SolutionDir)\..\..\\include\plugin_interface;$(SolutionDir)\..\..\\server\scsynth\.;$(SolutionDir)\..\..\\external_libraries\boost_sync\include;\portaudio\include;C:\Program Files (x86)\Mega-Nerd\libsndfile\include;$(SolutionDir)\..\..\\external_libraries\TLSF-2.4.6\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DisableSpecificWarnings>4018;4102;4267;4244;4305;4309;4800;4996</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;SC_MEMORY_ALIGNMENT=32;NOVA_SIMD;WIN32_LEAN_AND_MEAN;NOMINMAX;_WIN32_WINNT=0x0500;BOOST_THREAD_USE_LIB;BOOST_DATE_TIME_NO_LIB;BOOST_ALL_NO_LIB;BOOST_CHRONO_HEADER_ONLY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;SC_FFT_GREEN;SC_AUDIO_API=SC_AUDIO_API_PORTAUDIO;CMAKE_INTDIR="MinSizeRel";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;SC_MEMORY_ALIGNMENT=32;NOVA_SIMD;WIN32_LEAN_AND_MEAN;NOMINMAX;_WIN32_WINNT=0x0500;BOOST_THREAD_USE_LIB;BOOST_DATE_TIME_NO_LIB;BOOST_ALL_NO_LIB;BOOST_CHRONO_HEADER_ONLY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;SC_FFT_GREEN;SC_AUDIO_API=SC_AUDIO_API_PORTAUDIO;CMAKE_INTDIR=\"MinSizeRel\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)\common;$(SolutionDir)\..\..\\external_libraries;$(SolutionDir)\..\..\\external_libraries\nova-simd;$(SolutionDir)\..\..\\external_libraries\nova-tt;$(SolutionDir)\..\..\\external_libraries\boost;$(SolutionDir)\..\..\\include\common;$(SolutionDir)\..\..\\common;$(SolutionDir)\..\..\\include\server;$(SolutionDir)\..\..\\include\plugin_interface;$(SolutionDir)\..\..\\server\scsynth\.;$(SolutionDir)\..\..\\external_libraries\boost_sync\include;\portaudio\include;C:\Program Files (x86)\Mega-Nerd\libsndfile\include;$(SolutionDir)\..\..\\external_libraries\TLSF-2.4.6\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>$(SolutionDir)\common;$(SolutionDir)\..\..\\external_libraries;$(SolutionDir)\..\..\\external_libraries\nova-simd;$(SolutionDir)\..\..\\external_libraries\nova-tt;$(SolutionDir)\..\..\\external_libraries\boost;$(SolutionDir)\..\..\\include\common;$(SolutionDir)\..\..\\common;$(SolutionDir)\..\..\\include\server;$(SolutionDir)\..\..\\include\plugin_interface;$(SolutionDir)\..\..\\server\scsynth\.;$(SolutionDir)\..\..\\external_libraries\boost_sync\include;\portaudio\include;C:\Program Files (x86)\Mega-Nerd\libsndfile\include;$(SolutionDir)\..\..\\external_libraries\TLSF-2.4.6\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)\common;$(SolutionDir)\..\..\\external_libraries;$(SolutionDir)\..\..\\external_libraries\nova-simd;$(SolutionDir)\..\..\\external_libraries\nova-tt;$(SolutionDir)\..\..\\external_libraries\boost;$(SolutionDir)\..\..\\include\common;$(SolutionDir)\..\..\\common;$(SolutionDir)\..\..\\include\server;$(SolutionDir)\..\..\\include\plugin_interface;$(SolutionDir)\..\..\\server\scsynth\.;$(SolutionDir)\..\..\\external_libraries\boost_sync\include;\portaudio\include;C:\Program Files (x86)\Mega-Nerd\libsndfile\include;$(SolutionDir)\..\..\\external_libraries\TLSF-2.4.6\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4018;4102;4267;4244;4305;4309;4800;4996</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;SC_MEMORY_ALIGNMENT=32;NOVA_SIMD;WIN32_LEAN_AND_MEAN;NOMINMAX;_WIN32_WINNT=0x0500;BOOST_THREAD_USE_LIB;BOOST_DATE_TIME_NO_LIB;BOOST_ALL_NO_LIB;BOOST_CHRONO_HEADER_ONLY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;SC_FFT_GREEN;SC_AUDIO_API=SC_AUDIO_API_PORTAUDIO;CMAKE_INTDIR="RelWithDebInfo";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;SC_MEMORY_ALIGNMENT=32;NOVA_SIMD;WIN32_LEAN_AND_MEAN;NOMINMAX;_WIN32_WINNT=0x0500;BOOST_THREAD_USE_LIB;BOOST_DATE_TIME_NO_LIB;BOOST_ALL_NO_LIB;BOOST_CHRONO_HEADER_ONLY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;SC_FFT_GREEN;SC_AUDIO_API=SC_AUDIO_API_PORTAUDIO;CMAKE_INTDIR=\"RelWithDebInfo\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)\common;$(SolutionDir)\..\..\\external_libraries;$(SolutionDir)\..\..\\external_libraries\nova-simd;$(SolutionDir)\..\..\\external_libraries\nova-tt;$(SolutionDir)\..\..\\external_libraries\boost;$(SolutionDir)\..\..\\include\common;$(SolutionDir)\..\..\\common;$(SolutionDir)\..\..\\include\server;$(SolutionDir)\..\..\\include\plugin_interface;$(SolutionDir)\..\..\\server\scsynth\.;$(SolutionDir)\..\..\\external_libraries\boost_sync\include;\portaudio\include;C:\Program Files (x86)\Mega-Nerd\libsndfile\include;$(SolutionDir)\..\..\\external_libraries\TLSF-2.4.6\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>$(SolutionDir)\common;$(SolutionDir)\..\..\\external_libraries;$(SolutionDir)\..\..\\external_libraries\nova-simd;$(SolutionDir)\..\..\\external_libraries\nova-tt;$(SolutionDir)\..\..\\external_libraries\boost;$(SolutionDir)\..\..\\include\common;$(SolutionDir)\..\..\\common;$(SolutionDir)\..\..\\include\server;$(SolutionDir)\..\..\\include\plugin_interface;$(SolutionDir)\..\..\\server\scsynth\.;$(SolutionDir)\..\..\\external_libraries\boost_sync\include;\portaudio\include;C:\Program Files (x86)\Mega-Nerd\libsndfile\include;$(SolutionDir)\..\..\\external_libraries\TLSF-2.4.6\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(SolutionDir)\..\..\\server\scsynth\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule $(SolutionDir)/../../server/scsynth/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files (x86)\CMake\bin\cmake.exe" -H$(SolutionDir)/../.. -B$(SolutionDir)/../../vs/build --check-stamp-file $(SolutionDir)\server\scsynth\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)/../../server/scsynth/CMakeLists.txt;$(SolutionDir)\..\..\\server\scsynth\CMakeLists.txt;$(SolutionDir)\..\..\\cmake_modules\FindSndfile.cmake;$(SolutionDir)\..\..\\cmake_modules\FindPortaudio.cmake;$(SolutionDir)\..\..\\cmake_modules\FindPortaudio.cmake;$(SolutionDir)\..\..\\cmake_modules\FindAvahi.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\FindPackageMessage.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeParseArguments.cmake;$(SolutionDir)\..\..\\server\scsynth\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)\server\scsynth\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule $(SolutionDir)/../../server/scsynth/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files (x86)\CMake\bin\cmake.exe" -H$(SolutionDir)/../.. -B$(SolutionDir)/../../vs/build --check-stamp-file $(SolutionDir)\server\scsynth\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)/../../server/scsynth/CMakeLists.txt;$(SolutionDir)\..\..\\server\scsynth\CMakeLists.txt;$(SolutionDir)\..\..\\cmake_modules\FindSndfile.cmake;$(SolutionDir)\..\..\\cmake_modules\FindPortaudio.cmake;$(SolutionDir)\..\..\\cmake_modules\FindPortaudio.cmake;$(SolutionDir)\..\..\\cmake_modules\FindAvahi.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\FindPackageMessage.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeParseArguments.cmake;$(SolutionDir)\..\..\\server\scsynth\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)\server\scsynth\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule $(SolutionDir)/../../server/scsynth/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files (x86)\CMake\bin\cmake.exe" -H$(SolutionDir)/../.. -B$(SolutionDir)/../../vs/build --check-stamp-file $(SolutionDir)\server\scsynth\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(SolutionDir)/../../server/scsynth/CMakeLists.txt;$(SolutionDir)\..\..\\server\scsynth\CMakeLists.txt;$(SolutionDir)\..\..\\cmake_modules\FindSndfile.cmake;$(SolutionDir)\..\..\\cmake_modules\FindPortaudio.cmake;$(SolutionDir)\..\..\\cmake_modules\FindPortaudio.cmake;$(SolutionDir)\..\..\\cmake_modules\FindAvahi.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\FindPackageMessage.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeParseArguments.cmake;$(SolutionDir)\..\..\\server\scsynth\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(SolutionDir)\server\scsynth\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule $(SolutionDir)/../../server/scsynth/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files (x86)\CMake\bin\cmake.exe" -H$(SolutionDir)/../.. -B$(SolutionDir)/../../vs/build --check-stamp-file $(SolutionDir)\server\scsynth\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(SolutionDir)/../../server/scsynth/CMakeLists.txt;$(SolutionDir)\..\..\\server\scsynth\CMakeLists.txt;$(SolutionDir)\..\..\\cmake_modules\FindSndfile.cmake;$(SolutionDir)\..\..\\cmake_modules\FindPortaudio.cmake;$(SolutionDir)\..\..\\cmake_modules\FindPortaudio.cmake;$(SolutionDir)\..\..\\cmake_modules\FindAvahi.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\FindPackageMessage.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeParseArguments.cmake;$(SolutionDir)\..\..\\server\scsynth\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(SolutionDir)\server\scsynth\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_HiddenWorld.h" />
+    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\HashTable.h" />
+    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\iPhone\iscsynthAppDelegate.h" />
+    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\iPhone\iSCSynthController.h" />
+    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\OSC_Packet.h" />
+    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\PriorityQueue.h" />
+    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\ReadWriteMacros.h" />
+    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\Rendezvous.h" />
+    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_AU.h" />
+    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_CoreAudio.h" />
+    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_GraphDef.h" />
+    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_Group.h" />
+    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_Lib.h" />
+    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_Lib_Cintf.h" />
+    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_Prototypes.h" />
+    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_SequencedCommand.h" />
+    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_Str4.h" />
+    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_SynthDef.h" />
+    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_Time.hpp" />
+    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_TimeDLL.hpp" />
+    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_UnitDef.h" />
+    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_UnitSpec.h" />
+    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_WireSpec.h" />
+    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_BufGen.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_ComPort.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_CoreAudio.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_Graph.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_GraphDef.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_Group.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_Lib_Cintf.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_Lib.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_MiscCmds.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_Node.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_Rate.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_SequencedCommand.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_Str4.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_Unit.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_UnitDef.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_World.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\Rendezvous.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\..\\common\SC_fftlib.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\..\\common\SC_AllocPool.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\..\\common\SC_DirUtils.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\..\\common\SC_Errors.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\..\\common\SC_Reply.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\..\\common\SC_StandAloneInfo_Darwin.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\..\\common\SC_StringBuffer.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\..\\common\SC_StringParser.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\..\\common\Samp.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\..\\common\sc_popen.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\..\\external_libraries\boost\libs\system\src\error_code.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\..\\common\SC_Win32Utils.cpp" />
+    <ClCompile Include="$(SolutionDir)\..\..\\common\fftlib.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_PortAudio.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\plugins\BinaryOpUGens.vcxproj">
+      <Project>{8a2d3485-411f-4435-94ac-13402f02f54e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\plugins\ChaosUGens.vcxproj">
+      <Project>{0039772e-e99d-4c69-b397-26b8162c66aa}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\plugins\DelayUGens.vcxproj">
+      <Project>{315dc5bb-22df-4fd6-a287-c768153bc73d}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\plugins\DemandUGens.vcxproj">
+      <Project>{a80c1aa1-3460-45f2-92f8-99798f23ef01}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\plugins\DynNoiseUGens.vcxproj">
+      <Project>{29045a61-4e73-4555-a9a5-1a813223defa}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\plugins\FFT_UGens.vcxproj">
+      <Project>{cab5b6c8-4d18-4fbf-8003-55ff62ef26f9}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\plugins\FilterUGens.vcxproj">
+      <Project>{455f8c9e-02e4-48cd-bd06-9de2ca987110}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\plugins\GendynUGens.vcxproj">
+      <Project>{d911d019-341b-4c5c-97db-ae7da7272f02}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\plugins\GrainUGens.vcxproj">
+      <Project>{342ffe3f-49ec-40f2-bb2c-cd17ec82801e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\plugins\IOUGens.vcxproj">
+      <Project>{469ece90-b9dc-44f3-adca-d9173e9038aa}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\plugins\LFUGens.vcxproj">
+      <Project>{bd456b07-6f9e-4510-a4d8-bf0b6b923075}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\plugins\ML_UGens.vcxproj">
+      <Project>{a7423033-7558-4bce-8e02-093291c4ec93}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\plugins\MulAddUGens.vcxproj">
+      <Project>{4f64faae-d6b6-4de5-b3f3-7406a211691b}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\plugins\NoiseUGens.vcxproj">
+      <Project>{c1e6d4f1-69a3-4d6c-88d5-d42393c7a4d8}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\plugins\OscUGens.vcxproj">
+      <Project>{780f4842-ab90-48c1-a1c7-209065ed79c4}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\plugins\PanUGens.vcxproj">
+      <Project>{b493ba17-436d-4dbc-90df-f59864904c19}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\plugins\PhysicalModelingUGens.vcxproj">
+      <Project>{bb665deb-6e9d-4a13-b68e-69aa22fa0eeb}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\plugins\ReverbUGens.vcxproj">
+      <Project>{cb718407-fe89-46f9-8f18-c2e7d811d612}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\plugins\TestUGens.vcxproj">
+      <Project>{67c65524-bb80-428a-b6da-f9173d255d05}</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/ZERO_CHECK.vcxproj">
+      <Project>C0A904E4-572C-4107-88AA-2CF520DC7D1D</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/external_libraries/boost_system.vcxproj">
+      <Project>3A3949DC-E25B-4105-BCEA-EAF0A792B7F2</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/external_libraries/boost_thread.vcxproj">
+      <Project>8E013B98-2AFF-4305-B62B-D824F82BEB59</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/external_libraries/tlsf.vcxproj">
+      <Project>9A5A3B68-0718-49AA-9836-2951A5052414</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

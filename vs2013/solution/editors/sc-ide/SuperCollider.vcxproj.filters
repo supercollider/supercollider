@@ -1,0 +1,767 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\core\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\core\sig_mux.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\core\doc_manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\core\sc_process.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\core\sc_server.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\core\sc_introspection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\core\sc_lexer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\core\settings\serialization.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\core\settings\manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\core\settings\theme.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\core\session_manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\core\util\standard_dirs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\cmd_line.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\doc_list.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\documents_dialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\editor_box.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\find_replace_tool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\lookup_dialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\main_window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\multi_editor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\post_window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\session_switch_dialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\help_browser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\audio_status_box.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\lang_status_box.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\code_editor\editor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\code_editor\sc_editor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\code_editor\highlighter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\code_editor\line_indicator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\code_editor\overlay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\code_editor\autocompleter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\settings\dialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\settings\general_page.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\settings\sclang_page.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\settings\editor_page.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\settings\shortcuts_page.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\util\gui_utilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\util\text_format_list_widget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\util\popup_widget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\util\docklet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\util\volume_widget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\util\status_box.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\style\style.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\QtCollider\widgets\web_page.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\common\SC_TextUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\QtCollider\layouts\stack_layout.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\common\SC_DirUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\common\SC_Win32Utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\core\moc_main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\core\moc_sig_mux.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\core\moc_sc_process.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\core\moc_sc_server.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\core\moc_doc_manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\core\settings\moc_manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\core\settings\moc_theme.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\core\moc_session_manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\moc_cmd_line.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\moc_doc_list.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\moc_documents_dialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\moc_editor_box.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\moc_find_replace_tool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\moc_goto_line_tool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\moc_lookup_dialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\moc_main_window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\moc_multi_editor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\moc_popup_text_input.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\moc_post_window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\moc_session_switch_dialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\moc_sessions_dialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\moc_tool_box.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\moc_help_browser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\moc_audio_status_box.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\moc_lang_status_box.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\code_editor\moc_editor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\code_editor\moc_sc_editor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\code_editor\moc_highlighter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\code_editor\moc_line_indicator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\code_editor\moc_overlay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\code_editor\moc_autocompleter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\settings\moc_dialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\settings\moc_general_page.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\settings\moc_sclang_page.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\settings\moc_editor_page.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\settings\moc_shortcuts_page.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\util\moc_path_chooser_widget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\util\moc_text_format_list_widget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\util\moc_key_sequence_edit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\util\moc_popup_widget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\util\moc_color_widget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\util\moc_docklet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\widgets\util\moc_volume_widget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\__\__\QtCollider\widgets\moc_web_page.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\__\__\QtCollider\layouts\moc_stack_layout.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\editors\sc-ide\qrc_resources.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\core\doc_manager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\core\main.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\core\sc_introspection.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\core\sc_lexer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\core\sc_process.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\core\sc_server.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\core\session_manager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\core\settings\manager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\core\settings\serialization.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\core\settings\theme.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\core\sig_mux.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\core\util\overriding_action.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\core\util\standard_dirs.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\primitives\sc_ipc_client.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\audio_status_box.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\cmd_line.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\code_editor\autocompleter.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\code_editor\editor.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\code_editor\highlighter.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\code_editor\line_indicator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\code_editor\overlay.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\code_editor\sc_editor.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\code_editor\tokens.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\documents_dialog.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\doc_list.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\editor_box.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\find_replace_tool.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\goto_line_tool.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\help_browser.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\lang_status_box.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\lookup_dialog.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\main_window.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\multi_editor.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\popup_text_input.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\post_window.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\sessions_dialog.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\session_switch_dialog.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\settings\dialog.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\settings\editor_page.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\settings\general_page.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\settings\sclang_page.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\settings\shortcuts_page.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\style\style.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\tool_box.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\util\color_widget.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\util\docklet.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\util\gui_utilities.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\util\icon_list_widget.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\util\key_sequence_edit.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\util\multi_splitter.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\util\path_chooser_widget.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\util\popup_widget.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\util\status_box.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\util\text_format_list_widget.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\..\..\\editors\sc-ide\widgets\util\volume_widget.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\editors\sc-ide\ui_settings_dialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\editors\sc-ide\ui_settings_general.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\editors\sc-ide\ui_settings_sclang.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\editors\sc-ide\ui_settings_editor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SolutionDir)\editors\sc-ide\ui_settings_shortcuts.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(SolutionDir)\..\..\\editors\sc-ide\CMakeLists.txt" />
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\290a90491d8da4c3d7e8b8a0526660e4\moc_main.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\290a90491d8da4c3d7e8b8a0526660e4\moc_sig_mux.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\290a90491d8da4c3d7e8b8a0526660e4\moc_sc_process.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\290a90491d8da4c3d7e8b8a0526660e4\moc_sc_server.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\290a90491d8da4c3d7e8b8a0526660e4\moc_doc_manager.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\a068e8eb445a3b8fe2589d3a35ae1eb8\moc_manager.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\a068e8eb445a3b8fe2589d3a35ae1eb8\moc_theme.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\290a90491d8da4c3d7e8b8a0526660e4\moc_session_manager.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\41e465bcd4bd1215aa463f9f6ba71bbc\moc_cmd_line.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\41e465bcd4bd1215aa463f9f6ba71bbc\moc_doc_list.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\41e465bcd4bd1215aa463f9f6ba71bbc\moc_documents_dialog.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\41e465bcd4bd1215aa463f9f6ba71bbc\moc_editor_box.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\41e465bcd4bd1215aa463f9f6ba71bbc\moc_find_replace_tool.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\41e465bcd4bd1215aa463f9f6ba71bbc\moc_goto_line_tool.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\41e465bcd4bd1215aa463f9f6ba71bbc\moc_lookup_dialog.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\41e465bcd4bd1215aa463f9f6ba71bbc\moc_main_window.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\41e465bcd4bd1215aa463f9f6ba71bbc\moc_multi_editor.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\41e465bcd4bd1215aa463f9f6ba71bbc\moc_popup_text_input.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\41e465bcd4bd1215aa463f9f6ba71bbc\moc_post_window.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\41e465bcd4bd1215aa463f9f6ba71bbc\moc_session_switch_dialog.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\41e465bcd4bd1215aa463f9f6ba71bbc\moc_sessions_dialog.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\41e465bcd4bd1215aa463f9f6ba71bbc\moc_tool_box.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\41e465bcd4bd1215aa463f9f6ba71bbc\moc_help_browser.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\41e465bcd4bd1215aa463f9f6ba71bbc\moc_audio_status_box.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\41e465bcd4bd1215aa463f9f6ba71bbc\moc_lang_status_box.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\169998bc7e1314d19a65c65738149c8d\moc_editor.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\169998bc7e1314d19a65c65738149c8d\moc_sc_editor.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\169998bc7e1314d19a65c65738149c8d\moc_highlighter.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\169998bc7e1314d19a65c65738149c8d\moc_line_indicator.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\169998bc7e1314d19a65c65738149c8d\moc_overlay.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\169998bc7e1314d19a65c65738149c8d\moc_autocompleter.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\4040113eb18c0b111b8e84dd9a2f12e6\moc_dialog.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\4040113eb18c0b111b8e84dd9a2f12e6\moc_general_page.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\4040113eb18c0b111b8e84dd9a2f12e6\moc_sclang_page.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\4040113eb18c0b111b8e84dd9a2f12e6\moc_editor_page.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\4040113eb18c0b111b8e84dd9a2f12e6\moc_shortcuts_page.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\5590f5baa8cbb658d0d9da58929d41a8\moc_path_chooser_widget.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\5590f5baa8cbb658d0d9da58929d41a8\moc_text_format_list_widget.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\5590f5baa8cbb658d0d9da58929d41a8\moc_key_sequence_edit.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\5590f5baa8cbb658d0d9da58929d41a8\moc_popup_widget.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\5590f5baa8cbb658d0d9da58929d41a8\moc_color_widget.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\5590f5baa8cbb658d0d9da58929d41a8\moc_docklet.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\5590f5baa8cbb658d0d9da58929d41a8\moc_volume_widget.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\ad6e7e3f5fc1048f3d9c61d99f5271c6\moc_web_page.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\5176a726f256d49ec5f8f6830eb83ef2\moc_stack_layout.cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\..\..\\editors\sc-ide\forms\settings_dialog.ui" />
+    <CustomBuild Include="$(SolutionDir)\..\..\\editors\sc-ide\forms\settings_general.ui" />
+    <CustomBuild Include="$(SolutionDir)\..\..\\editors\sc-ide\forms\settings_sclang.ui" />
+    <CustomBuild Include="$(SolutionDir)\..\..\\editors\sc-ide\forms\settings_editor.ui" />
+    <CustomBuild Include="$(SolutionDir)\..\..\\editors\sc-ide\forms\settings_shortcuts.ui" />
+    <CustomBuild Include="$(SolutionDir)\..\..\\editors\sc-ide\resources.qrc" />
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\57bdcf1ed3813d829d604318732ed932\scide_de.qm.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\57bdcf1ed3813d829d604318732ed932\scide_es.qm.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\57bdcf1ed3813d829d604318732ed932\scide_fr.qm.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\57bdcf1ed3813d829d604318732ed932\scide_ja.qm.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\57bdcf1ed3813d829d604318732ed932\scide_pt.qm.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\57bdcf1ed3813d829d604318732ed932\scide_ru.qm.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\57bdcf1ed3813d829d604318732ed932\scide_sl.qm.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\57bdcf1ed3813d829d604318732ed932\scide_sv.qm.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\57bdcf1ed3813d829d604318732ed932\scide_zh.qm.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\57bdcf1ed3813d829d604318732ed932\scide.qm.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(SolutionDir)\editors\sc-ide\scide_de.qm" />
+    <None Include="$(SolutionDir)\editors\sc-ide\scide_es.qm" />
+    <None Include="$(SolutionDir)\editors\sc-ide\scide_fr.qm" />
+    <None Include="$(SolutionDir)\editors\sc-ide\scide_ja.qm" />
+    <None Include="$(SolutionDir)\editors\sc-ide\scide_pt.qm" />
+    <None Include="$(SolutionDir)\editors\sc-ide\scide_ru.qm" />
+    <None Include="$(SolutionDir)\editors\sc-ide\scide_sl.qm" />
+    <None Include="$(SolutionDir)\editors\sc-ide\scide_sv.qm" />
+    <None Include="$(SolutionDir)\editors\sc-ide\scide_zh.qm" />
+    <None Include="$(SolutionDir)\editors\sc-ide\scide.qm" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\d3dcompiler_47.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Enginio.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Enginiod.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\icudt53.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\icuin53.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\icuuc53.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\libEGL.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\libEGLd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\libGLESv2.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\libGLESv2d.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\opengl32sw.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Bluetooth.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Bluetoothd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5CLucene.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5CLucened.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Concurrent.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Concurrentd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Core.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Cored.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5DBus.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5DBusd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Declarative.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Declaratived.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Designer.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5DesignerComponents.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5DesignerComponentsd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Designerd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Gui.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Guid.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Help.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Helpd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Location.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Locationd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Multimedia.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Multimediad.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5MultimediaQuick_p.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5MultimediaQuick_pd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5MultimediaWidgets.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5MultimediaWidgetsd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Network.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Networkd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Nfc.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Nfcd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5OpenGL.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5OpenGLd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Positioning.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Positioningd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5PrintSupport.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5PrintSupportd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Qml.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Qmld.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Quick.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Quickd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5QuickParticles.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5QuickParticlesd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5QuickTest.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5QuickTestd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5QuickWidgets.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5QuickWidgetsd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Script.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Scriptd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5ScriptTools.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5ScriptToolsd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Sensors.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Sensorsd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5SerialPort.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5SerialPortd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Sql.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Sqld.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Svg.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Svgd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Test.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Testd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5WebChannel.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5WebChanneld.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5WebEngine.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5WebEngineCore.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5WebEngineCored.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5WebEngined.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5WebEngineWidgets.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5WebEngineWidgetsd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5WebKit.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5WebKitd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5WebKitWidgets.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5WebKitWidgetsd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5WebSockets.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5WebSocketsd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5WebView.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5WebViewd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Widgets.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Widgetsd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5WinExtras.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5WinExtrasd.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Xml.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5Xmld.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5XmlPatterns.dll" />
+    <None Include="..\..\..\..\..\..\..\..\..\Qt\5.4\msvc2013_64\bin\Qt5XmlPatternsd.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{6C7A12BE-31C9-46EA-847D-D164E2E16EAF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{8526FF94-9263-4E3A-8116-E1AAA0E39274}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{30686CA4-47DE-4CB0-B90F-C8A48B7371D2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="SuperCollider.rc" />
+  </ItemGroup>
+</Project>

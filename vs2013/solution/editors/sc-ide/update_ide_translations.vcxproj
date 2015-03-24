@@ -1,0 +1,237 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{64FF462B-44FB-4E28-99F5-CEBDEA4A0C74}</ProjectGUID>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>x64</Platform>
+    <ProjectName>update_ide_translations</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>$(SolutionDir)\common;$(SolutionDir)\..\..\\include\common;$(SolutionDir)\..\..\\common;$(SolutionDir)\..\..\\include\plugin_interface;$(SolutionDir)\..\..\\external_libraries\yaml-cpp-0.3.0\include;$(SolutionDir)\..\..\\external_libraries\boost;$(SolutionDir)\..\..\;$(SolutionDir)\..\..\\editors\sc-ide\widgets\util;$(SolutionDir)\..\..\\editors\sc-ide\widgets;$(SolutionDir)\editors\sc-ide;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>$(SolutionDir)\common;$(SolutionDir)\..\..\\include\common;$(SolutionDir)\..\..\\common;$(SolutionDir)\..\..\\include\plugin_interface;$(SolutionDir)\..\..\\external_libraries\yaml-cpp-0.3.0\include;$(SolutionDir)\..\..\\external_libraries\boost;$(SolutionDir)\..\..\;$(SolutionDir)\..\..\\editors\sc-ide\widgets\util;$(SolutionDir)\..\..\\editors\sc-ide\widgets;$(SolutionDir)\editors\sc-ide;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>$(SolutionDir)\common;$(SolutionDir)\..\..\\include\common;$(SolutionDir)\..\..\\common;$(SolutionDir)\..\..\\include\plugin_interface;$(SolutionDir)\..\..\\external_libraries\yaml-cpp-0.3.0\include;$(SolutionDir)\..\..\\external_libraries\boost;$(SolutionDir)\..\..\;$(SolutionDir)\..\..\\editors\sc-ide\widgets\util;$(SolutionDir)\..\..\\editors\sc-ide\widgets;$(SolutionDir)\editors\sc-ide;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>$(SolutionDir)\common;$(SolutionDir)\..\..\\include\common;$(SolutionDir)\..\..\\common;$(SolutionDir)\..\..\\include\plugin_interface;$(SolutionDir)\..\..\\external_libraries\yaml-cpp-0.3.0\include;$(SolutionDir)\..\..\\external_libraries\boost;$(SolutionDir)\..\..\;$(SolutionDir)\..\..\\editors\sc-ide\widgets\util;$(SolutionDir)\..\..\\editors\sc-ide\widgets;$(SolutionDir)\editors\sc-ide;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(SolutionDir)\..\..\\editors\sc-ide\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule $(SolutionDir)/../../editors/sc-ide/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files (x86)\CMake\bin\cmake.exe" -H$(SolutionDir)/../.. -B$(SolutionDir)/../../vs/build --check-stamp-file $(SolutionDir)\editors\sc-ide\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)/../../editors/sc-ide/CMakeLists.txt;$(SolutionDir)\..\..\\editors\sc-ide\CMakeLists.txt;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Core\Qt5CoreConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Core\Qt5CoreConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Core\Qt5CoreConfigExtras.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Core\Qt5CoreConfigExtrasMkspecDir.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Core\Qt5CoreMacros.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeParseArguments.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Widgets\Qt5WidgetsConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Widgets\Qt5WidgetsConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5GuiConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5GuiConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QDDSPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QGifPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QICNSPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QICOPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QJp2Plugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QJpegPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QMinimalIntegrationPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QMngPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QOffscreenIntegrationPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QTgaPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QTiffPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QWbmpPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QWebpPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QWindowsIntegrationPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5GuiConfigExtras.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Widgets\Qt5WidgetsConfigExtras.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Widgets\Qt5WidgetsMacros.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeParseArguments.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5LinguistTools\Qt5LinguistToolsConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5LinguistTools\Qt5LinguistToolsConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5LinguistTools\Qt5LinguistToolsMacros.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeParseArguments.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5WebKitWidgets\Qt5WebKitWidgetsConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5WebKitWidgets\Qt5WebKitWidgetsConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5WebKit\Qt5WebKitConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5WebKit\Qt5WebKitConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Network\Qt5NetworkConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Network\Qt5NetworkConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Network\Qt5Network_QGenericEnginePlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Network\Qt5Network_QNativeWifiEnginePlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5OpenGL\Qt5OpenGLConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5OpenGL\Qt5OpenGLConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5PrintSupport\Qt5PrintSupportConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5PrintSupport\Qt5PrintSupportConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5PrintSupport\Qt5PrintSupport_QWindowsPrinterSupportPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sensors\Qt5SensorsConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sensors\Qt5SensorsConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sensors\Qt5Sensors_genericSensorPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sensors\Qt5Sensors_QShakeSensorGesturePlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sensors\Qt5Sensors_QtSensorGesturePlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Quick\Qt5QuickConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Quick\Qt5QuickConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Qml\Qt5QmlConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Qml\Qt5QmlConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Qml\Qt5Qml_QtQuick2Plugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Qml\Qt5QmlConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Qml\Qt5QmlConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sql\Qt5SqlConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sql\Qt5SqlConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sql\Qt5Sql_QMYSQLDriverPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sql\Qt5Sql_QODBCDriverPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sql\Qt5Sql_QPSQLDriverPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sql\Qt5Sql_QSQLiteDriverPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Positioning\Qt5PositioningConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Positioning\Qt5PositioningConfig.cmake;$(SolutionDir)\..\..\\editors\sc-ide\resources.qrc;$(SolutionDir)\..\..\\editors\sc-ide\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)\editors\sc-ide\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule $(SolutionDir)/../../editors/sc-ide/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files (x86)\CMake\bin\cmake.exe" -H$(SolutionDir)/../.. -B$(SolutionDir)/../../vs/build --check-stamp-file $(SolutionDir)\editors\sc-ide\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)/../../editors/sc-ide/CMakeLists.txt;$(SolutionDir)\..\..\\editors\sc-ide\CMakeLists.txt;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Core\Qt5CoreConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Core\Qt5CoreConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Core\Qt5CoreConfigExtras.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Core\Qt5CoreConfigExtrasMkspecDir.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Core\Qt5CoreMacros.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeParseArguments.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Widgets\Qt5WidgetsConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Widgets\Qt5WidgetsConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5GuiConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5GuiConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QDDSPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QGifPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QICNSPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QICOPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QJp2Plugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QJpegPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QMinimalIntegrationPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QMngPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QOffscreenIntegrationPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QTgaPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QTiffPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QWbmpPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QWebpPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QWindowsIntegrationPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5GuiConfigExtras.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Widgets\Qt5WidgetsConfigExtras.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Widgets\Qt5WidgetsMacros.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeParseArguments.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5LinguistTools\Qt5LinguistToolsConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5LinguistTools\Qt5LinguistToolsConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5LinguistTools\Qt5LinguistToolsMacros.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeParseArguments.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5WebKitWidgets\Qt5WebKitWidgetsConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5WebKitWidgets\Qt5WebKitWidgetsConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5WebKit\Qt5WebKitConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5WebKit\Qt5WebKitConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Network\Qt5NetworkConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Network\Qt5NetworkConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Network\Qt5Network_QGenericEnginePlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Network\Qt5Network_QNativeWifiEnginePlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5OpenGL\Qt5OpenGLConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5OpenGL\Qt5OpenGLConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5PrintSupport\Qt5PrintSupportConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5PrintSupport\Qt5PrintSupportConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5PrintSupport\Qt5PrintSupport_QWindowsPrinterSupportPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sensors\Qt5SensorsConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sensors\Qt5SensorsConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sensors\Qt5Sensors_genericSensorPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sensors\Qt5Sensors_QShakeSensorGesturePlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sensors\Qt5Sensors_QtSensorGesturePlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Quick\Qt5QuickConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Quick\Qt5QuickConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Qml\Qt5QmlConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Qml\Qt5QmlConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Qml\Qt5Qml_QtQuick2Plugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Qml\Qt5QmlConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Qml\Qt5QmlConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sql\Qt5SqlConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sql\Qt5SqlConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sql\Qt5Sql_QMYSQLDriverPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sql\Qt5Sql_QODBCDriverPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sql\Qt5Sql_QPSQLDriverPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sql\Qt5Sql_QSQLiteDriverPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Positioning\Qt5PositioningConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Positioning\Qt5PositioningConfig.cmake;$(SolutionDir)\..\..\\editors\sc-ide\resources.qrc;$(SolutionDir)\..\..\\editors\sc-ide\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)\editors\sc-ide\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule $(SolutionDir)/../../editors/sc-ide/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files (x86)\CMake\bin\cmake.exe" -H$(SolutionDir)/../.. -B$(SolutionDir)/../../vs/build --check-stamp-file $(SolutionDir)\editors\sc-ide\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(SolutionDir)/../../editors/sc-ide/CMakeLists.txt;$(SolutionDir)\..\..\\editors\sc-ide\CMakeLists.txt;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Core\Qt5CoreConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Core\Qt5CoreConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Core\Qt5CoreConfigExtras.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Core\Qt5CoreConfigExtrasMkspecDir.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Core\Qt5CoreMacros.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeParseArguments.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Widgets\Qt5WidgetsConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Widgets\Qt5WidgetsConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5GuiConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5GuiConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QDDSPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QGifPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QICNSPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QICOPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QJp2Plugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QJpegPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QMinimalIntegrationPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QMngPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QOffscreenIntegrationPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QTgaPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QTiffPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QWbmpPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QWebpPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QWindowsIntegrationPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5GuiConfigExtras.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Widgets\Qt5WidgetsConfigExtras.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Widgets\Qt5WidgetsMacros.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeParseArguments.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5LinguistTools\Qt5LinguistToolsConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5LinguistTools\Qt5LinguistToolsConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5LinguistTools\Qt5LinguistToolsMacros.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeParseArguments.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5WebKitWidgets\Qt5WebKitWidgetsConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5WebKitWidgets\Qt5WebKitWidgetsConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5WebKit\Qt5WebKitConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5WebKit\Qt5WebKitConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Network\Qt5NetworkConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Network\Qt5NetworkConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Network\Qt5Network_QGenericEnginePlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Network\Qt5Network_QNativeWifiEnginePlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5OpenGL\Qt5OpenGLConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5OpenGL\Qt5OpenGLConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5PrintSupport\Qt5PrintSupportConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5PrintSupport\Qt5PrintSupportConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5PrintSupport\Qt5PrintSupport_QWindowsPrinterSupportPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sensors\Qt5SensorsConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sensors\Qt5SensorsConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sensors\Qt5Sensors_genericSensorPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sensors\Qt5Sensors_QShakeSensorGesturePlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sensors\Qt5Sensors_QtSensorGesturePlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Quick\Qt5QuickConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Quick\Qt5QuickConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Qml\Qt5QmlConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Qml\Qt5QmlConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Qml\Qt5Qml_QtQuick2Plugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Qml\Qt5QmlConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Qml\Qt5QmlConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sql\Qt5SqlConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sql\Qt5SqlConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sql\Qt5Sql_QMYSQLDriverPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sql\Qt5Sql_QODBCDriverPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sql\Qt5Sql_QPSQLDriverPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sql\Qt5Sql_QSQLiteDriverPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Positioning\Qt5PositioningConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Positioning\Qt5PositioningConfig.cmake;$(SolutionDir)\..\..\\editors\sc-ide\resources.qrc;$(SolutionDir)\..\..\\editors\sc-ide\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(SolutionDir)\editors\sc-ide\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule $(SolutionDir)/../../editors/sc-ide/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files (x86)\CMake\bin\cmake.exe" -H$(SolutionDir)/../.. -B$(SolutionDir)/../../vs/build --check-stamp-file $(SolutionDir)\editors\sc-ide\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(SolutionDir)/../../editors/sc-ide/CMakeLists.txt;$(SolutionDir)\..\..\\editors\sc-ide\CMakeLists.txt;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Core\Qt5CoreConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Core\Qt5CoreConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Core\Qt5CoreConfigExtras.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Core\Qt5CoreConfigExtrasMkspecDir.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Core\Qt5CoreMacros.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeParseArguments.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Widgets\Qt5WidgetsConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Widgets\Qt5WidgetsConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5GuiConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5GuiConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QDDSPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QGifPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QICNSPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QICOPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QJp2Plugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QJpegPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QMinimalIntegrationPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QMngPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QOffscreenIntegrationPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QTgaPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QTiffPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QWbmpPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QWebpPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5Gui_QWindowsIntegrationPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Gui\Qt5GuiConfigExtras.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Widgets\Qt5WidgetsConfigExtras.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Widgets\Qt5WidgetsMacros.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeParseArguments.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5LinguistTools\Qt5LinguistToolsConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5LinguistTools\Qt5LinguistToolsConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5LinguistTools\Qt5LinguistToolsMacros.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeParseArguments.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5WebKitWidgets\Qt5WebKitWidgetsConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5WebKitWidgets\Qt5WebKitWidgetsConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5WebKit\Qt5WebKitConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5WebKit\Qt5WebKitConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Network\Qt5NetworkConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Network\Qt5NetworkConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Network\Qt5Network_QGenericEnginePlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Network\Qt5Network_QNativeWifiEnginePlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5OpenGL\Qt5OpenGLConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5OpenGL\Qt5OpenGLConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5PrintSupport\Qt5PrintSupportConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5PrintSupport\Qt5PrintSupportConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5PrintSupport\Qt5PrintSupport_QWindowsPrinterSupportPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sensors\Qt5SensorsConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sensors\Qt5SensorsConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sensors\Qt5Sensors_genericSensorPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sensors\Qt5Sensors_QShakeSensorGesturePlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sensors\Qt5Sensors_QtSensorGesturePlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Quick\Qt5QuickConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Quick\Qt5QuickConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Qml\Qt5QmlConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Qml\Qt5QmlConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Qml\Qt5Qml_QtQuick2Plugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Qml\Qt5QmlConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Qml\Qt5QmlConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sql\Qt5SqlConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sql\Qt5SqlConfig.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sql\Qt5Sql_QMYSQLDriverPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sql\Qt5Sql_QODBCDriverPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sql\Qt5Sql_QPSQLDriverPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Sql\Qt5Sql_QSQLiteDriverPlugin.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Positioning\Qt5PositioningConfigVersion.cmake;C:\Qt\5.4\msvc2013_64\lib\cmake\Qt5Positioning\Qt5PositioningConfig.cmake;$(SolutionDir)\..\..\\editors\sc-ide\resources.qrc;$(SolutionDir)\..\..\\editors\sc-ide\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(SolutionDir)\editors\sc-ide\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(SolutionDir)\CMakeFiles\df0dc863ae1f917f618b2f761ab794bb\update_ide_translations.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"></Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+lupdate $(SolutionDir)/../../editors/sc-ide -ts $(SolutionDir)/../../editors/sc-ide/translations/scide_de.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_es.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_fr.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_ja.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_pt.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_ru.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_sl.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_sv.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_zh.ts -no-obsolete
+if %errorlevel% neq 0 goto :cmEnd
+lupdate $(SolutionDir)/../../editors/sc-ide -ts $(SolutionDir)/../../editors/sc-ide/translations/scide.ts -no-obsolete -pluralonly
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)/CMakeFiles/df0dc863ae1f917f618b2f761ab794bb/update_ide_translations.rule;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)\editors\sc-ide\CMakeFiles\update_ide_translations</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'"></Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+lupdate $(SolutionDir)/../../editors/sc-ide -ts $(SolutionDir)/../../editors/sc-ide/translations/scide_de.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_es.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_fr.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_ja.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_pt.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_ru.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_sl.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_sv.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_zh.ts -no-obsolete
+if %errorlevel% neq 0 goto :cmEnd
+lupdate $(SolutionDir)/../../editors/sc-ide -ts $(SolutionDir)/../../editors/sc-ide/translations/scide.ts -no-obsolete -pluralonly
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)/CMakeFiles/df0dc863ae1f917f618b2f761ab794bb/update_ide_translations.rule;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)\editors\sc-ide\CMakeFiles\update_ide_translations</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'"></Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+lupdate $(SolutionDir)/../../editors/sc-ide -ts $(SolutionDir)/../../editors/sc-ide/translations/scide_de.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_es.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_fr.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_ja.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_pt.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_ru.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_sl.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_sv.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_zh.ts -no-obsolete
+if %errorlevel% neq 0 goto :cmEnd
+lupdate $(SolutionDir)/../../editors/sc-ide -ts $(SolutionDir)/../../editors/sc-ide/translations/scide.ts -no-obsolete -pluralonly
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(SolutionDir)/CMakeFiles/df0dc863ae1f917f618b2f761ab794bb/update_ide_translations.rule;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(SolutionDir)\editors\sc-ide\CMakeFiles\update_ide_translations</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'"></Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+lupdate $(SolutionDir)/../../editors/sc-ide -ts $(SolutionDir)/../../editors/sc-ide/translations/scide_de.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_es.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_fr.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_ja.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_pt.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_ru.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_sl.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_sv.ts $(SolutionDir)/../../editors/sc-ide/translations/scide_zh.ts -no-obsolete
+if %errorlevel% neq 0 goto :cmEnd
+lupdate $(SolutionDir)/../../editors/sc-ide -ts $(SolutionDir)/../../editors/sc-ide/translations/scide.ts -no-obsolete -pluralonly
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(SolutionDir)/CMakeFiles/df0dc863ae1f917f618b2f761ab794bb/update_ide_translations.rule;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(SolutionDir)\editors\sc-ide\CMakeFiles\update_ide_translations</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(SolutionDir)\editors\sc-ide\CMakeFiles\update_ide_translations" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)/ZERO_CHECK.vcxproj">
+      <Project>C0A904E4-572C-4107-88AA-2CF520DC7D1D</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

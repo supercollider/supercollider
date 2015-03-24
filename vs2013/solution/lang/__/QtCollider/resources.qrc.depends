@@ -1,0 +1,8 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+     <file alias="icons/sc-cube-16">../icons/sc_cube_16x16.png</file>
+     <file alias="icons/sc-cube-32">../icons/sc_cube_32x32.png</file>
+     <file alias="icons/sc-cube-48">../icons/sc_cube_48x48.png</file>
+     <file alias="icons/sc-cube-128">../icons/sc_cube_128x128.png</file>
+</qresource>
+</RCC>

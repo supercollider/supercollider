@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="$(SolutionDir)\..\..\\external_libraries\boost\libs\filesystem\src\codecvt_error_category.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\external_libraries\boost\libs\filesystem\src\operations.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\external_libraries\boost\libs\filesystem\src\path.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\external_libraries\boost\libs\filesystem\src\path_traits.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\external_libraries\boost\libs\filesystem\src\portability.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\external_libraries\boost\libs\filesystem\src\unique_path.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\external_libraries\boost\libs\filesystem\src\utf8_codecvt_facet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(SolutionDir)\..\..\\external_libraries\boost\libs\filesystem\src\windows_file_codecvt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(SolutionDir)\..\..\\external_libraries\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{6C7A12BE-31C9-46EA-847D-D164E2E16EAF}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

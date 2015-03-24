@@ -1,0 +1,9 @@
+# CMake generation dependency list for this directory.
+C:/Users/lucas/Documents/GitHub/supercollider/server/scsynth/CMakeLists.txt
+C:/Users/lucas/Documents/GitHub/supercollider/cmake_modules/FindSndfile.cmake
+C:/Users/lucas/Documents/GitHub/supercollider/cmake_modules/FindPortaudio.cmake
+C:/Users/lucas/Documents/GitHub/supercollider/cmake_modules/FindPortaudio.cmake
+C:/Users/lucas/Documents/GitHub/supercollider/cmake_modules/FindAvahi.cmake
+C:/Program Files (x86)/CMake/share/cmake-3.2/Modules/FindPackageHandleStandardArgs.cmake
+C:/Program Files (x86)/CMake/share/cmake-3.2/Modules/FindPackageMessage.cmake
+C:/Program Files (x86)/CMake/share/cmake-3.2/Modules/CMakeParseArguments.cmake

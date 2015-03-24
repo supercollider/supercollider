@@ -1,0 +1,18 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file alias="icons/sc-cube-16">../../icons/sc_cube_16x16.png</file>
+    <file alias="icons/sc-cube-32">../../icons/sc_cube_32x32.png</file>
+    <file alias="icons/sc-cube-48">../../icons/sc_cube_48x48.png</file>
+    <file alias="icons/sc-cube-128">../../icons/sc_cube_128x128.png</file>
+    <file alias="icons/sc-ide-svg">../../icons/sc_ide.svg</file>
+    <file alias="icons/sc-ide-16">../../icons/sc_ide_16.png</file>
+    <file alias="icons/sc-ide-24">../../icons/sc_ide_24.png</file>
+    <file alias="icons/sc-ide-32">../../icons/sc_ide_32.png</file>
+    <file alias="icons/sc-ide-48">../../icons/sc_ide_48.png</file>
+    <file alias="icons/sc-ide-64">../../icons/sc_ide_64.png</file>
+    <file alias="icons/sc-ide-128">../../icons/sc_ide_128.png</file>
+    <file alias="icons/sc-ide-256">../../icons/sc_ide_256.png</file>
+    <file alias="icons/sc-ide-512">../../icons/sc_ide_512.png</file>
+    <file alias="icons/sc-ide-1024">../../icons/sc_ide_1024.png</file>
+</qresource>
+</RCC>

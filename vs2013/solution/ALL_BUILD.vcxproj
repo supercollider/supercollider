@@ -1,0 +1,274 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGUID>{3647FE46-6B3D-47DA-977C-3DFC435F3869}</ProjectGUID>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>x64</Platform>
+    <ProjectName>ALL_BUILD</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+    <PropertyGroup>
+      <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+      <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>$(SolutionDir)\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>$(SolutionDir)\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>$(SolutionDir)\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>$(SolutionDir)\common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="$(SolutionDir)\..\..\\CMakeLists.txt">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule $(SolutionDir)/../../CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files (x86)\CMake\bin\cmake.exe" -H$(SolutionDir)/../.. -B$(SolutionDir)/../../vs/build --check-stamp-file $(SolutionDir)\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)/../../CMakeLists.txt;$(SolutionDir)\..\..\\CMakeLists.txt;$(SolutionDir)\CMakeFiles\3.2.1\CMakeSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeSystemSpecificInitialize.cmake;$(SolutionDir)\CMakeFiles\3.2.1\CMakeCCompiler.cmake;$(SolutionDir)\CMakeFiles\3.2.1\CMakeCXXCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeGenericSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\Platform\Windows.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\Platform\WindowsPaths.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\Platform\Windows-MSVC.cmake;$(SolutionDir)\CMakeFiles\3.2.1\CMakeRCCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeRCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeCXXInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\Platform\Windows-MSVC.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeCommonLanguageInclude.cmake;$(SolutionDir)\..\..\\SCVersion.txt;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CTest.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CTestUseLaunchers.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CTestTargets.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\DartConfiguration.tcl.in;$(SolutionDir)\..\..\\cmake_modules\FinalFile.cmake;$(SolutionDir)\..\..\\cmake_modules\cmake_uninstall.cmake.in;$(SolutionDir)\..\..\\cmake_modules\FindYamlCpp.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\FindPackageMessage.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeParseArguments.cmake;$(SolutionDir)\..\..\\common\SC_Version.hpp.in;$(SolutionDir)\..\..\\build_sclang.cfg.in;$(SolutionDir)\..\..\\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule $(SolutionDir)/../../CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files (x86)\CMake\bin\cmake.exe" -H$(SolutionDir)/../.. -B$(SolutionDir)/../../vs/build --check-stamp-file $(SolutionDir)\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)/../../CMakeLists.txt;$(SolutionDir)\..\..\\CMakeLists.txt;$(SolutionDir)\CMakeFiles\3.2.1\CMakeSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeSystemSpecificInitialize.cmake;$(SolutionDir)\CMakeFiles\3.2.1\CMakeCCompiler.cmake;$(SolutionDir)\CMakeFiles\3.2.1\CMakeCXXCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeGenericSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\Platform\Windows.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\Platform\WindowsPaths.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\Platform\Windows-MSVC.cmake;$(SolutionDir)\CMakeFiles\3.2.1\CMakeRCCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeRCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeCXXInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\Platform\Windows-MSVC.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeCommonLanguageInclude.cmake;$(SolutionDir)\..\..\\SCVersion.txt;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CTest.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CTestUseLaunchers.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CTestTargets.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\DartConfiguration.tcl.in;$(SolutionDir)\..\..\\cmake_modules\FinalFile.cmake;$(SolutionDir)\..\..\\cmake_modules\cmake_uninstall.cmake.in;$(SolutionDir)\..\..\\cmake_modules\FindYamlCpp.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\FindPackageMessage.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeParseArguments.cmake;$(SolutionDir)\..\..\\common\SC_Version.hpp.in;$(SolutionDir)\..\..\\build_sclang.cfg.in;$(SolutionDir)\..\..\\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule $(SolutionDir)/../../CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files (x86)\CMake\bin\cmake.exe" -H$(SolutionDir)/../.. -B$(SolutionDir)/../../vs/build --check-stamp-file $(SolutionDir)\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(SolutionDir)/../../CMakeLists.txt;$(SolutionDir)\..\..\\CMakeLists.txt;$(SolutionDir)\CMakeFiles\3.2.1\CMakeSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeSystemSpecificInitialize.cmake;$(SolutionDir)\CMakeFiles\3.2.1\CMakeCCompiler.cmake;$(SolutionDir)\CMakeFiles\3.2.1\CMakeCXXCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeGenericSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\Platform\Windows.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\Platform\WindowsPaths.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\Platform\Windows-MSVC.cmake;$(SolutionDir)\CMakeFiles\3.2.1\CMakeRCCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeRCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeCXXInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\Platform\Windows-MSVC.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeCommonLanguageInclude.cmake;$(SolutionDir)\..\..\\SCVersion.txt;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CTest.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CTestUseLaunchers.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CTestTargets.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\DartConfiguration.tcl.in;$(SolutionDir)\..\..\\cmake_modules\FinalFile.cmake;$(SolutionDir)\..\..\\cmake_modules\cmake_uninstall.cmake.in;$(SolutionDir)\..\..\\cmake_modules\FindYamlCpp.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\FindPackageMessage.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeParseArguments.cmake;$(SolutionDir)\..\..\\common\SC_Version.hpp.in;$(SolutionDir)\..\..\\build_sclang.cfg.in;$(SolutionDir)\..\..\\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(SolutionDir)\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule $(SolutionDir)/../../CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files (x86)\CMake\bin\cmake.exe" -H$(SolutionDir)/../.. -B$(SolutionDir)/../../vs/build --check-stamp-file $(SolutionDir)\CMakeFiles\generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(SolutionDir)/../../CMakeLists.txt;$(SolutionDir)\..\..\\CMakeLists.txt;$(SolutionDir)\CMakeFiles\3.2.1\CMakeSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeSystemSpecificInitialize.cmake;$(SolutionDir)\CMakeFiles\3.2.1\CMakeCCompiler.cmake;$(SolutionDir)\CMakeFiles\3.2.1\CMakeCXXCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeGenericSystem.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\Platform\Windows.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\Platform\WindowsPaths.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\Platform\Windows-MSVC.cmake;$(SolutionDir)\CMakeFiles\3.2.1\CMakeRCCompiler.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeRCInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeCXXInformation.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\Platform\Windows-MSVC.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeCommonLanguageInclude.cmake;$(SolutionDir)\..\..\\SCVersion.txt;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CTest.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CTestUseLaunchers.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CTestTargets.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\DartConfiguration.tcl.in;$(SolutionDir)\..\..\\cmake_modules\FinalFile.cmake;$(SolutionDir)\..\..\\cmake_modules\cmake_uninstall.cmake.in;$(SolutionDir)\..\..\\cmake_modules\FindYamlCpp.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\FindPackageMessage.cmake;C:\Program Files (x86)\CMake\share\cmake-3.2\Modules\CMakeParseArguments.cmake;$(SolutionDir)\..\..\\common\SC_Version.hpp.in;$(SolutionDir)\..\..\\build_sclang.cfg.in;$(SolutionDir)\..\..\\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(SolutionDir)\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)/server/plugins/BinaryOpUGens.vcxproj">
+      <Project>8A2D3485-411F-4435-94AC-13402F02F54E</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/server/plugins/ChaosUGens.vcxproj">
+      <Project>0039772E-E99D-4C69-B397-26B8162C66AA</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/server/plugins/DelayUGens.vcxproj">
+      <Project>315DC5BB-22DF-4FD6-A287-C768153BC73D</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/server/plugins/DemandUGens.vcxproj">
+      <Project>A80C1AA1-3460-45F2-92F8-99798F23EF01</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/server/plugins/DiskIO_UGens.vcxproj">
+      <Project>86813353-14EA-43E5-A7C5-E70DA1D7C028</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/server/plugins/DynNoiseUGens.vcxproj">
+      <Project>29045A61-4E73-4555-A9A5-1A813223DEFA</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/server/plugins/FFT_UGens.vcxproj">
+      <Project>CAB5B6C8-4D18-4FBF-8003-55FF62EF26F9</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/server/plugins/FilterUGens.vcxproj">
+      <Project>455F8C9E-02E4-48CD-BD06-9DE2CA987110</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/server/plugins/GendynUGens.vcxproj">
+      <Project>D911D019-341B-4C5C-97DB-AE7DA7272F02</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/server/plugins/GrainUGens.vcxproj">
+      <Project>342FFE3F-49EC-40F2-BB2C-CD17EC82801E</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/server/plugins/IOUGens.vcxproj">
+      <Project>469ECE90-B9DC-44F3-ADCA-D9173E9038AA</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/server/plugins/LFUGens.vcxproj">
+      <Project>BD456B07-6F9E-4510-A4D8-BF0B6B923075</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/server/plugins/ML_UGens.vcxproj">
+      <Project>A7423033-7558-4BCE-8E02-093291C4EC93</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/server/plugins/MulAddUGens.vcxproj">
+      <Project>4F64FAAE-D6B6-4DE5-B3F3-7406A211691B</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/server/plugins/NoiseUGens.vcxproj">
+      <Project>C1E6D4F1-69A3-4D6C-88D5-D42393C7A4D8</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/server/plugins/OscUGens.vcxproj">
+      <Project>780F4842-AB90-48C1-A1C7-209065ED79C4</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/server/plugins/PV_ThirdParty.vcxproj">
+      <Project>2A7D33B0-0429-4A6D-8E27-20074C858215</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/server/plugins/PanUGens.vcxproj">
+      <Project>B493BA17-436D-4DBC-90DF-F59864904C19</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/server/plugins/PhysicalModelingUGens.vcxproj">
+      <Project>BB665DEB-6E9D-4A13-B68E-69AA22FA0EEB</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/server/plugins/ReverbUGens.vcxproj">
+      <Project>CB718407-FE89-46F9-8F18-C2E7D811D612</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/editors/sc-ide/SuperCollider.vcxproj">
+      <Project>627F71DF-664C-42A4-9C27-8952AC6C6F98</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/server/plugins/TestUGens.vcxproj">
+      <Project>67C65524-BB80-428A-B6DA-F9173D255D05</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/server/plugins/TriggerUGens.vcxproj">
+      <Project>4FEF8C8D-2210-4198-808E-4D57A637B316</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/server/plugins/UIUGens.vcxproj">
+      <Project>A7B26B42-6624-4AD3-B150-A9CE5E585BE6</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/server/plugins/UnaryOpUGens.vcxproj">
+      <Project>9BF14BA4-B3E0-4005-92C9-AFAD886265D1</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/server/plugins/UnpackFFTUGens.vcxproj">
+      <Project>89D56FA8-806F-4FC3-8CDB-2516E3D071BF</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/ZERO_CHECK.vcxproj">
+      <Project>C0A904E4-572C-4107-88AA-2CF520DC7D1D</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/external_libraries/hidapi/hidapi_parser/hidapi_parser.vcxproj">
+      <Project>F0933289-33AF-4765-9FB0-E8C88F123D03</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/lang/libsclang.vcxproj">
+      <Project>4E6F73EC-769C-44C0-8E32-356A4340E6F9</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/server/scsynth/libscsynth.vcxproj">
+      <Project>0A6A5A3C-3148-4033-967D-D5B61A77D5E1</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/external_libraries/portmidi.vcxproj">
+      <Project>22D5E59B-5D62-4970-AC1D-DCC181DE252B</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/lang/sclang.vcxproj">
+      <Project>94AEC79D-56D1-442E-934F-3A32A427ECB8</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/server/scsynth/scsynth.vcxproj">
+      <Project>5056B84B-95B4-4EC8-A59A-8DE1D247EECF</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/external_libraries/tlsf.vcxproj">
+      <Project>9A5A3B68-0718-49AA-9836-2951A5052414</Project>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)/external_libraries/yaml.vcxproj">
+      <Project>F808120F-0920-4899-A5B8-2856600F81ED</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
