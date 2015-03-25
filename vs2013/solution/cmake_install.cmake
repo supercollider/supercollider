@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/lucas/Documents/GitHub/supercollider
+# Install script for directory: __SC_GITHUB_HOME__
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -28,39 +28,39 @@ if(NOT CMAKE_INSTALL_COMPONENT)
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider" TYPE DIRECTORY FILES "C:/Users/lucas/Documents/GitHub/supercollider/SCClassLibrary" REGEX "ignoreme" EXCLUDE REGEX "/[^/]*\~$" EXCLUDE REGEX "/[^/]*\#$" EXCLUDE)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider" TYPE DIRECTORY FILES "__SC_GITHUB_HOME__/SCClassLibrary" REGEX "ignoreme" EXCLUDE REGEX "/[^/]*\~$" EXCLUDE REGEX "/[^/]*\#$" EXCLUDE)
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider" TYPE DIRECTORY FILES "C:/Users/lucas/Documents/GitHub/supercollider/sounds")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider" TYPE DIRECTORY FILES "__SC_GITHUB_HOME__/sounds")
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider" TYPE DIRECTORY FILES "C:/Users/lucas/Documents/GitHub/supercollider/examples")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider" TYPE DIRECTORY FILES "__SC_GITHUB_HOME__/examples")
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider" TYPE FILE FILES
-    "C:/Users/lucas/Documents/GitHub/supercollider/README.md"
-    "C:/Users/lucas/Documents/GitHub/supercollider/README_WINDOWS.md"
-    "C:/Users/lucas/Documents/GitHub/supercollider/ChangeLog"
-    "C:/Users/lucas/Documents/GitHub/supercollider/COPYING"
-    "C:/Users/lucas/Documents/GitHub/supercollider/AUTHORS"
+    "__SC_GITHUB_HOME__/README.md"
+    "__SC_GITHUB_HOME__/README_WINDOWS.md"
+    "__SC_GITHUB_HOME__/ChangeLog"
+    "__SC_GITHUB_HOME__/COPYING"
+    "__SC_GITHUB_HOME__/AUTHORS"
     )
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider" TYPE DIRECTORY FILES "C:/Users/lucas/Documents/GitHub/supercollider/HelpSource" REGEX "ignoreme" EXCLUDE REGEX "/[^/]*\~$" EXCLUDE REGEX "/[^/]*\#$" EXCLUDE)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider" TYPE DIRECTORY FILES "__SC_GITHUB_HOME__/HelpSource" REGEX "ignoreme" EXCLUDE REGEX "/[^/]*\~$" EXCLUDE REGEX "/[^/]*\#$" EXCLUDE)
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/external_libraries/cmake_install.cmake")
-  include("C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/server/cmake_install.cmake")
-  include("C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/lang/cmake_install.cmake")
-  include("C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/platform/cmake_install.cmake")
-  include("C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/editors/cmake_install.cmake")
-  include("C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/testsuite/cmake_install.cmake")
+  include("__SC_GITHUB_HOME__/vs2013/solution/external_libraries/cmake_install.cmake")
+  include("__SC_GITHUB_HOME__/vs2013/solution/server/cmake_install.cmake")
+  include("__SC_GITHUB_HOME__/vs2013/solution/lang/cmake_install.cmake")
+  include("__SC_GITHUB_HOME__/vs2013/solution/platform/cmake_install.cmake")
+  include("__SC_GITHUB_HOME__/vs2013/solution/editors/cmake_install.cmake")
+  include("__SC_GITHUB_HOME__/vs2013/solution/testsuite/cmake_install.cmake")
 
 endif()
 
@@ -72,5 +72,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "__SC_GITHUB_HOME__/vs2013/solution/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

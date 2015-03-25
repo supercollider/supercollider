@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/lucas/Documents/GitHub/supercollider/editors
+# Install script for directory: __SC_GITHUB_HOME__/editors
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -29,7 +29,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/editors/sc-ide/cmake_install.cmake")
+  include("__SC_GITHUB_HOME__/vs2013/solution/editors/sc-ide/cmake_install.cmake")
 
 endif()
 

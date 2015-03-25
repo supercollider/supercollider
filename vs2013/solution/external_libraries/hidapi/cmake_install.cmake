@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/lucas/Documents/GitHub/supercollider/external_libraries/hidapi
+# Install script for directory: __SC_GITHUB_HOME__/external_libraries/hidapi
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -29,9 +29,9 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/external_libraries/hidapi/hidapi/cmake_install.cmake")
-  include("C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/external_libraries/hidapi/windows/cmake_install.cmake")
-  include("C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/external_libraries/hidapi/hidapi_parser/cmake_install.cmake")
+  include("__SC_GITHUB_HOME__/vs2013/solution/external_libraries/hidapi/hidapi/cmake_install.cmake")
+  include("__SC_GITHUB_HOME__/vs2013/solution/external_libraries/hidapi/windows/cmake_install.cmake")
+  include("__SC_GITHUB_HOME__/vs2013/solution/external_libraries/hidapi/hidapi_parser/cmake_install.cmake")
 
 endif()
 

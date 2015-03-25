@@ -1,8 +1,8 @@
-IF(NOT EXISTS "C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/install_manifest.txt")
-  MESSAGE(FATAL_ERROR "Cannot find install manifest: \"C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/install_manifest.txt\"")
-ENDIF(NOT EXISTS "C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/install_manifest.txt")
+IF(NOT EXISTS "__SC_GITHUB_HOME__/vs2013/solution/install_manifest.txt")
+  MESSAGE(FATAL_ERROR "Cannot find install manifest: \"__SC_GITHUB_HOME__/vs2013/solution/install_manifest.txt\"")
+ENDIF(NOT EXISTS "__SC_GITHUB_HOME__/vs2013/solution/install_manifest.txt")
 
-FILE(READ "C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/install_manifest.txt" files)
+FILE(READ "__SC_GITHUB_HOME__/vs2013/solution/install_manifest.txt" files)
 STRING(REGEX REPLACE "\n" ";" files "${files}")
 FOREACH(file ${files})
   MESSAGE(STATUS "Uninstalling \"$ENV{DESTDIR}${file}\"")

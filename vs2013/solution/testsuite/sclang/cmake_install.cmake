@@ -1,4 +1,4 @@
-# Install script for directory: C:/Users/lucas/Documents/GitHub/supercollider/testsuite/sclang
+# Install script for directory: __SC_GITHUB_HOME__/testsuite/sclang
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
