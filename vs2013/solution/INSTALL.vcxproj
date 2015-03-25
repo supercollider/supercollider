@@ -76,7 +76,7 @@
       <Message>
       </Message>
       <Command>$(SolutionDir)..\deploy.bat $(SolutionDir) $(Configuration) $(Platform)
-if %errorlevel% neq 0 goto :VCEnd</Command>
+if %errorlevel% gtr 7 goto :VCEnd</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -92,7 +92,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <Message>
       </Message>
       <Command>$(SolutionDir)..\deploy.bat $(SolutionDir) $(Configuration) $(Platform)
-if %errorlevel% neq 0 goto :VCEnd</Command>
+if %errorlevel% gtr 7 goto :VCEnd</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
@@ -108,7 +108,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <Message>
       </Message>
       <Command>$(SolutionDir)..\deploy.bat $(SolutionDir) $(Configuration) $(Platform)
-if %errorlevel% neq 0 goto :VCEnd</Command>
+if %errorlevel% gtr 7 goto :VCEnd</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
@@ -124,7 +124,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <Message>
       </Message>
       <Command>$(SolutionDir)..\deploy.bat $(SolutionDir) $(Configuration) $(Platform)
-if %errorlevel% neq 0 goto :VCEnd</Command>
+if %errorlevel% gtr 7 goto :VCEnd</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

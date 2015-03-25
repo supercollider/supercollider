@@ -1,53 +1,53 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="$(SolutionDir)\..\..\\server\plugins\ML.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\server\plugins\ML.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\server\plugins\Loudness.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\server\plugins\Loudness.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\server\plugins\BeatTrack.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\server\plugins\BeatTrack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\server\plugins\Onsets.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\server\plugins\Onsets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\server\plugins\onsetsds.c">
+    <ClCompile Include="$(SolutionDir)..\..\server\plugins\onsetsds.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\server\plugins\KeyTrack.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\server\plugins\KeyTrack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\server\plugins\MFCC.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\server\plugins\MFCC.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\server\plugins\BeatTrack2.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\server\plugins\BeatTrack2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\server\plugins\ML_SpecStats.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\server\plugins\ML_SpecStats.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(SolutionDir)\..\..\\server\plugins\BeatTrack.h">
+    <ClInclude Include="$(SolutionDir)..\..\server\plugins\BeatTrack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\..\\server\plugins\BeatTrack2.h">
+    <ClInclude Include="$(SolutionDir)..\..\server\plugins\BeatTrack2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\..\\server\plugins\ML.h">
+    <ClInclude Include="$(SolutionDir)..\..\server\plugins\ML.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\..\\server\plugins\Onsets.h">
+    <ClInclude Include="$(SolutionDir)..\..\server\plugins\Onsets.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\..\\server\plugins\onsetsds.h">
+    <ClInclude Include="$(SolutionDir)..\..\server\plugins\onsetsds.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="$(SolutionDir)\..\..\\server\plugins\CMakeLists.txt" />
+    <CustomBuild Include="$(SolutionDir)..\..\server\plugins\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">

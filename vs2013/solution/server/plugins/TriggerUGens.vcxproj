@@ -58,25 +58,25 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)\server\plugins\Debug\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)server\plugins\Debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TriggerUGens.dir\Debug\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TriggerUGens</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.scx</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)\server\plugins\Release\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)server\plugins\Release\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TriggerUGens.dir\Release\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TriggerUGens</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.scx</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(SolutionDir)\server\plugins\MinSizeRel\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(SolutionDir)server\plugins\MinSizeRel\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">TriggerUGens.dir\MinSizeRel\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">TriggerUGens</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.scx</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(SolutionDir)\server\plugins\RelWithDebInfo\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(SolutionDir)server\plugins\RelWithDebInfo\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">TriggerUGens.dir\RelWithDebInfo\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">TriggerUGens</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.scx</TargetExt>
@@ -85,7 +85,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)\common;$(SolutionDir)\..\..\\external_libraries;$(SolutionDir)\..\..\\external_libraries\nova-simd;$(SolutionDir)\..\..\\external_libraries\nova-tt;$(SolutionDir)\..\..\\external_libraries\boost;$(SolutionDir)\..\..\\include\common;$(SolutionDir)\..\..\\common;$(SolutionDir)\..\..\\include\plugin_interface;$(SolutionDir)\..\..\\server\plugins\..\..\platform\windows\compat_stuff;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)common;$(SolutionDir)..\..\external_libraries;$(SolutionDir)..\..\external_libraries\nova-simd;$(SolutionDir)..\..\external_libraries\nova-tt;$(SolutionDir)..\..\external_libraries\boost;$(SolutionDir)..\..\include\common;$(SolutionDir)..\..\common;$(SolutionDir)..\..\include\plugin_interface;$(SolutionDir)..\..\server\plugins\..\..\platform\windows\compat_stuff;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Debug/</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>CompileAsCpp</CompileAs>
@@ -103,10 +103,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;NOVA_SIMD;WIN32_LEAN_AND_MEAN;NOMINMAX;_WIN32_WINNT=0x0500;BOOST_THREAD_USE_LIB;BOOST_DATE_TIME_NO_LIB;BOOST_ALL_NO_LIB;BOOST_CHRONO_HEADER_ONLY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;SC_FFT_GREEN;CMAKE_INTDIR=\"Debug\";TriggerUGens_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\common;$(SolutionDir)\..\..\\external_libraries;$(SolutionDir)\..\..\\external_libraries\nova-simd;$(SolutionDir)\..\..\\external_libraries\nova-tt;$(SolutionDir)\..\..\\external_libraries\boost;$(SolutionDir)\..\..\\include\common;$(SolutionDir)\..\..\\common;$(SolutionDir)\..\..\\include\plugin_interface;$(SolutionDir)\..\..\\server\plugins\..\..\platform\windows\compat_stuff;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)common;$(SolutionDir)..\..\external_libraries;$(SolutionDir)..\..\external_libraries\nova-simd;$(SolutionDir)..\..\external_libraries\nova-tt;$(SolutionDir)..\..\external_libraries\boost;$(SolutionDir)..\..\include\common;$(SolutionDir)..\..\common;$(SolutionDir)..\..\include\plugin_interface;$(SolutionDir)..\..\server\plugins\..\..\platform\windows\compat_stuff;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>$(SolutionDir)\common;$(SolutionDir)\..\..\\external_libraries;$(SolutionDir)\..\..\\external_libraries\nova-simd;$(SolutionDir)\..\..\\external_libraries\nova-tt;$(SolutionDir)\..\..\\external_libraries\boost;$(SolutionDir)\..\..\\include\common;$(SolutionDir)\..\..\\common;$(SolutionDir)\..\..\\include\plugin_interface;$(SolutionDir)\..\..\\server\plugins\..\..\platform\windows\compat_stuff;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)common;$(SolutionDir)..\..\external_libraries;$(SolutionDir)..\..\external_libraries\nova-simd;$(SolutionDir)..\..\external_libraries\nova-tt;$(SolutionDir)..\..\external_libraries\boost;$(SolutionDir)..\..\include\common;$(SolutionDir)..\..\common;$(SolutionDir)..\..\include\plugin_interface;$(SolutionDir)..\..\server\plugins\..\..\platform\windows\compat_stuff;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -131,7 +131,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)\common;$(SolutionDir)\..\..\\external_libraries;$(SolutionDir)\..\..\\external_libraries\nova-simd;$(SolutionDir)\..\..\\external_libraries\nova-tt;$(SolutionDir)\..\..\\external_libraries\boost;$(SolutionDir)\..\..\\include\common;$(SolutionDir)\..\..\\common;$(SolutionDir)\..\..\\include\plugin_interface;$(SolutionDir)\..\..\\server\plugins\..\..\platform\windows\compat_stuff;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)common;$(SolutionDir)..\..\external_libraries;$(SolutionDir)..\..\external_libraries\nova-simd;$(SolutionDir)..\..\external_libraries\nova-tt;$(SolutionDir)..\..\external_libraries\boost;$(SolutionDir)..\..\include\common;$(SolutionDir)..\..\common;$(SolutionDir)..\..\include\plugin_interface;$(SolutionDir)..\..\server\plugins\..\..\platform\windows\compat_stuff;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <DisableSpecificWarnings>4018;4102;4267;4244;4305;4309;4800;4996</DisableSpecificWarnings>
@@ -149,10 +149,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;NOVA_SIMD;WIN32_LEAN_AND_MEAN;NOMINMAX;_WIN32_WINNT=0x0500;BOOST_THREAD_USE_LIB;BOOST_DATE_TIME_NO_LIB;BOOST_ALL_NO_LIB;BOOST_CHRONO_HEADER_ONLY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;SC_FFT_GREEN;CMAKE_INTDIR=\"Release\";TriggerUGens_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\common;$(SolutionDir)\..\..\\external_libraries;$(SolutionDir)\..\..\\external_libraries\nova-simd;$(SolutionDir)\..\..\\external_libraries\nova-tt;$(SolutionDir)\..\..\\external_libraries\boost;$(SolutionDir)\..\..\\include\common;$(SolutionDir)\..\..\\common;$(SolutionDir)\..\..\\include\plugin_interface;$(SolutionDir)\..\..\\server\plugins\..\..\platform\windows\compat_stuff;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)common;$(SolutionDir)..\..\external_libraries;$(SolutionDir)..\..\external_libraries\nova-simd;$(SolutionDir)..\..\external_libraries\nova-tt;$(SolutionDir)..\..\external_libraries\boost;$(SolutionDir)..\..\include\common;$(SolutionDir)..\..\common;$(SolutionDir)..\..\include\plugin_interface;$(SolutionDir)..\..\server\plugins\..\..\platform\windows\compat_stuff;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>$(SolutionDir)\common;$(SolutionDir)\..\..\\external_libraries;$(SolutionDir)\..\..\\external_libraries\nova-simd;$(SolutionDir)\..\..\\external_libraries\nova-tt;$(SolutionDir)\..\..\\external_libraries\boost;$(SolutionDir)\..\..\\include\common;$(SolutionDir)\..\..\\common;$(SolutionDir)\..\..\\include\plugin_interface;$(SolutionDir)\..\..\\server\plugins\..\..\platform\windows\compat_stuff;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)common;$(SolutionDir)..\..\external_libraries;$(SolutionDir)..\..\external_libraries\nova-simd;$(SolutionDir)..\..\external_libraries\nova-tt;$(SolutionDir)..\..\external_libraries\boost;$(SolutionDir)..\..\include\common;$(SolutionDir)..\..\common;$(SolutionDir)..\..\include\plugin_interface;$(SolutionDir)..\..\server\plugins\..\..\platform\windows\compat_stuff;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -177,7 +177,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)\common;$(SolutionDir)\..\..\\external_libraries;$(SolutionDir)\..\..\\external_libraries\nova-simd;$(SolutionDir)\..\..\\external_libraries\nova-tt;$(SolutionDir)\..\..\\external_libraries\boost;$(SolutionDir)\..\..\\include\common;$(SolutionDir)\..\..\\common;$(SolutionDir)\..\..\\include\plugin_interface;$(SolutionDir)\..\..\\server\plugins\..\..\platform\windows\compat_stuff;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)common;$(SolutionDir)..\..\external_libraries;$(SolutionDir)..\..\external_libraries\nova-simd;$(SolutionDir)..\..\external_libraries\nova-tt;$(SolutionDir)..\..\external_libraries\boost;$(SolutionDir)..\..\include\common;$(SolutionDir)..\..\common;$(SolutionDir)..\..\include\plugin_interface;$(SolutionDir)..\..\server\plugins\..\..\platform\windows\compat_stuff;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <DisableSpecificWarnings>4018;4102;4267;4244;4305;4309;4800;4996</DisableSpecificWarnings>
@@ -195,10 +195,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;NOVA_SIMD;WIN32_LEAN_AND_MEAN;NOMINMAX;_WIN32_WINNT=0x0500;BOOST_THREAD_USE_LIB;BOOST_DATE_TIME_NO_LIB;BOOST_ALL_NO_LIB;BOOST_CHRONO_HEADER_ONLY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;SC_FFT_GREEN;CMAKE_INTDIR=\"MinSizeRel\";TriggerUGens_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\common;$(SolutionDir)\..\..\\external_libraries;$(SolutionDir)\..\..\\external_libraries\nova-simd;$(SolutionDir)\..\..\\external_libraries\nova-tt;$(SolutionDir)\..\..\\external_libraries\boost;$(SolutionDir)\..\..\\include\common;$(SolutionDir)\..\..\\common;$(SolutionDir)\..\..\\include\plugin_interface;$(SolutionDir)\..\..\\server\plugins\..\..\platform\windows\compat_stuff;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)common;$(SolutionDir)..\..\external_libraries;$(SolutionDir)..\..\external_libraries\nova-simd;$(SolutionDir)..\..\external_libraries\nova-tt;$(SolutionDir)..\..\external_libraries\boost;$(SolutionDir)..\..\include\common;$(SolutionDir)..\..\common;$(SolutionDir)..\..\include\plugin_interface;$(SolutionDir)..\..\server\plugins\..\..\platform\windows\compat_stuff;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>$(SolutionDir)\common;$(SolutionDir)\..\..\\external_libraries;$(SolutionDir)\..\..\\external_libraries\nova-simd;$(SolutionDir)\..\..\\external_libraries\nova-tt;$(SolutionDir)\..\..\\external_libraries\boost;$(SolutionDir)\..\..\\include\common;$(SolutionDir)\..\..\\common;$(SolutionDir)\..\..\\include\plugin_interface;$(SolutionDir)\..\..\\server\plugins\..\..\platform\windows\compat_stuff;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)common;$(SolutionDir)..\..\external_libraries;$(SolutionDir)..\..\external_libraries\nova-simd;$(SolutionDir)..\..\external_libraries\nova-tt;$(SolutionDir)..\..\external_libraries\boost;$(SolutionDir)..\..\include\common;$(SolutionDir)..\..\common;$(SolutionDir)..\..\include\plugin_interface;$(SolutionDir)..\..\server\plugins\..\..\platform\windows\compat_stuff;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -223,7 +223,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)\common;$(SolutionDir)\..\..\\external_libraries;$(SolutionDir)\..\..\\external_libraries\nova-simd;$(SolutionDir)\..\..\\external_libraries\nova-tt;$(SolutionDir)\..\..\\external_libraries\boost;$(SolutionDir)\..\..\\include\common;$(SolutionDir)\..\..\\common;$(SolutionDir)\..\..\\include\plugin_interface;$(SolutionDir)\..\..\\server\plugins\..\..\platform\windows\compat_stuff;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)common;$(SolutionDir)..\..\external_libraries;$(SolutionDir)..\..\external_libraries\nova-simd;$(SolutionDir)..\..\external_libraries\nova-tt;$(SolutionDir)..\..\external_libraries\boost;$(SolutionDir)..\..\include\common;$(SolutionDir)..\..\common;$(SolutionDir)..\..\include\plugin_interface;$(SolutionDir)..\..\server\plugins\..\..\platform\windows\compat_stuff;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -240,10 +240,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;NOVA_SIMD;WIN32_LEAN_AND_MEAN;NOMINMAX;_WIN32_WINNT=0x0500;BOOST_THREAD_USE_LIB;BOOST_DATE_TIME_NO_LIB;BOOST_ALL_NO_LIB;BOOST_CHRONO_HEADER_ONLY;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;SC_FFT_GREEN;CMAKE_INTDIR=\"RelWithDebInfo\";TriggerUGens_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\common;$(SolutionDir)\..\..\\external_libraries;$(SolutionDir)\..\..\\external_libraries\nova-simd;$(SolutionDir)\..\..\\external_libraries\nova-tt;$(SolutionDir)\..\..\\external_libraries\boost;$(SolutionDir)\..\..\\include\common;$(SolutionDir)\..\..\\common;$(SolutionDir)\..\..\\include\plugin_interface;$(SolutionDir)\..\..\\server\plugins\..\..\platform\windows\compat_stuff;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)common;$(SolutionDir)..\..\external_libraries;$(SolutionDir)..\..\external_libraries\nova-simd;$(SolutionDir)..\..\external_libraries\nova-tt;$(SolutionDir)..\..\external_libraries\boost;$(SolutionDir)..\..\include\common;$(SolutionDir)..\..\common;$(SolutionDir)..\..\include\plugin_interface;$(SolutionDir)..\..\server\plugins\..\..\platform\windows\compat_stuff;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>$(SolutionDir)\common;$(SolutionDir)\..\..\\external_libraries;$(SolutionDir)\..\..\\external_libraries\nova-simd;$(SolutionDir)\..\..\\external_libraries\nova-tt;$(SolutionDir)\..\..\\external_libraries\boost;$(SolutionDir)\..\..\\include\common;$(SolutionDir)\..\..\\common;$(SolutionDir)\..\..\\include\plugin_interface;$(SolutionDir)\..\..\\server\plugins\..\..\platform\windows\compat_stuff;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)common;$(SolutionDir)..\..\external_libraries;$(SolutionDir)..\..\external_libraries\nova-simd;$(SolutionDir)..\..\external_libraries\nova-tt;$(SolutionDir)..\..\external_libraries\boost;$(SolutionDir)..\..\include\common;$(SolutionDir)..\..\common;$(SolutionDir)..\..\include\plugin_interface;$(SolutionDir)..\..\server\plugins\..\..\platform\windows\compat_stuff;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -267,10 +267,10 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CustomBuild Include="$(SolutionDir)\..\..\\server\plugins\CMakeLists.txt">
+    <CustomBuild Include="$(SolutionDir)..\..\server\plugins\CMakeLists.txt">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule $(SolutionDir)/../../server/plugins/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
-"C:\Program Files (x86)\CMake\bin\cmake.exe" -H$(SolutionDir)/../.. -B$(SolutionDir)/ --check-stamp-file $(SolutionDir)\server\plugins\CMakeFiles\generate.stamp
+"C:\Program Files (x86)\CMake\bin\cmake.exe" -H$(SolutionDir)/../.. -B$(SolutionDir)/ --check-stamp-file $(SolutionDir)server\plugins\CMakeFiles\generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -278,12 +278,12 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)/../../server/plugins/CMakeLists.txt;$(SolutionDir)\..\..\\server\plugins\CMakeLists.txt;$(SolutionDir)\..\..\\cmake_modules\FindSndfile.cmake;$(SolutionDir)\..\..\\server\plugins\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)\server\plugins\CMakeFiles\generate.stamp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)/../../server/plugins/CMakeLists.txt;$(SolutionDir)..\..\server\plugins\CMakeLists.txt;$(SolutionDir)..\..\cmake_modules\FindSndfile.cmake;$(SolutionDir)..\..\server\plugins\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)server\plugins\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule $(SolutionDir)/../../server/plugins/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
-"C:\Program Files (x86)\CMake\bin\cmake.exe" -H$(SolutionDir)/../.. -B$(SolutionDir)/ --check-stamp-file $(SolutionDir)\server\plugins\CMakeFiles\generate.stamp
+"C:\Program Files (x86)\CMake\bin\cmake.exe" -H$(SolutionDir)/../.. -B$(SolutionDir)/ --check-stamp-file $(SolutionDir)server\plugins\CMakeFiles\generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -291,12 +291,12 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)/../../server/plugins/CMakeLists.txt;$(SolutionDir)\..\..\\server\plugins\CMakeLists.txt;$(SolutionDir)\..\..\\cmake_modules\FindSndfile.cmake;$(SolutionDir)\..\..\\server\plugins\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)\server\plugins\CMakeFiles\generate.stamp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)/../../server/plugins/CMakeLists.txt;$(SolutionDir)..\..\server\plugins\CMakeLists.txt;$(SolutionDir)..\..\cmake_modules\FindSndfile.cmake;$(SolutionDir)..\..\server\plugins\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)server\plugins\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
       <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule $(SolutionDir)/../../server/plugins/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
-"C:\Program Files (x86)\CMake\bin\cmake.exe" -H$(SolutionDir)/../.. -B$(SolutionDir)/ --check-stamp-file $(SolutionDir)\server\plugins\CMakeFiles\generate.stamp
+"C:\Program Files (x86)\CMake\bin\cmake.exe" -H$(SolutionDir)/../.. -B$(SolutionDir)/ --check-stamp-file $(SolutionDir)server\plugins\CMakeFiles\generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -304,12 +304,12 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(SolutionDir)/../../server/plugins/CMakeLists.txt;$(SolutionDir)\..\..\\server\plugins\CMakeLists.txt;$(SolutionDir)\..\..\\cmake_modules\FindSndfile.cmake;$(SolutionDir)\..\..\\server\plugins\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(SolutionDir)\server\plugins\CMakeFiles\generate.stamp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(SolutionDir)/../../server/plugins/CMakeLists.txt;$(SolutionDir)..\..\server\plugins\CMakeLists.txt;$(SolutionDir)..\..\cmake_modules\FindSndfile.cmake;$(SolutionDir)..\..\server\plugins\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(SolutionDir)server\plugins\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
       <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule $(SolutionDir)/../../server/plugins/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
-"C:\Program Files (x86)\CMake\bin\cmake.exe" -H$(SolutionDir)/../.. -B$(SolutionDir)/ --check-stamp-file $(SolutionDir)\server\plugins\CMakeFiles\generate.stamp
+"C:\Program Files (x86)\CMake\bin\cmake.exe" -H$(SolutionDir)/../.. -B$(SolutionDir)/ --check-stamp-file $(SolutionDir)server\plugins\CMakeFiles\generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -317,13 +317,13 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(SolutionDir)/../../server/plugins/CMakeLists.txt;$(SolutionDir)\..\..\\server\plugins\CMakeLists.txt;$(SolutionDir)\..\..\\cmake_modules\FindSndfile.cmake;$(SolutionDir)\..\..\\server\plugins\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(SolutionDir)\server\plugins\CMakeFiles\generate.stamp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(SolutionDir)/../../server/plugins/CMakeLists.txt;$(SolutionDir)..\..\server\plugins\CMakeLists.txt;$(SolutionDir)..\..\cmake_modules\FindSndfile.cmake;$(SolutionDir)..\..\server\plugins\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(SolutionDir)server\plugins\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(SolutionDir)\..\..\\server\plugins\TriggerUGens.cpp" />
+    <ClCompile Include="$(SolutionDir)..\..\server\plugins\TriggerUGens.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)/ZERO_CHECK.vcxproj">

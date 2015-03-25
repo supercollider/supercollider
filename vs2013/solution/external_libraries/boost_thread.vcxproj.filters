@@ -1,24 +1,24 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="$(SolutionDir)\..\..\\external_libraries\boost\libs\thread\src\future.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\external_libraries\boost\libs\thread\src\future.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\external_libraries\boost\libs\thread\src\tss_null.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\external_libraries\boost\libs\thread\src\tss_null.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\external_libraries\boost\libs\thread\src\win32\thread.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\external_libraries\boost\libs\thread\src\win32\thread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\external_libraries\boost\libs\thread\src\win32\tss_dll.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\external_libraries\boost\libs\thread\src\win32\tss_dll.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\external_libraries\boost\libs\thread\src\win32\tss_pe.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\external_libraries\boost\libs\thread\src\win32\tss_pe.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="$(SolutionDir)\..\..\\external_libraries\CMakeLists.txt" />
+    <CustomBuild Include="$(SolutionDir)..\..\external_libraries\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">

@@ -1,173 +1,173 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_BufGen.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\server\scsynth\SC_BufGen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_ComPort.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\server\scsynth\SC_ComPort.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_CoreAudio.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\server\scsynth\SC_CoreAudio.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_Graph.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\server\scsynth\SC_Graph.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_GraphDef.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\server\scsynth\SC_GraphDef.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_Group.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\server\scsynth\SC_Group.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_Lib_Cintf.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\server\scsynth\SC_Lib_Cintf.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_Lib.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\server\scsynth\SC_Lib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_MiscCmds.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\server\scsynth\SC_MiscCmds.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_Node.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\server\scsynth\SC_Node.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_Rate.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\server\scsynth\SC_Rate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_SequencedCommand.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\server\scsynth\SC_SequencedCommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_Str4.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\server\scsynth\SC_Str4.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_Unit.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\server\scsynth\SC_Unit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_UnitDef.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\server\scsynth\SC_UnitDef.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_World.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\server\scsynth\SC_World.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\Rendezvous.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\server\scsynth\Rendezvous.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\common\SC_fftlib.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\common\SC_fftlib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\common\SC_AllocPool.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\common\SC_AllocPool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\common\SC_DirUtils.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\common\SC_DirUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\common\SC_Errors.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\common\SC_Errors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\common\SC_Reply.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\common\SC_Reply.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\common\SC_StandAloneInfo_Darwin.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\common\SC_StandAloneInfo_Darwin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\common\SC_StringBuffer.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\common\SC_StringBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\common\SC_StringParser.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\common\SC_StringParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\common\Samp.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\common\Samp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\common\sc_popen.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\common\sc_popen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\external_libraries\boost\libs\system\src\error_code.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\external_libraries\boost\libs\system\src\error_code.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\common\SC_Win32Utils.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\common\SC_Win32Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\common\fftlib.c">
+    <ClCompile Include="$(SolutionDir)..\..\common\fftlib.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\server\scsynth\SC_PortAudio.cpp">
+    <ClCompile Include="$(SolutionDir)..\..\server\scsynth\SC_PortAudio.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_HiddenWorld.h">
+    <ClInclude Include="$(SolutionDir)..\..\server\scsynth\SC_HiddenWorld.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\HashTable.h">
+    <ClInclude Include="$(SolutionDir)..\..\server\scsynth\HashTable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\iPhone\iscsynthAppDelegate.h">
+    <ClInclude Include="$(SolutionDir)..\..\server\scsynth\iPhone\iscsynthAppDelegate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\iPhone\iSCSynthController.h">
+    <ClInclude Include="$(SolutionDir)..\..\server\scsynth\iPhone\iSCSynthController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\OSC_Packet.h">
+    <ClInclude Include="$(SolutionDir)..\..\server\scsynth\OSC_Packet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\PriorityQueue.h">
+    <ClInclude Include="$(SolutionDir)..\..\server\scsynth\PriorityQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\ReadWriteMacros.h">
+    <ClInclude Include="$(SolutionDir)..\..\server\scsynth\ReadWriteMacros.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\Rendezvous.h">
+    <ClInclude Include="$(SolutionDir)..\..\server\scsynth\Rendezvous.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_AU.h">
+    <ClInclude Include="$(SolutionDir)..\..\server\scsynth\SC_AU.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_CoreAudio.h">
+    <ClInclude Include="$(SolutionDir)..\..\server\scsynth\SC_CoreAudio.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_GraphDef.h">
+    <ClInclude Include="$(SolutionDir)..\..\server\scsynth\SC_GraphDef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_Group.h">
+    <ClInclude Include="$(SolutionDir)..\..\server\scsynth\SC_Group.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_Lib.h">
+    <ClInclude Include="$(SolutionDir)..\..\server\scsynth\SC_Lib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_Lib_Cintf.h">
+    <ClInclude Include="$(SolutionDir)..\..\server\scsynth\SC_Lib_Cintf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_Prototypes.h">
+    <ClInclude Include="$(SolutionDir)..\..\server\scsynth\SC_Prototypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_SequencedCommand.h">
+    <ClInclude Include="$(SolutionDir)..\..\server\scsynth\SC_SequencedCommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_Str4.h">
+    <ClInclude Include="$(SolutionDir)..\..\server\scsynth\SC_Str4.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_SynthDef.h">
+    <ClInclude Include="$(SolutionDir)..\..\server\scsynth\SC_SynthDef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_Time.hpp">
+    <ClInclude Include="$(SolutionDir)..\..\server\scsynth\SC_Time.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_TimeDLL.hpp">
+    <ClInclude Include="$(SolutionDir)..\..\server\scsynth\SC_TimeDLL.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_UnitDef.h">
+    <ClInclude Include="$(SolutionDir)..\..\server\scsynth\SC_UnitDef.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_UnitSpec.h">
+    <ClInclude Include="$(SolutionDir)..\..\server\scsynth\SC_UnitSpec.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\..\\server\scsynth\SC_WireSpec.h">
+    <ClInclude Include="$(SolutionDir)..\..\server\scsynth\SC_WireSpec.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="$(SolutionDir)\..\..\\server\scsynth\CMakeLists.txt" />
+    <CustomBuild Include="$(SolutionDir)..\..\server\scsynth\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">

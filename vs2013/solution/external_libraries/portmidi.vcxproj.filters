@@ -1,44 +1,44 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="$(SolutionDir)\..\..\\external_libraries\portmidi\pm_common\pmutil.c">
+    <ClCompile Include="$(SolutionDir)..\..\external_libraries\portmidi\pm_common\pmutil.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\external_libraries\portmidi\pm_common\portmidi.c">
+    <ClCompile Include="$(SolutionDir)..\..\external_libraries\portmidi\pm_common\portmidi.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\external_libraries\portmidi\pm_win\pmwin.c">
+    <ClCompile Include="$(SolutionDir)..\..\external_libraries\portmidi\pm_win\pmwin.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\external_libraries\portmidi\pm_win\pmwinmm.c">
+    <ClCompile Include="$(SolutionDir)..\..\external_libraries\portmidi\pm_win\pmwinmm.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\external_libraries\portmidi\porttime\porttime.c">
+    <ClCompile Include="$(SolutionDir)..\..\external_libraries\portmidi\porttime\porttime.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="$(SolutionDir)\..\..\\external_libraries\portmidi\porttime\ptwinmm.c">
+    <ClCompile Include="$(SolutionDir)..\..\external_libraries\portmidi\porttime\ptwinmm.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(SolutionDir)\..\..\\external_libraries\portmidi\pm_common\pminternal.h">
+    <ClInclude Include="$(SolutionDir)..\..\external_libraries\portmidi\pm_common\pminternal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\..\\external_libraries\portmidi\pm_common\pmutil.h">
+    <ClInclude Include="$(SolutionDir)..\..\external_libraries\portmidi\pm_common\pmutil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\..\\external_libraries\portmidi\pm_common\portmidi.h">
+    <ClInclude Include="$(SolutionDir)..\..\external_libraries\portmidi\pm_common\portmidi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\..\\external_libraries\portmidi\pm_win\pmwinmm.h">
+    <ClInclude Include="$(SolutionDir)..\..\external_libraries\portmidi\pm_win\pmwinmm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="$(SolutionDir)\..\..\\external_libraries\portmidi\porttime\porttime.h">
+    <ClInclude Include="$(SolutionDir)..\..\external_libraries\portmidi\porttime\porttime.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="$(SolutionDir)\..\..\\external_libraries\CMakeLists.txt" />
+    <CustomBuild Include="$(SolutionDir)..\..\external_libraries\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">

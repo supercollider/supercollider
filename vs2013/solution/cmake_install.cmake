@@ -28,7 +28,7 @@ if(NOT CMAKE_INSTALL_COMPONENT)
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider" TYPE DIRECTORY FILES "C:/Users/lucas/Documents/GitHub/supercollider/SCClassLibrary" REGEX "ignoreme" EXCLUDE REGEX "/[^/]*\\~$" EXCLUDE REGEX "/[^/]*\\#$" EXCLUDE)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider" TYPE DIRECTORY FILES "C:/Users/lucas/Documents/GitHub/supercollider/SCClassLibrary" REGEX "ignoreme" EXCLUDE REGEX "/[^/]*\~$" EXCLUDE REGEX "/[^/]*\#$" EXCLUDE)
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
@@ -50,7 +50,7 @@ if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspeci
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider" TYPE DIRECTORY FILES "C:/Users/lucas/Documents/GitHub/supercollider/HelpSource" REGEX "ignoreme" EXCLUDE REGEX "/[^/]*\\~$" EXCLUDE REGEX "/[^/]*\\#$" EXCLUDE)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider" TYPE DIRECTORY FILES "C:/Users/lucas/Documents/GitHub/supercollider/HelpSource" REGEX "ignoreme" EXCLUDE REGEX "/[^/]*\~$" EXCLUDE REGEX "/[^/]*\#$" EXCLUDE)
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
