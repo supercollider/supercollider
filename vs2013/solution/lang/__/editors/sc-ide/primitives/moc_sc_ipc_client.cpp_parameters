@@ -1,4 +1,4 @@
--IC:/Users/lucas/Documents/GitHub/supercollider/vs/build/common
+-IC:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/common
 -IC:/Users/lucas/Documents/GitHub/supercollider/include/common
 -IC:/Users/lucas/Documents/GitHub/supercollider/include/lang
 -IC:/Users/lucas/Documents/GitHub/supercollider/include/plugin_interface
@@ -32,5 +32,5 @@
 -DQT_NO_KEYWORDS
 -DWIN32
 -o
-C:/Users/lucas/Documents/GitHub/supercollider/vs/build/lang/__/editors/sc-ide/primitives/moc_sc_ipc_client.cpp
+C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/lang/__/editors/sc-ide/primitives/moc_sc_ipc_client.cpp
 C:/Users/lucas/Documents/GitHub/supercollider/editors/sc-ide/primitives/sc_ipc_client.hpp

@@ -29,7 +29,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("C:/Users/lucas/Documents/GitHub/supercollider/vs/build/editors/sc-ide/cmake_install.cmake")
+  include("C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/editors/sc-ide/cmake_install.cmake")
 
 endif()
 

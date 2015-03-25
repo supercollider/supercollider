@@ -1,4 +1,4 @@
--IC:/Users/lucas/Documents/GitHub/supercollider/vs/build/common
+-IC:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/common
 -IC:/Users/lucas/Documents/GitHub/supercollider/include/common
 -IC:/Users/lucas/Documents/GitHub/supercollider/common
 -IC:/Users/lucas/Documents/GitHub/supercollider/include/plugin_interface
@@ -7,7 +7,7 @@
 -IC:/Users/lucas/Documents/GitHub/supercollider
 -IC:/Users/lucas/Documents/GitHub/supercollider/editors/sc-ide/widgets/util
 -IC:/Users/lucas/Documents/GitHub/supercollider/editors/sc-ide/widgets
--IC:/Users/lucas/Documents/GitHub/supercollider/vs/build/editors/sc-ide
+-IC:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/editors/sc-ide
 -DWIN32_LEAN_AND_MEAN
 -DNOMINMAX
 -D_WIN32_WINNT=0x0500
@@ -19,5 +19,5 @@
 -D_SCL_SECURE_NO_WARNINGS
 -DWIN32
 -o
-C:/Users/lucas/Documents/GitHub/supercollider/vs/build/editors/sc-ide/widgets/moc_main_window.cpp
+C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/editors/sc-ide/widgets/moc_main_window.cpp
 C:/Users/lucas/Documents/GitHub/supercollider/editors/sc-ide/widgets/main_window.hpp

@@ -11,7 +11,7 @@ Microsoft (R) Build Engine version 12.0.31101.0
 Copyright (C) Microsoft Corporation. All rights reserved.
 
 Build started 2015-03-18 11:14:33 PM.
-Project "C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\3.2.1\CompilerIdC\CompilerIdC.vcxproj" on node 1 (default targets).
+Project "C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\3.2.1\CompilerIdC\CompilerIdC.vcxproj" on node 1 (default targets).
 PrepareForBuild:
   Creating directory "Debug\".
   Creating directory "Debug\CompilerIdC.tlog\".
@@ -22,7 +22,7 @@ ClCompile:
   CMakeCCompilerId.c
 Link:
   C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:".\CompilerIdC.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\CompilerIdC.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\CompilerIdC.lib" /MACHINE:X64 Debug\CMakeCCompilerId.obj
-  CompilerIdC.vcxproj -> C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\3.2.1\CompilerIdC\.\CompilerIdC.exe
+  CompilerIdC.vcxproj -> C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\3.2.1\CompilerIdC\.\CompilerIdC.exe
 PostBuildEvent:
   for %%i in (cl.exe) do @echo CMAKE_C_COMPILER=%%~$PATH:i
   :VCEnd
@@ -30,7 +30,7 @@ PostBuildEvent:
 FinalizeBuildStatus:
   Deleting file "Debug\CompilerIdC.tlog\unsuccessfulbuild".
   Touching "Debug\CompilerIdC.tlog\CompilerIdC.lastbuildstate".
-Done Building Project "C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\3.2.1\CompilerIdC\CompilerIdC.vcxproj" (default targets).
+Done Building Project "C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\3.2.1\CompilerIdC\CompilerIdC.vcxproj" (default targets).
 
 Build succeeded.
     0 Warning(s)
@@ -43,7 +43,7 @@ Compilation of the C compiler identification source "CMakeCCompilerId.c" produce
 
 Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.vcxproj"
 
-The C compiler identification is MSVC, found in "C:/Users/lucas/Documents/GitHub/supercollider/vs/build/CMakeFiles/3.2.1/CompilerIdC/CompilerIdC.exe"
+The C compiler identification is MSVC, found in "C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/CMakeFiles/3.2.1/CompilerIdC/CompilerIdC.exe"
 
 Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
 Compiler:  
@@ -57,7 +57,7 @@ Microsoft (R) Build Engine version 12.0.31101.0
 Copyright (C) Microsoft Corporation. All rights reserved.
 
 Build started 2015-03-18 11:14:34 PM.
-Project "C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\3.2.1\CompilerIdCXX\CompilerIdCXX.vcxproj" on node 1 (default targets).
+Project "C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\3.2.1\CompilerIdCXX\CompilerIdCXX.vcxproj" on node 1 (default targets).
 PrepareForBuild:
   Creating directory "Debug\".
   Creating directory "Debug\CompilerIdCXX.tlog\".
@@ -68,7 +68,7 @@ ClCompile:
   CMakeCXXCompilerId.cpp
 Link:
   C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:".\CompilerIdCXX.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\CompilerIdCXX.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\CompilerIdCXX.lib" /MACHINE:X64 Debug\CMakeCXXCompilerId.obj
-  CompilerIdCXX.vcxproj -> C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\3.2.1\CompilerIdCXX\.\CompilerIdCXX.exe
+  CompilerIdCXX.vcxproj -> C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\3.2.1\CompilerIdCXX\.\CompilerIdCXX.exe
 PostBuildEvent:
   for %%i in (cl.exe) do @echo CMAKE_CXX_COMPILER=%%~$PATH:i
   :VCEnd
@@ -76,7 +76,7 @@ PostBuildEvent:
 FinalizeBuildStatus:
   Deleting file "Debug\CompilerIdCXX.tlog\unsuccessfulbuild".
   Touching "Debug\CompilerIdCXX.tlog\CompilerIdCXX.lastbuildstate".
-Done Building Project "C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\3.2.1\CompilerIdCXX\CompilerIdCXX.vcxproj" (default targets).
+Done Building Project "C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\3.2.1\CompilerIdCXX\CompilerIdCXX.vcxproj" (default targets).
 
 Build succeeded.
     0 Warning(s)
@@ -89,10 +89,10 @@ Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" p
 
 Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.vcxproj"
 
-The CXX compiler identification is MSVC, found in "C:/Users/lucas/Documents/GitHub/supercollider/vs/build/CMakeFiles/3.2.1/CompilerIdCXX/CompilerIdCXX.exe"
+The CXX compiler identification is MSVC, found in "C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/CMakeFiles/3.2.1/CompilerIdCXX/CompilerIdCXX.exe"
 
 Determining if the C compiler works passed with the following output:
-Change Dir: C:/Users/lucas/Documents/GitHub/supercollider/vs/build/CMakeFiles/CMakeTmp
+Change Dir: C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/CMakeFiles/CMakeTmp
 
 Run Build Command:"C:/Program Files (x86)/MSBuild/12.0/bin/MSBuild.exe" "cmTryCompileExec2055550524.vcxproj" "/p:Configuration=Debug" "/p:VisualStudioVersion=12.0"
 Microsoft (R) Build Engine version 12.0.31101.0
@@ -100,28 +100,28 @@ Microsoft (R) Build Engine version 12.0.31101.0
 Copyright (C) Microsoft Corporation. All rights reserved.
 
 Build started 2015-03-18 11:14:34 PM.
-Project "C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\CMakeTmp\cmTryCompileExec2055550524.vcxproj" on node 1 (default targets).
+Project "C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\CMakeTmp\cmTryCompileExec2055550524.vcxproj" on node 1 (default targets).
 PrepareForBuild:
   Creating directory "cmTryCompileExec2055550524.dir\Debug\".
-  Creating directory "C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\CMakeTmp\Debug\".
+  Creating directory "C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\CMakeTmp\Debug\".
   Creating directory "cmTryCompileExec2055550524.dir\Debug\cmTryCom.114F835B.tlog\".
 InitializeBuildStatus:
   Creating "cmTryCompileExec2055550524.dir\Debug\cmTryCom.114F835B.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
 ClCompile:
-  C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /Zi /W3 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"cmTryCompileExec2055550524.dir\Debug\\" /Fd"cmTryCompileExec2055550524.dir\Debug\vc120.pdb" /Gd /TC /errorReport:queue C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\CMakeTmp\testCCompiler.c
+  C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /Zi /W3 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"cmTryCompileExec2055550524.dir\Debug\\" /Fd"cmTryCompileExec2055550524.dir\Debug\vc120.pdb" /Gd /TC /errorReport:queue C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\CMakeTmp\testCCompiler.c
   Microsoft (R) C/C++ Optimizing Compiler Version 18.00.31101 for x64
   Copyright (C) Microsoft Corporation.  All rights reserved.
   
-  cl /c /Zi /W3 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"cmTryCompileExec2055550524.dir\Debug\\" /Fd"cmTryCompileExec2055550524.dir\Debug\vc120.pdb" /Gd /TC /errorReport:queue C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\CMakeTmp\testCCompiler.c
+  cl /c /Zi /W3 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"cmTryCompileExec2055550524.dir\Debug\\" /Fd"cmTryCompileExec2055550524.dir\Debug\vc120.pdb" /Gd /TC /errorReport:queue C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\CMakeTmp\testCCompiler.c
   
   testCCompiler.c
 Link:
-  C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec2055550524.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/lucas/Documents/GitHub/supercollider/vs/build/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec2055550524.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/lucas/Documents/GitHub/supercollider/vs/build/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec2055550524.lib" /MACHINE:X64  /machine:x64 /debug cmTryCompileExec2055550524.dir\Debug\testCCompiler.obj
-  cmTryCompileExec2055550524.vcxproj -> C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec2055550524.exe
+  C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec2055550524.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec2055550524.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec2055550524.lib" /MACHINE:X64  /machine:x64 /debug cmTryCompileExec2055550524.dir\Debug\testCCompiler.obj
+  cmTryCompileExec2055550524.vcxproj -> C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec2055550524.exe
 FinalizeBuildStatus:
   Deleting file "cmTryCompileExec2055550524.dir\Debug\cmTryCom.114F835B.tlog\unsuccessfulbuild".
   Touching "cmTryCompileExec2055550524.dir\Debug\cmTryCom.114F835B.tlog\cmTryCompileExec2055550524.lastbuildstate".
-Done Building Project "C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\CMakeTmp\cmTryCompileExec2055550524.vcxproj" (default targets).
+Done Building Project "C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\CMakeTmp\cmTryCompileExec2055550524.vcxproj" (default targets).
 
 Build succeeded.
     0 Warning(s)
@@ -131,7 +131,7 @@ Time Elapsed 00:00:00.80
 
 
 Detecting C compiler ABI info compiled with the following output:
-Change Dir: C:/Users/lucas/Documents/GitHub/supercollider/vs/build/CMakeFiles/CMakeTmp
+Change Dir: C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/CMakeFiles/CMakeTmp
 
 Run Build Command:"C:/Program Files (x86)/MSBuild/12.0/bin/MSBuild.exe" "cmTryCompileExec3075050964.vcxproj" "/p:Configuration=Debug" "/p:VisualStudioVersion=12.0"
 Microsoft (R) Build Engine version 12.0.31101.0
@@ -139,10 +139,10 @@ Microsoft (R) Build Engine version 12.0.31101.0
 Copyright (C) Microsoft Corporation. All rights reserved.
 
 Build started 2015-03-18 11:14:35 PM.
-Project "C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\CMakeTmp\cmTryCompileExec3075050964.vcxproj" on node 1 (default targets).
+Project "C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\CMakeTmp\cmTryCompileExec3075050964.vcxproj" on node 1 (default targets).
 PrepareForBuild:
   Creating directory "cmTryCompileExec3075050964.dir\Debug\".
-  Creating directory "C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\CMakeTmp\Debug\".
+  Creating directory "C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\CMakeTmp\Debug\".
   Creating directory "cmTryCompileExec3075050964.dir\Debug\cmTryCom.E2B1425B.tlog\".
 InitializeBuildStatus:
   Creating "cmTryCompileExec3075050964.dir\Debug\cmTryCom.E2B1425B.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
@@ -155,12 +155,12 @@ ClCompile:
   
   CMakeCCompilerABI.c
 Link:
-  C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec3075050964.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/lucas/Documents/GitHub/supercollider/vs/build/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec3075050964.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/lucas/Documents/GitHub/supercollider/vs/build/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec3075050964.lib" /MACHINE:X64  /machine:x64 /debug cmTryCompileExec3075050964.dir\Debug\CMakeCCompilerABI.obj
-  cmTryCompileExec3075050964.vcxproj -> C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec3075050964.exe
+  C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec3075050964.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec3075050964.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec3075050964.lib" /MACHINE:X64  /machine:x64 /debug cmTryCompileExec3075050964.dir\Debug\CMakeCCompilerABI.obj
+  cmTryCompileExec3075050964.vcxproj -> C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec3075050964.exe
 FinalizeBuildStatus:
   Deleting file "cmTryCompileExec3075050964.dir\Debug\cmTryCom.E2B1425B.tlog\unsuccessfulbuild".
   Touching "cmTryCompileExec3075050964.dir\Debug\cmTryCom.E2B1425B.tlog\cmTryCompileExec3075050964.lastbuildstate".
-Done Building Project "C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\CMakeTmp\cmTryCompileExec3075050964.vcxproj" (default targets).
+Done Building Project "C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\CMakeTmp\cmTryCompileExec3075050964.vcxproj" (default targets).
 
 Build succeeded.
     0 Warning(s)
@@ -170,7 +170,7 @@ Time Elapsed 00:00:00.57
 
 
 Determining if the CXX compiler works passed with the following output:
-Change Dir: C:/Users/lucas/Documents/GitHub/supercollider/vs/build/CMakeFiles/CMakeTmp
+Change Dir: C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/CMakeFiles/CMakeTmp
 
 Run Build Command:"C:/Program Files (x86)/MSBuild/12.0/bin/MSBuild.exe" "cmTryCompileExec3803201081.vcxproj" "/p:Configuration=Debug" "/p:VisualStudioVersion=12.0"
 Microsoft (R) Build Engine version 12.0.31101.0
@@ -178,28 +178,28 @@ Microsoft (R) Build Engine version 12.0.31101.0
 Copyright (C) Microsoft Corporation. All rights reserved.
 
 Build started 2015-03-18 11:14:36 PM.
-Project "C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\CMakeTmp\cmTryCompileExec3803201081.vcxproj" on node 1 (default targets).
+Project "C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\CMakeTmp\cmTryCompileExec3803201081.vcxproj" on node 1 (default targets).
 PrepareForBuild:
   Creating directory "cmTryCompileExec3803201081.dir\Debug\".
-  Creating directory "C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\CMakeTmp\Debug\".
+  Creating directory "C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\CMakeTmp\Debug\".
   Creating directory "cmTryCompileExec3803201081.dir\Debug\cmTryCom.E5D73A58.tlog\".
 InitializeBuildStatus:
   Creating "cmTryCompileExec3803201081.dir\Debug\cmTryCom.E5D73A58.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
 ClCompile:
-  C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /Zi /W3 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo"cmTryCompileExec3803201081.dir\Debug\\" /Fd"cmTryCompileExec3803201081.dir\Debug\vc120.pdb" /Gd /TP /errorReport:queue C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\CMakeTmp\testCXXCompiler.cxx
+  C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /Zi /W3 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo"cmTryCompileExec3803201081.dir\Debug\\" /Fd"cmTryCompileExec3803201081.dir\Debug\vc120.pdb" /Gd /TP /errorReport:queue C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\CMakeTmp\testCXXCompiler.cxx
   Microsoft (R) C/C++ Optimizing Compiler Version 18.00.31101 for x64
   Copyright (C) Microsoft Corporation.  All rights reserved.
   
-  cl /c /Zi /W3 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo"cmTryCompileExec3803201081.dir\Debug\\" /Fd"cmTryCompileExec3803201081.dir\Debug\vc120.pdb" /Gd /TP /errorReport:queue C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\CMakeTmp\testCXXCompiler.cxx
+  cl /c /Zi /W3 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo"cmTryCompileExec3803201081.dir\Debug\\" /Fd"cmTryCompileExec3803201081.dir\Debug\vc120.pdb" /Gd /TP /errorReport:queue C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\CMakeTmp\testCXXCompiler.cxx
   
   testCXXCompiler.cxx
 Link:
-  C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec3803201081.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/lucas/Documents/GitHub/supercollider/vs/build/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec3803201081.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/lucas/Documents/GitHub/supercollider/vs/build/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec3803201081.lib" /MACHINE:X64  /machine:x64 /debug cmTryCompileExec3803201081.dir\Debug\testCXXCompiler.obj
-  cmTryCompileExec3803201081.vcxproj -> C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec3803201081.exe
+  C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec3803201081.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec3803201081.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec3803201081.lib" /MACHINE:X64  /machine:x64 /debug cmTryCompileExec3803201081.dir\Debug\testCXXCompiler.obj
+  cmTryCompileExec3803201081.vcxproj -> C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec3803201081.exe
 FinalizeBuildStatus:
   Deleting file "cmTryCompileExec3803201081.dir\Debug\cmTryCom.E5D73A58.tlog\unsuccessfulbuild".
   Touching "cmTryCompileExec3803201081.dir\Debug\cmTryCom.E5D73A58.tlog\cmTryCompileExec3803201081.lastbuildstate".
-Done Building Project "C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\CMakeTmp\cmTryCompileExec3803201081.vcxproj" (default targets).
+Done Building Project "C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\CMakeTmp\cmTryCompileExec3803201081.vcxproj" (default targets).
 
 Build succeeded.
     0 Warning(s)
@@ -209,7 +209,7 @@ Time Elapsed 00:00:00.56
 
 
 Detecting CXX compiler ABI info compiled with the following output:
-Change Dir: C:/Users/lucas/Documents/GitHub/supercollider/vs/build/CMakeFiles/CMakeTmp
+Change Dir: C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/CMakeFiles/CMakeTmp
 
 Run Build Command:"C:/Program Files (x86)/MSBuild/12.0/bin/MSBuild.exe" "cmTryCompileExec2696633512.vcxproj" "/p:Configuration=Debug" "/p:VisualStudioVersion=12.0"
 Microsoft (R) Build Engine version 12.0.31101.0
@@ -217,10 +217,10 @@ Microsoft (R) Build Engine version 12.0.31101.0
 Copyright (C) Microsoft Corporation. All rights reserved.
 
 Build started 2015-03-18 11:14:37 PM.
-Project "C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\CMakeTmp\cmTryCompileExec2696633512.vcxproj" on node 1 (default targets).
+Project "C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\CMakeTmp\cmTryCompileExec2696633512.vcxproj" on node 1 (default targets).
 PrepareForBuild:
   Creating directory "cmTryCompileExec2696633512.dir\Debug\".
-  Creating directory "C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\CMakeTmp\Debug\".
+  Creating directory "C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\CMakeTmp\Debug\".
   Creating directory "cmTryCompileExec2696633512.dir\Debug\cmTryCom.69110CDF.tlog\".
 InitializeBuildStatus:
   Creating "cmTryCompileExec2696633512.dir\Debug\cmTryCom.69110CDF.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
@@ -233,12 +233,12 @@ ClCompile:
   
   CMakeCXXCompilerABI.cpp
 Link:
-  C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec2696633512.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/lucas/Documents/GitHub/supercollider/vs/build/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec2696633512.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/lucas/Documents/GitHub/supercollider/vs/build/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec2696633512.lib" /MACHINE:X64  /machine:x64 /debug cmTryCompileExec2696633512.dir\Debug\CMakeCXXCompilerABI.obj
-  cmTryCompileExec2696633512.vcxproj -> C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec2696633512.exe
+  C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec2696633512.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec2696633512.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec2696633512.lib" /MACHINE:X64  /machine:x64 /debug cmTryCompileExec2696633512.dir\Debug\CMakeCXXCompilerABI.obj
+  cmTryCompileExec2696633512.vcxproj -> C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec2696633512.exe
 FinalizeBuildStatus:
   Deleting file "cmTryCompileExec2696633512.dir\Debug\cmTryCom.69110CDF.tlog\unsuccessfulbuild".
   Touching "cmTryCompileExec2696633512.dir\Debug\cmTryCom.69110CDF.tlog\cmTryCompileExec2696633512.lastbuildstate".
-Done Building Project "C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\CMakeTmp\cmTryCompileExec2696633512.vcxproj" (default targets).
+Done Building Project "C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\CMakeTmp\cmTryCompileExec2696633512.vcxproj" (default targets).
 
 Build succeeded.
     0 Warning(s)
@@ -250,7 +250,7 @@ Time Elapsed 00:00:00.58
 
 
 Detecting CXX [] compiler features compiled with the following output:
-Change Dir: C:/Users/lucas/Documents/GitHub/supercollider/vs/build/CMakeFiles/CMakeTmp
+Change Dir: C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/CMakeFiles/CMakeTmp
 
 Run Build Command:"C:/Program Files (x86)/MSBuild/12.0/bin/MSBuild.exe" "cmTryCompileExec3357106718.vcxproj" "/p:Configuration=Debug" "/p:VisualStudioVersion=12.0"
 Microsoft (R) Build Engine version 12.0.31101.0
@@ -258,28 +258,28 @@ Microsoft (R) Build Engine version 12.0.31101.0
 Copyright (C) Microsoft Corporation. All rights reserved.
 
 Build started 2015-03-18 11:14:38 PM.
-Project "C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\CMakeTmp\cmTryCompileExec3357106718.vcxproj" on node 1 (default targets).
+Project "C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\CMakeTmp\cmTryCompileExec3357106718.vcxproj" on node 1 (default targets).
 PrepareForBuild:
   Creating directory "cmTryCompileExec3357106718.dir\Debug\".
-  Creating directory "C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\CMakeTmp\Debug\".
+  Creating directory "C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\CMakeTmp\Debug\".
   Creating directory "cmTryCompileExec3357106718.dir\Debug\cmTryCom.50B3257C.tlog\".
 InitializeBuildStatus:
   Creating "cmTryCompileExec3357106718.dir\Debug\cmTryCom.50B3257C.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
 ClCompile:
-  C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /Zi /W3 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo"cmTryCompileExec3357106718.dir\Debug\\" /Fd"cmTryCompileExec3357106718.dir\Debug\vc120.pdb" /Gd /TP /errorReport:queue C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\feature_tests.cxx
+  C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /Zi /W3 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo"cmTryCompileExec3357106718.dir\Debug\\" /Fd"cmTryCompileExec3357106718.dir\Debug\vc120.pdb" /Gd /TP /errorReport:queue C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\feature_tests.cxx
   Microsoft (R) C/C++ Optimizing Compiler Version 18.00.31101 for x64
   Copyright (C) Microsoft Corporation.  All rights reserved.
   
-  cl /c /Zi /W3 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo"cmTryCompileExec3357106718.dir\Debug\\" /Fd"cmTryCompileExec3357106718.dir\Debug\vc120.pdb" /Gd /TP /errorReport:queue C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\feature_tests.cxx
+  cl /c /Zi /W3 /WX- /Od /Ob0 /D WIN32 /D _WINDOWS /D _DEBUG /D "CMAKE_INTDIR=\"Debug\"" /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo"cmTryCompileExec3357106718.dir\Debug\\" /Fd"cmTryCompileExec3357106718.dir\Debug\vc120.pdb" /Gd /TP /errorReport:queue C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\feature_tests.cxx
   
   feature_tests.cxx
 Link:
-  C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec3357106718.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/lucas/Documents/GitHub/supercollider/vs/build/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec3357106718.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/lucas/Documents/GitHub/supercollider/vs/build/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec3357106718.lib" /MACHINE:X64  /machine:x64 /debug cmTryCompileExec3357106718.dir\Debug\feature_tests.obj
-  cmTryCompileExec3357106718.vcxproj -> C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec3357106718.exe
+  C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:QUEUE /OUT:"C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec3357106718.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec3357106718.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/CMakeFiles/CMakeTmp/Debug/cmTryCompileExec3357106718.lib" /MACHINE:X64  /machine:x64 /debug cmTryCompileExec3357106718.dir\Debug\feature_tests.obj
+  cmTryCompileExec3357106718.vcxproj -> C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\CMakeTmp\Debug\cmTryCompileExec3357106718.exe
 FinalizeBuildStatus:
   Deleting file "cmTryCompileExec3357106718.dir\Debug\cmTryCom.50B3257C.tlog\unsuccessfulbuild".
   Touching "cmTryCompileExec3357106718.dir\Debug\cmTryCom.50B3257C.tlog\cmTryCompileExec3357106718.lastbuildstate".
-Done Building Project "C:\Users\lucas\Documents\GitHub\supercollider\vs\build\CMakeFiles\CMakeTmp\cmTryCompileExec3357106718.vcxproj" (default targets).
+Done Building Project "C:\Users\lucas\Documents\GitHub\supercollider\vs2013\solution\CMakeFiles\CMakeTmp\cmTryCompileExec3357106718.vcxproj" (default targets).
 
 Build succeeded.
     0 Warning(s)

@@ -1,9 +1,9 @@
 # CMake generation dependency list for this directory.
 C:/Users/lucas/Documents/GitHub/supercollider/CMakeLists.txt
-C:/Users/lucas/Documents/GitHub/supercollider/vs/build/CMakeFiles/3.2.1/CMakeSystem.cmake
+C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/CMakeFiles/3.2.1/CMakeSystem.cmake
 C:/Program Files (x86)/CMake/share/cmake-3.2/Modules/CMakeSystemSpecificInitialize.cmake
-C:/Users/lucas/Documents/GitHub/supercollider/vs/build/CMakeFiles/3.2.1/CMakeCCompiler.cmake
-C:/Users/lucas/Documents/GitHub/supercollider/vs/build/CMakeFiles/3.2.1/CMakeCXXCompiler.cmake
+C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/CMakeFiles/3.2.1/CMakeCCompiler.cmake
+C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/CMakeFiles/3.2.1/CMakeCXXCompiler.cmake
 C:/Program Files (x86)/CMake/share/cmake-3.2/Modules/CMakeSystemSpecificInformation.cmake
 C:/Program Files (x86)/CMake/share/cmake-3.2/Modules/CMakeGenericSystem.cmake
 C:/Program Files (x86)/CMake/share/cmake-3.2/Modules/Platform/Windows.cmake
@@ -11,7 +11,7 @@ C:/Program Files (x86)/CMake/share/cmake-3.2/Modules/Platform/WindowsPaths.cmake
 C:/Program Files (x86)/CMake/share/cmake-3.2/Modules/CMakeCInformation.cmake
 C:/Program Files (x86)/CMake/share/cmake-3.2/Modules/Platform/Windows-MSVC-C.cmake
 C:/Program Files (x86)/CMake/share/cmake-3.2/Modules/Platform/Windows-MSVC.cmake
-C:/Users/lucas/Documents/GitHub/supercollider/vs/build/CMakeFiles/3.2.1/CMakeRCCompiler.cmake
+C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/CMakeFiles/3.2.1/CMakeRCCompiler.cmake
 C:/Program Files (x86)/CMake/share/cmake-3.2/Modules/CMakeRCInformation.cmake
 C:/Program Files (x86)/CMake/share/cmake-3.2/Modules/CMakeCommonLanguageInclude.cmake
 C:/Program Files (x86)/CMake/share/cmake-3.2/Modules/CMakeCXXInformation.cmake

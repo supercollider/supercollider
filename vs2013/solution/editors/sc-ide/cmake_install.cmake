@@ -29,28 +29,28 @@ endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   if("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Dd][Ee][Bb][Uu][Gg])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider" TYPE EXECUTABLE PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE FILES "C:/Users/lucas/Documents/GitHub/supercollider/vs/build/editors/sc-ide/Debug/scide.exe")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider" TYPE EXECUTABLE PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE FILES "C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/editors/sc-ide/Debug/scide.exe")
   elseif("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider" TYPE EXECUTABLE PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE FILES "C:/Users/lucas/Documents/GitHub/supercollider/vs/build/editors/sc-ide/Release/scide.exe")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider" TYPE EXECUTABLE PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE FILES "C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/editors/sc-ide/Release/scide.exe")
   elseif("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Mm][Ii][Nn][Ss][Ii][Zz][Ee][Rr][Ee][Ll])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider" TYPE EXECUTABLE PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE FILES "C:/Users/lucas/Documents/GitHub/supercollider/vs/build/editors/sc-ide/MinSizeRel/scide.exe")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider" TYPE EXECUTABLE PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE FILES "C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/editors/sc-ide/MinSizeRel/scide.exe")
   elseif("${CMAKE_INSTALL_CONFIG_NAME}" MATCHES "^([Rr][Ee][Ll][Ww][Ii][Tt][Hh][Dd][Ee][Bb][Ii][Nn][Ff][Oo])$")
-    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider" TYPE EXECUTABLE PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE FILES "C:/Users/lucas/Documents/GitHub/supercollider/vs/build/editors/sc-ide/RelWithDebInfo/scide.exe")
+    file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider" TYPE EXECUTABLE PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE FILES "C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/editors/sc-ide/RelWithDebInfo/scide.exe")
   endif()
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider/translations" TYPE FILE FILES
-    "C:/Users/lucas/Documents/GitHub/supercollider/vs/build/editors/sc-ide/scide_de.qm"
-    "C:/Users/lucas/Documents/GitHub/supercollider/vs/build/editors/sc-ide/scide_es.qm"
-    "C:/Users/lucas/Documents/GitHub/supercollider/vs/build/editors/sc-ide/scide_fr.qm"
-    "C:/Users/lucas/Documents/GitHub/supercollider/vs/build/editors/sc-ide/scide_ja.qm"
-    "C:/Users/lucas/Documents/GitHub/supercollider/vs/build/editors/sc-ide/scide_pt.qm"
-    "C:/Users/lucas/Documents/GitHub/supercollider/vs/build/editors/sc-ide/scide_ru.qm"
-    "C:/Users/lucas/Documents/GitHub/supercollider/vs/build/editors/sc-ide/scide_sl.qm"
-    "C:/Users/lucas/Documents/GitHub/supercollider/vs/build/editors/sc-ide/scide_sv.qm"
-    "C:/Users/lucas/Documents/GitHub/supercollider/vs/build/editors/sc-ide/scide_zh.qm"
-    "C:/Users/lucas/Documents/GitHub/supercollider/vs/build/editors/sc-ide/scide.qm"
+    "C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/editors/sc-ide/scide_de.qm"
+    "C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/editors/sc-ide/scide_es.qm"
+    "C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/editors/sc-ide/scide_fr.qm"
+    "C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/editors/sc-ide/scide_ja.qm"
+    "C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/editors/sc-ide/scide_pt.qm"
+    "C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/editors/sc-ide/scide_ru.qm"
+    "C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/editors/sc-ide/scide_sl.qm"
+    "C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/editors/sc-ide/scide_sv.qm"
+    "C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/editors/sc-ide/scide_zh.qm"
+    "C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/editors/sc-ide/scide.qm"
     )
 endif()
 

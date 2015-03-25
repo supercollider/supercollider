@@ -55,12 +55,12 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("C:/Users/lucas/Documents/GitHub/supercollider/vs/build/external_libraries/cmake_install.cmake")
-  include("C:/Users/lucas/Documents/GitHub/supercollider/vs/build/server/cmake_install.cmake")
-  include("C:/Users/lucas/Documents/GitHub/supercollider/vs/build/lang/cmake_install.cmake")
-  include("C:/Users/lucas/Documents/GitHub/supercollider/vs/build/platform/cmake_install.cmake")
-  include("C:/Users/lucas/Documents/GitHub/supercollider/vs/build/editors/cmake_install.cmake")
-  include("C:/Users/lucas/Documents/GitHub/supercollider/vs/build/testsuite/cmake_install.cmake")
+  include("C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/external_libraries/cmake_install.cmake")
+  include("C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/server/cmake_install.cmake")
+  include("C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/lang/cmake_install.cmake")
+  include("C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/platform/cmake_install.cmake")
+  include("C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/editors/cmake_install.cmake")
+  include("C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/testsuite/cmake_install.cmake")
 
 endif()
 
@@ -72,5 +72,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "C:/Users/lucas/Documents/GitHub/supercollider/vs/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "C:/Users/lucas/Documents/GitHub/supercollider/vs2013/solution/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
