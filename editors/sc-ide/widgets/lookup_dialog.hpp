@@ -27,6 +27,7 @@
 #include <QTreeWidget>
 
 #include "../core/sc_process.hpp"
+#include "code_editor/sc_editor.hpp"
 
 namespace ScIDE {
 
@@ -44,12 +45,14 @@ public:
     explicit GenericLookupDialog(QWidget *parent = 0);
     void query( const QString & query ) { mQueryEdit->setText(query); this->performQuery(); }
     void clearQuery() { mQueryEdit->clear(); }
+    void setModel(QStandardItemModel*);
 
 public Q_SLOTS:
     bool openDocumentation();
 
 protected Q_SLOTS:
     virtual void onAccepted(QModelIndex);
+    void currentChanged(const QModelIndex &, const QModelIndex &);
 
 private Q_SLOTS:
     virtual void performQuery() = 0;
@@ -67,6 +70,8 @@ protected:
 
     QTreeView *mResult;
     QLineEdit *mQueryEdit;
+    Document *mPreviewDocument;
+    ScCodeEditor *mPreviewEditor;
 };
 
 class LookupDialog : public GenericLookupDialog
@@ -81,7 +86,7 @@ private slots:
     void onAccepted(QModelIndex);
 
 private:
-    QStandardItemModel * modelForClass(const QString & className);
+    QStandardItemModel * modelForClass(const QString & className, const QString & methodName = QString());
     QStandardItemModel * modelForMethod(const QString & methodName);
     QStandardItemModel * modelForPartialQuery(const QString & queryString);
     bool performClassQuery(const QString & className);
