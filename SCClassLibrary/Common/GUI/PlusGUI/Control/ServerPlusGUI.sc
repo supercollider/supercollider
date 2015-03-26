@@ -280,7 +280,7 @@
 
 			volumeNum = gui.numberBox.new(w, Rect(0, 0, 28, 18))
 				.font_(font)
-				.value_(currentVolume.clip(-90, 6))
+				.value_(currentVolume)
 				.align_(\center)
 				.action_({arg me;
 					var newdb;
