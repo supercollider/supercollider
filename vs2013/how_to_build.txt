@@ -1,0 +1,100 @@
+building on win64
+-----------------
+
+- first get and install:
+  - visual studio 2013 community (it's free)
+  - Qt 5.4 msvc2013_64, i put it in C:\Qt
+  - libsndfile 64 bit, there's an installer
+  - portaudio - i think you only need portaudio_x64.dll and the include folder
+
+- edit build.bat, set the folders right.
+
+run build.bat, this runs cmake that builds the solution.
+
+open the solution.
+
+In configuration manager, uncheck build for DiskIO_UGens.
+
+hidapi
+	- sclang needs it in CMakeFiles
+	- Must be built linking all dependencies
+  - i had to build it separately from their github
+
+
+change the solution:
+
+(in vs2013)
+sclang->Properties->Linker->Input->Dependencies:
+
+kernel32.lib
+user32.lib
+gdi32.lib
+winspool.lib
+shell32.lib
+ole32.lib
+oleaut32.lib
+uuid.lib
+comdlg32.lib
+advapi32.lib
+setupapi.lib
+Release\libsclang.lib
+C:\Qt\5.4\msvc2013_64\lib\Qt5WebKitWidgets.lib
+C:\Qt\5.4\msvc2013_64\lib\Qt5WebKit.lib
+C:\Qt\5.4\msvc2013_64\lib\Qt5PrintSupport.lib
+C:\Qt\5.4\msvc2013_64\lib\Qt5OpenGL.lib
+C:\Qt\5.4\msvc2013_64\lib\Qt5Widgets.lib
+C:\Qt\5.4\msvc2013_64\lib\Qt5Sensors.lib
+C:\Qt\5.4\msvc2013_64\lib\Qt5Quick.lib
+C:\Qt\5.4\msvc2013_64\lib\Qt5Gui.lib
+C:\Qt\5.4\msvc2013_64\lib\Qt5Qml.lib
+C:\Qt\5.4\msvc2013_64\lib\Qt5Network.lib
+C:\Qt\5.4\msvc2013_64\lib\Qt5Sql.lib
+C:\Qt\5.4\msvc2013_64\lib\Qt5Positioning.lib
+C:\Qt\5.4\msvc2013_64\lib\Qt5Core.lib
+C:\Users\lucas\Documents\GitHub\hidapi\windows\x64\Release\hidapi.lib
+..\external_libraries\hidapi\hidapi_parser\Release\hidapi_parser.lib
+..\server\scsynth\Release\libscsynth.lib
+..\external_libraries\Release\tlsf.lib
+..\external_libraries\Release\boost_thread.lib
+..\external_libraries\Release\boost_system.lib
+\portaudio\lib\x64\portaudio_x64.lib
+winmm.lib
+C:\Program Files\Mega-Nerd\libsndfile\lib\libsndfile-1.lib
+wsock32.lib
+ws2_32.lib
+..\external_libraries\Release\portmidi.lib
+..\external_libraries\Release\yaml.lib
+
+
+deploying
+---------
+
+deploy.bat, when set as a Post-Build-Event for ALL-BUILD, will deploy all the files to c:\supercollider.
+
+ALL_BUILD-->preferences-->Build Events-->Post Build Event:
+
+$(SolutionDir)..\deploy.bat $(SolutionDir) $(Configuration) $(Platform)
+
+or manually copy into c:\supercollider the dlls.
+
+DLLs to deploy:
+Everything from QT
+portaudio_x64.dll
+libsndfile-1.dll
+
+
+Build files to deploy
+C:\Users\lucas\Documents\GitHub\supercollider\vs2013\build\editors\sc-ide\Debug\scide.exe
+C:\Users\lucas\Documents\GitHub\supercollider\vs2013\build\lang\Debug\sclang.exe
+C:\Users\lucas\Documents\GitHub\supercollider\vs2013\build\server\scsynth\Debug\scsynth.exe
+
+C:\Users\lucas\Documents\GitHub\supercollider\vs2013\build\editors\sc-ide\Release\scide.exe
+C:\Users\lucas\Documents\GitHub\supercollider\vs2013\build\lang\Release\sclang.exe
+C:\Users\lucas\Documents\GitHub\supercollider\vs2013\build\server\scsynth\Release\scsynth.exe
+
+the ugens.. use deploy.bat, it will put them in the right spot for release/debug
+
+from the commandline:
+
+deploy.bat C:\Users\lucas\Documents\GitHub\supercollider\vs2013\build\ Release x64
+deploy.bat C:\Users\lucas\Documents\GitHub\supercollider\vs2013\build\ Debug x64

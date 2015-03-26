@@ -1,4 +1,4 @@
-# Install script for directory: __SC_GITHUB_HOME__/external_libraries/hidapi/hidapi
+# Install script for directory: C:/Users/lucas/Documents/GitHub/supercollider/external_libraries/hidapi/hidapi
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

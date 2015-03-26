@@ -4,11 +4,14 @@ set Platform=%3
 
 set SC_HOME=C:\Supercollider
 set SC_DLL=%SolutionDir%\..\dll\%Platform%
+set QT_HOME=C:\Qt\5.4
 
 set ROBO_FLAGS=/S /V /FP /NP
 
 :: deploy dlls
 robocopy %SC_DLL% %SC_HOME% %ROBO_FLAGS%
+robocopy %QT_HOME%\msvc2013_64\bin %SC_HOME% *.dll %ROBO_FLAGS%
+
 
 :: deploy build files
 robocopy %SolutionDir%\editors\sc-ide\%Configuration% %SC_HOME% scide.exe %ROBO_FLAGS%

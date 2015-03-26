@@ -1,5 +1,5 @@
 # CMake generation dependency list for this directory.
-__SC_GITHUB_HOME__/editors/sc-ide/CMakeLists.txt
+C:/Users/lucas/Documents/GitHub/supercollider/editors/sc-ide/CMakeLists.txt
 C:/Qt/5.4/msvc2013_64/lib/cmake/Qt5Core/Qt5CoreConfigVersion.cmake
 C:/Qt/5.4/msvc2013_64/lib/cmake/Qt5Core/Qt5CoreConfig.cmake
 C:/Qt/5.4/msvc2013_64/lib/cmake/Qt5Core/Qt5CoreConfigExtras.cmake
@@ -65,4 +65,4 @@ C:/Qt/5.4/msvc2013_64/lib/cmake/Qt5Sql/Qt5Sql_QPSQLDriverPlugin.cmake
 C:/Qt/5.4/msvc2013_64/lib/cmake/Qt5Sql/Qt5Sql_QSQLiteDriverPlugin.cmake
 C:/Qt/5.4/msvc2013_64/lib/cmake/Qt5Positioning/Qt5PositioningConfigVersion.cmake
 C:/Qt/5.4/msvc2013_64/lib/cmake/Qt5Positioning/Qt5PositioningConfig.cmake
-__SC_GITHUB_HOME__/editors/sc-ide/resources.qrc
+C:/Users/lucas/Documents/GitHub/supercollider/editors/sc-ide/resources.qrc

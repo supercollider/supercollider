@@ -1,8 +1,8 @@
 # CMake generation dependency list for this directory.
-__SC_GITHUB_HOME__/lang/CMakeLists.txt
-__SC_GITHUB_HOME__/cmake_modules/FindReadline.cmake
-__SC_GITHUB_HOME__/cmake_modules/FindSndfile.cmake
-__SC_GITHUB_HOME__/QtCollider/CMakeLists.txt
+C:/Users/lucas/Documents/GitHub/supercollider/lang/CMakeLists.txt
+C:/Users/lucas/Documents/GitHub/supercollider/cmake_modules/FindReadline.cmake
+C:/Users/lucas/Documents/GitHub/supercollider/cmake_modules/FindSndfile.cmake
+C:/Users/lucas/Documents/GitHub/supercollider/QtCollider/CMakeLists.txt
 C:/Qt/5.4/msvc2013_64/lib/cmake/Qt5Core/Qt5CoreConfigVersion.cmake
 C:/Qt/5.4/msvc2013_64/lib/cmake/Qt5Core/Qt5CoreConfig.cmake
 C:/Qt/5.4/msvc2013_64/lib/cmake/Qt5Core/Qt5CoreConfigExtras.cmake
@@ -64,7 +64,7 @@ C:/Qt/5.4/msvc2013_64/lib/cmake/Qt5Sql/Qt5Sql_QPSQLDriverPlugin.cmake
 C:/Qt/5.4/msvc2013_64/lib/cmake/Qt5Sql/Qt5Sql_QSQLiteDriverPlugin.cmake
 C:/Qt/5.4/msvc2013_64/lib/cmake/Qt5Positioning/Qt5PositioningConfigVersion.cmake
 C:/Qt/5.4/msvc2013_64/lib/cmake/Qt5Positioning/Qt5PositioningConfig.cmake
-__SC_GITHUB_HOME__/QtCollider/resources.qrc
-__SC_GITHUB_HOME__/SCDoc/CMakeLists.txt
+C:/Users/lucas/Documents/GitHub/supercollider/QtCollider/resources.qrc
+C:/Users/lucas/Documents/GitHub/supercollider/SCDoc/CMakeLists.txt
 C:/Qt/5.4/msvc2013_64/lib/cmake/Qt5Core/Qt5CoreConfigVersion.cmake
 C:/Qt/5.4/msvc2013_64/lib/cmake/Qt5Core/Qt5CoreConfig.cmake

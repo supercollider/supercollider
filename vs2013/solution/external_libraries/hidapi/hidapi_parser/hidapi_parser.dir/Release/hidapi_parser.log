@@ -1,20 +1,20 @@
 Build started 2015-03-23 12:22:10 AM.
-     1>Project "__SC_GITHUB_HOME__\vs2013\solution\external_libraries\hidapi\hidapi_parser\hidapi_parser.vcxproj" on node 5 (Rebuild target(s)).
+     1>Project "C:/Users/lucas/Documents/GitHub/supercollider\vs2013\solution\external_libraries\hidapi\hidapi_parser\hidapi_parser.vcxproj" on node 5 (Rebuild target(s)).
      1>CustomBuild:
-         Building Custom Rule __SC_GITHUB_HOME__/external_libraries/hidapi/hidapi_parser/CMakeLists.txt
-         CMake does not need to re-run because __SC_GITHUB_HOME__\vs2013\solution\external_libraries\hidapi\hidapi_parser\CMakeFiles\generate.stamp is up-to-date.
+         Building Custom Rule C:/Users/lucas/Documents/GitHub/supercollider/external_libraries/hidapi/hidapi_parser/CMakeLists.txt
+         CMake does not need to re-run because C:/Users/lucas/Documents/GitHub/supercollider\vs2013\solution\external_libraries\hidapi\hidapi_parser\CMakeFiles\generate.stamp is up-to-date.
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /I__SC_GITHUB_HOME__\external_libraries\hidapi\hidapi /nologo /W3 /WX- /O2 /Ob2 /D WIN32 /D _WINDOWS /D NDEBUG /D WIN32_LEAN_AND_MEAN /D NOMINMAX /D _WIN32_WINNT=0x0500 /D BOOST_THREAD_USE_LIB /D BOOST_DATE_TIME_NO_LIB /D BOOST_ALL_NO_LIB /D BOOST_CHRONO_HEADER_ONLY /D _CRT_SECURE_NO_WARNINGS /D _SCL_SECURE_NO_WARNINGS /D "CMAKE_INTDIR=\"Release\"" /D _MBCS /Gm- /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"hidapi_parser.dir\Release\" /Fd"hidapi_parser.dir\Release\vc120.pdb" /Gd /TC /wd4018 /wd4102 /wd4267 /wd4244 /wd4305 /wd4309 /wd4800 /wd4996 /errorReport:prompt __SC_GITHUB_HOME__\external_libraries\hidapi\hidapi_parser\hidapi_parser.c
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /IC:/Users/lucas/Documents/GitHub/supercollider\external_libraries\hidapi\hidapi /nologo /W3 /WX- /O2 /Ob2 /D WIN32 /D _WINDOWS /D NDEBUG /D WIN32_LEAN_AND_MEAN /D NOMINMAX /D _WIN32_WINNT=0x0500 /D BOOST_THREAD_USE_LIB /D BOOST_DATE_TIME_NO_LIB /D BOOST_ALL_NO_LIB /D BOOST_CHRONO_HEADER_ONLY /D _CRT_SECURE_NO_WARNINGS /D _SCL_SECURE_NO_WARNINGS /D "CMAKE_INTDIR=\"Release\"" /D _MBCS /Gm- /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"hidapi_parser.dir\Release\" /Fd"hidapi_parser.dir\Release\vc120.pdb" /Gd /TC /wd4018 /wd4102 /wd4267 /wd4244 /wd4305 /wd4309 /wd4800 /wd4996 /errorReport:prompt C:/Users/lucas/Documents/GitHub/supercollider\external_libraries\hidapi\hidapi_parser\hidapi_parser.c
          hidapi_parser.c
-     1>__SC_GITHUB_HOME__\external_libraries\hidapi\hidapi_parser\hidapi_parser.c(301): warning C4101: 'current_output' : unreferenced local variable
-     1>__SC_GITHUB_HOME__\external_libraries\hidapi\hidapi_parser\hidapi_parser.c(300): warning C4101: 'current_input' : unreferenced local variable
-     1>__SC_GITHUB_HOME__\external_libraries\hidapi\hidapi_parser\hidapi_parser.c(293): warning C4101: 'current_report_size' : unreferenced local variable
-     1>__SC_GITHUB_HOME__\external_libraries\hidapi\hidapi_parser\hidapi_parser.c(1063): warning C4101: 'next_mod_bit_size' : unreferenced local variable
-     1>__SC_GITHUB_HOME__\external_libraries\hidapi\hidapi_parser\hidapi_parser.c(917): warning C4700: uninitialized local variable 'i' used
+     1>C:/Users/lucas/Documents/GitHub/supercollider\external_libraries\hidapi\hidapi_parser\hidapi_parser.c(301): warning C4101: 'current_output' : unreferenced local variable
+     1>C:/Users/lucas/Documents/GitHub/supercollider\external_libraries\hidapi\hidapi_parser\hidapi_parser.c(300): warning C4101: 'current_input' : unreferenced local variable
+     1>C:/Users/lucas/Documents/GitHub/supercollider\external_libraries\hidapi\hidapi_parser\hidapi_parser.c(293): warning C4101: 'current_report_size' : unreferenced local variable
+     1>C:/Users/lucas/Documents/GitHub/supercollider\external_libraries\hidapi\hidapi_parser\hidapi_parser.c(1063): warning C4101: 'next_mod_bit_size' : unreferenced local variable
+     1>C:/Users/lucas/Documents/GitHub/supercollider\external_libraries\hidapi\hidapi_parser\hidapi_parser.c(917): warning C4700: uninitialized local variable 'i' used
        Lib:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\Lib.exe /OUT:"__SC_GITHUB_HOME__\vs2013\solution\external_libraries\hidapi\hidapi_parser\Release\hidapi_parser.lib" /NOLOGO /MACHINE:X64 hidapi_parser.dir\Release\hidapi_parser.obj
-         hidapi_parser.vcxproj -> __SC_GITHUB_HOME__\vs2013\solution\external_libraries\hidapi\hidapi_parser\Release\hidapi_parser.lib
-     1>Done Building Project "__SC_GITHUB_HOME__\vs2013\solution\external_libraries\hidapi\hidapi_parser\hidapi_parser.vcxproj" (Rebuild target(s)).
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\Lib.exe /OUT:"C:/Users/lucas/Documents/GitHub/supercollider\vs2013\solution\external_libraries\hidapi\hidapi_parser\Release\hidapi_parser.lib" /NOLOGO /MACHINE:X64 hidapi_parser.dir\Release\hidapi_parser.obj
+         hidapi_parser.vcxproj -> C:/Users/lucas/Documents/GitHub/supercollider\vs2013\solution\external_libraries\hidapi\hidapi_parser\Release\hidapi_parser.lib
+     1>Done Building Project "C:/Users/lucas/Documents/GitHub/supercollider\vs2013\solution\external_libraries\hidapi\hidapi_parser\hidapi_parser.vcxproj" (Rebuild target(s)).
 
 Build succeeded.
 

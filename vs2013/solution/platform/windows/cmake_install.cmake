@@ -1,4 +1,4 @@
-# Install script for directory: __SC_GITHUB_HOME__/platform/windows
+# Install script for directory: C:/Users/lucas/Documents/GitHub/supercollider/platform/windows
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -28,14 +28,14 @@ if(NOT CMAKE_INSTALL_COMPONENT)
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider" TYPE FILE RENAME "LICENSE.txt" FILES "__SC_GITHUB_HOME__/COPYING")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider" TYPE FILE RENAME "LICENSE.txt" FILES "C:/Users/lucas/Documents/GitHub/supercollider/COPYING")
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider" TYPE FILE RENAME "README.md" FILES "__SC_GITHUB_HOME__/README_WINDOWS.md")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider" TYPE FILE RENAME "README.md" FILES "C:/Users/lucas/Documents/GitHub/supercollider/README_WINDOWS.md")
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/." TYPE FILE FILES "__SC_GITHUB_HOME__/platform/windows/Resources/sc_cube.ico")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/." TYPE FILE FILES "C:/Users/lucas/Documents/GitHub/supercollider/platform/windows/Resources/sc_cube.ico")
 endif()
 

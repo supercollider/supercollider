@@ -1,3 +1,3 @@
 # CMake generation dependency list for this directory.
-__SC_GITHUB_HOME__/server/CMakeLists.txt
-__SC_GITHUB_HOME__/cmake_modules/FindFFTW3f.cmake
+C:/Users/lucas/Documents/GitHub/supercollider/server/CMakeLists.txt
+C:/Users/lucas/Documents/GitHub/supercollider/cmake_modules/FindFFTW3f.cmake
