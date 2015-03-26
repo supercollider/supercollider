@@ -740,6 +740,7 @@ Server {
 	}
 
 	bootServerApp {
+		var f;
 		if (inProcess) {
 			"booting internal".inform;
 			this.bootInProcess;
@@ -751,6 +752,26 @@ Server {
 			};
 
 			pid = (program ++ options.asOptionsString(addr.port)).unixCmd;
+			if( options.protocol == \tcp ){
+				f = {
+					|attempts|
+					attempts = attempts - 1;
+					try { addr.connect } {
+						|err|
+						if (err.isKindOf(PrimitiveFailedError) and: { err.failedPrimitiveName == '_NetAddr_Connect'}) {
+							if(attempts > 0){
+								0.2.wait;
+								f.value(attempts)
+							}{
+								"Couldn't connect to server % via TCP\n".postf(this.name);
+							}
+						} {
+							err.throw;
+						}
+					}
+				};
+				fork{ f.(10) }
+			};
 			("booting " ++ addr.port.asString).inform;
 		};
 	}
@@ -850,6 +871,7 @@ Server {
 			};
 		};
 		addr.sendMsg("/quit");
+		if( options.protocol == \tcp ){ fork{ 0.1.wait; addr.disconnect } };
 		this.stopAliveThread;
 		if (inProcess, {
 			this.quitInProcess;
