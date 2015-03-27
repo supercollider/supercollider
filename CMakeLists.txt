@@ -141,7 +141,7 @@ option(NO_LIBSNDFILE "Disable soundfile functionality. (Not recommended.)" OFF)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Windows")
 	option(NO_AVAHI "Disable Avahi support. (Not recommended.)" ON)
-else
+else()
 	option(NO_AVAHI "Disable Avahi support. (Not recommended.)" OFF)
 endif()
 
