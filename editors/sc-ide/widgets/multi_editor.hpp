@@ -112,6 +112,7 @@ public:
         ShowWhitespace,
         ShowLinenumber,
         IndentWithSpaces,
+        ShowAutocompleteHelp,
 
         NextDocument,
         PreviousDocument,
@@ -164,6 +165,8 @@ public slots:
 
     void setShowWhitespace(bool on);
     void setShowLinenumber(bool on);
+
+    void setShowAutocompleteHelp(bool on);
 
 private slots:
     void applySettings( Settings::Manager * );

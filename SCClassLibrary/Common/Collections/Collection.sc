@@ -177,6 +177,13 @@ Collection {
 		}
 		^res;
 	}
+	collectInPlace { |function |
+		this.do { |item, i| this.put(i, function.value(item, i)) }
+	}
+	collectCopy { |func|
+		^this.copy.collectInPlace(func)
+	}
+
 	detect { | function |
 		this.do {|elem, i| if (function.value(elem, i)) { ^elem } }
 		^nil;

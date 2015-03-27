@@ -25,18 +25,24 @@ list::
 
 note:: examples are given with Ndef, but apply to ProxySpace and NodeProxy: code::Ndef(\x, 5);:: is the same as code:: ~x = 5;:: in ProxySpace.::
 
+Perhaps one of the greatest chages in terms of behavior is the elastic strong::reshaping:: of node proxies (See: link::#NodeProxy elastic behavior setting::). By default it is off. If you want to test it as a default, you can add this to your startup file:
 
-section:: Behaviour Changes:
+code::
+BusPlug.defaultReshaping = \elastic;
+::
 
-subsection:: Changes in pattern proxies (Pdef/Pdefn/Tdef and respective parent classes):
+
+section:: Behavior Changes
+
+subsection:: Changes in pattern proxies (Pdef/Pdefn/Tdef and respective parent classes)
 
 list::
 ## When a none-stream/non-pattern object is the source of the proxy, return the object only once per stream (do not loop by default)
-## In the pattern system, the role of a non-pattern object is ambiguous: in some cases, when used as an input of a pattern, it will return itself endlessly (e.g. in a Pbind value). In other cases (e.g. as an element of a Pseq list), they are used only once and give way to the next element. Pattern proxies should actually behave the same dependent on their input. This means that asStream and embedInStream have to be implemented slightly differently: all pattern proxies now behave to asStream and embedInStream like their respective source objects. E.g. code::Pdefn(\x, 800); Pbindef(\freq, Pdefn(\x)):: will loop 800, while code::Pseq([Pdefn(\x), 900]):: will return first 800, then 900.
+## In the pattern system, the role of a non-pattern object is ambiguous: in some cases, when used as an input of a pattern, it will return itself endlessly (e.g. in a link::Classes/Pbind:: value). In other cases (e.g. as an element of a link::Classes/Pseq:: list), they are used only once and give way to the next element. Pattern proxies should actually behave the same dependent on their input. This means that asStream and embedInStream have to be implemented slightly differently: all pattern proxies now behave to asStream and embedInStream like their respective source objects. E.g. code::Pdefn(\x, 800); Pbindef(\freq, Pdefn(\x)):: will loop 800, while code::Pseq([Pdefn(\x), 900]):: will return first 800, then 900.
 
 ::
 
-subsection:: NodeProxy
+subsection:: Changes in node proxy (NodeProxy, Ndef, BusPlug)
 
 list::
 ## controls are now set at synth creation time, not in an extra set message. This means that i-rate controls can be set in the nodemap.
@@ -63,35 +69,40 @@ list::
 ## node proxies and pattern proxies can be copied now: this will copy the hidden internal state to make the copy independent, but will keep the reference to the source object. In NodeProxy, the rendered SynthDef is cached, which makes the copy efficient. A ProxySpace or LazyEnvir can be copied and then modified independently.
 ::
 
-subsection:: node proxy elastic behaviour setting:
+subsection:: NodeProxy elastic behavior setting
 
 list::
 ## NodeProxy is now able to reshape according to its source. When doing so, it recursively updates all other node proxies that depend on it. Both source and monitor will crossfade between the respective states.
-## reshaping can be set on three levels: (a) global default, (b) for a ProxySpace, (c) for an individual NodeProxy/BusPlug.
-## by default, reshaping is nil (no automatic reshaping). Apart from this, currently, there is \elastic: both shrink and grow and change rate, and \expanding: only grow, but also adjust rate.
+## reshaping can be set on three levels:
+list::
+## as a global default, e.g.: code::BusPlug.defaultReshaping = \elastic::.
+## for a ProxySpace, e.g.: code::p = ProxySpace.push; p.reshaping = \elastic::.
+## for an individual NodeProxy/BusPlug e.g.: code::Ndef(\x).reshaping = \elastic::.
+::
+## by default, reshaping is code::nil:: (no automatic reshaping). Apart from this, currently, there is code::\elastic::: both shrink and grow and change rate, and code::\expanding::: only grow, but also adjust rate.
 ::
 
-subsection:: a few minor changes:
+subsection:: A few minor changes
 
 list::
 ## An empty function / or a function returning nil to a node proxy will not fail, but simply play a synth without output
 ## when trying to play control rate proxy, just warn and don't throw an error
 ## the source of a proxy is built when it is inserted, not only when the server is running. This allows to know its number of channels independently of the server running.
 ## bus is freed after fadeTime as to avoid a too early reuse.
-## proxy is passed into events produced by event streams (~proxy).
+## proxy is passed into events produced by event streams (code::~proxy::).
 ::
 
 
-section:: Implementation Changes:
+section:: Implementation Changes
 
 list::
-## NodeProxy and BusPlug code has been refactored to make it easier to read and more consistent in behaviour (see below).
+## NodeProxy and BusPlug code has been refactored to make it easier to read and more consistent in behavior (see below).
 ## NodeMap is now simply a Dictionary (NodeMapSetting classes have been removed). You can use NodeMap for many purposes.
 ## A node proxy keeps track of any other node proxies that use its output so that it can rebuild them if the bus changes ("children").
 ## Some methods, like setSourceLikeInPbind and prFadeTime were not necessary anymore.
 ::
 
-section:: Bugs fixed:
+section:: Bugs fixed
 
 list::
 ## Pattern Proxies sometimes didn't embed correctly when quant was not nil (fixed)

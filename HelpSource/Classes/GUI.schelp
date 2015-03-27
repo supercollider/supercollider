@@ -7,7 +7,7 @@ related:: Overviews/GUI-Classes, Guides/GUI-Introduction, Classes/ViewRedirect
 description::
 SuperCollider currently supports three operating system platforms: Macintosh OSX, UNIX (Linux and FreeBSD) and Windows (with some limitations).
 
-note::The redirect system has been deprecated, please use the view classes directly.::
+warning::The redirect system has been deprecated, please use the view classes directly.::
 
 Graphical User Interface (GUI) code, for the most part, does not need to worry about which platform is executing the code because of the strong::view redirect:: system. At any time, one and only one strong::GUI kit:: is active. This determines which GUI classes will be used for rendering. These classes, the active views, have prefixes for the GUI kit that created the view object: SCWindow vs. JSCWindow vs. QWindow.
 

@@ -456,6 +456,11 @@ void MainWindow::createActions()
     action->setStatusTip(tr("Open the SuperCollider IDE guide"));
     connect(action, SIGNAL(triggered()), this, SLOT(openHelpAboutIDE()));
 
+    mActions[ReportABug]  = action =
+        new QAction(QIcon::fromTheme("system-help"), tr("Report a bug..."), this);
+    action->setStatusTip(tr("Report a bug"));
+    connect(action, SIGNAL(triggered()), this, SLOT(doBugReport()));
+    
     mActions[LookupDocumentationForCursor] = action =
             new QAction(tr("Look Up Documentation for Cursor"), this);
     action->setShortcut(tr("Ctrl+D", "Look Up Documentation for Cursor"));
@@ -620,6 +625,8 @@ void MainWindow::createMenus()
     menu->addAction( mEditors->action(MultiEditor::ShowWhitespace) );
     menu->addAction( mEditors->action(MultiEditor::ShowLinenumber) );
     menu->addSeparator();
+    menu->addAction(mEditors->action(MultiEditor::ShowAutocompleteHelp));
+    menu->addSeparator();
     menu->addAction( mEditors->action(MultiEditor::NextDocument) );
     menu->addAction( mEditors->action(MultiEditor::PreviousDocument) );
     menu->addAction( mEditors->action(MultiEditor::SwitchDocument) );
@@ -670,6 +677,7 @@ void MainWindow::createMenus()
 
     menu = new QMenu(tr("&Help"), this);
     menu->addAction( mActions[HelpAboutIDE] );
+    menu->addAction( mActions[ReportABug] );
     menu->addSeparator();
     menu->addAction( mActions[Help] );
     menu->addAction( mActions[LookupDocumentationForCursor] );
@@ -1447,11 +1455,12 @@ void MainWindow::showAbout()
 {
     QString aboutString =
             "<h3>SuperCollider %1</h3>"
+            "<p>%2</p>"
             "&copy; James McCartney and others.<br>"
             "<h3>SuperCollider IDE</h3>"
             "&copy; Jakob Leben, Tim Blechmann and others.<br>"
             ;
-    aboutString = aboutString.arg(SC_VersionString().c_str());
+    aboutString = aboutString.arg(SC_VersionString().c_str()).arg(SC_BuildString().c_str());
 
     QMessageBox::about(this, tr("About SuperCollider IDE"), aboutString);
 }
@@ -1589,6 +1598,44 @@ void MainWindow::openHelpAboutIDE()
 {
     mHelpBrowserDocklet->browser()->gotoHelpFor("Guides/SCIde");
     mHelpBrowserDocklet->focus();
+}
+    
+void MainWindow::doBugReport()
+{
+    Settings::Manager *settings = mMain->settings();
+    bool useGitHubBugReport = false;
+    
+    if (settings->contains("IDE/useGitHubBugReport")) {
+        
+        useGitHubBugReport = settings->value("IDE/useGitHubBugReport").toBool();
+        
+    } else {
+        
+        QMessageBox* dialog = new QMessageBox();
+        dialog->setText("Do you want to submit bugs using <a href=\"https://www.github.com\">GitHub</a>?");
+        dialog->setInformativeText("This requires a GitHub account.");
+        dialog->addButton("Submit using GitHub", QMessageBox::YesRole);
+        dialog->addButton("Submit anonymously", QMessageBox::NoRole);
+        dialog->addButton("Cancel", QMessageBox::RejectRole);
+        dialog->exec();
+        QMessageBox::ButtonRole clicked = dialog->buttonRole(dialog->clickedButton());
+        
+        if (clicked == QMessageBox::YesRole || clicked == QMessageBox::NoRole) {
+            useGitHubBugReport = (clicked == QMessageBox::YesRole);
+            settings->setValue("IDE/useGitHubBugReport", useGitHubBugReport);
+        } else {
+            // Dialog was cancelled, so bail
+            return;
+        }
+    }
+    
+    if (useGitHubBugReport) {
+        QString url("https://github.com/supercollider/supercollider/issues/new");
+        QString formData("?labels=bug&body=Bug%20description%3A%0A%0ASteps%20to%20reproduce%3A%0A1.%0A2.%0A3.%0A%0AActual%20result%3A%0A%0AExpected%20result%3A%0A");
+        QDesktopServices::openUrl(url + formData);
+    } else {
+        QDesktopServices::openUrl(QString("https://gitreports.com/issue/supercollider/supercollider"));
+    }
 }
 
 void MainWindow::dragEnterEvent( QDragEnterEvent * event )
