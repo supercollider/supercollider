@@ -13,10 +13,10 @@ run build.bat, this runs cmake that builds the solution.
 
 open the solution.
 
-In configuration manager, uncheck build for DiskIO_UGens.
+In configuration manager, recheck build for DiskIO_UGens,
+if you'd previously listened to me telling you to uncheck it.
 
 hidapi
-	- sclang needs it in CMakeFiles
 	- Must be built linking all dependencies
   - i had to build it separately from their github
 
@@ -24,7 +24,9 @@ hidapi
 change the solution:
 
 (in vs2013)
-sclang->Properties->Linker->Input->Dependencies:
+
+do each of these in Debug as well, replacing Release with Debug, if you want to build debug.
+(sclang project)->Properties->Linker->Input->Dependencies-><edit>:
 
 kernel32.lib
 user32.lib
@@ -65,6 +67,43 @@ ws2_32.lib
 ..\external_libraries\Release\portmidi.lib
 ..\external_libraries\Release\yaml.lib
 
+
+(scsynth project)->Properties->Linker->Input->Dependencies-><edit>:
+kernel32.lib
+user32.lib
+gdi32.lib
+winspool.lib
+shell32.lib
+ole32.lib
+oleaut32.lib
+uuid.lib
+comdlg32.lib
+advapi32.lib
+Release\libscsynth.lib
+..\..\external_libraries\Release\tlsf.lib
+C:\Program Files\Mega-Nerd\libsndfile\lib\libsndfile-1.lib
+\portaudio\lib\x64\portaudio_x64.lib
+..\..\external_libraries\Release\boost_thread.lib
+..\..\external_libraries\Release\boost_system.lib
+wsock32.lib
+ws2_32.lib
+winmm.lib
+
+(this one you need to make sure it didn't put C:\Program Files (x86)\...)
+(DiskIo Ugen)->Properties->Linker->Input->Dependencies-><edit>:
+kernel32.lib
+user32.lib
+gdi32.lib
+winspool.lib
+shell32.lib
+ole32.lib
+oleaut32.lib
+uuid.lib
+comdlg32.lib
+advapi32.lib
+C:\Program Files\Mega-Nerd\libsndfile\lib\libsndfile-1.lib
+wsock32.lib
+ws2_32.lib
 
 deploying
 ---------
