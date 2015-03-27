@@ -132,6 +132,7 @@ bool CompletionMenu::eventFilter(QObject * obj, QEvent * ev)
     if (isVisible() && obj == parentWidget() && ev->type() == QEvent::KeyPress)
     {
         bool filtered = false;
+		static int oldIndex = 0;
 
         QKeyEvent *kev = static_cast<QKeyEvent*>(ev);
         switch(kev->key())
@@ -142,7 +143,6 @@ bool CompletionMenu::eventFilter(QObject * obj, QEvent * ev)
         case Qt::Key_PageDown:
             QApplication::sendEvent(mListView, ev);
 
-            static int oldIndex = 0;
             if (oldIndex != mListView->currentIndex().row()) {
                 emit itemChanged(mListView->currentIndex().row());
                 oldIndex = mListView->currentIndex().row();
