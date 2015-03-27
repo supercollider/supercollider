@@ -9,7 +9,7 @@ cmake_minimum_required (VERSION 2.8.11)
 include("SCVersion.txt")
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}${PROJECT_VERSION_PATCH}")
 message(STATUS "SuperCollider Version: ${PROJECT_VERSION}")
-
+message(STATUS "Building from branch ${GIT_BRANCH}, commit hash is ${GIT_COMMIT_HASH}")
 include(CTest)
 enable_testing()
 
@@ -156,7 +156,7 @@ endif()
 option(SC_SYMLINK_CLASSLIB "Place a symlink of SCCLassLibrary instead of copying" OFF)
 
 option(SYSTEM_BOOST   "Use boost libraries from system" OFF)
-option(SYSTEM_YAMLCPP "Use yaml-cpp library from system" ON)
+option(SYSTEM_YAMLCPP "Use yaml-cpp library from system" OFF)
 
 option(FORTIFY "Define -D_FORTIFY_SOURCE=2 to check for programming errors" OFF)
 

@@ -54,7 +54,7 @@ a.value = 1;
 ::
 
 METHOD:: style
-note:: Not yet implemented in Qt GUI ::
+note:: Not yet implemented ::
 Sets the style of the view.
 
 argument:: val
@@ -89,7 +89,7 @@ a.numSteps = 20;
 ::
 
 METHOD:: image
-note:: Not yet implemented in Qt GUI ::
+note:: Not yet implemented ::
 Sets the image used in style 3. See below for an example.
 
 argument:: image

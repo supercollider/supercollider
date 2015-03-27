@@ -108,7 +108,7 @@ void Theme::fillDefault()
     addToTheme(mFormats, "searchResult",
                appPlt.color(QPalette::HighlightedText).darker(200),
                appPlt.color(QPalette::Highlight).darker(200));
-    addToTheme(mFormats, "matchingBrackets", QColor("#ffff7f"), Qt::red, true);
+    addToTheme(mFormats, "matchingBrackets", QColor("#2bc93d"), Qt::yellow, true);
     addToTheme(mFormats, "mismatchedBrackets", Qt::white, QColor(150,0,0));
     addToTheme(mFormats, "evaluatedCode", Qt::black, QColor("#F8A200"));
 

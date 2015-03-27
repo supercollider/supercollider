@@ -331,29 +331,29 @@ FunctionList : AbstractFunction {
 	}
 
 	value { arg ... args;
-		var res = array.collect(_.valueArray(args));
+		var res = array.collectCopy(_.valueArray(args));
 		^if(flopped) { res.flop } { res }
 	}
 	valueArray { arg args;
-		var res = array.collect(_.valueArray(args));
+		var res = array.collectCopy(_.valueArray(args));
 		^if(flopped) { res.flop } { res }
 	}
 	valueEnvir { arg ... args;
-		var res = array.collect(_.valueArrayEnvir(args));
+		var res = array.collectCopy(_.valueArrayEnvir(args));
 		^if(flopped) { res.flop } { res }
 	}
 	valueArrayEnvir { arg args;
-		var res = array.collect(_.valueArrayEnvir(args));
+		var res = array.collectCopy(_.valueArrayEnvir(args));
 		^if(flopped) { res.flop } { res }
 	}
 	do { arg function;
 		array.do(function)
 	}
 	flop {
-		if(flopped.not) {array = array.collect(_.flop) }; flopped = true;
+		if(flopped.not) { array = array.collect(_.flop) }; flopped = true;
 	}
 	envirFlop {
-		if(flopped.not) {array = array.collect(_.envirFlop) }; flopped = true;
+		if(flopped.not) { array = array.collect(_.envirFlop) }; flopped = true;
 	}
 	storeArgs { ^[array] }
 	copy { ^super.copy.array_(array.copy) }
