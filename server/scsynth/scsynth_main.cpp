@@ -52,6 +52,7 @@ void Usage()
 {
 	scprintf(
 		"supercollider_synth  options:\n"
+		"   -v print the supercollider version and exit\n"
 		"   -u <udp-port-number>    a port number 0-65535\n"
 		"   -t <tcp-port-number>    a port number 0-65535\n"
 		"   -c <number-of-control-bus-channels> (default %d)\n"
@@ -85,11 +86,10 @@ void Usage()
 		"   -L enable memory locking\n"
 #endif
 		"   -H <hardware-device-name>\n"
-		"   -v <verbosity>\n"
+		"   -V <verbosity>\n"
 		"          0 is normal behaviour\n"
 		"          -1 suppresses informational messages\n"
 		"          -2 suppresses informational and many error messages\n"
-		"   -V print the supercollider version and exit\n"
 		"   -U <ugen-plugins-path>    a colon-separated list of paths\n"
 		"          if -U is specified, the standard paths are NOT searched for plugins.\n"
 		"   -P <restricted-path>    \n"
@@ -276,11 +276,11 @@ int main(int argc, char* argv[])
 				options.mMemoryLocking = false;
 #endif
 				break;
-			case 'v' :
+			case 'V' :
 				checkNumArgs(2);
 				options.mVerbosity = atoi(argv[j+1]);
 				break;
-			case 'V' :
+			case 'v' :
 				scprintf("scsynth %s\n", SC_VersionString().c_str());
 				exit(0);
 				break;
