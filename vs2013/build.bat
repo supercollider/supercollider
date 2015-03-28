@@ -9,6 +9,8 @@ cd build
 
 cmake -G "Visual Studio 12 2013 Win64" ..\..\.
 
+msbuild /m:6 /target:ALL_BUILD;INSTALL Supercollider.sln
+
 start Supercollider.sln
 
 cd ..
