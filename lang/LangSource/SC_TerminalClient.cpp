@@ -113,6 +113,7 @@ void SC_TerminalClient::printUsage()
 	fprintf(stdout, "Usage:\n   %s [options] [file..] [-]\n\n", getName());
 	fprintf(stdout,
 			"Options:\n"
+			"   -v                             Print supercollider version and exit\n"
 			"   -d <path>                      Set runtime directory\n"
 			"   -D                             Enter daemon mode (no input)\n"
 			"   -g <memory-growth>[km]         Set heap growth (default %s)\n"
@@ -123,8 +124,7 @@ void SC_TerminalClient::printUsage()
 			"   -s                             Call Main.stop on shutdown\n"
 			"   -u <network-port-number>       Set UDP listening port (default %d)\n"
 			"   -i <ide-name>                  Specify IDE name (for enabling IDE-specific class code, default \"%s\")\n"
-			"   -a                             Standalone mode\n"
-			"   -V                             Print supercollider version and exit\n",
+			"   -a                             Standalone mode\n",
 			memGrowBuf,
 			memSpaceBuf,
 			opt.mPort,
@@ -134,7 +134,7 @@ void SC_TerminalClient::printUsage()
 
 bool SC_TerminalClient::parseOptions(int& argc, char**& argv, Options& opt)
 {
-	const char* optstr = ":d:Dg:hl:m:rsu:i:aV";
+	const char* optstr = ":d:Dg:hl:m:rsu:i:av";
 	int c;
 
 	// inhibit error reporting
@@ -168,7 +168,7 @@ bool SC_TerminalClient::parseOptions(int& argc, char**& argv, Options& opt)
 			case 'r':
 				opt.mCallRun = true;
 				break;
-			case 'V':
+			case 'v':
 				fprintf(stdout, "sclang %s\n", SC_VersionString().c_str());
 				quit(0);
 				return false;
