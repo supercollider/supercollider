@@ -86,21 +86,22 @@ else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
         18
       )
     else (NOT WIN32)
+      message(STATUS "Using included win64 external_library")
+
       set(PORTAUDIO_VERSION
         19
       )
       set(PORTAUDIO_INCLUDE_DIRS
-        /portaudio/include
+        ${CMAKE_SOURCE_DIR}/external_libraries/portaudio_win64/include
       )
       set(PORTAUDIO_LIBRARIES
-        /portaudio/lib/x64/portaudio_x64.lib
+        ${CMAKE_SOURCE_DIR}/external_libraries/portaudio_win64/lib/x64/portaudio_x64.lib
       )
 
       set(PORTAUDIO_LIBRARY_DIRS
-        /portaudio/lib/x64
+        ${CMAKE_SOURCE_DIR}/external_libraries/portaudio_win64/lib/x64
       )
 
-      message(STATUS "Hereeeeee")
 
 
     endif (NOT WIN32)
