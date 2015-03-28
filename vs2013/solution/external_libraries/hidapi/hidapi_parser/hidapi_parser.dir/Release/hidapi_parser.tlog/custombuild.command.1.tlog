@@ -1,2 +1,0 @@
-^__SC_GITHUB_HOME__\EXTERNAL_LIBRARIES\HIDAPI\HIDAPI_PARSER\CMAKELISTS.TXT
-setlocal"C:\Program Files (x86)\CMake\bin\cmake.exe" -H__SC_GITHUB_HOME__\vs2013\solution\/../.. -B__SC_GITHUB_HOME__\vs2013\solution\/ --check-stamp-file __SC_GITHUB_HOME__\vs2013\solution\external_libraries\hidapi\hidapi_parser\CMakeFiles\generate.stampif %errorlevel% neq 0 goto :cmEnd:cmEndendlocal & call :cmErrorLevel %errorlevel% & goto :cmDone:cmErrorLevelexit /b %1:cmDoneif %errorlevel% neq 0 goto :VCEnd

@@ -3,112 +3,33 @@ building on win64
 
 - first get and install:
   - visual studio 2013 community (it's free)
-  - Qt 5.4 msvc2013_64, i put it in C:\Qt
-  - libsndfile 64 bit, there's an installer
-  - portaudio - i think you only need portaudio_x64.dll and the include folder
+  - Qt 5.4 msvc2013_64, put it in C:\Qt
 
 - edit build.bat, set the folders right.
 
 run build.bat, this runs cmake that builds the solution.
 
-open the solution.
-
-In configuration manager, recheck build for DiskIO_UGens,
-if you'd previously listened to me telling you to uncheck it.
-
-hidapi
-	- Must be built linking all dependencies
-  - i had to build it separately from their github
-
-
-change the solution:
-
-(in vs2013)
-
-do each of these in Debug as well, replacing Release with Debug, if you want to build debug.
-(sclang project)->Properties->Linker->Input->Dependencies-><edit>:
-
-kernel32.lib
-user32.lib
-gdi32.lib
-winspool.lib
-shell32.lib
-ole32.lib
-oleaut32.lib
-uuid.lib
-comdlg32.lib
-advapi32.lib
-setupapi.lib
-Release\libsclang.lib
-C:\Qt\5.4\msvc2013_64\lib\Qt5WebKitWidgets.lib
-C:\Qt\5.4\msvc2013_64\lib\Qt5WebKit.lib
-C:\Qt\5.4\msvc2013_64\lib\Qt5PrintSupport.lib
-C:\Qt\5.4\msvc2013_64\lib\Qt5OpenGL.lib
-C:\Qt\5.4\msvc2013_64\lib\Qt5Widgets.lib
-C:\Qt\5.4\msvc2013_64\lib\Qt5Sensors.lib
-C:\Qt\5.4\msvc2013_64\lib\Qt5Quick.lib
-C:\Qt\5.4\msvc2013_64\lib\Qt5Gui.lib
-C:\Qt\5.4\msvc2013_64\lib\Qt5Qml.lib
-C:\Qt\5.4\msvc2013_64\lib\Qt5Network.lib
-C:\Qt\5.4\msvc2013_64\lib\Qt5Sql.lib
-C:\Qt\5.4\msvc2013_64\lib\Qt5Positioning.lib
-C:\Qt\5.4\msvc2013_64\lib\Qt5Core.lib
-C:\Users\lucas\Documents\GitHub\hidapi\windows\x64\Release\hidapi.lib
-..\external_libraries\hidapi\hidapi_parser\Release\hidapi_parser.lib
-..\server\scsynth\Release\libscsynth.lib
-..\external_libraries\Release\tlsf.lib
-..\external_libraries\Release\boost_thread.lib
-..\external_libraries\Release\boost_system.lib
-\portaudio\lib\x64\portaudio_x64.lib
-winmm.lib
-C:\Program Files\Mega-Nerd\libsndfile\lib\libsndfile-1.lib
-wsock32.lib
-ws2_32.lib
-..\external_libraries\Release\portmidi.lib
-..\external_libraries\Release\yaml.lib
-
-
-(scsynth project)->Properties->Linker->Input->Dependencies-><edit>:
-kernel32.lib
-user32.lib
-gdi32.lib
-winspool.lib
-shell32.lib
-ole32.lib
-oleaut32.lib
-uuid.lib
-comdlg32.lib
-advapi32.lib
-Release\libscsynth.lib
-..\..\external_libraries\Release\tlsf.lib
-C:\Program Files\Mega-Nerd\libsndfile\lib\libsndfile-1.lib
-\portaudio\lib\x64\portaudio_x64.lib
-..\..\external_libraries\Release\boost_thread.lib
-..\..\external_libraries\Release\boost_system.lib
-wsock32.lib
-ws2_32.lib
-winmm.lib
-
-(this one you need to make sure it didn't put C:\Program Files (x86)\...)
-(DiskIo Ugen)->Properties->Linker->Input->Dependencies-><edit>:
-kernel32.lib
-user32.lib
-gdi32.lib
-winspool.lib
-shell32.lib
-ole32.lib
-oleaut32.lib
-uuid.lib
-comdlg32.lib
-advapi32.lib
-C:\Program Files\Mega-Nerd\libsndfile\lib\libsndfile-1.lib
-wsock32.lib
-ws2_32.lib
+then it will run msbuild to build the solution.
 
 deploying
 ---------
 
-deploy.bat, when set as a Post-Build-Event for ALL-BUILD, will deploy all the files to c:\supercollider.
+run install.bat.
+
+it will use cmake to install SC to a staging folder, then will robocopy that folder, 
+along with QT and the other required DLLs to C:\SuperCollider
+
+If you want c:\Program Files\SuperCollider, you'll have to fix the bug where it can't handle the space.
+
+
+
+Old info about dlls
+-------------------
+
+this is outdated info. don't do this. but it might be helpful making a script to deploy all the dlls
+to the vs2013\build\lang\Debug\ folder, for if you want to debug from VS or something.
+
+deploy_vs_post_build_hook.bat, when set as a Post-Build-Event for ALL-BUILD, will deploy all the files to c:\supercollider.
 
 ALL_BUILD-->preferences-->Build Events-->Post Build Event:
 

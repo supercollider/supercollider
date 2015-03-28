@@ -19,7 +19,11 @@ $qt_dir="C:\Qt\5.4"
 
 Write-Host "Deploying SuperCollider"
 robo $staging_dir $install_dir
-Write-Host "Deploying QT"
-robo "$qt_dir\msvc2013_64\bin" $install_dir "*.dll"
+
+Write-Host "Deploying QT dlls"
+robo "$qt_dir\msvc2013_64\bin" "$install_dir\SuperCollider" "*.dll"
+
+Write-Host "Deploying Portaudio and libsndfile dlls"
+robo "dll\x64" "$install_dir\SuperCollider"
 
 exit 0
