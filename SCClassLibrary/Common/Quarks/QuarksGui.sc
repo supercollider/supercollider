@@ -9,7 +9,8 @@ QuarksGui {
 		palette,
 		lblMsg,
 		btnRecompile,
-		detailView;
+		detailView,
+		initialized=false;
 
 	*new { ^super.new.init }
 
@@ -141,7 +142,10 @@ QuarksGui {
 			});
 		});
 		treeView.canSort = true;
-		treeView.sort(1, true);
+		if(initialized.not, {
+			treeView.sort(0, true);
+			initialized = true;
+		});
 		treeView.invokeMethod(\resizeColumnToContents, 0);
 		treeView.invokeMethod(\resizeColumnToContents, 1);
 		treeView.invokeMethod(\resizeColumnToContents, 2);
@@ -465,12 +469,13 @@ QuarkRowView {
 
 		btn = Button().fixedSize_(Size(20, 20));
 		treeItem = parent.addItem([
+			"",
 			nil,
 			"",
 			"",
-			"",
 			""
-		]).setView(0, btn);
+		]).setView(1, btn);
+		treeItem.setTextColor(0, Color.clear);
 
 		btn.action = { |btn|
 			this.install(btn.value > 0);
@@ -508,26 +513,19 @@ QuarkRowView {
 			isInstalled;
 
 		btn.states = [
-			if(quark.isDownloaded, {
-				["+", nil, grey]
-			}, {
-				["+", nil, nil]
-			}),
+			["+", nil, nil],
 			["✓", nil, green],
 		];
 
 		isInstalled = quark.isInstalled;
 		btn.value = isInstalled.binaryValue;
 
-		treeItem.setString(1, isInstalled.if("Y", { quark.isDownloaded.if("N", "") }));
+		// this column has invisible text
+		// its used to sort the rows by installed installed state
+		treeItem.setString(0, isInstalled.if("Y", { quark.isDownloaded.if("N", "") }));
+		// 1 is the install button. its not possible to sort by its state
 		treeItem.setString(2, quark.name ? "");
 		treeItem.setString(3, (quark.version ? "").asString);
-		treeItem.setString(4,
-			if(quark.summary.isNil, {
-				""
-			}, {
-				quark.summary.replace(Char.nl," ").replace(Char.tab, "")
-			})
-		);
+		treeItem.setString(4, (quark.summary ? "").replace(Char.nl," ").replace(Char.tab, ""));
 	}
 }
