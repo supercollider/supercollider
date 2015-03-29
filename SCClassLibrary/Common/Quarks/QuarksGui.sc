@@ -32,19 +32,21 @@ QuarksGui {
 		lblCaption = StaticText().font_(GUI.font.new(size:16, usePointSize:true)).string_("Quarks");
 
 		btnUpdateDirectory = Button()
-			.states_([["Refresh Quarks directory"]])
-			.toolTip_("Download directory listing from" + Quarks.directoryUrl + "(auto-refreshes every 4 hours)")
+			.states_([["Check for updates"], ["Checking..."]])
+			.toolTip_("Download directory listing from" + Quarks.directoryUrl)
 			.action_({
 				treeView.enabled = false;
 				this.setMsg("Fetching" + Quarks.directoryUrl, \yellow);
-				AppClock.sched(0.2, {
-					protect {
-						model.fetchDirectory(true);
-					} {
-						treeView.enabled = true;
-						this.setMsg("Quarks directory has been updated.", \green);
-						this.update;
-					}
+				this.checkForUpdates({
+					this.setMsg("Directory has been updated.", \green);
+					treeView.enabled = true;
+					btnUpdateDirectory.value = 0;
+					this.update;
+				}, {
+					this.setMsg();
+					treeView.enabled = true;
+					btnUpdateDirectory.value = 0;
+					this.update;
 				});
 				nil
 			});
@@ -150,8 +152,28 @@ QuarksGui {
 	}
 
 	setMsg { |msg, color|
-		lblMsg.background = palette.button.blend(Color.perform(color ? 'yellow'), 0.2);
-		lblMsg.string = msg;
+		lblMsg.background = palette.button.blend(Color.perform(color ? 'white'), 0.2);
+		lblMsg.string = msg ? "";
+	}
+	checkForUpdates { |onComplete, onCancel|
+		this.runCancellable({
+			model.fetchDirectory(true);
+			model.checkForUpdates();
+		}, onComplete, onCancel)
+	}
+	runCancellable { |fn, onComplete, onCancel|
+		var r, cancel;
+		r = Routine.run({
+			fn.protect({
+				CmdPeriod.remove(cancel);
+				onComplete.value();
+			});
+		}, clock: AppClock);
+		cancel = {
+			r.stop();
+			onCancel.value;
+		};
+		CmdPeriod.doOnce(cancel);
 	}
 }
 
