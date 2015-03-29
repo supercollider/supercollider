@@ -18,6 +18,7 @@ QuarksGui {
 		var bounds,
 			btnUpdateDirectory,
 			btnQuarksHelp,
+			btnInstallFolder,
 			btnOpenFolder,
 			lblCaption,
 			btnClear,
@@ -56,9 +57,13 @@ QuarksGui {
 			.toolTip_("Open Quarks documentation")
 			.action_({ HelpBrowser.openBrowsePage("Quarks") });
 
-		btnOpenFolder = Button().states_([["Open Quarks Folder"]])
+		btnInstallFolder = Button().states_([["Install a folder"]])
+			.toolTip_("Install classes from a folder on your computer")
+			.action_({ this.installFolder });
+
+		/*btnOpenFolder = Button().states_([["Open Quarks Folder"]])
 			.toolTip_("Open" + model.folder)
-			.action_({ model.openFolder });
+			.action_({ model.openFolder });*/
 
 		btnClear = Button().states_([["Uninstall all"]])
 			.toolTip_("Uninstall all")
@@ -118,7 +123,15 @@ QuarksGui {
 		window.layout =
 			VLayout(
 				lblCaption,
-				HLayout(btnUpdateDirectory, btnOpenFolder, btnQuarksHelp, btnClear, btnSave, btnLoad, btnRecompile, nil),
+				HLayout(
+					btnUpdateDirectory,
+					btnInstallFolder,
+					btnClear,
+					btnSave,
+					btnLoad,
+					btnQuarksHelp,
+					btnRecompile,
+					nil),
 				lblMsg,
 				[treeView, s:5],
 				[detailView.makeView(this), s:2]
@@ -164,6 +177,16 @@ QuarksGui {
 			model.fetchDirectory(true);
 			model.checkForUpdates();
 		}, onComplete, onCancel)
+	}
+	installFolder {
+		FileDialog({ |path|
+				Quarks.install(path);
+				this.update;
+			},
+			nil, // cancel
+			2,  // QFileDialog::Directory
+			0,  // QFileDialog::AcceptOpen
+			true); // just first value in paths array
 	}
 	runCancellable { |fn, onComplete, onCancel|
 		var r, cancel;
