@@ -281,6 +281,13 @@ Quarks {
 			});
 		});
 	}
+	*checkForUpdates {
+		this.all.do { arg quark;
+			if(quark.isGit, {
+				quark.checkForUpdates();
+			});
+		}
+	}
 	*prReadFile { |fetch, dirCachePath|
 		var line, kv, file, cached=List.new;
 		directory = Dictionary.new;

@@ -23,7 +23,8 @@ Git {
 		this.git(["checkout", refspec])
 	}
 	fetch {
-		this.git(["fetch"])
+		tags = remoteLatest = nil;
+		this.git(["fetch"]);
 	}
 	isDirty {
 		^this.git(["--no-pager diff HEAD --"]).size != 0
