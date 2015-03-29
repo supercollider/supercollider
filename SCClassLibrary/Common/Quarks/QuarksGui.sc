@@ -198,9 +198,10 @@ QuarksGui {
 		}, clock: AppClock);
 		cancel = {
 			r.stop();
+			CmdPeriod.remove(cancel);
 			onCancel.value;
 		};
-		CmdPeriod.doOnce(cancel);
+		CmdPeriod.add(cancel);
 	}
 }
 
@@ -506,26 +507,32 @@ QuarkRowView {
 		this.update;
 	}
 	install { |bool|
-		var prev, ok;
-		if(bool, {
-			// if any other is installed by same name
-			// then just uinstall that first
-			prev = Quarks.installed.detect({ |q| q.name == quark.name });
-			if(prev.notNil, {
-				"Uninstalling other version % %".format(prev, prev.localPath).warn;
-				prev.uninstall;
-			});
-			ok = quark.install;
-			if(ok, {
-				quarksGui.setMsg("Installed" + quark, \green);
+		quarksGui.runCancellable({
+			var prev, ok;
+			if(bool, {
+				// if any other is installed by same name
+				// then just uinstall that first
+				prev = Quarks.installed.detect({ |q| q.name == quark.name });
+				if(prev.notNil, {
+					"Uninstalling other version % %".format(prev, prev.localPath).warn;
+					prev.uninstall;
+				});
+				ok = quark.install;
+				if(ok, {
+					quarksGui.setMsg("Installed" + quark, \green);
+				}, {
+					quarksGui.setMsg("Error while installing" + quark, \red);
+				});
 			}, {
-				quarksGui.setMsg("Error while installing" + quark, \red);
+				quark.uninstall;
+				quarksGui.setMsg("Uninstalled" + quark, \yellow);
 			});
 		}, {
-			quark.uninstall;
-			quarksGui.setMsg("Uninstalled" + quark, \yellow);
+			quarksGui.update;
+		}, {
+			quarksGui.setMsg("Cancelled" + quark, \yellow);
+			quarksGui.update;
 		});
-		quarksGui.update;
 	}
 
 	update {
