@@ -53,7 +53,7 @@ QuarksGui {
 				nil
 			});
 
-		btnQuarksHelp = Button().states_([["Quarks Help"]])
+		btnQuarksHelp = Button().states_([["Help"]])
 			.toolTip_("Open Quarks documentation")
 			.action_({ HelpBrowser.openBrowsePage("Quarks") });
 
@@ -69,20 +69,20 @@ QuarksGui {
 			.toolTip_("Uninstall all")
 			.action_({ model.clear; this.update; });
 
-		btnLoad = Button().states_([["Load Quarks file"]])
+		btnSave = Button().states_([["Save Quarks set"]])
+			.toolTip_("Save currently installed quarks to a file")
+			.action_({
+				Dialog.savePanel({ |path|
+					model.save(path)
+				})
+			});
+
+		btnLoad = Button().states_([["Load Quarks set"]])
 			.toolTip_("Install a set of quarks from a file")
 			.action_({
 				Dialog.openPanel({ |path|
 					model.load(path);
 					this.update;
-				})
-			});
-
-		btnSave = Button().states_([["Save Quarks file"]])
-			.toolTip_("Save currently installed quarks to a file")
-			.action_({
-				Dialog.savePanel({ |path|
-					model.save(path)
 				})
 			});
 
@@ -130,8 +130,7 @@ QuarksGui {
 					btnSave,
 					btnLoad,
 					btnQuarksHelp,
-					btnRecompile,
-					nil),
+					btnRecompile),
 				lblMsg,
 				[treeView, s:5],
 				[detailView.makeView(this), s:2]
