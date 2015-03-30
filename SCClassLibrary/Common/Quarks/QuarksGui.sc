@@ -21,7 +21,6 @@ QuarksGui {
 			btnQuarksHelp,
 			btnInstallFolder,
 			btnOpenFolder,
-			lblCaption,
 			btnClear,
 			btnLoad,
 			btnSave;
@@ -32,7 +31,6 @@ QuarksGui {
 		bounds = Window.flipY(Window.availableBounds);
 		window = Window("Quarks", Rect(0, 0, min(bounds.width * 0.75, 1000), bounds.height * 0.9).center_(bounds.center));
 
-		lblCaption = StaticText().font_(GUI.font.new(size:16, usePointSize:true)).string_("Quarks");
 		colors = (
 			error: (bg: Color.fromHexString("#fcdede"), text: Color.fromHexString("#991111")),
 			info: (bg: Color.fromHexString("#e2eef9"), text: Color.fromHexString("#224466")),
@@ -131,7 +129,6 @@ QuarksGui {
 
 		window.layout =
 			VLayout(
-				lblCaption,
 				HLayout(
 					btnUpdateDirectory,
 					btnInstallFolder,
