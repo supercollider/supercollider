@@ -10,6 +10,7 @@ QuarksGui {
 		lblMsg,
 		btnRecompile,
 		detailView,
+		<colors,
 		initialized=false;
 
 	*new { ^super.new.init }
@@ -32,15 +33,23 @@ QuarksGui {
 		window = Window("Quarks", Rect(0, 0, min(bounds.width * 0.75, 1000), bounds.height * 0.9).center_(bounds.center));
 
 		lblCaption = StaticText().font_(GUI.font.new(size:16, usePointSize:true)).string_("Quarks");
+		colors = (
+			error: (bg: Color.fromHexString("#fcdede"), text: Color.fromHexString("#991111")),
+			info: (bg: Color.fromHexString("#e2eef9"), text: Color.fromHexString("#224466")),
+			warn: (bg: Color.fromHexString("#fff9ea"), text: Color.fromHexString("#4c4a42")),
+			success: (bg: Color.fromHexString("#f5ffef"), text: Color.fromHexString("#6cc644")),
+			primary: (bg: Color.fromHexString("#76c656"), text: Color.white),
+			default: (bg: Color.white, text: Color.black),
+		);
 
 		btnUpdateDirectory = Button()
 			.states_([["Check for updates"], ["Checking..."]])
 			.toolTip_("Download directory listing from" + Quarks.directoryUrl)
 			.action_({
 				treeView.enabled = false;
-				this.setMsg("Fetching" + Quarks.directoryUrl, \yellow);
+				this.setMsg("Fetching" + Quarks.directoryUrl, \info);
 				this.checkForUpdates({
-					this.setMsg("Directory has been updated.", \green);
+					this.setMsg("Directory has been updated.", \success);
 					treeView.enabled = true;
 					btnUpdateDirectory.value = 0;
 					this.update;
@@ -88,7 +97,7 @@ QuarksGui {
 
 		btnRecompile = Button().states_([
 				["Recompile class library"],
-				["Recompile class library", Color.black, Color.yellow]
+				["Recompile class library", colors.primary.text, colors.primary.bg]
 			])
 			.toolTip_("You will need to recompile the class library after making any changes")
 			.action_({ thisProcess.platform.recompile })
@@ -167,8 +176,9 @@ QuarksGui {
 		detailView.update();
 	}
 
-	setMsg { |msg, color|
-		lblMsg.background = palette.button.blend(Color.perform(color ? 'white'), 0.2);
+	setMsg { |msg, style|
+		lblMsg.background = colors[style ? \default].bg;
+		lblMsg.stringColor = colors[style ? \default].text;
 		lblMsg.string = msg ? "";
 	}
 	checkForUpdates { |onComplete, onCancel|
@@ -283,9 +293,9 @@ QuarkDetailView {
 				});
 				this.update;
 				if(ok, {
-					quarksGui.setMsg(model.name + "has checked out" + model.version, \green);
+					quarksGui.setMsg(model.name + "has checked out" + model.version, \success);
 				}, {
-					quarksGui.setMsg(model.name + "could not checkout" + model.version, \yellow);
+					quarksGui.setMsg(model.name + "could not checkout" + model.version, \error);
 				});
 			});
 
@@ -518,32 +528,28 @@ QuarkRowView {
 				});
 				ok = quark.install;
 				if(ok, {
-					quarksGui.setMsg("Installed" + quark, \green);
+					quarksGui.setMsg("Installed" + quark, \success);
 				}, {
-					quarksGui.setMsg("Error while installing" + quark, \red);
+					quarksGui.setMsg("Error while installing" + quark, \error);
 				});
 			}, {
 				quark.uninstall;
-				quarksGui.setMsg("Uninstalled" + quark, \yellow);
+				quarksGui.setMsg("Uninstalled" + quark, \success);
 			});
 		}, {
 			quarksGui.update;
 		}, {
-			quarksGui.setMsg("Cancelled" + quark, \yellow);
+			quarksGui.setMsg("Cancelled" + quark, \info);
 			quarksGui.update;
 		});
 	}
 
 	update {
-		var palette = GUI.current.tryPerform(\palette),
-			c = palette !? {palette.button},
-			green = c.notNil.if({Color.green.blend(c, 0.5)}, {Color.green(1, 0.5)}),
-			grey = c.notNil.if({Color.grey.blend(c, 0.5)}, {Color.grey(1, 0.5)}),
-			isInstalled;
+		var isInstalled;
 
 		btn.states = [
 			["+", nil, nil],
-			["✓", nil, green],
+			["✓", quarksGui.colors.primary.text, quarksGui.colors.primary.bg],
 		];
 
 		isInstalled = quark.isInstalled;
