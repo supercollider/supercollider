@@ -34,10 +34,11 @@ QuarksGui {
 		colors = (
 			error: (bg: Color.fromHexString("#fcdede"), text: Color.fromHexString("#991111")),
 			info: (bg: Color.fromHexString("#e2eef9"), text: Color.fromHexString("#224466")),
-			warn: (bg: Color.fromHexString("#fff9ea"), text: Color.fromHexString("#4c4a42")),
+			warn: (bg: Color.fromHexString("#f7ea57"), text: Color.fromHexString("#494620")),
 			success: (bg: Color.fromHexString("#f5ffef"), text: Color.fromHexString("#6cc644")),
 			primary: (bg: Color.fromHexString("#76c656"), text: Color.white),
-			default: (bg: Color.white, text: Color.black),
+			installed: (bg: Color.fromHexString("#76c656"), text: Color.white),
+			default: (bg: Color.white, text: Color.black)
 		);
 
 		btnUpdateDirectory = Button()
@@ -101,7 +102,9 @@ QuarksGui {
 			.action_({ thisProcess.platform.recompile })
 			.enabled_(false);
 
-		lblMsg = StaticText().font_(GUI.font.new(size:12, usePointSize:true));
+		lblMsg = StaticText()
+			.font_(GUI.font.new(size:13, usePointSize:true))
+			.align_(\center);
 
 		treeView = TreeView()
 			.setProperty(\rootIsDecorated, false)
@@ -216,230 +219,134 @@ QuarkDetailView {
 
 	var <model,
 		view,
-		selectVersion,
-		btnMethods,
-		txtDescription,
-		btnClose,
-		btnHelp,
-		btnOpenFolder,
-		btnClasses,
-		btnOpenWebpage,
-		btnOpenGithub,
-		btnCheckout;
+		quarksGui,
+		details,
+		txtTitle;
 
-	makeView { |quarksGui|
-		var xSizeHint;
-		txtDescription = TextView(bounds:10@10)
-			.font_(Font(size:11, usePointSize:true))
-			.tabWidth_(15)
-			.autohidesScrollers_(true)
-			.hasVerticalScroller_(true)
-			.editable_(false)
-			.minHeight_(50);
+	makeView { |argQuarksGui|
+		quarksGui = argQuarksGui;
 
-		btnHelp = Button()
-			.states_([["Help"]])
-			.action_({
-				model.help
-			});
+		txtTitle = StaticText().font_(Font(size:16));
 
-		btnOpenFolder = Button()
-			.states_([["Open Folder"]])
-			.action_({
-				model.localPath.openOS;
-			});
-
-		btnOpenWebpage = Button()
-			.states_([["Open Webpage"]])
-			.action_({
-				var url = model.data['url'] ? model.url;
-				if(url.notNil, {
-					if(url.beginsWith("git:"), {
-						url = "https:" ++ url.copyToEnd(4)
-					});
-					openOS(url);
-				});
-			});
-
-		btnOpenGithub = Button()
-			.states_([["Github"]])
-			.action_({
-				var url = model.url;
-				if(url.notNil, {
-					if(url.beginsWith("git:"), {
-						url = "https:" ++ url.copyToEnd(4)
-					});
-					openOS(url);
-				});
-			});
-
-		selectVersion = PopUpMenu();
-
-		btnCheckout = Button()
-			.states_([["Checkout"]])
-			.action_({
-				var refspec = selectVersion.items.at(selectVersion.value ? -1),
-					ok=true;
-				if(model.isInstalled, {
-					// reinstall possibly with different dependencies
-					model.uninstall;
-					ok = Quarks.install(model.url, refspec);
-				}, {
-					model.refspec = refspec;
-					model.checkout;
-				});
-				this.update;
-				if(ok, {
-					quarksGui.setMsg(model.name + "has checked out" + model.version, \success);
-				}, {
-					quarksGui.setMsg(model.name + "could not checkout" + model.version, \error);
-				});
-			});
-
-		btnClasses = Button()
-			.states_([["Classes"]])
-			.toolTip_("Show classes defined by this quark")
-			.enabled_(false)
-			.action_({
-				var cls = model.definesClasses;
-				var tree, item, buts = [
-					Button().states_([["Browse"]]).action_({
-						cls[item.index].browse;
-					}),
-					Button().states_([["Help"]]).action_({
-						cls[item.index].help;
-					}),
-					Button().states_([["Open File"]]).action_({
-						cls[item.index].openCodeFile;
-					})
-				];
-				buts.do(_.enabled_(false));
-				Window("% Classes".format(model.name)).layout_(
-					VLayout(
-						tree = TreeView()
-							.setProperty(\rootIsDecorated, false)
-							.columns_(["Classes"])
-							.onItemChanged_({|v| item = v.currentItem}),
-						HLayout(*buts)
-					)
-				).front;
-				if(cls.size > 0) {
-					cls.do {|c| tree.addItem([c.name.asString])};
-					tree.itemPressedAction = { buts.do(_.enabled_(true)) }
-				} {
-					tree.addItem(["No classes"]);
-				};
-				tree.invokeMethod(\resizeColumnToContents, 0);
-			});
-
-		btnMethods = Button()
-			.states_([["Extension methods"]])
-			.toolTip_("Show extension methods defined in this quark that overwrite methods in the common library")
-			.enabled_(false)
-			.action_({
-				var mets = model.definesExtensionMethods;
-				var tree, item, buts = [
-					Button().states_([["Browse"]]).action_({
-						mets[item.index].ownerClass.browse;
-					}),
-					Button().states_([["Help"]]).action_({
-						mets[item.index].help;
-					}),
-					Button().states_([["Source"]]).action_({
-						mets[item.index].openCodeFile;
-					})
-				];
-				buts.do(_.enabled_(false));
-				Window("% Extension Methods".format(model.name)).layout_(
-					VLayout(
-						tree = TreeView()
-							.setProperty(\rootIsDecorated, false)
-							.columns_(["Class", "Method"])
-							.onItemChanged_({|v| item = v.currentItem }),
-						HLayout(*buts)
-					)
-				).front;
-				if(mets.size > 0) {
-					mets.collect { |m|
-						var x = m.ownerClass.name,
-							it = if(x.isMetaClassName,
-								{[x.asString[5..], "*" ++ m.name]},
-								{[x.asString, "-" ++ m.name]});
-						tree.addItem(it);
-					};
-					tree.itemPressedAction = { buts.do(_.enabled_(true)) }
-				} {
-					tree.addItem([nil,"No extension methods"]);
-				};
-				tree.invokeMethod(\resizeColumnToContents, 0);
-				tree.invokeMethod(\resizeColumnToContents, 1);
-			});
-
-		btnClose = StaticText()
-			.string_("X")
-			.align_(\center)
-			.toolTip_("Close detail view")
-			.mouseDownAction_({
-				this.visible = false;
-			});
-		xSizeHint = btnClose.sizeHint;
-		xSizeHint.width = xSizeHint.width + 20;
-		btnClose.fixedSize = xSizeHint;
+		details = TreeView()
+			.setProperty(\rootIsDecorated, false)
+			.columns_(["", ""])
+			.canSort_(false);
 
 		view = View();
 		view.layout = VLayout(
-			HLayout(btnOpenWebpage, btnOpenGithub, btnHelp,
-				btnOpenFolder, btnClasses, btnMethods,
-				selectVersion, btnCheckout, btnClose,
-				nil).margins_(0),
-			txtDescription
-		).spacing_(0).margins_(0);
+			txtTitle,
+			details
+		).spacing_(4).margins_(0);
 		view.visible = false;
 		^view
 	}
 	update {
-		var tags, refspec, isInstalled = false, isDownloaded = false, url;
+		var tags, refspec, isInstalled = false, isDownloaded = false,
+			url,
+			webpage,
+			dependencies,
+			makeBtn = { |text, fn|
+				Button()
+					.fixedSize_(Size(600, 20))
+					.states_([[text, Color.blue, nil]])
+					.action_(fn);
+			};
 		if(model.notNil, {
-			txtDescription.string = this.descriptionForQuark(model) ? "";
+
 			isInstalled = model.isInstalled;
 			isDownloaded = model.isDownloaded;
 			url = model.url;
-			// if webpage is different than the github url
-			btnOpenWebpage.enabled = model.data['url'] != url and: {url.notNil};
-			btnOpenGithub.enabled = url.notNil;
-			btnClasses.enabled = isInstalled;
-			btnMethods.enabled = isInstalled;
-			btnHelp.enabled = isInstalled or: {
-				isDownloaded and: {model.data['helpdoc'].isString}
-			};
-			btnOpenFolder.enabled = isDownloaded or: isInstalled;
-			btnCheckout.enabled = model.url.notNil;
+			webpage = model.data['url'];
 
-			if(model.git.isNil, {
-				selectVersion.items = [];
-				selectVersion.enabled = false;
-			}, {
-				tags = model.tags.collect({ |t| "tags/" ++ t });
-				refspec = model.git.refspec;
-				if(tags.indexOfEqual(refspec).isNil, {
-					tags = tags.add(refspec);
-				});
-				// if model.git.remoteLatest != current
-				// show that you can update
-				tags = tags.add("HEAD");
-				if(model.git.isDirty, {
-					selectVersion.enabled = false;
-					refspec = "DIRTY";
-					tags = tags.add("DIRTY");
-				}, {
-					selectVersion.enabled = true;
-				});
-				selectVersion.items = tags;
-				selectVersion.value = tags.indexOfEqual(refspec);
+			txtTitle.string = model.name;
+
+			details.clear();
+
+
+			if(model.summary.notNil, {
+				this.pushRow("Summary", model.summary);
 			});
+
+			// author
+
+			// version
+			if(model.data['version'].notNil, {
+				this.pushRow("Version", model.data['version'].asString);
+			});
+
+			if(webpage != url and: webpage.notNil, {
+				this.pushRow("Webpage", makeBtn.value(webpage, {
+					this.openWebpage();
+				}));
+			});
+
+			if(url.notNil, {
+				this.pushRow("Repository", makeBtn.value(url, {
+					this.openGithub();
+				}));
+			});
+
+			if(isDownloaded or: isInstalled, {
+				this.pushRow("Local path", makeBtn.value("Open Folder", {
+					this.openLocalPath;
+				}));
+			});
+			if(isInstalled and: { File.exists(model.localPath).not }, {
+				this.pushRow("ERROR", model.localPath + "does not exist");
+			});
+
+			dependencies = model.dependencies;
+			if(dependencies.notEmpty) {
+				this.pushRow("Dependencies", dependencies.collect(_.asString).join(Char.nl));
+			};
+			if(isInstalled or: {
+				isDownloaded and: {model.data['helpdoc'].isString}
+			}, {
+				this.pushRow("Help", makeBtn.value("Open help", { model.help }));
+			});
+
+			if(isDownloaded, {
+				if(isInstalled, {
+					this.pushRow("Classes",
+						makeBtn.value("Show classes", { this.showClasses })
+					);
+					this.pushRow("Extensions",
+						makeBtn.value("Show extension methods",
+							{ this.showExtensionMethods })
+					);
+				});
+			}, {
+				if(model.url.notNil, {
+					this.pushRow("", makeBtn.value("Fetch", {
+						model.checkout();
+						quarksGui.update();
+						this.update();
+					}));
+				});
+			});
+
+			model.data.keysValuesDo({ |k, v|
+				if(#[\name, \summary, \url, \path, \dependencies, \version].includes(k).not) {
+					this.pushRow(k.asString, v.asString);
+				}
+			});
+
+			// versions
+			if(isDownloaded and: {model.git.notNil}, {
+				this.pushRow("Versions", this.makeVersionTree());
+			});
+
 			view.visible = true;
 		}, {
 			view.visible = false;
+		});
+	}
+	pushRow { |caption, obj|
+		if(obj.isString, {
+			details.addItem([caption, obj]);
+		}, {
+			details.addItem([caption, nil]).setView(1, obj);
 		});
 	}
 	model_ { |quark|
@@ -449,38 +356,172 @@ QuarkDetailView {
 	visible_ { |bool|
 		view.visible = bool;
 	}
-	descriptionForQuark { |quark|
-		var lines,
-			dependencies,
-			isInstalled = quark.isInstalled,
-			isDownloaded = quark.isDownloaded;
-		lines = [
-			quark.name,
-			"url:" + quark.url,
-			"installed:" + isInstalled,
-			if(quark.url.notNil, { "downloaded:" + isDownloaded }),
-			if(isDownloaded or: isInstalled, { "path:" + quark.localPath })
+	openWebpage {
+		var url = model.data['url'];
+		if(url.notNil, {
+			openOS(url);
+		});
+	}
+	openGithub {
+		var url = model.url;
+		if(url.notNil, {
+			if(url.beginsWith("git:"), {
+				url = "https:" ++ url.copyToEnd(4)
+			});
+			openOS(url);
+		});
+	}
+	openLocalPath {
+		model.localPath.openOS;
+	}
+	showClasses {
+		var cls = model.definesClasses;
+		var tree, item, buts = [
+			Button().states_([["Browse"]]).action_({
+				cls[item.index].browse;
+			}),
+			Button().states_([["Help"]]).action_({
+				cls[item.index].help;
+			}),
+			Button().states_([["Open File"]]).action_({
+				cls[item.index].openCodeFile;
+			})
 		];
-		if(isInstalled and: { File.exists(quark.localPath).not }, {
-			lines = lines.add("ERROR: path does not exist");
+		buts.do(_.enabled_(false));
+		Window("% Classes".format(model.name)).layout_(
+			VLayout(
+				tree = TreeView()
+					.setProperty(\rootIsDecorated, false)
+					.columns_(["Classes"])
+					.onItemChanged_({|v| item = v.currentItem}),
+				HLayout(*buts)
+			)
+		).front;
+		if(cls.size > 0) {
+			cls.do {|c| tree.addItem([c.name.asString])};
+			tree.itemPressedAction = { buts.do(_.enabled_(true)) }
+		} {
+			tree.addItem(["No classes"]);
+		};
+		tree.invokeMethod(\resizeColumnToContents, 0);
+	}
+	showExtensionMethods {
+		var mets = model.definesExtensionMethods;
+		var tree, item, buts = [
+			Button().states_([["Browse"]]).action_({
+				mets[item.index].ownerClass.browse;
+			}),
+			Button().states_([["Help"]]).action_({
+				mets[item.index].help;
+			}),
+			Button().states_([["Source"]]).action_({
+				mets[item.index].openCodeFile;
+			})
+		];
+		buts.do(_.enabled_(false));
+		Window("% Extension Methods".format(model.name)).layout_(
+			VLayout(
+				tree = TreeView()
+					.setProperty(\rootIsDecorated, false)
+					.columns_(["Class", "Method"])
+					.onItemChanged_({|v| item = v.currentItem }),
+				HLayout(*buts)
+			)
+		).front;
+		if(mets.size > 0) {
+			mets.collect { |m|
+				var x = m.ownerClass.name,
+					it = if(x.isMetaClassName,
+						{[x.asString[5..], "*" ++ m.name]},
+						{[x.asString, "-" ++ m.name]});
+				tree.addItem(it);
+			};
+			tree.itemPressedAction = { buts.do(_.enabled_(true)) }
+		} {
+			tree.addItem([nil,"No extension methods"]);
+		};
+		tree.invokeMethod(\resizeColumnToContents, 0);
+		tree.invokeMethod(\resizeColumnToContents, 1);
+	}
+	makeVersionTree {
+		var versions, tags, latest, currentRefspec, currentTag,
+			isDirty, tree, currentItem, addRow;
+
+		versions = List.new;
+
+		latest = model.git.remoteLatest;
+		// but is this hash equal to a tag ?
+		versions.add([latest, "LATEST"]);
+
+		model.tags.do { |tag|
+			var refspec = "tags/" ++ tag;
+			versions.add([refspec, tag]);
+		};
+
+		// this blocks you from changing version
+		isDirty = model.git.isDirty;
+		if(isDirty, {
+			currentRefspec = "DIRTY";
+			versions.insert(0, ["DIRTY", "DIRTY"]);
+		}, {
+			currentRefspec = model.git.refspec;
+			if(currentRefspec.beginsWith("tags/").not and: {
+				currentRefspec != latest
+			}, {
+				versions.insert(0, [currentRefspec, currentRefspec]);
+			});
 		});
 
-		quark.data.keysValuesDo({ |k, v|
-			if([\name, \summary, \url, \path, \dependencies].includes(k).not) {
-				lines = lines.add(k.asString ++ ":" + v.asString);
-			}
+		tree = TreeView()
+			.setProperty(\rootIsDecorated, false)
+			.columns_(["Version", "Checkout"]);
+
+		// release notes:
+		// https://github.com/supercollider-quarks/cruciallib/releases/tag/4.1.4
+
+		versions.do({ |tagRefspec|
+			var tag, refspec, btn, row, isCurrent;
+			# refspec, tag = tagRefspec;
+			isCurrent = refspec == currentRefspec;
+			row = tree.addItem([tag, nil]);
+			btn = Button()
+				.fixedSize_(Size(100, 20))
+				.states_([[if(isCurrent, "Selected", "Checkout")]]);
+			if(isDirty or: isCurrent, {
+				btn.enabled = false;
+			}, {
+				btn.action = { this.checkout(refspec) };
+			});
+			row.setView(1, btn);
+
+			if(refspec == currentRefspec, {
+				row.colors = [quarksGui.colors.installed.bg, quarksGui.colors.installed.bg];
+				row.setTextColor(0, quarksGui.colors.installed.text);
+			});
 		});
-		dependencies = quark.dependencies;
-		if(dependencies.notEmpty) {
-			lines = lines ++ [Char.nl, "Dependencies:"] ++ dependencies.collect(_.asString);
-		};
-		if(quark.summary.notNil, {
-			lines = lines ++ [
-				Char.nl,
-				quark.summary
-			];
+
+		tree.invokeMethod(\resizeColumnToContents, 0);
+		tree.currentItem = currentItem;
+		^tree
+	}
+	checkout { |refspec|
+		{
+			if(model.isInstalled, {
+				// reinstall possibly with different dependencies
+				model.uninstall;
+				model = Quarks.install(model.url, refspec);
+			}, {
+				model.refspec = refspec;
+				model.checkout;
+			});
+		}.protect({ |err|
+			this.update;
+			if(err.isNil, {
+				quarksGui.setMsg(model.name + "has checked out" + refspec, \success);
+			}, {
+				quarksGui.setMsg(model.name + "failed to checkout" + refspec, \error);
+			});
 		});
-		^lines.select(_.notNil).join(Char.nl);
 	}
 }
 
@@ -553,9 +594,9 @@ QuarkRowView {
 		btn.value = isInstalled.binaryValue;
 
 		// this column has invisible text
-		// its used to sort the rows by installed installed state
+		// its used to sort the rows so that installed quarks are at the top
 		treeItem.setString(0, isInstalled.if("Y", { quark.isDownloaded.if("N", "") }));
-		// 1 is the install button. its not possible to sort by its state
+		// 1 is the install button. its not possible to sort by this column
 		treeItem.setString(2, quark.name ? "");
 		treeItem.setString(3, (quark.version ? "").asString);
 		treeItem.setString(4, (quark.summary ? "").replace(Char.nl," ").replace(Char.tab, ""));
