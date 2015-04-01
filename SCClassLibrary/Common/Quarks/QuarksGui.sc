@@ -249,7 +249,7 @@ QuarkDetailView {
 			makeBtn = { |text, fn|
 				Button()
 					.fixedSize_(Size(600, 20))
-					.states_([[text, Color.blue, nil]])
+					.states_([[text]])
 					.action_(fn);
 			};
 		if(model.notNil, {
