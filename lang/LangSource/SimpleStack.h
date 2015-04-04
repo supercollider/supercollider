@@ -22,15 +22,15 @@
 #define LANG_SIMPLESTACK_H
 #include <PyrSlot.h>
 typedef struct {
-	ptr_sized_int *stak;
+	intptr_t *stak;
 	short num, maxsize;
 } LongStack;
 
 void initLongStack(LongStack *self) ;
 void freeLongStack(LongStack *self);
 void growLongStack(LongStack *self);
-void pushls(LongStack *self, ptr_sized_int value);
-ptr_sized_int popls(LongStack *self);
+void pushls(LongStack *self, intptr_t value);
+intptr_t popls(LongStack *self);
 int emptyls(LongStack *self);
 
 #endif
