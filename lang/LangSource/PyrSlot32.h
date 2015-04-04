@@ -35,8 +35,6 @@ A PyrSlot is an 8-byte value which is either a double precision float or a
 #include <cassert>
 #include <cstddef>
 
-typedef long ptr_sized_int;
-
 struct PyrSymbol;
 
 /*

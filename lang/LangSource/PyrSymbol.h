@@ -36,7 +36,7 @@ struct PyrSymbol {
 	uint8 flags;
 	uint8 length;
 	union {
-		ptr_sized_int index; // index in row table or primitive table
+		intptr_t index; // index in row table or primitive table
 		struct PyrClass *classobj;	// pointer to class with this name.
 		char *source; // source code for sym_Filename; used only during compilation.
 	} u;
