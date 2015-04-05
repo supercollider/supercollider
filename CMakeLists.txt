@@ -368,12 +368,11 @@ elseif(APPLE)
 	install(DIRECTORY examples DESTINATION ${auxresourcesdir})
 endif()
 
-if (WIN32)
+if(WIN32)
 	set( AdditionalInstallFiles
 		README.md
 		README_WINDOWS.md
 		ChangeLog
-		COPYING
 		AUTHORS
 	)
 elseif(APPLE)
@@ -381,8 +380,8 @@ elseif(APPLE)
 		README.md
 		README_OS_X.md
 		ChangeLog
-		COPYING
 		AUTHORS
+		COPYING
 		MOVED_STUFF.txt
 	)
 else()
@@ -390,12 +389,17 @@ else()
 		README.md
 		README_LINUX.md
 		ChangeLog
-		COPYING
 		AUTHORS
+		COPYING
 	)
 endif()
 
 install(FILES ${AdditionalInstallFiles} DESTINATION ${auxresourcesdir})
+
+if(WIN32)
+	install(FILES COPYING DESTINATION ${auxresourcesdir} RENAME LICENSE.txt)
+endif()
+
 
 if(INSTALL_HELP)
 	if(SC_SYMLINK_CLASSLIB AND APPLE)
@@ -405,6 +409,13 @@ if(INSTALL_HELP)
 		endif()
 		install( CODE
 					"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/HelpSource ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource )" )
+	elseif(WIN32)
+		install(DIRECTORY HelpSource
+			DESTINATION ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}
+			REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
+			PATTERN "*~" EXCLUDE
+			PATTERN "*#" EXCLUDE
+		)
 	elseif(NOT APPLE)
 		install(DIRECTORY HelpSource
 			DESTINATION ${auxresourcesdir}
