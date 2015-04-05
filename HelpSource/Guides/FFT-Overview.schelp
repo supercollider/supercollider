@@ -1,11 +1,11 @@
 title:: FFT Overview
-summary:: Overview of FFT UGens
+summary:: Overview of the Fast Fourier Transform (FFT) UGens
 categories:: UGens>FFT
 related:: Classes/FFT, Classes/IFFT
 
 section:: FFT and IFFT
 
-SuperCollider implements a number of UGens supporting FFT based processing. The most basic of these are FFT and IFFT which convert data between the time and frequency domains:
+SuperCollider implements a number of UGens supporting Fast Fourier Transform (FFT) based processing. The most basic of these are FFT and IFFT (inverse-FFT) which convert data between the time and frequency domains:
 code::
 chain = FFT(buffer, input)
 ::
