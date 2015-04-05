@@ -4,6 +4,17 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 	set(LINUX 1)
 endif()
 
+if (WIN32)
+	if (NOT CMAKE_INSTALL_PREFIX)
+		set(CMAKE_INSTALL_PREFIX "C:/SuperCollider")
+	endif()
+
+	set(SC_WIN64_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
+	set(SC_WIN64_INSTALL_STAGING "${CMAKE_BINARY_DIR}/staging")
+
+	set(CMAKE_INSTALL_PREFIX "${SC_WIN64_INSTALL_STAGING}")
+endif()
+
 cmake_minimum_required (VERSION 2.8.11)
 
 include("SCVersion.txt")
@@ -242,6 +253,7 @@ endif()
 
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
   foreach(flag CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
+		set(${flag} "${${flag}} /wd4065") # switch statement contains 'default' but no 'case' labels
     set(${flag} "${${flag}} /wd4018") # signed/unsigned mismatch
     set(${flag} "${${flag}} /wd4102") # unreferenced label
     set(${flag} "${${flag}} /wd4267") # conversion from 'size_t' to 'int', possible loss of data
@@ -493,3 +505,7 @@ mark_as_advanced(JACK JACK_INCLUDE_DIR JACK_LIBRARY)
 mark_as_advanced(MATH_LIBRARY)
 mark_as_advanced(QT_QMAKE_EXECUTABLE)
 mark_as_advanced(SNDFILE)
+
+if(WIN32)
+	install (SCRIPT "${CMAKE_SOURCE_DIR}/cmake_modules/WindowsDeploy.cmake")
+endif()

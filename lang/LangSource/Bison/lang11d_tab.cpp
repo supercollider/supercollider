@@ -4513,7 +4513,7 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 1481 "lang11d"
-    { (yyval) = zzval ;}
+    { (yyval) = zzval; ;}
     break;
 
   case 258:
