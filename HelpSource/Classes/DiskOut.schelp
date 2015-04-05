@@ -108,7 +108,7 @@ subsection:: Messaging Style
 code::
 // The same thing done in Messaging Style (less overhead but without the convienence of objects)
 // This does nothing different from the Messaging Style example.
-// If any of the following is confusing, stick to Messaging Style
+// If any of the following is confusing, stick to Object Style
 // and ignore this part.
 
 // start something to record
