@@ -20,7 +20,7 @@
 
 #ifndef LANG_SIMPLESTACK_H
 #define LANG_SIMPLESTACK_H
-#include <PyrSlot.h>
+
 typedef struct {
 	intptr_t *stak;
 	short num, maxsize;
