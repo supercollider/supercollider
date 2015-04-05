@@ -1720,7 +1720,7 @@ void compileDepTree()
 			classdep->fileSym->name, classdep->startLine, classdep->endLine, classDep->lineOffset);	 */
 		compileClass(classdep->fileSym, classdep->startPos, classdep->endPos, classdep->lineOffset);
 	}
-	postfl("<compile\n");
+	//postfl("<compile\n");
 }
 
 void compileClassExtensions()

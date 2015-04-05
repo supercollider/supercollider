@@ -4,7 +4,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 	set(LINUX 1)
 endif()
 
-if (WIN32) 
+if (WIN32)
 	if (NOT CMAKE_INSTALL_PREFIX)
 		set(CMAKE_INSTALL_PREFIX "C:/SuperCollider")
 	endif()
@@ -104,7 +104,7 @@ if(WIN32)
     add_definitions(-DBOOST_THREAD_USE_LIB)
     #avoid unnecesary autolink
     add_definitions(-DBOOST_DATE_TIME_NO_LIB -DBOOST_ALL_NO_LIB)
-    
+
 endif()
 
 add_definitions(-DBOOST_CHRONO_HEADER_ONLY)
@@ -254,6 +254,7 @@ endif()
 
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
   foreach(flag CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
+		set(${flag} "${${flag}} /wd4065") # switch statement contains 'default' but no 'case' labels
     set(${flag} "${${flag}} /wd4018") # signed/unsigned mismatch
     set(${flag} "${${flag}} /wd4102") # unreferenced label
     set(${flag} "${${flag}} /wd4267") # conversion from 'size_t' to 'int', possible loss of data
