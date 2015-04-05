@@ -872,7 +872,7 @@ void buildClassTree()
 	//postfl("count subclasses\n");
 	PyrClass *classobj = gClassList;
 	while (classobj) {
-		PyrClass * superclassobj = slotRawSymbol(&(classobj->superclass))->u.classobj;
+		PyrClass * superclassobj = slotRawSymbol(&classobj->superclass)->u.classobj;
 		if (superclassobj) {
 			//postfl("     superclassobj %s\n", slotRawSymbol(&superclassobj->name)->name);
 			SetRaw(&superclassobj->subclasses, slotRawInt(&superclassobj->subclasses) + 1);
