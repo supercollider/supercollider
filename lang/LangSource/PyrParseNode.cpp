@@ -4103,9 +4103,9 @@ void PyrBlockNode::compile(PyrSlot* slotResult)
 			PyrString* string = newPyrStringN(compileGC(), stringLength, flags, false);
 			memcpy(string->s, text+mBeginCharNo, stringLength);
 			SetObject(&block->sourceCode, string);
-			static int totalLength = 0, totalStrings = 0;
-			totalLength += stringLength;
-			totalStrings++;
+			//static int totalLength = 0, totalStrings = 0;
+			//totalLength += stringLength;
+			//totalStrings++;
 			//post("cf %4d %4d %6d %s:%s \n", totalStrings, stringLength, totalLength, slotRawSymbol(&gCompilingClass->name)->name, slotRawSymbol(&gCompilingMethod->name)->name);
 	}
 

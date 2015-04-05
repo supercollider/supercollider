@@ -1,18 +1,8 @@
 #ifndef WINTIME_H
 #define WINTIME_H
-
+ 
+#include <WinSock2.h> // for timeval struct
 #include <windows.h>
-
-// HACK - prevent winsock from complaining about duplicate definitions
-#define _WINSOCK2API_
-
-/*
-* Structure used in select() call, taken from the BSD file sys/time.h.
-*/
-struct timeval {
-	long    tv_sec;         /* seconds */
-	long    tv_usec;        /* and microseconds */
-};
 
 /*
 Implementation as per:
