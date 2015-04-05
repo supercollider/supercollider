@@ -1,6 +1,6 @@
 #ifndef WINTIME_H
 #define WINTIME_H
- 
+
 #include <WinSock2.h> // for timeval struct
 #include <windows.h>
 
