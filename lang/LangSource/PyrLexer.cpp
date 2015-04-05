@@ -1715,9 +1715,8 @@ void compileDepTree()
 
 	for (i=gClassCompileOrderNum-1; i>=0; --i) {
 		classdep = gClassCompileOrder[i];
-		//postfl("compile %d '%s' '%s' '%s'\n", i, classdep->className->name, classdep->superClassName->name);
 		/*postfl("compile %d '%s' '%s' '%s'...%d/%d/%d\n", i, classdep->className->name, classdep->superClassName->name,
-			classdep->fileSym->name, classdep->startLine, classdep->endLine, classDep->lineOffset);	 */
+			classdep->fileSym->name, classdep->startLine, classdep->endLine, classDep->lineOffset);*/
 		compileClass(classdep->fileSym, classdep->startPos, classdep->endPos, classdep->lineOffset);
 	}
 	//postfl("<compile\n");
