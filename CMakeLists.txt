@@ -4,18 +4,6 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 	set(LINUX 1)
 endif()
 
-if (WIN32)
-	if (NOT CMAKE_INSTALL_PREFIX)
-		set(CMAKE_INSTALL_PREFIX "C:/SuperCollider")
-	endif()
-
-	set(SC_WIN64_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
-	set(SC_WIN64_INSTALL_STAGING "${CMAKE_BINARY_DIR}/staging")
-
-	set(CMAKE_INSTALL_PREFIX "${SC_WIN64_INSTALL_STAGING}")
-endif()
-
-
 cmake_minimum_required (VERSION 2.8.11)
 
 include("SCVersion.txt")
