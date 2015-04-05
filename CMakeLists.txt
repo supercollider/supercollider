@@ -506,7 +506,3 @@ mark_as_advanced(JACK JACK_INCLUDE_DIR JACK_LIBRARY)
 mark_as_advanced(MATH_LIBRARY)
 mark_as_advanced(QT_QMAKE_EXECUTABLE)
 mark_as_advanced(SNDFILE)
-
-if(WIN32)
-	install (SCRIPT "${CMAKE_SOURCE_DIR}/cmake_modules/WindowsDeploy.cmake")
-endif()
