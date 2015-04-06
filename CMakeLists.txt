@@ -24,6 +24,16 @@ if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 	message(WARNING "WARNING: IN-PLACE BUILDS ARE NOT RECOMMENDED - PLEASE USE A BUILD DIRECTORY")
 endif()
 
+######################################################################
+# Let CMAKE_INSTALL_PREFIX reflect target arch bit and build type
+if (WIN32)    
+    if (CMAKE_GENERATOR MATCHES "Visual Studio 12 2013 Win64")
+        SET(CMAKE_LIBRARY_ARCHITECHTURE "x64")
+    else()
+        SET(CMAKE_LIBRARY_ARCHITECHTURE "x86")
+    endif()
+    SET(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/${CMAKE_LIBRARY_ARCHITECHTURE}/${CMAKE_BUILD_TYPE}")
+endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules
                       ${CMAKE_MODULE_PATH})
