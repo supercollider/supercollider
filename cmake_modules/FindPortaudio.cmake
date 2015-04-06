@@ -86,22 +86,27 @@ else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
         18
       )
     else (NOT WIN32)
-      set(PORTAUDIO_VERSION
-        19
-      )
-      set(PORTAUDIO_INCLUDE_DIRS
-        /portaudio/include
-      )
-      set(PORTAUDIO_LIBRARIES
-        /portaudio/lib/x64/portaudio_x64.lib
-      )
 
-      set(PORTAUDIO_LIBRARY_DIRS
-        /portaudio/lib/x64
-      )
+        find_path(PORTAUDIO_INCLUDE_DIR
+            NAMES portaudio.h
+            PATHS ${CMAKE_SOURCE_DIR}/../portaudio/include
+        )
+        find_library(PORTAUDIO_LIBRARY
+            NAMES portaudio_x64.lib portaudio_x86.lib libportaudio.a
+            PATHS ${CMAKE_SOURCE_DIR}/../portaudio/build/${CMAKE_BUILD_TYPE}
+                  ${CMAKE_SOURCE_DIR}/../portaudio/lib
+        )
+        find_path(PORTAUDIO_LIBRARY_DIR
+            NAMES portaudio_x64.dll portaudio_x86.dll
+            PATHS ${CMAKE_SOURCE_DIR}/../portaudio/build/${CMAKE_BUILD_TYPE}
+        )
 
-      message(STATUS "Hereeeeee")
+        set(PORTAUDIO_INCLUDE_DIRS ${PORTAUDIO_INCLUDE_DIR})
+        set(PORTAUDIO_LIBRARIES ${PORTAUDIO_LIBRARY})
+        set(PORTAUDIO_LIBRARY_DIRS ${PORTAUDIO_LIBRARY_DIR})
 
+        # simply assume nobody tries to build with older pa
+        set(PORTAUDIO_VERSION 19)
 
     endif (NOT WIN32)
 
