@@ -7,7 +7,7 @@
 
 
 Name "SuperCollider ${SC_VERSION}"
-OutFile ${SC_DST_DIR}\SuperCollider-${SC_VERSION}-win32.exe
+OutFile ${SC_DST_DIR}\SuperCollider-${SC_VERSION}_${BUILD}-${BIT_SUFIX}.exe
 InstallDir $PROGRAMFILES\SuperCollider-${SC_VERSION}
 
 !define MUI_ICON ${SC_ICON}

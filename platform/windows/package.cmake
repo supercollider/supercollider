@@ -7,5 +7,7 @@ execute_process( COMMAND makensis
     # FIXME: Does not support spaces in path:
     /DSC_DST_DIR=${NATIVE_INSTALL_PREFIX}
     /DSC_ICON=${SC_CUBE_PATH}
+    /DBUILD=${BUILD_TYPE}
+    /DBIT_SUFIX=${ARCH_BITS}
     ${NSIS_SCRIPT}
 )
