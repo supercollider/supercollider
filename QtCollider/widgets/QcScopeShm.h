@@ -51,29 +51,32 @@ class QcScopeShm : public QWidget, QcHelper
   Q_PROPERTY( int style READ style WRITE setStyle );
   Q_PROPERTY( QVariantList waveColors READ dummyVariantList WRITE setWaveColors );
   Q_PROPERTY( QColor background READ background WRITE setBackground );
+  Q_PROPERTY( bool fill READ fill WRITE setFill );
   Q_PROPERTY( int updateInterval READ updateInterval WRITE setUpdateInterval );
   Q_PROPERTY( bool running READ running );
 
   public:
     QcScopeShm();
     ~QcScopeShm();
-    int serverPort() const { return _srvPort; }
+    int serverPort() const          { return _srvPort; }
     void setServerPort( int );
     void setBufferNumber( int );
-    void setXOffset( float f ) { xOffset = f; }
-    void setYOffset( float f ) { yOffset = f; }
-    void setXZoom( float f ) { xZoom = f; }
-    void setYZoom( float f ) { yZoom = f; }
-    int style() const { return _style; }
-    void setStyle( int i ) { _style = i; }
+    void setXOffset( float f )      { xOffset = f; }
+    void setYOffset( float f )      { yOffset = f; }
+    void setXZoom( float f )        { xZoom = f; }
+    void setYZoom( float f )        { yZoom = f; }
+    int style() const               { return _style; }
+    void setStyle( int i )          { _style = i; }
     void setWaveColors( const QVariantList & colors );
-    QColor background() const { return _bkg; }
+    QColor background() const       { return _bkg; }
     void setBackground( const QColor &c ) { _bkg = c; update(); }
+    bool fill()                     { return _fill; };
+    void setFill(bool b)            { _fill = b; };
     int updateInterval() const;
     void setUpdateInterval( int i );
-    bool running() const { return _running; }
-    QSize sizeHint() const { return QSize( 500, 300 ); }
-    QSize minimumSizeHint() const { return QSize( 50, 50 ); }
+    bool running() const            { return _running; }
+    QSize sizeHint() const          { return QSize( 500, 300 ); }
+    QSize minimumSizeHint() const   { return QSize( 50, 50 ); }
   public Q_SLOTS:
     void start();
     void stop();
@@ -105,6 +108,7 @@ class QcScopeShm : public QWidget, QcHelper
     int _style;
     QList<QColor> colors;
     QColor _bkg;
+    bool _fill;
 
     QPixmap _pixmap;
 };
