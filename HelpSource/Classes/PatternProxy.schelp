@@ -4,9 +4,11 @@ categories:: Libraries>JITLib>Patterns, Live Coding
 related:: Classes/Pdefn
 
 description::
-Keeps a reference to a stream that can be replaced while playing. Multiple streams are thus handled without creating dependancies.
+Keeps a reference to a stream that can be replaced while playing. Multiple streams are thus handled without creating dependencies.
 
 ClassMethods::
+
+private::at, hasGlobalDictionary, parallelise, postRepository, removeAll, basicNew, clear, event
 
 method::new
 create a new instance with a pattern (the source). the pattern should be a emphasis::value pattern:: (see link::Classes/Pdefn::).
@@ -19,7 +21,54 @@ a default source, if none is given. the default is 1.0 (it is not 0.0 in order t
 method::defaultQuant
 set the default quantization value for the class. (default: nil)
 
+method::defaultValue
+a default retrurn value, if no source is given. the default is 1.0 (it is not 0.0 in order to make it safe for durations). This is used in link::-endless::.
+
 InstanceMethods::
+
+method::asStream
+Return a link::Classes/Stream:: from this pattern. One pattern proxy can be used to produce any number of independent streams.
+
+code::
+a = PatternProxy.new;
+a.source = Pgeom(1, Pwhite(1.01, 1.2), inf);
+b = a.asStream; c = a.asStream;
+
+b.next;
+b.next;
+b.next;
+
+c.next; // c is independent from b
+c.next;
+
+a.source = Pgeom([1, 2, 3], Pwhite(1.01, 1.2), inf); // replace the source
+
+b.next;
+c.next;
+
+::
+
+method::embedInStream
+Given a link::Classes/Stream:: like e.g. link::Classes/Routine::, yield all values from the pattern in the proxy before continuing. One pattern proxy can be used to produce values for any number of independent streams.
+
+argument::inval
+The inval is passed into all substreams and can be used to control how they behave from the outside.
+
+argument::embed
+See link::Classes/Object#-streamArg:: for explanation.
+
+argument::default
+Replacement for code::nil:: outputs of the source pattern. One use case is link::#-endless::.
+
+code::
+a = PatternProxy.new;
+a.source = Pgeom(1, Pwhite(1.01, 1.2), 4);
+r = Routine { loop { 2.yield; 3.yield; a.embedInStream }; };
+r.nextN(12); // the next 12 values from r
+a.source = Pgeom([1, 2, 3], Pwhite(1.01, 1.2), inf); // replace the source
+r.nextN(12); // the next 12 values from r
+::
+
 
 method::source
 set the source. If a quantization is given, schedule this change to the next beat
@@ -36,7 +85,7 @@ provide a condition under which the pattern is switched when a new one is insert
 method::embedInStream
 just like any pattern, embeds itself in stream
 
-subsection::extra methods
+subsection::Methods implemented for subclasses
 
 PatternProxy implements some methods for the benefits of its subclasses link::Classes/Pdefn:: / link::Classes/Pdef:: / link::Classes/Tdef:: which are not useful for link::Classes/PatternProxy:: and link::Classes/TaskProxy::.
 

@@ -592,6 +592,9 @@ Get/set the header format (string) of the output file. The default is "aiff". Mu
 method:: recSampleFormat
 Get/set the sample format (string) of the output file. The default is "float". Must be called strong::before:: prepareForRecord.
 
+method::recBufSize
+Get/set the size of the link::Classes/Buffer:: to use with the link::Classes/DiskOut:: UGen. This must be a power of two. The default is the code::sampleRate.nextPowerOfTwo:: or the first power of two number of samples longer than one second. Must be called strong::before:: prepareForRecord.
+
 subsection:: Asynchronous Commands
 
 Server provides support for waiting on the completion of asynchronous OSC-commands such as reading or writing soundfiles. N.B. The following methods must be called from within a running link::Classes/Routine::. Explicitly passing in a link::Classes/Condition:: allows multiple elements to depend on different conditions. The examples below should make clear how all this works.

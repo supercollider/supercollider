@@ -3531,8 +3531,13 @@ static int prLanguageConfig_removeExcludePath(struct VMGlobals * g, int numArgsP
 static int prLanguageConfig_getCurrentConfigPath(struct VMGlobals * g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	PyrString* string = newPyrString(g->gc, gLanguageConfig->getCurrentConfigPath(), 0, false);
-	SetObject(a, string);
+	PyrString* str = newPyrString(g->gc, gLanguageConfig->getCurrentConfigPath(), 0, false);
+    if(str->size == 0) {
+        SetNil(a);
+    } else {
+        SetObject(a, str);
+    }
+    
 	return errNone;
 }
 

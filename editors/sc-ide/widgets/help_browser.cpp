@@ -390,7 +390,7 @@ void HelpBrowser::findReferences()
 HelpBrowserFindBox::HelpBrowserFindBox( QWidget * parent ):
     QLineEdit(parent)
 {
-    setPlaceholderText(tr("Find..."));
+    setPlaceholderText(tr("Find in page..."));
     connect( this, SIGNAL(textChanged(QString)), this, SIGNAL(query(QString)) );
 }
 

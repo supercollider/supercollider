@@ -58,6 +58,11 @@ METHOD:: y
     argument::
         A Float.
 
+METHOD:: fill
+    Fill area under scope.
+    argument::
+        A Boolean.
+
 METHOD:: waveColors
     The colors used to plot each of the channels.
 
