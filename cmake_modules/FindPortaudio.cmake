@@ -40,7 +40,6 @@ else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
     set(PORTAUDIO_FOUND TRUE)
   else (PORTAUDIO2_FOUND)
 
-    if (NOT WIN32)
       find_path(PORTAUDIO_INCLUDE_DIR
         NAMES
           portaudio.h
@@ -49,26 +48,30 @@ else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
           /usr/local/include
           /opt/local/include
           /sw/include
+          ${CMAKE_SOURCE_DIR}/../portaudio/include
       )
 
       find_library(PORTAUDIO_LIBRARY
         NAMES
-          portaudio portaudio_x64
+          portaudio portaudio_x64 portaudio_x64.lib portaudio_x86.lib libportaudio.a
         PATHS
           /usr/lib
           /usr/local/lib
           /opt/local/lib
           /sw/lib
+          ${CMAKE_SOURCE_DIR}/../portaudio/build/${CMAKE_BUILD_TYPE}
+          ${CMAKE_SOURCE_DIR}/../portaudio/lib
       )
 
       find_path(PORTAUDIO_LIBRARY_DIR
         NAMES
-          portaudio
+          portaudio portaudio_x64.dll portaudio_x86.dll
         PATHS
           /usr/lib
           /usr/local/lib
           /opt/local/lib
           /sw/lib
+          ${CMAKE_SOURCE_DIR}/../portaudio/build/${CMAKE_BUILD_TYPE}
       )
 
       set(PORTAUDIO_INCLUDE_DIRS
@@ -81,34 +84,14 @@ else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
       set(PORTAUDIO_LIBRARY_DIRS
         ${PORTAUDIO_LIBRARY_DIR}
       )
-
-      set(PORTAUDIO_VERSION
-        18
-      )
-    else (NOT WIN32)
-
-        find_path(PORTAUDIO_INCLUDE_DIR
-            NAMES portaudio.h
-            PATHS ${CMAKE_SOURCE_DIR}/../portaudio/include
-        )
-        find_library(PORTAUDIO_LIBRARY
-            NAMES portaudio_x64.lib portaudio_x86.lib libportaudio.a
-            PATHS ${CMAKE_SOURCE_DIR}/../portaudio/build/${CMAKE_BUILD_TYPE}
-                  ${CMAKE_SOURCE_DIR}/../portaudio/lib
-        )
-        find_path(PORTAUDIO_LIBRARY_DIR
-            NAMES portaudio_x64.dll portaudio_x86.dll
-            PATHS ${CMAKE_SOURCE_DIR}/../portaudio/build/${CMAKE_BUILD_TYPE}
-        )
-
-        set(PORTAUDIO_INCLUDE_DIRS ${PORTAUDIO_INCLUDE_DIR})
-        set(PORTAUDIO_LIBRARIES ${PORTAUDIO_LIBRARY})
-        set(PORTAUDIO_LIBRARY_DIRS ${PORTAUDIO_LIBRARY_DIR})
-    
+      if (WIN32)
         # simply assume nobody tries to build with older pa
         set(PORTAUDIO_VERSION 19)
-
-    endif (NOT WIN32)
+      else (WIN32)
+        set(PORTAUDIO_VERSION
+          18
+        )
+      endif (WIN32)
 
     if (PORTAUDIO_INCLUDE_DIRS AND PORTAUDIO_LIBRARIES)
        set(PORTAUDIO_FOUND TRUE)
