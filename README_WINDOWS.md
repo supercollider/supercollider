@@ -1,7 +1,7 @@
 Supercollider 3.7 for Windows
 =============================
 
-**IMPORTANT**: a full install of **Git** is required to use the SC extensions
+**IMPORTANT**: you need to install **Git** to use the new SC Quarks
 system. Please read at least the section *Installation and Dependencies*
 
 NOTE: This is a provisional version of the Windows Readme provided for the alpha-
@@ -35,6 +35,7 @@ Table of contents
  * Using cmake with QtCreator (outdated)
  * Cmake arguments for SC (outdated)
  * Diagnosing build problems
+ * Creating an installer binary
  * Links
  * Outro
 
@@ -334,7 +335,7 @@ INSTALL). This will basically trigger three steps with a single command:
   architecture (64-bit): `build\x64\Debug\SuperCollider`
 * copy the required dependency libraries into the install folder (fixup bundle)
 
-**IMPORTANT NOTE:** in the current state of cmake<->VS integration, build type
+**NOTE:** in the current state of cmake<->VS integration, build type
 as defined by cmake and by VS are not coordinated automatically. The IDE chooses
 `Debug` by default, whereas cmake configures `RelWithDebInfo`, if you do not
 specify a `CMAKE_BUILD_TYPE` definition. This can cause incongruities between
@@ -351,6 +352,18 @@ to use with `cmake --build` or from within the VS-IDE. Possible build types are
 to the `found path` returned by cmake for Portaudio. The path should contain
 the build type, as there is a separate Portaudio build for each build type.
 
+The `clean` step does not delete a previous install. If necessary do so 
+manually.
+
+**IMPORTANT:** While good practice clean is not enough when you change build type. 
+In addition you should delete the file CMakeCache.txt in your build folder before 
+reconfiguring with cmake. So when changing from debug to release, you should do:
+
+```
+    $>  cmake --build . --config Debug --target clean
+    $>  del CMakeCache.txt
+    $>  cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=C:/Qt/5.4/msvc2013_64_opengl .. 
+```
 
 ## External dependencies
 
@@ -662,7 +675,8 @@ Common arguments to control the build configuration are:
 Diagnosing build problems
 -------------------------
 
-The most common build problems are related to incorrect versions of the core dependencies, or dirty states in your build folder. An additional
+The most common build problems are related to incorrect versions of the core 
+dependencies, or dirty states in your build folder. An additional
 source for problems could be that dependencies and core sc are built
 with different compiler versions or toolchains.
 
@@ -670,26 +684,56 @@ with different compiler versions or toolchains.
 
 - **cmake**: `cmake --version` (should be bigger than 2.8.11)
 
-- Double-check the downloaded versions for qt5, readline, libsndfiles, fftw and portaudio.
+- Double-check the downloaded versions for qt5, readline, libsndfiles, fftw 
+  and portaudio.
 
 - Make sure you downloaded a MinGW based Qt-distribution.
 
-When asking for build help, always check and mention the installed versions any components you used to build SC!
+When asking for build help, always check and mention the installed versions 
+any components you used to build SC!
 
 ### Dirty build states
 
-While it's generally safe to re-use your build folder, changing branches, build tools, cmake settings, or the versions of your dependencies can sometimes put you in a state where you can no longer build. The solution is to clean your build folder - the common ways to do this, in order of severity:
+While it's generally safe to re-use your build folder, changing branches, 
+build tools, cmake settings, or the versions of your dependencies can 
+sometimes put you in a state where you can no longer build. The solution 
+is to clean your build folder - the common ways to do this, in order of 
+severity:
 
-1. `rm CMakeCache.txt` (delete your cmake settings for that build)
-2. `make clean` (clean your intermediate build files)
-2. `rm -r ./Install` (delete the output of your build)
-3. `rm -rf *` (delete everything in the build folder)
+1. `del CMakeCache.txt` (delete your cmake settings for that build)
+2. `cmake --build . --config Debug* --target clean` (clean your intermediate 
+   build files, *use your previous build type in place of Debug)
+2. Delete the output of your build. For simplicity use the file Explorer.
+   The build-install is found in `supercollider\build\x64\Debug` or a folder
+   corresponding to your build type.
+3. Delete everything in the build folder. For simplicity use the file Explorer.
 
-Generally, clearing the CMakeCache.txt should be enough to fix many build problems. After each one of these, you must re-run the cmake command and rebuild. It's recommended that you create a new build folder for each branch you're building. In practice, though, you can usually switch between similar branches and rebuild by simply deleting your CMakeCache.txt.
+Generally, clearing the CMakeCache.txt should be enough to fix many build 
+problems. After each one of these, you must re-run the cmake command and 
+rebuild. It's recommended that you create a new build folder for each 
+branch you're building. In practice, though, you can usually switch between 
+similar branches and rebuild by simply deleting your CMakeCache.txt.
 
 ### Someone else's fault...
-If you're *sure* you're doing everything right and you're still failing, check the travis-ci status page:
+If you're *sure* you're doing everything right and you're still failing, 
+check the travis-ci status page:
 [https://travis-ci.org/supercollider/supercollider]()
+
+
+Creating an installer binary
+----------------------------
+
+In order to create a distributable binary installer for your build you just 
+need to build the target `installer`:
+
+    cmake --build . --config Debug --target installer
+
+This will only work properly though, if you have NSIS installed on your 
+system, and and if it's command line tool `makensis` is added to the system 
+path. The SC installer executable will be written to the same parent folder 
+as the SuperCollider build install, for example:
+ 
+    ...\supercollider\build\x64\Release\SuperCollider-version.exe
 
 
 Links
