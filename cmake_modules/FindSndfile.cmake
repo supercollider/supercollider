@@ -25,14 +25,28 @@ elseif (APPLE)
 	# TODO on non-apple platforms, we need to be able to test for >=1018.
 	# (On apple it is known true, because we bundle a later version.)
 	add_definitions("-DLIBSNDFILE_1018")
-
+	
 else()
 	find_path(SNDFILE_INCLUDE_DIR sndfile.h
-		PATHS "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/include"
+		PATHS /usr/local/include
+			  /usr/include 
+		      "${CMAKE_SOURCE_DIR}/../libsndfile/include"
+		      "$ENV{ProgramW6432}/Mega-Nerd/libsndfile/include"
+              "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/include"
 	)
-
-	find_library(SNDFILE_LIBRARY NAMES sndfile sndfile-1 libsndfile libsndfile-1
-		PATHS "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/lib"
+	find_library(SNDFILE_LIBRARY 
+		NAMES sndfile sndfile-1 libsndfile libsndfile-1
+		PATHS /usr/local/lib
+              /usr/lib
+			  "${CMAKE_SOURCE_DIR}/../libsndfile/bin"
+		      "$ENV{ProgramW6432}/Mega-Nerd/libsndfile/bin"
+              "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/bin"
+	)
+	find_path(SNDFILE_LIBRARY_DIR 
+		NAMES sndfile sndfile-1 libsndfile libsndfile-1.dll
+		PATHS "${CMAKE_SOURCE_DIR}/../libsndfile/bin"
+		      "$ENV{ProgramW6432}/Mega-Nerd/libsndfile/bin"
+              "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/bin"
 	)
 
 	# Handle the QUIETLY and REQUIRED arguments and set SNDFILE_FOUND to TRUE if
