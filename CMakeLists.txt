@@ -138,7 +138,13 @@ option(SC_MEMORY_DEBUGGING "Build sclang&scsynth for memory debugging (disable m
 option(GC_SANITYCHECK "Enable sanity checks in the sclang garbage collector.")
 
 option(NO_LIBSNDFILE "Disable soundfile functionality. (Not recommended.)" OFF)
-option(NO_AVAHI "Disable Avahi support. (Not recommended.)" OFF)
+
+if(WIN32)
+ 	option(NO_AVAHI "Disable Avahi support. (Not recommended.)" ON)
+else(WIN32)
+ 	option(NO_AVAHI "Disable Avahi support. (Not recommended.)" OFF)
+endif(WIN32)
+
 option(NO_GPL3 "Disable GPL3 code, for pure-GPL2 situations. (Not recommended.)" OFF)
 
 option(SCLANG_SERVER "Build with internal server." ON)
@@ -374,7 +380,6 @@ if (WIN32)
 		README.md
 		README_WINDOWS.md
 		ChangeLog
-		COPYING
 		AUTHORS
 	)
 elseif(APPLE)
@@ -397,6 +402,10 @@ else()
 endif()
 
 install(FILES ${AdditionalInstallFiles} DESTINATION ${auxresourcesdir})
+
+if(WIN32)
+	install(FILES COPYING DESTINATION ${auxresourcesdir} RENAME LICENSE.txt)
+endif(WIN32)
 
 if(INSTALL_HELP)
 	if(SC_SYMLINK_CLASSLIB AND APPLE)
