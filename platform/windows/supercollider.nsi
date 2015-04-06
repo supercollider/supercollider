@@ -7,7 +7,8 @@
 
 
 Name "SuperCollider ${SC_VERSION}"
-OutFile ${SC_DST_DIR}\SuperCollider-${SC_VERSION}_${BUILD}-${BIT_SUFIX}.exe
+OutFile ${SC_DST_DIR}\SuperCollider-${SC_VERSION}-${FILE_NAME_SUFIX}.exe
+; Atm only one install per version is supported
 InstallDir $PROGRAMFILES\SuperCollider-${SC_VERSION}
 
 !define MUI_ICON ${SC_ICON}

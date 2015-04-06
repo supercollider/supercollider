@@ -20,8 +20,7 @@ add_custom_target( installer
         "-DSC_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
         "-DNSIS_SCRIPT=${CMAKE_CURRENT_SOURCE_DIR}/supercollider.nsi"
         "-DSC_CUBE_PATH=${CMAKE_CURRENT_SOURCE_DIR}/Resources/sc_cube.ico"
-        "-DBUILD_TYPE=${CMAKE_BUILD_TYPE}"
-        "-DARCH_BITS=${CMAKE_LIBRARY_ARCHITECTURE}"
+        "-DBUILD_DEF=${CMAKE_BUILD_TYPE}-${CMAKE_LIBRARY_ARCHITECTURE}"
         -P "${CMAKE_CURRENT_SOURCE_DIR}/package.cmake"
     COMMENT "Building the installer:"
     VERBATIM
