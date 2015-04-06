@@ -2,13 +2,15 @@ install(FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/sc_cube.ico
     DESTINATION .
 )
 
-# This target invokes fixup_bundle to copy dependencies
-# into the installation directory:
-add_custom_target( bundle
-    COMMAND ${CMAKE_COMMAND}
-        "-DSC_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
-        "-DSC_DEPENDENCY_DIRS=${CMAKE_LIBRARY_PATH}"
-        -P "${CMAKE_CURRENT_SOURCE_DIR}/bundle.cmake"
+SET(CMAKE_LIBRARY_PATH "${CMAKE_PREFIX_PATH}/bin;${SNDFILE_LIBRARY_DIR};${PORTAUDIO_LIBRARY_DIR};${FFTW3F_LIBRARY_DIR};${READLINE_LIBRARY_DIR}")
+
+install(CODE "
+	include(BundleUtilities)
+	fixup_bundle(
+		\"${CMAKE_INSTALL_PREFIX}/SuperCollider/sclang.exe\"
+		\"\"
+		\"${CMAKE_LIBRARY_PATH}\" )
+	"
     COMMENT "Bundling the dependencies:"
     VERBATIM
 )
