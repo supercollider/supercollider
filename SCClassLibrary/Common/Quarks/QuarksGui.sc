@@ -444,52 +444,69 @@ QuarkDetailView {
 		tree.invokeMethod(\resizeColumnToContents, 1);
 	}
 	makeVersionTree {
-		var versions, tags, latest, currentRefspec, currentTag,
-			isDirty, tree, currentItem, addRow;
+		var versions, tags, remoteLatest, currentRefspec, currentSha, isDirty, tree;
 
 		versions = List.new;
 
-		latest = model.git.remoteLatest;
-		// but is this hash equal to a tag ?
-		versions.add([latest, "LATEST"]);
+		tags =  model.tags;
 
-		model.tags.do { |tag|
+		// add LATEST iff remoteLatest != sha of most recent tag
+		remoteLatest = model.git.remoteLatest;
+		if(tags.size == 0 or: {
+			remoteLatest != model.git.shaForTag(tags.first);
+		}, {
+			versions.add([remoteLatest, "LATEST"]);
+		});
+
+		// working copy
+		currentRefspec = model.refspec;
+		if(currentRefspec.size != 40, {
+			if(currentRefspec.beginsWith("tags/"), {
+				currentSha = model.git.shaForTag(currentRefspec.copyToEnd(5));
+			}, {
+				currentSha = model.git.shaForTag(currentRefspec);
+			});
+		}, {
+			currentSha = currentRefspec;
+		});
+
+		tags.do { |tag|
 			var refspec = "tags/" ++ tag;
 			versions.add([refspec, tag]);
 		};
 
-		// this blocks you from changing version
 		isDirty = model.git.isDirty;
 		if(isDirty, {
 			currentRefspec = "DIRTY";
 			versions.insert(0, ["DIRTY", "DIRTY"]);
-		}, {
-			currentRefspec = model.git.refspec;
-			if(currentRefspec.beginsWith("tags/").not and: {
-				currentRefspec != latest
-			}, {
-				versions.insert(0, [currentRefspec, currentRefspec]);
-			});
 		});
 
 		tree = TreeView()
 			.setProperty(\rootIsDecorated, false)
 			.columns_(["Version", "Checkout"]);
 
-		// release notes:
-		// https://github.com/supercollider-quarks/cruciallib/releases/tag/4.1.4
-
 		versions.do({ |tagRefspec|
-			var tag, refspec, btn, row, isCurrent;
+			var tag, refspec, btn, row, isCurrent, btnText, enabled;
 			# refspec, tag = tagRefspec;
 			isCurrent = refspec == currentRefspec;
 			row = tree.addItem([tag, nil]);
+			// if installed then you can switch versions
+			// else you can install any including current
+			if(model.isInstalled, {
+				btnText = if(isCurrent, "INSTALLED", "Install");
+				enabled = isCurrent.not;
+			}, {
+				btnText = "Install";
+				enabled = true;
+			});
+			if(isDirty, {
+				enabled = false;
+			});
 			btn = Button()
 				.fixedSize_(Size(100, 20))
-				.states_([[if(isCurrent, "Selected", "Checkout")]]);
-			if(isDirty or: isCurrent, {
-				btn.enabled = false;
-			}, {
+				.states_([[btnText]]);
+			btn.enabled = enabled;
+			if(enabled, {
 				btn.action = { this.checkout(refspec) };
 			});
 			row.setView(1, btn);
@@ -501,7 +518,6 @@ QuarkDetailView {
 		});
 
 		tree.invokeMethod(\resizeColumnToContents, 0);
-		tree.currentItem = currentItem;
 		^tree
 	}
 	checkout { |refspec|
@@ -509,13 +525,11 @@ QuarkDetailView {
 			if(model.isInstalled, {
 				// reinstall possibly with different dependencies
 				model.uninstall;
-				model = Quarks.install(model.url, refspec);
-			}, {
-				model.refspec = refspec;
-				model.checkout;
 			});
+			model = Quarks.install(model.url, refspec);
 		}.protect({ |err|
 			this.update;
+			quarksGui.update;
 			if(err.isNil, {
 				quarksGui.setMsg(model.name + "has checked out" + refspec, \success);
 			}, {
