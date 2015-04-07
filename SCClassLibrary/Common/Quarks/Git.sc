@@ -90,6 +90,9 @@ Git {
 				.collect({ |t| t.copyToEnd(10)});
 		}
 	}
+	shaForTag { |tag|
+		^this.git(["rev-list", tag]).copyFromStart(39)
+	}
 	git { |args, cd=true|
 		var cmd;
 		if(cd, {
