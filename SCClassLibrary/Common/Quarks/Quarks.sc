@@ -9,16 +9,20 @@ Quarks {
 		cache;
 
 	*install { |name, refspec|
-		var path;
+		var path, quark;
 		if(Quarks.isPath(name).not, {
-			this.installQuark(Quark(name, refspec));
+			quark = Quark(name, refspec);
+			this.installQuark(quark);
+			^quark
 		}, {
 			// local path / ~/ ./
 			path = this.asAbsolutePath(name);
 			if(File.exists(path).not, {
-				("Path does not exist" + path).warn;
+				("Quarks-install: path does not exist" + path).warn;
 			});
-			this.link(path);
+			quark = Quark.fromLocalPath(path);
+			this.installQuark(quark);
+			^quark
 		});
 	}
 	*uninstall { |name|
@@ -280,6 +284,13 @@ Quarks {
 				this.prReadFile(true, dirCachePath);
 			});
 		});
+	}
+	*checkForUpdates {
+		this.all.do { arg quark;
+			if(quark.isGit, {
+				quark.checkForUpdates();
+			});
+		}
 	}
 	*prReadFile { |fetch, dirCachePath|
 		var line, kv, file, cached=List.new;
