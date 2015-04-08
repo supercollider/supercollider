@@ -19,7 +19,11 @@ Name of a quark that is listed in the directory,
 or the url of a git repository
 or the path (absolute or relative to current working directory) of a folder to install.
 ARGUMENT:: refspec
-Git refspec: "tags/1.0.0" | "shaabcdef1234567890" | "HEAD" | nil (default)
+Optional git refspec. By default it will install the latest version.
+Optionally you can specify a tag: "tags/1.0.0"
+A sha commit: "15e6ea822a18d06b286c3f10918f83b8d797d939"
+"HEAD"
+nil (default)
 returns:: this
 
 METHOD:: installQuark
@@ -90,11 +94,13 @@ Path of the downloaded-quarks folder where Quarks are cloned to before installin
 returns:: path
 
 METHOD:: fetchDirectory
-Private. Fetches the directory.txt file, caches it locally for 4 hours.
-Stores in downloaded-quarks
+Private.
+Fetches the directory listing into downloaded-quarks/quarks
+If a local copy already exists and it is not a git repo then this is used instead.
 ARGUMENT:: force
 (Boolean)
-Force download of file, ignoring any cached version.
+Force fetch. By default it is fetched once per session. Recompile the class library to fetch it again, or
+call Quarks.fetchDirectory(true) to force it.
 returns:: this
 
 METHOD:: classesInPackage
@@ -152,7 +158,7 @@ private. gets or creates a Quark by name, storing it in a central cache.
 ARGUMENT:: name
 returns:: Quark
 
-METHOD:: prReadFile
+METHOD:: prReadDirectoryFile
 private
 ARGUMENT:: fetch
 ARGUMENT:: dirCachePath
