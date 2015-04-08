@@ -291,8 +291,10 @@ if (FFTW3F_FOUND)
 endif()
 
 if (WIN32)
-	target_link_libraries(libsclang wsock32 ws2_32)
-    target_link_libraries(libsclang portmidi)
+  target_link_libraries(libsclang wsock32 ws2_32 portmidi kernel32 user32
+    gdi32 winspool shell32 ole32 oleaut32 uuid comdlg32 advapi32 setupapi
+    hidapi hidapi_parser libscsynth tlsf boost_thread boost_system winmm yaml)
+
 endif()
 
 if (GC_SANITYCHECK)
