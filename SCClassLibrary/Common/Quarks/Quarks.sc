@@ -169,16 +169,13 @@ Quarks {
 		if(quark.isCompatible().not, {
 			^incompatible.value(quark.name);
 		});
-		deps = quark.deepDependencies;
-		deps.do({ |dep|
-			if(dep.isCompatible().not, {
-				^incompatible.value(dep.name);
+		quark.dependencies.do { |dep|
+			var ok = dep.install();
+			if(ok.not, {
+				("Failed to install" + quark.name).error;
+				^false
 			});
-			dep.checkout();
-		});
-		deps.do({ |dep|
-			this.link(dep.localPath);
-		});
+		};
 		this.link(quark.localPath);
 		(quark.name + "installed").inform;
 		^true
