@@ -1,15 +1,29 @@
 SET(CMAKE_LIBRARY_PATH "${CMAKE_PREFIX_PATH}/bin;${SNDFILE_LIBRARY_DIR};${PORTAUDIO_LIBRARY_DIR};${FFTW3F_LIBRARY_DIR};${READLINE_LIBRARY_DIR}")
 
-install(CODE "
-	include(BundleUtilities)
-	fixup_bundle(
-		\"${CMAKE_INSTALL_PREFIX}/SuperCollider/sclang.exe\"
-		\"\"
-		\"${CMAKE_LIBRARY_PATH}\" )
-	"
-    COMMENT "Bundling the dependencies:"
-    VERBATIM
-)
+if(MINGW)
+    # This target invokes fixup_bundle to copy dependencies
+    # into the installation directory. Fixup_bundle is so slow
+    # with MinGW that we can't wait after each install:
+    add_custom_target( bundle
+        COMMAND ${CMAKE_COMMAND}
+            "-DSC_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
+            "-DSC_DEPENDENCY_DIRS=${CMAKE_LIBRARY_PATH}"
+            -P "${CMAKE_CURRENT_SOURCE_DIR}/bundle.cmake"
+        COMMENT "Bundling the dependencies:"
+        VERBATIM
+    )
+else(MINGW)
+    install(CODE "
+        include(BundleUtilities)
+        fixup_bundle(
+            \"${CMAKE_INSTALL_PREFIX}/SuperCollider/sclang.exe\"
+            \"\"
+            \"${CMAKE_LIBRARY_PATH}\" )
+        "
+        COMMENT "Bundling the dependencies:"
+        VERBATIM
+    )
+endif(MINGW)
 
 # This target invokes a custom NSIS script to create
 # the installer
