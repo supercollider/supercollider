@@ -60,6 +60,7 @@ else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
           /opt/local/lib
           /sw/lib
           ${CMAKE_SOURCE_DIR}/../portaudio/build/${CMAKE_BUILD_TYPE}
+          ${CMAKE_SOURCE_DIR}/../portaudio/build/${CMAKE_BUILD_TYPE}/lib
           ${CMAKE_SOURCE_DIR}/../portaudio/lib
       )
 

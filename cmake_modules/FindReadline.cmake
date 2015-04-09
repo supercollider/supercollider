@@ -20,7 +20,7 @@ if(WIN32)
         PATHS ${CMAKE_SOURCE_DIR}/../readline/include
     )
     find_library(READLINE_LIBRARY
-        NAMES libreadline6.lib readline5.lib readline.lib
+        NAMES libreadline6.lib readline5.lib readline.lib libreadline6.dll readline5.dll
         PATHS ${CMAKE_SOURCE_DIR}/../readline/bin
     )
     find_path(READLINE_LIBRARY_DIR
