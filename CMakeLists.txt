@@ -27,7 +27,7 @@ endif()
 ######################################################################
 # Let CMAKE_INSTALL_PREFIX reflect target arch bit and build type
 if (WIN32)    
-    if (CMAKE_GENERATOR MATCHES "Visual Studio 12 2013 Win64")
+    if (CMAKE_GENERATOR MATCHES "Visual Studio 12 2013 Win64" OR CMAKE_SYSTEM_PROCESSOR MATCHES "AMD64")
         SET(CMAKE_LIBRARY_ARCHITECTURE "x64")
     else()
         SET(CMAKE_LIBRARY_ARCHITECTURE "x86")
