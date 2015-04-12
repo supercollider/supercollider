@@ -882,7 +882,7 @@ void MultiEditor::switchSession( Session *session )
         QVariantList docDataList = session->value("documents").value<QVariantList>();
         foreach( const QVariant & docData, docDataList ) {
             QString filePath = docData.toString();
-            Document * doc = docManager->open(filePath, -1, 0, false);
+            Document * doc = docManager->open(filePath, -1, 0, true);
             documentList << doc;
         }
 
