@@ -374,17 +374,17 @@ QTextCharFormat EditorPage::constructTextFormat()
     QTextCharFormat format;
 
     QBrush fg = ui->fgPicker->brush();
-    if ( fg.style() != Qt::NoBrush)
+    if (ui->fgPicker->isEnabled() && fg.style() != Qt::NoBrush)
         format.setForeground(fg);
 
     QBrush bg = ui->bgPicker->brush();
-    if (bg.style() != Qt::NoBrush)
+    if (ui->bgPicker->isEnabled() && bg.style() != Qt::NoBrush)
         format.setBackground(bg);
 
-    if (ui->italicOption->isChecked())
+    if (ui->italicOption->isEnabled() && ui->italicOption->isChecked())
         format.setFontItalic(true);
 
-    if (ui->boldOption->isChecked())
+    if (ui->boldOption->isEnabled() && ui->boldOption->isChecked())
         format.setFontWeight(QFont::Bold);
 
     return format;
