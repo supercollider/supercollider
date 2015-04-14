@@ -18,7 +18,9 @@ Quarks {
 			if(File.exists(path).not, {
 				("Path does not exist" + path).warn;
 			});
-			this.link(path);
+			if(this.pathIsInstalled(path).not) {
+				this.link(path);
+			};
 		});
 	}
 	*uninstall { |name|
