@@ -20,10 +20,6 @@ Quark {
 		# url, refspec = directoryEntry.split($@);
 		^super.new.init(name, url, refspec)
 	}
-	*nameEquals { |a, b|
-		^(a.compare(b, true) == 0);
-	}
-
 	*versionEquals { |a, b|
 		a = a.asString;
 		b = b.asString;
@@ -301,7 +297,7 @@ QuarkDependency {
 	}
 
 	conflictsWith { |inName, inVersion|
-		if (Quark.nameEquals(name, inName), {
+		if (name == inName, {
 			if (inVersion.notNil && version.notNil, {
 				if (Quark.versionEquals(inVersion, version).not, {
 					^true;
@@ -313,7 +309,7 @@ QuarkDependency {
 	}
 
 	isMetBy { |inName, inVersion|
-		var isMet = Quark.nameEquals(name, inName);
+		var isMet = (name == inName);
 		if (version.notNil, {
 			isMet = isMet && Quark.versionEquals(version, inVersion);
 		});
