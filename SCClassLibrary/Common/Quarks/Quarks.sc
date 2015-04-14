@@ -60,8 +60,7 @@ Quarks {
 			}
 		});
 	}
-	*parseQuarkSpecifier {
-		|line, relativeTo|
+	*parseQuarkSpecifier { |line, relativeTo|
 		var localRe, nameRe, result, name, refspec, localPath, match, url;
 
 		// localPath=url[@refspec]
@@ -114,8 +113,7 @@ Quarks {
 		file.close();
 		^lines
 	}
-	*savedQuarkSpecifier {
-		|quark, relativeTo|
+	*savedQuarkSpecifier { |quark, relativeTo|
 		var line, localPath, url, refspec, isGit, isCleanAndInstalled = false, isInDirectory = false;
 		var specifier = "";
 
