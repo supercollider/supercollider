@@ -31,7 +31,7 @@ Quarks {
 	*uninstall { |name|
 		// by quark name or local path
 		this.installed.do { |q|
-			if(Quark.nameEquals(q.name, name), {
+			if(q.name == name, {
 				this.unlink(q.localPath)
 			});
 		};
@@ -44,7 +44,7 @@ Quarks {
 			LanguageConfig.removeIncludePath(quark.localPath);
 		});
 		LanguageConfig.store(LanguageConfig.currentPath);
-		cache = QuarkDictionary.new;
+		cache = Dictionary.new;
 	}
 	*load { |path|
 		// install a list of quarks from a text file
@@ -175,12 +175,8 @@ Quarks {
 	*pathIsInstalled{ |path|
 		path = path.withoutTrailingSlash;
 		^LanguageConfig.includePaths.any({ |apath|
-			this.pathEquals(path, apath);
+			apath.withoutTrailingSlash == path
 		})
-	}
-	*pathEquals {
-		|a, b|
-		^(a.withoutTrailingSlash.compare(b.withoutTrailingSlash, true) == 0);
 	}
 	*openFolder {
 		this.folder.openOS;
@@ -199,7 +195,7 @@ Quarks {
 				).inform;
 				false
 			},
-			prev = this.installed.detect({ |q| Quark.nameEquals(q.name, quark.name) });
+			prev = this.installed.detect({ |q| q.name == quark.name });
 
 		if(prev.notNil and: {prev.localPath != quark.localPath}, {
 			("A version of % is already installed at %".format(quark, prev.localPath)).error;
@@ -258,7 +254,7 @@ Quarks {
 		if(File.exists(folder).not, {
 			folder.mkdir();
 		});
-		cache = QuarkDictionary.new;
+		cache = Dictionary.new;
 	}
 	*at { |name|
 		var q;
@@ -345,7 +341,7 @@ Quarks {
 	}
 	*prReadDirectoryFile { |dirTxtPath|
 		var file;
-		directory = QuarkDictionary.new;
+		directory = Dictionary.new;
 		file = File.open(dirTxtPath, "r");
 		{
 			var line, kv;
@@ -417,23 +413,4 @@ Quarks {
 	}
 	// quarks fetch all available quark specs
 	// directory.json
-}
-
-QuarkDictionary : Dictionary {
-	scanFor { arg argKey;
-		var maxHash = array.size div: 2;
-		var start = (argKey.isString.if({ argKey.toLower }, { argKey }).hash % maxHash) * 2;
-		var end = array.size-1;
-		var i = start;
-		forBy( start, end, 2, { arg i;
-			var key = array.at(i);
-			if ( key.isNil or: { Quark.nameEquals(key, argKey) }, { ^i });
-		});
-		end = start - 1;
-		forBy( 0, start-2, 2, { arg i;
-			var key = array.at(i);
-			if ( key.isNil or: { Quark.nameEquals(key, argKey) }, { ^i });
-		});
-		^-2
-	}
 }
