@@ -1,5 +1,8 @@
 
 Quark {
+	classvar <nameRegexp = "[A-Za-z0-9_\\.\\-]+";
+	classvar <versionRegexp = "[A-Za-z0-9_/\\.\\-]+";
+
 	var <name, url, >refspec, data, <localPath;
 	var <changed = false, <git;
 
@@ -16,6 +19,17 @@ Quark {
 		var url, refspec;
 		# url, refspec = directoryEntry.split($@);
 		^super.new.init(name, url, refspec)
+	}
+	*nameEquals { |a, b|
+		^(a.compare(b, true) == 0);
+	}
+
+	*versionEquals { |a, b|
+		a = a.asString;
+		b = b.asString;
+		if (a.beginsWith("tags/")) { a = a[5..] };
+		if (b.beginsWith("tags/")) { b = b[5..] };
+		^(a == b);
 	}
 	init { |argName, argUrl, argRefspec, argLocalPath|
 		name = argName;
@@ -211,4 +225,66 @@ Quark {
 		});
 		HelpBrowser.openBrowsePage("Quarks>" ++ name);
 	}
+}
+
+QuarkDependency {
+	var string, <name, <version;
+
+	*new { |string|
+		^super.newCopyArgs(string).parse;
+	}
+
+	*fromAssociation { |association|
+		var str = association.key.asString();
+		if (association.value.notNil) { str = str ++ "@" ++ association.value.asString() };
+		^QuarkDependency(str);
+	}
+
+	parse {
+		var match;
+		var ampersandPattern = "(%)@(%)".format(Quark.nameRegexp, Quark.versionRegexp);
+		var namePattern = "(%)".format(Quark.nameRegexp);
+
+		case
+		{ (match = string.findRegexp(ampersandPattern)).size > 2 } {
+			name = match[1][1];
+			version = match[2][1];
+		}
+		{ (match = string.findRegexp(namePattern)).size > 1 } {
+			name = match[1][1];
+		};
+	}
+
+	exactVersion {
+		^version;
+	}
+
+	conflictsWith { |inName, inVersion|
+		if (Quark.nameEquals(name, inName)) {
+			if (inVersion.notNil && version.notNil) {
+				if (QuarkDependency.versionEquals(inVersion, version).not) {
+					^true;
+				}
+			}
+		};
+
+		^false;
+	}
+
+	isFulfilledBy { |inName, inVersion|
+		var fulfilled = Quark.nameEquals(name, inName);
+		if (version.notNil) {
+			fulfilled = fulfilled && QuarkDependency.versionEquals(version, inVersion);
+		};
+		^fulfilled;
+	}
+
+	asString {
+		^"QuarkDependency(%)".format(string);
+	}
+
+	printOn { |stream|
+		stream << this.asString
+	}
+
 }
