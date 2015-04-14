@@ -20,6 +20,12 @@ Quark {
 		# url, refspec = directoryEntry.split($@);
 		^super.new.init(name, url, refspec)
 	}
+	*canonicalName { |inName|
+		var found = Quarks.directory.keys.detect({ |name|
+			Quark.nameEquals(inName, name)
+		});
+		if (found.notNil) { ^found } { ^inName };
+	}
 	*nameEquals { |a, b|
 		^(a.compare(b, true) == 0);
 	}
@@ -32,7 +38,7 @@ Quark {
 		^(a == b);
 	}
 	init { |argName, argUrl, argRefspec, argLocalPath|
-		name = argName;
+		name = Quark.canonicalName(argName);
 		url = argUrl;
 		refspec = argRefspec;
 		localPath = argLocalPath ?? {Quarks.folder +/+ name};
