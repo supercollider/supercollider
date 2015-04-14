@@ -21,7 +21,7 @@ Quarks {
 			if(File.exists(path).not, {
 				("Quarks-install: path does not exist" + path).warn;
 			});
-			if(this.pathIsInstalled(path).not) {
+			if(this.pathIsInstalled(path).not, {
 				quark = Quark.fromLocalPath(path);
 				this.installQuark(quark);
 				^quark
@@ -62,9 +62,9 @@ Quarks {
 			line.notNil;
 		}, {
 			#name, refspec = this.parseQuarkSpecifier(line, dir);
-			if (name.notNil) {
+			if (name.notNil, {
 				this.install(name, refspec);
-			}
+			});
 		});
 	}
 	*parseQuarkSpecifier { |line, relativeTo|
@@ -77,28 +77,28 @@ Quarks {
 
 		result = [nil, nil];
 
-			// resolve any paths relative to the quark file
+		// resolve any paths relative to the quark file
 		match = line.findRegexp(localRe);
-			if(match.size > 0, {
-				localPath = match[1][1];
-				name = localPath.basename;
-				url = match[2][1];
+		if(match.size > 0, {
+			localPath = match[1][1];
+			name = localPath.basename;
+			url = match[2][1];
 			refspec = match[3] !? { match[3][1] };
 			result = [this.asAbsolutePath(localPath, relativeTo), refspec];
-			}, {
-				match = line.findRegexp(nameRe);
-				if(match.size > 0, {
-					name = match[1][1];
+		}, {
+			match = line.findRegexp(nameRe);
+			if(match.size > 0, {
+				name = match[1][1];
 				refspec = match[2] !? { match[2][1] };
-					if(Quarks.isPath(name), {
+				if(Quarks.isPath(name), {
 					result = [this.asAbsolutePath(name, relativeTo), refspec];
-					}, {
-					result = [name, refspec];
-					});
 				}, {
-					"Unreadable line: %".format(line).error;
+					result = [name, refspec];
 				});
+			}, {
+				"Unreadable line: %".format(line).error;
 			});
+		});
 
 		^result;
 	}
@@ -126,35 +126,35 @@ Quarks {
 
 		localPath = this.asRelativePath(quark.localPath, relativeTo);
 
-			if(Git.isGit(quark.localPath), {
-				url = quark.url;
-				if(Git(quark.localPath).isDirty, {
-					("Working copy is dirty" + quark.localPath).warn;
-				}, {
-					refspec = quark.refspec;
-				if (quark.localPath.beginsWith(Quarks.folder)) {
+		if(Git.isGit(quark.localPath), {
+			url = quark.url;
+			if(Git(quark.localPath).isDirty, {
+				("Working copy is dirty" + quark.localPath).warn;
+			}, {
+				refspec = quark.refspec;
+				if (quark.localPath.beginsWith(Quarks.folder), {
 					isCleanAndInstalled = true;
-				}
-				});
+				})
 			});
+		});
 
-		if (Quarks.findQuarkURL(quark.name).notNil) {
+		if (Quarks.findQuarkURL(quark.name).notNil, {
 			// If we have the quark in the directory, we can simplify by using it's name.
 			url = quark.name;
-		};
+		});
 
-		if (isCleanAndInstalled) {
+		if (isCleanAndInstalled, {
 			// If we have a clean and installed quark,
 			// we can refer to it more generically than a local path.
 			specifier = specifier ++ url;
 		} {
 			// Okay, we need to specify local path
 			specifier = specifier ++ "%=%".format(localPath, url ?? quark.name);
-		};
+		});
 
 		if(refspec.size() > 0, {
 			specifier = specifier ++ "@" ++ refspec;
-			});
+		});
 
 		^specifier;
 	}
@@ -218,7 +218,7 @@ Quarks {
 			conflict = dependencies.detect({ |prior| prior.value.conflictsWith(quark.name, quark.version) });
 			if (conflict.notNil) {
 				"The quark %@% conflicts with dependency '%' (via %)".format(
-						quark.name, quark.version, conflict.value, conflict.key).error;
+					quark.name, quark.version, conflict.value, conflict.key).error;
 				^false;
 			};
 		});
@@ -326,7 +326,7 @@ Quarks {
 			("Failed to read quarks directory listing: % %".format(if(fetch, directoryUrl, dirTxtPath), err)).error;
 			if(fetch, {
 				// if fetch failed, try read from cache
-				 if(File.exists(dirTxtPath), {
+				if(File.exists(dirTxtPath), {
 					this.prReadDirectoryFile(dirTxtPath);
 				});
 			}, {

@@ -141,25 +141,25 @@ Quark {
 	*findMatch { |dependency, pending|
 		var found;
 
-		Quarks.installed.do { |q|
-			if (dependency.isMetBy(q.name, q.version)) { ^q };
-		};
+		Quarks.installed.do({ |q|
+			if (dependency.isMetBy(q.name, q.version), { ^q });
+		});
 
 		pending.do { |q|
-			if (dependency.isMetBy(q.name, q.version)) { ^q };
+			if (dependency.isMetBy(q.name, q.version), { ^q });
 		};
 
 		found = Quark(dependency.name);
-		if (found.isDownloaded.not) { found.checkout() };
-		if (dependency.isMetBy(found.name, found.version)) {
+		if (found.isDownloaded.not, { found.checkout() });
+		if (dependency.isMetBy(found.name, found.version), {
 			^found;
-		};
-		found.tags.do {
+		});
+		found.tags.do({
 			|tag|
-			if (dependency.isMetBy(dependency.name, tag)) {
+			if (dependency.isMetBy(dependency.name, tag), {
 				^Quark(dependency.name, tag)
-			}
-		};
+			})
+		});
 
 		^nil
 	}
@@ -175,16 +175,16 @@ Quark {
 		var conflict, quark, dependencies, foundQuarks = Dictionary.new;
 
 		dependencies = this.dependencies();
-		dependencies.do { |d|
+		dependencies.do({ |d|
 			allDeps.add("%@%".format(this.name, this.version) -> d)
-		};
+		});
 
 		dependencies.do({ |dep|
 			quark = Quark.findMatch(dep);
 
-			if (quark.isNil) {
+			if (quark.isNil, {
 				Error("No quark found that satisfies dependency: %".format(dep.asString())).throw;
-			};
+			});
 
 			quark.checkout();
 			quark.deepDependencies(allDeps).debug(quark).do({ |qb|
@@ -203,14 +203,14 @@ Quark {
 			^QuarkDependency(dep)
 		};
 
-		if (dep.isKindOf(Association)) {
+		if (dep.isKindOf(Association), {
 			^QuarkDependency.fromAssociation(dep)
-		};
+		});
 
-		if (dep.isSequenceableCollection) {
+		if (dep.isSequenceableCollection, {
 			# name, version, url = dep;
 			^QuarkDependency(url ++ name, version);
-		};
+		});
 
 		Error("Cannot parse dependency:" + this + dep).throw;
 	}
@@ -283,7 +283,7 @@ QuarkDependency {
 
 	*fromAssociation { |association|
 		var str = association.key.asString();
-		if (association.value.notNil) { str = str ++ "@" ++ association.value.asString() };
+		if (association.value.notNil, { str = str ++ "@" ++ association.value.asString() });
 		^QuarkDependency(str);
 	}
 
@@ -307,22 +307,22 @@ QuarkDependency {
 	}
 
 	conflictsWith { |inName, inVersion|
-		if (Quark.nameEquals(name, inName)) {
-			if (inVersion.notNil && version.notNil) {
-				if (Quark.versionEquals(inVersion, version).not) {
+		if (Quark.nameEquals(name, inName), {
+			if (inVersion.notNil && version.notNil, {
+				if (Quark.versionEquals(inVersion, version).not, {
 					^true;
-				}
-			}
-		};
+				})
+			})
+		});
 
 		^false;
 	}
 
 	isMetBy { |inName, inVersion|
 		var isMet = Quark.nameEquals(name, inName);
-		if (version.notNil) {
+		if (version.notNil, {
 			isMet = isMet && Quark.versionEquals(version, inVersion);
-		};
+		});
 		^isMet;
 	}
 
