@@ -147,7 +147,7 @@ Quarks {
 			// If we have a clean and installed quark,
 			// we can refer to it more generically than a local path.
 			specifier = specifier ++ url;
-		} {
+		}, {
 			// Okay, we need to specify local path
 			specifier = specifier ++ "%=%".format(localPath, url ?? quark.name);
 		});
