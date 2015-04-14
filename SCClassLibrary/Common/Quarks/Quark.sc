@@ -73,6 +73,9 @@ Quark {
 	isDownloaded {
 		^File.exists(this.localPath)
 	}
+	isGit {
+		^git.notNil
+	}
 	isInstalled {
 		^Quarks.pathIsInstalled(this.localPath)
 	}
@@ -121,6 +124,18 @@ Quark {
 			});
 			changed = true;
 			data = nil;
+		});
+	}
+	checkForUpdates {
+		var tags;
+		if(this.isGit, {
+			tags = git.tags().sort;
+			git.fetch();
+			// if not already marked as changed
+			if(changed.not, {
+				// changed if there are new tags
+				changed = git.tags().sort != tags;
+			})
 		});
 	}
 	*findMatch { |dependency, pending|
