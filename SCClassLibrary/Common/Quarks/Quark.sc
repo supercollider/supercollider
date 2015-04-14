@@ -150,45 +150,47 @@ Quark {
 		});
 		^deps.collect({ |dep| this.parseDependency(dep) }).select(_.notNil);
 	}
-	deepDependencies {
-		var deps = Dictionary.new;
-		this.dependencies.do({ |q|
-			q.checkout();
-			q.deepDependencies.debug(q).do({ |qb|
-				deps[qb.name] = qb;
+	deepDependencies { | allDeps=(List()) |
+		var conflict, quark, dependencies, foundQuarks = Dictionary.new;
+
+		dependencies = this.dependencies();
+		dependencies.do { |d|
+			allDeps.add("%@%".format(this.name, this.version) -> d)
+		};
+
+		dependencies.do({ |dep|
+			quark = Quark.findMatch(dep);
+
+			if (quark.isNil) {
+				Error("No quark found that satisfies dependency: %".format(dep.asString())).throw;
+			};
+
+			quark.checkout();
+			quark.deepDependencies(allDeps).debug(quark).do({ |qb|
+				foundQuarks[qb.name] = qb;
 			});
-			deps[q.name] = q;
+			foundQuarks[quark.name] = quark;
 		});
-		^deps.values
+
+		^foundQuarks.values
 	}
 	parseDependency { arg dep;
 		// (1) string
 		var name, version, url, q;
-		if(dep.isString, {
-			{
-				q = Quarks.at(dep)
-			}.try({ |err|
-				// bad name, or quark not found
-				err.errorString.postln;
-				(this.asString + "failed to find dependency" + dep.asCompileString).warn;
-			});
-			^q
-		});
-		// support older styles:
-		// (2) name->version
-		if(dep.isKindOf(Association), {
-			name = dep.key.asString;
-			version = dep.value;
-			q = Quarks.at(name);
-			// and what if version is different ?
-			^Quark(name)
-		});
-		// (3) [name, version, url]
-		// url is likely to be an svn repo
-		if(dep.isSequenceableCollection, {
+
+		if (dep.isString) {
+			^QuarkDependency(dep)
+		};
+
+		if (dep.isKindOf(Association)) {
+			^QuarkDependency.fromAssociation(dep)
+		};
+
+		if (dep.isSequenceableCollection) {
 			# name, version, url = dep;
-			^Quark(url + name, version);
-		});
+			^QuarkDependency(url ++ name, version);
+		};
+
 		Error("Cannot parse dependency:" + this + dep).throw;
 	}
 
