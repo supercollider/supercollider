@@ -117,7 +117,31 @@ Quark {
 			data = nil;
 		});
 	}
+	*findMatch { |dependency, pending|
+		var found;
 
+		Quarks.installed.do { |q|
+			if (dependency.isMetBy(q.name, q.version)) { ^q };
+		};
+
+		pending.do { |q|
+			if (dependency.isMetBy(q.name, q.version)) { ^q };
+		};
+
+		found = Quark(dependency.name);
+		if (found.isDownloaded.not) { found.checkout() };
+		if (dependency.isMetBy(found.name, found.version)) {
+			^found;
+		};
+		found.tags.do {
+			|tag|
+			if (dependency.isMetBy(dependency.name, tag)) {
+				^Quark(dependency.name, tag)
+			}
+		};
+
+		^nil
+	}
 	dependencies {
 		var deps = this.data['dependencies'] ?? {^[]};
 		if(deps.isSequenceableCollection.not, {
