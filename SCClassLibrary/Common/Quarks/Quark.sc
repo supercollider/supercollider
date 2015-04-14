@@ -295,12 +295,12 @@ QuarkDependency {
 		^false;
 	}
 
-	isFulfilledBy { |inName, inVersion|
-		var fulfilled = Quark.nameEquals(name, inName);
+	isMetBy { |inName, inVersion|
+		var isMet = Quark.nameEquals(name, inName);
 		if (version.notNil) {
-			fulfilled = fulfilled && QuarkDependency.versionEquals(version, inVersion);
+			isMet = isMet && QuarkDependency.versionEquals(version, inVersion);
 		};
-		^fulfilled;
+		^isMet;
 	}
 
 	asString {
