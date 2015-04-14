@@ -286,7 +286,7 @@ QuarkDependency {
 	conflictsWith { |inName, inVersion|
 		if (Quark.nameEquals(name, inName)) {
 			if (inVersion.notNil && version.notNil) {
-				if (QuarkDependency.versionEquals(inVersion, version).not) {
+				if (Quark.versionEquals(inVersion, version).not) {
 					^true;
 				}
 			}
@@ -298,7 +298,7 @@ QuarkDependency {
 	isMetBy { |inName, inVersion|
 		var isMet = Quark.nameEquals(name, inName);
 		if (version.notNil) {
-			isMet = isMet && QuarkDependency.versionEquals(version, inVersion);
+			isMet = isMet && Quark.versionEquals(version, inVersion);
 		};
 		^isMet;
 	}
