@@ -182,7 +182,7 @@ Quarks {
 
 	*installQuark { |quark|
 		var
-			deps,
+			dependentQuarks, dependencies, conflict,
 			incompatible = { arg name;
 				(quark.name
 					+ "reports an incompatibility with this Super Collider version"
@@ -200,15 +200,22 @@ Quarks {
 		if(quark.isCompatible().not, {
 			^incompatible.value(quark.name);
 		});
-		deps = quark.deepDependencies;
-		deps.do({ |dep|
-			if(dep.isCompatible().not, {
-				^incompatible.value(dep.name);
+		dependencies = List();
+		dependentQuarks = quark.deepDependencies(dependencies);
+		dependentQuarks.do({ |quark|
+			if(quark.isCompatible().not, {
+				^incompatible.value(quark.name);
 			});
-			dep.checkout();
+			conflict = dependencies.detect({ |prior| prior.value.conflictsWith(quark.name, quark.version) });
+			if (conflict.notNil) {
+				"The quark %@% conflicts with dependency '%' (via %)".format(
+						quark.name, quark.version, conflict.value, conflict.key).error;
+				^false;
+			};
 		});
-		deps.do({ |dep|
-			this.link(dep.localPath);
+		dependentQuarks.do({ |q|
+			q.checkout();
+			this.link(q.localPath);
 		});
 		this.link(quark.localPath);
 		(quark.name + "installed").inform;
