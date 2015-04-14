@@ -205,8 +205,15 @@ Quarks {
 		if(quark.isCompatible().not, {
 			^incompatible.value(quark.name);
 		});
-		dependencies = List();
-		dependentQuarks = quark.deepDependencies(dependencies);
+
+		try({
+			dependencies = List();
+			dependentQuarks = quark.deepDependencies(dependencies);
+		}, { |e|
+			e.errorString.inform;
+			^false
+		});
+
 		dependentQuarks.do({ |quark|
 			if(quark.isCompatible().not, {
 				^incompatible.value(quark.name);
