@@ -30,9 +30,9 @@ else()
 	find_path(SNDFILE_INCLUDE_DIR sndfile.h
 		PATHS /usr/local/include
 			  /usr/include
+		      "${CMAKE_SOURCE_DIR}/../libsndfile/include"
               /${MINGW_ARCH}/include
               $ENV{WD}/../../${MINGW_ARCH}/include
-		      "${CMAKE_SOURCE_DIR}/../libsndfile/include"
 		      "$ENV{ProgramW6432}/Mega-Nerd/libsndfile/include"
               "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/include"
 	)
@@ -41,17 +41,17 @@ else()
 		NAMES sndfile sndfile-1 libsndfile libsndfile-1
 		PATHS /usr/local/lib
               /usr/lib
+			  "${CMAKE_SOURCE_DIR}/../libsndfile/bin"
               /${MINGW_ARCH}/bin
               $ENV{WD}/../../${MINGW_ARCH}/bin
-			  "${CMAKE_SOURCE_DIR}/../libsndfile/bin"
 		      "$ENV{ProgramW6432}/Mega-Nerd/libsndfile/bin"
               "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/bin"
 	)
 	find_path(SNDFILE_LIBRARY_DIR 
 		NAMES sndfile sndfile-1 libsndfile libsndfile-1.dll
-        PATHS /${MINGW_ARCH}/bin
+        PATHS "${CMAKE_SOURCE_DIR}/../libsndfile/bin"
+              /${MINGW_ARCH}/bin
               $ENV{WD}/../../${MINGW_ARCH}/bin
-              "${CMAKE_SOURCE_DIR}/../libsndfile/bin"
 		      "$ENV{ProgramW6432}/Mega-Nerd/libsndfile/bin"
               "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/bin"
 	)

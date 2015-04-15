@@ -48,9 +48,9 @@ else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
           /usr/local/include
           /opt/local/include
           /sw/include
+          ${CMAKE_SOURCE_DIR}/../portaudio/include
           /${MINGW_ARCH}/include
           $ENV{WD}/../../${MINGW_ARCH}/include
-          ${CMAKE_SOURCE_DIR}/../portaudio/include
       )
 
       find_library(PORTAUDIO_LIBRARY
@@ -61,11 +61,9 @@ else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
           /usr/local/lib
           /opt/local/lib
           /sw/lib
+          ${CMAKE_SOURCE_DIR}/../portaudio/build/${CMAKE_BUILD_TYPE}
           /${MINGW_ARCH}/lib
           $ENV{WD}/../../${MINGW_ARCH}/lib
-          ${CMAKE_SOURCE_DIR}/../portaudio/build/${CMAKE_BUILD_TYPE}
-          ${CMAKE_SOURCE_DIR}/../portaudio/build/${CMAKE_BUILD_TYPE}/lib
-          ${CMAKE_SOURCE_DIR}/../portaudio/lib
       )
 
       find_path(PORTAUDIO_LIBRARY_DIR
@@ -76,9 +74,9 @@ else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
           /usr/local/lib
           /opt/local/lib
           /sw/lib
+          ${CMAKE_SOURCE_DIR}/../portaudio/build/${CMAKE_BUILD_TYPE}
           /${MINGW_ARCH}/bin
           $ENV{WD}/../../${MINGW_ARCH}/bin
-          ${CMAKE_SOURCE_DIR}/../portaudio/build/${CMAKE_BUILD_TYPE}
       )
 
       set(PORTAUDIO_INCLUDE_DIRS
