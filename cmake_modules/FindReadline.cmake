@@ -17,15 +17,21 @@ endif()
 if(WIN32)
     find_path(READLINE_INCLUDE_DIR
         NAMES readline/readline.h
-        PATHS ${CMAKE_SOURCE_DIR}/../readline/include
+        PATHS /${MINGW_ARCH}/include
+              $ENV{WD}/../../${MINGW_ARCH}/include
+              ${CMAKE_SOURCE_DIR}/../readline/include
     )
     find_library(READLINE_LIBRARY
         NAMES libreadline6.lib readline5.lib readline.lib libreadline6.dll readline5.dll
-        PATHS ${CMAKE_SOURCE_DIR}/../readline/bin
+        PATHS /${MINGW_ARCH}/bin
+              $ENV{WD}/../../${MINGW_ARCH}/bin
+              ${CMAKE_SOURCE_DIR}/../readline/bin
     )
     find_path(READLINE_LIBRARY_DIR
         NAMES libreadline6.dll readline5.dll
-        PATHS ${CMAKE_SOURCE_DIR}/../readline/bin
+        PATHS /${MINGW_ARCH}/bin
+              $ENV{WD}/../../${MINGW_ARCH}/bin
+              ${CMAKE_SOURCE_DIR}/../readline/bin
     )
 endif()
 

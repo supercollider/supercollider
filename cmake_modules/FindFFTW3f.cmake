@@ -6,9 +6,11 @@ FIND_PATH(
     HINTS $ENV{FFTW3_DIR}/include
     PATHS /usr/local/include
           /usr/include 
-		  ${CMAKE_SOURCE_DIR}/../fftw
 		  $ENV{ProgramW6432}/fftw
           $ENV{ProgramFiles}/fftw
+          /${MINGW_ARCH}/include
+          $ENV{WD}/../../${MINGW_ARCH}/include
+		  ${CMAKE_SOURCE_DIR}/../fftw
 )
 FIND_LIBRARY(
     FFTW3F_LIBRARY
@@ -16,16 +18,20 @@ FIND_LIBRARY(
     HINTS $ENV{FFTW3_DIR}/lib
     PATHS /usr/local/lib
           /usr/lib
-		  ${CMAKE_SOURCE_DIR}/../fftw
 		  $ENV{ProgramW6432}/fftw
           $ENV{ProgramFiles}/fftw
+          /${MINGW_ARCH}/bin
+          $ENV{WD}/../../${MINGW_ARCH}/bin
+		  ${CMAKE_SOURCE_DIR}/../fftw
 )
 FIND_PATH(
     FFTW3F_LIBRARY_DIR
     NAMES fftw3f libfftw3f fftw3f-3 libfftw3f-3.dll
-    PATHS ${CMAKE_SOURCE_DIR}/../fftw
-		  $ENV{ProgramW6432}/fftw
+	PATHS $ENV{ProgramW6432}/fftw
           $ENV{ProgramFiles}/fftw
+          /${MINGW_ARCH}/bin
+          $ENV{WD}/../../${MINGW_ARCH}/bin
+          ${CMAKE_SOURCE_DIR}/../fftw
 )
 
 SET(FFTW3F_FOUND "NO")

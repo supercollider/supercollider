@@ -18,10 +18,10 @@ if (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
   # in cache already
   set(PORTAUDIO_FOUND TRUE)
 else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
-  if (NOT WIN32)
+  if (NOT WIN32 OR MSYS)
    include(FindPkgConfig)
    pkg_check_modules(PORTAUDIO2 portaudio-2.0)
-  endif (NOT WIN32)
+  endif (NOT WIN32 OR MSYS)
 
   if (PORTAUDIO2_FOUND)
     set(PORTAUDIO_INCLUDE_DIRS
@@ -48,6 +48,8 @@ else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
           /usr/local/include
           /opt/local/include
           /sw/include
+          /${MINGW_ARCH}/include
+          $ENV{WD}/../../${MINGW_ARCH}/include
           ${CMAKE_SOURCE_DIR}/../portaudio/include
       )
 
@@ -59,6 +61,8 @@ else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
           /usr/local/lib
           /opt/local/lib
           /sw/lib
+          /${MINGW_ARCH}/lib
+          $ENV{WD}/../../${MINGW_ARCH}/lib
           ${CMAKE_SOURCE_DIR}/../portaudio/build/${CMAKE_BUILD_TYPE}
           ${CMAKE_SOURCE_DIR}/../portaudio/build/${CMAKE_BUILD_TYPE}/lib
           ${CMAKE_SOURCE_DIR}/../portaudio/lib
@@ -72,6 +76,8 @@ else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
           /usr/local/lib
           /opt/local/lib
           /sw/lib
+          /${MINGW_ARCH}/bin
+          $ENV{WD}/../../${MINGW_ARCH}/bin
           ${CMAKE_SOURCE_DIR}/../portaudio/build/${CMAKE_BUILD_TYPE}
       )
 
