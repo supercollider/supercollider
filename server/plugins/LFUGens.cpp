@@ -2702,6 +2702,8 @@ enum {
 void EnvGen_next_ak_nova(EnvGen *unit, int inNumSamples);
 #endif
 
+#define ENVGEN_NOT_STARTED 1000000000
+
 void EnvGen_Ctor(EnvGen *unit)
 {
 	//Print("EnvGen_Ctor A\n");
@@ -2726,7 +2728,8 @@ void EnvGen_Ctor(EnvGen *unit)
 
 	unit->m_endLevel = unit->m_level = ZIN0(kEnvGen_initLevel) * ZIN0(kEnvGen_levelScale) + ZIN0(kEnvGen_levelBias);
 	unit->m_counter = 0;
-	unit->m_stage = 1000000000;
+	unit->m_stage = ENVGEN_NOT_STARTED;
+	unit->m_shape = shape_Hold;
 	unit->m_prevGate = 0.f;
 	unit->m_released = false;
 	unit->m_releaseNode = (int)ZIN0(kEnvGen_releaseNode);
@@ -2785,6 +2788,7 @@ static inline bool check_gate_ar(EnvGen * unit, int i, float & prevGate, float *
 
 static inline bool EnvGen_nextSegment(EnvGen * unit, int & counter, double & level)
 {
+    if (unit->m_stage == ENVGEN_NOT_STARTED) { return true; }
 	//Print("stage %d rel %d\n", unit->m_stage, (int)ZIN0(kEnvGen_releaseNode));
 	int numstages = (int)ZIN0(kEnvGen_numStages);
 
