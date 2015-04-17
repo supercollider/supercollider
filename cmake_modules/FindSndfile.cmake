@@ -36,7 +36,6 @@ else()
 		      "$ENV{ProgramW6432}/Mega-Nerd/libsndfile/include"
               "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/include"
 	)
-    message(STATUS "${MINGW_ARCH}/include")
     find_library(SNDFILE_LIBRARY 
 		NAMES sndfile sndfile-1 libsndfile libsndfile-1
 		PATHS /usr/local/lib

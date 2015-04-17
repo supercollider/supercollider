@@ -55,7 +55,7 @@ else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
 
       find_library(PORTAUDIO_LIBRARY
         NAMES
-          portaudio portaudio_x64 portaudio_x64.lib portaudio_x86.lib libportaudio.a
+          portaudio portaudio_${CMAKE_LIBRARY_ARCHITECTURE}.lib portaudio_x64 libportaudio.a
         PATHS
           /usr/lib
           /usr/local/lib
@@ -68,7 +68,7 @@ else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
 
       find_path(PORTAUDIO_LIBRARY_DIR
         NAMES
-          portaudio portaudio_x64.dll portaudio_x86.dll
+          portaudio portaudio_${CMAKE_LIBRARY_ARCHITECTURE}.dll
         PATHS
           /usr/lib
           /usr/local/lib
