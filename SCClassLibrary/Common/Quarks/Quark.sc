@@ -189,7 +189,7 @@ Quark {
 		// search Quarks folders
 		(Quarks.additionalFolders ++ [Quarks.folder]).do({ |f|
 			var localPath = f +/+ name, url;
-			if(File.exists(localPath), {
+			if(File.existsCaseSensitive(localPath), {
 				^[name, nil, refspec, localPath]
 			});
 		});
