@@ -4,7 +4,11 @@ Quark {
 	var <changed = false, <git;
 
 	*new { |name, refspec|
-		^super.new.init(*Quark.parseQuarkName(name, refspec))
+		var args = Quark.parseQuarkName(name, refspec);
+		if(args.isNil, {
+			Error("% not found".format(name)).throw;
+		});
+		^super.new.init(*args)
 	}
 	*fromLocalPath { |path|
 		var name, url, refspec;
@@ -125,7 +129,13 @@ Quark {
 			("Invalid dependencies " + this + deps).warn;
 			^[]
 		});
-		^deps.collect({ |dep| Quark.parseDependency(dep, this) }).select(_.notNil);
+		^deps.collect({ |dep|
+			var q = Quark.parseDependency(dep, this);
+			if(q.isNil, {
+				"% not found".format(dep).warn;
+			});
+			q
+		}).select({ |it| it.notNil });
 	}
 	deepDependencies {
 		// warning: everything must be checked out just to get the dependency list
@@ -161,18 +171,17 @@ Quark {
 		if(dep.isSequenceableCollection, {
 			^Quark.prMakeDep(dep.first)
 		});
-		Error("Cannot parse dependency:" + dep + (forQuark ? "")).throw;
+		("Cannot parse dependency:" + dep + (forQuark ? "")).error;
+		^nil
 	}
 	*prMakeDep { |name, refspec|
 		// protected make dependency
 		// if not found then posts error and returns nil
-		var q;
-		{
-			q = Quark(name, refspec)
-		}.try({ |err|
-			err.errorString.postln;
+		var args = Quark.parseQuarkName(name, refspec);
+		if(args.isNil, {
+			^nil
 		});
-		^q
+		^super.new.init(*args)
 	}
 	*parseQuarkName { |name, refspec|
 		// determine which quark the string 'name' refers to
@@ -199,7 +208,8 @@ Quark {
 			directoryEntry = directoryEntry.split($@);
 			^[name, directoryEntry[0], refspec ? directoryEntry[1], nil]
 		});
-		Error("% not found".format(name)).throw;
+		// not found
+		^nil
 	}
 	parseQuarkFile {
 		var qfp = this.localPath +/+ name ++ ".quark",
