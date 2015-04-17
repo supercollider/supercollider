@@ -125,7 +125,7 @@ Quark {
 			("Invalid dependencies " + this + deps).warn;
 			^[]
 		});
-		^deps.collect({ |dep| this.parseDependency(dep) }).select(_.notNil);
+		^deps.collect({ |dep| Quark.parseDependency(dep, this) }).select(_.notNil);
 	}
 	deepDependencies {
 		// warning: everything must be checked out just to get the dependency list
@@ -146,41 +146,38 @@ Quark {
 		});
 		^collector
 	}
-	parseDependency { arg dep;
+	*parseDependency { |dep, forQuark|
+		// parse a dependency specifier and return a Quark
 		// (1) string
-		var name, version, url, q;
 		if(dep.isString, {
-			{
-				q = Quarks.at(dep)
-			}.try({ |err|
-				// bad name, or quark not found
-				err.errorString.postln;
-				(this.asString + "failed to find dependency" + dep.asCompileString).warn;
-			});
-			^q
+			^Quark.prMakeDep(*dep.split($@))
 		});
-		// support older styles:
-		// (2) name->version
+		// (2) name -> version
 		if(dep.isKindOf(Association), {
-			name = dep.key.asString;
-			version = dep.value;
-			q = Quarks.at(name);
-			// and what if version is different ?
-			^Quark(name)
+			^Quark.prMakeDep(dep.key.asString)
 		});
 		// (3) [name, version, url]
-		// url is likely to be an svn repo
+		// url is svn repo and should be ignored now
 		if(dep.isSequenceableCollection, {
-			# name, version, url = dep;
-			^Quark(url + name, version);
+			^Quark.prMakeDep(dep.first)
 		});
-		Error("Cannot parse dependency:" + this + dep).throw;
+		Error("Cannot parse dependency:" + dep + (forQuark ? "")).throw;
 	}
-
+	*prMakeDep { |name, refspec|
+		// protected make dependency
+		// if not found then posts error and returns nil
+		var q;
+		{
+			q = Quark(name, refspec)
+		}.try({ |err|
+			err.errorString.postln;
+		});
+		^q
+	}
 	*parseQuarkName { |name, refspec|
 		// determine which quark the string 'name' refers to
-		// and return name, url, refspec, localPath
 		// name is one of: quarkname, url, localPath
+		// returns: [name, url, refspec, localPath]
 		var directoryEntry;
 		if(name.contains("://"), {
 			^[PathName(name).fileNameWithoutExtension(), name, refspec, nil]
