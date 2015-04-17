@@ -44,11 +44,11 @@ Quark {
 	}
 	refspec {
 		^refspec ?? {
-			git.refspec
+			git !? { git.refspec }
 		}
 	}
 	tags {
-		^git.tags
+		^git !? { git.tags }
 	}
 	isDownloaded {
 		^File.exists(this.localPath)
@@ -214,8 +214,9 @@ Quark {
 	}
 
 	printOn { arg stream;
+		var v = this.version ? this.refspec;
 		stream << "Quark: " << name;
-		if(this.version.notNil,{ stream << " [" << this.version << "]"; });
+		if(v.notNil,{ stream << "[" << v << "]" });
 	}
 	help {
 		var p = this.data['schelp'];
