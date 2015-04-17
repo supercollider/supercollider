@@ -128,15 +128,23 @@ Quark {
 		^deps.collect({ |dep| this.parseDependency(dep) }).select(_.notNil);
 	}
 	deepDependencies {
-		var deps = Dictionary.new;
+		// warning: everything must be checked out just to get the dependency list
+		^this.prCollectDependencies(Dictionary.new).values
+	}
+	prCollectDependencies { |collector|
 		this.dependencies.do({ |q|
-			q.checkout();
-			q.deepDependencies.debug(q).do({ |qb|
-				deps[qb.name] = qb;
+			var prev = collector[q.name];
+			if(prev.notNil, {
+				if(prev.refspec != q.refspec, {
+					("% requires % but % is already registered as a dependency".format(this, q, prev)).warn;
+				});
+			}, {
+				q.checkout();
+				collector[q.name] = q;
+				q.prCollectDependencies(collector);
 			});
-			deps[q.name] = q;
 		});
-		^deps.values
+		^collector
 	}
 	parseDependency { arg dep;
 		// (1) string
