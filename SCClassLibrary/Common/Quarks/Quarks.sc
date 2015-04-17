@@ -337,7 +337,7 @@ Quarks {
 		});
 	}
 	*isPath { |string|
-		^string.findRegexp("^[~\.]?/").size != 0
+		^string.findRegexp("^[~\\.]?/").size != 0
 	}
 	*asAbsolutePath { |path, relativeTo|
 		^if(path.at(0).isPathSeparator, {
