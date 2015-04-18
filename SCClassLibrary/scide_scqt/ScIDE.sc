@@ -686,22 +686,26 @@ Document {
 
 	keyDown { | modifiers, unicode, keycode, key |
 		var character = unicode.asAscii;
-		this.class.globalKeyDownAction.value(this,character, modifiers, unicode, keycode);
+		var cocoaModifiers = QKeyModifiers.toCocoa(modifiers);
+		this.class.globalKeyDownAction.value(this,character, cocoaModifiers, unicode, keycode);
 		keyDownAction.value(this,character, modifiers, unicode, keycode, key);
 	}
 
 	keyUp { | modifiers, unicode, keycode, key |
 		var character = unicode.asAscii;
-		this.class.globalKeyUpAction.value(this,character, modifiers, unicode, keycode);
+		var cocoaModifiers = QKeyModifiers.toCocoa(modifiers);
+		this.class.globalKeyUpAction.value(this,character, cocoaModifiers, unicode, keycode);
 		keyUpAction.value(this,character, modifiers, unicode, keycode, key);
 	}
 
 	mouseDown { | x, y, modifiers, buttonNumber, clickCount |
-		mouseDownAction.value(this, x, y, modifiers, buttonNumber, clickCount)
+		var cocoaModifiers = QKeyModifiers.toCocoa(modifiers);
+		mouseDownAction.value(this, x, y, cocoaModifiers, buttonNumber, clickCount)
 	}
 
 	mouseUp { | x, y, modifiers, buttonNumber |
-		mouseUpAction.value(this, x, y, modifiers, buttonNumber)
+		var cocoaModifiers = QKeyModifiers.toCocoa(modifiers);
+		mouseUpAction.value(this, x, y, cocoaModifiers, buttonNumber)
 	}
 
 	keyDownAction_ {|action|
