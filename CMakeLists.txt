@@ -15,9 +15,20 @@ enable_testing()
 
 include (cmake_modules/FinalFile.cmake)
 
-if (NOT CMAKE_BUILD_TYPE)
-	message(STATUS "Build type defaulting to \"RelWithDebInfo\"")
-	set(CMAKE_BUILD_TYPE "RelWithDebInfo")
+if(CMAKE_CONFIGURATION_TYPES AND NOT APPLE)
+    set(CMAKE_CONFIGURATION_TYPES Debug Release)
+    set(CMAKE_CONFIGURATION_TYPES "${CMAKE_CONFIGURATION_TYPES}" CACHE STRING
+        "Reset the configurations to what we need/support"
+        FORCE
+    )
+    message("-- Please choose build configuration in next step: You can choose \"Debug\" or \"Release\"")
+else(CMAKE_CONFIGURATION_TYPES AND NOT APPLE)
+    if (NOT CMAKE_BUILD_TYPE)
+        message(STATUS "Build type defaulting to \"RelWithDebInfo\"")
+        set(CMAKE_BUILD_TYPE "RelWithDebInfo")
+    else(NOT CMAKE_BUILD_TYPE)
+        message("-- Building in *${CMAKE_BUILD_TYPE}*-mode")
+    endif(NOT CMAKE_BUILD_TYPE)
 endif()
 
 if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
@@ -26,15 +37,19 @@ endif()
 
 ######################################################################
 # Let CMAKE_INSTALL_PREFIX reflect target arch bit and build type
-if (WIN32)
+if(WIN32)
     string(TOLOWER "$ENV{MSYSTEM}" MINGW_ARCH)
     if (CMAKE_GENERATOR MATCHES "64" OR MINGW_ARCH MATCHES "64")
         SET(CMAKE_LIBRARY_ARCHITECTURE "x64")
     else()
         SET(CMAKE_LIBRARY_ARCHITECTURE "x86")
     endif()
-    SET(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/${CMAKE_LIBRARY_ARCHITECTURE}/${CMAKE_BUILD_TYPE}")
-endif()
+    if (MSVC)
+        SET(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/${CMAKE_LIBRARY_ARCHITECTURE}")
+    elseif(MINGW)
+        SET(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/${CMAKE_LIBRARY_ARCHITECTURE}/${CMAKE_BUILD_TYPE}")
+    endif()
+endif(WIN32)
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules
                       ${CMAKE_MODULE_PATH})
