@@ -28,11 +28,11 @@ class QObject;
 
 namespace QtCollider {
   // WARNING these can be called only from Qt thread (no locking needed):
-  void announcePainting( QObject* obj = 0 );
+  void announcePainting();
   bool paintingAnnounced();
 
   // WARNING language must be locked to call these:
-  bool beginPainting( QPainter * );
+  bool beginPainting( QPainter *, QObject* obj = 0 );
   void endPainting();
   bool isPaintingObject( QObject* obj );
 

@@ -38,14 +38,13 @@ static QPainterPath path;
 
 namespace QtCollider {
 
-  void announcePainting(QObject* obj) {
+  void announcePainting() {
     announced = true;
-    paintingObject = obj;
   }
   bool paintingAnnounced() { return announced; }
   bool isPaintingObject(QObject* obj) { return obj == paintingObject; }
 
-  bool beginPainting( QPainter *p )
+  bool beginPainting( QPainter *p, QObject* obj )
   {
     if( painter ) {
       qcErrorMsg( QString("Painting already in progress!") );
@@ -53,6 +52,7 @@ namespace QtCollider {
     }
 
     painter = p;
+    paintingObject = obj;
 
     painter->setRenderHint( QPainter::Antialiasing, true );
     QColor black( 0,0,0 );
