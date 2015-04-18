@@ -518,7 +518,7 @@ void QWidgetProxy::customPaint( QPainter *painter )
     return;
   }
 
-  QtCollider::announcePainting();
+  QtCollider::announcePainting(this);
 
   QtCollider::lockLang();
 

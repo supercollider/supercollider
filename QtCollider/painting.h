@@ -24,16 +24,17 @@
 
 class QPainter;
 class QWidget;
+class QObject;
 
 namespace QtCollider {
   // WARNING these can be called only from Qt thread (no locking needed):
-  void announcePainting();
+  void announcePainting( QObject* obj = 0 );
   bool paintingAnnounced();
 
   // WARNING language must be locked to call these:
-
   bool beginPainting( QPainter * );
   void endPainting();
+  bool isPaintingObject( QObject* obj );
 
   QPainter * globalPainter();
 }

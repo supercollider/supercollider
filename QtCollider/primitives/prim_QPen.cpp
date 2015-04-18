@@ -32,13 +32,18 @@
 #include <cmath>
 
 static bool announced = false;
+static QObject *paintingObject = NULL;
 static QPainter *painter = 0;
 static QPainterPath path;
 
 namespace QtCollider {
 
-  void announcePainting() { announced = true; }
+  void announcePainting(QObject* obj) {
+    announced = true;
+    paintingObject = obj;
+  }
   bool paintingAnnounced() { return announced; }
+  bool isPaintingObject(QObject* obj) { return obj == paintingObject; }
 
   bool beginPainting( QPainter *p )
   {
@@ -65,6 +70,7 @@ namespace QtCollider {
   {
     painter = 0;
     announced = false;
+    paintingObject = NULL;
   }
 
   QPainter *globalPainter() { return painter; }
