@@ -169,6 +169,7 @@ FreqScopeView {
 		if (this.shmScopeAvailable) {
 			scope = ScopeView.new(parent, bounds);
 			scope.server = server;
+			scope.fill = false;
 		} {
 			scope = Scope(parent, bounds);
 		};
