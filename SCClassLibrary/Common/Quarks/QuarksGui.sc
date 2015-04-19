@@ -328,7 +328,7 @@ QuarkDetailView {
 
 			model.data.keysValuesDo({ |k, v|
 				if(#[\name, \summary, \url, \path, \dependencies, \version].includes(k).not) {
-					this.pushRow(k.asString, v.value().asString);
+					this.pushRow(k.asString, protect({ v.value() }).asString);
 				}
 			});
 
