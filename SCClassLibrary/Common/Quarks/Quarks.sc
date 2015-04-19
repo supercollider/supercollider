@@ -165,6 +165,9 @@ Quarks {
 			("A version of % is already installed at %".format(quark, prev.localPath)).error;
 			^false
 		});
+
+		"Installing %".format(quark.name).inform;
+
 		quark.checkout();
 		if(quark.isCompatible().not, {
 			^incompatible.value(quark.name);
