@@ -479,7 +479,7 @@ void DocumentManager::close( Document *doc )
             .arg(doc->id().constData());
     Main::evaluateCodeIfCompiled( command, true );
 
-    delete doc;
+    doc->deleteLater();
 }
 
 bool DocumentManager::save( Document *doc )

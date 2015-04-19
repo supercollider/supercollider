@@ -301,9 +301,6 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
 
     makeSignalConnections();
 
-    mBoxSigMux->connect(SIGNAL(currentChanged(GenericCodeEditor*)),
-                        this, SLOT(onCurrentEditorChanged(GenericCodeEditor*)));
-
     connect( &mDocModifiedSigMap, SIGNAL(mapped(QObject*)), this, SLOT(onDocModified(QObject*)) );
 
     connect( main, SIGNAL(applySettingsRequest(Settings::Manager*)),
@@ -335,6 +332,10 @@ void MultiEditor::makeSignalConnections()
             this, SLOT(onCurrentTabChanged(int)));
     connect(mTabs, SIGNAL(tabCloseRequested(int)),
             this, SLOT(onCloseRequest(int)));
+
+    mBoxSigMux->connect(SIGNAL(currentChanged(GenericCodeEditor*)),
+            this, SLOT(onCurrentEditorChanged(GenericCodeEditor*)));
+    
 }
 
 void MultiEditor::breakSignalConnections()
@@ -342,6 +343,7 @@ void MultiEditor::breakSignalConnections()
     DocumentManager *docManager = Main::documentManager();
     docManager->disconnect(this);
     mTabs->disconnect(this);
+    mBoxSigMux->disconnect(this);
 }
 
 void MultiEditor::createActions()
@@ -800,8 +802,10 @@ void MultiEditor::saveSession( Session *session )
     int tabCount = mTabs->count();
     for (int tabIdx = 0; tabIdx < tabCount; ++tabIdx) {
         Document *doc = documentForTab(tabIdx);
-        documentList << doc;
-        tabsData << doc->filePath();
+        if (doc) {
+            documentList << doc;
+            tabsData << doc->filePath();
+        }
     }
 
     session->setValue( "documents", QVariant::fromValue(tabsData) );
@@ -861,8 +865,8 @@ void MultiEditor::switchSession( Session *session )
 
     // close all docs
     foreach (Document *doc, documentList)
-        docManager->close(doc);
-
+    docManager->close(doc);
+    
     // remove all tabs
     while (mTabs->count())
         mTabs->removeTab(0);
@@ -1073,7 +1077,11 @@ void MultiEditor::onBoxActivated(CodeEditorBox *box)
 
 Document * MultiEditor::documentForTab( int index )
 {
-    return mTabs->tabData(index).value<Document*>();
+    QVariant doc = mTabs->tabData(index);
+    if (doc.isValid() && !doc.isNull())
+        return doc.value<Document*>();
+    else
+        return NULL;
 }
 
 int MultiEditor::tabForDocument( Document * doc )
