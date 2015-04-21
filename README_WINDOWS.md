@@ -1,73 +1,104 @@
 Supercollider 3.7 for Windows
 =============================
 
-**IMPORTANT**: you need to install **Git** to use the new SC Quarks
-system. Please read at least the section *Installation and Dependencies*
+**IMPORTANT NOTE**: you need to install **Git** to use the new Quarks system
+(see below in *Installing SuperCollider*).
 
-NOTE: This is a provisional version of the Windows Readme provided for the alpha-
-and beta-stages of the upcoming 3.7-release. It is bound to change considerably.
+This is a preliminary version of the Windows Readme provided for the alpha-
+and beta-stages of the upcoming 3.7-release. Expect some changes before the
+release.
+
+The style of the 'Building SC...' chapters tries to accomodate unexperienced 
+developers. If you have some experience in building SC, the chapter 'Quick Steps' 
+might do.
+
+April 2015
 
 
 Table of contents
 -----------------
 
- * Introduction
- * System requirements
- * *Installation and Dependencies*
- * Using the SuperCollider IDE
- * Using SuperCollider in command line mode
- * Configuration- and support files
- * Extensions and Quarks
- * *Building SuperCollider for Windows*
- * Preliminaries
- * Obtaining the SC source
- * The SC 3.7 release
- * Using cmake with Visual Studio
-    * External dependencies
-    * Qt
-    * Portaudio (PA)
-    * Libsndfile
-    * FFTW
-    * Readline
-    * Specifying library- and include-paths manually
-    * Downloading a binary dependencies bundle (temporary)
- * Using cmake with msys/MinGW (outdated)
- * Using cmake with QtCreator (outdated)
- * Cmake arguments for SC (outdated)
- * Diagnosing build problems
- * Creating an installer binary
- * Links
- * Outro
+- Introduction
+- *Installing SuperCollider*
+  - System requirements
+  - Using the SuperCollider IDE
+  - Using SuperCollider in command line mode
+  - Configuration- and support files
+  - Extensions and Quarks
+- *Building SuperCollider for Windows*
+  - Overview
+  - Quick Steps
+  - Code management- and build-tools
+  - Obtaining the SC source
+  - Additional libraries
+  - A temporary custom download for dependencies
+  - Using `cmake`
+      - Basic steps
+      - Additional options
+      - Specify library- and include-paths manually
+  - Building with msys2/MinGW & QtCreator
+    - Building portaudio with ASIO support (msys2)
+  - Building with Visual Studio
+    - Building portaudio with ASIO support (VS)
+  - Creating a distributable installer binary
+  - Diagnosing build problems
+  - The SC 3.7 release build
+- Links
+- Outro
 
 
 Introduction
-------------
+============
 
 This is the Windows version of James McCartney's SuperCollider synthesis
-engine (scsynth) and programming language (sclang). SuperCollider's central
-website is on Github:
+engine (`scsynth`) and programming language (`sclang`), distributed together
+with a dedicated IDE (`scide`).
 
-   http://supercollider.github.io/
+SuperCollider's central website is on Github:
 
-The help files contain a lot of useful information and tutorials for getting
-started. If you are using the SuperCollider ide, you can find the documentation
-using Cmd+D, or via the menu entry `Help` -> `Show Help Browser`.
+    http://supercollider.github.io/
 
-In a non-IDE context, you must generate the help files first, by running:
-`SCDoc.indexAllDocuments`. Help files will be created in the use support
-directory. On Windows 7&8 this is
+Binaries of release-versions and pre-release snapshots are available as
+GitHub releases now:
 
-`C:\Documents and Settings\<USERNAME>\Local Settings\Application Data\SuperCollider`
+    https://github.com/supercollider/supercollider/releases
 
-To get further information on SuperCollider usage or development, you are
-strongly encouraged to subscribe to the mailing lists:
+Older releases and snapshots of the source code used for releases are available
+at Sourceforge:
 
-   http://www.beast.bham.ac.uk/research/sc_mailing_lists.shtml
+    http://sourceforge.net/projects/supercollider/files/?source=navbar
+
+There is an online version of SuperCollider Help, the site SCDOC:
+
+    http://doc.sccode.org/Help.html
+
+SC has a life in social media too. Visit for example sccode.org, the Facebook group 
+SuperCollider, or find SuperCollider tweets, e.g. @sc140tweets. In addition you are 
+encouraged to subscribe to the two SC mailing lists 'sc-users' and 'sc-devel'. There 
+you will get friendly and qualified answers to your questions, as well as interest 
+in, and encouragement for your projects:
+
+    http://www.beast.bham.ac.uk/research/sc_mailing_lists.shtml
+
+
+Installing SuperCollider
+========================
+
+For SC itself just run the downloaded installer. If necessary select an
+alternative install path when prompted during installation. In order to
+uninstall, use the default procedure on Windows (Control panel -> Uninstall a
+programm) or run Uninstall.exe from within the SC installation folder. Note
+that files created in the 'user support directory' are not deleted (see below
+for details and an explanation).
+
+IMPORTANT: in order to use the Quarks extension system you *need* to install
+Git. It is available from
+
+    http://git-scm.com/downloads
 
 
 System Requirements
 -------------------
-
 
 ### Operating System
 
@@ -79,29 +110,16 @@ System Requirements
 
 ### Sound card
 
-Most common sound cards will work fine - the sound card should be one
-that is supported by PortAudio (http://www.portaudio.com). If you have
+Most sound cards running under Windows will work fine - the sound card should
+be one that is supported by PortAudio (http://www.portaudio.com). For professional 
+use do some research and find a card that allows for low latency. If you have
 issues with latency, consult http://www.portaudio.com/docs/latency.html
-for advice on how to tune your operating system to achieve the best results
-(in short: use ASIO drivers wherever possible).
-
-
-Installation and Dependencies
------------------------------
-
-For SC itself just run the installer, and choose (or confirm) the path where all
-the application files will be unpacked. In order to uninstall use the Windows
-recommended way (Control panel -> Uninstall a programm) or run Uninstall.exe
-from within the SC installation folder. Note that files created in the user
-support directory are not deleted (see below for details and an explanation).
-
-IMPORTANT: in order to use the Quarks extension system you *need* to install
-Git. It is available from
-
-    http://git-scm.com/downloads
-
-After installation, you can control SuperCollider from the provided IDE or
-in command line mode:
+for advice on how to tune your operating system to achieve the best results.
+The portaudio build in SC supports various Windows sound APIs, among which you
+can chose. Usually you get best results and biggest control over latency by
+using the ASIO driver. If your soundcard does not provide an ASIO driver you
+should give *ASIO4ALL* a try (see the chapter 'Links' at the end of this document).
+See SC help for how to select the audio interface to be used by SC.
 
 
 Using the SuperCollider IDE
@@ -109,9 +127,12 @@ Using the SuperCollider IDE
 
 To start up the IDE use the Startmenu link or run the scide.exe program
 found within the installation folder. On first startup expect several
-firewall warnings to pop up. The SuperCollider components communicate
-through the network, so you will get a warning for each of scide, sclang,
-scsynth and - if installed - supernova.
+firewall warnings to pop up. The SuperCollider components - the language
+interpreter `sclang`, the sound server `scsynth` and the IDE `scide` -
+communicate among each other over the network, so you will get a warning for
+each of the three executables. If you are new to SuperCollider, inspect the
+help system and look for the tutorials. You can find the documentation using
+Cmd+D, or via the menu entry `Help` -> `Show Help Browser`.
 
 
 Using SuperCollider in command line mode
@@ -121,8 +142,7 @@ Using SuperCollider in command line mode
 
 2. Navigate to the SuperCollider installation folder.
 
-3. Start up the sclang.exe program, to enter the SuperCollider
-command line.
+3. Start up the `sclang.exe` program to enter the SuperCollider command line.
 
 4. You can now type SuperCollider code and evaluate it by pressing
 the Enter (Return) key. You can browse the previous commands using
@@ -132,94 +152,238 @@ the up and down arrow keys.
 
     `Ctrl+t`: equivalent to CmdPeriod.run  
     `Ctrl+x`: to recompile the class library  
-    `Ctrl+d`: to quit the SuperCollider command line  
+    `Ctrl+d`: to quit the SuperCollider command line
 
-The interface uses the GNU library Readline. Google readline for more
-information.
+The interface uses the GNU library Readline (Google can help ;) ).
+
+If you want to use SC Help outside of the IDE, you must generate the help
+files first by running `SCDoc.indexAllDocuments`. Help files will by default
+be created in the 'user application support directory'.
 
 
 Configuration- and support files
 --------------------------------
 
-The location of the folder containing application related user data (f.e.
-Quarks, Help, plugins, config-files, synthdefs) follows general Windows
-policies:
+An important folder containing application related user data (for example
+extensions, quarks, Help files, plugins, configuration files, synthdefs) is
+located in the Windows 'local application data' folder. This location is a
+bit tricky to find (in the file explorer it's grandparent is hidden by default).
+You can see it in the environment variable LOCALAPPDATA. Type this on a command
+line:
+
+    $> echo %LOCALAPPDATA%
+
+It will likely be in one of the following locations:
 
 - Windows Vista/7/8 `C:\Users\<USERNAME>\AppData\Local\SuperCollider`
 - Windows XP: `C:\Documents and Settings\<USERNAME>\Local Settings\Application Data\SuperCollider`
 
 This folder is user writable and *not* deleted by uninstall. Therefore your
-settings, quarks, plugins etc persist through updates (beware of potential
+settings, quarks, plugins etc persist through SC-updates (beware of potential
 incompatibilities with new sc-versions). The folder can easily be accessed
-via the IDE (menu -> `Open user support directory`). Its location can be
-queried by executing:
+via the IDE (menu -> `Open user support directory`). You can also ask `sclang`
+where this folder is located. Type this in the SC-IDE:
 
     Platform.userAppSupportDir
-
-In order to access it through the FileExplorer you might have to make hidden
-system folders visible.
 
 
 Extensions and Quarks
 ---------------------
 
 Extensions are bundles of classes, and optionally plugins and helpfiles that
-extend the functionality of SC. They typically have a root folder that may
-be moved to the `Extensions` subfolder of the user support directory, or - the
-more flexible and recommended way since SC version 3.7: extensions - wherever
-they are stored - may be added to the folders scanned by SC at startup
-by adding them to the list of `include folders` in a file called
-`sclang_config.yaml` in the user support directory. This file can be edited
-manually, or through the settings dialog of the IDE, or programmatically (see
-help->`LanguageConfig`). After each change of this file the interpreter has to
-be restarted. A comfortable and community driven way of adding extensions to SC
-is the so called *Quarks* system. Quarks may be added programmatically or by
-using a GUI. See help->`Using Quarks` for an overview.
+extend the functionality of core SC. They typically have a root folder that may
+be moved to the `Extensions` subfolder of the `user support directory`. The
+more flexible and recommended way since SC version 3.7 does not restrict you
+to a single parent folder in a hidden system location. Any folder may be
+included among the folders scanned by SC at startup ("compiled by the interpreter
+(sclang)"). This is done by adding them to the list of `include folders` in a
+file called `sclang_config.yaml` in the user support directory.
+This file can be edited manually, or through the settings dialog of the IDE,
+or programmatically (see help->`LanguageConfig`). The new Quarks system also
+adds and removes entries here. After each change in this file the interpreter
+has to be restarted ("rebooted"). A comfortable and community driven way of
+adding and distributing extensions for SC is the so called *Quarks* system.
+Quarks may be added programmatically or by using a GUI. See Help->Using Quarks
+for an overview.
+
 
 
 Building SuperCollider for Windows
 ==================================
 
-Preliminaries
--------------
 
-The build system of SC uses the cross platform, open source build system `cmake`.
-Cmake supports native toolchains on many operating systems. Since SC version
-3.7 the recommended way of building SC is using cmake in conjunction with
-`msbuild` and `Visual Studio 12 2013`. Mainly for historical reasons the
-previous way of building SC, using the unix emulation `msys` in conjunction
-with the Windows port of gcc `MinGW`, is described below as well.
+Overview
+--------
 
-In order to build SC you need recent versions of a few tools (see download links
-at the end of this document):
+The build system of SC uses the cross platform, open source build system
+`cmake`. It can configure builds and generate intermediary build files for many
+OS-toolchain combinations.
 
-* Git (>v1.9.4): the currently most popular version control system used for SC
-* SVN (>v1.8): the version control system used by the SC dependency `portaudio`
-* cmake (>v2.8.11): build system used for SC and Portaudio
-* Visual Studio 2013 (v12): MS development environment with free community edition
-* NSIS (v2.46 or 3.0b1): a free tool to create binary installers
+Since SC version 3.7, the preferred way of building SC is to use `cmake` in
+conjunction with `msbuild`. In this case the IDE of choice (and the application to 
+download) would be `Visual Studio 12 2013` (VS). You can also build SC with the 
+toolchain *MinGW* in conjunction with the unixy build environment *msys2*. In this 
+later environment building SC is quite similar to building SC on Unix platforms. 
+The recommended IDE in this environment is Qt Creator, as it works very well with 
+`cmake`, 'MinGW', and of course 'Qt'. This is the traditional way of building SC on 
+Windows, and still has several advantages over the "native" build. Building 
+optional extensions like 'sc3-plugins' or `supernova`, and enabling `sclang`
+command-line mode (depending on `readline`) currently only works with the MinGW
+toolchain. While the msys2/MinGW-build system atm only supports a 32-bit build,
+the VS build currently has to be a 64-bit version.
 
-The SC source comes with various dependencies bundled as submodules. The build
-dependencies you need to download are (see links at the end):
 
-* Qt5 (>5.3.2)
-* Portaudio (rev1952)
-    * ASIO SDK (v2.3) - optional but strongly recommended
-    * DirectX (v9, "june 10") - optional
-* Libsndfile (v1.0.25)
-* FFTW (v3.3.4)
-* Readline
+Quick steps
+-----------
 
-If your soundcard does not provide ASIO drivers, you might want to try a very
-popular generic driver:
+This README overall assumes a developer with little experience in building
+SC, especially on Windows. For experienced developers the following two chapters
+might be enough, they just list the essential steps. After that the whole process
+is described again with more detail and background information.
 
-* ASIO4ALL
 
-You may also prefer a lightweight text editor that supports unix line endings
-and a file decompression tool for formats other than .zip:
+### Quick steps: Msys2 and MinGW (Win32)
 
-* Notepad++
-* 7-zip
+* Download the msys2 installer from http://msys2.github.io and bootstrap the
+  base system. Make sure you update to the latest version before adding any
+  packages.
+
+* Run this to get buildtools, toolchain and libraries in a single run (some 20GB):
+
+    pacman -S git python2 svn nano base-devel p7zip ruby perl wget mingw-w64-i686-cmake mingw-w64-i686-toolchain mingw-w64-i686-qt-creator mingw-w64-i686-portaudio mingw-w64-i686-libsndfile mingw-w64-i686-fftw mingw-w64-x86_64-cmake mingw-w64-x86_64-toolchain mingw-w64-x86_64-qt-creator mingw-w64-x86_64-portaudio mingw-w64-x86_64-libsndfile mingw-w64-x86_64-fftw
+
+  *Note*: 32- and 64-bit libraries are separated in above command. Take out one of
+  the blocks if you want to build for either of these architectures only.
+
+* If you need portaudio with ASIO support, read in the dedicated msys2 chapter about 
+  building portaudio. The approaches differ for msys2 and VS, so go to the right 
+  chapter :).
+
+* Clone the SC source into your msys2 home folder.
+
+      git clone --recursive https://github.com/supercollider/supercollider.git
+
+* Build as usual with "MSYS Makefiles" as generator (No Qt-prefix required):
+
+      $> cd supercollider; mkdir build; cd build
+      $> cmake -G "MSYS Makefiles" -DCMAKE_BUILD_TYPE=Debug ..
+      $> cmake --build . --target install
+
+  If you stay in the mingw32-shell, you can now run the binaries. 
+
+* To be able to run the install outside of the mingw32 shell, and before creating 
+  a binary installer, these additional steps are required:
+
+      $> cmake --build . --target bundle   # copies dll's into install folder (be patient)
+
+* To create the distributable installer do>
+
+      $> cmake --build . --target installer  # creates the binary installer, requires NSIS in your path
+
+You should find the SC install in the subfolder `x86\yourBuildType` of the
+build folder.
+
+
+### Quick steps: Visual Studio 12 2013 Win64
+
+* Install
+
+  - git, svn, cmake, NSIS and make sure they are in the search path
+  - Visual Studio 2013, DirectX, Windows SDK
+  - Qt5 (online installer, at minimum the msvc2013_64_opengl libraries)
+  - Download libsndfile, fftw3 and optionally readline
+  - create a folder x64 as sibling of the supercollider source
+  - copy/extract/install the dependencies into this folder
+  - using the 'lib' tool accessible from VS Developer prompt, create import
+    libraries for: libsndfile-1.dll, libfftw3f-3.dll and optionally
+    libreadline6.dll
+
+* Compile portaudio using cmake
+
+  - use the latest svn checkout (rev 1952 or bigger) and move it to a sibling
+    folder of the supercollider source (not in x64!).
+  - add the ASIO SDK and make sure it is found during configuration
+    (the ASIOSDK2.3 folder should reside in a sibling of the portaudio folder)
+  - create a Release and a Debug build. The SC build will sellect the correct
+    version (only Release and Debug are supported at this time)
+
+*Note:* If assembling the dependencies sounds like too much work, download this
+zip file that contains everything (portaudio) precompiled in the expected folder
+structure (this is a folder, look out for a file name that makes sense):
+
+    https://drive.google.com/folderview?id=0B7igZrWv7UxdUmxHdThYLUE2QXc&usp=sharing
+
+* Build like on other platforms, but with "Visual Studio 12 2013 Win64" as
+  generator file. You will need to specify (and identify) the correct path to
+  Qt (parent of the `bin:lib:include` that fit's your environment). The build 
+  type (configuration) is specified in the `cmake --build .` step (defaults to
+  Debug).
+
+      $> cd supercollider; mkdir build; cd build
+      $> cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_PREFIX_PATH=C:\Qt\5.4\msvc2013_64_opengl ..
+      $> cmake --build . --config Debug --target install
+
+  *Note:* The cmake generator for VS2013 supports VS's capability to recreate
+  builds with different configurations from within the IDE. Because of this
+  CMAKE_BUILD_TYPE in the cmake configuration is ignored by cmake when generating
+  a VS2013 solution file. The generator creates files and settings for all build
+  types instead and lets the actual build decide which to pick (multi configuration
+  generator). Therefore the configuration needs to be specified in the step
+  `cmake --build`. This feature is not supported well in SC's build system yet.
+
+
+Code management and build tools
+-------------------------------
+
+In order to build SC you need recent versions of a few tools to download and
+manage your code, to edit the source, analyze problems, build the executables
+and create a binary installer. Don't immediately download them, you will want
+to use the package manager if you build with msys2.
+
+* For retrieving and managing the sources:
+
+  - Git (>v1.9.4): the version control system used for SC. Make sure Git is not
+    set to convert Unix (`\n`) to Windows (`\r\n`) line endings. If necessary add
+    `autocrlf = input` in the core section of your git configuration file.
+
+  - SVN (>v1.8): the version control system used by the SC dependency `portaudio`
+
+* For configuring the build and generating intermediate build files:
+
+  - cmake (>v2.8.11): used for SC (and Portaudio when building with Visual Studio)
+
+* For a comprehensive environment for editing, debugging and controlling the
+  build, get one of:
+
+  1. Visual Studio 2013 (v12), which includes `msbuild`. Optionally the Windows
+     SDK for you Windows version. If you choose this, you will have to download
+     dependencies (see below) from the original providers.
+
+     If your keyboard reflexes are 'dir, del and \', if you prefer the
+     native toolchain (or do not want to change your habits), if you like the
+     edge and don't need sc3-plugins, supernova or command-line mode, you want
+     this.
+
+  2. Msys2 & MinGW (and QtCreator): unixy build environment and packages
+     repository. The required packages (build-tools, toolchain and dependencies)
+     are obtained with `pacman`, a clone of the ArchLinux package manager. This
+     means you can downloaded everything from the command line, and it will get
+     stored in default system locations automatically.
+
+     If your keyboard reflexes are 'ls, rm and /', if /usr does not look like a
+     misspelled word to you, if you prefer typing 'packam -S git' to downloading
+     git from a website, if a 32-bit version is enough, and if you need any of
+     sc3-plugins, supernova and sclang command line mode, you want this.
+
+* To create a distributable binary installer:
+
+  - NSIS (v2.46 or 3.0b1): a free tool to create binary installers
+
+You will need a text editor that supports unix line endings and a file
+decompression tool for formats other than .zip. Common free tools are:
+
+  - Notepad++
+  - 7-zip
 
 
 Obtaining the SC source
@@ -231,163 +395,822 @@ Get a copy of the source code with:
 
     git clone --recursive https://github.com/supercollider/supercollider.git
 
-Binaries of release-versions and pre-release snapshots are available as
-GitHub releases:
+The `recursive` argument will download all submodules as well. If you forget it, 
+you will have to initialize the submodules manually:
 
-    https://github.com/supercollider/supercollider/releases
+    git submodules init
 
+As different checkouts (revisions/versions) of SC might require different
+checkouts of submodules, you need to run `git submodules update` if
+resynchronization is necessary. Git and SC will warn you if this is required.
 
-The SC 3.7 release
-------------------
+There are snapshots of release versions of the source on Sourceforge:
 
-*** the following is the provisional description, and will be
-adjusted to however the SCWin Release 3.7 build will be done.
+    http://sourceforge.net/projects/supercollider/files/Source/
 
-SC 3.7 was built with
+But you do not want to miss out on being able to manage your code and access the
+entire source history with git. Release versions of SC can be checked out as `tags`.
 
-- Qt5.4.1 (msvc2013_64_opengl, ie. 64-bit)
-- Portaudio 1.9 (rev. 1952)
-- ASIO SDK 2.3
-- MS DirectX v9 (June 10)
-- linsndfile 1.25
-- FFTW 3.3.4
-- Readline 6.2
+By default `git clone` will create a folder called `supercollider` in the folder
+where you run the command. Think a moment about where to store the source. If
+you use msys2, you will want to install that first and then work in the msys2
+home folder (see below the dedicated chapter). With VS you might prefer a folder
+within your Windows user folder. It is also common to create a isolated project
+folder in the root of your system drive. This makes paths short and allows you to
+make sure that pathname requirements of elder tools are met (e.g no spaces,
+short). If for some reason you need both build systems, you can use the same
+source folder for the VS build too. As long as you don't open a msys2 shell,
+the msys tree behaves like any other one on the system. In an msys2 shell paths
+to msys and optionally mingw build tools are added at the beginning of the
+search path. This is likely to cause trouble for a vs/msbuild-build.
 
-and various bundled software packages (boost 1.5.7, portmidi, hidapi and
-several more (see `external libraries` in the source tree))
-
-Other than Visual Studio, the tools used were Git (1.9.5) and cmake (3.2.1),
-SlikSVN (1.8.10) and NSIS (3.0b1) to create the binary installer. These four
-tools should be installed under Windows (not msys) and be added to the system
-path (a reboot might be required). When working on the Windows command line,
-using combo `cmake` and `msbuild` you should always use the Visual Studio
-provided shell called `Developer Command Prompt for VS2013`. This will create
-the environment (especially path settings) required to easily access the correct
-build tools.
-
-
-Using `cmake` with Visual Studio (VS)
------------------------------------
-
-VS uses a central `solution` file and several project files to organize the
-build. Cmake has the capability to generate these files. You tell cmake what
-kind of project files to generate by adding the flag -G and a generator name
-after the command `cmake`. As cmake creates generators by evaluating a tree
-structure of files called `CMakeLists.txt`, you also need to point cmake to
-the top-level file of this tree, which is always located in the root of you
-source tree. SC is traditionally built in a folder called `build` below the
-root folder of the source. Pointing from `build` to the root source folder thus
-just requires the shortcut `..`. Provided you have a command prompt in the
-root folder of the SC source tree, these steps will start configuring the
-build
-
-```
-$>  mkdir build
-$>  cd build
-$>  cmake -G "Visual Studio 12 2013 Win64" ..
-
-```
-
-The ending `Win64` in the generator name tells cmake to configure the build for
-a 64-bit version of SC. Without the ending - so just "Visual Studio 12 2013" - a
-32-bit version would be built (yet untested). Provided the other dependencies are
-located in the right locations (see below), and you want to use the default
-build type called `RelWithDebInfo` ('release with debug info'), you only need
-one more setting to have build configuration and creation of project files
-complete successfully: the location of Qt5. Qt, as distributed via web installer,
-has a particular tree structure that you need to specify down to the forth level
-for cmake to find all the required Qt-files. For the official SC build this was:
-
-    C:/Qt/5.4/msvc2013_64_opengl
-
-You need to assign this path to the keyword `CMAKE_PREFIX_PATH` and add it to
-the cmake command using the flag -D ('definition'):
-
-    $>  cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_PREFIX_PATH=C:/Qt/5.4/msvc2013_64_opengl ..
-
-If you want to build a debug- or release-version, you need to assign
-the respective value to the keyword `CMAKE_BUILD_TYPE`. So in order to
-configure and prepare a debug-build, you would type:
-
-    $>  cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=C:/Qt/5.4/msvc2013_64_opengl ..
-
-Provided the other dependencies are stored in places that can be found by cmake,
-the build configuration should succeed with this command line. After the
-configuration you need to start the actual build. This can conveniently be done
-on the command line, again using cmake (which in turn will start `msbuild`),
-with a few arguments:
-
-    $>  cmake --build . --config Debug --target install
-
-If you prefer to start the build (and install) from the VS-IDE, you as well
-run VS and open the `solution` file `SuperCollider.sln` that cmake created
-in the build folder. Or run VS from the command line by `start`-ing the
-solution file:
-
-    $>  start SuperCollider.sln
-
-Then select the target `install` in the `Solution Explorer` and build it
-(right-click target INSTALL->build, or select INSTALL, then menu->BUILD->Build
-INSTALL). This will basically trigger three steps with a single command:
-
-* build all required targets for SC to work (sclang, scsynth & plugins, scide)
-* install them in a folder that reflects build type (Debug) and target
-  architecture (64-bit): `build\x64\Debug\SuperCollider`
-* copy the required dependency libraries into the install folder (fixup bundle)
-
-**NOTE:** in the current state of cmake<->VS integration, build type
-as defined by cmake and by VS are not coordinated automatically. The IDE chooses
-`Debug` by default, whereas cmake configures `RelWithDebInfo`, if you do not
-specify a `CMAKE_BUILD_TYPE` definition. This can cause incongruities between
-the build files created by cmake and the build strategy chosen by VS. Therefore
-make sure to specify the same build type in cmake configuration and for a VS (or
-`msbuild`) build. If you want to change the build type, make sure to `clean` the
-build first
-
-    cmake --build . --config Debug --target clean
-
-and then rerun the cmake configuration, specifying the new build type you intend
-to use with `cmake --build` or from within the VS-IDE. Possible build types are
-`Release`, `MinSizeRel`, `RelWithDebInfo` and `Debug`. Pay particular attention
-to the `found path` returned by cmake for Portaudio. The path should contain
-the build type, as there is a separate Portaudio build for each build type.
-
-The `clean` step does not delete a previous install. If necessary do so 
-manually.
-
-**IMPORTANT:** While good practice clean is not enough when you change build type. 
-In addition you should delete the file CMakeCache.txt in your build folder before 
-reconfiguring with cmake. So when changing from debug to release, you should do:
-
-```
-    $>  cmake --build . --config Debug --target clean
-    $>  del CMakeCache.txt
-    $>  cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=C:/Qt/5.4/msvc2013_64_opengl .. 
-```
-
-## External dependencies
-
-####Qt
-
-You should download the latest version (currently 5.4.1) using the web installer
-provided by the official Qt distribution. The web installer provides you a
-choice of various flavours, aimed at different plattforms and created with
-different toolchains. When using VS you have the choice between 64- and 32-bit
-versions, as well as between an opengl and default version. Sofar both opengl and
-default versions have been used in 64-bit versions. A MinGW-compiled 32-bit
-version has been used in a msys environment. The most common path defining Qt-
-version and flavor is this:
-
-    C:\Qt\5.4\msvc2013_64
-
-You must add the version you choose as cmake definition for `CMAKE_PREFIX_PATH`
+Make sure your build folder is outside of the SC source. Traditionally a
+subfolder of 'supercollider' is used, but this is not mandatory. If the name of
+the buildfolder starts with 'build', git is set to ignore it. If the build
+folders are within the SC source tree, you can move that tree without having
+to reconfigure the build with cmake.
 
 
-####Portaudio (PA)
+Additional libraries (core dependencies)
+----------------------------------------
+
+The SC source comes with various dependencies bundled as submodules (see the
+subfolder `external_libraries`). Additionally you need to obtain the library
+packages listed below. They are not easy to compile, so - with the exception
+of portaudio - we recommend using the binary distributions.
+
+You will need to obtain these libraries:
+
+* Qt5 (>5.3.2, use the latest available). Qt5 provides libraries for both the
+  SC-IDE and sclang. For the VS build, use the official distribution, for the
+  msys2 build get them with msys2's package manager `pacman`.
+
+* Portaudio (VS: svn rev1952 or as provided by msys2). The latest svn-revision
+  compiles easily using cmake and VS. To get ASIO driver support you need to
+  add the ASIO SDK to the tree of sources. Msys2 provides a portaudio package,
+  but unfortunately without ASIO support. You will have to recompile the package
+  if you need it.
+
+    * ASIO SDK (v2.3) - optional but strongly recommended
+
+    * DirectX (VS: latest version installed in Windows, msys2: version 7) - optional
+
+* Libsndfile (v1.0.25) - not required but providing the functionality to read and
+  write many sound file formats.
+
+* FFTW (v3.3.4) - not required but superior to the bundled Green FFT
+
+* Readline (>=5) - not required for build. Provides the interface in command line
+  mode (this is broken in the current VS build)
+
+Weblinks to the recommended distributors are provided at the end of this document.
+Additional detail is given in the description of the individual build systems/steps.
+
+*WARNING*: As said above, if you build with msys2, you must must use Qt from
+msys2 as well. Do not mix the officially distributed Qt version with
+msys2/MinGW-Qt (at least this has not been tested, and is warned against by many
+gurus). SC and Qt should be compiled with the same toolchain. You *can*
+have two or more versions of Qt on your system, but you must make sure that
+cmake sees the intended version for your *current* build environment. If this
+version is not contained in the default locations of what cmake sees as your
+current base system, the safest way is to add the path of the Qt-root (parent
+of bin:lib:include in the targeted Qt tree) to the cmake variable
+`CMAKE_PREFIX_PATH`. This value can be passed in via a cmake command line
+argument (preceded by `-D`) or as environment variable
+(`set CMAKE_PREFIX_PATH=X:\Qt...`). You would usually do that in a shell/command
+line. Qt Creator additionally allows to control the environment from the project
+settings.
+
+If you insist on using official Qt with MinGW, you need to install the MinGW
+compiled Qt-version, which also comes with the MinGW toolchain (contained in
+the folder 'Tools'). You will then have to decide how to build `portaudio`,
+which is not distributed as binary by the portaudio team. The current svn
+version (rev 1952) builds nicely with cmake, but only when you use the VS
+compiler. In order to compile with MinGW the supported way, you would have to
+run a configure script, which requires a unixy environment like msys2. Or you
+could modify the portaudio cmake files to allow building with MinGW too.
+
+So if you want to go for the simple (i.e. "downloadable") and tested
+alternatives, there are basically two alternatives:
+
+  1. go with cmake & msys2 only (using all their packages)
+
+  2. use cmake & VS for protaudio and supercollider, plus the binary downloads
+     from the original providers.
+
+When dealing with build dependencies, the VS build is still a bit more involved.
+This will change once libsndfile, fftw and readline are provided with as native 
+Windows builds.
+
+An important advantage of the msys2 build is that libraries are automatically
+moved to default locations where cmake can find them. So the situation is quite
+similar to Linux and OSX, where you just "install" a dependency and then take
+for granted that any build finds and uses it. On vanilla Windows (without the
+msys "implant") the situation is different, as there are no, or only weakly
+defined/enforced default locations. Therefore, when building with VS, you will
+either have to let cmake know where to find the libraries (which can be a
+quite involved process), or store the files in the locations described below (see
+'Building with VS'). In the later case the customized find-modules provided
+in the SC source can find them automatically (compare the `cmake_modules` folder
+in the SC source).
+
+*NOTE for the VS build:* For the time period leading to the 3.7 release we
+provide a download that contains required files stored as expected. You just
+need to extract one zip file into the parent folder of the SC source and should
+be set (32- and 64-bit versions provided, import libraries already generated,
+folder names an nesting as expected). The folder structure proposed is explicit
+as to the target architecture used (x86/x64) and allows the VS and msys2 build
+systems to access the same source-dependencies tree (look in this folder).
+
+    https://drive.google.com/folderview?id=0B7igZrWv7UxdUmxHdThYLUE2QXc&usp=sharing
+
+*NOTE for the msys2 build:* As DirectX 7 is not easy to find and you only
+need the `include` and `lib` folders, we provide a zip file containing a
+stripped down version. The use is described in the chapter dedicated to the
+msys2 build. Note also that you do not need to provide DirectX to build
+portaudio with ASIO and MME support only (have a look in this folder).
+
+    https://drive.google.com/folderview?id=0B7igZrWv7UxdUmxHdThYLUE2QXc&usp=sharing
+
+
+Using `cmake`
+-------------
+
+### Basic steps
+
+No matter whether you build on the command line only or use an IDE, whether
+you choose the VS- or msys2-environment, the build process will always start
+from running `cmake`.
+
+Cmake configures the build and generates intermediary build files by evaluating
+arguments you provide on the command line, and a tree of files named
+`CMakeLists.txt` starting from the top level source folder. We assume below that
+SC source and the the dependencies are in place. For msys2 this is given if you
+installed it properly and downloaded all required packages as described in the
+chapter dedicated to msys2. For the VS build this is given if you place the
+dependencies as described in the VS chapter, or if you downloaded the provided
+zip file and extracted it to a sibling folder of the SC source.
+
+If you build in the SC-source subdirectory `build`, the initial steps are:
+
+1. Open the shell fitting your build environment:
+
+    - for VS: "Developer command prompt for VS2013"
+    - for msys2: "MinGW-w64 Win32 shell"
+
+2. Enter the SC source directory, create a subfolder `build` and enter that
+   folder.
+
+        $> cd supercollider; mkdir build; cd build
+
+3. Run `cmake` with these arguments:
+
+    - msys2/MinGW:
+
+          $> cmake -G "MSYS Makefiles" -DCMAKE_BUILD_TYPE=Debug ..
+
+          -G  defines the generator activated by cmake  
+          -D  can provide values for cmake variables. In the msys2 build 
+              CMAKE_BUILD_TYPE is used to define the build configuration (Debug 
+              or Release). The VS build ignores this setting.  
+          ..  points to the SC source folder and tells cmake where to find the
+              first CMakeLists.txt-file to evaluate.
+
+          Note: When identifying the compiler location for MSYS and MinGW 
+                generators, cmake depends on the search path. It is 
+                automatically set when you start the mingw32 or mingw64 shell. 
+                This means that you switch between 32- and 64-bit builds of SC 
+                when you switch the shell.
+
+          Note: While not supported by msys2 officially, you can actually run 
+                the SC build - which does not depend on unix build tools by 
+                itself - in a Windows command prompt. All you need to do is 
+                prepend the mingw??-path to the Windows path in your shell:
+
+                    $> set PATH=C:\msys\mingw32\bin;%PATH%
+
+                Cmake (running from the mingw-tree) is clever enough to find 
+                all other libraries relative to this path. This means that 
+                strictly speaking - if `ls`, `/` and `rm` are too hard to 
+                stand for longer than the inescapable you are only bound to the 
+                msys2 shell for installing and maintaining the packages and 
+                for building portaudio. The actual SC build can be done in a 
+                "pure" Windows environment.
+
+    - Visual Studio:
+
+          $> cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_PREFIX_PATH=C:\Qt\5.4\msvc2013_64_opengl ..
+
+          Note: no build type is specified. This is because the VS generator 
+                supports VS's ability to compile with different build 
+                configurations from within the IDE. This means that the build 
+                type or configuration needs to be specified in the next build step, 
+                that actually triggers the build.
+
+          Note: outside of the msys environment there is no way for cmake to know 
+                where Qt is stored. You therefore have to provide the path with 
+                DCMAKE_PREFIX_PATH or create an environment variable of the same 
+                name:
+
+                    $> set CMAKE_PREFIX_PATH=C:\Qt\5.4\msvc2013_64_opengl
+
+                Study the Qt tree of your distribution and identify the parent 
+                directory of the folders bin:include:lib in the branch that fit's 
+                your architecture.
+
+          Note: you determine whether to build 32- or 64 bit SC by choosing a 
+                different generator. For 32-bit omit the `Win64` at the end of 
+                above generator name. The VS generator does not depend on the 
+                MS compiler being stored in the path. Changing the path is 
+                therefore no option to change the target architecture.
+
+4. Provided cmake did not return an error, and that you want to continue on the
+   command line rather than switching to an IDE, you can now start the build
+   process
+
+   - msys/MinGW:
+
+         $> cmake --build . --target install
+
+         - The dot after `--build` indicates the location of the file that contains 
+           cached build configuration information: CMakeCache.txt.
+
+         - You can speed the build up significantly on multi core systems by 
+           adding the flag `-j` with the number of provided cores after `--`:
+
+             $> cmake --build . --target install -- -j4
+
+         This will build and install the SC files, but it will not add the 
+         required dynamic libraries provided by the dependencies. If you remain 
+         in the build environment, they can be fould via search path, but for 
+         a complete build you will have to add another step:
+
+             $> cmake --build . --target bundle -- -j4
+
+         Be patient, this step takes very long with the mingw tools.
+
+         The build can be found in a subfolder of the build folder that indicates 
+         architecture and build type: x86/Debug or x86/Release.
+
+   - Visual Studio
+
+         $> cmake --build . --config Debug --target install
+
+         Note that an argument `--config Debug` is provided. In the VS build the 
+         build configuration has to be provided in the 'msbuild' step. Cmake's VS 
+         generator is a so called 'multi configuration generator' that provides
+         intermediary build files for all configurations supported. Only when 
+         actually triggering the build the configuration is specified. This 
+         allows building and switching build configurations from inside the IDE 
+         without having to regenerate build files with cmake. Note that as of 
+         this writing this feature is not supported well by the cmake project 
+         files for SC.
+
+         Note: The --target bundle step is not required in the VS build
+
+Voilà, you should have a working install of SC on your system. If you want to 
+create a distributable binary installer, read the chapter towards the end of this 
+text. Provided NSIS is installed correctly on your system, you just have to build 
+the target installer:
+
+        $> cmake --build . --target installer
+
+
+*Note:* When regenerating your build files (running `cmake...`) it is not
+necessary to retype all arguments, provided the cmake configuration cache
+CMakeCache.txt is still available and can be used. Just add the variable you
+want to change and point to the SC-root, for example:
+
+        $> cmake -DSUPERNOVA=ON ..
+
+All other settings (build type, library location etc) are retained. Note though
+that some changes could cause an unclean state of the build files. If you observe
+unusual build problems, you might want to delete the cache file, or even delete
+the entire build folder and build from scratch. Experience has shown that a mere
+
+      $> cmake --build . --target clean
+
+is sometimes not enough. See 'Dirty build states' towards the end of this
+document for a discussion of the topic. If you regenerate from scratch you will
+have to provide all arguments again.
+
+
+### Additional options
+
+Learn more about the cmake system by running `cmake --help`. A good window into
+the SC build configuration is the cache CMakeCache.txt in the build folder, and
+the files CMakeLists.txt scattered over the project. A longer list of variables
+defined for the build is retrieved by adding the flags -L or -AL to the command
+`cmake ..`.
+
+The file CMakeCache.txt can be manually edited and is the best place to verify
+that all variables have been assigned the values expected. Keep in mind that
+the `clean` step does not delete or change this file. This simplifies
+configuration, but may also cause trouble if wrong values are kept. For a
+guaranteed clean build delete this file or the entire build folder.
+
+Common arguments to control the build configuration are:
+
+ * Location where SC get's "installed". The default location reflects target
+   architecture and build-type as nesting levels. Change this for example
+   like so:
+
+       -DCMAKE_INSTALL_PREFIX=./build
+
+   This moves the installed files in a subfolder `build` in the build-directory.
+   You may also specify an absolute path here. This "install" should not be
+   confused with creating a distributable, binary installer as described towards
+   the end of this text.
+
+ * Enable compiler optimizations for your local system (could cause a faster
+   binary, but could also cause problems. Don't use this if building for
+   other computers than your own.)
+
+       -DNATIVE=ON
+
+ * Build the *supernova* server:
+
+       -DSUPERNOVA=ON
+
+   *Note*: When you build with supernova, an alternative server executable and
+   a supernova version of each plugin is built. If you also use the 'sc3-plugins'
+   package, make sure to compile them with supernova support too.
+
+   Within SC you will be able to switch between scsynth and supernova by
+   evaluating one of and then booting the server as usual:
+
+       Server.supernova
+       Server.scsynth
+
+   Check SC help for `ParGroup` to see how to make use of multi-core hardware.
+
+
+### Specifying library- and include-paths manually
+
+If for some reason you cannot use the suggested or default locations for
+dependencies, you will have to tell cmake where to find them. The easiest, but
+sometimes unfeasible way to do this, is as command line argument to `cmake`:
+
+    $> cmake -DSNDFILE_LIBRARY_PATH=F:/scbuild/libsndfile ..
+
+If you need to do that for all library- and include-path required, you will get
+a loong cmake command. One option is to store these values in a batch-file that
+you can edit at leisure. This has the added advantage that you can delete the
+cmake cache file to clean a previous build and recreate your configuration with
+a single short command.
+
+Here is a quite involved example:
+
+    set CMAKE_BUILD_TYPE=Debug
+    set CMAKE_GENERATOR="Visual Studio 12 2013 Win64"
+    set SC_SOURCE_DIR=C:/scbuild/supercollider
+    set QT_HOME=C:/Qt/5.4
+    set CMAKE_LIBRARY_ARCHITECTURE=x64
+    set QT_COMPILATION=msvc2013_64_opengl
+    set CMAKE_PREFIX_PATH=%QT_HOME%/%QT_COMPILATION%
+    set SNDFILE_PREFIX_PATH=%SC_SOURCE_DIR%/../%CMAKE_LIBRARY_ARCHITECTURE%/libsndfile
+    set FFTW_PREFIX_PATH=%SC_SOURCE_DIR%/../%CMAKE_LIBRARY_ARCHITECTURE%/fftw
+    set READLINE_PREFIX_PATH=%SC_SOURCE_DIR%/../%CMAKE_LIBRARY_ARCHITECTURE%/readline
+    set PORTAUDIO_PREFIX_PATH=G:/sonic-pi-build/portaudio/build
+
+    cmake -G %CMAKE_GENERATOR% ^
+    -DCMAKE_LIBRARY_ARCHITECTURE=%CMAKE_LIBRARY_ARCHITECHTURE% ^
+    -DCMAKE_PREFIX_PATH=%CMAKE_PREFIX_PATH% ^
+    -DSNDFILE_INCLUDE_DIR=%SNDFILE_PREFIX_PATH%/include ^
+    -DSNDFILE_LIBRARY=%SNDFILE_PREFIX_PATH%/bin/libsndfile-1.lib ^
+    -DFFTW3F_INCLUDE_DIR=%FFTW_PREFIX_PATH% ^
+    -DFFTW3F_LIBRARY=%FFTW_PREFIX_PATH%/libfftw3f-3.lib ^
+    -DPORTAUDIO_INCLUDE_DIRS=%PORTAUDIO_PREFIX_PATH%/include ^
+    -DPORTAUDIO_LIBRARIES=%PORTAUDIO_PREFIX_PATH%/build/%CMAKE_BUILD_TYPE%/portaudio_x64.lib ^
+    -DCMAKE_LIBRARY_PATH=%CMAKE_PREFIX_PATH%/bin;%SNDFILE_PREFIX_PATH%/bin;%FFTW_PREFIX_PATH%;%PORTAUDIO_PREFIX_PATH%/build/%CMAKE_BUILD_TYPE% ^
+    ..
+
+    REM -DREADLINE_INCLUDE_DIR=C:/scbuild/bin64/libreadline.mingw492_64/include ^
+    REM -DREADLINE_LIBRARY=C:/scbuild/bin64/libreadline.mingw492_64/bin/libreadline6.lib ^
+    REM ;C:/scbuild/bin64/libreadline.mingw492_64/bin
+    REM start Supercollider.sln
+
+
+Another way of specifying cmake command line arguments is creating a "toolchain"
+file. This is the cmake suggested method, but has in the past exhibited some
+idiosyncrasies. Please look up the cmake documentation if you require an advanced
+configuration and are interested in this approach.
+
+
+Building with msys2/MinGW
+-------------------------
+
+### Introduction
+
+Because of SC's Apple/Unix background, and the requirement to build with unix
+build tools, past SCWin releases have been built within a mini unix emulation
+running on top of Windows, called `msys`. Msys provides an environment to use
+unix build tools and access the toolchain MinGW, which is basically a Windows
+port of gcc. For the time being the msys/MinGW build environment is the only
+one to successfully build 32-bit SC 3.7 with readline support, sc3-plugins and
+supernova. Msys has recently been revitalized and extended by a package manager
+that emulates the ArchLinux package manager `pacman`. This version is called
+msys2 and is used exclusively in this description. It provides all SC
+dependencies in an integrated file tree following unix standards.
+
+The first step of assembling this system is downloading the installer executive.
+All following steps are done from within the provided bash-shell with `pacman`.
+
+Msys2 provides full environments for both 32- and 64-bit builds. Managing this
+difference within one system requires naming conventions that can be confusing
+in the beginning. On top of this we need to distinguish whether a package
+belongs to msys2 (unix build tools that require a custom environment) or MinGW,
+the actual toolchain for *native* Windows applications that can run outside of
+msys. All *libraries* used for compiling SC have to be in the MinGW tree, which
+usually starts at `/c/msys/mingw32` (or 64). Tools (cmake, git a.o.) could
+belong to either environment.
+
+
+### Bootstrapping the system
+
+Run the installer downloaded from:
+
+    http://msys2.github.io
+
+This will start a shell from which you should first update the package
+information, and then the core system:
+
+    $> pacman -Sy
+    $> pacman --needed -S bash pacman pacman-mirrors msys2-runtime
+
+Make sure to close the shell after this and reopen it to refresh settings. The
+shell can be opened from the Start menu or by running `msys2_shell.bat` from the
+top level msys2 folder.
+
+Now update the remaining packages:
+
+    $> pacman -Su
+
+This will install a basic environment (not yet including the toolchain) and
+update it to the latest version.
+
+
+### Installing the packages
+
+Let's first install Git:
+
+    $> pacman -S git
+
+This pulls in a lot of stuff, including openssh, perl and vim and ends by
+suggesting to install python2 and subversion. Let's do it, and add the editor
+'nano' to the mix:
+
+    $> pacman -S python2 svn nano
+
+You could add these three lines to your ~/.bashrc to simplify keeping your
+packages up-to-date a bit:
+
+    alias cu="pacman -Sy; pacman --needed -S bash pacman pacman-mirrors msys2-runtime;"
+    alias pu="pacman -Sy; pacman -Su"
+    alias edit="start notepad++"
+
+This will create three commands, `cu`, `pu`and `edit`. The first two to simplify
+the system/package update and the third to edit texts in notepad++. Updating
+an individual package would be done by:
+
+    pacman -U nano
+
+The flag for removing individual packages is `-R`
+
+The important tool we are still missing is `cmake`. Try:
+
+    $> pacman -S cmake
+
+The return value likely is `error: target not found: cmake`. This doesn't
+necessarily mean that `cmake` isn't provided by msys2. In fact it is, only
+it is provided within the MinGW branch, and all packages there carry a prefix
+that identifies them as 32- or 64-bit versions. Lets take this as a little
+lesson. Let's ask pacman about cmake:
+
+    $> pacman -Ss cmake
+
+At the time of this writing this returned six packages, three for each mingw32
+and mingw64. If you are new to this, take some time to get used to the
+prefixes:
+
+    mingw32/mingw-w64-i686-cmake 3.2.1-2
+        A cross-platform open-source make system (mingw-w64).
+    mingw32/mingw-w64-i686-cmake-git r25180.3bbdb23-1
+        A cross-platform open-source make system (mingw-w64).
+    mingw32/mingw-w64-i686-extra-cmake-modules 1.5.0-1
+        Extra CMake modules (mingw-w64)
+    mingw64/mingw-w64-x86_64-cmake 3.2.1-2
+        A cross-platform open-source make system (mingw-w64).
+    mingw64/mingw-w64-x86_64-cmake-git r25180.3bbdb23-1
+        A cross-platform open-source make system (mingw-w64).
+    mingw64/mingw-w64-x86_64-extra-cmake-modules 1.5.0-1
+        Extra CMake modules (mingw-w64)
+
+The first prefix just indicates to which toolchain branch the package belongs.
+After the slash you get the so called mingw package prefix. There are various
+types of triplets around, allowing to identify provider, host- and target system.
+These elements become particularly important when cross-compiling. The middle
+element identifies the operating system of the host system (in this case 64-bit
+Windows). For our purpose it is enough to pay attention to the third element,
+which identifies the target system: do we build *for* a 32- or 64-bit systems?
+If you are happy to go for 32-bit only, it is enough to pick the package with
+the `mingw-w64-i686` triplet. For a comprehensive build system that can build for 
+both architectures, you would have to install both versions of
+each package. Let's do the later for cmake:
+
+    packman -S mingw-w64-i686-cmake mingw-w64-x86_64-cmake
+
+Again quite a few dependencies are pulled in. After the install is finished,
+let's run cmake:
+
+    cmake --version
+
+Did you get a meaningful answer? If yes, get very alert: you apparently have
+cmake installed under Windows. It is not entirely impossible to run Windows
+cmake in msys2, but it is not clean. Run:
+
+    which cmake
+
+You will likely get a Windows path (converted to Unix syntax: /c/Progra...) as
+return value.
+
+So how to make sure that the msys/mingw cmake is used? Or, why in the first
+place, didn't the mingw-cmake start we just installed? ->  because the currently
+active search path is wrong.
+
+Why is it wrong, and how should it be corrected? -> by opening the right shell
+for the job.
+
+If only maintaining msys2, we can work in the shell called `Msys2 shell`, but
+if we need to access the packages stored in the mingw branches, we need to pick
+a shell that includes them in the path. So for running cmake, and for building
+SC you will have to use the `mingw-w64 Win32 shell` (or 64). Now try that and
+repeat `cmake --version`. It should answer something sensible. But how do you
+know it's msys/MinGW's cmake, and not the one installed under Windows? Try again
+`which cmake`, and it should return a MinGW-path now. You can also try:
+
+    where cmake
+
+This time you should get both path's returned. Only the first one will be used,
+and that is what we want. End of the lesson.
+
+After the basic system setup let's progress to toolchain and libraries required
+to build SC. The build stuff first, using package groups:
+
+    pacman -S base-devel
+
+This brings in a lot of packages, among others `make`, autotools, a debugger,
+pkg-config and more. Notice that these are all msys packages. For fun let's get
+some more:
+
+    pacman -S p7zip ruby perl wget
+
+Noticed it, it told you that perl and wget were already installed and gives you
+a chance to back out of the install.
+
+Now the toolchain, we need it for the system we are targeting, so either i686
+(32-bit), x86_64 (64-bit), or both:
+
+    pacman -S mingw-w64-i686-toolchain mingw-w64-x86_64-toolchain
+
+Now we are getting the hardcore stuff, including some MinGW versions of packages
+that were already included in msys development packages. Various compilers, libs
+and a MinGW version of the gdb-debugger. Note that libreadline is already
+included here!
+
+Now Qt5, we only need the packages with dynamic link libraries. We will not
+consider the option of building Qt5 ourselves. The fastest way to get everything
+is to install Qt-creator, which will pull in the Qt5 libraries as dependencies:
+
+    pacman -S mingw-w64-i686-qt-creator mingw-w64-x86_64-qt-creator
+
+At this point only the actual audio stuff remains to be installed:
+
+    pacman -S mingw-w64-i686-portaudio mingw-w64-i686-libsndfile mingw-w64-i686-fftw mingw-w64-x86_64-portaudio mingw-w64-x86_64-libsndfile mingw-w64-x86_64-fftw
+
+
+Once everything is in place you may proceed with the steps described in the
+`cmake` paragraph above. If you already know you want ASIO support, read the
+following chapter too. But you may as well try if what you've done until now
+actually works, and come back later.
+
+*Note:* at the time of this writing the 64-bit msys2 build of SC did not
+succeed, so try this only if you are prepared to work on the build (and please
+share your findings).
+
+
+### Building portaudio with ASIO support (msys2)
+
+As the msys2 portaudio package does not offer ASIO support, we have to build
+that package ourselves within the msys2 environment. Msys2 provide's very well
+for this requirement: All msys2 packages are hosted on Github. To get the
+sources for both mingw and msys2 packages, clone these two repos (for our
+purposes the mingw repo is enough). This is commonly done in a folder called
+`repos` in the root of msys2:
+
+    git clone https://github.com/alexpux/MINGW-packages.git
+    git clone https://github.com/alexpux/MSYS2-packages.git
+
+The portaudio package is found in `/repos/MINGW-packages/mingw-w64-portaudio`.
+Note the missing `i686` or `x86_64`. This will be added to the name of the
+built packages.
+
+We will have to download the ASIO SDK provided by Steinberg (free, see Links
+at the end). Put the ASIOSDK2.3 folder in some easily accessible (and writeable)
+folder. You may also add the DirectX SDK v7 to support Direct Sound (newer
+versions don't work out of the box with the portaudio version provided by
+msys2). It is enough to provide the folders `include` and `lib`(30 MB)
+in a parent like `dx7sdk`. Put it next to ASIOSDK2.3.
+
+The build script configures the build the way it is are built for msys2/MinGW. 
+Modifications can easily be made by editing the file `PKGBUILD` in the root of 
+the package source. First step is to bring in the latest version of source and 
+patches:
+
+    $> updpkgsums
+
+Let's go ahead and specify that we want to enable ASIO, and where the SDKs are
+located. You may want to do this on a new git-branch. Open `PKGBUILD` in an
+editor and:
+
+  * Go to the `build ()` function and append `, asio` to the `--with-winapi`
+    line (42).
+
+  * Adjust the path to the DirectX SDK in you environment (e.g.
+    `/usr/local/share/dx7sdk`).
+
+  * Add the path to the ASIO SDK in a new line (doesn't matter where, but don't
+    forget the backslash):
+
+    `--with-asiodir=/usr/local/share/ASIOSDK2.3`
+
+That are all additions necessary to the configuration. Now we have to run the build 
+and provide a few arguments to get what we want:
+
+  * build for both 32- and 64-bit (default)
+  * make sure the source is wiped before the second build to prevent any
+    interference with the previous build files (`clean` is not enough).
+  * we want to install and keep the build package in case we need to reinstall
+    later
+
+The command to run a mingw-build is `makepkg-mingw`. We want the flags -cCifL
+(check the options by running `makepkg-mingw --help` and use your own ;)
+
+*WARNING*: if you build both 32- and 64-bit versions you will run into a problem:
+some intermediary build files are written to the ASIO SDK and not cleared out
+before a new build! You will get filetype-not-recognized errors. Go to
+...ASIOSDK2.3/common/ and delete the `.libs` folder. The right moment to do this
+is when the build script prompts you: "Continue with build?" before the second
+compile (32-bit). If you only want to build for one architecture, precede the
+build command with an environment variable like so:
+
+    MINGW_INSTALLS=mingw32 makepkg-mingw -cCifL
+
+This setting will be gone when you reopen the shell.
+
+
+### Building with QtCreator (QtC)
+
+QtCreator (the IDE bundled with Qtlib) has excellent cmake and MinGW integration.
+It can evaluate the CMakeLists.txt files provided in the SC source, and directly
+uses the MinGW generator files created by cmake. You can control cmake from
+within the IDE. During this process you will be prompted to provide cmake
+arguments. If you run QtC as provided by msys2, no arguments are required.
+For optional arguments refer to the chapter on using cmake above.
+
+At the time of this writing QtC does not automatically add the targets `install`
+and `bundle` to the build chain. You will have to do this manually. You may
+add and subsequently disable the target `bundle` as takes a long time to complete
+without adding anything new when your environment doesn't change. You may do
+the same with the target `installer`, which creates the binary distributable
+installer.
+
+If you need to use a different version of QtC than the one provided by msys2,
+you will have to pass the location of the dependencies to cmake. This can be
+done by passing in the root of your dependencies tree with the variable
+`CMAKE_PREFIX_PATH` (refer to the chapter 'Using `cmake`' above for some
+considerations. In some cases you might need a more fine grained approach.
+If you use the entire MinGW32-tree, all dependencies can be found in a single
+go. Be aware though that in that case you also need to set the toolchain used
+by QtC to the one provided by msys2/MinGW.
+
+If you want to use the original Qt distribution you need to use the MinGW-
+toolchain provided by Qt too. It is found automatically by Qt-provided QtC,
+but the default might be set to the VS compilers if you have VS installed on
+your system. For considerations why this approach might be less advisable, read
+the chapter 'Additional libraries' above. The main problem is that it is not
+easy to obtain a mingw-based portaudio build without installing the msys2
+environment. If you do that, you might as well use the comfort provided by using
+the msys2 system for all your requirements.
+
+
+Building with Visual Studio (VS)
+--------------------------------
+
+Most of the preperatory steps needed to work with VS IDE have been described in
+the `cmake` chapter. The cmake VS generator creates a VS solution file that can
+be opend in VS to work with the project. There are a few additional details to
+be taken into consideration when trying to build SC with VS.
+
+- Three the dependencies are not provided as VS built binaries by the
+  original providers (libsndfile, fftw, readline) - you will have to create
+  so called "import libraries" for them.
+
+- Portaudio is not provided as binary at all, so you will have to build it,
+  optionally adding ASIO and DSound support. Building with ASIO support requires
+  to download the ASIO SDK from Steinberg, and DSound support requires the
+  DirectX SDK from Microsoft.
+
+- GNU Readline is not provided as VS built binary. Apparently it cannot be built
+  with VS. We therefore need to exctract it form one of the MinGW distributions,
+  where it is often bundled.
+
+
+*Note:* When working on any of this (see below) always use the MS provided
+developer shell "Developer Command Prompt for VS2013" to have the necessary
+environment created automatically. That way the correct versions of tools
+like `lib` and `dumpbin` are directly available on the command line.
+
+*Note:* The following assumes that you have installed git, svn, cmake and NSIS,
+and that they are in your search path. You might also need 7z and an editor like
+Notepad++ to edit text files with unix line endings. Make sure your git doesn't
+add carriage return to line endings in source files. If necessary change to the
+sc source directory and run:
+
+    $> git config core.autocrlf input
+
+You should have already downloaded the latest versions of:
+
+  - *Qt5*: installed with the online installer: choose msvc2013_64, with or without
+    opengl. If you'd like to get a 32-bit build of SC working in this environment,
+    you will need 32-bit Qt as well. The Qt online installer allows to maintain
+    several Qt-versions/flavors within one folder tree.
+
+  - *MS DirectX SDK* (optional): Install with default settings
+
+  - *libsndfile*: you may install it in the location suggested by the installer,
+    but for better control or independence of your base system read the
+    recommendation below.
+
+  - *fftw3f*: see below for the recommended install/extraction location
+
+  - *ASIO SDK*: extract to a sibling folder of the SC source
+
+
+### Creating an folder tree
+
+If you move the dependency folders to specific locations, the customized cmake
+find-modules of the SC project can find them automatically when configuring the
+SC build. This simplifies building SC significantly. The suggested arrangement
+expects the SC-source and all dependencies in a single parent folder. With the
+exception of portaudio, the binary dependencies should go into folders indicating
+the target architecture: x86 for a 32-bit compile, and x64 for a 64-bit compile.
+Within these folders the individual dependencies are laid out as provided by
+the original project (flat in the case of fftw, split up in bin:lib:include for
+all others).
+
+The out-of-the box portaudio build distinguishes 32- and 64-bit versions in
+the names of the individual files (portaudio_x64.dll vs portaudio_x86.dll). The
+SC cmake-find modules account for this. They assume that you put portaudio in
+a sibling folder of SC (*not* within one of x64 or x86), and that you build in
+the preexisting build folder in the portaudio source tree, which is a subfolder
+of the source root. The ASIO SDK is expected in a sibling folder of the portaudio
+source tree. DirectX (if used) should be installed in Windows. The portaudio
+version used in the VS build will find it.
+
+As a result you should get this folder tree:
+
+    someParent
+        supercollider (source)
+            build
+        portaudio (source)
+            build
+                Debug
+                Release
+        ASIOSDK2.3
+        x64
+            libsndfile
+            fftw
+            readline
+        x86
+            libsndfile
+            fftw
+            readline
+
+*Note:* For convenience a package of all dependencies with precompiled portaudio
+is provided as zip-file during the period of the upcoming 3.7 release. This
+file only needs to be extracted into the parent folder of the SC source, and
+everything will be in place. Find it in this Google drive folder:
+
+    https://drive.google.com/folderview?id=0B7igZrWv7UxdUmxHdThYLUE2QXc&usp=sharing
+
+
+### Building portaudio with ASIO support (VS)
 
 There is currently no binary distribution of Portaudio available. You need to
-download the source and build it yourself. Fortunately PA supports cmake, so
-we can use build steps very similar to the ones described above for SC.
+download the source and build it yourself. Fortunately the PA source offers
+cmake build files working with VS, so we can use build steps very similar to
+the ones used for SC.
 
 Move to the folder containing the SC source (the parent folder) and download
 PA with svn:
@@ -399,368 +1222,332 @@ to support some of the audio driver APIs available in Windows portaudio needs
 one or two additional SDKs. The ASIO SDK provided by Steinberg, and if you want
 DirectSound support, the latest DirectX SDK provided by Microsoft. Go get them
 following the links provided at the end of this document. DirectX will be
-installed in the default location and then found automatically. For the ASIO SDK
-to be sound, it's root folder should be parallel to the Portaudio folder.
+installed in the default location and then found automatically. Extract the
+ASIO SDK to a sibling folder of the portaudio source.
 
 Once this is in place change into the `portaudio` folder, enter the (existing)
-folder build, and run cmake specifying our generator and the build type required.
-Then start the build:
+folder build (ignore the scons and msvc content), and run cmake specifying our
+generator and the build type required. Then start the build:
 
-```
-$>  cd portaudio\build`
-$>  cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_BUILD_TYPE=Debug ..
-$>  cmake --build . --config Debug
-```
+    $> cd portaudio\build
+    $> cmake -G "Visual Studio 12 2013 Win64" ..
+    $> cmake --build . --config Debug
 
-No target required. This will create a folder `Debug` within the folder `build`
-that contains all libraries required. Provided the portaudio source root folder
-is contained in the same parent folder as the SC source tree, the PA libraries
-should be found automatically during the SC build configuration.
+Clean the build and repeat the build step for the configuration `Release`:
 
+    $> cmake --build . --target clean
+    $> cmake --build . --config Release
 
-####Libsndfile
+You should now have two subfolders `Debug` and `Release` that contain the various
+libraries provided by the build (specifying --target install is not required).
+These two build configurations are currently supported by the SCWin build when
+using VS.
 
-Libsndfile (>= v1.0.25) is provided with a binary installer for Windows (see
-download link at end of this document). You may install in the default
-location (`C:\Program Files\Mega-Nerd\libsndfile` for the 64-bit version) or
-(maybe better) in a folder `libsndfile` next to the SC source tree (shared parent
-folder, ommit the Mega-Nerd level). Using the 'Developer Command Prompt' (!) change
-to the folder `libsndfile\bin` and use the lib-tool to create a .lib-file from
-the existing .dll:
+If you want 32-bit versions as well, repeat above steps with the generator name
+without `Win64`. You should clean the build and delete the build cache before
+doing this. Also delete the subfolder `.libs` in the ASIOSDK2.3 tree as shown
+below. Unfortunately the build writes to that folder as well.
 
-```
-$>  cd libsndfile\bin
-$>  lib /machine:x64 /def:libsndfile-1.dll
-```
+If you are currently in the subfolder `build` of the portaudio source, use these
+steps:
 
-This will create two new files in the bin folder: libsndfile-1.def and
-libsndfile-1.lib. The later will be used in the SC compile.
+    $> rmdir /s ..\..\ASIOSDK2.3\common\.libs
+    $> cmake --build . --target clean
+    $> del .\CMakeCache.txt
+    $> cmake -G "Visual Studio 12 2013" ..  # this builds a 32-bit version
+    $> cmake --build . --config Debug       # and then repeat with Release config
 
 
-####FFTW
-
-FFTW (>= v3.3.4) provides a "zip-ball" of Windows binaries. Please extract it
-into a folder parallel to the SC source tree and rename the folder to `fftw`.
-The folder is flat, containing both headers and libraries. Repeat the 'lib'-steps
-described above for libsndfile, in order to create a .lib of the file
-`libfftw3f-3.dll` (*not* `libfftw3-3.dll`).
+You could also build versions for the configurations `RelWithDebInfo` and
+`MinSizeRel`, but they are currently not supported by the SC build. By default
+cmake only supports two build configurations in a multi configuration generator.
 
 
-####Readline
+### Obtaining and using readline
 
 As of the writing of this guide (April 2015), Readline support in SCWin 64-bit
-MSVC does not work. The Readline library provides an interface for keyboard
-control of command line sclang. Anticipating Readline to work, the SC build
-configuration can automatically find a readline binary tree that resides
-in parallel to the SC source tree (same parent folder). So far experiments have
-been made with the MinGW compiled 64-bit version of Readline provided in the
-`opt` folder of the MinGW tree.
+VS-build does not work. The Readline library provides an interface for keyboard
+control of command line sclang. Expecting readline to work in the release version,
+the SC build configuration is set to automatically find a readline binary tree
+in the location specified above.
+
+Readline is not obligatory in a SC build. If you want to sidestep the current
+problems with readline to focus on other development tasks, just rename the
+readline folder and it will be ignored. Cmake should tell you in the configure
+step that readline was not found and go on happily.
+
+As there is no official binary distribution of readline (apart from an outdated
+version 5.0.1 which is only available for 32-bit), we need to extract readline
+from one of the toolchain distributions that make it available. Readline is
+included in both msys2 and the MinGW toolchain provided by Qt.
+
+Get one of them and copy these files from the folders bin, lib and include (not
+all is required for SC, but this creates a full self-contained readline package)
+into a folder `readline`, using the same subdirectories as the distribution:
+
+    bin/libreadline6.dll
+    bin/libhistory6.dll
+    bin/libtermcap-0.dll   # dependency of libreadline
+
+    include/readline       # this is a folder containing several headers
+
+    lib/libreadline.a
+    lib/libreadline.dll.a
+    lib/libhistory.a
+    lib/libhistory.dll.a
+
+Do this for 64- and/or 32-bit as required. Move the resulting tree into the
+x86 or x64 folders as required and move on to the next step.
 
 
-###Specifying library- and include-paths manually
+### Creating import libraries
 
-If for some reason you cannot adhere to the folder structure described above,
-you may also specify the paths manually as cmake definitions. This will create
-a loong cmake command, therefore you might prefer to save it as a batch file.
-Here is an example:
+To get the MinGW build dynamic link libraries of libsndfile, fftw and readline
+work in a VS build, you will have to create 'import libraries' (lib, these are
+not static libraries (!)) that tell VS what to expect. This process is a bit
+tedious and expects you to edit a textfile created with `dumpbin` manually. It
+has to be applied to three library files:
 
-```
-set CMAKE_BUILD_TYPE=Debug
-set SC_SOURCE_DIR=C:/scbuild/supercollider
-set QT_HOME=C:/Qt/5.4
-set CMAKE_LIBRARY_ARCHITECTURE=x64
-set CMAKE_PREFIX_PATH=%QT_HOME%/msvc2013_64_opengl
-set SNDFILE_PREFIX_PATH=%SC_SOURCE_DIR%/../libsndfile
-set FFTW_PREFIX_PATH=%SC_SOURCE_DIR%/../fftw
-set READLINE_PREFIX_PATH=%SC_SOURCE_DIR%/../readline
-set PORTAUDIO_PREFIX_PATH=%SC_SOURCE_DIR%/../portaudio
+    libsndfile-1.dll
+    libfftw3f-3.dll        # mind the "f" (single precision)
+    libreadline6.dll
 
-cmake -G "Visual Studio 12 2013 Win64" ^
--DCMAKE_LIBRARY_ARCHITECTURE=%CMAKE_LIBRARY_ARCHITECHTURE% ^
--DCMAKE_BUILD_TYPE=%CMAKE_BUILD_TYPE% ^
--DCMAKE_PREFIX_PATH=%CMAKE_PREFIX_PATH% ^
--DSNDFILE_INCLUDE_DIR=%SNDFILE_PREFIX_PATH%/include ^
--DSNDFILE_LIBRARY=%SNDFILE_PREFIX_PATH%/bin/libsndfile-1.lib ^
--DFFTW3F_INCLUDE_DIR=%FFTW_PREFIX_PATH% ^
--DFFTW3F_LIBRARY=%FFTW_PREFIX_PATH%/libfftw3f-3.lib ^
--DPORTAUDIO_INCLUDE_DIRS=%PORTAUDIO_PREFIX_PATH%/include ^
--DPORTAUDIO_LIBRARIES=%PORTAUDIO_PREFIX_PATH%/build/%CMAKE_BUILD_TYPE%/portaudio_x64.lib ^
--DCMAKE_LIBRARY_PATH=%CMAKE_PREFIX_PATH%/bin;%SNDFILE_PREFIX_PATH%/bin;%FFTW_PREFIX_PATH%;%PORTAUDIO_PREFIX_PATH%/build/%CMAKE_BUILD_TYPE% ^
-..
+It's the easiest to do this in the 'lib' folder of each of the packages. That is
+where the resulting 'lib' file should reside to be found automatically by cmake.
 
-REM -DREADLINE_INCLUDE_DIR=C:/scbuild/bin64/libreadline.mingw492_64/include ^
-REM -DREADLINE_LIBRARY=C:/scbuild/bin64/libreadline.mingw492_64/bin/libreadline6.lib ^
-REM start Supercollider.sln
-REM ;C:/scbuild/bin64/libreadline.mingw492_64/bin
+We'll do the walkthrough for libsndfile-1.dll. It's exactly the same thing for
+the other libraries. Open the 'Developer Command prompt for VS2013' and head
+into x64/libsndfile/lib. Run:
 
-```
+    $> dumpbin /EXPORTS ../bin/libsndfile-1.dll > ./libsndfile-1.DEF
 
+Edit the resulting textfile and remove everything except the list of 
+functions under the heading "name", and add the heading EXPORTS.
 
-###Downloading a binary dependencies bundle (temporary)
+A shortened version of the dump looks like this (this is the readline dump):
 
-For convenience during the development and testing period towards the SC 3.7
-release we provide a zip-ball of the dependencies (except Qt and DirectX).
-It contains prebuilt Portaudio (Debug, Release, RelWithDebInfo, MinSizeRel) the
-ASIO-SDK, .lib-libraries where necessary, and an experimental Readline, grabbed
-from MinGW 4.92_64. The folders are named and nested as described above, and
-should be copied/extracted to the same parent folder as the SC source tree.
-There are only 64-bit versions.
+    Microsoft (R) COFF/PE Dumper Version 12.00.31101.0
+    ...
+        ordinal hint RVA      name
 
-[Find the zip-ball here (29.4 MB)](https://drive.google.com/file/d/0B7igZrWv7UxdemRzSkVhc0pMRFE/view?usp=sharing)
+              1    0 0002E83C BC
+              2    1 0002E874 PC
+              ...
+            613  264 000153C0 xmalloc
+            614  265 000153F0 xrealloc
 
-*IMPORTANT NOTE:* You should only place the Readline folder in parallel to the
-SC source tree, if you want to experiment with it. Currently the SC build will
-break if Readline is added.
+      Summary
+
+            1000 .CRT
+            ...
+            1000 .tls
+
+After trimming it should look like this:
+
+    EXPORTS
+    BC
+    PC
+    ...
+    xmalloc
+    xrealloc
 
 
-Using cmake with msys/MinGW (outdated)
---------------------------------------
+With this edited DEF-file run the following command, and you are set:
 
-Because of SC's Unix-history past SCWin releases have been built within a
-mini unix emulation running within Windows, called `msys`. Msys is used to
-control MinGW, which is more or less a Windows version of gcc. For the time
-being the msys/MinGW environment is the only to bild 32-bit SC 3.7 with readline
-support.
-Msys provides a bash shell, the file structure of a unix system, a
-syntax to integrate files from the Windows file system (`/c/Users/...`),
-it allows to merge an msys path with the Windows system path and of course
-various build tools. Depending on whether you prefer to work in a Unix- or
-Dos shell, different approaches to to using either of them might be
-chosen. This description assumes you prefer a Unix shell, even in cases
-where the same operation could be executed in a Dos shell (cmake, the tool
-used to configure the build, is actually cross platform).
+    $> lib /machine:x64 /def:libsndfile-1.DEF
 
-The msys-distribution used was from *mingwbuilds* (r13), MinGW 4.8.2 was
-used as bundled with Qt5.3.2.
+*Note:* Use /machine:x86 for 32-bit builds and don't forget the heading EXPORTS in
+the .def file.
 
-The cmake arguments used were:
-
-```
-  cmake -G"MSYS Makefiles" -DCMAKE_TOOLCHAIN_FILE=../sc-toolchain-hybrid.cmake -DSUPERNOVA=ON -DNATIVE=OFF ../../sources/supercollider
-```
-
-The toolchain file referred to above supplies other, more static arguments,
-and the paths to the libraries and headers of the dependencies:
-
-```
-  SET(CMAKE_CXX_COMPILER_ENV_VAR C:/Qt/Qt5.3.2/Tools/mingw482_32)
-  SET(CMAKE_PREFIX_PATH=C:/Qt/Qt5.3.2/5.3/mingw482_32)
-  SET(CMAKE_INSTALL_PREFIX=./install)
-  SET(CMAKE_BUILD_TYPE=RelWithDebInfo) # could also be Debug or Release
-  SET(NO_AVAHI=ON)
-  SET(SYSTEM_YAMLCPP=OFF)
-  SET(SYSTEM_BOOST=OFF)
-
-  SET(CMAKE_LIBRARY_PATH
-	  C:/msys/home/sc/prebuilt32/libsndfile.nerd/bin
-	  C:/msys/home/sc/prebuilt32/readline/bin
-	  C:/msys/home/sc/prebuilt32/fftw.org
-	  C:/msys/home/sc/prebuilt32/portaudio/lib
-  )
-
-  SET(CMAKE_INCLUDE_PATH
-	  C:/msys/home/sc/prebuilt32/libsndfile.nerd/include
-  	C:/msys/home/sc/prebuilt32/readline/include
-	  C:/msys/home/sc/prebuilt32/fftw.org
-	  C:/msys/home/sc/prebuilt32/portaudio/include
-  )
-
-# set paths of libraries not found correctly with above syntax explicitly (workaround)
-
-  SET(READLINE_LIBRARY C:/msys/home/sc/prebuilt32/readline/bin/libreadline6.dll)
-  SET(FFTW3F_LIBRARY C:/msys/home/sc/prebuilt32/fftw3.org/libfftw3f-3.dll)
-  SET(FFTW3F_INCLUDE_DIR C:/msys/home/sc/prebuilt32/fftw3.org)
-```
-
-If the build configuration finished successfully (read the cmake output
-carefully to verify that all dependencies were found correctly and no other
-errors are reported), the following steps will build SuperCollider:
-
-```
-  $>	make
-  $>  make install
-  $>  make bundle
-```
-
-The resulting build will reside in the folder specified by the
-CMAKE_INSTALL_PREFIX-argument (by default folder `install` in the
-build-folder). It can be used to run SuperCollider, especially for
-test- and debug work. You can ommit the `make bundle` step in sub-
-sequent builds, if you are sure nothing in the dependencies has
-changed. In order to create an installer binary, add the following
-command:
-
-  `$>  make installer`
-
-This only works if you have NSIS installed and in the system path.
+Repeat this for all required libraries and the last hurdle on the way to
+a shiny VS SC-build is taken.
 
 
-Using cmake with QtCreator (outdated)
--------------------------------------
+#### Configuring the build with cmake
 
-QtCreator (the IDE bundled with Qtlib) has excellent cmake integration.
-It can read the CMakeLists.txt files provided in the SC source. It is
-not necessary to use a generator (defined via the -G flag) to create
-a project file as with other IDEs like Visual Studio or Xcode. In
-order to create a QtC project file you will be prompted to provide
-cmake arguments. It is advisable to make a reference to a toolchain
-file as demonstrated above, to keep the list of arguments to be typed
-short.
-
-If possible deselect the option to add
-the bash-shell provided by git to the system path. This conflicts with using
-MinGW the way it is accessed by QtC.
+Please refer to the chapter 'building with cmake' above. Everything required
+should be in place by now.
 
 
-Cmake arguments for SC (outdated)
----------------------------------
+#### Starting the VS IDE
 
-There are more settings in the build configuration you may want to adjust. In
-order to see a useful list of your options, you can run:
+After `cmake --build . --config Debug --target install` finished successfully
+you should find the file `SuperCollider.sln` in your build folder. Either open
+it from the VS IDE or start the IDE with the solution file loaded:
 
-	$>	cmake -L ..
+    $> start SuperCollider.sln
 
-or
+After the IDE processed all project files you should be ready to work. Note that
+at the time of this writing cmake<->VS integration is not very good. While
+you can always rebuild the initial configuration from within the IDE, changes
+to build-type and more so target architecture (64- vs 32-bit) could cause a
+dirty build state. More research and work is required here. The original
+SC cmake project was designed for single configuration generators to be used
+with (GNU) make and siblings like mingw32-make.
 
-  $>	cmake -AL ..
+*Note*: building the target `install` (accessible in the "Solution Explorer")
+includes copying all dynamic link libraries to the build folder. This differs
+from the msys2/MinGW build, where building a separate target ('bundle') is
+required for that.
 
-This configures the build using default settings or settings stored in the
-file build/CMakeCache.txt, prints explanatory return statements and produces
-a list of variables the value of which you might want to change.
-
-In order to see all the command line options `cmake` offers, type:
-
-	$>	cmake --help
-
-It is not necessary to pass in all required arguments each time you run cmake,
-as cmake caches previously set arguments in the file CMakeCache.txt. This is
-helpful, but also something to keep in mind if unexpected things happen.
-
-If you feel uncomfortable with the command line, you might want to try cmake
-frontends like  `ccmake` or `cmake-gui`. You can also configure your build by
-manually editing build/CMakeCache.txt.
+*Note*: In order to create the distributable binary installer, build the target
+`installer` (NSIS has to be installed on your system and in your search path).
 
 
-Common arguments to control the build configuration are:
+Creating a distributable installer binary
+-----------------------------------------
 
-  * Location where SC get's "installed". The following line:
+In order to create a distributable binary installer for your build, you just
+need to build the target `installer`. This expects the target `install`
+- and when building with msys2 also target `bundle` having completed successfully
+before:
 
-    `-DCMAKE_INSTALL_PREFIX=./build`
+    cmake --build . --target installer
 
-    moves the installed files in a subfolder `build` in the build-directory.
+Of course these steps can also be done in the IDEs.
 
-  * Enable compiler optimizations for your local system
+In order for this to work you will have to have NSIS installed on your
+system. The NSIS installer add's the command line tool `makensis` to the
+system, which is required for the SC script to succeed.
 
-    `-DNATIVE=ON`
+The SC installer executable will be written to the same parent folder as the
+SuperCollider install-build, for example:
 
-  * Build the *supernova* server:
-
-    `-DSUPERNOVA=ON`
-
-    Using supernova requires the `portaudio` audio backend, so you need to install it
-    (Homebrew and MacPorts both provide packages).
-
-    *Note*: When you build with supernova, an alternative server executable and a supernova
-    version of each plugin is built. If you also use the sc3-plugins package, make sure to
-    compile them with supernova support too.
-
-    Within SC you will be able to switch between scsynth and supernova by evaluating one of:
-
-    `Server.supernova`  
-    `Server.scsynth`
-
-    Check sc help for `ParGroup` to see how to make use of multi-core hardware.
+    ...\supercollider\build\x64\Release\SuperCollider-<version-build type>.exe
 
 
 Diagnosing build problems
 -------------------------
 
-The most common build problems are related to incorrect versions of the core 
-dependencies, or dirty states in your build folder. An additional
-source for problems could be that dependencies and core sc are built
-with different compiler versions or toolchains.
+The most common build problems are related to incorrect versions of the core
+dependencies, or dirty states in your build folder. An additional source for
+problems could be that dependencies and core sc are built with different
+compiler versions or toolchains.
 
 ### Checking component versions:
 
 - **cmake**: `cmake --version` (should be bigger than 2.8.11)
 
-- Double-check the downloaded versions for qt5, readline, libsndfiles, fftw 
+- Double-check the downloaded versions for qt5, readline, libsndfiles, fftw
   and portaudio.
 
-- Make sure you downloaded a MinGW based Qt-distribution.
+- If you build with msys2, make sure you use the Qt package provided by msys2.
+  If you build with VS, make sure you use the coorect Qt version from the Qt
+  site. It should show `msvc2013` in the parent folder of the actual Qt files.
 
-When asking for build help, always check and mention the installed versions 
+When asking for build help, always check and mention the installed versions
 any components you used to build SC!
 
 ### Dirty build states
 
-While it's generally safe to re-use your build folder, changing branches, 
-build tools, cmake settings, or the versions of your dependencies can 
-sometimes put you in a state where you can no longer build. The solution 
-is to clean your build folder - the common ways to do this, in order of 
+While it's generally safe to re-use your build folder, changing branches,
+build tools, cmake settings, or the versions of your dependencies can
+sometimes put you in a state where you can no longer build. The solution
+is to clean your build folder - the common ways to do this, in order of
 severity:
 
 1. `del CMakeCache.txt` (delete your cmake settings for that build)
-2. `cmake --build . --config Debug* --target clean` (clean your intermediate 
-   build files, *use your previous build type in place of Debug)
-2. Delete the output of your build. For simplicity use the file Explorer.
-   The build-install is found in `supercollider\build\x64\Debug` or a folder
+2. `cmake --build . --config Debug* --target clean` (clean your intermediate
+   build files, *use your previous build type in place of Debug*)
+2. Delete the output of your build. Use the file Explorer or run
+   `rmdir /s ./x86/Debug`
+   The install is found in `supercollider\build\x64\Debug` or a folder
    corresponding to your build type.
-3. Delete everything in the build folder. For simplicity use the file Explorer.
+3. Delete everything in the build folder. Use the file Explorer or run
+   `rmdir /s .`
 
-Generally, clearing the CMakeCache.txt should be enough to fix many build 
-problems. After each one of these, you must re-run the cmake command and 
-rebuild. It's recommended that you create a new build folder for each 
-branch you're building. In practice, though, you can usually switch between 
-similar branches and rebuild by simply deleting your CMakeCache.txt.
+Generally, clearing the CMakeCache.txt should be enough to fix many build
+problems. After each one of these, you must re-run `cmake` to configure the
+build and generate build files. It's recommended that you create a new build
+folder for each branch you're building. In practice, though, you can usually
+switch between similar branches and rebuild by simply deleting your
+CMakeCache.txt.
 
 ### Someone else's fault...
-If you're *sure* you're doing everything right and you're still failing, 
+If you're *sure* you're doing everything right and you're still failing,
 check the travis-ci status page:
 [https://travis-ci.org/supercollider/supercollider]()
 
 
-Creating an installer binary
-----------------------------
+The SC 3.7 release build
+------------------------
 
-In order to create a distributable binary installer for your build you just 
-need to build the target `installer`:
+**Note**: the following is a sketch of what is going to come, and will be
+adjusted to the actual way the SCWin Release 3.7 build will be done.
 
-    cmake --build . --config Debug --target installer
+SCWin64 3.7 was built with Visual Studio 12/2013 update 4
 
-This will only work properly though, if you have NSIS installed on your 
-system, and and if it's command line tool `makensis` is added to the system 
-path. The SC installer executable will be written to the same parent folder 
-as the SuperCollider build install, for example:
- 
-    ...\supercollider\build\x64\Release\SuperCollider-version.exe
+- Qt5.4.1 (msvc2013_64_opengl, 64-bit)
+- Portaudio 1.9 (svn rev. 1952)
+- ASIO SDK 2.3
+- MS DirectX v9 (June 10)
+- linsndfile 1.25
+- FFTW 3.3.4
+- Readline 6.2
+
+and various bundled software packages (boost 1.5.7, portmidi, hidapi and
+several more (see `external libraries` in the source tree))
+
+The tools used were Git (1.9.5) and cmake (3.2.1), SlikSVN (1.8.10), and
+NSIS (3.0b1) to create the binary installer.
+
+SCWin32 3.7 was built with msys2 and MinGW 4.9.2 as distributed by msys2. The
+additional packages were mostly used as provided. The exception was
+portaudio, which was recompiled within the msys2 environment with ASIO support.
+
+- Qt5.4.1 (msvc2013_64_opengl, 64-bit)
+- Portaudio 1.9
+- ASIO SDK 2.3
+- MS DirectX v7
+- linsndfile 1.25
+- FFTW 3.3.4
+- Readline 6.2
 
 
 Links
------
+=====
 
-- [SC repo on Github](https://github.com/supercollider/supercollider)
-- [Git](http://git-scm.com/download/win)
-- [svn client (sliksvn)](https://sliksvn.com/download/)
-- [cmake](http://www.cmake.org/download/)
-- [NSIS](http://nsis.sourceforge.net/Download)
-- [Visual Studio 2013, community edition](https://www.visualstudio.com/en-us/products/free-developer-offers-vs.aspx)
-- [notepad++](http://notepad-plus-plus.org)
-- [7-zip](http://www.7-zip.org)
-- [Qt official](http://download.qt.io/archive/qt/5.3/5.3.2/)
-- [QT mingwbuilds](http://sourceforge.net/projects/mingwbuilds/files/external-binary-packages/Qt-Builds/)
-- [msys mingwbuilds](http://sourceforge.net/projects/mingwbuilds/files/external-binary-packages/)
-- [portaudio](http://www.portaudio.com/download.html)
-- [portmidi](http://portmedia.sourceforge.net/portmidi/) - note: bundled since SC uses Qt5
-- [ASIO SDK](http://www.steinberg.net/en/company/developers.html)
-- [DirectX SDK](http://www.microsoft.com/en-us/download/details.aspx?id=6812)
-- [libsndfile](http://www.mega-nerd.com/libsndfile/)
-- [fftw](http://www.fftw.org/install/windows.html)
-- [readline](http://cnswww.cns.cwru.edu/php/chet/readline/rltop.html)
+- [Central SC-site](https://supercollider.github.io)
+- [SC source repository on Github](https://github.com/supercollider/supercollider)
+  The issue tracker and Github pull requests are developing into an important forum
+  for the discussion of the SC application development.
+- [SC online help](http://doc.sccode.org/Help.html)
+- [SC mailing lists](http://www.beast.bham.ac.uk/research/sc_mailing_lists.shtml)
+
+- Requirements/Useful additions to SC
+    - [ASIO4ALL](http://www.asio4all.com/)
+    - [Git](http://git-scm.com/download/win)
+
+- Build tools
+    - [cmake](http://www.cmake.org/download/)
+    - [Git](http://git-scm.com/download/win)
+    - [svn client (suggested: sliksvn)](https://sliksvn.com/download/)
+    - [NSIS](http://nsis.sourceforge.net/Download)
+
+- Documented build environments
+    - [Visual Studio 2013, community edition](https://www.visualstudio.com/en-us/products/free-developer-offers-vs.aspx)
+        - [Windows 8.1 SDK](https://msdn.microsoft.com/en-us/windows/desktop/bg162891.aspx) - contains cdb debugger used by Qt-Creator (Google should know the link for other Windows versions).
+    - [msys2](https://msys2.github.io/)
+
+- Build dependencies (other than the bundled ones)
+    - [Qt official](http://download.qt.io/archive/qt/5.3/5.3.2/)
+    - [portaudio](http://www.portaudio.com/download.html)
+        - [ASIO SDK](http://www.steinberg.net/en/company/developers.html)
+        - [DirectX SDK](http://www.microsoft.com/en-us/download/details.aspx?id=6812)
+    - [libsndfile](http://www.mega-nerd.com/libsndfile/)  - not obligatory but important
+    - [fftw](http://www.fftw.org/install/windows.html) - not needed but more powerful than the bundled Green FFT
+    - [readline](http://cnswww.cns.cwru.edu/php/chet/readline/rltop.html)  - not needed for build
+    - [portmidi](http://portmedia.sourceforge.net/portmidi/) - *note*: bundled with SC source since SC 3.7
+
+- Utilities
+    - [notepad++](http://notepad-plus-plus.org) - free text editor that handles unix linefeed
+    - [7-zip](http://www.7-zip.org) - decompression tool that handles formats from unix world
+    - [Dependency Walker](http://www.dependencywalker.com/) - follow up missing library errors
+    - [ssh server & client] (https://www.bitvise.com/download-area) - gratis for non commercial use
 
 
 Outro
------
+=====
 
 Thanks to James McCartney, for making this great piece of audio
 software publically and freely available.
