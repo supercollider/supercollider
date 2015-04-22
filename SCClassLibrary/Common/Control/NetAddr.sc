@@ -43,8 +43,10 @@ NetAddr {
 	}
 
 	*disconnectAll {
-		connections.keys.do({ | netAddr |
-			netAddr.disconnect;
+		if(connections.notNil, {
+			connections.keys.do({ |netAddr|
+				netAddr.disconnect;
+			});
 		});
 	}
 
