@@ -1,5 +1,8 @@
 
 Quark {
+	classvar <nameRegexp = "[A-Za-z0-9_\\.\\-]+";
+	classvar <versionRegexp = "[A-Za-z0-9_/\\.\\-]+";
+
 	var <name, url, >refspec, data, <localPath;
 	var <changed = false, <git;
 
@@ -16,6 +19,13 @@ Quark {
 		var url, refspec;
 		# url, refspec = directoryEntry.split($@);
 		^super.new.init(name, url, refspec)
+	}
+	*versionEquals { |a, b|
+		a = a.asString;
+		b = b.asString;
+		if (a.beginsWith("tags/")) { a = a[5..] };
+		if (b.beginsWith("tags/")) { b = b[5..] };
+		^(a == b);
 	}
 	init { |argName, argUrl, argRefspec, argLocalPath|
 		name = argName;
@@ -118,7 +128,31 @@ Quark {
 			})
 		});
 	}
+	*findMatch { |dependency, pending|
+		var found;
 
+		Quarks.installed.do({ |q|
+			if (dependency.isMetBy(q.name, q.version), { ^q });
+		});
+
+		pending.do { |q|
+			if (dependency.isMetBy(q.name, q.version), { ^q });
+		};
+
+		found = Quark(dependency.name);
+		if (found.isDownloaded.not, { found.checkout() });
+		if (dependency.isMetBy(found.name, found.version), {
+			^found;
+		});
+		found.tags.do({
+			|tag|
+			if (dependency.isMetBy(dependency.name, tag), {
+				^Quark(dependency.name, tag)
+			})
+		});
+
+		^nil
+	}
 	dependencies {
 		var deps = this.data['dependencies'] ?? {^[]};
 		if(deps.isSequenceableCollection.not, {
@@ -127,45 +161,47 @@ Quark {
 		});
 		^deps.collect({ |dep| this.parseDependency(dep) }).select(_.notNil);
 	}
-	deepDependencies {
-		var deps = Dictionary.new;
-		this.dependencies.do({ |q|
-			q.checkout();
-			q.deepDependencies.debug(q).do({ |qb|
-				deps[qb.name] = qb;
-			});
-			deps[q.name] = q;
+	deepDependencies { | allDeps=(List()) |
+		var conflict, quark, dependencies, foundQuarks = Dictionary.new;
+
+		dependencies = this.dependencies();
+		dependencies.do({ |d|
+			allDeps.add("%@%".format(this.name, this.version) -> d)
 		});
-		^deps.values
+
+		dependencies.do({ |dep|
+			quark = Quark.findMatch(dep);
+
+			if (quark.isNil, {
+				Error("No quark found that satisfies dependency: %".format(dep.asString())).throw;
+			});
+
+			quark.checkout();
+			quark.deepDependencies(allDeps).debug(quark).do({ |qb|
+				foundQuarks[qb.name] = qb;
+			});
+			foundQuarks[quark.name] = quark;
+		});
+
+		^foundQuarks.values
 	}
 	parseDependency { arg dep;
 		// (1) string
 		var name, version, url, q;
-		if(dep.isString, {
-			{
-				q = Quarks.at(dep)
-			}.try({ |err|
-				// bad name, or quark not found
-				err.errorString.postln;
-				(this.asString + "failed to find dependency" + dep.asCompileString).warn;
-			});
-			^q
+
+		if (dep.isString) {
+			^QuarkDependency(dep)
+		};
+
+		if (dep.isKindOf(Association), {
+			^QuarkDependency.fromAssociation(dep)
 		});
-		// support older styles:
-		// (2) name->version
-		if(dep.isKindOf(Association), {
-			name = dep.key.asString;
-			version = dep.value;
-			q = Quarks.at(name);
-			// and what if version is different ?
-			^Quark(name)
-		});
-		// (3) [name, version, url]
-		// url is likely to be an svn repo
-		if(dep.isSequenceableCollection, {
+
+		if (dep.isSequenceableCollection, {
 			# name, version, url = dep;
-			^Quark(url + name, version);
+			^QuarkDependency(url ++ name, version);
 		});
+
 		Error("Cannot parse dependency:" + this + dep).throw;
 	}
 
@@ -226,4 +262,66 @@ Quark {
 		});
 		HelpBrowser.openBrowsePage("Quarks>" ++ name);
 	}
+}
+
+QuarkDependency {
+	var string, <name, <version;
+
+	*new { |string|
+		^super.newCopyArgs(string).parse;
+	}
+
+	*fromAssociation { |association|
+		var str = association.key.asString();
+		if (association.value.notNil, { str = str ++ "@" ++ association.value.asString() });
+		^QuarkDependency(str);
+	}
+
+	parse {
+		var match;
+		var ampersandPattern = "(%)@(%)".format(Quark.nameRegexp, Quark.versionRegexp);
+		var namePattern = "(%)".format(Quark.nameRegexp);
+
+		case
+		{ (match = string.findRegexp(ampersandPattern)).size > 2 } {
+			name = match[1][1];
+			version = match[2][1];
+		}
+		{ (match = string.findRegexp(namePattern)).size > 1 } {
+			name = match[1][1];
+		};
+	}
+
+	exactVersion {
+		^version;
+	}
+
+	conflictsWith { |inName, inVersion|
+		if (name == inName, {
+			if (inVersion.notNil && version.notNil, {
+				if (Quark.versionEquals(inVersion, version).not, {
+					^true;
+				})
+			})
+		});
+
+		^false;
+	}
+
+	isMetBy { |inName, inVersion|
+		var isMet = (name == inName);
+		if (version.notNil, {
+			isMet = isMet && Quark.versionEquals(version, inVersion);
+		});
+		^isMet;
+	}
+
+	asString {
+		^"QuarkDependency(%)".format(string);
+	}
+
+	printOn { |stream|
+		stream << this.asString
+	}
+
 }
