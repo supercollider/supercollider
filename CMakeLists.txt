@@ -15,14 +15,15 @@ enable_testing()
 
 include (cmake_modules/FinalFile.cmake)
 
-if(CMAKE_CONFIGURATION_TYPES AND NOT APPLE)
+if(CMAKE_GENERATOR MATCHES "Visual Studio 12 2013")
     set(CMAKE_CONFIGURATION_TYPES Debug Release)
     set(CMAKE_CONFIGURATION_TYPES "${CMAKE_CONFIGURATION_TYPES}" CACHE STRING
         "Reset the configurations to what we need/support"
         FORCE
     )
-    message("-- Please choose build configuration in next step: You can choose \"Debug\" or \"Release\"")
-else(CMAKE_CONFIGURATION_TYPES AND NOT APPLE)
+    message(STATUS "Generating files with generator \"${CMAKE_GENERATOR}\"")
+    message(STATUS "Please choose build configuration (\"Release\" or \"Debug\") in next step.")
+elseif(NOT CMAKE_GENERATOR MATCHES Xcode)
     if (NOT CMAKE_BUILD_TYPE)
         message(STATUS "Build type defaulting to \"RelWithDebInfo\"")
         set(CMAKE_BUILD_TYPE "RelWithDebInfo")
@@ -35,19 +36,20 @@ if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 	message(WARNING "WARNING: IN-PLACE BUILDS ARE NOT RECOMMENDED - PLEASE USE A BUILD DIRECTORY")
 endif()
 
-######################################################################
-# Let CMAKE_INSTALL_PREFIX reflect target arch bit and build type
+##############################################################################################
+# Win - Create target architecture Variable and set install path to SC default (cahed system
+# default location throws error)
 if(WIN32)
     string(TOLOWER "$ENV{MSYSTEM}" MINGW_ARCH)
     if (CMAKE_GENERATOR MATCHES "64" OR MINGW_ARCH MATCHES "64")
-        SET(CMAKE_LIBRARY_ARCHITECTURE "x64")
+        SET(CMAKE_LIBRARY_ARCHITECTURE "x64" CACHE STRING "Architecture of target system (for 64bit)")
     else()
-        SET(CMAKE_LIBRARY_ARCHITECTURE "x86")
+        SET(CMAKE_LIBRARY_ARCHITECTURE "x86" CACHE STRING "Architecture of target system (for 32bit)")
     endif()
-    if (MSVC)
-        SET(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/${CMAKE_LIBRARY_ARCHITECTURE}")
-    elseif(MINGW)
-        SET(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/${CMAKE_LIBRARY_ARCHITECTURE}/${CMAKE_BUILD_TYPE}")
+    if (CMAKE_GENERATOR MATCHES "Visual Studio 12 2013")
+        SET(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install")
+    else()
+        SET(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install")
     endif()
 endif(WIN32)
 
@@ -272,7 +274,7 @@ if (CMAKE_COMPILER_IS_INTEL AND NOT WIN32)
 	add_definitions(-diag-disable 279) # controlling expression is constant
 endif()
 
-if(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
+if("x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xMSVC")
   foreach(flag CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
 		set(${flag} "${${flag}} /wd4065") # switch statement contains 'default' but no 'case' labels
     set(${flag} "${${flag}} /wd4018") # signed/unsigned mismatch
@@ -384,7 +386,15 @@ if(APPLE)
 					"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/${onedirectory} ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary/${onedirectory} )" )
 			endif()
 		endforeach(onedirectory)
-	endif()
+    endif()
+elseif(CMAKE_GENERATOR MATCHES "Visual Studio 12 2013")
+	install(DIRECTORY SCClassLibrary
+        CONFIGURATIONS Debug;Release
+		DESTINATION ${auxresourcesdir}
+		REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
+		PATTERN "*~" EXCLUDE
+		PATTERN "*#" EXCLUDE
+	)
 else()
 	install(DIRECTORY SCClassLibrary
 		DESTINATION ${auxresourcesdir}
@@ -394,7 +404,10 @@ else()
 	)
 endif()
 
-if(NOT APPLE)
+if(CMAKE_GENERATOR MATCHES "Visual Studio 12 2013")
+	install(DIRECTORY sounds   CONFIGURATIONS Debug;Release DESTINATION "${auxresourcesdir}")
+	install(DIRECTORY examples CONFIGURATIONS Debug;Release DESTINATION "${auxresourcesdir}")
+elseif(NOT APPLE)
 	install(DIRECTORY sounds   DESTINATION ${auxresourcesdir})
 	install(DIRECTORY examples DESTINATION ${auxresourcesdir})
 elseif(APPLE)
@@ -406,6 +419,7 @@ if (WIN32)
 		README.md
 		README_WINDOWS.md
 		ChangeLog
+		COPYING
 		AUTHORS
 	)
 elseif(APPLE)
@@ -427,11 +441,11 @@ else()
 	)
 endif()
 
-install(FILES ${AdditionalInstallFiles} DESTINATION ${auxresourcesdir})
-
-if(WIN32)
-	install(FILES COPYING DESTINATION ${auxresourcesdir} RENAME LICENSE.txt)
-endif(WIN32)
+if(CMAKE_GENERATOR MATCHES "Visual Studio 12 2013")
+    install(FILES ${AdditionalInstallFiles} CONFIGURATIONS Debug;Release DESTINATION "${auxresourcesdir}")
+else()
+    install(FILES ${AdditionalInstallFiles} DESTINATION ${auxresourcesdir})
+endif()
 
 if(INSTALL_HELP)
 	if(SC_SYMLINK_CLASSLIB AND APPLE)
@@ -441,6 +455,14 @@ if(INSTALL_HELP)
 		endif()
 		install( CODE
 					"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/HelpSource ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource )" )
+	elseif(CMAKE_GENERATOR MATCHES "Visual Studio 12 2013")
+		install(DIRECTORY HelpSource
+            CONFIGURATIONS Debug;Release
+			DESTINATION "${auxresourcesdir}"
+			REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
+			PATTERN "*~" EXCLUDE
+			PATTERN "*#" EXCLUDE
+		)
 	elseif(NOT APPLE)
 		install(DIRECTORY HelpSource
 			DESTINATION ${auxresourcesdir}
