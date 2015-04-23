@@ -96,18 +96,31 @@ else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
 
     else(NOT MSVC)
 
-      find_path(PORTAUDIO_INCLUDE_DIR NAMES portaudio.h PATHS ${CMAKE_SOURCE_DIR}/../portaudio/include)
+      find_path(PORTAUDIO_INCLUDE_DIR NAMES portaudio.h 
+        PATHS ${CMAKE_SOURCE_DIR}/../portaudio/include
+              ${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/portaudio/include
+      )
 
-      find_library(PORTAUDIO_LIBRARY_DEBUG NAMES portaudio_${CMAKE_LIBRARY_ARCHITECTURE} PATHS ${CMAKE_SOURCE_DIR}/../portaudio/build/Debug)
-      find_library(PORTAUDIO_LIBRARY_RELEASE NAMES portaudio_${CMAKE_LIBRARY_ARCHITECTURE} PATHS ${CMAKE_SOURCE_DIR}/../portaudio/build/Release)
+      find_library(PORTAUDIO_LIBRARY_DEBUG 
+        NAMES portaudio_${CMAKE_LIBRARY_ARCHITECTURE} 
+        PATHS ${CMAKE_SOURCE_DIR}/../portaudio/build/Debug 
+              ${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/portaudio/Debug
+      )
+      find_library(PORTAUDIO_LIBRARY_RELEASE 
+        NAMES portaudio_${CMAKE_LIBRARY_ARCHITECTURE} 
+        PATHS ${CMAKE_SOURCE_DIR}/../portaudio/build/Release 
+              ${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/portaudio/Release
+      )
 
       find_path(PORTAUDIO_LIBRARY_DIR_DEBUG 
-		NAMES portaudio_static_${CMAKE_LIBRARY_ARCHITECTURE}.lib portaudio_${CMAKE_LIBRARY_ARCHITECTURE}.dll
-		PATHS ${CMAKE_SOURCE_DIR}/../portaudio/build/Debug
+		NAMES portaudio_${CMAKE_LIBRARY_ARCHITECTURE}.dll
+		PATHS ${CMAKE_SOURCE_DIR}/../portaudio/build/Debug 
+              ${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/portaudio/Debug
 	  )
       find_path(PORTAUDIO_LIBRARY_DIR_RELEASE 
-		NAMES portaudio_static_${CMAKE_LIBRARY_ARCHITECTURE}.lib portaudio_${CMAKE_LIBRARY_ARCHITECTURE}.dll
-		PATHS ${CMAKE_SOURCE_DIR}/../portaudio/build/Release
+		NAMES portaudio_${CMAKE_LIBRARY_ARCHITECTURE}.dll
+		PATHS ${CMAKE_SOURCE_DIR}/../portaudio/build/Release 
+              ${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/portaudio/Release
 	  )
       set(PORTAUDIO_LIBRARY_DIR ${PORTAUDIO_LIBRARY_DIR_RELEASE} ${PORTAUDIO_LIBRARY_DIR_DEBUG} "")
 
