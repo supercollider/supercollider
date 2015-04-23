@@ -46,7 +46,7 @@
 
 // Plugin directory in resource directory
 #if defined(_WIN32) && defined(_DEBUG)
-# define SC_PLUGIN_DIR_NAME "plugins_debug"
+# define SC_PLUGIN_DIR_NAME "plugins"
 #else
 # define SC_PLUGIN_DIR_NAME "plugins"
 #endif
