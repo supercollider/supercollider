@@ -5,6 +5,7 @@ if(MINGW)
     # into the installation directory. Fixup_bundle is so slow
     # with MinGW that we can't wait after each install:
     add_custom_target( bundle
+        include(BundleUtilities)
         COMMAND ${CMAKE_COMMAND}
             "-DSC_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
             "-DSC_DEPENDENCY_DIRS=${CMAKE_LIBRARY_PATH}"
