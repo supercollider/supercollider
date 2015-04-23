@@ -256,14 +256,19 @@ elseif (APPLE)
 	add_definitions("-DSC_DARWIN")
 endif()
 
-if (WIN32 AND NOT MINGW AND CMAKE_BUILD_TYPE MATCHES Debug)
-	install(TARGETS ${plugins} ${supernova_plugins}
-			DESTINATION "SuperCollider/plugins_debug"
-			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-elseif (WIN32)
-	install(TARGETS ${plugins} ${supernova_plugins}
+if (WIN32)
+    if(CMAKE_GENERATOR MATCHES "Visual Studio 12 2013")
+        set_property(TARGET  ${plugins} ${supernova_plugins} PROPERTY LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/server/plugins")
+    install(TARGETS ${plugins} ${supernova_plugins}
+        CONFIGURATIONS Debug;Release
+        DESTINATION "SuperCollider/plugins"
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+    else()
+        install(TARGETS ${plugins} ${supernova_plugins}
 			DESTINATION "SuperCollider/plugins"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+    endif()
+
 elseif(APPLE)
 
     if(CMAKE_GENERATOR MATCHES Xcode)

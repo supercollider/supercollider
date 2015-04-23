@@ -371,7 +371,15 @@ if(APPLE)
                 #fixup_qt5_executable(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\")
                 " COMPONENT Runtime)
 
-
+elseif(CMAKE_GENERATOR MATCHES "Visual Studio 12 2013")
+    set_property(TARGET SuperCollider PROPERTY RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/editors/sc-ide")
+	install(TARGETS SuperCollider
+            CONFIGURATIONS Debug;Release
+			DESTINATION "SuperCollider"
+			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)    
+    install(FILES ${translations}
+            CONFIGURATIONS Debug;Release
+			DESTINATION "SuperCollider/translations")
 elseif(WIN32)
 	install(TARGETS SuperCollider
 			DESTINATION "SuperCollider"

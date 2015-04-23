@@ -144,8 +144,13 @@ endif()
 add_executable(supernova server/main.cpp ${supernova_headers})
 target_link_libraries(supernova libsupernova)
 
-
-if(WIN32)
+if(CMAKE_GENERATOR MATCHES "Visual Studio 12 2013")
+    set_property(TARGET supernova PROPERTY RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/server/supernova")
+	install(TARGETS supernova
+        CONFIGURATIONS Debug;Release
+        DESTINATION "SuperCollider"
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+elseif(WIN32)
 	install(TARGETS supernova
         DESTINATION "SuperCollider"
         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
