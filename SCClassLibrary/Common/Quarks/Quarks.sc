@@ -172,16 +172,13 @@ Quarks {
 		if(quark.isCompatible().not, {
 			^incompatible.value(quark.name);
 		});
-		deps = quark.deepDependencies;
-		deps.do({ |dep|
-			if(dep.isCompatible().not, {
-				^incompatible.value(dep.name);
+		quark.dependencies.do { |dep|
+			var ok = dep.install();
+			if(ok.not, {
+				("Failed to install" + quark.name).error;
+				^false
 			});
-			dep.checkout();
-		});
-		deps.do({ |dep|
-			this.link(dep.localPath);
-		});
+		};
 		this.link(quark.localPath);
 		(quark.name + "installed").inform;
 		^true
@@ -343,7 +340,7 @@ Quarks {
 		});
 	}
 	*isPath { |string|
-		^string.findRegexp("^[~\.]?/").size != 0
+		^string.findRegexp("^[~\\.]?/").size != 0
 	}
 	*asAbsolutePath { |path, relativeTo|
 		^if(path.at(0).isPathSeparator, {
