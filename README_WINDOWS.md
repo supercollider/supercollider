@@ -291,8 +291,9 @@ build folder.
   - Visual Studio 2013, DirectX, Windows SDK
   - Qt5 (online installer, at minimum the msvc2013_64_opengl libraries)
   - Download libsndfile, fftw3 and optionally readline
-  - create a folder x64 as sibling of the supercollider source
-  - copy/extract/install the dependencies into this folder
+  - create a folder x64 for 64-bit, and/or x86 for 32-bit dependencies as sibling
+    of the supercollider source
+  - copy/extract/install the dependencies into these folders
   - using the 'lib' tool accessible from VS Developer prompt, create import
     libraries for: libsndfile-1.dll, libfftw3f-3.dll and optionally
     libreadline6.dll
@@ -307,8 +308,8 @@ build folder.
     version (only Release and Debug are supported at this time)
 
 *Note:* If assembling the dependencies sounds like too much work, download zip file
-from the folder below that contains everything (portaudio) precompiled in the expected
-folder structure:
+from the folder below that contains everything (incl. portaudio) precompiled in
+the expected folder structure:
 
     https://drive.google.com/folderview?id=0B7igZrWv7UxdUmxHdThYLUE2QXc&usp=sharing
 
@@ -321,7 +322,9 @@ folder structure:
 
       $> cd supercollider; mkdir build; cd build
       $> cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_PREFIX_PATH=C:\Qt\5.4\msvc2013_64_opengl ..
-      $> cmake --build . --target install --config Release
+      $> cmake --build . --target install --config Release -- /m4
+
+                              ****
 
 Code management and build tools
 -------------------------------
@@ -419,9 +422,7 @@ search path. This will cause problems for a vs/msbuild-build.
 
 Make sure your build folder is outside of the SC source. Traditionally a
 subfolder of 'supercollider' is used, but this is not mandatory. If the name of
-the buildfolder starts with 'build', git is set to ignore it. If the build
-folders are within the SC source tree, you can move the entire tree without
-having to reconfigure the build with cmake.
+the buildfolder starts with 'build', git is set to ignore it.
 
 
 Additional libraries (core dependencies)
