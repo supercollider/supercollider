@@ -227,6 +227,7 @@ SimpleNumber : Number {
 
 	lincurve { arg inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip = \minmax;
 		var grow, a, b, scaled;
+		if (abs(curve) < 0.001) { ^this.linlin(inMin, inMax, outMin, outMax,clip) };
 		switch(clip,
 			\minmax, {
 				if (this <= inMin, { ^outMin });
@@ -239,7 +240,6 @@ SimpleNumber : Number {
 				if (this >= inMax, { ^outMax });
 			}
 		);
-		if (abs(curve) < 0.001) { ^this.linlin(inMin, inMax, outMin, outMax) };
 
 		grow = exp(curve);
 		a = outMax - outMin / (1.0 - grow);
@@ -251,6 +251,8 @@ SimpleNumber : Number {
 
 	curvelin { arg inMin = 0, inMax = 1, outMin = 0, outMax = 1, curve = -4, clip = \minmax;
 		var grow, a, b, scaled;
+		if (abs(curve) < 0.001) { ^this.linlin(inMin, inMax, outMin, outMax,clip) };
+
 		switch(clip,
 			\minmax, {
 				if (this <= inMin, { ^outMin });
@@ -263,7 +265,6 @@ SimpleNumber : Number {
 				if (this >= inMax, { ^outMax });
 			}
 		);
-		if (abs(curve) < 0.001) { ^this.linlin(inMin, inMax, outMin, outMax) };
 
 		grow = exp(curve);
 		a = inMax - inMin / (1.0 - grow);
