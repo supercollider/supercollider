@@ -55,15 +55,15 @@ SCIpcClient::~SCIpcClient()
     mSocket->disconnectFromServer();
 }
 
-void SCIpcClient::readIDEData() {
-    mIpcData.append(mSocket->readAll());
+void SCIpcClient::readIDEData() { 
+	mIpcData.append(mSocket->readAll());
     
-    while (mIpcData.size()) {
+    while (mIpcData.size()) {			
         QBuffer receivedData ( &mIpcData );
         receivedData.open ( QIODevice::ReadOnly );
         
         QDataStream in ( &receivedData );
-        in.setVersion ( QDataStream::Qt_4_6 );
+        in.setVersion ( QDataStream::Qt_5_4 );
         QString selector;
         QVariantList argList;
         in >> selector;
@@ -78,7 +78,8 @@ void SCIpcClient::readIDEData() {
         mIpcData.remove ( 0, receivedData.pos() );
         
         onResponse(selector, argList);
-    }
+
+	}
 }
     
 void SCIpcClient::onResponse( const QString & selector, const QVariantList & argList )
@@ -94,6 +95,9 @@ void SCIpcClient::onResponse( const QString & selector, const QVariantList & arg
 
 void SCIpcClient::updateDocText( const QVariantList & argList )
 {
+	if (argList.isEmpty())
+		return;
+
     QByteArray quuid = argList[0].toByteArray();
     int pos = argList[1].toInt();
     int charsRemoved = argList[2].toInt();
@@ -103,9 +107,13 @@ void SCIpcClient::updateDocText( const QVariantList & argList )
 
 void SCIpcClient::updateDocSelection( const QVariantList & argList )
 {
-    QByteArray quuid = argList[0].toByteArray();
+	if (argList.isEmpty())
+		return;
+
+	QByteArray quuid = argList[0].toByteArray();
     int start = argList[1].toInt();
     int range = argList[2].toInt();
+
     setSelectionMirrorForDocument(quuid, start, range);
 }
 
@@ -308,7 +316,7 @@ int ScIDE_Send(struct VMGlobals *g, int numArgsPushed)
         YAMLSerializer serializer(argSlot);
 
         QDataStream stream(gIpcClient->mSocket);
-        stream.setVersion(QDataStream::Qt_4_6);
+		stream.setVersion(QDataStream::Qt_5_4);
         stream << QString(id);
         stream << QString::fromUtf8(serializer.data());
     } catch (std::exception const & e) {

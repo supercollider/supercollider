@@ -28,7 +28,7 @@
 #define FLEX_SCANNER
 #define YY_FLEX_MAJOR_VERSION 2
 #define YY_FLEX_MINOR_VERSION 5
-#define YY_FLEX_SUBMINOR_VERSION 37
+#define YY_FLEX_SUBMINOR_VERSION 39
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
 #endif
@@ -198,6 +198,13 @@ extern FILE *scdocin, *scdocout;
                 int yyl;\
                 for ( yyl = n; yyl < scdocleng; ++yyl )\
                     if ( scdoctext[yyl] == '\n' )\
+                        --scdoclineno;\
+            }while(0)
+    #define YY_LINENO_REWIND_TO(dst) \
+            do {\
+                const char *p;\
+                for ( p = yy_cp-1; p >= (dst); --p)\
+                    if ( *p == '\n' )\
                         --scdoclineno;\
             }while(0)
     
@@ -1813,7 +1820,7 @@ static int method_caller;
 
 
 
-#line 1817 "lex.scdoc.cpp"
+#line 1824 "lex.scdoc.cpp"
 
 #define INITIAL 0
 #define verbatim 1
@@ -2002,23 +2009,6 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 45 "SCDoc.l"
-
-
-
-
-if (scdoc_start_token) {
-    int t = scdoc_start_token;
-    scdoc_start_token = 0;
-//    colnum = 1;
-    if(t==START_METADATA) BEGIN(eat);
-    return t;
-}
-
-
-
-#line 2021 "lex.scdoc.cpp"
-
 	if ( !(yy_init) )
 		{
 		(yy_init) = 1;
@@ -2045,6 +2035,24 @@ if (scdoc_start_token) {
 		scdoc_load_buffer_state( );
 		}
 
+	{
+#line 45 "SCDoc.l"
+
+
+
+
+if (scdoc_start_token) {
+    int t = scdoc_start_token;
+    scdoc_start_token = 0;
+//    colnum = 1;
+    if(t==START_METADATA) BEGIN(eat);
+    return t;
+}
+
+
+
+#line 2055 "lex.scdoc.cpp"
+
 	while ( 1 )		/* loops until end-of-file is reached */
 		{
 		yy_cp = (yy_c_buf_p);
@@ -2061,7 +2069,7 @@ if (scdoc_start_token) {
 yy_match:
 		do
 			{
-			register YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)];
+			register YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)] ;
 			if ( yy_accept[yy_current_state] )
 				{
 				(yy_last_accepting_state) = yy_current_state;
@@ -2087,7 +2095,7 @@ yy_find_action:
 
 		if ( yy_act != YY_END_OF_BUFFER && yy_rule_can_match_eol[yy_act] )
 			{
-			int yyl;
+			yy_size_t yyl;
 			for ( yyl = 0; yyl < scdocleng; ++yyl )
 				if ( scdoctext[yyl] == '\n' )
 					   
@@ -2643,7 +2651,7 @@ YY_RULE_SETUP
 #line 176 "SCDoc.l"
 ECHO;
 	YY_BREAK
-#line 2647 "lex.scdoc.cpp"
+#line 2655 "lex.scdoc.cpp"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(verbatim):
 case YY_STATE_EOF(verbatim2):
@@ -2782,6 +2790,7 @@ case YY_STATE_EOF(method):
 			"fatal flex scanner internal error--no action found" );
 	} /* end of action switch */
 		} /* end of scanning one token */
+	} /* end of user's declarations */
 } /* end of scdoclex */
 
 /* yy_get_next_buffer - try to read in a new buffer
@@ -3424,7 +3433,7 @@ YY_BUFFER_STATE scdoc_scan_bytes  (yyconst char * yybytes, yy_size_t  _yybytes_l
 	YY_BUFFER_STATE b;
 	char *buf;
 	yy_size_t n;
-	int i;
+	yy_size_t i;
     
 	/* Get memory for full buffer, including space for trailing EOB's. */
 	n = _yybytes_len + 2;

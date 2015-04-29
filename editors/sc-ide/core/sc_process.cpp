@@ -315,7 +315,7 @@ void ScProcess::onIpcData()
         receivedData.open ( QIODevice::ReadOnly );
 
         QDataStream in ( &receivedData );
-        in.setVersion ( QDataStream::Qt_4_6 );
+		in.setVersion(QDataStream::Qt_5_4);
         QString selector, message;
         in >> selector;
         if ( in.status() != QDataStream::Ok )
@@ -377,7 +377,7 @@ void ScProcess::updateTextMirrorForDocument ( Document * doc, int position, int 
     
     try {
         QDataStream stream(mIpcSocket);
-        stream.setVersion(QDataStream::Qt_4_6);
+		stream.setVersion(QDataStream::Qt_5_4);
         stream << QString("updateDocText");
         stream << argList;
     } catch (std::exception const & e) {
@@ -395,7 +395,7 @@ void ScProcess::updateSelectionMirrorForDocument ( Document * doc, int start, in
     
     try {
         QDataStream stream(mIpcSocket);
-        stream.setVersion(QDataStream::Qt_4_6);
+		stream.setVersion(QDataStream::Qt_5_4);
         stream << QString("updateDocSelection");
         stream << argList;
     } catch (std::exception const & e) {
