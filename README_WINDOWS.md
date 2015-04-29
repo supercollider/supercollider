@@ -283,42 +283,44 @@ You should find the SC install in the subfolder `Install` of the
 build folder.
 
 
-### Quick steps: Visual Studio 12 2013 Win64
+### Quick steps: Visual Studio 12 2013
 
 * Install
 
   - git, svn, cmake, NSIS and make sure they are in the search path
   - Visual Studio 2013, DirectX, Windows SDK
   - Qt5 (online installer, at minimum the msvc2013_64_opengl libraries)
-  - Download libsndfile, fftw3 and optionally readline
-  - create a folder x64 for 64-bit, and/or x86 for 32-bit dependencies as sibling
-    of the supercollider source
-  - copy/extract/install the dependencies into these folders
-  - using the 'lib' tool accessible from VS Developer prompt, create import
-    libraries for: libsndfile-1.dll, libfftw3f-3.dll and optionally
-    libreadline6.dll
+  - For now download prebuilt binaries of additional dependencies from:
 
-* Compile portaudio using cmake
+        https://drive.google.com/folderview?id=0B7igZrWv7UxdUmxHdThYLUE2QXc&usp=sharing
 
-  - use the latest svn checkout (rev 1952 or bigger) and move it to a sibling
-    folder of the supercollider source (not in x64!).
-  - add the ASIO SDK and make sure it is found during configuration
-    (the ASIOSDK2.3 folder should reside in a sibling of the portaudio folder)
-  - create a Release and a Debug build. The SC build will sellect the correct
-    version (only Release and Debug are supported at this time)
+    and extract the contained folders into a sibbling folder of the SC source.
+    Or:
 
-*Note:* If assembling the dependencies sounds like too much work, download zip file
-from the folder below that contains everything (incl. portaudio) precompiled in
-the expected folder structure:
+      - Download libsndfile, fftw3 and optionally readline
+      - create a folder x64 for 64-bit, and/or x86 for 32-bit dependencies as sibling
+        of the supercollider source
+      - copy/extract/install the dependencies into these folders
+      - using the 'lib' tool accessible from VS Developer prompt, create import
+        libraries for: libsndfile-1.dll, libfftw3f-3.dll and optionally
+        libreadline6.dll
 
-    https://drive.google.com/folderview?id=0B7igZrWv7UxdUmxHdThYLUE2QXc&usp=sharing
+    * Compile portaudio using cmake
+
+      - use the latest svn checkout (rev 1952 or bigger) and move it to a sibling
+        folder of the supercollider source (not in x64!).
+      - add the ASIO SDK and make sure it is found during configuration
+        (the ASIOSDK2.3 folder should reside in a sibling of the portaudio folder)
+      - create a Release and a Debug build. The SC build will sellect the correct
+        version (only Release and Debug are supported at this time)
 
 * Build with "Visual Studio 12 2013 Win64" as generator file. You will need to specify
   (and identify) the correct path to Qt (parent of the `bin:lib:include` that fit's your
   environment) and pass it to cmake (-DCMAKE_PREFIX_PATH (sic)). The build type
   (configuration) is specified in the build step (`cmake --build .`), not during
-  build configuration. It defaults to Debug. Currently only 'Debug' and 'Release' are
-  supported. So building on the command line would look like this:
+  the first cmake run that creates the build files. The build configuration
+  defaults to Debug. Currently only 'Debug' and 'Release' are supported. So
+  building on the command line would look like this:
 
       $> cd supercollider; mkdir build; cd build
       $> cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_PREFIX_PATH=C:\Qt\5.4\msvc2013_64_opengl ..
@@ -405,7 +407,7 @@ There are snapshots of release versions of the source on Sourceforge:
     http://sourceforge.net/projects/supercollider/files/Source/
 
 But you do not want to miss out on being able to manage your code and access the
-entire source history with git. Release versions of SC can be checked out as `tags`.
+entire source history with git. Release versions of SC can be checked out as `tag`s.
 
 By default `git clone` will create a folder called `supercollider` in the folder
 where you run the command. Think a moment about where to store the source. If
@@ -417,12 +419,12 @@ make sure that pathname requirements of elder tools are met (e.g no spaces,
 short). If for some reason you need both build systems, you can use the same
 source folder for the VS build too. As long as you don't open a msys2 shell,
 the msys tree behaves like any other one on the system. In an msys2 shell paths
-to msys and optionally mingw, build tools are added at the beginning of the
+to msys- (and optionally mingw-) build tools are added at the beginning of the
 search path. This will cause problems for a vs/msbuild-build.
 
 Make sure your build folder is outside of the SC source. Traditionally a
 subfolder of 'supercollider' is used, but this is not mandatory. If the name of
-the buildfolder starts with 'build', git is set to ignore it.
+the build folder starts with 'build', git is set to ignore it.
 
 
 Additional libraries (core dependencies)
@@ -768,7 +770,8 @@ a single environment variable (`CMAKE_PREFIX_PATH`) that cmake will read. The
 lines here contain random data to demonstrate some possibilities. The case
 of portaudio is a bit more complicated, because we need to distinguish two
 library versions (Debug and Release). See the module `FindPortaudio.cmake`
-in the cmake_modules folder for more details.
+in the cmake_modules folder for more details. Note this option (or complication)
+out of the box is only available in the VS build:
 
     set CMAKE_GENERATOR="Visual Studio 12 2013 Win64"
     set QT_HOME=C:/Qt/5.3/5.3.2
@@ -1159,7 +1162,7 @@ contained folders (x86/x64) next to the SC source. Get it from here:
     https://drive.google.com/folderview?id=0B7igZrWv7UxdUmxHdThYLUE2QXc&usp=sharing
 
 
-### Creating an folder tree
+### Creating a folder tree
 
 If you move the dependency folders to specific locations, the customized cmake
 find-modules of the SC project can find them automatically when configuring the
@@ -1383,6 +1386,15 @@ folders (target/Debug, target/Release). The targets that could in theory run in
 the targets folders are sclang, scsynth and scide. Atm they can only be run
 from the install folder because all the main binaries require dll's not available
 in the target folders.
+
+To simplify working with cmake from within the VS IDE you might like this plugin:
+
+    https://visualstudiogallery.msdn.microsoft.com/6d1586a9-1c98-4ac7-b54f-7615d5f9fbc7
+
+When trying to debug from the IDE, this plugin is helpful, as it allows
+to debug child processes easily:
+
+    https://visualstudiogallery.msdn.microsoft.com/a1141bff-463f-465f-9b6d-d29b7b503d7a
 
 *Note*: building the target `install` (accessible in the "Solution Explorer")
 copyies all dynamic link libraries to the install folder as well. This differs
