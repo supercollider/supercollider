@@ -279,7 +279,16 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
     /* don't close the handle */
     return;
 }
-
+void sc_ugen_factory::unload_plugins(void)
+{
+    for(void * handle : open_handles){
+        void *ptr = dlsym(handle, "unload");
+        if(ptr){
+            UnLoadPlugInFunc unloadFunc = (UnLoadPlugInFunc)ptr;
+            (*unloadFunc)();
+        }
+    }
+}
 void sc_ugen_factory::close_handles(void)
 {
 #if 0
@@ -340,7 +349,7 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
         FreeLibrary(hinstance);
         return;
     }
-
+    open_handles.push_back(hinstance);
     LoadPlugInFunc loadFunc = (LoadPlugInFunc)ptr;
     (*loadFunc)(&sc_interface);
 
@@ -348,9 +357,21 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
 
     return;
 }
-
 void sc_ugen_factory::close_handles(void)
-{}
+{
+}
+void sc_ugen_factory::unload_plugins(void)
+{
+    for(void * ptrhinstance : open_handles){
+        HINSTANCE hinstance = (HINSTANCE)ptrhinstance;
+        void *ptr = (void *)GetProcAddress( hinstance, "unload" );
+        if(ptr){
+            //printf("unloading plugin\n");
+            UnLoadPlugInFunc unloadFunc = (UnLoadPlugInFunc)ptr;
+            (*unloadFunc)();
+        }
+    }
+}
 #else
 
 #endif
