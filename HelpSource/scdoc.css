@@ -16,8 +16,9 @@ html {
 
 div.contents {
     margin: 1em;
-    text-align: justify;
-    padding-top: 2em;
+    padding-left: 0.3em;
+    padding-right: 0.3em;
+    padding-top: 1.5em;
     padding-bottom: 0.5em;
 }
 
@@ -185,7 +186,7 @@ a.navlink {
 
 
 .header {
-    border-bottom: 3px solid #000;
+  border-bottom: 2.5px solid #000; padding-bottom:0.18em;
 }
 #label, #label a {
     font-weight: bold;
@@ -194,13 +195,14 @@ a.navlink {
 }
 #summary {
     font-weight: normal;
+    font-size: 1.1em;
 }
 #categories {
     color: #888;
     font-size: 9pt;
 }
 #related {
-    text-align: left;
+    text-align: right;
     font-weight: bold;
     margin-top: 0.5em;
 }
@@ -251,7 +253,7 @@ div.footnote {
 
 h1 {
     margin: 0.1em 0;
-    font-size: 3em;
+    font-size: 2.6em;
     margin-bottom: 0em;
 }
 
@@ -260,7 +262,7 @@ h2 {
     margin-top: 1.0em;
     text-align: left;
     margin-bottom: 2px;
-    font-size: 1.7em;
+    font-size: 1.4em;
 }
 
 h3 {

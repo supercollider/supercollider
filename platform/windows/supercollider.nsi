@@ -29,13 +29,13 @@ InstallDirRegKey HKCU "Software\SuperCollider\${SC_VERSION}" ""
 
 !insertmacro MUI_PAGE_LICENSE SuperCollider\LICENSE.txt
 
-; --- Hack to display Readme.txt easily ---
+; --- Hack to display Readme.md easily ---
 !define MUI_PAGE_HEADER_TEXT "Read me!"
 !define MUI_PAGE_HEADER_SUBTEXT "Find below useful information regarding installation and usage"
 !define MUI_LICENSEPAGE_TEXT_TOP "Press Page Down to see the rest of the information"
 !define MUI_LICENSEPAGE_TEXT_BOTTOM "This information will be available in your SuperCollider application folder as README.txt"
 !define MUI_LICENSEPAGE_BUTTON "Next >"
-!insertmacro MUI_PAGE_LICENSE SuperCollider\README.txt
+!insertmacro MUI_PAGE_LICENSE SuperCollider\README.md
 
 !insertmacro MUI_PAGE_DIRECTORY
 
@@ -66,7 +66,7 @@ Section "Core" core_sect
 
     ;Create uninstaller
     WriteUninstaller "$INSTDIR\Uninstall.exe"
-	
+
 	; Register uninstaller in Add-/remove programs and add some Metadata
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SuperCollider-${SC_VERSION}" "DisplayName" "SuperCollider Version ${SC_VERSION}"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SuperCollider-${SC_VERSION}" "UninstallString" "$INSTDIR\Uninstall.exe"
@@ -77,7 +77,7 @@ Section "Core" core_sect
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SuperCollider-${SC_VERSION}" "DisplayIcon" "$INSTDIR\sclang.exe"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SuperCollider-${SC_VERSION}" "NoModify" 1
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SuperCollider-${SC_VERSION}" "NoRepair" 1
-	
+
 	;Associate file-types scd, sc and schelp with SuperCollider
 	WriteRegStr HKCR ".scd" "" "SuperCollider.Document"
 	WriteRegStr HKCR "SuperCollider.Document" "" "SuperCollider Document"
@@ -120,7 +120,7 @@ Section "Uninstall"
 
 	DeleteRegKey HKCR ".schelp"
 	DeleteRegKey HKCR "SuperCollider.HelpFile"
-	
+
 	;Try to remove StartMenu item
 	SetShellVarContext all
 	delete "$SMPROGRAMS\SuperCollider\SuperCollider-${SC_VERSION}.lnk"

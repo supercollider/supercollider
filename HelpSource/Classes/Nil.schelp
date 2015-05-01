@@ -69,6 +69,10 @@ Returns Quant.default.
 
 method::matchItem
 Returns true.
+
+See also link::Reference/matchItem::.
+
+
 code::
 [3, 2, 1].select(nil.matchItem(_))); // returns all
 // compare:

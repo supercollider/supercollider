@@ -41,6 +41,22 @@ void SignalMultiplexer::connect(QObject *sender, const char *signal, const char 
     mConnections << conn;
     connect(conn);
 }
+    
+bool SignalMultiplexer::disconnect(QObject *sender)
+{
+    bool result = false;
+    QList<Connection>::Iterator it;
+    for (it = mConnections.begin(); it != mConnections.end(); ++it) {
+        Connection conn = *it;
+        if ((QObject*)conn.sender == sender) {
+            disconnect(conn);
+            mConnections.erase(it);
+            result = true;
+        }
+    }
+    
+    return result;
+}
 
 bool SignalMultiplexer::disconnect(QObject *sender, const char *signal, const char *slot)
 {

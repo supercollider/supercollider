@@ -105,6 +105,36 @@ For non-realtime recording see the link::Classes/Score:: helpfile, especially "c
 
 InstanceMethods::
 
+method::asStream
+Return a link::Classes/Stream:: from this pattern. One pattern can be used to produce any number of independent streams.
+
+code::
+a = Pgeom(1, Pwhite(1.01, 1.2), inf);
+b = a.asStream; c = a.asStream;
+
+b.next;
+b.next;
+b.next;
+
+c.next; // c is independent from b
+c.next;
+
+
+::
+
+method::embedInStream
+Given a link::Classes/Stream:: like e.g. link::Classes/Routine::, yield all values from this pattern before continuing. One pattern can be used to produce values for any number of independent streams.
+
+argument::inval
+The inval is passed into all substreams and can be used to control how they behave from the outside.
+
+code::
+a = Pgeom(1, Pwhite(1.01, 1.2), 5);
+r = Routine { 2.yield; 3.yield; a.embedInStream; 7.yield; };
+r.nextN(12); // the next 12 values from r
+::
+
+
 method::play
 
 argument::clock

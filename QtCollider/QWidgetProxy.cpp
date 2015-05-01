@@ -43,6 +43,10 @@
 # undef KeyRelease
 #endif
 
+#ifdef Q_OS_MAC
+# include "./hacks/hacks_mac.hpp"
+#endif
+
 using namespace QtCollider;
 
 QAtomicInt QWidgetProxy::_globalEventMask = 0;
@@ -186,6 +190,10 @@ void QWidgetProxy::bringFrontEvent() {
 #ifdef Q_WS_X11
   raise_window(QX11Info::display(), w);
 #endif
+
+#ifdef Q_OS_MAC
+    QtCollider::Mac::activateApp();
+#endif
 }
 
 void QWidgetProxy::setFocusEvent( QtCollider::SetFocusEvent *e ) {
@@ -251,15 +259,16 @@ bool QWidgetProxy::preProcessEvent( QObject *o, QEvent *e, EventHandlerData &eh,
 {
   // NOTE We assume that qObject need not be checked here, as we wouldn't get events if
   // it wasn't existing
+  int acquired_globalEventMask = _globalEventMask.load();
 
   switch( eh.type ) {
 
     case QEvent::KeyPress:
-      return ((_globalEventMask & KeyPress) || eh.enabled)
+      return ((acquired_globalEventMask & KeyPress) || eh.enabled)
         && interpretKeyEvent( o, e, args );
 
     case QEvent::KeyRelease:
-      return ((_globalEventMask & KeyRelease) || eh.enabled)
+      return ((acquired_globalEventMask & KeyRelease) || eh.enabled)
         && interpretKeyEvent( o, e, args );
 
     case QEvent::MouseButtonPress:
@@ -395,7 +404,7 @@ bool QWidgetProxy::interpretKeyEvent( QObject *o, QEvent *e, QList<QVariant> &ar
 
   QChar character;
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
   bool isLetter = key >= Qt::Key_A && key <= Qt::Key_Z;
   if (mods & Qt::MetaModifier && isLetter)
   {

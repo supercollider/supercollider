@@ -41,6 +41,7 @@ NoteOnResponder : MIDIResponder {
 	classvar <norinit = false,<nonr;
 
 	*new { arg function, src, chan, num, veloc, install=true,swallowEvent=false;
+		num = num.isNumber.if({ num.asInteger }, num);
 		^super.new.function_(function)
 			.matchEvent_(MIDIEvent(nil, src, chan, num, veloc))
 			.swallowEvent_(swallowEvent)
@@ -105,6 +106,7 @@ CCResponder : MIDIResponder {
 	classvar <ccinit = false,<ccr,<ccnumr;
 
 	*new { arg function, src, chan, num, value, install=true,swallowEvent=false;
+		num = num.isNumber.if({ num.asInteger }, num);
 		^super.new.function_(function).swallowEvent_(swallowEvent)
 			.matchEvent_(MIDIEvent(nil, src, chan, num, value))
 			.init(install)

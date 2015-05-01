@@ -39,12 +39,26 @@
 #  define C_LINKAGE
 #endif
 
-#ifdef BUILDING_SUPERCOLLIDER // if SuperCollider is being built, instead of used
-#  define SC_DLLEXPORT_C C_LINKAGE SC_API_EXPORT
-#  define SC_DLLEXPORT SC_API_EXPORT
+#ifdef BUILDING_SCSYNTH // if scsynth is being built, instead of used
+#  define SCSYNTH_DLLEXPORT_C C_LINKAGE SC_API_EXPORT
+#  define SCSYNTH_DLLEXPORT SC_API_EXPORT
+#elif defined(USING_SCSYNTH)
+#  define SCSYNTH_DLLEXPORT_C C_LINKAGE SC_API_IMPORT
+#  define SCSYNTH_DLLEXPORT SC_API_IMPORT
 #else
-#  define SC_DLLEXPORT_C C_LINKAGE SC_API_IMPORT
-#  define SC_DLLEXPORT SC_API_IMPORT
+#  define SCSYNTH_DLLEXPORT_C C_LINKAGE
+#  define SCSYNTH_DLLEXPORT /*SC_API_IMPORT*/
+#endif
+
+#ifdef BUILDING_SCLANG // if sclang is being built, instead of used
+#  define SCLANG_DLLEXPORT_C C_LINKAGE SC_API_EXPORT
+#  define SCLANG_DLLEXPORT SC_API_EXPORT
+#elif defined(USING_SCSYNTH)
+#  define SCLANG_DLLEXPORT_C C_LINKAGE SC_API_IMPORT
+#  define SCLANG_DLLEXPORT SC_API_IMPORT
+#else
+#  define SCLANG_DLLEXPORT_C C_LINKAGE
+#  define SCLANG_DLLEXPORT /*SC_API_IMPORT*/
 #endif
 
 #endif

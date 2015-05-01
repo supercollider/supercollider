@@ -163,7 +163,14 @@ NdefParamGui : EnvirGui {
 	}
 
 	setFunc { |key|
-		^{ |sl| object.set(key, sl.value) }
+		^{ |sl|
+			// this special key (#) allows to set the source from a slider
+			if(key == '#') {
+				object.source = sl.value
+			} {
+				object.set(key, sl.value)
+			}
+		}
 	}
 
 	clearField { |index|

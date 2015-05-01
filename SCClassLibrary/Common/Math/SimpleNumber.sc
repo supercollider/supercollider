@@ -239,7 +239,12 @@ SimpleNumber : Number {
 				if (this >= inMax, { ^outMax });
 			}
 		);
-		if (abs(curve) < 0.001) { ^this.linlin(inMin, inMax, outMin, outMax) };
+		if (abs(curve) < 0.001) {
+			// If the value should be clipped, it has already been clipped (above).
+			// If we got this far, then linlin does not need to do any clipping.
+			// Inlining the formula here makes it even faster.
+			^(this-inMin)/(inMax-inMin) * (outMax-outMin) + outMin;
+		};
 
 		grow = exp(curve);
 		a = outMax - outMin / (1.0 - grow);
@@ -263,7 +268,10 @@ SimpleNumber : Number {
 				if (this >= inMax, { ^outMax });
 			}
 		);
-		if (abs(curve) < 0.001) { ^this.linlin(inMin, inMax, outMin, outMax) };
+		if (abs(curve) < 0.001) {
+			// If the value should be clipped, it has already been clipped (above).
+			^(this-inMin)/(inMax-inMin) * (outMax-outMin) + outMin;
+		};
 
 		grow = exp(curve);
 		a = inMax - inMin / (1.0 - grow);

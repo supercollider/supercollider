@@ -57,6 +57,8 @@ public:
 	static void freeLibraryConfig();
 	static bool defaultLibraryConfig(   bool standalone);
 	static bool readLibraryConfig(bool standalone);
+	
+	const char* getCurrentConfigPath();
 
 private:
 	DirVector mIncludedDirectories;

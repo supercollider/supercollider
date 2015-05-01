@@ -101,11 +101,17 @@ GridLayout : Layout {
 		var data;
 		grid = this.new;
 		rows.do { |row, r|
+			var offset = 0;
 			if( row.size > 0 ) {
 				row.do { |item, c|
+					var colSpan;
 					if( item.notNil ) {
 						data = this.parse( item, r, c );
+						colSpan = data[4];
+						data[2] = data[2] + offset;
 						grid.invokeMethod( \addItem, [data], true );
+						// If there's spanning, store offset for next elements column
+						if (colSpan > 1) { offset = offset + (colSpan - 1) };
 					};
 				};
 			};
@@ -118,11 +124,17 @@ GridLayout : Layout {
 		var data;
 		grid = this.new;
 		cols.do { |col, c|
+			var offset = 0;
 			if( col.size > 0 ) {
 				col.do { |item, r|
+					var rowSpan;
 					if( item.notNil ) {
 						data = this.parse( item, r, c );
+						rowSpan = data[3];
+						data[1] = data[1] + offset;
 						grid.invokeMethod( \addItem, [data], true );
+						// If there's spanning, store offset for next elements row
+						if (rowSpan > 1) { offset = offset + (rowSpan - 1) };
 					};
 				};
 			};

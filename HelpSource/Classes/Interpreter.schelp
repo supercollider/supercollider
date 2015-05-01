@@ -1,9 +1,17 @@
 class::Interpreter
 summary:: The interpreter defines a context in which interactive commands are compiled and executed.
 categories:: Core>Kernel
+related::How-to-Use-the-Interpreter
 
 description::
-In the interpreter, code::this:: refers to the interpreter itself, e.g.: code::this.postln::
+The interpreter is an object that handles the translation and execution of code at runtime. It is that what runs any program code and defines a context for it.
+
+code::
+(
+a = 5 + 7;
+this.cmdLine.postln;
+)
+::
 
 classMethods::
 
@@ -13,7 +21,28 @@ instanceMethods::
 
 subsection::Accessing
 
-The interpreter defines instance variables code::a:: through code::z:: which are always available in the interpreter. By convention, the variable code::s:: is used to hold the default Server. Assigning another value to code::s:: may cause some of the examples in the documentation to fail.
+In the interpreter, code::this:: refers to the interpreter itself, e.g.: code::this.postln::
+
+The interpreter defines global variables (code::a:: … code::z::), that can be used for interactive programming. Except these single letter variables ("interpreter variables"), all variables have to be defined by the keyword code::var:: (see: link::Reference/Assignment::, and link::Reference/Scope::).
+
+code::
+// typical usage
+a = 4;
+b = 3;
+b = b + a;
+
+// some sound
+a = Synth(\default);
+g = fork { loop { 0.1.wait; a.set(\freq, 200 + 20.0.rand2.postln) } };
+g.stop; a.free;
+
+// an overview of all the variables
+this.inspect;
+::
+
+note::Use these variables with a bit of extra care – as they are global, they remain in memory and one piece of code may happen to interfer with another one. The variable code::s:: is by convention bound to the default server (link::Classes/Server::) and should not be changed.::
+
+
 
 method::clearAll
 
@@ -104,4 +133,6 @@ this.preProcessor = { |code| code.replace("SinOsc", "Saw") };
 preProcessor = nil; // reset to nil.
 ::
 
+method::a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z
 
+Global variables ("interpreter variables") for interactive programming (see link::#Accessing::).

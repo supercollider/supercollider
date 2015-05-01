@@ -9,7 +9,9 @@ QuarksGui {
 		palette,
 		lblMsg,
 		btnRecompile,
-		detailView;
+		detailView,
+		<colors,
+		initialized=false;
 
 	*new { ^super.new.init }
 
@@ -17,8 +19,8 @@ QuarksGui {
 		var bounds,
 			btnUpdateDirectory,
 			btnQuarksHelp,
+			btnInstallFolder,
 			btnOpenFolder,
-			lblCaption,
 			btnClear,
 			btnLoad,
 			btnSave;
@@ -29,39 +31,61 @@ QuarksGui {
 		bounds = Window.flipY(Window.availableBounds);
 		window = Window("Quarks", Rect(0, 0, min(bounds.width * 0.75, 1000), bounds.height * 0.9).center_(bounds.center));
 
-		lblCaption = StaticText().font_(GUI.font.new(size:16, usePointSize:true)).string_("Quarks");
+		colors = (
+			error: (bg: Color.fromHexString("#fcdede"), text: Color.fromHexString("#991111")),
+			info: (bg: Color.fromHexString("#e2eef9"), text: Color.fromHexString("#224466")),
+			warn: (bg: Color.fromHexString("#f7ea57"), text: Color.fromHexString("#494620")),
+			success: (bg: Color.fromHexString("#f5ffef"), text: Color.fromHexString("#6cc644")),
+			primary: (bg: Color.fromHexString("#76c656"), text: Color.white),
+			installed: (bg: Color.fromHexString("#76c656"), text: Color.white),
+			default: (bg: Color.white, text: Color.black)
+		);
 
 		btnUpdateDirectory = Button()
-			.states_([["Refresh Quarks directory"]])
-			.toolTip_("Download directory listing from" + Quarks.directoryUrl + "(auto-refreshes every 4 hours)")
+			.states_([["Check for updates"], ["Checking..."]])
+			.toolTip_("Download directory listing from" + Quarks.directoryUrl)
 			.action_({
 				treeView.enabled = false;
-				this.setMsg("Fetching" + Quarks.directoryUrl, \yellow);
-				AppClock.sched(0.2, {
-					protect {
-						model.fetchDirectory(true);
-					} {
-						treeView.enabled = true;
-						this.setMsg("Quarks directory has been updated.", \green);
-						this.update;
-					}
+				this.setMsg("Fetching" + Quarks.directoryUrl, \info);
+				this.checkForUpdates({
+					this.setMsg("Directory has been updated.", \success);
+					treeView.enabled = true;
+					btnUpdateDirectory.value = 0;
+					this.update;
+				}, {
+					this.setMsg();
+					treeView.enabled = true;
+					btnUpdateDirectory.value = 0;
+					this.update;
 				});
 				nil
 			});
 
-		btnQuarksHelp = Button().states_([["Quarks Help"]])
+		btnQuarksHelp = Button().states_([["Help"]])
 			.toolTip_("Open Quarks documentation")
 			.action_({ HelpBrowser.openBrowsePage("Quarks") });
 
-		btnOpenFolder = Button().states_([["Open Quarks Folder"]])
+		btnInstallFolder = Button().states_([["Install a folder"]])
+			.toolTip_("Install classes from a folder on your computer")
+			.action_({ this.installFolder });
+
+		/*btnOpenFolder = Button().states_([["Open Quarks Folder"]])
 			.toolTip_("Open" + model.folder)
-			.action_({ model.openFolder });
+			.action_({ model.openFolder });*/
 
 		btnClear = Button().states_([["Uninstall all"]])
 			.toolTip_("Uninstall all")
 			.action_({ model.clear; this.update; });
 
-		btnLoad = Button().states_([["Load Quarks file"]])
+		btnSave = Button().states_([["Save Quarks set"]])
+			.toolTip_("Save currently installed quarks to a file")
+			.action_({
+				Dialog.savePanel({ |path|
+					model.save(path)
+				})
+			});
+
+		btnLoad = Button().states_([["Load Quarks set"]])
 			.toolTip_("Install a set of quarks from a file")
 			.action_({
 				Dialog.openPanel({ |path|
@@ -70,23 +94,17 @@ QuarksGui {
 				})
 			});
 
-		btnSave = Button().states_([["Save Quarks file"]])
-			.toolTip_("Save currently installed quarks to a file")
-			.action_({
-				Dialog.savePanel({ |path|
-					model.save(path)
-				})
-			});
-
 		btnRecompile = Button().states_([
 				["Recompile class library"],
-				["Recompile class library", Color.black, Color.yellow]
+				["Recompile class library", colors.primary.text, colors.primary.bg]
 			])
 			.toolTip_("You will need to recompile the class library after making any changes")
 			.action_({ thisProcess.platform.recompile })
 			.enabled_(false);
 
-		lblMsg = StaticText().font_(GUI.font.new(size:12, usePointSize:true));
+		lblMsg = StaticText()
+			.font_(GUI.font.new(size:13, usePointSize:true))
+			.align_(\center);
 
 		treeView = TreeView()
 			.setProperty(\rootIsDecorated, false)
@@ -114,8 +132,14 @@ QuarksGui {
 
 		window.layout =
 			VLayout(
-				lblCaption,
-				HLayout(btnUpdateDirectory, btnOpenFolder, btnQuarksHelp, btnClear, btnSave, btnLoad, btnRecompile, nil),
+				HLayout(
+					btnUpdateDirectory,
+					btnInstallFolder,
+					btnClear,
+					btnSave,
+					btnLoad,
+					btnQuarksHelp,
+					btnRecompile),
 				lblMsg,
 				[treeView, s:5],
 				[detailView.makeView(this), s:2]
@@ -139,7 +163,10 @@ QuarksGui {
 			});
 		});
 		treeView.canSort = true;
-		treeView.sort(1, true);
+		if(initialized.not, {
+			treeView.sort(0, true);
+			initialized = true;
+		});
 		treeView.invokeMethod(\resizeColumnToContents, 0);
 		treeView.invokeMethod(\resizeColumnToContents, 1);
 		treeView.invokeMethod(\resizeColumnToContents, 2);
@@ -149,9 +176,41 @@ QuarksGui {
 		detailView.update();
 	}
 
-	setMsg { |msg, color|
-		lblMsg.background = palette.button.blend(Color.perform(color ? 'yellow'), 0.2);
-		lblMsg.string = msg;
+	setMsg { |msg, style|
+		lblMsg.background = colors[style ? \default].bg;
+		lblMsg.stringColor = colors[style ? \default].text;
+		lblMsg.string = msg ? "";
+	}
+	checkForUpdates { |onComplete, onCancel|
+		this.runCancellable({
+			model.fetchDirectory(true);
+			model.checkForUpdates();
+		}, onComplete, onCancel)
+	}
+	installFolder {
+		FileDialog({ |path|
+				Quarks.install(path);
+				this.update;
+			},
+			nil, // cancel
+			2,  // QFileDialog::Directory
+			0,  // QFileDialog::AcceptOpen
+			true); // just first value in paths array
+	}
+	runCancellable { |fn, onComplete, onCancel|
+		var r, cancel;
+		r = Routine.run({
+			fn.protect({
+				CmdPeriod.remove(cancel);
+				onComplete.value();
+			});
+		}, clock: AppClock);
+		cancel = {
+			r.stop();
+			CmdPeriod.remove(cancel);
+			onCancel.value;
+		};
+		CmdPeriod.add(cancel);
 	}
 }
 
@@ -160,230 +219,134 @@ QuarkDetailView {
 
 	var <model,
 		view,
-		selectVersion,
-		btnMethods,
-		txtDescription,
-		btnClose,
-		btnHelp,
-		btnOpenFolder,
-		btnClasses,
-		btnOpenWebpage,
-		btnOpenGithub,
-		btnCheckout;
+		quarksGui,
+		details,
+		txtTitle;
 
-	makeView { |quarksGui|
-		var xSizeHint;
-		txtDescription = TextView(bounds:10@10)
-			.font_(Font(size:11, usePointSize:true))
-			.tabWidth_(15)
-			.autohidesScrollers_(true)
-			.hasVerticalScroller_(true)
-			.editable_(false)
-			.minHeight_(50);
+	makeView { |argQuarksGui|
+		quarksGui = argQuarksGui;
 
-		btnHelp = Button()
-			.states_([["Help"]])
-			.action_({
-				model.help
-			});
+		txtTitle = StaticText().font_(Font(size:16));
 
-		btnOpenFolder = Button()
-			.states_([["Open Folder"]])
-			.action_({
-				model.localPath.openOS;
-			});
-
-		btnOpenWebpage = Button()
-			.states_([["Open Webpage"]])
-			.action_({
-				var url = model.data['url'] ? model.url;
-				if(url.notNil, {
-					if(url.beginsWith("git:"), {
-						url = "https:" ++ url.copyToEnd(4)
-					});
-					openOS(url);
-				});
-			});
-
-		btnOpenGithub = Button()
-			.states_([["Github"]])
-			.action_({
-				var url = model.url;
-				if(url.notNil, {
-					if(url.beginsWith("git:"), {
-						url = "https:" ++ url.copyToEnd(4)
-					});
-					openOS(url);
-				});
-			});
-
-		selectVersion = PopUpMenu();
-
-		btnCheckout = Button()
-			.states_([["Checkout"]])
-			.action_({
-				var refspec = selectVersion.items.at(selectVersion.value ? -1),
-					ok=true;
-				if(model.isInstalled, {
-					// reinstall possibly with different dependencies
-					model.uninstall;
-					ok = Quarks.install(model.url, refspec);
-				}, {
-					model.refspec = refspec;
-					model.checkout;
-				});
-				this.update;
-				if(ok, {
-					quarksGui.setMsg(model.name + "has checked out" + model.version, \green);
-				}, {
-					quarksGui.setMsg(model.name + "could not checkout" + model.version, \yellow);
-				});
-			});
-
-		btnClasses = Button()
-			.states_([["Classes"]])
-			.toolTip_("Show classes defined by this quark")
-			.enabled_(false)
-			.action_({
-				var cls = model.definesClasses;
-				var tree, item, buts = [
-					Button().states_([["Browse"]]).action_({
-						cls[item.index].browse;
-					}),
-					Button().states_([["Help"]]).action_({
-						cls[item.index].help;
-					}),
-					Button().states_([["Open File"]]).action_({
-						cls[item.index].openCodeFile;
-					})
-				];
-				buts.do(_.enabled_(false));
-				Window("% Classes".format(model.name)).layout_(
-					VLayout(
-						tree = TreeView()
-							.setProperty(\rootIsDecorated, false)
-							.columns_(["Classes"])
-							.onItemChanged_({|v| item = v.currentItem}),
-						HLayout(*buts)
-					)
-				).front;
-				if(cls.size > 0) {
-					cls.do {|c| tree.addItem([c.name.asString])};
-					tree.itemPressedAction = { buts.do(_.enabled_(true)) }
-				} {
-					tree.addItem(["No classes"]);
-				};
-				tree.invokeMethod(\resizeColumnToContents, 0);
-			});
-
-		btnMethods = Button()
-			.states_([["Extension methods"]])
-			.toolTip_("Show extension methods defined in this quark that overwrite methods in the common library")
-			.enabled_(false)
-			.action_({
-				var mets = model.definesExtensionMethods;
-				var tree, item, buts = [
-					Button().states_([["Browse"]]).action_({
-						mets[item.index].ownerClass.browse;
-					}),
-					Button().states_([["Help"]]).action_({
-						mets[item.index].help;
-					}),
-					Button().states_([["Source"]]).action_({
-						mets[item.index].openCodeFile;
-					})
-				];
-				buts.do(_.enabled_(false));
-				Window("% Extension Methods".format(model.name)).layout_(
-					VLayout(
-						tree = TreeView()
-							.setProperty(\rootIsDecorated, false)
-							.columns_(["Class", "Method"])
-							.onItemChanged_({|v| item = v.currentItem }),
-						HLayout(*buts)
-					)
-				).front;
-				if(mets.size > 0) {
-					mets.collect { |m|
-						var x = m.ownerClass.name,
-							it = if(x.isMetaClassName,
-								{[x.asString[5..], "*" ++ m.name]},
-								{[x.asString, "-" ++ m.name]});
-						tree.addItem(it);
-					};
-					tree.itemPressedAction = { buts.do(_.enabled_(true)) }
-				} {
-					tree.addItem([nil,"No extension methods"]);
-				};
-				tree.invokeMethod(\resizeColumnToContents, 0);
-				tree.invokeMethod(\resizeColumnToContents, 1);
-			});
-
-		btnClose = StaticText()
-			.string_("X")
-			.align_(\center)
-			.toolTip_("Close detail view")
-			.mouseDownAction_({
-				this.visible = false;
-			});
-		xSizeHint = btnClose.sizeHint;
-		xSizeHint.width = xSizeHint.width + 20;
-		btnClose.fixedSize = xSizeHint;
+		details = TreeView()
+			.setProperty(\rootIsDecorated, false)
+			.columns_(["", ""])
+			.canSort_(false);
 
 		view = View();
 		view.layout = VLayout(
-			HLayout(btnOpenWebpage, btnOpenGithub, btnHelp,
-				btnOpenFolder, btnClasses, btnMethods,
-				selectVersion, btnCheckout, btnClose,
-				nil).margins_(0),
-			txtDescription
-		).spacing_(0).margins_(0);
+			txtTitle,
+			details
+		).spacing_(4).margins_(0);
 		view.visible = false;
 		^view
 	}
 	update {
-		var tags, refspec, isInstalled = false, isDownloaded = false, url;
+		var tags, refspec, isInstalled = false, isDownloaded = false,
+			url,
+			webpage,
+			dependencies,
+			makeBtn = { |text, fn|
+				Button()
+					.fixedSize_(Size(600, 20))
+					.states_([[text]])
+					.action_(fn);
+			};
 		if(model.notNil, {
-			txtDescription.string = this.descriptionForQuark(model) ? "";
+
 			isInstalled = model.isInstalled;
 			isDownloaded = model.isDownloaded;
 			url = model.url;
-			// if webpage is different than the github url
-			btnOpenWebpage.enabled = model.data['url'] != url and: {url.notNil};
-			btnOpenGithub.enabled = url.notNil;
-			btnClasses.enabled = isInstalled;
-			btnMethods.enabled = isInstalled;
-			btnHelp.enabled = isInstalled or: {
-				isDownloaded and: {model.data['helpdoc'].isString}
-			};
-			btnOpenFolder.enabled = isDownloaded or: isInstalled;
-			btnCheckout.enabled = model.url.notNil;
+			webpage = model.data['url'];
 
-			if(model.git.isNil, {
-				selectVersion.items = [];
-				selectVersion.enabled = false;
-			}, {
-				tags = model.tags.collect({ |t| "tags/" ++ t });
-				refspec = model.git.refspec;
-				if(tags.indexOfEqual(refspec).isNil, {
-					tags = tags.add(refspec);
-				});
-				// if model.git.remoteLatest != current
-				// show that you can update
-				tags = tags.add("HEAD");
-				if(model.git.isDirty, {
-					selectVersion.enabled = false;
-					refspec = "DIRTY";
-					tags = tags.add("DIRTY");
-				}, {
-					selectVersion.enabled = true;
-				});
-				selectVersion.items = tags;
-				selectVersion.value = tags.indexOfEqual(refspec);
+			txtTitle.string = model.name;
+
+			details.clear();
+
+
+			if(model.summary.notNil, {
+				this.pushRow("Summary", model.summary);
 			});
+
+			// author
+
+			// version
+			if(model.data['version'].notNil, {
+				this.pushRow("Version", model.data['version'].asString);
+			});
+
+			if(webpage != url and: webpage.notNil, {
+				this.pushRow("Webpage", makeBtn.value(webpage, {
+					this.openWebpage();
+				}));
+			});
+
+			if(url.notNil, {
+				this.pushRow("Repository", makeBtn.value(url, {
+					this.openGithub();
+				}));
+			});
+
+			if(isDownloaded or: isInstalled, {
+				this.pushRow("Local path", makeBtn.value("Open Folder", {
+					this.openLocalPath;
+				}));
+			});
+			if(isInstalled and: { File.exists(model.localPath).not }, {
+				this.pushRow("ERROR", model.localPath + "does not exist");
+			});
+
+			dependencies = model.dependencies;
+			if(dependencies.notEmpty) {
+				this.pushRow("Dependencies", dependencies.collect(_.asString).join(Char.nl));
+			};
+			if(isInstalled or: {
+				isDownloaded and: {model.data['helpdoc'].isString}
+			}, {
+				this.pushRow("Help", makeBtn.value("Open help", { model.help }));
+			});
+
+			if(isDownloaded, {
+				if(isInstalled, {
+					this.pushRow("Classes",
+						makeBtn.value("Show classes", { this.showClasses })
+					);
+					this.pushRow("Extensions",
+						makeBtn.value("Show extension methods",
+							{ this.showExtensionMethods })
+					);
+				});
+			}, {
+				if(model.url.notNil, {
+					this.pushRow("", makeBtn.value("Fetch", {
+						model.checkout();
+						quarksGui.update();
+						this.update();
+					}));
+				});
+			});
+
+			model.data.keysValuesDo({ |k, v|
+				if(#[\name, \summary, \url, \path, \dependencies, \version].includes(k).not) {
+					this.pushRow(k.asString, v.value().asString);
+				}
+			});
+
+			// versions
+			if(isDownloaded and: {model.git.notNil}, {
+				this.pushRow("Versions", this.makeVersionTree());
+			});
+
 			view.visible = true;
 		}, {
 			view.visible = false;
+		});
+	}
+	pushRow { |caption, obj|
+		if(obj.isString, {
+			details.addItem([caption, obj]);
+		}, {
+			details.addItem([caption, nil]).setView(1, obj);
 		});
 	}
 	model_ { |quark|
@@ -393,38 +356,186 @@ QuarkDetailView {
 	visible_ { |bool|
 		view.visible = bool;
 	}
-	descriptionForQuark { |quark|
-		var lines,
-			dependencies,
-			isInstalled = quark.isInstalled,
-			isDownloaded = quark.isDownloaded;
-		lines = [
-			quark.name,
-			"url:" + quark.url,
-			"installed:" + isInstalled,
-			if(quark.url.notNil, { "downloaded:" + isDownloaded }),
-			if(isDownloaded or: isInstalled, { "path:" + quark.localPath })
+	openWebpage {
+		var url = model.data['url'];
+		if(url.notNil, {
+			openOS(url);
+		});
+	}
+	openGithub {
+		var url = model.url;
+		if(url.notNil, {
+			if(url.beginsWith("git:"), {
+				url = "https:" ++ url.copyToEnd(4)
+			});
+			openOS(url);
+		});
+	}
+	openLocalPath {
+		model.localPath.openOS;
+	}
+	showClasses {
+		var cls = model.definesClasses;
+		var tree, item, buts = [
+			Button().states_([["Browse"]]).action_({
+				cls[item.index].browse;
+			}),
+			Button().states_([["Help"]]).action_({
+				cls[item.index].help;
+			}),
+			Button().states_([["Open File"]]).action_({
+				cls[item.index].openCodeFile;
+			})
 		];
-		if(isInstalled and: { File.exists(quark.localPath).not }, {
-			lines = lines.add("ERROR: path does not exist");
+		buts.do(_.enabled_(false));
+		Window("% Classes".format(model.name)).layout_(
+			VLayout(
+				tree = TreeView()
+					.setProperty(\rootIsDecorated, false)
+					.columns_(["Classes"])
+					.onItemChanged_({|v| item = v.currentItem}),
+				HLayout(*buts)
+			)
+		).front;
+		if(cls.size > 0) {
+			cls.do {|c| tree.addItem([c.name.asString])};
+			tree.itemPressedAction = { buts.do(_.enabled_(true)) }
+		} {
+			tree.addItem(["No classes"]);
+		};
+		tree.invokeMethod(\resizeColumnToContents, 0);
+	}
+	showExtensionMethods {
+		var mets = model.definesExtensionMethods;
+		var tree, item, buts = [
+			Button().states_([["Browse"]]).action_({
+				mets[item.index].ownerClass.browse;
+			}),
+			Button().states_([["Help"]]).action_({
+				mets[item.index].help;
+			}),
+			Button().states_([["Source"]]).action_({
+				mets[item.index].openCodeFile;
+			})
+		];
+		buts.do(_.enabled_(false));
+		Window("% Extension Methods".format(model.name)).layout_(
+			VLayout(
+				tree = TreeView()
+					.setProperty(\rootIsDecorated, false)
+					.columns_(["Class", "Method"])
+					.onItemChanged_({|v| item = v.currentItem }),
+				HLayout(*buts)
+			)
+		).front;
+		if(mets.size > 0) {
+			mets.collect { |m|
+				var x = m.ownerClass.name,
+					it = if(x.isMetaClassName,
+						{[x.asString[5..], "*" ++ m.name]},
+						{[x.asString, "-" ++ m.name]});
+				tree.addItem(it);
+			};
+			tree.itemPressedAction = { buts.do(_.enabled_(true)) }
+		} {
+			tree.addItem([nil,"No extension methods"]);
+		};
+		tree.invokeMethod(\resizeColumnToContents, 0);
+		tree.invokeMethod(\resizeColumnToContents, 1);
+	}
+	makeVersionTree {
+		var versions, tags, remoteLatest, currentRefspec, currentSha, isDirty, tree;
+
+		versions = List.new;
+
+		tags =  model.tags;
+
+		// add LATEST iff remoteLatest != sha of most recent tag
+		remoteLatest = model.git.remoteLatest;
+		if(tags.size == 0 or: {
+			remoteLatest != model.git.shaForTag(tags.first);
+		}, {
+			versions.add([remoteLatest, "LATEST"]);
 		});
 
-		quark.data.keysValuesDo({ |k, v|
-			if([\name, \summary, \url, \path, \dependencies].includes(k).not) {
-				lines = lines.add(k.asString ++ ":" + v.asString);
-			}
+		// working copy
+		currentRefspec = model.refspec;
+		if(currentRefspec.size != 40, {
+			if(currentRefspec.beginsWith("tags/"), {
+				currentSha = model.git.shaForTag(currentRefspec.copyToEnd(5));
+			}, {
+				currentSha = model.git.shaForTag(currentRefspec);
+			});
+		}, {
+			currentSha = currentRefspec;
 		});
-		dependencies = quark.dependencies;
-		if(dependencies.notEmpty) {
-			lines = lines ++ [Char.nl, "Dependencies:"] ++ dependencies.collect(_.asString);
+
+		tags.do { |tag|
+			var refspec = "tags/" ++ tag;
+			versions.add([refspec, tag]);
 		};
-		if(quark.summary.notNil, {
-			lines = lines ++ [
-				Char.nl,
-				quark.summary
-			];
+
+		isDirty = model.git.isDirty;
+		if(isDirty, {
+			currentRefspec = "DIRTY";
+			versions.insert(0, ["DIRTY", "DIRTY"]);
 		});
-		^lines.select(_.notNil).join(Char.nl);
+
+		tree = TreeView()
+			.setProperty(\rootIsDecorated, false)
+			.columns_(["Version", "Checkout"]);
+
+		versions.do({ |tagRefspec|
+			var tag, refspec, btn, row, isCurrent, btnText, enabled;
+			# refspec, tag = tagRefspec;
+			isCurrent = refspec == currentRefspec;
+			row = tree.addItem([tag, nil]);
+			// if installed then you can switch versions
+			// else you can install any including current
+			if(model.isInstalled, {
+				btnText = if(isCurrent, "INSTALLED", "Install");
+				enabled = isCurrent.not;
+			}, {
+				btnText = "Install";
+				enabled = true;
+			});
+			if(isDirty, {
+				enabled = false;
+			});
+			btn = Button()
+				.fixedSize_(Size(100, 20))
+				.states_([[btnText]]);
+			btn.enabled = enabled;
+			if(enabled, {
+				btn.action = { this.checkout(refspec) };
+			});
+			row.setView(1, btn);
+
+			if(refspec == currentRefspec, {
+				row.colors = [quarksGui.colors.installed.bg, quarksGui.colors.installed.bg];
+				row.setTextColor(0, quarksGui.colors.installed.text);
+			});
+		});
+
+		tree.invokeMethod(\resizeColumnToContents, 0);
+		^tree
+	}
+	checkout { |refspec|
+		{
+			if(model.isInstalled, {
+				// reinstall possibly with different dependencies
+				model.uninstall;
+			});
+			model = Quarks.install(model.url, refspec);
+		}.protect({ |err|
+			this.update;
+			quarksGui.update;
+			if(err.isNil, {
+				quarksGui.setMsg(model.name + "has checked out" + refspec, \success);
+			}, {
+				quarksGui.setMsg(model.name + "failed to checkout" + refspec, \error);
+			});
+		});
 	}
 }
 
@@ -443,12 +554,13 @@ QuarkRowView {
 
 		btn = Button().fixedSize_(Size(20, 20));
 		treeItem = parent.addItem([
+			"",
 			nil,
 			"",
 			"",
-			"",
 			""
-		]).setView(0, btn);
+		]).setView(1, btn);
+		treeItem.setTextColor(0, Color.clear);
 
 		btn.action = { |btn|
 			this.install(btn.value > 0);
@@ -456,56 +568,51 @@ QuarkRowView {
 		this.update;
 	}
 	install { |bool|
-		var prev, ok;
-		if(bool, {
-			// if any other is installed by same name
-			// then just uinstall that first
-			prev = Quarks.installed.detect({ |q| q.name == quark.name });
-			if(prev.notNil, {
-				"Uninstalling other version % %".format(prev, prev.localPath).warn;
-				prev.uninstall;
-			});
-			ok = quark.install;
-			if(ok, {
-				quarksGui.setMsg("Installed" + quark, \green);
+		quarksGui.runCancellable({
+			var prev, ok;
+			if(bool, {
+				// if any other is installed by same name
+				// then just uinstall that first
+				prev = Quarks.installed.detect({ |q| q.name == quark.name });
+				if(prev.notNil, {
+					"Uninstalling other version % %".format(prev, prev.localPath).warn;
+					prev.uninstall;
+				});
+				ok = quark.install;
+				if(ok, {
+					quarksGui.setMsg("Installed" + quark, \success);
+				}, {
+					quarksGui.setMsg("Error while installing" + quark, \error);
+				});
 			}, {
-				quarksGui.setMsg("Error while installing" + quark, \red);
+				quark.uninstall;
+				quarksGui.setMsg("Uninstalled" + quark, \success);
 			});
 		}, {
-			quark.uninstall;
-			quarksGui.setMsg("Uninstalled" + quark, \yellow);
+			quarksGui.update;
+		}, {
+			quarksGui.setMsg("Cancelled" + quark, \info);
+			quarksGui.update;
 		});
-		quarksGui.update;
 	}
 
 	update {
-		var palette = GUI.current.tryPerform(\palette),
-			c = palette !? {palette.button},
-			green = c.notNil.if({Color.green.blend(c, 0.5)}, {Color.green(1, 0.5)}),
-			grey = c.notNil.if({Color.grey.blend(c, 0.5)}, {Color.grey(1, 0.5)}),
-			isInstalled;
+		var isInstalled;
 
 		btn.states = [
-			if(quark.isDownloaded, {
-				["+", nil, grey]
-			}, {
-				["+", nil, nil]
-			}),
-			["✓", nil, green],
+			["+", nil, nil],
+			["✓", quarksGui.colors.primary.text, quarksGui.colors.primary.bg],
 		];
 
 		isInstalled = quark.isInstalled;
 		btn.value = isInstalled.binaryValue;
 
-		treeItem.setString(1, isInstalled.if("Y", { quark.isDownloaded.if("N", "") }));
+		// this column has invisible text
+		// its used to sort the rows so that installed quarks are at the top
+		treeItem.setString(0, isInstalled.if("Y", { quark.isDownloaded.if("N", "") }));
+		// 1 is the install button. its not possible to sort by this column
 		treeItem.setString(2, quark.name ? "");
 		treeItem.setString(3, (quark.version ? "").asString);
-		treeItem.setString(4,
-			if(quark.summary.isNil, {
-				""
-			}, {
-				quark.summary.replace(Char.nl," ").replace(Char.tab, "")
-			})
-		);
+		treeItem.setString(4, (quark.summary ? "").replace(Char.nl," ").replace(Char.tab, ""));
 	}
 }

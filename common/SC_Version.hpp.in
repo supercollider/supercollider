@@ -24,6 +24,8 @@
 static const int SC_VersionMajor    = @PROJECT_VERSION_MAJOR@;
 static const int SC_VersionMinor    = @PROJECT_VERSION_MINOR@;
 static const char SC_VersionPatch[] = "@PROJECT_VERSION_PATCH@";
+static const char SC_Branch[] = "@GIT_BRANCH@";
+static const char SC_CommitHash[] = "@GIT_COMMIT_HASH@";
 
 static inline std::string SC_VersionString()
 {
@@ -32,4 +34,11 @@ static inline std::string SC_VersionString()
 		<< SC_VersionMinor
 		<< SC_VersionPatch;
 	return out.str();
+}
+
+static inline std::string SC_BuildString()
+{
+    std::stringstream out;
+    out << "Built from branch '" << SC_Branch << "' [" << SC_CommitHash << "]";
+    return out.str();
 }

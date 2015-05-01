@@ -84,6 +84,7 @@ extern "C"
 
 	void DiskOut_next(DiskOut *unit, int inNumSamples);
 	void DiskOut_Ctor(DiskOut* unit);
+    void DiskOut_Dtor(DiskOut* unit);
 
 	void VDiskIn_next(VDiskIn *unit, int inNumSamples);
 	void VDiskIn_first(VDiskIn *unit, int inNumSamples);
@@ -166,7 +167,7 @@ struct DiskIOThread
 	boost::lockfree::spsc_queue<DiskIOMsg, boost::lockfree::capacity<256> > mDiskFifo;
 #endif
 
-	std::atomic_bool mRunning;
+	std::atomic<bool> mRunning;
 	thread mThread;
 
 	DiskIOThread():
@@ -400,6 +401,33 @@ sendMessage:
 
 }
 
+void DiskOut_Dtor(DiskOut* unit)
+{
+    GET_BUF
+    
+    uint32 framepos = unit->m_framepos;
+    uint32 bufFrames2 = bufFrames >> 1;
+    // check that we didn't just write
+    if (framepos != 0 && framepos != bufFrames2) {
+        // if not write the last chunk of samples
+        uint32 writeStart;
+        if (framepos > bufFrames2) {
+            writeStart = bufFrames2;
+        } else {
+            writeStart = 0;
+        }
+        DiskIOMsg msg;
+        msg.mWorld = unit->mWorld;
+        msg.mCommand = kDiskCmd_Write;
+        msg.mBufNum = (int)fbufnum;
+        msg.mPos = writeStart;
+        msg.mFrames = framepos - writeStart;
+        msg.mChannels = bufChannels;
+        //printf("sendMessage %d  %d %d %d\n", msg.mBufNum, msg.mPos, msg.mFrames, msg.mChannels);
+        gDiskIO.Write(msg);
+    }
+}
+
 
 void VDiskIn_Ctor(VDiskIn* unit)
 {
@@ -624,7 +652,7 @@ PluginLoad(DiskIO)
 	gDiskIO.launchThread();
 
 	DefineSimpleUnit(DiskIn);
-	DefineSimpleUnit(DiskOut);
+	DefineDtorUnit(DiskOut);
 	DefineSimpleUnit(VDiskIn);
 }
 

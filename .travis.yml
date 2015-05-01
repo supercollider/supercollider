@@ -13,12 +13,14 @@ before_install:
  - ifmac () { if [[ $TRAVIS_OS_NAME == osx ]]; then eval $@; fi; }
  - iflin () { if [[ $TRAVIS_OS_NAME == linux ]]; then eval $@; fi; }
  - ifmac brew update
- - ifmac brew install cmake qt4 || true
- - iflin sudo apt-add-repository -y ppa:ubuntu-sdk-team/ppa
+ - ifmac brew install cmake qt5 || true
+ #- iflin sudo apt-add-repository -y ppa:ubuntu-sdk-team/ppa
+ - iflin "curl https://s3-us-west-2.amazonaws.com/supercollider/build-tools/linux/qt-5.3.2.zip -o qt.zip; unzip qt.zip -d $HOME/qt"
  - iflin sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
  - iflin sudo add-apt-repository -y ppa:andykimpe/cmake  # backport of cmake 2.8.12
+ - iflin sudo add-apt-repository -y ppa:ondrej/php5 # libicu-dev 52
  - iflin sudo apt-get update
- - iflin sudo apt-get install gcc-4.7 g++-4.7 aptitude build-essential libqt4-dev libqtwebkit-dev libjack-dev libsndfile1-dev libasound2-dev libavahi-client-dev libicu-dev libreadline6-dev libfftw3-dev libxt-dev libudev-dev pkg-config cmake=2.8.12.2-3 subversion libstdc++5
+ - iflin sudo apt-get install libicu-dev=52.1-1+debphp.org~precise+1 gcc-4.7 g++-4.7 aptitude build-essential libjack-dev libsndfile1-dev libasound2-dev libavahi-client-dev libreadline6-dev libfftw3-dev libxt-dev libudev-dev pkg-config cmake=2.8.12.2-3 subversion libstdc++5
  - iflin sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.6 40 --slave /usr/bin/g++ g++ /usr/bin/g++-4.6 
  - iflin sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.7 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.7 
  - iflin sudo update-alternatives --auto gcc
@@ -26,23 +28,30 @@ before_install:
 before_script:
  - mkdir BUILD
  - cd BUILD
- - ifmac cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=`brew --prefix qt` -DSC_QT=1 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 .. --debug-output
- - iflin cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/qt4/ -DCMAKE_INSTALL_PREFIX:PATH=$PWD/Install -DSC_EL=no .. --debug-output
+ - export QT_PREFIX=$HOME/qt/gcc_64
+ - export QT_PLUGIN_PATH=$QT_PREFIX/plugins
+ - ifmac cmake -DCMAKE_PREFIX_PATH=`brew --prefix qt5` -DSC_QT=1 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 .. --debug-output
+ - iflin cmake -DSC_EL=no -DCMAKE_PREFIX_PATH=$QT_PREFIX -DCMAKE_INSTALL_PREFIX:PATH=$PWD/Install -DCMAKE_BUILD_TYPE=Release -DSC_QT=1 .. --debug-output
+# some paths
+ - ifmac export SCLANG=$TRAVIS_BUILD_DIR/BUILD/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
+ - iflin export SCLANG=$TRAVIS_BUILD_DIR/BUILD/Install/bin/sclang
 
-script: 
+script:
  - make install
- 
+ - $TRAVIS_BUILD_DIR/testsuite/sclang/launch_test.py $SCLANG
+
+ - export COMMIT_NAME=$TRAVIS_COMMIT
+ - ifmac mkdir -p $HOME/artifacts
+ - (ifmac cd Install; ifmac zip -r $HOME/artifacts/SC-$COMMIT_NAME.zip SuperCollider)
+
 before_deploy:
  # required for github releases
  - git fetch --tags
- - export COMMIT_NAME=$TRAVIS_COMMIT
  - export BUILD_PREFIX=$TRAVIS_REPO_SLUG/$TRAVIS_OS_NAME
  - export FWD_HTML='<html><head><meta http-equiv="refresh" content="0; url=SC-'$COMMIT_NAME'.zip" /></head></html>'
  # put everything to be archived in artifacts/
- - mkdir $HOME/artifacts
- - cd Install
- - zip -r $HOME/artifacts/SC-$COMMIT_NAME.zip SuperCollider
- - mkdir -p "${TRAVIS_BRANCH%/*}"
+ - mkdir -p "$HOME/artifacts/${TRAVIS_BRANCH%/*}"
+ - mkdir -p "$HOME/artifacts/${TRAVIS_TAG%/*}"
  - echo $FWD_HTML > $HOME/artifacts/$TRAVIS_BRANCH-latest.html
  - 'if [[ $TRAVIS_TAG != "head" ]]; then echo $FWD_HTML > $HOME/artifacts/$TRAVIS_TAG.html; fi;'
 
@@ -60,21 +69,26 @@ deploy:
    acl: public_read
    on:
      condition: $TRAVIS_OS_NAME = osx
-     repo: supercollider/supercollider
      all_branches: true
  # github releases - only tags
  - provider: releases
    api_key:
-     secure: dT+wMo2ICRxBp0oIw/Iao+mUJLHDNcFtOrRUdU/5jX6ENdtabt2CDX+OJX3/SJNdDuNOaR+R1fr7qypQmxx/sHAuzH3uqYMuMH6z95zRHH8iS0iZgLOVfJ7U/O3EpgNLSqlqkRGwl2nDXqCvUJrnDnsXpEy4pbqQXHX5tzM9cQs=
+     secure: YN33x5V66b6xepehiEoIm2+UNdbjAPvgrg713F5FdTmWfmuPbLYX6a9zYQYYQ0ZO6w5kofBuWZKL1arw0ABYgUE9kmnNFgx8nR//wsfOnCcgvhGHMXpImzhWX3tPelCW4gyEBF0w8tmN9o4CCC5dcjgHJcpz/q8+eCfg0VeZOZE=
    file: $HOME/artifacts/SC-$COMMIT_NAME.zip
    prerelease: true
    skip_cleanup: true
    on:
      condition: $TRAVIS_OS_NAME = osx
-     repo: supercollider/supercollider
      tags: true
      all_branches: true
 
 notifications:
- on_success: change
- on_failure: change
+  on_success: change
+  on_failure: change
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/51b9b53ca50a7bfca97d
+    on_success: change
+    on_failure: always
+  
+ 

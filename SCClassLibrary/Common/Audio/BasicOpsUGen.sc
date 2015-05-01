@@ -211,6 +211,7 @@ BinaryOpUGen : BasicOpUGen {
 	optimizeToSum3 {
 		var a, b;
 		#a, b = inputs;
+		if(a.rate == \demand or: { b.rate == \demand }) { ^nil };
 
 		if (a.isKindOf(BinaryOpUGen) and: { a.operator == '+'
 			and: { a.descendants.size == 1 }}) {
@@ -229,6 +230,7 @@ BinaryOpUGen : BasicOpUGen {
 	optimizeToSum4 {
 		var a, b;
 		#a, b = inputs;
+		if(a.rate == \demand or: { b.rate == \demand }) { ^nil };
 
 		if (a.isKindOf(Sum3) and: { a.descendants.size == 1 }) {
 			buildSynthDef.removeUGen(a);
