@@ -125,26 +125,49 @@ public:
         }
         return false;
     }
-
+    void report_latency()
+    {
+        const PaStreamInfo *psi = Pa_GetStreamInfo(stream);
+        if (psi){
+            fprintf(stdout,"  Sample rate: %.3f\n", psi->sampleRate);
+            fprintf(stdout,"  Latency (in/out): %.3f / %.3f sec\n", psi->inputLatency, psi->outputLatency); 
+        }
+    }
     bool open_stream(std::string const & input_device, unsigned int inchans,
                      std::string const & output_device, unsigned int outchans,
-                     unsigned int samplerate, unsigned int pa_blocksize, unsigned int blocksize)
+                     unsigned int samplerate, unsigned int pa_blocksize, int h_blocksize)
     {
         int input_device_index, output_device_index;
         if (!match_device(input_device, input_device_index) || !match_device(output_device, output_device_index))
             return false;
 
         PaStreamParameters in_parameters, out_parameters;
+        PaTime suggestedLatencyIn, suggestedLatencyOut;
+        
+        if (h_blocksize == 0){
+            if (inchans)
+                suggestedLatencyIn = Pa_GetDeviceInfo(input_device_index)->defaultHighInputLatency;
+            if (outchans)
+                suggestedLatencyOut = Pa_GetDeviceInfo(output_device_index)->defaultHighOutputLatency;
+        }else{
+            if(h_blocksize < 0){
+                if (inchans)
+                    suggestedLatencyIn = Pa_GetDeviceInfo(input_device_index)->defaultLowInputLatency;
+                if (outchans)
+                    suggestedLatencyOut = Pa_GetDeviceInfo(output_device_index)->defaultLowOutputLatency;
+            }else
+                suggestedLatencyIn = suggestedLatencyOut = (double)h_blocksize / (double)samplerate;
+        }
 
         if (inchans) {
-            const PaDeviceInfo* device_info = Pa_GetDeviceInfo(output_device_index);
+            const PaDeviceInfo* device_info = Pa_GetDeviceInfo(input_device_index);
 
             inchans = std::min(inchans, (unsigned int)device_info->maxInputChannels);
 
             in_parameters.device = input_device_index;
             in_parameters.channelCount = inchans;
             in_parameters.sampleFormat = paFloat32 | paNonInterleaved;
-            in_parameters.suggestedLatency = device_info->defaultHighInputLatency;
+            in_parameters.suggestedLatency = suggestedLatencyIn;
             in_parameters.hostApiSpecificStreamInfo = NULL;
         }
 
@@ -156,7 +179,7 @@ public:
             out_parameters.device = output_device_index;
             out_parameters.channelCount = outchans;
             out_parameters.sampleFormat = paFloat32 | paNonInterleaved;
-            out_parameters.suggestedLatency = device_info->defaultHighOutputLatency;
+            out_parameters.suggestedLatency = suggestedLatencyOut;
             out_parameters.hostApiSpecificStreamInfo = NULL;
         }
 
@@ -169,7 +192,7 @@ public:
             return false;
 
         callback_initialized = false;
-        blocksize_ = blocksize;
+        blocksize_ = pa_blocksize;
 
         PaError opened = Pa_OpenStream(&stream, in_stream_parameters, out_stream_parameters,
                                        samplerate, pa_blocksize, paNoFlag,

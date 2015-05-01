@@ -1005,7 +1005,7 @@ void World_Start(World *inWorld)
 void World_Cleanup(World *world)
 {
 	if (!world) return;
-
+	deinitialize_library();
 	scsynth::stopAsioThread();
 
 	HiddenWorld *hw = world->hw;

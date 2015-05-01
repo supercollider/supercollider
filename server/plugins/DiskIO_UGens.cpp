@@ -636,6 +636,10 @@ void VDiskIn_next_rate1(VDiskIn *unit, int inNumSamples)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+C_LINKAGE SC_API_EXPORT void unload(InterfaceTable *inTable)
+{
+	gDiskIO.~DiskIOThread();
+}
 
 PluginLoad(DiskIO)
 {
