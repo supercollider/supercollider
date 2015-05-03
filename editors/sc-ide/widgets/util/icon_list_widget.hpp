@@ -36,9 +36,20 @@ public:
         ItemDelegate(QObject *parent) : QStyledItemDelegate(parent) {}
 
         virtual QSize sizeHint
-            ( const QStyleOptionViewItem & opt, const QModelIndex & index ) const
+            ( const QStyleOptionViewItem & option, const QModelIndex & index ) const
         {
-            return QStyledItemDelegate::sizeHint(opt, index) + QSize(0, 10);
+            QIcon icon(index.data(Qt::DecorationRole).value<QIcon>());
+            QSize iconSize = icon.actualSize(option.decorationSize);
+
+            QString text = index.data(Qt::DisplayRole).toString();
+            QFontMetrics fm( option.font );
+
+            int fontWidth = fm.width( text );
+
+            QSize requiredSize ( qMax( fontWidth, iconSize.width() ),
+                                 fm.height() + iconSize.height() );
+
+            return requiredSize + QSize(5, 5);
         }
 
         virtual void paint
