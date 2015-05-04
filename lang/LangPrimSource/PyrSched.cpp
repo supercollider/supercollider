@@ -27,7 +27,11 @@
 #ifdef SC_DARWIN
 # include <CoreAudio/HostTime.h>
 #endif
+#ifdef _MSC_VER
+#include "wintime.h"
+#else
 #include <sys/time.h>
+#endif
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
@@ -224,7 +228,11 @@ static void syncOSCOffsetWithTimeOfDay();
 void resyncThread();
 
 // Use the highest resolution clock available for monotonic clock time
-typedef typename std::conditional<chrono::high_resolution_clock::is_steady, chrono::high_resolution_clock, chrono::steady_clock>::type monotonic_clock;
+typedef
+#ifndef _MSC_VER
+typename
+#endif
+std::conditional<chrono::high_resolution_clock::is_steady, chrono::high_resolution_clock, chrono::steady_clock>::type monotonic_clock;
 
 static chrono::high_resolution_clock::time_point hrTimeOfInitialization;
 
@@ -850,7 +858,7 @@ void* TempoClock::Run()
 
 			//printf("event ready at %g . elapsed beats %g\n", mQueue->slots->uf, elapsedBeats);
 			double wakeTime = BeatsToSecs(slotRawFloat(mQueue->slots));
-            
+
             schedSecs = chrono::duration_cast<chrono::high_resolution_clock::duration>(chrono::duration<double>(wakeTime));
             schedPoint = hrTimeOfInitialization + schedSecs;
 

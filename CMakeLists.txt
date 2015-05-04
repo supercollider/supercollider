@@ -24,6 +24,16 @@ if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 	message(WARNING "WARNING: IN-PLACE BUILDS ARE NOT RECOMMENDED - PLEASE USE A BUILD DIRECTORY")
 endif()
 
+######################################################################
+# Let CMAKE_INSTALL_PREFIX reflect target arch bit and build type
+if (WIN32)    
+    if (CMAKE_GENERATOR MATCHES "Visual Studio 12 2013 Win64")
+        SET(CMAKE_LIBRARY_ARCHITECTURE "x64")
+    else()
+        SET(CMAKE_LIBRARY_ARCHITECTURE "x86")
+    endif()
+    SET(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/${CMAKE_LIBRARY_ARCHITECTURE}/${CMAKE_BUILD_TYPE}")
+endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules
                       ${CMAKE_MODULE_PATH})
@@ -138,7 +148,13 @@ option(SC_MEMORY_DEBUGGING "Build sclang&scsynth for memory debugging (disable m
 option(GC_SANITYCHECK "Enable sanity checks in the sclang garbage collector.")
 
 option(NO_LIBSNDFILE "Disable soundfile functionality. (Not recommended.)" OFF)
-option(NO_AVAHI "Disable Avahi support. (Not recommended.)" OFF)
+
+if(WIN32)
+ 	option(NO_AVAHI "Disable Avahi support. (Not recommended.)" ON)
+else(WIN32)
+ 	option(NO_AVAHI "Disable Avahi support. (Not recommended.)" OFF)
+endif(WIN32)
+
 option(NO_GPL3 "Disable GPL3 code, for pure-GPL2 situations. (Not recommended.)" OFF)
 
 option(SCLANG_SERVER "Build with internal server." ON)
@@ -242,6 +258,7 @@ endif()
 
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
   foreach(flag CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
+		set(${flag} "${${flag}} /wd4065") # switch statement contains 'default' but no 'case' labels
     set(${flag} "${${flag}} /wd4018") # signed/unsigned mismatch
     set(${flag} "${${flag}} /wd4102") # unreferenced label
     set(${flag} "${${flag}} /wd4267") # conversion from 'size_t' to 'int', possible loss of data
@@ -373,7 +390,6 @@ if (WIN32)
 		README.md
 		README_WINDOWS.md
 		ChangeLog
-		COPYING
 		AUTHORS
 	)
 elseif(APPLE)
@@ -396,6 +412,10 @@ else()
 endif()
 
 install(FILES ${AdditionalInstallFiles} DESTINATION ${auxresourcesdir})
+
+if(WIN32)
+	install(FILES COPYING DESTINATION ${auxresourcesdir} RENAME LICENSE.txt)
+endif(WIN32)
 
 if(INSTALL_HELP)
 	if(SC_SYMLINK_CLASSLIB AND APPLE)

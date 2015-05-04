@@ -256,7 +256,11 @@ elseif (APPLE)
 	add_definitions("-DSC_DARWIN")
 endif()
 
-if (WIN32)
+if (WIN32 AND CMAKE_BUILD_TYPE MATCHES Debug)
+	install(TARGETS ${plugins} ${supernova_plugins}
+			DESTINATION "SuperCollider/plugins_debug"
+			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+elseif (WIN32)
 	install(TARGETS ${plugins} ${supernova_plugins}
 			DESTINATION "SuperCollider/plugins"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)

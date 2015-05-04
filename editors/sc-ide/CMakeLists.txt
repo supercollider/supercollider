@@ -243,14 +243,14 @@ if(APPLE)
     endforeach()
 endif()
 
-# This sets up the exe icon for windows under mingw.
-if(MINGW)
+# This sets up the exe icon for windows.
+if(WIN32)
  set(RES_FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/scide.rc)
  set(CMAKE_RC_COMPILER_INIT windres)
  ENABLE_LANGUAGE(RC)
  SET(CMAKE_RC_COMPILE_OBJECT
  "<CMAKE_RC_COMPILER> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
-endif(MINGW)
+endif(WIN32)
 
 
 # final builds of the IDE seem to be broken atm
