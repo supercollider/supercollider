@@ -122,18 +122,18 @@ extern void iPhone_Load(InterfaceTable *table);
 
 void deinitialize_library()
 {
-	scprintf("deinitialize plugins\n");
+
 #ifdef _WIN32
 	for(void * ptrhinstance : open_handles){
 		HINSTANCE hinstance = (HINSTANCE)ptrhinstance;
 		void *ptr = (void *)GetProcAddress( hinstance, "unload" );
 		if(ptr){
-			scprintf("unloading plugin\n");
 			UnLoadPlugInFunc unloadFunc = (UnLoadPlugInFunc)ptr;
 			(*unloadFunc)();
 		}
+		FreeLibrary(hinstance);
 	}
-       //FreeLibrary dlclose(handle);
+
 #else
 	for(void * handle : open_handles){
 		void *ptr = dlsym(handle, "unload");
@@ -141,6 +141,7 @@ void deinitialize_library()
 			UnLoadPlugInFunc unloadFunc = (UnLoadPlugInFunc)ptr;
 			(*unloadFunc)();
 		}
+	    dlclose(handle);
 	}
 #endif
 }
