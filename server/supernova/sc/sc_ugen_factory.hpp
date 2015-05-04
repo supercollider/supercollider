@@ -230,7 +230,7 @@ public:
 
     void load_plugin_folder(boost::filesystem::path const & path);
     void load_plugin(boost::filesystem::path const & path);
-    void unload_plugins(void);
+
 private:
     void close_handles(void);
 

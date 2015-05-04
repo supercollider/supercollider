@@ -279,7 +279,7 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
     /* don't close the handle */
     return;
 }
-void sc_ugen_factory::unload_plugins(void)
+void sc_ugen_factory::close_handles(void)
 {
     for(void * handle : open_handles){
         void *ptr = dlsym(handle, "unload");
@@ -287,16 +287,10 @@ void sc_ugen_factory::unload_plugins(void)
             UnLoadPlugInFunc unloadFunc = (UnLoadPlugInFunc)ptr;
             (*unloadFunc)();
         }
+        dlclose(handle);
     }
 }
-void sc_ugen_factory::close_handles(void)
-{
-#if 1
-    /* closing the handles has some unwanted side effects, so we leave them open */
-    for(void * handle : open_handles)
-        dlclose(handle);
-#endif
-}
+
 
 #elif defined(_WIN32)
 
@@ -357,14 +351,8 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
 
     return;
 }
+
 void sc_ugen_factory::close_handles(void)
-{
-    for(void * handle : open_handles){
-        HINSTANCE hinstance = (HINSTANCE) handle;
-        FreeLibrary(hinstance);
-    }
-}
-void sc_ugen_factory::unload_plugins(void)
 {
     for(void * ptrhinstance : open_handles){
         HINSTANCE hinstance = (HINSTANCE)ptrhinstance;
@@ -373,6 +361,7 @@ void sc_ugen_factory::unload_plugins(void)
             UnLoadPlugInFunc unloadFunc = (UnLoadPlugInFunc)ptr;
             (*unloadFunc)();
         }
+        FreeLibrary(hinstance);
     }
 }
 #else
