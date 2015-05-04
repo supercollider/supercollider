@@ -383,6 +383,5 @@ int main(int argc, char * argv[])
     } else
         server.run_nonrt_synthesis(args);
 
-    sc_factory->unload_plugins();
     return 0;
 }
