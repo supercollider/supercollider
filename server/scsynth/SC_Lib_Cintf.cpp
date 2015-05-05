@@ -131,7 +131,7 @@ void deinitialize_library()
 			UnLoadPlugInFunc unloadFunc = (UnLoadPlugInFunc)ptr;
 			(*unloadFunc)();
 		}
-		FreeLibrary(hinstance);
+		//FreeLibrary(hinstance);
 	}
 
 #else
@@ -141,9 +141,10 @@ void deinitialize_library()
 			UnLoadPlugInFunc unloadFunc = (UnLoadPlugInFunc)ptr;
 			(*unloadFunc)();
 		}
-	    dlclose(handle);
+	    //dlclose(handle);
 	}
 #endif
+	open_handles.clear();
 }
 void initialize_library(const char *uGensPluginPath)
 {
