@@ -13,6 +13,7 @@ if(MINGW)
         COMMENT "Bundling the dependencies:"
         VERBATIM
     )
+	SET(BUILD_ENV "MinGW")
 else(MINGW)
     install(CODE "
         include(BundleUtilities)
@@ -24,6 +25,7 @@ else(MINGW)
         COMMENT "Bundling the dependencies:"
         VERBATIM
     )
+	SET(BUILD_ENV "VS")
 endif(MINGW)
 
 # This target invokes a custom NSIS script to create
@@ -35,7 +37,7 @@ add_custom_target( installer
         "-DSC_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
         "-DNSIS_SCRIPT=${CMAKE_CURRENT_SOURCE_DIR}/supercollider.nsi"
         "-DSC_CUBE_PATH=${CMAKE_CURRENT_SOURCE_DIR}/Resources/sc_cube.ico"
-        "-DBUILD_DEF=${CMAKE_BUILD_TYPE}-${CMAKE_LIBRARY_ARCHITECTURE}"
+        "-DBUILD_DEF=${CMAKE_BUILD_TYPE}-${CMAKE_LIBRARY_ARCHITECTURE}-${BUILD_ENV}-${GIT_COMMIT_HASH}"
         -P "${CMAKE_CURRENT_SOURCE_DIR}/package.cmake"
     COMMENT "Building the installer:"
     VERBATIM

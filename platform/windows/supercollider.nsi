@@ -28,7 +28,7 @@ InstallDirRegKey HKCU "Software\SuperCollider\${SC_VERSION}" ""
 
 !insertmacro MUI_PAGE_WELCOME
 
-!insertmacro MUI_PAGE_LICENSE SuperCollider\LICENSE.txt
+!insertmacro MUI_PAGE_LICENSE SuperCollider\COPYING
 
 ; --- Hack to display Readme.md easily ---
 !define MUI_PAGE_HEADER_TEXT "Read me!"
