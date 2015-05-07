@@ -37,20 +37,16 @@ if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 endif()
 
 ##############################################################################################
-# Win - Create target architecture Variable and set install path to SC default (cahed system
+# Win - Create target architecture Variable and set install path to SC default (cached system
 # default location throws error)
 if(WIN32)
-    string(TOLOWER "$ENV{MSYSTEM}" MINGW_ARCH)
-    if (CMAKE_GENERATOR MATCHES "64" OR MINGW_ARCH MATCHES "64")
+    if(CMAKE_GENERATOR MATCHES "64" OR "$ENV{MSYSTEM}" MATCHES "64")
         SET(CMAKE_LIBRARY_ARCHITECTURE "x64" CACHE STRING "Architecture of target system (for 64bit)")
     else()
         SET(CMAKE_LIBRARY_ARCHITECTURE "x86" CACHE STRING "Architecture of target system (for 32bit)")
     endif()
-    if (CMAKE_GENERATOR MATCHES "Visual Studio 12 2013")
-        SET(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install")
-    else()
-        SET(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install")
-    endif()
+
+    SET(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install")
 endif(WIN32)
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules
@@ -387,14 +383,6 @@ if(APPLE)
 			endif()
 		endforeach(onedirectory)
     endif()
-elseif(CMAKE_GENERATOR MATCHES "Visual Studio 12 2013")
-	install(DIRECTORY SCClassLibrary
-        CONFIGURATIONS Debug;Release
-		DESTINATION ${auxresourcesdir}
-		REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
-		PATTERN "*~" EXCLUDE
-		PATTERN "*#" EXCLUDE
-	)
 else()
 	install(DIRECTORY SCClassLibrary
 		DESTINATION ${auxresourcesdir}
@@ -441,8 +429,29 @@ else()
 	)
 endif()
 
-if(CMAKE_GENERATOR MATCHES "Visual Studio 12 2013")
-    install(FILES ${AdditionalInstallFiles} CONFIGURATIONS Debug;Release DESTINATION "${auxresourcesdir}")
+if(WIN32)
+    SET(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}")
+    include(InstallRequiredSystemLibraries)
+
+    install(FILES ${AdditionalInstallFiles} DESTINATION "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}")
+
+    if(CMAKE_GENERATOR MATCHES "Visual Studio 12 2013")
+        # manual solution until robust solution is found. This requires CMAKE_PREFIX_PATH to conatin Qt-path
+        # only (VS) and only works with MinGW cmake as the plugin path is defined relative to the cmake executable;
+        # there should be a find_package qwindows
+        SET(QT_PLATFORM_PLUGIN_PREFIX ${CMAKE_PREFIX_PATH}/plugins/platforms CACHE STRING "Location of qt platform plugin for windows. Override if you have multiple paths in your cmake prefix path")
+    elseif(MINGW)
+        SET(QT_PLATFORM_PLUGIN_PREFIX ${CMAKE_COMMAND}/../../share/qt5/plugins/platforms CACHE STRING "Location of qt platform plugin for windows. Override when not using MinGW-cmake!")
+    endif()
+
+    install(FILES "${QT_PLATFORM_PLUGIN_PREFIX}/qwindows.dll"
+        CONFIGURATIONS Release
+			  DESTINATION "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/platforms"
+    )
+    install(FILES "${QT_PLATFORM_PLUGIN_PREFIX}/qwindowsd.dll"
+        CONFIGURATIONS Debug
+			  DESTINATION "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/platforms"
+    )
 else()
     install(FILES ${AdditionalInstallFiles} DESTINATION ${auxresourcesdir})
 endif()
@@ -455,14 +464,6 @@ if(INSTALL_HELP)
 		endif()
 		install( CODE
 					"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/HelpSource ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource )" )
-	elseif(CMAKE_GENERATOR MATCHES "Visual Studio 12 2013")
-		install(DIRECTORY HelpSource
-            CONFIGURATIONS Debug;Release
-			DESTINATION "${auxresourcesdir}"
-			REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
-			PATTERN "*~" EXCLUDE
-			PATTERN "*#" EXCLUDE
-		)
 	elseif(NOT APPLE)
 		install(DIRECTORY HelpSource
 			DESTINATION ${auxresourcesdir}
