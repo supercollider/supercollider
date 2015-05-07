@@ -8,5 +8,6 @@ execute_process( COMMAND makensis
     /DSC_DST_DIR=${NATIVE_INSTALL_PREFIX}
     /DSC_ICON=${SC_CUBE_PATH}
     /DFILE_NAME_SUFIX=${BUILD_DEF}
+    /DTARCH=${TARGET_ARCH}
     ${NSIS_SCRIPT}
 )

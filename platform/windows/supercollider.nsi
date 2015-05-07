@@ -4,12 +4,12 @@
 !include "FileFunc.nsh"
 !include "WordFunc.nsh"
 !include "MUI2.nsh"
+!include "LogicLib.nsh"
+!include "x64.nsh"
 
 
 Name "SuperCollider ${SC_VERSION}"
 OutFile ${SC_DST_DIR}\SuperCollider-${SC_VERSION}-${FILE_NAME_SUFIX}.exe
-; Atm only one install per version is supported
-InstallDir $PROGRAMFILES\SuperCollider-${SC_VERSION}
 
 !define MUI_ICON ${SC_ICON}
 !define MUI_UNICON ${SC_ICON}
@@ -135,8 +135,11 @@ SectionEnd
 ; --- FUNCTIONS ---
 
 Function .onInit
-    IntOp $0 ${SF_SELECTED} | ${SF_RO}
-    SectionSetFlags ${core_sect} $0
+    ${If} ${TARCH} == "x64"
+        StrCpy $INSTDIR "$PROGRAMFILES64\SuperCollider-${SC_VERSION}"
+    ${Else}
+        StrCpy $INSTDIR "$PROGRAMFILES\SuperCollider-${SC_VERSION}"
+    ${EndIf}
 FunctionEnd
 
 Function RefreshShellIcons
