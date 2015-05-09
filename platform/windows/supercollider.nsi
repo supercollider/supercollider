@@ -9,7 +9,7 @@
 
 
 Name "SuperCollider ${SC_VERSION}"
-OutFile ${SC_DST_DIR}\SuperCollider-${SC_VERSION}-${FILE_NAME_SUFIX}.exe
+OutFile ${SC_DST_DIR}\SuperCollider-${SC_VERSION}_${FILE_NAME_SUFIX}.exe
 
 !define MUI_ICON ${SC_ICON}
 !define MUI_UNICON ${SC_ICON}
