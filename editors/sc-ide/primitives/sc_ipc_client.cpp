@@ -63,7 +63,7 @@ void SCIpcClient::readIDEData() {
         receivedData.open ( QIODevice::ReadOnly );
         
         QDataStream in ( &receivedData );
-        in.setVersion ( QDataStream::Qt_5_4 );
+        in.setVersion ( QDataStream::Qt_5_3 );
         QString selector;
         QVariantList argList;
         in >> selector;
@@ -316,7 +316,7 @@ int ScIDE_Send(struct VMGlobals *g, int numArgsPushed)
         YAMLSerializer serializer(argSlot);
 
         QDataStream stream(gIpcClient->mSocket);
-		stream.setVersion(QDataStream::Qt_5_4);
+		stream.setVersion(QDataStream::Qt_5_3);
         stream << QString(id);
         stream << QString::fromUtf8(serializer.data());
     } catch (std::exception const & e) {
