@@ -19,7 +19,8 @@ Quarks {
 			// local path / ~/ ./
 			path = this.asAbsolutePath(name);
 			if(File.exists(path).not, {
-				("Quarks-install: path does not exist" + path).warn;
+				("Quarks-install: path does not exist" + path).error;
+				^nil
 			});
 			quark = Quark.fromLocalPath(path);
 			this.installQuark(quark);
