@@ -875,6 +875,8 @@ void sc_osc_handler::handle_bundle(received_bundle const & bundle, endpoint_ptr 
     typedef osc::ReceivedBundleElement bundle_element;
 
     if (bundle_time <= now) {
+		time_tag late = now - bundle_time;
+		log_printf("late: %zu.%09zu\n", late.get_secs(), late.get_nanoseconds());
         for (bundle_iterator it = bundle.ElementsBegin(); it != bundle.ElementsEnd(); ++it) {
             bundle_element const & element = *it;
 

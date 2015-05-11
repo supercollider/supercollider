@@ -338,7 +338,15 @@ void realtime_engine_functor::init_thread(void)
 #ifdef JACK_BACKEND
     set_realtime_priority(0);
 #endif
-
+//#ifdef SC_PA_USE_DLL
+	//time_tag nows = time_tag::from_ptime(boost::date_time::microsec_clock<boost::posix_time::ptime>::universal_time());
+	double nows = (uint64)(OSCTime(chrono::system_clock::now())) * kOSCtoSecs;
+	instance->mDLL.Reset(
+		sc_factory->world.mSampleRate,
+		sc_factory->world.mBufLength,
+		SC_TIME_DLL_BW,
+		nows);
+//#endif
     name_current_thread(0);
 }
 

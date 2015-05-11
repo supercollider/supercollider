@@ -177,7 +177,17 @@ public:
             seconds += (float)secs;
         return seconds * samplerate;
     }
+    
+    double to_seconds()
+    {
+        double seconds = get_fractional_seconds();
+        uint32_t secs = get_secs();
 
+        if (secs == 0)
+            seconds += (double)secs;
+        return seconds;
+    }
+    
     static time_tag from_ptime(boost::posix_time::ptime const & pt)
     {
         using namespace boost::gregorian;
