@@ -19,7 +19,8 @@ Quarks {
 			// local path / ~/ ./
 			path = this.asAbsolutePath(name);
 			if(File.exists(path).not, {
-				("Quarks-install: path does not exist" + path).warn;
+				("Quarks-install: path does not exist" + path).error;
+				^nil
 			});
 			quark = Quark.fromLocalPath(path);
 			this.installQuark(quark);
@@ -340,7 +341,8 @@ Quarks {
 		});
 	}
 	*isPath { |string|
-		^string.findRegexp("^[~\\.]?/").size != 0
+		var re = if(thisProcess.platform.name !== 'windows', "^[~\\.]?/", "^(\\\\|[a-zA-Z]:)");
+		^string.findRegexp(re).size != 0
 	}
 	*asAbsolutePath { |path, relativeTo|
 		^if(path.at(0).isPathSeparator, {
