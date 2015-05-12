@@ -37,7 +37,7 @@ rrand(24, 48)       // linear distribution in the given range.
 
 exprand(0.01, 1)    // exponential distribution;
                     // both numbers must have the same sign.
-                    // (Note that the distribution of numbers is not exactly an exponential distribution, 
+                    // (Note that the distribution of numbers is not exactly an exponential distribution,
                     // since that would be unbounded: we might call it a logarithmic uniform distribution.)
 ::
 
@@ -289,6 +289,21 @@ list::
 ::
 
 Also see UGens>Generators>Stochastic in the link::Browse#UGens>Generators>Stochastic:: page.
+
+subsection:: Random operators on signals
+
+Unary or binary random method produce a random value for each frame (not implemented in some cases). This can be used to implement tendency masks.
+
+code::
+{ rrand(SinOsc.ar(0.1), SinOsc.ar(0.42)) * 0.1 }.play
+{ exprand(SinOsc.ar(0.1)) * 0.1 }.play
+{ linrand(SinOsc.ar(0.1)) * 0.1 }.play
+{ bilinrand(SinOsc.ar(0.1)) * 0.1 }.play
+{ sum3rand(SinOsc.ar(0.1)) * 0.1 }.play
+{ coin(SinOsc.ar(0.1)) * 0.1 }.play
+::
+
+
 
 subsection:: UGens that generate random numbers once, or on trigger:
 
