@@ -287,7 +287,7 @@ void sc_ugen_factory::close_handles(void)
             UnLoadPlugInFunc unloadFunc = (UnLoadPlugInFunc)ptr;
             (*unloadFunc)();
         }
-        dlclose(handle);
+        //dlclose(handle);
     }
 }
 
@@ -361,7 +361,7 @@ void sc_ugen_factory::close_handles(void)
             UnLoadPlugInFunc unloadFunc = (UnLoadPlugInFunc)ptr;
             (*unloadFunc)();
         }
-        FreeLibrary(hinstance);
+        //FreeLibrary(hinstance);
     }
 }
 #else
