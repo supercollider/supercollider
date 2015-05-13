@@ -468,21 +468,6 @@ method:: underlineSelection
 Underlines the current selection of a Document.
 
 
-subsection:: Auto-Completion
-
-note::
-OSX version only, currently. See link::Reference/DocumentAutoCompletion::.
-::
-code::
-	*allowAutoComp
-	*autoCompAll
-	*autoComplete
-	*autoCompleteKeyAction
-	*openFileAutoComplete (path)
-	*openAutoComplete
-	autoComplete
-::
-
 subsection:: Subclassing and Internal Methods
 
 The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
