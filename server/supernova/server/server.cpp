@@ -342,7 +342,6 @@ void realtime_engine_functor::init_thread(void)
     set_realtime_priority(0);
 #endif
     if(instance->use_system_clock){
-        //time_tag nows = time_tag::from_ptime(boost::date_time::microsec_clock<boost::posix_time::ptime>::universal_time());
         double nows = (uint64)(OSCTime(chrono::system_clock::now())) * kOSCtoSecs;
         instance->mDLL.Reset(
             sc_factory->world.mSampleRate,

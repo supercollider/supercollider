@@ -227,7 +227,7 @@ public:
     {
         sc_osc_handler::increment_logical_time(time_per_tick);
     }
-    
+
     void set_last_now(time_tag const & lasts, time_tag const & nows)
     {
         sc_osc_handler::set_last_now(lasts, nows);
@@ -300,15 +300,12 @@ inline void realtime_engine_functor::sync_clock(void)
 {
 
     if(instance->use_system_clock){
-        //time_tag nows = time_tag::from_ptime(boost::date_time::microsec_clock<boost::posix_time::ptime>::universal_time());
-        log_printf("mDLL.Reset\n");
         double nows = (uint64)(OSCTime(chrono::system_clock::now())) * kOSCtoSecs;
         instance->mDLL.Reset(
             sc_factory->world.mSampleRate,
             sc_factory->world.mBufLength,
             SC_TIME_DLL_BW,
             nows);
-        //instance->mDLL.Update(nows);
         time_tag oscTime = time_tag((uint64)((instance->mDLL.PeriodTime()) * kSecondsToOSCunits + .5));
         time_tag oscInc = time_tag((uint64)((instance->mDLL.Period()) * kSecondsToOSCunits + .5));
         instance->smooth_samplerate = instance->mDLL.SampleRate();
