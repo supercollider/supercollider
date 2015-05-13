@@ -49,10 +49,6 @@ Quarks {
 		// install a list of quarks from a text file
 		var file, line, dir,re, nameRe;
 		var match, localPath, url, name, refspec;
-		// localPath=url[@refspec]
-		re = "^([^=]+)=?([^@]+)@?(.*)$";
-		// quarkname[@refspec]
-		nameRe = "^([^@]+)@?(.*)$";
 		path = this.asAbsolutePath(path);
 		dir = path.dirname;
 		if(File.exists(path).not, {
@@ -62,37 +58,48 @@ Quarks {
 		file = File.open(path, "r");
 		while({
 			line = file.getLine();
-			line.notNil
+			line.notNil;
 		}, {
-			// resolve any paths relative to the quark file
-			match = line.findRegexp(re);
+			#name, refspec = this.parseQuarkSpecifier(line, dir);
+			if (name.notNil) {
+				this.install(name, refspec);
+			}
+		});
+	}
+	*parseQuarkSpecifier { |line, relativeTo|
+		var localRe, nameRe, result, name, refspec, localPath, match, url;
+
+		// localPath=url[@refspec]
+		localRe = "^([^=]+)=([^@]+)@?(.*)$";
+		// quarkname[@refspec]
+		nameRe = "^([^@]+)@?(.*)$";
+
+		result = [nil, nil];
+
+		// resolve any paths relative to the quark file
+		match = line.findRegexp(localRe);
+		if(match.size > 0, {
+			localPath = match[1][1];
+			name = localPath.basename;
+			url = match[2][1];
+			refspec = match[3] !? { match[3][1] };
+			result = [this.asAbsolutePath(localPath, relativeTo), refspec];
+		}, {
+			match = line.findRegexp(nameRe);
 			if(match.size > 0, {
-				localPath = match[1][1];
-				name = localPath.basename;
-				url = match[2][1];
-				refspec = match[3];
-				if(refspec.notNil, {
-					refspec = refspec[1];
-				});
-				this.install(this.asAbsolutePath(localPath, dir), refspec);
-			}, {
-				match = line.findRegexp(nameRe);
-				if(match.size > 0, {
-					name = match[1][1];
-					refspec = match[2];
-					if(refspec.notNil, {
-						refspec = refspec[1];
-					});
-					if(Quarks.isPath(name), {
-						this.install(this.asAbsolutePath(name, dir), refspec);
-					}, {
-						this.install(name, refspec);
-					});
+				name = match[1][1];
+				refspec = match[2] !? { match[2][1] };
+				if(Quarks.isPath(name), {
+					result = [this.asAbsolutePath(name, relativeTo), refspec];
 				}, {
-					"Unreadable line: %".format(line).error;
+					result = [name, refspec];
 				});
+			}, {
+				"Unreadable line: %".format(line).error;
 			});
 		});
+
+		^result;
 	}
 	*save { |path|
 		// save currently installed quarks to a text file
@@ -100,28 +107,55 @@ Quarks {
 		var file, dir, lines;
 		path = this.asAbsolutePath(path);
 		dir = path.dirname;
-		lines = this.installed.collect({ |quark|
-			var localPath, url="", refspec;
-			localPath = this.asRelativePath(quark.localPath);
-			if(Git.isGit(quark.localPath), {
-				url = quark.url;
-				if(Git(quark.localPath).isDirty, {
-					("Working copy is dirty" + quark.localPath).warn;
-				}, {
-					refspec = quark.refspec;
-				});
-			});
-			if(refspec.notNil, {
-				"%=%@%".format(localPath, url, refspec)
-			}, {
-				"%=%".format(localPath, url)
-			});
+
+		lines = this.installed.collect({
+			|quark|
+			this.savedQuarkSpecifier(quark, dir);
 		});
+
 		file = File.open(path, "w");
 		lines = lines.join(Char.nl);
 		file.write(lines);
 		file.close();
 		^lines
+	}
+	*savedQuarkSpecifier { |quark, relativeTo|
+		var line, localPath, url, refspec, isGit, isCleanAndInstalled = false, isInDirectory = false;
+		var specifier = "";
+
+		localPath = this.asRelativePath(quark.localPath, relativeTo);
+
+		if(Git.isGit(quark.localPath), {
+			url = quark.url;
+			if(Git(quark.localPath).isDirty, {
+				("Working copy is dirty" + quark.localPath).warn;
+			}, {
+				refspec = quark.refspec;
+				if (quark.localPath.beginsWith(Quarks.folder)) {
+					isCleanAndInstalled = true;
+				}
+			});
+		});
+
+		if (Quarks.findQuarkURL(quark.name).notNil) {
+			// If we have the quark in the directory, we can simplify by using it's name.
+			url = quark.name;
+		};
+
+		if (isCleanAndInstalled) {
+			// If we have a clean and installed quark,
+			// we can refer to it more generically than a local path.
+			specifier = specifier ++ url;
+		} {
+			// Okay, we need to specify local path
+			specifier = specifier ++ "%=%".format(localPath, url ?? quark.name);
+		};
+
+		if(refspec.size() > 0, {
+			specifier = specifier ++ "@" ++ refspec;
+		});
+
+		^specifier;
 	}
 	*update { |name|
 		// by quark name or by supplying a local path
@@ -361,7 +395,7 @@ Quarks {
 	*asRelativePath { |path, relativeToDir|
 		var d;
 		if(path.beginsWith(relativeToDir), {
-			^"." ++ path.copyToEnd(relativeToDir)
+			^"." ++ path.copyToEnd(relativeToDir.size())
 		});
 		d = Platform.userHomeDir;
 		// ~/path if in home
