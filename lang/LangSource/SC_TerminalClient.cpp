@@ -57,6 +57,7 @@
 #include "VMGlobals.h"
 #include "SC_DirUtils.h"   // for gIdeName
 #include "SC_LanguageConfig.hpp"
+#include "SC_Version.hpp"
 
 static FILE* gPostDest = stdout;
 
@@ -112,6 +113,7 @@ void SC_TerminalClient::printUsage()
 	fprintf(stdout, "Usage:\n   %s [options] [file..] [-]\n\n", getName());
 	fprintf(stdout,
 			"Options:\n"
+			"   -v                             Print supercollider version and exit\n"
 			"   -d <path>                      Set runtime directory\n"
 			"   -D                             Enter daemon mode (no input)\n"
 			"   -g <memory-growth>[km]         Set heap growth (default %s)\n"
@@ -132,7 +134,7 @@ void SC_TerminalClient::printUsage()
 
 bool SC_TerminalClient::parseOptions(int& argc, char**& argv, Options& opt)
 {
-	const char* optstr = ":d:Dg:hl:m:rsu:i:a";
+	const char* optstr = ":d:Dg:hl:m:rsu:i:av";
 	int c;
 
 	// inhibit error reporting
@@ -165,6 +167,11 @@ bool SC_TerminalClient::parseOptions(int& argc, char**& argv, Options& opt)
 				break;
 			case 'r':
 				opt.mCallRun = true;
+				break;
+			case 'v':
+				fprintf(stdout, "sclang %s\n", SC_VersionString().c_str());
+				quit(0);
+				return false;
 				break;
 			case 's':
 				opt.mCallStop = true;
