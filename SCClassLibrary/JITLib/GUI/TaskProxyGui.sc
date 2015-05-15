@@ -283,7 +283,9 @@ TaskProxyAllGui :JITGui {
 
 		filtBut = Button(zone, Rect(0,0, 80, skin.headHeight))
 		.canFocus_(false)
-		.states_([["all"], ["filt"]])
+		.states_([
+			["all", skin.fontColor, skin.foreground],
+			["filt", skin.fontColor, skin.onColor]])
 		.action_({ |btn|
 			this.filtering_(btn.value > 0);
 		});
@@ -297,6 +299,9 @@ TaskProxyAllGui :JITGui {
 			if (str == "") { str = nil };
 			this.prefix_(txvw.string);
 		});
+		filTextV
+			.background_(skin.background)
+			.stringColor_(skin.fontColor);
 
 		edits = Array.fill(numItems, {
 			this.class.tpGuiClass.new(
