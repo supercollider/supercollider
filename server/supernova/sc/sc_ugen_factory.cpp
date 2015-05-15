@@ -282,11 +282,15 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
 
 void sc_ugen_factory::close_handles(void)
 {
-#if 0
-    /* closing the handles has some unwanted side effects, so we leave them open */
-    for(void * handle : open_handles)
-        dlclose(handle);
-#endif
+    for(void * handle : open_handles){
+        void *ptr = dlsym(handle, "unload");
+        if(ptr){
+            UnLoadPlugInFunc unloadFunc = (UnLoadPlugInFunc)ptr;
+            (*unloadFunc)();
+        }
+        //dlclose(handle);
+    }
+
 }
 
 #elif defined(_WIN32)
@@ -340,7 +344,7 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
         FreeLibrary(hinstance);
         return;
     }
-
+    open_handles.push_back(hinstance);
     LoadPlugInFunc loadFunc = (LoadPlugInFunc)ptr;
     (*loadFunc)(&sc_interface);
 
@@ -350,7 +354,17 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
 }
 
 void sc_ugen_factory::close_handles(void)
-{}
+{
+    for(void * ptrhinstance : open_handles){
+        HINSTANCE hinstance = (HINSTANCE)ptrhinstance;
+        void *ptr = (void *)GetProcAddress( hinstance, "unload" );
+        if(ptr){
+            UnLoadPlugInFunc unloadFunc = (UnLoadPlugInFunc)ptr;
+            (*unloadFunc)();
+        }
+        //FreeLibrary(hinstance);
+    }
+}
 #else
 
 #endif
