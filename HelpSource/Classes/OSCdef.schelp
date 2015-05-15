@@ -24,7 +24,7 @@ argument:: key
 The key at which to store this OSCdef in the global collection. Generally this will be a link::Classes/Symbol::.
 
 argument:: func
-A link::Classes/Function:: or similar object which will respond to the incoming message. When evaluated it will be passed the arguments msg, time, addr, and recvPort, corresponding to the message as an link::Classes/Array:: in the form code::[OSCAddress, other args]::, the time that the message was sent, a link::Classes/NetAddr:: corresponding to the IP address of the sender, and an link::Classes/Integer:: corresponding to the port on which the message was received.
+A link::Classes/Function:: or similar object which will respond to the incoming message. When evaluated it will be passed the arguments msg, time, addr, and recvPort, corresponding to the message as an link::Classes/Array:: in the form code::[OSCAddress, other args]::, the time that the message was sent (plus the latency if the message was in a bundle), a link::Classes/NetAddr:: corresponding to the IP address of the sender, and an link::Classes/Integer:: corresponding to the port on which the message was received.
 
 argument:: path
 A link::Classes/Symbol:: indicating the path of the OSC address of this object. Note that OSCdef demands OSC compliant addresses. If the path does not begin with a / one will be added automatically.
@@ -79,6 +79,24 @@ returns:: Usually a link::Classes/Symbol::.
 
 METHOD:: free
 Clears this OSCdef from the global collection and deactivates it.
+
+SECTION::Timing in incoming bundles
+The time argument indicates the time the message was sent plus, if given, the latency added to the bundle:
+CODE::
+(
+OSCdef(\x, { |msg, time|
+	"reception time: %\nscheduling time: %\ndelta: %\n\n".postf(Main.elapsedTime, time, time - Main.elapsedTime)
+}, \time);
+
+n = NetAddr("127.0.0.1", 57120);
+)
+
+(
+n.sendBundle(0.0, [\time]);
+n.sendBundle(1.0, [\time]);
+)
+::
+
 
 
 EXAMPLES::
