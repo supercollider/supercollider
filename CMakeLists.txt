@@ -435,13 +435,10 @@ if(WIN32)
 
     install(FILES ${AdditionalInstallFiles} DESTINATION "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}")
 
-    if(CMAKE_GENERATOR MATCHES "Visual Studio 12 2013")
-        # manual solution until robust solution is found. This requires CMAKE_PREFIX_PATH to conatin Qt-path
-        # only (VS) and only works with MinGW cmake as the plugin path is defined relative to the cmake executable;
-        # there should be a find_package qwindows
-        SET(QT_PLATFORM_PLUGIN_PREFIX ${CMAKE_PREFIX_PATH}/plugins/platforms CACHE STRING "Location of qt platform plugin for windows. Override if you have multiple paths in your cmake prefix path")
-    elseif(MINGW)
-        SET(QT_PLATFORM_PLUGIN_PREFIX ${CMAKE_COMMAND}/../../share/qt5/plugins/platforms CACHE STRING "Location of qt platform plugin for windows. Override when not using MinGW-cmake!")
+    if(MSYS)
+        SET(QT_PLATFORM_PLUGIN_PREFIX ${Qt5Core_DIR}/../../../share/qt5/plugins/platforms CACHE STRING "Location of qt platform plugin for windows. Override when not using MinGW-cmake!")
+    else()
+        SET(QT_PLATFORM_PLUGIN_PREFIX ${Qt5Core_DIR}/../../../plugins/platforms CACHE STRING "Location of qt platform plugin for windows. Override if you have multiple paths in your cmake prefix path")
     endif()
 
     install(FILES "${QT_PLATFORM_PLUGIN_PREFIX}/qwindows.dll"
