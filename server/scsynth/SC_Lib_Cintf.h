@@ -25,6 +25,7 @@
 #include "SC_Lib.h"
 #include "SC_Reply.h"
 #include "SC_OSC_Commands.h"
+#include "SC_Export.h"
 
 typedef SCErr (*SC_CommandFunc)(struct World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 
@@ -43,7 +44,7 @@ extern Malloc gMalloc;
 extern HashTable<class SC_LibCmd, Malloc> *gCmdLib;
 
 void initialize_library(const char *mUGensPluginPath);
-void deinitialize_library();
+SCSYNTH_DLLEXPORT_C void deinitialize_library();
 SCErr NewCommand(const char *inPath, uint32 inCommandNumber, SC_CommandFunc inFunc);
 
 extern SC_LibCmd* gCmdArray[NUMBER_OF_COMMANDS];

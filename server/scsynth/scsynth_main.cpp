@@ -21,7 +21,7 @@
 
 #include "SC_WorldOptions.h"
 #include "SC_Version.hpp"
-
+#include "SC_Lib_Cintf.h"
 #include <cstring>
 #include <stdio.h>
 #include <stdarg.h>
@@ -360,7 +360,7 @@ int main(int argc, char* argv[])
 
 	World_WaitForQuit(world);
 
-
+    deinitialize_library();
 #ifdef _WIN32
     // clean up winsock
     WSACleanup();
