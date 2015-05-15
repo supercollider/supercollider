@@ -236,7 +236,7 @@ of the box, VS can do both 64- and 32-bit versions.
 Quick steps
 -----------
 
-This README overall assumes a developer with little experience in building
+This README generally assumes a developer with little experience in building
 SC, especially on Windows. For experienced developers the following two chapters
 might be enough, they just list the essential steps. After that the whole process
 is described again with more detail and background information.
@@ -244,20 +244,60 @@ is described again with more detail and background information.
 
 ### Quick steps: Msys2 and MinGW (Win32)
 
+#### Install msys2 and MinGW
+
 * Download the msys2 installer from http://msys2.github.io and bootstrap the
   base system. Make sure you update to the latest version before adding any
-  packages.
+  new packages.
 
-* Run this to get buildtools, toolchain and libraries in a single run (some 20GB):
+* Install these packages with `pacman -S`
 
-    pacman -S git python2 svn nano base-devel p7zip ruby perl wget mingw-w64-i686-cmake mingw-w64-i686-toolchain mingw-w64-i686-pkg-config mingw-w64-i686-qt-creator mingw-w64-i686-portaudio mingw-w64-i686-libsndfile mingw-w64-i686-fftw mingw-w64-x86_64-cmake mingw-w64-x86_64-toolchain mingw-w64-x86_64-pkg-config mingw-w64-x86_64-qt-creator mingw-w64-x86_64-portaudio mingw-w64-x86_64-libsndfile mingw-w64-x86_64-fftw
+      base-devel
+      git
+      mingw-w64-{i686,x86_64}-cmake
+      mingw-w64-{i686,x86_64}-toolchain
+      mingw-w64-{i686,x86_64}-pkg-config
+      mingw-w64-{i686,x86_64}-qt5
+      mingw-w64-{i686,x86_64}-portaudio
+      mingw-w64-{i686,x86_64}-libsndfile
+      mingw-w64-{i686,x86_64}-fftw
 
-  *Note*: 32- and 64-bit libraries are separated in above command. Take out one of
-  the blocks if you want to build for either of these architectures only.
+* If you need portaudio with ASIO support you have two options: download a 
+  private build, or build within msys2
+    - private download:
+          https://drive.google.com/folderview?id=0B7igZrWv7UxdUmxHdThYLUE2QXc&usp=sharing
+      from folder BuildDependencies. You will also find the SDKs mentioned below.
 
-* If you need portaudio with ASIO support, read in the dedicated msys2 chapter about
-  building portaudio. The approaches differ for msys2 and VS, so go to the right
-  chapter :).
+
+#### Optionally build portauido
+
+* copy dx7sdk and ASIO2.3SDK to /usr/local/share
+      $> mkdir /repos; cd /repos
+* git clone https://github.com/Alexpux/MINGW-packages.git
+* cd MINGW-packages/mingw-w64-portaudio
+
+    $> updpkgsums
+
+* make these changes to PKGBUILD (optionally on a separate branch)
+
+      -    --with-dxdir=${MINGW_PREFIX}/${MINGW_CHOST} \
+      -    --with-winapi=wmme,directx,wdmks
+      +    --with-dxdir=/usr/local/share/dx7sdk \
+      +    --with-winapi=wmme,directx,wdmks,asio \
+      +    --with-asiodir=/usr/local/share/ASIOSDK2.3
+
+* build
+      $> makepkg-mingw -cCifL
+
+*note*: in the middle of the build, the script will ask if it
+should continue with the second build/architecture. This is
+the opportunity to overwrite the ASIOSDK2.3 with a fresh 
+version.
+
+*note*:the cC's in the arguments make sure a radical cleanup occures between 
+the two builds
+
+#### Build SC
 
 * Clone the SC source into your msys2 home folder.
 
@@ -268,11 +308,6 @@ is described again with more detail and background information.
       $> cd supercollider; mkdir build; cd build
       $> cmake -G "MSYS Makefiles" -DCMAKE_BUILD_TYPE=Debug ..
       $> cmake --build . --target install
-
-  If you stay in the mingw32-shell, you can now run the binaries.
-
-* To add the dll-s to the install folder do:
-
       $> cmake --build . --target bundle   # copies dll's into install folder (be patient)
 
 * To create the distributable installer do:
@@ -1001,13 +1036,12 @@ actually works, and come back later.
 
 As the msys2 portaudio package does not offer ASIO support, we have to build
 that package ourselves within the msys2 environment. Msys2 provide's very well
-for this requirement: All msys2 packages are hosted on Github. To get the
+for this requirement: All msys2/MinGW packages are hosted on Github. To get the
 sources for both mingw and msys2 packages, clone these two repos (for our
 purposes the mingw repo is enough). This is commonly done in a folder called
 `repos` in the root of msys2:
 
     git clone https://github.com/alexpux/MINGW-packages.git
-    git clone https://github.com/alexpux/MSYS2-packages.git
 
 The portaudio package is found in `/repos/MINGW-packages/mingw-w64-portaudio`.
 Note the missing `i686` or `x86_64`. This will be added to the name of the
