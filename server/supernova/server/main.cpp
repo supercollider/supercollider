@@ -28,6 +28,8 @@
 #include "server.hpp"
 #include "server_args.hpp"
 
+#include "SC_Version.hpp"
+
 #include "../sc/sc_ugen_factory.hpp"
 #include "../sc/sc_synth_definition.hpp"
 #include "../utilities/utils.hpp"
@@ -355,6 +357,11 @@ int main(int argc, char * argv[])
 
     server_arguments::initialize(argc, argv);
     server_arguments const & args = server_arguments::instance();
+
+    if(args.dump_version){
+        cout << "supernova " << SC_VersionString() << endl;
+        return 0;
+    }
 
     rt_pool.init(args.rt_pool_size * 1024, args.memory_locking);
     lock_memory(args);
