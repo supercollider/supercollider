@@ -255,7 +255,7 @@ MyClass {
 
 section:: External Method Files
 
-Methods may be added to Classes in separate files.  This is equivalent to Protocols in Objective-C.  By convention, the
+Methods may be added to Classes in separate files.  This is equivalent to Categories in Objective-C.  By convention, the
 file name starts with a lower case letter: the name of the method or feature that the methods are supporting.
 
 code::
