@@ -60,8 +60,9 @@ server_arguments::server_arguments(int argc, char * argv[])
                                                             "UDP ports never require passwords, so for security use TCP.")
         ("nrt,N", value<vector<string> >()->multitoken(), "nrt synthesis <cmd-filename> <input-filename> <output-filename> <sample-rate> <header-format> <sample-format>")
         ("memory-locking,L", "enable memory locking")
+        ("version,v", "print the supercollider version and exit")
         ("hardware-device-name,H", value<vector<string> >()->multitoken(), "hardware device name")
-        ("verbose,v", value<int16_t>(&verbosity)->default_value(0), "verbosity: 0 is normal behaviour\n-1 suppresses informational messages\n"
+        ("verbose,V", value<int16_t>(&verbosity)->default_value(0), "verbosity: 0 is normal behaviour\n-1 suppresses informational messages\n"
                                                          "-2 suppresses informational and many error messages")
         ("ugen-search-path,U", value<vector<string> >(&ugen_paths), "a colon-separated list of paths\n"
                                                                     "if -U is specified, the standard paths are NOT searched for plugins.")
@@ -98,6 +99,7 @@ server_arguments::server_arguments(int argc, char * argv[])
 
     notify(vm);
 
+    dump_version = vm.count("version");
     memory_locking = vm.count("memory-locking");
 
     if (vm.count("help")) {
