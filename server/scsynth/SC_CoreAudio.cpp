@@ -127,12 +127,17 @@ static void resyncThreadFunc()
 	}
 }
 
+
+
 void initializeScheduler()
 {
-	syncOSCOffsetWithTimeOfDay();
-
-	thread resyncThread(resyncThreadFunc);
-	resyncThread.detach();
+    static bool resyncThreadInited = false;
+    syncOSCOffsetWithTimeOfDay();
+    if(!resyncThreadInited){
+        thread resyncThread(resyncThreadFunc);
+        resyncThread.detach();
+        resyncThreadInited = true;
+    }
 }
 #endif // SC_AUDIO_API_COREAUDIO
 

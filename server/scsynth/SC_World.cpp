@@ -332,13 +332,11 @@ World* World_New(WorldOptions *inOptions)
 	World *world = 0;
 
 	try {
-		static bool gLibInitted = false;
-		if (!gLibInitted) {
-			InterfaceTable_Init();
-			initialize_library(inOptions->mUGensPluginPath);
-			initializeScheduler();
-			gLibInitted = true;
-		}
+
+		InterfaceTable_Init();
+		initialize_library(inOptions->mUGensPluginPath);
+		initializeScheduler();
+
 
 		world = (World*)zalloc(1, sizeof(World));
 
