@@ -229,7 +229,7 @@ endif()
 # some preprocessor flags
 if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
 	if (SSE)
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}   -msse")
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse")
 		set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -msse")
 		if(NOT APPLE AND NOT CMAKE_COMPILER_IS_CLANG)
 			set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mfpmath=sse")
@@ -272,7 +272,7 @@ endif()
 
 if("x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xMSVC")
   foreach(flag CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
-		set(${flag} "${${flag}} /wd4065") # switch statement contains 'default' but no 'case' labels
+	set(${flag} "${${flag}} /wd4065") # switch statement contains 'default' but no 'case' labels
     set(${flag} "${${flag}} /wd4018") # signed/unsigned mismatch
     set(${flag} "${${flag}} /wd4102") # unreferenced label
     set(${flag} "${${flag}} /wd4267") # conversion from 'size_t' to 'int', possible loss of data
@@ -294,6 +294,15 @@ endif()
 if(MINGW)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mstackrealign")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mstackrealign")
+endif()
+
+if(MINGW AND ${CMAKE_CXX_COMPILER_VERSION} MATCHES "4.9")
+    set (CMAKE_CXX_FLAGS_MINSIZEREL "-O0 -DNDEBUG" CACHE STRING "Disable compiler optimizations for now" FORCE)
+    set (CMAKE_CXX_FLAGS_RELEASE "-O0 -DNDEBUG" CACHE STRING "Disable compiler optimizations for now" FORCE)
+    set (CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O0 -DNDEBUG" CACHE STRING "Disable compiler optimizations for now" FORCE)
+    set (CMAKE_C_FLAGS_MINSIZEREL "-O0 -DNDEBUG" CACHE STRING "Disable compiler optimizations for now" FORCE)
+    set (CMAKE_C_FLAGS_RELEASE "-O0 -DNDEBUG" CACHE STRING "Disable compiler optimizations for now" FORCE)
+    set (CMAKE_C_FLAGS_RELWITHDEBINFO "-O0 -DNDEBUG" CACHE STRING "Disable compiler optimizations for now" FORCE)
 endif()
 
 if (NO_GPL3)
