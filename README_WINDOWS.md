@@ -264,7 +264,7 @@ is described again with more detail and background information.
 
 * If you need portaudio with ASIO support you have two options: download a 
   private build, or build within msys2
-    - private download:
+    - private download (temporary):
           https://drive.google.com/folderview?id=0B7igZrWv7UxdUmxHdThYLUE2QXc&usp=sharing
       from folder BuildDependencies. You will also find the SDKs mentioned below.
 
@@ -289,13 +289,13 @@ is described again with more detail and background information.
 * build
       $> makepkg-mingw -cCifL
 
+*note*:the cC's in the arguments make sure a radical cleanup occures between 
+the two builds. This does not include the ASIO sdk though.
+
 *note*: in the middle of the build, the script will ask if it
 should continue with the second build/architecture. This is
 the opportunity to overwrite the ASIOSDK2.3 with a fresh 
 version.
-
-*note*:the cC's in the arguments make sure a radical cleanup occures between 
-the two builds
 
 #### Build SC
 
