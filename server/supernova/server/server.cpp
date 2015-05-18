@@ -87,7 +87,8 @@ void nova_server::prepare_backend(void)
 
 nova_server::~nova_server(void)
 {
-    delete sc_factory;
+    //we should delete but get chrashes at the moment on linux and macosx
+    //delete sc_factory;
 #if defined(JACK_BACKEND) || defined(PORTAUDIO_BACKEND)
     deactivate_audio();
 #endif
