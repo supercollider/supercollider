@@ -641,7 +641,7 @@ PluginLoad(DiskIO)
 {
 	ft = inTable;
 
-	gDiskIO = new() DiskIOThread();
+	gDiskIO = new DiskIOThread();
 	gDiskIO->launchThread();
 
 	DefineSimpleUnit(DiskIn);
