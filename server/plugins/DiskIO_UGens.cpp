@@ -213,7 +213,7 @@ struct DiskIOThread
 	}
 };
 
-DiskIOThread gDiskIO;
+DiskIOThread *gDiskIO;
 
 }
 
@@ -294,7 +294,7 @@ sendMessage:
 			msg.mPos = bufFrames2 - unit->m_framepos;
 			msg.mFrames = bufFrames2;
 			msg.mChannels = bufChannels;
-			gDiskIO.Write(msg);
+			gDiskIO->Write(msg);
 		} else {
 			SndBuf *bufr = World_GetNRTBuf(unit->mWorld, (int) fbufnum);
 			uint32 mPos = bufFrames2 - unit->m_framepos;
@@ -396,7 +396,7 @@ sendMessage:
 		msg.mFrames = bufFrames2;
 		msg.mChannels = bufChannels;
 		//printf("sendMessage %d  %d %d %d\n", msg.mBufNum, msg.mPos, msg.mFrames, msg.mChannels);
-		gDiskIO.Write(msg);
+		gDiskIO->Write(msg);
 	}
 
 }
@@ -424,7 +424,7 @@ void DiskOut_Dtor(DiskOut* unit)
         msg.mFrames = framepos - writeStart;
         msg.mChannels = bufChannels;
         //printf("sendMessage %d  %d %d %d\n", msg.mBufNum, msg.mPos, msg.mFrames, msg.mChannels);
-        gDiskIO.Write(msg);
+        gDiskIO->Write(msg);
     }
 }
 
@@ -461,7 +461,7 @@ static void VDiskIn_request_buffer(VDiskIn * unit, float fbufnum, uint32 bufFram
 		msg.mPos = thisPos;
 		msg.mFrames = bufFrames2;
 		msg.mChannels = bufChannels;
-		gDiskIO.Write(msg);
+		gDiskIO->Write(msg);
 
 		if((int)ZIN0(3)) {
 			//	float outval = bufPos + sc_mod((float)(unit->m_count * bufFrames2), (float)buf->fileinfo.frames);
@@ -641,11 +641,8 @@ PluginLoad(DiskIO)
 {
 	ft = inTable;
 
-#ifdef _WIN32
-	new(&gDiskIO) DiskIOThread();
-#endif
-
-	gDiskIO.launchThread();
+	gDiskIO = new() DiskIOThread();
+	gDiskIO->launchThread();
 
 	DefineSimpleUnit(DiskIn);
 	DefineDtorUnit(DiskOut);
