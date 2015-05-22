@@ -157,6 +157,8 @@ TestArray : UnitTest {
 			// check if normalized == orig
 			this.assertEquals(a.normalize, a, "normalising an array that's already 0--1 should be no-op");
 			this.assertEquals(a.normalize(-128, 128).normalize(), a, "normalising an array that's already 0--1 should be no-op");
+			this.assertEquals(a.integrate.differentiate, a, "integrate should be the inverse of differentiate");
+			this.assertEquals(a.differentiate.integrate, a, "differentiate should be the inverse of integrate");
 		}
 
 	} // End test_arraystats
