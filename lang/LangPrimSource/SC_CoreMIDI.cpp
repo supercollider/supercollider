@@ -321,21 +321,24 @@ int midiCleanUp();
 
 int initMIDI(int numIn, int numOut)
 {
+	OSStatus err;
+	CFAllocatorRef alloc = CFAllocatorGetDefault();
+	int enc = kCFStringEncodingMacRoman;
+
 	midiCleanUp();
 	numIn = sc_clip(numIn, 1, kMaxMidiPorts);
 	numOut = sc_clip(numOut, 1, kMaxMidiPorts);
 
-	int enc = kCFStringEncodingMacRoman;
-	CFAllocatorRef alloc = CFAllocatorGetDefault();
+	if (!gMIDIClient) {
+		CFStringRef clientName = CFStringCreateWithCString(alloc, "SuperCollider", enc);
 
-	CFStringRef clientName = CFStringCreateWithCString(alloc, "SuperCollider", enc);
-
-	OSStatus err = MIDIClientCreate(clientName, midiNotifyProc, nil, &gMIDIClient);
-	if (err) {
-		post("Could not create MIDI client. error %d\n", err);
-		return errFailed;
+		err = MIDIClientCreate(clientName, midiNotifyProc, nil, &gMIDIClient);
+		if (err) {
+			post("Could not create MIDI client. error: ");
+			return errFailed;
+		}
+		CFRelease(clientName);
 	}
-	CFRelease(clientName);
 
 	for (int i=0; i<numIn; ++i) {
 		char str[32];
@@ -398,13 +401,14 @@ int midiCleanUp()
 	}
 	gNumMIDIInPorts = 0;
 
-	if (gMIDIClient) {
-		if( MIDIClientDispose(gMIDIClient) ) {
-			post( "Error: failed to dispose MIDIClient\n" );
-			return errFailed;
-		}
-		gMIDIClient = 0;
-	}
+// Disposing and immediately re-initializing an identical midi client can cause crashes. Don't dispose - instead, reuse the one we've created already.
+//	if (gMIDIClient) {
+//		if( MIDIClientDispose(gMIDIClient) ) {
+//			post( "Error: failed to dispose MIDIClient\n" );
+//			return errFailed;
+//		}
+//		gMIDIClient = 0;
+//	}
 	return errNone;
 }
 
@@ -467,8 +471,8 @@ int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
 		{
 			MIDIObjectGetStringProperty(src, kMIDIPropertyName, &devname);
 			MIDIObjectGetStringProperty(src, kMIDIPropertyName, &endname);
-			CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
-			CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
+			if (devname) CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
+			if (endname) CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
 		}
 		else
 		{
@@ -477,8 +481,8 @@ int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
 			MIDIEntityGetDevice(ent, &dev);
 			MIDIObjectGetStringProperty(dev, kMIDIPropertyName, &devname);
 			MIDIObjectGetStringProperty(src, kMIDIPropertyName, &endname);
-			CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
-			CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
+			if (devname) CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
+			if (endname) CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
 		}
 
 		PyrString *string = newPyrString(g->gc, cendname, 0, true);
@@ -494,8 +498,8 @@ int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
 		SetInt(idarraySo->slots+i, id);
 		idarraySo->size++;
 
-		CFRelease(devname);
-		CFRelease(endname);
+		if (devname) CFRelease(devname);
+		if (endname) CFRelease(endname);
 	}
 
 
@@ -517,8 +521,8 @@ int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
 		{
 			MIDIObjectGetStringProperty(dst, kMIDIPropertyName, &devname);
 			MIDIObjectGetStringProperty(dst, kMIDIPropertyName, &endname);
-			CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
-			CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
+			if (devname) CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
+			if (endname) CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
 
 		}
 		else
@@ -528,8 +532,8 @@ int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
 			MIDIEntityGetDevice(ent, &dev);
 			MIDIObjectGetStringProperty(dev, kMIDIPropertyName, &devname);
 			MIDIObjectGetStringProperty(dst, kMIDIPropertyName, &endname);
-			CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
-			CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
+			if (devname) CFStringGetCString(devname, cdevname, 1024, kCFStringEncodingUTF8);
+			if (endname) CFStringGetCString(endname, cendname, 1024, kCFStringEncodingUTF8);
 		}
 
 		PyrString *string = newPyrString(g->gc, cendname, 0, true);
@@ -543,8 +547,8 @@ int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
 
 		SetInt(idarrayDe->slots+idarrayDe->size++, id);
 
-		CFRelease(devname);
-		CFRelease(endname);
+		if (devname) CFRelease(devname);
+		if (endname) CFRelease(endname);
 
 	}
 	return errNone;
