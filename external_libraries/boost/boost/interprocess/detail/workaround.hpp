@@ -11,6 +11,10 @@
 #ifndef BOOST_INTERPROCESS_DETAIL_WORKAROUND_HPP
 #define BOOST_INTERPROCESS_DETAIL_WORKAROUND_HPP
 
+#if defined(_MSC_VER)
+#  pragma once
+#endif
+
 #include <boost/interprocess/detail/config_begin.hpp>
 
 #if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
@@ -61,19 +65,19 @@
       #define BOOST_INTERPROCESS_POSIX_NAMED_SEMAPHORES
    #endif
 
-   #if ((defined _V6_ILP32_OFFBIG)  &&(_V6_ILP32_OFFBIG   - 0 > 0)) ||\
-       ((defined _V6_LP64_OFF64)    &&(_V6_LP64_OFF64     - 0 > 0)) ||\
-       ((defined _V6_LPBIG_OFFBIG)  &&(_V6_LPBIG_OFFBIG   - 0 > 0)) ||\
-       ((defined _XBS5_ILP32_OFFBIG)&&(_XBS5_ILP32_OFFBIG - 0 > 0)) ||\
-       ((defined _XBS5_LP64_OFF64)  &&(_XBS5_LP64_OFF64   - 0 > 0)) ||\
-       ((defined _XBS5_LPBIG_OFFBIG)&&(_XBS5_LPBIG_OFFBIG - 0 > 0)) ||\
-       ((defined _FILE_OFFSET_BITS) &&(_FILE_OFFSET_BITS  - 0 >= 64))||\
-       ((defined _FILE_OFFSET_BITS) &&(_FILE_OFFSET_BITS  - 0 >= 64))
+   #if (defined (_V6_ILP32_OFFBIG)  &&(_V6_ILP32_OFFBIG   - 0 > 0)) ||\
+       (defined (_V6_LP64_OFF64)    &&(_V6_LP64_OFF64     - 0 > 0)) ||\
+       (defined (_V6_LPBIG_OFFBIG)  &&(_V6_LPBIG_OFFBIG   - 0 > 0)) ||\
+       (defined (_XBS5_ILP32_OFFBIG)&&(_XBS5_ILP32_OFFBIG - 0 > 0)) ||\
+       (defined (_XBS5_LP64_OFF64)  &&(_XBS5_LP64_OFF64   - 0 > 0)) ||\
+       (defined (_XBS5_LPBIG_OFFBIG)&&(_XBS5_LPBIG_OFFBIG - 0 > 0)) ||\
+       (defined (_FILE_OFFSET_BITS) &&(_FILE_OFFSET_BITS  - 0 >= 64))||\
+       (defined (_FILE_OFFSET_BITS) &&(_FILE_OFFSET_BITS  - 0 >= 64))
       #define BOOST_INTERPROCESS_UNIX_64_BIT_OR_BIGGER_OFF_T
    #endif
 
    //Check for XSI shared memory objects. They are available in nearly all UNIX platforms
-   #if !defined(__QNXNTO__)
+   #if !defined(__QNXNTO__) && !defined(__ANDROID__)
       #define BOOST_INTERPROCESS_XSI_SHARED_MEMORY_OBJECTS
    #endif
 
@@ -176,6 +180,10 @@
 #elif defined (__GNUC__)
    #define BOOST_INTERPROCESS_NEVER_INLINE __attribute__((__noinline__))
 #endif
+
+//Macros for documentation purposes. For code, expands to the argument
+#define BOOST_INTERPROCESS_IMPDEF(TYPE) TYPE
+#define BOOST_INTERPROCESS_SEEDOC(TYPE) TYPE
 
 #if defined(BOOST_NO_CXX11_NOEXCEPT)
    #if defined(BOOST_MSVC)

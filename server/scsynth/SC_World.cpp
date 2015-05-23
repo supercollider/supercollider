@@ -22,6 +22,11 @@
 #include "SC_Win32Utils.h"
 #endif
 
+#ifdef __APPLE__
+#include "../../common/SC_Apple.hpp"
+#endif
+
+
 #include "SC_World.h"
 #include "SC_WorldOptions.h"
 #include "SC_HiddenWorld.h"
@@ -295,7 +300,7 @@ void stopAsioThread();
 }
 
 
-SC_DLLEXPORT_C World* World_New(WorldOptions *inOptions)
+World* World_New(WorldOptions *inOptions)
 {
 #if (_POSIX_MEMLOCK - 0) >=  200112L
 	if (inOptions->mMemoryLocking && inOptions->mRealTime)
@@ -340,7 +345,7 @@ SC_DLLEXPORT_C World* World_New(WorldOptions *inOptions)
 		world->hw = (HiddenWorld*)zalloc(1, sizeof(HiddenWorld));
 
 		world->hw->mAllocPool = new AllocPool(malloc, free, inOptions->mRealTimeMemorySize * 1024, 0);
-		world->hw->mQuitProgram = new nova::semaphore(0);
+		world->hw->mQuitProgram = new boost::sync::semaphore(0);
 		world->hw->mTerminating = false;
 
 		HiddenWorld *hw = world->hw;
@@ -460,6 +465,12 @@ SC_DLLEXPORT_C World* World_New(WorldOptions *inOptions)
 				scprintf("start audio failed.\n");
 				return 0;
 			}
+			
+#ifdef __APPLE__
+			SC::Apple::disableAppNap();
+#endif
+			
+			
 		} else {
 			hw->mAudioDriver = 0;
 		}
@@ -474,7 +485,7 @@ SC_DLLEXPORT_C World* World_New(WorldOptions *inOptions)
 	return world;
 }
 
-SC_DLLEXPORT_C int World_CopySndBuf(World *world, uint32 index, SndBuf *outBuf, bool onlyIfChanged, bool *outDidChange)
+int World_CopySndBuf(World *world, uint32 index, SndBuf *outBuf, bool onlyIfChanged, bool *outDidChange)
 {
 	if (index > world->mNumSndBufs) return kSCErr_IndexOutOfRange;
 
@@ -558,7 +569,7 @@ bool nextOSCPacket(FILE *file, OSC_Packet *packet, int64& outTime)
 void PerformOSCBundle(World *inWorld, OSC_Packet *inPacket);
 
 #ifndef NO_LIBSNDFILE
-SC_DLLEXPORT_C void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
+void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 {
 	if (inOptions->mLoadGraphDefs) {
 		World_LoadGraphDefs(world);
@@ -751,7 +762,7 @@ Bail:
 }
 #endif   // !NO_LIBSNDFILE
 
-SC_DLLEXPORT_C void World_WaitForQuit(struct World *inWorld)
+void World_WaitForQuit(struct World *inWorld)
 {
 	try {
 		inWorld->hw->mQuitProgram->wait();
@@ -991,10 +1002,10 @@ void World_Start(World *inWorld)
 	inWorld->mRunning = true;
 }
 
-SC_DLLEXPORT_C void World_Cleanup(World *world)
+void World_Cleanup(World *world)
 {
 	if (!world) return;
-
+	deinitialize_library();
 	scsynth::stopAsioThread();
 
 	HiddenWorld *hw = world->hw;
@@ -1278,13 +1289,13 @@ bool SendMsgFromEngine(World *inWorld, FifoMsg& inMsg)
 	return inWorld->hw->mAudioDriver->SendMsgFromEngine(inMsg);
 }
 
-SC_DLLEXPORT_C void SetPrintFunc(PrintFunc func)
+void SetPrintFunc(PrintFunc func)
 {
 	gPrint = func;
 }
 
 
-SC_DLLEXPORT_C int scprintf(const char *fmt, ...)
+int scprintf(const char *fmt, ...)
 {
 	va_list vargs;
 	va_start(vargs, fmt);

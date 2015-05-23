@@ -47,6 +47,27 @@ class SignalMultiplexer;
 
 namespace Settings { class Manager; }
 
+class EditorTabBar : public QTabBar
+{
+    Q_OBJECT
+
+public:
+    explicit EditorTabBar(QWidget* parent = nullptr);
+
+private slots:
+    void onCloseTab();
+    void onCloseOtherTabs();
+    void onCloseTabsToTheRight();
+
+private:
+    void mousePressEvent(QMouseEvent * event) override final;
+    void mouseDoubleClickEvent(QMouseEvent * event) override final;
+
+    void showContextMenu(QMouseEvent * event);
+
+    int mTabUnderCursor;
+};
+
 class MultiEditor : public QWidget
 {
     Q_OBJECT
@@ -91,6 +112,7 @@ public:
         ShowWhitespace,
         ShowLinenumber,
         IndentWithSpaces,
+        ShowAutocompleteHelp,
 
         NextDocument,
         PreviousDocument,
@@ -143,6 +165,8 @@ public slots:
 
     void setShowWhitespace(bool on);
     void setShowLinenumber(bool on);
+
+    void setShowAutocompleteHelp(bool on);
 
 private slots:
     void applySettings( Settings::Manager * );

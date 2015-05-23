@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2012-2012. Distributed under the Boost
+// (C) Copyright Ion Gaztanaga 2012-2013. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying file
 // LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
@@ -17,6 +17,7 @@
 
 #include <boost/container/detail/config_begin.hpp>
 #include <boost/container/detail/workaround.hpp>
+
 #include <boost/container/allocator_traits.hpp>             //allocator_traits
 #include <boost/container/throw_exception.hpp>
 #include <boost/container/detail/multiallocation_chain.hpp> //multiallocation_chain
@@ -25,7 +26,7 @@
 #include <boost/container/detail/mpl.hpp>                   //integral_constant
 #include <boost/intrusive/pointer_traits.hpp>               //pointer_traits
 #include <utility>                                          //pair
-#include <boost/detail/no_exceptions_support.hpp>           //BOOST_TRY
+#include <boost/core/no_exceptions_support.hpp>             //BOOST_TRY
 
 namespace boost {
 namespace container {

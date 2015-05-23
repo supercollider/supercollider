@@ -237,9 +237,9 @@ void SclangPage::writeLanguageConfig()
     ofstream fout(languageConfigFile().toStdString().c_str());
     fout << out.c_str();
 
-    QMessageBox::information(this, tr("ScLang configuration file updated"),
-                             tr("The ScLang configuration has been updated. "
-                                "Recompile the class library to apply changes."));
+    QMessageBox::information(this, tr("Sclang configuration file updated"),
+                             tr("The SuperCollider language configuration has been updated. "
+                                "Reboot the interpreter to apply the changes."));
 
     sclangConfigDirty = false;
 }

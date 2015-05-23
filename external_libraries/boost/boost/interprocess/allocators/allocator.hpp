@@ -11,7 +11,7 @@
 #ifndef BOOST_INTERPROCESS_ALLOCATOR_HPP
 #define BOOST_INTERPROCESS_ALLOCATOR_HPP
 
-#if (defined _MSC_VER) && (_MSC_VER >= 1200)
+#if defined(_MSC_VER)
 #  pragma once
 #endif
 
@@ -57,7 +57,7 @@ class allocator
    typedef SegmentManager                                segment_manager;
    typedef typename SegmentManager::void_pointer         void_pointer;
 
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
    private:
 
    //Self type
@@ -85,7 +85,7 @@ class allocator
 
    //Pointer to the allocator
    alloc_ptr_t mp_mngr;
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 
    public:
    typedef T                                    value_type;
@@ -104,12 +104,12 @@ class allocator
 
    typedef boost::interprocess::version_type<allocator, 2>   version;
 
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
 
    //Experimental. Don't use.
    typedef boost::container::container_detail::transform_multiallocation_chain
       <typename SegmentManager::multiallocation_chain, T>multiallocation_chain;
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 
    //!Obtains an allocator that allocates
    //!objects of type T2
@@ -285,7 +285,7 @@ bool operator!=(const allocator<T, SegmentManager>  &alloc1,
 
 }  //namespace interprocess {
 
-/// @cond
+#if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
 
 template<class T>
 struct has_trivial_destructor;
@@ -296,7 +296,7 @@ struct has_trivial_destructor
 {
    static const bool value = true;
 };
-/// @endcond
+#endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 
 }  //namespace boost {
 

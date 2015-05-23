@@ -11,7 +11,7 @@
 #ifndef BOOST_INTERPROCESS_EXCEPTIONS_HPP
 #define BOOST_INTERPROCESS_EXCEPTIONS_HPP
 
-#if (defined _MSC_VER) && (_MSC_VER >= 1200)
+#if defined(_MSC_VER)
 #  pragma once
 #endif
 
@@ -75,11 +75,11 @@ class interprocess_exception : public std::exception
    // Note: a value of other_error implies a library (rather than system) error
    error_code_t   get_error_code()  const { return m_err.get_error_code(); }
 
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
    private:
    error_info        m_err;
    std::string       m_str;
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 };
 
 //!This is the exception thrown by shared interprocess_mutex family when a deadlock situation

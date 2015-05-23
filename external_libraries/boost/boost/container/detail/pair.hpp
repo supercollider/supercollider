@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2005-2012.
+// (C) Copyright Ion Gaztanaga 2005-2013.
 //
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt or copy at
@@ -17,7 +17,7 @@
 #  pragma once
 #endif
 
-#include "config_begin.hpp"
+#include <boost/container/detail/config_begin.hpp>
 #include <boost/container/detail/workaround.hpp>
 
 #include <boost/container/detail/mpl.hpp>
@@ -28,8 +28,8 @@
 #include <utility>   //std::pair
 #include <algorithm> //std::swap
 
-#include <boost/move/utility.hpp>
-#include <boost/type_traits/is_class.hpp>
+#include <boost/move/utility_core.hpp>
+
 
 #ifndef BOOST_CONTAINER_PERFECT_FORWARDING
 #include <boost/container/detail/preprocessor.hpp>
@@ -330,22 +330,42 @@ struct is_enum< ::boost::container::container_detail::pair<T, U> >
    static const bool value = false;
 };
 
+template <class T>
+struct is_class;
+
 //This specialization is needed to avoid instantiation of pair in
 //is_class, and allow recursive maps.
 template <class T1, class T2>
 struct is_class< ::boost::container::container_detail::pair<T1, T2> >
-   : public ::boost::true_type
-{};
+{
+   static const bool value = true;
+};
 
 #ifdef BOOST_NO_CXX11_RVALUE_REFERENCES
 
 template<class T1, class T2>
 struct has_move_emulation_enabled< ::boost::container::container_detail::pair<T1, T2> >
-   : ::boost::true_type
-{};
+{
+   static const bool value = true;
+};
 
 #endif
 
+namespace move_detail{
+
+template<class T>
+struct is_class_or_union;
+
+template <class T1, class T2>
+struct is_class_or_union< ::boost::container::container_detail::pair<T1, T2> >
+//This specialization is needed to avoid instantiation of pair in
+//is_class, and allow recursive maps.
+{
+   static const bool value = true;
+};
+
+
+}  //namespace move_detail{
 
 }  //namespace boost {
 

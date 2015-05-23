@@ -178,6 +178,9 @@ List[1, 2, 3, 4].includesAll(List[4, 5]);
 method::matchItem
 Returns link::Classes/True:: if this includes the strong::item::.
 
+See also link::Reference/matchItem::.
+
+
 subsection::Iteration
 
 method::do
@@ -241,6 +244,30 @@ code::
 [1,2,3,4,5].injectr([], _++_); // [ 5, 4, 3, 2, 1 ]
 
 [1,2,3,4,5].inject([], _++_); // [ 1, 2, 3, 4, 5 ]
+::
+
+method::collectInPlace
+Iterate over the collection and replace each item with a new one, returned by the function. This can be useful when one wants to aviod creating a new array in memory. In most cases, it is better to use link::#-collect::.
+
+code::
+a = [1, 5, 3, 4];
+a.collectInPlace { |x| 2 ** x };
+a; // changed
+
+// compare:
+a = [1, 5, 3, 4];
+a.collect { |x| 2 ** x };
+a; // remains unchanged
+::
+
+method::collectCopy
+Like link::#-collect::, but the collection is copied before iteration. This is recommended wherever the function may change the collection itself.
+
+code::
+a = [1, 5, 2, 3, 4];
+b = a.collectCopy { |x| if(x.even) { a.remove(x); "removed" } { x }  };
+a;
+b;
 ::
 
 method::any

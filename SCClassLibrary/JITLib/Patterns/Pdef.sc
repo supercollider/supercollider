@@ -30,6 +30,12 @@ PatternProxy : Pattern {
 		this.changed(\source, obj);
 	}
 
+	setSource { arg obj;
+		pattern = obj;
+		source = obj; // keep original here.
+		this.changed(\source, obj);
+	}
+
 	count { arg n=1;
 		condition = { |val,i| i % n == 0 }
 	}
@@ -149,6 +155,15 @@ PatternProxy : Pattern {
 
 	storeArgs { ^[pattern] }
 
+	copy {
+		^super.copy.copyState(this)
+	}
+
+	copyState { |proxy|
+		envir = proxy.envir.copy;
+		this.source = proxy.source;
+	}
+
 
 	// these following methods are factored out for the benefit of subclasses
 	// they only work for Pdef/Tdef/Pdefn.
@@ -259,6 +274,10 @@ Pdefn : PatternProxy {
 	}
 
 	storeArgs { ^[key] } // assume it was created globally
+	copy { |toKey|
+		if(key == toKey) { Error("cannot copy to identical key").throw };
+		^this.class.new(toKey).copyState(this)
+	}
 
 	prAdd { arg argKey;
 		key = argKey;
@@ -395,6 +414,11 @@ Tdef : TaskProxy {
 	}
 
 	storeArgs { ^[key] }
+
+	copy { |toKey|
+		if(key == toKey) { Error("cannot copy to identical key").throw };
+		^this.class.new(toKey).copyState(this)
+	}
 
 	prAdd { arg argKey;
 		key = argKey;
@@ -583,6 +607,11 @@ Pdef : EventPatternProxy {
 		all.put(argKey, this);
 	}
 
+	copy { |toKey|
+		if(key == toKey) { Error("cannot copy to identical key").throw };
+		^this.class.new(toKey).copyState(this)
+	}
+
 	*hasGlobalDictionary { ^true }
 
 	*initClass {
@@ -668,7 +697,7 @@ PbindProxy : Pattern {
 	init {
 		forBy(0, pairs.size-1, 2) { arg i;
 			var proxy = PatternProxy.new;
-			proxy.source = pairs[i+1];
+			proxy.setSource(pairs[i+1]);
 			pairs[i+1] = proxy
 		};
 		source = EventPatternProxy(Pbind(*pairs));
@@ -704,10 +733,10 @@ PbindProxy : Pattern {
 					pairs.removeAt(i);
 					changedPairs = true;
 				}{
-					pairs[i+1].quant_(quant).source_(val)
+					pairs[i+1].quant_(quant).setSource(val)
 				};
 			}{
-				pairs = pairs ++ [key, PatternProxy.new.quant_(quant).source_(val)];
+				pairs = pairs ++ [key, PatternProxy.new.quant_(quant).setSource(val)];
 				changedPairs = true;
 			};
 

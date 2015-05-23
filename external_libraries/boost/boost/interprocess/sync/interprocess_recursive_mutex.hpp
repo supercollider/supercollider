@@ -27,9 +27,9 @@
 #ifndef BOOST_INTERPROCESS_RECURSIVE_MUTEX_HPP
 #define BOOST_INTERPROCESS_RECURSIVE_MUTEX_HPP
 
-/// @cond
+#if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
 
-#if (defined _MSC_VER) && (_MSC_VER >= 1200)
+#if defined(_MSC_VER)
 #  pragma once
 #endif
 
@@ -64,7 +64,7 @@ class mutex_traits;
 
 #endif
 
-/// @endcond
+#endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 
 //!\file
 //!Describes interprocess_recursive_mutex and shared_recursive_try_mutex classes
@@ -77,11 +77,11 @@ namespace interprocess {
 //!process. Allows timed lock tries
 class interprocess_recursive_mutex
 {
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
    //Non-copyable
    interprocess_recursive_mutex(const interprocess_recursive_mutex &);
    interprocess_recursive_mutex &operator=(const interprocess_recursive_mutex &);
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
    public:
    //!Constructor.
    //!Throws interprocess_exception on error.
@@ -116,7 +116,7 @@ class interprocess_recursive_mutex
    //!   same number of times it is locked.
    //!Throws: interprocess_exception on error.
    void unlock();
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
    private:
 
    #if defined (BOOST_INTERPROCESS_USE_GENERIC_EMULATION)
@@ -133,7 +133,7 @@ class interprocess_recursive_mutex
    #else
       #error "Unknown platform for interprocess_mutex"
    #endif
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 };
 
 }  //namespace interprocess {

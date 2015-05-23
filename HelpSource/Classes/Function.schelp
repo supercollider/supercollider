@@ -332,11 +332,14 @@ method::matchItem
 Interface shared with other classes that implements pattern matching. See also: matchItem.
 Function.matchItem evaluates the function with the item as argument, expecting a Boolean as reply.
 
+See also link::Reference/matchItem::.
+
 code::
 { |x| x > 5 }.matchItem(6); // true
 ::
 
-performDegreeToKey(scaleDegree, stepsPerOctave = 12, accidental = 0)
+
+method::performDegreeToKey
 
 use a function as a conversion from scale degree to note number. See also SequenceableCollection and Scale
 

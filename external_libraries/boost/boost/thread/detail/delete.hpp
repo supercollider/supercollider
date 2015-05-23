@@ -15,7 +15,8 @@
  * BOOST_THREAD_DELETE_COPY_ASSIGN deletes the copy assignment when the compiler supports it or
  * makes it private.
  */
-#ifndef BOOST_NO_CXX11_DELETED_FUNCTIONS
+
+#if ! defined BOOST_NO_CXX11_DELETED_FUNCTIONS && ! defined BOOST_NO_CXX11_RVALUE_REFERENCES
 #define BOOST_THREAD_DELETE_COPY_CTOR(CLASS) \
       CLASS(CLASS const&) = delete; \
 

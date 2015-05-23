@@ -396,7 +396,7 @@ class SC_TcpInPort
 	thread mRendezvousThread;
 #endif
 
-	boost::atomic<int> mAvailableConnections;
+	std::atomic<int> mAvailableConnections;
 	friend class SC_TcpConnection;
 
 public:
@@ -487,7 +487,7 @@ using namespace scsynth;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-SC_DLLEXPORT_C bool World_SendPacketWithContext(World *inWorld, int inSize, char *inData, ReplyFunc inFunc, void *inContext)
+SCSYNTH_DLLEXPORT_C bool World_SendPacketWithContext(World *inWorld, int inSize, char *inData, ReplyFunc inFunc, void *inContext)
 {
 	if (inSize > 0) {
 		if (inWorld->mDumpOSC) dumpOSC(inWorld->mDumpOSC, inSize, inData);
@@ -507,12 +507,12 @@ SC_DLLEXPORT_C bool World_SendPacketWithContext(World *inWorld, int inSize, char
 	return true;
 }
 
-SC_DLLEXPORT_C bool World_SendPacket(World *inWorld, int inSize, char *inData, ReplyFunc inFunc)
+SCSYNTH_DLLEXPORT_C bool World_SendPacket(World *inWorld, int inSize, char *inData, ReplyFunc inFunc)
 {
 	return World_SendPacketWithContext(inWorld, inSize, inData, inFunc, 0);
 }
 
-SC_DLLEXPORT_C int World_OpenUDP(struct World *inWorld, int inPort)
+SCSYNTH_DLLEXPORT_C int World_OpenUDP(struct World *inWorld, int inPort)
 {
 	try {
 		new SC_UdpInPort(inWorld, inPort);
@@ -524,7 +524,7 @@ SC_DLLEXPORT_C int World_OpenUDP(struct World *inWorld, int inPort)
 	return false;
 }
 
-SC_DLLEXPORT_C int World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog)
+SCSYNTH_DLLEXPORT_C int World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog)
 {
 	try {
 		new SC_TcpInPort(inWorld, inPort, inMaxConnections, inBacklog);

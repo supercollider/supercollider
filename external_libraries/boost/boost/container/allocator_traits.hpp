@@ -6,7 +6,7 @@
 //
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2011-2012. Distributed under the Boost
+// (C) Copyright Ion Gaztanaga 2011-2013. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying file
 // LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
@@ -27,21 +27,24 @@
 #include <boost/intrusive/pointer_traits.hpp>
 #include <boost/intrusive/detail/memory_util.hpp>
 #include <boost/container/detail/memory_util.hpp>
-#include <boost/type_traits/integral_constant.hpp>
 #include <boost/container/detail/mpl.hpp>
-#include <boost/move/utility.hpp>
-#include <limits> //numeric_limits<>::max()
-#include <new>    //placement new
-#include <memory> //std::allocator
+#include <boost/container/detail/placement_new.hpp>
+#include <boost/move/utility_core.hpp>
 
 #if defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)
 #include <boost/container/detail/preprocessor.hpp>
 #endif
 
-///@cond
+
 
 namespace boost {
 namespace container {
+namespace allocator_traits_detail {
+
+}
+
+#ifndef BOOST_CONTAINER_DOXYGEN_INVOKED
+
 namespace container_detail {
 
 //workaround needed for C++03 compilers with no construct()
@@ -56,7 +59,7 @@ struct is_std_allocator< std::allocator<T> >
 
 }  //namespace container_detail {
 
-///@endcond
+#endif   //#ifndef BOOST_CONTAINER_DOXYGEN_INVOKED
 
 //! The class template allocator_traits supplies a uniform interface to all allocator types.
 //! This class is a C++03-compatible implementation of std::allocator_traits
@@ -94,29 +97,29 @@ struct allocator_traits
       //!
       typedef see_documentation size_type;
       //! Alloc::propagate_on_container_copy_assignment if such a type exists, otherwise an integral_constant
-      //! type with internal constant static member `value` == false.
+      //! type with internal constant static member <code>value</code> == false.
       typedef see_documentation propagate_on_container_copy_assignment;
       //! Alloc::propagate_on_container_move_assignment if such a type exists, otherwise an integral_constant
-      //! type with internal constant static member `value` == false.
+      //! type with internal constant static member <code>value</code> == false.
       typedef see_documentation propagate_on_container_move_assignment;
       //! Alloc::propagate_on_container_swap if such a type exists, otherwise an integral_constant
-      //! type with internal constant static member `value` == false.
+      //! type with internal constant static member <code>value</code> == false.
       typedef see_documentation propagate_on_container_swap;
       //! Defines an allocator: Alloc::rebind<T>::other if such a type exists; otherwise, Alloc<T, Args>
       //! if Alloc is a class template instantiation of the form Alloc<U, Args>, where Args is zero or
       //! more type arguments ; otherwise, the instantiation of rebind_alloc is ill-formed.
       //!
-      //! In C++03 compilers `rebind_alloc` is a struct derived from an allocator
+      //! In C++03 compilers <code>rebind_alloc</code> is a struct derived from an allocator
       //! deduced by previously detailed rules.
       template <class T> using rebind_alloc = see_documentation;
 
-      //! In C++03 compilers `rebind_traits` is a struct derived from
-      //! `allocator_traits<OtherAlloc>`, where `OtherAlloc` is
-      //! the allocator deduced by rules explained in `rebind_alloc`.
+      //! In C++03 compilers <code>rebind_traits</code> is a struct derived from
+      //! <code>allocator_traits<OtherAlloc></code>, where <code>OtherAlloc</code> is
+      //! the allocator deduced by rules explained in <code>rebind_alloc</code>.
       template <class T> using rebind_traits = allocator_traits<rebind_alloc<T> >;
 
       //! Non-standard extension: Portable allocator rebind for C++03 and C++11 compilers.
-      //! `type` is an allocator related to Alloc deduced deduced by rules explained in `rebind_alloc`.
+      //! <code>type</code> is an allocator related to Alloc deduced deduced by rules explained in <code>rebind_alloc</code>.
       template <class T>
       struct portable_rebind_alloc
       {  typedef see_documentation type;  };
@@ -158,27 +161,27 @@ struct allocator_traits
             size_type;
       //propagate_on_container_copy_assignment
       typedef BOOST_INTRUSIVE_OBTAIN_TYPE_WITH_DEFAULT(boost::container::container_detail::, Alloc,
-         propagate_on_container_copy_assignment, boost::false_type)
+         propagate_on_container_copy_assignment, container_detail::false_type)
             propagate_on_container_copy_assignment;
       //propagate_on_container_move_assignment
       typedef BOOST_INTRUSIVE_OBTAIN_TYPE_WITH_DEFAULT(boost::container::container_detail::, Alloc,
-         propagate_on_container_move_assignment, boost::false_type)
+         propagate_on_container_move_assignment, container_detail::false_type)
             propagate_on_container_move_assignment;
       //propagate_on_container_swap
       typedef BOOST_INTRUSIVE_OBTAIN_TYPE_WITH_DEFAULT(boost::container::container_detail::, Alloc,
-         propagate_on_container_swap, boost::false_type)
+         propagate_on_container_swap, container_detail::false_type)
             propagate_on_container_swap;
 
       #if !defined(BOOST_NO_CXX11_TEMPLATE_ALIASES)
          //C++11
-         template <typename T> using rebind_alloc  = typename boost::intrusive::detail::type_rebinder<Alloc, T>::type;
+         template <typename T> using rebind_alloc  = typename boost::intrusive::pointer_rebind<Alloc, T>::type;
          template <typename T> using rebind_traits = allocator_traits< rebind_alloc<T> >;
       #else    // #if !defined(BOOST_NO_CXX11_TEMPLATE_ALIASES)
          //Some workaround for C++03 or C++11 compilers with no template aliases
          template <typename T>
-         struct rebind_alloc : boost::intrusive::detail::type_rebinder<Alloc,T>::type
+         struct rebind_alloc : boost::intrusive::pointer_rebind<Alloc,T>::type
          {
-            typedef typename boost::intrusive::detail::type_rebinder<Alloc,T>::type Base;
+            typedef typename boost::intrusive::pointer_rebind<Alloc,T>::type Base;
             #if !defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)
             template <typename... Args>
             rebind_alloc(BOOST_FWD_REF(Args)... args)
@@ -198,61 +201,61 @@ struct allocator_traits
 
          template <typename T>
          struct rebind_traits
-            : allocator_traits<typename boost::intrusive::detail::type_rebinder<Alloc, T>::type>
+            : allocator_traits<typename boost::intrusive::pointer_rebind<Alloc, T>::type>
          {};
       #endif   // #if !defined(BOOST_NO_CXX11_TEMPLATE_ALIASES)
       template <class T>
       struct portable_rebind_alloc
-      {  typedef typename boost::intrusive::detail::type_rebinder<Alloc, T>::type type;  };
+      {  typedef typename boost::intrusive::pointer_rebind<Alloc, T>::type type;  };
    #endif   //BOOST_CONTAINER_DOXYGEN_INVOKED
 
-   //! <b>Returns</b>: `a.allocate(n)`
+   //! <b>Returns</b>: <code>a.allocate(n)</code>
    //!
    static pointer allocate(Alloc &a, size_type n)
    {  return a.allocate(n);  }
 
-   //! <b>Returns</b>: `a.deallocate(p, n)`
+   //! <b>Returns</b>: <code>a.deallocate(p, n)</code>
    //!
    //! <b>Throws</b>: Nothing
    static void deallocate(Alloc &a, pointer p, size_type n)
    {  a.deallocate(p, n);  }
 
-   //! <b>Effects</b>: calls `a.allocate(n, p)` if that call is well-formed;
-   //! otherwise, invokes `a.allocate(n)`
+   //! <b>Effects</b>: calls <code>a.allocate(n, p)</code> if that call is well-formed;
+   //! otherwise, invokes <code>a.allocate(n)</code>
    static pointer allocate(Alloc &a, size_type n, const_void_pointer p)
    {
       const bool value = boost::container::container_detail::
          has_member_function_callable_with_allocate
             <Alloc, const size_type, const const_void_pointer>::value;
-      ::boost::integral_constant<bool, value> flag;
+      container_detail::bool_<value> flag;
       return allocator_traits::priv_allocate(flag, a, n, p);
    }
 
-   //! <b>Effects</b>: calls `a.destroy(p)` if that call is well-formed;
-   //! otherwise, invokes `p->~T()`.
+   //! <b>Effects</b>: calls <code>a.destroy(p)</code> if that call is well-formed;
+   //! otherwise, invokes <code>p->~T()</code>.
    template<class T>
-   static void destroy(Alloc &a, T*p)
+   static void destroy(Alloc &a, T*p) BOOST_CONTAINER_NOEXCEPT
    {
       typedef T* destroy_pointer;
       const bool value = boost::container::container_detail::
          has_member_function_callable_with_destroy
             <Alloc, const destroy_pointer>::value;
-      ::boost::integral_constant<bool, value> flag;
+      container_detail::bool_<value> flag;
       allocator_traits::priv_destroy(flag, a, p);
    }
 
-   //! <b>Returns</b>: `a.max_size()` if that expression is well-formed; otherwise,
-   //! `numeric_limits<size_type>::max()`.
-   static size_type max_size(const Alloc &a)
+   //! <b>Returns</b>: <code>a.max_size()</code> if that expression is well-formed; otherwise,
+   //! <code>numeric_limits<size_type>::max()</code>.
+   static size_type max_size(const Alloc &a) BOOST_CONTAINER_NOEXCEPT
    {
       const bool value = boost::container::container_detail::
          has_member_function_callable_with_max_size
             <const Alloc>::value;
-      ::boost::integral_constant<bool, value> flag;
+      container_detail::bool_<value> flag;
       return allocator_traits::priv_max_size(flag, a);
    }
 
-   //! <b>Returns</b>: `a.select_on_container_copy_construction()` if that expression is well-formed;
+   //! <b>Returns</b>: <code>a.select_on_container_copy_construction()</code> if that expression is well-formed;
    //! otherwise, a.
    static
    #if !defined(BOOST_CONTAINER_DOXYGEN_INVOKED)
@@ -271,73 +274,73 @@ struct allocator_traits
       const bool value = boost::container::container_detail::
          has_member_function_callable_with_select_on_container_copy_construction
             <const Alloc>::value;
-      ::boost::integral_constant<bool, value> flag;
+      container_detail::bool_<value> flag;
       return allocator_traits::priv_select_on_container_copy_construction(flag, a);
    }
 
    #if !defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES) || defined(BOOST_CONTAINER_DOXYGEN_INVOKED)
-      //! <b>Effects</b>: calls `a.construct(p, std::forward<Args>(args)...)` if that call is well-formed;
-      //! otherwise, invokes `::new (static_cast<void*>(p)) T(std::forward<Args>(args)...)`
+      //! <b>Effects</b>: calls <code>a.construct(p, std::forward<Args>(args)...)</code> if that call is well-formed;
+      //! otherwise, invokes <code>::new (static_cast<void*>(p)) T(std::forward<Args>(args)...)</code>
       template <class T, class ...Args>
       static void construct(Alloc & a, T* p, BOOST_FWD_REF(Args)... args)
       {
-         ::boost::integral_constant<bool, container_detail::is_std_allocator<Alloc>::value> flag;
+         container_detail::bool_<container_detail::is_std_allocator<Alloc>::value> flag;
          allocator_traits::priv_construct(flag, a, p, ::boost::forward<Args>(args)...);
       }
    #endif
-   ///@cond
+   #ifndef BOOST_CONTAINER_DOXYGEN_INVOKED
    #if !defined(BOOST_CONTAINER_DOXYGEN_INVOKED)
       private:
-      static pointer priv_allocate(boost::true_type, Alloc &a, size_type n, const_void_pointer p)
+      static pointer priv_allocate(container_detail::true_type, Alloc &a, size_type n, const_void_pointer p)
       {  return a.allocate(n, p);  }
 
-      static pointer priv_allocate(boost::false_type, Alloc &a, size_type n, const_void_pointer)
+      static pointer priv_allocate(container_detail::false_type, Alloc &a, size_type n, const_void_pointer)
       {  return allocator_traits::allocate(a, n);  }
 
       template<class T>
-      static void priv_destroy(boost::true_type, Alloc &a, T* p)
+      static void priv_destroy(container_detail::true_type, Alloc &a, T* p) BOOST_CONTAINER_NOEXCEPT
       {  a.destroy(p);  }
 
       template<class T>
-      static void priv_destroy(boost::false_type, Alloc &, T* p)
+      static void priv_destroy(container_detail::false_type, Alloc &, T* p) BOOST_CONTAINER_NOEXCEPT
       {  p->~T(); (void)p;  }
 
-      static size_type priv_max_size(boost::true_type, const Alloc &a)
+      static size_type priv_max_size(container_detail::true_type, const Alloc &a) BOOST_CONTAINER_NOEXCEPT
       {  return a.max_size();  }
 
-      static size_type priv_max_size(boost::false_type, const Alloc &)
-      {  return (std::numeric_limits<size_type>::max)();  }
+      static size_type priv_max_size(container_detail::false_type, const Alloc &) BOOST_CONTAINER_NOEXCEPT
+      {  return size_type(-1);  }
 
-      static Alloc priv_select_on_container_copy_construction(boost::true_type, const Alloc &a)
+      static Alloc priv_select_on_container_copy_construction(container_detail::true_type, const Alloc &a)
       {  return a.select_on_container_copy_construction();  }
 
-      static const Alloc &priv_select_on_container_copy_construction(boost::false_type, const Alloc &a)
+      static const Alloc &priv_select_on_container_copy_construction(container_detail::false_type, const Alloc &a) BOOST_CONTAINER_NOEXCEPT
       {  return a;  }
 
       #if !defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)
          template<class T, class ...Args>
-         static void priv_construct(boost::false_type, Alloc &a, T *p, BOOST_FWD_REF(Args) ...args)                   
-         {                                                                                                 
+         static void priv_construct(container_detail::false_type, Alloc &a, T *p, BOOST_FWD_REF(Args) ...args)
+         {
             const bool value = boost::container::container_detail::
                   has_member_function_callable_with_construct
                      < Alloc, T*, Args... >::value;
-            ::boost::integral_constant<bool, value> flag;
+            container_detail::bool_<value> flag;
             priv_construct_dispatch2(flag, a, p, ::boost::forward<Args>(args)...);
          }
 
          template<class T, class ...Args>
-         static void priv_construct(boost::true_type, Alloc &a, T *p, BOOST_FWD_REF(Args) ...args)
+         static void priv_construct(container_detail::true_type, Alloc &a, T *p, BOOST_FWD_REF(Args) ...args)
          {
-            priv_construct_dispatch2(boost::false_type(), a, p, ::boost::forward<Args>(args)...);
+            priv_construct_dispatch2(container_detail::false_type(), a, p, ::boost::forward<Args>(args)...);
          }
 
          template<class T, class ...Args>
-         static void priv_construct_dispatch2(boost::true_type, Alloc &a, T *p, BOOST_FWD_REF(Args) ...args)
+         static void priv_construct_dispatch2(container_detail::true_type, Alloc &a, T *p, BOOST_FWD_REF(Args) ...args)
          {  a.construct( p, ::boost::forward<Args>(args)...);  }
 
          template<class T, class ...Args>
-         static void priv_construct_dispatch2(boost::false_type, Alloc &, T *p, BOOST_FWD_REF(Args) ...args)
-         {  ::new((void*)p) T(::boost::forward<Args>(args)...); }
+         static void priv_construct_dispatch2(container_detail::false_type, Alloc &, T *p, BOOST_FWD_REF(Args) ...args)
+         {  ::new((void*)p, boost_container_new_t()) T(::boost::forward<Args>(args)...); }
       #else // #if !defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)
          public:
          #define BOOST_PP_LOCAL_MACRO(n)                                                              \
@@ -345,56 +348,57 @@ struct allocator_traits
          static void construct(Alloc &a, T *p                                                         \
                               BOOST_PP_ENUM_TRAILING(n, BOOST_CONTAINER_PP_PARAM_LIST, _))            \
          {                                                                                            \
-            ::boost::integral_constant<bool, container_detail::is_std_allocator<Alloc>::value> flag;  \
+            container_detail::bool_                                                                   \
+               <container_detail::is_std_allocator<Alloc>::value> flag;                               \
             allocator_traits::priv_construct(flag, a, p                                               \
                BOOST_PP_ENUM_TRAILING(n, BOOST_CONTAINER_PP_PARAM_FORWARD, _));                       \
          }                                                                                            \
          //
          #define BOOST_PP_LOCAL_LIMITS (0, BOOST_CONTAINER_MAX_CONSTRUCTOR_PARAMETERS)
          #include BOOST_PP_LOCAL_ITERATE()
-     
+
          private:
          #define BOOST_PP_LOCAL_MACRO(n)                                                                    \
          template<class T  BOOST_PP_ENUM_TRAILING_PARAMS(n, class P) >                                      \
-         static void priv_construct(boost::false_type, Alloc &a, T *p                                       \
+         static void priv_construct(container_detail::false_type, Alloc &a, T *p                            \
                         BOOST_PP_ENUM_TRAILING(n, BOOST_CONTAINER_PP_PARAM_LIST,_))                         \
          {                                                                                                  \
             const bool value =                                                                              \
                boost::container::container_detail::has_member_function_callable_with_construct              \
                      < Alloc, T* BOOST_PP_ENUM_TRAILING(n, BOOST_CONTAINER_PP_FWD_TYPE, _) >::value;        \
-            ::boost::integral_constant<bool, value> flag;                                                   \
+            container_detail::bool_<value> flag;                                                            \
             priv_construct_dispatch2(flag, a, p                                                             \
                BOOST_PP_ENUM_TRAILING(n, BOOST_CONTAINER_PP_PARAM_FORWARD, _) );                            \
          }                                                                                                  \
                                                                                                             \
          template<class T  BOOST_PP_ENUM_TRAILING_PARAMS(n, class P) >                                      \
-         static void priv_construct(boost::true_type, Alloc &a, T *p                                        \
+         static void priv_construct(container_detail::true_type, Alloc &a, T *p                             \
                         BOOST_PP_ENUM_TRAILING(n, BOOST_CONTAINER_PP_PARAM_LIST,_))                         \
          {                                                                                                  \
-            priv_construct_dispatch2(boost::false_type(), a, p                                              \
+            priv_construct_dispatch2(container_detail::false_type(), a, p                                   \
                BOOST_PP_ENUM_TRAILING(n, BOOST_CONTAINER_PP_PARAM_FORWARD, _) );                            \
          }                                                                                                  \
                                                                                                             \
          template<class T  BOOST_PP_ENUM_TRAILING_PARAMS(n, class P) >                                      \
-         static void priv_construct_dispatch2(boost::true_type, Alloc &a, T *p                              \
+         static void priv_construct_dispatch2(container_detail::true_type, Alloc &a, T *p                   \
                         BOOST_PP_ENUM_TRAILING(n, BOOST_CONTAINER_PP_PARAM_LIST,_))                         \
          {  a.construct( p BOOST_PP_ENUM_TRAILING(n, BOOST_CONTAINER_PP_PARAM_FORWARD, _) );  }             \
                                                                                                             \
          template<class T  BOOST_PP_ENUM_TRAILING_PARAMS(n, class P) >                                      \
-         static void priv_construct_dispatch2(boost::false_type, Alloc &, T *p                              \
+         static void priv_construct_dispatch2(container_detail::false_type, Alloc &, T *p                   \
                         BOOST_PP_ENUM_TRAILING(n, BOOST_CONTAINER_PP_PARAM_LIST, _) )                       \
-         {  ::new((void*)p) T(BOOST_PP_ENUM(n, BOOST_CONTAINER_PP_PARAM_FORWARD, _)); }                     \
+         {  ::new((void*)p, boost_container_new_t()) T(BOOST_PP_ENUM(n, BOOST_CONTAINER_PP_PARAM_FORWARD, _)); }\
          //
          #define BOOST_PP_LOCAL_LIMITS (0, BOOST_CONTAINER_MAX_CONSTRUCTOR_PARAMETERS)
          #include BOOST_PP_LOCAL_ITERATE()
       #endif   // #if !defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)
 
       template<class T>
-      static void priv_construct_dispatch2(boost::false_type, Alloc &, T *p, ::boost::container::default_init_t)
+      static void priv_construct_dispatch2(container_detail::false_type, Alloc &, T *p, ::boost::container::default_init_t)
       {  ::new((void*)p) T; }
    #endif   //#if defined(BOOST_CONTAINER_DOXYGEN_INVOKED)
 
-   ///@endcond
+   #endif   //#ifndef BOOST_CONTAINER_DOXYGEN_INVOKED
 };
 
 }  //namespace container {

@@ -2,7 +2,7 @@
 // detail/socket_ops.hpp
 // ~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2013 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -107,6 +107,13 @@ BOOST_ASIO_DECL int connect(socket_type s, const socket_addr_type* addr,
 
 BOOST_ASIO_DECL void sync_connect(socket_type s, const socket_addr_type* addr,
     std::size_t addrlen, boost::system::error_code& ec);
+
+#if defined(BOOST_ASIO_HAS_IOCP)
+
+BOOST_ASIO_DECL void complete_iocp_connect(socket_type s,
+    boost::system::error_code& ec);
+
+#endif // defined(BOOST_ASIO_HAS_IOCP)
 
 BOOST_ASIO_DECL bool non_blocking_connect(socket_type s,
     boost::system::error_code& ec);

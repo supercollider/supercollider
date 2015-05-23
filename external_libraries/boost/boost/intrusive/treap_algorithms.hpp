@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga  2006-2013.
+// (C) Copyright Ion Gaztanaga  2006-2014.
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -13,20 +13,61 @@
 #ifndef BOOST_INTRUSIVE_TREAP_ALGORITHMS_HPP
 #define BOOST_INTRUSIVE_TREAP_ALGORITHMS_HPP
 
-#include <boost/intrusive/detail/config_begin.hpp>
+#if defined(_MSC_VER)
+#  pragma once
+#endif
 
-#include <cstddef>
+#include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/intrusive_fwd.hpp>
 
+#include <cstddef>
+
 #include <boost/intrusive/detail/assert.hpp>
-#include <boost/intrusive/pointer_traits.hpp>
-#include <boost/intrusive/detail/utilities.hpp>
+#include <boost/intrusive/detail/algo_type.hpp>
 #include <boost/intrusive/bstree_algorithms.hpp>
 #include <algorithm>
 
 
 namespace boost {
 namespace intrusive {
+
+#ifndef BOOST_INTRUSIVE_DOXYGEN_INVOKED
+
+namespace detail
+{
+
+template<class ValueTraits, class NodePtrPrioCompare, class ExtraChecker>
+struct treap_node_extra_checker
+      : public ExtraChecker
+{
+   typedef ExtraChecker                            base_checker_t;
+   typedef ValueTraits                             value_traits;
+   typedef typename value_traits::node_traits      node_traits;
+   typedef typename node_traits::const_node_ptr    const_node_ptr;
+
+   typedef typename base_checker_t::return_type    return_type;
+
+   treap_node_extra_checker(const NodePtrPrioCompare& prio_comp, ExtraChecker extra_checker)
+      : base_checker_t(extra_checker), prio_comp_(prio_comp)
+   {}
+
+   void operator () (const const_node_ptr& p,
+                     const return_type& check_return_left, const return_type& check_return_right,
+                     return_type& check_return)
+   {
+      if (node_traits::get_left(p))
+         BOOST_INTRUSIVE_INVARIANT_ASSERT(!prio_comp_(node_traits::get_left(p), p));
+      if (node_traits::get_right(p))
+         BOOST_INTRUSIVE_INVARIANT_ASSERT(!prio_comp_(node_traits::get_right(p), p));
+      base_checker_t::operator()(p, check_return_left, check_return_right, check_return);
+   }
+
+   const NodePtrPrioCompare prio_comp_;
+};
+
+} // namespace detail
+
+#endif   //#ifndef BOOST_INTRUSIVE_DOXYGEN_INVOKED
 
 //! treap_algorithms provides basic algorithms to manipulate
 //! nodes forming a treap.
@@ -110,16 +151,17 @@ class treap_algorithms
 
    static void rotate_up_n(const node_ptr header, const node_ptr p, std::size_t n)
    {
-      for( node_ptr p_parent = NodeTraits::get_parent(p)
-         ; n--
-         ; p_parent = NodeTraits::get_parent(p)){
-         //Check if left child
-         if(p == NodeTraits::get_left(p_parent)){
-            bstree_algo::rotate_right(p_parent, header);
+      node_ptr p_parent(NodeTraits::get_parent(p));
+      node_ptr p_grandparent(NodeTraits::get_parent(p_parent));
+      while(n--){
+         if(p == NodeTraits::get_left(p_parent)){  //p is left child
+            bstree_algo::rotate_right(p_parent, p, p_grandparent, header);
          }
-         else{ //Right child
-            bstree_algo::rotate_left(p_parent, header);
+         else{ //p is right child
+            bstree_algo::rotate_left(p_parent, p, p_grandparent, header);
          }
+         p_parent      = p_grandparent;
+         p_grandparent = NodeTraits::get_parent(p_parent);
       }
    }
 
@@ -248,6 +290,7 @@ class treap_algorithms
    //! @copydoc ::boost::intrusive::bstree_algorithms::count(const const_node_ptr&,const KeyType&,KeyNodePtrCompare)
    template<class KeyType, class KeyNodePtrCompare>
    static std::size_t count(const const_node_ptr & header, const KeyType &key, KeyNodePtrCompare comp);
+
    #endif   //#ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
 
    //! <b>Requires</b>: "h" must be the header node of a tree.
@@ -525,7 +568,7 @@ class treap_algorithms
       (const node_ptr & header, const node_ptr & new_node, const insert_commit_data &commit_data)
    {
       bstree_algo::insert_unique_commit(header, new_node, commit_data);
-      rebalance_after_insertion_commit(header, new_node, commit_data.rotations);
+      rotate_up_n(header, new_node, commit_data.rotations);
    }
 
    #ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
@@ -546,11 +589,12 @@ class treap_algorithms
       node_ptr z_left  = NodeTraits::get_left(z);
       node_ptr z_right = NodeTraits::get_right(z);
       while(z_left || z_right){
+         const node_ptr z_parent(NodeTraits::get_parent(z));
          if(!z_right || (z_left && pcomp(z_left, z_right))){
-            bstree_algo::rotate_right(z, header);
+            bstree_algo::rotate_right(z, z_left, z_parent, header);
          }
          else{
-            bstree_algo::rotate_left(z, header);
+            bstree_algo::rotate_left(z, z_right, z_parent, header);
          }
          ++n;
          z_left  = NodeTraits::get_left(z);
@@ -566,9 +610,8 @@ class treap_algorithms
       rebalance_after_insertion_check(h, commit_data.node, new_node, pcomp, commit_data.rotations);
       //No-throw
       bstree_algo::insert_unique_commit(h, new_node, commit_data);
-      rebalance_after_insertion_commit(h, new_node, commit_data.rotations);
+      rotate_up_n(h, new_node, commit_data.rotations);
    }
-
 
    template<class Key, class KeyNodePriorityCompare>
    static void rebalance_after_insertion_check
@@ -584,22 +627,6 @@ class treap_algorithms
          upnode = NodeTraits::get_parent(upnode);
       }
       num_rotations = n;
-   }
-
-   static void rebalance_after_insertion_commit(const node_ptr & header, const node_ptr & p, std::size_t n)
-   {
-      // Now execute n rotations
-      for( node_ptr p_parent = NodeTraits::get_parent(p)
-         ; n--
-         ; p_parent = NodeTraits::get_parent(p)){
-         //Check if left child
-         if(p == NodeTraits::get_left(p_parent)){
-            bstree_algo::rotate_right(p_parent, header);
-         }
-         else{ //Right child
-            bstree_algo::rotate_left(p_parent, header);
-         }
-      }
    }
 
    template<class NodePtrPriorityCompare>
@@ -628,6 +655,12 @@ template<class NodeTraits>
 struct get_algo<TreapAlgorithms, NodeTraits>
 {
    typedef treap_algorithms<NodeTraits> type;
+};
+
+template <class ValueTraits, class NodePtrCompare, class ExtraChecker>
+struct get_node_checker<TreapAlgorithms, ValueTraits, NodePtrCompare, ExtraChecker>
+{
+   typedef detail::bstree_node_checker<ValueTraits, NodePtrCompare, ExtraChecker> type;
 };
 
 /// @endcond

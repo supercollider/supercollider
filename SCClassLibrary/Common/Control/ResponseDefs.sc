@@ -787,6 +787,7 @@ MIDIFunc : AbstractResponderFunc {
 
 	init {|argfunc, argmsgNum, argchan, argType, argsrcID, argtempl, argdisp|
 		msgNum = argmsgNum ? msgNum;
+		msgNum = msgNum.isNumber.if({ msgNum.asInteger }, msgNum);
 		chan = argchan ? chan;
 		srcID = argsrcID ? srcID;
 		func = argfunc ? func;

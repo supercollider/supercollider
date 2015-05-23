@@ -61,7 +61,7 @@ double timeNow();
 
 int32 timeseed()
 {
-	using namespace boost::chrono;
+	using namespace chrono;
 
 	high_resolution_clock::time_point now = high_resolution_clock::now();
 	high_resolution_clock::duration since_epoch = now.time_since_epoch();
@@ -69,7 +69,7 @@ int32 timeseed()
 	seconds     secs     = duration_cast<seconds>(since_epoch);
 	nanoseconds nanosecs = since_epoch - secs;
 
-	boost::int_least64_t seed = secs.count() ^ nanosecs.count();
+	int_least64_t seed = secs.count() ^ nanosecs.count();
 
 	return (int32)seed;
 }
@@ -110,7 +110,7 @@ extern PyrClass *gClassList;
 static void endInterpreter(VMGlobals *g);
 
 
-SC_DLLEXPORT_C void runInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed)
+SCLANG_DLLEXPORT_C void runInterpreter(VMGlobals *g, PyrSymbol *selector, int numArgsPushed)
 {
 		//postfl("->runInterpreter\n");
 #ifdef GC_SANITYCHECK
@@ -296,7 +296,7 @@ void initPatterns();
 void initThreads();
 void initGUI();
 
-#ifndef SC_WIN32
+#ifndef _WIN32
 bool running = true;
 static void handleSigUsr1(int param)
 {
@@ -348,7 +348,7 @@ bool initRuntime(VMGlobals *g, int poolSize, AllocPool *inPool)
 #endif
 	//tellPlugInsAboutToRun();
 
-#ifndef SC_WIN32
+#ifndef _WIN32
 	signal(SIGUSR1,handleSigUsr1);
 #endif
 
@@ -851,7 +851,7 @@ HOT void Interpret(VMGlobals *g)
 	if (setjmp(g->escapeInterpreter) != 0) {
 		return;
 	}
-#ifndef SC_WIN32
+#ifndef _WIN32
 	while (running) {  // not going to indent body to save line space
 #else
 	while (true) {
@@ -2684,7 +2684,7 @@ HOT void Interpret(VMGlobals *g)
 			dispatch_opcode;
 	} // switch(op1)
 	} // end while(running)
-#ifndef SC_WIN32
+#ifndef _WIN32
 	running = true; // reset the signal
 #endif
 	g->sp = sp; g->ip = ip;

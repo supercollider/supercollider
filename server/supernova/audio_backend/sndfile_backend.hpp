@@ -28,11 +28,11 @@
 #include <vector>
 
 #include <boost/lockfree/spsc_queue.hpp>
+#include <boost/sync/semaphore.hpp>
 
 #include <sndfile.hh>
 
 #include "nova-tt/name_thread.hpp"
-#include "nova-tt/semaphore.hpp"
 #include "utilities/branch_hints.hpp"
 
 #include "audio_backend_common.hpp"
@@ -337,7 +337,7 @@ private:
 
     std::thread reader_thread, writer_thread;
     boost::lockfree::spsc_queue< sample_type > read_frames, write_frames;
-    nova::semaphore read_semaphore, write_semaphore;
+    boost::sync::semaphore read_semaphore, write_semaphore;
     std::atomic<bool> running, reader_running, writer_running;
     std::vector<sample_type> max_peaks;
 };

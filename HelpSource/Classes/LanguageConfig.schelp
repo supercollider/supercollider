@@ -48,6 +48,9 @@ Add new class library exclude path.
 METHOD:: removeExcludePath
 Remove path from class library exclude paths.
 
+METHOD:: currentPath
+Return the current config file path.
+
 subsection:: Compiler Warnings
 
 METHOD:: postInlineWarnings

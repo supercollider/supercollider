@@ -15,7 +15,7 @@
 #ifndef BOOST_INTERPROCESS_SYNC_WAIT_HPP_INCLUDED
 #define BOOST_INTERPROCESS_SYNC_WAIT_HPP_INCLUDED
 
-#if defined(_MSC_VER) && (_MSC_VER >= 1020)
+#if defined(_MSC_VER)
 # pragma once
 #endif
 
@@ -30,14 +30,14 @@
 
 // BOOST_INTERPROCESS_SMT_PAUSE
 
-#if defined(_MSC_VER) && _MSC_VER >= 1310 && ( defined(_M_IX86) || defined(_M_X64) )
+#if defined(_MSC_VER) && ( defined(_M_IX86) || defined(_M_X64) )
 
 extern "C" void _mm_pause();
 #pragma intrinsic( _mm_pause )
 
 #define BOOST_INTERPROCESS_SMT_PAUSE _mm_pause();
 
-#elif defined(__GNUC__) && ( defined(__i386__) || defined(__x86_64__) )
+#elif defined(__GNUC__) && ( defined(__i386__) || defined(__x86_64__) ) && !defined(_CRAYC)
 
 #define BOOST_INTERPROCESS_SMT_PAUSE __asm__ __volatile__( "rep; nop" : : : "memory" );
 

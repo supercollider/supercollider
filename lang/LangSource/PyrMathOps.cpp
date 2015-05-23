@@ -332,8 +332,8 @@ int doSpecialBinaryArithMsg(VMGlobals *g, int numArgsPushed, bool isPrimitive)
 						case opBitAnd :	SetRaw(a, slotRawInt(a) & slotRawInt(b)); break;
 						case opBitOr  :	SetRaw(a, slotRawInt(a) | slotRawInt(b)); break;
 						case opBitXor :	SetRaw(a, slotRawInt(a) ^ slotRawInt(b)); break;
-						case opLCM   :	SetRaw(a, sc_lcm(slotRawInt(a), slotRawInt(b))); break;
-						case opGCD   :	SetRaw(a, sc_gcd(slotRawInt(a), slotRawInt(b))); break;
+						case opLCM   :	SetRaw(a, sc_lcm((long)slotRawInt(a), (long)slotRawInt(b))); break;
+						case opGCD   :	SetRaw(a, sc_gcd((long)slotRawInt(a), (long)slotRawInt(b))); break;
 						case opRound :	SetRaw(a, sc_round((int)slotRawInt(a), (int)slotRawInt(b))); break;
 						case opRoundUp :SetRaw(a, sc_roundUp((int)slotRawInt(a), (int)slotRawInt(b))); break;
 						case opTrunc :	SetRaw(a, sc_trunc((int)slotRawInt(a), (int)slotRawInt(b))); break;

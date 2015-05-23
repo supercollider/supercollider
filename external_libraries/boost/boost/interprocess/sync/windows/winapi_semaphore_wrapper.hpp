@@ -11,7 +11,7 @@
 #ifndef BOOST_INTERPROCESS_DETAIL_WINAPI_SEMAPHORE_WRAPPER_HPP
 #define BOOST_INTERPROCESS_DETAIL_WINAPI_SEMAPHORE_WRAPPER_HPP
 
-#if (defined _MSC_VER) && (_MSC_VER >= 1200)
+#if defined(_MSC_VER)
 #  pragma once
 #endif
 
@@ -21,6 +21,7 @@
 #include <boost/interprocess/permissions.hpp>
 #include <boost/interprocess/detail/win32_api.hpp>
 #include <boost/interprocess/detail/posix_time_types_wrk.hpp>
+#include <boost/interprocess/sync/windows/winapi_wrapper_common.hpp>
 #include <boost/interprocess/errors.hpp>
 #include <boost/interprocess/exceptions.hpp>
 #include <limits>
@@ -31,12 +32,12 @@ namespace ipcdetail {
 
 class winapi_semaphore_functions
 {
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
 
    //Non-copyable
    winapi_semaphore_functions(const winapi_semaphore_functions &);
    winapi_semaphore_functions &operator=(const winapi_semaphore_functions &);
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 
    public:
    winapi_semaphore_functions(void *hnd)
@@ -50,48 +51,13 @@ class winapi_semaphore_functions
    }
 
    void wait()
-   {
-      if(winapi::wait_for_single_object(m_sem_hnd, winapi::infinite_time) != winapi::wait_object_0){
-         error_info err = system_error_code();
-         throw interprocess_exception(err);
-      }
-   }
+   {  return winapi_wrapper_wait_for_single_object(m_sem_hnd);  }
 
    bool try_wait()
-   {
-      unsigned long ret = winapi::wait_for_single_object(m_sem_hnd, 0);
-      if(ret == winapi::wait_object_0){
-         return true;
-      }
-      else if(ret == winapi::wait_timeout){
-         return false;
-      }
-      else{
-         error_info err = system_error_code();
-         throw interprocess_exception(err);
-      }
-   }
+   {  return winapi_wrapper_try_wait_for_single_object(m_sem_hnd);  }
 
    bool timed_wait(const boost::posix_time::ptime &abs_time)
-   {
-      if(abs_time == boost::posix_time::pos_infin){
-         this->wait();
-         return true;
-      }
-
-      unsigned long ret = winapi::wait_for_single_object
-         (m_sem_hnd, (abs_time - microsec_clock::universal_time()).total_milliseconds());
-      if(ret == winapi::wait_object_0){
-         return true;
-      }
-      else if(ret == winapi::wait_timeout){
-         return false;
-      }
-      else{
-         error_info err = system_error_code();
-         throw interprocess_exception(err);
-      }
-   }
+   {  return winapi_wrapper_timed_wait_for_single_object(m_sem_hnd, abs_time);  }
 
    long value() const
    {
@@ -109,10 +75,10 @@ class winapi_semaphore_functions
       return l_limit;
    }
 
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
    protected:
    void *m_sem_hnd;
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 };
 
 

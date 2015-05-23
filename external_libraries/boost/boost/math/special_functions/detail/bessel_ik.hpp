@@ -271,6 +271,7 @@ int CF2_ik(T v, T x, T* Kv, T* Kv1, const Policy& pol)
         // S converges slower than f
         BOOST_MATH_INSTRUMENT_VARIABLE(Q * delta);
         BOOST_MATH_INSTRUMENT_VARIABLE(abs(S) * tolerance);
+        BOOST_MATH_INSTRUMENT_VARIABLE(S);
         if (abs(Q * delta) < abs(S) * tolerance) 
         { 
            break; 
@@ -278,7 +279,10 @@ int CF2_ik(T v, T x, T* Kv, T* Kv1, const Policy& pol)
     }
     policies::check_series_iterations<T>("boost::math::bessel_ik<%1%>(%1%,%1%) in CF2_ik", k, pol);
 
-    *Kv = sqrt(pi<T>() / (2 * x)) * exp(-x) / S;
+    if(x >= tools::log_max_value<T>())
+       *Kv = exp(0.5f * log(pi<T>() / (2 * x)) - x - log(S));
+    else
+      *Kv = sqrt(pi<T>() / (2 * x)) * exp(-x) / S;
     *Kv1 = *Kv * (0.5f + v + x + (v * v - 0.25f) * f) / x;
     BOOST_MATH_INSTRUMENT_VARIABLE(*Kv);
     BOOST_MATH_INSTRUMENT_VARIABLE(*Kv1);

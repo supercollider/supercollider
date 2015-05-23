@@ -78,8 +78,8 @@ MonitorGui : JITGui {
 				numberWidth: width - 28
 		);
 
-		fadeBox.labelView.font_(font).background_(Color.clear);
-		fadeBox.numberView.font_(font).background_(Color.clear);
+		fadeBox.labelView.font_(font).background_(skin.foreground);
+		fadeBox.numberView.font_(font).background_(skin.foreground);
 		fadeBox.view.resize_(3);
 	}
 
@@ -137,7 +137,10 @@ MonitorGui : JITGui {
 				};
 			}, 0, labelWidth: 1, unitWidth: 1);	// 1 is workaround for EZNumber resize bug
 		setOutBox.view.resize_(3);
-		setOutBox.numberView.font_(font).align_(\center);
+		setOutBox.numberView
+		.background_(skin.background)
+		.stringColor_(skin.fontColor)
+		.font_(font).align_(\center);
 	}
 
 

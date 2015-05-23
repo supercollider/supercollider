@@ -13,7 +13,7 @@ Get current date from system and create a date object from it.
 code::
 (
 var a = Date.getDate;
-a.bootSeconds.postln;
+a.rawSeconds.postln;
 a.dayOfWeek.postln;
 a
 )
@@ -70,7 +70,7 @@ method::format
 Obtain a date string with a given format. The character % is replaced by the appropriate value, which is derived from the letter that follows.
 code::
 Date.getDate.format("Today is %A. It is around %I o'clock (%p), in %B.");
-Date.getDate.format("%Y-%d-%e-%Hh%m");
+Date.getDate.format("%d/%m/%Y %H:%M");  // DD/MM/YYYY hh:mm
 ::
 
 discussion::

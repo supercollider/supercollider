@@ -24,6 +24,7 @@
 #include "settings/manager.hpp"
 #include "../widgets/code_editor/highlighter.hpp"
 #include "../../common/SC_TextUtils.hpp"
+#include "util/standard_dirs.hpp"
 
 #include <QPlainTextDocumentLayout>
 #include <QDebug>
@@ -49,8 +50,18 @@ Document::Document(bool isPlainText, const QByteArray & id,
     mKeyUpActionEnabled(false),
     mMouseDownActionEnabled(false),
     mMouseUpActionEnabled(false),
-    mTextChangedActionEnabled(false)
+    mTextChangedActionEnabled(false),
+    mLastActiveEditor(0),
+    mInitialSelectionStart(0),
+    mInitialSelectionRange(0),
+    mEditable(true),
+    mPromptsToSave(true)
 {
+    mTmpCoalCount = 0;
+    mTmpCoalTimer.setInterval(RESTORE_COAL_MSECS);
+    mTmpCoalTimer.setSingleShot(true);
+    connect(&mTmpCoalTimer, SIGNAL(timeout()), this, SLOT(onTmpCoalUsecs()));
+
     if (mId.isEmpty())
         mId = QUuid::createUuid().toString().toLatin1();
     if (mTitle.isEmpty())
@@ -191,9 +202,76 @@ void Document::setTextInRange(const QString text, int start, int range)
     cursor.insertText(text);
 }
 
+void Document::onTmpCoalUsecs()
+{
+    mTmpCoalCount = RESTORE_COAL;
+    storeTmpFile();
+}
+
+void Document::storeTmpFile()
+{
+    QString path, name;
+    QDir tmpFilesDir = standardDirectory(ScConfigUserDir);
+    int i = 0;
+
+    if (!textDocument()->isModified())
+        return;
+
+    if (++mTmpCoalCount < RESTORE_COAL) {
+        mTmpCoalTimer.start();
+        return;
+    }
+
+    mTmpCoalCount = 0;
+
+    if (!mTmpFilePath.isEmpty()) {
+        path = mTmpFilePath;
+        goto store;
+    }
+
+    if (mFilePath.isEmpty())
+        name = QString("Untitled");
+    else
+        name = QFileInfo(mFilePath).baseName();
+
+    if (!tmpFilesDir.exists("tmp"))
+        tmpFilesDir.mkdir("tmp");
+    tmpFilesDir.cd("tmp");
+
+    path = QString("%1/%2.bak").arg(tmpFilesDir.absolutePath())
+                               .arg(name);
+    while (QFile(path).exists())
+        path = QString("%1/%2-%3.bak")
+                               .arg(tmpFilesDir.absolutePath())
+                               .arg(name)
+                               .arg(++i);
+    mTmpFilePath = path;
+
+store:
+    QFile file(path);
+    if(!file.open(QIODevice::WriteOnly)) {
+        qWarning() << "DocumentManager: the file" << path << "could not be opened for writing.";
+        return;
+    }
+
+    QString str = textDocument()->toPlainText();
+    file.write(str.toUtf8());
+    file.close();
+}
+
+void Document::removeTmpFile()
+{
+    if (mTmpFilePath.isEmpty())
+        return;
+
+    if(!QFile(mTmpFilePath).remove())
+        qWarning() << "DocumentManager: the file" << mTmpFilePath
+                   << "could not be removed.'";
+    mTmpFilePath = "";
+}
 
 DocumentManager::DocumentManager( Main *main, Settings::Manager * settings ):
-QObject(main), mTextMirrorEnabled(true), mCurrentDocument(NULL)
+QObject(main), mTextMirrorEnabled(true), mCurrentDocument(NULL), mGlobalKeyDownEnabled(false), mGlobalKeyUpEnabled(false)
 {
     connect(&mFsWatcher, SIGNAL(fileChanged(QString)), this, SLOT(onFileChanged(QString)));
 
@@ -215,6 +293,7 @@ void DocumentManager::create()
 {
     Document *doc = createDocument();
 
+    connect(doc->textDocument(), SIGNAL(contentsChanged()), doc, SLOT(storeTmpFile()));
     syncLangDocument(doc);
     Q_EMIT( opened(doc, 0, 0) );
 }
@@ -276,12 +355,16 @@ Document *DocumentManager::open( const QString & path, int initialCursorPosition
     doc->mFilePath = filePath;
     doc->mTitle = info.fileName();
     doc->mSaveTime = info.lastModified();
+    doc->setInitialSelection(initialCursorPosition, selectionLength);
+    connect(doc->textDocument(), SIGNAL(contentsChanged()), doc, SLOT(storeTmpFile()));
 
     if (!isRTF)
         mFsWatcher.addPath(cpath);
 
     // if this was opened from the lang we don't need to sync
-    if(syncLang) syncLangDocument(doc);
+    if(syncLang) {
+        syncLangDocument(doc);
+    }
     Q_EMIT( opened(doc, initialCursorPosition, selectionLength) );
 
     if (toRecent) this->addToRecent(doc);
@@ -318,6 +401,48 @@ bool DocumentManager::reload( Document *doc )
     return true;
 }
 
+QStringList DocumentManager::tmpFiles()
+{
+    QDir tmpFilesDir = standardDirectory(ScConfigUserDir) + "/tmp";
+    QStringList files = tmpFilesDir.entryList(QStringList("*.bak"), QDir::Files);
+    int i;
+
+    for (i = 0; i < files.size(); i++)
+        files.replace(i, tmpFilesDir.absolutePath() + "/" + files[i]);
+
+    return files;
+}
+
+bool DocumentManager::needRestore()
+{
+    return (!tmpFiles().isEmpty());
+}
+
+void DocumentManager::restore()
+{
+    foreach(QString path, tmpFiles()) {
+        QFile file(path);
+        if (!file.open(QIODevice::ReadOnly))
+            MainWindow::instance()->showStatusMessage(
+                        tr("Cannot open file for reading: %1").arg(path));
+        QByteArray bytes(file.readAll());
+        file.close();
+        Document *doc = createDocument(false, QByteArray(),
+                                       QFileInfo(path).baseName(),
+                                       decodeDocument(bytes));
+        doc->mTmpFilePath = path;
+        syncLangDocument(doc);
+        Q_EMIT(opened(doc, 0, 0));
+        connect(doc->textDocument(), SIGNAL(contentsChanged()), doc, SLOT(storeTmpFile()));
+    }
+}
+
+void DocumentManager::deleteRestore()
+{
+    foreach(QString file, tmpFiles())
+        QFile(file).remove();
+}
+
 Document * DocumentManager::documentForId(const QByteArray docID)
 {
     Document * doc = mDocHash.value(docID);
@@ -337,6 +462,8 @@ void DocumentManager::close( Document *doc )
 {
     Q_ASSERT(doc);
 
+    doc->removeTmpFile();
+
     if( mDocHash.remove(doc->id()) == 0 ) {
         qWarning("DocumentManager: trying to close an unmanaged document.");
         return;
@@ -352,7 +479,7 @@ void DocumentManager::close( Document *doc )
             .arg(doc->id().constData());
     Main::evaluateCodeIfCompiled( command, true );
 
-    delete doc;
+    doc->deleteLater();
 }
 
 bool DocumentManager::save( Document *doc )
@@ -412,6 +539,7 @@ bool DocumentManager::doSaveAs( Document *doc, const QString & path )
     doc->mDoc->setModified(false);
     doc->mSaveTime = info.lastModified();
     doc->setPlainText(fileIsPlainText);
+    doc->removeTmpFile();
 
     // Always try to start watching, because the file could have been removed:
     if (!mFsWatcher.files().contains(cpath))
@@ -498,9 +626,15 @@ void DocumentManager::handleScLangMessage( const QString &selector, const QStrin
     static QString openFileSelector("openFile");
     static QString getDocTextSelector("getDocumentText");
     static QString setDocTextSelector("setDocumentText");
+    static QString setDocSelectionSelector("setDocumentSelection");
+    static QString setDocEditableSelector("setDocumentEditable");
+    static QString setDocPromptsToSaveSelector("setDocumentPromptsToSave");
     static QString setCurrentDocSelector("setCurrentDocument");
+    static QString removeDocUndoSelector("removeDocUndo");
     static QString closeDocSelector("closeDocument");
     static QString setDocTitleSelector("setDocumentTitle");
+    static QString enableGlobalKeyDownSelector("enableDocumentGlobalKeyDownAction");
+    static QString enableGlobalKeyUpSelector("enableDocumentGlobalKeyUpAction");
     static QString enableKeyDownSelector("enableDocumentKeyDownAction");
     static QString enableKeyUpSelector("enableDocumentKeyUpAction");
     static QString enableMouseDownSelector("enableDocumentMouseDownAction");
@@ -522,10 +656,22 @@ void DocumentManager::handleScLangMessage( const QString &selector, const QStrin
 
     if (selector == setDocTextSelector)
         handleSetDocTextScRequest(data);
+    
+    if (selector == setDocSelectionSelector)
+        handleSetDocSelectionScRequest(data);
+    
+    if (selector == setDocEditableSelector)
+        handleSetDocEditableScRequest(data);
+    
+    if (selector == setDocPromptsToSaveSelector)
+        handleSetDocPromptsToSaveScRequest(data);
 
     if (selector == setCurrentDocSelector)
         handleSetCurrentDocScRequest(data);
-
+    
+    if (selector == removeDocUndoSelector)
+        handleRemoveDocUndoScRequest(data);
+    
     if (selector == closeDocSelector)
         handleCloseDocScRequest(data);
 
@@ -537,6 +683,12 @@ void DocumentManager::handleScLangMessage( const QString &selector, const QStrin
     
     if (selector == enableKeyUpSelector)
         handleEnableKeyUpScRequest( data );
+    
+    if (selector == enableGlobalKeyDownSelector)
+        handleEnableGlobalKeyDownScRequest( data );
+    
+    if (selector == enableGlobalKeyUpSelector)
+        handleEnableGlobalKeyUpScRequest( data );
   
     if (selector == enableMouseDownSelector)
         handleEnableMouseDownScRequest( data );
@@ -558,12 +710,23 @@ void DocumentManager::handleDocListScRequest()
     QString command = QString("Document.syncDocs([");
     for (it = docs.begin(); it != docs.end(); ++it) {
         Document * doc = *it;
-        QString docData = QString("[\'%1\', %2, %3, %4, %5],")
+        int start, range;
+        if(doc->lastActiveEditor()){ // we might have changed selection before sync happened
+            QTextCursor cursor = doc->lastActiveEditor()->textCursor();
+            start = cursor.selectionStart();
+            range = cursor.selectionEnd() - start;
+        } else {
+            start = doc->initialSelectionStart();
+            range = doc->initialSelectionRange();
+        }
+        QString docData = QString("[\'%1\', %2, %3, %4, %5, %6, %7],")
             .arg(doc->id().constData())
             .arg(doc->titleAsSCArrayOfCharCodes())
             .arg(doc->textAsSCArrayOfCharCodes(0, -1))
             .arg(doc->isModified())
-            .arg(doc->pathAsSCArrayOfCharCodes());
+            .arg(doc->pathAsSCArrayOfCharCodes())
+            .arg(start)
+            .arg(range);
         command = command.append(docData);
     }
     command = command.append("]);");
@@ -738,6 +901,100 @@ void DocumentManager::handleSetDocTextScRequest( const QString & data )
     }
 }
 
+void DocumentManager::handleSetDocSelectionScRequest( const QString & data )
+{
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
+    YAML::Parser parser(stream);
+    
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+        
+        std::string id;
+        bool success = doc[0].Read(id);
+        if (!success)
+            return;
+        
+        int start;
+        success = doc[1].Read(start);
+        if (!success)
+            return;
+        
+        int range;
+        success = doc[2].Read(range);
+        if (!success)
+            return;
+        
+        Document *document = documentForId(id.c_str());
+        if(document){
+            if(document->lastActiveEditor()){
+                document->lastActiveEditor()->showPosition(start, range);
+            }
+        }
+    }
+}
+
+void DocumentManager::handleSetDocEditableScRequest( const QString & data )
+{
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
+    YAML::Parser parser(stream);
+    
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+        
+        std::string id;
+        bool success = doc[0].Read(id);
+        if (!success)
+            return;
+        
+        bool editable;
+        success = doc[1].Read(editable);
+        if (!success)
+            return;
+        
+        Document *document = documentForId(id.c_str());
+        if(document){
+            document->setEditable(editable);
+            if(document->lastActiveEditor()){
+                document->lastActiveEditor()->setReadOnly(!editable);
+            }
+        }
+    }
+}
+
+void DocumentManager::handleSetDocPromptsToSaveScRequest( const QString & data )
+{
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
+    YAML::Parser parser(stream);
+    
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+        
+        std::string id;
+        bool success = doc[0].Read(id);
+        if (!success)
+            return;
+        
+        bool promptsToSave;
+        success = doc[1].Read(promptsToSave);
+        if (!success)
+            return;
+        
+        Document *document = documentForId(id.c_str());
+        if(document){
+            document->setPromptsToSave(promptsToSave);
+        }
+    }
+}
+
 void DocumentManager::handleSetCurrentDocScRequest( const QString & data )
 {
     std::stringstream stream;
@@ -759,6 +1016,32 @@ void DocumentManager::handleSetCurrentDocScRequest( const QString & data )
             Q_EMIT( showRequest(document) );
     }
 
+}
+
+void DocumentManager::handleRemoveDocUndoScRequest( const QString & data )
+{
+    std::stringstream stream;
+    stream << data.toStdString();
+    YAML::Parser parser(stream);
+    
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+        
+        std::string id;
+        bool success = doc[0].Read(id);
+        if (!success)
+            return;
+        
+        Document *document = documentForId(id.c_str());
+        if(document){
+            QTextDocument *textDoc = document->textDocument();
+            textDoc->clearUndoRedoStacks();
+            textDoc->setModified(false);
+        }
+    }
+    
 }
 
 void DocumentManager::handleCloseDocScRequest( const QString & data )
@@ -876,6 +1159,48 @@ void DocumentManager::handleEnableKeyUpScRequest( const QString & data )
     
 }
 
+void DocumentManager::handleEnableGlobalKeyDownScRequest( const QString & data )
+{
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
+    YAML::Parser parser(stream);
+    
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+        
+        bool enabled;
+        bool success = doc[0].Read(enabled);
+        if (!success)
+            return;
+        
+        mGlobalKeyDownEnabled = enabled;
+    }
+    
+}
+
+void DocumentManager::handleEnableGlobalKeyUpScRequest( const QString & data )
+{
+    QByteArray utf8_bytes = data.toUtf8();
+    std::stringstream stream(utf8_bytes.constData());
+    YAML::Parser parser(stream);
+    
+    YAML::Node doc;
+    if (parser.GetNextDocument(doc)) {
+        if (doc.Type() != YAML::NodeType::Sequence)
+            return;
+        
+        bool enabled;
+        bool success = doc[0].Read(enabled);
+        if (!success)
+            return;
+        
+        mGlobalKeyUpEnabled = enabled;
+    }
+    
+}
+
 void DocumentManager::handleEnableMouseDownScRequest( const QString & data )
 {
     std::string id;
@@ -945,6 +1270,7 @@ void DocumentManager::handleEnableTextMirrorScRequest( const QString & data )
             for (it = docs.begin(); it != docs.end(); ++it) {
                 Document * doc = *it;
                 Main::scProcess()->updateTextMirrorForDocument(doc, 0, -1, doc->textDocument()->characterCount());
+                doc->lastActiveEditor()->updateDocLastSelection();
             }
         } else {
             // this sets the mirror to empty strings
@@ -961,13 +1287,24 @@ void DocumentManager::handleEnableTextMirrorScRequest( const QString & data )
 
 void DocumentManager::syncLangDocument(Document *doc)
 {
+    int start, range;
+    if(doc->lastActiveEditor()){ // we might have changed selection before sync happened
+        QTextCursor cursor = doc->lastActiveEditor()->textCursor();
+        start = cursor.selectionStart();
+        range = cursor.selectionEnd() - start;
+    } else {
+        start = doc->initialSelectionStart();
+        range = doc->initialSelectionRange();
+    }
     QString command =
-            QString("Document.syncFromIDE(\'%1\', %2, %3, %4, \'%5\')")
+            QString("Document.syncFromIDE(\'%1\', %2, %3, %4, \'%5\', %6, %7)")
             .arg(doc->id().constData())
             .arg(doc->titleAsSCArrayOfCharCodes())
             .arg(doc->textAsSCArrayOfCharCodes(0, -1))
             .arg(doc->isModified())
-            .arg(doc->pathAsSCArrayOfCharCodes());
+            .arg(doc->pathAsSCArrayOfCharCodes())
+            .arg(start)
+            .arg(range);
     Main::evaluateCode ( command, true );
 }
 

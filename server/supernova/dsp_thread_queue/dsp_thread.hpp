@@ -24,6 +24,7 @@
 #include <thread>
 
 #include <boost/ptr_container/ptr_vector.hpp>
+#include <boost/sync/semaphore.hpp>
 
 #include "dsp_thread_queue.hpp"
 #include "../utilities/malloc_aligned.hpp"
@@ -94,7 +95,7 @@ public:
 
         for (;;) {
             cycle_sem.wait();
-            if (unlikely(stop.load(boost::memory_order_acquire)))
+            if (unlikely(stop.load(std::memory_order_acquire)))
                 return;
 
             interpreter.tick(index);
@@ -110,7 +111,7 @@ public:
 
     void terminate(void)
     {
-        stop.store(true, boost::memory_order_release);
+        stop.store(true, std::memory_order_release);
         wake_thread();
     }
 
@@ -126,9 +127,9 @@ public:
     }
 
 private:
-    semaphore cycle_sem;
+    boost::sync::semaphore cycle_sem;
     dsp_queue_interpreter & interpreter;
-    boost::atomic<bool> stop;
+    std::atomic<bool> stop;
     uint16_t index;
     char * stack_;
 };

@@ -49,7 +49,7 @@
 #include "SC_DirUtils.h"
 #include "SC_Version.hpp"
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 # include <direct.h>
 #else
 # include <sys/param.h>
@@ -3528,6 +3528,19 @@ static int prLanguageConfig_removeExcludePath(struct VMGlobals * g, int numArgsP
 	return prLanguageConfig_removeLibraryPath(g, numArgsPushed, excludePaths);
 }
 
+static int prLanguageConfig_getCurrentConfigPath(struct VMGlobals * g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+	PyrString* str = newPyrString(g->gc, gLanguageConfig->getCurrentConfigPath(), 0, false);
+    if(str->size == 0) {
+        SetNil(a);
+    } else {
+        SetObject(a, str);
+    }
+    
+	return errNone;
+}
+
 static int prLanguageConfig_writeConfigFile(struct VMGlobals * g, int numArgsPushed)
 {
 	PyrSlot *fileString = g->sp;
@@ -4145,6 +4158,7 @@ void initPrimitives()
 	definePrimitive(base, index++, "_MainOverwriteMsg", prOverwriteMsg, 1, 0);
 
 	definePrimitive(base, index++, "_AppClock_SchedNotify", prAppClockSchedNotify, 1, 0);
+	definePrimitive(base, index++, "_LanguageConfig_getCurrentConfigPath", prLanguageConfig_getCurrentConfigPath, 1, 0);
 	definePrimitive(base, index++, "_LanguageConfig_getIncludePaths", prLanguageConfig_getIncludePaths, 1, 0);
 	definePrimitive(base, index++, "_LanguageConfig_getExcludePaths", prLanguageConfig_getExcludePaths, 1, 0);
 	definePrimitive(base, index++, "_LanguageConfig_addIncludePath", prLanguageConfig_addIncludePath, 2, 0);
@@ -4230,13 +4244,12 @@ void initMIDIPrimitives();
 	initMIDIPrimitives();
 #endif
 
-
-#if !defined(SC_WIN32) && !defined(SC_IPHONE) && !defined(__OpenBSD__) && !defined(__APPLE__)
+#if !defined(_WIN32) && !defined(SC_IPHONE) && !defined(__OpenBSD__) && !defined(__NetBSD__) && !defined(__APPLE__)
 void initLIDPrimitives();
 	initLIDPrimitives();
 #endif
 
-#if !defined(SC_WIN32) && !defined(SC_IPHONE) && !defined(__OpenBSD__)
+#if !defined(_WIN32) && !defined(SC_IPHONE) && !defined(__OpenBSD__) && !defined(__NetBSD__)
 
 void initSerialPrimitives();
 	initSerialPrimitives();
@@ -4281,6 +4294,11 @@ void deinitPrimitives()
 {
 	void deinitHIDAPIPrimitives();
 	deinitHIDAPIPrimitives();
+
+#if defined(HAVE_PORTMIDI)
+void deinitMIDIPrimitives();
+	deinitMIDIPrimitives();
+#endif
 
 }
 

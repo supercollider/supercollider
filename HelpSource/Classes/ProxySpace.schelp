@@ -126,7 +126,7 @@ Gets the NodeProxy at strong::key:: (if none exists, returns a new one) and sets
 method::at
 Return the proxy source object at that key.
 
-subsection::"garbage collecting"
+subsection::garbage collecting
 
 method::clean
 free and remove all proxies that are not needed in order to play the ones passed in with 'exclude'. if none are passed in, all proxies that are monitoring (with the .play message) are kept as well as their parents etc.
@@ -134,7 +134,30 @@ free and remove all proxies that are not needed in order to play the ones passed
 method::reduce
 free all proxies that are not needed in order to play the ones passed in with 'to'. if none are passed in, all proxies that are monitored (with the play message) are kept as well as their parents etc.
 
-subsection::Coding
+subsection::making copies
+
+method::copy
+Copies the environment into a new one, with each proxy being copied as well (See: link::Classes/NodeProxy#-copy::). Also the instance variables that determine the ProxySpace behaviour are included, such as server, fadeTime, quant, reshaping (this happens in the code::copyState:: method).
+
+code::
+p = ProxySpace.push(s.boot);
+p.reshaping = \elastic;
+~out.play;
+~out = { Blip.ar(~freq, ~numharm) };
+~freq = 70;
+~numharm = { MouseX.kr(2, 100, 1) };
+
+q = p.copy; p.pop; q.push;
+
+q.reshaping.postln; // also elastic
+~out.play;
+~freq = { MouseY.kr(2, 1000, 1) * [1, 1.2] };
+
+p.end; q.end;
+::
+
+
+subsection::Writing code
 
 method::document
 creates a new document with the current proxyspace state. This does not allow open functions as proxy sources. see: link::Tutorials/JITLib/jitlib_asCompileString::.

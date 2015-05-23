@@ -7,7 +7,7 @@
  * Boost Software License, Version 1.0. (See accompanying
  * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
  * Author: Jeff Garland, Bart Garst
- * $Date: 2013-10-15 08:22:02 -0700 (Tue, 15 Oct 2013) $
+ * $Date$
  */
 
 
@@ -63,7 +63,7 @@ fixed_string_to_int(std::istreambuf_iterator<charT>& itr,
     itr++;
     j++;
   }
-  int_type i = -1;
+  int_type i = static_cast<int_type>(-1);
   // mr.cache will hold leading zeros. size() tells us when input is too short.
   if(mr.cache.size() < length) {
     return i;
@@ -111,7 +111,7 @@ var_string_to_int(std::istreambuf_iterator<charT>& itr,
     ++itr;
     ++j;
   }
-  int_type i = -1;
+  int_type i = static_cast<int_type>(-1);
   if(!s.empty()) {
     i = boost::lexical_cast<int_type>(s);
   }

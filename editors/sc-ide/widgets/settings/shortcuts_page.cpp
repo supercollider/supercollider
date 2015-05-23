@@ -226,7 +226,7 @@ bool ShortcutsPage::confirmOverride( const QKeySequence &duplicateSequence,
     QString warningString = tr("Shortcut '%1' has already been assigned to '%2'.\n\n"
                                "Would you like to override it?");
 
-    warningString = warningString.arg(duplicateSequence, duplicateItem->text(0));
+    warningString = warningString.arg(duplicateSequence.toString(), duplicateItem->text(0));
 
     QMessageBox::StandardButton result =
             QMessageBox::warning( this,

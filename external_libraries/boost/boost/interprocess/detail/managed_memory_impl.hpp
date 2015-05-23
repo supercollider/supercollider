@@ -11,7 +11,7 @@
 #ifndef BOOST_INTERPROCESS_DETAIL_MANAGED_MEMORY_IMPL_HPP
 #define BOOST_INTERPROCESS_DETAIL_MANAGED_MEMORY_IMPL_HPP
 
-#if (defined _MSC_VER) && (_MSC_VER >= 1200)
+#if defined(_MSC_VER)
 #  pragma once
 #endif
 
@@ -90,7 +90,7 @@ class basic_managed_memory_impl
    typedef typename segment_manager::
       const_unique_iterator                           const_unique_iterator;
 
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
 
    typedef typename
            segment_manager::char_ptr_holder_t         char_ptr_holder_t;
@@ -98,7 +98,7 @@ class basic_managed_memory_impl
 
    typedef typename segment_manager::multiallocation_chain  multiallocation_chain;
 
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 
    static const size_type PayloadPerAllocation = segment_manager::PayloadPerAllocation;
 
@@ -303,11 +303,11 @@ class basic_managed_memory_impl
    void * allocate_aligned(size_type nbytes, size_type alignment)
    {   return mp_header->allocate_aligned(nbytes, alignment);  }
 
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
 
    //Experimental. Don't use.
 
-   //!Allocates n_elements of elem_bytes bytes. 
+   //!Allocates n_elements of elem_bytes bytes.
    //!Throws bad_alloc on failure. chain.size() is not increased on failure.
    void allocate_many(size_type elem_bytes, size_type n_elements, multiallocation_chain &chain)
    {  mp_header->allocate_many(elem_bytes, n_elements, chain); }
@@ -317,7 +317,7 @@ class basic_managed_memory_impl
    void allocate_many(const size_type *element_lengths, size_type n_elements, size_type sizeof_element, multiallocation_chain &chain)
    {  mp_header->allocate_many(element_lengths, n_elements, sizeof_element, chain); }
 
-   //!Allocates n_elements of elem_bytes bytes. 
+   //!Allocates n_elements of elem_bytes bytes.
    //!Non-throwing version. chain.size() is not increased on failure.
    void allocate_many(std::nothrow_t, size_type elem_bytes, size_type n_elements, multiallocation_chain &chain)
    {  mp_header->allocate_many(std::nothrow_t(), elem_bytes, n_elements, chain); }
@@ -333,7 +333,7 @@ class basic_managed_memory_impl
    void deallocate_many(multiallocation_chain &chain)
    {  mp_header->deallocate_many(chain); }
 
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 
    //!Marks previously allocated memory as free. Never throws.
    void  deallocate           (void *addr)
@@ -609,7 +609,7 @@ class basic_managed_memory_impl
    {  mp_header->template destroy_ptr<T>(ptr); }
 
    //!Returns the name of an object created with construct/find_or_construct
-   //!functions. Does not throw
+   //!functions. If ptr points to an unique instance typeid(T).name() is returned.
    template<class T>
    static const char_type *get_instance_name(const T *ptr)
    {  return segment_manager::get_instance_name(ptr);   }
@@ -703,14 +703,14 @@ class basic_managed_memory_impl
       get_deleter()
    {   return mp_header->template get_deleter<T>(); }
 
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
    //!Tries to find a previous named allocation address. Returns a memory
    //!buffer and the object count. If not found returned pointer is 0.
    //!Never throws.
    template <class T>
    std::pair<T*, size_type> find_no_lock  (char_ptr_holder_t name)
    {   return mp_header->template find_no_lock<T>(name); }
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 
    protected:
    //!Swaps the segment manager's managed by this managed memory segment.

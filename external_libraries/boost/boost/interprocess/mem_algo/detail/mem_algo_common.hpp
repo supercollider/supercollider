@@ -11,7 +11,7 @@
 #ifndef BOOST_INTERPROCESS_DETAIL_MEM_ALGO_COMMON_HPP
 #define BOOST_INTERPROCESS_DETAIL_MEM_ALGO_COMMON_HPP
 
-#if (defined _MSC_VER) && (_MSC_VER >= 1200)
+#if defined(_MSC_VER)
 #  pragma once
 #endif
 
@@ -24,7 +24,7 @@
 #include <boost/interprocess/detail/type_traits.hpp>
 #include <boost/interprocess/detail/math_functions.hpp>
 #include <boost/interprocess/detail/utilities.hpp>
-#include <boost/move/move.hpp>
+#include <boost/move/utility_core.hpp>
 #include <boost/interprocess/detail/min_max.hpp>
 #include <boost/container/detail/multiallocation_chain.hpp>
 #include <boost/assert.hpp>
@@ -288,7 +288,6 @@ class memory_algorithm_common
             second->m_size = old_size - first->m_size;
             BOOST_ASSERT(second->m_size >= MinBlockUnits);
             memory_algo->priv_mark_new_allocated_block(first);
-            //memory_algo->priv_tail_size(first, first->m_size);
             memory_algo->priv_mark_new_allocated_block(second);
             memory_algo->priv_deallocate(memory_algo->priv_get_user_buffer(second));
          }

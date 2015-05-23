@@ -11,6 +11,7 @@
 //  http://www.boost.org/LICENSE_1_0.txt)
 
 #include <boost/thread/detail/config.hpp>
+#include <boost/predef/platform.h>
 #include <boost/throw_exception.hpp>
 #include <boost/assert.hpp>
 #include <boost/thread/exceptions.hpp>
@@ -18,10 +19,8 @@
 //#include <boost/detail/winapi/synchronization.hpp>
 #include <algorithm>
 
-#ifndef BOOST_THREAD_WIN32_HAS_GET_TICK_COUNT_64
-#if _WIN32_WINNT >= 0x0600 && ! defined _WIN32_WINNT_WS08
-#define BOOST_THREAD_WIN32_HAS_GET_TICK_COUNT_64
-#endif
+#if BOOST_PLAT_WINDOWS_RUNTIME
+#include <thread>
 #endif
 
 #if defined( BOOST_USE_WINDOWS_H )
@@ -33,53 +32,61 @@ namespace boost
     {
         namespace win32
         {
-#ifdef BOOST_THREAD_WIN32_HAS_GET_TICK_COUNT_64
-            typedef unsigned long long ticks_type;
-#else
-            typedef unsigned long ticks_type;
-#endif
-            typedef ULONG_PTR ulong_ptr;
             typedef HANDLE handle;
+            typedef SYSTEM_INFO system_info;
+            typedef unsigned __int64 ticks_type;
             unsigned const infinite=INFINITE;
             unsigned const timeout=WAIT_TIMEOUT;
             handle const invalid_handle_value=INVALID_HANDLE_VALUE;
             unsigned const event_modify_state=EVENT_MODIFY_STATE;
             unsigned const synchronize=SYNCHRONIZE;
             unsigned const wait_abandoned=WAIT_ABANDONED;
-
+            unsigned const create_event_initial_set = 0x00000002;
+            unsigned const create_event_manual_reset = 0x00000001;
+            unsigned const event_all_access = EVENT_ALL_ACCESS;
+            unsigned const semaphore_all_access = SEMAPHORE_ALL_ACCESS;
+            
 
 # ifdef BOOST_NO_ANSI_APIS
+# if BOOST_USE_WINAPI_VERSION < BOOST_WINAPI_VERSION_VISTA
             using ::CreateMutexW;
             using ::CreateEventW;
-            using ::OpenEventW;
             using ::CreateSemaphoreW;
+# else
+            using ::CreateMutexExW;
+            using ::CreateEventExW;
+            using ::CreateSemaphoreExW;
+# endif
+            using ::OpenEventW;
 # else
             using ::CreateMutexA;
             using ::CreateEventA;
             using ::OpenEventA;
             using ::CreateSemaphoreA;
 # endif
+#if BOOST_PLAT_WINDOWS_RUNTIME
+            using ::GetNativeSystemInfo;
+            using ::GetTickCount64;
+#else
+            using ::GetSystemInfo;
+#endif
             using ::CloseHandle;
             using ::ReleaseMutex;
             using ::ReleaseSemaphore;
             using ::SetEvent;
             using ::ResetEvent;
-            using ::WaitForMultipleObjects;
-            using ::WaitForSingleObject;
+            using ::WaitForMultipleObjectsEx;  
+            using ::WaitForSingleObjectEx;  
             using ::GetCurrentProcessId;
             using ::GetCurrentThreadId;
             using ::GetCurrentThread;
             using ::GetCurrentProcess;
             using ::DuplicateHandle;
+#if !BOOST_PLAT_WINDOWS_RUNTIME
             using ::SleepEx;
             using ::Sleep;
             using ::QueueUserAPC;
-            using ::GetTickCount;
-#ifdef BOOST_THREAD_WIN32_HAS_GET_TICK_COUNT_64
-            using ::GetTickCount64;
-#else
-            inline ticks_type GetTickCount64() { return GetTickCount(); }
-#endif
+#endif           
         }
     }
 }
@@ -100,13 +107,19 @@ extern "C" {
 typedef int BOOL;
 typedef unsigned long DWORD;
 typedef void* HANDLE;
-
 #  include <kfuncs.h>
 #  ifdef __cplusplus
 }
 #  endif
 # endif
 
+# ifdef __cplusplus
+extern "C" {
+# endif
+struct _SYSTEM_INFO;
+# ifdef __cplusplus
+}
+#endif
 
 namespace boost
 {
@@ -114,31 +127,38 @@ namespace boost
     {
         namespace win32
         {
-#ifdef BOOST_THREAD_WIN32_HAS_GET_TICK_COUNT_64
-            typedef unsigned long long ticks_type;
-#else
-            typedef unsigned long ticks_type;
-#endif
 # ifdef _WIN64
             typedef unsigned __int64 ulong_ptr;
 # else
             typedef unsigned long ulong_ptr;
 # endif
             typedef void* handle;
+            typedef _SYSTEM_INFO system_info;
+            typedef unsigned __int64 ticks_type;
             unsigned const infinite=~0U;
             unsigned const timeout=258U;
             handle const invalid_handle_value=(handle)(-1);
             unsigned const event_modify_state=2;
             unsigned const synchronize=0x100000u;
             unsigned const wait_abandoned=0x00000080u;
+            unsigned const create_event_initial_set = 0x00000002;
+            unsigned const create_event_manual_reset = 0x00000001;
+            unsigned const event_all_access = 0x1F0003;
+            unsigned const semaphore_all_access = 0x1F0003;
 
             extern "C"
             {
                 struct _SECURITY_ATTRIBUTES;
 # ifdef BOOST_NO_ANSI_APIS
+# if BOOST_USE_WINAPI_VERSION < BOOST_WINAPI_VERSION_VISTA
                 __declspec(dllimport) void* __stdcall CreateMutexW(_SECURITY_ATTRIBUTES*,int,wchar_t const*);
                 __declspec(dllimport) void* __stdcall CreateSemaphoreW(_SECURITY_ATTRIBUTES*,long,long,wchar_t const*);
                 __declspec(dllimport) void* __stdcall CreateEventW(_SECURITY_ATTRIBUTES*,int,int,wchar_t const*);
+# else
+                __declspec(dllimport) void* __stdcall CreateMutexExW(_SECURITY_ATTRIBUTES*,wchar_t const*,unsigned long,unsigned long);
+                __declspec(dllimport) void* __stdcall CreateEventExW(_SECURITY_ATTRIBUTES*,wchar_t const*,unsigned long,unsigned long);
+                __declspec(dllimport) void* __stdcall CreateSemaphoreExW(_SECURITY_ATTRIBUTES*,long,long,wchar_t const*,unsigned long,unsigned long);
+# endif
                 __declspec(dllimport) void* __stdcall OpenEventW(unsigned long,int,wchar_t const*);
 # else
                 __declspec(dllimport) void* __stdcall CreateMutexA(_SECURITY_ATTRIBUTES*,int,char const*);
@@ -146,21 +166,25 @@ namespace boost
                 __declspec(dllimport) void* __stdcall CreateEventA(_SECURITY_ATTRIBUTES*,int,int,char const*);
                 __declspec(dllimport) void* __stdcall OpenEventA(unsigned long,int,char const*);
 # endif
+#if BOOST_PLAT_WINDOWS_RUNTIME
+                __declspec(dllimport) void __stdcall GetNativeSystemInfo(_SYSTEM_INFO*);
+                __declspec(dllimport) ticks_type __stdcall GetTickCount64();
+#else
+                __declspec(dllimport) void __stdcall GetSystemInfo(_SYSTEM_INFO*);
+#endif
                 __declspec(dllimport) int __stdcall CloseHandle(void*);
                 __declspec(dllimport) int __stdcall ReleaseMutex(void*);
-                __declspec(dllimport) unsigned long __stdcall WaitForSingleObject(void*,unsigned long);
-                __declspec(dllimport) unsigned long __stdcall WaitForMultipleObjects(unsigned long nCount,void* const * lpHandles,int bWaitAll,unsigned long dwMilliseconds);
+                __declspec(dllimport) unsigned long __stdcall WaitForSingleObjectEx(void*,unsigned long,int);
+                __declspec(dllimport) unsigned long __stdcall WaitForMultipleObjectsEx(unsigned long nCount,void* const * lpHandles,int bWaitAll,unsigned long dwMilliseconds,int bAlertable);
                 __declspec(dllimport) int __stdcall ReleaseSemaphore(void*,long,long*);
                 __declspec(dllimport) int __stdcall DuplicateHandle(void*,void*,void*,void**,unsigned long,int,unsigned long);
+#if !BOOST_PLAT_WINDOWS_RUNTIME
                 __declspec(dllimport) unsigned long __stdcall SleepEx(unsigned long,int);
                 __declspec(dllimport) void __stdcall Sleep(unsigned long);
                 typedef void (__stdcall *queue_user_apc_callback_function)(ulong_ptr);
                 __declspec(dllimport) unsigned long __stdcall QueueUserAPC(queue_user_apc_callback_function,void*,ulong_ptr);
+#endif
 
-                __declspec(dllimport) unsigned long __stdcall GetTickCount();
-# ifdef BOOST_THREAD_WIN32_HAS_GET_TICK_COUNT_64
-                __declspec(dllimport) ticks_type __stdcall GetTickCount64();
-# endif
 # ifndef UNDER_CE
                 __declspec(dllimport) unsigned long __stdcall GetCurrentProcessId();
                 __declspec(dllimport) unsigned long __stdcall GetCurrentThreadId();
@@ -177,9 +201,6 @@ namespace boost
                 using ::ResetEvent;
 # endif
             }
-# ifndef BOOST_THREAD_WIN32_HAS_GET_TICK_COUNT_64
-            inline ticks_type GetTickCount64() { return GetTickCount(); }
-# endif
         }
     }
 }
@@ -195,6 +216,103 @@ namespace boost
     {
         namespace win32
         {
+            namespace detail { typedef int (__stdcall *farproc_t)(); typedef ticks_type (__stdcall *gettickcount64_t)(); }
+#if !BOOST_PLAT_WINDOWS_RUNTIME
+            extern "C"
+            {
+                __declspec(dllimport) detail::farproc_t __stdcall GetProcAddress(void *, const char *);
+#if !defined(BOOST_NO_ANSI_APIS)
+                __declspec(dllimport) void * __stdcall GetModuleHandleA(const char *);
+#else
+                __declspec(dllimport) void * __stdcall GetModuleHandleW(const wchar_t *);
+#endif
+                __declspec(dllimport) unsigned long __stdcall GetTickCount();
+#ifdef _MSC_VER
+                long _InterlockedCompareExchange(long volatile *, long, long);
+#pragma intrinsic(_InterlockedCompareExchange)
+#elif defined(__MINGW64_VERSION_MAJOR)
+                long _InterlockedCompareExchange(long volatile *, long, long);
+#else
+                // Mingw doesn't provide intrinsics
+#define _InterlockedCompareExchange InterlockedCompareExchange
+#endif
+            }
+            // Borrowed from https://stackoverflow.com/questions/8211820/userland-interrupt-timer-access-such-as-via-kequeryinterrupttime-or-similar
+            inline ticks_type __stdcall GetTickCount64emulation()
+            {
+                static volatile long count = 0xFFFFFFFF;
+                unsigned long previous_count, current_tick32, previous_count_zone, current_tick32_zone;
+                ticks_type current_tick64;
+
+                previous_count = (unsigned long) _InterlockedCompareExchange(&count, 0, 0);
+                current_tick32 = GetTickCount();
+
+                if(previous_count == 0xFFFFFFFF)
+                {
+                    // count has never been written
+                    unsigned long initial_count;
+                    initial_count = current_tick32 >> 28;
+                    previous_count = (unsigned long) _InterlockedCompareExchange(&count, initial_count, 0xFFFFFFFF);
+
+                    current_tick64 = initial_count;
+                    current_tick64 <<= 28;
+                    current_tick64 += current_tick32 & 0x0FFFFFFF;
+                    return current_tick64;
+                }
+
+                previous_count_zone = previous_count & 15;
+                current_tick32_zone = current_tick32 >> 28;
+
+                if(current_tick32_zone == previous_count_zone)
+                {
+                    // The top four bits of the 32-bit tick count haven't changed since count was last written.
+                    current_tick64 = previous_count;
+                    current_tick64 <<= 28;
+                    current_tick64 += current_tick32 & 0x0FFFFFFF;
+                    return current_tick64;
+                }
+
+                if(current_tick32_zone == previous_count_zone + 1 || (current_tick32_zone == 0 && previous_count_zone == 15))
+                {
+                    // The top four bits of the 32-bit tick count have been incremented since count was last written.
+                    _InterlockedCompareExchange(&count, previous_count + 1, previous_count);
+                    current_tick64 = previous_count + 1;
+                    current_tick64 <<= 28;
+                    current_tick64 += current_tick32 & 0x0FFFFFFF;
+                    return current_tick64;
+                }
+
+                // Oops, we weren't called often enough, we're stuck
+                return 0xFFFFFFFF;     
+            }
+#else
+#endif
+            inline detail::gettickcount64_t GetTickCount64_()
+            {
+                static detail::gettickcount64_t gettickcount64impl;
+                if(gettickcount64impl)
+                    return gettickcount64impl;
+                    
+                // GetTickCount and GetModuleHandle are not allowed in the Windows Runtime,
+                // and kernel32 isn't used in Windows Phone.
+#if BOOST_PLAT_WINDOWS_RUNTIME
+                gettickcount64impl = &GetTickCount64;
+#else               
+                detail::farproc_t addr=GetProcAddress(
+#if !defined(BOOST_NO_ANSI_APIS)
+                    GetModuleHandleA("KERNEL32.DLL"),
+#else
+                    GetModuleHandleW(L"KERNEL32.DLL"),
+#endif
+                    "GetTickCount64");
+                if(addr)
+                    gettickcount64impl=(detail::gettickcount64_t) addr;
+                else
+                    gettickcount64impl=&GetTickCount64emulation;
+#endif                    
+                return gettickcount64impl;
+            }
+
             enum event_type
             {
                 auto_reset_event=false,
@@ -207,13 +325,32 @@ namespace boost
                 event_initially_set=true
             };
 
-            inline handle create_anonymous_event(event_type type,initial_event_state state)
+            inline handle create_event(
+#if !defined(BOOST_NO_ANSI_APIS)
+                const char *mutex_name,
+#else
+                const wchar_t *mutex_name,
+#endif
+                event_type type,
+                initial_event_state state)
             {
 #if !defined(BOOST_NO_ANSI_APIS)
-                handle const res=win32::CreateEventA(0,type,state,0);
+                handle const res = win32::CreateEventA(0, type, state, mutex_name);
+#elif BOOST_USE_WINAPI_VERSION < BOOST_WINAPI_VERSION_VISTA
+                handle const res = win32::CreateEventW(0, type, state, mutex_name);
 #else
-                handle const res=win32::CreateEventW(0,type,state,0);
+                handle const res = win32::CreateEventExW(
+                    0, 
+                    mutex_name, 
+                    type ? create_event_manual_reset : 0 | state ? create_event_initial_set : 0,
+                    event_all_access);
 #endif
+                return res;
+            }
+            
+            inline handle create_anonymous_event(event_type type,initial_event_state state)
+            {
+                handle const res = create_event(0, type, state);
                 if(!res)
                 {
                     boost::throw_exception(thread_resource_error());
@@ -221,26 +358,27 @@ namespace boost
                 return res;
             }
 
-            inline handle create_anonymous_semaphore(long initial_count,long max_count)
+            inline handle create_anonymous_semaphore_nothrow(long initial_count,long max_count)
             {
 #if !defined(BOOST_NO_ANSI_APIS)
-                handle const res=CreateSemaphoreA(0,initial_count,max_count,0);
+                handle const res=win32::CreateSemaphoreA(0,initial_count,max_count,0);
 #else
-                handle const res=CreateSemaphoreW(0,initial_count,max_count,0);
+#if BOOST_USE_WINAPI_VERSION < BOOST_WINAPI_VERSION_VISTA
+                handle const res=win32::CreateSemaphoreEx(0,initial_count,max_count,0,0);
+#else
+                handle const res=win32::CreateSemaphoreExW(0,initial_count,max_count,0,0,semaphore_all_access);
 #endif
+#endif
+                return res;
+            }
+      
+            inline handle create_anonymous_semaphore(long initial_count,long max_count)
+            {
+                handle const res=create_anonymous_semaphore_nothrow(initial_count,max_count);
                 if(!res)
                 {
                     boost::throw_exception(thread_resource_error());
                 }
-                return res;
-            }
-            inline handle create_anonymous_semaphore_nothrow(long initial_count,long max_count)
-            {
-#if !defined(BOOST_NO_ANSI_APIS)
-                handle const res=CreateSemaphoreA(0,initial_count,max_count,0);
-#else
-                handle const res=CreateSemaphoreW(0,initial_count,max_count,0);
-#endif
                 return res;
             }
 
@@ -261,7 +399,64 @@ namespace boost
             {
                 BOOST_VERIFY(ReleaseSemaphore(semaphore,count,0)!=0);
             }
+            
+            inline void get_system_info(system_info *info)
+            {
+#if BOOST_PLAT_WINDOWS_RUNTIME
+                win32::GetNativeSystemInfo(info); 
+#else
+                win32::GetSystemInfo(info);
+#endif
+            }
+            
+            inline void sleep(unsigned long milliseconds)
+            {
+                if(milliseconds == 0)
+                {                
+#if BOOST_PLAT_WINDOWS_RUNTIME
+                    std::this_thread::yield();
+#else
+                    ::boost::detail::win32::Sleep(0);
+#endif
+                }
+                else
+                {
+#if BOOST_PLAT_WINDOWS_RUNTIME
+                    ::boost::detail::win32::WaitForSingleObjectEx(::boost::detail::win32::GetCurrentThread(), milliseconds, 0); 
+#else
+                    ::boost::detail::win32::Sleep(milliseconds);
+#endif
+                }
+            }
+            
+#if BOOST_PLAT_WINDOWS_RUNTIME
+            class BOOST_THREAD_DECL scoped_winrt_thread
+            {
+            public:
+                scoped_winrt_thread() : m_completionHandle(invalid_handle_value)
+                {}
 
+                ~scoped_winrt_thread()
+                {
+                    if (m_completionHandle != ::boost::detail::win32::invalid_handle_value)
+                    {
+                        CloseHandle(m_completionHandle);
+                    }
+                }
+
+                typedef unsigned(__stdcall * thread_func)(void *);
+                bool start(thread_func address, void *parameter, unsigned int *thrdId);
+
+                handle waitable_handle() const
+                {
+                    BOOST_ASSERT(m_completionHandle != ::boost::detail::win32::invalid_handle_value);
+                    return m_completionHandle;
+                }
+
+            private:
+                handle m_completionHandle;
+            };
+#endif
             class BOOST_THREAD_DECL handle_manager
             {
             private:
@@ -324,7 +519,6 @@ namespace boost
                     cleanup();
                 }
             };
-
         }
     }
 }

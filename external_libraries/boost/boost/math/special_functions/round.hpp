@@ -12,18 +12,57 @@
 
 #include <boost/math/tools/config.hpp>
 #include <boost/math/policies/error_handling.hpp>
+#include <boost/math/special_functions/math_fwd.hpp>
 #include <boost/math/special_functions/fpclassify.hpp>
 
 namespace boost{ namespace math{
 
+namespace detail{
+
+template <class T, class Policy>
+inline typename tools::promote_args<T>::type round(const T& v, const Policy& pol, const mpl::false_)
+{
+   BOOST_MATH_STD_USING
+      typedef typename tools::promote_args<T>::type result_type;
+   if(!(boost::math::isfinite)(v))
+      return policies::raise_rounding_error("boost::math::round<%1%>(%1%)", 0, static_cast<result_type>(v), static_cast<result_type>(v), pol);
+   //
+   // The logic here is rather convoluted, but avoids a number of traps,
+   // see discussion here https://github.com/boostorg/math/pull/8
+   //
+   if (-0.5 < v && v < 0.5)
+   {
+      // special case to avoid rounding error on the direct
+      // predecessor of +0.5 resp. the direct successor of -0.5 in
+      // IEEE floating point types
+      return 0;
+   }
+   else if (v > 0)
+   {
+      // subtract v from ceil(v) first in order to avoid rounding
+      // errors on largest representable integer numbers
+      result_type c(ceil(v));
+      return 0.5 < c - v ? c - 1 : c;
+   }
+   else
+   {
+      // see former branch
+      result_type f(floor(v));
+      return 0.5 < v - f ? f + 1 : f;
+   }
+}
+template <class T, class Policy>
+inline typename tools::promote_args<T>::type round(const T& v, const Policy&, const mpl::true_)
+{
+   return v;
+}
+
+} // namespace detail
+
 template <class T, class Policy>
 inline typename tools::promote_args<T>::type round(const T& v, const Policy& pol)
 {
-   BOOST_MATH_STD_USING
-   typedef typename tools::promote_args<T>::type result_type;
-   if(!(boost::math::isfinite)(v))
-      return policies::raise_rounding_error("boost::math::round<%1%>(%1%)", 0, static_cast<result_type>(v), static_cast<result_type>(v), pol);
-   return v < 0 ? static_cast<result_type>(ceil(v - 0.5f)) : static_cast<result_type>(floor(v + 0.5f));
+   return detail::round(v, pol, mpl::bool_<detail::is_integer_for_rounding<T>::value>());
 }
 template <class T>
 inline typename tools::promote_args<T>::type round(const T& v)

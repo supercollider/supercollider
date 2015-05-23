@@ -13,9 +13,13 @@
 #ifndef BOOST_INTRUSIVE_BS_SET_HOOK_HPP
 #define BOOST_INTRUSIVE_BS_SET_HOOK_HPP
 
+#if defined(_MSC_VER)
+#  pragma once
+#endif
+
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/intrusive_fwd.hpp>
-#include <boost/intrusive/detail/utilities.hpp>
+
 #include <boost/intrusive/detail/tree_node.hpp>
 #include <boost/intrusive/bstree_algorithms.hpp>
 #include <boost/intrusive/options.hpp>
@@ -23,14 +27,6 @@
 
 namespace boost {
 namespace intrusive {
-
-/// @cond
-template<class VoidPointer>
-struct get_bs_set_node_algo
-{
-   typedef bstree_algorithms<tree_node_traits<VoidPointer> > type;
-};
-/// @endcond
 
 //! Helper metafunction to define a \c bs_set_base_hook that yields to the same
 //! type when the same options (either explicitly or implicitly) are used.
@@ -51,7 +47,7 @@ struct make_bs_set_base_hook
    ::type packed_options;
 
    typedef generic_hook
-   < get_bs_set_node_algo<typename packed_options::void_pointer>
+   < bstree_algorithms<tree_node_traits<typename packed_options::void_pointer> >
    , typename packed_options::tag
    , packed_options::link_mode
    , BsTreeBaseHookId
@@ -73,7 +69,7 @@ struct make_bs_set_base_hook
 //! unique tag.
 //!
 //! \c void_pointer<> is the pointer type that will be used internally in the hook
-//! and the the container configured to use this hook.
+//! and the container configured to use this hook.
 //!
 //! \c link_mode<> will specify the linking mode of the hook (\c normal_link,
 //! \c auto_unlink or \c safe_link).
@@ -180,7 +176,7 @@ struct make_bs_set_member_hook
    ::type packed_options;
 
    typedef generic_hook
-   < get_bs_set_node_algo<typename packed_options::void_pointer>
+   < bstree_algorithms<tree_node_traits<typename packed_options::void_pointer> >
    , member_tag
    , packed_options::link_mode
    , NoBaseHookId
@@ -196,7 +192,7 @@ struct make_bs_set_member_hook
 //! The hook admits the following options: \c void_pointer<>, \c link_mode<>.
 //!
 //! \c void_pointer<> is the pointer type that will be used internally in the hook
-//! and the the container configured to use this hook.
+//! and the container configured to use this hook.
 //!
 //! \c link_mode<> will specify the linking mode of the hook (\c normal_link,
 //! \c auto_unlink or \c safe_link).

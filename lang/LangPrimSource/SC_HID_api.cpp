@@ -497,6 +497,7 @@ int prHID_API_BuildDeviceList(VMGlobals* g, int numArgsPushed){
 	int result = SC_HID_APIManager::instance().build_devicelist();
 	if ( result > 0 ){
 		PyrObject* allDevsArray = newPyrArray(g->gc, result * sizeof(PyrObject), 0 , true);
+		SetObject( self, allDevsArray );
 
 		struct hid_device_info *cur_dev = SC_HID_APIManager::instance().devinfos;
 		while( cur_dev ){
@@ -507,7 +508,7 @@ int prHID_API_BuildDeviceList(VMGlobals* g, int numArgsPushed){
 
 			PyrString *dev_path_name = newPyrString(g->gc, cur_dev->path, 0, true );
 			SetObject(devInfo->slots+devInfo->size++, dev_path_name);
-			g->gc->GCWrite(devInfo, (PyrObject*) dev_path_name);
+			g->gc->GCWrite(devInfo, dev_path_name);
 
 			const char * mystring;
 			if ( cur_dev->serial_number != NULL )
@@ -517,7 +518,7 @@ int prHID_API_BuildDeviceList(VMGlobals* g, int numArgsPushed){
 
 			PyrString *dev_serial = newPyrString(g->gc, mystring, 0, true );
 			SetObject(devInfo->slots+devInfo->size++, dev_serial);
-			g->gc->GCWrite(devInfo, (PyrObject*) dev_serial);
+			g->gc->GCWrite(devInfo, dev_serial);
 
 			if (mystring != emptyString) free((void*)mystring);
 			if ( cur_dev->manufacturer_string != NULL )
@@ -527,7 +528,7 @@ int prHID_API_BuildDeviceList(VMGlobals* g, int numArgsPushed){
 
 			PyrString *dev_man_name = newPyrString(g->gc, mystring, 0, true );
 			SetObject(devInfo->slots+devInfo->size++, dev_man_name);
-			g->gc->GCWrite(devInfo, (PyrObject*) dev_man_name);
+			g->gc->GCWrite(devInfo, dev_man_name);
 
 			if (mystring != emptyString) free((void*)mystring);
 
@@ -538,7 +539,7 @@ int prHID_API_BuildDeviceList(VMGlobals* g, int numArgsPushed){
 
 			PyrString *dev_prod_name = newPyrString(g->gc, mystring, 0, true );
 			SetObject(devInfo->slots+devInfo->size++, dev_prod_name);
-			g->gc->GCWrite(devInfo, (PyrObject*) dev_prod_name);
+			g->gc->GCWrite(devInfo, dev_prod_name);
 
 			if (mystring != emptyString)
 				free((void*)mystring);
@@ -550,12 +551,11 @@ int prHID_API_BuildDeviceList(VMGlobals* g, int numArgsPushed){
 			SetInt(devInfo->slots+devInfo->size++, cur_dev->usage);
 
 			SetObject(allDevsArray->slots+allDevsArray->size++, devInfo );
-			g->gc->GCWrite(allDevsArray, (PyrObject*) devInfo );
+			g->gc->GCWrite(allDevsArray, devInfo);
 
 			cur_dev = cur_dev->next;
 		}
 
-		SetObject( self, allDevsArray );
 		SC_HID_APIManager::instance().free_devicelist();
 	} else {
 		// send back info that no devices were found, or empty array
@@ -641,13 +641,14 @@ int prHID_API_GetInfo( VMGlobals* g, int numArgsPushed ){
 
 	if ( cur_dev != NULL ){
 		PyrObject* devInfo = newPyrArray(g->gc, 9 * sizeof(PyrObject), 0 , true);
+		SetObject( self, devInfo );
 
 		SetInt(devInfo->slots+devInfo->size++, cur_dev->vendor_id);
 		SetInt(devInfo->slots+devInfo->size++, cur_dev->product_id);
 
 		PyrString *dev_path_name = newPyrString(g->gc, cur_dev->path, 0, true );
 		SetObject(devInfo->slots+devInfo->size++, dev_path_name);
-		g->gc->GCWrite(devInfo, (PyrObject*) dev_path_name);
+		g->gc->GCWrite(devInfo, dev_path_name);
 
 		const char * mystring;
 		if ( cur_dev->serial_number != NULL ){
@@ -658,7 +659,7 @@ int prHID_API_GetInfo( VMGlobals* g, int numArgsPushed ){
 
 		PyrString *dev_serial = newPyrString(g->gc, mystring, 0, true );
 		SetObject(devInfo->slots+devInfo->size++, dev_serial);
-		g->gc->GCWrite(devInfo, (PyrObject*) dev_serial);
+		g->gc->GCWrite(devInfo, dev_serial);
 
 		if (mystring != emptyString)
 			free((void*)mystring);
@@ -670,7 +671,7 @@ int prHID_API_GetInfo( VMGlobals* g, int numArgsPushed ){
 		}
 		PyrString *dev_man_name = newPyrString(g->gc, mystring, 0, true );
 		SetObject(devInfo->slots+devInfo->size++, dev_man_name);
-		g->gc->GCWrite(devInfo, (PyrObject*) dev_man_name);
+		g->gc->GCWrite(devInfo, dev_man_name);
 		if (mystring != emptyString)
 			free((void*)mystring);
 
@@ -682,14 +683,12 @@ int prHID_API_GetInfo( VMGlobals* g, int numArgsPushed ){
 		}
 		PyrString *dev_prod_name = newPyrString(g->gc, mystring, 0, true );
 		SetObject(devInfo->slots+devInfo->size++, dev_prod_name);
-		g->gc->GCWrite(devInfo, (PyrObject*) dev_prod_name);
+		g->gc->GCWrite(devInfo, dev_prod_name);
 		if (mystring != emptyString)
 			free((void*)mystring);
 
 		SetInt(devInfo->slots+devInfo->size++, cur_dev->release_number);
 		SetInt(devInfo->slots+devInfo->size++, cur_dev->interface_number);
-
-		SetObject( self, devInfo );
 	} else {
 		SetInt( self, 0 );
 	}
@@ -753,6 +752,7 @@ int prHID_API_GetCollectionInfo( VMGlobals* g, int numArgsPushed ){
 
 	if ( thiscollection != NULL ){
 		PyrObject* elInfo = newPyrArray(g->gc, 9 * sizeof(PyrObject), 0 , true);
+		SetObject( self, elInfo );
 
 		SetInt(elInfo->slots+elInfo->size++, thiscollection->index );
 		SetInt(elInfo->slots+elInfo->size++, thiscollection->type );
@@ -781,7 +781,6 @@ int prHID_API_GetCollectionInfo( VMGlobals* g, int numArgsPushed ){
 			SetInt(elInfo->slots+elInfo->size++, -1 );
 		}
 
-		SetObject( self, elInfo );
 	} else {
 		SetInt( self, 0 );
 	}
@@ -845,6 +844,7 @@ int prHID_API_GetElementInfo( VMGlobals* g, int numArgsPushed ){
 
 	if ( thiselement != NULL ){
 		PyrObject* elInfo = newPyrArray(g->gc, 18 * sizeof(PyrObject), 0 , true);
+		SetObject( self, elInfo );
 
 		SetInt(elInfo->slots+elInfo->size++, thiselement->index );
 		SetInt(elInfo->slots+elInfo->size++, thiselement->io_type );
@@ -869,7 +869,6 @@ int prHID_API_GetElementInfo( VMGlobals* g, int numArgsPushed ){
 
 		SetInt(elInfo->slots+elInfo->size++, thiselement->parent_collection->index );
 
-		SetObject( self, elInfo );
 	} else {
 		SetInt( self, 0 );
 	}

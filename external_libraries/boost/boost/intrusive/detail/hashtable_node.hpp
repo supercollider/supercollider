@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga  2007-2013
+// (C) Copyright Ion Gaztanaga  2007-2014
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -13,46 +13,23 @@
 #ifndef BOOST_INTRUSIVE_HASHTABLE_NODE_HPP
 #define BOOST_INTRUSIVE_HASHTABLE_NODE_HPP
 
-#include <boost/intrusive/detail/config_begin.hpp>
-#include <iterator>
+#if defined(_MSC_VER)
+#  pragma once
+#endif
+
 #include <boost/intrusive/detail/assert.hpp>
 #include <boost/intrusive/pointer_traits.hpp>
-#include <boost/intrusive/circular_list_algorithms.hpp>
 #include <boost/intrusive/detail/mpl.hpp>
-#include <boost/intrusive/detail/utilities.hpp>
-#include <boost/intrusive/slist.hpp> //remove-me
-#include <boost/intrusive/pointer_traits.hpp>
 #include <boost/intrusive/trivial_value_traits.hpp>
+#include <boost/intrusive/slist.hpp> //make_slist
 #include <cstddef>
-#include <boost/type_traits/make_unsigned.hpp>
-#include <boost/pointer_cast.hpp>
+#include <climits>
 #include <boost/move/core.hpp>
 
 
 namespace boost {
 namespace intrusive {
 namespace detail {
-
-template<int Dummy = 0>
-struct prime_list_holder
-{
-   static const std::size_t prime_list[];
-   static const std::size_t prime_list_size;
-};
-
-template<int Dummy>
-const std::size_t prime_list_holder<Dummy>::prime_list[] = {
-   3ul, 7ul, 11ul, 17ul, 29ul,
-   53ul, 97ul, 193ul, 389ul, 769ul,
-   1543ul, 3079ul, 6151ul, 12289ul, 24593ul,
-   49157ul, 98317ul, 196613ul, 393241ul, 786433ul,
-   1572869ul, 3145739ul, 6291469ul, 12582917ul, 25165843ul,
-   50331653ul, 100663319ul, 201326611ul, 402653189ul, 805306457ul,
-   1610612741ul, 3221225473ul, 4294967291ul };
-
-template<int Dummy>
-const std::size_t prime_list_holder<Dummy>::prime_list_size
-   = sizeof(prime_list)/sizeof(std::size_t);
 
 template <class Slist>
 struct bucket_impl : public Slist
@@ -163,8 +140,7 @@ struct get_slist_impl
       < typename NodeTraits::node
       , boost::intrusive::value_traits<trivial_traits>
       , boost::intrusive::constant_time_size<false>
-	  , boost::intrusive::size_type<typename boost::make_unsigned
-         <typename pointer_traits<typename NodeTraits::node_ptr>::difference_type>::type >
+      , boost::intrusive::size_type<std::size_t>
       >::type
    {};
 };
@@ -173,29 +149,30 @@ struct get_slist_impl
 
 template<class BucketValueTraits, bool IsConst>
 class hashtable_iterator
-   :  public std::iterator
-         < std::forward_iterator_tag
-         , typename BucketValueTraits::real_value_traits::value_type
-         , typename pointer_traits<typename BucketValueTraits::real_value_traits::value_type*>::difference_type
-         , typename detail::add_const_if_c
-                     <typename BucketValueTraits::real_value_traits::value_type, IsConst>::type *
-         , typename detail::add_const_if_c
-                     <typename BucketValueTraits::real_value_traits::value_type, IsConst>::type &
-         >
 {
-   typedef typename BucketValueTraits::real_value_traits          real_value_traits;
-   typedef typename BucketValueTraits::real_bucket_traits         real_bucket_traits;
-   typedef typename real_value_traits::node_traits                node_traits;
+   typedef boost::intrusive::iterator
+         < std::forward_iterator_tag
+         , typename BucketValueTraits::value_traits::value_type
+         , typename pointer_traits<typename BucketValueTraits::value_traits::value_type*>::difference_type
+         , typename detail::add_const_if_c
+                     <typename BucketValueTraits::value_traits::value_type, IsConst>::type *
+         , typename detail::add_const_if_c
+                     <typename BucketValueTraits::value_traits::value_type, IsConst>::type &
+         >  iterator_traits;
+
+   typedef typename BucketValueTraits::value_traits          value_traits;
+   typedef typename BucketValueTraits::bucket_traits         bucket_traits;
+   typedef typename value_traits::node_traits                node_traits;
    typedef typename detail::get_slist_impl
       <typename detail::reduced_slist_node_traits
-         <typename real_value_traits::node_traits>::type
+         <typename value_traits::node_traits>::type
       >::type                                                     slist_impl;
    typedef typename slist_impl::iterator                          siterator;
    typedef typename slist_impl::const_iterator                    const_siterator;
    typedef detail::bucket_impl<slist_impl>                        bucket_type;
 
    typedef typename pointer_traits
-      <typename real_value_traits::pointer>::template rebind_pointer
+      <typename value_traits::pointer>::template rebind_pointer
          < const BucketValueTraits >::type                        const_bucketvaltraits_ptr;
    typedef typename slist_impl::size_type                         size_type;
 
@@ -207,11 +184,14 @@ class hashtable_iterator
    }
 
    public:
-   typedef typename real_value_traits::value_type    value_type;
-   typedef typename detail::add_const_if_c<value_type, IsConst>::type *pointer;
-   typedef typename detail::add_const_if_c<value_type, IsConst>::type &reference;
+   typedef typename iterator_traits::difference_type    difference_type;
+   typedef typename iterator_traits::value_type         value_type;
+   typedef typename iterator_traits::pointer            pointer;
+   typedef typename iterator_traits::reference          reference;
+   typedef typename iterator_traits::iterator_category  iterator_category;
 
    hashtable_iterator ()
+      : slist_it_()  //Value initialization to achieve "null iterators" (N3644)
    {}
 
    explicit hashtable_iterator(siterator ptr, const BucketValueTraits *cont)
@@ -250,23 +230,23 @@ class hashtable_iterator
 
    pointer operator->() const
    {
-      return boost::intrusive::detail::to_raw_pointer(this->priv_real_value_traits().to_value_ptr
+      return boost::intrusive::detail::to_raw_pointer(this->priv_value_traits().to_value_ptr
          (downcast_bucket(slist_it_.pointed_node())));
    }
 
    const const_bucketvaltraits_ptr &get_bucket_value_traits() const
    {  return traitsptr_;  }
 
-   const real_value_traits &priv_real_value_traits() const
-   {  return traitsptr_->priv_real_value_traits();  }
+   const value_traits &priv_value_traits() const
+   {  return traitsptr_->priv_value_traits();  }
 
-   const real_bucket_traits &priv_real_bucket_traits() const
-   {  return traitsptr_->priv_real_bucket_traits();  }
+   const bucket_traits &priv_bucket_traits() const
+   {  return traitsptr_->priv_bucket_traits();  }
 
    private:
    void increment()
    {
-      const real_bucket_traits &rbuck_traits = this->priv_real_bucket_traits();
+      const bucket_traits &rbuck_traits = this->priv_bucket_traits();
       bucket_type* const buckets = boost::intrusive::detail::to_raw_pointer(rbuck_traits.bucket_begin());
       const size_type buckets_len = rbuck_traits.bucket_count();
 

@@ -297,8 +297,10 @@ void thread_init_functor::operator()(int thread_index)
     if (rt)
         set_realtime_priority(thread_index);
 
+#ifndef __APPLE__
     if (!thread_set_affinity(thread_index))
         std::cout << "Warning: cannot set thread affinity of audio helper thread" << std::endl;
+#endif
 }
 
 void io_thread_init_functor::operator()() const
@@ -326,8 +328,10 @@ void realtime_engine_functor::init_thread(void)
 {
     set_daz_ftz();
 
+#ifndef __APPLE__
     if (!thread_set_affinity(0))
-        std::cerr << "Warning: cannot set thread affinity of main audio thread" << std::endl;
+        std::cout << "Warning: cannot set thread affinity of main audio thread" << std::endl;
+#endif
 
 #ifdef JACK_BACKEND
     set_realtime_priority(0);

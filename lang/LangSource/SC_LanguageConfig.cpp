@@ -31,7 +31,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
-#ifdef SC_WIN32
+#ifdef _WIN32
 # include "SC_Win32Utils.h"
 #else
 # include <sys/param.h>
@@ -150,6 +150,11 @@ void SC_LanguageConfig::removeExcludedDirectory(const char *path)
 	string str(path);
 	DirVector::iterator end = std::remove(mExcludedDirectories.begin(), mExcludedDirectories.end(), str);
 	mExcludedDirectories.erase(end, mExcludedDirectories.end());
+}
+
+const char* SC_LanguageConfig::getCurrentConfigPath()
+{
+	return gConfigFile.c_str();
 }
 
 extern bool gPostInlineWarnings;

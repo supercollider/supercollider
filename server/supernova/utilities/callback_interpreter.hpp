@@ -19,16 +19,16 @@
 #ifndef UTILITIES_CALLBACK_INTERPRETER_HPP
 #define UTILITIES_CALLBACK_INTERPRETER_HPP
 
+#include <atomic>
 #include <thread>
 
 #include "branch_hints.hpp"
 #include "callback_system.hpp"
 
-#include "nova-tt/semaphore.hpp"
 #include "nova-tt/thread_priority.hpp"
 
-#include <boost/atomic.hpp>
 #include <boost/checked_delete.hpp>
+#include <boost/sync/semaphore.hpp>
 
 
 namespace nova {
@@ -51,6 +51,7 @@ class callback_interpreter:
     callback_system<callback_type, mpmc, callback_deleter>
 {
     typedef callback_system<callback_type, mpmc, callback_deleter> super_t;
+    typedef boost::sync::semaphore semaphore;
 
 public:
     callback_interpreter(void):
@@ -65,20 +66,20 @@ public:
 
     void run(void)
     {
-        running.store(true, boost::memory_order_relaxed);
+        running.store(true, std::memory_order_relaxed);
         perform();
     }
 
     void terminate(void)
     {
-        running.store(false, boost::memory_order_relaxed);
+        running.store(false, std::memory_order_relaxed);
         sem.post();
     }
 
 protected:
     void run(semaphore & sync_sem)
     {
-        running.store(true, boost::memory_order_relaxed);
+        running.store(true, std::memory_order_relaxed);
         sync_sem.post();
         perform();
     }
@@ -90,12 +91,12 @@ private:
         {
             sem.wait();
             super_t::run_callbacks();
-        } while(likely(running.load(boost::memory_order_relaxed)));
+        } while(likely(running.load(std::memory_order_relaxed)));
     }
 
 protected:
-    semaphore sem;
-    boost::atomic<bool> running;
+    boost::sync::semaphore sem;
+    std::atomic<bool> running;
 };
 
 
@@ -107,6 +108,7 @@ class threaded_callback_interpreter:
     init_functor
 {
     typedef callback_interpreter<callback_type, true, callback_deleter> super;
+    typedef boost::sync::semaphore semaphore;
 
     std::thread callback_thread;
 
@@ -123,11 +125,11 @@ public:
     void start_thread(void)
     {
         semaphore sync_sem;
-        semaphore_sync<semaphore> sync(sync_sem);
         std::thread thr( [&]() {
             this->run_thread(sync_sem);
         });
         callback_thread = move(thr);
+        sync_sem.wait();
     }
 
     void run_thread(semaphore & sync_sem)
@@ -153,6 +155,7 @@ class callback_interpreter_threadpool:
     init_functor
 {
     typedef callback_interpreter<callback_type, true, callback_deleter> super;
+    typedef boost::sync::semaphore semaphore;
 
 public:
     callback_interpreter_threadpool(uint16_t worker_thread_count, bool rt, uint16_t priority):

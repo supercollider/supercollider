@@ -67,9 +67,11 @@ ScIDE {
 
 		this.prSend(\defaultServerRunningChanged, [
 			server.serverRunning, server.addr.hostname, server.addr.port]);
-		this.prSend( if (server.volume.isMuted, \serverMuted, \serverUnmuted) );
+		this.prSend( if(server.volume.isMuted, \serverMuted, \serverUnmuted) );
+		this.prSend( if(server.dumpMode.asBoolean, \dumpOSCStarted, \dumpOSCStopped) );
 		this.prSend( \serverAmpRange, "%,%".format(server.volume.min, server.volume.max) );
 		this.prSend( \serverAmp, server.volume.volume.asString );
+
 	}
 
 	*request { |id, command, data|
@@ -348,9 +350,25 @@ ScIDE {
 	*setTextByQUuid {|quuid, funcID, text, start = 0, range = -1|
 		this.prSend(\setDocumentText, [quuid, funcID, text, start, range]);
 	}
+    
+    *setSelectionByQUuid {|quuid, start, length|
+        this.prSend(\setDocumentSelection, [quuid, start, length]);
+    }
+	
+	*setEditablebyQUuid {|quuid, editable|
+		this.prSend(\setDocumentEditable, [quuid, editable]);
+	}
+	
+	*setPromptsToSavebyQUuid {|quuid, prompts|
+		this.prSend(\setDocumentPromptsToSave, [quuid, prompts]);
+	}
 
 	*setCurrentDocumentByQUuid {|quuid|
 		this.prSend(\setCurrentDocument, [quuid]);
+	}
+	
+	*removeDocUndoByQUuid {|quuid|
+		this.prSend(\removeDocUndo, [quuid]);
 	}
 
 	*close {|quuid|
@@ -367,6 +385,14 @@ ScIDE {
 
 	*setDocumentKeyUpEnabled {|quuid, bool|
 		this.prSend(\enableDocumentKeyUpAction, [quuid, bool]);
+	}
+	
+	*setDocumentGlobalKeyDownEnabled {|bool|
+		this.prSend(\enableDocumentGlobalKeyDownAction, [bool]);
+	}
+	
+	*setDocumentGlobalKeyUpEnabled {|bool|
+		this.prSend(\enableDocumentGlobalKeyUpAction, [bool]);
 	}
 
 	*setDocumentMouseDownEnabled {|quuid, bool|
@@ -410,7 +436,7 @@ Document {
 	var <>toFrontAction, <>endFrontAction, <>onClose, <textChangedAction;
 
 	var <envir, savedEnvir;
-	var <editable;
+	var <editable = true, <promptToSave = true;
 
 	*initClass{
 		asyncActions = IdentityDictionary.new;
@@ -439,19 +465,19 @@ Document {
 		^doc
 	}
 
-	*syncFromIDE {|quuid, title, chars, isEdited, path|
+	*syncFromIDE {|quuid, title, chars, isEdited, path, selStart, selSize|
 		var doc;
 		isEdited = isEdited.booleanValue;
 		chars = String.fill(chars.size, {|i| chars[i].asAscii});
 		title = String.fill(title.size, {|i| title[i].asAscii});
 		path = String.fill(path.size, {|i| path[i].asAscii});
 		if((doc = this.findByQUuid(quuid)).isNil, {
-			doc = super.new.initFromIDE(quuid, title, chars, isEdited, path);
+			doc = super.new.initFromIDE(quuid, title, chars, isEdited, path, selStart, selSize);
 			allDocuments = allDocuments.add(doc);
-		}, {doc.initFromIDE(quuid, title, chars, isEdited, path)});
+		}, {doc.initFromIDE(quuid, title, chars, isEdited, path, selStart, selSize)});
 	}
 
-	*syncDocs {|docInfo| // [quuid, title, string, isEdited, path]
+	*syncDocs {|docInfo| // [quuid, title, string, isEdited, path, selStart, selSize]
 		docInfo.do({|info| this.syncFromIDE(*info) });
 	}
 
@@ -551,10 +577,11 @@ Document {
 		isEdited = argisEdited;
 	}
 
-	initFromIDE {|id, argtitle, argstring, argisEdited, argPath|
+    initFromIDE {|id, argtitle, argstring, argisEdited, argPath, selStart, selSize|
 		quuid = id;
 		title = argtitle;
 		this.prSetTextMirror(id, argstring, 0, -1);
+        this.prSetSelectionMirror(id, selStart, selSize);
 		isEdited = argisEdited;
 		path = argPath;
 	}
@@ -612,6 +639,11 @@ Document {
 		_ScIDE_SetDocTextMirror
 		this.primitiveFailed
 	}
+    
+    prSetSelectionMirror {|quuid, start, size|
+		_ScIDE_SetDocSelectionMirror
+		this.primitiveFailed
+	}
 
 	text_ {|string|
 		this.prSetText(string);
@@ -654,32 +686,36 @@ Document {
 
 	keyDown { | modifiers, unicode, keycode, key |
 		var character = unicode.asAscii;
-		this.class.globalKeyDownAction.value(this,character, modifiers, unicode, keycode);
+		var cocoaModifiers = QKeyModifiers.toCocoa(modifiers);
+		this.class.globalKeyDownAction.value(this,character, cocoaModifiers, unicode, keycode);
 		keyDownAction.value(this,character, modifiers, unicode, keycode, key);
 	}
 
 	keyUp { | modifiers, unicode, keycode, key |
 		var character = unicode.asAscii;
-		this.class.globalKeyUpAction.value(this,character, modifiers, unicode, keycode);
+		var cocoaModifiers = QKeyModifiers.toCocoa(modifiers);
+		this.class.globalKeyUpAction.value(this,character, cocoaModifiers, unicode, keycode);
 		keyUpAction.value(this,character, modifiers, unicode, keycode, key);
 	}
 
 	mouseDown { | x, y, modifiers, buttonNumber, clickCount |
-		mouseDownAction.value(this, x, y, modifiers, buttonNumber, clickCount)
+		var cocoaModifiers = QKeyModifiers.toCocoa(modifiers);
+		mouseDownAction.value(this, x, y, cocoaModifiers, buttonNumber, clickCount)
 	}
 
 	mouseUp { | x, y, modifiers, buttonNumber |
-		mouseUpAction.value(this, x, y, modifiers, buttonNumber)
+		var cocoaModifiers = QKeyModifiers.toCocoa(modifiers);
+		mouseUpAction.value(this, x, y, cocoaModifiers, buttonNumber)
 	}
 
 	keyDownAction_ {|action|
 		keyDownAction = action;
-		ScIDE.setDocumentKeyDownEnabled(quuid, action.notNil || globalKeyDownAction.notNil);
+		ScIDE.setDocumentKeyDownEnabled(quuid, action.notNil);
 	}
 
 	keyUpAction_ {|action|
 		keyUpAction = action;
-		ScIDE.setDocumentKeyUpEnabled(quuid, action.notNil  || globalKeyUpAction.notNil);
+		ScIDE.setDocumentKeyUpEnabled(quuid, action.notNil);
 	}
 
 	mouseDownAction_ {|action|
@@ -699,16 +735,12 @@ Document {
 
 	*globalKeyDownAction_ {|action|
 		globalKeyDownAction = action;
-		allDocuments.do({|doc|
-			ScIDE.setDocumentKeyDownEnabled(doc.quuid, action.notNil || doc.keyDownAction.notNil);
-		});
+		ScIDE.setDocumentGlobalKeyDownEnabled(action.notNil);
 	}
 
 	*globalKeyUpAction_ {|action|
 		globalKeyUpAction = action;
-		allDocuments.do({|doc|
-			ScIDE.setDocumentKeyUpEnabled(doc.quuid, action.notNil || doc.keyUpAction.notNil);
-		});
+		ScIDE.setDocumentGlobalKeyUpEnabled(action.notNil);
 	}
 
 	title_ {|newTitle|
@@ -748,11 +780,19 @@ Document {
 	}
 
 	selectionStart {
-		^this.selectedRangeLocation
+		^this.prGetSelectionStart(quuid)
+	}
+
+	prGetSelectionStart {|id|
+		_ScIDE_GetDocSelectionStart
 	}
 
 	selectionSize {
-		^this.selectedRangeSize
+		^this.prGetSelectionRange(quuid)
+	}
+
+	prGetSelectionRange {|id|
+		_ScIDE_GetDocSelectionRange
 	}
 
 	string { | rangestart, rangesize = 1 |
@@ -763,15 +803,15 @@ Document {
 	}
 
 	string_ { | string, rangestart = -1, rangesize = 1 |
-		this.insertTextRange(string, rangestart, rangesize);
+		this.prSetText(string, nil, rangestart, rangesize);
 	}
 
 	selectedString {
-		^this.selectedText
+		^this.rangeText(this.selectionStart, this.selectionSize);
 	}
 
 	selectedString_ { | txt |
-		this.prinsertText(txt)
+		this.prSetText(txt, nil, this.selectionStart, this.selectionSize);
 	}
 
 	currentLine {
@@ -843,42 +883,37 @@ Document {
 		}
 	}
 
-	// not yet implemented
-
 	selectLine { | line |
-		this.notYetImplemented
+		var text, breaks, numLines, start = 0, end;
+		if(line < 1, { line = 1 });
+		text = this.text;
+		breaks = text.findAll("\n");
+		numLines = breaks.size + 1;
+		line = min(line, numLines);
+		if(line > 1, { start = breaks[line - 2] + 1});
+		end = breaks[line - 1] ?? { text.size };
+		this.selectRange(start, end - start);
 	}
 
 	selectRange { | start=0, length=0 |
-		^this.notYetImplemented
+		this.prSetSelectionMirror(quuid, start, length); // set the backend mirror
+        ScIDE.setSelectionByQUuid(quuid, start, length); // set the IDE doc
+    }
+    
+	editable_ { | bool=true |
+		editable = bool;
+		ScIDE.setEditablebyQUuid(quuid, bool);
 	}
-
-	editable_ { | abool=true |
-		editable = abool;
-		this.notYetImplemented
+	
+	promptToSave_ { | bool |
+		promptToSave = bool;
+		ScIDE.setPromptsToSavebyQUuid(quuid, bool);
 	}
 
 	removeUndo {
-		^this.notYetImplemented
-	}
-
-	promptToSave_ { | bool |
-		^this.notYetImplemented
-	}
-
-	promptToSave {
-		^this.notYetImplemented
-	}
-
-	prinsertText { | dataPtr, txt |
-		^this.notYetImplemented
-	}
-
-	insertTextRange { | string, rangestart, rangesize |
-		^this.notYetImplemented
+		ScIDE.removeDocUndoByQUuid(quuid);
 	}
 
 	// probably still needed for compatibility
 	*implementationClass { ^this }
 }
-

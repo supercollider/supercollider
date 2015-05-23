@@ -395,25 +395,26 @@ void fire_notification(movable_array<char> & msg)
     instance->send_notification(msg.data(), msg.size());
 }
 
-sc_notify_observers::error_code sc_notify_observers::add_observer(endpoint_ptr const & ep)
+int sc_notify_observers::add_observer(endpoint_ptr const & ep)
 {
     observer_vector::iterator it = find(ep);
     if (it != observers.end())
         return already_registered;
 
     observers.push_back(ep);
-    return no_error;
+    return observers.size() - 1;
 }
 
-sc_notify_observers::error_code sc_notify_observers::remove_observer(endpoint_ptr const & ep)
+int sc_notify_observers::remove_observer(endpoint_ptr const & ep)
 {
     observer_vector::iterator it = find(ep);
 
     if (it == observers.end())
         return not_registered;
 
+    const int observerIndex = it - observers.begin();
     observers.erase(it);
-    return no_error;
+    return observerIndex;
 }
 
 const char * sc_notify_observers::error_string(error_code error)
@@ -938,17 +939,22 @@ void handle_notify(received_message const & message, endpoint_ptr endpoint)
     int enable = first_arg_as_int(message);
 
     cmd_dispatcher<realtime>::fire_system_callback( [=]() {
+
+        int observer = 0;
+
         if (enable) {
-            auto error_code = instance->add_observer(endpoint);
-            if (error_code)
-                send_fail_message(endpoint, "/notify", sc_notify_observers::error_string(error_code));
+            observer = instance->add_observer(endpoint);
+
+            if (observer < 0)
+                send_fail_message(endpoint, "/notify", sc_notify_observers::error_string( (sc_notify_observers::error_code)observer ));
         } else {
-            auto error_code = instance->remove_observer(endpoint);
-            if (error_code)
-                send_fail_message(endpoint, "/notify", sc_notify_observers::error_string(error_code));
+            observer = instance->remove_observer(endpoint);
+            if (observer < 0)
+                send_fail_message(endpoint, "/notify", sc_notify_observers::error_string( (sc_notify_observers::error_code)observer ));
         }
 
-        send_done_message(endpoint, "/notify");
+        if (observer >= 0)
+            send_done_message(endpoint, "/notify", observer);
     });
 }
 
@@ -3171,8 +3177,7 @@ void handle_cmd(received_message const & msg, int size, endpoint_ptr endpoint, i
 
     const char * cmd = args.gets();
 
-    // FIXME: how to handle endpoints?
-    sc_factory->run_cmd_plugin(&sc_factory->world, cmd, &args, nullptr/*endpoint.get()*/);
+    sc_factory->run_cmd_plugin(&sc_factory->world, cmd, &args, endpoint.get());
 }
 
 } /* namespace */
@@ -3881,17 +3886,20 @@ void sc_osc_handler::do_asynchronous_command(World * world, void* replyAddr, con
                                              int completionMsgSize, void* completionMsgData)
 {
     completion_message msg(completionMsgSize, completionMsgData);
-//    nova_endpoint * endpoint = replyAddr ? static_cast<nova_endpoint*>(replyAddr)
-//                                         : nullptr;
+    endpoint_ptr shared_endpoint;
 
-    endpoint_ptr endpoint; // FIXME: how to pass endpoints through asynchronous commands?
+    nova_endpoint * endpoint = replyAddr ? static_cast<nova_endpoint*>(replyAddr)
+                                         : nullptr;
+
+    if (endpoint)
+        shared_endpoint = endpoint->shared_from_this();
 
     if (world->mRealTime)
         cmd_dispatcher<true>::fire_system_callback(std::bind(handle_asynchronous_plugin_stage2<true>, world, cmdName,
-                                                               cmdData, stage2, stage3, stage4, cleanup, msg, endpoint));
+                                                               cmdData, stage2, stage3, stage4, cleanup, msg, shared_endpoint));
     else
         cmd_dispatcher<false>::fire_system_callback(std::bind(handle_asynchronous_plugin_stage2<false>, world, cmdName,
-                                                                cmdData, stage2, stage3, stage4, cleanup, msg, endpoint));
+                                                                cmdData, stage2, stage3, stage4, cleanup, msg, shared_endpoint));
 }
 
 

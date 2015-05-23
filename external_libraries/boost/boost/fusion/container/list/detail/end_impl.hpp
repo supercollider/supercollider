@@ -8,6 +8,7 @@
 #if !defined(FUSION_END_IMPL_07172005_0828)
 #define FUSION_END_IMPL_07172005_0828
 
+#include <boost/fusion/support/config.hpp>
 #include <boost/mpl/if.hpp>
 #include <boost/type_traits/is_const.hpp>
 
@@ -38,6 +39,7 @@ namespace boost { namespace fusion
                     typename mpl::if_<is_const<Sequence>, nil_ const, nil_>::type>
                 type;
     
+                BOOST_FUSION_GPU_ENABLED
                 static type
                 call(Sequence&)
                 {

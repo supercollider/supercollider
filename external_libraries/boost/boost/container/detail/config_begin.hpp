@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2005-2012. Distributed under the Boost
+// (C) Copyright Ion Gaztanaga 2005-2013. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying file
 // LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
@@ -9,15 +9,13 @@
 //////////////////////////////////////////////////////////////////////////////
 #ifndef BOOST_CONTAINER_CONTAINER_DETAIL_CONFIG_INCLUDED
 #define BOOST_CONTAINER_CONTAINER_DETAIL_CONFIG_INCLUDED
+#ifndef BOOST_CONFIG_HPP
 #include <boost/config.hpp>
+#endif
 
 #endif   //BOOST_CONTAINER_CONTAINER_DETAIL_CONFIG_INCLUDED
 
 #ifdef BOOST_MSVC
-   #ifndef _CRT_SECURE_NO_DEPRECATE
-   #define  BOOST_CONTAINER_DETAIL_CRT_SECURE_NO_DEPRECATE
-   #define _CRT_SECURE_NO_DEPRECATE
-   #endif
    #pragma warning (push)
    #pragma warning (disable : 4702) // unreachable code
    #pragma warning (disable : 4706) // assignment within conditional expression

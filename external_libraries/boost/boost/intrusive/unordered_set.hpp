@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 //
 // (C) Copyright Olaf Krzikalla 2004-2006.
-// (C) Copyright Ion Gaztanaga  2006-2013
+// (C) Copyright Ion Gaztanaga  2006-2014
 //
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -13,12 +13,15 @@
 #ifndef BOOST_INTRUSIVE_UNORDERED_SET_HPP
 #define BOOST_INTRUSIVE_UNORDERED_SET_HPP
 
+#if defined(_MSC_VER)
+#  pragma once
+#endif
+
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/intrusive_fwd.hpp>
 #include <boost/intrusive/hashtable.hpp>
-#include <boost/move/move.hpp>
-#include <iterator>
-
+#include <boost/move/utility_core.hpp>
+#include <boost/static_assert.hpp>
 
 namespace boost {
 namespace intrusive {
@@ -1029,15 +1032,15 @@ struct make_unordered_set
    typedef typename detail::get_value_traits
       <T, typename packed_options::proto_value_traits>::type value_traits;
 
-   typedef typename make_real_bucket_traits
-            <T, true, packed_options>::type real_bucket_traits;
+   typedef typename make_bucket_traits
+            <T, true, packed_options>::type bucket_traits;
 
    typedef unordered_set_impl
       < value_traits
       , typename packed_options::hash
       , typename packed_options::equal
       , typename packed_options::size_type
-      , real_bucket_traits
+      , bucket_traits
       ,  (std::size_t(true)*hash_bool_flags::unique_keys_pos)
       |  (std::size_t(packed_options::constant_time_size)*hash_bool_flags::constant_time_size_pos)
       |  (std::size_t(packed_options::power_2_buckets)*hash_bool_flags::power_2_buckets_pos)
@@ -2066,15 +2069,15 @@ struct make_unordered_multiset
    typedef typename detail::get_value_traits
       <T, typename packed_options::proto_value_traits>::type value_traits;
 
-   typedef typename make_real_bucket_traits
-            <T, true, packed_options>::type real_bucket_traits;
+   typedef typename make_bucket_traits
+            <T, true, packed_options>::type bucket_traits;
 
    typedef unordered_multiset_impl
       < value_traits
       , typename packed_options::hash
       , typename packed_options::equal
       , typename packed_options::size_type
-      , real_bucket_traits
+      , bucket_traits
       ,  (std::size_t(false)*hash_bool_flags::unique_keys_pos)
       |  (std::size_t(packed_options::constant_time_size)*hash_bool_flags::constant_time_size_pos)
       |  (std::size_t(packed_options::power_2_buckets)*hash_bool_flags::power_2_buckets_pos)

@@ -1,0 +1,90 @@
+[library Boost.Sync
+    [quickbook 1.5]
+    [version v1]
+    [authors [Botet Escriba, Vicente J.], [Semashev, Andrey], [Blechmann, Tim]]
+    [copyright 2013 Vicente J. Botet Escriba, Andrey Semashev, Tim Blechmann]
+    [license
+        Distributed under the Boost Software License, Version 1.0.
+        (See accompanying file LICENSE_1_0.txt or copy at
+        [@http://www.boost.org/LICENSE_1_0.txt]).
+    ]
+    [id sync]
+    [source-mode c++]
+    [last-revision $Date: 2013-05-18 00:11:22 +0400 (Sat, 18 May 2013) $]
+]
+
+[c++]
+
+[/ Links to external resources /]
+[def __boost_config__ [@http://www.boost.org/doc/libs/release/libs/config/doc/html/index.html Boost.Config]]
+[def __boost_smart_ptr__ [@http://www.boost.org/doc/libs/release/libs/smart_ptr/smart_ptr.htm Boost.SmartPtr]]
+[def __boost_function__ [@http://www.boost.org/doc/libs/release/doc/html/function.html Boost.Function]]
+[def __boost_system__ [@http://www.boost.org/doc/libs/release/libs/system/doc/index.html Boost.System]]
+[def __boost_date_time__ [@http://www.boost.org/doc/libs/release/doc/html/date_time.html Boost.DateTime]]
+[def __boost_thread__ [@http://www.boost.org/doc/libs/release/doc/html/thread.html Boost.Thread]]
+[def __boost_preprocessor__ [@http://www.boost.org/doc/libs/release/libs/preprocessor/doc/index.html Boost.Preprocessor]]
+[def __boost_bind__ [@http://www.boost.org/doc/libs/release/libs/bind/bind.html Boost.Bind]]
+[def __boost_lambda__ [@http://www.boost.org/doc/libs/release/doc/html/lambda.html Boost.Lambda]]
+[def __boost_phoenix__ [@http://www.boost.org/doc/libs/release/libs/phoenix/doc/html/index.html Boost.Phoenix]]
+[def __boost_optional__ [@http://www.boost.org/doc/libs/release/libs/optional/index.html Boost.Optional]]
+[def __boost_mpl__ [@http://www.boost.org/doc/libs/release/libs/mpl/doc/index.html Boost.MPL]]
+[def __boost_exception__ [@http://www.boost.org/doc/libs/release/libs/exception/doc/boost-exception.html Boost.Exception]]
+[def __boost_asio__ [@http://www.boost.org/doc/libs/release/doc/html/boost_asio.html Boost.ASIO]]
+[def __boost_move__ [@http://www.boost.org/doc/libs/release/doc/html/move.html Boost.Move]]
+[def __boost_utility__ [@http://www.boost.org/doc/libs/release/libs/utility/utility.htm Boost.Utility]]
+[def __boost_quickbook__ [@http://www.boost.org/doc/libs/release/doc/html/quickbook.html Boost.Quickbook]]
+
+[template ticket[key] '''<ulink url="https://svn.boost.org/trac/boost/ticket/'''[key]'''">#'''[key]'''</ulink>''']
+
+[/ Auto-generated macros that refer to Reference sections /]
+[include top_level_reference.qbk]
+[include locks_reference.qbk]
+[/ [include support_reference.qbk] /]
+
+
+[section:installation Installation and compatibility]
+
+[section:supported_compilers Supported compilers and platforms]
+
+The library should build and work with a reasonably compliant compiler. The library was successfully built and tested on the following platforms:
+
+* Windows XP, Windows Vista, Windows 7. MSVC 8.0 SP1, MSVC 9.0 and newer.
+* Linux. GCC 4.5 and newer. Older versions may work too, but it was not tested.
+* Linux. Intel C++ 13.1.0.146 Build 20130121.
+* Linux. Clang 3.2.
+
+The following compilers/platforms are not supported and will likely fail to compile the library:
+
+* C++11 compilers with non-C++11 standard libraries (like Clang with libstdc++ from GCC 4.2). Please, use a C++11 standard library in C++11 mode.
+* MSVC 8.0 (without SP1) and older.
+* GCC 4.0 and older.
+* Borland C++ 5.5.1 (free version). Newer versions might or might not work.
+* Windows 9x, ME, NT4 and older are not supported.
+
+Boost.Sync should be compatible with all hardware architectures supported by Boost. However, in case of 32 bit x86 architecture the library requires at least i586 class CPU to run.
+
+[endsect]
+
+[section:config Configuring and building the library]
+
+[endsect]
+
+[endsect]
+
+[include:sync notes_for_maintainers.qbk]
+
+[section:reference Reference]
+
+[xinclude top_level_reference.xml]
+[xinclude locks_reference.xml]
+[/ [xinclude support_reference.xml] /]
+
+[endsect]
+
+[include:sync changelog.qbk]
+
+[section:acknowledgments Acknowledgments]
+
+* This library originates from __boost_thread__ which was originally developed by Anthony Williams and later maintained by Vicente J. Botet Escriba. Many design choices of this library were originally made by __boost_thread__ developers.
+
+[endsect]

@@ -21,8 +21,9 @@
 #ifndef SC_SCOPE_BUFFER_HPP
 #define SC_SCOPE_BUFFER_HPP
 
+#include <atomic>
+
 #include <boost/interprocess/offset_ptr.hpp>
-#include <boost/atomic.hpp>
 
 extern "C" {
 #include "tlsf.h"
@@ -31,7 +32,7 @@ extern "C" {
 namespace detail_server_shm {
 
 using boost::interprocess::offset_ptr;
-using boost::atomic;
+using std::atomic;
 
 class scope_buffer_writer;
 class scope_buffer_reader;
@@ -123,7 +124,7 @@ private:
 
 	bool allocate( scope_buffer_pool & pool, unsigned int channels, unsigned int size )
 	{
-		bool available = _status.load( boost::memory_order_relaxed ) == free;
+		bool available = _status.load( std::memory_order_relaxed ) == free;
 		if( !available ) return false;
 
 		_size = size;
@@ -138,19 +139,19 @@ private:
 		_state[1].data = _data + asset_size;
 		_state[2].data = _data + asset_size + asset_size;
 
-		_status.store( initialized, boost::memory_order_release );
+		_status.store( initialized, std::memory_order_release );
 
 		return true;
 	}
 
 	void release( scope_buffer_pool & pool )
 	{
-		bool allocated = _status.load( boost::memory_order_relaxed ) != free;
+		bool allocated = _status.load( std::memory_order_relaxed ) != free;
 		if( !allocated ) return;
 
 		pool.deallocate( _data.get() );
 
-		_status.store( free, boost::memory_order_release );
+		_status.store( free, std::memory_order_release );
 	}
 
 	float * write_address() { return _state[_in].data.get(); }
@@ -158,28 +159,28 @@ private:
 	void push( unsigned int frames )
 	{
 		_state[_in].frames = frames;
-		_state[_in].changed.store( true, boost::memory_order_relaxed );
-		_in = _stage.exchange( _in, boost::memory_order_release );
+		_state[_in].changed.store( true, std::memory_order_relaxed );
+		_in = _stage.exchange( _in, std::memory_order_release );
 	}
 
 	// reader interface
 
 	bool valid()
 	{
-		return _status.load( boost::memory_order_acquire ) == initialized;
+		return _status.load( std::memory_order_acquire ) == initialized;
 	}
 
 	float * read_address() { return _state[_out].data.get(); }
 
 	unsigned int pull()
 	{
-		int stage = _stage.load( boost::memory_order_relaxed );
-		bool changed = _state[stage].changed.load( boost::memory_order_relaxed );
+		int stage = _stage.load( std::memory_order_relaxed );
+		bool changed = _state[stage].changed.load( std::memory_order_relaxed );
 
 		if( changed )
 		{
-			_state[_out].changed.store( false, boost::memory_order_relaxed );
-			_out = _stage.exchange( _out, boost::memory_order_acquire );
+			_state[_out].changed.store( false, std::memory_order_relaxed );
+			_out = _stage.exchange( _out, std::memory_order_acquire );
 		}
 
 		return _state[_out].frames;

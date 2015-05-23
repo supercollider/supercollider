@@ -87,7 +87,7 @@ EnvirGui : JITGui {
 
 	makeClrBut { |width, height|
 		Button(zone, width@height).font_(font)
-			.states_([[\CLR, skin.fontColor, Color.clear]])
+			.states_([[\CLR, skin.fontColor, skin.background]])
 			.action_({ arg btn, mod;
 				if (mod.isAlt) { object.clear } {
 					"Safety - use alt-click to clear object.".postln;
@@ -132,7 +132,7 @@ EnvirGui : JITGui {
 
 	makeDocBut { |width, height|
 		docBut = Button(zone, width@height).font_(font)
-			.states_([[\doc, skin.fontColor, Color.clear]])
+			.states_([[\doc, skin.fontColor, skin.background]])
 			.enabled_(false)
 			.action_({ |but, mod|
 				if (object.notNil) { object.asCompileString.newTextWindow };

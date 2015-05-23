@@ -22,6 +22,7 @@
 #include "ui_settings_editor.h"
 #include "../code_editor/highlighter.hpp"
 #include "../../core/settings/manager.hpp"
+#include "../../core/settings/theme.hpp"
 #include "../../core/main.hpp"
 
 #include <QMenu>
@@ -29,6 +30,8 @@
 #include <QListWidgetItem>
 #include <QFontDatabase>
 #include <QApplication>
+#include <QInputDialog>
+#include <QMessageBox>
 
 namespace ScIDE { namespace Settings {
 
@@ -46,6 +49,10 @@ EditorPage::EditorPage(QWidget *parent) :
     connect( ui->fontSize, SIGNAL(valueChanged(int)), this, SLOT(updateFontPreview()) );
     connect( ui->fontAntialias, SIGNAL(stateChanged(int)), this, SLOT(updateFontPreview()) );
 
+    connect(ui->themeCombo, SIGNAL(currentIndexChanged(QString)),
+             this, SLOT(updateTheme(QString)) );
+    connect(ui->themeCopyBtn, SIGNAL(clicked()), this, SLOT(dialogCopyTheme()));
+    connect(ui->themeDeleteBtn, SIGNAL(clicked()), this, SLOT(deleteTheme()));
     connect( ui->textFormats, SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem*)),
              this, SLOT(updateTextFormatEdit()) );
     connect( ui->fgPicker, SIGNAL(colorPicked(QColor)),
@@ -70,6 +77,7 @@ EditorPage::~EditorPage()
 {
     delete ui;
     delete fontDatabase;
+    qDeleteAll(mThemes);
 }
 
 void EditorPage::load( Manager *s )
@@ -113,15 +121,11 @@ void EditorPage::load( Manager *s )
 
     ui->textFormats->clear();
 
-    s->beginGroup("colors");
-    loadGeneralTextFormats( s );
-    s->endGroup(); // colors
-
-    s->beginGroup("highlighting");
-    loadSyntaxTextFormats( s );
-    s->endGroup(); // highlighting
-
     s->endGroup(); // IDE/editor
+
+    QString themeName = s->value("IDE/editor/theme").toString();
+    updateTheme(themeName);
+    populateThemeList(themeName);
 
     s->beginGroup("IDE/postWindow");
     ui->postWindowScrollback->setValue( s->value("scrollback").toInt() );
@@ -134,85 +138,64 @@ void EditorPage::load( Manager *s )
     ui->textFormats->expandAll();
 }
 
-void EditorPage::loadGeneralTextFormats( Manager *settings )
+void EditorPage::updateTheme(QString  name)
 {
-    mGeneralFormatsItem = new QTreeWidgetItem( ui->textFormats );
-    mGeneralFormatsItem->setText(0, tr("General") );
+    Theme *theme;
+    QMap<QString, Theme *>::const_iterator i = mThemes.find(name);
 
-    // commont text format item is special - don't set foreground and background on the item!
-    mCommonTextFormatItem = new QTreeWidgetItem();
-    mCommonTextFormatItem->setText( 0, tr("Text") );
-    mCommonTextFormatItem->setData( 0, TextFormatConfigKeyRole, "text" );
-    mCommonTextFormatItem->setData( 0, TextFormatRole, settings->value( "text" ) );
-    mGeneralFormatsItem->addChild( mCommonTextFormatItem );
-
-    QPalette palette = QApplication::palette();
-
-    QTextCharFormat lineNumbersDefaultFormat;
-    lineNumbersDefaultFormat.setBackground( palette.brush(QPalette::Mid) );
-    lineNumbersDefaultFormat.setForeground( palette.brush(QPalette::ButtonText) );
-
-    addTextFormat( mGeneralFormatsItem, tr("Line Numbers"), "lineNumbers",
-                   settings->value( "lineNumbers" ).value<QTextCharFormat>(),
-                   lineNumbersDefaultFormat );
-
-    QTextCharFormat selectionDefaultFormat;
-    selectionDefaultFormat.setBackground( palette.brush(QPalette::Highlight) );
-    selectionDefaultFormat.setForeground( palette.brush(QPalette::HighlightedText) );
-
-    addTextFormat( mGeneralFormatsItem, tr("Selected Text"), "selection",
-                   settings->value( "selection" ).value<QTextCharFormat>(),
-                   selectionDefaultFormat );
-    
-    QTextCharFormat postWindowDefaultFormat;
-    postWindowDefaultFormat.setBackground( palette.brush(QPalette::Mid) );
-    postWindowDefaultFormat.setForeground( palette.brush(QPalette::ButtonText) );
-    
-    addTextFormat( mGeneralFormatsItem, tr("Post Window Text"), "postwindowtext",
-                  settings->value( "postwindowtext" ).value<QTextCharFormat>(),
-                  postWindowDefaultFormat );
-
-    static char const * const keys[] = {
-        "currentLine", "searchResult", "matchingBrackets", "mismatchedBrackets", "evaluatedCode"
-    };
-
-    static QStringList strings = QStringList()
-            << tr("Current Line") << tr("Search Result") << tr("Matching Brackets")
-            << tr("Mismatched Brackets") << tr("Evaluated Code")
-    ;
-
-    static int count = strings.count();
-
-    for (int idx = 0; idx < count; ++idx) {
-        QTextCharFormat format = settings->value( keys[idx] ).value<QTextCharFormat>();
-        addTextFormat( mGeneralFormatsItem, strings[idx], keys[idx], format );
+    if (i == mThemes.end()) {
+        theme = new Theme(name);
+        mThemes.insert(name, theme);
+    } else {
+        theme = i.value();
     }
+
+    loadThemeFormats(*theme);
+
+    ui->bgPicker->setDisabled(theme->locked());
+    ui->fgPicker->setDisabled(theme->locked());
+    ui->bgClearBtn->setDisabled(theme->locked());
+    ui->fgClearBtn->setDisabled(theme->locked());
+    ui->themeDeleteBtn->setDisabled(theme->locked());
+    ui->italicOption->setDisabled(theme->locked());
+    ui->boldOption->setDisabled(theme->locked());
 }
 
-void EditorPage::loadSyntaxTextFormats( Manager *settings )
+void EditorPage::loadThemeFormats(Theme & theme)
 {
-    mSyntaxFormatsItem = new QTreeWidgetItem( ui->textFormats );
-    mSyntaxFormatsItem->setText(0, tr("Syntax Highlighting") );
+    ui->textFormats->clear();
+
+    // common text format item is special - don't set foreground and background on the item!
+    mCommonTextFormatItem = new QTreeWidgetItem(ui->textFormats);
+    mCommonTextFormatItem->setText( 0, tr("Text") );
+    mCommonTextFormatItem->setData( 0, TextFormatConfigKeyRole, "text" );
+    mCommonTextFormatItem->setData( 0, TextFormatRole, QVariant::fromValue(theme.format("text")) );
+    updateTextFormatDisplayCommons();
 
     static char const * const keys[] = {
+        "currentLine", "searchResult", "matchingBrackets", "mismatchedBrackets",
+        "evaluatedCode", "lineNumbers", "selection", "postwindowtext",
         "whitespace", "keyword", "built-in", "env-var", "class", "number",
         "symbol", "string", "char", "comment", "primitive",
         "postwindowerror", "postwindowwarning", "postwindowsuccess", "postwindowemphasis"
     };
 
     static QStringList strings = QStringList()
+            << tr("Current Line") << tr("Search Result") << tr("Matching Brackets")
+            << tr("Mismatched Brackets") << tr("Evaluated Code")
+            << tr("Line Numbers") << tr("Selected Text") << tr("Post Window Text")
             << tr("Whitespace")
             << tr("Keyword") << tr("Built-in Value") << tr("Environment Variable")
             << tr("Class") << tr("Number") << tr("Symbol") << tr("String") << tr("Char")
             << tr("Comment") << tr("Primitive")
-            << tr("Post Window Error") << tr("Post Window Warning") << ("Post Window Success") << ("Post Window Emphasis")
-    ;
+            << tr("Post Window Error") << tr("Post Window Warning") << tr("Post Window Success")
+            << tr("Post Window Emphasis");
 
     static int count = strings.count();
 
     for (int idx = 0; idx < count; ++idx) {
-        QTextCharFormat format = settings->value( keys[idx] ).value<QTextCharFormat>();
-        addTextFormat( mSyntaxFormatsItem, strings[idx], keys[idx], format );
+        QTextCharFormat format = theme.format(keys[idx]);
+        addTextFormat(strings[idx], keys[idx], format);
     }
 }
 
@@ -227,6 +210,34 @@ void EditorPage::populateFontList( bool onlyMonospaced )
 
         ui->fontCombo->addItem(family);
     }
+}
+
+void EditorPage::populateThemeList(const QString & sel)
+{
+    /* managing the combo box send parasite signals */
+    disconnect( ui->themeCombo, SIGNAL(currentIndexChanged(QString)),
+             this, SLOT(updateTheme(QString)) );
+
+    QMap<QString, Theme *>::const_iterator itr = mThemes.begin();
+    QList<QString> list =  itr.value()->availableThemes();
+    int i = 0;
+
+    foreach(QString th, mThemes.keys()) {
+        if (list.indexOf(th) < 0)
+                list.append(th);
+    }
+
+    ui->themeCombo->clear();
+    foreach(QString themeName, list) {
+        ui->themeCombo->addItem(themeName);
+        if (sel == themeName)
+                ui->themeCombo->setCurrentIndex(i);
+        else
+            i++;
+    }
+
+    connect( ui->themeCombo, SIGNAL(currentIndexChanged(QString)),
+             this, SLOT(updateTheme(QString)) );
 }
 
 void EditorPage::store( Manager *s )
@@ -253,31 +264,7 @@ void EditorPage::store( Manager *s )
     s->setValue("antialias", ui->fontAntialias->checkState());
     s->endGroup();
 
-    s->beginGroup("colors");
-
-    int generalFormatCount = mGeneralFormatsItem->childCount();
-    for(int i = 0; i < generalFormatCount; ++i)
-    {
-        QTreeWidgetItem *item = mGeneralFormatsItem->child(i);
-        QTextCharFormat fm = item->data( 0, TextFormatRole).value<QTextCharFormat>();
-        QString key = item->data( 0, TextFormatConfigKeyRole ).toString();
-        s->setValue( key, QVariant::fromValue<QTextCharFormat>(fm) );
-    }
-
-    s->endGroup(); // colors
-
-    s->beginGroup("highlighting");
-
-    int syntaxFormatCount = mSyntaxFormatsItem->childCount();
-    for(int i = 0; i < syntaxFormatCount; ++i)
-    {
-        QTreeWidgetItem *item =mSyntaxFormatsItem->child(i);
-        QTextCharFormat fm = item->data( 0, TextFormatRole).value<QTextCharFormat>();
-        QString key = item->data( 0, TextFormatConfigKeyRole ).toString();
-        s->setValue( key, QVariant::fromValue<QTextCharFormat>(fm) );
-    }
-
-    s->endGroup(); // highlighting
+    s->setValue("theme", ui->themeCombo->currentText());
 
     s->endGroup();
 
@@ -285,6 +272,14 @@ void EditorPage::store( Manager *s )
     s->setValue("scrollback", ui->postWindowScrollback->value());
     s->setValue("lineWrap", ui->postWindowLineWrap->isChecked());
     s->endGroup();
+
+    foreach(Theme *theme, mThemes) {
+        if (ui->themeCombo->findText(theme->name()) > 0)
+            theme->save();
+        else
+            theme->remove();
+    }
+    s->updateTheme();
 }
 
 void EditorPage::onCurrentTabChanged(int)
@@ -335,20 +330,15 @@ QFont EditorPage::constructFont()
 }
 
 QTreeWidgetItem * EditorPage::addTextFormat
-( QTreeWidgetItem * parent, const QString & name, const QString &key,
+( const QString & name, const QString &key,
   const QTextCharFormat & format, const QTextCharFormat &defaultFormat )
 {
-    QTreeWidgetItem *item = new QTreeWidgetItem();
+    QTreeWidgetItem *item = new QTreeWidgetItem(ui->textFormats);
     item->setText( 0, name );
     item->setData( 0, TextFormatConfigKeyRole, key );
     item->setData( 0, TextFormatRole, QVariant::fromValue(format) );
     item->setData( 0, DefaultTextFormatRole, QVariant::fromValue(defaultFormat) );
     updateTextFormatDisplay( item );
-
-    if (!parent)
-        parent = ui->textFormats->invisibleRootItem();
-
-    parent->addChild(item);
 
     return item;
 }
@@ -384,17 +374,17 @@ QTextCharFormat EditorPage::constructTextFormat()
     QTextCharFormat format;
 
     QBrush fg = ui->fgPicker->brush();
-    if ( fg.style() != Qt::NoBrush)
+    if (ui->fgPicker->isEnabled() && fg.style() != Qt::NoBrush)
         format.setForeground(fg);
 
     QBrush bg = ui->bgPicker->brush();
-    if (bg.style() != Qt::NoBrush)
+    if (ui->bgPicker->isEnabled() && bg.style() != Qt::NoBrush)
         format.setBackground(bg);
 
-    if (ui->italicOption->isChecked())
+    if (ui->italicOption->isEnabled() && ui->italicOption->isChecked())
         format.setFontItalic(true);
 
-    if (ui->boldOption->isChecked())
+    if (ui->boldOption->isEnabled() && ui->boldOption->isChecked())
         format.setFontWeight(QFont::Bold);
 
     return format;
@@ -414,10 +404,19 @@ void EditorPage::updateTextFormatEdit()
     }
     else {
         QTextCharFormat format = item->data( 0, TextFormatRole).value<QTextCharFormat>();
+        int enable = true;
+
         ui->fgPicker->setBrush( format.foreground() );
         ui->bgPicker->setBrush( format.background() );
         ui->italicOption->setChecked( format.fontItalic() );
         ui->boldOption->setChecked( format.fontWeight() == QFont::Bold );
+
+        if (item->data(0, TextFormatConfigKeyRole).toString() == "currentLine")
+            enable = false;
+
+        ui->fgPicker->setEnabled(enable);
+        ui->italicOption->setEnabled(enable);
+        ui->boldOption->setEnabled(enable);
     }
 }
 
@@ -435,6 +434,9 @@ void EditorPage::updateTextFormatDisplay()
         updateTextFormatDisplay( item );
     else
         updateTextFormatDisplayCommons();
+
+    Theme *theme = mThemes.value(ui->themeCombo->currentText());
+    theme->setFormat(item->data(0, TextFormatConfigKeyRole).toString(), format);
 }
 
 void EditorPage::updateTextFormatDisplayCommons()
@@ -453,6 +455,38 @@ void EditorPage::updateTextFormatDisplayCommons()
         palette.setBrush( QPalette::Base, bg );
 
     ui->textFormats->setPalette(palette);
+}
+
+void EditorPage::dialogCopyTheme()
+{
+    bool ok;
+    QString themeName = ui->themeCombo->currentText();
+    QString newThemeName = QInputDialog::getText
+        (this, tr("Copy theme"),
+         tr("copy the selected theme:"), QLineEdit::Normal,
+         themeName, &ok);
+
+   if ( ok && !newThemeName.isEmpty() ) {
+        QMap<QString, Theme *>::const_iterator i = mThemes.begin();
+        QList<QString> themes = i.value()->availableThemes();
+
+        if (themes.indexOf(newThemeName)  >= 0) {
+            QMessageBox::information (this,
+                 tr("Theme Already Existing"),
+                 tr("This theme already exists, pick another one\n"));
+        } else {
+            Theme * theme = new Theme(newThemeName, themeName);
+            mThemes.insert(newThemeName, theme);
+            ui->themeCombo->addItem(newThemeName);
+            ui->themeCombo->setCurrentIndex(ui->themeCombo->findText(newThemeName));
+            updateTheme(newThemeName);
+        }
+    }
+}
+
+void EditorPage::deleteTheme()
+{
+    ui->themeCombo->removeItem(ui->themeCombo->currentIndex());
 }
 
 }} // namespace ScIDE::Settings

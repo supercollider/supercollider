@@ -11,7 +11,7 @@
 #ifndef BOOST_INTERPROCESS_IN_PLACE_INTERFACE_HPP
 #define BOOST_INTERPROCESS_IN_PLACE_INTERFACE_HPP
 
-#if (defined _MSC_VER) && (_MSC_VER >= 1200)
+#if defined(_MSC_VER)
 #  pragma once
 #endif
 
@@ -47,7 +47,7 @@ template<class T>
 struct placement_destroy :  public in_place_interface
 {
    placement_destroy()
-	   :  in_place_interface(::boost::alignment_of<T>::value, sizeof(T), typeid(T).name())
+      :  in_place_interface(::boost::alignment_of<T>::value, sizeof(T), typeid(T).name())
    {}
 
    virtual void destroy_n(void *mem, std::size_t num, std::size_t &destroyed)

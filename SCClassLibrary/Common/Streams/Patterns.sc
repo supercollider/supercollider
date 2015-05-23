@@ -121,7 +121,7 @@ Pattern : AbstractFunction {
 				// Pfset has a cleanupFunc, which executes even if pattern is stopped by cmd-.
 				Pfset(nil,
 					Pseq([
-						Pfuncn { startTime = thisThread.beats; 0 },
+						Pfuncn { startTime = thisThread.beats; (type: \rest, delta: 0) },
 						(type: \on, instrument: defname, bufnum: buf, bus: bus, out: out, id: recsynth,
 							delta: 0),
 						pattern <> (out: bus),
@@ -182,7 +182,7 @@ Pfuncn : Pattern {
 	storeArgs { ^[func,repeats] }
 	embedInStream {  arg inval;
 		repeats.value(inval).do({
-			inval = func.value(inval).yield;
+			inval = func.value(inval).processRest(inval).yield;
 		});
 		^inval
 	}
@@ -369,7 +369,7 @@ Pbind : Pattern {
 						^inevent
 					};
 					name.do { arg key, i;
-						event.put(key, streamout[i]);
+						event.put(key, streamout[i].processRest(event));
 					};
 				}{
 					event.put(name, streamout);

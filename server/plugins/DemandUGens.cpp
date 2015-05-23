@@ -192,6 +192,13 @@ struct Dreset : public Unit
 	float prev_reset;
 };
 
+struct Dconst : public Unit
+{
+  float m_total;
+  float m_runningsum;
+  float m_tolerance;
+};
+
 extern "C"
 {
 
@@ -278,6 +285,9 @@ void Dreset_next(Dreset *unit, int inNumSamples);
 
 void Donce_Ctor(Donce *unit);
 void Donce_next(Donce *unit, int inNumSamples);
+
+void Dconst_Ctor(Dconst *unit);
+void Dconst_next(Dconst *unit, int inNumSamples);
 
 };
 
@@ -505,10 +515,9 @@ void Duty_next_da(Duty *unit, int inNumSamples)
 			out[i] = x;
 
 		} else {
-			count--;
 			out[i] = prevout;
 		}
-
+		count--;
 		prevreset = zreset;
 	}
 
@@ -2063,6 +2072,68 @@ void Dstutter_Ctor(Dstutter *unit)
 
 //////////////////////////////
 
+void Dconst_next(Dconst *unit, int inNumSamples)
+{
+	float total, tolerance;
+
+	if (inNumSamples) {
+		if(sc_isnan(unit->m_runningsum)) {
+			OUT0(0) = NAN;
+			return;
+		}
+
+		if (unit->m_total < 0.f) {
+
+			total = DEMANDINPUT_A(0, inNumSamples);
+			tolerance = DEMANDINPUT_A(2, inNumSamples);
+			if(sc_isnan(total) || sc_isnan(tolerance)) {
+				OUT0(0) = NAN;
+				return;
+			}
+			unit->m_total = total;
+			unit->m_tolerance = tolerance;
+
+		} {
+			total = unit->m_total;
+			tolerance = unit->m_tolerance;
+		}
+
+		float val = DEMANDINPUT_A(1, inNumSamples);
+
+		if(sc_isnan(val)) {
+			OUT0(0) = NAN;
+			return;
+		} else {
+			float runningsum = unit->m_runningsum + val;
+			if((runningsum > total) || (fabs(total - runningsum) <= tolerance)) {
+				OUT0(0) = total - unit->m_runningsum;
+				unit->m_runningsum = NAN;	// stop next time
+			} else {
+				unit->m_runningsum = runningsum;
+				OUT0(0) = val;
+			}
+		}
+
+	} else {
+
+		unit->m_total = -1.f;
+		unit->m_runningsum = 0.f;
+		RESETINPUT(0);
+		RESETINPUT(1);
+		RESETINPUT(2);
+
+	}
+}
+
+void Dconst_Ctor(Dconst *unit)
+{
+	SETCALC(Dconst_next);
+	Dconst_next(unit, 0);
+	OUT0(0) = 0.f;
+}
+
+//////////////////////////////
+
 
 
 void Dpoll_next(Dpoll *unit, int inNumSamples)
@@ -2382,6 +2453,7 @@ PluginLoad(Demand)
 	DefineSimpleUnit(Dswitch1);
 	DefineSimpleUnit(Dswitch);
 	DefineSimpleUnit(Dstutter);
+	DefineSimpleUnit(Dconst);
 	DefineSimpleUnit(Donce);
 	DefineSimpleUnit(Dreset);
 	DefineDtorUnit(Dpoll);

@@ -190,7 +190,7 @@ void HelpBrowser::onLinkClicked( const QUrl & url )
     foreach ( const QString & extension, nonHelpFileExtensions ) {
         if (urlString.endsWith( extension )) {
             if ( QURL_IS_LOCAL_FILE(url) ) {
-                Main::documentManager()->open(url.toLocalFile());
+                Main::documentManager()->open(url.toLocalFile(), -1, 0, false );
                 return;
             }
             break;
@@ -390,7 +390,7 @@ void HelpBrowser::findReferences()
 HelpBrowserFindBox::HelpBrowserFindBox( QWidget * parent ):
     QLineEdit(parent)
 {
-    setPlaceholderText(tr("Find..."));
+    setPlaceholderText(tr("Find in page..."));
     connect( this, SIGNAL(textChanged(QString)), this, SIGNAL(query(QString)) );
 }
 

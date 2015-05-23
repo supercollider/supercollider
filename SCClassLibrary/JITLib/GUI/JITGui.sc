@@ -130,7 +130,7 @@ JITGui {
 	}
 
 	makeZone {
-		zone = CompositeView(parent, bounds).background_(Color.white);
+		zone = CompositeView(parent, bounds).background_(skin.background);
 		zone.addFlowLayout(skin.margin, skin.gap);
 		zone.resize_(2);
 		zone.background_(skin.foreground);

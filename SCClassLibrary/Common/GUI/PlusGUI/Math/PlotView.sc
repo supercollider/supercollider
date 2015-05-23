@@ -676,7 +676,9 @@ Plotter {
 
 	// interaction
 	pointIsInWhichPlot { |point|
-		var res = plots.detectIndex { |plot|
+		var res;
+		if(plots.isNil) { ^nil };
+		res = plots.detectIndex { |plot|
 			point.y.exclusivelyBetween(plot.bounds.top, plot.bounds.bottom)
 		};
 		^res ?? {
@@ -834,6 +836,12 @@ Plotter {
 	}
 }
 
++ Bus {
+	plot { |duration = 0.01, bounds, minval, maxval, separately = false|
+		^{ InFeedback.ar(this.index, this.numChannels) }.plot(duration, this.server, bounds, minval, maxval, separately)
+	}
+}
+
 + Wavetable {
 	plot { |name, bounds, minval, maxval, separately = false|
 		^this.asSignal.plot(name, bounds, minval: minval, maxval: maxval, separately: separately)
@@ -866,6 +874,7 @@ Plotter {
 		^plotter
 	}
 }
+
 
 + Env {
 	plot { |size = 400, bounds, minval, maxval, name|

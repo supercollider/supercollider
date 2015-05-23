@@ -25,6 +25,7 @@
 #include "../../core/main.hpp"
 #include "../../core/doc_manager.hpp"
 #include "../../core/settings/manager.hpp"
+#include "../../core/settings/theme.hpp"
 
 #include "QtCollider/hacks/hacks_qt.hpp"
 
@@ -63,8 +64,8 @@ void ScCodeEditor::applySettings( Settings::Manager *settings )
 
     mSpaceIndent = settings->value("spaceIndent").toBool();
     mBlinkDuration = settings->value("blinkDuration").toInt();
-    mBracketHighlight = settings->value("colors/matchingBrackets").value<QTextCharFormat>();
-    mBracketMismatchFormat = settings->value("colors/mismatchedBrackets").value<QTextCharFormat>();
+    mBracketHighlight = settings->getThemeVal("matchingBrackets");
+    mBracketMismatchFormat = settings->getThemeVal("mismatchedBrackets");
     mStepForwardEvaluation = settings->value("stepForwardEvaluation").toBool();
     mInsertMatchingTokens = settings->value("insertMatchingTokens").toBool();
     mHighlightBracketContents = settings->value("highlightBracketContents").toBool();
@@ -83,9 +84,11 @@ bool ScCodeEditor::event( QEvent *e )
         QKeyEvent *ke = static_cast<QKeyEvent*>(e);
         switch (ke->key()) {
         case Qt::Key_Tab:
-            indent();
-            e->accept();
-            return true;
+            if (!tabChangesFocus()) {
+                indent();
+                e->accept();
+                return true;
+            }
         default:
             break;
         }
@@ -1325,6 +1328,7 @@ void ScCodeEditor::evaluateLine()
         if( mStepForwardEvaluation ) {
             QTextCursor newCursor = cursor;
             newCursor.movePosition(QTextCursor::NextBlock);
+            newCursor.setVerticalMovementX( cursor.verticalMovementX() );
             setTextCursor(newCursor);
         }
 
@@ -1363,6 +1367,7 @@ void ScCodeEditor::evaluateRegion()
             if( mStepForwardEvaluation ) {
                 QTextCursor newCursor = cursor;
                 newCursor.movePosition(QTextCursor::NextBlock);
+                newCursor.setVerticalMovementX( cursor.verticalMovementX() );
                 setTextCursor(newCursor);
             }
             // Adjust cursor for code blinking:

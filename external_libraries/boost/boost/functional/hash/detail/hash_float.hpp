@@ -6,11 +6,11 @@
 #if !defined(BOOST_FUNCTIONAL_HASH_DETAIL_HASH_FLOAT_HEADER)
 #define BOOST_FUNCTIONAL_HASH_DETAIL_HASH_FLOAT_HEADER
 
-#if defined(_MSC_VER) && (_MSC_VER >= 1020)
-# pragma once
+#include <boost/config.hpp>
+#if defined(BOOST_HAS_PRAGMA_ONCE)
+#pragma once
 #endif
 
-#include <boost/config.hpp>
 #include <boost/functional/hash/detail/float_functions.hpp>
 #include <boost/functional/hash/detail/limits.hpp>
 #include <boost/utility/enable_if.hpp>

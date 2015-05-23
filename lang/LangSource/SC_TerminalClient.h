@@ -30,17 +30,17 @@
 #include "SC_LanguageClient.h"
 #include "SC_StringBuffer.h"
 #include "SC_Lock.h"
-#include "nova-tt/semaphore.hpp"
 
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
+#include <boost/sync/semaphore.hpp>
 
 // =====================================================================
 // SC_TerminalClient - command line sclang client.
 // =====================================================================
 
 // TODO: move locks & thread out of the header, possibly using pimpl
-class SC_DLLEXPORT SC_TerminalClient : public SC_LanguageClient
+class SCLANG_DLLEXPORT SC_TerminalClient : public SC_LanguageClient
 {
 public:
 	enum
@@ -176,14 +176,14 @@ private:
 #ifndef _WIN32
 	boost::asio::posix::stream_descriptor   mStdIn;
 #else
-	boost::asio::windows::stream_descriptor mStdIn;
+	boost::asio::windows::object_handle mStdIn;
 #endif
 	void startInputRead();
 	void onInputRead(const boost::system::error_code& error, std::size_t bytes_transferred);
 
 	// command input
 	bool mUseReadline;
-	nova::semaphore mReadlineSem;
+	boost::sync::semaphore mReadlineSem;
 };
 
 #endif // SC_TERMINALCLIENT_H_INCLUDED

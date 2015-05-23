@@ -34,7 +34,7 @@
 
 # include <machine/endian.h>
 
-#elif defined(__FreeBSD__) || defined(__OpenBSD__)
+#elif defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__)
 
 # include <sys/types.h>
 # include <netinet/in.h>

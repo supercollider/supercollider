@@ -5,7 +5,7 @@ related:: Classes/Color, Classes/HiliteGradient
 
 description::
 
-note:: The use of Gradient is strong::not supported yet in Qt GUI::. When Gradient is used in place of Color, the average gradient color will be used instead. ::
+note:: The use of Gradient is strong::not supported yet::. When Gradient is used in place of Color, the average gradient color will be used instead. ::
 
 classmethods::
 

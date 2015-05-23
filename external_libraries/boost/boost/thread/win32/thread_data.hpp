@@ -11,6 +11,8 @@
 #include <boost/thread/win32/thread_primitives.hpp>
 #include <boost/thread/win32/thread_heap_alloc.hpp>
 
+#include <boost/predef/platform.h>
+
 #include <boost/intrusive_ptr.hpp>
 #ifdef BOOST_THREAD_USES_CHRONO
 #include <boost/chrono/system_clocks.hpp>
@@ -93,10 +95,18 @@ namespace boost
         struct BOOST_THREAD_DECL thread_data_base
         {
             long count;
+
+            // Win32 threading APIs are not available in store apps so
+            // use abstraction on top of Windows::System::Threading.
+#if BOOST_PLAT_WINDOWS_RUNTIME
+            detail::win32::scoped_winrt_thread thread_handle;
+#else
             detail::win32::handle_manager thread_handle;
+#endif
+
             boost::detail::thread_exit_callback_node* thread_exit_callbacks;
-            std::map<void const*,boost::detail::tss_data_node> tss_data;
             unsigned id;
+            std::map<void const*,boost::detail::tss_data_node> tss_data;
             typedef std::vector<std::pair<condition_variable*, mutex*>
             //, hidden_allocator<std::pair<condition_variable*, mutex*> >
             > notify_list_t;
@@ -113,9 +123,11 @@ namespace boost
 //#endif
 
             thread_data_base():
-                count(0),thread_handle(detail::win32::invalid_handle_value),
-                thread_exit_callbacks(0),tss_data(),
+                count(0),
+                thread_handle(),
+                thread_exit_callbacks(0),
                 id(0),
+                tss_data(),
                 notify(),
                 async_states_()
 //#if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
@@ -173,14 +185,15 @@ namespace boost
             static unsigned long const max_non_infinite_wait=0xfffffffe;
 
             timeout(uintmax_t milliseconds_):
-                start(win32::GetTickCount64()),
+                start(win32::GetTickCount64_()()),
                 milliseconds(milliseconds_),
-                relative(true),
-                abs_time(boost::get_system_time())
+                relative(true)
+            //,
+            //    abs_time(boost::get_system_time())
             {}
 
             timeout(boost::system_time const& abs_time_):
-                start(win32::GetTickCount64()),
+                start(win32::GetTickCount64_()()),
                 milliseconds(0),
                 relative(false),
                 abs_time(abs_time_)
@@ -205,7 +218,7 @@ namespace boost
                 }
                 else if(relative)
                 {
-                    win32::ticks_type const now=win32::GetTickCount64();
+                    win32::ticks_type const now=win32::GetTickCount64_()();
                     win32::ticks_type const elapsed=now-start;
                     return remaining_time((elapsed<milliseconds)?(milliseconds-elapsed):0);
                 }
@@ -273,6 +286,33 @@ namespace boost
           interruptible_wait(chrono::duration_cast<chrono::milliseconds>(ns).count());
         }
 #endif
+        namespace no_interruption_point
+        {
+          bool BOOST_THREAD_DECL non_interruptible_wait(detail::win32::handle handle_to_wait_for,detail::timeout target_time);
+          inline void non_interruptible_wait(uintmax_t milliseconds)
+          {
+            non_interruptible_wait(detail::win32::invalid_handle_value,milliseconds);
+          }
+          inline BOOST_SYMBOL_VISIBLE void non_interruptible_wait(system_time const& abs_time)
+          {
+            non_interruptible_wait(detail::win32::invalid_handle_value,abs_time);
+          }
+          template<typename TimeDuration>
+          inline BOOST_SYMBOL_VISIBLE void sleep(TimeDuration const& rel_time)
+          {
+            non_interruptible_wait(detail::pin_to_zero(rel_time.total_milliseconds()));
+          }
+          inline BOOST_SYMBOL_VISIBLE void sleep(system_time const& abs_time)
+          {
+            non_interruptible_wait(abs_time);
+          }
+#ifdef BOOST_THREAD_USES_CHRONO
+          inline void BOOST_SYMBOL_VISIBLE sleep_for(const chrono::nanoseconds& ns)
+          {
+            non_interruptible_wait(chrono::duration_cast<chrono::milliseconds>(ns).count());
+          }
+#endif
+        }
     }
 
 }

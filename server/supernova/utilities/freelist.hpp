@@ -23,6 +23,7 @@
 #include <boost/atomic.hpp>
 #include <boost/noncopyable.hpp>
 
+// FIXME: port to std::atomic, once a fixed clang 3.5 has been released
 
 namespace nova {
 

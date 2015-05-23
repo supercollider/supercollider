@@ -17,6 +17,9 @@ a.operator
 operator(a)
 ::
 
+
+subsection:: Arithmetics
+
 method:: neg
 Inversion.
 discussion::
@@ -83,6 +86,10 @@ The definition of square root is extended for signals so that sqrt(a) when a<0 r
 method:: exp
 Exponential.
 
+
+subsection:: Musical acoustics
+
+
 method:: midicps
 Convert MIDI note number to cycles per second.
 discussion::
@@ -112,6 +119,62 @@ Convert decimal octaves to cycles per second.
 
 method:: cpsoct
 Convert cycles per second to decimal octaves.
+
+subsection:: Random operators
+
+See also link::Guides/Randomness::
+
+method::rand
+Returns an evenly distributed random value between this and zero.
+code::
+10.rand;
+
+{ SinOsc.ar(110).rand }.plot;
+::
+
+method::rand2
+Returns an evenly distributed random value between [+this ... - this].
+code::
+10.rand2;
+
+{ SinOsc.ar(110).rand2 }.plot;
+::
+
+method::linrand
+Returns a linearly distributed random value between this and zero.
+code::
+10.linrand;
+
+{ SinOsc.ar(110).linrand }.plot;
+::
+
+
+method::bilinrand
+Returns a linearly distributed random value between [+this ... - this].
+code::
+10.bilinrand;
+
+{ SinOsc.ar(110).bilinrand }.plot;
+::
+
+method::sum3rand
+Returns a value from a gaussian-like random distribution between this and zero.
+Larry Polansky's poor man's gaussian generator, follows the formula:
+
+code::
+{ 1.0.rand }.dup(3).sum - 1.5 * (2/3)
+::
+
+code::
+10.sum3rand;
+
+{ SinOsc.ar(110).sum3rand }.plot;
+::
+
+
+
+subsection:: Other
+
 
 method:: log
 Natural logarithm.
@@ -232,10 +295,60 @@ Floating point modulo.
 
 method:: **
 Exponentiation. When used with UGens which produce a negative signal this function extends the usual definition of
-exponentiation and returns neg(neg(a) ** b). This allows exponentiation of negative signal values by noninteger exponents. For the normal behaviour use pow (see below).
+exponentiation and returns code::neg(neg(a) ** b)::. This allows exponentiation of negative signal values by noninteger exponents. For the normal behaviour use pow (see below).
 
 method:: pow
 Exponentiation.
+
+method:: lcm
+Least common multiple. This definition extends the usual definition and returns a negative number if strong::any of the operands:: is negative. This makes it consistent with the lattice-theoretical interpretation and its idempotency, commutative, associative, absorption laws.
+
+Following the example of the programming language J (see: link::Guides/J-concepts-in-SC::), lcm is analogous to logical strong::and:: (see also: link::http://www.jsoftware.com/papers/eem/gcd.htm::).
+
+code::
+lcm(4, 6);
+lcm(1, 1); // and
+lcm(1624, 26);
+lcm(1624, -26);
+lcm(-1624, -26);
+lcm(513, gcd(513, 44)) // absorption law -> 513.
+::
+code::
+(
+{
+	var mx = MouseX.kr(-20, 20);
+	var my = MouseY.kr(-20, 20);
+	SinOsc.ar(SinOsc.kr(0.3) * 20 lcm: [mx, my] * 30 + 500) * 0.1
+}.play;
+)
+::
+
+method:: gcd
+Greatest common divisor. This definition extends the usual definition and returns a negative number if strong::both operands:: are negative. This makes it consistent with the lattice-theoretical interpretation and its idempotency, commutative, associative, absorption laws.
+
+"greater" means "divisible by" in this interpretation, so code::gcd(-1, -1):: returns a negative number. This is necessary to make the whole system consistent (fundamental law of arithmetics, idempotency and absorption laws would fail).
+
+Following the example of the programming language J (see: link::Guides/J-concepts-in-SC::), gcd is analogous to logical strong::or::  (see also: link::http://www.jsoftware.com/papers/eem/gcd.htm::).
+
+code::
+gcd(4, 6);
+gcd(0, 1); // or
+gcd(1024, 256);
+gcd(1024, -256);
+gcd(-1024, -256); // "greater" means "divisible by" in this case, so this returns a negative number.
+gcd(-1024, lcm(-1024, 256)) // absorption law -> -1024.
+gcd(66, 54) * lcm(66, 54) == (66 * 54); // true
+::
+
+code::
+(
+{
+	var mx = MouseX.kr(-200, 200);
+	var my = MouseY.kr(-200, 200);
+	SinOsc.ar(SinOsc.kr(0.3) * 20 gcd: [mx, my] * 30 + 500) * 0.1
+}.play;
+)
+::
 
 subsection:: Comparisions
 
@@ -250,6 +363,7 @@ Greater than.
 discussion::
 With UGens, this can be useful for triggering purposes, among other things:
 code::
+(
 { // trigger an envelope
 	var trig;
 	trig = SinOsc.ar(1) > 0;
@@ -257,22 +371,22 @@ code::
 		EnvGen.kr(Env.perc, trig, doneAction: 0)
 			* SinOsc.ar(440,0,0.1)
 	)
-}.play(s);
+}.play
+)
 
-( // trigger a synth
+// trigger a synth
+(
 SynthDef("help-EnvGen",{ arg out=0;
 	Out.ar(out,
 		EnvGen.kr(Env.perc,1.0,doneAction: 2)
 			* SinOsc.ar(440,0,0.1)
 	)
-}).send(s);
+}).add;
 
 // This synth has no output. It only checks amplitude of input and looks for a transition from < 0.2
 // to > 0.2
 
-SynthDef("help-> trig", {
-	SendTrig.kr(Amplitude.kr(SoundIn.ar(0)) > 0.2);
-}).play(s);
+{ SendTrig.kr(Amplitude.kr(SoundIn.ar(0)) > 0.2) }.play;
 
 // OSCFunc to trigger synth
 OSCFunc({ "triggered".postln; Synth.new("help-EnvGen") },'/tr', s.addr);
@@ -292,6 +406,20 @@ subsection:: Other
 
 method:: <!
 Return first argument.
+
+code::
+// this is useful when two ugens need to be called, but only one of their outputs is needed
+(
+{
+	var a, b, c;
+	a = Dseq([1, 2, 3, 4], inf).dpoll("a");
+	b = Dseq([1955, 1952, 1823, 1452], inf).dpoll("b");
+	c = (a <! b).dpoll("------> a <! b = "); // c only
+	Duty.kr(0.4, 0, c);
+	0.0
+}.play
+)
+::
 
 method:: min
 Minimum.

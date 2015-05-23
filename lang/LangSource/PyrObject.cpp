@@ -18,6 +18,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
+#include <atomic>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -1072,7 +1073,7 @@ int compareColDescs(const void *va, const void *vb)
 
 #define CHECK_METHOD_LOOKUP_TABLE_BUILD_TIME 0
 #if CHECK_METHOD_LOOKUP_TABLE_BUILD_TIME
-double elapsedRealTime();
+double elapsedTime();
 #endif
 
 static size_t fillClassRow(PyrClass *classobj, PyrMethod** bigTable);
@@ -1177,7 +1178,7 @@ void buildBigMethodMatrix()
 	//post("allocate arrays\n");
 
 #if CHECK_METHOD_LOOKUP_TABLE_BUILD_TIME
-	double t0 = elapsedRealTime();
+	double t0 = elapsedTime();
 #endif
 
 	// pyrmalloc:
@@ -1290,7 +1291,7 @@ void buildBigMethodMatrix()
 	//post("popSum %d\n", popSum);
 
 #if CHECK_METHOD_LOOKUP_TABLE_BUILD_TIME
-	post("building table took %.3g seconds\n", elapsedRealTime() - t0);
+	post("building table took %.3g seconds\n", elapsedTime() - t0);
 	{
 		int numFilled = 0;
 		for (i=0; i<rowTableSize/sizeof(PyrMethod*); ++i) {
@@ -1315,9 +1316,9 @@ void buildBigMethodMatrix()
 
 #include <boost/atomic.hpp>
 
-static void fillClassRowSubClasses(PyrObject * subclasses, int begin, int end, PyrMethod** bigTable, boost::atomic<size_t> * rCount);
+static void fillClassRowSubClasses(PyrObject * subclasses, int begin, int end, PyrMethod** bigTable, std::atomic<size_t> * rCount);
 
-static void fillClassRow(PyrClass *classobj, PyrMethod** bigTable, boost::atomic<size_t> * rCount)
+static void fillClassRow(PyrClass *classobj, PyrMethod** bigTable, std::atomic<size_t> * rCount)
 {
 	size_t count = 0;
 
@@ -1368,7 +1369,7 @@ static void fillClassRow(PyrClass *classobj, PyrMethod** bigTable, boost::atomic
 	}
 }
 
-static void fillClassRowSubClasses(PyrObject * subclasses, int begin, int end, PyrMethod** bigTable, boost::atomic<size_t> * rCount)
+static void fillClassRowSubClasses(PyrObject * subclasses, int begin, int end, PyrMethod** bigTable, std::atomic<size_t> * rCount)
 {
 	for (int i = begin; i != end; ++i)
 		fillClassRow(slotRawClass(&subclasses->slots[i]), bigTable, rCount);
@@ -1377,11 +1378,11 @@ static void fillClassRowSubClasses(PyrObject * subclasses, int begin, int end, P
 
 static size_t fillClassRow(PyrClass *classobj, PyrMethod** bigTable)
 {
-	boost::atomic<size_t> ret (0);
+	std::atomic<size_t> ret (0);
 
 	fillClassRow(classobj, bigTable, &ret);
 	if (helperThreadCount) compileThreadPool.wait();
-	return ret.load(boost::memory_order_acquire);
+	return ret.load(std::memory_order_acquire);
 }
 
 
@@ -2458,7 +2459,7 @@ PyrBlock* newPyrBlock(int flags)
 	return block;
 }
 
-SC_DLLEXPORT_C struct VMGlobals* scGlobals()
+SCLANG_DLLEXPORT_C struct VMGlobals* scGlobals()
 {
 	return gMainVMGlobals;
 }

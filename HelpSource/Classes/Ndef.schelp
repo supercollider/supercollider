@@ -81,6 +81,16 @@ code::
 Ndef.dictFor(s);
 ::
 
+subsection::Setting default parameters
+Behind every Ndef there is one single instance of link::Classes/ProxySpace:: per server used (usually just the one for the default server). This ProxySpace keeps default values for the proxies that can be set. This can be done by:
+
+code::
+// set default quant
+Ndef(\x).proxyspace.quant = 1.0;
+::
+The other values that can be set in such a way are: code::clock, fadeTime, quant, reshaping, awake::.
+
+
 Examples::
 
 code::
@@ -100,6 +110,29 @@ Ndef(\lfo, { LFNoise1.kr(300, 400, 800) });
 
 Ndef.clear; //clear all Ndefs
 ::
+
+subsection::using Ndef inside other Ndefs
+
+code::
+Ndef(\lfo2, { LFNoise1.kr(LFNoise1.kr(0.1).exprange(1, 300) ! 2, 400, 800) });
+Ndef(\sound, { Blip.ar(Ndef.kr(\lfo2), 30) * 0.2 }).play;
+
+Ndef(\lfo2, { [MouseX.kr(10, 300, 1), MouseY.kr(10, 300, 1)] });
+::
+
+subsection::setting and mapping parameters
+
+code::
+Ndef(\sound, { |freq = 56, numHarm = 10| Blip.ar(freq, numHarm, 30) * 0.2 }).play;
+Ndef(\sound).set(\freq, 15);
+Ndef(\sound).set(\freq, 15, \numHarm, 100);
+
+Ndef(\lfo, { LFNoise2.kr(2).exprange(10, 200) });
+Ndef(\sound).map(\numHarm, Ndef(\lfo));
+Ndef(\sound).set(\numHarm, nil); // unmap.
+Ndef(\sound).stop;
+::
+
 
 subsection::Simple audio routing with the <<> operator
 
@@ -127,6 +160,21 @@ Ndef(\a) <<>.phase Ndef(\sound);
 Ndef(\a) <<>.phase nil;	// unmap
 Ndef.clear(3);		// fade out and clear all Ndefs
 ::
+
+subsection::Making Copies
+
+method::copy
+Because an Ndef is a unique instance for a given key, it can be copied only by supplying a new key.
+See also: link::Classes/NodeProxy#-copy::.
+
+code::
+Ndef(\x, { SinOsc.ar(Rand(500, 900)) * 0.1 }).play;
+Ndef(\x).copy(\y);
+Ndef(\y).play;
+::
+
+argument::newKey
+A valid new key, usually a link::Classes/Symbol::
 
 subsection::Recursion
 

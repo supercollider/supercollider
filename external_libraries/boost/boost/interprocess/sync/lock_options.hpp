@@ -11,7 +11,7 @@
 #ifndef BOOST_INTERPROCESS_LOCK_OPTIONS_HPP
 #define BOOST_INTERPROCESS_LOCK_OPTIONS_HPP
 
-#if (defined _MSC_VER) && (_MSC_VER >= 1200)
+#if defined(_MSC_VER)
 #  pragma once
 #endif
 
@@ -23,8 +23,12 @@
 
 namespace boost {
 
+#if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
+
 namespace posix_time
 {  class ptime;   }
+
+#endif   //#if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
 
 namespace interprocess {
 

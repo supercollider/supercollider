@@ -140,7 +140,7 @@ void ScProcess::startLanguage (void)
 
     QString sclangCommand;
 #ifdef Q_OS_MAC
-    sclangCommand = standardDirectory(ScResourceDir) + "/sclang";
+    sclangCommand = standardDirectory(ScResourceDir) + "/../MacOS/sclang";
 #else
     sclangCommand = "sclang";
 #endif
@@ -379,6 +379,24 @@ void ScProcess::updateTextMirrorForDocument ( Document * doc, int position, int 
         QDataStream stream(mIpcSocket);
         stream.setVersion(QDataStream::Qt_4_6);
         stream << QString("updateDocText");
+        stream << argList;
+    } catch (std::exception const & e) {
+        scPost(QString("Exception during ScIDE_Send: %1\n").arg(e.what()));
+    }
+}
+    
+void ScProcess::updateSelectionMirrorForDocument ( Document * doc, int start, int range )
+{
+    QVariantList argList;
+    
+    argList.append(QVariant(doc->id()));
+    argList.append(QVariant(start));
+    argList.append(QVariant(range));
+    
+    try {
+        QDataStream stream(mIpcSocket);
+        stream.setVersion(QDataStream::Qt_4_6);
+        stream << QString("updateDocSelection");
         stream << argList;
     } catch (std::exception const & e) {
         scPost(QString("Exception during ScIDE_Send: %1\n").arg(e.what()));

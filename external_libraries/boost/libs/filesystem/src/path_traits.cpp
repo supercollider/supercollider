@@ -126,7 +126,7 @@ namespace {
 namespace boost { namespace filesystem { namespace path_traits {
 
 //--------------------------------------------------------------------------------------//
-//                          convert const char* to wstring                             //
+//                          convert const char* to wstring                              //
 //--------------------------------------------------------------------------------------//
 
   BOOST_FILESYSTEM_DECL

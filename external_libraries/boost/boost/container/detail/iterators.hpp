@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2005-2012.
+// (C) Copyright Ion Gaztanaga 2005-2013.
 // (C) Copyright Gennaro Prota 2003 - 2004.
 //
 // Distributed under the Boost Software License, Version 1.0.
@@ -18,12 +18,13 @@
 #  pragma once
 #endif
 
-#include "config_begin.hpp"
+#include <boost/container/detail/config_begin.hpp>
 #include <boost/container/detail/workaround.hpp>
-#include <boost/move/utility.hpp>
 #include <boost/container/allocator_traits.hpp>
 #include <boost/container/detail/type_traits.hpp>
 #include <boost/static_assert.hpp>
+#include <boost/move/utility_core.hpp>
+#include <boost/intrusive/detail/reverse_iterator.hpp>
 
 #ifdef BOOST_CONTAINER_PERFECT_FORWARDING
 #include <boost/container/detail/variadic_templates_tools.hpp>
@@ -53,7 +54,7 @@ class constant_iterator
 
    constant_iterator& operator++()
    { increment();   return *this;   }
-  
+
    constant_iterator operator++(int)
    {
       constant_iterator result (*this);
@@ -63,7 +64,7 @@ class constant_iterator
 
    constant_iterator& operator--()
    { decrement();   return *this;   }
-  
+
    constant_iterator operator--(int)
    {
       constant_iterator result (*this);
@@ -147,7 +148,7 @@ class constant_iterator
    {  return m_num - other.m_num;   }
 };
 
-template <class T, class Difference = std::ptrdiff_t>
+template <class T, class Difference>
 class value_init_construct_iterator
   : public std::iterator
       <std::random_access_iterator_tag, T, Difference, const T*, const T &>
@@ -164,7 +165,7 @@ class value_init_construct_iterator
 
    value_init_construct_iterator& operator++()
    { increment();   return *this;   }
-  
+
    value_init_construct_iterator operator++(int)
    {
       value_init_construct_iterator result (*this);
@@ -174,7 +175,7 @@ class value_init_construct_iterator
 
    value_init_construct_iterator& operator--()
    { decrement();   return *this;   }
-  
+
    value_init_construct_iterator operator--(int)
    {
       value_init_construct_iterator result (*this);
@@ -258,7 +259,7 @@ class value_init_construct_iterator
    {  return m_num - other.m_num;   }
 };
 
-template <class T, class Difference = std::ptrdiff_t>
+template <class T, class Difference>
 class default_init_construct_iterator
   : public std::iterator
       <std::random_access_iterator_tag, T, Difference, const T*, const T &>
@@ -275,7 +276,7 @@ class default_init_construct_iterator
 
    default_init_construct_iterator& operator++()
    { increment();   return *this;   }
-  
+
    default_init_construct_iterator operator++(int)
    {
       default_init_construct_iterator result (*this);
@@ -285,7 +286,7 @@ class default_init_construct_iterator
 
    default_init_construct_iterator& operator--()
    { decrement();   return *this;   }
-  
+
    default_init_construct_iterator operator--(int)
    {
       default_init_construct_iterator result (*this);
@@ -386,7 +387,7 @@ class repeat_iterator
 
    this_type& operator++()
    { increment();   return *this;   }
-  
+
    this_type operator++(int)
    {
       this_type result (*this);
@@ -396,7 +397,7 @@ class repeat_iterator
 
    this_type& operator--()
    { increment();   return *this;   }
-  
+
    this_type operator--(int)
    {
       this_type result (*this);
@@ -497,7 +498,7 @@ class emplace_iterator
 
    this_type& operator++()
    { increment();   return *this;   }
-  
+
    this_type operator++(int)
    {
       this_type result (*this);
@@ -507,7 +508,7 @@ class emplace_iterator
 
    this_type& operator--()
    { decrement();   return *this;   }
-  
+
    this_type operator--(int)
    {
       this_type result (*this);
@@ -698,11 +699,16 @@ struct is_bidirectional_iterator<T, false>
    static const bool value = false;
 };
 
+template<class IINodeType>
+struct iiterator_node_value_type {
+  typedef typename IINodeType::value_type type;
+};
+
 template<class IIterator>
 struct iiterator_types
 {
    typedef typename IIterator::value_type                            it_value_type;
-   typedef typename it_value_type::value_type                        value_type;
+   typedef typename iiterator_node_value_type<it_value_type>::type   value_type;
    typedef typename std::iterator_traits<IIterator>::pointer         it_pointer;
    typedef typename std::iterator_traits<IIterator>::difference_type difference_type;
    typedef typename ::boost::intrusive::pointer_traits<it_pointer>::
@@ -740,14 +746,15 @@ struct std_iterator<IIterator, false>
 
 template<class IIterator, bool IsConst>
 class iterator
-   :  public std_iterator<IIterator, IsConst>::type
 {
    typedef typename std_iterator<IIterator, IsConst>::type types_t;
 
    public:
-   typedef typename types_t::value_type      value_type;
-   typedef typename types_t::pointer         pointer;
-   typedef typename types_t::reference       reference;
+   typedef typename types_t::pointer             pointer;
+   typedef typename types_t::reference           reference;
+   typedef typename types_t::difference_type     difference_type;
+   typedef typename types_t::iterator_category   iterator_category;
+   typedef typename types_t::value_type          value_type;
 
    iterator()
    {}
@@ -802,6 +809,8 @@ class iterator
    private:
    IIterator m_iit;
 };
+
+using ::boost::intrusive::detail::reverse_iterator;
 
 }  //namespace container_detail {
 }  //namespace container {

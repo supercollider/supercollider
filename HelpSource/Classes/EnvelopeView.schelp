@@ -13,7 +13,7 @@ You can also define nodes with arrays of x and y values using link::#-value::, a
 
 SUBSECTION:: Appearance
 
-In strong::Qt GUI::, the view supports two strong::display styles::: the default one draws nodes as small dots, with labels next to them, while another style draws nodes as rounded rectangles with labels drawn inside. See link::#-style::.
+The view supports two strong::display styles::: the default one draws nodes as small dots, with labels next to them, while another style draws nodes as rounded rectangles with labels drawn inside. See link::#-style::.
 
 A strong::label:: for each of the nodes can be set using link::#-strings:: and link::#-setString::.
 
@@ -21,11 +21,11 @@ SUBSECTION:: Interaction
 
 Nodes can be selected and moved using mouse. Shift-clicking a node will add it to the selection.
 
-You can also move selected nodes and change selection using keyboard. In strong::Qt::, pressing the arrow keys will move selected nodes (as long as link::#-step:: is larger than 0). Pressing the left or right arrow keys while holding down Alt will select previous or next node, and holding down Shift will extend selection to the left or to the right. Other GUI kits may differ.
+You can also move selected nodes and change selection using keyboard. Pressing the arrow keys will move selected nodes (as long as link::#-step:: is larger than 0). Pressing the left or right arrow keys while holding down Alt will select previous or next node, and holding down Shift will extend selection to the left or to the right. Other GUI kits may differ.
 
-In strong::Qt::, link::#-keepHorizontalOrder:: allows you to enforce the order of nodes in horizontal direction to match their index order. In that case, node movement to the left and to the right will be restricted by the positions of their immediate neighbours. This is especially useful when EnvelopeView is used to display an link::Classes/Env::.
+link::#-keepHorizontalOrder:: allows you to enforce the order of nodes in horizontal direction to match their index order. In that case, node movement to the left and to the right will be restricted by the positions of their immediate neighbours. This is especially useful when EnvelopeView is used to display an link::Classes/Env::.
 
-In strong::Qt::, link::#-elasticSelection:: determines whether moving multiple nodes will be blocked altogether if any of the nodes meet an obstacle (the view bounds or a neighbour node), or only those individual nodes will be blocked.
+link::#-elasticSelection:: determines whether moving multiple nodes will be blocked altogether if any of the nodes meet an obstacle (the view bounds or a neighbour node), or only those individual nodes will be blocked.
 
 Node selection can also be changed programmatically using link::#-index::, link::#-selectIndex::, and link::#-deselectIndex::. The link::#-index#current:: node can be moved programmatically using link::#-x:: and link::#-y::.
 
@@ -92,7 +92,10 @@ METHOD:: setString
 
 	note:: In order for the label to be visible, you might need to ensure that the link::#-strokeColor:: contrasts the link::#-fillColor:: (depending on how the view draws the nodes and the labels).::
 
-	argument::
+	argument::index
+	the index of the node.
+
+	argument::string
 		A String.
 
 METHOD:: setFillColor
@@ -135,20 +138,19 @@ METHOD:: setThumbSize
 METHOD:: connect
 	Removes any connections created when the link::#-value:: was set, and then creates new ones from the node at index given in the first argument to each of the nodes at indexes given in the second argument.
 
-	argument:: index
+	argument:: source
 		An Integer - the index of the node to become one end of all the new connections.
-	argument:: connections
+	argument:: targets
 		An Array of Integers - indexes of nodes, each to become the second end to a new connection created.
 
 METHOD:: selection
-	note::Only in Qt GUI::
 	Returns an array of indexes of all selected nodes.
 
 
 SUBSECTION:: Appearance
 
 METHOD:: style
-    NOTE:: Only available in Qt GUI ::
+
 
     One of the following drawing styles:
 
@@ -246,11 +248,7 @@ SUBSECTION:: Interaction
 METHOD:: index
 	The index of the emphasis::current:: node, i.e. the node affected by link::#-x:: and link::#-y:: methods.
 
-    In strong::Qt::, this is the selected node with lowest index, or -1 if no selection.
-
-    In strong::Cocoa::, this is the last node selected, or -1 if no selection.
-
-    In strong::SwingOSC::, this is the last node clicked, regardless of selection.
+    This is the selected node with lowest index, or -1 if no selection.
 
 	argument::
 		An Integer.
@@ -295,7 +293,6 @@ METHOD:: step
 		A Float.
 
 METHOD:: keepHorizontalOrder
-	note:: Only available in strong::Qt GUI:: ::
 
 	Whether the position of nodes on the horizontal axis shall be restricted by their immediate neighbours (in order of their index).
 
@@ -305,7 +302,6 @@ METHOD:: keepHorizontalOrder
 		A Boolean.
 
 METHOD:: elasticSelection
-	note:: Only available in strong::Qt GUI:: ::
 
 	Whether the relative positions of nodes within the selection can change when the selection is moved using mouse or keyboard, in order to adapt to obstacles (the view bounds or, in case link::#-keepHorizontalOrder:: is code::true::, a neighbour node).
 
@@ -327,7 +323,7 @@ METHOD:: defaultKeyDownAction
 
     Implements the default behavior on key presses.
 
-    In Qt, the default behavior is defined in the C++ implementation of the view instead of this method. See link::Classes/View#Key and mouse event processing:: for explanation of how to override the behavior.
+    The default behavior is defined in the C++ implementation of the view instead of this method. See link::Classes/View#Key and mouse event processing:: for explanation of how to override the behavior.
 
 
 
@@ -369,6 +365,7 @@ w.front;
 )
 
 // show grid
+b.grid = Point(0.2, 0.2);
 b.gridOn_(true);
 
 // show Env

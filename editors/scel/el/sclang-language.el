@@ -48,7 +48,7 @@ The expressions are joined as alternatives with the \\| operator."
   "Regular expression matching symbols.")
 
 (defconst sclang-identifier-regexp
-  (concat "[a-z]" sclang-symbol-regexp)
+  (concat "[a-zA-Z]" sclang-symbol-regexp)
   "Regular expression matching valid identifiers.")
 
 (defconst sclang-method-name-special-chars

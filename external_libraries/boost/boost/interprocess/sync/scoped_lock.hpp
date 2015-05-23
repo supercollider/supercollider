@@ -16,7 +16,7 @@
 #ifndef BOOST_INTERPROCESS_SCOPED_LOCK_HPP
 #define BOOST_INTERPROCESS_SCOPED_LOCK_HPP
 
-#if (defined _MSC_VER) && (_MSC_VER >= 1200)
+#if defined(_MSC_VER)
 #  pragma once
 #endif
 
@@ -27,7 +27,7 @@
 #include <boost/interprocess/exceptions.hpp>
 #include <boost/interprocess/detail/mpl.hpp>
 #include <boost/interprocess/detail/type_traits.hpp>
-#include <boost/move/move.hpp>
+#include <boost/move/utility_core.hpp>
 #include <boost/interprocess/detail/posix_time_types_wrk.hpp>
 
 //!\file
@@ -50,12 +50,12 @@ namespace interprocess {
 template <class Mutex>
 class scoped_lock
 {
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
    private:
    typedef scoped_lock<Mutex> this_type;
    BOOST_MOVABLE_BUT_NOT_COPYABLE(scoped_lock)
    typedef bool this_type::*unspecified_bool_type;
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
    public:
 
    typedef Mutex mutex_type;
@@ -357,11 +357,11 @@ class scoped_lock
       std::swap(m_locked, other.m_locked);
    }
 
-   /// @cond
+   #if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
    private:
    mutex_type *mp_mutex;
    bool        m_locked;
-   /// @endcond
+   #endif   //#ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
 };
 
 } // namespace interprocess

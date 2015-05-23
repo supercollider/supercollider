@@ -2,7 +2,7 @@
 // detail/wrapped_handler.hpp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2013 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -265,7 +265,7 @@ inline bool asio_handler_is_continuation(
     rewrapped_handler<Dispatcher, Context>* this_handler)
 {
   return boost_asio_handler_cont_helpers::is_continuation(
-      this_handler->handler_);
+      this_handler->context_);
 }
 
 template <typename Function, typename Handler, typename Context>

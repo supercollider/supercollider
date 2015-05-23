@@ -163,7 +163,14 @@ NdefParamGui : EnvirGui {
 	}
 
 	setFunc { |key|
-		^{ |sl| object.set(key, sl.value) }
+		^{ |sl|
+			// this special key (#) allows to set the source from a slider
+			if(key == '#') {
+				object.source = sl.value
+			} {
+				object.set(key, sl.value)
+			}
+		}
 	}
 
 	clearField { |index|
@@ -216,10 +223,11 @@ NdefParamGui : EnvirGui {
 			var currValue = currState.detect { |pair| pair[0] == key }[1];
 			var newSpec = this.getSpec(key, currValue);
 			var widge = widgets[i];
-			if (newSpec != widge.controlSpec) {
-				specs.put(key, newSpec);
+
+			if (widge.notNil and: { newSpec != widge.controlSpec }) {
 				if (widge.isKindOf(EZSlider) or:
 					{ widge.isKindOf(EZRanger) }) {
+					specs.put(key, newSpec);
 					widge.controlSpec = newSpec;
 					widge.value_(currValue);
 				};

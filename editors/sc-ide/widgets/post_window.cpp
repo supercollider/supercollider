@@ -23,6 +23,7 @@
 #include "util/gui_utilities.hpp"
 #include "../core/main.hpp"
 #include "../core/settings/manager.hpp"
+#include "../core/settings/theme.hpp"
 #include "../core/util/overriding_action.hpp"
 
 #include <QApplication>
@@ -44,6 +45,7 @@ PostWindow::PostWindow(QWidget* parent):
     setReadOnly(true);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     setFrameShape( QFrame::NoFrame );
+    previousChar = QChar('\n');
 
     viewport()->setAttribute( Qt::WA_MacNoClickThrough, true );
 
@@ -151,14 +153,8 @@ void PostWindow::applySettings(Settings::Manager * settings)
 
     QPalette palette;
     QTextCharFormat format;
-    settings->beginGroup("IDE/editor/colors");
-    if (settings->contains("text")) {
-        format.merge(settings->value("text").value<QTextCharFormat>());
-    }
-    if (settings->contains("postwindowtext")) {
-        format.merge(settings->value("postwindowtext").value<QTextCharFormat>());
-    }
-    settings->endGroup(); // colors
+    format.merge(settings->getThemeVal("text"));
+    format.merge(settings->getThemeVal("postwindowtext"));
 
     QBrush bg = format.background();
     QBrush fg = format.foreground();
@@ -202,19 +198,28 @@ QString PostWindow::symbolUnderCursor()
 void PostWindow::post(const QString &text)
 {
     bool scroll = mActions[AutoScroll]->isChecked();
-    QTextCursor c(document());
-    
-    int startPos = 0, length = 0;
+    QTextCursor cursor(document());
     QChar linebreak = QChar('\n');
+  
+    int startPos = 0, position = 0;
     foreach(const QChar chr, text) {
-        ++length;
-        if (chr == linebreak && length > 0) {
-            QStringRef newLine(&text, startPos, length);
-            c.movePosition(QTextCursor::End);
-            c.insertText(newLine.toString(), formatForPostLine(newLine));
-            startPos += length;
-            length = 0;
+        if (previousChar == linebreak) {
+            cursor.movePosition(QTextCursor::End);
+            cursor.insertText(QStringRef(&text, startPos, position - startPos).toString(), currentFormat);
+            startPos = position;
+            
+            QStringRef newLine(&text, position, text.length() - 1);
+            currentFormat = formatForPostLine(newLine);
         }
+        
+        previousChar = chr;
+        position++;
+    }
+  
+    // handle remaining chars if not \n terminated
+    if (startPos < text.length()) {
+        cursor.movePosition(QTextCursor::End);
+        cursor.insertText(QStringRef(&text, startPos, text.length() - startPos).toString(), currentFormat);
     }
 
     if (scroll)
@@ -224,26 +229,22 @@ void PostWindow::post(const QString &text)
 QTextCharFormat PostWindow::formatForPostLine(QStringRef line)
 {
     Settings::Manager *settings = Main::settings();
-    settings->beginGroup("IDE/editor/highlighting");
-    QTextCharFormat postWindowError = settings->value("postwindowerror").value<QTextCharFormat>();
-    QTextCharFormat postWindowWarning = settings->value("postwindowwarning").value<QTextCharFormat>();
-    QTextCharFormat postWindowSuccess = settings->value("postwindowsuccess").value<QTextCharFormat>();
-    QTextCharFormat postWindowEmphasis = settings->value("postwindowemphasis").value<QTextCharFormat>();
-    settings->endGroup();
+    QTextCharFormat postWindowError = settings->getThemeVal("postwindowerror");
+    QTextCharFormat postWindowWarning = settings->getThemeVal("postwindowwarning");
+    QTextCharFormat postWindowSuccess = settings->getThemeVal("postwindowsuccess");
+    QTextCharFormat postWindowEmphasis = settings->getThemeVal("postwindowemphasis");
     
     QTextCharFormat format;
     
     if (line.startsWith("ERROR:", Qt::CaseInsensitive) || line.startsWith("!"))
         format.merge(postWindowError);
-    
-    if (line.startsWith("WARNING:", Qt::CaseInsensitive) || line.startsWith("?"))
+    else if (line.startsWith("WARNING:", Qt::CaseInsensitive) || line.startsWith("?"))
         format.merge(postWindowWarning);
-    
-    if (line.startsWith("->"))
+    else if (line.startsWith("->"))
         format.merge(postWindowSuccess);
-    
-    if (line.startsWith("***"))
+    else if (line.startsWith("***"))
         format.merge(postWindowEmphasis);
+    // else no format
     
     return format;
 }
@@ -332,7 +333,7 @@ void PostWindow::wheelEvent( QWheelEvent * e )
     QPlainTextEdit::wheelEvent(e);
 #endif
 }
-
+    
 void PostWindow::focusOutEvent( QFocusEvent * event )
 {
     if (event->reason() == Qt::TabFocusReason)
@@ -410,5 +411,5 @@ void PostDocklet::onFloatingChanged(bool floating)
     if (floating)
         dockWidget()->resize(dockWidget()->size() - QSize(1,1));
 }
-
+    
 } // namespace ScIDE

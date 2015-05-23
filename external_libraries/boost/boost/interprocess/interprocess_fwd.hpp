@@ -11,20 +11,117 @@
 #ifndef BOOST_INTERPROCESS_FWD_HPP
 #define BOOST_INTERPROCESS_FWD_HPP
 
-#if defined (_MSC_VER) && (_MSC_VER >= 1200)
+#if defined(_MSC_VER)
 #  pragma once
 #endif
 
+//! \file
+//! This header file forward declares the basic interprocess types:
+//!   - boost::interprocess::offset_ptr;
+//!   - boost::interprocess::permissions;
+//!   - boost::interprocess::mapped_region;
+//!   - boost::interprocess::file_mapping;
+//!   - boost::interprocess::shared_memory_object;
+//!   - boost::interprocess::windows_shared_memory;
+//!   - boost::interprocess::xsi_shared_memory;
+//!
+//! The following synchronization mechanisms and locks:
+//!   - boost::interprocess::null_mutex;
+//!   - boost::interprocess::interprocess_mutex;
+//!   - boost::interprocess::interprocess_recursive_mutex;
+//!   - boost::interprocess::interprocess_semaphore;
+//!   - boost::interprocess::named_mutex;
+//!   - boost::interprocess::named_recursive_mutex;
+//!   - boost::interprocess::named_semaphore;
+//!   - boost::interprocess::interprocess_sharable_mutex;
+//!   - boost::interprocess::interprocess_condition;
+//!   - boost::interprocess::scoped_lock;
+//!   - boost::interprocess::sharable_lock;
+//!   - boost::interprocess::upgradable_lock;
+//!
+//! The following mutex families:
+//!   - boost::interprocess::mutex_family;
+//!   - boost::interprocess::null_mutex_family;
+//!
+//! The following allocators:
+//!   - boost::interprocess::allocator;
+//!   - boost::interprocess::node_allocator;
+//!   - boost::interprocess::private_node_allocator;
+//!   - boost::interprocess::cached_node_allocator;
+//!   - boost::interprocess::adaptive_pool;
+//!   - boost::interprocess::private_adaptive_pool;
+//!   - boost::interprocess::cached_adaptive_pool;
+//!
+//! The following allocation algorithms:
+//!   - boost::interprocess::simple_seq_fit;
+//!   - boost::interprocess::rbtree_best_fit;
+//!
+//! The following index types:
+//!   - boost::interprocess::flat_map_index;
+//!   - boost::interprocess::iset_index;
+//!   - boost::interprocess::iunordered_set_index;
+//!   - boost::interprocess::map_index;
+//!   - boost::interprocess::null_index;
+//!   - boost::interprocess::unordered_map_index;
+//!
+//! The following managed memory types:
+//!   - boost::interprocess::segment_manager;
+//!   - boost::interprocess::basic_managed_external_buffer
+//!   - boost::interprocess::managed_external_buffer
+//!   - boost::interprocess::wmanaged_external_buffer
+//!   - boost::interprocess::basic_managed_shared_memory
+//!   - boost::interprocess::managed_shared_memory
+//!   - boost::interprocess::wmanaged_shared_memory
+//!   - boost::interprocess::basic_managed_windows_shared_memory
+//!   - boost::interprocess::managed_windows_shared_memory
+//!   - boost::interprocess::wmanaged_windows_shared_memory
+//!   - boost::interprocess::basic_managed_xsi_shared_memory
+//!   - boost::interprocess::managed_xsi_shared_memory
+//!   - boost::interprocess::wmanaged_xsi_shared_memory
+//!   - boost::interprocess::fixed_managed_shared_memory
+//!   - boost::interprocess::wfixed_managed_shared_memory
+//!   - boost::interprocess::basic_managed_heap_memory
+//!   - boost::interprocess::managed_heap_memory
+//!   - boost::interprocess::wmanaged_heap_memory
+//!   - boost::interprocess::basic_managed_mapped_file
+//!   - boost::interprocess::managed_mapped_file
+//!   - boost::interprocess::wmanaged_mapped_file
+//!
+//! The following exception types:
+//!   - boost::interprocess::interprocess_exception
+//!   - boost::interprocess::lock_exception
+//!   - boost::interprocess::bad_alloc
+//!
+//! The following stream types:
+//!   - boost::interprocess::basic_bufferbuf
+//!   - boost::interprocess::basic_ibufferstream
+//!   - boost::interprocess::basic_obufferstream
+//!   - boost::interprocess::basic_bufferstream
+//!   - boost::interprocess::basic_vectorbuf
+//!   - boost::interprocess::basic_ivectorstream
+//!   - boost::interprocess::basic_ovectorstream
+//!   - boost::interprocess::basic_vectorstream
+//!
+//! The following smart pointer types:
+//!   - boost::interprocess::scoped_ptr
+//!   - boost::interprocess::intrusive_ptr
+//!   - boost::interprocess::shared_ptr
+//!   - boost::interprocess::weak_ptr
+//!
+//! The following interprocess communication types:
+//!   - boost::interprocess::message_queue_t;
+//!   - boost::interprocess::message_queue;
+
 #include <boost/interprocess/detail/config_begin.hpp>
 #include <boost/interprocess/detail/workaround.hpp>
+
+#if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
 
 #include <cstddef>
 
 //////////////////////////////////////////////////////////////////////////////
 //                        Standard predeclarations
 //////////////////////////////////////////////////////////////////////////////
-
-/// @cond
 
 namespace boost{
 namespace intrusive{
@@ -41,8 +138,6 @@ namespace bi = boost::intrusive;
 #include <iosfwd>
 #include <string>
 
-/// @endcond
-
 namespace boost { namespace interprocess {
 
 //////////////////////////////////////////////////////////////////////////////
@@ -57,17 +152,20 @@ class permissions;
 
 class shared_memory_object;
 
-#if defined (BOOST_INTERPROCESS_WINDOWS) || defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
+#if defined (BOOST_INTERPROCESS_WINDOWS)
 class windows_shared_memory;
 #endif   //#if defined (BOOST_INTERPROCESS_WINDOWS)
 
+#if defined(BOOST_INTERPROCESS_XSI_SHARED_MEMORY_OBJECTS)
+class xsi_shared_memory;
+#endif   //#if defined (BOOST_INTERPROCESS_WINDOWS)
+
 //////////////////////////////////////////////////////////////////////////////
-//              mapped file/mapped region/mapped_file
+//              file mapping / mapped region
 //////////////////////////////////////////////////////////////////////////////
 
 class file_mapping;
 class mapped_region;
-class mapped_file;
 
 //////////////////////////////////////////////////////////////////////////////
 //                               Mutexes
@@ -95,7 +193,6 @@ struct null_mutex_family;
 //                   Other synchronization classes
 //////////////////////////////////////////////////////////////////////////////
 
-class barrier;
 class interprocess_sharable_mutex;
 class interprocess_condition;
 
@@ -231,7 +328,7 @@ wmanaged_shared_memory;
 //                      Windows shared memory managed memory classes
 //////////////////////////////////////////////////////////////////////////////
 
-#if defined (BOOST_INTERPROCESS_WINDOWS) || defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
+#if defined (BOOST_INTERPROCESS_WINDOWS)
 
 template <class CharType
          ,class MemoryAlgorithm
@@ -252,7 +349,7 @@ wmanaged_windows_shared_memory;
 
 #endif   //#if defined (BOOST_INTERPROCESS_WINDOWS)
 
-#if defined(BOOST_INTERPROCESS_XSI_SHARED_MEMORY_OBJECTS) || defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
+#if defined(BOOST_INTERPROCESS_XSI_SHARED_MEMORY_OBJECTS)
 
 template <class CharType
          ,class MemoryAlgorithm
@@ -409,9 +506,7 @@ typedef message_queue_t<offset_ptr<void> > message_queue;
 
 }}  //namespace boost { namespace interprocess {
 
-//////////////////////////////////////////////////////////////////////////////
-//                                  CONTAINERS
-//////////////////////////////////////////////////////////////////////////////
+#endif   //#if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
 
 #include <boost/interprocess/detail/config_end.hpp>
 

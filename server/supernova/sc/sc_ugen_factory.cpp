@@ -231,6 +231,8 @@ void sc_ugen_factory::load_plugin_folder (boost::filesystem::path const & path)
     for (directory_iterator it(path); it != end; ++it) {
         if (is_regular_file(it->status()))
             load_plugin(it->path());
+        if (is_directory(it->status()))
+            load_plugin_folder(it->path());
     }
 }
 
