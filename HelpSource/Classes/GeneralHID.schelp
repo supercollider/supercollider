@@ -6,9 +6,10 @@ categories:: External Control>HID
 description::
 GeneralHID is a cross platform wrapper for accessing HID devices. Currently the MacOSX and Linux HID support has been wrapped. Some of the code is inspired by the GUI wrapper.
 
-note::
-It is advised to use this class instead of the platform specific classes: link::Classes/HIDDeviceService:: (on MacOSX) and link::Classes/LID:: (on Linux).
+warning::
+This class will be deprecated. For working with human interface devices, consult link::Guides/Working_with_HID::.
 ::
+
 
 There are intermediate "bridge" classes link::Classes/MXHID:: (on MacOSX) and link::Classes/GLID:: (on Linux), which should not be used directly, but their names will show up in the output of some of the methods of GeneralHID.
 

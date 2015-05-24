@@ -3,6 +3,11 @@ summary:: Create access by names to slots of a GeneralHIDDevice
 related:: Classes/HIDDeviceService, Classes/LID, Classes/GeneralHID, Classes/GeneralHIDDevice
 categories:: External Control>HID
 
+
+warning::
+This class will be deprecated. For working with human interface devices, consult link::Guides/Working_with_HID::.
+::
+
 ClassMethods::
 
 private::initClass
