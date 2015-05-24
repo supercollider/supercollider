@@ -406,7 +406,7 @@ void MultiEditor::createActions()
 
     mActions[TriggerAutoCompletion] = action = new QAction(tr("Trigger Autocompletion"), this);
     action->setStatusTip(tr("Suggest possible completions of text at cursor"));
-    action->setShortcut(tr("Ctrl+Space", "Trigger Autocompletion"));
+    action->setShortcut(tr("Alt+Space", "Trigger Autocompletion"));
     action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(triggerAutoCompletion()),
                            SignalMultiplexer::ConnectionOptional);
@@ -414,7 +414,7 @@ void MultiEditor::createActions()
 
     mActions[TriggerMethodCallAid] = action = new QAction(tr("Trigger Method Call Aid"), this);
     action->setStatusTip(tr("Show arguments for currently typed method call"));
-    action->setShortcut(tr("Ctrl+Shift+Space", "Trigger Method Call Aid"));
+    action->setShortcut(tr("Alt+Shift+Space", "Trigger Method Call Aid"));
     action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(triggerMethodCallAid()),
                            SignalMultiplexer::ConnectionOptional);
