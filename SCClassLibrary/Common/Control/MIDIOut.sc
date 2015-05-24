@@ -123,6 +123,9 @@ MIDIIn {
 	<> controlList, <> programList,
 	<> touchList, <> bendList;
 
+	classvar
+	<> noteOnZeroAsNoteOff = true;
+
 	// safer than global setters
 	*addFuncTo { |what, func|
 		this.perform(what.asSetter, this.perform(what).addFunc(func))
@@ -138,8 +141,13 @@ MIDIIn {
 
 	*waitNoteOn { arg port, chan, note, veloc;
 		var event;
-		event = MIDIEvent(\noteOn, port, chan, note, veloc, thisThread);
-		noteOnList = noteOnList.add(event); // add to waiting list
+		if ( noteOnZeroAsNoteOff and: ( veloc == 0 ) ){
+			event = MIDIEvent(\noteOff, port, chan, note, veloc, thisThread);
+			noteOffList = noteOffList.add(event); // add to waiting list
+		}{
+			event = MIDIEvent(\noteOn, port, chan, note, veloc, thisThread);
+			noteOnList = noteOnList.add(event); // add to waiting list
+		};
 		nil.yield; // pause the thread.
 		^event
 	}
@@ -190,8 +198,13 @@ MIDIIn {
 		action.value(src, status, a, b, c);
 	}
 	*doNoteOnAction { arg src, chan, num, veloc;
-		noteOn.value(src, chan, num, veloc);
-		this.prDispatchEvent(noteOnList, \noteOn, src, chan, num, veloc);
+		if ( noteOnZeroAsNoteOff and: ( veloc == 0 ) ){
+			noteOff.value(src, chan, num, veloc);
+			this.prDispatchEvent(noteOffList, \noteOff, src, chan, num, veloc);
+		}{
+			noteOn.value(src, chan, num, veloc);
+			this.prDispatchEvent(noteOnList, \noteOn, src, chan, num, veloc);
+		};
 	}
 	*doNoteOffAction { arg src, chan, num, veloc;
 		noteOff.value(src, chan, num, veloc);
