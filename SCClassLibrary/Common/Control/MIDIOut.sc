@@ -141,13 +141,8 @@ MIDIIn {
 
 	*waitNoteOn { arg port, chan, note, veloc;
 		var event;
-		if ( noteOnZeroAsNoteOff and: ( veloc == 0 ) ){
-			event = MIDIEvent(\noteOff, port, chan, note, veloc, thisThread);
-			noteOffList = noteOffList.add(event); // add to waiting list
-		}{
-			event = MIDIEvent(\noteOn, port, chan, note, veloc, thisThread);
-			noteOnList = noteOnList.add(event); // add to waiting list
-		};
+		event = MIDIEvent(\noteOn, port, chan, note, veloc, thisThread);
+		noteOnList = noteOnList.add(event); // add to waiting list
 		nil.yield; // pause the thread.
 		^event
 	}
