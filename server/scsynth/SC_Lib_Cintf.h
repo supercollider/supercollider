@@ -26,6 +26,7 @@
 #include "SC_Reply.h"
 #include "SC_OSC_Commands.h"
 
+
 typedef SCErr (*SC_CommandFunc)(struct World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 
 class SC_LibCmd : public SC_NamedObj

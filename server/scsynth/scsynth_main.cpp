@@ -21,7 +21,6 @@
 
 #include "SC_WorldOptions.h"
 #include "SC_Version.hpp"
-
 #include <cstring>
 #include <stdio.h>
 #include <stdarg.h>
@@ -338,13 +337,13 @@ int main(int argc, char* argv[])
 
 	if (udpPortNum >= 0) {
 		if (!World_OpenUDP(world, udpPortNum)) {
-			World_Cleanup(world);
+			World_Cleanup(world,true);
 			return 1;
 		}
 	}
 	if (tcpPortNum >= 0) {
 		if (!World_OpenTCP(world, tcpPortNum, options.mMaxLogins, 8)) {
-			World_Cleanup(world);
+			World_Cleanup(world,true);
 			return 1;
 		}
 	}
@@ -358,7 +357,7 @@ int main(int argc, char* argv[])
 	}
 	fflush(stdout);
 
-	World_WaitForQuit(world);
+	World_WaitForQuit(world,true);
 
 
 #ifdef _WIN32
