@@ -117,6 +117,7 @@ public:
 
 	void stop();
 	void cleanup();
+	bool isCurrentThread() const;
 
 protected:
 	void threadLoop();
@@ -353,14 +354,19 @@ SerialPort::SerialPort(PyrObject* obj, const char* serialport, const Options& op
 SerialPort::~SerialPort()
 {
 	m_running = false;
-//	m_open = false;
+
 	if ( m_open ){
 		tcflush(m_fd, TCIOFLUSH);
 		tcsetattr(m_fd, TCSANOW, &m_oldtermio);
 		close(m_fd);
 		m_open = false;
 	}
-	m_thread.join();
+
+	if (m_thread.joinable() && m_thread.get_id() != std::this_thread::get_id()) {
+		m_thread.join();
+	} else {
+		assert(0 && "We're about to destroy m_thread from it's own thread, and without first joining!");
+	}
 }
 
 void SerialPort::stop(){
@@ -376,6 +382,10 @@ void SerialPort::cleanup(){
 		close(m_fd);
 		m_open = false;
 	};
+}
+
+bool SerialPort::isCurrentThread() const {
+	return m_thread.get_id() == std::this_thread::get_id();
 }
 
 bool SerialPort::put(uint8_t byte)
@@ -607,6 +617,10 @@ static int prSerialPort_Cleanup(struct VMGlobals *g, int numArgsPushed)
 	SerialPort* port = (SerialPort*)getSerialPort(self);
 
 	if (port == 0) return errFailed;
+	if (port->isCurrentThread()) {
+		post("Cannot cleanup SerialPort from this thread. Call from AppClock thread.");
+		return errFailed;
+	}
 
 	port->cleanup();
 
