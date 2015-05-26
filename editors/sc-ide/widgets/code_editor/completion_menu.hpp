@@ -35,6 +35,17 @@
 namespace ScIDE {
 
 namespace ScLanguage { struct Method; struct Class; }
+  
+class CompletionTextBrowser : public QTextBrowser
+{
+    // FIXME: Workaround for bug #1452 - crash when dragging/copying text from completion help window
+    // QT seems to delete the QMimeData before it's finished with it, causing a crash.
+    // The only way to avoid is to return no MIME data at all.
+    QMimeData *createMimeDataFromSelection() const
+    {
+        return NULL;
+    };
+};
 
 class CompletionMenu : public PopUpWidget
 {
@@ -64,7 +75,7 @@ private:
     QListView *mListView;
     QStandardItemModel *mModel;
     QSortFilterProxyModel *mFilterModel;
-    QTextBrowser *mTextBrowser;
+    CompletionTextBrowser *mTextBrowser;
     QHBoxLayout *mLayout;
     int mCompletionRole;
 
