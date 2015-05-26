@@ -145,7 +145,7 @@ int main(int argc, char* argv[])
 	WorldOptions options = kDefaultWorldOptions;
 
 	for (int i=1; i<argc;) {
-		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utaioczblndpmwZrNSDIOMHvVRUhPL", argv[i][1]) == 0) {
+		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utaioczblndpmwZrCNSDIOMHvVRUhPL", argv[i][1]) == 0) {
 			scprintf("ERROR: Invalid option %s\n", argv[i]);
 			Usage();
 		}
@@ -295,6 +295,9 @@ int main(int argc, char* argv[])
 				checkNumArgs(2);
 				options.mRestrictedPath = argv[j+1];
 				break;
+            case 'C' :
+				checkNumArgs(2);
+                break;
 			case 'h':
 			default: Usage();
 		}
