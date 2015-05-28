@@ -39,12 +39,18 @@ namespace ScIDE {
 
 ScProcess::ScProcess( Settings::Manager * settings, QObject * parent ):
     QProcess( parent ),
-    mIpcServer( new QLocalServer(this) ),
-    mIpcSocket(NULL),
+    mIpcServer( new QTcpServer(this) ),
     mIpcServerName("SCIde_" + QString::number(QCoreApplication::applicationPid())),
     mTerminationRequested(false),
     mCompiled(false)
 {
+
+	mIpcServer->listen(QHostAddress(QHostAddress::LocalHost), ScIpcChannel::Port);
+
+	// this is initialized when connecting.
+	mIpcChannel = nullptr;
+	mIpcSocket = nullptr;
+
     mIntrospectionParser = new ScIntrospectionParser( this );
     mIntrospectionParser->start();
 
@@ -245,20 +251,33 @@ void ScProcess::evaluateCode(QString const & commandString, bool silent)
 
 void ScProcess::onNewIpcConnection()
 {
-    if (mIpcSocket)
-        // we can handle only one ipc connection at a time
-        mIpcSocket->disconnect();
+	emit statusMessage(tr("onNewIpcConnection"));
+
+	if (mIpcSocket)	{
+		emit statusMessage(tr("onNewIpcConnection::disconnecting;"));
+		// we can handle only one ipc connection at a time
+		mIpcSocket->disconnect();
+	}
 
     mIpcSocket = mIpcServer->nextPendingConnection();
+	mIpcChannel = new ScIpcChannel(mIpcSocket, QString("scide"));
+
+	emit statusMessage(tr("onNewIpcConnection::channel up"));
+
+	evaluateCode("\"w00t\".postln;", false);
     connect(mIpcSocket, SIGNAL(disconnected()), this, SLOT(finalizeConnection()));
     connect(mIpcSocket, SIGNAL(readyRead()), this, SLOT(onIpcData()));
+
+	Main::documentManager()->sendActiveDocument();
 }
 
 void ScProcess::finalizeConnection()
 {
-    mIpcData.clear();
-    mIpcSocket->deleteLater();
-    mIpcSocket = NULL;
+	delete mIpcChannel;
+	mIpcChannel = nullptr;
+
+	mIpcSocket->deleteLater();
+	mIpcSocket = nullptr;
 }
 
 void ScProcess::onProcessStateChanged(QProcess::ProcessState state)
@@ -308,29 +327,7 @@ void ScProcess::postQuitNotification()
 
 void ScProcess::onIpcData()
 {
-    mIpcData.append(mIpcSocket->readAll());
-
-    while (mIpcData.size()) {
-        QBuffer receivedData ( &mIpcData );
-        receivedData.open ( QIODevice::ReadOnly );
-
-        QDataStream in ( &receivedData );
-		in.setVersion(QDataStream::Qt_5_2);
-        QString selector, message;
-        in >> selector;
-        if ( in.status() != QDataStream::Ok )
-            return;
-
-        in >> message;
-        if ( in.status() != QDataStream::Ok )
-            return;
-
-        mIpcData.remove ( 0, receivedData.pos() );
-
-        onResponse(selector, message);
-
-        emit response(selector, message);
-    }
+	mIpcChannel->read<QString,ScProcess>(this, &ScProcess::onResponse);
 }
 
 void ScProcess::onResponse( const QString & selector, const QString & data )
@@ -354,13 +351,28 @@ void ScProcess::onResponse( const QString & selector, const QString & data )
 void ScProcess::onStart()
 {
     if(!mIpcServer->isListening()) // avoid a warning on stderr
-        mIpcServer->listen(mIpcServerName);
+		mIpcServer->listen(QHostAddress(QHostAddress::LocalHost), ScIpcChannel::Port);
 
-    QString command = QString("ScIDE.connect(\"%1\")").arg(mIpcServerName);
+	QString command = QString("ScIDE.connect(\"%1\")").arg(mIpcServerName);
     evaluateCode ( command, true );
-    Main::documentManager()->sendActiveDocument();
-}
     
+}
+
+void ScProcess::sendToScLang(QString const & selector, QVariantList const & argList)	{
+	
+	try {
+		if (!mIpcChannel) {
+			scPost(QString("WARNING::ScIDE_Send::%1:: ipc channel is null\n").arg(selector));
+			return;
+		};
+		mIpcChannel->write<QVariantList>(selector, argList);
+	}
+	catch (std::exception const & e) {
+		scPost(QString("Exception during ScIDE_Send: %1\n").arg(e.what()));
+	}
+
+}
+
 void ScProcess::updateTextMirrorForDocument ( Document * doc, int position, int charsRemoved, int charsAdded )
 {
     QVariantList argList;
@@ -375,14 +387,7 @@ void ScProcess::updateTextMirrorForDocument ( Document * doc, int position, int 
     
     argList.append(QVariant(cursor.selection().toPlainText()));
     
-    try {
-        QDataStream stream(mIpcSocket);
-		stream.setVersion(QDataStream::Qt_5_2);
-        stream << QString("updateDocText");
-        stream << argList;
-    } catch (std::exception const & e) {
-        scPost(QString("Exception during ScIDE_Send: %1\n").arg(e.what()));
-    }
+	sendToScLang(QString("updateDocText"), argList);
 }
     
 void ScProcess::updateSelectionMirrorForDocument ( Document * doc, int start, int range )
@@ -393,14 +398,8 @@ void ScProcess::updateSelectionMirrorForDocument ( Document * doc, int start, in
     argList.append(QVariant(start));
     argList.append(QVariant(range));
     
-    try {
-        QDataStream stream(mIpcSocket);
-		stream.setVersion(QDataStream::Qt_5_2);
-        stream << QString("updateDocSelection");
-        stream << argList;
-    } catch (std::exception const & e) {
-        scPost(QString("Exception during ScIDE_Send: %1\n").arg(e.what()));
-    }
+	sendToScLang(QString("updateDocSelection"), argList);
+
 }
 
 void ScIntrospectionParserWorker::process(const QString &input)

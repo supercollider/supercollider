@@ -53,10 +53,10 @@ int main( int argc, char *argv[] )
 
     // Pass files to existing instance and quit
 
-    SingleInstanceGuard guard;
-    if (guard.tryConnect(arguments))
-        return 0;
-
+    //SingleInstanceGuard guard;
+    //if (guard.tryConnect(arguments))
+    //    return 0;
+	
     // Set up translations
 
     QTranslator qtTranslator;
@@ -132,11 +132,11 @@ int main( int argc, char *argv[] )
 bool SingleInstanceGuard::tryConnect(QStringList const & arguments)
 {
     const int maxNumberOfInstances = 128;
-    if (!arguments.empty()) {
+    /*if (!arguments.empty()) {
         for (int socketID = 0; socketID != maxNumberOfInstances; ++socketID) {
             QString serverName = QString("SuperColliderIDE_Singleton_%1").arg(socketID);
-            QSharedPointer<QLocalSocket> socket (new QLocalSocket(this));
-            socket->connectToServer(serverName);
+            QSharedPointer<QTcpSocket> socket (new QTcpSocket(this));
+            socket->connectToHost(QHostAddress(QHostAddress::LocalHost), ScIpcChannel::Port);
 
             QStringList canonicalArguments;
             foreach (QString path, arguments) {
@@ -146,8 +146,7 @@ bool SingleInstanceGuard::tryConnect(QStringList const & arguments)
 
             if (socket->waitForConnected(200)) {
                 QDataStream stream(socket.data());
-                stream.setVersion(QDataStream::Qt_5_2);
-
+                
                 stream << QString("open");
                 stream << canonicalArguments;
                 if (!socket->waitForBytesWritten(300))
@@ -156,24 +155,29 @@ bool SingleInstanceGuard::tryConnect(QStringList const & arguments)
                 return true;
             }
         }
-    }
+    } */
 
-    mIpcServer = new QLocalServer(this);
-    for (int socketID = 0; socketID != maxNumberOfInstances; ++socketID) {
+    //mIpcServer = new QTcpServer(this);
+	//bool listening = mIpcServer->listen(QHostAddress(QHostAddress::LocalHost), ScIpcChannel::Port);
+	//if (listening) {
+	//	connect(mIpcServer, SIGNAL(newConnection()), this, SLOT(onNewIpcConnection()));
+	//	return false;
+	//}
+	/*for (int socketID = 0; socketID != maxNumberOfInstances; ++socketID) {
         QString serverName = QString("SuperColliderIDE_Singleton_%1").arg(socketID);
 
-        bool listening = mIpcServer->listen(serverName);
+		bool listening = mIpcServer->listen(QHostAddress(QHostAddress::LocalHost), ScIpcChannel::Port);
         if (listening) {
             connect(mIpcServer, SIGNAL(newConnection()), this, SLOT(onNewIpcConnection()));
             return false;
         }
-    }
+    } */
     return false;
 }
 
 void SingleInstanceGuard::onIpcData()
 {
-    QByteArray ipcData = mIpcSocket->readAll();
+    /*QByteArray ipcData = mIpcSocket->readAll();
 
     QBuffer receivedData ( &ipcData );
     receivedData.open ( QIODevice::ReadOnly );
@@ -193,7 +197,7 @@ void SingleInstanceGuard::onIpcData()
     if (id == QString("open")) {
         foreach (QString path, message)
             Main::documentManager()->open(path);
-    }
+    }	*/
 }
 
 

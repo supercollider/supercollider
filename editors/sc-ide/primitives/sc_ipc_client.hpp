@@ -21,21 +21,23 @@
 #ifndef SuperCollider_sc_ipc_client_hpp
 #define SuperCollider_sc_ipc_client_hpp
 
+#include "sc_ipc_channel.hpp"
+
 #include <QObject>
-#include <QLocalSocket>
 #include <QMutex>
 #include <QHash>
 
-class SCIpcClient : public QObject
+class ScIpcClient : public QObject
 {
     Q_OBJECT
 public:
-    SCIpcClient( const char * ideName );
+    ScIpcClient( const char * ideName );
     
-    void send(const char * data, size_t length);
+    void send(QByteArray const & data);
     
-    ~SCIpcClient();
-    QLocalSocket * mSocket;
+    ~ScIpcClient();
+    QTcpSocket *mSocket;					  
+	ScIpcChannel *mIpcChannel;
     
     QString getTextMirrorForDocument(QByteArray & id, int pos = 0, int range = -1);
     QPair<int, int> getSelectionMirrorForDocument(QByteArray & id);
@@ -54,7 +56,6 @@ private:
     void updateDocText( const QVariantList & argList );
     void updateDocSelection( const QVariantList & argList );
     
-    QByteArray mIpcData;
     QHash<QByteArray, QString> mDocumentTextMirrors;
     QHash<QByteArray, QPair<int, int>> mDocumentSelectionMirrors;
     QMutex mTextMirrorHashMutex;

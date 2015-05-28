@@ -62,6 +62,7 @@ set ( ide_moc_hdr
     core/settings/manager.hpp
     core/settings/theme.hpp
     core/session_manager.hpp
+    primitives/sc_ipc_channel.hpp
     widgets/cmd_line.hpp
     widgets/doc_list.hpp
     widgets/documents_dialog.hpp
@@ -118,6 +119,7 @@ set ( ide_src
     core/session_manager.cpp
     core/util/standard_dirs.cpp
     core/util/scdoc_log.cpp
+    primitives/sc_ipc_channel.cpp
     widgets/cmd_line.cpp
     widgets/doc_list.cpp
     widgets/documents_dialog.cpp

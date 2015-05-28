@@ -25,9 +25,6 @@
 #include <QAction>
 #include <QObject>
 
-#include <QtNetwork/QLocalSocket>
-#include <QtNetwork/QLocalServer>
-
 #include "sc_process.hpp"
 #include "sc_server.hpp"
 #include "doc_manager.hpp"
@@ -58,8 +55,8 @@ public Q_SLOTS:
     void onIpcData();
 
 private:
-    QLocalServer * mIpcServer;
-    QLocalSocket * mIpcSocket;
+    QTcpServer * mIpcServer;
+    QTcpSocket * mIpcSocket;
 };
 
 class Main:

@@ -272,6 +272,7 @@ endif()
 
 if("x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xMSVC")
   foreach(flag CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
+    set(${flag} "${${flag}} /wd4520") # multiple default constructors (boost::flyweight)
 	set(${flag} "${${flag}} /wd4065") # switch statement contains 'default' but no 'case' labels
     set(${flag} "${${flag}} /wd4018") # signed/unsigned mismatch
     set(${flag} "${${flag}} /wd4102") # unreferenced label
