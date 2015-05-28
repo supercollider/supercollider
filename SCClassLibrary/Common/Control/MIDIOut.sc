@@ -79,6 +79,15 @@ MIDIClient {
 		_RestartMIDI
 		^this.primitiveFailed
 	}
+
+	// overridden in Linux:
+	*externalSources{
+		^sources;
+	}
+
+	*externalDestinations{
+		^destinations;
+	}
 }
 
 
@@ -248,12 +257,21 @@ MIDIIn {
 	*findPort { arg deviceName,portName;
 		^MIDIClient.sources.detect({ |endPoint| endPoint.device == deviceName and: {endPoint.name == portName}});
 	}
+
+	// *connectAll {
+	// 	if(MIDIClient.initialized.not,{ MIDIClient.init });
+	// 	MIDIClient.sources.do({ |src,i|
+	// 		MIDIIn.connect(i,src);
+	// 	});
+	// }
+
 	*connectAll {
 		if(MIDIClient.initialized.not,{ MIDIClient.init });
-		MIDIClient.sources.do({ |src,i|
+		MIDIClient.externalSources.do({ |src,i|
 			MIDIIn.connect(i,src);
 		});
 	}
+
 	*connect { arg inport=0, device=0;
 		var uid,source;
 		if(MIDIClient.initialized.not,{ MIDIClient.init });
