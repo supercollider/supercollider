@@ -114,6 +114,8 @@ struct SC_AlsaMidiClient
 	int connectInput(int inputIndex, int uid, int (*action)(snd_seq_t*, snd_seq_port_subscribe_t*), const char* actionName);
 	int connectOutput(int outputIndex, int uid, int (*action)(snd_seq_t*, snd_seq_port_subscribe_t*), const char* actionName);
 	int sendEvent(int outputIndex, int uid, snd_seq_event_t* evt, float late=0.f);
+
+	int mClientID;
 };
 
 static SC_AlsaMidiClient gMIDIClient;
@@ -562,6 +564,8 @@ int initMIDIClient()
 	}
 
 	snd_seq_set_client_name(client->mHandle, "SuperCollider");
+	client->mClientID = snd_seq_client_id( client->mHandle );
+
 
 	// initialize queue
 	client->mQueue = snd_seq_alloc_queue(client->mHandle);
@@ -1008,6 +1012,18 @@ int prSendSysex(VMGlobals *g, int numArgsPushed)
 	return sendMIDISysex(outputIndex, uid, packet->size, packet->b);
 }
 
+int prGetMIDIClientID(VMGlobals *g, int numArgsPushed)
+{
+  
+  PyrSlot* args = g->sp;
+  if (!gMIDIClient.mHandle) return errFailed;
+
+  
+  SetInt(args, gMIDIClient.mClientID );
+  
+  return errNone;
+}
+
 void initMIDIPrimitives()
 {
 	int base, index;
@@ -1042,6 +1058,8 @@ void initMIDIPrimitives()
 
 	definePrimitive(base, index++, "_SendMIDIOut", prSendMIDIOut, 9, 0);
 	definePrimitive(base, index++, "_SendSysex", prSendSysex, 3, 0); // MIDIOut.sysex patch 2007-01-16
+	
+	definePrimitive(base, index++, "_GetMIDIClientID", prGetMIDIClientID, 1, 0); // MIDIOut.sysex patch 2007-01-16
 
 	cleanUpMIDI();
 }
