@@ -167,9 +167,14 @@ Signal[float] : FloatArray {
 		_SignalAddChebyshev
 		^this.primitiveFailed
 	}
-	chebyFill { arg amplitudes, normalize=true;
+	chebyFill { arg amplitudes, normalize=true, zeroOffset=true;
 		this.fill(0.0);
-		amplitudes.do({ arg amp, i; this.addChebyshev(i+1, amp); if(i%4==1,{this.offset(1)}); if(i%4==3,{this.offset(-1)}); }); //corrections for JMC DC offsets, as per Buffer:cheby
+		amplitudes.do({ arg amp, i; this.addChebyshev(i+1, amp);
+			if (zeroOffset) {
+				if(i%4==1,{this.offset(amp)});
+				if(i%4==3,{this.offset(-1*amp)});
+			}
+		}); //corrections for JMC DC offsets, as per Buffer:cheby
 
 		if(normalize,{this.normalizeTransfer}); //no automatic cheby
 	}

@@ -24,7 +24,8 @@ method::chebyFill
 Fill a Signal of the given size with a sum of Chebyshev polynomials at the given amplitudes. For eventual use in waveshaping by the Shaper ugen; see link::Classes/Shaper:: helpfile and link::Classes/Buffer#-cheby#Buffer:cheby:: too.
 code::
 Signal.chebyFill(1000, [1]).plot;
-Signal.chebyFill(1000, [0, 1]).plot;
+Signal.chebyFill(1000, [0, 1]).plot;  // shifted to avoid DC offset when waveshaping a zero signal
+Signal.chebyFill(1000, [0, 1], false, false).plot;  // raw (unshifted) Chebyshev polynomial
 Signal.chebyFill(1000, [0, 0, 1]).plot;
 Signal.chebyFill(1000, [0.3, -0.8, 1.1]).plot;
 ::
@@ -33,7 +34,9 @@ the number of samples in the Signal.
 argument::amplitudes
 an link::Classes/Array:: of amplitudes for each Chebyshev polynomial beginning with order 1.
 argument::normalize
-a link::Classes/Boolean::
+a link::Classes/Boolean:: indicating whether to normalize the resulting Signal (for use as a transfer function) using link::Classes/Signal#-normalizeTransfer#normalizeTransfer::.  Default is true.
+argument::zeroOffset
+a link::Classes/Boolean:: indicating whether to offset the middle of each polynomial to zero. If true, then a zero input will always result in a zero output when used as a link::Classes/Shaper##waveshaper::. Default is true. Only relevant when the normalize argument is false, since link::Classes/Signal#-normalizeTransfer#normalizeTransfer:: performs zero-compensation (in addition to normalizing).
 
 method::hanningWindow
 Fill a Signal of the given size with a Hanning window.

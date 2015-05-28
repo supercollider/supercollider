@@ -21,19 +21,22 @@ argument::phases
 an Array of phases in radians for each harmonic beginning with the fundamental.
 
 method::chebyFill
-Fill a Wavetable of the given size with a sum of Chebyshev polynomials at the given amplitudes for use in waveshaping by the link::Classes/Shaper:: ugen. The Wavetable will be normalized.
+Fill a Wavetable of the given size with a sum of Chebyshev polynomials at the given amplitudes for use in waveshaping by the link::Classes/Shaper:: ugen.
 code::
 Wavetable.chebyFill(513, [1]).plot;
-Wavetable.chebyFill(513, [0, 1]).plot;
+Wavetable.chebyFill(513, [0, 1]).plot; // shifted to avoid DC offset when waveshaping a zero signal
+Wavetable.chebyFill(513, [0, 1], false, false).plot;  // raw (unshifted) Chebyshev polynomial
 Wavetable.chebyFill(513, [0, 0, 1]).plot;
 Wavetable.chebyFill(513, [0.3, -0.8, 1.1]).plot;
 ::
 argument::size
 must be a power of 2 plus 1, eventual wavetable is next power of two size up.
 argument::amplitudes
-an Array of amplitudes for each Chebyshev polynomial beginning with order 1.
+an link::Classes/Array:: of amplitudes for each Chebyshev polynomial beginning with order 1.
 argument::normalize
-A link::Classes/Boolean::.
+a link::Classes/Boolean:: indicating whether to normalize the resulting Wavetable (for use as a transfer function) using link::Classes/Signal#-normalizeTransfer#normalizeTransfer::.  Default is true.
+argument::zeroOffset
+a link::Classes/Boolean:: indicating whether to offset the middle of each polynomial to zero. If true, then a zero input will always result in a zero output when used as a link::Classes/Shaper##waveshaper::. Default is true. Only relevant when the normalize argument is false, since link::Classes/Signal#-normalizeTransfer#normalizeTransfer:: performs zero-compensation (in addition to normalizing).
 
 INSTANCEMETHODS::
 
