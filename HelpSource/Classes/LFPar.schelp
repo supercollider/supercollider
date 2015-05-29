@@ -6,7 +6,7 @@ categories::  UGens>Generators>Deterministic
 
 Description::
 
-A sine-like shape made of two parabolas.  It has audible odd harmonics and is non-band-limited.
+A sine-like shape made of two parabolas and the integral of a triangular wave.  It has audible odd harmonics and is non-band-limited.
 Output ranges from -1 to +1.
 
 classmethods::
