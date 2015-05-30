@@ -188,6 +188,11 @@ public:
         return seconds;
     }
     
+    bool is_immediate()
+    {
+      return data_ == 1;
+    }
+
     static time_tag from_ptime(boost::posix_time::ptime const & pt)
     {
         using namespace boost::gregorian;
