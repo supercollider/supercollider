@@ -135,6 +135,11 @@ QPointF QcScrollArea::visibleOrigin() const
 
 void QcScrollArea::setVisibleOrigin( const QPointF &pt )
 {
+  if (horizontalScrollBar()->maximum() < pt.x())
+    horizontalScrollBar()->setMaximum(pt.x());
+  if (verticalScrollBar()->maximum() < pt.y())
+    verticalScrollBar()->setMaximum(pt.y());
+  
   horizontalScrollBar()->setValue( pt.x() );
   verticalScrollBar()->setValue( pt.y() );
 }
