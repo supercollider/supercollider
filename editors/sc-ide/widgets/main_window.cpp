@@ -1534,7 +1534,6 @@ void MainWindow::showReplaceTool()
 
 void MainWindow::hideToolBox()
 {
-    mToolBox->hide();
     GenericCodeEditor *editor = mEditors->currentEditor();
     if (editor) {
         // This slot is mapped to Escape, so also clear highlighting
@@ -1543,6 +1542,8 @@ void MainWindow::hideToolBox()
         if (!editor->hasFocus())
             editor->setFocus(Qt::OtherFocusReason);
     }
+
+    mToolBox->hide();
 }
 
 void MainWindow::showSettings()
