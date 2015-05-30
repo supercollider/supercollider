@@ -67,6 +67,12 @@ The link::Classes/Function:: or similar object to be replaced.
 argument::newFunc
 A link::Classes/Function:: or similar object to be evaluated when a message of the specified type is received. See the setters below for the arguments which will be passed at evaluation time.
 
+
+method::noteOnZeroAsNoteOff
+
+By default this flag is code::true:: and SuperCollider interprets incoming MIDI noteOn message with velocity 0 as noteOff messages. In case you do not want this automatic translation, you can set this flag to code::false::
+
+
 subsection:: Getter/Setters for Specific Message Types
 
 The methods below allow you to register a function to respond to a particular message type.

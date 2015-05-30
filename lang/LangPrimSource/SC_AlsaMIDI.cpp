@@ -180,7 +180,8 @@ void SC_AlsaMidiClient::processEvent(snd_seq_event_t* evt)
 				++g->sp; SetInt(g->sp, evt->data.note.channel);
 				++g->sp; SetInt(g->sp, evt->data.note.note);
 				++g->sp; SetInt(g->sp, evt->data.note.velocity);
-				runInterpreter(g, evt->data.note.velocity ? s_midiNoteOnAction : s_midiNoteOffAction, 5);
+// 				runInterpreter(g, evt->data.note.velocity ? s_midiNoteOnAction : s_midiNoteOffAction, 5);
+				runInterpreter(g, s_midiNoteOnAction, 5);
 				break;
 			case SND_SEQ_EVENT_KEYPRESS:		// polytouch
 				++g->sp; SetInt(g->sp, evt->data.note.channel);

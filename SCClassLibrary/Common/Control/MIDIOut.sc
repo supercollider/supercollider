@@ -123,6 +123,9 @@ MIDIIn {
 	<> controlList, <> programList,
 	<> touchList, <> bendList;
 
+	classvar
+	<> noteOnZeroAsNoteOff = true;
+
 	// safer than global setters
 	*addFuncTo { |what, func|
 		this.perform(what.asSetter, this.perform(what).addFunc(func))
@@ -190,8 +193,13 @@ MIDIIn {
 		action.value(src, status, a, b, c);
 	}
 	*doNoteOnAction { arg src, chan, num, veloc;
-		noteOn.value(src, chan, num, veloc);
-		this.prDispatchEvent(noteOnList, \noteOn, src, chan, num, veloc);
+		if ( noteOnZeroAsNoteOff and: ( veloc == 0 ) ){
+			noteOff.value(src, chan, num, veloc);
+			this.prDispatchEvent(noteOffList, \noteOff, src, chan, num, veloc);
+		}{
+			noteOn.value(src, chan, num, veloc);
+			this.prDispatchEvent(noteOnList, \noteOn, src, chan, num, veloc);
+		};
 	}
 	*doNoteOffAction { arg src, chan, num, veloc;
 		noteOff.value(src, chan, num, veloc);

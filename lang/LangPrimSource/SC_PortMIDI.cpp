@@ -146,7 +146,8 @@ static void PMProcessMidi(PtTimestamp timestamp, void *userData)
 					case 0x90 : //noteOn 
 						++g->sp; SetInt(g->sp, data1);
 						++g->sp; SetInt(g->sp, data2);
-						runInterpreter(g, data2 ? s_midiNoteOnAction : s_midiNoteOffAction, 5);
+// 						runInterpreter(g, data2 ? s_midiNoteOnAction : s_midiNoteOffAction, 5);
+						runInterpreter(g, s_midiNoteOnAction, 5);
 						break;
 					case 0xA0 : //polytouch
 						++g->sp; SetInt(g->sp, data1);

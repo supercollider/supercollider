@@ -255,7 +255,8 @@ static void midiProcessPacket(MIDIPacket *pkt, size_t uid)
 				case 0x90 : //noteOn
 					++g->sp; SetInt(g->sp, pkt->data[i+1]); //val1
 					++g->sp; SetInt(g->sp, pkt->data[i+2]); //val2
-					runInterpreter(g, pkt->data[i+2] ? s_midiNoteOnAction : s_midiNoteOffAction, 5);
+// 					runInterpreter(g, pkt->data[i+2] ? s_midiNoteOnAction : s_midiNoteOffAction, 5);
+					runInterpreter(g, s_midiNoteOnAction, 5);
 					i += 3;
 					break;
 				case 0xA0 : //polytouch
