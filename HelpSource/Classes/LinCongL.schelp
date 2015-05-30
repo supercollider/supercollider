@@ -12,6 +12,15 @@ teletype::
 
 The output signal is automatically scaled to a range of [-1, 1].
 
+sclang code translation:
+
+code::
+(
+var a = 1.1, c = 0.13, m = 1, xi = 0, size = 64;
+plot(size.collect { xi = (a * xi + c) % m });
+)
+::
+
 classmethods::
 method:: ar
 argument:: freq

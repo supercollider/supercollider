@@ -10,6 +10,15 @@ teletype::
 	x(n+1) = a * x(n)^2 + b * x(n) + c
 ::
 
+sclang code translation:
+
+code::
+(
+var a = 1, b = -1, c = -0.75, xi = 0, size = 64;
+plot(size.collect { xi = (a * (xi ** 2)) + (b * xi) + c; xi });
+)
+::
+
 classmethods::
 method:: ar
 argument:: freq
