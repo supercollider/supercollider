@@ -39,7 +39,7 @@ CompletionMenu::CompletionMenu(QWidget * parent):
     mListView->setFrameShape(QFrame::NoFrame);
     mListView->setFixedHeight(200);
 
-    mTextBrowser = new QTextBrowser();
+    mTextBrowser = new CompletionTextBrowser();
     mTextBrowser->setFrameShape(QFrame::NoFrame);
     mTextBrowser->setReadOnly(true);
     mTextBrowser->setFixedSize(500, 400);
