@@ -37,6 +37,7 @@ ServerOptions
 
 	var <>memoryLocking = false;
 	var <>threads = nil; // for supernova
+	var <>useSystemClock = false;  // for supernova
 
 	var <numPrivateAudioBusChannels=112;
 
@@ -158,6 +159,9 @@ ServerOptions
 			if (Server.program.asString.endsWith("supernova")) {
 				o = o ++ " -T " ++ threads;
 			}
+		});
+		if (useSystemClock.notNil, {
+			o = o ++ " -C " ++ useSystemClock.asInteger
 		});
 		if (maxLogins.notNil, {
 			o = o ++ " -l " ++ maxLogins;
