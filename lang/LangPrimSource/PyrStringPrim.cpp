@@ -163,6 +163,7 @@ int prString_Format(struct VMGlobals *g, int numArgsPushed)
 				buf[k++] = '%';
 			} else {
 				i--;
+                buf[k++] = '\\';
 			}
 		} else {
 			buf[k++] = ch;
