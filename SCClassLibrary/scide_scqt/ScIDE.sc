@@ -688,14 +688,14 @@ Document {
 		var character = unicode.asAscii;
 		var cocoaModifiers = QKeyModifiers.toCocoa(modifiers);
 		this.class.globalKeyDownAction.value(this,character, cocoaModifiers, unicode, keycode);
-		keyDownAction.value(this,character, modifiers, unicode, keycode, key);
+		keyDownAction.value(this,character, cocoaModifiers, unicode, keycode, key);
 	}
 
 	keyUp { | modifiers, unicode, keycode, key |
 		var character = unicode.asAscii;
 		var cocoaModifiers = QKeyModifiers.toCocoa(modifiers);
 		this.class.globalKeyUpAction.value(this,character, cocoaModifiers, unicode, keycode);
-		keyUpAction.value(this,character, modifiers, unicode, keycode, key);
+		keyUpAction.value(this,character, cocoaModifiers, unicode, keycode, key);
 	}
 
 	mouseDown { | x, y, modifiers, buttonNumber, clickCount |
