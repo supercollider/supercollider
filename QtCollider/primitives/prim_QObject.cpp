@@ -26,6 +26,7 @@
 #include "../Common.h"
 #include "../type_codec.hpp"
 #include "../metatype.hpp"
+#include "../painting.h"
 
 #include <PyrObject.h>
 #include <PyrKernel.h>
@@ -301,7 +302,7 @@ QC_LANG_PRIMITIVE( QObject_SetProperty, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g 
 
   QVariant val = QtCollider::get( a+1 );
 
-  if( sync ) {
+  if( sync && !QtCollider::isPaintingObject(proxy) ) {
     proxy->setProperty( property->name, val );
   } else {
     SetPropertyEvent *e = new SetPropertyEvent();
