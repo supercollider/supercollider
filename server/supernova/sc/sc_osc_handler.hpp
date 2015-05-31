@@ -31,7 +31,7 @@
 #include <boost/date_time/microsec_time_clock.hpp>
 #include <boost/intrusive/treap_set.hpp>
 
-#include <boost/integer/endian.hpp>
+#include <boost/endian/arithmetic.hpp>
 
 #include "osc/OscReceivedElements.h"
 
@@ -306,7 +306,7 @@ public:
 
         tcp::socket socket_;
         sc_osc_handler * osc_handler;
-        boost::integer::big32_t msg_size_;
+        boost::endian::big_int32_t msg_size_;
         std::vector<char> msg_buffer_;
     };
 
