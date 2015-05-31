@@ -40,6 +40,8 @@
 #include "audio_backend/jack_backend.hpp"
 #endif
 
+#include "../../scsynth/SC_TimeDLL.hpp"
+#include "../../scsynth/SC_Time.hpp"
 namespace nova {
 
 struct realtime_engine_functor
@@ -138,6 +140,10 @@ class nova_server:
     public sc_osc_handler
 {
 public:
+    SC_TimeDLL mDLL;
+    bool use_system_clock;
+    double smooth_samplerate;
+
     typedef detail::audio_backend audio_backend;
 
     /* main nova_server function */
@@ -222,6 +228,11 @@ public:
         sc_osc_handler::increment_logical_time(time_per_tick);
     }
 
+    void set_last_now(time_tag const & lasts, time_tag const & nows)
+    {
+        sc_osc_handler::set_last_now(lasts, nows);
+    }
+
 public:
     HOT void tick()
     {
@@ -277,23 +288,60 @@ inline void run_scheduler_tick(void)
     }
 }
 
-inline void realtime_engine_functor::sync_clock(void)
-{
-    instance->update_time_from_system();
-}
-
-inline void realtime_engine_functor::run_tick(void)
-{
-    run_scheduler_tick();
-    instance->increment_logical_time();
-}
-
 inline bool log_printf(const char *fmt, ...)
 {
     va_list vargs;
     va_start(vargs, fmt);
     return instance->log_printf(fmt, vargs);
 }
+
+
+inline void realtime_engine_functor::sync_clock(void)
+{
+
+    if(instance->use_system_clock){
+        double nows = (uint64)(OSCTime(chrono::system_clock::now())) * kOSCtoSecs;
+        instance->mDLL.Reset(
+            sc_factory->world.mSampleRate,
+            sc_factory->world.mBufLength,
+            SC_TIME_DLL_BW,
+            nows);
+        time_tag oscTime = time_tag((uint64)((instance->mDLL.PeriodTime()) * kSecondsToOSCunits + .5));
+        time_tag oscInc = time_tag((uint64)((instance->mDLL.Period()) * kSecondsToOSCunits + .5));
+        instance->smooth_samplerate = instance->mDLL.SampleRate();
+        instance->set_last_now(oscTime,oscTime + oscInc);
+    }else
+        instance->update_time_from_system();
+}
+
+
+inline void realtime_engine_functor::run_tick(void)
+{
+    /* // debug timedll
+    static int count = 0;
+    if(count >= 44100/64){
+        count = 0;
+                log_printf("DLL: t %.6f p %.9f sr %.6f e %.9f avg(e) %.9f \n",
+                 instance->mDLL.PeriodTime(), instance->mDLL.Period(), instance->mDLL.SampleRate(),
+                 instance->mDLL.Error(), instance->mDLL.AvgError());
+    }
+    count++;
+    */
+    run_scheduler_tick();
+    
+    if(instance->use_system_clock){
+        //time_tag nows = time_tag::from_ptime(boost::date_time::microsec_clock<boost::posix_time::ptime>::universal_time());
+        double nows = (uint64)(OSCTime(chrono::system_clock::now())) * kOSCtoSecs;
+        instance->mDLL.Update(nows);
+        time_tag oscTime = time_tag((uint64)((instance->mDLL.PeriodTime()) * kSecondsToOSCunits + .5));
+        time_tag oscInc = time_tag((uint64)((instance->mDLL.Period()) * kSecondsToOSCunits + .5));
+        instance->smooth_samplerate = instance->mDLL.SampleRate();
+        instance->set_last_now(oscTime,oscTime + oscInc);
+    }else
+        instance->increment_logical_time();
+}
+
+
 
 inline bool log(const char * string)
 {

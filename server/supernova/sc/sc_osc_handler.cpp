@@ -875,6 +875,10 @@ void sc_osc_handler::handle_bundle(received_bundle const & bundle, endpoint_ptr 
     typedef osc::ReceivedBundleElement bundle_element;
 
     if (bundle_time <= now) {
+        if (!bundle_time.is_immediate()) {
+            time_tag late = now - bundle_time;
+            log_printf("late: %zu.%09zu\n", late.get_secs(), late.get_nanoseconds());
+	};
         for (bundle_iterator it = bundle.ElementsBegin(); it != bundle.ElementsEnd(); ++it) {
             bundle_element const & element = *it;
 
@@ -981,7 +985,7 @@ void handle_status(endpoint_ptr endpoint)
           << average_load                           /* average cpu % */
           << peak_load                              /* peak cpu % */
           << instance->get_samplerate()             /* nominal samplerate */
-          << instance->get_samplerate()             /* actual samplerate */
+          << instance->smooth_samplerate             /* actual samplerate */
           << osc::EndMessage;
 
         endpoint->send(p.Data(), p.Size());
