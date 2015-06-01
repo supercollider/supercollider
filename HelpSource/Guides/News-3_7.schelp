@@ -1,0 +1,44 @@
+title:: News in 3.7
+summary:: A summary of news in SC 3.7
+categories:: News
+
+NOTE::This is an incomplete stub::
+
+
+SECTION:: SuperCollider IDE
+
+LIST::
+##New controls for server
+##Control IDE documents from sclang
+::
+
+SECTION:: Language-side news
+
+LIST::
+##An interface for Key Value Pairs, see link::Reference/Key-Value-Pairs::
+##Refactored JITLib, see link::Other/JITLibChanges3.7::
+::
+
+
+SUBSECTION::Human Interface Devices (HID)
+
+There is an entirely new HID implementation: see link::Guides/Working_with_HID::.
+
+
+SECTION::Server-side news
+
+
+SUBSECTION::More operators work uniformly across sclang and scserver
+
+The following operators have been added as ugens and work the same as in sclang:
+
+TABLE::
+##unary operators || code::rand, rand2, linrand, bilinrand, sum3rand, coin::
+
+##binary operators || code::lcm, gcd, rrand, exprand::
+::
+
+code::lcm:: and code::gcd:: have consistent interpretations of negative values and zero.
+
+See link::Overviews/Operators::
+

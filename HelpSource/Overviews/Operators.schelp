@@ -171,6 +171,13 @@ code::
 { SinOsc.ar(110).sum3rand }.plot;
 ::
 
+method::coin
+Returns one or zero with the probability given by the argument.
+code::
+0.4.coin;
+
+{ SinOsc.ar(110).coin }.plot;
+::
 
 
 subsection:: Other
