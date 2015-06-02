@@ -262,13 +262,14 @@ h2 {
     margin-top: 1.0em;
     text-align: left;
     margin-bottom: 2px;
-    font-size: 1.4em;
+    font-size: 1.6em;
 }
 
 h3 {
-    margin-bottom: 2px;
+    margin-top: 2.0em;
+    margin-bottom: 1px;
     text-align: left;
-    font-size: 1.4em;
+    font-size: 1.2em;
 }
 
 h4 {
