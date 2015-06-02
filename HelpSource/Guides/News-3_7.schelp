@@ -42,6 +42,11 @@ NOTE::3.7 is an alpha version, which fixes many issues, but may also introduce n
 	##link::Classes/Server#*remote:: Create a new Server instance corresponding to a server app running on a separate machine.
 	::
 
+	SUBSECTION::List of deprecated methods/classes, or that will be deprecated soon
+	LIST::
+	##GeneralHID, GeneralHIDSpec, GeneralHIDDevice (replaced by the new LINK::Classes/HID:: system)
+	::
+
 
 
 	SECTION::Server-side news
