@@ -25,6 +25,15 @@ void ProxyStyle::drawComplexControl ( ComplexControl ctrl, const QStyleOptionCom
     return;
   }
 
+	if (ctrl == QStyle::CC_ScrollBar) {
+		const QStyleOptionSlider *optSlider = static_cast<const QStyleOptionSlider*>(opt);
+		QStyleOptionSlider opt2( *optSlider );
+		opt2.state = State_On;
+		QProxyStyle::drawComplexControl( ctrl, static_cast<const QStyleOptionComplex*>(&opt2), p, w );
+
+		return;
+	}
+
   QProxyStyle::drawComplexControl( ctrl, opt, p, w );
 }
 #endif
@@ -33,10 +42,10 @@ int ProxyStyle::styleHint ( StyleHint hint, const QStyleOption * option,
                             const QWidget * widget, QStyleHintReturn * returnData ) const
 {
   switch( hint ) {
-    case QStyle::SH_Slider_AbsoluteSetButtons:
-      return Qt::LeftButton;
-    case QStyle::SH_Slider_PageSetButtons:
-      return Qt::NoButton;
+//    case QStyle::SH_Slider_AbsoluteSetButtons:
+//      return Qt::LeftButton;
+//    case QStyle::SH_Slider_PageSetButtons:
+//      return Qt::NoButton;
     case QStyle::SH_ScrollBar_Transient:
       return 1;
     default:
