@@ -29,16 +29,19 @@ an link::Classes/Array:: of amplitudes for each Chebyshev polynomial beginning w
 argument::normalize
 a link::Classes/Boolean:: indicating whether to normalize the resulting Wavetable. If the zeroOffset argument is true, the normalization is done for use as a transfer function, using link::Classes/Signal#-normalizeTransfer#normalizeTransfer::, otherwise it just uses link::Classes/Signal#-normalize#normalize:: to make the absolute peak value 1.  Default is true.
 argument::zeroOffset
-a link::Classes/Boolean:: indicating whether to offset the middle of each polynomial to zero. If true, then a zero input will always result in a zero output when used as a link::Classes/Shaper##waveshaper::. If false, then the "raw" (unshifted) Chebyshev polynomials are used. Default is true.
+a link::Classes/Boolean:: indicating whether to offset the middle of each polynomial to zero. If true, then a zero input will always result in a zero output when used as a link::Classes/Shaper##waveshaper::. If false, then the "raw" (unshifted) Chebyshev polynomials are used. Default is false.
 discussion::
+note::
+In previous versions, chebyFill always offset the curves to ensure the center value was zero. The zeroOffset argument was added in version 3.7, and the default behavior was changed, so that it no longer offsets.
+::
 code::
 Wavetable.chebyFill(513, [1]).plot;
 
-// by default, shifted to avoid DC offset when waveshaping a zero signal:
-Wavetable.chebyFill(513, [0, 1]).plot;
+// shifted to avoid DC offset when waveshaping a zero signal
+Wavetable.chebyFill(513, [0, 1], zeroOffset: true).plot;
 
-// normalized sum of (unshifted) Chebyshev polynomials:
-Wavetable.chebyFill(513, [0, 1, 0, 0, 0, 1], true, false).plot;
+// normalized sum of (unshifted) Chebyshev polynomials (the default)
+Wavetable.chebyFill(513, [0, 1, 0, 0, 0, 1], normalize: true, zeroOffset: false).plot;
 
 Wavetable.chebyFill(513, [0, 0, 1]).plot;
 Wavetable.chebyFill(513, [0.3, -0.8, 1.1]).plot;
