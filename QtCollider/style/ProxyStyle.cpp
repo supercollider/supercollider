@@ -1,5 +1,7 @@
 #include "ProxyStyle.hpp"
 
+#include "../QcApplication.h"
+
 #include <QWebView>
 #include <QStyleOptionSlider>
 #include <QPainter>
@@ -13,15 +15,15 @@ using namespace QtCollider;
 static bool AlwaysShowScrollbars() {
 #ifdef Q_OS_MAC
   return QtCollider::Mac::AlwaysShowScrollbars();
-  
+
 #elif Q_OS_X11
-  return true;
+  return !QcApplication::SystemHasMouseWheel();
 
 #elif Q_OS_WIN
-  return true;
+  return !QcApplication::SystemHasMouseWheel();
 
 #else
-  return true;
+  return !QcApplication::SystemHasMouseWheel();
 #endif
 };
 
