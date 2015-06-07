@@ -84,6 +84,7 @@ extern "C"
 
 	void DiskOut_next(DiskOut *unit, int inNumSamples);
 	void DiskOut_Ctor(DiskOut* unit);
+    void DiskOut_Dtor(DiskOut* unit);
 
 	void VDiskIn_next(VDiskIn *unit, int inNumSamples);
 	void VDiskIn_first(VDiskIn *unit, int inNumSamples);
@@ -212,7 +213,7 @@ struct DiskIOThread
 	}
 };
 
-DiskIOThread gDiskIO;
+DiskIOThread *gDiskIO;
 
 }
 
@@ -293,7 +294,7 @@ sendMessage:
 			msg.mPos = bufFrames2 - unit->m_framepos;
 			msg.mFrames = bufFrames2;
 			msg.mChannels = bufChannels;
-			gDiskIO.Write(msg);
+			gDiskIO->Write(msg);
 		} else {
 			SndBuf *bufr = World_GetNRTBuf(unit->mWorld, (int) fbufnum);
 			uint32 mPos = bufFrames2 - unit->m_framepos;
@@ -395,9 +396,36 @@ sendMessage:
 		msg.mFrames = bufFrames2;
 		msg.mChannels = bufChannels;
 		//printf("sendMessage %d  %d %d %d\n", msg.mBufNum, msg.mPos, msg.mFrames, msg.mChannels);
-		gDiskIO.Write(msg);
+		gDiskIO->Write(msg);
 	}
 
+}
+
+void DiskOut_Dtor(DiskOut* unit)
+{
+    GET_BUF
+    
+    uint32 framepos = unit->m_framepos;
+    uint32 bufFrames2 = bufFrames >> 1;
+    // check that we didn't just write
+    if (framepos != 0 && framepos != bufFrames2) {
+        // if not write the last chunk of samples
+        uint32 writeStart;
+        if (framepos > bufFrames2) {
+            writeStart = bufFrames2;
+        } else {
+            writeStart = 0;
+        }
+        DiskIOMsg msg;
+        msg.mWorld = unit->mWorld;
+        msg.mCommand = kDiskCmd_Write;
+        msg.mBufNum = (int)fbufnum;
+        msg.mPos = writeStart;
+        msg.mFrames = framepos - writeStart;
+        msg.mChannels = bufChannels;
+        //printf("sendMessage %d  %d %d %d\n", msg.mBufNum, msg.mPos, msg.mFrames, msg.mChannels);
+        gDiskIO->Write(msg);
+    }
 }
 
 
@@ -433,7 +461,7 @@ static void VDiskIn_request_buffer(VDiskIn * unit, float fbufnum, uint32 bufFram
 		msg.mPos = thisPos;
 		msg.mFrames = bufFrames2;
 		msg.mChannels = bufChannels;
-		gDiskIO.Write(msg);
+		gDiskIO->Write(msg);
 
 		if((int)ZIN0(3)) {
 			//	float outval = bufPos + sc_mod((float)(unit->m_count * bufFrames2), (float)buf->fileinfo.frames);
@@ -608,19 +636,19 @@ void VDiskIn_next_rate1(VDiskIn *unit, int inNumSamples)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+C_LINKAGE SC_API_EXPORT void unload(InterfaceTable *inTable)
+{
+	delete gDiskIO;
+}
 
 PluginLoad(DiskIO)
 {
 	ft = inTable;
-
-#ifdef _WIN32
-	new(&gDiskIO) DiskIOThread();
-#endif
-
-	gDiskIO.launchThread();
+    gDiskIO = new DiskIOThread();
+	gDiskIO->launchThread();
 
 	DefineSimpleUnit(DiskIn);
-	DefineSimpleUnit(DiskOut);
+	DefineDtorUnit(DiskOut);
 	DefineSimpleUnit(VDiskIn);
 }
 

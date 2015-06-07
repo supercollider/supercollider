@@ -29,6 +29,7 @@
 #include <QToolButton>
 #include <QLayout>
 #include <QDebug>
+#include <QWebView>
 
 namespace ScIDE {
 
@@ -76,6 +77,20 @@ void Style::drawComplexControl
     }
 
     switch(control) {
+    // FIXME: this is a workaround for the WebKit bug #104116 (or a variation on it).
+    case QStyle::CC_ScrollBar:
+    {
+        if (qobject_cast<const QWebView*>(widget) != 0 && option->type == QStyleOption::SO_Slider)
+        {
+            // WebKit tries to hide scrollbars, but mistakenly hides QWebView - NULL-ify styleObject to prevent.
+            const QStyleOptionSlider *optSlider = static_cast<const QStyleOptionSlider*>(option);
+            QStyleOptionSlider opt2( *optSlider );
+            opt2.styleObject = NULL;
+            
+            QProxyStyle::drawComplexControl( control, &opt2, painter, widget );
+            return;
+        }
+    }
     case QStyle::CC_ToolButton:
     {
         // TODO: We only draw either text, or icon, or arrow

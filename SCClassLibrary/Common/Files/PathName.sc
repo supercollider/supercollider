@@ -200,11 +200,10 @@ PathName {
 		^this.class.new(fullPath +/+ otherFullPath)
 	}
 
-	/* additional methods jrh */
-
 	entries {
 		var path;
 		path = fullPath;
+		if(path.isEmpty) { ^[] };
 		if(path.last.isPathSeparator.not, { path = path ++ thisProcess.platform.pathSeparator });
 		^pathMatch(path ++ "*").collect({ arg item; PathName(item) });
 	}

@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 2.8.11)
 set(required_qt_version 5.2)
 
 find_package(Qt5Core)
-find_package(Qt5Widgets) 
-find_package(Qt5Network) 
+find_package(Qt5Widgets)
+find_package(Qt5Network)
 find_package(Qt5WebKit)
 find_package(Qt5WebKitWidgets)
 find_package(Qt5PrintSupport)
@@ -15,14 +15,14 @@ find_package(Qt5Qml)
 find_package(Qt5Sql)
 find_package(Qt5Positioning)
 
-set (QT_COLLIDER_LIBS 
-  Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::WebKit Qt5::WebKitWidgets Qt5::PrintSupport 
+set (QT_COLLIDER_LIBS
+  Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::WebKit Qt5::WebKitWidgets Qt5::PrintSupport
   Qt5::OpenGL Qt5::Sensors Qt5::Quick Qt5::Qml Qt5::Sql Qt5::Positioning
   ${MATH_LIBRARY})
 
 if (APPLE)
   find_package(Qt5MacExtras)
-  list(APPEND QT_COLLIDER_LIBS Qt5::MacExtras)  
+  list(APPEND QT_COLLIDER_LIBS Qt5::MacExtras)
 endif()
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}  -DQC_DEBUG")
@@ -127,7 +127,7 @@ if(QT_COLLIDER_LANG_CLIENT)
     list(APPEND QT_COLLIDER_HDRS ${QT_COLLIDER_DIR}/LanguageClient.h)
     list(APPEND QT_COLLIDER_SRCS ${QT_COLLIDER_DIR}/LanguageClient.cpp)
 endif()
-	
+
 
 set( QT_USE_QTWEBKIT TRUE )
 

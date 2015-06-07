@@ -463,7 +463,7 @@ void LFPulse_next_a(LFPulse *unit, int inNumSamples)
 			phase -= 1.f;
 			duty = unit->mDuty = nextDuty;
 			// output at least one sample from the opposite polarity
-			z = duty < 0.5f ? 1.f : 0.f;
+			z = duty <= 0.5f ? 1.f : 0.f;
 		} else {
 			z = phase < duty ? 1.f : 0.f;
 		}
@@ -488,7 +488,7 @@ void LFPulse_next_k(LFPulse *unit, int inNumSamples)
 			phase -= 1.f;
 			duty = unit->mDuty = nextDuty;
 			// output at least one sample from the opposite polarity
-			z = duty < 0.5f ? 1.f : 0.f;
+			z = duty <= 0.5f ? 1.f : 0.f;
 		} else {
 			z = phase < duty ? 1.f : 0.f;
 		}
@@ -866,7 +866,6 @@ void LFGauss_Ctor(LFGauss* unit)
 				SETCALC(LFGauss_next_aa);
 		} else {
 				SETCALC(LFGauss_next_a);
-				printf("LFGauss_next_a\n");
 		}
 	} else {
 		SETCALC(LFGauss_next_k);

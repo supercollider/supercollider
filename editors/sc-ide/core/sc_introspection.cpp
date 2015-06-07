@@ -294,6 +294,12 @@ Introspection::ClassMethodMap Introspection::constructMethodMap(const Class * kl
     }
     return methodMap;
 }
+  
+bool Method::matches(const QString& toMatch) const
+{
+    return toMatch.isEmpty() ? true : name.get().startsWith(toMatch, Qt::CaseInsensitive);
+}
+
 
 QString Method::signature( SignatureStyle style ) const
 {

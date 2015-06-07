@@ -49,7 +49,10 @@ nova_server::nova_server(server_arguments const & args):
 {
     assert(instance == 0);
     instance = this;
-
+    
+    use_system_clock = (args.use_system_clock == 1);
+    smooth_samplerate = args.samplerate;
+    
     if (!args.non_rt)
         io_interpreter.start_thread();
 
@@ -87,6 +90,8 @@ void nova_server::prepare_backend(void)
 
 nova_server::~nova_server(void)
 {
+    //we should delete but get chrashes at the moment on linux and macosx
+    //delete sc_factory;
 #if defined(JACK_BACKEND) || defined(PORTAUDIO_BACKEND)
     deactivate_audio();
 #endif
@@ -336,6 +341,14 @@ void realtime_engine_functor::init_thread(void)
 #ifdef JACK_BACKEND
     set_realtime_priority(0);
 #endif
+    if(instance->use_system_clock){
+        double nows = (uint64)(OSCTime(chrono::system_clock::now())) * kOSCtoSecs;
+        instance->mDLL.Reset(
+            sc_factory->world.mSampleRate,
+            sc_factory->world.mBufLength,
+            SC_TIME_DLL_BW,
+            nows);
+    }
 
     name_current_thread(0);
 }

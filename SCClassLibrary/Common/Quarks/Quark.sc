@@ -1,377 +1,245 @@
-/**
-  *
-  * Subversion based package repository and package manager
-  * sk, cx, LFSaw, danstowell
-  *
-  */
 
+Quark {
+	var <name, url, >refspec, data, <localPath;
+	var <changed = false, <git;
 
-// quarks are much worse than opiates, you should have been more careful !
-// now you have a quark dependency
-QuarkDependency
-{
-	// Note: "repos" should be nil if dependency is in same repos; otherwise the base URL of the repos.
-	var <name, <version, <repos;
-	*new { | name, version, repos |
-		^this.newCopyArgs(name, version, repos)
+	*new { |name, refspec|
+		var args = Quark.parseQuarkName(name, refspec);
+		if(args.isNil, {
+			Error("% not found".format(name)).throw;
+		});
+		^super.new.init(*args)
 	}
-	== { arg that;
-		^this.compareObject(that, [\name, \version])
+	*fromLocalPath { |path|
+		var name, url, refspec;
+		path= Quarks.quarkNameAsLocalPath(path);
+		name = path.basename;
+		^super.new.init(name, url, refspec, path)
 	}
-	hash { arg that;
-		^this.instVarHash([\name, \version])
+	*fromDirectoryEntry { |name, directoryEntry|
+		var url, refspec;
+		# url, refspec = directoryEntry.split($@);
+		^super.new.init(name, url, refspec)
 	}
-	asQuark { |parentQuarks|
-		parentQuarks = parentQuarks ? Quarks.global;
-		^if(repos.isNil, {parentQuarks}, {Quarks.forUrl(repos)}).repos.findQuark(name, version);
+	init { |argName, argUrl, argRefspec, argLocalPath|
+		name = argName;
+		url = argUrl;
+		refspec = argRefspec;
+		localPath = argLocalPath ?? {Quarks.folder +/+ name};
+		if(Git.isGit(localPath), {
+			git = Git(localPath);
+		});
 	}
-}
-
-
-// a Quark is a single package of classes, helpfiles etc.
-// the QUARK file is sc code and should be an IdentityDictionary
-// path is a relative path  relative to the repos root or the local root
-
-Quark
-{
-	var <name, <summary, <version, <author, dependencies, <tags, <>path, <>status;
-	var <isLocal;// meaning that a local copy exists either because checked out or is local only
-	var <parent; // the Quarks, if available
-	var <info;
-
-	*fromFile { | path, parent |
-		var string = { File.use(path, "r", _.readAllString) }.try;
-		if (string.isNil) {
-			Error(path + "is an invalid quark file.").throw;
-		};
-		^this.fromString(string, parent)
+	data {
+		^data ?? {
+			data = this.parseQuarkFile() ?? { IdentityDictionary.new }
+		}
 	}
-	*fromString { | string , parent|
-		var blob = { string.interpret }.try;
-		if (blob.isNil or: { blob.isKindOf(IdentityDictionary).not }) {
-			Error("Can not interpret quark definition.").throw;
-		};
-		^this.new(blob, parent)
+	version {
+		^this.data['version']
 	}
-	*fromPath { |path, parent| // if no blob exists, make a generic one
-		var blob = (
-			name: path.basename.splitext,
-			path: path
-		);
-		^this.new(blob, parent)
+	summary {
+		^this.data['summary']
 	}
-	*new { | blob, parent |
-		^super.new.init(blob, parent)
+	url {
+		^url ?? {
+			url = git !? { git.url }
+		}
 	}
-	*find { |name|
-		^Quarks.local.quarks.detect({ |q| q.name == name })
+	refspec {
+		^refspec ?? {
+			git !? { git.refspec }
+		}
 	}
-	init { | blob , argParent |
-		parent = argParent;
-
-		name = this.getName(blob[\name]);
-		path = this.getString(blob[\path]);
-		summary = this.getString(blob[\summary]);
-		status = this.getString(blob[\status]);
- 		version = this.getVersion(blob[\version]);
-		dependencies = this.getDependencies(blob[\dependencies]);
-		author = this.getString(blob[\author]);
-		isLocal = (Quarks.local.simplePath ++ "/" ++ path).pathMatch.notEmpty;
-		info = blob;
-		tags = ();
+	tags {
+		^git !? { git.tags }
+	}
+	isDownloaded {
+		^File.exists(this.localPath)
+	}
+	isGit {
+		^git.notNil
+	}
+	isInstalled {
+		^Quarks.pathIsInstalled(this.localPath)
+	}
+	isCompatible {
+		^this.data['isCompatible'].value !== false
 	}
 
-	getName { | obj |
-		var name = obj.asString;
-		if (name.isEmpty) {
-			Error("Can not parse a quark: invalid name.").throw;
-		};
-		^name.split(Char.nl).first/*.strip*/
+	install {
+		var success = Quarks.installQuark(this);
+		changed = true;
+		data = nil;
+		^success
 	}
-	getString { | obj |
-		^obj !? { obj.asString }
+	uninstall {
+		Quarks.uninstallQuark(this);
+		changed = true;
 	}
-	getVersion { | obj |
-		if (obj.notNil) {
-			if (obj.respondsTo(\asFloat).not) {
-				Error("Can not parse quark '" ++ this.name ++ "': invalid version type.").throw;
-			};
-			^obj.asFloat
-		};
+
+	checkout {
+		if(this.isDownloaded.not, {
+			if(this.url.isNil, {
+				Error("No git url, cannot checkout quark" + this).throw;
+			});
+			git = Git(localPath);
+			git.clone(url);
+			// get tags etc
+			git.fetch();
+			changed = true;
+			data = nil;
+		});
+		if(refspec.notNil, {
+			if(this.isDownloaded
+				and: {git.notNil}
+				and: {git.isDirty},
+			{
+				("% has uncommited changes, cannot checkout %".format(name, refspec ? "")).warn;
+			}, {
+				if(refspec == "HEAD", {
+					git.pull()
+				}, {
+					// when do you have to fetch ?
+					// if offline then you do not want to fetch
+					// just checkout. fast switching
+					git.checkout(refspec)
+				});
+			});
+			changed = true;
+			data = nil;
+		});
+	}
+	checkForUpdates {
+		var tags;
+		if(this.isGit, {
+			tags = git.tags().sort;
+			git.fetch();
+			// if not already marked as changed
+			if(changed.not, {
+				// changed if there are new tags
+				changed = git.tags().sort != tags;
+			})
+		});
+	}
+
+	dependencies {
+		var deps = this.data['dependencies'] ?? {^[]};
+		if(deps.isSequenceableCollection.not, {
+			("Invalid dependencies " + this + deps).warn;
+			^[]
+		});
+		^deps.collect({ |dep|
+			var q = Quark.parseDependency(dep, this);
+			if(q.isNil, {
+				"% not found".format(dep).warn;
+			});
+			q
+		}).select({ |it| it.notNil });
+	}
+	deepDependencies {
+		// warning: everything must be checked out just to get the dependency list
+		^this.prCollectDependencies(Dictionary.new).values
+	}
+	prCollectDependencies { |collector|
+		this.dependencies.do({ |q|
+			var prev = collector[q.name];
+			if(prev.notNil, {
+				if(prev.refspec != q.refspec, {
+					("% requires % but % is already registered as a dependency".format(this, q, prev)).warn;
+				});
+			}, {
+				q.checkout();
+				collector[q.name] = q;
+				q.prCollectDependencies(collector);
+			});
+		});
+		^collector
+	}
+	*parseDependency { |dep, forQuark|
+		// parse a dependency specifier and return a Quark
+		// (1) string
+		if(dep.isString, {
+			^Quark.prMakeDep(*dep.split($@))
+		});
+		// (2) name -> version
+		if(dep.isKindOf(Association), {
+			^Quark.prMakeDep(dep.key.asString)
+		});
+		// (3) [name, version, url]
+		// url is svn repo and should be ignored now
+		if(dep.isSequenceableCollection, {
+			^Quark.prMakeDep(dep.first)
+		});
+		("Cannot parse dependency:" + dep + (forQuark ? "")).error;
 		^nil
 	}
-	getDependencies { | obj |
-		var deps;
-		if (obj.isNil) {
-			^[]
-		};
-		if (obj.isSequenceableCollection.not) {
-			Error("Can not parse quark '" ++ this.name ++ "': invalid dependencies.").throw;
-		};
-		deps = Array(obj.size);
-		obj.do { | spec |
-			var dep;
-			case
-			{spec.isString} {
-				dep = QuarkDependency(spec, nil)
-			}
-			{spec.isKindOf(ArrayedCollection)} {
-				dep = QuarkDependency(
-					spec[0].asString,
-					this.getVersion(spec[1]),
-					spec[2] !? {spec[2].asString})
-			}
-			{spec.isKindOf(Association)} {
-				dep = QuarkDependency(
-					spec.key.asString,
-					this.getVersion(spec.value))
-			}
-			{Error("Can not parse quark '" ++ this.name ++ "': an invalid dependency.").throw};
-			deps add: dep
-		};
-		^deps;
+	*prMakeDep { |name, refspec|
+		// protected make dependency
+		// if not found then posts error and returns nil
+		var args = Quark.parseQuarkName(name, refspec);
+		if(args.isNil, {
+			^nil
+		});
+		^super.new.init(*args)
+	}
+	*parseQuarkName { |name, refspec|
+		// determine which quark the string 'name' refers to
+		// name is one of: quarkname, url, localPath
+		// returns: [name, url, refspec, localPath]
+		var directoryEntry;
+		if(name.contains("://"), {
+			^[PathName(name).fileNameWithoutExtension(), name, refspec, nil]
+		});
+		if(Quarks.isPath(name), {
+			// url can be determined later by the Quark
+			^[name.basename, nil, refspec, name]
+		});
+		// search Quarks folders
+		(Quarks.additionalFolders ++ [Quarks.folder]).do({ |f|
+			var localPath = f +/+ name, url;
+			if(File.existsCaseSensitive(localPath), {
+				^[name, nil, refspec, localPath]
+			});
+		});
+		// lookup url in directory
+		directoryEntry = Quarks.findQuarkURL(name);
+		if(directoryEntry.notNil, {
+			directoryEntry = directoryEntry.split($@);
+			^[name, directoryEntry[0], refspec ? directoryEntry[1], nil]
+		});
+		// not found
+		^nil
+	}
+	parseQuarkFile {
+		var qfp = this.localPath +/+ name ++ ".quark",
+			result;
+		if(File.exists(qfp), {
+			result = thisProcess.interpreter.compileFile(qfp).value;
+			if(result.isNil, {
+				("Failed to parse %".format(qfp)).warn;
+			});
+		});
+		^result
+	}
+
+	printOn { arg stream;
+		var v = this.version ? this.refspec;
+		stream << "Quark: " << name;
+		if(v.notNil,{ stream << "[" << v << "]" });
 	}
 	help {
-		var p = info.schelp;
-		if(p.notNil) {
-			HelpBrowser.openHelpFor(p);
-			^this
-		};
-		if(File.exists(parent.local.path +/+ path +/+ "HelpSource")) {
-			HelpBrowser.openBrowsePage("Quarks>"++name);
-			^this;
-		};
-		p = info.helpdoc;
-		if(p.notNil) {
-			HelpBrowser.goTo(URI.fromLocalPath(parent.local.path +/+ path +/+ p).asString)
-			^this
-		};
-		HelpBrowser.openBrowsePage("Quarks>"++name);
-	}
-	printOn { arg stream;
-		stream << "Quark: " << name;
-		if(version.notNil,{ stream << " [" << version << "]"; });
-	}
-
-	longDesc {
-		var string;
-		string = name;
-		if(version.notNil) { string = string + "[" ++ version ++ "]" };
-		string = string
-			++ "\n(by " ++ (author ? "anonymous") ++ ")"
-			++ "\n\n" ++ summary
-			++ "\n\n" ++ "Status: " ++ (status ? "unknown")
-			++ "\n" ++ "Checked out: " ++ if(isLocal, "yes", "no");
-		if(dependencies.notEmpty) {
-			string = string ++ "\nDepends on";
-			dependencies.do{|dep|
-				string = string ++ "\n - " ++ dep.name;
-			};
-		};
-		string = string ++ "\n";
-		^string;
-	}
-	postDesc {
-		this.longDesc.postln;
-	}
-	== { arg that;
-		^this.compareObject(that,
-			[\name, \summary, \version, \author, \dependencies, \tags, \path, \status]);
-	}
-	hash { arg that;
-		^this.instVarHash([\name, \summary, \version, \author, \dependencies, \tags, \path, \status]);
-	}
-	dependencies { |recursive = false, knownList|
-		var deps, quark, selfasdep;
-		deps = dependencies;
-		if(recursive, {
-			if(knownList.isNil.not, {
-				deps = dependencies.select({|d| knownList.indexOfEqual(d).isNil}); // To avoid infinite recursion traps
-			});
-			deps.do({|dep|
-				quark = dep.asQuark(parent);
-				if(quark.notNil) {
-					deps = deps ++ quark.dependencies(recursive: true,
-						knownList: ([QuarkDependency(name, version)] ++ knownList));
-				};
-			});
+		var p = this.data['schelp'];
+		// explicit pointer to a help file in quark data
+		if(p.notNil, {
+			^HelpBrowser.openHelpFor(p);
 		});
-		^deps
-	}
-	isCompatible { ^info['isCompatible'].value !== false }
-}
-
-QuarkView {
-	var	<quark, <isInstalled, <toBeInstalled = false, <toBeDeinstalled = false, installButton,
-		nameView, authorView, infoButton, srcButton, browseHelpButton;
-
-	*new { |parent, extent, quark, isInstalled|
-		^super.new.init(parent, extent, quark, isInstalled)
-	}
-	init { |parent, extent, aQuark, argIsInstalled|
-		var installBounds, descrBounds, authorBounds, infoBounds, sourceBounds,
-			pad = 5,checkoutBounds, remainder;
-
-		quark = aQuark;
-		isInstalled = argIsInstalled;
-
-		//installBounds = Rect(0,0, extent.y, extent.y);
-		infoBounds = Rect(0,0, 25, extent.y);
-		sourceBounds = Rect(0, 0, 20, extent.y);
-		checkoutBounds = Rect(0,0,50,extent.y);
-		remainder = extent.x - (infoBounds.width*2)  - sourceBounds.width -
-			checkoutBounds.width - (4*pad);
-		descrBounds = Rect(0, 0, (remainder * 0.60).asInteger, extent.y);
-		authorBounds = Rect(0, 0, (remainder * 0.40).asInteger, extent.y);
-
-		installButton = GUI.button.new(parent, Rect(15,15,17,17));
-
-		// the name with author
-		nameView = GUI.staticText.new(parent, descrBounds).string_(quark.name);
-		authorView = GUI.staticText.new(parent, authorBounds).string_(quark.author);
-		infoButton = GUI.button.new(parent, infoBounds)
-			.font_( Font.sansSerif( 10 ))
-			.states_([["info"]]).action_{this.fullDescription};
-
-		browseHelpButton = GUI.button.new(parent, infoBounds)
-			.font_( Font.sansSerif( 10 ))
-			.states_([["help"]])
-			.action_({ quark.help });
-
-		if(quark.isLocal) {
-			srcButton = GUI.button.new(parent, sourceBounds)
-				.font_( Font.sansSerif( 10 ))
-				.states_([["src"]]).action_{
-					openOS( "%/%".format(Quarks.local.path, quark.path) );
-				};
-		};
-
-		/*if(quark.isLocal.not,{
-			GUI.button.new(parent, checkoutBounds)
-				.font_( Font.sansSerif( 10 ))
-				.states_([["checkout"]]).action_{
-					Quarks.checkout(quark.name);
-				};
-		});*/
-
-		this.updateButtonStates;
-	}
-	updateButtonStates {
-		var palette = GUI.current.tryPerform(\palette);
-		var c = palette !? {palette.button};
-
-		isInstalled.if({
-			// Quark is currently installed
-			installButton.states = [
-				// installed
-				["+", nil, if(c.notNil){Color.green.blend(c,0.5)}{Color.green(1, 0.5)}],
-				// selected to deinstall
-				["x", nil, if(c.notNil){Color.red.blend(c,0.5)}{Color.red(1, 0.5)}]
-			];
-			installButton.action = { arg butt;
-				toBeDeinstalled = butt.value>0;
-			};
-
-		},{
-			// Quark is currently not installed
-			installButton.states = [
-				// never installed
-				["-", nil, ],
-				// selected to install
-				["*", nil, if(c.notNil){Color.blue.blend(c,0.5)}{Color.blue(1, 0.5)}]
-			];
-			installButton.action = { arg butt;
-				toBeInstalled = butt.value>0;
-			};
+		// old html help doc
+		p = this.data['helpdoc'];
+		if(p.notNil, {
+			(this.localPath +/+ p).openOS;
+			// ^HelpBrowser.goTo(URI.fromLocalPath(this.localPath +/+ p).asString);
 		});
-		this.reset;
-	}
-	reset {
-		installButton.valueAction = 0;
-	}
-	flush {
-		toBeInstalled.if  {isInstalled = true;  toBeInstalled   = false};
-		toBeDeinstalled.if{isInstalled = false; toBeDeinstalled = false};
-		this.updateButtonStates;
-	}
-	fullDescription {
-		var window;
-		window = GUI.window.new(quark.name, Rect(100, 100, 400, 200)).front;
-		GUI.textView.new( window, Rect(4, 4, 392, 192))
-			.font_( Font.sansSerif( 12 ) )
-			.resize_( 5 )
-			.autohidesScrollers_( true )
-			.hasVerticalScroller_( true )
-			.string_( quark.longDesc )
-			.editable_( false );
-		GUI.button.new(window, Rect(125, 176, 150, 20))
-			.resize_(8)
-			.states_([["Open quark help"]])
-			.action_({ quark.help });
-	}
-	remove {
-		[installButton, nameView, infoButton, srcButton].do(_.remove);
-	}
-}
-
-QuarkViewQt {
-	var <quark, <isInstalled, <toBeInstalled = false, <toBeDeinstalled = false, <treeItem;
-	var installButton;
-
-	*new { |parent, quark, isInstalled|
-		^super.new.init(parent, quark, isInstalled)
-	}
-
-	init { |parent, aQuark, argIsInstalled|
-
-		quark = aQuark;
-		isInstalled = argIsInstalled;
-
-		installButton = Button().fixedSize_(Size(20,20));
-		treeItem = parent.addItem([
-			nil, quark.name,
-			quark.summary !? { quark.summary.replace("\n"," ").replace("\t","") }
-		]).setView( 0, installButton );
-
-		this.updateButtonStates;
-	}
-
-	updateButtonStates {
-		var palette = GUI.current.tryPerform(\palette);
-		var c = palette !? {palette.button};
-
-		isInstalled.if({
-			// Quark is currently installed
-			installButton.states = [
-				// installed
-				["+", nil, if(c.notNil){Color.green.blend(c,0.5)}{Color.green(1, 0.5)}],
-				// selected to deinstall
-				["x", nil, if(c.notNil){Color.red.blend(c,0.5)}{Color.red(1, 0.5)}]
-			];
-			installButton.action = { arg butt;
-				toBeDeinstalled = butt.value>0;
-			};
-
-		},{
-			// Quark is currently not installed
-			installButton.states = [
-				// never installed
-				["-", nil, ],
-				// selected to install
-				["*", nil, if(c.notNil){Color.blue.blend(c,0.5)}{Color.blue(1, 0.5)}]
-			];
-			installButton.action = { arg butt;
-				toBeInstalled = butt.value>0;
-			};
-		});
-		this.reset;
-	}
-	reset {
-		installButton.valueAction = 0;
-	}
-	flush {
-		toBeInstalled.if  {isInstalled = true;  toBeInstalled   = false};
-		toBeDeinstalled.if{isInstalled = false; toBeDeinstalled = false};
-		this.updateButtonStates;
+		HelpBrowser.openBrowsePage("Quarks>" ++ name);
 	}
 }

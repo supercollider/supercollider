@@ -8,7 +8,9 @@ DESCRIPTION::
 
 A sound file viewer with numerous options.
 
-In strong::Qt GUI:: you can strong::zoom:: in and out using Shift + right-click + mouse-up/down; likewise, you can strong::scroll:: using right-click + mouse-left/right.
+Zoom in and out using Shift + right-click + mouse-up/down;
+
+Scroll using right-click + mouse-left/right.
 
 CLASSMETHODS::
 
@@ -29,7 +31,7 @@ METHOD:: read
 
     Reads a section of the link::#-soundfile:: and displays it in the view. For large files, you may want to use readWithTask instead.
 
-    note:: In Qt GUI, the 'block' argument has no effect; the display resolution is infinite. ::
+    The 'block' argument has no effect; the display resolution is infinite.
 
     argument:: startFrame
         The beginning of the section, in frames.
@@ -48,7 +50,7 @@ METHOD:: readFile
 
     Reads a section of an open instance of SoundFile, and displays it in the view. For large files, you may want to use the method readWithTask instead.
 
-    note:: In Qt GUI, the 'block' argument has no effect; the display resolution is infinite. ::
+   The 'block' argument has no effect; the display resolution is infinite.
 
     argument:: soundfile
         An open instance of SoundFile.
@@ -69,10 +71,7 @@ METHOD:: readWithTask
 
     Reads a section of the link::#-soundfile:: asynchronously (in the background), updating the link::#-readProgress:: along the way. If the code::showProgress:: argument is code::true::, a SoundFileViewProgressWindow opens to show the progress.
 
-    note:: In Qt GUI:
-        The 'block' argument has no effect; the display resolution is infinite.
-        The 'showProgress' argument has no effect; the view always displays reading progress within itself.
-    ::
+   The 'block' argument has no effect; the display resolution is infinite. The 'showProgress' argument has no effect; the view always displays reading progress within itself.
 
     argument:: startFrame
         The beginning of the section, in frames.
@@ -94,7 +93,6 @@ METHOD:: readFileWithTask
 
     Reads a section of an open instance of SoundFile asynchronously (in the background), updating the link::#-readProgress:: along the way. If the code::showProgress:: argument is code::true::, a SoundFileViewProgressWindow opens to show the progress.
 
-    note:: In Qt GUI:
         The 'block' argument has no effect; the display resolution is infinite.
         The 'showProgress' argument has no effect; the view always displays reading progress within itself.
     ::
@@ -121,9 +119,9 @@ METHOD:: data
 
     Gets the display data, or sets custom data instead of a sound file.
 
-    note:: In Qt and SwingOSC it is not possible to get the data. ::
+    It is not possible to get the data.
 
-    In Cocoa and SwingOSC, setting this property is equivalent to link::#-setData:: with number of channels and sample rate of the current link::#-soundfile:: (if any), while in Qt it always assumes 1 channel and sample rate of 44100 Hz. Use link::#-setData:: instead if you want more control.
+   Setting this property assumes 1 channel and sample rate of 44100 Hz. Use link::#-setData:: instead if you want more control.
 
     argument::
         An Array of Floats; multiple channel data should be interleaved.
@@ -132,13 +130,12 @@ METHOD:: setData
 
     Sets custom display data instead of a sound file, interpreting it using specified number of channels and sample rate.
 
-    note:: In Qt GUI, the 'block' argument has no effect; the display resolution is infinite. ::
 
     argument:: arr
         An Array of Floats; multiple channel data should be interleaved.
 
     argument:: block
-        The block size - visual resolution of the display. An Integer of the form 2**n.
+The block size - visual resolution of the display. An Integer of the form 2**n. (since the port to QT, the 'block' argument has no effect; the display resolution is infinite).
 
     argument:: startframe
         An integer.
@@ -150,8 +147,9 @@ METHOD:: setData
         An integer.
 
 METHOD:: alloc
-    NOTE:: Only in Qt GUI ::
-    Allocates a desired amount of display channels and frames; all frames have initial value of 0.
+
+Allocates a desired amount of display channels and frames; all frames have initial value of 0.
+
     argument:: frames
         An Integer.
     argument:: channels
@@ -160,8 +158,8 @@ METHOD:: alloc
         An Integer.
 
 METHOD:: set
-    NOTE:: Only in Qt GUI ::
-    Overwrites a range of display data with another data. This method can be used after link::#-alloc:: or link::#-setData:: has been called, but not while the view is displaying a sound file.
+
+Overwrites a range of display data with another data. This method can be used after link::#-alloc:: or link::#-setData:: has been called, but not while the view is displaying a sound file.
 
     argument:: offset
         The frame at which to start overwriting; an Integer.
@@ -380,7 +378,7 @@ METHOD:: setEditableSelectionSize
 
 METHOD:: readSelection
 
-    note:: Not in Qt GUI ::
+    note:: Not implemented ::
 
     Read the data within a selection.
 
@@ -392,7 +390,7 @@ METHOD:: readSelection
 
 METHOD:: readSelectionWithTask
 
-    note:: Not in Qt GUI ::
+    note:: Not implemented ::
 
     Read the data within the current selection asynchronously (in the background), showing the progress in a separate window.
 
@@ -475,7 +473,7 @@ EXAMPLES::
 SUBSECTION:: Basic example
 
 code::
-// In Qt GUI:
+
 // To zoom in/out: Shift + right-click + mouse-up/down
 // To scroll: right-click + mouse-left/right
 (
@@ -519,7 +517,6 @@ a.read(0, f.numFrames);     // read in the entire file.
 a.refresh;                  // refresh to display the file.
 )
 
-// In Qt GUI:
 // To zoom in/out: Shift + right-click + mouse-up/down
 // To scroll: right-click + mouse-left/right
 
@@ -529,15 +526,10 @@ a.read.refresh;                     // read entire file by default
 a.read(f.numFrames / 2).refresh;    // read second half
 a.read(0, -1).refresh;              // -1 also reads entire file, like buffer.
 
-// In Qt GUI, the resolution of the view is always infinite;
+// the resolution of the view is always infinite;
 // you can always zoom in until you see a single sample.
 
-// In other GUI kits, 'block' sets the resolution of the view (default is 64).
-// i.e. the view keeps peak values for each block of e.g. 64 samples
-// rather than the entire waveform.
-a.read(0, -1, block: 32).refresh;
-a.read(0, -1, block: 24).refresh;
-a.read(0, -1, block: 16).refresh;
+a.read(0, -1).refresh;
 
 // for longer files, you can use:
 a.readWithTask;

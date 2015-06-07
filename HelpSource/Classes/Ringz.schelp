@@ -6,9 +6,8 @@ categories::  UGens>Filters>Linear
 
 Description::
 
-This is the same as  link::Classes/Resonz:: , except that instead of a
-resonance parameter, the bandwidth is specified in a 60dB ring decay
-time. One Ringz is equivalent to one component of the
+This is the same as  link::Classes/Resonz:: , except that it is a constant skirt gain filter, meaning that the peak gain depends on the value of Q. Also, instead of the
+resonance parameter in Resonz, the bandwidth is specified in a 60dB ring decay time. One Ringz is equivalent to one component of the
 link::Classes/Klank::  UGen.
 
 

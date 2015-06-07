@@ -319,7 +319,7 @@ Plot {
 	}
 
 	getRelativePositionX { |x|
-		^domainSpec.map((x - plotBounds.left) / plotBounds.width)
+		^this.resampledDomainSpec.map((x - plotBounds.left) / plotBounds.width)
 	}
 
 	getRelativePositionY { |y|

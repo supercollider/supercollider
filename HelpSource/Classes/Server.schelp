@@ -59,6 +59,18 @@ Most of the time users work with a server app running on the same machine as the
 
 One common variant of this approach is multiple clients using the same server. If you wish to do this you will need to set the server's link::Classes/ServerOptions#-maxLogins:: to at least the number of clients you wish to allow.  When a client registers for link::#-notify#notifications:: the server will supply a client ID. This also configures the allocators to avoid conflicts when allocating link::Classes/Node##Nodes::, link::Classes/Buffer##Buffers::, or link::Classes/Bus##Busses::.
 
+In order to use a remote server with tcp one should first boot the remote server using the code::-t:: option and then run the following code:
+
+code::
+(
+s.options.protocol_(\tcp);
+s.addr.connect;
+s.startAliveThread( 0 );
+s.doWhenBooted({ "remote tcp server started".postln; s.notify; s.initTree });
+)
+::
+
+
 
 
 ClassMethods::
@@ -591,6 +603,9 @@ Get/set the header format (string) of the output file. The default is "aiff". Mu
 
 method:: recSampleFormat
 Get/set the sample format (string) of the output file. The default is "float". Must be called strong::before:: prepareForRecord.
+
+method::recBufSize
+Get/set the size of the link::Classes/Buffer:: to use with the link::Classes/DiskOut:: UGen. This must be a power of two. The default is the code::sampleRate.nextPowerOfTwo:: or the first power of two number of samples longer than one second. Must be called strong::before:: prepareForRecord.
 
 subsection:: Asynchronous Commands
 

@@ -101,6 +101,7 @@ Collection {
 	notEmpty { ^this.size > 0 }
 	asCollection { ^this }
 	isCollection { ^true }
+	isAssociationArray { ^this.subclassResponsibility(thisMethod) }
 
 	add { ^this.subclassResponsibility(thisMethod) }
 	addAll { | aCollection | aCollection.asCollection.do { | item | this.add(item) } }
@@ -176,6 +177,13 @@ Collection {
 		}
 		^res;
 	}
+	collectInPlace { |function |
+		this.do { |item, i| this.put(i, function.value(item, i)) }
+	}
+	collectCopy { |func|
+		^this.copy.collectInPlace(func)
+	}
+
 	detect { | function |
 		this.do {|elem, i| if (function.value(elem, i)) { ^elem } }
 		^nil;
@@ -540,11 +548,56 @@ Collection {
 	}
 	isSubsetOf { | that | ^that.includesAll(this) }
 
-	asArray { ^Array.new(this.size).addAll(this); }
-	asBag { ^Bag.new(this.size).addAll(this); }
-	asList { ^List.new(this.size).addAll(this); }
-	asSet { ^Set.new(this.size).addAll(this); }
-	asSortedList { | function | ^SortedList.new(this.size, function).addAll(this); }
+	asArray { ^Array.new(this.size).addAll(this) }
+	asBag { ^Bag.new(this.size).addAll(this) }
+	asList { ^List.new(this.size).addAll(this) }
+	asSet { ^Set.new(this.size).addAll(this) }
+	asSortedList { | function | ^SortedList.new(this.size, function).addAll(this) }
+
+	asAssociations {
+		var res;
+		if(this.isAssociationArray) { ^this };
+		res = Array.new(this.size div: 2);
+		this.pairsDo { |key, val| res.add(key -> val) }
+		^res
+	}
+
+	asPairs {
+		var res;
+		if(this.isAssociationArray.not) { ^this };
+		res = Array.new(this.size div: 2);
+		this.do { |assoc| res.add(assoc.key).add(assoc.value) }
+		^res
+	}
+
+	asDict { |mergeFunc|
+		var res = IdentityDictionary.new; // another dispute: Dictionary would default to a very inefficient lookup.
+		if(mergeFunc.notNil) { ^this.asDictWith(mergeFunc) };
+		if(this.isAssociationArray) {
+			this.do { |assoc|
+				res.put(assoc.key, assoc.value)
+			}
+		} {
+			this.pairsDo { |key, val|
+				res.put(key, val)
+			}
+		};
+		^res
+	}
+
+	asDictWith { |mergeFunc|
+		var res = IdentityDictionary.new;
+		if(this.isAssociationArray) {
+			this.do { |assoc|
+				res.mergeItem(assoc.key, assoc.value, mergeFunc)
+			}
+		} {
+			this.pairsDo { |key, val|
+				res.mergeItem(key, val, mergeFunc)
+			}
+		};
+		^res
+	}
 
 	powerset {
 		var species = this.species;

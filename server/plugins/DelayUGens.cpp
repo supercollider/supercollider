@@ -270,6 +270,7 @@ extern "C"
 	void NumAudioBuses_Ctor(Unit *unit, int inNumSamples);
 	void NumControlBuses_Ctor(Unit *unit, int inNumSamples);
 	void NumBuffers_Ctor(Unit *unit, int inNumSamples);
+	void NodeID_Ctor(Unit *unit, int inNumSamples);
 	void NumRunningSynths_Ctor(Unit *unit, int inNumSamples);
 	void NumRunningSynths_next(Unit *unit, int inNumSamples);
 
@@ -534,6 +535,11 @@ void NumBuffers_Ctor(Unit *unit, int inNumSamples)
 	ZOUT0(0) = unit->mWorld->mNumSndBufs;
 }
 
+void NodeID_Ctor(Unit *unit, int inNumSamples)
+{
+	ZOUT0(0) = (float) unit->mParent->mNode.mID;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 void NumRunningSynths_Ctor(Unit *unit, int inNumSamples)
@@ -546,6 +552,7 @@ void NumRunningSynths_next(Unit *unit, int inNumSamples)
 {
 	ZOUT0(0) = unit->mWorld->mNumGraphs;
 }
+
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -7751,6 +7758,7 @@ PluginLoad(Delay)
 	DefineInfoUnit(NumControlBuses);
 	DefineInfoUnit(NumBuffers);
 	DefineInfoUnit(NumRunningSynths);
+	DefineInfoUnit(NodeID);
 
 #define DefineBufInfoUnit(name) \
 	(*ft->fDefineUnit)(#name, sizeof(BufInfoUnit), (UnitCtorFunc)&name##_Ctor, 0, 0);

@@ -3,6 +3,17 @@ if(NOT READLINE_INCLUDE_DIR OR NOT READLINE_LIBRARY)
     find_library(READLINE_LIBRARY NAMES readline)
 endif()
 
+if(APPLE)
+    # look in homebrew paths
+    execute_process(COMMAND brew --prefix readline OUTPUT_VARIABLE READLINE_BREW_PREFIX)
+    if (READLINE_BREW_PREFIX)
+        string(STRIP ${READLINE_BREW_PREFIX} READLINE_BREW_PREFIX)
+        message(STATUS "Found a homebrew install of readline ${READLINE_BREW_PREFIX}")
+        set(READLINE_INCLUDE_DIR ${READLINE_BREW_PREFIX}/include)
+        set(READLINE_LIBRARY ${READLINE_BREW_PREFIX}/lib/libreadline.dylib)
+    endif()
+endif()
+
 if (READLINE_INCLUDE_DIR AND READLINE_LIBRARY)
     set(READLINE_FOUND TRUE)
 endif()
@@ -14,7 +25,7 @@ if (READLINE_INCLUDE_DIR AND EXISTS "${READLINE_INCLUDE_DIR}/readline/readline.h
   file(STRINGS "${READLINE_INCLUDE_DIR}/readline/readline.h"
                READLINE_MINOR_VERSION
        REGEX "^#define RL_VERSION_MINOR.*$")
-
+  
   string(REGEX REPLACE "^.*RL_VERSION_MAJOR.*([0-9]+).*$"
                        "\\1"
                        READLINE_MAJOR_VERSION

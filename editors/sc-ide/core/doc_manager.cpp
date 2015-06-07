@@ -479,7 +479,7 @@ void DocumentManager::close( Document *doc )
             .arg(doc->id().constData());
     Main::evaluateCodeIfCompiled( command, true );
 
-    delete doc;
+    doc->deleteLater();
 }
 
 bool DocumentManager::save( Document *doc )
@@ -526,6 +526,7 @@ bool DocumentManager::doSaveAs( Document *doc, const QString & path )
 
     QString str = doc->textDocument()->toPlainText();
     file.write(str.toUtf8());
+    file.flush();
     file.close();
 
     info.refresh();
@@ -534,10 +535,17 @@ bool DocumentManager::doSaveAs( Document *doc, const QString & path )
                                   (info.suffix() == QString("scd")) ||
                                   (info.suffix() == QString("schelp")));
 
+    // It's possible the mod time has not been updated - if it looks like that is the case,
+    // just set it one second in the future, so we don't trip the external modification alarm.
+    if (doc->mSaveTime == info.lastModified()) {
+        doc->mSaveTime = QDateTime::currentDateTime().addMSecs(1000);
+    } else {
+        doc->mSaveTime = info.lastModified();
+    }
+
     doc->mFilePath = cpath;
     doc->mTitle = info.fileName();
     doc->mDoc->setModified(false);
-    doc->mSaveTime = info.lastModified();
     doc->setPlainText(fileIsPlainText);
     doc->removeTmpFile();
 

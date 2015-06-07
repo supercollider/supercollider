@@ -37,6 +37,7 @@ ServerOptions
 
 	var <>memoryLocking = false;
 	var <>threads = nil; // for supernova
+	var <>useSystemClock = false;  // for supernova
 
 	var <numPrivateAudioBusChannels=112;
 
@@ -158,6 +159,9 @@ ServerOptions
 			if (Server.program.asString.endsWith("supernova")) {
 				o = o ++ " -T " ++ threads;
 			}
+		});
+		if (useSystemClock.notNil, {
+			o = o ++ " -C " ++ useSystemClock.asInteger
 		});
 		if (maxLogins.notNil, {
 			o = o ++ " -l " ++ maxLogins;
@@ -285,7 +289,7 @@ Server {
 	var <window, <>scopeWindow;
 	var <emacsbuf;
 	var recordBuf, <recordNode, <>recHeaderFormat="aiff", <>recSampleFormat="float";
-	var <>recChannels=2;
+	var <>recChannels=2, <>recBufSize;
 
 	var <volume;
 
@@ -740,6 +744,7 @@ Server {
 	}
 
 	bootServerApp {
+		var f;
 		if (inProcess) {
 			"booting internal".inform;
 			this.bootInProcess;
@@ -751,6 +756,26 @@ Server {
 			};
 
 			pid = (program ++ options.asOptionsString(addr.port)).unixCmd;
+			if( options.protocol == \tcp ){
+				f = {
+					|attempts|
+					attempts = attempts - 1;
+					try { addr.connect } {
+						|err|
+						if (err.isKindOf(PrimitiveFailedError) and: { err.failedPrimitiveName == '_NetAddr_Connect'}) {
+							if(attempts > 0){
+								0.2.wait;
+								f.value(attempts)
+							}{
+								"Couldn't connect to server % via TCP\n".postf(this.name);
+							}
+						} {
+							err.throw;
+						}
+					}
+				};
+				fork{ f.(10) }
+			};
 			("booting " ++ addr.port.asString).inform;
 		};
 	}
@@ -850,6 +875,7 @@ Server {
 			};
 		};
 		addr.sendMsg("/quit");
+		if( options.protocol == \tcp ){ fork{ 0.1.wait; addr.disconnect } };
 		this.stopAliveThread;
 		if (inProcess, {
 			this.quitInProcess;
@@ -1033,7 +1059,7 @@ Server {
 				path = thisProcess.platform.recordingsDir +/+ "SC_" ++ Date.localtime.stamp ++ "." ++ recHeaderFormat;
 			};
 		};
-		recordBuf = Buffer.alloc(this, 65536 * 16, recChannels,
+		recordBuf = Buffer.alloc(this, recBufSize ?? { sampleRate.nextPowerOfTwo }, recChannels,
 			{arg buf; buf.writeMsg(path, recHeaderFormat, recSampleFormat, 0, 0, true);},
 			this.options.numBuffers + 1); // prevent buffer conflicts by using reserved bufnum
 		recordBuf.path = path;

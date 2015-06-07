@@ -29,7 +29,7 @@
 #include <limits>
 #include <set>
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 # include <direct.h>
 #else
 # include <sys/param.h>
@@ -58,7 +58,7 @@
 #include "PyrKernelProto.h"
 #include "InitAlloc.h"
 #include "PredefinedSymbols.h"
-#ifdef SC_WIN32
+#ifdef _WIN32
 #else
 # include "dirent.h"
 #endif
@@ -181,7 +181,7 @@ static bool getFileText(char* filename, char **text, int *length)
 	char *ltext;
 	int llength;
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 	file = fopen(filename, "rb");
 #else
 	file = fopen(filename, "r");
@@ -192,11 +192,11 @@ static bool getFileText(char* filename, char **text, int *length)
 	llength = ftell(file);
 	fseek(file, 0L, SEEK_SET);
 	ltext = (char*)pyr_pool_compile->Alloc((llength+1) * sizeof(char));
-#ifdef SC_WIN32
+#ifdef _WIN32
 	// win32 isprint( ) doesn't like the 0xcd after the end of file when
 	// there is a mismatch in lengths due to line endings....
 	memset(ltext,0,(llength+1) * sizeof(char));
-#endif //SC_WIN32
+#endif //_WIN32
 	MEMFAIL(ltext);
 
 	size_t size = fread(ltext, 1, llength, file);

@@ -27,8 +27,6 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	find_package(ALSA)
-elseif(WIN32)
-	find_package(Portmidi)
 endif()
 
 find_package(Readline 5.0)
@@ -90,7 +88,7 @@ set(sclang_sources
 
 if(APPLE)
 	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
-	
+
 	list(APPEND sclang_sources ${CMAKE_SOURCE_DIR}/common/SC_Apple.mm)
 	set_source_files_properties(${CMAKE_SOURCE_DIR}/common/SC_Apple.mm PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-exceptions")
 endif()
@@ -140,11 +138,7 @@ if(WIN32)
                 include_directories(../platform/windows/compat_stuff/getopt)
         endif()
 
-	if(PORTMIDI_FOUND)
-		include_directories (${PORTMIDI_INCLUDE_DIRS})
-		add_definitions(-DHAVE_PORTMIDI)
-		list(APPEND sclang_sources LangPrimSource/SC_PortMidi.cpp)
-	endif()
+        list(APPEND sclang_sources LangPrimSource/SC_PortMidi.cpp)
 endif()
 
 # This sets up the exe icon for windows under mingw.
@@ -221,8 +215,8 @@ if(FALSE) # libsclang is a shared library
 endif()
 
 target_compile_definitions(libsclang PRIVATE HAVE_HIDAPI)
-
 target_link_libraries( libsclang hidapi hidapi_parser )
+
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux" AND HID_HIDRAW)
   target_link_libraries( libsclang ${UDEV_LIBRARIES})
 endif()
@@ -298,9 +292,7 @@ endif()
 
 if (WIN32)
 	target_link_libraries(libsclang wsock32 ws2_32)
-	if(PORTMIDI_FOUND)
-		target_link_libraries(libsclang ${PORTMIDI_LIBRARIES})
-	endif()
+    target_link_libraries(libsclang portmidi)
 endif()
 
 if (GC_SANITYCHECK)

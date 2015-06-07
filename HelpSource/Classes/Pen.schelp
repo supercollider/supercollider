@@ -441,7 +441,6 @@ w.refresh;
 
 method:: matrix
 Gets or sets the coordinate system transformation matrix.
-note::Getter only available in Qt GUI::
 
 See link::#Matrix example:: for an example.
 
@@ -627,6 +626,18 @@ See link::#Blending modes:: for more information.
 method:: lineDash
 Set the line dash pattern.
 pattern should be a link::Classes/FloatArray:: of values that specify the lengths of the painted segments and not painted segments.
+
+method:: drawImage
+Draw a bitmap image using the Image class.
+discussion::
+example:
+code::
+w = Window.new.front;
+w.view.background = Color.red;
+i = Image.open(SCDoc.helpSourceDir +/+ "images/Swamp.png");
+w.drawFunc_({
+	Pen.drawImage( Point(140, 140), i, operation: 'sourceOver', opacity:1);
+});
 
 examples::
 Simple rotating and scaling:

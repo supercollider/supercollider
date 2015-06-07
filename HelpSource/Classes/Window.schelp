@@ -9,7 +9,7 @@ The Window is the most fundamental element of the GUI. It occupies a rectangular
 A child view is added into a window by passing the window to the view's constructor. See link::Classes/View#*new::.
 
 note::
-In strong::Qt GUI:: there is no distinction between windows, views, and containers; a View can be displayed directly on screen, and can contain other views. Therefore, visual descriptions of Window and most of the methods that are specific to Window in other GUI kits, also apply to and make part of View in Qt, and are thus shared by all its subclasses.
+There is no distinction between windows, views, and containers; a View can be displayed directly on screen, and can contain other views. Therefore, visual descriptions of Window and most of the methods that are specific to Window in other GUI kits, also apply to and make part of View in Qt, and are thus shared by all its subclasses.
 
 The Window class is provided in Qt GUI for compatibility as well as convenience: e.g. unlike View, Window will be created by default in the center of the screen, and various aspects can be conveniently controlled using its constructor arguments.
 ::
@@ -86,7 +86,7 @@ METHOD:: currentSheet
 SUBSECTION:: Visibility
 
 METHOD:: front
-	Displays the window on the screen (In Qt GUI this has the same effect as setting link::#-visible:: to true).
+	Displays the window on the screen (This has the same effect as setting link::#-visible:: to true).
 
 METHOD:: minimize
 	Hides the window, only keeping its representation in the dock, taskbar, etc..
@@ -107,7 +107,6 @@ METHOD:: alwaysOnTop
 		A Boolean.
 
 METHOD:: visible
-	note:: only in Qt GUI ::
 
 	Whether the window is visible.
 
@@ -150,7 +149,7 @@ METHOD:: setInnerExtent
 
 	Resizes the window, keeping its position intact.
 
-	In strong:: Qt GUI ::, this is equivalent to link::Classes/View#-resizeTo:: called on the link::#-view::.
+	This is equivalent to link::Classes/View#-resizeTo:: called on the link::#-view::.
 
 	argument:: w
 		An Integer width in pixels.
@@ -158,11 +157,9 @@ METHOD:: setInnerExtent
 		An Integer height in pixels.
 
 METHOD:: sizeHint
-	note:: only in Qt GUI ::
 	Redirects to link::Classes/View#-sizeHint:: of the link::#-view::.
 
 METHOD:: minSizeHint
-	note:: only in Qt GUI ::
 	Redirects to link::Classes/View#-minSizeHint:: of the link::#-view::.
 
 METHOD:: addFlowLayout
@@ -178,7 +175,6 @@ METHOD:: addFlowLayout
 	returns:: The new FlowLayout instance.
 
 METHOD:: layout
-	note:: only in Qt GUI ::
 	Redirects to link::Classes/View#-layout:: of the link::#-view::.
 
 
@@ -351,6 +347,48 @@ x.close;
 y.free;
 ::
 
+subsection:: Using Layouts
+
+Layouts are used to organize view sizes automatically. See: link::Guides/GUI-Layout-Management::.
+
+note:: Only in Cocoa GUI ::
+
+code::
+// make a window and a layout
+(
+w = Window(bounds:Rect(700,200,200,200));
+h = HLayout();
+v = VLayout(h);
+w.layout =  v;
+w.front;
+w.alwaysOnTop = true;
+)
+
+// add views step by step
+
+v.add(k = Slider());
+h.add(Slider());
+h.add(Slider());
+k.orientation = \horizontal;
+
+
+h.add(g = VLayout(), 2, \left);
+g.add(TextView());
+g.add(TextView().string_("sand and hand"));
+
+v.add(Button());
+v.add(Button());
+v.add(Button());
+g.add(Button());
+
+g.margins = [1, 1, 1, 1];
+h.margins = [1, 1, 1, 1] * 23;
+v.margins = [1, 1, 1, 1] * 5;
+
+h.add(g = VLayout(), 1, \left);
+g.add(g = HLayout(), 1, \left);
+5.do { g.add(Slider().orientation_(\vertical)) };
+::
 
 subsection:: Drawing on Window with Pen
 

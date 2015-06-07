@@ -42,7 +42,8 @@ server_arguments::server_arguments(int argc, char * argv[])
         ("control-busses,c", value<uint32_t>(&control_busses)->default_value(4096), "number of control busses")
         ("audio-busses,a", value<uint32_t>(&audio_busses)->default_value(128), "number of audio busses")
         ("block-size,z", value<uint32_t>(&blocksize)->default_value(64), "audio block size")
-        ("hardware-buffer-size,Z", value<uint32_t>()->default_value(0), "hardware buffer size")
+        ("hardware-buffer-size,Z", value<int32_t>(&hardware_buffer_size)->default_value(0), "hardware buffer size")
+        ("use-system-clock,C", value<uint16_t>(&use_system_clock)->default_value(0), "type of clock sampleclock=0 systemclock=1")
         ("samplerate,S", value<uint32_t>(&samplerate)->default_value(44100), "hardware sample rate")
         ("buffers,b", value<uint32_t>(&buffers)->default_value(1024), "number of sample buffers")
         ("max-nodes,n", value<uint32_t>(&max_nodes)->default_value(1024), "maximum number of server nodes")
@@ -60,8 +61,9 @@ server_arguments::server_arguments(int argc, char * argv[])
                                                             "UDP ports never require passwords, so for security use TCP.")
         ("nrt,N", value<vector<string> >()->multitoken(), "nrt synthesis <cmd-filename> <input-filename> <output-filename> <sample-rate> <header-format> <sample-format>")
         ("memory-locking,L", "enable memory locking")
+        ("version,v", "print the supercollider version and exit")
         ("hardware-device-name,H", value<vector<string> >()->multitoken(), "hardware device name")
-        ("verbose,v", value<int16_t>(&verbosity)->default_value(0), "verbosity: 0 is normal behaviour\n-1 suppresses informational messages\n"
+        ("verbose,V", value<int16_t>(&verbosity)->default_value(0), "verbosity: 0 is normal behaviour\n-1 suppresses informational messages\n"
                                                          "-2 suppresses informational and many error messages")
         ("ugen-search-path,U", value<vector<string> >(&ugen_paths), "a colon-separated list of paths\n"
                                                                     "if -U is specified, the standard paths are NOT searched for plugins.")
@@ -98,6 +100,7 @@ server_arguments::server_arguments(int argc, char * argv[])
 
     notify(vm);
 
+    dump_version = vm.count("version");
     memory_locking = vm.count("memory-locking");
 
     if (vm.count("help")) {

@@ -1,0 +1,50 @@
+title:: Key Value Pairs
+summary:: An interface for translating between three common data structures: Dictionaries, Arrays of Associations and of Pairs
+categories:: Collections, Interfaces
+related::Classes/IdentityDictionary, Classes/Array, Classes/Association
+
+SECTION::Motivation
+
+There are three very similar ways to represent maps between keys and values, each of which have a specific purpose:
+
+TABLE::
+## key value pairs || common representation of arguments || code::[\freq, 452, \amp, 0.2]::
+## collections of asscociations || ordering, array and collection methods || code::[0 -> [1, 2, 3], 1 -> [2, 1]]::
+## dictionaries: fast lookup || event compatibility || code::(instrument: \sine, freq: 561)::
+::
+
+To make it easy to translate between these purposes and representations, there is a uniform set of methods:
+
+TABLE::
+##code::asPairs:: || returns an array of key value pairs
+##code::asAssociations:: || returns an array of associations
+##code::asDict:: || returns an IdentityDictionary
+::
+
+EXAMPLES::
+
+CODE::
+
+// the following all return [\freq, 452, \amp, 0.2]
+
+[\freq, 452, \amp, 0.2].asPairs
+[\freq -> 452, \amp -> 0.2].asPairs
+(freq: 452, amp: 0.2).asPairs
+
+
+// the following all return [\freq -> 452, \amp -> 0.2]
+
+[\freq, 452, \amp, 0.2].asAssociations
+[\freq -> 452, \amp -> 0.2].asAssociations
+(freq: 452, amp: 0.2).asAssociations
+
+// the following all return (freq: 452, amp: 0.2) or the equivalent IdentityDictionary
+
+[\freq, 452, \amp, 0.2].asDict
+[\freq -> 452, \amp -> 0.2].asDict
+(freq: 452, amp: 0.2).asDict
+
+
+::
+
+

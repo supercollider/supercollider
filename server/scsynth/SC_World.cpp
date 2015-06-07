@@ -478,7 +478,7 @@ World* World_New(WorldOptions *inOptions)
 		scsynth::startAsioThread();
 	} catch (std::exception& exc) {
 		scprintf("Exception in World_New: %s\n", exc.what());
-		World_Cleanup(world);
+		World_Cleanup(world,true);
 		return 0;
 	} catch (...) {
 	}
@@ -758,15 +758,15 @@ Bail:
 	}
 
 	free(packet.mData);
-	World_Cleanup(world);
+	World_Cleanup(world,true);
 }
 #endif   // !NO_LIBSNDFILE
 
-void World_WaitForQuit(struct World *inWorld)
+void World_WaitForQuit(struct World *inWorld, bool unload_plugins)
 {
 	try {
 		inWorld->hw->mQuitProgram->wait();
-		World_Cleanup(inWorld);
+		World_Cleanup(inWorld, unload_plugins);
 	} catch (std::exception& exc) {
 		scprintf("Exception in World_WaitForQuit: %s\n", exc.what());
 	} catch (...) {
@@ -1002,12 +1002,15 @@ void World_Start(World *inWorld)
 	inWorld->mRunning = true;
 }
 
-void World_Cleanup(World *world)
+void World_Cleanup(World *world, bool unload_plugins)
 {
 	if (!world) return;
 
 	scsynth::stopAsioThread();
-
+    
+    if(unload_plugins)
+        deinitialize_library();
+    
 	HiddenWorld *hw = world->hw;
 
 	if (hw && world->mRealTime) hw->mAudioDriver->Stop();

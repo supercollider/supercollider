@@ -461,10 +461,9 @@ void ScServer::timerEvent(QTimerEvent * event)
         stream << osc::BeginMessage("status");
         stream << osc::MessageTerminator();
 
-        qint64 sentSize = mUdpSocket->writeDatagram(stream.Data(), stream.Size(),
-                                                    mServerAddress, mPort);
+        qint64 sentSize = mUdpSocket->write(stream.Data(), stream.Size());
         if (sentSize == -1)
-            qCritical("Failed to send server status request.");
+            qCritical() << "Failed to send server status request:" << mUdpSocket->errorString();
     }
 }
 
@@ -514,11 +513,11 @@ void ScServer::processServerStatusMessage(const osc::ReceivedMessage &message )
     if (!isRunning())
         return;
 
-    int	unused;
-    int	ugenCount;
-    int	synthCount;
-    int	groupCount;
-    int	defCount;
+    osc::int32 unused;
+    osc::int32 ugenCount;
+    osc::int32 synthCount;
+    osc::int32 groupCount;
+    osc::int32 defCount;
     float avgCPU;
     float peakCPU;
 

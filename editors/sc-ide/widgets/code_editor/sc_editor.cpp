@@ -84,9 +84,11 @@ bool ScCodeEditor::event( QEvent *e )
         QKeyEvent *ke = static_cast<QKeyEvent*>(e);
         switch (ke->key()) {
         case Qt::Key_Tab:
-            indent();
-            e->accept();
-            return true;
+            if (!tabChangesFocus()) {
+                indent();
+                e->accept();
+                return true;
+            }
         default:
             break;
         }
@@ -172,8 +174,15 @@ void ScCodeEditor::keyPressEvent( QKeyEvent *e )
     {
         QTextBlock cursorBlock = cursor.block();
         int cursorPosInBlock = cursor.position() - cursorBlock.position();
+        
+        TokenIterator prevToken = TokenIterator::leftOf(cursorBlock, cursorPosInBlock);
         TokenIterator nextToken = TokenIterator::rightOf(cursorBlock, cursorPosInBlock);
-        if ( nextToken.block() == cursorBlock && nextToken.type() == Token::ClosingBracket )
+        
+        if (   nextToken.block() == cursorBlock
+            && nextToken.type() == Token::ClosingBracket
+            && prevToken.type() != Token::ClosingBracket // no double-newline if cursor is between closing brackets, i.e. ])
+            && !(prevToken.block().firstLineNumber() < nextToken.block().firstLineNumber()) // no double-nl if only whitespace to the left
+        )
         {
             cursor.beginEditBlock();
             cursor.insertBlock();

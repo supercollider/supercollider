@@ -131,12 +131,13 @@ void GenericCodeEditor::applySettings( Settings::Manager *settings )
 
     // NOTE: the line number widget will inherit the palette from the editor
     format = &settings->getThemeVal("lineNumbers");
+    mLineIndicator->setFont(format->font());
     bg = format->background();
     fg = format->foreground();
-    if (bg.style() != Qt::NoBrush)
-        palette.setBrush(QPalette::Mid, bg);
-    if (fg.style() != Qt::NoBrush)
-        palette.setBrush(QPalette::ButtonText, fg);
+    palette.setBrush(QPalette::Mid,
+                            bg.style() != Qt::NoBrush ? bg : palette.base());
+    palette.setBrush(QPalette::ButtonText,
+                            fg.style() != Qt::NoBrush ? fg : palette.base());
 
     format = &settings->getThemeVal("selection");
     bg = format->background();
@@ -727,27 +728,6 @@ void GenericCodeEditor::wheelEvent( QWheelEvent * e )
 #endif
 }
     
-void GenericCodeEditor::focusInEvent( QFocusEvent *e )
-{
-    if(mFocusRect){
-        mFocusRect->setRect(viewport()->rect().adjusted(0, 0, -1, -1));
-        mFocusRect->setVisible(true);
-    } else {
-        QColor rectColor = palette().color(QPalette::Text);
-        rectColor.setAlpha(80);
-        mFocusRect = mOverlay->addRect(viewport()->rect().adjusted(0, 0, -1, -1), rectColor);
-    }
-    QPlainTextEdit::focusInEvent(e);
-}
-    
-void GenericCodeEditor::focusOutEvent( QFocusEvent *e )
-{
-    if (mFocusRect) {
-        mFocusRect->setVisible(false);
-    }
-    QPlainTextEdit::focusOutEvent(e);
-}
-
 void GenericCodeEditor::dragEnterEvent( QDragEnterEvent * event )
 {
     const QMimeData * data = event->mimeData();
@@ -908,10 +888,6 @@ void GenericCodeEditor::paintLineIndicator( QPaintEvent *e )
     QPainter p( mLineIndicator );
 
     p.fillRect( r, plt.color( QPalette::Mid ) );
-    p.setPen( plt.color(QPalette::Dark) );
-    p.drawLine( r.topRight(), r.bottomRight() );
-
-    p.setPen( plt.color(QPalette::ButtonText) );
 
     QTextDocument *doc = QPlainTextEdit::document();
     QTextCursor cursor(textCursor());
@@ -944,7 +920,8 @@ void GenericCodeEditor::paintLineIndicator( QPaintEvent *e )
             }
 
             QString number = QString::number(num + 1);
-            p.drawText(0, top, mLineIndicator->width() - 4, bottom - top,
+            p.setPen(plt.color(QPalette::ButtonText));
+            p.drawText(0, top, mLineIndicator->width() - 10, bottom - top,
                        Qt::AlignRight, number);
 
             p.restore();

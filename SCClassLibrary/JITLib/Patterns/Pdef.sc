@@ -703,6 +703,10 @@ PbindProxy : Pattern {
 		source = EventPatternProxy(Pbind(*pairs));
 
 	}
+	clear {
+		pairs = [];
+		source.clear;
+	}
 	embedInStream { arg inval;
 		^source.embedInStream(inval)
 	}

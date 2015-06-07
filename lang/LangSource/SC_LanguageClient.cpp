@@ -30,7 +30,7 @@
 #include <string>
 #include <cerrno>
 
-#ifdef SC_WIN32
+#ifdef _WIN32
 # include <stdio.h>
 # include <direct.h>
 # define snprintf _snprintf

@@ -10,8 +10,8 @@ joystick, gamepad, tablet) and busses (serial, PS/2, USB).
 
 See link::#examples:: below for documentation-by-example.
 
-note::
-It is advised to use link::Classes/GeneralHID:: instead, which wraps the link::Classes/HIDDeviceService:: functionality, and produces crossplatform compatible code.
+warning::
+This class will be deprecated. For working with human interface devices, consult link::Guides/Working_with_HID::.
 ::
 
 examples::

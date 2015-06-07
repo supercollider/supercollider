@@ -7,11 +7,11 @@ description::
 GeneralHID is a cross platform wrapper for accessing HID devices. Currently the MacOSX and Linux HID support has been wrapped. Some of the code is inspired by the GUI wrapper.
 A GeneralHIDDevice accesses one HID device, such as a mouse, joystick or gamepad. Devices are automatically created when a building the device list with link::Classes/GeneralHID::, so it is not necessary for a user to create a new device.
 
-See link::Classes/GeneralHID:: for a complete explanation and an example of how to access an HID device.
 
-note::
-It is advised to use this class instead of the platform specific classes: link::Classes/HIDDeviceService:: (on MacOSX) and link::Classes/LID:: (on Linux)
+warning::
+This class will be deprecated. For working with human interface devices, consult link::Guides/Working_with_HID::.
 ::
+
 
 subsection::Some outstanding issues
 This class is not completely finished yet. Common slot numbers across platforms are not yet guaranteed. On Windows there is not yet a proper implementation available.

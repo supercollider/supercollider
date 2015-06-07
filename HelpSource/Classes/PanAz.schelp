@@ -55,6 +55,22 @@ speaker will be directly in front. Should be 0.5 if the front
 bisects a side of the polygon. Then the first speaker will be the
 one left of center.
 
+section::Comparison to Pan2
+
+Despite a certain similarity, link::Classes/Pan2:: and link::Classes/PanAz:: with 2 channels behave differently.
+
+code::
+// one full cycle for PanAz: from 0 to 1
+{ PanAz.ar(2, DC.ar(1), Line.ar(0, 1, 0.1)) }.plot(0.1)
+// one full cycle for Pan2: from -1 to 1 and back to -1
+{ Pan2.ar(DC.ar(1), EnvGen.kr(Env([-1, 1, -1], [0.05, 0.05]))) }.plot(0.1)
+
+// in other words, while Pan2 makes one full transition
+{ Pan2.ar(DC.ar(1), Line.ar(-1, 1, 0.1)) }.plot(0.1)
+// we need only a half one in PanAz:
+{ PanAz.ar(2, DC.ar(1), Line.ar(0, 1/2, 0.1)) }.plot(0.1)
+::
+
 
 Examples::
 

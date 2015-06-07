@@ -6,7 +6,7 @@ categories::  UGens>Generators>Deterministic
 
 Description::
 
-A sine-like shape made of two parabolas.  It has audible odd harmonics and is non-band-limited.
+A sine-like shape made of two parabolas and the integral of a triangular wave.  It has audible odd harmonics and is non-band-limited.
 Output ranges from -1 to +1.
 
 classmethods::
@@ -44,6 +44,11 @@ code::
 
 // used as both Oscillator and LFO:
 { LFPar.ar(LFPar.kr(3, 0.3, 200, 400)) * 0.1 }.play;
+
+// used as phase modulator (behaves like a triangular modulator in FM):
+// Compare:
+{SinOsc.ar(440, LFPar.ar(1, 2, mul: 8pi))}.play
+{SinOsc.ar(440 + LFTri.ar(1, mul: 8pi))}.play
 
 
 // more examples:

@@ -177,6 +177,21 @@ public:
             seconds += (float)secs;
         return seconds * samplerate;
     }
+    
+    double to_seconds()
+    {
+        double seconds = get_fractional_seconds();
+        uint32_t secs = get_secs();
+
+        if (secs == 0)
+            seconds += (double)secs;
+        return seconds;
+    }
+    
+    bool is_immediate()
+    {
+      return data_ == 1;
+    }
 
     static time_tag from_ptime(boost::posix_time::ptime const & pt)
     {

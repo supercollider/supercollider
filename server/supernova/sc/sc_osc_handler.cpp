@@ -875,6 +875,10 @@ void sc_osc_handler::handle_bundle(received_bundle const & bundle, endpoint_ptr 
     typedef osc::ReceivedBundleElement bundle_element;
 
     if (bundle_time <= now) {
+        if (!bundle_time.is_immediate()) {
+            time_tag late = now - bundle_time;
+            log_printf("late: %zu.%09zu\n", late.get_secs(), late.get_nanoseconds());
+	};
         for (bundle_iterator it = bundle.ElementsBegin(); it != bundle.ElementsEnd(); ++it) {
             bundle_element const & element = *it;
 
@@ -981,7 +985,7 @@ void handle_status(endpoint_ptr endpoint)
           << average_load                           /* average cpu % */
           << peak_load                              /* peak cpu % */
           << instance->get_samplerate()             /* nominal samplerate */
-          << instance->get_samplerate()             /* actual samplerate */
+          << instance->smooth_samplerate             /* actual samplerate */
           << osc::EndMessage;
 
         endpoint->send(p.Data(), p.Size());
@@ -3177,8 +3181,7 @@ void handle_cmd(received_message const & msg, int size, endpoint_ptr endpoint, i
 
     const char * cmd = args.gets();
 
-    // FIXME: how to handle endpoints?
-    sc_factory->run_cmd_plugin(&sc_factory->world, cmd, &args, nullptr/*endpoint.get()*/);
+    sc_factory->run_cmd_plugin(&sc_factory->world, cmd, &args, endpoint.get());
 }
 
 } /* namespace */
@@ -3887,17 +3890,20 @@ void sc_osc_handler::do_asynchronous_command(World * world, void* replyAddr, con
                                              int completionMsgSize, void* completionMsgData)
 {
     completion_message msg(completionMsgSize, completionMsgData);
-//    nova_endpoint * endpoint = replyAddr ? static_cast<nova_endpoint*>(replyAddr)
-//                                         : nullptr;
+    endpoint_ptr shared_endpoint;
 
-    endpoint_ptr endpoint; // FIXME: how to pass endpoints through asynchronous commands?
+    nova_endpoint * endpoint = replyAddr ? static_cast<nova_endpoint*>(replyAddr)
+                                         : nullptr;
+
+    if (endpoint)
+        shared_endpoint = endpoint->shared_from_this();
 
     if (world->mRealTime)
         cmd_dispatcher<true>::fire_system_callback(std::bind(handle_asynchronous_plugin_stage2<true>, world, cmdName,
-                                                               cmdData, stage2, stage3, stage4, cleanup, msg, endpoint));
+                                                               cmdData, stage2, stage3, stage4, cleanup, msg, shared_endpoint));
     else
         cmd_dispatcher<false>::fire_system_callback(std::bind(handle_asynchronous_plugin_stage2<false>, world, cmdName,
-                                                                cmdData, stage2, stage3, stage4, cleanup, msg, endpoint));
+                                                                cmdData, stage2, stage3, stage4, cleanup, msg, shared_endpoint));
 }
 
 

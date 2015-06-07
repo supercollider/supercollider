@@ -32,7 +32,7 @@ Primitives for String.
 #include <ctype.h>
 #include "PyrLexer.h"
 #include "SC_DirUtils.h"
-#ifdef SC_WIN32
+#ifdef _WIN32
 # include <direct.h>
 # include "SC_Win32Utils.h"
 #else
@@ -163,6 +163,7 @@ int prString_Format(struct VMGlobals *g, int numArgsPushed)
 				buf[k++] = '%';
 			} else {
 				i--;
+                buf[k++] = '\\';
 			}
 		} else {
 			buf[k++] = ch;
@@ -540,7 +541,7 @@ int prStringHash(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-#ifndef SC_WIN32
+#ifndef _WIN32
 #include <glob.h>
 
 int prStringPathMatch(struct VMGlobals *g, int numArgsPushed);
@@ -578,7 +579,7 @@ int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
 
 	return errNone;
 }
-#else //#ifndef SC_WIN32
+#else //#ifndef _WIN32
 int prStringPathMatch(struct VMGlobals *g, int numArgsPushed);
 
 int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
@@ -655,7 +656,7 @@ int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
   ::FindClose(hFind);
   return errNone;
 }
-#endif //#ifndef SC_WIN32
+#endif //#ifndef _WIN32
 
 int prString_Getenv(struct VMGlobals* g, int numArgsPushed);
 int prString_Getenv(struct VMGlobals* g, int /* numArgsPushed */)
@@ -701,7 +702,7 @@ int prString_Setenv(struct VMGlobals* g, int /* numArgsPushed */)
 	if (err) return err;
 
 	if (IsNil(args+1)) {
-#ifdef SC_WIN32
+#ifdef _WIN32
 		SetEnvironmentVariable(key,NULL);
 #else
 		unsetenv(key);
@@ -710,7 +711,7 @@ int prString_Setenv(struct VMGlobals* g, int /* numArgsPushed */)
 		char value[1024];
 		err = slotStrVal(args+1, value, 1024);
 		if (err) return err;
-#ifdef SC_WIN32
+#ifdef _WIN32
 		SetEnvironmentVariable(key, value);
 #else
 		setenv(key, value, 1);

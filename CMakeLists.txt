@@ -9,7 +9,7 @@ cmake_minimum_required (VERSION 2.8.11)
 include("SCVersion.txt")
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}${PROJECT_VERSION_PATCH}")
 message(STATUS "SuperCollider Version: ${PROJECT_VERSION}")
-
+message(STATUS "Building from branch ${GIT_BRANCH}, commit hash is ${GIT_COMMIT_HASH}")
 include(CTest)
 enable_testing()
 
@@ -86,16 +86,12 @@ elseif(UNIX)
 endif()
 
 if(WIN32)
-    set_property(DIRECTORY
-                 APPEND
-                 PROPERTY COMPILE_DEFINITIONS SC_WIN32 NOMINMAX _WIN32_WINNT=0x0500)
-
-    add_definitions(-DWIN32_LEAN_AND_MEAN)
+    add_definitions(-DWIN32_LEAN_AND_MEAN -DNOMINMAX -D_WIN32_WINNT=0x0500)
 
     # correctly link the static Boost Thread library:
     add_definitions(-DBOOST_THREAD_USE_LIB)
-	#avoid unnecesary autolink
-	add_definitions(-DBOOST_DATE_TIME_NO_LIB -DBOOST_ALL_NO_LIB)
+    #avoid unnecesary autolink
+    add_definitions(-DBOOST_DATE_TIME_NO_LIB -DBOOST_ALL_NO_LIB)
 
 endif()
 
@@ -113,13 +109,7 @@ option(SSE2 "Compile with support for SSE2 instructions." ON)
 
 set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio})")
 
-if(NOT WIN32)
-	option(LIBSCSYNTH "Compile libscsynth as shared library" OFF)
-else()
-	# libscsynth has unresolved symbols, which are resolved when linked with server executable.
-	# On Windows, this is not supported for static libraries, so we build dynamic by default.
-	option(LIBSCSYNTH "Compile libscsynth as shared library" ON)
-endif()
+option(LIBSCSYNTH "Compile libscsynth as shared library" OFF)
 
 option(INSTALL_HELP "Install help docs and examples along with the software" ON)
 option(SC_DOC_RENDER "Pre-render SCDoc documentation. (For putting online, etc)" OFF)
@@ -166,7 +156,7 @@ endif()
 option(SC_SYMLINK_CLASSLIB "Place a symlink of SCCLassLibrary instead of copying" OFF)
 
 option(SYSTEM_BOOST   "Use boost libraries from system" OFF)
-option(SYSTEM_YAMLCPP "Use yaml-cpp library from system" ON)
+option(SYSTEM_YAMLCPP "Use yaml-cpp library from system" OFF)
 
 option(FORTIFY "Define -D_FORTIFY_SOURCE=2 to check for programming errors" OFF)
 
@@ -372,18 +362,38 @@ else()
 endif()
 
 if(NOT APPLE)
-  install(DIRECTORY sounds   DESTINATION ${auxresourcesdir})
-  install(DIRECTORY examples DESTINATION ${auxresourcesdir})
+	install(DIRECTORY sounds   DESTINATION ${auxresourcesdir})
+	install(DIRECTORY examples DESTINATION ${auxresourcesdir})
+elseif(APPLE)
+	install(DIRECTORY examples DESTINATION ${auxresourcesdir})
 endif()
 
-set( AdditionalInstallFiles
-     README.md
-     README_OS_X.md
-     ChangeLog
-     COPYING
-     AUTHORS
-     MOVED_STUFF.txt
-    )
+if (WIN32)
+	set( AdditionalInstallFiles
+		README.md
+		README_WINDOWS.md
+		ChangeLog
+		COPYING
+		AUTHORS
+	)
+elseif(APPLE)
+	set( AdditionalInstallFiles
+		README.md
+		README_OS_X.md
+		ChangeLog
+		COPYING
+		AUTHORS
+		MOVED_STUFF.txt
+	)
+else()
+	set( AdditionalInstallFiles
+		README.md
+		README_LINUX.md
+		ChangeLog
+		COPYING
+		AUTHORS
+	)
+endif()
 
 install(FILES ${AdditionalInstallFiles} DESTINATION ${auxresourcesdir})
 
@@ -395,6 +405,13 @@ if(INSTALL_HELP)
 		endif()
 		install( CODE
 					"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/HelpSource ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource )" )
+	elseif(NOT APPLE)
+		install(DIRECTORY HelpSource
+			DESTINATION ${auxresourcesdir}
+			REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
+			PATTERN "*~" EXCLUDE
+			PATTERN "*#" EXCLUDE
+		)
 	endif()
 endif()
 

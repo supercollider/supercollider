@@ -12,8 +12,6 @@ private::key
 
 method:: new
 
-note:: The strong::bold::, strong::italic:: and strong::isPointSize:: arguments are only available in Qt GUI.
-::
 
 argument:: name
 An instance of link::Classes/String::. Must coincide with the name of a font on the system. See link::#*availableFonts::.
@@ -63,10 +61,9 @@ The default monospace face Font.
 method:: default
 The global default Font.
 
-In Qt GUI, setting this property is equivalent to code::Font.setDefault(font)::. See link::#*setDefault:: for details.
+Setting this property is equivalent to code::Font.setDefault(font)::. See link::#*setDefault:: for details.
 
 method:: setDefault
-note::Only available in Qt GUI::
 Sets the global default font. Properties of the code::font:: argument will be combined with properties of the default system font, and those of individual views.
 
 Optionally, a class can be given, so only views of that class will be affected.
@@ -97,25 +94,22 @@ An instance of link::Classes/String::.
 
 method:: size
 Gets/sets the size of the font.
-note:: In Qt GUI, setting this variable is always considered as setting the link::#-pixelSize::, while getting it will return any size set. In other GUI kits, size is always considered as pixel-size anyway. See link::#-hasPointSize:: for distinction.::
+Setting this variable is always considered as setting the link::#-pixelSize::, while getting it will return any size set. See link::#-hasPointSize:: for distinction.::
 
 argument:: pixelSize
 A Float.
 
 method:: hasPointSize
-note::Only in Qt GUI::
 A Boolean variable indicating whether the link::#-size:: is regarded as pixel-size (precise amount of pixels), or point-size (adapting to screen resolution).
 To change this, you need to set the size via link::#-pixelSize:: or link::#-pointSize::.
 
 method:: pixelSize
-note::Only in Qt GUI::
 Gets or sets the pixel-size of the font. When getting, returns nil if the font has point-size instead. See link::#-hasPointSize:: for distinction.
 Argument::
 	Any number, but note that floats will be rounded to integer values when setting pixel-size.
 
 
 method:: pointSize
-note::Only in Qt GUI::
 Gets or sets the point-size of the font. When getting, returns nil if the font has pixel-size instead. See link::#-hasPointSize:: for distinction.
 Argument::
 	A Float.
@@ -123,9 +117,8 @@ Argument::
 method:: setDefault
 Makes this instance of Font the default.
 
-In Qt GUI, this is equivalent to calling link::#*setDefault:: with this Font and the given class as arguments.
+This is equivalent to calling link::#*setDefault:: with this Font and the given class as arguments.
 
-In other GUI kits, this is equivalent to setting the link::#*default:: property.
 
 method:: storeArgs
 (?)

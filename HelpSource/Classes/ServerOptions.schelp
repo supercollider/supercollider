@@ -127,6 +127,17 @@ method:: threads
 Number of audio threads that are spawned by supernova. For scsynth this value is ignored. If it is code::nil::or 0, it
 uses the one thread per CPU. Default is code::nil::.
 
+method:: useSystemClock
+Tells supernova whether to sync to the driver's sample clock, or to the system clock.
+For scsynth this value is ignored.
+list::
+## code::false:: (default) -- Use the sample clock. This helps to
+support sample-accurate scheduling; however, messaging latency from
+the SuperCollider language will drift over long periods of time.
+## code::true:: -- Use the system clock. Timestamped messages will maintain consistent
+latency over long sessions, but may not be perfectly sample-accurate.
+::
+
 method:: memoryLocking
 A Boolean indicating whether the server should try to lock its memory into physical RAM. Default is code::false::.
 

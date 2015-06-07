@@ -21,6 +21,11 @@ ProxySynthDef : SynthDef {
 			if(output.isKindOf(UGen) and: { output.synthDef != UGen.buildSynthDef }) {
 				Error("Cannot share UGens between NodeProxies:" + output).throw
 			};
+			// protect from accidentally wrong array shapes
+			if(output.containsSeqColl) {
+				"Synth output should be a flat array.\n%".format(output).warn;
+				output = output.flat;
+			};
 
 			output = output ? 0.0;
 
@@ -54,7 +59,7 @@ ProxySynthDef : SynthDef {
 			canFree = UGen.buildSynthDef.children.canFreeSynth;
 			hasOwnGate = UGen.buildSynthDef.hasGateControl;
 			makeFadeEnv = if(hasOwnGate and: { canFree.not }) {
-				"warning: gate does not free synth!".inform; false
+				"The gate control should be able to free the synth!\n%".format(func).warn; false
 			} {
 				makeFadeEnv and: { (isScalar || canFree).not };
 			};
