@@ -27,7 +27,8 @@
 #include <QMutex>
 #include <QHash>
 
-class ScIpcClient : public QObject
+class ScIpcClient : public QObject, IIpcLogger, public IIpcHandler
+
 {
     Q_OBJECT
 public:
@@ -60,6 +61,11 @@ private:
     QHash<QByteArray, QPair<int, int>> mDocumentSelectionMirrors;
     QMutex mTextMirrorHashMutex;
     QMutex mSelMirrorHashMutex;
+
+	// IIpcLogger
+	void onIpcLog(const QString & message);
+
+
 };
 
 

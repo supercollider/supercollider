@@ -41,7 +41,7 @@
 ScIpcClient::ScIpcClient( const char * ideName )
 {
     mSocket = new QTcpSocket();
-	mIpcChannel = new ScIpcChannel(mSocket, QString("sclang"));
+	mIpcChannel = new ScIpcChannel(mSocket, QString("sclang"), this);
 
 	mSocket->connectToHost(QHostAddress(QHostAddress::LocalHost), ScIpcChannel::Port);
     connect(mSocket, SIGNAL(readyRead()), this, SLOT(readIDEData()));
@@ -64,7 +64,7 @@ ScIpcClient::~ScIpcClient()
 
 void ScIpcClient::readIDEData() {
 
-	mIpcChannel->read<QVariantList,ScIpcClient>(this, &ScIpcClient::onResponse);
+	mIpcChannel->read<QVariantList, ScIpcClient>(this, &ScIpcClient::onResponse);
 }
     
 void ScIpcClient::onResponse( const QString & selector, const QVariantList & argList )
@@ -165,6 +165,11 @@ void ScIpcClient::setSelectionMirrorForDocument(QByteArray & id, int start, int 
     mDocumentSelectionMirrors[id] = qMakePair(start, range);
     mSelMirrorHashMutex.unlock();
 }
+
+void ScIpcClient::onIpcLog(const QString &message) {
+	post(message.toStdString().c_str());
+}
+
 
 static ScIpcClient * gIpcClient = NULL;
 

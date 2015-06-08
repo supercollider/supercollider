@@ -21,12 +21,6 @@
 #include "sc_ipc_channel.hpp"
 #include "stdio.h"
 
-ScIpcChannel::ScIpcChannel(QTcpSocket *socket, QString &tag):
-mTag(tag)
-{
-	mSocket = socket;
-}
-
 ScIpcChannel::~ScIpcChannel() {
 	bail();
 }

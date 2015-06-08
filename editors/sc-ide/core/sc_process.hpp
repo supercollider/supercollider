@@ -41,7 +41,8 @@ namespace Settings { class Manager; }
 class ScIntrospectionParser;
 
 class ScProcess:
-    public QProcess
+    public QProcess,
+	IIpcLogger
 {
     Q_OBJECT
 
@@ -117,7 +118,8 @@ private slots:
 
 private:
     void onStart();
-    void onResponse( const QString & selector, const QString & data );
+    
+	void onResponse( const QString & selector, const QString & data );
 
     void prepareActions(Settings::Manager * settings);
     void postQuitNotification();
@@ -135,6 +137,11 @@ private:
     bool mTerminationRequested;
     QDateTime mTerminationRequestTime;
     bool mCompiled;
+
+	// IIpcLogger
+	void onIpcLog(const QString &message);
+
+
 };
 
 class ScRequest : public QObject

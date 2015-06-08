@@ -260,11 +260,10 @@ void ScProcess::onNewIpcConnection()
 	}
 
     mIpcSocket = mIpcServer->nextPendingConnection();
-	mIpcChannel = new ScIpcChannel(mIpcSocket, QString("scide"));
+	mIpcChannel = new ScIpcChannel(mIpcSocket, QString("scide"), this);
 
 	emit statusMessage(tr("onNewIpcConnection::channel up"));
 
-	evaluateCode("\"w00t\".postln;", false);
     connect(mIpcSocket, SIGNAL(disconnected()), this, SLOT(finalizeConnection()));
     connect(mIpcSocket, SIGNAL(readyRead()), this, SLOT(onIpcData()));
 
@@ -327,7 +326,7 @@ void ScProcess::postQuitNotification()
 
 void ScProcess::onIpcData()
 {
-	mIpcChannel->read<QString,ScProcess>(this, &ScProcess::onResponse);
+	mIpcChannel->read<QString, ScProcess>(this, &ScProcess::onResponse);
 }
 
 void ScProcess::onResponse( const QString & selector, const QString & data )
@@ -362,13 +361,13 @@ void ScProcess::sendToScLang(QString const & selector, QVariantList const & argL
 	
 	try {
 		if (!mIpcChannel) {
-			scPost(QString("WARNING::ScIDE_Send::%1:: ipc channel is null\n").arg(selector));
+			scPost(QString("WARNING::sendToScLang::%1:: ipc channel is null\n").arg(selector));
 			return;
 		};
 		mIpcChannel->write<QVariantList>(selector, argList);
 	}
 	catch (std::exception const & e) {
-		scPost(QString("Exception during ScIDE_Send: %1\n").arg(e.what()));
+		scPost(QString("Exception during sendToScLang: %1\n").arg(e.what()));
 	}
 
 }
@@ -400,6 +399,10 @@ void ScProcess::updateSelectionMirrorForDocument ( Document * doc, int start, in
     
 	sendToScLang(QString("updateDocSelection"), argList);
 
+}
+
+void ScProcess::onIpcLog(const QString &message) {
+	scPost(message);
 }
 
 void ScIntrospectionParserWorker::process(const QString &input)
