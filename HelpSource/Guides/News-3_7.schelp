@@ -5,7 +5,7 @@ related::Guides/News-3_6, Guides/News-3_5, Guides/Debugging-tips
 
 NOTE::This is an incomplete stub::
 
-NOTE::3.7 is an alpha version, which fixes many issues, but may also introduce new ones. Please do not hesitate to add them to the issue tracker (LINK::https://github.com/supercollider/supercollider/issues::) or on the supercollider mailing list.::
+NOTE::3.7 is an alpha version, which fixes many issues, but may also introduce new ones. Please do not hesitate to add them to the LINK::https://github.com/supercollider/supercollider/issues##issue tracker:: or mention them on any of the supercollider LINK::http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx##mailing list::.::
 
 	This document focusses on features, there are STRONG::many bugfixes and interesting improvements::, which can be found by exploring the recent changes file and snooping around the system itself.
 
