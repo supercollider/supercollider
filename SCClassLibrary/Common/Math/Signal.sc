@@ -3,7 +3,7 @@ Signal[float] : FloatArray {
 	*sineFill { arg size, amplitudes, phases;
 		^Signal.newClear(size).sineFill(amplitudes, phases).normalize
 	}
-	*chebyFill { arg size, amplitudes, normalize=true, zeroOffset=true;
+	*chebyFill { arg size, amplitudes, normalize=true, zeroOffset=false;
 		^Signal.newClear(size).chebyFill(amplitudes, normalize, zeroOffset);
 	}
 	*hammingWindow { arg size, pad=0;
@@ -167,7 +167,7 @@ Signal[float] : FloatArray {
 		_SignalAddChebyshev
 		^this.primitiveFailed
 	}
-	chebyFill { arg amplitudes, normalize=true, zeroOffset=true;
+	chebyFill { arg amplitudes, normalize=true, zeroOffset=false;
 		this.fill(0.0);
 		amplitudes.do({ arg amp, i;
 			this.addChebyshev(i+1, amp);
@@ -321,7 +321,7 @@ Wavetable[float] : FloatArray {
 	}
 
 	//size must be N/2+1 for N power of two; N is eventual size of wavetable
-	*chebyFill { arg size, amplitudes, normalize=true, zeroOffset=true;
+	*chebyFill { arg size, amplitudes, normalize=true, zeroOffset=false;
 
 		^Signal.chebyFill(size, amplitudes, normalize, zeroOffset).asWavetableNoWrap; //asWavetable causes wrap here, problem
 	}

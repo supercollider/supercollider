@@ -911,7 +911,9 @@ argument:: clearFirst
 A Boolean indicating whether or not to clear the buffer before writing. The default is true.
 
 method:: cheby, chebyMsg
-Fill this buffer with a series of chebyshev polynomials, which can be defined as: code::cheby(n) = amplitude  * cos(n * acos(x))::. To eliminate a DC offset when used as a waveshaper, the wavetable is offset so that the center value is zero.
+Fill this buffer with a series of Chebyshev polynomials, which can be defined as: code::cheby(n) = amplitude  * cos(n * acos(x))::. To eliminate a DC offset when used as a waveshaper, the wavetable is offset so that the center value is zero.
+
+Similar functionality can be found in link::Classes/Signal#*chebyFill#Signal.chebyFill:: and link::Classes/Wavetable#*chebyFill#Wavetable.chebyFill::.  If you require Chebyshev polynomials that do not include the offset compensation, it is recommended to use one of these.
 argument:: amplitudes
 An Array containing amplitudes for the harmonics. The first float value specifies the amplitude for n = 1, the second float value specifies the amplitude for n = 2, and so on.
 argument:: normalize
@@ -921,6 +923,9 @@ A Boolean indicating whether or not to write to the buffer in wavetable format s
 argument:: clearFirst
 A Boolean indicating whether or not to clear the buffer before writing. The default is true.
 discussion::
+note::
+In previous versions, offsetting (to ensure the center value is zero) was performed incorrectly.  This was fixed in version 3.7, so any code that may have relied on the (wrong) behavior may need to be changed.  If using a Chebyshev buffer as a waveshaper, the simplest fix is to wrap the link::Classes/Shaper:: in a link::Classes/LeakDC:: UGen.
+::
 code::
 s.boot;
 b = Buffer.alloc(s, 512, 1, {arg buf; buf.chebyMsg([1,0,1,1,0,1])});
