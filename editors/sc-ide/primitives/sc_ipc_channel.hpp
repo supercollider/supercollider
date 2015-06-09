@@ -32,18 +32,13 @@
 #include <QThread>
 
 struct IIpcLogger {
-
 	virtual void onIpcLog(const QString &message) = 0;
-
 };
-
-class IIpcHandler {};
 
 class ScIpcChannel {
 
 	QTcpSocket *mSocket;
 	void bail();
-	void bail(const char *msg);
 
 	// used in creating the shared memory key, should uniquely identify the sender.
 	// (ie "sclang" or "scide")
@@ -55,17 +50,13 @@ public:
 	const QString LargeMessageSelector = "LargeMessage";
 	static const int Port = 5228;
 
-	// on windows, difficulties arrise when we serialize large QT objects.
+	// on windows, difficulties arise when we serialize large QT objects.
 	static const int MaxInbandSize = 4000;
 
-	ScIpcChannel(QTcpSocket *socket, QString &tag, IIpcLogger *logger) :
-		mTag(tag),
-		mLogger(logger)
-	{
-		mSocket = socket;
-	};
-
+	ScIpcChannel(QTcpSocket *socket, QString &tag, IIpcLogger *logger);
 	~ScIpcChannel();
+
+	void log(const QString &message);
 
 	template <typename TData, typename TIpcHandler>
 	void read(TIpcHandler *that, void (TIpcHandler::*onResponse)(const QString &selector, const TData &data));
@@ -73,63 +64,54 @@ public:
 	template <typename T> 
 	void write(const QString &selector, const T &data);
 
-	void log(const QString &message) {
-		mLogger->onIpcLog(QString("IPC: %1\n").arg(message));
-	}
-
 };
 
 // If these templates go in the cpp file we get linking errors.
 template <typename TData, typename TIpcHandler>
 void ScIpcChannel::read(TIpcHandler *that, void (TIpcHandler::*onResponse)(const QString &selector, const TData &data)) {
 
-	log(QString("READ:<?> - A - ScIpcChannel::read started."));
+	log("read - started.");
 
 	if (!mSocket) {
-		log(QString("READ:<?> ScIpcChannel::read - No socket."));
+		log("read - No socket.");
 		return;
 	}
 
 	while (mSocket->bytesAvailable() > 0) {
-		//QByteArray inputBytes;
-		//QBuffer buf(&inputBytes);
-		//buf.open(QIODevice::ReadOnly);
+		
 		QDataStream inStream(mSocket);
 		inStream.setVersion(QDataStream::Qt_DefaultCompiledVersion);
 
-		quint32 available = mSocket->bytesAvailable();
 		quint32 bytesExpected;
 
-		while (available < sizeof(bytesExpected)) {
+		while (mSocket->bytesAvailable() < sizeof(bytesExpected)) {
 			mSocket->waitForReadyRead();
-			available = mSocket->bytesAvailable();
 		}
 
-		//available = loadInputBytes();
 		inStream >> bytesExpected;
 		bytesExpected += sizeof(quint32);
 
 		// spin until we have all the data
 		while (mSocket->bytesAvailable() < bytesExpected)
-			mSocket->waitForReadyRead();		//available = loadInputBytes();
+			mSocket->waitForReadyRead();
+
 		bytesExpected += sizeof(quint32);
 
 		QString selector;
 		inStream >> selector;
 		if (inStream.status() != QDataStream::Ok) {
 			int status = inStream.status();
-			log(QString("IPC FAIL. reading selector, status: %1").arg(inStream.status()));
+			log(QString("read - %1 - Error reading selector, status: %2").arg(selector, inStream.status() ));
 			bail();
 			return;
 		}
-
-		log(QString("READ:B: Selector: %1").arg(selector));
 
 		TData data;
 		inStream >> data;
 
 		if (inStream.status() != QDataStream::Ok) {
-			bail(QString("IPC FAIL. reading data, status: %1").arg(inStream.status()).toStdString().c_str());
+			log(QString("read - %1 - Error reading data, status: %2").arg(selector, inStream.status() ));
+			bail();
 			return;
 		}
 
@@ -140,19 +122,17 @@ void ScIpcChannel::read(TIpcHandler *that, void (TIpcHandler::*onResponse)(const
 		check ^= CheckMask;
 
 		if (inStream.status() != QDataStream::Ok || bytesExpected != check) {
-			bail("Check failed.");
+			log("read - Check failed.");
+			bail();
 			return;
 		}
 
-		log(QString("READ:<%1> - C").arg(selector));
-
 		if (selector == LargeMessageSelector) {
-			log(QString("READ:<%1> - WOOT").arg(selector));
 			QByteArray lotsOfBytes;
 			{
-				ScIpcLargeMessage* blob = new ScIpcLargeMessage(data);
-				blob->receive(lotsOfBytes);
-				delete blob;
+				ScIpcLargeMessage* largeMessage = new ScIpcLargeMessage(data, mLogger);
+				largeMessage->receive(lotsOfBytes);
+				delete largeMessage;
 			}
 
 			QBuffer largeBuf(&lotsOfBytes);
@@ -165,10 +145,8 @@ void ScIpcChannel::read(TIpcHandler *that, void (TIpcHandler::*onResponse)(const
 			largeBuf.close();
 		}
 
-		log(QString("READ<%1>:D").arg(selector));
 		// call the handler
 		(that->*onResponse)(selector, data);
-		log(QString("READ<%1>:EEEE").arg(selector));
 
 	}
 	
@@ -176,11 +154,10 @@ void ScIpcChannel::read(TIpcHandler *that, void (TIpcHandler::*onResponse)(const
 
 template <typename T> void ScIpcChannel::write(const QString &selector, const T &data) {
 
-
-	log(QString("ScIpcChannel::write started. <%1>").arg(selector));
+	//log(QString("write - %1 - started.").arg(selector));
 
 	if (!mSocket) {
-		log(QString("ScIpcChannel::write - No socket."));
+		log(QString("write - %1 - No socket.").arg(selector));
 		return;
 	}
 
@@ -194,28 +171,30 @@ template <typename T> void ScIpcChannel::write(const QString &selector, const T 
 	bufStream << data;
 	buf.close();
 	
+	// when we serialize a QByteArray, the length (quint32) of the array is automatically sent first.
+	// On the other side, we must adjust this, as we send a quint32 check after.
 	quint32 left = bytes.size();
-	quint32 total_length = left + 2 * sizeof(quint32);
+	quint32 totalLength = left + 2 * sizeof(quint32);
 			 
-	if (total_length < ScIpcChannel::MaxInbandSize) {
+	if (totalLength < ScIpcChannel::MaxInbandSize) {
 		QDataStream socketStream(mSocket);
 		socketStream.setVersion(QDataStream::Qt_DefaultCompiledVersion);
+
 		socketStream << bytes;
-		total_length ^= CheckMask;
-		socketStream << total_length;
+		totalLength ^= CheckMask;
+		socketStream << totalLength;
 		
-		auto waitReturn = mSocket->waitForBytesWritten();
-		if (!waitReturn) {
-			log(QString("waitForBytesWritten timedout. <%1>:%2 bytes.").arg(selector, total_length));
+		if (!mSocket->waitForBytesWritten()) {
+			log(QString("write - %1 - waitForBytesWritten timeout - %2 bytes attempted.").arg(selector, totalLength));
 		}
 	}
 	else {
-		ScIpcLargeMessage* blob = new ScIpcLargeMessage(bytes, mTag);
-		blob->send(this); // returns after the other side has read it.
-		delete blob;
+		ScIpcLargeMessage* largeMessage = new ScIpcLargeMessage(bytes, mTag, mLogger);
+		largeMessage->send(this); // returns after the other side has read it, or after we've given up.
+		delete largeMessage;
 	}
 	
-	log(QString("ScIpcChannel::write complete. <%1>").arg(selector));
+	//log(QString("write - %1 - complete.").arg(selector));
 }
 
 struct ScIpcLargeMessageMemory {
@@ -230,18 +209,9 @@ struct ScIpcLargeMessageMemory {
 	qint32 mFresh;
 	Status mStatus;
 
-	char *data(void *memory) {
-		return static_cast<char *>(memory)+sizeof(ScIpcLargeMessageMemory);
-	}
-
-	void coolStoryBro() {
-		mFresh = 0;
-		mStatus = DONE;
-	}
-
-	qint32 ripen() {
-		return --mFresh;
-	}
+	char *data(void *memory);
+	void coolStoryBro();
+	qint32 ripen();
 
 };
 
@@ -253,100 +223,23 @@ public:
 	QSharedMemory *shm;
 	ScIpcLargeMessageMemory *memory;
 	char *data;
+	IIpcLogger *mLogger;
 
 	// Here we are a writer.
-	ScIpcLargeMessage(QByteArray &bytes, QString &tag) {
-		static int i = 0;
-		QString key = QString("ScIpcLargeMessage<%1>:%2").arg(tag, ++i);
-
-		quint32 n = bytes.size();
-		shm = new QSharedMemory();
-		shm->setKey(key);
-		if (!shm->create(sizeof(quint32) + n + 1)) {
-			const char *wtf = shm->errorString().toStdString().c_str();
-			return;
-		}
-
-		shm->lock();
-		void *p = shm->data();
-		memory = static_cast<ScIpcLargeMessageMemory*>(p);
-		memory->mLength = n;
-		memory->mFresh = 10;
-		memory->mStatus = ScIpcLargeMessageMemory::UNREAD;
-		data = memory->data(p);
-		
-		memcpy(data, bytes.constData(), (size_t)n);
-		data[n] = '\0';
-		shm->unlock();
-
-	}
+	ScIpcLargeMessage(QByteArray &bytes, QString &tag, IIpcLogger *logger);
 
 	// Here we are a reader.
-	ScIpcLargeMessage(QString &key) {
-		
-		shm = new QSharedMemory();
-		shm->setKey(key);
-		if (!shm->attach()) {
-			const char *wtf = shm->errorString().toStdString().c_str();
-			return;
-		}
-
-		void *p = shm->data();
-		memory = static_cast<ScIpcLargeMessageMemory*>(p);
-		data = memory->data(p);
-		
-	}
+	ScIpcLargeMessage(QString &key, IIpcLogger *logger);
 
 	// these are here so the template ScIpcChannel::read can compile. they are not used.
-	ScIpcLargeMessage(QVariantList &data) {}
-	ScIpcLargeMessage(QStringList &data) {}
+	ScIpcLargeMessage(QVariantList &data, IIpcLogger *logger);
+	ScIpcLargeMessage(QStringList &data, IIpcLogger *logger);
 
-	~ScIpcLargeMessage() {
-		if (shm) {
-			if (shm->isAttached())
-				shm->detach();
-			shm->deleteLater();
-			shm = nullptr;
-		}
-	}
+	~ScIpcLargeMessage();
 
-	void send(ScIpcChannel *channel) {
-		QString &key = shm->key();
-
-		channel->log(QString("ScIpcLargeMessage::send - Signaling other side that there's data."));
-		channel->write<QString>(channel->LargeMessageSelector, key);
-		
-		// wait until other side has read this, give up when it's not fresh anymore.
-		shm->lock();
-		while (memory->ripen() > 0) {																	
-			channel->log(QString("ScIpcLargeMessage::send - memory->mFresh == %1").arg(memory->mFresh));
-			shm->unlock();
-			QThread::msleep(500L);
-			shm->lock();
-		}
-
- 		if (memory->mStatus != ScIpcLargeMessageMemory::DONE) {
-			auto status = memory->mStatus;
-			// log error
-			channel->log(QString("ScIpcLargeMessage::send - Other side didn't read shared memory, deleting. status:%1").arg(status));
-			shm->unlock();
-			return;
-		}
-
-		shm->unlock();
-	}
-
-	void receive(QByteArray &dst) {
-		shm->lock();
-		if (memory->mFresh > 0) {
-			dst.append(data, memory->mLength);
-			memory->coolStoryBro();
-		}
-		shm->unlock();
-	}
-
+	void send(ScIpcChannel *channel);
+	void receive(QByteArray &dst);
+	void log(const QString &message);
 };
-
-
 
 #endif //SuperCollider_ScIpcChannel_hpp

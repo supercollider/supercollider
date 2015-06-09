@@ -119,7 +119,7 @@ QString ScIpcClient::getTextMirrorForDocument(QByteArray & id, int pos, int rang
             mTextMirrorHashMutex.unlock();
         }
     } else {
-        post("WARNING: Attempted to access missing Text Mirror for Document %s\n", id.constData());
+        post("WARNING: Attempted to access (get) missing Text Mirror for Document %s\n", id.constData());
     }
     return returnText;
 }
@@ -140,7 +140,7 @@ void ScIpcClient::setTextMirrorForDocument(QByteArray & id, const QString & text
             mDocumentTextMirrors[id] = existingText.replace(pos, range, text);
             mTextMirrorHashMutex.unlock();
         } else {
-            post("WARNING: Attempted to modify missing Text Mirror for Document %s\n", id.constData());
+            post("WARNING: Attempted to modify (set) missing Text Mirror for Document %s\n", id.constData());
         }
     }
 }

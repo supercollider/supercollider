@@ -329,7 +329,7 @@ void ScProcess::onIpcData()
 	mIpcChannel->read<QString, ScProcess>(this, &ScProcess::onResponse);
 }
 
-void ScProcess::onResponse( const QString & selector, const QString & data )
+void ScProcess::onResponse(const QString & selector, const QString & data)
 {
     static QString introspectionSelector("introspection");
     static QString classLibraryRecompiledSelector("classLibraryRecompiled");

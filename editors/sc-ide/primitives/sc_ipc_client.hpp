@@ -27,8 +27,7 @@
 #include <QMutex>
 #include <QHash>
 
-class ScIpcClient : public QObject, IIpcLogger, public IIpcHandler
-
+class ScIpcClient : public QObject, IIpcLogger
 {
     Q_OBJECT
 public:

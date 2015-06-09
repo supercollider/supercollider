@@ -359,7 +359,7 @@ build folder.
 
       $> cd supercollider; mkdir build; cd build
       $> cmake -G "Visual Studio 12 2013 Win64" -DCMAKE_PREFIX_PATH=C:\Qt\5.4\msvc2013_64_opengl ..
-      $> cmake --build . --target install --config Release -- /m4
+      $> cmake --build . --target install --config Release -- /m:4
 
                               ****
 
