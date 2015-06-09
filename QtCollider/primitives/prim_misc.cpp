@@ -139,7 +139,7 @@ QC_LANG_PRIMITIVE( QFont_DefaultFamilyForStyle, 1, PyrSlot *r, PyrSlot *a, VMGlo
         family = "serif";
         break;
     case 2:
-        styleHint = QFont::TypeWriter;
+        styleHint = QFont::Monospace;
         family = "monospace";
         break;
     default:
@@ -147,10 +147,9 @@ QC_LANG_PRIMITIVE( QFont_DefaultFamilyForStyle, 1, PyrSlot *r, PyrSlot *a, VMGlo
     }
 
     QFont font(family);
-    font.setStyleHint(styleHint);
+	font.setStyleHint(styleHint, QFont::PreferMatch);
 
-    QFontInfo fontInfo(font);
-    QtCollider::set( r, fontInfo.family() );
+    QtCollider::set( r, font.defaultFamily() );
 
     return errNone;
 }
