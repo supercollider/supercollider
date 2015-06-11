@@ -40,6 +40,8 @@ QC_DECLARE_FACTORY( QcTextEdit, QcTextEditFactory );
 
 QcTextEdit::QcTextEdit() : _interpretSelection(true)
 {
+  setAttribute(Qt::WA_AcceptTouchEvents);
+
   connect( this, SIGNAL(interpret(QString)),
            qApp, SLOT(interpret(QString)),
            Qt::QueuedConnection );

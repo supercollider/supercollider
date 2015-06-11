@@ -56,6 +56,8 @@ QcNumberBox::QcNumberBox()
 
   setLocked( true );
 
+  setAttribute(Qt::WA_AcceptTouchEvents);
+
   connect( this, SIGNAL( editingFinished() ),
            this, SLOT( onEditingFinished() ) );
   connect( this, SIGNAL( valueChanged() ),

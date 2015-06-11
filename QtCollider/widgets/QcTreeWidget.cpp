@@ -37,6 +37,8 @@ QC_DECLARE_FACTORY( QcTreeWidget, QcTreeWidgetFactory );
 
 QcTreeWidget::QcTreeWidget()
 {
+  setAttribute(Qt::WA_AcceptTouchEvents);
+
   // Forward signals to argument-less versions connectable from SC.
   connect( this, SIGNAL( itemActivated(QTreeWidgetItem*, int) ),
            this, SIGNAL( action() ) );

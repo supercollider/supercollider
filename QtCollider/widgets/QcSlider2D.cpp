@@ -39,6 +39,7 @@ QcSlider2D::QcSlider2D() :
 {
   setFocusPolicy( Qt::StrongFocus );
   setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
+  setAttribute(Qt::WA_AcceptTouchEvents);
 }
 
 void QcSlider2D::incrementX( double factor )
