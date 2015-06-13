@@ -91,7 +91,8 @@ Git {
 		}
 	}
 	shaForTag { |tag|
-		^this.git(["rev-list", tag]).copyFromStart(39)
+		var out = this.git(["rev-list", tag, "--max-count=1"]);
+		^out.copyFromStart(39)
 	}
 	git { |args, cd=true|
 		var cmd;
