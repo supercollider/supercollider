@@ -102,7 +102,9 @@ Quark {
 					git.pull()
 				}, {
 					rs = this.validateRefspec(refspec);
-					git.checkout(rs)
+					if(rs.notNil, {
+						git.checkout(rs)
+					});
 				});
 			});
 			changed = true;
@@ -122,7 +124,8 @@ Quark {
 			tag = refspec.copyToEnd(5);
 		});
 		if(this.tags.includesEqual(tag).not, {
-			Error("Tag not found:" + this + tag).throw;
+			("Tag not found:" + this + tag + Char.nl + "Possible tags:" + this.tags).warn;
+			^nil
 		});
 		^refspec
 	}
