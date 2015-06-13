@@ -194,17 +194,6 @@ MethodOverride {
 		path2.openTextFile;
 	}
 
-	*simplifyPath { arg path;
-		var extDir, sysExtDir, quarkDir;
-		extDir = Platform.userExtensionDir;
-		sysExtDir = Platform.systemExtensionDir;
-		quarkDir = LocalQuarks.globalPath;
-		path = path.replace("'" ++ extDir, "Platform.userExtensionDir ++ '");
-		path = path.replace("'" ++ sysExtDir, "Platform.systemExtensionDir ++ '");
-		path = path.replace("'" ++ quarkDir, "LocalQuarks.globalPath ++ '");
-		^path
-
-	}
 
 	*all {
 		var msg = Main.overwriteMsg.drop(-1); // drop last newline
@@ -212,7 +201,7 @@ MethodOverride {
 		^lines.collect { |line| this.fromLine(line) };
 	}
 
-	*printAll { arg simplifyPaths = true;
+	*printAll {
 		var all = this.all;
 		var classes = all.collect(_.ownerClass).as(Set);
 		if(all.isEmpty) { "There are no overwritten methods in class library".postln; ^this };
@@ -222,10 +211,6 @@ MethodOverride {
 			all.select { |x| x.ownerClass == class }.do { |x|
 				var activePath = x.activePath;
 				var overriddenPath = x.overriddenPath;
-				if(simplifyPaths) {
-					activePath = this.simplifyPath(x.activePath);
-					overriddenPath = this.simplifyPath(x.overriddenPath);
-				};
 				("\t" ++ x.ownerClass.name ++ ":" ++ x.selector).postln;
 				("\t\t" ++ activePath).postln;
 				("\t\t" ++ overriddenPath).postln;
