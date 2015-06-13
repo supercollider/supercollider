@@ -65,7 +65,7 @@ Quark {
 	}
 	isCompatible {
 		var isCompatible = true;
-		if(this.data.includesKey['isCompatible'], {
+		if(this.data.includesKey('isCompatible'), {
 			{
 				isCompatible = this.data['isCompatible'].value !== false
 			}.try({ |error|
