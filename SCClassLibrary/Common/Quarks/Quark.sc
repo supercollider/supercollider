@@ -64,7 +64,16 @@ Quark {
 		^Quarks.pathIsInstalled(this.localPath)
 	}
 	isCompatible {
-		^this.data['isCompatible'].value !== false
+		var isCompatible = true;
+		if(this.data.includesKey('isCompatible'), {
+			{
+				isCompatible = this.data['isCompatible'].value !== false
+			}.try({ |error|
+				("Failed to evalute quarkfile data field: isCompatible" + this).error;
+				error.reportError;
+			});
+		});
+		^isCompatible
 	}
 
 	install {
