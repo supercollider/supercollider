@@ -282,7 +282,7 @@ Server {
 	var <avgCPU, <peakCPU;
 	var <sampleRate, <actualSampleRate;
 
-	var alive = false, booting = false, aliveThread, <>aliveThreadPeriod = 0.7, statusWatcher;
+	var alive = false, booting = false, <unresponsive = false, aliveThread, <>aliveThreadPeriod = 0.7, statusWatcher;
 	var <>tree;
 
 	var <window, <>scopeWindow;
@@ -522,33 +522,35 @@ Server {
 			if(val.not) {
 				reallyDeadCount = reallyDeadCount - 1;
 			};
-			if (val != serverRunning or: { reallyDeadCount == 0 }) {
-				if(thisProcess.platform.isSleeping.not) {
-					serverRunning = val;
+			if (val != serverRunning) {
+				serverRunning = val;
 
-					if (serverRunning.not) {
-						if(reallyDeadCount <= 0) {
-							ServerQuit.run(this);
+				if (serverRunning.not) {
+					if(reallyDeadCount <= 0) {
+						ServerQuit.run(this);
 
-							if (serverInterface.notNil) {
-								serverInterface.disconnect;
-								serverInterface = nil;
-							};
-
-							NotificationCenter.notify(this, \didQuit);
-							recordNode = nil;
-							if(this.isLocal.not) {
-								notified = false;
-							};
+						if (serverInterface.notNil) {
+							"server disconnected shared memory interface".postln;
+							serverInterface.disconnect;
+							serverInterface = nil;
 						};
-					} {
-						if(reallyDeadCount <= 0) {
-							ServerBoot.run(this);
+
+						NotificationCenter.notify(this, \didQuit);
+						recordNode = nil;
+						if(this.isLocal.not) {
+							notified = false;
 						};
-						reallyDeadCount = this.options.pingsBeforeConsideredDead;
 					};
-					{ this.changed(\serverRunning); }.defer;
-				}
+				} {
+					if(reallyDeadCount <= 0) {
+						ServerBoot.run(this);
+					};
+					reallyDeadCount = this.options.pingsBeforeConsideredDead;
+				};
+				{ this.changed(\serverRunning) }.defer;
+
+			} {
+				unresponsive = (reallyDeadCount == 0);
 			}
 		};
 	}
@@ -711,6 +713,8 @@ Server {
 		if (serverBooting, { "server already booting".inform; ^this });
 
 		serverBooting = true;
+		unresponsive = false;
+
 		if(startAliveThread, { this.startAliveThread });
 		if(recover) { this.newNodeAllocators } { this.newAllocators };
 		bootNotifyFirst = true;
@@ -752,6 +756,7 @@ Server {
 			if (serverInterface.notNil) {
 				serverInterface.disconnect;
 				serverInterface = nil;
+				"server disconnected shared memory interface".postln;
 			};
 
 			pid = (program ++ options.asOptionsString(addr.port)).unixCmd;
