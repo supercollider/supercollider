@@ -427,7 +427,7 @@ void ScServer::handleRuningStateChangedMsg( const QString & data )
     stream << data.toStdString();
     YAML::Parser parser(stream);
 
-    bool serverRunningState = false;
+    bool serverRunningState, serverUnresponsive;
     std::string hostName;
     int port;
 
@@ -443,13 +443,16 @@ void ScServer::handleRuningStateChangedMsg( const QString & data )
 
         success = doc[2].Read(port);
         if (!success) return; // LATER: report error?
+		
+		success = doc[3].Read(serverUnresponsive);
+		if (!success) return; // LATER: report error?
     }
 
     QString qstrHostName( hostName.c_str() );
 
-    onRunningStateChanged( serverRunningState, qstrHostName, port );
+    onRunningStateChanged( serverRunningState, qstrHostName, port);
 
-    emit runningStateChange( serverRunningState, qstrHostName, port );
+    emit runningStateChange( serverRunningState, qstrHostName, port, serverUnresponsive );
 }
 
 void ScServer::timerEvent(QTimerEvent * event)

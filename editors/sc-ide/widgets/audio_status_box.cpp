@@ -77,15 +77,15 @@ AudioStatusBox::AudioStatusBox(ScServer *server, QWidget *parent):
     addAction( server->action(ScServer::Mute) );
     addAction( server->action(ScServer::Volume) );
 
-    connect(server, SIGNAL(runningStateChange(bool,QString,int)),
-            this, SLOT(onServerRunningChanged(bool,QString,int)));
+    connect(server, SIGNAL(runningStateChange(bool,QString,int,bool)),
+            this, SLOT(onServerRunningChanged(bool,QString,int,bool)));
     connect(server, SIGNAL(updateServerStatus(int,int,int,int,float,float)),
             this, SLOT(onServerStatusReply(int,int,int,int,float,float)));
     connect(server, SIGNAL(volumeChanged(float)), this, SLOT(updateVolumeLabel(float)));
     connect(server, SIGNAL(mutedChanged(bool)), this, SLOT(updateMuteLabel(bool)));
     connect(server, SIGNAL(recordingChanged(bool)), this, SLOT(updateRecordLabel(bool)));
 
-    onServerRunningChanged(false, "", 0);
+    onServerRunningChanged(false, "", 0, false);
     updateVolumeLabel( mServer->volume() );
     updateMuteLabel( mServer->isMuted() );
     updateRecordLabel( mServer->isRecording() );
@@ -104,11 +104,20 @@ void AudioStatusBox::onServerStatusReply(int ugens, int synths, int groups, int 
     updateStatistics();
 }
 
-void AudioStatusBox::onServerRunningChanged(bool running, const QString &, int)
+void AudioStatusBox::onServerRunningChanged(bool running, const QString &, int, bool unresponsive)
 {
-    mStatisticsLabel->setTextColor( running ? Qt::green : Qt::white);
-    mVolumeLabel->setTextColor( running ? Qt::green : Qt::white );
-
+	
+	if(running) {
+		mStatisticsLabel->setTextColor(Qt::green);
+		mVolumeLabel->setTextColor(Qt::green);
+	} else if (unresponsive) {
+		mStatisticsLabel->setTextColor(Qt::yellow);
+		mVolumeLabel->setTextColor(Qt::yellow);
+	} else {
+		mStatisticsLabel->setTextColor(Qt::white);
+		mVolumeLabel->setTextColor(Qt::white);
+	};
+	
     if (!running)
         onServerStatusReply(0, 0, 0, 0, 0, 0);
 }

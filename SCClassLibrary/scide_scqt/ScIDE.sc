@@ -37,7 +37,7 @@ ScIDE {
 		serverController = SimpleController(server)
 		.put(\serverRunning, { | server, what, extraArg |
 			this.send(\defaultServerRunningChanged, [
-				server.serverRunning, server.addr.hostname, server.addr.port]);
+				server.serverRunning, server.addr.hostname, server.addr.port, server.unresponsive]);
 		})
 		.put(\default, { | server, what, newServer |
 			("changed default server to:" + newServer.name).postln;
@@ -64,7 +64,7 @@ ScIDE {
 		defaultServer = server;
 
 		this.send(\defaultServerRunningChanged, [
-			server.serverRunning, server.addr.hostname, server.addr.port]);
+			server.serverRunning, server.addr.hostname, server.addr.port, server.unresponsive]);
 		this.send( if(server.volume.isMuted, \serverMuted, \serverUnmuted) );
 		this.send( if(server.dumpMode.asBoolean, \dumpOSCStarted, \dumpOSCStopped) );
 		this.send( \serverAmpRange, "%,%".format(server.volume.min, server.volume.max) );
