@@ -858,8 +858,9 @@ Server {
 		this.changed(\dumpOSC, code);
 	}
 
-	quit {
+	quit { |watchShutDown = true|
 		var	serverReallyQuitWatcher, serverReallyQuit = false;
+		if(watchShutDown.not) { statusWatcher.disable; statusWatcher = nil };
 		statusWatcher !? {
 			statusWatcher.disable;
 			if(notified) {
@@ -872,10 +873,11 @@ Server {
 						serverReallyQuitWatcher.free;
 					};
 				}, '/done', addr);
-				// don't accumulate quit-watchers if /done doesn't come back
+
 				AppClock.sched(3.0, {
 					if(serverReallyQuit.not) {
 						"Server % failed to quit after 3.0 seconds.".format(this.name).warn;
+						// don't accumulate quit-watchers if /done doesn't come back
 						serverReallyQuitWatcher.free;
 					};
 				});
@@ -904,10 +906,10 @@ Server {
 		this.newAllocators;
 	}
 
-	*quitAll {
+	*quitAll { |watchShutDown = true|
 		set.do({ arg server;
 			if (server.sendQuit === true) {
-				server.quit
+				server.quit(watchShutDown)
 			};
 		})
 	}
@@ -919,7 +921,7 @@ Server {
 
 		// this brutally kills them all off
 		thisProcess.platform.killAll(this.program.basename);
-		this.quitAll;
+		this.quitAll(false);
 	}
 	freeAll {
 		this.sendMsg("/g_freeAll", 0);
