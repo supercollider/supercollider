@@ -275,9 +275,7 @@ Server {
 	var <nodeAllocator, <controlBusAllocator, <audioBusAllocator, <bufferAllocator, <scopeBufferAllocator;
 
 	var <serverRunning = false, <>serverBooting = false, <unresponsive = false;
-	var <>numUGens=0, <>numSynths=0, <>numGroups=0, <>numSynthDefs=0;
-	var <>avgCPU, <>peakCPU;
-	var <>sampleRate, <>actualSampleRate;
+
 
 	var <syncThread, <syncTasks;
 	var statusWatcher;
@@ -624,6 +622,18 @@ Server {
 		}
 	}
 
+	/* backward compatibility */
+
+	numUGens { ^statusWatcher.numUGens }
+	numSynths { ^statusWatcher.numSynths }
+	numGroups { ^statusWatcher.numGroups }
+	numSynthDefs { ^statusWatcher.numSynthDefs }
+	avgCPU { ^statusWatcher.avgCPU }
+	peakCPU { ^statusWatcher.peakCPU }
+	sampleRate { ^statusWatcher.sampleRate }
+	actualSampleRate { ^statusWatcher.actualSampleRate }
+
+
 	/* server status */
 
 	startAliveThread { | delay=0.0 |
@@ -643,11 +653,7 @@ Server {
 		^statusWatcher.aliveThreadPeriod
 	}
 
-	updateInfoFromOSC { |msg|
-		var cmd, one;
-		#cmd, one, numUGens, numSynths, numGroups, numSynthDefs,
-						avgCPU, peakCPU, sampleRate, actualSampleRate = msg;
-	}
+
 
 	disconnectSharedMemory {
 		if (serverInterface.notNil) {
@@ -977,7 +983,7 @@ Server {
 				path = thisProcess.platform.recordingsDir +/+ "SC_" ++ Date.localtime.stamp ++ "." ++ recHeaderFormat;
 			};
 		};
-		recordBuf = Buffer.alloc(this, recBufSize ?? { sampleRate.nextPowerOfTwo }, recChannels,
+		recordBuf = Buffer.alloc(this, recBufSize ?? { this.sampleRate.nextPowerOfTwo }, recChannels,
 			{arg buf; buf.writeMsg(path, recHeaderFormat, recSampleFormat, 0, 0, true);},
 			this.options.numBuffers + 1); // prevent buffer conflicts by using reserved bufnum
 		recordBuf.path = path;
