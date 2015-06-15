@@ -510,50 +510,54 @@ Server {
 	}
 
 	serverRunning_ { arg val;
-		// var countNotRunning = 0;
-		if(addr.hasBundle) {
-			{ this.changed(\bundling); }.defer;
-		} {
-			// We should not have a hair trigger for ServerQuit and ServerBoot.
-			// One or two unanswered /status messages are a temporary glitch.
-			// So here, require 5 consecutive "not running" calls
-			// before panicking. 5 * 0.7 = 3.5 sec
-			// Aside: If you explicitly shut down the server then newAllocators
-			// and the \newAllocators notification will happen immediately
-			if(val.not) {
-				reallyDeadCount = reallyDeadCount - 1;
-			};
-			if (val != serverRunning) {
-				serverRunning = val;
 
-				if (serverRunning.not) {
-					if(reallyDeadCount <= 0) {
-						ServerQuit.run(this);
+		if (val != serverRunning) {
+			serverRunning = val;
+			unresponsive = false;
 
-						if (serverInterface.notNil) {
-							"server disconnected shared memory interface".postln;
-							serverInterface.disconnect;
-							serverInterface = nil;
-						};
-
-						NotificationCenter.notify(this, \didQuit);
-						recordNode = nil;
-						if(this.isLocal.not) {
-							notified = false;
-						};
-					};
-				} {
-					if(reallyDeadCount <= 0) {
-						ServerBoot.run(this);
-					};
-					reallyDeadCount = this.options.pingsBeforeConsideredDead;
-				};
-				{ this.changed(\serverRunning) }.defer;
-
+			if (serverRunning) {
+				ServerBoot.run(this);
 			} {
-				unresponsive = (reallyDeadCount == 0);
+				ServerQuit.run(this);
+
+				if (serverInterface.notNil) {
+					"server '%' disconnected shared memory interface\n".postf(name);
+					serverInterface.disconnect;
+					serverInterface = nil;
+				};
+
+				NotificationCenter.notify(this, \didQuit);
+				recordNode = nil;
+				if(this.isLocal.not) {
+					notified = false;
+				};
+			};
+			this.changed(\serverRunning)
+			//{ this.changed(\serverRunning) }.defer;
+		}
+	}
+
+	updateRunningState { arg val;
+		if(addr.hasBundle) {
+			{ this.changed(\bundling) }.defer;
+		} {
+			if(val) {
+				serverRunning = true;
+				this.unresponsive = false;
+				reallyDeadCount = this.options.pingsBeforeConsideredDead;
+			} {
+				reallyDeadCount = reallyDeadCount - 1;
+				this.unresponsive = (reallyDeadCount <= 0);
 			}
-		};
+		}
+	}
+
+	unresponsive_ { arg val;
+		if (val != unresponsive) {
+			unresponsive = val;
+			this.changed(\serverRunning)
+			{ this.changed(\serverRunning) }.defer;
+		}
 	}
 
 	wait { arg responseName;
@@ -651,7 +655,7 @@ Server {
 					#cmd, one, numUGens, numSynths, numGroups, numSynthDefs,
 						avgCPU, peakCPU, sampleRate, actualSampleRate = msg;
 					{
-						this.serverRunning_(true);
+					this.updateRunningState(true);
 						this.changed(\counts);
 						nil // no resched
 					}.defer;
@@ -681,7 +685,7 @@ Server {
 				loop({
 					this.status;
 					aliveThreadPeriod.wait;
-					this.serverRunning = alive;
+					this.updateRunningState(alive);
 					alive = false;
 				});
 			});
@@ -880,7 +884,7 @@ Server {
 			};
 		};
 		addr.sendMsg("/quit");
-		if( options.protocol == \tcp ){ fork{ 0.1.wait; addr.disconnect } };
+		if( options.protocol == \tcp ){ fork{ 0.1.wait; addr.disconnect } }; // sure? can we receive the above reply?
 		this.stopAliveThread;
 		if (inProcess, {
 			this.quitInProcess;
@@ -893,7 +897,6 @@ Server {
 		pid = nil;
 		serverBooting = false;
 		sendQuit = nil;
-		reallyDeadCount = 0;  // force serverRunning_ to act on the quit NOW
 		this.serverRunning = false;
 		if(scopeWindow.notNil) { scopeWindow.quit };
 		if(volume.isPlaying) {
