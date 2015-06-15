@@ -267,7 +267,7 @@ ServerShmInterface {
 Server {
 	classvar <>local, <>internal, <default, <>named, <>set, <>program, <>sync_s = true;
 
-	var <name, <>addr, <>clientID, userSpecifiedClientID = false;
+	var <name, <>addr, <clientID, userSpecifiedClientID = false;
 	var <isLocal, <inProcess, <>sendQuit, <>remoteControlled;
 
 	var <>options, <>latency = 0.2, <dumpMode = 0;
@@ -341,6 +341,12 @@ Server {
 		this.sendMsg("/g_new", 1, 0, 0);
 		tree.value(this);
 		ServerTree.run(this);
+	}
+	clientID_ { |val|
+		if(val.notNil and: { clientID != val }) {
+			clientID = val;
+			this.newAllocators;
+		}
 	}
 	newAllocators {
 		this.newNodeAllocators;
@@ -620,8 +626,8 @@ Server {
 
 	/* server status */
 
-	startAliveThread {
-		serverStatus.startAliveThread
+	startAliveThread { | delay=0.0 |
+		serverStatus.startAliveThread(delay)
 	}
 	stopAliveThread {
 		serverStatus.stopAliveThread
@@ -780,21 +786,24 @@ Server {
 	}
 
 	quit { |watchShutDown = true|
-		if(watchShutDown) { serverStatus.watchQuit } { serverStatus.stopStatusWatcher };
+
 		addr.sendMsg("/quit");
+
+		serverStatus.quit(watchShutDown);
+
 		if( options.protocol == \tcp ){ fork{ 0.1.wait; addr.disconnect } }; // sure? can we receive the above reply?
-		serverStatus.stopAliveThread;
+
 		if (inProcess, {
 			this.quitInProcess;
 			"quit done\n".inform;
 		},{
 			"/quit sent\n".inform;
 		});
-		serverStatus.notified = false;
+
 		pid = nil;
 		serverBooting = false;
 		sendQuit = nil;
-		serverStatus.serverRunning = false;
+
 		if(scopeWindow.notNil) { scopeWindow.quit };
 		if(volume.isPlaying) {
 			volume.free
@@ -935,7 +944,7 @@ Server {
 	}
 
 	isRecording {
-		^recordNode.isNil
+		^recordNode.isPlaying
 	}
 
 	pauseRecording {
