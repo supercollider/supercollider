@@ -333,12 +333,12 @@
 		ctlr = SimpleController(this)
 			.put(\serverRunning, {	if(serverRunning,running,stopped) })
 			.put(\counts,{
-				countsViews.at(0).string = avgCPU.round(0.1);
-				countsViews.at(1).string = peakCPU.round(0.1);
-				countsViews.at(2).string = numUGens;
-				countsViews.at(3).string = numSynths;
-				countsViews.at(4).string = numGroups;
-				countsViews.at(5).string = numSynthDefs;
+				countsViews.at(0).string = statusWatcher.avgCPU.round(0.1);
+				countsViews.at(1).string = statusWatcher.peakCPU.round(0.1);
+				countsViews.at(2).string = statusWatcher.numUGens;
+				countsViews.at(3).string = statusWatcher.numSynths;
+				countsViews.at(4).string = statusWatcher.numGroups;
+				countsViews.at(5).string = statusWatcher.numSynthDefs;
 			})
 			.put(\bundling, bundling)
 			.put(\default, showDefault);
