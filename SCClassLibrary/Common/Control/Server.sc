@@ -745,6 +745,9 @@ Server {
 	notify {
 		^serverStatus.notify
 	}
+	notify_ { |flag|
+		serverStatus.notify(flag)
+	}
 	notified {
 		^serverStatus.notified
 	}
