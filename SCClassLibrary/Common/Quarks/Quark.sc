@@ -88,6 +88,7 @@ Quark {
 	}
 
 	checkout {
+		var rs;
 		if(this.isDownloaded.not, {
 			if(this.url.isNil, {
 				Error("No git url, cannot checkout quark" + this).throw;
@@ -109,15 +110,33 @@ Quark {
 				if(refspec == "HEAD", {
 					git.pull()
 				}, {
-					// when do you have to fetch ?
-					// if offline then you do not want to fetch
-					// just checkout. fast switching
-					git.checkout(refspec)
+					rs = this.validateRefspec(refspec);
+					if(rs.notNil, {
+						git.checkout(rs)
+					});
 				});
 			});
 			changed = true;
 			data = nil;
 		});
+	}
+	validateRefspec { |refspec|
+		var tag;
+		if(refspec == "HEAD"
+			or: {refspec.findRegexp("^[a-zA-Z0-9]{40}$").size != 0}, {
+			^refspec
+		});
+		if(refspec.beginsWith("tags/").not, {
+			tag = refspec;
+			refspec = "tags/" ++ tag;
+		}, {
+			tag = refspec.copyToEnd(5);
+		});
+		if(this.tags.includesEqual(tag).not, {
+			("Tag not found:" + this + tag + Char.nl + "Possible tags:" + this.tags).warn;
+			^nil
+		});
+		^refspec
 	}
 	checkForUpdates {
 		var tags;
