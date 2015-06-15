@@ -153,14 +153,12 @@ ServerStatusWatcher {
 
 	startAliveThread { | delay=0.0 |
 		this.addStatusWatcher;
-		[\aliveThread, aliveThread.cs].postln;
 		^aliveThread ?? {
 			"new AliveThread".postln;
 			aliveThread = Routine {
 				// this thread polls the server to see if it is alive
 				delay.wait;
 				loop {
-					aliveThread.identityHash.postln;
 					server.status;
 					aliveThreadPeriod.wait;
 					this.updateRunningState(alive);
@@ -172,7 +170,7 @@ ServerStatusWatcher {
 	}
 
 	stopAliveThread {
-		"stopAliveThread".postln;
+
 		statusWatcher.free;
 		statusWatcher = nil;
 
@@ -183,9 +181,10 @@ ServerStatusWatcher {
 
 
 	serverRunning_ { | val |
+
 		if(val != serverRunning) {
 			serverRunning = val;
-			//unresponsive = false;
+			unresponsive = false;
 
 			if (server.serverRunning) {
 				ServerBoot.run(server);
@@ -210,14 +209,13 @@ ServerStatusWatcher {
 		if(server.addr.hasBundle) {
 			{ server.changed(\bundling) }.defer;
 		} {
-			//[\reallyDeadCount, reallyDeadCount].postln;
 			if(val) {
 				this.serverRunning = true;
-				//unresponsive = false;
+				unresponsive = false;
 				reallyDeadCount = server.options.pingsBeforeConsideredDead;
 			} {
 				reallyDeadCount = reallyDeadCount - 1;
-				//this.unresponsive = (reallyDeadCount <= 0);
+				this.unresponsive = (reallyDeadCount <= 0);
 			}
 		}
 	}
@@ -226,7 +224,7 @@ ServerStatusWatcher {
 	unresponsive_ { arg val;
 		if (val != unresponsive) {
 			unresponsive = val;
-			{ this.changed(\serverRunning) }.defer;
+			{ server.changed(\serverRunning) }.defer;
 		}
 	}
 
