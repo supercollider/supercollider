@@ -268,22 +268,21 @@ ServerShmInterface {
 Server {
 	classvar <>local, <>internal, <default, <>named, <>set, <>program, <>sync_s = true;
 
-	var <name, <>addr, <clientID, userSpecifiedClientID = false;
+	var <name, <>addr, <>clientID, userSpecifiedClientID = false;
 	var <isLocal, <inProcess, <>sendQuit, <>remoteControlled;
-	var <serverRunning = false, <serverBooting = false, bootNotifyFirst = false;
-	var <>options, <>latency = 0.2, <dumpMode = 0, <notify = true, <notified=false;
-	var <nodeAllocator;
-	var <controlBusAllocator;
-	var <audioBusAllocator;
-	var <bufferAllocator;
-	var <scopeBufferAllocator;
+
+	var <>options, <>latency = 0.2, <dumpMode = 0;
+
+	var <nodeAllocator, <controlBusAllocator, <audioBusAllocator, <bufferAllocator, <scopeBufferAllocator;
+
+	var <>serverRunning = false, <>serverBooting = false, <>unresponsive = false;
+	var <>numUGens=0, <>numSynths=0, <>numGroups=0, <>numSynthDefs=0;
+	var <>avgCPU, <>peakCPU;
+	var <>sampleRate, <>actualSampleRate;
+
 	var <syncThread, <syncTasks;
+	var serverStatus;
 
-	var <numUGens=0, <numSynths=0, <numGroups=0, <numSynthDefs=0;
-	var <avgCPU, <peakCPU;
-	var <sampleRate, <actualSampleRate;
-
-	var alive = false, booting = false, <unresponsive = false, aliveThread, <>aliveThreadPeriod = 0.7, statusWatcher;
 	var <>tree;
 
 	var <window, <>scopeWindow;
@@ -296,7 +295,8 @@ Server {
 	var <pid;
 	var serverInterface;
 
-	var reallyDeadCount = 0;
+	var bootNotifyFirst; // ??
+
 
 	*default_ { |server|
 		default = server; // sync with s?
@@ -321,13 +321,14 @@ Server {
 	init { arg argName, argAddr, argOptions, argClientID;
 		name = argName.asSymbol;
 		addr = argAddr;
-		if(argClientID.notNil, { userSpecifiedClientID = true;});
+		if(argClientID.notNil, { userSpecifiedClientID = true });
 		clientID = argClientID ? 0;
 		options = argOptions ? ServerOptions.new;
 		if (addr.isNil, { addr = NetAddr("127.0.0.1", 57110) });
 		inProcess = addr.addr == 0;
 		isLocal = inProcess || { addr.isLocal };
 		remoteControlled = isLocal;
+		serverStatus = ServerStatus(this);
 		serverRunning = false;
 		named.put(name, this);
 		set.add(this);
@@ -509,54 +510,7 @@ Server {
 		this.listSendMsg(["/d_loadDir", dir, completionMsg]);
 	}
 
-	serverRunning_ { arg val;
-		if (val != serverRunning) {
-			serverRunning = val;
-			unresponsive = false;
 
-			if (serverRunning) {
-				ServerBoot.run(this);
-			} {
-				ServerQuit.run(this);
-
-				if (serverInterface.notNil) {
-					"server '%' disconnected shared memory interface\n".postf(name);
-					serverInterface.disconnect;
-					serverInterface = nil;
-				};
-
-				NotificationCenter.notify(this, \didQuit);
-				recordNode = nil;
-				if(this.isLocal.not) {
-					notified = false;
-				};
-			};
-			{ this.changed(\serverRunning) }.defer;
-		};
-
-	}
-
-	updateRunningState { arg val;
-		if(addr.hasBundle) {
-			{ this.changed(\bundling) }.defer;
-		} {
-			if(val) {
-				this.serverRunning = true;
-				this.unresponsive = false;
-				reallyDeadCount = this.options.pingsBeforeConsideredDead;
-			} {
-				reallyDeadCount = reallyDeadCount - 1;
-				this.unresponsive = (reallyDeadCount <= 0);
-			}
-		}
-	}
-
-	unresponsive_ { arg val;
-		if (val != unresponsive) {
-			unresponsive = val;
-			{ this.changed(\serverRunning) }.defer;
-		}
-	}
 
 	wait { arg responseName;
 		var routine;
@@ -583,8 +537,8 @@ Server {
 		^Routine({
 			while({
 				((serverRunning.not
-				  or: (serverBooting and: mBootNotifyFirst.not))
-				 and: {(limit = limit - 1) > 0})
+					or: (serverBooting and: mBootNotifyFirst.not))
+				and: {(limit = limit - 1) > 0})
 				and: { pid.tryPerform(\pidRunning) == true }
 			},{
 				0.2.wait;
@@ -603,6 +557,7 @@ Server {
 			}, onComplete);
 		}).play(AppClock);
 	}
+
 
 	bootSync { arg condition;
 		condition ?? { condition = Condition.new };
@@ -638,30 +593,6 @@ Server {
 		pingFunc.value;
 	}
 
-	addStatusWatcher {
-		if(statusWatcher.isNil) {
-			statusWatcher =
-				OSCFunc({ arg msg;
-					var cmd, one;
-					if(notify){
-						if(notified.not){
-							this.sendNotifyRequest;
-							"Receiving notification messages from server %\n".postf(this.name);
-						}
-					};
-					alive = true;
-					#cmd, one, numUGens, numSynths, numGroups, numSynthDefs,
-						avgCPU, peakCPU, sampleRate, actualSampleRate = msg;
-					{
-					this.updateRunningState(true);
-						this.changed(\counts);
-						nil // no resched
-					}.defer;
-				}, '/status.reply', addr).fix;
-		} {
-			statusWatcher.enable;
-		};
-	}
 
 	cachedBuffersDo { |func| Buffer.cachedBuffersDo(this, func) }
 	cachedBufferAt { |bufnum| ^Buffer.cachedBufferAt(this, bufnum) }
@@ -674,36 +605,41 @@ Server {
 		^Bus(\audio, 0, this.options.numOutputBusChannels, this);
 	}
 
-	startAliveThread { arg delay=0.0;
-		this.addStatusWatcher;
-		^aliveThread ?? {
-			aliveThread = Routine({
-				// this thread polls the server to see if it is alive
-				delay.wait;
-				loop({
-					this.status;
-					aliveThreadPeriod.wait;
-					this.updateRunningState(alive);
-					alive = false;
-				});
-			});
-			AppClock.play(aliveThread);
-			aliveThread
-		}
+	/* server status */
+
+	startAliveThread {
+		serverStatus.startAliveThread
 	}
 	stopAliveThread {
-		if( aliveThread.notNil, {
-			aliveThread.stop;
-			aliveThread = nil;
-		});
-		if( statusWatcher.notNil, {
-			statusWatcher.free;
-			statusWatcher = nil;
-		});
+		serverStatus.stopAliveThread
 	}
 	aliveThreadIsRunning {
-		^aliveThread.notNil and: {aliveThread.isPlaying}
+		^serverStatus.aliveThreadIsRunning
 	}
+
+	aliveThreadPeriod_ { |val|
+		serverStatus.aliveThreadPeriod_(val)
+	}
+	aliveThreadPeriod { |val|
+		^serverStatus.aliveThreadPeriod
+	}
+
+	updateInfoFromOSC { |msg|
+		var cmd, one;
+		#cmd, one, numUGens, numSynths, numGroups, numSynthDefs,
+						avgCPU, peakCPU, sampleRate, actualSampleRate = msg;
+	}
+
+	disconnectSharedMemory {
+		if (serverInterface.notNil) {
+			"server '%' disconnected shared memory interface\n".postf(name);
+			serverInterface.disconnect;
+			serverInterface = nil;
+		}
+	}
+
+
+
 	*resumeThreads {
 		set.do({ arg server;
 			server.stopAliveThread;
@@ -716,10 +652,10 @@ Server {
 		if (serverBooting, { "server already booting".inform; ^this });
 
 		serverBooting = true;
-		unresponsive = false;
 
-		if(startAliveThread, { this.startAliveThread });
+		if(startAliveThread, { serverStatus.startAliveThread });
 		if(recover) { this.newNodeAllocators } { this.newAllocators };
+
 		bootNotifyFirst = true;
 		this.doWhenBooted({
 			serverBooting = false;
@@ -807,44 +743,13 @@ Server {
 		addr.sendStatusMsg
 	}
 
-	notify_ { |flag = true|
-		notify = flag;
-		if(flag){
-			if(serverRunning){
-				this.sendNotifyRequest(true);
-				notified = true;
-				"Receiving notification messages from server %\n".postf(this.name);
-			}
-		}{
-			this.sendNotifyRequest(false);
-			notified = false;
-			"Switched off notification messages from server %\n".postf(this.name);
-		}
+	notify {
+		^serverStatus.notify
+	}
+	notified {
+		^serverStatus.notified
 	}
 
-	sendNotifyRequest { arg flag=true;
-		var doneOSCFunc, failOSCFunc;
-		notified = flag;
-		if(userSpecifiedClientID.not , {
-			doneOSCFunc = OSCFunc({|msg|
-				if(flag && { msg[2] != clientID }, {
-					if(msg[2].notNil, {
-						clientID = msg[2];
-						this.newAllocators;
-					})
-				});
-				failOSCFunc.free;
-			}, '/done', addr, argTemplate:['/notify', nil]).oneShot;
-			failOSCFunc = OSCFunc({|msg|
-				if(msg[3].notNil && { msg[3] != clientID }, {
-					clientID = msg[3];
-					this.newAllocators;
-				});
-				doneOSCFunc.free;
-			}, '/fail', addr, argTemplate:['/notify', nil, nil]).oneShot;
-		});
-		addr.sendMsg("/notify", flag.binaryValue);
-	}
 
 	dumpOSC { arg code=1;
 		/*
@@ -859,41 +764,17 @@ Server {
 	}
 
 	quit { |watchShutDown = true|
-		var	serverReallyQuitWatcher, serverReallyQuit = false;
-		if(watchShutDown.not) { statusWatcher.disable; statusWatcher = nil };
-		statusWatcher !? {
-			statusWatcher.disable;
-			if(notified) {
-				serverReallyQuitWatcher = OSCFunc({ |msg|
-					if(msg[1] == '/quit') {
-						if (statusWatcher.notNil) {
-							statusWatcher.enable;
-						};
-						serverReallyQuit = true;
-						serverReallyQuitWatcher.free;
-					};
-				}, '/done', addr);
-
-				AppClock.sched(3.0, {
-					if(serverReallyQuit.not) {
-						"Server % failed to quit after 3.0 seconds.".format(this.name).warn;
-						// don't accumulate quit-watchers if /done doesn't come back
-						serverReallyQuitWatcher.free;
-					};
-				});
-			};
-		};
+		if(watchShutDown) { serverStatus.watchQuit } { serverStatus.stopStatusWatcher };
 		addr.sendMsg("/quit");
 		if( options.protocol == \tcp ){ fork{ 0.1.wait; addr.disconnect } }; // sure? can we receive the above reply?
-		this.stopAliveThread;
+		serverStatus.stopAliveThread;
 		if (inProcess, {
 			this.quitInProcess;
 			"quit done\n".inform;
 		},{
 			"/quit sent\n".inform;
 		});
-		alive = false;
-		notified = false;
+		serverStatus.notified = false;
 		pid = nil;
 		serverBooting = false;
 		sendQuit = nil;
