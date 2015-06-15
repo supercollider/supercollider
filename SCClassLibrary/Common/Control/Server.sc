@@ -275,7 +275,7 @@ Server {
 
 	var <nodeAllocator, <controlBusAllocator, <audioBusAllocator, <bufferAllocator, <scopeBufferAllocator;
 
-	var <>serverRunning = false, <>serverBooting = false, <>unresponsive = false;
+	var <serverRunning = false, <>serverBooting = false, <unresponsive = false;
 	var <>numUGens=0, <>numSynths=0, <>numGroups=0, <>numSynthDefs=0;
 	var <>avgCPU, <>peakCPU;
 	var <>sampleRate, <>actualSampleRate;
@@ -605,6 +605,20 @@ Server {
 		^Bus(\audio, 0, this.options.numOutputBusChannels, this);
 	}
 
+	serverRunning_ { arg val;
+		if (val != serverRunning) {
+			serverRunning = val;
+			{ this.changed(\serverRunning) }.defer;
+		}
+	}
+
+	unresponsive_ { arg val;
+		if (val != unresponsive) {
+			unresponsive = val;
+			{ this.changed(\serverRunning) }.defer;
+		}
+	}
+
 	/* server status */
 
 	startAliveThread {
@@ -781,7 +795,7 @@ Server {
 		pid = nil;
 		serverBooting = false;
 		sendQuit = nil;
-		this.serverRunning = false;
+		serverStatus.serverRunning = false;
 		if(scopeWindow.notNil) { scopeWindow.quit };
 		if(volume.isPlaying) {
 			volume.free
@@ -907,7 +921,7 @@ Server {
 				this.record;
 			}).play;
 		}{
-			if(recordNode.isNil){
+			if(this.isRecording) {
 				recordNode = Synth.tail(RootNode(this), "server-record",
 						[\bufnum, recordBuf.bufnum]);
 				CmdPeriod.doOnce {
@@ -919,6 +933,10 @@ Server {
 			};
 			"Recording: %\n".postf(recordBuf.path);
 		};
+	}
+
+	isRecording {
+		^recordNode.isNil
 	}
 
 	pauseRecording {
