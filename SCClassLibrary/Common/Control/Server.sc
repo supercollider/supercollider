@@ -510,7 +510,6 @@ Server {
 	}
 
 	serverRunning_ { arg val;
-
 		if (val != serverRunning) {
 			serverRunning = val;
 			unresponsive = false;
@@ -532,9 +531,9 @@ Server {
 					notified = false;
 				};
 			};
-			this.changed(\serverRunning)
-			//{ this.changed(\serverRunning) }.defer;
-		}
+			{ this.changed(\serverRunning) }.defer;
+		};
+
 	}
 
 	updateRunningState { arg val;
@@ -542,7 +541,7 @@ Server {
 			{ this.changed(\bundling) }.defer;
 		} {
 			if(val) {
-				serverRunning = true;
+				this.serverRunning = true;
 				this.unresponsive = false;
 				reallyDeadCount = this.options.pingsBeforeConsideredDead;
 			} {
@@ -555,7 +554,6 @@ Server {
 	unresponsive_ { arg val;
 		if (val != unresponsive) {
 			unresponsive = val;
-			this.changed(\serverRunning)
 			{ this.changed(\serverRunning) }.defer;
 		}
 	}
