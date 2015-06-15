@@ -3,13 +3,17 @@ ServerStatusWatcher {
 	var server;
 
 	var <>notified = false, <notify = false;
-	var alive = false, aliveThread, <>aliveThreadPeriod = 0.7, statusWatcher;
+	var alive = false, <aliveThread, <>aliveThreadPeriod = 0.7, statusWatcher;
+
+	var <serverRunning = false, <>serverBooting = false, <unresponsive = false;
 
 	var <numUGens=0, <numSynths=0, <numGroups=0, <numSynthDefs=0;
 	var <avgCPU, <peakCPU;
 	var <sampleRate, <actualSampleRate;
 
 	var reallyDeadCount = 0;
+	var <>bootNotifyFirst;
+
 
 	*new { |server|
 		^super.newCopyArgs(server)
@@ -23,13 +27,14 @@ ServerStatusWatcher {
 		};
 		this.stopAliveThread;
 		notified = false;
+		serverBooting = false;
 		this.serverRunning = false;
 	}
 
 	notify_ { |flag = true|
 		notify = flag;
 		if(flag){
-			if(server.serverRunning){
+			if(serverRunning){
 				this.sendNotifyRequest(true);
 				notified = true;
 				"Receiving notification messages from server %\n".postf(server.name);
@@ -44,7 +49,7 @@ ServerStatusWatcher {
 	sendNotifyRequest { | flag=true |
 		var doneOSCFunc, failOSCFunc;
 		notified = flag;
-		if(server.userSpecifiedClientID.not, {
+		if(server.userSpecifiedClientID.not) {
 			doneOSCFunc = OSCFunc({|msg|
 				if(flag) { server.clientID = msg[2] };
 				failOSCFunc.free;
@@ -55,9 +60,37 @@ ServerStatusWatcher {
 				doneOSCFunc.free;
 			}, '/fail', server.addr, argTemplate:['/notify', nil, nil]).oneShot;
 
-		});
+		};
 
 		server.sendMsg("/notify", flag.binaryValue);
+	}
+
+	doWhenBooted { arg onComplete, limit=100, onFailure;
+		var mBootNotifyFirst = bootNotifyFirst, postError = true;
+		bootNotifyFirst = false;
+
+		^Routine {
+			while {
+				((serverRunning.not
+					or: (serverBooting and: mBootNotifyFirst.not))
+				and: { (limit = limit - 1) > 0 })
+				and: { server.pid.tryPerform(\pidRunning) == true }
+			} {
+				0.2.wait;
+			};
+
+			if(serverRunning.not, {
+				if(onFailure.notNil) {
+					postError = (onFailure.value == false);
+				};
+				if(postError) {
+					"server failed to start".error;
+					"For advice: [http://supercollider.sf.net/wiki/index.php/ERROR:_server_failed_to_start]".postln;
+				};
+				serverBooting = false;
+				server.changed(\serverRunning);
+			}, onComplete);
+		}.play(AppClock);
 	}
 
 
@@ -120,53 +153,55 @@ ServerStatusWatcher {
 
 	startAliveThread { | delay=0.0 |
 		this.addStatusWatcher;
+		[\aliveThread, aliveThread.cs].postln;
 		^aliveThread ?? {
-			aliveThread = Routine({
+			"new AliveThread".postln;
+			aliveThread = Routine {
 				// this thread polls the server to see if it is alive
 				delay.wait;
-				loop({
+				loop {
+					aliveThread.identityHash.postln;
 					server.status;
 					aliveThreadPeriod.wait;
 					this.updateRunningState(alive);
 					alive = false;
-				});
-			});
-			AppClock.play(aliveThread);
+				};
+			}.play(AppClock);
 			aliveThread
 		}
 	}
 
 	stopAliveThread {
-		alive = false;
-		aliveThread.stop;
-		aliveThread = nil;
+		"stopAliveThread".postln;
 		statusWatcher.free;
 		statusWatcher = nil;
-	}
 
-	aliveThreadIsRunning {
-		^aliveThread.notNil and: { aliveThread.isPlaying }
+		aliveThread.stop;
+		alive = false;
+		aliveThread = nil;
 	}
 
 
 	serverRunning_ { | val |
+		if(val != serverRunning) {
+			serverRunning = val;
+			//unresponsive = false;
 
-		server.serverRunning = val;
-		server.unresponsive = false;
+			if (server.serverRunning) {
+				ServerBoot.run(server);
+			} {
+				ServerQuit.run(server);
 
-		if (server.serverRunning) {
-			ServerBoot.run(server);
-		} {
-			ServerQuit.run(server);
+				server.disconnectSharedMemory;
+				if(server.isRecording) { server.stopRecording };
 
-			server.disconnectSharedMemory;
-			if(server.isRecording) { server.stopRecording };
+				NotificationCenter.notify(server, \didQuit);
 
-			NotificationCenter.notify(server, \didQuit);
-
-			if(server.isLocal.not) {
-				notified = false;
+				if(server.isLocal.not) {
+					notified = false;
+				};
 			};
+			{ server.changed(\serverRunning) }.defer;
 		}
 
 	}
@@ -175,14 +210,23 @@ ServerStatusWatcher {
 		if(server.addr.hasBundle) {
 			{ server.changed(\bundling) }.defer;
 		} {
+			//[\reallyDeadCount, reallyDeadCount].postln;
 			if(val) {
 				this.serverRunning = true;
-				server.unresponsive = false;
+				//unresponsive = false;
 				reallyDeadCount = server.options.pingsBeforeConsideredDead;
 			} {
 				reallyDeadCount = reallyDeadCount - 1;
-				server.unresponsive = (reallyDeadCount <= 0);
+				//this.unresponsive = (reallyDeadCount <= 0);
 			}
+		}
+	}
+
+
+	unresponsive_ { arg val;
+		if (val != unresponsive) {
+			unresponsive = val;
+			{ this.changed(\serverRunning) }.defer;
 		}
 	}
 

@@ -274,11 +274,7 @@ Server {
 
 	var <nodeAllocator, <controlBusAllocator, <audioBusAllocator, <bufferAllocator, <scopeBufferAllocator;
 
-	var <serverRunning = false, <>serverBooting = false, <unresponsive = false;
-
-
 	var <syncThread, <syncTasks;
-	var statusWatcher;
 
 	var <>tree;
 
@@ -290,9 +286,7 @@ Server {
 	var <volume;
 
 	var <pid;
-	var serverInterface;
-
-	var bootNotifyFirst; // ??
+	var serverInterface, statusWatcher;
 
 
 	*default_ { |server|
@@ -326,7 +320,6 @@ Server {
 		isLocal = inProcess || { addr.isLocal };
 		remoteControlled = isLocal;
 		statusWatcher = ServerStatusWatcher(this);
-		serverRunning = false;
 		named.put(name, this);
 		set.add(this);
 		this.newAllocators;
@@ -529,36 +522,12 @@ Server {
 		// doWhenBooted prints the normal boot failure message.
 		// if the server fails to boot, the failure error gets posted TWICE.
 		// So, we suppress one of them.
-		if(serverRunning.not) { this.boot(onFailure: true) };
+		if(this.serverRunning.not) { this.boot(onFailure: true) };
 		this.doWhenBooted(onComplete, limit, onFailure);
 	}
 
 	doWhenBooted { arg onComplete, limit=100, onFailure;
-		var mBootNotifyFirst = bootNotifyFirst, postError = true;
-		bootNotifyFirst = false;
-
-		^Routine({
-			while({
-				((serverRunning.not
-					or: (serverBooting and: mBootNotifyFirst.not))
-				and: {(limit = limit - 1) > 0})
-				and: { pid.tryPerform(\pidRunning) == true }
-			},{
-				0.2.wait;
-			});
-
-			if(serverRunning.not,{
-				if(onFailure.notNil) {
-					postError = (onFailure.value == false);
-				};
-				if(postError) {
-					"server failed to start".error;
-					"For advice: [http://supercollider.sf.net/wiki/index.php/ERROR:_server_failed_to_start]".postln;
-				};
-				serverBooting = false;
-				this.changed(\serverRunning);
-			}, onComplete);
-		}).play(AppClock);
+		statusWatcher.doWhenBooted(onComplete, limit, onFailure)
 	}
 
 
@@ -575,7 +544,7 @@ Server {
 
 	ping { arg n=1, wait=0.1, func;
 		var result=0, pingFunc;
-		if(serverRunning.not) { "server not running".postln; ^this };
+		if(statusWatcher.serverRunning.not) { "server not running".postln; ^this };
 		pingFunc = {
 			Routine.run {
 					var t, dt;
@@ -608,19 +577,6 @@ Server {
 		^Bus(\audio, 0, this.options.numOutputBusChannels, this);
 	}
 
-	serverRunning_ { arg val;
-		if (val != serverRunning) {
-			serverRunning = val;
-			{ this.changed(\serverRunning) }.defer;
-		}
-	}
-
-	unresponsive_ { arg val;
-		if (val != unresponsive) {
-			unresponsive = val;
-			{ this.changed(\serverRunning) }.defer;
-		}
-	}
 
 	/* backward compatibility */
 
@@ -632,6 +588,9 @@ Server {
 	peakCPU { ^statusWatcher.peakCPU }
 	sampleRate { ^statusWatcher.sampleRate }
 	actualSampleRate { ^statusWatcher.actualSampleRate }
+	serverRunning { ^statusWatcher.serverRunning }
+	serverBooting { ^statusWatcher.serverBooting }
+	unresponsive { ^statusWatcher.unresponsive }
 
 
 	/* server status */
@@ -643,7 +602,7 @@ Server {
 		statusWatcher.stopAliveThread
 	}
 	aliveThreadIsRunning {
-		^statusWatcher.aliveThreadIsRunning
+		^statusWatcher.aliveThread.isPlaying
 	}
 
 	aliveThreadPeriod_ { |val|
@@ -672,42 +631,44 @@ Server {
 		});
 	}
 
-	boot { arg startAliveThread=true, recover=false, onFailure;
-		if (serverRunning, { "server already running".inform; ^this });
-		if (serverBooting, { "server already booting".inform; ^this });
+	boot { | startAliveThread=true, recover=false, onFailure |
 
-		serverBooting = true;
+		if (statusWatcher.serverRunning) { "server already running".inform; ^this };
+		if (statusWatcher.serverBooting) { "server already booting".inform; ^this };
 
-		if(startAliveThread, { statusWatcher.startAliveThread });
+		statusWatcher.serverBooting = true;
+
+		if(startAliveThread) { statusWatcher.startAliveThread };
 		if(recover) { this.newNodeAllocators } { this.newAllocators };
 
-		bootNotifyFirst = true;
-		this.doWhenBooted({
-			serverBooting = false;
+		statusWatcher.bootNotifyFirst = true; // unclear what this means.
+		statusWatcher.doWhenBooted({
+			statusWatcher.serverBooting = false;
 			if (recChannels.notNil and: (recChannels != options.numOutputBusChannels)) {
 				"Resetting recChannels to %".format(options.numOutputBusChannels).inform
 			};
 			recChannels = options.numOutputBusChannels;
 
-			if (sendQuit.isNil) {
+			if(sendQuit.isNil) {
 				sendQuit = this.inProcess or: {this.isLocal};
 			};
 
-			if (this.inProcess) {
+			if(this.inProcess) {
 				serverInterface = ServerShmInterface(thisProcess.pid);
 			} {
-				if (isLocal) {
+				if(isLocal) {
 					serverInterface = ServerShmInterface(addr.port);
 				}
 			};
 			if(dumpMode != 0) { this.sendMsg(\dumpOSC, dumpMode) };
 			this.initTree;
 		}, onFailure: onFailure ? false);
-		if (remoteControlled.not, {
+
+		if(remoteControlled.not) {
 			"You will have to manually boot remote server.".inform;
-		},{
+		} {
 			this.bootServerApp;
-		});
+		}
 	}
 
 	bootServerApp {
@@ -717,11 +678,7 @@ Server {
 			this.bootInProcess;
 			pid = thisProcess.pid;
 		} {
-			if (serverInterface.notNil) {
-				serverInterface.disconnect;
-				serverInterface = nil;
-				"server disconnected shared memory interface".postln;
-			};
+			this.disconnectSharedMemory;
 
 			pid = (program ++ options.asOptionsString(addr.port)).unixCmd;
 			if( options.protocol == \tcp ){
@@ -750,7 +707,7 @@ Server {
 
 	reboot { arg func; // func is evaluated when server is off
 		if (isLocal.not) { "can't reboot a remote server".inform; ^this };
-		if(serverRunning) {
+		if(statusWatcher.serverRunning) {
 			Routine.run {
 				this.quit;
 				this.wait(\done);
@@ -807,7 +764,6 @@ Server {
 		});
 
 		pid = nil;
-		serverBooting = false;
 		sendQuit = nil;
 
 		if(scopeWindow.notNil) { scopeWindow.quit };
@@ -928,14 +884,14 @@ Server {
 
 	// recording output
 	record { |path|
-		if(recordBuf.isNil){
+		if(recordBuf.isNil) {
 			this.prepareForRecord(path);
 			Routine({
 				this.sync;
 				this.record;
 			}).play;
-		}{
-			if(this.isRecording) {
+		} {
+			if(this.isRecording.not) {
 				recordNode = Synth.tail(RootNode(this), "server-record",
 						[\bufnum, recordBuf.bufnum]);
 				CmdPeriod.doOnce {
