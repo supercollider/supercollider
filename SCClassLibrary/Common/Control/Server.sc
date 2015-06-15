@@ -281,7 +281,7 @@ Server {
 	var <>sampleRate, <>actualSampleRate;
 
 	var <syncThread, <syncTasks;
-	var serverStatus;
+	var statusWatcher;
 
 	var <>tree;
 
@@ -328,7 +328,7 @@ Server {
 		inProcess = addr.addr == 0;
 		isLocal = inProcess || { addr.isLocal };
 		remoteControlled = isLocal;
-		serverStatus = ServerStatus(this);
+		statusWatcher = ServerStatusWatcher(this);
 		serverRunning = false;
 		named.put(name, this);
 		set.add(this);
@@ -628,20 +628,20 @@ Server {
 	/* server status */
 
 	startAliveThread { | delay=0.0 |
-		serverStatus.startAliveThread(delay)
+		statusWatcher.startAliveThread(delay)
 	}
 	stopAliveThread {
-		serverStatus.stopAliveThread
+		statusWatcher.stopAliveThread
 	}
 	aliveThreadIsRunning {
-		^serverStatus.aliveThreadIsRunning
+		^statusWatcher.aliveThreadIsRunning
 	}
 
 	aliveThreadPeriod_ { |val|
-		serverStatus.aliveThreadPeriod_(val)
+		statusWatcher.aliveThreadPeriod_(val)
 	}
 	aliveThreadPeriod { |val|
-		^serverStatus.aliveThreadPeriod
+		^statusWatcher.aliveThreadPeriod
 	}
 
 	updateInfoFromOSC { |msg|
@@ -673,7 +673,7 @@ Server {
 
 		serverBooting = true;
 
-		if(startAliveThread, { serverStatus.startAliveThread });
+		if(startAliveThread, { statusWatcher.startAliveThread });
 		if(recover) { this.newNodeAllocators } { this.newAllocators };
 
 		bootNotifyFirst = true;
@@ -764,13 +764,13 @@ Server {
 	}
 
 	notify {
-		^serverStatus.notify
+		^statusWatcher.notify
 	}
 	notify_ { |flag|
-		serverStatus.notify(flag)
+		statusWatcher.notify(flag)
 	}
 	notified {
-		^serverStatus.notified
+		^statusWatcher.notified
 	}
 
 
@@ -790,7 +790,7 @@ Server {
 
 		addr.sendMsg("/quit");
 
-		serverStatus.quit(watchShutDown);
+		statusWatcher.quit(watchShutDown);
 
 		if( options.protocol == \tcp ){ fork{ 0.1.wait; addr.disconnect } }; // sure? can we receive the above reply?
 
