@@ -64,7 +64,6 @@ private:
 	// IIpcLogger
 	void onIpcLog(const QString & message);
 
-
 };
 
 

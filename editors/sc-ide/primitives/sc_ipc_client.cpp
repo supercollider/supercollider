@@ -63,7 +63,6 @@ ScIpcClient::~ScIpcClient()
 }
 
 void ScIpcClient::readIDEData() {
-
 	mIpcChannel->read<QVariantList, ScIpcClient>(this, &ScIpcClient::onResponse);
 }
     
@@ -126,7 +125,7 @@ QString ScIpcClient::getTextMirrorForDocument(QByteArray & id, int pos, int rang
 
 void ScIpcClient::setTextMirrorForDocument(QByteArray & id, const QString & text, int pos, int range)
 {
-    if((pos == 0) && range == -1){
+    if ((pos == 0) && range == -1) {
         mTextMirrorHashMutex.lock();
         mDocumentTextMirrors[id] = text;
         mTextMirrorHashMutex.unlock();
@@ -153,7 +152,7 @@ QPair<int, int> ScIpcClient::getSelectionMirrorForDocument(QByteArray & id)
         selection = mDocumentSelectionMirrors[id];
         mSelMirrorHashMutex.unlock();
     } else {
-        post("WARNING: Attempted to access missing Selection Mirror for Document %s\n", id.constData());
+        post("WARNING: Attempted to access (get selection) missing Selection Mirror for Document %s\n", id.constData());
         selection = qMakePair(0, 0);
     }
     return selection;
@@ -170,9 +169,7 @@ void ScIpcClient::onIpcLog(const QString &message) {
 	post(message.toStdString().c_str());
 }
 
-
 static ScIpcClient * gIpcClient = NULL;
-
 
 int ScIDE_Connect(struct VMGlobals *g, int numArgsPushed)
 {
@@ -187,7 +184,7 @@ int ScIDE_Connect(struct VMGlobals *g, int numArgsPushed)
     int status = slotStrVal(ideNameSlot, ideName, 1024);
     if (status != errNone)
         return errWrongType;
-    post("DEBUG::starting ScIpcClient");
+    //post("DEBUG::starting ScIpcClient");
     gIpcClient = new ScIpcClient(ideName);
 
     return errNone;
@@ -196,9 +193,7 @@ int ScIDE_Connect(struct VMGlobals *g, int numArgsPushed)
 int ScIDE_Connected(struct VMGlobals *g, int numArgsPushed)
 {
     PyrSlot * returnSlot = g->sp - numArgsPushed + 1;
-
     SetBool(returnSlot, gIpcClient != 0);
-
     return errNone;
 }
 

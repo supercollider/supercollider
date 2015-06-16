@@ -118,7 +118,9 @@ ScIpcLargeMessage::ScIpcLargeMessage(QString &key, IIpcLogger *logger) {
 
 // these are here so the template ScIpcChannel::read can compile. they are not used.
 ScIpcLargeMessage::ScIpcLargeMessage(QVariantList &data, IIpcLogger *logger) {}
-ScIpcLargeMessage::ScIpcLargeMessage(QStringList &data, IIpcLogger *logger) {}
+ScIpcLargeMessage::ScIpcLargeMessage(QStringList &data, IIpcLogger *logger) {
+
+}
 
 ScIpcLargeMessage::~ScIpcLargeMessage() {
 	if (shm) {

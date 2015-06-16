@@ -70,7 +70,7 @@ public:
 template <typename TData, typename TIpcHandler>
 void ScIpcChannel::read(TIpcHandler *that, void (TIpcHandler::*onResponse)(const QString &selector, const TData &data)) {
 
-	log("read - started.");
+	//log("read - started.");
 
 	if (!mSocket) {
 		log("read - No socket.");

@@ -390,10 +390,12 @@ to use the package manager if you build with msys2.
      SDK for your Windows version. If you choose this, you will have to download
      dependencies (see below) from the original providers.
 
-     If your keyboard reflexes are 'dir, del and \', if you prefer the
-     native toolchain (or do not want to change your habits), if you like the
-     edge and don't need sc3-plugins, supernova or command-line mode, you want
+     If your keyboard reflexes are 'dir, del and \', if you want the native toolchain, 
+     the VS debugger, or want to try instrumented builds (optimising SC for your specific application); 
+     and if you don't (yet) need sc3-plugins, supernova or command-line sclang, you want
      this.
+
+     You'll still be at the commandline alot, do yourself a solid and get `ConEmu`. 
 
   2. Msys2 & MinGW (and QtCreator): unixy build environment and packages
      repository. The required packages (build-tools, toolchain and dependencies)
@@ -413,9 +415,11 @@ to use the package manager if you build with msys2.
 You will need a text editor that supports unix line endings and a file
 decompression tool for formats other than .zip. Common free tools are:
 
+  - Atom
+  - Sublime Text
+  - Visual Studio Code
   - Notepad++
   - 7-zip
-
 
 Obtaining the SC source
 -----------------------

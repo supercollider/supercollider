@@ -267,7 +267,6 @@ void ScProcess::onNewIpcConnection()
     connect(mIpcSocket, SIGNAL(disconnected()), this, SLOT(finalizeConnection()));
     connect(mIpcSocket, SIGNAL(readyRead()), this, SLOT(onIpcData()));
 
-	Main::documentManager()->sendActiveDocument();
 }
 
 void ScProcess::finalizeConnection()
@@ -345,6 +344,8 @@ void ScProcess::onResponse(const QString & selector, const QString & data)
 
     else if (selector == requestCurrentPathSelector)
         Main::documentManager()->sendActiveDocument();
+
+	emit response(selector, data);
 }
 
 void ScProcess::onStart()
@@ -355,6 +356,7 @@ void ScProcess::onStart()
 	QString command = QString("ScIDE.connect(\"%1\")").arg(mIpcServerName);
     evaluateCode ( command, true );
     
+	Main::documentManager()->sendActiveDocument();
 }
 
 void ScProcess::sendToScLang(QString const & selector, QVariantList const & argList)	{
@@ -398,7 +400,6 @@ void ScProcess::updateSelectionMirrorForDocument ( Document * doc, int start, in
     argList.append(QVariant(range));
     
 	sendToScLang(QString("updateDocSelection"), argList);
-
 }
 
 void ScProcess::onIpcLog(const QString &message) {
