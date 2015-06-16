@@ -284,10 +284,10 @@ Server {
 	var recordBuf, <recordNode, <>recHeaderFormat="aiff", <>recSampleFormat="float";
 	var <>recChannels=2, <>recBufSize;
 
-	var <volume;
+	var <volume, <statusWatcher;
 
 	var <pid;
-	var serverInterface, statusWatcher;
+	var serverInterface;
 
 
 	*default_ { |server|
@@ -624,12 +624,8 @@ Server {
 	}
 
 
-
 	*resumeThreads {
-		set.do({ arg server;
-			server.stopAliveThread;
-			server.startAliveThread(server.aliveThreadPeriod);
-		});
+		set.do { |server| server.statusWatcher.resumeThread }
 	}
 
 	boot { | startAliveThread=true, recover=false, onFailure |
