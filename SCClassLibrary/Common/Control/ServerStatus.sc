@@ -154,7 +154,6 @@ ServerStatusWatcher {
 	startAliveThread { | delay=0.0 |
 		this.addStatusWatcher;
 		^aliveThread ?? {
-			"new AliveThread".postln;
 			aliveThread = Routine {
 				// this thread polls the server to see if it is alive
 				delay.wait;
@@ -177,6 +176,13 @@ ServerStatusWatcher {
 		aliveThread.stop;
 		alive = false;
 		aliveThread = nil;
+	}
+
+	resumeThread {
+		aliveThread !? {
+			this.stopAliveThread;
+			this.startAliveThread;
+		}
 	}
 
 
