@@ -39,7 +39,7 @@ ServerStatusWatcher {
 				notified = true;
 				"Receiving notification messages from server %\n".postf(server.name);
 			}
-		}{
+		} {
 			this.sendNotifyRequest(false);
 			notified = false;
 			"Switched off notification messages from server %\n".postf(server.name);
@@ -90,7 +90,7 @@ ServerStatusWatcher {
 				serverBooting = false;
 				server.changed(\serverRunning);
 			}, onComplete);
-		}.play(AppClock);
+		}.play(AppClock)
 	}
 
 
@@ -115,10 +115,10 @@ ServerStatusWatcher {
 						// don't accumulate quit-watchers if /done doesn't come back
 						serverReallyQuitWatcher.free;
 						statusWatcher.disable;
-					};
-				});
-			};
-		};
+					}
+				})
+			}
+		}
 	}
 
 
@@ -186,10 +186,10 @@ ServerStatusWatcher {
 	}
 
 
-	serverRunning_ { | val |
+	serverRunning_ { | running |
 
-		if(val != serverRunning) {
-			serverRunning = val;
+		if(running != serverRunning) {
+			serverRunning = running;
 			unresponsive = false;
 
 			if (server.serverRunning) {
@@ -211,11 +211,11 @@ ServerStatusWatcher {
 
 	}
 
-	updateRunningState { | val |
+	updateRunningState { | running |
 		if(server.addr.hasBundle) {
 			{ server.changed(\bundling) }.defer;
 		} {
-			if(val) {
+			if(running) {
 				this.serverRunning = true;
 				unresponsive = false;
 				reallyDeadCount = server.options.pingsBeforeConsideredDead;
@@ -227,7 +227,7 @@ ServerStatusWatcher {
 	}
 
 
-	unresponsive_ { arg val;
+	unresponsive_ { | val |
 		if (val != unresponsive) {
 			unresponsive = val;
 			{ server.changed(\serverRunning) }.defer;
