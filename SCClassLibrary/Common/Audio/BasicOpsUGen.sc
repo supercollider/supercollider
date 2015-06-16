@@ -153,7 +153,6 @@ BinaryOpUGen : BasicOpUGen {
 		#a, b = inputs;
 
 		if (b.isKindOf(UnaryOpUGen) and: { b.operator == 'neg' }) {
-			"b".postln;
 			// a + b.neg -> a - b
 			if (b.descendants.size == 1) {
 				buildSynthDef.removeUGen(b);
@@ -164,7 +163,6 @@ BinaryOpUGen : BasicOpUGen {
 		};
 
 		if (a.isKindOf(UnaryOpUGen) and: { a.operator == 'neg' }) {
-			"a".postln;
 			// a.neg + b -> b - a
 			if (a.descendants.size == 1) {
 				buildSynthDef.removeUGen(a);
