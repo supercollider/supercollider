@@ -45,6 +45,11 @@ ServerOptions
 
 	var <>maxLogins = 1;
 
+	var <>recHeaderFormat="aiff";
+	var <>recSampleFormat="float";
+	var <>recChannels = 2;
+	var <>recBufSize = nil;
+
 	device {
 		^if(inDevice == outDevice)
 		{
@@ -281,8 +286,7 @@ Server {
 
 	var <window, <>scopeWindow;
 	var <emacsbuf;
-	var recordBuf, <recordNode, <>recHeaderFormat="aiff", <>recSampleFormat="float";
-	var <>recChannels=2, <>recBufSize;
+	var recordBuf, <recordNode;
 
 	var <volume, <statusWatcher;
 
@@ -556,7 +560,7 @@ Server {
 					result = max(result, dt);
 					n = n - 1;
 					if(n > 0) {
-						SystemClock.sched(wait, {pingFunc.value; nil })
+						SystemClock.sched(wait, { pingFunc.value; nil })
 					} {
 						("maximum determined latency of" + name + ":" + result + "s").postln;
 						func.value(result)
@@ -576,6 +580,40 @@ Server {
 
 	outputBus {
 		^Bus(\audio, 0, this.options.numOutputBusChannels, this);
+	}
+
+	/* recording formats */
+
+	recHeaderFormat {
+		^options.recHeaderFormat
+	}
+
+	recHeaderFormat_ { |string|
+		options.recHeaderFormat_(string)
+	}
+
+	recSampleFormat {
+		^options.recSampleFormat
+	}
+
+	recSampleFormat_ { |string|
+		options.recSampleFormat_(string)
+	}
+
+	recChannels {
+		^options.recChannels
+	}
+
+	recChannels_ { |n|
+		options.recChannels_(n)
+	}
+
+	recBufSize {
+		^options.recBufSize
+	}
+
+	recBufSize_ { |n|
+		options.recBufSize_(n)
 	}
 
 
@@ -610,8 +648,6 @@ Server {
 		^statusWatcher.aliveThreadPeriod
 	}
 
-
-
 	disconnectSharedMemory {
 		if (serverInterface.notNil) {
 			"server '%' disconnected shared memory interface\n".postf(name);
@@ -619,7 +655,12 @@ Server {
 			serverInterface = nil;
 		}
 	}
-
+	connectSharedMemory {
+		var id;
+		this.disconnectSharedMemory;
+		id = if(this.inProcess) { thisProcess.pid } { addr.port };
+		serverInterface = ServerShmInterface(id);
+	}
 
 	*resumeThreads {
 		set.do { |server| server.statusWatcher.resumeThread }
@@ -633,29 +674,11 @@ Server {
 		statusWatcher.serverBooting = true;
 
 		if(startAliveThread) { statusWatcher.startAliveThread };
-		if(recover) { this.newNodeAllocators } { this.newAllocators };
 
 		statusWatcher.bootNotifyFirst = true; // unclear what this means.
 		statusWatcher.doWhenBooted({
 			statusWatcher.serverBooting = false;
-			if (recChannels.notNil and: (recChannels != options.numOutputBusChannels)) {
-				"Resetting recChannels to %".format(options.numOutputBusChannels).inform
-			};
-			recChannels = options.numOutputBusChannels;
-
-			if(sendQuit.isNil) {
-				sendQuit = this.inProcess or: {this.isLocal};
-			};
-
-			if(this.inProcess) {
-				serverInterface = ServerShmInterface(thisProcess.pid);
-			} {
-				if(isLocal) {
-					serverInterface = ServerShmInterface(addr.port);
-				}
-			};
-			if(dumpMode != 0) { this.sendMsg(\dumpOSC, dumpMode) };
-			this.initTree;
+			this.bootInit(recover);
 		}, onFailure: onFailure ? false);
 
 		if(remoteControlled.not) {
@@ -663,6 +686,16 @@ Server {
 		} {
 			this.bootServerApp;
 		}
+	}
+
+	bootInit { | recover = false |
+		if(recover) { this.newNodeAllocators } { this.newAllocators };
+		if(dumpMode != 0) { this.sendMsg(\dumpOSC, dumpMode) };
+		if(sendQuit.isNil) {
+			sendQuit = this.inProcess or: { this.isLocal };
+		};
+		this.connectSharedMemory;
+		this.initTree;
 	}
 
 	bootServerApp {
@@ -927,18 +960,18 @@ Server {
 
 			// temporary kludge to fix Date's brokenness on windows
 			if(thisProcess.platform.name == \windows) {
-				path = thisProcess.platform.recordingsDir +/+ "SC_" ++ Main.elapsedTime.round(0.01) ++ "." ++ recHeaderFormat;
+				path = thisProcess.platform.recordingsDir +/+ "SC_" ++ Main.elapsedTime.round(0.01) ++ "." ++ options.recHeaderFormat;
 
 			} {
-				path = thisProcess.platform.recordingsDir +/+ "SC_" ++ Date.localtime.stamp ++ "." ++ recHeaderFormat;
+				path = thisProcess.platform.recordingsDir +/+ "SC_" ++ Date.localtime.stamp ++ "." ++ options.recHeaderFormat;
 			};
 		};
-		recordBuf = Buffer.alloc(this, recBufSize ?? { this.sampleRate.nextPowerOfTwo }, recChannels,
-			{arg buf; buf.writeMsg(path, recHeaderFormat, recSampleFormat, 0, 0, true);},
+		recordBuf = Buffer.alloc(this, options.recBufSize ?? { this.sampleRate.nextPowerOfTwo }, options.recChannels,
+			{arg buf; buf.writeMsg(path, options.recHeaderFormat, options.recSampleFormat, 0, 0, true);},
 			this.options.numBuffers + 1); // prevent buffer conflicts by using reserved bufnum
 		recordBuf.path = path;
 		SynthDef("server-record", { arg bufnum;
-			DiskOut.ar(bufnum, In.ar(0, recChannels))
+			DiskOut.ar(bufnum, In.ar(0, options.recChannels))
 		}).send(this);
 	}
 
