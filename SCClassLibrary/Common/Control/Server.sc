@@ -180,22 +180,22 @@ ServerOptions
 		^this.primitiveFailed
 	}
 
-	numPrivateAudioBusChannels_ {arg numChannels = 112;
+	numPrivateAudioBusChannels_ { |numChannels = 112|
 		numPrivateAudioBusChannels = numChannels;
 		this.recalcChannels;
 	}
 
-	numAudioBusChannels_ {arg numChannels=128;
+	numAudioBusChannels_ { |numChannels=128|
 		numAudioBusChannels = numChannels;
 		numPrivateAudioBusChannels = numAudioBusChannels - numInputBusChannels - numOutputBusChannels;
 	}
 
-	numInputBusChannels_ {arg numChannels=8;
+	numInputBusChannels_ { |numChannels=8|
 		numInputBusChannels = numChannels;
 		this.recalcChannels;
 	}
 
-	numOutputBusChannels_ {arg numChannels=8;
+	numOutputBusChannels_ { |numChannels=8|
 		numOutputBusChannels = numChannels;
 		this.recalcChannels;
 	}
@@ -204,8 +204,7 @@ ServerOptions
 		numAudioBusChannels = numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels;
 	}
 
-	*prListDevices {
-		arg in, out;
+	*prListDevices { |in, out|
 		_ListAudioDevices
 		^this.primitiveFailed
 	}
@@ -289,6 +288,20 @@ Server {
 	var <pid;
 	var serverInterface;
 
+	*initClass {
+		Class.initClassTree(ServerOptions);
+		Class.initClassTree(NotificationCenter);
+		named = IdentityDictionary.new;
+		set = Set.new;
+		default = local = Server.new(\localhost, NetAddr("127.0.0.1", 57110));
+		internal = Server.new(\internal, NetAddr.new);
+	}
+
+	*fromName { |name|
+		^Server.named[name] ?? {
+			Server(name, NetAddr.new("127.0.0.1", 57110), ServerOptions.new)
+		}
+	}
 
 	*default_ { |server|
 		default = server; // sync with s?
@@ -296,11 +309,11 @@ Server {
 		this.all.do(_.changed(\default, server));
 	}
 
-	*new { arg name, addr, options, clientID;
+	*new { |name, addr, options, clientID|
 		^super.new.init(name, addr, options, clientID)
 	}
 
-	*remote { arg name, addr, options, clientID;
+	*remote { |name, addr, options, clientID|
 		var result;
 		result = this.new(name, addr, options, clientID);
 		result.startAliveThread;
@@ -308,9 +321,11 @@ Server {
 	}
 
 	*all { ^set }
-	*all_ { arg dict; set = dict }
+	*all_ { |dict| set = dict }
 
-	init { arg argName, argAddr, argOptions, argClientID;
+
+
+	init { |argName, argAddr, argOptions, argClientID|
 		name = argName.asSymbol;
 		addr = argAddr;
 		if(argClientID.notNil, { userSpecifiedClientID = true });
@@ -377,6 +392,10 @@ Server {
 				);
 	}
 
+
+
+	/* node ids */
+
 	newBufferAllocators {
 		var bufferOffset;
 		var offset = this.calcOffset;
@@ -414,34 +433,21 @@ Server {
 		^nodeAllocator.freePerm(id)
 	}
 
-	*initClass {
-		Class.initClassTree(ServerOptions);
-		Class.initClassTree(NotificationCenter);
-		named = IdentityDictionary.new;
-		set = Set.new;
-		default = local = Server.new(\localhost, NetAddr("127.0.0.1", 57110));
-		internal = Server.new(\internal, NetAddr.new);
-	}
 
-	*fromName { arg name;
-		^Server.named[name] ?? {
-			Server(name, NetAddr.new("127.0.0.1", 57110), ServerOptions.new)
-		}
-	}
+	/* network messages */
 
-	// bundling support added
-	sendMsg { arg ... msg;
+	sendMsg { |... msg|
 		addr.sendMsg(*msg);
 	}
-	sendBundle { arg time ... msgs;
+	sendBundle { |time ... msgs|
 		addr.sendBundle(time, *msgs)
 	}
 
-	sendRaw { arg rawArray;
+	sendRaw { |rawArray|
 		addr.sendRaw(rawArray);
 	}
 
-	sendMsgSync { arg condition ... args;
+	sendMsgSync { |condition ... args|
 		var cmdName, resp;
 		if (condition.isNil) { condition = Condition.new };
 		cmdName = args[0].asString;
@@ -458,11 +464,11 @@ Server {
 		condition.wait;
 	}
 
-	sync { arg condition, bundles, latency; // array of bundles that cause async action
+	sync { |condition, bundles, latency| // array of bundles that cause async action
 		addr.sync(condition, bundles, latency)
 	}
 
-	schedSync { arg func;
+	schedSync { |func|
 		syncTasks = syncTasks.add(func);
 		if(syncThread.isNil) {
 			syncThread = Routine.run {
@@ -474,16 +480,21 @@ Server {
 
 	}
 
-	// bundling support added
-	listSendMsg { arg msg;
+	listSendMsg { |msg|
 		addr.sendMsg(*msg);
 	}
- 	listSendBundle { arg time, msgs;
+
+	listSendBundle { |time, msgs|
 		addr.sendBundle(time, *(msgs.asArray));
 	}
 
+	reorder { |nodeList, target, addAction=\addToHead|
+		target = target.asTarget;
+		this.sendMsg(62, Node.actionNumberFor(addAction), target.nodeID, *(nodeList.collect(_.nodeID))); //"/n_order"
+	}
+
 	// load from disk locally, send remote
-	sendSynthDef { arg name, dir;
+	sendSynthDef { |name, dir|
 		var file, buffer;
 		dir = dir ? SynthDef.synthDefDir;
 		file = File(dir ++ name ++ ".scsyndef","r");
@@ -497,20 +508,60 @@ Server {
 		this.sendMsg("/d_recv", buffer);
 	}
 	// tell server to load from disk
-	loadSynthDef { arg name, completionMsg, dir;
+	loadSynthDef { |name, completionMsg, dir|
 		dir = dir ? SynthDef.synthDefDir;
 		this.listSendMsg(
 			["/d_load", dir ++ name ++ ".scsyndef", completionMsg ]
 		)
 	}
 	//loadDir
-	loadDirectory { arg dir, completionMsg;
+	loadDirectory { |dir, completionMsg|
 		this.listSendMsg(["/d_loadDir", dir, completionMsg]);
 	}
 
 
+	/* network message bundling */
 
-	wait { arg responseName;
+	openBundle { |bundle|	// pass in a bundle that you want to
+							// continue adding to, or nil for a new bundle.
+		if(addr.hasBundle) {
+			bundle = addr.bundle.addAll(bundle);
+			addr.bundle = []; // debatable
+		};
+		addr = BundleNetAddr.copyFrom(addr, bundle);
+	}
+
+	closeBundle { |time| // set time to false if you don't want to send.
+		var bundle;
+		if(addr.hasBundle) {
+			bundle = addr.closeBundle(time);
+			addr = addr.saveAddr;
+		} {
+			"there is no open bundle.".warn
+		};
+		^bundle;
+	}
+
+	makeBundle { |time, func, bundle|
+		this.openBundle(bundle);
+		try {
+			func.value(this);
+			bundle = this.closeBundle(time);
+		}{|error|
+			addr = addr.saveAddr; // on error restore the normal NetAddr
+			error.throw
+		}
+		^bundle
+	}
+
+	bind { |func|
+		^this.makeBundle(this.latency, func)
+	}
+
+
+	/* scheduling */
+
+	wait { |responseName|
 		var routine;
 		routine = thisThread;
 		OSCFunc({
@@ -518,7 +569,7 @@ Server {
 		}, responseName, addr).oneShot;
 	}
 
-	waitForBoot { arg onComplete, limit=100, onFailure;
+	waitForBoot { |onComplete, limit=100, onFailure|
 		// onFailure.true: why is this necessary?
 		// this.boot also calls doWhenBooted.
 		// doWhenBooted prints the normal boot failure message.
@@ -528,12 +579,12 @@ Server {
 		this.doWhenBooted(onComplete, limit, onFailure);
 	}
 
-	doWhenBooted { arg onComplete, limit=100, onFailure;
+	doWhenBooted { |onComplete, limit=100, onFailure|
 		statusWatcher.doWhenBooted(onComplete, limit, onFailure)
 	}
 
 
-	bootSync { arg condition;
+	bootSync { |condition|
 		condition ?? { condition = Condition.new };
 		condition.test = false;
 		this.waitForBoot({
@@ -544,7 +595,8 @@ Server {
 		condition.wait;
 	}
 
-	ping { arg n=1, wait=0.1, func;
+
+	ping { |n=1, wait=0.1, func|
 		var result=0, pingFunc;
 		if(statusWatcher.serverRunning.not) { "server not running".postln; ^this };
 		pingFunc = {
@@ -567,9 +619,9 @@ Server {
 		pingFunc.value;
 	}
 
-
 	cachedBuffersDo { |func| Buffer.cachedBuffersDo(this, func) }
 	cachedBufferAt { |bufnum| ^Buffer.cachedBufferAt(this, bufnum) }
+	defaultGroup { ^Group.basicNew(this, 1) }
 
 	inputBus {
 		^Bus(\audio, this.options.numOutputBusChannels, this.options.numInputBusChannels, this);
@@ -646,7 +698,7 @@ Server {
 	}
 
 	disconnectSharedMemory {
-		if (serverInterface.notNil) {
+		if (this.hasShmInterface) {
 			"server '%' disconnected shared memory interface\n".postf(name);
 			serverInterface.disconnect;
 			serverInterface = nil;
@@ -658,6 +710,8 @@ Server {
 		id = if(this.inProcess) { thisProcess.pid } { addr.port };
 		serverInterface = ServerShmInterface(id);
 	}
+
+	hasShmInterface { ^serverInterface.notNil }
 
 	*resumeThreads {
 		set.do { |server| server.statusWatcher.resumeThread }
@@ -729,7 +783,7 @@ Server {
 		};
 	}
 
-	reboot { arg func; // func is evaluated when server is off
+	reboot { |func| // func is evaluated when server is off
 		if (isLocal.not) { "can't reboot a remote server".inform; ^this };
 		if(statusWatcher.serverRunning) {
 			Routine.run {
@@ -760,7 +814,7 @@ Server {
 	}
 
 
-	dumpOSC { arg code=1;
+	dumpOSC { |code=1|
 		/*
 			0 - turn dumping OFF.
 			1 - print the parsed contents of the message.
@@ -799,7 +853,7 @@ Server {
 	}
 
 	*quitAll { |watchShutDown = true|
-		set.do({ arg server;
+		set.do({ |server|
 			if (server.sendQuit === true) {
 				server.quit(watchShutDown)
 			};
@@ -821,25 +875,25 @@ Server {
 		this.initTree;
 	}
 
-	*freeAll { arg evenRemote = false;
+	*freeAll { |evenRemote = false|
 		if (evenRemote) {
-			set.do { arg server;
+			set.do { |server|
 				if ( server.serverRunning ) { server.freeAll }
 			}
 		} {
-			set.do { arg server;
+			set.do { |server|
 				if (server.isLocal and:{ server.serverRunning }) { server.freeAll }
 			}
 		}
 	}
 
-	*hardFreeAll { arg evenRemote = false;
+	*hardFreeAll { |evenRemote = false|
 		if (evenRemote) {
-			set.do { arg server;
+			set.do { |server|
 				server.freeAll
 			}
 		} {
-			set.do { arg server;
+			set.do { |server|
 				if (server.isLocal) { server.freeAll }
 			}
 		}
@@ -849,64 +903,22 @@ Server {
 		^this.all.select(_.serverRunning)
 	}
 
-	// bundling support
+	/* volume control */
 
-
-	openBundle { arg bundle;	// pass in a bundle that you want to
-							// continue adding to, or nil for a new bundle.
-		if(addr.hasBundle) {
-			bundle = addr.bundle.addAll(bundle);
-			addr.bundle = []; // debatable
-		};
-		addr = BundleNetAddr.copyFrom(addr, bundle);
-	}
-	closeBundle { arg time; // set time to false if you don't want to send.
-		var bundle;
-		if(addr.hasBundle) {
-			bundle = addr.closeBundle(time);
-			addr = addr.saveAddr;
-		} {
-			"there is no open bundle.".warn
-		};
-		^bundle;
-	}
-	makeBundle { arg time, func, bundle;
-		this.openBundle(bundle);
-		try {
-			func.value(this);
-			bundle = this.closeBundle(time);
-		}{|error|
-			addr = addr.saveAddr; // on error restore the normal NetAddr
-			error.throw
-		}
-		^bundle
-	}
-	bind { arg func;
-		^this.makeBundle(this.latency, func)
+	volume_ { | newVolume |
+		volume.volume_(newVolume);
 	}
 
-	// internal server commands
-	bootInProcess {
-		^options.bootInProcess;
-	}
-	quitInProcess {
-		_QuitInProcessServer
-		^this.primitiveFailed
-	}
-	allocSharedControls { arg numControls=1024;
-		_AllocSharedControls
-		^this.primitiveFailed
-	}
-	setSharedControl { arg num, value;
-		_SetSharedControl
-		^this.primitiveFailed
-	}
-	getSharedControl { arg num;
-		_GetSharedControl
-		^this.primitiveFailed
+	mute {
+		volume.mute;
 	}
 
-	// recording output
+	unmute {
+		volume.unmute;
+	}
+
+	/* recording output */
+
 	record { |path|
 		recorder.record(path);
 	}
@@ -932,7 +944,32 @@ Server {
 		^recorder.recordNode
 	}
 
-	// CmdPeriod support for Server-scope and Server-record and Server-volume
+	/* internal server commands */
+
+	bootInProcess {
+		^options.bootInProcess;
+	}
+	quitInProcess {
+		_QuitInProcessServer
+		^this.primitiveFailed
+	}
+	allocSharedControls { |numControls=1024|
+		_AllocSharedControls
+		^this.primitiveFailed
+	}
+	setSharedControl { |num, value|
+		_SetSharedControl
+		^this.primitiveFailed
+	}
+	getSharedControl { |num|
+		_GetSharedControl
+		^this.primitiveFailed
+	}
+
+
+
+	/* CmdPeriod support for Server-scope and Server-record and Server-volume */
+
 	cmdPeriod {
 		addr = addr.recover;
 		this.changed(\cmdPeriod);
@@ -942,12 +979,10 @@ Server {
 		if(scopeWindow.notNil) { scopeWindow.run }
 	}
 
-	defaultGroup { ^Group.basicNew(this, 1) }
-
-	queryAllNodes { arg queryControls = false;
+	queryAllNodes { | queryControls = false |
 		var resp, done = false;
 		if(isLocal, {this.sendMsg("/g_dumpTree", 0, queryControls.binaryValue);}, {
-			resp = OSCFunc({ arg msg;
+			resp = OSCFunc({ |msg|
 				var i = 2, tabs = 0, printControls = false, dumpFunc;
 				if(msg[1] != 0, {printControls = true});
 				("NODE TREE Group" + msg[2]).postln;
@@ -1002,7 +1037,7 @@ Server {
 	printOn { |stream|
 		stream << name;
 	}
-	storeOn { arg stream;
+	storeOn { |stream|
 		var codeStr = this.switch (
 			Server.default, 			{ if (sync_s) { "s" } { "Server.default" } },
 			Server.local,				{ "Server.local" },
@@ -1014,25 +1049,6 @@ Server {
 
 	archiveAsCompileString { ^true }
 	archiveAsObject { ^true }
-
-	volume_ {arg newVolume;
-		volume.volume_(newVolume);
-	}
-
-	mute {
-		volume.mute;
-	}
-
-	unmute {
-		volume.unmute;
-	}
-
-	hasShmInterface { ^serverInterface.notNil }
-
-	reorder { arg nodeList, target, addAction=\addToHead;
-		target = target.asTarget;
-		this.sendMsg(62, Node.actionNumberFor(addAction), target.nodeID, *(nodeList.collect(_.nodeID))); //"/n_order"
-	}
 
 	getControlBusValue {|busIndex|
 		if (serverInterface.isNil) {
