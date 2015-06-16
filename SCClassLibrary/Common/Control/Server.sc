@@ -579,7 +579,7 @@ Server {
 	}
 
 
-	/* backward compatibility */
+	/* server status */
 
 	numUGens { ^statusWatcher.numUGens }
 	numSynths { ^statusWatcher.numSynths }
@@ -592,9 +592,6 @@ Server {
 	serverRunning { ^statusWatcher.serverRunning }
 	serverBooting { ^statusWatcher.serverBooting }
 	unresponsive { ^statusWatcher.unresponsive }
-
-
-	/* server status */
 
 	startAliveThread { | delay=0.0 |
 		statusWatcher.startAliveThread(delay)
@@ -726,7 +723,7 @@ Server {
 		^statusWatcher.notify
 	}
 	notify_ { |flag|
-		statusWatcher.notify(flag)
+		statusWatcher.notify_(flag)
 	}
 	notified {
 		^statusWatcher.notified
