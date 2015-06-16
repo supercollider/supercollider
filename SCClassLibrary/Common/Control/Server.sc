@@ -51,17 +51,14 @@ ServerOptions
 	var <>recBufSize = nil;
 
 	device {
-		^if(inDevice == outDevice)
-		{
+		^if(inDevice == outDevice) {
 			inDevice
-		}
-		{
+		} {
 			[inDevice, outDevice]
 		}
 	}
 
-	device_ {
-		|dev|
+	device_ { |dev|
 		inDevice = outDevice = dev;
 	}
 
@@ -286,9 +283,8 @@ Server {
 
 	var <window, <>scopeWindow;
 	var <emacsbuf;
-	var recordBuf, <recordNode;
 
-	var <volume, <statusWatcher;
+	var <volume, <recorder, <statusWatcher;
 
 	var <pid;
 	var serverInterface;
@@ -329,7 +325,8 @@ Server {
 		set.add(this);
 		this.newAllocators;
 		Server.changed(\serverAdded, this);
-		volume = Volume.new(server: this, persist: true);
+		volume = Volume(server: this, persist: true);
+		recorder = Recorder(this);
 	}
 
 	initTree {
@@ -911,68 +908,28 @@ Server {
 
 	// recording output
 	record { |path|
-		if(recordBuf.isNil) {
-			this.prepareForRecord(path);
-			Routine({
-				this.sync;
-				this.record;
-			}).play;
-		} {
-			if(this.isRecording.not) {
-				recordNode = Synth.tail(RootNode(this), "server-record",
-						[\bufnum, recordBuf.bufnum]);
-				CmdPeriod.doOnce {
-					recordNode = nil;
-					if (recordBuf.notNil) { recordBuf.close {|buf| buf.freeMsg }; recordBuf = nil; };
-				}
-			} {
-				recordNode.run(true)
-			};
-			"Recording: %\n".postf(recordBuf.path);
-		};
+		recorder.record(path);
 	}
 
 	isRecording {
-		^recordNode.isPlaying
+		^recorder.isRecording
 	}
 
 	pauseRecording {
-		recordNode.notNil.if({ recordNode.run(false); "Paused".postln }, { "Not Recording".warn });
+		recorder.pauseRecording
 	}
 
 	stopRecording {
-		if(recordNode.notNil) {
-			recordNode.free;
-			recordNode = nil;
-			recordBuf.close({ |buf| buf.freeMsg });
-			"Recording Stopped: %\n".postf(recordBuf.path);
-			recordBuf = nil;
-		} {
-			"Not Recording".warn
-		};
+		recorder.stopRecording
 	}
 
-	prepareForRecord { arg path;
-		if (path.isNil) {
-			if(File.exists(thisProcess.platform.recordingsDir).not) {
-				thisProcess.platform.recordingsDir.mkdir
-			};
+	prepareForRecord { |path|
+		recorder.prepareForRecord(path)
+	}
 
-			// temporary kludge to fix Date's brokenness on windows
-			if(thisProcess.platform.name == \windows) {
-				path = thisProcess.platform.recordingsDir +/+ "SC_" ++ Main.elapsedTime.round(0.01) ++ "." ++ options.recHeaderFormat;
-
-			} {
-				path = thisProcess.platform.recordingsDir +/+ "SC_" ++ Date.localtime.stamp ++ "." ++ options.recHeaderFormat;
-			};
-		};
-		recordBuf = Buffer.alloc(this, options.recBufSize ?? { this.sampleRate.nextPowerOfTwo }, options.recChannels,
-			{arg buf; buf.writeMsg(path, options.recHeaderFormat, options.recSampleFormat, 0, 0, true);},
-			this.options.numBuffers + 1); // prevent buffer conflicts by using reserved bufnum
-		recordBuf.path = path;
-		SynthDef("server-record", { arg bufnum;
-			DiskOut.ar(bufnum, In.ar(0, options.recChannels))
-		}).send(this);
+	recordNode {
+		this.deprecated(thisMethod);
+		^recorder.recordNode
 	}
 
 	// CmdPeriod support for Server-scope and Server-record and Server-volume
