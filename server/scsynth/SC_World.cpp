@@ -994,7 +994,7 @@ void World_Start(World *inWorld)
 	for (uint32 i=0; i<inWorld->mNumAudioBusChannels; ++i) inWorld->mAudioBusTouched[i] = -1;
 	for (uint32 i=0; i<inWorld->mNumControlBusChannels; ++i) inWorld->mControlBusTouched[i] = -1;
 
-	inWorld->hw->mWireBufSpace = (float*)sc_malloc(inWorld->hw->mMaxWireBufs * inWorld->mBufLength * sizeof(float));
+	inWorld->hw->mWireBufSpace = (float*)malloc_alig(inWorld->hw->mMaxWireBufs * inWorld->mBufLength * sizeof(float));
 
 	inWorld->hw->mTriggers.MakeEmpty();
 	inWorld->hw->mNodeMsgs.MakeEmpty();
