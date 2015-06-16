@@ -80,8 +80,10 @@ HistoryGui : JITGui {
 		.enterInterpretsSelection_(false)
 		.keyDownAction_({ |txvw, char, mod, uni, keycode|
 			// char.postcs;
-			if ([3, 13].includes(char.ascii)) {
-				this.rip(textV.string);
+			char !? {
+				if ([3, 13].includes(char.ascii)) {
+					this.rip(textV.string);
+				};
 			};
 		})
 		.resize_(2);
