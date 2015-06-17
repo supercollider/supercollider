@@ -61,7 +61,7 @@ EZText : EZGui {
 			var newstr = textField.string;
 			var newval = try { newstr.interpret };
 			if (newval.notNil or: { newstr == "" }) {
-				this.valueAction_(newval);
+				this.valueActionIfChanged_(newval);
 			} {
 			//	"EZText compile failed - reset to prev value.".postln;
 				textField.string = this.value.asCompileString;
