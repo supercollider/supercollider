@@ -265,7 +265,7 @@ ServerShmInterface {
 Server {
 
 	classvar <>local, <>internal, <default;
-	classvar <>named, <>set, <>program, <>sync_s = true;
+	classvar <>named, <>all, <>program, <>sync_s = true;
 
 	var <name, <>addr, <clientID, userSpecifiedClientID = false;
 	var <isLocal, <inProcess, <>sendQuit, <>remoteControlled;
@@ -281,11 +281,12 @@ Server {
 	var <volume, <recorder, <statusWatcher;
 	var <pid, serverInterface;
 
+
 	*initClass {
 		Class.initClassTree(ServerOptions);
 		Class.initClassTree(NotificationCenter);
 		named = IdentityDictionary.new;
-		set = Set.new;
+		all = Set.new;
 		default = local = Server.new(\localhost, NetAddr("127.0.0.1", 57110));
 		internal = Server.new(\internal, NetAddr.new);
 	}
@@ -313,11 +314,6 @@ Server {
 		^result;
 	}
 
-	*all { ^set }
-	*all_ { |dict| set = dict }
-
-
-
 	init { |argName, argAddr, argOptions, argClientID|
 		name = argName.asSymbol;
 		addr = argAddr;
@@ -330,7 +326,7 @@ Server {
 		remoteControlled = isLocal;
 		statusWatcher = ServerStatusWatcher(this);
 		named.put(name, this);
-		set.add(this);
+		all.add(this);
 		this.newAllocators;
 		Server.changed(\serverAdded, this);
 		volume = Volume(server: this, persist: true);
@@ -687,7 +683,7 @@ Server {
 	hasShmInterface { ^serverInterface.notNil }
 
 	*resumeThreads {
-		set.do { |server| server.statusWatcher.resumeThread }
+		all.do { |server| server.statusWatcher.resumeThread }
 	}
 
 	boot { | startAliveThread = true, recover = false, onFailure |
@@ -823,7 +819,7 @@ Server {
 	}
 
 	*quitAll { |watchShutDown = true|
-		set.do { |server|
+		all.do { |server|
 			if(server.sendQuit === true) {
 				server.quit(watchShutDown)
 			}
@@ -849,11 +845,11 @@ Server {
 
 	*freeAll { |evenRemote = false|
 		if(evenRemote) {
-			set.do { |server|
+			all.do { |server|
 				if( server.serverRunning ) { server.freeAll }
 			}
 		} {
-			set.do { |server|
+			all.do { |server|
 				if(server.isLocal and:{ server.serverRunning }) { server.freeAll }
 			}
 		}
@@ -861,11 +857,11 @@ Server {
 
 	*hardFreeAll { |evenRemote = false|
 		if(evenRemote) {
-			set.do { |server|
+			all.do { |server|
 				server.freeAll
 			}
 		} {
-			set.do { |server|
+			all.do { |server|
 				if(server.isLocal) { server.freeAll }
 			}
 		}
@@ -1052,4 +1048,17 @@ Server {
 	*supernova {
 		this.program = this.program.replace("scsynth", "supernova")
 	}
+
+	/* backward compatibility */
+
+	*set {
+		this.deprecated(thisMethod, this.class.findMethod('all'));
+		^all
+	}
+
+	*set_ { |item|
+		this.deprecated(thisMethod, this.class.findMethod('all_'));
+		all = item
+	}
+
 }

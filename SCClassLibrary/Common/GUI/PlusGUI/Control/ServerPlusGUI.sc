@@ -13,7 +13,7 @@
 
 	calculateViewBounds {
 		var width = 288, height = 98, taskBarHeight = 27; // the latter should be in SCWindow
-		var keys = set.asArray.collect(_.name).sort;
+		var keys = all.asArray.collect(_.name).sort;
 		^Rect(5, keys.indexOf(name) * (height + taskBarHeight) + 5, width, height)
 	}
 
