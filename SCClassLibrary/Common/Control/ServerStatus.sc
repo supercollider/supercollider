@@ -46,7 +46,7 @@ ServerStatusWatcher {
 		}
 	}
 
-	sendNotifyRequest { | flag=true |
+	sendNotifyRequest { |flag = true|
 		var doneOSCFunc, failOSCFunc;
 		notified = flag;
 		if(server.userSpecifiedClientID.not) {
@@ -65,15 +65,15 @@ ServerStatusWatcher {
 		server.sendMsg("/notify", flag.binaryValue);
 	}
 
-	doWhenBooted { arg onComplete, limit=100, onFailure;
+	doWhenBooted { |onComplete, limit = 100, onFailure|
 		var mBootNotifyFirst = bootNotifyFirst, postError = true;
 		bootNotifyFirst = false;
 
 		^Routine {
 			while {
-				((serverRunning.not
-					or: (serverBooting and: mBootNotifyFirst.not))
-				and: { (limit = limit - 1) > 0 })
+				serverRunning.not
+				or: { serverBooting and: mBootNotifyFirst.not }
+				and: { (limit = limit - 1) > 0 }
 				and: { server.pid.tryPerform(\pidRunning) == true }
 			} {
 				0.2.wait;
@@ -101,12 +101,10 @@ ServerStatusWatcher {
 			if(notified) {
 				serverReallyQuitWatcher = OSCFunc({ |msg|
 					if(msg[1] == '/quit') {
-						if (statusWatcher.notNil) {
-							statusWatcher.enable;
-						};
+						statusWatcher!? { statusWatcher.enable };
 						serverReallyQuit = true;
 						serverReallyQuitWatcher.free;
-					};
+					}
 				}, '/done', server.addr);
 
 				AppClock.sched(3.0, {
@@ -128,7 +126,7 @@ ServerStatusWatcher {
 			OSCFunc({ arg msg;
 				var cmd, one;
 				if(notify){
-					if(notified.not){
+					if(notified.not) {
 						this.sendNotifyRequest;
 						"Receiving notification messages from server %\n".postf(server.name);
 					}
@@ -151,7 +149,7 @@ ServerStatusWatcher {
 		statusWatcher.disable;
 	}
 
-	startAliveThread { | delay=0.0 |
+	startAliveThread { | delay = 0.0 |
 		this.addStatusWatcher;
 		^aliveThread ?? {
 			aliveThread = Routine {
