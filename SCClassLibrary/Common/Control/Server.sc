@@ -409,7 +409,7 @@ Server {
 		if(clientID > (options.maxLogins - 1)) {
 			"Client ID exceeds maxLogins. Some buses and buffers may overlap for remote server: %".format(this).warn;
 		};
-		^clientID % options.maxLogins;
+		^clientID % options.maxLogins
 	}
 
 	newScopeBufferAllocators {
