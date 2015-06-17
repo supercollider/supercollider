@@ -63,8 +63,9 @@ EZSlider : EZGui {
 		action = argAction;
 
 		sliderView.action = {
-			this.valueAction_(controlSpec.map(sliderView.value));
+			this.valueActionIfChanged_(controlSpec.map(sliderView.value));
 		};
+
 
 		sliderView.receiveDragHandler = { arg slider;
 			slider.valueAction = controlSpec.unmap(View.currentDrag);
@@ -74,7 +75,7 @@ EZSlider : EZGui {
 			controlSpec.map(slider.value)
 		};
 
-		numberView.action = { this.valueAction_(numberView.value) };
+		numberView.action = { this.valueActionIfChanged_(numberView.value) };
 
 		numberStep = controlSpec.step;
 		if (numberStep == 0) {
