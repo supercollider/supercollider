@@ -103,7 +103,7 @@ bool Introspection::parse(const QString & yamlString )
         Class *klass = it->second.data();
 
 		// LC debugging
-        qDebug() << klass->name;
+        //qDebug() << klass->name;
 
         ClassMap::iterator class_it;
 
@@ -129,7 +129,7 @@ bool Introspection::parse(const QString & yamlString )
             continue;
 
 		// LC debugging
-        assert(methodSeq.Type() == YAML::NodeType::Sequence);
+        //assert(methodSeq.Type() == YAML::NodeType::Sequence);
         
 		for (YAML::Iterator mit = methodSeq.begin(); mit != methodSeq.end(); ++mit)
         {
@@ -147,7 +147,7 @@ bool Introspection::parse(const QString & yamlString )
             method->definition.position = methodNode[3].to<int>();
 
 			// LC debugging
-			qDebug() << "--" << method->name;
+			//qDebug() << "--" << method->name;
 
             const YAML::Node &argNode = methodNode[4];
             assert(argNode.Type() == YAML::NodeType::Sequence);
@@ -161,7 +161,7 @@ bool Introspection::parse(const QString & yamlString )
                 argument.name = arg->to<std::string>().c_str();
 
 				// LC debugging
-				qDebug() << "---# " << argument.name;
+				//qDebug() << "---# " << argument.name;
 
                 // get arg default value
                 ++arg;

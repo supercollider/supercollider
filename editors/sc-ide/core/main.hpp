@@ -37,7 +37,7 @@ class SessionManager;
 // scide instances have a LocalServer. when called with an argument, it will try to reconnect
 // to the instance with the lowest number.
 class SingleInstanceGuard:
-	public QObject, public IIpcLogger
+	public QObject, public IIpcHandler
 {
     Q_OBJECT
 
@@ -45,8 +45,8 @@ public:
 	static const int Port = 6770;
 
     bool tryConnect(QStringList const & arguments);
-	void onIpcLog(const QString & message);
-	void onResponse(const QString &selector, const QStringList &data);
+	void onIpcLog(const QString & message) override;
+	void onIpcMessage(const QString &selector, const QVariantList &data) override;
 
 public Q_SLOTS:
 	void onNewIpcConnection();
@@ -54,7 +54,7 @@ public Q_SLOTS:
 	
 
 private:
-	IIpcLogger * mLogger;
+	IIpcHandler * mHandler;
 	ScIpcChannel * mIpcChannel;
     QTcpServer * mIpcServer;
     QTcpSocket * mIpcSocket;

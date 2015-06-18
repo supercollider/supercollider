@@ -42,12 +42,13 @@ class ScIntrospectionParser;
 
 class ScProcess:
     public QProcess,
-	IIpcLogger
+	IIpcHandler
 {
     Q_OBJECT
 
 public:
     ScProcess( Settings::Manager *, QObject * parent );
+    ~ScProcess();
 
     enum ActionRole {
         ToggleRunning = 0,
@@ -83,8 +84,8 @@ public:
     void updateTextMirrorForDocument ( class Document * doc, int position, int charsRemoved, int charsAdded );
     void updateSelectionMirrorForDocument ( class Document * doc, int start, int range);
 
-	void sendToScLang(QString const & selector, QVariantList const & argList);
-
+	void sendToScLang(QString const & selector, std::initializer_list<QVariant> args);
+	
 public slots:
     void toggleRunning();
     void startLanguage (void);
@@ -119,8 +120,6 @@ private slots:
 private:
     void onStart();
     
-	void onResponse( const QString & selector, const QString & data );
-
     void prepareActions(Settings::Manager * settings);
     void postQuitNotification();
 
@@ -138,9 +137,9 @@ private:
     QDateTime mTerminationRequestTime;
     bool mCompiled;
 
-	// IIpcLogger
-	void onIpcLog(const QString &message);
-
+	// IIpcHandler
+	void onIpcLog(const QString &message) override;
+	void onIpcMessage(const QString & selector, const QVariantList & argList) override;
 
 };
 

@@ -145,7 +145,7 @@ bool SingleInstanceGuard::tryConnect(QStringList const & arguments)
         QTcpSocket *socket = new QTcpSocket(this);
 		socket->connectToHost(QHostAddress(QHostAddress::LocalHost), SingleInstanceGuard::Port);
 		
-        QStringList canonicalArguments;
+        QVariantList canonicalArguments;
         foreach (QString path, arguments) {
             QFileInfo info(path);
             canonicalArguments << info.canonicalFilePath();
@@ -153,7 +153,7 @@ bool SingleInstanceGuard::tryConnect(QStringList const & arguments)
 
         if (socket->waitForConnected(200)) {
 			ScIpcChannel *ipcChannel = new ScIpcChannel(socket, QString("SingleInstanceGuard"), this);
-			ipcChannel->write<QStringList>(QString("open"), canonicalArguments);
+			ipcChannel->write(QString("open"), canonicalArguments);
 
 			return true;
         }
@@ -170,14 +170,14 @@ bool SingleInstanceGuard::tryConnect(QStringList const & arguments)
 	return false;
 }
 
-void SingleInstanceGuard::onResponse(const QString &selector, const QStringList &data) {
+void SingleInstanceGuard::onIpcMessage(const QString &selector, const QVariantList &data) {
 	if (selector == QString("open"))
-		foreach(QString path, data)
-			Main::documentManager()->open(path);
+		foreach(QVariant path, data)
+			Main::documentManager()->open(path.toString());
 }
 
 void SingleInstanceGuard::onIpcData() {
-	mIpcChannel->read<QStringList, SingleInstanceGuard>(this, &SingleInstanceGuard::onResponse);
+	mIpcChannel->read();
 }
 
 

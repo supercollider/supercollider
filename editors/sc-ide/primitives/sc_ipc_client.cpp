@@ -37,6 +37,7 @@
 
 #include "sc_ipc_client.hpp"
 #include <QHostAddress>
+#include <QDebug>
 
 ScIpcClient::ScIpcClient( const char * ideName )
 {
@@ -62,11 +63,18 @@ ScIpcClient::~ScIpcClient()
 	}
 }
 
-void ScIpcClient::readIDEData() {
-	mIpcChannel->read<QVariantList, ScIpcClient>(this, &ScIpcClient::onResponse);
+void ScIpcClient::readIDEData() 
+{
+	mIpcChannel->read();
 }
-    
-void ScIpcClient::onResponse( const QString & selector, const QVariantList & argList )
+   
+void ScIpcClient::onIpcLog(const QString &message) 
+{
+	qDebug() << message;
+	post(message.toStdString().c_str());
+}
+
+void ScIpcClient::onIpcMessage( const QString & selector, const QVariantList & argList ) 
 {
     static QString upDateDocTextSelector("updateDocText");
     static QString upDateDocSelectionSelector("updateDocSelection");
@@ -79,9 +87,6 @@ void ScIpcClient::onResponse( const QString & selector, const QVariantList & arg
 
 void ScIpcClient::updateDocText( const QVariantList & argList )
 {
-	if (argList.isEmpty())
-		return;
-
     QByteArray quuid = argList[0].toByteArray();
     int pos = argList[1].toInt();
     int charsRemoved = argList[2].toInt();
@@ -90,10 +95,7 @@ void ScIpcClient::updateDocText( const QVariantList & argList )
 }
 
 void ScIpcClient::updateDocSelection( const QVariantList & argList )
-{
-	if (argList.isEmpty())
-		return;
-
+{		
 	QByteArray quuid = argList[0].toByteArray();
     int start = argList[1].toInt();
     int range = argList[2].toInt();
@@ -163,10 +165,6 @@ void ScIpcClient::setSelectionMirrorForDocument(QByteArray & id, int start, int 
     mSelMirrorHashMutex.lock();
     mDocumentSelectionMirrors[id] = qMakePair(start, range);
     mSelMirrorHashMutex.unlock();
-}
-
-void ScIpcClient::onIpcLog(const QString &message) {
-	post(message.toStdString().c_str());
 }
 
 static ScIpcClient * gIpcClient = NULL;
@@ -299,11 +297,9 @@ int ScIDE_Send(struct VMGlobals *g, int numArgsPushed)
 
     try {
         YAMLSerializer serializer(argSlot);
-
-		QString yamlstr = QString::fromUtf8(serializer.data(), serializer.size());
-		std::string wtf = yamlstr.toStdString();
-
-		gIpcClient->mIpcChannel->write<QString>(QString(id), yamlstr);
+		QString &yamlstr = QString::fromUtf8(serializer.data(), serializer.size());
+		
+		gIpcClient->mIpcChannel->write(QString(id), { QVariant(yamlstr) });
 		
     } catch (std::exception const & e) {
         postfl("Exception during ScIDE_Send: %s\n", e.what());

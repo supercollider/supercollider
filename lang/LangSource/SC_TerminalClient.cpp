@@ -298,8 +298,8 @@ static PyrSymbol * resolveMethodSymbol(bool silent)
 {
 	if (silent)
 		return s_interpretCmdLine;
-	else
-		return s_interpretPrintCmdLine;
+	
+	return s_interpretPrintCmdLine;
 }
 
 void SC_TerminalClient::interpretCmdLine(const char* cmdLine, bool silent)

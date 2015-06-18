@@ -27,7 +27,7 @@
 #include <QMutex>
 #include <QHash>
 
-class ScIpcClient : public QObject, IIpcLogger
+class ScIpcClient : public QObject, IIpcHandler
 {
     Q_OBJECT
 public:
@@ -51,8 +51,6 @@ private Q_SLOTS:
     
 private:
     
-    void onResponse( const QString & selector, const QVariantList & argList );
-    
     void updateDocText( const QVariantList & argList );
     void updateDocSelection( const QVariantList & argList );
     
@@ -61,8 +59,9 @@ private:
     QMutex mTextMirrorHashMutex;
     QMutex mSelMirrorHashMutex;
 
-	// IIpcLogger
+	// IIpcHandler
 	void onIpcLog(const QString & message);
+	void onIpcMessage(const QString & selector, const QVariantList & argList);
 
 };
 
