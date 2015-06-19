@@ -758,7 +758,7 @@ Server {
 				this.wait(\done);
 				0.1.wait;
 				func.value;
-				this.boot;
+				defer { this.boot }
 			}
 		} {
 			func.value;
