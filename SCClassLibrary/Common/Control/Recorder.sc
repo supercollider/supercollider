@@ -1,10 +1,11 @@
 Recorder {
 
-	var <server, <bus, <numChannels;
+	var <server;
 	var recordBuf, recordNode;
+	var <>filePrefix = "SC_";
 
-	*new { |server, bus, numChannels|
-		^super.newCopyArgs(server, bus, numChannels)
+	*new { |server|
+		^super.newCopyArgs(server)
 	}
 
 	record { |path|
@@ -21,17 +22,11 @@ Recorder {
 		} {
 			if(this.isRecording.not) {
 				recordNode = Synth.tail(RootNode(server), 'server-record', [\bufnum, recordBuf.bufnum]);
-				CmdPeriod.doOnce {
-					recordNode = nil;
-					if (recordBuf.notNil) {
-						recordBuf.close {|buf| buf.freeMsg };
-						recordBuf = nil
-					}
-				}
+				CmdPeriod.doOnce { this.stopRecording }
 			} {
 				recordNode.run(true)
 			};
-			"Recording: %\n".postf(recordBuf.path);
+			"Recording ... \npath: '%'\n".postf(recordBuf.bpath);
 		}
 	}
 
@@ -52,24 +47,28 @@ Recorder {
 		if(recordNode.notNil) {
 			recordNode.free;
 			recordNode = nil;
-			recordBuf.close({ |buf| buf.freeMsg });
-			"Recording Stopped: %\n".postf(recordBuf.path);
-			recordBuf = nil;
+			"Recording Stopped.\npath: '%'\n".postf(recordBuf.path);
+			if (recordBuf.notNil) {
+				recordBuf.close({ |buf| buf.freeMsg });
+				recordBuf = nil;
+			}
 		} {
 			"Not Recording".warn
 		}
 	}
 
-	prepareForRecord { | path |
-		var bufSize = server.recBufSize ?? { server.sampleRate.nextPowerOfTwo };
-		var recChannels = numChannels ? server.recChannels;
-		var recHeaderFormat = server.recHeaderFormat;
-		var recSampleFormat = server.recSampleFormat;
+	prepareForRecord { | path, bus, numChannels, recHeaderFormat, recSampleFormat, recBufSize |
+		var bufSize = recBufSize ? server.recBufSize ?? { server.sampleRate.nextPowerOfTwo };
 		var bufnum = server.options.numBuffers + 1; // prevent buffer conflicts by using reserved bufnum
+
+		recHeaderFormat = recHeaderFormat ? server.recHeaderFormat;
+		recSampleFormat = recSampleFormat ? server.recSampleFormat;
+		bus = (bus ? 0).asControlInput;
+		numChannels = numChannels ? server.recChannels;
 		path = path ?? { this.makePath };
 		recordBuf = Buffer.alloc(server,
 			bufSize,
-			recChannels,
+			numChannels,
 			{| buf |
 				buf.writeMsg(path, recHeaderFormat, recSampleFormat, 0, 0, true)
 			},
@@ -78,8 +77,9 @@ Recorder {
 		recordBuf.path = path;
 
 		SynthDef('server-record', { | bufnum |
-			DiskOut.ar(bufnum, In.ar(bus ? 0, recChannels))
+			DiskOut.ar(bufnum, In.ar(bus ? 0, numChannels))
 		}).send(server);
+		"Preparing '%' server to record channels %\n".postf(server.name, bus.asControlInput + (0..numChannels - 1));
 	}
 
 	makePath {
@@ -96,7 +96,7 @@ Recorder {
 			Date.localtime.stamp
 		};
 
-		^dir +/+ "SC_" ++ timestamp ++ "." ++ server.recHeaderFormat;
+		^dir +/+ filePrefix ++ timestamp ++ "." ++ server.recHeaderFormat;
 	}
 
 
