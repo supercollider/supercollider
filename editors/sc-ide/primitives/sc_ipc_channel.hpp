@@ -57,7 +57,7 @@ public:
 	// on windows, difficulties arise when we serialize large QT objects.
 	static const int MaxInbandSize = 4000;
 
-	ScIpcChannel(QTcpSocket *socket, QString &tag, IIpcHandler *logger);
+	ScIpcChannel(QTcpSocket *socket, const QString &tag, IIpcHandler *logger);
 	~ScIpcChannel();
 
 	void log(const QString &message);
@@ -95,10 +95,10 @@ public:
 	IIpcHandler *mIpcHandler;
 
 	// Here we are a writer.
-	ScIpcLargeMessage(QByteArray &bytes, QString &tag, IIpcHandler *handler);
+	ScIpcLargeMessage(QByteArray &bytes, const QString &tag, IIpcHandler *handler);
 
 	// Here we are a reader.
-	ScIpcLargeMessage(QString &key, IIpcHandler *handler);
+	ScIpcLargeMessage(const QString &key, IIpcHandler *handler);
 
 	~ScIpcLargeMessage();
 

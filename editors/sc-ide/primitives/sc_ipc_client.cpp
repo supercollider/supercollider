@@ -41,11 +41,13 @@
 
 ScIpcClient::ScIpcClient( const char * ideName )
 {
-    mSocket = new QTcpSocket();
-	mIpcChannel = new ScIpcChannel(mSocket, QString("sclang"), this);
+	mSocket = new QTcpSocket();
+	
+	QString tag("sclang");
+	mIpcChannel = new ScIpcChannel(mSocket, tag, static_cast<IIpcHandler*>(this));
 
 	mSocket->connectToHost(QHostAddress(QHostAddress::LocalHost), ScIpcChannel::Port);
-    connect(mSocket, SIGNAL(readyRead()), this, SLOT(readIDEData()));
+	connect(mSocket, SIGNAL(readyRead()), this, SLOT(readIDEData()));
 
 }
 
@@ -297,7 +299,7 @@ int ScIDE_Send(struct VMGlobals *g, int numArgsPushed)
 
     try {
         YAMLSerializer serializer(argSlot);
-		QString &yamlstr = QString::fromUtf8(serializer.data(), serializer.size());
+		QString const& yamlstr = QString::fromUtf8(serializer.data(), serializer.size());
 		
 		gIpcClient->mIpcChannel->write(QString(id), { QVariant(yamlstr) });
 		

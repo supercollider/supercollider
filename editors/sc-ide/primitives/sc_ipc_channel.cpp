@@ -23,7 +23,7 @@
 // ----------------------------------------------------------------------------------------------
 // ScIpcChannel - the interesting code for this is in the header, because they are templates.
 // ------------
-ScIpcChannel::ScIpcChannel(QTcpSocket *socket, QString &tag, IIpcHandler *handler) : 
+ScIpcChannel::ScIpcChannel(QTcpSocket *socket, const QString &tag, IIpcHandler *handler) : 
 	mSocket(socket), 
 	mTag(tag), 
 	mIpcHandler(handler),
@@ -61,7 +61,7 @@ void ScIpcChannel::read() {
 	while (mSocket->bytesAvailable() > 0) {
 
 		QDataStream inStream(mSocket);
-		inStream.setVersion(QDataStream::Qt_DefaultCompiledVersion);
+		//inStream.setVersion(QDataStream::Qt_DefaultCompiledVersion);
 
 		quint32 bytesExpected;
 
@@ -130,7 +130,7 @@ void ScIpcChannel::read() {
 			QBuffer largeBuf(&lotsOfBytes);
 			largeBuf.open(QIODevice::ReadOnly);
 			QDataStream largeStream(&largeBuf);
-			largeStream.setVersion(QDataStream::Qt_DefaultCompiledVersion);
+			//largeStream.setVersion(QDataStream::Qt_DefaultCompiledVersion);
 
 			largeStream >> selector;
 			if (largeStream.status() != QDataStream::Ok) {
@@ -170,7 +170,7 @@ void ScIpcChannel::write(const QString &selector, const QVariantList &data) {
 	QBuffer buf(&bytes);
 	buf.open(QIODevice::WriteOnly);
 	QDataStream bufStream(&buf);
-	bufStream.setVersion(QDataStream::Qt_DefaultCompiledVersion);
+	//bufStream.setVersion(QDataStream::Qt_DefaultCompiledVersion);
 
 	bufStream << selector;
 	if (bufStream.status() != QDataStream::Ok) {
@@ -195,7 +195,7 @@ void ScIpcChannel::write(const QString &selector, const QVariantList &data) {
 	if (totalLength < ScIpcChannel::MaxInbandSize) {
 		mWriteLock.lock();
 		QDataStream socketStream(mSocket);
-		socketStream.setVersion(QDataStream::Qt_DefaultCompiledVersion);
+		//socketStream.setVersion(QDataStream::Qt_DefaultCompiledVersion);
 
 		socketStream << bytes;
 		if (socketStream.status() != QDataStream::Ok) {
@@ -249,7 +249,7 @@ qint32 ScIpcLargeMessageMemory::ripen() {
 // -----------------
 
 // Here we are a writer.
-ScIpcLargeMessage::ScIpcLargeMessage(QByteArray &bytes, QString &tag, IIpcHandler *logger) {
+ScIpcLargeMessage::ScIpcLargeMessage(QByteArray &bytes, const QString &tag, IIpcHandler *logger) {
 	static int i = 0;
 	QString key = QString("ScIpcLargeMessage<%1>:%2").arg(tag, ++i);
 
@@ -286,7 +286,7 @@ ScIpcLargeMessage::ScIpcLargeMessage(QByteArray &bytes, QString &tag, IIpcHandle
 }
 
 // Here we are a reader.
-ScIpcLargeMessage::ScIpcLargeMessage(QString &key, IIpcHandler *logger) {
+ScIpcLargeMessage::ScIpcLargeMessage(const QString &key, IIpcHandler *logger) {
 
 	mIpcHandler = logger;
 
@@ -315,7 +315,7 @@ ScIpcLargeMessage::~ScIpcLargeMessage() {
 }
 
 void ScIpcLargeMessage::send(ScIpcChannel *channel) {
-	QString &key = shm->key();
+	const QString &key = shm->key();
 
 	//log(QString("send - Signalling other side that there's data."));
 	channel->write(channel->LargeMessageSelector, { QVariant(key) });
