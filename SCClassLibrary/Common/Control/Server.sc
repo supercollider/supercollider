@@ -42,6 +42,10 @@ ServerOptions
 
 	var <numPrivateAudioBusChannels = 112;
 
+	var <>reservedNumAudioBusChannels = 0;
+	var <>reservedNumControlBusChannels = 0;
+	var <>reservedNumBuffers = 0;
+
 	var <>pingsBeforeConsideredDead = 5;
 
 	var <>maxLogins = 1;
@@ -341,6 +345,10 @@ Server {
 		ServerTree.run(this);
 	}
 
+
+
+	/* id allocators */
+
 	clientID_ { |val|
 		if(val.notNil and: { clientID != val }) {
 			clientID = val;
@@ -369,8 +377,8 @@ Server {
 		numControl = options.numControlBusChannels div: n;
 		numAudio = options.numAudioBusChannels div: n;
 
-		controlBusOffset = numControl * offset;
-		audioBusOffset = options.firstPrivateBus + (numAudio * offset);
+		controlBusOffset = numControl * offset + options.reservedNumControlBusChannels;
+		audioBusOffset = options.firstPrivateBus + (numAudio * offset) + options.reservedNumAudioBusChannels;
 
 		controlBusAllocator =
 		ContiguousBlockAllocator.new(numControl, controlBusOffset);
@@ -380,15 +388,12 @@ Server {
 	}
 
 
-
-	/* node ids */
-
 	newBufferAllocators {
 		var bufferOffset;
 		var offset = this.calcOffset;
 		var n = options.maxLogins ? 1;
 		var numBuffers = options.numBuffers div: n;
-		bufferOffset = numBuffers * offset;
+		bufferOffset = numBuffers * offset + options.reservedNumBuffers;
 		bufferAllocator =
 		ContiguousBlockAllocator.new(numBuffers, bufferOffset);
 	}
