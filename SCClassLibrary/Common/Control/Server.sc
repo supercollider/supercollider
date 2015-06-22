@@ -6,7 +6,7 @@ ServerOptions
 	var <>numControlBusChannels = 4096;
 	var <numInputBusChannels = 2;
 	var <numOutputBusChannels = 2;
-	var numBuffers=1026;
+	var numBuffers = 1026;
 
 	var <>maxNodes = 1024;
 	var <>maxSynthDefs = 1024;
@@ -169,6 +169,7 @@ ServerOptions
 	firstPrivateBus { // after the outs and ins
 		^numOutputBusChannels + numInputBusChannels
 	}
+
 
 	bootInProcess {
 		_BootInProcessServer
@@ -372,15 +373,10 @@ Server {
 		audioBusOffset = options.firstPrivateBus + (numAudio * offset);
 
 		controlBusAllocator =
-		ContiguousBlockAllocator.new(
-			numControl + controlBusOffset,
-			controlBusOffset
-		);
+		ContiguousBlockAllocator.new(numControl, controlBusOffset);
+
 		audioBusAllocator =
-		ContiguousBlockAllocator.new(
-			numAudio + audioBusOffset,
-			audioBusOffset
-		);
+		ContiguousBlockAllocator.new(numAudio, audioBusOffset);
 	}
 
 
@@ -394,10 +390,7 @@ Server {
 		var numBuffers = options.numBuffers div: n;
 		bufferOffset = numBuffers * offset;
 		bufferAllocator =
-		ContiguousBlockAllocator.new(
-			numBuffers + bufferOffset,
-			bufferOffset
-		);
+		ContiguousBlockAllocator.new(numBuffers, bufferOffset);
 	}
 
 	calcOffset {
