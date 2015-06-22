@@ -3,10 +3,10 @@ ServerOptions
 	// order of variables is important here. Only add new instance variables to the end.
 
 	var <numAudioBusChannels = 128;
-	var <>numControlBusChannels = 4096;
 	var <numInputBusChannels = 2;
 	var <numOutputBusChannels = 2;
-	var numBuffers = 1026;
+	var <>numControlBusChannels = 4096;
+	var <>numBuffers = 1026;
 
 	var <>maxNodes = 1024;
 	var <>maxSynthDefs = 1024;
@@ -65,17 +65,6 @@ ServerOptions
 
 	device_ { |dev|
 		inDevice = outDevice = dev;
-	}
-
-	// prevent buffer conflicts in Server-prepareForRecord and Server-scope
-	// by ensuring reserved buffers:
-
-	numBuffers {
-		^numBuffers - 2
-	}
-
-	numBuffers_ { | argNumBuffers |
-		numBuffers = argNumBuffers + 2
 	}
 
 	asOptionsString { | port = 57110 |
@@ -885,11 +874,11 @@ Server {
 
 	/* recording output */
 
-	record { |path| recorder.record(path) }
+	record { |path, bus, numChannels| recorder.record(path, bus, numChannels) }
 	isRecording { ^recorder.isRecording }
 	pauseRecording { recorder.pauseRecording }
 	stopRecording { recorder.stopRecording }
-	prepareForRecord { |path| recorder.prepareForRecord(path) }
+	prepareForRecord { |path, bus, numChannels| recorder.prepareForRecord(path, bus, numChannels) }
 
 	recordNode {
 		this.deprecated(thisMethod);
