@@ -9,7 +9,7 @@ Recorder {
 		^super.newCopyArgs(server)
 	}
 
-	record { |path, bus, numChannels|
+	record { |path, bus, numChannels, node|
 		if(server.serverRunning.not) {
 			"server '%' not running".format(server.name).postln;
 			^this
@@ -18,11 +18,11 @@ Recorder {
 			fork {
 				this.prepareForRecord(path, bus, numChannels);
 				server.sync;
-				this.record;
+				this.record(path, bus, numChannels, node)
 			}
 		} {
 			if(this.isRecording.not) {
-				recordNode = Synth.tail(RootNode(server), synthDef.name, [\bufnum, recordBuf]);
+				recordNode = Synth.tail(node ? 0, synthDef.name, [\bufnum, recordBuf]);
 				CmdPeriod.doOnce { this.stopRecording }
 			} {
 				recordNode.run(true)

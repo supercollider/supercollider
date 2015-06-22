@@ -874,7 +874,7 @@ Server {
 
 	/* recording output */
 
-	record { |path, bus, numChannels| recorder.record(path, bus, numChannels) }
+	record { |path, bus, numChannels, node| recorder.record(path, bus, numChannels, node) }
 	isRecording { ^recorder.isRecording }
 	pauseRecording { recorder.pauseRecording }
 	stopRecording { recorder.stopRecording }
