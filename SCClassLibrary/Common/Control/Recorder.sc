@@ -23,12 +23,18 @@ Recorder {
 		} {
 			if(this.isRecording.not) {
 				recordNode = Synth.tail(node ? 0, synthDef.name, [\bufnum, recordBuf]);
-				CmdPeriod.doOnce { this.stopRecording }
+				recordNode.register(true);
+				CmdPeriod.add(this);
+				"Recording ... \npath: '%'\n".postf(recordBuf.path);
 			} {
-				recordNode.run(true)
-			};
-			"Recording ... \npath: '%'\n".postf(recordBuf.path);
+				this.resumeRecording
+			}
+
 		}
+	}
+
+	cmdPeriod {
+		this.stopRecording
 	}
 
 	isRecording {
@@ -38,7 +44,16 @@ Recorder {
 	pauseRecording {
 		if(recordNode.notNil) {
 			recordNode.run(false);
-			"Paused".postln
+			"... paused recording.\npath: '%'\n".postf(recordBuf.path);
+		} {
+			"Not Recording".warn
+		}
+	}
+
+	resumeRecording {
+		if(recordNode.isPlaying) {
+			recordNode.run(true);
+			"Resumed recording ...\npath: '%'\n".postf(recordBuf.path);
 		} {
 			"Not Recording".warn
 		}
@@ -54,7 +69,8 @@ Recorder {
 			if (recordBuf.notNil) {
 				recordBuf.close({ |buf| buf.freeMsg });
 				recordBuf = nil;
-			}
+			};
+			CmdPeriod.remove(this);
 		} {
 			"Not Recording".warn
 		}
