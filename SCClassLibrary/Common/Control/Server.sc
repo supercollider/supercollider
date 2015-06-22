@@ -878,7 +878,7 @@ Server {
 	isRecording { ^recorder.isRecording }
 	pauseRecording { recorder.pauseRecording }
 	stopRecording { recorder.stopRecording }
-	prepareForRecord { |path, bus, numChannels| recorder.prepareForRecord(path, bus, numChannels) }
+	prepareForRecord { |path, numChannels| recorder.prepareForRecord(path, numChannels) }
 
 	recordNode {
 		this.deprecated(thisMethod);

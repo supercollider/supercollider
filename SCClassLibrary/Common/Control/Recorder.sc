@@ -1,6 +1,6 @@
 Recorder {
 
-	var <server;
+	var <server, <>numChannels;
 	var <>recHeaderFormat, <>recSampleFormat, <>recBufSize;
 	var recordBuf, recordNode, synthDef;
 	var <>filePrefix = "SC_";
@@ -16,16 +16,28 @@ Recorder {
 		};
 		if(recordBuf.isNil) {
 			fork {
-				this.prepareForRecord(path, bus, numChannels);
+				this.prepareForRecord(path, numChannels);
 				server.sync;
 				this.record(path, bus, numChannels, node)
 			}
 		} {
+			if(numChannels.notNil and: { numChannels != this.numChannels }) {
+				"Cannot change recording number of channels while running".warn;
+				^this
+			};
 			if(this.isRecording.not) {
-				recordNode = Synth.tail(node ? 0, synthDef.name, [\bufnum, recordBuf]);
+				bus = (bus ? 0).asControlInput;
+				recordNode = Synth.tail(node ? 0, synthDef.name, [\bufnum, recordBuf, \in, bus]);
 				recordNode.register(true);
 				CmdPeriod.add(this);
-				"Recording ... \npath: '%'\n".postf(recordBuf.path);
+				numChannels = this.numChannels;
+				if(numChannels > 1) {
+					"Recording channels % - % ... \npath: '%'\n"
+					.postf(bus, bus + numChannels - 1, recordBuf.path);
+				} {
+					"Recording channel % ... \npath: '%'\n"
+					.postf(bus, recordBuf.path);
+				};
 			} {
 				this.resumeRecording
 			}
@@ -76,12 +88,11 @@ Recorder {
 		}
 	}
 
-	prepareForRecord { | path, bus, numChannels |
+	prepareForRecord { | path, numChannels |
 		var bufSize = recBufSize ? server.recBufSize ?? { server.sampleRate.nextPowerOfTwo };
 
 		recHeaderFormat = recHeaderFormat ? server.recHeaderFormat;
 		recSampleFormat = recSampleFormat ? server.recSampleFormat;
-		bus = (bus ? 0).asControlInput;
 		numChannels = numChannels ? server.recChannels;
 		path = if(path.isNil) { this.makePath } { path.standardizePath };
 		recordBuf = Buffer.alloc(server,
@@ -92,12 +103,13 @@ Recorder {
 			}
 		);
 		recordBuf.path = path;
+		this.numChannels = numChannels;
 
-		synthDef = SynthDef(SystemSynthDefs.generateTempName, { |bufnum|
-			DiskOut.ar(bufnum, In.ar(bus, numChannels))
+		synthDef = SynthDef(SystemSynthDefs.generateTempName, { |in, bufnum|
+			DiskOut.ar(bufnum, In.ar(in, numChannels))
 		}).send(server);
 
-		"Preparing '%' server to record channels %\n".postf(server.name, bus.asControlInput + (0..numChannels - 1));
+		"Preparing recording on '%'\n".postf(server.name);
 	}
 
 	makePath {
