@@ -71,7 +71,7 @@ HID {
 			};
 		}{ // no devices found
 				"HID: no devices found".postln;
-		}
+		};
 		"HID: found % devices\n".postf( devlist.size );
 		^available
 	}
