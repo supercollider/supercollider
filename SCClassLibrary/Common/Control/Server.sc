@@ -422,6 +422,17 @@ Server {
 		^bufnum
 	}
 
+	freeAllBuffers {
+		var bundle;
+		bufferAllocator.blocks.do { arg block;
+			(block.address .. block.address + block.size - 1).do { |i|
+				bundle = bundle.add( ["/b_free", i] );
+			};
+			bufferAllocator.free(block.address);
+		};
+		this.sendBundle(nil, *bundle);
+	}
+
 	nextNodeID {
 		^nodeAllocator.alloc
 	}

@@ -359,15 +359,7 @@ Buffer {
 	}
 
 	*freeAll { arg server;
-		var b;
-		server = server ? Server.default;
-		server.bufferAllocator.blocks.do({ arg block;
-			(block.address .. block.address + block.size - 1).do({ |i|
-				b = b.add( ["/b_free", i] );
-			});
-			server.bufferAllocator.free(block.address);
-		});
-		server.sendBundle(nil, *b);
+		(server ? Server.default).freeAllBuffers;
 		this.clearServerCaches(server);
 	}
 
