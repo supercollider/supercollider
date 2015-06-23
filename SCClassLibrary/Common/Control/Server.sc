@@ -410,6 +410,18 @@ Server {
 		}
 	}
 
+	nextBufferNumber { |n|
+		var bufnum = bufferAllocator.alloc(n);
+		if(bufnum.isNil) {
+			if(n > 1) {
+				Error("No block of % consecutive buffer numbers is available.".format(n)).throw
+			} {
+				Error("No more buffer numbers -- free some buffers before allocating more.").throw
+			}
+		};
+		^bufnum
+	}
+
 	nextNodeID {
 		^nodeAllocator.alloc
 	}
