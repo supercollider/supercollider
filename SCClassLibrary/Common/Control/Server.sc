@@ -261,7 +261,7 @@ Server {
 	classvar <>local, <>internal, <default;
 	classvar <>named, <>all, <>program, <>sync_s = true;
 
-	var <name, <>addr, <clientID, userSpecifiedClientID = false;
+	var <name, <addr, <clientID, userSpecifiedClientID = false;
 	var <isLocal, <inProcess, <>sendQuit, <>remoteControlled;
 
 	var <>options, <>latency = 0.2, <dumpMode = 0;
@@ -309,22 +309,31 @@ Server {
 	}
 
 	init { |argName, argAddr, argOptions, argClientID|
+
 		name = argName.asSymbol;
-		addr = argAddr;
-		if(argClientID.notNil) { userSpecifiedClientID = true };
-		clientID = argClientID ? 0;
+		this.addr = argAddr;
 		options = argOptions ? ServerOptions.new;
-		if(addr.isNil) { addr = NetAddr("127.0.0.1", 57110) };
+		clientID = argClientID ? 0;
+		if(argClientID.notNil) { userSpecifiedClientID = true };
+
+		this.newAllocators;
+
+		statusWatcher = ServerStatusWatcher(server: this);
+		volume = Volume(server: this, persist: true);
+		recorder = Recorder(server: this);
+
+
+		all.add(this);
+		named.put(name, this);
+		Server.changed(\serverAdded, this);
+
+	}
+
+	addr_ { |netAddr|
+		addr = netAddr ?? { NetAddr("127.0.0.1", 57110) };
 		inProcess = addr.addr == 0;
 		isLocal = inProcess || { addr.isLocal };
 		remoteControlled = isLocal;
-		statusWatcher = ServerStatusWatcher(this);
-		named.put(name, this);
-		all.add(this);
-		this.newAllocators;
-		Server.changed(\serverAdded, this);
-		volume = Volume(server: this, persist: true);
-		recorder = Recorder(this);
 	}
 
 	initTree {
