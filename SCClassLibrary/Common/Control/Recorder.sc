@@ -31,13 +31,8 @@ Recorder {
 				recordNode.register(true);
 				CmdPeriod.add(this);
 				numChannels = this.numChannels;
-				if(numChannels > 1) {
-					"Recording channels % - % ... \npath: '%'\n"
-					.postf(bus, bus + numChannels - 1, recordBuf.path);
-				} {
-					"Recording channel % ... \npath: '%'\n"
-					.postf(bus, recordBuf.path);
-				};
+				"Recording channels % ... \npath: '%'\n"
+				.postf(bus + (0..numChannels - 1), recordBuf.path);
 			} {
 				this.resumeRecording
 			}
@@ -77,7 +72,7 @@ Recorder {
 			recordNode = nil;
 			server.sendMsg("/d_free", synthDef.name);
 			synthDef = nil;
-			"Recording Stopped.\npath: '%'\n".postf(recordBuf.path);
+			"Recording stopped, written to\npath: '%'\n".postf(recordBuf.path);
 			if (recordBuf.notNil) {
 				recordBuf.close({ |buf| buf.freeMsg });
 				recordBuf = nil;
