@@ -100,6 +100,7 @@ public slots:
     void restoreVolume();
     void mute() { setMuted(true); }
     void unmute() { setMuted(false); }
+    void sendRecording( bool active );
     void setRecording( bool active );
 
 signals:

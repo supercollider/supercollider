@@ -158,7 +158,7 @@ void ScServer::createActions(Settings::Manager * settings)
 
     mActions[Record] = action = new QAction(tr("Recording"), this);
     action->setCheckable(true);
-    connect( action, SIGNAL(triggered(bool)), this, SLOT(setRecording(bool)) );
+    connect( action, SIGNAL(triggered(bool)), this, SLOT(sendRecording(bool)) );
     connect( action, SIGNAL(toggled(bool)), this, SIGNAL(recordingChanged(bool)) );
     settings->addAction( action, "synth-server-record", synthServerCategory);
 
@@ -320,26 +320,30 @@ bool ScServer::isRecording() const { return mIsRecording; }
 
 void ScServer::setRecording( bool doRecord )
 {
-    static const QString startRecordingCommand("ScIDE.defaultServer.record");
-    static const QString stopRecordingCommand("ScIDE.defaultServer.stopRecording");
-
     if (!isRunning() || mIsRecording == doRecord)
         return;
 
     mIsRecording = doRecord;
 
     if (doRecord) {
-        mLang->evaluateCode( startRecordingCommand );
         mRecordTime = system_clock::now();
         mRecordTimer.start();
     }
     else {
-        mLang->evaluateCode( stopRecordingCommand );
         mRecordTimer.stop();
     }
 
     updateRecordingAction();
 }
+
+void ScServer::sendRecording( bool doRecord )
+{
+	static const QString startRecordingCommand("ScIDE.defaultServer.record");
+	static const QString stopRecordingCommand("ScIDE.defaultServer.stopRecording");
+	setRecording(doRecord);
+	mLang->evaluateCode(doRecord ? startRecordingCommand : stopRecordingCommand);
+}
+
 
 seconds ScServer::recordingTime() const
 {
@@ -401,10 +405,10 @@ void ScServer::onScLangReponse( const QString & selector, const QString & data )
         mActions[DumpOSC]->setChecked(false);
     }
 	else if (selector == startRecordingSelector) {
-		mActions[Record]->setChecked(true);
+		setRecording(true);
 	}
 	else if (selector == stopRecordingSelector) {
-		mActions[Record]->setChecked(false);
+		setRecording(false);
 	}
     else if (selector == ampSelector) {
         bool ok;
@@ -441,6 +445,7 @@ void ScServer::handleRuningStateChangedMsg( const QString & data )
     bool serverRunningState, serverUnresponsive;
     std::string hostName;
     int port;
+
 
     YAML::Node doc;
     while(parser.GetNextDocument(doc)) {

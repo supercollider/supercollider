@@ -52,7 +52,7 @@ Recorder {
 	pauseRecording {
 		if(recordNode.notNil) {
 			recordNode.run(false);
-			server.changed(\recording, false); // for now
+			server.changed(\recording, false);
 			"... paused recording.\npath: '%'\n".postf(recordBuf.path);
 		} {
 			"Not Recording".warn
@@ -62,6 +62,7 @@ Recorder {
 	resumeRecording {
 		if(recordNode.isPlaying) {
 			recordNode.run(true);
+			server.changed(\recording, true);
 			"Resumed recording ...\npath: '%'\n".postf(recordBuf.path);
 		} {
 			"Not Recording".warn
