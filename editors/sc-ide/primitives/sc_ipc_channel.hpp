@@ -54,9 +54,6 @@ public:
 	const QString LargeMessageSelector = "LargeMessage";
 	static const int Port = 5228;
 
-	// on windows, difficulties arise when we serialize large QT objects.
-	static const int MaxInbandSize = 4000;
-
 	ScIpcChannel(QTcpSocket *socket, const QString &tag, IIpcHandler *logger);
 	~ScIpcChannel();
 
@@ -65,46 +62,6 @@ public:
 	void read();
 	void write(const QString &selector, const QVariantList &data);
 	
-};
-
-
-
-struct ScIpcLargeMessageMemory {
-	
-	enum Status:quint32 {
-		UNREAD,
-		DONE,
-		ERROR
-	};
-
-	qint32 mFresh;
-	Status mStatus;
-	quint32 mLength;
-
-	char *data(void *memory);
-	void coolStoryBro();
-	qint32 ripen();
-
-};
-
-class ScIpcLargeMessage {
-public:
-	QSharedMemory *shm;
-	ScIpcLargeMessageMemory *memory;
-	char *data;
-	IIpcHandler *mIpcHandler;
-
-	// Here we are a writer.
-	ScIpcLargeMessage(QByteArray &bytes, const QString &tag, IIpcHandler *handler);
-
-	// Here we are a reader.
-	ScIpcLargeMessage(const QString &key, IIpcHandler *handler);
-
-	~ScIpcLargeMessage();
-
-	void send(ScIpcChannel *channel);
-	void receive(QByteArray &dst);
-	void log(const QString &message);
 };
 
 #endif //SuperCollider_ScIpcChannel_hpp
