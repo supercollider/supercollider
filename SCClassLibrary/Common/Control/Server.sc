@@ -596,6 +596,25 @@ Server {
 		statusWatcher.doWhenBooted(onComplete, limit, onFailure)
 	}
 
+	ifRunning { |func, failFunc|
+		^if(statusWatcher.unresponsive) {
+			"server '%' not responsive".format(this.name).postln;
+			failFunc.value(this)
+		} {
+			if(statusWatcher.serverRunning) {
+				func.value(this)
+			} {
+				"server '%' not running".format(this.name).postln;
+				failFunc.value(this)
+			}
+		}
+
+	}
+
+	ifNotRunning { |func|
+		^ifRunning(this, nil, func)
+	}
+
 
 	bootSync { |condition|
 		condition ?? { condition = Condition.new };
@@ -707,8 +726,13 @@ Server {
 
 	boot { | startAliveThread = true, recover = false, onFailure |
 
-		if(statusWatcher.serverRunning) { "server already running".inform; ^this };
-		if(statusWatcher.serverBooting) { "server already booting".inform; ^this };
+		if(statusWatcher.unresponsive) {
+			"server '%' unresponsive, rebooting ...".format(this.name).inform;
+			this.quit(false)
+		};
+		if(statusWatcher.serverRunning) { "server '%' already running".format(this.name).inform; ^this };
+		if(statusWatcher.serverBooting) { "server '%' already booting".format(this.name).inform; ^this };
+
 
 		statusWatcher.serverBooting = true;
 

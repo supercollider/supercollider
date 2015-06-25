@@ -10,10 +10,9 @@ Recorder {
 	}
 
 	record { |path, bus, numChannels, node|
-		if(server.serverRunning.not) {
-			"server '%' not running".format(server.name).postln;
-			^this
-		};
+
+		server.ifNotRunning { ^this };
+
 		if(recordBuf.isNil) {
 			fork {
 				this.prepareForRecord(path, numChannels);
