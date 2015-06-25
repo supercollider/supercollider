@@ -156,10 +156,13 @@ void ScServer::createActions(Settings::Manager * settings)
     connect(action, SIGNAL(triggered()), this, SLOT(restoreVolume()));
     settings->addAction( action, "synth-server-volume-restore", synthServerCategory);
 
-    mActions[Record] = action = new QAction(this);
+    mActions[Record] = action = new QAction(tr("Recording"), this);
     action->setCheckable(true);
     connect( action, SIGNAL(triggered(bool)), this, SLOT(setRecording(bool)) );
     connect( action, SIGNAL(toggled(bool)), this, SIGNAL(recordingChanged(bool)) );
+    settings->addAction( action, "synth-server-record", synthServerCategory);
+
+
 
     connect( mActions[Boot], SIGNAL(changed()), this, SLOT(updateToggleRunningAction()) );
     connect( mActions[Quit], SIGNAL(changed()), this, SLOT(updateToggleRunningAction()) );
@@ -380,6 +383,8 @@ void ScServer::onScLangReponse( const QString & selector, const QString & data )
     static QString ampRangeSelector("serverAmpRange");
 	static QString startDumpOSCSelector("dumpOSCStarted");
 	static QString stopDumpOSCSelector("dumpOSCStopped");
+	static QString startRecordingSelector("recordingStarted");
+	static QString stopRecordingSelector("recordingStopped");
 
 
     if (selector == defaultServerRunningChangedSelector)
@@ -395,6 +400,12 @@ void ScServer::onScLangReponse( const QString & selector, const QString & data )
 	else if (selector == stopDumpOSCSelector) {
         mActions[DumpOSC]->setChecked(false);
     }
+	else if (selector == startRecordingSelector) {
+		mActions[Record]->setChecked(true);
+	}
+	else if (selector == stopRecordingSelector) {
+		mActions[Record]->setChecked(false);
+	}
     else if (selector == ampSelector) {
         bool ok;
         float volume = data.mid(1, data.size() - 2).toFloat(&ok);

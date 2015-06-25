@@ -35,7 +35,8 @@ Recorder {
 				.postf(bus + (0..numChannels - 1), recordBuf.path);
 			} {
 				this.resumeRecording
-			}
+			};
+			server.changed(\recording, true);
 
 		}
 	}
@@ -51,6 +52,7 @@ Recorder {
 	pauseRecording {
 		if(recordNode.notNil) {
 			recordNode.run(false);
+			server.changed(\recording, false); // for now
 			"... paused recording.\npath: '%'\n".postf(recordBuf.path);
 		} {
 			"Not Recording".warn
@@ -72,6 +74,7 @@ Recorder {
 			recordNode = nil;
 			server.sendMsg("/d_free", synthDef.name);
 			synthDef = nil;
+			server.changed(\recording, false);
 			"Recording stopped, written to\npath: '%'\n".postf(recordBuf.path);
 			if (recordBuf.notNil) {
 				recordBuf.close({ |buf| buf.freeMsg });

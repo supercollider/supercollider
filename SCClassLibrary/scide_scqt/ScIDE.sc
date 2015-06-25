@@ -47,6 +47,9 @@ ScIDE {
 		})
 		.put(\dumpOSC, { | volume, what, code |
 			this.prSend( if(code.asBoolean, \dumpOSCStarted, \dumpOSCStopped) );
+		})
+		.put(\recording, { | volume, what, code |
+			this.prSend( if(code.asBoolean, \recordingStarted, \recordingStopped) );
 		});
 
 		volumeController.remove;
