@@ -258,13 +258,6 @@ MIDIIn {
 		^MIDIClient.sources.detect({ |endPoint| endPoint.device == deviceName and: {endPoint.name == portName}});
 	}
 
-	// *connectAll {
-	// 	if(MIDIClient.initialized.not,{ MIDIClient.init });
-	// 	MIDIClient.sources.do({ |src,i|
-	// 		MIDIIn.connect(i,src);
-	// 	});
-	// }
-
 	*connectAll {
 		if(MIDIClient.initialized.not,{ MIDIClient.init });
 		MIDIClient.externalSources.do({ |src,i|
