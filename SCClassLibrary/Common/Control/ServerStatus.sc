@@ -215,7 +215,7 @@ ServerStatusWatcher {
 		} {
 			if(running) {
 				this.serverRunning = true;
-				unresponsive = false;
+				this.unresponsive = false;
 				reallyDeadCount = server.options.pingsBeforeConsideredDead;
 			} {
 				reallyDeadCount = reallyDeadCount - 1;
