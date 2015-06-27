@@ -50,6 +50,9 @@ ScIDE {
 		})
 		.put(\recording, { | volume, what, code |
 			this.prSend( if(code.asBoolean, \recordingStarted, \recordingStopped) );
+		})
+		.put(\pausedRecording, { | volume, what |
+			this.prSend(\recordingPaused);
 		});
 
 		volumeController.remove;

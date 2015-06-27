@@ -59,6 +59,7 @@ public:
         VolumeDown,
         VolumeRestore,
         Record,
+		PauseRecord,
 
         ActionCount
     };
@@ -102,6 +103,7 @@ public slots:
     void unmute() { setMuted(false); }
     void sendRecording( bool active );
     void setRecording( bool active );
+    void pauseRecording( bool flag );
 
 signals:
     void runningStateChange( bool running, QString const & hostName, int port, bool unresponsive );
@@ -166,7 +168,9 @@ private:
     VolumeWidget *mVolumeWidget;
     QTimer mRecordTimer;
     boost::chrono::system_clock::time_point mRecordTime;
+    boost::chrono::system_clock::time_point mPauseTime;
     bool mIsRecording;
+    bool mIsRecordingPaused;
 };
 
 }

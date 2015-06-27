@@ -54,6 +54,7 @@ AudioStatusBox::AudioStatusBox(ScServer *server, QWidget *parent):
     setLayout(layout);
 
     server->action(ScServer::Record)->setProperty("keep_menu_open", true);
+	server->action(ScServer::PauseRecord)->setProperty("keep_menu_open", true);
     server->action(ScServer::VolumeRestore)->setProperty("keep_menu_open", true);
     server->action(ScServer::Mute)->setProperty("keep_menu_open", true);
     server->action(ScServer::DumpOSC)->setProperty("keep_menu_open", true);
@@ -72,6 +73,7 @@ AudioStatusBox::AudioStatusBox(ScServer *server, QWidget *parent):
     addAction( server->action(ScServer::DumpOSC) );
     addActionSeparator();
     addAction( server->action(ScServer::Record) );
+	addAction( server->action(ScServer::PauseRecord) );
     addActionSeparator();
     addAction( server->action(ScServer::VolumeRestore) );
     addAction( server->action(ScServer::Mute) );

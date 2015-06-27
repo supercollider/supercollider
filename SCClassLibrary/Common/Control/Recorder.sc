@@ -3,6 +3,7 @@ Recorder {
 	var <server, <>numChannels;
 	var <>recHeaderFormat, <>recSampleFormat, <>recBufSize;
 	var recordBuf, recordNode, synthDef;
+	var <>paused = false;
 	var <>filePrefix = "SC_";
 
 	*new { |server|
@@ -33,7 +34,7 @@ Recorder {
 				"Recording channels % ... \npath: '%'\n"
 				.postf(bus + (0..numChannels - 1), recordBuf.path);
 			} {
-				this.resumeRecording
+				if(paused) { this.resumeRecording };
 			};
 			server.changed(\recording, true);
 
@@ -51,21 +52,23 @@ Recorder {
 	pauseRecording {
 		if(recordNode.notNil) {
 			recordNode.run(false);
-			server.changed(\recording, false);
+			server.changed(\pausedRecording);
 			"... paused recording.\npath: '%'\n".postf(recordBuf.path);
-		} {
-			"Not Recording".warn
-		}
+		};
+		paused = true;
 	}
 
 	resumeRecording {
 		if(recordNode.isPlaying) {
-			recordNode.run(true);
-			server.changed(\recording, true);
-			"Resumed recording ...\npath: '%'\n".postf(recordBuf.path);
+			if(paused) {
+				recordNode.run(true);
+				server.changed(\recording, true);
+				"Resumed recording ...\npath: '%'\n".postf(recordBuf.path);
+			}
 		} {
 			"Not Recording".warn
-		}
+		};
+		paused = false;
 	}
 
 	stopRecording {
@@ -83,7 +86,8 @@ Recorder {
 			CmdPeriod.remove(this);
 		} {
 			"Not Recording".warn
-		}
+		};
+		paused = false;
 	}
 
 	prepareForRecord { | path, numChannels |
@@ -114,7 +118,8 @@ Recorder {
 		var timestamp;
 		var dir = thisProcess.platform.recordingsDir;
 		if(File.exists(dir).not) {
-			thisProcess.platform.recordingsDir.mkdir
+			dir.mkdir;
+			"created recordings directory: '%'\n".postf(dir)
 		};
 
 		// temporary kludge to fix Date's brokenness on windows
