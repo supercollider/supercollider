@@ -261,7 +261,7 @@ Server {
 	classvar <>local, <>internal, <default;
 	classvar <>named, <>all, <>program, <>sync_s = true;
 
-	var <name, <addr, <clientID, userSpecifiedClientID = false;
+	var <name, <addr, <clientID, <userSpecifiedClientID = false;
 	var <isLocal, <inProcess, <>sendQuit, <>remoteControlled;
 
 	var <>options, <>latency = 0.2, <dumpMode = 0;
