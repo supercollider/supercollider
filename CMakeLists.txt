@@ -81,6 +81,7 @@ if(APPLE)
 	set_property(DIRECTORY
 		APPEND
 		PROPERTY COMPILE_DEFINITIONS SC_DARWIN)
+	set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install")
 elseif(UNIX)
 	add_definitions(-DSC_DATA_DIR="${CMAKE_INSTALL_PREFIX}/share/SuperCollider")
 endif()
