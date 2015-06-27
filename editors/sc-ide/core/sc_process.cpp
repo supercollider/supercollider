@@ -345,7 +345,7 @@ void ScProcess::onStart()
 void ScProcess::sendToScLang(QString const & selector, std::initializer_list<QVariant> args)	{
 		
 	if (!mIpcChannel) {
-		scPost(QString("WARNING::sendToScLang::%1:: ipc channel is null\n").arg(selector));
+		//qDebug() << "ipc channel is null - " << selector;
 		return;
 	}
 
