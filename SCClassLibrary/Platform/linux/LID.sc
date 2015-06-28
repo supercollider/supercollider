@@ -435,6 +435,7 @@ LID {
 
 	close {
 		if (this.isOpen) {
+			closeAction.value;
 			this.prClose;
 			openDevices.remove(this);
 		};
@@ -637,7 +638,6 @@ LID {
 	prReadError{
 		this.close;
 		("WARNING: Device was removed: " + this.path + this.info).postln;
-		closeAction.value;
 	}
 
 	prSetLedState { |evtCode, evtValue|	// added by Marije Baalman
