@@ -39,12 +39,12 @@
 + LIDInfo {
 
 	vendor{
-        this.deprecated(thisMethod, this.findMethod( \vendorID ) );
+        this.deprecated(thisMethod, LIDInfo.findMethod( \vendorID ) );
 		^this.vendorID;
 	}
 
 	product{
-        this.deprecated(thisMethod, this.findMethod( \productID ) );
+        this.deprecated(thisMethod, LIDInfo.findMethod( \productID ) );
 		^this.productID;
 	}
 
