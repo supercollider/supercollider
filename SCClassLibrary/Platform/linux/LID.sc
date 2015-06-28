@@ -54,10 +54,13 @@ LID {
 	var dataPtr, <path, <info, <caps, spec, <slots, <isGrabbed=false, <>action;
 	var <>closeAction;
 	var <debugAction;
-	classvar <eventLoopIsRunning = false;
 	classvar <globalDebugAction;
 	classvar openDevices, eventTypes, <specs, <>deviceRoot = "/dev/input", <available;
+	classvar eventLoopIsRunning = false;
 
+	*running{
+		^eventLoopIsRunning;
+	}
 
 	*initClass {
 		// all = []; // becomes openDevices
@@ -96,7 +99,7 @@ LID {
 	}
 
 	*initializeLID{
-		"starting LID eventloop".postln;
+		"Starting LID eventloop".postln;
 		this.prStartEventLoop;
 		eventLoopIsRunning = true;
 		ShutDown.add {
