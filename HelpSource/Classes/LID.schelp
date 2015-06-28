@@ -225,7 +225,7 @@ LID.register('Logitech WingMan RumblePad', (
 
 
 METHOD:: register
-This will register the spec for the specified device. If the device was opened and did not use the spec before, it will use this spec. See also link::Classes/LID#spec#.
+This will register the spec for the specified device. If the device was opened and did not use the spec before, it will use this spec. See also link::Classes/LID#spec::.
 
 ARGUMENT:: name
 The name of the device to register it for.
