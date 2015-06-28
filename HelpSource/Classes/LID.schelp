@@ -295,14 +295,14 @@ subsection:: Accessing slots
 
 Device capabilities are reported as event type and event code mappings. Event type and event code constants can be found in code::/usr/include/linux/input.h::
 
-
 METHOD::slot
-Access a slot by its evtType and evtCode. See also
+Access a slot by its evtType and evtCode. See also link::Classes/LIDSlot::
 
 ARGUMENT:: evtType
+The eventType to access the slot.
 
 ARGUMENT:: evtCode
-
+The eventCode to access the slot.
 
 
 METHOD::at
@@ -464,8 +464,8 @@ code::
 
 
 subsection:: LED's
-some devices have LEDs which can be turned on and off. These show up
-with d.caps as events of type 0x0011
+some devices have LEDs which can be turned on and off. These show up with d.caps as events of type 0x0011
+
 code::
 d = LID("/dev/input/event0");
 // LED's can be turned on:
