@@ -54,9 +54,9 @@ LID {
 	var dataPtr, <path, <info, <caps, spec, <slots, <isGrabbed=false, <>action;
 	var <>closeAction;
 	var <debugAction;
-	classvar <globalDebugAction;
 	classvar openDevices, eventTypes, <specs, <>deviceRoot = "/dev/input", <available;
 	classvar eventLoopIsRunning = false;
+	classvar globalDebugAction;
 
 	*running{
 		^eventLoopIsRunning;
@@ -521,6 +521,9 @@ LID {
 		}
 	}
 
+	*debug{
+		^globalDebugAction.notNil;
+	}
 	spec{ |forceLookup = false|
 		if ( spec.notNil and: forceLookup.not ){ ^spec };
 		spec = specs.atFail(info.name, { IdentityDictionary.new });
