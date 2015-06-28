@@ -1,13 +1,13 @@
 LIDInfo {
-	var <name, <bustype, <vendor, <product, <version, <physical, <unique;
+	var <name, <bustype, <vendorID, <productID, <version, <physical, <unique;
 	var <>path;
 
 	printOn { | stream |
 		super.printOn(stream);
 		stream << $( << name << ", " << path << ", ";
 		[
-			vendor,
-			product,
+			vendorID,
+			productID,
 			version,
 			bustype
 		].collect({ | x | "0x" ++ x.asHexString(4) }).printItemsOn(stream);
@@ -17,7 +17,7 @@ LIDInfo {
 
 	postInfo {
 		"\tName: \t%\n".postf( name );
-		"\tVendor and product ID: \t%, %\n".postf( vendor, product );
+		"\tVendor and product ID: \t%, %\n".postf( vendorID, productID );
 		"\tPath: \t%\n".postf( path );
 		"\tPhysical: \t%\n".postf( physical );
 		"\tVersion and bustype: \t%, %\n".postf( version, bustype );
@@ -32,7 +32,7 @@ LIDInfo {
 	}
 
 	findArgs {
-		^[vendor, product, path, version, physical, unique]
+		^[vendorID, productID, path, version, physical, unique]
 	}
 }
 
@@ -353,8 +353,8 @@ LID {
 			^nil;
 		};
 		^LID.available.select{ |info|
-			vendorID.isNil or: { info.vendor == vendorID } and:
-			{ productID.isNil or: { info.product == productID } } and:
+			vendorID.isNil or: { info.vendorID == vendorID } and:
+			{ productID.isNil or: { info.productID == productID } } and:
 			{ path.isNil or: { info.path == path } } and:
 			{ version.isNil or: { info.version == version } } and:
 			{ physical.isNil or: { info.physical == physical.asSymbol } } and:
@@ -412,11 +412,11 @@ LID {
 	}
 
 	vendor{
-		^this.info.vendor;
+		^this.info.vendorID;
 	}
 
 	product{
-		^this.info.product;
+		^this.info.productID;
 	}
 
 	postSlots{
