@@ -270,10 +270,10 @@ MIDIIn {
 		});
 	}
 
-	*connectAll { |rescan=false|
+	*connectAll {
 		if(MIDIClient.initialized.not,
 			{ MIDIClient.init },
-			{ if ( rescan, {MIDIClient.disposeClient; MIDIClient.init;} ); }
+			{ MIDIIn.disconnectAll; MIDIClient.list; }
 		);
 		MIDIClient.externalSources.do({ |src,i|
 			MIDIIn.connect(i,src);

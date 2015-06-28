@@ -20,6 +20,18 @@
 	}
 }
 
++ MIDIIn{
+	*connectAll {
+		if(MIDIClient.initialized.not,
+			{ MIDIClient.init },
+			{ MIDIClient.disposeClient; MIDIClient.init; }
+		);
+		MIDIClient.externalSources.do({ |src,i|
+			MIDIIn.connect(i,src);
+		});
+	}
+}
+
 + MIDIOut{
 	// uid is not set by connect, in order to enable several connections to one output. set the uid directly, if you only want to send data to one MIDI destination.
 	connect{ arg device = 0;
