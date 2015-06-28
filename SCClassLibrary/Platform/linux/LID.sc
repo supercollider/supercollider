@@ -356,8 +356,8 @@ LID {
 			{ productID.isNil or: { info.product == productID } } and:
 			{ path.isNil or: { info.path == path } } and:
 			{ version.isNil or: { info.version == version } } and:
-			{ physical.isNil or: { info.physical == physical } } and:
-			{ unique.isNil or: { info.unique == unique } }
+			{ physical.isNil or: { info.physical == physical.asSymbol } } and:
+			{ unique.isNil or: { info.unique == unique.asSymbol } }
 		};
 	}
 
