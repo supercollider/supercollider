@@ -653,7 +653,8 @@ LID {
 }
 
 LIDSlot {
-	var <device, <type, <code, value=0, <spec, <>action;
+	var <device, <type, <code, <spec, <>action;
+	var rawValue = 0;
 	classvar slotTypeMap, <slotTypeStrings;
 	var <bus, <busAction;
 	var <debugAction;
@@ -706,13 +707,13 @@ LIDSlot {
 		spec = ControlSpec(0, 1, \lin, 1, 0);
 	}
 	rawValue {
-		^value
+		^rawValue
 	}
 	value {
-		^spec.unmap(value)
+		^spec.unmap(rawValue)
 	}
-	value_ { | rawValue |
-		value = rawValue;
+	value_ { | inValue |
+		rawValue = inValue;
 		action.value(this);
 		busAction.value( this );
 		debugAction.value( this );
@@ -742,7 +743,6 @@ LIDSlot {
 			"Server seems not running, so bus will be invalid".warn;
 		});*/
 		busAction = { |v| bus.set( v.value ); };
-		//	devSlot.action = { |v| action.value(v); busAction.value(v); };
 	}
 
 	freeBus {
@@ -761,7 +761,7 @@ LIDSlot {
 LIDKeySlot : LIDSlot {
 	initSpec {
 		super.initSpec;
-		value = device.getKeyState(code);
+		rawValue = device.getKeyState(code);
 	}
 }
 
@@ -769,10 +769,10 @@ LIDRelSlot : LIDSlot {
 	var delta, <>deltaAction;
 
 	initSpec { }
-	value { ^value }
-	value_ { | dta |
-		delta = dta;
-		value = value + delta;
+	value { ^rawValue }
+	value_ { | inDelta |
+		delta = inDelta;
+		rawValue = rawValue + delta;
 		action.value(this);
 		busAction.value( this );
 		debugAction.value( this );
@@ -795,10 +795,10 @@ LIDRelSlot : LIDSlot {
 LIDLedSlot : LIDSlot {
 
 	initSpec { }
-	value { ^value }
-	value_ { | v |
-		value = v;
-		device.setLEDState( code, value );
+	value { ^rawValue }
+	value_ { | inValue |
+		rawValue = inValue;
+		device.setLEDState( code, inValue );
 		action.value(this);
 		busAction.value( this );
 		debugAction.value( this );
@@ -808,10 +808,10 @@ LIDLedSlot : LIDSlot {
 LIDMscSlot : LIDSlot {
 
 	initSpec { }
-	value { ^value }
-	value_ { | v |
-		value = v;
-		device.setMSCState( code, value );
+	value { ^rawValue }
+	value_ { | inValue |
+		rawValue = inValue;
+		device.setMSCState( code, rawValue );
 		action.value(this);
 		busAction.value( this );
 		debugAction.value( this );
@@ -825,7 +825,7 @@ LIDAbsSlot : LIDSlot {
 		info = device.getAbsInfo(code);
 		spec = ControlSpec(info.min, info.max, \lin, 1);
 		spec.default = spec.map(0.5).asInteger;
-		value = info.value;
+		rawValue = info.value;
 	}
 }
 
