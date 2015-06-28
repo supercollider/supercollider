@@ -411,6 +411,24 @@ LID {
 		this.info.postInfo;
 	}
 
+	vendor{
+		^this.info.vendor;
+	}
+
+	product{
+		^this.info.product;
+	}
+
+	postSlots{
+		slots.sortedKeysValuesDo{ |k,v|
+			v.sortedKeysValuesDo{ |ks,vs|
+				"%,%: ".format( k, ks ).post;
+				this.spec.select{ |sl| (sl[0] == vs.type ) and: (sl[1] == vs.code ) }.keys.asArray.first.postln;
+				vs.postInfo;
+			};
+		};
+	}
+
 	isOpen {
 		^dataPtr.notNil
 	}
@@ -666,6 +684,14 @@ LIDSlot {
 		]);
 
 	}
+
+	postInfo {
+		"\tType: \t%, %\n".postf( type, slotTypeStrings.at( type ) );
+		"\tCode: \t%\n".postf( code );
+		"\tSpec: \t%\n".postf( spec );
+		"\tValue: \t%\n".postf( this.value );
+	}
+
 	*new { | device, evtType, evtCode |
 		^(slotTypeMap[evtType] ? this).newCopyArgs(device, evtType, evtCode).init.initSpec
 	}
