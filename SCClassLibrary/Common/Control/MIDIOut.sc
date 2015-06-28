@@ -13,7 +13,7 @@ MIDIClient {
    classvar <myinports, <myoutports; // for linux it is useful to keep track of how many we open ourselves
 	classvar <sources, <destinations;
 	classvar <initialized=false;
-	*init { arg inports, outports; // by default initialize all available ports
+	*init { arg inports, outports, verbose=true; // by default initialize all available ports
 								// you still must connect to them using MIDIIn.connect
 
 		this.prInitClient;
@@ -35,17 +35,19 @@ MIDIClient {
 				++ " outport(s).").postln;
 			"Some expected MIDI devices may not be available.".postln;
 		});
-      myinports = inports;
-      myoutports = outports;
+		myinports = inports;
+		myoutports = outports;
 
 		this.list;
 
 		ShutDown.add { this.disposeClient };
 
-		Post << "MIDI Sources:" << Char.nl;
-		sources.do({ |x| Post << Char.tab << x << Char.nl });
-		Post << "MIDI Destinations:" << Char.nl;
-		destinations.do({ |x| Post << Char.tab << x << Char.nl });
+		if ( verbose,{
+			Post << "MIDI Sources:" << Char.nl;
+			sources.do({ |x| Post << Char.tab << x << Char.nl });
+			Post << "MIDI Destinations:" << Char.nl;
+			destinations.do({ |x| Post << Char.tab << x << Char.nl });
+		});
 	}
 	*list {
 		var list;
@@ -270,9 +272,9 @@ MIDIIn {
 		});
 	}
 
-	*connectAll {
+	*connectAll { |verbose=true|
 		if(MIDIClient.initialized.not,
-			{ MIDIClient.init },
+			{ MIDIClient.init(verbose: verbose) },
 			{ MIDIIn.disconnectAll; MIDIClient.list; }
 		);
 		MIDIClient.externalSources.do({ |src,i|

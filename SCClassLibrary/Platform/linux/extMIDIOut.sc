@@ -21,10 +21,10 @@
 }
 
 + MIDIIn{
-	*connectAll {
+	*connectAll { |verbose=true|
 		if(MIDIClient.initialized.not,
-			{ MIDIClient.init },
-			{ MIDIClient.disposeClient; MIDIClient.init; }
+			{ MIDIClient.init(verbose: verbose) },
+			{ MIDIClient.disposeClient; MIDIClient.init(verbose: verbose); }
 		);
 		MIDIClient.externalSources.do({ |src,i|
 			MIDIIn.connect(i,src);
