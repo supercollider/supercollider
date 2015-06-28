@@ -125,7 +125,7 @@ LID {
 			if ( d != nil,
 				{
 					d.info.path_( it );
-					available.put( i, d.info ); // why did I need the slots already here? d.slots
+					available.put( i, d.info ); // why did I need the slots already here?
 					if ( open.not, {d.close} );
 				},{
 					// just print that device is not openable, and don't add it to the available list
