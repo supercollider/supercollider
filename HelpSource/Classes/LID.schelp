@@ -1,7 +1,7 @@
 class:: LID
 summary:: Linux Input Device
 categories:: Platform>Linux, External Control>HID
-related:: Classes/HID, Classes/LIDInfo
+related:: Classes/HID, Classes/LIDInfo, Classes/LIDSlot
 
 description::
 This class provides a way to access devices in the linux input layer, which supports many input devices (mouse, keyboard, joystick, gamepad, tablet) and busses (serial, PS/2, USB).
@@ -282,7 +282,7 @@ d.isOpen;
 SUBSECTION:: Posting human readable information about the device
 
 METHOD:: postInfo
-Post the LIDInfo of this device in a human readable format
+Post the LIDInfo of this device in a human readable format. See also link::Classes/LIDInfo::.
 
 METHOD:: postSlots
 Post information about all the slots of this device in a human readable format
