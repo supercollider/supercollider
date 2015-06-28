@@ -54,9 +54,9 @@ LID {
 	var dataPtr, <path, <info, <caps, <spec, <slots, <isGrabbed=false, <>action;
 	var <>closeAction;
 	var <debugAction;
-	classvar openDevices, eventTypes, <>specs, <>deviceRoot = "/dev/input", <available;
 	classvar <eventLoopIsRunning = false;
 	classvar <globalDebugAction;
+	classvar openDevices, eventTypes, <specs, <>deviceRoot = "/dev/input", <available;
 
 
 	*initClass {
