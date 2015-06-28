@@ -422,8 +422,7 @@ LID {
 	postSlots{
 		slots.sortedKeysValuesDo{ |k,v|
 			v.sortedKeysValuesDo{ |ks,vs|
-				"%,%: ".format( k, ks ).post;
-				this.spec.select{ |sl| (sl[0] == vs.type ) and: (sl[1] == vs.code ) }.keys.asArray.first.postln;
+				"%,%: %".format( k, ks, vs.key ).post;
 				vs.postInfo;
 			};
 		};
@@ -543,6 +542,10 @@ LID {
 	spec{ |forceLookup = false|
 		if ( spec.notNil and: forceLookup.not ){ ^spec };
 		spec = specs.atFail(info.name, { IdentityDictionary.new });
+		spec.keysValuesDo{ |k,v|
+			var slot = slots[ v[0] ][ v[1] ];
+			if ( slot.notNil ){ slot.key = k };
+		};
 		^spec;
 	}
 
@@ -689,6 +692,7 @@ LIDSlot {
 	postInfo {
 		"\tType: \t%, %\n".postf( type, slotTypeStrings.at( type ) );
 		"\tCode: \t%\n".postf( code );
+		"\tKey: \t%\n".postf( key );
 		"\tSpec: \t%\n".postf( spec );
 		"\tValue: \t%\n".postf( this.value );
 	}
