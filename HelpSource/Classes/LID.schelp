@@ -1,7 +1,7 @@
 class:: LID
 summary:: Linux Input Device
 categories:: Platform>Linux, External Control>HID
-related:: Classes/GeneralHID, Classes/HIDDeviceService
+related:: Classes/HID, Classes/LIDInfo
 
 description::
 This class provides a way to access devices in the linux input
@@ -10,11 +10,212 @@ joystick, gamepad, tablet) and busses (serial, PS/2, USB).
 
 See link::#examples:: below for documentation-by-example.
 
-warning::
-This class will be deprecated. For working with human interface devices, consult link::Guides/Working_with_HID::.
+NOTE::For external HID devices it is recommended to use the link::Classes/HID:: interface, as described in link::Guides/Working_with_HID::, as it will ensure that your code is cross platform compatible. Only in cases where the raw HID interface does not provide access because the device needs a special driver (and this driver is provided in Linux kernel), or in case you want to access internal devices, you should use this class.
 ::
 
+NOTE: if you have trouble opening a device, e.g. when you get the message code::ERROR: LID: Could not open device::, please check the link::Guides/LID_permissions::
+
+CLASSMETHODS::
+
+private:: prStartEventLoop, prStopEventLoop
+
+SUBSECTION:: Finding devices
+
+METHOD:: findAvailable
+queries the operating system which LID devices are attached to the system and can be accessed. When using LID this is the first method you need to execute, before you can access any device.
+
+ARGUMENT:: name
+The basic path to look for, by default this is code::"event"::. See also code::deviceRoot::.
+
+returns:: an IdentityDictionary of available devices
+
+METHOD:: deviceRoot
+
+This is the base path where to look for devices. By default this is: code::"/dev/input"::. With code::findAvailable:: this is extended with the code::name:: that is passed in, which has as a default code::"event"::. Hence, by default we look for devices that match the path: code::"/dev/input/event*"::.
+
+METHOD:: available
+A dictionary of available devices, or rather info about them in an instance of LINK::Classes/LIDInfo::, populated by the method findAvailable
+
+returns:: an IdentityDictionary
+
+METHOD:: postAvailable
+posts a human readable list of available LID devices and their properties (see also LINK::Classes/LIDInfo::)
+
+
+METHOD:: findBy
+Find devices in the available device dictionary by specifying one or more characteristics of the device
+
+ARGUMENT:: vendorID
+The vendor ID of the device, this is a number encoded by the device itself.
+
+ARGUMENT:: productID
+The product ID of the device, this is a number encoded by the device itself.
+
+ARGUMENT:: path
+The path of the device, this is a path defined by the operating system.
+
+ARGUMENT:: version
+The version of the device.
+
+ARGUMENT:: physical
+The physical location of the device, this is a path defined by the operating system.
+
+ARGUMENT:: unique
+A unique identifier for the device, defined by the operating system.
+
+returns:: an IdentityDictionary of devices the match the search query, or nil if no arguments are given
+
+SUBSECTION:: Opening devices
+
+METHOD:: open
+Open a device with a given vendorID and product ID. For arguments description see link::#findBy::.
+The method will call the method code::findBy:: and use the first available result as the device to open.
+
+returns:: The LID device - an instance of code::LID::.
+
+
+METHOD:: new
+Same as code::LID.openPath::.
+
+
+METHOD:: openPath
+Open a device using its path in the operating system.
+
+ARGUMENT:: path
+The path in the operating system, e.g. code::"/dev/input/event4"::
+
+returns:: The LID device - an instance of code::LID::.
+
+METHOD:: openAt
+Open a device using its index in the dictionary of available devices
+
+ARGUMENT:: index
+The index into the dictionary of available devices
+
+returns:: The LID device - an instance of code::LID::.
+
+
+METHOD:: openDevices
+A dictionary of the opened devices
+
+returns:: an IdentityDictionary
+
+
+
+SUBSECTION:: Adding functions to LID events
+
+Whenever data comes in from an opened LID device, there are two types of actions fired. An action for the incoming element data and an action for the device, indicating that there has been a change in one of the elements. In most cases you will want to use the first action; only in cases where the order of parsing the element data is important, you may want to use the second type - e.g. when dealing with very accurately timed button press combinations.
+
+There are three levels where you can set actions:
+LIST::
+	## at the global level - called for any LID device, for any slot
+	## at the device level - called for the specific device, for any slot
+	## at the slot level - called for the specific element of the specific device
+::
+
+
+METHOD:: debug
+When set to true, the incoming data from any opened LID device will be printed to the post window.
+
+METHOD:: action
+Set or get the action to be performed upon receiving element data from any device. The function will be passed the following arguments: the value (mapped between 0 and 1), the raw value, element usage page, the element usage, the element id, the device id, the device (an instance of LID).
+
+ARGUMENT:: function
+The function to be performed upon receiving element data from the device
+
+
+METHOD:: addRecvFunc
+add a function to the internal FunctionList that will be evaluated whenever element data comes in from an open device. The arguments passed to the function are as defined above.
+Use this method if you want to add actions to LID functions from classes you write, so that you still keep the option to add an action on the fly from user code.
+
+ARGUMENT:: function
+The function to be added to the list.
+
+
+METHOD:: removeRecvFunc
+remove a function to the internal FunctionList that will be evaluated whenever data comes in from a device.
+
+
+ARGUMENT:: function
+The function to remove from the list, this must be a reference to the Function that was originally added to the list
+
+
+SUBSECTION:: Managing the LID subsystem
+
+The following methods are used internally to initialize and finalize the LID subsystem, but in rare cases you may wish to manage these methods manually.
+
+METHOD:: initializeLID
+Initialize the LID subsystem, this method is called automatically when calling the method findAvailable.
+
+
+METHOD:: running
+Indicates whether or not the LID subsystem is running.
+
+
+METHOD:: closeAll
+This method is called automatically upon Shutdown, if the LID subsystem was initialized. It can be stopped manually, in order to save system resources. This method will close all opened LID devices.
+
+
+SUBSECTION:: Creating specs for devices
+
+Device specs are mappings between event codes and symbolic control names. New specs can be added to LID.specs via LID>>*register.
+
+
+code::
+// Add a mouse device spec for a Logitech trackball
+LID.register('Logitech Trackball', LID.mouseDeviceSpec);
+
+// Add a custom device spec for a Logitech gamepad
+(
+LID.register('Logitech WingMan RumblePad', (
+	// key
+	rumble: #[0x0001, 0x0102],	// rumble (toggles ff)
+	mode: #[0x0001, 0x0103],	// mode (switches h and l)
+	a: #[0x0001, 0x0120],		// button a
+	b: #[0x0001, 0x0121],		// button b
+	c: #[0x0001, 0x0122],		// button c
+	x: #[0x0001, 0x0123],		// button x
+	y: #[0x0001, 0x0124],		// button y
+	z: #[0x0001, 0x0125],		// button z
+	l: #[0x0001, 0x0126],		// left front button
+	r: #[0x0001, 0x0127],		// right front button
+	s: #[0x0001, 0x0128],		// button s
+	// abs
+	lx: #[0x0003, 0x0000],		// left joystick x
+	ly: #[0x0003, 0x0001],		// left joystick y
+	rx: #[0x0003, 0x0005],		// right joystick x
+	ry: #[0x0003, 0x0006],		// right joystick y
+	hx: #[0x0003, 0x0010],		// hat x
+	hy: #[0x0003, 0x0011],		// hat y
+	slider: #[0x0003, 0x0002]	// slider
+));
+)
+::
+
+
+METHOD:: register
+This will register the spec for the specified device. If the device was opened and did not use the spec before, it will use this spec. See also link::Classes/LID#spec#.
+
+ARGUMENT:: name
+The name of the device to register it for.
+
+ARGUMENT:: spec
+The spec to be added. This should be an IdentityDictionary.
+
+
+METHOD:: specs
+This returns the specs that have been registered.
+
+
+METHOD:: mouseDeviceSpec
+This returns a default spec for a mouse device; any mouse, trackball, trackpad or trackpoint should be able to use this spec.
+
+METHOD:: keyboardDeviceSpec
+This returns a default spec for a keyboard device; any keyboard or numpad should be able to use this spec.
+
+
 examples::
+
 subsection:: Opening a device
 
 Input devices are accessed through device nodes, typically
@@ -98,40 +299,6 @@ d.slot(0x0002, 0x0001).deltaAction = { | slot |
 )
 ::
 
-subsection:: Device specs
-Device specs are mappings between event codes and symbolic control
-names. New specs can be added to LID.specs via LID>>*register.
-
-code::
-// Add a mouse device spec for a Logitech trackball
-LID.register('Logitech Trackball', LID.mouseDeviceSpec);
-
-// Add a custom device spec for a Logitech gamepad
-(
-LID.register('Logitech WingMan RumblePad', (
-	// key
-	rumble: #[0x0001, 0x0102],	// rumble (toggles ff)
-	mode: #[0x0001, 0x0103],	// mode (switches h and l)
-	a: #[0x0001, 0x0120],		// button a
-	b: #[0x0001, 0x0121],		// button b
-	c: #[0x0001, 0x0122],		// button c
-	x: #[0x0001, 0x0123],		// button x
-	y: #[0x0001, 0x0124],		// button y
-	z: #[0x0001, 0x0125],		// button z
-	l: #[0x0001, 0x0126],		// left front button
-	r: #[0x0001, 0x0127],		// right front button
-	s: #[0x0001, 0x0128],		// button s
-	// abs
-	lx: #[0x0003, 0x0000],		// left joystick x
-	ly: #[0x0003, 0x0001],		// left joystick y
-	rx: #[0x0003, 0x0005],		// right joystick x
-	ry: #[0x0003, 0x0006],		// right joystick y
-	hx: #[0x0003, 0x0010],		// hat x
-	hy: #[0x0003, 0x0011],		// hat y
-	slider: #[0x0003, 0x0002]	// slider
-));
-)
-::
 
 subsection:: Event actions (symbolic slot events)
 
@@ -140,6 +307,7 @@ actions can be assigned by using the symbolic control name.
 code::
 d[\a].action = { | slot | [\a, slot.value].postln };
 ::
+
 There is also a default keyboard device spec.
 code::
 (
