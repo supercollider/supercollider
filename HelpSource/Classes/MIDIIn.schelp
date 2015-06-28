@@ -73,6 +73,15 @@ method::noteOnZeroAsNoteOff
 By default this flag is code::true:: and SuperCollider interprets incoming MIDI noteOn message with velocity 0 as noteOff messages. In case you do not want this automatic translation, you can set this flag to code::false::
 
 
+method::connectAll
+
+Connect to all possible MIDI inputs.
+
+method::disconnectAll
+
+Disconnect from all MIDI inputs.
+
+
 subsection:: Getter/Setters for Specific Message Types
 
 The methods below allow you to register a function to respond to a particular message type.
