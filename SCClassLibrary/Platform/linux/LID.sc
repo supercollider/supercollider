@@ -771,7 +771,7 @@ LIDKeySlot : LIDSlot {
 }
 
 LIDRelSlot : LIDSlot {
-	var delta, <>deltaAction;
+	var delta = 0, <>deltaAction;
 
 	initSpec { }
 	value { ^rawValue }
