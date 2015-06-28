@@ -51,7 +51,7 @@ LIDAbsInfo {
 }
 
 LID {
-	var dataPtr, <path, <info, <caps, <spec, <slots, <isGrabbed=false, <>action;
+	var dataPtr, <path, <info, <caps, spec, <slots, <isGrabbed=false, <>action;
 	var <>closeAction;
 	var <debugAction;
 	classvar <eventLoopIsRunning = false;
@@ -475,7 +475,7 @@ LID {
 		})
 	}
 	at { | controlName |
-		^this.slot(*spec.atFail(controlName, {
+		^this.slot(*this.spec.atFail(controlName, {
 			Error("invalid control name").throw
 		}))
 	}
@@ -518,6 +518,12 @@ LID {
 		}
 	}
 
+	spec{ |forceLookup = false|
+		if ( spec.notNil and: forceLookup.not ){ ^spec };
+		spec = specs.atFail(info.name, { IdentityDictionary.new });
+		^spec;
+	}
+
 	// PRIVATE
 	*prStartEventLoop {
 		_LID_Start
@@ -535,7 +541,6 @@ LID {
 		info = this.prGetInfo(LIDInfo.new);
 		info.path_( path );
 		("LID: Opened device: %\n".postf( this.info ) );
-		spec = specs.atFail(info.name, { IdentityDictionary.new });
 		caps = IdentityDictionary.new;
 		slots = IdentityDictionary.new;
 		eventTypes.do { | evtTypeMax, evtType |
