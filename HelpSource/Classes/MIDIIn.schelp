@@ -1,6 +1,6 @@
 class:: MIDIIn
 summary:: receive MIDI messages
-related:: Classes/MIDIOut, Classes/MIDIFunc, Classes/MIDIdef, Guides/MIDI, Guides/UsingMIDI
+related:: Classes/MIDIClient, Classes/MIDIOut, Classes/MIDIFunc, Classes/MIDIdef, Guides/MIDI, Guides/UsingMIDI
 categories:: External Control>MIDI
 
 description::
@@ -76,6 +76,10 @@ By default this flag is code::true:: and SuperCollider interprets incoming MIDI 
 method::connectAll
 
 Connect to all possible MIDI inputs.
+
+argument::verbose
+
+If set to true (default) it will print out the ports found in MIDIClient.init.
 
 method::disconnectAll
 
