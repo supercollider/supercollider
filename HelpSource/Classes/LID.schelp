@@ -245,41 +245,16 @@ METHOD:: keyboardDeviceSpec
 This returns a default spec for a keyboard device; any keyboard or numpad should be able to use this spec.
 
 
+
+INSTANCEMETHODS::
+
+private:: prClose, prEventCodeSupported, prEventTypeSupported, prGetAbsInfo, prGetInfo, prGetKeyState, prGrab, prHandleEvent, prInit, prOpen, prReadError, prSetLedState, prSetMscState
+
+
+
+
 examples::
 
-subsection:: Opening a device
-
-Input devices are accessed through device nodes, typically
-/dev/input/event[0-9]. When using a userspace daemon like udev,
-meaningful names can be assigned to devices.
-
-raw device name:
-code::
-d = LID("/dev/input/event4");
-::
-
-symbolic device name
-code::
-d = LID("/dev/input/trackball");
-::
-
-device name relative to LID.deviceRoot
-code::
-d = LID("gamepad");
-::
-
-build a list of the available devices:
-code::
-LID.buildDeviceList
-::
-buildDeviceList builds a table of the devices found in LID.deviceRoot+"/event", trying to open all that it finds, looking up its name and closing them again. The result is returned and can later be accessed by LID.deviceList.
-You can query another name than "/event" by passing an argument. (the search will be: LID.deviceRoot++"/"++name++"*")
-code::
-LID.buildDeviceList( "mouse" );
-::
-Note:: this is likely to give the info that the devices could not be opened, as "mouse" uses another interface (you can of course access mice via the "event" interface) ::
-
-Note:: if you cannot open the devices at all, please look in the helpfile for: Linux_udev_setup ::
 
 subsection:: Querying device information
 code::
