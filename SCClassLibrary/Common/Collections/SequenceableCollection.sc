@@ -242,6 +242,24 @@ SequenceableCollection : Collection {
 		^((val - a) / div) + i - 1
 	}
 
+	selectIndex { | function |
+		^this.selectIndexAs(function, this.species);
+	}
+	selectIndexAs { | function, class |
+		var res = class.new(this.size);
+		this.do {|elem, i| if (function.value(elem, i)) { res.add(i) } }
+		^res;
+	}
+
+	rejectIndex { | function |
+		^this.rejectIndexAs(function, this.species);
+	}
+	rejectIndexAs { | function, class |
+		var res = class.new(this.size);
+		this.do {|elem, i| if (function.value(elem, i).not) { res.add(i) } }
+		^res;
+	}
+
 	isSeries { arg step;
 		if(this.size <= 1) { ^true };
 		this.doAdjacentPairs { |a, b|
