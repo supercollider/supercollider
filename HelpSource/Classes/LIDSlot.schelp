@@ -1,0 +1,114 @@
+TITLE:: LIDSlot
+summary:: Handles incoming LID data.
+categories:: Platform>Linux, External Control>HID
+related:: Classes/LID
+
+DESCRIPTION::
+
+
+CLASSMETHODS::
+
+private:: new, initClass
+
+METHOD:: slotTypeStrings
+An IdentityDictionary mapping the evtTypes to descriptive strings.
+
+
+INSTANCEMETHODS::
+
+private:: initSpec, init
+
+
+METHOD:: postInfo
+Post the slots properties in a nice, human readable way.
+
+METHOD:: debug
+(describe method here)
+
+ARGUMENT:: onoff
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+
+
+METHOD:: action
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+
+METHOD:: value
+(describe method here)
+
+ARGUMENT:: rawValue
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+
+METHOD:: spec
+The ControlSpec to map this slots value.
+
+
+
+
+METHOD:: rawValue
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+
+
+METHOD:: next
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+
+
+METHOD:: createBus
+(describe method here)
+
+ARGUMENT:: s
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+
+METHOD:: bus
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+
+METHOD:: freeBus
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+METHOD:: kr
+(describe method here)
+
+returns:: (describe returnvalue here)
+
+
+
+METHOD:: device
+The device to which this slot belongs.
+
+METHOD:: type
+The type of slot that this is.
+
+METHOD:: code
+The eventCode for this slot.
+
+METHOD:: key
+The key by which this slot is known in the spec of the device.
+
+
+EXAMPLES::
+
+code::
+
+::
