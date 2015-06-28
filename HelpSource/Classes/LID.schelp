@@ -252,6 +252,27 @@ private:: prClose, prEventCodeSupported, prEventTypeSupported, prGetAbsInfo, prG
 
 
 
+subsection:: Grabbing devices
+
+Given proper permissions, devices can be grabbed to prevent use in other applications (including X). Be careful when grabbing mouse or keyboard, as you will not be able to use them for normal interaction (like typing code or moving the mouse pointer) anymore!
+
+code::
+d[\b].action = { d.ungrab };
+d.grab;
+
+d.isGrabbed;
+::
+
+METHOD::grab
+Grab the device to use exclusively for SC.
+
+METHOD::ungrab
+Release the device to use it no longer exclusively for SC.
+
+METHOD::isGrabbed
+Check whether the device is grabbed.
+
+
 
 examples::
 
@@ -338,16 +359,6 @@ d.close;
 // setLEDState( evtCode, evtValue ): value should be 1 or 0
 ::
 
-subsection:: Grabbing devices
-Given proper permissions, devices can be grabbed to prevent use in
-other applications (including X). Be careful when grabbing mouse or
-keyboard!
-code::
-d[\b].action = { d.ungrab };
-d.grab;
-
-d.isGrabbed;
-::
 
 subsection:: Closing devices
 code::
