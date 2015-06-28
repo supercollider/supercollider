@@ -35,3 +35,17 @@
 	}
 
 }
+
++ LIDInfo {
+
+	vendor{
+        this.deprecated(thisMethod, this.findMethod( \vendorID ) );
+		^this.vendorID;
+	}
+
+	product{
+        this.deprecated(thisMethod, this.findMethod( \productID ) );
+		^this.productID;
+	}
+
+}
