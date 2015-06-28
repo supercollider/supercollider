@@ -25,6 +25,7 @@
 		if(MIDIClient.initialized.not,
 			{ MIDIClient.init(verbose: verbose) },
 			{ MIDIClient.disposeClient; MIDIClient.init(verbose: verbose); }
+			// on Linux, supercollider creates as many MIDI ports for SC as there are devices to connect to; MIDIClient.list will find the new sources, but there will not be a matching port initialized for SC to connect it to; therefor we reinitialize the client.
 		);
 		MIDIClient.externalSources.do({ |src,i|
 			MIDIIn.connect(i,src);
