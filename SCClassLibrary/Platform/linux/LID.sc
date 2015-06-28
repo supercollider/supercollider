@@ -659,8 +659,8 @@ LIDSlot {
 	var <device, <type, <code, <spec, <>action;
 	var rawValue = 0;
 	classvar slotTypeMap, <slotTypeStrings;
-	var <bus, <busAction;
-	var <debugAction;
+	var <bus, busAction;
+	var debugAction;
 	var <>key;
 
 
@@ -732,6 +732,10 @@ LIDSlot {
 		}, {
 			debugAction = {};
 		});
+	}
+
+	debug{
+		^debugAction.notNil;
 	}
 
 	createBus { |s|
