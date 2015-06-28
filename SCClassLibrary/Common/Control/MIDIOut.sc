@@ -262,6 +262,14 @@ MIDIIn {
 		^MIDIClient.sources.detect({ |endPoint| endPoint.device == deviceName and: {endPoint.name == portName}});
 	}
 
+	*disconnectAll {
+		if(MIDIClient.initialized,{
+			MIDIClient.externalSources.do({ |src,i|
+				MIDIIn.disconnect(i,src);
+			});
+		});
+	}
+
 	*connectAll {
 		if(MIDIClient.initialized.not,{ MIDIClient.init });
 		MIDIClient.externalSources.do({ |src,i|
