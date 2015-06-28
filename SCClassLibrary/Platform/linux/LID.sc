@@ -57,6 +57,7 @@ LID {
 	classvar openDevices, eventTypes, <specs, <>deviceRoot = "/dev/input", <available;
 	classvar eventLoopIsRunning = false;
 	classvar globalDebugAction;
+	classvar <action, prAction;
 
 	*running{
 		^eventLoopIsRunning;
@@ -498,6 +499,28 @@ LID {
 	*debug{
 		^globalDebugAction.notNil;
 	}
+
+	// action interface:
+	*addRecvFunc { |function|
+		if ( prAction.isNil ) {
+			prAction = FunctionList.new;
+		};
+		prAction = prAction.addFunc( function );
+	}
+
+	*removeRecvFunc { |function|
+		prAction.removeFunc( function );
+	}
+
+
+	*action_ { |function|
+		if ( action.notNil ) {
+			this.removeRecvFunc( action );
+		};
+		action = function;
+		this.addRecvFunc( function );
+	}
+
 	spec{ |forceLookup = false|
 		if ( spec.notNil and: forceLookup.not ){ ^spec };
 		spec = specs.atFail(info.name, { IdentityDictionary.new });
@@ -586,6 +609,9 @@ LID {
 			if (action.notNil) {
 				action.value(evtType, evtCode, evtValue, slots[evtType][evtCode].value);
 			};
+		};
+		if ( prAction.notNil ){
+			prAction.value( this, evtType, evtCode, evtValue );
 		}
 	}
 
