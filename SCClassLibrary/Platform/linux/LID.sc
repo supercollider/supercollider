@@ -440,6 +440,10 @@ LID {
 		}
 	}
 
+	debug{
+		^debugAction.notNil;
+	}
+
 	slot { | evtType, evtCode |
 		^slots.atFail(evtType, {
 			Error("event type not supported").throw
