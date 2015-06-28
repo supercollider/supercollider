@@ -22,10 +22,16 @@
 	dumpEvents {
         this.deprecated(thisMethod, LID.findMethod( \debug_ ) );
 		this.debug_( true );
-		/*
-		action = { | evtType, evtCode, value |
-			[evtType.asHexString, evtCode.asHexString, value].postln;
-		}
-		*/
 	}
+
+	*all {
+        this.deprecated(thisMethod, LID.findMethod( \openDevices ) );
+	 	^this.openDevices;
+	}
+
+	*eventLoopIsRunning{
+        this.deprecated(thisMethod, LID.findMethod( \running ) );
+	 	^this.running;
+	}
+
 }
