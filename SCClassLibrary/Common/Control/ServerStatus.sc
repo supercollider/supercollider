@@ -2,7 +2,7 @@ ServerStatusWatcher {
 
 	var server;
 
-	var <>notified = false, <notify = false;
+	var <>notified = false, <notify = true;
 	var alive = false, <aliveThread, <>aliveThreadPeriod = 0.7, statusWatcher;
 
 	var <serverRunning = false, <>serverBooting = false, <unresponsive = false;
