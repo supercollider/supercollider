@@ -140,32 +140,6 @@ LID {
 		this.available.sortedKeysValuesDo { |k, v| "%: ".postf( k ); v.postInfo; };
 	}
 
-	/*
-	*buildDeviceList{ |name| //TODO: deprecate and do findAvailable
-		var table, devices, d, open;
-		if ( eventLoopIsRunning.not ){ this.initializeLID; };
-		name = name ? "event";
-		devices = (deviceRoot++"/"++name++"*").pathMatch;
-		deviceList = Array.fill( devices.size, 0 );
-		devices.do{ |it,i|
-			open = false;
-			if ( all.detect({ | dev | dev.path == it }).notNil,
-				{open = true});
-			d = try { LID( it ) };
-			if ( d != nil,
-				{
-					deviceList[i] = [ it, d.info, d.slots ];
-					if ( open.not,
-						{d.close});
-				},
-				{
-					deviceList[i] = [ it, "could not open device" ];
-				});
-		};
-		^deviceList;
-	}
-	*/
-
 	*register { | name, spec |
 		specs[name] = spec;
 	}
@@ -358,10 +332,6 @@ LID {
 			documents: [1, 235]
 		)
 	}
-
-	// *all {
-	// 	^all.copy
-	// }
 
 	*openDevices{
 		^openDevices.copy;
