@@ -422,7 +422,7 @@ LID {
 	postSlots{
 		slots.sortedKeysValuesDo{ |k,v|
 			v.sortedKeysValuesDo{ |ks,vs|
-				"%,%: %".format( k, ks, vs.key ).post;
+				"%,%: %\n".format( k, ks, vs.key ).post;
 				vs.postInfo;
 			};
 		};
