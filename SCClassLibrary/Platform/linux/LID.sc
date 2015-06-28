@@ -626,7 +626,7 @@ LID {
 		};
 		if ( slots.notNil ){
 			// not either or for the device action. Do slot actions in any case:
-			slots[evtType][evtCode].value_(evtValue);
+			slots[evtType][evtCode].rawValue_(evtValue);
 			// event callback
 			if (action.notNil) {
 				action.value(evtType, evtCode, evtValue, slots[evtType][evtCode].value);
@@ -716,7 +716,7 @@ LIDSlot {
 	value {
 		^spec.unmap(rawValue)
 	}
-	value_ { | inValue |
+	rawValue_ { | inValue |
 		rawValue = inValue;
 		action.value(this);
 		busAction.value( this );
@@ -738,18 +738,15 @@ LIDSlot {
 		^debugAction.notNil;
 	}
 
-	createBus { |s|
-		s = s ? Server.default;
+	createBus { |server|
+		server = server ? Server.default;
 		if ( bus.isNil, {
-			bus = Bus.control( s, 1 );
+			bus = Bus.control( server, 1 );
 		}, {
 			if ( bus.index.isNil, {
-				bus = Bus.control( s, 1 );
+				bus = Bus.control( server, 1 );
 			});
 		});
-		/*		if ( s.serverRunning.not and: s.isLocal, {
-			"Server seems not running, so bus will be invalid".warn;
-		});*/
 		busAction = { |v| bus.set( v.value ); };
 	}
 
@@ -778,7 +775,7 @@ LIDRelSlot : LIDSlot {
 
 	initSpec { }
 	value { ^rawValue }
-	value_ { | inDelta |
+	rawValue_ { | inDelta |
 		delta = inDelta;
 		rawValue = rawValue + delta;
 		action.value(this);
@@ -804,7 +801,8 @@ LIDLedSlot : LIDSlot {
 
 	initSpec { }
 	value { ^rawValue }
-	value_ { | inValue |
+	value_{ |inValue| this.rawValue_( spec.map( inValue ) ); }
+	rawValue_ { | inValue |
 		rawValue = inValue;
 		device.setLEDState( code, inValue );
 		action.value(this);
@@ -817,7 +815,8 @@ LIDMscSlot : LIDSlot {
 
 	initSpec { }
 	value { ^rawValue }
-	value_ { | inValue |
+	value_{ |inValue| this.rawValue_( spec.map( inValue ) ); }
+	rawValue_ { | inValue |
 		rawValue = inValue;
 		device.setMSCState( code, rawValue );
 		action.value(this);
