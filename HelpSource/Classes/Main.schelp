@@ -51,7 +51,7 @@ Called after the class library has been compiled.
 discussion::
 This calls the superclass' startup, which among other things initializes the link::Classes/AppClock:: and the top-level link::Classes/Environment::.
 
-Main's startup then stores Server.default in the interpreter variable s, sets the platform default's link::Classes/GUI:: kit, initializes the link::Classes/GeneralHID:: system, calls a link::Classes/Platform:: specific startup method (for example OSXPlatform's startup opens the server windows), and finally invokes StartUp.run.
+Main's startup then stores Server.default in the interpreter variable s, sets the platform default's link::Classes/GUI:: kit, calls a link::Classes/Platform:: specific startup method (for example OSXPlatform's startup opens the server windows), and finally invokes StartUp.run.
 
 To add your own startup functionalities, you could either edit the special startup-file (discussed in link::Reference/StartupFile::), or use StartUp.add as discussed in the link::Classes/StartUp:: help file.
 
@@ -60,7 +60,7 @@ method::shutdown
 Called after SuperCollider is quit or the class library is about to be re-compiled.
 
 discussion::
-This will quit all audio link::Classes/Server:: instances, perform a platform specific shutdown (e.g. on Mac OS X, the HID service is released), finally Process' shutdown method is called, resulting in successive calls to UI.shutdown, NetAddr.disconnectAll, File.closeAll, and Archive.write. To register your own shutdown code, use a call like this:
+This will quit all audio link::Classes/Server:: instances, perform a platform specific shutdown (e.g. the HID subsystem is released), finally Process' shutdown method is called, resulting in successive calls to UI.shutdown, NetAddr.disconnectAll, File.closeAll, and Archive.write. To register your own shutdown code, use a call like this:
 
 code::
 ShutDown.add({ "Good bye!!".postln });
