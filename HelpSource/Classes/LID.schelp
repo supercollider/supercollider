@@ -4,16 +4,31 @@ categories:: Platform>Linux, External Control>HID
 related:: Classes/HID, Classes/LIDInfo
 
 description::
-This class provides a way to access devices in the linux input
-layer, which supports many input devices (mouse, keyboard,
-joystick, gamepad, tablet) and busses (serial, PS/2, USB).
-
-See link::#examples:: below for documentation-by-example.
+This class provides a way to access devices in the linux input layer, which supports many input devices (mouse, keyboard, joystick, gamepad, tablet) and busses (serial, PS/2, USB).
 
 NOTE::For external HID devices it is recommended to use the link::Classes/HID:: interface, as described in link::Guides/Working_with_HID::, as it will ensure that your code is cross platform compatible. Only in cases where the raw HID interface does not provide access because the device needs a special driver (and this driver is provided in Linux kernel), or in case you want to access internal devices, you should use this class.
 ::
 
 NOTE: if you have trouble opening a device, e.g. when you get the message code::ERROR: LID: Could not open device::, please check the link::Guides/LID_permissions::
+
+subsection:: First example:
+
+code::
+
+LID.findAvailable;
+LID.postAvailable; // pick one that you want to open, and fill in the vendor and product id in the next line:
+d = LID.open( 2, 10 ); // trackpoint
+
+d.postInfo;
+d.postSlots;
+
+d.debug_( true ); // wiggle a little and see the data coming in
+
+d.debug_( false );
+
+// close the device (don't do this yet, if you want to excecute the further examples in this class)
+d.close;
+::
 
 CLASSMETHODS::
 
@@ -154,7 +169,6 @@ Set or get the action to be performed upon receiving element data from any devic
 ARGUMENT:: function
 The function to be performed upon receiving element data from the device
 
-
 METHOD:: addRecvFunc
 add a function to the internal FunctionList that will be evaluated whenever element data comes in from an open device. The arguments passed to the function are as defined above.
 Use this method if you want to add actions to LID functions from classes you write, so that you still keep the option to add an action on the fly from user code.
@@ -248,9 +262,123 @@ This returns a default spec for a keyboard device; any keyboard or numpad should
 
 INSTANCEMETHODS::
 
-private:: prClose, prEventCodeSupported, prEventTypeSupported, prGetAbsInfo, prGetInfo, prGetKeyState, prGrab, prHandleEvent, prInit, prOpen, prReadError, prSetLedState, prSetMscState
+private:: prClose, prEventCodeSupported, prEventTypeSupported, prGetAbsInfo, prGetInfo, prGetKeyState, prGrab, prHandleEvent, prInit, prOpen, prReadError, prSetLedState, prSetMscState, getAbsInfo, getKeyState, getLEDState, setLEDState, setMSCState
 
 
+METHOD:: close
+Close the LID device, closing a device is asynchronous. You can set a closeAction (see below), which will be performed when the device closes.
+
+METHOD:: isOpen
+Returns true if the device is open, false if the device was closed.
+
+CODE::
+d.isOpen;
+d.close;
+d.isOpen;
+::
+
+
+
+SUBSECTION:: Posting human readable information about the device
+
+METHOD:: postInfo
+Post the LIDInfo of this device in a human readable format
+
+METHOD:: postSlots
+Post information about all the slots of this device in a human readable format
+
+METHOD:: dumpCaps
+Post the list of available capabilities in a human readable format
+
+
+subsection:: Accessing slots
+
+Device capabilities are reported as event type and event code mappings. Event type and event code constants can be found in code::/usr/include/linux/input.h::
+
+
+METHOD::slot
+Access a slot by its evtType and evtCode. See also
+
+ARGUMENT:: evtType
+
+ARGUMENT:: evtCode
+
+
+
+METHOD::at
+If a code::spec:: is defined for this device, then you can use a controlName to look up a slot.
+
+
+METHOD:: spec
+The IdentityDictionary that maps labels for slots to slot indices.
+
+ARGUMENT:: forceLookup
+If set to true, this will force the dictionary to be reinitialised with the registered spec for this device.
+
+
+subsection:: Adding functionality to the device
+
+METHOD:: debug
+When set to true, the incoming data from this LID device will be printed to the post window.
+
+
+CODE::
+d.debug_( true );
+d.debug_( false );
+::
+
+
+METHOD:: closeAction
+Function to be performed when device is closed.
+
+CODE::
+d.closeAction_( { "hey, I got closed!".postln; } );
+d.close;
+::
+
+METHOD:: action
+Set or get the action to be performed upon receiving data from the device. The function will be passed in the evtType, the evtCode, the value (mapped according to the slot's spec), and the raw value.
+
+CODE::
+d.action_( { arg ...args; ("my action" + args ).postln; } );
+d.action_( nil );
+::
+
+SUBSECTION:: Properties of the device
+
+METHOD::slots
+An IdentityDictionary holding all the slots, i.e. controls, of the device
+
+METHOD::path
+Retrieve the path of this device
+
+CODE::
+d.path;
+::
+
+METHOD:: info
+Retrieve the LIDInfo of this device
+
+CODE::
+d.info;
+::
+
+METHOD:: vendor
+Retrieve the vendor id of this device
+
+CODE::
+d.vendor;
+::
+
+METHOD:: product
+Retrieve the product id of this device
+
+CODE::
+d.product;
+::
+
+METHOD:: caps
+The list of available capabilities.
 
 subsection:: Grabbing devices
 
@@ -273,23 +401,21 @@ METHOD::isGrabbed
 Check whether the device is grabbed.
 
 
-
 examples::
 
+subsection:: Finding and opening the device
 
-subsection:: Querying device information
 code::
-d.info;
-d.info.name;
-d.info.vendor.asHexString(4);
-d.info.product.asHexString(4);
-::
 
-subsection:: Querying device capabilities
-Device capabilities are reported as event type and event code mappings. Event type and event code constants can be found in /usr/include/linux/input.h
-code::
-d.caps;
-d.dumpCaps;
+LID.findAvailable;
+LID.postAvailable; // pick one that you want to open, and fill in the vendor and product id in the next line:
+d = LID.open( 2, 10 ); // trackpoint
+
+d.postInfo;
+d.postSlots;
+
+d.debug_( true ); // wiggle a little and see the data coming in
+d.debug_( false );
 ::
 
 subsection:: Event actions (raw events)
@@ -313,13 +439,14 @@ subsection:: Event actions (raw slot events)
 When 'action' is nil, actions can be bound to specific events.
 code::
 (
-d.slot(0x0001, 0x0120).action = { | slot |
-	[slot.type.asHexString(4), slot.code.asHexString(4), slot.rawValue].postln;
+d.slot(0x0002, 0x0001).action = { | slot |
+	[slot.type.asHexString(4), slot.code.asHexString(4), slot.value].postln;
 }
 )
 ::
 Relative slots can have deltaActions:
 code::
+(
 d.slot(0x0002, 0x0001).deltaAction = { | slot |
 	[slot.type.asHexString(4), slot.code.asHexString(4), slot.delta].postln;
 }
@@ -332,17 +459,9 @@ subsection:: Event actions (symbolic slot events)
 When a device spec was registered for a given device name, slot
 actions can be assigned by using the symbolic control name.
 code::
-d[\a].action = { | slot | [\a, slot.value].postln };
+	d[\x].action = { | slot | [\x, slot.value].postln };
 ::
 
-There is also a default keyboard device spec.
-code::
-(
-LID.keyboardDeviceSpec.keys.do { | key |
-	d[key].action = { | slot | [key, slot.value].postln }
-}
-)
-::
 
 subsection:: LED's
 some devices have LEDs which can be turned on and off. These show up
@@ -365,9 +484,6 @@ code::
 d.close;
 LID.closeAll;
 ::
-
-
-
 
 
 subsection:: Opening devices with alternative deviceRoot
@@ -400,4 +516,4 @@ LID.findAvailable( "mouse" );
 ::
 Note:: this is likely to give the info that the devices could not be opened, as "mouse" uses another interface (you can of course access mice via the "event" interface) ::
 
-Note:: if you cannot open the devices at all, please look in the helpfile for: LID_permissions ::
+Note:: if you cannot open the devices at all, please look in the helpfile for: link::Guides/LID_permissions:: ::
