@@ -72,6 +72,10 @@ MIDIClient {
 		^this.primitiveFailed
 	}
 	*disposeClient {
+		this.prDisposeClient;
+		initialized = false;
+	}
+	*prDisposeClient {
 		_DisposeMIDIClient
 		^this.primitiveFailed
 	}
