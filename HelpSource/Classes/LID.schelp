@@ -21,6 +21,20 @@ private:: prStartEventLoop, prStopEventLoop
 
 SUBSECTION:: Finding devices
 
+An example of finding a device:
+
+code::
+LID.findAvailable;
+
+LID.available;
+
+LID.postAvailable;
+
+// look for the one you want and find it:
+
+LID.findBy( 2, 10 ) // by vendor and product
+::
+
 METHOD:: findAvailable
 queries the operating system which LID devices are attached to the system and can be accessed. When using LID this is the first method you need to execute, before you can access any device.
 
@@ -32,6 +46,8 @@ returns:: an IdentityDictionary of available devices
 METHOD:: deviceRoot
 
 This is the base path where to look for devices. By default this is: code::"/dev/input"::. With code::findAvailable:: this is extended with the code::name:: that is passed in, which has as a default code::"event"::. Hence, by default we look for devices that match the path: code::"/dev/input/event*"::.
+
+See below for some link::#Opening devices with alternative deviceRoot::
 
 METHOD:: available
 A dictionary of available devices, or rather info about them in an instance of LINK::Classes/LIDInfo::, populated by the method findAvailable
@@ -64,6 +80,21 @@ ARGUMENT:: unique
 A unique identifier for the device, defined by the operating system.
 
 returns:: an IdentityDictionary of devices the match the search query, or nil if no arguments are given
+
+code::
+LID.findBy( 2 ); // by vendorID
+LID.findBy( 2, 10 ) // by vendor and product
+LID.findBy( productID: 10 );
+LID.findBy( path: "/dev/input/event4" );
+LID.findBy( version: 0 );
+LID.findBy( physical: 'synaptics-pt/serio0/input0' )
+LID.findBy( physical: "synaptics-pt/serio0/input0" ) // argument is converted to symbol for check
+LID.findBy( unique: '' )
+LID.findBy( unique: "" ) // argument is converted to symbol for check
+
+// using all possible arguments:
+LID.findBy( 2, 10, "/dev/input/event4", 0x0000, 'synaptics-pt/serio0/input0' )
+::
 
 SUBSECTION:: Opening devices
 
@@ -349,3 +380,38 @@ d.close;
 LID.closeAll;
 ::
 
+
+
+
+
+subsection:: Opening devices with alternative deviceRoot
+
+Input devices are accessed through device nodes, typically code::/dev/input/event[0-9]::. When using a userspace daemon like udev, meaningful names can be assigned to devices.
+
+raw device name:
+code::
+d = LID("/dev/input/event4");
+::
+
+symbolic device name
+code::
+d = LID("/dev/input/trackball");
+::
+
+device name relative to LID.deviceRoot
+code::
+d = LID("gamepad");
+::
+
+build a list of the available devices:
+code::
+LID.findAvailable;
+::
+buildDeviceList builds a table of the devices found in LID.deviceRoot+"/event", trying to open all that it finds, looking up its name and closing them again. The result is returned and can later be accessed by LID.deviceList.
+You can query another name than "/event" by passing an argument. (the search will be: LID.deviceRoot++"/"++name++"*")
+code::
+LID.findAvailable( "mouse" );
+::
+Note:: this is likely to give the info that the devices could not be opened, as "mouse" uses another interface (you can of course access mice via the "event" interface) ::
+
+Note:: if you cannot open the devices at all, please look in the helpfile for: LID_permissions ::
