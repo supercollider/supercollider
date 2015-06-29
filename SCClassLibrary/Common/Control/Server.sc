@@ -738,7 +738,6 @@ Server {
 
 		if(startAliveThread) { statusWatcher.startAliveThread };
 
-		statusWatcher.bootNotifyFirst = true; // unclear what this means.
 		statusWatcher.doWhenBooted({
 			statusWatcher.serverBooting = false;
 			this.bootInit(recover);

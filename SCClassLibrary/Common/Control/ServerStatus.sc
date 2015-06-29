@@ -11,9 +11,7 @@ ServerStatusWatcher {
 	var <avgCPU, <peakCPU;
 	var <sampleRate, <actualSampleRate;
 
-	var reallyDeadCount = 0;
-	var <>bootNotifyFirst;
-
+	var reallyDeadCount = 0, bootNotifyFirst = true;
 
 	*new { |server|
 		^super.newCopyArgs(server)
@@ -29,6 +27,7 @@ ServerStatusWatcher {
 		notified = false;
 		serverBooting = false;
 		this.serverRunning = false;
+		bootNotifyFirst = true;
 	}
 
 	notify_ { |flag = true|
@@ -85,6 +84,7 @@ ServerStatusWatcher {
 				serverBooting = false;
 				server.changed(\serverRunning);
 			}, onComplete);
+
 		}.play(AppClock)
 	}
 
@@ -145,10 +145,10 @@ ServerStatusWatcher {
 				// this thread polls the server to see if it is alive
 				delay.wait;
 				loop {
+					alive = false;
 					server.status;
 					aliveThreadPeriod.wait;
 					this.updateRunningState(alive);
-					alive = false;
 				};
 			}.play(AppClock);
 			aliveThread
@@ -208,6 +208,7 @@ ServerStatusWatcher {
 				this.unresponsive = false;
 				reallyDeadCount = server.options.pingsBeforeConsideredDead;
 			} {
+				// parrot
 				reallyDeadCount = reallyDeadCount - 1;
 				this.unresponsive = (reallyDeadCount <= 0);
 			}
