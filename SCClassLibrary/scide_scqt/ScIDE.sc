@@ -45,13 +45,13 @@ ScIDE {
 			("changed default server to:" + newServer.name).postln;
 			this.defaultServer = newServer;
 		})
-		.put(\dumpOSC, { | volume, what, code |
+		.put(\dumpOSC, { | server, what, code |
 			this.prSend( if(code.asBoolean, \dumpOSCStarted, \dumpOSCStopped) );
 		})
-		.put(\recording, { | volume, what, code |
-			this.prSend( if(code.asBoolean, \recordingStarted, \recordingStopped) );
+		.put(\recording, { | theChanger, what, flag |
+			this.prSend( if(flag.asBoolean, \recordingStarted, \recordingStopped) );
 		})
-		.put(\pausedRecording, { | volume, what |
+		.put(\pausedRecording, { | theChanger, what |
 			this.prSend(\recordingPaused);
 		});
 

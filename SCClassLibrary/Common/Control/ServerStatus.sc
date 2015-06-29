@@ -33,21 +33,12 @@ ServerStatusWatcher {
 
 	notify_ { |flag = true|
 		notify = flag;
-		if(flag){
-			if(serverRunning){
-				this.sendNotifyRequest(true);
-				notified = true;
-				"Receiving notification messages from server %\n".postf(server.name);
-			}
-		} {
-			this.sendNotifyRequest(false);
-			notified = false;
-			"Switched off notification messages from server %\n".postf(server.name);
-		}
+		this.sendNotifyRequest(flag);
 	}
 
 	sendNotifyRequest { |flag = true|
 		var doneOSCFunc, failOSCFunc;
+		if(serverRunning.not) { ^this };
 		notified = flag;
 		if(server.userSpecifiedClientID.not) {
 			doneOSCFunc = OSCFunc({|msg|
@@ -61,7 +52,11 @@ ServerStatusWatcher {
 			}, '/fail', server.addr, argTemplate:['/notify', nil, nil]).oneShot;
 
 		};
-
+		if(flag){
+			"Receiving notification messages from server '%'\n".postf(server.name)
+		} {
+			"Switched off notification messages from server '%'\n".postf(server.name);
+		};
 		server.sendMsg("/notify", flag.binaryValue);
 	}
 
@@ -109,7 +104,7 @@ ServerStatusWatcher {
 
 				AppClock.sched(3.0, {
 					if(serverReallyQuit.not) {
-						"Server % failed to quit after 3.0 seconds.".format(server.name).warn;
+						"Server '%' failed to quit after 3.0 seconds.".format(server.name).warn;
 						// don't accumulate quit-watchers if /done doesn't come back
 						serverReallyQuitWatcher.free;
 						statusWatcher.disable;
@@ -125,19 +120,13 @@ ServerStatusWatcher {
 			statusWatcher =
 			OSCFunc({ arg msg;
 				var cmd, one;
-				if(notify){
-					if(notified.not) {
-						this.sendNotifyRequest;
-						"Receiving notification messages from server %\n".postf(server.name);
-					}
-				};
+				if(notify and: { notified.not }) { this.sendNotifyRequest };
 				alive = true;
 				#cmd, one, numUGens, numSynths, numGroups, numSynthDefs,
 						avgCPU, peakCPU, sampleRate, actualSampleRate = msg;
 				{
 					this.updateRunningState(true);
-					this.changed(\counts);
-					nil // no resched
+					server.changed(\counts);
 				}.defer;
 			}, '/status.reply', server.addr).fix;
 		} {
@@ -198,7 +187,8 @@ ServerStatusWatcher {
 				server.disconnectSharedMemory;
 				if(server.isRecording) { server.stopRecording };
 
-				NotificationCenter.notify(server, \didQuit);
+				{ server.changed(\didQuit) }.defer;
+				NotificationCenter.notify(server, \didQuit); // why here "NotificationCenter" and below "changed"?
 
 				if(server.isLocal.not) {
 					notified = false;
