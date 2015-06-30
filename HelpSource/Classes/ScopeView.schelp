@@ -130,17 +130,19 @@ This explains all the options:
 
 code::
 (
-
-
-s.waitForBoot({
+s.waitForBoot(
+{
 
     var func, sdef1, sdef2, syn1, syn2,startButton ;
     f = Buffer.alloc(s,1024,2);
     b = Bus.audio(s,1);
 
-    w=Window("Scope", Rect(150, SCWindow.screenBounds.height-500,790,400)).front;
+    w=Window("Scope", Rect(150, Window.screenBounds.height-500,790,400)).front;
     c = ScopeView(w,Rect(10,10,380,380)); // this is SCScope
     c.bufnum = f.bufnum;
+
+	// IMPORTANT
+	c.server_(s);
 
     v=CompositeView(w,Rect(400,10,380,380)).background_(Color.rand(0.7));
     v.decorator = n = FlowLayout(v.bounds, margin: 0@0, gap: 5@5);
@@ -171,7 +173,6 @@ s.waitForBoot({
         c.xZoom = ([0.25, 10, \exp, 1/8, 1].asSpec.map(m.value)); a.string = " xZoom = %".format(c.xZoom);
         c.yZoom = ([0.25, 10, \exp, 1/8, 1].asSpec.map(g.value)); d.string = " yZoom = %".format(c.yZoom);
         c.x = ([ -1024,1024, \linear, 1/8, 1].asSpec.map(i.value)); h.string = " x = %".format(c.x);
-//      c.y = ([-1,1, \linear, 1/16, 1].asSpec.map(k.value)); j.string = " y = %".format(c.y);
         c.style=t.value
         };
 
@@ -185,7 +186,9 @@ s.waitForBoot({
                     var z;
                     z = In.ar(bus,2);
                     // ScopeOut writes the audio to the buffer
-                    ScopeOut.ar(z, bufnum);
+				//                     ScopeOut.ar(z, bufnum);
+				// IMPORTANT - ScopeOut2, not ScopeOut
+                    ScopeOut2.ar(z, bufnum);
                     Out.ar(0,z);
                 }).play(
                     RootNode(s),
@@ -205,6 +208,10 @@ s.waitForBoot({
         }{syn1.free; syn2.free};
 
     };
+
+	// IMPORTANT
+	c.start;
+
     w.onClose={syn1.free; syn2.free; b.free; f.free};
     CmdPeriod.doOnce({w.close});
 })
