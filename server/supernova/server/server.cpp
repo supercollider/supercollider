@@ -342,7 +342,7 @@ void realtime_engine_functor::init_thread(void)
     set_realtime_priority(0);
 #endif
     if(instance->use_system_clock){
-        double nows = (uint64)(OSCTime(chrono::system_clock::now())) * kOSCtoSecs;
+        double nows = (uint64)(OSCTime(std::chrono::system_clock::now())) * kOSCtoSecs;
         instance->mDLL.Reset(
             sc_factory->world.mSampleRate,
             sc_factory->world.mBufLength,

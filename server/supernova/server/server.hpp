@@ -300,7 +300,7 @@ inline void realtime_engine_functor::sync_clock(void)
 {
 
     if(instance->use_system_clock){
-        double nows = (uint64)(OSCTime(chrono::system_clock::now())) * kOSCtoSecs;
+        double nows = (uint64)(OSCTime(std::chrono::system_clock::now())) * kOSCtoSecs;
         instance->mDLL.Reset(
             sc_factory->world.mSampleRate,
             sc_factory->world.mBufLength,
@@ -331,7 +331,7 @@ inline void realtime_engine_functor::run_tick(void)
     
     if(instance->use_system_clock){
         //time_tag nows = time_tag::from_ptime(boost::date_time::microsec_clock<boost::posix_time::ptime>::universal_time());
-        double nows = (uint64)(OSCTime(chrono::system_clock::now())) * kOSCtoSecs;
+        double nows = (uint64)(OSCTime(std::chrono::system_clock::now())) * kOSCtoSecs;
         instance->mDLL.Update(nows);
         time_tag oscTime = time_tag((uint64)((instance->mDLL.PeriodTime()) * kSecondsToOSCunits + .5));
         time_tag oscInc = time_tag((uint64)((instance->mDLL.Period()) * kSecondsToOSCunits + .5));
