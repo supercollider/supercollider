@@ -162,7 +162,7 @@ protected:
 	boost::asio::io_service mIoService;
 private:
 	boost::asio::io_service::work mWork;
-	boost::asio::basic_waitable_timer<chrono::system_clock> mTimer;
+	boost::asio::basic_waitable_timer<std::chrono::system_clock> mTimer;
 
 	// input io service
 	boost::asio::io_service mInputService;

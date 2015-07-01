@@ -276,7 +276,7 @@ void load_synthdefs(nova_server & server, server_arguments const & args)
     using namespace std;
 
 #ifndef NDEBUG
-    auto start_time = chrono::high_resolution_clock::now();
+    auto start_time = std::chrono::high_resolution_clock::now();
 #endif
 
     if (args.load_synthdefs) {
@@ -298,9 +298,9 @@ void load_synthdefs(nova_server & server, server_arguments const & args)
             load_synthdef_folder(server, directory, args.verbosity > 0);
     }
 #ifndef NDEBUG
-    auto end_time = chrono::high_resolution_clock::now();
+    auto end_time = std::chrono::high_resolution_clock::now();
     cout << "SynthDefs loaded in "
-         << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count()
+         << std::chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count()
          << " ms"
          << endl;
 #endif
