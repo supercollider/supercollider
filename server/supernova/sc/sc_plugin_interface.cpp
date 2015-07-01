@@ -544,7 +544,13 @@ void done_action(int done_action, struct Unit *unit)
 
 int buf_alloc(SndBuf * buf, int channels, int frames, double samplerate)
 {
-    return nova::sc_factory->allocate_buffer(buf, channels, frames, samplerate);
+    try {
+        nova::sc_factory->allocate_buffer(buf, channels, frames, samplerate);
+        return kSCErr_None;
+    } catch(std::exception const & e) {
+        std::cout << e.what() << std::endl;
+        return kSCErr_Failed;
+    }
 }
 
 void send_trigger(Node * unit, int trigger_id, float value)
@@ -893,27 +899,25 @@ void read_channel(SndfileHandle & sf, uint32_t channel_count, const uint32_t * c
 
 } /* namespace */
 
-int sc_plugin_interface::allocate_buffer(SndBuf * buf, uint32_t frames, uint32_t channels, double samplerate)
+void sc_plugin_interface::allocate_buffer(SndBuf * buf, uint32_t frames, uint32_t channels, double samplerate)
 {
     const uint32_t samples = frames * channels;
     if (samples == 0)
-        return kSCErr_Failed; /* invalid buffer size */
+		throw std::runtime_error( "invalid buffer size" );
 
     sample * data = nova::allocate_buffer(samples);
     if (data == NULL)
-        return kSCErr_Failed; /* could not allocate memory */
+		throw std::runtime_error( "could not allocate memory" );
 
-    buf->data = data;
-
-    buf->channels = channels;
-    buf->frames = frames;
-    buf->samples = samples;
-    buf->mask = bufmask(samples); /* for delay lines */
-    buf->mask1 = buf->mask - 1;    /* for oscillators */
+    buf->data       = data;
+    buf->channels   = channels;
+    buf->frames     = frames;
+    buf->samples    = samples;
+    buf->mask       = bufmask(samples); /* for delay lines */
+    buf->mask1      = buf->mask - 1;    /* for oscillators */
     buf->samplerate = samplerate;
-    buf->sampledur = 1.0 / samplerate;
-    buf->isLocal = false;
-    return kSCErr_None;
+    buf->sampledur  = 1.0 / samplerate;
+    buf->isLocal    = false;
 }
 
 SndBuf * sc_plugin_interface::allocate_buffer(uint32_t index, uint32_t frames, uint32_t channels)
