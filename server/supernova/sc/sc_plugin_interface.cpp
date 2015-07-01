@@ -903,11 +903,11 @@ void sc_plugin_interface::allocate_buffer(SndBuf * buf, uint32_t frames, uint32_
 {
     const uint32_t samples = frames * channels;
     if (samples == 0)
-		throw std::runtime_error( "invalid buffer size" );
+        throw std::runtime_error( "invalid buffer size" );
 
     sample * data = nova::allocate_buffer(samples);
     if (data == nullptr)
-		throw std::runtime_error( "could not allocate memory" );
+        throw std::runtime_error( "could not allocate memory" );
 
     buf->data       = data;
     buf->channels   = channels;
