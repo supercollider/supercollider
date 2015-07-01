@@ -36,12 +36,12 @@ set(libsupernova_src
 )
 
 if(APPLE)
-	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
+    set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
 endif()
 
 
 if (FFT_GREEN)
-	list(APPEND libsupernova_src ../../common/fftlib.c)
+    list(APPEND libsupernova_src ../../common/fftlib.c)
 endif()
 
 if(WIN32)
@@ -118,8 +118,8 @@ else()
 endif()
 
 if (FFTW3F_FOUND)
-	target_include_directories(libsupernova PUBLIC ${FFTW3F_INCLUDE_DIR})
-	target_link_libraries(libsupernova ${FFTW3F_LIBRARY})
+    target_include_directories(libsupernova PUBLIC ${FFTW3F_INCLUDE_DIR})
+    target_link_libraries(libsupernova ${FFTW3F_LIBRARY})
 endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -129,7 +129,7 @@ endif()
 
 if(Boost_FOUND)
     target_link_libraries(libsupernova ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY})
-	target_include_directories(libsupernova PUBLIC ${Boost_INCLUDE_DIRS})
+    target_include_directories(libsupernova PUBLIC ${Boost_INCLUDE_DIRS})
 else()
     target_include_directories(libsupernova PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/boost)
     target_link_libraries(libsupernova boost_system boost_filesystem boost_program_options boost_thread)
@@ -146,7 +146,7 @@ target_link_libraries(supernova libsupernova)
 
 
 if(WIN32)
-	install(TARGETS supernova
+    install(TARGETS supernova
         DESTINATION "SuperCollider"
         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 elseif(NOT APPLE)
