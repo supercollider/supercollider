@@ -61,7 +61,7 @@ double timeNow();
 
 int32 timeseed()
 {
-	using namespace chrono;
+	using namespace std::chrono;
 
 	high_resolution_clock::time_point now = high_resolution_clock::now();
 	high_resolution_clock::duration since_epoch = now.time_since_epoch();

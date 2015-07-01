@@ -231,7 +231,7 @@ int prUnix_Errno(struct VMGlobals *g, int numArgsPushed)
 
 #include <time.h>
 
-static void fillSlotsFromTime(PyrSlot * result, struct tm* tm, chrono::system_clock::time_point const & now)
+static void fillSlotsFromTime(PyrSlot * result, struct tm* tm, std::chrono::system_clock::time_point const & now)
 {
 	PyrSlot *slots = slotRawObject(result)->slots;
 
@@ -242,12 +242,12 @@ static void fillSlotsFromTime(PyrSlot * result, struct tm* tm, chrono::system_cl
 	SetInt(slots+4, tm->tm_min);
 	SetInt(slots+5, tm->tm_sec);
 	SetInt(slots+6, tm->tm_wday);
-	SetFloat(slots+7, chrono::duration_cast<chrono::nanoseconds>(now.time_since_epoch()).count() * 1.0e-9);
+	SetFloat(slots+7, std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch()).count() * 1.0e-9);
 }
 
 int prLocalTime(struct VMGlobals *g, int numArgsPushed)
 {
-	using namespace chrono;
+	using namespace std::chrono;
 	system_clock::time_point now = system_clock::now();
 	time_t now_time_t = system_clock::to_time_t(now);
 	struct tm* tm = localtime(&now_time_t);
@@ -259,7 +259,7 @@ int prLocalTime(struct VMGlobals *g, int numArgsPushed)
 
 int prGMTime(struct VMGlobals *g, int numArgsPushed)
 {
-	using namespace chrono;
+	using namespace std::chrono;
 	system_clock::time_point now = system_clock::now();
 	time_t now_time_t = system_clock::to_time_t(now);
 	struct tm* tm = gmtime(&now_time_t);

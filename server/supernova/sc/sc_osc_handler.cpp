@@ -49,7 +49,7 @@ server_node * find_node(int32_t target_id)
 
     server_node * node = instance->find_node(target_id);
 
-    if (node == NULL)
+    if (node == nullptr)
         log_printf("node not found: %d\n", target_id);
 
     return node;
@@ -62,7 +62,7 @@ abstract_group * find_group(int32_t target_id)
 
     abstract_group * node = instance->find_group(target_id);
 
-    if (node == NULL)
+    if (node == nullptr)
         log("node not found or not a group\n");
     return node;
 }
@@ -143,7 +143,7 @@ struct movable_string
     movable_string(movable_string const & rhs)
     {
         data_ = rhs.data_;
-        const_cast<movable_string&>(rhs).data_ = NULL;
+        const_cast<movable_string&>(rhs).data_ = nullptr;
     }
 
     ~movable_string(void)
@@ -178,7 +178,7 @@ struct movable_array
     {
         length_ = rhs.length_;
         data_ = rhs.data_;
-        const_cast<movable_array&>(rhs).data_ = NULL;
+        const_cast<movable_array&>(rhs).data_ = nullptr;
     }
 
     ~movable_array(void)
@@ -1066,12 +1066,12 @@ sc_synth * add_synth(const char * name, int node_id, int action, int target_id)
         return 0;
 
     server_node * target = find_node(target_id);
-    if (target == NULL)
-        return NULL;
+    if (target == nullptr)
+        return nullptr;
 
     node_position_constraint pos = make_pair(target, node_position(action));
     if (!node_position_sanity_check(pos))
-        return NULL;
+        return nullptr;
 
     abstract_synth * synth = instance->add_synth(name, node_id, pos);
     if (!synth)
@@ -1214,7 +1214,7 @@ void handle_s_new(received_message const & msg)
 
     sc_synth * synth = add_synth(def_name, id, action, target);
 
-    if (synth == NULL)
+    if (synth == nullptr)
         return;
 
     try {
@@ -1732,7 +1732,7 @@ void handle_n_order(received_message const & msg)
 
     server_node * target = find_node(target_id);
 
-    if (target == NULL)
+    if (target == nullptr)
         return;
 
     abstract_group * target_parent;
@@ -1749,7 +1749,7 @@ void handle_n_order(received_message const & msg)
         args >> node_id;
 
         server_node * node = find_node(node_id);
-        if (node == NULL)
+        if (node == nullptr)
             continue;
 
         abstract_group * node_parent = node->get_parent();
@@ -3164,7 +3164,7 @@ void handle_u_cmd(received_message const & msg, int size)
 
     server_node * target_synth = find_node(node_id);
 
-    if (target_synth == NULL || target_synth->is_group())
+    if (target_synth == nullptr || target_synth->is_group())
         return;
 
     sc_synth * synth = static_cast<sc_synth*>(target_synth);

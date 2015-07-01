@@ -123,7 +123,7 @@ void buffer_wrapper::write_file(const char * file, const char * header_format, c
     if (!sndfile)
         throw std::runtime_error(std::string("could not open file: ") + std::string(file));
 
-    sndfile.command(SFC_SET_CLIPPING, NULL, SF_TRUE);
+    sndfile.command(SFC_SET_CLIPPING, nullptr, SF_TRUE);
 
     size_t written = sndfile.writef(data, frames_);
     if (written != frames_)

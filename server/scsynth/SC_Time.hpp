@@ -32,23 +32,23 @@ const double kSecondsToOSCunits = 4294967296.; // pow(2,32)
 const double kMicrosToOSCunits = 4294.967296; // pow(2,32)/1e6
 const double kNanosToOSCunits  = 4.294967296; // pow(2,32)/1e9
 
-typedef chrono::system_clock::time_point HostTime;
+typedef std::chrono::system_clock::time_point HostTime;
 
-static inline chrono::system_clock::time_point getTime()
+static inline std::chrono::system_clock::time_point getTime()
 {
-	return chrono::system_clock::now();
+	return std::chrono::system_clock::now();
 }
 
 template <typename TimePoint>
 static inline double secondsSinceEpoch(TimePoint const & tp)
 {
-	return chrono::duration_cast<chrono::nanoseconds>(tp.time_since_epoch()).count() * 1e-9;
+	return std::chrono::duration_cast<std::chrono::nanoseconds>(tp.time_since_epoch()).count() * 1e-9;
 }
 
 template <typename TimePoint>
 static inline int64 OSCTime(TimePoint const & tp)
 {
-	using namespace chrono;
+	using namespace std::chrono;
 	typedef typename TimePoint::duration Duration;
 	Duration sinceEpoch = tp.time_since_epoch();
 	seconds secs = duration_cast<seconds>(sinceEpoch);
@@ -61,7 +61,7 @@ static inline int64 OSCTime(TimePoint const & tp)
 
 static inline int32 timeSeed()
 {
-	using namespace chrono;
+	using namespace std::chrono;
 	static int32 count = 0;
 
 	typedef high_resolution_clock::time_point TimePoint;

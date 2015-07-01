@@ -62,7 +62,7 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const & prototype):
     char * raw_chunk = rt_synthesis ? (char*)rt_pool.malloc(total_alloc_size)
                                     : (char*)malloc(total_alloc_size);
 
-    if (raw_chunk == NULL)
+    if (raw_chunk == nullptr)
         throw std::bad_alloc();
 
     linear_allocator allocator(raw_chunk);

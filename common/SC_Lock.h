@@ -35,8 +35,6 @@ using std::unique_lock;
 using std::cv_status;
 typedef std::condition_variable_any condition_variable_any;
 using std::thread;
-namespace this_thread = std::this_thread;
-namespace chrono = std::chrono;
 
 typedef SC_Lock mutex;
 
