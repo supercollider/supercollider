@@ -53,7 +53,7 @@ class jack_backend:
 
 public:
     jack_backend(void):
-        client(NULL), is_active(false), time_is_synced(false)
+        client(nullptr), is_active(false), time_is_synced(false)
     {}
 
     ~jack_backend(void)
@@ -93,7 +93,7 @@ public:
         jack_set_thread_init_callback (client, jack_thread_init_callback, this);
         jack_set_process_callback (client, jack_process_callback, this);
         jack_set_xrun_callback(client, jack_xrun_callback, this);
-        jack_on_info_shutdown(client, (JackInfoShutdownCallback)jack_on_info_shutdown_callback, NULL);
+        jack_on_info_shutdown(client, (JackInfoShutdownCallback)jack_on_info_shutdown_callback, nullptr);
 
         /* register ports */
         input_ports.clear();
@@ -129,13 +129,13 @@ public:
     {
         if (client) {
             jack_client_close(client);
-            client = NULL;
+            client = nullptr;
         }
     }
 
     bool audio_is_opened(void)
     {
-        return client != NULL;
+        return client != nullptr;
     }
 
     bool audio_is_active(void)
@@ -178,7 +178,7 @@ public:
 
     int connect_all_inputs(const char * client_name)
     {
-        const char **ports = jack_get_ports (client, client_name, NULL, JackPortIsOutput);
+        const char **ports = jack_get_ports (client, client_name, nullptr, JackPortIsOutput);
 
         if (!ports)
             return -1;
@@ -200,7 +200,7 @@ public:
 
     int connect_all_outputs(const char * client_name)
     {
-        const char **ports = jack_get_ports (client, client_name, NULL, JackPortIsInput);
+        const char **ports = jack_get_ports (client, client_name, nullptr, JackPortIsInput);
 
         if (!ports)
             return -1;

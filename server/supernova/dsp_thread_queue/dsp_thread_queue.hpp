@@ -194,7 +194,7 @@ private:
         std::size_t i = 0;
         for (;;) {
             if (i == successors.size())
-                return NULL;
+                return nullptr;
 
             ptr = successors[i++]->dec_activation_count(interpreter);
             if (ptr)
@@ -220,7 +220,7 @@ private:
         if (current == 1)
             return this;
         else
-            return NULL;
+            return nullptr;
     }
 
     std::atomic<activation_limit_t> activation_count; /**< current activation count */
@@ -355,7 +355,7 @@ public:
      */
     bool init_tick(void)
     {
-        if (unlikely((queue.get() == NULL) or                /* no queue */
+        if (unlikely((queue.get() == nullptr) or                /* no queue */
                      (queue->get_total_node_count() == 0)    /* no nodes */
                     ))
             return false;
@@ -584,7 +584,7 @@ private:
         do {
             item = item->run(*this, index);
             consumed += 1;
-        } while (item != NULL);
+        } while (item != nullptr);
 
         node_count_t remaining = node_count.fetch_sub(consumed, std::memory_order_release);
 

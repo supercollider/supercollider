@@ -140,13 +140,13 @@ public:
 
     void check_buffer_unused(int index)
     {
-        if (buffers[index].data != NULL)
+        if (buffers[index].data != nullptr)
             throw std::runtime_error("buffer already in use");
     }
 
     void check_buffer_in_use(int index)
     {
-        if (buffers[index].data == NULL)
+        if (buffers[index].data == nullptr)
             throw std::runtime_error("buffer is not in use");
     }
 

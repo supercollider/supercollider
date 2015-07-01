@@ -176,7 +176,7 @@ public:
     {
         node_set_type::iterator it = node_set.find(node_id, hash_node(), equal_node());
         if (it == node_set.end())
-            return NULL;
+            return nullptr;
         return &(*it);
     }
 
@@ -199,7 +199,7 @@ public:
     {
         server_node * node = find_node(node_id);
         if (!node || node->is_synth())
-            return NULL;
+            return nullptr;
         else
             return static_cast<abstract_group*>(node);
     }
@@ -210,7 +210,7 @@ public:
         if (node && node->is_synth())
             return static_cast<abstract_synth*>(node);
         else
-            return NULL;
+            return nullptr;
     }
 
     void group_free_all(abstract_group * group)

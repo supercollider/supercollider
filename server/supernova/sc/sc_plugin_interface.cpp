@@ -60,8 +60,8 @@ spin_lock rt_pool_guard;
 
 inline Node * as_Node(server_node * node)
 {
-    if (node == NULL)
-        return NULL;
+    if (node == nullptr)
+        return nullptr;
 
     // hack!!! we only assume that the 32bit integer mID member can be accessed via Node
     if (node->is_synth()) {
@@ -368,7 +368,7 @@ void * rt_alloc(World * dummy, size_t size)
     if (size)
         return nova::rt_pool.malloc(size);
     else
-        return NULL;
+        return nullptr;
 }
 
 void * rt_realloc(World * dummy, void * ptr, size_t size)
@@ -647,7 +647,7 @@ void sc_plugin_interface::initialize(server_arguments const & args, float * cont
 
     /* sndfile functions */
 #ifdef NO_LIBSNDFILE
-    sc_interface.fSndFileFormatInfoFromStrings = NULL;
+    sc_interface.fSndFileFormatInfoFromStrings = nullptr;
 #else
     sc_interface.fSndFileFormatInfoFromStrings = &sndfileFormatInfoFromStrings;
 #endif
@@ -906,7 +906,7 @@ void sc_plugin_interface::allocate_buffer(SndBuf * buf, uint32_t frames, uint32_
 		throw std::runtime_error( "invalid buffer size" );
 
     sample * data = nova::allocate_buffer(samples);
-    if (data == NULL)
+    if (data == nullptr)
 		throw std::runtime_error( "could not allocate memory" );
 
     buf->data       = data;
@@ -1076,10 +1076,10 @@ void sc_plugin_interface::buffer_close(uint32_t index)
 {
     SndBuf * buf = World_GetNRTBuf(&world, index);
 
-    if (buf->sndfile == NULL)
+    if (buf->sndfile == nullptr)
         return;
     sf_close(buf->sndfile);
-    buf->sndfile = NULL;
+    buf->sndfile = nullptr;
 }
 
 

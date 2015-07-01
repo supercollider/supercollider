@@ -101,7 +101,7 @@ public:
         if (!output_file)
             throw std::runtime_error("cannot open output file");
 
-        output_file.command(SFC_SET_CLIPPING, NULL, SF_TRUE);
+        output_file.command(SFC_SET_CLIPPING, nullptr, SF_TRUE);
 
         super::output_samples.resize(output_channel_count);
 

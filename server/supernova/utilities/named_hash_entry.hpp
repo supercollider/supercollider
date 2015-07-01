@@ -123,9 +123,8 @@ private:
         typedef boost::unordered_set<symbol_data> table_type;
         typedef std::pair<table_type::const_iterator, bool> lookup_result_type;
 
-public:
-        symbol_table(void):
-            table(16384)
+    public:
+        symbol_table(void)
         {}
 
         symbol_data const & find(const char * str, size_t strlen)
@@ -153,7 +152,7 @@ public:
             return std::make_pair(it, it != table.end());
         }
 
-        table_type table;
+        table_type table = table_type(16384);
         nova::nonrecursive_rw_mutex mutex;
     };
 
@@ -169,8 +168,7 @@ public:
     }
 
 public:
-    symbol ():
-        data(NULL, 0)
+    symbol ()
     {}
 
     explicit symbol (const char * str):
@@ -207,7 +205,7 @@ public:
         return lhs.data.str < rhs.data.str;
     }
 
-    symbol_data data;
+    symbol_data data = symbol_data( nullptr, 0 );
 };
 
 class named_hash_entry:
