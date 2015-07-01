@@ -25,6 +25,9 @@
 
 #ifndef __FP__
 const double pi     = std::acos(-1.);
+#else
+const double sc_pi  = std::acos(-1.);
+#define pi sc_pi // hack to avoid osx warning about deprecated pi
 #endif
 const double pi2    = pi * .5;
 const double pi32   = pi * 1.5;
