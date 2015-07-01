@@ -172,7 +172,7 @@ void nova_server::finalize_node(server_node & node)
 
 void nova_server::free_node(server_node * node)
 {
-    if (node->get_parent() == NULL)
+    if (node->get_parent() == nullptr)
         return; // has already been freed by a different event
 
     node_graph::remove_node(node, [&] (server_node & node) {

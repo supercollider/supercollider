@@ -49,7 +49,7 @@ class portaudio_backend:
 
 public:
     portaudio_backend(void):
-        stream(NULL), blocksize_(0)
+        stream(nullptr), blocksize_(0)
     {
         int err = Pa_Initialize();
         report_error(err, true);
@@ -168,7 +168,7 @@ public:
             in_parameters.channelCount = inchans;
             in_parameters.sampleFormat = paFloat32 | paNonInterleaved;
             in_parameters.suggestedLatency = suggestedLatencyIn;
-            in_parameters.hostApiSpecificStreamInfo = NULL;
+            in_parameters.hostApiSpecificStreamInfo = nullptr;
         }
 
         if (outchans) {
@@ -180,11 +180,11 @@ public:
             out_parameters.channelCount = outchans;
             out_parameters.sampleFormat = paFloat32 | paNonInterleaved;
             out_parameters.suggestedLatency = suggestedLatencyOut;
-            out_parameters.hostApiSpecificStreamInfo = NULL;
+            out_parameters.hostApiSpecificStreamInfo = nullptr;
         }
 
-        PaStreamParameters * in_stream_parameters  = inchans ? &in_parameters : NULL;
-        PaStreamParameters * out_stream_parameters = outchans ? &out_parameters : NULL;
+        PaStreamParameters * in_stream_parameters  = inchans ? &in_parameters : nullptr;
+        PaStreamParameters * out_stream_parameters = outchans ? &out_parameters : nullptr;
 
         PaError supported = Pa_IsFormatSupported(in_stream_parameters, out_stream_parameters, samplerate);
         report_error(supported);
@@ -213,14 +213,14 @@ public:
 
     void close_stream(void)
     {
-        if (stream == NULL)
+        if (stream == nullptr)
             return;
 
         deactivate_audio();
 
         int err = Pa_CloseStream(stream);
         report_error(err);
-        stream = NULL;
+        stream = nullptr;
     }
 
     void activate_audio()

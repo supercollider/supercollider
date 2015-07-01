@@ -342,7 +342,7 @@ void sc_synthdef::prepare(void)
         current_ugen_spec.buffer_mapping.resize(current_ugen_spec.output_specs.size());
 
         sc_ugen_def * ugen = sc_factory->find_ugen(current_ugen_spec.name);
-        if (unlikely(ugen == NULL)) {
+        if (unlikely(ugen == nullptr)) {
             /* we cannot prepare the synthdef, if the ugens are not installed */
             boost::format frmt("Cannot load synth %1%: Unit generator %2% not installed");
             frmt % name_.c_str() % current_ugen_spec.name.c_str();

@@ -69,7 +69,7 @@ public:
     pointer allocate(size_type size, const void* hint = 0)
     {
         pointer ret = static_cast<pointer>(rt_pool.malloc(size * sizeof(T)));
-        if (ret == NULL)
+        if (ret == nullptr)
             throw std::bad_alloc();
 
         return ret;
