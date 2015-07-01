@@ -628,7 +628,7 @@ Event : Environment {
 							bndl = bndl.asOSCArgBundle;
 
 						};
-						~schedBundleArray.value(~lag, ~timingOffset, server, bndl);
+						~schedBundleArray.value(~lag, ~timingOffset, server, bndl, ~latency);
 
 						~server = server;
 						~id = ids;
@@ -651,7 +651,7 @@ Event : Environment {
 						};
 
 						bndl = ([15 /* \n_set */, ~id] ++  bndl).flop.asOSCArgBundle;
-						~schedBundleArray.value(~lag, ~timingOffset, server, bndl);
+						~schedBundleArray.value(~lag, ~timingOffset, server, bndl, ~latency);
 					},
 
 					off: #{|server|
@@ -659,17 +659,19 @@ Event : Environment {
 						if (~hasGate) {
 							gate = min(0.0, ~gate ? 0.0); // accept release times
 							~schedBundleArray.value(~lag, ~timingOffset, server,
-								[15 /* \n_set */, ~id.asControlInput, \gate, gate].flop)
+								[15 /* \n_set */, ~id.asControlInput, \gate, gate].flop,
+								~latency
+							)
 						} {
 							~schedBundleArray.value(~lag, ~timingOffset, server,
-								[\n_free, ~id.asControlInput].flop)
+								[\n_free, ~id.asControlInput].flop, ~latency)
 						};
 						~isPlaying = false;
 					},
 
 					kill: #{|server|
 						~schedBundleArray.value(~lag, ~timingOffset, server,
-							[\n_free, ~id.asControlInput].flop)
+							[\n_free, ~id.asControlInput].flop, ~latency)
 					},
 
 					group: #{|server|
@@ -677,7 +679,7 @@ Event : Environment {
 						if (~id.isNil) { ~id = server.nextNodeID };
 						bundle = [21 /* \g_new */, ~id.asArray, Node.actionNumberFor(~addAction),
 							~group.asControlInput].flop;
-						~schedBundleArray.value(~lag, ~timingOffset, server, bundle);
+						~schedBundleArray.value(~lag, ~timingOffset, server, bundle, ~latency);
 					},
 
 					parGroup: #{|server|
@@ -685,7 +687,7 @@ Event : Environment {
 						if (~id.isNil) { ~id = server.nextNodeID };
 						bundle = [63 /* \p_new */, ~id.asArray, Node.actionNumberFor(~addAction),
 							~group.asControlInput].flop;
-						~schedBundleArray.value(~lag, ~timingOffset, server, bundle);
+						~schedBundleArray.value(~lag, ~timingOffset, server, bundle, ~latency);
 					},
 
 
