@@ -539,7 +539,7 @@ Despite the fact that the method is called 'unixCmd', strong::it does work in Wi
 ::
 
 method::unixCmd
-Execute a unix command asynchronously using the standard shell (sh).
+Execute a unix command strong::asynchronously:: using the standard shell (sh).
 argument:: action
 A link::Classes/Function:: that is called when the process has exited. It is passed two arguments: the exit code and pid of the exited process.
 argument:: postOutput
@@ -554,19 +554,19 @@ code::
 ::
 
 method::unixCmdGetStdOut
-Similar to link::#-unixCmd:: except that the stdout of the process is returned (synchronously) rather than sent to the post window.
+Similar to link::#-unixCmd:: except that the stdout of the process is returned (strong::synchronously::) rather than sent to the post window.
 code::
 ~listing = "ls Help".unixCmdGetStdOut; // Grab
 ~listing.reverse.as(Array).stutter.join.postln; // Mangle
 ::
 
 method::systemCmd
-Executes a unix command synchronously using the standard shell (sh).
+Executes a unix command strong::synchronously:: using the standard shell (sh).
 
 returns:: Error code of the unix command
 
 method::runInTerminal
-Execute the String in a new terminal window (asynchronously).
+Execute the String in a new terminal window (strong::asynchronously::).
 argument::shell
 The shell used to execute the string.
 discussion::
