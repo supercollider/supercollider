@@ -242,19 +242,19 @@ SequenceableCollection : Collection {
 		^((val - a) / div) + i - 1
 	}
 
-	selectIndex { | function |
+	selectIndices { | function |
 		^this.selectIndexAs(function, this.species);
 	}
-	selectIndexAs { | function, class |
+	selectIndicesAs { | function, class |
 		var res = class.new(this.size);
 		this.do {|elem, i| if (function.value(elem, i)) { res.add(i) } }
 		^res;
 	}
 
-	rejectIndex { | function |
+	rejectIndices { | function |
 		^this.rejectIndexAs(function, this.species);
 	}
-	rejectIndexAs { | function, class |
+	rejectIndicesAs { | function, class |
 		var res = class.new(this.size);
 		this.do {|elem, i| if (function.value(elem, i).not) { res.add(i) } }
 		^res;
