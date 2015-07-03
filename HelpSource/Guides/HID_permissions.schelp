@@ -25,4 +25,6 @@ sudo chgrp plugdev /dev/hidraw*
 
 Check the permissions with:
 
-code:: ls /dev/hidraw* -lah ::
+code::
+"ls /dev/hidraw* -lah".unixCmd;
+::

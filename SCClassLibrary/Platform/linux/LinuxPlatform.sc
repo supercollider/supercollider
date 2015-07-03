@@ -27,7 +27,6 @@ LinuxPlatform : UnixPlatform
 		// load user startup file
 		this.loadStartupFiles;
 	}
-	defaultHIDScheme { ^\linux_hid }
 
 	initPlatform {
 		super.initPlatform;

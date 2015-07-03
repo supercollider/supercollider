@@ -31,7 +31,7 @@ NOTE::3.7 is an alpha version, which fixes many issues, but may also introduce n
 
 	SUBSECTION::External Interfacing
 
-	There is an entirely new HID implementation: see link::Guides/Working_with_HID::.
+There is an entirely new HID implementation: see link::Guides/Working_with_HID:: that works cross platform (Linux and OSX thus far). This deprecates the GeneralHID interface. Also the link::Classes/LID:: interface has been updated to match the API of the new HID implementation.
 
 
 	SUBSECTION::List of new methods and classes
