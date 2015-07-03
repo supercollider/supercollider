@@ -87,7 +87,7 @@ char *sc_StandardizePath(const char *path, char *newpath2)
 		char home[PATH_MAX];
 		sc_GetUserHomeDirectory(home, PATH_MAX);
 
-		if (home != 0) {
+		if (home[0] != 0) {
 			if ((pathLen - 1 + strlen(home)) >= MAXPATHLEN) {
 				return 0;
 			}
