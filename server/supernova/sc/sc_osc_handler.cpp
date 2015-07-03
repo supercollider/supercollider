@@ -2575,6 +2575,10 @@ void handle_b_set(received_message const & msg)
     osc::int32 buffer_index = it->AsInt32(); ++it;
 
     buffer_wrapper::sample_t * data = sc_factory->get_buffer(buffer_index);
+    if( !data ) {
+        log_printf("/b_set called on unallocated buffer");
+        return;
+    }
 
     while (it != end) {
         osc::int32 index = it->AsInt32(); ++it;
@@ -2592,6 +2596,10 @@ void handle_b_setn(received_message const & msg)
     osc::int32 buffer_index = it->AsInt32(); ++it;
 
     buffer_wrapper::sample_t * data = sc_factory->get_buffer(buffer_index);
+    if( !data ) {
+        log_printf("/b_setn called on unallocated buffer");
+        return;
+    }
 
     while (it != end) {
         osc::int32 index = it->AsInt32(); ++it;
@@ -2614,6 +2622,11 @@ void handle_b_fill(received_message const & msg)
     osc::int32 buffer_index = it->AsInt32(); ++it;
 
     buffer_wrapper::sample_t * data = sc_factory->get_buffer(buffer_index);
+    if( !data ) {
+        log_printf("/b_fill called on unallocated buffer");
+        return;
+    }
+
 
     while (it != end) {
         osc::int32 index = it->AsInt32(); ++it;
@@ -2702,6 +2715,11 @@ void handle_b_get(received_message const & msg, endpoint_ptr endpoint)
 
     const SndBuf * buf = sc_factory->get_buffer_struct(buffer_index);
     const sample * data = buf->data;
+    if( !data ) {
+        log_printf("/b_get called on unallocated buffer");
+        return;
+    }
+
     const int max_sample = buf->frames * buf->channels;
 
     osc::OutboundPacketStream p(return_message.c_array(), alloc_size);
@@ -2754,6 +2772,10 @@ void handle_b_getn(received_message const & msg, endpoint_ptr endpoint)
 
     const SndBuf * buf = sc_factory->get_buffer_struct(buffer_index);
     const sample * data = buf->data;
+    if( !data ) {
+        log_printf("/b_getn called on unallocated buffer");
+        return;
+    }
     const int max_sample = buf->frames * buf->channels;
 
     while (!args.Eos())
