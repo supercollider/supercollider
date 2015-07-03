@@ -246,17 +246,17 @@ void QObjectProxy::invokeScMethod
 
 void QObjectProxy::customEvent( QEvent *event )
 {
-  switch ( event->type() ) {
-    case (QEvent::Type) QtCollider::Event_ScMethodCall:
+  switch ( (int)event->type() ) {
+    case QtCollider::Event_ScMethodCall:
       scMethodCallEvent( static_cast<ScMethodCallEvent*>(event) );
       return;
-    case (QEvent::Type) QtCollider::Event_Proxy_SetProperty:
+    case QtCollider::Event_Proxy_SetProperty:
       setPropertyEvent( static_cast<SetPropertyEvent*>(event) );
       return;
-    case (QEvent::Type) QtCollider::Event_Proxy_Destroy:
+    case QtCollider::Event_Proxy_Destroy:
       destroyEvent( static_cast<DestroyEvent*>(event) );
       return;
-    case (QEvent::Type) QtCollider::Event_Proxy_Release:
+    case QtCollider::Event_Proxy_Release:
       invokeScMethod(SC_SYM(prRelease));
       return;
     default: ;
