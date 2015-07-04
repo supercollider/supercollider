@@ -228,18 +228,11 @@ static void syncOSCOffsetWithTimeOfDay();
 void resyncThread();
 
 // Use the highest resolution clock available for monotonic clock time
-<<<<<<< HEAD
 typedef
 #ifndef _MSC_VER
 typename
 #endif
-std::conditional<chrono::high_resolution_clock::is_steady, chrono::high_resolution_clock, chrono::steady_clock>::type monotonic_clock;
-=======
-typedef typename std::conditional<std::chrono::high_resolution_clock::is_steady,
-								  std::chrono::high_resolution_clock,
-								  std::chrono::steady_clock>::type monotonic_clock;
->>>>>>> master
-
+std::conditional<chrono::high_resolution_clock::is_steady,chrono::high_resolution_clock, chrono::steady_clock>::type monotonic_clock;
 static std::chrono::high_resolution_clock::time_point hrTimeOfInitialization;
 
 template <typename DurationType>
