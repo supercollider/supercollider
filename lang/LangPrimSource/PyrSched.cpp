@@ -860,13 +860,8 @@ void* TempoClock::Run()
 			//printf("event ready at %g . elapsed beats %g\n", mQueue->slots->uf, elapsedBeats);
 			double wakeTime = BeatsToSecs(slotRawFloat(mQueue->slots));
 
-<<<<<<< HEAD
             schedSecs = chrono::duration_cast<chrono::high_resolution_clock::duration>(chrono::duration<double>(wakeTime));
             schedPoint = hrTimeOfInitialization + schedSecs;
-=======
-			schedSecs = duration_cast<high_resolution_clock::duration>(duration<double>(wakeTime));
-			schedPoint = hrTimeOfInitialization + schedSecs;
->>>>>>> master
 
 			//printf("wait until an event is ready. wake %g  now %g\n", wakeTime, elapsedTime());
 			mCondition.wait_until(lock, schedPoint);
