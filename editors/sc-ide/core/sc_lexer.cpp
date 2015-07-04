@@ -82,7 +82,7 @@ void ScLexer::initKeywordsRules()
              << "this"
              << "var";
 
-    QString keywordPattern = QString("^\\b(%1)\\b").arg(keywords.join("|"));
+    QString keywordPattern = QStringLiteral("^\\b(%1)\\b").arg(keywords.join("|"));
     mLexicalRules << LexicalRule(Token::Keyword, keywordPattern);
 }
 
@@ -102,7 +102,7 @@ void ScLexer::initBuiltinsRules()
              << "topEnvironment"
                 ;
 
-    QString builtinsPattern = QString("^\\b(%1)\\b").arg(builtins.join("|"));
+    QString builtinsPattern = QStringLiteral("^\\b(%1)\\b").arg(builtins.join("|"));
     mLexicalRules << LexicalRule(Token::Builtin, builtinsPattern);
 }
 

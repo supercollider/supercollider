@@ -116,15 +116,15 @@ void QWidgetProxy::setLayout ( QObjectProxy *layoutProxy ) {
   QLayout *exLayout = w->layout();
   if( exLayout != l ) {
     if( exLayout != 0 ) {
-      qcDebugMsg( 2, QString("Deleting old layout.") );
+      qcDebugMsg( 2, QStringLiteral("Deleting old layout.") );
       delete exLayout;
     }
-    qcDebugMsg( 2, QString("Setting layout.") );
+    qcDebugMsg( 2, QStringLiteral("Setting layout.") );
     w->setLayout( l );
     l->activate();
   }
   else {
-    qcDebugMsg( 2, QString("Layout same as existing. Will do nothing.") );
+    qcDebugMsg( 2, QStringLiteral("Layout same as existing. Will do nothing.") );
   }
 }
 

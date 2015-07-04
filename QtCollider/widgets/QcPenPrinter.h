@@ -59,7 +59,7 @@ private Q_SLOTS:
   void show() {
     if( !dialog ) {
       dialog = new QPrintDialog(&printer);
-      dialog->setWindowTitle( QString("Print Document") );
+      dialog->setWindowTitle( QStringLiteral("Print Document") );
       dialog->setOptions (
         QAbstractPrintDialog::PrintToFile |
         QAbstractPrintDialog::PrintPageRange |

@@ -168,13 +168,13 @@ void HelpBrowser::closeDocument()
 
 void HelpBrowser::gotoHelpFor( const QString & symbol )
 {
-    QString code = QString("HelpBrowser.openHelpFor(\"%1\")").arg(symbol);
+    QString code = QStringLiteral("HelpBrowser.openHelpFor(\"%1\")").arg(symbol);
     sendRequest(code);
 }
 
 void HelpBrowser::gotoHelpForMethod( const QString & className, const QString & methodName )
 {
-    QString code = QString("HelpBrowser.openHelpForMethod( %1.findMethod(\\%2) )").arg(className, methodName);
+    QString code = QStringLiteral("HelpBrowser.openHelpForMethod( %1.findMethod(\\%2) )").arg(className, methodName);
     sendRequest(code);
 }
 
@@ -197,7 +197,7 @@ void HelpBrowser::onLinkClicked( const QUrl & url )
         }
     }
 
-    sendRequest( QString("HelpBrowser.goTo(\"%1\")").arg( urlString ) );
+    sendRequest( QStringLiteral("HelpBrowser.goTo(\"%1\")").arg( urlString ) );
 }
 
 void HelpBrowser::onReload()

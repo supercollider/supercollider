@@ -344,12 +344,12 @@ void QcScopeShm::connectSharedMemory( int port )
       qcDebugMsg(1,"Shared memory connected");
   } catch (std::exception & e) {
       _shm->client = 0;
-      qcErrorMsg(QString("Cannot connect to shared memory: %1").arg(e.what()) );
+      qcErrorMsg(QStringLiteral("Cannot connect to shared memory: %1").arg(e.what()) );
   }
 }
 
 void QcScopeShm::initScopeReader( ScopeShm *shm, int index )
 {
   shm->reader = shm->client->get_scope_buffer_reader( index );
-  qcDebugMsg(1,QString("Initialized scope buffer reader for index %1.").arg(index));
+  qcDebugMsg(1,QStringLiteral("Initialized scope buffer reader for index %1.").arg(index));
 }

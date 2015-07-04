@@ -47,7 +47,7 @@ namespace QtCollider {
   bool beginPainting( QPainter *p, QObject* obj )
   {
     if( painter ) {
-      qcErrorMsg( QString("Painting already in progress!") );
+      qcErrorMsg( QStringLiteral("Painting already in progress!") );
       return false;
     }
 
@@ -109,7 +109,7 @@ inline static qreal radToDeg( qreal rad )
 
 inline static bool isPenValid() {
     if( !painter ) {
-      qcErrorMsg( QString("Usage of QPen is not allowed at this point!") );
+      qcErrorMsg( QStringLiteral("Usage of QPen is not allowed at this point!") );
       return false;
     }
     return true;

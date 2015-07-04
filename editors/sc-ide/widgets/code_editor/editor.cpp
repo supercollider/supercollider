@@ -529,8 +529,8 @@ void GenericCodeEditor::keyPressEvent(QKeyEvent * e)
                     // in overwrite mode, backspace should insert a space
                     cursor.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor);
                     QString selectedText = cursor.selectedText();
-                    if (selectedText == QString(" ") ||
-                        selectedText == QString("\t") ) {
+                    if (selectedText == QStringLiteral(" ") ||
+                        selectedText == QStringLiteral("\t") ) {
                         cursor.clearSelection();
                     } else {
                         cursor.insertText(QString(QChar(' ')));
@@ -628,12 +628,12 @@ void GenericCodeEditor::doKeyAction( QKeyEvent * ke )
     
     if(ke->type() == QEvent::KeyPress)
     {
-        type = QString("keyDown");
+        type = QStringLiteral("keyDown");
     } else {
-        type = QString("keyUp");
+        type = QStringLiteral("keyUp");
     }
 
-    Main::evaluateCodeIfCompiled(QString("Document.findByQUuid(\'%1\').%2(%3, %4, %5, %6)").arg(mDoc->id().constData()).arg(type).arg(mods).arg(unicode).arg(keycode).arg(key), true);
+    Main::evaluateCodeIfCompiled(QStringLiteral("Document.findByQUuid(\'%1\').%2(%3, %4, %5, %6)").arg(mDoc->id().constData()).arg(type).arg(mods).arg(unicode).arg(keycode).arg(key), true);
     
 }
     
@@ -652,7 +652,7 @@ void GenericCodeEditor::mousePressEvent(QMouseEvent * e)
                 button = -1;
         }
     
-        Main::evaluateCodeIfCompiled(QString("Document.findByQUuid(\'%1\').mouseDown(%2, %3, %4, %5, 1)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
+        Main::evaluateCodeIfCompiled(QStringLiteral("Document.findByQUuid(\'%1\').mouseDown(%2, %3, %4, %5, 1)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
     }
     
     QPlainTextEdit::mousePressEvent(e);
@@ -673,7 +673,7 @@ void GenericCodeEditor::mouseDoubleClickEvent(QMouseEvent * e)
                 button = -1;
         }
         
-        Main::evaluateCodeIfCompiled(QString("Document.findByQUuid(\'%1\').mouseDown(%2, %3, %4, %5, 2)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
+        Main::evaluateCodeIfCompiled(QStringLiteral("Document.findByQUuid(\'%1\').mouseDown(%2, %3, %4, %5, 2)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
     }
     
     QPlainTextEdit::mouseDoubleClickEvent(e);
@@ -694,7 +694,7 @@ void GenericCodeEditor::mouseReleaseEvent(QMouseEvent * e)
                 button = -1;
         }
         
-        Main::evaluateCodeIfCompiled(QString("Document.findByQUuid(\'%1\').mouseUp(%2, %3, %4, %5)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
+        Main::evaluateCodeIfCompiled(QStringLiteral("Document.findByQUuid(\'%1\').mouseUp(%2, %3, %4, %5)").arg(mDoc->id().constData()).arg(e->x()).arg(e->y()).arg(e->modifiers()).arg(button), true);
         
     }
     QPlainTextEdit::mouseReleaseEvent(e);

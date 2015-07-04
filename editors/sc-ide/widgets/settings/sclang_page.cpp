@@ -250,7 +250,7 @@ QString SclangPage::languageConfigFile()
     {
         selectedLanguageConfigFile =
                 standardDirectory(ScConfigUserDir)
-                + "/" + QString("sclang_conf.yaml");
+                + "/" + QStringLiteral("sclang_conf.yaml");
     }
     return selectedLanguageConfigFile;
 }

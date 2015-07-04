@@ -126,7 +126,7 @@ bool QcApplication::event( QEvent *event )
     case QEvent::FileOpen: {
         // open the file dragged onto the application icon on Mac
         QFileOpenEvent *fe = static_cast<QFileOpenEvent*>(event);
-        interpret( QString("Document.open(\"%1\")").arg(fe->file()), false );
+        interpret( QStringLiteral("Document.open(\"%1\")").arg(fe->file()), false );
         event->accept();
         return true;
     }

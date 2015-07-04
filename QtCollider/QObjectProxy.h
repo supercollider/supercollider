@@ -35,7 +35,7 @@
 #include <PyrSymbol.h>
 
 #define qcProxyDebugMsg( LEVEL, MSG ) \
-  qcDebugMsg( LEVEL, QString("[%1]: ").arg(_scClassName) + QString(MSG) )
+  qcDebugMsg( LEVEL, QStringLiteral("[%1]: ").arg(_scClassName) + QString(MSG) )
 
 class QObjectProxy;
 class QcSignalSpy;

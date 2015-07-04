@@ -48,7 +48,7 @@ inline QString wordInStringAt ( int position, const QString & source )
 inline void extendSelectionForEnvVar(QPlainTextEdit * textEdit, QTextCursor selection)
 {
     if (selection.hasSelection()) {
-        if (selection.selectedText() == QString("~")) {
+        if (selection.selectedText() == QStringLiteral("~")) {
             QTextCursor wordAfter(selection);
             wordAfter.movePosition(QTextCursor::NextCharacter);
             wordAfter.select(QTextCursor::WordUnderCursor);
