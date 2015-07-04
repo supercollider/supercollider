@@ -42,7 +42,7 @@ class freelist:
 
 public:
     freelist(void):
-        pool_(tagged_ptr(NULL))
+        pool_(tagged_ptr(nullptr))
     {}
 
     void * pop (void)

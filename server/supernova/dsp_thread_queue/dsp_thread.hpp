@@ -65,11 +65,11 @@ class dsp_thread:
 public:
     dsp_thread(dsp_queue_interpreter & interpreter, uint16_t index, size_t stack_size,
                thread_init_functor const & thread_init = thread_init_functor()):
-        thread_init_functor(thread_init), interpreter(interpreter), stop(false), index(index), stack_ (NULL)
+        thread_init_functor(thread_init), interpreter(interpreter), stop(false), index(index), stack_ (nullptr)
     {
         if (stack_size) {
                 stack_ = malloc_aligned<char>(stack_size);
-            if (stack_ == NULL)
+            if (stack_ == nullptr)
                 throw std::bad_alloc();
             // touch stack to avoid page faults
             for (size_t i = 0; i != stack_size; ++i)
@@ -106,7 +106,7 @@ public:
     {
         dsp_thread * self = static_cast<dsp_thread*>(arg);
         self->run();
-        return NULL;
+        return nullptr;
     }
 
     void terminate(void)

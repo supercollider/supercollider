@@ -3709,6 +3709,7 @@ PluginLoad(Osc)
 	DefineSimpleUnit(DetectIndex);
 	DefineSimpleUnit(Shaper);
 	DefineSimpleUnit(FSinOsc);
+	DefineSimpleUnit(PSinGrain);
 	DefineSimpleUnit(SinOsc);
 	DefineSimpleUnit(SinOscFB);
 	DefineSimpleUnit(VOsc);

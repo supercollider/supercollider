@@ -77,7 +77,7 @@ private:
     static inline bool free_one_disposed_object(void)
     {
         void * chunk = disposed_objects.pop();
-        if (chunk == NULL)
+        if (chunk == nullptr)
             return true;
         object_pool.free(chunk);
         return false;
@@ -108,7 +108,7 @@ private:
                 if (ret)
                     return ret;
                 if (free_one_disposed_object())
-                    return NULL; /* no object in freelist, we  */
+                    return nullptr; /* no object in freelist, we  */
             }
         }
     };

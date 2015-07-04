@@ -393,7 +393,7 @@ void SC_TerminalClient::onQuit( int exitCode )
 	stop();
 }
 
-extern void ElapsedTimeToChrono(double elapsed, chrono::system_clock::time_point & out_time_point);
+extern void ElapsedTimeToChrono(double elapsed, std::chrono::system_clock::time_point & out_time_point);
 
 void SC_TerminalClient::tick( const boost::system::error_code& error )
 {
@@ -406,7 +406,7 @@ void SC_TerminalClient::tick( const boost::system::error_code& error )
 
 	flush();
 
-	chrono::system_clock::time_point nextAbsTime;
+	std::chrono::system_clock::time_point nextAbsTime;
 	ElapsedTimeToChrono( secs, nextAbsTime );
 
 	if (haveNext) {

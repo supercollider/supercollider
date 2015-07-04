@@ -81,7 +81,7 @@ static void syncOSCOffsetWithTimeOfDay()
 	// Then if this machine is synced via NTP, we are synced with the world.
 	// more accurate way to do this??
 
-    using namespace chrono;
+    using namespace std::chrono;
 	struct timeval tv;
 
     nanoseconds systemTimeBefore, systemTimeAfter;

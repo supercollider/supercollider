@@ -60,7 +60,6 @@ set ( ide_moc_hdr
     core/sc_server.hpp
     core/doc_manager.hpp
     core/settings/manager.hpp
-    core/settings/theme.hpp
     core/session_manager.hpp
     primitives/sc_ipc_channel.hpp
     widgets/cmd_line.hpp

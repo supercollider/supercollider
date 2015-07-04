@@ -263,7 +263,7 @@ public:
         assert((Relation == before) || (Relation == after));
         abstract_group * target_parent = node->get_parent();
 
-        if (Relation == after && target->next_node() == NULL) {
+        if (Relation == after && target->next_node() == nullptr) {
             // for the sake of simplicity, move the node to the tail of the target's parent group
             move_to_head_or_tail<tail>(node, target_parent);
             return;

@@ -1,6 +1,6 @@
 TITLE:: HIDElement
 summary:: A class describing an element of an HID device
-categories::  External control>HID
+categories::  External Control>HID
 related:: Classes/HID, Guides/Working_with_HID, Classes/HIDCollection, Classes/HIDUsage
 
 DESCRIPTION::

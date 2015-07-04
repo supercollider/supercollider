@@ -129,7 +129,6 @@ Platform
 
 	// Prefer qt but fall back to swing if qt not installed.
 	defaultGUIScheme { if (GUI.get(\qt).notNil) {^\qt} {^\swing} }
-	defaultHIDScheme { ^\none }
 
 	isSleeping { ^false } // unless defined otherwise
 

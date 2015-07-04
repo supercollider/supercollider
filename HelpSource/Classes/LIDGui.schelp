@@ -1,0 +1,43 @@
+TITLE:: LIDGui
+summary:: A GUI for an LID
+categories:: Platform>Linux, External Control>HID
+related:: Classes/LID
+
+DESCRIPTION::
+This class creates a simple GUI for an LID device.
+
+
+CLASSMETHODS::
+
+METHOD:: new
+Create a new GUI.
+
+ARGUMENT:: device
+An instance of LID, for which to create the GUI.
+
+
+
+INSTANCEMETHODS::
+private:: init, bkeys, rkeys, akeys, updater;
+
+
+METHOD:: win
+The window that the LIDGui is in.
+
+
+METHOD:: device
+The device for which this GUI is.
+
+
+EXAMPLES::
+
+code::
+LID.findAvailable;
+LID.postAvailable; // pick one that you want to open, and fill in the vendor and product id in the next line:
+d = LID.open( 2, 10 ); // trackpoint
+
+g = LIDGui.new( d );
+
+// or the shortcut method:
+g = d.makeGui;
+::

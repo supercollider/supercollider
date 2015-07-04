@@ -1,3 +1,25 @@
++ MIDIClient {
+
+	*externalSources{
+		^MIDIClient.sources.select({ |src,i|
+			// src.device != "SuperCollider"
+			(src.uid >> 16) != this.getClientID;
+		})
+	}
+
+	*externalDestinations{
+		^MIDIClient.destinations.select({ |src,i|
+			// src.device != "SuperCollider"
+			(src.uid >> 16) != this.getClientID;
+		})
+	}
+
+	*getClientID {
+		_GetMIDIClientID;
+		^this.primitiveFailed;
+	}
+}
+
 + MIDIOut{
 	// uid is not set by connect, in order to enable several connections to one output. set the uid directly, if you only want to send data to one MIDI destination.
 	connect{ arg device = 0;

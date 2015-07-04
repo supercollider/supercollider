@@ -29,7 +29,6 @@
 		super.startup;
 
 		GUI.fromID( this.platform.defaultGUIScheme );
-		GeneralHID.fromID( this.platform.defaultHIDScheme );
 
 		// Set Server.default and the 's' interpreter variable to the internal server.
 		// You should use the internal server for standalone applications --

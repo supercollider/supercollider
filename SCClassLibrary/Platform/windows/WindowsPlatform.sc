@@ -23,8 +23,6 @@ WindowsPlatform : Platform
 		this.loadStartupFiles;
 	}
 
-	defaultHIDScheme { ^nil }
-
 	pathSeparator { ^$\\ }
 	isPathSeparator { |char|
 		^#[$\\, $/].includes(char)

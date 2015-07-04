@@ -2272,7 +2272,7 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 	} \
 	fbufnum = sc_max(0.f, fbufnum); \
 	if (fbufnum != unit->m_fbufnum) { \
-		uint32 bufnum = (int)fbufnum; \
+		int bufnum = (int)fbufnum; \
 		World *world = unit->mWorld; \
 		if (bufnum < 0) { bufnum = 0; } \
 		if (bufnum >= world->mNumSndBufs) { \
@@ -2306,7 +2306,7 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 	} \
 	fbufnum = sc_max(0.f, fbufnum); \
 	if (fbufnum != unit->m_fbufnum) { \
-		uint32 bufnum = (int)fbufnum; \
+		int bufnum = (int)fbufnum; \
 		World *world = unit->mWorld; \
 		if (bufnum < 0) { bufnum = 0; } \
 		if (bufnum >= world->mNumSndBufs) { \
