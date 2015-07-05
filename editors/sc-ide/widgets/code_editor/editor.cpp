@@ -499,6 +499,8 @@ void GenericCodeEditor::keyPressEvent(QKeyEvent * event)
 
     QTextCursor cursor( textCursor() );
 
+    cursor.beginEditBlock();
+
     bool updateCursor = false;
 
     if (event == QKeySequence::InsertLineSeparator) {
@@ -539,8 +541,11 @@ void GenericCodeEditor::keyPressEvent(QKeyEvent * event)
         setTextCursor( cursor );
         ensureCursorVisible();
     }
+
     if (mDoc->keyDownActionEnabled() || Main::documentManager()->globalKeyDownActionEnabled())
         doKeyAction(event);
+
+    cursor.endEditBlock();
 }
     
 void GenericCodeEditor::handleKeyDown(QKeyEvent *event, QTextCursor & textCursor)
