@@ -418,14 +418,28 @@ void nrt_free_2(World * dummy, void * ptr)
 
 void clear_outputs(Unit *unit, int samples)
 {
-    size_t outputs = unit->mNumOutputs;
+    const uint32_t outputs = unit->mNumOutputs;
 
-    if ((samples & 15) == 0)
-        for (size_t i=0; i!=outputs; ++i)
+    if( (samples & 63) == 0 ) {
+        const uint32_t loops = samples / 64;
+
+        for( int i=0; i != outputs; ++i ) {
+            float * buffer = unit->mOutBuf[i];
+            for( int loop = 0; loop != loops; ++loop ) {
+                nova::zerovec_simd<64>( buffer + loop * 64 );
+            }
+        }
+        return;
+    }
+
+    if( (samples & 15) == 0 ) {
+        for( int i=0; i != outputs; ++i )
             nova::zerovec_simd(unit->mOutBuf[i], samples);
-    else
-        for (size_t i=0; i!=outputs; ++i)
-            nova::zerovec(unit->mOutBuf[i], samples);
+        return;
+    }
+
+    for( int i=0; i != outputs; ++i )
+      nova::zerovec(unit->mOutBuf[i], samples);
 }
 
 void node_end(struct Node * node)
