@@ -55,7 +55,11 @@ class DocumentSelectPopUp : public QDialog
 {
 public:
     DocumentSelectPopUp(const CodeEditorBox::History & history, QWidget * parent):
-        QDialog(parent, Qt::Popup | Qt::FramelessWindowHint)
+    #ifndef Q_OS_MAC
+        QDialog(parent, Qt::Popup  | Qt::FramelessWindowHint)
+    #else
+        QDialog(parent, Qt::Dialog | Qt::FramelessWindowHint)
+    #endif
     {
         mModel = new QStandardItemModel(this);
         populateModel(history);
