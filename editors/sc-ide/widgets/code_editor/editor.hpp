@@ -135,6 +135,7 @@ private:
     void handleKeyDown(QKeyEvent * event, QTextCursor & textCursor);
     void handleKeyUp(QKeyEvent * event, QTextCursor & textCursor);
     void handleKeyDelete(QKeyEvent * event, QTextCursor & textCursor);
+    void handleKeyRightParentheses(QKeyEvent * event, QTextCursor & textCursor, bool & updateCursor);
     void handleKeyBackspace(QKeyEvent * event, QTextCursor & textCursor, bool & updateCursor);
 };
 
