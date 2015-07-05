@@ -188,9 +188,9 @@ void start_audio_backend(server_arguments const & args)
     }
     cout << "opened portaudio device name: ";
     cout << input_device << " / " << output_device << endl;
-    
+
     instance->report_latency();
-    
+
     instance->prepare_backend();
     instance->activate_audio();
 }
@@ -300,7 +300,7 @@ void load_synthdefs(nova_server & server, server_arguments const & args)
 #ifndef NDEBUG
     auto end_time = std::chrono::high_resolution_clock::now();
     cout << "SynthDefs loaded in "
-         << std::chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count()
+         << std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count()
          << " ms"
          << endl;
 #endif
