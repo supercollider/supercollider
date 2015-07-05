@@ -346,8 +346,7 @@ Document *DocumentManager::open( const QString & path, int initialCursorPosition
     closeSingleUntitledIfUnmodified();
 
     const bool fileIsPlainText = !(info.suffix() == QString("sc") ||
-                                  (info.suffix() == QString("scd")) ||
-                                  (info.suffix() == QString("schelp")));
+                                   (info.suffix() == QString("scd")));
 
     Document *doc = createDocument( fileIsPlainText, id );
     doc->mDoc->setPlainText( decodeDocument(bytes) );
@@ -532,8 +531,7 @@ bool DocumentManager::doSaveAs( Document *doc, const QString & path )
     info.refresh();
 
     const bool fileIsPlainText = !(info.suffix() == QString("sc") ||
-                                  (info.suffix() == QString("scd")) ||
-                                  (info.suffix() == QString("schelp")));
+                                   (info.suffix() == QString("scd")));
 
     // It's possible the mod time has not been updated - if it looks like that is the case,
     // just set it one second in the future, so we don't trip the external modification alarm.
