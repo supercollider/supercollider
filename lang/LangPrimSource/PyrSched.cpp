@@ -1,22 +1,22 @@
 /*
 	SuperCollider real time audio synthesis system
-    Copyright (c) 2002 James McCartney. All rights reserved.
+ Copyright (c) 2002 James McCartney. All rights reserved.
 	http://www.audiosynth.com
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
-*/
+ 
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
+ */
 
 
 #include "PyrKernel.h"
@@ -54,7 +54,7 @@ void runAwakeMessage(VMGlobals *g);
 
 // heaps use an integer timestamp to ensure stable heap order
 struct PyrHeap:
-	PyrObjectHdr
+PyrObjectHdr
 {
 	PyrSlot count;    // stability count
 	PyrSlot slots[0]; // slots
@@ -71,16 +71,16 @@ bool addheap(VMGlobals *g, PyrObject *heapArg, double schedtime, PyrSlot *task)
 	if (heap->size >= ARRAYMAXINDEXSIZE(heap))
 		return false;
 	assert(heap->size);
-
-// 	post("->addheap\n");
-// 	dumpheap(heapArg);
-
+	
+	// 	post("->addheap\n");
+	// 	dumpheap(heapArg);
+	
 	/* parent and sibling in the heap, not in the task hierarchy */
 	int mom = heap->size - 1;
 	PyrSlot * pme = heap->slots + mom;
 	int stabilityCount = slotRawInt(&heap->count);
 	SetRaw(&heap->count, stabilityCount + 1);
-
+	
 	for (; mom>0;) {	/* percolate up heap */
 		int newMom = ((mom - 3) / 2);
 		mom = newMom - newMom % 3; /// LATER: we could avoid the division by using 4 slots per element
@@ -98,12 +98,12 @@ bool addheap(VMGlobals *g, PyrObject *heapArg, double schedtime, PyrSlot *task)
 	SetInt(&pme[2], stabilityCount);
 	g->gc->GCWrite(heap, task);
 	heap->size += 3;
-
+	
 #ifdef GC_SANITYCHECK
 	g->gc->SanityCheck();
 #endif
-// 	dumpheap(heapArg);
-// 	post("<-addheap %g\n", schedtime);
+	// 	dumpheap(heapArg);
+	// 	post("<-addheap %g\n", schedtime);
 	return true;
 }
 
@@ -123,9 +123,9 @@ bool getheap(VMGlobals *g, PyrObject *heapArg, double *schedtime, PyrSlot *task)
 	PyrGC* gc = g->gc;
 	bool isPartialScanObj = gc->IsPartialScanObject(heapArg);
 	assert(heap->size);
-
-// 	post("->getheap\n");
-// 	dumpheap(heapArg);
+	
+	// 	post("->getheap\n");
+	// 	dumpheap(heapArg);
 	if (heap->size>1) {
 		*schedtime = slotRawFloat(&heap->slots[0]);
 		slotCopy(task, &heap->slots[1]);
@@ -134,7 +134,7 @@ bool getheap(VMGlobals *g, PyrObject *heapArg, double *schedtime, PyrSlot *task)
 		slotCopy(&heap->slots[0], &heap->slots[size]);
 		slotCopy(&heap->slots[1], &heap->slots[size+1]);
 		slotCopy(&heap->slots[2], &heap->slots[size+2]);
-
+		
 		/* parent and sibling in the heap, not in the task hierarchy */
 		int mom = 0;
 		int me = 3;
@@ -148,10 +148,10 @@ bool getheap(VMGlobals *g, PyrObject *heapArg, double *schedtime, PyrSlot *task)
 		for (;pme < pend;) {
 			/* demote heap */
 			if (pme+3 < pend && ((slotRawFloat(&pme[0]) > slotRawFloat(&pme[3])) ||
-				((slotRawFloat(&pme[0]) == slotRawFloat(&pme[3])) && (slotRawInt(&pme[2]) > slotRawInt(&pme[5]))
-				))) {
-				me += 3; pme += 3;
-			}
+								 ((slotRawFloat(&pme[0]) == slotRawFloat(&pme[3])) && (slotRawInt(&pme[2]) > slotRawInt(&pme[5]))
+								  ))) {
+									 me += 3; pme += 3;
+								 }
 			if (timetemp > slotRawFloat(&pme[0]) ||
 				(timetemp == slotRawFloat(&pme[0]) && stabilityCountTemp > slotRawInt(&pme[2]))) {
 				slotCopy(&pmom[0], &pme[0]);
@@ -170,15 +170,15 @@ bool getheap(VMGlobals *g, PyrObject *heapArg, double *schedtime, PyrSlot *task)
 		SetRaw(&pmom[2], stabilityCountTemp);
 		if (isPartialScanObj)
 			gc->GCWriteBlack(pmom+1);
-
+		
 		if (size == 0)
 			SetInt(&heap->count, 0);
-
-// 	dumpheap(heapArg);
-// 	post("<-getheap true\n");
+		
+		// 	dumpheap(heapArg);
+		// 	post("<-getheap true\n");
 		return true;
 	} else {
-// 	post("<-getheap false\n");
+		// 	post("<-getheap false\n");
 		return false;
 	}
 }
@@ -203,7 +203,7 @@ void dumpheap(PyrObject *heapArg)
 		post("%3d(%3d) %9.2f %p %d\n", i/3, i, slotRawFloat(&heap->slots[i]), slotRawObject(&heap->slots[i+1]), slotRawInt(&heap->slots[i+2]));
 		if ((slotRawFloat(&heap->slots[i]) < mintime)
 			|| (slotRawFloat(&heap->slots[i]) == mintime && slotRawInt(&heap->slots[i+2]) < count )
-		)
+			)
 			post("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
 	}
 }
@@ -242,19 +242,19 @@ inline double DurToFloat(DurationType dur)
 	using namespace chrono;
 	seconds secs         = duration_cast<seconds>(dur);
 	nanoseconds nanosecs = dur - secs;
-
+	
 	return secs.count() + 1.0e-9 * nanosecs.count();
 }
 
 SCLANG_DLLEXPORT_C void schedInit()
 {
 	using namespace chrono;
-    hrTimeOfInitialization     = high_resolution_clock::now();
-
+	hrTimeOfInitialization     = high_resolution_clock::now();
+	
 	syncOSCOffsetWithTimeOfDay();
 	thread thread(resyncThread);
 	gResyncThread = std::move(thread);
-
+	
 	gHostStartNanos = duration_cast<nanoseconds>(hrTimeOfInitialization.time_since_epoch()).count();
 	gElapsedOSCoffset = (int64)(gHostStartNanos * kNanosToOSC) + gHostOSCoffset;
 }
@@ -265,7 +265,7 @@ SCLANG_DLLEXPORT_C void schedCleanup()
 
 double elapsedTime()
 {
-return DurToFloat(chrono::high_resolution_clock::now() - hrTimeOfInitialization);
+	return DurToFloat(chrono::high_resolution_clock::now() - hrTimeOfInitialization);
 }
 
 double monotonicClockTime()
@@ -286,11 +286,11 @@ double OSCToElapsedTime(int64 oscTime)
 void ElapsedTimeToChrono(double elapsed, chrono::system_clock::time_point & out_time_point)
 {
 	int64 oscTime = ElapsedTimeToOSC(elapsed);
-
+	
 	int64 secs      = ((oscTime >> 32) - kSECONDS_FROM_1900_to_1970);
 	int32 nano_secs = (int32)((oscTime & 0xFFFFFFFF) * kOSCtoNanos);
-
-
+	
+	
 	using namespace chrono;
 #if 0 // TODO: check system_clock precision
 	system_clock::time_point time_point = system_clock::time_point(seconds(secs) + nanoseconds(nano_secs));
@@ -313,13 +313,13 @@ void syncOSCOffsetWithTimeOfDay()
 	// is equal to gettimeofday time in OSCunits.
 	// Then if this machine is synced via NTP, we are synced with the world.
 	// more accurate way to do this??
-
-    using namespace chrono;
+	
+	using namespace chrono;
 	struct timeval tv;
-
-    nanoseconds systemTimeBefore, systemTimeAfter;
+	
+	nanoseconds systemTimeBefore, systemTimeAfter;
 	int64 diff, minDiff = 0x7fffFFFFffffFFFFLL;
-
+	
 	// take best of several tries
 	const int numberOfTries = 8;
 	int64 newOffset = gHostOSCoffset;
@@ -327,7 +327,7 @@ void syncOSCOffsetWithTimeOfDay()
 		systemTimeBefore = high_resolution_clock::now().time_since_epoch();
 		gettimeofday(&tv, 0);
 		systemTimeAfter = high_resolution_clock::now().time_since_epoch();
-
+		
 		diff = (systemTimeAfter - systemTimeBefore).count();
 		if (diff < minDiff) {
 			minDiff = diff;
@@ -335,11 +335,11 @@ void syncOSCOffsetWithTimeOfDay()
 			int64 systemTimeBetween = systemTimeBefore.count() + diff/2;
 			int64 systemTimeInOSCunits = (int64)((double)systemTimeBetween * kNanosToOSC);
 			int64 timeOfDayInOSCunits  = ((int64)(tv.tv_sec + kSECONDS_FROM_1900_to_1970) << 32)
-                                            + (int64)(tv.tv_usec * kMicrosToOSC);
+			+ (int64)(tv.tv_usec * kMicrosToOSC);
 			newOffset = timeOfDayInOSCunits - systemTimeInOSCunits;
 		}
 	}
-
+	
 	gHostOSCoffset = newOffset;
 	//postfl("gHostOSCoffset %016llX\n", gHostOSCoffset);
 }
@@ -404,7 +404,7 @@ void resyncThread()
 {
 	while (true) {
 		this_thread::sleep_for(chrono::seconds(20));
-
+		
 		syncOSCOffsetWithTimeOfDay();
 		gElapsedOSCoffset = (int64)(gHostStartNanos * kNanosToOSC) + gHostOSCoffset;
 	}
@@ -415,15 +415,15 @@ extern bool gTraceInterpreter;
 static void schedRunFunc()
 {
 	unique_lock<timed_mutex> lock(gLangMutex);
-
+	
 	VMGlobals *g = gMainVMGlobals;
 	PyrObject* inQueue = slotRawObject(&g->process->sysSchedulerQueue);
 	//dumpObject(inQueue);
-
+	
 	gRunSched = true;
 	while (true) {
 		assert(inQueue->size);
-
+		
 		//postfl("wait until there is something in scheduler\n");
 		// wait until there is something in scheduler
 		while (inQueue->size == 1) {
@@ -432,48 +432,48 @@ static void schedRunFunc()
 			if (!gRunSched) goto leave;
 		}
 		//postfl("wait until an event is ready\n");
-
+		
 		// wait until an event is ready
-        chrono::high_resolution_clock::duration schedSecs;
-        chrono::high_resolution_clock::time_point now, schedPoint;
+		chrono::high_resolution_clock::duration schedSecs;
+		chrono::high_resolution_clock::time_point now, schedPoint;
 		do {
-            now = chrono::high_resolution_clock::now();
-            schedSecs = chrono::duration_cast<chrono::high_resolution_clock::duration>(chrono::duration<double>(slotRawFloat(inQueue->slots + 1)));
-            schedPoint = hrTimeOfInitialization + schedSecs;
-            if(now >= schedPoint) break;
+			now = chrono::high_resolution_clock::now();
+			schedSecs = chrono::duration_cast<chrono::high_resolution_clock::duration>(chrono::duration<double>(slotRawFloat(inQueue->slots + 1)));
+			schedPoint = hrTimeOfInitialization + schedSecs;
+			if(now >= schedPoint) break;
 			//postfl("wait until an event is ready\n");
 			gSchedCond.wait_until(lock, schedPoint);
 			if (!gRunSched) goto leave;
 			//postfl("time diff %g\n", elapsedTime() - inQueue->slots->uf);
 		} while (inQueue->size > 1);
-
+		
 		//postfl("perform all events that are ready %d %.9f\n", inQueue->size, elapsed);
-
+		
 		// perform all events that are ready
 		//postfl("perform all events that are ready\n");
 		while ((inQueue->size > 1) && now >= hrTimeOfInitialization + chrono::duration_cast<chrono::high_resolution_clock::duration>(chrono::duration<double>(slotRawFloat(inQueue->slots + 1)))) {
 			double schedtime, delta;
 			PyrSlot task;
-
+			
 			//postfl("while %.6f >= %.6f\n", elapsed, inQueue->slots->uf);
-
+			
 			getheap(g, inQueue, &schedtime, &task);
-
+			
 			if (isKindOfSlot(&task, class_thread)) {
 				SetNil(&slotRawThread(&task)->nextBeat);
 			}
-
+			
 			slotCopy((++g->sp), &task);
 			SetFloat(++g->sp, schedtime);
 			SetFloat(++g->sp, schedtime);
 			++g->sp;	SetObject(g->sp, s_systemclock->u.classobj);
-
+			
 			runAwakeMessage(g);
 			long err = slotDoubleVal(&g->result, &delta);
 			if (!err) {
 				// add delta time and reschedule
 				double time = schedtime + delta;
-
+				
 				schedAdd(g, inQueue, time, &task);
 			}
 		}
@@ -494,41 +494,41 @@ leave:
 //parameter, and whether or not the thread uses timeshare scheduling
 //is returned at the address pointed to by the isTimeShare parameter
 kern_return_t  GetStdThreadSchedule( mach_port_t    machThread,
-                                    int            *priority,
-                                    boolean_t      *isTimeshare )
+									int            *priority,
+									boolean_t      *isTimeshare )
 {
-    kern_return_t                       result = 0;
-    thread_extended_policy_data_t       timeShareData;
-    thread_precedence_policy_data_t     precedenceData;
-    mach_msg_type_number_t		structItemCount;
-    boolean_t				fetchDefaults = false;
-
-    memset( &timeShareData, 0, sizeof( thread_extended_policy_data_t ));
-    memset( &precedenceData, 0, sizeof( thread_precedence_policy_data_t ));
-
-    if( 0 == machThread )
-        machThread = mach_thread_self();
-
-    if( NULL != isTimeshare )
-    {
-        structItemCount = THREAD_EXTENDED_POLICY_COUNT;
-        result = thread_policy_get( machThread, THREAD_EXTENDED_POLICY,
-                                    (integer_t*)&timeShareData, &structItemCount, &fetchDefaults );
-        *isTimeshare = timeShareData.timeshare;
-        if( 0 != result )
-            return result;
-    }
-
-    if( NULL != priority )
-    {
-        fetchDefaults = false;
-        structItemCount = THREAD_PRECEDENCE_POLICY_COUNT;
-        result = thread_policy_get( machThread, THREAD_PRECEDENCE_POLICY,
-                                    (integer_t*)&precedenceData, &structItemCount, &fetchDefaults );
-        *priority = precedenceData.importance;
-    }
-
-    return result;
+	kern_return_t                       result = 0;
+	thread_extended_policy_data_t       timeShareData;
+	thread_precedence_policy_data_t     precedenceData;
+	mach_msg_type_number_t		structItemCount;
+	boolean_t				fetchDefaults = false;
+	
+	memset( &timeShareData, 0, sizeof( thread_extended_policy_data_t ));
+	memset( &precedenceData, 0, sizeof( thread_precedence_policy_data_t ));
+	
+	if( 0 == machThread )
+		machThread = mach_thread_self();
+	
+	if( NULL != isTimeshare )
+	{
+		structItemCount = THREAD_EXTENDED_POLICY_COUNT;
+		result = thread_policy_get( machThread, THREAD_EXTENDED_POLICY,
+								   (integer_t*)&timeShareData, &structItemCount, &fetchDefaults );
+		*isTimeshare = timeShareData.timeshare;
+		if( 0 != result )
+			return result;
+	}
+	
+	if( NULL != priority )
+	{
+		fetchDefaults = false;
+		structItemCount = THREAD_PRECEDENCE_POLICY_COUNT;
+		result = thread_policy_get( machThread, THREAD_PRECEDENCE_POLICY,
+								   (integer_t*)&precedenceData, &structItemCount, &fetchDefaults );
+		*priority = precedenceData.importance;
+	}
+	
+	return result;
 }
 
 // Reschedules the indicated thread according to new parameters:
@@ -542,35 +542,35 @@ kern_return_t  GetStdThreadSchedule( mach_port_t    machThread,
 // timeshare scheduling scheme. Use pthread_mach_thread_np() to
 // to convert a pthread id to a mach thread id
 kern_return_t  RescheduleStdThread( mach_port_t    machThread,
-                                    int            newPriority,
-                                    boolean_t      isTimeshare )
+								   int            newPriority,
+								   boolean_t      isTimeshare )
 {
-    kern_return_t                       result = 0;
-    thread_extended_policy_data_t       timeShareData;
-    thread_precedence_policy_data_t     precedenceData;
-
-    //Set up some variables that we need for the task
-    precedenceData.importance = newPriority;
-    timeShareData.timeshare = isTimeshare;
-    if( 0 == machThread )
-        machThread = mach_thread_self();
-
-    //Set the scheduling flavor. We want to do this first, since doing so
-    //can alter the priority
-    result = thread_policy_set( machThread,
-                                THREAD_EXTENDED_POLICY,
-                                (integer_t*)&timeShareData,
-                                THREAD_EXTENDED_POLICY_COUNT );
-
-    if( 0 != result )
-        return result;
-
-    //Now set the priority
-    return   thread_policy_set( machThread,
-                                THREAD_PRECEDENCE_POLICY,
-                                (integer_t*)&precedenceData,
-                                THREAD_PRECEDENCE_POLICY_COUNT );
-
+	kern_return_t                       result = 0;
+	thread_extended_policy_data_t       timeShareData;
+	thread_precedence_policy_data_t     precedenceData;
+	
+	//Set up some variables that we need for the task
+	precedenceData.importance = newPriority;
+	timeShareData.timeshare = isTimeshare;
+	if( 0 == machThread )
+		machThread = mach_thread_self();
+	
+	//Set the scheduling flavor. We want to do this first, since doing so
+	//can alter the priority
+	result = thread_policy_set( machThread,
+							   THREAD_EXTENDED_POLICY,
+							   (integer_t*)&timeShareData,
+							   THREAD_EXTENDED_POLICY_COUNT );
+	
+	if( 0 != result )
+		return result;
+	
+	//Now set the priority
+	return   thread_policy_set( machThread,
+							   THREAD_PRECEDENCE_POLICY,
+							   (integer_t*)&precedenceData,
+							   THREAD_PRECEDENCE_POLICY_COUNT );
+	
 }
 #endif // SC_DARWIN
 
@@ -581,14 +581,14 @@ static void SC_LinuxSetRealtimePriority(pthread_t thread, int priority)
 {
 	int policy;
 	struct sched_param param;
-
+	
 	pthread_getschedparam(thread, &policy, &param);
-
+	
 	policy = SCHED_FIFO;
 	const int minprio = sched_get_priority_min(policy);
 	const int maxprio = sched_get_priority_max(policy);
 	param.sched_priority = sc_clip(priority, minprio, maxprio);
-
+	
 	int err = pthread_setschedparam(thread, policy, &param);
 	if (err != 0) {
 		post("Couldn't set realtime scheduling priority %d: %s\n",
@@ -602,71 +602,71 @@ SCLANG_DLLEXPORT_C void schedRun()
 {
 	thread thread(schedRunFunc);
 	gSchedThread = std::move(thread);
-
+	
 #ifdef SC_DARWIN
-        int policy;
-        struct sched_param param;
-
-        //pthread_t thread = pthread_self ();
-        pthread_getschedparam (gSchedThread.native_handle(), &policy, &param);
-        //post("param.sched_priority %d\n", param.sched_priority);
-
-        policy = SCHED_RR;         // round-robin, AKA real-time scheduling
-
-        int machprio;
-        boolean_t timeshare;
-        GetStdThreadSchedule(pthread_mach_thread_np(gSchedThread.native_handle()), &machprio, &timeshare);
-        //post("mach priority %d   timeshare %d\n", machprio, timeshare);
-
-        // what priority should gSchedThread use?
-
-        RescheduleStdThread(pthread_mach_thread_np(gSchedThread.native_handle()), 62, false);
-
-        GetStdThreadSchedule(pthread_mach_thread_np(gSchedThread.native_handle()), &machprio, &timeshare);
-        //post("mach priority %d   timeshare %d\n", machprio, timeshare);
-
-        //param.sched_priority = 70; // you'll have to play with this to see what it does
-        //pthread_setschedparam (gSchedThread, policy, &param);
-
-        pthread_getschedparam (gSchedThread.native_handle(), &policy, &param);
-
-		//post("param.sched_priority %d\n", param.sched_priority);
+	int policy;
+	struct sched_param param;
+	
+	//pthread_t thread = pthread_self ();
+	pthread_getschedparam (gSchedThread.native_handle(), &policy, &param);
+	//post("param.sched_priority %d\n", param.sched_priority);
+	
+	policy = SCHED_RR;         // round-robin, AKA real-time scheduling
+	
+	int machprio;
+	boolean_t timeshare;
+	GetStdThreadSchedule(pthread_mach_thread_np(gSchedThread.native_handle()), &machprio, &timeshare);
+	//post("mach priority %d   timeshare %d\n", machprio, timeshare);
+	
+	// what priority should gSchedThread use?
+	
+	RescheduleStdThread(pthread_mach_thread_np(gSchedThread.native_handle()), 62, false);
+	
+	GetStdThreadSchedule(pthread_mach_thread_np(gSchedThread.native_handle()), &machprio, &timeshare);
+	//post("mach priority %d   timeshare %d\n", machprio, timeshare);
+	
+	//param.sched_priority = 70; // you'll have to play with this to see what it does
+	//pthread_setschedparam (gSchedThread, policy, &param);
+	
+	pthread_getschedparam (gSchedThread.native_handle(), &policy, &param);
+	
+	//post("param.sched_priority %d\n", param.sched_priority);
 #endif // SC_DARWIN
-
+	
 #ifdef __linux__
-		SC_LinuxSetRealtimePriority(gSchedThread.native_handle(), 1);
+	SC_LinuxSetRealtimePriority(gSchedThread.native_handle(), 1);
 #endif // __linux__
 }
 
 
 
 /*
-
-unscheduled events:
+ 
+ unscheduled events:
 	startup,
 	receive OSC,
 	mouse, keyboard, MIDI
-
-all these happen in the main thread.
-
-*/
+ 
+ all these happen in the main thread.
+ 
+ */
 
 /*
-new clock:
+ new clock:
 	create
 	destroy
 	wake up at time x.
 	unschedule
 	awake
-		reschedules.
-*/
+ reschedules.
+ */
 
 
 class TempoClock
 {
 public:
 	TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
-				double inTempo, double inBaseBeats, double inBaseSeconds);
+			   double inTempo, double inBaseBeats, double inBaseSeconds);
 	~TempoClock() {}
 	void StopReq();
 	void Stop();
@@ -675,9 +675,9 @@ public:
 		Stop();
 		delete this;
 	}
-
+	
 	void* Run();
-
+	
 	void Add(double inBeats, PyrSlot* inTask);
 	void SetTempoAtBeat(double inTempo, double inBeats);
 	void SetTempoAtTime(double inTempo, double inSeconds);
@@ -688,16 +688,16 @@ public:
 	double GetTempo() const { return mTempo; }
 	double GetBeatDur() const { return mBeatDur; }
 	double BeatsToSecs(double beats) const
-		{ return (beats - mBaseBeats) * mBeatDur + mBaseSeconds; }
+	{ return (beats - mBaseBeats) * mBeatDur + mBaseSeconds; }
 	double SecsToBeats(double secs) const
-		{ return (secs - mBaseSeconds) * mTempo + mBaseBeats; }
+	{ return (secs - mBaseSeconds) * mTempo + mBaseBeats; }
 	void Dump();
-
-//protected:
+	
+	//protected:
 	VMGlobals* g;
 	PyrObject* mTempoClockObj;
 	PyrHeap* mQueue;
-
+	
 	double mTempo; // beats per second
 	double mBeatDur; // 1/tempo
 	double mBeats; // beats
@@ -707,9 +707,9 @@ public:
 	thread mThread;
 	condition_variable_any mCondition;
 	TempoClock *mPrev, *mNext;
-
+	
 	static TempoClock *sAll;
-
+	
 };
 
 TempoClock *TempoClock::sAll = 0;
@@ -730,37 +730,37 @@ void TempoClock_stopAll(void)
 }
 
 TempoClock::TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
-							double inTempo, double inBaseBeats, double inBaseSeconds)
-	: g(inVMGlobals), mTempoClockObj(inTempoClockObj), mTempo(inTempo), mBeatDur(1./inTempo),
-	mBaseSeconds(inBaseSeconds), mBaseBeats(inBaseBeats), mRun(true), mPrev(0), mNext(sAll)
+					   double inTempo, double inBaseBeats, double inBaseSeconds)
+: g(inVMGlobals), mTempoClockObj(inTempoClockObj), mTempo(inTempo), mBeatDur(1./inTempo),
+mBaseSeconds(inBaseSeconds), mBaseBeats(inBaseBeats), mRun(true), mPrev(0), mNext(sAll)
 {
 	if (sAll) sAll->mPrev = this;
 	sAll = this;
-
+	
 	mQueue = (PyrHeap*)slotRawObject(&mTempoClockObj->slots[0]);
 	mQueue->size = 1;
 	SetInt(&mQueue->count, 0);
-
+	
 	thread thread(std::bind(&TempoClock::Run, this));
 	mThread = std::move(thread);
-
+	
 #ifdef SC_DARWIN
 	int machprio;
 	boolean_t timeshare;
 	GetStdThreadSchedule(pthread_mach_thread_np(mThread.native_handle()), &machprio, &timeshare);
 	//post("mach priority %d   timeshare %d\n", machprio, timeshare);
-
+	
 	// what priority should gSchedThread use?
-
+	
 	RescheduleStdThread(pthread_mach_thread_np(mThread.native_handle()), 10, false);
-
+	
 	GetStdThreadSchedule(pthread_mach_thread_np(mThread.native_handle()), &machprio, &timeshare);
 	//post("mach priority %d   timeshare %d\n", machprio, timeshare);
-
+	
 	//param.sched_priority = 70; // you'll have to play with this to see what it does
 	//pthread_setschedparam (mThread, policy, &param);
 #endif // SC_DARWIN
-
+	
 #ifdef __linux__
 	SC_LinuxSetRealtimePriority(mThread.native_handle(), 1);
 #endif // __linux__
@@ -771,7 +771,7 @@ void TempoClock::StopReq()
 	//printf("->TempoClock::StopReq\n");
 	thread stopThread(std::bind(&TempoClock::StopAndDelete, this));
 	stopThread.detach();
-
+	
 	//printf("<-TempoClock::StopReq\n");
 }
 
@@ -780,21 +780,21 @@ void TempoClock::Stop()
 	//printf("->TempoClock::Stop\n");
 	{
 		lock_guard<timed_mutex> lock(gLangMutex);
-
+		
 		//printf("Stop mRun %d\n", mRun);
 		if (mRun) {
 			mRun = false;
-
+			
 			// unlink
 			if (mPrev) mPrev->mNext = mNext;
 			else sAll = mNext;
 			if (mNext) mNext->mPrev = mPrev;
-
+			
 			mCondition.notify_all();
 		}
 	}
 	mThread.join();
-
+	
 	//printf("<-TempoClock::Stop\n");
 }
 
@@ -834,7 +834,7 @@ void* TempoClock::Run()
 {
 	//printf("->TempoClock::Run\n");
 	unique_lock<timed_mutex> lock(gLangMutex);
-
+	
 	while (mRun) {
 		assert(mQueue->size);
 		//printf("tempo %g  dur %g  beats %g\n", mTempo, mBeatDur, mBeats);
@@ -847,21 +847,21 @@ void* TempoClock::Run()
 			if (!mRun) goto leave;
 		}
 		//printf("wait until an event is ready\n");
-
+		
 		// wait until an event is ready
 		double elapsedBeats;
-        chrono::high_resolution_clock::duration schedSecs;
-        chrono::high_resolution_clock::time_point schedPoint;
+		chrono::high_resolution_clock::duration schedSecs;
+		chrono::high_resolution_clock::time_point schedPoint;
 		do {
 			elapsedBeats = ElapsedBeats();
 			if (elapsedBeats >= slotRawFloat(mQueue->slots)) break;
-
+			
 			//printf("event ready at %g . elapsed beats %g\n", mQueue->slots->uf, elapsedBeats);
 			double wakeTime = BeatsToSecs(slotRawFloat(mQueue->slots));
-
-            schedSecs = chrono::duration_cast<chrono::high_resolution_clock::duration>(chrono::duration<double>(wakeTime));
-            schedPoint = hrTimeOfInitialization + schedSecs;
-
+			
+			schedSecs = chrono::duration_cast<chrono::high_resolution_clock::duration>(chrono::duration<double>(wakeTime));
+			schedPoint = hrTimeOfInitialization + schedSecs;
+			
 			//printf("wait until an event is ready. wake %g  now %g\n", wakeTime, elapsedTime());
 			mCondition.wait_until(lock, schedPoint);
 			//printf("mRun b %d\n", mRun);
@@ -869,26 +869,26 @@ void* TempoClock::Run()
 			//printf("time diff %g\n", elapsedTime() - mQueue->slots->uf);
 		} while (mQueue->size > 1);
 		//printf("perform all events that are ready %d %.9f\n", mQueue->size, elapsedBeats);
-
+		
 		// perform all events that are ready
 		//printf("perform all events that are ready\n");
 		while (mQueue->size > 1 && elapsedBeats >= slotRawFloat(mQueue->slots)) {
 			double delta;
 			PyrSlot task;
-
+			
 			//printf("while %.6f >= %.6f\n", elapsedBeats, mQueue->slots->uf);
-
+			
 			getheap(g, (PyrObject*)mQueue, &mBeats, &task);
-
+			
 			if (isKindOfSlot(&task, class_thread)) {
 				SetNil(&slotRawThread(&task)->nextBeat);
 			}
-
+			
 			slotCopy((++g->sp), &task);
 			SetFloat(++g->sp, mBeats);
 			SetFloat(++g->sp, BeatsToSecs(mBeats));
 			++g->sp;	SetObject(g->sp, mTempoClockObj);
-
+			
 			runAwakeMessage(g);
 			long err = slotDoubleVal(&g->result, &delta);
 			if (!err) {
@@ -904,31 +904,31 @@ leave:
 }
 
 /*
-void TempoClock::Flush()
-{
+ void TempoClock::Flush()
+ {
 	while (mQueue->size && elapsedBeats >= mQueue->slots->uf) {
-		double delta;
-		PyrSlot task;
-
-		//printf("while %.6f >= %.6f\n", elapsedBeats, mQueue->slots->uf);
-
-		getheap(g, mQueue, &mBeats, &task);
-
-		slotCopy((++g->sp), &task);
-		(++g->sp)->uf = mBeats;
-		(++g->sp)->uf = BeatsToSecs(mBeats);
-		++g->sp;	SetObject(g->sp, mTempoClockObj);
-
-		runAwakeMessage(g);
-		long err = slotDoubleVal(&g->result, &delta);
-		if (!err) {
-			// add delta time and reschedule
-			double beats = mBeats + delta;
-			Add(beats, &task);
-		}
+ double delta;
+ PyrSlot task;
+ 
+ //printf("while %.6f >= %.6f\n", elapsedBeats, mQueue->slots->uf);
+ 
+ getheap(g, mQueue, &mBeats, &task);
+ 
+ slotCopy((++g->sp), &task);
+ (++g->sp)->uf = mBeats;
+ (++g->sp)->uf = BeatsToSecs(mBeats);
+ ++g->sp;	SetObject(g->sp, mTempoClockObj);
+ 
+ runAwakeMessage(g);
+ long err = slotDoubleVal(&g->result, &delta);
+ if (!err) {
+ // add delta time and reschedule
+ double beats = mBeats + delta;
+ Add(beats, &task);
+ }
 	}
-}
-*/
+ }
+ */
 
 
 void TempoClock::Add(double inBeats, PyrSlot* inTask)
@@ -970,7 +970,7 @@ int prTempoClock_New(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *b = g->sp - 2;
 	PyrSlot *c = g->sp - 1;
 	PyrSlot *d = g->sp;
-
+	
 	double tempo;
 	int err = slotDoubleVal(b, &tempo);
 	if (err) tempo = 1.;
@@ -979,18 +979,18 @@ int prTempoClock_New(struct VMGlobals *g, int numArgsPushed)
 		SetPtr(slotRawObject(a)->slots+1, NULL);
 		return errFailed;
 	}
-
+	
 	double beats;
 	err = slotDoubleVal(c, &beats);
 	if (err) beats = 0.;
-
+	
 	double seconds;
 	err = slotDoubleVal(d, &seconds);
 	if (err) {
 		err = slotDoubleVal(&g->thread->seconds, &seconds);
 		if (err) return err;
 	}
-
+	
 	TempoClock* clock = new TempoClock(g, slotRawObject(a), tempo, beats, seconds);
 	SetPtr(slotRawObject(a)->slots+1, clock);
 	return errNone;
@@ -1002,10 +1002,10 @@ int prTempoClock_Free(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp;
 	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 	if (!clock) return errNone;	// not running
-
+	
 	SetNil(slotRawObject(a)->slots + 1);
 	clock->StopReq();
-
+	
 	return errNone;
 }
 
@@ -1015,7 +1015,7 @@ int prTempoClock_Clear(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp;
 	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 	if (clock) clock->Clear();
-
+	
 	return errNone;
 }
 
@@ -1025,7 +1025,7 @@ int prTempoClock_Dump(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp;
 	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 	if (clock) clock->Dump();
-
+	
 	return errNone;
 }
 
@@ -1039,9 +1039,9 @@ int prTempoClock_Tempo(struct VMGlobals *g, int numArgsPushed)
 		error("clock is not running.\n");
 		return errFailed;
 	}
-
+	
 	SetFloat(a, clock->mTempo);
-
+	
 	return errNone;
 }
 
@@ -1054,9 +1054,9 @@ int prTempoClock_BeatDur(struct VMGlobals *g, int numArgsPushed)
 		error("clock is not running.\n");
 		return errFailed;
 	}
-
+	
 	SetFloat(a, clock->mBeatDur);
-
+	
 	return errNone;
 }
 
@@ -1069,9 +1069,9 @@ int prTempoClock_ElapsedBeats(struct VMGlobals *g, int numArgsPushed)
 		error("clock is not running.\n");
 		return errFailed;
 	}
-
+	
 	SetFloat(a, clock->ElapsedBeats());
-
+	
 	return errNone;
 }
 
@@ -1080,7 +1080,7 @@ int prTempoClock_Beats(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
 	double beats, seconds;
-
+	
 	if (SlotEq(&g->thread->clock, a)) {
 		int err = slotDoubleVal(&g->thread->beats, &beats);
 		if (err) return errWrongType;
@@ -1090,10 +1090,10 @@ int prTempoClock_Beats(struct VMGlobals *g, int numArgsPushed)
 			error("clock is not running.\n");
 			return errFailed;
 		}
-
+		
 		int err = slotDoubleVal(&g->thread->seconds, &seconds);
 		if (err) return errWrongType;
-
+		
 		beats = clock->SecsToBeats(seconds);
 	}
 	SetFloat(a, beats);
@@ -1104,24 +1104,24 @@ int prTempoClock_SetBeats(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
-
+	
 	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 	if (!clock) {
 		error("clock is not running.\n");
 		return errFailed;
 	}
-
+	
 	double beats, seconds;
 	int err;
-
+	
 	err = slotDoubleVal(b, &beats);
 	if (err) return errWrongType;
-
+	
 	err = slotDoubleVal(&g->thread->seconds, &seconds);
 	if (err) return errWrongType;
-
+	
 	clock->SetAll(clock->mTempo, beats, seconds);
-
+	
 	return errNone;
 }
 
@@ -1133,13 +1133,13 @@ int prTempoClock_Sched(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *c = g->sp;
 	double delta, beats;
 	int err;
-
+	
 	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 	if (!clock) {
 		error("clock is not running.\n");
 		return errFailed;
 	}
-
+	
 	if (SlotEq(&g->thread->clock, a)) {
 		err = slotDoubleVal(&g->thread->beats, &beats);
 		if (err) return errNone; // return nil OK, just don't schedule
@@ -1150,15 +1150,15 @@ int prTempoClock_Sched(struct VMGlobals *g, int numArgsPushed)
 		if (err) return errNone;
 		beats = clock->SecsToBeats(seconds);
 	}
-
+	
 	err = slotDoubleVal(b, &delta);
 	if (err) return errNone; // return nil OK, just don't schedule
 	beats += delta;
 	if (beats == dInfinity)
 		return errNone; // return nil OK, just don't schedule
-
+	
 	clock->Add(beats, c);
-
+	
 	return errNone;
 }
 
@@ -1168,19 +1168,19 @@ int prTempoClock_SchedAbs(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
-
+	
 	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 	if (!clock) {
 		error("clock is not running.\n");
 		return errFailed;
 	}
-
+	
 	double beats;
 	int err = slotDoubleVal(b, &beats) || (beats == dInfinity);
 	if (err) return errNone; // return nil OK, just don't schedule
-
+	
 	clock->Add(beats, c);
-
+	
 	return errNone;
 }
 
@@ -1190,13 +1190,13 @@ int prTempoClock_SetTempoAtBeat(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
-
+	
 	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 	if (!clock) {
 		error("clock is not running.\n");
 		return errFailed;
 	}
-
+	
 	double tempo, beat;
 	int err = slotDoubleVal(b, &tempo);
 	if (err) return errFailed;
@@ -1204,12 +1204,12 @@ int prTempoClock_SetTempoAtBeat(struct VMGlobals *g, int numArgsPushed)
 		error("invalid tempo %g\n", tempo);
 		return errFailed;
 	}
-
+	
 	err = slotDoubleVal(c, &beat);
 	if (err) return errFailed;
-
+	
 	clock->SetTempoAtBeat(tempo, beat);
-
+	
 	return errNone;
 }
 
@@ -1220,25 +1220,25 @@ int prTempoClock_SetAll(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *b = g->sp - 2;
 	PyrSlot *c = g->sp - 1;
 	PyrSlot *d = g->sp;
-
+	
 	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 	if (!clock) {
 		error("clock is not running.\n");
 		return errFailed;
 	}
-
+	
 	double tempo, beat, secs;
 	int err = slotDoubleVal(b, &tempo);
 	if (err) return errFailed;
-
+	
 	err = slotDoubleVal(c, &beat);
 	if (err) return errFailed;
-
+	
 	err = slotDoubleVal(d, &secs);
 	if (err) return errFailed;
-
+	
 	clock->SetAll(tempo, beat, secs);
-
+	
 	return errNone;
 }
 
@@ -1248,22 +1248,22 @@ int prTempoClock_SetTempoAtTime(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
-
+	
 	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 	if (!clock) {
 		error("clock is not running.\n");
 		return errFailed;
 	}
-
+	
 	double tempo, sec;
 	int err = slotDoubleVal(b, &tempo);
 	if (err) return errFailed;
-
+	
 	err = slotDoubleVal(c, &sec);
 	if (err) return errFailed;
-
+	
 	clock->SetTempoAtTime(tempo, sec);
-
+	
 	return errNone;
 }
 
@@ -1274,19 +1274,19 @@ int prTempoClock_BeatsToSecs(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
-
+	
 	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 	if (!clock) {
 		error("clock is not running.\n");
 		return errFailed;
 	}
-
+	
 	double beats;
 	int err = slotDoubleVal(b, &beats);
 	if (err) return errFailed;
-
+	
 	SetFloat(a, clock->BeatsToSecs(beats));
-
+	
 	return errNone;
 }
 
@@ -1295,19 +1295,19 @@ int prTempoClock_SecsToBeats(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp - 1;
 	PyrSlot *b = g->sp;
-
+	
 	TempoClock *clock = (TempoClock*)slotRawPtr(&slotRawObject(a)->slots[1]);
 	if (!clock) {
 		error("clock is not running.\n");
 		return errFailed;
 	}
-
+	
 	double secs;
 	int err = slotDoubleVal(b, &secs);
 	if (err) return errFailed;
-
+	
 	SetFloat(a, clock->SecsToBeats(secs));
-
+	
 	return errNone;
 }
 
@@ -1316,9 +1316,9 @@ int prSystemClock_Clear(struct VMGlobals *g, int numArgsPushed);
 int prSystemClock_Clear(struct VMGlobals *g, int numArgsPushed)
 {
 	//PyrSlot *a = g->sp;
-
+	
 	schedClearUnsafe();
-
+	
 	return errNone;
 }
 
@@ -1328,7 +1328,7 @@ int prSystemClock_Sched(struct VMGlobals *g, int numArgsPushed)
 	//PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
-
+	
 	double delta, seconds;
 	int err = slotDoubleVal(b, &delta);
 	if (err) return errNone; // return nil OK, just don't schedule
@@ -1337,9 +1337,9 @@ int prSystemClock_Sched(struct VMGlobals *g, int numArgsPushed)
 	seconds += delta;
 	if (seconds == dInfinity) return errNone; // return nil OK, just don't schedule
 	PyrObject* inQueue = slotRawObject(&g->process->sysSchedulerQueue);
-
+	
 	schedAdd(g, inQueue, seconds, c);
-
+	
 	return errNone;
 }
 
@@ -1349,14 +1349,14 @@ int prSystemClock_SchedAbs(struct VMGlobals *g, int numArgsPushed)
 	//PyrSlot *a = g->sp - 2;
 	PyrSlot *b = g->sp - 1;
 	PyrSlot *c = g->sp;
-
+	
 	double time;
 	int err = slotDoubleVal(b, &time) || (time == dInfinity);
 	if (err) return errNone; // return nil OK, just don't schedule
 	PyrObject* inQueue = slotRawObject(&g->process->sysSchedulerQueue);
-
+	
 	schedAdd(g, inQueue, time, c);
-
+	
 	return errNone;
 }
 
@@ -1375,9 +1375,9 @@ int prmonotonicClockTime(struct VMGlobals *g, int numArgsPushed)
 void initSchedPrimitives()
 {
 	int base, index=0;
-
+	
 	base = nextPrimitiveIndex();
-
+	
 	definePrimitive(base, index++, "_TempoClock_New", prTempoClock_New, 4, 0);
 	definePrimitive(base, index++, "_TempoClock_Free", prTempoClock_Free, 1, 0);
 	definePrimitive(base, index++, "_TempoClock_Clear", prTempoClock_Clear, 1, 0);
@@ -1394,11 +1394,11 @@ void initSchedPrimitives()
 	definePrimitive(base, index++, "_TempoClock_SetAll", prTempoClock_SetAll, 4, 0);
 	definePrimitive(base, index++, "_TempoClock_BeatsToSecs", prTempoClock_BeatsToSecs, 2, 0);
 	definePrimitive(base, index++, "_TempoClock_SecsToBeats", prTempoClock_SecsToBeats, 2, 0);
-
+	
 	definePrimitive(base, index++, "_SystemClock_Clear", prSystemClock_Clear, 1, 0);
 	definePrimitive(base, index++, "_SystemClock_Sched", prSystemClock_Sched, 3, 0);
 	definePrimitive(base, index++, "_SystemClock_SchedAbs", prSystemClock_SchedAbs, 3, 0);
-
+	
 	definePrimitive(base, index++, "_ElapsedTime", prElapsedTime, 1, 0);
-    definePrimitive(base, index++, "_monotonicClockTime", prmonotonicClockTime, 1, 0);
+	definePrimitive(base, index++, "_monotonicClockTime", prmonotonicClockTime, 1, 0);
 }
