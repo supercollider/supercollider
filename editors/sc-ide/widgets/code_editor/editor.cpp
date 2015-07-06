@@ -510,7 +510,7 @@ void GenericCodeEditor::keyPressEvent(QKeyEvent * event)
         case Qt::Key_BraceRight:
         case Qt::Key_BracketRight:
         case Qt::Key_ParenRight:
-            handleKeyRightParentheses( event, cursor, updateCursor );
+            handleKeyRightParentheses( event, cursor );
             break;
 
         case Qt::Key_Delete:
@@ -605,7 +605,7 @@ void GenericCodeEditor::handleKeyBackspace(QKeyEvent * event, QTextCursor & text
     }
 }
 
-void GenericCodeEditor::handleKeyRightParentheses(QKeyEvent *event, QTextCursor &textCursor, bool & updateCursor)
+void GenericCodeEditor::handleKeyRightParentheses(QKeyEvent *event, QTextCursor &textCursor)
 {
     if( !textCursor.atBlockEnd() ) {
         QTextCursor nextCharCursor( textCursor );
@@ -613,8 +613,7 @@ void GenericCodeEditor::handleKeyRightParentheses(QKeyEvent *event, QTextCursor 
 
         if( nextCharCursor.selectedText() == event->text() ) {
             // don't insert, just move
-            textCursor.movePosition( QTextCursor::NextCharacter );
-            updateCursor = true;
+            moveCursor( QTextCursor::NextCharacter );
             return;
         }
     }
