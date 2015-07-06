@@ -27,7 +27,11 @@
 #ifdef SC_DARWIN
 # include <CoreAudio/HostTime.h>
 #endif
+#ifdef _MSC_VER
+#include "wintime.h"
+#else
 #include <sys/time.h>
+#endif
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
@@ -224,10 +228,11 @@ static void syncOSCOffsetWithTimeOfDay();
 void resyncThread();
 
 // Use the highest resolution clock available for monotonic clock time
-typedef typename std::conditional<std::chrono::high_resolution_clock::is_steady,
-								  std::chrono::high_resolution_clock,
-								  std::chrono::steady_clock>::type monotonic_clock;
-
+typedef
+#ifndef _MSC_VER
+typename
+#endif
+std::conditional<chrono::high_resolution_clock::is_steady,chrono::high_resolution_clock, chrono::steady_clock>::type monotonic_clock;
 static std::chrono::high_resolution_clock::time_point hrTimeOfInitialization;
 
 template <typename DurationType>
@@ -855,8 +860,8 @@ void* TempoClock::Run()
 			//printf("event ready at %g . elapsed beats %g\n", mQueue->slots->uf, elapsedBeats);
 			double wakeTime = BeatsToSecs(slotRawFloat(mQueue->slots));
 
-			schedSecs = duration_cast<high_resolution_clock::duration>(duration<double>(wakeTime));
-			schedPoint = hrTimeOfInitialization + schedSecs;
+            schedSecs = chrono::duration_cast<chrono::high_resolution_clock::duration>(chrono::duration<double>(wakeTime));
+            schedPoint = hrTimeOfInitialization + schedSecs;
 
 			//printf("wait until an event is ready. wake %g  now %g\n", wakeTime, elapsedTime());
 			mCondition.wait_until(lock, schedPoint);

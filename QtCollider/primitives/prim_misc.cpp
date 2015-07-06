@@ -76,7 +76,7 @@ QC_LANG_PRIMITIVE( QWindow_AvailableGeometry, 0, PyrSlot *r, PyrSlot *a, VMGloba
 
 QC_LANG_PRIMITIVE( Qt_StringBounds, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
-  QString str = QtCollider::get( a );
+  QString str = QtCollider::get<QString>( a );
 
   QFont f = QtCollider::get( a+1 );
 
@@ -167,7 +167,7 @@ QC_LANG_PRIMITIVE( Qt_SetGlobalPalette, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g 
 {
   if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
-  QPalette p = QtCollider::get( a );
+  QPalette p(QtCollider::get<QPalette>(a));
   QApplication::setPalette( p );
 
   return errNone;
@@ -202,7 +202,7 @@ QC_LANG_PRIMITIVE( Qt_SetStyle, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 {
   if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
-  QString str = QtCollider::get( a );
+  QString str = QtCollider::get<QString>( a );
   if( str.isEmpty() ) return errFailed;
 
   QStyle *style = QStyleFactory::create( str );

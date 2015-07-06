@@ -39,12 +39,18 @@ namespace ScIDE {
 
 ScProcess::ScProcess( Settings::Manager * settings, QObject * parent ):
     QProcess( parent ),
-    mIpcServer( new QLocalServer(this) ),
-    mIpcSocket(NULL),
+    mIpcServer( new QTcpServer(this) ),
     mIpcServerName("SCIde_" + QString::number(QCoreApplication::applicationPid())),
     mTerminationRequested(false),
     mCompiled(false)
 {
+
+	mIpcServer->listen(QHostAddress(QHostAddress::LocalHost), ScIpcChannel::Port);
+
+	// this is initialized when connecting.
+	mIpcChannel = nullptr;
+	mIpcSocket = nullptr;
+
     mIntrospectionParser = new ScIntrospectionParser( this );
     mIntrospectionParser->start();
 
@@ -57,6 +63,10 @@ ScProcess::ScProcess( Settings::Manager * settings, QObject * parent ):
             this, SLOT(swapIntrospection(ScLanguage::Introspection*)));
 
     connect(this, SIGNAL(stateChanged(QProcess::ProcessState)), this, SLOT(onProcessStateChanged(QProcess::ProcessState)));
+}
+
+ScProcess::~ScProcess() {
+	finalizeConnection();
 }
 
 void ScProcess::prepareActions(Settings::Manager * settings)
@@ -245,20 +255,30 @@ void ScProcess::evaluateCode(QString const & commandString, bool silent)
 
 void ScProcess::onNewIpcConnection()
 {
-    if (mIpcSocket)
-        // we can handle only one ipc connection at a time
-        mIpcSocket->disconnect();
+	if (mIpcSocket)	{
+		emit statusMessage(tr("onNewIpcConnection::disconnecting;"));
+		// we can handle only one ipc connection at a time
+		mIpcSocket->disconnect();
+	}
 
     mIpcSocket = mIpcServer->nextPendingConnection();
+	mIpcChannel = new ScIpcChannel(mIpcSocket, QString("scide"), this);
+
+	emit statusMessage(tr("New IPC channel up."));
+
     connect(mIpcSocket, SIGNAL(disconnected()), this, SLOT(finalizeConnection()));
     connect(mIpcSocket, SIGNAL(readyRead()), this, SLOT(onIpcData()));
+
 }
 
 void ScProcess::finalizeConnection()
 {
-    mIpcData.clear();
-    mIpcSocket->deleteLater();
-    mIpcSocket = NULL;
+	emit statusMessage(tr("ScProcess::finalizeConnection()"));
+	delete mIpcChannel;
+	mIpcChannel = nullptr;
+
+	mIpcSocket->deleteLater();
+	mIpcSocket = nullptr;
 }
 
 void ScProcess::onProcessStateChanged(QProcess::ProcessState state)
@@ -308,100 +328,82 @@ void ScProcess::postQuitNotification()
 
 void ScProcess::onIpcData()
 {
-    mIpcData.append(mIpcSocket->readAll());
-
-    while (mIpcData.size()) {
-        QBuffer receivedData ( &mIpcData );
-        receivedData.open ( QIODevice::ReadOnly );
-
-        QDataStream in ( &receivedData );
-        in.setVersion ( QDataStream::Qt_4_6 );
-        QString selector, message;
-        in >> selector;
-        if ( in.status() != QDataStream::Ok )
-            return;
-
-        in >> message;
-        if ( in.status() != QDataStream::Ok )
-            return;
-
-        mIpcData.remove ( 0, receivedData.pos() );
-
-        onResponse(selector, message);
-
-        emit response(selector, message);
-    }
-}
-
-void ScProcess::onResponse( const QString & selector, const QString & data )
-{
-    static QString introspectionSelector("introspection");
-    static QString classLibraryRecompiledSelector("classLibraryRecompiled");
-    static QString requestCurrentPathSelector("requestCurrentPath");
-
-    if (selector == introspectionSelector)
-        mIntrospectionParser->process(data);
-
-    else if (selector == classLibraryRecompiledSelector){
-        mCompiled = true;
-        emit classLibraryRecompiled();
-    }
-
-    else if (selector == requestCurrentPathSelector)
-        Main::documentManager()->sendActiveDocument();
+	mIpcChannel->read();
 }
 
 void ScProcess::onStart()
 {
     if(!mIpcServer->isListening()) // avoid a warning on stderr
-        mIpcServer->listen(mIpcServerName);
+		mIpcServer->listen(QHostAddress(QHostAddress::LocalHost), ScIpcChannel::Port);
 
-    QString command = QString("ScIDE.connect(\"%1\")").arg(mIpcServerName);
+	QString command = QString("ScIDE.connect(\"%1\")").arg(mIpcServerName);
     evaluateCode ( command, true );
-    Main::documentManager()->sendActiveDocument();
-}
     
+	Main::documentManager()->sendActiveDocument();
+}
+
+void ScProcess::sendToScLang(QString const & selector, std::initializer_list<QVariant> args)	{
+		
+	if (!mIpcChannel) {
+		//qDebug() << "ipc channel is null - " << selector;
+		return;
+	}
+
+	//qDebug() << "sendToScLang - " << selector;
+	mIpcChannel->write(selector, args);
+}
+
 void ScProcess::updateTextMirrorForDocument ( Document * doc, int position, int charsRemoved, int charsAdded )
 {
-    QVariantList argList;
-    
-    argList.append(QVariant(doc->id()));
-    argList.append(QVariant(position));
-    argList.append(QVariant(charsRemoved));
-    
     QTextCursor cursor = QTextCursor(doc->textDocument());
     cursor.setPosition(position, QTextCursor::MoveAnchor);
     cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, charsAdded);
     
-    argList.append(QVariant(cursor.selection().toPlainText()));
-    
-    try {
-        QDataStream stream(mIpcSocket);
-        stream.setVersion(QDataStream::Qt_4_6);
-        stream << QString("updateDocText");
-        stream << argList;
-    } catch (std::exception const & e) {
-        scPost(QString("Exception during ScIDE_Send: %1\n").arg(e.what()));
-    }
+	sendToScLang(QString("updateDocText"), 
+		{ QVariant(doc->id()), QVariant(position), QVariant(charsRemoved), QVariant(cursor.selection().toPlainText()) });
 }
     
 void ScProcess::updateSelectionMirrorForDocument ( Document * doc, int start, int range )
 {
-    QVariantList argList;
-    
-    argList.append(QVariant(doc->id()));
-    argList.append(QVariant(start));
-    argList.append(QVariant(range));
-    
-    try {
-        QDataStream stream(mIpcSocket);
-        stream.setVersion(QDataStream::Qt_4_6);
-        stream << QString("updateDocSelection");
-        stream << argList;
-    } catch (std::exception const & e) {
-        scPost(QString("Exception during ScIDE_Send: %1\n").arg(e.what()));
-    }
+	QTextDocument *text = doc->textDocument();
+	int n = text->characterCount();
+
+	if (start > n || range > n || start + range > n) {
+		scPost(QString("Warning - updateDocSelection - ignoring out of range selection. start: %1, range: %2, characterCount: %3")
+			.arg(start, range, n));
+		return;
+	}
+
+	sendToScLang(QString("updateDocSelection"), { QVariant(doc->id()), QVariant(start), QVariant(range) });
 }
+
+void ScProcess::onIpcLog(const QString &message) 
+{
+	qDebug() << message;
+	//scPost(message);
+}
+
+
+void ScProcess::onIpcMessage(const QString & selector, const QVariantList & data)
+{
+	static QString introspectionSelector("introspection");
+	static QString classLibraryRecompiledSelector("classLibraryRecompiled");
+	static QString requestCurrentPathSelector("requestCurrentPath");
+
+	if (selector == introspectionSelector) {
+		mIntrospectionParser->process(data[0].toString());
+	}
+	else if (selector == classLibraryRecompiledSelector){
+		mCompiled = true;
+		emit classLibraryRecompiled();
+	}
+
+	else if (selector == requestCurrentPathSelector)
+		Main::documentManager()->sendActiveDocument();
+
+	emit response(selector, data[0].toString());
+}
+
 
 void ScIntrospectionParserWorker::process(const QString &input)
 {

@@ -61,6 +61,7 @@ set ( ide_moc_hdr
     core/doc_manager.hpp
     core/settings/manager.hpp
     core/session_manager.hpp
+    primitives/sc_ipc_channel.hpp
     widgets/cmd_line.hpp
     widgets/doc_list.hpp
     widgets/documents_dialog.hpp
@@ -117,6 +118,7 @@ set ( ide_src
     core/session_manager.cpp
     core/util/standard_dirs.cpp
     core/util/scdoc_log.cpp
+    primitives/sc_ipc_channel.cpp
     widgets/cmd_line.cpp
     widgets/doc_list.cpp
     widgets/documents_dialog.cpp
@@ -242,14 +244,14 @@ if(APPLE)
     endforeach()
 endif()
 
-# This sets up the exe icon for windows under mingw.
-if(MINGW)
+# This sets up the exe icon for windows.
+if(WIN32)
  set(RES_FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/scide.rc)
  set(CMAKE_RC_COMPILER_INIT windres)
  ENABLE_LANGUAGE(RC)
  SET(CMAKE_RC_COMPILE_OBJECT
  "<CMAKE_RC_COMPILER> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
-endif(MINGW)
+endif(WIN32)
 
 
 # final builds of the IDE seem to be broken atm
@@ -370,7 +372,15 @@ if(APPLE)
                 #fixup_qt5_executable(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\")
                 " COMPONENT Runtime)
 
-
+elseif(CMAKE_GENERATOR MATCHES "Visual Studio 12 2013")
+    set_property(TARGET SuperCollider PROPERTY RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/editors/sc-ide")
+	install(TARGETS SuperCollider
+            CONFIGURATIONS Debug;Release
+			DESTINATION "SuperCollider"
+			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)    
+    install(FILES ${translations}
+            CONFIGURATIONS Debug;Release
+			DESTINATION "SuperCollider/translations")
 elseif(WIN32)
 	install(TARGETS SuperCollider
 			DESTINATION "SuperCollider"

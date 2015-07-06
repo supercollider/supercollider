@@ -36,52 +36,47 @@
 #include "PyrSymbol.h"
 
 #include "sc_ipc_client.hpp"
+#include <QHostAddress>
+#include <QDebug>
 
-SCIpcClient::SCIpcClient( const char * ideName ):
-        mSocket(NULL)
+ScIpcClient::ScIpcClient( const char * ideName )
 {
-    mSocket = new QLocalSocket();
-    mSocket->connectToServer(QString(ideName));
-    connect(mSocket, SIGNAL(readyRead()), this, SLOT(readIDEData()));
+	mSocket = new QTcpSocket();
+	
+	QString tag("sclang");
+	mIpcChannel = new ScIpcChannel(mSocket, tag, static_cast<IIpcHandler*>(this));
+
+	mSocket->connectToHost(QHostAddress(QHostAddress::LocalHost), ScIpcChannel::Port);
+	connect(mSocket, SIGNAL(readyRead()), this, SLOT(readIDEData()));
+
 }
 
-void SCIpcClient::send(const char * data, size_t length)
+ScIpcClient::~ScIpcClient()
 {
-    mSocket->write(data, length);
+	if (mSocket) {
+		mSocket->disconnect();
+		mSocket->deleteLater();
+		mSocket = nullptr;
+	}
+
+	if (mIpcChannel) {
+		delete mIpcChannel;
+		mIpcChannel = nullptr;
+	}
 }
 
-SCIpcClient::~SCIpcClient()
+void ScIpcClient::readIDEData() 
 {
-    mSocket->disconnectFromServer();
+	mIpcChannel->read();
+}
+   
+void ScIpcClient::onIpcLog(const QString &message) 
+{
+	qDebug() << message;
+	post(message.toStdString().c_str());
 }
 
-void SCIpcClient::readIDEData() {
-    mIpcData.append(mSocket->readAll());
-    
-    while (mIpcData.size()) {
-        QBuffer receivedData ( &mIpcData );
-        receivedData.open ( QIODevice::ReadOnly );
-        
-        QDataStream in ( &receivedData );
-        in.setVersion ( QDataStream::Qt_4_6 );
-        QString selector;
-        QVariantList argList;
-        in >> selector;
-        if ( in.status() != QDataStream::Ok )
-            return;
-
-        in >> argList;
-        
-        if ( in.status() != QDataStream::Ok )
-            return;
-        
-        mIpcData.remove ( 0, receivedData.pos() );
-        
-        onResponse(selector, argList);
-    }
-}
-    
-void SCIpcClient::onResponse( const QString & selector, const QVariantList & argList )
+void ScIpcClient::onIpcMessage( const QString & selector, const QVariantList & argList ) 
 {
     static QString upDateDocTextSelector("updateDocText");
     static QString upDateDocSelectionSelector("updateDocSelection");
@@ -92,7 +87,7 @@ void SCIpcClient::onResponse( const QString & selector, const QVariantList & arg
         updateDocSelection(argList);
 }
 
-void SCIpcClient::updateDocText( const QVariantList & argList )
+void ScIpcClient::updateDocText( const QVariantList & argList )
 {
     QByteArray quuid = argList[0].toByteArray();
     int pos = argList[1].toInt();
@@ -101,15 +96,16 @@ void SCIpcClient::updateDocText( const QVariantList & argList )
     setTextMirrorForDocument(quuid, newChars, pos, charsRemoved);
 }
 
-void SCIpcClient::updateDocSelection( const QVariantList & argList )
-{
-    QByteArray quuid = argList[0].toByteArray();
+void ScIpcClient::updateDocSelection( const QVariantList & argList )
+{		
+	QByteArray quuid = argList[0].toByteArray();
     int start = argList[1].toInt();
     int range = argList[2].toInt();
+
     setSelectionMirrorForDocument(quuid, start, range);
 }
 
-QString SCIpcClient::getTextMirrorForDocument(QByteArray & id, int pos, int range)
+QString ScIpcClient::getTextMirrorForDocument(QByteArray & id, int pos, int range)
 {
     QString returnText;
     if (mDocumentTextMirrors.contains(id)) {
@@ -126,14 +122,14 @@ QString SCIpcClient::getTextMirrorForDocument(QByteArray & id, int pos, int rang
             mTextMirrorHashMutex.unlock();
         }
     } else {
-        post("WARNING: Attempted to access missing Text Mirror for Document %s\n", id.constData());
+        post("WARNING: Attempted to access (get) missing Text Mirror for Document %s\n", id.constData());
     }
     return returnText;
 }
 
-void SCIpcClient::setTextMirrorForDocument(QByteArray & id, const QString & text, int pos, int range)
+void ScIpcClient::setTextMirrorForDocument(QByteArray & id, const QString & text, int pos, int range)
 {
-    if((pos == 0) && range == -1){
+    if ((pos == 0) && range == -1) {
         mTextMirrorHashMutex.lock();
         mDocumentTextMirrors[id] = text;
         mTextMirrorHashMutex.unlock();
@@ -147,12 +143,12 @@ void SCIpcClient::setTextMirrorForDocument(QByteArray & id, const QString & text
             mDocumentTextMirrors[id] = existingText.replace(pos, range, text);
             mTextMirrorHashMutex.unlock();
         } else {
-            post("WARNING: Attempted to modify missing Text Mirror for Document %s\n", id.constData());
+            post("WARNING: Attempted to modify (set) missing Text Mirror for Document %s\n", id.constData());
         }
     }
 }
 
-QPair<int, int> SCIpcClient::getSelectionMirrorForDocument(QByteArray & id)
+QPair<int, int> ScIpcClient::getSelectionMirrorForDocument(QByteArray & id)
 {
     QPair<int, int> selection;
     if (mDocumentSelectionMirrors.contains(id)) {
@@ -160,21 +156,20 @@ QPair<int, int> SCIpcClient::getSelectionMirrorForDocument(QByteArray & id)
         selection = mDocumentSelectionMirrors[id];
         mSelMirrorHashMutex.unlock();
     } else {
-        post("WARNING: Attempted to access missing Selection Mirror for Document %s\n", id.constData());
+        post("WARNING: Attempted to access (get selection) missing Selection Mirror for Document %s\n", id.constData());
         selection = qMakePair(0, 0);
     }
     return selection;
 }
 
-void SCIpcClient::setSelectionMirrorForDocument(QByteArray & id, int start, int range)
+void ScIpcClient::setSelectionMirrorForDocument(QByteArray & id, int start, int range)
 {
     mSelMirrorHashMutex.lock();
     mDocumentSelectionMirrors[id] = qMakePair(start, range);
     mSelMirrorHashMutex.unlock();
 }
 
-static SCIpcClient * gIpcClient = NULL;
-
+static ScIpcClient * gIpcClient = NULL;
 
 int ScIDE_Connect(struct VMGlobals *g, int numArgsPushed)
 {
@@ -189,8 +184,8 @@ int ScIDE_Connect(struct VMGlobals *g, int numArgsPushed)
     int status = slotStrVal(ideNameSlot, ideName, 1024);
     if (status != errNone)
         return errWrongType;
-
-    gIpcClient = new SCIpcClient(ideName);
+    //post("DEBUG::starting ScIpcClient");
+    gIpcClient = new ScIpcClient(ideName);
 
     return errNone;
 }
@@ -198,9 +193,7 @@ int ScIDE_Connect(struct VMGlobals *g, int numArgsPushed)
 int ScIDE_Connected(struct VMGlobals *g, int numArgsPushed)
 {
     PyrSlot * returnSlot = g->sp - numArgsPushed + 1;
-
     SetBool(returnSlot, gIpcClient != 0);
-
     return errNone;
 }
 
@@ -306,11 +299,10 @@ int ScIDE_Send(struct VMGlobals *g, int numArgsPushed)
 
     try {
         YAMLSerializer serializer(argSlot);
-
-        QDataStream stream(gIpcClient->mSocket);
-        stream.setVersion(QDataStream::Qt_4_6);
-        stream << QString(id);
-        stream << QString::fromUtf8(serializer.data());
+		QString const& yamlstr = QString::fromUtf8(serializer.data(), serializer.size());
+		
+		gIpcClient->mIpcChannel->write(QString(id), { QVariant(yamlstr) });
+		
     } catch (std::exception const & e) {
         postfl("Exception during ScIDE_Send: %s\n", e.what());
         return errFailed;
@@ -382,7 +374,7 @@ int ScIDE_SetDocTextMirror(struct VMGlobals *g, int numArgsPushed)
 #ifndef _WIN32
     char text[length + 1];
 #else
-    char * text = (char*)_alloca(length + 1);
+    char * text = (char*) malloc(length + 1);
 #endif
     if (slotStrVal( textSlot, text, length + 1))
         return errWrongType;
@@ -400,6 +392,10 @@ int ScIDE_SetDocTextMirror(struct VMGlobals *g, int numArgsPushed)
     QString docText = QString(text);
     
     gIpcClient->setTextMirrorForDocument(key, docText, pos, range);
+
+#ifdef _WIN32
+	free(text);
+#endif
 
     return errNone;
 }

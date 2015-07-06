@@ -141,14 +141,14 @@ if(WIN32)
         list(APPEND sclang_sources LangPrimSource/SC_PortMidi.cpp)
 endif()
 
-# This sets up the exe icon for windows under mingw.
-if(MINGW)
+# This sets up the exe icon for windows.
+if(WIN32)
  set(RES_FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/sclang.rc)
  set(CMAKE_RC_COMPILER_INIT windres)
  ENABLE_LANGUAGE(RC)
  SET(CMAKE_RC_COMPILE_OBJECT
  "<CMAKE_RC_COMPILER> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
-endif(MINGW)
+endif(WIN32)
 
 if(SC_WII)
 	if(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -178,8 +178,8 @@ endif()
 if(SC_IDE)
 	add_definitions(-DSC_IDE -DQT_NO_KEYWORDS)
 
-	qt5_wrap_cpp( SCLANG_MOC_SRCS ../editors/sc-ide/primitives/sc_ipc_client.hpp )
-	list(APPEND sclang_sources ../editors/sc-ide/primitives/sc_ipc_client.cpp)
+	qt5_wrap_cpp( SCLANG_MOC_SRCS ../editors/sc-ide/primitives/sc_ipc_client.hpp ../editors/sc-ide/primitives/sc_ipc_channel.hpp)
+	list(APPEND sclang_sources ../editors/sc-ide/primitives/sc_ipc_client.cpp ../editors/sc-ide/primitives/sc_ipc_channel.cpp)
 	list(APPEND sclang_sources ${SCLANG_MOC_SRCS})
 endif()
 
@@ -291,8 +291,7 @@ if (FFTW3F_FOUND)
 endif()
 
 if (WIN32)
-	target_link_libraries(libsclang wsock32 ws2_32)
-    target_link_libraries(libsclang portmidi)
+  target_link_libraries(libsclang wsock32 ws2_32 portmidi)
 endif()
 
 if (GC_SANITYCHECK)
@@ -325,6 +324,12 @@ if(APPLE)
 	install(TARGETS sclang
 			DESTINATION "${scappbindir}"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+elseif(CMAKE_GENERATOR MATCHES "Visual Studio 12 2013")
+    set_property(TARGET  sclang PROPERTY RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lang")
+    install(TARGETS sclang
+        CONFIGURATIONS Debug;Release
+        DESTINATION "SuperCollider"
+		PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 elseif(WIN32)
 	install(TARGETS sclang
 			DESTINATION "SuperCollider"

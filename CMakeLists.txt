@@ -15,15 +15,41 @@ enable_testing()
 
 include (cmake_modules/FinalFile.cmake)
 
-if (NOT CMAKE_BUILD_TYPE)
-	message(STATUS "Build type defaulting to \"RelWithDebInfo\"")
-	set(CMAKE_BUILD_TYPE "RelWithDebInfo")
+if(CMAKE_GENERATOR MATCHES "Visual Studio 12 2013")
+    set(CMAKE_CONFIGURATION_TYPES Debug Release)
+    set(CMAKE_CONFIGURATION_TYPES "${CMAKE_CONFIGURATION_TYPES}" CACHE STRING
+        "Reset the configurations to what we need/support"
+        FORCE
+    )
+    message(STATUS "Generating files with generator \"${CMAKE_GENERATOR}\"")
+    message(STATUS "Please choose build configuration (\"Release\" or \"Debug\") in next step.")
+elseif(NOT CMAKE_GENERATOR MATCHES Xcode)
+    if (NOT CMAKE_BUILD_TYPE)
+        message(STATUS "Build type defaulting to \"RelWithDebInfo\"")
+        set(CMAKE_BUILD_TYPE "RelWithDebInfo")
+    else(NOT CMAKE_BUILD_TYPE)
+        message("-- Building in *${CMAKE_BUILD_TYPE}*-mode")
+    endif(NOT CMAKE_BUILD_TYPE)
 endif()
 
 if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 	message(WARNING "WARNING: IN-PLACE BUILDS ARE NOT RECOMMENDED - PLEASE USE A BUILD DIRECTORY")
 endif()
 
+##############################################################################################
+# Win - Create target architecture Variable and set install path to SC default (cached system
+# default location throws error)
+if(WIN32)
+    if(CMAKE_GENERATOR MATCHES "64" OR "$ENV{MSYSTEM}" MATCHES "64")
+        SET(CMAKE_LIBRARY_ARCHITECTURE "x64" CACHE STRING "Architecture of target system (for 64bit)")
+    else()
+        SET(CMAKE_LIBRARY_ARCHITECTURE "x86" CACHE STRING "Architecture of target system (for 32bit)")
+    endif()
+
+    if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+        SET(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install" CACHE STRING "Cmake install path" FORCE)
+    endif()
+endif(WIN32)
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules
                       ${CMAKE_MODULE_PATH})
@@ -139,7 +165,13 @@ option(SC_MEMORY_DEBUGGING "Build sclang&scsynth for memory debugging (disable m
 option(GC_SANITYCHECK "Enable sanity checks in the sclang garbage collector.")
 
 option(NO_LIBSNDFILE "Disable soundfile functionality. (Not recommended.)" OFF)
-option(NO_AVAHI "Disable Avahi support. (Not recommended.)" OFF)
+
+if(WIN32)
+ 	option(NO_AVAHI "Disable Avahi support. (Not recommended.)" ON)
+else(WIN32)
+ 	option(NO_AVAHI "Disable Avahi support. (Not recommended.)" OFF)
+endif(WIN32)
+
 option(NO_GPL3 "Disable GPL3 code, for pure-GPL2 situations. (Not recommended.)" OFF)
 
 option(SCLANG_SERVER "Build with internal server." ON)
@@ -200,7 +232,7 @@ endif()
 # some preprocessor flags
 if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
 	if (SSE)
-		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}   -msse")
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse")
 		set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -msse")
 		if(NOT APPLE AND NOT CMAKE_COMPILER_IS_CLANG)
 			set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mfpmath=sse")
@@ -241,8 +273,10 @@ if (CMAKE_COMPILER_IS_INTEL AND NOT WIN32)
 	add_definitions(-diag-disable 279) # controlling expression is constant
 endif()
 
-if(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
+if("x${CMAKE_CXX_COMPILER_ID}" STREQUAL "xMSVC")
   foreach(flag CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
+    set(${flag} "${${flag}} /wd4520") # multiple default constructors (boost::flyweight)
+	set(${flag} "${${flag}} /wd4065") # switch statement contains 'default' but no 'case' labels
     set(${flag} "${${flag}} /wd4018") # signed/unsigned mismatch
     set(${flag} "${${flag}} /wd4102") # unreferenced label
     set(${flag} "${${flag}} /wd4267") # conversion from 'size_t' to 'int', possible loss of data
@@ -264,6 +298,15 @@ endif()
 if(MINGW)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mstackrealign")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mstackrealign")
+endif()
+
+if(MINGW AND ${CMAKE_CXX_COMPILER_VERSION} MATCHES "4.9")
+    set (CMAKE_CXX_FLAGS_MINSIZEREL "-O0 -DNDEBUG" CACHE STRING "Disable compiler optimizations for now" FORCE)
+    set (CMAKE_CXX_FLAGS_RELEASE "-O0 -DNDEBUG" CACHE STRING "Disable compiler optimizations for now" FORCE)
+    set (CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O0 -DNDEBUG" CACHE STRING "Disable compiler optimizations for now" FORCE)
+    set (CMAKE_C_FLAGS_MINSIZEREL "-O0 -DNDEBUG" CACHE STRING "Disable compiler optimizations for now" FORCE)
+    set (CMAKE_C_FLAGS_RELEASE "-O0 -DNDEBUG" CACHE STRING "Disable compiler optimizations for now" FORCE)
+    set (CMAKE_C_FLAGS_RELWITHDEBINFO "-O0 -DNDEBUG" CACHE STRING "Disable compiler optimizations for now" FORCE)
 endif()
 
 if (NO_GPL3)
@@ -352,7 +395,7 @@ if(APPLE)
 					"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/${onedirectory} ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary/${onedirectory} )" )
 			endif()
 		endforeach(onedirectory)
-	endif()
+    endif()
 else()
 	install(DIRECTORY SCClassLibrary
 		DESTINATION ${auxresourcesdir}
@@ -362,7 +405,10 @@ else()
 	)
 endif()
 
-if(NOT APPLE)
+if(CMAKE_GENERATOR MATCHES "Visual Studio 12 2013")
+	install(DIRECTORY sounds   CONFIGURATIONS Debug;Release DESTINATION "${auxresourcesdir}")
+	install(DIRECTORY examples CONFIGURATIONS Debug;Release DESTINATION "${auxresourcesdir}")
+elseif(NOT APPLE)
 	install(DIRECTORY sounds   DESTINATION ${auxresourcesdir})
 	install(DIRECTORY examples DESTINATION ${auxresourcesdir})
 elseif(APPLE)
@@ -396,7 +442,29 @@ else()
 	)
 endif()
 
-install(FILES ${AdditionalInstallFiles} DESTINATION ${auxresourcesdir})
+if(WIN32)
+    SET(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}")
+    include(InstallRequiredSystemLibraries)
+
+    install(FILES ${AdditionalInstallFiles} DESTINATION "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}")
+
+    if(MSYS)
+        SET(QT_PLATFORM_PLUGIN_PREFIX ${Qt5Core_DIR}/../../../share/qt5/plugins/platforms CACHE STRING "Location of qt platform plugin for windows. Override when not using MinGW-cmake!")
+    else()
+        SET(QT_PLATFORM_PLUGIN_PREFIX ${Qt5Core_DIR}/../../../plugins/platforms CACHE STRING "Location of qt platform plugin for windows. Override if you have multiple paths in your cmake prefix path")
+    endif()
+
+    install(FILES "${QT_PLATFORM_PLUGIN_PREFIX}/qwindows.dll"
+        CONFIGURATIONS Release
+			  DESTINATION "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/platforms"
+    )
+    install(FILES "${QT_PLATFORM_PLUGIN_PREFIX}/qwindowsd.dll"
+        CONFIGURATIONS Debug
+			  DESTINATION "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/platforms"
+    )
+else()
+    install(FILES ${AdditionalInstallFiles} DESTINATION ${auxresourcesdir})
+endif()
 
 if(INSTALL_HELP)
 	if(SC_SYMLINK_CLASSLIB AND APPLE)

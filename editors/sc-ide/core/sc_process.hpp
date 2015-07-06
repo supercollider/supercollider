@@ -22,16 +22,18 @@
 #define SCIDE_SC_PROCESS_HPP_INCLUDED
 
 #include "sc_introspection.hpp"
+#include "../primitives/sc_ipc_channel.hpp"
 
 #include <QAction>
 #include <QByteArray>
+#include <QBuffer>
 #include <QDateTime>
 #include <QDebug>
 #include <QProcess>
 #include <QThread>
 #include <QUuid>
-#include <QtNetwork/QLocalSocket>
-#include <QtNetwork/QLocalServer>
+#include <QtNetwork/QTcpSocket>
+#include <QtNetwork/QTcpServer>
 
 namespace ScIDE {
 
@@ -39,12 +41,14 @@ namespace Settings { class Manager; }
 class ScIntrospectionParser;
 
 class ScProcess:
-    public QProcess
+    public QProcess,
+	IIpcHandler
 {
     Q_OBJECT
 
 public:
     ScProcess( Settings::Manager *, QObject * parent );
+    ~ScProcess();
 
     enum ActionRole {
         ToggleRunning = 0,
@@ -80,6 +84,8 @@ public:
     void updateTextMirrorForDocument ( class Document * doc, int position, int charsRemoved, int charsAdded );
     void updateSelectionMirrorForDocument ( class Document * doc, int start, int range);
 
+	void sendToScLang(QString const & selector, std::initializer_list<QVariant> args);
+	
 public slots:
     void toggleRunning();
     void startLanguage (void);
@@ -107,14 +113,13 @@ private slots:
     void onNewIpcConnection();
     void onIpcData();
     void finalizeConnection();
-    void onProcessStateChanged( QProcess::ProcessState state);
+    void onProcessStateChanged(QProcess::ProcessState state);
     void onReadyRead(void);
     void updateToggleRunningAction();
 
 private:
     void onStart();
-    void onResponse( const QString & selector, const QString & data );
-
+    
     void prepareActions(Settings::Manager * settings);
     void postQuitNotification();
 
@@ -123,14 +128,19 @@ private:
     ScLanguage::Introspection mIntrospection;
     ScIntrospectionParser *mIntrospectionParser;
 
-    QLocalServer *mIpcServer;
-    QLocalSocket *mIpcSocket;
-    QString mIpcServerName;
-    QByteArray mIpcData;
+    QTcpServer *mIpcServer;
+	QTcpSocket *mIpcSocket;
+	QString mIpcServerName;
+	ScIpcChannel *mIpcChannel;
 
     bool mTerminationRequested;
     QDateTime mTerminationRequestTime;
     bool mCompiled;
+
+	// IIpcHandler
+	void onIpcLog(const QString &message) override;
+	void onIpcMessage(const QString & selector, const QVariantList & argList) override;
+
 };
 
 class ScRequest : public QObject

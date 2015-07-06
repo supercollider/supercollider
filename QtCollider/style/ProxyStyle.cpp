@@ -19,9 +19,9 @@ static bool AlwaysShowScrollbars() {
 #elif Q_OS_X11
   return !QcApplication::SystemHasMouseWheel();
 
-#elif Q_OS_WIN
-  return !QcApplication::SystemHasMouseWheel();
-
+// #elif Q_OS_WIN
+//  return !QcApplication::SystemHasMouseWheel();
+//
 #else
   return !QcApplication::SystemHasMouseWheel();
 #endif
@@ -43,7 +43,7 @@ void ProxyStyle::drawComplexControl ( ComplexControl ctrl, const QStyleOptionCom
     QProxyStyle::drawComplexControl( ctrl, &opt2, p, w );
     return;
   }
-  
+
   if (ctrl == QStyle::CC_ScrollBar && AlwaysShowScrollbars()) {
     const QStyleOptionSlider *optSlider = static_cast<const QStyleOptionSlider*>(opt);
     QStyleOptionSlider opt2( *optSlider );

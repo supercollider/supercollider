@@ -73,8 +73,8 @@ set(scsynth_sources
 
 if(APPLE)
 	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
-	
-	list(APPEND scsynth_sources 
+
+	list(APPEND scsynth_sources
 		${CMAKE_SOURCE_DIR}/common/SC_Apple.mm
 	)
 	set_source_files_properties( ${CMAKE_SOURCE_DIR}/common/SC_Apple.mm
@@ -187,7 +187,10 @@ else()
 endif()
 
 if (WIN32)
-	target_link_libraries(libscsynth wsock32 ws2_32 winmm)
+	target_link_libraries(libscsynth wsock32 ws2_32 winmm kernel32 user32
+		gdi32 winspool shell32 ole32 oleaut32 uuid comdlg32 advapi32 tlsf
+		boost_thread boost_system)
+
 endif()
 
 if(NOT WIN32)
@@ -245,6 +248,12 @@ if(APPLE)
 			RUNTIME DESTINATION "${scappbindir}"
 			LIBRARY DESTINATION "${scappauxresourcesdir}"
 			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE OWNER_WRITE)
+elseif(CMAKE_GENERATOR MATCHES "Visual Studio 12 2013")
+    set_property(TARGET scsynth PROPERTY RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/server/scsynth)
+    install(TARGETS ${INSTALL_TARGETS}
+        CONFIGURATIONS Debug;Release
+        DESTINATION "SuperCollider"
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 elseif(WIN32)
 	install(TARGETS ${INSTALL_TARGETS}
 			DESTINATION "SuperCollider"
