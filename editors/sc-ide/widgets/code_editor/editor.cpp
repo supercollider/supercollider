@@ -499,8 +499,6 @@ void GenericCodeEditor::keyPressEvent(QKeyEvent * event)
 
     QTextCursor cursor( textCursor() );
 
-    cursor.beginEditBlock();
-
     bool updateCursor = false;
 
     if (event == QKeySequence::InsertLineSeparator) {
@@ -544,8 +542,6 @@ void GenericCodeEditor::keyPressEvent(QKeyEvent * event)
 
     if (mDoc->keyDownActionEnabled() || Main::documentManager()->globalKeyDownActionEnabled())
         doKeyAction(event);
-
-    cursor.endEditBlock();
 }
     
 void GenericCodeEditor::handleKeyDown(QKeyEvent *event, QTextCursor & textCursor)
@@ -593,6 +589,7 @@ void GenericCodeEditor::handleKeyBackspace(QKeyEvent * event, QTextCursor & text
             QPlainTextEdit::keyPressEvent(event);
         } else {
             // in overwrite mode, backspace should insert a space
+            textCursor.beginEditBlock();
             textCursor.movePosition(QTextCursor::PreviousCharacter, QTextCursor::KeepAnchor);
             QString selectedText = textCursor.selectedText();
             if (selectedText == QStringLiteral(" ") ||
@@ -602,6 +599,7 @@ void GenericCodeEditor::handleKeyBackspace(QKeyEvent * event, QTextCursor & text
                 textCursor.insertText(QString(QChar(' ')));
                 textCursor.movePosition(QTextCursor::PreviousCharacter);
             }
+            textCursor.endEditBlock();
         }
         updateCursor = true;
     }
