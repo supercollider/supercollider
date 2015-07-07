@@ -80,6 +80,9 @@ Dialog::Dialog( Manager *settings, QWidget * parent ):
     connect(ui->buttonBox->button(QDialogButtonBox::Apply), SIGNAL(clicked()), this, SLOT(apply()));
     connect(ui->buttonBox->button(QDialogButtonBox::Reset), SIGNAL(clicked()), this, SLOT(reset()));
 
+
+    ui->configPageList->setMinimumWidth( ui->configPageList->sizeHintForColumn(0) );
+
     reset();
 }
 
