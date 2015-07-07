@@ -48,10 +48,23 @@ Version number available as major, minor, and patch.
 #           error "Cannot determine build number from _MSC_FULL_VER"
 #       endif
 #   endif
-#   define BOOST_COMP_MSVC_DETECTION BOOST_VERSION_NUMBER(\
-        _MSC_VER/100-6,\
-        _MSC_VER%100,\
-        BOOST_COMP_MSVC_BUILD)
+    /*
+    VS2014 was skipped in the release sequence for MS. Which
+    means that the compiler and VS product versions are no longer
+    in sync. Hence we need to use different formulas for
+    mapping from MSC version to VS product version.
+    */
+#   if (_MSC_VER >= 1900)
+#       define BOOST_COMP_MSVC_DETECTION BOOST_VERSION_NUMBER(\
+            _MSC_VER/100-5,\
+            _MSC_VER%100,\
+            BOOST_COMP_MSVC_BUILD)
+#   else
+#       define BOOST_COMP_MSVC_DETECTION BOOST_VERSION_NUMBER(\
+            _MSC_VER/100-6,\
+            _MSC_VER%100,\
+            BOOST_COMP_MSVC_BUILD)
+#   endif
 #endif
 
 #ifdef BOOST_COMP_MSVC_DETECTION

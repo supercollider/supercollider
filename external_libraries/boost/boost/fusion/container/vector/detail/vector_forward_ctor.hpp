@@ -8,7 +8,7 @@
 #if !defined(FUSION_VECTOR_FORWARD_CTOR_07122005_1123)
 #define FUSION_VECTOR_FORWARD_CTOR_07122005_1123
 
-#define FUSION_FORWARD_CTOR_FORWARD(z, n, _)    std::forward<U##n>(_##n)
+#define FUSION_FORWARD_CTOR_FORWARD(z, n, _)    BOOST_FUSION_FWD_ELEM(U##n, _##n)
 
 #define BOOST_PP_FILENAME_1 \
     <boost/fusion/container/vector/detail/vector_forward_ctor.hpp>
@@ -26,13 +26,23 @@
 
 #define M BOOST_PP_ITERATION()
 
+    // XXX:
+#if defined(__WAVE__) && defined(BOOST_FUSION_CREATE_PREPROCESSED_FILES)
+FUSION_HASH if !defined(BOOST_CLANG)
+    BOOST_CONSTEXPR
+FUSION_HASH endif
+#else
+#if !defined(BOOST_CLANG)
+    BOOST_CONSTEXPR
+#endif
+#endif
     BOOST_FUSION_GPU_ENABLED
 #if M == 1
     explicit
 #endif
     vector(BOOST_PP_ENUM_BINARY_PARAMS(
-        M, typename detail::call_param<T, >::type _))
-        : vec(BOOST_PP_ENUM_PARAMS(M, _)) {}
+        M, typename detail::call_param<T, >::type arg))
+        : vec(BOOST_PP_ENUM_PARAMS(M, arg)) {}
 
 #if defined(__WAVE__) && defined(BOOST_FUSION_CREATE_PREPROCESSED_FILES)
 FUSION_HASH if !defined(BOOST_NO_CXX11_RVALUE_REFERENCES)
@@ -40,12 +50,22 @@ FUSION_HASH if !defined(BOOST_NO_CXX11_RVALUE_REFERENCES)
 #if !defined(BOOST_NO_CXX11_RVALUE_REFERENCES) || \
     (defined(__WAVE__) && defined(BOOST_FUSION_CREATE_PREPROCESSED_FILES))
     template <BOOST_PP_ENUM_PARAMS(M, typename U)>
+    // XXX:
+#if defined(__WAVE__) && defined(BOOST_FUSION_CREATE_PREPROCESSED_FILES)
+FUSION_HASH if !defined(BOOST_CLANG)
+    BOOST_CXX14_CONSTEXPR
+FUSION_HASH endif
+#else
+#if !defined(BOOST_CLANG)
+    BOOST_CXX14_CONSTEXPR
+#endif
+#endif
     BOOST_FUSION_GPU_ENABLED
 #if M == 1
     explicit
 #endif
-    vector(BOOST_PP_ENUM_BINARY_PARAMS(M, U, && _))
-        : vec(BOOST_PP_ENUM(M, FUSION_FORWARD_CTOR_FORWARD, _)) {}
+    vector(BOOST_PP_ENUM_BINARY_PARAMS(M, U, && arg))
+        : vec(BOOST_PP_ENUM(M, FUSION_FORWARD_CTOR_FORWARD, arg)) {}
 #endif
 #if defined(__WAVE__) && defined(BOOST_FUSION_CREATE_PREPROCESSED_FILES)
 FUSION_HASH endif

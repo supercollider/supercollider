@@ -17,6 +17,14 @@
 #ifndef BOOST_MOVE_MOVE_UTILITY_CORE_HPP
 #define BOOST_MOVE_MOVE_UTILITY_CORE_HPP
 
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+#
+#if defined(BOOST_HAS_PRAGMA_ONCE)
+#  pragma once
+#endif
+
 #include <boost/move/detail/config_begin.hpp>
 #include <boost/move/core.hpp>
 #include <boost/move/detail/meta_utils.hpp>
@@ -272,14 +280,6 @@
 
 namespace boost{
 namespace move_detail{
-
-template<class T>
-void swap(T &a, T &b)
-{
-   T c((::boost::move(a)));
-   a = ::boost::move(b);
-   b = ::boost::move(c);
-}
 
 template <typename T>
 typename boost::move_detail::add_rvalue_reference<T>::type declval();

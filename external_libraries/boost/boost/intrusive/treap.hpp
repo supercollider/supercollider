@@ -12,19 +12,10 @@
 #ifndef BOOST_INTRUSIVE_TREAP_HPP
 #define BOOST_INTRUSIVE_TREAP_HPP
 
-#if defined(_MSC_VER)
-#  pragma once
-#endif
-
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/intrusive_fwd.hpp>
-#include <algorithm>
-#include <cstddef>
-#include <functional>
-#include <utility>
 
 #include <boost/intrusive/detail/assert.hpp>
-#include <boost/static_assert.hpp>
 #include <boost/intrusive/bs_set_hook.hpp>
 #include <boost/intrusive/bstree.hpp>
 #include <boost/intrusive/detail/tree_node.hpp>
@@ -34,10 +25,21 @@
 #include <boost/intrusive/detail/mpl.hpp>
 #include <boost/intrusive/treap_algorithms.hpp>
 #include <boost/intrusive/link_mode.hpp>
-#include <boost/move/utility_core.hpp>
 #include <boost/intrusive/priority_compare.hpp>
 #include <boost/intrusive/detail/node_cloner_disposer.hpp>
 #include <boost/intrusive/detail/key_nodeptr_comp.hpp>
+
+#include <boost/static_assert.hpp>
+#include <boost/move/utility_core.hpp>
+#include <boost/move/adl_move_swap.hpp>
+
+#include <cstddef>
+#include <boost/intrusive/detail/minimal_less_equal_header.hpp>
+#include <boost/intrusive/detail/minimal_pair_header.hpp>   //std::pair
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
+#  pragma once
+#endif
 
 namespace boost {
 namespace intrusive {
@@ -77,6 +79,7 @@ template<class ValueTraits, class VoidOrKeyComp, class VoidOrPrioComp, class Siz
 class treap_impl
    /// @cond
    : public bstree_impl<ValueTraits, VoidOrKeyComp, SizeType, ConstantTimeSize, BsTreeAlgorithms, HeaderHolder>
+   //Use public inheritance to avoid MSVC bugs with closures
    , public detail::ebo_functor_holder
          < typename get_prio
             < VoidOrPrioComp
@@ -90,7 +93,7 @@ class treap_impl
    /// @cond
    typedef bstree_impl< ValueTraits, VoidOrKeyComp, SizeType
                       , ConstantTimeSize, BsTreeAlgorithms
-                      , HeaderHolder>                               tree_type;
+                      , HeaderHolder>                                tree_type;
    typedef tree_type                                                 implementation_defined;
    typedef get_prio
                < VoidOrPrioComp
@@ -100,7 +103,7 @@ class treap_impl
       <typename get_prio_type::type>                                 prio_base;
 
    /// @endcond
-   
+
    typedef typename implementation_defined::pointer                  pointer;
    typedef typename implementation_defined::const_pointer            const_pointer;
    typedef typename implementation_defined::value_type               value_type;
@@ -184,7 +187,7 @@ class treap_impl
 
    //! @copydoc ::boost::intrusive::bstree::bstree(bstree &&)
    treap_impl(BOOST_RV_REF(treap_impl) x)
-      : tree_type(::boost::move(static_cast<tree_type&>(x)))
+      : tree_type(BOOST_MOVE_BASE(tree_type, x))
       , prio_base(::boost::move(x.priv_pcomp()))
    {}
 
@@ -329,8 +332,7 @@ class treap_impl
    {
       tree_type::swap(other);
       //This can throw
-      using std::swap;
-      swap(this->priv_pcomp(), other.priv_pcomp());
+      ::boost::adl_move_swap(this->priv_pcomp(), other.priv_pcomp());
    }
 
    //! <b>Requires</b>: Disposer::operator()(pointer) shouldn't throw.
@@ -710,7 +712,7 @@ class treap_impl
       this->tree_type::sz_traits().increment();
    }
 
-   //! <b>Effects</b>: Erases the element pointed to by pos.
+   //! <b>Effects</b>: Erases the element pointed to by i.
    //!
    //! <b>Complexity</b>: Average complexity for erase element is constant time.
    //!
@@ -786,7 +788,7 @@ class treap_impl
 
    //! <b>Requires</b>: Disposer::operator()(pointer) shouldn't throw.
    //!
-   //! <b>Effects</b>: Erases the element pointed to by pos.
+   //! <b>Effects</b>: Erases the element pointed to by i.
    //!   Disposer::operator()(pointer) is called for the removed element.
    //!
    //! <b>Complexity</b>: Average complexity for erase element is constant time.
@@ -930,7 +932,7 @@ class treap_impl
 
    //! @copydoc ::boost::intrusive::bstree::lower_bound(const_reference)
    iterator lower_bound(const_reference value);
-   
+
    //! @copydoc ::boost::intrusive::bstree::lower_bound(const KeyType&,KeyValueCompare)
    template<class KeyType, class KeyValueCompare>
    iterator lower_bound(const KeyType& key, KeyValueCompare comp);
@@ -1096,8 +1098,6 @@ struct make_treap
 
    typedef typename detail::get_value_traits
       <T, typename packed_options::proto_value_traits>::type value_traits;
-   typedef typename detail::get_header_holder_type
-      < value_traits, typename packed_options::header_holder_type >::type header_holder_type;
 
    typedef treap_impl
          < value_traits
@@ -1105,7 +1105,7 @@ struct make_treap
          , typename packed_options::priority
          , typename packed_options::size_type
          , packed_options::constant_time_size
-         , header_holder_type
+         , typename packed_options::header_holder_type
          > implementation_defined;
    /// @endcond
    typedef implementation_defined type;
@@ -1164,11 +1164,11 @@ class treap
    {}
 
    treap(BOOST_RV_REF(treap) x)
-      :  Base(::boost::move(static_cast<Base&>(x)))
+      :  Base(BOOST_MOVE_BASE(Base, x))
    {}
 
    treap& operator=(BOOST_RV_REF(treap) x)
-   {  return static_cast<treap&>(this->Base::operator=(::boost::move(static_cast<Base&>(x))));  }
+   {  return static_cast<treap&>(this->Base::operator=(BOOST_MOVE_BASE(Base, x)));  }
 
    static treap &container_from_end_iterator(iterator end_iterator)
    {  return static_cast<treap &>(Base::container_from_end_iterator(end_iterator));   }

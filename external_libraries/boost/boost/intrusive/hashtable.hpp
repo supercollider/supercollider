@@ -12,21 +12,9 @@
 #ifndef BOOST_INTRUSIVE_HASHTABLE_HPP
 #define BOOST_INTRUSIVE_HASHTABLE_HPP
 
-#if defined(_MSC_VER)
-#  pragma once
-#endif
-
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/intrusive_fwd.hpp>
-//std C++
-#include <functional>   //std::equal_to
-#include <utility>      //std::pair
-#include <algorithm>    //std::swap, std::lower_bound, std::upper_bound
-#include <cstddef>      //std::size_t
-//boost
-#include <boost/intrusive/detail/assert.hpp>
-#include <boost/static_assert.hpp>
-#include <boost/functional/hash.hpp>
+
 //General intrusive utilities
 #include <boost/intrusive/detail/hashtable_node.hpp>
 #include <boost/intrusive/detail/transform_iterator.hpp>
@@ -44,7 +32,23 @@
 #include <boost/intrusive/slist.hpp>
 #include <boost/intrusive/pointer_traits.hpp>
 #include <boost/intrusive/detail/mpl.hpp>
+
+//boost
+#include <boost/functional/hash.hpp>
+#include <boost/intrusive/detail/assert.hpp>
+#include <boost/static_assert.hpp>
 #include <boost/move/utility_core.hpp>
+#include <boost/move/adl_move_swap.hpp>
+
+//std C++
+#include <boost/intrusive/detail/minimal_less_equal_header.hpp>   //std::equal_to
+#include <boost/intrusive/detail/minimal_pair_header.hpp>   //std::pair
+#include <algorithm>    //std::lower_bound, std::upper_bound
+#include <cstddef>      //std::size_t
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
+#  pragma once
+#endif
 
 namespace boost {
 namespace intrusive {
@@ -550,7 +554,8 @@ struct downcast_node_to_value_t
 
 template<class F, class SlistNodePtr, class NodePtr>
 struct node_cast_adaptor
-   :  private detail::ebo_functor_holder<F>
+   //Use public inheritance to avoid MSVC bugs with closures
+   :  public detail::ebo_functor_holder<F>
 {
    typedef detail::ebo_functor_holder<F> base_t;
 
@@ -800,6 +805,7 @@ struct get_hash<void, T>
 //Stores bucket_plus_vtraits plust the hash function
 template<class VoidOrKeyHash, class ValueTraits, class BucketTraits>
 struct bucket_hash_t
+   //Use public inheritance to avoid MSVC bugs with closures
    : public detail::ebo_functor_holder
    <typename get_hash< VoidOrKeyHash
                       , typename bucket_plus_vtraits<ValueTraits,BucketTraits>::value_traits::value_type
@@ -852,6 +858,7 @@ struct get_equal_to<void, T>
 //non-empty bucket shall not be cached.
 template<class VoidOrKeyHash, class VoidOrKeyEqual, class ValueTraits, class BucketTraits, bool>
 struct bucket_hash_equal_t
+   //Use public inheritance to avoid MSVC bugs with closures
    : public detail::ebo_functor_holder //equal
    <typename get_equal_to< VoidOrKeyEqual
                          , typename bucket_plus_vtraits<ValueTraits,BucketTraits>::value_traits::value_type
@@ -929,6 +936,7 @@ struct bucket_hash_equal_t
 //non-empty bucket shall be cached.
 template<class VoidOrKeyHash, class VoidOrKeyEqual, class ValueTraits, class BucketTraits>  //cache_begin == true version
 struct bucket_hash_equal_t<VoidOrKeyHash, VoidOrKeyEqual, ValueTraits, BucketTraits, true>
+   //Use public inheritance to avoid MSVC bugs with closures
    : public detail::ebo_functor_holder //equal
                <typename get_equal_to< VoidOrKeyEqual
                          , typename bucket_plus_vtraits<ValueTraits,BucketTraits>::value_traits::value_type
@@ -973,7 +981,7 @@ struct bucket_hash_equal_t<VoidOrKeyHash, VoidOrKeyEqual, ValueTraits, BucketTra
 
    void priv_swap_cache(bucket_hash_equal_t &other)
    {
-      std::swap(this->cached_begin_, other.cached_begin_);
+      ::boost::adl_move_swap(this->cached_begin_, other.cached_begin_);
    }
 
    siterator priv_begin() const
@@ -1308,7 +1316,7 @@ class hashtable_impl
 
    typedef detail::transform_iterator
       < typename slist_impl::iterator
-      , downcast_node_to_value_t 
+      , downcast_node_to_value_t
          < value_traits
          , true> >    const_local_iterator;
 
@@ -1510,13 +1518,12 @@ class hashtable_impl
    //!   found using ADL throw. Basic guarantee.
    void swap(hashtable_impl& other)
    {
-      using std::swap;
       //These can throw
-      swap(this->priv_equal(),  other.priv_equal());
-      swap(this->priv_hasher(), other.priv_hasher());
+      ::boost::adl_move_swap(this->priv_equal(),  other.priv_equal());
+      ::boost::adl_move_swap(this->priv_hasher(), other.priv_hasher());
       //These can't throw
-      swap(this->priv_bucket_traits(), other.priv_bucket_traits());
-      swap(this->priv_value_traits(), other.priv_value_traits());
+      ::boost::adl_move_swap(this->priv_bucket_traits(), other.priv_bucket_traits());
+      ::boost::adl_move_swap(this->priv_value_traits(), other.priv_value_traits());
       this->priv_swap_cache(other);
       if(constant_time_size){
          size_type backup = this->priv_size_traits().get_size();
@@ -1568,7 +1575,7 @@ class hashtable_impl
             const bucket_ptr src_buckets = src.priv_bucket_pointer();
             const bucket_ptr dst_buckets = this->priv_bucket_pointer();
             size_type constructed;
-                                      
+
             typedef node_cast_adaptor< detail::node_disposer<Disposer, value_traits, CircularSListAlgorithms>
                                      , slist_node_ptr, node_ptr > NodeDisposer;
             typedef node_cast_adaptor< detail::node_cloner  <Cloner,   value_traits, CircularSListAlgorithms>
@@ -1660,7 +1667,7 @@ class hashtable_impl
    //!
    //! <b>Effects</b>: Equivalent to this->insert_equal(t) for each element in [b, e).
    //!
-   //! <b>Complexity</b>: Average case O(N), where N is std::distance(b, e).
+   //! <b>Complexity</b>: Average case O(N), where N is distance(b, e).
    //!   Worst case O(N*this->size()).
    //!
    //! <b>Throws</b>: If the internal hasher or the equality functor throws. Basic guarantee.
@@ -1706,7 +1713,7 @@ class hashtable_impl
    //!
    //! <b>Effects</b>: Equivalent to this->insert_unique(t) for each element in [b, e).
    //!
-   //! <b>Complexity</b>: Average case O(N), where N is std::distance(b, e).
+   //! <b>Complexity</b>: Average case O(N), where N is distance(b, e).
    //!   Worst case O(N*this->size()).
    //!
    //! <b>Throws</b>: If the internal hasher or the equality functor throws. Basic guarantee.
@@ -1819,7 +1826,7 @@ class hashtable_impl
 
    //! <b>Effects</b>: Erases the range pointed to by b end e.
    //!
-   //! <b>Complexity</b>: Average case O(std::distance(b, e)),
+   //! <b>Complexity</b>: Average case O(distance(b, e)),
    //!   worst case O(this->size()).
    //!
    //! <b>Throws</b>: Nothing.
@@ -1896,7 +1903,7 @@ class hashtable_impl
    //! <b>Effects</b>: Erases the range pointed to by b end e.
    //!   Disposer::operator()(pointer) is called for the removed elements.
    //!
-   //! <b>Complexity</b>: Average case O(std::distance(b, e)),
+   //! <b>Complexity</b>: Average case O(distance(b, e)),
    //!   worst case O(this->size()).
    //!
    //! <b>Throws</b>: Nothing.
@@ -2805,7 +2812,7 @@ class hashtable_impl
 
    siterator priv_invalid_local_it() const
    {  return this->data_type::internal.internal.internal.internal.priv_invalid_local_it(); }
-   
+
    split_traits &priv_split_traits()
    {  return this->data_type::internal.priv_split_traits();  }
 
@@ -3287,11 +3294,11 @@ class hashtable
    {}
 
    hashtable(BOOST_RV_REF(hashtable) x)
-      :  Base(::boost::move(static_cast<Base&>(x)))
+      :  Base(BOOST_MOVE_BASE(Base, x))
    {}
 
    hashtable& operator=(BOOST_RV_REF(hashtable) x)
-   {  return static_cast<hashtable&>(this->Base::operator=(::boost::move(static_cast<Base&>(x))));  }
+   {  return static_cast<hashtable&>(this->Base::operator=(BOOST_MOVE_BASE(Base, x)));  }
 };
 
 #endif

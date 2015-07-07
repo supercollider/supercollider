@@ -1,0 +1,17 @@
+# Copyright John Maddock.
+# Use, modification and distribution are subject to the 
+# Boost Software License, Version 1.0. (See accompanying file 
+# LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+rule requires ( names + )
+{
+   local result ;
+   for name in $(names)
+   {
+      local msg = "Boost.Config Feature Check: " ;
+      msg += $(name) ;
+      result += [ check-target-builds $(__name__:D)//$(name) $(msg:J=) : : <build>no ] ;
+   }
+   return $(result) ;
+}
+

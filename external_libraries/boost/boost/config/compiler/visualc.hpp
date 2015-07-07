@@ -104,7 +104,7 @@
 #if (_MSC_VER >= 1400) && !defined(_DEBUG)
 #   define BOOST_HAS_NRVO
 #endif
-#if _MSC_VER >= 1500  // 150X == VC++ 9.0
+#if _MSC_VER >= 1600  // 160X == VC++ 10.0
 #  define BOOST_HAS_PRAGMA_DETECT_MISMATCH
 #endif
 //
@@ -172,26 +172,26 @@
 #  define BOOST_NO_CXX11_DECLTYPE_N3276
 #endif
 
-// C++11 features supported by VC++ 14 (aka 2014) CTP1
-// Because the CTP is unsupported, unrelease, and only alpha quality,
-// it is only supported if BOOST_MSVC_ENABLE_2014_JUN_CTP is defined.
+// C++11 features supported by VC++ 14 (aka 2015) Preview
 //
-#if (_MSC_FULL_VER < 190021730) || !defined(BOOST_MSVC_ENABLE_2014_JUN_CTP)
+#if (_MSC_FULL_VER < 190022310)
 #  define BOOST_NO_CXX11_NOEXCEPT
 #  define BOOST_NO_CXX11_REF_QUALIFIERS
 #  define BOOST_NO_CXX11_USER_DEFINED_LITERALS
 #  define BOOST_NO_CXX11_ALIGNAS
 #  define BOOST_NO_CXX11_INLINE_NAMESPACES
+#  define BOOST_NO_CXX11_CHAR16_T
+#  define BOOST_NO_CXX11_CHAR32_T
+#  define BOOST_NO_CXX11_UNICODE_LITERALS
 #  define BOOST_NO_CXX14_DECLTYPE_AUTO
 #  define BOOST_NO_CXX14_INITIALIZED_LAMBDA_CAPTURES
 #  define BOOST_NO_CXX14_RETURN_TYPE_DEDUCTION
+#  define BOOST_NO_CXX14_BINARY_LITERALS
+#  define BOOST_NO_CXX14_GENERIC_LAMBDAS
 #endif
 
 // C++11 features not supported by any versions
-#define BOOST_NO_CXX11_CHAR16_T
-#define BOOST_NO_CXX11_CHAR32_T
 #define BOOST_NO_CXX11_CONSTEXPR
-#define BOOST_NO_CXX11_UNICODE_LITERALS
 #define BOOST_NO_SFINAE_EXPR
 #define BOOST_NO_TWO_PHASE_NAME_LOOKUP
 
@@ -199,17 +199,11 @@
 #if !defined(__cpp_aggregate_nsdmi) || (__cpp_aggregate_nsdmi < 201304)
 #  define BOOST_NO_CXX14_AGGREGATE_NSDMI
 #endif
-#if !defined(__cpp_binary_literals) || (__cpp_binary_literals < 201304)
-#  define BOOST_NO_CXX14_BINARY_LITERALS
-#endif
 #if !defined(__cpp_constexpr) || (__cpp_constexpr < 201304)
 #  define BOOST_NO_CXX14_CONSTEXPR
 #endif
 #if (__cplusplus < 201304) // There's no SD6 check for this....
 #  define BOOST_NO_CXX14_DIGIT_SEPARATORS
-#endif
-#if !defined(__cpp_generic_lambdas) || (__cpp_generic_lambdas < 201304)
-#  define BOOST_NO_CXX14_GENERIC_LAMBDAS
 #endif
 #if !defined(__cpp_variable_templates) || (__cpp_variable_templates < 201304)
 #  define BOOST_NO_CXX14_VARIABLE_TEMPLATES
@@ -290,8 +284,8 @@
 #endif
 
 //
-// last known and checked version is 19.00.22129 (VC14 CTP4):
-#if (_MSC_VER > 1800 && _MSC_FULL_VER > 190022129)
+// last known and checked version is 19.00.22129 (VC14 Preview):
+#if (_MSC_VER > 1800 && _MSC_FULL_VER > 190022310)
 #  if defined(BOOST_ASSERT_CONFIG)
 #     error "Unknown compiler version - please run the configure tests and report the results"
 #  else

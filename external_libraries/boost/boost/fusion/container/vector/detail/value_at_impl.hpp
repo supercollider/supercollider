@@ -23,7 +23,7 @@ namespace boost { namespace fusion
         struct value_at_impl<vector_tag>
         {
             template <typename Sequence, typename N>
-            struct apply 
+            struct apply
             {
                 typedef typename mpl::at<typename Sequence::types, N>::type type;
             };

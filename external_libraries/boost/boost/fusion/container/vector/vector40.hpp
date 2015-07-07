@@ -11,6 +11,7 @@
 #include <boost/fusion/support/config.hpp>
 #include <boost/fusion/container/vector/vector40_fwd.hpp>
 #include <boost/fusion/support/sequence_base.hpp>
+#include <boost/fusion/support/is_sequence.hpp>
 #include <boost/fusion/support/detail/access.hpp>
 #include <boost/fusion/iterator/next.hpp>
 #include <boost/fusion/iterator/deref.hpp>

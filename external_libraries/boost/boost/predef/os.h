@@ -15,6 +15,7 @@ http://www.boost.org/LICENSE_1_0.txt)
 #include <boost/predef/os/beos.h>
 #include <boost/predef/os/bsd.h>
 #include <boost/predef/os/cygwin.h>
+#include <boost/predef/os/haiku.h>
 #include <boost/predef/os/hpux.h>
 #include <boost/predef/os/irix.h>
 #include <boost/predef/os/ios.h>

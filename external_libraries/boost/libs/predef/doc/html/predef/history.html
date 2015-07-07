@@ -1,0 +1,98 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>History</title>
+<link rel="stylesheet" href="../boostbook.css" type="text/css">
+<meta name="generator" content="DocBook XSL Stylesheets V1.78.1">
+<link rel="home" href="../index.html" title="Predef 1.2">
+<link rel="up" href="../index.html" title="Predef 1.2">
+<link rel="prev" href="check_utilities.html" title="Check Utilities">
+<link rel="next" href="to_do.html" title="To Do">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<div class="spirit-nav">
+<a accesskey="p" href="check_utilities.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../index.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="to_do.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+<div class="section">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="predef.history"></a><a class="link" href="history.html" title="History">History</a>
+</h2></div></div></div>
+<h4>
+<a name="predef.history.h0"></a>
+      <span class="phrase"><a name="predef.history.1_2"></a></span><a class="link" href="history.html#predef.history.1_2">1.2</a>
+    </h4>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+          Account for skip in Visual Studio product version vs. compiler version.
+          This supports version of VS 2015 an onward.
+        </li>
+<li class="listitem">
+          Add detection of Haiku OS (from Jessica Hamilton).
+        </li>
+<li class="listitem">
+          Some fixes to endian detection for Android (from mstahl-at-redhat.com).
+        </li>
+<li class="listitem">
+          Add missing <code class="computeroutput"><span class="identifier">BOOST_PREDEF_MAKE_0X_VVRRPP</span></code>
+          macro (from Erik Lindahl).
+        </li>
+<li class="listitem">
+          Add <code class="computeroutput"><span class="identifier">predef_check</span></code> program
+          and BBv2 integration for build configuration checks.
+        </li>
+</ul></div>
+<h4>
+<a name="predef.history.h1"></a>
+      <span class="phrase"><a name="predef.history.1_1"></a></span><a class="link" href="history.html#predef.history.1_1">1.1</a>
+    </h4>
+<div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; ">
+<li class="listitem">
+          Addition of <code class="computeroutput"><span class="identifier">BOOST_PLAT_</span><span class="special">*</span></code> platform definitions for MinGW and Windows
+          platform variants.
+        </li>
+<li class="listitem">
+          Detection of ARM architecture for Windows compilers to target mobile devices
+          of Windows 8.
+        </li>
+<li class="listitem">
+          Improved ARM detection for 64 bit ARM.
+        </li>
+<li class="listitem">
+          Added detection of iOS an an operating system.
+        </li>
+<li class="listitem">
+          Improved detection of endianess on some platforms.
+        </li>
+<li class="listitem">
+          Addition of exclusive plus emulated definitions for platform and compiler
+          detection.
+        </li>
+</ul></div>
+<div class="warning"><table border="0" summary="Warning">
+<tr>
+<td rowspan="2" align="center" valign="top" width="25"><img alt="[Warning]" src="../images/warning.png"></td>
+<th align="left">Warning</th>
+</tr>
+<tr><td align="left" valign="top"><p>
+        The big change for this version is the restructuring of the definitions to
+        avoid duplicate definitions in one category. That is, only one <code class="computeroutput"><span class="identifier">BOOST_OS_</span><span class="special">*</span></code>,
+        <code class="computeroutput"><span class="identifier">BOOST_COMP_</span><span class="special">*</span></code>,
+        and <code class="computeroutput"><span class="identifier">BOOST_PLAT_</span><span class="special">*</span></code>
+        variant will be detected (except for sub-categories).
+      </p></td></tr>
+</table></div>
+</div>
+<table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
+<td align="left"></td>
+<td align="right"><div class="copyright-footer">Copyright &#169; 2005, 2008-2014 Rene Rivera<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
+      </p>
+</div></td>
+</tr></table>
+<hr>
+<div class="spirit-nav">
+<a accesskey="p" href="check_utilities.html"><img src="../images/prev.png" alt="Prev"></a><a accesskey="u" href="../index.html"><img src="../images/up.png" alt="Up"></a><a accesskey="h" href="../index.html"><img src="../images/home.png" alt="Home"></a><a accesskey="n" href="to_do.html"><img src="../images/next.png" alt="Next"></a>
+</div>
+</body>
+</html>

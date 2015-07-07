@@ -13,15 +13,15 @@
 #ifndef BOOST_INTRUSIVE_UNORDERED_SET_HPP
 #define BOOST_INTRUSIVE_UNORDERED_SET_HPP
 
-#if defined(_MSC_VER)
-#  pragma once
-#endif
-
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/intrusive_fwd.hpp>
 #include <boost/intrusive/hashtable.hpp>
 #include <boost/move/utility_core.hpp>
 #include <boost/static_assert.hpp>
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
+#  pragma once
+#endif
 
 namespace boost {
 namespace intrusive {
@@ -134,7 +134,7 @@ class unordered_set_impl
    //! <b>Effects</b>: Constructs an empty unordered_set and inserts elements from
    //!   [b, e).
    //!
-   //! <b>Complexity</b>: If N is std::distance(b, e): Average case is O(N)
+   //! <b>Complexity</b>: If N is distance(b, e): Average case is O(N)
    //!   (with a good hash function and with buckets_len >= N),worst case O(N2).
    //!
    //! <b>Throws</b>: If value_traits::node_traits::node
@@ -156,13 +156,13 @@ class unordered_set_impl
    //! <b>Effects</b>: to-do
    //!
    unordered_set_impl(BOOST_RV_REF(unordered_set_impl) x)
-      :  table_type(::boost::move(static_cast<table_type&>(x)))
+      :  table_type(BOOST_MOVE_BASE(table_type, x))
    {}
 
    //! <b>Effects</b>: to-do
    //!
    unordered_set_impl& operator=(BOOST_RV_REF(unordered_set_impl) x)
-   {  return static_cast<unordered_set_impl&>(table_type::operator=(::boost::move(static_cast<table_type&>(x)))); }
+   {  return static_cast<unordered_set_impl&>(table_type::operator=(BOOST_MOVE_BASE(table_type, x))); }
 
    #ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
    //! <b>Effects</b>: Detaches all elements from this. The objects in the unordered_set
@@ -325,7 +325,7 @@ class unordered_set_impl
    //!
    //! <b>Effects</b>: Equivalent to this->insert(t) for each element in [b, e).
    //!
-   //! <b>Complexity</b>: Average case O(N), where N is std::distance(b, e).
+   //! <b>Complexity</b>: Average case O(N), where N is distance(b, e).
    //!   Worst case O(N*this->size()).
    //!
    //! <b>Throws</b>: If the internal hasher or the equality functor throws. Basic guarantee.
@@ -413,7 +413,7 @@ class unordered_set_impl
 
    //! <b>Effects</b>: Erases the range pointed to by b end e.
    //!
-   //! <b>Complexity</b>: Average case O(std::distance(b, e)),
+   //! <b>Complexity</b>: Average case O(distance(b, e)),
    //!   worst case O(this->size()).
    //!
    //! <b>Throws</b>: Nothing.
@@ -485,7 +485,7 @@ class unordered_set_impl
    //! <b>Effects</b>: Erases the range pointed to by b end e.
    //!   Disposer::operator()(pointer) is called for the removed elements.
    //!
-   //! <b>Complexity</b>: Average case O(std::distance(b, e)),
+   //! <b>Complexity</b>: Average case O(distance(b, e)),
    //!   worst case O(this->size()).
    //!
    //! <b>Throws</b>: Nothing.
@@ -1110,11 +1110,11 @@ class unordered_set
    {}
 
    unordered_set(BOOST_RV_REF(unordered_set) x)
-      :  Base(::boost::move(static_cast<Base&>(x)))
+      :  Base(BOOST_MOVE_BASE(Base, x))
    {}
 
    unordered_set& operator=(BOOST_RV_REF(unordered_set) x)
-   {  return static_cast<unordered_set&>(this->Base::operator=(::boost::move(static_cast<Base&>(x))));  }
+   {  return static_cast<unordered_set&>(this->Base::operator=(BOOST_MOVE_BASE(Base, x)));  }
 };
 
 #endif
@@ -1227,7 +1227,7 @@ class unordered_multiset_impl
    //! <b>Effects</b>: Constructs an empty unordered_multiset and inserts elements from
    //!   [b, e).
    //!
-   //! <b>Complexity</b>: If N is std::distance(b, e): Average case is O(N)
+   //! <b>Complexity</b>: If N is distance(b, e): Average case is O(N)
    //!   (with a good hash function and with buckets_len >= N),worst case O(N2).
    //!
    //! <b>Throws</b>: If value_traits::node_traits::node
@@ -1249,13 +1249,13 @@ class unordered_multiset_impl
    //! <b>Effects</b>: to-do
    //!
    unordered_multiset_impl(BOOST_RV_REF(unordered_multiset_impl) x)
-      :  table_type(::boost::move(static_cast<table_type&>(x)))
+      :  table_type(BOOST_MOVE_BASE(table_type, x))
    {}
 
    //! <b>Effects</b>: to-do
    //!
    unordered_multiset_impl& operator=(BOOST_RV_REF(unordered_multiset_impl) x)
-   {  return static_cast<unordered_multiset_impl&>(table_type::operator=(::boost::move(static_cast<table_type&>(x))));  }
+   {  return static_cast<unordered_multiset_impl&>(table_type::operator=(BOOST_MOVE_BASE(table_type, x)));  }
 
    #ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
 
@@ -1442,7 +1442,7 @@ class unordered_multiset_impl
 
    //! <b>Effects</b>: Erases the range pointed to by b end e.
    //!
-   //! <b>Complexity</b>: Average case O(std::distance(b, e)),
+   //! <b>Complexity</b>: Average case O(distance(b, e)),
    //!   worst case O(this->size()).
    //!
    //! <b>Throws</b>: Nothing.
@@ -1521,7 +1521,7 @@ class unordered_multiset_impl
    //! <b>Effects</b>: Erases the range pointed to by b end e.
    //!   Disposer::operator()(pointer) is called for the removed elements.
    //!
-   //! <b>Complexity</b>: Average case O(std::distance(b, e)),
+   //! <b>Complexity</b>: Average case O(distance(b, e)),
    //!   worst case O(this->size()).
    //!
    //! <b>Throws</b>: Nothing.
@@ -2146,11 +2146,11 @@ class unordered_multiset
    {}
 
    unordered_multiset(BOOST_RV_REF(unordered_multiset) x)
-      :  Base(::boost::move(static_cast<Base&>(x)))
+      :  Base(BOOST_MOVE_BASE(Base, x))
    {}
 
    unordered_multiset& operator=(BOOST_RV_REF(unordered_multiset) x)
-   {  return static_cast<unordered_multiset&>(this->Base::operator=(::boost::move(static_cast<Base&>(x))));  }
+   {  return static_cast<unordered_multiset&>(this->Base::operator=(BOOST_MOVE_BASE(Base, x)));  }
 };
 
 #endif

@@ -227,7 +227,7 @@ namespace boost
     set_gid_on_exe = 02000, // S_ISGID, Set-group-ID on execution
     sticky_bit     = 01000, // S_ISVTX,
                             // (POSIX XSI) On directories, restricted deletion flag 
-	                          // (V7) 'sticky bit': save swapped text even after use 
+                            // (V7) 'sticky bit': save swapped text even after use 
                             // (SunOS) On non-directories: don't cache this file
                             // (SVID-v4.2) On directories: restricted deletion flag
                             // Also see http://en.wikipedia.org/wiki/Sticky_bit
@@ -843,9 +843,10 @@ namespace detail
 
     bool equal(const directory_iterator& rhs) const
       { return m_imp == rhs.m_imp; }
-  };
 
-  //  enable C++11 range-base for statement use  ---------------------------------------//
+  };  // directory_iterator
+
+  //  enable directory_iterator C++11 range-base for statement use  --------------------//
 
   //  begin() and end() are only used by a range-based for statement in the context of
   //  auto - thus the top-level const is stripped - so returning const is harmless and
@@ -855,7 +856,7 @@ namespace detail
   inline
   directory_iterator end(const directory_iterator&)  {return directory_iterator();}
 
-  //  enable BOOST_FOREACH  ------------------------------------------------------------//
+  //  enable directory_iterator BOOST_FOREACH  -----------------------------------------//
 
   inline
   directory_iterator& range_begin(directory_iterator& iter) {return iter;}
@@ -1165,9 +1166,9 @@ namespace filesystem
     bool equal(const recursive_directory_iterator& rhs) const
       { return m_imp == rhs.m_imp; }
 
-  };
+  };  // recursive directory iterator
 
-  //  enable C++11 range-base for statement use  ---------------------------------------//
+  //  enable recursive directory iterator C++11 range-base for statement use  ----------//
 
   //  begin() and end() are only used by a range-based for statement in the context of
   //  auto - thus the top-level const is stripped - so returning const is harmless and
@@ -1179,7 +1180,7 @@ namespace filesystem
   recursive_directory_iterator end(const recursive_directory_iterator&)
                                                   {return recursive_directory_iterator();}
 
-  //  enable BOOST_FOREACH  ------------------------------------------------------------//
+  //  enable recursive directory iterator BOOST_FOREACH  -------------------------------//
 
   inline
   recursive_directory_iterator& range_begin(recursive_directory_iterator& iter)

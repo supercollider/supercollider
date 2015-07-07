@@ -1,0 +1,81 @@
+[/
+    Boost.Optional
+
+    Copyright (c) 2003-2007 Fernando Luis Cacciola Carballal
+
+    Distributed under the Boost Software License, Version 1.0.
+    (See accompanying file LICENSE_1_0.txt or copy at
+    http://www.boost.org/LICENSE_1_0.txt)
+]
+
+
+[section Dependencies and Portability]
+
+[section Dependencies]
+The implementation uses the following other Boost modules:
+
+# assert
+# config
+# core
+# detail
+# move
+# mpl
+# static_assert
+# throw_exception
+# type_traits
+# utility
+
+[endsect]
+
+
+[section Optional Reference Binding]
+
+On compilers that do not conform to Standard C++ rules of reference binding, operations on optional references might give adverse results: rather than binding a reference to a designated object they may create an unexpected temporary and bind to it. Compilers known to have these deficiencies include GCC versions 4.2, 4.3, 4.4, 4.5; QCC 4.4.2; MSVC versions 8.0, 9.0, 10.0, 11.0, 12.0. On these compilers prefer using direct-initialization and copy assignment of optional references to copy-initialization and assignment from `T&`:
+
+    const int i = 0;
+    optional<const int&> or1;
+    optional<const int&> or2 = i;  // not portable
+    or1 = i;                       // not portable
+    
+    optional<const int&> or3(i);   // portable
+    or1 = optional<const int&>(i); // portable
+
+In order to check if your compiler correctly implements reference binding use this test program. 
+
+    #include <cassert>
+
+    const int global_i = 0;
+
+    struct TestingReferenceBinding
+    {
+      TestingReferenceBinding(const int& ii)
+      {
+        assert(&ii == &global_i);
+      }
+
+      void operator=(const int& ii) 
+      {
+        assert(&ii == &global_i);
+      }
+
+      void operator=(int&&) // remove this if your compiler doesn't have rvalue refs
+      { 
+        assert(false);
+      }
+    };
+
+    int main()
+    {
+      const int& iref = global_i;
+      assert(&iref == &global_i);
+
+      TestingReferenceBinding ttt = global_i;
+      ttt = global_i;
+
+      TestingReferenceBinding ttt2 = iref;
+      ttt2 = iref;
+    }
+ 
+[endsect]
+
+[endsect]

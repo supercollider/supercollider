@@ -14,7 +14,11 @@
 #ifndef BOOST_INTRUSIVE_DETAIL_MPL_HPP
 #define BOOST_INTRUSIVE_DETAIL_MPL_HPP
 
-#if defined(_MSC_VER)
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
 #  pragma once
 #endif
 
@@ -315,7 +319,14 @@ template <> struct unvoid_ref<const void> { struct type_impl { }; typedef type_i
          ::boost::intrusive::detail::if_c                         \
             <value, T, DefaultWrap>::type::TNAME type;            \
    };                                                             \
-                                                                  \
+   //
+
+#define BOOST_INTRUSIVE_OBTAIN_TYPE_WITH_DEFAULT(INSTANTIATION_NS_PREFIX, T, TNAME, TIMPL)   \
+      typename INSTANTIATION_NS_PREFIX                                                       \
+         boost_intrusive_default_type_ ## TNAME< T, TIMPL >::type                            \
+//
+
+#define BOOST_INTRUSIVE_INSTANTIATE_EVAL_DEFAULT_TYPE_TMPLT(TNAME)\
    template <typename T, typename DefaultType>                    \
    struct boost_intrusive_eval_default_type_ ## TNAME             \
    {                                                              \
@@ -337,11 +348,6 @@ template <> struct unvoid_ref<const void> { struct type_impl { }; typedef type_i
             , ::boost::intrusive::detail::identity<DefaultWrap>   \
             >::type::TNAME type;                                  \
    };                                                             \
-//
-
-#define BOOST_INTRUSIVE_OBTAIN_TYPE_WITH_DEFAULT(INSTANTIATION_NS_PREFIX, T, TNAME, TIMPL)   \
-      typename INSTANTIATION_NS_PREFIX                                                       \
-         boost_intrusive_default_type_ ## TNAME< T, TIMPL >::type                            \
 //
 
 #define BOOST_INTRUSIVE_OBTAIN_TYPE_WITH_EVAL_DEFAULT(INSTANTIATION_NS_PREFIX, T, TNAME, TIMPL) \
@@ -366,6 +372,58 @@ struct TRAITS_PREFIX##_bool_is_true\
    static const bool value = TRAITS_PREFIX##_bool<T>::value > sizeof(one)*2;\
 };\
 //
+
+#define BOOST_INTRUSIVE_HAS_STATIC_MEMBER_FUNC_SIGNATURE(TRAITS_NAME, FUNC_NAME) \
+  template <typename U, typename Signature> \
+  class TRAITS_NAME \
+  { \
+  private: \
+  template<Signature> struct helper;\
+  template<typename T> \
+  static ::boost::intrusive::detail::yes_type check(helper<&T::FUNC_NAME>*); \
+  template<typename T> static ::boost::intrusive::detail::no_type check(...); \
+  public: \
+  static const bool value = sizeof(check<U>(0)) == sizeof(::boost::intrusive::detail::yes_type); \
+  }; \
+//
+
+#define BOOST_INTRUSIVE_HAS_MEMBER_FUNC_CALLED(TRAITS_NAME, FUNC_NAME) \
+template <typename Type> \
+struct TRAITS_NAME \
+{ \
+   struct BaseMixin \
+   { \
+      void FUNC_NAME(); \
+   }; \
+   struct Base : public Type, public BaseMixin { Base(); }; \
+   template <typename T, T t> class Helper{}; \
+   template <typename U> \
+   static ::boost::intrusive::detail::no_type  check(U*, Helper<void (BaseMixin::*)(), &U::FUNC_NAME>* = 0); \
+   static ::boost::intrusive::detail::yes_type check(...); \
+   static const bool value = sizeof(::boost::intrusive::detail::yes_type) == sizeof(check((Base*)(0))); \
+};\
+//
+
+#define BOOST_INTRUSIVE_HAS_MEMBER_FUNC_CALLED_IGNORE_SIGNATURE(TRAITS_NAME, FUNC_NAME) \
+BOOST_INTRUSIVE_HAS_MEMBER_FUNC_CALLED(TRAITS_NAME##_ignore_signature, FUNC_NAME) \
+\
+template <typename Type, class> \
+struct TRAITS_NAME \
+   : public TRAITS_NAME##_ignore_signature<Type> \
+{};\
+//
+
+
+template <typename T>
+inline T* addressof(T& obj)
+{
+   return static_cast<T*>
+      (static_cast<void*>
+         (const_cast<char*>
+            (&reinterpret_cast<const char&>(obj))
+         )
+      );
+}
 
 } //namespace detail
 } //namespace intrusive

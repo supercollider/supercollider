@@ -11,7 +11,11 @@
 #ifndef BOOST_INTERPROCESS_EXCEPTIONS_HPP
 #define BOOST_INTERPROCESS_EXCEPTIONS_HPP
 
-#if defined(_MSC_VER)
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+#
+#if defined(BOOST_HAS_PRAGMA_ONCE)
 #  pragma once
 #endif
 
@@ -19,7 +23,6 @@
 #include <boost/interprocess/detail/workaround.hpp>
 #include <boost/interprocess/errors.hpp>
 #include <stdexcept>
-#include <new>
 
 //!\file
 //!Describes exceptions thrown by interprocess classes

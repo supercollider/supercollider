@@ -1,0 +1,37 @@
+[/
+Copyright 2014-2015 Rene Rivera
+Distributed under the Boost Software License, Version 1.0.
+(See accompanying file LICENSE_1_0.txt or copy at
+http://www.boost.org/LICENSE_1_0.txt)
+]
+
+[section History]
+
+[heading 1.2]
+
+* Account for skip in Visual Studio product version vs. compiler version.
+  This supports version of VS 2015 an onward.
+* Add detection of Haiku OS (from Jessica Hamilton).
+* Some fixes to endian detection for Android (from mstahl-at-redhat.com).
+* Add missing `BOOST_PREDEF_MAKE_0X_VVRRPP` macro (from Erik Lindahl).
+* Add `predef_check` program and BBv2 integration for build configuration
+  checks.
+
+[heading 1.1]
+
+* Addition of `BOOST_PLAT_*` platform definitions for MinGW and
+  Windows platform variants.
+* Detection of ARM architecture for Windows compilers to target
+  mobile devices of Windows 8.
+* Improved ARM detection for 64 bit ARM.
+* Added detection of iOS an an operating system.
+* Improved detection of endianess on some platforms.
+* Addition of exclusive plus emulated definitions for platform
+  and compiler detection.
+
+[warning The big change for this version is the restructuring of the
+definitions to avoid duplicate definitions in one category. That is, only one
+`BOOST_OS_*`, `BOOST_COMP_*`, and `BOOST_PLAT_*` variant will be detected
+(except for sub-categories).]
+
+[endsect]

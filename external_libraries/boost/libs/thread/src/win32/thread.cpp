@@ -44,7 +44,7 @@
 #include <wrl\ftm.h>
 #include <windows.system.threading.h>
 #pragma comment(lib, "runtimeobject.lib")
-#endif 
+#endif
 
 namespace boost
 {
@@ -198,7 +198,7 @@ namespace boost
     namespace detail
     {
         std::atomic_uint threadCount;
-        
+
         bool win32::scoped_winrt_thread::start(thread_func address, void *parameter, unsigned int *thrdId)
         {
             Microsoft::WRL::ComPtr<ABI::Windows::System::Threading::IThreadPoolStatics> threadPoolFactory;
@@ -220,7 +220,7 @@ namespace boost
             m_completionHandle = completionHandle;
 
             // Create new work item.
-            Microsoft::WRL::ComPtr<ABI::Windows::System::Threading::IWorkItemHandler> workItem = 
+            Microsoft::WRL::ComPtr<ABI::Windows::System::Threading::IWorkItemHandler> workItem =
                 Microsoft::WRL::Callback<Microsoft::WRL::Implements<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>, ABI::Windows::System::Threading::IWorkItemHandler, Microsoft::WRL::FtmBase>>
                 ([address, parameter, completionHandle](ABI::Windows::Foundation::IAsyncAction *)
             {
@@ -274,13 +274,10 @@ namespace boost
                         }
                         boost::detail::heap_delete(current_node);
                     }
-                    for(std::map<void const*,detail::tss_data_node>::iterator next=current_thread_data->tss_data.begin(),
-                            current,
-                            end=current_thread_data->tss_data.end();
-                        next!=end;)
+                    while (!current_thread_data->tss_data.empty())
                     {
-                        current=next;
-                        ++next;
+                        std::map<void const*,detail::tss_data_node>::iterator current
+                            = current_thread_data->tss_data.begin();
                         if(current->second.func && (current->second.value!=0))
                         {
                             (*current->second.func)(current->second.value);
@@ -346,7 +343,7 @@ namespace boost
         return true;
 #endif
     }
-    
+
     bool thread::start_thread_noexcept(const attributes& attr)
     {
 #if BOOST_PLAT_WINDOWS_RUNTIME
@@ -367,7 +364,7 @@ namespace boost
       return true;
 #endif
     }
-    
+
     thread::thread(detail::thread_data_ptr data):
         thread_info(data)
     {}
@@ -529,11 +526,10 @@ namespace boost
 
     unsigned thread::physical_concurrency() BOOST_NOEXCEPT
     {
-#if BOOST_PLAT_WINDOWS_RUNTIME
+#if BOOST_PLAT_WINDOWS_RUNTIME || (defined(__MINGW32__) && !defined(__MINGW64_VERSION_MAJOR))
         return hardware_concurrency();
 #else
         unsigned cores = 0;
-#if !(defined(__MINGW32__) || defined (__MINGW64__))
         DWORD size = 0;
 
         GetLogicalProcessorInformation(NULL, &size);
@@ -550,7 +546,6 @@ namespace boost
             if (buffer[i].Relationship == RelationProcessorCore)
                 ++cores;
         }
-#endif
         return cores;
 #endif
     }
@@ -633,10 +628,60 @@ namespace boost
             }
         }
 
-
+#ifndef UNDER_CE
+#if !BOOST_PLAT_WINDOWS_RUNTIME
+        namespace detail_
+        {
+            typedef struct _REASON_CONTEXT {
+                ULONG Version;
+                DWORD Flags;
+                union {
+                    LPWSTR SimpleReasonString;
+                    struct {
+                        HMODULE LocalizedReasonModule;
+                        ULONG   LocalizedReasonId;
+                        ULONG   ReasonStringCount;
+                        LPWSTR  *ReasonStrings;
+                    } Detailed;
+                } Reason;
+            } REASON_CONTEXT, *PREASON_CONTEXT;
+            static REASON_CONTEXT default_reason_context={0/*POWER_REQUEST_CONTEXT_VERSION*/, 0x00000001/*POWER_REQUEST_CONTEXT_SIMPLE_STRING*/, (LPWSTR)L"generic"};
+            typedef BOOL (WINAPI *setwaitabletimerex_t)(HANDLE, const LARGE_INTEGER *, LONG, PTIMERAPCROUTINE, LPVOID, PREASON_CONTEXT, ULONG);
+            static inline BOOL WINAPI SetWaitableTimerEx_emulation(HANDLE hTimer, const LARGE_INTEGER *lpDueTime, LONG lPeriod, PTIMERAPCROUTINE pfnCompletionRoutine, LPVOID lpArgToCompletionRoutine, PREASON_CONTEXT WakeContext, ULONG TolerableDelay)
+            {
+                return SetWaitableTimer(hTimer, lpDueTime, lPeriod, pfnCompletionRoutine, lpArgToCompletionRoutine, FALSE);
+            }
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 6387) // MSVC sanitiser warns that GetModuleHandleA() might fail
+#endif
+            static inline setwaitabletimerex_t SetWaitableTimerEx()
+            {
+                static setwaitabletimerex_t setwaitabletimerex_impl;
+                if(setwaitabletimerex_impl)
+                    return setwaitabletimerex_impl;
+                void (*addr)()=(void (*)()) GetProcAddress(
+#if !defined(BOOST_NO_ANSI_APIS)
+                    GetModuleHandleA("KERNEL32.DLL"),
+#else
+                    GetModuleHandleW(L"KERNEL32.DLL"),
+#endif
+                    "SetWaitableTimerEx");
+                if(addr)
+                    setwaitabletimerex_impl=(setwaitabletimerex_t) addr;
+                else
+                    setwaitabletimerex_impl=&SetWaitableTimerEx_emulation;
+                return setwaitabletimerex_impl;
+            }
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
+        }
+#endif
+#endif
         bool interruptible_wait(detail::win32::handle handle_to_wait_for,detail::timeout target_time)
         {
-            detail::win32::handle handles[3]={0};
+            detail::win32::handle handles[4]={0};
             unsigned handle_count=0;
             unsigned wait_handle_index=~0U;
 #if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
@@ -659,31 +704,23 @@ namespace boost
 
 #ifndef UNDER_CE
 #if !BOOST_PLAT_WINDOWS_RUNTIME
-            unsigned const min_timer_wait_period=20;
-
+            // Preferentially use coalescing timers for better power consumption and timer accuracy
             if(!target_time.is_sentinel())
             {
                 detail::timeout::remaining_time const time_left=target_time.remaining_milliseconds();
-                if(time_left.milliseconds > min_timer_wait_period)
+                timer_handle=CreateWaitableTimer(NULL,false,NULL);
+                if(timer_handle!=0)
                 {
-                    // for a long-enough timeout, use a waitable timer (which tracks clock changes)
-                    timer_handle=CreateWaitableTimer(NULL,false,NULL);
-                    if(timer_handle!=0)
+                    ULONG tolerable=32; // Empirical testing shows Windows ignores this when <= 26
+                    if(time_left.milliseconds/20>tolerable)  // 5%
+                        tolerable=time_left.milliseconds/20;
+                    LARGE_INTEGER due_time=get_due_time(target_time);
+                    bool const set_time_succeeded=detail_::SetWaitableTimerEx()(timer_handle,&due_time,0,0,0,&detail_::default_reason_context,tolerable)!=0;
+                    if(set_time_succeeded)
                     {
-                        LARGE_INTEGER due_time=get_due_time(target_time);
-
-                        bool const set_time_succeeded=SetWaitableTimer(timer_handle,&due_time,0,0,0,false)!=0;
-                        if(set_time_succeeded)
-                        {
-                            timeout_index=handle_count;
-                            handles[handle_count++]=timer_handle;
-                        }
+                        timeout_index=handle_count;
+                        handles[handle_count++]=timer_handle;
                     }
-                }
-                else if(!target_time.relative)
-                {
-                    // convert short absolute-time timeouts into relative ones, so we don't race against clock changes
-                    target_time=detail::timeout(time_left.milliseconds);
                 }
             }
 #endif
@@ -751,31 +788,23 @@ namespace boost
 
 #ifndef UNDER_CE
 #if !BOOST_PLAT_WINDOWS_RUNTIME
-            unsigned const min_timer_wait_period=20;
-
+            // Preferentially use coalescing timers for better power consumption and timer accuracy
             if(!target_time.is_sentinel())
             {
                 detail::timeout::remaining_time const time_left=target_time.remaining_milliseconds();
-                if(time_left.milliseconds > min_timer_wait_period)
+                timer_handle=CreateWaitableTimer(NULL,false,NULL);
+                if(timer_handle!=0)
                 {
-                    // for a long-enough timeout, use a waitable timer (which tracks clock changes)
-                    timer_handle=CreateWaitableTimer(NULL,false,NULL);
-                    if(timer_handle!=0)
+                    ULONG tolerable=32; // Empirical testing shows Windows ignores this when <= 26
+                    if(time_left.milliseconds/20>tolerable)  // 5%
+                        tolerable=time_left.milliseconds/20;
+                    LARGE_INTEGER due_time=get_due_time(target_time);
+                    bool const set_time_succeeded=detail_::SetWaitableTimerEx()(timer_handle,&due_time,0,0,0,&detail_::default_reason_context,tolerable)!=0;
+                    if(set_time_succeeded)
                     {
-                        LARGE_INTEGER due_time=get_due_time(target_time);
-
-                        bool const set_time_succeeded=SetWaitableTimer(timer_handle,&due_time,0,0,0,false)!=0;
-                        if(set_time_succeeded)
-                        {
-                            timeout_index=handle_count;
-                            handles[handle_count++]=timer_handle;
-                        }
+                        timeout_index=handle_count;
+                        handles[handle_count++]=timer_handle;
                     }
-                }
-                else if(!target_time.relative)
-                {
-                    // convert short absolute-time timeouts into relative ones, so we don't race against clock changes
-                    target_time=detail::timeout(time_left.milliseconds);
                 }
             }
 #endif

@@ -1,0 +1,268 @@
+[/
+          Copyright Oliver Kowalke 2014.
+ Distributed under the Boost Software License, Version 1.0.
+    (See accompanying file LICENSE_1_0.txt or copy at
+          http://www.boost.org/LICENSE_1_0.txt
+]
+
+[section:econtext Class execution_context]
+
+[important __econtext__ is supported only by C++14.]
+
+Class __econtext__ encapsulates __fcontext__ and related functions (
+__jump_fcontext__ and __make_fcontext__) as well as stack management.
+__econtext__ permits access to the current, active context via
+`execution_context::current()`.
+
+        /*
+         * grammar:
+         *   P ---> E '\0'
+         *   E ---> T {('+'|'-') T}
+         *   T ---> S {('*'|'/') S}
+         *   S ---> digit | '(' E ')'
+         */
+        class Parser{
+            // implementation omitted; see examples directory
+        };
+
+        int main() {
+            std::istringstream is("1+1");
+            bool done=false;
+            char c;
+
+            // create handle to main execution context
+            boost::context::execution_context main_ctx(
+                boost::context::execution_context::current() );
+
+            // executes parser in new execution context
+            boost::context::execution_context parser_ctx(
+                boost::context::fixedsize_stack(),
+                [&main_ctx,&is,&c,&done](){
+                    // create parser with callback function
+                    Parser p(is,
+                             [&main_ctx,&c](char ch){
+                                 c=ch;
+                                 // resume main execution context
+                                 main_ctx.resume();
+                             });
+                    // start recursive parsing
+                    p.run();
+                    done=true;
+                    // return to main execution context
+                    main_ctx.resume();
+                });
+
+            // user-code pulls parsed data from parser
+            // inverted control flow
+            parser_ctx.resume();
+            do {
+                printf("Parsed: %c\n",c);
+                parser_ctx.resume();
+            } while( ! done);
+        }
+
+        output:
+            Parsed: 1
+            Parsed: +
+            Parsed: 1
+
+
+In this example a recursive descent parser uses a callback to emit a newly passed
+symbol. Using __econtext__ the control flow can be inverted, e.g. the user-code
+pulls parsed symbols from the parser - instead to get pushed from the parser
+(via callback).
+
+The interface of __econtext__ does not transfer data. This is not required
+because usually sharing data's address (pointer/reference) sufficient.
+
+If the code executed by __econtext__ emits an exception, `std::terminate()` will
+be called.
+
+[important Do not jump from inside a catch block and than re-throw exceptions in
+another execution context.]
+
+Sometimes it is necessary to unwind the stack of an unfinished context to
+destroy local stack variables so they can release allocated resources (RAII
+pattern). The user is responsible for this task.
+
+[heading allocating control strutures on top of stack]
+Allocating control structures on top of the stack requires to allocated the
+__stack_context__ and create the control structure with placement new before
+__econtext__ is created.
+[note The user is responsible for destructing the control structure at the top
+of the stack.]
+
+        // stack-alloctor used for (de-)allocating stack
+        fixedsize_stack salloc( 4048);
+        // allocate stack space
+        stack_context sctx( salloc.allocate() );
+        // reserve space for control structure on top of the stack
+        void * sp = static_cast< char * >( sctx.sp) - sizeof( my_control_structure);
+        std::size_t size = sctx.size - sizeof( my_control_structure);
+        // placement new creates control structure on reserved space
+        my_control_structure * cs = new ( sp) my_control_structure( sp, size, sctx, salloc);
+        ...
+        // destructing the control structure
+        cs->~my_control_structure();
+        ...
+        struct my_control_structure  {
+            // execution context
+            execution_context ectx;
+
+            template< typename StackAllocator >
+            my_control_structure( void * sp, std::size_t size, stack_context sctx, StackAllocator salloc) :
+                // create execution context
+                ectx( preallocated( sp, size, sctx), salloc, entry_func) {
+            }
+            ...
+        };
+
+[heading exception handling]
+If the function executed inside a __econtext__ emitts ans exception, `std::terminate()` is
+called - `std::exception_ptr` can used to store exceptions thrown inside the other context.
+
+[heading parameter passing]
+Input and output parameters are transfered via a lambda capture list and references/pointers.
+
+        class X {
+        private:
+            int * inp_;
+            std::string outp_;
+            std::exception_ptr excptr_;
+            boost::context::execution_context caller_;
+            boost::context::execution_context callee_;
+
+        public:
+            X() :
+                inp_( nullptr),
+                outp_(),
+                excptr_(),
+                caller_( boost::context::execution_context::current() ),
+                callee_( boost::context::fixedsize_stack(),
+                         [=] () {
+                            try {
+                                int i = * inp_;
+                                outp_ = boost::lexical_cast< std::string >( i);
+                                caller_.resume();
+                            } catch (...) {
+                                excptr_ = std::current_exception();
+                            }
+                         })
+            {}
+
+            std::string operator()( int i) {
+                inp_ = & i;
+                callee_.resume();
+                if ( excptr_) {
+                    std::rethrow_exception( excptr_);
+                }
+                return outp_;
+            }
+        };
+
+        int main() {
+            X x;
+            std::cout << x( 7) << std::endl;
+            std::cout << "done" << std::endl;
+        }
+
+
+[heading Class `execution_context`]
+
+        class execution_context {
+        public:
+            static execution_context current() noexcept;
+
+            template< typename StackAlloc, typename Fn >
+            execution_context( StackAlloc salloc, Fn && fn);
+
+            template< typename StackAlloc, typename Fn, typename ... Args >
+            execution_context( StackAlloc salloc, Fn && fn, Args && ... args);
+
+            template< typename StackAlloc, typename Fn >
+            execution_context( preallocated palloc, StackAlloc salloc, Fn && fn);
+
+            template< typename StackAlloc, typename Fn, typename ... Args >
+            execution_context( preallocated palloc, StackAlloc salloc, Fn && fn, Args && ... args);
+
+            void resume() noexcept;
+
+            explicit operator bool() const noexcept;
+
+            bool operator!() const noexcept;
+        };
+
+[heading `static execution_context current()`]
+[variablelist
+[[Returns:] [Returns an instance of excution_context pointing to the active
+execution context.]]
+[[Throws:] [Nothing.]]
+]
+
+[heading `template< typename StackAlloc, typname Fn > execution_context( StackAlloc salloc, Fn && fn)`]
+[variablelist
+[[Effects:] [Creates a new execution context and prepares the context to execute
+`fn`.]]
+]
+
+[heading `template< typename StackAlloc, typname Fn, typename ... Args > execution_context( StackAlloc salloc, Fn && fn, Args && ... args)`]
+[variablelist
+[[Effects:] [Creates a new execution context and prepares the context to execute
+`fn`.]]
+]
+
+[heading `template< typename StackAlloc, typname Fn > execution_context( preallocated palloc, StackAlloc salloc, Fn && fn)`]
+[variablelist
+[[Effects:] [Creates a new execution context and prepares the context to execute
+`fn`. Used to store control structures on top of the stack.]]
+]
+
+[heading `template< typename StackAlloc, typname Fn, typename ... Args > execution_context( preallocated palloc, StackAlloc salloc, Fn && fn, Args && ... args)`]
+[variablelist
+[[Effects:] [Creates a new execution context and prepares the context to execute
+`fn`. Used to store control structures on top of the stack.]]
+]
+
+[heading `void resume()`]
+[variablelist
+[[Effects:] [Stores internally the current context data (stack pointer,
+instruction pointer, and CPU registers) to the current active context and
+restores the context data from `*this`, which implies jumping to `*this`'s
+execution context.]]
+[[Note:] [The behaviour is undefined if `resume()` is called while `execution_context::current()`
+returns `*this` (e.g. resuming an alredy running cotnext).]]
+[[Throws:] [Nothing.]]
+]
+
+[heading `explicit operator bool() const`]
+[variablelist
+[[Returns:] [If `*this` refers to an invalid context or the context-function
+has returned (completed), the function returns `false`. Otherwise `true`.]]
+[[Throws:] [Nothing.]]
+]
+
+[heading `bool operator!() const`]
+[variablelist
+[[Returns:] [If `*this` refers to an invalid context or the context-function
+has returned (completed), the function returns `true`. Otherwise `false`.]]
+[[Throws:] [Nothing.]]
+]
+
+
+[heading Struct `preallocated`]
+
+        struct preallocated {
+            void        *   sp;
+            std::size_t     size;
+            stack_context   sctx;
+
+            preallocated( void * sp, std:size_t size, stack_allocator sctx) noexcept;
+        };
+
+[heading `preallocated( void * sp, std:size_t size, stack_allocator sctx)`]
+[variablelist
+[[Effects:] [Crreates an object of preallocated.]]
+]
+
+
+[endsect]

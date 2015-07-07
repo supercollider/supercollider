@@ -14,15 +14,15 @@
 #ifndef BOOST_INTRUSIVE_CIRCULAR_LIST_ALGORITHMS_HPP
 #define BOOST_INTRUSIVE_CIRCULAR_LIST_ALGORITHMS_HPP
 
-#if defined(_MSC_VER)
-#  pragma once
-#endif
-
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/intrusive_fwd.hpp>
 #include <boost/intrusive/detail/algo_type.hpp>
 #include <boost/core/no_exceptions_support.hpp>
 #include <cstddef>
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
+#  pragma once
+#endif
 
 namespace boost {
 namespace intrusive {
@@ -211,60 +211,6 @@ class circular_list_algorithms
    //! <b>Complexity</b>: Constant
    //!
    //! <b>Throws</b>: Nothing.
-/*
-   static void swap_nodes(const node_ptr &this_node, const node_ptr &other_node)
-   {
-
-      if (other_node == this_node)
-         return;
-      bool empty1 = unique(this_node);
-      bool empty2 = unique(other_node);
-
-      node_ptr next_this(NodeTraits::get_next(this_node));
-      node_ptr prev_this(NodeTraits::get_previous(this_node));
-      node_ptr next_other(NodeTraits::get_next(other_node));
-      node_ptr prev_other(NodeTraits::get_previous(other_node));
-
-      //Do the swap
-      NodeTraits::set_next(this_node, next_other);
-      NodeTraits::set_next(other_node, next_this);
-
-      NodeTraits::set_previous(this_node, prev_other);
-      NodeTraits::set_previous(other_node, prev_this);
-
-      if (empty2){
-         init(this_node);
-      }
-      else{
-         NodeTraits::set_next(prev_other, this_node);
-         NodeTraits::set_previous(next_other, this_node);
-      }
-      if (empty1){
-         init(other_node);
-      }
-      else{
-         NodeTraits::set_next(prev_this, other_node);
-         NodeTraits::set_previous(next_this, other_node);
-      }
-   }
-*/
-
-   //Watanabe version
-   private:
-   static void swap_prev(const node_ptr &this_node, const node_ptr &other_node)
-   {
-      node_ptr temp(NodeTraits::get_previous(this_node));
-      NodeTraits::set_previous(this_node, NodeTraits::get_previous(other_node));
-      NodeTraits::set_previous(other_node, temp);
-   }
-   static void swap_next(const node_ptr &this_node, const node_ptr &other_node)
-   {
-      node_ptr temp(NodeTraits::get_next(this_node));
-      NodeTraits::set_next(this_node, NodeTraits::get_next(other_node));
-      NodeTraits::set_next(other_node, temp);
-   }
-
-   public:
    static void swap_nodes(const node_ptr &this_node, const node_ptr &other_node)
    {
       if (other_node == this_node)
@@ -475,7 +421,7 @@ class circular_list_algorithms
             BOOST_CATCH(...){
                node_traits::set_next    (last_to_remove, new_f);
                node_traits::set_previous(new_f, last_to_remove);
-               throw;
+               BOOST_RETHROW;
             }
             BOOST_CATCH_END
             node_traits::set_next(last_to_remove, new_f);
@@ -486,6 +432,21 @@ class circular_list_algorithms
       info.num_1st_partition = num1;
       info.num_2nd_partition = num2;
       info.beg_2st_partition = new_f;
+   }
+
+   private:
+   static void swap_prev(const node_ptr &this_node, const node_ptr &other_node)
+   {
+      node_ptr temp(NodeTraits::get_previous(this_node));
+      NodeTraits::set_previous(this_node, NodeTraits::get_previous(other_node));
+      NodeTraits::set_previous(other_node, temp);
+   }
+
+   static void swap_next(const node_ptr &this_node, const node_ptr &other_node)
+   {
+      node_ptr temp(NodeTraits::get_next(this_node));
+      NodeTraits::set_next(this_node, NodeTraits::get_next(other_node));
+      NodeTraits::set_next(other_node, temp);
    }
 };
 

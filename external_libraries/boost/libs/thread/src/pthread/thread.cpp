@@ -36,8 +36,6 @@
 #include <set>
 #include <vector>
 
-#include "./timeconv.inl"
-
 namespace boost
 {
     namespace detail
@@ -98,13 +96,10 @@ namespace boost
                                 }
                                 delete current_node;
                             }
-                            for(std::map<void const*,tss_data_node>::iterator next=thread_info->tss_data.begin(),
-                                    current,
-                                    end=thread_info->tss_data.end();
-                                next!=end;)
+                            while (!thread_info->tss_data.empty())
                             {
-                                current=next;
-                                ++next;
+                                std::map<void const*,detail::tss_data_node>::iterator current
+                                    = thread_info->tss_data.begin();
                                 if(current->second.func && (current->second.value!=0))
                                 {
                                     (*current->second.func)(current->second.value);
@@ -164,7 +159,7 @@ namespace boost
             static void* thread_proxy(void* param)
             {
                 boost::detail::thread_data_ptr thread_info = static_cast<boost::detail::thread_data_base*>(param)->self;
-                thread_info->self.reset();
+                //thread_info->self.reset();
                 detail::set_current_thread_data(thread_info.get());
 #if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
                 BOOST_TRY

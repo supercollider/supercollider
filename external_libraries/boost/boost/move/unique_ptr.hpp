@@ -11,11 +11,20 @@
 #ifndef BOOST_MOVE_UNIQUE_PTR_HPP_INCLUDED
 #define BOOST_MOVE_UNIQUE_PTR_HPP_INCLUDED
 
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+#
+#if defined(BOOST_HAS_PRAGMA_ONCE)
+#  pragma once
+#endif
+
 #include <boost/move/detail/config_begin.hpp>
 #include <boost/move/detail/workaround.hpp>
 #include <boost/move/detail/unique_ptr_meta_utils.hpp>
 #include <boost/move/default_delete.hpp>
 #include <boost/move/utility_core.hpp>
+#include <boost/move/adl_move_swap.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/assert.hpp>
 
@@ -723,9 +732,8 @@ class unique_ptr
    //! <b>Effects</b>: Invokes swap on the stored pointers and on the stored deleters of *this and u.
    void swap(unique_ptr& u) BOOST_NOEXCEPT
    {
-      using ::boost::move_detail::swap;
-      swap(m_data.m_p, u.m_data.m_p);
-      swap(m_data.deleter(), u.m_data.deleter());
+      ::boost::adl_move_swap(m_data.m_p, u.m_data.m_p);
+      ::boost::adl_move_swap(m_data.deleter(), u.m_data.deleter());
    }
 };
 

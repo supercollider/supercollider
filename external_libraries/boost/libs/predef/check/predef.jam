@@ -1,0 +1,106 @@
+# Copyright Rene Rivera 2015
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE_1_0.txt or copy at
+# http://www.boost.org/LICENSE_1_0.txt)
+
+# Defines rules that provide requirements based on checking
+# conditions using Boost Predef definitions and version numbers.
+
+import modules ;
+import project ;
+import feature ;
+import string ;
+import toolset ;
+import modules ;
+import path ;
+
+# Create a project for our targets.
+project.extension predef check ;
+
+# Feature to pass check expressions to check programs.
+feature.feature predef-expression : : free ;
+
+# Check programs. Each needs to be compiled for different languages
+# even though they are all the same source code.
+local rule check_target ( language : ext )
+{
+    # Need to use absolute paths because we don't know the
+    # context of the invocation which affects where the paths
+    # originate from.
+    local predef_jam
+        = [ modules.binding $(__name__) ] ;
+        local source_path
+            = $(predef_jam:D)/predef_check_as_$(language).$(ext) ;
+        local include_path
+            = $(predef_jam:D)/../include ;
+        _check_exe_($(language)) = [
+            exe predef_check_as_$(language)
+                : $(source_path)
+                : <include>$(include_path) ] ;
+    explicit predef_check_as_$(language) ;
+}
+check_target c : c ;
+check_target cpp : cpp ;
+check_target objc : m ;
+check_target objcpp : mm ;
+
+# Checks the expressions and when used evaluates to the true-properties
+# if the expressions are all true. Otherwise evaluates to the
+# false-properties.
+rule check ( expressions + : language ? : true-properties * : false-properties * )
+{
+    # Default to C++ on the check context.
+    language ?= cpp ;
+    
+    local project_target = [ project.target $(__name__) ] ;
+	project.push-current $(project_target) ;
+    local result ;
+    for expression in $(expressions)
+    {
+        # The check program to use.
+        local exe_target = [ $(_check_exe_($(language))).name ] ;
+        exe_target = /check/predef//$(exe_target) ;
+        
+        # Create the check run if we don't have one yet.
+        local key = [ MD5 $(language)::$(expression) ] ;
+        if ! ( $(key) in $(_checks_) )
+        {
+            _checks_ += $(key) ;
+            make
+                $(key).txt :
+                $(exe_target) :
+                @$(__name__).predef_check_action :
+                <predef-expression>$(expression) ;
+            explicit
+                $(key).txt ;
+        }
+        
+        local check_target = [ check-target-builds
+            /check/predef//$(key).txt $(expression)
+            : $(true-properties)
+            : $(false-properties) ] ;
+        
+        result += $(check_target) ;
+    }
+	project.pop-current ;
+    return $(result) ;
+}
+
+# Checks the expressions and when used evaluates to <build>no
+# if the expressions are all false. Otherwise evaluates to the
+# nothing.
+rule require ( expressions + : language ? )
+{
+    return [ check $(expressions) : $(language) : : <build>no ] ;
+}
+
+rule predef_check_action ( targets + : sources + : props * )
+{
+    PREDEF_CHECK_EXPRESSION on $(targets)
+        = [ feature.get-values <predef-expression> : $(props) ] ;
+}
+
+actions predef_check_action bind PREDEF_CHECK_EXPRESSION
+{
+    $(>) "$(PREDEF_CHECK_EXPRESSION)" > $(<)
+}

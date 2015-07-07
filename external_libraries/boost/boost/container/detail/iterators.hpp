@@ -14,7 +14,11 @@
 #ifndef BOOST_CONTAINER_DETAIL_ITERATORS_HPP
 #define BOOST_CONTAINER_DETAIL_ITERATORS_HPP
 
-#if defined(_MSC_VER)
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
 #  pragma once
 #endif
 
@@ -26,20 +30,19 @@
 #include <boost/move/utility_core.hpp>
 #include <boost/intrusive/detail/reverse_iterator.hpp>
 
-#ifdef BOOST_CONTAINER_PERFECT_FORWARDING
-#include <boost/container/detail/variadic_templates_tools.hpp>
+#if defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)
+#include <boost/move/detail/fwd_macros.hpp>
 #else
-#include <boost/container/detail/preprocessor.hpp>
+#include <boost/container/detail/variadic_templates_tools.hpp>
 #endif
-
-#include <iterator>
+#include <boost/container/detail/iterator.hpp>
 
 namespace boost {
 namespace container {
 
 template <class T, class Difference = std::ptrdiff_t>
 class constant_iterator
-  : public std::iterator
+  : public ::boost::container::iterator
       <std::random_access_iterator_tag, T, Difference, const T*, const T &>
 {
    typedef  constant_iterator<T, Difference> this_type;
@@ -150,7 +153,7 @@ class constant_iterator
 
 template <class T, class Difference>
 class value_init_construct_iterator
-  : public std::iterator
+  : public ::boost::container::iterator
       <std::random_access_iterator_tag, T, Difference, const T*, const T &>
 {
    typedef  value_init_construct_iterator<T, Difference> this_type;
@@ -261,7 +264,7 @@ class value_init_construct_iterator
 
 template <class T, class Difference>
 class default_init_construct_iterator
-  : public std::iterator
+  : public ::boost::container::iterator
       <std::random_access_iterator_tag, T, Difference, const T*, const T &>
 {
    typedef  default_init_construct_iterator<T, Difference> this_type;
@@ -373,7 +376,7 @@ class default_init_construct_iterator
 
 template <class T, class Difference = std::ptrdiff_t>
 class repeat_iterator
-  : public std::iterator
+  : public ::boost::container::iterator
       <std::random_access_iterator_tag, T, Difference>
 {
    typedef repeat_iterator<T, Difference> this_type;
@@ -483,7 +486,7 @@ class repeat_iterator
 
 template <class T, class EmplaceFunctor, class Difference /*= std::ptrdiff_t*/>
 class emplace_iterator
-  : public std::iterator
+  : public ::boost::container::iterator
       <std::random_access_iterator_tag, T, Difference, const T*, const T &>
 {
    typedef emplace_iterator this_type;
@@ -564,8 +567,8 @@ class emplace_iterator
    //const T& operator[](difference_type) const;
    //const T* operator->() const;
 
-   template<class A>
-   void construct_in_place(A &a, T* ptr)
+   template<class Allocator>
+   void construct_in_place(Allocator &a, T* ptr)
    {  (*m_pe)(a, ptr);  }
 
    private:
@@ -597,54 +600,49 @@ class emplace_iterator
    {  return difference_type(m_num - other.m_num);   }
 };
 
-#ifdef BOOST_CONTAINER_PERFECT_FORWARDING
+#if !defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)
 
 template<class ...Args>
 struct emplace_functor
 {
    typedef typename container_detail::build_number_seq<sizeof...(Args)>::type index_tuple_t;
 
-   emplace_functor(Args&&... args)
+   emplace_functor(BOOST_FWD_REF(Args)... args)
       : args_(args...)
    {}
 
-   template<class A, class T>
-   void operator()(A &a, T *ptr)
+   template<class Allocator, class T>
+   void operator()(Allocator &a, T *ptr)
    {  emplace_functor::inplace_impl(a, ptr, index_tuple_t());  }
 
-   template<class A, class T, int ...IdxPack>
-   void inplace_impl(A &a, T* ptr, const container_detail::index_tuple<IdxPack...>&)
+   template<class Allocator, class T, int ...IdxPack>
+   void inplace_impl(Allocator &a, T* ptr, const container_detail::index_tuple<IdxPack...>&)
    {
-      allocator_traits<A>::construct
+      allocator_traits<Allocator>::construct
          (a, ptr, ::boost::forward<Args>(container_detail::get<IdxPack>(args_))...);
    }
 
    container_detail::tuple<Args&...> args_;
 };
 
-#else //#ifdef BOOST_CONTAINER_PERFECT_FORWARDING
+#else // !defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)
 
-#define BOOST_PP_LOCAL_MACRO(n)                                                        \
-   BOOST_PP_EXPR_IF(n, template <)                                                     \
-      BOOST_PP_ENUM_PARAMS(n, class P)                                                 \
-         BOOST_PP_EXPR_IF(n, >)                                                        \
-   struct BOOST_PP_CAT(BOOST_PP_CAT(emplace_functor, n), arg)                          \
-   {                                                                                   \
-      BOOST_PP_CAT(BOOST_PP_CAT(emplace_functor, n), arg)                              \
-         ( BOOST_PP_ENUM(n, BOOST_CONTAINER_PP_PARAM_LIST, _) )                        \
-      BOOST_PP_EXPR_IF(n, :) BOOST_PP_ENUM(n, BOOST_CONTAINER_PP_PARAM_INIT, _){}      \
-                                                                                       \
-      template<class A, class T>                                                       \
-      void operator()(A &a, T *ptr)                                                    \
-      {                                                                                \
-         allocator_traits<A>::construct                                                \
-            (a, ptr BOOST_PP_ENUM_TRAILING(n, BOOST_CONTAINER_PP_MEMBER_FORWARD, _) ); \
-      }                                                                                \
-      BOOST_PP_REPEAT(n, BOOST_CONTAINER_PP_PARAM_DEFINE, _)                           \
-   };                                                                                  \
-   //!
-#define BOOST_PP_LOCAL_LIMITS (0, BOOST_CONTAINER_MAX_CONSTRUCTOR_PARAMETERS)
-#include BOOST_PP_LOCAL_ITERATE()
+#define BOOST_MOVE_ITERATOR_EMPLACE_FUNCTOR_CODE(N) \
+BOOST_MOVE_TMPL_LT##N BOOST_MOVE_CLASS##N BOOST_MOVE_GT##N \
+struct emplace_functor##N\
+{\
+   explicit emplace_functor##N( BOOST_MOVE_UREF##N )\
+      BOOST_MOVE_COLON##N BOOST_MOVE_FWD_INIT##N{}\
+   \
+   template<class Allocator, class T>\
+   void operator()(Allocator &a, T *ptr)\
+   {  allocator_traits<Allocator>::construct(a, ptr BOOST_MOVE_I##N BOOST_MOVE_MFWD##N);  }\
+   \
+   BOOST_MOVE_MREF##N\
+};\
+//
+BOOST_MOVE_ITERATE_0TO9(BOOST_MOVE_ITERATOR_EMPLACE_FUNCTOR_CODE)
+#undef BOOST_MOVE_ITERATOR_EMPLACE_FUNCTOR_CODE
 
 #endif
 
@@ -709,8 +707,8 @@ struct iiterator_types
 {
    typedef typename IIterator::value_type                            it_value_type;
    typedef typename iiterator_node_value_type<it_value_type>::type   value_type;
-   typedef typename std::iterator_traits<IIterator>::pointer         it_pointer;
-   typedef typename std::iterator_traits<IIterator>::difference_type difference_type;
+   typedef typename boost::container::iterator_traits<IIterator>::pointer         it_pointer;
+   typedef typename boost::container::iterator_traits<IIterator>::difference_type difference_type;
    typedef typename ::boost::intrusive::pointer_traits<it_pointer>::
       template rebind_pointer<value_type>::type                      pointer;
    typedef typename ::boost::intrusive::pointer_traits<it_pointer>::
@@ -723,9 +721,9 @@ struct iiterator_types
 };
 
 template<class IIterator, bool IsConst>
-struct std_iterator
+struct iterator_types
 {
-   typedef typename std::iterator
+   typedef typename ::boost::container::iterator
       < typename iiterator_types<IIterator>::iterator_category
       , typename iiterator_types<IIterator>::value_type
       , typename iiterator_types<IIterator>::difference_type
@@ -734,9 +732,9 @@ struct std_iterator
 };
 
 template<class IIterator>
-struct std_iterator<IIterator, false>
+struct iterator_types<IIterator, false>
 {
-   typedef typename std::iterator
+   typedef typename ::boost::container::iterator
       < typename iiterator_types<IIterator>::iterator_category
       , typename iiterator_types<IIterator>::value_type
       , typename iiterator_types<IIterator>::difference_type
@@ -745,9 +743,9 @@ struct std_iterator<IIterator, false>
 };
 
 template<class IIterator, bool IsConst>
-class iterator
+class iterator_from_iiterator
 {
-   typedef typename std_iterator<IIterator, IsConst>::type types_t;
+   typedef typename iterator_types<IIterator, IsConst>::type types_t;
 
    public:
    typedef typename types_t::pointer             pointer;
@@ -756,63 +754,64 @@ class iterator
    typedef typename types_t::iterator_category   iterator_category;
    typedef typename types_t::value_type          value_type;
 
-   iterator()
+   iterator_from_iiterator()
    {}
 
-   explicit iterator(IIterator iit) BOOST_CONTAINER_NOEXCEPT
+   explicit iterator_from_iiterator(IIterator iit) BOOST_NOEXCEPT_OR_NOTHROW
       : m_iit(iit)
    {}
 
-   iterator(iterator<IIterator, false> const& other) BOOST_CONTAINER_NOEXCEPT
+   iterator_from_iiterator(iterator_from_iiterator<IIterator, false> const& other) BOOST_NOEXCEPT_OR_NOTHROW
       :  m_iit(other.get())
    {}
 
-   iterator& operator++() BOOST_CONTAINER_NOEXCEPT
+   iterator_from_iiterator& operator++() BOOST_NOEXCEPT_OR_NOTHROW
    {  ++this->m_iit;   return *this;  }
 
-   iterator operator++(int) BOOST_CONTAINER_NOEXCEPT
+   iterator_from_iiterator operator++(int) BOOST_NOEXCEPT_OR_NOTHROW
    {
-      iterator result (*this);
+      iterator_from_iiterator result (*this);
       ++this->m_iit;
       return result;
    }
 
-   iterator& operator--() BOOST_CONTAINER_NOEXCEPT
+   iterator_from_iiterator& operator--() BOOST_NOEXCEPT_OR_NOTHROW
    {
-      //If the iterator is not a bidirectional iterator, operator-- should not exist
-      BOOST_STATIC_ASSERT((is_bidirectional_iterator<iterator>::value));
+      //If the iterator_from_iiterator is not a bidirectional iterator, operator-- should not exist
+      BOOST_STATIC_ASSERT((is_bidirectional_iterator<iterator_from_iiterator>::value));
       --this->m_iit;   return *this;
    }
 
-   iterator operator--(int) BOOST_CONTAINER_NOEXCEPT
+   iterator_from_iiterator operator--(int) BOOST_NOEXCEPT_OR_NOTHROW
    {
-      iterator result (*this);
+      iterator_from_iiterator result (*this);
       --this->m_iit;
       return result;
    }
 
-   friend bool operator== (const iterator& l, const iterator& r) BOOST_CONTAINER_NOEXCEPT
+   friend bool operator== (const iterator_from_iiterator& l, const iterator_from_iiterator& r) BOOST_NOEXCEPT_OR_NOTHROW
    {  return l.m_iit == r.m_iit;   }
 
-   friend bool operator!= (const iterator& l, const iterator& r) BOOST_CONTAINER_NOEXCEPT
+   friend bool operator!= (const iterator_from_iiterator& l, const iterator_from_iiterator& r) BOOST_NOEXCEPT_OR_NOTHROW
    {  return !(l == r); }
 
-   reference operator*()  const BOOST_CONTAINER_NOEXCEPT
+   reference operator*()  const BOOST_NOEXCEPT_OR_NOTHROW
    {  return (*this->m_iit).get_data();  }
 
-   pointer   operator->() const BOOST_CONTAINER_NOEXCEPT
+   pointer   operator->() const BOOST_NOEXCEPT_OR_NOTHROW
    {  return ::boost::intrusive::pointer_traits<pointer>::pointer_to(this->operator*());  }
 
-   const IIterator &get() const BOOST_CONTAINER_NOEXCEPT
+   const IIterator &get() const BOOST_NOEXCEPT_OR_NOTHROW
    {  return this->m_iit;   }
 
    private:
    IIterator m_iit;
 };
 
-using ::boost::intrusive::detail::reverse_iterator;
-
 }  //namespace container_detail {
+
+using ::boost::intrusive::reverse_iterator;
+
 }  //namespace container {
 }  //namespace boost {
 

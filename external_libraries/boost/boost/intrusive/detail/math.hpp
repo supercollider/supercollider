@@ -13,7 +13,11 @@
 #ifndef BOOST_INTRUSIVE_DETAIL_MATH_HPP
 #define BOOST_INTRUSIVE_DETAIL_MATH_HPP
 
-#if defined(_MSC_VER)
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
 #  pragma once
 #endif
 
@@ -84,9 +88,9 @@ namespace detail {
 
    #if defined(BOOST_HAS_LONG_LONG)
    template<>
-   struct builtin_clz_dispatch<unsigned long long>
+   struct builtin_clz_dispatch< ::boost::ulong_long_type >
    {
-      static unsigned long long call(unsigned long long n)
+      static ::boost::ulong_long_type call(::boost::ulong_long_type n)
       {  return __builtin_clzll(n); }
    };
    #endif
@@ -154,7 +158,7 @@ namespace detail {
 
    inline std::size_t floor_log2 (std::size_t v, integer<std::size_t, 32>)
    {
-      static const int MultiplyDeBruijnBitPosition[32] = 
+      static const int MultiplyDeBruijnBitPosition[32] =
       {
          0, 9, 1, 10, 13, 21, 2, 29, 11, 14, 16, 18, 22, 25, 3, 30,
          8, 12, 20, 28, 15, 17, 24, 7, 19, 27, 23, 6, 26, 5, 4, 31

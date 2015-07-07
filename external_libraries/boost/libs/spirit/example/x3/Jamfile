@@ -1,0 +1,52 @@
+#==============================================================================
+#   Copyright (c) 2001-2014 Joel de Guzman
+#
+#   Distributed under the Boost Software License, Version 1.0. (See accompanying
+#   file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+#==============================================================================
+project spirit-x3-example
+    : requirements
+        <include>.
+        <toolset>gcc:<cxxflags>-std=c++0x
+        <toolset>gcc:<cxxflags>-ftemplate-depth-512
+        <toolset>clang:<cxxflags>-std=c++1y
+        <toolset>clang:<cxxflags>-ftemplate-depth-512
+        <toolset>darwin:<cxxflags>-std=c++1y
+        <toolset>darwin:<cxxflags>-ftemplate-depth-512
+    :
+    :
+    ;
+
+exe calc1 : calc1.cpp ;
+exe calc2 : calc2.cpp ;
+exe calc3 : calc4.cpp ;
+exe calc4 : calc4b.cpp ;
+exe calc5 : calc5.cpp ;
+exe calc6 : calc6.cpp ;
+
+exe calc7 :
+    calc7/vm.cpp
+    calc7/compiler.cpp
+    calc7/expression.cpp
+    calc7/main.cpp
+;
+
+exe calc8 :
+    /boost//system
+    /boost//filesystem
+    calc8/vm.cpp
+    calc8/compiler.cpp
+    calc8/expression.cpp
+    calc8/statement.cpp
+    calc8/main.cpp
+;
+
+exe calc9 :
+    /boost//system
+    /boost//filesystem
+    calc9/vm.cpp
+    calc9/compiler.cpp
+    calc9/expression.cpp
+    calc9/statement.cpp
+    calc9/main.cpp
+;

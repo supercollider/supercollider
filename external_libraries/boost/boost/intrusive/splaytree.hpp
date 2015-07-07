@@ -12,15 +12,11 @@
 #ifndef BOOST_INTRUSIVE_SPLAYTREE_HPP
 #define BOOST_INTRUSIVE_SPLAYTREE_HPP
 
-#if defined(_MSC_VER)
-#  pragma once
-#endif
-
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/intrusive_fwd.hpp>
 #include <cstddef>
-#include <functional>
-#include <utility>
+#include <boost/intrusive/detail/minimal_less_equal_header.hpp>
+#include <boost/intrusive/detail/minimal_pair_header.hpp>   //std::pair
 
 #include <boost/static_assert.hpp>
 #include <boost/intrusive/bstree.hpp>
@@ -33,6 +29,10 @@
 #include <boost/intrusive/link_mode.hpp>
 #include <boost/intrusive/detail/key_nodeptr_comp.hpp>
 #include <boost/move/utility_core.hpp>
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
+#  pragma once
+#endif
 
 namespace boost {
 namespace intrusive {
@@ -78,7 +78,7 @@ class splaytree_impl
    /// @cond
    typedef bstree_impl< ValueTraits, VoidOrKeyComp, SizeType
                       , ConstantTimeSize, SplayTreeAlgorithms
-                      , HeaderHolder>                               tree_type;
+                      , HeaderHolder>                                tree_type;
    typedef tree_type                                                 implementation_defined;
    /// @endcond
 
@@ -136,12 +136,12 @@ class splaytree_impl
 
    //! @copydoc ::boost::intrusive::bstree::bstree(bstree &&)
    splaytree_impl(BOOST_RV_REF(splaytree_impl) x)
-      :  tree_type(::boost::move(static_cast<tree_type&>(x)))
+      :  tree_type(BOOST_MOVE_BASE(tree_type, x))
    {}
 
    //! @copydoc ::boost::intrusive::bstree::operator=(bstree &&)
    splaytree_impl& operator=(BOOST_RV_REF(splaytree_impl) x)
-   {  return static_cast<splaytree_impl&>(tree_type::operator=(::boost::move(static_cast<tree_type&>(x)))); }
+   {  return static_cast<splaytree_impl&>(tree_type::operator=(BOOST_MOVE_BASE(tree_type, x))); }
 
    #ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
    //! @copydoc ::boost::intrusive::bstree::~bstree()
@@ -533,15 +533,13 @@ struct make_splaytree
 
    typedef typename detail::get_value_traits
       <T, typename packed_options::proto_value_traits>::type value_traits;
-   typedef typename detail::get_header_holder_type
-      < value_traits, typename packed_options::header_holder_type >::type header_holder_type;
 
    typedef splaytree_impl
          < value_traits
          , typename packed_options::compare
          , typename packed_options::size_type
          , packed_options::constant_time_size
-         , header_holder_type
+         , typename packed_options::header_holder_type
          > implementation_defined;
    /// @endcond
    typedef implementation_defined type;
@@ -598,11 +596,11 @@ class splaytree
    {}
 
    splaytree(BOOST_RV_REF(splaytree) x)
-      :  Base(::boost::move(static_cast<Base&>(x)))
+      :  Base(BOOST_MOVE_BASE(Base, x))
    {}
 
    splaytree& operator=(BOOST_RV_REF(splaytree) x)
-   {  return static_cast<splaytree &>(this->Base::operator=(::boost::move(static_cast<Base&>(x))));  }
+   {  return static_cast<splaytree &>(this->Base::operator=(BOOST_MOVE_BASE(Base, x)));  }
 
    static splaytree &container_from_end_iterator(iterator end_iterator)
    {  return static_cast<splaytree &>(Base::container_from_end_iterator(end_iterator));   }

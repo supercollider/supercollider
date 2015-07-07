@@ -13,7 +13,11 @@
 #ifndef BOOST_CONTAINER_CONTAINER_DETAIL_MPL_HPP
 #define BOOST_CONTAINER_CONTAINER_DETAIL_MPL_HPP
 
-#if defined(_MSC_VER)
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
 #  pragma once
 #endif
 
@@ -38,6 +42,13 @@ struct bool_ : integral_constant<bool, C_>
 {
    static const bool value = C_;
    operator bool() const { return bool_::value; }
+};
+
+template< unsigned V_ >
+struct unsigned_ : integral_constant<unsigned, V_>
+{
+   static const unsigned value = V_;
+   operator unsigned() const { return unsigned_::value; }
 };
 
 typedef bool_<true>        true_;
@@ -167,6 +178,12 @@ template<>
 struct ls_zeros<1>
 {
    static const std::size_t value = 0;
+};
+
+template <std::size_t OrigSize, std::size_t RoundTo>
+struct ct_rounded_size
+{
+   static const std::size_t value = ((OrigSize-1)/RoundTo+1)*RoundTo;
 };
 
 template <typename T> struct unvoid { typedef T type; };

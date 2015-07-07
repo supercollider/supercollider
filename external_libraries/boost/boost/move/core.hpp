@@ -16,7 +16,16 @@
 #ifndef BOOST_MOVE_CORE_HPP
 #define BOOST_MOVE_CORE_HPP
 
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+#
+#if defined(BOOST_HAS_PRAGMA_ONCE)
+#  pragma once
+#endif
+
 #include <boost/move/detail/config_begin.hpp>
+#include <boost/move/detail/workaround.hpp>
 
 //boost_move_no_copy_constructor_or_assign typedef
 //used to detect noncopyable types for other Boost libraries.
@@ -42,7 +51,7 @@
 
 #if defined(BOOST_NO_CXX11_RVALUE_REFERENCES) && !defined(BOOST_MOVE_DOXYGEN_INVOKED)
 
-   #include <boost/move/detail/meta_utils.hpp>
+   #include <boost/move/detail/type_traits.hpp>
 
    //Move emulation rv breaks standard aliasing rules so add workarounds for some compilers
    #if defined(__GNUC__) && (__GNUC__ >= 4) && \
@@ -65,7 +74,7 @@
    template <class T>
    class rv
       : public ::boost::move_detail::if_c
-         < ::boost::move_detail::is_class_or_union<T>::value
+         < ::boost::move_detail::is_class<T>::value
          , T
          , ::boost::move_detail::nat
          >::type
@@ -194,6 +203,10 @@
       boost::move_detail::move_return< RET_TYPE >(REF)
    //
 
+   #define BOOST_MOVE_BASE(BASE_TYPE, ARG) \
+      ::boost::move((BASE_TYPE&)(ARG))
+   //
+
    //////////////////////////////////////////////////////////////////////////////
    //
    //                         BOOST_MOVABLE_BUT_NOT_COPYABLE
@@ -250,23 +263,6 @@
    }}
 
 #else    //BOOST_NO_CXX11_RVALUE_REFERENCES
-
-   //Compiler workaround detection
-   #if !defined(BOOST_MOVE_DOXYGEN_INVOKED)
-      #if defined(__GNUC__) && (__GNUC__ == 4) && (__GNUC_MINOR__ < 5) && !defined(__clang__)
-         //Pre-standard rvalue binding rules
-         #define BOOST_MOVE_OLD_RVALUE_REF_BINDING_RULES
-      #elif defined(_MSC_VER) && (_MSC_VER == 1600)
-         //Standard rvalue binding rules but with some bugs
-         #define BOOST_MOVE_MSVC_10_MEMBER_RVALUE_REF_BUG
-         #define BOOST_MOVE_MSVC_AUTO_MOVE_RETURN_BUG
-         //Use standard library for MSVC to avoid namespace issues as
-         //some move calls in the STL are not fully qualified.
-         //#define BOOST_MOVE_USE_STANDARD_LIBRARY_MOVE
-      #elif defined(_MSC_VER) && (_MSC_VER == 1700)
-         #define BOOST_MOVE_MSVC_AUTO_MOVE_RETURN_BUG
-      #endif
-   #endif
 
    //! This macro marks a type as movable but not copyable, disabling copy construction
    //! and assignment. The user will need to write a move constructor/assignment as explained
@@ -369,7 +365,6 @@
       const TYPE & \
    //
 
-
    #endif   //#if !defined(BOOST_MOVE_DOXYGEN_INVOKED)
 
    #if !defined(BOOST_MOVE_MSVC_AUTO_MOVE_RETURN_BUG) || defined(BOOST_MOVE_DOXYGEN_INVOKED)
@@ -431,6 +426,17 @@
       //
 
    #endif   //!defined(BOOST_MOVE_MSVC_AUTO_MOVE_RETURN_BUG) || defined(BOOST_MOVE_DOXYGEN_INVOKED)
+
+   //!This macro is used to achieve portable optimal move constructors.
+   //!
+   //!When implementing the move constructor, in C++03 compilers the moved-from argument must be
+   //!cast to the base type before calling `::boost::move()` due to rvalue reference limitations.
+   //!
+   //!In C++11 compilers the cast from a rvalue reference of a derived type to a rvalue reference of
+   //!a base type is implicit.
+   #define BOOST_MOVE_BASE(BASE_TYPE, ARG) \
+      ::boost::move((BASE_TYPE&)(ARG))
+   //
 
    namespace boost {
    namespace move_detail {

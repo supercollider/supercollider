@@ -13,7 +13,11 @@
 #ifndef BOOST_INTRUSIVE_DETAIL_KEY_NODEPTR_COMP_HPP
 #define BOOST_INTRUSIVE_DETAIL_KEY_NODEPTR_COMP_HPP
 
-#if defined(_MSC_VER)
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
 #  pragma once
 #endif
 
@@ -26,7 +30,8 @@ namespace detail {
 
 template<class KeyValueCompare, class ValueTraits>
 struct key_nodeptr_comp
-   :  private ebo_functor_holder<KeyValueCompare>
+   //Use public inheritance to avoid MSVC bugs with closures
+   :  public ebo_functor_holder<KeyValueCompare>
 {
    typedef ValueTraits                             value_traits;
    typedef typename value_traits::value_type       value_type;
@@ -44,6 +49,7 @@ struct key_nodeptr_comp
       static const bool value = is_same<T, const_node_ptr>::value || is_same<T, node_ptr>::value;
    };
 
+   //key_forward
    template<class T>
    const value_type & key_forward
       (const T &node, typename enable_if_c<is_node_ptr<T>::value>::type * = 0) const
@@ -53,21 +59,23 @@ struct key_nodeptr_comp
    const T & key_forward(const T &key, typename enable_if_c<!is_node_ptr<T>::value>::type* = 0) const
    {  return key;  }
 
-   template<class T>
-   T & key_forward(T &key, typename enable_if_c<!is_node_ptr<T>::value>::type* = 0) const
-   {  return key;  }
-
-   template<class KeyType, class KeyType2>
-   bool operator()(const KeyType &key1, const KeyType2 &key2) const
-   {  return base_t::get()(this->key_forward(key1), this->key_forward(key2));  }
-
+   //operator() 1 arg
    template<class KeyType>
    bool operator()(const KeyType &key1) const
    {  return base_t::get()(this->key_forward(key1));  }
 
    template<class KeyType>
-   bool operator()(KeyType &key1)
+   bool operator()(const KeyType &key1)
    {  return base_t::get()(this->key_forward(key1));  }
+
+   //operator() 2 arg
+   template<class KeyType, class KeyType2>
+   bool operator()(const KeyType &key1, const KeyType2 &key2) const
+   {  return base_t::get()(this->key_forward(key1), this->key_forward(key2));  }
+
+   template<class KeyType, class KeyType2>
+   bool operator()(const KeyType &key1, const KeyType2 &key2)
+   {  return base_t::get()(this->key_forward(key1), this->key_forward(key2));  }
 
    const ValueTraits *const traits_;
 };

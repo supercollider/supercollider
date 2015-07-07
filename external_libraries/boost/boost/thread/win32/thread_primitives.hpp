@@ -285,7 +285,6 @@ namespace boost
                 // Oops, we weren't called often enough, we're stuck
                 return 0xFFFFFFFF;     
             }
-#else
 #endif
             inline detail::gettickcount64_t GetTickCount64_()
             {

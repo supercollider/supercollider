@@ -11,7 +11,11 @@
 #ifndef BOOST_CONTAINER_DETAIL_STD_FWD_HPP
 #define BOOST_CONTAINER_DETAIL_STD_FWD_HPP
 
-#if defined(_MSC_VER)
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
 #  pragma once
 #endif
 
@@ -25,6 +29,12 @@
    #pragma GCC diagnostic ignored "-Wc++11-extensions"
    #define BOOST_CONTAINER_STD_NS_BEG _LIBCPP_BEGIN_NAMESPACE_STD
    #define BOOST_CONTAINER_STD_NS_END _LIBCPP_END_NAMESPACE_STD
+#elif defined(BOOST_GNU_STDLIB) && defined(_GLIBCXX_BEGIN_NAMESPACE_VERSION)  //GCC >= 4.6
+   #define BOOST_CONTAINER_STD_NS_BEG namespace std _GLIBCXX_VISIBILITY(default) { _GLIBCXX_BEGIN_NAMESPACE_VERSION
+   #define BOOST_CONTAINER_STD_NS_END _GLIBCXX_END_NAMESPACE_VERSION  } // namespace
+#elif defined(BOOST_GNU_STDLIB) && defined(_GLIBCXX_BEGIN_NAMESPACE)  //GCC >= 4.2
+   #define BOOST_CONTAINER_STD_NS_BEG _GLIBCXX_BEGIN_NAMESPACE(std)
+   #define BOOST_CONTAINER_STD_NS_END _GLIBCXX_END_NAMESPACE
 #else
    #define BOOST_CONTAINER_STD_NS_BEG namespace std{
    #define BOOST_CONTAINER_STD_NS_END }
@@ -48,6 +58,11 @@ struct input_iterator_tag;
 struct forward_iterator_tag;
 struct bidirectional_iterator_tag;
 struct random_access_iterator_tag;
+
+template<class Container>
+class insert_iterator;
+
+struct allocator_arg_t;
 
 BOOST_CONTAINER_STD_NS_END
 

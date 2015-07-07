@@ -1,0 +1,35 @@
+[/
+          Copyright Oliver Kowalke 2014.
+ Distributed under the Boost Software License, Version 1.0.
+    (See accompanying file LICENSE_1_0.txt or copy at
+          http://www.boost.org/LICENSE_1_0.txt
+]
+
+[section:performance Performance]
+
+Performance of __boost_context__ was measured on the platforms shown in the
+following table. Performance measurements were taken using `rdtsc` and
+`boost::chrono::high_resolution_clock`, with
+overhead corrections, on x86 platforms. In each case, cache warm-up was
+accounted for, and the one running thread was pinned
+to a single CPU. The code was compiled using the build options,
+'variant = release cxxflags = -DBOOST_DISABLE_ASSERTS'.
+
+[table Performance of context switch
+    [[Platform] [ucontext_t] [fcontext_t] [windows fibers]]
+    [
+        [i386 [footnote AMD Athlon 64 DualCore 4400+]]
+        [708 ns / 754 cycles]
+        [37 ns / 37 cycles]
+        [ ns /  cycles]
+    ]
+    [
+        [x86_64 [footnote Intel Core2 Q6700]]
+        [547 ns / 1433 cycles]
+        [8 ns / 23 cycles]
+        [ ns /  cycles]
+    ]
+]
+
+
+[endsect]

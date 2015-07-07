@@ -321,30 +321,6 @@ namespace boost {
             typedef const T * type;
         };
     }
-
-    namespace detail // is_this_float_conversion_optimized<Float, Char>
-    {
-        // this metafunction evaluates to true, if we have optimized comnversion 
-        // from Float type to Char array. 
-        // Must be in sync with lexical_stream_limited_src<Char, ...>::shl_real_type(...)
-        template <typename Float, typename Char>
-        struct is_this_float_conversion_optimized 
-        {
-            typedef boost::type_traits::ice_and<
-                boost::is_float<Float>::value,
-#if !defined(BOOST_LCAST_NO_WCHAR_T) && !defined(BOOST_NO_SWPRINTF) && !defined(__MINGW32__)
-                boost::type_traits::ice_or<
-                    boost::type_traits::ice_eq<sizeof(Char), sizeof(char) >::value,
-                    boost::is_same<Char, wchar_t>::value
-                >::value
-#else
-                boost::type_traits::ice_eq<sizeof(Char), sizeof(char) >::value
-#endif
-            > result_type;
-
-            BOOST_STATIC_CONSTANT(bool, value = (result_type::value) );
-        };
-    }
     
     namespace detail // lcast_src_length
     {
@@ -457,7 +433,6 @@ namespace boost {
 
             typedef boost::type_traits::ice_not< boost::type_traits::ice_or<
                 boost::is_integral<no_cv_src>::value,
-                boost::detail::is_this_float_conversion_optimized<no_cv_src, char_type >::value,
                 boost::detail::is_character<
                     BOOST_DEDUCED_TYPENAME deduce_src_char_metafunc::stage1_type          // if we did not get character type at stage1
                 >::value                                                                  // then we have no optimization for that type

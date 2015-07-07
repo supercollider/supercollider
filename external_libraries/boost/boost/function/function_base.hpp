@@ -294,7 +294,7 @@ namespace boost {
           } else if (op == destroy_functor_tag)
             out_buffer.func_ptr = 0;
           else if (op == check_functor_type_tag) {
-            const detail::sp_typeinfo& check_type 
+            const boost::detail::sp_typeinfo& check_type
               = *out_buffer.type.type;
             if (BOOST_FUNCTION_COMPARE_TYPE_ID(check_type, BOOST_SP_TYPEID(Functor)))
               out_buffer.obj_ptr = &in_buffer.func_ptr;

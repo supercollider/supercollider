@@ -44,6 +44,7 @@ template <typename T>
 class ringbuffer_base
 {
 #ifndef BOOST_DOXYGEN_INVOKED
+protected:
     typedef std::size_t size_t;
     static const int padding_size = BOOST_LOCKFREE_CACHELINE_BYTES - sizeof(size_t);
     atomic<size_t> write_index_;
@@ -462,13 +463,13 @@ public:
     }
 
     template <typename Functor>
-    bool consume_all(Functor & f)
+    size_type consume_all(Functor & f)
     {
         return ringbuffer_base<T>::consume_all(f, data(), max_size);
     }
 
     template <typename Functor>
-    bool consume_all(Functor const & f)
+    size_type consume_all(Functor const & f)
     {
         return ringbuffer_base<T>::consume_all(f, data(), max_size);
     }
@@ -953,6 +954,24 @@ public:
         BOOST_ASSERT(read_available() > 0);
         return base_type::front();
     }
+
+    /** reset the ringbuffer
+     *
+     * \note Not thread-safe
+     * */
+    void reset(void)
+    {
+        if ( !boost::has_trivial_destructor<T>::value ) {
+            // make sure to call all destructors!
+
+            T dummy_element;
+            while (pop(dummy_element))
+            {}
+        } else {
+            base_type::write_index_.store(0, memory_order_relaxed);
+            base_type::read_index_.store(0, memory_order_release);
+        }
+   }
 };
 
 } /* namespace lockfree */

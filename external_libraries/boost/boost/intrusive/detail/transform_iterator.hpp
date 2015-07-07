@@ -13,7 +13,11 @@
 #ifndef BOOST_INTRUSIVE_DETAIL_TRANSFORM_ITERATOR_HPP
 #define BOOST_INTRUSIVE_DETAIL_TRANSFORM_ITERATOR_HPP
 
-#if defined(_MSC_VER)
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
 #  pragma once
 #endif
 
@@ -90,16 +94,6 @@ class transform_iterator
    friend bool operator!= (const transform_iterator& i, const transform_iterator& i2)
    { return !(i == i2); }
 
-/*
-   friend bool operator> (const transform_iterator& i, const transform_iterator& i2)
-   { return i2 < i; }
-
-   friend bool operator<= (const transform_iterator& i, const transform_iterator& i2)
-   { return !(i > i2); }
-
-   friend bool operator>= (const transform_iterator& i, const transform_iterator& i2)
-   { return !(i < i2); }
-*/
    friend typename Iterator::difference_type operator- (const transform_iterator& i, const transform_iterator& i2)
    { return i2.distance_to(i); }
 

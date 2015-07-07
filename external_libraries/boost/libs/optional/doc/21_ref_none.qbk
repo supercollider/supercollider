@@ -1,0 +1,29 @@
+[/
+    Boost.Optional
+
+    Copyright (c) 2003-2007 Fernando Luis Cacciola Carballal
+    Copyright (c) 2015 Andrzej Krzemienski
+
+    Distributed under the Boost Software License, Version 1.0.
+    (See accompanying file LICENSE_1_0.txt or copy at
+    http://www.boost.org/LICENSE_1_0.txt)
+]
+
+[section Header <boost/none.hpp>]
+
+[section Synopsis]
+```
+namespace boost {
+
+class none_t {};
+
+extern const none_t none; // see below
+    
+} // namespace boost
+```
+
+Variable `none` has external linkage, however it is not required to link with any library to obtain its definition. Only by including this header file, the definition becomes available, by means of using template instantiation.
+
+[endsect]
+
+[endsect]

@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2012-2012.
+// (C) Copyright Ion Gaztanaga 2012-2015.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
@@ -14,7 +14,14 @@
 #ifndef BOOST_MOVE_DETAIL_META_UTILS_HPP
 #define BOOST_MOVE_DETAIL_META_UTILS_HPP
 
-#include <boost/move/detail/config_begin.hpp>
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+#
+#if defined(BOOST_HAS_PRAGMA_ONCE)
+#  pragma once
+#endif
+#include <boost/move/detail/meta_utils_core.hpp>
 #include <cstddef>   //for std::size_t
 
 //Small meta-typetraits to support move
@@ -35,78 +42,6 @@ struct nat{};
 //            natify
 //////////////////////////////////////
 template <class T> struct natify{};
-
-//////////////////////////////////////
-//             if_c
-//////////////////////////////////////
-template<bool C, typename T1, typename T2>
-struct if_c
-{
-   typedef T1 type;
-};
-
-template<typename T1, typename T2>
-struct if_c<false,T1,T2>
-{
-   typedef T2 type;
-};
-
-//////////////////////////////////////
-//             if_
-//////////////////////////////////////
-template<typename T1, typename T2, typename T3>
-struct if_
-{
-   typedef typename if_c<0 != T1::value, T2, T3>::type type;
-};
-
-//enable_if_
-template <bool B, class T = nat>
-struct enable_if_c
-{
-   typedef T type;
-};
-
-//////////////////////////////////////
-//          enable_if_c
-//////////////////////////////////////
-template <class T>
-struct enable_if_c<false, T> {};
-
-//////////////////////////////////////
-//           enable_if
-//////////////////////////////////////
-template <class Cond, class T = nat>
-struct enable_if : public enable_if_c<Cond::value, T> {};
-
-//////////////////////////////////////
-//          disable_if
-//////////////////////////////////////
-template <class Cond, class T = nat>
-struct disable_if : public enable_if_c<!Cond::value, T> {};
-
-//////////////////////////////////////
-//          integral_constant
-//////////////////////////////////////
-template<class T, T v>
-struct integral_constant
-{
-   static const T value = v;
-   typedef T value_type;
-   typedef integral_constant<T, v> type;
-};
-
-typedef integral_constant<bool, true >  true_type;
-typedef integral_constant<bool, false > false_type;
-
-//////////////////////////////////////
-//             identity
-//////////////////////////////////////
-template <class T>
-struct identity
-{
-   typedef T type;
-};
 
 //////////////////////////////////////
 //          remove_reference
@@ -184,39 +119,13 @@ struct add_const<T&&>
 //////////////////////////////////////
 template<class T>
 struct add_lvalue_reference
-{
-   typedef T& type;
-};
+{  typedef T& type;  };
 
-template<class T>
-struct add_lvalue_reference<T&>
-{
-   typedef T& type;
-};
-
-template<>
-struct add_lvalue_reference<void>
-{
-   typedef void type;
-};
-
-template<>
-struct add_lvalue_reference<const void>
-{
-   typedef const void type;
-};
-
-template<>
-struct add_lvalue_reference<volatile void>
-{
-   typedef volatile void type;
-};
-
-template<>
-struct add_lvalue_reference<const volatile void>
-{
-   typedef const volatile void type;
-};
+template<class T> struct add_lvalue_reference<T&>                 {  typedef T& type;  };
+template<>        struct add_lvalue_reference<void>               {  typedef void type;   };
+template<>        struct add_lvalue_reference<const void>         {  typedef const void type;  };
+template<>        struct add_lvalue_reference<volatile void>      {  typedef volatile void type;   };
+template<>        struct add_lvalue_reference<const volatile void>{  typedef const volatile void type;   };
 
 template<class T>
 struct add_const_lvalue_reference
@@ -225,22 +134,6 @@ struct add_const_lvalue_reference
    typedef typename add_const<t_unreferenced>::type   t_unreferenced_const;
    typedef typename add_lvalue_reference
       <t_unreferenced_const>::type                    type;
-};
-
-
-//////////////////////////////////////
-//             is_same
-//////////////////////////////////////
-template<class T, class U>
-struct is_same
-{
-   static const bool value = false;
-};
- 
-template<class T>
-struct is_same<T, T>
-{
-   static const bool value = true;
 };
 
 //////////////////////////////////////
@@ -264,7 +157,7 @@ struct is_lvalue_reference<T&>
 template<class T>
 struct is_class_or_union
 {
-   struct twochar { char _[2]; };
+   struct twochar { char dummy[2]; };
    template <class U>
    static char is_class_or_union_tester(void(U::*)(void));
    template <class U>
@@ -470,7 +363,5 @@ template< class T > struct remove_rvalue_reference { typedef T type; };
 
 }  //namespace move_detail {
 }  //namespace boost {
-
-#include <boost/move/detail/config_end.hpp>
 
 #endif //#ifndef BOOST_MOVE_DETAIL_META_UTILS_HPP

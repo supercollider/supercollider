@@ -17,7 +17,7 @@ namespace boost { namespace fusion
         struct swallow_assign
         {
             template<typename T>
-            BOOST_FUSION_GPU_ENABLED
+            BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
             swallow_assign const&
             operator=(const T&) const
             {
@@ -27,7 +27,7 @@ namespace boost { namespace fusion
     }
 
     //  "ignore" allows tuple positions to be ignored when using "tie".
-    detail::swallow_assign const ignore = detail::swallow_assign();
+    BOOST_CONSTEXPR detail::swallow_assign const ignore = detail::swallow_assign();
 }}
 
 #endif
