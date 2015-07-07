@@ -93,7 +93,7 @@ void QcWaveform::load( const QString& filename )
   SNDFILE *new_sf = sf_open( filename.toStdString().c_str(), SFM_READ, &new_info );
 
   if( !new_sf ) {
-    qcErrorMsg(QString("Could not open soundfile: ") + filename);
+    qcErrorMsg(QStringLiteral("Could not open soundfile: ") + filename);
     return;
   }
 
@@ -110,7 +110,7 @@ void QcWaveform::load( const QString& filename, int beg, int dur )
   SNDFILE *new_sf = sf_open( filename.toStdString().c_str(), SFM_READ, &new_info );
 
   if( !new_sf ) {
-    qcErrorMsg(QString("Could not open soundfile: ") + filename);
+    qcErrorMsg(QStringLiteral("Could not open soundfile: ") + filename);
     return;
   }
 
@@ -704,11 +704,11 @@ void QcWaveform::draw( QPixmap *pix, int x, int width, double f_beg, double f_du
   SoundFileStream sfStream;
 
   if( canUseCache ) {
-    qcDebugMsg( 2, QString("using cache") );
+    qcDebugMsg( 2, QStringLiteral("using cache") );
     soundStream = _cache;
   }
   else if( sf ) {
-    qcDebugMsg( 2, QString("using file") );
+    qcDebugMsg( 2, QStringLiteral("using file") );
     soundStream = &sfStream;
     sfStream.load( sf, sfInfo, i_beg, i_count );
   }

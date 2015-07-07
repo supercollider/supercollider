@@ -356,7 +356,7 @@ void ScProcess::onStart()
     if(!mIpcServer->isListening()) // avoid a warning on stderr
         mIpcServer->listen(mIpcServerName);
 
-    QString command = QString("ScIDE.connect(\"%1\")").arg(mIpcServerName);
+    QString command = QStringLiteral("ScIDE.connect(\"%1\")").arg(mIpcServerName);
     evaluateCode ( command, true );
     Main::documentManager()->sendActiveDocument();
 }
@@ -378,10 +378,10 @@ void ScProcess::updateTextMirrorForDocument ( Document * doc, int position, int 
     try {
         QDataStream stream(mIpcSocket);
         stream.setVersion(QDataStream::Qt_4_6);
-        stream << QString("updateDocText");
+        stream << QStringLiteral("updateDocText");
         stream << argList;
     } catch (std::exception const & e) {
-        scPost(QString("Exception during ScIDE_Send: %1\n").arg(e.what()));
+        scPost(QStringLiteral("Exception during ScIDE_Send: %1\n").arg(e.what()));
     }
 }
     
@@ -396,10 +396,10 @@ void ScProcess::updateSelectionMirrorForDocument ( Document * doc, int start, in
     try {
         QDataStream stream(mIpcSocket);
         stream.setVersion(QDataStream::Qt_4_6);
-        stream << QString("updateDocSelection");
+        stream << QStringLiteral("updateDocSelection");
         stream << argList;
     } catch (std::exception const & e) {
-        scPost(QString("Exception during ScIDE_Send: %1\n").arg(e.what()));
+        scPost(QStringLiteral("Exception during ScIDE_Send: %1\n").arg(e.what()));
     }
 }
 

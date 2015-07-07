@@ -245,7 +245,7 @@ QC_LANG_PRIMITIVE( QQuartzComposer_SetInputPort, 2, PyrSlot *r, PyrSlot *a, VMGl
     if( NotSym( a ) ) return errWrongType;
     PyrSymbol *keysymbol = slotRawSymbol( a );
     
-    qcSCObjectDebugMsg( 1, slotRawObject(r), QString("SET: %1").arg(keysymbol->name) );
+    qcSCObjectDebugMsg( 1, slotRawObject(r), QStringLiteral("SET: %1").arg(keysymbol->name) );
     
     NSString *key = [NSString stringWithCString:keysymbol->name encoding: NSUTF8StringEncoding];
     if(!(view->hasInputKey(key))) {
@@ -271,7 +271,7 @@ QC_LANG_PRIMITIVE( QQuartzComposer_GetInputPort, 1, PyrSlot *r, PyrSlot *a, VMGl
     if( NotSym(a) ) return errWrongType;
     PyrSymbol *keysymbol = slotRawSymbol( a );
     
-    qcSCObjectDebugMsg( 1, slotRawObject(r), QString("GET: %1").arg(keysymbol->name) );
+    qcSCObjectDebugMsg( 1, slotRawObject(r), QStringLiteral("GET: %1").arg(keysymbol->name) );
     
     NSString *key = [NSString stringWithCString: keysymbol->name encoding: NSUTF8StringEncoding];
     if(!(view->hasInputKey(key))) {
@@ -296,7 +296,7 @@ QC_LANG_PRIMITIVE( QQuartzComposer_GetOutputPort, 1, PyrSlot *r, PyrSlot *a, VMG
     if( NotSym(a) ) return errWrongType;
     PyrSymbol *keysymbol = slotRawSymbol( a );
     
-    qcSCObjectDebugMsg( 1, slotRawObject(r), QString("GET: %1").arg(keysymbol->name) );
+    qcSCObjectDebugMsg( 1, slotRawObject(r), QStringLiteral("GET: %1").arg(keysymbol->name) );
     
     NSString *key = [NSString stringWithCString: keysymbol->name encoding: NSUTF8StringEncoding];
     if(!(view->hasOutputKey(key))) {

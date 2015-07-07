@@ -50,7 +50,7 @@ public:
 
 static void qcNoConstructorMsg( const QMetaObject *metaObject, int argc, QtCollider::MetaValue *argv )
 {
-  QString str = QString("No appropriate constructor found for %1 (")
+  QString str = QStringLiteral("No appropriate constructor found for %1 (")
     .arg( metaObject->className() );
 
   for (int i = 0; i < argc; ++i)
