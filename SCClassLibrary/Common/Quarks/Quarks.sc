@@ -295,7 +295,7 @@ Quarks {
 			fetch = true;
 
 		if(File.exists(dirTxtPath), {
-			fetch = force or: fetched.not
+			fetch = force // or: fetched.not
 		});
 		{
 			if(fetch, { this.prFetchDirectory });
