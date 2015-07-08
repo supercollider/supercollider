@@ -3461,8 +3461,11 @@ static int prLanguageConfig_getLibraryPaths(struct VMGlobals * g, int numArgsPus
 	SetObject(result, resultArray);
 	resultArray->size = numberOfPaths;
 
-	for (size_t i = 0; i != numberOfPaths; ++i)
-		SetObject(resultArray->slots + i, newPyrString(g->gc, dirVector[i].c_str(), 0, true));
+	for (size_t i = 0; i != numberOfPaths; ++i) {
+		PyrString * pyrString = newPyrString(g->gc, dirVector[i].c_str(), 0, true);
+		SetObject(resultArray->slots + i, pyrString);
+		g->gc->GCWrite( resultArray,  pyrString );
+	}
 	return errNone;
 }
 
