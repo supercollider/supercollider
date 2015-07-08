@@ -109,16 +109,16 @@ void AudioStatusBox::onServerStatusReply(int ugens, int synths, int groups, int 
 void AudioStatusBox::onServerRunningChanged(bool running, const QString &, int, bool unresponsive)
 {
 	
-	if (unresponsive) {
-		mStatisticsLabel->setTextColor(Qt::yellow);
-		mVolumeLabel->setTextColor(Qt::yellow);
-	} else if(running) {
-		mStatisticsLabel->setTextColor(Qt::green);
-		mVolumeLabel->setTextColor(Qt::green);
-	} else {
-		mStatisticsLabel->setTextColor(Qt::white);
-		mVolumeLabel->setTextColor(Qt::white);
-	};
+    if (unresponsive) {
+        mStatisticsLabel->setTextColor(Qt::yellow);
+        mVolumeLabel->setTextColor(Qt::yellow);
+    } else if(running) {
+        mStatisticsLabel->setTextColor(Qt::green);
+        mVolumeLabel->setTextColor(Qt::green);
+    } else {
+        mStatisticsLabel->setTextColor(Qt::white);
+        mVolumeLabel->setTextColor(Qt::white);
+    };
 	
     if (!running)
         onServerStatusReply(0, 0, 0, 0, 0, 0);

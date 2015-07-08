@@ -59,7 +59,7 @@ public:
         VolumeDown,
         VolumeRestore,
         Record,
-		PauseRecord,
+        PauseRecord,
 
         ActionCount
     };
