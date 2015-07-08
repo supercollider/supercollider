@@ -45,10 +45,10 @@ Quarks {
 		LanguageConfig.store(LanguageConfig.currentPath);
 		cache = Dictionary.new;
 	}
-	*load { |path|
+	*load { |path, done|
 		// install a list of quarks from a text file
 		var file, line, dir,re, nameRe;
-		var match, localPath, url, name, refspec;
+		var match, localPath, url, name, refspec, q;
 		// localPath=url[@refspec]
 		re = "^([^=]+)=?([^@]+)@?(.*)$";
 		// quarkname[@refspec]
@@ -56,43 +56,50 @@ Quarks {
 		path = this.asAbsolutePath(path);
 		dir = path.dirname;
 		if(File.exists(path).not, {
-			^("Path does not exist" + path).error;
+			^("Quark set file does not exist:" + path).error;
 		});
 		this.clear();
-		file = File.open(path, "r");
-		while({
-			line = file.getLine();
-			line.notNil
-		}, {
-			// resolve any paths relative to the quark file
-			match = line.findRegexp(re);
-			if(match.size > 0, {
-				localPath = match[1][1];
-				name = localPath.basename;
-				url = match[2][1];
-				refspec = match[3];
-				if(refspec.notNil, {
-					refspec = refspec[1];
-				});
-				this.install(this.asAbsolutePath(localPath, dir), refspec);
+		Routine.run({
+			file = File.open(path, "r");
+			while({
+				line = file.getLine();
+				line.notNil
 			}, {
-				match = line.findRegexp(nameRe);
+				0.05.wait;
+				// resolve any paths relative to the quark file
+				match = line.findRegexp(re);
 				if(match.size > 0, {
-					name = match[1][1];
-					refspec = match[2];
+					localPath = match[1][1];
+					name = localPath.basename;
+					localPath = this.asAbsolutePath(localPath, dir);
+					url = match[2][1];
+					refspec = match[3];
 					if(refspec.notNil, {
 						refspec = refspec[1];
 					});
-					if(Quarks.isPath(name), {
-						this.install(this.asAbsolutePath(name, dir), refspec);
-					}, {
-						this.install(name, refspec);
-					});
+					q = Quark(name, refspec, url, localPath);
+					q.install();
 				}, {
-					"Unreadable line: %".format(line).error;
+					match = line.findRegexp(nameRe);
+					if(match.size > 0, {
+						name = match[1][1];
+						refspec = match[2];
+						if(refspec.notNil, {
+							refspec = refspec[1];
+						});
+						if(Quarks.isPath(name), {
+							this.install(this.asAbsolutePath(name, dir), refspec);
+						}, {
+							this.install(name, refspec);
+						});
+					}, {
+						"Unreadable line: %".format(line).error;
+					});
 				});
 			});
-		});
+			cache = Dictionary.new;
+			done.value();
+		}, clock: AppClock);
 	}
 	*save { |path|
 		// save currently installed quarks to a text file
