@@ -59,6 +59,7 @@ public:
         VolumeDown,
         VolumeRestore,
         Record,
+        PauseRecord,
 
         ActionCount
     };
@@ -79,7 +80,10 @@ public:
     void setDumpingOSC( bool dumping );
 
     bool isRecording() const;
+    bool isPaused() const;
+
     boost::chrono::seconds recordingTime() const;
+    boost::chrono::system_clock::time_point beginningOfRecording() const;
 
 public slots:
     void boot();
@@ -100,16 +104,20 @@ public slots:
     void restoreVolume();
     void mute() { setMuted(true); }
     void unmute() { setMuted(false); }
+    void sendRecording( bool active );
     void setRecording( bool active );
+    void pauseRecording( bool flag );
 
 signals:
-    void runningStateChange( bool running, QString const & hostName, int port );
+    void runningStateChange( bool running, QString const & hostName, int port, bool unresponsive );
     void updateServerStatus (int ugenCount, int synthCount,
                              int groupCount, int defCount,
                              float avgCPU, float peakCPU);
     void volumeChanged( float volume );
     void mutedChanged( bool muted );
     void recordingChanged( bool recording );
+    void pauseChanged( bool paused );
+
 
 private slots:
     void onScLangStateChanged( QProcess::ProcessState );
@@ -165,7 +173,9 @@ private:
     VolumeWidget *mVolumeWidget;
     QTimer mRecordTimer;
     boost::chrono::system_clock::time_point mRecordTime;
+    boost::chrono::seconds mPauseTime;
     bool mIsRecording;
+    bool mIsRecordingPaused;
 };
 
 }

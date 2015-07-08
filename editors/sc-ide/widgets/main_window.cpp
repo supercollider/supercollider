@@ -658,6 +658,8 @@ void MainWindow::createMenus()
     menu->addAction( mMain->scServer()->action(ScServer::DumpNodeTreeWithControls) );
     menu->addAction( mMain->scServer()->action(ScServer::PlotTree) );
     menu->addAction( mMain->scServer()->action(ScServer::DumpOSC) );
+	menu->addAction( mMain->scServer()->action(ScServer::Record) );
+	menu->addAction( mMain->scServer()->action(ScServer::PauseRecord) );
     menu->addAction( mMain->scServer()->action(ScServer::VolumeUp) );
     menu->addAction( mMain->scServer()->action(ScServer::VolumeDown) );
     menu->addAction( mMain->scServer()->action(ScServer::VolumeRestore) );

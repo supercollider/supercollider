@@ -39,14 +39,20 @@ ScIDE {
 		serverController = SimpleController(server)
 		.put(\serverRunning, { | server, what, extraArg |
 			this.prSend(\defaultServerRunningChanged, [
-				server.serverRunning, server.addr.hostname, server.addr.port]);
+				server.serverRunning, server.addr.hostname, server.addr.port, server.unresponsive]);
 		})
 		.put(\default, { | server, what, newServer |
 			("changed default server to:" + newServer.name).postln;
 			this.defaultServer = newServer;
 		})
-		.put(\dumpOSC, { | volume, what, code |
+		.put(\dumpOSC, { | server, what, code |
 			this.prSend( if(code.asBoolean, \dumpOSCStarted, \dumpOSCStopped) );
+		})
+		.put(\recording, { | theChanger, what, flag |
+			this.prSend( if(flag.asBoolean, \recordingStarted, \recordingStopped) );
+		})
+		.put(\pausedRecording, { | theChanger, what |
+			this.prSend(\recordingPaused);
 		});
 
 		volumeController.remove;
@@ -66,7 +72,7 @@ ScIDE {
 		defaultServer = server;
 
 		this.prSend(\defaultServerRunningChanged, [
-			server.serverRunning, server.addr.hostname, server.addr.port]);
+			server.serverRunning, server.addr.hostname, server.addr.port, server.unresponsive]);
 		this.prSend( if(server.volume.isMuted, \serverMuted, \serverUnmuted) );
 		this.prSend( if(server.dumpMode.asBoolean, \dumpOSCStarted, \dumpOSCStopped) );
 		this.prSend( \serverAmpRange, "%,%".format(server.volume.min, server.volume.max) );
@@ -350,15 +356,15 @@ ScIDE {
 	*setTextByQUuid {|quuid, funcID, text, start = 0, range = -1|
 		this.prSend(\setDocumentText, [quuid, funcID, text, start, range]);
 	}
-    
+
     *setSelectionByQUuid {|quuid, start, length|
         this.prSend(\setDocumentSelection, [quuid, start, length]);
     }
-	
+
 	*setEditablebyQUuid {|quuid, editable|
 		this.prSend(\setDocumentEditable, [quuid, editable]);
 	}
-	
+
 	*setPromptsToSavebyQUuid {|quuid, prompts|
 		this.prSend(\setDocumentPromptsToSave, [quuid, prompts]);
 	}
@@ -366,7 +372,7 @@ ScIDE {
 	*setCurrentDocumentByQUuid {|quuid|
 		this.prSend(\setCurrentDocument, [quuid]);
 	}
-	
+
 	*removeDocUndoByQUuid {|quuid|
 		this.prSend(\removeDocUndo, [quuid]);
 	}
@@ -386,11 +392,11 @@ ScIDE {
 	*setDocumentKeyUpEnabled {|quuid, bool|
 		this.prSend(\enableDocumentKeyUpAction, [quuid, bool]);
 	}
-	
+
 	*setDocumentGlobalKeyDownEnabled {|bool|
 		this.prSend(\enableDocumentGlobalKeyDownAction, [bool]);
 	}
-	
+
 	*setDocumentGlobalKeyUpEnabled {|bool|
 		this.prSend(\enableDocumentGlobalKeyUpAction, [bool]);
 	}
@@ -639,7 +645,7 @@ Document {
 		_ScIDE_SetDocTextMirror
 		this.primitiveFailed
 	}
-    
+
     prSetSelectionMirror {|quuid, start, size|
 		_ScIDE_SetDocSelectionMirror
 		this.primitiveFailed
@@ -899,12 +905,12 @@ Document {
 		this.prSetSelectionMirror(quuid, start, length); // set the backend mirror
         ScIDE.setSelectionByQUuid(quuid, start, length); // set the IDE doc
     }
-    
+
 	editable_ { | bool=true |
 		editable = bool;
 		ScIDE.setEditablebyQUuid(quuid, bool);
 	}
-	
+
 	promptToSave_ { | bool |
 		promptToSave = bool;
 		ScIDE.setPromptsToSavebyQUuid(quuid, bool);

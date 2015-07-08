@@ -156,10 +156,18 @@ void ScServer::createActions(Settings::Manager * settings)
     connect(action, SIGNAL(triggered()), this, SLOT(restoreVolume()));
     settings->addAction( action, "synth-server-volume-restore", synthServerCategory);
 
-    mActions[Record] = action = new QAction(this);
+    mActions[Record] = action = new QAction(tr("Recording"), this);
     action->setCheckable(true);
-    connect( action, SIGNAL(triggered(bool)), this, SLOT(setRecording(bool)) );
+    connect( action, SIGNAL(triggered(bool)), this, SLOT(sendRecording(bool)) );
     connect( action, SIGNAL(toggled(bool)), this, SIGNAL(recordingChanged(bool)) );
+    settings->addAction( action, "synth-server-record", synthServerCategory);
+
+    mActions[PauseRecord] = action = new QAction(tr("Pause Recording"), this);
+    action->setCheckable(true);
+    connect( action, SIGNAL(triggered(bool)), this, SLOT(pauseRecording(bool)) );
+    connect( action, SIGNAL(toggled(bool)), this, SLOT(pauseChanged(bool)) );
+    settings->addAction( action, "synth-server-pause-recording", synthServerCategory);
+
 
     connect( mActions[Boot], SIGNAL(changed()), this, SLOT(updateToggleRunningAction()) );
     connect( mActions[Quit], SIGNAL(changed()), this, SLOT(updateToggleRunningAction()) );
@@ -314,29 +322,57 @@ void ScServer::sendVolume( float volume )
 }
 
 bool ScServer::isRecording() const { return mIsRecording; }
+bool ScServer::isPaused() const { return mIsRecordingPaused; }
+
+
 
 void ScServer::setRecording( bool doRecord )
+    {
+        if (!isRunning())
+            return;
+
+        mIsRecording = doRecord;
+
+        if (doRecord) {
+            mRecordTime = beginningOfRecording();
+            mRecordTime = system_clock::now();
+            mRecordTimer.start();
+        } else {
+            mRecordTimer.stop();
+        }
+        mIsRecordingPaused = false;
+        updateRecordingAction();
+}
+
+void ScServer::pauseRecording( bool flag )
+    {
+        if(mIsRecordingPaused != flag) {
+            if(flag) {
+                if (isRunning()) {
+                    mRecordTimer.stop();
+                    mPauseTime = recordingTime();
+                    updateRecordingAction();
+                }
+                mIsRecordingPaused = true;
+                mLang->evaluateCode( QString("ScIDE.defaultServer.pauseRecording"), true );
+            }
+            else {
+                if(mIsRecording) {
+                    setRecording(true);
+                }
+            }
+    }
+}
+
+
+void ScServer::sendRecording( bool doRecord )
 {
     static const QString startRecordingCommand("ScIDE.defaultServer.record");
     static const QString stopRecordingCommand("ScIDE.defaultServer.stopRecording");
-
-    if (!isRunning() || mIsRecording == doRecord)
-        return;
-
-    mIsRecording = doRecord;
-
-    if (doRecord) {
-        mLang->evaluateCode( startRecordingCommand );
-        mRecordTime = system_clock::now();
-        mRecordTimer.start();
-    }
-    else {
-        mLang->evaluateCode( stopRecordingCommand );
-        mRecordTimer.stop();
-    }
-
-    updateRecordingAction();
+    setRecording(doRecord);
+    mLang->evaluateCode(doRecord ? startRecordingCommand : stopRecordingCommand);
 }
+
 
 seconds ScServer::recordingTime() const
 {
@@ -344,6 +380,14 @@ seconds ScServer::recordingTime() const
         return duration_cast<seconds>( system_clock::now() - mRecordTime );
     else
         return seconds(0);
+}
+
+boost::chrono::system_clock::time_point ScServer::beginningOfRecording() const
+{
+    if (mIsRecordingPaused)
+        return system_clock::now() - mPauseTime;
+    else
+        return system_clock::now();
 }
 
 void ScServer::updateRecordingAction()
@@ -364,6 +408,7 @@ void ScServer::updateRecordingAction()
         mActions[Record]->setText( "Start Recording" );
     }
     mActions[Record]->setChecked( isRecording() );
+    mActions[PauseRecord]->setChecked( mIsRecordingPaused );
 }
 
 void ScServer::onScLangStateChanged( QProcess::ProcessState )
@@ -378,8 +423,11 @@ void ScServer::onScLangReponse( const QString & selector, const QString & data )
     static QString unmutedSelector("serverUnmuted");
     static QString ampSelector("serverAmp");
     static QString ampRangeSelector("serverAmpRange");
-	static QString startDumpOSCSelector("dumpOSCStarted");
-	static QString stopDumpOSCSelector("dumpOSCStopped");
+    static QString startDumpOSCSelector("dumpOSCStarted");
+    static QString stopDumpOSCSelector("dumpOSCStopped");
+    static QString startRecordingSelector("recordingStarted");
+    static QString pauseRecordingSelector("recordingPaused");
+    static QString stopRecordingSelector("recordingStopped");
 
 
     if (selector == defaultServerRunningChangedSelector)
@@ -394,6 +442,15 @@ void ScServer::onScLangReponse( const QString & selector, const QString & data )
     }
 	else if (selector == stopDumpOSCSelector) {
         mActions[DumpOSC]->setChecked(false);
+    }
+    else if (selector == startRecordingSelector) {
+        setRecording(true);
+    }
+    else if (selector == pauseRecordingSelector) {
+        pauseRecording(true);
+    }
+    else if (selector == stopRecordingSelector) {
+        setRecording(false);
     }
     else if (selector == ampSelector) {
         bool ok;
@@ -427,9 +484,10 @@ void ScServer::handleRuningStateChangedMsg( const QString & data )
     stream << data.toStdString();
     YAML::Parser parser(stream);
 
-    bool serverRunningState;
+    bool serverRunningState, serverUnresponsive;
     std::string hostName;
     int port;
+
 
     YAML::Node doc;
     while(parser.GetNextDocument(doc)) {
@@ -443,13 +501,16 @@ void ScServer::handleRuningStateChangedMsg( const QString & data )
 
         success = doc[2].Read(port);
         if (!success) return; // LATER: report error?
+
+        success = doc[3].Read(serverUnresponsive);
+        if (!success) return; // LATER: report error?
     }
 
     QString qstrHostName( hostName.c_str() );
 
-    onRunningStateChanged( serverRunningState, qstrHostName, port );
+    onRunningStateChanged( serverRunningState, qstrHostName, port);
 
-    emit runningStateChange( serverRunningState, qstrHostName, port );
+    emit runningStateChange( serverRunningState, qstrHostName, port, serverUnresponsive );
 }
 
 void ScServer::timerEvent(QTimerEvent * event)
@@ -564,6 +625,7 @@ void ScServer::updateEnabledActions()
     mActions[Volume]->setEnabled(langAndServerRunning);
     mActions[VolumeRestore]->setEnabled(langAndServerRunning);
     mActions[Record]->setEnabled(langAndServerRunning);
+    mActions[PauseRecord]->setEnabled(langAndServerRunning);
     mActions[DumpOSC]->setEnabled(langAndServerRunning);
 }
 
