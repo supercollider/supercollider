@@ -543,6 +543,14 @@ code::
 
 
 method:: equalWithPrecision
+
+argument::precision
+The absolute precision, independent of the value compared
+
+argument::relativePrecision
+The precision relative to the larger absolute of the values compared.
+
+
 returns:: true if receiver is closer to that than precision.
 
 discussion::
@@ -550,7 +558,12 @@ code::
 3.1.equalWithPrecision(3.0, 0.05); // false
 3.1.equalWithPrecision(3.0, 0.1); // false
 3.1.equalWithPrecision(3.0, 0.11); // true
+3000.1.equalWithPrecision(3000.0, 0, 0.01); // true
+3.1.equalWithPrecision(3.0, 0, 0.01); // false
+
 ::
+
+
 
 method:: quantize
 round the receiver to the quantum.
