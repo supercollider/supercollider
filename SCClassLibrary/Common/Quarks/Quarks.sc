@@ -7,7 +7,8 @@ Quarks {
 		directory,
 		<>directoryUrl="https://github.com/supercollider-quarks/quarks.git",
 		fetched=false,
-		cache;
+		cache,
+		regex;
 
 	*install { |name, refspec|
 		var path, quark;
@@ -213,6 +214,17 @@ Quarks {
 			folder.mkdir();
 		});
 		cache = Dictionary.new;
+		if(thisProcess.platform.name !== 'windows', {
+			regex = (
+				isPath: "^[~\\.]?/",
+				isAbsolutePath: "^/"
+			);
+		}, {
+			regex = (
+				isPath: "",
+				isAbsolutePath: "^[a-z]:\\\\"
+			);
+		});
 	}
 	*at { |name|
 		var q;
@@ -250,10 +262,11 @@ Quarks {
 
 		f = { |path|
 			// \directory or \not_found, but not a file
+			var downloadedQuarks = "downloaded-quarks" +/+ "quarks";
 			if(File.type(path) !== \regular, {
 				path = path.withoutTrailingSlash;
 				// ignore the directory
-				if(path.endsWith("downloaded-quarks/quarks").not, {
+				if(path.endsWith(downloadedQuarks).not, {
 					all[path] = Quark.fromLocalPath(path);
 				});
 			});
@@ -341,18 +354,17 @@ Quarks {
 		});
 	}
 	*isPath { |string|
-		var re = if(thisProcess.platform.name !== 'windows', "^[~\\.]?/", "^(\\\\|[a-zA-Z]:)");
-		^string.findRegexp(re).size != 0
+		^string.findRegexp(regex.isPath).size != 0
 	}
 	*asAbsolutePath { |path, relativeTo|
-		^if(path.at(0).isPathSeparator, {
+		^if(path.findRegexp(regex.isAbsolutePath).size != 0, {
 			path
 		}, {
 			if(path.at(0) == $~, {
 				^path.standardizePath
 			});
 			// scroot is the cwd at startup
-			if(path.beginsWith("./"), {
+			if(path.beginsWith("." ++ Platform.pathSeparator), {
 				^(relativeTo ?? {PathName.scroot}) +/+ path.copyToEnd(2)
 			});
 			(relativeTo ?? {PathName.scroot}) +/+ path

@@ -12,7 +12,7 @@ Quark {
 	}
 	*fromLocalPath { |path|
 		var name, url, refspec;
-		path= Quarks.quarkNameAsLocalPath(path);
+		path = Quarks.quarkNameAsLocalPath(path);
 		name = path.basename;
 		^super.new.init(name, url, refspec, path)
 	}
