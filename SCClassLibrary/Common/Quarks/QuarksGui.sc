@@ -81,7 +81,9 @@ QuarksGui {
 			.toolTip_("Save currently installed quarks to a file")
 			.action_({
 				Dialog.savePanel({ |path|
-					model.save(path)
+					this.setMsg("Saving quarks to file:" + path);
+					model.save(path);
+					this.setMsg();
 				})
 			});
 
@@ -89,9 +91,16 @@ QuarksGui {
 			.toolTip_("Install a set of quarks from a file")
 			.action_({
 				Dialog.openPanel({ |path|
-					model.load(path);
-					this.update;
-				})
+					this.runCancellable({
+						this.setMsg("Installing from file:" + path);
+						0.1.wait;
+						model.load(path, {
+							this.setMsg();
+							0.1.wait;
+							this.update;
+						});
+					});
+				});
 			});
 
 		btnRecompile = Button().states_([
