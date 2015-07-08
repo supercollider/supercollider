@@ -8,7 +8,8 @@ Quarks {
 		<>directoryUrl="https://github.com/supercollider-quarks/quarks.git",
 		fetched=false,
 		cache,
-		regex;
+		regex,
+		installedPaths;
 
 	*install { |name, refspec|
 		var path, quark;
@@ -44,7 +45,11 @@ Quarks {
 			LanguageConfig.removeIncludePath(quark.localPath);
 		});
 		LanguageConfig.store(LanguageConfig.currentPath);
+		this.clearCache;
+	}
+	*clearCache {
 		cache = Dictionary.new;
+		installedPaths = nil;
 	}
 	*load { |path|
 		// install a list of quarks from a text file
@@ -133,16 +138,20 @@ Quarks {
 		^LanguageConfig.includePaths
 			.collect(Quark.fromLocalPath(_))
 	}
+	*installedPaths {
+		^installedPaths ?? {
+			installedPaths = LanguageConfig.includePaths.collect({ |apath|
+				apath.withoutTrailingSlash
+			});
+		}
+	}
 	*isInstalled { |name|
-		^LanguageConfig.includePaths.any({ |path|
-			path.withoutTrailingSlash.endsWith(name)
+		^this.installedPaths.any({ |path|
+			path.endsWith(name)
 		})
 	}
-	*pathIsInstalled{ |path|
-		path = path.withoutTrailingSlash;
-		^LanguageConfig.includePaths.any({ |apath|
-			apath.withoutTrailingSlash == path
-		})
+	*pathIsInstalled { |path|
+		^this.installedPaths.includesEqual(path.withoutTrailingSlash)
 	}
 	*openFolder {
 		this.folder.openOS;
@@ -192,6 +201,7 @@ Quarks {
 			path.debug("Adding path");
 			LanguageConfig.addIncludePath(path);
 			LanguageConfig.store(LanguageConfig.currentPath);
+			installedPaths = installedPaths.add(path.withoutTrailingSlash);
 			^true
 		});
 		^false
@@ -202,6 +212,7 @@ Quarks {
 			path.debug("Removing path");
 			LanguageConfig.removeIncludePath(path);
 			LanguageConfig.store(LanguageConfig.currentPath);
+			installedPaths.remove(path.withoutTrailingSlash);
 			^true
 		});
 		^false
@@ -213,7 +224,7 @@ Quarks {
 		if(File.exists(folder).not, {
 			folder.mkdir();
 		});
-		cache = Dictionary.new;
+		this.clearCache;
 		if(thisProcess.platform.name !== 'windows', {
 			regex = (
 				isPath: "^[~\\.]?/",
