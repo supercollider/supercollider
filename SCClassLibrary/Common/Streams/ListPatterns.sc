@@ -392,7 +392,7 @@ Pwalk : ListPattern {
 
 	embedInStream { arg inval;
 		var	step;
-		var index = startPos;
+		var index = startPos.value(inval);
 		var stepStream = stepPattern.asStream;
 		var directionStream = directionPattern.asStream;
 		// 1 = use steps as is; -1 = reverse direction
