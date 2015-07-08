@@ -460,15 +460,13 @@ void GenericCodeEditor::showPosition( int pos, int selectionLength )
 
 QString GenericCodeEditor::symbolUnderCursor()
 {
-    QTextCursor cursor = textCursor();
+    const QTextCursor cursor = textCursor();
     if (cursor.hasSelection())
         return cursor.selectedText();
-    else
-    {
-        QString blockString = cursor.block().text();
-        int position = cursor.positionInBlock();
-        return wordInStringAt( position, blockString );
-    }
+
+    const QString blockString = cursor.block().text();
+    const int position = cursor.positionInBlock();
+    return tokenInStringAt( position, blockString );
 }
 
 bool GenericCodeEditor::event( QEvent * event )

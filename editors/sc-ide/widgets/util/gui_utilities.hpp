@@ -27,7 +27,7 @@
 
 namespace ScIDE {
 
-inline QString wordInStringAt ( int position, const QString & source )
+inline QString tokenInStringAt( int position, const QString & source )
 {
     const QRegExp wordRegexp("\\w+");
 
