@@ -346,20 +346,22 @@ void ScServer::setRecording( bool doRecord )
 
 void ScServer::pauseRecording( bool flag )
     {
-        if(flag) {
-            if (isRunning()) {
-                mRecordTimer.stop();
-                mPauseTime = recordingTime();
-                updateRecordingAction();
+        if(mIsRecordingPaused != flag) {
+            if(flag) {
+                if (isRunning()) {
+                    mRecordTimer.stop();
+                    mPauseTime = recordingTime();
+                    updateRecordingAction();
+                }
+                mIsRecordingPaused = true;
+                mLang->evaluateCode( QString("ScIDE.defaultServer.pauseRecording"), true );
             }
-            mIsRecordingPaused = true;
-            mLang->evaluateCode( QString("ScIDE.defaultServer.pauseRecording"), true );
-        }
-        else {
-            if(mIsRecording) {
-                setRecording(true);
+            else {
+                if(mIsRecording) {
+                    setRecording(true);
+                }
             }
-        }
+    }
 }
 
 
