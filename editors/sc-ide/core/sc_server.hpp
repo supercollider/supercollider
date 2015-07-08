@@ -80,7 +80,10 @@ public:
     void setDumpingOSC( bool dumping );
 
     bool isRecording() const;
+    bool isPaused() const;
+
     boost::chrono::seconds recordingTime() const;
+    boost::chrono::system_clock::time_point beginningOfRecording() const;
 
 public slots:
     void boot();
@@ -113,6 +116,8 @@ signals:
     void volumeChanged( float volume );
     void mutedChanged( bool muted );
     void recordingChanged( bool recording );
+    void pauseChanged( bool paused );
+
 
 private slots:
     void onScLangStateChanged( QProcess::ProcessState );
@@ -168,7 +173,7 @@ private:
     VolumeWidget *mVolumeWidget;
     QTimer mRecordTimer;
     boost::chrono::system_clock::time_point mRecordTime;
-    boost::chrono::system_clock::time_point mPauseTime;
+    boost::chrono::seconds mPauseTime;
     bool mIsRecording;
     bool mIsRecordingPaused;
 };

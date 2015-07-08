@@ -165,7 +165,7 @@ void ScServer::createActions(Settings::Manager * settings)
     mActions[PauseRecord] = action = new QAction(tr("Pause Recording"), this);
     action->setCheckable(true);
     connect( action, SIGNAL(triggered(bool)), this, SLOT(pauseRecording(bool)) );
-    //connect( action, SIGNAL(toggled(bool)), this, SLOT(pauseRecording(bool)) );
+    connect( action, SIGNAL(toggled(bool)), this, SLOT(pauseChanged(bool)) );
     settings->addAction( action, "synth-server-pause-recording", synthServerCategory);
 
 
@@ -322,6 +322,8 @@ void ScServer::sendVolume( float volume )
 }
 
 bool ScServer::isRecording() const { return mIsRecording; }
+bool ScServer::isPaused() const { return mIsRecordingPaused; }
+
 
 
 void ScServer::setRecording( bool doRecord )
@@ -329,15 +331,11 @@ void ScServer::setRecording( bool doRecord )
         if (!isRunning())
             return;
 
-        if(!mIsRecording) {
-            mRecordTime = system_clock::now();
-        } else if(mIsRecordingPaused) {
-            mRecordTime = mRecordTime + (system_clock::now() - mPauseTime);
-        }
-
         mIsRecording = doRecord;
 
         if (doRecord) {
+            mRecordTime = beginningOfRecording();
+            mRecordTime = system_clock::now();
             mRecordTimer.start();
         } else {
             mRecordTimer.stop();
@@ -351,10 +349,11 @@ void ScServer::pauseRecording( bool flag )
         if(flag) {
             if (isRunning()) {
                 mRecordTimer.stop();
-                mPauseTime = system_clock::now();
+                mPauseTime = recordingTime();
                 updateRecordingAction();
             }
             mIsRecordingPaused = true;
+            mLang->evaluateCode( QString("ScIDE.defaultServer.pauseRecording"), true );
         }
         else {
             if(mIsRecording) {
@@ -379,6 +378,14 @@ seconds ScServer::recordingTime() const
         return duration_cast<seconds>( system_clock::now() - mRecordTime );
     else
         return seconds(0);
+}
+
+boost::chrono::system_clock::time_point ScServer::beginningOfRecording() const
+{
+    if (mIsRecordingPaused)
+        return system_clock::now() - mPauseTime;
+    else
+        return system_clock::now();
 }
 
 void ScServer::updateRecordingAction()
