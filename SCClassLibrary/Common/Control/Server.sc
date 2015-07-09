@@ -598,13 +598,13 @@ Server {
 
 	ifRunning { |func, failFunc|
 		^if(statusWatcher.unresponsive) {
-			"server '%' not responsive".format(this.name).postln;
+			"server '%' not responsive".format(this.name).inform;
 			failFunc.value(this)
 		} {
 			if(statusWatcher.serverRunning) {
 				func.value(this)
 			} {
-				"server '%' not running".format(this.name).postln;
+				"server '%' not running".format(this.name).inform;
 				failFunc.value(this)
 			}
 		}
@@ -630,7 +630,7 @@ Server {
 
 	ping { |n = 1, wait = 0.1, func|
 		var result = 0, pingFunc;
-		if(statusWatcher.serverRunning.not) { "server not running".postln; ^this };
+		if(statusWatcher.serverRunning.not) { "server not running".inform; ^this };
 		pingFunc = {
 			Routine.run {
 				var t, dt;
@@ -728,15 +728,13 @@ Server {
 
 		if(statusWatcher.unresponsive) {
 			"server '%' unresponsive, rebooting ...".format(this.name).inform;
-			this.quit(false)
+			this.quit(watchShutDown: false)
 		};
 		if(statusWatcher.serverRunning) { "server '%' already running".format(this.name).inform; ^this };
 		if(statusWatcher.serverBooting) { "server '%' already booting".format(this.name).inform; ^this };
 
 
 		statusWatcher.serverBooting = true;
-
-		if(startAliveThread) { statusWatcher.startAliveThread };
 
 		statusWatcher.doWhenBooted({
 			statusWatcher.serverBooting = false;
@@ -746,7 +744,9 @@ Server {
 		if(remoteControlled.not) {
 			"You will have to manually boot remote server.".inform;
 		} {
-			this.bootServerApp;
+			this.bootServerApp({
+				if(startAliveThread) { statusWatcher.startAliveThread }
+			})
 		}
 	}
 
@@ -760,51 +760,29 @@ Server {
 		this.initTree;
 	}
 
-	bootServerApp {
-		var f;
+	bootServerApp { |onComplete|
 		if(inProcess) {
 			"booting internal".inform;
 			this.bootInProcess;
 			pid = thisProcess.pid;
 		} {
 			this.disconnectSharedMemory;
-
 			pid = (program ++ options.asOptionsString(addr.port)).unixCmd;
-			if(options.protocol == \tcp) {
-				f = { |attempts|
-					attempts = attempts - 1;
-					try { addr.connect } { |err|
-						if(err.isKindOf(PrimitiveFailedError) and: { err.failedPrimitiveName == '_NetAddr_Connect'}) {
-							if(attempts > 0) {
-								0.2.wait;
-								f.value(attempts)
-							} {
-								"Couldn't connect to server % via TCP\n".postf(this.name);
-							}
-						} {
-							err.throw;
-						}
-					}
-				};
-				fork{ f.(10) }
-			};
-			("booting " ++ addr.port.asString).inform;
-		};
+			("booting server '%' on address: %:%").format(this.name, addr.hostname, addr.port.asString).inform;
+			if(options.protocol == \tcp, { addr.tryConnectTCP(onComplete) }, onComplete);
+		}
 	}
 
-	reboot { |func| // func is evaluated when server is off
+	reboot { |func, onFailure| // func is evaluated when server is off
 		if(isLocal.not) { "can't reboot a remote server".inform; ^this };
 		if(statusWatcher.serverRunning) {
-			Routine.run {
-				this.quit;
-				this.wait(\done);
-				0.1.wait;
+			this.quit({
 				func.value;
 				defer { this.boot }
-			}
+			}, onFailure);
 		} {
 			func.value;
-			this.boot
+			this.boot(onFailure: onFailure);
 		}
 	}
 
@@ -836,19 +814,22 @@ Server {
 		this.changed(\dumpOSC, code);
 	}
 
-	quit { |watchShutDown = true|
+
+	quit { |onComplete, onFailure, watchShutDown = true|
+		var func;
 
 		addr.sendMsg("/quit");
-
-		statusWatcher.quit(watchShutDown);
-
-		if( options.protocol == \tcp ) { fork { 0.1.wait; addr.disconnect } }; // sure? can we receive the above reply?
+		if(options.protocol == \tcp) {
+			statusWatcher.quit({ addr.tryDisconnectTCP(onComplete, onFailure) }, nil, watchShutDown);
+		} {
+			statusWatcher.quit(onComplete, onFailure, watchShutDown);
+		};
 
 		if(inProcess) {
 			this.quitInProcess;
 			"quit done\n".inform;
 		} {
-			"/quit sent\n".inform;
+			"'/quit' sent\n".inform;
 		};
 
 		pid = nil;
@@ -863,7 +844,7 @@ Server {
 	*quitAll { |watchShutDown = true|
 		all.do { |server|
 			if(server.sendQuit === true) {
-				server.quit(watchShutDown)
+				server.quit(watchShutDown: watchShutDown)
 			}
 		}
 	}
@@ -876,7 +857,7 @@ Server {
 
 		// this brutally kills them all off
 		thisProcess.platform.killAll(this.program.basename);
-		this.quitAll(false);
+		this.quitAll(watchShutDown: false);
 	}
 
 	freeAll {

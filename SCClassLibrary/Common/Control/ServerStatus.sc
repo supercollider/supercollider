@@ -17,11 +17,12 @@ ServerStatusWatcher {
 		^super.newCopyArgs(server)
 	}
 
-	quit { |watchShutDown = true|
+	quit { |onComplete, onFailure, watchShutDown = true|
 		if(watchShutDown) {
-			this.watchQuit
+			this.watchQuit(onComplete, onFailure)
 		} {
-			this.stopStatusWatcher
+			this.stopStatusWatcher;
+			onComplete.value;
 		};
 		this.stopAliveThread;
 		notified = false;
@@ -75,11 +76,10 @@ ServerStatusWatcher {
 
 			if(serverRunning.not, {
 				if(onFailure.notNil) {
-					postError = (onFailure.value == false);
+					postError = (onFailure.value(server) == false);
 				};
 				if(postError) {
-					"server failed to start".error;
-					"For advice: [http://supercollider.sf.net/wiki/index.php/ERROR:_server_failed_to_start]".postln;
+					"Server '%' on failed to start. You may need to kill all servers".format(server.name).error;
 				};
 				serverBooting = false;
 				server.changed(\serverRunning);
@@ -89,16 +89,17 @@ ServerStatusWatcher {
 	}
 
 
-	watchQuit {
+	watchQuit { |onComplete, onFailure|
 		var	serverReallyQuitWatcher, serverReallyQuit = false;
 		statusWatcher !? {
 			statusWatcher.disable;
 			if(notified) {
 				serverReallyQuitWatcher = OSCFunc({ |msg|
 					if(msg[1] == '/quit') {
-						statusWatcher!? { statusWatcher.enable };
+						statusWatcher !? { statusWatcher.enable };
 						serverReallyQuit = true;
 						serverReallyQuitWatcher.free;
+						onComplete.value;
 					}
 				}, '/done', server.addr);
 
@@ -108,6 +109,7 @@ ServerStatusWatcher {
 						// don't accumulate quit-watchers if /done doesn't come back
 						serverReallyQuitWatcher.free;
 						statusWatcher.disable;
+						onFailure.value(server)
 					}
 				})
 			}

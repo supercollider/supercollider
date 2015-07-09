@@ -149,6 +149,46 @@ NetAddr {
 		};
 	}
 
+	tryConnectTCP { |onComplete, onFailure, maxAttempts = 10|
+		var func = { |attempts|
+			attempts = attempts - 1;
+			try {
+				this.connect
+			} { |err|
+				if(err.isKindOf(PrimitiveFailedError) and: { err.failedPrimitiveName == '_NetAddr_Connect'}) {
+					if(attempts > 0) {
+						0.2.wait;
+						func.value(onComplete, attempts)
+					} {
+						"Couldn't connect to TCP address %:%\n".format(hostname, port).warn;
+						onFailure.value(this)
+					}
+				} {
+					err.throw;
+				}
+			}
+		};
+		fork {
+			func.value(maxAttempts);
+			onComplete.value(this);
+		}
+	}
+
+	tryDisconnectTCP { |onComplete, onFailure|
+		try {
+			this.disconnect
+		} { |err|
+			if(err.isKindOf(PrimitiveFailedError) and: { err.failedPrimitiveName == '_NetAddr_SendMsg'}) {
+				"Couldn't disconnect from TCP address %:%\n".format(hostname, port).warn;
+				onFailure.value(this)
+			} {
+				err.throw;
+			}
+		};
+		this.disconnect;
+		onComplete.value(this);
+	}
+
 	== { arg that;
 		^this.compareObject(that, #[\port, \addr])
 	}
