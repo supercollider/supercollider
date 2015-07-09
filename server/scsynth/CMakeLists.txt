@@ -238,13 +238,9 @@ else()
 endif()
 
 if(APPLE)
-	# TODO allow apple users to install to fhs-ish path if INSTALL_FHS option is enabled
-	# determines the app name and app install location (scappbundlename, scappdir):
-	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
-	install(TARGETS ${INSTALL_TARGETS}
-			RUNTIME DESTINATION "${scappbindir}"
-			LIBRARY DESTINATION "${scappauxresourcesdir}"
-			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE OWNER_WRITE)
+    add_custom_command(TARGET scsynth POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../MacOS/
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:scsynth> $<TARGET_FILE_DIR:SuperCollider>/../MacOS)
 elseif(WIN32)
 	install(TARGETS ${INSTALL_TARGETS}
 			DESTINATION "SuperCollider"
