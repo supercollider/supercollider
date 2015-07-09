@@ -721,9 +721,11 @@ Server {
 
 	connectSharedMemory {
 		var id;
-		this.disconnectSharedMemory;
-		id = if(this.inProcess) { thisProcess.pid } { addr.port };
-		serverInterface = ServerShmInterface(id);
+		if(this.isLocal) {
+			this.disconnectSharedMemory;
+			id = if(this.inProcess) { thisProcess.pid } { addr.port };
+			serverInterface = ServerShmInterface(id);
+		}
 	}
 
 	hasShmInterface { ^serverInterface.notNil }
