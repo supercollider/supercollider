@@ -787,6 +787,10 @@ Server {
 	}
 
 	status {
+		addr.sendStatusMsg // backward compatibility
+	}
+
+	sendStatusMsg {
 		addr.sendStatusMsg
 	}
 

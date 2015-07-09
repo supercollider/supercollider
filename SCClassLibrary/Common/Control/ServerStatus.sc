@@ -148,7 +148,7 @@ ServerStatusWatcher {
 				delay.wait;
 				loop {
 					alive = false;
-					server.status;
+					server.sendStatusMsg;
 					aliveThreadPeriod.wait;
 					this.updateRunningState(alive);
 				};
