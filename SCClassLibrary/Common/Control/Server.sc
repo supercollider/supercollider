@@ -310,7 +310,6 @@ Server {
 
 	init { |argName, argAddr, argOptions, argClientID|
 
-		name = argName.asSymbol;
 		this.addr = argAddr;
 		options = argOptions ? ServerOptions.new;
 		clientID = argClientID ? 0;
@@ -322,9 +321,9 @@ Server {
 		volume = Volume(server: this, persist: true);
 		recorder = Recorder(server: this);
 
-
+		this.name = argName;
 		all.add(this);
-		named.put(name, this);
+
 		Server.changed(\serverAdded, this);
 
 	}
@@ -334,6 +333,15 @@ Server {
 		inProcess = addr.addr == 0;
 		isLocal = inProcess || { addr.isLocal };
 		remoteControlled = isLocal;
+	}
+
+	name_ { |argName|
+		name = argName.asSymbol;
+		if(named.at(argName).notNil) {
+			"Server name already exists: '%'. Please use a unique name".format(name, argName).warn;
+		} {
+			named.put(name, this);
+		}
 	}
 
 	initTree {
