@@ -559,6 +559,11 @@ void MultiEditor::createActions()
     mActions[ShowWhitespace] = action = new QAction(tr("Show Spaces and Tabs"), this);
     action->setCheckable(true);
     action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+#ifdef Q_OS_MAC
+    action->setShortcut( QKeySequence( Qt::META | Qt::Key_E, Qt::META | Qt::Key_V ) );
+#else
+    action->setShortcut( QKeySequence( Qt::ALT | Qt::Key_E, Qt::ALT | Qt::Key_V ) );
+#endif
     connect(action, SIGNAL(triggered(bool)), this, SLOT(setShowWhitespace(bool)));
     settings->addAction( action, "editor-toggle-show-whitespace", editorCategory);
 
