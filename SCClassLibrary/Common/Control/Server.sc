@@ -796,6 +796,10 @@ Server {
 		}
 	}
 
+	applicationRunning {
+		^pid.tryPerform(\pidRunning) == true
+	}
+
 	status {
 		addr.sendStatusMsg // backward compatibility
 	}

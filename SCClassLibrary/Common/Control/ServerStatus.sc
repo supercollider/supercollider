@@ -67,13 +67,16 @@ ServerStatusWatcher {
 		^Routine {
 			while {
 				serverRunning.not
+				/*
+				// this is not yet implemented.
 				or: { serverBooting and: mBootNotifyFirst.not }
 				and: { (limit = limit - 1) > 0 }
-				and: { server.pid.tryPerform(\pidRunning) == true }
+				and: { server.applicationRunning.not }
+				*/
+
 			} {
 				0.2.wait;
 			};
-
 			if(serverRunning.not, {
 				if(onFailure.notNil) {
 					postError = (onFailure.value(server) == false);
