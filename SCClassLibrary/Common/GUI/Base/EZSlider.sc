@@ -17,7 +17,7 @@ EZSlider : EZGui {
 			initAction, labelWidth, argNumberWidth,argUnitWidth,
 			labelHeight, argLayout, argGap, argMargin;
 
-		var labelBounds, numBounds, unitBounds,sliderBounds;
+		var innerBounds;
 		var numberStep;
 
 		// Set Margin and Gap
@@ -32,26 +32,45 @@ EZSlider : EZGui {
 		// if no parent, then pop up window
 		# view,bounds = this.prMakeView( parentView,bounds);
 
+		innerBounds = bounds.insetBy(margin.x, margin.y);
 
-		labelSize=labelWidth@labelHeight;
-		numSize = numberWidth@labelHeight;
-
-		// calculate bounds of all subviews
-		# labelBounds,numBounds,sliderBounds, unitBounds
-				= this.prSubViewBounds(innerBounds, label.notNil, unitWidth>0);
+		if(argLayout == \horz) {
+			labelSize = labelWidth@innerBounds.height;
+			numSize = numberWidth@innerBounds.height;
+		} {
+			labelSize = innerBounds.width@labelHeight;
+			numSize = innerBounds.width@labelHeight;
+		};
 
 		// instert the views
 		label.notNil.if{ //only add a label if desired
-			labelView = StaticText.new(view, labelBounds);
+			labelView = StaticText.new;
+			labelView.fixedWidth = labelWidth;
 			labelView.string = label;
 		};
 
 		(unitWidth>0).if{ //only add a unitLabel if desired
-			unitView = StaticText.new(view, unitBounds);
+			unitView = StaticText.new;
+			unitView.fixedWidth = unitWidth;
 		};
 
-		sliderView = Slider.new(view, sliderBounds);
-		numberView = NumberBox.new(view, numBounds);
+		sliderView = Slider.new;
+		if(argLayout == \horz) {
+			sliderView.orientation = \horizontal;
+		} {
+			sliderView.orientation = \vertical;
+		};
+		numberView = NumberBox.new;
+		if(argLayout == \horz) {
+			numberView.fixedWidth_(numSize.x)
+		} {
+			numberView.fixedHeight_(labelHeight);
+		};
+
+		view.layout = if(argLayout == \horz) { HLayout } { VLayout }
+		.new(*[labelView, unitView, numberView, sliderView].reject(_.isNil))
+		.margins_([margin.x, margin.y])
+		.spacing_(gap.x);
 
 		// set view parameters and actions
 
@@ -88,7 +107,6 @@ EZSlider : EZGui {
 
 		numberView.step = numberStep;
 		numberView.scroll_step = numberStep;
-		//numberView.scroll=true;
 
 		if (initAction) {
 			this.valueAction_(initVal);
@@ -102,7 +120,7 @@ EZSlider : EZGui {
 			}
 		};
 
-		this.prSetViewParams;
+		// this.prSetViewParams;
 
 	}
 
@@ -168,121 +186,6 @@ EZSlider : EZGui {
 	}
 
 	///////Private methods ///////
-
-	prSetViewParams{ // sets resize and alignment for different layouts
-
-		switch (layout,
-		\line2, {
-			labelView.notNil.if{
-				labelView.resize_(2);
-				unitView.notNil.if{unitView.resize_(3)};
-				numberView.resize_(3);
-				}{
-				unitView.notNil.if{
-					unitView.resize_(2);
-					numberView.resize_(1);
-					}{
-					numberView.resize_(2);
-					};
-				};
-			sliderView.resize_(5);
-			popUp.if{view.resize_(2)};
-		},
-		\vert, {
-			labelView.notNil.if{labelView.resize_(2)};
-			unitView.notNil.if{unitView.resize_(8)};
-			numberView.resize_(8);
-			sliderView.resize_(5);
-			popUp.if{view.resize_(4)};
-		},
-		\horz, {
-			labelView.notNil.if{labelView.resize_(4).align_(\right)};
-			unitView.notNil.if{unitView.resize_(6)};
-			numberView.resize_(6);
-			sliderView.resize_(5);
-			popUp.if{view.resize_(2)};
-		});
-
-	}
-
-	prSubViewBounds{arg rect, hasLabel, hasUnit;  // calculate subview bounds
-		var numBounds,labelBounds,sliderBounds, unitBounds;
-		var gap1, gap2, gap3, tmp, labelH, unitH;
-		gap1 = gap.copy;
-		gap2 = gap.copy;
-		gap3 = gap.copy;
-		labelH=labelSize.y;//  needed for \vert
-		unitH=labelSize.y; //  needed for \vert
-		hasUnit.not.if{ gap3 = 0@0; unitWidth = 0};
-
-		switch (layout,
-			\line2, {
-
-				hasLabel.if{ // with label
-					unitBounds = (unitWidth@labelSize.y)
-						.asRect.left_(rect.width-unitWidth);// view to right
-					numBounds = (numSize.x@labelSize.y)
-						.asRect.left_(rect.width-unitBounds.width-numberWidth-gap3.x); // view to right
-					labelBounds = (labelSize.x@labelSize.y)
-						.asRect.width_(numBounds.left-gap2.x); //adjust width
-				}{ // no label
-				labelBounds = (0@labelSize.y).asRect; //just a dummy
-				numBounds = (numberWidth@labelSize.y).asRect; //view to left
-				(unitWidth>0).if{
-					unitBounds = Rect (numBounds.width+gap3.x, 0,
-						rect.width-numBounds.width-gap3.x,labelSize.y); //adjust to fit
-						}{
-					unitBounds = Rect (0, 0,0,0); //no unitView
-						numBounds = (rect.width@labelSize.y).asRect; //view to left
-						};
-
-				};
-				sliderBounds = Rect( //adjust to fit
-						0,
-						labelSize.y+gap1.y,
-						rect.width,
-						rect.height-numSize.y-gap1.y;
-						);
-				},
-
-			 \vert, {
-				hasLabel.not.if{ gap1 = 0@0; labelSize.x = 0 ;};
-				hasLabel.not.if{labelH=0};
-				labelBounds = (rect.width@labelH).asRect; // to top
-				hasUnit.not.if{unitH=0};
-				unitBounds = (rect.width@unitH)
-					.asRect.top_(rect.height-labelSize.y); // to bottom
-				numBounds = (rect.width@labelSize.y)
-					.asRect.top_(rect.height-unitBounds.height-numSize.y-gap3.y); // to bottom
-
-				sliderBounds = Rect( //adjust to fit
-					0,
-					labelBounds.height+gap1.y,
-					rect.width,
-					rect.height - labelBounds.height - unitBounds.height
-							- numBounds.height - gap1.y - gap2.y - gap3.y
-					);
-				},
-
-			 \horz, {
-				hasLabel.not.if{ gap1 = 0@0; labelSize.x = 0 ;};
-				labelSize.y = rect.height;
-				labelBounds = (labelSize.x@labelSize.y).asRect; //to left
-				unitBounds = (unitWidth@labelSize.y).asRect.left_(rect.width-unitWidth); // to right
-				numBounds = (numSize.x@labelSize.y).asRect
-					.left_(rect.width-unitBounds.width-numSize.x-gap3.x);// to right
-				sliderBounds  =  Rect( // adjust to fit
-					labelBounds.width+gap1.x,
-					0,
-					rect.width - labelBounds.width - unitBounds.width
-							- numBounds.width - gap1.x - gap2.x - gap3.x,
-					labelBounds.height
-					);
-		});
-
-
-		^[labelBounds, numBounds, sliderBounds, unitBounds].collect{arg v; v.moveBy(margin.x,margin.y)}
-	}
 
 	update {arg changer, what ...moreArgs;
 		var oldValue;

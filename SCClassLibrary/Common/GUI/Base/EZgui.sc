@@ -22,6 +22,7 @@ EZGui{ // an abstract class
 	}
 
 	window{^ popUp.if{view.parent.findWindow};}
+	asView { ^view }
 
 	onClose{^ popUp.if{this.window.onClose}{view.onClose};}
 
