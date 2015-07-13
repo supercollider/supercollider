@@ -21,7 +21,7 @@ LineLayout : Layout {
 		var key;
 		var i;
 		if( in.isKindOf(Array) ) {
-			out[0] = in[0];
+			out[0] = in[0].tryPerform(\asView) ?? { in[0] };
 			i = 1;
 			while { i + 1 < in.size } {
 				key = in[i];
@@ -32,7 +32,7 @@ LineLayout : Layout {
 				i = i + 2;
 			};
 		}{
-			out[0] = in;
+			out[0] = in.tryPerform(\asView) ?? { in }; // in.asView;
 		};
 		^out;
 	}
@@ -78,7 +78,7 @@ GridLayout : Layout {
 		var key;
 		var i;
 		if( in.isKindOf(Array) ) {
-			out[0] = in[0];
+			out[0] = in[0].tryPerform(\asView) ?? { in[0] }; // in[0].asView;
 			i = 1;
 			while { i + 1 < in.size } {
 				key = in[i];
@@ -90,7 +90,7 @@ GridLayout : Layout {
 				i = i + 2;
 			};
 		}{
-			out[0] = in;
+			out[0] = in.tryPerform(\asView) ?? { in }; // in.asView;
 		};
 		^out;
 	}
