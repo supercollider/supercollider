@@ -47,7 +47,7 @@ void ScLexer::initLexicalRules()
 
     // do not include leading "-" in Float, as left-to-right algorithm does
     // not know whether it is not rather a binary operator
-    mLexicalRules << LexicalRule( Token::Float, "^\\b((\\d+(\\.\\d+)?([eE][-+]?\\d+)?(pi)?)|pi)" );
+    mLexicalRules << LexicalRule( Token::Float, "^\\b((\\d+(\\.\\d+)?([eE][-+]?\\d+)?(pi)?)|pi)\\b" );
 
     mLexicalRules << LexicalRule( Token::HexInt, "^\\b0(x|X)(\\d|[a-f]|[A-F])+" );
 
