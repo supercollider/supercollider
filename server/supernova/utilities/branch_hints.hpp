@@ -1,7 +1,5 @@
-//  $Id$
-//
 //  branch hints
-//  Copyright (C) 2007 Tim Blechmann
+//  Copyright (C) 2007-2015 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -17,11 +15,6 @@
 //  along with this program; see the file COPYING.  If not, write to
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
-
-//  $Revision$
-//  $LastChangedRevision$
-//  $LastChangedDate$
-//  $LastChangedBy$
 
 #ifndef BRANCH_HINTS_HPP
 #define BRANCH_HINTS_HPP
