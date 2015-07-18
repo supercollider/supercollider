@@ -135,14 +135,14 @@ private:
 
 /** \brief container for all dsp threads
  *
- *  - no care is taken, that dsp_threads::run is executed on a valid instance
+ *  - no care is taken, that dsp_thread_pool::run is executed on a valid instance
  *
  * */
 template <typename runnable,
           typename thread_init_functor = nop_thread_init,
           typename Alloc = std::allocator<void*>
          >
-class dsp_threads
+class dsp_thread_pool
 {
     typedef nova::dsp_queue_interpreter<runnable, Alloc> dsp_queue_interpreter;
     typedef nova::dsp_thread<runnable, thread_init_functor, Alloc> dsp_thread;
@@ -153,8 +153,8 @@ public:
 
     typedef std::unique_ptr<dsp_thread_queue<runnable, Alloc> > dsp_thread_queue_ptr;
 
-    dsp_threads(thread_count_t count, bool yield_if_busy = false,
-                thread_init_functor const & init_functor = thread_init_functor()):
+    dsp_thread_pool( thread_count_t count, bool yield_if_busy = false,
+                     thread_init_functor const & init_functor = thread_init_functor() ):
         interpreter(std::min(count, (thread_count_t)std::thread::hardware_concurrency()), yield_if_busy)
     {
         set_dsp_thread_count(interpreter.get_thread_count(), init_functor);
@@ -162,8 +162,8 @@ public:
 
     void run(void)
     {
-        bool run_tick = interpreter.init_tick();
-        if (likely(run_tick)) {
+        const bool run_tick = interpreter.init_tick();
+        if( likely(run_tick) ) {
             wake_threads();
             interpreter.tick_master();
         }
