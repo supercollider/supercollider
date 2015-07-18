@@ -44,7 +44,7 @@ class nova_server * instance = 0;
 nova_server::nova_server(server_arguments const & args):
     server_shared_memory_creator(args.port(), args.control_busses),
     scheduler<thread_init_functor>(args.threads, !args.non_rt),
-    buffer_manager(args.buffers), sc_osc_handler(args), dsp_queue_dirty(false),
+    buffer_manager(args.buffers), sc_osc_handler(args),
     quit_requested_(false)
 {
     assert(instance == 0);
@@ -58,7 +58,6 @@ nova_server::nova_server(server_arguments const & args):
 
     sc_factory = new sc_ugen_factory;
     sc_factory->initialize(args, server_shared_memory_creator::shm->get_control_busses());
-
 
     /** first guess: needs to be updated, once the backend is started */
     time_per_tick = time_tag::from_samples(args.blocksize, args.samplerate);

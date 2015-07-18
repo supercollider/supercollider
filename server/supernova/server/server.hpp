@@ -110,7 +110,7 @@ struct thread_init_functor
     void operator()(int thread_index);
 
 private:
-    bool rt;
+    const bool rt;
 };
 
 struct io_thread_init_functor
@@ -262,7 +262,7 @@ private:
     void perform_node_add(server_node * node, node_position_constraint const & constraints, bool update_dsp_queue);
     void finalize_node(server_node & node);
     std::atomic<bool> quit_requested_;
-    bool dsp_queue_dirty;
+    bool dsp_queue_dirty = false;
 
     callback_interpreter<system_callback, false> system_interpreter; // rt to system thread
     threaded_callback_interpreter<system_callback, io_thread_init_functor> io_interpreter; // for network IO

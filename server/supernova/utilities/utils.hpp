@@ -136,7 +136,9 @@ template <typename deleter = checked_deleter >
 struct intrusive_refcountable:
     public deleter
 {
-    intrusive_refcountable(void)                                           = default;
+    intrusive_refcountable(void):
+        use_count_(0)
+    {}
 
     intrusive_refcountable(intrusive_refcountable const & rhs)             = delete;
     intrusive_refcountable & operator=(intrusive_refcountable const & rhs) = delete;
@@ -164,9 +166,8 @@ struct intrusive_refcountable:
         p->release();
     }
 
-    boost::detail::atomic_count use_count_ = 0;
+    boost::detail::atomic_count use_count_;
 };
-
 
 template <class t, class compare = std::less<t> >
 struct compare_by_instance
