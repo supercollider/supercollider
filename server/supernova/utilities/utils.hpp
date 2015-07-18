@@ -136,15 +136,12 @@ template <typename deleter = checked_deleter >
 struct intrusive_refcountable:
     public deleter
 {
-    intrusive_refcountable(void):
-        use_count_(0)
-    {}
+    intrusive_refcountable(void)                                           = default;
 
-    intrusive_refcountable(intrusive_refcountable const & rhs) = delete;
+    intrusive_refcountable(intrusive_refcountable const & rhs)             = delete;
     intrusive_refcountable & operator=(intrusive_refcountable const & rhs) = delete;
 
-    virtual ~intrusive_refcountable(void)
-    {}
+    virtual ~intrusive_refcountable(void)                                  = default;
 
     void add_ref(void)
     {
@@ -167,7 +164,7 @@ struct intrusive_refcountable:
         p->release();
     }
 
-    boost::detail::atomic_count use_count_;
+    boost::detail::atomic_count use_count_ = 0;
 };
 
 
