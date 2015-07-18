@@ -208,6 +208,9 @@ public:
         output_channels = outchans;
         super::output_samples.resize(outchans);
         samplerate_ = samplerate;
+
+        cpu_time_accumulator.resize( samplerate_, blocksize_, 1 );
+
         return true;
     }
 

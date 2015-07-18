@@ -123,6 +123,8 @@ public:
 
         if (jack_frames % blocksize_)
             throw std::runtime_error("Jack buffer size is not a multiple of blocksize");
+
+        cpu_time_accumulator.resize( samplerate_, jack_frames, 1 );
     }
 
     void close_client(void)
