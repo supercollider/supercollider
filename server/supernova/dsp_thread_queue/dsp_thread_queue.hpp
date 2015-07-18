@@ -1,5 +1,5 @@
 //  dsp thread queue
-//  Copyright (C) 2007, 2008, 2009, 2010 Tim Blechmann
+//  Copyright (C) 2007-2015 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -56,7 +56,6 @@ concept runnable
  *
  * \tparam Alloc allocator for successor list
  *
- * \todo operator new doesn't support stateful allocators
  */
 template <typename runnable,
           typename Alloc = std::allocator<void*> >
@@ -84,9 +83,9 @@ public:
         /* create instance */
         explicit successor_list(uint32_t size = 0)
         {
-            data = array_allocator().allocate(2*sizeof(uint32_t) + size * sizeof(dsp_thread_queue_item*));
+            data        = array_allocator().allocate( 2*sizeof(uint32_t) + size * sizeof(dsp_thread_queue_item*) );
             data->count = 1;
-            data->size = size;
+            data->size  = size;
         }
 
         successor_list(successor_list const & rhs):
@@ -98,7 +97,7 @@ public:
         successor_list & operator=(successor_list const & rhs)
         {
             if (--data->count == 0)
-                array_allocator().deallocate(data, 2*sizeof(uint32_t) + data->size * sizeof(dsp_thread_queue_item*));
+                array_allocator().deallocate( data, 2*sizeof(uint32_t) + data->size * sizeof(dsp_thread_queue_item*) );
 
             data = rhs.data;
             data->count++;
@@ -130,7 +129,7 @@ public:
         ~successor_list(void)
         {
             if (--data->count == 0)
-                array_allocator().deallocate(data, 2*sizeof(uint32_t) + data->size * sizeof(dsp_thread_queue_item*));
+                array_allocator().deallocate( data, 2*sizeof(uint32_t) + data->size * sizeof(dsp_thread_queue_item*) );
         }
 
         data_t * data;
@@ -141,7 +140,7 @@ public:
         activation_count(0), job(job), successors(successors), activation_limit(activation_limit)
     {}
 
-    dsp_thread_queue_item * run(dsp_queue_interpreter & interpreter, boost::uint8_t thread_index)
+    dsp_thread_queue_item * run(dsp_queue_interpreter & interpreter, std::uint8_t thread_index)
     {
         assert(activation_count == 0);
 
@@ -262,7 +261,7 @@ public:
 
     /** preallocate node_count nodes */
     dsp_thread_queue(std::size_t node_count, bool has_parallelism = true):
-        total_node_count(0), has_parallelism_(has_parallelism)
+        has_parallelism_(has_parallelism)
     {
         initially_runnable_items.reserve(node_count);
         queue_items = node_count ? item_allocator().allocate(node_count * sizeof(dsp_thread_queue_item))
@@ -314,7 +313,7 @@ public:
     }
 
 private:
-    node_count_t total_node_count;          /* total number of nodes */
+    node_count_t total_node_count = 0;      /* total number of nodes */
     item_vector_t initially_runnable_items; /* nodes without precedessor */
     dsp_thread_queue_item * queue_items;    /* all nodes */
     const bool has_parallelism_;
@@ -355,7 +354,7 @@ public:
      */
     bool init_tick(void)
     {
-        if (unlikely((queue.get() == nullptr) or                /* no queue */
+        if (unlikely((queue.get() == nullptr) ||             /* no queue */
                      (queue->get_total_node_count() == 0)    /* no nodes */
                     ))
             return false;

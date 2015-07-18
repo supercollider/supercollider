@@ -1,5 +1,5 @@
 //  dsp thread
-//  Copyright (C) 2007, 2008, 2009, 2010 Tim Blechmann
+//  Copyright (C) 2007-2015 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -65,10 +65,10 @@ class dsp_thread:
 public:
     dsp_thread(dsp_queue_interpreter & interpreter, uint16_t index, size_t stack_size,
                thread_init_functor const & thread_init = thread_init_functor()):
-        thread_init_functor(thread_init), interpreter(interpreter), stop(false), index(index), stack_ (nullptr)
+        thread_init_functor(thread_init), interpreter(interpreter), stop(false), index(index)
     {
         if (stack_size) {
-                stack_ = malloc_aligned<char>(stack_size);
+            stack_ = malloc_aligned<char>(stack_size);
             if (stack_ == nullptr)
                 throw std::bad_alloc();
             // touch stack to avoid page faults
@@ -78,7 +78,7 @@ public:
         }
     }
 
-    dsp_thread(dsp_thread const &) = delete;
+    dsp_thread(dsp_thread const &)            = delete;
     dsp_thread& operator=(dsp_thread const &) = delete;
 
     ~dsp_thread(void)
@@ -120,7 +120,6 @@ public:
         cycle_sem.post();
     }
 
-
     char * stack(void)
     {
         return stack_;
@@ -131,7 +130,7 @@ private:
     dsp_queue_interpreter & interpreter;
     std::atomic<bool> stop;
     uint16_t index;
-    char * stack_;
+    char * stack_ = nullptr;
 };
 
 /** \brief container for all dsp threads
