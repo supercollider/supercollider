@@ -1,5 +1,5 @@
 //  native jack backend
-//  Copyright (C) 2009, 2010 Tim Blechmann
+//  Copyright (C) 2009-2015 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -52,8 +52,7 @@ class jack_backend:
     typedef detail::audio_backend_base<sample_type, jack_default_audio_sample_t, blocking, false> super;
 
 public:
-    jack_backend(void):
-        client(nullptr), is_active(false), time_is_synced(false)
+    jack_backend(void)
     {}
 
     ~jack_backend(void)
@@ -310,11 +309,11 @@ private:
         return 0;
     }
 
-    jack_client_t * client;
+    jack_client_t * client = nullptr;
     jack_status_t status;
 
-    bool is_active;
-    bool time_is_synced;
+    bool is_active      = false;
+    bool time_is_synced = false;
     uint32_t blocksize_;
 
     std::vector<jack_port_t*> input_ports, output_ports;

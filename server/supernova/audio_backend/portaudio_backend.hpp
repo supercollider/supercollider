@@ -48,12 +48,10 @@ class portaudio_backend:
     typedef detail::audio_backend_base<sample_type, float, blocking, false> super;
 
 public:
-    portaudio_backend(void):
-        stream(nullptr), blocksize_(0)
+    portaudio_backend(void)
     {
         int err = Pa_Initialize();
         report_error(err, true);
-
 
         list_devices();
 
@@ -125,6 +123,7 @@ public:
         }
         return false;
     }
+
     void report_latency()
     {
         const PaStreamInfo *psi = Pa_GetStreamInfo(stream);
@@ -133,6 +132,7 @@ public:
             fprintf(stdout,"  Latency (in/out): %.3f / %.3f sec\n", psi->inputLatency, psi->outputLatency); 
         }
     }
+
     bool open_stream(std::string const & input_device, unsigned int inchans,
                      std::string const & output_device, unsigned int outchans,
                      unsigned int samplerate, unsigned int pa_blocksize, int h_blocksize)
@@ -191,7 +191,7 @@ public:
         if (supported != 0)
             return false;
 
-        callback_initialized = false;
+        engine_initalised = false;
         blocksize_ = pa_blocksize;
 
         PaError opened = Pa_OpenStream(&stream, in_stream_parameters, out_stream_parameters,
@@ -283,10 +283,10 @@ private:
     int perform(const void *inputBuffer, void *outputBuffer, unsigned long frames,
                 const PaStreamCallbackTimeInfo *timeInfo, PaStreamCallbackFlags statusFlags)
     {
-        if (unlikely(!callback_initialized)) {
+        if ( unlikely(!engine_initalised) ) {
             engine_functor::init_thread();
             engine_functor::sync_clock();
-            callback_initialized = true;
+            engine_initalised = true;
         }
 
         if (statusFlags & (paInputOverflow | paInputUnderflow | paOutputOverflow | paOutputUnderflow))
@@ -321,9 +321,9 @@ private:
         return self->perform(input, output, frame_count, time_info, status_flags);
     }
 
-    PaStream *stream;
-    uint32_t blocksize_;
-    bool callback_initialized;
+    PaStream *stream       = nullptr;
+    uint32_t blocksize_    = 0;
+    bool engine_initalised = false;
     cpu_time_info cpu_time_accumulator;
 };
 
