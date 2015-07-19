@@ -172,12 +172,12 @@ static int getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSString *type, VM
             PyrObject *dict, *array;
             
             dict = instantiateObject(g->gc, class_identdict, 5, true, false);
+            SetObject(slot, dict);
             array = newPyrArray(g->gc, 4, 0, false);
             array->size = 4;
             nilSlots(array->slots, array->size);
             SetObject(dict->slots + ivxIdentDict_array, array);
             g->gc->GCWrite(dict, array);
-            SetObject(slot, dict);
             
             NSEnumerator *enumerator = [nsObject keyEnumerator];
             id key;

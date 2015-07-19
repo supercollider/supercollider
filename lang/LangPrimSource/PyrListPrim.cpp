@@ -54,7 +54,7 @@ PyrSymbol *s_delta, *s_dur, *s_stretch;
 
 int prArrayMultiChanExpand(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a, *slot, *slots1, *slots2, *slots3, *slots4;
+	PyrSlot *a, *slot, *slots1, *slots2, *slots3, *slots4, *slotToCopy;
 	PyrObject *obj1, *obj2, *obj3, *obj4;
 	int i, j, size, len, maxlen;
 
@@ -77,11 +77,13 @@ int prArrayMultiChanExpand(struct VMGlobals *g, int numArgsPushed)
 
 	obj2 = newPyrArray(g->gc, maxlen, 0, true);
 	obj2->size = maxlen;
+    SetObject(a, obj2);
 	slots2 = obj2->slots;
 	for (i=0; i<maxlen; ++i) {
 		obj3 = newPyrArray(g->gc, size, 0, false);
 		obj3->size = size;
 		SetObject(slots2 + i, obj3);
+        g->gc->GCWrite(obj2, obj3);
 		slots1 = obj1->slots;
 		slots3 = obj3->slots;
 		for (j=0; j<size; ++j) {
@@ -90,17 +92,19 @@ int prArrayMultiChanExpand(struct VMGlobals *g, int numArgsPushed)
 				if (slotRawObject(slot)->classptr == class_array && slotRawObject(slot)->size > 0) {
 					obj4 = slotRawObject(slot);
 					slots4 = obj4->slots;
-					slotCopy(&slots3[j],&slots4[i % obj4->size]);
+                    slotToCopy = &slots4[i % obj4->size];
+					slotCopy(&slots3[j],slotToCopy);
+                    g->gc->GCWrite(obj3, slotToCopy);
 				} else {
 					slotCopy(&slots3[j],slot);
+                    g->gc->GCWrite(obj3, obj1);
 				}
 			} else {
 				slotCopy(&slots3[j],slot);
+                g->gc->GCWrite(obj3, slot);
 			}
 		}
 	}
-
-	SetObject(a, obj2);
 
 	return errNone;
 }
@@ -301,6 +305,8 @@ int prIdentDict_PutGet(struct VMGlobals *g, int numArgsPushed)
 			PyrObject *newarray;
 			newarray = newPyrArray(g->gc, size*3, 0, true);
 			newarray->size = ARRAYMAXINDEXSIZE(newarray);
+            SetRaw(&dict->slots[ivxIdentDict_array], newarray);
+            g->gc->GCWrite(dict, newarray);
 			nilSlots(newarray->slots, newarray->size);
 			slot = array->slots;
 			for (i=0; i<array->size; i+=2, slot+=2) {
@@ -308,11 +314,11 @@ int prIdentDict_PutGet(struct VMGlobals *g, int numArgsPushed)
 					index = arrayAtIdentityHashInPairs(newarray, slot);
 					newslot = newarray->slots + index;
 					slotCopy(&newslot[0],&slot[0]);
+                    g->gc->GCWrite(newarray, &slot[0]);
 					slotCopy(&newslot[1],&slot[1]);
+                    g->gc->GCWrite(newarray, &slot[1]);
 				}
 			}
-			SetRaw(&dict->slots[ivxIdentDict_array], newarray);
-			g->gc->GCWrite(dict, newarray);
 		}
 	}
 	--g->sp;

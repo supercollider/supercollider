@@ -1461,6 +1461,8 @@ int prSFOpenRead(struct VMGlobals *g, int numArgsPushed)
 
 	a = g->sp - 1;
 	b = g->sp;
+    
+    PyrObject *obj1 = slotRawObject(a);
 
 	if (!isKindOfSlot(b, class_string)) return errWrongType;
 	if (slotRawObject(b)->size > PATH_MAX - 1) return errFailed;
@@ -1473,16 +1475,18 @@ int prSFOpenRead(struct VMGlobals *g, int numArgsPushed)
 
 
 	if (file) {
-		SetPtr(slotRawObject(a)->slots + 0, file);
+		SetPtr(obj1->slots + 0, file);
 		sndfileFormatInfoToStrings(&info, &headerstr, &sampleformatstr);
 		//headerFormatToString(&info, &headerstr);
 		PyrString *hpstr = newPyrString(g->gc, headerstr, 0, true);
-		SetObject(slotRawObject(a)->slots+1, hpstr);
+		SetObject(obj1->slots+1, hpstr);
+        g->gc->GCWrite(obj1, (PyrObjectHdr*)hpstr);
 		PyrString *smpstr = newPyrString(g->gc, sampleformatstr, 0, true);
-		SetObject(slotRawObject(a)->slots+2, smpstr);
-		SetInt(slotRawObject(a)->slots + 3, info.frames);
-		SetInt(slotRawObject(a)->slots + 4, info.channels);
-		SetInt(slotRawObject(a)->slots + 5, info.samplerate);
+		SetObject(obj1->slots+2, smpstr);
+        g->gc->GCWrite(obj1, (PyrObjectHdr*)smpstr);
+		SetInt(obj1->slots + 3, info.frames);
+		SetInt(obj1->slots + 4, info.channels);
+		SetInt(obj1->slots + 5, info.samplerate);
 
 		SetTrue(a);
 	} else {

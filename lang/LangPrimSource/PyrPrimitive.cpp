@@ -2093,6 +2093,7 @@ private:
 		if (numargs) {
 			PyrObject* argArray = (PyrObject*)newPyrArray(g->gc, numargs, 0, false);
 			SetObject(debugFrameObj->slots + 1, argArray);
+            g->gc->GCWrite(debugFrameObj, argArray);
 			for (int i=0; i<numargs; ++i)
 				slotCopy(&argArray->slots[i], &frame->vars[i]);
 
@@ -2103,6 +2104,7 @@ private:
 		if (numvars) {
 			PyrObject* varArray = (PyrObject*)newPyrArray(g->gc, numvars, 0, false);
 			SetObject(debugFrameObj->slots + 2, varArray);
+            g->gc->GCWrite(debugFrameObj, varArray);
 			for (int i=0, j=numargs; i<numvars; ++i,++j)
 				slotCopy(&varArray->slots[i], &frame->vars[j]);
 
