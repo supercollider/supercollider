@@ -2013,7 +2013,7 @@ struct completion_message
     /** handle package directly
      *  only to be called from the rt thread
      */
-    void handle(endpoint_ptr endpoint)
+    void handle(endpoint_ptr endpoint) const
     {
         if (size_)
             instance->handle_packet((char*)data_, size_, endpoint);
@@ -2050,45 +2050,15 @@ completion_message extract_completion_message(osc::ReceivedMessageArgumentIterat
 }
 
 
-template <bool realtime>
-void b_alloc_2_rt(uint32_t index, completion_message & msg, sample * free_buf, endpoint_ptr endpoint);
-void b_alloc_3_nrt(uint32_t index, sample * free_buf, endpoint_ptr endpoint);
-
-template <bool realtime>
-void b_alloc_1_nrt(uint32_t bufnum, uint32_t frames, uint32_t channels, completion_message & msg, endpoint_ptr endpoint)
-{
-    sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(bufnum));
-    try {
-        sample * free_buf = sc_factory->get_nrt_mirror_buffer(bufnum);
-        sc_factory->allocate_buffer(bufnum, frames, channels);
-        cmd_dispatcher<realtime>::fire_rt_callback(std::bind(b_alloc_2_rt<realtime>, bufnum, msg, free_buf, endpoint));
-    } catch (std::exception const & error) {
-        report_failure(endpoint, error, "/b_alloc", bufnum);
-    }
-}
-
-template <bool realtime>
-void b_alloc_2_rt(uint32_t index, completion_message & msg, sample * free_buf, endpoint_ptr endpoint)
-{
-    sc_factory->buffer_sync(index);
-    msg.handle(endpoint);
-    cmd_dispatcher<realtime>::fire_system_callback(std::bind(b_alloc_3_nrt, index, free_buf, endpoint));
-}
-
-void b_alloc_3_nrt(uint32_t index, sample * free_buf, endpoint_ptr endpoint)
-{
-    free_aligned(free_buf);
-    send_done_message(endpoint, "/b_alloc", index);
-}
 
 template <bool realtime>
 void handle_b_alloc(received_message const & msg, endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
-    osc::int32 index, frames, channels;
+    osc::int32 bufferIndex, frames, channels;
 
-    args >> index >> frames;
+    args >> bufferIndex >> frames;
 
     if (!args.Eos())
         args >> channels;
@@ -2097,38 +2067,25 @@ void handle_b_alloc(received_message const & msg, endpoint_ptr endpoint)
 
     completion_message message = extract_completion_message(args);
 
-    cmd_dispatcher<realtime>::fire_system_callback(std::bind(b_alloc_1_nrt<realtime>, index, frames,
-                                                           channels, message, endpoint));
-}
+    cmd_dispatcher<realtime>::fire_system_callback( [=] {
+        sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard( bufferIndex ));
+        try {
+            sample * free_buf = sc_factory->get_nrt_mirror_buffer(bufferIndex);
+            sc_factory->allocate_buffer(bufferIndex, frames, channels);
 
-template <bool realtime>
-void b_free_1_nrt(uint32_t index, completion_message & msg, endpoint_ptr endpoint);
-template <bool realtime>
-void b_free_2_rt(uint32_t index, sample * free_buf, completion_message & msg, endpoint_ptr endpoint);
-void b_free_3_nrt(uint32_t index, sample * free_buf, endpoint_ptr endpoint);
+            cmd_dispatcher<realtime>::fire_rt_callback( [=] {
+                sc_factory->buffer_sync( bufferIndex );
+                message.handle( endpoint );
 
-template <bool realtime>
-void b_free_1_nrt(uint32_t index, completion_message & msg, endpoint_ptr endpoint)
-{
-    sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(index));
-    sample * free_buf = sc_factory->get_nrt_mirror_buffer(index);
-    sc_factory->free_buffer(index);
-    cmd_dispatcher<realtime>::fire_rt_callback(std::bind(b_free_2_rt<realtime>,
-                                                           index, free_buf, msg, endpoint));
-}
-
-template <bool realtime>
-void b_free_2_rt(uint32_t index, sample * free_buf, completion_message & msg, endpoint_ptr endpoint)
-{
-    sc_factory->buffer_sync(index);
-    cmd_dispatcher<realtime>::fire_system_callback(std::bind(b_free_3_nrt, index, free_buf, endpoint));
-    msg.handle(endpoint);
-}
-
-void b_free_3_nrt(uint32_t index, sample * free_buf, endpoint_ptr endpoint)
-{
-    free_aligned(free_buf);
-    send_done_message(endpoint, "/b_free", index);
+                cmd_dispatcher<realtime>::fire_system_callback( [=]{
+                    free_aligned(free_buf);
+                    send_done_message(endpoint, "/b_alloc", bufferIndex);
+                });
+            });
+        } catch (std::exception const & error) {
+            report_failure(endpoint, error, "/b_alloc", bufferIndex);
+        }
+    });
 }
 
 
@@ -2142,54 +2099,36 @@ void handle_b_free(received_message const & msg, endpoint_ptr endpoint)
 
     completion_message message = extract_completion_message(args);
 
-    cmd_dispatcher<realtime>::fire_system_callback(std::bind(b_free_1_nrt<realtime>, index, message, endpoint));
+    cmd_dispatcher<realtime>::fire_system_callback( [=] {
+        sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(index));
+        sample * free_buf = sc_factory->get_nrt_mirror_buffer(index);
+        sc_factory->free_buffer(index);
+
+        cmd_dispatcher<realtime>::fire_rt_callback( [=] {
+            sc_factory->buffer_sync(index);
+
+            cmd_dispatcher<realtime>::fire_system_callback( [=] {
+                free_aligned(free_buf);
+                send_done_message(endpoint, "/b_free", index);
+            });
+            message.handle(endpoint);
+        });
+    });
 }
 
-template <bool realtime>
-void b_allocRead_2_rt(uint32_t index, completion_message & msg, sample * free_buf, endpoint_ptr endpoint);
-void b_allocRead_3_nrt(uint32_t index, sample * free_buf, endpoint_ptr endpoint);
-
-template <bool realtime>
-void b_allocRead_1_nrt(uint32_t bufnum, movable_string & filename, uint32_t start, uint32_t frames, completion_message & msg,
-                       endpoint_ptr endpoint)
-{
-    sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(bufnum));
-    sample * free_buf = sc_factory->get_nrt_mirror_buffer(bufnum);
-    try {
-        sc_factory->buffer_read_alloc(bufnum, filename.c_str(), start, frames);
-        cmd_dispatcher<realtime>::fire_rt_callback(std::bind(b_allocRead_2_rt<realtime>, bufnum, msg, free_buf, endpoint));
-    } catch (std::exception const & error) {
-        report_failure(endpoint, error, "/b_allocRead", bufnum);
-    }
-}
-
-template <bool realtime>
-void b_allocRead_2_rt(uint32_t index, completion_message & msg, sample * free_buf,
-                      endpoint_ptr endpoint)
-{
-    sc_factory->buffer_sync(index);
-    msg.handle(endpoint);
-    cmd_dispatcher<realtime>::fire_system_callback(std::bind(b_allocRead_3_nrt, index, free_buf, endpoint));
-}
-
-void b_allocRead_3_nrt(uint32_t index, sample * free_buf, endpoint_ptr endpoint)
-{
-    free_aligned(free_buf);
-    send_done_message(endpoint, "/b_allocRead", index);
-}
 
 template <bool realtime>
 void handle_b_allocRead(received_message const & msg, endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
-    osc::int32 index;
-    const char * filename;
+    osc::int32 bufferIndex;
+    const char * filenameString;
 
     osc::int32 start = 0;
     osc::int32 frames = 0;
 
-    args >> index >> filename;
+    args >> bufferIndex >> filenameString;
 
     if (!args.Eos())
         args >> start;
@@ -2199,48 +2138,28 @@ void handle_b_allocRead(received_message const & msg, endpoint_ptr endpoint)
 
     completion_message message = extract_completion_message(args);
 
-    movable_string fname(filename);
-    cmd_dispatcher<realtime>::fire_system_callback(std::bind(b_allocRead_1_nrt<realtime>, index,
-                                                               fname, start, frames, message, endpoint));
-}
+    movable_string filename( filenameString );
 
-template <bool realtime>
-void b_allocReadChannel_2_rt(uint32_t bufnum, completion_message & msg, sample * free_buf,
-                             endpoint_ptr endpoint);
-void b_allocReadChannel_3_nrt(uint32_t bufnum, sample * free_buf, endpoint_ptr endpoint);
+    cmd_dispatcher<realtime>::fire_system_callback([=] {
+        sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard( bufferIndex ));
+        sample * free_buf = sc_factory->get_nrt_mirror_buffer(bufferIndex);
+        try {
+            sc_factory->buffer_read_alloc(bufferIndex, filename.c_str(), start, frames);
 
-template <bool realtime>
-void b_allocReadChannel_1_nrt(uint32_t bufnum, movable_string const & filename, uint32_t start, uint32_t frames,
-                              movable_array<uint32_t> const & channels, completion_message & msg,
-                              endpoint_ptr endpoint)
-{
-    sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(bufnum));
-    sample * free_buf = sc_factory->get_nrt_mirror_buffer(bufnum);
+            cmd_dispatcher<realtime>::fire_rt_callback( [=] {
+                sc_factory->buffer_sync(bufferIndex);
+                message.handle(endpoint);
 
-    try {
-        sc_factory->buffer_alloc_read_channels(bufnum, filename.c_str(), start, frames, channels.size(), channels.data());
+                cmd_dispatcher<realtime>::fire_system_callback( [=] {
+                    free_aligned(free_buf);
+                    send_done_message(endpoint, "/b_allocRead", bufferIndex);
+                });
+            });
 
-        cmd_dispatcher<realtime>::fire_rt_callback(std::bind(b_allocReadChannel_2_rt<realtime>,
-                                                             bufnum, msg, free_buf, endpoint));
-    } catch (std::exception const & error) {
-        report_failure(endpoint, error, "/b_allocReadChannel", bufnum);
-    }
-}
-
-template <bool realtime>
-void b_allocReadChannel_2_rt(uint32_t bufnum, completion_message & msg, sample * free_buf,
-                             endpoint_ptr endpoint)
-{
-    sc_factory->buffer_sync(bufnum);
-    msg.handle(endpoint);
-    cmd_dispatcher<realtime>::fire_system_callback(std::bind(b_allocReadChannel_3_nrt,
-                                                             bufnum, free_buf, endpoint));
-}
-
-void b_allocReadChannel_3_nrt(uint32_t bufnum, sample * free_buf, endpoint_ptr endpoint)
-{
-    free_aligned(free_buf);
-    send_done_message(endpoint, "/b_allocReadChannel", bufnum);
+        } catch (std::exception const & error) {
+            report_failure(endpoint, error, "/b_allocRead", bufferIndex);
+        }
+    });
 }
 
 
@@ -2250,7 +2169,7 @@ void handle_b_allocReadChannel(received_message const & msg, endpoint_ptr endpoi
     osc::ReceivedMessageArgumentIterator arg = msg.ArgumentsBegin();
 
     osc::int32 bufnum = arg->AsInt32(); arg++;
-    const char * filename = arg->AsString(); arg++;
+    const char * filenameString = arg->AsString(); arg++;
 
     osc::int32 start = arg->AsInt32(); arg++;
     size_t frames = arg->AsInt32(); arg++;
@@ -2272,11 +2191,28 @@ void handle_b_allocReadChannel(received_message const & msg, endpoint_ptr endpoi
     completion_message message = extract_completion_message(arg);
 
     movable_array<uint32_t> channel_mapping(channel_count, channels.c_array());
-    movable_string fname(filename);
+    movable_string filename(filenameString);
 
-    cmd_dispatcher<realtime>::fire_system_callback(std::bind(b_allocReadChannel_1_nrt<realtime>,
-                                                           bufnum, fname, start, frames, channel_mapping,
-                                                           message, endpoint));
+    cmd_dispatcher<realtime>::fire_system_callback( [=] {
+        sc_ugen_factory::buffer_lock_t buffer_lock(sc_factory->buffer_guard(bufnum));
+        sample * free_buf = sc_factory->get_nrt_mirror_buffer(bufnum);
+
+        try {
+            sc_factory->buffer_alloc_read_channels(bufnum, filename.c_str(), start, frames, channels.size(), channels.data());
+
+            cmd_dispatcher<realtime>::fire_rt_callback( [=] {
+                sc_factory->buffer_sync(bufnum);
+                msg.handle(endpoint);
+
+                cmd_dispatcher<realtime>::fire_system_callback( [=] {
+                    free_aligned(free_buf);
+                    send_done_message(endpoint, "/b_allocReadChannel", bufnum);
+                });
+            });
+        } catch (std::exception const & error) {
+            report_failure(endpoint, error, "/b_allocReadChannel", bufnum);
+        }
+    });
 }
 
 const char * b_write = "/b_write";
