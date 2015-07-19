@@ -1773,7 +1773,7 @@ int prArrayPermute(struct VMGlobals *g, int numArgsPushed)
 
 int prArrayAllTuples(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a, *b, *slots1, *slots2, *slots3;
+	PyrSlot *a, *b, *slots1, *slots2, *slots3, *slotToCopy;
 	PyrObject *obj1, *obj2, *obj3;
 
 	a = g->sp - 1;
@@ -1803,11 +1803,14 @@ int prArrayAllTuples(struct VMGlobals *g, int numArgsPushed)
 		for (int j=tupSize-1; j >= 0; --j) {
 			if (isKindOfSlot(slots1+j, class_array)) {
 				PyrObject *obj4 = slotRawObject(&slots1[j]);
-				slotCopy(&slots3[j], &obj4->slots[k % obj4->size]);
-				g->gc->GCWrite(obj3, obj4);
+                slotToCopy = &obj4->slots[k % obj4->size];
+				slotCopy(&slots3[j], slotToCopy);
+				g->gc->GCWrite(obj3, slotToCopy);
 				k /= obj4->size;
 			} else {
-				slotCopy(&slots3[j], &slots1[j]);
+                slotToCopy = &slots1[j];
+				slotCopy(&slots3[j], slotToCopy);
+                g->gc->GCWrite(obj3, slotToCopy);
 			}
 		}
 		obj3->size = tupSize;
