@@ -572,7 +572,7 @@ static PyrInt8Array* MsgToInt8Array ( sc_msg_iter& msg )
 
 static const double dInfinity = std::numeric_limits<double>::infinity();
 
-static PyrObject* ConvertOSCMessage(int inSize, char *inData)
+static void ConvertOSCMessage(int inSize, char *inData, PyrSlot* replySlot)
 {
 	char *cmdName = inData;
 	int cmdNameLen = OSCstrlen(cmdName);
@@ -594,6 +594,7 @@ static PyrObject* ConvertOSCMessage(int inSize, char *inData)
 	VMGlobals *g = gMainVMGlobals;
 	PyrObject *obj = newPyrArray(g->gc, numElems + 1, 0, false);
 	PyrSlot *slots = obj->slots;
+    SetObject(replySlot, obj);
 
 	SetSymbol(slots+0, getsym(cmdName));
 
@@ -617,6 +618,7 @@ static PyrObject* ConvertOSCMessage(int inSize, char *inData)
 		case 'b' : // fall through
 		case 'm' :
 			SetObject(slots+i+1, (PyrObject*)MsgToInt8Array(msg));
+                g->gc->GCWrite(obj, slots+i+1);
 			break;
 		case 'c':
 			SetChar(slots+i+1, (char)msg.geti());
@@ -649,7 +651,6 @@ static PyrObject* ConvertOSCMessage(int inSize, char *inData)
 		}
 	}
 	obj->size = numElems + 1;
-	return obj;
 }
 
 static PyrObject* ConvertReplyAddress(ReplyAddress *inReply)
@@ -685,9 +686,8 @@ void PerformOSCBundle(int inSize, char* inData, PyrObject *replyObj, int inPortN
 			++g->sp; SetFloat(g->sp, seconds);
 			++g->sp; SetObject(g->sp, replyObj);
 			++g->sp; SetInt(g->sp, inPortNum);
-
-			PyrObject *arrayObj = ConvertOSCMessage(msgSize, data);
-			++g->sp; SetObject(g->sp, arrayObj);
+            ++g->sp;
+			ConvertOSCMessage(msgSize, data, g->sp); // this sets the array on the stack internally to ensure correct GC ordering
 			runInterpreter(g, s_recvoscmsg, 5);
 		}
 		data += msgSize;
@@ -696,16 +696,14 @@ void PerformOSCBundle(int inSize, char* inData, PyrObject *replyObj, int inPortN
 
 void PerformOSCMessage(int inSize, char *inData, PyrObject *replyObj, int inPortNum, double time)
 {
-
-	PyrObject *arrayObj = ConvertOSCMessage(inSize, inData);
-
 	// call virtual machine to handle message
 	VMGlobals *g = gMainVMGlobals;
 	++g->sp; SetObject(g->sp, g->process);
 	++g->sp; SetFloat(g->sp, time);	// time
 	++g->sp; SetObject(g->sp, replyObj);
 	++g->sp; SetInt(g->sp, inPortNum);
-	++g->sp; SetObject(g->sp, arrayObj);
+	++g->sp;
+    ConvertOSCMessage(inSize, inData, g->sp); // this sets the array on the stack internally to ensure correct GC ordering
 
 	runInterpreter(g, s_recvoscmsg, 5);
 }
