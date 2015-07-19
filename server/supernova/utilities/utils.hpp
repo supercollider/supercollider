@@ -102,10 +102,6 @@ public:
     virtual t run(void) = 0;
 };
 
-/** \brief tag for denoting a deleteable class */
-class deleteable
-{};
-
 
 template <class T>
 struct default_deleter
