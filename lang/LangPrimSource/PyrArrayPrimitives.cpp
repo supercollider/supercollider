@@ -2339,7 +2339,6 @@ int prArrayUnlace(struct VMGlobals *g, int numArgsPushed)
 	if (err) return err;
 
 	obj2 = instantiateObject(g->gc, obj1->classptr, numLists, false, true);
-	obj2->size = numLists;
 	slots2 = obj2->slots;
 
 	SetObject(b, obj2); // store reference on stack, so both source and destination objects can be reached by the gc
@@ -2358,6 +2357,8 @@ int prArrayUnlace(struct VMGlobals *g, int numArgsPushed)
 			}
 		}
 		SetObject(slots2 + i, obj3);
+		g->gc->GCWrite(obj2, obj3);
+		obj2->size++;
 	}
 
 	SetRaw(a, obj2);
