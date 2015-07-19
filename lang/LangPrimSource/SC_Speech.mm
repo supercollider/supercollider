@@ -372,6 +372,7 @@ int prGetSpeechVoiceNames(struct VMGlobals *g, int numArgsPushed){
 	NSString * aVoice = NULL;
 	NSEnumerator * voiceEnumerator = [[NSSpeechSynthesizer availableVoices] objectEnumerator];
 	PyrObject* allVoices = newPyrArray(g->gc, (int) [[NSSpeechSynthesizer availableVoices] count]  * sizeof(PyrObject), 0 , true);
+	SetObject(a, allVoices);
 
 	while(aVoice = [voiceEnumerator nextObject]) {
 		NSDictionary * dictionaryOfVoiceAttributes = [NSSpeechSynthesizer attributesForVoice:aVoice];
@@ -384,7 +385,6 @@ int prGetSpeechVoiceNames(struct VMGlobals *g, int numArgsPushed){
 	}
 	[autoreleasepool release];
 
-	SetObject(a, allVoices);
 	return errNone;
 
 }
