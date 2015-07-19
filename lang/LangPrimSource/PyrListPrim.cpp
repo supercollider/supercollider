@@ -305,6 +305,8 @@ int prIdentDict_PutGet(struct VMGlobals *g, int numArgsPushed)
 			PyrObject *newarray;
 			newarray = newPyrArray(g->gc, size*3, 0, true);
 			newarray->size = ARRAYMAXINDEXSIZE(newarray);
+            SetRaw(&dict->slots[ivxIdentDict_array], newarray);
+            g->gc->GCWrite(dict, newarray);
 			nilSlots(newarray->slots, newarray->size);
 			slot = array->slots;
 			for (i=0; i<array->size; i+=2, slot+=2) {
@@ -312,11 +314,11 @@ int prIdentDict_PutGet(struct VMGlobals *g, int numArgsPushed)
 					index = arrayAtIdentityHashInPairs(newarray, slot);
 					newslot = newarray->slots + index;
 					slotCopy(&newslot[0],&slot[0]);
+                    g->gc->GCWrite(newarray, &slot[0]);
 					slotCopy(&newslot[1],&slot[1]);
+                    g->gc->GCWrite(newarray, &slot[1]);
 				}
 			}
-			SetRaw(&dict->slots[ivxIdentDict_array], newarray);
-			g->gc->GCWrite(dict, newarray);
 		}
 	}
 	--g->sp;
