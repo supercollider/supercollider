@@ -77,30 +77,35 @@ int prArrayMultiChanExpand(struct VMGlobals *g, int numArgsPushed)
 
 	obj2 = newPyrArray(g->gc, maxlen, 0, true);
 	obj2->size = maxlen;
+	SetObject(a, obj2);
 	slots2 = obj2->slots;
 	for (i=0; i<maxlen; ++i) {
-		obj3 = newPyrArray(g->gc, size, 0, false);
+		obj3 = newPyrArray(g->gc, size, 0, true);
 		obj3->size = size;
 		SetObject(slots2 + i, obj3);
+		g->gc->GCWrite(obj2, obj3);
 		slots1 = obj1->slots;
 		slots3 = obj3->slots;
 		for (j=0; j<size; ++j) {
 			slot = slots1 + j;
 			if (IsObj(slot)) {
 				if (slotRawObject(slot)->classptr == class_array && slotRawObject(slot)->size > 0) {
+					PyrSlot *slotToCopy;
 					obj4 = slotRawObject(slot);
 					slots4 = obj4->slots;
-					slotCopy(&slots3[j],&slots4[i % obj4->size]);
+					slotToCopy = &slots4[i % obj4->size];
+					slotCopy(&slots3[j],slotToCopy);
+					g->gc->GCWrite(obj3, slotToCopy);
 				} else {
 					slotCopy(&slots3[j],slot);
+					g->gc->GCWrite(obj3, obj1);
 				}
 			} else {
 				slotCopy(&slots3[j],slot);
+				g->gc->GCWrite(obj3, slot);
 			}
 		}
 	}
-
-	SetObject(a, obj2);
 
 	return errNone;
 }
