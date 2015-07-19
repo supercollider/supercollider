@@ -2358,6 +2358,7 @@ int prArrayUnlace(struct VMGlobals *g, int numArgsPushed)
 			}
 		}
 		SetObject(slots2 + i, obj3);
+		g->gc->GCWrite(obj2, obj3);
 	}
 
 	SetRaw(a, obj2);
