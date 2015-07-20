@@ -22,6 +22,7 @@
 #define SC_OSCUTILS_HPP
 
 #include "SC_ReplyImpl.hpp"
+#include <cinttypes>
 
 static bool dumpOSCmsg(int inSize, char* inData, bool skipStatus = false)
 {
@@ -85,7 +86,7 @@ static bool dumpOSCmsg(int inSize, char* inData, bool skipStatus = false)
 			scprintf(" %c", (char)msg.geti());
 			break;
 		case 't' :
-			scprintf(" %lld", msg.gett());
+			scprintf(" %" PRId64 "", msg.gett());
 			break;
 		case 'T' :
 			scprintf(" true");
@@ -155,7 +156,7 @@ static bool dumpOSCbndl(int indent, int size, char *inData)
 	char* data = inData + 8;
 	char* dataEnd = inData + size;
 
-	scprintf("[ \"#bundle\", %llu, ", OSCtime(data));
+	scprintf("[ \"#bundle\", %" PRIu64 ", ", OSCtime(data));
 	data += 8;
 	while (data < dataEnd) {
 		int contentPrinted;
