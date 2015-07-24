@@ -559,12 +559,12 @@ static int prArray_OSCBytes(VMGlobals *g, int numArgsPushed)
 // Create a new <PyrInt8Array> object and copy data from `msg.getb'.
 // Bytes are properly untyped, but there is no <UInt8Array> type.
 
-static PyrInt8Array* MsgToInt8Array ( sc_msg_iter& msg ) ;
-static PyrInt8Array* MsgToInt8Array ( sc_msg_iter& msg )
+static PyrInt8Array* MsgToInt8Array ( sc_msg_iter& msg, bool collect ) ;
+static PyrInt8Array* MsgToInt8Array ( sc_msg_iter& msg, bool collect )
 {
 	int size = msg.getbsize() ;
 	VMGlobals *g = gMainVMGlobals ;
-	PyrInt8Array *obj = newPyrInt8Array ( g->gc , size , 0 , true ) ;
+	PyrInt8Array *obj = newPyrInt8Array ( g->gc , size , 0 , collect ) ;
 	obj->size = size ;
 	msg.getb ( (char *)obj->b , obj->size ) ;
 	return obj ;
@@ -616,7 +616,7 @@ static PyrObject* ConvertOSCMessage(int inSize, char *inData)
 			break;
 		case 'b' : // fall through
 		case 'm' :
-			SetObject(slots+i+1, (PyrObject*)MsgToInt8Array(msg));
+			SetObject(slots+i+1, (PyrObject*)MsgToInt8Array(msg, false));
 			break;
 		case 'c':
 			SetChar(slots+i+1, (char)msg.geti());
