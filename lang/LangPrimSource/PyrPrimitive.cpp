@@ -2956,9 +2956,9 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 }
 
 void initPyrThread(VMGlobals *g, PyrThread *thread, PyrSlot *func, int stacksize, PyrInt32Array* rgenArray,
-	double beats, double seconds, PyrSlot* clock, bool collect);
+	double beats, double seconds, PyrSlot* clock, bool runGC);
 void initPyrThread(VMGlobals *g, PyrThread *thread, PyrSlot *func, int stacksize, PyrInt32Array* rgenArray,
-	double beats, double seconds, PyrSlot* clock, bool collect)
+	double beats, double seconds, PyrSlot* clock, bool runGC)
 {
 	PyrObject *array;
 	PyrGC* gc = g->gc;
@@ -2966,7 +2966,7 @@ void initPyrThread(VMGlobals *g, PyrThread *thread, PyrSlot *func, int stacksize
 	slotCopy(&thread->func, func);
 	gc->GCWrite(thread, func);
 
-	array = newPyrArray(gc, stacksize, 0, collect);
+	array = newPyrArray(gc, stacksize, 0, runGC);
 	SetObject(&thread->stack, array);
 	gc->GCWrite(thread, array);
 

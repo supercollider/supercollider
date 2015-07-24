@@ -322,12 +322,12 @@ inline void PyrGC::ToGrey2(PyrObjectHdr* obj)
 	mNumGrey ++ ;
 }
 
-inline PyrObject * PyrGC::Allocate(size_t inNumBytes, int32 sizeclass, bool inCollect)
+inline PyrObject * PyrGC::Allocate(size_t inNumBytes, int32 sizeclass, bool inRunCollection)
 {
-	if (inCollect && mNumToScan >= kScanThreshold)
+	if (inRunCollection && mNumToScan >= kScanThreshold)
 		Collect();
 	else {
-		if (inCollect)
+		if (inRunCollection)
 			mUncollectedAllocations = 0;
 		else
 			++mUncollectedAllocations;
