@@ -52,8 +52,7 @@ class jack_backend:
     typedef detail::audio_backend_base<sample_type, jack_default_audio_sample_t, blocking, false> super;
 
 public:
-    jack_backend(void)
-    {}
+    jack_backend(void) = default;
 
     ~jack_backend(void)
     {

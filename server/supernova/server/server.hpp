@@ -261,7 +261,7 @@ public:
 private:
     void perform_node_add(server_node * node, node_position_constraint const & constraints, bool update_dsp_queue);
     void finalize_node(server_node & node);
-    std::atomic<bool> quit_requested_;
+    std::atomic<bool> quit_requested_ = {false};
     bool dsp_queue_dirty = false;
 
     callback_interpreter<system_callback, false> system_interpreter; // rt to system thread

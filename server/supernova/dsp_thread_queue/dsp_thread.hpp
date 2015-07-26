@@ -65,7 +65,7 @@ class dsp_thread:
 public:
     dsp_thread(dsp_queue_interpreter & interpreter, uint16_t index, size_t stack_size,
                thread_init_functor const & thread_init = thread_init_functor()):
-        thread_init_functor(thread_init), interpreter(interpreter), stop(false), index(index)
+        thread_init_functor(thread_init), interpreter(interpreter),index(index)
     {
         if (stack_size) {
             stack_ = malloc_aligned<char>(stack_size);
@@ -128,7 +128,7 @@ public:
 private:
     boost::sync::semaphore cycle_sem;
     dsp_queue_interpreter & interpreter;
-    std::atomic<bool> stop;
+    std::atomic<bool> stop = {false};
     uint16_t index;
     char * stack_ = nullptr;
 };

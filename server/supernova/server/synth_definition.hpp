@@ -180,7 +180,7 @@ class synth_definition:
     public detail::slot_resolver
 {
 public:
-    synth_definition(symbol const & name):
+    explicit synth_definition(symbol const & name):
         named_hash_entry(name)
     {}
 

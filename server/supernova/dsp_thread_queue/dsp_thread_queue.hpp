@@ -339,7 +339,7 @@ public:
     typedef std::unique_ptr<dsp_thread_queue> dsp_thread_queue_ptr;
 
     dsp_queue_interpreter(thread_count_t tc, bool yield_if_busy = false):
-        node_count(0), yield_if_busy(yield_if_busy)
+        yield_if_busy(yield_if_busy)
     {
         if (!runnable_items.is_lock_free())
             std::cout << "Warning: scheduler queue is not lockfree!" << std::endl;
@@ -627,7 +627,7 @@ private:
     thread_count_t used_helper_threads; /* number of helper threads, which are actually used */
 
     boost::lockfree::stack<dsp_thread_queue_item*,  boost::lockfree::capacity<32768> > runnable_items;
-    std::atomic<node_count_t> node_count; /* number of nodes, that need to be processed during this tick */
+    std::atomic<node_count_t> node_count = {0}; /* number of nodes, that need to be processed during this tick */
     int watchdog_iterations;
     bool yield_if_busy;
 };

@@ -34,7 +34,7 @@ namespace nova {
 class node_graph
 {
 private:
-    group root_group_;
+    group root_group_ = {0};
     friend class dependency_graph_generator;
 
     static const std::size_t node_set_bucket_count = 4096;
@@ -47,7 +47,6 @@ public:
      *
      * - initialize root node */
     node_graph(void):
-        root_group_(0), generated_id(-2), synth_count_(0), group_count_(1),
         node_set(node_set_type::bucket_traits(node_buckets, node_set_bucket_count))
     {
         node_set.insert(root_group_);
@@ -192,7 +191,7 @@ public:
     int32_t generate_node_id(void);
 
 private:
-    int32_t generated_id;
+    int32_t generated_id = -2;
 
 public:
     abstract_group * find_group(int32_t node_id)
@@ -292,7 +291,7 @@ private:
                                              boost::intrusive::power_2_buckets<true>
                                            > node_set_type;
 
-    uint32_t synth_count_, group_count_;
+    uint32_t synth_count_ = 0, group_count_ = 0;
 
     node_set_type::bucket_type node_buckets[node_set_bucket_count];
     node_set_type node_set;

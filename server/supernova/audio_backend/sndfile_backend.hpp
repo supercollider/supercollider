@@ -60,7 +60,7 @@ class sndfile_backend:
 
 public:
     sndfile_backend(void):
-        read_frames(queue_size), write_frames(queue_size), running(false), reader_running(false), writer_running(false)
+        read_frames(queue_size), write_frames(queue_size)
     {}
 
     size_t get_audio_blocksize(void) const
@@ -338,7 +338,7 @@ private:
     std::thread reader_thread, writer_thread;
     boost::lockfree::spsc_queue< sample_type > read_frames, write_frames;
     boost::sync::semaphore read_semaphore, write_semaphore;
-    std::atomic<bool> running, reader_running, writer_running;
+    std::atomic<bool> running = {false}, reader_running = {false}, writer_running = {false};
     std::vector<sample_type> max_peaks;
 };
 

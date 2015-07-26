@@ -25,7 +25,7 @@
 namespace nova {
 
 sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const & prototype):
-    abstract_synth(node_id, prototype), initialized(false), trace(0), unit_buffers(0)
+    abstract_synth(node_id, prototype)
 {
     World const & world = sc_factory->world;
     const bool rt_synthesis = world.mRealTime;

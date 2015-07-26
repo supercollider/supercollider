@@ -44,8 +44,7 @@ class nova_server * instance = 0;
 nova_server::nova_server(server_arguments const & args):
     server_shared_memory_creator(args.port(), args.control_busses),
     scheduler<thread_init_functor>(args.threads, !args.non_rt),
-    buffer_manager(args.buffers), sc_osc_handler(args),
-    quit_requested_(false)
+    buffer_manager(args.buffers), sc_osc_handler(args)
 {
     assert(instance == 0);
     instance = this;
