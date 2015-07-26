@@ -38,6 +38,7 @@ PyrSymbol *s_scdoc_node;
 static void _doc_traverse(struct VMGlobals* g, DocNode *n, PyrObject *parent, PyrSlot *slot)
 {
     PyrObject *result = instantiateObject( g->gc, s_scdoc_node->u.classobj, 0, false, false );
+	result->size = 0;
 	SetObject(slot, result);
 	if(parent) g->gc->GCWrite(parent, result);
 
