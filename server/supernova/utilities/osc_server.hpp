@@ -19,17 +19,13 @@
 #ifndef OSC_SERVER_HPP
 #define OSC_SERVER_HPP
 
-#include <string>
-#include <iostream>
 #include <thread>
 
-#include <boost/asio.hpp>
-#include <boost/array.hpp>
-#include <boost/bind.hpp>
+#include <boost/asio/io_service.hpp>
+#include <boost/asio/ip/udp.hpp>
 
 #include "branch_hints.hpp"
 
-#include "static_allocator.hpp"
 #include "nova-tt/semaphore.hpp"
 #include "nova-tt/thread_priority.hpp"
 #include "nova-tt/name_thread.hpp"

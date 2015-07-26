@@ -18,6 +18,11 @@
 
 #include <iostream>
 
+#include <boost/asio/placeholders.hpp>
+#include <boost/asio/read.hpp>
+#include <boost/bind.hpp>
+
+
 #include "osc/OscOutboundPacketStream.h"
 #include "osc/OscPrintReceivedElements.h"
 
