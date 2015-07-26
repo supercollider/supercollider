@@ -20,6 +20,7 @@
 #include <future>
 
 #include <boost/filesystem/operations.hpp>
+#include <boost/range/iterator_range.hpp>
 
 #include "sc_synth.hpp"
 #include "sc_ugen_factory.hpp"
@@ -68,17 +69,17 @@ std::vector<sc_synthdef> sc_read_synthdefs_dir(path const & dir)
 
     vector<future<def_vector> > futures;
 
-    recursive_directory_iterator end;
-    for (recursive_directory_iterator it(dir); it != end; ++it) {
-        if (!is_directory(it->status())) {
-            auto path_name = it->path();
+    for( auto const & entry : boost::make_iterator_range( recursive_directory_iterator(dir),
+                                                          recursive_directory_iterator()     )) {
+        if (!is_directory( entry.status() )) {
+            auto path_name = entry.path();
             futures.emplace_back( std::move(async(launch_policy, [=]() { return sc_read_synthdefs_file(path_name);} )) );
         }
     }
 
     for (future<def_vector> & synthdef_future : futures) {
         for (sc_synthdef & definition : synthdef_future.get())
-            ret.emplace_back(std::move(definition));
+            ret.emplace_back( std::move(definition) );
     }
 
     return ret;

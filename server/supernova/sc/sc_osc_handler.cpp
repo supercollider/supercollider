@@ -3034,25 +3034,17 @@ void handle_c_getn(received_message const & msg, endpoint_ptr endpoint)
     cmd_dispatcher<realtime>::fire_message( endpoint, std::move(message) );
 }
 
-std::pair<sc_synth_definition_ptr *, size_t> wrap_synthdefs(std::vector<sc_synthdef> && defs)
+static std::vector<sc_synth_definition_ptr> wrapSynthdefs( std::vector<sc_synthdef> const & synthdefs )
 {
-    std::vector<sc_synthdef> synthdefs(std::move(defs));
-    size_t count = synthdefs.size();
-    sc_synth_definition_ptr * definitions = new sc_synth_definition_ptr [count];
+    std::vector<sc_synth_definition_ptr> wrappedSynthdefs;
+    wrappedSynthdefs.reserve( synthdefs.size() );
 
-    for (size_t i = 0; i != count; ++i)
-        definitions[i].reset(new sc_synth_definition(std::move(synthdefs[i])));
-    return std::make_pair(definitions, count);
-}
+    for( sc_synthdef const & synthdef : synthdefs ) {
+        sc_synth_definition_ptr ptr( new sc_synth_definition(synthdef) );
+        wrappedSynthdefs.push_back( ptr );
+    }
 
-std::pair<sc_synth_definition_ptr *, size_t> wrap_synthdefs(std::vector<sc_synthdef> const & defs)
-{
-    size_t count = defs.size();
-    sc_synth_definition_ptr * definitions = new sc_synth_definition_ptr [count];
-
-    for (size_t i = 0; i != count; ++i)
-        definitions[i].reset(new sc_synth_definition(defs[i]));
-    return std::make_pair(definitions, count);
+    return std::move( wrappedSynthdefs );
 }
 
 template <bool realtime>
@@ -3069,24 +3061,19 @@ void handle_d_recv(received_message const & msg,
     completion_message message = extract_completion_message(args);
 
     cmd_dispatcher<realtime>::fire_system_callback( [ =, def = std::move(def), message = std::move(message) ] () mutable {
-        std::vector<sc_synthdef> synthdefs( read_synthdefs(def.data(), def.data() + def.size()) );
+        std::vector<sc_synth_definition_ptr> wrappedSynthdefs = wrapSynthdefs( read_synthdefs(def.data(), def.data() + def.size()) );
 
-        size_t definition_count;
-        sc_synth_definition_ptr * definitions;
-
-        std::tie(definitions, definition_count) = wrap_synthdefs( std::move(synthdefs) );
-
-        // FIXME: directly move std::vector?
-        cmd_dispatcher<realtime>::fire_rt_callback( [ =, def = std::move(def), message = std::move(message) ] () mutable {
-            std::for_each( definitions, definitions + definition_count, [](sc_synth_definition_ptr const & definition) {
-                instance->register_definition(definition);
-            });
+        cmd_dispatcher<realtime>::fire_rt_callback( [ =, def = std::move(def), message = std::move(message),
+                                                      wrappedSynthdefs = std::move(wrappedSynthdefs)
+                                                    ] () mutable {
+            for( sc_synth_definition_ptr const & definition : wrappedSynthdefs )
+                instance->register_definition( definition );
 
             handle_completion_message( std::move(message), endpoint );
             consume( std::move(def) );
 
-            cmd_dispatcher<realtime>::fire_system_callback( [=] {
-                delete[] definitions;
+            cmd_dispatcher<realtime>::fire_system_callback( [=, wrappedSynthdefs = std::move(wrappedSynthdefs)] {
+                consume( std::move(wrappedSynthdefs) );
                 send_done_message(endpoint, "/d_recv");
             } );
         });
@@ -3106,24 +3093,23 @@ void handle_d_load(received_message const & msg,
 
     cmd_dispatcher<realtime>::fire_system_callback( [=, message=std::move(message),
                                                      path_string=std::move(path_string) ] () mutable {
-        size_t definition_count;
-        sc_synth_definition_ptr * definitions;
 
         /* TODO: we need to implment some file name pattern matching */
-        std::tie(definitions, definition_count) = wrap_synthdefs( sc_read_synthdefs_file( path_string.c_str() ) );
+        std::vector<sc_synth_definition_ptr> wrappedSynthdefs = wrapSynthdefs( sc_read_synthdefs_file( path_string.c_str() ) );
 
-        // FIXME: move std::vector directly?
         cmd_dispatcher<realtime>::fire_rt_callback( [=, message=std::move(message),
-                                                    path_string=std::move(path_string) ] () mutable {
+                                                     path_string=std::move(path_string),
+                                                     wrappedSynthdefs=std::move(wrappedSynthdefs)]
+                                                    () mutable {
 
-            std::for_each(definitions, definitions + definition_count, [](sc_synth_definition_ptr const & definition) {
-                instance->register_definition(definition);
-            });
+            for( sc_synth_definition_ptr const & definition : wrappedSynthdefs )
+                instance->register_definition( definition );
 
             handle_completion_message( std::move(message) , endpoint );
             consume( std::move(path_string) );
-            cmd_dispatcher<realtime>::fire_system_callback( [= ] {
-                delete[] definitions;
+
+            cmd_dispatcher<realtime>::fire_system_callback( [=,wrappedSynthdefs=std::move(wrappedSynthdefs)] {
+                consume( std::move(wrappedSynthdefs) );
                 send_done_message(endpoint, "/d_load");
             });
         } );
@@ -3140,24 +3126,22 @@ void handle_d_loadDir(received_message const & msg,
 
     args >> path;
     completion_message message = extract_completion_message(args);
-    movable_string pathString(path);
+    movable_string path_string(path);
 
-    cmd_dispatcher<realtime>::fire_system_callback( [=, message=std::move(message), pathString=std::move(pathString)] () mutable {
-        size_t definition_count;
-        sc_synth_definition_ptr * definitions;
-        std::tie(definitions, definition_count) = wrap_synthdefs(sc_read_synthdefs_dir(pathString.c_str()));
+    cmd_dispatcher<realtime>::fire_system_callback( [=, message=std::move(message), path_string=std::move(path_string)] () mutable {
+        std::vector<sc_synth_definition_ptr> wrappedSynthdefs = wrapSynthdefs( sc_read_synthdefs_dir( path_string.c_str() ) );
 
-        // todo: move vector directly?
-        cmd_dispatcher<realtime>::fire_rt_callback( [=, message=std::move(message), pathString=std::move(pathString)] () mutable {
-            std::for_each(definitions, definitions + definition_count, [](sc_synth_definition_ptr const & definition) {
-                instance->register_definition(definition);
-            });
+        cmd_dispatcher<realtime>::fire_rt_callback( [=, message=std::move(message), path_string=std::move(path_string),
+                                                     wrappedSynthdefs=std::move(wrappedSynthdefs)]
+                                                    () mutable {
+            for( sc_synth_definition_ptr const & definition : wrappedSynthdefs )
+                instance->register_definition( definition );
 
             handle_completion_message( std::move(message), endpoint );
-            consume( std::move( pathString ) );
+            consume( std::move(path_string) );
 
-            cmd_dispatcher<realtime>::fire_system_callback( [=] {
-                delete[] definitions;
+            cmd_dispatcher<realtime>::fire_system_callback( [=, wrappedSynthdefs=std::move(wrappedSynthdefs)] {
+                consume( std::move(wrappedSynthdefs) );
                 send_done_message(endpoint, "/d_loadDir");
             });
         });
