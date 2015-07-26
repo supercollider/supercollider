@@ -38,7 +38,6 @@ PyrSymbol *s_scdoc_node;
 static void _doc_traverse(struct VMGlobals* g, DocNode *n, PyrObject *parent, PyrSlot *slot)
 {
     PyrObject *result = instantiateObject( g->gc, s_scdoc_node->u.classobj, 0, false, false );
-    result->size = 0;
 	SetObject(slot, result);
 	if(parent) g->gc->GCWrite(parent, result);
 
@@ -55,7 +54,6 @@ static void _doc_traverse(struct VMGlobals* g, DocNode *n, PyrObject *parent, Py
 
     if(n->n_childs) {
         PyrObject *array = newPyrArray(g->gc, n->n_childs, 0, true);
-        array->size = 0;
         SetObject(result->slots+result->size++, array);
         g->gc->GCWrite(result, array);
         for(int i=0; i<n->n_childs; i++) {
