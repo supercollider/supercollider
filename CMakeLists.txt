@@ -72,9 +72,8 @@ elseif(${CMAKE_CXX_COMPILER} MATCHES icpc)
 
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     set(CMAKE_COMPILER_IS_CLANG 1)
-
-else()
-
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+    set(CMAKE_COMPILER_IS_CLANG 1)
 endif()
 
 if(APPLE)
