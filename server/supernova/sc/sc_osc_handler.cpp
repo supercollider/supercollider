@@ -696,7 +696,7 @@ void sc_scheduled_bundles::bundle_node::run(void)
 {
     typedef osc::ReceivedBundleElement bundle_element;
     typedef osc::ReceivedBundle received_bundle;
-    typedef osc::ReceivedMessage received_message;
+    typedef osc::ReceivedMessage ReceivedMessage;
 
     bundle_element element(data_);
 
@@ -704,7 +704,7 @@ void sc_scheduled_bundles::bundle_node::run(void)
         received_bundle bundle(element);
         instance->handle_bundle<true>(bundle, endpoint_);
     } else {
-        received_message message(element);
+        ReceivedMessage message(element);
         instance->handle_message<true>(message, element.Size(), endpoint_);
     }
 }
@@ -957,10 +957,10 @@ void sc_osc_handler::handle_packet_async(const char * data, size_t length,
         return;
 
     if (dump_osc_packets == 1) {
-        osc_received_packet packet (data, length);
+        ReceivedPacket packet (data, length);
 
         if (packet.IsMessage()) {
-            received_message message (packet);
+            ReceivedMessage message (packet);
 
             const char * address = message.AddressPattern();
             if (strcmp(address, "/status") != 0) // we ignore /status messages
@@ -974,11 +974,11 @@ void sc_osc_handler::handle_packet_async(const char * data, size_t length,
 
 time_tag sc_osc_handler::handle_bundle_nrt(const char * data, size_t length)
 {
-    osc_received_packet packet(data, length);
+    ReceivedPacket packet(data, length);
     if (!packet.IsBundle())
         throw std::runtime_error("packet needs to be an osc bundle");
 
-    received_bundle bundle(packet);
+    ReceivedBundle bundle(packet);
     handle_bundle<false> (bundle, nullptr);
     return bundle.TimeTag();
 }
@@ -1010,18 +1010,18 @@ void sc_osc_handler::received_packet::run(void)
 
 void sc_osc_handler::handle_packet(const char * data, std::size_t length, endpoint_ptr const & endpoint)
 {
-    osc_received_packet packet(data, length);
+    ReceivedPacket packet(data, length);
     if (packet.IsBundle()) {
-        received_bundle bundle(packet);
+        ReceivedBundle bundle(packet);
         handle_bundle<true> (bundle, endpoint);
     } else {
-        received_message message(packet);
+        ReceivedMessage message(packet);
         handle_message<true> (message, packet.Size(), endpoint);
     }
 }
 
 template <bool realtime>
-void sc_osc_handler::handle_bundle(received_bundle const & bundle, endpoint_ptr const & endpoint)
+void sc_osc_handler::handle_bundle(ReceivedBundle const & bundle, endpoint_ptr const & endpoint)
 {
     time_tag bundle_time = bundle.TimeTag();
 
@@ -1037,10 +1037,10 @@ void sc_osc_handler::handle_bundle(received_bundle const & bundle, endpoint_ptr 
             bundle_element const & element = *it;
 
             if (element.IsBundle()) {
-                received_bundle inner_bundle(element);
+                ReceivedBundle inner_bundle(element);
                 handle_bundle<realtime>(inner_bundle, endpoint);
             } else {
-                received_message message(element);
+                ReceivedMessage message(element);
                 handle_message<realtime>(message, element.Size(), endpoint);
             }
         }
@@ -1053,7 +1053,7 @@ void sc_osc_handler::handle_bundle(received_bundle const & bundle, endpoint_ptr 
 }
 
 template <bool realtime>
-void sc_osc_handler::handle_message(received_message const & message, size_t msg_size,
+void sc_osc_handler::handle_message(ReceivedMessage const & message, size_t msg_size,
                                     endpoint_ptr const & endpoint)
 {
     try {
@@ -1068,9 +1068,9 @@ void sc_osc_handler::handle_message(received_message const & message, size_t msg
 
 namespace {
 
-typedef sc_osc_handler::received_message received_message;
+typedef osc::ReceivedMessage ReceivedMessage;
 
-int first_arg_as_int(received_message const & message)
+int first_arg_as_int(ReceivedMessage const & message)
 {
     osc::ReceivedMessageArgumentStream args = message.ArgumentStream();
     osc::int32 val;
@@ -1092,7 +1092,7 @@ void handle_quit(endpoint_ptr endpoint)
 }
 
 template <bool realtime>
-void handle_notify(received_message const & message, endpoint_ptr endpoint)
+void handle_notify(ReceivedMessage const & message, endpoint_ptr endpoint)
 {
     int enable = first_arg_as_int(message);
 
@@ -1146,7 +1146,7 @@ void handle_status(endpoint_ptr const & endpoint_ref)
     });
 }
 
-void handle_dumpOSC(received_message const & message)
+void handle_dumpOSC(ReceivedMessage const & message)
 {
     int val = first_arg_as_int(message);
     val = min (1, val);    /* we just support one way of dumping osc messages */
@@ -1155,7 +1155,7 @@ void handle_dumpOSC(received_message const & message)
 }
 
 template <bool realtime>
-void handle_sync(received_message const & message, endpoint_ptr endpoint)
+void handle_sync(ReceivedMessage const & message, endpoint_ptr endpoint)
 {
     int id = first_arg_as_int(message);
 
@@ -1180,14 +1180,14 @@ void handle_clearSched(void)
     instance->clear_scheduled_bundles();
 }
 
-void handle_error(received_message const & message)
+void handle_error(ReceivedMessage const & message)
 {
     int val = first_arg_as_int(message);
 
     instance->set_error_posting(val);     /* thread-safe */
 }
 
-void handle_unhandled_message(received_message const & msg)
+void handle_unhandled_message(ReceivedMessage const & msg)
 {
     log_printf("unhandled message: %s\n", msg.AddressPattern());
 }
@@ -1344,7 +1344,7 @@ void set_control(server_node * node, osc::ReceivedMessageArgumentIterator & it, 
         throw runtime_error("invalid argument");
 }
 
-void handle_s_new(received_message const & msg)
+void handle_s_new(ReceivedMessage const & msg)
 {
     osc::ReceivedMessageArgumentIterator args = msg.ArgumentsBegin(), end = msg.ArgumentsEnd();
 
@@ -1380,7 +1380,7 @@ void handle_s_new(received_message const & msg)
 }
 
 
-void handle_g_new(received_message const & msg)
+void handle_g_new(ReceivedMessage const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
@@ -1407,7 +1407,7 @@ void handle_g_new(received_message const & msg)
     }
 }
 
-void handle_g_freeall(received_message const & msg)
+void handle_g_freeall(ReceivedMessage const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
@@ -1423,7 +1423,7 @@ void handle_g_freeall(received_message const & msg)
     }
 }
 
-void handle_g_deepFree(received_message const & msg)
+void handle_g_deepFree(ReceivedMessage const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
@@ -1518,7 +1518,7 @@ void g_query_tree(int node_id, bool flag, endpoint_ptr endpoint)
 }
 
 template <bool realtime>
-void handle_g_queryTree(received_message const & msg, endpoint_ptr endpoint)
+void handle_g_queryTree(ReceivedMessage const & msg, endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
@@ -1613,7 +1613,7 @@ void g_dump_tree(int id, bool flag)
     log(stream.str().c_str(), stream.str().size());
 }
 
-void handle_g_dumpTree(received_message const & msg)
+void handle_g_dumpTree(ReceivedMessage const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
@@ -1630,7 +1630,7 @@ void handle_g_dumpTree(received_message const & msg)
     }
 }
 
-void handle_n_free(received_message const & msg)
+void handle_n_free(ReceivedMessage const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
@@ -1657,7 +1657,7 @@ void handle_n_free(received_message const & msg)
  *  it is mainly intended as decorator to avoid duplicate error handling code
  */
 #define HANDLE_N_DECORATOR(cmd, function)                               \
-void handle_n_##cmd(received_message const & msg)                       \
+void handle_n_##cmd(ReceivedMessage const & msg)                       \
 {                                                                       \
     osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();     \
     osc::int32 id = it->AsInt32(); ++it;                                \
@@ -1808,7 +1808,7 @@ HANDLE_N_DECORATOR(mapn, mapn_control<false>)
 HANDLE_N_DECORATOR(mapan, mapn_control<true>)
 
 template <nova::node_position Relation>
-void handle_n_before_or_after(received_message const & msg)
+void handle_n_before_or_after(ReceivedMessage const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
@@ -1830,7 +1830,7 @@ void handle_n_before_or_after(received_message const & msg)
 }
 
 template <nova::node_position Position>
-void handle_g_head_or_tail(received_message const & msg)
+void handle_g_head_or_tail(ReceivedMessage const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
@@ -1851,7 +1851,7 @@ void handle_g_head_or_tail(received_message const & msg)
 }
 
 template <bool realtime>
-void handle_n_query(received_message const & msg, endpoint_ptr endpoint)
+void handle_n_query(ReceivedMessage const & msg, endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
@@ -1873,7 +1873,7 @@ void handle_n_query(received_message const & msg, endpoint_ptr endpoint)
     }
 }
 
-void handle_n_order(received_message const & msg)
+void handle_n_order(ReceivedMessage const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
@@ -1918,7 +1918,7 @@ void handle_n_order(received_message const & msg)
 }
 
 
-void handle_n_run(received_message const & msg)
+void handle_n_run(ReceivedMessage const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
@@ -1948,7 +1948,7 @@ void enable_tracing(server_node & node)
     }
 }
 
-void handle_n_trace(received_message const & msg)
+void handle_n_trace(ReceivedMessage const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
@@ -1965,7 +1965,7 @@ void handle_n_trace(received_message const & msg)
 }
 
 
-void handle_s_noid(received_message const & msg)
+void handle_s_noid(ReceivedMessage const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
@@ -2002,7 +2002,7 @@ int32_t get_control_index(sc_synth * s, osc::ReceivedMessageArgumentIterator & i
 }
 
 template <bool realtime>
-void handle_s_get(received_message const & msg, size_t msg_size, endpoint_ptr endpoint)
+void handle_s_get(ReceivedMessage const & msg, size_t msg_size, endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
 
@@ -2037,7 +2037,7 @@ void handle_s_get(received_message const & msg, size_t msg_size, endpoint_ptr en
 }
 
 template <bool realtime>
-void handle_s_getn(received_message const & msg, size_t msg_size, endpoint_ptr const & endpoint)
+void handle_s_getn(ReceivedMessage const & msg, size_t msg_size, endpoint_ptr const & endpoint)
 {
     osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
 
@@ -2194,7 +2194,7 @@ void handle_completion_message( completion_message && message, endpoint_ptr  end
 
 
 template <bool realtime>
-void handle_b_alloc(received_message const & msg, endpoint_ptr endpoint)
+void handle_b_alloc(ReceivedMessage const & msg, endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
@@ -2233,7 +2233,7 @@ void handle_b_alloc(received_message const & msg, endpoint_ptr endpoint)
 
 
 template <bool realtime>
-void handle_b_free(received_message const & msg, endpoint_ptr endpoint)
+void handle_b_free(ReceivedMessage const & msg, endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
@@ -2262,7 +2262,7 @@ void handle_b_free(received_message const & msg, endpoint_ptr endpoint)
 
 
 template <bool realtime>
-void handle_b_allocRead(received_message const & msg, endpoint_ptr endpoint)
+void handle_b_allocRead(ReceivedMessage const & msg, endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
@@ -2316,7 +2316,7 @@ void handle_b_allocRead(received_message const & msg, endpoint_ptr endpoint)
 
 
 template <bool realtime>
-void handle_b_allocReadChannel(received_message const & msg, endpoint_ptr endpoint)
+void handle_b_allocReadChannel(ReceivedMessage const & msg, endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentIterator arg = msg.ArgumentsBegin();
 
@@ -2381,7 +2381,7 @@ void fire_b_write_exception(void)
 }
 
 template <bool realtime>
-void handle_b_write(received_message const & msg, endpoint_ptr endpoint)
+void handle_b_write(ReceivedMessage const & msg, endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentIterator arg = msg.ArgumentsBegin();
     osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
@@ -2454,7 +2454,7 @@ void fire_b_read_exception(void)
 }
 
 template <bool realtime>
-void handle_b_read(received_message const & msg, endpoint_ptr endpoint)
+void handle_b_read(ReceivedMessage const & msg, endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentIterator arg = msg.ArgumentsBegin();
     osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
@@ -2537,7 +2537,7 @@ void fire_b_readChannel_exception(void)
 }
 
 template <bool realtime>
-void handle_b_readChannel(received_message const & msg, endpoint_ptr endpoint)
+void handle_b_readChannel(ReceivedMessage const & msg, endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentIterator arg = msg.ArgumentsBegin();
     osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
@@ -2634,7 +2634,7 @@ fire_callback:
 const char * b_zero = "/b_zero";
 
 template <bool realtime>
-void handle_b_zero(received_message const & msg, endpoint_ptr endpoint)
+void handle_b_zero(ReceivedMessage const & msg, endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
@@ -2652,7 +2652,7 @@ void handle_b_zero(received_message const & msg, endpoint_ptr endpoint)
     });
 }
 
-void handle_b_set(received_message const & msg)
+void handle_b_set(ReceivedMessage const & msg)
 {
     osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
     osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
@@ -2673,7 +2673,7 @@ void handle_b_set(received_message const & msg)
     }
 }
 
-void handle_b_setn(received_message const & msg)
+void handle_b_setn(ReceivedMessage const & msg)
 {
     osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
     osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
@@ -2699,7 +2699,7 @@ void handle_b_setn(received_message const & msg)
     }
 }
 
-void handle_b_fill(received_message const & msg)
+void handle_b_fill(ReceivedMessage const & msg)
 {
     osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
     osc::ReceivedMessageArgumentIterator end = msg.ArgumentsEnd();
@@ -2725,7 +2725,7 @@ void handle_b_fill(received_message const & msg)
 }
 
 template <bool realtime>
-void handle_b_query(received_message const & msg, endpoint_ptr endpoint)
+void handle_b_query(ReceivedMessage const & msg, endpoint_ptr endpoint)
 {
     const size_t elem_size = 3*sizeof(int) * sizeof(float);
 
@@ -2758,7 +2758,7 @@ void handle_b_query(received_message const & msg, endpoint_ptr endpoint)
 
 
 template <bool realtime>
-void handle_b_close(received_message const & msg, endpoint_ptr endpoint)
+void handle_b_close(ReceivedMessage const & msg, endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
     osc::int32 index;
@@ -2776,7 +2776,7 @@ void handle_b_close(received_message const & msg, endpoint_ptr endpoint)
 }
 
 template <bool realtime>
-void handle_b_get(received_message const & msg, endpoint_ptr endpoint)
+void handle_b_get(ReceivedMessage const & msg, endpoint_ptr endpoint)
 {
     const size_t elem_size = sizeof(int) * sizeof(float);
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
@@ -2835,7 +2835,7 @@ struct getn_data
 };
 
 template <bool realtime>
-void handle_b_getn(received_message const & msg, endpoint_ptr endpoint)
+void handle_b_getn(ReceivedMessage const & msg, endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
@@ -2888,7 +2888,7 @@ void handle_b_getn(received_message const & msg, endpoint_ptr endpoint)
 
 
 template <bool realtime>
-void handle_b_gen(received_message const & msg, size_t msg_size, endpoint_ptr endpoint)
+void handle_b_gen(ReceivedMessage const & msg, size_t msg_size, endpoint_ptr endpoint)
 {
     movable_array<char> cmd (msg_size, msg.AddressPattern());
 
@@ -2930,7 +2930,7 @@ void handle_b_gen(received_message const & msg, size_t msg_size, endpoint_ptr en
 }
 
 
-void handle_c_set(received_message const & msg)
+void handle_c_set(ReceivedMessage const & msg)
 {
     osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
 
@@ -2945,7 +2945,7 @@ void handle_c_set(received_message const & msg)
     }
 }
 
-void handle_c_setn(received_message const & msg)
+void handle_c_setn(ReceivedMessage const & msg)
 {
     osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
 
@@ -2961,7 +2961,7 @@ void handle_c_setn(received_message const & msg)
     }
 }
 
-void handle_c_fill(received_message const & msg)
+void handle_c_fill(ReceivedMessage const & msg)
 {
     osc::ReceivedMessageArgumentIterator it = msg.ArgumentsBegin();
 
@@ -2975,7 +2975,7 @@ void handle_c_fill(received_message const & msg)
 }
 
 template <bool realtime>
-void handle_c_get(received_message const & msg,
+void handle_c_get(ReceivedMessage const & msg,
                   endpoint_ptr endpoint)
 {
     const size_t elem_size = sizeof(int) + sizeof(float);
@@ -3003,7 +3003,7 @@ void handle_c_get(received_message const & msg,
 }
 
 template <bool realtime>
-void handle_c_getn(received_message const & msg, endpoint_ptr endpoint)
+void handle_c_getn(ReceivedMessage const & msg, endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
@@ -3048,7 +3048,7 @@ static std::vector<sc_synth_definition_ptr> wrapSynthdefs( std::vector<sc_synthd
 }
 
 template <bool realtime>
-void handle_d_recv(received_message const & msg,
+void handle_d_recv(ReceivedMessage const & msg,
                    endpoint_ptr endpoint)
 {
     const void * synthdef_data;
@@ -3083,7 +3083,7 @@ void handle_d_recv(received_message const & msg,
 
 
 template <bool realtime>
-void handle_d_load(received_message const & msg,
+void handle_d_load(ReceivedMessage const & msg,
                    endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentIterator args = msg.ArgumentsBegin();
@@ -3118,7 +3118,7 @@ void handle_d_load(received_message const & msg,
 
 
 template <bool realtime>
-void handle_d_loadDir(received_message const & msg,
+void handle_d_loadDir(ReceivedMessage const & msg,
                       endpoint_ptr endpoint)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
@@ -3149,7 +3149,7 @@ void handle_d_loadDir(received_message const & msg,
 }
 
 
-void handle_d_free(received_message const & msg)
+void handle_d_free(ReceivedMessage const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
@@ -3180,7 +3180,7 @@ void insert_parallel_group(int node_id, int action, int target_id)
     last_generated = node_id;
 }
 
-void handle_p_new(received_message const & msg)
+void handle_p_new(ReceivedMessage const & msg)
 {
     osc::ReceivedMessageArgumentStream args = msg.ArgumentStream();
 
@@ -3192,7 +3192,7 @@ void handle_p_new(received_message const & msg)
     }
 }
 
-void handle_u_cmd(received_message const & msg, int size)
+void handle_u_cmd(ReceivedMessage const & msg, int size)
 {
     sc_msg_iter args(size, msg.AddressPattern());
 
@@ -3211,7 +3211,7 @@ void handle_u_cmd(received_message const & msg, int size)
     synth->apply_unit_cmd(cmd_name, ugen_index, &args);
 }
 
-void handle_cmd(received_message const & msg, int size, endpoint_ptr endpoint, int skip_bytes)
+void handle_cmd(ReceivedMessage const & msg, int size, endpoint_ptr endpoint, int skip_bytes)
 {
     sc_msg_iter args(size, msg.AddressPattern() + skip_bytes);
 
@@ -3223,7 +3223,7 @@ void handle_cmd(received_message const & msg, int size, endpoint_ptr endpoint, i
 } /* namespace */
 
 template <bool realtime>
-void sc_osc_handler::handle_message_int_address(received_message const & message,
+void sc_osc_handler::handle_message_int_address(ReceivedMessage const & message,
                                                 size_t msg_size, endpoint_ptr const & endpoint)
 {
     uint32_t address = message.AddressPatternAsUInt32();
@@ -3481,7 +3481,7 @@ namespace
 {
 
 template <bool realtime>
-void dispatch_group_commands(const char * address, received_message const & message,
+void dispatch_group_commands(const char * address, ReceivedMessage const & message,
                              endpoint_ptr const & endpoint)
 {
     assert(address[1] == 'g');
@@ -3519,7 +3519,7 @@ void dispatch_group_commands(const char * address, received_message const & mess
 }
 
 template <bool realtime>
-void dispatch_node_commands(const char * address, received_message const & message,
+void dispatch_node_commands(const char * address, ReceivedMessage const & message,
                             endpoint_ptr const & endpoint)
 {
     assert(address[1] == 'n');
@@ -3597,7 +3597,7 @@ void dispatch_node_commands(const char * address, received_message const & messa
 }
 
 template <bool realtime>
-void dispatch_buffer_commands(const char * address, received_message const & message,
+void dispatch_buffer_commands(const char * address, ReceivedMessage const & message,
                               size_t msg_size, endpoint_ptr const & endpoint)
 {
     assert(address[1] == 'b');
@@ -3684,7 +3684,7 @@ void dispatch_buffer_commands(const char * address, received_message const & mes
 }
 
 template <bool realtime>
-void dispatch_control_bus_commands(const char * address, received_message const & message,
+void dispatch_control_bus_commands(const char * address, ReceivedMessage const & message,
                                    endpoint_ptr const & endpoint)
 {
     assert(address[1] == 'c');
@@ -3717,7 +3717,7 @@ void dispatch_control_bus_commands(const char * address, received_message const 
 }
 
 template <bool realtime>
-void dispatch_synthdef_commands(const char * address, received_message const & message,
+void dispatch_synthdef_commands(const char * address, ReceivedMessage const & message,
                                 endpoint_ptr const & endpoint)
 {
     assert(address[1] == 'd');
@@ -3745,7 +3745,7 @@ void dispatch_synthdef_commands(const char * address, received_message const & m
 }
 
 template <bool realtime>
-void dispatch_synth_commands(const char * address, received_message const & message, size_t msg_size,
+void dispatch_synth_commands(const char * address, ReceivedMessage const & message, size_t msg_size,
                              endpoint_ptr const & endpoint)
 {
     assert(address[1] == 's');
@@ -3775,7 +3775,7 @@ void dispatch_synth_commands(const char * address, received_message const & mess
 } /* namespace */
 
 template <bool realtime>
-void sc_osc_handler::handle_message_sym_address(received_message const & message,
+void sc_osc_handler::handle_message_sym_address(ReceivedMessage const & message,
                                                 size_t msg_size, endpoint_ptr const & endpoint)
 {
     const char * address = message.AddressPattern();

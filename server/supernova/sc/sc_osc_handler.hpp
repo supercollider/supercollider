@@ -236,9 +236,9 @@ public:
         detail::network_thread::start_receive();
     }
 
-    typedef osc::ReceivedPacket osc_received_packet;
-    typedef osc::ReceivedBundle received_bundle;
-    typedef osc::ReceivedMessage received_message;
+    typedef osc::ReceivedPacket  ReceivedPacket;
+    typedef osc::ReceivedBundle  ReceivedBundle;
+    typedef osc::ReceivedMessage ReceivedMessage;
 
     class received_packet:
         public audio_sync_callback
@@ -267,8 +267,7 @@ private:
     /* @{ */
     /** udp socket handling */
     void start_receive_udp();
-    void handle_receive_udp(const boost::system::error_code& error,
-                            std::size_t bytes_transferred);
+    void handle_receive_udp(const boost::system::error_code& error, std::size_t bytes_transferred);
     /* @} */
 
     /* @{ */
@@ -351,13 +350,13 @@ public:
 
 private:
     template <bool realtime>
-    void handle_bundle(received_bundle const & bundle, endpoint_ptr const & endpoint);
+    void handle_bundle(ReceivedBundle const & bundle, endpoint_ptr const & endpoint);
     template <bool realtime>
-    void handle_message(received_message const & message, size_t msg_size, endpoint_ptr const & endpoint);
+    void handle_message(ReceivedMessage const & message, size_t msg_size, endpoint_ptr const & endpoint);
     template <bool realtime>
-    void handle_message_int_address(received_message const & message, size_t msg_size, endpoint_ptr const & endpoint);
+    void handle_message_int_address(ReceivedMessage const & message, size_t msg_size, endpoint_ptr const & endpoint);
     template <bool realtime>
-    void handle_message_sym_address(received_message const & message, size_t msg_size, endpoint_ptr const & endpoint);
+    void handle_message_sym_address(ReceivedMessage const & message, size_t msg_size, endpoint_ptr const & endpoint);
 
     friend struct sc_scheduled_bundles::bundle_node;
     /* @} */
