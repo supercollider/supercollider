@@ -26,6 +26,8 @@
 
 #include "osc/OscReceivedElements.h"
 
+#include <boost/range/iterator_range.hpp>
+
 namespace nova
 {
 
@@ -33,8 +35,7 @@ namespace nova
 class osc_responder
 {
 public:
-    virtual ~osc_responder()
-    {}
+    virtual ~osc_responder() = default;
 
     virtual void run(osc::ReceivedMessageArgumentIterator begin,
                      osc::ReceivedMessageArgumentIterator const & end) = 0;
@@ -155,15 +156,11 @@ private:
     void handle_bundle(osc::ReceivedBundleElementIterator const & begin,
                        osc::ReceivedBundleElementIterator const & end)
     {
-        for (osc::ReceivedBundleElementIterator it = begin; it != end; ++it)
-        {
-            if (it->IsBundle())
-            {
+        for (osc::ReceivedBundleElementIterator it = begin; it != end; ++it) {
+            if (it->IsBundle()) {
                 osc::ReceivedBundle bundle(*it);
                 handle_bundle(bundle.ElementsBegin(), bundle.ElementsEnd());
-            }
-            else
-            {
+            } else {
                 osc::ReceivedMessage msg(*it);
                 handle_message(msg.AddressPattern(), msg.ArgumentsBegin(), msg.ArgumentsEnd());
             }
@@ -190,16 +187,14 @@ private:
 
         it = responder_map.lower_bound(pattern_root);
 
-        for(; it != responder_map.end(); ++it)
-        {
-            if (match_pattern(pattern, it->first.c_str()))
-            {
-                osc_responder * resp = it->second;
+        for( auto const & element : boost::make_iterator_range( it, responder_map.end() ) )  {
+            if (match_pattern(pattern, element.first.c_str()))  {
+                osc_responder * resp = element.second;
                 resp->run(begin, end);
                 continue;
             }
 
-            if (it->first.compare(0, pattern_begin, pattern_root))
+            if( element.first.compare(0, pattern_begin, pattern_root) )
                 return;
         }
     }
@@ -207,14 +202,11 @@ private:
     void handle_address(const char * address, osc::ReceivedMessageArgumentIterator const & begin,
                         osc::ReceivedMessageArgumentIterator const & end)
     {
-        responder_map_t::iterator it, it_end;
-        std::tie(it, it_end) = responder_map.equal_range(address);
+        responder_map_t::iterator responders_begin, responders_end;
+        std::tie(responders_begin, responders_end) = responder_map.equal_range(address);
 
-        for(; it != it_end; ++it)
-        {
-            osc_responder * resp = it->second;
-            resp->run(begin, end);
-        }
+        for( auto element : boost::make_iterator_range( responders_begin, responders_end ) )
+            element.second->run( begin, end );
     }
 
     responder_map_t responder_map;
