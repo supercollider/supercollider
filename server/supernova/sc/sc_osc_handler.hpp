@@ -77,7 +77,7 @@ public:
     }
 
 private:
-    void send(const char * data, size_t length) override;
+    void send(const char * data, size_t length) override final;
 
     udp::endpoint endpoint_;
 };
@@ -302,7 +302,7 @@ public:
             : socket_(io_service)
         {}
 
-        void send(const char *data, size_t length) override;
+        void send(const char *data, size_t length) override final;
 
         void async_read_msg_size();
         void handle_message_size();
@@ -380,13 +380,13 @@ public:
         last = now;
         now += diff;
     }
-	
+
     void set_last_now(time_tag const & lasts, time_tag const & nows)
     {
         now = nows;
         last = lasts;
     }
-	
+
     void update_time_from_system(void)
     {
         now = time_tag::from_ptime(boost::date_time::microsec_clock<boost::posix_time::ptime>::universal_time());
