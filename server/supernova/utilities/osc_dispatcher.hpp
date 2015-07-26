@@ -24,8 +24,6 @@
 #include "exists.hpp"
 #include "branch_hints.hpp"
 
-#include <boost/tuple/tuple.hpp>
-
 #include "osc/OscReceivedElements.h"
 
 namespace nova
@@ -119,7 +117,7 @@ public:
         assert(exists(responder_map, address));
 
         responder_map_t::iterator it, end;
-        boost::tie(it, end) = responder_map.equal_range(address);
+        std::tie(it, end) = responder_map.equal_range(address);
 
         for(; it != end; ++it)
         {
@@ -210,7 +208,7 @@ private:
                         osc::ReceivedMessageArgumentIterator const & end)
     {
         responder_map_t::iterator it, it_end;
-        boost::tie(it, it_end) = responder_map.equal_range(address);
+        std::tie(it, it_end) = responder_map.equal_range(address);
 
         for(; it != it_end; ++it)
         {

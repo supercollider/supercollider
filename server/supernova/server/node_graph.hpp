@@ -20,8 +20,7 @@
 #define SERVER_NODE_GRAPH_HPP
 
 #include <memory>
-
-#include "boost/tuple/tuple.hpp"
+#include <tuple>
 
 #include "dsp_thread_queue_node.hpp"
 #include "group.hpp"
