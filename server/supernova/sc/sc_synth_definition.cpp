@@ -34,10 +34,9 @@ using namespace std;
 
 void register_synthdefs(synth_factory & factory, std::vector<sc_synthdef> && defs)
 {
-    std::vector<sc_synthdef> synthdefs(std::move(defs));
-    for (sc_synthdef & def : synthdefs) {
-        sc_synth_definition * sp = new sc_synth_definition(std::move(def));
-        factory.register_definition(sp);
+    for (sc_synthdef & def : defs) {
+        sc_synth_definition_ptr sp = new sc_synth_definition( std::move(def) );
+        factory.register_definition( std::move(sp) );
     }
 }
 
@@ -85,8 +84,8 @@ std::vector<sc_synthdef> sc_read_synthdefs_dir(path const & dir)
     return ret;
 }
 
-sc_synth_definition::sc_synth_definition(sc_synthdef const & sd):
-    synth_definition(sd.name()), sc_synthdef(sd)
+sc_synth_definition::sc_synth_definition(sc_synthdef && sd):
+    synth_definition(sd.name()), sc_synthdef( std::forward<sc_synthdef>(sd) )
 {
     std::map<int, symbol> reversed_parameter_map;
     for( auto const & elem : parameter_map)

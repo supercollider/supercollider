@@ -3034,14 +3034,14 @@ void handle_c_getn(ReceivedMessage const & msg, endpoint_ptr endpoint)
     cmd_dispatcher<realtime>::fire_message( endpoint, std::move(message) );
 }
 
-static std::vector<sc_synth_definition_ptr> wrapSynthdefs( std::vector<sc_synthdef> const & synthdefs )
+static std::vector<sc_synth_definition_ptr> wrapSynthdefs( std::vector<sc_synthdef> && synthdefs )
 {
     std::vector<sc_synth_definition_ptr> wrappedSynthdefs;
     wrappedSynthdefs.reserve( synthdefs.size() );
 
-    for( sc_synthdef const & synthdef : synthdefs ) {
-        sc_synth_definition_ptr ptr( new sc_synth_definition(synthdef) );
-        wrappedSynthdefs.push_back( ptr );
+    for( sc_synthdef & synthdef : synthdefs ) {
+        sc_synth_definition_ptr ptr( new sc_synth_definition( std::move(synthdef) ) );
+        wrappedSynthdefs.emplace_back( std::move( ptr ) );
     }
 
     return std::move( wrappedSynthdefs );
@@ -3066,8 +3066,8 @@ void handle_d_recv(ReceivedMessage const & msg,
         cmd_dispatcher<realtime>::fire_rt_callback( [ =, def = std::move(def), message = std::move(message),
                                                       wrappedSynthdefs = std::move(wrappedSynthdefs)
                                                     ] () mutable {
-            for( sc_synth_definition_ptr const & definition : wrappedSynthdefs )
-                instance->register_definition( definition );
+            for( sc_synth_definition_ptr & definition : wrappedSynthdefs )
+                instance->register_definition( std::move(definition) );
 
             handle_completion_message( std::move(message), endpoint );
             consume( std::move(def) );
@@ -3102,8 +3102,8 @@ void handle_d_load(ReceivedMessage const & msg,
                                                      wrappedSynthdefs=std::move(wrappedSynthdefs)]
                                                     () mutable {
 
-            for( sc_synth_definition_ptr const & definition : wrappedSynthdefs )
-                instance->register_definition( definition );
+            for( sc_synth_definition_ptr & definition : wrappedSynthdefs )
+                instance->register_definition( std::move(definition) );
 
             handle_completion_message( std::move(message) , endpoint );
             consume( std::move(path_string) );
@@ -3134,8 +3134,8 @@ void handle_d_loadDir(ReceivedMessage const & msg,
         cmd_dispatcher<realtime>::fire_rt_callback( [=, message=std::move(message), path_string=std::move(path_string),
                                                      wrappedSynthdefs=std::move(wrappedSynthdefs)]
                                                     () mutable {
-            for( sc_synth_definition_ptr const & definition : wrappedSynthdefs )
-                instance->register_definition( definition );
+            for( sc_synth_definition_ptr & definition : wrappedSynthdefs )
+                instance->register_definition( std::move(definition) );
 
             handle_completion_message( std::move(message), endpoint );
             consume( std::move(path_string) );
