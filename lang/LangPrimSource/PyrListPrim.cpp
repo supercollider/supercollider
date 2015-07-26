@@ -76,7 +76,6 @@ int prArrayMultiChanExpand(struct VMGlobals *g, int numArgsPushed)
 	}
 
 	obj2 = newPyrArray(g->gc, maxlen, 0, true);
-	obj2->size = maxlen;
 	SetObject(a, obj2);
 	slots2 = obj2->slots;
 	for (i=0; i<maxlen; ++i) {
@@ -84,6 +83,7 @@ int prArrayMultiChanExpand(struct VMGlobals *g, int numArgsPushed)
 		obj3->size = size;
 		SetObject(slots2 + i, obj3);
 		g->gc->GCWrite(obj2, obj3);
+		obj2->size++;
 		slots1 = obj1->slots;
 		slots3 = obj3->slots;
 		for (j=0; j<size; ++j) {
@@ -98,11 +98,10 @@ int prArrayMultiChanExpand(struct VMGlobals *g, int numArgsPushed)
 					g->gc->GCWrite(obj3, slotToCopy);
 				} else {
 					slotCopy(&slots3[j],slot);
-					g->gc->GCWrite(obj3, obj1);
+					g->gc->GCWrite(obj3, slot);
 				}
 			} else {
-				slotCopy(&slots3[j],slot);
-				g->gc->GCWrite(obj3, slot);
+				slotCopy(&slots3[j],slot); // we don't need GCWrite here, as slot is not an object
 			}
 		}
 	}
