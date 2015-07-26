@@ -22,7 +22,6 @@
 #include <boost/detail/atomic_count.hpp>
 #include <boost/intrusive/list.hpp>
 #include <boost/intrusive/unordered_set.hpp>
-#include <boost/intrusive_ptr.hpp>
 
 #include "memory_pool.hpp"
 #include "synth_definition.hpp"
@@ -228,10 +227,6 @@ inline void intrusive_ptr_release(server_node * p)
 {
     p->release();
 }
-
-typedef boost::intrusive_ptr<server_node> server_node_ptr;
-typedef boost::intrusive_ptr<class abstract_synth> synth_ptr;
-typedef boost::intrusive_ptr<group> group_ptr;
 
 enum node_position
 {

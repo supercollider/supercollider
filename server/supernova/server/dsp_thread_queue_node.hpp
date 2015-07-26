@@ -40,8 +40,8 @@ public:
         node(static_cast<sc_synth*>(node))
     {}
 
-    queue_node_data(queue_node_data const & rhs)  = default;
-    queue_node_data(queue_node_data && rhs)       = default;
+    explicit queue_node_data(queue_node_data const & rhs)  = default;
+    explicit queue_node_data(queue_node_data && rhs)       = default;
 
     void operator()(thread_count_type index)
     {
@@ -66,16 +66,6 @@ class dsp_queue_node
     typedef std::uint_fast8_t thread_count_type;
 
 public:
-    dsp_queue_node(queue_node_data const & node, std::size_t container_size):
-        first(node)
-    {
-        nodes.reserve(container_size-1);
-    }
-
-    explicit dsp_queue_node(queue_node_data const & node):
-        first(node)
-    {}
-
     explicit dsp_queue_node(queue_node_data && node):
         first( std::move(node) )
     {}

@@ -391,8 +391,6 @@ private:
     }
 };
 
-typedef intrusive_ptr<group> group_ptr;
-
 class parallel_group:
     public abstract_group
 {
