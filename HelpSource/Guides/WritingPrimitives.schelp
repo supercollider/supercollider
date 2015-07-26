@@ -143,6 +143,7 @@ The following two examples are both safe:
 definitionlist::
 ##Run GCWrite as parent may not be white:
 ||teletype::
+PyrSlot* arg = g->sp;
 PyrObject *array = newPyrArray(g->gc, 2, 0, true); // runGC = true
 SetObject(arg, array); // make the array reachable on the stack
 PyrObject *str = newPyrString(g->gc, "Hello", 0, true); // runGC = true
@@ -162,6 +163,41 @@ SetObject(array->slots, str);
 ::
 
 If placing an object inside another has modified its size (e.g. adding an object to an array), you must correctly adjust its size by teletype::parent->size = newSize::. Both this and calling GCWrite (if necessary) should be done before any further object allocations. It is best practice to do them immediately if possible.
+
+definitionlist::
+##This is safe:
+||teletype::
+PyrSlot* arg = g->sp;
+int size = 10;
+PyrObject *array = newPyrArray(g->gc, size, 0, true); // runGC = true
+SetObject(arg, array);
+for(i=0; i<numLists; ++i) {
+  PyrObject *str = newPyrString(g->gc, "Hello", 0, true); // runGC = true
+  SetObject(array->slots + i, str);
+  g->gc->GCWrite(array, str);
+  // increment size immediately
+  //so it is accurate on next allocation
+  array->size++;
+}
+...
+::
+##This is emphasis::not:: safe:
+||teletype::
+PyrSlot* arg = g->sp;
+int size = 10;
+PyrObject *array = newPyrArray(g->gc, size, 0, true); // runGC = true
+// setting size to final value here means
+// it is *not* accurate on next allocation
+array->size = size;
+SetObject(arg, array);
+for(i=0; i<numLists; ++i) {
+  PyrObject *str = newPyrString(g->gc, "Hello", 0, true); // runGC = true
+  SetObject(array->slots + i, str);
+  g->gc->GCWrite(array, str);
+}
+...
+::
+::
 
 It is good practice to avoid creating objects in a primitive at all where possible. Primitives are much simpler to write and debug if you pass in an object that you create in SC code and fill in its slots in the primitive.
 
@@ -194,7 +230,7 @@ int prMyPrimitive(struct VMGlobals* g, int numArgsPushed)
     if(err) return err;
 
     PyrObject *array = newPyrArray(g->gc, 2, 0, true);
-    array->size = 0;
+    // array->size = 0 at creation; max size is 2
     SetObject(arg, array); // return value
 
     // NOTE: array is now reachable on the stack, since arg refers to g->sp
