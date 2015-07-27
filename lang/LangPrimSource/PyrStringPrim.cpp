@@ -409,7 +409,6 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 	int match_count = matches.size();
 
 	PyrObject *result_array = newPyrArray(g->gc, match_count, 0, true);
-	result_array->size = 0;
 	SetObject(a, result_array);
 
 	if( !match_count ) return errNone;
@@ -960,7 +959,6 @@ static void yaml_traverse(struct VMGlobals* g, const YAML::Node & node, PyrObjec
 
 		case YAML::NodeType::Sequence:
 			result = newPyrArray(g->gc, node.size(), 0, true);
-			result->size = 0;
 			SetObject(slot, result);
 			if(parent) g->gc->GCWrite(parent, result);
 			for (unsigned int i = 0; i < node.size(); i++) {
@@ -977,8 +975,7 @@ static void yaml_traverse(struct VMGlobals* g, const YAML::Node & node, PyrObjec
 			if(parent) g->gc->GCWrite(parent, result);
 
 			PyrObject *array = newPyrArray(g->gc, node.size()*2, 0, true);
-			array->size = 0;
-			result->size = 2; // ?
+			result->size = 2;
 			SetObject(result->slots, array);      // array
 			SetInt(result->slots+1, node.size()); // size
 			g->gc->GCWrite(result, array);

@@ -502,6 +502,8 @@ int prHID_API_BuildDeviceList(VMGlobals* g, int numArgsPushed){
 		struct hid_device_info *cur_dev = SC_HID_APIManager::instance().devinfos;
 		while( cur_dev ){
 			PyrObject* devInfo = newPyrArray(g->gc, 11 * sizeof(PyrObject), 0 , true);
+			SetObject(allDevsArray->slots+allDevsArray->size++, devInfo );
+			g->gc->GCWrite(allDevsArray, devInfo);
 
 			SetInt(devInfo->slots+devInfo->size++, cur_dev->vendor_id);
 			SetInt(devInfo->slots+devInfo->size++, cur_dev->product_id);
@@ -549,9 +551,6 @@ int prHID_API_BuildDeviceList(VMGlobals* g, int numArgsPushed){
 
 			SetInt(devInfo->slots+devInfo->size++, cur_dev->usage_page);
 			SetInt(devInfo->slots+devInfo->size++, cur_dev->usage);
-
-			SetObject(allDevsArray->slots+allDevsArray->size++, devInfo );
-			g->gc->GCWrite(allDevsArray, devInfo);
 
 			cur_dev = cur_dev->next;
 		}

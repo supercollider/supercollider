@@ -60,7 +60,7 @@ InternalSynthServerGlobals gInternalSynthServer = { 0, kNumDefaultSharedControls
 
 SC_UdpInPort* gUDPport = 0;
 
-PyrString* newPyrString(VMGlobals *g, char *s, int flags, bool collect);
+PyrString* newPyrString(VMGlobals *g, char *s, int flags, bool runGC);
 
 PyrSymbol *s_call, *s_write, *s_recvoscmsg, *s_recvoscbndl, *s_netaddr;
 extern bool compiledOK;
@@ -559,12 +559,12 @@ static int prArray_OSCBytes(VMGlobals *g, int numArgsPushed)
 // Create a new <PyrInt8Array> object and copy data from `msg.getb'.
 // Bytes are properly untyped, but there is no <UInt8Array> type.
 
-static PyrInt8Array* MsgToInt8Array ( sc_msg_iter& msg ) ;
-static PyrInt8Array* MsgToInt8Array ( sc_msg_iter& msg )
+static PyrInt8Array* MsgToInt8Array ( sc_msg_iter& msg, bool runGC ) ;
+static PyrInt8Array* MsgToInt8Array ( sc_msg_iter& msg, bool runGC )
 {
 	int size = msg.getbsize() ;
 	VMGlobals *g = gMainVMGlobals ;
-	PyrInt8Array *obj = newPyrInt8Array ( g->gc , size , 0 , true ) ;
+	PyrInt8Array *obj = newPyrInt8Array ( g->gc , size , 0 , runGC ) ;
 	obj->size = size ;
 	msg.getb ( (char *)obj->b , obj->size ) ;
 	return obj ;
@@ -616,7 +616,7 @@ static PyrObject* ConvertOSCMessage(int inSize, char *inData)
 			break;
 		case 'b' : // fall through
 		case 'm' :
-			SetObject(slots+i+1, (PyrObject*)MsgToInt8Array(msg));
+			SetObject(slots+i+1, (PyrObject*)MsgToInt8Array(msg, false));
 			break;
 		case 'c':
 			SetChar(slots+i+1, (char)msg.geti());
