@@ -477,7 +477,7 @@ QC_LANG_PRIMITIVE( QImage_Formats, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
         PyrString *str = newPyrString( g->gc, formats[i].constData(), obj_immutable, false );
         SetObject(array->slots+i, str);
         ++array->size;
-        g->gc->GCWrite( array, array->slots+i );
+        g->gc->GCWriteNew( array, str ); // we know str is white so we can use GCWriteNew
     }
 
     return errNone;

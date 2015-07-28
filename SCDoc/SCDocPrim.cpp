@@ -41,7 +41,7 @@ static void _doc_traverse(struct VMGlobals* g, DocNode *n, PyrObject *parent, Py
 	SetObject(slot, result);
 	if(parent) {
 		assert(isKindOf(parent, class_array));
-		g->gc->GCWrite(parent, result);
+		g->gc->GCWriteNew(parent, result); // we know result is white so we can use GCWriteNew
 		parent->size++;
 	}
 
@@ -53,14 +53,14 @@ static void _doc_traverse(struct VMGlobals* g, DocNode *n, PyrObject *parent, Py
     if(n->text) {
         PyrObject *str = (PyrObject*) newPyrString(g->gc, n->text, 0, true);
         SetObject(result->slots+1, str);
-        g->gc->GCWriteNew(result, str); // we know str is white
+        g->gc->GCWriteNew(result, str); // we know str is white so we can use GCWriteNew
     }
 	
 	// children
     if(n->n_childs) {
         PyrObject *array = newPyrArray(g->gc, n->n_childs, 0, true);
         SetObject(result->slots+2, array);
-        g->gc->GCWriteNew(result, array); // we know array is white
+        g->gc->GCWriteNew(result, array); // we know array is white so we can use GCWriteNew
         for(int i=0; i<n->n_childs; i++) {
             _doc_traverse(g, n->children[i], array, array->slots+i);
         }

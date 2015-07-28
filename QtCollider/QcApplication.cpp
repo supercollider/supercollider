@@ -113,7 +113,7 @@ void QcApplication::interpret( const QString &str, bool print )
       PyrString *strObj = newPyrString( g->gc, str.toStdString().c_str(), 0, true );
 
       SetObject(&slotRawInterpreter(&g->process->interpreter)->cmdLine, strObj);
-      g->gc->GCWrite(slotRawObject(&g->process->interpreter), strObj);
+      g->gc->GCWriteNew(slotRawObject(&g->process->interpreter), strObj); // we know strObj is white so we can use GCWriteNew
 
       runLibrary( print ? SC_SYM(interpretPrintCmdLine) : SC_SYM(interpretCmdLine) );
   }

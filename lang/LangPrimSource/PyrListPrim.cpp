@@ -82,7 +82,7 @@ int prArrayMultiChanExpand(struct VMGlobals *g, int numArgsPushed)
 		obj3 = newPyrArray(g->gc, size, 0, true);
 		obj3->size = size;
 		SetObject(slots2 + i, obj3);
-		g->gc->GCWrite(obj2, obj3);
+		g->gc->GCWriteNew(obj2, obj3); // we know obj3 is white so we can use GCWriteNew
 		obj2->size++;
 		slots1 = obj1->slots;
 		slots3 = obj3->slots;
@@ -250,7 +250,7 @@ int identDictPut(struct VMGlobals *g, PyrObject *dict, PyrSlot *key, PyrSlot *va
 				}
 			}
 			SetRaw(&dict->slots[ivxIdentDict_array], newarray);
-			g->gc->GCWrite(dict, newarray);
+			g->gc->GCWriteNew(dict, newarray); // we know newarray is white so we can use GCWriteNew
 		}
 	}
 	return errNone;
@@ -316,7 +316,7 @@ int prIdentDict_PutGet(struct VMGlobals *g, int numArgsPushed)
 				}
 			}
 			SetRaw(&dict->slots[ivxIdentDict_array], newarray);
-			g->gc->GCWrite(dict, newarray);
+			g->gc->GCWriteNew(dict, newarray); // we know newarray is white so we can use GCWriteNew
 		}
 	}
 	--g->sp;
@@ -540,7 +540,7 @@ void PriorityQueueAdd(struct VMGlobals *g, PyrObject* queueobj, PyrSlot* item, d
 		schedq->size = 1;
 		SetInt(schedq->slots + 0, 0); // stability count
 		SetObject(schedqSlot, schedq);
-		g->gc->GCWrite(queueobj, schedq);
+		g->gc->GCWriteNew(queueobj, schedq); // we know schedq is white so we can use GCWriteNew
 	} else {
 		schedq = slotRawObject(schedqSlot);
 		maxsize = ARRAYMAXINDEXSIZE(schedq);
@@ -554,7 +554,7 @@ void PriorityQueueAdd(struct VMGlobals *g, PyrObject* queueobj, PyrSlot* item, d
 			assert(IsInt(newschedq->slots));
 
 			SetObject(schedqSlot, newschedq);
-			g->gc->GCWrite(queueobj, newschedq);
+			g->gc->GCWriteNew(queueobj, newschedq); // we know newschedq is white so we can use GCWriteNew
 
 			schedq = newschedq;
 		}

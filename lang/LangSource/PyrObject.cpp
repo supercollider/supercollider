@@ -2770,5 +2770,5 @@ void InstallFinalizer(VMGlobals* g, PyrObject *inObj, int slotIndex, ObjFuncPtr 
 {
 	PyrObject *finalizer = g->gc->NewFinalizer(inFunc, inObj, false);
 	SetObject(inObj->slots + slotIndex, finalizer);
-	g->gc->GCWrite(inObj, finalizer);
+	g->gc->GCWriteNew(inObj, finalizer); // we know finalizer is white so we can use GCWriteNew
 }

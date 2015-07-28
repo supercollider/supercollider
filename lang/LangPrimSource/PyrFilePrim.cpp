@@ -1480,10 +1480,10 @@ int prSFOpenRead(struct VMGlobals *g, int numArgsPushed)
 		//headerFormatToString(&info, &headerstr);
 		PyrString *hpstr = newPyrString(g->gc, headerstr, 0, true);
 		SetObject(obj1->slots+1, hpstr);
-		g->gc->GCWrite(obj1, (PyrObjectHdr*)hpstr);
+		g->gc->GCWriteNew(obj1, (PyrObjectHdr*)hpstr); // we know hpstr is white so we can use GCWriteNew
 		PyrString *smpstr = newPyrString(g->gc, sampleformatstr, 0, true);
 		SetObject(obj1->slots+2, smpstr);
-		g->gc->GCWrite(obj1, (PyrObjectHdr*)smpstr);
+		g->gc->GCWriteNew(obj1, (PyrObjectHdr*)smpstr); // we know smpstr is white so we can use GCWriteNew
 		SetInt(obj1->slots + 3, info.frames);
 		SetInt(obj1->slots + 4, info.channels);
 		SetInt(obj1->slots + 5, info.samplerate);
@@ -1783,7 +1783,7 @@ int prDirectory_At(struct VMGlobals *g, int numArgsPushed)
 
 	PyrString *nameString = newPyrString(g->gc, name, 0, true);
 	SetObject(entryName, nameString);
-	g->gc->GCWrite(slotRawObject(b), (PyrObject*)nameString);
+	g->gc->GCWriteNew(slotRawObject(b), (PyrObject*)nameString); // we know nameString is white so we can use GCWriteNew
 
 	memcpy(fullPathName, slotRawObject(dirPathSlot)s->s, dirPathLength);
 	fullPathName[dirPathLength] = DELIMITOR;
@@ -1791,7 +1791,7 @@ int prDirectory_At(struct VMGlobals *g, int numArgsPushed)
 
 	PyrString *pathString = newPyrString(g->gc, fullPathName, 0, true);
 	SetObject(entryPath, pathString);
-	g->gc->GCWrite(slotRawObject(b), (PyrObject*)pathString);
+	g->gc->GCWriteNew(slotRawObject(b), (PyrObject*)pathString); // we know pathString is white so we can use GCWriteNew
 
 	if (isDirectory) { SetTrue(entryIsDir); } else { SetFalse(entryIsDir); }
 	if (isVisible) { SetTrue(entryIsVisible); } else { SetFalse(entryIsVisible); }

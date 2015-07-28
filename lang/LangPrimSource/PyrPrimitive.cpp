@@ -2968,7 +2968,7 @@ void initPyrThread(VMGlobals *g, PyrThread *thread, PyrSlot *func, int stacksize
 
 	array = newPyrArray(gc, stacksize, 0, runGC);
 	SetObject(&thread->stack, array);
-	gc->GCWrite(thread, array);
+	gc->GCWriteNew(thread, array); // we know array is white so we can use GCWriteNew
 
 	SetInt(&thread->state, tInit);
 
@@ -3065,7 +3065,7 @@ int prThreadRandSeed(struct VMGlobals *g, int numArgsPushed)
 		g->rgen = (RGen*)(rgenArray->i);
 	}
 	SetObject(&thread->randData, rgenArray);
-	g->gc->GCWrite(thread, rgenArray);
+	g->gc->GCWriteNew(thread, rgenArray); // we know rgenArray is white so we can use GCWriteNew
 
 	return errNone;
 }
@@ -3463,7 +3463,7 @@ static int prLanguageConfig_getLibraryPaths(struct VMGlobals * g, int numArgsPus
 	for (size_t i = 0; i != numberOfPaths; ++i) {
 		PyrString * pyrString = newPyrString(g->gc, dirVector[i].c_str(), 0, true);
 		SetObject(resultArray->slots + i, pyrString);
-		g->gc->GCWrite( resultArray,  pyrString );
+		g->gc->GCWriteNew( resultArray,  pyrString ); // we know pyrString is white so we can use GCWriteNew
 		resultArray->size++;
 	}
 	return errNone;

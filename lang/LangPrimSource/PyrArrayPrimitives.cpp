@@ -2360,7 +2360,7 @@ int prArrayUnlace(struct VMGlobals *g, int numArgsPushed)
 			}
 		}
 		SetObject(slots2 + i, obj3);
-		g->gc->GCWrite(obj2, obj3);
+		g->gc->GCWriteNew(obj2, obj3); // we know obj3 is white so we can use GCWriteNew
 		obj2->size++;
 	}
 

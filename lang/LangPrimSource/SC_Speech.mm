@@ -380,7 +380,7 @@ int prGetSpeechVoiceNames(struct VMGlobals *g, int numArgsPushed){
 
 		PyrString *namestring = newPyrString(g->gc, [voiceDisplayName cStringUsingEncoding:[NSString defaultCStringEncoding]], 0, true);
 		SetObject(allVoices->slots+allVoices->size++, namestring);
-		g->gc->GCWrite(allVoices, (PyrObject*) namestring);
+		g->gc->GCWriteNew(allVoices, (PyrObject*) namestring); // we know namestring is white so we can use GCWriteNew
 
 	}
 	[autoreleasepool release];
