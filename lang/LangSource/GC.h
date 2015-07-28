@@ -128,6 +128,7 @@ public:
 	// when you know the child is white
 	void GCWriteNew(PyrObjectHdr* inParent, PyrObjectHdr* inChild)
 		{
+			assert(IsWhite(inChild));
 			if (IsBlack(inParent)) {
 				ToGrey(inChild);
 			}
