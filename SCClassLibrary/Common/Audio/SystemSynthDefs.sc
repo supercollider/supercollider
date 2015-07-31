@@ -19,7 +19,7 @@ SystemSynthDefs {
 			// clean up any written synthdefs starting with "temp__"
 			var path = SynthDef.synthDefDir ++ tempNamePrefix ++ "*";
 			"Cleaning up temp synthdefs...".inform;
-			if(pathMatch(path).notEmpty) { unixCmdGetStdOut(("rm -f" + "'" ++ path ++ "'") )};
+			pathMatch(path).do { |file| File.delete(file) };
 
 			// add system synth defs
 			(1..numChannels).do { arg i;
