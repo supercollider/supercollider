@@ -535,14 +535,6 @@ SC_CoreAudioDriver::~SC_CoreAudioDriver()
 	}
 }
 
-struct AudioValueRangeComp {
-	bool operator()(const AudioValueRange& lhs, const AudioValueRange& rhs) {
-		return (lhs.mMaximum != rhs.mMaximum) ?
-			(lhs.mMaximum < rhs.mMaximum) :
-			(lhs.mMinimum < rhs.mMinimum);
-	}
-};
-
 std::vector<AudioValueRange> GetAvailableNominalSampleRates(const AudioDeviceID& device) {
 	std::vector<AudioValueRange>	result;
 	OSStatus						err;
@@ -805,7 +797,9 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 				availableSampleRates.begin(), availableSampleRates.end(),
 				inputSampleRates.begin(), inputSampleRates.end(),
 				availableSampleRatesInputOutput.begin(),
-				AudioValueRangeComp()
+				[](const AudioValueRange& lhs, const AudioValueRange& rhs) {
+					return (lhs.mMaximum != rhs.mMaximum) ? (lhs.mMaximum < rhs.mMaximum) : (lhs.mMinimum < rhs.mMinimum);
+				}
 			);
 			
 			availableSampleRatesInputOutput.resize(rateListIter - availableSampleRatesInputOutput.begin());
