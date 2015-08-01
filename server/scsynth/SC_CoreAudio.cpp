@@ -857,15 +857,18 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 		// Requested sample rate is available - we're going to set and, if we don't hit an error,
 		// assume that our set was successful.
 		if (sampleRateSupported) {
+			bool sampleRateSetSuccess = true;
+			
 			propertyAddress.mSelector = kAudioDevicePropertyNominalSampleRate;
 			propertyAddress.mScope = kAudioDevicePropertyScopeOutput;
 
 			err = AudioObjectSetPropertyData(mOutputDevice, &propertyAddress, 0, NULL, count, &sampleRate);
 
 			if (err != kAudioHardwareNoError) {
+				sampleRateSetSuccess = false;
 				scprintf("set kAudioDevicePropertyNominalSampleRate error %4.4s\n", (char*)&err);
-				//return false;
 			}
+			
 			if (UseSeparateIO())
 			{
 				count = sizeof(Float64);
@@ -874,11 +877,17 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 				propertyAddress.mScope = kAudioDevicePropertyScopeInput;
 
 				err = AudioObjectSetPropertyData(mInputDevice, &propertyAddress, 0, NULL, count, &sampleRate);
+				
 				if (err != kAudioHardwareNoError) {
+					sampleRateSetSuccess = false;
 					scprintf("set kAudioDevicePropertyNominalSampleRate error %4.4s\n", (char*)&err);
-				} else {
-					mExplicitSampleRate = sampleRate;
 				}
+			}
+			
+			if (sampleRateSetSuccess) {
+				mExplicitSampleRate = sampleRate;
+			} else {
+				return false;
 			}
 		}
 	}
