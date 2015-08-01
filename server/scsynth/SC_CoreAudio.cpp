@@ -806,7 +806,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 			availableSampleRates = availableSampleRatesInputOutput;
 		}
 		
-		BOOST_FOREACH(const AudioValueRange& range, availableSampleRates) {
+		for (const AudioValueRange& range : availableSampleRates) {
 			if (mPreferredSampleRate >= range.mMinimum && mPreferredSampleRate <= range.mMaximum) {
 				sampleRateSupported = true;
 				break;
@@ -820,7 +820,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 			Float64 nextHighestMatch = SR_MAX_VALUE;
 			Float64 nextLowestMatch = SR_MIN_VALUE;
 			
-			BOOST_FOREACH(const AudioValueRange& range, availableSampleRates) {
+			for (const AudioValueRange& range : availableSampleRates) {
 				if (range.mMinimum > mPreferredSampleRate && range.mMinimum < nextHighestMatch) {
 					nextHighestMatch = range.mMinimum;
 				}
@@ -844,7 +844,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 			} else {
 				scprintf("Could not set requested sample rate of %f\n", (double)mPreferredSampleRate);
 				scprintf("Available sample rates:\n");
-				BOOST_FOREACH(const AudioValueRange& range, availableSampleRates) {
+				for (const AudioValueRange& range : availableSampleRates) {
 					if (range.mMaximum == range.mMinimum) {
 						scprintf("\t%f\n", range.mMaximum);
 					} else {
