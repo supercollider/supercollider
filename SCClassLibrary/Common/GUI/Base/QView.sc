@@ -612,7 +612,6 @@ View : QObject {
 
 	keyDownEvent { arg char, modifiers, unicode, keycode, key, spontaneous;
 		modifiers = QKeyModifiers.toCocoa(modifiers);
-		if (char.ascii == 0) { char = nil };
 
 		if( spontaneous ) {
 			// this event has never been propagated to parent yet
@@ -628,7 +627,6 @@ View : QObject {
 
 	keyUpEvent { arg char, modifiers, unicode, keycode, key, spontaneous;
 		modifiers = QKeyModifiers.toCocoa(modifiers);
-		if (char.ascii == 0) { char = nil };
 
 		if( spontaneous ) {
 			// this event has never been propagated to parent yet
