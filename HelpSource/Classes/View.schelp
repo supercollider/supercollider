@@ -568,7 +568,8 @@ When the key action object is evaluated, it is passed one or more arguments from
 list::
 ## strong::view:: - The view.
 
-## strong::char:: - The character associated with the key, possibly unprintable. Character sequences (for example é) get passed as two characters, the first one blank ( ), the second one is the unmodified character (e). This will also vary depending on the nationality the keyboard is set to. note:: Only printable characters are passed. If a key is not associated with any printable character, nil will be passed instead.::
+## strong::char:: - The character (link::Classes/Char::) associated with the key, possibly unprintable. Character sequences (for example é) get passed as two characters, the first one blank ( ), the second one is the unmodified character (e). This will also vary depending on the nationality the keyboard is set to.
+note:: Only characters with an ASCII code are passed. Non-ASCII keys (Ctrl/Alt/Cmd/Shift modifiers, arrow keys and other control sequences) will pass a link::Classes/Char:: with ASCII code 0. (Ctrl-characters emphasis::do:: have ASCII codes, and are passed as a Char. The Ctrl key by itself also triggers the key action, but with ASCII code 0.) A useful test is link::Classes/Char#-isPrint::.::
 
 ## strong::modifiers:: - A bitwise or of integers indicating the modifier keys in effect. You can examine individual flag settings using the C bitwise AND operator. For a list of these, see link::Reference/Modifiers::.
 
