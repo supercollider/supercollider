@@ -178,16 +178,15 @@ void QcTextEdit::keyPressEvent( QKeyEvent *e )
       && ( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter ) )
   {
     QTextCursor c(textCursor());
-
-    if ( !c.hasSelection() ) {
-      c.movePosition( QTextCursor::StartOfLine );
-      c.movePosition( QTextCursor::EndOfLine, QTextCursor::KeepAnchor );
-    }
+    QString code;
 
     if ( c.hasSelection() ) {
-      QString selection( c.selectedText() );
-      Q_EMIT( interpret( prepareText(selection) ) );
+      code = c.selectedText();
+    } {
+      code = c.block().text();
     }
+
+    Q_EMIT( interpret( prepareText(code) ) );
 
     return;
   }
