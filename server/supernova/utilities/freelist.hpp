@@ -20,10 +20,8 @@
 #define UTILITIES_FREELIST_HPP
 
 #include <boost/lockfree/detail/tagged_ptr.hpp>
-#include <boost/atomic.hpp>
+#include <atomic>
 #include <boost/noncopyable.hpp>
-
-// FIXME: port to std::atomic, once a fixed clang 3.5 has been released
 
 namespace nova {
 
@@ -49,7 +47,7 @@ public:
     {
         for(;;)
         {
-            tagged_ptr old_pool = pool_.load(boost::memory_order_consume);
+            tagged_ptr old_pool = pool_.load(std::memory_order_consume);
 
             if (!old_pool.get_ptr())
                 return 0;
@@ -69,7 +67,7 @@ public:
         void * node = n;
         for(;;)
         {
-            tagged_ptr old_pool = pool_.load(boost::memory_order_consume);
+            tagged_ptr old_pool = pool_.load(std::memory_order_consume);
 
             freelist_node * new_pool_ptr = reinterpret_cast<freelist_node*>(node);
             tagged_ptr new_pool (new_pool_ptr, old_pool.get_tag() + 1);
@@ -82,7 +80,7 @@ public:
     }
 
 private:
-    boost::atomic<tagged_ptr> pool_;
+    std::atomic<tagged_ptr> pool_;
 };
 
 
