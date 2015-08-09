@@ -21,15 +21,13 @@
 
 #include <boost/lockfree/detail/tagged_ptr.hpp>
 #include <atomic>
-#include <boost/noncopyable.hpp>
 
 namespace nova {
 
 /**
  * simple freelist implementation without any memory allocation features
  * */
-class freelist:
-    boost::noncopyable
+class freelist
 {
     struct freelist_node
     {
@@ -42,6 +40,9 @@ public:
     freelist(void):
         pool_(tagged_ptr(nullptr))
     {}
+
+	freelist( freelist const & rhs )             = delete;
+	freelist & operator=( freelist const & rhs ) = delete;
 
     void * pop (void)
     {
