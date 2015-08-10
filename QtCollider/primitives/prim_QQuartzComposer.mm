@@ -175,8 +175,7 @@ static int getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSString *type, VM
             array = newPyrArray(g->gc, 4, 0, false);
             array->size = 4;
             nilSlots(array->slots, array->size);
-            SetObject(dict->slots + ivxIdentDict_array, array);
-            g->gc->GCWrite(dict, array);
+            SetObject(dict->slots + ivxIdentDict_array, array); // we know that dict is white so don't need GCWrite
             SetObject(slot, dict);
             
             NSEnumerator *enumerator = [nsObject keyEnumerator];

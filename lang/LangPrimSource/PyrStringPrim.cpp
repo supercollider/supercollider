@@ -409,7 +409,6 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 	int match_count = matches.size();
 
 	PyrObject *result_array = newPyrArray(g->gc, match_count, 0, true);
-	result_array->size = 0;
 	SetObject(a, result_array);
 
 	if( !match_count ) return errNone;
@@ -422,7 +421,7 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 		PyrObject *array = newPyrArray(g->gc, 2, 0, true);
 		SetObject(result_array->slots + i, array);
 		result_array->size++;
-		g->gc->GCWrite(result_array, array);
+		g->gc->GCWriteNew(result_array, array); // we know array is white so we can use GCWriteNew
 
 		PyrString *matched_string = newPyrStringN(g->gc, len, 0, true);
 		memcpy(matched_string->s, stringBegin + pos, len);
@@ -430,7 +429,7 @@ static int prString_FindRegexp(struct VMGlobals *g, int numArgsPushed)
 		array->size = 2;
 		SetInt(array->slots, pos + offset);
 		SetObject(array->slots+1, matched_string);
-		g->gc->GCWrite(array, matched_string);
+		g->gc->GCWrite(array, matched_string); // we know matched_string is white so we can use GCWriteNew
 	};
 
 	return errNone;
@@ -491,7 +490,7 @@ static int prString_FindRegexpAt(struct VMGlobals *g, int numArgsPushed)
 	array->size = 2;
 	SetInt(array->slots+1, matched_len);
 	SetObject(array->slots, matched_string);
-	g->gc->GCWrite(array, matched_string);
+	g->gc->GCWriteNew(array, matched_string); // we know matched_string is white so we can use GCWriteNew
 
 	return errNone;
 }
@@ -571,7 +570,7 @@ int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
 	for (unsigned int i=0; i<pglob.gl_pathc; ++i) {
 		PyrObject *string = (PyrObject*)newPyrString(g->gc, pglob.gl_pathv[i], 0, true);
 		SetObject(array->slots+i, string);
-		g->gc->GCWrite(array, string);
+		g->gc->GCWriteNew(array, string); // we know string is white so we can use GCWriteNew
 		array->size++;
 	}
 
@@ -648,7 +647,7 @@ int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
       const char* fullPath = strPath.c_str();
       PyrObject *string = (PyrObject*)newPyrString(g->gc, fullPath, 0, true);
       SetObject(array->slots+i, string);
-      g->gc->GCWrite(array, string);
+      g->gc->GCWriteNew(array, string); // we know string is white so we can use GCWriteNew
       array->size++;
       i++;
     }
@@ -955,14 +954,13 @@ static void yaml_traverse(struct VMGlobals* g, const YAML::Node & node, PyrObjec
 			node >> out;
 			result = (PyrObject*)newPyrString(g->gc, out.c_str(), 0, true);
 			SetObject(slot, result);
-			if(parent) g->gc->GCWrite(parent, result);
+			if(parent) g->gc->GCWriteNew(parent, result); // we know result is white so we can use GCWriteNew
 			break;
 
 		case YAML::NodeType::Sequence:
 			result = newPyrArray(g->gc, node.size(), 0, true);
-			result->size = 0;
 			SetObject(slot, result);
-			if(parent) g->gc->GCWrite(parent, result);
+			if(parent) g->gc->GCWriteNew(parent, result); // we know result is white so we can use GCWriteNew
 			for (unsigned int i = 0; i < node.size(); i++) {
 				const YAML::Node & subnode = node[i];
 				result->size++;
@@ -974,14 +972,13 @@ static void yaml_traverse(struct VMGlobals* g, const YAML::Node & node, PyrObjec
 		{
 			result = instantiateObject( g->gc, s_dictionary->u.classobj, 0, false, true );
 			SetObject(slot, result);
-			if(parent) g->gc->GCWrite(parent, result);
+			if(parent) g->gc->GCWriteNew(parent, result); // we know result is white so we can use GCWriteNew
 
 			PyrObject *array = newPyrArray(g->gc, node.size()*2, 0, true);
-			array->size = 0;
-			result->size = 2; // ?
+			result->size = 2;
 			SetObject(result->slots, array);      // array
 			SetInt(result->slots+1, node.size()); // size
-			g->gc->GCWrite(result, array);
+			g->gc->GCWriteNew(result, array); // we know array is white so we can use GCWriteNew
 
 			int j = 0;
 			for (YAML::Iterator i = node.begin(); i != node.end(); ++i) {
@@ -991,7 +988,7 @@ static void yaml_traverse(struct VMGlobals* g, const YAML::Node & node, PyrObjec
 				PyrObject *pkey = (PyrObject*)newPyrString(g->gc, out.c_str(), 0, true);
 				SetObject(array->slots+j, pkey);
 				array->size++;
-				g->gc->GCWrite(array, pkey);
+				g->gc->GCWriteNew(array, pkey); // we know pkey is white so we can use GCWriteNew
 
 				array->size++;
 				yaml_traverse(g, value, array, array->slots+j+1);

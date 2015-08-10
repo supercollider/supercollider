@@ -127,7 +127,7 @@ int listDevices(struct VMGlobals *g, int type)
         PyrString *string = newPyrString(g->gc, name, 0, true);
         SetObject(devArray->slots+j, string);
         devArray->size++;
-        g->gc->GCWrite(devArray, (PyrObject*)string);
+        g->gc->GCWriteNew(devArray, (PyrObject*)string); // we know array is white so we can use GCWriteNew
 
 		free(name);
 		j++;

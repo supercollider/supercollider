@@ -502,13 +502,15 @@ int prHID_API_BuildDeviceList(VMGlobals* g, int numArgsPushed){
 		struct hid_device_info *cur_dev = SC_HID_APIManager::instance().devinfos;
 		while( cur_dev ){
 			PyrObject* devInfo = newPyrArray(g->gc, 11 * sizeof(PyrObject), 0 , true);
+			SetObject(allDevsArray->slots+allDevsArray->size++, devInfo );
+			g->gc->GCWriteNew(allDevsArray, devInfo); // we know devInfo is white so we can use GCWriteNew
 
 			SetInt(devInfo->slots+devInfo->size++, cur_dev->vendor_id);
 			SetInt(devInfo->slots+devInfo->size++, cur_dev->product_id);
 
 			PyrString *dev_path_name = newPyrString(g->gc, cur_dev->path, 0, true );
 			SetObject(devInfo->slots+devInfo->size++, dev_path_name);
-			g->gc->GCWrite(devInfo, dev_path_name);
+			g->gc->GCWriteNew(devInfo, dev_path_name); // we know dev_path_name is white so we can use GCWriteNew
 
 			const char * mystring;
 			if ( cur_dev->serial_number != NULL )
@@ -518,7 +520,7 @@ int prHID_API_BuildDeviceList(VMGlobals* g, int numArgsPushed){
 
 			PyrString *dev_serial = newPyrString(g->gc, mystring, 0, true );
 			SetObject(devInfo->slots+devInfo->size++, dev_serial);
-			g->gc->GCWrite(devInfo, dev_serial);
+			g->gc->GCWriteNew(devInfo, dev_serial); // we know dev_serial is white so we can use GCWriteNew
 
 			if (mystring != emptyString) free((void*)mystring);
 			if ( cur_dev->manufacturer_string != NULL )
@@ -528,7 +530,7 @@ int prHID_API_BuildDeviceList(VMGlobals* g, int numArgsPushed){
 
 			PyrString *dev_man_name = newPyrString(g->gc, mystring, 0, true );
 			SetObject(devInfo->slots+devInfo->size++, dev_man_name);
-			g->gc->GCWrite(devInfo, dev_man_name);
+			g->gc->GCWriteNew(devInfo, dev_man_name); // we know dev_man_name is white so we can use GCWriteNew
 
 			if (mystring != emptyString) free((void*)mystring);
 
@@ -539,7 +541,7 @@ int prHID_API_BuildDeviceList(VMGlobals* g, int numArgsPushed){
 
 			PyrString *dev_prod_name = newPyrString(g->gc, mystring, 0, true );
 			SetObject(devInfo->slots+devInfo->size++, dev_prod_name);
-			g->gc->GCWrite(devInfo, dev_prod_name);
+			g->gc->GCWriteNew(devInfo, dev_prod_name); // we know dev_prod_name is white so we can use GCWriteNew
 
 			if (mystring != emptyString)
 				free((void*)mystring);
@@ -549,9 +551,6 @@ int prHID_API_BuildDeviceList(VMGlobals* g, int numArgsPushed){
 
 			SetInt(devInfo->slots+devInfo->size++, cur_dev->usage_page);
 			SetInt(devInfo->slots+devInfo->size++, cur_dev->usage);
-
-			SetObject(allDevsArray->slots+allDevsArray->size++, devInfo );
-			g->gc->GCWrite(allDevsArray, devInfo);
 
 			cur_dev = cur_dev->next;
 		}
@@ -648,7 +647,7 @@ int prHID_API_GetInfo( VMGlobals* g, int numArgsPushed ){
 
 		PyrString *dev_path_name = newPyrString(g->gc, cur_dev->path, 0, true );
 		SetObject(devInfo->slots+devInfo->size++, dev_path_name);
-		g->gc->GCWrite(devInfo, dev_path_name);
+		g->gc->GCWriteNew(devInfo, dev_path_name); // we know dev_path_name is white so we can use GCWriteNew
 
 		const char * mystring;
 		if ( cur_dev->serial_number != NULL ){
@@ -659,7 +658,7 @@ int prHID_API_GetInfo( VMGlobals* g, int numArgsPushed ){
 
 		PyrString *dev_serial = newPyrString(g->gc, mystring, 0, true );
 		SetObject(devInfo->slots+devInfo->size++, dev_serial);
-		g->gc->GCWrite(devInfo, dev_serial);
+		g->gc->GCWriteNew(devInfo, dev_serial); // we know dev_serial is white so we can use GCWriteNew
 
 		if (mystring != emptyString)
 			free((void*)mystring);
@@ -671,7 +670,7 @@ int prHID_API_GetInfo( VMGlobals* g, int numArgsPushed ){
 		}
 		PyrString *dev_man_name = newPyrString(g->gc, mystring, 0, true );
 		SetObject(devInfo->slots+devInfo->size++, dev_man_name);
-		g->gc->GCWrite(devInfo, dev_man_name);
+		g->gc->GCWriteNew(devInfo, dev_man_name); // we know dev_man_name is white so we can use GCWriteNew
 		if (mystring != emptyString)
 			free((void*)mystring);
 
@@ -683,7 +682,7 @@ int prHID_API_GetInfo( VMGlobals* g, int numArgsPushed ){
 		}
 		PyrString *dev_prod_name = newPyrString(g->gc, mystring, 0, true );
 		SetObject(devInfo->slots+devInfo->size++, dev_prod_name);
-		g->gc->GCWrite(devInfo, dev_prod_name);
+		g->gc->GCWriteNew(devInfo, dev_prod_name); // we know dev_prod_name is white so we can use GCWriteNew
 		if (mystring != emptyString)
 			free((void*)mystring);
 

@@ -175,7 +175,7 @@ void SC_LanguageClient::setCmdLine(const char* buf, size_t size)
 			memcpy(strobj->s, buf, size);
 
 			SetObject(&slotRawInterpreter(&g->process->interpreter)->cmdLine, strobj);
-			g->gc->GCWrite(slotRawObject(&g->process->interpreter), strobj);
+			g->gc->GCWriteNew(slotRawObject(&g->process->interpreter), strobj); // we know strobj is white so we can use GCWriteNew
 		}
 		unlock();
     }

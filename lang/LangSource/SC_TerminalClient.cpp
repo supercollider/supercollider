@@ -658,7 +658,7 @@ int SC_TerminalClient::prArgv(struct VMGlobals* g, int)
 		PyrString* str = newPyrString(g->gc, argv[i], 0, true);
 		SetObject(argvObj->slots+i, str);
 		argvObj->size++;
-		g->gc->GCWrite(argvObj, (PyrObject*)str);
+		g->gc->GCWriteNew(argvObj, (PyrObject*)str); // we know str is white so we can use GCWriteNew
 	}
 
 	return errNone;

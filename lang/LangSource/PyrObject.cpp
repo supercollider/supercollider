@@ -1779,7 +1779,7 @@ void initClasses()
 }
 
 PyrObject* instantiateObject(class PyrGC *gc, PyrClass* classobj, int size,
-	bool fill, bool collect)
+	bool fill, bool runGC)
 {
 	PyrObject *newobj, *proto;
 	int numbytes, format, flags;
@@ -1790,7 +1790,7 @@ PyrObject* instantiateObject(class PyrGC *gc, PyrClass* classobj, int size,
 	if (slotRawInt(&classobj->classFlags) & classHasIndexableInstances) {
 		// create an indexable object
 		numbytes = size * gFormatElemSize[format];
-		newobj = gc->New(numbytes, flags, format, collect);
+		newobj = gc->New(numbytes, flags, format, runGC);
 		if (fill) {
 			newobj->size = size;
 			if (format == obj_slot) {
@@ -1806,14 +1806,14 @@ PyrObject* instantiateObject(class PyrGC *gc, PyrClass* classobj, int size,
 			proto = slotRawObject(&classobj->iprototype);
 			size = proto->size;
 			numbytes = size * sizeof(PyrSlot);
-			newobj = gc->New(numbytes, flags, format, collect);
+			newobj = gc->New(numbytes, flags, format, runGC);
 			newobj->size = size;
 			if (size) {
 				memcpy(newobj->slots, proto->slots, numbytes);
 			}
 		} else {
 			numbytes = 0;
-			newobj = gc->New(numbytes, flags, format, collect);
+			newobj = gc->New(numbytes, flags, format, runGC);
 			newobj->size = 0;
 		}
 	}
@@ -1821,8 +1821,8 @@ PyrObject* instantiateObject(class PyrGC *gc, PyrClass* classobj, int size,
 	return newobj;
 }
 
-PyrObject* instantiateObjectLight(class PyrGC *gc, PyrClass* classobj, int size, bool collect);
-PyrObject* instantiateObjectLight(class PyrGC *gc, PyrClass* classobj, int size, bool collect)
+PyrObject* instantiateObjectLight(class PyrGC *gc, PyrClass* classobj, int size, bool runGC);
+PyrObject* instantiateObjectLight(class PyrGC *gc, PyrClass* classobj, int size, bool runGC)
 {
 	PyrObject *newobj, *proto;
 	int numbytes, format, flags;
@@ -1842,14 +1842,14 @@ PyrObject* instantiateObjectLight(class PyrGC *gc, PyrClass* classobj, int size,
 			numbytes = 0;
 		}
 	}
-	newobj = gc->New(numbytes, flags, format, collect);
+	newobj = gc->New(numbytes, flags, format, runGC);
 	newobj->size = size;
 	newobj->classptr = classobj;
 
 	return newobj;
 }
 
-PyrObject* copyObject(class PyrGC *gc, PyrObject *inobj, bool collect)
+PyrObject* copyObject(class PyrGC *gc, PyrObject *inobj, bool runGC)
 {
 	PyrObject *newobj;
 
@@ -1860,7 +1860,7 @@ PyrObject* copyObject(class PyrGC *gc, PyrObject *inobj, bool collect)
 	int elemsize = gFormatElemSize[inobj->obj_format];
 	int numbytes = inobj->size * elemsize;
 
-	newobj = gc->New(numbytes, flags, inobj->obj_format, collect);
+	newobj = gc->New(numbytes, flags, inobj->obj_format, runGC);
 
 	newobj->size = inobj->size;
 	newobj->classptr = inobj->classptr;
@@ -1869,7 +1869,7 @@ PyrObject* copyObject(class PyrGC *gc, PyrObject *inobj, bool collect)
 	return newobj;
 }
 
-PyrObject* copyObjectRange(class PyrGC *gc, PyrObject *inobj, int start, int end, bool collect)
+PyrObject* copyObjectRange(class PyrGC *gc, PyrObject *inobj, int start, int end, bool runGC)
 {
 	PyrObject *newobj;
 
@@ -1885,7 +1885,7 @@ PyrObject* copyObjectRange(class PyrGC *gc, PyrObject *inobj, int start, int end
 	int flags = ~(obj_immutable) & inobj->obj_flags;
 		flags = ~(obj_permanent) & flags;
 
-	newobj = gc->New(numbytes, flags, inobj->obj_format, collect);
+	newobj = gc->New(numbytes, flags, inobj->obj_format, runGC);
 	newobj->size = length;
 	newobj->classptr = inobj->classptr;
 
@@ -2345,12 +2345,12 @@ void zeroSlots(PyrSlot* slot, int size)
 	fillSlots(slot, size, &zero);
 }
 
-PyrObject* newPyrObject(class PyrGC *gc, size_t inNumBytes, int inFlags, int inFormat, bool inCollect)
+PyrObject* newPyrObject(class PyrGC *gc, size_t inNumBytes, int inFlags, int inFormat, bool inRunGC)
 {
-	return gc->New(inNumBytes, inFlags, inFormat, inCollect);
+	return gc->New(inNumBytes, inFlags, inFormat, inRunGC);
 }
 
-PyrObject* newPyrArray(class PyrGC *gc, int size, int flags, bool collect)
+PyrObject* newPyrArray(class PyrGC *gc, int size, int flags, bool runGC)
 {
 	PyrObject* array;
 
@@ -2358,72 +2358,72 @@ PyrObject* newPyrArray(class PyrGC *gc, int size, int flags, bool collect)
 	if (!gc)
 		array = PyrGC::NewPermanent(numbytes, flags, obj_slot);
 	else
-		array = gc->New(numbytes, flags, obj_slot, collect);
+		array = gc->New(numbytes, flags, obj_slot, runGC);
 	array->classptr = class_array;
 	return array;
 }
 
-PyrSymbolArray* newPyrSymbolArray(class PyrGC *gc, int size, int flags, bool collect)
+PyrSymbolArray* newPyrSymbolArray(class PyrGC *gc, int size, int flags, bool runGC)
 {
 	PyrSymbolArray* array;
 
 	int numbytes = size * sizeof(PyrSymbol*);
 	if (!gc) array = (PyrSymbolArray*)PyrGC::NewPermanent(numbytes, flags, obj_symbol);
-	else array = (PyrSymbolArray*)gc->New(numbytes, flags, obj_symbol, collect);
+	else array = (PyrSymbolArray*)gc->New(numbytes, flags, obj_symbol, runGC);
 	array->classptr = class_symbolarray;
 	return array;
 }
 
-PyrInt8Array* newPyrInt8Array(class PyrGC *gc, int size, int flags, bool collect)
+PyrInt8Array* newPyrInt8Array(class PyrGC *gc, int size, int flags, bool runGC)
 {
 	PyrInt8Array* array;
 
 	if (!gc) array = (PyrInt8Array*)PyrGC::NewPermanent(size, flags, obj_int8);
-	else array = (PyrInt8Array*)gc->New(size, flags, obj_int8, collect);
+	else array = (PyrInt8Array*)gc->New(size, flags, obj_int8, runGC);
 	array->classptr = class_int8array;
 	return array;
 }
 
-PyrInt32Array* newPyrInt32Array(class PyrGC *gc, int size, int flags, bool collect)
+PyrInt32Array* newPyrInt32Array(class PyrGC *gc, int size, int flags, bool runGC)
 {
 	PyrInt32Array* array;
 	int numbytes = size * sizeof(int32);
 	if (!gc) array = (PyrInt32Array*)PyrGC::NewPermanent(numbytes, flags, obj_int32);
-	else array = (PyrInt32Array*)gc->New(numbytes, flags, obj_int32, collect);
+	else array = (PyrInt32Array*)gc->New(numbytes, flags, obj_int32, runGC);
 	array->classptr = class_int32array;
 	return array;
 }
 
-PyrDoubleArray* newPyrDoubleArray(class PyrGC *gc, int size, int flags, bool collect)
+PyrDoubleArray* newPyrDoubleArray(class PyrGC *gc, int size, int flags, bool runGC)
 {
 	PyrDoubleArray* array;
 
 	int numbytes = size * sizeof(double);
 	if (!gc) array = (PyrDoubleArray*)PyrGC::NewPermanent(numbytes, flags, obj_double);
-	else array = (PyrDoubleArray*)gc->New(size, flags, obj_double, collect);
+	else array = (PyrDoubleArray*)gc->New(size, flags, obj_double, runGC);
 	array->classptr = class_doublearray;
 	return array;
 }
 
-PyrString* newPyrString(class PyrGC *gc, const char *s, int flags, bool collect)
+PyrString* newPyrString(class PyrGC *gc, const char *s, int flags, bool runGC)
 {
 	PyrString* string;
 	int length = strlen(s);
 
 	if (!gc) string = (PyrString*)PyrGC::NewPermanent(length, flags, obj_char);
-	else string = (PyrString*)gc->New(length, flags, obj_char, collect);
+	else string = (PyrString*)gc->New(length, flags, obj_char, runGC);
 	string->classptr = class_string;
 	string->size = length;
 	memcpy(string->s, s, length);
 	return string;
 }
 
-PyrString* newPyrStringN(class PyrGC *gc, int length, int flags, bool collect)
+PyrString* newPyrStringN(class PyrGC *gc, int length, int flags, bool runGC)
 {
 	PyrString* string;
 
 	if (!gc) string = (PyrString*)PyrGC::NewPermanent(length, flags, obj_char);
-	else string = (PyrString*)gc->New(length, flags, obj_char, collect);
+	else string = (PyrString*)gc->New(length, flags, obj_char, runGC);
 	string->classptr = class_string;
 	string->size = length; // filled with garbage!
 	return string;
@@ -2770,5 +2770,5 @@ void InstallFinalizer(VMGlobals* g, PyrObject *inObj, int slotIndex, ObjFuncPtr 
 {
 	PyrObject *finalizer = g->gc->NewFinalizer(inFunc, inObj, false);
 	SetObject(inObj->slots + slotIndex, finalizer);
-	g->gc->GCWrite(inObj, finalizer);
+	g->gc->GCWriteNew(inObj, finalizer); // we know finalizer is white so we can use GCWriteNew
 }
