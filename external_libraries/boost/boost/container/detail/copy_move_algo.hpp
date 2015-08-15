@@ -123,48 +123,49 @@ struct are_elements_contiguous< ::boost::interprocess::offset_ptr<PointedType, D
 
 template <typename I, typename O>
 struct are_contiguous_and_same
-{
-   static const bool is_same_io =
-      is_same< typename remove_const< typename ::boost::container::iterator_traits<I>::value_type >::type
-             , typename ::boost::container::iterator_traits<O>::value_type
-             >::value;
-   static const bool value = is_same_io &&
-      are_elements_contiguous<I>::value &&
-      are_elements_contiguous<O>::value;
-};
+   : boost::move_detail::and_
+      < are_elements_contiguous<I>
+      , are_elements_contiguous<O>
+      , is_same< typename remove_const< typename ::boost::container::iterator_traits<I>::value_type >::type
+               , typename ::boost::container::iterator_traits<O>::value_type
+               >
+      >
+{};
 
 template <typename I, typename O>
 struct is_memtransfer_copy_assignable
-{
-   static const bool value = are_contiguous_and_same<I, O>::value &&
-      container_detail::is_trivially_copy_assignable< typename ::boost::container::iterator_traits<I>::value_type >::value;
-};
+   : boost::move_detail::and_
+      < are_contiguous_and_same<I, O>
+      , container_detail::is_trivially_copy_assignable< typename ::boost::container::iterator_traits<I>::value_type >
+      >
+{};
 
 template <typename I, typename O>
 struct is_memtransfer_copy_constructible
-{
-   static const bool value = are_contiguous_and_same<I, O>::value &&
-      container_detail::is_trivially_copy_constructible< typename ::boost::container::iterator_traits<I>::value_type >::value;
-};
+   : boost::move_detail::and_
+      < are_contiguous_and_same<I, O>
+      , container_detail::is_trivially_copy_constructible< typename ::boost::container::iterator_traits<I>::value_type >
+      >
+{};
 
 template <typename I, typename O, typename R>
 struct enable_if_memtransfer_copy_constructible
-   : enable_if_c<container_detail::is_memtransfer_copy_constructible<I, O>::value, R>
+   : enable_if<container_detail::is_memtransfer_copy_constructible<I, O>, R>
 {};
 
 template <typename I, typename O, typename R>
 struct disable_if_memtransfer_copy_constructible
-   : enable_if_c<!container_detail::is_memtransfer_copy_constructible<I, O>::value, R>
+   : disable_if<container_detail::is_memtransfer_copy_constructible<I, O>, R>
 {};
 
 template <typename I, typename O, typename R>
 struct enable_if_memtransfer_copy_assignable
-   : enable_if_c<container_detail::is_memtransfer_copy_assignable<I, O>::value, R>
+   : enable_if<container_detail::is_memtransfer_copy_assignable<I, O>, R>
 {};
 
 template <typename I, typename O, typename R>
 struct disable_if_memtransfer_copy_assignable
-   : enable_if_c<!container_detail::is_memtransfer_copy_assignable<I, O>::value, R>
+   : disable_if<container_detail::is_memtransfer_copy_assignable<I, O>, R>
 {};
 
 template
@@ -174,8 +175,10 @@ inline F memmove(I f, I l, F r) BOOST_NOEXCEPT_OR_NOTHROW
 {
    typedef typename boost::container::iterator_traits<I>::value_type value_type;
    typename boost::container::iterator_traits<I>::difference_type n = boost::container::iterator_distance(f, l);
-   std::memmove((iterator_to_raw_pointer)(r), (iterator_to_raw_pointer)(f), sizeof(value_type)*n);
-   boost::container::iterator_advance(r, n);
+   if(n){
+      std::memmove((iterator_to_raw_pointer)(r), (iterator_to_raw_pointer)(f), sizeof(value_type)*n);
+      boost::container::iterator_advance(r, n);
+   }
    return r;
 }
 
@@ -185,8 +188,10 @@ template
 F memmove_n(I f, typename boost::container::iterator_traits<I>::difference_type n, F r) BOOST_NOEXCEPT_OR_NOTHROW
 {
    typedef typename boost::container::iterator_traits<I>::value_type value_type;
-   std::memmove((iterator_to_raw_pointer)(r), (iterator_to_raw_pointer)(f), sizeof(value_type)*n);
-   boost::container::iterator_advance(r, n);
+   if(n){
+      std::memmove((iterator_to_raw_pointer)(r), (iterator_to_raw_pointer)(f), sizeof(value_type)*n);
+      boost::container::iterator_advance(r, n);
+   }
    return r;
 }
 
@@ -195,9 +200,11 @@ template
     typename F> // F models ForwardIterator
 I memmove_n_source(I f, typename boost::container::iterator_traits<I>::difference_type n, F r) BOOST_NOEXCEPT_OR_NOTHROW
 {
-   typedef typename boost::container::iterator_traits<I>::value_type value_type;
-   std::memmove((iterator_to_raw_pointer)(r), (iterator_to_raw_pointer)(f), sizeof(value_type)*n);
-   boost::container::iterator_advance(f, n);
+   if(n){
+      typedef typename boost::container::iterator_traits<I>::value_type value_type;
+      std::memmove((iterator_to_raw_pointer)(r), (iterator_to_raw_pointer)(f), sizeof(value_type)*n);
+      boost::container::iterator_advance(f, n);
+   }
    return f;
 }
 
@@ -207,9 +214,11 @@ template
 I memmove_n_source_dest(I f, typename boost::container::iterator_traits<I>::difference_type n, F &r) BOOST_NOEXCEPT_OR_NOTHROW
 {
    typedef typename boost::container::iterator_traits<I>::value_type value_type;
-   std::memmove((iterator_to_raw_pointer)(r), (iterator_to_raw_pointer)(f), sizeof(value_type)*n);
-   boost::container::iterator_advance(f, n);
-   boost::container::iterator_advance(r, n);
+   if(n){
+      std::memmove((iterator_to_raw_pointer)(r), (iterator_to_raw_pointer)(f), sizeof(value_type)*n);
+      boost::container::iterator_advance(f, n);
+      boost::container::iterator_advance(r, n);
+   }
    return f;
 }
 

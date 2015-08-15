@@ -86,7 +86,7 @@ protected:
 
     size_t read_available(size_t max_size) const
     {
-        size_t write_index = write_index_.load(memory_order_relaxed);
+        size_t write_index = write_index_.load(memory_order_acquire);
         const size_t read_index  = read_index_.load(memory_order_relaxed);
         return read_available(write_index, read_index, max_size);
     }
@@ -94,7 +94,7 @@ protected:
     size_t write_available(size_t max_size) const
     {
         size_t write_index = write_index_.load(memory_order_relaxed);
-        const size_t read_index  = read_index_.load(memory_order_relaxed);
+        const size_t read_index  = read_index_.load(memory_order_acquire);
         return write_available(write_index, read_index, max_size);
     }
 
@@ -914,7 +914,7 @@ public:
      *
      * \return number of available elements that can be popped from the spsc_queue
      *
-     * \note Thread-safe and wait-free, should only be called from the producer thread
+     * \note Thread-safe and wait-free, should only be called from the consumer thread
      * */
     size_type read_available() const
     {
@@ -925,7 +925,7 @@ public:
      *
      * \return number of elements that can be pushed to the spsc_queue
      *
-     * \note Thread-safe and wait-free, should only be called from the consumer thread
+     * \note Thread-safe and wait-free, should only be called from the producer thread
      * */
     size_type write_available() const
     {
@@ -936,7 +936,7 @@ public:
      *
      * Availability of front element can be checked using read_available().
      *
-     * \pre only one thread is allowed to check front element
+     * \pre only a consuming thread is allowed to check front element
      * \pre read_available() > 0. If ringbuffer is empty, it's undefined behaviour to invoke this method.
      * \return reference to the first element in the queue
      *

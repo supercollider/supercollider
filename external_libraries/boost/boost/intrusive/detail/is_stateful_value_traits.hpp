@@ -32,7 +32,7 @@ namespace detail {
 template<class ValueTraits>
 struct is_stateful_value_traits
 {
-   static const bool value = !detail::is_empty_class<ValueTraits>::value;
+   static const bool value = !detail::is_empty<ValueTraits>::value;
 };
 
 }}}

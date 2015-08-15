@@ -34,9 +34,51 @@ template <class T> class rv;
 namespace move_detail {
 
 //////////////////////////////////////
+//          is_different
+//////////////////////////////////////
+template<class T, class U>
+struct is_different
+{
+   static const bool value = !is_same<T, U>::value;
+};
+
+//////////////////////////////////////
+//             apply
+//////////////////////////////////////
+template<class F, class Param>
+struct apply
+{
+   typedef typename F::template apply<Param>::type type;
+};
+
+//////////////////////////////////////
+//             bool_
+//////////////////////////////////////
+
+template< bool C_ >
+struct bool_ : integral_constant<bool, C_>
+{
+     operator bool() const { return C_; }
+   bool operator()() const { return C_; }
+};
+
+typedef bool_<true>        true_;
+typedef bool_<false>       false_;
+
+//////////////////////////////////////
 //              nat
 //////////////////////////////////////
 struct nat{};
+
+//////////////////////////////////////
+//          yes_type/no_type
+//////////////////////////////////////
+typedef char yes_type;
+
+struct no_type
+{
+   char _[2];
+};
 
 //////////////////////////////////////
 //            natify
@@ -86,8 +128,26 @@ struct remove_reference< const rv<T> &>
    typedef T type;
 };
 
-
 #endif
+
+//////////////////////////////////////
+//             remove_pointer
+//////////////////////////////////////
+
+template< class T > struct remove_pointer                    { typedef T type;   };
+template< class T > struct remove_pointer<T*>                { typedef T type;   };
+template< class T > struct remove_pointer<T* const>          { typedef T type;   };
+template< class T > struct remove_pointer<T* volatile>       { typedef T type;   };
+template< class T > struct remove_pointer<T* const volatile> { typedef T type;   };
+
+//////////////////////////////////////
+//             add_pointer
+//////////////////////////////////////
+template< class T >
+struct add_pointer
+{
+   typedef typename remove_reference<T>::type* type;
+};
 
 //////////////////////////////////////
 //             add_const
@@ -149,6 +209,19 @@ template<class T>
 struct is_lvalue_reference<T&>
 {
     static const bool value = true;
+};
+
+
+//////////////////////////////////////
+//             identity
+//////////////////////////////////////
+template <class T>
+struct identity
+{
+   typedef T type;
+   typedef typename add_const_lvalue_reference<T>::type reference;
+   reference operator()(reference t)
+   {  return t;   }
 };
 
 //////////////////////////////////////
@@ -241,9 +314,128 @@ class is_convertible
 
 #endif
 
+template<
+      bool C
+    , typename F1
+    , typename F2
+    >
+struct eval_if_c
+    : if_c<C,F1,F2>::type
+{};
+
+template<
+      typename C
+    , typename T1
+    , typename T2
+    >
+struct eval_if
+    : if_<C,T1,T2>::type
+{};
+
+template<class T, class U, class R = void>
+struct enable_if_convertible
+   : enable_if< is_convertible<T, U>, R>
+{};
+
+template<class T, class U, class R = void>
+struct disable_if_convertible
+   : disable_if< is_convertible<T, U>, R>
+{};
+
 //////////////////////////////////////////////////////////////////////////////
 //
-//                               has_move_emulation_enabled_impl
+//                         and_
+//
+//////////////////////////////////////////////////////////////////////////////
+template<bool, class B = true_, class C = true_, class D = true_>
+struct and_impl
+   : and_impl<B::value, C, D>
+{};
+
+template<>
+struct and_impl<true, true_, true_, true_>
+{
+   static const bool value = true;
+};
+
+template<class B, class C, class D>
+struct and_impl<false, B, C, D>
+{
+   static const bool value = false;
+};
+
+template<class A, class B, class C = true_, class D = true_>
+struct and_
+   : and_impl<A::value, B, C, D>
+{};
+
+//////////////////////////////////////////////////////////////////////////////
+//
+//                            or_
+//
+//////////////////////////////////////////////////////////////////////////////
+template<bool, class B = false_, class C = false_, class D = false_>
+struct or_impl
+   : or_impl<B::value, C, D>
+{};
+
+template<>
+struct or_impl<false, false_, false_, false_>
+{
+   static const bool value = false;
+};
+
+template<class B, class C, class D>
+struct or_impl<true, B, C, D>
+{
+   static const bool value = true;
+};
+
+template<class A, class B, class C = false_, class D = false_>
+struct or_
+   : or_impl<A::value, B, C, D>
+{};
+
+//////////////////////////////////////////////////////////////////////////////
+//
+//                         not_
+//
+//////////////////////////////////////////////////////////////////////////////
+template<class T>
+struct not_
+{
+   static const bool value = !T::value;
+};
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// enable_if_and / disable_if_and / enable_if_or / disable_if_or
+//
+//////////////////////////////////////////////////////////////////////////////
+
+template<class R, class A, class B, class C = true_, class D = true_>
+struct enable_if_and
+   : enable_if_c< and_<A, B, C, D>::value, R>
+{};
+
+template<class R, class A, class B, class C = true_, class D = true_>
+struct disable_if_and
+   : disable_if_c< and_<A, B, C, D>::value, R>
+{};
+
+template<class R, class A, class B, class C = false_, class D = false_>
+struct enable_if_or
+   : enable_if_c< or_<A, B, C, D>::value, R>
+{};
+
+template<class R, class A, class B, class C = false_, class D = false_>
+struct disable_if_or
+   : disable_if_c< or_<A, B, C, D>::value, R>
+{};
+
+//////////////////////////////////////////////////////////////////////////////
+//
+//                      has_move_emulation_enabled_impl
 //
 //////////////////////////////////////////////////////////////////////////////
 template<class T>

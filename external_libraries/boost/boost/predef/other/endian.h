@@ -1,5 +1,5 @@
 /*
-Copyright Rene Rivera 2013-2014
+Copyright Rene Rivera 2013-2015
 Distributed under the Boost Software License, Version 1.0.
 (See accompanying file LICENSE_1_0.txt or copy at
 http://www.boost.org/LICENSE_1_0.txt)
@@ -140,7 +140,7 @@ information and acquired knowledge:
     !BOOST_ENDIAN_LITTLE_BYTE && !BOOST_ENDIAN_LITTLE_WORD
 #   include <boost/predef/architecture.h>
 #   if BOOST_ARCH_M68K || \
-        BOOST_ARCH_PARISK || \
+        BOOST_ARCH_PARISC || \
         BOOST_ARCH_SPARC || \
         BOOST_ARCH_SYS370 || \
         BOOST_ARCH_SYS390 || \
@@ -189,6 +189,8 @@ information and acquired knowledge:
 #define BOOST_ENDIAN_LITTLE_BYTE_NAME "Byte-Swapped Little-Endian"
 #define BOOST_ENDIAN_LITTLE_WORD_NAME "Word-Swapped Little-Endian"
 
+#endif
+
 #include <boost/predef/detail/test.h>
 BOOST_PREDEF_DECLARE_TEST(BOOST_ENDIAN_BIG_BYTE,BOOST_ENDIAN_BIG_BYTE_NAME)
 
@@ -200,6 +202,3 @@ BOOST_PREDEF_DECLARE_TEST(BOOST_ENDIAN_LITTLE_BYTE,BOOST_ENDIAN_LITTLE_BYTE_NAME
 
 #include <boost/predef/detail/test.h>
 BOOST_PREDEF_DECLARE_TEST(BOOST_ENDIAN_LITTLE_WORD,BOOST_ENDIAN_LITTLE_WORD_NAME)
-
-
-#endif

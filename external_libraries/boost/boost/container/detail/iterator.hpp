@@ -32,6 +32,7 @@ using ::boost::intrusive::iterator_advance;
 using ::boost::intrusive::iterator;
 using ::boost::intrusive::iterator_enable_if_tag;
 using ::boost::intrusive::iterator_disable_if_tag;
+using ::boost::intrusive::iterator_arrow_result;
 
 }  //namespace container {
 }  //namespace boost {

@@ -184,6 +184,7 @@ template
    , class O3  = void
    , class O4  = void
    , class O5  = void
+   , class O6  = void
    >
 #else
 template<class T, class ...Options>
@@ -198,6 +199,7 @@ template
    , class O3  = void
    , class O4  = void
    , class O5  = void
+   , class O6  = void
    >
 #else
 template<class T, class ...Options>
@@ -212,6 +214,7 @@ template
    , class O3  = void
    , class O4  = void
    , class O5  = void
+   , class O6  = void
    >
 #else
 template<class T, class ...Options>
@@ -251,6 +254,7 @@ template
    , class O3  = void
    , class O4  = void
    , class O5  = void
+   , class O6  = void
    >
 #else
 template<class T, class ...Options>
@@ -265,6 +269,7 @@ template
    , class O3  = void
    , class O4  = void
    , class O5  = void
+   , class O6  = void
    >
 #else
 template<class T, class ...Options>
@@ -279,6 +284,7 @@ template
    , class O3  = void
    , class O4  = void
    , class O5  = void
+   , class O6  = void
    >
 #else
 template<class T, class ...Options>
@@ -294,6 +300,7 @@ template
    , class O3  = void
    , class O4  = void
    , class O5  = void
+   , class O6  = void
    >
 #else
 template<class T, class ...Options>
@@ -308,6 +315,7 @@ template
    , class O3  = void
    , class O4  = void
    , class O5  = void
+   , class O6  = void
    >
 #else
 template<class T, class ...Options>
@@ -322,6 +330,7 @@ template
    , class O3  = void
    , class O4  = void
    , class O5  = void
+   , class O6  = void
    >
 #else
 template<class T, class ...Options>
@@ -362,6 +371,7 @@ template
    , class O3  = void
    , class O4  = void
    , class O5  = void
+   , class O6  = void
    >
 #else
 template<class T, class ...Options>
@@ -376,6 +386,7 @@ template
    , class O3  = void
    , class O4  = void
    , class O5  = void
+   , class O6  = void
    >
 #else
 template<class T, class ...Options>
@@ -390,6 +401,7 @@ template
    , class O3  = void
    , class O4  = void
    , class O5  = void
+   , class O6  = void
    >
 #else
 template<class T, class ...Options>
@@ -405,6 +417,7 @@ template
    , class O3  = void
    , class O4  = void
    , class O5  = void
+   , class O6  = void
    >
 #else
 template<class T, class ...Options>
@@ -419,6 +432,7 @@ template
    , class O3  = void
    , class O4  = void
    , class O5  = void
+   , class O6  = void
    >
 #else
 template<class T, class ...Options>
@@ -433,6 +447,7 @@ template
    , class O3  = void
    , class O4  = void
    , class O5  = void
+   , class O6  = void
    >
 #else
 template<class T, class ...Options>
@@ -447,6 +462,7 @@ template
    , class O3  = void
    , class O4  = void
    , class O5  = void
+   , class O6  = void
    >
 #else
 template<class T, class ...Options>
@@ -461,6 +477,7 @@ template
    , class O3  = void
    , class O4  = void
    , class O5  = void
+   , class O6  = void
    >
 #else
 template<class T, class ...Options>
@@ -475,6 +492,7 @@ template
    , class O3  = void
    , class O4  = void
    , class O5  = void
+   , class O6  = void
    >
 #else
 template<class T, class ...Options>

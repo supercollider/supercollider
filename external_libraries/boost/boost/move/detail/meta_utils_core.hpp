@@ -49,16 +49,15 @@ template<typename T1, typename T2, typename T3>
 struct if_ : if_c<0 != T1::value, T2, T3>
 {};
 
-//enable_if_
+//////////////////////////////////////
+//          enable_if_c
+//////////////////////////////////////
 template <bool B, class T = void>
 struct enable_if_c
 {
    typedef T type;
 };
 
-//////////////////////////////////////
-//          enable_if_c
-//////////////////////////////////////
 template <class T>
 struct enable_if_c<false, T> {};
 
@@ -67,6 +66,14 @@ struct enable_if_c<false, T> {};
 //////////////////////////////////////
 template <class Cond, class T = void>
 struct enable_if : enable_if_c<Cond::value, T> {};
+
+//////////////////////////////////////
+//          disable_if_c
+//////////////////////////////////////
+template <bool B, class T = void>
+struct disable_if_c
+   : enable_if_c<!B, T>
+{};
 
 //////////////////////////////////////
 //          disable_if
@@ -83,19 +90,14 @@ struct integral_constant
    static const T value = v;
    typedef T value_type;
    typedef integral_constant<T, v> type;
+
+     operator T() const { return value; }
+   T operator()() const { return value; }
 };
 
 typedef integral_constant<bool, true >  true_type;
 typedef integral_constant<bool, false > false_type;
 
-//////////////////////////////////////
-//             identity
-//////////////////////////////////////
-template <class T>
-struct identity
-{
-   typedef T type;
-};
 
 //////////////////////////////////////
 //             is_same

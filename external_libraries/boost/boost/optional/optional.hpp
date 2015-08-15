@@ -18,12 +18,14 @@
 #define BOOST_OPTIONAL_OPTIONAL_FLC_19NOV2002_HPP
 
 #include <new>
-#include <algorithm>
 #include <iosfwd>
 
 #include <boost/config.hpp>
 #include <boost/assert.hpp>
+#include <boost/core/addressof.hpp>
+#include <boost/core/enable_if.hpp>
 #include <boost/core/explicit_operator_bool.hpp>
+#include <boost/core/swap.hpp>
 #include <boost/optional/bad_optional_access.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/throw_exception.hpp>
@@ -47,13 +49,7 @@
 #include <boost/detail/reference_content.hpp>
 #include <boost/move/utility.hpp>
 #include <boost/none.hpp>
-#include <boost/utility/addressof.hpp>
 #include <boost/utility/compare_pointees.hpp>
-#include <boost/utility/enable_if.hpp>
-#include <boost/utility/in_place_factory.hpp>
-#include <boost/utility/swap.hpp>
-
-
 
 #include <boost/optional/optional_fwd.hpp>
 
@@ -506,6 +502,13 @@ class optional_base : public optional_tag
        ::new (m_storage.address()) internal_type( boost::forward<Arg>(arg) );
        m_initialized = true ;
      }
+     
+    void emplace_assign ()
+     {
+       destroy();
+       ::new (m_storage.address()) internal_type();
+       m_initialized = true ;
+     }
 #else
     template<class Arg>
     void emplace_assign ( const Arg& arg )
@@ -515,11 +518,18 @@ class optional_base : public optional_tag
        m_initialized = true ;
      }
      
-     template<class Arg>
+    template<class Arg>
     void emplace_assign ( Arg& arg )
      {
        destroy();
        ::new (m_storage.address()) internal_type( arg );
+       m_initialized = true ;
+     }
+     
+    void emplace_assign ()
+     {
+       destroy();
+       ::new (m_storage.address()) internal_type();
        m_initialized = true ;
      }
 #endif
@@ -976,6 +986,11 @@ class optional : public optional_detail::optional_base<T>
      {
        this->emplace_assign( boost::forward<Arg>(arg) );
      }
+     
+    void emplace ()
+     {
+       this->emplace_assign();
+     }
 #else
     template<class Arg>
     void emplace ( const Arg& arg )
@@ -987,6 +1002,11 @@ class optional : public optional_detail::optional_base<T>
     void emplace ( Arg& arg )
      {
        this->emplace_assign( arg );
+     }
+     
+    void emplace ()
+     {
+       this->emplace_assign();
      }
 #endif
 
@@ -1251,9 +1271,10 @@ get_pointer ( optional<T>& opt )
 // The following declaration prevents a bug where operator safe-bool is used upon streaming optional object if you forget the IO header.
 template<class CharType, class CharTrait>
 std::basic_ostream<CharType, CharTrait>&
-operator<<(std::basic_ostream<CharType, CharTrait>& out, optional_detail::optional_tag const& v)
+operator<<(std::basic_ostream<CharType, CharTrait>& os, optional_detail::optional_tag const&)
 {
-  BOOST_STATIC_ASSERT_MSG(sizeof(CharType) == 0, "If you want to output boost::optional, include header <boost/optional/optional_io.hpp>"); 
+  BOOST_STATIC_ASSERT_MSG(sizeof(CharType) == 0, "If you want to output boost::optional, include header <boost/optional/optional_io.hpp>");
+  return os;  
 }
 
 // optional's relational operators ( ==, !=, <, >, <=, >= ) have deep-semantics (compare values).
@@ -1448,9 +1469,9 @@ struct swap_selector<true>
             return;
 
         if( !hasX )
-            x = boost::in_place();
+            x.emplace();
         else if ( !hasY )
-            y = boost::in_place();
+            y.emplace();
 
         // Boost.Utility.Swap will take care of ADL and workarounds for broken compilers
         boost::swap(x.get(),y.get());
@@ -1523,8 +1544,17 @@ struct swap_selector<false>
 
 } // namespace optional_detail
 
+#if (!defined BOOST_NO_CXX11_RVALUE_REFERENCES) && (!defined BOOST_CONFIG_RESTORE_OBSOLETE_SWAP_IMPLEMENTATION)
+
+template<class T>
+struct optional_swap_should_use_default_constructor : boost::false_type {} ;
+
+#else
+
 template<class T>
 struct optional_swap_should_use_default_constructor : has_nothrow_default_constructor<T> {} ;
+
+#endif //BOOST_NO_CXX11_RVALUE_REFERENCES
 
 template<class T> inline void swap ( optional<T>& x, optional<T>& y )
   //BOOST_NOEXCEPT_IF(::boost::is_nothrow_move_constructible<T>::value && BOOST_NOEXCEPT_EXPR(boost::swap(*x, *y)))

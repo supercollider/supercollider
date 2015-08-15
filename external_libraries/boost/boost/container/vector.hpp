@@ -57,6 +57,7 @@
 // other
 #include <boost/core/no_exceptions_support.hpp>
 #include <boost/assert.hpp>
+#include <boost/cstdint.hpp>
 
 //std
 #if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST)
@@ -177,6 +178,70 @@ class vec_iterator
 
    friend bool operator>=   (const vec_iterator& l, const vec_iterator& r) BOOST_NOEXCEPT_OR_NOTHROW
    {  return l.m_ptr >= r.m_ptr;  }
+};
+
+template<class BiDirPosConstIt, class BiDirValueIt>
+struct vector_insert_ordered_cursor
+{
+   typedef typename iterator_traits<BiDirPosConstIt>::value_type  size_type;
+   typedef typename iterator_traits<BiDirValueIt>::reference      reference;
+
+   vector_insert_ordered_cursor(BiDirPosConstIt posit, BiDirValueIt valueit)
+      : last_position_it(posit), last_value_it(valueit)
+   {}
+
+   void operator --()
+   {
+      --last_value_it;
+      --last_position_it;
+      while(this->get_pos() == size_type(-1)){
+         --last_value_it;
+         --last_position_it;
+      }
+   }
+
+   size_type get_pos() const
+   {  return *last_position_it;  }
+
+   reference get_val()
+   {  return *last_value_it;  }
+
+   BiDirPosConstIt last_position_it;
+   BiDirValueIt last_value_it;
+};
+
+template<class T, class SizeType, class BiDirValueIt, class Comp>
+struct vector_merge_cursor
+{
+   typedef SizeType  size_type;
+   typedef typename iterator_traits<BiDirValueIt>::reference      reference;
+
+   vector_merge_cursor(T *pbeg, T *plast, BiDirValueIt valueit, Comp cmp)
+      : m_pbeg(pbeg), m_pcur(--plast), m_valueit(valueit), m_cmp(cmp)
+   {}
+
+   void operator --()
+   {
+      --m_valueit;
+      const T &t = *m_valueit;
+      while((m_pcur + 1) != m_pbeg){
+         if(!m_cmp(t, *m_pcur)){
+            break;
+         }
+         --m_pcur;
+      }
+   }
+
+   size_type get_pos() const
+   {  return static_cast<size_type>((m_pcur + 1) - m_pbeg);  }
+
+   reference get_val()
+   {  return *m_valueit;  }
+
+   T *const m_pbeg;
+   T *m_pcur;
+   BiDirValueIt m_valueit;
+   Comp m_cmp;
 };
 
 }  //namespace container_detail {
@@ -640,6 +705,13 @@ class vector
 {
    #ifndef BOOST_CONTAINER_DOXYGEN_INVOKED
 
+   struct value_less
+   {
+      typedef typename boost::container::allocator_traits<Allocator>::value_type value_type;
+      bool operator()(const value_type &a, const value_type &b) const
+         {  return a < b;  }
+   };
+
    typedef typename container_detail::version<Allocator>::type alloc_version;
    typedef boost::container::container_detail::vector_alloc_holder<Allocator> alloc_holder_t;
    alloc_holder_t m_holder;
@@ -1043,10 +1115,11 @@ class vector
    //!
    //! <b>Note</b>: Non-standard extension to support static_vector
    template<class OtherAllocator>
-   typename container_detail::enable_if_c
-                           < container_detail::is_version<OtherAllocator, 0>::value &&
-                            !container_detail::is_same<OtherAllocator, allocator_type>::value
-                           , vector& >::type
+   typename container_detail::enable_if_and
+                           < vector&
+                           , container_detail::is_version<OtherAllocator, 0>
+                           , container_detail::is_different<OtherAllocator, allocator_type>
+                           >::type
       operator=(BOOST_RV_REF_BEG vector<value_type, OtherAllocator> BOOST_RV_REF_END x)
    {
       this->priv_move_assign(boost::move(x));
@@ -1064,10 +1137,11 @@ class vector
    //!
    //! <b>Note</b>: Non-standard extension to support static_vector
    template<class OtherAllocator>
-   typename container_detail::enable_if_c
-                           < container_detail::is_version<OtherAllocator, 0>::value &&
-                            !container_detail::is_same<OtherAllocator, allocator_type>::value
-                           , vector& >::type
+   typename container_detail::enable_if_and
+                           < vector&
+                           , container_detail::is_version<OtherAllocator, 0>
+                           , container_detail::is_different<OtherAllocator, allocator_type>
+                           >::type
       operator=(const vector<value_type, OtherAllocator> &x)
    {
       this->priv_copy_assign(x);
@@ -1084,11 +1158,15 @@ class vector
    //! <b>Complexity</b>: Linear to n.
    template <class InIt>
    void assign(InIt first, InIt last
-      BOOST_CONTAINER_DOCIGN(BOOST_MOVE_I typename container_detail::enable_if_c
-         < !container_detail::is_convertible<InIt BOOST_MOVE_I size_type>::value &&
-            ( container_detail::is_input_iterator<InIt>::value ||
-              container_detail::is_same<alloc_version BOOST_MOVE_I version_0>::value )
-         >::type * = 0) )
+      BOOST_CONTAINER_DOCIGN(BOOST_MOVE_I typename container_detail::disable_if_or
+         < void
+         BOOST_MOVE_I container_detail::is_convertible<InIt BOOST_MOVE_I size_type>
+         BOOST_MOVE_I container_detail::and_
+            < container_detail::is_different<alloc_version BOOST_MOVE_I version_0>
+            BOOST_MOVE_I container_detail::is_not_input_iterator<InIt>
+            >
+         >::type * = 0)
+      )
    {
       //Overwrite all elements we can from [first, last)
       iterator cur = this->begin();
@@ -1129,10 +1207,11 @@ class vector
    //! <b>Complexity</b>: Linear to n.
    template <class FwdIt>
    void assign(FwdIt first, FwdIt last
-      BOOST_CONTAINER_DOCIGN(BOOST_MOVE_I typename container_detail::enable_if_c
-         < !container_detail::is_convertible<FwdIt BOOST_MOVE_I size_type>::value &&
-            ( !container_detail::is_input_iterator<FwdIt>::value &&
-              !container_detail::is_same<alloc_version BOOST_MOVE_I version_0>::value )
+      BOOST_CONTAINER_DOCIGN(BOOST_MOVE_I typename container_detail::disable_if_or
+         < void
+         BOOST_MOVE_I container_detail::is_same<alloc_version BOOST_MOVE_I version_0>
+         BOOST_MOVE_I container_detail::is_convertible<FwdIt BOOST_MOVE_I size_type>
+         BOOST_MOVE_I container_detail::is_input_iterator<FwdIt>
          >::type * = 0)
       )
    {
@@ -1791,10 +1870,13 @@ class vector
    //! <b>Complexity</b>: Linear to boost::container::iterator_distance [first, last).
    template <class InIt>
    iterator insert(const_iterator pos, InIt first, InIt last
-      BOOST_CONTAINER_DOCIGN(BOOST_MOVE_I typename container_detail::enable_if_c
-         < !container_detail::is_convertible<InIt BOOST_MOVE_I size_type>::value
-            && container_detail::is_input_iterator<InIt>::value
-         >::type * = 0)
+      #if !defined(BOOST_CONTAINER_DOXYGEN_INVOKED)
+      , typename container_detail::disable_if_or
+         < void
+         , container_detail::is_convertible<InIt, size_type>
+         , container_detail::is_not_input_iterator<InIt>
+         >::type * = 0
+      #endif
       )
    {
       const size_type n_pos = pos - this->cbegin();
@@ -1809,9 +1891,10 @@ class vector
    #if !defined(BOOST_CONTAINER_DOXYGEN_INVOKED)
    template <class FwdIt>
    iterator insert(const_iterator pos, FwdIt first, FwdIt last
-      , typename container_detail::enable_if_c
-         < !container_detail::is_convertible<FwdIt, size_type>::value
-            && !container_detail::is_input_iterator<FwdIt>::value
+      , typename container_detail::disable_if_or
+         < void
+         , container_detail::is_convertible<FwdIt, size_type>
+         , container_detail::is_input_iterator<FwdIt>
          >::type * = 0
       )
    {
@@ -1902,7 +1985,7 @@ class vector
          T* const first_ptr = container_detail::to_raw_pointer(vector_iterator_get_ptr(first));
          T* const last_ptr  = container_detail::to_raw_pointer(vector_iterator_get_ptr(last));
          T* const ptr = container_detail::to_raw_pointer(boost::container::move(last_ptr, old_end_ptr, first_ptr));
-         this->priv_destroy_last_n(old_end_ptr - ptr, last_ptr == old_end_ptr);
+         this->priv_destroy_last_n(old_end_ptr - ptr);
       }
       return iterator(vector_iterator_get_ptr(first));
    }
@@ -1931,9 +2014,11 @@ class vector
    //! <b>Note</b>: Non-standard extension to support static_vector
    template<class OtherAllocator>
    void swap(vector<T, OtherAllocator> & x
-            , typename container_detail::enable_if_c
-                     < container_detail::is_version<OtherAllocator, 0>::value &&
-                      !container_detail::is_same<OtherAllocator, allocator_type>::value >::type * = 0
+            , typename container_detail::enable_if_and
+                     < void
+                     , container_detail::is_version<OtherAllocator, 0>
+                     , container_detail::is_different<OtherAllocator, allocator_type>
+                     >::type * = 0
             )
    {  this->m_holder.deep_swap(x.m_holder); }
 
@@ -2017,12 +2102,36 @@ class vector
    template<class BiDirPosConstIt, class BiDirValueIt>
    void insert_ordered_at(const size_type element_count, BiDirPosConstIt last_position_it, BiDirValueIt last_value_it)
    {
+      typedef container_detail::vector_insert_ordered_cursor<BiDirPosConstIt, BiDirValueIt> inserter_t;
+      return this->priv_insert_ordered_at(element_count, inserter_t(last_position_it, last_value_it));
+   }
+
+   template<class BidirIt>
+   void merge(BidirIt first, BidirIt last)
+   {  this->merge(first, last, value_less());  }
+
+   template<class BidirIt, class Compare>
+   void merge(BidirIt first, BidirIt last, Compare comp)
+   {  this->priv_merge(container_detail::false_type(), first, last, comp);  }
+
+   template<class BidirIt>
+   void merge_unique(BidirIt first, BidirIt last)
+   {  this->priv_merge(container_detail::true_type(),  first, last, value_less());  }
+
+   template<class BidirIt, class Compare>
+   void merge_unique(BidirIt first, BidirIt last, Compare comp)
+   {  this->priv_merge(container_detail::true_type(),  first, last, comp);  }
+
+   private:
+   template<class PositionValue>
+   void priv_insert_ordered_at(const size_type element_count, PositionValue position_value)
+   {
       const size_type old_size_pos = this->size();
       this->reserve(old_size_pos + element_count);
       T* const begin_ptr = container_detail::to_raw_pointer(this->m_holder.start());
       size_type insertions_left = element_count;
-      size_type next_pos = old_size_pos;
-      size_type hole_size = element_count;
+      size_type prev_pos = old_size_pos;
+      size_type old_hole_size = element_count;
 
       //Exception rollback. If any copy throws before the hole is filled, values
       //already inserted/copied at the end of the buffer will be destroyed.
@@ -2031,52 +2140,197 @@ class vector
       //Loop for each insertion backwards, first moving the elements after the insertion point,
       //then inserting the element.
       while(insertions_left){
-         size_type pos = static_cast<size_type>(*(--last_position_it));
-         while(pos == size_type(-1)){
-            --last_value_it;
-            pos = static_cast<size_type>(*(--last_position_it));
-         }
-
-         BOOST_ASSERT(pos != size_type(-1) && pos <= old_size_pos);
+         --position_value;
+         size_type const pos = position_value.get_pos();
+         BOOST_ASSERT(pos != size_type(-1) && pos <= old_size_pos && pos <= prev_pos);
          //If needed shift the range after the insertion point and the previous insertion point.
          //Function will take care if the shift crosses the size() boundary, using copy/move
          //or uninitialized copy/move if necessary.
-         size_type new_hole_size = (pos != next_pos)
-            ? priv_insert_ordered_at_shift_range(pos, next_pos, this->size(), insertions_left)
-            : hole_size
+         size_type new_hole_size = (pos != prev_pos)
+            ? priv_insert_ordered_at_shift_range(pos, prev_pos, this->size(), insertions_left)
+            : old_hole_size
             ;
-         if(new_hole_size > 0){
+         if(new_hole_size){
             //The hole was reduced by priv_insert_ordered_at_shift_range so expand exception rollback range backwards
-            past_hole_values_destroyer.increment_size_backwards(next_pos - pos);
+            past_hole_values_destroyer.increment_size_backwards(prev_pos - pos);
             //Insert the new value in the hole
-            allocator_traits_type::construct(this->m_holder.alloc(), begin_ptr + pos + insertions_left - 1, *(--last_value_it));
-            --new_hole_size;
-            if(new_hole_size == 0){
+            allocator_traits_type::construct(this->m_holder.alloc(), begin_ptr + pos + insertions_left - 1, position_value.get_val());
+            if(--new_hole_size){
+               //The hole was reduced by the new insertion by one
+               past_hole_values_destroyer.increment_size_backwards(size_type(1u));
+            }
+            else{
                //Hole was just filled, disable exception rollback and change vector size
                past_hole_values_destroyer.release();
                this->m_holder.m_size += element_count;
             }
-            else{
-               //The hole was reduced by the new insertion by one
-               past_hole_values_destroyer.increment_size_backwards(size_type(1u));
-            }
          }
          else{
-            if(hole_size){
+            if(old_hole_size){
                //Hole was just filled by priv_insert_ordered_at_shift_range, disable exception rollback and change vector size
                past_hole_values_destroyer.release();
                this->m_holder.m_size += element_count;
             }
             //Insert the new value in the already constructed range
-            begin_ptr[pos + insertions_left - 1] = *(--last_value_it);
+            begin_ptr[pos + insertions_left - 1] = position_value.get_val();
          }
          --insertions_left;
-         hole_size = new_hole_size;
-         next_pos = pos;
+         old_hole_size = new_hole_size;
+         prev_pos = pos;
       }
    }
 
-   private:
+   template<class UniqueBool, class BidirIt, class Compare>
+   void priv_merge(UniqueBool, BidirIt first, BidirIt last, Compare comp)
+   {
+      size_type const n = static_cast<size_type>(boost::container::iterator_distance(first, last));
+      if(BOOST_LIKELY(n)){
+         size_type const s = this->size();
+         if(BOOST_LIKELY(s)){
+            size_type const c = this->capacity();
+            size_type const free_c = (c - s);
+            //Use a new buffer if current one is too small for new elements,
+            //or there is no room for position indexes
+            bool new_buffer = false;
+            if(free_c < n){
+               new_buffer = true;
+            }
+            else if(!UniqueBool::value && free_c >= n){
+               typedef container_detail::vector_merge_cursor<T, size_type, BidirIt, Compare> inserter_t;
+               T* const pbeg = container_detail::to_raw_pointer(m_holder.start());
+               return this->priv_insert_ordered_at(n, inserter_t(pbeg, pbeg + s, last, comp));
+            }
+            else if(UniqueBool::value){ //Query for room to store n + 1 indexes (+1 to guarantee potential alignment overhead).
+                  //No need to destroy them as they are integral types, which simplifies things a lot.
+               std::size_t const sz_vlt = sizeof(value_type);
+               std::size_t const sz_szt = sizeof(size_type);
+               new_buffer = (c-s-n)*sz_vlt/sz_szt < (n+1);
+            }
+
+            if(new_buffer){
+               size_type const new_size = s + n;
+               size_type new_cap = new_size;
+               pointer p = pointer();
+               p = this->m_holder.allocation_command(allocate_new, new_size, new_cap, p);
+               this->priv_merge_in_new_buffer(UniqueBool(), first, n, comp, p, new_cap);
+            }
+            else{
+               //Use trailing memory to store position offsets
+               uintptr_t const szt_align_mask = container_detail::alignment_of<size_type>::value - 1;
+               boost::uintptr_t const addr = boost::uintptr_t(container_detail::to_raw_pointer(m_holder.start()) + s + n);
+               //Align memory before casting to address
+               size_type *const paddr = reinterpret_cast<size_type *>((addr + szt_align_mask) & ~szt_align_mask);
+               this->priv_insert_ordered_range(UniqueBool(), n, first, last, paddr, comp);
+            }
+         }
+         else{
+            this->insert(this->cend(), n, first, last);
+         }
+      }
+   }
+
+   template <class UniqueBool, class BidirIt, class Compare>
+   void priv_insert_ordered_range
+      (UniqueBool, size_type const n, BidirIt first, BidirIt const last, size_type positions[], Compare comp)
+   {
+      //Linear: at most N + M -1 comparisons
+      //Log: MlogN
+      //Average
+      //Linear: N + M - 2
+      //Log: MlogN
+      //N+M - 2
+      //N
+      //(N+M)/2 < MlogN
+      //(N/M+1)/2 <= logN
+      //bool const linear = !s || !n || (s <= n) || ((s+n)/n/2 < logN);
+      size_type const s = this->size();
+      size_type remaining = n;
+      T* const pbeg = container_detail::to_raw_pointer(m_holder.start());
+      T* const pend = pbeg + s;
+      T* pcur = pbeg;
+      size_type *position = positions;
+      size_type added_in_middle = 0;
+      if(first != last && pcur != pend){
+         while(1){
+            //maintain stability moving external values only if they are strictly less
+            if(comp(*first, *pcur)) { 
+               *position = static_cast<size_type>(pcur - pbeg);
+               BOOST_ASSERT((position == positions) || (*(position-1) == size_type(-1)) || (*(position-1) <= *position));
+               ++position;
+               ++added_in_middle;
+               --remaining;
+               if(++first == last)  break;
+            }
+            else if(UniqueBool::value && !comp(*pcur, *first)){
+               *position = size_type(-1);
+               ++position;
+               --remaining;
+               if(++first == last)  break;
+            }
+            else{
+               if(++pcur == pend)   break;
+            }
+         }
+      }
+      this->insert_ordered_at(added_in_middle, position, first);
+      this->insert(this->cend(), remaining, first, last);
+   }
+
+   template<class UniqueBool, class FwdIt, class Compare>
+   void priv_merge_in_new_buffer
+      (UniqueBool, FwdIt first, size_type n, Compare comp, pointer new_storage, size_type const new_cap)
+   {
+      BOOST_ASSERT((new_cap >= this->size() ) && (new_cap - this->size()) >= n);
+      allocator_type &a = this->m_holder.alloc();
+      typename value_traits::ArrayDeallocator new_buffer_deallocator(new_storage, a, new_cap);
+      typename value_traits::ArrayDestructor  new_values_destroyer(new_storage, a, 0u);
+      T* pbeg  = container_detail::to_raw_pointer(m_holder.start());
+      size_type const old_size = this->size();
+      T* const pend = pbeg + old_size;
+      T* d_first = container_detail::to_raw_pointer(new_storage);
+      size_type added = n;
+      //Merge in new buffer loop
+      while(1){
+         if(!n) {
+            ::boost::container::uninitialized_move_alloc(this->m_holder.alloc(), pbeg, pend, d_first);
+            break;
+         } 
+         else if(pbeg == pend) {
+            ::boost::container::uninitialized_move_alloc_n(this->m_holder.alloc(), first, n, d_first);
+            break;
+         }
+         //maintain stability moving external values only if they are strictly less
+         else if(comp(*first, *pbeg)) {
+            allocator_traits_type::construct( this->m_holder.alloc(), d_first, ::boost::move(*first) );
+            new_values_destroyer.increment_size(1u);
+            ++first;
+            --n;
+            ++d_first;
+         }
+         else if(UniqueBool::value && !comp(*pbeg, *first)){
+            ++first;
+            --n;
+            --added;
+         }
+         else{
+            allocator_traits_type::construct( this->m_holder.alloc(), d_first, ::boost::move(*pbeg) );
+            new_values_destroyer.increment_size(1u);
+            ++pbeg;
+            ++d_first;
+         }
+      }
+
+      //Nothrow operations
+      pointer const old_p     = this->m_holder.start();
+      size_type const old_cap = this->m_holder.capacity();
+      boost::container::destroy_alloc_n(a, container_detail::to_raw_pointer(old_p), old_size);
+      a.deallocate(old_p, old_cap);
+      this->m_holder.m_size = old_size + added;
+      this->m_holder.start(new_storage);
+      this->m_holder.capacity(new_cap);
+      new_buffer_deallocator.release();
+      new_values_destroyer.release();
+   }
 
    bool room_enough() const
    {  return this->m_holder.m_size < this->m_holder.capacity();   }
@@ -2113,9 +2367,11 @@ class vector
 
    template<class OtherAllocator>
    void priv_move_assign(BOOST_RV_REF_BEG vector<T, OtherAllocator> BOOST_RV_REF_END x
-      , typename container_detail::enable_if_c
-         < !container_detail::is_version<OtherAllocator, 0>::value &&
-           container_detail::is_same<OtherAllocator, allocator_type>::value>::type * = 0)
+      , typename container_detail::disable_if_or
+         < void
+         , container_detail::is_version<OtherAllocator, 0>
+         , container_detail::is_different<OtherAllocator, allocator_type>
+         >::type * = 0)
    {
       //for move constructor, no aliasing (&x != this) is assummed.
       BOOST_ASSERT(this != &x);
@@ -2167,10 +2423,12 @@ class vector
    }
 
    template<class OtherAllocator>
-   void priv_copy_assign(const vector<T, OtherAllocator> &x
-      , typename container_detail::enable_if_c
-         < !container_detail::is_version<OtherAllocator, 0>::value &&
-           container_detail::is_same<OtherAllocator, allocator_type>::value >::type * = 0)
+   typename container_detail::disable_if_or
+      < void
+      , container_detail::is_version<OtherAllocator, 0>
+      , container_detail::is_different<OtherAllocator, allocator_type>
+      >::type
+      priv_copy_assign(const vector<T, OtherAllocator> &x)
    {
       allocator_type &this_alloc     = this->m_holder.alloc();
       const allocator_type &x_alloc  = x.m_holder.alloc();
@@ -2274,16 +2532,7 @@ class vector
       }
    }
 
-   void priv_destroy_last() BOOST_NOEXCEPT_OR_NOTHROW
-   {
-      if(!value_traits::trivial_dctr){
-         value_type* const p = this->back_raw() - 1;
-         allocator_traits_type::destroy(this->get_stored_allocator(), p);
-      }
-      --this->m_holder.m_size;
-   }
-
-   void priv_destroy_last(const bool moved) BOOST_NOEXCEPT_OR_NOTHROW
+   void priv_destroy_last(const bool moved = false) BOOST_NOEXCEPT_OR_NOTHROW
    {
       (void)moved;
       if(!(value_traits::trivial_dctr || (value_traits::trivial_dctr_after_move && moved))){
@@ -2297,17 +2546,6 @@ class vector
    {
       BOOST_ASSERT(n <= this->m_holder.m_size);
       if(!value_traits::trivial_dctr){
-         T* const destroy_pos = container_detail::to_raw_pointer(this->m_holder.start()) + (this->m_holder.m_size-n);
-         boost::container::destroy_alloc_n(this->get_stored_allocator(), destroy_pos, n);
-      }
-      this->m_holder.m_size -= n;
-   }
-
-   void priv_destroy_last_n(const size_type n, const bool moved) BOOST_NOEXCEPT_OR_NOTHROW
-   {
-      BOOST_ASSERT(n <= this->m_holder.m_size);
-      (void)moved;
-      if(!(value_traits::trivial_dctr || (value_traits::trivial_dctr_after_move && moved))){
          T* const destroy_pos = container_detail::to_raw_pointer(this->m_holder.start()) + (this->m_holder.m_size-n);
          boost::container::destroy_alloc_n(this->get_stored_allocator(), destroy_pos, n);
       }
@@ -2554,69 +2792,6 @@ class vector
       return this->priv_forward_range_insert(this->back_ptr(), n, insert_range_proxy);
    }
 
-   //Absolutely experimental. This function might change, disappear or simply crash!
-   template<class BiDirPosConstIt, class BiDirSkipConstIt, class BiDirValueIt>
-   void priv_insert_ordered_at( size_type element_count, BiDirPosConstIt last_position_it
-                              , bool do_skip, BiDirSkipConstIt last_skip_it, BiDirValueIt last_value_it)
-   {
-      const size_type old_size_pos = this->size();
-      this->reserve(old_size_pos + element_count);
-      T* const begin_ptr = container_detail::to_raw_pointer(this->m_holder.start());
-      size_type insertions_left = element_count;
-      size_type next_pos = old_size_pos;
-      size_type hole_size = element_count;
-
-      //Exception rollback. If any copy throws before the hole is filled, values
-      //already inserted/copied at the end of the buffer will be destroyed.
-      typename value_traits::ArrayDestructor past_hole_values_destroyer
-         (begin_ptr + old_size_pos + element_count, this->m_holder.alloc(), size_type(0u));
-      //Loop for each insertion backwards, first moving the elements after the insertion point,
-      //then inserting the element.
-      while(insertions_left){
-         if(do_skip){
-            size_type n = *(--last_skip_it);
-            boost::container::iterator_advance(last_value_it, -difference_type(n));
-         }
-         const size_type pos = static_cast<size_type>(*(--last_position_it));
-         BOOST_ASSERT(pos <= old_size_pos);
-         //If needed shift the range after the insertion point and the previous insertion point.
-         //Function will take care if the shift crosses the size() boundary, using copy/move
-         //or uninitialized copy/move if necessary.
-         size_type new_hole_size = (pos != next_pos)
-            ? priv_insert_ordered_at_shift_range(pos, next_pos, this->size(), insertions_left)
-            : hole_size
-            ;
-         if(new_hole_size > 0){
-            //The hole was reduced by priv_insert_ordered_at_shift_range so expand exception rollback range backwards
-            past_hole_values_destroyer.increment_size_backwards(next_pos - pos);
-            //Insert the new value in the hole
-            allocator_traits_type::construct(this->m_holder.alloc(), begin_ptr + pos + insertions_left - 1, *(--last_value_it));
-            --new_hole_size;
-            if(new_hole_size == 0){
-               //Hole was just filled, disable exception rollback and change vector size
-               past_hole_values_destroyer.release();
-               this->m_holder.m_size += element_count;
-            }
-            else{
-               //The hole was reduced by the new insertion by one
-               past_hole_values_destroyer.increment_size_backwards(size_type(1u));
-            }
-         }
-         else{
-            if(hole_size){
-               //Hole was just filled by priv_insert_ordered_at_shift_range, disable exception rollback and change vector size
-               past_hole_values_destroyer.release();
-               this->m_holder.m_size += element_count;
-            }
-            //Insert the new value in the already constructed range
-            begin_ptr[pos + insertions_left - 1] = *(--last_value_it);
-         }
-         --insertions_left;
-         hole_size = new_hole_size;
-         next_pos = pos;
-      }
-   }
-
    //Takes the range pointed by [first_pos, last_pos) and shifts it to the right
    //by 'shift_count'. 'limit_pos' marks the end of constructed elements.
    //
@@ -2647,7 +2822,7 @@ class vector
    //                 |_>_>_>_>_>^
    //
    //
-   //New situation in Case B (hole_size > 0):
+   //New situation in Case B (hole_size >= 0):
    // range is moved through uninitialized moves
    //
    //       first_pos   last_pos         limit_pos
@@ -2689,7 +2864,7 @@ class vector
          //All uninitialized_moved
          ::boost::container::uninitialized_move_alloc
             (this->m_holder.alloc(), first_ptr, last_ptr, first_ptr + shift_count);
-         hole_size = last_pos + shift_count - limit_pos;
+         hole_size = first_pos + shift_count - limit_pos;
       }
       //Case C:
       else{
@@ -2716,7 +2891,7 @@ class vector
    void priv_forward_range_insert_expand_forward(T* const pos, const size_type n, InsertionProxy insert_range_proxy)
    {
       //n can't be 0, because there is nothing to do in that case
-      if(!n) return;
+      if(BOOST_UNLIKELY(!n)) return;
       //There is enough memory
       T* const old_finish = this->back_raw();
       const size_type elems_after = old_finish - pos;

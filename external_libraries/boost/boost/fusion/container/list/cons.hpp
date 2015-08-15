@@ -23,6 +23,7 @@
 #include <boost/fusion/container/list/detail/value_at_impl.hpp>
 #include <boost/fusion/container/list/detail/empty_impl.hpp>
 #include <boost/type_traits/is_convertible.hpp>
+#include <boost/type_traits/is_base_of.hpp>
 #include <boost/utility/enable_if.hpp>
 #include <boost/fusion/support/sequence_base.hpp>
 #include <boost/fusion/support/is_sequence.hpp>
@@ -73,12 +74,13 @@ namespace boost { namespace fusion
             : car(rhs.car), cdr(rhs.cdr) {}
 
         template <typename Sequence>
-        BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+        BOOST_FUSION_GPU_ENABLED
         cons(
             Sequence const& seq
           , typename boost::enable_if<
                 mpl::and_<
                     traits::is_sequence<Sequence>
+                  , mpl::not_<is_base_of<cons, Sequence> >
                   , mpl::not_<is_convertible<Sequence, Car> > > // use copy to car instead
             >::type* /*dummy*/ = 0
         )

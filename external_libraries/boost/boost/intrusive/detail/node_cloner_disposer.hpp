@@ -36,21 +36,22 @@ struct node_cloner
    //Use public inheritance to avoid MSVC bugs with closures
    :  public ebo_functor_holder<F>
 {
-   typedef ValueTraits                             value_traits;
-   typedef typename value_traits::node_traits      node_traits;
-   typedef typename node_traits::node_ptr          node_ptr;
-   typedef ebo_functor_holder<F>                   base_t;
+   typedef ValueTraits                                      value_traits;
+   typedef typename value_traits::node_traits               node_traits;
+   typedef typename node_traits::node_ptr                   node_ptr;
+   typedef ebo_functor_holder<F>                            base_t;
    typedef typename get_algo< AlgoType
-                            , node_traits>::type   node_algorithms;
+                            , node_traits>::type            node_algorithms;
    static const bool safemode_or_autounlink =
       is_safe_autounlink<value_traits::link_mode>::value;
-   typedef typename value_traits::value_type       value_type;
-   typedef typename value_traits::pointer          pointer;
-   typedef typename node_traits::node              node;
-   typedef typename value_traits::const_node_ptr   const_node_ptr;
-   typedef typename value_traits::reference        reference;
-   typedef typename value_traits::const_reference  const_reference;
-
+   typedef typename value_traits::value_type                value_type;
+   typedef typename value_traits::pointer                   pointer;
+   typedef typename value_traits::const_pointer             const_pointer;
+   typedef typename node_traits::node                       node;
+   typedef typename value_traits::const_node_ptr            const_node_ptr;
+   typedef typename pointer_traits<pointer>::reference      reference;
+   typedef typename pointer_traits
+      <const_pointer>::reference                            const_reference;
    typedef typename if_c<IsConst, const_reference, reference>::type reference_type;
 
    node_cloner(F f, const ValueTraits *traits)
@@ -63,21 +64,7 @@ struct node_cloner
       reference_type v = *traits_->to_value_ptr(p);
       node_ptr n = traits_->to_node_ptr(*base_t::get()(v));
       //Cloned node must be in default mode if the linking mode requires it
-      if(safemode_or_autounlink)
-         BOOST_INTRUSIVE_SAFE_HOOK_DEFAULT_ASSERT(node_algorithms::unique(n));
-      return n;
-   }
-
-   // hashtables use this method, which is proxy-reference unfriendly
-   node_ptr operator()(const node &to_clone)
-   {
-      reference_type v =
-         *traits_->to_value_ptr
-            (pointer_traits<const_node_ptr>::pointer_to(to_clone));
-      node_ptr n = traits_->to_node_ptr(*base_t::get()(v));
-      //Cloned node must be in default mode if the linking mode requires it
-      if(safemode_or_autounlink)
-         BOOST_INTRUSIVE_SAFE_HOOK_DEFAULT_ASSERT(node_algorithms::unique(n));
+      BOOST_INTRUSIVE_SAFE_HOOK_DEFAULT_ASSERT(!safemode_or_autounlink || node_algorithms::unique(n));
       return n;
    }
 

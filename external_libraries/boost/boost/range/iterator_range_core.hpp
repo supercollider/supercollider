@@ -66,13 +66,13 @@ namespace boost
             template< class ForwardRange >
             static IteratorT adl_begin( ForwardRange& r )
             {
-                return static_cast<IteratorT>( boost::begin( r ) );
+                return IteratorT( boost::begin( r ) );
             }
 
             template< class ForwardRange >
             static IteratorT adl_end( ForwardRange& r )
             {
-                return static_cast<IteratorT>( boost::end( r ) );
+                return IteratorT( boost::end( r ) );
             }
         };
 

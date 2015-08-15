@@ -53,6 +53,12 @@
 
    #include <boost/move/detail/type_traits.hpp>
 
+   #if defined(BOOST_MOVE_ADDRESS_SANITIZER_ON)
+      #define BOOST_MOVE_TO_RV_CAST(RV_TYPE, ARG) reinterpret_cast<RV_TYPE>(ARG)
+   #else
+      #define BOOST_MOVE_TO_RV_CAST(RV_TYPE, ARG) static_cast<RV_TYPE>(ARG)
+   #endif
+
    //Move emulation rv breaks standard aliasing rules so add workarounds for some compilers
    #if defined(__GNUC__) && (__GNUC__ >= 4) && \
       (\
@@ -101,6 +107,12 @@
       : integral_constant<bool, ::boost::move_detail::is_rv_impl<T>::value >
    {};
 
+   template <class T>
+   struct is_not_rv
+   {
+      static const bool value = !is_rv<T>::value;
+   };
+
    }  //namespace move_detail {
 
    //////////////////////////////////////////////////////////////////////////////
@@ -112,6 +124,12 @@
    struct has_move_emulation_enabled
       : ::boost::move_detail::has_move_emulation_enabled_impl<T>
    {};
+
+   template<class T>
+   struct has_move_emulation_disabled
+   {
+      static const bool value = !::boost::move_detail::has_move_emulation_enabled_impl<T>::value;
+   };
 
    }  //namespace boost {
 
@@ -133,6 +151,14 @@
 
    #define BOOST_RV_REF_END\
       >& \
+   //
+
+   #define BOOST_RV_REF_BEG_IF_CXX11 \
+      \
+   //
+
+   #define BOOST_RV_REF_END_IF_CXX11 \
+      \
    //
 
    #define BOOST_FWD_REF(TYPE)\
@@ -183,7 +209,7 @@
       , ::boost::rv<T>&>::type
          move_return(T& x) BOOST_NOEXCEPT
    {
-      return *static_cast< ::boost::rv<T>* >(::boost::move_detail::addressof(x));
+      return *BOOST_MOVE_TO_RV_CAST(::boost::rv<T>*, ::boost::move_detail::addressof(x));
    }
 
    template <class Ret, class T>
@@ -216,9 +242,9 @@
       BOOST_MOVE_IMPL_NO_COPY_CTOR_OR_ASSIGN(TYPE)\
       public:\
       operator ::boost::rv<TYPE>&() \
-      {  return *static_cast< ::boost::rv<TYPE>* >(this);  }\
+      {  return *BOOST_MOVE_TO_RV_CAST(::boost::rv<TYPE>*, this);  }\
       operator const ::boost::rv<TYPE>&() const \
-      {  return *static_cast<const ::boost::rv<TYPE>* >(this);  }\
+      {  return *BOOST_MOVE_TO_RV_CAST(const ::boost::rv<TYPE>*, this);  }\
       private:\
    //
 
@@ -231,21 +257,21 @@
    #define BOOST_COPYABLE_AND_MOVABLE(TYPE)\
       public:\
       TYPE& operator=(TYPE &t)\
-      {  this->operator=(static_cast<const ::boost::rv<TYPE> &>(const_cast<const TYPE &>(t))); return *this;}\
+      {  this->operator=(const_cast<const TYPE &>(t)); return *this;}\
       public:\
       operator ::boost::rv<TYPE>&() \
-      {  return *static_cast< ::boost::rv<TYPE>* >(this);  }\
+      {  return *BOOST_MOVE_TO_RV_CAST(::boost::rv<TYPE>*, this);  }\
       operator const ::boost::rv<TYPE>&() const \
-      {  return *static_cast<const ::boost::rv<TYPE>* >(this);  }\
+      {  return *BOOST_MOVE_TO_RV_CAST(const ::boost::rv<TYPE>*, this);  }\
       private:\
    //
 
    #define BOOST_COPYABLE_AND_MOVABLE_ALT(TYPE)\
       public:\
       operator ::boost::rv<TYPE>&() \
-      {  return *static_cast< ::boost::rv<TYPE>* >(this);  }\
+      {  return *BOOST_MOVE_TO_RV_CAST(::boost::rv<TYPE>*, this);  }\
       operator const ::boost::rv<TYPE>&() const \
-      {  return *static_cast<const ::boost::rv<TYPE>* >(this);  }\
+      {  return *BOOST_MOVE_TO_RV_CAST(const ::boost::rv<TYPE>*, this);  }\
       private:\
    //
 
@@ -295,6 +321,12 @@
       static const bool value = false;
    };
 
+   template<class T>
+   struct has_move_emulation_disabled
+   {
+      static const bool value = true;
+   };
+
    }  //namespace boost{
 
    //!This macro is used to achieve portable syntax in move
@@ -322,6 +354,19 @@
    //!and ended with BOOST_RV_REF_END
    #define BOOST_RV_REF_END\
       && \
+   //
+
+   //!This macro expands to BOOST_RV_REF_BEG if BOOST_NO_CXX11_RVALUE_REFERENCES
+   //!is not defined, empty otherwise
+   #define BOOST_RV_REF_BEG_IF_CXX11 \
+      BOOST_RV_REF_BEG \
+   //
+
+   //!This macro expands to BOOST_RV_REF_END if BOOST_NO_CXX11_RVALUE_REFERENCES
+   //!is not defined, empty otherwise
+   #define BOOST_RV_REF_END_IF_CXX11 \
+      BOOST_RV_REF_END \
+   //
 
    //!This macro is used to achieve portable syntax in copy
    //!assignment for classes marked as BOOST_COPYABLE_AND_MOVABLE.

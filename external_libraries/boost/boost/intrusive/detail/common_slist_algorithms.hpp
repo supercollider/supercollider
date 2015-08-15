@@ -46,7 +46,7 @@ class common_slist_algorithms
          ; this_node != (p_next = NodeTraits::get_next(p))
          ; p = p_next){
          //Logic error: possible use of linear lists with
-         //operations only permitted with lists
+         //operations only permitted with circular lists
          BOOST_INTRUSIVE_INVARIANT_ASSERT(p);
       }
       return p;

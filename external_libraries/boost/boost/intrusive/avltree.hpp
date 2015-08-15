@@ -48,19 +48,16 @@ struct is_default_hook_tag<default_avltree_hook_applier>
 {  static const bool value = true;  };
 
 struct avltree_defaults
+   : bstree_defaults
 {
    typedef default_avltree_hook_applier proto_value_traits;
-   static const bool constant_time_size = true;
-   typedef std::size_t size_type;
-   typedef void compare;
-   typedef void header_holder_type;
 };
 
 /// @endcond
 
 //! The class template avltree is an intrusive AVL tree container, that
 //! is used to construct intrusive avl_set and avl_multiset containers.
-//! The no-throw guarantee holds only, if the value_compare object
+//! The no-throw guarantee holds only, if the key_compare object
 //! doesn't throw.
 //!
 //! The template parameter \c T is the type to be managed by the container.
@@ -74,17 +71,17 @@ struct avltree_defaults
 #if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
 template<class T, class ...Options>
 #else
-template<class ValueTraits, class VoidOrKeyComp, class SizeType, bool ConstantTimeSize, typename HeaderHolder>
+template<class ValueTraits, class VoidOrKeyOfValue, class VoidOrKeyComp, class SizeType, bool ConstantTimeSize, typename HeaderHolder>
 #endif
 class avltree_impl
    /// @cond
-   :  public bstree_impl<ValueTraits, VoidOrKeyComp, SizeType, ConstantTimeSize, AvlTreeAlgorithms, HeaderHolder>
+   :  public bstree_impl<ValueTraits, VoidOrKeyOfValue, VoidOrKeyComp, SizeType, ConstantTimeSize, AvlTreeAlgorithms, HeaderHolder>
    /// @endcond
 {
    public:
    typedef ValueTraits value_traits;
    /// @cond
-   typedef bstree_impl< ValueTraits, VoidOrKeyComp, SizeType
+   typedef bstree_impl< ValueTraits, VoidOrKeyOfValue, VoidOrKeyComp, SizeType
                       , ConstantTimeSize, AvlTreeAlgorithms
                       , HeaderHolder>                                tree_type;
    typedef tree_type                                                 implementation_defined;
@@ -94,6 +91,7 @@ class avltree_impl
    typedef typename implementation_defined::const_pointer            const_pointer;
    typedef typename implementation_defined::value_type               value_type;
    typedef typename implementation_defined::key_type                 key_type;
+   typedef typename implementation_defined::key_of_value             key_of_value;
    typedef typename implementation_defined::reference                reference;
    typedef typename implementation_defined::const_reference          const_reference;
    typedef typename implementation_defined::difference_type          difference_type;
@@ -124,16 +122,16 @@ class avltree_impl
    typedef typename implementation_defined::insert_commit_data insert_commit_data;
 
 
-   //! @copydoc ::boost::intrusive::bstree::bstree(const value_compare &,const value_traits &)
-   explicit avltree_impl( const value_compare &cmp = value_compare()
+   //! @copydoc ::boost::intrusive::bstree::bstree(const key_compare &,const value_traits &)
+   explicit avltree_impl( const key_compare &cmp = key_compare()
                        , const value_traits &v_traits = value_traits())
       :  tree_type(cmp, v_traits)
    {}
 
-   //! @copydoc ::boost::intrusive::bstree::bstree(bool,Iterator,Iterator,const value_compare &,const value_traits &)
+   //! @copydoc ::boost::intrusive::bstree::bstree(bool,Iterator,Iterator,const key_compare &,const value_traits &)
    template<class Iterator>
    avltree_impl( bool unique, Iterator b, Iterator e
-              , const value_compare &cmp     = value_compare()
+              , const key_compare &cmp     = key_compare()
               , const value_traits &v_traits = value_traits())
       : tree_type(unique, b, e, cmp, v_traits)
    {}
@@ -215,9 +213,22 @@ class avltree_impl
    //! @copydoc ::boost::intrusive::bstree::swap
    void swap(avltree_impl& other);
 
-   //! @copydoc ::boost::intrusive::bstree::clone_from
+   //! @copydoc ::boost::intrusive::bstree::clone_from(const bstree&,Cloner,Disposer)
    template <class Cloner, class Disposer>
    void clone_from(const avltree_impl &src, Cloner cloner, Disposer disposer);
+
+   #else //BOOST_INTRUSIVE_DOXYGEN_INVOKED
+
+   using tree_type::clone_from;
+
+   #endif   //#ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
+
+   //! @copydoc ::boost::intrusive::bstree::clone_from(bstree&&,Cloner,Disposer)
+   template <class Cloner, class Disposer>
+   void clone_from(BOOST_RV_REF(avltree_impl) src, Cloner cloner, Disposer disposer)
+   {  tree_type::clone_from(BOOST_MOVE_BASE(tree_type, src), cloner, disposer);  }
+
+   #ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
 
    //! @copydoc ::boost::intrusive::bstree::insert_equal(reference)
    iterator insert_equal(reference value);
@@ -235,16 +246,16 @@ class avltree_impl
    //! @copydoc ::boost::intrusive::bstree::insert_unique(const_iterator,reference)
    iterator insert_unique(const_iterator hint, reference value);
 
-   //! @copydoc ::boost::intrusive::bstree::insert_unique_check(const KeyType&,KeyValueCompare,insert_commit_data&)
-   template<class KeyType, class KeyValueCompare>
+   //! @copydoc ::boost::intrusive::bstree::insert_unique_check(const KeyType&,KeyTypeKeyCompare,insert_commit_data&)
+   template<class KeyType, class KeyTypeKeyCompare>
    std::pair<iterator, bool> insert_unique_check
-      (const KeyType &key, KeyValueCompare key_value_comp, insert_commit_data &commit_data);
+      (const KeyType &key, KeyTypeKeyCompare comp, insert_commit_data &commit_data);
 
-   //! @copydoc ::boost::intrusive::bstree::insert_unique_check(const_iterator,const KeyType&,KeyValueCompare,insert_commit_data&)
-   template<class KeyType, class KeyValueCompare>
+   //! @copydoc ::boost::intrusive::bstree::insert_unique_check(const_iterator,const KeyType&,KeyTypeKeyCompare,insert_commit_data&)
+   template<class KeyType, class KeyTypeKeyCompare>
    std::pair<iterator, bool> insert_unique_check
       (const_iterator hint, const KeyType &key
-      ,KeyValueCompare key_value_comp, insert_commit_data &commit_data);
+      ,KeyTypeKeyCompare comp, insert_commit_data &commit_data);
 
    //! @copydoc ::boost::intrusive::bstree::insert_unique_commit
    iterator insert_unique_commit(reference value, const insert_commit_data &commit_data);
@@ -268,12 +279,12 @@ class avltree_impl
    //! @copydoc ::boost::intrusive::bstree::erase(const_iterator,const_iterator)
    iterator erase(const_iterator b, const_iterator e);
 
-   //! @copydoc ::boost::intrusive::bstree::erase(const_reference)
-   size_type erase(const_reference value);
+   //! @copydoc ::boost::intrusive::bstree::erase(const key_type &)
+   size_type erase(const key_type &key);
 
-   //! @copydoc ::boost::intrusive::bstree::erase(const KeyType&,KeyValueCompare)
-   template<class KeyType, class KeyValueCompare>
-   size_type erase(const KeyType& key, KeyValueCompare comp);
+   //! @copydoc ::boost::intrusive::bstree::erase(const KeyType&,KeyTypeKeyCompare)
+   template<class KeyType, class KeyTypeKeyCompare>
+   size_type erase(const KeyType& key, KeyTypeKeyCompare comp);
 
    //! @copydoc ::boost::intrusive::bstree::erase_and_dispose(const_iterator,Disposer)
    template<class Disposer>
@@ -283,13 +294,13 @@ class avltree_impl
    template<class Disposer>
    iterator erase_and_dispose(const_iterator b, const_iterator e, Disposer disposer);
 
-   //! @copydoc ::boost::intrusive::bstree::erase_and_dispose(const_reference, Disposer)
+   //! @copydoc ::boost::intrusive::bstree::erase_and_dispose(const key_type &, Disposer)
    template<class Disposer>
-   size_type erase_and_dispose(const_reference value, Disposer disposer);
+   size_type erase_and_dispose(const key_type &key, Disposer disposer);
 
-   //! @copydoc ::boost::intrusive::bstree::erase_and_dispose(const KeyType&,KeyValueCompare,Disposer)
-   template<class KeyType, class KeyValueCompare, class Disposer>
-   size_type erase_and_dispose(const KeyType& key, KeyValueCompare comp, Disposer disposer);
+   //! @copydoc ::boost::intrusive::bstree::erase_and_dispose(const KeyType&,KeyTypeKeyCompare,Disposer)
+   template<class KeyType, class KeyTypeKeyCompare, class Disposer>
+   size_type erase_and_dispose(const KeyType& key, KeyTypeKeyCompare comp, Disposer disposer);
 
    //! @copydoc ::boost::intrusive::bstree::clear
    void clear();
@@ -298,88 +309,88 @@ class avltree_impl
    template<class Disposer>
    void clear_and_dispose(Disposer disposer);
 
-   //! @copydoc ::boost::intrusive::bstree::count(const_reference)const
-   size_type count(const_reference value) const;
+   //! @copydoc ::boost::intrusive::bstree::count(const key_type &ke)const
+   size_type count(const key_type &key) const;
 
-   //! @copydoc ::boost::intrusive::bstree::count(const KeyType&,KeyValueCompare)const
-   template<class KeyType, class KeyValueCompare>
-   size_type count(const KeyType& key, KeyValueCompare comp) const;
+   //! @copydoc ::boost::intrusive::bstree::count(const KeyType&,KeyTypeKeyCompare)const
+   template<class KeyType, class KeyTypeKeyCompare>
+   size_type count(const KeyType& key, KeyTypeKeyCompare comp) const;
 
-   //! @copydoc ::boost::intrusive::bstree::lower_bound(const_reference)
-   iterator lower_bound(const_reference value);
+   //! @copydoc ::boost::intrusive::bstree::lower_bound(const key_type &)
+   iterator lower_bound(const key_type &key);
 
-   //! @copydoc ::boost::intrusive::bstree::lower_bound(const KeyType&,KeyValueCompare)
-   template<class KeyType, class KeyValueCompare>
-   iterator lower_bound(const KeyType& key, KeyValueCompare comp);
+   //! @copydoc ::boost::intrusive::bstree::lower_bound(const KeyType&,KeyTypeKeyCompare)
+   template<class KeyType, class KeyTypeKeyCompare>
+   iterator lower_bound(const KeyType& key, KeyTypeKeyCompare comp);
 
-   //! @copydoc ::boost::intrusive::bstree::lower_bound(const_reference)const
-   const_iterator lower_bound(const_reference value) const;
+   //! @copydoc ::boost::intrusive::bstree::lower_bound(const key_type &)const
+   const_iterator lower_bound(const key_type &key) const;
 
-   //! @copydoc ::boost::intrusive::bstree::lower_bound(const KeyType&,KeyValueCompare)const
-   template<class KeyType, class KeyValueCompare>
-   const_iterator lower_bound(const KeyType& key, KeyValueCompare comp) const;
+   //! @copydoc ::boost::intrusive::bstree::lower_bound(const KeyType&,KeyTypeKeyCompare)const
+   template<class KeyType, class KeyTypeKeyCompare>
+   const_iterator lower_bound(const KeyType& key, KeyTypeKeyCompare comp) const;
 
-   //! @copydoc ::boost::intrusive::bstree::upper_bound(const_reference)
-   iterator upper_bound(const_reference value);
+   //! @copydoc ::boost::intrusive::bstree::upper_bound(const key_type &key)
+   iterator upper_bound(const key_type &key);
 
-   //! @copydoc ::boost::intrusive::bstree::upper_bound(const KeyType&,KeyValueCompare)
-   template<class KeyType, class KeyValueCompare>
-   iterator upper_bound(const KeyType& key, KeyValueCompare comp);
+   //! @copydoc ::boost::intrusive::bstree::upper_bound(const KeyType&,KeyTypeKeyCompare)
+   template<class KeyType, class KeyTypeKeyCompare>
+   iterator upper_bound(const KeyType& key, KeyTypeKeyCompare comp);
 
-   //! @copydoc ::boost::intrusive::bstree::upper_bound(const_reference)const
-   const_iterator upper_bound(const_reference value) const;
+   //! @copydoc ::boost::intrusive::bstree::upper_bound(const key_type &)const
+   const_iterator upper_bound(const key_type &key) const;
 
-   //! @copydoc ::boost::intrusive::bstree::upper_bound(const KeyType&,KeyValueCompare)const
-   template<class KeyType, class KeyValueCompare>
-   const_iterator upper_bound(const KeyType& key, KeyValueCompare comp) const;
+   //! @copydoc ::boost::intrusive::bstree::upper_bound(const KeyType&,KeyTypeKeyCompare)const
+   template<class KeyType, class KeyTypeKeyCompare>
+   const_iterator upper_bound(const KeyType& key, KeyTypeKeyCompare comp) const;
 
-   //! @copydoc ::boost::intrusive::bstree::find(const_reference)
-   iterator find(const_reference value);
+   //! @copydoc ::boost::intrusive::bstree::find(const key_type &)
+   iterator find(const key_type &key);
 
-   //! @copydoc ::boost::intrusive::bstree::find(const KeyType&,KeyValueCompare)
-   template<class KeyType, class KeyValueCompare>
-   iterator find(const KeyType& key, KeyValueCompare comp);
+   //! @copydoc ::boost::intrusive::bstree::find(const KeyType&,KeyTypeKeyCompare)
+   template<class KeyType, class KeyTypeKeyCompare>
+   iterator find(const KeyType& key, KeyTypeKeyCompare comp);
 
-   //! @copydoc ::boost::intrusive::bstree::find(const_reference)const
-   const_iterator find(const_reference value) const;
+   //! @copydoc ::boost::intrusive::bstree::find(const key_type &)const
+   const_iterator find(const key_type &key) const;
 
-   //! @copydoc ::boost::intrusive::bstree::find(const KeyType&,KeyValueCompare)const
-   template<class KeyType, class KeyValueCompare>
-   const_iterator find(const KeyType& key, KeyValueCompare comp) const;
+   //! @copydoc ::boost::intrusive::bstree::find(const KeyType&,KeyTypeKeyCompare)const
+   template<class KeyType, class KeyTypeKeyCompare>
+   const_iterator find(const KeyType& key, KeyTypeKeyCompare comp) const;
 
-   //! @copydoc ::boost::intrusive::bstree::equal_range(const_reference)
-   std::pair<iterator,iterator> equal_range(const_reference value);
+   //! @copydoc ::boost::intrusive::bstree::equal_range(const key_type &)
+   std::pair<iterator,iterator> equal_range(const key_type &key);
 
-   //! @copydoc ::boost::intrusive::bstree::equal_range(const KeyType&,KeyValueCompare)
-   template<class KeyType, class KeyValueCompare>
-   std::pair<iterator,iterator> equal_range(const KeyType& key, KeyValueCompare comp);
+   //! @copydoc ::boost::intrusive::bstree::equal_range(const KeyType&,KeyTypeKeyCompare)
+   template<class KeyType, class KeyTypeKeyCompare>
+   std::pair<iterator,iterator> equal_range(const KeyType& key, KeyTypeKeyCompare comp);
 
-   //! @copydoc ::boost::intrusive::bstree::equal_range(const_reference)const
+   //! @copydoc ::boost::intrusive::bstree::equal_range(const key_type &)const
    std::pair<const_iterator, const_iterator>
-      equal_range(const_reference value) const;
+      equal_range(const key_type &key) const;
 
-   //! @copydoc ::boost::intrusive::bstree::equal_range(const KeyType&,KeyValueCompare)const
-   template<class KeyType, class KeyValueCompare>
+   //! @copydoc ::boost::intrusive::bstree::equal_range(const KeyType&,KeyTypeKeyCompare)const
+   template<class KeyType, class KeyTypeKeyCompare>
    std::pair<const_iterator, const_iterator>
-      equal_range(const KeyType& key, KeyValueCompare comp) const;
+      equal_range(const KeyType& key, KeyTypeKeyCompare comp) const;
 
-   //! @copydoc ::boost::intrusive::bstree::bounded_range(const_reference,const_reference,bool,bool)
+   //! @copydoc ::boost::intrusive::bstree::bounded_range(const key_type &,const key_type &,bool,bool)
    std::pair<iterator,iterator> bounded_range
-      (const_reference lower_value, const_reference upper_value, bool left_closed, bool right_closed);
+      (const key_type &lower, const key_type &upper_key, bool left_closed, bool right_closed);
 
-   //! @copydoc ::boost::intrusive::bstree::bounded_range(const KeyType&,const KeyType&,KeyValueCompare,bool,bool)
-   template<class KeyType, class KeyValueCompare>
+   //! @copydoc ::boost::intrusive::bstree::bounded_range(const KeyType&,const KeyType&,KeyTypeKeyCompare,bool,bool)
+   template<class KeyType, class KeyTypeKeyCompare>
    std::pair<iterator,iterator> bounded_range
-      (const KeyType& lower_key, const KeyType& upper_key, KeyValueCompare comp, bool left_closed, bool right_closed);
+      (const KeyType& lower_key, const KeyType& upper_key, KeyTypeKeyCompare comp, bool left_closed, bool right_closed);
 
-   //! @copydoc ::boost::intrusive::bstree::bounded_range(const_reference,const_reference,bool,bool)const
+   //! @copydoc ::boost::intrusive::bstree::bounded_range(const key_type &,const key_type &,bool,bool)const
    std::pair<const_iterator, const_iterator>
-      bounded_range(const_reference lower_value, const_reference upper_value, bool left_closed, bool right_closed) const;
+      bounded_range(const key_type &lower_key, const key_type &upper_key, bool left_closed, bool right_closed) const;
 
-   //! @copydoc ::boost::intrusive::bstree::bounded_range(const KeyType&,const KeyType&,KeyValueCompare,bool,bool)const
-   template<class KeyType, class KeyValueCompare>
+   //! @copydoc ::boost::intrusive::bstree::bounded_range(const KeyType&,const KeyType&,KeyTypeKeyCompare,bool,bool)const
+   template<class KeyType, class KeyTypeKeyCompare>
    std::pair<const_iterator, const_iterator> bounded_range
-         (const KeyType& lower_key, const KeyType& upper_key, KeyValueCompare comp, bool left_closed, bool right_closed) const;
+         (const KeyType& lower_key, const KeyType& upper_key, KeyTypeKeyCompare comp, bool left_closed, bool right_closed) const;
 
    //! @copydoc ::boost::intrusive::bstree::s_iterator_to(reference)
    static iterator s_iterator_to(reference value);
@@ -404,33 +415,23 @@ class avltree_impl
 
    //! @copydoc ::boost::intrusive::bstree::remove_node
    void remove_node(reference value);
+
+   friend bool operator< (const avltree_impl &x, const avltree_impl &y);
+
+   friend bool operator==(const avltree_impl &x, const avltree_impl &y);
+
+   friend bool operator!= (const avltree_impl &x, const avltree_impl &y);
+
+   friend bool operator>(const avltree_impl &x, const avltree_impl &y);
+
+   friend bool operator<=(const avltree_impl &x, const avltree_impl &y);
+
+   friend bool operator>=(const avltree_impl &x, const avltree_impl &y);
+
+   friend void swap(avltree_impl &x, avltree_impl &y);
    #endif   //#ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
 };
 
-#if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
-
-template<class T, class ...Options>
-bool operator< (const avltree_impl<T, Options...> &x, const avltree_impl<T, Options...> &y);
-
-template<class T, class ...Options>
-bool operator==(const avltree_impl<T, Options...> &x, const avltree_impl<T, Options...> &y);
-
-template<class T, class ...Options>
-bool operator!= (const avltree_impl<T, Options...> &x, const avltree_impl<T, Options...> &y);
-
-template<class T, class ...Options>
-bool operator>(const avltree_impl<T, Options...> &x, const avltree_impl<T, Options...> &y);
-
-template<class T, class ...Options>
-bool operator<=(const avltree_impl<T, Options...> &x, const avltree_impl<T, Options...> &y);
-
-template<class T, class ...Options>
-bool operator>=(const avltree_impl<T, Options...> &x, const avltree_impl<T, Options...> &y);
-
-template<class T, class ...Options>
-void swap(avltree_impl<T, Options...> &x, avltree_impl<T, Options...> &y);
-
-#endif   //#if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
 
 //! Helper metafunction to define a \c avltree that yields to the same type when the
 //! same options (either explicitly or implicitly) are used.
@@ -439,7 +440,7 @@ template<class T, class ...Options>
 #else
 template<class T, class O1 = void, class O2 = void
                 , class O3 = void, class O4 = void
-                , class O5 = void>
+                , class O5 = void, class O6 = void>
 #endif
 struct make_avltree
 {
@@ -447,7 +448,7 @@ struct make_avltree
    typedef typename pack_options
       < avltree_defaults,
       #if !defined(BOOST_INTRUSIVE_VARIADIC_TEMPLATES)
-      O1, O2, O3, O4, O5
+      O1, O2, O3, O4, O5, O6
       #else
       Options...
       #endif
@@ -458,6 +459,7 @@ struct make_avltree
 
    typedef avltree_impl
          < value_traits
+         , typename packed_options::key_of_value
          , typename packed_options::compare
          , typename packed_options::size_type
          , packed_options::constant_time_size
@@ -471,14 +473,14 @@ struct make_avltree
 #ifndef BOOST_INTRUSIVE_DOXYGEN_INVOKED
 
 #if !defined(BOOST_INTRUSIVE_VARIADIC_TEMPLATES)
-template<class T, class O1, class O2, class O3, class O4, class O5>
+template<class T, class O1, class O2, class O3, class O4, class O5, class O6>
 #else
 template<class T, class ...Options>
 #endif
 class avltree
    :  public make_avltree<T,
       #if !defined(BOOST_INTRUSIVE_VARIADIC_TEMPLATES)
-      O1, O2, O3, O4, O5
+      O1, O2, O3, O4, O5, O6
       #else
       Options...
       #endif
@@ -487,7 +489,7 @@ class avltree
    typedef typename make_avltree
       <T,
       #if !defined(BOOST_INTRUSIVE_VARIADIC_TEMPLATES)
-      O1, O2, O3, O4, O5
+      O1, O2, O3, O4, O5, O6
       #else
       Options...
       #endif
@@ -495,7 +497,7 @@ class avltree
    BOOST_MOVABLE_BUT_NOT_COPYABLE(avltree)
 
    public:
-   typedef typename Base::value_compare      value_compare;
+   typedef typename Base::key_compare        key_compare;
    typedef typename Base::value_traits       value_traits;
    typedef typename Base::iterator           iterator;
    typedef typename Base::const_iterator     const_iterator;
@@ -505,14 +507,14 @@ class avltree
    //Assert if passed value traits are compatible with the type
    BOOST_STATIC_ASSERT((detail::is_same<typename value_traits::value_type, T>::value));
 
-   explicit avltree( const value_compare &cmp = value_compare()
+   explicit avltree( const key_compare &cmp = key_compare()
                    , const value_traits &v_traits = value_traits())
       :  Base(cmp, v_traits)
    {}
 
    template<class Iterator>
    avltree( bool unique, Iterator b, Iterator e
-         , const value_compare &cmp = value_compare()
+         , const key_compare &cmp = key_compare()
          , const value_traits &v_traits = value_traits())
       :  Base(unique, b, e, cmp, v_traits)
    {}
@@ -523,6 +525,14 @@ class avltree
 
    avltree& operator=(BOOST_RV_REF(avltree) x)
    {  return static_cast<avltree &>(this->Base::operator=(BOOST_MOVE_BASE(Base, x)));  }
+
+   template <class Cloner, class Disposer>
+   void clone_from(const avltree &src, Cloner cloner, Disposer disposer)
+   {  Base::clone_from(src, cloner, disposer);  }
+
+   template <class Cloner, class Disposer>
+   void clone_from(BOOST_RV_REF(avltree) src, Cloner cloner, Disposer disposer)
+   {  Base::clone_from(BOOST_MOVE_BASE(Base, src), cloner, disposer);  }
 
    static avltree &container_from_end_iterator(iterator end_iterator)
    {  return static_cast<avltree &>(Base::container_from_end_iterator(end_iterator));   }

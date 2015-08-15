@@ -203,6 +203,7 @@ class ebo_functor_holder
    typedef ebo_functor_holder_impl<T, is_unary_or_binary_function<T>::value> super;
 
    public:
+   typedef T functor_type;
    ebo_functor_holder(){}
    explicit ebo_functor_holder(const T& t)
       :  super(t)

@@ -173,87 +173,25 @@ struct node_alloc_holder
    }
 
    #else //defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)
-   NodePtr create_node()
-   {
-      NodePtr p = this->allocate_one();
-      Deallocator node_deallocator(p, this->node_alloc());
-      allocator_traits<NodeAlloc>::construct
-         (this->node_alloc(), container_detail::addressof(p->m_data));
-      node_deallocator.release();
-      typedef typename Node::hook_type hook_type;
-      ::new(static_cast<hook_type*>(container_detail::to_raw_pointer(p)), boost_container_new_t()) hook_type;
-      return (p);
-   }
 
-   template<BOOST_MOVE_CLASS1>
-   NodePtr create_node(BOOST_MOVE_UREF1)
-   {
-      NodePtr p = this->allocate_one();
-      Deallocator node_deallocator(p, this->node_alloc());
-      allocator_traits<NodeAlloc>::construct
-         (this->node_alloc(), container_detail::addressof(p->m_data)
-         , BOOST_MOVE_FWD1);
-      node_deallocator.release();
-      typedef typename Node::hook_type hook_type;
-      ::new(static_cast<hook_type*>(container_detail::to_raw_pointer(p)), boost_container_new_t()) hook_type;
-      return (p);
-   }
-
-   template<BOOST_MOVE_CLASS2>
-   NodePtr create_node(BOOST_MOVE_UREF2)
-   {
-      NodePtr p = this->allocate_one();
-      Deallocator node_deallocator(p, this->node_alloc());
-      allocator_traits<NodeAlloc>::construct
-         (this->node_alloc(), container_detail::addressof(p->m_data)
-         , BOOST_MOVE_FWD2);
-      node_deallocator.release();
-      typedef typename Node::hook_type hook_type;
-      ::new(static_cast<hook_type*>(container_detail::to_raw_pointer(p)), boost_container_new_t()) hook_type;
-      return (p);
-   }
-
-   template<BOOST_MOVE_CLASS3>
-   NodePtr create_node(BOOST_MOVE_UREF3)
-   {
-      NodePtr p = this->allocate_one();
-      Deallocator node_deallocator(p, this->node_alloc());
-      allocator_traits<NodeAlloc>::construct
-         (this->node_alloc(), container_detail::addressof(p->m_data)
-         , BOOST_MOVE_FWD3);
-      node_deallocator.release();
-      typedef typename Node::hook_type hook_type;
-      ::new(static_cast<hook_type*>(container_detail::to_raw_pointer(p)), boost_container_new_t()) hook_type;
-      return (p);
-   }
-
-   template<BOOST_MOVE_CLASS4>
-   NodePtr create_node(BOOST_MOVE_UREF4)
-   {
-      NodePtr p = this->allocate_one();
-      Deallocator node_deallocator(p, this->node_alloc());
-      allocator_traits<NodeAlloc>::construct
-         (this->node_alloc(), container_detail::addressof(p->m_data)
-         , BOOST_MOVE_FWD4);
-      node_deallocator.release();
-      typedef typename Node::hook_type hook_type;
-      ::new(static_cast<hook_type*>(container_detail::to_raw_pointer(p)), boost_container_new_t()) hook_type;
-      return (p);
-   }
-
-   template<BOOST_MOVE_CLASS5>
-   NodePtr create_node(BOOST_MOVE_UREF5)
-   {
-      NodePtr p = this->allocate_one();
-      Deallocator node_deallocator(p, this->node_alloc());
-      allocator_traits<NodeAlloc>::construct
-         (this->node_alloc(), container_detail::addressof(p->m_data)
-         , BOOST_MOVE_FWD5);
-      node_deallocator.release();
-      typedef typename Node::hook_type hook_type;
-      ::new(static_cast<hook_type*>(container_detail::to_raw_pointer(p)), boost_container_new_t()) hook_type;
-      return (p);
-   }
+   #define BOOST_CONTAINER_NODE_ALLOC_HOLDER_CONSTRUCT_IMPL(N) \
+   BOOST_MOVE_TMPL_LT##N BOOST_MOVE_CLASS##N BOOST_MOVE_GT##N \
+   NodePtr create_node(BOOST_MOVE_UREF##N)\
+   {\
+      NodePtr p = this->allocate_one();\
+      Deallocator node_deallocator(p, this->node_alloc());\
+      allocator_traits<NodeAlloc>::construct\
+         ( this->node_alloc()\
+         , container_detail::addressof(p->m_data)\
+          BOOST_MOVE_I##N BOOST_MOVE_FWD##N);\
+      node_deallocator.release();\
+      typedef typename Node::hook_type hook_type;\
+      ::new(static_cast<hook_type*>(container_detail::to_raw_pointer(p)), boost_container_new_t()) hook_type;\
+      return (p);\
+   }\
+   //
+   BOOST_MOVE_ITERATE_0TO9(BOOST_CONTAINER_NODE_ALLOC_HOLDER_CONSTRUCT_IMPL)
+   #undef BOOST_CONTAINER_NODE_ALLOC_HOLDER_CONSTRUCT_IMPL
 
    #endif   // !defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)
 
@@ -375,7 +313,7 @@ struct node_alloc_holder
       {}
 
       NodePtr operator()(const Node &other) const
-      {  return m_holder.create_node(other.get_data());  }
+      {  return m_holder.create_node(other.m_data);  }
 
       node_alloc_holder &m_holder;
    };
@@ -387,7 +325,9 @@ struct node_alloc_holder
       {}
 
       NodePtr operator()(Node &other)
-      {  return m_holder.create_node(::boost::move(other.get_data()));  }
+      {  //Use m_data instead of get_data to allow moving const key in [multi]map
+         return m_holder.create_node(::boost::move(other.m_data));
+      }
 
       node_alloc_holder &m_holder;
    };
@@ -413,12 +353,12 @@ struct node_alloc_holder
       template<class ConvertibleToAlloc>
       members_holder(BOOST_FWD_REF(ConvertibleToAlloc) c2alloc, const value_compare &c)
          :  NodeAlloc(boost::forward<ConvertibleToAlloc>(c2alloc))
-         , m_icont(typename ICont::value_compare(c))
+         , m_icont(typename ICont::key_compare(c))
       {}
 
       explicit members_holder(const value_compare &c)
          : NodeAlloc()
-         , m_icont(typename ICont::value_compare(c))
+         , m_icont(typename ICont::key_compare(c))
       {}
 
       //The intrusive container

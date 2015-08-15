@@ -36,7 +36,7 @@ namespace intrusive {
 template<class ValueTraits, bool IsConst>
 class slist_iterator
 {
-   protected:
+   private:
    typedef iiterator
       <ValueTraits, IsConst, std::forward_iterator_tag> types_t;
 

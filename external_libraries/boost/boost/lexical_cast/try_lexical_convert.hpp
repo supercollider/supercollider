@@ -24,8 +24,9 @@
 #endif
 
 #include <string>
+#include <boost/mpl/bool.hpp>
+#include <boost/mpl/identity.hpp>
 #include <boost/mpl/if.hpp>
-#include <boost/type_traits/ice.hpp>
 #include <boost/type_traits/is_same.hpp>
 #include <boost/type_traits/is_arithmetic.hpp>
 
@@ -57,17 +58,15 @@ namespace boost {
         template<typename Target, typename Source>
         struct is_arithmetic_and_not_xchars
         {
+            typedef boost::mpl::bool_<
+                    !(boost::detail::is_character<Target>::value) &&
+                    !(boost::detail::is_character<Source>::value) &&
+                    boost::is_arithmetic<Source>::value &&
+                    boost::is_arithmetic<Target>::value
+                > type;
+        
             BOOST_STATIC_CONSTANT(bool, value = (
-                boost::type_traits::ice_and<
-                    boost::type_traits::ice_not<
-                        boost::detail::is_character<Target>::value
-                    >::value,
-                    boost::type_traits::ice_not<
-                        boost::detail::is_character<Source>::value
-                    >::value,
-                    boost::is_arithmetic<Source>::value,
-                    boost::is_arithmetic<Target>::value       
-                >::value
+                type::value
             ));
         };
 
@@ -78,13 +77,15 @@ namespace boost {
         template<typename Target, typename Source>
         struct is_xchar_to_xchar 
         {
-            BOOST_STATIC_CONSTANT(bool, value = (
-                boost::type_traits::ice_and<
-                     boost::type_traits::ice_eq<sizeof(Source), sizeof(Target)>::value,
-                     boost::type_traits::ice_eq<sizeof(Source), sizeof(char)>::value,
-                     boost::detail::is_character<Target>::value,
+            typedef boost::mpl::bool_<
+                     sizeof(Source) == sizeof(Target) &&
+                     sizeof(Source) == sizeof(char) &&
+                     boost::detail::is_character<Target>::value &&
                      boost::detail::is_character<Source>::value
-                >::value
+                > type;
+                
+            BOOST_STATIC_CONSTANT(bool, value = (
+                type::value
             ));
         };
 
@@ -140,17 +141,17 @@ namespace boost {
         {
             typedef BOOST_DEDUCED_TYPENAME boost::detail::array_to_pointer_decay<Source>::type src;
 
-            typedef BOOST_DEDUCED_TYPENAME boost::type_traits::ice_or<
-                boost::detail::is_xchar_to_xchar<Target, src >::value,
-                boost::detail::is_char_array_to_stdstring<Target, src >::value,
-                boost::type_traits::ice_and<
-                     boost::is_same<Target, src >::value,
+            typedef boost::mpl::bool_<
+                boost::detail::is_xchar_to_xchar<Target, src >::value ||
+                boost::detail::is_char_array_to_stdstring<Target, src >::value ||
+                (
+                     boost::is_same<Target, src >::value &&
                      boost::detail::is_stdstring<Target >::value
-                >::value,
-                boost::type_traits::ice_and<
-                     boost::is_same<Target, src >::value,
+                ) ||
+                (
+                     boost::is_same<Target, src >::value &&
                      boost::detail::is_character<Target >::value
-                >::value
+                )
             > shall_we_copy_t;
 
             typedef boost::detail::is_arithmetic_and_not_xchars<Target, src >

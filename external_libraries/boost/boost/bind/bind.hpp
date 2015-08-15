@@ -29,6 +29,8 @@
 #include <boost/bind/arg.hpp>
 #include <boost/detail/workaround.hpp>
 #include <boost/visit_each.hpp>
+#include <boost/core/enable_if.hpp>
+#include <boost/core/is_same.hpp>
 
 // Borland-specific bug, visit_each() silently fails to produce code
 

@@ -1129,7 +1129,7 @@ class scoped_allocator_adaptor
    #if defined(BOOST_CONTAINER_DOXYGEN_INVOKED)
    void
    #else
-   typename container_detail::enable_if_c<!container_detail::is_pair<T>::value, void>::type
+   typename container_detail::enable_if<container_detail::is_not_pair<T> >::type
    #endif
    construct(T* p, BOOST_FWD_REF(Args)...args)
    {
@@ -1146,7 +1146,7 @@ class scoped_allocator_adaptor
    //overload selection problems when the first parameter is a pair.
    #define BOOST_CONTAINER_SCOPED_ALLOCATOR_CONSTRUCT_CODE(N) \
    template < typename T BOOST_MOVE_I##N BOOST_MOVE_CLASSQ##N >\
-   typename container_detail::enable_if_c<!container_detail::is_pair<T>::value, void>::type\
+   typename container_detail::enable_if< container_detail::is_not_pair<T> >::type\
       construct(T* p BOOST_MOVE_I##N BOOST_MOVE_UREFQ##N)\
    {\
       container_detail::dispatch_uses_allocator\
@@ -1188,12 +1188,12 @@ class scoped_allocator_adaptor
    template <class T1, class T2, class U, class V>
    void construct( std::pair<T1, T2>* p
                  , BOOST_RV_REF_BEG std::pair<U, V> BOOST_RV_REF_END x)
-   {  this->construct_pair(p, x);   }
+   {  this->construct_pair(p, ::boost::move(x));   }
 
    template <class T1, class T2, class U, class V>
    void construct( container_detail::pair<T1, T2>* p
                  , BOOST_RV_REF_BEG container_detail::pair<U, V> BOOST_RV_REF_END x)
-   {  this->construct_pair(p, x);   }
+   {  this->construct_pair(p, ::boost::move(x));   }
 
    #ifndef BOOST_CONTAINER_DOXYGEN_INVOKED
    private:
@@ -1246,6 +1246,39 @@ class scoped_allocator_adaptor
    #endif   //#ifndef BOOST_CONTAINER_DOXYGEN_INVOKED
 };
 
+template<bool ZeroInner>
+struct scoped_allocator_operator_equal
+{
+   //Optimize equal outer allocator types with 
+   //allocator_traits::equal which uses is_always_equal
+   template<class IA>
+   static bool equal_outer(const IA &l, const IA &r)
+   {  return allocator_traits<IA>::equal(l, r);  }
+
+   //Otherwise compare it normally
+   template<class IA1, class IA2>
+   static bool equal_outer(const IA1 &l, const IA2 &r)
+   {  return l == r;  }
+
+   //Otherwise compare it normally
+   template<class IA>
+   static bool equal_inner(const IA &l, const IA &r)
+   {  return allocator_traits<IA>::equal(l, r);  }
+};
+
+template<>
+struct scoped_allocator_operator_equal<true>
+   : scoped_allocator_operator_equal<false>
+{
+   //when inner allocator count is zero,
+   //inner_allocator_type is the same as outer_allocator_type
+   //so both types can be different in operator==
+   template<class IA1, class IA2>
+   static bool equal_inner(const IA1 &, const IA2 &)
+   {  return true;  }
+};
+
+
 template <typename OuterA1, typename OuterA2, BOOST_CONTAINER_SCOPEDALLOC_ALLINNERCLASS>
 inline bool operator==(const scoped_allocator_adaptor<OuterA1, BOOST_CONTAINER_SCOPEDALLOC_ALLINNER>& a
                       ,const scoped_allocator_adaptor<OuterA2, BOOST_CONTAINER_SCOPEDALLOC_ALLINNER>& b)
@@ -1255,14 +1288,9 @@ inline bool operator==(const scoped_allocator_adaptor<OuterA1, BOOST_CONTAINER_S
    #else
    const bool has_zero_inner = boost::container::container_detail::is_same<P0, void>::value;
    #endif
-   typedef typename scoped_allocator_adaptor<OuterA1, BOOST_CONTAINER_SCOPEDALLOC_ALLINNER>
-      ::outer_allocator_type outer_allocator_type;
-   typedef typename scoped_allocator_adaptor<OuterA1, BOOST_CONTAINER_SCOPEDALLOC_ALLINNER>
-      ::inner_allocator_type inner_allocator_type;
-   
-   return allocator_traits<outer_allocator_type>::equal(a.outer_allocator(), b.outer_allocator())
-        && (has_zero_inner || 
-            allocator_traits<inner_allocator_type>::equal(a.inner_allocator(), b.inner_allocator()));
+   typedef scoped_allocator_operator_equal<has_zero_inner> equal_t;
+   return equal_t::equal_outer(a.outer_allocator(), b.outer_allocator()) &&
+          equal_t::equal_inner(a.inner_allocator(), b.inner_allocator());
 }
 
 template <typename OuterA1, typename OuterA2, BOOST_CONTAINER_SCOPEDALLOC_ALLINNERCLASS>

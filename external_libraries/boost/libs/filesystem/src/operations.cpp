@@ -1764,8 +1764,13 @@ namespace detail
       (val = std::getenv("TEMP"   )) ||
       (val = std::getenv("TEMPDIR"));
       
-      path p((val!=0) ? val : "/tmp");
-      
+#     ifdef __ANDROID__
+        const char* default_tmp = "/data/local/tmp";
+#     else
+        const char* default_tmp = "/tmp";
+#     endif
+      path p((val!=0) ? val : default_tmp);
+       
       if (p.empty() || (ec&&!is_directory(p, *ec))||(!ec&&!is_directory(p)))
       {
         error(ENOTDIR, p, ec, "boost::filesystem::temp_directory_path");

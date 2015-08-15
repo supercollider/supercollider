@@ -123,12 +123,12 @@
 #ifdef __clang__
 
 #if __has_include(<experimental/any>)
-#  define BOOST_LIBSTDCXX_VERSION 50000
+#  define BOOST_LIBSTDCXX_VERSION 50100
 #elif __has_include(<shared_mutex>)
 #  define BOOST_LIBSTDCXX_VERSION 40900
 #elif __has_include(<ext/cmath>)
 #  define BOOST_LIBSTDCXX_VERSION 40800
-#elif __has_include(<chrono>)
+#elif __has_include(<scoped_allocator>)
 #  define BOOST_LIBSTDCXX_VERSION 40700
 #elif __has_include(<typeindex>)
 #  define BOOST_LIBSTDCXX_VERSION 40600
@@ -213,6 +213,8 @@
 #  define BOOST_NO_CXX11_HDR_ATOMIC
 #  define BOOST_NO_CXX11_HDR_THREAD
 #endif
+//  C++0x features in GCC 4.9.0 and later
+//
 #if (BOOST_LIBSTDCXX_VERSION < 40900) || !defined(BOOST_LIBSTDCXX11)
 // Although <regex> is present and compilable against, the actual implementation is not functional
 // even for the simplest patterns such as "\d" or "[0-9]". This is the case at least in gcc up to 4.8, inclusively.
@@ -223,13 +225,25 @@
 // As of clang-3.6, libstdc++ header <atomic> throws up errors with clang:
 #  define BOOST_NO_CXX11_HDR_ATOMIC
 #endif
-
-//  C++0x headers not yet (fully!) implemented
 //
+//  C++0x features in GCC 5.1 and later
+//
+#if (BOOST_LIBSTDCXX_VERSION < 50100) || !defined(BOOST_LIBSTDCXX11)
 #  define BOOST_NO_CXX11_HDR_TYPE_TRAITS
 #  define BOOST_NO_CXX11_HDR_CODECVT
 #  define BOOST_NO_CXX11_ATOMIC_SMART_PTR
 #  define BOOST_NO_CXX11_STD_ALIGN
+#endif
+
+#if defined(__has_include)
+#if !__has_include(<shared_mutex>)
+#  define BOOST_NO_CXX14_HDR_SHARED_MUTEX
+#elif __cplusplus <= 201103
+#  define BOOST_NO_CXX14_HDR_SHARED_MUTEX
+#endif
+#elif __cplusplus < 201402 || (BOOST_LIBSTDCXX_VERSION < 40900) || !defined(BOOST_LIBSTDCXX11)
+#  define BOOST_NO_CXX14_HDR_SHARED_MUTEX
+#endif
 
 //
 // Headers not present on Solaris with the Oracle compiler:
@@ -249,6 +263,9 @@
 #  endif
 #  ifndef BOOST_NO_CXX11_HDR_THREAD
 #     define BOOST_NO_CXX11_HDR_THREAD
+#  endif
+#  ifndef BOOST_NO_CXX14_HDR_SHARED_MUTEX
+#     define BOOST_NO_CXX14_HDR_SHARED_MUTEX
 #  endif
 #endif
 

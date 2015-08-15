@@ -61,6 +61,15 @@ BOOST_INTRUSIVE_OPTION_TYPE(size_type, SizeType, SizeType, size_type)
 //!comparison functor for the value type
 BOOST_INTRUSIVE_OPTION_TYPE(compare, Compare, Compare, compare)
 
+//!This option setter specifies the a function object
+//!that specifies the type of the key of an associative
+//!container and an operator to obtain it from a value type.
+//!
+//!This function object must the define a `key_type` and
+//!a member with signature `const key_type & operator()(const value_type &) const`
+//!that will return the key from a value_type of an associative container
+BOOST_INTRUSIVE_OPTION_TYPE(key_of_value, KeyOfValue, KeyOfValue, key_of_value)
+
 //!This option setter for scapegoat containers specifies if
 //!the intrusive scapegoat container should use a non-variable
 //!alpha value that does not need floating-point operations.
@@ -199,7 +208,7 @@ BOOST_INTRUSIVE_OPTION_CONSTANT(optimize_multikey, bool, Enabled, optimize_multi
 //!This allows using masks instead of the default modulo operation to determine
 //!the bucket number from the hash value, leading to better performance.
 //!In debug mode, if power of two buckets mode is activated, the bucket length
-//!will be checked to through assertions to assure the bucket length is power of two.
+//!will be checked with assertions.
 BOOST_INTRUSIVE_OPTION_CONSTANT(power_2_buckets, bool, Enabled, power_2_buckets)
 
 //!This option setter specifies if the container will cache a pointer to the first

@@ -23,6 +23,16 @@
    #define BOOST_MOVE_PERFECT_FORWARDING
 #endif
 
+#if defined(__has_feature)
+   #define BOOST_MOVE_HAS_FEATURE __has_feature
+#else
+   #define BOOST_MOVE_HAS_FEATURE(x) 0
+#endif
+
+#if BOOST_MOVE_HAS_FEATURE(address_sanitizer) || defined(__SANITIZE_ADDRESS__)
+   #define BOOST_MOVE_ADDRESS_SANITIZER_ON
+#endif
+
 //Macros for documentation purposes. For code, expands to the argument
 #define BOOST_MOVE_IMPDEF(TYPE) TYPE
 #define BOOST_MOVE_SEEDOC(TYPE) TYPE

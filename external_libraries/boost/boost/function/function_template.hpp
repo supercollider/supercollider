@@ -717,9 +717,8 @@ namespace boost {
     template<typename Functor>
     BOOST_FUNCTION_FUNCTION(Functor BOOST_FUNCTION_TARGET_FIX(const &) f
 #ifndef BOOST_NO_SFINAE
-                            ,typename enable_if_c<
-                            (boost::type_traits::ice_not<
-                             (is_integral<Functor>::value)>::value),
+                            ,typename boost::enable_if_c<
+                             !(is_integral<Functor>::value),
                                         int>::type = 0
 #endif // BOOST_NO_SFINAE
                             ) :
@@ -730,9 +729,8 @@ namespace boost {
     template<typename Functor,typename Allocator>
     BOOST_FUNCTION_FUNCTION(Functor BOOST_FUNCTION_TARGET_FIX(const &) f, Allocator a
 #ifndef BOOST_NO_SFINAE
-                            ,typename enable_if_c<
-                            (boost::type_traits::ice_not<
-                             (is_integral<Functor>::value)>::value),
+                            ,typename boost::enable_if_c<
+                              !(is_integral<Functor>::value),
                                         int>::type = 0
 #endif // BOOST_NO_SFINAE
                             ) :
@@ -780,9 +778,8 @@ namespace boost {
     // construct.
     template<typename Functor>
 #ifndef BOOST_NO_SFINAE
-    typename enable_if_c<
-               (boost::type_traits::ice_not<
-                 (is_integral<Functor>::value)>::value),
+    typename boost::enable_if_c<
+                  !(is_integral<Functor>::value),
                BOOST_FUNCTION_FUNCTION&>::type
 #else
     BOOST_FUNCTION_FUNCTION&
@@ -1068,9 +1065,8 @@ public:
   template<typename Functor>
   function(Functor f
 #ifndef BOOST_NO_SFINAE
-           ,typename enable_if_c<
-                            (boost::type_traits::ice_not<
-                          (is_integral<Functor>::value)>::value),
+           ,typename boost::enable_if_c<
+                          !(is_integral<Functor>::value),
                        int>::type = 0
 #endif
            ) :
@@ -1080,9 +1076,8 @@ public:
   template<typename Functor,typename Allocator>
   function(Functor f, Allocator a
 #ifndef BOOST_NO_SFINAE
-           ,typename enable_if_c<
-                            (boost::type_traits::ice_not<
-                          (is_integral<Functor>::value)>::value),
+           ,typename boost::enable_if_c<
+                           !(is_integral<Functor>::value),
                        int>::type = 0
 #endif
            ) :
@@ -1120,9 +1115,8 @@ public:
 
   template<typename Functor>
 #ifndef BOOST_NO_SFINAE
-  typename enable_if_c<
-                            (boost::type_traits::ice_not<
-                         (is_integral<Functor>::value)>::value),
+  typename boost::enable_if_c<
+                         !(is_integral<Functor>::value),
                       self_type&>::type
 #else
   self_type&

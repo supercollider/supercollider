@@ -27,7 +27,7 @@ template <>
 struct numeric_traits<__float128>
 {
    static const int digits = 113;
-   static const int digits10 = 34;
+   static const int digits10 = 33;
    static const int max_exponent = 16384;
    static const bool is_specialized = true;
 };

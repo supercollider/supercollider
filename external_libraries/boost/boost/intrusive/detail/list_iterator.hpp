@@ -34,7 +34,7 @@ namespace intrusive {
 template<class ValueTraits, bool IsConst>
 class list_iterator
 {
-   protected:
+   private:
    typedef iiterator
       <ValueTraits, IsConst, std::bidirectional_iterator_tag> types_t;
 

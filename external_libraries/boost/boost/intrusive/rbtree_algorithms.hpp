@@ -92,8 +92,8 @@ struct rbtree_node_checker
 
       if (node_traits::get_color(p) == node_traits::red()){
          //Red nodes have black children
-         const node_ptr p_left(node_traits::get_left(p));
-         const node_ptr p_right(node_traits::get_right(p));
+         const node_ptr p_left(node_traits::get_left(p));   (void)p_left;
+         const node_ptr p_right(node_traits::get_right(p)); (void)p_right;
          BOOST_INTRUSIVE_INVARIANT_ASSERT(!p_left  || node_traits::get_color(p_left)  == node_traits::black());
          BOOST_INTRUSIVE_INVARIANT_ASSERT(!p_right || node_traits::get_color(p_right) == node_traits::black());
          //Red node can't be root

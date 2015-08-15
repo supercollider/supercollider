@@ -40,13 +40,11 @@ namespace intrusive {
 template<class ValueTraits, bool IsConst>
 class tree_iterator
 {
-   protected:
+   private:
    typedef iiterator< ValueTraits, IsConst
                     , std::bidirectional_iterator_tag>   types_t;
-
-   typedef ValueTraits                                   value_traits;
+   typedef typename types_t::value_traits                value_traits;
    typedef typename types_t::node_traits                 node_traits;
-
    typedef typename types_t::node                        node;
    typedef typename types_t::node_ptr                    node_ptr;
    typedef typename types_t::const_value_traits_ptr      const_value_traits_ptr;

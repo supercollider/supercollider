@@ -37,10 +37,6 @@ namespace intrusive {
 template <class NodePtr>
 struct insert_commit_data_t
 {
-   insert_commit_data_t()
-      :  link_left(false)
-      ,  node()
-   {}
    bool     link_left;
    NodePtr  node;
 };

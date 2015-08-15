@@ -96,6 +96,10 @@ template<class T>
 struct is_std_allocator< std::allocator<T> >
 {  static const bool value = true; };
 
+template<class Allocator>
+struct is_not_std_allocator
+{  static const bool value = !is_std_allocator<Allocator>::value; };
+
 BOOST_INTRUSIVE_INSTANTIATE_DEFAULT_TYPE_TMPLT(pointer)
 BOOST_INTRUSIVE_INSTANTIATE_EVAL_DEFAULT_TYPE_TMPLT(const_pointer)
 BOOST_INTRUSIVE_INSTANTIATE_DEFAULT_TYPE_TMPLT(reference)
@@ -195,11 +199,11 @@ struct allocator_traits
                const_pointer;
       //reference
       typedef BOOST_INTRUSIVE_OBTAIN_TYPE_WITH_DEFAULT(boost::container::container_detail::, Allocator,
-         reference, typename container_detail::unvoid<value_type>::type&)
+         reference, typename container_detail::unvoid_ref<value_type>::type)
             reference;
       //const_reference
       typedef BOOST_INTRUSIVE_OBTAIN_TYPE_WITH_DEFAULT(boost::container::container_detail::, Allocator,
-         const_reference, const typename container_detail::unvoid<value_type>::type&)
+         const_reference, typename container_detail::unvoid_ref<const value_type>::type)
                const_reference;
       //void_pointer
       typedef BOOST_INTRUSIVE_OBTAIN_TYPE_WITH_EVAL_DEFAULT(boost::container::container_detail::, Allocator,
@@ -340,7 +344,12 @@ struct allocator_traits
       template <class T, class ...Args>
       static void construct(Allocator & a, T* p, BOOST_FWD_REF(Args)... args)
       {
-         container_detail::bool_<container_detail::is_std_allocator<Allocator>::value> flag;
+         static const bool value = ::boost::move_detail::and_
+            < container_detail::is_not_std_allocator<Allocator>
+            , boost::container::container_detail::has_member_function_callable_with_construct
+                  < Allocator, T*, Args... >
+            >::value;
+         container_detail::bool_<value> flag;
          allocator_traits::priv_construct(flag, a, p, ::boost::forward<Args>(args)...);
       }
    #endif
@@ -391,25 +400,11 @@ struct allocator_traits
 
    #if !defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)
       template<class T, class ...Args>
-      static void priv_construct(container_detail::false_type, Allocator &a, T *p, BOOST_FWD_REF(Args) ...args)
-      {
-         const bool value = boost::container::container_detail::
-               has_member_function_callable_with_construct
-                  < Allocator, T*, Args... >::value;
-         container_detail::bool_<value> flag;
-         (priv_construct_dispatch_next)(flag, a, p, ::boost::forward<Args>(args)...);
-      }
-
-      template<class T, class ...Args>
       static void priv_construct(container_detail::true_type, Allocator &a, T *p, BOOST_FWD_REF(Args) ...args)
-      {  (priv_construct_dispatch_next)(container_detail::false_type(), a, p, ::boost::forward<Args>(args)...);  }
-
-      template<class T, class ...Args>
-      static void priv_construct_dispatch_next(container_detail::true_type, Allocator &a, T *p, BOOST_FWD_REF(Args) ...args)
       {  a.construct( p, ::boost::forward<Args>(args)...);  }
 
       template<class T, class ...Args>
-      static void priv_construct_dispatch_next(container_detail::false_type, Allocator &, T *p, BOOST_FWD_REF(Args) ...args)
+      static void priv_construct(container_detail::false_type, Allocator &, T *p, BOOST_FWD_REF(Args) ...args)
       {  ::new((void*)p, boost_container_new_t()) T(::boost::forward<Args>(args)...); }
    #else // #if !defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)
       public:
@@ -418,54 +413,38 @@ struct allocator_traits
       template<class T BOOST_MOVE_I##N BOOST_MOVE_CLASS##N >\
       static void construct(Allocator &a, T *p BOOST_MOVE_I##N BOOST_MOVE_UREF##N)\
       {\
-         container_detail::bool_<container_detail::is_std_allocator<Allocator>::value> flag;\
+         static const bool value = ::boost::move_detail::and_ \
+            < container_detail::is_not_std_allocator<Allocator> \
+            , boost::container::container_detail::has_member_function_callable_with_construct \
+                  < Allocator, T* BOOST_MOVE_I##N BOOST_MOVE_FWD_T##N > \
+            >::value; \
+         container_detail::bool_<value> flag;\
          (priv_construct)(flag, a, p BOOST_MOVE_I##N BOOST_MOVE_FWD##N);\
       }\
       //
-      BOOST_MOVE_ITERATE_0TO9(BOOST_CONTAINER_ALLOCATOR_TRAITS_CONSTRUCT_IMPL)
+      BOOST_MOVE_ITERATE_0TO8(BOOST_CONTAINER_ALLOCATOR_TRAITS_CONSTRUCT_IMPL)
       #undef BOOST_CONTAINER_ALLOCATOR_TRAITS_CONSTRUCT_IMPL
 
       private:
-
-      //////////////////
+      /////////////////////////////////
       // priv_construct
-      //////////////////
+      /////////////////////////////////
       #define BOOST_CONTAINER_ALLOCATOR_TRAITS_PRIV_CONSTRUCT_IMPL(N) \
       template<class T BOOST_MOVE_I##N BOOST_MOVE_CLASS##N >\
-      static void priv_construct(container_detail::false_type, Allocator &a, T *p BOOST_MOVE_I##N BOOST_MOVE_UREF##N)\
-      {\
-         const bool value = boost::container::container_detail::has_member_function_callable_with_construct\
-                  < Allocator, T* BOOST_MOVE_I##N BOOST_MOVE_FWD_T##N>::value;\
-         container_detail::bool_<value> flag;\
-         (priv_construct_dispatch_next)(flag, a, p BOOST_MOVE_I##N BOOST_MOVE_FWD##N);\
-      }\
+      static void priv_construct(container_detail::true_type, Allocator &a, T *p BOOST_MOVE_I##N BOOST_MOVE_UREF##N)\
+      {  a.construct( p BOOST_MOVE_I##N BOOST_MOVE_FWD##N );  }\
       \
       template<class T BOOST_MOVE_I##N BOOST_MOVE_CLASS##N >\
-      static void priv_construct(container_detail::true_type, Allocator &a, T *p BOOST_MOVE_I##N BOOST_MOVE_UREF##N)\
-      {  (priv_construct_dispatch_next)(container_detail::false_type(), a, p BOOST_MOVE_I##N BOOST_MOVE_FWD##N); }\
+      static void priv_construct(container_detail::false_type, Allocator &, T *p BOOST_MOVE_I##N BOOST_MOVE_UREF##N)\
+      {  ::new((void*)p, boost_container_new_t()) T(BOOST_MOVE_FWD##N); }\
       //
       BOOST_MOVE_ITERATE_0TO8(BOOST_CONTAINER_ALLOCATOR_TRAITS_PRIV_CONSTRUCT_IMPL)
       #undef BOOST_CONTAINER_ALLOCATOR_TRAITS_PRIV_CONSTRUCT_IMPL
 
-      /////////////////////////////////
-      // priv_construct_dispatch_next
-      /////////////////////////////////
-      #define BOOST_CONTAINER_ALLOCATOR_TRAITS_PRIV_CONSTRUCT_DISPATCH_NEXT_IMPL(N) \
-      template<class T BOOST_MOVE_I##N BOOST_MOVE_CLASS##N >\
-      static void priv_construct_dispatch_next(container_detail::true_type, Allocator &a, T *p BOOST_MOVE_I##N BOOST_MOVE_UREF##N)\
-      {  a.construct( p BOOST_MOVE_I##N BOOST_MOVE_FWD##N );  }\
-      \
-      template<class T BOOST_MOVE_I##N BOOST_MOVE_CLASS##N >\
-      static void priv_construct_dispatch_next(container_detail::false_type, Allocator &, T *p BOOST_MOVE_I##N BOOST_MOVE_UREF##N)\
-      {  ::new((void*)p, boost_container_new_t()) T(BOOST_MOVE_FWD##N); }\
-      //
-      BOOST_MOVE_ITERATE_0TO8(BOOST_CONTAINER_ALLOCATOR_TRAITS_PRIV_CONSTRUCT_DISPATCH_NEXT_IMPL)
-      #undef BOOST_CONTAINER_ALLOCATOR_TRAITS_PRIV_CONSTRUCT_DISPATCH_NEXT_IMPL
-
    #endif   // #if !defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)
 
    template<class T>
-   static void priv_construct_dispatch_next(container_detail::false_type, Allocator &, T *p, const ::boost::container::default_init_t&)
+   static void priv_construct(container_detail::false_type, Allocator &, T *p, const ::boost::container::default_init_t&)
    {  ::new((void*)p) T; }
 
    static bool priv_storage_is_unpropagable(container_detail::true_type, const Allocator &a, pointer p)

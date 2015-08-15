@@ -141,6 +141,14 @@ typename iterator_enable_if_tag_difference_type
    return off;
 }
 
+template<class I>
+typename iterator_traits<I>::pointer iterator_arrow_result(const I &i)
+{  return i.operator->();  }
+
+template<class T>
+T * iterator_arrow_result(T *p)
+{  return p;   }
+
 } //namespace intrusive
 } //namespace boost
 
