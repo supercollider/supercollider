@@ -568,7 +568,7 @@ When the key action object is evaluated, it is passed one or more arguments from
 list::
 ## strong::view:: - The view.
 
-## strong::char:: - The character associated with the key, possibly unprintable. Character sequences (for example é) get passed as two characters, the first one blank ( ), the second one is the unmodified character (e). This will also vary depending on the nationality the keyboard is set to. note:: Only printable characters are passed. If a key is not associated with any printable character, nil will be passed instead.::
+## strong::char:: - The character associated with the key, possibly unprintable. Character sequences (for example é) get passed as two characters, the first one blank ( ), the second one is the unmodified character (e). This will also vary depending on the nationality the keyboard is set to.
 
 ## strong::modifiers:: - A bitwise or of integers indicating the modifier keys in effect. You can examine individual flag settings using the C bitwise AND operator. For a list of these, see link::Reference/Modifiers::.
 

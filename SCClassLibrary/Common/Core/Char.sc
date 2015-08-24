@@ -73,6 +73,9 @@ Char : Magnitude {
 		// is lower case alphabetic character
 		_IsLower
 	}
+	isNull {
+		^this.ascii == 0
+	}
 	isFileSafe {
 		if(this.isPrint.not,{ ^false });
 		^this.ascii != 47 and: {this.ascii != 58} and: {this.ascii != 34}
