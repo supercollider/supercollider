@@ -262,13 +262,11 @@ if (WIN32)
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 elseif(APPLE)
 
-    if(CMAKE_GENERATOR MATCHES Xcode)
-        set_property(TARGET  ${plugins} ${supernova_plugins} PROPERTY LIBRARY_OUTPUT_DIRECTORY_DEBUG   "${CMAKE_BINARY_DIR}/editors/sc-ide/Debug/${ide_name}.app/Contents/Resources/plugins/")
-        set_property(TARGET  ${plugins} ${supernova_plugins} PROPERTY LIBRARY_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/editors/sc-ide/Release/${ide_name}.app/Contents/Resources/plugins/")
-    else()
-        set_property(TARGET  ${plugins} ${supernova_plugins}
-                     PROPERTY LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/editors/sc-ide/${ide_name}.app/Contents/Resources/plugins/")
-    endif()
+    foreach(plugin ${plugins} ${supernova_plugins})
+        add_custom_command(TARGET ${plugin} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../Resources/plugins/
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${plugin}> $<TARGET_FILE_DIR:SuperCollider>/../Resources/plugins/)
+    endforeach()
 
 elseif(NOT APPLE)
 	install(TARGETS ${plugins} ${supernova_plugins}
