@@ -223,10 +223,10 @@ private:
 
     friend class sc_ugen_def;
 
-    bool initialized;
-    int_fast8_t trace;
+    bool initialized  = false;
+    int_fast8_t trace = 0;
     Unit ** calc_units;
-    sample * unit_buffers;
+    sample * unit_buffers = nullptr;
     int32_t calc_unit_count, unit_count;
 
     RGen rgen;

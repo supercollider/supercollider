@@ -16,8 +16,8 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-#ifndef SERVER_synth_definition_HPP
-#define SERVER_synth_definition_HPP
+#ifndef SERVER_SYNTH_DEFINITION_HPP
+#define SERVER_SYNTH_DEFINITION_HPP
 
 #include <cassert>
 #include <cstdint>
@@ -63,7 +63,7 @@ private:
             return value;
         }
 
-        std::size_t value;
+        const std::size_t value;
     };
 
     bool exists(const char * str) const
@@ -180,12 +180,11 @@ class synth_definition:
     public detail::slot_resolver
 {
 public:
-    synth_definition(symbol const & name):
+    explicit synth_definition(symbol const & name):
         named_hash_entry(name)
     {}
 
-    virtual ~synth_definition(void)
-    {}
+    virtual ~synth_definition(void) = default;
 
     virtual abstract_synth * create_instance(int node_id) = 0;
 
@@ -197,4 +196,4 @@ typedef boost::intrusive_ptr<synth_definition> synth_definition_ptr;
 
 } /* namespace nova */
 
-#endif /* SERVER_synth_definition_HPP */
+#endif /* SERVER_SYNTH_DEFINITION_HPP */

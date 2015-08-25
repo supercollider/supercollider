@@ -1,5 +1,5 @@
 //  dsp thread queue
-//  Copyright (C) 2007, 2008, 2009, 2010 Tim Blechmann
+//  Copyright (C) 2007-2015 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -56,7 +56,6 @@ concept runnable
  *
  * \tparam Alloc allocator for successor list
  *
- * \todo operator new doesn't support stateful allocators
  */
 template <typename runnable,
           typename Alloc = std::allocator<void*> >
@@ -84,9 +83,9 @@ public:
         /* create instance */
         explicit successor_list(uint32_t size = 0)
         {
-            data = array_allocator().allocate(2*sizeof(uint32_t) + size * sizeof(dsp_thread_queue_item*));
+            data        = array_allocator().allocate( 2*sizeof(uint32_t) + size * sizeof(dsp_thread_queue_item*) );
             data->count = 1;
-            data->size = size;
+            data->size  = size;
         }
 
         successor_list(successor_list const & rhs):
@@ -98,7 +97,7 @@ public:
         successor_list & operator=(successor_list const & rhs)
         {
             if (--data->count == 0)
-                array_allocator().deallocate(data, 2*sizeof(uint32_t) + data->size * sizeof(dsp_thread_queue_item*));
+                array_allocator().deallocate( data, 2 * sizeof(uint32_t) + data->size * sizeof(dsp_thread_queue_item*) );
 
             data = rhs.data;
             data->count++;
@@ -130,7 +129,7 @@ public:
         ~successor_list(void)
         {
             if (--data->count == 0)
-                array_allocator().deallocate(data, 2*sizeof(uint32_t) + data->size * sizeof(dsp_thread_queue_item*));
+                array_allocator().deallocate( data, 2*sizeof(uint32_t) + data->size * sizeof(dsp_thread_queue_item*) );
         }
 
         data_t * data;
@@ -141,7 +140,7 @@ public:
         activation_count(0), job(job), successors(successors), activation_limit(activation_limit)
     {}
 
-    dsp_thread_queue_item * run(dsp_queue_interpreter & interpreter, boost::uint8_t thread_index)
+    dsp_thread_queue_item * run(dsp_queue_interpreter & interpreter, std::uint8_t thread_index)
     {
         assert(activation_count == 0);
 
@@ -190,29 +189,30 @@ private:
     /** \brief update all successors and possibly mark them as runnable */
     dsp_thread_queue_item * update_dependencies(dsp_queue_interpreter & interpreter)
     {
-        dsp_thread_queue_item * ptr;
+        dsp_thread_queue_item * next_item_to_run;
         std::size_t i = 0;
         for (;;) {
             if (i == successors.size())
                 return nullptr;
 
-            ptr = successors[i++]->dec_activation_count(interpreter);
-            if (ptr)
+            next_item_to_run = successors[i++]->decrement_activation_count();
+            if (next_item_to_run)
                 break; // no need to update the next item to run
         }
 
-        while (i != successors.size()) {
-            dsp_thread_queue_item * next = successors[i++]->dec_activation_count(interpreter);
+        // push remaining items to scheduler queue
+        while( i != successors.size() ) {
+            dsp_thread_queue_item * next = successors[i++]->decrement_activation_count();
             if (next)
                 interpreter.mark_as_runnable(next);
         }
 
-        return ptr;
+        return next_item_to_run;
     }
 
     /** \brief decrement activation count and return this, if it drops to zero
      */
-    inline dsp_thread_queue_item * dec_activation_count(dsp_queue_interpreter & interpreter)
+    inline dsp_thread_queue_item * decrement_activation_count()
     {
         activation_limit_t current = activation_count--;
         assert(current > 0);
@@ -236,9 +236,9 @@ class dsp_thread_queue
     typedef std::uint_fast16_t node_count_t;
 
     typedef nova::dsp_thread_queue_item<runnable, Alloc> dsp_thread_queue_item;
-    typedef std::vector<dsp_thread_queue_item*,
-                        typename Alloc::template rebind<dsp_thread_queue_item*>::other
-    > item_vector_t;
+    typedef std::vector< dsp_thread_queue_item*,
+                         typename Alloc::template rebind<dsp_thread_queue_item*>::other
+                       > item_vector_t;
 
     typedef typename Alloc::template rebind<dsp_thread_queue_item>::other item_allocator;
 
@@ -262,7 +262,7 @@ public:
 
     /** preallocate node_count nodes */
     dsp_thread_queue(std::size_t node_count, bool has_parallelism = true):
-        total_node_count(0), has_parallelism_(has_parallelism)
+        has_parallelism_(has_parallelism)
     {
         initially_runnable_items.reserve(node_count);
         queue_items = node_count ? item_allocator().allocate(node_count * sizeof(dsp_thread_queue_item))
@@ -314,7 +314,7 @@ public:
     }
 
 private:
-    node_count_t total_node_count;          /* total number of nodes */
+    node_count_t total_node_count = 0;      /* total number of nodes */
     item_vector_t initially_runnable_items; /* nodes without precedessor */
     dsp_thread_queue_item * queue_items;    /* all nodes */
     const bool has_parallelism_;
@@ -339,9 +339,9 @@ public:
     typedef std::unique_ptr<dsp_thread_queue> dsp_thread_queue_ptr;
 
     dsp_queue_interpreter(thread_count_t tc, bool yield_if_busy = false):
-        node_count(0), yield_if_busy(yield_if_busy)
+        yield_if_busy(yield_if_busy)
     {
-        if (!runnable_set.is_lock_free())
+        if (!runnable_items.is_lock_free())
             std::cout << "Warning: scheduler queue is not lockfree!" << std::endl;
 
         calibrate_backoff(10);
@@ -355,18 +355,18 @@ public:
      */
     bool init_tick(void)
     {
-        if (unlikely((queue.get() == nullptr) or                /* no queue */
+        if (unlikely((queue.get() == nullptr) ||             /* no queue */
                      (queue->get_total_node_count() == 0)    /* no nodes */
                     ))
             return false;
 
         /* reset node count */
         assert(node_count == 0);
-        assert(runnable_set.empty());
+        assert(runnable_items.empty());
         node_count.store(queue->get_total_node_count(), std::memory_order_release);
 
-        for (size_t i = 0; i != queue->initially_runnable_items.size(); ++i)
-            mark_as_runnable(queue->initially_runnable_items[i]);
+        for( auto * item : queue->initially_runnable_items )
+            mark_as_runnable( item );
 
         return true;
     }
@@ -434,11 +434,13 @@ public:
     }
 
 private:
+    static const int max_backup_loops = 16384;
+
     struct backoff
     {
         backoff(int min, int max): min(min), max(max), loops(min) {}
 
-        void run(void)
+        void run()
         {
             for (int i = 0; i != loops; ++i)
                 nova::detail::pause();
@@ -446,12 +448,13 @@ private:
             loops = std::min(loops * 2, max);
         }
 
-        void reset(void)
+        void reset()
         {
             loops = min;
         }
 
-        int min, max, loops;
+        const int min, max;
+        int loops;
     };
 
     struct yield_backoff
@@ -481,12 +484,13 @@ private:
 
         vector<nanoseconds> measured_values;
         generate_n(back_inserter(measured_values), 16, [] {
-            backoff b(32768, 32768);
+            backoff b( max_backup_loops, max_backup_loops );
             auto start = high_resolution_clock::now();
 
             for (int i = 0; i != backoff_iterations; ++i)
                 b.run();
-            auto end = high_resolution_clock::now();
+
+            auto end  = high_resolution_clock::now();
             auto diff = duration_cast<nanoseconds>(end - start);
 
             return diff;
@@ -506,7 +510,7 @@ private:
 
         typedef typename select_backoff<YieldBackoff>::type backoff_t;
 
-        backoff_t b(8, 32768);
+        backoff_t b(8, max_backup_loops);
         int poll_counts = 0;
 
         for (;;) {
@@ -528,9 +532,17 @@ private:
                 poll_counts = 0;
             }
 
-            if (!YieldBackoff && (poll_counts == watchdog_iterations)) {
-                std::printf("nova::dsp_queue_interpreter::run_item: possible lookup detected\n");
-                abort();
+            if( YieldBackoff )
+                continue;
+
+            if( poll_counts == watchdog_iterations ) {
+                if( index == 0 ) {
+                    std::printf("nova::dsp_queue_interpreter::run_item: possible lookup detected in main audio thread\n");
+                    abort();
+                } else {
+                    std::printf("nova::dsp_queue_interpreter::run_item: possible lookup detected in dsp helper thread\n");
+                    return;
+                }
             }
         }
     }
@@ -550,7 +562,7 @@ private:
     {
         run_item<YieldBackoff>(0);
         wait_for_end<YieldBackoff>();
-        assert(runnable_set.empty());
+        assert(runnable_items.empty());
     }
 
     template <bool YieldBackoff>
@@ -558,15 +570,14 @@ private:
     {
         typedef typename select_backoff<YieldBackoff>::type backoff_t;
 
-        backoff_t b(8, 32768);
+        backoff_t b(8, max_backup_loops);
         const int iterations = watchdog_iterations * 2;
         int count = 0;
         while (node_count.load(std::memory_order_acquire) != 0) {
             b.run();
             ++count;
-            if (!YieldBackoff && (count == iterations)) {
+            if( !YieldBackoff && (count == iterations) ) {
                 std::printf("nova::dsp_queue_interpreter::wait_for_end: possible lookup detected\n");
-                abort();
             }
         } // busy-wait for helper threads to finish
     }
@@ -574,7 +585,7 @@ private:
     HOT int run_next_item(thread_count_t index)
     {
         dsp_thread_queue_item * item;
-        bool success = runnable_set.pop(item);
+        bool success = runnable_items.pop(item);
 
         if (!success)
             return fifo_empty;
@@ -598,7 +609,7 @@ private:
 
     void mark_as_runnable(dsp_thread_queue_item * item)
     {
-        runnable_set.push(item);
+        runnable_items.push(item);
     }
 
     friend class nova::dsp_thread_queue_item<runnable, Alloc>;
@@ -615,8 +626,8 @@ private:
     thread_count_t thread_count;        /* number of dsp threads to be used by this queue */
     thread_count_t used_helper_threads; /* number of helper threads, which are actually used */
 
-    boost::lockfree::stack<dsp_thread_queue_item*,  boost::lockfree::capacity<32768> > runnable_set;
-    std::atomic<node_count_t> node_count; /* number of nodes, that need to be processed during this tick */
+    boost::lockfree::stack<dsp_thread_queue_item*,  boost::lockfree::capacity<32768> > runnable_items;
+    std::atomic<node_count_t> node_count = {0}; /* number of nodes, that need to be processed during this tick */
     int watchdog_iterations;
     bool yield_if_busy;
 };

@@ -1,5 +1,5 @@
 //  dsp thread
-//  Copyright (C) 2007, 2008, 2009, 2010 Tim Blechmann
+//  Copyright (C) 2007-2015 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -65,10 +65,10 @@ class dsp_thread:
 public:
     dsp_thread(dsp_queue_interpreter & interpreter, uint16_t index, size_t stack_size,
                thread_init_functor const & thread_init = thread_init_functor()):
-        thread_init_functor(thread_init), interpreter(interpreter), stop(false), index(index), stack_ (nullptr)
+        thread_init_functor(thread_init), interpreter(interpreter),index(index)
     {
         if (stack_size) {
-                stack_ = malloc_aligned<char>(stack_size);
+            stack_ = malloc_aligned<char>(stack_size);
             if (stack_ == nullptr)
                 throw std::bad_alloc();
             // touch stack to avoid page faults
@@ -78,7 +78,7 @@ public:
         }
     }
 
-    dsp_thread(dsp_thread const &) = delete;
+    dsp_thread(dsp_thread const &)            = delete;
     dsp_thread& operator=(dsp_thread const &) = delete;
 
     ~dsp_thread(void)
@@ -120,7 +120,6 @@ public:
         cycle_sem.post();
     }
 
-
     char * stack(void)
     {
         return stack_;
@@ -129,21 +128,21 @@ public:
 private:
     boost::sync::semaphore cycle_sem;
     dsp_queue_interpreter & interpreter;
-    std::atomic<bool> stop;
+    std::atomic<bool> stop = {false};
     uint16_t index;
-    char * stack_;
+    char * stack_ = nullptr;
 };
 
 /** \brief container for all dsp threads
  *
- *  - no care is taken, that dsp_threads::run is executed on a valid instance
+ *  - no care is taken, that dsp_thread_pool::run is executed on a valid instance
  *
  * */
 template <typename runnable,
           typename thread_init_functor = nop_thread_init,
           typename Alloc = std::allocator<void*>
          >
-class dsp_threads
+class dsp_thread_pool
 {
     typedef nova::dsp_queue_interpreter<runnable, Alloc> dsp_queue_interpreter;
     typedef nova::dsp_thread<runnable, thread_init_functor, Alloc> dsp_thread;
@@ -154,8 +153,8 @@ public:
 
     typedef std::unique_ptr<dsp_thread_queue<runnable, Alloc> > dsp_thread_queue_ptr;
 
-    dsp_threads(thread_count_t count, bool yield_if_busy = false,
-                thread_init_functor const & init_functor = thread_init_functor()):
+    dsp_thread_pool( thread_count_t count, bool yield_if_busy = false,
+                     thread_init_functor const & init_functor = thread_init_functor() ):
         interpreter(std::min(count, (thread_count_t)std::thread::hardware_concurrency()), yield_if_busy)
     {
         set_dsp_thread_count(interpreter.get_thread_count(), init_functor);
@@ -163,8 +162,8 @@ public:
 
     void run(void)
     {
-        bool run_tick = interpreter.init_tick();
-        if (likely(run_tick)) {
+        const bool run_tick = interpreter.init_tick();
+        if( likely(run_tick) ) {
             wake_threads();
             interpreter.tick_master();
         }

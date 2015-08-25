@@ -19,8 +19,6 @@
 #ifndef SERVER_GROUP_HPP
 #define SERVER_GROUP_HPP
 
-#include <boost/tuple/tuple.hpp> /* for boost::tie */
-
 #include "memory_pool.hpp"
 #include "node_types.hpp"
 #include "dsp_thread_queue_node.hpp"
@@ -56,10 +54,10 @@ class abstract_group:
 protected:
     server_node_list child_nodes;
     group_list child_groups;
-    const bool is_parallel_;
+    const bool group_is_parallel;
 
     abstract_group(int node_id, bool is_parallel):
-        server_node(node_id, false), is_parallel_(is_parallel), child_synth_count(0), child_group_count(0)
+        server_node(node_id, false), group_is_parallel(is_parallel)
     {}
 
 public:
@@ -67,7 +65,7 @@ public:
 
     bool is_parallel(void) const
     {
-        return is_parallel_;
+        return group_is_parallel;
     }
 
 
@@ -296,7 +294,7 @@ public:
     }
 
     friend class node_graph;
-    std::size_t child_synth_count, child_group_count;
+    std::size_t child_synth_count = 0, child_group_count = 0;
 };
 
 
@@ -392,8 +390,6 @@ private:
         return 0;
     }
 };
-
-typedef intrusive_ptr<group> group_ptr;
 
 class parallel_group:
     public abstract_group

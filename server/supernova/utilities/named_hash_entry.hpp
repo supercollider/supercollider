@@ -71,7 +71,8 @@ private:
             str(str), hash(hash)
         {}
 
-        symbol_data(symbol_data const & rhs) = default;
+        symbol_data(symbol_data const & rhs)             = default;
+        symbol_data & operator=(symbol_data const & rhs) = default;
 
         friend size_t hash_value(symbol_data const & value)
         {
@@ -183,7 +184,8 @@ public:
         data(lookup_string(str, length))
     {}
 
-    symbol (symbol const & rhs) = default;
+    symbol (symbol const & rhs)            = default;
+    symbol & operator=(symbol const & rhs) = default;
 
     const char * c_str(void) const
     {
@@ -315,5 +317,4 @@ struct named_hash_hash
 
 }
 
-#undef PURE
 #endif /* UTILITIES_NAMED_HASH_ENTRY_HPP */

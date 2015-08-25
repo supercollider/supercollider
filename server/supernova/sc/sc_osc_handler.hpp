@@ -27,6 +27,8 @@
 #define BOOST_ASIO_HAS_STD_ARRAY
 #endif
 
+#include <boost/asio/ip/tcp.hpp>
+
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/date_time/microsec_time_clock.hpp>
 #include <boost/intrusive/treap_set.hpp>
@@ -216,7 +218,6 @@ class sc_osc_handler:
 public:
     sc_osc_handler(server_arguments const & args):
         sc_notify_observers(detail::network_thread::io_service_),
-        dump_osc_packets(0), error_posting(1), quit_received(false),
         tcp_acceptor_(detail::network_thread::io_service_),
         tcp_password_(args.server_password.size() ? args.server_password.c_str() : nullptr)
     {
@@ -323,7 +324,7 @@ public:
     }
 
 private:
-    int dump_osc_packets;
+    int dump_osc_packets = 0;
 
     /* @{ */
 public:
@@ -335,7 +336,7 @@ public:
     }
 
 private:
-    int error_posting;
+    int error_posting = 1;
     /* @} */
 
     /* @{ */
@@ -404,7 +405,7 @@ public:
                                  AsyncStageFn stage2, AsyncStageFn stage3, AsyncStageFn stage4, AsyncFreeFn cleanup,
                                  int completionMsgSize, void* completionMsgData);
 
-    bool quit_received;
+    bool quit_received = false;
 
 private:
     /* @{ */

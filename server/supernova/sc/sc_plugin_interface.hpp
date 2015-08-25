@@ -94,8 +94,7 @@ public:
     void initialize(class server_arguments const & args, float * control_busses);
     void reset_sampling_rate(int sr);
 
-    sc_plugin_interface(void)
-    {}
+    sc_plugin_interface(void) = default;
 
     ~sc_plugin_interface(void);
 

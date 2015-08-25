@@ -2,8 +2,6 @@ set(simple_tests
     buffer_manager_test.cpp
     callback_interpreter_system.cpp
     memory-pool_test.cpp
-    osc_dispatcher_test.cpp
-    osc_server_test.cpp
     server_dsp_thread_queue_test.cpp
     server_dsp_thread_test.cpp
     server_node_graph_test.cpp
