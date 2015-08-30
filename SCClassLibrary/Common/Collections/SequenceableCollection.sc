@@ -243,7 +243,7 @@ SequenceableCollection : Collection {
 	}
 
 	selectIndices { | function |
-		^this.selectIndexAs(function, this.species);
+		^this.selectIndicesAs(function, this.species);
 	}
 	selectIndicesAs { | function, class |
 		var res = class.new(this.size);
@@ -252,7 +252,7 @@ SequenceableCollection : Collection {
 	}
 
 	rejectIndices { | function |
-		^this.rejectIndexAs(function, this.species);
+		^this.rejectIndicesAs(function, this.species);
 	}
 	rejectIndicesAs { | function, class |
 		var res = class.new(this.size);
