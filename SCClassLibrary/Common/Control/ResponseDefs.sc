@@ -491,7 +491,11 @@ MIDISysDataDispatcher : MIDIMessageDispatcher {
 	register {
 		var hook;
 		// select the correct low-level hook.
-		hook = if(messageType == \sysex || messageType == \mtcQF, {messageType}, {\sysrt});
+		hook = switch(messageType,
+			\sysex, {\sysex},
+			\mtcQF, {\smpte},
+			{\sysrt}
+		);
 		MIDIIn.perform(hook.asSetter, MIDIIn.perform(hook.asGetter).addFunc(this));
 		registered = true;
 	}
@@ -499,7 +503,11 @@ MIDISysDataDispatcher : MIDIMessageDispatcher {
 	unregister {
 		var hook;
 		// select the correct low-level hook.
-		hook = if(messageType == \sysex || messageType == \mtcQF, {messageType}, {\sysrt});
+		hook = switch(messageType,
+			\sysex, {\sysex},
+			\mtcQF, {\smpte},
+			{\sysrt}
+		);
 		MIDIIn.perform(hook.asSetter, MIDIIn.perform(hook.asGetter).removeFunc(this));
 		registered = false;
 	}
