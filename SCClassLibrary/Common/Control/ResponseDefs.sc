@@ -531,10 +531,18 @@ MIDISysDataDispatcher : MIDIMessageDispatcher {
 	}
 }
 
+MIDISysDataDropIndDispatcher : MIDISysDataDispatcher {
+	
+	value {|srcID, index, data|
+		active[index].value(data, srcID);
+	}
+
+}
+
 MIDISysNoDataDispatcher : MIDISysDataDispatcher {
 
 	value {|srcID, index|
-		active[index].value(srcID, index);
+		active[index].value(srcID);
 	}
 
 	wrapFunc {|funcProxy|
@@ -641,7 +649,7 @@ MIDIFunc : AbstractResponderFunc {
 			};*/ // unneeded? Just trace raw MTC
 		});
 		[\songPosition, \songSelect].do({|type|
-			defaultDispatchers[type] = MIDISysDataDispatcher(type);
+			defaultDispatchers[type] = MIDISysDataDropIndDispatcher(type);
 			traceFuncs[type] = {|src, ind, data|
 				if(ind == sysIndices[type], {
 					"MIDI Message Received:\n\ttype: %\n\tsrc: %\n\tdata: %\n\n".postf(type, src, data);
