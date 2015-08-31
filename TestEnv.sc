@@ -27,16 +27,22 @@ TestEnv : UnitTest {
 	}
 
 	test_initial_value {
-		var value = rrand(-100.0, 100.0);
-		var assert = { |x| this.assert(absdif(x, value) < 0.01, "env should return the first level immediately") };
+		var value = rrand(10.0, 100.0);
+		var assert = { |x, curve, selector, label=""|
+			this.assert(absdif(x, value) < 0.01,
+				"EnvGen.%() with curve '%' (%) should return the first level immediately".format(selector, curve, label)
+			)
+		};
 		this.bootServer;
-			{ EnvGen.ar(Env([value, 1, 2], [10, 0.01]), 1) }.loadToFloatArray(action: { |x| assert.(x[0]) });
-			0.1.wait;
-			{ EnvGen.kr(Env([value, 1, 2], [10, 0.01]), 1) }.loadToFloatArray(action: { |x| assert.(x[0]) });
-			0.1.wait;
-			{ |g = 1| EnvGen.ar(Env([value, 1, 2], [10, 0.01]), g) }.loadToFloatArray(action: { |x| assert.(x[0]) });
-			0.1.wait;
-			{ |g = 1| EnvGen.kr(Env([value, 1, 2], [10, 0.01]), g) }.loadToFloatArray(action: { |x| assert.(x[0]) });
+		Env.shapeNames.keysDo { |curve|
+			var env = Env([value, 1, 2], [10, 0.01], curve);
+			[\ar, \kr].do { |sel|
+				{ EnvGen.perform(sel, env, 1) }.loadToFloatArray(action: { |x| assert.(x[0], curve, sel, "gate = 1") });
+					0.1.wait;
+				{ |g = 1| EnvGen.perform(sel, env, g) }.loadToFloatArray(action: { |x| assert.(x[0], curve, sel, "gate = gateControl(1)") });
+				0.1.wait;
+			}
+		}
 	}
 }
 
