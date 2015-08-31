@@ -658,9 +658,9 @@ MIDIFunc : AbstractResponderFunc {
 		});
 		[\sysrt].do({|type|
 			defaultDispatchers[type] = MIDISysDataDispatcher(type);
-/*			traceFuncs[type] = {|src, ind, data|
+			traceFuncs[type] = {|src, ind, data|
 				"MIDI Message Received:\n\ttype: %\n\tindex: %\n\tsrc: %\n\tdata: %\n\n".postf(type, ind, src, data);
-			};*/// maybe unneeded
+			};// maybe unneeded
 		});
 		[\tuneRequest, \midiClock, \tick, \start, \continue, \stop, \activeSense, \reset].do({|type|
 			defaultDispatchers[type] = MIDISysNoDataDispatcher(type);
@@ -684,8 +684,11 @@ MIDIFunc : AbstractResponderFunc {
 				[\noteOn, \noteOff, \control, \polytouch, \touch, \program, \bend, \sysex].do({|type|
 					MIDIIn.addFuncTo(type, traceFuncs[type]);
 				});
-				[\tuneRequest, \midiClock, \tick, \start, \continue, \stop, \activeSense, \reset].do({|type|
+				[\tuneRequest, \midiClock, \tick, \start, \continue, \stop, \activeSense, \reset, \songPosition, \songSelect].do({|type|
 					MIDIIn.addFuncTo(\sysrt, traceFuncs[type]);
+				});
+				[\mtcQF].do({|type|
+					MIDIIn.addFuncTo(\smpte, traceFuncs[type]);
 				});
 				CmdPeriod.add(this);
 				traceRunning = true;
@@ -694,8 +697,11 @@ MIDIFunc : AbstractResponderFunc {
 			[\noteOn, \noteOff, \control, \polytouch, \touch, \program, \bend, \sysex].do({|type|
 				MIDIIn.removeFuncFrom(type, traceFuncs[type]);
 			});
-			[\tuneRequest, \midiClock, \tick, \start, \continue, \stop, \activeSense, \reset].do({|type|
+			[\tuneRequest, \midiClock, \tick, \start, \continue, \stop, \activeSense, \reset, \songPosition, \songSelect].do({|type|
 				MIDIIn.removeFuncFrom(\sysrt, traceFuncs[type]);
+			});
+			[\mtcQF].do({|type|
+				MIDIIn.removeFuncFrom(\smpte, traceFuncs[type]);
 			});
 			CmdPeriod.remove(this);
 			traceRunning = false;
