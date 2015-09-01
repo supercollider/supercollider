@@ -123,7 +123,57 @@ TestBuffer : UnitTest {
 		
 		
 	}
-	
+
+	test_cheby {
+		var s = this.s;
+		var buf;
+		var fromBuffer;
+		var calcVal;
+		var bufSize = 512;
+
+		this.bootServer;
+		buf = Buffer.alloc(s, bufSize , 1, { arg b; b.chebyMsg([0, 1], normalize: false, asWavetable: false) });
+		s.sync;
+		buf.loadToFloatArray(action: { arg array; fromBuffer = array });
+
+		calcVal = cos(2 * acos((bufSize - 1)/(bufSize >> 1) - 1)) + 1;
+		this.assert(
+			fromBuffer.first.equalWithPrecision(2) &&
+			this.getSignalMidValue(fromBuffer).equalWithPrecision(0) &&
+			fromBuffer.last.equalWithPrecision(calcVal),
+			"Order 2 Cheby Buffer (zero-offset) should be a parabola between 0 and 2");
+
+		buf.cheby([1], asWavetable: false);
+		buf.loadToFloatArray(action: { arg array; fromBuffer = array });
+		calcVal = [bufSize >> 1, bufSize-1].linlin(0, bufSize, -1, 1);
+		this.assert(
+			fromBuffer.first.equalWithPrecision(-1) &&
+			this.getSignalMidValue(fromBuffer).equalWithPrecision(calcVal.first) &&
+			fromBuffer.last.equalWithPrecision(calcVal.last),
+			"Order 1 Cheby Buffer should go from -1 to % by default".format(calcVal.last));
+
+		buf.cheby([0, 1], normalize: true, asWavetable: false);
+		buf.loadToFloatArray(action: { arg array; fromBuffer = array });
+		calcVal = cos(2 * acos((bufSize - 1)/(bufSize >> 1) - 1)) + 1 / 2;
+		this.assert(
+			fromBuffer.first.equalWithPrecision(1) &&
+			this.getSignalMidValue(fromBuffer).equalWithPrecision(0) &&
+			fromBuffer.last.equalWithPrecision(calcVal),
+			"Order 2 Cheby Buffer should be a parabola between from 0 to 1 by default (normalized, zero-offset)");
+
+		buf.cheby([0, 1, 0.5, -0.25], normalize: false, asWavetable: false);
+		buf.loadToFloatArray(action: { arg array; fromBuffer = array });
+		this.assert(
+			this.getSignalMidValue(fromBuffer).equalWithPrecision(0),
+			"A zeroOffset Cheby Buffer should have value 0 for its middle value");
+
+	}
+
+	// This is just a helper method
+	getSignalMidValue { arg sig;
+		^sig[sig.size >> 1]
+	}
+
 }
 
 
