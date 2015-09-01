@@ -348,7 +348,7 @@ int prSignalAddChebyshev(struct VMGlobals *g, int numArgsPushed)
 	out = (float*)(signal->slots) - 1;
 	x = -1.0;
 	step = 2.0 / (signal->size - 1);
-	UNROLL_CODE(signal->size, out, *++out += cos(harmonic * acos(x)) * amp; x += step; );
+	UNROLL_CODE(signal->size, out, *++out += cos(harmonic * acos(sc_min(x, 1.0))) * amp; x += step; );
 
 	return errNone;
 }
