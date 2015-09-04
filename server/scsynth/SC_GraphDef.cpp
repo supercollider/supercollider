@@ -579,7 +579,7 @@ void GraphDef_DeleteMsg(World *inWorld, GraphDef *inDef)
 
 	small_scpacket packet;
 	packet.adds("/d_removed");
-	packet.maketags(1);
+	packet.maketags(2);
 	packet.addtag(',');
 	packet.addtag('s');
 	packet.adds((char*)inDef->mNodeDef.mName);
