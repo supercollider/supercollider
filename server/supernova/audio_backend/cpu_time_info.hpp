@@ -36,7 +36,7 @@ public:
     void resize( int sampleRate, int blockSize, int seconds = 1 )
     {
         const size_t blocks = sampleRate * seconds / blockSize;
-        size = std::max( 1UL, blocks );
+        size = std::max( size_t(1), blocks );
         buffer.resize( size, 0.f );
         index = size - 1;
     }
