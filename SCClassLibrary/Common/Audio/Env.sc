@@ -140,7 +140,7 @@ Env {
 	*xyc { arg xyc;
 		var times, levels, curves, offset, order;
 		#times, levels, curves = xyc.flop;
-		if(times.containsSeqColl.not) { // sort triplets, if possible.
+		if(times.every(_.isKindOf(Magnitude))) { // sort triplets, if possible.
 			order = times.order;
 			times = times[order];
 			levels = levels[order];
