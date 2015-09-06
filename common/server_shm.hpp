@@ -28,7 +28,6 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/interprocess/managed_shared_memory.hpp>
 #include <boost/interprocess/containers/vector.hpp>
-#include <boost/atomic.hpp>
 
 namespace detail_server_shm {
 
