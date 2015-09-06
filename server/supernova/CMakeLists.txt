@@ -136,6 +136,10 @@ else()
 endif()
 
 
+if( ${_gcc_version} VERSION_GREATER 5 )
+  target_link_libraries( libsupernova atomic )
+endif()
+
 if(WIN32)
     target_link_libraries(libsupernova wsock32 ws2_32 winmm)
 endif()
