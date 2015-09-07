@@ -26,11 +26,17 @@ SCDocHTMLRenderer {
         };
         ^x;
     }
+	*escapeSpacesInAnchor { |str|
+		^str.replace(" ", "%20")
+	}
 
     *htmlForLink {|link,escape=true|
         var n, m, f, c, doc;
         // FIXME: how slow is this? can we optimize
         #n, m, f = link.split($#); // link, anchor, label
+		if(m.size > 0) {
+			m = this.escapeSpacesInAnchor(m);
+		};
         ^if ("^[a-zA-Z]+://.+".matchRegexp(link) or: (link.first==$/)) {
             if(f.size<1) {f=link};
             c = if(m.size>0) {n++"#"++m} {n};
@@ -393,11 +399,11 @@ SCDocHTMLRenderer {
                 stream << "<span class='soft'>" << this.escapeSpecialChars(node.text) << "</span>";
             },
             \ANCHOR, {
-                stream << "<a class='anchor' name='" << node.text << "'>&nbsp;</a>";
+				stream << "<a class='anchor' name='" << this.escapeSpacesInAnchor(node.text) << "'>&nbsp;</a>";
             },
             \KEYWORD, {
                 node.children.do {|child|
-                    stream << "<a class='anchor' name='kw_" << child.text << "'>&nbsp;</a>";
+					stream << "<a class='anchor' name='kw_" << this.escapeSpacesInAnchor(child.text) << "'>&nbsp;</a>";
                 }
             },
             \IMAGE, {
@@ -621,7 +627,7 @@ SCDocHTMLRenderer {
                 this.renderChildren(stream, node);
             },
             \SECTION, {
-                stream << "<h2><a class='anchor' name='" << node.text
+				stream << "<h2><a class='anchor' name='" << this.escapeSpacesInAnchor(node.text)
                 << "'>" << this.escapeSpecialChars(node.text) << "</a></h2>\n";
                 if(node.makeDiv.isNil) {
                     this.renderChildren(stream, node);
@@ -632,7 +638,7 @@ SCDocHTMLRenderer {
                 };
             },
             \SUBSECTION, {
-                stream << "<h3><a class='anchor' name='" << node.text
+				stream << "<h3><a class='anchor' name='" << this.escapeSpacesInAnchor(node.text)
                 << "'>" << this.escapeSpecialChars(node.text) << "</a></h3>\n";
                 if(node.makeDiv.isNil) {
                     this.renderChildren(stream, node);
@@ -678,32 +684,32 @@ SCDocHTMLRenderer {
                     \CMETHOD, {
                         stream << "<li class='toc3'>"
                         << (n.children[0].children.collect{|m|
-                            "<a href='#*"++m.text++"'>"++this.escapeSpecialChars(m.text)++"</a> ";
+							"<a href='#*"++m.text++"'>"++this.escapeSpecialChars(m.text)++"</a> ";
                         }.join(" "))
                         << "</li>\n";
                     },
                     \IMETHOD, {
                         stream << "<li class='toc3'>"
                         << (n.children[0].children.collect{|m|
-                            "<a href='#-"++m.text++"'>"++this.escapeSpecialChars(m.text)++"</a> ";
+							"<a href='#-"++m.text++"'>"++this.escapeSpecialChars(m.text)++"</a> ";
                         }.join(" "))
                         << "</li>\n";
                     },
                     \METHOD, {
                         stream << "<li class='toc3'>"
                         << (n.children[0].children.collect{|m|
-                            "<a href='#."++m.text++"'>"++this.escapeSpecialChars(m.text)++"</a> ";
+							"<a href='#."++m.text++"'>"++this.escapeSpecialChars(m.text)++"</a> ";
                         }.join(" "))
                         << "</li>\n";
                     },
 
                     \SECTION, {
-                        stream << "<li class='toc1'><a href='#" << n.text << "'>"
+						stream << "<li class='toc1'><a href='#" << this.escapeSpacesInAnchor(n.text) << "'>"
                         << this.escapeSpecialChars(n.text) << "</a></li>\n";
                         this.renderTOC(stream, n);
                     },
                     \SUBSECTION, {
-                        stream << "<li class='toc2'><a href='#" << n.text << "'>"
+						stream << "<li class='toc2'><a href='#" << this.escapeSpacesInAnchor(n.text) << "'>"
                         << this.escapeSpecialChars(n.text) << "</a></li>\n";
                         this.renderTOC(stream, n);
                     }
