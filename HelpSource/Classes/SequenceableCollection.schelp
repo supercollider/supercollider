@@ -143,7 +143,7 @@ code::
 #[a, b, c, g, h, h, j, h].selectIndices({|item, i| item === \h})
 ::
 
-If you want to control what type of collection is returned, use link::Classes/Collection#selectIndicesAs::
+If you want to control what type of collection is returned, use link::#-selectIndicesAs::
 
 method::selectIndicesAs
 Return a new collection of type emphasis::class:: which consists of all indices of those elements of the receiver for which function answers code::true::. The function is passed two arguments, the item and an integer index.
@@ -160,7 +160,7 @@ code::
 #[a, b, c, g, h, h, j, h].rejectIndices({|item, i| item === \h})
 ::
 
-If you want to control what type of collection is returned, use link::Classes/Collection#selectIndicesAs::
+If you want to control what type of collection is returned, use link::#-rejectIndicesAs::
 
 method::rejectIndicesAs
 Return a new collection of type emphasis::class:: which consists of all indices of those elements of the receiver for which function answers code::false::. The function is passed two arguments, the item and an integer index.
