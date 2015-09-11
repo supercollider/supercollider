@@ -96,7 +96,7 @@ if(WIN32)
 
 endif()
 
-add_definitions(-DBOOST_CHRONO_HEADER_ONLY)
+add_definitions(-DBOOST_CHRONO_HEADER_ONLY -DBOOST_NO_AUTO_PTR)
 
 #############################################
 # Options
