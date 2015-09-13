@@ -86,13 +86,11 @@ AudioStatusBox::AudioStatusBox(ScServer *server, QWidget *parent):
     connect(server, SIGNAL(volumeChanged(float)), this, SLOT(updateVolumeLabel(float)));
     connect(server, SIGNAL(mutedChanged(bool)), this, SLOT(updateMuteLabel(bool)));
     connect(server, SIGNAL(recordingChanged(bool)), this, SLOT(updateRecordLabel(bool)));
-    connect(server, SIGNAL(pauseChanged(bool)), this, SLOT(updateRecordLabelPause(bool)));
 
     onServerRunningChanged(false, "", 0, false);
     updateVolumeLabel( mServer->volume() );
     updateMuteLabel( mServer->isMuted() );
     updateRecordLabel( mServer->isRecording() );
-    updateRecordLabelPause( mServer->isPaused() );
 }
 
 void AudioStatusBox::onServerStatusReply(int ugens, int synths, int groups, int synthDefs,
@@ -166,15 +164,5 @@ void AudioStatusBox::updateRecordLabel( bool recording )
     mRecordLabel->setTextColor( recording ? Qt::red : QColor(30,30,30) );
 }
 
-void AudioStatusBox::updateRecordLabelPause( bool paused )
-{
-    if(paused) {
-         mRecordLabel->setTextColor(Qt::yellow);
-    } else if ( mServer->isRecording() ) {
-        mRecordLabel->setTextColor(Qt::red);
-    } else {
-        mRecordLabel->setTextColor(QColor(30,30,30));
-    }
-}
 
 } // namespace ScIDE

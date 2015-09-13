@@ -82,8 +82,7 @@ public:
     bool isRecording() const;
     bool isPaused() const;
 
-    boost::chrono::seconds recordingTime() const;
-    boost::chrono::system_clock::time_point beginningOfRecording() const;
+    int recordingTime() const;
 
 public slots:
     void boot();
@@ -171,9 +170,7 @@ private:
     QAction * mActions[ActionCount];
 
     VolumeWidget *mVolumeWidget;
-    QTimer mRecordTimer;
-    boost::chrono::system_clock::time_point mRecordTime;
-    boost::chrono::seconds mPauseTime;
+    int mRecordTime;
     bool mIsRecording;
     bool mIsRecordingPaused;
 };

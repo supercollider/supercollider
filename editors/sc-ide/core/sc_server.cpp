@@ -51,9 +51,6 @@ ScServer::ScServer(ScProcess *scLang, Settings::Manager *settings, QObject *pare
     mUdpSocket = new QUdpSocket(this);
     startTimer(333);
 
-    mRecordTimer.setInterval(1000);
-    connect( &mRecordTimer, SIGNAL(timeout()), this, SLOT(updateRecordingAction()) );
-
     connect(scLang, SIGNAL(stateChanged(QProcess::ProcessState)),
             this, SLOT(onScLangStateChanged(QProcess::ProcessState)));
     connect(scLang, SIGNAL(response(QString,QString)),
@@ -332,14 +329,6 @@ void ScServer::setRecording( bool doRecord )
             return;
 
         mIsRecording = doRecord;
-
-        if (doRecord) {
-            mRecordTime = beginningOfRecording();
-            mRecordTime = system_clock::now();
-            mRecordTimer.start();
-        } else {
-            mRecordTimer.stop();
-        }
         mIsRecordingPaused = false;
         updateRecordingAction();
 }
@@ -347,21 +336,17 @@ void ScServer::setRecording( bool doRecord )
 void ScServer::pauseRecording( bool flag )
     {
         if(mIsRecordingPaused != flag) {
+            mIsRecordingPaused = flag;
             if(flag) {
-                if (isRunning()) {
-                    mRecordTimer.stop();
-                    mPauseTime = recordingTime();
-                    updateRecordingAction();
-                }
-                mIsRecordingPaused = true;
                 mLang->evaluateCode( QString("ScIDE.defaultServer.pauseRecording"), true );
-            }
-            else {
+            } else {
                 if(mIsRecording) {
-                    setRecording(true);
-                }
+                setRecording(true);
+                sendRecording(true);
+               }
             }
-    }
+            updateRecordingAction();
+        }
 }
 
 
@@ -374,38 +359,23 @@ void ScServer::sendRecording( bool doRecord )
 }
 
 
-seconds ScServer::recordingTime() const
-{
-    if (isRecording())
-        return duration_cast<seconds>( system_clock::now() - mRecordTime );
-    else
-        return seconds(0);
-}
-
-boost::chrono::system_clock::time_point ScServer::beginningOfRecording() const
-{
-    if (mIsRecordingPaused)
-        return system_clock::now() - mPauseTime;
-    else
-        return system_clock::now();
-}
-
 void ScServer::updateRecordingAction()
 {
     if (isRecording()) {
-        seconds time = recordingTime();
-        hours h = duration_cast<hours>(time);
-        minutes m = duration_cast<minutes>(time - h);
-        seconds s = (time - m);
+        int s = mRecordTime % 60;
+        int m = mRecordTime / 60;
+        int h = m / 60;
         ostringstream msg;
         msg << "Recording: ";
-        msg << setw(2) << setfill('0') << h.count() << ':';
-        msg << setw(2) << setfill('0') << m.count() << ':';
-        msg << setw(2) << setfill('0') << s.count();
+        msg << setw(2) << setfill('0') << h << ':';
+        msg << setw(2) << setfill('0') << m << ':';
+        msg << setw(2) << setfill('0') << s;
         mActions[Record]->setText( msg.str().c_str() );
     }
     else {
+        mRecordTime = 0;
         mActions[Record]->setText( "Start Recording" );
+        mIsRecordingPaused = false;
     }
     mActions[Record]->setChecked( isRecording() );
     mActions[PauseRecord]->setChecked( mIsRecordingPaused );
@@ -428,6 +398,7 @@ void ScServer::onScLangReponse( const QString & selector, const QString & data )
     static QString startRecordingSelector("recordingStarted");
     static QString pauseRecordingSelector("recordingPaused");
     static QString stopRecordingSelector("recordingStopped");
+    static QString recordingDurationSelector("recordingDuration");
 
 
     if (selector == defaultServerRunningChangedSelector)
@@ -440,8 +411,16 @@ void ScServer::onScLangReponse( const QString & selector, const QString & data )
 	else if (selector == startDumpOSCSelector) {
         mActions[DumpOSC]->setChecked(true);
     }
-	else if (selector == stopDumpOSCSelector) {
-        mActions[DumpOSC]->setChecked(false);
+	else if (selector == recordingDurationSelector) {
+        bool ok;
+        float duration = data.mid(1, data.size() - 2).toFloat(&ok);
+        if (ok) {
+            mRecordTime = (int) duration;
+            updateRecordingAction();
+        }
+    }
+    else if (selector == startRecordingSelector) {
+        setRecording(true);
     }
     else if (selector == startRecordingSelector) {
         setRecording(true);
@@ -538,7 +517,6 @@ void ScServer::onRunningStateChanged( bool running, QString const & hostName, in
         mServerAddress.clear();
         mPort = 0;
         mIsRecording = false;
-        mRecordTimer.stop();
         mUdpSocket->disconnectFromHost();
     }
 

@@ -53,6 +53,9 @@ ScIDE {
 		})
 		.put(\pausedRecording, { | theChanger, what |
 			this.prSend(\recordingPaused);
+		})
+		.put(\recordingDuration, { | theChanger, what, duration |
+			this.prSend(\recordingDuration, duration.asString);
 		});
 
 		volumeController.remove;

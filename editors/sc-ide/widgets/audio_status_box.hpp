@@ -41,7 +41,6 @@ private slots:
     void updateVolumeLabel(float volume);
     void updateMuteLabel(bool muted);
     void updateRecordLabel(bool recording);
-    void updateRecordLabelPause(bool paused);
 
 
 protected:

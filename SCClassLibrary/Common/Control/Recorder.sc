@@ -3,8 +3,9 @@ Recorder {
 	var <server, <>numChannels;
 	var <>recHeaderFormat, <>recSampleFormat, <>recBufSize;
 	var recordBuf, recordNode, synthDef;
-	var <>paused = false;
+	var <>paused = false, <duration = 0;
 	var <>filePrefix = "SC_";
+	var responder, id;
 
 	*new { |server|
 		^super.newCopyArgs(server)
@@ -88,6 +89,8 @@ Recorder {
 			"Not Recording".warn
 		};
 		paused = false;
+		duration = 0;
+		server.changed(\recordingDuration, 0);
 	}
 
 	prepareForRecord { | path, numChannels |
@@ -106,10 +109,21 @@ Recorder {
 		);
 		recordBuf.path = path;
 		this.numChannels = numChannels;
+		id = UniqueID.next;
 
 		synthDef = SynthDef(SystemSynthDefs.generateTempName, { |in, bufnum|
+			var tick = Impulse.kr(1);
+			var timer = PulseCount.kr(tick);
+			SendReply.kr(tick, '/recordingDuration', timer, id);
 			DiskOut.ar(bufnum, In.ar(in, numChannels))
 		}).send(server);
+
+		responder = OSCFunc({ |msg|
+			if(msg[2] == id) {
+				duration = msg[3];
+				server.changed(\recordingDuration, duration);
+			}
+		}, '/recordingDuration', server.addr);
 
 		"Preparing recording on '%'\n".postf(server.name);
 	}
