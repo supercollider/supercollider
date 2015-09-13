@@ -99,7 +99,7 @@ While much has improved and many bugs from 3.6 have been fixed, there are still 
 Here is one few that are worth a special mention:
 
 LIST::
-##Evaluating code in the help document doesn't work (OSX) LINK::lhttps://github.com/supercollider/supercollider/issues/1385::
+##Evaluating code in the help document doesn't work (OSX) LINK::https://github.com/supercollider/supercollider/issues/1385::
 ##Drag and drop files to expand paths broken (OSX): LINK::https://github.com/supercollider/supercollider/issues/1295::
 ::
 
