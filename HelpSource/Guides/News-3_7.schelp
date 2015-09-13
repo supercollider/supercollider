@@ -3,22 +3,11 @@ summary:: A summary of news in SC 3.7
 categories:: News
 related::Guides/News-3_6, Guides/News-3_5, Guides/Debugging-tips
 
-NOTE::This is an incomplete stub::
 
-NOTE::3.7 is an alpha version, which fixes many issues, but may also introduce new ones. Please do not hesitate to add them to the LINK::https://github.com/supercollider/supercollider/issues##issue tracker:: or mention them on any of the supercollider LINK::http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx##mailing list::.::
+NOTE::3.7.0 fixes many issues, but may also introduce new ones. See also STRONG::Known Issues:: section below. Please do not hesitate to add new issues you find to the LINK::https://github.com/supercollider/supercollider/issues##issue tracker:: or mention them on any of the supercollider LINK::http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx##mailing list::.::
 
 This document focusses on features, there are STRONG::many bugfixes and interesting improvements::, which can be found by exploring the recent changes file and snooping around the system itself.
 
-SECTION:: Known Issues
-
-While much has improved and many bugs from 3.6 have been fixed, there are still many known issues. For a complete list see: link::https://github.com/supercollider/supercollider/issues/::
-
-Here is one few that are worth a special mention:
-
-LIST::
-##Evaluating code in the help document doesn't work (OSX) LINK::lhttps://github.com/supercollider/supercollider/issues/1385::
-##Drag and drop files to expand paths broken (OSX): LINK::https://github.com/supercollider/supercollider/issues/1295::
-::
 
 SECTION:: Editor
 
@@ -66,7 +55,9 @@ LIST::
 
 SECTION::Server-side news
 
-Apart from UDP, the TCP-protocol is now supported
+Apart from UDP, the TCP-protocol is now supported.
+
+When mapping controls of synths to busses, their number of channels is limited to the number of control channels, avoiding a "spill-over" of mappings.
 
 SUBSECTION::List of new UGens
 
@@ -78,9 +69,13 @@ LIST::
 SUBSECTION::Improved or corrected behavior
 LIST::
 ##LINK::Classes/LinXFade2:: (correct fading direction)
-##Instances of PV_Copy are added automatically where necessary for parallel processing
+##LINK::Classes/LFPulse:: (when width = 0.5, return exacly as many 0 as 1)
+##LINK::Classes/TrigControl:: is now independent of synth order, like LINK::Classes/Control::.
+##LINK::Classes/TRand::, LINK::Classes/TExpRand::, LINK::Classes/TIRand:: (can operate at audio rate)
 ##LINK::Classes/Env#*new:: accepts a new TELETYPE::step2:: shape, which steps to a value at the end of a shape
 ##LINK::Classes/UGen#-curvelin:: is now inverse of LINK::Classes/UGen#-lincurve::
+##LINK::Classes/Server#-record:: correcty closes short files
+##In combinations of demand-ugens: Instances of PV_Copy are added automatically where necessary for parallel processing
 ::
 
 
@@ -96,6 +91,17 @@ TABLE::
 
 See link::Overviews/Operators::
 
+
+SECTION:: Known Issues
+
+While much has improved and many bugs from 3.6 have been fixed, there are still many known issues. For a complete list see: link::https://github.com/supercollider/supercollider/issues/::
+
+Here is one few that are worth a special mention:
+
+LIST::
+##Evaluating code in the help document doesn't work (OSX) LINK::lhttps://github.com/supercollider/supercollider/issues/1385::
+##Drag and drop files to expand paths broken (OSX): LINK::https://github.com/supercollider/supercollider/issues/1295::
+::
 
 
 
