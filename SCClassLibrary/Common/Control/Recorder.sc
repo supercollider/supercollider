@@ -27,6 +27,7 @@ Recorder {
 				^this
 			};
 			if(this.isRecording.not) {
+				this.prStartListen;
 				bus = (bus ? 0).asControlInput;
 				recordNode = Synth.tail(node ? 0, synthDef.name, [\bufnum, recordBuf, \in, bus]);
 				recordNode.register(true);
@@ -90,7 +91,9 @@ Recorder {
 		};
 		paused = false;
 		duration = 0;
+		this.prStopListen;
 		server.changed(\recordingDuration, 0);
+
 	}
 
 	prepareForRecord { | path, numChannels |
@@ -118,14 +121,24 @@ Recorder {
 			DiskOut.ar(bufnum, In.ar(in, numChannels))
 		}).send(server);
 
-		responder = OSCFunc({ |msg|
-			if(msg[2] == id) {
-				duration = msg[3];
-				server.changed(\recordingDuration, duration);
-			}
-		}, '/recordingDuration', server.addr);
-
 		"Preparing recording on '%'\n".postf(server.name);
+	}
+
+	prStartListen {
+		if(responder.isNil) {
+			responder = OSCFunc({ |msg|
+				if(msg[2] == id) {
+					duration = msg[3];
+					server.changed(\recordingDuration, duration);
+				}
+			}, '/recordingDuration', server.addr);
+		} {
+			responder.enable;
+		}
+	}
+
+	prStopListen {
+		responder.disable;
 	}
 
 	makePath {
