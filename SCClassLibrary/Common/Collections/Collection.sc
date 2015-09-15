@@ -63,6 +63,10 @@ Collection {
 		^obj
 	}
 
+	++ { | collection|
+		^this.copy.addAll(collection)
+	}
+
 	@ { | index | ^this[index] }
 
 	== { | aCollection |
