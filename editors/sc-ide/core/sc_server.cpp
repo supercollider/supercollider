@@ -411,6 +411,9 @@ void ScServer::onScLangReponse( const QString & selector, const QString & data )
 	else if (selector == startDumpOSCSelector) {
         mActions[DumpOSC]->setChecked(true);
     }
+    else if (selector == stopDumpOSCSelector) {
+        mActions[DumpOSC]->setChecked(false);
+    }
 	else if (selector == recordingDurationSelector) {
         bool ok;
         float duration = data.mid(1, data.size() - 2).toFloat(&ok);
