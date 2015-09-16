@@ -124,7 +124,8 @@ Scale {
 
 	*chooseFromSelected { |selectFunc|
 		selectFunc = selectFunc ? { true };
-		^(all ++ all.parent).select(selectFunc).choose.deepCopy;
+		^(all.copy.putAll(all.parent)).select(selectFunc)
+		.choose.deepCopy;
 	}
 
 	*names {
@@ -214,7 +215,8 @@ Tuning {
 
 	*chooseFromSelected { |selectFunc|
 		selectFunc = selectFunc ? { true };
-		^(all ++ all.parent).select(selectFunc).choose.deepCopy;
+		^(all.copy.putAll(all.parent)).select(selectFunc)
+		.choose.deepCopy;
 	}
 
 	ratios {
