@@ -3,7 +3,7 @@ Recorder {
 	var <server, <>numChannels;
 	var <>recHeaderFormat, <>recSampleFormat, <>recBufSize;
 	var recordBuf, recordNode, synthDef;
-	var <>paused = false, <duration = 0;
+	var <paused = false, <duration = 0;
 	var <>filePrefix = "SC_";
 	var responder, id;
 
