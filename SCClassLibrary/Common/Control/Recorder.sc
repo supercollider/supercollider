@@ -38,10 +38,11 @@ Recorder {
 			} {
 				if(paused) { this.resumeRecording };
 			};
-			server.changed(\recording, true);
+			defer { server.changed(\recording, true) }
 
 		}
 	}
+
 
 	cmdPeriod {
 		this.stopRecording
@@ -92,7 +93,7 @@ Recorder {
 		paused = false;
 		duration = 0;
 		this.prStopListen;
-		server.changed(\recordingDuration, 0);
+		defer { server.changed(\recordingDuration, 0) };
 
 	}
 
@@ -129,7 +130,7 @@ Recorder {
 			responder = OSCFunc({ |msg|
 				if(msg[2] == id) {
 					duration = msg[3];
-					server.changed(\recordingDuration, duration);
+					defer { server.changed(\recordingDuration, duration) };
 				}
 			}, '/recordingDuration', server.addr);
 		} {
