@@ -362,8 +362,8 @@ void ScServer::sendRecording( bool doRecord )
 void ScServer::updateRecordingAction()
 {
     if (isRecording()) {
-        int s = mRecordTime % 60;
-        int m = mRecordTime / 60;
+        int s = mRecordingSeconds % 60;
+        int m = mRecordingSeconds / 60;
         int h = m / 60;
         ostringstream msg;
         msg << "Recording: ";
@@ -373,7 +373,7 @@ void ScServer::updateRecordingAction()
         mActions[Record]->setText( msg.str().c_str() );
     }
     else {
-        mRecordTime = 0;
+        mRecordingSeconds = 0;
         mActions[Record]->setText( "Start Recording" );
         mIsRecordingPaused = false;
     }
@@ -418,7 +418,7 @@ void ScServer::onScLangReponse( const QString & selector, const QString & data )
         bool ok;
         float duration = data.mid(1, data.size() - 2).toFloat(&ok);
         if (ok) {
-            mRecordTime = (int) duration;
+            mRecordingSeconds = (int) duration;
             updateRecordingAction();
         }
     }

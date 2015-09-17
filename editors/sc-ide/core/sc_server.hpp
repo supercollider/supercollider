@@ -170,7 +170,7 @@ private:
     QAction * mActions[ActionCount];
 
     VolumeWidget *mVolumeWidget;
-    int mRecordTime;
+    int mRecordingSeconds;
     bool mIsRecording;
     bool mIsRecordingPaused;
 };
