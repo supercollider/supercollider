@@ -11,7 +11,7 @@ Recorder {
 		^super.newCopyArgs(server)
 	}
 
-	record { |path, bus, numChannels, node|
+	record { |path, bus, numChannels, node, duration|
 
 		server.ifNotRunning { ^this };
 
@@ -19,7 +19,7 @@ Recorder {
 			fork {
 				this.prepareForRecord(path, numChannels);
 				server.sync;
-				this.record(path, bus, numChannels, node)
+				this.record(path, bus, numChannels, node, duration)
 			}
 		} {
 			if(numChannels.notNil and: { numChannels != this.numChannels }) {
@@ -29,8 +29,9 @@ Recorder {
 			if(this.isRecording.not) {
 				this.prStartListen;
 				bus = (bus ? 0).asControlInput;
-				recordNode = Synth.tail(node ? 0, synthDef.name, [\bufnum, recordBuf, \in, bus]);
+				recordNode = Synth.tail(node ? 0, synthDef.name, [\bufnum, recordBuf, \in, bus, \duration, duration ? -1]);
 				recordNode.register(true);
+				recordNode.onFree { this.stopRecording };
 				CmdPeriod.add(this);
 				numChannels = this.numChannels;
 				"Recording channels % ... \npath: '%'\n"
@@ -75,12 +76,11 @@ Recorder {
 	}
 
 	stopRecording {
-		if(recordNode.notNil) {
-			recordNode.free;
-			recordNode = nil;
+		if(synthDef.notNil) {
+			if(recordNode.isPlaying) { recordNode.free };
 			server.sendMsg("/d_free", synthDef.name);
 			synthDef = nil;
-			server.changed(\recording, false);
+			defer { server.changed(\recording, false) };
 			"Recording stopped, written to\npath: '%'\n".postf(recordBuf.path);
 			if (recordBuf.notNil) {
 				recordBuf.close({ |buf| buf.freeMsg });
@@ -92,9 +92,8 @@ Recorder {
 		};
 		paused = false;
 		duration = 0;
-		this.prStopListen;
 		defer { server.changed(\recordingDuration, 0) };
-
+		this.prStopListen;
 	}
 
 	prepareForRecord { | path, numChannels |
@@ -115,9 +114,11 @@ Recorder {
 		this.numChannels = numChannels;
 		id = UniqueID.next;
 
-		synthDef = SynthDef(SystemSynthDefs.generateTempName, { |in, bufnum|
+		synthDef = SynthDef(SystemSynthDefs.generateTempName, { |in, bufnum, duration|
 			var tick = Impulse.kr(1);
 			var timer = PulseCount.kr(tick);
+			var doneAction = if(duration <= 0, 0, 2);
+			Line.kr(0, 0, duration, doneAction:doneAction);
 			SendReply.kr(tick, '/recordingDuration', timer, id);
 			DiskOut.ar(bufnum, In.ar(in, numChannels))
 		}).send(server);
