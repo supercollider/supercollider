@@ -56,7 +56,7 @@ Recorder {
 	pauseRecording {
 		if(recordNode.notNil) {
 			recordNode.run(false);
-			server.changed(\pausedRecording);
+			defer { server.changed(\pausedRecording) };
 			"... paused recording.\npath: '%'\n".postf(recordBuf.path);
 		};
 		paused = true;
@@ -66,7 +66,7 @@ Recorder {
 		if(recordNode.isPlaying) {
 			if(paused) {
 				recordNode.run(true);
-				server.changed(\recording, true);
+				defer { server.changed(\recording, true) };
 				"Resumed recording ...\npath: '%'\n".postf(recordBuf.path);
 			}
 		} {
