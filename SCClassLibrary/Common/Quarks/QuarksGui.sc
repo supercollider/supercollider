@@ -201,6 +201,7 @@ QuarksGui {
 			true); // just first value in paths array
 	}
 	runCancellable { |fn, onComplete, onCancel|
+		// call a function that can be cancelled by cmd-.
 		var r, cancel;
 		r = Routine.run({
 			fn.protect({
