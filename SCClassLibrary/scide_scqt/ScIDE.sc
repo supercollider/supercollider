@@ -20,9 +20,7 @@ ScIDE {
 
 	*connect {|ideName|
 		this.prConnect(ideName);
-		defer {
-			this.handshake
-		}
+		this.handshake
 	}
 
 	*handshake {
@@ -412,9 +410,9 @@ ScIDE {
 	}
 
 	*send { |id, data|
-		AppClock.sched(0, {
+		defer {
 			this.prSend(id, data)
-		})
+		}
 	}
 
 
