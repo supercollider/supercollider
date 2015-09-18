@@ -54,10 +54,12 @@ Recorder {
 	}
 
 	pauseRecording {
-		if(recordNode.notNil) {
+		if(recordNode.isPlaying) {
 			recordNode.run(false);
 			defer { server.changed(\pausedRecording) };
 			"... paused recording.\npath: '%'\n".postf(recordBuf.path);
+		} {
+			"Not Recording".warn
 		};
 		paused = true;
 	}
@@ -77,7 +79,7 @@ Recorder {
 
 	stopRecording {
 		if(synthDef.notNil) {
-			if(recordNode.isPlaying) { recordNode.free };
+			if(recordNode.isPlaying) { recordNode.free; recordNode = nil };
 			server.sendMsg("/d_free", synthDef.name);
 			synthDef = nil;
 			defer { server.changed(\recording, false) };
