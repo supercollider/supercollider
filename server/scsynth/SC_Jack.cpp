@@ -395,9 +395,10 @@ bool SC_JackDriver::DriverStop()
 	if (mClient) err = jack_deactivate(mClient);
 	return err == 0;
 }
-
+void sc_SetDenormalFlags();
 void SC_JackDriver::Run()
 {
+    sc_SetDenormalFlags();
 	jack_client_t* client = mClient;
 	World* world = mWorld;
 
