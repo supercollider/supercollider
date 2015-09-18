@@ -154,11 +154,11 @@ Pipe : UnixFILE {
 		^super.new.open(commandLine, mode);
 	}
 
-	*exec { arg command, onSuccess, onError, maxLineLength=4096;
+	*call { arg command, onSuccess, onError, maxLineLength=4096;
 		var r, cancel, closePipe;
 		r = Routine.run({
 			{
-				closePipe = Pipe.execSync(command, onSuccess, onError, maxLineLength)
+				closePipe = Pipe.callSync(command, onSuccess, onError, maxLineLength)
 			}.protect({
 				CmdPeriod.remove(cancel);
 			});
@@ -172,7 +172,7 @@ Pipe : UnixFILE {
 		CmdPeriod.add(cancel);
 		^cancel
 	}
-	*execSync { arg command, onSuccess, onError, maxLineLength=4096;
+	*callSync { arg command, onSuccess, onError, maxLineLength=4096;
 		var pipe, lines=[], line, close;
 		pipe = Pipe.new(command, "r");
 		close = {

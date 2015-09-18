@@ -105,7 +105,7 @@ Git {
 		});
 		cmd = (cmd ++ args).join(" ");
 		// this blocks the app thread
-		Pipe.execSync(cmd, { |res|
+		Pipe.callSync(cmd, { |res|
 			result = res;
 		}, {
 			Git.checkForGit();
@@ -115,7 +115,7 @@ Git {
 	*checkForGit {
 		if(gitIsInstalled.isNil, {
 			// does not work on windows
-			Pipe.execSync("which git", {
+			Pipe.callSync("which git", {
 				gitIsInstalled = true;
 			}, { arg error;
 				"Quarks requires git to be installed".error;
