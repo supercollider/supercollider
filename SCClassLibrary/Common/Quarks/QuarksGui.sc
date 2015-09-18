@@ -81,7 +81,9 @@ QuarksGui {
 			.toolTip_("Save currently installed quarks to a file")
 			.action_({
 				Dialog.savePanel({ |path|
-					model.save(path)
+					this.setMsg("Saving quarks to file:" + path);
+					model.save(path);
+					this.setMsg();
 				})
 			});
 
@@ -89,9 +91,16 @@ QuarksGui {
 			.toolTip_("Install a set of quarks from a file")
 			.action_({
 				Dialog.openPanel({ |path|
-					model.load(path);
-					this.update;
-				})
+					this.runCancelable({
+						this.setMsg("Installing from file:" + path);
+						0.1.wait;
+						model.load(path, {
+							this.setMsg();
+							0.1.wait;
+							this.update;
+						});
+					});
+				});
 			});
 
 		btnRecompile = Button().states_([
@@ -182,7 +191,7 @@ QuarksGui {
 		lblMsg.string = msg ? "";
 	}
 	checkForUpdates { |onComplete, onCancel|
-		this.runCancellable({
+		this.runCancelable({
 			model.fetchDirectory(true);
 			model.checkForUpdates();
 		}, onComplete, onCancel)
@@ -197,7 +206,7 @@ QuarksGui {
 			0,  // QFileDialog::AcceptOpen
 			true); // just first value in paths array
 	}
-	runCancellable { |fn, onComplete, onCancel|
+	runCancelable { |fn, onComplete, onCancel|
 		var r, cancel;
 		r = Routine.run({
 			fn.protect({
@@ -568,7 +577,7 @@ QuarkRowView {
 		this.update;
 	}
 	install { |bool|
-		quarksGui.runCancellable({
+		quarksGui.runCancelable({
 			var prev, ok;
 			if(bool, {
 				// if any other is installed by same name

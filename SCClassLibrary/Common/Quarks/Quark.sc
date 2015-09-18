@@ -3,8 +3,8 @@ Quark {
 	var <name, url, >refspec, data, <localPath;
 	var <changed = false, <git;
 
-	*new { |name, refspec|
-		var args = Quark.parseQuarkName(name, refspec);
+	*new { |name, refspec, url, localPath|
+		var args = Quark.parseQuarkName(name, refspec, url, localPath);
 		if(args.isNil, {
 			Error("% not found".format(name)).throw;
 		});
@@ -211,30 +211,30 @@ Quark {
 		});
 		^super.new.init(*args)
 	}
-	*parseQuarkName { |name, refspec|
+	*parseQuarkName { |name, refspec, url, localPath|
 		// determine which quark the string 'name' refers to
 		// name is one of: quarkname, url, localPath
 		// returns: [name, url, refspec, localPath]
 		var directoryEntry;
 		if(name.contains("://"), {
-			^[PathName(name).fileNameWithoutExtension(), name, refspec, nil]
+			^[PathName(name).fileNameWithoutExtension(), name, refspec, localPath]
 		});
 		if(Quarks.isPath(name), {
-			// url can be determined later by the Quark
-			^[name.basename, nil, refspec, name]
+			// if not provided then url can be determined later by the Quark
+			^[name.basename, url, refspec, name]
 		});
 		// search Quarks folders
 		(Quarks.additionalFolders ++ [Quarks.folder]).do({ |f|
-			var localPath = f +/+ name, url;
-			if(File.existsCaseSensitive(localPath), {
-				^[name, nil, refspec, localPath]
+			var lp = localPath ?? {f +/+ name};
+			if(File.existsCaseSensitive(lp), {
+				^[name, url, refspec, lp]
 			});
 		});
 		// lookup url in directory
 		directoryEntry = Quarks.findQuarkURL(name);
 		if(directoryEntry.notNil, {
 			directoryEntry = directoryEntry.split($@);
-			^[name, directoryEntry[0], refspec ? directoryEntry[1], nil]
+			^[name, url ? directoryEntry[0], refspec ? directoryEntry[1], localPath]
 		});
 		// not found
 		^nil
