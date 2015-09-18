@@ -1,6 +1,7 @@
 
 Git {
 	var <>localPath, >url, tag, sha, remoteLatest, tags;
+	classvar gitIsInstalled;
 
 	*isGit { |localPath|
 		^File.exists(localPath +/+ ".git")
@@ -87,7 +88,7 @@ Git {
 			tags = raw.split(Char.nl)
 				.select({ |t| t.size != 0 })
 				.reverse()
-				.collect({ |t| t.copyToEnd(10)});
+				.collect({ |t| t.copyToEnd(10) });
 		}
 	}
 	shaForTag { |tag|
@@ -95,7 +96,8 @@ Git {
 		^out.copyFromStart(39)
 	}
 	git { |args, cd=true|
-		var cmd;
+		var cmd, result="";
+
 		if(cd, {
 			cmd = ["cd", localPath.escapeChar($ ), "&&", "git"];
 		},{
@@ -103,6 +105,22 @@ Git {
 		});
 		cmd = (cmd ++ args).join(" ");
 		// this blocks the app thread
-		^cmd.unixCmdGetStdOut;
+		Pipe.callSync(cmd, { |res|
+			result = res;
+		}, {
+			Git.checkForGit();
+		});
+		^result;
+	}
+	*checkForGit {
+		if(gitIsInstalled.isNil, {
+			// does not work on windows
+			Pipe.callSync("which git", {
+				gitIsInstalled = true;
+			}, { arg error;
+				"Quarks requires git to be installed".error;
+				gitIsInstalled = false;
+			});
+		})
 	}
 }

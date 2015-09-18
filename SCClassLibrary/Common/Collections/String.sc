@@ -5,21 +5,18 @@ String[char] : RawArray {
 		unixCmdActions = IdentityDictionary.new;
 	}
 
-	*doUnixCmdAction {
-		arg res, pid;
+	*doUnixCmdAction { arg res, pid;
 		unixCmdActions[pid].value(res, pid);
 		unixCmdActions.removeAt(pid);
 	}
 
-	prUnixCmd {
-		arg postOutput = true;
+	prUnixCmd { arg postOutput = true;
 		_String_POpen
 		^this.primitiveFailed
 	}
 
 	// runs a unix command and sends stdout to the post window
-	unixCmd {
-		arg action, postOutput = true;
+	unixCmd { arg action, postOutput = true;
 		var pid;
 		pid = this.prUnixCmd(postOutput);
 		if(action.notNil) {
@@ -29,15 +26,14 @@ String[char] : RawArray {
 	}
 
 	// Like unixCmd but gets the result into a string
-	unixCmdGetStdOut {
+	unixCmdGetStdOut { arg maxLineLength=1024;
 		var pipe, lines, line;
 
 		pipe = Pipe.new(this, "r");
 		lines = "";
-		line = pipe.getLine;
+		line = pipe.getLine(maxLineLength);
 		while({line.notNil}, {lines = lines ++ line ++ "\n"; line = pipe.getLine; });
 		pipe.close;
-
 		^lines;
 	}
 

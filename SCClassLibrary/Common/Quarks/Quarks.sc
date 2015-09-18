@@ -302,7 +302,7 @@ Quarks {
 			fetch = true;
 
 		if(File.exists(dirTxtPath), {
-			fetch = force or: fetched.not
+			fetch = force // or: fetched.not
 		});
 		{
 			if(fetch, { this.prFetchDirectory });
@@ -321,12 +321,16 @@ Quarks {
 			});
 		});
 	}
-	*checkForUpdates {
-		this.all.do { arg quark;
-			if(quark.isGit, {
-				quark.checkForUpdates();
-			});
-		}
+	*checkForUpdates { |done|
+		Routine.run({
+			this.all.do { arg quark;
+				if(quark.isGit, {
+					quark.checkForUpdates();
+				});
+				0.05.wait;
+			};
+			done.value();
+		});
 	}
 	*prReadDirectoryFile { |dirTxtPath|
 		var file;
