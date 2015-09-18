@@ -314,12 +314,16 @@ Quarks {
 			});
 		});
 	}
-	*checkForUpdates {
-		this.all.do { arg quark;
-			if(quark.isGit, {
-				quark.checkForUpdates();
-			});
-		}
+	*checkForUpdates { |done|
+		Routine.run({
+			this.all.do { arg quark;
+				if(quark.isGit, {
+					quark.checkForUpdates();
+				});
+				0.05.wait;
+			};
+			done.value();
+		});
 	}
 	*prReadDirectoryFile { |dirTxtPath|
 		var file;
