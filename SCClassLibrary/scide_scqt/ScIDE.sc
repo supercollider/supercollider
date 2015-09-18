@@ -412,9 +412,9 @@ ScIDE {
 	}
 
 	*send { |id, data|
-		defer {
+		AppClock.sched(0, {
 			this.prSend(id, data)
-		}
+		})
 	}
 
 
