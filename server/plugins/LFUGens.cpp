@@ -2900,8 +2900,8 @@ initSegment:
 			unit->m_grow = (unit->m_y2 - unit->m_y1) / counter;
 		} break;
 		case shape_Cubed : {
-			unit->m_y1 = pow(level, 0.33333333);
-			unit->m_y2 = pow(endLevel, 0.33333333);
+			unit->m_y1 = pow(level, 1.0/3.0);//0.33333333);
+			unit->m_y2 = pow(endLevel, 1.0/3.0);
 			unit->m_grow = (unit->m_y2 - unit->m_y1) / counter;
 		} break;
 		}
@@ -3008,6 +3008,7 @@ static inline void EnvGen_perform(EnvGen * unit, float *& out, double & level, i
 				break;
 			ZXP(out) = level;
 			y1 += grow;
+            y1 = sc_max(y1,0);
 			level = y1*y1*y1;
 		}
 		unit->m_y1 = y1;
