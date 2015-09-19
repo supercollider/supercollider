@@ -124,7 +124,7 @@ Recorder {
 	}
 
 	freeResources {
-		if(recordNode.isPlaying) { recordNode.free; recordNode = nil };
+		if(recordNode.isPlaying) { recordNode.unregister; recordNode.free; recordNode = nil };
 		server.sendMsg("/d_free", synthDef.name);
 		synthDef = nil;
 		if(recordBuf.notNil) { recordBuf.close({ |buf| buf.freeMsg }); recordBuf = nil };
