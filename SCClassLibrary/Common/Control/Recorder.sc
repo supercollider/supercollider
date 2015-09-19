@@ -14,7 +14,6 @@ Recorder {
 	record { |path, bus, numChannels, node, duration|
 
 		server.ifNotRunning { ^this };
-
 		if(recordBuf.isNil) {
 			fork {
 				this.prepareForRecord(path, numChannels);
@@ -33,10 +32,10 @@ Recorder {
 				recordNode.register(true);
 				recordNode.onFree { this.stopRecording };
 				CmdPeriod.add(this);
-				this.numChannels = numChannels;
+
 				server.changed(\recording, true);
 				"Recording channels % ... \npath: '%'\n"
-				.postf(bus + (0..numChannels - 1), recordBuf.path);
+				.postf(bus + (0..this.numChannels - 1), recordBuf.path);
 			} {
 				if(paused) {
 					this.resumeRecording
