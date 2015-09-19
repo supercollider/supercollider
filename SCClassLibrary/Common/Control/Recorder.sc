@@ -14,11 +14,13 @@ Recorder {
 	record { |path, bus, numChannels, node, duration|
 
 		server.ifNotRunning { ^this };
+		bus = (bus ? 0).asControlInput;
+
 		if(recordBuf.isNil) {
 			fork {
 				this.prepareForRecord(path, numChannels);
 				server.sync;
-				this.record(path, bus, numChannels, node, duration)
+				this.record(path, bus, numChannels, node, duration) // now we are ready
 			}
 		} {
 			if(numChannels.notNil and: { numChannels != this.numChannels }) {
@@ -26,13 +28,7 @@ Recorder {
 				^this
 			};
 			if(this.isRecording.not) {
-				this.prStartListen;
-				bus = (bus ? 0).asControlInput;
-				recordNode = Synth.tail(node ? 0, synthDef.name, [\bufnum, recordBuf, \in, bus, \duration, duration ? -1]);
-				recordNode.register(true);
-				recordNode.onFree { this.stopRecording };
-				CmdPeriod.add(this);
-
+				this.prRecord(bus, node, duration);
 				server.changed(\recording, true);
 				"Recording channels % ... \npath: '%'\n"
 				.postf(bus + (0..this.numChannels - 1), recordBuf.path);
@@ -43,10 +39,8 @@ Recorder {
 					"Recording already (% seconds)".format(this.duration).warn
 				}
 			}
-
 		}
 	}
-
 
 	cmdPeriod {
 		this.stopRecording
@@ -82,15 +76,11 @@ Recorder {
 
 	stopRecording {
 		if(synthDef.notNil) {
-			this.freeResources;
+			this.prStopRecord;
 			server.changed(\recording, false);
 		} {
 			"Not Recording".warn
-		};
-		paused = false;
-		duration = 0;
-		server.changed(\recordingDuration, 0);
-		this.prStopListen;
+		}
 	}
 
 	prepareForRecord { | path, numChannels |
@@ -107,6 +97,7 @@ Recorder {
 				buf.writeMsg(path, recHeaderFormat, recSampleFormat, 0, 0, true)
 			}
 		);
+		if(recordBuf.isNil) { Error("could not allocate buffer").throw };
 		recordBuf.path = path;
 		this.numChannels = numChannels;
 		id = UniqueID.next;
@@ -123,16 +114,13 @@ Recorder {
 		"Preparing recording on '%'\n".postf(server.name);
 	}
 
-	freeResources {
-		if(recordNode.isPlaying) { recordNode.unregister; recordNode.free; recordNode = nil };
-		server.sendMsg("/d_free", synthDef.name);
-		synthDef = nil;
-		if(recordBuf.notNil) { recordBuf.close({ |buf| buf.freeMsg }); recordBuf = nil };
-		CmdPeriod.remove(this);
-	}
 
+	/* private implementation */
 
-	prStartListen {
+	prRecord { |bus, node, duration|
+		recordNode = Synth.tail(node ? 0, synthDef.name, [\bufnum, recordBuf, \in, bus, \duration, duration ? -1]);
+		recordNode.register(true);
+		recordNode.onFree { this.stopRecording };
 		if(responder.isNil) {
 			responder = OSCFunc({ |msg|
 				if(msg[2] == id) {
@@ -142,11 +130,20 @@ Recorder {
 			}, '/recordingDuration', server.addr);
 		} {
 			responder.enable;
-		}
+		};
+		CmdPeriod.add(this);
 	}
 
-	prStopListen {
+	prStopRecord {
+		if(recordNode.isPlaying) { recordNode.unregister; recordNode.free; recordNode = nil };
+		server.sendMsg("/d_free", synthDef.name);
+		synthDef = nil;
+		if(recordBuf.notNil) { recordBuf.close({ |buf| buf.freeMsg }); recordBuf = nil };
+		CmdPeriod.remove(this);
 		responder.disable;
+		paused = false;
+		duration = 0;
+		server.changed(\recordingDuration, 0);
 	}
 
 	makePath {
