@@ -34,12 +34,12 @@ Recorder {
 				recordNode.onFree { this.stopRecording };
 				CmdPeriod.add(this);
 				numChannels = this.numChannels;
+				server.changed(\recording, true);
 				"Recording channels % ... \npath: '%'\n"
 				.postf(bus + (0..numChannels - 1), recordBuf.path);
 			} {
 				if(paused) { this.resumeRecording };
-			};
-			server.changed(\recording, true)
+			}
 
 		}
 	}
