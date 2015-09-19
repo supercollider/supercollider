@@ -12,9 +12,9 @@ ScIDE {
 		Class.initClassTree(Server);
 
 		StartUp.add {
-			if (ScIDE.connected) {
+			if (this.connected) {
 				this.handshake
-			};
+			}
 		}
 	}
 
@@ -299,11 +299,11 @@ ScIDE {
 			}
 		};
 
-		ScIDE.prSend(requestId, [symbol, result.asArray])
+		this.prSend(requestId, [symbol, result.asArray])
 	}
 
 	*openHelpUrl { |url|
-		ScIDE.processUrl(url, { |processedUrl|
+		this.processUrl(url, { |processedUrl|
 			this.prSend("openHelpUrl", processedUrl.asString)
 		});
 	}
