@@ -83,16 +83,8 @@ Recorder {
 
 	stopRecording {
 		if(synthDef.notNil) {
-			if(recordNode.isPlaying) { recordNode.free; recordNode = nil };
-			server.sendMsg("/d_free", synthDef.name);
-			synthDef = nil;
+			this.freeResources;
 			server.changed(\recording, false);
-			"Recording stopped, written to\npath: '%'\n".postf(recordBuf.path);
-			if (recordBuf.notNil) {
-				recordBuf.close({ |buf| buf.freeMsg });
-				recordBuf = nil;
-			};
-			CmdPeriod.remove(this);
 		} {
 			"Not Recording".warn
 		};
@@ -131,6 +123,15 @@ Recorder {
 
 		"Preparing recording on '%'\n".postf(server.name);
 	}
+
+	freeResources {
+		if(recordNode.isPlaying) { recordNode.free; recordNode = nil };
+		server.sendMsg("/d_free", synthDef.name);
+		synthDef = nil;
+		if(recordBuf.notNil) { recordBuf.close({ |buf| buf.freeMsg }); recordBuf = nil };
+		CmdPeriod.remove(this);
+	}
+
 
 	prStartListen {
 		if(responder.isNil) {
