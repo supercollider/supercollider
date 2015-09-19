@@ -277,11 +277,11 @@ ClassBrowser {
 			}
 			{ 2 } {
 				isClassSearch = true;
-				pool = this.currentClass.allSubclasses
+				pool = this.currentClass.allSubclasses.asArray
 			}
 			{ 3 } {
 				isClassSearch = false;
-				pool = this.currentClass.allSubclasses ++ this.currentClass;
+				pool = this.currentClass.allSubclasses ++ [this.currentClass];
 				if(this.currentClass.isMetaClass.not) {
 					pool = pool ++ pool.collect(_.class);
 				};
