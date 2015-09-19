@@ -39,7 +39,7 @@ Recorder {
 			} {
 				if(paused) { this.resumeRecording };
 			};
-			defer { server.changed(\recording, true) }
+			server.changed(\recording, true)
 
 		}
 	}
@@ -56,7 +56,7 @@ Recorder {
 	pauseRecording {
 		if(recordNode.isPlaying) {
 			recordNode.run(false);
-			defer { server.changed(\pausedRecording) };
+			server.changed(\pausedRecording);
 			"... paused recording.\npath: '%'\n".postf(recordBuf.path);
 		} {
 			"Not Recording".warn
@@ -68,7 +68,7 @@ Recorder {
 		if(recordNode.isPlaying) {
 			if(paused) {
 				recordNode.run(true);
-				defer { server.changed(\recording, true) };
+				server.changed(\recording, true);
 				"Resumed recording ...\npath: '%'\n".postf(recordBuf.path);
 			}
 		} {
@@ -82,7 +82,7 @@ Recorder {
 			if(recordNode.isPlaying) { recordNode.free; recordNode = nil };
 			server.sendMsg("/d_free", synthDef.name);
 			synthDef = nil;
-			defer { server.changed(\recording, false) };
+			server.changed(\recording, false);
 			"Recording stopped, written to\npath: '%'\n".postf(recordBuf.path);
 			if (recordBuf.notNil) {
 				recordBuf.close({ |buf| buf.freeMsg });
@@ -94,7 +94,7 @@ Recorder {
 		};
 		paused = false;
 		duration = 0;
-		defer { server.changed(\recordingDuration, 0) };
+		server.changed(\recordingDuration, 0);
 		this.prStopListen;
 	}
 
@@ -133,7 +133,7 @@ Recorder {
 			responder = OSCFunc({ |msg|
 				if(msg[2] == id) {
 					duration = msg[3];
-					defer { server.changed(\recordingDuration, duration) };
+					server.changed(\recordingDuration, duration);
 				}
 			}, '/recordingDuration', server.addr);
 		} {
