@@ -102,7 +102,7 @@ A couple of more notes about the post window. It's very useful to be able to see
 
 By convention this kind of key sequence is written Cmd - \
 
-As well, sometimes the post window becomes full of stuff and hard to read. You can clear it at any time by pressing Cmd-shift-k (hold down the command key and the shift key, and then press k).
+As well, sometimes the post window becomes full of stuff and hard to read. You can clear it at any time by pressing Cmd-shift-p (hold down the command key and the shift key, and then press k).
 
 section::The World According to SuperCollider
 
