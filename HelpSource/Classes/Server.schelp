@@ -22,6 +22,14 @@ s.boot;
 { SinOsc.ar * 0.1 }.play(s); // play a synth on the server
 ::
 
+The server application may be in three different states: running, not running, or unresponsive (for example while loading large files from disk).
+
+code::
+s.serverRunning // returns true if it is true
+::
+
+
+
 
 ClassMethods::
 private:: initClass
