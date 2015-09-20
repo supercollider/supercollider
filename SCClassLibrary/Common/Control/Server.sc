@@ -970,10 +970,6 @@ Server {
 		this.changed(\cmdPeriod)
 	}
 
-	doOnServerTree {
-		if(scopeWindow.notNil) { scopeWindow.run }
-	}
-
 	queryAllNodes { | queryControls = false |
 		var resp, done = false;
 		if(isLocal) {
