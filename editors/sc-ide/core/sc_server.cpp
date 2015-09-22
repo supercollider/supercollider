@@ -363,8 +363,8 @@ void ScServer::updateRecordingAction()
 {
     if (isRecording()) {
         int s = mRecordingSeconds % 60;
-        int m = mRecordingSeconds / 60;
-        int h = m / 60;
+        int m = mRecordingSeconds / 60 % 60;
+        int h = mRecordingSeconds / 3600;
         ostringstream msg;
         msg << "Recording: ";
         msg << setw(2) << setfill('0') << h << ':';
