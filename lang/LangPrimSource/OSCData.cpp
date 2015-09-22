@@ -397,13 +397,18 @@ static int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
 
 static int prNetAddr_Disconnect(VMGlobals *g, int numArgsPushed)
 {
+	int err;
+	
 	PyrSlot* netAddrSlot = g->sp;
 	PyrObject* netAddrObj = slotRawObject(netAddrSlot);
 
 	SC_TcpClientPort *comPort = (SC_TcpClientPort*)slotRawPtr(netAddrObj->slots + ivxNetAddr_Socket);
-	if (comPort) comPort->Close();
+	if (comPort) {
+		err = comPort->Close();
+		SetPtr(netAddrObj->slots + ivxNetAddr_Socket, NULL);
+	}
 
-	return errNone;
+	return err;
 }
 
 
