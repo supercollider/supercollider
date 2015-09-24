@@ -282,7 +282,6 @@ ClassBrowser {
 					w.endFrontAction_(nil).close;
 				})
 				.front;
-				^this  // early exit
 			};
 		string = string ?? { "" };
 		matchCase = matchCase > 0;
@@ -299,7 +298,7 @@ ClassBrowser {
 				if(this.currentClass.notNil) {
 					isClassSearch = true;
 					pool = this.currentClass.allSubclasses.asArray
-				} { warning.value };
+				} { ^warning.value };  // early exit
 			}
 			{ 3 } {
 				if(this.currentClass.notNil) {
@@ -308,7 +307,7 @@ ClassBrowser {
 					if(this.currentClass.isMetaClass.not) {
 						pool = pool ++ pool.collect(_.class);
 					};
-				} { warning.value };
+				} { ^warning.value };  // early exit
 			}
 			{ 4 } {
 				if(this.currentClass.notNil) {
@@ -323,9 +322,9 @@ ClassBrowser {
 							pool.reject(_.isMetaClass).sort({ |a, b| a.name < b.name }),
 							searchType
 						);
-						^this	// just to force early exit
+						^this	// early exit
 					};
-				} { warning.value };
+				} { ^warning.value };  // early exit
 			};
 		if (isClassSearch)
 		{
