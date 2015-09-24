@@ -263,7 +263,26 @@ ClassBrowser {
 	searchClasses { |string, rootNumber, matchCase, addHistory = true|
 		var	pool, rootdir, result,
 			searchType = searchMenuKeys[rootNumber] ? \classSearch,
-			isClassSearch;
+			isClassSearch,
+			warning = {
+				var w;
+				w = Window("Invalid search", Rect.aboutPoint(Window.screenBounds.center, 170, 60))
+				.layout_(VLayout(
+					StaticText().align_(\center)
+					.string_("This search requires a class to be selected"),
+					HLayout(
+						StaticText(),  // padding to push button to horiz. center
+						Button().states_([["OK"]])
+						.action_({ w.close })
+						.maxWidth_(80),
+						StaticText()
+					)
+				))
+				.endFrontAction_({
+					w.endFrontAction_(nil).close;
+				})
+				.front;
+			};
 		string = string ?? { "" };
 		matchCase = matchCase > 0;
 		switch(rootNumber)
@@ -276,30 +295,36 @@ ClassBrowser {
 				pool = Class.allClasses;
 			}
 			{ 2 } {
-				isClassSearch = true;
-				pool = this.currentClass.allSubclasses
+				if(this.currentClass.notNil) {
+					isClassSearch = true;
+					pool = this.currentClass.allSubclasses.asArray
+				} { ^warning.value };  // early exit
 			}
 			{ 3 } {
-				isClassSearch = false;
-				pool = this.currentClass.allSubclasses ++ this.currentClass;
-				if(this.currentClass.isMetaClass.not) {
-					pool = pool ++ pool.collect(_.class);
-				};
+				if(this.currentClass.notNil) {
+					isClassSearch = false;
+					pool = this.currentClass.allSubclasses ++ [this.currentClass];
+					if(this.currentClass.isMetaClass.not) {
+						pool = pool ++ pool.collect(_.class);
+					};
+				} { ^warning.value };  // early exit
 			}
 			{ 4 } {
-				isClassSearch = true;
-				rootdir = PathName(currentState.currentClass.filenameSymbol.asString).pathOnly;
-				pool = Class.allClasses.select({ |class|
-					PathName(class.filenameSymbol.asString).pathOnly == rootdir
-				});
+				if(this.currentClass.notNil) {
+					isClassSearch = true;
+					rootdir = PathName(currentState.currentClass.filenameSymbol.asString).pathOnly;
+					pool = Class.allClasses.select({ |class|
+						PathName(class.filenameSymbol.asString).pathOnly == rootdir
+					});
 
-				if(string.isEmpty) {
-					this.makeState(
-						pool.reject(_.isMetaClass).sort({ |a, b| a.name < b.name }),
-						searchType
-					);
-					^this	// just to force early exit
-				};
+					if(string.isEmpty) {
+						this.makeState(
+							pool.reject(_.isMetaClass).sort({ |a, b| a.name < b.name }),
+							searchType
+						);
+						^this	// early exit
+					};
+				} { ^warning.value };  // early exit
 			};
 		if (isClassSearch)
 		{
