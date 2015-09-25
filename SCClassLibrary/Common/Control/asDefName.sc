@@ -51,11 +51,7 @@
 		);
 	}
 
-	play {
-		Ndef(\play, this).play;
-	}
-
-	xplay { arg target, outbus = 0, fadeTime = 0.02, addAction=\addToHead, args;
+	play { arg target, outbus = 0, fadeTime = 0.02, addAction=\addToHead, args;
 		var def, synth, server, bytes, synthMsg;
 		target = target.asTarget;
 		server = target.server;
