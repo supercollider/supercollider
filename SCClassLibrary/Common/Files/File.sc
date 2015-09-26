@@ -34,7 +34,17 @@ File : UnixFILE {
 		^if(systemIsCaseSensitive) {
 			this.exists(pathName)
 		} {
-			(pathName.dirname+/+"*").pathMatch.detect{|x|x.compare(pathName)==0}.notNil
+			// if pathNAme points to a directory,
+			// the comparison should strip any trailing path separator
+			if(pathName.last.isPathSeparator) {
+				pathName = pathName.drop(-1);
+			};
+			(pathName.dirname +/+ "*").pathMatch.any { |x|
+				if(x.last.isPathSeparator) {
+					x = x.drop(-1);
+				};
+				x.compare(pathName) == 0
+			}
 		}
 	}
 	*realpath { arg pathName;
