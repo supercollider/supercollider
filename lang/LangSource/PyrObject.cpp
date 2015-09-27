@@ -1314,8 +1314,6 @@ void buildBigMethodMatrix()
 	compileThreadPool.size_controller().resize(0); // terminate threads
 }
 
-#include <boost/atomic.hpp>
-
 static void fillClassRowSubClasses(PyrObject * subclasses, int begin, int end, PyrMethod** bigTable, std::atomic<size_t> * rCount);
 
 static void fillClassRow(PyrClass *classobj, PyrMethod** bigTable, std::atomic<size_t> * rCount)
