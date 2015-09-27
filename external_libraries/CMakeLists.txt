@@ -34,7 +34,6 @@ if(NOT Boost_FOUND) # we compile boost ourselves
 					 APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 	endif()
 
-	# still required by threadpool
 	add_library(boost_thread STATIC EXCLUDE_FROM_ALL ${boost_thread_src} ${boost_thread_platform})
 	target_link_libraries(boost_thread boost_system)
 #	target_compile_definitions(boost_thread PUBLIC BOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS)
