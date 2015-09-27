@@ -39,6 +39,7 @@ if(NOT Boost_FOUND) # we compile boost ourselves
 	target_link_libraries(boost_thread boost_system)
 #	target_compile_definitions(boost_thread PUBLIC BOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS)
 	target_include_directories(boost_thread PUBLIC boost)
+	target_compile_definitions(boost_thread PUBLIC BOOST_THREAD_USE_LIB) # for win32
 
 	if(PTHREADS_FOUND)
 		target_include_directories(boost_thread PUBLIC ${PTHREADS_INCLUDE_DIR})
@@ -60,6 +61,7 @@ if(NOT Boost_FOUND) # we compile boost ourselves
 		set_property(TARGET boost_thread
 			APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 	endif()
+
 endif()
 
 # tlsf
