@@ -1078,18 +1078,6 @@ double elapsedTime();
 
 static size_t fillClassRow(PyrClass *classobj, PyrMethod** bigTable);
 
-
-static void updateSelectorRowWidth(ColumnDescriptor* sels, size_t begin, size_t end)
-{
-	for (int i=begin; i<end; ++i) {
-		//if (chunkSize > sels[i].largestChunk) {
-		//	sels[i].largestChunk = chunkSize;
-		//	sels[i].chunkOffset = chunkOffset;
-		//}
-		sels[i].rowWidth = sels[i].maxClassIndex - sels[i].minClassIndex + 1;
-	}
-}
-
 static void binsortClassRows(PyrMethod ** bigTable, const ColumnDescriptor* sels, size_t numSelectors, size_t begin, size_t end)
 {
 	// bin sort the class rows to the new ordering
@@ -1161,6 +1149,9 @@ static void calcRowStats(PyrMethod** bigTable, ColumnDescriptor * sels, int numC
 			}
 		}
 	}
+
+	for (int i=begin; i<end; ++i)
+		sels[i].rowWidth = sels[i].maxClassIndex - sels[i].minClassIndex + 1;
 }
 
 
@@ -1217,13 +1208,6 @@ void buildBigMethodMatrix()
 											   selectorsPerThread * i, selectorsPerThread * (i+1)));
 
 	calcRowStats(bigTable, sels, numClasses, numSelectors, helperThreadCount*selectorsPerThread, numSelectors);
-	if (helperThreadCount) compileThreadPool.wait();
-
-	for (i = 0; i != helperThreadCount; ++i)
-		compileThreadPool.schedule(std::bind(&updateSelectorRowWidth, sels,
-											   selectorsPerThread * i, selectorsPerThread * (i+1)));
-
-	updateSelectorRowWidth(sels, helperThreadCount*selectorsPerThread, numSelectors);
 	if (helperThreadCount) compileThreadPool.wait();
 
 	//post("qsort\n");
