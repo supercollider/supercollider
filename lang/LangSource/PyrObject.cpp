@@ -1220,7 +1220,7 @@ void buildBigMethodMatrix()
 	double t0 = elapsedTime();
 #endif
 
-	boost::basic_thread_pool pool( thread::hardware_concurrency() );
+	boost::basic_thread_pool pool( std::min( int(thread::hardware_concurrency() - 1), 1 ) );
 
 	// pyrmalloc:
 	// lifetime: kill after compile
@@ -1261,8 +1261,10 @@ void buildBigMethodMatrix()
 		columnDescriptorsWithStats.push_back( std::move(future) );
 	}
 
-	for( auto & future : columnDescriptorsWithStats )
-		future.wait();
+	for( auto & future : columnDescriptorsWithStats ) {
+		while( !future.is_ready() )
+			pool.schedule_one_or_yield();
+	}
 
 	//post("qsort\n");
 	// sort rows by largest chunk, then by width, then by chunk offset
@@ -1278,8 +1280,11 @@ void buildBigMethodMatrix()
 		binsortedClassRowFuture.push_back( std::move(future) );
 	}
 
-	for( auto & future : binsortedClassRowFuture )
-		future.wait();
+	for( auto & future : binsortedClassRowFuture ) {
+		while( !future.is_ready() )
+			pool.schedule_one_or_yield();
+
+	}
 
 	//post("calc row offsets %d\n", numSelectors);
 	widthSum = 0;
@@ -1354,8 +1359,7 @@ void buildBigMethodMatrix()
 */
 }
 
-//static std::vector<std::future<size_t>> fillClassRow(const PyrClass *classobj, PyrMethod** bigTable)
-static std::vector<boost::future<size_t>> fillClassRow(const PyrClass *classobj, PyrMethod** bigTable, boost::basic_thread_pool & pool)
+static size_t fillClassRow(const PyrClass *classobj, PyrMethod** bigTable, boost::basic_thread_pool & pool)
 {
 	size_t count = 0;
 
@@ -1387,44 +1391,30 @@ static std::vector<boost::future<size_t>> fillClassRow(const PyrClass *classobj,
 		}
 	}
 
-	boost::promise<size_t> promise;
-	boost::future<size_t> thisClassCount = promise.get_future();
-	promise.set_value( count );
-
-	std::vector< boost::future<size_t> > result;
-	result.emplace_back( std::move( thisClassCount ) );
+	size_t result = count;
 
 	if (IsObj(&classobj->subclasses)) {
 		const PyrObject * subclasses = slotRawObject(&classobj->subclasses);
 		size_t numSubclasses = subclasses->size;
-		result.reserve( numSubclasses + 1 );
 
 		if( numSubclasses < 4 ) {
-			for( int subClassIndex : boost::irange(0UL, numSubclasses) ) {
-				auto subclassResult = fillClassRow( slotRawClass(&subclasses->slots[subClassIndex]), bigTable, pool );
-				for( auto & future : subclassResult )
-					result.emplace_back( std::move(future) );
-			}
+			for( int subClassIndex : boost::irange(0UL, numSubclasses) )
+				result += fillClassRow( slotRawClass(&subclasses->slots[subClassIndex]), bigTable, pool );
 		}
 		else {
-			typedef std::vector< boost::future<size_t> >     VectorOfFutures;
-			typedef boost::future< VectorOfFutures >         FutureOfVectorOfFutures;
-			typedef std::vector< FutureOfVectorOfFutures > VectorOfFuturesOfVectorOfFutures;
+			typedef std::vector< boost::future<size_t> > VectorOfFutures;
 
-			VectorOfFuturesOfVectorOfFutures subclassResults;
+			VectorOfFutures subclassResults;
 			for( int subClassIndex : boost::irange(0UL, numSubclasses) ) {
 				auto subclassResult = boost::async( pool, fillClassRow, slotRawClass(&subclasses->slots[subClassIndex]), bigTable, boost::ref(pool) );
 				subclassResults.emplace_back( std::move( subclassResult ) );
 			}
 
-			for( FutureOfVectorOfFutures & subclassResult : subclassResults ) {
+			for( auto & subclassResult : subclassResults ) {
 				while( !subclassResult.is_ready() )
 					pool.try_executing_one();
 
-				VectorOfFutures vectorOfFutures = std::move( subclassResult.get() );
-
-				for( auto & future : vectorOfFutures )
-					result.emplace_back( std::move( future ) );
+				result += subclassResult.get();
 			}
 		}
 	}
@@ -1434,13 +1424,7 @@ static std::vector<boost::future<size_t>> fillClassRow(const PyrClass *classobj,
 
 static size_t fillClassRows(const PyrClass *classobj, PyrMethod** bigTable, boost::basic_thread_pool & pool)
 {
-	std::vector<boost::future<size_t>> futures = fillClassRow(classobj, bigTable, pool );
-
-	size_t count = 0;
-	for( auto & future : futures )
-		count += future.get();
-
-	return count;
+	return fillClassRow(classobj, bigTable, pool );
 }
 
 bool funcFindArg(PyrBlock* func, PyrSymbol *name, int *index)
