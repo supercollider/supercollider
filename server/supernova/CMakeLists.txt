@@ -135,9 +135,10 @@ else()
     target_link_libraries(libsupernova boost_system boost_filesystem boost_program_options boost_thread)
 endif()
 
-
-if( ${_gcc_version} VERSION_GREATER 5 )
-  target_link_libraries( libsupernova atomic )
+if(CMAKE_COMPILER_IS_GNUCXX)
+    if( ${_gcc_version} VERSION_GREATER 5 )
+      target_link_libraries( libsupernova atomic )
+    endif()
 endif()
 
 if(WIN32)
