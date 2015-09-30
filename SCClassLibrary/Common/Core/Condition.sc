@@ -44,14 +44,14 @@ FlowVar {
 	var condition;
 
 	*new { arg inVal = \unbound;
-		^super.init(inVal)
+		^super.new.init(inVal)
 	}
 	init { arg inVal;
 		value = inVal;
 		condition = Condition { value != \unbound };
 	}
 	value_ { arg inVal;
-		if (value ==  \unbound) {
+		if (value != \unbound) {
 			Error("cannot rebind a FlowVar").throw
 		};
 		value = inVal;
