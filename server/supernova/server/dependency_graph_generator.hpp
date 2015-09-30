@@ -165,8 +165,8 @@ private:
         std::vector<thread_queue_item*, rt_pool_allocator<thread_queue_item*> > collected_nodes;
         collected_nodes.reserve(g.child_synth_count + g.child_group_count * 16); // pessimize
 
-        for (server_node_list::iterator it = g.child_nodes.begin(); it != g.child_nodes.end(); ++it) {
-            server_node & node = *it;
+        for (auto & node : g.child_nodes) {
+            
 
             if (node.is_synth()) {
                 thread_queue_item * q_item = q->allocate_queue_item(queue_node(std::move(queue_node_data(static_cast<abstract_synth*>(&node)))),

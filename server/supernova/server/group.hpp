@@ -99,8 +99,8 @@ public:
         if (child_synth_count)
             return true;
 
-        for (group_list::const_iterator it = child_groups.begin(); it != child_groups.end(); ++it)
-            if (it->has_synth_children())
+        for (const auto & elem : child_groups)
+            if (elem.has_synth_children())
                 return true;
 
         return false;
@@ -111,8 +111,8 @@ public:
         if (is_parallel())
             return true;
 
-        for (group_list::const_iterator it = child_groups.begin(); it != child_groups.end(); ++it)
-            if (it->has_parallel_group_children())
+        for (const auto & elem : child_groups)
+            if (elem.has_parallel_group_children())
                 return true;
 
         return false;
@@ -128,27 +128,27 @@ public:
     template<typename functor>
     void apply_on_children(functor const & f)
     {
-        for (server_node_list::iterator it = child_nodes.begin(); it != child_nodes.end(); ++it)
-            f(*it);
+        for (auto & elem : child_nodes)
+            f(elem);
     }
 
     template<typename functor>
     void apply_deep_on_children(functor const & f)
     {
-        for (server_node_list::iterator it = child_nodes.begin(); it != child_nodes.end(); ++it) {
-            if (it->is_group()) {
-                abstract_group & grp = static_cast<abstract_group&>(*it);
+        for (auto & elem : child_nodes) {
+            if (elem.is_group()) {
+                abstract_group & grp = static_cast<abstract_group&>(elem);
                 grp.apply_deep_on_children(f);
             }
-            f(*it);
+            f(elem);
         }
     }
 
     template<typename functor>
     void apply_on_children(functor const & f) const
     {
-        for (server_node_list::const_iterator it = child_nodes.begin(); it != child_nodes.end(); ++it)
-            f(*it);
+        for (const auto & elem : child_nodes)
+            f(elem);
     }
     /* @} */
 
@@ -199,8 +199,8 @@ public:
                                           std::mem_fn(&server_node::clear_parent));
 
         /* now there are only group classes */
-        for(server_node_list::iterator it = child_nodes.begin(); it != child_nodes.end(); ++it) {
-            abstract_group * group = static_cast<abstract_group*>(&*it);
+        for(auto & elem : child_nodes) {
+            abstract_group * group = static_cast<abstract_group*>(&elem);
             group->free_synths_deep();
         }
         assert(child_synth_count == 0);
