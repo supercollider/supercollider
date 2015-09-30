@@ -402,7 +402,7 @@ void fire_notification(movable_array<char> & msg)
 
 int sc_notify_observers::add_observer(endpoint_ptr const & ep)
 {
-    observer_vector::iterator it = find(ep);
+    auto it = find(ep);
     if (it != observers.end())
         return already_registered;
 
@@ -412,7 +412,7 @@ int sc_notify_observers::add_observer(endpoint_ptr const & ep)
 
 int sc_notify_observers::remove_observer(endpoint_ptr const & ep)
 {
-    observer_vector::iterator it = find(ep);
+    auto it = find(ep);
 
     if (it == observers.end())
         return not_registered;
@@ -442,7 +442,7 @@ const char * sc_notify_observers::error_string(error_code error)
 
 sc_notify_observers::observer_vector::iterator sc_notify_observers::find(endpoint_ptr const & ep)
 {
-    for (observer_vector::iterator it = observers.begin(); it != observers.end(); ++it) {
+    for (auto it = observers.begin(); it != observers.end(); ++it) {
 
         udp_endpoint * elemUDP = dynamic_cast<udp_endpoint*>(it->get());
         udp_endpoint * testUDP = dynamic_cast<udp_endpoint*>(ep.get());

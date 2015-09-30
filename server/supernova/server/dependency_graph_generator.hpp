@@ -120,7 +120,7 @@ private:
                 --it; // we iterated one element too far, so we need to go back to the previous element
                 assert(sequential_children.size() == node_count);
 
-                sequential_child_list::reverse_iterator seq_it = sequential_children.rbegin();
+                auto seq_it = sequential_children.rbegin();
 
                 int activation_limit = get_previous_activation_count(it, g.child_nodes.rend(), previous_activation_limit);
 

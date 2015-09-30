@@ -309,7 +309,7 @@ void sc_synthdef::prepare(void)
     // store the last references to each output buffer inside a std::map for faster lookup
     std::map<input_spec, size_t> last_buffer_references;
 
-    for (graph_t::reverse_iterator it = graph.rbegin(); it != graph.rend(); ++it) {
+    for (auto it = graph.rbegin(); it != graph.rend(); ++it) {
         for (size_t i = 0; i != it->input_specs.size(); ++i) {
             input_spec const & in_spec = it->input_specs[i];
 
