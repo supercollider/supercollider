@@ -14,7 +14,7 @@ http://supercollider.github.com
 To get further information on supercollider usage or development, you
 might consider subscribing to the mailing lists
 
-http://www.beast.bham.ac.uk/research/sc_mailing_lists.shtml
+http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx
 
 
 Build requirements
@@ -59,7 +59,7 @@ Build requirements (optional features)
    * advanced linux sound architecture drivers and library, for sclang's MIDI interface
 
  * libudev
-   * http://www.freedesktop.org/software/systemd/libudev/
+   * http://www.freedesktop.org/software/systemd/man/libudev.html
    * interaction with the device manager of linux (used for HID support)
 
  * libreadline >= 5
