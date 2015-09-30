@@ -276,7 +276,7 @@ struct fn_system_callback:
         fn_(fn)
     {}
 
-    void run(void)
+    void run(void) override
     {
         fn_();
     }
@@ -292,7 +292,7 @@ struct fn_sync_callback:
         fn_(fn)
     {}
 
-    void run(void)
+    void run(void) override
     {
         fn_();
     }

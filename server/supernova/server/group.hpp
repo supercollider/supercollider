@@ -75,8 +75,8 @@ public:
 
     /* @{ */
     /** pause/resume handling (set pause/resume on children)  */
-    virtual void pause(void);
-    virtual void resume(void);
+    virtual void pause(void) override;
+    virtual void resume(void) override;
     /* @} */
 
     /* @{ */
@@ -210,17 +210,17 @@ public:
     void remove_child(server_node * node);
     /* @} */
 
-    void set(slot_index_t slot_id, float val);
-    void set(const char * slot_str, float val);
-    void set(const char * slot_str, size_t hashed_str, float val);
+    void set(slot_index_t slot_id, float val) override;
+    void set(const char * slot_str, float val) override;
+    void set(const char * slot_str, size_t hashed_str, float val) override;
 
-    void set_control_array(slot_index_t slot_str, size_t count, float * val);
-    void set_control_array(const char * slot_str, size_t count, float * val);
-    void set_control_array(const char * slot_str, size_t hashed_str, size_t count, float * val);
+    void set_control_array(slot_index_t slot_str, size_t count, float * val) override;
+    void set_control_array(const char * slot_str, size_t count, float * val) override;
+    void set_control_array(const char * slot_str, size_t hashed_str, size_t count, float * val) override;
 
-    void set_control_array_element(slot_index_t slot_str, size_t count, float val);
-    void set_control_array_element(const char * slot_str, size_t count, float val);
-    void set_control_array_element(const char * slot_str, size_t hashed_str, size_t count, float val);
+    void set_control_array_element(slot_index_t slot_str, size_t count, float val) override;
+    void set_control_array_element(const char * slot_str, size_t count, float val) override;
+    void set_control_array_element(const char * slot_str, size_t hashed_str, size_t count, float val) override;
 
     /* move node to head or tail of target */
     template <node_position Position>
@@ -367,12 +367,12 @@ public:
     }
 
 private:
-    void add_child(server_node * node, node_position_constraint const & constraint);
-    void add_child(server_node * node, node_position);
+    void add_child(server_node * node, node_position_constraint const & constraint) override;
+    void add_child(server_node * node, node_position) override;
 
     friend class dependency_graph_generator;
 
-    virtual int tail_nodes(void) const
+    virtual int tail_nodes(void) const override
     {
         if (empty())
             return 0;
@@ -400,10 +400,10 @@ public:
     {}
 
 private:
-    void add_child(server_node * node, node_position_constraint const & constraint);
-    void add_child(server_node * node, node_position);
+    void add_child(server_node * node, node_position_constraint const & constraint) override;
+    void add_child(server_node * node, node_position) override;
 
-    virtual int tail_nodes(void) const;
+    virtual int tail_nodes(void) const override;
 
     friend class dependency_graph_generator;
 };

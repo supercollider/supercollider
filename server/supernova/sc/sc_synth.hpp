@@ -131,11 +131,11 @@ public:
 #endif
     }
 
-    void run(void);
+    void run(void) override;
 
-    void set(slot_index_t slot_index, sample val);
-    float get(slot_index_t slot_index) const;
-    void set_control_array(slot_index_t slot_index, size_t count, sample * val);
+    void set(slot_index_t slot_index, sample val) override;
+    float get(slot_index_t slot_index) const override;
+    void set_control_array(slot_index_t slot_index, size_t count, sample * val) override;
 
     sample get(slot_index_t slot_index)
     {
