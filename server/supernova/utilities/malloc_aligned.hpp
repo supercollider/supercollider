@@ -214,10 +214,10 @@ public:
         return &x;
     }
 
-    pointer allocate(size_type n, const void* hint = 0)
+    pointer allocate(size_type n, const void* hint = nullptr)
     {
         pointer ret = malloc_aligned<T>(n);
-        if (ret == 0)
+        if (ret == nullptr)
             throw std::bad_alloc();
         return ret;
     }

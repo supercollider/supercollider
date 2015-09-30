@@ -171,7 +171,7 @@ public:
         assert(has_child(node));
         server_node_list::iterator next = ++server_node_list::s_iterator_to(*node);
         if (unlikely(next == child_nodes.end()))
-            return 0;
+            return nullptr;
         else
             return &(*next);
     }
@@ -181,7 +181,7 @@ public:
         assert(has_child(node));
         server_node_list::iterator it = server_node_list::s_iterator_to(*node);
         if (unlikely(it == child_nodes.begin()))
-            return 0;
+            return nullptr;
         else
             return &(*--it);
     }
@@ -307,7 +307,7 @@ inline void server_node::clear_parent(void)
         static_cast<abstract_group*>(this)->unregister_as_child();
     }
 
-    parent_ = 0;
+    parent_ = nullptr;
     release();
 }
 

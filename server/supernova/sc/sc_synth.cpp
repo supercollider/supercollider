@@ -37,8 +37,8 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const & prototype):
     mRGen = &rgen;
     mSubsampleOffset = world.mSubsampleOffset;
     mSampleOffset = world.mSampleOffset;
-    mLocalAudioBusUnit = 0;
-    mLocalControlBusUnit = 0;
+    mLocalAudioBusUnit = nullptr;
+    mLocalControlBusUnit = nullptr;
 
     localBufNum = 0;
     localMaxBufNum = 0;
@@ -84,9 +84,9 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const & prototype):
     mWire = allocator.alloc<Wire>(constants_count);
     for (size_t i = 0; i != synthdef.constants.size(); ++i) {
         Wire * wire = mWire + i;
-        wire->mFromUnit = 0;
+        wire->mFromUnit = nullptr;
         wire->mCalcRate = 0;
-        wire->mBuffer = 0;
+        wire->mBuffer = nullptr;
         wire->mScalarValue = get_constant(i);
     }
 

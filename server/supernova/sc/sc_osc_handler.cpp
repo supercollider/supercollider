@@ -1068,7 +1068,7 @@ static bool node_position_sanity_check(node_position_constraint const & constrai
 sc_synth * add_synth(const char * name, int node_id, int action, int target_id)
 {
     if (!check_node_id(node_id))
-        return 0;
+        return nullptr;
 
     server_node * target = find_node(target_id);
     if (target == nullptr)
@@ -2014,7 +2014,7 @@ struct completion_message
 
 completion_message extract_completion_message(osc::ReceivedMessageArgumentStream & args)
 {
-    osc::Blob blob(0, 0);
+    osc::Blob blob(nullptr, 0);
 
     if (!args.Eos()) {
         try {
@@ -2029,7 +2029,7 @@ completion_message extract_completion_message(osc::ReceivedMessageArgumentStream
 
 completion_message extract_completion_message(osc::ReceivedMessageArgumentIterator & it)
 {
-    const void * data = 0;
+    const void * data = nullptr;
     osc::osc_bundle_element_size_t length = 0;
 
     if (it->IsBlob())

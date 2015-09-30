@@ -382,7 +382,7 @@ public:
         dsp_thread_queue_ptr ret(std::move(queue));
 
         queue = std::move(new_queue);
-        if (queue.get() == 0)
+        if (queue.get() == nullptr)
             return ret;
 
         queue->reset_activation_counts();

@@ -46,7 +46,7 @@ public:
     {
         prototype_map_type::iterator it = definition_map.find(name, named_hash_hash(), named_hash_equal());
         if (it == definition_map.end())
-            return 0;
+            return nullptr;
 
         return it->create_instance(node_id);
     }
