@@ -104,7 +104,7 @@ Recorder {
 
 		synthDef = SynthDef(SystemSynthDefs.generateTempName, { |in, bufnum, duration|
 			var tick = Impulse.kr(1);
-			var timer = PulseCount.kr(tick);
+			var timer = PulseCount.kr(tick) - 1;
 			var doneAction = if(duration <= 0, 0, 2);
 			Line.kr(0, 0, duration, doneAction:doneAction);
 			SendReply.kr(tick, '/recordingDuration', timer, id);
