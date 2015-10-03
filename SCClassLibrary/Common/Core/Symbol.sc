@@ -39,14 +39,17 @@ Symbol {
 	}
 	isClassName {
 		_SymbolIsClassName
+		^this.primitiveFailed;
 		// returns true if first character of symbol is a capital letter
 	}
 	isMetaClassName {
 		_SymbolIsMetaClassName
+		^this.primitiveFailed;
 		// returns true if there is a meta class by this name
 	}
 	isPrefix { | other |
 		_SymbolIsPrefix
+		^this.primitiveFailed;
 	}
 	isPrimitiveName {
 		// returns true if symbol is a valid primitive name

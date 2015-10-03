@@ -240,6 +240,7 @@ String[char] : RawArray {
 
 	escapeChar { arg charToEscape; // $"
 		_String_EscapeChar
+		^this.primitiveFailed;
 	}
 	shellQuote {
 		^"'"++this.replace("'","'\\''")++"'"
@@ -292,7 +293,7 @@ String[char] : RawArray {
 	*readNew { arg file;
 		^file.readAllString;
 	}
-	prCat { arg aString; _ArrayCat }
+	prCat { arg aString; _ArrayCat; ^this.primitiveFailed; }
 
 	printOn { arg stream;
 		stream.putAll(this);

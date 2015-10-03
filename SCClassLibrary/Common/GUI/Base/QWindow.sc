@@ -84,10 +84,12 @@ Window
 
 	*screenBounds {
 		_QWindow_ScreenBounds
+		^this.primitiveFailed;
 	}
 
 	*availableBounds {
 		_QWindow_AvailableGeometry
+		^this.primitiveFailed;
 	}
 
 	*closeAll {

@@ -100,6 +100,7 @@ SerialPort
 	// rx errors since last query
 	rxErrors {
 		_SerialPort_RXErrors
+		^this.primitiveFailed;
 	}
 
 	// always blocks

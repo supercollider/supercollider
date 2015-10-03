@@ -96,7 +96,7 @@ Main : Process {
 
 	prOpenUDPPort {|portNum|
 		_OpenUDPPort
-		^false
+		^this.primitiveFailed;
 	}
 
 //	override in platform specific extension
