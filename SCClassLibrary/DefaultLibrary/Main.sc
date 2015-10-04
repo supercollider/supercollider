@@ -165,8 +165,6 @@ Main : Process {
 
 	exitFullScreen { platform.exitFullScreen }
 
-	setDeferredTaskInterval { |interval| platform.setDeferredTaskInterval(interval) }
-
 	*overwriteMsg { _MainOverwriteMsg ^this.primitiveFailed }
 }
 
