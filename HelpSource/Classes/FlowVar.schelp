@@ -1,6 +1,7 @@
 TITLE:: FlowVar
-summary:: A place holder that when accessed pauses a thread until it has received a value
-related:: Classes/Ref, Classes/Thunk, Reference/Condition, Classes/Routine
+summary:: A place holder, which when accessed pauses a thread until the place holder has a value
+categories::Scheduling
+related:: Classes/Ref, Classes/Thunk, Classes/Condition, Classes/Routine
 
 DESCRIPTION::
 
