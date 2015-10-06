@@ -16,7 +16,7 @@ EZNumber : EZGui{
 			initAction, labelWidth, argNumberWidth,argUnitWidth,
 			labelHeight, argLayout, argGap, argMargin;
 
-		var labelBounds, numBounds, unitBounds;
+		var innerBounds;
 		var numberStep;
 
 		// Set Margin and Gap
@@ -26,7 +26,6 @@ EZNumber : EZGui{
 		unitWidth = argUnitWidth;
 		numberWidth = argNumberWidth;
 		layout=argLayout;
-
 		bounds.isNil.if {bounds= 160@20};
 
 		// if no parent, then pop up window
@@ -39,22 +38,20 @@ EZNumber : EZGui{
 		labelSize=labelWidth@labelHeight;
 		numSize = numberWidth@labelHeight;
 
-		// calcualate bounds
-		# labelBounds,numBounds, unitBounds
-				= this.prSubViewBounds(innerBounds, label.notNil, unitWidth>0);
-
 		// insert the views
 
 		label.notNil.if{ //only add a label if desired
-				labelView = StaticText.new(view, labelBounds);
+				labelView = StaticText.new;
 			if (layout==\line2)
 				{labelView.align = \left;}
 				{labelView.align = \right;};
+			labelView.fixedWidth = labelWidth;
 			labelView.string = label;
 		};
 
 		(unitWidth>0).if{ //only add a unitLabel if desired
-			unitView = StaticText.new(view, unitBounds);
+			unitView = StaticText.new;
+			unitView.fixedWidth = unitWidth;
 		};
 
 		// set view parameters and actions
@@ -63,7 +60,12 @@ EZNumber : EZGui{
 		initVal = initVal ? controlSpec.default;
 		action = argAction;
 
-		numberView = NumberBox.new(view, numBounds).resize_(2);
+		numberView = NumberBox.new;
+
+		view.layout = if(argLayout == \horz) { HLayout } { VLayout }
+		.new(*[labelView, unitView, numberView].reject(_.isNil))
+		.margins_([margin.x, margin.y])
+		.spacing_(gap.x);
 
 		numberStep = controlSpec.step;
 		if (numberStep == 0) {
@@ -86,8 +88,6 @@ EZNumber : EZGui{
 		}{
 			this.value = initVal;
 		};
-
-		this.prSetViewParams;
 	}
 
 	value_{ arg val;
@@ -141,72 +141,5 @@ EZNumber : EZGui{
 			unitView.notNil.if{unitView.font=font};
 			numberView.font=font;
 	}
-
-	/////// Private methods /////////
-
-	prSetViewParams{ // sets resize and alignment for different layouts
-
-		switch (layout,
-		\line2, {
-			labelView.notNil.if{labelView.resize_(2)};
-			unitView.notNil.if{unitView.resize_(6)};
-			numberView.resize_(5);
-		},
-		\horz, {
-			labelView.notNil.if{
-				labelView.resize_(4).align_(\right);
-				numberView.resize_(5);
-				unitView.notNil.if{unitView.resize_(6)};
-			}{
-				unitView.notNil.if{	unitView.resize_(6)};
-				numberView.resize_(5);
-			};
-		});
-			popUp.if{view.resize_(2)};
-	}
-
-	prSubViewBounds{arg rect, hasLabel, hasUnit;
-		var numBounds,labelBounds,sliderBounds;
-		var unitBounds, gap1, gap2, numY;
-		gap1 = gap.copy;
-		gap2 = gap.copy;
-		hasLabel.not.if{ gap1 = 0@0; labelSize=0@0};
-		hasUnit.not.if{gap2 = 0@0};
-
-		switch (layout,
-			\line2, {
-
-				labelBounds = Rect( // fill the line
-						0,
-						0,
-						rect.width,
-						labelSize.y;
-						);
-
-				numSize.y=numSize.y-gap1.y;
-				numY=labelBounds.height+gap1.y;
-				unitBounds = Rect( rect.width - unitWidth, // //adjust to fit
-					numY, unitWidth, rect.height-labelSize.y-gap1.y);
-				numBounds = Rect(0, numY,
-					rect.width-unitWidth-gap2.x, rect.height-labelSize.y-gap1.y); // to right
-
-				},
-
-			 \horz, {
-				labelSize.y=rect.height;
-				labelBounds = (labelSize.x@labelSize.y).asRect; // to left
-				unitBounds = (unitWidth@labelSize.y).asRect.left_(rect.width-unitWidth); // to right
-				numBounds  =  Rect( //adjust to fit
-					labelBounds.width+gap1.x,
-					0,
-					rect.width - labelBounds.width - unitBounds.width - gap1.x - gap2.x ,
-					labelBounds.height
-					);
-		});
-
-
-		^[labelBounds, numBounds, unitBounds].collect{arg v; v.moveBy(margin.x,margin.y)}
-	}
-
 
 }
