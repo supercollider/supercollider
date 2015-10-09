@@ -75,7 +75,7 @@ Pbind(*[
 	instrument:			\test,
 	nharms:				Pseq([4, 10, 40], inf),
 	dur:				Pseq([1, 1, 2, 1]/10, inf),
-	#[freq, sustain],	Ptuple([
+	#[freq, sustain]:	Ptuple([
 							Pseq( (1..16) * 50, 4),
 							Pseq([1/10, 0.5, 1, 2], inf)
 						])
@@ -337,18 +337,77 @@ Prand([
 
 subsection::Multichannel Expansion
 
-If we supply an array for any argument, the synth node will automatically replicate to handle the additional arguments. When we give the 'root' argument an array, we should hear a chord....
+If we supply an array for strong::any:: argument, the synth node will automatically replicate to handle the additional arguments.
+
+The only strong::exception:: to this is: code::\instrument:: and code::\dur::. For the general schema, see also: link::Guides/Multichannel-Expansion::.
 
 code::
+// When we provide the 'root' argument an array, we should hear a chord.
+// the synth def is defined above
 (
 Pbind(
 	\instrument, \acid, \dur, Pseq([0.25, 0.5, 0.25], inf),
-	\root, [-24, -17],
+	\root, [-24, -17],  // expand root
 	\degree, Pseq([0, 3, 5, 7, 9, 11, 5, 1], inf),
-	\pan, Pfunc({1.0.rand2}), \cut, Pxrand([1000, 500, 2000, 300], inf), \rez, Pfunc({0.7.rand +0.3}),
+	\pan, Pfunc { 1.0.rand2 },
+	\cut, Pxrand([1000, 500, 2000, 300], inf),
+	\rez, Pfunc { 0.7.rand + 0.3 },
 	\amp, 0.2).play;
+);
+
+// multiple arrays are correlated in parallel, the shorter one wraps:
+(
+Pbind(
+	\instrument, \acid,
+	\dur, Pseq([0.25, 0.5, 0.25], inf),
+	\root, [-24, -17], // expand root ...
+	\degree, Pseq([0, 3, 5, 7, 9, 11, 5, 1], inf) + [0, 6, 9], // ... and expand degrees
+	\pan, Pfunc { 1.0.rand2 },
+	\cut, Pxrand([1000, 500, 2000, 300], inf),
+	\rez, Pfunc { 0.7.rand + 0.3 },
+	\amp, 0.2).play;
+);
+::
+
+note::In Pbind, you can’t have arrays of patterns, but only patterns that strong::return:: arrays.::
+
+code::
+// so this does not expand:
+Pbind(\degree, [Pseq([0, 2, 3], inf), Pseq([2, 4, 5, 6], inf)]).play;
+
+// but this does:
+Pbind(\degree, Pseq([ [ 0, 2 ], [ 2, 4 ], [ 3, 5 ], [ 0, 6 ] ], inf)]).play;
+::
+
+
+code::
+// transform an array of patterns into a pattern that returns arrays, use Ptuple:
+a = [Pseq([1, 2, 3], inf), Prand([100, 299, 399], inf), Pseries(0, 6, inf)];
+b = Ptuple(a);
+b.asStream.nextN(8)
+::
+
+code::
+Pbind(\degree, Ptuple([Pseq([0, 2, 3], inf), Pseq([2, 4, 5, 6], inf)])).play;
+::
+
+code::
+// an example: instead of \degree, [p1, p2] you write \degree, Ptuple([p1, p2])
+(
+Pdef(\x,
+	Pbind(
+		\instrument, \test,
+		\legato, 0.2,
+		\degree, Ptuple([0, Pwalk(Scale.hijaz.degrees, Prand([1, -1], inf))],
+		\scale, Scale.hijaz,
+		\strum, 0.05
+	)
+).play;
 )
 ::
+
+
+subsection::Experimenting with Patterns
 
 Using link::Classes/Pdef:: (provided by link::Overviews/JITLib::) makes it easy to replace patterns on the fly:
 
