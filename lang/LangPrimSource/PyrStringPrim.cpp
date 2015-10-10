@@ -516,10 +516,8 @@ int prStringCompare(struct VMGlobals *g, int numArgsPushed)
 	b = g->sp - 1;
 	c = g->sp;
 
-	if (NotObj(b) || !isKindOf(slotRawObject(b), class_string)) {
-		SetNil(a);
-		return errNone;
-	}
+	if (NotObj(b) || !isKindOf(slotRawObject(b), class_string)) return errWrongType;
+	
 	length = sc_min(slotRawObject(a)->size, slotRawObject(b)->size);
 	if (IsTrue(c)) cmp = memcmpi(slotRawString(a)->s, slotRawString(b)->s, length);
 	else cmp = memcmp(slotRawString(a)->s, slotRawString(b)->s, length);
