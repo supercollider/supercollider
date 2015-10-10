@@ -42,10 +42,6 @@ Recorder {
 		}
 	}
 
-	cmdPeriod {
-		this.stopRecording
-	}
-
 	isRecording {
 		^recordNode.isPlaying
 	}
@@ -131,7 +127,6 @@ Recorder {
 		} {
 			responder.enable;
 		};
-		CmdPeriod.add(this);
 	}
 
 	prStopRecord {
