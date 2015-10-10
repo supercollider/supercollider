@@ -764,10 +764,7 @@ int prString_Find(struct VMGlobals *g, int numArgsPushed)
 	int err = slotIntVal(d, &offset);
 	if (err) return err;
 
-	if (!isKindOfSlot(b, class_string)) {
-		SetNil(a);
-		return errNone;
-	}
+	if (!isKindOfSlot(b, class_string)) return errWrongType;
 
 	int alength = slotRawObject(a)->size - offset;
 	int blength = slotRawObject(b)->size;
@@ -822,10 +819,7 @@ int prString_FindBackwards(struct VMGlobals *g, int numArgsPushed)
 	int err = slotIntVal(d, &offset);
 	if (err) return err;
 
-	if (!isKindOfSlot(b, class_string)) {
-		SetNil(a);
-		return errNone;
-	}
+	if (!isKindOfSlot(b, class_string)) return errWrongType;
 
 	int alength = sc_min(offset + 1, slotRawObject(a)->size);
 	int blength = slotRawObject(b)->size;
