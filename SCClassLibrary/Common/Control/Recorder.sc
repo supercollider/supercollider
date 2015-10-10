@@ -134,7 +134,6 @@ Recorder {
 		server.sendMsg("/d_free", synthDef.name);
 		synthDef = nil;
 		if(recordBuf.notNil) { recordBuf.close({ |buf| buf.freeMsg }); recordBuf = nil };
-		CmdPeriod.remove(this);
 		responder.disable;
 		paused = false;
 		duration = 0;
