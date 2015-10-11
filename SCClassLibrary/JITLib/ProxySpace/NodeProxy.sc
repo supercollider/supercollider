@@ -746,7 +746,7 @@ NodeProxy : BusPlug {
 
 	// bundle: apply the node map settings to the entire group
 	sendAllToBundle { | bundle, extraArgs |
-		extraArgs = nodeMap.asOSCArgArray ++ extraArgs.value.asOSCArgArray;
+		extraArgs = { nodeMap.asOSCArgArray ++ extraArgs.value.asOSCArgArray };
 		objects.do { arg item;
 			item.playToBundle(bundle, extraArgs, this);
 		}
@@ -762,7 +762,7 @@ NodeProxy : BusPlug {
 	// bundle: send single object
 	sendObjectToBundle { | bundle, object, extraArgs, index |
 		var target, nodes;
-		var synthID = object.playToBundle(bundle, nodeMap.asOSCArgArray ++ extraArgs.value.asOSCArgArray, this);
+		var synthID = object.playToBundle(bundle, { nodeMap.asOSCArgArray ++ extraArgs.value.asOSCArgArray }, this);
 		if(synthID.notNil) {
 			if(index.notNil and: { objects.size > 1 }) { // if nil, all are sent anyway
 				// make list of nodeIDs following the index
