@@ -175,7 +175,7 @@ code::
 // drag some circles
 (
 var w, r, u;
-var clicked;
+var clicked, relativeWhere;
 r = { Rect(300.rand, 300.rand, 110, 110) } ! 4;
 
 w = Window.new.front;
@@ -190,7 +190,8 @@ u.drawFunc = {
 u.mouseDownAction = { |v, x, y|
 	r.do { |rect, i|
 		if(rect.contains(Point(x, y))) {
-			clicked = i
+			clicked = i;
+			relativeWhere = Point(x, y) - rect.origin;
 		};
 	};
 };
@@ -199,7 +200,7 @@ u.mouseMoveAction = { |v, x, y|
 	var rect;
 	if(clicked.notNil) {
 		rect = r.at(clicked);
-		r.put(clicked, rect.center = Point(x, y));
+		r.put(clicked, rect.origin = Point(x, y) - relativeWhere);
 		w.refresh;
 	}
 };
@@ -208,6 +209,7 @@ u.mouseUpAction = {
 	clicked = nil;
 }
 )
+
 
 ::
 
