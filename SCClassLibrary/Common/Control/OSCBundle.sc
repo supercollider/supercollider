@@ -56,7 +56,8 @@ OSCBundle {
 
 	prSend { arg server, delta,timeOfRequest;
 		if(messages.notNil, {
-			server.listSendBundle(delta ?? { server.latency }, messages.collect { |x| x.value });
+			if(removeOnCancel.notNil) { messages = messages.collect { |x| x.value } };
+			server.listSendBundle(delta ?? { server.latency }, messages);
 		})
 	}
 
@@ -115,7 +116,8 @@ MixedBundle : OSCBundle {
 			});
 		};
 		if(messages.notNil) {
-			server.listSendBundle(delta, messages.collect { |x| x.value });
+			if(removeOnCancel.notNil) { messages = messages.collect { |x| x.value } };
+			server.listSendBundle(delta, messages);
 		};
 		this.doSendFunctions;
 	}
