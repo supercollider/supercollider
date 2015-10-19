@@ -415,6 +415,15 @@ if(INSTALL_HELP)
 			PATTERN "*#" EXCLUDE
 		)
 	endif()
+
+	if(NOT APPLE)
+		install(DIRECTORY HelpSource
+			DESTINATION ${auxresourcesdir}
+			REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
+			PATTERN "*~" EXCLUDE
+			PATTERN "*#" EXCLUDE
+		)
+	endif()
 endif()
 
 
