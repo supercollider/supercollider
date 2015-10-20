@@ -48,7 +48,7 @@ PyrSymbol* gSpecialClasses[op_NumSpecialClasses];
 PyrSlot gSpecialValues[svNumSpecialValues];
 
 PyrParseNode* gRootParseNode;
-int gParserResult;
+intptr_t gParserResult;
 
 int conjureConstantIndex(PyrParseNode *node, PyrBlock* func, PyrSlot *slot);
 void compilePushConstant(PyrParseNode* node, PyrSlot *slot);

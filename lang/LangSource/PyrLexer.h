@@ -123,7 +123,8 @@ extern int yylen;
 extern int lexCmdLine;
 extern bool compilingCmdLine;
 extern bool compilingCmdLineErrorWindow;
-extern long zzval;
+extern intptr_t zzval;
+extern intptr_t gParserResult;
 
 extern int lineno, charno, linepos;
 extern int *linestarts;
