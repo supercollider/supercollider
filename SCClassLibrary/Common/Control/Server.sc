@@ -356,7 +356,11 @@ Server {
 	/* id allocators */
 
 	clientID_ { |val|
-		if(val.notNil and: { clientID != val }) {
+		if(val.isInteger.not) {
+			"Server % couldn't set client id to: %".format(name, val.asCompileString).warn;
+			^this
+		};
+		if(clientID != val) {
 			clientID = val;
 			this.newAllocators;
 		}
