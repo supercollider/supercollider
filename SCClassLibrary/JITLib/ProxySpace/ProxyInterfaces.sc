@@ -222,7 +222,7 @@ SynthControl : AbstractPlayControl {
 
 	spawnToBundle { | bundle, extraArgs, target, addAction = 0 | // assumes self freeing
 		var targetID = target.asTarget.nodeID;
-		bundle.add([9, this.asDefName, -1, addAction, targetID] ++ extraArgs.asOSCArgArray);
+		bundle.add([9, this.asDefName, -1, addAction, targetID] ++ extraArgs.value.asOSCArgArray);
 	}
 
 	playToBundle { | bundle, extraArgs, target, addAction = 1 |
@@ -255,7 +255,7 @@ SynthControl : AbstractPlayControl {
 	}
 
 	set { | ... args |
-		server.sendBundle(server.latency, ["/n_set", nodeID] ++ args);
+		server.sendBundle(server.latency, ["/n_set", nodeID] ++ args.asOSCArgArray);
 	}
 
 	pause { | clock, quant = 1 |
