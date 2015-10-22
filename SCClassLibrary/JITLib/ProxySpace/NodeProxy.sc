@@ -455,8 +455,7 @@ NodeProxy : BusPlug {
 			i = this.index;
 			bundle = this.getBundle;
 			if(loaded.not) { this.loadToBundle(bundle) };
-			obj.spawnToBundle(bundle, extraArgs, this);
-			nodeMap.addToBundle(bundle, -1);
+			obj.spawnToBundle(bundle, { nodeMap.asOSCArgArray ++ extraArgs.value.asOSCArgArray }, this);
 			bundle.schedSend(server);
 		}
 	}

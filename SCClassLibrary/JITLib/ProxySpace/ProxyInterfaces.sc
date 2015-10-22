@@ -222,7 +222,7 @@ SynthControl : AbstractPlayControl {
 
 	spawnToBundle { | bundle, extraArgs, target, addAction = 0 | // assumes self freeing
 		var targetID = target.asTarget.nodeID;
-		bundle.add([9, this.asDefName, -1, addAction, targetID] ++ extraArgs.value.asOSCArgArray);
+		bundle.addCancel({ [9, this.asDefName, -1, addAction, targetID] ++ extraArgs.value });
 	}
 
 	playToBundle { | bundle, extraArgs, target, addAction = 1 |
