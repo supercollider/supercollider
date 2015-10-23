@@ -304,7 +304,7 @@ bool get_scope_buffer(World *inWorld, int index, int channels, int maxFrames, Sc
         return true;
     }
     else {
-        hnd.internalData = 0;
+        hnd.internalData = nullptr;
         return false;
     }
 }
@@ -844,14 +844,14 @@ inline void sndbuf_init(SndBuf * buf)
 {
     buf->samplerate = 0;
     buf->sampledur = 0;
-    buf->data = 0;
+    buf->data = nullptr;
     buf->channels = 0;
     buf->samples = 0;
     buf->frames = 0;
     buf->mask = 0;
     buf->mask1 = 0;
     buf->coord = 0;
-    buf->sndfile = 0;
+    buf->sndfile = nullptr;
     buf->isLocal = false;
 }
 

@@ -276,7 +276,7 @@ struct fn_system_callback:
         fn_(fn)
     {}
 
-    void run(void)
+    void run(void) override
     {
         fn_();
     }
@@ -292,7 +292,7 @@ struct fn_sync_callback:
         fn_(fn)
     {}
 
-    void run(void)
+    void run(void) override
     {
         fn_();
     }
@@ -402,7 +402,7 @@ void fire_notification(movable_array<char> & msg)
 
 int sc_notify_observers::add_observer(endpoint_ptr const & ep)
 {
-    observer_vector::iterator it = find(ep);
+    auto it = find(ep);
     if (it != observers.end())
         return already_registered;
 
@@ -412,7 +412,7 @@ int sc_notify_observers::add_observer(endpoint_ptr const & ep)
 
 int sc_notify_observers::remove_observer(endpoint_ptr const & ep)
 {
-    observer_vector::iterator it = find(ep);
+    auto it = find(ep);
 
     if (it == observers.end())
         return not_registered;
@@ -442,7 +442,7 @@ const char * sc_notify_observers::error_string(error_code error)
 
 sc_notify_observers::observer_vector::iterator sc_notify_observers::find(endpoint_ptr const & ep)
 {
-    for (observer_vector::iterator it = observers.begin(); it != observers.end(); ++it) {
+    for (auto it = observers.begin(); it != observers.end(); ++it) {
 
         udp_endpoint * elemUDP = dynamic_cast<udp_endpoint*>(it->get());
         udp_endpoint * testUDP = dynamic_cast<udp_endpoint*>(ep.get());
@@ -1068,7 +1068,7 @@ static bool node_position_sanity_check(node_position_constraint const & constrai
 sc_synth * add_synth(const char * name, int node_id, int action, int target_id)
 {
     if (!check_node_id(node_id))
-        return 0;
+        return nullptr;
 
     server_node * target = find_node(target_id);
     if (target == nullptr)
@@ -2014,7 +2014,7 @@ struct completion_message
 
 completion_message extract_completion_message(osc::ReceivedMessageArgumentStream & args)
 {
-    osc::Blob blob(0, 0);
+    osc::Blob blob(nullptr, 0);
 
     if (!args.Eos()) {
         try {
@@ -2029,7 +2029,7 @@ completion_message extract_completion_message(osc::ReceivedMessageArgumentStream
 
 completion_message extract_completion_message(osc::ReceivedMessageArgumentIterator & it)
 {
-    const void * data = 0;
+    const void * data = nullptr;
     osc::osc_bundle_element_size_t length = 0;
 
     if (it->IsBlob())

@@ -87,7 +87,7 @@ public:
     {}
 
 private:
-    virtual void run(void)
+    virtual void run(void) override
     {
         delete ptr_;
     }

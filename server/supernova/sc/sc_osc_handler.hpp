@@ -75,7 +75,7 @@ public:
     }
 
 private:
-    void send(const char * data, size_t length);
+    void send(const char * data, size_t length) override;
 
     udp::endpoint endpoint_;
 };
@@ -253,7 +253,7 @@ public:
         static received_packet * alloc_packet(const char * data, size_t length,
                                               endpoint_ptr const & remote_endpoint);
 
-        void run(void);
+        void run(void) override;
 
         const char * const data;
         const size_t length;
@@ -299,7 +299,7 @@ public:
             : socket_(io_service)
         {}
 
-        void send(const char *data, size_t length);
+        void send(const char *data, size_t length) override;
 
         void async_read_msg_size();
         void handle_message_size();

@@ -39,7 +39,7 @@ struct buffer_wrapper
     typedef uint32_t uint;
 
     buffer_wrapper(void):
-        data(0), frames_(0), channels_(0), sample_rate_(0)
+        data(nullptr), frames_(0), channels_(0), sample_rate_(0)
     {}
 
     ~buffer_wrapper(void)
@@ -54,7 +54,7 @@ struct buffer_wrapper
     {
         if (data) {
             free_aligned(data);
-            data = 0;
+            data = nullptr;
             frames_ = 0;
             channels_ = 0;
         }

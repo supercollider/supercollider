@@ -59,7 +59,7 @@ public:
 
     // construct/copy/destruct
     explicit sized_array(size_type size = 0, T const & def = T()):
-        data_( size ? Allocator::allocate(size) : 0), size_(size)
+        data_( size ? Allocator::allocate(size) : nullptr), size_(size)
     {
         for (size_type i = 0; i != size; ++i)
             Allocator::construct(data_ + i, def);

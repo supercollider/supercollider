@@ -51,7 +51,7 @@ public:
             tagged_ptr old_pool = pool_.load(std::memory_order_consume);
 
             if (!old_pool.get_ptr())
-                return 0;
+                return nullptr;
 
             freelist_node * new_pool_ptr = old_pool->next.get_ptr();
             tagged_ptr new_pool (new_pool_ptr, old_pool.get_tag() + 1);

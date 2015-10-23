@@ -75,8 +75,8 @@ public:
 
     /* @{ */
     /** pause/resume handling (set pause/resume on children)  */
-    virtual void pause(void);
-    virtual void resume(void);
+    virtual void pause(void) override;
+    virtual void resume(void) override;
     /* @} */
 
     /* @{ */
@@ -99,8 +99,8 @@ public:
         if (child_synth_count)
             return true;
 
-        for (group_list::const_iterator it = child_groups.begin(); it != child_groups.end(); ++it)
-            if (it->has_synth_children())
+        for (const auto & elem : child_groups)
+            if (elem.has_synth_children())
                 return true;
 
         return false;
@@ -111,8 +111,8 @@ public:
         if (is_parallel())
             return true;
 
-        for (group_list::const_iterator it = child_groups.begin(); it != child_groups.end(); ++it)
-            if (it->has_parallel_group_children())
+        for (const auto & elem : child_groups)
+            if (elem.has_parallel_group_children())
                 return true;
 
         return false;
@@ -128,27 +128,27 @@ public:
     template<typename functor>
     void apply_on_children(functor const & f)
     {
-        for (server_node_list::iterator it = child_nodes.begin(); it != child_nodes.end(); ++it)
-            f(*it);
+        for (auto & elem : child_nodes)
+            f(elem);
     }
 
     template<typename functor>
     void apply_deep_on_children(functor const & f)
     {
-        for (server_node_list::iterator it = child_nodes.begin(); it != child_nodes.end(); ++it) {
-            if (it->is_group()) {
-                abstract_group & grp = static_cast<abstract_group&>(*it);
+        for (auto & elem : child_nodes) {
+            if (elem.is_group()) {
+                abstract_group & grp = static_cast<abstract_group&>(elem);
                 grp.apply_deep_on_children(f);
             }
-            f(*it);
+            f(elem);
         }
     }
 
     template<typename functor>
     void apply_on_children(functor const & f) const
     {
-        for (server_node_list::const_iterator it = child_nodes.begin(); it != child_nodes.end(); ++it)
-            f(*it);
+        for (const auto & elem : child_nodes)
+            f(elem);
     }
     /* @} */
 
@@ -171,7 +171,7 @@ public:
         assert(has_child(node));
         server_node_list::iterator next = ++server_node_list::s_iterator_to(*node);
         if (unlikely(next == child_nodes.end()))
-            return 0;
+            return nullptr;
         else
             return &(*next);
     }
@@ -181,7 +181,7 @@ public:
         assert(has_child(node));
         server_node_list::iterator it = server_node_list::s_iterator_to(*node);
         if (unlikely(it == child_nodes.begin()))
-            return 0;
+            return nullptr;
         else
             return &(*--it);
     }
@@ -199,8 +199,8 @@ public:
                                           std::mem_fn(&server_node::clear_parent));
 
         /* now there are only group classes */
-        for(server_node_list::iterator it = child_nodes.begin(); it != child_nodes.end(); ++it) {
-            abstract_group * group = static_cast<abstract_group*>(&*it);
+        for(auto & elem : child_nodes) {
+            abstract_group * group = static_cast<abstract_group*>(&elem);
             group->free_synths_deep();
         }
         assert(child_synth_count == 0);
@@ -210,17 +210,17 @@ public:
     void remove_child(server_node * node);
     /* @} */
 
-    void set(slot_index_t slot_id, float val);
-    void set(const char * slot_str, float val);
-    void set(const char * slot_str, size_t hashed_str, float val);
+    void set(slot_index_t slot_id, float val) override;
+    void set(const char * slot_str, float val) override;
+    void set(const char * slot_str, size_t hashed_str, float val) override;
 
-    void set_control_array(slot_index_t slot_str, size_t count, float * val);
-    void set_control_array(const char * slot_str, size_t count, float * val);
-    void set_control_array(const char * slot_str, size_t hashed_str, size_t count, float * val);
+    void set_control_array(slot_index_t slot_str, size_t count, float * val) override;
+    void set_control_array(const char * slot_str, size_t count, float * val) override;
+    void set_control_array(const char * slot_str, size_t hashed_str, size_t count, float * val) override;
 
-    void set_control_array_element(slot_index_t slot_str, size_t count, float val);
-    void set_control_array_element(const char * slot_str, size_t count, float val);
-    void set_control_array_element(const char * slot_str, size_t hashed_str, size_t count, float val);
+    void set_control_array_element(slot_index_t slot_str, size_t count, float val) override;
+    void set_control_array_element(const char * slot_str, size_t count, float val) override;
+    void set_control_array_element(const char * slot_str, size_t hashed_str, size_t count, float val) override;
 
     /* move node to head or tail of target */
     template <node_position Position>
@@ -307,7 +307,7 @@ inline void server_node::clear_parent(void)
         static_cast<abstract_group*>(this)->unregister_as_child();
     }
 
-    parent_ = 0;
+    parent_ = nullptr;
     release();
 }
 
@@ -367,12 +367,12 @@ public:
     }
 
 private:
-    void add_child(server_node * node, node_position_constraint const & constraint);
-    void add_child(server_node * node, node_position);
+    void add_child(server_node * node, node_position_constraint const & constraint) override;
+    void add_child(server_node * node, node_position) override;
 
     friend class dependency_graph_generator;
 
-    virtual int tail_nodes(void) const
+    virtual int tail_nodes(void) const override
     {
         if (empty())
             return 0;
@@ -400,10 +400,10 @@ public:
     {}
 
 private:
-    void add_child(server_node * node, node_position_constraint const & constraint);
-    void add_child(server_node * node, node_position);
+    void add_child(server_node * node, node_position_constraint const & constraint) override;
+    void add_child(server_node * node, node_position) override;
 
-    virtual int tail_nodes(void) const;
+    virtual int tail_nodes(void) const override;
 
     friend class dependency_graph_generator;
 };

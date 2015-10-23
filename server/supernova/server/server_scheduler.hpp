@@ -73,7 +73,7 @@ class scheduler
             sched(sched), qptr(qptr)
         {}
 
-        void run(void)
+        void run(void) override
         {
             sched->reset_queue_sync(qptr);
             /** todo: later free the queue in a helper thread */
