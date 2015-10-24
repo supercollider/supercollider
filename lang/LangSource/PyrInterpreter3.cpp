@@ -538,6 +538,13 @@ static inline void checkStackDepth(VMGlobals* g, PyrSlot * sp)
 #define UNLIKELY(x) x
 #endif
 
+#if defined(__GNUC__) && !defined(__clang__)
+// gcc manual:
+// Note: When compiling a program using computed gotos, a GCC extension, you may get better run-time performance if
+//       you disable the global common subexpression elimination pass by adding -fno-gcse to the command line.
+#pragma GCC push_options
+#pragma GCC optimize("-fno-gcse")
+#endif
 
 HOT void Interpret(VMGlobals *g)
 {
@@ -2689,6 +2696,12 @@ HOT void Interpret(VMGlobals *g)
 #endif
 	g->sp = sp; g->ip = ip;
 }
+
+
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC pop_options
+#endif
+
 
 void DumpSimpleBackTrace(VMGlobals *g);
 void DumpSimpleBackTrace(VMGlobals *g)
