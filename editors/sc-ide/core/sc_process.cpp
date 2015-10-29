@@ -18,9 +18,13 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include <QCoreApplication>
 #include <QBuffer>
+#include <QCoreApplication>
+#include <QtCore/QFuture>
+#include <QtCore/QFutureWatcher>
 #include <QTextDocumentFragment>
+
+#include <QtConcurrent>
 
 #include "main.hpp"
 #include "main_window.hpp"
@@ -45,17 +49,11 @@ ScProcess::ScProcess( Settings::Manager * settings, QObject * parent ):
     mTerminationRequested(false),
     mCompiled(false)
 {
-    mIntrospectionParser = new ScIntrospectionParser( this );
-    mIntrospectionParser->start();
-
     prepareActions(settings);
 
     connect(this, SIGNAL( readyRead() ),
             this, SLOT( onReadyRead() ));
     connect(mIpcServer, SIGNAL(newConnection()), this, SLOT(onNewIpcConnection()));
-    connect(mIntrospectionParser, SIGNAL(done(ScLanguage::Introspection*)),
-            this, SLOT(swapIntrospection(ScLanguage::Introspection*)));
-
     connect(this, SIGNAL(stateChanged(QProcess::ProcessState)), this, SLOT(onProcessStateChanged(QProcess::ProcessState)));
 }
 
@@ -349,19 +347,34 @@ void ScProcess::onIpcData()
 
 void ScProcess::onResponse( const QString & selector, const QString & data )
 {
-    static QString introspectionSelector("introspection");
-    static QString classLibraryRecompiledSelector("classLibraryRecompiled");
-    static QString requestCurrentPathSelector("requestCurrentPath");
+    if (selector == QStringLiteral("introspection")) {
+        using ScLanguage::Introspection;
 
-    if (selector == introspectionSelector)
-        mIntrospectionParser->process(data);
+        auto watcher = new QFutureWatcher<Introspection>(this);
+        connect( watcher, &QFutureWatcher<Introspection>::finished, [=]{
+            try {
+                Introspection newIntrospection = watcher->result();
+                mIntrospection = std::move(newIntrospection);
+                emit introspectionChanged();
+            } catch (std::exception & e) {
+                MainWindow::instance()->showStatusMessage(e.what());
+            }
+            watcher->deleteLater();
+        });
 
-    else if (selector == classLibraryRecompiledSelector){
+        // Start the computation.
+        QFuture<Introspection> future = QtConcurrent::run( [] (QString data) {
+            return ScLanguage::Introspection(data);
+        }, data );
+        watcher->setFuture(future);
+    }
+
+    else if (selector == QStringLiteral("classLibraryRecompiled")){
         mCompiled = true;
         emit classLibraryRecompiled();
     }
 
-    else if (selector == requestCurrentPathSelector)
+    else if (selector == QStringLiteral("requestCurrentPath"))
         Main::documentManager()->sendActiveDocument();
 }
 
@@ -417,14 +430,5 @@ void ScProcess::updateSelectionMirrorForDocument ( Document * doc, int start, in
     }
 }
 
-void ScIntrospectionParserWorker::process(const QString &input)
-{
-    try {
-        ScLanguage::Introspection *introspection = new ScLanguage::Introspection (input);
-        emit done(introspection);
-    } catch (std::exception & e) {
-        MainWindow::instance()->showStatusMessage(e.what());
-    }
-}
 
 } // namespace ScIDE
