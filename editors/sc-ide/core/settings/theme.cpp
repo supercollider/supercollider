@@ -241,7 +241,6 @@ Theme::~Theme()
 void Theme::setFormat(const QString & key, const QTextCharFormat & newFormat)
 {
     QMap<QString, QTextCharFormat *>::iterator i = mFormats.find(key);
-    QTextCharFormat *format = i.value();
     bool fontWeight = (newFormat.fontWeight() == QFont::Bold) ? true : false;
     QColor bg = (newFormat.background() == Qt::NoBrush) ?
                     QColor(Qt::transparent): newFormat.background().color();

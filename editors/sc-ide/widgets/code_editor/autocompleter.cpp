@@ -209,7 +209,6 @@ inline QTextDocument *AutoCompleter::document()
 
 void AutoCompleter::keyPress( QKeyEvent *e )
 {
-    int key = e->key();
     switch (e->key())
     {
     case Qt::Key_ParenLeft:
@@ -829,7 +828,6 @@ void AutoCompleter::triggerMethodCallAid( bool explicitTrigger )
         return;
     }
 
-    QTextDocument *doc = document();
     QTextCursor cursor( mEditor->textCursor() );
 
     // Find the first bracket that defines a method call

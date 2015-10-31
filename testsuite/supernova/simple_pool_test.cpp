@@ -21,7 +21,7 @@ void run_simple_test(bool locked)
 {
     simple_pool<> pool(16*1024, locked);
 
-    foo* f1 = static_cast<foo*>(pool.malloc(sizeof(f1)));
+    foo* f1 = static_cast<foo*>(pool.malloc(sizeof(foo)));
     ::new(f1) foo();
     f1->~foo();
     pool.free(f1);
@@ -33,7 +33,7 @@ void run_simple_test_2(bool locked)
 
     pool.init(16*1024, locked);
 
-    foo* f1 = static_cast<foo*>(pool.malloc(sizeof(f1)));
+    foo* f1 = static_cast<foo*>(pool.malloc(sizeof(foo)));
     ::new(f1) foo();
     f1->~foo();
     pool.free(f1);

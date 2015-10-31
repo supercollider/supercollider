@@ -163,7 +163,7 @@ struct movable_string
     }
 
 private:
-    const char * data_;
+    const char * data_ = nullptr;
 };
 
 template <typename T>
@@ -208,7 +208,7 @@ struct movable_array
     }
 
 private:
-    size_t length_;
+    size_t length_ = 0;
     T * data_;
 };
 
