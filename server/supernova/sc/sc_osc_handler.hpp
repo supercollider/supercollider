@@ -23,8 +23,10 @@
 #include <mutex>
 #include <vector>
 
+#ifndef BOOST_ASIO_HAS_STD_ARRAY
 #ifdef __clang__ // clang workaround
 #define BOOST_ASIO_HAS_STD_ARRAY
+#endif
 #endif
 
 #include <boost/asio/ip/tcp.hpp>
