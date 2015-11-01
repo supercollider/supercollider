@@ -378,12 +378,10 @@ void signalAsWavetable(float *signal, float *wavetable, int size)
 
 void wavetableAsSignal(float *wavetable, float *signal, int size)
 {
-	int i, imax;
 	float *in, *out;
 	in = wavetable;
 	out = signal - 1;
-	imax = size;
-	for (i=0; i<size; ++i) {
+	for (int i=0; i<size; ++i) {
 		*++out = in[0] + in[1];
 		in += 2;
 	}

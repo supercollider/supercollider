@@ -821,8 +821,9 @@ static UnaryOpFunc ChooseNovaSimdFunc(UnaryOpUGen *unit)
 		case opRamp : return &ramp_nova_64;
 
 		default : return &thru_nova_64;
-        }
-    }
+		}
+		return func;
+	}
 	switch (unit->mSpecialIndex) {
 		case opSilence : func = &zero_nova; break;
 		case opThru : func = &thru_nova; break;

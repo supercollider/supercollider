@@ -427,7 +427,7 @@ void ScServer::handleRuningStateChangedMsg( const QString & data )
     stream << data.toStdString();
     YAML::Parser parser(stream);
 
-    bool serverRunningState;
+    bool serverRunningState = false;
     std::string hostName;
     int port;
 
