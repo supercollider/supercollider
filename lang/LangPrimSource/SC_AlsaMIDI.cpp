@@ -5,22 +5,22 @@
 	====================================================================
 
 	SuperCollider real time audio synthesis system
-    Copyright (c) 2002 James McCartney. All rights reserved.
+	Copyright (c) 2002 James McCartney. All rights reserved.
 	http://www.audiosynth.com
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
+	You should have received a copy of the GNU General Public License
+	along with this program; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
 #include "SCBase.h"
@@ -195,143 +195,143 @@ void SC_AlsaMidiClient::processEvent(snd_seq_event_t* evt)
 		++g->sp; SetInt(g->sp, SC_AlsaMakeUID(evt->source.client, evt->source.port));
 
 		switch (evt->type) {
-			// midi events
-			case SND_SEQ_EVENT_NOTEOFF:			// noteOff
-				++g->sp; SetInt(g->sp, evt->data.note.channel);
-				++g->sp; SetInt(g->sp, evt->data.note.note);
-				++g->sp; SetInt(g->sp, evt->data.note.velocity);
-				runInterpreter(g, s_midiNoteOffAction, 5);
-				break;
-			case SND_SEQ_EVENT_NOTEON:			// noteOn
-				++g->sp; SetInt(g->sp, evt->data.note.channel);
-				++g->sp; SetInt(g->sp, evt->data.note.note);
-				++g->sp; SetInt(g->sp, evt->data.note.velocity);
-// 				runInterpreter(g, evt->data.note.velocity ? s_midiNoteOnAction : s_midiNoteOffAction, 5);
-				runInterpreter(g, s_midiNoteOnAction, 5);
-				break;
-			case SND_SEQ_EVENT_KEYPRESS:		// polytouch
-				++g->sp; SetInt(g->sp, evt->data.note.channel);
-				++g->sp; SetInt(g->sp, evt->data.note.note);
-				++g->sp; SetInt(g->sp, evt->data.note.velocity);
-				runInterpreter(g, s_midiPolyTouchAction, 5);
-				break;
-			case SND_SEQ_EVENT_CONTROLLER:		// control
-				++g->sp; SetInt(g->sp, evt->data.control.channel);
-				++g->sp; SetInt(g->sp, evt->data.control.param);
-				++g->sp; SetInt(g->sp, evt->data.control.value);
-				runInterpreter(g, s_midiControlAction, 5);
-				break;
-			case SND_SEQ_EVENT_PGMCHANGE:		// program
-				++g->sp; SetInt(g->sp, evt->data.control.channel);
-				++g->sp; SetInt(g->sp, evt->data.control.value);
-				runInterpreter(g, s_midiProgramAction, 4);
-				break;
-			case SND_SEQ_EVENT_CHANPRESS:		// touch
-				++g->sp; SetInt(g->sp, evt->data.control.channel);
-				++g->sp; SetInt(g->sp, evt->data.control.value);
-				runInterpreter(g, s_midiTouchAction, 4);
-				break;
-			case SND_SEQ_EVENT_PITCHBEND:		// bend
-				++g->sp; SetInt(g->sp, evt->data.control.channel);
-				++g->sp; SetInt(g->sp, evt->data.control.value + 8192);
-				runInterpreter(g, s_midiBendAction, 4);
-				break;
+		// midi events
+		case SND_SEQ_EVENT_NOTEOFF:			// noteOff
+			++g->sp; SetInt(g->sp, evt->data.note.channel);
+			++g->sp; SetInt(g->sp, evt->data.note.note);
+			++g->sp; SetInt(g->sp, evt->data.note.velocity);
+			runInterpreter(g, s_midiNoteOffAction, 5);
+			break;
+		case SND_SEQ_EVENT_NOTEON:			// noteOn
+			++g->sp; SetInt(g->sp, evt->data.note.channel);
+			++g->sp; SetInt(g->sp, evt->data.note.note);
+			++g->sp; SetInt(g->sp, evt->data.note.velocity);
+			// 				runInterpreter(g, evt->data.note.velocity ? s_midiNoteOnAction : s_midiNoteOffAction, 5);
+			runInterpreter(g, s_midiNoteOnAction, 5);
+			break;
+		case SND_SEQ_EVENT_KEYPRESS:		// polytouch
+			++g->sp; SetInt(g->sp, evt->data.note.channel);
+			++g->sp; SetInt(g->sp, evt->data.note.note);
+			++g->sp; SetInt(g->sp, evt->data.note.velocity);
+			runInterpreter(g, s_midiPolyTouchAction, 5);
+			break;
+		case SND_SEQ_EVENT_CONTROLLER:		// control
+			++g->sp; SetInt(g->sp, evt->data.control.channel);
+			++g->sp; SetInt(g->sp, evt->data.control.param);
+			++g->sp; SetInt(g->sp, evt->data.control.value);
+			runInterpreter(g, s_midiControlAction, 5);
+			break;
+		case SND_SEQ_EVENT_PGMCHANGE:		// program
+			++g->sp; SetInt(g->sp, evt->data.control.channel);
+			++g->sp; SetInt(g->sp, evt->data.control.value);
+			runInterpreter(g, s_midiProgramAction, 4);
+			break;
+		case SND_SEQ_EVENT_CHANPRESS:		// touch
+			++g->sp; SetInt(g->sp, evt->data.control.channel);
+			++g->sp; SetInt(g->sp, evt->data.control.value);
+			runInterpreter(g, s_midiTouchAction, 4);
+			break;
+		case SND_SEQ_EVENT_PITCHBEND:		// bend
+			++g->sp; SetInt(g->sp, evt->data.control.channel);
+			++g->sp; SetInt(g->sp, evt->data.control.value + 8192);
+			runInterpreter(g, s_midiBendAction, 4);
+			break;
 			// system common events
-			case SND_SEQ_EVENT_QFRAME:			// mtc quarter frame
-			{
-				int index = evt->data.control.value >> 4;
-				int data = evt->data.control.value & 0xf;
+		case SND_SEQ_EVENT_QFRAME:			// mtc quarter frame
+		{
+			int index = evt->data.control.value >> 4;
+			int data = evt->data.control.value & 0xf;
 
 #if 0
-				post(
-					"mtc qframe: byte 0x%x index 0x%x data 0x%x\n",
-					evt->data.control.value,
-					index, data
-					);
+			post(
+						"mtc qframe: byte 0x%x index 0x%x data 0x%x\n",
+						evt->data.control.value,
+						index, data
+						);
 #endif
 
-				switch (index) {
-					case 1: case 3:
-					case 5:	case 7:
-						data = data << 4;
-				}
-
-				++g->sp; SetInt(g->sp, index);
-				++g->sp; SetInt(g->sp, data);
+			switch (index) {
+			case 1: case 3:
+			case 5:	case 7:
+				data = data << 4;
 			}
-				runInterpreter(g, s_midiSMPTEAction, 4);
-				break;
-			case SND_SEQ_EVENT_SONGPOS:			// song ptr
-				++g->sp; SetInt(g->sp, evt->data.control.channel);
-				++g->sp; SetInt(g->sp, (evt->data.control.value << 7) | evt->data.control.param);
-				runInterpreter(g, s_midiSysrtAction, 4);
-				break;
-			case SND_SEQ_EVENT_SONGSEL:			// song sel
-				++g->sp; SetInt(g->sp, evt->data.control.channel);
-				++g->sp; SetInt(g->sp, evt->data.control.param);
-				runInterpreter(g, s_midiSysrtAction, 4);
-				break;
+
+			++g->sp; SetInt(g->sp, index);
+			++g->sp; SetInt(g->sp, data);
+		}
+			runInterpreter(g, s_midiSMPTEAction, 4);
+			break;
+		case SND_SEQ_EVENT_SONGPOS:			// song ptr
+			++g->sp; SetInt(g->sp, evt->data.control.channel);
+			++g->sp; SetInt(g->sp, (evt->data.control.value << 7) | evt->data.control.param);
+			runInterpreter(g, s_midiSysrtAction, 4);
+			break;
+		case SND_SEQ_EVENT_SONGSEL:			// song sel
+			++g->sp; SetInt(g->sp, evt->data.control.channel);
+			++g->sp; SetInt(g->sp, evt->data.control.param);
+			runInterpreter(g, s_midiSysrtAction, 4);
+			break;
 			// system realtime events
-			case SND_SEQ_EVENT_TUNE_REQUEST:	// tuning request
-				++g->sp; SetInt(g->sp, 0x6);
-				++g->sp; SetInt(g->sp, 0);
-				runInterpreter(g, s_midiSysrtAction, 4);
-				break;
-			case SND_SEQ_EVENT_CLOCK:			// clock
-				++g->sp; SetInt(g->sp, 0x8);
-				++g->sp; SetInt(g->sp, 0);
-				runInterpreter(g, s_midiSysrtAction, 4);
-				break;
-			case SND_SEQ_EVENT_TICK:			// tick
-				++g->sp; SetInt(g->sp, 0x9);
-				++g->sp; SetInt(g->sp, 0);
-				runInterpreter(g, s_midiSysrtAction, 4);
-				break;
-			case SND_SEQ_EVENT_START:			// start
-				++g->sp; SetInt(g->sp, 0xA);
-				++g->sp; SetInt(g->sp, 0);
-				runInterpreter(g, s_midiSysrtAction, 4);
-				break;
-			case SND_SEQ_EVENT_CONTINUE:		// continue
-				++g->sp; SetInt(g->sp, 0xB);
-				++g->sp; SetInt(g->sp, 0);
-				runInterpreter(g, s_midiSysrtAction, 4);
-				break;
-			case SND_SEQ_EVENT_STOP:			// stop
-				++g->sp; SetInt(g->sp, 0xC);
-				++g->sp; SetInt(g->sp, 0);
-				runInterpreter(g, s_midiSysrtAction, 4);
-				break;
-			case SND_SEQ_EVENT_SENSING:			// active sensing
-				++g->sp; SetInt(g->sp, 0xE);
-				++g->sp; SetInt(g->sp, 0);
-				runInterpreter(g, s_midiSysrtAction, 4);
-				break;
-			case SND_SEQ_EVENT_RESET:			// system reset
-				++g->sp; SetInt(g->sp, 0xF);
-				++g->sp; SetInt(g->sp, 0);
-				runInterpreter(g, s_midiSysrtAction, 4);
-				break;
+		case SND_SEQ_EVENT_TUNE_REQUEST:	// tuning request
+			++g->sp; SetInt(g->sp, 0x6);
+			++g->sp; SetInt(g->sp, 0);
+			runInterpreter(g, s_midiSysrtAction, 4);
+			break;
+		case SND_SEQ_EVENT_CLOCK:			// clock
+			++g->sp; SetInt(g->sp, 0x8);
+			++g->sp; SetInt(g->sp, 0);
+			runInterpreter(g, s_midiSysrtAction, 4);
+			break;
+		case SND_SEQ_EVENT_TICK:			// tick
+			++g->sp; SetInt(g->sp, 0x9);
+			++g->sp; SetInt(g->sp, 0);
+			runInterpreter(g, s_midiSysrtAction, 4);
+			break;
+		case SND_SEQ_EVENT_START:			// start
+			++g->sp; SetInt(g->sp, 0xA);
+			++g->sp; SetInt(g->sp, 0);
+			runInterpreter(g, s_midiSysrtAction, 4);
+			break;
+		case SND_SEQ_EVENT_CONTINUE:		// continue
+			++g->sp; SetInt(g->sp, 0xB);
+			++g->sp; SetInt(g->sp, 0);
+			runInterpreter(g, s_midiSysrtAction, 4);
+			break;
+		case SND_SEQ_EVENT_STOP:			// stop
+			++g->sp; SetInt(g->sp, 0xC);
+			++g->sp; SetInt(g->sp, 0);
+			runInterpreter(g, s_midiSysrtAction, 4);
+			break;
+		case SND_SEQ_EVENT_SENSING:			// active sensing
+			++g->sp; SetInt(g->sp, 0xE);
+			++g->sp; SetInt(g->sp, 0);
+			runInterpreter(g, s_midiSysrtAction, 4);
+			break;
+		case SND_SEQ_EVENT_RESET:			// system reset
+			++g->sp; SetInt(g->sp, 0xF);
+			++g->sp; SetInt(g->sp, 0);
+			runInterpreter(g, s_midiSysrtAction, 4);
+			break;
 			// sysex events
-			case SND_SEQ_EVENT_SYSEX:			// sysex
-				sysexArray = newPyrInt8Array(g->gc, evt->data.ext.len, 0, true);
-				memcpy(sysexArray->b, evt->data.ext.ptr, evt->data.ext.len);
-				sysexArray->size = evt->data.ext.len;
-				++g->sp; SetObject(g->sp, (PyrObject*)sysexArray);
-				runInterpreter(g, s_midiSysexAction, 3);
-				break;
-			default:
-				// unknown: convert to midi packet
-				snd_midi_event_reset_decode(mEventToMidi);
-				memset(pkt.data, 0, kAlsaMaxPacketSize);
-				if (snd_midi_event_decode(mEventToMidi, pkt.data, kAlsaMaxPacketSize, evt) > 0) {
-					for (size_t i=0; i < kAlsaMaxPacketSize; i++) {
-						++g->sp; SetInt(g->sp, pkt.data[i]);
-					}
-					runInterpreter(g, s_domidiaction, 2+kAlsaMaxPacketSize);
-				} else {
-					g->sp -= 2;
+		case SND_SEQ_EVENT_SYSEX:			// sysex
+			sysexArray = newPyrInt8Array(g->gc, evt->data.ext.len, 0, true);
+			memcpy(sysexArray->b, evt->data.ext.ptr, evt->data.ext.len);
+			sysexArray->size = evt->data.ext.len;
+			++g->sp; SetObject(g->sp, (PyrObject*)sysexArray);
+			runInterpreter(g, s_midiSysexAction, 3);
+			break;
+		default:
+			// unknown: convert to midi packet
+			snd_midi_event_reset_decode(mEventToMidi);
+			memset(pkt.data, 0, kAlsaMaxPacketSize);
+			if (snd_midi_event_decode(mEventToMidi, pkt.data, kAlsaMaxPacketSize, evt) > 0) {
+				for (size_t i=0; i < kAlsaMaxPacketSize; i++) {
+					++g->sp; SetInt(g->sp, pkt.data[i]);
 				}
+				runInterpreter(g, s_domidiaction, 2+kAlsaMaxPacketSize);
+			} else {
+				g->sp -= 2;
+			}
 		}
 		g->canCallOS = false;
 	}
@@ -486,29 +486,29 @@ int initMIDI(int numIn, int numOut)
 
 	if (client->mHandle) cleanUpMIDI();
 
-    numIn = sc_clip(numIn, 1, kMaxMidiPorts);
-    numOut = sc_clip(numOut, 1, kMaxMidiPorts);
+	numIn = sc_clip(numIn, 1, kMaxMidiPorts);
+	numOut = sc_clip(numOut, 1, kMaxMidiPorts);
 
 	// initialize client handle
-    if (snd_seq_open(&client->mHandle, "default", SND_SEQ_OPEN_DUPLEX, 0) < 0) {
+	if (snd_seq_open(&client->mHandle, "default", SND_SEQ_OPEN_DUPLEX, 0) < 0) {
 		client->mHandle = 0;
 		post("MIDI (ALSA): could not open ALSA sequencer: %s\n", snd_strerror(errno));
-        return errFailed;
+		return errFailed;
 	}
 
 	snd_seq_set_client_name(client->mHandle, "SuperCollider");
 
 	// allocate i/o ports
-    for (i=0; i < numIn; i++) {
-        char str[32];
+	for (i=0; i < numIn; i++) {
+		char str[32];
 		int port;
 
 		sprintf(str, "in%d", i);
 
 		port = snd_seq_create_simple_port(
-			client->mHandle, str,
-			SND_SEQ_PORT_CAP_WRITE|SND_SEQ_PORT_CAP_SUBS_WRITE,
-            SND_SEQ_PORT_TYPE_APPLICATION);
+					client->mHandle, str,
+					SND_SEQ_PORT_CAP_WRITE|SND_SEQ_PORT_CAP_SUBS_WRITE,
+					SND_SEQ_PORT_TYPE_APPLICATION);
 
 		if (port < 0) {
 			post("MIDI (ALSA): could not create MIDI in port %d: %s\n", i, snd_strerror(errno));
@@ -516,30 +516,30 @@ int initMIDI(int numIn, int numOut)
 		}
 
 		client->mInPorts[i] = port;
-    }
+	}
 
-    client->mNumInPorts = i;
+	client->mNumInPorts = i;
 
-    for (i=0; i < numOut; i++) {
-        char str[32];
+	for (i=0; i < numOut; i++) {
+		char str[32];
 		int port;
 
-        sprintf(str, "out%d", i);
+		sprintf(str, "out%d", i);
 
 		port = snd_seq_create_simple_port(
-			client->mHandle, str,
-			SND_SEQ_PORT_CAP_READ|SND_SEQ_PORT_CAP_SUBS_READ,
-            SND_SEQ_PORT_TYPE_APPLICATION);
+					client->mHandle, str,
+					SND_SEQ_PORT_CAP_READ|SND_SEQ_PORT_CAP_SUBS_READ,
+					SND_SEQ_PORT_TYPE_APPLICATION);
 
 		if (port < 0) {
-            post("MIDI (ALSA): could not create MIDI out port %d: %s\n", i, snd_strerror(errno));
+			post("MIDI (ALSA): could not create MIDI out port %d: %s\n", i, snd_strerror(errno));
 			break;
-        }
+		}
 
 		client->mOutPorts[i] = port;
-    }
+	}
 
-    client->mNumOutPorts = i;
+	client->mNumOutPorts = i;
 
 	// initialize queue
 	client->mQueue = snd_seq_alloc_queue(client->mHandle);
@@ -574,10 +574,10 @@ int initMIDIClient()
 	if (client->mHandle) return errNone;
 
 	// initialize client handle
-    if (snd_seq_open(&client->mHandle, "default", SND_SEQ_OPEN_DUPLEX, 0) < 0) {
+	if (snd_seq_open(&client->mHandle, "default", SND_SEQ_OPEN_DUPLEX, 0) < 0) {
 		client->mHandle = 0;
 		post("MIDI (ALSA): could not open ALSA sequencer: %s\n", snd_strerror(errno));
-        return errFailed;
+		return errFailed;
 	}
 
 	snd_seq_set_client_name(client->mHandle, "SuperCollider");
@@ -717,14 +717,14 @@ int listMIDIEndpoints(struct VMGlobals *g, PyrSlot* a)
 	int numSrc = srcPorts.size();
 	int numDst = dstPorts.size();
 
-    PyrObject* idarray = newPyrArray(g->gc, 6 * sizeof(PyrObject), 0 , true);
+	PyrObject* idarray = newPyrArray(g->gc, 6 * sizeof(PyrObject), 0 , true);
 	SetObject(a, idarray);
 
-    PyrObject* idarraySo = newPyrArray(g->gc, numSrc * sizeof(int32), 0 , true);
+	PyrObject* idarraySo = newPyrArray(g->gc, numSrc * sizeof(int32), 0 , true);
 	SetObject(idarray->slots+idarray->size++, idarraySo);
 	g->gc->GCWrite(idarray, idarraySo);
 
-    PyrObject* devarraySo = newPyrArray(g->gc, numSrc * sizeof(PyrObject), 0 , true);
+	PyrObject* devarraySo = newPyrArray(g->gc, numSrc * sizeof(PyrObject), 0 , true);
 	SetObject(idarray->slots+idarray->size++, devarraySo);
 	g->gc->GCWrite(idarray, devarraySo);
 
@@ -732,53 +732,53 @@ int listMIDIEndpoints(struct VMGlobals *g, PyrSlot* a)
 	SetObject(idarray->slots+idarray->size++, namearraySo);
 	g->gc->GCWrite(idarray, namearraySo);
 
-    PyrObject* idarrayDe = newPyrArray(g->gc, numDst * sizeof(int32), 0 , true);
+	PyrObject* idarrayDe = newPyrArray(g->gc, numDst * sizeof(int32), 0 , true);
 	SetObject(idarray->slots+idarray->size++, idarrayDe);
 	g->gc->GCWrite(idarray, idarrayDe);
 
-    PyrObject* namearrayDe = newPyrArray(g->gc, numDst * sizeof(PyrObject), 0 , true);
+	PyrObject* namearrayDe = newPyrArray(g->gc, numDst * sizeof(PyrObject), 0 , true);
 	SetObject(idarray->slots+idarray->size++, namearrayDe);
 	g->gc->GCWrite(idarray, namearrayDe);
 
-    PyrObject* devarrayDe = newPyrArray(g->gc, numDst * sizeof(PyrObject), 0 , true);
+	PyrObject* devarrayDe = newPyrArray(g->gc, numDst * sizeof(PyrObject), 0 , true);
 	SetObject(idarray->slots+idarray->size++, devarrayDe);
 	g->gc->GCWrite(idarray, devarrayDe);
 
 
-    for (int i=0; i<numSrc; ++i) {
-	char* name = srcPorts[i].name;
-	char* devicename = srcPorts[i].device;
+	for (int i=0; i<numSrc; ++i) {
+		char* name = srcPorts[i].name;
+		char* devicename = srcPorts[i].device;
 
-        PyrString *string = newPyrString(g->gc, name, 0, true);
-        SetObject(namearraySo->slots+i, string);
-        namearraySo->size++;
-        g->gc->GCWrite(namearraySo, (PyrObject*)string);
+		PyrString *string = newPyrString(g->gc, name, 0, true);
+		SetObject(namearraySo->slots+i, string);
+		namearraySo->size++;
+		g->gc->GCWrite(namearraySo, (PyrObject*)string);
 
-        PyrString *devstring = newPyrString(g->gc, devicename, 0, true);
-        SetObject(devarraySo->slots+i, devstring);
-        devarraySo->size++;
-        g->gc->GCWrite(devarraySo, (PyrObject*)devstring);
+		PyrString *devstring = newPyrString(g->gc, devicename, 0, true);
+		SetObject(devarraySo->slots+i, devstring);
+		devarraySo->size++;
+		g->gc->GCWrite(devarraySo, (PyrObject*)devstring);
 
-        SetInt(idarraySo->slots+i, srcPorts[i].uid);
-        idarraySo->size++;
-    }
+		SetInt(idarraySo->slots+i, srcPorts[i].uid);
+		idarraySo->size++;
+	}
 
-    for (int i=0; i<numDst; ++i) {
-	char* name = dstPorts[i].name;
-	char* devicename = dstPorts[i].device;
+	for (int i=0; i<numDst; ++i) {
+		char* name = dstPorts[i].name;
+		char* devicename = dstPorts[i].device;
 
-        PyrString *string = newPyrString(g->gc, name, 0, true);
-        SetObject(namearrayDe->slots+namearrayDe->size++, string);
-        g->gc->GCWrite(namearrayDe, (PyrObject*)string);
+		PyrString *string = newPyrString(g->gc, name, 0, true);
+		SetObject(namearrayDe->slots+namearrayDe->size++, string);
+		g->gc->GCWrite(namearrayDe, (PyrObject*)string);
 
-        PyrString *devstring = newPyrString(g->gc, devicename, 0, true);
-        SetObject(devarrayDe->slots+i, devstring);
+		PyrString *devstring = newPyrString(g->gc, devicename, 0, true);
+		SetObject(devarrayDe->slots+i, devstring);
 		devarrayDe->size++;
-        g->gc->GCWrite(devarrayDe, (PyrObject*)devstring);
+		g->gc->GCWrite(devarrayDe, (PyrObject*)devstring);
 
-        SetInt(idarrayDe->slots+i, dstPorts[i].uid);
+		SetInt(idarrayDe->slots+i, dstPorts[i].uid);
 		idarrayDe->size++;
-    }
+	}
 
 	return errNone;
 }
@@ -1023,14 +1023,14 @@ int prSendSysex(VMGlobals *g, int numArgsPushed)
 
 int prGetMIDIClientID(VMGlobals *g, int numArgsPushed)
 {
-  
-  PyrSlot* args = g->sp;
-  if (!gMIDIClient.mHandle) return errFailed;
 
-  
-  SetInt(args, gMIDIClient.mClientID );
-  
-  return errNone;
+	PyrSlot* args = g->sp;
+	if (!gMIDIClient.mHandle) return errFailed;
+
+
+	SetInt(args, gMIDIClient.mClientID );
+
+	return errNone;
 }
 
 void initMIDIPrimitives()
