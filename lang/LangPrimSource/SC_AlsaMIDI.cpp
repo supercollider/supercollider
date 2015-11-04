@@ -328,10 +328,13 @@ void* SC_AlsaMidiClient::inputThreadFunc(void* arg)
 			for (int i=0; i < npfd; i++) {
 				if (pfd[i].revents > 0) {
 					do {
-						snd_seq_event_t* evt;
-						snd_seq_event_input(handle, &evt);
-						client->processEvent(evt);
-						snd_seq_free_event(evt);
+						snd_seq_event_t* evt = nullptr;
+						int status = snd_seq_event_input(handle, &evt);
+						if( status > 0 ) {
+							assert( evt );
+							client->processEvent(evt);
+							snd_seq_free_event(evt);
+						}
 					} while (snd_seq_event_input_pending(handle, 0) > 0);
 				}
 			}
