@@ -39,6 +39,9 @@
 #include "GC.h"
 #include "SC_LanguageClient.h"
 
+#include <atomic>
+#include <thread>
+
 PyrSymbol* s_midiin;
 PyrSymbol* s_domidiaction;
 PyrSymbol* s_midiNoteOnAction;
@@ -81,7 +84,6 @@ static int sendMIDISysex(int port, int destId, int length, uint8* data);
 // =====================================================================
 
 #include <alsa/asoundlib.h>
-#include <pthread.h>
 #include <vector>
 #include <string.h>
 
@@ -105,10 +107,32 @@ struct SC_AlsaMidiClient
 	int					mOutPorts[kMaxMidiPorts];
 	snd_midi_event_t*	mEventToMidi;
 	snd_midi_event_t*	mMidiToEvent;
-	pthread_t			mInputThread;
-	bool				mShouldBeRunning;
+	std::thread			mInputThread;
+	std::atomic_bool	mShouldBeRunning { false };
 
-	static void* inputThreadFunc(void*);
+	int startInputThread()
+	{
+		mShouldBeRunning = true;
+		try {
+			std::thread inputThread ( [this] {
+				inputThreadFunc();
+			});
+			mInputThread = std::move( inputThread );
+			return errNone;
+		} catch (...) {
+			post("MIDI (ALSA): could not start input thread\n");
+			return errFailed;
+		}
+	}
+
+	void joinInputThread()
+	{
+		mShouldBeRunning = false;
+		if( mInputThread.joinable() )
+			mInputThread.join();
+	}
+
+	void inputThreadFunc();
 	void processEvent(snd_seq_event_t* evt);
 
 	int connectInput(int inputIndex, int uid, int (*action)(snd_seq_t*, snd_seq_port_subscribe_t*), const char* actionName);
@@ -314,34 +338,30 @@ void SC_AlsaMidiClient::processEvent(snd_seq_event_t* evt)
 	gLangMutex.unlock();
 }
 
-void* SC_AlsaMidiClient::inputThreadFunc(void* arg)
+void SC_AlsaMidiClient::inputThreadFunc()
 {
-	SC_AlsaMidiClient* client = (SC_AlsaMidiClient*)arg;
-	snd_seq_t* handle = client->mHandle;
-	int npfd = snd_seq_poll_descriptors_count(handle, POLLIN);
+	int npfd = snd_seq_poll_descriptors_count(mHandle, POLLIN);
 	struct pollfd pfd[npfd];
 
-	snd_seq_poll_descriptors(handle, pfd, npfd, POLLIN);
+	snd_seq_poll_descriptors(mHandle, pfd, npfd, POLLIN);
 
-	while (client->mShouldBeRunning) {
+	while (mShouldBeRunning.load( std::memory_order_relaxed )) {
 		if (poll(pfd, npfd, 2000) > 0) { // 2s timeout
 			for (int i=0; i < npfd; i++) {
 				if (pfd[i].revents > 0) {
 					do {
 						snd_seq_event_t* evt = nullptr;
-						int status = snd_seq_event_input(handle, &evt);
+						int status = snd_seq_event_input(mHandle, &evt);
 						if( status > 0 ) {
 							assert( evt );
-							client->processEvent(evt);
+							processEvent(evt);
 							snd_seq_free_event(evt);
 						}
-					} while (snd_seq_event_input_pending(handle, 0) > 0);
+					} while (snd_seq_event_input_pending(mHandle, 0) > 0);
 				}
 			}
 		}
 	}
-
-	return 0;
 }
 
 int SC_AlsaMidiClient::connectInput(int inputIndex, int uid, int (*action)(snd_seq_t*, snd_seq_port_subscribe_t*), const char* actionName)
@@ -544,13 +564,7 @@ int initMIDI(int numIn, int numOut)
 	snd_midi_event_no_status(client->mMidiToEvent, 1);
 
 	// start input thread
-	client->mShouldBeRunning = true;
-	if (pthread_create(&client->mInputThread, 0, &SC_AlsaMidiClient::inputThreadFunc, client) != 0) {
-		post("MIDI (ALSA): could not start input thread\n");
-		return errFailed;
-	}
-
-    return errNone;
+	return client->startInputThread();
 }
 
 int initMIDIClient()
@@ -592,14 +606,7 @@ int initMIDIClient()
 	snd_midi_event_no_status(client->mEventToMidi, 1);
 	snd_midi_event_no_status(client->mMidiToEvent, 1);
 
-	// start input thread
-	client->mShouldBeRunning = true;
-	if (pthread_create(&client->mInputThread, 0, &SC_AlsaMidiClient::inputThreadFunc, client) != 0) {
-		post("MIDI (ALSA): could not start input thread\n");
-		return errFailed;
-	}
-
-    return errNone;
+	return client->startInputThread();
 }
 
 int disposeMIDI()
@@ -618,8 +625,7 @@ void cleanUpMIDI()
 	SC_AlsaMidiClient* client = &gMIDIClient;
 
 	if (client->mHandle) {
-		client->mShouldBeRunning = false;
-		pthread_join(client->mInputThread, 0);
+		client->joinInputThread();
 
 		snd_seq_remove_events_t *revt;
 		snd_seq_remove_events_malloc(&revt);
