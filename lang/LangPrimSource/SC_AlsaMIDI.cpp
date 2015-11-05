@@ -1073,4 +1073,8 @@ void initMIDIPrimitives()
 	cleanUpMIDI();
 }
 
+void deinitMIDIPrimitives()
+{
+	cleanUpMIDI();
+}
 // EOF
