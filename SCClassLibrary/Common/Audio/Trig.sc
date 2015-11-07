@@ -205,8 +205,7 @@ Pitch : MultiOutUGen {
 	}
 }
 
-InRange : UGen
-{
+InRange : UGen {
 	*ar { arg in = 0.0, lo = 0.0, hi = 1.0;
 		^this.multiNew('audio', in, lo, hi)
 	}
@@ -218,8 +217,7 @@ InRange : UGen
 	}
 }
 
-InRect : UGen
-{
+InRect : UGen {
 	*ar { arg x = 0.0, y = 0.0, rect;
 		^this.multiNew('audio', x, y, rect.left, rect.top,
 			rect.right, rect.bottom)
@@ -258,8 +256,7 @@ ModDif : UGen {
 	}
 }
 
-MostChange : UGen
-{
+MostChange : UGen {
 	*ar { arg a = 0.0, b = 0.0;
 		^this.multiNew('audio', a, b)
 	}

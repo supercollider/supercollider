@@ -326,8 +326,7 @@ CleanupStream : Stream {
 
 // PauseStream is a stream wrapper that can be started and stopped.
 
-PauseStream : Stream
-{
+PauseStream : Stream {
 	var <stream, <originalStream, <clock, <nextBeat, <>streamHasEnded=false;
 	var isWaiting = false, era=0;
 

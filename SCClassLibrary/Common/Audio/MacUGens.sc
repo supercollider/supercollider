@@ -1,5 +1,4 @@
-MouseX : UGen
-{
+MouseX : UGen {
 	// warp 0 = linear
 	// warp 1 = exponential
 	*kr {

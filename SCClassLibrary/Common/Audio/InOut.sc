@@ -1,5 +1,4 @@
-ControlName
-{
+ControlName {
 	var <>name, <>index, <>rate, <>defaultValue, <>argNum, <>lag;
 
 	*new { arg name, index, rate, defaultValue, argNum, lag;

@@ -104,16 +104,13 @@ LFSaw : PureUGen {
 	}
 }
 
-LFPar : LFSaw
-{
+LFPar : LFSaw {
 }
 
-LFCub : LFSaw
-{
+LFCub : LFSaw {
 }
 
-LFTri : LFSaw
-{
+LFTri : LFSaw {
 }
 
 LFGauss : UGen {

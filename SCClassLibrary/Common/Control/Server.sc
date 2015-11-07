@@ -1,5 +1,4 @@
-ServerOptions
-{
+ServerOptions {
 	// order of variables is important here. Only add new instance variables to the end.
 	var <numAudioBusChannels=128;
 	var <>numControlBusChannels=4096;
