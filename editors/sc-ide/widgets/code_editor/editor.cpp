@@ -1155,6 +1155,18 @@ void GenericCodeEditor::moveLineDown()
     moveLineUpDown(false);
 }
 
+void GenericCodeEditor::deleteWord()
+{
+    QTextCursor cur = textCursor();
+
+    cur.beginEditBlock();
+
+    cur.movePosition(QTextCursor::StartOfWord, QTextCursor::KeepAnchor);
+    cur.deletePreviousChar();
+
+    cur.endEditBlock();
+}
+
 void GenericCodeEditor::gotoPreviousEmptyLine()
 {
     gotoEmptyLineUpDown(true);
