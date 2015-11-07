@@ -239,8 +239,8 @@ Quarks {
 			);
 		}, {
 			regex = (
-				isPath: "",
-				isAbsolutePath: "^[a-z]:\\\\"
+				isPath: "\\\\|/",
+				isAbsolutePath: "^[A-Za-z]:\\\\"
 			);
 		});
 	}
