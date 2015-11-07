@@ -38,7 +38,29 @@ TwoWayIdentityDictionary : Collection
 		^objToID.at(obj);
 	}
 
+	copy {
+		^this.class.prNew(idToObj.copy, objToID.copy)
+	}
+
+	storeOn { arg stream;
+		if (stream.atLimit) { ^this };
+		stream << this.class.name << ".prNew(";
+		[idToObj, objToID].storeItemsOn(stream);
+		stream << ")";
+	}
+
+	printOn { arg stream;
+		if (stream.atLimit) { ^this };
+		stream << this.class.name << "[";
+		idToObj.printItemsOn(stream);
+		stream << "]";
+	}
+
 	// PRIVATE
+	*prNew { arg idToObj, objToID;
+		^super.newCopyArgs(idToObj, objToID)
+	}
+
 	init {
 		idToObj = IdentityDictionary.new;
 		objToID = IdentityDictionary.new;
