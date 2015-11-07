@@ -478,7 +478,7 @@ Server {
 	listSendMsg { arg msg;
 		addr.sendMsg(*msg);
 	}
- 	listSendBundle { arg time, msgs;
+	listSendBundle { arg time, msgs;
 		addr.sendBundle(time, *(msgs.asArray));
 	}
 

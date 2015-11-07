@@ -84,7 +84,7 @@ SequenceableCollection : Collection {
 			obj.add(start + (i * step));
 		};
 		^obj
- 	}
+	}
 
 
 	++ { arg aSequenceableCollection;
@@ -813,7 +813,7 @@ SequenceableCollection : Collection {
 	}
 
 	performBinaryOp { arg aSelector, theOperand, adverb;
- 		^theOperand.performBinaryOpOnSeqColl(aSelector, this, adverb);
+		^theOperand.performBinaryOpOnSeqColl(aSelector, this, adverb);
 	}
 	performBinaryOpOnSeqColl { arg aSelector, theOperand, adverb;
 		var size, newList;

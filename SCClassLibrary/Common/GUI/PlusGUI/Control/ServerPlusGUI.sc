@@ -328,7 +328,7 @@
 		}.value;
 		};
 
- 		w.front;
+		w.front;
 
 		ctlr = SimpleController(this)
 			.put(\serverRunning, {	if(serverRunning,running,stopped) })

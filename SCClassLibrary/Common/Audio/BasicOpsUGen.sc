@@ -94,7 +94,7 @@ BinaryOpUGen : BasicOpUGen {
 			if (b == -1.0, { ^a.neg });
 		})})})});
 
- 		^super.new1(rate, selector, a, b)
+		^super.new1(rate, selector, a, b)
 	}
 
 	init { arg theOperator, a, b;
@@ -374,14 +374,14 @@ MulAdd : UGen {
 		var minus, nomul, noadd;
 
 		// eliminate degenerate cases
- 		if (mul == 0.0, { ^add });
+		if (mul == 0.0, { ^add });
 		minus = mul == -1.0;
 		nomul = mul == 1.0;
 		noadd = add == 0.0;
- 		if (nomul && noadd, { ^in });
- 		if (minus && noadd, { ^in.neg });
- 		if (noadd, { ^in * mul });
-  		if (minus, { ^add - in });
+		if (nomul && noadd, { ^in });
+		if (minus && noadd, { ^in.neg });
+		if (noadd, { ^in * mul });
+		if (minus, { ^add - in });
 		if (nomul, { ^in + add });
 
 		if (this.canBeMulAdd(in, mul, add)) {

@@ -1,6 +1,6 @@
 /*
 Non-linear Dynamic Sound Generators
-   Lance Putnam 2004
+Lance Putnam 2004
 lance@uwalumni.com
 
 This is a set of iterative functions and differential equations that

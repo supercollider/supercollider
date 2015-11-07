@@ -25,9 +25,9 @@
 }
 
 + Event {
-asOSC {
- 	var score;
- 	score = Pseq([this]).asScore.score;
- 	^score.copyRange(1, score.size - 2);
- }
+	asOSC {
+		var score;
+		score = Pseq([this]).asScore.score;
+		^score.copyRange(1, score.size - 2);
+	}
 }

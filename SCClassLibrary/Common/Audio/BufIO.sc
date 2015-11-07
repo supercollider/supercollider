@@ -65,11 +65,11 @@ BufRd : MultiOutUGen {
 	}
 	argNamesInputsOffset { ^2 }
 	checkInputs {
- 		if (rate == 'audio' and: {inputs.at(1).rate != 'audio'}, {
- 			^("phase input is not audio rate: " + inputs.at(1) + inputs.at(1).rate);
- 		});
- 		^this.checkValidInputs
- 	}
+		if (rate == 'audio' and: {inputs.at(1).rate != 'audio'}, {
+			^("phase input is not audio rate: " + inputs.at(1) + inputs.at(1).rate);
+		});
+		^this.checkValidInputs
+	}
 }
 
 BufWr : UGen {
@@ -83,11 +83,11 @@ BufWr : UGen {
 			loop] ++ inputArray.asArray)
 	}
 	checkInputs {
- 		if (rate == 'audio' and: {inputs.at(1).rate != 'audio'}, {
- 			^("phase input is not audio rate: " + inputs.at(1) + inputs.at(1).rate);
- 		});
- 		^this.checkValidInputs
- 	}
+		if (rate == 'audio' and: {inputs.at(1).rate != 'audio'}, {
+			^("phase input is not audio rate: " + inputs.at(1) + inputs.at(1).rate);
+		});
+		^this.checkValidInputs
+	}
 }
 
 

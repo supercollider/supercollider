@@ -10,7 +10,7 @@ PingPong {
 
 		feedbackChannels = LocalIn.ar(inputs.size) * feedback;
 
- 		delayedSignals = BufRd.ar(inputs.size, bufnum, (phase - delaySamps).wrap(0, frames), 0);
+		delayedSignals = BufRd.ar(inputs.size, bufnum, (phase - delaySamps).wrap(0, frames), 0);
 		LocalOut.ar(delayedSignals);
 
 		BufWr.ar((inputs + feedbackChannels).rotate(rotate) <! delayedSignals.asArray.first, bufnum, phase, 1);
