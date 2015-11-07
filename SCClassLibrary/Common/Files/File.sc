@@ -34,7 +34,9 @@ File : UnixFILE {
 		^if(systemIsCaseSensitive) {
 			this.exists(pathName)
 		} {
-			(pathName.dirname+/+"*").pathMatch.detect{|x|x.compare(pathName)==0}.notNil
+			(pathName.dirname +/+ "*").pathMatch
+				.detect({ |x| x.withoutTrailingSlash.compare(pathName.withoutTrailingSlash) == 0 })
+				.notNil
 		}
 	}
 	*realpath { arg pathName;
