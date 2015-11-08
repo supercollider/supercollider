@@ -1,5 +1,4 @@
-LinuxPlatform : UnixPlatform
-{
+LinuxPlatform : UnixPlatform {
 	name { ^\linux }
 	startupFiles {
 		var deprecated = #["~/.sclang.sc"];

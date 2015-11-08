@@ -1,5 +1,4 @@
-WindowsPlatform : Platform
-{
+WindowsPlatform : Platform {
 	name { ^\windows }
 	startupFiles {
 		var deprecated = ["startup.sc", "~\\SuperCollider\\startup.sc".standardizePath];

@@ -140,7 +140,7 @@ QColorRole {
 QLevelIndicatorStyle {
 	classvar
 	<continuous = 0,
-  	<led = 1;
+	<led = 1;
 
 	*new { arg style; style.isInteger.if(style, { this.perform(style) }) }
 }

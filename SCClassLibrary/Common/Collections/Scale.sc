@@ -350,8 +350,8 @@ ScaleStream {
 			\majorPentatonic -> Scale.new(#[0,2,4,7,9], 12, name: "Major Pentatonic"),
 			// another mode of major pentatonic
 			\ritusen -> Scale.new(#[0,2,5,7,9], 12, name: "Ritusen"),
- 			// another mode of major pentatonic
- 			\egyptian -> Scale.new(#[0,2,5,7,10], 12, name: "Egyptian"),
+			// another mode of major pentatonic
+			\egyptian -> Scale.new(#[0,2,5,7,10], 12, name: "Egyptian"),
 
 			\kumoi -> Scale.new(#[0,2,3,7,9], 12, name: "Kumai"),
 			\hirajoshi -> Scale.new(#[0,2,3,7,8], 12, name: "Hirajoshi"),

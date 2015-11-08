@@ -1,5 +1,4 @@
-IPhonePlatform : UnixPlatform
-{
+IPhonePlatform : UnixPlatform {
 	initPlatform {
 		super.initPlatform;
 	}

@@ -26,7 +26,7 @@ LIDGui{
 		if ( device.slots[1].notNil, {
 			bkeys = device.slots[1].keys.asArray.sort;
 			buttons = bkeys.collect{ |key,it|
-            EZNumber.new( win, 30@40, device.slots[1][key].key.asString, [0,1,\linear,1].asSpec, labelWidth: 30, layout: 'line2', gap:0@0, margin: 0@0 );
+				EZNumber.new( win, 30@40, device.slots[1][key].key.asString, [0,1,\linear,1].asSpec, labelWidth: 30, layout: 'line2', gap:0@0, margin: 0@0 );
 			};
 		});
 		win.view.decorator.nextLine;
@@ -34,8 +34,8 @@ LIDGui{
 		// absolute slots:
 		if ( device.slots[3].notNil, {
 			akeys = device.slots[3].keys.asArray.sort;
-         sliders = akeys.collect{ |key,it|
-            EZSlider.new( win, 30@80, device.slots[3][key].key.asString, labelWidth: 30, layout: 'vert',gap:0@0,margin:0@0 );
+			sliders = akeys.collect{ |key,it|
+				EZSlider.new( win, 30@80, device.slots[3][key].key.asString, labelWidth: 30, layout: 'vert',gap:0@0,margin:0@0 );
 			};
 		});
 		win.view.decorator.nextLine;

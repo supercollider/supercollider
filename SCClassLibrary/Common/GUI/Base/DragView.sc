@@ -1,5 +1,4 @@
-DragView : TextField
-{
+DragView : TextField {
 	*new { arg parent, bounds; ^super.new(parent,bounds).initQDragView }
 
 	initQDragView {
@@ -25,18 +24,15 @@ DragView : TextField
 	defaultReceiveDrag { }
 }
 
-DragSource : DragView
-{
+DragSource : DragView {
 	defaultGetDrag { ^object }
 }
 
-DragSink : DragView
-{
+DragSink : DragView {
 	defaultCanReceiveDrag { ^true }
 	defaultReceiveDrag { this.object = View.currentDrag; action.value(this); }
 }
 
-DragBoth : DragSink
-{
+DragBoth : DragSink {
 	defaultGetDrag { ^object }
 }

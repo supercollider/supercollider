@@ -1,5 +1,4 @@
-OSXPlatform : UnixPlatform
-{
+OSXPlatform : UnixPlatform {
 	var <>preferencesAction; // Warning: scapp only
 	var <>sleepAction, <>wakeAction, <>isSleeping=false;
 

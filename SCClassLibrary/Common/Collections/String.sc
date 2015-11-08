@@ -200,8 +200,8 @@ String[char] : RawArray {
 	}
 
 	findRegexp { arg regexp, offset = 0;
-       _String_FindRegexp
-       ^this.primitiveFailed
+		_String_FindRegexp
+		^this.primitiveFailed
 	}
 
 	findAllRegexp { arg string, offset = 0;

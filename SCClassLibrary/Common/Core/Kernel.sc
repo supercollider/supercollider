@@ -383,7 +383,7 @@ Process {
 
 	*elapsedTime { _ElapsedTime }
 
-    *monotonicClockTime { _monotonicClockTime }
+	*monotonicClockTime { _monotonicClockTime }
 
 	storeOn { arg stream;
 		stream << "thisProcess";

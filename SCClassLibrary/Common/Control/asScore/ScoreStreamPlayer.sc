@@ -1,23 +1,23 @@
 /*
- ScoreStreamPlayer collects OSC commands from an EventStream into a Score. It is derived from server to provide allocation of nodeIDs, bufums, etc.
+ScoreStreamPlayer collects OSC commands from an EventStream into a Score. It is derived from server to provide allocation of nodeIDs, bufums, etc.
 
-  It implements the functionality of a TempoClock, to support tempo changes and time based patterns.
+It implements the functionality of a TempoClock, to support tempo changes and time based patterns.
 
- Patterns that play on multiple servers are not directly supported, but can be managed.
- For example, assuming the server is explicitly identified in the pattern:
+Patterns that play on multiple servers are not directly supported, but can be managed.
+For example, assuming the server is explicitly identified in the pattern:
 
- arrayOfScores = arrayOfServers.collect { | server |
- 		Pchain(
- 			Pbind(\freq,
- 				Pfunc({| ev |
- 					if (ev[\server] == server)
- 						{ ev[\freq] }
- 						{ \rest}
- 				})
- 			),
- 			pattern
- 		).asScore
- }
+arrayOfScores = arrayOfServers.collect { | server |
+		Pchain(
+			Pbind(\freq,
+				Pfunc({| ev |
+					if (ev[\server] == server)
+						{ ev[\freq] }
+						{ \rest}
+				})
+			),
+			pattern
+		).asScore
+}
 
 */
 ScoreStreamPlayer : Server {

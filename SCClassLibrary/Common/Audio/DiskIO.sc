@@ -4,15 +4,15 @@ DiskOut : UGen {
 	}
 
 	checkInputs {
- 		if (rate == 'audio', {
- 			for(1, inputs.size - 1, { arg i;
- 				if (inputs.at(i).rate != 'audio', {
- 					^("input was not audio rate: " + inputs.at(i));
- 				});
- 			});
- 		});
- 		^this.checkValidInputs
- 	}
+		if (rate == 'audio', {
+			for(1, inputs.size - 1, { arg i;
+				if (inputs.at(i).rate != 'audio', {
+					^("input was not audio rate: " + inputs.at(i));
+				});
+			});
+		});
+		^this.checkValidInputs
+	}
 }
 
 DiskIn : MultiOutUGen {

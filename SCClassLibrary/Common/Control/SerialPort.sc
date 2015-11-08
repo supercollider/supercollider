@@ -1,5 +1,4 @@
-SerialPort
-{
+SerialPort {
 	classvar <>devicePattern, allPorts;
 	var dataptr, semaphore;
 

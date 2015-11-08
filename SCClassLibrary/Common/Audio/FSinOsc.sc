@@ -35,10 +35,10 @@ Klang : UGen {
 
 		^super.new.rate_(rate).addToSynth.init([freqscale,freqoffset] ++ specs);
 	}
- 	init { arg theInputs;
- 		// store the inputs as an array
- 		inputs = theInputs;
- 	}
+	init { arg theInputs;
+		// store the inputs as an array
+		inputs = theInputs;
+	}
 	argNamesInputsOffset { ^2 }
 }
 
@@ -58,10 +58,10 @@ Klank : UGen {
 
 		^super.new.rate_(rate).addToSynth.init([input,freqscale,freqoffset,decayscale] ++ specs);
 	}
- 	init { arg theInputs;
- 		// store the inputs as an array
- 		inputs = theInputs;
- 	}
+	init { arg theInputs;
+		// store the inputs as an array
+		inputs = theInputs;
+	}
 	argNamesInputsOffset { ^2 }
 }
 

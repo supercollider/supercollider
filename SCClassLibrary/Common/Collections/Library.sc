@@ -1,5 +1,4 @@
-MultiLevelIdentityDictionary : Collection
-{
+MultiLevelIdentityDictionary : Collection {
 
 	var <>dictionary;
 
@@ -357,8 +356,7 @@ MultiLevelIdentityDictionary : Collection
 
 
 
-LibraryBase : MultiLevelIdentityDictionary
-{
+LibraryBase : MultiLevelIdentityDictionary {
 	*global {
 		^this.subclassResponsibility(thisMethod);
 	}
@@ -394,8 +392,7 @@ LibraryBase : MultiLevelIdentityDictionary
 
 }
 
-Library : LibraryBase
-{
+Library : LibraryBase {
 	classvar global;
 
 	*global { ^global }
@@ -406,8 +403,7 @@ Library : LibraryBase
 	}
 }
 
-Archive : LibraryBase
-{
+Archive : LibraryBase {
 	classvar global;
 	classvar <>archiveDir;
 

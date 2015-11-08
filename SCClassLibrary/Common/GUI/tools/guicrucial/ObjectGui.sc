@@ -51,7 +51,7 @@ ObjectGui : SCViewHolder {
 			bounds = bounds.asRect;
 		});
 		if(parent.isNil,{
-            parent = PageLayout(title ?? {model.asString.copyRange(0,50)},bounds,front:false);
+			parent = PageLayout(title ?? {model.asString.copyRange(0,50)},bounds,front:false);
 		},{
 			parent = parent.asPageLayout(bounds);
 		});
@@ -97,4 +97,3 @@ ObjectGui : SCViewHolder {
 			.object_(string);
 	}
 }
-

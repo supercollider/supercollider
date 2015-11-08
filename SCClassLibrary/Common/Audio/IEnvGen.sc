@@ -19,10 +19,10 @@ IEnvGen : UGen { // envelope index generator
 		^super.new.rate_(rate).addToSynth.init([index] ++ envArray.dereference)
 	}
 
- 	init { arg theInputs;
- 		// store the inputs as an array
- 		inputs = theInputs;
- 	}
+	init { arg theInputs;
+		// store the inputs as an array
+		inputs = theInputs;
+	}
 	argNamesInputsOffset { ^2 }
 
 }

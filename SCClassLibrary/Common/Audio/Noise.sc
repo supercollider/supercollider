@@ -285,12 +285,12 @@ LinCong : UGen {
 		^this.multiNew('control', iseed, imul, iadd, imod).madd(mul, add)
 	}
 	init { arg jseed, jmul, jadd, jmod ... theInputs;
- 		inputs = theInputs;
- 		iseed = jseed;
- 		imul = jmul;
- 		iadd = jadd;
- 		imod = jmod;
- 	}
+		inputs = theInputs;
+		iseed = jseed;
+		imul = jmul;
+		iadd = jadd;
+		imod = jmod;
+	}
 }
 */
 //

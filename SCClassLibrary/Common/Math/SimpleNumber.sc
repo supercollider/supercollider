@@ -175,7 +175,7 @@ SimpleNumber : Number {
 				if (this >= inMax, { ^outMax });
 			}
 		);
-    		^(this-inMin)/(inMax-inMin) * (outMax-outMin) + outMin;
+		^(this-inMin)/(inMax-inMin) * (outMax-outMin) + outMin;
 	}
 
 	linexp { arg inMin, inMax, outMin, outMax, clip=\minmax;

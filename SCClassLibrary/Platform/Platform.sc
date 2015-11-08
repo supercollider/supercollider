@@ -1,5 +1,4 @@
-Platform
-{
+Platform {
 	classvar defaultStartupFile;
 
 	// IDE actions
@@ -149,8 +148,7 @@ Platform
 	}
 }
 
-UnixPlatform : Platform
-{
+UnixPlatform : Platform {
 	pathSeparator { ^$/ }
 
 	isPathSeparator { |char|

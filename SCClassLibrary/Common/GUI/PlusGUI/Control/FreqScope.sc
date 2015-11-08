@@ -182,7 +182,7 @@ FreqScopeView {
 		freqMode = 0;
 		bufSize = 2048;
 		ServerQuit.add(this, server);
-        ^this;
+		^this;
 	}
 
 	allocBuffers {

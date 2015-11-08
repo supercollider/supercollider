@@ -15,8 +15,7 @@ TextViewBase : View {
 	}
 }
 
-ItemViewBase : View
-{
+ItemViewBase : View {
 	var <items;
 
 	items_ { arg stringArray;
