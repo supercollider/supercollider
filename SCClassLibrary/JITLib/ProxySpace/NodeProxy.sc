@@ -745,7 +745,7 @@ NodeProxy : BusPlug {
 
 	// bundle: apply the node map settings to the entire group
 	sendAllToBundle { | bundle, extraArgs |
-		var args = Thunk { nodeMap.asOSCArgArray ++ extraArgs.value.asOSCArgArray };
+		var args = Thunk({ nodeMap.asOSCArgArray ++ extraArgs.value.asOSCArgArray });
 		objects.do { arg item;
 			item.playToBundle(bundle, args, this);
 		}
