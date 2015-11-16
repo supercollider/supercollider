@@ -99,8 +99,8 @@ While much has improved and many bugs from 3.6 have been fixed, there are still 
 Here is one few that are worth a special mention:
 
 LIST::
-##Evaluating code in the help document doesn't work (OSX) LINK::https://github.com/supercollider/supercollider/issues/1385::
-##Drag and drop files to expand paths broken (OSX): LINK::https://github.com/supercollider/supercollider/issues/1295::
+##(OSX) Evaluating code in the help document works only with teletype::shift-enter:: and not with teletype::cmd-enter:: LINK::https://github.com/supercollider/supercollider/issues/1385::
+##(WIN) When running "Quit Interpreter" from the IDE-Language menu, sclang crashes. LINK::https://github.com/supercollider/supercollider/issues/1578::
 ::
 
 
