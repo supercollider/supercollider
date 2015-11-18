@@ -12,9 +12,10 @@ code::
 w = Window("test", Rect(20, 820, 400, 100)).front;
 w.addFlowLayout;
 ~pv = ParamView(w, Rect(20, 20, 360, 20));
+~pv2 = ParamView(w, Rect(20, 20, 360, 40));
 
 // not working properly yet
-~pv.bounds_(Rect(20, 20, 360, 40));
+~pv.bounds_(Rect(4, 4, 300, 40));
 
 ~pv.dump
 ~pv.viewType_(0); // EZNumber
@@ -27,10 +28,12 @@ w.addFlowLayout;
 
 ~pv.value_(200);
 ~pv.value_(2000);
-// switch to EZRanger
+// switches to EZRanger
 ~pv.value_([200, 2000]);
-~pv.value_([20, 200, 2000]); // 3 numbers -> EZText
-~pv.value_(\blonk); // anything else -> EZText
+// 3 numbers -> switches to EZText
+~pv.value_([20, 200, 2000]);
+// anything else -> EZText
+~pv.value_(\blonk);
 ~pv.action = { |pv| pv.value.postcs };
 
 ::

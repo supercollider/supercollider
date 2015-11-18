@@ -26,8 +26,8 @@ ParamView {
 		var rect2 = bounds.moveTo(0,0);
 		zone = CompositeView(parent, bounds);
 		zones = 3.collect { |i| CompositeView(zone, rect2); };
-		zone.resize_(5);
-		zones.do(_.resize_(5));
+		zone.resize_(2);
+		zones.do(_.resize_(2));
 
 		label = argLabel ? "-";
 		spec = argSpec.asSpec;
@@ -36,6 +36,8 @@ ParamView {
 		slider = EZSlider(zones[0], rect2, label, spec);
 		ranger = EZRanger(zones[1], rect2, label, spec);
 		textview = EZText(zones[2], rect2, label);
+
+		zones.do { |z| z.children[0].resize_(2) };
 
 		ezviews = [slider, ranger, textview];
 		ezviews.do { |ez|
