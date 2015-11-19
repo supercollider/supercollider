@@ -16,6 +16,7 @@ method:: ar
 argument:: in
 input signal to be processed.
 argument:: freq
+WARNING: due to the nature of its implementation frequency values close to 0 may cause glitches and/or extremely loud audio artifacts!
 center frequency.
 argument:: rs
 the reciprocal of S. Shell boost/cut slope. When S = 1, the shelf slope is as steep as it can be and remain monotonically increasing or decreasing gain with frequency. The shelf slope, in dB/octave, remains proportional to S for all other values for a fixed code::freq/SampleRate.ir:: and code::db::.
