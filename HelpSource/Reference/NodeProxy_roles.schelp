@@ -154,7 +154,7 @@ a.set(\wet1, 0.2);
 a.clear(3);
 ::
 
-## \filterIn -> mix
+## \mix -> function
 || Mix in the UGen in the function.
 
 code::
