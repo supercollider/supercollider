@@ -1,6 +1,6 @@
 + UGen {
 	scope { arg name = "UGen Scope", bufsize = 4096, zoom = 1.0;
-		var server = Stethoscope.defaultServer;
+		var server = Server.default;
 		^SynthDef.wrap({ var bus, numChannels, rate, scope;
 			numChannels = this.numChannels;
 			rate = this.rate;
