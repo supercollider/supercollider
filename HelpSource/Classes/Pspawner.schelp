@@ -105,15 +105,15 @@ Pspawner({ | sp |
 (
 // example 3: define a Pspawner and use Pattern manipulations
 p = Pspawner({ | sp |
-	var motif = Pbrown( -7, 7, 3);
+	var pat = Pbrown( -7, 7, 3);
 
-	sp.par(Pbind(*[octave: 5, degree: motif, dur: 1/4]) );
+	sp.par(Pbind(*[octave: 5, degree: pat, dur: 1/4]) );
 	sp.wait(2);
-	sp.par(Pbind(*[octave: 6, degree: motif, dur: 1/8]) );
+	sp.par(Pbind(*[octave: 6, degree: pat, dur: 1/8]) );
 	sp.wait(3);
-	sp.par(Pbind(*[octave: 7, degree: motif, dur: 1/6, db: -20]) );
+	sp.par(Pbind(*[octave: 7, degree: pat, dur: 1/6, db: -20]) );
 	sp.wait(4);
-	sp.par(Pbind(*[octave: 4, degree: motif, dur: 1/4]) );
+	sp.par(Pbind(*[octave: 4, degree: pat, dur: 1/4]) );
 	
 	sp.wait(8);
 	sp.suspendAll;
@@ -127,7 +127,7 @@ p.play;
 // manipulate basic pattern with Pchain
 Pchain(
 	Pbind(*[mtranspose: Pkey(\mtranspose) + Pstutter(8, Prand([0,[0,3,-2],[0,2,4]], inf)) ] ), //make some notes into triads
-	Pbind(*[ctranspose: 0 + Pwhite(-0.1, 0.1)]), //add random detuning to notes
+	Pbind(*[ctranspose: Pwhite(-0.1, 0.1)]), //add random detuning to notes
 	Pbind(*[\scale, Scale.minor]), //alter the scale
 	Pn(Pseq([p, (type:\rest, dur: 1.0)]) ), //repeat the pattern after a 1 second pause
 	Pbind(*[
