@@ -33,7 +33,7 @@ discussion::
 Example:
 code::
 // Start server
-s = s.boot;
+s.boot;
 
 // Create analyzer in a window
 (
@@ -62,7 +62,7 @@ Linear (0) or log(1) frequency mode. Defaults to 1.
 discussion::
 Example:
 code::
-Server.default = s = Stethoscope.defaultServer.boot;
+s.boot
 
 // basic usage. try these. Each one will open a new window
 // move the mouse left and right to test response in different ranges
@@ -153,8 +153,7 @@ examples::
 
 code::
 // Start server
-s = Server.boot;
-
+s.boot;
 
 // Create analyzer in a window
 (
