@@ -188,6 +188,7 @@ EnvirGui : JITGui {
 	checkUpdate { |doFull = false|
 		var newState = this.getState;
 		var newKeys = newState[\editKeys];
+		var newSpecs = newState[\specs];
 
 		this.updateButtons;
 
@@ -212,6 +213,10 @@ EnvirGui : JITGui {
 		} {
 			this.setByKeys(newKeys);
 			this.showFields(newKeys.size);
+		};
+
+		if (newSpecs != prevState[\specs]) {
+			this.checkForSpecs
 		};
 
 //		"newState: %\n".postf(newState);
