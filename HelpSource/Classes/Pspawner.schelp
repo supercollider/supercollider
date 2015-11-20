@@ -81,7 +81,7 @@ Pspawner({ | sp |
 
 
 (
-// example 2: create 5 streams at 4 second intervals
+// example 2: create 6 streams at 4 second intervals
 // then delete them in the order they were created
 
 Pspawner({ | sp |
