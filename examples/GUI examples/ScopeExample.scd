@@ -6,7 +6,6 @@ GUI.cocoa;	// use Mac OS X native GUI
 GUI.swing;	// use Java GUI
 
 (
-s = Stethoscope.defaultServer;
 s.waitForBoot({
 	var sc;
 	b = Buffer.alloc(s,2048,2);
