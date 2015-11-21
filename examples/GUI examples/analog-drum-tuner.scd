@@ -20,9 +20,7 @@ post, buildSynthDef, currentDef, g, stop,
 window, leftview, rightview, ffreqview, rqview, ampview, rateEdit, newButton,
 funcedit, envedit, helpview;
 
-var s = Server.default;
-
-s.waitForBoot {
+s.waitForBoot({
 	{
 		// preparation
 		percBus = Bus.audio(s, 1);
@@ -266,5 +264,5 @@ The 'save' button stores the specs into a file; 'load' returns the editor to a s
 		newButton.doAction;
 		window.front;
 	}.fork(AppClock);
-};
+});
 )

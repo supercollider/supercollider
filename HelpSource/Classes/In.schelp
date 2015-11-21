@@ -53,10 +53,7 @@ Examples::
 
 read from an audio bus:
 code::
-(
-s = Server.local;
 s.boot;
-)
 
 (
 SynthDef("help-PinkNoise", { arg out=0;

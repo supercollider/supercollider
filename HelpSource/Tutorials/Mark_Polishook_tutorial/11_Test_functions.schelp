@@ -9,10 +9,10 @@ An easy way to audition synthesis processes is to test them within a function. T
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Boot (turn on) the internal server
+Boot (turn on) the server
 
 code::
-Server.internal.boot;
+s.boot;
 ::
 
 Run this example, and look at the scope window.

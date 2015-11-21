@@ -1,4 +1,4 @@
-Server.local.boot;
+s.boot;
 
 (
 

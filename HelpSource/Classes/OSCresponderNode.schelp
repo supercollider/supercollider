@@ -69,7 +69,6 @@ code::
 // example from SendTrig
 
 (
-s = Server.local;
 s.boot;
 s.notify;
 )

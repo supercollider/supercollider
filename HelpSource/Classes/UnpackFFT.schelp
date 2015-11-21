@@ -33,11 +33,11 @@ code::
 examples::
 code::
 (
-s.boot.doWhenBooted {
+s.waitForBoot({
 	var fftsize = 1024;
 	b = Buffer.alloc(s, fftsize, 1);
 	c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
-}
+})
 )
 
 // This one just drags out various the values and posts them - a little bit pointless!

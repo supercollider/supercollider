@@ -31,7 +31,7 @@ This value will be added to the output.
 Examples::
 
 code::
-s = s.boot;
+s.boot;
 s.scope;
 a = {Hilbert.ar(SinOsc.ar(100)) * -20.dbamp}.play;
 a.release;

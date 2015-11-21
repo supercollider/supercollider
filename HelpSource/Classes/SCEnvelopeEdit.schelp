@@ -131,7 +131,6 @@ v.refresh; // must refresh editor
 
 Controlling a Synth
 code::
-s = Server.internal;
 s.boot;
 
 (

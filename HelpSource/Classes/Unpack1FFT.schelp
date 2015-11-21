@@ -30,9 +30,9 @@ argument:: whichmeasure
 examples::
 code::
 (
-s.boot.doWhenBooted{
+s.waitForBoot({
 	c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
-}
+})
 )
 
 // Let's extract the DC component - i.e. the magnitude at index zero.

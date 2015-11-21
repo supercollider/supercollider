@@ -270,7 +270,7 @@ Ndef(\z).children.includes(Ndef(\x)).not;
 
 ////// send extraArguments override nodemap by coming after it.
 // look:
-s.waitForBoot { s.dumpOSC(true) };
+s.waitForBoot({ s.dumpOSC(true)});
 Ndef.clear;
 Ndef(\x).ar(2);
 Ndef(\x, \default);

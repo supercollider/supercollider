@@ -17,7 +17,7 @@ an link::Classes/FFT:: chain.
 examples::
 
 code::
-s = Server.internal.boot;
+s.boot;
 b = Buffer.alloc(s,2048,1);
 
 (

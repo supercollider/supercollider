@@ -56,7 +56,6 @@ Examples::
 
 code::
 
-s = Server.local;
 s.boot;
 
 (

@@ -19,7 +19,7 @@ s.initTree;
 ::
 This is the default target for all Nodes when using object style and is what you will get if you supply a link::Classes/Server:: as a target. If you don't specify a target or pass in nil, you will get the default group of the default Server.
 code::
-Server.default.boot;
+s.boot;
 a = Synth.new(\default); // creates a synth in the default group of the default Server
 a.group; // note the Group ID
 ::

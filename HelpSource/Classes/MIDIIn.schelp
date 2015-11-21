@@ -262,7 +262,6 @@ code::
 subsection::example with sound
 code::
 MIDIIn.connect;
-s = Server.local;
 s.boot;
 
 (
@@ -315,7 +314,6 @@ code::
 //Powerbook G4, 512mb ram.
 //- matrix6k@somahq.com
 
-s = Server.local;
 s.boot;
 
 (
