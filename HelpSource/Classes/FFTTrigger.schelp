@@ -16,9 +16,9 @@ a flag. If 0.0, the buffer will be prepared for complex data, if > 0.0, polar da
 examples::
 code::
 (
-s.boot.doWhenBooted{
+s.waitForBoot({
 	b = Buffer.alloc(s, 512);
-};
+});
 )
 // Reminder: This isn't the intended typical usage! It's OK to do this though.
 (

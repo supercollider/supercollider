@@ -12,7 +12,6 @@
 
 
 (
-Server.default = Server.internal; s = Server.default;
 Routine.run {var c; c = Condition.new; s.freeAll; TempoClock.all.do{|x|x.clear}; s.bootSync(c);
 
 ( // **** SynthDefs ****

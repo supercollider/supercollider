@@ -15,11 +15,8 @@ A simple way to deal with this is to execute code in blocks. In the following co
 code::
 // Execute these one at a time
 
-// Boot the local Server
-(
-s = Server.local;
+// Boot the server
 s.boot;
-)
 
 // Compile a SynthDef and write it to disk
 (

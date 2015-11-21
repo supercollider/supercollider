@@ -17,7 +17,7 @@ code::
 p = Pbind(\degree, Prand((0..7), inf), \dur, 0.3, \legato, 0.2);
 
  // watch the node structure as it changes
-s.waitForBoot { s.plotTree };
+s.waitForBoot({ s.plotTree });
 
 // one group
 Pgroup(p).play;

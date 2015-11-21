@@ -19,8 +19,6 @@ n.waveColors = [Color.yellow, Color.blue(1.2), Color.red, Color.green];
 w.front;
 )
 
-// boot internal server
-s = Server.internal;
 s.boot;
 
 // allocate a 2 channel buffer

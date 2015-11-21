@@ -16,11 +16,8 @@
  */
 
 
-(
 // start server
-s = Server.local.boot;
-)
-
+s.boot;
 
 (
 // Streaming

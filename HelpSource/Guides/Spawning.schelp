@@ -85,11 +85,7 @@ Synth.play({
 )
 
 // The same example in SC3 (will execute)
-(
-s = Server.default;
 s.boot;
-)
-
 (
 SynthDef("help-EnvGen",{ arg out = 0;
 	Out.ar(
@@ -109,11 +105,7 @@ Note that the above example uses a precompiled link::Classes/SynthDef::. This re
 
 code::
 // SynthDefs on the fly
-(
-s = Server.default;
 s.boot;
-)
-
 (
 t = TempoClock.new;
 r = Routine.new({
@@ -190,11 +182,7 @@ t.pause;		// Same as t.stop
 TSpawn's functionality can be replicated with link::Classes/SendTrig:: and link::Classes/OSCFunc::. See their individual helpfiles for details on their arguments and functionality.
 
 code::
-(
-s = Server.default;
 s.boot;
-)
-
 (
 // this Synth will send a trigger to the client app
 SynthDef("help-SendTrig", {

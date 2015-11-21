@@ -80,7 +80,7 @@ The truth is that there aren't multichannel busses per se, but Bus objects are a
 When you're working with so-called 'private' busses (i.e. anything besides the input and output channels; all control busses are 'private') you generally want to make sure that that bus is only used for exactly what you want. The point after all is to keep things separate. You could do this by carefully considering which indices to use, but Bus allows for this to be done automatically. Each Server object has a bus allocator, and when you make a Bus object, it reserves those private indices, and will not give them out again until freed. You can find out the index of a Bus by using its 'index' method. Normally however, you will not need to store this value, as instances of Bus can be passed directly as UGen inputs or Synth args.
 
 code::
-s.reboot; // this will restart the server app and thus reset the bus allocators
+s.reboot; // this will restart the server and thus reset the bus allocators
 
 b = Bus.control(s, 2);	// a 2 channel control Bus
 b.index; 		// this should be zero
