@@ -136,12 +136,12 @@ EventTypesWithCleanup {
 
 			freeCue: #{ | server |
 				var bufNum = ~bufNum;
-				server.schedBundleArray.value(~lag, ~timingOffset, server, [["/b_close", bufNum], ["/b_free", bufNum ] ]  );
+				~schedBundleArray.value(~lag, ~timingOffset, server, [['/b_close', bufNum],['/b_free', bufNum ]] );
 			},
 
 			freeCueID: #{ | server |
 				var bufNum = ~bufNum;
-				server.schedBundleArray.value(~lag, ~timingOffset, server, [["/b_close", bufNum], ["/b_free", bufNum ] ]  );
+				~schedBundleArray.value(~lag, ~timingOffset, server, [['/b_close', bufNum], ['/b_free', bufNum ]] );
 				server.bufferAllocator.free(bufNum);
 			},
 
