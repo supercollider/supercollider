@@ -71,12 +71,30 @@ String[char] : RawArray {
 		_StringCompare
 		this.primitiveFailed;
 	}
-	< { arg aString; ^this.compare(aString, false) < 0 }
-	> { arg aString; ^this.compare(aString, false) > 0 }
-	<= { arg aString; ^this.compare(aString, false) <= 0 }
-	>= { arg aString; ^this.compare(aString, false) >= 0 }
-	== { arg aString; ^this.compare(aString, false) == 0 }
-	!= { arg aString; ^this.compare(aString, false) != 0 }
+	< { arg aString;
+		if(aString.isString.not) { ^false };
+		^this.compare(aString, false) < 0
+	}
+	> { arg aString;
+		if(aString.isString.not) { ^false };
+		^this.compare(aString, false) > 0
+	}
+	<= { arg aString;
+		if(aString.isString.not) { ^false };
+		^this.compare(aString, false) <= 0
+	}
+	>= { arg aString;
+		if(aString.isString.not) { ^false };
+		^this.compare(aString, false) >= 0
+	}
+	== { arg aString;
+		if(aString.isString.not) { ^false };
+		^this.compare(aString, false) == 0
+	}
+	!= { arg aString;
+		if(aString.isString.not) { ^true }
+		^this.compare(aString, false) != 0
+	}
 	hash { _StringHash }
 
 	// no sense doing collect as per superclass collection
