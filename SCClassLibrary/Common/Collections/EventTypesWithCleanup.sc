@@ -226,7 +226,7 @@ EventTypesWithCleanup {
 			if(cleanupTypes[type].notNil,
 				{
 					(
-						parent: ev.postln,
+						parent: ev,
 						type: cleanupTypes[type]
 					).play;
 				},
