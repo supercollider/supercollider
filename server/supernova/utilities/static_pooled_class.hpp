@@ -21,7 +21,6 @@
 
 #include <cstddef>
 
-#include <boost/mpl/equal_to.hpp>
 #include <boost/mpl/if.hpp>
 
 #include "freelist.hpp"
@@ -55,18 +54,13 @@ namespace nova {
 template <typename tag,
           std::size_t pool_size,
           bool pool_locking = false,
-          unsigned int recover_count = 0 >
+          unsigned int recover_count = 0>
 class static_pooled_class
 {
 protected:
-    static_pooled_class(void)
-    {}
-
-    static_pooled_class(static_pooled_class const & rhs)
-    {}
-
-    ~static_pooled_class(void)
-    {}
+    static_pooled_class(void)                            = default;
+    static_pooled_class(static_pooled_class const & rhs) = default;
+    ~static_pooled_class(void)                           = default;
 
 private:
     /** free one object from freelist
@@ -113,10 +107,7 @@ private:
         }
     };
 
-    typedef typename boost::mpl::equal_to<boost::mpl::int_<recover_count>,
-                                          boost::mpl::int_<0>
-                                          > greater_zero;
-    typedef typename boost::mpl::if_<greater_zero,
+    typedef typename boost::mpl::if_c<(recover_count > 0),
                                      dispose_n_object_allocator,
                                      disposing_allocator
                                      >::type allocator;
