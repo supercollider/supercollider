@@ -72,10 +72,12 @@ SpeechChannel{
 
 	prSpeak{|channel, txt|
 		_SpeakText
+		^this.primitiveFailed;
 	}
 
 	prIsActive{|chan|
 		_SpeechVoiceIsSpeaking
+		^this.primitiveFailed;
 	}
 
 }
@@ -86,26 +88,33 @@ Speech {
 
 	*setSpeechVoice { arg chan,voice;
 		_SetSpeechVoice
+		^this.primitiveFailed;
 	}
 	*setSpeechRate { arg chan,rate;
 		_SetSpeechRate
+		^this.primitiveFailed;
 	}
 	*setSpeechPitch { arg chan,pitch;
 		_SetSpeechPitch
+		^this.primitiveFailed;
 	}
 	*setSpeechPitchMod { arg chan,pitchMod;
 		_SetSpeechPitchMod
+		^this.primitiveFailed;
 	}
 	*setSpeechVolume { arg chan,volume;
 		_SetSpeechVolume
+		^this.primitiveFailed;
 	}
 	*pause { arg chan, paused=0;
 		_SetSpeechPause
+		^this.primitiveFailed;
 	}
 
 	//when: 0 kImmediate, 1 kEndOfWord, 2 kEndOfSentence
 	*stop { arg chan, when=0;
 		_SetSpeechStopAt
+		^this.primitiveFailed;
 	}
 	//private
 	*init { arg num= 1;
@@ -121,6 +130,7 @@ Speech {
 	}
 	*prInitSpeech { arg num=16;
 		_InitSpeech
+		^this.primitiveFailed;
 	}
 	*doWordAction { arg chan;
 		wordAction.value(chan); //backward compatibility

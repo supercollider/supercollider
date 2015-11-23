@@ -26,7 +26,7 @@ code::
 Speech.init(2);
 Speech.channels[0].speak("hallo");
 Speech.channels[0].isActive;
-Speech.channels[0].voice_(3);
+Speech.channels[0].voice_(14);
 Speech.channels[0].speak("hallo");
 Speech.channels[0].pitch_(60);
 Speech.channels[0].speak("hallo");

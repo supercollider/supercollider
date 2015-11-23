@@ -789,6 +789,7 @@ Document {
 
 	prGetSelectionStart {|id|
 		_ScIDE_GetDocSelectionStart
+		^this.primitiveFailed;
 	}
 
 	selectionSize {
@@ -797,6 +798,7 @@ Document {
 
 	prGetSelectionRange {|id|
 		_ScIDE_GetDocSelectionRange
+		^this.primitiveFailed;
 	}
 
 	string { | rangestart, rangesize = 1 |

@@ -96,7 +96,7 @@ Main : Process {
 
 	prOpenUDPPort {|portNum|
 		_OpenUDPPort
-		^false
+		^this.primitiveFailed;
 	}
 
 //	override in platform specific extension
@@ -164,8 +164,6 @@ Main : Process {
 	escapeWindow { platform.escapeWindow }
 
 	exitFullScreen { platform.exitFullScreen }
-
-	setDeferredTaskInterval { |interval| platform.setDeferredTaskInterval(interval) }
 
 	*overwriteMsg { _MainOverwriteMsg ^this.primitiveFailed }
 }

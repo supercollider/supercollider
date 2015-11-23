@@ -2,8 +2,12 @@ title:: Writing Primitives
 summary:: Writing Primitives
 categories:: Internals
 
+Although much of SuperCollider's functionality is implemented in the SuperCollider language itself, for reasons of efficiency, some functionality is implemented in 'back end' C++ functions called 'primitives'. This document provides guidance to members of the SC development community on writing primitives.
+
 section:: Example
 subsection:: SuperCollider code
+
+Primitive calls are preceded with an underscore, so for example _myPrimitiveName. Here is an example call to a primitive in an SC class:
 
 code::
 Cocoa {
@@ -11,6 +15,60 @@ Cocoa {
         _Cocoa_GetPathsDialog
         ^this.primitiveFailed
     }
+}
+::
+
+In the example above the primitive is dispatched at _Cocoa_GetPathsDialog. If it is successful, it will return without executing the code below that. Primitive functions (see below) return an integer, which should be one of the values defined in the file PyrErrors.h:
+
+teletype::
+enum { // primitive errors
+	errReturn = -1,	// not really an error.. primitive executed a non-local return
+	errNone,
+	errFailed = 5000,
+	errBadPrimitive,
+	errWrongType,
+	errIndexNotAnInteger,
+	errIndexOutOfRange,
+	errImmutableObject,
+	errNotAnIndexableObject,
+	errStackOverflow,
+	errOutOfMemory,
+	errCantCallOS,
+	errException,
+	
+	errPropertyNotFound = 6000,
+	
+	errLastError
+};
+::
+
+If your primitive can return any value besides code::errNone:: then you will need to provide handling code after the primitive call. In most cases this will be code::^this.primitiveFailed::. This will throw an Error giving the user information about what went wrong.
+
+In some cases, you may wish to execute fallback SC code instead of throwing an Error. This can be useful in cases where for example a primitive provides an optimised version of a method which is not usable in all instances. Here is an example of how this can be done:
+
+code::
+flop {
+	_ArrayMultiChannelExpand
+	^super.flop // this gets executed if the primitive fails
+}
+::
+
+Note that returning anything besides errNone will result in executing the SC method emphasis::ignoring:: the primitive call. For this reason, if you need to do some prepatory work in SC before calling the primitive, it is best practice to do this in a separate method to avoid duplication. For example:
+
+code::
+// do initial work here
+openUDPPort {|portNum|
+	var result;
+	if(openPorts.includes(portNum), {^true});
+	result = this.prOpenUDPPort(portNum);
+	if(result, { openPorts = openPorts.add(portNum); });
+	^result;
+}
+
+// this method only calls the primitive, and throws any primitive errors
+prOpenUDPPort {|portNum|
+	_OpenUDPPort
+	^this.primitiveFailed;
 }
 ::
 
