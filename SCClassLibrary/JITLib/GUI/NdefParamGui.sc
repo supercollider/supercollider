@@ -89,7 +89,7 @@ NdefParamGui : EnvirGui {
 		newKeys = newKeys.drop(keysRotation).keep(numItems);
 		currSpecs = newKeys.collect { |key|
 			var pair = settings.detect { |pair| pair[0] == key };
-			this.getSpec(key, pair[1]);
+			[key, this.getSpec(key, pair[1])];
 		};
 
 		^(object: object, editKeys: newKeys, settings: settings,
@@ -100,6 +100,8 @@ NdefParamGui : EnvirGui {
 
 	checkUpdate {
 		var newState = this.getState;
+		var newKeys = newState[\editKeys];
+		var newSpecs = newState[\specs];
 
 		if (newState == prevState) {
 			^this
@@ -119,13 +121,16 @@ NdefParamGui : EnvirGui {
 			scroller.visible_(false);
 		};
 
-		if (newState[\editKeys] == prevState[\editKeys]) {
-			this.setByKeys(newState[\editKeys], newState[\settings]);
+		if (newKeys == prevState[\editKeys]) {
+			this.setByKeys(newKeys, newState[\settings]);
 		} {
-			this.setByKeys(newState[\editKeys], newState[\settings]);
-			this.showFields(newState[\editKeys].size);
+			this.setByKeys(newKeys, newState[\settings]);
+			this.showFields(newKeys.size);
 		};
 
+		if (newSpecs != prevState[\specs]) {
+			this.updateViewSpecs(newSpecs);
+		};
 		prevState = newState;
 	}
 
@@ -142,15 +147,18 @@ NdefParamGui : EnvirGui {
 
 			oldKey = prevState[\editKeys][i];
 			if (oldKey.notNil) {
-			oldVal = prevSettings.detect { |pair| pair[0] == oldKey };
+				oldVal = prevSettings.detect { |pair| pair[0] == oldKey };
 				if (oldVal.notNil) { oldVal = oldVal[1] };
 			};
 
 			if (oldKey != newKey) {
-				paramView.label_(newKey);
+				paramView.label_(replaceKeys[newKey] ? newKey);
 				paramView.spec_(this.getSpec(newKey, newVal));
+				paramView.value_(newVal);
+				paramView.action = this.setFunc(newKey);
+			} {
+				if (oldVal != newVal) { paramView.value_(newVal) };
 			};
-			if (oldVal != newVal) { paramView.value_(newVal) };
 		};
 	}
 

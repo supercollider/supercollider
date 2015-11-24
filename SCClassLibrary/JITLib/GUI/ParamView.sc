@@ -18,9 +18,13 @@ ParamView {
 
 	label_ { |alabel|
 		label = alabel;
-		ezviews.do { |ez| ez.labelView.string_(alabel);};
+		ezviews.do { |ez| ez.labelView.string_(alabel) };
 	}
 
+	enabled_ { |bool=true| zone.enabled_(bool) }
+	enabled { ^zone.enabled }
+	visible_ { |bool=true| zone.visible_(bool) }
+	visible { ^zone.visible }
 
 	init { |parent, bounds, argLabel, argSpec, argAction, initVal, initAction, initType = 0|
 		var rect2 = bounds.moveTo(0,0);

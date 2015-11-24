@@ -13,12 +13,15 @@ EnvirGui : JITGui {
 	}
 
 	addReplaceKey { |replaced, replacer, spec|
+		var pv = this.viewForParam(replaced);
 		replaceKeys.put(replaced, replacer);
-		if (spec.notNil) { specs.put(replaced, spec) };
+		if (pv.notNil) { pv.label_(replacer) };
 	}
 
-	removeReplaceKey { |replaced|
-		replaceKeys.removeAt(replaced)
+	removeReplaceKey { |replacer|
+		var pv = this.viewForParam(replacer);
+		var replaced = replaceKeys.removeAt(replaced);
+		if (pv.notNil) { pv.label_(replacer) };
 	}
 
 	*new { |object, numItems = 8, parent, bounds, makeSkip = true, options = #[]|
@@ -35,7 +38,7 @@ EnvirGui : JITGui {
 	makeViews { |options|
 		var height = skin.buttonHeight;
 
-		specs = ();
+		specs = ().parent_(Spec.specs);
 		replaceKeys = ();
 		prevState = ( overflow: 0, keysRotation: 0, editKeys: []);
 
@@ -185,14 +188,12 @@ EnvirGui : JITGui {
 		)
 	}
 
-	checkUpdate { |doFull = false|
+	checkUpdate {
 		var newState = this.getState;
 		var newKeys = newState[\editKeys];
 		var newSpecs = newState[\specs];
 
 		this.updateButtons;
-
-		if (doFull.not and: { newState == prevState }) { ^this };
 
 		if (object.isNil) {
 			prevState = newState;
@@ -216,11 +217,9 @@ EnvirGui : JITGui {
 		};
 
 		if (newSpecs != prevState[\specs]) {
-			this.checkForSpecs
+			this.updateViewSpecs(newSpecs);
 		};
 
-//		"newState: %\n".postf(newState);
-//		"prevState: %\n".postf(prevState);
 		prevState = newState.put(\object, object.copy);
 	}
 
@@ -238,11 +237,13 @@ EnvirGui : JITGui {
 		if (docBut.notNil) { docBut.enabled_(flag) };
 	}
 
+	// backwards compat
+	clearFields { |num| ^this.showFields(num) }
+
 	showFields { |num = 0|
 		paramViews.do { |pv, i|
 			var isInUse = i < num;
-			// [i, isInUse].postln;
-			pv.zone.visible_(isInUse).refresh;
+			pv.visible_(isInUse);
 		}
 	}
 
@@ -261,10 +262,13 @@ EnvirGui : JITGui {
 			oldVal = prevEnvir[newKey];
 
 			if (isSameKey.not) {
-				paramView.label_(newKey);
+				paramView.label_(replaceKeys[newKey] ? newKey);
 				paramView.spec_(this.getSpec(newKey, newVal));
+				paramView.value_(newVal);
+				paramView.action = this.setFunc(newKey);
+			} {
+				if (oldVal != newVal) { paramView.value_(newVal) };
 			};
-			if (oldVal != newVal) { paramView.value_(newVal) };
 		};
 	}
 
@@ -282,21 +286,51 @@ EnvirGui : JITGui {
 		};
 	}
 
+	updateViewSpecs { |newSpecs|
+		newSpecs.do { |pair|
+			var name, spec, pv;
+			#name, spec = pair;
+			if (spec.notNil) {
+				pv = this.viewForParam(name);
+				if (pv.notNil) { pv.spec_(spec) };
+			};
+		};
+	}
+
+	viewForParam { |name|
+		name = replaceKeys[name] ? name;
+		^paramViews.detect { |pv| pv.label == name };
+	}
+
 	putSpec { |key, obj|
-		var widge, spec;
+		var pview, spec, value;
+
+		// clear local spec only
+		if (obj.isNil) {
+			specs.put(key, nil);
+			^this
+		};
 		spec = obj.asSpec;
 		specs.put(key, spec);
 			// could check all widgets and update specs if same name ...
-		widge = this.findWidget(key);
-		if (widge.notNil) { widge.controlSpec_(spec).value_(widge.value) }
+		pview = this.viewForParam(key);
+		if (pview.notNil) {
+			value = pview.value;
+			pview.spec_(spec);
+			pview.value_(value)
+		}
 	}
 
-	// this is for global specs only - use JITLibExtensions
-	//  for local specs attached to proxies.
+	// this finds global specs and local specs in the gui only
+	// - use JITLibExtensions for specs attached to the JITGui objects.
+	// precedence: global specs first, then cached local,
+	// else guess an initial spec and remember it.
 	getSpec { |key, value|
-		var spec = Spec.specs[key] ? specs[key];
-		spec = spec ?? { Spec.guess(key, value) };
-		specs.put(key, spec);
+		var spec = specs[key];
+		if (spec.isNil) {
+			spec = Spec.guess(key, value);
+			specs.put(key, spec);
+		};
 		^spec
 	}
 }
