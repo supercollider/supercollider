@@ -45,7 +45,7 @@ Stethoscope {
 		zoom = 1.0, rate = \audio, view, bufnum;
 		var bus;
 
-		if(server.isNil) {server = this.defaultServer};
+		if(server.isNil) {server = Server.default};
 		if(server.isLocal.not) {Error("Can not scope on remote server.").throw};
 
 		bus = Bus(rate, index, numChannels, server);

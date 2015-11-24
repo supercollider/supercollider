@@ -323,9 +323,11 @@ MIDIIn {
 	}
 	*connectByUID {arg inport, uid;
 		_ConnectMIDIIn
+		^this.primitiveFailed;
 	}
 	*disconnectByUID {arg inport, uid;
 		_DisconnectMIDIIn
+		^this.primitiveFailed;
 	}
 
 	*prDispatchEvent { arg eventList, status, port, chan, b, c;
@@ -450,6 +452,7 @@ MIDIOut {
 
 	send { arg outport, uid, len, hiStatus, loStatus, a=0, b=0, late;
 		_SendMIDIOut
+		^this.primitiveFailed;
 	}
 
 	prSysex { arg uid, packet;

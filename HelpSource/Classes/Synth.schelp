@@ -232,13 +232,13 @@ The synthdef has to be .add'ed, so that it is stored in the link::Classes/SynthD
 Example:
 code::
 (
-s.waitForBoot {
+s.waitForBoot({
     SynthDef(\helpSeti, { |freqs = #[100,150,200,250]|
         Out.ar(0, SinOsc.ar(freqs.poll,0,0.1).sum ! 2)
     }).add;
     s.sync;
     x = Synth(\helpSeti);
-}
+})
 )
 x.seti(\freqs,2,600); // set only the third element
 x.seti(\freqs,1,[400,410]); // set second and third element
@@ -247,11 +247,7 @@ x.free;
 
 Examples::
 code::
-// boot the default server
-s = Server.default; // just to be sure
 s.boot;
-
-
 (
 // send a synth def to server
 SynthDef("tpulse", { arg out = 0,freq = 700, sawFreq = 440.0;

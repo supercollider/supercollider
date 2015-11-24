@@ -640,7 +640,6 @@ Event : Environment {
 						freqs = ~freq = ~detunedFreq.value;
 
 						~server = server;
-						freqs = ~freq;
 						~amp = ~amp.value;
 
 						if(~args.size == 0) {

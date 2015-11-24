@@ -860,7 +860,7 @@ NodeProxy : BusPlug {
 				};
 				if(monitor.isPlaying) {
 					//postf("in % restarting monitor\n", this);
-					monitor.playNBusToBundle(bundle, bus: bus);
+					monitor.playNBusToBundle(bundle, bus: bus, fadeTime: timeArgs[0]);
 				}
 			}
 		}

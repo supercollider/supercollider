@@ -80,7 +80,6 @@ METHOD:: ugenScopes
     Returns an array of the running ugen scopes.
 
 code::
-Server.default = s = Server.internal
 s.boot
 {[SinOsc.ar.scope,WhiteNoise.ar(0.5).scope]*0.1}.scope(2);
 Stethoscope.ugenScopes; // returns the ugen scopes
@@ -195,11 +194,7 @@ EXAMPLES::
 
 SUBSECTION:: A step-by-step example
 code::
-(
-Server.default = Server.internal;
-s = Server.default;
 s.boot;
-)
 (
 {
     SinOsc.ar([225, 450, 900], 0, 0.2)

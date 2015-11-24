@@ -811,6 +811,8 @@ void sc_osc_handler::handle_packet_async(const char * data, size_t length,
                                          endpoint_ptr const & endpoint)
 {
     received_packet * p = received_packet::alloc_packet(data, length, endpoint);
+    if( !p )
+        return;
 
     if (dump_osc_packets == 1) {
         osc_received_packet packet (data, length);
@@ -846,6 +848,11 @@ sc_osc_handler::received_packet::alloc_packet(const char * data, size_t length,
 {
     /* received_packet struct and data array are located in one memory chunk */
     void * chunk = received_packet::allocate(sizeof(received_packet) + length);
+    if( !chunk ) {
+        std::cerr << "Memory allocation failure: OSC message not handled\n";
+        return nullptr;
+    }
+
     received_packet * p = (received_packet*)chunk;
     char * cpy = (char*)(chunk) + sizeof(received_packet);
     memcpy(cpy, data, length);
@@ -1993,9 +2000,9 @@ struct completion_message
     void trigger_async(endpoint_ptr endpoint)
     {
         if (size_) {
-            sc_osc_handler::received_packet * p =
-                sc_osc_handler::received_packet::alloc_packet((char*)data_, size_, endpoint);
-            instance->add_sync_callback(p);
+            sc_osc_handler::received_packet * p = sc_osc_handler::received_packet::alloc_packet((char*)data_, size_, endpoint);
+            if( p )
+                instance->add_sync_callback(p);
         }
     }
 

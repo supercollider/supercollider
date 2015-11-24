@@ -16,6 +16,7 @@ argument:: in
 input signal to be processed.
 argument:: freq
 center frequency.
+WARNING: due to the nature of its implementation frequency values close to 0 may cause glitches and/or extremely loud audio artifacts!
 argument:: rq
 the reciprocal of Q. bandwidth / cutoffFreq.
 argument:: mul

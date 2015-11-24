@@ -65,9 +65,9 @@ Examples::
 subsection:: pvcalc
 code::
 (
-s.boot.doWhenBooted{
+s.waitForBoot({
 	c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
-}
+})
 )
 
 (
@@ -93,9 +93,9 @@ x.free;
 subsection:: pvcalc2
 code::
 (
-s.boot.doWhenBooted {
+s.waitForBoot({
 c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
-}
+})
 )
 
 (
@@ -130,9 +130,9 @@ x.free;
 subsection:: pvcollect
 code::
 (
-s.boot.doWhenBooted{
+s.waitForBoot({
 c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
-}
+})
 )
 
 (

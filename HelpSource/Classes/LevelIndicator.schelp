@@ -191,7 +191,7 @@ EXAMPLES::
 code::
 (
 // something to meter
-Server.default.boot.doWhenBooted {
+s.waitForBoot({
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 	x = {
@@ -212,7 +212,7 @@ o = OSCFunc({arg msg;
 		a.peakLevel = msg[4].ampdb.linlin(-40, 0, 0, 1);
 	}.defer;
 }, '/levels', s.addr);
-}
+})
 )
 
 (

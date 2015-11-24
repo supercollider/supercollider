@@ -105,8 +105,10 @@
 	}
 	*connectByUID {arg outport, uid;
 		_ConnectMIDIOut
+		^this.primitiveFailed;
 	}
 	*disconnectByUID {arg outport, uid;
 		_DisconnectMIDIOut
+		^this.primitiveFailed;
 	}
 }

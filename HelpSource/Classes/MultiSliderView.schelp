@@ -428,7 +428,7 @@ code::
 (
 var size;
 size = 12;
-s.waitForBoot{
+s.waitForBoot({
     n={arg freq=330; SinOsc.ar(freq,0,0.2)}.play;
 
     w = Window("test", Rect(200 , 450, 10 + (size * 17), 10 + (size * 17)));
@@ -463,6 +463,6 @@ s.waitForBoot{
         {w.close}.defer;
     });
     AppClock.play(r);
-};
+});
 )
 ::

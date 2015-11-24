@@ -30,7 +30,7 @@ An instance of link::Classes/Color::. The background color of the scope.
 discussion::
 Example:
 code::
-s = Server.default.boot;
+s.boot;
 
 // create a new analyzer
 FreqScope.new(400, 200, 0, server: s);

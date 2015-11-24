@@ -542,6 +542,7 @@ View : QObject {
 
 	*setGlobalEventEnabled { arg event, enabled;
 		_QWidget_SetGlobalEventEnabled
+		^this.primitiveFailed;
 	}
 
 	initView { arg parent;

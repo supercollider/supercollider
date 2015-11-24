@@ -312,7 +312,6 @@ EnvirGui : JITGui {
 		};
 		spec = obj.asSpec;
 		specs.put(key, spec);
-			// could check all widgets and update specs if same name ...
 		pview = this.viewForParam(key);
 		if (pview.notNil) {
 			value = pview.value;

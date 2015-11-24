@@ -10,20 +10,23 @@ and
 
 link::Reference/Server-Command-Reference::.
 
-There are two parts to SuperCollider. One part is the language application and another is a synthesis server that can run either inside the language application, or as a separate program on the same machine, or run on a different computer across a network connection. The language application sends command messages to the server using a subset of the Open Sound Control protocol.
+Since version 3.6 SuperCollider consists of three separate components:
+The sound synthesiser (audio server), the  programming language (and language interpreter) and the code editor (integrated development environment, or shortly, IDE).
+
+The server can run either inside the language application ("internal server"), as a separate program on the same machine ("local server"), or run on a different computer across a network connection. The language application sends command messages to the server using a subset of the Open Sound Control protocol.
 
 section::Booting a Server
 
-In order to run sound we need to start a server running. The easiest way to start a server is to click on one of the "Start Server" buttons in the server windows. Sometimes though it is useful to start a server programmatically. To do this we need to get or create a server object and tell it to "boot". Two servers, internal and local, are predefined.
+In order to run sound we need to start a server running. The easiest way to start a server is to click on "Boot Server" in the pull-up menu you get by clicking on the server stats field on the bottom of the IDE's editor window. Or by clicking on the "Start Server" button in the respective server window. This you get with s.makeWindow (for instance for the default server) for any server object you created (see below). Sometimes though it is useful to start a server programmatically. To do this we need to get or create a server object and tell it to "boot". Two servers, internal and local, are predefined.
 
 The internal server runs in the same process as the SuperCollider application. It is internal to the program itself.
 
 code::
-// set the interpreter variable s to the internal server object.
-s = Server.internal;
+// set the interpreter variable i to the internal server object.
+i = Server.internal;
 ::
 
-strong::VERY IMPORTANT:: : This line must be executed for the variable 's' to be set. The mechanics are different depending on your platform. The MacOSX standard is to place the cursor anywhere on this line and press the "Enter" key on the numeric keypad. Pressing the main return key does not execute code! This allows you to write code fragments of multiple lines. To execute a multi-line block of code, select the block and press "Enter." For convenience, a code block can be enclosed in parentheses, and the entire block selected by double-clicking just inside either parenthesis. (For instructions in other editors (e.g. on Linux or Windows), consult the documentation specific to that platform. See also the helpfile link::Reference/KeyboardShortcuts:: for key commands in other editors.) If you don't have an enter key, then you can use ctrl-Return, Ctrl-c, fn-Return (on Some Macs), or Shift-Return.
+strong::VERY IMPORTANT:: : This line must be executed for the variable 'i' to be set. The mechanics are different depending on your platform. The MacOSX standard is to place the cursor anywhere on this line and press the "Enter" key on the numeric keypad. Pressing the main return key does not execute code! This allows you to write code fragments of multiple lines. To execute a multi-line block of code, select the block and press "Enter." For convenience, a code block can be enclosed in parentheses, and the entire block selected by double-clicking just inside either parenthesis. (For instructions in other editors (e.g. on Linux or Windows), consult the documentation specific to that platform. See also the helpfile link::Reference/KeyboardShortcuts:: for key commands in other editors.) If you don't have an enter key, then you can use ctrl-Return, Ctrl-c, fn-Return (on Some Macs), or Shift-Return.
 
 The local server runs on the same machine as the SuperCollider application, but is a separate program, 'scsynth'.
 Note:: By default the interpreter variable code::s:: is set to the local server at startup. For further information see the link::Classes/Server:: helpfile.
@@ -31,7 +34,7 @@ Note:: By default the interpreter variable code::s:: is set to the local server 
 
 code::
 // set the interpreter variable s to the local server object.
-s = Server.local;
+s = Server.local;	// s is set to Server.default at startup of SuperCollider
 ::
 
 To boot the server you send it the boot message.
@@ -49,20 +52,20 @@ s.quit;
 We can also create a server to run. To create a server object we need to provide the IP address or the server and a port number. Port numbers are somewhat arbitrary but they should not conflict with common protocols like telnet, ftp http, etc. The IP address 127.0.0.1 is defined to mean the local host. This is the IP address to use for running a server on your own machine.
 
 code::
-// create a server object that will run on the local host using port #58009
-s = Server(\myServer, NetAddr("127.0.0.1", 58009));
+// create another server object that will run on the local host using port #58009
+m = Server(\myServer, NetAddr("127.0.0.1", 58009));
 
-s.boot; //start the server
+m.boot; //start the server
 
-s.quit; // quit the server
+m.quit; // quit the server
 ::
 
 It is not possible to boot a server on a remote machine, but if you have one running already or you know of one running, you can send messages to it. You create the server object using the IP address of the machine running the server and the port it is using.
 
 code::
-// create a server object for talking to the server running on a machine having
-// IP address 192.168.0.47 using port #57110
-s = Server(\myServer, NetAddr("192.168.0.47", 57110));
+// create a server object for talking to the server running on a 
+// remote machine having IP address 192.168.0.47 using port #57110
+r = Server(\myServer, NetAddr("192.168.0.47", 57110));
 ::
 
 section::Making Sound
@@ -71,11 +74,7 @@ section::Making Sound
 
 Now lets make some audio.
 
-code::
-s = Server.local; // assign it to interpreter variable 's'
-::
-
-Boot it.
+Boot the server:
 
 code::
 s.boot;
@@ -154,8 +153,6 @@ section::Using Arguments
 It is useful to be able to specify parameters of a synth when it is created. Here a frequency argument is added to the sine SynthDef so that we can create it
 
 code::
-s = Server.local; // assign it to interpreter variable 's'
-
 s.boot;
 
 (

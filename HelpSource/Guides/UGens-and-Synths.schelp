@@ -24,7 +24,7 @@ section::SynthDefs and Synths
 In order to play a unit generator one needs to compile it in a link::Classes/SynthDef:: and play it on the server in a link::Classes/Synth::. A synth node is a container for one or more unit generators that execute together. A SynthDef is like a kind of pattern for creating synth nodes on the server.
 
 code::
-s.boot; // boot the local server
+s.boot; // boot the server
 
 // compile and send this def
 SynthDef.new("FSinOsc-test", { Out.ar(0, FSinOsc.ar(800, 0, 0.2)) }).send(s); // out channel 0
