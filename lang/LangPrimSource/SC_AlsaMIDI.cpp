@@ -1068,7 +1068,7 @@ void initMIDIPrimitives()
 	definePrimitive(base, index++, "_SendMIDIOut", prSendMIDIOut, 9, 0);
 	definePrimitive(base, index++, "_SendSysex", prSendSysex, 3, 0); // MIDIOut.sysex patch 2007-01-16
 	
-	definePrimitive(base, index++, "_GetMIDIClientID", prGetMIDIClientID, 1, 0); // MIDIOut.sysex patch 2007-01-16
+	definePrimitive(base, index++, "_GetMIDIClientID", prGetMIDIClientID, 1, 0);
 
 	cleanUpMIDI();
 }
