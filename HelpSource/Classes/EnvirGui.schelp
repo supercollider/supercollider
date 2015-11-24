@@ -12,7 +12,7 @@ subsection::Creation
 
 method::new
 create a new EnvirGui
-
+NdefParamGui
 code::
 // simple example
 g = EnvirGui.new(nil, 5);    // empty with 5 slots
@@ -194,9 +194,9 @@ strong::methods that make gui elements: ::
 method::makeViews, makeNameView, makeOptionalViews, makeKnowBut, makeDocBut, makeClrBut, makeProtoBut, makeParentBut
 
 strong::standard JITGui methods: ::
-method::accepts, getState, checkUpdate, updateButtons
+method::accepts, setDefaults, getState, checkUpdate, updateButtons
 
-method::clearFields, getState, checkUpdate, updateButtons
+private:: clearFields, updateViewSpecs, viewForParam
 
 Examples::
 
