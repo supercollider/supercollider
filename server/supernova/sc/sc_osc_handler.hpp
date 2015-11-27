@@ -240,7 +240,7 @@ public:
     typedef osc::ReceivedBundle received_bundle;
     typedef osc::ReceivedMessage received_message;
 
-    struct received_packet:
+    class received_packet:
         public audio_sync_callback
     {
         received_packet(const char * dat, size_t length, endpoint_ptr const & endpoint):
@@ -252,10 +252,11 @@ public:
             return ::operator new(size, ptr);
         }
 
+    public:
         static received_packet * alloc_packet(const char * data, size_t length,
                                               endpoint_ptr const & remote_endpoint);
 
-        void run(void) override;
+        void run(void) override final;
 
         const char * const data;
         const size_t length;
@@ -400,8 +401,7 @@ public:
     sc_scheduled_bundles scheduled_bundles;
     time_tag now, last;
     time_tag time_per_tick;
-/* @} */
-
+    /* @} */
 
     void do_asynchronous_command(World * world, void* replyAddr, const char* cmdName, void *cmdData,
                                  AsyncStageFn stage2, AsyncStageFn stage3, AsyncStageFn stage4, AsyncFreeFn cleanup,
