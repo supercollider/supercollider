@@ -422,13 +422,13 @@ inline long sc_lcm(long a, long b)
 
 inline float sc_gcd(float u, float v)
 {
-	return (float) sc_gcd((long) std::trunc(u), (long) std::trunc(v));
+	return (float) sc_gcd((long) trunc(u), (long) trunc(v));
 }
 
 
 inline float sc_lcm(float u, float v)
 {
-    return (float) sc_lcm((long) std::trunc(u), (long) std::trunc(v));
+    return (float) sc_lcm((long) trunc(u), (long) trunc(v));
 }
 
 
