@@ -230,6 +230,55 @@ private:
     const activation_limit_t activation_limit;                 /**< number of precedessors */
 };
 
+template <typename T, typename Alloc>
+class raw_vector:
+    Alloc
+{
+public:
+    explicit raw_vector( size_t elements, Alloc const & alloc = Alloc() ):
+        Alloc(alloc), capacity_(elements)
+    {
+        data = elements ? Alloc::allocate(capacity_ * sizeof(T))
+                        : nullptr;
+    }
+
+    template< class... Args >
+    T * emplace_back( Args&&... args )
+    {
+        assert( size() != capacity_ );
+
+        T * element = data + size_;
+        Alloc::construct( element, std::forward<Args>(args)... );
+        size_ += 1;
+        return element;
+    }
+
+    T & operator[](std::size_t index)
+    {
+        assert( index < size_ );
+        return data[index];
+    }
+
+    T * begin()             { return data;         }
+    T * end()               { return data + size_; }
+    bool empty()  const     { return size_ == 0;   }
+    size_t size() const     { return size_;        }
+    size_t capacity() const { return capacity_;    }
+
+    ~raw_vector()
+    {
+        for (std::size_t i = 0; i != size_; ++i)
+            Alloc::destroy( data + i );
+        if (data)
+            Alloc::deallocate (data, capacity_ * sizeof(Alloc) );
+    }
+
+private:
+    T * data               = nullptr;
+    const size_t capacity_ = 0;
+    size_t size_           = 0;
+};
+
 template <typename runnable, typename Alloc = std::allocator<void*> >
 class dsp_thread_queue
 {
@@ -262,20 +311,13 @@ public:
 
     /** preallocate node_count nodes */
     dsp_thread_queue(std::size_t node_count, bool has_parallelism = true):
-        has_parallelism_(has_parallelism)
+        has_parallelism_(has_parallelism),
+        items( node_count )
     {
         initially_runnable_items.reserve(node_count);
-        queue_items = node_count ? item_allocator().allocate(node_count * sizeof(dsp_thread_queue_item))
-                                 : nullptr;
     }
 
-    ~dsp_thread_queue(void)
-    {
-        for (std::size_t i = 0; i != total_node_count; ++i)
-            queue_items[i].~dsp_thread_queue_item();
-        if (queue_items)
-            item_allocator().deallocate(queue_items, total_node_count * sizeof(dsp_thread_queue_item));
-    }
+    ~dsp_thread_queue(void) = default;
 
     void add_initially_runnable(dsp_thread_queue_item * item)
     {
@@ -288,38 +330,26 @@ public:
                         typename dsp_thread_queue_item::successor_list const & successors,
                         typename dsp_thread_queue_item::activation_limit_t activation_limit)
     {
-        assert(queue_items);
-        dsp_thread_queue_item * ret = queue_items + total_node_count;
-        ++total_node_count;
-
-        assert (total_node_count <= initially_runnable_items.capacity());
-        new (ret) dsp_thread_queue_item(job, successors, activation_limit);
-        return ret;
+        return items.emplace_back( job, successors, activation_limit );
     }
 
     void reset_activation_counts(void)
     {
-        for (node_count_t i = 0; i != total_node_count; ++i)
-            queue_items[i].reset_activation_count();
+        for( dsp_thread_queue_item & item : items)
+            item.reset_activation_count();
     }
 
-    node_count_t get_total_node_count(void) const
-    {
-        return total_node_count;
-    }
-
-    bool has_parallelism(void) const
-    {
-        return has_parallelism_;
-    }
+    bool empty()                        const { return items.empty();              }
+    node_count_t total_node_count(void) const { return node_count_t(items.size()); }
+    bool has_parallelism(void)          const { return has_parallelism_;           }
 
 private:
-    node_count_t total_node_count = 0;      /* total number of nodes */
     item_vector_t initially_runnable_items; /* nodes without precedessor */
-    dsp_thread_queue_item * queue_items;    /* all nodes */
     const bool has_parallelism_;
 
     friend class dsp_queue_interpreter<runnable, Alloc>;
+
+    raw_vector<dsp_thread_queue_item, item_allocator> items;
 };
 
 template <typename runnable,
@@ -355,15 +385,13 @@ public:
      */
     bool init_tick(void)
     {
-        if (unlikely((queue.get() == nullptr) ||             /* no queue */
-                     (queue->get_total_node_count() == 0)    /* no nodes */
-                    ))
+        if (unlikely( !queue || queue->empty() ))
             return false;
 
         /* reset node count */
         assert(node_count == 0);
         assert(runnable_items.empty());
-        node_count.store(queue->get_total_node_count(), std::memory_order_release);
+        node_count.store(queue->total_node_count(), std::memory_order_release);
 
         for( auto * item : queue->initially_runnable_items )
             mark_as_runnable( item );
@@ -405,7 +433,7 @@ public:
 
     node_count_t total_node_count(void) const
     {
-        return queue->get_total_node_count();
+        return queue->total_node_count();
     }
 
     void set_thread_count(thread_count_t i)
