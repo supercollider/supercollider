@@ -283,7 +283,7 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     QWidget(parent),
     mEditorSigMux(new SignalMultiplexer(this)),
     mBoxSigMux(new SignalMultiplexer(this)),
-#ifdef SC_DARWIN
+#ifdef __APPLE__
     mDocModifiedIcon( QApplication::style()->standardIcon(QStyle::SP_DriveHDIcon) )
 #else
     mDocModifiedIcon( QIcon::fromTheme("document-save") )

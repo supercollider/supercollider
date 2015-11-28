@@ -31,7 +31,7 @@
 
  */
 
-#ifdef SC_DARWIN
+#ifdef __APPLE__
     #include <Carbon/Carbon.h>
 #endif
 
@@ -52,14 +52,14 @@
 
 #ifdef HAVE_WII
 
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 	#include <mach/mach.h>
 	#include <mach/mach_error.h>
 
 	extern "C"{
 	#include "WiiMote_OSX/wiiremote.h"
 	}
-#endif // SC_DARWIN
+#endif // __APPLE__
 
 #ifdef __linux__
 	#include <stdint.h>
@@ -101,7 +101,7 @@ static PyrSymbol* s_readError = 0;
 extern bool compiledOK;
 //int gNumberOfWiiDevices = 0;
 
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 EventLoopTimerRef gWiiTimer = NULL; // timer for element data updates
 #endif
 
@@ -134,7 +134,7 @@ struct SC_WII
 	void handleClassicEvent( struct cwiid_classic_mesg classic );
 	void handleExtensionEvent( int ext_type );
 #endif
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 // 	void handleBatteryEvent(  );
 // 	void handleButtonEvent(  );
 // 	void handleAccEvent(  );
@@ -156,7 +156,7 @@ struct SC_WII
 		return (SC_WII*)slotRawPtr(obj->slots);
 	}
 
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 	WiiRemoteRef	m_wiiremote;
 	char			m_address[32];
 #endif
@@ -186,7 +186,7 @@ public:
 #ifdef __linux__
 	cwiid_wiimote_t *  discover();
 #endif
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 	WiiRemoteRef discover();
 #endif
 
@@ -256,7 +256,7 @@ void set_rpt_mode(cwiid_wiimote_t *wiimotet, unsigned char rpt_mode)
 
 #endif
 
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 void GetWii_Events();
 static pascal void IdleTimerWii (EventLoopTimerRef inTimer, void* userData);
 static EventLoopTimerUPP GetTimerUPPWii (void);
@@ -295,7 +295,7 @@ SC_WIIManager::SC_WIIManager()
 	cwiid_set_err(err);
 #endif
 
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 	NumVersion	outSoftwareVersion;
 	BluetoothHCIVersionInfo	outHardwareVersion;
 
@@ -320,7 +320,7 @@ SC_WIIManager::SC_WIIManager()
 
 SC_WIIManager::~SC_WIIManager()
 {
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 	if (gWiiTimer)
     	{
 		RemoveEventLoopTimer(gWiiTimer);
@@ -334,7 +334,7 @@ int SC_WIIManager::start( float updtime )
 
 /// nothing to do for Linux
 
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 	m_updatetime = (updtime / 1000); // convert to seconds
 	post( "WII: eventloop updatetime %f\n", m_updatetime );
 	//double eventtime = (double) updtime;
@@ -372,7 +372,7 @@ cwiid_wiimote_t * SC_WIIManager::discover()
 }
 #endif
 
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 WiiRemoteRef SC_WIIManager::discover()
 {
 /*	WiiRemoteRef newwii;
@@ -396,7 +396,7 @@ WiiRemoteRef SC_WIIManager::discover()
 int SC_WIIManager::stop()
 {
 /// nothing to do on LINUX
-#ifdef SC_DARWIN
+#ifdef __APPLE__
  	if (gWiiTimer)
  	{
  		RemoveEventLoopTimer(gWiiTimer);
@@ -432,7 +432,7 @@ int SC_WIIManager::add(SC_WII* dev)
 	set_led_state( dev->m_wiiremote, dev->led_state );
 #endif
 
-//#ifdef SC_DARWIN
+//#ifdef __APPLE__
 //	dev->wii_connect();
 //#endif
 
@@ -515,7 +515,7 @@ void cwiid_callback(cwiid_wiimote_t *wiimotet, int mesg_count,
 }
 #endif
 
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 void GetWii_Events (){
 	SC_WII *dev = SC_WIIManager::instance().m_devices;
 // 	 m_devices;
@@ -584,7 +584,7 @@ SC_WII::~SC_WII()
 
 bool SC_WII::open()
 {
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 	m_wiiremote = (WiiRemoteRef)malloc(sizeof(WiiRemoteRec));
 	if (m_wiiremote != NULL)
 		{
@@ -620,7 +620,7 @@ bool SC_WII::close()
 {
 	if (m_wiiremote != NULL)
 	{
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 		if (wiiremote_isconnected(m_wiiremote))
 			wiiremote_disconnect(m_wiiremote);
 		; //m_wiiremote, sizeof(WiiRemoteRec));
@@ -647,7 +647,7 @@ bool SC_WII::close()
 
 bool SC_WII::wii_connect()
 {
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 	if (wiiremote_isconnected(m_wiiremote))
 	{
 		post("WII: wiimote is already connected\n");
@@ -682,7 +682,7 @@ void SC_WII::connected()
 	bool result;
 	m_connected = true;
 	m_searching = 0;
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 	result = wiiremote_led( m_wiiremote, 0, 0, 0, 0);
 //	if ( !result )
 //		wii_disconnect();
@@ -705,7 +705,7 @@ bool SC_WII::wii_disconnect()
 	m_searching = 0;
 	/// TODO: remove from wii_manager
 
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 	wiiremote_stopsearch( m_wiiremote );
 	result = wiiremote_disconnect( m_wiiremote);
 #endif
@@ -761,7 +761,7 @@ void SC_WII::disconnected()
 
 void SC_WII::get_address()
 {
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 	if (m_wiiremote->device == NULL)
 	{
 		return;
@@ -792,7 +792,7 @@ void SC_WII::get_address()
 // // 	post( "WII: addr %s, m_address %s\n", addr, m_address );
 // }
 
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 void SC_WII::handleEvent()
 {
 	if (m_wiiremote->device == NULL)
@@ -1183,7 +1183,7 @@ int prWii_Discover(VMGlobals* g, int numArgsPushed)
 	PyrObject* obj = SC_WII::getObject(slotsArray+curid);
 	SC_WII* dev = SC_WII::getDevice(obj);
 
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 	dev->wii_connect();
 #endif
 
@@ -1269,7 +1269,7 @@ int prWiiAddress(VMGlobals *g, int numArgsPushed)
 // #ifdef __linux__
 // 	char path[19];
 // #endif
-// #ifdef SC_DARWIN
+// #ifdef __APPLE__
 // 	char path[32];
 // #endif
 // 	err = slotStrVal(args+1, path, sizeof(path));
@@ -1334,7 +1334,7 @@ int prWiiCalibration(VMGlobals *g, int numArgsPushed)
 	}
 	else
 	{
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 		SetFloat(infoObj->slots+0, dev->m_wiiremote->wiiCalibData.accX_zero);
 		SetFloat(infoObj->slots+1, dev->m_wiiremote->wiiCalibData.accY_zero);
 		SetFloat(infoObj->slots+2, dev->m_wiiremote->wiiCalibData.accZ_zero);
@@ -1412,7 +1412,7 @@ int prWiiCalibration(VMGlobals *g, int numArgsPushed)
 // 	}
 // 	else
 // 	{
-// #ifdef SC_DARWIN
+// #ifdef __APPLE__
 // 		SetInt(bslots+0, dev->m_wiiremote->isLED1Illuminated);
 // 		SetInt(bslots+1, dev->m_wiiremote->isLED2Illuminated);
 // 		SetInt(bslots+2, dev->m_wiiremote->isLED3Illuminated);
@@ -1455,7 +1455,7 @@ int prWiiCalibration(VMGlobals *g, int numArgsPushed)
 // 	}
 // 	else
 // 	{
-// #ifdef SC_DARWIN
+// #ifdef __APPLE__
 // // 		SetInt(bslots+0, dev->m_wiiremote->isLED1Illuminated);
 // // 		SetInt(bslots+1, dev->m_wiiremote->isLED2Illuminated);
 // // 		SetInt(bslots+2, dev->m_wiiremote->isLED3Illuminated);
@@ -1505,7 +1505,7 @@ int prWiiCalibration(VMGlobals *g, int numArgsPushed)
 // 	}
 // 	else
 // 	{
-// #ifdef SC_DARWIN
+// #ifdef __APPLE__
 // // 		SetInt(bslots+0, dev->m_wiiremote->isLED1Illuminated);
 // // 		SetInt(bslots+1, dev->m_wiiremote->isLED2Illuminated);
 // // 		SetInt(bslots+2, dev->m_wiiremote->isLED3Illuminated);
@@ -1547,7 +1547,7 @@ int prWiiCalibration(VMGlobals *g, int numArgsPushed)
 // 	}
 // 	else
 // 	{
-// #ifdef SC_DARWIN
+// #ifdef __APPLE__
 // // 		SetInt(bslots+0, dev->m_wiiremote->isLED1Illuminated);
 // // 		SetInt(bslots+1, dev->m_wiiremote->isLED2Illuminated);
 // // 		SetInt(bslots+2, dev->m_wiiremote->isLED3Illuminated);
@@ -1589,7 +1589,7 @@ int prWiiCalibration(VMGlobals *g, int numArgsPushed)
 // 	}
 // 	else
 // 	{
-// #ifdef SC_DARWIN
+// #ifdef __APPLE__
 // // 		SetInt(bslots+0, dev->m_wiiremote->isLED1Illuminated);
 // // 		SetInt(bslots+1, dev->m_wiiremote->isLED2Illuminated);
 // // 		SetInt(bslots+2, dev->m_wiiremote->isLED3Illuminated);
@@ -1630,7 +1630,7 @@ int prWiiCalibration(VMGlobals *g, int numArgsPushed)
 // 	}
 // 	else
 // 	{
-// #ifdef SC_DARWIN
+// #ifdef __APPLE__
 // // 		SetInt(bslots+0, dev->m_wiiremote->isLED1Illuminated);
 // // 		SetInt(bslots+1, dev->m_wiiremote->isLED2Illuminated);
 // // 		SetInt(bslots+2, dev->m_wiiremote->isLED3Illuminated);
@@ -1671,7 +1671,7 @@ int prWiiCalibration(VMGlobals *g, int numArgsPushed)
 // 	}
 // 	else
 // 	{
-// #ifdef SC_DARWIN
+// #ifdef __APPLE__
 // // 		SetInt(bslots+0, dev->m_wiiremote->isLED1Illuminated);
 // // 		SetInt(bslots+1, dev->m_wiiremote->isLED2Illuminated);
 // // 		SetInt(bslots+2, dev->m_wiiremote->isLED3Illuminated);
@@ -1704,7 +1704,7 @@ int prWiiCalibration(VMGlobals *g, int numArgsPushed)
 // 	}
 // 	else
 // 	{
-// #ifdef SC_DARWIN
+// #ifdef __APPLE__
 // 		if (dev->m_wiiremote->isExpansionPortAttached)
 // 			SetInt( args, dev->m_wiiremote->expType );
 // 		else
@@ -1738,7 +1738,7 @@ int prWiiCalibration(VMGlobals *g, int numArgsPushed)
 // 	}
 // 	else
 // 	{
-// #ifdef SC_DARWIN
+// #ifdef __APPLE__
 // 		if (dev->m_wiiremote->batteryLevel)
 // 			SetFloat( args, dev->m_wiiremote->batteryLevel );
 // 		else
@@ -1788,7 +1788,7 @@ int prWiiSetLED(VMGlobals *g, int numArgsPushed)
 	}
 	else
 	{
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 		result = wiiremote_led( dev->m_wiiremote, enable1, enable2, enable3, enable4);
 //		if ( !result )
 //			dev->wii_disconnect();
@@ -1841,7 +1841,7 @@ int prWiiSetVibration(VMGlobals *g, int numArgsPushed)
 	}
 	else
 	{
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 		result = wiiremote_vibration( dev->m_wiiremote, enable1 );
 //		if ( !result )
 //			dev->wii_disconnect();
@@ -1879,7 +1879,7 @@ int prWiiSetExpansion(VMGlobals *g, int numArgsPushed)
 	}
 	else
 	{
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 		result = wiiremote_expansion( dev->m_wiiremote, enable1 );
 //		if ( !result )
 //			dev->wii_disconnect();
@@ -1919,7 +1919,7 @@ int prWiiSetIRSensor(VMGlobals *g, int numArgsPushed)
 	}
 	else
 	{
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 		result = wiiremote_irsensor( dev->m_wiiremote, enable1 );
 //		if ( !result )
 //			dev->wii_disconnect();
@@ -1960,7 +1960,7 @@ int prWiiSetMotionSensor(VMGlobals *g, int numArgsPushed)
 	}
 	else
 	{
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 		result = wiiremote_motionsensor( dev->m_wiiremote, enable1 );
 //		if ( !result )
 //			dev->wii_disconnect();
@@ -1999,7 +1999,7 @@ int prWiiSetButtons(VMGlobals *g, int numArgsPushed)
 	}
 	else
 	{
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 // buttons are always enabled
 // 		result = wiiremote_motionsensor( dev->m_wiiremote, enable1 );
 #endif
@@ -2037,7 +2037,7 @@ int prWiiEnable(VMGlobals *g, int numArgsPushed)
 	}
 	else
 	{
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 // is always enabled
 // 		result = wiiremote_motionsensor( dev->m_wiiremote, enable1 );
 #endif
@@ -2081,7 +2081,7 @@ int prWiiEnable(VMGlobals *g, int numArgsPushed)
 // 	}
 // 	else
 // 	{
-// // #ifdef SC_DARWIN
+// // #ifdef __APPLE__
 // // 		result = wiiremote_motionsensor( dev->m_wiiremote, enable1 );
 // // #endif
 // #ifdef __linux__
@@ -2123,7 +2123,7 @@ int prWiiEnable(VMGlobals *g, int numArgsPushed)
 // 	}
 // 	else
 // 	{
-// // #ifdef SC_DARWIN
+// // #ifdef __APPLE__
 // // 		result = wiiremote_motionsensor( dev->m_wiiremote, enable1 );
 // // #endif
 // #ifdef __linux__
@@ -2162,7 +2162,7 @@ int prWiiEnable(VMGlobals *g, int numArgsPushed)
 // 	}
 // 	else
 // 	{
-// // #ifdef SC_DARWIN
+// // #ifdef __APPLE__
 // // 		result = wiiremote_motionsensor( dev->m_wiiremote, enable1 );
 // // #endif
 // #ifdef __linux__
@@ -2201,7 +2201,7 @@ int prWiiEnable(VMGlobals *g, int numArgsPushed)
 // 	}
 // 	else
 // 	{
-// // #ifdef SC_DARWIN
+// // #ifdef __APPLE__
 // // 		result = wiiremote_motionsensor( dev->m_wiiremote, enable1 );
 // // #endif
 // #ifdef __linux__

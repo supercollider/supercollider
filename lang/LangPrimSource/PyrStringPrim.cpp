@@ -553,7 +553,7 @@ int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
 	glob_t pglob;
 
 	int gflags = GLOB_MARK | GLOB_TILDE;
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 	gflags |= GLOB_QUOTE;
 #endif
 
@@ -862,9 +862,9 @@ int prString_FindBackwards(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-#if SC_DARWIN
+#if __APPLE__
 # include <CoreFoundation/CoreFoundation.h>
-#endif // SC_DARWIN
+#endif // __APPLE__
 
 int prString_StandardizePath(struct VMGlobals* g, int numArgsPushed);
 int prString_StandardizePath(struct VMGlobals* g, int /* numArgsPushed */)
@@ -882,7 +882,7 @@ int prString_StandardizePath(struct VMGlobals* g, int /* numArgsPushed */)
 		opath = ipath;
 	}
 
-#if SC_DARWIN
+#if __APPLE__
 	CFStringRef cfstring =
 		CFStringCreateWithCString(NULL,
 								  opath,
@@ -890,7 +890,7 @@ int prString_StandardizePath(struct VMGlobals* g, int /* numArgsPushed */)
 	err = !CFStringGetFileSystemRepresentation(cfstring, opath, PATH_MAX);
 	CFRelease(cfstring);
 	if (err) return errFailed;
-#endif // SC_DARWIN
+#endif // __APPLE__
 
 	PyrString* pyrString = newPyrString(g->gc, opath, 0, true);
 	SetObject(arg, pyrString);

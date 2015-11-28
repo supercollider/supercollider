@@ -24,7 +24,7 @@
 #include "GC.h"
 #include "PyrPrimitive.h"
 #include "PyrSymbol.h"
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 # include <CoreAudio/HostTime.h>
 #endif
 #include <sys/time.h>
@@ -34,7 +34,7 @@
 #include <math.h>
 #include <limits>
 
-#if defined(SC_DARWIN) || defined(__linux__)
+#if defined(__APPLE__) || defined(__linux__)
 # include <pthread.h>
 #endif
 
@@ -479,7 +479,7 @@ leave:
 	return;
 }
 
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 #include <mach/mach.h>
 #include <mach/thread_policy.h>
 
@@ -567,7 +567,7 @@ kern_return_t  RescheduleStdThread( mach_port_t    machThread,
                                 THREAD_PRECEDENCE_POLICY_COUNT );
 
 }
-#endif // SC_DARWIN
+#endif // __APPLE__
 
 #ifdef __linux__
 #include <string.h>
@@ -598,7 +598,7 @@ SCLANG_DLLEXPORT_C void schedRun()
 	thread thread(schedRunFunc);
 	gSchedThread = std::move(thread);
 
-#ifdef SC_DARWIN
+#ifdef __APPLE__
         int policy;
         struct sched_param param;
 
@@ -626,7 +626,7 @@ SCLANG_DLLEXPORT_C void schedRun()
         pthread_getschedparam (gSchedThread.native_handle(), &policy, &param);
 
 		//post("param.sched_priority %d\n", param.sched_priority);
-#endif // SC_DARWIN
+#endif // __APPLE__
 
 #ifdef __linux__
 		SC_LinuxSetRealtimePriority(gSchedThread.native_handle(), 1);
@@ -739,7 +739,7 @@ TempoClock::TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
 	thread thread(std::bind(&TempoClock::Run, this));
 	mThread = std::move(thread);
 
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 	int machprio;
 	boolean_t timeshare;
 	GetStdThreadSchedule(pthread_mach_thread_np(mThread.native_handle()), &machprio, &timeshare);
@@ -754,7 +754,7 @@ TempoClock::TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
 
 	//param.sched_priority = 70; // you'll have to play with this to see what it does
 	//pthread_setschedparam (mThread, policy, &param);
-#endif // SC_DARWIN
+#endif // __APPLE__
 
 #ifdef __linux__
 	SC_LinuxSetRealtimePriority(mThread.native_handle(), 1);

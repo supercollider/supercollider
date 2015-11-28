@@ -4263,7 +4263,7 @@ void initWiiPrimitives();
 #endif
 	
 #endif
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 void initCoreAudioPrimitives();
 	initCoreAudioPrimitives();
 #endif

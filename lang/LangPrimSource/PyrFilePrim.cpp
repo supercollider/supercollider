@@ -136,7 +136,7 @@ int prFileRealPath(struct VMGlobals* g, int numArgsPushed )
 	}
 	strcpy(opath,p.string().c_str());
 
-#if SC_DARWIN
+#if __APPLE__
 	CFStringRef cfstring =
 		CFStringCreateWithCString(NULL,
 								  opath,
@@ -144,7 +144,7 @@ int prFileRealPath(struct VMGlobals* g, int numArgsPushed )
 	err = !CFStringGetFileSystemRepresentation(cfstring, opath, PATH_MAX);
 	CFRelease(cfstring);
 	if (err) return errFailed;
-#endif // SC_DARWIN
+#endif // __APPLE__
 
 	PyrString* pyrString = newPyrString(g->gc, opath, 0, true);
 	SetObject(a, pyrString);
@@ -1382,7 +1382,7 @@ int headerFormatToString(struct SF_INFO *info, const char **string){
 				*string = "FLAC";
 				break ;
 // TODO allow other platforms to know vorbis once libsndfile 1.0.18 is established
-#if SC_DARWIN || _WIN32 || LIBSNDFILE_1018
+#if __APPLE__ || _WIN32 || LIBSNDFILE_1018
 		case SF_FORMAT_VORBIS :
 				*string = "vorbis";
 				break ;
