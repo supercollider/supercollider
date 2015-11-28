@@ -118,7 +118,7 @@ public:
 
     void join()
     {
-        stop.store( true, std::memory_order_release );
+        stop.store( true, std::memory_order_relaxed );
         wake_thread();
 
 #ifdef SUPERNOVA_USE_PTHREAD
@@ -145,7 +145,7 @@ private:
 
         for (;;) {
             cycle_sem.wait();
-            if (unlikely(stop.load(std::memory_order_acquire)))
+            if (unlikely(stop.load(std::memory_order_relaxed)))
                 return;
 
             interpreter.tick(index);
