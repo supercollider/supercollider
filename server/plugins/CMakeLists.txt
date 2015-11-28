@@ -252,8 +252,6 @@ elseif (APPLE)
 	if(NOT NO_LIBSNDFILE)
 		target_link_libraries(DiskIO_UGens "-framework CoreServices")
 	endif()
-
-	add_definitions("-DSC_DARWIN")
 endif()
 
 if (WIN32)

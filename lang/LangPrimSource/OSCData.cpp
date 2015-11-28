@@ -986,7 +986,7 @@ int prBootInProcessServer(VMGlobals *g, int numArgsPushed)
 
 		options.mLoadGraphDefs = IsTrue(optionsSlots + 14) ? 1 : 0;
 
-		#ifdef SC_DARWIN
+		#ifdef __APPLE__
 		err = slotStrVal(optionsSlots+15, mInputStreamsEnabled, 512);
 		if(err) options.mInputStreamsEnabled = NULL;
 		else options.mInputStreamsEnabled = mInputStreamsEnabled;

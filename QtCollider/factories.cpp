@@ -63,7 +63,7 @@ static void doLoadFactories ()
   QC_ADD_FACTORY( QcGridLayout );
   QC_ADD_FACTORY( QcStackLayout );
   QC_ADD_FACTORY( QtDownload );
-#ifdef SC_DARWIN
+#ifdef __APPLE__
   QC_ADD_FACTORY( QcQuartzComposerView );
 #endif
 }
