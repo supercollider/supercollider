@@ -49,7 +49,7 @@ namespace nova {
  */
 const int malloc_memory_alignment = 64;
 
-inline void* MALLOC malloc_aligned(std::size_t nbytes)
+inline void* MALLOC ASSUME_ALIGNED(64) malloc_aligned(std::size_t nbytes)
 {
     void * ret;
     int status = posix_memalign(&ret, malloc_memory_alignment, nbytes);
@@ -68,7 +68,7 @@ inline void free_aligned(void *ptr)
 
 const int malloc_memory_alignment = 64;
 
-inline void* MALLOC malloc_aligned(std::size_t nbytes)
+inline void* MALLOC ASSUME_ALIGNED(64) malloc_aligned(std::size_t nbytes)
 {
     return _mm_malloc(nbytes, malloc_memory_alignment);
 }
@@ -98,7 +98,7 @@ inline void free_aligned(void *ptr)
 
 const int malloc_memory_alignment = 64;
 
-inline void* MALLOC malloc_aligned(std::size_t nbytes)
+inline void* MALLOC ASSUME_ALIGNED(64) malloc_aligned(std::size_t nbytes)
 {
     return _aligned_malloc(nbytes, malloc_memory_alignment);
 }
@@ -127,7 +127,7 @@ inline void free_aligned(void *ptr)
 /* on other systems, we use the aligned memory allocation taken
  * from thomas grill's implementation for pd */
 #define VECTORALIGNMENT 128
-inline void* MALLOC malloc_aligned(std::size_t nbytes)
+inline void* MALLOC ASSUME_ALIGNED(64) malloc_aligned(std::size_t nbytes)
 {
     void* vec = malloc(nbytes+ (VECTORALIGNMENT/8-1) + sizeof(void *));
 
