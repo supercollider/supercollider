@@ -146,6 +146,18 @@ public:
 		return INRATE(index);
 	}
 
+	/// get number of inputs
+	int numInputs() const
+	{
+		return mNumInputs;
+	}
+
+	/// get number of outputs
+	int numOutputs() const
+	{
+		return mNumOutputs;
+	}
+
 	/// test if input signal at index is scalar rate
 	bool isScalarRateIn(int index) const
 	{
