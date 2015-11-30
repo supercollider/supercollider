@@ -38,9 +38,7 @@ struct buffer_wrapper
     typedef float sample_t;
     typedef uint32_t uint;
 
-    buffer_wrapper(void):
-        data(nullptr), frames_(0), channels_(0), sample_rate_(0)
-    {}
+    buffer_wrapper(void) = default;
 
     ~buffer_wrapper(void)
     {
@@ -87,8 +85,7 @@ struct buffer_wrapper
         size_t avail = frames_ - position;
         count = std::min(size_t(count), avail);
 
-        for (unsigned int i = 0; i != count; ++i)
-            base[i] = sample_t(values[i]);
+        std::copy_n( base, count, values );
     }
 
     /** set continuous samples starting at position to a single value */
@@ -99,9 +96,7 @@ struct buffer_wrapper
         size_t avail = frames_ - position;
         count = std::min(size_t(count), avail);
 
-        sample_t val = sample_t(value);
-        for (unsigned int i = 0; i != count; ++i)
-            base[i] = val;
+        std::fill_n( base, count, sample_t(value) );
     }
 
     /* @{ */
@@ -125,10 +120,10 @@ struct buffer_wrapper
     void write_file(const char * file, const char * header_format, const char * sample_format,
                     size_t start_frame, size_t frames);
 
-    sample_t * data;
-    size_t frames_;
-    unsigned int channels_;
-    int sample_rate_;
+    sample_t * data        = nullptr;
+    size_t frames_         = 0;
+    unsigned int channels_ = 0;
+    int sample_rate_       = 0;
 };
 
 class buffer_manager

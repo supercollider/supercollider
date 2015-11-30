@@ -43,18 +43,14 @@ public:
         typedef rt_pool_allocator<U> other;
     };
 
-    rt_pool_allocator() throw()
-    {}
-
-    rt_pool_allocator(const rt_pool_allocator&) throw()
-    {}
+    rt_pool_allocator() throw()                         = default;
+    rt_pool_allocator(const rt_pool_allocator&) throw() = default;
+    ~rt_pool_allocator() throw()                        = default;
 
     template <class U>
     rt_pool_allocator(const rt_pool_allocator<U>&) throw()
     {}
 
-    ~rt_pool_allocator() throw()
-    {}
 
     pointer address(reference x) const
     {
@@ -93,6 +89,12 @@ public:
     void construct(pointer p, const T& val = T())
     {
         new(p) T(val);
+    }
+
+    template< class U, class... Args >
+    void construct( U* p, Args&&... args )
+    {
+        ::new((void *)p) U(std::forward<Args>(args)...);
     }
 
     void destroy(pointer p)
