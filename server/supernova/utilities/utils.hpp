@@ -32,8 +32,6 @@
 
 typedef unsigned int uint;
 
-#include "malloc_aligned.hpp"
-
 #include "function_attributes.h"
 
 
@@ -96,8 +94,7 @@ template <typename t>
 class runnable
 {
 public:
-    virtual ~runnable(void)
-    {}
+    virtual ~runnable(void) = default;
 
     virtual t run(void) = 0;
 };
