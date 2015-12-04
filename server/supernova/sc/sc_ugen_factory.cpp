@@ -34,7 +34,7 @@
 
 namespace nova {
 
-sc_ugen_factory * sc_factory;
+std::unique_ptr<sc_ugen_factory> sc_factory;
 
 Unit * sc_ugen_def::construct(sc_synthdef::unit_spec_t const & unit_spec, sc_synth * s, World * world, linear_allocator & allocator)
 {
