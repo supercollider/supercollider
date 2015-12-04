@@ -288,7 +288,7 @@ void sc_ugen_factory::close_handles(void)
             UnLoadPlugInFunc unloadFunc = (UnLoadPlugInFunc)ptr;
             (*unloadFunc)();
         }
-        //dlclose(handle);
+        dlclose(handle);
     }
 
 }
@@ -348,8 +348,6 @@ void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
     LoadPlugInFunc loadFunc = (LoadPlugInFunc)ptr;
     (*loadFunc)(&sc_interface);
 
-    // FIXME: at the moment we never call FreeLibrary() on a loaded plugin
-
     return;
 }
 
@@ -362,7 +360,7 @@ void sc_ugen_factory::close_handles(void)
             UnLoadPlugInFunc unloadFunc = (UnLoadPlugInFunc)ptr;
             (*unloadFunc)();
         }
-        //FreeLibrary(hinstance);
+        FreeLibrary(hinstance);
     }
 }
 #else
