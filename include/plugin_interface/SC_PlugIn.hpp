@@ -24,6 +24,8 @@
 #include "SC_PlugIn.h"
 #include "function_attributes.h"
 
+#include <type_traits>
+
 /// c++ wrapper for Unit struct
 class SCUnit:
 	public Unit
@@ -288,5 +290,25 @@ void CLASSNAME##_Dtor(CLASSNAME * unit) \
 {                                       \
 	unit->~CLASSNAME();                 \
 }
+
+namespace detail {
+
+template <class UGenClass>
+void constructClass( Unit * unit ) { new( static_cast<UGenClass*>(unit) ) UGenClass(); }
+template <class UGenClass>
+void destroyClass( Unit * unit )   { static_cast<UGenClass*>(unit)->~UGenClass();      }
+
+}
+
+template <class Unit>
+void registerUnit( InterfaceTable * ft, const char * name )
+{
+    UnitCtorFunc ctor = detail::constructClass<Unit>;
+    UnitDtorFunc dtor = std::is_trivially_destructible<Unit>::value ? nullptr
+                                                                    : detail::destroyClass<Unit>;
+
+    (*ft->fDefineUnit)( name, sizeof(Unit), ctor, dtor, 0 );
+}
+
 
 #endif /* SC_PLUGIN_HPP */
