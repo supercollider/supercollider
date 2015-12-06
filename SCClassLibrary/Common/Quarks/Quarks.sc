@@ -139,7 +139,13 @@ Quarks {
 	*update { |name|
 		// by quark name or by supplying a local path
 		// resolving / ~/ ./
-		Git.update(this.quarkNameAsLocalPath(name));
+		// is it a git
+		var localPath = this.quarkNameAsLocalPath(name);
+		if(Git.isGit(localPath), {
+			Git(localPath).pull;
+		}, {
+			("Quark" + name + "was not installed using git, cannot update.").warn;
+		});
 	}
 	*installed {
 		^LanguageConfig.includePaths
