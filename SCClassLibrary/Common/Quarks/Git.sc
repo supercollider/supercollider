@@ -67,8 +67,7 @@ Git {
 		// find what hash is currently checked out
 		var out;
 		^sha ?? {
-			out = this.git(["rev-parse HEAD"]);
-			sha = out.copyRange(0, out.size - 2)
+			sha = this.git(["rev-parse HEAD"]);
 		}
 	}
 	remoteLatest {

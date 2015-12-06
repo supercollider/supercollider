@@ -39,6 +39,7 @@ Quarks {
 	}
 	*uninstallQuark { |quark|
 		this.unlink(quark.localPath);
+		this.clearCache;
 	}
 	*clear {
 		this.installed.do({ |quark|
@@ -103,7 +104,7 @@ Quarks {
 					});
 				});
 			});
-			cache = Dictionary.new;
+			this.clearCache();
 			done.value();
 		}, clock: AppClock);
 	}
@@ -139,7 +140,13 @@ Quarks {
 	*update { |name|
 		// by quark name or by supplying a local path
 		// resolving / ~/ ./
-		Git.update(this.quarkNameAsLocalPath(name));
+		// is it a git
+		var localPath = this.quarkNameAsLocalPath(name);
+		if(Git.isGit(localPath), {
+			Git(localPath).pull;
+		}, {
+			("Quark" + name + "was not installed using git, cannot update.").warn;
+		});
 	}
 	*installed {
 		^LanguageConfig.includePaths
@@ -199,6 +206,7 @@ Quarks {
 		};
 		this.link(quark.localPath);
 		(quark.name + "installed").inform;
+		this.clearCache();
 		^true
 	}
 
