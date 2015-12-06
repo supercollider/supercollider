@@ -1,6 +1,6 @@
 title:: LID permissions
 summary:: Details how to configure your computer to set the permissions to access LID's
-categories:: External control>HID
+categories:: External Control>HID
 related:: Guides/HID_permissions, Classes/LID
 
 section:: On Linux
