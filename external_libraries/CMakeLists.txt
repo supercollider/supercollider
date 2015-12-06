@@ -49,7 +49,7 @@ if(NOT Boost_FOUND) # we compile boost ourselves
 
 
 	if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-		target_compile_options(boost_thread PRIVATE -fPIC)
+		set_property(TARGET boost_thread APPEND PROPERTY COMPILE_FLAGS "-fPIC")
 		target_link_libraries(boost_thread rt)
 	endif()
 
@@ -92,7 +92,7 @@ if(NOT YAMLCPP_FOUND)
   set_property( TARGET yaml PROPERTY FOLDER 3rdparty )
 
   if(CMAKE_COMPILER_IS_GNUCXX)
-    target_compile_options(yaml PRIVATE -Wno-deprecated-declarations)
+    set_property(TARGET yaml APPEND PROPERTY COMPILE_FLAGS -Wno-deprecated-declarations)
   endif()
 
 endif()
