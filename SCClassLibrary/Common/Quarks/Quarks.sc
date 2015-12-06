@@ -39,6 +39,7 @@ Quarks {
 	}
 	*uninstallQuark { |quark|
 		this.unlink(quark.localPath);
+		this.clearCache;
 	}
 	*clear {
 		this.installed.do({ |quark|
@@ -103,7 +104,7 @@ Quarks {
 					});
 				});
 			});
-			cache = Dictionary.new;
+			this.clearCache();
 			done.value();
 		}, clock: AppClock);
 	}
@@ -205,6 +206,7 @@ Quarks {
 		};
 		this.link(quark.localPath);
 		(quark.name + "installed").inform;
+		this.clearCache();
 		^true
 	}
 
