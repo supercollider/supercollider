@@ -1,6 +1,6 @@
 title:: Working with HID
 summary:: A guide to using HID devices for control input
-categories:: External control>HID
+categories:: External Control>HID
 related:: Classes/HID, Classes/HIDFunc
 
 section:: Introduction
