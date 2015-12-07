@@ -763,48 +763,76 @@ int prString_Find(struct VMGlobals *g, int numArgsPushed)
 	int offset;
 	int err = slotIntVal(d, &offset);
 	if (err) return err;
-
-	if (!isKindOfSlot(b, class_string)) return errWrongType;
-
+	
 	int alength = slotRawObject(a)->size - offset;
-	int blength = slotRawObject(b)->size;
-
-	if ((alength <= 0)
-		|| (blength == 0)
-			// should also return nil if search string is longer than source
-		|| (blength > alength))
+	if (alength <= 0)
 	{
 		SetNil(a);
 		return errNone;
 	}
 
-	int cmp = 1;	// assume contains will be false
-	char *achar = slotRawString(a)->s + offset;
-	char *bchar = slotRawString(b)->s;
-	char bchar0 = bchar[0];
-	int scanlength = alength - blength;
-	if (IsTrue(c)) {
-		bchar0 = toupper(bchar0);
-		for (int i=0; i <= scanlength; ++i, ++achar) {
-			if (toupper(*achar) == bchar0) {
-				cmp = memcmpi(achar+1, bchar+1, blength-1);
-				if (cmp == 0) break;
+	if (isKindOfSlot(b, class_string)) {
+		int blength = slotRawObject(b)->size;
+
+		if ((blength == 0)
+				// should also return nil if search string is longer than source
+			|| (blength > alength))
+		{
+			SetNil(a);
+			return errNone;
+		}
+
+		int cmp = 1;	// assume contains will be false
+		char *achar = slotRawString(a)->s + offset;
+		char *bchar = slotRawString(b)->s;
+		char bchar0 = bchar[0];
+		int scanlength = alength - blength;
+		if (IsTrue(c)) {
+			bchar0 = toupper(bchar0);
+			for (int i=0; i <= scanlength; ++i, ++achar) {
+				if (toupper(*achar) == bchar0) {
+					cmp = memcmpi(achar+1, bchar+1, blength-1);
+					if (cmp == 0) break;
+				}
+			}
+		} else {
+			for (int i=0; i <= scanlength; ++i, ++achar) {
+				if (*achar == bchar0) {
+					cmp = memcmp(achar+1, bchar+1, blength-1);
+					if (cmp == 0) break;
+				}
 			}
 		}
-	} else {
-		for (int i=0; i <= scanlength; ++i, ++achar) {
-			if (*achar == bchar0) {
-				cmp = memcmp(achar+1, bchar+1, blength-1);
-				if (cmp == 0) break;
+		if (cmp == 0) {
+			SetInt(a, achar - slotRawString(a)->s);
+		} else {
+			SetNil(a);
+		}
+		return errNone;
+		
+	} else if (IsChar(b)) {
+		char *achar = slotRawString(a)->s + offset;
+		char bchar = slotRawChar(b);
+		int scanlength = alength - 1;
+		if (IsTrue(c)) {
+			bchar = toupper(bchar);
+			for (int i=0; i <= scanlength; ++i, ++achar) {
+				if (toupper(*achar) == bchar) {
+					SetInt(a, achar - slotRawString(a)->s);
+					return errNone;
+				}
+			}
+		} else {
+			for (int i=0; i <= scanlength; ++i, ++achar) {
+				if (*achar == bchar) {
+					SetInt(a, achar - slotRawString(a)->s);
+					return errNone;
+				}
 			}
 		}
-	}
-	if (cmp == 0) {
-		SetInt(a, achar - slotRawString(a)->s);
-	} else {
 		SetNil(a);
-	}
-	return errNone;
+		return errNone;
+	} else return errWrongType;
 }
 
 int prString_FindBackwards(struct VMGlobals *g, int numArgsPushed);
@@ -818,48 +846,76 @@ int prString_FindBackwards(struct VMGlobals *g, int numArgsPushed)
 	int offset;
 	int err = slotIntVal(d, &offset);
 	if (err) return err;
-
-	if (!isKindOfSlot(b, class_string)) return errWrongType;
-
+	
 	int alength = sc_min(offset + 1, slotRawObject(a)->size);
-	int blength = slotRawObject(b)->size;
-
-	if ((alength <= 0)
-		|| (blength == 0)
-			// should also return nil if search string is longer than source
-		|| (blength > alength))
+	if (alength <= 0)
 	{
 		SetNil(a);
 		return errNone;
 	}
 
-	int cmp = 1;	// assume contains will be false
-	char *achar = slotRawString(a)->s + (alength - blength);
-	char *bchar = slotRawString(b)->s;
-	char bchar0 = bchar[0];
-	int scanlength = alength - blength;
-	if (IsTrue(c)) {
-		bchar0 = toupper(bchar0);
-		for (int i=scanlength; i >= 0; --i, --achar) {
-			if (toupper(*achar) == bchar0) {
-				cmp = memcmpi(achar+1, bchar+1, blength-1);
-				if (cmp == 0) break;
+	if (isKindOfSlot(b, class_string)) {
+
+		int blength = slotRawObject(b)->size;
+
+		if ((blength == 0)
+				// should also return nil if search string is longer than source
+			|| (blength > alength))
+		{
+			SetNil(a);
+			return errNone;
+		}
+
+		int cmp = 1;	// assume contains will be false
+		char *achar = slotRawString(a)->s + (alength - blength);
+		char *bchar = slotRawString(b)->s;
+		char bchar0 = bchar[0];
+		int scanlength = alength - blength;
+		if (IsTrue(c)) {
+			bchar0 = toupper(bchar0);
+			for (int i=scanlength; i >= 0; --i, --achar) {
+				if (toupper(*achar) == bchar0) {
+					cmp = memcmpi(achar+1, bchar+1, blength-1);
+					if (cmp == 0) break;
+				}
+			}
+		} else {
+			for (int i=scanlength; i >= 0; --i, --achar) {
+				if (*achar == bchar0) {
+					cmp = memcmp(achar+1, bchar+1, blength-1);
+					if (cmp == 0) break;
+				}
 			}
 		}
-	} else {
-		for (int i=scanlength; i >= 0; --i, --achar) {
-			if (*achar == bchar0) {
-				cmp = memcmp(achar+1, bchar+1, blength-1);
-				if (cmp == 0) break;
+		if (cmp == 0) {
+			SetInt(a, achar - slotRawString(a)->s);
+		} else {
+			SetNil(a);
+		}
+		return errNone;
+	} else if (IsChar(b)) {
+		char *achar = slotRawString(a)->s + (alength - 1);
+		char bchar = slotRawChar(b);
+		int scanlength = alength - 1;
+		if (IsTrue(c)) {
+			bchar = toupper(bchar);
+			for (int i=scanlength; i >= 0; --i, --achar) {
+				if (toupper(*achar) == bchar) {
+					SetInt(a, achar - slotRawString(a)->s);
+					return errNone;
+				}
+			}
+		} else {
+			for (int i=scanlength; i >= 0; --i, --achar) {
+				if (*achar == bchar) {
+					SetInt(a, achar - slotRawString(a)->s);
+					return errNone;
+				}
 			}
 		}
-	}
-	if (cmp == 0) {
-		SetInt(a, achar - slotRawString(a)->s);
-	} else {
 		SetNil(a);
-	}
-	return errNone;
+		return errNone;
+	} else return errWrongType;
 }
 
 #if __APPLE__
