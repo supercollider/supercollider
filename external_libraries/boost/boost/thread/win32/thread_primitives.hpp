@@ -35,6 +35,7 @@ namespace boost
             typedef HANDLE handle;
             typedef SYSTEM_INFO system_info;
             typedef unsigned __int64 ticks_type;
+            typedef FARPROC farproc_t;
             unsigned const infinite=INFINITE;
             unsigned const timeout=WAIT_TIMEOUT;
             handle const invalid_handle_value=INVALID_HANDLE_VALUE;
@@ -58,17 +59,20 @@ namespace boost
             using ::CreateSemaphoreExW;
 # endif
             using ::OpenEventW;
+            using ::GetModuleGandleW;
 # else
             using ::CreateMutexA;
             using ::CreateEventA;
             using ::OpenEventA;
             using ::CreateSemaphoreA;
+            using ::GetModuleHandleA;
 # endif
 #if BOOST_PLAT_WINDOWS_RUNTIME
             using ::GetNativeSystemInfo;
             using ::GetTickCount64;
 #else
             using ::GetSystemInfo;
+            using ::GetTickCount;
 #endif
             using ::CloseHandle;
             using ::ReleaseMutex;
@@ -86,6 +90,7 @@ namespace boost
             using ::SleepEx;
             using ::Sleep;
             using ::QueueUserAPC;
+            using ::GetProcAddress;
 #endif           
         }
     }
@@ -135,6 +140,7 @@ namespace boost
             typedef void* handle;
             typedef _SYSTEM_INFO system_info;
             typedef unsigned __int64 ticks_type;
+            typedef int (__stdcall *farproc_t)();
             unsigned const infinite=~0U;
             unsigned const timeout=258U;
             handle const invalid_handle_value=(handle)(-1);
@@ -160,17 +166,20 @@ namespace boost
                 __declspec(dllimport) void* __stdcall CreateSemaphoreExW(_SECURITY_ATTRIBUTES*,long,long,wchar_t const*,unsigned long,unsigned long);
 # endif
                 __declspec(dllimport) void* __stdcall OpenEventW(unsigned long,int,wchar_t const*);
+                __declspec(dllimport) void* __stdcall GetModuleHandleW(wchar_t const*);
 # else
                 __declspec(dllimport) void* __stdcall CreateMutexA(_SECURITY_ATTRIBUTES*,int,char const*);
                 __declspec(dllimport) void* __stdcall CreateSemaphoreA(_SECURITY_ATTRIBUTES*,long,long,char const*);
                 __declspec(dllimport) void* __stdcall CreateEventA(_SECURITY_ATTRIBUTES*,int,int,char const*);
                 __declspec(dllimport) void* __stdcall OpenEventA(unsigned long,int,char const*);
+                __declspec(dllimport) void* __stdcall GetModuleHandleA(char const*);
 # endif
 #if BOOST_PLAT_WINDOWS_RUNTIME
                 __declspec(dllimport) void __stdcall GetNativeSystemInfo(_SYSTEM_INFO*);
                 __declspec(dllimport) ticks_type __stdcall GetTickCount64();
 #else
                 __declspec(dllimport) void __stdcall GetSystemInfo(_SYSTEM_INFO*);
+                __declspec(dllimport) unsigned long __stdcall GetTickCount();
 #endif
                 __declspec(dllimport) int __stdcall CloseHandle(void*);
                 __declspec(dllimport) int __stdcall ReleaseMutex(void*);
@@ -183,6 +192,7 @@ namespace boost
                 __declspec(dllimport) void __stdcall Sleep(unsigned long);
                 typedef void (__stdcall *queue_user_apc_callback_function)(ulong_ptr);
                 __declspec(dllimport) unsigned long __stdcall QueueUserAPC(queue_user_apc_callback_function,void*,ulong_ptr);
+                __declspec(dllimport) farproc_t __stdcall GetProcAddress(void *, const char *);
 #endif
 
 # ifndef UNDER_CE
@@ -216,17 +226,10 @@ namespace boost
     {
         namespace win32
         {
-            namespace detail { typedef int (__stdcall *farproc_t)(); typedef ticks_type (__stdcall *gettickcount64_t)(); }
+            namespace detail { typedef ticks_type (__stdcall *gettickcount64_t)(); }
 #if !BOOST_PLAT_WINDOWS_RUNTIME
             extern "C"
             {
-                __declspec(dllimport) detail::farproc_t __stdcall GetProcAddress(void *, const char *);
-#if !defined(BOOST_NO_ANSI_APIS)
-                __declspec(dllimport) void * __stdcall GetModuleHandleA(const char *);
-#else
-                __declspec(dllimport) void * __stdcall GetModuleHandleW(const wchar_t *);
-#endif
-                __declspec(dllimport) unsigned long __stdcall GetTickCount();
 #ifdef _MSC_VER
                 long _InterlockedCompareExchange(long volatile *, long, long);
 #pragma intrinsic(_InterlockedCompareExchange)
@@ -298,7 +301,7 @@ namespace boost
 #if BOOST_PLAT_WINDOWS_RUNTIME
                 gettickcount64impl = &GetTickCount64;
 #else               
-                detail::farproc_t addr=GetProcAddress(
+                farproc_t addr=GetProcAddress(
 #if !defined(BOOST_NO_ANSI_APIS)
                     GetModuleHandleA("KERNEL32.DLL"),
 #else

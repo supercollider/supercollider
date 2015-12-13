@@ -23,7 +23,7 @@
 #include <fstream>
 #include <string>
 
-#include <boost/integer/endian.hpp>
+#include <boost/endian/arithmetic.hpp>
 #include <boost/format.hpp>
 
 #include "server_args.hpp"
@@ -100,7 +100,7 @@ struct non_realtime_synthesis_engine
         auto start_time = steady_clock::now();
 
         while (!command_stream.eof()) {
-            boost::integer::big32_t packet_size;
+            boost::endian::big_int32_t packet_size;
             command_stream.read((char*)&packet_size, sizeof(packet_size));
 
             assert(packet_size > 0);

@@ -625,7 +625,7 @@ private:
    //
    fixed_vector<T> bn, tn;
    std::vector<T> m_intermediates;
-   // The value at which we know overflow has already occured for the Bn:
+   // The value at which we know overflow has already occurred for the Bn:
    std::size_t m_overflow_limit;
 #if !defined(BOOST_HAS_THREADS)
 #elif defined(BOOST_MATH_NO_ATOMIC_INT)

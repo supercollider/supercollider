@@ -1220,7 +1220,7 @@ bool basic_regex_parser<charT, traits>::parse_alt()
         )
       )
    {
-      fail(regex_constants::error_empty, this->m_position - this->m_base, "A regular expression can start with the alternation operator |.");
+      fail(regex_constants::error_empty, this->m_position - this->m_base, "A regular expression cannot start with the alternation operator |.");
       return false;
    }
    //

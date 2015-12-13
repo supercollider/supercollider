@@ -11,11 +11,20 @@
 #ifndef BOOST_MOVE_UNIQUE_PTR_HPP_INCLUDED
 #define BOOST_MOVE_UNIQUE_PTR_HPP_INCLUDED
 
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+#
+#if defined(BOOST_HAS_PRAGMA_ONCE)
+#  pragma once
+#endif
+
 #include <boost/move/detail/config_begin.hpp>
 #include <boost/move/detail/workaround.hpp>
 #include <boost/move/detail/unique_ptr_meta_utils.hpp>
 #include <boost/move/default_delete.hpp>
 #include <boost/move/utility_core.hpp>
+#include <boost/move/adl_move_swap.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/assert.hpp>
 
@@ -96,8 +105,8 @@ struct unique_ptr_data
    {}
 
    template <class U>
-   unique_ptr_data(P p, BOOST_FWD_REF(U) d) BOOST_NOEXCEPT
-      : m_p(p), d(::boost::forward<U>(d))
+   unique_ptr_data(P p, BOOST_FWD_REF(U) d1) BOOST_NOEXCEPT
+      : m_p(p), d(::boost::forward<U>(d1))
    {}
 
    del_ref deleter()       { return d; }
@@ -210,9 +219,14 @@ struct enable_up_ptr
 template<class T, class D, class U, class E>
 struct unique_moveconvert_assignable
 {
-   static const bool value = (bmupmu::extent<T>::value == bmupmu::extent<U>::value) && is_unique_ptr_convertible
-      < bmupmu::is_array<T>::value
-      , typename bmupmu::pointer_type<U, E>::type, typename bmupmu::pointer_type<T, D>::type>::value;
+   static const bool t_is_array = bmupmu::is_array<T>::value;
+   static const bool value =
+      t_is_array == bmupmu::is_array<U>::value &&
+      bmupmu::extent<T>::value == bmupmu::extent<U>::value &&
+      is_unique_ptr_convertible
+         < t_is_array
+         , typename bmupmu::pointer_type<U, E>::type, typename bmupmu::pointer_type<T, D>::type
+         >::value;
 };
 
 template<class T, class D, class U, class E, std::size_t N>
@@ -281,8 +295,9 @@ struct unique_deleter_is_initializable<D, E, false>
 
 template<class T, class D, class U, class E, class Type = bmupmu::nat>
 struct enable_up_moveconv_constr
-   : bmupmu::enable_if_c<unique_moveconvert_assignable<T, D, U, E>::value &&
-                      unique_deleter_is_initializable<D, E>::value, Type>
+   : bmupmu::enable_if_c
+      < unique_moveconvert_assignable<T, D, U, E>::value && unique_deleter_is_initializable<D, E>::value
+      , Type>
 {};
 
 }  //namespace move_upd {
@@ -529,7 +544,7 @@ class unique_ptr
    //! <b>Postconditions</b>: <tt>get()</tt> yields the value <tt>u.get()</tt> yielded before the construction. <tt>get_deleter()</tt>
    //!   returns a reference to the stored deleter that was constructed from <tt>u.get_deleter()</tt>.
    template <class U, class E>
-   unique_ptr( BOOST_RV_REF_BEG unique_ptr<U, E> BOOST_RV_REF_END u
+   unique_ptr( BOOST_RV_REF_BEG_IF_CXX11 unique_ptr<U, E> BOOST_RV_REF_END_IF_CXX11 u
       BOOST_MOVE_DOCIGN(BOOST_MOVE_I typename bmupd::enable_up_moveconv_constr<T BOOST_MOVE_I D BOOST_MOVE_I U BOOST_MOVE_I E>::type* =0)
       ) BOOST_NOEXCEPT
       : m_data(u.release(), ::boost::move_if_not_lvalue_reference<E>(u.get_deleter()))
@@ -723,9 +738,8 @@ class unique_ptr
    //! <b>Effects</b>: Invokes swap on the stored pointers and on the stored deleters of *this and u.
    void swap(unique_ptr& u) BOOST_NOEXCEPT
    {
-      using ::boost::move_detail::swap;
-      swap(m_data.m_p, u.m_data.m_p);
-      swap(m_data.deleter(), u.m_data.deleter());
+      ::boost::adl_move_swap(m_data.m_p, u.m_data.m_p);
+      ::boost::adl_move_swap(m_data.deleter(), u.m_data.deleter());
    }
 };
 

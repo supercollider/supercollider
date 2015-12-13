@@ -11,7 +11,11 @@
 #ifndef BOOST_CONTAINER_DETAIL_WORKAROUND_HPP
 #define BOOST_CONTAINER_DETAIL_WORKAROUND_HPP
 
-#if defined(_MSC_VER)
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
 #  pragma once
 #endif
 
@@ -20,18 +24,6 @@
 #if    !defined(BOOST_NO_CXX11_RVALUE_REFERENCES) && !defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)\
     && !defined(BOOST_INTERPROCESS_DISABLE_VARIADIC_TMPL)
    #define BOOST_CONTAINER_PERFECT_FORWARDING
-#endif
-
-#if defined(BOOST_NO_CXX11_NOEXCEPT)
-   #if defined(BOOST_MSVC)
-      #define BOOST_CONTAINER_NOEXCEPT throw()
-   #else
-      #define BOOST_CONTAINER_NOEXCEPT
-   #endif
-   #define BOOST_CONTAINER_NOEXCEPT_IF(x)
-#else
-   #define BOOST_CONTAINER_NOEXCEPT    noexcept
-   #define BOOST_CONTAINER_NOEXCEPT_IF(x) noexcept(x)
 #endif
 
 #if !defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES) && defined(__GXX_EXPERIMENTAL_CXX0X__)\

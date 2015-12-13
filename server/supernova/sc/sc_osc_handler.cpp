@@ -695,7 +695,7 @@ void sc_osc_handler::handle_receive_udp(const boost::system::error_code& error,
 void sc_osc_handler::tcp_connection::start(sc_osc_handler * self)
 {
     using namespace boost;
-    typedef boost::integer::big32_t big32_t;
+    typedef boost::endian::big_int32_t big_int32_t;
     asio::ip::tcp::no_delay option(true);
     socket_.set_option(option);
 
@@ -703,10 +703,10 @@ void sc_osc_handler::tcp_connection::start(sc_osc_handler * self)
 
     if (check_password) {
         std::array<char, 32> password;
-        big32_t msglen;
+        big_int32_t msglen;
         for (unsigned int i=0; i!=4; ++i) {
             size_t size = socket_.receive(asio::buffer(&msglen, 4));
-            if (size != sizeof(big32_t))
+            if (size != sizeof(big_int32_t))
                 return;
 
             if (msglen > password.size())
@@ -731,7 +731,7 @@ void sc_osc_handler::tcp_connection::start(sc_osc_handler * self)
 
 void sc_osc_handler::tcp_connection::send(const char *data, size_t length)
 {
-    boost::integer::big32_t len(length);
+    boost::endian::big_int32_t len(length);
 
     socket_.send(boost::asio::buffer(&len, sizeof(len)));
     size_t written = socket_.send(boost::asio::buffer(data, length));

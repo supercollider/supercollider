@@ -44,6 +44,7 @@ template <typename T>
 class ringbuffer_base
 {
 #ifndef BOOST_DOXYGEN_INVOKED
+protected:
     typedef std::size_t size_t;
     static const int padding_size = BOOST_LOCKFREE_CACHELINE_BYTES - sizeof(size_t);
     atomic<size_t> write_index_;
@@ -85,7 +86,7 @@ protected:
 
     size_t read_available(size_t max_size) const
     {
-        size_t write_index = write_index_.load(memory_order_relaxed);
+        size_t write_index = write_index_.load(memory_order_acquire);
         const size_t read_index  = read_index_.load(memory_order_relaxed);
         return read_available(write_index, read_index, max_size);
     }
@@ -93,7 +94,7 @@ protected:
     size_t write_available(size_t max_size) const
     {
         size_t write_index = write_index_.load(memory_order_relaxed);
-        const size_t read_index  = read_index_.load(memory_order_relaxed);
+        const size_t read_index  = read_index_.load(memory_order_acquire);
         return write_available(write_index, read_index, max_size);
     }
 
@@ -462,13 +463,13 @@ public:
     }
 
     template <typename Functor>
-    bool consume_all(Functor & f)
+    size_type consume_all(Functor & f)
     {
         return ringbuffer_base<T>::consume_all(f, data(), max_size);
     }
 
     template <typename Functor>
-    bool consume_all(Functor const & f)
+    size_type consume_all(Functor const & f)
     {
         return ringbuffer_base<T>::consume_all(f, data(), max_size);
     }
@@ -913,7 +914,7 @@ public:
      *
      * \return number of available elements that can be popped from the spsc_queue
      *
-     * \note Thread-safe and wait-free, should only be called from the producer thread
+     * \note Thread-safe and wait-free, should only be called from the consumer thread
      * */
     size_type read_available() const
     {
@@ -924,7 +925,7 @@ public:
      *
      * \return number of elements that can be pushed to the spsc_queue
      *
-     * \note Thread-safe and wait-free, should only be called from the consumer thread
+     * \note Thread-safe and wait-free, should only be called from the producer thread
      * */
     size_type write_available() const
     {
@@ -935,7 +936,7 @@ public:
      *
      * Availability of front element can be checked using read_available().
      *
-     * \pre only one thread is allowed to check front element
+     * \pre only a consuming thread is allowed to check front element
      * \pre read_available() > 0. If ringbuffer is empty, it's undefined behaviour to invoke this method.
      * \return reference to the first element in the queue
      *
@@ -953,6 +954,24 @@ public:
         BOOST_ASSERT(read_available() > 0);
         return base_type::front();
     }
+
+    /** reset the ringbuffer
+     *
+     * \note Not thread-safe
+     * */
+    void reset(void)
+    {
+        if ( !boost::has_trivial_destructor<T>::value ) {
+            // make sure to call all destructors!
+
+            T dummy_element;
+            while (pop(dummy_element))
+            {}
+        } else {
+            base_type::write_index_.store(0, memory_order_relaxed);
+            base_type::read_index_.store(0, memory_order_release);
+        }
+   }
 };
 
 } /* namespace lockfree */

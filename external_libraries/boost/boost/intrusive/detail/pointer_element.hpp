@@ -11,11 +11,17 @@
 #ifndef BOOST_INTRUSIVE_DETAIL_POINTER_ELEMENT_HPP
 #define BOOST_INTRUSIVE_DETAIL_POINTER_ELEMENT_HPP
 
-#if defined(_MSC_VER)
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
 #  pragma once
 #endif
 
+#ifndef BOOST_INTRUSIVE_DETAIL_WORKAROUND_HPP
 #include <boost/intrusive/detail/workaround.hpp>
+#endif   //BOOST_INTRUSIVE_DETAIL_WORKAROUND_HPP
 
 namespace boost {
 namespace intrusive {
@@ -116,14 +122,6 @@ template <typename T> struct first_param
             , class P0, class P1, class P2, class P3, class P4, class P5, class P6, class P7, class P8>
    struct first_param
       < TemplateClass<T, P0, P1, P2, P3, P4, P5, P6, P7, P8> >
-   {  typedef T type;   };
-
-   template < template  //10arg
-               <class,class,class,class,class,class,class,class,class,class,class
-               > class TemplateClass, class T
-            , class P0, class P1, class P2, class P3, class P4, class P5, class P6, class P7, class P8, class P9>
-   struct first_param
-      < TemplateClass<T, P0, P1, P2, P3, P4, P5, P6, P7, P8, P9> >
    {  typedef T type;   };
 
 #endif   //!defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)

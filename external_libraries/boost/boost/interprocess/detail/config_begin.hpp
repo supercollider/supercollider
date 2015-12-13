@@ -24,6 +24,7 @@
    #pragma warning (disable : 4267) // conversion from "X" to "Y", possible loss of data
    #pragma warning (disable : 4275) // non DLL-interface classkey "identifier" used as base for DLL-interface classkey "identifier"
    #pragma warning (disable : 4355) // "this" : used in base member initializer list
+   #pragma warning (disable : 4345) // behavior change: an object of POD type constructed with an initializer of the form () will  be default-initialized
    #pragma warning (disable : 4503) // "identifier" : decorated name length exceeded, name was truncated
    #pragma warning (disable : 4511) // copy constructor could not be generated
    #pragma warning (disable : 4512) // assignment operator could not be generated

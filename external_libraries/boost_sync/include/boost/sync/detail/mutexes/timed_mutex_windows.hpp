@@ -52,11 +52,11 @@ private:
     sync::detail::windows::basic_mutex m_mutex;
 
 public:
-#if !defined(BOOST_NO_CXX11_CONSTEXPR)
+#if !defined(BOOST_NO_CXX11_CONSTEXPR) && !defined(BOOST_SYNC_DETAIL_NO_CONSTEXPR_WITH_NON_LITERAL_BASE)
 #define BOOST_SYNC_DEFINES_TIMED_MUTEX_CONSTEXPR_CONSTRUCTOR
 #endif
 
-    BOOST_CONSTEXPR timed_mutex() BOOST_NOEXCEPT : m_mutex()
+    BOOST_SYNC_DETAIL_CONSTEXPR_WITH_NON_LITERAL_BASE timed_mutex() BOOST_NOEXCEPT : m_mutex()
     {
     }
 

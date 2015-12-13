@@ -22,7 +22,11 @@
 #ifndef BOOST_INTERPROCESS_DETAIL_OS_THREAD_FUNCTIONS_HPP
 #define BOOST_INTERPROCESS_DETAIL_OS_THREAD_FUNCTIONS_HPP
 
-#if defined(_MSC_VER)
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+#
+#if defined(BOOST_HAS_PRAGMA_ONCE)
 #  pragma once
 #endif
 
@@ -31,7 +35,7 @@
 #include <boost/interprocess/streams/bufferstream.hpp>
 #include <boost/interprocess/detail/posix_time_types_wrk.hpp>
 #include <cstddef>
-#include <memory>
+#include <ostream>
 
 #if defined(BOOST_INTERPROCESS_WINDOWS)
 #  include <boost/interprocess/detail/win32_api.hpp>

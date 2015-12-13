@@ -13,14 +13,14 @@
 #ifndef BOOST_INTRUSIVE_TRIVIAL_VALUE_TRAITS_HPP
 #define BOOST_INTRUSIVE_TRIVIAL_VALUE_TRAITS_HPP
 
-#if defined(_MSC_VER)
-#  pragma once
-#endif
-
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/intrusive_fwd.hpp>
 #include <boost/intrusive/link_mode.hpp>
 #include <boost/intrusive/pointer_traits.hpp>
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
+#  pragma once
+#endif
 
 namespace boost {
 namespace intrusive {

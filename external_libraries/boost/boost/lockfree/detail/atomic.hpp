@@ -23,6 +23,23 @@
 #undef BOOST_LOCKFREE_NO_HDR_ATOMIC
 #endif
 
+
+// Apple clang is 3 mayor versions ahead, but in fact 1 minor version behind
+#ifdef BOOST_CLANG
+
+#define BOOST_ATOMIC_CLANG_VERSION (__clang_major__ * 10000 + __clang_minor__ * 100 + __clang_patchlevel__)
+
+#if  defined(__apple_build_version__) && (BOOST_ATOMIC_CLANG_VERSION >= 60100)
+#undef BOOST_LOCKFREE_NO_HDR_ATOMIC
+#endif
+
+#if !defined(__apple_build_version__) && (BOOST_ATOMIC_CLANG_VERSION >= 30600)
+#undef BOOST_LOCKFREE_NO_HDR_ATOMIC
+#endif
+
+#undef BOOST_ATOMIC_CLANG_VERSION
+
+#endif // BOOST_CLANG
 #endif // BOOST_LOCKFREE_FORCE_STD_ATOMIC
 
 

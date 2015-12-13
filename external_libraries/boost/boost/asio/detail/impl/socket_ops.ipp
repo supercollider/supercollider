@@ -2,7 +2,7 @@
 // detail/impl/socket_ops.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -525,6 +525,25 @@ void sync_connect(socket_type s, const socket_addr_type* addr,
 
 void complete_iocp_connect(socket_type s, boost::system::error_code& ec)
 {
+  // Map non-portable errors to their portable counterparts.
+  switch (ec.value())
+  {
+  case ERROR_CONNECTION_REFUSED:
+    ec = boost::asio::error::connection_refused;
+    break;
+  case ERROR_NETWORK_UNREACHABLE:
+    ec = boost::asio::error::network_unreachable;
+    break;
+  case ERROR_HOST_UNREACHABLE:
+    ec = boost::asio::error::host_unreachable;
+    break;
+  case ERROR_SEM_TIMEOUT:
+    ec = boost::asio::error::timed_out;
+    break;
+  default:
+    break;
+  }
+
   if (!ec)
   {
     // Need to set the SO_UPDATE_CONNECT_CONTEXT option so that getsockname
@@ -2213,14 +2232,34 @@ int inet_pton(int af, const char* src, void* dest,
 
   return result == socket_error_retval ? -1 : 1;
 #else // defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
-  int result = error_wrapper(::inet_pton(af, src, dest), ec);
+  using namespace std; // For strchr, memcpy and atoi.
+
+  // On some platforms, inet_pton fails if an address string contains a scope
+  // id. Detect and remove the scope id before passing the string to inet_pton.
+  const bool is_v6 = (af == BOOST_ASIO_OS_DEF(AF_INET6));
+  const char* if_name = is_v6 ? strchr(src, '%') : 0;
+  char src_buf[max_addr_v6_str_len + 1];
+  const char* src_ptr = src;
+  if (if_name != 0)
+  {
+    if (if_name - src > max_addr_v6_str_len)
+    {
+      ec = boost::asio::error::invalid_argument;
+      return 0;
+    }
+    memcpy(src_buf, src, if_name - src);
+    src_buf[if_name - src] = 0;
+    src_ptr = src_buf;
+  }
+
+  int result = error_wrapper(::inet_pton(af, src_ptr, dest), ec);
   if (result <= 0 && !ec)
     ec = boost::asio::error::invalid_argument;
-  if (result > 0 && af == BOOST_ASIO_OS_DEF(AF_INET6) && scope_id)
+  if (result > 0 && is_v6 && scope_id)
   {
     using namespace std; // For strchr and atoi.
     *scope_id = 0;
-    if (const char* if_name = strchr(src, '%'))
+    if (if_name != 0)
     {
       in6_addr_type* ipv6_address = static_cast<in6_addr_type*>(dest);
       bool is_link_local = ((ipv6_address->s6_addr[0] == 0xfe)

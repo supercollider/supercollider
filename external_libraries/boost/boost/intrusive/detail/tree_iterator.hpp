@@ -13,14 +13,18 @@
 #ifndef BOOST_INTRUSIVE_TREE_ITERATOR_HPP
 #define BOOST_INTRUSIVE_TREE_ITERATOR_HPP
 
-#if defined(_MSC_VER)
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
 #  pragma once
 #endif
 
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/detail/std_fwd.hpp>
 #include <boost/intrusive/detail/iiterator.hpp>
-#include <boost/intrusive/bstree_algorithms.hpp>
+#include <boost/intrusive/detail/bstree_algorithms_base.hpp>
 
 namespace boost {
 namespace intrusive {
@@ -36,18 +40,20 @@ namespace intrusive {
 template<class ValueTraits, bool IsConst>
 class tree_iterator
 {
-   protected:
+   private:
    typedef iiterator< ValueTraits, IsConst
                     , std::bidirectional_iterator_tag>   types_t;
-
-   typedef ValueTraits                                   value_traits;
+   typedef typename types_t::value_traits                value_traits;
    typedef typename types_t::node_traits                 node_traits;
-
    typedef typename types_t::node                        node;
    typedef typename types_t::node_ptr                    node_ptr;
    typedef typename types_t::const_value_traits_ptr      const_value_traits_ptr;
+   typedef bstree_algorithms_base<node_traits>           node_algorithms;
+
    static const bool stateful_value_traits = types_t::stateful_value_traits;
-   typedef bstree_algorithms<node_traits>                node_algorithms;
+
+   void unspecified_bool_type_func() const {}
+   typedef void (tree_iterator::*unspecified_bool_type)() const;
 
    public:
    typedef typename types_t::iterator_traits::difference_type    difference_type;
@@ -99,6 +105,21 @@ class tree_iterator
       members_.nodeptr_ = node_algorithms::prev_node(members_.nodeptr_);
       return result;
    }
+
+   void go_left()
+   { members_.nodeptr_ = node_traits::get_left(members_.nodeptr_); }
+
+   void go_right()
+   { members_.nodeptr_ = node_traits::get_right(members_.nodeptr_); }
+
+   void go_parent()
+   { members_.nodeptr_ = node_traits::get_parent(members_.nodeptr_); }
+
+   operator unspecified_bool_type() const
+   {  return members_.nodeptr_ ? &tree_iterator::unspecified_bool_type_func : 0;   }
+
+   bool operator! () const
+   {  return !members_.nodeptr_;   }
 
    friend bool operator== (const tree_iterator& l, const tree_iterator& r)
    { return l.pointed_node() == r.pointed_node(); }

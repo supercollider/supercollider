@@ -13,7 +13,11 @@
 #ifndef BOOST_INTRUSIVE_GENERIC_HOOK_HPP
 #define BOOST_INTRUSIVE_GENERIC_HOOK_HPP
 
-#if defined(_MSC_VER)
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
 #  pragma once
 #endif
 
@@ -134,13 +138,13 @@ class generic_hook
       , typename NodeAlgorithms::node
       , node_holder<typename NodeAlgorithms::node, Tag, BaseHookType>
       >::type
-   //If this is the a default-tagged base hook derive from a class that 
+   //If this is the a default-tagged base hook derive from a class that
    //will define an special internal typedef. Containers will be able to detect this
    //special typedef and obtain generic_hook's internal types in order to deduce
    //value_traits for this hook.
    , public hook_tags_definer
       < generic_hook<NodeAlgorithms, Tag, LinkMode, BaseHookType>
-      , detail::is_same<Tag, default_tag>::value*BaseHookType>
+      , detail::is_same<Tag, dft_tag>::value*BaseHookType>
    /// @endcond
 {
    /// @cond
