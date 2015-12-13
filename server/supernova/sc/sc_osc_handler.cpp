@@ -731,11 +731,15 @@ void sc_osc_handler::tcp_connection::start(sc_osc_handler * self)
 
 void sc_osc_handler::tcp_connection::send(const char *data, size_t length)
 {
-    boost::endian::big_int32_t len(length);
+    try {
+        boost::endian::big_int32_t len(length);
 
-    socket_.send(boost::asio::buffer(&len, sizeof(len)));
-    size_t written = socket_.send(boost::asio::buffer(data, length));
-    assert(length == written);
+        socket_.send(boost::asio::buffer(&len, sizeof(len)));
+        size_t written = socket_.send(boost::asio::buffer(data, length));
+        assert(length == written);
+    } catch (std::exception const & err) {
+        std::cout << "Exception when sending message over TCP: " << err.what();
+    }
 }
 
 
