@@ -131,7 +131,7 @@ if(Boost_FOUND)
     target_include_directories(libsupernova PUBLIC ${Boost_INCLUDE_DIRS})
 else()
     target_include_directories(libsupernova PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/boost)
-    target_link_libraries(libsupernova boost_system boost_filesystem boost_program_options boost_thread)
+    target_link_libraries(libsupernova boost_system boost_filesystem boost_program_options)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX)
