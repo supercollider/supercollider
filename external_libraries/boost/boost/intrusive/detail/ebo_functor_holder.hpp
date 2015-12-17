@@ -183,7 +183,7 @@ class ebo_functor_holder
    {}
 
    ebo_functor_holder(const ebo_functor_holder &x)
-      : t_(x)
+      : t_(x.t_)
    {}
 
    ebo_functor_holder(BOOST_RV_REF(ebo_functor_holder) x)
