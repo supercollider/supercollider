@@ -32,19 +32,19 @@ namespace std{
 #endif
 
 
-namespace boost{ namespace re_detail{
+namespace boost{ namespace BOOST_REGEX_DETAIL_NS{
 
 void BOOST_REGEX_CALL raw_storage::resize(size_type n)
 {
-   register size_type newsize = start ? last - start : 1024;
+   size_type newsize = start ? last - start : 1024;
    while(newsize < n)
       newsize *= 2;
-   register size_type datasize = end - start;
+   size_type datasize = end - start;
    // extend newsize to WORD/DWORD boundary:
    newsize = (newsize + padding_mask) & ~(padding_mask);
 
    // allocate and copy data:
-   register pointer ptr = static_cast<pointer>(::operator new(newsize));
+   pointer ptr = static_cast<pointer>(::operator new(newsize));
    BOOST_REGEX_NOEH_ASSERT(ptr)
    if(start)
       std::memcpy(ptr, start, datasize);
@@ -63,7 +63,7 @@ void* BOOST_REGEX_CALL raw_storage::insert(size_type pos, size_type n)
    BOOST_ASSERT(pos <= size_type(end - start));
    if(size_type(last - end) < n)
       resize(n + (end - start));
-   register void* result = start + pos;
+   void* result = start + pos;
    std::memmove(start + pos + n, start + pos, (end - start) - pos);
    end += n;
    return result;

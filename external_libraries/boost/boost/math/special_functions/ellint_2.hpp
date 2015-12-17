@@ -103,17 +103,10 @@ T ellint_e_imp(T phi, T k, const Policy& pol)
        {
           return policies::raise_domain_error<T>("boost::math::ellint_2<%1%>(%1%, %1%)", "The parameter k is out of range, got k = %1%", k, pol);
        }
-       else if(rphi == 0)
+       else if(rphi < tools::root_epsilon<T>())
        {
-          result = 0;
-       }
-       else if(sinp * sinp < tools::min_value<T>())
-       {
-          T x = cosp * cosp;
-          T t = k * k * sinp * sinp;
-          T y = 1 - t;
-          T z = 1;
-          result = s * sinp * (ellint_rf_imp(x, y, z, pol) - t * ellint_rd_imp(x, y, z, pol) / 3);
+          // See http://functions.wolfram.com/EllipticIntegrals/EllipticE2/06/01/03/0001/
+          result = s * rphi;
        }
        else
        {

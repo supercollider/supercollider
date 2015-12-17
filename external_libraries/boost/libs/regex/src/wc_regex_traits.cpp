@@ -117,7 +117,7 @@ c_regex_traits<wchar_t>::string_type BOOST_REGEX_CALL c_regex_traits<wchar_t>::t
 c_regex_traits<wchar_t>::string_type BOOST_REGEX_CALL c_regex_traits<wchar_t>::transform_primary(const wchar_t* p1, const wchar_t* p2) 
 {
    static wchar_t s_delim;
-   static const int s_collate_type = ::boost::re_detail::find_sort_syntax(static_cast<const c_regex_traits<wchar_t>*>(0), &s_delim);
+   static const int s_collate_type = ::boost::BOOST_REGEX_DETAIL_NS::find_sort_syntax(static_cast<const c_regex_traits<wchar_t>*>(0), &s_delim);
    std::wstring result;
    //
    // What we do here depends upon the format of the sort key returned by
@@ -125,8 +125,8 @@ c_regex_traits<wchar_t>::string_type BOOST_REGEX_CALL c_regex_traits<wchar_t>::t
    //
    switch(s_collate_type)
    {
-   case ::boost::re_detail::sort_C:
-   case ::boost::re_detail::sort_unknown:
+   case ::boost::BOOST_REGEX_DETAIL_NS::sort_C:
+   case ::boost::BOOST_REGEX_DETAIL_NS::sort_unknown:
       // the best we can do is translate to lower case, then get a regular sort key:
       {
          result.assign(p1, p2);
@@ -135,14 +135,14 @@ c_regex_traits<wchar_t>::string_type BOOST_REGEX_CALL c_regex_traits<wchar_t>::t
          result = c_regex_traits<wchar_t>::transform(&*result.begin(), &*result.begin() + result.size());
          break;
       }
-   case ::boost::re_detail::sort_fixed:
+   case ::boost::BOOST_REGEX_DETAIL_NS::sort_fixed:
       {
          // get a regular sort key, and then truncate it:
          result = c_regex_traits<wchar_t>::transform(&*result.begin(), &*result.begin() + result.size());
          result.erase(s_delim);
          break;
       }
-   case ::boost::re_detail::sort_delim:
+   case ::boost::BOOST_REGEX_DETAIL_NS::sort_delim:
          // get a regular sort key, and then truncate everything after the delim:
          result = c_regex_traits<wchar_t>::transform(&*result.begin(), &*result.begin() + result.size());
          if(result.size() && (result[0] == s_delim))
@@ -189,13 +189,13 @@ c_regex_traits<wchar_t>::char_class_type BOOST_REGEX_CALL c_regex_traits<wchar_t
       char_class_xdigit,
    };
 
-   int idx = ::boost::re_detail::get_default_class_id(p1, p2);
+   int idx = ::boost::BOOST_REGEX_DETAIL_NS::get_default_class_id(p1, p2);
    if(idx < 0)
    {
       std::wstring s(p1, p2);
       for(std::wstring::size_type i = 0; i < s.size(); ++i)
          s[i] = (std::towlower)(s[i]);
-      idx = ::boost::re_detail::get_default_class_id(&*s.begin(), &*s.begin() + s.size());
+      idx = ::boost::BOOST_REGEX_DETAIL_NS::get_default_class_id(&*s.begin(), &*s.begin() + s.size());
    }
    BOOST_ASSERT(idx+1 < static_cast<int>(sizeof(masks) / sizeof(masks[0])));
    return masks[idx+1];
@@ -213,11 +213,11 @@ bool BOOST_REGEX_CALL c_regex_traits<wchar_t>::isctype(wchar_t c, char_class_typ
       || ((mask & char_class_digit) && (std::iswdigit)(c))
       || ((mask & char_class_punct) && (std::iswpunct)(c))
       || ((mask & char_class_xdigit) && (std::iswxdigit)(c))
-      || ((mask & char_class_blank) && (std::iswspace)(c) && !::boost::re_detail::is_separator(c))
+      || ((mask & char_class_blank) && (std::iswspace)(c) && !::boost::BOOST_REGEX_DETAIL_NS::is_separator(c))
       || ((mask & char_class_word) && (c == '_'))
       || ((mask & char_class_unicode) && (c & ~static_cast<wchar_t>(0xff)))
-      || ((mask & char_class_vertical) && (::boost::re_detail::is_separator(c) || (c == L'\v')))
-      || ((mask & char_class_horizontal) && (std::iswspace)(c) && !::boost::re_detail::is_separator(c) && (c != L'\v'));
+      || ((mask & char_class_vertical) && (::boost::BOOST_REGEX_DETAIL_NS::is_separator(c) || (c == L'\v')))
+      || ((mask & char_class_horizontal) && (std::iswspace)(c) && !::boost::BOOST_REGEX_DETAIL_NS::is_separator(c) && (c != L'\v'));
 }
 
 c_regex_traits<wchar_t>::string_type BOOST_REGEX_CALL c_regex_traits<wchar_t>::lookup_collatename(const wchar_t* p1, const wchar_t* p2) 
@@ -232,7 +232,7 @@ c_regex_traits<wchar_t>::string_type BOOST_REGEX_CALL c_regex_traits<wchar_t>::l
    while(p0 != p2)
       name.append(1, char(*p0++));
 #endif
-   name = ::boost::re_detail::lookup_default_collate_name(name);
+   name = ::boost::BOOST_REGEX_DETAIL_NS::lookup_default_collate_name(name);
 #if !defined(BOOST_NO_TEMPLATED_ITERATOR_CONSTRUCTORS)\
                && !BOOST_WORKAROUND(BOOST_MSVC, < 1300)\
                && !BOOST_WORKAROUND(__BORLANDC__, <= 0x0551)

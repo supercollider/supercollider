@@ -38,7 +38,7 @@
 //! specially in C++03 compilers:
 //!   - <tt>operator < </tt> uses pointer <tt>operator < </tt>instead of <tt>std::less<common_type></tt>. 
 //!      This avoids dependencies on <tt>std::common_type</tt> and <tt>std::less</tt>
-//!      (<tt><type_traits>/<functional></tt> headers. In C++03 this avoid pulling Boost.Typeof and other
+//!      (<tt><type_traits>/<functional></tt> headers). In C++03 this avoid pulling Boost.Typeof and other
 //!      cascading dependencies. As in all Boost platforms <tt>operator <</tt> on raw pointers and
 //!      other smart pointers provides strict weak ordering in practice this should not be a problem for users.
 //!   - assignable from literal 0 for compilers without nullptr
@@ -46,6 +46,7 @@
 //!      cv-less T and cv-less U are the same type and T is more CV qualified than U.
 
 namespace boost{
+// @cond
 namespace move_upd {
 
 ////////////////////////////////////////////
@@ -301,6 +302,7 @@ struct enable_up_moveconv_constr
 {};
 
 }  //namespace move_upd {
+// @endcond
 
 namespace movelib {
 

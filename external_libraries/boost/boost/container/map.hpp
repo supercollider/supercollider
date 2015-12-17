@@ -481,8 +481,12 @@ class map
    //!
    //! Complexity: Logarithmic.
    mapped_type& operator[](key_type &&k);
+   #elif defined(BOOST_MOVE_HELPERS_RETURN_SFINAE_BROKEN)
+      //in compilers like GCC 3.4, we can't catch temporaries
+      mapped_type& operator[](const key_type &k)         {  return this->priv_subscript(k);  }
+      mapped_type& operator[](BOOST_RV_REF(key_type) k)  {  return this->priv_subscript(::boost::move(k));  }
    #else
-   BOOST_MOVE_CONVERSION_AWARE_CATCH( operator[] , key_type, mapped_type&, this->priv_subscript)
+      BOOST_MOVE_CONVERSION_AWARE_CATCH( operator[] , key_type, mapped_type&, this->priv_subscript)
    #endif
 
    //! Returns: A reference to the element whose key is equivalent to x.

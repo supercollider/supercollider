@@ -38,7 +38,7 @@
 
 namespace boost{
 
-namespace re_detail{
+namespace BOOST_REGEX_DETAIL_NS{
 
 template <class charT>
 struct digraph : public std::pair<charT, charT>
@@ -371,9 +371,9 @@ re_syntax_base* basic_regex_creator<charT, traits>::append_set(
    //
    // fill in the basics:
    //
-   result->csingles = static_cast<unsigned int>(::boost::re_detail::distance(char_set.singles_begin(), char_set.singles_end()));
-   result->cranges = static_cast<unsigned int>(::boost::re_detail::distance(char_set.ranges_begin(), char_set.ranges_end())) / 2;
-   result->cequivalents = static_cast<unsigned int>(::boost::re_detail::distance(char_set.equivalents_begin(), char_set.equivalents_end()));
+   result->csingles = static_cast<unsigned int>(::boost::BOOST_REGEX_DETAIL_NS::distance(char_set.singles_begin(), char_set.singles_end()));
+   result->cranges = static_cast<unsigned int>(::boost::BOOST_REGEX_DETAIL_NS::distance(char_set.ranges_begin(), char_set.ranges_end())) / 2;
+   result->cequivalents = static_cast<unsigned int>(::boost::BOOST_REGEX_DETAIL_NS::distance(char_set.equivalents_begin(), char_set.equivalents_end()));
    result->cclasses = char_set.classes();
    result->cnclasses = char_set.negated_classes();
    if(flags() & regbase::icase)
@@ -463,10 +463,10 @@ re_syntax_base* basic_regex_creator<charT, traits>::append_set(
          return 0;
       }
       charT* p = static_cast<charT*>(this->m_pdata->m_data.extend(sizeof(charT) * (s1.size() + s2.size() + 2) ) );
-      re_detail::copy(s1.begin(), s1.end(), p);
+      BOOST_REGEX_DETAIL_NS::copy(s1.begin(), s1.end(), p);
       p[s1.size()] = charT(0);
       p += s1.size() + 1;
-      re_detail::copy(s2.begin(), s2.end(), p);
+      BOOST_REGEX_DETAIL_NS::copy(s2.begin(), s2.end(), p);
       p[s2.size()] = charT(0);
    }
    //
@@ -487,7 +487,7 @@ re_syntax_base* basic_regex_creator<charT, traits>::append_set(
       if(s.empty())
          return 0;  // invalid or unsupported equivalence class
       charT* p = static_cast<charT*>(this->m_pdata->m_data.extend(sizeof(charT) * (s.size()+1) ) );
-      re_detail::copy(s.begin(), s.end(), p);
+      BOOST_REGEX_DETAIL_NS::copy(s.begin(), s.end(), p);
       p[s.size()] = charT(0);
       ++first;
    }
@@ -664,7 +664,7 @@ void basic_regex_creator<charT, traits>::finalize(const charT* p1, const charT* 
    m_pdata->m_expression_len = len;
    charT* ps = static_cast<charT*>(m_pdata->m_data.extend(sizeof(charT) * (1 + (p2 - p1))));
    m_pdata->m_expression = ps;
-   re_detail::copy(p1, p2, ps);
+   BOOST_REGEX_DETAIL_NS::copy(p1, p2, ps);
    ps[p2 - p1] = 0;
    // fill in our other data...
    // successful parsing implies a zero status:
@@ -1149,6 +1149,7 @@ void basic_regex_creator<charT, traits>::create_startmap(re_syntax_base* state, 
          set_all_masks(l_map, mask);
          return;
       }
+      case syntax_element_accept:
       case syntax_element_match:
       {
          // must be null, any character can match:
@@ -1335,6 +1336,11 @@ void basic_regex_creator<charT, traits>::create_startmap(re_syntax_base* state, 
          state = state->next.p;
          break;
 
+      case syntax_element_commit:
+         set_all_masks(l_map, mask);
+         // Continue scanning so we can figure out whether we can be null:
+         state = state->next.p;
+         break;
       case syntax_element_startmark:
          // need to handle independent subs as a special case:
          if(static_cast<re_brace*>(state)->index == -3)
@@ -1456,15 +1462,15 @@ syntax_element_type basic_regex_creator<charT, traits>::get_repeat_type(re_synta
       {
          switch(state->next.p->type)
          {
-         case re_detail::syntax_element_wild:
-            return re_detail::syntax_element_dot_rep;
-         case re_detail::syntax_element_literal:
-            return re_detail::syntax_element_char_rep;
-         case re_detail::syntax_element_set:
-            return re_detail::syntax_element_short_set_rep;
-         case re_detail::syntax_element_long_set:
-            if(static_cast<re_detail::re_set_long<m_type>*>(state->next.p)->singleton)
-               return re_detail::syntax_element_long_set_rep;
+         case BOOST_REGEX_DETAIL_NS::syntax_element_wild:
+            return BOOST_REGEX_DETAIL_NS::syntax_element_dot_rep;
+         case BOOST_REGEX_DETAIL_NS::syntax_element_literal:
+            return BOOST_REGEX_DETAIL_NS::syntax_element_char_rep;
+         case BOOST_REGEX_DETAIL_NS::syntax_element_set:
+            return BOOST_REGEX_DETAIL_NS::syntax_element_short_set_rep;
+         case BOOST_REGEX_DETAIL_NS::syntax_element_long_set:
+            if(static_cast<BOOST_REGEX_DETAIL_NS::re_set_long<m_type>*>(state->next.p)->singleton)
+               return BOOST_REGEX_DETAIL_NS::syntax_element_long_set_rep;
             break;
          default:
             break;
@@ -1529,7 +1535,7 @@ void basic_regex_creator<charT, traits>::probe_leading_repeat(re_syntax_base* st
 }
 
 
-} // namespace re_detail
+} // namespace BOOST_REGEX_DETAIL_NS
 
 } // namespace boost
 

@@ -480,7 +480,7 @@ template <class T>
 struct remove_all_extents<T[]>
 {  typedef typename remove_all_extents<T>::type type; };
 
-template <class T, size_t N>
+template <class T, std::size_t N>
 struct remove_all_extents<T[N]>
 {  typedef typename remove_all_extents<T>::type type;};
 
@@ -1003,7 +1003,7 @@ BOOST_MOVE_ALIGNED_STORAGE_WITH_BOOST_ALIGNMENT(0x1000)
 
 #else //BOOST_NO_ALIGNMENT
 
-template<class T, size_t Len>
+template<class T, std::size_t Len>
 union aligned_union
 {	
    T aligner;

@@ -60,7 +60,7 @@ T ellint_d_imp(T phi, T k, const Policy& pol)
     if(phi >= tools::max_value<T>())
     {
        // Need to handle infinity as a special case:
-       result = policies::raise_overflow_error<T>("boost::math::ellint_e<%1%>(%1%,%1%)", 0, pol);
+       result = policies::raise_overflow_error<T>("boost::math::ellint_d<%1%>(%1%,%1%)", 0, pol);
     }
     else if(phi > 1 / tools::epsilon<T>())
     {
@@ -113,14 +113,10 @@ T ellint_d_imp(T k, const Policy& pol)
     BOOST_MATH_STD_USING
     using namespace boost::math::tools;
 
-    if (abs(k) > 1)
+    if (abs(k) >= 1)
     {
-       return policies::raise_domain_error<T>("boost::math::ellint_e<%1%>(%1%)",
+       return policies::raise_domain_error<T>("boost::math::ellint_d<%1%>(%1%)",
             "Got k = %1%, function requires |k| <= 1", k, pol);
-    }
-    if (abs(k) == 1)
-    {
-        return static_cast<T>(1);
     }
     if(fabs(k) <= tools::root_epsilon<T>())
        return constants::pi<T>() / 4;

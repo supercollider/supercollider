@@ -445,7 +445,7 @@ struct allocator_traits
 
    template<class T>
    static void priv_construct(container_detail::false_type, Allocator &, T *p, const ::boost::container::default_init_t&)
-   {  ::new((void*)p) T; }
+   {  ::new((void*)p, boost_container_new_t()) T; }
 
    static bool priv_storage_is_unpropagable(container_detail::true_type, const Allocator &a, pointer p)
    {  return a.storage_is_unpropagable(p);  }

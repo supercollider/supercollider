@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2005-2013. Distributed under the Boost
+// (C) Copyright Ion Gaztanaga 2005-2015. Distributed under the Boost
 // Software License, Version 1.0. (See accompanying file
 // LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
@@ -413,8 +413,11 @@ struct key_node_compare
    {  return node.get_data();  }
 
    template<class T>
-   typename enable_if_c<!is_node<T>::value, const T &>::type
-      key_forward(const T &key) const
+   #if defined(BOOST_MOVE_HELPERS_RETURN_SFINAE_BROKEN)
+   const T &key_forward(const T &key, typename enable_if_c<!is_node<T>::value>::type* =0) const
+   #else
+   typename enable_if_c<!is_node<T>::value, const T &>::type key_forward(const T &key) const
+   #endif
    {  return key; }
 
    template<class KeyType, class KeyType2>
@@ -811,6 +814,7 @@ class tree
    std::pair<iterator,bool> insert_unique_check
       (const_iterator hint, const key_type& key, insert_commit_data &data)
    {
+      BOOST_ASSERT((priv_is_linked)(hint));
       std::pair<iiterator, bool> ret =
          this->icont().insert_unique_check(hint.get(), key, KeyNodeCompare(value_comp()), data);
       return std::pair<iterator, bool>(iterator(ret.first), ret.second);
@@ -861,6 +865,15 @@ class tree
 
    private:
 
+   bool priv_is_linked(const_iterator const position) const
+   {
+      iiterator const cur(position.get());
+      return   cur == this->icont().end() ||
+               cur == this->icont().root() ||
+               iiterator(cur).go_parent().go_left()  == cur ||
+               iiterator(cur).go_parent().go_right() == cur;
+   }
+
    template<class MovableConvertible>
    void push_back_impl(BOOST_FWD_REF(MovableConvertible) v)
    {
@@ -888,6 +901,7 @@ class tree
 
    iterator emplace_unique_hint_impl(const_iterator hint, NodePtr p)
    {
+      BOOST_ASSERT((priv_is_linked)(hint));
       value_type &v = p->get_data();
       insert_commit_data data;
       std::pair<iterator,bool> ret =
@@ -924,6 +938,7 @@ class tree
    template <class... Args>
    iterator emplace_hint_equal(const_iterator hint, BOOST_FWD_REF(Args)... args)
    {
+      BOOST_ASSERT((priv_is_linked)(hint));
       NodePtr tmp(AllocHolder::create_node(boost::forward<Args>(args)...));
       scoped_destroy_deallocator<NodeAlloc> destroy_deallocator(tmp, this->node_alloc());
       iterator ret(this->icont().insert_equal(hint.get(), *tmp));
@@ -955,6 +970,7 @@ class tree
    BOOST_MOVE_TMPL_LT##N BOOST_MOVE_CLASS##N BOOST_MOVE_GT##N \
    iterator emplace_hint_equal(const_iterator hint BOOST_MOVE_I##N BOOST_MOVE_UREF##N)\
    {\
+      BOOST_ASSERT((priv_is_linked)(hint));\
       NodePtr tmp(AllocHolder::create_node(BOOST_MOVE_FWD##N));\
       scoped_destroy_deallocator<NodeAlloc> destroy_deallocator(tmp, this->node_alloc());\
       iterator ret(this->icont().insert_equal(hint.get(), *tmp));\
@@ -969,6 +985,7 @@ class tree
 
    iterator insert_unique(const_iterator hint, const value_type& v)
    {
+      BOOST_ASSERT((priv_is_linked)(hint));
       insert_commit_data data;
       std::pair<iterator,bool> ret =
          this->insert_unique_check(hint, KeyOfValue()(v), data);
@@ -980,6 +997,7 @@ class tree
    template<class MovableConvertible>
    iterator insert_unique(const_iterator hint, BOOST_FWD_REF(MovableConvertible) v)
    {
+      BOOST_ASSERT((priv_is_linked)(hint));
       insert_commit_data data;
       std::pair<iterator,bool> ret =
          this->insert_unique_check(hint, KeyOfValue()(v), data);
@@ -1016,6 +1034,7 @@ class tree
 
    iterator insert_equal(const_iterator hint, const value_type& v)
    {
+      BOOST_ASSERT((priv_is_linked)(hint));
       NodePtr tmp(AllocHolder::create_node(v));
       scoped_destroy_deallocator<NodeAlloc> destroy_deallocator(tmp, this->node_alloc());
       iterator ret(this->icont().insert_equal(hint.get(), *tmp));
@@ -1026,6 +1045,7 @@ class tree
    template<class MovableConvertible>
    iterator insert_equal(const_iterator hint, BOOST_FWD_REF(MovableConvertible) v)
    {
+      BOOST_ASSERT((priv_is_linked)(hint));
       NodePtr tmp(AllocHolder::create_node(boost::forward<MovableConvertible>(v)));
       scoped_destroy_deallocator<NodeAlloc> destroy_deallocator(tmp, this->node_alloc());
       iterator ret(this->icont().insert_equal(hint.get(), *tmp));
@@ -1041,13 +1061,20 @@ class tree
    }
 
    iterator erase(const_iterator position)
-   {  return iterator(this->icont().erase_and_dispose(position.get(), Destroyer(this->node_alloc()))); }
+   {
+      BOOST_ASSERT(position != this->cend() && (priv_is_linked)(position));
+      return iterator(this->icont().erase_and_dispose(position.get(), Destroyer(this->node_alloc())));
+   }
 
    size_type erase(const key_type& k)
    {  return AllocHolder::erase_key(k, KeyNodeCompare(value_comp()), alloc_version()); }
 
    iterator erase(const_iterator first, const_iterator last)
-   {  return iterator(AllocHolder::erase_range(first.get(), last.get(), alloc_version())); }
+   {
+      BOOST_ASSERT(first == last || (first != this->cend() && (priv_is_linked)(first)));
+      BOOST_ASSERT(first == last || (priv_is_linked)(last));
+      return iterator(AllocHolder::erase_range(first.get(), last.get(), alloc_version()));
+   }
 
    void clear()
    {  AllocHolder::clear(alloc_version());  }

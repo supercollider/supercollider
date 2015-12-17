@@ -302,20 +302,9 @@ inline T cyl_neumann_imp(T v, T x, const bessel_maybe_int_tag&, const Policy& po
 
    if(floor(v) == v)
    {
-      if(asymptotic_bessel_large_x_limit(v, x))
-      {
-         T r = asymptotic_bessel_y_large_x_2(static_cast<T>(abs(v)), x);
-         if((v < 0) && (itrunc(v, pol) & 1))
-            r = -r;
-         BOOST_MATH_INSTRUMENT_VARIABLE(r);
-         return r;
-      }
-      else
-      {
-         T r = bessel_yn(itrunc(v, pol), x, pol);
-         BOOST_MATH_INSTRUMENT_VARIABLE(r);
-         return r;
-      }
+      T r = bessel_yn(itrunc(v, pol), x, pol);
+      BOOST_MATH_INSTRUMENT_VARIABLE(r);
+      return r;
    }
    T r = cyl_neumann_imp<T>(v, x, bessel_no_int_tag(), pol);
    BOOST_MATH_INSTRUMENT_VARIABLE(r);
@@ -325,20 +314,7 @@ inline T cyl_neumann_imp(T v, T x, const bessel_maybe_int_tag&, const Policy& po
 template <class T, class Policy>
 inline T cyl_neumann_imp(int v, T x, const bessel_int_tag&, const Policy& pol)
 {
-   BOOST_MATH_STD_USING
-
-   BOOST_MATH_INSTRUMENT_VARIABLE(v);
-   BOOST_MATH_INSTRUMENT_VARIABLE(x);
-
-   if(asymptotic_bessel_large_x_limit(T(v), x))
-   {
-      T r = asymptotic_bessel_y_large_x_2(static_cast<T>(abs(v)), x);
-      if((v < 0) && (v & 1))
-         r = -r;
-      return r;
-   }
-   else
-      return bessel_yn(v, x, pol);
+   return bessel_yn(v, x, pol);
 }
 
 template <class T, class Policy>
@@ -582,7 +558,7 @@ inline typename detail::bessel_traits<T1, T2, Policy>::result_type cyl_bessel_i(
       policies::promote_double<false>, 
       policies::discrete_quantile<>,
       policies::assert_undefined<> >::type forwarding_policy;
-   return policies::checked_narrowing_cast<result_type, Policy>(detail::cyl_bessel_i_imp<value_type>(v, static_cast<value_type>(x), forwarding_policy()), "boost::math::cyl_bessel_i<%1%>(%1%,%1%)");
+   return policies::checked_narrowing_cast<result_type, Policy>(detail::cyl_bessel_i_imp<value_type>(static_cast<value_type>(v), static_cast<value_type>(x), forwarding_policy()), "boost::math::cyl_bessel_i<%1%>(%1%,%1%)");
 }
 
 template <class T1, class T2>

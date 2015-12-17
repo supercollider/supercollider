@@ -1,4 +1,4 @@
-//  (C) Copyright Gennadiy Rozental 2001-2014.
+//  (C) Copyright Gennadiy Rozental 2001.
 //  Distributed under the Boost Software License, Version 1.0.
 //  (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
@@ -18,7 +18,13 @@
 #include <boost/test/tree/test_case_template.hpp>
 #include <boost/test/tree/global_fixture.hpp>
 
+
+#include <boost/test/detail/suppress_warnings.hpp>
+
+
 #include <boost/test/detail/pp_variadic.hpp>
+
+
 
 //____________________________________________________________________________//
 
@@ -352,6 +358,9 @@ init_unit_test_suite( int, char* [] )   {
 #endif
 
 //____________________________________________________________________________//
+
+#include <boost/test/detail/enable_warnings.hpp>
+
 
 #endif // BOOST_TEST_UNIT_TEST_SUITE_HPP_071894GER
 

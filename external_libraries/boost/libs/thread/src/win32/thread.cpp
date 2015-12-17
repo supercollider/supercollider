@@ -25,6 +25,7 @@
 #if defined BOOST_THREAD_USES_DATETIME
 #include <boost/date_time/posix_time/conversion.hpp>
 #endif
+#include <boost/thread/csbl/memory/unique_ptr.hpp>
 #include <memory>
 #include <algorithm>
 #ifndef UNDER_CE
@@ -153,7 +154,7 @@ namespace boost
 
         DWORD WINAPI ThreadProxy(LPVOID args)
         {
-            std::auto_ptr<ThreadProxyData> data(reinterpret_cast<ThreadProxyData*>(args));
+            boost::csbl::unique_ptr<ThreadProxyData> data(reinterpret_cast<ThreadProxyData*>(args));
             DWORD ret=data->start_address_(data->arglist_);
             return ret;
         }
@@ -526,8 +527,11 @@ namespace boost
 
     unsigned thread::physical_concurrency() BOOST_NOEXCEPT
     {
-#if BOOST_PLAT_WINDOWS_RUNTIME || (defined(__MINGW32__) && !defined(__MINGW64_VERSION_MAJOR))
-        return hardware_concurrency();
+      // a bit too strict: Windows XP with SP3 would be sufficient
+#if BOOST_PLAT_WINDOWS_RUNTIME                                    \
+    || ( BOOST_USE_WINAPI_VERSION <= BOOST_WINAPI_VERSION_WINXP ) \
+    || ( ( defined(__MINGW32__) && !defined(__MINGW64__) ) && _WIN32_WINNT < 0x0600)
+        return 0;
 #else
         unsigned cores = 0;
         DWORD size = 0;
@@ -645,7 +649,7 @@ namespace boost
                     } Detailed;
                 } Reason;
             } REASON_CONTEXT, *PREASON_CONTEXT;
-            static REASON_CONTEXT default_reason_context={0/*POWER_REQUEST_CONTEXT_VERSION*/, 0x00000001/*POWER_REQUEST_CONTEXT_SIMPLE_STRING*/, (LPWSTR)L"generic"};
+            //static REASON_CONTEXT default_reason_context={0/*POWER_REQUEST_CONTEXT_VERSION*/, 0x00000001/*POWER_REQUEST_CONTEXT_SIMPLE_STRING*/, (LPWSTR)L"generic"};
             typedef BOOL (WINAPI *setwaitabletimerex_t)(HANDLE, const LARGE_INTEGER *, LONG, PTIMERAPCROUTINE, LPVOID, PREASON_CONTEXT, ULONG);
             static inline BOOL WINAPI SetWaitableTimerEx_emulation(HANDLE hTimer, const LARGE_INTEGER *lpDueTime, LONG lPeriod, PTIMERAPCROUTINE pfnCompletionRoutine, LPVOID lpArgToCompletionRoutine, PREASON_CONTEXT WakeContext, ULONG TolerableDelay)
             {
@@ -715,7 +719,8 @@ namespace boost
                     if(time_left.milliseconds/20>tolerable)  // 5%
                         tolerable=time_left.milliseconds/20;
                     LARGE_INTEGER due_time=get_due_time(target_time);
-                    bool const set_time_succeeded=detail_::SetWaitableTimerEx()(timer_handle,&due_time,0,0,0,&detail_::default_reason_context,tolerable)!=0;
+                    //bool const set_time_succeeded=detail_::SetWaitableTimerEx()(timer_handle,&due_time,0,0,0,&detail_::default_reason_context,tolerable)!=0;
+                    bool const set_time_succeeded=detail_::SetWaitableTimerEx()(timer_handle,&due_time,0,0,0,NULL,tolerable)!=0;
                     if(set_time_succeeded)
                     {
                         timeout_index=handle_count;
@@ -799,7 +804,8 @@ namespace boost
                     if(time_left.milliseconds/20>tolerable)  // 5%
                         tolerable=time_left.milliseconds/20;
                     LARGE_INTEGER due_time=get_due_time(target_time);
-                    bool const set_time_succeeded=detail_::SetWaitableTimerEx()(timer_handle,&due_time,0,0,0,&detail_::default_reason_context,tolerable)!=0;
+                    //bool const set_time_succeeded=detail_::SetWaitableTimerEx()(timer_handle,&due_time,0,0,0,&detail_::default_reason_context,tolerable)!=0;
+                    bool const set_time_succeeded=detail_::SetWaitableTimerEx()(timer_handle,&due_time,0,0,0,NULL,tolerable)!=0;
                     if(set_time_succeeded)
                     {
                         timeout_index=handle_count;

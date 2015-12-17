@@ -1,6 +1,6 @@
 /*
 (c) 2014 Glen Joseph Fernandes
-glenjofe at gmail dot com
+<glenjofe -at- gmail.com>
 
 Distributed under the Boost Software
 License, Version 1.0.
@@ -17,13 +17,13 @@ namespace alignment {
 namespace detail {
 
 #if defined(BOOST_HAS_INTPTR_T)
-typedef boost::uintptr_t address_t;
+typedef boost::uintptr_t address;
 #else
-typedef std::size_t address_t;
+typedef std::size_t address;
 #endif
 
-} /* :detail */
-} /* :alignment */
-} /* :boost */
+} /* .detail */
+} /* .alignment */
+} /* .boost */
 
 #endif

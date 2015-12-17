@@ -27,51 +27,11 @@
 #include <boost/container/detail/mpl.hpp>
 #include <boost/container/detail/type_traits.hpp>
 #include <boost/container/detail/mpl.hpp>
-#include <boost/container/detail/type_traits.hpp>
+#include <boost/container/detail/std_fwd.hpp>
 #include <boost/move/adl_move_swap.hpp> //swap
 
 #include <boost/intrusive/detail/minimal_pair_header.hpp>      //pair
 #include <boost/move/utility_core.hpp>
-
-/*
-namespace boost{
-
-template<class T1, class T2>
-inline rv< std::pair<T1, T2> > &move(std::pair<T1, T2> &r)
-{
-   return reinterpret_cast< rv< std::pair<T1, T2> > &>(r);
-}
-
-template<class T1, class T2>
-inline rv< std::pair<T1, T2> > &move(rv< std::pair<T1, T2> > &r)
-{
-   return r;
-}
-
-template <class T>
-inline typename ::boost::move_detail::enable_if_and
-   < T &
-   , boost::container::container_detail::is_std_pair<T>
-   , ::boost::move_detail::is_rv<T>
-   >::type
-      forward(const typename ::boost::move_detail::identity<T>::type &x) BOOST_NOEXCEPT
-{
-   return const_cast<T&>(x);
-}
-
-template <class T>
-inline typename ::boost::move_detail::enable_if_and
-   < const T &
-   , boost::container::container_detail::is_std_pair<T>
-   , ::boost::move_detail::is_not_rv<T>
-   >::type
-      forward(const typename ::boost::move_detail::identity<T>::type &x) BOOST_NOEXCEPT
-{
-   return x;
-}
-
-}  //namespace boost {
-*/
 
 namespace boost {
 namespace container {
@@ -117,36 +77,6 @@ struct is_std_pair< std::pair<T1, T2> >
 };
 
 struct pair_nat;
-
-struct piecewise_construct_t { };
-static const piecewise_construct_t piecewise_construct = piecewise_construct_t();
-
-/*
-template <class T1, class T2>
-struct pair
-{
-    template <class U, class V> pair(pair<U, V>&& p);
-    template <class... Args1, class... Args2>
-        pair(piecewise_construct_t, tuple<Args1...> first_args,
-             tuple<Args2...> second_args);
-
-    template <class U, class V> pair& operator=(const pair<U, V>& p);
-    pair& operator=(pair&& p) noexcept(is_nothrow_move_assignable<T1>::value &&
-                                       is_nothrow_move_assignable<T2>::value);
-    template <class U, class V> pair& operator=(pair<U, V>&& p);
-
-    void swap(pair& p) noexcept(noexcept(swap(first, p.first)) &&
-                                noexcept(swap(second, p.second)));
-};
-
-template <class T1, class T2> bool operator==(const pair<T1,T2>&, const pair<T1,T2>&);
-template <class T1, class T2> bool operator!=(const pair<T1,T2>&, const pair<T1,T2>&);
-template <class T1, class T2> bool operator< (const pair<T1,T2>&, const pair<T1,T2>&);
-template <class T1, class T2> bool operator> (const pair<T1,T2>&, const pair<T1,T2>&);
-template <class T1, class T2> bool operator>=(const pair<T1,T2>&, const pair<T1,T2>&);
-template <class T1, class T2> bool operator<=(const pair<T1,T2>&, const pair<T1,T2>&);
-*/
-
 
 template <class T1, class T2>
 struct pair

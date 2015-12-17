@@ -27,6 +27,8 @@
 #include <boost/move/detail/config_begin.hpp>
 #include <boost/move/detail/workaround.hpp>
 
+// @cond
+
 //boost_move_no_copy_constructor_or_assign typedef
 //used to detect noncopyable types for other Boost libraries.
 #if defined(BOOST_NO_CXX11_DELETED_FUNCTIONS) || defined(BOOST_NO_CXX11_RVALUE_REFERENCES)
@@ -48,6 +50,8 @@
       private:\
    //
 #endif   //BOOST_NO_CXX11_DELETED_FUNCTIONS
+
+// @endcond
 
 #if defined(BOOST_NO_CXX11_RVALUE_REFERENCES) && !defined(BOOST_MOVE_DOXYGEN_INVOKED)
 

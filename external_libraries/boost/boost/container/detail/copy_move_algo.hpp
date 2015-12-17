@@ -252,15 +252,15 @@ struct disable_if_memzero_initializable
 
 template <typename I, typename R>
 struct enable_if_trivially_destructible
-   : enable_if_c < false/*container_detail::is_trivially_destructible
-                  <typename boost::container::iterator_traits<I>::value_type>::value*/
+   : enable_if_c < container_detail::is_trivially_destructible
+                  <typename boost::container::iterator_traits<I>::value_type>::value
                , R>
 {};
 
 template <typename I, typename R>
 struct disable_if_trivially_destructible
-   : enable_if_c <true/*!container_detail::is_trivially_destructible
-                  <typename boost::container::iterator_traits<I>::value_type>::value*/
+   : enable_if_c <!container_detail::is_trivially_destructible
+                  <typename boost::container::iterator_traits<I>::value_type>::value
                , R>
 {};
 

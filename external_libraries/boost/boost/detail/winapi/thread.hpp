@@ -1,6 +1,7 @@
 //  thread.hpp  --------------------------------------------------------------//
 
 //  Copyright 2010 Vicente J. Botet Escriba
+//  Copyright 2015 Andrey Semashev
 
 //  Distributed under the Boost Software License, Version 1.0.
 //  See http://www.boost.org/LICENSE_1_0.txt
@@ -16,32 +17,28 @@
 #pragma once
 #endif
 
-namespace boost
-{
-namespace detail
-{
-namespace winapi
-{
-#if defined( BOOST_USE_WINDOWS_H )
-    using ::GetCurrentThreadId;
-    using ::SleepEx;
-    using ::Sleep;
-    using ::SwitchToThread;
-#else
+#if !defined( BOOST_USE_WINDOWS_H )
 extern "C" {
-# ifndef UNDER_CE
-    __declspec(dllimport) DWORD_ WINAPI GetCurrentThreadId(void);
-    __declspec(dllimport) DWORD_ WINAPI SleepEx(DWORD_, BOOL_);
-    __declspec(dllimport) void WINAPI Sleep(DWORD_);
-    __declspec(dllimport) BOOL_ WINAPI SwitchToThread(void);
-#else
-    using ::GetCurrentThreadId;
-    using ::SleepEx;
-    using ::Sleep;
-    using ::SwitchToThread;
+// Windows CE define GetCurrentThreadId as an inline function in kfuncs.h
+#if !defined( UNDER_CE )
+BOOST_SYMBOL_IMPORT boost::detail::winapi::DWORD_ WINAPI GetCurrentThreadId(BOOST_DETAIL_WINAPI_VOID);
 #endif
+BOOST_SYMBOL_IMPORT boost::detail::winapi::DWORD_ WINAPI
+SleepEx(
+    boost::detail::winapi::DWORD_ dwMilliseconds,
+    boost::detail::winapi::BOOL_ bAlertable);
+BOOST_SYMBOL_IMPORT boost::detail::winapi::VOID_ WINAPI Sleep(boost::detail::winapi::DWORD_ dwMilliseconds);
+BOOST_SYMBOL_IMPORT boost::detail::winapi::BOOL_ WINAPI SwitchToThread(BOOST_DETAIL_WINAPI_VOID);
 }
 #endif
+
+namespace boost {
+namespace detail {
+namespace winapi {
+using ::GetCurrentThreadId;
+using ::SleepEx;
+using ::Sleep;
+using ::SwitchToThread;
 }
 }
 }

@@ -34,13 +34,24 @@ struct tree_value_compare
    typedef KeyOfValue   key_of_value;
    typedef Key          key_type;
 
-   explicit tree_value_compare(const key_compare &kcomp)
-      :  base_t(kcomp)
-   {}
 
    tree_value_compare()
       :  base_t()
    {}
+
+   explicit tree_value_compare(const key_compare &kcomp)
+      :  base_t(kcomp)
+   {}
+
+   tree_value_compare (const tree_value_compare &x)
+      :  base_t(x.base_t::get())
+   {}
+
+   tree_value_compare &operator=(const tree_value_compare &x)
+   {  this->base_t::get() = x.base_t::get();   return *this;  }
+
+   tree_value_compare &operator=(const key_compare &x)
+   {  this->base_t::get() = x;   return *this;  }
 
    const key_compare &key_comp() const
    {  return static_cast<const key_compare &>(*this);  }
@@ -54,13 +65,13 @@ struct tree_value_compare
    {};
 
    template<class U>
-   typename boost::intrusive::detail::enable_if<is_key<U>, const key_type &>::type
-      key_forward(const U &key) const
+   const key_type & key_forward
+      (const U &key, typename boost::intrusive::detail::enable_if<is_key<U> >::type* = 0) const
    {  return key; }
 
    template<class U>
-   typename boost::intrusive::detail::disable_if<is_key<U>, const key_type &>::type
-      key_forward(const U &key) const
+   const key_type & key_forward
+      (const U &key, typename boost::intrusive::detail::disable_if<is_key<U> >::type* = 0) const
    {  return KeyOfValue()(key);  }
 
    template<class KeyType, class KeyType2>

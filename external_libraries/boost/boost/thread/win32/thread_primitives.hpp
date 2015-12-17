@@ -46,7 +46,7 @@ namespace boost
             unsigned const create_event_manual_reset = 0x00000001;
             unsigned const event_all_access = EVENT_ALL_ACCESS;
             unsigned const semaphore_all_access = SEMAPHORE_ALL_ACCESS;
-            
+
 
 # ifdef BOOST_NO_ANSI_APIS
 # if BOOST_USE_WINAPI_VERSION < BOOST_WINAPI_VERSION_VISTA
@@ -59,7 +59,7 @@ namespace boost
             using ::CreateSemaphoreExW;
 # endif
             using ::OpenEventW;
-            using ::GetModuleGandleW;
+            using ::GetModuleHandleW;
 # else
             using ::CreateMutexA;
             using ::CreateEventA;
@@ -79,8 +79,8 @@ namespace boost
             using ::ReleaseSemaphore;
             using ::SetEvent;
             using ::ResetEvent;
-            using ::WaitForMultipleObjectsEx;  
-            using ::WaitForSingleObjectEx;  
+            using ::WaitForMultipleObjectsEx;
+            using ::WaitForSingleObjectEx;
             using ::GetCurrentProcessId;
             using ::GetCurrentThreadId;
             using ::GetCurrentThread;
@@ -91,7 +91,7 @@ namespace boost
             using ::Sleep;
             using ::QueueUserAPC;
             using ::GetProcAddress;
-#endif           
+#endif
         }
     }
 }
@@ -286,7 +286,7 @@ namespace boost
                 }
 
                 // Oops, we weren't called often enough, we're stuck
-                return 0xFFFFFFFF;     
+                return 0xFFFFFFFF;
             }
 #else
 #endif
@@ -295,12 +295,12 @@ namespace boost
                 static detail::gettickcount64_t gettickcount64impl;
                 if(gettickcount64impl)
                     return gettickcount64impl;
-                    
+
                 // GetTickCount and GetModuleHandle are not allowed in the Windows Runtime,
                 // and kernel32 isn't used in Windows Phone.
 #if BOOST_PLAT_WINDOWS_RUNTIME
                 gettickcount64impl = &GetTickCount64;
-#else               
+#else
                 farproc_t addr=GetProcAddress(
 #if !defined(BOOST_NO_ANSI_APIS)
                     GetModuleHandleA("KERNEL32.DLL"),
@@ -312,7 +312,7 @@ namespace boost
                     gettickcount64impl=(detail::gettickcount64_t) addr;
                 else
                     gettickcount64impl=&GetTickCount64emulation;
-#endif                    
+#endif
                 return gettickcount64impl;
             }
 
@@ -343,14 +343,14 @@ namespace boost
                 handle const res = win32::CreateEventW(0, type, state, mutex_name);
 #else
                 handle const res = win32::CreateEventExW(
-                    0, 
-                    mutex_name, 
+                    0,
+                    mutex_name,
                     type ? create_event_manual_reset : 0 | state ? create_event_initial_set : 0,
                     event_all_access);
 #endif
                 return res;
             }
-            
+
             inline handle create_anonymous_event(event_type type,initial_event_state state)
             {
                 handle const res = create_event(0, type, state);
@@ -374,7 +374,7 @@ namespace boost
 #endif
                 return res;
             }
-      
+
             inline handle create_anonymous_semaphore(long initial_count,long max_count)
             {
                 handle const res=create_anonymous_semaphore_nothrow(initial_count,max_count);
@@ -402,20 +402,20 @@ namespace boost
             {
                 BOOST_VERIFY(ReleaseSemaphore(semaphore,count,0)!=0);
             }
-            
+
             inline void get_system_info(system_info *info)
             {
 #if BOOST_PLAT_WINDOWS_RUNTIME
-                win32::GetNativeSystemInfo(info); 
+                win32::GetNativeSystemInfo(info);
 #else
                 win32::GetSystemInfo(info);
 #endif
             }
-            
+
             inline void sleep(unsigned long milliseconds)
             {
                 if(milliseconds == 0)
-                {                
+                {
 #if BOOST_PLAT_WINDOWS_RUNTIME
                     std::this_thread::yield();
 #else
@@ -425,13 +425,13 @@ namespace boost
                 else
                 {
 #if BOOST_PLAT_WINDOWS_RUNTIME
-                    ::boost::detail::win32::WaitForSingleObjectEx(::boost::detail::win32::GetCurrentThread(), milliseconds, 0); 
+                    ::boost::detail::win32::WaitForSingleObjectEx(::boost::detail::win32::GetCurrentThread(), milliseconds, 0);
 #else
                     ::boost::detail::win32::Sleep(milliseconds);
 #endif
                 }
             }
-            
+
 #if BOOST_PLAT_WINDOWS_RUNTIME
             class BOOST_THREAD_DECL scoped_winrt_thread
             {
@@ -639,7 +639,7 @@ namespace boost
                     }
                     old=current;
                 }
-                while(true);
+                while(true) ;
                 return (old&value)!=0;
             }
 
@@ -656,7 +656,7 @@ namespace boost
                     }
                     old=current;
                 }
-                while(true);
+                while(true) ;
                 return (old&value)!=0;
             }
         }
