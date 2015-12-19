@@ -49,7 +49,9 @@ if(NOT Boost_FOUND) # we compile boost ourselves
 
 
 	if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-		target_compile_options(boost_thread PRIVATE -fPIC)
+		# HACK -- cmake 2.8.11 doesn't understand target_compile_options() so:
+		#target_compile_options(boost_thread PRIVATE -fPIC)
+		set_property(TARGET boost_thread APPEND PROPERTY COMPILE_FLAGS "-fPIC")
 		target_link_libraries(boost_thread rt)
 	endif()
 
