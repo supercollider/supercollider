@@ -45,14 +45,6 @@ int64 oscTimeNow()
 	return GetCurrentOSCTime();
 }
 
-/*TODO int64 PaStreamTimeToOSC(PaTime pa_time) {
-	uint64 s, f;
-	s = (uint64)pa_time;
-	f = (uint64)((pa_time - s) * 1000000 * kMicrosToOSCunits);
-
-	return (s << 32) + f;
-} */
-
 void initializeScheduler()
 {
 	gOSCoffset = GetCurrentOSCTime();
@@ -64,8 +56,7 @@ class SC_BelaDriver : public SC_AudioDriver
 {
 
 	int mInputChannelCount, mOutputChannelCount;
-//TODO 	PaTime mPaStreamStartupTime;
-//TODO 	int64 mPaStreamStartupTimeOSC;
+	uint64_t mBelaStartSampleCount; // probably always starts as zero, but we need to subtract it anyway to keep track of total elapsed samples.
 protected:
 	// Driver interface methods
 	virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
@@ -86,6 +77,7 @@ SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)
 
 SC_BelaDriver::SC_BelaDriver(struct World *inWorld)
 		: SC_AudioDriver(inWorld)
+		, mStartHostSecs(0)
 {
 }
 
@@ -95,7 +87,7 @@ SC_BelaDriver::~SC_BelaDriver()
 	BeagleRT_cleanupAudio();
 }
 
-void render(BeagleRTContext *context, void *userData)
+void render(BeagleRTContext *belaContext, void *userData)
 //static int SC_PortAudioStreamCallback( const void *input, void *output,
 //	unsigned long frameCount, const PaStreamCallbackTimeInfo* timeInfo,
 //	PaStreamCallbackFlags statusFlags, void *userData )
@@ -109,24 +101,47 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *context)
 {
 	sc_SetDenormalFlags();
 	World *world = mWorld;
-	(void) frameCount, timeInfo, statusFlags; // suppress unused parameter warnings
-	try {
-//TODO
-		// synchronise against the output buffer - timeInfo->currentTime is 0.0 bug in PA?
-		if (mPaStreamStartupTime==0 && mPaStreamStartupTimeOSC==0) {
-			mPaStreamStartupTimeOSC = GetCurrentOSCTime();
-			mPaStreamStartupTime = timeInfo->outputBufferDacTime;
-		}
-		mOSCbuftime = PaStreamTimeToOSC(timeInfo->outputBufferDacTime - mPaStreamStartupTime) + mPaStreamStartupTimeOSC;
 
+	// NOTE: code here is adapted from the SC_Jack.cpp, the version not using the DLL
+	HostTime hostTime = getTime();
+	double hostSecs = secondsSinceEpoch(hostTime);
+	// NOTE: jack driver uses time in num frames; bela gives it in num samples, so here we divide to give in num frames. need to do this?
+	double sampleTime = static_cast<double>(belaContext->audioSampleCount / belaContext->audioFrames);
+	//double sampleTime = (double)(jack_frame_time(client) + jack_frames_since_cycle_start(client));
+
+	if (mStartHostSecs == 0) {
+		mStartHostSecs = hostSecs;
+		mStartSampleTime = sampleTime;
+	} else {
+		double instSampleRate = (sampleTime - mPrevSampleTime) / (hostSecs - mPrevHostSecs);
+		double smoothSampleRate = mSmoothSampleRate;
+		smoothSampleRate = smoothSampleRate + 0.002 * (instSampleRate - smoothSampleRate);
+		if (fabs(smoothSampleRate - mSampleRate) > 10.) {
+			smoothSampleRate = mSampleRate;
+		}
+		mOSCincrement = (int64)(mOSCincrementNumerator / smoothSampleRate);
+		mSmoothSampleRate = smoothSampleRate;
+#if 0
+		double avgSampleRate = (sampleTime - mStartSampleTime)/(hostSecs - mStartHostSecs);
+		double jitter = (smoothSampleRate * (hostSecs - mPrevHostSecs)) - (sampleTime - mPrevSampleTime);
+		double drift = (smoothSampleRate - mSampleRate) * (hostSecs - mStartHostSecs);
+#endif
+	}
+
+	mPrevHostSecs = hostSecs;
+	mPrevSampleTime = sampleTime;
+
+	try {
 		mFromEngine.Free();
 		mToEngine.Perform();
 		mOscPacketsToEngine.Perform();
 
-		int numInputs = mInputChannelCount;
-		int numOutputs = mOutputChannelCount;
-		const float **inBuffers = (const float**)input;
-		float **outBuffers = (float**)output;
+		int numInputs = mInputList->mSize;
+		int numOutputs = mOutputList->mSize;
+		jack_port_t **inPorts = mInputList->mPorts;
+		jack_port_t **outPorts = mOutputList->mPorts;
+		sc_jack_sample_t **inBuffers = mInputList->mBuffers;
+		sc_jack_sample_t **outBuffers = mOutputList->mBuffers;
 
 		int numSamples = NumSamplesPerCallback();
 		int bufFrames = mWorld->mBufLength;
@@ -137,32 +152,54 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *context)
 		int32 *inTouched = mWorld->mAudioBusTouched + mWorld->mNumOutputs;
 		int32 *outTouched = mWorld->mAudioBusTouched;
 
-		int minInputs = std::min<size_t>(numInputs, mWorld->mNumInputs);
-		int minOutputs = std::min<size_t>(numOutputs, mWorld->mNumOutputs);
+		int minInputs = sc_min(numInputs, (int)mWorld->mNumInputs);
+		int minOutputs = sc_min(numOutputs, (int)mWorld->mNumOutputs);
 
 		int bufFramePos = 0;
-		int64 oscTime = mOSCbuftime;
+
+// TODO
+		// cache I/O buffers
+		for (int i = 0; i < minInputs; ++i) {
+			inBuffers[i] = (sc_jack_sample_t*)jack_port_get_buffer(inPorts[i], numSamples);
+		}
+
+		for (int i = 0; i < minOutputs; ++i) {
+			outBuffers[i] = (sc_jack_sample_t*)jack_port_get_buffer(outPorts[i], numSamples);
+		}
+
+		// main loop
+#ifdef SC_JACK_USE_DLL
+		int64 oscTime = mOSCbuftime = (int64)((mDLL.PeriodTime() - mMaxOutputLatency) * kSecondsToOSCunits + .5);
+// 		int64 oscInc = mOSCincrement = (int64)(mOSCincrementNumerator / mDLL.SampleRate());
+		int64 oscInc = mOSCincrement = (int64)((mDLL.Period() / numBufs) * kSecondsToOSCunits + .5);
+		mSmoothSampleRate = mDLL.SampleRate();
+		double oscToSamples = mOSCtoSamples = mSmoothSampleRate * kOSCtoSecs /* 1/pow(2,32) */;
+#else
+		int64 oscTime = mOSCbuftime = OSCTime(hostTime) - (int64)(mMaxOutputLatency * kSecondsToOSCunits + .5);
 		int64 oscInc = mOSCincrement;
 		double oscToSamples = mOSCtoSamples;
-		// main loop
-		for (int i = 0; i < numBufs; ++i, mWorld->mBufCounter++, bufFramePos += bufFrames)
-		{
+#endif
+
+		for (int i = 0; i < numBufs; ++i, mWorld->mBufCounter++, bufFramePos += bufFrames) {
 			int32 bufCounter = mWorld->mBufCounter;
 			int32 *tch;
 
-//TODO			// copy+touch inputs
+//TODO
+			// copy+touch inputs
 			tch = inTouched;
-			for (int k = 0; k < minInputs; ++k)
-			{
-				const float *src = inBuffers[k] + bufFramePos;
+			for (int k = 0; k < minInputs; ++k) {
+				sc_jack_sample_t *src = inBuffers[k] + bufFramePos;
 				float *dst = inBuses + k * bufFrames;
-				for (int n = 0; n < bufFrames; ++n) *dst++ = *src++;
+				for (int n = 0; n < bufFrames; ++n) {
+					*dst++ = *src++;
+				}
 				*tch++ = bufCounter;
 			}
 
 			// run engine
 			int64 schedTime;
 			int64 nextTime = oscTime + oscInc;
+
 			while ((schedTime = mScheduler.NextTime()) <= nextTime) {
 				float diffTime = (float)(schedTime - oscTime) * oscToSamples + 0.5;
 				float diffTimeFloor = floor(diffTime);
@@ -175,25 +212,30 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *context)
 				SC_ScheduledEvent event = mScheduler.Remove();
 				event.Perform();
 			}
+
 			world->mSampleOffset = 0;
 			world->mSubsampleOffset = 0.f;
-
 			World_Run(world);
 
-//TODO			// copy touched outputs
+//TODO
+			// copy touched outputs
 			tch = outTouched;
 			for (int k = 0; k < minOutputs; ++k) {
-				float *dst = outBuffers[k] + bufFramePos;
+				sc_jack_sample_t *dst = outBuffers[k] + bufFramePos;
 				if (*tch++ == bufCounter) {
 					float *src = outBuses + k * bufFrames;
-					for (int n = 0; n < bufFrames; ++n) *dst++ = *src++;
+					for (int n = 0; n < bufFrames; ++n) {
+						*dst++ = *src++;
+					}
 				} else {
-					for (int n = 0; n < bufFrames; ++n) *dst++ = 0.0f;
+					for (int n = 0; n < bufFrames; ++n) {
+						*dst++ = 0.0f;
+					}
 				}
 			}
 
-			// update buffer time
-			oscTime = mOSCbuftime = nextTime;
+			// advance OSC time
+			mOSCbuftime = oscTime = nextTime;
 		}
 	} catch (std::exception& exc) {
 		scprintf("SC_BelaDriver: exception in real time: %s\n", exc.what());
@@ -346,15 +388,6 @@ bool SC_BelaDriver::DriverStart()
 		cout << "Error in SC_BelaDriver::DriverStart(): unable to start real-time audio" << endl;
 		return false;
 	}
-
-
-//TODO
-	// sync times
-	mPaStreamStartupTimeOSC = 0;
-	mPaStreamStartupTime = 0;
-	// it would be better to do the sync here, but the timeInfo in the callback is incomplete
-	//mPaStreamStartupTimeOSC = GetCurrentOSCTime();
-	//mPaStreamStartupTime = Pa_GetStreamTime(mStream);
 	return true;
 }
 
