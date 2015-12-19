@@ -41,7 +41,16 @@ class network_thread
 public:
     void start_receive(void)
     {
-        thread_ = std::move(std::thread(network_thread::start, this));
+        thread_ = std::thread( [this] {
+#ifdef NOVA_TT_PRIORITY_RT
+            thread_set_priority_rt(thread_priority_interval_rt().first);
+#endif
+            name_thread("Network Receive");
+
+            sem.post();
+            io_service::work work(io_service_);
+            io_service_.run();
+        } );
         sem.wait();
     }
 
@@ -63,24 +72,6 @@ public:
         udp::socket socket(io_service_);
         socket.open(udp::v4());
         socket.send_to(boost::asio::buffer(data, size), receiver);
-    }
-
-private:
-    static void start(network_thread * self)
-    {
-#ifdef NOVA_TT_PRIORITY_RT
-        thread_set_priority_rt(thread_priority_interval_rt().first);
-#endif
-        name_thread("Network Receive");
-        self->run();
-    }
-
-    void run(void)
-    {
-        sem.post();
-
-        io_service::work work(io_service_);
-        io_service_.run();
     }
 
 protected:
