@@ -13,7 +13,7 @@ Eventually the idea would be to have a Xenomai/BeagleRT audio driver for scsynth
 PREPARATION
 ===========
 
-Plug in an ethernet cable, so you can (a) install/update packages and (b) set the system time. Then:
+Plug in an ethernet cable (or connect to the Internet some other way). Then we need to (a) install/update packages and (b) set the system time:
 
     ifup eth0
     echo "deb http://http.debian.net/debian wheezy-backports main" >> /etc/apt/sources.list
@@ -46,6 +46,8 @@ My modified source code is in this git branch here, called `bela_hackery`. If yo
     cd supercollider
     git submodule init && git submodule update
 
+I believe that the Bela system image already includes most of SuperCollider's build dependencies. The updates to cmake/gcc described above are incurred because I'm using the latest `master` version of SC rather than 3.6.
+
 COMPILING
 =========
 
@@ -56,4 +58,6 @@ Then here's how to build:
     # note that we're choosing the compiler version here too
     cmake /extrabela/supercollider -DCMAKE_C_COMPILER=gcc-4.7 -DCMAKE_CXX_COMPILER=g++-4.7 -DNOVA_SIMD=OFF -DSSE=OFF -DSSE2=OFF -DINSTALL_HELP=OFF -DSC_QT=OFF -DSC_IDE=OFF -DSUPERNOVA=OFF -DNO_AVAHI=ON -DNATIVE=ON -DENABLE_TESTSUITE=OFF
     make
+
+The `make` step will take a little while, about 30 minutes for me.
 
