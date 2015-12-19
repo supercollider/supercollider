@@ -248,10 +248,10 @@ bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 				// sets default values in the data structure which specifies the BeagleRT settings, including
 				// frame sizes, numbers of channels, volume levels and other parameters.
 
-
-
 	/*
-	TODO DAN NOTE: we do NOT know the samplerate or blocksize in here. anything that DOES need to know that goes in the setup() callback.
+	NOTE: SuperCollider wants us to fill in (int* outNumSamples, double* outSampleRate) during this function call, BUT in Bela we can't
+	know those values for sure until we reach setup() which is called-back from the BeagleRT_initAudio() function. This is OK because
+	that callback happens in-line. If the API were to change in future and make that callback asynch, we would be in trouble.
 	*/
 	DataSlotsToFill dataSlotsToFill;
 	dataSlotsToFill.outNumSamples = outNumSamples;
