@@ -79,6 +79,7 @@ SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)
 
 SC_BelaDriver::SC_BelaDriver(struct World *inWorld)
 		: SC_AudioDriver(inWorld)
+		, mStartHostSecs(0)
 {
 	mStartHostSecs = 0;
 }
