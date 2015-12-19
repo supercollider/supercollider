@@ -69,7 +69,7 @@ Then here's how to build:
 
 The `make` step will take a little while, about 30 minutes for me.
 
-Currently status: builds, but then when running `./server/scsynth/scsynth -u 57110` we get this:
+Current status: builds, but then when running `./server/scsynth/scsynth -u 57110` we get this:
 
     SC_BelaDriver: >>DriverSetup
     SC_AudioDriver: sample rate = 44100.000000, driver's block size = 0
