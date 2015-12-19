@@ -293,9 +293,11 @@ else()
 endif()
 
 add_subdirectory(server)
+if(FALSE) # HACK -- currently just compiling the server
 add_subdirectory(lang)
 add_subdirectory(platform)
 add_subdirectory(editors)
+endif()
 
 if(UNIX AND NOT APPLE)
     install(DIRECTORY include/common include/plugin_interface include/server include/lang
@@ -440,7 +442,9 @@ foreach(arg ${BUILD_CLASSLIBRARIES})
 	set(BUILD_CLASSLIBRARYPATH "${BUILD_CLASSLIBRARYPATH}+${arg}\n")
 endforeach()
 
+if(FALSE) # HACK -- currently just compiling the server
 configure_file(build_sclang.cfg.in ${CMAKE_CURRENT_BINARY_DIR}/build_sclang.cfg)
+endif()
 
 if(SC_DOC_RENDER)
 	file(GLOB_RECURSE SCDocSources RELATIVE HelpSource .*[^~])

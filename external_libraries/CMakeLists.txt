@@ -83,6 +83,7 @@ add_library(oscpack STATIC EXCLUDE_FROM_ALL "oscpack_build.cpp")
 target_include_directories(oscpack PRIVATE boost)
 target_include_directories(oscpack INTERFACE oscpack_1_1_0 )
 
+if(FALSE) # HACK -- currently just compiling the server
 if(NOT YAMLCPP_FOUND)
   message(STATUS "using bundled libyaml-cpp")
 
@@ -98,6 +99,7 @@ if(NOT YAMLCPP_FOUND)
     target_compile_options(yaml PRIVATE -Wno-deprecated-declarations)
   endif()
 
+endif()
 endif()
 
 
@@ -116,7 +118,9 @@ if (HID_HIDRAW)
 endif()
 set( EXAMPLE_TEST OFF )
 set( EXAMPLE_OSC OFF )
+if(FALSE) # HACK -- currently just compiling the server
 add_subdirectory(hidapi)
+endif()
 
 if(WIN32)
   add_library(portmidi portmidi/pm_common/pminternal.h
