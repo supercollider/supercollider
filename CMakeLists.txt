@@ -104,7 +104,7 @@ option(FFT_GREEN "Use internal 'Green' FFT lib rather than FFTW. (Not recommende
 option(SSE "Compile with support for SSE instructions." ON)
 option(SSE2 "Compile with support for SSE2 instructions." ON)
 
-set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio})")
+set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio,bela})")
 
 option(LIBSCSYNTH "Compile libscsynth as shared library" OFF)
 
