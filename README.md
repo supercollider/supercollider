@@ -7,7 +7,7 @@ This file is Dan's notes about compiling SC on Bela (BeagleRT) platform.
 
 At time of writing, I'm compiling just the server `scsynth`, so I've deactivated other components in the cmake.
 This branch `bela_hackery` contains that plus other modifications to get the SC source code master branch building.
-Eventually the idea would be to have a Xenomai/BeagleRT audio driver for scsynth.
+The main addition in this branch is a **Xenomai/BeagleRT audio driver for scsynth**, to use Bela's ultra-low-latency audio thread *instead* of jack/portaudio.
 
 
 PREPARATION
