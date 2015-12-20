@@ -3,6 +3,8 @@
 #
 #  BELA_FOUND - system has bela
 #  BELA_INCLUDE_DIRS - the bela include directory
+#  BELA_SOURCES - the bela source files to compile in
+#  BELA_LIBRARIES - Link these too please
 #  BELA_DEFINITIONS - Compiler switches required for using bela
 #
 #  Copyright (c) 2008 Andreas Schneider <mail@cynapses.org>
@@ -39,25 +41,31 @@ else (BELA_INCLUDE_DIRS)
       /opt/local/include
       /sw/include
   )
-  
-  find_library(BELA_LIBRARY
+
+  find_path(BELA_SOURCES_DIR
     NAMES
-      xenomai
+      RTAudio.cpp
     PATHS
-      ${_BELA_LIBDIR}
-      /usr/xenomai/lib
-      /usr/lib
-      /usr/local/lib
-      /opt/local/lib
-      /sw/lib
+      ${_BELA_SOURCES_DIR}
+      /root/BeagleRT/core
   )
 
-  if (BELA_LIBRARY)
+  file(GLOB BELA_SOURCE_FILES ${BELA_SOURCES_DIR}/*.cpp)
+
+  if (BELA_INCLUDE_DIR)
     set(BELA_FOUND TRUE)
-  endif (BELA_LIBRARY)
+  endif (BELA_INCLUDE_DIR)
 
   set(BELA_INCLUDE_DIRS
     ${BELA_INCLUDE_DIR}
+  )
+
+  set(BELA_SOURCES
+    ${BELA_SOURCE_FILES}
+  )
+
+  set(BELA_LIBRARIES
+      "-L/usr/xenomai/lib -L/usr/lib/arm-linux-gnueabihf -lrt -lnative -lxenomai -lprussdrv"   # TODO is this the best portable way to link these?
   )
 
   if (BELA_INCLUDE_DIRS)
@@ -66,7 +74,8 @@ else (BELA_INCLUDE_DIRS)
 
   if (BELA_FOUND)
     if (NOT BELA_FIND_QUIETLY)
-      message(STATUS "Found xenomai: ${BELA_LIBRARY}")
+      message(STATUS "Found Bela headers: ${BELA_INCLUDE_DIRS}")
+      message(STATUS "Found Bela sources: ${BELA_SOURCES}")
     endif (NOT BELA_FIND_QUIETLY)
   else (BELA_FOUND)
     if (BELA_FIND_REQUIRED)

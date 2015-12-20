@@ -38,12 +38,7 @@ elseif(AUDIOAPI STREQUAL bela)
 	if(NOT BELA_FOUND)
 		message(FATAL_ERROR "Bela selected as audio API, but Bela development files not found")
 	endif()
-
-
-	# TODO still to check: STATIC_LIBS := ./libprussdrv.a
-	# TODO still to check: LIBS := -lrt -lnative -lxenomai
-
-
+	message(STATUS "bela libs: ${BELA_LIBRARIES}")
 endif()
 message(STATUS "Audio API: ${AUDIOAPI}")
 
@@ -125,6 +120,7 @@ elseif (AUDIOAPI STREQUAL portaudio)
 	include_directories(${PORTAUDIO_INCLUDE_DIRS})
 elseif (AUDIOAPI STREQUAL bela)
 	list(APPEND scsynth_sources SC_Bela.cpp)
+	list(APPEND scsynth_sources ${BELA_SOURCES})
 	add_definitions("-DSC_AUDIO_API=SC_AUDIO_API_BELA" ${XENOMAI_DEFINITIONS} ${BELA_DEFINITIONS})
 	include_directories(${XENOMAI_INCLUDE_DIRS})
 	include_directories(${BELA_INCLUDE_DIRS})
