@@ -27,7 +27,6 @@
 #include "SC_Time.hpp"
 #include <math.h>
 #include <stdlib.h>
-#include <iostream>
 
 #include "BeagleRT.h"
 
@@ -261,16 +260,19 @@ bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 	dataSlotsToFill.outSampleRate = outSampleRate;
 
 	//NO, stick with bela documented layout    settings.interleave = 0; // we prefer our io buffers non-interleaved thanks
-	settings.periodSize = mPreferredHardwareBufferFrameSize / 2; // halved because "periodSize" in bela is for the analogue pins not the audio pins
+	if(mPreferredHardwareBufferFrameSize){
+		settings.periodSize = mPreferredHardwareBufferFrameSize / 2; // halved because "periodSize" in bela is for the analogue pins not the audio pins
+	}
 	// note that Bela doesn't give us an option to choose samplerate, since it's baked-in.
 
 	// Initialise the PRU audio device. This function prepares audio rendering in BeagleRT. It should be called from main() sometime
 	// after command line option parsing has finished. It will initialise the rendering system, which
 	// in the process will result in a call to the user-defined setup() function.
 	if(BeagleRT_initAudio(&settings, &dataSlotsToFill) != 0) {
-		cout << "Error in SC_BelaDriver::DriverSetup(): unable to initialise audio" << endl;
+		scprintf("Error in SC_BelaDriver::DriverSetup(): unable to initialise audio\n");
 		return false;
 	}
+
 	return true;
 }
 
@@ -288,6 +290,9 @@ bool setup(BeagleRTContext* belaContext, void* userData)
 		DataSlotsToFill* dataSlotsToFill = (DataSlotsToFill*)userData;
 		*(dataSlotsToFill->outNumSamples) = static_cast<int>(belaContext->audioFrames);
 		*(dataSlotsToFill->outSampleRate) = static_cast<double>(belaContext->audioSampleRate);
+	}else{
+		scprintf("SC_BelaDriver: error, setup() got no user data\n");
+		return false;
 	}
 	return true;
 }
@@ -303,7 +308,7 @@ bool SC_BelaDriver::DriverStart()
 	scprintf("SC_BelaDriver: >>DriverStart\n");
 	// Start the audio device running
 	if(BeagleRT_startAudio()) {
-		cout << "Error in SC_BelaDriver::DriverStart(): unable to start real-time audio" << endl;
+		scprintf("Error in SC_BelaDriver::DriverStart(): unable to start real-time audio\n");
 		return false;
 	}
 	return true;
