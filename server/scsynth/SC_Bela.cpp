@@ -1,7 +1,6 @@
 /*
-	SuperCollider real time audio synthesis system
-	Copyright (c) 2002 James McCartney. All rights reserved.
-	http://www.audiosynth.com
+	Bela (BeagleRT) audio driver for SuperCollider.
+	Copyright (c) 2015 Dan Stowell. All rights reserved.
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -16,6 +15,9 @@
 	You should have received a copy of the GNU General Public License
 	along with this program; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
+
+	This file contains elements from SC_PortAudio.cpp and SC_Jack.cpp,
+	copyright their authors, and published under the same licence.
 */
 #include "SC_CoreAudio.h"
 #include <stdarg.h>
@@ -243,6 +245,7 @@ typedef struct {
 
 bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 {
+	scprintf("SC_BelaDriver: >>DriverSetup\n");
 	BeagleRTInitSettings settings;
 	BeagleRT_defaultSettings(&settings);	// This function should be called in main() before parsing any command-line arguments. It
 				// sets default values in the data structure which specifies the BeagleRT settings, including
@@ -297,6 +300,7 @@ void cleanup(BeagleRTContext *belaContext, void *userData)
 
 bool SC_BelaDriver::DriverStart()
 {
+	scprintf("SC_BelaDriver: >>DriverStart\n");
 	// Start the audio device running
 	if(BeagleRT_startAudio()) {
 		cout << "Error in SC_BelaDriver::DriverStart(): unable to start real-time audio" << endl;
@@ -307,6 +311,7 @@ bool SC_BelaDriver::DriverStart()
 
 bool SC_BelaDriver::DriverStop()
 {
+	scprintf("SC_BelaDriver: >>DriverStop\n");
 	// Stop the audio device
 	BeagleRT_stopAudio();
 	return true;
