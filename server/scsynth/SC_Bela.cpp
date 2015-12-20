@@ -67,7 +67,7 @@ public:
 	SC_BelaDriver(struct World *inWorld);
 	virtual ~SC_BelaDriver();
 
-	void BelaAudioCallback(BeagleRTContext *context);
+	void BelaAudioCallback(BeagleRTContext *belaContext);
 };
 
 SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)
@@ -88,16 +88,13 @@ SC_BelaDriver::~SC_BelaDriver()
 }
 
 void render(BeagleRTContext *belaContext, void *userData)
-//static int SC_PortAudioStreamCallback( const void *input, void *output,
-//	unsigned long frameCount, const PaStreamCallbackTimeInfo* timeInfo,
-//	PaStreamCallbackFlags statusFlags, void *userData )
 {
 	SC_BelaDriver *driver = (SC_BelaDriver*)userData;
 
-	driver->BelaAudioCallback(context);
+	driver->BelaAudioCallback(belaContext);
 }
 void sc_SetDenormalFlags();
-void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *context)
+void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 {
 	sc_SetDenormalFlags();
 	World *world = mWorld;
@@ -136,12 +133,8 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *context)
 		mToEngine.Perform();
 		mOscPacketsToEngine.Perform();
 
-		int numInputs = mInputList->mSize;
-		int numOutputs = mOutputList->mSize;
-		jack_port_t **inPorts = mInputList->mPorts;
-		jack_port_t **outPorts = mOutputList->mPorts;
-		sc_jack_sample_t **inBuffers = mInputList->mBuffers;
-		sc_jack_sample_t **outBuffers = mOutputList->mBuffers;
+		const uint32_t numInputs = belaContext->audioChannels;
+		const uint32_t numOutputs = belaContext->audioChannels;
 
 		int numSamples = NumSamplesPerCallback();
 		int bufFrames = mWorld->mBufLength;
@@ -157,41 +150,33 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *context)
 
 		int bufFramePos = 0;
 
-// TODO
+		// THIS IS TO DO LATER -- LOOK AT CACHEING AND CONSTING TO IMPROVE EFFICIENCY
 		// cache I/O buffers
-		for (int i = 0; i < minInputs; ++i) {
-			inBuffers[i] = (sc_jack_sample_t*)jack_port_get_buffer(inPorts[i], numSamples);
-		}
-
-		for (int i = 0; i < minOutputs; ++i) {
-			outBuffers[i] = (sc_jack_sample_t*)jack_port_get_buffer(outPorts[i], numSamples);
-		}
+		//for (int i = 0; i < minInputs; ++i) {
+		//	inBuffers[i] = (sc_jack_sample_t*)jack_port_get_buffer(inPorts[i], numSamples);
+		//}
+		//
+		//for (int i = 0; i < minOutputs; ++i) {
+		//	outBuffers[i] = (sc_jack_sample_t*)jack_port_get_buffer(outPorts[i], numSamples);
+		//}
 
 		// main loop
-#ifdef SC_JACK_USE_DLL
-		int64 oscTime = mOSCbuftime = (int64)((mDLL.PeriodTime() - mMaxOutputLatency) * kSecondsToOSCunits + .5);
-// 		int64 oscInc = mOSCincrement = (int64)(mOSCincrementNumerator / mDLL.SampleRate());
-		int64 oscInc = mOSCincrement = (int64)((mDLL.Period() / numBufs) * kSecondsToOSCunits + .5);
-		mSmoothSampleRate = mDLL.SampleRate();
-		double oscToSamples = mOSCtoSamples = mSmoothSampleRate * kOSCtoSecs /* 1/pow(2,32) */;
-#else
 		int64 oscTime = mOSCbuftime = OSCTime(hostTime) - (int64)(mMaxOutputLatency * kSecondsToOSCunits + .5);
 		int64 oscInc = mOSCincrement;
 		double oscToSamples = mOSCtoSamples;
-#endif
 
 		for (int i = 0; i < numBufs; ++i, mWorld->mBufCounter++, bufFramePos += bufFrames) {
 			int32 bufCounter = mWorld->mBufCounter;
 			int32 *tch;
 
-//TODO
 			// copy+touch inputs
 			tch = inTouched;
 			for (int k = 0; k < minInputs; ++k) {
-				sc_jack_sample_t *src = inBuffers[k] + bufFramePos;
+				//sc_jack_sample_t *src = inBuffers[k] + bufFramePos;
 				float *dst = inBuses + k * bufFrames;
 				for (int n = 0; n < bufFrames; ++n) {
-					*dst++ = *src++;
+					//*dst++ = *src++;
+					*dst++ = belaContext->audioIn[n * numInputs + k];
 				}
 				*tch++ = bufCounter;
 			}
@@ -217,19 +202,20 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *context)
 			world->mSubsampleOffset = 0.f;
 			World_Run(world);
 
-//TODO
 			// copy touched outputs
 			tch = outTouched;
 			for (int k = 0; k < minOutputs; ++k) {
-				sc_jack_sample_t *dst = outBuffers[k] + bufFramePos;
+				//sc_jack_sample_t *dst = outBuffers[k] + bufFramePos;
 				if (*tch++ == bufCounter) {
 					float *src = outBuses + k * bufFrames;
 					for (int n = 0; n < bufFrames; ++n) {
-						*dst++ = *src++;
+						//*dst++ = *src++;
+						belaContext->audioOut[n * numOutputs + k] = *src++;
 					}
 				} else {
 					for (int n = 0; n < bufFrames; ++n) {
-						*dst++ = 0.0f;
+						//*dst++ = 0.0f;
+						belaContext->audioOut[n * numOutputs + k] = 0.0f;
 					}
 				}
 			}
@@ -247,8 +233,12 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *context)
 }
 
 // ====================================================================
-//
-//
+
+struct {
+	int* outNumSamples,
+	double* outSampleRate
+} DataSlotsToFill; // just a convenience for use during driver setup
+
 bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 {
 	BeagleRTInitSettings settings;
@@ -261,102 +251,21 @@ bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 	/*
 	TODO DAN NOTE: we do NOT know the samplerate or blocksize in here. anything that DOES need to know that goes in the setup() callback.
 	*/
+	DataSlotsToFill dataSlotsToFill;
+	dataSlotsToFill.outNumSamples = outNumSamples;
+	dataSlotsToFill.outSampleRate = outSampleRate;
 
+	//NO, stick with bela documented layout    settings->interleave = 0; // we prefer our io buffers non-interleaved thanks
+	settings->periodSize = mPreferredHardwareBufferFrameSize / 2; // halved because "periodSize" in bela is for the analogue pins not the audio pins
+	// note that Bela doesn't give us an option to choose samplerate, since it's baked-in.
 
-	//TODO
-
-
-	int mDeviceInOut[2];
-	const PaDeviceInfo *pdi;
-	const PaHostApiInfo *apiInfo;
-	const PaStreamInfo *psi;
-	PaTime suggestedLatencyIn, suggestedLatencyOut;
-	PaDeviceIndex numDevices = Pa_GetDeviceCount();
-
-	mDeviceInOut[0] = paNoDevice;
-	mDeviceInOut[1] = paNoDevice;
-	if (mDeviceInOut[0] == paNoDevice) mDeviceInOut[0] = Pa_GetDefaultInputDevice();
-	if (mDeviceInOut[1] == paNoDevice) mDeviceInOut[1] = Pa_GetDefaultOutputDevice();
-
-	*outNumSamples = mWorld->mBufLength;
-	if (mPreferredSampleRate)
-		*outSampleRate = mPreferredSampleRate;
-	else
-		*outSampleRate = 44100.;
-
-
-//TODO
-	if (mPreferredHardwareBufferFrameSize)
-		// controls the suggested latency by hardwareBufferSize switch -Z
-		suggestedLatencyIn = suggestedLatencyOut = mPreferredHardwareBufferFrameSize / (*outSampleRate);
-	else {
-		if (mDeviceInOut[0]!=paNoDevice)
-			suggestedLatencyIn = Pa_GetDeviceInfo( mDeviceInOut[0] )->defaultLowInputLatency;
-		if (mDeviceInOut[1]!=paNoDevice)
-			suggestedLatencyOut = Pa_GetDeviceInfo( mDeviceInOut[1] )->defaultLowOutputLatency;
-	}
-
-	fprintf(stdout, "\nBooting with:\n");
-
-//TODO
-	PaSampleFormat fmt = paFloat32 | paNonInterleaved;
-//TODO
-	if (mDeviceInOut[0]!=paNoDevice){
-		mInputChannelCount = Pa_GetDeviceInfo( mDeviceInOut[0] )->maxInputChannels;
-		fprintf(stdout, "  In: %s : %s \n",
-		Pa_GetHostApiInfo(Pa_GetDeviceInfo( mDeviceInOut[0] )->hostApi)->name,
-		Pa_GetDeviceInfo( mDeviceInOut[0] )->name);
-	}else{
-		mInputChannelCount = 0;
-	}
-//TODO
-	if (mDeviceInOut[1]!=paNoDevice){
-		mOutputChannelCount = Pa_GetDeviceInfo( mDeviceInOut[1] )->maxOutputChannels;
-		fprintf(stdout, "  Out: %s : %s \n",
-		Pa_GetHostApiInfo(Pa_GetDeviceInfo( mDeviceInOut[1] )->hostApi)->name,
-		Pa_GetDeviceInfo( mDeviceInOut[1] )->name);
-	}else{
-		mOutputChannelCount = 0;
-	}
-
-//TODO
-	PaStreamParameters *inStreamParams_p;
-	PaStreamParameters inStreamParams;
-	if (mDeviceInOut[0]!=paNoDevice){
-		inStreamParams.device = mDeviceInOut[0];
-		inStreamParams.channelCount = mInputChannelCount;
-		inStreamParams.sampleFormat = fmt;
-		inStreamParams.suggestedLatency = suggestedLatencyIn;
-		inStreamParams.hostApiSpecificStreamInfo = NULL;
-		inStreamParams_p = &inStreamParams;
-	}else{
-		inStreamParams_p = NULL;
-	}
-
-//TODO
-	PaStreamParameters *outStreamParams_p;
-	PaStreamParameters outStreamParams;
-	if (mDeviceInOut[1]!=paNoDevice){
-		outStreamParams.device = mDeviceInOut[1];
-		outStreamParams.channelCount = mOutputChannelCount;
-		outStreamParams.sampleFormat = fmt;
-		outStreamParams.suggestedLatency = suggestedLatencyOut;
-		outStreamParams.hostApiSpecificStreamInfo = NULL;
-		outStreamParams_p = &outStreamParams;
-	}else{
-		outStreamParams_p = NULL;
-	}
-
-//TODO
-	//Pa_OpenStream(&mStream, inStreamParams_p, outStreamParams_p, *outSampleRate, *outNumSamples, paNoFlag, SC_PortAudioStreamCallback, this );
 	// Initialise the PRU audio device. This function prepares audio rendering in BeagleRT. It should be called from main() sometime
 	// after command line option parsing has finished. It will initialise the rendering system, which
 	// in the process will result in a call to the user-defined setup() function.
-	if(BeagleRT_initAudio(&settings, &driver) != 0) {
+	if(BeagleRT_initAudio(&settings, &dataSlotsToFill) != 0) {
 		cout << "Error in SC_BelaDriver::DriverSetup(): unable to initialise audio" << endl;
 		return false;
 	}
-
 	return true;
 }
 
@@ -368,16 +277,18 @@ bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 // in from the call to initAudio().
 //
 // Return true on success; returning false halts the program.
-bool setup(BeagleRTContext *context, void *userData)
+bool setup(BeagleRTContext *belaContext, void *userData)
 {
 	if(userData != 0){
-		//TODO ----- at this point we know the period size and sample rate that Bela has chosen. do we now need to do anything to tell SC?
+		DataSlotsToFill *dataSlotsToFill = (DataSlotsToFill*)userData;
+		dataSlotsToFill->outNumSamples = static_cast<int>belaContext->audioFrames;
+		dataSlotsToFill->outSampleRate = static_cast<const>belaContext->audioSampleRate;
 	}
 }
 
 // cleanup() is called once at the end, after the audio has stopped.
 // Release any resources that were allocated in setup().
-void cleanup(BeagleRTContext *context, void *userData)
+void cleanup(BeagleRTContext *belaContext, void *userData)
 {
 }
 
