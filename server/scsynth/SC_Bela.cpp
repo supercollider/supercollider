@@ -25,8 +25,11 @@
 #include "SC_Time.hpp"
 #include <math.h>
 #include <stdlib.h>
+#include <iostream>
 
 #include "BeagleRT.h"
+
+using namespace std;
 
 int32 server_timeseed()
 {
@@ -56,7 +59,6 @@ class SC_BelaDriver : public SC_AudioDriver
 {
 
 	int mInputChannelCount, mOutputChannelCount;
-	uint64_t mBelaStartSampleCount; // probably always starts as zero, but we need to subtract it anyway to keep track of total elapsed samples.
 protected:
 	// Driver interface methods
 	virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
@@ -77,8 +79,8 @@ SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)
 
 SC_BelaDriver::SC_BelaDriver(struct World *inWorld)
 		: SC_AudioDriver(inWorld)
-		, mStartHostSecs(0)
 {
+	mStartHostSecs = 0;
 }
 
 SC_BelaDriver::~SC_BelaDriver()
@@ -161,7 +163,7 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 		//}
 
 		// main loop
-		int64 oscTime = mOSCbuftime = OSCTime(hostTime) - (int64)(mMaxOutputLatency * kSecondsToOSCunits + .5);
+		int64 oscTime = mOSCbuftime = OSCTime(hostTime); // TODO CHECK: - (int64)(mMaxOutputLatency * kSecondsToOSCunits + .5);
 		int64 oscInc = mOSCincrement;
 		double oscToSamples = mOSCtoSamples;
 
@@ -234,9 +236,9 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 
 // ====================================================================
 
-struct {
-	int* outNumSamples,
-	double* outSampleRate
+typedef struct {
+	int* outNumSamples;
+	double* outSampleRate;
 } DataSlotsToFill; // just a convenience for use during driver setup
 
 bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
@@ -255,8 +257,8 @@ bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 	dataSlotsToFill.outNumSamples = outNumSamples;
 	dataSlotsToFill.outSampleRate = outSampleRate;
 
-	//NO, stick with bela documented layout    settings->interleave = 0; // we prefer our io buffers non-interleaved thanks
-	settings->periodSize = mPreferredHardwareBufferFrameSize / 2; // halved because "periodSize" in bela is for the analogue pins not the audio pins
+	//NO, stick with bela documented layout    settings.interleave = 0; // we prefer our io buffers non-interleaved thanks
+	settings.periodSize = mPreferredHardwareBufferFrameSize / 2; // halved because "periodSize" in bela is for the analogue pins not the audio pins
 	// note that Bela doesn't give us an option to choose samplerate, since it's baked-in.
 
 	// Initialise the PRU audio device. This function prepares audio rendering in BeagleRT. It should be called from main() sometime
@@ -277,13 +279,14 @@ bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 // in from the call to initAudio().
 //
 // Return true on success; returning false halts the program.
-bool setup(BeagleRTContext *belaContext, void *userData)
+bool setup(BeagleRTContext* belaContext, void* userData)
 {
 	if(userData != 0){
-		DataSlotsToFill *dataSlotsToFill = (DataSlotsToFill*)userData;
-		dataSlotsToFill->outNumSamples = static_cast<int>belaContext->audioFrames;
-		dataSlotsToFill->outSampleRate = static_cast<const>belaContext->audioSampleRate;
+		DataSlotsToFill* dataSlotsToFill = (DataSlotsToFill*)userData;
+		*(dataSlotsToFill->outNumSamples) = static_cast<int>(belaContext->audioFrames);
+		*(dataSlotsToFill->outSampleRate) = static_cast<double>(belaContext->audioSampleRate);
 	}
+	return true;
 }
 
 // cleanup() is called once at the end, after the audio has stopped.
