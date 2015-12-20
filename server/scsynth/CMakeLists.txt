@@ -16,7 +16,7 @@ if(AUDIOAPI STREQUAL "default")
 endif()
 
 if(NOT AUDIOAPI MATCHES "^(jack|coreaudio|portaudio)$")
-	message(WARNING "Unrecognised audio API: ${AUDIOAPI}")
+	message(FATAL_ERROR "Unrecognised audio API: ${AUDIOAPI}")
 endif()
 
 if(AUDIOAPI STREQUAL jack)
