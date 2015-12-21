@@ -61,7 +61,7 @@ if(NOT WIN32)
                PROPERTY OUTPUT_NAME supernova)
 endif()
 
-target_link_libraries(libsupernova oscpack tlsf ${PTHREADS_LIBRARIES})
+target_link_libraries(libsupernova oscpack tlsf ${PTHREADS_LIBRARIES} boost_thread)
 
 target_compile_definitions(libsupernova PUBLIC SUPERNOVA)
 target_include_directories(libsupernova PUBLIC
