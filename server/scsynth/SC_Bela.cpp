@@ -237,11 +237,6 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 
 // ====================================================================
 
-typedef struct {
-	int* outNumSamples;
-	double* outSampleRate;
-} DataSlotsToFill; // just a convenience for use during driver setup
-
 bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 {
 	scprintf("SC_BelaDriver: >>DriverSetup\n");
@@ -249,15 +244,6 @@ bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 	BeagleRT_defaultSettings(&settings);	// This function should be called in main() before parsing any command-line arguments. It
 				// sets default values in the data structure which specifies the BeagleRT settings, including
 				// frame sizes, numbers of channels, volume levels and other parameters.
-
-	/*
-	NOTE: SuperCollider wants us to fill in (int* outNumSamples, double* outSampleRate) during this function call, BUT in Bela we can't
-	know those values for sure until we reach setup() which is called-back from the BeagleRT_initAudio() function. This is OK because
-	that callback happens in-line. If the API were to change in future and make that callback asynch, we would be in trouble.
-	*/
-	DataSlotsToFill dataSlotsToFill;
-	dataSlotsToFill.outNumSamples = outNumSamples;
-	dataSlotsToFill.outSampleRate = outSampleRate;
 
 	//NO, stick with bela documented layout    settings.interleave = 0; // we prefer our io buffers non-interleaved thanks
 	if(mPreferredHardwareBufferFrameSize){
@@ -268,10 +254,13 @@ bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 	// Initialise the PRU audio device. This function prepares audio rendering in BeagleRT. It should be called from main() sometime
 	// after command line option parsing has finished. It will initialise the rendering system, which
 	// in the process will result in a call to the user-defined setup() function.
-	if(BeagleRT_initAudio(&settings, &dataSlotsToFill) != 0) {
+	if(BeagleRT_initAudio(&settings, this) != 0) {
 		scprintf("Error in SC_BelaDriver::DriverSetup(): unable to initialise audio\n");
 		return false;
 	}
+
+	*outNumSamples = settings.periodSize * 2;       // ... which in turn is just mPreferredHardwareBufferFrameSize
+	*outSampleRate = 44100.0;                                       // This is fixed in Bela at the moment
 
 	return true;
 }
@@ -286,14 +275,11 @@ bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 // Return true on success; returning false halts the program.
 bool setup(BeagleRTContext* belaContext, void* userData)
 {
-	if(userData != 0){
-		DataSlotsToFill* dataSlotsToFill = (DataSlotsToFill*)userData;
-		*(dataSlotsToFill->outNumSamples) = static_cast<int>(belaContext->audioFrames);
-		*(dataSlotsToFill->outSampleRate) = static_cast<double>(belaContext->audioSampleRate);
-	}else{
+	if(userData == 0){
 		scprintf("SC_BelaDriver: error, setup() got no user data\n");
 		return false;
 	}
+
 	return true;
 }
 
