@@ -1,4 +1,4 @@
-//  (C) Copyright Gennadiy Rozental 2001-2014.
+//  (C) Copyright Gennadiy Rozental 2001.
 //  Distributed under the Boost Software License, Version 1.0.
 //  (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
@@ -14,14 +14,15 @@
 #ifndef BOOST_TEST_UNIT_TEST_PARAMETERS_HPP_071894GER
 #define BOOST_TEST_UNIT_TEST_PARAMETERS_HPP_071894GER
 
+// Boost.Test
 #include <boost/test/detail/global_typedef.hpp>
-#include <boost/test/detail/log_level.hpp>
-
-#include <boost/test/detail/suppress_warnings.hpp>
+#include <boost/test/utils/runtime/argument.hpp>
 
 // STL
-#include <iosfwd>
-#include <list>
+#include <iostream>
+#include <fstream>
+
+#include <boost/test/detail/suppress_warnings.hpp>
 
 //____________________________________________________________________________//
 
@@ -33,53 +34,88 @@ namespace runtime_config {
 // **************                 runtime_config               ************** //
 // ************************************************************************** //
 
-BOOST_TEST_DECL void                    init( int& argc, char** argv );
+// UTF parameters 
+BOOST_TEST_DECL extern std::string AUTO_START_DBG;
+BOOST_TEST_DECL extern std::string BREAK_EXEC_PATH;
+BOOST_TEST_DECL extern std::string BUILD_INFO;
+BOOST_TEST_DECL extern std::string CATCH_SYS_ERRORS;
+BOOST_TEST_DECL extern std::string COLOR_OUTPUT;
+BOOST_TEST_DECL extern std::string DETECT_FP_EXCEPT;
+BOOST_TEST_DECL extern std::string DETECT_MEM_LEAKS;
+BOOST_TEST_DECL extern std::string LIST_CONTENT;
+BOOST_TEST_DECL extern std::string LIST_LABELS;
+BOOST_TEST_DECL extern std::string LOG_FORMAT;
+BOOST_TEST_DECL extern std::string LOG_LEVEL;
+BOOST_TEST_DECL extern std::string LOG_SINK;
+BOOST_TEST_DECL extern std::string OUTPUT_FORMAT;
+BOOST_TEST_DECL extern std::string RANDOM_SEED;
+BOOST_TEST_DECL extern std::string REPORT_FORMAT;
+BOOST_TEST_DECL extern std::string REPORT_LEVEL;
+BOOST_TEST_DECL extern std::string REPORT_MEM_LEAKS;
+BOOST_TEST_DECL extern std::string REPORT_SINK;
+BOOST_TEST_DECL extern std::string RESULT_CODE;
+BOOST_TEST_DECL extern std::string RUN_FILTERS;
+BOOST_TEST_DECL extern std::string SAVE_TEST_PATTERN;
+BOOST_TEST_DECL extern std::string SHOW_PROGRESS;
+BOOST_TEST_DECL extern std::string USE_ALT_STACK;
+BOOST_TEST_DECL extern std::string WAIT_FOR_DEBUGGER;
 
-/// Automatically attach debugger in a location of fatal error
-BOOST_TEST_DECL bool                    auto_start_dbg();
-BOOST_TEST_DECL const_string            break_exec_path();
-/// Should we catch system errors/sygnals?
-BOOST_TEST_DECL bool                    catch_sys_errors();
-/// Should we try to produce color output?
-BOOST_TEST_DECL bool                    color_output();
-/// Should we detect floating point exceptions?
-BOOST_TEST_DECL bool                    detect_fp_exceptions();
-/// Should we detect memory leaks (>0)? And if yes, which specific memory allocation should we break.
-BOOST_TEST_DECL long                    detect_memory_leaks();
-/// List content of test tree?
-BOOST_TEST_DECL output_format           list_content();
-/// List available labels?
-BOOST_TEST_DECL bool                    list_labels();
-/// Which output format to use
-BOOST_TEST_DECL output_format           log_format();
-/// Which log level to set
-BOOST_TEST_DECL unit_test::log_level    log_level();
-/// Where to direct log stream into
-BOOST_TEST_DECL std::ostream*           log_sink();
-/// If memory leak detection, where to direct the report
-BOOST_TEST_DECL const_string            memory_leaks_report_file();
-/// Do not prodce result code
-BOOST_TEST_DECL bool                    no_result_code();
-/// Random seed to use to randomize order of test units being run
-BOOST_TEST_DECL unsigned                random_seed();
-/// Which format to use to report results
-BOOST_TEST_DECL output_format           report_format();
-/// Wht lever of report format to set
-BOOST_TEST_DECL unit_test::report_level report_level();
-/// Where to direct results report into
-BOOST_TEST_DECL std::ostream*           report_sink();
-/// Should we save pattern (true) or match against existing pattern (used by output validation tool)
-BOOST_TEST_DECL bool                    save_pattern();
-/// Should Unit Test framework show the build information?
-BOOST_TEST_DECL bool                    show_build_info();
-/// Tells Unit Test Framework to show test progress (forces specific log level)
-BOOST_TEST_DECL bool                    show_progress();
-/// Specific test units to run/exclude
-BOOST_TEST_DECL std::list<std::string> const& test_to_run();
-/// Should execution monitor use alternative stack for signal handling
-BOOST_TEST_DECL bool                    use_alt_stack();
-/// Tells Unit Test Framework to wait for debugger to attach
-BOOST_TEST_DECL bool                    wait_for_debugger();
+BOOST_TEST_DECL void init( int& argc, char** argv );
+
+// ************************************************************************** //
+// **************              runtime_param::get              ************** //
+// ************************************************************************** //
+
+/// Access to arguments
+BOOST_TEST_DECL runtime::arguments_store const& argument_store();
+
+template<typename T>
+inline T const&
+get( runtime::cstring parameter_name )
+{
+    return argument_store().get<T>( parameter_name );
+}
+
+/// For public access
+BOOST_TEST_DECL bool save_pattern();
+
+// ************************************************************************** //
+// **************                  stream_holder               ************** //
+// ************************************************************************** //
+
+class stream_holder {
+public:
+    // Constructor
+    explicit        stream_holder( std::ostream& default_stream )
+    : m_stream( &default_stream )
+    {
+    }
+
+    void            setup( runtime::cstring param_name )
+    {
+        if( !runtime_config::argument_store().has( param_name ) )
+            return;
+
+        std::string const& file_name = runtime_config::get<std::string>( param_name );
+
+        if( file_name == "stderr" )
+            m_stream = &std::cerr;
+        else if( file_name == "stdout" )
+            m_stream = &std::cout;
+        else {
+            m_file.open( file_name.c_str() );
+            m_stream = &m_file;
+        }
+    }
+
+    // Access methods
+    std::ostream&   ref() const { return *m_stream; }  
+
+private:
+    // Data members
+    std::ofstream   m_file;
+    std::ostream*   m_stream;  
+};
 
 } // namespace runtime_config
 } // namespace unit_test

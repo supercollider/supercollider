@@ -1,4 +1,4 @@
-//  (C) Copyright Gennadiy Rozental 2001-2014.
+//  (C) Copyright Gennadiy Rozental 2001.
 //  (C) Copyright Beman Dawes and Ullrich Koethe 1995-2001.
 //  Use, modification, and distribution are subject to the
 //  Boost Software License, Version 1.0. (See accompanying file
@@ -243,9 +243,9 @@ report_error( execution_exception::error_code ec, boost::exception const* be, ch
 
     va_end( *args );
 
-    throw execution_exception( ec, buf, execution_exception::location( extract<throw_file>( be ),
-                                                                       (size_t)extract<throw_line>( be ),
-                                                                       extract<throw_function>( be ) ) );
+    BOOST_TEST_I_THROW(execution_exception( ec, buf, execution_exception::location( extract<throw_file>( be ),
+                                                                                    (size_t)extract<throw_line>( be ),
+                                                                                    extract<throw_function>( be ) ) ));
 }
 
 //____________________________________________________________________________//
@@ -869,7 +869,7 @@ execution_monitor::catch_signals( boost::function<int ()> const& F )
     if( !sigsetjmp( signal_handler::jump_buffer(), 1 ) )
         return detail::do_invoke( m_custom_translators , F );
     else
-        return BOOST_TEST_IMPL_THROW( local_signal_handler.sys_sig() );
+        BOOST_TEST_I_THROW( local_signal_handler.sys_sig() );
 }
 
 //____________________________________________________________________________//
@@ -1200,14 +1200,14 @@ execution_monitor::execute( boost::function<int ()> const& F )
     if( debug::under_debugger() )
         p_catch_system_errors.value = false;
 
-    BOOST_TEST_IMPL_TRY {
+    BOOST_TEST_I_TRY {
         detail::fpe_except_guard G( p_detect_fp_exceptions );
         unit_test::ut_detail::ignore_unused_variable_warning( G );
 
         return catch_signals( F );
     }
 
-#ifndef BOOST_NO_EXCEPTION
+#ifndef BOOST_NO_EXCEPTIONS
 
     //  Catch-clause reference arguments are a bit different from function
     //  arguments (ISO 15.3 paragraphs 18 & 19).  Apparently const isn't
@@ -1273,7 +1273,7 @@ execution_monitor::execute( boost::function<int ()> const& F )
     // system errors
     catch( system_error const& ex )
       { detail::report_error( execution_exception::cpp_exception_error,
-                              "system_error produced by: %s: %s", ex.p_failed_exp.get(), std::strerror( ex.p_errno ) ); }
+                              "system_error produced by: %s: %s", ex.p_failed_exp, std::strerror( ex.p_errno ) ); }
     catch( detail::system_signal_exception const& ex )
       { ex.report(); }
 

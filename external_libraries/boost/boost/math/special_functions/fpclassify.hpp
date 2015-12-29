@@ -80,6 +80,9 @@ is used.
 #if defined(_MSC_VER) || defined(__BORLANDC__)
 #include <float.h>
 #endif
+#ifdef BOOST_MATH_USE_FLOAT128
+#include "quadmath.h"
+#endif
 
 #ifdef BOOST_NO_STDC_NAMESPACE
   namespace std{ using ::abs; using ::fabs; }
@@ -121,7 +124,10 @@ inline bool is_nan_helper(T, const boost::false_type&)
 {
    return false;
 }
-
+#ifdef BOOST_MATH_USE_FLOAT128
+inline bool is_nan_helper(__float128 f, const boost::true_type&) { return ::isnanq(f); }
+inline bool is_nan_helper(__float128 f, const boost::false_type&) { return ::isnanq(f); }
+#endif
 }
 
 namespace math{
@@ -513,6 +519,13 @@ inline bool (isinf)(long double x)
    return detail::isinf_impl(static_cast<value_type>(x), method());
 }
 #endif
+#ifdef BOOST_MATH_USE_FLOAT128
+template<>
+inline bool (isinf)(__float128 x)
+{
+   return ::isinfq(x);
+}
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -596,6 +609,13 @@ inline bool (isnan)(long double x)
    typedef traits::method method;
    //typedef boost::is_floating_point<long double>::type fp_tag;
    return detail::isnan_impl(x, method());
+}
+#endif
+#ifdef BOOST_MATH_USE_FLOAT128
+template<>
+inline bool (isnan)(__float128 x)
+{
+   return ::isnanq(x);
 }
 #endif
 

@@ -1,4 +1,4 @@
-//  (C) Copyright Gennadiy Rozental 2001-2014.
+//  (C) Copyright Gennadiy Rozental 2001.
 //  Distributed under the Boost Software License, Version 1.0.
 //  (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
@@ -102,7 +102,7 @@ private:
 
         m_os << ",fontname=Helvetica";
 
-        m_os << (tu.is_enabled() ? ",color=green" : ",color=yellow");
+        m_os << (tu.p_default_status == test_unit::RS_ENABLED ? ",color=green" : ",color=yellow");
 
         if( master_ts )
             m_os << ",label=\"" << tu.p_name << "\"];\n";
@@ -185,10 +185,10 @@ unit_test_main( init_unit_test_func init_func, int argc, char* argv[] )
 {
     int result_code = 0;
 
-    BOOST_TEST_IMPL_TRY {
+    BOOST_TEST_I_TRY {
         framework::init( init_func, argc, argv );
 
-        if( runtime_config::wait_for_debugger() ) {
+        if( runtime_config::get<bool>( runtime_config::WAIT_FOR_DEBUGGER ) ) {
             results_reporter::get_stream() << "Press any key to continue..." << std::endl;
 
             std::getchar();
@@ -197,8 +197,9 @@ unit_test_main( init_unit_test_func init_func, int argc, char* argv[] )
 
         framework::finalize_setup_phase();
 
-        if( runtime_config::list_content() != unit_test::OF_INVALID ) {
-            if( runtime_config::list_content() == unit_test::OF_DOT ) {
+        output_format list_cont = runtime_config::get<output_format>( runtime_config::LIST_CONTENT );
+        if( list_cont != unit_test::OF_INVALID ) {
+            if( list_cont == unit_test::OF_DOT ) {
                 ut_detail::dot_content_reporter reporter( results_reporter::get_stream() );
 
                 traverse_test_tree( framework::master_test_suite().p_id, reporter, true );
@@ -212,7 +213,7 @@ unit_test_main( init_unit_test_func init_func, int argc, char* argv[] )
             return boost::exit_success;
         }
 
-        if( runtime_config::list_labels() ) {
+        if( runtime_config::get<bool>( runtime_config::LIST_LABELS ) ) {
             ut_detail::labels_collector collector;
 
             traverse_test_tree( framework::master_test_suite().p_id, collector, true );
@@ -229,24 +230,24 @@ unit_test_main( init_unit_test_func init_func, int argc, char* argv[] )
 
         results_reporter::make_report();
 
-        result_code = runtime_config::no_result_code()
+        result_code = !runtime_config::get<bool>( runtime_config::RESULT_CODE )
                         ? boost::exit_success
                         : results_collector.results( framework::master_test_suite().p_id ).result_code();
     }
-    BOOST_TEST_IMPL_CATCH0( framework::nothing_to_test ) {
-        result_code = boost::exit_success;
+    BOOST_TEST_I_CATCH( framework::nothing_to_test, ex ) {
+        result_code = ex.m_result_code;
     }
-    BOOST_TEST_IMPL_CATCH( framework::internal_error, ex ) {
+    BOOST_TEST_I_CATCH( framework::internal_error, ex ) {
         results_reporter::get_stream() << "Boost.Test framework internal error: " << ex.what() << std::endl;
 
         result_code = boost::exit_exception_failure;
     }
-    BOOST_TEST_IMPL_CATCH( framework::setup_error, ex ) {
+    BOOST_TEST_I_CATCH( framework::setup_error, ex ) {
         results_reporter::get_stream() << "Test setup error: " << ex.what() << std::endl;
 
         result_code = boost::exit_exception_failure;
     }
-    BOOST_TEST_IMPL_CATCHALL() {
+    BOOST_TEST_I_CATCHALL() {
         results_reporter::get_stream() << "Boost.Test framework internal error: unknown reason" << std::endl;
 
         result_code = boost::exit_exception_failure;

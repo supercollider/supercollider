@@ -1,4 +1,4 @@
-//  (C) Copyright Gennadiy Rozental 2005-2014.
+//  (C) Copyright Gennadiy Rozental 2001.
 //  Distributed under the Boost Software License, Version 1.0.
 //  (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
@@ -38,7 +38,7 @@ public:
     virtual void    test_unit_start( test_unit const& ) {}
     virtual void    test_unit_finish( test_unit const&, unsigned long /* elapsed */ ) {}
     virtual void    test_unit_skipped( test_unit const& tu, const_string ) { test_unit_skipped( tu ); }
-    virtual void    test_unit_skipped( test_unit const& ) {} ///< backward compartibility
+    virtual void    test_unit_skipped( test_unit const& ) {} ///< backward compatibility
     virtual void    test_unit_aborted( test_unit const& ) {}
 
     virtual void    assertion_result( unit_test::assertion_result ar )

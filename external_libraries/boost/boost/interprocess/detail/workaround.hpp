@@ -187,6 +187,9 @@
 //Macros for documentation purposes. For code, expands to the argument
 #define BOOST_INTERPROCESS_IMPDEF(TYPE) TYPE
 #define BOOST_INTERPROCESS_SEEDOC(TYPE) TYPE
+#define BOOST_INTERPROCESS_DOC1ST(TYPE1, TYPE2) TYPE2
+#define BOOST_INTERPROCESS_I ,
+#define BOOST_INTERPROCESS_DOCIGN(T1) T1
 
 #include <boost/interprocess/detail/config_end.hpp>
 

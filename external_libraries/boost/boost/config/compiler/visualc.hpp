@@ -55,6 +55,7 @@
 #  define BOOST_NO_CXX11_EXTERN_TEMPLATE
 // Variadic macros do not exist for VC7.1 and lower
 #  define BOOST_NO_CXX11_VARIADIC_MACROS
+#  define BOOST_NO_CXX11_LOCAL_CLASS_TEMPLATE_PARAMETERS
 #endif
 
 #if _MSC_VER < 1500  // 140X == VC++ 8.0

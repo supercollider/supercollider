@@ -33,6 +33,7 @@
 #include <boost/intrusive/pointer_traits.hpp>
 #include <boost/move/utility_core.hpp>
 #include <boost/static_assert.hpp>
+#include <boost/cstdint.hpp>
 #include <climits>
 
 namespace boost {
@@ -156,27 +157,28 @@ inline bool size_overflows(SizeType count)
 }
 
 template<class RawPointer>
-class pointer_size_t_caster
+class pointer_uintptr_caster;
+
+template<class T>
+class pointer_uintptr_caster<T*>
 {
    public:
-   BOOST_STATIC_ASSERT(sizeof(std::size_t) == sizeof(void*));
-
-   explicit pointer_size_t_caster(std::size_t sz)
-      : m_ptr(reinterpret_cast<RawPointer>(sz))
+   BOOST_FORCEINLINE explicit pointer_uintptr_caster(uintptr_t sz)
+      : m_uintptr(sz)
    {}
 
-   explicit pointer_size_t_caster(RawPointer p)
-      : m_ptr(p)
+   BOOST_FORCEINLINE explicit pointer_uintptr_caster(const volatile T *p)
+      : m_uintptr(reinterpret_cast<uintptr_t>(p))
    {}
 
-   std::size_t size() const
-   {   return reinterpret_cast<std::size_t>(m_ptr);   }
+   BOOST_FORCEINLINE uintptr_t uintptr() const
+   {   return m_uintptr;   }
 
-   RawPointer pointer() const
-   {   return m_ptr;   }
+   BOOST_FORCEINLINE T* pointer() const
+   {   return reinterpret_cast<T*>(m_uintptr);   }
 
    private:
-   RawPointer m_ptr;
+   uintptr_t m_uintptr;
 };
 
 

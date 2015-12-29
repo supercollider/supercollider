@@ -40,7 +40,7 @@ public:
     OffsetHigh = 0;
 
     // Create a non-signalled manual-reset event, for GetOverlappedResult.
-    hEvent = ::CreateEvent(0, TRUE, FALSE, 0);
+    hEvent = ::CreateEventW(0, TRUE, FALSE, 0);
     if (hEvent)
     {
       // As documented in GetQueuedCompletionStatus, setting the low order

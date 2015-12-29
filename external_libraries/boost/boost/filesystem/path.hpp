@@ -46,6 +46,7 @@ namespace boost
 {
 namespace filesystem
 {
+
   //------------------------------------------------------------------------------------//
   //                                                                                    //
   //                                    class path                                      //
@@ -128,8 +129,7 @@ namespace filesystem
 
     //  -----  constructors  -----
 
-    path(){}                                          
-
+    path() BOOST_NOEXCEPT {}                                          
     path(const path& p) : m_pathname(p.m_pathname) {}
 
     template <class Source>
@@ -144,6 +144,16 @@ namespace filesystem
     path(value_type* s) : m_pathname(s) {}
     path(const string_type& s) : m_pathname(s) {}
     path(string_type& s) : m_pathname(s) {}
+
+  //  As of October 2015 the interaction between noexcept and =default is so troublesome
+  //  for VC++, GCC, and probably other compilers, that =default is not used with noexcept
+  //  functions. GCC is not even consistent for the same release on different platforms.
+
+# if !defined(BOOST_NO_CXX11_RVALUE_REFERENCES)
+    path(path&& p) BOOST_NOEXCEPT { m_pathname = std::move(p.m_pathname); }
+    path& operator=(path&& p) BOOST_NOEXCEPT
+      { m_pathname = std::move(p.m_pathname); return *this; }
+# endif
 
     template <class Source>
     path(Source const& source, const codecvt_type& cvt)
@@ -351,7 +361,7 @@ namespace filesystem
 
     //  -----  modifiers  -----
 
-    void   clear()             { m_pathname.clear(); }
+    void   clear() BOOST_NOEXCEPT             { m_pathname.clear(); }
     path&  make_preferred()
 #   ifdef BOOST_POSIX_API
       { return *this; }  // POSIX no effect
@@ -361,7 +371,7 @@ namespace filesystem
     path&  remove_filename();
     path&  remove_trailing_separator();
     path&  replace_extension(const path& new_extension = path());
-    void   swap(path& rhs)     { m_pathname.swap(rhs.m_pathname); }
+    void   swap(path& rhs) BOOST_NOEXCEPT     { m_pathname.swap(rhs.m_pathname); }
 
     //  -----  observers  -----
   
@@ -384,8 +394,9 @@ namespace filesystem
 
     //  -----  native format observers  -----
 
-    const string_type&  native() const { return m_pathname; }          // Throws: nothing
-    const value_type*   c_str() const  { return m_pathname.c_str(); }  // Throws: nothing
+    const string_type&  native() const BOOST_NOEXCEPT  { return m_pathname; }
+    const value_type*   c_str() const BOOST_NOEXCEPT   { return m_pathname.c_str(); }
+    string_type::size_type size() const BOOST_NOEXCEPT { return m_pathname.size(); }
 
     template <class String>
     String string() const;
@@ -441,6 +452,21 @@ namespace filesystem
 
     //  -----  generic format observers  -----
 
+    //  Experimental generic function returning generic formatted path (i.e. separators
+    //  are forward slashes). Motivation: simpler than a family of generic_*string
+    //  functions.
+    path generic() const
+    {
+#   ifdef BOOST_WINDOWS_API
+      path tmp;
+      std::replace_copy(m_pathname.begin(), m_pathname.end(),
+        std::back_inserter(tmp.m_pathname), L'\\', L'/');
+      return tmp;
+#   else
+      return path(*this);
+#   endif
+    }
+
     template <class String>
     String generic_string() const;
 
@@ -482,7 +508,7 @@ namespace filesystem
 
     //  -----  query  -----
 
-    bool empty() const               { return m_pathname.empty(); } // name consistent with std containers
+    bool empty() const BOOST_NOEXCEPT{ return m_pathname.empty(); }
     bool has_root_path() const       { return has_root_directory() || has_root_name(); }
     bool has_root_name() const       { return !root_name().empty(); }
     bool has_root_directory() const  { return !root_directory().empty(); }
@@ -491,6 +517,7 @@ namespace filesystem
     bool has_filename() const        { return !m_pathname.empty(); }
     bool has_stem() const            { return !stem().empty(); }
     bool has_extension() const       { return !extension().empty(); }
+    bool is_relative() const         { return !is_absolute(); } 
     bool is_absolute() const
     {
 #     ifdef BOOST_WINDOWS_API
@@ -499,20 +526,33 @@ namespace filesystem
       return has_root_directory();
 #     endif
     }
-    bool is_relative() const         { return !is_absolute(); } 
+
+    //  -----  lexical operations  -----
+
+    path  lexically_normal() const;
+    path  lexically_relative(const path& base) const;
+    path  lexically_proximate(const path& base) const
+    {
+      path tmp(lexically_relative(base));
+      return tmp.empty() ? *this : tmp;
+    }
 
     //  -----  iterators  -----
 
     class iterator;
     typedef iterator const_iterator;
+    class reverse_iterator;
+    typedef reverse_iterator const_reverse_iterator;
 
     iterator begin() const;
     iterator end() const;
+    reverse_iterator rbegin() const;
+    reverse_iterator rend() const;
 
     //  -----  static member functions  -----
 
-    static std::locale  imbue(const std::locale& loc);
-    static const        codecvt_type& codecvt();
+    static std::locale          imbue(const std::locale& loc);
+    static const codecvt_type&  codecvt();
 
     //  -----  deprecated functions  -----
 
@@ -522,7 +562,11 @@ namespace filesystem
 
 # if !defined(BOOST_FILESYSTEM_NO_DEPRECATED)
     //  recently deprecated functions supplied by default
-    path&  normalize()              { return m_normalize(); }
+    path&  normalize()              { 
+                                      path tmp(lexically_normal());
+                                      m_pathname.swap(tmp.m_pathname);
+                                      return *this;
+                                    }
     path&  remove_leaf()            { return remove_filename(); }
     path   leaf() const             { return filename(); }
     path   branch_path() const      { return parent_path(); }
@@ -557,6 +601,7 @@ namespace filesystem
 //--------------------------------------------------------------------------------------//
 
   private:
+
 #   if defined(_MSC_VER)
 #     pragma warning(push) // Save warning settings
 #     pragma warning(disable : 4251) // disable warning: class 'std::basic_string<_Elem,_Traits,_Ax>'
@@ -623,6 +668,7 @@ namespace filesystem
   private:
     friend class boost::iterator_core_access;
     friend class boost::filesystem::path;
+    friend class boost::filesystem::path::reverse_iterator;
     friend void m_path_iterator_increment(path::iterator & it);
     friend void m_path_iterator_decrement(path::iterator & it);
 
@@ -647,6 +693,53 @@ namespace filesystem
                                          // end() iterator is indicated by 
                                          // m_pos == m_path_ptr->m_pathname.size()
   }; // path::iterator
+
+  //------------------------------------------------------------------------------------//
+  //                         class path::reverse_iterator                               //
+  //------------------------------------------------------------------------------------//
+ 
+  class path::reverse_iterator
+    : public boost::iterator_facade<
+      path::reverse_iterator,
+      path const,
+      boost::bidirectional_traversal_tag >
+  {
+  public:
+
+    explicit reverse_iterator(iterator itr) : m_itr(itr)
+    {
+      if (itr != itr.m_path_ptr->begin())
+        m_element = *--itr;
+    }
+  private:
+    friend class boost::iterator_core_access;
+    friend class boost::filesystem::path;
+
+    const path& dereference() const { return m_element; }
+    bool equal(const reverse_iterator& rhs) const { return m_itr == rhs.m_itr; }
+    void increment()
+    { 
+      --m_itr;
+      if (m_itr != m_itr.m_path_ptr->begin())
+      {
+        iterator tmp = m_itr;
+        m_element = *--tmp;
+      }
+    }
+    void decrement()
+    {
+      m_element = *m_itr;
+      ++m_itr;
+    }
+
+    iterator m_itr;
+    path     m_element;
+
+  }; // path::reverse_iterator
+
+  inline path::reverse_iterator path::rbegin() const { return reverse_iterator(end()); }
+  inline path::reverse_iterator path::rend() const   { return reverse_iterator(begin()); }
+
 
   //------------------------------------------------------------------------------------//
   //                                                                                    //

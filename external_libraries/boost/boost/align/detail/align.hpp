@@ -1,6 +1,6 @@
 /*
 (c) 2014 Glen Joseph Fernandes
-glenjofe at gmail dot com
+<glenjofe -at- gmail.com>
 
 Distributed under the Boost Software
 License, Version 1.0.
@@ -21,7 +21,7 @@ inline void* align(std::size_t alignment, std::size_t size,
     void*& ptr, std::size_t& space)
 {
     BOOST_ASSERT(detail::is_alignment(alignment));
-    std::size_t n = detail::address_t(ptr) & (alignment - 1);
+    std::size_t n = detail::address(ptr) & (alignment - 1);
     if (n != 0) {
         n = alignment - n;
     }
@@ -34,7 +34,7 @@ inline void* align(std::size_t alignment, std::size_t size,
     return p;
 }
 
-} /* :alignment */
-} /* :boost */
+} /* .alignment */
+} /* .boost */
 
 #endif

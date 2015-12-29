@@ -265,6 +265,8 @@
 
 
       #if defined(BOOST_MOVE_DOXYGEN_INVOKED)
+         //! <b>Effects</b>: Calls `boost::move` if `input_reference` is not a lvalue reference.
+         //!   Otherwise returns the reference
          template <class T> output_reference move_if_not_lvalue_reference(input_reference) noexcept;
       #elif defined(BOOST_MOVE_OLD_RVALUE_REF_BINDING_RULES)
 

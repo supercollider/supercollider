@@ -251,6 +251,10 @@
 #define BOOST_NO_CXX11_HDR_FUTURE
 #define BOOST_NO_CXX11_HDR_FORWARD_LIST 
 #define BOOST_NO_CXX11_HDR_ATOMIC
+// shared_ptr is present, but is not convertible to bool
+// which causes all kinds of problems especially in Boost.Thread
+// but probably elsewhere as well.
+#define BOOST_NO_CXX11_SMART_PTR
 #endif
 
 #if (!defined(_GLIBCXX_HAS_GTHREADS) || !defined(_GLIBCXX_USE_C99_STDINT_TR1))

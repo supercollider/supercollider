@@ -332,6 +332,11 @@ struct eval_if
     : if_<C,T1,T2>::type
 {};
 
+
+#if defined(BOOST_GCC) && (BOOST_GCC <= 40000)
+#define BOOST_MOVE_HELPERS_RETURN_SFINAE_BROKEN
+#endif
+
 template<class T, class U, class R = void>
 struct enable_if_convertible
    : enable_if< is_convertible<T, U>, R>

@@ -23,6 +23,13 @@
 #   pragma once
 #endif
 
+#if defined(__clang__) || (defined(__GNUC__) && \
+    !(defined(__INTEL_COMPILER) || defined(__ICL) || defined(__ICC) || defined(__ECC)) && \
+    (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)))
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuninitialized"
+#endif
+
 #include <string>
 #include <boost/mpl/bool.hpp>
 #include <boost/mpl/identity.hpp>
@@ -194,6 +201,12 @@ namespace boost {
     }
 
 } // namespace boost
+
+#if defined(__clang__) || (defined(__GNUC__) && \
+    !(defined(__INTEL_COMPILER) || defined(__ICL) || defined(__ICC) || defined(__ECC)) && \
+    (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)))
+#pragma GCC diagnostic pop
+#endif
 
 #endif // BOOST_LEXICAL_CAST_TRY_LEXICAL_CONVERT_HPP
 

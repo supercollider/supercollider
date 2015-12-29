@@ -106,14 +106,23 @@ class tree_iterator
       return result;
    }
 
-   void go_left()
-   { members_.nodeptr_ = node_traits::get_left(members_.nodeptr_); }
+   tree_iterator&  go_left()
+   {
+      members_.nodeptr_ = node_traits::get_left(members_.nodeptr_);
+      return static_cast<tree_iterator&> (*this);
+   }
 
-   void go_right()
-   { members_.nodeptr_ = node_traits::get_right(members_.nodeptr_); }
+   tree_iterator&  go_right()
+   {
+      members_.nodeptr_ = node_traits::get_right(members_.nodeptr_);
+      return static_cast<tree_iterator&> (*this);
+   }
 
-   void go_parent()
-   { members_.nodeptr_ = node_traits::get_parent(members_.nodeptr_); }
+   tree_iterator&  go_parent()
+   {
+      members_.nodeptr_ = node_traits::get_parent(members_.nodeptr_);
+      return static_cast<tree_iterator&> (*this);
+   }
 
    operator unspecified_bool_type() const
    {  return members_.nodeptr_ ? &tree_iterator::unspecified_bool_type_func : 0;   }

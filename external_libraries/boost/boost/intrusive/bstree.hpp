@@ -360,7 +360,11 @@ struct bstbase2
    }
 
    template<class KeyTypeKeyCompare>
-   detail::key_nodeptr_comp<KeyTypeKeyCompare, value_traits, key_of_value> key_node_comp(KeyTypeKeyCompare comp) const
+   struct key_node_comp_ret
+   {  typedef detail::key_nodeptr_comp<KeyTypeKeyCompare, value_traits, key_of_value> type;  };
+
+   template<class KeyTypeKeyCompare>
+   typename key_node_comp_ret<KeyTypeKeyCompare>::type key_node_comp(KeyTypeKeyCompare comp) const
    {
       return detail::key_nodeptr_comp<KeyTypeKeyCompare, value_traits, key_of_value>(comp, &this->get_value_traits());
    }
@@ -1245,6 +1249,19 @@ class bstree_impl
       node_ptr to_insert(this->get_value_traits().to_node_ptr(value));
       if(safemode_or_autounlink)
          BOOST_INTRUSIVE_SAFE_HOOK_DEFAULT_ASSERT(node_algorithms::unique(to_insert));
+
+      #if !(defined(BOOST_DISABLE_ASSERTS) || ( defined(BOOST_ENABLE_ASSERT_DEBUG_HANDLER) && defined(NDEBUG) ))
+      //Test insertion position is correct
+      iterator p(commit_data.node, this->priv_value_traits_ptr());
+      if(!commit_data.link_left){
+         ++p;
+      }
+      //Check if the insertion point is correct to detect wrong
+      //uses insert_unique_check
+      BOOST_ASSERT(( p == this->end()   || !this->comp()(*p, value)   ));
+      BOOST_ASSERT(( p == this->begin() || !this->comp()(value, *--p) ));
+      #endif
+
       node_algorithms::insert_unique_commit
                (this->header_ptr(), to_insert, commit_data);
       this->sz_traits().increment();
@@ -1368,6 +1385,10 @@ class bstree_impl
    size_type erase(const key_type &key)
    {  return this->erase(key, this->key_comp());   }
 
+   //! <b>Requires</b>: key is a value such that `*this` is partitioned with respect to
+   //!   comp(nk, key) and !comp(key, nk), with comp(nk, key) implying !comp(key, nk),
+   //!   with nk the key_type of a value_type inserted into `*this`.
+   //!
    //! <b>Effects</b>: Erases all the elements with the given key.
    //!   according to the comparison functor "comp".
    //!
@@ -1448,6 +1469,10 @@ class bstree_impl
    iterator erase_and_dispose(const_iterator b, const_iterator e, Disposer disposer)
    {  size_type n;   return this->private_erase(b, e, n, disposer);   }
 
+   //! <b>Requires</b>: key is a value such that `*this` is partitioned with respect to
+   //!   comp(nk, key) and !comp(key, nk), with comp(nk, key) implying !comp(key, nk)
+   //!   and nk the key_type of a value_type inserted into `*this`.
+   //!
    //! <b>Requires</b>: Disposer::operator()(pointer) shouldn't throw.
    //!
    //! <b>Effects</b>: Erases all the elements with the given key.
@@ -1520,6 +1545,10 @@ class bstree_impl
    size_type count(const key_type &key) const
    {  return size_type(this->count(key, this->key_comp()));   }
 
+   //! <b>Requires</b>: key is a value such that `*this` is partitioned with respect to
+   //!   comp(nk, key) and !comp(key, nk), with comp(nk, key) implying !comp(key, nk),
+   //!   and nk the key_type of a value_type inserted into `*this`.
+   //!
    //! <b>Effects</b>: Returns the number of contained elements with the given key
    //!
    //! <b>Complexity</b>: Logarithmic to the number of elements contained plus lineal
@@ -1569,21 +1598,11 @@ class bstree_impl
    //! <b>Throws</b>: If `key_compare` throws.
    const_iterator lower_bound(const key_type &key) const;
 
-   //! <b>Effects</b>: Returns an iterator to the first element whose
-   //!   key is not less than k or end() if that element does not exist.
-   //!
-   //! <b>Complexity</b>: Logarithmic.
-   //!
-   //! <b>Throws</b>: If `comp` throws.
+   //! @copydoc ::boost::intrusive::bstree::lower_bound(const key_type &)
    template<class KeyType, class KeyTypeKeyCompare>
    iterator lower_bound(const KeyType &key, KeyTypeKeyCompare comp);
 
-   //! <b>Effects</b>: Returns a const iterator to the first element whose
-   //!   key is not less than k or end() if that element does not exist.
-   //!
-   //! <b>Complexity</b>: Logarithmic.
-   //!
-   //! <b>Throws</b>: If `comp` throws.
+   //! @copydoc ::boost::intrusive::bstree::lower_bound(const KeyType&,KeyTypeKeyCompare)
    template<class KeyType, class KeyTypeKeyCompare>
    const_iterator lower_bound(const KeyType &key, KeyTypeKeyCompare comp) const;
 
@@ -1595,6 +1614,9 @@ class bstree_impl
    //! <b>Throws</b>: If `key_compare` throws.
    iterator upper_bound(const key_type &key);
 
+   //! <b>Requires</b>: key is a value such that `*this` is partitioned with respect to
+   //!   !comp(key, nk), with nk the key_type of a value_type inserted into `*this`.
+   //!
    //! <b>Effects</b>: Returns an iterator to the first element whose
    //!   key is greater than k according to comp or end() if that element
    //!   does not exist.
@@ -1605,21 +1627,10 @@ class bstree_impl
    template<class KeyType, class KeyTypeKeyCompare>
    iterator upper_bound(const KeyType &key, KeyTypeKeyCompare comp);
 
-   //! <b>Effects</b>: Returns an iterator to the first element whose
-   //!   key is greater than k or end() if that element does not exist.
-   //!
-   //! <b>Complexity</b>: Logarithmic.
-   //!
-   //! <b>Throws</b>: If `key_compare` throws.
+   //! @copydoc ::boost::intrusive::bstree::upper_bound(const key_type &)
    const_iterator upper_bound(const key_type &key) const;
 
-   //! <b>Effects</b>: Returns an iterator to the first element whose
-   //!   key is greater than k according to comp or end() if that element
-   //!   does not exist.
-   //!
-   //! <b>Complexity</b>: Logarithmic.
-   //!
-   //! <b>Throws</b>: If `comp` throws.
+   //! @copydoc ::boost::intrusive::bstree::upper_bound(const KeyType&,KeyTypeKeyCompare)
    template<class KeyType, class KeyTypeKeyCompare>
    const_iterator upper_bound(const KeyType &key, KeyTypeKeyCompare comp) const;
 
@@ -1631,6 +1642,10 @@ class bstree_impl
    //! <b>Throws</b>: If `key_compare` throws.
    iterator find(const key_type &key);
 
+   //! <b>Requires</b>: key is a value such that `*this` is partitioned with respect to
+   //!   comp(nk, key) and !comp(key, nk), with comp(nk, key) implying !comp(key, nk),
+   //!   and nk the key_type of a value_type inserted into `*this`.
+   //!
    //! <b>Effects</b>: Finds an iterator to the first element whose key is
    //!   k or end() if that element does not exist.
    //!
@@ -1640,20 +1655,10 @@ class bstree_impl
    template<class KeyType, class KeyTypeKeyCompare>
    iterator find(const KeyType &key, KeyTypeKeyCompare comp);
 
-   //! <b>Effects</b>: Finds a const_iterator to the first element whose key is
-   //!   k or end() if that element does not exist.
-   //!
-   //! <b>Complexity</b>: Logarithmic.
-   //!
-   //! <b>Throws</b>: If `key_compare` throws.
+   //! @copydoc ::boost::intrusive::bstree::find(const key_type &)
    const_iterator find(const key_type &key) const;
 
-   //! <b>Effects</b>: Finds a const_iterator to the first element whose key is
-   //!   k or end() if that element does not exist.
-   //!
-   //! <b>Complexity</b>: Logarithmic.
-   //!
-   //! <b>Throws</b>: If `comp` throws.
+   //! @copydoc ::boost::intrusive::bstree::find(const KeyType&,KeyTypeKeyCompare)
    template<class KeyType, class KeyTypeKeyCompare>
    const_iterator find(const KeyType &key, KeyTypeKeyCompare comp) const;
 
@@ -1666,6 +1671,10 @@ class bstree_impl
    //! <b>Throws</b>: If `key_compare` throws.
    std::pair<iterator,iterator> equal_range(const key_type &key);
 
+   //! <b>Requires</b>: key is a value such that `*this` is partitioned with respect to
+   //!   comp(nk, key) and !comp(key, nk), with comp(nk, key) implying !comp(key, nk),
+   //!   with nk the key_type of a value_type inserted into `*this`.
+   //!
    //! <b>Effects</b>: Finds a range containing all elements whose key is k or
    //!   an empty range that indicates the position where those elements would be
    //!   if they there is no elements with key k.
@@ -1676,29 +1685,21 @@ class bstree_impl
    template<class KeyType, class KeyTypeKeyCompare>
    std::pair<iterator,iterator> equal_range(const KeyType &key, KeyTypeKeyCompare comp);
 
-   //! <b>Effects</b>: Finds a range containing all elements whose key is k or
-   //!   an empty range that indicates the position where those elements would be
-   //!   if they there is no elements with key k.
-   //!
-   //! <b>Complexity</b>: Logarithmic.
-   //!
-   //! <b>Throws</b>: If `key_compare` throws.
-   std::pair<const_iterator, const_iterator>
-      equal_range(const key_type &key) const;
+   //! @copydoc ::boost::intrusive::bstree::equal_range(const key_type &)
+   std::pair<const_iterator, const_iterator> equal_range(const key_type &key) const;
 
-   //! <b>Effects</b>: Finds a range containing all elements whose key is k or
-   //!   an empty range that indicates the position where those elements would be
-   //!   if they there is no elements with key k.
-   //!
-   //! <b>Complexity</b>: Logarithmic.
-   //!
-   //! <b>Throws</b>: If `comp` throws.
+   //! @copydoc ::boost::intrusive::bstree::equal_range(const KeyType&,KeyTypeKeyCompare)
    template<class KeyType, class KeyTypeKeyCompare>
    std::pair<const_iterator, const_iterator>
       equal_range(const KeyType &key, KeyTypeKeyCompare comp) const;
 
-   //! <b>Requires</b>: 'lower_key' must not be greater than 'upper_key'. If
-   //!   'lower_key' == 'upper_key', ('left_closed' || 'right_closed') must be false.
+   //! <b>Requires</b>:
+   //!   `upper_key` shall not precede `lower_key` according to key_compare.
+   //!   [key_comp()(upper_key, lower_key) shall be false]
+   //!
+   //!   If `lower_key` is equivalent to `upper_key`
+   //!   [!key_comp()(upper_key, lower_key) && !key_comp()(lower_key, upper_key)] then
+   //!   ('left_closed' || 'right_closed') must be false.
    //!
    //! <b>Effects</b>: Returns an a pair with the following criteria:
    //!
@@ -1717,11 +1718,19 @@ class bstree_impl
    std::pair<iterator,iterator> bounded_range
       (const key_type &lower_key, const key_type &upper_value, bool left_closed, bool right_closed);
 
-   //! <b>Requires</b>: KeyTypeKeyCompare is a function object that induces a strict weak
-   //!   ordering compatible with the strict weak ordering used to create the
-   //!   the container.
-   //!   'lower_key' must not be greater than 'upper_key' according to 'comp'. If
-   //!   'lower_key' == 'upper_key', ('left_closed' || 'right_closed') must be false.
+   //! <b>Requires</b>:
+   //!   `lower_key` is a value such that `*this` is partitioned with respect to
+   //!   comp(nk, lower_key) if left_closed is true, with respect to !comp(lower_key, nk) otherwise.
+   //!
+   //! `upper_key` is a value such that `*this` is partitioned with respect to
+   //!   !comp(upper_key, nk) if right_closed is true, with respect to comp(nk, upper_key) otherwise.
+   //!
+   //!   `upper_key` shall not precede `lower_key` according to comp
+   //!   [comp(upper_key, lower_key) shall be false]
+   //!
+   //!   If `lower_key` is equivalent to `upper_key`
+   //!   [!comp(upper_key, lower_key) && !comp(lower_key, upper_key)] then
+   //!   ('left_closed' || 'right_closed') must be false.
    //!
    //! <b>Effects</b>: Returns an a pair with the following criteria:
    //!
@@ -1740,47 +1749,12 @@ class bstree_impl
    template<class KeyType, class KeyTypeKeyCompare>
    std::pair<iterator,iterator> bounded_range
       (const KeyType &lower_key, const KeyType &upper_key, KeyTypeKeyCompare comp, bool left_closed, bool right_closed);
-
-   //! <b>Requires</b>: 'lower_key' must not be greater than 'upper_key'. If
-   //!   'lower_key' == 'upper_key', ('left_closed' || 'right_closed') must be false.
-   //!
-   //! <b>Effects</b>: Returns an a pair with the following criteria:
-   //!
-   //!   first = lower_bound(lower_key) if left_closed, upper_bound(lower_key) otherwise
-   //!
-   //!   second = upper_bound(upper_key) if right_closed, lower_bound(upper_key) otherwise
-   //!
-   //! <b>Complexity</b>: Logarithmic.
-   //!
-   //! <b>Throws</b>: If `key_compare` throws.
-   //!
-   //! <b>Note</b>: This function can be more efficient than calling upper_bound
-   //!   and lower_bound for lower_value and upper_value.
-   //!
-   //! <b>Note</b>: Experimental function, the interface might change in future releases.
+   
+   //! @copydoc ::boost::intrusive::bstree::bounded_range(const key_type &,const key_type &,bool,bool)
    std::pair<const_iterator,const_iterator> bounded_range
       (const key_type &lower_key, const key_type &upper_key, bool left_closed, bool right_closed) const;
 
-   //! <b>Requires</b>: KeyTypeKeyCompare is a function object that induces a strict weak
-   //!   ordering compatible with the strict weak ordering used to create the
-   //!   the container.
-   //!   'lower_key' must not be greater than 'upper_key' according to 'comp'. If
-   //!   'lower_key' == 'upper_key', ('left_closed' || 'right_closed') must be false.
-   //!
-   //! <b>Effects</b>: Returns an a pair with the following criteria:
-   //!
-   //!   first = lower_bound(lower_key, comp) if left_closed, upper_bound(lower_key, comp) otherwise
-   //!
-   //!   second = upper_bound(upper_key, comp) if right_closed, lower_bound(upper_key, comp) otherwise
-   //!
-   //! <b>Complexity</b>: Logarithmic.
-   //!
-   //! <b>Throws</b>: If `comp` throws.
-   //!
-   //! <b>Note</b>: This function can be more efficient than calling upper_bound
-   //!   and lower_bound for lower_key and upper_key.
-   //!
-   //! <b>Note</b>: Experimental function, the interface might change in future releases.
+   //! @copydoc ::boost::intrusive::bstree::bounded_range(const KeyType&,const KeyType&,KeyTypeKeyCompare,bool,bool)
    template<class KeyType, class KeyTypeKeyCompare>
    std::pair<const_iterator,const_iterator> bounded_range
       (const KeyType &lower_key, const KeyType &upper_key, KeyTypeKeyCompare comp, bool left_closed, bool right_closed) const;

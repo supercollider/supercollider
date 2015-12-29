@@ -263,10 +263,10 @@ namespace
 
   //  error handling helpers  ----------------------------------------------------------//
 
-  bool error(err_t error_num, error_code* ec, const string& message);
-  bool error(err_t error_num, const path& p, error_code* ec, const string& message);
+  bool error(err_t error_num, error_code* ec, const char* message);
+  bool error(err_t error_num, const path& p, error_code* ec, const char* message);
   bool error(err_t error_num, const path& p1, const path& p2, error_code* ec,
-    const string& message);
+    const char* message);
 
   const error_code ok;
 
@@ -274,7 +274,7 @@ namespace
   //  Interface changed 30 Jan 15 to have caller supply error_num as ::SetLastError()
   //  values were apparently getting cleared before they could be retrieved by error().
 
-  bool error(err_t error_num, error_code* ec, const string& message)
+  bool error(err_t error_num, error_code* ec, const char* message)
   {
     if (!error_num)
     {
@@ -291,7 +291,7 @@ namespace
     return error_num != 0;
   }
 
-  bool error(err_t error_num, const path& p, error_code* ec, const string& message)
+  bool error(err_t error_num, const path& p, error_code* ec, const char* message)
   {
     if (!error_num)
     {
@@ -309,7 +309,7 @@ namespace
   }
 
   bool error(err_t error_num, const path& p1, const path& p2, error_code* ec,
-    const string& message)
+    const char* message)
   {
     if (!error_num)
     {
@@ -333,11 +333,21 @@ namespace
     return fs::directory_iterator(p)== end_dir_itr;
   }
 
-  bool remove_directory(const path& p) // true if succeeds
-    { return BOOST_REMOVE_DIRECTORY(p.c_str()); }
+  bool not_found_error(int errval); // forward declaration
+
+  // only called if directory exists
+  bool remove_directory(const path& p) // true if succeeds or not found
+  { 
+    return BOOST_REMOVE_DIRECTORY(p.c_str())
+      || not_found_error(BOOST_ERRNO);  // mitigate possible file system race. See #11166
+  }
   
-  bool remove_file(const path& p) // true if succeeds
-    { return BOOST_DELETE_FILE(p.c_str()); }
+  // only called if file exists
+  bool remove_file(const path& p) // true if succeeds or not found
+  {
+    return BOOST_DELETE_FILE(p.c_str())
+      || not_found_error(BOOST_ERRNO);  // mitigate possible file system race. See #11166
+  }
   
   // called by remove and remove_all_aux
   bool remove_file_or_directory(const path& p, fs::file_type type, error_code* ec)
@@ -927,6 +937,12 @@ namespace detail
  BOOST_FILESYSTEM_DECL
   bool create_directories(const path& p, system::error_code* ec)
   {
+    path filename(p.filename());
+    if ((filename.native().size() == 1 && filename.native()[0] == dot)
+      || (filename.native().size() == 2
+        && filename.native()[0] == dot && filename.native()[1] == dot))
+      return create_directories(p.parent_path(), ec);
+
     error_code local_ec;
     file_status p_status = status(p, local_ec);
 
@@ -1400,7 +1416,7 @@ namespace detail
     else if (prms & remove_perms)
       prms = current_status.permissions() & ~prms;
 
-    // Mac OS X Lion and some other platforms don't support fchmodat().
+    // OS X <10.10, iOS <8.0 and some other platforms don't support fchmodat().
     // Solaris (SunPro and gcc) only support fchmodat() on Solaris 11 and higher,
     // and a runtime check is too much trouble.
     // Linux does not support permissions on symbolic links and has no plans to
@@ -1413,7 +1429,11 @@ namespace detail
     //   "http://man7.org/linux/man-pages/man2/fchmodat.2.html"
 #   if defined(AT_FDCWD) && defined(AT_SYMLINK_NOFOLLOW) \
       && !(defined(__SUNPRO_CC) || defined(__sun) || defined(sun)) \
-      && !(defined(linux) || defined(__linux) || defined(__linux__))
+      && !(defined(linux) || defined(__linux) || defined(__linux__)) \
+      && !(defined(__MAC_OS_X_VERSION_MIN_REQUIRED) \
+           && __MAC_OS_X_VERSION_MIN_REQUIRED < 101000) \
+      && !(defined(__IPHONE_OS_VERSION_MIN_REQUIRED) \
+           && __IPHONE_OS_VERSION_MIN_REQUIRED < 80000)
       if (::fchmodat(AT_FDCWD, p.c_str(), mode_cast(prms),
            !(prms & symlink_perms) ? 0 : AT_SYMLINK_NOFOLLOW))
 #   else  // fallback if fchmodat() not supported
@@ -1517,6 +1537,19 @@ namespace detail
 #     endif
     return symlink_path;
   }
+
+  BOOST_FILESYSTEM_DECL
+  path relative(const path& p, const path& base, error_code* ec)
+  {
+    error_code tmp_ec;
+    path wc_base(weakly_canonical(base, &tmp_ec));
+    if (error(tmp_ec.value(), base, ec, "boost::filesystem::relative"))
+      return path();
+    path wc_p(weakly_canonical(p, &tmp_ec));
+    if (error(tmp_ec.value(), base, ec, "boost::filesystem::relative"))
+      return path();
+    return wc_p.lexically_relative(wc_base);
+  }
   
   BOOST_FILESYSTEM_DECL
   bool remove(const path& p, error_code* ec)
@@ -1530,7 +1563,7 @@ namespace detail
     // Since POSIX remove() is specified to work with either files or directories, in a
     // perfect world it could just be called. But some important real-world operating
     // systems (Windows, Mac OS X, for example) don't implement the POSIX spec. So
-    // remove_file_or_directory() is always called to kep it simple.
+    // remove_file_or_directory() is always called to keep it simple.
     return remove_file_or_directory(p, type, ec);
   }
 
@@ -1855,6 +1888,47 @@ namespace detail
 #   endif
   }
 
+  BOOST_FILESYSTEM_DECL
+  path weakly_canonical(const path& p, system::error_code* ec)
+  {
+    path head(p);
+    path tail;
+    system::error_code tmp_ec;
+    path::iterator itr = p.end();
+
+    for (; !head.empty(); --itr)
+    {
+      file_status head_status = status(head, tmp_ec);
+      if (error(head_status.type() == fs::status_error,
+        head, ec, "boost::filesystem::weakly_canonical"))
+        return path();
+      if (head_status.type() != fs::file_not_found)
+        break;
+      head.remove_filename();
+    }
+
+    bool tail_has_dots = false;
+    for (; itr != p.end(); ++itr)
+    { 
+      tail /= *itr;
+      // for a later optimization, track if any dot or dot-dot elements are present
+      if (itr->native().size() <= 2
+        && itr->native()[0] == dot
+        && (itr->native().size() == 1 || itr->native()[1] == dot))
+        tail_has_dots = true;
+    }
+    
+    if (head.empty())
+      return p.lexically_normal();
+    head = canonical(head, tmp_ec);
+    if (error(tmp_ec.value(), head, ec, "boost::filesystem::weakly_canonical"))
+      return path();
+    return tail.empty()
+      ? head
+      : (tail_has_dots  // optimization: only normalize if tail had dot or dot-dot element
+          ? (head/tail).lexically_normal()  
+          : head/tail);
+  }
 }  // namespace detail
 
 //--------------------------------------------------------------------------------------//

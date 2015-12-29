@@ -167,7 +167,11 @@ BOOST_INTRUSIVE_HAS_MEMBER_FUNCTION_CALLABLE_WITH_NS_BEG
             void BOOST_INTRUSIVE_HAS_MEMBER_FUNCTION_CALLABLE_WITH_FUNCNAME();
          };
 
-         struct Base : public boost_intrusive_hmfcw::remove_cv<Type>::type, public BaseMixin {};
+         struct Base
+            : public boost_intrusive_hmfcw::remove_cv<Type>::type, public BaseMixin
+         {  //Declare the unneeded default constructor as some old compilers wrongly require it with is_convertible
+            Base();
+         };
          template <typename T, T t> class Helper{};
 
          template <typename U>
@@ -244,11 +248,16 @@ BOOST_INTRUSIVE_HAS_MEMBER_FUNCTION_CALLABLE_WITH_NS_BEG
 
       #if BOOST_INTRUSIVE_HAS_MEMBER_FUNCTION_CALLABLE_WITH_MAX > 0
          //1 to N arg specialization when BOOST_INTRUSIVE_HAS_MEMBER_FUNCTION_CALLABLE_WITH_FUNCNAME is present
+         //Declare some unneeded default constructor as some old compilers wrongly require it with is_convertible
          #if defined(BOOST_NO_CXX11_DECLTYPE)
             #define BOOST_INTRUSIVE_HAS_MEMBER_FUNCTION_CALLABLE_WITH_ITERATION(N)\
-            template<class Fun>  struct BOOST_MOVE_CAT(FunWrap##N, BOOST_INTRUSIVE_HAS_MEMBER_FUNCTION_CALLABLE_WITH_FUNCNAME) : Fun\
+            \
+            template<class Fun>\
+            struct BOOST_MOVE_CAT(FunWrap##N, BOOST_INTRUSIVE_HAS_MEMBER_FUNCTION_CALLABLE_WITH_FUNCNAME)\
+               : Fun\
             {\
                using Fun::BOOST_INTRUSIVE_HAS_MEMBER_FUNCTION_CALLABLE_WITH_FUNCNAME;\
+               BOOST_MOVE_CAT(FunWrap##N, BOOST_INTRUSIVE_HAS_MEMBER_FUNCTION_CALLABLE_WITH_FUNCNAME)();\
                boost_intrusive_hmfcw::private_type BOOST_INTRUSIVE_HAS_MEMBER_FUNCTION_CALLABLE_WITH_FUNCNAME\
                   (BOOST_MOVE_REPEAT##N(boost_intrusive_hmfcw::dont_care)) const;\
             };\

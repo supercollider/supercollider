@@ -60,13 +60,15 @@ struct key_nodeptr_comp
 
    //key_forward
    template<class T>
-   typename enable_if<is_node_ptr<T>, const key_type &>::type
-      key_forward(const T &node) const
+   typename enable_if<is_node_ptr<T>, const key_type &>::type key_forward(const T &node) const
    {  return key_of_value()(*traits_->to_value_ptr(node));  }
 
    template<class T>
-   typename disable_if<is_node_ptr<T>, const T &>::type
-   const  key_forward(const T &key) const
+   #if defined(BOOST_MOVE_HELPERS_RETURN_SFINAE_BROKEN)
+   const T &key_forward (const T &key, typename disable_if<is_node_ptr<T> >::type* =0) const
+   #else
+   typename disable_if<is_node_ptr<T>, const T &>::type key_forward(const T &key) const
+   #endif
    {  return key;  }
 
    //operator() 1 arg
