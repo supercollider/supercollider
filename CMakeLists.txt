@@ -50,10 +50,7 @@ if (${CMAKE_COMPILER_IS_GNUCXX})
 		message(FATAL_ERROR "SuperCollider requires at least gcc-4.7 when compiled with gcc.")
 	endif()
 
-#	disabled for now: -ffast-math breaks avx intrinsics and -fsigned-zeros/-fno-associative-math are not available in some versions
-#	if (${_gcc_version} VERSION_GREATER 4.0.99)
-#		add_definitions("-ffast-math -fsigned-zeros -fno-associative-math")
-#	endif()
+	add_definitions("-ffast-math -fsigned-zeros -fno-associative-math")
 
 	if(APPLE)
 		exec_program(${CMAKE_CXX_COMPILER} ARGS --version OUTPUT_VARIABLE _gcc_version_info)
@@ -70,9 +67,7 @@ elseif(${CMAKE_CXX_COMPILER} MATCHES icpc)
 	add_definitions(-Wno-unknown-pragmas)
 	add_definitions(-simd)
 
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(CMAKE_COMPILER_IS_CLANG 1)
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
     set(CMAKE_COMPILER_IS_CLANG 1)
 endif()
 
