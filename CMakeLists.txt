@@ -180,11 +180,6 @@ if (NOT WIN32)
     include_directories(${PTHREADS_INCLUDE_DIR})
 endif()
 
-if(MSVC OR MINGW)
-    set(MATH_LIBRARY "")
-else()
-    find_library(MATH_LIBRARY m)
-endif()
 
 if(SYSTEM_BOOST)
   set(Boost_USE_MULTITHREADED      ON)
