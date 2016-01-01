@@ -89,6 +89,17 @@ endif()
 
 add_definitions(-DBOOST_CHRONO_HEADER_ONLY -DBOOST_NO_AUTO_PTR)
 
+
+#############################################
+# Detect CCache
+
+find_program(CCacheExectuable ccache)
+if( CCacheExectuable )
+  # only used with >=cmake-3.4
+  set( CMAKE_C_COMPILER_LAUNCHER   "${CCacheExectuable}" )
+  set( CMAKE_CXX_COMPILER_LAUNCHER "${CCacheExectuable}" )
+endif()
+
 #############################################
 # Options
 option(NOVA_SIMD "Build with nova-simd support." ON)
