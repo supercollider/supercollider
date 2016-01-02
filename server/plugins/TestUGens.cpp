@@ -28,49 +28,11 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-// FIXME: once we completely move to c++11, we should get rid of sc_fpclassify
 
-// Previous versions of Visual C++ didn't have fpclassify (C99), so define it here if needed
-#ifdef SC_PROVIDE_FPCLASSIFY
-#include <float.h>
-enum _FP_CLASSES_ { FP_NORMAL, FP_NAN, FP_INFINITE, FP_SUBNORMAL };
-
-static int sc_fpclassify(float x)
-{
-	int result;
-	int kind = _fpclass((double)x);
-	switch (kind)
-	{
-	case _FPCLASS_NINF:
-		result = FP_INFINITE;
-		break;
-	case _FPCLASS_PINF:
-		result = FP_INFINITE;
-		break;
-	case _FPCLASS_SNAN:
-		result = FP_NAN;
-		break;
-	case _FPCLASS_QNAN:
-		result = FP_NAN;
-		break;
-	case _FPCLASS_ND:
-		result = FP_SUBNORMAL;
-		break;
-	case _FPCLASS_PD:
-		result = FP_SUBNORMAL;
-		break;
-	default:
-		result = FP_NORMAL;
-	};
-	return result;
-}
-
-#else
 inline int sc_fpclassify(float x)
 {
 	return std::fpclassify(x);
 }
-#endif // _WIN32
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
