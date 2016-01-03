@@ -375,7 +375,7 @@ int main(int argc, char * argv[])
     nova_server server(args);
     register_signal_handler();
 
-    set_plugin_paths(args, sc_factory);
+    set_plugin_paths(args, sc_factory.get());
     load_synthdefs(server, args);
 
     if (!args.non_rt) {

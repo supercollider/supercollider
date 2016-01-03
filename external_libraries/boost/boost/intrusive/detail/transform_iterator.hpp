@@ -13,12 +13,17 @@
 #ifndef BOOST_INTRUSIVE_DETAIL_TRANSFORM_ITERATOR_HPP
 #define BOOST_INTRUSIVE_DETAIL_TRANSFORM_ITERATOR_HPP
 
-#if defined(_MSC_VER)
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
 #  pragma once
 #endif
 
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/detail/mpl.hpp>
+#include <boost/intrusive/detail/iterator.hpp>
 
 namespace boost {
 namespace intrusive {
@@ -54,14 +59,14 @@ struct operator_arrow_proxy<T&>
 
 template <class Iterator, class UnaryFunction>
 class transform_iterator
-   : public boost::intrusive::iterator
-      < typename Iterator::iterator_category
-      , typename detail::remove_reference<typename UnaryFunction::result_type>::type
-      , typename Iterator::difference_type
-      , operator_arrow_proxy<typename UnaryFunction::result_type>
-      , typename UnaryFunction::result_type>
 {
    public:
+   typedef typename Iterator::iterator_category                                           iterator_category;
+   typedef typename detail::remove_reference<typename UnaryFunction::result_type>::type   value_type;
+   typedef typename Iterator::difference_type                                             difference_type;
+   typedef operator_arrow_proxy<typename UnaryFunction::result_type>                      pointer;
+   typedef typename UnaryFunction::result_type                                            reference;
+   
    explicit transform_iterator(const Iterator &it, const UnaryFunction &f = UnaryFunction())
       :  members_(it, f)
    {}
@@ -90,16 +95,6 @@ class transform_iterator
    friend bool operator!= (const transform_iterator& i, const transform_iterator& i2)
    { return !(i == i2); }
 
-/*
-   friend bool operator> (const transform_iterator& i, const transform_iterator& i2)
-   { return i2 < i; }
-
-   friend bool operator<= (const transform_iterator& i, const transform_iterator& i2)
-   { return !(i > i2); }
-
-   friend bool operator>= (const transform_iterator& i, const transform_iterator& i2)
-   { return !(i < i2); }
-*/
    friend typename Iterator::difference_type operator- (const transform_iterator& i, const transform_iterator& i2)
    { return i2.distance_to(i); }
 

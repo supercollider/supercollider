@@ -32,15 +32,8 @@ class audio_bus_manager
     typedef std::uint16_t uint16_t;
 
 public:
-/*    audio_bus_manager(uint16_t count = 4096, uint16_t blocksize = 64)
-    {
-        initialize(count, blocksize);
-    }
-*/
-    audio_bus_manager(void)
-    {}
-
-    audio_bus_manager(audio_bus_manager const &) = delete;
+    audio_bus_manager(void)                                 = default;
+    audio_bus_manager(audio_bus_manager const &)            = delete;
     audio_bus_manager& operator=(audio_bus_manager const &) = delete;
 
     void initialize(uint16_t c, uint16_t b)
@@ -77,10 +70,10 @@ public:
 private:
     friend class sc_plugin_interface;
 
-    uint16_t count;
-    uint16_t blocksize;
-    sample * buffers;
-    padded_rw_spinlock * locks;
+    uint16_t count             = 0;
+    uint16_t blocksize         = 0;
+    sample * buffers           = nullptr;
+    padded_rw_spinlock * locks = nullptr;
 };
 
 } /* namespace nova */

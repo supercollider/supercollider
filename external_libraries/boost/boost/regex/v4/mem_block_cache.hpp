@@ -28,7 +28,7 @@
 #endif
 
 namespace boost{
-namespace re_detail{
+namespace BOOST_REGEX_DETAIL_NS{
 
 struct mem_block_node
 {

@@ -13,12 +13,17 @@
 #ifndef BOOST_INTRUSIVE_DETAIL_MATH_HPP
 #define BOOST_INTRUSIVE_DETAIL_MATH_HPP
 
-#if defined(_MSC_VER)
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
 #  pragma once
 #endif
 
 #include <cstddef>
 #include <climits>
+#include <boost/intrusive/detail/mpl.hpp>
 
 namespace boost {
 namespace intrusive {
@@ -84,9 +89,9 @@ namespace detail {
 
    #if defined(BOOST_HAS_LONG_LONG)
    template<>
-   struct builtin_clz_dispatch<unsigned long long>
+   struct builtin_clz_dispatch< ::boost::ulong_long_type >
    {
-      static unsigned long long call(unsigned long long n)
+      static ::boost::ulong_long_type call(::boost::ulong_long_type n)
       {  return __builtin_clzll(n); }
    };
    #endif
@@ -123,7 +128,7 @@ namespace detail {
    {  return (n >> 1) + ((n & 1u) & (n != 1)); }
 
    template<std::size_t N>
-   inline std::size_t floor_log2 (std::size_t x, integer<std::size_t, N>)
+   inline std::size_t floor_log2 (std::size_t x, integral_constant<std::size_t, N>)
    {
       const std::size_t Bits = N;
       const bool Size_t_Bits_Power_2= !(Bits & (Bits-1));
@@ -152,9 +157,9 @@ namespace detail {
    //http://stackoverflow.com/questions/11376288/fast-computing-of-log2-for-64-bit-integers
    //Thanks to Desmond Hume
 
-   inline std::size_t floor_log2 (std::size_t v, integer<std::size_t, 32>)
+   inline std::size_t floor_log2 (std::size_t v, integral_constant<std::size_t, 32>)
    {
-      static const int MultiplyDeBruijnBitPosition[32] = 
+      static const int MultiplyDeBruijnBitPosition[32] =
       {
          0, 9, 1, 10, 13, 21, 2, 29, 11, 14, 16, 18, 22, 25, 3, 30,
          8, 12, 20, 28, 15, 17, 24, 7, 19, 27, 23, 6, 26, 5, 4, 31
@@ -169,7 +174,7 @@ namespace detail {
       return MultiplyDeBruijnBitPosition[(std::size_t)(v * 0x07C4ACDDU) >> 27];
    }
 
-   inline std::size_t floor_log2 (std::size_t v, integer<std::size_t, 64>)
+   inline std::size_t floor_log2 (std::size_t v, integral_constant<std::size_t, 64>)
    {
       static const std::size_t MultiplyDeBruijnBitPosition[64] = {
       63,  0, 58,  1, 59, 47, 53,  2,
@@ -194,7 +199,7 @@ namespace detail {
    inline std::size_t floor_log2 (std::size_t x)
    {
       const std::size_t Bits = sizeof(std::size_t)*CHAR_BIT;
-      return floor_log2(x, integer<std::size_t, Bits>());
+      return floor_log2(x, integral_constant<std::size_t, Bits>());
    }
 
 #endif
@@ -223,9 +228,28 @@ inline float fast_log2 (float val)
    return val + static_cast<float>(log_2);
 }
 
+inline bool is_pow2(std::size_t x)
+{  return (x & (x-1)) == 0;  }
+
+template<std::size_t N>
+struct static_is_pow2
+{
+   static const bool value = (N & (N-1)) == 0;
+};
+
 inline std::size_t ceil_log2 (std::size_t x)
 {
-   return static_cast<std::size_t>((x & (x-1)) != 0) + floor_log2(x);
+   return static_cast<std::size_t>(!(is_pow2)(x)) + floor_log2(x);
+}
+
+inline std::size_t ceil_pow2 (std::size_t x)
+{
+   return std::size_t(1u) << (ceil_log2)(x);
+}
+
+inline std::size_t previous_or_equal_pow2(std::size_t x)
+{
+   return std::size_t(1u) << floor_log2(x);
 }
 
 template<class SizeType, std::size_t N>

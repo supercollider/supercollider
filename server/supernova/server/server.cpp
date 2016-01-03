@@ -55,7 +55,7 @@ nova_server::nova_server(server_arguments const & args):
     if (!args.non_rt)
         io_interpreter.start_thread();
 
-    sc_factory = new sc_ugen_factory;
+    sc_factory.reset( new sc_ugen_factory );
     sc_factory->initialize(args, server_shared_memory_creator::shm->get_control_busses());
 
     /** first guess: needs to be updated, once the backend is started */
@@ -98,6 +98,8 @@ nova_server::~nova_server(void)
 
     scheduler<thread_init_functor>::terminate();
     io_interpreter.join_thread();
+
+    sc_factory.reset();
     instance = nullptr;
 }
 

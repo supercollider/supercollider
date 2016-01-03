@@ -14,16 +14,16 @@
 #ifndef BOOST_INTRUSIVE_LINEAR_SLIST_ALGORITHMS_HPP
 #define BOOST_INTRUSIVE_LINEAR_SLIST_ALGORITHMS_HPP
 
-#if defined(_MSC_VER)
-#  pragma once
-#endif
-
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/intrusive_fwd.hpp>
 #include <boost/intrusive/detail/common_slist_algorithms.hpp>
 #include <boost/intrusive/detail/algo_type.hpp>
 #include <cstddef>
-#include <utility>
+#include <boost/intrusive/detail/minimal_pair_header.hpp>   //std::pair
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
+#  pragma once
+#endif
 
 namespace boost {
 namespace intrusive {

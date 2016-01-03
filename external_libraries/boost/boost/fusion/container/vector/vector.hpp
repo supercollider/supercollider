@@ -1,243 +1,340 @@
 /*=============================================================================
-    Copyright (c) 2001-2011 Joel de Guzman
+    Copyright (c) 2014-2015 Kohei Takahashi
 
     Distributed under the Boost Software License, Version 1.0. (See accompanying
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 ==============================================================================*/
-#if !defined(FUSION_VECTOR_07072005_1244)
-#define FUSION_VECTOR_07072005_1244
+#ifndef FUSION_VECTOR_11052014_1625
+#define FUSION_VECTOR_11052014_1625
 
-#include <boost/preprocessor/iterate.hpp>
-#include <boost/preprocessor/repetition/enum_params.hpp>
-#include <boost/preprocessor/repetition/enum_binary_params.hpp>
+#include <boost/config.hpp>
 #include <boost/fusion/support/config.hpp>
+#include <boost/fusion/container/vector/detail/config.hpp>
 #include <boost/fusion/container/vector/vector_fwd.hpp>
-#include <boost/fusion/container/vector/detail/vector_n_chooser.hpp>
+
+///////////////////////////////////////////////////////////////////////////////
+// Without variadics, we will use the PP version
+///////////////////////////////////////////////////////////////////////////////
+#if !defined(BOOST_FUSION_HAS_VARIADIC_VECTOR)
+# include <boost/fusion/container/vector/detail/cpp03/vector.hpp>
+#else
+
+///////////////////////////////////////////////////////////////////////////////
+// C++11 interface
+///////////////////////////////////////////////////////////////////////////////
+#include <boost/fusion/support/sequence_base.hpp>
+#include <boost/fusion/support/is_sequence.hpp>
+#include <boost/fusion/support/detail/index_sequence.hpp>
+#include <boost/fusion/container/vector/detail/at_impl.hpp>
+#include <boost/fusion/container/vector/detail/value_at_impl.hpp>
+#include <boost/fusion/container/vector/detail/begin_impl.hpp>
+#include <boost/fusion/container/vector/detail/end_impl.hpp>
+#include <boost/fusion/sequence/intrinsic/size.hpp>
 #include <boost/fusion/sequence/intrinsic/begin.hpp>
-#include <boost/mpl/at.hpp>
+#include <boost/fusion/iterator/advance.hpp>
+#include <boost/fusion/iterator/deref.hpp>
+#include <boost/core/enable_if.hpp>
+#include <boost/mpl/int.hpp>
 #include <boost/mpl/bool.hpp>
-#include <boost/type_traits/add_reference.hpp>
-#include <boost/type_traits/add_const.hpp>
-#include <boost/type_traits/is_base_of.hpp>
-#include <boost/detail/workaround.hpp>
-
-#define FUSION_HASH #
-
-#if BOOST_WORKAROUND(BOOST_MSVC, <= 1600)
-
-#define BOOST_FUSION_VECTOR_COPY_INIT()                                       \
-    ctor_helper(rhs, is_base_of<vector, Sequence>())                          \
-
-#define BOOST_FUSION_VECTOR_CTOR_HELPER()                                     \
-    BOOST_FUSION_GPU_ENABLED                                                  \
-    static vector_n const&                                                    \
-    ctor_helper(vector const& rhs, mpl::true_)                                \
-    {                                                                         \
-        return rhs.vec;                                                       \
-    }                                                                         \
-                                                                              \
-    template <typename T>                                                     \
-    BOOST_FUSION_GPU_ENABLED                                                  \
-    static T const&                                                           \
-    ctor_helper(T const& rhs, mpl::false_)                                    \
-    {                                                                         \
-        return rhs;                                                           \
-    }
-
-#else
-
-#define BOOST_FUSION_VECTOR_COPY_INIT()                                       \
-    rhs                                                                       \
-
-#define BOOST_FUSION_VECTOR_CTOR_HELPER()
-
-#endif
-
-#if !defined(BOOST_FUSION_DONT_USE_PREPROCESSED_FILES)
-#include <boost/fusion/container/vector/detail/preprocessed/vector.hpp>
-#else
-#if defined(__WAVE__) && defined(BOOST_FUSION_CREATE_PREPROCESSED_FILES)
-#pragma wave option(preserve: 2, line: 0, output: "detail/preprocessed/vvector" FUSION_MAX_VECTOR_SIZE_STR ".hpp")
-#endif
-
-/*=============================================================================
-    Copyright (c) 2001-2011 Joel de Guzman
-
-    Distributed under the Boost Software License, Version 1.0. (See accompanying
-    file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-
-    This is an auto-generated file. Do not edit!
-==============================================================================*/
-
-#if defined(__WAVE__) && defined(BOOST_FUSION_CREATE_PREPROCESSED_FILES)
-#pragma wave option(preserve: 1)
-#endif
+#include <boost/type_traits/is_same.hpp>
+#include <boost/type_traits/is_convertible.hpp>
+#include <boost/type_traits/remove_cv.hpp>
+#include <boost/type_traits/remove_reference.hpp>
+#include <cstddef>
+#include <utility>
 
 namespace boost { namespace fusion
 {
-    struct void_;
-    struct fusion_sequence_tag;
+    struct vector_tag;
+    struct random_access_traversal_tag;
 
-    template <BOOST_PP_ENUM_PARAMS(FUSION_MAX_VECTOR_SIZE, typename T)>
-    struct vector
-        : sequence_base<vector<BOOST_PP_ENUM_PARAMS(FUSION_MAX_VECTOR_SIZE, T)> >
+    namespace vector_detail
     {
-    private:
-
-        typedef typename detail::vector_n_chooser<
-            BOOST_PP_ENUM_PARAMS(FUSION_MAX_VECTOR_SIZE, T)>::type
-        vector_n;
-
-        template <BOOST_PP_ENUM_PARAMS(FUSION_MAX_VECTOR_SIZE, typename U)>
-        friend struct vector;
-
-    public:
-
-        typedef typename vector_n::types types;
-        typedef typename vector_n::fusion_tag fusion_tag;
-        typedef typename vector_n::tag tag;
-        typedef typename vector_n::size size;
-        typedef typename vector_n::category category;
-        typedef typename vector_n::is_view is_view;
-
-        BOOST_FUSION_GPU_ENABLED
-        vector()
-            : vec() {}
-
-        template <BOOST_PP_ENUM_PARAMS(FUSION_MAX_VECTOR_SIZE, typename U)>
-        BOOST_FUSION_GPU_ENABLED
-        vector(vector<BOOST_PP_ENUM_PARAMS(FUSION_MAX_VECTOR_SIZE, U)> const& rhs)
-            : vec(rhs.vec) {}
-
-        BOOST_FUSION_GPU_ENABLED
-        vector(vector const& rhs)
-            : vec(rhs.vec) {}
+        struct each_elem {};
+        struct copy_or_move {};
+        template <typename I> struct from_sequence {};
 
         template <typename Sequence>
-        BOOST_FUSION_GPU_ENABLED
-        vector(Sequence const& rhs)
-            : vec(BOOST_FUSION_VECTOR_COPY_INIT()) {}
-
-        //  Expand a couple of forwarding constructors for arguments
-        //  of type (T0), (T0, T1), (T0, T1, T2) etc. Example:
-        //
-        //  vector(
-        //      typename detail::call_param<T0>::type _0
-        //    , typename detail::call_param<T1>::type _1)
-        //    : vec(_0, _1) {}
-        #include <boost/fusion/container/vector/detail/vector_forward_ctor.hpp>
-
-        template <BOOST_PP_ENUM_PARAMS(FUSION_MAX_VECTOR_SIZE, typename U)>
-        BOOST_FUSION_GPU_ENABLED
-        vector&
-        operator=(vector<BOOST_PP_ENUM_PARAMS(FUSION_MAX_VECTOR_SIZE, U)> const& rhs)
-        {
-            vec = rhs.vec;
-            return *this;
-        }
+        struct make_indices_from_seq
+            : detail::make_index_sequence<
+                  fusion::result_of::size<typename remove_reference<Sequence>::type>::value
+              >
+        {};
 
         template <typename T>
-        BOOST_FUSION_GPU_ENABLED
-        vector&
-        operator=(T const& rhs)
-        {
-            vec = rhs;
-            return *this;
-        }
+        struct pure : remove_cv<typename remove_reference<T>::type> {};
 
-        BOOST_FUSION_GPU_ENABLED
-        vector&
-        operator=(vector const& rhs)
-        {
-            vec = rhs.vec;
-            return *this;
-        }
+        template <typename Sequence, typename This, int = result_of::size<This>::value>
+        struct is_convertible_to_first
+            : boost::is_convertible<Sequence, typename result_of::value_at_c<This, 0>::type>
+        {};
 
-#if defined(__WAVE__) && defined(BOOST_FUSION_CREATE_PREPROCESSED_FILES)
-FUSION_HASH if !defined(BOOST_NO_CXX11_RVALUE_REFERENCES)
-#endif
-#if !defined(BOOST_NO_CXX11_RVALUE_REFERENCES) || \
-    (defined(__WAVE__) && defined(BOOST_FUSION_CREATE_PREPROCESSED_FILES))
-        BOOST_FUSION_GPU_ENABLED
-        vector(vector&& rhs)
-            : vec(std::forward<vector_n>(rhs.vec)) {}
-        BOOST_FUSION_GPU_ENABLED
-        vector&
-        operator=(vector&& rhs)
-        {
-            vec = std::forward<vector_n>(rhs.vec);
-            return *this;
-        }
+        template <typename Sequence, typename This>
+        struct is_convertible_to_first<Sequence, This, 0>
+            : mpl::false_
+        {};
 
-        template <typename T>
-        BOOST_FUSION_GPU_ENABLED
-        vector&
-        operator=(T&& rhs)
-        {
-            vec = std::forward<T>(rhs);
-            return *this;
-        }
-#endif
-#if defined(__WAVE__) && defined(BOOST_FUSION_CREATE_PREPROCESSED_FILES)
-FUSION_HASH endif
-#endif
+        template <typename This, typename ...T>
+        BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+        inline each_elem
+        dispatch(T const&...) BOOST_NOEXCEPT { return each_elem(); }
 
-        template <int N>
-        BOOST_FUSION_GPU_ENABLED
-        typename add_reference<
-            typename mpl::at_c<types, N>::type
-        >::type
-        at_impl(mpl::int_<N> index)
-        {
-            return vec.at_impl(index);
-        }
+        template <typename This>
+        BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+        inline copy_or_move
+        dispatch(This const&) BOOST_NOEXCEPT { return copy_or_move(); }
 
-        template <int N>
-        BOOST_FUSION_GPU_ENABLED
-        typename add_reference<
-            typename add_const<
-                typename mpl::at_c<types, N>::type
+        template <typename This, typename Sequence>
+        BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+        inline from_sequence<
+            typename lazy_enable_if_c<
+                (traits::is_sequence<typename remove_reference<Sequence>::type>::value &&
+                 !is_same<This, typename pure<Sequence>::type>::value &&
+                 !is_convertible_to_first<Sequence, This>::value)
+              , make_indices_from_seq<Sequence>
             >::type
-        >::type
-        at_impl(mpl::int_<N> index) const
+        >
+        dispatch(Sequence&&) BOOST_NOEXCEPT
+        { return from_sequence<typename make_indices_from_seq<Sequence>::type>(); }
+
+
+        // forward_at_c allows to access Nth element even if ForwardSequence
+        // since fusion::at_c requires RandomAccessSequence.
+        namespace result_of
         {
-            return vec.at_impl(index);
+            template <typename Sequence, int N>
+            struct forward_at_c
+                : fusion::result_of::deref<
+                      typename fusion::result_of::advance_c<
+                          typename fusion::result_of::begin<
+                              typename remove_reference<Sequence>::type
+                          >::type
+                        , N
+                      >::type
+                  >
+            {};
         }
 
-        template <typename I>
-        BOOST_FUSION_GPU_ENABLED
-        typename add_reference<
-            typename mpl::at<types, I>::type
-        >::type
-        at_impl(I /*index*/)
+        template <int N, typename Sequence>
+        BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+        inline typename result_of::forward_at_c<Sequence, N>::type
+        forward_at_c(Sequence&& seq)
         {
-            return vec.at_impl(mpl::int_<I::value>());
+            typedef typename
+                result_of::forward_at_c<Sequence, N>::type
+            result;
+            return std::forward<result>(*advance_c<N>(begin(seq)));
         }
 
-        template<typename I>
-        BOOST_FUSION_GPU_ENABLED
-        typename add_reference<
-            typename add_const<
-                typename mpl::at<types, I>::type
-            >::type
-        >::type
-        at_impl(I /*index*/) const
+        // Object proxy since preserve object order
+        template <std::size_t, typename T>
+        struct store
         {
-            return vec.at_impl(mpl::int_<I::value>());
+            BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+            store()
+                : elem() // value-initialized explicitly
+            {}
+
+            BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+            store(store const& rhs)
+                : elem(rhs.get())
+            {}
+
+            BOOST_CXX14_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+            store&
+            operator=(store const& rhs)
+            {
+                elem = rhs.get();
+                return *this;
+            }
+
+            BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+            store(store&& rhs)
+                : elem(static_cast<T&&>(rhs.get()))
+            {}
+
+            BOOST_CXX14_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+            store&
+            operator=(store&& rhs)
+            {
+                elem = static_cast<T&&>(rhs.get());
+                return *this;
+            }
+
+            template <typename U>
+            BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+            store(U&& rhs
+                , typename disable_if<is_same<typename pure<U>::type, store> >::type* = 0)
+                : elem(std::forward<U>(rhs))
+            {}
+
+            template <typename U>
+            BOOST_CXX14_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+            typename disable_if<is_same<typename pure<U>::type, store>, store&>::type
+            operator=(U&& rhs)
+            {
+                elem = std::forward<U>(rhs);
+                return *this;
+            }
+
+            BOOST_CXX14_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+            T      & get()       { return elem; }
+            BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+            T const& get() const { return elem; }
+
+            T elem;
+        };
+
+        template <typename I, typename ...T>
+        struct vector_data;
+
+        template <std::size_t ...I, typename ...T>
+        struct vector_data<detail::index_sequence<I...>, T...>
+            : store<I, T>...
+            , sequence_base<vector_data<detail::index_sequence<I...>, T...> >
+        {
+            typedef vector_tag                  fusion_tag;
+            typedef fusion_sequence_tag         tag; // this gets picked up by MPL
+            typedef mpl::false_                 is_view;
+            typedef random_access_traversal_tag category;
+            typedef mpl::int_<sizeof...(T)>     size;
+            typedef vector<T...>                type_sequence;
+
+            BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+            vector_data()
+            {}
+
+            BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+            vector_data(copy_or_move, vector_data const& rhs)
+                : store<I, T>(static_cast<store<I, T> const&>(rhs))...
+            {}
+
+            BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+            vector_data(copy_or_move, vector_data&& rhs)
+                : store<I, T>(std::forward<store<I, T> >(rhs))...
+            {}
+
+            template <typename Sequence>
+            BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+            explicit
+            vector_data(from_sequence<detail::index_sequence<I...> >, Sequence&& rhs)
+                : store<I, T>(forward_at_c<I>(rhs))...
+            {}
+
+            template <typename ...U>
+            BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+            explicit
+            vector_data(each_elem, U&&... var)
+                : store<I, T>(std::forward<U>(var))...
+            {}
+
+            template <typename Sequence>
+            BOOST_CXX14_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+            void
+            assign(Sequence&&, detail::index_sequence<>) {}
+
+            template <typename Sequence, std::size_t N, std::size_t ...M>
+            BOOST_CXX14_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+            void
+            assign(Sequence&& seq, detail::index_sequence<N, M...>)
+            {
+                at_impl(mpl::int_<N>()) = vector_detail::forward_at_c<N>(seq);
+                assign(std::forward<Sequence>(seq), detail::index_sequence<M...>());
+            }
+
+            template <std::size_t N, typename U>
+            static BOOST_CXX14_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+            auto at_detail(store<N, U>* this_) -> decltype(this_->get())
+            {
+                return this_->get();
+            }
+
+            template <std::size_t N, typename U>
+            static BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+            auto at_detail(store<N, U> const* this_) -> decltype(this_->get())
+            {
+                return this_->get();
+            }
+
+            template <typename J>
+            BOOST_CXX14_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+            auto at_impl(J) -> decltype(at_detail<J::value>(this))
+            {
+                return at_detail<J::value>(this);
+            }
+
+            template <typename J>
+            BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+            auto at_impl(J) const -> decltype(at_detail<J::value>(this))
+            {
+                return at_detail<J::value>(this);
+            }
+
+            template <std::size_t N, typename U>
+            static BOOST_FUSION_GPU_ENABLED
+            mpl::identity<U> value_at_impl(store<N, U>*);
+        };
+
+        template <typename V, typename... T>
+        struct trim_void_;
+
+        template <typename... T>
+        struct trim_void_<vector<T...> >
+        {
+            typedef vector_data<
+                typename detail::make_index_sequence<sizeof...(T)>::type
+              , T...
+            > type;
+        };
+
+        template <typename... T, typename... Tail>
+        struct trim_void_<vector<T...>, void_, Tail...>
+            : trim_void_<vector<T...> > {};
+
+        template <typename... T, typename Head, typename... Tail>
+        struct trim_void_<vector<T...>, Head, Tail...>
+            : trim_void_<vector<T..., Head>, Tail...> {};
+
+        template <typename... T>
+        struct trim_void : trim_void_<vector<>, T...> {};
+    } // namespace boost::fusion::vector_detail
+
+    // This class provides backward compatibility: vector<T, ..., void_, void_, ...>.
+    template <typename... T>
+    struct vector
+        : vector_detail::trim_void<T...>::type
+    {
+        typedef typename vector_detail::trim_void<T...>::type base;
+
+        BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+        vector()
+        {}
+
+        // rvalue-references is required here in order to forward any arguments to
+        // base: vector(T const&...) doesn't work with trailing void_ and
+        // vector(U const&...) cannot forward any arguments to base.
+        template <typename... U>
+        // XXX: constexpr become error due to pull-request #79, booooo!!
+        //      In the (near) future release, should be fixed.
+        /* BOOST_CONSTEXPR */ BOOST_FUSION_GPU_ENABLED
+        vector(U&&... u)
+            : base(vector_detail::dispatch<vector>(std::forward<U>(u)...), std::forward<U>(u)...)
+        {}
+
+        template <typename Sequence>
+        BOOST_CXX14_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+        vector&
+        operator=(Sequence&& rhs)
+        {
+            typedef typename
+                vector_detail::make_indices_from_seq<Sequence>::type
+            indices;
+            base::assign(std::forward<Sequence>(rhs), indices());
+            return *this;
         }
-
-    private:
-
-        BOOST_FUSION_VECTOR_CTOR_HELPER()
-        vector_n vec;
     };
 }}
 
-#if defined(__WAVE__) && defined(BOOST_FUSION_CREATE_PREPROCESSED_FILES)
-#pragma wave option(output: null)
+#endif
 #endif
 
-#endif // BOOST_FUSION_DONT_USE_PREPROCESSED_FILES
-
-#undef FUSION_HASH
-#endif

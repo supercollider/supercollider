@@ -11,9 +11,18 @@
 #ifndef BOOST_INTERPROCESS_FWD_HPP
 #define BOOST_INTERPROCESS_FWD_HPP
 
-#if defined(_MSC_VER)
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+#ifndef BOOST_CSTDINT_HPP
+#  include <boost/cstdint.hpp>
+#endif
+#
+#if defined(BOOST_HAS_PRAGMA_ONCE)
 #  pragma once
 #endif
+
+#include <boost/interprocess/detail/std_fwd.hpp>
 
 //! \file
 //! This header file forward declares the basic interprocess types:
@@ -123,20 +132,8 @@
 //                        Standard predeclarations
 //////////////////////////////////////////////////////////////////////////////
 
-namespace boost{
-namespace intrusive{
-}}
-
-namespace boost{
-namespace interprocess{
-namespace bi = boost::intrusive;
-}}
-
-#include <utility>
-#include <memory>
-#include <functional>
-#include <iosfwd>
-#include <string>
+namespace boost{  namespace intrusive{ }  }
+namespace boost{  namespace interprocess{ namespace bi = boost::intrusive; }  }
 
 namespace boost { namespace interprocess {
 
@@ -225,19 +222,16 @@ class private_node_allocator;
 template<class T, class SegmentManager, std::size_t NodesPerBlock = 64>
 class cached_node_allocator;
 
-template<class T, class SegmentManager, std::size_t NodesPerBlock = 64, std::size_t MaxFreeBlocks = 2
-         , unsigned char OverheadPercent = 5
->
+template< class T, class SegmentManager, std::size_t NodesPerBlock = 64
+        , std::size_t MaxFreeBlocks = 2, unsigned char OverheadPercent = 5 >
 class adaptive_pool;
 
-template<class T, class SegmentManager, std::size_t NodesPerBlock = 64, std::size_t MaxFreeBlocks = 2
-         , unsigned char OverheadPercent = 5
->
+template< class T, class SegmentManager, std::size_t NodesPerBlock = 64
+        , std::size_t MaxFreeBlocks = 2, unsigned char OverheadPercent = 5 >
 class private_adaptive_pool;
 
-template<class T, class SegmentManager, std::size_t NodesPerBlock = 64, std::size_t MaxFreeBlocks = 2
-         , unsigned char OverheadPercent = 5
->
+template< class T, class SegmentManager, std::size_t NodesPerBlock = 64
+        , std::size_t MaxFreeBlocks = 2, unsigned char OverheadPercent = 5 >
 class cached_adaptive_pool;
 
 
@@ -247,7 +241,16 @@ class cached_adaptive_pool;
 
 static const std::size_t offset_type_alignment = 0;
 
-template <class T, class DifferenceType = std::ptrdiff_t, class OffsetType = std::size_t, std::size_t Alignment = offset_type_alignment>
+#if !defined(BOOST_INTERPROCESS_DOXYGEN_INVOKED)
+#  ifdef BOOST_HAS_INTPTR_T
+      using ::boost::uintptr_t;
+#  else
+      typedef std::size_t uintptr_t;
+#  endif
+#endif
+
+template < class T, class DifferenceType = std::ptrdiff_t
+         , class OffsetType = uintptr_t, std::size_t Alignment = offset_type_alignment>
 class offset_ptr;
 
 //////////////////////////////////////////////////////////////////////////////

@@ -39,6 +39,22 @@
 #include <set>
 #include <limits>
 
+#include <memory>
+#include <boost/range/irange.hpp>
+
+#define BOOST_THREAD_VERSION 4
+#define BOOST_THREAD_PROVIDES_EXECUTORS
+
+#include <boost/thread/future.hpp>
+#include <boost/thread/executor.hpp>
+#include <boost/thread/executors/basic_thread_pool.hpp>
+
+#if 0 // not yet
+#include <parallel/algorithm>
+#endif
+
+
+
 PyrClass *gClassList = NULL;
 int gNumSelectors = 0;
 int gNumClasses = 0;
@@ -854,17 +870,9 @@ static PyrClass * sortClasses(PyrClass * aClassList)
 	return sortedClasses;
 }
 
-#include <boost/threadpool.hpp>
-
-static int cpuCount = thread::hardware_concurrency();
-static int helperThreadCount = cpuCount - 1;
-static boost::threadpool::fifo_pool compileThreadPool;
 
 void buildClassTree()
 {
-	// the first time we use the pool
-	compileThreadPool.size_controller().resize(helperThreadCount);
-
 	// after all classes are compiled this function builds the tree and
 	// indexes the classes
 
@@ -1076,32 +1084,22 @@ int compareColDescs(const void *va, const void *vb)
 double elapsedTime();
 #endif
 
-static size_t fillClassRow(PyrClass *classobj, PyrMethod** bigTable);
+static size_t fillClassRows(const PyrClass *classobj, PyrMethod** bigTable, boost::basic_thread_pool & pool);
 
 
-static void updateSelectorRowWidth(ColumnDescriptor* sels, size_t begin, size_t end)
-{
-	for (int i=begin; i<end; ++i) {
-		//if (chunkSize > sels[i].largestChunk) {
-		//	sels[i].largestChunk = chunkSize;
-		//	sels[i].chunkOffset = chunkOffset;
-		//}
-		sels[i].rowWidth = sels[i].maxClassIndex - sels[i].minClassIndex + 1;
-	}
-}
-
-static void binsortClassRows(PyrMethod ** bigTable, const ColumnDescriptor* sels, size_t numSelectors, size_t begin, size_t end)
+static void binsortClassRows(PyrMethod const ** bigTable, const ColumnDescriptor* sels, size_t numSelectors, size_t begin, size_t end)
 {
 	// bin sort the class rows to the new ordering
 	//post("reorder rows\n");
-	const int allocaThreshold = 4096;
-
+	const int allocaThreshold = 16384;
 	PyrMethod** temprow = (numSelectors < allocaThreshold) ? (PyrMethod**)alloca(numSelectors * sizeof(PyrMethod*))
 														   : (PyrMethod**)malloc(numSelectors * sizeof(PyrMethod*));
 
 	for (int j=begin; j<end; ++j) {
-		PyrMethod** row = bigTable + j * numSelectors;
+		PyrMethod const ** row = bigTable + j * numSelectors;
 		memcpy(temprow, row, numSelectors * sizeof(PyrMethod*));
+
+#pragma GCC ivdep
 		for (int i=0; i<numSelectors; ++i)
 			row[i] = temprow[sels[i].selectorIndex];
 	}
@@ -1110,16 +1108,19 @@ static void binsortClassRows(PyrMethod ** bigTable, const ColumnDescriptor* sels
 		free(temprow);
 }
 
-static void prepareColumnTable(ColumnDescriptor * sels, int numSelectors)
+static ColumnDescriptor * prepareColumnTable(ColumnDescriptor * sels, int numSelectors)
 {
 	// fill selector table
 	//post("fill selector table\n");
 	SymbolTable* symbolTable = gMainVMGlobals->symbolTable;
-	for (int i=0, j=0; i<symbolTable->TableSize(); ++i) {
+
+	int selectorTableIndex = 0;
+	for( int i : boost::irange(0, symbolTable->TableSize()) ) {
 		PyrSymbol *sym = symbolTable->Get(i);
 		if (sym && (sym->flags & sym_Selector))
-			sels[j++].selector = sym;
+			sels[selectorTableIndex++].selector = sym;
 	}
+	assert( selectorTableIndex == numSelectors );
 
 	for (int i=0; i<numSelectors; ++i) {
 		//postfl("%3d %s\n", i, sels[i].selector->name);
@@ -1130,29 +1131,31 @@ static void prepareColumnTable(ColumnDescriptor * sels, int numSelectors)
 		sels[i].selectorIndex = i;
 		sels[i].population = 0;
 	}
+	return sels;
 }
 
-static void calcRowStats(PyrMethod** bigTable, ColumnDescriptor * sels, int numClasses, int numSelectors, int begin, int end)
+
+static void calcRowStats(PyrMethod const * const * bigTable, ColumnDescriptor * sels, int numClasses, int numSelectors, int begin, int end)
 {
-		//chunkSize = 0;
-		//chunkOffset = 0;
-	for (int j=0; j<numClasses; ++j) {
-		for (int i=begin; i<end; ++i) {
-			PyrMethod* method = bigTable[j * numSelectors + i];
+	//chunkSize = 0;
+	//chunkOffset = 0;
+	for (int classIndex=0; classIndex<numClasses; ++classIndex) {
+		for (int selectorIndex=begin; selectorIndex<end; ++selectorIndex) {
+			PyrMethod const * method = bigTable[classIndex * numSelectors + selectorIndex];
 			if (method) {
 				//classobj = method->ownerclass.uoc;
-				if (j > sels[i].maxClassIndex) {
-					sels[i].maxClassIndex = j;
-				}
-				if (j < sels[i].minClassIndex) {
-					sels[i].minClassIndex = j;
-				}
-				sels[i].population ++;
+				if (classIndex > sels[selectorIndex].maxClassIndex)
+					sels[selectorIndex].maxClassIndex = classIndex;
+
+				if (classIndex < sels[selectorIndex].minClassIndex)
+					sels[selectorIndex].minClassIndex = classIndex;
+
+				sels[selectorIndex].population ++;
 				//if (chunkSize == 0) chunkOffset = j;
 				//chunkSize++;
 				//postfl("    %8s %3d %3d %3d %3d\n", slotRawSymbol(&classobj->name)->name, i, j,
 				//	chunkSize, slotRawInt(&classobj->classIndex));
-			//} else {
+				//} else {
 				//if (chunkSize > sels[i].largestChunk) {
 				//	sels[i].largestChunk = chunkSize;
 				//	sels[i].chunkOffset = chunkOffset;
@@ -1161,25 +1164,30 @@ static void calcRowStats(PyrMethod** bigTable, ColumnDescriptor * sels, int numC
 			}
 		}
 	}
-}
 
+	for (int i=begin; i<end; ++i)
+		sels[i].rowWidth = sels[i].maxClassIndex - sels[i].minClassIndex + 1;
+}
 
 void buildBigMethodMatrix()
 {
 	PyrMethod **bigTable, **row;
-	PyrClass *classobj, **classes;
-	int i, j, k;
+	PyrClass **classes;
+	int j, k;
 	int popSum, widthSum;
 	int rowOffset, freeIndex;
 	int rowTableSize;
 	int bigTableSize;
-	const int numSelectors = gNumSelectors;
-	const int numClasses = gNumClasses;
+	const size_t numSelectors = gNumSelectors;
+	const size_t numClasses = gNumClasses;
 	//post("allocate arrays\n");
 
 #if CHECK_METHOD_LOOKUP_TABLE_BUILD_TIME
 	double t0 = elapsedTime();
 #endif
+
+	const int cpuCount = thread::hardware_concurrency();
+	boost::basic_thread_pool pool( std::min( cpuCount - 1, 1 ) );
 
 	// pyrmalloc:
 	// lifetime: kill after compile
@@ -1187,65 +1195,86 @@ void buildBigMethodMatrix()
 	//post("bigTableSize %d %d %d\n", bigTableSize, numSelectors, numClasses);
 	ColumnDescriptor *sels = (ColumnDescriptor*)pyr_pool_compile->Alloc(numSelectors * sizeof(ColumnDescriptor));
 	MEMFAIL(sels);
-	if (helperThreadCount)
-		compileThreadPool.schedule(std::bind(&prepareColumnTable, sels, numSelectors));
-	else
-		prepareColumnTable(sels, numSelectors);
 
-	bigTable = (PyrMethod**)pyr_pool_compile->Alloc(bigTableSize * sizeof(PyrMethod*));
-	MEMFAIL(bigTable);
+	auto filledSelectorsFuture = boost::async( pool, std::bind( &prepareColumnTable, sels, numSelectors )    );
+
 	classes = (PyrClass**)pyr_pool_compile->Alloc(numClasses * sizeof(PyrClass*));
 	MEMFAIL(classes);
 
-	classobj = gClassList;
-	while (classobj) {
-		classes[slotRawInt(&classobj->classIndex)] = classobj;
-		classobj = slotRawClass(&classobj->nextclass);
-	}
+	auto fillClassIndices = [] (PyrClass** classes) {
+		PyrClass *classobj = gClassList;
+		while (classobj) {
+			classes[slotRawInt(&classobj->classIndex)] = classobj;
+			classobj = slotRawClass(&classobj->nextclass);
+		}
+		return classes;
+	};
 
-	size_t numentries = fillClassRow(class_object, bigTable);
+	auto filledClassIndices = boost::async( pool, fillClassIndices, classes);
+
+	bigTable = (PyrMethod**)pyr_pool_compile->Alloc(bigTableSize * sizeof(PyrMethod*));
+	MEMFAIL(bigTable);
+
+	pool.try_executing_one();
+	filledClassIndices.wait();
+	size_t numentries = fillClassRows(class_object, bigTable, pool);
 	post("\tnumentries = %lu / %d = %.2g\n", numentries, bigTableSize, (double)numentries/(double)bigTableSize);
 
-	// no need to wait for the theadpool, because it is done in fillClassRow
 
-	// calc row stats
-	//post("calc row stats\n");
-	const int classesPerThread = numClasses/cpuCount;
-	const int selectorsPerThread = numSelectors/cpuCount;
-	for (i = 0; i != helperThreadCount; ++i)
-		compileThreadPool.schedule(std::bind(&calcRowStats, bigTable, sels, numClasses, numSelectors,
-											   selectorsPerThread * i, selectorsPerThread * (i+1)));
+	ColumnDescriptor * filledSelectors = filledSelectorsFuture.get();
 
-	calcRowStats(bigTable, sels, numClasses, numSelectors, helperThreadCount*selectorsPerThread, numSelectors);
-	if (helperThreadCount) compileThreadPool.wait();
+	std::vector< boost::future<void> > columnDescriptorsWithStats;
+	size_t selectorsPerJob = numSelectors / cpuCount / 2;
+	for( size_t beginSelectorIndex : boost::irange(selectorsPerJob, numSelectors, selectorsPerJob) ) {
+		size_t endSelectorIndex = std::min( beginSelectorIndex + selectorsPerJob, numSelectors );
+		auto future = boost::async( pool, calcRowStats, bigTable, filledSelectors, numClasses, numSelectors, beginSelectorIndex, endSelectorIndex );
+		columnDescriptorsWithStats.push_back( std::move(future) );
+	}
 
-	for (i = 0; i != helperThreadCount; ++i)
-		compileThreadPool.schedule(std::bind(&updateSelectorRowWidth, sels,
-											   selectorsPerThread * i, selectorsPerThread * (i+1)));
+	calcRowStats(bigTable, filledSelectors, numClasses, numSelectors, 0, std::min( selectorsPerJob, numSelectors) );
 
-	updateSelectorRowWidth(sels, helperThreadCount*selectorsPerThread, numSelectors);
-	if (helperThreadCount) compileThreadPool.wait();
+	for( auto & future : columnDescriptorsWithStats ) {
+		while( !future.is_ready() )
+			pool.schedule_one_or_yield();
+	}
 
 	//post("qsort\n");
 	// sort rows by largest chunk, then by width, then by chunk offset
-	//qsort(sels, numSelectors, sizeof(ColumnDescriptor), (std::_compare_function)compareColDescs);
-	qsort(sels, numSelectors, sizeof(ColumnDescriptor), compareColDescs);
+
+#if 0 // not yet
+	__gnu_parallel::sort(sels, sels + numSelectors, [](ColumnDescriptor const & rhs, ColumnDescriptor const & lhs) {
+		return compareColDescs(&rhs, &lhs) < 0;
+	});
+#else
+	std::sort(sels, sels + numSelectors, [](ColumnDescriptor const & rhs, ColumnDescriptor const & lhs) {
+		return compareColDescs(&rhs, &lhs) < 0;
+	});
+#endif
 
 	// bin sort the class rows to the new ordering
 	//post("reorder rows\n");
-	for (i = 0; i != helperThreadCount; ++i)
-		compileThreadPool.schedule(std::bind(&binsortClassRows, bigTable, sels, numSelectors,
-											   classesPerThread * i, classesPerThread * (i+1)));
 
-	binsortClassRows(bigTable, sels, numSelectors, helperThreadCount*classesPerThread, numClasses);
-	if (helperThreadCount) compileThreadPool.wait();
+	std::vector< boost::future<void> > binsortedClassRowFuture;
+	size_t classesPerJob = numClasses / cpuCount / 2;
+	for( size_t beginClassIndex : boost::irange(classesPerJob, numClasses, classesPerJob) ) {
+		size_t endClassIndex = std::min( beginClassIndex + classesPerJob, numClasses );
+		auto future = boost::async( pool, binsortClassRows, (PyrMethod const **)bigTable, sels, numSelectors, beginClassIndex, endClassIndex );
+		binsortedClassRowFuture.push_back( std::move(future) );
+	}
+
+	binsortClassRows( (PyrMethod const **)bigTable, sels, numSelectors, 0, std::min( classesPerJob, numClasses) );
+
+	for( auto & future : binsortedClassRowFuture ) {
+		while( !future.is_ready() )
+			pool.schedule_one_or_yield();
+	}
 
 	//post("calc row offsets %d\n", numSelectors);
 	widthSum = 0;
 	popSum = 0;
 	freeIndex = 0;
 	rowOffset = -1;
-	for (i=0; i<numSelectors; ++i) {
+	for (int i=0; i<numSelectors; ++i) {
 		widthSum += sels[i].rowWidth;
 		popSum += sels[i].population;
 		rowOffset = sc_max(rowOffset+1, freeIndex - sels[i].minClassIndex);
@@ -1261,14 +1290,14 @@ void buildBigMethodMatrix()
 	MEMFAIL(gRowTable);
 
 	// having the method ptr always be valid saves a branch in SendMessage()
-	for (i=0; i<freeIndex + numClasses; ++i)
+	for (int i=0; i<freeIndex + numClasses; ++i)
 		gRowTable[i] = gNullMethod;
 
 	//post("fill compressed table\n");
 	//{ FILE* fp;
 	// newPyrMethod
 	//fp = fopen("meth table", "w");
-	for (i=0; i<numSelectors; ++i) {
+	for (int i=0; i<numSelectors; ++i) {
 		int offset, maxwidth;
 		offset = sels[i].rowOffset + sels[i].minClassIndex;
 		maxwidth = offset + sels[i].rowWidth;
@@ -1282,7 +1311,7 @@ void buildBigMethodMatrix()
 	//fclose(fp);
 	//}
 
-	for (i=0; i<freeIndex + numClasses; ++i)
+	for (int i=0; i<freeIndex + numClasses; ++i)
 		assert(gRowTable[i]);
 
 
@@ -1294,7 +1323,7 @@ void buildBigMethodMatrix()
 	post("building table took %.3g seconds\n", elapsedTime() - t0);
 	{
 		int numFilled = 0;
-		for (i=0; i<rowTableSize/sizeof(PyrMethod*); ++i) {
+		for (int i=0; i<rowTableSize/sizeof(PyrMethod*); ++i) {
 			if (gRowTable[i] != gNullMethod) numFilled++;
 		}
 		post("Filled %d of %d = %f percent\n", numFilled, rowTableSize/sizeof(PyrMethod*),
@@ -1311,14 +1340,9 @@ void buildBigMethodMatrix()
 	pyr_pool_compile->Free(bigTable);
 	pyr_pool_compile->Free(sels);
 */
-	compileThreadPool.size_controller().resize(0); // terminate threads
 }
 
-#include <boost/atomic.hpp>
-
-static void fillClassRowSubClasses(PyrObject * subclasses, int begin, int end, PyrMethod** bigTable, std::atomic<size_t> * rCount);
-
-static void fillClassRow(PyrClass *classobj, PyrMethod** bigTable, std::atomic<size_t> * rCount)
+static size_t fillClassRow(const PyrClass *classobj, PyrMethod** bigTable, boost::basic_thread_pool & pool)
 {
 	size_t count = 0;
 
@@ -1327,17 +1351,19 @@ static void fillClassRow(PyrClass *classobj, PyrMethod** bigTable, std::atomic<s
 	if (superclassobj) {
 		PyrMethod ** superrow = bigTable + slotRawInt(&superclassobj->classIndex) * gNumSelectors;
 
+#pragma GCC ivdep
 		for (int i = 0; i != gNumSelectors; ++i) {
 			myrow[i] = superrow[i];
 			if (superrow[i])
 				++count;
 		}
+
 	} else {
 		memset(myrow, 0, gNumSelectors * sizeof(PyrMethod*));
 	}
 
 	if (IsObj(&classobj->methods)) {
-		PyrObject * methods = slotRawObject(&classobj->methods);
+		PyrObject * methods = const_cast<PyrObject*>( slotRawObject(&classobj->methods) );
 		//postfl("        %d\n", methods->size);
 		for (int i=0; i<methods->size; ++i) {
 			PyrMethod* method = slotRawMethod(&methods->slots[i]);
@@ -1350,41 +1376,45 @@ static void fillClassRow(PyrClass *classobj, PyrMethod** bigTable, std::atomic<s
 		}
 	}
 
-	*rCount += count;
+	size_t result = count;
 
 	if (IsObj(&classobj->subclasses)) {
-		PyrObject * subclasses = slotRawObject(&classobj->subclasses);
+		const PyrObject * subclasses = slotRawObject(&classobj->subclasses);
 		size_t numSubclasses = subclasses->size;
 
-		if (numSubclasses > 4*cpuCount) {
-			int subclassesPerThread = numSubclasses / cpuCount;
-			for (int i = 0; i != helperThreadCount; ++i)
-				compileThreadPool.schedule(std::bind(&fillClassRowSubClasses, subclasses,
-													   subclassesPerThread * i, subclassesPerThread * (i+1),
-													   bigTable, rCount));
-			fillClassRowSubClasses(subclasses, subclassesPerThread * helperThreadCount, numSubclasses, bigTable, rCount);
+		if( numSubclasses ) {
+
+			if( numSubclasses <= 2 ) {
+				for( int subClassIndex : boost::irange(0UL, numSubclasses) )
+					result += fillClassRow( slotRawClass(&subclasses->slots[subClassIndex]), bigTable, pool );
+			} else {
+				typedef std::vector< boost::future<size_t> > VectorOfFutures;
+
+				VectorOfFutures subclassResults;
+				for( int subClassIndex : boost::irange(1UL, numSubclasses) ) {
+					auto subclassResult = boost::async( pool, fillClassRow, slotRawClass(&subclasses->slots[subClassIndex]), bigTable, boost::ref(pool) );
+					subclassResults.emplace_back( std::move( subclassResult ) );
+				}
+
+				result += fillClassRow( slotRawClass(&subclasses->slots[0]), bigTable, pool );
+
+				for( auto & subclassResult : subclassResults ) {
+					while( !subclassResult.is_ready() )
+						pool.schedule_one_or_yield();
+
+					result += subclassResult.get();
+				}
+			}
 		}
-		else
-			fillClassRowSubClasses(subclasses, 0, numSubclasses, bigTable, rCount);
 	}
+
+	return result;
 }
 
-static void fillClassRowSubClasses(PyrObject * subclasses, int begin, int end, PyrMethod** bigTable, std::atomic<size_t> * rCount)
+static size_t fillClassRows(const PyrClass *classobj, PyrMethod** bigTable, boost::basic_thread_pool & pool)
 {
-	for (int i = begin; i != end; ++i)
-		fillClassRow(slotRawClass(&subclasses->slots[i]), bigTable, rCount);
+	return fillClassRow(classobj, bigTable, pool );
 }
-
-
-static size_t fillClassRow(PyrClass *classobj, PyrMethod** bigTable)
-{
-	std::atomic<size_t> ret (0);
-
-	fillClassRow(classobj, bigTable, &ret);
-	if (helperThreadCount) compileThreadPool.wait();
-	return ret.load(std::memory_order_acquire);
-}
-
 
 bool funcFindArg(PyrBlock* func, PyrSymbol *name, int *index)
 {
