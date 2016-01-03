@@ -1313,7 +1313,7 @@ void DocumentManager::syncLangDocument(Document *doc)
             .arg(doc->pathAsSCArrayOfCharCodes())
             .arg(start)
             .arg(range);
-    Main::evaluateCode ( command, true );
+    Main::evaluateCodeIfCompiled ( command, true );
 }
 
 void DocumentManager::setActiveDocument(Document * document)
@@ -1340,9 +1340,9 @@ void DocumentManager::sendActiveDocument()
         QString command = QStringLiteral("Document.setActiveDocByQUuid(\'%1\');").arg(mCurrentDocument->id().constData());
         if (!mCurrentDocumentPath.isEmpty())
             command = command.append(QStringLiteral("ScIDE.currentPath_(\"%1\");").arg(mCurrentDocumentPath));
-        Main::evaluateCode(command, true);
+        Main::evaluateCodeIfCompiled(command, true);
     } else
-        Main::evaluateCode(QStringLiteral("ScIDE.currentPath_(nil); Document.current = nil;"), true);
+        Main::evaluateCodeIfCompiled(QStringLiteral("ScIDE.currentPath_(nil); Document.current = nil;"), true);
 }
 
 void DocumentManager::updateCurrentDocContents ( int position, int charsRemoved, int charsAdded )
