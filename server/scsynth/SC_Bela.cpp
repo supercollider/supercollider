@@ -27,6 +27,7 @@
 #include "SC_Time.hpp"
 #include <math.h>
 #include <stdlib.h>
+#include <posix/time.h>		// For Xenomai clock_gettime()
 
 #include "BeagleRT.h"
 
@@ -96,17 +97,24 @@ void render(BeagleRTContext *belaContext, void *userData)
 
 	driver->BelaAudioCallback(belaContext);
 }
+
 void sc_SetDenormalFlags();
 void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 {
+	struct timespec tspec;
+
 	sc_SetDenormalFlags();
 	World *world = mWorld;
 
 	// NOTE: code here is adapted from the SC_Jack.cpp, the version not using the DLL
-	HostTime hostTime = getTime();
-	double hostSecs = secondsSinceEpoch(hostTime);
-	// NOTE: jack driver uses time in num frames; bela gives it in num samples, so here we divide to give in num frames. need to do this?
-	double sampleTime = static_cast<double>(belaContext->audioSampleCount / belaContext->audioFrames);
+	// HostTime hostTimeOld = getTime();
+
+	// Use Xenomai-friendly clock_gettime() -- note that this requires a -wrap argument to build
+	clock_gettime(CLOCK_HOST_REALTIME, &tspec);
+
+	double hostSecs = (double)tspec.tv_sec + (double)tspec.tv_nsec * 1.0e-9;
+	//double hostSecs = secondsSinceEpoch(hostTime);
+	double sampleTime = static_cast<double>(belaContext->audioSampleCount);
 	//double sampleTime = (double)(jack_frame_time(client) + jack_frames_since_cycle_start(client));
 
 	if (mStartHostSecs == 0) {
@@ -164,9 +172,17 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 		//}
 
 		// main loop
-		int64 oscTime = mOSCbuftime = OSCTime(hostTime); // TODO CHECK: - (int64)(mMaxOutputLatency * kSecondsToOSCunits + .5);
+		// int64 oscTime = mOSCbuftime = OSCTime(hostTime); // TODO CHECK: - (int64)(mMaxOutputLatency * kSecondsToOSCunits + .5);
+		int64 oscTime = mOSCbuftime = ((int64)(tspec.tv_sec + kSECONDS_FROM_1900_to_1970) << 32)
+									  + (int64)(tspec.tv_nsec * kNanosToOSCunits);
+
 		int64 oscInc = mOSCincrement;
 		double oscToSamples = mOSCtoSamples;
+
+		// clear out anything left over in audioOut buffer
+		for (int i = 0; i < belaContext->audioFrames * belaContext->audioChannels; i++) {
+			belaContext->audioOut[i] = 0;
+		}
 
 		for (int i = 0; i < numBufs; ++i, mWorld->mBufCounter++, bufFramePos += bufFrames) {
 			int32 bufCounter = mWorld->mBufCounter;
@@ -207,6 +223,7 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 
 			// copy touched outputs
 			tch = outTouched;
+
 			for (int k = 0; k < minOutputs; ++k) {
 				//sc_jack_sample_t *dst = outBuffers[k] + bufFramePos;
 				if (*tch++ == bufCounter) {
@@ -232,6 +249,7 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 		scprintf("SC_BelaDriver: unknown exception in real time\n");
 	}
 
+	// FIXME: this triggers a mode switch in Xenomai.
 	mAudioSync.Signal();
 }
 
@@ -259,8 +277,8 @@ bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 		return false;
 	}
 
-	*outNumSamples = settings.periodSize * 2;       // ... which in turn is just mPreferredHardwareBufferFrameSize
-	*outSampleRate = 44100.0;                                       // This is fixed in Bela at the moment
+	*outNumSamples = settings.periodSize * 2;	// ... which in turn is just mPreferredHardwareBufferFrameSize
+	*outSampleRate = 44100.0;					// This is fixed in Bela at the moment
 
 	return true;
 }

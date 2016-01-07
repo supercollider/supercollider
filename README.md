@@ -76,6 +76,9 @@ Current status: builds, but then when running `./server/scsynth/scsynth -u 57110
     SC_BelaDriver: >>DriverStart
     Segmentation fault
 
+UPDATE: Andrew has got scsynth running, and he says this: "scsynth's default internal buffer size (64) is bigger than the hardware buffer size (16), so dividing hardware by internal returned 0 buffers per callback. To make it run, you need to add the command-line argument "-z 16" (or presumably make the hardware buffer size bigger)." So invoke scsynth like this:
+
+       `./server/scsynth/scsynth -u 57110 -z 16
 
 INSTALL - CLASH WARNING
 =======================
