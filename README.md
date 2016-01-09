@@ -79,7 +79,7 @@ Running it
 
 Just run the executable like this:
 
-       `scsynth -u 57110 -z 16
+       scsynth -u 57110 -z 16
 
 The `-u` flag tells it which UDP port to listen on, and with the `-z` flag we choose scsynth's internal blocksize. We need to do this because scsynth's default internal buffer size (64) is bigger than the hardware buffer size (16), so dividing hardware by internal returned 0 buffers per callback. To make it run, you need to add the command-line argument "-z 16" (or presumably make the hardware buffer size bigger).
 
