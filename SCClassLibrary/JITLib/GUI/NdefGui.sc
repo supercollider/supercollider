@@ -151,7 +151,7 @@ NdefGui : JITGui {
 	//	"NdefGui - zone.bounds: % zone.decorator.margin: %\n".postf(zone.bounds, zone.decorator.margin);
 
 		options.do { |option|
-			buttonFuncs[option.postcs].value(this, skin.buttonHeight, options);
+			buttonFuncs[option].value(this, skin.buttonHeight, options);
 		};
 
 
