@@ -1,16 +1,17 @@
-COMPILING SUPERCOLLIDER SCSYNTH ON BELA
+Compiling SuperCollider scsynth on Bela
 =======================================
 
 See [README_main.md](README_main.md) for the "real" SuperCollider readme.
 
-This file is Dan's notes about compiling SC on Bela (BeagleRT) platform.
+This file is Dan's notes about compiling SC on [Bela (BeagleRT)](http://beaglert.cc/) platform.
 
 At time of writing, I'm compiling just the server `scsynth`, so I've deactivated other components in the cmake.
 This branch `bela_hackery` contains that plus other modifications to get the SC source code master branch building.
 The main addition in this branch is a **Xenomai/BeagleRT audio driver for scsynth**, to use Bela's ultra-low-latency audio thread *instead* of jack/portaudio.
 
+All of the commands here are to be executed *on the Bela device itself*. Normally you would SSH to it from a computer connected by USB, in order to do the following stuff.
 
-PREPARATION
+Preparation
 ===========
 
 Plug in an ethernet cable (or connect to the Internet some other way). Then we need to (a) install/update packages and (b) set the system time:
@@ -37,7 +38,7 @@ Actually I added this line to my /etc/fstab so the partition automounts:
     /dev/mmcblk0p3  /extrabela   ext4  noatime,errors=remount-ro  0  1
 
 
-GET THE SOURCE CODE
+Get the source code
 ===================
 
 My modified source code is in this git branch here, called `bela_hackery`. If your Bela is still connected to the network you can grab it directly:
@@ -49,8 +50,8 @@ My modified source code is in this git branch here, called `bela_hackery`. If yo
 
 I believe that the Bela system image already includes most of SuperCollider's build dependencies. The updates to cmake/gcc described above are incurred because I'm using the latest `master` version of SC rather than 3.6.
 
-COMPILING
-=========
+Compiling and installing
+========================
 
 Before we compile, here's an optional step: installing ccache makes repeated builds faster, if you have spare disk space for it. It's especially helpful if you're going to be changing the cmake build scripts.
 
@@ -69,19 +70,36 @@ Then here's how to build:
 
 The `make` step will take a little while, about 30 minutes for me.
 
-Current status: builds, but then when running `./server/scsynth/scsynth -u 57110` we get this:
+Next we install. **CLASH WARNING:** Note that my version of Bela already comes with a standard compile of SuperCollider in `/usr/local/bin/scsynth`, plus plugins at `/usr/local/lib/SuperCollider/plugins`. To avoid confusion, you might want to destroy those before installing, else you might accidentally end up using the vanilla version.
 
-    SC_BelaDriver: >>DriverSetup
-    SC_AudioDriver: sample rate = 44100.000000, driver's block size = 16
-    SC_BelaDriver: >>DriverStart
-    Segmentation fault
+    make install
+    
+Running it
+==========
 
-UPDATE: Andrew has got scsynth running, and he says this: "scsynth's default internal buffer size (64) is bigger than the hardware buffer size (16), so dividing hardware by internal returned 0 buffers per callback. To make it run, you need to add the command-line argument "-z 16" (or presumably make the hardware buffer size bigger)." So invoke scsynth like this:
+Just run the executable like this:
 
-       `./server/scsynth/scsynth -u 57110 -z 16
+       `scsynth -u 57110 -z 16
 
-INSTALL - CLASH WARNING
-=======================
+The `-u` flag tells it which UDP port to listen on, and with the `-z` flag we choose scsynth's internal blocksize. We need to do this because scsynth's default internal buffer size (64) is bigger than the hardware buffer size (16), so dividing hardware by internal returned 0 buffers per callback. To make it run, you need to add the command-line argument "-z 16" (or presumably make the hardware buffer size bigger).
 
-Note that my version of Bela already comes with a standard compile of SuperCollider in `/usr/local/bin/scsynth`, plus plugins at `/usr/local/lib/SuperCollider/plugins`. To avoid confusion, you might want to destroy those before installing, else you might accidentally end up using the vanilla version.
+So now you should have scsynth running on the device. You should be able to send OSC commands to it from SuperCollider running on your main computer:
 
+    # These commands are to be run in SUPERCOLLIDER running on your MAIN computer. (I guess you could run them on the device too if you wanted.)
+    Server.default = s = Server("belaServer", NetAddr("192.168.7.2", 57110));
+    s.initTree;
+    SynthDef("funsound", { Out.ar(0, 0.5 * Pan2.ar(SinOsc.ar(LFNoise1.kr(2).exprange(100, 1000)), LFNoise1.kr(2))) }).add;
+    x = Synth("funsound");
+    SynthDef("bish", { Out.ar(0, PinkNoise.ar * EnvGen.ar(Env.perc, Impulse.kr(2))) }).add;
+    y = Synth("bish");
+    
+    // then when you want to stop the sounds:
+    x.free;
+    y.free;
+
+
+
+    // You could use this to test mic input - be careful of feedback!
+    SynthDef("mic", { Out.ar(0, SoundIn.ar([0,1])) }).add;
+    z = Synth("mic");
+    z.free;
