@@ -234,6 +234,15 @@ endif()
 add_executable(scsynth scsynth_main.cpp)
 target_link_libraries(scsynth libscsynth)
 
+if(AUDIOAPI STREQUAL bela)
+	# This tells Xenomai to wrap the clock_gettime() call in its own version
+	set(CMAKE_EXECUTABLE_RUNTIME_C_FLAG       "-Wl,-wrap,clock_gettime,-rpath,")
+	set(CMAKE_EXECUTABLE_RUNTIME_CXX_FLAG     "-Wl,-wrap,clock_gettime,-rpath,")
+	set(CMAKE_SHARED_LIBRARY_RUNTIME_C_FLAG   "-Wl,-wrap,clock_gettime,-rpath,")
+	set(CMAKE_SHARED_LIBRARY_RUNTIME_CXX_FLAG "-Wl,-wrap,clock_gettime,-rpath,")
+	target_link_libraries(scsynth ${XENOMAI_LIBRARIES} ${BELA_LIBRARIES})
+endif()
+
 if (PTHREADS_FOUND)
     target_link_libraries(scsynth ${PTHREADS_LIBRARIES})
 endif()
