@@ -85,9 +85,10 @@ The `-u` flag tells it which UDP port to listen on, and with the `-z` flag we ch
 
 So now you should have scsynth running on the device. You should be able to send OSC commands to it from SuperCollider running on your main computer:
 
-    # These commands are to be run in SUPERCOLLIDER running on your MAIN computer. (I guess you could run them on the device too if you wanted.)
+    // These commands are to be run in SUPERCOLLIDER running on your MAIN computer. (I guess you could run them on the device too if you wanted.)
     Server.default = s = Server("belaServer", NetAddr("192.168.7.2", 57110));
     s.initTree;
+    s.startAliveThread;
     SynthDef("funsound", { Out.ar(0, 0.5 * Pan2.ar(SinOsc.ar(LFNoise1.kr(2).exprange(100, 1000)), LFNoise1.kr(2))) }).add;
     x = Synth("funsound");
     SynthDef("bish", { Out.ar(0, PinkNoise.ar * EnvGen.ar(Env.perc, Impulse.kr(2))) }).add;
