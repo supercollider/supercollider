@@ -32,7 +32,7 @@ a = Synth(\theremin);
 a.set(\mod, 12);
 
 b = Synth(\theremin);
-b.set(\mod, 5, \detune, 200); 
+b.set(\mod, 5, \detune, 200);
 
 a.free;
 b.free;

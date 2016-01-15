@@ -5,9 +5,9 @@ s.boot;
 b = Buffer.read(s, "sounds/a11wlk01.wav");  //use your own buffer here - mine is probably not on your computer
 
 (
-SynthDef("TriggerBufferGranular", {arg out=0, bufnum=0, in=1, thresh = 0.004, ampScaler = 1, duration = 
+SynthDef("TriggerBufferGranular", {arg out=0, bufnum=0, in=1, thresh = 0.004, ampScaler = 1, duration =
 0.2, pan=0,centerPosition=0.1, interp=1, incrementBy = 200;
-	
+
 	var trig, amp, gatedAmp, triggerBool, outamp, bufferFrames, bufRateScale;
 	var bufPointer, trigs, env, envGens, outArray, grNum;
 
@@ -25,7 +25,7 @@ SynthDef("TriggerBufferGranular", {arg out=0, bufnum=0, in=1, thresh = 0.004, am
 	bufPointer = PulseCount.kr(trig);  //a counter that counts the number of triggers triggered
 
 	//each trigger below triggers once for every four times trig (above) triggers (if a trig trig could trig trig)
-	
+
 	trigs = Array.fill(grNum, {|i| PulseDivider.kr(trig, 4, i )});
 	envGens = Array.fill(grNum, {|i| EnvGen.kr(env, trigs[i] ) });
 
@@ -33,6 +33,6 @@ SynthDef("TriggerBufferGranular", {arg out=0, bufnum=0, in=1, thresh = 0.004, am
 	outArray = Array.fill(grNum, {|i| PlayBuf.ar(1, bufnum, bufRateScale, trigs[i], (bufPointer*incrementBy)%bufferFrames)*envGens[i]});
 
 	Out.ar(out, Pan2.ar(Mix(outArray)));
-	
+
 }).play(s,[\out, 0, \bufnum, b.bufnum]);
 )
