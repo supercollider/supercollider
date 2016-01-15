@@ -337,10 +337,9 @@ universal binary. This UB contains ppc, i386 and x86_64 archs. By default SC use
 file, although the currently built universal does not contain Power PC versions any more
 and intel universal binaries of libsndfile are readily available via package managers.
 
-If you would like to build using the latest version of libsndfile, you need to install it
-and point cmake to it very much the same way it was demonstrated above for readline.
-The cmake variables, alongside with the likely path if you install libsndfile using
-MacPorts, are:
+If you would like to build using the latest version of libsndfile, then specify its path to the cmake configuration:
 
 `-DSNDFILE_INCLUDE_DIR=/opt/local/include`
 `-DSNDFILE_LIBRARY=/opt/local/lib/libsndfile.dylib`
+
+The actual paths you need to include will vary depending on how you installed libsndfile.
