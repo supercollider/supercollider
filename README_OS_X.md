@@ -19,6 +19,7 @@ Table of contents
  * Frequently used cmake settings
  * Using cmake with Xcode or QtCreator
  * Building without Qt or the IDE
+ * sclang and scynth executables
  * On libsndfile
 
 Executables
@@ -271,6 +272,56 @@ This should be fixed at some point (its a build tool configuration issue). Until
 
 They do however work on Linux and Windows.
 
+
+sclang and scynth executables
+-----------------------------
+
+The executables `sclang`, `scsynth` and (if available) `supernova` are inside the application bundle:
+
+`SuperCollider.app/Contents/MacOS`
+
+The SuperCollider class library and help files are in:
+
+`SuperCollider.app/Contents/Resources`
+
+In previous versions of SuperCollider these resources lived in the top folder next to SuperCollider.app. To make a standard self-contained app bundle with correct library linking, these have now been moved into the app bundle.
+
+If you need to access them from the Finder, ctrl-click SuperCollider.app and choose "Show package contents" from the context menu.
+
+To access them in the Terminal:
+
+    cd /path/to/SuperCollider.app/Contents/Resources
+
+or
+
+    cd /path/to/SuperCollider.app/Contents/MacOS
+
+##### Adding scsynth and sclang to your path
+
+To have `sclang` and `scsynth` available system-wide, you can create shell scripts and put them somewhere that is in your PATH (eg. `/usr/local/bin` or `~/bin`)
+
+For `sclang`:
+
+    #!/bin/sh
+    cd /full/path/to/SuperCollider.app/Contents/MacOS
+    exec ./sclang $*
+
+And for `scsynth`:
+
+    #!/bin/sh
+    cd /full/path/to/SuperCollider.app/Contents/MacOS
+    export SC_PLUGIN_PATH="/full/path/to/SuperCollider.app/Resources/plugins/";
+    exec ./scsynth $*
+
+###### Why not just symlink them ?
+
+- If you have Qt installed system-wide, sclang will load those as well as the Qt frameworks included in the application bundle. It will then fail with an error message like:
+
+> You might be loading two sets of Qt binaries into the same process. Check that all plugins are compiled against the right Qt binaries. Export DYLD_PRINT_LIBRARIES=1 and check that only one set of binaries are being loaded.
+This application failed to start because it could not find or load the Qt platform plugin "cocoa".
+
+- scsynth will not find the included "plugins", unless given explicitly
+  with the -U commandline flag or using the SC_PLUGIN_PATH environment variable as shown above.
 
 
 On libsndfile
