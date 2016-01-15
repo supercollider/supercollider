@@ -1,18 +1,8 @@
-Supercollider 3.6 for Windows
+Supercollider 3.7 for Windows
 =============================
 
 This is the Windows version of James McCartney's SuperCollider synthesis
 engine (scsynth) and programming language (sclang).
-Supercollider's main homepage is at
-   http://supercollider.github.com
-
-There is a lot of useful information and tutorials in the SuperCollider
-documentation which you can access online at
-    http://doc.sccode.org
-
-To get further information on SuperCollider usage or development, you
-should subscribe to the mailing lists:
-   http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx
 
 
 System Requirements
@@ -85,60 +75,9 @@ the up and down arrow keys.
 - `Ctrl+D`: to quit the SuperCollider command line
 
 
-Quarks
-------
-Quarks are an community driven extensions system for SuperCollider. On
-OSX and Linux, SC provides a GUI to download and update Quarks. It is
-started by evaluating `Quarks.gui`. This GUI cannot be used on Windows
-though. You need to download Quarks manually and make them available
-to SC. The most common way of doing this is:
-
-1. Download Quarks with your preferred svn-client by running:
-
-`svn co https://svn.code.sf.net/p/quarks/code quarks`
-
-You can later use svn to update your quarks:
-
-`svn update`
-
-The complete collection of Quarks will be downloaded into a folder
-`quarks` at the location where you ran the command. Within that
-folder you will find many folders, one for each Quark.
-The Quarks you want to install needs to be copied or "hardlinked" into
-a folder where SC can find them. Usually a folder called Extensions in
-the user application support directory is used for this purpose. It
-is located within the folder:
-
-  `C:\Users\<USERNAME>\AppData\Local\SuperCollider`
-
-See below for the variations of this location on different Windows
-versions, or evaluate `Platform.userAppSupportDir` in the SC editor
-and use the output in the post window.
-
-2. If you don't find an Extensions folder, create it manually as:
-
-  `YourUserAppSupportDir\Extensions`
-
-For example:
-
-  `C:\Users\<USERNAME>\AppData\Local\SuperCollider\Extensions`
-
-3. Copy or "hardlink" the folder containing each Quark you want to install
-into this folder (you can create a subfolder within the Extensions folder
-to bundle your Quarks there). "Hardlinking" [1] has the advantage, that on
-subsequent svn updates, SC will automatically get the updated versions.
-
-4. Now look for a file in the folder quarks/DIRECTORY with the same name as
-your Quark (and the extension .quark). Open it in a text editor and look
-for the key \dependencies. If you find it (only some Quarks have dependencies)
-add the quark(s) listed there to the mix (i.e. copy or hardlink them to your
-Extensions folder).
-
-5. After recompiling your class library or restarting SC your Quarks should
-be available.
-
 Uninstall
 ---------
+
 Should you ever decide to uninstall SuperCollider, it is the easiest to
 use the uninstaller executable provided in the application folder, or to
 use the uninstall service provided in the 'Add-/Remove Programs' dialogue.
@@ -197,11 +136,5 @@ please copy the contents of the old directory to the new one, given below:
 
 `C:\Documents and Settings\<USERNAME>\SuperCollider`
 
-
-Outro
------
-
-Thanks to James McCartney, for making this great piece of audio
-software publically and freely available.
 
 [1] http://schinagl.priv.at/nt/hardlinkshellext/hardlinkshellext.html

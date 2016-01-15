@@ -4,17 +4,9 @@ Supercollider 3 for linux
 Intro
 -----
 
-SuperCollider is a synthesis engine (scsynth) and programming language
-(sclang), originally Mac-based but now very widely used on Linux
-(since Stefan Kersten ported the code in 2003). SuperCollider is free
-software under the GPL - its main homepage is at
+SuperCollider is a synthesis engine (scsynth) and programming language (sclang), originally Mac-based but now very widely used and actively developed on Linux.
 
-http://supercollider.github.com
-
-To get further information on supercollider usage or development, you
-might consider subscribing to the mailing lists
-
-http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx
+Stefan Kersten first ported the code to Linux in 2003.
 
 
 Build requirements
@@ -103,7 +95,7 @@ for building supercollider:
  - libudev-dev
  - libcwiid-dev (for wiimote support)
  - pkg-config
- - git (required by the Quarks class at run-time)
+ - git (used by the Quarks package management system)
  - cmake (on some platforms, cmake >= 2.9 may require manual build)
  - qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5webkit5-dev qtpositioning5-dev libqt5sensors5-dev
 
@@ -178,6 +170,7 @@ $> cmake -DCMAKE_CXX_COMPILER=/usr/lib/ccache/g++ -DCMAKE_C_COMPILER=/usr/lib/cc
 ```
 
 This assumes your ccache executables are installed into `/usr/lib/ccache` - you may need to change the path to reflect your installation.
+
 
 Building a Debian package
 -------------------------
@@ -279,12 +272,6 @@ names are separated by ':' as in the unix PATH variable:
    ```
 
 
-Reporting bugs
---------------
-
-Please report bugs either to the sc-users or sc-dev mailing lists.
-
-
 Contributors to this document
 -----------------------------
 
@@ -297,9 +284,3 @@ Contributors to this document
 - nescivi (marije baalman)
 - dan stowell
 - tim blechmann
-
-
-Outro
------
-
-Thanks to james mccartney, for making this great piece of audio software publically and freely available.
