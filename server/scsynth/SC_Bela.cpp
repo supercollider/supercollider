@@ -72,6 +72,9 @@ public:
 	virtual ~SC_BelaDriver();
 
 	void BelaAudioCallback(BeagleRTContext *belaContext);
+
+private:
+	uint32 mSCBufLength;
 };
 
 SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)
@@ -83,6 +86,7 @@ SC_BelaDriver::SC_BelaDriver(struct World *inWorld)
 		: SC_AudioDriver(inWorld)
 {
 	mStartHostSecs = 0;
+	mSCBufLength = inWorld->mBufLength;
 }
 
 SC_BelaDriver::~SC_BelaDriver()
@@ -252,6 +256,12 @@ bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 	if(mPreferredHardwareBufferFrameSize){
 		settings.periodSize = mPreferredHardwareBufferFrameSize / 2; // halved because "periodSize" in bela is for the analogue pins not the audio pins
 	}
+	if(settings.periodSize * 2 < mSCBufLength) {
+		scprintf("Error in SC_BelaDriver::DriverSetup(): hardware buffer size (%i) smaller than SC audio buffer size (%i). It is recommended to have them set to the same value, using both the '-Z' and '-z' command-line options respectively.\n",
+				settings.periodSize * 2, mSCBufLength);
+		return false;
+	}
+
 	// note that Bela doesn't give us an option to choose samplerate, since it's baked-in.
 
 	// Initialise the PRU audio device. This function prepares audio rendering in BeagleRT. It should be called from main() sometime
