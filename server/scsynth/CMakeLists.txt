@@ -16,7 +16,7 @@ if(AUDIOAPI STREQUAL "default")
 endif()
 
 if(NOT AUDIOAPI MATCHES "^(jack|coreaudio|portaudio)$")
-	message(WARNING "Unrecognised audio API: ${AUDIOAPI}")
+	message(FATAL_ERROR "Unrecognised audio API: ${AUDIOAPI}")
 endif()
 
 if(AUDIOAPI STREQUAL jack)
@@ -181,9 +181,9 @@ elseif(AUDIOAPI STREQUAL coreaudio)
 endif()
 
 if (Boost_FOUND)
-	target_link_libraries(libscsynth ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+	target_link_libraries(libscsynth ${Boost_SYSTEM_LIBRARY})
 else()
-	target_link_libraries(libscsynth boost_thread boost_system)
+	target_link_libraries(libscsynth boost_system)
 endif()
 
 if (WIN32)
@@ -238,13 +238,9 @@ else()
 endif()
 
 if(APPLE)
-	# TODO allow apple users to install to fhs-ish path if INSTALL_FHS option is enabled
-	# determines the app name and app install location (scappbundlename, scappdir):
-	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
-	install(TARGETS ${INSTALL_TARGETS}
-			RUNTIME DESTINATION "${scappbindir}"
-			LIBRARY DESTINATION "${scappauxresourcesdir}"
-			PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE OWNER_WRITE)
+    add_custom_command(TARGET scsynth POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../MacOS/
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:scsynth> $<TARGET_FILE_DIR:SuperCollider>/../MacOS)
 elseif(WIN32)
 	install(TARGETS ${INSTALL_TARGETS}
 			DESTINATION "SuperCollider"

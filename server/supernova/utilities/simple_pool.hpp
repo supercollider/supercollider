@@ -54,7 +54,7 @@ class simple_pool
         mutex_type
     {
         data(void):
-            pool(0)
+            pool(nullptr)
         {}
 
         void init(std::size_t size, bool lock)
@@ -122,13 +122,13 @@ public:
         return std::numeric_limits<std::size_t>::max();
     }
 #else
-    void * MALLOC malloc(std::size_t size)
+    void * MALLOC ASSUME_ALIGNED(32) malloc(std::size_t size)
     {
         scoped_lock lock(data_);
         return malloc_ex(size, data_.pool);
     }
 
-    void * MALLOC realloc(void * p, std::size_t size)
+    void * MALLOC ASSUME_ALIGNED(32) realloc(void * p, std::size_t size)
     {
         scoped_lock lock(data_);
         return realloc_ex(p, size, data_.pool);

@@ -560,26 +560,46 @@ void GraphDef_Define(World *inWorld, GraphDef *inList)
 	}
 }
 
-void GraphDef_Remove(World *inWorld, int32 *inName)
+#include "SC_SequencedCommand.h"
+#include "SC_Errors.h"
+SCErr GraphDef_Remove(World *inWorld, int32 *inName)
 {
 	GraphDef* graphDef = World_GetGraphDef(inWorld, inName);
 	if (graphDef) {
 		World_RemoveGraphDef(inWorld, graphDef);
 		if (--graphDef->mRefCount == 0) {
-			GraphDef_DeleteMsg(inWorld, graphDef);
+			return GraphDef_DeleteMsg(inWorld, graphDef);
 		}
 	}
+    return kSCErr_None;
 }
 
-void GraphDef_DeleteMsg(World *inWorld, GraphDef *inDef)
+SCErr SendReplyCmd_d_removed(World * inWorld,int inSize,char* inData, ReplyAddress *inReply)
 {
-	DeleteGraphDefMsg msg;
+	void* space = World_Alloc(inWorld, sizeof(SendReplyCmd)); 
+	SendReplyCmd *cmd = new (space) SendReplyCmd(inWorld, inReply); 
+	if (!cmd) return kSCErr_Failed; 
+	int err = cmd->Init(inData, inSize); 
+	if (err) { 
+		cmd->~SendReplyCmd(); 
+		World_Free(inWorld, space); 
+		return err; 
+	} 
+	if (inWorld->mRealTime) cmd->CallNextStage(); 
+	else cmd->CallEveryStage();
+    return kSCErr_None;
+}
+
+SCErr GraphDef_DeleteMsg(World *inWorld, GraphDef *inDef)
+{
+
+    DeleteGraphDefMsg msg;
 	msg.mDef = inDef;
 	inWorld->hw->mDeleteGraphDefs.Write(msg);
 
 	small_scpacket packet;
 	packet.adds("/d_removed");
-	packet.maketags(1);
+	packet.maketags(2);
 	packet.addtag(',');
 	packet.addtag('s');
 	packet.adds((char*)inDef->mNodeDef.mName);
@@ -587,8 +607,11 @@ void GraphDef_DeleteMsg(World *inWorld, GraphDef *inDef)
 	ReplyAddress *users = inWorld->hw->mUsers;
 	int numUsers = inWorld->hw->mNumUsers;
 	for (int i=0; i<numUsers; ++i) {
-		SendReply(users+i, packet.data(), packet.size());
+        SCErr err = SendReplyCmd_d_removed(inWorld, packet.size(), packet.data(), users+i);
+        if(err!=kSCErr_None)
+            return err;
 	}
+    return kSCErr_None;
 }
 
 GraphDef* GraphDef_Recv(World *inWorld, char *buffer, GraphDef *inList)

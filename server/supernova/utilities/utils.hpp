@@ -32,8 +32,6 @@
 
 typedef unsigned int uint;
 
-#include "malloc_aligned.hpp"
-
 #include "function_attributes.h"
 
 
@@ -96,15 +94,10 @@ template <typename t>
 class runnable
 {
 public:
-    virtual ~runnable(void)
-    {}
+    virtual ~runnable(void) = default;
 
     virtual t run(void) = 0;
 };
-
-/** \brief tag for denoting a deleteable class */
-class deleteable
-{};
 
 
 template <class T>
@@ -140,11 +133,10 @@ struct intrusive_refcountable:
         use_count_(0)
     {}
 
-    intrusive_refcountable(intrusive_refcountable const & rhs) = delete;
+    intrusive_refcountable(intrusive_refcountable const & rhs)             = delete;
     intrusive_refcountable & operator=(intrusive_refcountable const & rhs) = delete;
 
-    virtual ~intrusive_refcountable(void)
-    {}
+    virtual ~intrusive_refcountable(void)                                  = default;
 
     void add_ref(void)
     {
@@ -169,7 +161,6 @@ struct intrusive_refcountable:
 
     boost::detail::atomic_count use_count_;
 };
-
 
 template <class t, class compare = std::less<t> >
 struct compare_by_instance

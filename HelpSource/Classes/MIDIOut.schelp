@@ -1,6 +1,6 @@
 class:: MIDIOut
 summary:: send MIDI messages
-related:: Classes/MIDIIn, Guides/MIDI, Guides/UsingMIDI
+related:: Classes/MIDIClient, Classes/MIDIIn, Guides/MIDI, Guides/UsingMIDI
 categories:: External Control>MIDI
 
 description::

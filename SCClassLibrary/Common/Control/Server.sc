@@ -1,5 +1,4 @@
-ServerOptions
-{
+ServerOptions {
 	// order of variables is important here. Only add new instance variables to the end.
 
 	var <numAudioBusChannels = 128;
@@ -511,7 +510,7 @@ Server {
 	listSendBundle { |time, msgs|
 		addr.sendBundle(time, *(msgs.asArray))
 	}
-
+    
 	reorder { |nodeList, target, addAction=\addToHead|
 		target = target.asTarget;
 		this.sendMsg(62, Node.actionNumberFor(addAction), target.nodeID, *(nodeList.collect(_.nodeID))) //"/n_order"

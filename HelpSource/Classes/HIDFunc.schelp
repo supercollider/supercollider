@@ -1,6 +1,6 @@
 TITLE:: HIDFunc
 summary:: Fast responder for incoming data from human input devices (HID)
-categories:: External control>HID
+categories:: External Control>HID
 related:: Classes/HID, Classes/HIDdef, Classes/HIDProto, Classes/HIDElementProto, Classes/OSCFunc, Classes/MIDIFunc, Guides/Working_with_HID
 
 DESCRIPTION::

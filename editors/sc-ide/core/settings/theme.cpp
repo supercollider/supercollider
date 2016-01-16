@@ -34,8 +34,8 @@ namespace ScIDE { namespace Settings {
 
 int legacyTheme(Manager * settings)
 {
-    QString group = QString("IDE/editor/colors/");
-    QString newGroup = QString("IDE/editor/themes/My old theme/");
+    QString group = QStringLiteral("IDE/editor/colors/");
+    QString newGroup = QStringLiteral("IDE/editor/themes/My old theme/");
 
     if (!settings->contains(group + "evaluatedCode"))
         return 0;
@@ -56,7 +56,7 @@ int legacyTheme(Manager * settings)
     }
     settings->remove(group);
 
-    group = QString("IDE/editor/highlighting/");
+    group = QStringLiteral("IDE/editor/highlighting/");
     keys.clear();
 
     keys << "keyword" << "built-in" << "env-var" << "class" << "number"
@@ -174,7 +174,7 @@ void Theme::fillDark()
 
 void Theme::fillUser(const QString & name, const Manager *settings)
 {
-    QString group = QString("IDE/editor/themes/%1/").arg(name);
+    QString group = QStringLiteral("IDE/editor/themes/%1/").arg(name);
 
     if (!settings->contains(group + "whitespace")) {
         qDebug() << "Failed to find theme" << name << settings->group();
@@ -241,7 +241,6 @@ Theme::~Theme()
 void Theme::setFormat(const QString & key, const QTextCharFormat & newFormat)
 {
     QMap<QString, QTextCharFormat *>::iterator i = mFormats.find(key);
-    QTextCharFormat *format = i.value();
     bool fontWeight = (newFormat.fontWeight() == QFont::Bold) ? true : false;
     QColor bg = (newFormat.background() == Qt::NoBrush) ?
                     QColor(Qt::transparent): newFormat.background().color();
@@ -291,7 +290,7 @@ void Theme::save()
         return;
 
     QMap<QString, QTextCharFormat *>::const_iterator i = mFormats.begin();
-    QString group = QString("IDE/editor/themes/").append(mName);
+    QString group = QStringLiteral("IDE/editor/themes/").append(mName);
 
     mSettings->beginGroup(group);
     while (i != mFormats.end()) {
@@ -308,7 +307,7 @@ void Theme::remove()
         return;
 
     QMap<QString, QTextCharFormat *>::const_iterator i = mFormats.begin();
-    QString key = QString("IDE/editor/themes/").append(mName);
+    QString key = QStringLiteral("IDE/editor/themes/").append(mName);
 
     mSettings->remove(key);
 }

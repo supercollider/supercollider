@@ -41,11 +41,6 @@ Primitives for File i/o.
 
 #include "../../common/SC_SndFileHelpers.hpp"
 
-#ifdef NOCLASSIC
-#include <TextUtils.h>
-#include <Navigation.h>
-#endif
-
 #ifndef _WIN32
 # include <unistd.h>
 #else
@@ -141,7 +136,7 @@ int prFileRealPath(struct VMGlobals* g, int numArgsPushed )
 	}
 	strcpy(opath,p.string().c_str());
 
-#if SC_DARWIN
+#if __APPLE__
 	CFStringRef cfstring =
 		CFStringCreateWithCString(NULL,
 								  opath,
@@ -149,7 +144,7 @@ int prFileRealPath(struct VMGlobals* g, int numArgsPushed )
 	err = !CFStringGetFileSystemRepresentation(cfstring, opath, PATH_MAX);
 	CFRelease(cfstring);
 	if (err) return errFailed;
-#endif // SC_DARWIN
+#endif // __APPLE__
 
 	PyrString* pyrString = newPyrString(g->gc, opath, 0, true);
 	SetObject(a, pyrString);
@@ -1387,7 +1382,7 @@ int headerFormatToString(struct SF_INFO *info, const char **string){
 				*string = "FLAC";
 				break ;
 // TODO allow other platforms to know vorbis once libsndfile 1.0.18 is established
-#if SC_DARWIN || _WIN32 || LIBSNDFILE_1018
+#if __APPLE__ || _WIN32 || LIBSNDFILE_1018
 		case SF_FORMAT_VORBIS :
 				*string = "vorbis";
 				break ;
@@ -1462,6 +1457,8 @@ int prSFOpenRead(struct VMGlobals *g, int numArgsPushed)
 	a = g->sp - 1;
 	b = g->sp;
 
+	PyrObject *obj1 = slotRawObject(a);
+
 	if (!isKindOfSlot(b, class_string)) return errWrongType;
 	if (slotRawObject(b)->size > PATH_MAX - 1) return errFailed;
 
@@ -1473,16 +1470,18 @@ int prSFOpenRead(struct VMGlobals *g, int numArgsPushed)
 
 
 	if (file) {
-		SetPtr(slotRawObject(a)->slots + 0, file);
+		SetPtr(obj1->slots + 0, file);
 		sndfileFormatInfoToStrings(&info, &headerstr, &sampleformatstr);
 		//headerFormatToString(&info, &headerstr);
 		PyrString *hpstr = newPyrString(g->gc, headerstr, 0, true);
-		SetObject(slotRawObject(a)->slots+1, hpstr);
+		SetObject(obj1->slots+1, hpstr);
+		g->gc->GCWriteNew(obj1, (PyrObjectHdr*)hpstr); // we know hpstr is white so we can use GCWriteNew
 		PyrString *smpstr = newPyrString(g->gc, sampleformatstr, 0, true);
-		SetObject(slotRawObject(a)->slots+2, smpstr);
-		SetInt(slotRawObject(a)->slots + 3, info.frames);
-		SetInt(slotRawObject(a)->slots + 4, info.channels);
-		SetInt(slotRawObject(a)->slots + 5, info.samplerate);
+		SetObject(obj1->slots+2, smpstr);
+		g->gc->GCWriteNew(obj1, (PyrObjectHdr*)smpstr); // we know smpstr is white so we can use GCWriteNew
+		SetInt(obj1->slots + 3, info.frames);
+		SetInt(obj1->slots + 4, info.channels);
+		SetInt(obj1->slots + 5, info.samplerate);
 
 		SetTrue(a);
 	} else {
@@ -1726,195 +1725,6 @@ int prSFHeaderInfoString(struct VMGlobals *g, int numArgsPushed)
 
 #endif // !NO_LIBSNDFILE
 
-
-//////////
-#ifdef NOCLASSIC
-
-int dir_Lookup(char *pathString, int pathStringLength, int index,
-  /* outputs: */
-  char *name, int *nameLength, int *creationDate, int *modificationDate,
-  int *isDirectory, int *isVisible, int *sizeIfFile);
-
-int prDirectory_At(struct VMGlobals *g, int numArgsPushed);
-int prDirectory_At(struct VMGlobals *g, int numArgsPushed)
-{
-	PyrSlot *a = g->sp - 2;
-	PyrSlot *b = g->sp - 1;
-	PyrSlot *c = g->sp;
-
-	PyrSlot *dirPathSlot = slotRawObject(a)->slots + 0;
-	int err, index;
-	err = slotIntVal(c, &index);
-	if (err) {
-		SetNil(a);
-		return err;
-	}
-
-	char name[256], fullPathName[256];
-	int nameLength, creationDate, modificationDate, isDirectory, isVisible, sizeIfFile;
-	int dirPathLength = slotRawObject(dirPathSlot)->size;
-
-	err = dir_Lookup(slotRawObject(dirPathSlot)s->s, dirPathLength, index+1,
-		name, &nameLength, &creationDate, &modificationDate, &isDirectory, &isVisible, &sizeIfFile);
-	if (err == 1) {
-		SetNil(a);
-		return errNone;
-	}
-	if (err) {
-		error("Invalid path\n");
-		SetNil(a);
-		return errFailed;
-	}
-
-	if (dirPathLength + nameLength + 1 > 255) {
-		error("Full path name too long.\n");
-		SetNil(a);
-		return errFailed;
-	}
-
-	PyrSlot *entryName = slotRawObject(b)->slots + 0;
-	PyrSlot *entryPath = slotRawObject(b)->slots + 1;
-	PyrSlot *entryIsDir = slotRawObject(b)->slots + 2;
-	PyrSlot *entryIsVisible = slotRawObject(b)->slots + 3;
-
-	PyrString *nameString = newPyrString(g->gc, name, 0, true);
-	SetObject(entryName, nameString);
-	g->gc->GCWrite(slotRawObject(b), (PyrObject*)nameString);
-
-	memcpy(fullPathName, slotRawObject(dirPathSlot)s->s, dirPathLength);
-	fullPathName[dirPathLength] = DELIMITOR;
-	strcpy(fullPathName + dirPathLength + 1, name);
-
-	PyrString *pathString = newPyrString(g->gc, fullPathName, 0, true);
-	SetObject(entryPath, pathString);
-	g->gc->GCWrite(slotRawObject(b), (PyrObject*)pathString);
-
-	if (isDirectory) { SetTrue(entryIsDir); } else { SetFalse(entryIsDir); }
-	if (isVisible) { SetTrue(entryIsVisible); } else { SetFalse(entryIsVisible); }
-
-	slotCopy(a,b);
-
-	return errNone;
-}
-
-Boolean		GetFullPathname(const FSSpec* aSpec, Str255 pathname);
-void pstrncpy(unsigned char *s1, unsigned char *s2, int n);
-
-int prFile_GetFile(struct VMGlobals *g, int numArgsPushed);
-int prFile_GetFile(struct VMGlobals *g, int numArgsPushed)
-{
-
-	PyrSlot *a = g->sp - 1;
-	PyrSlot *b = g->sp;
-
-	NavDialogOptions options;
-
-	int err = NavGetDefaultDialogOptions(&options);
-	if (err) return errFailed;
-
-	options.dialogOptionFlags |= kNavNoTypePopup;
-	options.dialogOptionFlags |= kNavDontAutoTranslate;
-	options.dialogOptionFlags |= kNavDontAddTranslateItems;
-	options.dialogOptionFlags |= kNavSelectDefaultLocation;
-	options.dialogOptionFlags &= ~kNavAllowPreviews;
-	options.dialogOptionFlags &= ~kNavAllowMultipleFiles;
-
-	if (isKindOfSlot(b, class_string)) {
-		pstringFromPyrString((PyrString*)slotRawObject(b), options.message, 256);
-	}
-
-	NavReplyRecord reply;
-	err = NavGetFile(0, &reply, &options, 0, 0, 0, 0, 0);
-
-	if (err == noErr && reply.validRecord) {
-		AEKeyword keyword;
-		DescType actualType;
-		Size actualSize;
-		FSSpec fsspec;
-
-		err = AEGetNthPtr(&reply.selection, 1, typeFSS, &keyword, &actualType,
-							&fsspec, sizeof(FSSpec), &actualSize);
-
-		if (err == noErr) {
-			Str255 pathname;
-			GetFullPathname(&fsspec, pathname);
-			p2cstr(pathname);
-			PyrString *string = newPyrString(g->gc, (char*)pathname, 0, true);
-			SetObject(a, string);
-		} else {
-			SetNil(a);
-		}
-		err = NavDisposeReply(&reply);
-	} else {
-		SetNil(a);
-	}
-	return errNone;
-}
-
-
-
-int prFile_PutFile(struct VMGlobals *g, int numArgsPushed);
-int prFile_PutFile(struct VMGlobals *g, int numArgsPushed)
-{
-
-	PyrSlot *a = g->sp - 2;
-	PyrSlot *b = g->sp - 1;
-	PyrSlot *c = g->sp;
-
-	NavDialogOptions options;
-
-	int err = NavGetDefaultDialogOptions(&options);
-	if (err) return errFailed;
-
-	options.dialogOptionFlags |= kNavNoTypePopup;
-	options.dialogOptionFlags |= kNavDontAutoTranslate;
-	options.dialogOptionFlags |= kNavDontAddTranslateItems;
-	options.dialogOptionFlags |= kNavSelectDefaultLocation;
-	options.dialogOptionFlags &= ~kNavAllowPreviews;
-	options.dialogOptionFlags &= ~kNavAllowMultipleFiles;
-
-	if (isKindOfSlot(b, class_string)) {
-		pstringFromPyrString((PyrString*)slotRawObject(b), options.message, 256);
-	}
-
-	if (isKindOfSlot(c, class_string)) {
-		pstringFromPyrString((PyrString*)slotRawObject(c), options.savedFileName, 256);
-	} else {
-		//pstrncpy(options.savedFileName, "\pUntitled", 255);
-	}
-
-	NavReplyRecord reply;
-	err = NavPutFile(0, &reply, &options, 0, 'TEXT', 'SCjm', 0);
-
-	if (err == noErr && reply.validRecord) {
-		AEKeyword keyword;
-		DescType actualType;
-		Size actualSize;
-		FSSpec fsspec;
-
-		err = AEGetNthPtr(&reply.selection, 1, typeFSS, &keyword, &actualType,
-							&fsspec, sizeof(FSSpec), &actualSize);
-
-		if (err == noErr) {
-			Str255 pathname;
-			GetFullPathname(&fsspec, pathname);
-			p2cstr(pathname);
-			PyrString *string = newPyrString(g->gc, (char*)pathname, 0, true);
-			SetObject(a, string);
-
-			err = NavCompleteSave(&reply, kNavTranslateInPlace);
-		} else {
-			SetNil(a);
-		}
-		err = NavDisposeReply(&reply);
-	} else {
-		SetNil(a);
-	}
-	return errNone;
-}
-
-#endif
-
 /////////////
 
 void initFilePrimitives()
@@ -1981,16 +1791,4 @@ void initFilePrimitives()
 
 	definePrimitive(base, index++, "_FileReadRaw", prFileReadRaw, 2, 0);
 	definePrimitive(base, index++, "_FileReadRawLE", prFileReadRawLE, 2, 0);
-
-#ifdef NOCLASSIC
-	definePrimitive(base, index++, "_Directory_At", prDirectory_At, 3, 0);
-	definePrimitive(base, index++, "_File_GetFile", prFile_GetFile, 2, 0);
-	definePrimitive(base, index++, "_File_PutFile", prFile_PutFile, 3, 0);
-#endif
 }
-
-
-
-
-
-

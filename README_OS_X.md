@@ -35,7 +35,7 @@ Help files will be created in the app support dir (on Mac, `~/Library/Applicatio
 To get further information on SuperCollider usage or development, you should subscribe 
 to the mailing lists:
 
-http://www.beast.bham.ac.uk/research/sc_mailing_lists.shtml
+http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx
 
 The SC 3.7 release
 --------------------
@@ -130,7 +130,7 @@ Generally, clearing the CMakeCache.txt should be enough to fix many build proble
 
 ### Someone else's fault...
 If you're *sure* you're doing everything right and you're still failing, check the travis-ci status page:
-[https://travis-ci.org/supercollider/supercollider]()
+https://travis-ci.org/supercollider/supercollider
 
 Travis does incremental mac and linux builds for every git commit, and can show you if the place you are currently synced (`git log -n 1`) is actually just plain *broken*. If the build status looks bad, it's easy to work around:
 

@@ -1,5 +1,4 @@
-WindowsPlatform : Platform
-{
+WindowsPlatform : Platform {
 	name { ^\windows }
 	startupFiles {
 		var deprecated = ["startup.sc", "~\\SuperCollider\\startup.sc".standardizePath];
@@ -22,8 +21,6 @@ WindowsPlatform : Platform
 		// load user startup file
 		this.loadStartupFiles;
 	}
-
-	defaultHIDScheme { ^nil }
 
 	pathSeparator { ^$\\ }
 	isPathSeparator { |char|

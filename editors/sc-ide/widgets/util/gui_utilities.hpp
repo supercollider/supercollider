@@ -27,9 +27,10 @@
 
 namespace ScIDE {
 
-inline QString wordInStringAt ( int position, const QString & source )
+// match words, environment variable and symbols
+inline QString tokenInStringAt( int position, const QString & source )
 {
-    const QRegExp wordRegexp("\\w+");
+    const QRegExp wordRegexp("(~?|\\\\?)\\w+");
 
     int offset = 0;
     while (offset <= position) {
@@ -48,7 +49,7 @@ inline QString wordInStringAt ( int position, const QString & source )
 inline void extendSelectionForEnvVar(QPlainTextEdit * textEdit, QTextCursor selection)
 {
     if (selection.hasSelection()) {
-        if (selection.selectedText() == QString("~")) {
+        if (selection.selectedText() == QStringLiteral("~")) {
             QTextCursor wordAfter(selection);
             wordAfter.movePosition(QTextCursor::NextCharacter);
             wordAfter.select(QTextCursor::WordUnderCursor);

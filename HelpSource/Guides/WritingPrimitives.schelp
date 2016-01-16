@@ -2,8 +2,12 @@ title:: Writing Primitives
 summary:: Writing Primitives
 categories:: Internals
 
+Although much of SuperCollider's functionality is implemented in the SuperCollider language itself, for reasons of efficiency, some functionality is implemented in 'back end' C++ functions called 'primitives'. This document provides guidance to members of the SC development community on writing primitives.
+
 section:: Example
 subsection:: SuperCollider code
+
+Primitive calls are preceded with an underscore, so for example _myPrimitiveName. Here is an example call to a primitive in an SC class:
 
 code::
 Cocoa {
@@ -11,6 +15,60 @@ Cocoa {
         _Cocoa_GetPathsDialog
         ^this.primitiveFailed
     }
+}
+::
+
+In the example above the primitive is dispatched at _Cocoa_GetPathsDialog. If it is successful, it will return without executing the code below that. Primitive functions (see below) return an integer, which should be one of the values defined in the file PyrErrors.h:
+
+teletype::
+enum { // primitive errors
+	errReturn = -1,	// not really an error.. primitive executed a non-local return
+	errNone,
+	errFailed = 5000,
+	errBadPrimitive,
+	errWrongType,
+	errIndexNotAnInteger,
+	errIndexOutOfRange,
+	errImmutableObject,
+	errNotAnIndexableObject,
+	errStackOverflow,
+	errOutOfMemory,
+	errCantCallOS,
+	errException,
+	
+	errPropertyNotFound = 6000,
+	
+	errLastError
+};
+::
+
+If your primitive can return any value besides code::errNone:: then you will need to provide handling code after the primitive call. In most cases this will be code::^this.primitiveFailed::. This will throw an Error giving the user information about what went wrong.
+
+In some cases, you may wish to execute fallback SC code instead of throwing an Error. This can be useful in cases where for example a primitive provides an optimised version of a method which is not usable in all instances. Here is an example of how this can be done:
+
+code::
+flop {
+	_ArrayMultiChannelExpand
+	^super.flop // this gets executed if the primitive fails
+}
+::
+
+Note that returning anything besides errNone will result in executing the SC method emphasis::ignoring:: the primitive call. For this reason, if you need to do some prepatory work in SC before calling the primitive, it is best practice to do this in a separate method to avoid duplication. For example:
+
+code::
+// do initial work here
+openUDPPort {|portNum|
+	var result;
+	if(openPorts.includes(portNum), {^true});
+	result = this.prOpenUDPPort(portNum);
+	if(result, { openPorts = openPorts.add(portNum); });
+	^result;
+}
+
+// this method only calls the primitive, and throws any primitive errors
+prOpenUDPPort {|portNum|
+	_OpenUDPPort
+	^this.primitiveFailed;
 }
 ::
 
@@ -71,32 +129,157 @@ Cocoa). Or set the object at teletype::receiver:: which again is at teletype::(g
 
 section:: Guidelines
 
-subsection:: GC safety
+subsection:: Creating objects in primitives, and GC safety
 
-If possible, you should avoid creating objects in a primitive. Primitives are much simpler to write and debug if you pass in an object that you create in SC code and fill in its slots in the primitive.
+SuperCollider uses a garbage collector to manage memory allocation and collection where needed.footnote::Some SC language objects, such as numbers, boolean types, chars, and symbols are stored directly within a PyrSlot, and do not require allocation. (Symbols are a special case: A reference to a location in the global symbol table is stored, where each defined symbol is permanently stored.):: In order to meet the requirements of good real time performance, a small and bounded amount of garbage collection may be triggered each time an object is created. This consists of incrementally examining all objects and determining if they are reachable (see below) or not. Unreachable objects may have their memory reallocated to new objects.
 
-When you do fill in slots in an object with other objects, you must call teletype::g->gc->GCWrite(object, other_object):: in order to notify the garbage collector that you have modified a slot that it may have already scanned.
+The following points are important to understanding how the GC works, and how to avoid bugs:
+list::
+##An object is emphasis::reachable:: if it has
+list::
+  ##been stored on the stack, or
+  ##been stored in an sclang variable, or a class variable, or
+  ##been stored in another object that fulfills one of the above criteria
+::
+##The GC marks objects as one of the following:
+list::
+  ##strong::White:: - To be examined
+  ##strong::Grey:: - Reachable, but containing objects which themselves have not been fully inspected and marked grey or black
+  ##strong::Black:: - Reachable, with any contained objects all fully inspected
+  ##strong::Free:: - Unreachable; memory is available for reuse
+::
+##If triggered, garbage collection will happen emphasis::before:: allocating the new object.
+##The newly created object will be marked as strong::white:: (to be examined).
+::
 
-If you create more than one object in a primitive you must make sure that all the previously created objects are reachable before you allocate another. In other words you must store them on the stack or in another object's slots before creating another. Creating objects can call the garbage collector and if you have not made your objects reachable, they can get collected out from under you.
+SC provides a number of functions which create new objects. These include teletype::instantiateObject::, teletype::newPyrObject::, teletype::newPyrString::, and teletype::newPyrArray::. Before any calls to such functions it is crucial that all previously created objects have been made reachable. If this is not done, it is possible that such objects will be marked as strong::free::. Since a freed object's memory may not be immediately reused, problems may not arise at the time your primitive is called, leading to extremely hard to find bugs.
+
+Alternatively, most object creation functions include a teletype::bool runGC:: argument. If set to false, this will guarantee that the garbage collector does not run on this allocation. While not ideal, as it is best that GC activity is amortised to the extent possible, this option is safe, since the status of any previously created objects will not be changed.
+
+The following two examples are both safe:
+definitionlist::
+##Make the newly created object reachable:
+||teletype::
+PyrSlot* arg = g->sp;
+PyrObject *array1 = newPyrArray(g->gc, 2, 0, true); // runGC = true
+SetObject(arg, array1); // make the array reachable on the stack
+PyrObject *array2 = newPyrArray(g->gc, 2, 0, true);
+...
+::
+##Set teletype::runGC:: to false:
+||teletype::
+PyrSlot* arg = g->sp;
+// runGC = true
+PyrObject *array1 = newPyrArray(g->gc, 2, 0, true);
+// runGC = false so GC is not triggered, and array1 can't be freed
+PyrObject *array2 = newPyrArray(g->gc, 2, 0, false);
+...
+::
+::
+Care must be taken when writing utility functions which themselves create new objects, since this may happen somewhat opaquely and the calling context may not be known. Functions which may call themselves recursively also need special attention. In such cases setting teletype::runGC:: to false may be the safest option, or including a teletype::runGC:: arg so that GC behaviour is explicit. teletype::MsgToInt8Array:: is one example of such a function.
+
+teletype::
+static PyrInt8Array* MsgToInt8Array ( sc_msg_iter& msg, bool runGC )
+{
+	int size = msg.getbsize() ;
+	VMGlobals *g = gMainVMGlobals ;
+	PyrInt8Array *obj = newPyrInt8Array ( g->gc , size , 0 , runGC ) ;
+	obj->size = size ;
+	msg.getb ( (char *)obj->b , obj->size ) ;
+	return obj ;
+}
+::
+
+Setting an object into another object's internal slot (e.g. with teletype::SetObject:: or teletype::slotCopy::) also requires care. If the parent object is emphasis::black:: (reachable and examined), the GC needs to be notified of the change. For this reason, you must usually call teletype::g->gc->GCWrite(parentObject, childObject):: after using one of these methods. The emphasis::only:: exceptions to this rule are cases in which the parent object is known to be white (unexamined). This will be true if:
+list::
+##It is the last created object, or
+##Any subsequently created objects were allocated with teletype::runGC = false:: (i.e. the GC cannot have run in the interim), emphasis::and::
+##It has not had GCWrite called upon it
+::
+
+The following two examples are both safe:
+definitionlist::
+##Run GCWrite as parent may not be white:
+||teletype::
+PyrSlot* arg = g->sp;
+PyrObject *array = newPyrArray(g->gc, 2, 0, true); // runGC = true
+SetObject(arg, array); // make the array reachable on the stack
+PyrObject *str = newPyrString(g->gc, "Hello", 0, true); // runGC = true
+SetObject(array->slots, str);
+// we must call GCWrite, since array may not be white
+g->gc->GCWrite(array, str);
+...
+::
+##We know that parent emphasis::is:: white:
+||teletype::
+PyrObject *array = newPyrArray(g->gc, 2, 0, true); // runGC = true
+PyrObject *str = newPyrString(g->gc, "Hello", 0, false); // runGC = false
+SetObject(array->slots, str);
+// we don't need GCWrite, since array must still be white
+...
+::
+::
+
+If you emphasis::know:: that the child object is still white, then you can use teletype::GCWriteNew:: instead of teletype::GCWrite::. The child object will still be white if the GC has not been triggered since it was created, and you have not previously called GCWrite on it.
+
+If placing an object inside another has modified its size (e.g. adding an object to an array), you must correctly adjust its size by teletype::parent->size = newSize::. Both this and calling GCWrite (if necessary) should be done before any further object allocations. It is best practice to do them immediately if possible.
+
+definitionlist::
+##This is safe:
+||teletype::
+PyrSlot* arg = g->sp;
+int size = 10;
+PyrObject *array = newPyrArray(g->gc, size, 0, true); // runGC = true
+SetObject(arg, array);
+for(i=0; i<numLists; ++i) {
+  PyrObject *str = newPyrString(g->gc, "Hello", 0, true); // runGC = true
+  SetObject(array->slots + i, str);
+  // str must still be white so we can use GCWriteNew
+  g->gc->GCWriteNew(array, str);
+  // increment size immediately
+  //so it is accurate on next allocation
+  array->size++;
+}
+...
+::
+##This is emphasis::not:: safe:
+||teletype::
+PyrSlot* arg = g->sp;
+int size = 10;
+PyrObject *array = newPyrArray(g->gc, size, 0, true); // runGC = true
+// setting size to final value here means
+// it is *not* accurate on next allocation below
+array->size = size;
+SetObject(arg, array);
+for(i=0; i<numLists; ++i) {
+  PyrObject *str = newPyrString(g->gc, "Hello", 0, true); // runGC = true
+  SetObject(array->slots + i, str);
+  g->gc->GCWriteNew(array, str);
+}
+...
+::
+::
+
+It is good practice to avoid creating objects in a primitive at all where possible. Primitives are much simpler to write and debug if you pass in an object that you create in SC code and fill in its slots in the primitive.
 
 note::
-To summarize, before calling any function that might allocate (like teletype::newPyr*::) you strong::must:: make sure these critera are fulfilled:
+To summarize, before calling any function that might allocate (like teletype::newPyr*::) you strong::must:: make sure these criteria are fulfilled:
 numberedlist::
 ## All objects previously created must be reachable, which means they must exist
     list::
     ## on the teletype::g->sp:: stack
-    ## or, in a lang-side class/instance variable
+    ## or, in a lang-side variable or class variable.
     ## or, in a slot of another object that fulfils these criteria.
     ::
 ## If any object ( teletype::child:: ) was put inside a slot of another object ( teletype::parent:: ), you must have
     list::
-    ## called teletype::g->gc->GCWrite(parent, child):: afterwards
+    ## called teletype::g->gc->GCWrite(parent, child):: afterwards unless you strong::know:: that the parent is still white (unexamined), or GCWriteNew if you also strong::know:: that the child is white
     ## and, set teletype::parent->size:: to the correct value
     ::
 ::
 ::
 
-Here's an example of how it may look:
+Here's an example of how a complete primitive might look:
 teletype::
 int prMyPrimitive(struct VMGlobals* g, int numArgsPushed)
 {
@@ -108,15 +291,17 @@ int prMyPrimitive(struct VMGlobals* g, int numArgsPushed)
     if(err) return err;
 
     PyrObject *array = newPyrArray(g->gc, 2, 0, true);
-    array->size = 0;
+    // array->size = 0 at creation; max size is 2
     SetObject(arg, array); // return value
 
     // NOTE: array is now reachable on the stack, since arg refers to g->sp
 
     PyrObject *str1 = newPyrString(g->gc, "Hello", 0, true);
     SetObject(array->slots, str1);
-    array->size++;
-    g->gc->GCWrite(array, str1);
+    array->size++; // immediately increment array's size
+    // array may not be white, so call GCWrite
+    // but we know str is white, so can use GCWriteNew instead
+    g->gc->GCWriteNew(array, str1);
 
     // NOTE: str1 is now reachable in array, which is reachable on the stack
 
@@ -127,7 +312,7 @@ int prMyPrimitive(struct VMGlobals* g, int numArgsPushed)
     return errNone;
 }
 ::
-If we would have put teletype::SetObject(arg, array);:: at the end of this function, teletype::array:: would strong::not:: have been reachable at the call to teletype::newPyrString::, thus breaking the rules and introducing bugs that sooner or later would crash SuperCollider (but most probably not in the faulty code but somewhere else, making it very hard to find!)
+If we would have put teletype::SetObject(arg, array);:: at the end of this function, teletype::array:: would strong::not:: have been reachable at the call to teletype::newPyrString::, and thus may have been marked teletype::free::, resulting in a hard to track down bug.
 
 warning::Do not store pointers to PyrObjects in C/C++ variables unless you can absolutely guarantee that they cannot be garbage
 collected. For example the File and SCWindow classes do this by storing the objects in an array in a classvar. The

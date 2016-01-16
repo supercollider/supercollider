@@ -60,7 +60,6 @@ set ( ide_moc_hdr
     core/sc_server.hpp
     core/doc_manager.hpp
     core/settings/manager.hpp
-    core/settings/theme.hpp
     core/session_manager.hpp
     widgets/cmd_line.hpp
     widgets/doc_list.hpp
@@ -315,26 +314,6 @@ endif()
 # Installation
 
 if(APPLE)
-    add_dependencies(SuperCollider sclang scsynth ${plugins} ${supernova_plugins})
-    add_custom_command(TARGET SuperCollider POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:sclang> $<TARGET_FILE_DIR:SuperCollider>/../MacOS)
-
-    add_custom_command(TARGET SuperCollider POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:scsynth> $<TARGET_FILE_DIR:SuperCollider>/../MacOS)
-
-    if(TARGET supernova)
-        add_dependencies(SuperCollider supernova)
-        add_custom_command(TARGET SuperCollider POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:supernova> $<TARGET_FILE_DIR:SuperCollider>/../MacOS)
-    endif()
-
-    foreach(plugin ${plugins} ${supernova_plugins})
-        add_custom_command(TARGET SuperCollider POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../Resources/plugins/
-            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${plugin}> $<TARGET_FILE_DIR:SuperCollider>/../Resources/plugins/)
-    endforeach()
-
-
     if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
         set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install" CACHE PATH "Install path prefix" FORCE)
     endif()

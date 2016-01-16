@@ -64,7 +64,7 @@ regex_error::regex_error(const std::string& s, regex_constants::error_type err, 
 }
 
 regex_error::regex_error(regex_constants::error_type err) 
-   : std::runtime_error(::boost::re_detail::get_default_error_string(err))
+   : std::runtime_error(::boost::BOOST_REGEX_DETAIL_NS::get_default_error_string(err))
    , m_error_code(err)
    , m_position(0) 
 {
@@ -83,7 +83,7 @@ void regex_error::raise()const
 
 
 
-namespace re_detail{
+namespace BOOST_REGEX_DETAIL_NS{
 
 BOOST_REGEX_DECL void BOOST_REGEX_CALL raise_runtime_error(const std::runtime_error& ex)
 {
@@ -211,7 +211,7 @@ BOOST_REGEX_DECL void BOOST_REGEX_CALL put_mem_block(void* p)
 
 #endif
 
-} // namespace re_detail
+} // namespace BOOST_REGEX_DETAIL_NS
 
 
 

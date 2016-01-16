@@ -9,7 +9,7 @@ Demand : MultiOutUGen {
 		inputs = argInputs;
 		^this.initOutputs(inputs.size - 2, rate)
 	}
- 	checkInputs { ^this.checkSameRateAsFirstInput }
+	checkInputs { ^this.checkSameRateAsFirstInput }
 }
 
 Duty : UGen {
@@ -24,8 +24,8 @@ Duty : UGen {
 		^if(inputs.at(0).rate === \demand) {
 			if (inputs.at(1).rate !== \demand and: { inputs.at(1).rate !== \scalar } and:
 				{ inputs.at(1).rate !== rate }) {
- 				("reset input is not" + rate + "rate: " + inputs.at(1) + inputs.at(1).rate);
- 			}
+				("reset input is not" + rate + "rate: " + inputs.at(1) + inputs.at(1).rate);
+			}
 		} {
 			this.checkValidInputs
 		}
@@ -70,8 +70,8 @@ DemandEnvGen : UGen {
 }
 
 DUGen : UGen {
- 	// some n-ary op special cases
- 	linlin { arg inMin, inMax, outMin, outMax, clip=\minmax;
+	// some n-ary op special cases
+	linlin { arg inMin, inMax, outMin, outMax, clip=\minmax;
 		^((this.prune(inMin, inMax, clip)-inMin)/(inMax-inMin) * (outMax-outMin) + outMin);
 	}
 

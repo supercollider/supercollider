@@ -11,11 +11,11 @@ I should acknowledge that this tutorial is 'by' me in only a limited sense. In w
 
 A full list of those who have contributed to SuperCollider and its documentation can be seen at:
 
-http://supercollider.sourceforge.net
+https://supercollider.github.io
 
 section::Links
 
-Within the text, and at the end of each section there might be a list links to other documents, that will look something like this:
+Within the text, and at the end of each section there might be a list of links to other documents, that will look something like this:
 
 See also: link::Tutorials/Getting-Started/01-Introductory-Remarks#Links##Some other document::
 

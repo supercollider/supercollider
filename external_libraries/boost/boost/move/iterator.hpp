@@ -14,9 +14,17 @@
 #ifndef BOOST_MOVE_ITERATOR_HPP
 #define BOOST_MOVE_ITERATOR_HPP
 
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+#
+#if defined(BOOST_HAS_PRAGMA_ONCE)
+#  pragma once
+#endif
+
 #include <boost/move/detail/config_begin.hpp>
+#include <boost/move/detail/iterator_traits.hpp>
 #include <boost/move/utility_core.hpp>
-#include <iterator>  //std::iterator
 
 namespace boost {
 
@@ -36,7 +44,7 @@ class move_iterator
 {
    public:
    typedef It                                                              iterator_type;
-   typedef typename std::iterator_traits<iterator_type>::value_type        value_type;
+   typedef typename boost::movelib::iterator_traits<iterator_type>::value_type        value_type;
    #if !defined(BOOST_NO_CXX11_RVALUE_REFERENCES) || defined(BOOST_MOVE_DOXYGEN_INVOKED)
    typedef value_type &&                                                   reference;
    #else
@@ -46,8 +54,8 @@ class move_iterator
       , value_type & >::type                                               reference;
    #endif
    typedef It                                                              pointer;
-   typedef typename std::iterator_traits<iterator_type>::difference_type   difference_type;
-   typedef typename std::iterator_traits<iterator_type>::iterator_category iterator_category;
+   typedef typename boost::movelib::iterator_traits<iterator_type>::difference_type   difference_type;
+   typedef typename boost::movelib::iterator_traits<iterator_type>::iterator_category iterator_category;
 
    move_iterator()
    {}

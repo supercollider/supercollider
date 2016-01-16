@@ -119,8 +119,12 @@ SimpleNumber : Number {
 	<= { arg aNumber, adverb; _LE; ^aNumber.performBinaryOpOnSimpleNumber('<=', this, adverb) }
 	>= { arg aNumber, adverb; _GE; ^aNumber.performBinaryOpOnSimpleNumber('>=', this, adverb) }
 
-	equalWithPrecision { arg that, precision=0.0001;
-		^absdif(this, that) < precision
+	equalWithPrecision { arg that, precision=0.0001, relativePrecision=0;
+		^if(relativePrecision > 0) {
+			absdif(this, that) < max(precision, relativePrecision * min(abs(this), abs(that)))
+		} {
+			absdif(this, that) < precision
+		}
 	}
 
 	hash { _ObjectHash; ^this.primitiveFailed }
@@ -171,7 +175,7 @@ SimpleNumber : Number {
 				if (this >= inMax, { ^outMax });
 			}
 		);
-    		^(this-inMin)/(inMax-inMin) * (outMax-outMin) + outMin;
+		^(this-inMin)/(inMax-inMin) * (outMax-outMin) + outMin;
 	}
 
 	linexp { arg inMin, inMax, outMin, outMax, clip=\minmax;

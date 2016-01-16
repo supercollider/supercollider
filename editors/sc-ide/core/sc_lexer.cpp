@@ -43,6 +43,14 @@ void ScLexer::initLexicalRules()
     initKeywordsRules();
     initBuiltinsRules();
 
+    mLexicalRules << LexicalRule( Token::RadixFloat, "^\\b\\d+r[0-9a-zA-Z]*(\\.[0-9A-Z]*)?" );
+
+    // do not include leading "-" in Float, as left-to-right algorithm does
+    // not know whether it is not rather a binary operator
+    mLexicalRules << LexicalRule( Token::Float, "^\\b((\\d+(\\.\\d+)?([eE][-+]?\\d+)?(pi)?)|pi)\\b" );
+
+    mLexicalRules << LexicalRule( Token::HexInt, "^\\b0(x|X)(\\d|[a-f]|[A-F])+" );
+
     mLexicalRules << LexicalRule( Token::SymbolArg, "^\\b[A-Za-z_]\\w*\\:" );
 
     mLexicalRules << LexicalRule( Token::Name, "^[a-z]\\w*" );
@@ -57,13 +65,6 @@ void ScLexer::initLexicalRules()
 
     mLexicalRules << LexicalRule( Token::EnvVar, "^~\\w+" );
 
-    mLexicalRules << LexicalRule( Token::RadixFloat, "^\\b\\d+r[0-9a-zA-Z]*(\\.[0-9A-Z]*)?" );
-
-    // do not include leading "-" in Float, as left-to-right algorithm does
-    // not know whether it is not rather a binary operator
-    mLexicalRules << LexicalRule( Token::Float, "^\\b((\\d+(\\.\\d+)?([eE][-+]?\\d+)?(pi)?)|pi)" );
-
-    mLexicalRules << LexicalRule( Token::HexInt, "^\\b0(x|X)(\\d|[a-f]|[A-F])+" );
 
     mLexicalRules << LexicalRule( Token::SingleLineComment, "^//[^\r\n]*" );
 
@@ -82,7 +83,7 @@ void ScLexer::initKeywordsRules()
              << "this"
              << "var";
 
-    QString keywordPattern = QString("^\\b(%1)\\b").arg(keywords.join("|"));
+    QString keywordPattern = QStringLiteral("^\\b(%1)\\b").arg(keywords.join("|"));
     mLexicalRules << LexicalRule(Token::Keyword, keywordPattern);
 }
 
@@ -102,7 +103,7 @@ void ScLexer::initBuiltinsRules()
              << "topEnvironment"
                 ;
 
-    QString builtinsPattern = QString("^\\b(%1)\\b").arg(builtins.join("|"));
+    QString builtinsPattern = QStringLiteral("^\\b(%1)\\b").arg(builtins.join("|"));
     mLexicalRules << LexicalRule(Token::Builtin, builtinsPattern);
 }
 

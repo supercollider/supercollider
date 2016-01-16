@@ -62,7 +62,7 @@ QObjectProxy::QObjectProxy( QObject *qObject_, PyrObject *scObject_ )
 
 QObjectProxy::~QObjectProxy()
 {
-  qcProxyDebugMsg( 1, QString("Proxy is being deleted.") );
+  qcProxyDebugMsg( 1, QStringLiteral("Proxy is being deleted.") );
 }
 
 bool QObjectProxy::compareThread() {
@@ -70,7 +70,7 @@ bool QObjectProxy::compareThread() {
 }
 
 void QObjectProxy::invalidate() {
-  qcProxyDebugMsg( 1, QString("Object has been deleted. Invalidating proxy.") );
+  qcProxyDebugMsg( 1, QStringLiteral("Object has been deleted. Invalidating proxy.") );
   mutex.lock(); qObject = 0; mutex.unlock();
   QApplication::postEvent( this, new QEvent((QEvent::Type) QtCollider::Event_Proxy_Release) );
 }
@@ -168,7 +168,7 @@ bool QObjectProxy::invokeMethod( const char *method, PyrSlot *retSlot, PyrSlot *
   }
 
   if( mi < 0 || mi >= mo->methodCount()  ) {
-    qcProxyDebugMsg( 1, QString("WARNING: No such method: %1::%2").arg( mo->className() )
+    qcProxyDebugMsg( 1, QStringLiteral("WARNING: No such method: %1::%2").arg( mo->className() )
                         .arg( sig.constData() ) );
     return false;
   }
@@ -185,7 +185,7 @@ bool QObjectProxy::invokeMethod( const char *method, PyrSlot *retSlot, PyrSlot *
   if( retSlot && rtype_id != QMetaType::Void ) {
     MetaType *type = MetaType::find(rtype_id);
     if(!type) {
-      qcErrorMsg(QString("No translation for return type '%1'").arg(rtype_name));
+      qcErrorMsg(QStringLiteral("No translation for return type '%1'").arg(rtype_name));
       return false;
     }
 
@@ -225,7 +225,7 @@ void QObjectProxy::invokeScMethod
 ( PyrSymbol *method, const QList<QVariant> & args, PyrSlot *result,
   bool locked )
 {
-  qcProxyDebugMsg(1, QString("SC METHOD CALL [+++]: ") + QString(method->name) );
+  qcProxyDebugMsg(1, QStringLiteral("SC METHOD CALL [+++]: ") + QString(method->name) );
 
   if( !locked ) {
     QtCollider::lockLang();
@@ -241,22 +241,22 @@ void QObjectProxy::invokeScMethod
 
   if( !locked ) QtCollider::unlockLang();
 
-  qcProxyDebugMsg(1, QString("SC METHOD CALL [---]: ") + QString(method->name) );
+  qcProxyDebugMsg(1, QStringLiteral("SC METHOD CALL [---]: ") + QString(method->name) );
 }
 
 void QObjectProxy::customEvent( QEvent *event )
 {
-  switch ( event->type() ) {
-    case (QEvent::Type) QtCollider::Event_ScMethodCall:
+  switch ( (int)event->type() ) {
+    case QtCollider::Event_ScMethodCall:
       scMethodCallEvent( static_cast<ScMethodCallEvent*>(event) );
       return;
-    case (QEvent::Type) QtCollider::Event_Proxy_SetProperty:
+    case QtCollider::Event_Proxy_SetProperty:
       setPropertyEvent( static_cast<SetPropertyEvent*>(event) );
       return;
-    case (QEvent::Type) QtCollider::Event_Proxy_Destroy:
+    case QtCollider::Event_Proxy_Destroy:
       destroyEvent( static_cast<DestroyEvent*>(event) );
       return;
-    case (QEvent::Type) QtCollider::Event_Proxy_Release:
+    case QtCollider::Event_Proxy_Release:
       invokeScMethod(SC_SYM(prRelease));
       return;
     default: ;
@@ -274,7 +274,7 @@ bool QObjectProxy::setProperty( const char *property, const QVariant & val )
 {
   if( !qObject ) return true;
   if( !qObject->setProperty( property, val ) ) {
-    qcProxyDebugMsg(1, QString("WARNING: Property '%1' not found. Setting dynamic property.")
+    qcProxyDebugMsg(1, QStringLiteral("WARNING: Property '%1' not found. Setting dynamic property.")
                         .arg( property ) );
   }
   return false;
@@ -374,7 +374,7 @@ bool QObjectProxy::disconnectObject( const char *sig, PyrObject *object )
   QByteArray signal = QMetaObject::normalizedSignature( sig );
   int sigId = mo->indexOfSignal( signal );
   if( sigId < 0 ) {
-    qcDebugMsg( 1, QString("WARNING: No such signal: '%1'").arg(signal.constData()) );
+    qcDebugMsg( 1, QStringLiteral("WARNING: No such signal: '%1'").arg(signal.constData()) );
     return false;
   }
 
@@ -398,7 +398,7 @@ bool QObjectProxy::disconnectMethod( const char *sig, PyrSymbol *method)
   QByteArray signal = QMetaObject::normalizedSignature( sig );
   int sigId = mo->indexOfSignal( signal );
   if( sigId < 0 ) {
-    qcDebugMsg( 1, QString("WARNING: No such signal: '%1'").arg(signal.constData()) );
+    qcDebugMsg( 1, QStringLiteral("WARNING: No such signal: '%1'").arg(signal.constData()) );
     return false;
   }
 
@@ -504,7 +504,7 @@ bool QObjectProxy::eventFilter( QObject * watched, QEvent * event )
   }
   if(n < 0)
   {
-      qcProxyDebugMsg(3,QString("No handler for event (%1), forwarding to the widget")
+      qcProxyDebugMsg(3,QStringLiteral("No handler for event (%1), forwarding to the widget")
         .arg(type));
       return false;
   }
@@ -512,13 +512,13 @@ bool QObjectProxy::eventFilter( QObject * watched, QEvent * event )
   QList<QVariant> args;
 
   if( !preProcessEvent( watched, event, *d, args ) ) {
-    qcProxyDebugMsg(3,QString("Event (%1, %2) not handled, forwarding to the widget")
+    qcProxyDebugMsg(3,QStringLiteral("Event (%1, %2) not handled, forwarding to the widget")
       .arg(type)
       .arg(event->spontaneous() ? "spontaneous" : "inspontaneous") );
     return false;
   }
 
-  qcProxyDebugMsg(1,QString("Will handle event (%1, %2) -> (%3, %4)")
+  qcProxyDebugMsg(1,QStringLiteral("Will handle event (%1, %2) -> (%3, %4)")
     .arg(type)
     .arg(event->spontaneous() ? "spontaneous" : "inspontaneous")
     .arg(d->method->name)

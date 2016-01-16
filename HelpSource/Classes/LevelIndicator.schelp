@@ -22,75 +22,72 @@ A link::Classes/Float:: between 0 and 1.
 returns:: A link::Classes/Float::
 
 METHOD:: warning
-Set the warning threshold. Styles 0 and 2 (see link::#-style::) implement a warning display. If link::#-critical:: is > warning the view will turn yellow if link::#-value:: is > code::val::. If critical is <= warning the view will turn yellow if value is <= to code::val::. If link::#-drawsPeak:: is true warning will be displayed based on link::#-peakLevel:: rather than value.
+METHOD:: critical
+Set the warning and critical thresholds. If meter value is above either threshold, link::#-warningColor or link::#-criticalColor will be shown, respectively (by default, yellow and red).
+If link::#-drawsPeak:: is true warning color will be displayed based on link::#-peakLevel:: rather than value.
 
 argument:: val
 A link::Classes/Float::.
 
-code::(
-w = Window.new.front;
-a = LevelIndicator(w, Rect(10, 10, 20, 160));
+code::
+a = LevelIndicator(bounds:Rect(10, 10, 20, 160)).front;
 a.value = 0.5;
-)
 a.warning = 0.6; a.critical = 0.9;
 a.value = 0.7;
-::
-
-METHOD:: critical
-Set the warning threshold. Styles 0 and 2 (see link::#-style::) implement a critical display. If critical is > link::#-warning:: the view will turn red if link::#-value:: is > code::val::. If critical is <= warning the view will turn yellow if value is <= to code::val::. If link::#-drawsPeak:: is true critical will be displayed based on link::#-peakLevel:: rather than value.
-
-argument:: val
-A link::Classes/Float::.
-
-code::(
-w = Window.new.front;
-a = LevelIndicator(w, Rect(10, 10, 20, 160));
-a.style = 2;
-a.numSteps = 10;
-a.value = 0.5;
-)
-a.warning = 0.6; a.critical = 0.9;
-a.value = 1;
+a.value = 0.9;
 ::
 
 METHOD:: style
-note:: Not yet implemented ::
 Sets the style of the view.
 
 argument:: val
-An link::Classes/Integer:: from 0 to 3. 0 = colored bar; 1 = graduated black lines; 2 = LED style (see link::#-numSteps::); 3 = LED style with custom image. (See link::#-image::.)
+An link::Classes/QLevelIndicatorStyle:: \continuous or \led (see link::#-stepWidth::)
 
-code::(
-w = Window.new.front;
-w.addFlowLayout;
-4.do({|i|
-	a = LevelIndicator(w, Rect(0, 0, 20, 200));
-	a.style = i;
-	a.numSteps = 10;
-	a.value = 0.5;
-});
+code::
+(
+w = Window().front.layout_(
+	HLayout(
+		LevelIndicator().style_(\continuous).value_(1/3),
+		LevelIndicator().style_(\led).value_(2/3),
+)
+)
 )
 ::
 
-METHOD:: numSteps
-The number of steps used in styles 2 and 3. (See link::#-style::.)
+METHOD:: stepWidth
+The width of each led light, for \led.
 
 argument:: val
 An positive link::Classes/Integer::.
 
-code::(
-w = Window.new.front;
-a = LevelIndicator(w, Rect(10, 10, 200, 20));
-a.style = 2;
-a.value = 1;
+code::
+(
+w = Window().front.layout_(HLayout(
+	LevelIndicator().style_(\led).value_(0.8).stepWidth_(1),
+	LevelIndicator().style_(\led).value_(0.8).stepWidth_(3),
+	LevelIndicator().style_(\led).value_(0.8).stepWidth_(10),
+	LevelIndicator().style_(\led).value_(0.8).stepWidth_(50),
+));
 )
-a.numSteps = 10;
-a.numSteps = 20;
+::
+
+METHOD:: numSteps
+The number of steps used in \led style.
+
+argument:: val
+An positive link::Classes/Integer::.
+
+code::
+(
+a = LevelIndicator(bounds:Rect(10, 10, 80, 400)).front();
+a.value = 1;
+a.style = \led;
+a.numSteps = 4;
+)
 ::
 
 METHOD:: image
-note:: Not yet implemented ::
-Sets the image used in style 3. See below for an example.
+note:: Not yet implemented in Qt GUI ::
 
 argument:: image
 An link::Classes/Image::. The default image is the SC cube.
@@ -101,12 +98,14 @@ The number of ticks to display in the view's scale.
 argument:: number
 An link::Classes/Integer:: >= 0.
 
-code::(
-w = Window.new.front;
-w.view.background = Color.black;
-a = LevelIndicator(w, Rect(10, 10, 300, 30));
-a.numTicks = 11;
-a.value = 0.5;
+code::
+(
+w = Window(bounds:100@400).front().background_(Color.black);
+w.layout_(HLayout(
+	LevelIndicator()
+		.numTicks_(16)
+		.value_(0.75)
+))
 )
 ::
 
@@ -116,29 +115,30 @@ The number of ticks in the view's scale which will be large sized.
 argument:: number
 An link::Classes/Integer:: >= 0.
 
-code::(
-w = Window.new.front;
-w.view.background = Color.black;
-a = LevelIndicator(w, Rect(10, 10, 300, 30));
-a.numTicks = 11;
-a.numMajorTicks = 3;
-a.value = 0.5;
+code::
+(
+w = Window(bounds:100@400).front().background_(Color.black);
+w.layout_(HLayout(
+	LevelIndicator()
+		.numMajorTicks_(16)
+		.numTicks_(16)
+		.value_(0.75)
+))
 )
 ::
 
 METHOD:: drawsPeak
-Determines whether the view draws a separate peak display. This can be useful for displaying both peak and RMS values. If drawsPeak is true link::#-warning:: and link::#-critical:: will be displayed based on link::#-peakLevel:: rather than value in link::#-style#styles:: 0 and 2.
+Determines whether the view draws a separate peak display. This can be useful for displaying both peak and RMS values. If drawsPeak is true link::#-warning:: and link::#-critical:: will be displayed based on link::#-peakLevel:: rather than value.
 
 argument:: bool
 A link::Classes/Boolean::. By default the peak is not drawn.
 
-code::(
-w = Window.new.front;
-a = LevelIndicator(w, Rect(10, 10, 300, 30));
-a.drawsPeak = true;
-a.style = 1;
-a.value = 0.5;
-a.peakLevel = 0.6;
+code::
+(
+w = Window().front().layout_(HLayout(
+	LevelIndicator().style_(\continuous).value_(0.75).drawsPeak_(true).peakLevel_(0.9),
+	LevelIndicator().style_(\led).value_(0.75).drawsPeak_(true).peakLevel_(0.9)
+))
 )
 ::
 
@@ -148,26 +148,54 @@ Sets the level of the peak display. (See link::#-drawsPeak::.)
 argument:: val
 A link::Classes/Float::.
 
-code::(
-w = Window.new.front;
-a = LevelIndicator(w, Rect(10, 10, 20, 160));
-a.drawsPeak = true;
-a.peakLevel = 0.6)
+code::
+(
+w = Window().front().layout_(HLayout(
+	LevelIndicator().style_(\continuous).value_(0.1).drawsPeak_(true).peakLevel_(0.3),
+	LevelIndicator().style_(\continuous).value_(0.1).drawsPeak_(true).peakLevel_(0.5),
+	LevelIndicator().style_(\continuous).value_(0.1).drawsPeak_(true).peakLevel_(0.7),
+	LevelIndicator().style_(\continuous).value_(0.1).drawsPeak_(true).peakLevel_(0.9),
+))
 )
 ::
 
+METHOD:: meterColor
+METHOD:: warningColor
+METHOD:: criticalColor
+Sets the color of the meter, as well as the warning and critical colors.
+
+argument:: color
+A link::Classes/Color::.
+
+code::
+(
+l = LevelIndicator(bounds:Rect(100, 100, 100, 400)).front().value_(1).style_(\led);
+l.meterColor = Color.blue(0.9);
+l.warningColor = Color.blue(0.7);
+l.criticalColor = Color.blue(0.5);
+)
+::
+code::
+(
+// inverse
+l.background = Color.blue;
+l.meterColor = Color.black.alpha_(1);
+l.warningColor = Color.black.alpha_(1);
+l.criticalColor = Color.black.alpha_(0.3);
+)
+::
 
 
 EXAMPLES::
 
 code::
-s.boot;
-GUI.cocoa; // just to be sure
-
-// something to meter
 (
+// something to meter
+s.waitForBoot({
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
-x = { var colum, noise, imp, delimp, mul = 1;
+
+	x = {
+		var colum, noise, imp, delimp, mul = 1;
 	imp = Impulse.kr(10);
 	delimp = Delay1.kr(imp);
 	colum = PlayBuf.ar(1, b, BufRateScale.kr(b), loop: 1) * mul;
@@ -175,81 +203,50 @@ x = { var colum, noise, imp, delimp, mul = 1;
 	SendReply.kr(imp, '/levels', [Amplitude.kr(colum), K2A.ar(Peak.ar(colum, delimp).lag(0, 3))]);
 	colum;
 }.play;
-)
 
-// a window and responder
-// default style is coloured / solid
-(
-w = Window.new.front;
-a = LevelIndicator(w, Rect(10, 10, 20, 160));
+	a = LevelIndicator(bounds:Rect(100, 100, 100, 400)).front;
+	a.onClose_({ x.free; o.free; });
 o = OSCFunc({arg msg;
 	{
 		a.value = msg[3].ampdb.linlin(-40, 0, 0, 1);
 		a.peakLevel = msg[4].ampdb.linlin(-40, 0, 0, 1);
 	}.defer;
 }, '/levels', s.addr);
-w.onClose = {o.free; x.free};
+})
 )
 
-// styles 0 and 2 support warning and critical levels
 (
 a.warning = -6.dbamp;
 a.critical = -3.dbamp;
 )
-
 // optionally show peak level
-(
-a.warning = 0;
-a.critical = 0;
 a.drawsPeak = true;
+
+(
+a.style = \led;
+a.stepWidth = 3;
 )
 
-// style 1 is black bars
-a.style = 1
-
-// looks good with a background
-a.background = Gradient(Color.red, Color.green, \v);
-
+// different colors
+(
+a.meterColor = Color.blue(0.9);
+a.warningColor = Color.blue(0.8);
+a.criticalColor = Color.blue(0.6);
+)
 // all styles can have ticks
 (
 a.background = Color.clear;
 a.numTicks = 11; // includes 0;
-a.numMajorTicks = 3;
 )
 
-// style 2 is LED
+// Single blinking square level indicator
 (
-a.drawsPeak = false;
-a.style = 2;
-a.numSteps = 10;
+a.style = \led;
 a.numTicks = 0;
+a.drawsPeak = false;
+a.bounds = a.bounds.resizeTo(90, 90);
+a.numSteps = 1;
 )
 
-// style 3 is as 2, but with images
-a.style = 3; // use default image
-
-// make a custom image
-(
-j = Image.new(20,20);
-j.draw({ arg image;
-var lozenge;
-lozenge = Rect(3, 3, 16, 16);
-Pen.addOval(lozenge);
-Pen.fillAxialGradient(1@1, 19@19, Color.new255(255, 165, 0), Color.new255(238, 232, 170));
-Pen.width = 1;
-Pen.strokeColor = Color.blue;
-Pen.strokeOval(lozenge);
-});
-a.image = j;
-)
-
-// be inspired
-j = Image.openURL("http://bit.ly/uSMWwp");
-
-(
-a.bounds = Rect(10, 10, 380, 80);
-a.numSteps = 5;
-a.image = j;
-)
 
 ::

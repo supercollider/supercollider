@@ -22,7 +22,7 @@
 #include <sstream>
 
 #include <boost/format.hpp>
-#include <boost/integer/endian.hpp>
+#include <boost/endian/arithmetic.hpp>
 
 #include "sc_synthdef.hpp"
 #include "sc_ugen_factory.hpp"
@@ -36,9 +36,9 @@ typedef std::int16_t int16;
 typedef std::int32_t int32;
 typedef std::int8_t int8;
 
-using boost::integer::big32_t;
-using boost::integer::big16_t;
-using boost::integer::big8_t;
+using boost::endian::big_int32_t;
+using boost::endian::big_int16_t;
+using boost::endian::big_int8_t;
 
 using std::size_t;
 
@@ -69,7 +69,7 @@ float read_float(const char *& buffer, const char *buffer_end)
 {
     verify_synthdef_buffer(buffer, buffer_end);
 
-    big32_t data = *(big32_t*)buffer;
+    big_int32_t data = *(big_int32_t*)buffer;
     buffer += 4;
 
     union {
@@ -85,7 +85,7 @@ int8_t read_int8(const char *& buffer, const char *buffer_end)
 {
     verify_synthdef_buffer(buffer, buffer_end);
 
-    big8_t data = *(big8_t*)buffer;
+    big_int8_t data = *(big_int8_t*)buffer;
     buffer += 1;
     return data;
 }
@@ -95,7 +95,7 @@ int16_t read_int16(const char *& buffer, const char *buffer_end)
 {
     verify_synthdef_buffer(buffer, buffer_end);
 
-    big16_t data = *(big16_t*)buffer;
+    big_int16_t data = *(big_int16_t*)buffer;
     buffer += 2;
     return data;
 }
@@ -104,7 +104,7 @@ int32_t read_int32(const char *& buffer, const char *buffer_end)
 {
     verify_synthdef_buffer(buffer, buffer_end);
 
-    big32_t data = *(big32_t*)buffer;
+    big_int32_t data = *(big_int32_t*)buffer;
     buffer += 4;
     return data;
 }
@@ -309,7 +309,7 @@ void sc_synthdef::prepare(void)
     // store the last references to each output buffer inside a std::map for faster lookup
     std::map<input_spec, size_t> last_buffer_references;
 
-    for (graph_t::reverse_iterator it = graph.rbegin(); it != graph.rend(); ++it) {
+    for (auto it = graph.rbegin(); it != graph.rend(); ++it) {
         for (size_t i = 0; i != it->input_specs.size(); ++i) {
             input_spec const & in_spec = it->input_specs[i];
 
@@ -342,7 +342,7 @@ void sc_synthdef::prepare(void)
         current_ugen_spec.buffer_mapping.resize(current_ugen_spec.output_specs.size());
 
         sc_ugen_def * ugen = sc_factory->find_ugen(current_ugen_spec.name);
-        if (unlikely(ugen == NULL)) {
+        if (unlikely(ugen == nullptr)) {
             /* we cannot prepare the synthdef, if the ugens are not installed */
             boost::format frmt("Cannot load synth %1%: Unit generator %2% not installed");
             frmt % name_.c_str() % current_ugen_spec.name.c_str();
@@ -407,9 +407,8 @@ std::string sc_synthdef::dump(void) const
         stream << "\t" << parameters[i] << endl;
 
     stream << "parameter names: " << endl;
-    for (parameter_index_map_t::const_iterator it = parameter_map.begin();
-         it != parameter_map.end(); ++it)
-        stream << "\t" << it->first.c_str() << " " << it->second << endl;
+    for (const auto & elem : parameter_map)
+        stream << "\t" << elem.first.c_str() << " " << elem.second << endl;
 
     stream << "ugens: " << endl;
     for (uint i = 0; i != graph.size(); ++i) {

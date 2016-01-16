@@ -9,9 +9,9 @@ CheckBadValues : UGen {
 	}
 
 	checkInputs {
- 		if ((rate==\audio) and:{ inputs.at(0).rate != \audio}) {
- 			^("audio-rate, yet first input is not audio-rate");
- 		};
- 		^this.checkValidInputs
- 	}
+		if ((rate==\audio) and:{ inputs.at(0).rate != \audio}) {
+			^("audio-rate, yet first input is not audio-rate");
+		};
+		^this.checkValidInputs
+	}
 }

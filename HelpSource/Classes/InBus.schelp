@@ -45,10 +45,10 @@ EXAMPLES::
 
 code::
 (
-s.waitForBoot {
+s.waitForBoot({
 	b = Bus.control(s, 3);
 	b.setn([1, 10, 100]);
-}
+})
 )
 { InBus.kr(b, 1, 0).poll(2, "val"); 0.0 }.play;
 { InBus.kr(b, 1, 1).poll(2, "val"); 0.0 }.play;

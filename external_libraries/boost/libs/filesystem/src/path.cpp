@@ -24,6 +24,7 @@
 
 #include <boost/filesystem/config.hpp>
 #include <boost/filesystem/path.hpp>
+#include <boost/filesystem/operations.hpp>  // for filesystem_error
 #include <boost/scoped_array.hpp>
 #include <boost/system/error_code.hpp>
 #include <boost/assert.hpp>
@@ -36,7 +37,7 @@
 # include "windows_file_codecvt.hpp"
 # include <windows.h>
 #elif defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__) \
- || defined(__FreeBSD__) || defined(__OPEN_BSD__)
+ || defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__HAIKU__)
 # include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
 #endif
 
@@ -254,6 +255,13 @@ namespace filesystem
     return *this;
   }
 
+  path&  path::remove_trailing_separator()
+  {
+    if (!m_pathname.empty() && is_separator(m_pathname[m_pathname.size() - 1]))
+      m_pathname.erase(m_pathname.size() - 1);
+    return *this;
+  }
+
   path& path::replace_extension(const path& new_extension)
   {
     // erase existing extension, including the dot, if any
@@ -380,11 +388,47 @@ namespace filesystem
       : path(name.m_pathname.c_str() + pos);
   }
 
-  // m_normalize  ----------------------------------------------------------------------//
+  //  lexical operations  --------------------------------------------------------------//
 
-  path& path::m_normalize()
+  namespace detail
   {
-    if (m_pathname.empty()) return *this;
+    // C++14 provide a mismatch algorithm with four iterator arguments(), but earlier
+    // standard libraries didn't, so provide this needed functionality.
+    inline
+    std::pair<path::iterator, path::iterator> mismatch(path::iterator it1,
+      path::iterator it1end, path::iterator it2, path::iterator it2end)
+    {
+      for (; it1 != it1end && it2 != it2end && *it1 == *it2;)
+      {
+        ++it1;
+        ++it2;
+      }
+      return std::make_pair(it1, it2);
+    }
+  }
+
+  path path::lexically_relative(const path& base) const
+  {
+    std::pair<path::iterator, path::iterator> mm
+      = detail::mismatch(begin(), end(), base.begin(), base.end());
+    if (mm.first == begin() && mm.second == base.begin())
+      return path();
+    if (mm.first == end() && mm.second == base.end())
+      return detail::dot_path();
+    path tmp;
+    for (; mm.second != base.end(); ++mm.second)
+      tmp /= detail::dot_dot_path();
+    for (; mm.first != end(); ++mm.first)
+      tmp /= *mm.first;
+    return tmp;
+  }
+
+  //  normal  --------------------------------------------------------------------------//
+
+  path path::lexically_normal() const
+  {
+    if (m_pathname.empty())
+      return *this;
       
     path temp;
     iterator start(begin());
@@ -420,21 +464,26 @@ namespace filesystem
           )
         {
           temp.remove_filename();
-          // if not root directory, must also remove "/" if any
-          if (temp.m_pathname.size() > 0
-            && temp.m_pathname[temp.m_pathname.size()-1]
-              == separator)
-          {
-            string_type::size_type rds(
-              root_directory_start(temp.m_pathname, temp.m_pathname.size()));
-            if (rds == string_type::npos
-              || rds != temp.m_pathname.size()-1) 
-              { temp.m_pathname.erase(temp.m_pathname.size()-1); }
-          }
+          //// if not root directory, must also remove "/" if any
+          //if (temp.native().size() > 0
+          //  && temp.native()[temp.native().size()-1]
+          //    == separator)
+          //{
+          //  string_type::size_type rds(
+          //    root_directory_start(temp.native(), temp.native().size()));
+          //  if (rds == string_type::npos
+          //    || rds != temp.native().size()-1) 
+          //  {
+          //    temp.m_pathname.erase(temp.native().size()-1);
+          //  }
+          //}
 
           iterator next(itr);
           if (temp.empty() && ++next != stop
-            && next == last && *last == detail::dot_path()) temp /= detail::dot_path();
+            && next == last && *last == detail::dot_path())
+          {
+            temp /= detail::dot_path();
+          }
           continue;
         }
       }
@@ -442,9 +491,9 @@ namespace filesystem
       temp /= *itr;
     };
 
-    if (temp.empty()) temp /= detail::dot_path();
-    m_pathname = temp.m_pathname;
-    return *this;
+    if (temp.empty())
+      temp /= detail::dot_path();
+    return temp;
   }
 
 }  // namespace filesystem
@@ -660,11 +709,11 @@ namespace filesystem
     const path&  dot_path()
     {
 #   ifdef BOOST_WINDOWS_API
-      static const fs::path dot(L".");
+      static const fs::path dot_pth(L".");
 #   else
-      static const fs::path dot(".");
+      static const fs::path dot_pth(".");
 #   endif
-      return dot;
+      return dot_pth;
     }
 
     BOOST_FILESYSTEM_DECL
@@ -825,13 +874,13 @@ namespace
   //  indicated the current code is roughly 9% slower than the previous code, and that
   //  seems a small price to pay for better code that is easier to use. 
 
-  inline std::locale default_locale()
+  std::locale default_locale()
   {
 # if defined(BOOST_WINDOWS_API)
     std::locale global_loc = std::locale();
     return std::locale(global_loc, new windows_file_codecvt);
 # elif defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__) \
-  || defined(__FreeBSD__) || defined(__OpenBSD__)
+  || defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__HAIKU__)
     // "All BSD system functions expect their string parameters to be in UTF-8 encoding
     // and nothing else." See
     // http://developer.apple.com/mac/library/documentation/MacOSX/Conceptual/BPInternational/Articles/FileEncodings.html
@@ -860,7 +909,7 @@ namespace
 # endif
   }
 
-  inline std::locale& path_locale()
+  std::locale& path_locale()
   // std::locale("") construction, needed on non-Apple POSIX systems, can throw
   // (if environmental variables LC_MESSAGES or LANG are wrong, for example), so
   // path_locale() provides lazy initialization via a local static to ensure that any 
@@ -869,6 +918,10 @@ namespace
   // actually called, ensuring that an exception will only be thrown if std::locale("")
   // is really needed.
   {
+    // [locale] paragraph 6: Once a facet reference is obtained from a locale object by
+    // calling use_facet<>, that reference remains usable, and the results from member
+    // functions of it may be cached and re-used, as long as some locale object refers
+    // to that facet.
     static std::locale loc(default_locale());
 #ifdef BOOST_FILESYSTEM_DEBUG
     std::cout << "***** path_locale() called" << std::endl;
@@ -893,6 +946,7 @@ namespace filesystem
     std::cout << "***** path::codecvt() called" << std::endl;
 #endif
     BOOST_ASSERT_MSG(&path_locale(), "boost::filesystem::path locale initialization error");
+
     return std::use_facet<std::codecvt<wchar_t, char, std::mbstate_t> >(path_locale());
   }
 

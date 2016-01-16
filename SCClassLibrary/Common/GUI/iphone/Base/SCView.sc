@@ -610,8 +610,7 @@ SCSliderBase : SCControlView {
 
 }
 
-SCSlider : SCSliderBase
-{
+SCSlider : SCSliderBase {
 	value {
 		^this.getProperty(\value)
 	}

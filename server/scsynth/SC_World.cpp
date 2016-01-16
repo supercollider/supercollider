@@ -139,12 +139,12 @@ void* sc_dbg_zalloc(size_t n, size_t size, const char* tag, int line)
 }
 
 # if SC_DEBUG_MEMORY
-#  define malloc(size)			sc_dbg_malloc((size), __FUNCTION__, __LINE__)
-#  define free(ptr)				sc_dbg_free((ptr), __FUNCTION__, __LINE__)
+#  define malloc_alig(size)			sc_dbg_malloc((size), __FUNCTION__, __LINE__)
+#  define free_alig(ptr)				sc_dbg_free((ptr), __FUNCTION__, __LINE__)
 #  define zalloc_(n, size)		sc_dbg_zalloc((n), (size), __FUNCTION__, __LINE__)
 # else
-#  define malloc(size)			sc_malloc((size))
-#  define free(ptr)				sc_free((ptr))
+#  define malloc_alig(size)			sc_malloc((size))
+#  define free_alig(ptr)				sc_free((ptr))
 #  define zalloc_(n, size)		sc_zalloc((n), (size))
 # endif // SC_DEBUG_MEMORY
 
@@ -155,7 +155,7 @@ void* zalloc(size_t n, size_t size)
 
 void zfree(void * ptr)
 {
-	return free(ptr);
+	return free_alig(ptr);
 }
 
 
@@ -504,8 +504,8 @@ int World_CopySndBuf(World *world, uint32 index, SndBuf *outBuf, bool onlyIfChan
 			uint32 bufSize = buf->samples * sizeof(float);
 			if (buf->samples != outBuf->samples)
 			{
-				free(outBuf->data);
-				outBuf->data = (float*)malloc(bufSize);
+				free_alig(outBuf->data);
+				outBuf->data = (float*)malloc_alig(bufSize);
 			}
 			memcpy(outBuf->data, buf->data, bufSize);
 			outBuf->channels 	= buf->channels;
@@ -516,7 +516,7 @@ int World_CopySndBuf(World *world, uint32 index, SndBuf *outBuf, bool onlyIfChan
 		}
 		else
 		{
-			free(outBuf->data);
+			free_alig(outBuf->data);
 			outBuf->data = 0;
 			outBuf->channels 	= 0;
 			outBuf->samples 	= 0;
@@ -994,7 +994,7 @@ void World_Start(World *inWorld)
 	for (uint32 i=0; i<inWorld->mNumAudioBusChannels; ++i) inWorld->mAudioBusTouched[i] = -1;
 	for (uint32 i=0; i<inWorld->mNumControlBusChannels; ++i) inWorld->mControlBusTouched[i] = -1;
 
-	inWorld->hw->mWireBufSpace = (float*)sc_malloc(inWorld->hw->mMaxWireBufs * inWorld->mBufLength * sizeof(float));
+	inWorld->hw->mWireBufSpace = (float*)malloc_alig(inWorld->hw->mMaxWireBufs * inWorld->mBufLength * sizeof(float));
 
 	inWorld->hw->mTriggers.MakeEmpty();
 	inWorld->hw->mNodeMsgs.MakeEmpty();
@@ -1034,8 +1034,8 @@ void World_Cleanup(World *world, bool unload_plugins)
 		SndBuf *nrtbuf = world->mSndBufsNonRealTimeMirror + i;
 		SndBuf * rtbuf = world->mSndBufs + i;
 
-		if (nrtbuf->data) free(nrtbuf->data);
-		if (rtbuf->data && rtbuf->data != nrtbuf->data) free(rtbuf->data);
+		if (nrtbuf->data) free_alig(nrtbuf->data);
+		if (rtbuf->data && rtbuf->data != nrtbuf->data) free_alig(rtbuf->data);
 
 #ifndef NO_LIBSNDFILE
 		if (nrtbuf->sndfile) sf_close(nrtbuf->sndfile);
@@ -1043,16 +1043,16 @@ void World_Cleanup(World *world, bool unload_plugins)
 #endif
 	}
 
-	free(world->mSndBufsNonRealTimeMirror);
-	free(world->mSndBufs);
+	free_alig(world->mSndBufsNonRealTimeMirror);
+	free_alig(world->mSndBufs);
 
-	free(world->mControlBusTouched);
-	free(world->mAudioBusTouched);
+	free_alig(world->mControlBusTouched);
+	free_alig(world->mAudioBusTouched);
 	if (hw->mShmem) {
 		delete hw->mShmem;
 	} else
-		free(world->mControlBus);
-	free(world->mAudioBus);
+		free_alig(world->mControlBus);
+	free_alig(world->mAudioBus);
 	delete [] world->mRGen;
 	if (hw) {
 
@@ -1061,16 +1061,16 @@ void World_Cleanup(World *world, bool unload_plugins)
 		if (hw->mNRTOutputFile) sf_close(hw->mNRTOutputFile);
 		if (hw->mNRTCmdFile) fclose(hw->mNRTCmdFile);
 #endif
-		free(hw->mUsers);
-        free(hw->mClientIDs);
+		free_alig(hw->mUsers);
+        free_alig(hw->mClientIDs);
         delete hw->mClientIDdict;
 		delete hw->mNodeLib;
 		delete hw->mGraphDefLib;
 		delete hw->mQuitProgram;
 		delete hw->mAllocPool;
-		free(hw);
+		free_alig(hw);
 	}
-	free(world);
+	free_alig(world);
 }
 
 

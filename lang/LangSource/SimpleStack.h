@@ -22,15 +22,15 @@
 #define LANG_SIMPLESTACK_H
 
 typedef struct {
-	long *stak;
+	intptr_t *stak;
 	short num, maxsize;
 } LongStack;
 
 void initLongStack(LongStack *self) ;
 void freeLongStack(LongStack *self);
 void growLongStack(LongStack *self);
-void pushls(LongStack *self, long value);
-long popls(LongStack *self);
+void pushls(LongStack *self, intptr_t value);
+intptr_t popls(LongStack *self);
 int emptyls(LongStack *self);
 
 #endif

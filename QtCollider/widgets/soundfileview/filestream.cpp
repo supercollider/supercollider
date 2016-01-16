@@ -194,7 +194,7 @@ bool SoundFileStream::displayData
 
     double n = fpu;
     double avg = sum / n;
-    double stdDev = sqrt( abs((sum2 - (sum*avg) ) / n) );
+    double stdDev = std::sqrt( std::abs((sum2 - (sum*avg) ) / n) );
 
     minBuffer[i] = min;
     maxBuffer[i] = max;

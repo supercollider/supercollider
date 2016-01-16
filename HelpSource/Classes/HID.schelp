@@ -1,6 +1,6 @@
 TITLE:: HID
 summary:: This class provides access to human input devices, or in short HID, such as joysticks, gamepads, mice, keyboard, and so on.
-categories:: External control>HID
+categories:: External Control>HID
 related:: Classes/HIDFunc, Guides/Working_with_HID, Classes/HIDElement, Classes/HIDCollection, Classes/HIDUsage, Classes/HIDInfo
 
 DESCRIPTION::

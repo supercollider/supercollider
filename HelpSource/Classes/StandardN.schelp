@@ -6,13 +6,21 @@ related:: Classes/StandardL
 description::
 A non-interpolating sound generator based on the difference equations:
 
-code::
-	x[n+1] = (x[n] + y[n+1]) % 2pi
-	y[n+1] = (y[n] + k * sin(x[n])) % 2pi
+teletype::
+        x(n+1) = (x(n) + y(n+1)) % 2pi
+        y(n+1) = (y(n) + k * sin(x(n))) % 2pi
 ::
-warning:: revise formulae conversion to c like code ::
 
 The standard map is an area preserving map of a cylinder discovered by the plasma physicist Boris Chirikov.
+
+sclang code translation:
+
+code::
+(
+var k = 1, xi = 0.5, yi = 0, size = 64;
+plot(size.collect { yi = yi + (k * sin(xi)) % 2pi; xi = (xi + yi) % 2pi; xi - pi * 0.3183098861837907 });
+)
+::
 
 classmethods::
 method:: ar

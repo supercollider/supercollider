@@ -18,10 +18,12 @@ NetAddr {
 
 	*langPort {
 		_GetLangPort
+		^this.primitiveFailed;
 	}
 
 	*matchLangIP {|ipstring|
 		_MatchLangIP
+		^this.primitiveFailed;
 	}
 
 	*localEndPoint {

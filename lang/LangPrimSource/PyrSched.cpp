@@ -24,7 +24,7 @@
 #include "GC.h"
 #include "PyrPrimitive.h"
 #include "PyrSymbol.h"
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 # include <CoreAudio/HostTime.h>
 #endif
 #include <sys/time.h>
@@ -34,7 +34,7 @@
 #include <math.h>
 #include <limits>
 
-#if defined(SC_DARWIN) || defined(__linux__)
+#if defined(__APPLE__) || defined(__linux__)
 # include <pthread.h>
 #endif
 
@@ -224,14 +224,16 @@ static void syncOSCOffsetWithTimeOfDay();
 void resyncThread();
 
 // Use the highest resolution clock available for monotonic clock time
-typedef typename std::conditional<chrono::high_resolution_clock::is_steady, chrono::high_resolution_clock, chrono::steady_clock>::type monotonic_clock;
+typedef typename std::conditional<std::chrono::high_resolution_clock::is_steady,
+								  std::chrono::high_resolution_clock,
+								  std::chrono::steady_clock>::type monotonic_clock;
 
-static chrono::high_resolution_clock::time_point hrTimeOfInitialization;
+static std::chrono::high_resolution_clock::time_point hrTimeOfInitialization;
 
 template <typename DurationType>
 inline double DurToFloat(DurationType dur)
 {
-	using namespace chrono;
+	using namespace std::chrono;
 	seconds secs         = duration_cast<seconds>(dur);
 	nanoseconds nanosecs = dur - secs;
 
@@ -240,8 +242,8 @@ inline double DurToFloat(DurationType dur)
 
 SCLANG_DLLEXPORT_C void schedInit()
 {
-	using namespace chrono;
-    hrTimeOfInitialization     = high_resolution_clock::now();
+	using namespace std::chrono;
+	hrTimeOfInitialization     = high_resolution_clock::now();
 
 	syncOSCOffsetWithTimeOfDay();
 	thread thread(resyncThread);
@@ -257,7 +259,7 @@ SCLANG_DLLEXPORT_C void schedCleanup()
 
 double elapsedTime()
 {
-return DurToFloat(chrono::high_resolution_clock::now() - hrTimeOfInitialization);
+return DurToFloat(std::chrono::high_resolution_clock::now() - hrTimeOfInitialization);
 }
 
 double monotonicClockTime()
@@ -275,7 +277,7 @@ double OSCToElapsedTime(int64 oscTime)
 	return (double)(oscTime - gElapsedOSCoffset) * kOSCtoSecs;
 }
 
-void ElapsedTimeToChrono(double elapsed, chrono::system_clock::time_point & out_time_point)
+void ElapsedTimeToChrono(double elapsed, std::chrono::system_clock::time_point & out_time_point)
 {
 	int64 oscTime = ElapsedTimeToOSC(elapsed);
 
@@ -283,7 +285,7 @@ void ElapsedTimeToChrono(double elapsed, chrono::system_clock::time_point & out_
 	int32 nano_secs = (int32)((oscTime & 0xFFFFFFFF) * kOSCtoNanos);
 
 
-	using namespace chrono;
+	using namespace std::chrono;
 #if 0 // TODO: check system_clock precision
 	system_clock::time_point time_point = system_clock::time_point(seconds(secs) + nanoseconds(nano_secs));
 #else
@@ -306,10 +308,10 @@ void syncOSCOffsetWithTimeOfDay()
 	// Then if this machine is synced via NTP, we are synced with the world.
 	// more accurate way to do this??
 
-    using namespace chrono;
+	using namespace std::chrono;
 	struct timeval tv;
 
-    nanoseconds systemTimeBefore, systemTimeAfter;
+	nanoseconds systemTimeBefore, systemTimeAfter;
 	int64 diff, minDiff = 0x7fffFFFFffffFFFFLL;
 
 	// take best of several tries
@@ -395,7 +397,7 @@ void post(const char *fmt, ...);
 void resyncThread()
 {
 	while (true) {
-		this_thread::sleep_for(chrono::seconds(20));
+		std::this_thread::sleep_for(std::chrono::seconds(20));
 
 		syncOSCOffsetWithTimeOfDay();
 		gElapsedOSCoffset = (int64)(gHostStartNanos * kNanosToOSC) + gHostOSCoffset;
@@ -406,6 +408,7 @@ extern bool gTraceInterpreter;
 
 static void schedRunFunc()
 {
+	using namespace std::chrono;
 	unique_lock<timed_mutex> lock(gLangMutex);
 
 	VMGlobals *g = gMainVMGlobals;
@@ -426,13 +429,13 @@ static void schedRunFunc()
 		//postfl("wait until an event is ready\n");
 
 		// wait until an event is ready
-        chrono::high_resolution_clock::duration schedSecs;
-        chrono::high_resolution_clock::time_point now, schedPoint;
+		high_resolution_clock::duration schedSecs;
+		high_resolution_clock::time_point now, schedPoint;
 		do {
-            now = chrono::high_resolution_clock::now();
-            schedSecs = chrono::duration_cast<chrono::high_resolution_clock::duration>(chrono::duration<double>(slotRawFloat(inQueue->slots + 1)));
-            schedPoint = hrTimeOfInitialization + schedSecs;
-            if(now >= schedPoint) break;
+			now = high_resolution_clock::now();
+			schedSecs = duration_cast<high_resolution_clock::duration>(duration<double>(slotRawFloat(inQueue->slots + 1)));
+			schedPoint = hrTimeOfInitialization + schedSecs;
+			if(now >= schedPoint) break;
 			//postfl("wait until an event is ready\n");
 			gSchedCond.wait_until(lock, schedPoint);
 			if (!gRunSched) goto leave;
@@ -443,7 +446,7 @@ static void schedRunFunc()
 
 		// perform all events that are ready
 		//postfl("perform all events that are ready\n");
-		while ((inQueue->size > 1) && now >= hrTimeOfInitialization + chrono::duration_cast<chrono::high_resolution_clock::duration>(chrono::duration<double>(slotRawFloat(inQueue->slots + 1)))) {
+		while ((inQueue->size > 1) && now >= hrTimeOfInitialization + duration_cast<high_resolution_clock::duration>(duration<double>(slotRawFloat(inQueue->slots + 1)))) {
 			double schedtime, delta;
 			PyrSlot task;
 
@@ -476,7 +479,7 @@ leave:
 	return;
 }
 
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 #include <mach/mach.h>
 #include <mach/thread_policy.h>
 
@@ -564,7 +567,7 @@ kern_return_t  RescheduleStdThread( mach_port_t    machThread,
                                 THREAD_PRECEDENCE_POLICY_COUNT );
 
 }
-#endif // SC_DARWIN
+#endif // __APPLE__
 
 #ifdef __linux__
 #include <string.h>
@@ -595,7 +598,7 @@ SCLANG_DLLEXPORT_C void schedRun()
 	thread thread(schedRunFunc);
 	gSchedThread = std::move(thread);
 
-#ifdef SC_DARWIN
+#ifdef __APPLE__
         int policy;
         struct sched_param param;
 
@@ -623,7 +626,7 @@ SCLANG_DLLEXPORT_C void schedRun()
         pthread_getschedparam (gSchedThread.native_handle(), &policy, &param);
 
 		//post("param.sched_priority %d\n", param.sched_priority);
-#endif // SC_DARWIN
+#endif // __APPLE__
 
 #ifdef __linux__
 		SC_LinuxSetRealtimePriority(gSchedThread.native_handle(), 1);
@@ -736,7 +739,7 @@ TempoClock::TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
 	thread thread(std::bind(&TempoClock::Run, this));
 	mThread = std::move(thread);
 
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 	int machprio;
 	boolean_t timeshare;
 	GetStdThreadSchedule(pthread_mach_thread_np(mThread.native_handle()), &machprio, &timeshare);
@@ -751,7 +754,7 @@ TempoClock::TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
 
 	//param.sched_priority = 70; // you'll have to play with this to see what it does
 	//pthread_setschedparam (mThread, policy, &param);
-#endif // SC_DARWIN
+#endif // __APPLE__
 
 #ifdef __linux__
 	SC_LinuxSetRealtimePriority(mThread.native_handle(), 1);
@@ -824,6 +827,7 @@ double TempoClock::ElapsedBeats()
 
 void* TempoClock::Run()
 {
+	using namespace std::chrono;
 	//printf("->TempoClock::Run\n");
 	unique_lock<timed_mutex> lock(gLangMutex);
 
@@ -842,17 +846,17 @@ void* TempoClock::Run()
 
 		// wait until an event is ready
 		double elapsedBeats;
-        chrono::high_resolution_clock::duration schedSecs;
-        chrono::high_resolution_clock::time_point schedPoint;
+		high_resolution_clock::duration schedSecs;
+		high_resolution_clock::time_point schedPoint;
 		do {
 			elapsedBeats = ElapsedBeats();
 			if (elapsedBeats >= slotRawFloat(mQueue->slots)) break;
 
 			//printf("event ready at %g . elapsed beats %g\n", mQueue->slots->uf, elapsedBeats);
 			double wakeTime = BeatsToSecs(slotRawFloat(mQueue->slots));
-            
-            schedSecs = chrono::duration_cast<chrono::high_resolution_clock::duration>(chrono::duration<double>(wakeTime));
-            schedPoint = hrTimeOfInitialization + schedSecs;
+
+			schedSecs = duration_cast<high_resolution_clock::duration>(duration<double>(wakeTime));
+			schedPoint = hrTimeOfInitialization + schedSecs;
 
 			//printf("wait until an event is ready. wake %g  now %g\n", wakeTime, elapsedTime());
 			mCondition.wait_until(lock, schedPoint);

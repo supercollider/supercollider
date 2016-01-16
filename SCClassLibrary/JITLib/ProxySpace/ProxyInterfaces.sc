@@ -176,7 +176,7 @@ PatternControl : StreamControl {
 			str = source.buildForProxy(proxy, channelOffset);
 			if(args.notNil) {
 				event = str.event;
-				args.pairsDo { arg key, val; event[key] = val }
+				args.value.pairsDo { arg key, val; event[key] = val }
 			};
 			array = array.add(str);
 			// no latency (latency is in stream already)
@@ -222,7 +222,7 @@ SynthControl : AbstractPlayControl {
 
 	spawnToBundle { | bundle, extraArgs, target, addAction = 0 | // assumes self freeing
 		var targetID = target.asTarget.nodeID;
-		bundle.add([9, this.asDefName, -1, addAction, targetID] ++ extraArgs.asOSCArgArray);
+		bundle.addCancel({ [9, this.asDefName, -1, addAction, targetID] ++ extraArgs.value });
 	}
 
 	playToBundle { | bundle, extraArgs, target, addAction = 1 |
@@ -230,7 +230,7 @@ SynthControl : AbstractPlayControl {
 		server = target.server;
 		group = target.asTarget;
 		nodeID = server.nextNodeID;
-		bundle.addCancel([9, this.asDefName, nodeID, addAction, group.nodeID]++extraArgs.asOSCArgArray);
+		bundle.addCancel({ [9, this.asDefName, nodeID, addAction, group.nodeID] ++ extraArgs.value });
 		if(paused) { bundle.addCancel(["/n_run", nodeID, 0]) };
 		prevBundle = bundle;
 		^nodeID
@@ -255,7 +255,7 @@ SynthControl : AbstractPlayControl {
 	}
 
 	set { | ... args |
-		server.sendBundle(server.latency, ["/n_set", nodeID] ++ args);
+		server.sendBundle(server.latency, ["/n_set", nodeID] ++ args.asOSCArgArray);
 	}
 
 	pause { | clock, quant = 1 |

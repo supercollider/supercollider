@@ -24,6 +24,7 @@
    #pragma warning (disable : 4267) // conversion from "X" to "Y", possible loss of data
    #pragma warning (disable : 4275) // non DLL-interface classkey "identifier" used as base for DLL-interface classkey "identifier"
    #pragma warning (disable : 4355) // "this" : used in base member initializer list
+   #pragma warning (disable : 4345) // behavior change: an object of POD type constructed with an initializer of the form () will  be default-initialized
    #pragma warning (disable : 4503) // "identifier" : decorated name length exceeded, name was truncated
    #pragma warning (disable : 4511) // copy constructor could not be generated
    #pragma warning (disable : 4512) // assignment operator could not be generated
@@ -41,4 +42,9 @@
    #pragma warning (disable : 4673) //  throwing '' the following types will not be considered at the catch site
    #pragma warning (disable : 4671) //  the copy constructor is inaccessible
    #pragma warning (disable : 4250) //  inherits 'x' via dominance
+#endif
+
+#if defined(BOOST_GCC) && (BOOST_GCC >= 40600)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif

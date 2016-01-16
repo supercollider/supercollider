@@ -201,9 +201,7 @@ class sc_ugen_factory:
     public sc_plugin_container
 {
 public:
-    sc_ugen_factory():
-        ugen_count_(0)
-    {}
+    sc_ugen_factory() = default;
 
     ~sc_ugen_factory(void)
     {
@@ -234,11 +232,11 @@ public:
 private:
     void close_handles(void);
 
-    uint32_t ugen_count_;
+    uint32_t ugen_count_ = 0;
     std::vector<void*> open_handles;
 };
 
-extern sc_ugen_factory * sc_factory;
+extern std::unique_ptr<sc_ugen_factory> sc_factory;
 
 } /* namespace nova */
 

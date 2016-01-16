@@ -6,13 +6,25 @@ related:: Classes/LatoocarfianC, Classes/LatoocarfianN
 description::
 A linear-interpolating sound generator based on a function given in Clifford Pickover's book Chaos In Wonderland, pg 26. The function is:
 
-code::
-	x[n+1] = sin(b * y[n]) + c * sin(b * x[n])
-	y[n+1] = sin(a * y[n]) + d * sin(a * x[n])
+teletype::
+        x(n+1) = sin(b * y(n)) + c * sin(b * x(n))
+        y(n+1) = sin(a * x(n)) + d * sin(a * y(n))
 ::
-warning:: revise formulae conversion to c like code ::
 
 According to Pickover, parameters code::a:: and code::b:: should be in the range from -3 to +3, and parameters code::c:: and code::d:: should be in the range from 0.5 to 1.5. The function can, depending on the parameters given, give continuous chaotic output, converge to a single value (silence) or oscillate in a cycle (tone).
+
+sclang code translation:
+
+code::
+(
+var a = 1, b = 3, c = 0.5, d = 0.5, xi = 0.5, yi = 0.5, size = 64;
+plot(size.collect { var x = xi;
+xi = sin(b * yi) + (c * sin(b * xi));
+yi = sin(a * x) + (d * sin(a * yi));
+xi
+});
+)
+::
 
 note::This UGen is experimental and not optimized currently, so is rather hoggish of CPU.::
 

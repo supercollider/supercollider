@@ -75,12 +75,12 @@ SynthDef.new("tutorial-SinOsc-stereo", { var outArray;
 )
 ::
 
-The truth is that there aren't multichannel busses per se, but Bus objects are able to represent a series of busses with consecutive indices. They emphasis::encapsulate:: several adjacent sever-side busses into a single Bus object, allowing you to treat them as a group. This turns out to be rather handy.
+The truth is that there aren't multichannel busses per se, but Bus objects are able to represent a series of busses with consecutive indices. They emphasis::encapsulate:: several adjacent server-side busses into a single Bus object, allowing you to treat them as a group. This turns out to be rather handy.
 
 When you're working with so-called 'private' busses (i.e. anything besides the input and output channels; all control busses are 'private') you generally want to make sure that that bus is only used for exactly what you want. The point after all is to keep things separate. You could do this by carefully considering which indices to use, but Bus allows for this to be done automatically. Each Server object has a bus allocator, and when you make a Bus object, it reserves those private indices, and will not give them out again until freed. You can find out the index of a Bus by using its 'index' method. Normally however, you will not need to store this value, as instances of Bus can be passed directly as UGen inputs or Synth args.
 
 code::
-s.reboot; // this will restart the server app and thus reset the bus allocators
+s.reboot; // this will restart the server and thus reset the bus allocators
 
 b = Bus.control(s, 2);	// a 2 channel control Bus
 b.index; 		// this should be zero
@@ -133,7 +133,7 @@ x.free; y.free; z.free; b.free;
 
 Both y and z read from the same bus. The latter just modifies the frequency control signal by adding a constant value of 200 to it. This is more efficient than having two separate control oscillators to control frequency. This sort of strategy of connecting together synths, each of which does different things in a larger process, can be very effective in SC.
 
-Now an example with an audio bus. This is the most complicated example we've seen so far, but should give you some idea of how to start putting all the things we've learned together. The code below will use two Synths as sources, one creating pulses of PinkNoise (a kind of Nnise which has less energy at high frequencies than at low), and another creating pulses of sine waves. The pulses are created using the UGens link::Classes/Impulse:: and link::Classes/Decay2::. These are then reverberated using a chain of link::Classes/AllpassC::, which is a kind of delay.
+Now an example with an audio bus. This is the most complicated example we've seen so far, but should give you some idea of how to start putting all the things we've learned together. The code below will use two Synths as sources, one creating pulses of PinkNoise (a kind of Noise which has less energy at high frequencies than at low), and another creating pulses of sine waves. The pulses are created using the UGens link::Classes/Impulse:: and link::Classes/Decay2::. These are then reverberated using a chain of link::Classes/AllpassC::, which is a kind of delay.
 
 Note the construction 16.do({ ... }), below. This makes the chain by evaluating the function 16 times. This is a very powerful and flexible technique, as by simply changing the number, I can change the number of evaluations. See link::Classes/Integer:: for more info on Integer-do.
 

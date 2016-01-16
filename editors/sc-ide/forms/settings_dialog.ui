@@ -19,14 +19,20 @@
      <item>
       <widget class="ScIDE::IconListWidget" name="configPageList">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="maximumSize">
         <size>
-         <width>100</width>
+         <width>16777215</width>
          <height>16777215</height>
         </size>
        </property>
@@ -41,6 +47,9 @@
        </property>
        <property name="isWrapping" stdset="0">
         <bool>false</bool>
+       </property>
+       <property name="resizeMode">
+        <enum>QListView::Adjust</enum>
        </property>
        <property name="viewMode">
         <enum>QListView::ListMode</enum>

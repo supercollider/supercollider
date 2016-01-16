@@ -814,6 +814,7 @@ Plotter {
 		var name = this.asCompileString, plotter;
 		if(name.size > 50 or: { name.includes(Char.nl) }) { name = "function plot" };
 		plotter = Plotter(name, bounds);
+		plotter.value = [0.0];
 		server = server ? Server.default;
 		server.waitForBoot {
 			this.loadToFloatArray(duration, server, { |array, buf|

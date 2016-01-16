@@ -1,5 +1,4 @@
-ControlName
-{
+ControlName {
 	var <>name, <>index, <>rate, <>defaultValue, <>argNum, <>lag;
 
 	*new { arg name, index, rate, defaultValue, argNum, lag;
@@ -101,7 +100,7 @@ AudioControl : MultiOutUGen {
 TrigControl : Control {}
 
 LagControl : Control {
- 	*kr { arg values, lags;
+	*kr { arg values, lags;
 		var outputs;
 
 		values = values.asArray;
@@ -143,7 +142,7 @@ LagControl : Control {
 }
 
 AbstractIn : MultiOutUGen {
- 	*isInputUGen { ^true }
+	*isInputUGen { ^true }
 }
 
 In : AbstractIn {
@@ -206,26 +205,26 @@ InTrig : AbstractIn {
 AbstractOut : UGen {
 	numOutputs { ^0 }
 	writeOutputSpecs {}
- 	checkInputs {
- 		if (rate == 'audio', {
- 			for(this.class.numFixedArgs, inputs.size - 1, { arg i;
- 				if (inputs.at(i).rate != 'audio', {
- 					^(" input at index " + i +
- 						"(" + inputs.at(i) + ") is not audio rate");
- 				});
- 			});
- 		});
- 		^this.checkValidInputs
- 	}
+	checkInputs {
+		if (rate == 'audio', {
+			for(this.class.numFixedArgs, inputs.size - 1, { arg i;
+				if (inputs.at(i).rate != 'audio', {
+					^(" input at index " + i +
+						"(" + inputs.at(i) + ") is not audio rate");
+				});
+			});
+		});
+		^this.checkValidInputs
+	}
 
- 	*isOutputUGen { ^true }
+	*isOutputUGen { ^true }
 	*numFixedArgs { ^this.subclassResponsibility(thisMethod) }
 
- 	numAudioChannels {
- 		^inputs.size - this.class.numFixedArgs
- 	}
+	numAudioChannels {
+		^inputs.size - this.class.numFixedArgs
+	}
 
- 	writesToBus { ^this.subclassResponsibility(thisMethod) }
+	writesToBus { ^this.subclassResponsibility(thisMethod) }
 }
 
 Out : AbstractOut {
@@ -274,17 +273,17 @@ XOut : AbstractOut {
 	}
 	*numFixedArgs { ^2 }
 	checkInputs {
- 		if (rate == 'audio', {
- 			for(2, inputs.size - 1, { arg i;
- 				if (inputs.at(i).rate != 'audio', {
- 					^(" input at index " + i +
- 						"(" + inputs.at(i) + ") is not audio rate");
- 				});
- 			});
- 		});
- 		^this.checkValidInputs
- 	}
- 	writesToBus { ^true }
+		if (rate == 'audio', {
+			for(2, inputs.size - 1, { arg i;
+				if (inputs.at(i).rate != 'audio', {
+					^(" input at index " + i +
+						"(" + inputs.at(i) + ") is not audio rate");
+				});
+			});
+		});
+		^this.checkValidInputs
+	}
+	writesToBus { ^true }
 }
 
 

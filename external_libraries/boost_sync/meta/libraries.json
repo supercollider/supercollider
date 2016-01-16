@@ -1,0 +1,17 @@
+{
+    "key": "sync",
+    "name": "Sync",
+    "authors": [
+        "Tim Blechmann",
+        "Andrey Semashev"
+    ],
+    "description": "Thread synchronization primitives.",
+    "category": [
+        "Concurrent"
+    ],
+    "maintainers": [
+        "Tim Blechmann <tim -at- klingt.org>",
+        "Andrey Semashev <andrey.semashev -at- gmail.com>",
+        "Vicente J. Botet Escriba <vicente.botet -at- wanadoo.fr>"
+    ]
+}

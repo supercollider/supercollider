@@ -59,6 +59,9 @@ Dictionary : Set {
 		};
 		^result
 	}
+	++ { arg dict;
+		^this.copy.putAll(dict)
+	}
 
 	associationAt { arg key;
 		var index = this.scanFor(key);

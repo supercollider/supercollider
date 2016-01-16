@@ -205,9 +205,9 @@ private:
     }
 
     std::vector<std::thread> threads;
-    uint16_t worker_thread_count_;
-    uint16_t priority;
-    bool rt;
+    const uint16_t worker_thread_count_;
+    const uint16_t priority;
+    const bool rt;
 };
 
 

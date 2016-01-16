@@ -711,7 +711,7 @@ PbindProxy : Pattern {
 		^source.embedInStream(inval)
 	}
 	find { arg key;
-		pairs.pairsDo { |u,x,i| if(u === key) { ^i } }; ^nil
+		pairs.pairsDo { |u,x,i| if(u == key) { ^i } }; ^nil
 	}
 	quant_ { arg val;
 		pairs.pairsDo { arg key, item; item.quant = val }; // maybe use ref later
@@ -723,7 +723,6 @@ PbindProxy : Pattern {
 
 	at { arg key; var i; i = this.find(key); ^if(i.notNil) { pairs[i+1] } { nil } }
 
-	// does not yet work with adding arrayed keys/values
 	set { arg ... args; // key, val ...
 		var changedPairs = false, quant;
 		quant = this.quant;

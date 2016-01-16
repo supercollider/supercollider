@@ -23,15 +23,19 @@
 #include <mutex>
 #include <vector>
 
+#ifndef BOOST_ASIO_HAS_STD_ARRAY
 #ifdef __clang__ // clang workaround
 #define BOOST_ASIO_HAS_STD_ARRAY
 #endif
+#endif
+
+#include <boost/asio/ip/tcp.hpp>
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/date_time/microsec_time_clock.hpp>
 #include <boost/intrusive/treap_set.hpp>
 
-#include <boost/integer/endian.hpp>
+#include <boost/endian/arithmetic.hpp>
 
 #include "osc/OscReceivedElements.h"
 
@@ -73,7 +77,7 @@ public:
     }
 
 private:
-    void send(const char * data, size_t length);
+    void send(const char * data, size_t length) override;
 
     udp::endpoint endpoint_;
 };
@@ -216,7 +220,6 @@ class sc_osc_handler:
 public:
     sc_osc_handler(server_arguments const & args):
         sc_notify_observers(detail::network_thread::io_service_),
-        dump_osc_packets(0), error_posting(1), quit_received(false),
         tcp_acceptor_(detail::network_thread::io_service_),
         tcp_password_(args.server_password.size() ? args.server_password.c_str() : nullptr)
     {
@@ -237,7 +240,7 @@ public:
     typedef osc::ReceivedBundle received_bundle;
     typedef osc::ReceivedMessage received_message;
 
-    struct received_packet:
+    class received_packet:
         public audio_sync_callback
     {
         received_packet(const char * dat, size_t length, endpoint_ptr const & endpoint):
@@ -249,10 +252,11 @@ public:
             return ::operator new(size, ptr);
         }
 
+    public:
         static received_packet * alloc_packet(const char * data, size_t length,
                                               endpoint_ptr const & remote_endpoint);
 
-        void run(void);
+        void run(void) override final;
 
         const char * const data;
         const size_t length;
@@ -298,7 +302,7 @@ public:
             : socket_(io_service)
         {}
 
-        void send(const char *data, size_t length);
+        void send(const char *data, size_t length) override;
 
         void async_read_msg_size();
         void handle_message_size();
@@ -306,7 +310,7 @@ public:
 
         tcp::socket socket_;
         sc_osc_handler * osc_handler;
-        boost::integer::big32_t msg_size_;
+        boost::endian::big_int32_t msg_size_;
         std::vector<char> msg_buffer_;
     };
 
@@ -323,7 +327,7 @@ public:
     }
 
 private:
-    int dump_osc_packets;
+    int dump_osc_packets = 0;
 
     /* @{ */
 public:
@@ -335,7 +339,7 @@ public:
     }
 
 private:
-    int error_posting;
+    int error_posting = 1;
     /* @} */
 
     /* @{ */
@@ -397,14 +401,13 @@ public:
     sc_scheduled_bundles scheduled_bundles;
     time_tag now, last;
     time_tag time_per_tick;
-/* @} */
-
+    /* @} */
 
     void do_asynchronous_command(World * world, void* replyAddr, const char* cmdName, void *cmdData,
                                  AsyncStageFn stage2, AsyncStageFn stage3, AsyncStageFn stage4, AsyncFreeFn cleanup,
                                  int completionMsgSize, void* completionMsgData);
 
-    bool quit_received;
+    bool quit_received = false;
 
 private:
     /* @{ */

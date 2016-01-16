@@ -30,6 +30,7 @@
 #define PURE __attribute__((pure))
 
 #define MALLOC __attribute__((malloc))
+#define ASSUME_ALIGNED(Alignment) __attribute__((assume_aligned(Alignment)))
 #define HOT __attribute__((hot))
 #define COLD __attribute__((cold))
 #define FLATTEN __attribute__((flatten))
@@ -39,6 +40,7 @@
 #ifdef __clang__
 #undef HOT
 #undef FLATTEN
+#undef ASSUME_ALIGNED
 #endif
 
 #ifdef __PATHCC__
@@ -71,6 +73,10 @@
 
 #ifndef FLATTEN
 #define FLATTEN /*FLATTEN*/
+#endif
+
+#ifndef ASSUME_ALIGNED
+#define ASSUME_ALIGNED(Alignment) /* assume aligned Alignment */
 #endif
 
 // provide c99-style __restrict__

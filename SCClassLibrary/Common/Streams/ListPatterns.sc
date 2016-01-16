@@ -324,27 +324,27 @@ Ppatlace : Pseq {
 }
 
 Pslide : ListPattern {
-    // 'repeats' is the number of segments.
-    // 'len' is the length of each segment.
-    // 'step' is how far to step the start of each segment from previous.
-    // 'start' is what index to start at.
-    // indexing wraps around if goes past beginning or end.
-    // step can be negative.
+	// 'repeats' is the number of segments.
+	// 'len' is the length of each segment.
+	// 'step' is how far to step the start of each segment from previous.
+	// 'start' is what index to start at.
+	// indexing wraps around if goes past beginning or end.
+	// step can be negative.
 
-    var <>len, <>step, <>start, <>wrapAtEnd;
-    *new { arg list, repeats = 1, len = 3, step = 1, start = 0, wrapAtEnd = true;
-        ^super.new(list, repeats).len_(len).step_(step).start_(start)
+	var <>len, <>step, <>start, <>wrapAtEnd;
+	*new { arg list, repeats = 1, len = 3, step = 1, start = 0, wrapAtEnd = true;
+		^super.new(list, repeats).len_(len).step_(step).start_(start)
 			.wrapAtEnd_(wrapAtEnd);
-    }
-    embedInStream { arg inval;
-    	var item;
-    	var pos = start;
-    	var stepStr = step.asStream, stepVal;
-    	var lengthStr = len.asStream, lengthVal;
+	}
+	embedInStream { arg inval;
+		var item;
+		var pos = start;
+		var stepStr = step.asStream, stepVal;
+		var lengthStr = len.asStream, lengthVal;
 
-	   	repeats.value(inval).do {
+		repeats.value(inval).do {
 			lengthVal = lengthStr.next(inval);
-	    		if(lengthVal.isNil) { ^inval };
+				if(lengthVal.isNil) { ^inval };
 			if(wrapAtEnd) {
 				lengthVal.do { |j|
 					item = list.wrapAt(pos + j);
@@ -361,13 +361,13 @@ Pslide : ListPattern {
 					};
 				}
 			};
-    		stepVal = stepStr.next(inval);
-    		if(stepVal.isNil) { ^inval };
-    		pos = pos + stepVal;
+			stepVal = stepStr.next(inval);
+			if(stepVal.isNil) { ^inval };
+			pos = pos + stepVal;
 		};
 
-	     ^inval;
-    }
+		^inval;
+	}
 }
 
 Pwalk : ListPattern {
@@ -392,7 +392,7 @@ Pwalk : ListPattern {
 
 	embedInStream { arg inval;
 		var	step;
-		var index = startPos;
+		var index = startPos.value(inval);
 		var stepStream = stepPattern.asStream;
 		var directionStream = directionPattern.asStream;
 		// 1 = use steps as is; -1 = reverse direction

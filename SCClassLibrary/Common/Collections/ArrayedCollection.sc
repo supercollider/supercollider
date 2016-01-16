@@ -405,9 +405,9 @@ ArrayedCollection : SequenceableCollection {
 		if(size.isNil) { size = this.size } { a = a.resamp1(size) };
 		a = a.integrate; // incrementally integrate
 		a = a.normalize(0, size-1); // normalize and scale by max index
-        	b = Array.fill(size, { arg i; a.indexInBetween(i) });  // flip array
-        	b = b / size // rescale to 0..1
-        	^b
+		b = Array.fill(size, { arg i; a.indexInBetween(i) });  // flip array
+		b = b / size // rescale to 0..1
+		^b
 	}
 
 	tableRand {

@@ -1,5 +1,5 @@
 //  dsp thread queue nodes
-//  Copyright (C) 2008, 2009, 2010 Tim Blechmann
+//  Copyright (C) 2008-2015 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 
 #include "server/synth.hpp"
 #include "../sc/sc_synth.hpp"
+#include "function_attributes.h"
 
 namespace nova {
 
@@ -39,8 +40,8 @@ public:
         node(static_cast<sc_synth*>(node))
     {}
 
-    queue_node_data(queue_node_data const & rhs)  = default;
-    queue_node_data(queue_node_data && rhs)       = default;
+    explicit queue_node_data(queue_node_data const & rhs)  = default;
+    explicit queue_node_data(queue_node_data && rhs)       = default;
 
     void operator()(thread_count_type index)
     {
@@ -65,27 +66,17 @@ class dsp_queue_node
     typedef std::uint_fast8_t thread_count_type;
 
 public:
-    dsp_queue_node(queue_node_data const & node, std::size_t container_size):
-        first(node), node_count(0)
-    {
-        nodes.reserve(container_size-1);
-    }
-
-    explicit dsp_queue_node(queue_node_data const & node):
-        first(node), node_count(0)
-    {}
-
     explicit dsp_queue_node(queue_node_data && node):
-        first(std::move(node)), node_count(0)
+        first( std::move(node) )
     {}
 
     dsp_queue_node(queue_node_data && node, std::size_t container_size):
-        first(std::move(node)), node_count(0)
+        first( std::move(node) )
     {
         nodes.reserve(container_size-1);
     }
 
-    void operator()(thread_count_type thread_index)
+    HOT void operator()(thread_count_type thread_index)
     {
         first(thread_index);
 
@@ -93,7 +84,7 @@ public:
         if (remaining == 0)
             return; //fast-path
 
-        queue_node_data * data = nodes.data();
+        queue_node_data * __restrict__ data = nodes.data();
 
         if (remaining & 1) {
             (*data)(thread_index);
@@ -161,7 +152,7 @@ public:
 private:
     queue_node_data first;
     node_container nodes;
-    node_count_type node_count;
+    node_count_type node_count = 0;
 };
 
 } /* namespace nova */

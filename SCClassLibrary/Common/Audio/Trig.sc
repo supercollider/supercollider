@@ -22,7 +22,7 @@ SendTrig : UGen {
 		this.multiNew('control', in, id, value);
 		^0.0		// SendTrig has no output
 	}
- 	checkInputs { ^this.checkSameRateAsFirstInput }
+	checkInputs { ^this.checkSameRateAsFirstInput }
 	numOutputs { ^0 }
 	writeOutputSpecs {}
 }
@@ -51,7 +51,7 @@ SendReply : SendTrig {
 }
 
 TDelay : Trig1 {
- 	checkInputs { ^this.checkSameRateAsFirstInput }
+	checkInputs { ^this.checkSameRateAsFirstInput }
 }
 
 Latch : UGen {
@@ -76,7 +76,7 @@ PulseCount : UGen {
 	*kr { arg trig = 0.0, reset = 0.0;
 		^this.multiNew('control', trig, reset)
 	}
- 	checkInputs { ^this.checkSameRateAsFirstInput }
+	checkInputs { ^this.checkSameRateAsFirstInput }
 }
 
 Peak : UGen {
@@ -111,7 +111,7 @@ Stepper : UGen {
 	*kr { arg trig=0, reset=0, min=0, max=7, step=1, resetval;
 		^this.multiNew('control', trig, reset, min, max, step, resetval ? min)
 	}
- 	checkInputs { ^this.checkSameRateAsFirstInput }
+	checkInputs { ^this.checkSameRateAsFirstInput }
 }
 
 
@@ -147,7 +147,7 @@ ZeroCrossing : UGen {
 	*kr { arg in = 0.0;
 		^this.multiNew('control', in)
 	}
- 	checkInputs { ^this.checkSameRateAsFirstInput }
+	checkInputs { ^this.checkSameRateAsFirstInput }
 }
 
 Timer : UGen {
@@ -158,7 +158,7 @@ Timer : UGen {
 	*kr { arg trig = 0.0;
 		^this.multiNew('control', trig)
 	}
- 	checkInputs { ^this.checkSameRateAsFirstInput }
+	checkInputs { ^this.checkSameRateAsFirstInput }
 }
 
 Sweep : UGen {
@@ -205,8 +205,7 @@ Pitch : MultiOutUGen {
 	}
 }
 
-InRange : UGen
-{
+InRange : UGen {
 	*ar { arg in = 0.0, lo = 0.0, hi = 1.0;
 		^this.multiNew('audio', in, lo, hi)
 	}
@@ -218,8 +217,7 @@ InRange : UGen
 	}
 }
 
-InRect : UGen
-{
+InRect : UGen {
 	*ar { arg x = 0.0, y = 0.0, rect;
 		^this.multiNew('audio', x, y, rect.left, rect.top,
 			rect.right, rect.bottom)
@@ -258,8 +256,7 @@ ModDif : UGen {
 	}
 }
 
-MostChange : UGen
-{
+MostChange : UGen {
 	*ar { arg a = 0.0, b = 0.0;
 		^this.multiNew('audio', a, b)
 	}

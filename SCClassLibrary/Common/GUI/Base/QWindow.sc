@@ -71,8 +71,7 @@ TopView : View {
 	doDrawFunc { window.drawFunc.value(window) }
 }
 
-Window
-{
+Window {
 	classvar <allWindows, <>initAction;
 
 	var resizable, <drawFunc;
@@ -84,10 +83,12 @@ Window
 
 	*screenBounds {
 		_QWindow_ScreenBounds
+		^this.primitiveFailed;
 	}
 
 	*availableBounds {
 		_QWindow_AvailableGeometry
+		^this.primitiveFailed;
 	}
 
 	*closeAll {

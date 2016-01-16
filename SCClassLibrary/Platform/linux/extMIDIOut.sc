@@ -1,3 +1,38 @@
++ MIDIClient {
+
+	*externalSources{
+		^MIDIClient.sources.select({ |src,i|
+			// src.device != "SuperCollider"
+			(src.uid >> 16) != this.getClientID;
+		})
+	}
+
+	*externalDestinations{
+		^MIDIClient.destinations.select({ |src,i|
+			// src.device != "SuperCollider"
+			(src.uid >> 16) != this.getClientID;
+		})
+	}
+
+	*getClientID {
+		_GetMIDIClientID;
+		^this.primitiveFailed;
+	}
+}
+
++ MIDIIn{
+	*connectAll { |verbose=true|
+		if(MIDIClient.initialized.not,
+			{ MIDIClient.init(verbose: verbose) },
+			{ MIDIClient.disposeClient; MIDIClient.init(verbose: verbose); }
+			// on Linux, supercollider creates as many MIDI ports for SC as there are devices to connect to; MIDIClient.list will find the new sources, but there will not be a matching port initialized for SC to connect it to; therefor we reinitialize the client.
+		);
+		MIDIClient.externalSources.do({ |src,i|
+			MIDIIn.connect(i,src);
+		});
+	}
+}
+
 + MIDIOut{
 	// uid is not set by connect, in order to enable several connections to one output. set the uid directly, if you only want to send data to one MIDI destination.
 	connect{ arg device = 0;
@@ -83,8 +118,10 @@
 	}
 	*connectByUID {arg outport, uid;
 		_ConnectMIDIOut
+		^this.primitiveFailed;
 	}
 	*disconnectByUID {arg outport, uid;
 		_DisconnectMIDIOut
+		^this.primitiveFailed;
 	}
 }

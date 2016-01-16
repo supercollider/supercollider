@@ -165,7 +165,6 @@ subsection:: Sound Example
 Use ListView to switch filters:
 code::
 (
-Server.default = s = Stethoscope.defaultServer.boot;
 s.waitForBoot({
     var f, freq, ww;
     n={r=LFSaw.ar([220, 530],0,0.3)*LFPulse.ar(12,0,0.3,0.4); [r[0],Delay2.ar(r[1])]}.play;

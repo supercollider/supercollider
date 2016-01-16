@@ -61,7 +61,7 @@ EZText : EZGui {
 			var newstr = textField.string;
 			var newval = try { newstr.interpret };
 			if (newval.notNil or: { newstr == "" }) {
-				this.valueAction_(newval);
+				this.valueActionIfChanged_(newval);
 			} {
 			//	"EZText compile failed - reset to prev value.".postln;
 				textField.string = this.value.asCompileString;
@@ -110,19 +110,19 @@ EZText : EZGui {
 	}
 
 	prSetViewParams { // sets resize and alignment for different layouts
-        switch (layout,
-        \vert, {
-            labelView.notNil.if{labelView.resize_(2).align_(\left)};
-            textField.resize_(5);
-        },
-        \horz, {
-            labelView.notNil.if{
-                labelView.resize_(4).align_(\right);
-                textField.resize_(5);
-            }{
-                textField.resize_(5);
-            };
-        });
-            popUp.if{ view.resize_(2) };
-    }
+		switch (layout,
+		\vert, {
+			labelView.notNil.if{labelView.resize_(2).align_(\left)};
+			textField.resize_(5);
+		},
+		\horz, {
+			labelView.notNil.if{
+				labelView.resize_(4).align_(\right);
+				textField.resize_(5);
+			}{
+				textField.resize_(5);
+			};
+		});
+			popUp.if{ view.resize_(2) };
+	}
 }

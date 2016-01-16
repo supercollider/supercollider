@@ -1,5 +1,4 @@
-OSXPlatform : UnixPlatform
-{
+OSXPlatform : UnixPlatform {
 	var <>preferencesAction; // Warning: scapp only
 	var <>sleepAction, <>wakeAction, <>isSleeping=false;
 
@@ -7,7 +6,6 @@ OSXPlatform : UnixPlatform
 		super.initPlatform;
 		recordingsDir = "~/Music/SuperCollider Recordings".standardizePath;
 		this.declareFeature(\unixPipes); // pipes are possible (can't declare in UnixPlatform since IPhonePlatform is unixy yet can't support pipes)
-		if (Platform.ideName == "scapp") { this.setDeferredTaskInterval(1/60); }
 	}
 
 	name { ^\osx }
@@ -41,9 +39,6 @@ OSXPlatform : UnixPlatform
 	}
 
 	defaultGUIScheme { ^\qt }
-    defaultHIDScheme { ^nil }
-
-	setDeferredTaskInterval { |interval| _SetDeferredTaskInterval }
 
 	findHelpFile { | string |
 		^string.findHelpFile;

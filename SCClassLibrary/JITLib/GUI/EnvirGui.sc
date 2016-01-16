@@ -1,9 +1,7 @@
-	// needs a defer for making new EZs after a clearField...
-	// get rid of this later if possible.
 
 EnvirGui : JITGui {
 
-	var <valFields, <widgets, labelWidth;
+	var <paramViews, labelWidth;
 	var <keysRotation = 0, <specs;
 	var <protoBut, <parentBut, <knowBut, <docBut;
 	var <replaceKeys;
@@ -15,12 +13,15 @@ EnvirGui : JITGui {
 	}
 
 	addReplaceKey { |replaced, replacer, spec|
+		var pv = this.viewForParam(replaced);
 		replaceKeys.put(replaced, replacer);
-		if (spec.notNil) { specs.put(replaced, spec) };
+		if (pv.notNil) { pv.label_(replacer) };
 	}
 
-	removeReplaceKey { |replaced|
-		replaceKeys.removeAt(replaced)
+	removeReplaceKey { |replacer|
+		var pv = this.viewForParam(replacer);
+		var replaced = replaceKeys.removeAt(replaced);
+		if (pv.notNil) { pv.label_(replacer) };
 	}
 
 	*new { |object, numItems = 8, parent, bounds, makeSkip = true, options = #[]|
@@ -37,7 +38,7 @@ EnvirGui : JITGui {
 	makeViews { |options|
 		var height = skin.buttonHeight;
 
-		specs = ();
+		specs = ().parent_(Spec.specs);
 		replaceKeys = ();
 		prevState = ( overflow: 0, keysRotation: 0, editKeys: []);
 
@@ -45,13 +46,11 @@ EnvirGui : JITGui {
 
 		this.makeOptionalViews(options);
 
-		valFields = {
-			CompositeView(zone, Rect(0, 0, bounds.width - 20, height))
-			.resize_(2)
+		paramViews = {
+			ParamView(zone, Rect(0, 0, bounds.width - 20, height))
 			.background_(skin.background);
 		}.dup(numItems);
-
-		widgets = nil.dup(numItems); // keep EZGui types here
+		paramViews.do { |pv| pv.zone.visible_(false); };
 
 		zone.decorator.reset.shift(zone.bounds.width - 16, 0);
 
@@ -149,26 +148,23 @@ EnvirGui : JITGui {
 	envir { ^object }
 
 	highlight { |index, prefix, color|
-		var widget = widgets[index];
-		var parName;
-		if (widget.notNil) {
-			widget.labelView.background_(color ? skin.onColor2);
-			parName = this.editKeys[index];
-			if (prefix.notNil and: parName.notNil) {
-				parName = prefix ++ parName;
-			};
-			widget.labelView.string_(parName);
+		var parView = paramViews[index];
+		var parName = this.editKeys[index];
+
+		parView.background_(color ? skin.onColor2);
+
+		if (prefix.notNil and: parName.notNil) {
+			parName = prefix ++ parName;
 		};
+		parView.label_(parName);
 	}
 
-	unhighlight { |index, prefix, color|
-		var widget = widgets[index];
-		var parName;
-		if (widget.notNil) {
-			widget.labelView.background_(skin.offColor);
-			parName = this.editKeys[index] ? "";
-			widget.labelView.string_(parName);
-		};
+	unhighlight { |index|
+		var parView = paramViews[index];
+		var parName = this.editKeys[index] ? "";
+
+		parView.background_(skin.offColor);
+		parView.label_(parName);
 	}
 
 	// also get specs as state that may have changed
@@ -192,17 +188,16 @@ EnvirGui : JITGui {
 		)
 	}
 
-	checkUpdate { |doFull = false|
+	checkUpdate {
 		var newState = this.getState;
 		var newKeys = newState[\editKeys];
+		var newSpecs = newState[\specs];
 
 		this.updateButtons;
 
-		if (doFull.not and: { newState == prevState }) { ^this };
-
 		if (object.isNil) {
 			prevState = newState;
-			^this.clearFields(0);
+			^this.showFields(0);
 		};
 
 		if (newState[\overflow] > 0) {
@@ -218,139 +213,67 @@ EnvirGui : JITGui {
 			this.setByKeys(newKeys);
 		} {
 			this.setByKeys(newKeys);
-			if (newState[\overflow] == 0) { this.clearFields(newKeys.size) };
+			this.showFields(newKeys.size);
 		};
 
-//		"newState: %\n".postf(newState);
-//		"prevState: %\n".postf(prevState);
+		if (newSpecs != prevState[\specs]) {
+			this.updateViewSpecs(newSpecs);
+		};
+
 		prevState = newState.put(\object, object.copy);
 	}
 
 	updateButtons {
 		var flag = object.notNil;
-		if (protoBut.notNil) { protoBut.enabled_(flag and: { object.proto.notNil }) };
-		if (parentBut.notNil) { parentBut.enabled_(flag and: { object.parent.notNil }) };
-		if (knowBut.notNil) { knowBut.enabled_(flag).value_((flag and: { object.know }).binaryValue) };
+		if (protoBut.notNil) {
+			protoBut.enabled_(flag and: { object.proto.notNil })
+		};
+		if (parentBut.notNil) {
+			parentBut.enabled_(flag and: { object.parent.notNil })
+		};
+		if (knowBut.notNil) {
+			knowBut.enabled_(flag).value_((flag and: { object.know }).binaryValue)
+		};
 		if (docBut.notNil) { docBut.enabled_(flag) };
 	}
 
-	clearFields { |from = 0| (numItems - 1 .. from).do(this.clearField(_)) }
+	// backwards compat
+	clearFields { |num| ^this.showFields(num) }
+
+	showFields { |num = 0|
+		paramViews.do { |pv, i|
+			var isInUse = i < num;
+			pv.visible_(isInUse);
+		}
+	}
 
 	setByKeys { |newKeys|
 		var prevEnvir = prevState[\object] ?? {()};
 		var newVal, oldVal, oldKey;
 
+
 		newKeys.do { |newKey, i|
 			var isSameKey;
+			var paramView = paramViews[i];
 
 			oldKey = prevState[\editKeys][i];
 			isSameKey = oldKey == newKey;
 			newVal = object[newKey];
 			oldVal = prevEnvir[newKey];
-			if (isSameKey.not or: { oldVal != newVal }) {
-			//	"val for % has changed: %\n".postf(key, newval);
-				this.setField(i, newKey, newVal, false);
-			};
-		};
-	}
 
-	clearField { |index|
-		var area = valFields[index];
-		try {
-			area.children.copy.do { |view| view.remove };
-			area.background_(skin.background);
-			area.refresh;
-			widgets[index] = nil;
+			if (isSameKey.not) {
+				paramView.label_(replaceKeys[newKey] ? newKey);
+				paramView.spec_(this.getSpec(newKey, newVal));
+				paramView.value_(newVal);
+				paramView.action = this.setFunc(newKey);
+			} {
+				if (oldVal != newVal) { paramView.value_(newVal) };
+			};
 		};
 	}
 
 	setFunc { |key|
 		^{ |elem| object.put(key, elem.value) }
-	}
-
-	setToSlider { |index, key, value, sameKey|
-		var widget = widgets[index];
-		var area = valFields[index];
-		var keyToShow = this.showKeyFor(key);
-
-	//	"setToSlider...".postln;
-
-		if (widget.isKindOf(EZSlider)) {
-		//	"was slider already".postln;
-			if (sameKey.not) {
-		//		"new key - reset widget ...".postln;
-				widget.set(
-					keyToShow,
-					this.getSpec(key, value),
-					this.setFunc(key),
-					value
-				);
-				this.colorizeArea(area, keyToShow != key);			} {
-		//		"old key, just set ...".postln;
-				widget.value = value;
-			};
-
-			^this
-		} {
-		//	"make new slider!".postln;
-			this.clearField(index);
-				// don't know why, but defer seems needed:
-			{
-				widget = EZSlider(area, area.bounds.extent,
-					this.showKeyFor(key),
-					this.getSpec(key, value),
-					this.setFunc(key),
-					value,
-					labelWidth: labelWidth,
-					numberWidth: labelWidth
-				)
-					.font_(font);
-				widget.view.resize_(2);
-				widgets[index] = widget;
-
-				this.colorizeArea(area, keyToShow != key);
-
-			}.defer(0.03);
-
-			^this
-		};
-	}
-
-	setToRanger { |index, key, value, sameKey|
-		var widget = widgets[index];
-		var area = valFields[index];
-		var keyToShow = this.showKeyFor(key);
-
-		if (widget.isKindOf(EZRanger)) {
-			if (sameKey.not) {
-				widget.set(
-					keyToShow,
-					this.getSpec(key),
-					this.setFunc(key),
-					value
-				);
-				this.colorizeArea(area, keyToShow != key);
-			} {
-				widget.value = value;
-			};
-		} {
-			this.clearField(index);
-			{
-				widget = EZRanger(valFields[index], valFields[index].bounds.extent,
-					this.showKeyFor(key),
-					this.getSpec(key, value.maxItem),
-					this.setFunc(key),
-					value,
-					labelWidth: labelWidth,
-					numberWidth: labelWidth
-				).font_(font);
-
-				widget.view.resize_(2);
-				widgets[index] = widget;
-				this.colorizeArea(area, keyToShow != key);
-			}.defer(0.03);
-			^this
-		};
 	}
 
 	showKeyFor { |key| ^(replaceKeys[key] ? key) }
@@ -363,97 +286,50 @@ EnvirGui : JITGui {
 		};
 	}
 
-	setToText { |index, key, value, sameKey = false|
-		var widget = widgets[index];
-		var area = valFields[index];
-		var keyToShow = this.showKeyFor(key);
-
-			// default: EZText
-		if (widget.isKindOf(EZText)) {
-			if (sameKey.not) { widget.labelView.string = keyToShow.asString };
-			widget.action = this.setFunc(key);
-			widget.value = value;
-			this.colorizeArea(area, keyToShow != key);
-
-			^this
-		} {
-			this.clearField(index);
-			{
-				widget = EZText(area,
-					area.bounds.extent,
-					this.showKeyFor(key),
-					this.setFunc(key),
-					value, false,
-					labelWidth, labelHeight: 18);
-				widget.font_(font);
-				widget.view.resize_(2);
-				widgets[index] = widget;
-
-				widget.value_(value);
-				this.colorizeArea(area, keyToShow != key);
-
-			}.defer(0.03);
-		};
-	}
-
-	setField { |index, key, value, sameKey = false|
-		var widget = widgets[index];
-		var area = valFields[index];
-
-		if (value.isKindOf(SimpleNumber) ) {
-			this.setToSlider(index, key, value, sameKey);
-			^this
-		};
-			// Ranger - only if spec exists and value is 2 numbers
-		if (useRanger
-			and: { value.size == 2
-			and: { key.asSpec.notNil
-			and: { value.every(_.isKindOf(SimpleNumber)) }
-		} }) {
-			this.setToRanger(index, key, value, sameKey);
-			^this
-		};
-			// default
-		this.setToText(index, key, value, sameKey);
-	}
-
-	findWidget { |key|
-		^widgets.reject(_.isNil).detect { |ez| ez.labelView.string.asSymbol == key };
-	}
-
-	updateSliderSpecs { |editKeys|
-
-		if (object.isNil) { specs.clear; ^this };
-
-		editKeys.do { |key, i|
-			var currValue = object[key];
-			var newSpec = this.getSpec(key, currValue);
-			var widge = widgets[i];
-			if (newSpec != widge.controlSpec) {
-				specs.put(key, newSpec);
-				if (widge.isKindOf(EZSlider) or: { widge.isKindOf(EZRanger) }) {
-					widge.controlSpec = newSpec;
-					widge.value_(currValue);
-				};
+	updateViewSpecs { |newSpecs|
+		newSpecs.do { |pair|
+			var name, spec, pv;
+			#name, spec = pair;
+			if (spec.notNil) {
+				pv = this.viewForParam(name);
+				if (pv.notNil) { pv.spec_(spec) };
 			};
-		}
+		};
+	}
+
+	viewForParam { |name|
+		name = replaceKeys[name] ? name;
+		^paramViews.detect { |pv| pv.label == name };
 	}
 
 	putSpec { |key, obj|
-		var widge, spec;
+		var pview, spec, value;
+
+		// clear local spec only
+		if (obj.isNil) {
+			specs.put(key, nil);
+			^this
+		};
 		spec = obj.asSpec;
 		specs.put(key, spec);
-			// could check all widgets and update specs if same name ...
-		widge = this.findWidget(key);
-		if (widge.notNil) { widge.controlSpec_(spec).value_(widge.value) }
+		pview = this.viewForParam(key);
+		if (pview.notNil) {
+			value = pview.value;
+			pview.spec_(spec);
+			pview.value_(value)
+		}
 	}
 
-	// this is for global specs only - use JITLibExtensions
-	//  for local specs attached to proxies.
+	// this finds global specs and local specs in the gui only
+	// - use JITLibExtensions for specs attached to the JITGui objects.
+	// precedence: global specs first, then cached local,
+	// else guess an initial spec and remember it.
 	getSpec { |key, value|
-		var spec = Spec.specs[key] ? specs[key];
-		spec = spec ?? { Spec.guess(key, value) };
-		specs.put(key, spec);
+		var spec = specs[key];
+		if (spec.isNil) {
+			spec = Spec.guess(key, value);
+			specs.put(key, spec);
+		};
 		^spec
 	}
 }

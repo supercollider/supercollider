@@ -43,18 +43,14 @@ public:
         typedef rt_pool_allocator<U> other;
     };
 
-    rt_pool_allocator() throw()
-    {}
-
-    rt_pool_allocator(const rt_pool_allocator&) throw()
-    {}
+    rt_pool_allocator() throw()                         = default;
+    rt_pool_allocator(const rt_pool_allocator&) throw() = default;
+    ~rt_pool_allocator() throw()                        = default;
 
     template <class U>
     rt_pool_allocator(const rt_pool_allocator<U>&) throw()
     {}
 
-    ~rt_pool_allocator() throw()
-    {}
 
     pointer address(reference x) const
     {
@@ -66,16 +62,16 @@ public:
         return &x;
     }
 
-    pointer allocate(size_type size, const void* hint = 0)
+    pointer allocate(size_type size, const void* hint = nullptr)
     {
         pointer ret = static_cast<pointer>(rt_pool.malloc(size * sizeof(T)));
-        if (ret == NULL)
+        if (ret == nullptr)
             throw std::bad_alloc();
 
         return ret;
     }
 
-    pointer reallocate(pointer p, size_type size, void* hint = 0)
+    pointer reallocate(pointer p, size_type size, void* hint = nullptr)
     {
         return static_cast<pointer>(rt_pool.realloc(p, size));
     }
@@ -93,6 +89,12 @@ public:
     void construct(pointer p, const T& val = T())
     {
         new(p) T(val);
+    }
+
+    template< class U, class... Args >
+    void construct( U* p, Args&&... args )
+    {
+        ::new((void *)p) U(std::forward<Args>(args)...);
     }
 
     void destroy(pointer p)

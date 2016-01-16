@@ -76,7 +76,7 @@ QC_LANG_PRIMITIVE( QImage_NewURL, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   QString url_str = QtCollider::get(a);
   QUrl url(url_str);
   if( !url.isValid() || url.isEmpty() ) {
-    qcErrorMsg( QString("QImage: invalid or empty URL: ") + url_str );
+    qcErrorMsg( QStringLiteral("QImage: invalid or empty URL: ") + url_str );
     return errFailed;
   }
 
@@ -84,7 +84,7 @@ QC_LANG_PRIMITIVE( QImage_NewURL, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
     if( QImage_InitPath( g, slotRawObject(r), url.toLocalFile() ) ) {
       return errNone;
     } else {
-      qcErrorMsg( QString("QImage: file doesn't exist or can't be opened: ") + url_str );
+      qcErrorMsg( QStringLiteral("QImage: file doesn't exist or can't be opened: ") + url_str );
       return errFailed;
     }
   }
@@ -103,18 +103,18 @@ QC_LANG_PRIMITIVE( QImage_NewURL, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   loop.exec(); // blocks
 
   if( reply->error() != QNetworkReply::NoError ) {
-    qcErrorMsg( QString("QImage: error trying to download: ") + url_str );
+    qcErrorMsg( QStringLiteral("QImage: error trying to download: ") + url_str );
     return errFailed;
   }
   else if( !reply->isFinished() ) {
-    qcErrorMsg( QString("QImage: timeout while trying to download: ") + url_str );
+    qcErrorMsg( QStringLiteral("QImage: timeout while trying to download: ") + url_str );
     reply->abort();
     return errFailed;
   }
 
   QByteArray byteArray = reply->readAll();
   if( byteArray.isEmpty() ) {
-    qcErrorMsg( QString("QImage: no data received: ") + url_str );
+    qcErrorMsg( QStringLiteral("QImage: no data received: ") + url_str );
     return errFailed;
   }
 
@@ -122,7 +122,7 @@ QC_LANG_PRIMITIVE( QImage_NewURL, 2, PyrSlot *r, PyrSlot *a, VMGlobals *g )
     return errNone;
   }
   else {
-    qcErrorMsg( QString("QImage: failed trying to open downloaded data: ") + url_str );
+    qcErrorMsg( QStringLiteral("QImage: failed trying to open downloaded data: ") + url_str );
     return errFailed;
   }
 #endif
@@ -254,7 +254,7 @@ QC_LANG_PRIMITIVE( QImage_Write, 3, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   if( image.save(path, format.toUpper().toStdString().c_str(), quality) )
     return errNone;
 
-  qcErrorMsg( QString("QImage: Failed to write to file: ") + path );
+  qcErrorMsg( QStringLiteral("QImage: Failed to write to file: ") + path );
   return errFailed;
 }
 
@@ -477,7 +477,7 @@ QC_LANG_PRIMITIVE( QImage_Formats, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
         PyrString *str = newPyrString( g->gc, formats[i].constData(), obj_immutable, false );
         SetObject(array->slots+i, str);
         ++array->size;
-        g->gc->GCWrite( array, array->slots+i );
+        g->gc->GCWriteNew( array, str ); // we know str is white so we can use GCWriteNew
     }
 
     return errNone;

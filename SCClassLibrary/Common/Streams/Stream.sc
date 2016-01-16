@@ -326,8 +326,7 @@ CleanupStream : Stream {
 
 // PauseStream is a stream wrapper that can be started and stopped.
 
-PauseStream : Stream
-{
+PauseStream : Stream {
 	var <stream, <originalStream, <clock, <nextBeat, <>streamHasEnded=false;
 	var isWaiting = false, era=0;
 
@@ -343,6 +342,7 @@ PauseStream : Stream
 		clock = argClock ? clock ? TempoClock.default;
 		streamHasEnded = false;
 		this.refresh; //stream = originalStream;
+		stream.clock = clock;
 		isWaiting = true;	// make sure that accidental play/stop/play sequences
 						// don't cause memory leaks
 		era = CmdPeriod.era;
@@ -494,6 +494,7 @@ EventStreamPlayer : PauseStream {
 		clock = argClock ? clock ? TempoClock.default;
 		streamHasEnded = false;
 		stream = originalStream;
+		stream.clock = clock;
 		isWaiting = true;	// make sure that accidental play/stop/play sequences
 						// don't cause memory leaks
 		era = CmdPeriod.era;

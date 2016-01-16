@@ -20,8 +20,7 @@
 #define SERVER_NODE_GRAPH_HPP
 
 #include <memory>
-
-#include "boost/tuple/tuple.hpp"
+#include <tuple>
 
 #include "dsp_thread_queue_node.hpp"
 #include "group.hpp"
@@ -34,7 +33,7 @@ namespace nova {
 class node_graph
 {
 private:
-    group root_group_;
+    group root_group_ = {0};
     friend class dependency_graph_generator;
 
     static const std::size_t node_set_bucket_count = 4096;
@@ -47,7 +46,6 @@ public:
      *
      * - initialize root node */
     node_graph(void):
-        root_group_(0), generated_id(-2), synth_count_(0), group_count_(1),
         node_set(node_set_type::bucket_traits(node_buckets, node_set_bucket_count))
     {
         node_set.insert(root_group_);
@@ -176,7 +174,7 @@ public:
     {
         node_set_type::iterator it = node_set.find(node_id, hash_node(), equal_node());
         if (it == node_set.end())
-            return NULL;
+            return nullptr;
         return &(*it);
     }
 
@@ -192,14 +190,14 @@ public:
     int32_t generate_node_id(void);
 
 private:
-    int32_t generated_id;
+    int32_t generated_id = -2;
 
 public:
     abstract_group * find_group(int32_t node_id)
     {
         server_node * node = find_node(node_id);
         if (!node || node->is_synth())
-            return NULL;
+            return nullptr;
         else
             return static_cast<abstract_group*>(node);
     }
@@ -210,7 +208,7 @@ public:
         if (node && node->is_synth())
             return static_cast<abstract_synth*>(node);
         else
-            return NULL;
+            return nullptr;
     }
 
     void group_free_all(abstract_group * group)
@@ -292,7 +290,7 @@ private:
                                              boost::intrusive::power_2_buckets<true>
                                            > node_set_type;
 
-    uint32_t synth_count_, group_count_;
+    uint32_t synth_count_ = 0, group_count_ = 0;
 
     node_set_type::bucket_type node_buckets[node_set_bucket_count];
     node_set_type node_set;

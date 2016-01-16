@@ -68,9 +68,9 @@ HID {
 			available = IdentityDictionary.new;
 			devlist.do { |it, i|
 				available.put( i, HIDInfo.new( *it ) );
-			} { // no devices found
+			};
+		}{ // no devices found
 				"HID: no devices found".postln;
-			}
 		};
 		"HID: found % devices\n".postf( devlist.size );
 		^available

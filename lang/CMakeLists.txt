@@ -12,7 +12,6 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
 
                     ${YAMLCPP_INCLUDE_DIR}
 
-                    ${CMAKE_SOURCE_DIR}/external_libraries/threadpool
                     ${CMAKE_SOURCE_DIR}/external_libraries/boost_sync/include
 
                     LangSource
@@ -197,16 +196,11 @@ target_compile_definitions(libsclang PRIVATE YYSTACK_USE_ALLOC)
 target_link_libraries(libsclang tlsf ${PTHREADS_LIBRARIES})
 
 if(SC_IDE OR SC_QT)
-	message("libsclang qt libs:" ${QT_COLLIDER_LIBS})
-	#qt5_use_modules(libsclang Core)
 	find_package(Qt5Core)
 	get_target_property(QtCore_location Qt5::Core LOCATION)
-	message("core: " ${QtCore_location} )
+	message("Qt: " ${QtCore_location} )
 
-	#include_directories(${Qt5Core_INCLUDE_DIRS})
-	#target_link_libraries(libsclang Qt5::Core)
 	target_link_libraries(libsclang ${QT_COLLIDER_LIBS})
-	#qt5_use_modules(libsclang Core Network Gui WebKit Widgets WebKitWidgets)
 endif()
 
 if(FALSE) # libsclang is a shared library
@@ -236,7 +230,7 @@ endif()
 
 
 if (Boost_FOUND)
-	target_include_directoriesf(libsclang PUBLIC ${Boost_INCLUDE_DIRS})
+	target_include_directories(libsclang PUBLIC ${Boost_INCLUDE_DIRS})
 	target_link_libraries(libsclang ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_REGEX_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
 else()
 	target_include_directories(libsclang PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/boost)
@@ -319,12 +313,9 @@ if(LTO)
 endif()
 
 if(APPLE)
-	# determines the app name and app install location (scappbundlename, scappdir):
-	include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
-
-	install(TARGETS sclang
-			DESTINATION "${scappbindir}"
-			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+    add_custom_command(TARGET sclang POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../MacOS/
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:sclang> $<TARGET_FILE_DIR:SuperCollider>/../MacOS)
 elseif(WIN32)
 	install(TARGETS sclang
 			DESTINATION "SuperCollider"

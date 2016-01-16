@@ -46,17 +46,16 @@ QuarksGui {
 			.toolTip_("Download directory listing from" + Quarks.directoryUrl)
 			.action_({
 				treeView.enabled = false;
-				this.setMsg("Fetching" + Quarks.directoryUrl, \info);
 				this.checkForUpdates({
+					treeView.enabled = true;
+					btnUpdateDirectory.value = 0;
+					this.update;
 					this.setMsg("Directory has been updated.", \success);
-					treeView.enabled = true;
-					btnUpdateDirectory.value = 0;
-					this.update;
 				}, {
-					this.setMsg();
 					treeView.enabled = true;
 					btnUpdateDirectory.value = 0;
 					this.update;
+					this.setMsg("An error occured while updating the directory.", \warn);
 				});
 				nil
 			});
@@ -81,7 +80,9 @@ QuarksGui {
 			.toolTip_("Save currently installed quarks to a file")
 			.action_({
 				Dialog.savePanel({ |path|
-					model.save(path)
+					this.setMsg("Saving quarks to file:" + path);
+					model.save(path);
+					this.setMsg();
 				})
 			});
 
@@ -89,9 +90,16 @@ QuarksGui {
 			.toolTip_("Install a set of quarks from a file")
 			.action_({
 				Dialog.openPanel({ |path|
-					model.load(path);
-					this.update;
-				})
+					this.runCancellable({
+						this.setMsg("Installing from file:" + path);
+						0.1.wait;
+						model.load(path, {
+							this.setMsg();
+							0.1.wait;
+							this.update;
+						});
+					});
+				});
 			});
 
 		btnRecompile = Button().states_([
@@ -183,7 +191,11 @@ QuarksGui {
 	}
 	checkForUpdates { |onComplete, onCancel|
 		this.runCancellable({
+			this.setMsg("Fetching directory listing...", \info);
+			0.1.wait;
 			model.fetchDirectory(true);
+			this.setMsg("Checking for updates to Quarks...", \info);
+			0.1.wait;
 			model.checkForUpdates();
 		}, onComplete, onCancel)
 	}
@@ -198,6 +210,7 @@ QuarksGui {
 			true); // just first value in paths array
 	}
 	runCancellable { |fn, onComplete, onCancel|
+		// call a function that can be cancelled by cmd-.
 		var r, cancel;
 		r = Routine.run({
 			fn.protect({
@@ -252,8 +265,8 @@ QuarkDetailView {
 					.states_([[text]])
 					.action_(fn);
 			};
-		if(model.notNil, {
 
+		if(model.notNil, {
 			isInstalled = model.isInstalled;
 			isDownloaded = model.isDownloaded;
 			url = model.url;
@@ -522,6 +535,7 @@ QuarkDetailView {
 	}
 	checkout { |refspec|
 		{
+			quarksGui.setMsg("Installing" + model.name);
 			if(model.isInstalled, {
 				// reinstall possibly with different dependencies
 				model.uninstall;

@@ -310,7 +310,7 @@ WiiMote {
 		//		//		this.prWiiGetLED( remote_led );
 		//		calibration = this.prCalibration(WiiCalibrationInfo.new);
 
- 		spec = this.deviceSpec;
+		spec = this.deviceSpec;
 		actionSpec = IdentityDictionary.new;
 	}
 	*prStart { |updtime=0.05|

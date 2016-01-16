@@ -138,7 +138,7 @@ MetaType *MetaType::find( PyrSlot *slot )
       }
       else {
         QString className = TypeCodec<QString>::read( &slotRawObject(slot)->classptr->name );
-        qcWarningMsg(QString("WARNING: Do not know how to use an instance of class '%1'").arg(className));
+        qcWarningMsg(QStringLiteral("WARNING: Do not know how to use an instance of class '%1'").arg(className));
         return 0;
       }
     }

@@ -190,8 +190,7 @@ GridLayout : Layout {
 	}
 }
 
-StackLayout : Layout
-{
+StackLayout : Layout {
 
 	*qtClass { ^'QcStackLayout' }
 

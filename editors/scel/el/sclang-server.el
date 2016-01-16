@@ -159,7 +159,7 @@
   (interactive)
   (sclang-set-server)
   (setq sclang-server-info-string (sclang-get-server-info-string))
-  (force-mode-line-update))
+  (force-mode-line-update t))
 
 ;; =====================================================================
 ;; language control

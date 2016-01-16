@@ -6,10 +6,18 @@ related:: Classes/QuadN, Classes/QuadL
 description::
 A cubic-interpolating sound generator based on the difference equation:
 
-code::
-	x[n+1] = a * pow(x[n], 2) + b * x[n] + c
+teletype::
+	x(n+1) = a * x(n)^2 + b * x(n) + c
 ::
-warning:: revise formulae conversion to c like code ::
+
+sclang code translation:
+
+code::
+(
+var a = 1, b = -1, c = -0.75, xi = 0, size = 64;
+plot(size.collect { xi = (a * (xi ** 2)) + (b * xi) + c; xi });
+)
+::
 
 classmethods::
 method:: ar

@@ -15,9 +15,9 @@
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301
 // USA
 
-EmacsDocument
+EmacsDocument {
 // : Document
-{
+
 	classvar documentMap, <>current;
 	var <>sceld;
 	var title, path;

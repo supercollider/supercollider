@@ -1,6 +1,6 @@
 class:: MIDIIn
 summary:: receive MIDI messages
-related:: Classes/MIDIOut, Classes/MIDIFunc, Classes/MIDIdef, Guides/MIDI, Guides/UsingMIDI
+related:: Classes/MIDIClient, Classes/MIDIOut, Classes/MIDIFunc, Classes/MIDIdef, Guides/MIDI, Guides/UsingMIDI
 categories:: External Control>MIDI
 
 description::
@@ -71,6 +71,19 @@ A link::Classes/Function:: or similar object to be evaluated when a message of t
 method::noteOnZeroAsNoteOff
 
 By default this flag is code::true:: and SuperCollider interprets incoming MIDI noteOn message with velocity 0 as noteOff messages. In case you do not want this automatic translation, you can set this flag to code::false::
+
+
+method::connectAll
+
+Connect to all possible MIDI inputs.
+
+argument::verbose
+
+If set to true (default) it will print out the ports found in MIDIClient.init.
+
+method::disconnectAll
+
+Disconnect from all MIDI inputs.
 
 
 subsection:: Getter/Setters for Specific Message Types
@@ -262,7 +275,6 @@ code::
 subsection::example with sound
 code::
 MIDIIn.connect;
-s = Server.local;
 s.boot;
 
 (
@@ -315,7 +327,6 @@ code::
 //Powerbook G4, 512mb ram.
 //- matrix6k@somahq.com
 
-s = Server.local;
 s.boot;
 
 (

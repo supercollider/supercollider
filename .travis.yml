@@ -20,9 +20,8 @@ before_install:
  - iflin sudo add-apt-repository -y ppa:andykimpe/cmake  # backport of cmake 2.8.12
  - iflin sudo add-apt-repository -y ppa:ondrej/php5 # libicu-dev 52
  - iflin sudo apt-get update
- - iflin sudo apt-get install libicu-dev=52.1-1+debphp.org~precise+1 gcc-4.7 g++-4.7 aptitude build-essential libjack-dev libsndfile1-dev libasound2-dev libavahi-client-dev libreadline6-dev libfftw3-dev libxt-dev libudev-dev pkg-config cmake=2.8.12.2-3 subversion libstdc++5
- - iflin sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.6 40 --slave /usr/bin/g++ g++ /usr/bin/g++-4.6 
- - iflin sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.7 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.7 
+ - iflin sudo apt-get install libicu-dev=52.1-1+debphp.org~precise+1 gcc-4.8 g++-4.8 aptitude build-essential libjack-dev libsndfile1-dev libasound2-dev libavahi-client-dev libreadline6-dev libfftw3-dev libxt-dev libudev-dev pkg-config cmake=2.8.12.2-3 subversion libstdc++5
+ - iflin sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.8 
  - iflin sudo update-alternatives --auto gcc
 
 before_script:

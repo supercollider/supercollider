@@ -5,21 +5,18 @@ String[char] : RawArray {
 		unixCmdActions = IdentityDictionary.new;
 	}
 
-	*doUnixCmdAction {
-		arg res, pid;
+	*doUnixCmdAction { arg res, pid;
 		unixCmdActions[pid].value(res, pid);
 		unixCmdActions.removeAt(pid);
 	}
 
-	prUnixCmd {
-		arg postOutput = true;
+	prUnixCmd { arg postOutput = true;
 		_String_POpen
 		^this.primitiveFailed
 	}
 
 	// runs a unix command and sends stdout to the post window
-	unixCmd {
-		arg action, postOutput = true;
+	unixCmd { arg action, postOutput = true;
 		var pid;
 		pid = this.prUnixCmd(postOutput);
 		if(action.notNil) {
@@ -29,15 +26,14 @@ String[char] : RawArray {
 	}
 
 	// Like unixCmd but gets the result into a string
-	unixCmdGetStdOut {
+	unixCmdGetStdOut { arg maxLineLength=1024;
 		var pipe, lines, line;
 
 		pipe = Pipe.new(this, "r");
 		lines = "";
-		line = pipe.getLine;
+		line = pipe.getLine(maxLineLength);
 		while({line.notNil}, {lines = lines ++ line ++ "\n"; line = pipe.getLine; });
 		pipe.close;
-
 		^lines;
 	}
 
@@ -71,13 +67,34 @@ String[char] : RawArray {
 		^Platform.resourceDir
 	}
 
-	compare { arg aString, ignoreCase=false; _StringCompare }
-	< { arg aString; ^this.compare(aString, false) < 0 }
-	> { arg aString; ^this.compare(aString, false) > 0 }
-	<= { arg aString; ^this.compare(aString, false) <= 0 }
-	>= { arg aString; ^this.compare(aString, false) >= 0 }
-	== { arg aString; ^this.compare(aString, false) == 0 }
-	!= { arg aString; ^this.compare(aString, false) != 0 }
+	compare { arg aString, ignoreCase=false;
+		_StringCompare
+		this.primitiveFailed;
+	}
+	< { arg aString;
+		if(aString.isString.not) { ^false };
+		^this.compare(aString, false) < 0
+	}
+	> { arg aString;
+		if(aString.isString.not) { ^false };
+		^this.compare(aString, false) > 0
+	}
+	<= { arg aString;
+		if(aString.isString.not) { ^false };
+		^this.compare(aString, false) <= 0
+	}
+	>= { arg aString;
+		if(aString.isString.not) { ^false };
+		^this.compare(aString, false) >= 0
+	}
+	== { arg aString;
+		if(aString.isString.not) { ^false };
+		^this.compare(aString, false) == 0
+	}
+	!= { arg aString;
+		if(aString.isString.not) { ^true }
+		^this.compare(aString, false) != 0
+	}
 	hash { _StringHash }
 
 	// no sense doing collect as per superclass collection
@@ -204,8 +221,8 @@ String[char] : RawArray {
 	}
 
 	findRegexp { arg regexp, offset = 0;
-       _String_FindRegexp
-       ^this.primitiveFailed
+		_String_FindRegexp
+		^this.primitiveFailed
 	}
 
 	findAllRegexp { arg string, offset = 0;
@@ -238,12 +255,20 @@ String[char] : RawArray {
 		^indices
 	}
 	replace { arg find, replace;
-		^super.replace(find, replace).join
+		var index, out = "", array = this, findSize = max(find.size, 1);
+		while {
+			(index = array.find(find)).notNil
+		}{
+			out = out ++ array.keep(index) ++ replace;
+			array = array.drop(index + findSize);
+		};
+		^out ++ array
 	}
 
 
 	escapeChar { arg charToEscape; // $"
 		_String_EscapeChar
+		^this.primitiveFailed;
 	}
 	shellQuote {
 		^"'"++this.replace("'","'\\''")++"'"
@@ -296,7 +321,7 @@ String[char] : RawArray {
 	*readNew { arg file;
 		^file.readAllString;
 	}
-	prCat { arg aString; _ArrayCat }
+	prCat { arg aString; _ArrayCat; ^this.primitiveFailed; }
 
 	printOn { arg stream;
 		stream.putAll(this);

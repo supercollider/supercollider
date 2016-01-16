@@ -54,6 +54,9 @@ ScIDE {
 		})
 		.put(\recordingDuration, { | theChanger, what, duration |
 			this.send(\recordingDuration, duration.asString);
+		})
+		.put(\dumpOSC, { | volume, what, code |
+			this.send( if(code.asBoolean, \dumpOSCStarted, \dumpOSCStopped) );
 		});
 
 		volumeController.remove;
@@ -418,11 +421,11 @@ ScIDE {
 		this.send(\enableDocumentTextMirror, [bool]);
 	}
 
-	*send {|id, data|
+	*send { |id, data|
 		defer {
 			this.prSend(id, data)
 		}
-	}
+    }
 
 
 	// PRIVATE ///////////////////////////////////////////////////////////
@@ -797,6 +800,7 @@ Document {
 
 	prGetSelectionStart {|id|
 		_ScIDE_GetDocSelectionStart
+		^this.primitiveFailed;
 	}
 
 	selectionSize {
@@ -805,6 +809,7 @@ Document {
 
 	prGetSelectionRange {|id|
 		_ScIDE_GetDocSelectionRange
+		^this.primitiveFailed;
 	}
 
 	string { | rangestart, rangesize = 1 |

@@ -351,7 +351,7 @@ QStandardItemModel * LookupDialog::modelForClass(const QString &className, const
             parentItem->appendRow(makeDialogItem(klass->name.get(), displayPath,
                                                  klass->definition.path.get(),
                                                  klass->definition.position,
-                                                 klass->name.get(), QString(""),
+                                                 klass->name.get(), QStringLiteral(""),
                                                  true ));
         }
 

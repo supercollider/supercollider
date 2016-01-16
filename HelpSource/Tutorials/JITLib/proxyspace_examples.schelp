@@ -646,12 +646,14 @@ q.use({
 });
 )
 
+(
 // wait for the booted server
-s.boot;
-
-// play the proxy at \out
-p.play(\out);
-q.play; // out is the default output
+s.waitForBoot({
+	// play the proxy at \out
+	p.play(\out);
+	q.play; // out is the default output
+});
+)
 ::
 
 subsection::external access

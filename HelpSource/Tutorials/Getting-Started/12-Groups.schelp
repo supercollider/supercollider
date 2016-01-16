@@ -109,7 +109,7 @@ section::The Root Node and the Default Group
 When a server app is booted there is a special group created with a node ID of 0. This represents the top of the server's node tree. There is a special server abstraction object to represent this, called RootNode. In addition there is another group created with an ID of 1, called the default group. This is the default target for all Nodes and is what you will get if you supply a Server as a target. If you don't specify a target or pass in nil, you will get the default group of the default Server.
 
 code::
-Server.default.boot;
+s.boot;
 a = Synth.new(\default); // creates a synth in the default group of the default Server
 a.group; // Returns a Group object. Note the ID of 1 (the default group) in the post window
 ::

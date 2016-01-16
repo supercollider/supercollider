@@ -175,8 +175,7 @@ static int getSCObjectForNSObject(PyrSlot *slot, id nsObject, NSString *type, VM
             array = newPyrArray(g->gc, 4, 0, false);
             array->size = 4;
             nilSlots(array->slots, array->size);
-            SetObject(dict->slots + ivxIdentDict_array, array);
-            g->gc->GCWrite(dict, array);
+            SetObject(dict->slots + ivxIdentDict_array, array); // we know that dict is white so don't need GCWrite
             SetObject(slot, dict);
             
             NSEnumerator *enumerator = [nsObject keyEnumerator];
@@ -245,7 +244,7 @@ QC_LANG_PRIMITIVE( QQuartzComposer_SetInputPort, 2, PyrSlot *r, PyrSlot *a, VMGl
     if( NotSym( a ) ) return errWrongType;
     PyrSymbol *keysymbol = slotRawSymbol( a );
     
-    qcSCObjectDebugMsg( 1, slotRawObject(r), QString("SET: %1").arg(keysymbol->name) );
+    qcSCObjectDebugMsg( 1, slotRawObject(r), QStringLiteral("SET: %1").arg(keysymbol->name) );
     
     NSString *key = [NSString stringWithCString:keysymbol->name encoding: NSUTF8StringEncoding];
     if(!(view->hasInputKey(key))) {
@@ -271,7 +270,7 @@ QC_LANG_PRIMITIVE( QQuartzComposer_GetInputPort, 1, PyrSlot *r, PyrSlot *a, VMGl
     if( NotSym(a) ) return errWrongType;
     PyrSymbol *keysymbol = slotRawSymbol( a );
     
-    qcSCObjectDebugMsg( 1, slotRawObject(r), QString("GET: %1").arg(keysymbol->name) );
+    qcSCObjectDebugMsg( 1, slotRawObject(r), QStringLiteral("GET: %1").arg(keysymbol->name) );
     
     NSString *key = [NSString stringWithCString: keysymbol->name encoding: NSUTF8StringEncoding];
     if(!(view->hasInputKey(key))) {
@@ -296,7 +295,7 @@ QC_LANG_PRIMITIVE( QQuartzComposer_GetOutputPort, 1, PyrSlot *r, PyrSlot *a, VMG
     if( NotSym(a) ) return errWrongType;
     PyrSymbol *keysymbol = slotRawSymbol( a );
     
-    qcSCObjectDebugMsg( 1, slotRawObject(r), QString("GET: %1").arg(keysymbol->name) );
+    qcSCObjectDebugMsg( 1, slotRawObject(r), QStringLiteral("GET: %1").arg(keysymbol->name) );
     
     NSString *key = [NSString stringWithCString: keysymbol->name encoding: NSUTF8StringEncoding];
     if(!(view->hasOutputKey(key))) {

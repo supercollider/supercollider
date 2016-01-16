@@ -44,7 +44,7 @@
 	}
 }
 
- + Dictionary {
++ Dictionary {
 	/*
 		This method was introducing a conflict with the use of .gui(view,bounds)
 		which is what the Object.gui system expects everything to be able to respond to.
@@ -66,4 +66,3 @@
 		})
 	}
 }
-

@@ -81,7 +81,7 @@ Pspawner({ | sp |
 
 
 (
-// example 2: create 5 streams at 4 second intervals
+// example 2: create 6 streams at 4 second intervals
 // then delete them in the order they were created
 
 Pspawner({ | sp |
@@ -105,37 +105,36 @@ Pspawner({ | sp |
 (
 // example 3: define a Pspawner and use Pattern manipulations
 p = Pspawner({ | sp |
+	var pat = Pbrown( -7, 7, 3);
 
-	sp.par(Pbind(*[octave: 5, degree: Pbrown( -7, 7, 3), dur: 0.2]) );
-
+	sp.par(Pbind(*[octave: 5, degree: pat, dur: 1/4]) );
 	sp.wait(2);
-	sp.par(Pbind(*[octave: 5, degree: Pbrown( -7, 7, 3), dur: 0.1]) );
-	sp.wait(1);
-	sp.par(Pbind(*[octave: 6, degree: Pbrown( -7, 7, 3), dur: 0.05]) );
-	sp.wait(0.5);
-
+	sp.par(Pbind(*[octave: 6, degree: pat, dur: 1/8]) );
+	sp.wait(3);
+	sp.par(Pbind(*[octave: 7, degree: pat, dur: 1/6, db: -20]) );
 	sp.wait(4);
-	sp.par(Pbind(*[octave: 5, degree: Pbrown( -7, 7, 3), dur: 0.2]) );
-
-	sp.wait(4);
+	sp.par(Pbind(*[octave: 4, degree: pat, dur: 1/4]) );
+	
+	sp.wait(8);
 	sp.suspendAll;
 });
 )
 
 // play the basic patten
-( p.play )
+p.play;
 
 (
-// manipulate it with Pchain
+// manipulate basic pattern with Pchain
 Pchain(
-	Pbind(*[ctranspose: 0 + Pwhite(-0.1, 0.1)]),
-	Pbind(*[mtranspose: Pkey(\mtranspose) + Pstutter(8, Prand([0,[-3,0,2],[0,2,4,6,8,10]], inf)) ] ),
-	Pn(Pseq([p, (type:\rest, dur: 0.4)]) ),
+	Pbind(*[mtranspose: Pkey(\mtranspose) + Pstutter(8, Prand([0,[0,3,-2],[0,2,4]], inf)) ] ), //make some notes into triads
+	Pbind(*[ctranspose: Pwhite(-0.1, 0.1)]), //add random detuning to notes
+	Pbind(*[\scale, Scale.minor]), //alter the scale
+	Pn(Pseq([p, (type:\rest, dur: 1.0)]) ), //repeat the pattern after a 1 second pause
 	Pbind(*[
 		db: Pstep(Pseq([-10, -13, -13, -11, -13, -13], inf), 0.1) - 10,
-		mtranspose: Pstep(Pwhite(-7, 7), Prand([5,4,2],inf) )
- 	])
- ).play(protoEvent: Event.default)
+		mtranspose: Pstep(Pwhite(-7,7), Prand([5,4,2],inf) ) //random modal transposition
+	])
+).play(protoEvent: Event.default)
 )
 
 // example 4: altering the contents of the Pspawner from separate code

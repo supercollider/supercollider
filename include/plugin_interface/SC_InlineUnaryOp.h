@@ -35,59 +35,27 @@
 #include <smmintrin.h>
 #endif
 
-// FIXME: we should use better detection methods or remove c++98 support
-#if _XOPEN_SOURCE >= 600 || _ISOC99_SOURCE /* c99 compliant compiler */
-#define HAVE_C99
-#endif
-
-#ifndef HAVE_C99
-/* needed for msvc compiler at least */
-template <typename float_type>
-inline float_type trunc(float_type arg)
-{
-	if(arg > float_type(0))
-		return std::floor(arg);
-	else
-		return std::ceil(arg);
-}
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
 inline bool sc_isnan(float x)
 {
-#if __cplusplus >= 201103L
 	return std::isnan(x);
-#else
-	return (!(x >= 0.f || x <= 0.f));
-#endif
 }
 
 inline bool sc_isnan(double x)
 {
-#if __cplusplus >= 201103L
 	return std::isnan(x);
-#else
-	return (!(x >= 0.0 || x <= 0.0));
-#endif
 }
 
 inline bool sc_isfinite(float x)
 {
-#if __cplusplus >= 201103L
 	return std::isfinite(x);
-#else
-	return !sc_isnan(x) && (std::abs(x) == std::numeric_limits<float>::infinity());
-#endif
 }
 
 inline bool sc_isfinite(double x)
 {
-#if __cplusplus >= 201103L
 	return std::isfinite(x);
-#else
-	return !sc_isnan(x) && (std::abs(x) != std::numeric_limits<double>::infinity());
-#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -112,13 +80,7 @@ inline float32 zapgremlins(float32 x)
 
 inline float32 sc_log2(float32 x)
 {
-#if __cplusplus >= 201103L
 	return std::log2(x);
-#elif defined(HAVE_C99)
-	return ::log2f(std::abs(x));
-#else
-	return static_cast<float32>(std::log(std::abs(x)) * (float32)rlog2);
-#endif
 }
 
 inline float32 sc_log10(float32 x)
@@ -275,14 +237,7 @@ inline float32 taylorsin(float32 x)
 
 inline float32 sc_trunc(float32 x)
 {
-#ifdef __SSE__
-	return (int)x;
-#endif
-#ifdef HAVE_C99
-	return truncf(x);
-#else
-	return trunc(x);
-#endif
+	return std::trunc(x);
 }
 
 
@@ -290,8 +245,7 @@ inline float32 sc_ceil(float32 x)
 {
 #ifdef __SSE4_1__
 	__m128 a = _mm_set_ss(x);
-	const int cntrl = _MM_FROUND_TO_POS_INF;
-	__m128 b = _mm_round_ss(a, a, cntrl);
+	__m128 b = _mm_round_ss(a, a, _MM_FROUND_TO_POS_INF);
 	return _mm_cvtss_f32(b);
 #else
 	return std::ceil(x);
@@ -302,8 +256,7 @@ inline float32 sc_floor(float32 x)
 {
 #ifdef __SSE4_1__
 	__m128 a = _mm_set_ss(x);
-	const int cntrl = _MM_FROUND_TO_NEG_INF;
-	__m128 b = _mm_round_ss(a, a, cntrl);
+	__m128 b = _mm_round_ss(a, a, _MM_FROUND_TO_NEG_INF);
 	return _mm_cvtss_f32(b);
 #else
 	return std::floor(x);
@@ -350,16 +303,9 @@ inline float32 sc_CalcFeedback(float32 delaytime, float32 decaytime)
 	if (delaytime == 0.f || decaytime == 0.f)
 		return 0.f;
 
-#ifdef HAVE_C99
-	float32 absret = static_cast<float32>(exp(log001 * delaytime / sc_abs(decaytime)));
-	float32 ret = copysignf(absret, decaytime);
+	float32 absret = static_cast<float32>( std::exp(log001 * delaytime / std::abs(decaytime)));
+	float32 ret = std::copysign(absret, decaytime);
 	return ret;
-#else
-	if (decaytime > 0.f)
-		return static_cast<float32>(exp(log001 * delaytime / decaytime));
-	else
-		return static_cast<float32>(-exp(log001 * delaytime / -decaytime));
-#endif
 
 }
 
@@ -392,11 +338,7 @@ inline float64 zapgremlins(float64 x)
 
 inline float64 sc_log2(float64 x)
 {
-#ifdef HAVE_C99
-	return ::log2(std::abs(x));
-#else
-	return std::log(std::abs(x)) * rlog2;
-#endif
+	return std::log2(std::abs(x));
 }
 
 inline float64 sc_log10(float64 x)
@@ -552,10 +494,7 @@ inline float64 taylorsin(float64 x)
 
 inline float64 sc_trunc(float64 x)
 {
-#ifdef __SSE2__
-	return (long)(x);
-#endif
-	return trunc(x);
+	return std::trunc(x);
 }
 
 inline float64 sc_ceil(float64 x)

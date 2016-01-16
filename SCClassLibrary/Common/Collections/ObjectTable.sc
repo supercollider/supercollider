@@ -1,5 +1,4 @@
-TwoWayIdentityDictionary : Collection
-{
+TwoWayIdentityDictionary : Collection {
 	var idToObj, objToID;
 
 	*new {
@@ -34,9 +33,19 @@ TwoWayIdentityDictionary : Collection
 	at { arg id;
 		^idToObj.at(id);
 	}
+
 	getID { arg obj;
 		^objToID.at(obj);
 	}
+
+	storeItemsOn { arg stream, itemsPerLine = 5;
+		^idToObj.storeItemsOn(stream, itemsPerLine)
+	}
+
+	printItemsOn { arg stream, itemsPerLine = 5;
+		^idToObj.printItemsOn(stream, itemsPerLine)
+	}
+
 
 	// PRIVATE
 	init {
@@ -51,8 +60,7 @@ UniqueID {
 	*next  { ^id = id + 1; }
 }
 
-ObjectTable : TwoWayIdentityDictionary
-{
+ObjectTable : TwoWayIdentityDictionary {
 	classvar <global;
 
 

@@ -16,7 +16,7 @@ UGen : AbstractFunction {
 	*newFromDesc { arg rate, numOutputs, inputs, specialIndex;
 		^super.new.rate_(rate).inputs_(inputs).specialIndex_(specialIndex)
 	}
- 	*multiNew { arg ... args;
+	*multiNew { arg ... args;
 		^this.multiNewList(args);
 	}
 
@@ -38,21 +38,21 @@ UGen : AbstractFunction {
 		^results
 	}
 
- 	init { arg ... theInputs;
- 		// store the inputs as an array
- 		inputs = theInputs;
- 	}
- 	copy {
- 		// you can't really copy a UGen without disturbing the Synth.
- 		// Usually you want the same object. This makes .dup work
- 		^this
- 	}
+	init { arg ... theInputs;
+		// store the inputs as an array
+		inputs = theInputs;
+	}
+	copy {
+		// you can't really copy a UGen without disturbing the Synth.
+		// Usually you want the same object. This makes .dup work
+		^this
+	}
 
- 	madd { arg mul = 1.0, add = 0.0;
- 		^MulAdd(this, mul, add);
- 	}
- 	range { arg lo = 0.0, hi = 1.0;
- 		var mul, add;
+	madd { arg mul = 1.0, add = 0.0;
+		^MulAdd(this, mul, add);
+	}
+	range { arg lo = 0.0, hi = 1.0;
+		var mul, add;
 		if (this.signalRange == \bipolar, {
 			mul = (hi - lo) * 0.5;
 			add = mul + lo;
@@ -60,15 +60,15 @@ UGen : AbstractFunction {
 			mul = (hi - lo) ;
 			add = lo;
 		});
- 		^MulAdd(this, mul, add);
- 	}
- 	exprange { arg lo = 0.01, hi = 1.0;
+		^MulAdd(this, mul, add);
+	}
+	exprange { arg lo = 0.01, hi = 1.0;
 		^if (this.signalRange == \bipolar) {
 			this.linexp(-1, 1, lo, hi, nil)
 		} {
 			this.linexp(0, 1, lo, hi, nil)
 		};
- 	}
+	}
 
 	curverange { arg lo = 0.00, hi = 1.0, curve = -4;
 		^if (this.signalRange == \bipolar) {
@@ -78,36 +78,36 @@ UGen : AbstractFunction {
 		};
 	}
 
- 	unipolar { arg mul = 1;
- 		^this.range(0, mul)
- 	}
+	unipolar { arg mul = 1;
+		^this.range(0, mul)
+	}
 
- 	bipolar { arg mul = 1;
- 		^this.range(mul.neg, mul)
-  	}
+	bipolar { arg mul = 1;
+		^this.range(mul.neg, mul)
+	}
 
- 	clip { arg lo = 0.0, hi = 1.0;
+	clip { arg lo = 0.0, hi = 1.0;
 		^if(rate == \demand){
 			max(lo, min(hi, this))
 		}{
 			Clip.perform(Clip.methodSelectorForRate(rate), this, lo, hi)
 		}
- 	}
+	}
 
- 	fold { arg lo = 0.0, hi = 0.0;
+	fold { arg lo = 0.0, hi = 0.0;
 		^if(rate == \demand) {
- 			this.notYetImplemented(thisMethod)
- 		} {
+			this.notYetImplemented(thisMethod)
+		} {
 			Fold.perform(Fold.methodSelectorForRate(rate), this, lo, hi)
- 		}
- 	}
- 	wrap { arg lo = 0.0, hi = 1.0;
+		}
+	}
+	wrap { arg lo = 0.0, hi = 1.0;
 		^if(rate == \demand) {
 			this.notYetImplemented(thisMethod)
 		} {
 			Wrap.perform(Wrap.methodSelectorForRate(rate), this, lo, hi)
 		}
- 	}
+	}
 	blend { arg that, blendFrac = 0.5;
 		var pan;
 		^if (rate == \demand || that.rate == \demand) {
@@ -126,7 +126,7 @@ UGen : AbstractFunction {
 		}
 	}
 
- 	minNyquist { ^min(this, SampleRate.ir * 0.5) }
+	minNyquist { ^min(this, SampleRate.ir * 0.5) }
 
 	lag { arg t1=0.1, t2;
 		^if(t2.isNil) {
@@ -304,11 +304,11 @@ UGen : AbstractFunction {
 	}
 
 	checkSameRateAsFirstInput {
- 		if (rate !== inputs.at(0).rate) {
- 			^("first input is not" + rate + "rate: " + inputs.at(0) + inputs.at(0).rate);
- 		};
- 		^this.checkValidInputs
- 	}
+		if (rate !== inputs.at(0).rate) {
+			^("first input is not" + rate + "rate: " + inputs.at(0) + inputs.at(0).rate);
+		};
+		^this.checkValidInputs
+	}
 
 	argNameForInputAt { arg i;
 		var method = this.class.class.findMethod(this.methodSelectorForRate);
@@ -331,7 +331,7 @@ UGen : AbstractFunction {
 	isUGen { ^true }
 
 	poll { arg trig = 10, label, trigid = -1;
-          ^Poll(trig, this, label, trigid)
+		^Poll(trig, this, label, trigid)
 	}
 
 	dpoll { arg label, run = 1, trigid = -1;
@@ -339,7 +339,7 @@ UGen : AbstractFunction {
 	}
 
 	checkBadValues { arg id = 0, post = 2;
-			// add the UGen to the tree but keep "this" as the output
+		// add the UGen to the tree but keep "this" as the output
 		CheckBadValues.perform(this.methodSelectorForRate, this, id, post);
 	}
 
@@ -358,28 +358,28 @@ UGen : AbstractFunction {
 	}
 
 	*replaceZeroesWithSilence { arg array;
- 		// this replaces zeroes with audio rate silence.
- 		// sub collections are deep replaced
- 		var numZeroes, silentChannels, pos = 0;
+		// this replaces zeroes with audio rate silence.
+		// sub collections are deep replaced
+		var numZeroes, silentChannels, pos = 0;
 
- 		numZeroes = array.count({ arg item; item == 0.0 });
- 		if (numZeroes == 0, { ^array });
+		numZeroes = array.count({ arg item; item == 0.0 });
+		if (numZeroes == 0, { ^array });
 
- 		silentChannels = Silent.ar(numZeroes).asCollection;
- 		array.do({ arg item, i;
- 			var res;
- 			if (item == 0.0, {
- 				array.put(i, silentChannels.at(pos));
- 				pos = pos + 1;
- 			}, {
- 				if(item.isSequenceableCollection, {
- 					res = this.replaceZeroesWithSilence(item);
- 					array.put(i, res);
- 				});
- 			});
- 		});
- 		^array;
- 	}
+		silentChannels = Silent.ar(numZeroes).asCollection;
+		array.do({ arg item, i;
+			var res;
+			if (item == 0.0, {
+				array.put(i, silentChannels.at(pos));
+				pos = pos + 1;
+			}, {
+				if(item.isSequenceableCollection, {
+					res = this.replaceZeroesWithSilence(item);
+					array.put(i, res);
+				});
+			});
+		});
+		^array;
+	}
 
 
 	// PRIVATE

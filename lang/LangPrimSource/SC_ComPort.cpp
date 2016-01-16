@@ -305,7 +305,19 @@ void SC_TcpClientPort::handleMsgReceived(const boost::system::error_code &error,
 	startReceive();
 }
 
-void SC_TcpClientPort::Close()
+int SC_TcpClientPort::Close()
 {
-	socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
+	boost::system::error_code error;
+
+	socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both, error);
+	socket.close();
+	
+	if (error) {
+		if( error != boost::asio::error::not_connected ) {
+			::error("Socket shutdown failed, closed socket anyway. %s", error.message().c_str() );
+			return errFailed;
+		}
+	}
+	
+	return errNone;
 }

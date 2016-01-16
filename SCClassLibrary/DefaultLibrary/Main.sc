@@ -19,7 +19,6 @@ Main : Process {
 		// set the 's' interpreter variable to the default server.
 		interpreter.s = Server.default;
 
-		GeneralHID.fromID( this.platform.defaultHIDScheme );
 		openPorts = Set[NetAddr.langPort];
 		this.platform.startup;
 		StartUp.run;
@@ -97,7 +96,7 @@ Main : Process {
 
 	prOpenUDPPort {|portNum|
 		_OpenUDPPort
-		^false
+		^this.primitiveFailed;
 	}
 
 //	override in platform specific extension
@@ -165,8 +164,6 @@ Main : Process {
 	escapeWindow { platform.escapeWindow }
 
 	exitFullScreen { platform.exitFullScreen }
-
-	setDeferredTaskInterval { |interval| platform.setDeferredTaskInterval(interval) }
 
 	*overwriteMsg { _MainOverwriteMsg ^this.primitiveFailed }
 }

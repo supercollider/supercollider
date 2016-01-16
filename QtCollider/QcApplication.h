@@ -56,6 +56,7 @@ class QcApplication : public QApplication
     static void processEvents() {
       if( _instance ) _instance->_eventProc.work();
     }
+    static inline bool SystemHasMouseWheel() { return _systemHasMouseWheel; }
 
   public Q_SLOTS:
     void interpret( const QString & code, bool printResult = true );
@@ -70,6 +71,7 @@ class QcApplication : public QApplication
 
     static QMutex _mutex;
     static QcApplication *_instance;
+    static bool _systemHasMouseWheel;
 
     bool _handleCmdPeriod;
 };

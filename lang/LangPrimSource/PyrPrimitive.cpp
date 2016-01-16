@@ -2082,7 +2082,7 @@ private:
 		PyrMethod *meth = slotRawMethod(&frame->method);
 		PyrMethodRaw * methraw = METHRAW(meth);
 
-		PyrObject* debugFrameObj = instantiateObject(g->gc, getsym("DebugFrame")->u.classobj, 0, false, true);
+		PyrObject* debugFrameObj = instantiateObject(g->gc, getsym("DebugFrame")->u.classobj, 0, false, false);
 		SetObject(outSlot, debugFrameObj);
 
 		SetObject(debugFrameObj->slots + 0, meth);
@@ -2956,9 +2956,9 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 }
 
 void initPyrThread(VMGlobals *g, PyrThread *thread, PyrSlot *func, int stacksize, PyrInt32Array* rgenArray,
-	double beats, double seconds, PyrSlot* clock, bool collect);
+	double beats, double seconds, PyrSlot* clock, bool runGC);
 void initPyrThread(VMGlobals *g, PyrThread *thread, PyrSlot *func, int stacksize, PyrInt32Array* rgenArray,
-	double beats, double seconds, PyrSlot* clock, bool collect)
+	double beats, double seconds, PyrSlot* clock, bool runGC)
 {
 	PyrObject *array;
 	PyrGC* gc = g->gc;
@@ -2966,9 +2966,9 @@ void initPyrThread(VMGlobals *g, PyrThread *thread, PyrSlot *func, int stacksize
 	slotCopy(&thread->func, func);
 	gc->GCWrite(thread, func);
 
-	array = newPyrArray(gc, stacksize, 0, collect);
+	array = newPyrArray(gc, stacksize, 0, runGC);
 	SetObject(&thread->stack, array);
-	gc->GCWrite(thread, array);
+	gc->GCWriteNew(thread, array); // we know array is white so we can use GCWriteNew
 
 	SetInt(&thread->state, tInit);
 
@@ -3065,7 +3065,7 @@ int prThreadRandSeed(struct VMGlobals *g, int numArgsPushed)
 		g->rgen = (RGen*)(rgenArray->i);
 	}
 	SetObject(&thread->randData, rgenArray);
-	g->gc->GCWrite(thread, rgenArray);
+	g->gc->GCWriteNew(thread, rgenArray); // we know rgenArray is white so we can use GCWriteNew
 
 	return errNone;
 }
@@ -3459,10 +3459,13 @@ static int prLanguageConfig_getLibraryPaths(struct VMGlobals * g, int numArgsPus
 	size_t numberOfPaths = dirVector.size();
 	PyrObject * resultArray = newPyrArray(g->gc, numberOfPaths, 0, true);
 	SetObject(result, resultArray);
-	resultArray->size = numberOfPaths;
 
-	for (size_t i = 0; i != numberOfPaths; ++i)
-		SetObject(resultArray->slots + i, newPyrString(g->gc, dirVector[i].c_str(), 0, true));
+	for (size_t i = 0; i != numberOfPaths; ++i) {
+		PyrString * pyrString = newPyrString(g->gc, dirVector[i].c_str(), 0, true);
+		SetObject(resultArray->slots + i, pyrString);
+		g->gc->GCWriteNew( resultArray,  pyrString ); // we know pyrString is white so we can use GCWriteNew
+		resultArray->size++;
+	}
 	return errNone;
 }
 
@@ -4260,7 +4263,7 @@ void initWiiPrimitives();
 #endif
 	
 #endif
-#ifdef SC_DARWIN
+#ifdef __APPLE__
 void initCoreAudioPrimitives();
 	initCoreAudioPrimitives();
 #endif
@@ -4295,7 +4298,7 @@ void deinitPrimitives()
 	void deinitHIDAPIPrimitives();
 	deinitHIDAPIPrimitives();
 
-#if defined(HAVE_PORTMIDI)
+#if defined(HAVE_PORTMIDI) || defined(HAVE_ALSA)
 void deinitMIDIPrimitives();
 	deinitMIDIPrimitives();
 #endif

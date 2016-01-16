@@ -27,6 +27,7 @@
 #include "OSC_Packet.h"
 #include "SC_SyncCondition.h"
 #include "PriorityQueue.h"
+#include <boost/optional.hpp>
 
 #include <SC_Lock.h>
 
@@ -174,6 +175,7 @@ protected:
 	int mNumSamplesPerCallback;
 	uint32 mPreferredHardwareBufferFrameSize;
 	uint32 mPreferredSampleRate;
+	boost::optional<uint32> mExplicitSampleRate;
 	double mBuffersPerSecond;
 	double mAvgCPU, mPeakCPU;
 	int mPeakCounter, mMaxPeakCounter;

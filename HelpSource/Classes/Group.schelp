@@ -140,10 +140,7 @@ Queries the server for a message describing this group's node subtree. (Sends a 
 
 Examples::
 code::
-(
-s = Server.default; // just to be sure
 s.boot;
-)
 
 (
 SynthDef("help-Group-moto-rev", { arg out=0,freq=100,ffreq=120;

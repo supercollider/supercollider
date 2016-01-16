@@ -4,7 +4,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 	set(LINUX 1)
 endif()
 
-cmake_minimum_required (VERSION 2.8.11)
+cmake_minimum_required (VERSION 2.8.12)
 
 include("SCVersion.txt")
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}${PROJECT_VERSION_PATCH}")
@@ -72,15 +72,14 @@ elseif(${CMAKE_CXX_COMPILER} MATCHES icpc)
 
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     set(CMAKE_COMPILER_IS_CLANG 1)
-
-else()
-
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+    set(CMAKE_COMPILER_IS_CLANG 1)
 endif()
 
 if(APPLE)
-	set_property(DIRECTORY
-		APPEND
-		PROPERTY COMPILE_DEFINITIONS SC_DARWIN)
+	if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+		set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install" CACHE STRING "Cmake install path")
+	endif()
 elseif(UNIX)
 	add_definitions(-DSC_DATA_DIR="${CMAKE_INSTALL_PREFIX}/share/SuperCollider")
 endif()
@@ -88,14 +87,12 @@ endif()
 if(WIN32)
     add_definitions(-DWIN32_LEAN_AND_MEAN -DNOMINMAX -D_WIN32_WINNT=0x0500)
 
-    # correctly link the static Boost Thread library:
-    add_definitions(-DBOOST_THREAD_USE_LIB)
     #avoid unnecesary autolink
     add_definitions(-DBOOST_DATE_TIME_NO_LIB -DBOOST_ALL_NO_LIB)
 
 endif()
 
-add_definitions(-DBOOST_CHRONO_HEADER_ONLY)
+add_definitions(-DBOOST_CHRONO_HEADER_ONLY -DBOOST_NO_AUTO_PTR)
 
 #############################################
 # Options
@@ -406,6 +403,15 @@ if(INSTALL_HELP)
 		install( CODE
 					"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/HelpSource ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource )" )
 	elseif(NOT APPLE)
+		install(DIRECTORY HelpSource
+			DESTINATION ${auxresourcesdir}
+			REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
+			PATTERN "*~" EXCLUDE
+			PATTERN "*#" EXCLUDE
+		)
+	endif()
+
+	if(NOT APPLE)
 		install(DIRECTORY HelpSource
 			DESTINATION ${auxresourcesdir}
 			REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE

@@ -66,10 +66,10 @@ EnvGen : UGen { // envelope generator
 		^super.new.rate_(rate).addToSynth.init([gate, levelScale, levelBias, timeScale, doneAction]
 			++ envArray.dereference);
 	}
- 	init { arg theInputs;
- 		// store the inputs as an array
- 		inputs = theInputs;
- 	}
+	init { arg theInputs;
+		// store the inputs as an array
+		inputs = theInputs;
+	}
 	argNamesInputsOffset { ^2 }
 }
 

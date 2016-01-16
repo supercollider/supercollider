@@ -78,7 +78,7 @@ EZNumber : EZGui{
 		numberView.scroll=true;
 
 		numberView.action = {
-			this.valueAction_(numberView.value);
+			this.valueActionIfChanged_(numberView.value);
 		};
 
 		if (initAction) {

@@ -62,7 +62,7 @@ Wavetable.chebyFill(513, [0.3, -0.8, 1.1]).plot;
 // example) cancels out any DC offsets (third version), while making full use
 // of the -1 to 1 range.
 (
-s.waitForBoot {
+s.waitForBoot({
 	var amplitudes = [0, 1, 1, -2, 1];
 	var wavs = [
 		Wavetable.chebyFill(256+1, amplitudes, normalize: true, zeroOffset: true),
@@ -74,7 +74,7 @@ s.waitForBoot {
 		var in = SinOsc.ar(100, 0, SinOsc.kr(0.1, 0, 0.5, 0.5));
 		Shaper.ar(b, in ) ++ LeakDC.ar(Shaper.ar(b[1], in))
 	}.scope;
-}
+})
 )
 x.free; b.do(_.free); b = nil;
 ::
