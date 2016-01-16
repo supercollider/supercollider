@@ -107,15 +107,12 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 	World *world = mWorld;
 
 	// NOTE: code here is adapted from the SC_Jack.cpp, the version not using the DLL
-	// HostTime hostTimeOld = getTime();
 
 	// Use Xenomai-friendly clock_gettime() -- note that this requires a -wrap argument to build
 	clock_gettime(CLOCK_HOST_REALTIME, &tspec);
 
 	double hostSecs = (double)tspec.tv_sec + (double)tspec.tv_nsec * 1.0e-9;
-	//double hostSecs = secondsSinceEpoch(hostTime);
 	double sampleTime = static_cast<double>(belaContext->audioSampleCount);
-	//double sampleTime = (double)(jack_frame_time(client) + jack_frames_since_cycle_start(client));
 
 	if (mStartHostSecs == 0) {
 		mStartHostSecs = hostSecs;
@@ -129,11 +126,6 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 		}
 		mOSCincrement = (int64)(mOSCincrementNumerator / smoothSampleRate);
 		mSmoothSampleRate = smoothSampleRate;
-#if 0
-		double avgSampleRate = (sampleTime - mStartSampleTime)/(hostSecs - mStartHostSecs);
-		double jitter = (smoothSampleRate * (hostSecs - mPrevHostSecs)) - (sampleTime - mPrevSampleTime);
-		double drift = (smoothSampleRate - mSampleRate) * (hostSecs - mStartHostSecs);
-#endif
 	}
 
 	mPrevHostSecs = hostSecs;
@@ -172,7 +164,6 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 		//}
 
 		// main loop
-		// int64 oscTime = mOSCbuftime = OSCTime(hostTime); // TODO CHECK: - (int64)(mMaxOutputLatency * kSecondsToOSCunits + .5);
 		int64 oscTime = mOSCbuftime = ((int64)(tspec.tv_sec + kSECONDS_FROM_1900_to_1970) << 32)
 									  + (int64)(tspec.tv_nsec * kNanosToOSCunits);
 
@@ -191,10 +182,8 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 			// copy+touch inputs
 			tch = inTouched;
 			for (int k = 0; k < minInputs; ++k) {
-				//sc_jack_sample_t *src = inBuffers[k] + bufFramePos;
 				float *dst = inBuses + k * bufFrames;
 				for (int n = 0; n < bufFrames; ++n) {
-					//*dst++ = *src++;
 					*dst++ = belaContext->audioIn[n * numInputs + k];
 				}
 				*tch++ = bufCounter;
@@ -225,16 +214,13 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 			tch = outTouched;
 
 			for (int k = 0; k < minOutputs; ++k) {
-				//sc_jack_sample_t *dst = outBuffers[k] + bufFramePos;
 				if (*tch++ == bufCounter) {
 					float *src = outBuses + k * bufFrames;
 					for (int n = 0; n < bufFrames; ++n) {
-						//*dst++ = *src++;
 						belaContext->audioOut[n * numOutputs + k] = *src++;
 					}
 				} else {
 					for (int n = 0; n < bufFrames; ++n) {
-						//*dst++ = 0.0f;
 						belaContext->audioOut[n * numOutputs + k] = 0.0f;
 					}
 				}
@@ -263,7 +249,6 @@ bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 				// sets default values in the data structure which specifies the BeagleRT settings, including
 				// frame sizes, numbers of channels, volume levels and other parameters.
 
-	//NO, stick with bela documented layout    settings.interleave = 0; // we prefer our io buffers non-interleaved thanks
 	if(mPreferredHardwareBufferFrameSize){
 		settings.periodSize = mPreferredHardwareBufferFrameSize / 2; // halved because "periodSize" in bela is for the analogue pins not the audio pins
 	}
@@ -310,7 +295,6 @@ void cleanup(BeagleRTContext *belaContext, void *userData)
 bool SC_BelaDriver::DriverStart()
 {
 	scprintf("SC_BelaDriver: >>DriverStart\n");
-	// Start the audio device running
 	if(BeagleRT_startAudio()) {
 		scprintf("Error in SC_BelaDriver::DriverStart(): unable to start real-time audio\n");
 		return false;
@@ -321,7 +305,6 @@ bool SC_BelaDriver::DriverStart()
 bool SC_BelaDriver::DriverStop()
 {
 	scprintf("SC_BelaDriver: >>DriverStop\n");
-	// Stop the audio device
 	BeagleRT_stopAudio();
 	return true;
 }
