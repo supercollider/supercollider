@@ -711,6 +711,6 @@ PluginLoad(MulAdd)
 	ft = inTable;
 
 	registerUnit<MulAdd>(ft, "MulAdd" );
-	registerUnit<MulAdd>(ft, "Sum3"	  );
-	registerUnit<MulAdd>(ft, "Sum4"	  );
+	registerUnit<Sum3>(ft,   "Sum3"   );
+	registerUnit<Sum4>(ft,   "Sum4"   );
 }
