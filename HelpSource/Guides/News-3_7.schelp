@@ -15,6 +15,8 @@ LIST::
 ##Menu entries for Recording, scope and server inspection
 ##Modify and query IDE documents from sclang
 ##Support for the Atom text editor
+##Integrated help with auto-completion
+##Autosave feature
 ::
 
 SECTION:: Language-side news
