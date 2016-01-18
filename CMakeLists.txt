@@ -103,8 +103,13 @@ option(FINAL_BUILD "Build as single source file." OFF)
 
 option(FFT_GREEN "Use internal 'Green' FFT lib rather than FFTW. (Not recommended.)" OFF)
 
-option(SSE "Compile with support for SSE instructions." ON)
-option(SSE2 "Compile with support for SSE2 instructions." ON)
+if(NOT ${CMAKE_SYSTEM_PROCESSOR} MATCHES "^arm")
+    option(SSE "Compile with support for SSE instructions." ON)
+    option(SSE2 "Compile with support for SSE2 instructions." ON)
+else() # ARM platforms do not have SSE
+    set(SSE OFF)
+    set(SSE2 OFF)
+endif()
 
 set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio})")
 
