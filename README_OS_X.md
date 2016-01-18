@@ -37,6 +37,11 @@ Prerequisites:
 -------------
 
 - **Xcode** can be installed free from the Apple App Store or downloaded from: http://developer.apple.com
+
+  - Xcode 5 may work
+  - Xcode 6 is known to work - it requires a Mac running OS X version 10.9.4 or later or 10.10
+  - Later versions should definitely work
+
 - **Xcode command line tools** must be installed - after installing Xcode, this can be done from the Xcode preferences or from the command line:
   `xcode-select --install`
 - **homebrew** is recommended to install required libraries
@@ -44,7 +49,7 @@ Prerequisites:
 - **git, cmake, readline, and qt5**, installed via homebrew:
   `brew install git cmake readline qt5`
 
-As of this writing the latest stable Qt is 5.5.x. The 5.6 beta has also been reported to work fine.
+  As of this writing the latest stable Qt is 5.5.x. The 5.6 beta has also been reported to work fine.
 
 Obtaining the source code
 ----------------------------
@@ -188,7 +193,7 @@ manually editing build/CMakeCache.txt.
 
 Common arguments to control the build configuration are:
 
-  * Control the location where SC get's installed. The following line moves it to the Applications folder
+  * Control the location where SC gets installed. The following line moves it to the Applications folder
     (which means you need to use `sudo`):
 
     `-DCMAKE_INSTALL_PREFIX=/Applications`
