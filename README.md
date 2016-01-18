@@ -44,9 +44,8 @@ Get the source code
 My modified source code is in this git branch here, called `bela_hackery`. If your Bela is still connected to the network you can grab it directly:
 
     cd /extrabela
-    git clone -b bela_hackery https://github.com/danstowell/supercollider.git
+    git clone --recursive -b bela_hackery https://github.com/danstowell/supercollider.git
     cd supercollider
-    git submodule init && git submodule update
 
 I believe that the Bela system image already includes most of SuperCollider's build dependencies. The updates to cmake/gcc described above are incurred because I'm using the latest `master` version of SC rather than 3.6.
 
@@ -62,9 +61,10 @@ Then here's how to build:
 
     mkdir /extrabela/build
     cd /extrabela/build
-    # note that we must explicitly choose the compiler version 4.7 here too -- here's the version WITHOUT ccache
+    # note that we must explicitly choose the compiler version 4.7 here too, whichever command we use
+    # here's the command WITHOUT ccache
     cmake /extrabela/supercollider -DCMAKE_C_COMPILER=gcc-4.7 -DCMAKE_CXX_COMPILER=g++-4.7 -DNOVA_SIMD=OFF -DSSE=OFF -DSSE2=OFF -DINSTALL_HELP=OFF -DSC_QT=OFF -DSC_IDE=OFF -DSUPERNOVA=OFF -DNO_AVAHI=ON -DNATIVE=ON -DENABLE_TESTSUITE=OFF -DAUDIOAPI=bela
-    # or here's the version WITH ccache
+    # or here's the command WITH ccache
     cmake /extrabela/supercollider -DCMAKE_C_COMPILER=/usr/lib/ccache/gcc-4.7 -DCMAKE_CXX_COMPILER=/usr/lib/ccache/g++-4.7 -DNOVA_SIMD=OFF -DSSE=OFF -DSSE2=OFF -DINSTALL_HELP=OFF -DSC_QT=OFF -DSC_IDE=OFF -DSUPERNOVA=OFF -DNO_AVAHI=ON -DNATIVE=ON -DENABLE_TESTSUITE=OFF -DAUDIOAPI=bela
     make
 
