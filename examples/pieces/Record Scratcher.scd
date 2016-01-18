@@ -12,7 +12,7 @@ SynthDef(\scratch, {arg gate = 1, buffer;
 	buf = PlayBuf.ar(1, buffer, speed * BufRateScale.kr(buffer), loop: 1);
 	Out.ar(0, (buf * env).dup );
 }).add;
-	
+
 s.boot;
 
 // path to a mono soundfile here
@@ -27,4 +27,3 @@ b = Synth(\scratch, [\buffer, a]);
 b.set(\gate, 0);
 // free the Buffer
 a.free;
-

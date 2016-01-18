@@ -382,7 +382,6 @@ elseif(APPLE)
 		ChangeLog
 		COPYING
 		AUTHORS
-		MOVED_STUFF.txt
 	)
 else()
 	set( AdditionalInstallFiles
