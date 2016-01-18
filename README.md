@@ -104,3 +104,19 @@ So now you should have scsynth running on the device. You should be able to send
     SynthDef("mic", { Out.ar(0, SoundIn.ar([0,1])) }).add;
     z = Synth("mic");
     z.free;
+
+Optional: Bonus level: Even more plugins (sc3-plugins)
+======================================================
+
+SuperCollider comes with a built-in set of UGen plugins but there's an extra set in the community **sc3-plugins** project. So if you want, you can also install those:
+
+    cd /extrabela
+    git clone --recursive https://github.com/supercollider/sc3-plugins.git
+    cd sc3-plugins
+    mkdir build
+    cd build
+    cmake -DSC_PATH=/extrabela/supercollider -DCMAKE_C_COMPILER=/usr/lib/ccache/gcc-4.7 -DCMAKE_CXX_COMPILER=/usr/lib/ccache/g++-4.7  ..
+    make
+    make install
+
+These are basically just the instructions from the README of [the sc3-plugins project](https://github.com/supercollider/sc3-plugins/).
