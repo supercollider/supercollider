@@ -1380,18 +1380,18 @@ static size_t fillClassRow(const PyrClass *classobj, PyrMethod** bigTable, boost
 
 	if (IsObj(&classobj->subclasses)) {
 		const PyrObject * subclasses = slotRawObject(&classobj->subclasses);
-		size_t numSubclasses = subclasses->size;
+		int numSubclasses = subclasses->size;
 
 		if( numSubclasses ) {
 
 			if( numSubclasses <= 2 ) {
-				for( int subClassIndex : boost::irange(0UL, numSubclasses) )
+				for( int subClassIndex : boost::irange(0, numSubclasses) )
 					result += fillClassRow( slotRawClass(&subclasses->slots[subClassIndex]), bigTable, pool );
 			} else {
 				typedef std::vector< boost::future<size_t> > VectorOfFutures;
 
 				VectorOfFutures subclassResults;
-				for( int subClassIndex : boost::irange(1UL, numSubclasses) ) {
+				for( int subClassIndex : boost::irange(1, numSubclasses) ) {
 					auto subclassResult = boost::async( pool, fillClassRow, slotRawClass(&subclasses->slots[subClassIndex]), bigTable, boost::ref(pool) );
 					subclassResults.emplace_back( std::move( subclassResult ) );
 				}
