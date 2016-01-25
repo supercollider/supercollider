@@ -136,7 +136,7 @@ ServerOptions {
 			o = o ++ " -H % %".format(inDevice.asString.quote, outDevice.asString.quote);
 		};
 		if (verbosity != 0, {
-			o = o ++ " -v " ++ verbosity;
+			o = o ++ " -V " ++ verbosity;
 		});
 		if (zeroConf.not, {
 			o = o ++ " -R 0";
