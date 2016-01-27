@@ -255,7 +255,7 @@ QuarkDetailView {
 		^view
 	}
 	update {
-		var tags, refspec, isInstalled = false, isDownloaded = false,
+		var tags, refspec, isInstalled = false, isDownloaded = false, path,
 			url,
 			webpage,
 			dependencies,
@@ -301,7 +301,9 @@ QuarkDetailView {
 			});
 
 			if(isDownloaded or: isInstalled, {
-				this.pushRow("Local path", makeBtn.value("Open Folder", {
+				path =  model.localPath;
+				if(path.size > 64) { path = "..." + path.keep(-64) };
+				this.pushRow("Local path", makeBtn.value("Open Folder:" + path, {
 					this.openLocalPath;
 				}));
 			});
