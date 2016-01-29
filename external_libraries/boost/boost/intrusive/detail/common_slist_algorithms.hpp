@@ -13,7 +13,11 @@
 #ifndef BOOST_INTRUSIVE_COMMON_SLIST_ALGORITHMS_HPP
 #define BOOST_INTRUSIVE_COMMON_SLIST_ALGORITHMS_HPP
 
-#if defined(_MSC_VER)
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
 #  pragma once
 #endif
 
@@ -42,7 +46,7 @@ class common_slist_algorithms
          ; this_node != (p_next = NodeTraits::get_next(p))
          ; p = p_next){
          //Logic error: possible use of linear lists with
-         //operations only permitted with lists
+         //operations only permitted with circular lists
          BOOST_INTRUSIVE_INVARIANT_ASSERT(p);
       }
       return p;
@@ -143,7 +147,7 @@ class common_slist_algorithms
             }
             BOOST_CATCH(...){
                node_traits::set_next(last_to_remove, new_f);
-               throw;
+               BOOST_RETHROW;
             }
             BOOST_CATCH_END
             node_traits::set_next(last_to_remove, new_f);

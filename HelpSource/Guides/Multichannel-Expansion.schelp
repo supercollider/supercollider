@@ -68,8 +68,8 @@ code::
 ::
 Also the various UGen convenience functions like code::.clip2::, code::.lag:: and code::.range:: :
 code::
-{ Saw.ar(LFNoise1.kr(1).range(100,[200,300]) }.play;
-{ Saw.ar(LFPulse.kr(1).range(100,[200,300]).lag([0.1,0.2]) }.play;
+{ Saw.ar(LFNoise1.kr(1).range(100,[200,300])) }.play;
+{ Saw.ar(LFPulse.kr(1).range(100,[200,300]).lag([0.1,0.2])) }.play;
 ::
 The expansion is handled by wrapper-methods defined in link::Classes/SequenceableCollection::.
 

@@ -14,10 +14,6 @@
 #ifndef BOOST_INTRUSIVE_AVLTREE_ALGORITHMS_HPP
 #define BOOST_INTRUSIVE_AVLTREE_ALGORITHMS_HPP
 
-#if defined(_MSC_VER)
-#  pragma once
-#endif
-
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/intrusive_fwd.hpp>
 
@@ -28,6 +24,11 @@
 #include <boost/intrusive/detail/ebo_functor_holder.hpp>
 #include <boost/intrusive/bstree_algorithms.hpp>
 
+#if defined(BOOST_HAS_PRAGMA_ONCE)
+#  pragma once
+#endif
+
+
 namespace boost {
 namespace intrusive {
 
@@ -35,7 +36,8 @@ namespace intrusive {
 
 template<class NodeTraits, class F>
 struct avltree_node_cloner
-   :  private detail::ebo_functor_holder<F>
+   //Use public inheritance to avoid MSVC bugs with closures
+   :  public detail::ebo_functor_holder<F>
 {
    typedef typename NodeTraits::node_ptr  node_ptr;
    typedef detail::ebo_functor_holder<F>  base_t;
@@ -45,6 +47,13 @@ struct avltree_node_cloner
    {}
 
    node_ptr operator()(const node_ptr & p)
+   {
+      node_ptr n = base_t::get()(p);
+      NodeTraits::set_balance(n, NodeTraits::get_balance(p));
+      return n;
+   }
+
+   node_ptr operator()(const node_ptr & p) const
    {
       node_ptr n = base_t::get()(p);
       NodeTraits::set_balance(n, NodeTraits::get_balance(p));
@@ -168,7 +177,7 @@ class avltree_algorithms
 
    //! @copydoc ::boost::intrusive::bstree_algorithms::swap_tree
    static void swap_tree(const node_ptr & header1, const node_ptr & header2);
-   
+
    #endif   //#ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
 
    //! @copydoc ::boost::intrusive::bstree_algorithms::swap_nodes(const node_ptr&,const node_ptr&)
@@ -604,7 +613,7 @@ class avltree_algorithms
       const node_ptr c = NodeTraits::get_right(a_oldleft);
       bstree_algo::rotate_left_no_parent_fix(a_oldleft, c);
       //No need to link c with a [NodeTraits::set_parent(c, a) + NodeTraits::set_left(a, c)]
-      //as c is not root and another rotation is coming 
+      //as c is not root and another rotation is coming
       bstree_algo::rotate_right(a, c, NodeTraits::get_parent(a), hdr);
       left_right_balancing(a, a_oldleft, c);
       return c;

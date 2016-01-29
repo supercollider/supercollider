@@ -14,7 +14,11 @@
 #ifndef BOOST_INTRUSIVE_SLIST_ITERATOR_HPP
 #define BOOST_INTRUSIVE_SLIST_ITERATOR_HPP
 
-#if defined(_MSC_VER)
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
 #  pragma once
 #endif
 
@@ -32,7 +36,7 @@ namespace intrusive {
 template<class ValueTraits, bool IsConst>
 class slist_iterator
 {
-   protected:
+   private:
    typedef iiterator
       <ValueTraits, IsConst, std::forward_iterator_tag> types_t;
 

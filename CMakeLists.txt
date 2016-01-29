@@ -87,8 +87,6 @@ endif()
 if(WIN32)
     add_definitions(-DWIN32_LEAN_AND_MEAN -DNOMINMAX -D_WIN32_WINNT=0x0500)
 
-    # correctly link the static Boost Thread library:
-    add_definitions(-DBOOST_THREAD_USE_LIB)
     #avoid unnecesary autolink
     add_definitions(-DBOOST_DATE_TIME_NO_LIB -DBOOST_ALL_NO_LIB)
 
@@ -103,8 +101,13 @@ option(FINAL_BUILD "Build as single source file." OFF)
 
 option(FFT_GREEN "Use internal 'Green' FFT lib rather than FFTW. (Not recommended.)" OFF)
 
-option(SSE "Compile with support for SSE instructions." ON)
-option(SSE2 "Compile with support for SSE2 instructions." ON)
+if(NOT ${CMAKE_SYSTEM_PROCESSOR} MATCHES "^arm")
+    option(SSE "Compile with support for SSE instructions." ON)
+    option(SSE2 "Compile with support for SSE2 instructions." ON)
+else() # ARM platforms do not have SSE
+    set(SSE OFF)
+    set(SSE2 OFF)
+endif()
 
 set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio})")
 

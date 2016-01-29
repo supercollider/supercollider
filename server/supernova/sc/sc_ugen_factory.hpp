@@ -236,7 +236,7 @@ private:
     std::vector<void*> open_handles;
 };
 
-extern sc_ugen_factory * sc_factory;
+extern std::unique_ptr<sc_ugen_factory> sc_factory;
 
 } /* namespace nova */
 

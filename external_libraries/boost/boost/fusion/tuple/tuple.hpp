@@ -1,86 +1,65 @@
 /*=============================================================================
-    Copyright (c) 2001-2011 Joel de Guzman
+    Copyright (c) 2014-2015 Kohei Takahashi
 
     Distributed under the Boost Software License, Version 1.0. (See accompanying
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 ==============================================================================*/
-#if !defined(FUSION_TUPLE_10032005_0810)
-#define FUSION_TUPLE_10032005_0810
+#ifndef FUSION_TUPLE_14122014_0102
+#define FUSION_TUPLE_14122014_0102
 
 #include <boost/fusion/support/config.hpp>
 #include <boost/fusion/tuple/tuple_fwd.hpp>
+
+///////////////////////////////////////////////////////////////////////////////
+// With no variadics, we will use the C++03 version
+///////////////////////////////////////////////////////////////////////////////
+#if !defined(BOOST_FUSION_HAS_VARIADIC_TUPLE)
+# include <boost/fusion/tuple/detail/tuple.hpp>
+#else
+
+///////////////////////////////////////////////////////////////////////////////
+// C++11 interface
+///////////////////////////////////////////////////////////////////////////////
 #include <boost/fusion/container/vector/vector.hpp>
 #include <boost/fusion/sequence/intrinsic/size.hpp>
 #include <boost/fusion/sequence/intrinsic/value_at.hpp>
 #include <boost/fusion/sequence/intrinsic/at.hpp>
 #include <boost/fusion/sequence/comparison.hpp>
 #include <boost/fusion/sequence/io.hpp>
-#include <boost/utility/enable_if.hpp>
-#include <boost/type_traits/is_const.hpp>
-#include <boost/config/no_tr1/utility.hpp>
-
-#if !defined(BOOST_FUSION_DONT_USE_PREPROCESSED_FILES)
-#include <boost/fusion/tuple/detail/preprocessed/tuple.hpp>
-#else
-#if defined(__WAVE__) && defined(BOOST_FUSION_CREATE_PREPROCESSED_FILES)
-#pragma wave option(preserve: 2, line: 0, output: "detail/preprocessed/tuple" FUSION_MAX_VECTOR_SIZE_STR ".hpp")
-#endif
-
-/*=============================================================================
-    Copyright (c) 2001-2011 Joel de Guzman
-
-    Distributed under the Boost Software License, Version 1.0. (See accompanying
-    file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-
-    This is an auto-generated file. Do not edit!
-==============================================================================*/
-
-#if defined(__WAVE__) && defined(BOOST_FUSION_CREATE_PREPROCESSED_FILES)
-#pragma wave option(preserve: 1)
-#endif
+#include <utility>
 
 namespace boost { namespace fusion
 {
-    template <BOOST_PP_ENUM_PARAMS(FUSION_MAX_VECTOR_SIZE, typename T)>
-    struct tuple : vector<BOOST_PP_ENUM_PARAMS(FUSION_MAX_VECTOR_SIZE, T)>
+    template <typename ...T>
+    struct tuple : vector<T...>
     {
-        typedef vector<
-            BOOST_PP_ENUM_PARAMS(FUSION_MAX_VECTOR_SIZE, T)>
-        base_type;
+        typedef vector<T...> base_type;
 
-        BOOST_FUSION_GPU_ENABLED tuple()
+        BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+        tuple()
             : base_type() {}
 
-        BOOST_FUSION_GPU_ENABLED tuple(tuple const& rhs)
-            : base_type(rhs) {}
+        template <typename ...U>
+        BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+        tuple(tuple<U...> const& other)
+            : base_type(other) {}
 
-        template <typename U1, typename U2>
-        BOOST_FUSION_GPU_ENABLED
-        tuple(std::pair<U1, U2> const& rhs)
-            : base_type(rhs) {}
+        template <typename ...U>
+        BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+        tuple(tuple<U...>&& other)
+            : base_type(std::move(other)) {}
 
-        #include <boost/fusion/tuple/detail/tuple_expand.hpp>
+        template <typename ...U>
+        /*BOOST_CONSTEXPR*/ BOOST_FUSION_GPU_ENABLED
+        explicit
+        tuple(U&&... args)
+            : base_type(std::forward<U>(args)...) {}
 
-        template <typename T>
-        BOOST_FUSION_GPU_ENABLED
-        tuple& operator=(T const& rhs)
+        template <typename U>
+        BOOST_CXX14_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+        tuple& operator=(U&& rhs)
         {
-            base_type::operator=(rhs);
-            return *this;
-        }
-
-        BOOST_FUSION_GPU_ENABLED
-        tuple& operator=(tuple const& rhs)
-        {
-            base_type::operator=(rhs);
-            return *this;
-        }
-
-        template <typename U1, typename U2>
-        BOOST_FUSION_GPU_ENABLED
-        tuple& operator=(std::pair<U1, U2> const& rhs)
-        {
-            base_type::operator=(rhs);
+            base_type::operator=(std::forward<U>(rhs));
             return *this;
         }
     };
@@ -92,19 +71,15 @@ namespace boost { namespace fusion
     struct tuple_element : result_of::value_at_c<Tuple, N> {};
 
     template <int N, typename Tuple>
-    BOOST_FUSION_GPU_ENABLED
-    inline typename
-        lazy_disable_if<
-            is_const<Tuple>
-          , result_of::at_c<Tuple, N>
-        >::type
+    BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
+    inline typename result_of::at_c<Tuple, N>::type
     get(Tuple& tup)
     {
         return at_c<N>(tup);
     }
 
     template <int N, typename Tuple>
-    BOOST_FUSION_GPU_ENABLED
+    BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
     inline typename result_of::at_c<Tuple const, N>::type
     get(Tuple const& tup)
     {
@@ -112,11 +87,6 @@ namespace boost { namespace fusion
     }
 }}
 
-#if defined(__WAVE__) && defined(BOOST_FUSION_CREATE_PREPROCESSED_FILES)
-#pragma wave option(output: null)
 #endif
-
-#endif // BOOST_FUSION_DONT_USE_PREPROCESSED_FILES
-
 #endif
 

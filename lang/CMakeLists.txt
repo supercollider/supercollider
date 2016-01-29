@@ -12,7 +12,6 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
 
                     ${YAMLCPP_INCLUDE_DIR}
 
-                    ${CMAKE_SOURCE_DIR}/external_libraries/threadpool
                     ${CMAKE_SOURCE_DIR}/external_libraries/boost_sync/include
 
                     LangSource

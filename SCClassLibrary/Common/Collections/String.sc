@@ -255,7 +255,14 @@ String[char] : RawArray {
 		^indices
 	}
 	replace { arg find, replace;
-		^super.replace(find, replace).join
+		var index, out = "", array = this, findSize = max(find.size, 1);
+		while {
+			(index = array.find(find)).notNil
+		}{
+			out = out ++ array.keep(index) ++ replace;
+			array = array.drop(index + findSize);
+		};
+		^out ++ array
 	}
 
 

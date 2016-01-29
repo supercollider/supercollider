@@ -1245,8 +1245,6 @@ struct K2A:
 	}
 };
 
-DEFINE_XTORS(K2A)
-
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 void A2K_next(A2K *unit, int inNumSamples)
@@ -1365,8 +1363,6 @@ struct DC:
 			set_vec<type>(out(0), value, inNumSamples);
 	}
 };
-
-DEFINE_XTORS(DC)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -3672,11 +3668,11 @@ PluginLoad(LF)
 	DefineSimpleUnit(Impulse);
 	DefineSimpleUnit(VarSaw);
 	DefineSimpleUnit(SyncSaw);
-	DefineSimpleUnit(K2A);
+	registerUnit<K2A>( ft, "K2A" );
 	DefineSimpleUnit(A2K);
 	DefineSimpleUnit(T2K);
 	DefineSimpleUnit(T2A);
-	DefineSimpleUnit(DC);
+	registerUnit<DC>( ft, "DC" );
 	DefineSimpleUnit(Line);
 	DefineSimpleUnit(XLine);
 

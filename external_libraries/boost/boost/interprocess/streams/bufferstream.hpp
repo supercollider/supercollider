@@ -35,7 +35,11 @@
 #ifndef BOOST_INTERPROCESS_BUFFERSTREAM_HPP
 #define BOOST_INTERPROCESS_BUFFERSTREAM_HPP
 
-#if defined(_MSC_VER)
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+#
+#if defined(BOOST_HAS_PRAGMA_ONCE)
 #  pragma once
 #endif
 
@@ -196,8 +200,8 @@ class basic_bufferbuf
 
       if(!in && !out)
          return pos_type(off_type(-1));
-      else if((in  && (!(m_mode & std::ios_base::in) || this->gptr() == 0)) ||
-               (out && (!(m_mode & std::ios_base::out) || this->pptr() == 0)))
+      else if((in  && (!(m_mode & std::ios_base::in) || (off != 0 && this->gptr() == 0) )) ||
+               (out && (!(m_mode & std::ios_base::out) || (off != 0 && this->pptr() == 0))))
          return pos_type(off_type(-1));
 
       std::streamoff newoff;

@@ -14,10 +14,6 @@
 #ifndef BOOST_INTRUSIVE_SLIST_HPP
 #define BOOST_INTRUSIVE_SLIST_HPP
 
-#if defined(_MSC_VER)
-#  pragma once
-#endif
-
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/intrusive_fwd.hpp>
 
@@ -32,6 +28,7 @@
 #include <boost/intrusive/detail/default_header_holder.hpp>
 #include <boost/intrusive/detail/uncast.hpp>
 #include <boost/intrusive/detail/mpl.hpp>
+#include <boost/intrusive/detail/iterator.hpp>
 #include <boost/intrusive/detail/slist_iterator.hpp>
 #include <boost/intrusive/detail/array_initializer.hpp>
 #include <boost/intrusive/detail/exception_disposer.hpp>
@@ -39,14 +36,18 @@
 #include <boost/intrusive/detail/key_nodeptr_comp.hpp>
 #include <boost/intrusive/detail/simple_disposers.hpp>
 #include <boost/intrusive/detail/size_holder.hpp>
+#include <boost/intrusive/detail/algorithm.hpp>
 
 #include <boost/move/utility_core.hpp>
 #include <boost/static_assert.hpp>
 
-#include <functional>
-#include <algorithm>
+#include <boost/intrusive/detail/minimal_less_equal_header.hpp>//std::less
 #include <cstddef>   //std::size_t
-#include <utility>   //std::pair
+#include <boost/intrusive/detail/minimal_pair_header.hpp>   //std::pair
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
+#  pragma once
+#endif
 
 namespace boost {
 namespace intrusive {
@@ -139,7 +140,8 @@ class slist_impl
    typedef typename node_traits::node                                node;
    typedef typename node_traits::node_ptr                            node_ptr;
    typedef typename node_traits::const_node_ptr                      const_node_ptr;
-   typedef HeaderHolder                                             header_holder_type;
+   typedef typename detail::get_header_holder_type
+      < value_traits, HeaderHolder >::type                           header_holder_type;
 
    static const bool constant_time_size = 0 != (BoolFlags & slist_bool_flags::constant_time_size_pos);
    static const bool stateful_value_traits = detail::is_stateful_value_traits<value_traits>::value;
@@ -313,7 +315,7 @@ class slist_impl
    //!
    //! <b>Effects</b>: Constructs a list equal to [b ,e).
    //!
-   //! <b>Complexity</b>: Linear in std::distance(b, e). No copy constructors are called.
+   //! <b>Complexity</b>: Linear in distance(b, e). No copy constructors are called.
    //!
    //! <b>Throws</b>: If value_traits::node_traits::node
    //!   constructor throws (this does not happen with predefined Boost.Intrusive hooks).
@@ -414,8 +416,7 @@ class slist_impl
    void push_front(reference value)
    {
       node_ptr to_insert = priv_value_traits().to_node_ptr(value);
-      if(safemode_or_autounlink)
-         BOOST_INTRUSIVE_SAFE_HOOK_DEFAULT_ASSERT(node_algorithms::inited(to_insert));
+      BOOST_INTRUSIVE_SAFE_HOOK_DEFAULT_ASSERT(!safemode_or_autounlink || node_algorithms::inited(to_insert));
       if(cache_last){
          if(this->empty()){
             this->set_last_node(to_insert);
@@ -440,8 +441,7 @@ class slist_impl
    {
       BOOST_STATIC_ASSERT((cache_last));
       node_ptr n = priv_value_traits().to_node_ptr(value);
-      if(safemode_or_autounlink)
-         BOOST_INTRUSIVE_SAFE_HOOK_DEFAULT_ASSERT(node_algorithms::inited(n));
+      BOOST_INTRUSIVE_SAFE_HOOK_DEFAULT_ASSERT(!safemode_or_autounlink || node_algorithms::inited(n));
       node_algorithms::link_after(this->get_last_node(), n);
       if(cache_last){
          this->set_last_node(n);
@@ -766,6 +766,34 @@ class slist_impl
       rollback.release();
    }
 
+   //! <b>Requires</b>: Disposer::operator()(pointer) shouldn't throw.
+   //!   Cloner should yield to nodes equivalent to the original nodes.
+   //!
+   //! <b>Effects</b>: Erases all the elements from *this
+   //!   calling Disposer::operator()(pointer), clones all the
+   //!   elements from src calling Cloner::operator()(reference)
+   //!   and inserts them on *this.
+   //!
+   //!   If cloner throws, all cloned elements are unlinked and disposed
+   //!   calling Disposer::operator()(pointer).
+   //!
+   //! <b>Complexity</b>: Linear to erased plus inserted elements.
+   //!
+   //! <b>Throws</b>: If cloner throws.
+   template <class Cloner, class Disposer>
+   void clone_from(BOOST_RV_REF(slist_impl) src, Cloner cloner, Disposer disposer)
+   {
+      this->clear_and_dispose(disposer);
+      detail::exception_disposer<slist_impl, Disposer>
+         rollback(*this, disposer);
+      iterator prev(this->cbefore_begin());
+      iterator b(src.begin()), e(src.end());
+      for(; b != e; ++b){
+         prev = this->insert_after(prev, *cloner(*b));
+      }
+      rollback.release();
+   }
+
    //! <b>Requires</b>: value must be an lvalue and prev_p must point to an element
    //!   contained by the list or to end().
    //!
@@ -782,8 +810,7 @@ class slist_impl
    iterator insert_after(const_iterator prev_p, reference value)
    {
       node_ptr n = priv_value_traits().to_node_ptr(value);
-      if(safemode_or_autounlink)
-         BOOST_INTRUSIVE_SAFE_HOOK_DEFAULT_ASSERT(node_algorithms::inited(n));
+      BOOST_INTRUSIVE_SAFE_HOOK_DEFAULT_ASSERT(!safemode_or_autounlink || node_algorithms::inited(n));
       node_ptr prev_n(prev_p.pointed_node());
       node_algorithms::link_after(prev_n, n);
       if(cache_last && (this->get_last_node() == prev_n)){
@@ -813,8 +840,7 @@ class slist_impl
       node_ptr prev_n(prev_p.pointed_node());
       for (; f != l; ++f, ++count){
          const node_ptr n = priv_value_traits().to_node_ptr(*f);
-         if(safemode_or_autounlink)
-            BOOST_INTRUSIVE_SAFE_HOOK_DEFAULT_ASSERT(node_algorithms::inited(n));
+         BOOST_INTRUSIVE_SAFE_HOOK_DEFAULT_ASSERT(!safemode_or_autounlink || node_algorithms::inited(n));
          node_algorithms::link_after(prev_n, n);
          prev_n = n;
       }
@@ -907,7 +933,7 @@ class slist_impl
    }
 
    //! <b>Effects</b>: Erases the range (before_f, l) from
-   //!   the list. n must be std::distance(before_f, l) - 1.
+   //!   the list. n must be distance(before_f, l) - 1.
    //!   No destructors are called.
    //!
    //! <b>Returns</b>: the first element remaining beyond the removed elements,
@@ -975,7 +1001,7 @@ class slist_impl
    {  return this->erase_after(this->previous(f), l);  }
 
    //! <b>Effects</b>: Erases the range [f, l) from
-   //!   the list. n must be std::distance(f, l).
+   //!   the list. n must be distance(f, l).
    //!   No destructors are called.
    //!
    //! <b>Returns</b>: the first element remaining beyond the removed elements,
@@ -1026,6 +1052,15 @@ class slist_impl
 
    /// @cond
 
+   static iterator s_insert_after(const_iterator const prev_p, reference value)
+   {
+      BOOST_STATIC_ASSERT(((!cache_last)&&(!constant_time_size)&&(!stateful_value_traits)));
+      node_ptr const n = value_traits::to_node_ptr(value);
+      BOOST_INTRUSIVE_SAFE_HOOK_DEFAULT_ASSERT(!safemode_or_autounlink || node_algorithms::inited(n));
+      node_algorithms::link_after(prev_p.pointed_node(), n);
+      return iterator (n, const_value_traits_ptr());
+   }
+
    template<class Disposer>
    static iterator s_erase_after_and_dispose(const_iterator prev, Disposer disposer)
    {
@@ -1040,6 +1075,23 @@ class slist_impl
          node_algorithms::init(to_erase);
       disposer(value_traits::to_value_ptr(to_erase));
       return it.unconst();
+   }
+
+   template<class Disposer>
+   static iterator s_erase_after_and_dispose(const_iterator before_f, const_iterator l, Disposer disposer)
+   {
+      BOOST_STATIC_ASSERT(((!cache_last)&&(!constant_time_size)&&(!stateful_value_traits)));
+      node_ptr bfp(before_f.pointed_node()), lp(l.pointed_node());
+      node_ptr fp(node_traits::get_next(bfp));
+      node_algorithms::unlink_after(bfp, lp);
+      while(fp != lp){
+         node_ptr to_erase(fp);
+         fp = node_traits::get_next(fp);
+         if(safemode_or_autounlink)
+            node_algorithms::init(to_erase);
+         disposer(value_traits::to_value_ptr(to_erase));
+      }
+      return l.unconst();
    }
 
    static iterator s_erase_after(const_iterator prev)
@@ -1265,7 +1317,7 @@ class slist_impl
    //! <b>Requires</b>: prev_pos must be a dereferenceable iterator in *this or be
    //!   before_begin(), and before_f and before_l belong to x and
    //!   ++before_f != x.end() && before_l != x.end() and
-   //!   n == std::distance(before_f, before_l).
+   //!   n == distance(before_f, before_l).
    //!
    //! <b>Effects</b>: Transfers the range (before_f, before_l] from list x to this
    //!   list, after the element pointed by p. No destructors or copy constructors are called.
@@ -1350,7 +1402,7 @@ class slist_impl
 
    //! <b>Requires</b>: pos must be a dereferenceable iterator in *this
    //!   and f and l belong to x and f and l a valid range on x.
-   //!   n == std::distance(f, l).
+   //!   n == distance(f, l).
    //!
    //! <b>Effects</b>: Transfers the range [f, l) from list x to this
    //!   list, before the element pointed by pos.
@@ -1712,7 +1764,7 @@ class slist_impl
    static const_iterator s_iterator_to(const_reference value)
    {
       BOOST_STATIC_ASSERT((!stateful_value_traits));
-      reference r =*pointer_traits<pointer>::const_cast_from(pointer_traits<const_pointer>::pointer_to(value));
+      reference r =*detail::uncast(pointer_traits<const_pointer>::pointer_to(value));
       return const_iterator(value_traits::to_node_ptr(r), const_value_traits_ptr());
    }
 
@@ -1742,7 +1794,7 @@ class slist_impl
    //! <b>Note</b>: Iterators and references are not invalidated.
    const_iterator iterator_to(const_reference value) const
    {
-      reference r =*pointer_traits<pointer>::const_cast_from(pointer_traits<const_pointer>::pointer_to(value));
+      reference r =*detail::uncast(pointer_traits<const_pointer>::pointer_to(value));
       BOOST_INTRUSIVE_INVARIANT_ASSERT (linear || !node_algorithms::inited(this->priv_value_traits().to_node_ptr(r)));
       return const_iterator(this->priv_value_traits().to_node_ptr(r), this->priv_value_traits_ptr());
    }
@@ -1828,7 +1880,7 @@ class slist_impl
 
    //! <b>Requires</b>: prev_pos must be a dereferenceable iterator in *this or be
    //!   before_begin(), and f and before_l belong to another slist.
-   //!   n == std::distance(f, before_l) + 1.
+   //!   n == distance(f, before_l) + 1.
    //!
    //! <b>Effects</b>: Transfers the range [f, before_l] to this
    //!   list, after the element pointed by prev_pos.
@@ -1847,7 +1899,7 @@ class slist_impl
       if(n){
          BOOST_INTRUSIVE_INVARIANT_ASSERT(n > 0);
          BOOST_INTRUSIVE_INVARIANT_ASSERT
-            (size_type(std::distance
+            (size_type(boost::intrusive::iterator_distance
                ( iterator(f, this->priv_value_traits_ptr())
                , iterator(before_l, this->priv_value_traits_ptr())))
             +1 == n);
@@ -1902,6 +1954,33 @@ class slist_impl
       if (constant_time_size)
          BOOST_INTRUSIVE_INVARIANT_ASSERT(this->priv_size_traits().get_size() == node_count);
    }
+
+
+   friend bool operator==(const slist_impl &x, const slist_impl &y)
+   {
+      if(constant_time_size && x.size() != y.size()){
+         return false;
+      }
+      return ::boost::intrusive::algo_equal(x.cbegin(), x.cend(), y.cbegin(), y.cend());
+   }
+
+   friend bool operator!=(const slist_impl &x, const slist_impl &y)
+   {  return !(x == y); }
+
+   friend bool operator<(const slist_impl &x, const slist_impl &y)
+   {  return ::boost::intrusive::algo_lexicographical_compare(x.begin(), x.end(), y.begin(), y.end());  }
+
+   friend bool operator>(const slist_impl &x, const slist_impl &y)
+   {  return y < x;  }
+
+   friend bool operator<=(const slist_impl &x, const slist_impl &y)
+   {  return !(y < x);  }
+
+   friend bool operator>=(const slist_impl &x, const slist_impl &y)
+   {  return !(x < y);  }
+
+   friend void swap(slist_impl &x, slist_impl &y)
+   {  x.swap(y);  }
 
    private:
    void priv_splice_after(const node_ptr & prev_pos_n, slist_impl &x, const node_ptr & before_f_n, const node_ptr & before_l_n)
@@ -2042,130 +2121,6 @@ class slist_impl
    }
 };
 
-#if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
-template<class T, class ...Options>
-#else
-template<class ValueTraits, class SizeType, std::size_t BoolFlags, typename HeaderHolder>
-#endif
-inline bool operator<
-#if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
-(const slist_impl<T, Options...> &x, const slist_impl<T, Options...> &y)
-#else
-( const slist_impl<ValueTraits, SizeType, BoolFlags, HeaderHolder> &x
-, const slist_impl<ValueTraits, SizeType, BoolFlags, HeaderHolder> &y)
-#endif
-{  return std::lexicographical_compare(x.begin(), x.end(), y.begin(), y.end());  }
-
-#if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
-template<class T, class ...Options>
-#else
-template<class ValueTraits, class SizeType, std::size_t BoolFlags, typename HeaderHolder>
-#endif
-bool operator==
-#if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
-(const slist_impl<T, Options...> &x, const slist_impl<T, Options...> &y)
-#else
-( const slist_impl<ValueTraits, SizeType, BoolFlags, HeaderHolder> &x
-, const slist_impl<ValueTraits, SizeType, BoolFlags, HeaderHolder> &y)
-#endif
-{
-   typedef slist_impl<ValueTraits, SizeType, BoolFlags, HeaderHolder> slist_type;
-   typedef typename slist_type::const_iterator const_iterator;
-   const bool C = slist_type::constant_time_size;
-   if(C && x.size() != y.size()){
-      return false;
-   }
-   const_iterator end1 = x.end();
-
-   const_iterator i1 = x.begin();
-   const_iterator i2 = y.begin();
-   if(C){
-      while (i1 != end1 && *i1 == *i2) {
-         ++i1;
-         ++i2;
-      }
-      return i1 == end1;
-   }
-   else{
-      const_iterator end2 = y.end();
-      while (i1 != end1 && i2 != end2 && *i1 == *i2) {
-         ++i1;
-         ++i2;
-      }
-      return i1 == end1 && i2 == end2;
-   }
-}
-
-#if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
-template<class T, class ...Options>
-#else
-template<class ValueTraits, class SizeType, std::size_t BoolFlags, typename HeaderHolder>
-#endif
-inline bool operator!=
-#if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
-(const slist_impl<T, Options...> &x, const slist_impl<T, Options...> &y)
-#else
-( const slist_impl<ValueTraits, SizeType, BoolFlags, HeaderHolder> &x
-, const slist_impl<ValueTraits, SizeType, BoolFlags, HeaderHolder> &y)
-#endif
-{  return !(x == y); }
-
-#if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
-template<class T, class ...Options>
-#else
-template<class ValueTraits, class SizeType, std::size_t BoolFlags, typename HeaderHolder>
-#endif
-inline bool operator>
-#if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
-(const slist_impl<T, Options...> &x, const slist_impl<T, Options...> &y)
-#else
-( const slist_impl<ValueTraits, SizeType, BoolFlags, HeaderHolder> &x
-, const slist_impl<ValueTraits, SizeType, BoolFlags, HeaderHolder> &y)
-#endif
-{  return y < x;  }
-
-#if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
-template<class T, class ...Options>
-#else
-template<class ValueTraits, class SizeType, std::size_t BoolFlags, typename HeaderHolder>
-#endif
-inline bool operator<=
-#if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
-(const slist_impl<T, Options...> &x, const slist_impl<T, Options...> &y)
-#else
-( const slist_impl<ValueTraits, SizeType, BoolFlags, HeaderHolder> &x
-, const slist_impl<ValueTraits, SizeType, BoolFlags, HeaderHolder> &y)
-#endif
-{  return !(y < x);  }
-
-#if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
-template<class T, class ...Options>
-#else
-template<class ValueTraits, class SizeType, std::size_t BoolFlags, typename HeaderHolder>
-#endif
-inline bool operator>=
-#if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
-(const slist_impl<T, Options...> &x, const slist_impl<T, Options...> &y)
-#else
-( const slist_impl<ValueTraits, SizeType, BoolFlags, HeaderHolder> &x
-, const slist_impl<ValueTraits, SizeType, BoolFlags, HeaderHolder> &y)
-#endif
-{  return !(x < y);  }
-
-#if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
-template<class T, class ...Options>
-#else
-template<class ValueTraits, class SizeType, std::size_t BoolFlags, typename HeaderHolder>
-#endif
-inline void swap
-#if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
-(slist_impl<T, Options...> &x, slist_impl<T, Options...> &y)
-#else
-( slist_impl<ValueTraits, SizeType, BoolFlags, HeaderHolder> &x
-, slist_impl<ValueTraits, SizeType, BoolFlags, HeaderHolder> &y)
-#endif
-{  x.swap(y);  }
-
 //! Helper metafunction to define a \c slist that yields to the same type when the
 //! same options (either explicitly or implicitly) are used.
 #if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED) || defined(BOOST_INTRUSIVE_VARIADIC_TEMPLATES)
@@ -2184,17 +2139,16 @@ struct make_slist
          Options...
          #endif
       >::type packed_options;
+
    typedef typename detail::get_value_traits
       <T, typename packed_options::proto_value_traits>::type value_traits;
-   typedef typename detail::get_header_holder_type
-      < value_traits, typename packed_options::header_holder_type >::type header_holder_type;
    typedef slist_impl
       < value_traits
       , typename packed_options::size_type
       ,  (std::size_t(packed_options::linear)*slist_bool_flags::linear_pos)
         |(std::size_t(packed_options::constant_time_size)*slist_bool_flags::constant_time_size_pos)
         |(std::size_t(packed_options::cache_last)*slist_bool_flags::cache_last_pos)
-      , header_holder_type
+      , typename packed_options::header_holder_type
       > implementation_defined;
    /// @endcond
    typedef implementation_defined type;
@@ -2253,11 +2207,19 @@ class slist
    {}
 
    slist(BOOST_RV_REF(slist) x)
-      :  Base(::boost::move(static_cast<Base&>(x)))
+      :  Base(BOOST_MOVE_BASE(Base, x))
    {}
 
    slist& operator=(BOOST_RV_REF(slist) x)
-   {  return static_cast<slist &>(this->Base::operator=(::boost::move(static_cast<Base&>(x))));  }
+   {  return static_cast<slist &>(this->Base::operator=(BOOST_MOVE_BASE(Base, x)));  }
+
+   template <class Cloner, class Disposer>
+   void clone_from(const slist &src, Cloner cloner, Disposer disposer)
+   {  Base::clone_from(src, cloner, disposer);  }
+
+   template <class Cloner, class Disposer>
+   void clone_from(BOOST_RV_REF(slist) src, Cloner cloner, Disposer disposer)
+   {  Base::clone_from(BOOST_MOVE_BASE(Base, src), cloner, disposer);  }
 
    static slist &container_from_end_iterator(iterator end_iterator)
    {  return static_cast<slist &>(Base::container_from_end_iterator(end_iterator));   }

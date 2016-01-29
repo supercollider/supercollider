@@ -24,7 +24,13 @@
 #if !defined(BOOST_ATOMIC_FORCE_FALLBACK)
 
 // Compiler-based backends
-#if ((defined(__GNUC__) && ((__GNUC__ * 100 + __GNUC_MINOR__) >= 407)) ||\
+#if (defined(__ibmxl__) || defined(__IBMCPP__)) && defined(__PPC__)
+
+// IBM XL C++ Compiler has to be checked before GCC/Clang as it pretends to be one but does not support __atomic* intrinsics.
+// It does support GCC inline assembler though.
+#define BOOST_ATOMIC_DETAIL_PLATFORM gcc_ppc
+
+#elif ((defined(__GNUC__) && ((__GNUC__ * 100 + __GNUC_MINOR__) >= 407)) ||\
     (defined(BOOST_CLANG) && ((__clang_major__ * 100 + __clang_minor__) >= 302))) &&\
     (\
         (__GCC_ATOMIC_BOOL_LOCK_FREE + 0) == 2 ||\

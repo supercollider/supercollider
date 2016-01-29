@@ -810,10 +810,11 @@ Plotter {
 		});
 	}
 
-	plot { |duration = 0.01, server, bounds, minval, maxval, separately = false|
+	plot { |duration = 0.01, server, bounds, minval= -1, maxval=1, separately = false|
 		var name = this.asCompileString, plotter;
 		if(name.size > 50 or: { name.includes(Char.nl) }) { name = "function plot" };
 		plotter = Plotter(name, bounds);
+		plotter.value = [0.0];
 		server = server ? Server.default;
 		server.waitForBoot {
 			this.loadToFloatArray(duration, server, { |array, buf|

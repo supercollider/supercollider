@@ -1,8 +1,5 @@
 #include <boost/test/unit_test.hpp>
 
-#include <boost/thread.hpp>
-#include <boost/bind.hpp>
-
 #include "utilities/callback_system.hpp"
 #include "utilities/callback_interpreter.hpp"
 #include "nova-tt/thread_priority.hpp"

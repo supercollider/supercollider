@@ -100,4 +100,17 @@ __attribute__((__strong__))
 }
 #endif // !defined(BOOST_NO_CXX11_INLINE_NAMESPACES)
 
+#if defined(BOOST_MSVC) || (defined(BOOST_WINDOWS) && defined(__clang__))
+// MSVC 2015 (a.k.a. 14) and clang-cl refuse to compile a constexpr constructor if there is a data member or a base class of a non-literal type.
+// See DR1911: http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_defects.html#1911
+// See also: https://github.com/boostorg/sync/pull/2
+#define BOOST_SYNC_DETAIL_NO_CONSTEXPR_WITH_NON_LITERAL_BASE
+#endif
+
+#if !defined(BOOST_SYNC_DETAIL_NO_CONSTEXPR_WITH_NON_LITERAL_BASE)
+#define BOOST_SYNC_DETAIL_CONSTEXPR_WITH_NON_LITERAL_BASE BOOST_CONSTEXPR
+#else
+#define BOOST_SYNC_DETAIL_CONSTEXPR_WITH_NON_LITERAL_BASE
+#endif
+
 #endif // BOOST_SYNC_DETAIL_CONFIG_HPP_INCLUDED_

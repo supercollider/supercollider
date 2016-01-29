@@ -16,7 +16,7 @@ if(AUDIOAPI STREQUAL "default")
 endif()
 
 if(NOT AUDIOAPI MATCHES "^(jack|coreaudio|portaudio)$")
-	message(WARNING "Unrecognised audio API: ${AUDIOAPI}")
+	message(FATAL_ERROR "Unrecognised audio API: ${AUDIOAPI}")
 endif()
 
 if(AUDIOAPI STREQUAL jack)
@@ -181,9 +181,9 @@ elseif(AUDIOAPI STREQUAL coreaudio)
 endif()
 
 if (Boost_FOUND)
-	target_link_libraries(libscsynth ${Boost_THREAD_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+	target_link_libraries(libscsynth ${Boost_SYSTEM_LIBRARY})
 else()
-	target_link_libraries(libscsynth boost_thread boost_system)
+	target_link_libraries(libscsynth boost_system)
 endif()
 
 if (WIN32)

@@ -214,6 +214,11 @@ inline PyrMethod* slotRawMethod(PyrSlot *slot)
 	return slot->u.om;
 }
 
+inline const PyrMethod* slotRawMethod(const PyrSlot *slot)
+{
+	return slot->u.om;
+}
+
 inline PyrThread* slotRawThread(PyrSlot *slot)
 {
 	return slot->u.ot;
@@ -239,12 +244,22 @@ inline PyrClass* slotRawClass(PyrSlot *slot)
 	return slot->u.oc;
 }
 
+inline const PyrClass* slotRawClass(const PyrSlot *slot)
+{
+	return slot->u.oc;
+}
+
 inline PyrInterpreter* slotRawInterpreter(PyrSlot *slot)
 {
 	return slot->u.oi;
 }
 
 inline PyrSymbol* slotRawSymbol(PyrSlot *slot)
+{
+	return slot->u.s;
+}
+
+inline const PyrSymbol* slotRawSymbol(const PyrSlot *slot)
 {
 	return slot->u.s;
 }
@@ -267,6 +282,12 @@ inline double slotRawFloat(const PyrSlot *slot)
 }
 
 inline PyrObject* slotRawObject(PyrSlot *slot)
+{
+	assert(IsObj(slot));
+	return slot->u.o;
+}
+
+inline const PyrObject* slotRawObject(const PyrSlot *slot)
 {
 	assert(IsObj(slot));
 	return slot->u.o;

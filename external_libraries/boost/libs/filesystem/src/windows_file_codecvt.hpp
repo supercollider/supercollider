@@ -26,8 +26,8 @@
     : public std::codecvt< wchar_t, char, std::mbstate_t >  
   {
   public:
-    explicit windows_file_codecvt()
-        : std::codecvt<wchar_t, char, std::mbstate_t>() {}
+    explicit windows_file_codecvt(std::size_t refs = 0)
+        : std::codecvt<wchar_t, char, std::mbstate_t>(refs) {}
   protected:
 
     virtual bool do_always_noconv() const throw() { return false; }
