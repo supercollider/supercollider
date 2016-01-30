@@ -743,17 +743,24 @@ void LinXFade2_Ctor(LinXFade2 *unit)
 		break;
 
 	case calc_BufRate:
+#ifdef NOVA_SIMD
 		if (!(BUFLENGTH & 15))
 			SETCALC(LinXFade2_next_k_nova);
 		else
 			SETCALC(LinXFade2_next_k);
+#else
+		SETCALC(LinXFade2_next_k);
+#endif
 		break;
-
 	case calc_ScalarRate:
+#ifdef NOVA_SIMD
 		if (!(BUFLENGTH & 15))
 			SETCALC(LinXFade2_next_i_nova);
 		else
 			SETCALC(LinXFade2_next_i);
+#else
+		SETCALC(LinXFade2_next_i);
+#endif
 		break;
 	}
 
