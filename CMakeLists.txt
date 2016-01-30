@@ -46,8 +46,8 @@ if (${CMAKE_COMPILER_IS_GNUCXX})
 
 	add_definitions("-Wreturn-type")
 
-	if(${_gcc_version} VERSION_LESS 4.7)
-		message(FATAL_ERROR "SuperCollider requires at least gcc-4.7 when compiled with gcc.")
+	if(${_gcc_version} VERSION_LESS 4.8)
+		message(FATAL_ERROR "SuperCollider requires at least gcc-4.8 when compiled with gcc.")
 	endif()
 
 #	disabled for now: -ffast-math breaks avx intrinsics and -fsigned-zeros/-fno-associative-math are not available in some versions
