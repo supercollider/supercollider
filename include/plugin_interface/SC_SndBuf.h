@@ -44,7 +44,7 @@ class rw_spinlock
 #ifdef __SSE2__
 	static inline void pause() { _mm_pause(); }
 #else
-	static inline void pause() { _mm_pause(); }
+	static inline void pause() { }
 #endif
 
 public:
