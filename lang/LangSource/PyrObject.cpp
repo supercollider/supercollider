@@ -1187,7 +1187,7 @@ void buildBigMethodMatrix()
 #endif
 
 	const int cpuCount = thread::hardware_concurrency();
-	boost::basic_thread_pool pool( std::min( cpuCount - 1, 1 ) );
+	boost::basic_thread_pool pool( std::max( cpuCount - 1, 1 ) );
 
 	// pyrmalloc:
 	// lifetime: kill after compile
