@@ -21,9 +21,9 @@
 // ********** this version for windows and linux. for mac see UIUGens.mm
 
 #include <SC_Lock.h>
+#include <atomic>
 
 # ifndef _WIN32
-#  include <time.h>
 #  include <X11/Intrinsic.h>
 # else
 #include "SC_Win32Utils.h"
@@ -58,6 +58,8 @@ struct MouseInputUGen : public Unit
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+std::atomic_bool inputThreadRunning = { false };
+
 #ifdef _WIN32
 
 void gstate_update_func()
@@ -80,7 +82,7 @@ void gstate_update_func()
 	float r_screenHeight = 1.f / (float)(screenHeight -1);
 
 
-	for(;;) {
+	while ( inputThreadRunning.load( std::memory_order_relaxed ) ) {
 		// "KeyState" is disabled for now, on Windows...
 		//GetKey((long*)gstate->keys);
 
@@ -88,7 +90,7 @@ void gstate_update_func()
 		gMouseUGenGlobals.mouseX = (float)p.x * r_screenWidth;
 		gMouseUGenGlobals.mouseY = 1.f - (float)p.y * r_screenHeight;
 		gMouseUGenGlobals.mouseButton = (GetKeyState(mButton) < 0);
-		::Sleep(17); // 17msec.
+		std::this_thread::sleep_for( std::chrono::milliseconds( 17 ) );
 	}
 }
 
@@ -98,10 +100,6 @@ void gstate_update_func()
 {
 	Window r;
 	struct timespec requested_time , remaining_time;
-
-	requested_time.tv_sec = 0;
-	requested_time.tv_nsec = 17000 * 1000;
-
 	// NOTE: should not be required as this is the only thread accessing the x11 API
 	//       but omitting seems to cause troubles.
 	XInitThreads();
@@ -122,7 +120,7 @@ void gstate_update_func()
 	r_width = 1.0 / (float)attributes.width;
 	r_height = 1.0 / (float)attributes.height;
 
-	for (;;) {
+	while ( inputThreadRunning.load( std::memory_order_relaxed ) ) {
 		XQueryKeymap ( d , (char *) (gKeyStateGlobals.keys) );
 		XQueryPointer ( d, r,
 						&rep_root, &rep_child,
@@ -135,7 +133,7 @@ void gstate_update_func()
 
 		gMouseUGenGlobals.mouseButton = (bool) ( rep_mask & Button1Mask );
 
-		nanosleep ( &requested_time , &remaining_time );
+		std::this_thread::sleep_for( std::chrono::milliseconds( 17 ) );
 	}
 }
 #endif
@@ -422,9 +420,8 @@ PluginLoad(UIUGens)
 {
 	ft = inTable;
 
-	thread thread( gstate_update_func );
-	uiListenThread = std::move(thread);
-	uiListenThread.detach();
+	inputThreadRunning = true;
+	uiListenThread = std::thread ( gstate_update_func );
 
 	DefineSimpleUnit(KeyState);
 
@@ -438,10 +435,14 @@ PluginLoad(UIUGens)
 	DefinePlugInCmd("pluginCmdDemo", cmdDemoFunc, (void*)&gMyPlugin);
 }
 
-#if defined(__GNUC__) && !defined(_WIN32)
-static void __attribute__ ((destructor)) finalize(void)
+
+C_LINKAGE SC_API_EXPORT void unload(InterfaceTable *inTable)
 {
+	inputThreadRunning = false;
+	uiListenThread.join();
+
+#ifndef _WIN32
 	if (d)
 		XCloseDisplay(d);
-}
 #endif
+}
