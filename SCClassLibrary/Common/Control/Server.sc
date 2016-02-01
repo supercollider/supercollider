@@ -360,7 +360,7 @@ Server {
 		var n = options.maxLogins ? 1;
 
 		numControl = options.numControlBusChannels div: n;
-		numAudio = options.numAudioBusChannels div: n;
+		numAudio = options.numPrivateAudioBusChannels div: n;
 
 		controlBusOffset = numControl * offset;
 		audioBusOffset = options.firstPrivateBus + (numAudio * offset);
