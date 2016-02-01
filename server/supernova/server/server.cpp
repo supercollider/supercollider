@@ -248,10 +248,10 @@ static bool set_realtime_priority(int thread_index)
 
 #ifdef __APPLE__
 
-    success = thread_set_priority_rt(AudioConvertNanosToHostTime(ns_per_block),
-                                     AudioConvertNanosToHostTime(ns_per_block - 2),
-                                     AudioConvertNanosToHostTime(ns_per_block - 1),
-                                     false);
+    success = thread_set_priority_rt( 0,
+                                     AudioConvertNanosToHostTime( ns_per_block - 5000 ),
+                                     AudioConvertNanosToHostTime( ns_per_block ),
+                                     true);
 
 #else
 
