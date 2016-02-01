@@ -41,6 +41,7 @@
 
 #ifdef __APPLE__
 # include <ApplicationServices/ApplicationServices.h>
+# include <SC_Apple.hpp>
 #endif
 
 
@@ -373,6 +374,8 @@ int main(int argc, char * argv[])
     if (GetCurrentProcess(&psn) == noErr) {
         TransformProcessType(&psn, kProcessTransformToUIElementApplication);
     }
+
+    SC::Apple::disableAppNap();
 #endif
 
     rt_pool.init(args.rt_pool_size * 1024, args.memory_locking);
