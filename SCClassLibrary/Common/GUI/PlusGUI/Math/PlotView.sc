@@ -810,7 +810,7 @@ Plotter {
 		});
 	}
 
-	plot { |duration = 0.01, server, bounds, minval= -1, maxval=1, separately = false|
+	plot { |duration = 0.01, server, bounds, minval, maxval, separately = false|
 		var name = this.asCompileString, plotter;
 		if(name.size > 50 or: { name.includes(Char.nl) }) { name = "function plot" };
 		plotter = Plotter(name, bounds);
@@ -835,11 +835,18 @@ Plotter {
 		};
 		^plotter
 	}
+
+	plotAudio { |duration = 0.01, minval = -1, maxval = 1, server, bounds|
+		^this.plot(duration, server, bounds, minval, maxval)
+	}
 }
 
 + Bus {
 	plot { |duration = 0.01, bounds, minval, maxval, separately = false|
 		^{ InFeedback.ar(this.index, this.numChannels) }.plot(duration, this.server, bounds, minval, maxval, separately)
+	}
+	plotAudio { |duration = 0.01, minval = -1, maxval = 1, bounds|
+		^this.plot(duration, bounds, minval, maxval)
 	}
 }
 
