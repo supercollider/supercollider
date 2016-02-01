@@ -213,6 +213,10 @@ AbstractOut : UGen {
 						"(" + inputs.at(i) + ") is not audio rate");
 				});
 			});
+		}, {
+			if(inputs.size <= 1, {
+				^"missing input at index 1"
+			})
 		});
 		^this.checkValidInputs
 	}
