@@ -384,11 +384,8 @@ int ScIDE_SetDocTextMirror(struct VMGlobals *g, int numArgsPushed)
     
     if(length == -1) return errWrongType;
     
-#ifndef _WIN32
-    char text[length + 1];
-#else
-    char * text = (char*)_alloca(length + 1);
-#endif
+    char * text = (char*)malloc(length + 1);
+    
     if (slotStrVal( textSlot, text, length + 1))
         return errWrongType;
     
@@ -403,6 +400,8 @@ int ScIDE_SetDocTextMirror(struct VMGlobals *g, int numArgsPushed)
     
     QByteArray key = QByteArray(id);
     QString docText = QString(text);
+    
+    free(text);
     
     gIpcClient->setTextMirrorForDocument(key, docText, pos, range);
 
