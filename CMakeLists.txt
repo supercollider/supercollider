@@ -263,6 +263,7 @@ endif()
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
   foreach(flag CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
     set(${flag} "${${flag}} /wd4018") # signed/unsigned mismatch
+    set(${flag} "${${flag}} /wd4065") # switch statement contains 'default' but no 'case' labels
     set(${flag} "${${flag}} /wd4102") # unreferenced label
     set(${flag} "${${flag}} /wd4267") # conversion from 'size_t' to 'int', possible loss of data
     set(${flag} "${${flag}} /wd4244") # conversion from '__int64' to 'int', possible loss of data

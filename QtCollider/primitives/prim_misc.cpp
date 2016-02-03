@@ -167,7 +167,7 @@ QC_LANG_PRIMITIVE( Qt_SetGlobalPalette, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g 
 {
   if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
-  QPalette p = QtCollider::get( a );
+  QPalette p = (QPalette&&) QtCollider::get(a);
   QApplication::setPalette( p );
 
   return errNone;
