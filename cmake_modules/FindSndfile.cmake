@@ -25,14 +25,34 @@ elseif (APPLE)
 	# TODO on non-apple platforms, we need to be able to test for >=1018.
 	# (On apple it is known true, because we bundle a later version.)
 	add_definitions("-DLIBSNDFILE_1018")
-
+	
 else()
 	find_path(SNDFILE_INCLUDE_DIR sndfile.h
-		PATHS "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/include"
+		PATHS /usr/local/include
+			  /usr/include
+              /${MINGW_ARCH}/include
+              $ENV{WD}/../../${MINGW_ARCH}/include
+		      "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/libsndfile/include"
+		      "$ENV{ProgramW6432}/Mega-Nerd/libsndfile/include"
+              "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/include"
 	)
-
-	find_library(SNDFILE_LIBRARY NAMES sndfile sndfile-1 libsndfile libsndfile-1
-		PATHS "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/lib"
+    find_library(SNDFILE_LIBRARY 
+		NAMES sndfile sndfile-1 libsndfile libsndfile-1
+		PATHS /usr/local/lib
+              /usr/lib
+              /${MINGW_ARCH}/lib
+              $ENV{WD}/../../${MINGW_ARCH}/lib
+			  "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/libsndfile/lib"
+		      "$ENV{ProgramW6432}/Mega-Nerd/libsndfile/lib"
+              "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/lib"
+	)
+	find_path(SNDFILE_LIBRARY_DIR 
+		NAMES sndfile sndfile-1 libsndfile libsndfile-1.dll
+        PATHS /${MINGW_ARCH}/bin
+              $ENV{WD}/../../${MINGW_ARCH}/bin
+		      "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/libsndfile/bin"
+              "$ENV{ProgramW6432}/Mega-Nerd/libsndfile/bin"
+              "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/bin"
 	)
 
 	# Handle the QUIETLY and REQUIRED arguments and set SNDFILE_FOUND to TRUE if

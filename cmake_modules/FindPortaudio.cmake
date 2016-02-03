@@ -18,10 +18,10 @@ if (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
   # in cache already
   set(PORTAUDIO_FOUND TRUE)
 else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
-  if (NOT WIN32)
+  if (NOT WIN32 OR MSYS)
    include(FindPkgConfig)
    pkg_check_modules(PORTAUDIO2 portaudio-2.0)
-  endif (NOT WIN32)
+  endif (NOT WIN32 OR MSYS)
 
   if (PORTAUDIO2_FOUND)
     set(PORTAUDIO_INCLUDE_DIRS
@@ -39,55 +39,103 @@ else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
     )
     set(PORTAUDIO_FOUND TRUE)
   else (PORTAUDIO2_FOUND)
-    find_path(PORTAUDIO_INCLUDE_DIR
-      NAMES
-        portaudio.h
-      PATHS
-        /usr/include
-        /usr/local/include
-        /opt/local/include
-        /sw/include
-    )
-   
-    find_library(PORTAUDIO_LIBRARY
-      NAMES
-        portaudio
-      PATHS
-        /usr/lib
-        /usr/local/lib
-        /opt/local/lib
-        /sw/lib
-    )
-   
-    find_path(PORTAUDIO_LIBRARY_DIR
-      NAMES
-        portaudio
-      PATHS
-        /usr/lib
-        /usr/local/lib
-        /opt/local/lib
-        /sw/lib
-    )
-   
-    set(PORTAUDIO_INCLUDE_DIRS
-      ${PORTAUDIO_INCLUDE_DIR}
-    )
-    set(PORTAUDIO_LIBRARIES
-      ${PORTAUDIO_LIBRARY}
-    )
-   
-    set(PORTAUDIO_LIBRARY_DIRS
-      ${PORTAUDIO_LIBRARY_DIR}
-    )
-   
-    set(PORTAUDIO_VERSION
-      18
-    )
-   
+
+    if(NOT MSVC)
+      find_path(PORTAUDIO_INCLUDE_DIR
+        NAMES
+          portaudio.h
+        PATHS
+          /usr/include
+          /usr/local/include
+          /opt/local/include
+          /sw/include
+          /${MINGW_ARCH}/include
+          $ENV{WD}/../../${MINGW_ARCH}/include
+      )
+
+      find_library(PORTAUDIO_LIBRARY
+        NAMES
+          portaudio portaudio_${CMAKE_LIBRARY_ARCHITECTURE} portaudio_x64 libportaudio
+        PATHS
+          /usr/lib
+          /usr/local/lib
+          /opt/local/lib
+          /sw/lib
+          /${MINGW_ARCH}/lib
+          $ENV{WD}/../../${MINGW_ARCH}/lib
+      )
+
+      find_path(PORTAUDIO_LIBRARY_DIR
+        NAMES
+          portaudio portaudio_${CMAKE_LIBRARY_ARCHITECTURE}
+        PATHS
+          /usr/lib
+          /usr/local/lib
+          /opt/local/lib
+          /sw/lib
+          /${MINGW_ARCH}/bin
+          $ENV{WD}/../../${MINGW_ARCH}/bin
+      )
+
+      set(PORTAUDIO_INCLUDE_DIRS
+        ${PORTAUDIO_INCLUDE_DIR}
+      )
+      set(PORTAUDIO_LIBRARIES
+        ${PORTAUDIO_LIBRARY}
+      )
+
+      set(PORTAUDIO_LIBRARY_DIRS
+        ${PORTAUDIO_LIBRARY_DIR}
+      )
+      if (WIN32)
+        # simply assume nobody tries to build with older pa
+        set(PORTAUDIO_VERSION 19)
+      else (WIN32)
+        set(PORTAUDIO_VERSION 18)
+      endif (WIN32)
+
+    else(NOT MSVC)
+
+      find_path(PORTAUDIO_INCLUDE_DIR NAMES portaudio.h 
+        PATHS ${CMAKE_SOURCE_DIR}/../portaudio/include
+              ${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/portaudio/include
+      )
+
+      find_library(PORTAUDIO_LIBRARY_DEBUG 
+        NAMES portaudio_${CMAKE_LIBRARY_ARCHITECTURE} 
+        PATHS ${CMAKE_SOURCE_DIR}/../portaudio/build/Debug 
+              ${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/portaudio/Debug
+      )
+      find_library(PORTAUDIO_LIBRARY_RELEASE 
+        NAMES portaudio_${CMAKE_LIBRARY_ARCHITECTURE} 
+        PATHS ${CMAKE_SOURCE_DIR}/../portaudio/build/Release 
+              ${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/portaudio/Release
+      )
+
+      find_path(PORTAUDIO_LIBRARY_DIR_DEBUG 
+		NAMES portaudio_${CMAKE_LIBRARY_ARCHITECTURE}.dll
+		PATHS ${CMAKE_SOURCE_DIR}/../portaudio/build/Debug 
+              ${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/portaudio/Debug
+	  )
+      find_path(PORTAUDIO_LIBRARY_DIR_RELEASE 
+		NAMES portaudio_${CMAKE_LIBRARY_ARCHITECTURE}.dll
+		PATHS ${CMAKE_SOURCE_DIR}/../portaudio/build/Release 
+              ${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/portaudio/Release
+	  )
+      set(PORTAUDIO_LIBRARY_DIR ${PORTAUDIO_LIBRARY_DIR_RELEASE} ${PORTAUDIO_LIBRARY_DIR_DEBUG} "")
+
+      set(PORTAUDIO_INCLUDE_DIRS ${PORTAUDIO_INCLUDE_DIR})
+      set(PORTAUDIO_LIBRARIES debug;${PORTAUDIO_LIBRARY_DEBUG};optimized;${PORTAUDIO_LIBRARY_RELEASE})
+      set(PORTAUDIO_LIBRARY_DIRS ${PORTAUDIO_LIBRARY_DIR} CACHE PATH "")
+
+      set(PORTAUDIO_VERSION 19)
+
+    endif(NOT MSVC)
+
     if (PORTAUDIO_INCLUDE_DIRS AND PORTAUDIO_LIBRARIES)
        set(PORTAUDIO_FOUND TRUE)
     endif (PORTAUDIO_INCLUDE_DIRS AND PORTAUDIO_LIBRARIES)
-   
+
     if (PORTAUDIO_FOUND)
       if (NOT Portaudio_FIND_QUIETLY)
         message(STATUS "Found Portaudio: ${PORTAUDIO_LIBRARIES}")
@@ -104,4 +152,3 @@ else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
   mark_as_advanced(PORTAUDIO_INCLUDE_DIRS PORTAUDIO_LIBRARIES)
 
 endif (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
-

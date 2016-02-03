@@ -14,6 +14,27 @@ if(APPLE)
     endif()
 endif()
 
+if(WIN32)
+    find_path(READLINE_INCLUDE_DIR
+        NAMES readline/readline.h
+        PATHS /${MINGW_ARCH}/include
+              "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/include"
+              $ENV{WD}/../../${MINGW_ARCH}/include
+    )
+    find_library(READLINE_LIBRARY
+        NAMES libreadline6 readline5 readline
+        PATHS /${MINGW_ARCH}/lib
+              $ENV{WD}/../../${MINGW_ARCH}/lib
+              "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/lib"
+    )
+    find_path(READLINE_LIBRARY_DIR
+        NAMES libreadline6.dll readline5.dll
+        PATHS /${MINGW_ARCH}/bin
+              $ENV{WD}/../../${MINGW_ARCH}/bin
+              "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/bin"
+    )
+endif()
+
 if (READLINE_INCLUDE_DIR AND READLINE_LIBRARY)
     set(READLINE_FOUND TRUE)
 endif()
