@@ -189,7 +189,8 @@ endif()
 if (WIN32)
 	target_link_libraries(libscsynth wsock32 ws2_32 winmm kernel32 user32
 		gdi32 winspool shell32 ole32 oleaut32 uuid comdlg32 advapi32 tlsf
-		boost_thread boost_system)endif()
+		boost_thread boost_system)
+endif()
 
 if(NOT WIN32)
 set_property(TARGET libscsynth PROPERTY OUTPUT_NAME scsynth)

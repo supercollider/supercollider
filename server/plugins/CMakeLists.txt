@@ -262,7 +262,7 @@ if (WIN32)
             DESTINATION "SuperCollider/plugins"
             PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
     else()
-        install(TARGETS ${plugins} ${supernova_plugins}	install(TARGETS ${plugins} ${supernova_plugins}
+        install(TARGETS ${plugins} ${supernova_plugins}
             DESTINATION "SuperCollider/plugins"
             PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
     endif()
