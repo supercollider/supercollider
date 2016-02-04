@@ -16,7 +16,7 @@ find_package(Qt5Qml)
 find_package(Qt5Sql)
 find_package(Qt5Positioning)
 
-set(QT_IDE_LIBRARIES 
+set(QT_IDE_LIBRARIES
     Qt5::Core Qt5::WebKitWidgets Qt5::OpenGL Qt5::PrintSupport Qt5::Sensors Qt5::Quick Qt5::Qml Qt5::Sql Qt5::Positioning)
 
 if(${CMAKE_COMPILER_IS_GNUCXX})
@@ -181,7 +181,7 @@ if(APPLE)
 endif()
 
 if(APPLE)
-	list(APPEND ide_src 
+	list(APPEND ide_src
         ${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp
         ${CMAKE_SOURCE_DIR}/QtCollider/hacks/hacks_mac.mm
     )
@@ -242,14 +242,14 @@ if(APPLE)
     endforeach()
 endif()
 
-# This sets up the exe icon for windows under mingw.
-if(MINGW)
+# This sets up the exe icon for windows.
+if(WIN32)
  set(RES_FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/scide.rc)
  set(CMAKE_RC_COMPILER_INIT windres)
  ENABLE_LANGUAGE(RC)
  SET(CMAKE_RC_COMPILE_OBJECT
  "<CMAKE_RC_COMPILER> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
-endif(MINGW)
+endif(WIN32)
 
 
 # final builds of the IDE seem to be broken atm
@@ -350,21 +350,29 @@ if(APPLE)
                 #fixup_qt5_executable(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\")
                 " COMPONENT Runtime)
 
-
+elseif(CMAKE_GENERATOR MATCHES "Visual Studio")
+  set_property(TARGET SuperCollider PROPERTY RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/editors/sc-ide")
+  install(TARGETS SuperCollider
+      CONFIGURATIONS Debug;Release
+      DESTINATION "SuperCollider"
+      PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+  install(FILES ${translations}
+      CONFIGURATIONS Debug;Release
+      DESTINATION "SuperCollider/translations")
 elseif(WIN32)
-	install(TARGETS SuperCollider
-			DESTINATION "SuperCollider"
-			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-    install(FILES ${translations}
-            DESTINATION "SuperCollider/translations")
+  install(TARGETS SuperCollider
+      DESTINATION "SuperCollider"
+      PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+  install(FILES ${translations}
+      DESTINATION "SuperCollider/translations")
 else()
-	install(TARGETS SuperCollider
-			RUNTIME DESTINATION "bin"
-			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-    install(FILES ${translations}
-            DESTINATION "share/SuperCollider/translations")
+  install(TARGETS SuperCollider
+      RUNTIME DESTINATION "bin"
+      PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+  install(FILES ${translations}
+      DESTINATION "share/SuperCollider/translations")
 endif()
 
 if (LINUX)
-   install( PROGRAMS SuperColliderIDE.desktop  DESTINATION "share/applications")
+  install( PROGRAMS SuperColliderIDE.desktop  DESTINATION "share/applications")
 endif()

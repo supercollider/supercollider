@@ -141,14 +141,14 @@ if(WIN32)
         list(APPEND sclang_sources LangPrimSource/SC_PortMidi.cpp)
 endif()
 
-# This sets up the exe icon for windows under mingw.
-if(MINGW)
+# This sets up the exe icon for windows.
+if(WIN32)
  set(RES_FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/sclang.rc)
  set(CMAKE_RC_COMPILER_INIT windres)
  ENABLE_LANGUAGE(RC)
  SET(CMAKE_RC_COMPILE_OBJECT
  "<CMAKE_RC_COMPILER> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
-endif(MINGW)
+endif(WIN32)
 
 if(SC_WII)
 	if(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -306,22 +306,28 @@ target_link_libraries(sclang ${ICU_LIBRARIES})
 target_compile_definitions(sclang PUBLIC USE_SC_TERMINAL_CLIENT)
 
 if(LTO)
-	target_compile_definitions(libsclang PUBLIC -flto -flto-report)
+  target_compile_definitions(libsclang PUBLIC -flto -flto-report)
 
-	set_property(TARGET sclang libsclang
-					APPEND PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program")
+  set_property(TARGET sclang libsclang
+        APPEND PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program")
 endif()
 
 if(APPLE)
     add_custom_command(TARGET sclang POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../MacOS/
         COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:sclang> $<TARGET_FILE_DIR:SuperCollider>/../MacOS)
+elseif(CMAKE_GENERATOR MATCHES "Visual Studio")
+    set_property(TARGET  sclang PROPERTY RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lang")
+    install(TARGETS sclang
+        CONFIGURATIONS Debug;Release
+        DESTINATION "SuperCollider"
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 elseif(WIN32)
-	install(TARGETS sclang
-			DESTINATION "SuperCollider"
-			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+    install(TARGETS sclang
+        DESTINATION "SuperCollider"
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 elseif(NOT APPLE)
-	install(TARGETS sclang
-			RUNTIME DESTINATION "bin"
-			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+    install(TARGETS sclang
+        RUNTIME DESTINATION "bin"
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endif()
