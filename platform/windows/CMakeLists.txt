@@ -5,7 +5,6 @@ SET(CMAKE_LIBRARY_PATH "${CMAKE_PREFIX_PATH}/bin;${SNDFILE_LIBRARY_DIR};${PORTAU
 # is so slow with MinGW that we can't wait after each install:
 if(MINGW)
     add_custom_target( bundle
-        include(BundleUtilities)
         COMMAND ${CMAKE_COMMAND}
             "-DSC_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
             "-DSC_DEPENDENCY_DIRS=${CMAKE_LIBRARY_PATH}"
