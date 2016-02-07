@@ -384,9 +384,9 @@ int ScIDE_SetDocTextMirror(struct VMGlobals *g, int numArgsPushed)
     
     if(length == -1) return errWrongType;
     
-    char * text = (char*)malloc(length + 1);
+    std::vector<char> text(length + 1);
     
-    if (slotStrVal( textSlot, text, length + 1))
+    if (slotStrVal( textSlot, text.data(), length + 1))
         return errWrongType;
     
     int pos, range, err = errNone;
@@ -399,10 +399,8 @@ int ScIDE_SetDocTextMirror(struct VMGlobals *g, int numArgsPushed)
     if (err) return err;
     
     QByteArray key = QByteArray(id);
-    QString docText = QString(text);
-    
-    free(text);
-    
+    QString docText = QString(text.data());
+        
     gIpcClient->setTextMirrorForDocument(key, docText, pos, range);
 
     return errNone;
