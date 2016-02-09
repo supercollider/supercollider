@@ -26,7 +26,7 @@ endif()
 
 # allows cmake-find modules and Windows installer to identify the right architecture
 if(WIN32)
-    if(CMAKE_GENERATOR MATCHES "64" OR "$ENV{MSYSTEM}" MATCHES "64")
+    if(CMAKE_CL_64 OR "$ENV{MSYSTEM}" MATCHES "64" OR CMAKE_C_COMPILER MATCHES "64")
         SET(CMAKE_LIBRARY_ARCHITECTURE "x64" CACHE STRING "Architecture of target system (for 64bit)")
     else()
         SET(CMAKE_LIBRARY_ARCHITECTURE "x86" CACHE STRING "Architecture of target system (for 32bit)")
@@ -36,7 +36,6 @@ if(WIN32)
         SET(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install" CACHE STRING "Cmake install path" FORCE)
     endif()
 endif(WIN32)
-
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules
                       ${CMAKE_MODULE_PATH})
@@ -261,7 +260,7 @@ if (CMAKE_COMPILER_IS_INTEL AND NOT WIN32)
 	add_definitions(-diag-disable 279) # controlling expression is constant
 endif()
 
-if(x${CMAKE_CXX_COMPILER_ID} STREQUAL "xMSVC")
+if(CMAKE_CXX_COMPILER_ID STREQUAL MSVC)
   foreach(flag CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
     set(${flag} "${${flag}} /wd4018") # signed/unsigned mismatch
     set(${flag} "${${flag}} /wd4065") # switch statement contains 'default' but no 'case' labels
@@ -383,10 +382,7 @@ else()
 	)
 endif()
 
-if(CMAKE_GENERATOR MATCHES "Visual Studio")
-	install(DIRECTORY sounds   CONFIGURATIONS Debug;Release DESTINATION "${auxresourcesdir}")
-	install(DIRECTORY examples CONFIGURATIONS Debug;Release DESTINATION "${auxresourcesdir}")
-elseif(NOT APPLE)
+if(NOT APPLE)
 	install(DIRECTORY sounds   DESTINATION ${auxresourcesdir})
 	install(DIRECTORY examples DESTINATION ${auxresourcesdir})
 elseif(APPLE)
@@ -419,29 +415,7 @@ else()
 	)
 endif()
 
-if(WIN32)
-		SET(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}")
-		include(InstallRequiredSystemLibraries)
-
-		install(FILES ${AdditionalInstallFiles} DESTINATION "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}")
-
-	if(MSYS)
-		SET(QT_PLATFORM_PLUGIN_PREFIX ${Qt5Core_DIR}/../../../share/qt5/plugins/platforms CACHE STRING "Location of qt platform plugin for windows. Override when not using MinGW-cmake!")
-	else()
-		SET(QT_PLATFORM_PLUGIN_PREFIX ${Qt5Core_DIR}/../../../plugins/platforms CACHE STRING "Location of qt platform plugin for windows. Override if you have multiple paths in your cmake prefix path")
-	endif()
-
-	install(FILES "${QT_PLATFORM_PLUGIN_PREFIX}/qwindows.dll"
-		CONFIGURATIONS Release
-		DESTINATION "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/platforms"
-	)
-	install(FILES "${QT_PLATFORM_PLUGIN_PREFIX}/qwindowsd.dll"
-		CONFIGURATIONS Debug
-		DESTINATION "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/platforms"
-	)
-else()
-		install(FILES ${AdditionalInstallFiles} DESTINATION ${auxresourcesdir})
-endif()
+install(FILES ${AdditionalInstallFiles} DESTINATION ${auxresourcesdir})
 
 if(INSTALL_HELP)
 	if(SC_SYMLINK_CLASSLIB AND APPLE)
