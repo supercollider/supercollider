@@ -213,11 +213,22 @@
        </widget>
       </item>
       <item row="4" column="1">
-       <widget class="QCheckBox" name="sclang_post_inline_warnings">
-        <property name="text">
-         <string>Post Inline Warnings</string>
-        </property>
-       </widget>
+       <layout class="QHBoxLayout" name="interpreter_options">
+        <item>
+         <widget class="QCheckBox" name="sclang_post_inline_warnings">
+          <property name="text">
+           <string>Post Inline Warnings</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="sclang_standalone_mode">
+          <property name="text">
+           <string>Exclude default search paths</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>
