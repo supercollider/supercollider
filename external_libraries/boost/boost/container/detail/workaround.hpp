@@ -76,4 +76,17 @@
    #define BOOST_CONTAINER_DECL
 #endif  /* DYN_LINK */
 
+//#define BOOST_CONTAINER_DISABLE_FORCEINLINE
+
+#if defined(BOOST_CONTAINER_DISABLE_FORCEINLINE)
+   #define BOOST_CONTAINER_FORCEINLINE inline
+#elif defined(BOOST_CONTAINER_FORCEINLINE_IS_BOOST_FORCELINE)
+   #define BOOST_CONTAINER_FORCEINLINE BOOST_FORCEINLINE
+#elif defined(BOOST_MSVC) && defined(_DEBUG)
+   //"__forceinline" and MSVC seems to have some bugs in debug mode
+   #define BOOST_CONTAINER_FORCEINLINE inline
+#else
+   #define BOOST_CONTAINER_FORCEINLINE BOOST_FORCEINLINE
+#endif
+
 #endif   //#ifndef BOOST_CONTAINER_DETAIL_WORKAROUND_HPP

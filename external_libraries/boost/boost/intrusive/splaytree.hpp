@@ -111,9 +111,13 @@ class splaytree_impl
 
    typedef typename implementation_defined::insert_commit_data insert_commit_data;
 
+   //! @copydoc ::boost::intrusive::bstree::bstree()
+   splaytree_impl()
+      :  tree_type()
+   {}
+
    //! @copydoc ::boost::intrusive::bstree::bstree(const key_compare &,const value_traits &)
-   explicit splaytree_impl( const key_compare &cmp = key_compare()
-                          , const value_traits &v_traits = value_traits())
+   explicit splaytree_impl( const key_compare &cmp, const value_traits &v_traits = value_traits())
       :  tree_type(cmp, v_traits)
    {}
 
@@ -239,6 +243,14 @@ class splaytree_impl
 
    //! @copydoc ::boost::intrusive::bstree::insert_unique(const_iterator,reference)
    iterator insert_unique(const_iterator hint, reference value);
+
+   //! @copydoc ::boost::intrusive::bstree::insert_unique_check(const key_type&,insert_commit_data&)
+   std::pair<iterator, bool> insert_unique_check
+      (const key_type &key, insert_commit_data &commit_data);
+
+   //! @copydoc ::boost::intrusive::bstree::insert_unique_check(const_iterator,const key_type&,insert_commit_data&)
+   std::pair<iterator, bool> insert_unique_check
+      (const_iterator hint, const key_type &key, insert_commit_data &commit_data);
 
    //! @copydoc ::boost::intrusive::bstree::insert_unique_check(const KeyType&,KeyTypeKeyCompare,insert_commit_data&)
    template<class KeyType, class KeyTypeKeyCompare>
@@ -584,8 +596,11 @@ class splaytree
    //Assert if passed value traits are compatible with the type
    BOOST_STATIC_ASSERT((detail::is_same<typename value_traits::value_type, T>::value));
 
-   explicit splaytree( const key_compare &cmp = key_compare()
-                     , const value_traits &v_traits = value_traits())
+   splaytree()
+      :  Base()
+   {}
+
+   explicit splaytree( const key_compare &cmp, const value_traits &v_traits = value_traits())
       :  Base(cmp, v_traits)
    {}
 

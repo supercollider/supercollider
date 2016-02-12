@@ -307,7 +307,17 @@ class slist_impl
    //!
    //! <b>Throws</b>: If value_traits::node_traits::node
    //!   constructor throws (this does not happen with predefined Boost.Intrusive hooks).
-   explicit slist_impl(const value_traits &v_traits = value_traits())
+   slist_impl()
+      :  data_(value_traits())
+   {  this->set_default_constructed_state(); }
+
+   //! <b>Effects</b>: constructs an empty list.
+   //!
+   //! <b>Complexity</b>: Constant
+   //!
+   //! <b>Throws</b>: If value_traits::node_traits::node
+   //!   constructor throws (this does not happen with predefined Boost.Intrusive hooks).
+   explicit slist_impl(const value_traits &v_traits)
       :  data_(v_traits)
    {  this->set_default_constructed_state(); }
 
@@ -2190,7 +2200,11 @@ class slist
    typedef typename Base::size_type          size_type;
    typedef typename Base::node_ptr           node_ptr;
 
-   explicit slist(const value_traits &v_traits = value_traits())
+   slist()
+      :  Base()
+   {}
+
+   explicit slist(const value_traits &v_traits)
       :  Base(v_traits)
    {}
 

@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2005-2012.
+// (C) Copyright Ion Gaztanaga 2005-2015.
 // (C) Copyright Gennaro Prota 2003 - 2004.
 //
 // Distributed under the Boost Software License, Version 1.0.
@@ -123,8 +123,8 @@ struct is_intrusive_index
    static const bool value = false;
 };
 
-template <typename T> T*
-addressof(T& v)
+template <typename T>
+BOOST_INTERPROCESS_FORCEINLINE T* addressof(T& v)
 {
   return reinterpret_cast<T*>(
        &const_cast<char&>(reinterpret_cast<const volatile char &>(v)));
@@ -148,7 +148,7 @@ inline bool multiplication_overflows(SizeType a, SizeType b)
 }
 
 template<std::size_t SztSizeOfType, class SizeType>
-inline bool size_overflows(SizeType count)
+BOOST_INTERPROCESS_FORCEINLINE bool size_overflows(SizeType count)
 {
    //Compile time-check
    BOOST_STATIC_ASSERT(SztSizeOfType <= SizeType(-1));
@@ -163,18 +163,18 @@ template<class T>
 class pointer_uintptr_caster<T*>
 {
    public:
-   BOOST_FORCEINLINE explicit pointer_uintptr_caster(uintptr_t sz)
+   BOOST_INTERPROCESS_FORCEINLINE explicit pointer_uintptr_caster(uintptr_t sz)
       : m_uintptr(sz)
    {}
 
-   BOOST_FORCEINLINE explicit pointer_uintptr_caster(const volatile T *p)
+   BOOST_INTERPROCESS_FORCEINLINE explicit pointer_uintptr_caster(const volatile T *p)
       : m_uintptr(reinterpret_cast<uintptr_t>(p))
    {}
 
-   BOOST_FORCEINLINE uintptr_t uintptr() const
+   BOOST_INTERPROCESS_FORCEINLINE uintptr_t uintptr() const
    {   return m_uintptr;   }
 
-   BOOST_FORCEINLINE T* pointer() const
+   BOOST_INTERPROCESS_FORCEINLINE T* pointer() const
    {   return reinterpret_cast<T*>(m_uintptr);   }
 
    private:
@@ -196,7 +196,7 @@ class value_eraser
    ~value_eraser()
    {  if(m_erase) m_cont.erase(m_index_it);  }
 
-   void release() {  m_erase = false;  }
+   BOOST_INTERPROCESS_FORCEINLINE void release() {  m_erase = false;  }
 
    private:
    Cont                   &m_cont;

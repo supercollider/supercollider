@@ -480,6 +480,7 @@ public:
         BOOST_TEST_FOREACH( test_unit_id, chld_id, ts.m_children )
             deduce_siblings_order( chld_id, master_tu_id, tuoi );
 
+        ts.m_ranked_children.clear();
         BOOST_TEST_FOREACH( test_unit_id, chld_id, ts.m_children ) {
             counter_t rank = assign_sibling_rank( chld_id, tuoi );
             ts.m_ranked_children.insert( std::make_pair( rank, chld_id ) );
@@ -581,8 +582,17 @@ public:
 
     typedef unit_test_monitor_t::error_level execution_result;
 
+    // Random generator using the std::rand function (seeded prior to the call)
+    struct random_generator_helper {
+      size_t operator()(size_t i) const {
+        return std::rand() % i;
+      }
+    };
+
       // Executed the test tree with the root at specified test unit
-    execution_result execute_test_tree( test_unit_id tu_id, unsigned timeout = 0 )
+    execution_result execute_test_tree( test_unit_id tu_id,
+                                        unsigned timeout = 0,
+                                        random_generator_helper const * const p_random_generator = 0)
     {
         test_unit const& tu = framework::get( tu_id, TUT_ANY );
 
@@ -662,12 +672,14 @@ public:
                             it++;
                         }
 
-                        std::random_shuffle( children_with_the_same_rank.begin(), children_with_the_same_rank.end() );
+                        const random_generator_helper& rand_gen = p_random_generator ? *p_random_generator : random_generator_helper();
+
+                        std::random_shuffle( children_with_the_same_rank.begin(), children_with_the_same_rank.end(), rand_gen );
 
                         BOOST_TEST_FOREACH( test_unit_id, chld, children_with_the_same_rank ) {
                             unsigned chld_timeout = child_timeout( timeout, tu_timer.elapsed() );
 
-                            result = (std::min)( result, execute_test_tree( chld, chld_timeout ) );
+                            result = (std::min)( result, execute_test_tree( chld, chld_timeout, &rand_gen ) );
 
                             if( unit_test_monitor.is_critical_error( result ) )
                                 break;
@@ -1221,7 +1233,7 @@ run( test_unit_id id, bool continue_test )
     case 0:
         break;
     case 1:
-        seed = static_cast<unsigned>( std::time( 0 ) );
+        seed = static_cast<unsigned>( std::rand() ^ std::time( 0 ) ); // better init using std::rand() ^ ...
     default:
         BOOST_TEST_MESSAGE( "Test cases order is shuffled using seed: " << seed );
         std::srand( seed );

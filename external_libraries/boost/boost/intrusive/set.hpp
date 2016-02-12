@@ -83,9 +83,13 @@ class set_impl
    static const bool constant_time_size = tree_type::constant_time_size;
 
    public:
+   //! @copydoc ::boost::intrusive::rbtree::rbtree()
+   set_impl()
+      :  tree_type()
+   {}
+
    //! @copydoc ::boost::intrusive::rbtree::rbtree(const key_compare &,const value_traits &)
-   explicit set_impl( const key_compare &cmp = key_compare()
-                    , const value_traits &v_traits = value_traits())
+   explicit set_impl( const key_compare &cmp, const value_traits &v_traits = value_traits())
       :  tree_type(cmp, v_traits)
    {}
 
@@ -195,6 +199,17 @@ class set_impl
    //! @copydoc ::boost::intrusive::rbtree::insert_unique(const_iterator,reference)
    iterator insert(const_iterator hint, reference value)
    {  return tree_type::insert_unique(hint, value);  }
+
+   //! @copydoc ::boost::intrusive::rbtree::insert_unique_check(const key_type&,insert_commit_data&)
+   std::pair<iterator, bool> insert_check
+      (const key_type &key, insert_commit_data &commit_data)
+   {  return tree_type::insert_unique_check(key, commit_data); }
+
+   //! @copydoc ::boost::intrusive::rbtree::insert_unique_check(const_iterator,const key_type&,insert_commit_data&)
+   std::pair<iterator, bool> insert_check
+      (const_iterator hint, const key_type &key
+      ,insert_commit_data &commit_data)
+   {  return tree_type::insert_unique_check(hint, key, commit_data); }
 
    //! @copydoc ::boost::intrusive::rbtree::insert_unique_check(const KeyType&,KeyTypeKeyCompare,insert_commit_data&)
    template<class KeyType, class KeyTypeKeyCompare>
@@ -476,8 +491,11 @@ class set
    //Assert if passed value traits are compatible with the type
    BOOST_STATIC_ASSERT((detail::is_same<typename value_traits::value_type, T>::value));
 
-   explicit set( const key_compare &cmp = key_compare()
-               , const value_traits &v_traits = value_traits())
+   set()
+      :  Base()
+   {}
+
+   explicit set( const key_compare &cmp, const value_traits &v_traits = value_traits())
       :  Base(cmp, v_traits)
    {}
 
@@ -573,9 +591,13 @@ class multiset_impl
    static const bool constant_time_size = tree_type::constant_time_size;
 
    public:
+   //! @copydoc ::boost::intrusive::rbtree::rbtree()
+   multiset_impl()
+      :  tree_type()
+   {}
+
    //! @copydoc ::boost::intrusive::rbtree::rbtree(const key_compare &,const value_traits &)
-   explicit multiset_impl( const key_compare &cmp = key_compare()
-                         , const value_traits &v_traits = value_traits())
+   explicit multiset_impl( const key_compare &cmp, const value_traits &v_traits = value_traits())
       :  tree_type(cmp, v_traits)
    {}
 
@@ -936,8 +958,11 @@ class multiset
    //Assert if passed value traits are compatible with the type
    BOOST_STATIC_ASSERT((detail::is_same<typename value_traits::value_type, T>::value));
 
-   multiset( const key_compare &cmp = key_compare()
-           , const value_traits &v_traits = value_traits())
+   multiset()
+      :  Base()
+   {}
+
+   explicit multiset( const key_compare &cmp, const value_traits &v_traits = value_traits())
       :  Base(cmp, v_traits)
    {}
 
