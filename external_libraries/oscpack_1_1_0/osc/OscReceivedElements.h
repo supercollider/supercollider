@@ -480,7 +480,11 @@ public:
 	const char *AddressPattern() const { return addressPattern_; }
 
 	// Support for non-standard SuperCollider integer address patterns:
-	bool AddressPatternIsUInt32() const;
+	bool AddressPatternIsUInt32() const
+    {
+        return (addressPattern_[0] == '\0');
+    }
+
 	uint32 AddressPatternAsUInt32() const;
 
 	uint32 ArgumentCount() const { return static_cast<uint32>(typeTagsEnd_ - typeTagsBegin_); }
