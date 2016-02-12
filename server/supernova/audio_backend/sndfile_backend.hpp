@@ -27,6 +27,7 @@
 #include <thread>
 #include <vector>
 
+#include <boost/align/aligned_allocator.hpp>
 #include <boost/lockfree/spsc_queue.hpp>
 #include <boost/sync/semaphore.hpp>
 
@@ -202,7 +203,7 @@ private:
         const size_t frames_per_tick = get_audio_blocksize();
 
         // something like autobuffer might be good
-        std::vector<sample_type, aligned_allocator<sample_type> > data_to_read(input_channels * frames_per_tick, 0.f);
+        std::vector<sample_type, boost::alignment::aligned_allocator<sample_type, 64> > data_to_read(input_channels * frames_per_tick, 0.f);
 
         for (;;) {
             if (unlikely(reader_running.load(std::memory_order_acquire) == false))

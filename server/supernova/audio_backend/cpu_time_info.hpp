@@ -20,14 +20,16 @@
 #define AUDIO_BACKEND_CPU_TIME_INFO_HPP
 
 #include <vector>
-#include "utilities/aligned_class.hpp"
+
+#include <boost/align/aligned_allocator.hpp>
+
 #include "nova-simd/simd_horizontal_functions.hpp"
 
 namespace nova {
 
 class cpu_time_info
 {
-    typedef std::vector<float, aligned_allocator<float>> ringbuffer;
+    typedef std::vector<float, boost::alignment::aligned_allocator<float, 64>> ringbuffer;
 
 public:
     cpu_time_info()
