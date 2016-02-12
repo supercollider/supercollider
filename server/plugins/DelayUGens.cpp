@@ -25,6 +25,8 @@
 #include "SC_PlugIn.h"
 #include <cstdio>
 
+#include <boost/align/is_aligned.hpp>
+
 using namespace std; // for math functions
 
 
@@ -4023,7 +4025,7 @@ static bool DelayUnit_init_0(DelayUnit *unit)
 		if (ZIN(0) == ZOUT(0))
 			SETCALC(Delay_next_0_nop);
 #ifdef NOVA_SIMD
-		else if (!(BUFLENGTH & 15))
+		else if (boost::alignment::is_aligned( BUFLENGTH, 16 ))
 			SETCALC(Delay_next_0_nova);
 #endif
 		else
