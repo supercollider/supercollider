@@ -1,8 +1,20 @@
 find_package(Sndfile)
-if (WIN32)
-	find_package(Portaudio)
-endif()
 
+if(WIN32)
+	if(NOT SC_BUILD_PA)
+		add_library(portaudio STATIC IMPORTED GLOBAL)
+		if(MSVC)
+			set_target_properties(portaudio PROPERTIES
+				IMPORTED_LOCATION_DEBUG   ${PORTAUDIO_LIBRARY_DEBUG}
+				IMPORTED_LOCATION         ${PORTAUDIO_LIBRARY_RELEASE}
+			)
+		else(MSVC)
+			set_target_properties(portaudio PROPERTIES
+				IMPORTED_LOCATION         ${PORTAUDIO_LIBRARIES}
+			)
+		endif(MSVC)
+	endif(NOT SC_BUILD_PA)
+endif(WIN32)
 
 # Here we work out which audio API to use, from system type and/or user option.
 if(AUDIOAPI STREQUAL "default")
@@ -24,11 +36,11 @@ if(AUDIOAPI STREQUAL jack)
 	if(NOT JACK_FOUND)
 		message(FATAL_ERROR "Jack selected as audio API, but development files not found")
 	endif()
-elseif(AUDIOAPI STREQUAL portaudio)
-	find_package(Portaudio)
-	if(NOT PORTAUDIO_FOUND)
-		message(FATAL_ERROR "Portaudio selected as audio API, but development files not found")
-	endif()
+elseif(AUDIOAPI STREQUAL portaudio AND NOT WIN32)
+		find_package(Portaudio)
+		if(NOT PORTAUDIO_FOUND)
+			message(FATAL_ERROR "Portaudio selected as audio API, but development files not found")
+		endif()
 endif()
 message(STATUS "Audio API: ${AUDIOAPI}")
 
@@ -175,7 +187,11 @@ endif()
 if (AUDIOAPI STREQUAL jack)
 	target_link_libraries(libscsynth ${JACK_LIBRARIES})
 elseif(AUDIOAPI STREQUAL portaudio)
-	target_link_libraries(libscsynth ${PORTAUDIO_LIBRARIES})
+	if(WIN32)
+		target_link_libraries(libscsynth portaudio)
+	elseif(WIN32)
+		target_link_libraries(libscsynth ${PORTAUDIO_LIBRARIES})
+	endif(WIN32)
 elseif(AUDIOAPI STREQUAL coreaudio)
 	target_link_libraries(libscsynth "-framework CoreAudio")
 endif()
