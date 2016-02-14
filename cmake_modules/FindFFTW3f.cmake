@@ -19,14 +19,15 @@ FIND_LIBRARY(
     PATHS /usr/local/lib
           /usr/lib
           /${MINGW_ARCH}/bin
-          $ENV{WD}/../../${MINGW_ARCH}/lib
+          $ENV{WD}/../../${MINGW_ARCH}/bin
           "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/fftw"
           "$ENV{ProgramW6432}/fftw"
           "$ENV{ProgramFiles}/fftw"
 )
+# used for Windows only
 FIND_PATH(
     FFTW3F_LIBRARY_DIR
-    NAMES fftw3f libfftw3f fftw3f-3 libfftw3f-3.dll
+    NAMES fftw3f.dll libfftw3f.dll fftw3f-3.dll libfftw3f-3.dll
     PATHS /${MINGW_ARCH}/bin
           $ENV{WD}/../../${MINGW_ARCH}/bin
           "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/fftw"
