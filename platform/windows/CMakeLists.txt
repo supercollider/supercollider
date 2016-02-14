@@ -1,4 +1,21 @@
-SET(CMAKE_LIBRARY_PATH "${CMAKE_PREFIX_PATH}/bin;${SNDFILE_LIBRARY_DIR};${PORTAUDIO_LIBRARY_DIRS};${FFTW3F_LIBRARY_DIR};${READLINE_LIBRARY_DIR}")
+SET(DLL_PATH
+  ${CMAKE_PREFIX_PATH}/bin
+  ${SNDFILE_LIBRARY_DIR}
+  ${PORTAUDIO_LIBRARY_DIRS}
+  ${FFTW3F_LIBRARY_DIR}
+  ${READLINE_LIBRARY_DIR}
+)
+
+if(PORTAUDIO_FOUND)
+  LIST(APPEND DLL_PATH
+    ${PORTAUDIO_LIBRARY_DIRS}
+  )
+elseif(PORTAUDIO_FOUND_RELEASE_DEBUG)
+  LIST(APPEND DLL_PATH
+    ${PORTAUDIO_LIBRARY_DIR_RELEASE}
+    ${PORTAUDIO_LIBRARY_DIR_DEBUG}
+  )
+endif()
 
 # MinGW only: This target invokes fixup_bundle to copy
 # dependencies into the installation directory. Fixup_bundle
@@ -7,7 +24,7 @@ if(MINGW)
     add_custom_target( bundle
         COMMAND ${CMAKE_COMMAND}
             "-DSC_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
-            "-DSC_DEPENDENCY_DIRS=${CMAKE_LIBRARY_PATH}"
+            "-DSC_DEPENDENCY_DIRS=${DLL_PATH}"
             -P "${CMAKE_CURRENT_SOURCE_DIR}/bundle.cmake"
         COMMENT "Bundling the dependencies:"
         VERBATIM
@@ -19,7 +36,7 @@ else(MINGW)
         fixup_bundle(
             \"${CMAKE_INSTALL_PREFIX}/SuperCollider/sclang.exe\"
             \"\"
-            \"${CMAKE_LIBRARY_PATH}\" )
+            \"${DLL_PATH}\" )
         "
         COMMENT "Bundling the dependencies:"
         VERBATIM
