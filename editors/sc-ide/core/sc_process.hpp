@@ -53,6 +53,7 @@ public:
         Restart,
         RecompileClassLibrary,
         StopMain,
+        ShowQuarks,
 
         ActionCount
     };
@@ -87,6 +88,7 @@ public slots:
     void restartLanguage (void);
     void recompileClassLibrary (void);
     void stopMain(void);
+    void showQuarks(void);
     void evaluateCode(QString const & commandString, bool silent = false);
 
 signals:
