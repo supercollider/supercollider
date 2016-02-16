@@ -13,7 +13,7 @@ if(WIN32 AND NOT MSYS)
 				IMPORTED_LOCATION         ${PORTAUDIO_LIBRARIES}
 			)
 		endif(MSVC)
-	endif(NOT SC_BUILD_PA AND NOT MSYS)
+	endif(NOT SC_BUILD_PA)
 endif(WIN32 AND NOT MSYS)
 
 # Here we work out which audio API to use, from system type and/or user option.
