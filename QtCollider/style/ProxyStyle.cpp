@@ -2,6 +2,7 @@
 
 #include "../QcApplication.h"
 
+#include <QtGlobal>
 #include <QWebView>
 #include <QStyleOptionSlider>
 #include <QPainter>
@@ -13,15 +14,14 @@
 using namespace QtCollider;
 
 static bool AlwaysShowScrollbars() {
-#ifdef Q_OS_MAC
+#if defined(Q_OS_MAC)
   return QtCollider::Mac::AlwaysShowScrollbars();
 
-#elif Q_OS_X11
+#elif defined(Q_OS_X11)
   return !QcApplication::SystemHasMouseWheel();
 
-// Creates a build error in VStudio 2013 C1017
-// #elif Q_OS_WIN
-//  return !QcApplication::SystemHasMouseWheel();
+#elif defined(Q_OS_WIN)
+  return !QcApplication::SystemHasMouseWheel();
 
 #else
   return !QcApplication::SystemHasMouseWheel();
