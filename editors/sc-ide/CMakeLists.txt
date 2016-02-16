@@ -366,14 +366,10 @@ elseif(WIN32)
     SET(QT_PLATFORM_PLUGIN_PREFIX ${Qt5Core_DIR}/../../../plugins/platforms CACHE STRING "Location of qt platform plugin for windows")
   endif()
 
-  install(FILES "${QT_PLATFORM_PLUGIN_PREFIX}/qwindows.dll"
-    CONFIGURATIONS Release;RelWithDebInfo;MinSizeRel
+  install(FILES "${QT_PLATFORM_PLUGIN_PREFIX}/qwindows$<$<CONFIG:DEBUG>:d>.dll"
     DESTINATION ${CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION}
   )
-  install(FILES "${QT_PLATFORM_PLUGIN_PREFIX}/qwindowsd.dll"
-    CONFIGURATIONS Debug
-    DESTINATION ${CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION}
-)
+
 else()
   install(TARGETS SuperCollider
       RUNTIME DESTINATION "bin"
