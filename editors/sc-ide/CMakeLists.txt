@@ -366,8 +366,9 @@ elseif(WIN32)
     endif()
 
     install(FILES "${QT_PLATFORM_PLUGIN_PREFIX}/qwindows$<$<CONFIG:DEBUG>:d>.dll"
-        DESTINATION ${CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION}
-    )
+    DESTINATION ${CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION}
+  )
+
 else()
   install(TARGETS SuperCollider
       RUNTIME DESTINATION "bin"
