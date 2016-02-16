@@ -167,12 +167,14 @@ QC_LANG_PRIMITIVE( Qt_SetGlobalPalette, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g 
 {
   if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
-//  QPalette p = QtCollider::get( a );
-// The line below is a workaround. Above term causes Error C2440 in VS
-// https://msdn.microsoft.com/en-us/library/sy5tsf8z.aspx
-  QPalette p = (QPalette&&) QtCollider::get(a);
-// Tim1
-//  static_cast<QPalette>( QtCollider::get( a ) );
+  // The line below is a workaround. The non-win term causes Error C2440 in VS
+  // https://msdn.microsoft.com/en-us/library/sy5tsf8z.aspx
+  #if defined(_MSC_VER)
+    QPalette p = (QPalette&&) QtCollider::get(a);
+  #else
+    QPalette p = QtCollider::get( a );
+  #endif
+
   QApplication::setPalette( p );
 
   return errNone;
