@@ -349,22 +349,25 @@ if(APPLE)
                 fixup_bundle(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\" \"\${QTPLUGINS}\" \"${QT_LIBRARY_DIR}\")
                 #fixup_qt5_executable(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\")
                 " COMPONENT Runtime)
-
-elseif(CMAKE_GENERATOR MATCHES "Visual Studio")
-  set_property(TARGET SuperCollider PROPERTY RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/editors/sc-ide")
-  install(TARGETS SuperCollider
-      CONFIGURATIONS Debug;Release
-      DESTINATION "SuperCollider"
-      PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-  install(FILES ${translations}
-      CONFIGURATIONS Debug;Release
-      DESTINATION "SuperCollider/translations")
 elseif(WIN32)
-  install(TARGETS SuperCollider
-      DESTINATION "SuperCollider"
-      PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-  install(FILES ${translations}
-      DESTINATION "SuperCollider/translations")
+    install(TARGETS SuperCollider
+        DESTINATION "SuperCollider"
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+    install(FILES ${translations}
+        DESTINATION "SuperCollider/translations")
+
+    SET(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider/platforms")
+        include(InstallRequiredSystemLibraries)
+
+    if(MSYS)
+        SET(QT_PLATFORM_PLUGIN_PREFIX ${Qt5Core_DIR}/../../../share/qt5/plugins/platforms CACHE STRING "Location of qt platform plugin for windows as provided by MSYS2!")
+    else()
+        SET(QT_PLATFORM_PLUGIN_PREFIX ${Qt5Core_DIR}/../../../plugins/platforms CACHE STRING "Location of qt platform plugin for windows")
+    endif()
+
+    install(FILES "${QT_PLATFORM_PLUGIN_PREFIX}/qwindows$<$<CONFIG:DEBUG>:d>.dll"
+        DESTINATION ${CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION}
+    )
 else()
   install(TARGETS SuperCollider
       RUNTIME DESTINATION "bin"
