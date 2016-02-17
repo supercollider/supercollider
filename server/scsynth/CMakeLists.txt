@@ -187,7 +187,9 @@ else()
 endif()
 
 if (WIN32)
-	target_link_libraries(libscsynth wsock32 ws2_32 winmm)
+	target_link_libraries(libscsynth wsock32 ws2_32 winmm kernel32 user32
+		gdi32 winspool shell32 ole32 oleaut32 uuid comdlg32 advapi32 tlsf
+		boost_thread boost_system)
 endif()
 
 if(NOT WIN32)
@@ -241,6 +243,12 @@ if(APPLE)
     add_custom_command(TARGET scsynth POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../MacOS/
         COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:scsynth> $<TARGET_FILE_DIR:SuperCollider>/../MacOS)
+elseif(CMAKE_GENERATOR MATCHES "Visual Studio")
+    set_property(TARGET scsynth PROPERTY RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/server/scsynth)
+    install(TARGETS ${INSTALL_TARGETS}
+        CONFIGURATIONS Debug;Release
+        DESTINATION "SuperCollider"
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 elseif(WIN32)
     install(TARGETS ${INSTALL_TARGETS}
         DESTINATION "SuperCollider"

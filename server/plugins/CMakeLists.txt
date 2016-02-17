@@ -255,9 +255,17 @@ elseif (APPLE)
 endif()
 
 if (WIN32)
-    install(TARGETS ${plugins} ${supernova_plugins}
-        DESTINATION "SuperCollider/plugins"
-        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+    if(CMAKE_GENERATOR MATCHES "Visual Studio")
+        set_property(TARGET  ${plugins} ${supernova_plugins} PROPERTY LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/server/plugins")
+        install(TARGETS ${plugins} ${supernova_plugins}
+            CONFIGURATIONS Debug;Release
+            DESTINATION "SuperCollider/plugins"
+            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+    else()
+        install(TARGETS ${plugins} ${supernova_plugins}
+            DESTINATION "SuperCollider/plugins"
+            PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+    endif()
 
 elseif(APPLE)
 
@@ -267,10 +275,10 @@ elseif(APPLE)
             COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${plugin}> $<TARGET_FILE_DIR:SuperCollider>/../Resources/plugins/)
     endforeach()
 
-elseif()
-  install(TARGETS ${plugins} ${supernova_plugins}
-      DESTINATION "lib/SuperCollider/plugins"
-      PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+elseif(NOT APPLE)
+	install(TARGETS ${plugins} ${supernova_plugins}
+			DESTINATION "lib/SuperCollider/plugins"
+			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endif()
 
 set_property(TARGET ${plugins} ${supernova_plugins} PROPERTY FOLDER UnitGenerators)
