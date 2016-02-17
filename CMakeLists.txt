@@ -15,9 +15,13 @@ enable_testing()
 
 include (cmake_modules/FinalFile.cmake)
 
-if (NOT CMAKE_BUILD_TYPE)
-	message(STATUS "Build type defaulting to \"RelWithDebInfo\"")
-	set(CMAKE_BUILD_TYPE "RelWithDebInfo")
+if(CMAKE_GENERATOR MATCHES "Visual Studio" OR CMAKE_GENERATOR MATCHES "Xcode")
+	message(STATUS "Please specify the build configuration in the next step")
+else()
+	if (NOT CMAKE_BUILD_TYPE)
+		message(STATUS "Build type defaulting to \"RelWithDebInfo\"")
+		set(CMAKE_BUILD_TYPE "RelWithDebInfo")
+	endif()
 endif()
 
 if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
