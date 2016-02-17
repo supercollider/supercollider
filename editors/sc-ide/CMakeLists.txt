@@ -361,9 +361,9 @@ elseif(WIN32)
     include(InstallRequiredSystemLibraries)
 
   if(MSYS)
-    SET(QT_PLATFORM_PLUGIN_PREFIX ${Qt5Core_DIR}/../../../share/qt5/plugins/platforms CACHE STRING "Location of qt platform plugin for windows as provided by MSYS2!")
+    SET(QT_PLATFORM_PLUGIN_PREFIX "${Qt5Core_DIR}/../../../share/qt5/plugins/platforms" CACHE STRING "Location of qt platform plugin for windows as provided by MSYS2!")
   else()
-    SET(QT_PLATFORM_PLUGIN_PREFIX ${Qt5Core_DIR}/../../../plugins/platforms CACHE STRING "Location of qt platform plugin for windows")
+    SET(QT_PLATFORM_PLUGIN_PREFIX "${Qt5Core_DIR}/../../../plugins/platforms" CACHE STRING "Location of qt platform plugin for windows")
   endif()
 
   install(FILES "${QT_PLATFORM_PLUGIN_PREFIX}/qwindows$<$<CONFIG:DEBUG>:d>.dll"

@@ -62,24 +62,24 @@ else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
         /usr/local/lib
         /opt/local/lib
         /sw/lib
-        /${MINGW_ARCH}/lib
-        /${MINGW_ARCH}/bin
-        $ENV{WD}/../../${MINGW_ARCH}/lib
-        $ENV{WD}/../../${MINGW_ARCH}/bin
+        "/${MINGW_ARCH}/lib"
+        "/${MINGW_ARCH}/bin"
+        "$ENV{WD}/../../${MINGW_ARCH}/lib"
+        "$ENV{WD}/../../${MINGW_ARCH}/bin"
         "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/portaudio/lib"
         "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/portaudio/bin"
     )
 
     find_library(PORTAUDIO_LIBRARY_DEBUG
       NAMES
-        portaudio_static_${CMAKE_LIBRARY_ARCHITECTURE} portaudio_${CMAKE_LIBRARY_ARCHITECTURE}
+        "portaudio_static_${CMAKE_LIBRARY_ARCHITECTURE}" "portaudio_${CMAKE_LIBRARY_ARCHITECTURE}"
       PATHS
         "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/portaudio/Debug"
     )
 
     find_library(PORTAUDIO_LIBRARY_RELEASE
       NAMES
-        portaudio_static_${CMAKE_LIBRARY_ARCHITECTURE} portaudio_${CMAKE_LIBRARY_ARCHITECTURE}
+        "portaudio_static_${CMAKE_LIBRARY_ARCHITECTURE}" "portaudio_${CMAKE_LIBRARY_ARCHITECTURE}"
       PATHS
         "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/portaudio/Release"
     )
@@ -88,21 +88,21 @@ else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
       NAMES
         portaudio.dll libportaudio.dll libportaudio_${CMAKE_LIBRARY_ARCHITECTURE}.dll
       PATHS
-        /${MINGW_ARCH}/bin
-        $ENV{WD}/../../${MINGW_ARCH}/bin
+        "/${MINGW_ARCH}/bin"
+        "$ENV{WD}/../../${MINGW_ARCH}/bin"
         "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/portaudio/bin"
     )
     # used for MSVC only, and only if PA is linked as dll
     find_path(PORTAUDIO_LIBRARY_DIR_DEBUG
       NAMES
-        portaudio_${CMAKE_LIBRARY_ARCHITECTURE}.dll
+        "portaudio_${CMAKE_LIBRARY_ARCHITECTURE}.dll"
       PATHS
         "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/portaudio/Debug"
     )
     # used for MSVC only, and only if PA is linked as dll
     find_path(PORTAUDIO_LIBRARY_DIR_RELEASE
       NAMES
-        portaudio_${CMAKE_LIBRARY_ARCHITECTURE}.dll
+        "portaudio_${CMAKE_LIBRARY_ARCHITECTURE}.dll"
       PATHS
         "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/portaudio/Release"
     )
@@ -127,7 +127,7 @@ else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
       set(PORTAUDIO_FOUND TRUE)
     endif ()
 
-    if (PORTAUDIO_LIBRARY_DEBUG AND PORTAUDIO_LIBRARY_RELEASE)
+    if (PORTAUDIO_INCLUDE_DIRS PORTAUDIO_LIBRARY_DEBUG AND PORTAUDIO_LIBRARY_RELEASE)
       set(PORTAUDIO_FOUND_RELEASE_DEBUG TRUE)
     endif()
 
