@@ -46,7 +46,7 @@ Prerequisites:
   `xcode-select --install`
 - **homebrew** is recommended to install required libraries
   See http://brew.sh for installation instructions.
-- **git, cmake, readline, and qt5**, installed via homebrew:
+- **git, cmake, sndfile, readline, and qt5**, installed via homebrew:
   `brew install git cmake readline qt5`
 
   As of this writing the latest stable Qt is 5.5.x. The 5.6 beta has also been reported to work fine.
@@ -126,7 +126,7 @@ The most common build problems are related to incorrect versions of the core dep
 
 **Xcode**: `xcodebuild -version`, or the "About" dialog of the Xcode application. Any build from the 6.x series or greater should generally work.
 
-**cmake, qt5, readline**: `brew info ____` will show you what you have installed - for example, `brew info qt5` should show you the Qt5 version information.
+**cmake, qt5, sndfile, readline**: `brew info ____` will show you what you have installed - for example, `brew info qt5` should show you the Qt5 version information.
 
 `brew upgrade ____` will update the dependency to a newer version.
 
@@ -215,7 +215,7 @@ Common arguments to control the build configuration are:
 
     Within SC you will be able to switch between scsynth and supernova by evaluating one of:
 
-    `Server.supernova`  
+    `Server.supernova`
     `Server.scsynth`
 
     Check sc help for `ParGroup` to see how to make use of multi-core hardware.
@@ -230,8 +230,15 @@ Common arguments to control the build configuration are:
 
     `-DCMAKE_OSX_ARCHITECTURES='i386;x86_64'`
 
-  * Normally, homebrew installations of readline are detected automatically, and building with  
-    readline is only required if you plan to use SuperCollider from the terminal. To link to a  
+  * Normally, homebrew installations of libsndfile are detected automatically. To link to a
+    non-standard version of libsndfile, you can use. This is also necessary if for some
+    (rare) reason your libsndfile install is not in /usr/local/include|lib:
+
+    `-DSNDFILE_INCLUDE_DIR='/path/to/libsndfile/include'`
+    `-DSNDFILE_LIBRARY='/path/to/libsndfile/lib/libreadline.dylib'`
+
+  * Normally, homebrew installations of readline are detected automatically, and building with
+    readline is only required if you plan to use SuperCollider from the terminal. To link to a
     non-standard version of readline, you can use:
 
     `-DREADLINE_INCLUDE_DIR='/path/to/readline/include'`
@@ -327,24 +334,3 @@ This application failed to start because it could not find or load the Qt platfo
 
 - scsynth will not find the included "plugins", unless given explicitly
   with the -U commandline flag or using the SC_PLUGIN_PATH environment variable as shown above.
-
-
-On libsndfile
--------------
-
-In the past compiling a universal binary of libsndfile used to require accessing both a
-i386 and PPC Mac. The reasons for this are described here:
-
-http://www.mega-nerd.com/libsndfile/FAQ.html#Q018
-
-Because of this, libsndfile is included with the source as a precompiled
-universal binary. This UB contains ppc, i386 and x86_64 archs. By default SC uses this
-file, although the currently built universal does not contain Power PC versions any more
-and intel universal binaries of libsndfile are readily available via package managers.
-
-If you would like to build using the latest version of libsndfile, then specify its path to the cmake configuration:
-
-`-DSNDFILE_INCLUDE_DIR=/opt/local/include`
-`-DSNDFILE_LIBRARY=/opt/local/lib/libsndfile.dylib`
-
-The actual paths you need to include will vary depending on how you installed libsndfile.
