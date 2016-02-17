@@ -148,14 +148,7 @@ endif()
 add_executable(supernova server/main.cpp ${supernova_headers})
 target_link_libraries(supernova libsupernova)
 
-
-if(CMAKE_GENERATOR MATCHES "Visual Studio")
-    set_property(TARGET supernova PROPERTY RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/server/supernova")
-    install(TARGETS supernova
-        CONFIGURATIONS Debug;Release
-        DESTINATION "SuperCollider"
-        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-elseif(WIN32)
+if(WIN32)
     install(TARGETS supernova
         DESTINATION "SuperCollider"
         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
@@ -163,7 +156,7 @@ elseif(APPLE)
     add_custom_command(TARGET supernova POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../MacOS/
         COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:supernova> $<TARGET_FILE_DIR:SuperCollider>/../MacOS)
-else(NOT APPLE)
+else()
   install(TARGETS supernova
           DESTINATION "bin"
           PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
