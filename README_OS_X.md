@@ -83,14 +83,15 @@ Quick steps
 - **Xcode command line tools** must be installed - after installing Xcode, this can be done from the Xcode preferences, or from the command line using: `xcode-select --install`
 - **[homebrew](http://brew.sh)** is recommended to easily install required libraries:
  `ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"`
-- **git, cmake, readline, and qt5**, installed via homebrew: `brew install git cmake readline qt5`:
+- **git, cmake, readline, libsndfile and qt5**, installed via homebrew: `brew install git cmake readline libsndfile qt5`:
  
-Once those dependencies are satisfied, the following steps will build Supercollider: 
+Once those dependencies are satisfied, the following steps will build Supercollider:
+
 
 	$>	git clone --recursive https://github.com/supercollider/supercollider.git
 	$>	cd supercollider
 	$>	mkdir build; cd build
-	$>	cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt5`  ..
+	$>	cmake -G Xcode `-DSNDFILE_INCLUDE_DIR=/usr/local/include` `-DSNDFILE_LIBRARY=/usr/local/lib/libsndfile.dylib` -DCMAKE_PREFIX_PATH=`brew --prefix qt5`  ..
 	$>	cmake --build . --target install --config RelWithDebInfo
 
 A successful build will result in a SuperCollider.app and components at `build/Install/SuperCollider`
@@ -100,6 +101,8 @@ A successful build will result in a SuperCollider.app and components at `build/I
 **Note**: You can also open the produced SuperCollider.xcodeproj in Xcode, and build the "Install" scheme in place of the last step.
 
 **Note**: For versions of Qt5 other than the one provided by Homebrew, the correct path has to be added to `CMAKE_PREFIX_PATH`. It should point to the parent folder of the bin/include/lib folders in that Qt tree.
+
+**Note**: This assumes you used homebrew to install `libsndfile`. If you used an alternative method you'll need to change the `DSNDFILE_INCLUDE_DIR` and `DSNDFILE_LIBRARY` paths to point to the appropriate places.
 
 
 Diagnosing Build Problems
@@ -320,28 +323,6 @@ turn triggers building the old editor, now using Cocoa:
 
 While Qt and Cocoa are mutually exclusive, SwingOSC can still be used as an alternative
 and switchable toolkit to either of them in 3.6.
-
-
-On libsndfile
--------------
-
-In the past compiling a universal binary of libsndfile used to require accessing both a
-i386 and PPC Mac. The reasons for this are described here:
-
-http://www.mega-nerd.com/libsndfile/FAQ.html#Q018
-
-Because of this, libsndfile is included with the source as a precompiled
-universal binary. This UB contains ppc, i386 and x86_64 archs. By default SC uses this 
-file, although the currently built universal does not contain Power PC versions any more 
-and intel universal binaries of libsndfile are readily available via package managers.
-
-If you would like to build using the latest version of libsndfile, you need to intall it
-and point cmake to it very much the same way it was demonstrated above for readline. 
-The cmake variables, alongside with the likely path if you install libsndfile using 
-MacPorts, are:
-
-`-DSNDFILE_INCLUDE_DIR=/opt/local/include`
-`-DSNDFILE_LIBRARY=/opt/local/lib/libsndfile.dylib`
 
 
 Special characters on mac
