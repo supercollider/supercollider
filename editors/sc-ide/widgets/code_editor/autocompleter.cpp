@@ -808,7 +808,7 @@ void AutoCompleter::updateCompletionMenuInfo()
     if (!examples.isEmpty())
         examples.prepend("<h4>Examples</h4>");
 // MSVStudio 2013 does not concatenate multiple QStringliterals ("""") properly
-// see blog.qt.io/blog/2014/06/13/qt/weekly/13/qstringliteral/
+// see http://blog.qt.io/blog/2014/06/13/qt-weekly-13-qstringliteral/
     QString infos = QStringLiteral("<h4>%1</h4>%2%3<p><a href=\"%4\">go to help</a>")
                     .arg(parseClassElement(node, "SUMMARY"))
                     .arg(parseClassElement(node, "DESCRIPTION"))
