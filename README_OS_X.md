@@ -20,7 +20,6 @@ Table of contents
  * Using cmake with Xcode or QtCreator
  * Building without Qt or the IDE
  * sclang and scynth executables
- * On libsndfile
 
 Executables
 -----------
@@ -46,7 +45,7 @@ Prerequisites:
   `xcode-select --install`
 - **homebrew** is recommended to install required libraries
   See http://brew.sh for installation instructions.
-- **git, cmake, sndfile, readline, and qt5**, installed via homebrew:
+- **git, cmake, libsndfile, readline, and qt5**, installed via homebrew:
   `brew install git cmake readline qt5`
 
   As of this writing the latest stable Qt is 5.5.x. The 5.6 beta has also been reported to work fine.
@@ -126,7 +125,7 @@ The most common build problems are related to incorrect versions of the core dep
 
 **Xcode**: `xcodebuild -version`, or the "About" dialog of the Xcode application. Any build from the 6.x series or greater should generally work.
 
-**cmake, qt5, sndfile, readline**: `brew info ____` will show you what you have installed - for example, `brew info qt5` should show you the Qt5 version information.
+**cmake, qt5, libsndfile, readline**: `brew info ____` will show you what you have installed - for example, `brew info qt5` should show you the Qt5 version information.
 
 `brew upgrade ____` will update the dependency to a newer version.
 
