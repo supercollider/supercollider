@@ -27,13 +27,13 @@ else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
     set(PORTAUDIO_INCLUDE_DIRS
       ${PORTAUDIO2_INCLUDE_DIRS}
     )
-    if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" OR MSYS)
       set(PORTAUDIO_LIBRARIES "${PORTAUDIO2_LIBRARY_DIRS}/lib${PORTAUDIO2_LIBRARIES}.dylib")
-    else (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    else (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" OR MSYS)
       set(PORTAUDIO_LIBRARIES
         ${PORTAUDIO2_LIBRARIES}
       )
-    endif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    endif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" OR MSYS)
     set(PORTAUDIO_VERSION
       19
     )
@@ -47,8 +47,8 @@ else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
         /usr/local/include
         /opt/local/include
         /sw/include
-        /${MINGW_ARCH}/include
-        $ENV{WD}/../../${MINGW_ARCH}/include
+        "/${MINGW_ARCH}/include"
+        "$ENV{WD}/../../${MINGW_ARCH}/include"
         "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/portaudio/include"
     )
     # As to Windows, this is for MINGW only, the MSVC versions should be in
@@ -56,7 +56,7 @@ else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
     # and shared libraries (.dll in bin)
     find_library(PORTAUDIO_LIBRARY
       NAMES
-        portaudio libportaudio libportaudio_${CMAKE_LIBRARY_ARCHITECTURE}
+        portaudio libportaudio "libportaudio_${CMAKE_LIBRARY_ARCHITECTURE}"
       PATHS
         /usr/lib
         /usr/local/lib
@@ -86,7 +86,7 @@ else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
     # used for MINGW only, and only if PA is linked as dll
     find_path(PORTAUDIO_LIBRARY_DIR
       NAMES
-        portaudio.dll libportaudio.dll libportaudio_${CMAKE_LIBRARY_ARCHITECTURE}.dll
+        portaudio.dll libportaudio.dll "libportaudio_${CMAKE_LIBRARY_ARCHITECTURE}.dll"
       PATHS
         "/${MINGW_ARCH}/bin"
         "$ENV{WD}/../../${MINGW_ARCH}/bin"
@@ -127,7 +127,7 @@ else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
       set(PORTAUDIO_FOUND TRUE)
     endif ()
 
-    if (PORTAUDIO_INCLUDE_DIRS PORTAUDIO_LIBRARY_DEBUG AND PORTAUDIO_LIBRARY_RELEASE)
+    if (PORTAUDIO_INCLUDE_DIRS AND PORTAUDIO_LIBRARY_DEBUG AND PORTAUDIO_LIBRARY_RELEASE)
       set(PORTAUDIO_FOUND_RELEASE_DEBUG TRUE)
     endif()
 

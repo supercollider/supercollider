@@ -171,7 +171,6 @@ endif()
 add_executable(supernova server/main.cpp ${supernova_headers})
 target_link_libraries(supernova libsupernova)
 
-
 if(WIN32)
     install(TARGETS supernova
         DESTINATION "SuperCollider"
