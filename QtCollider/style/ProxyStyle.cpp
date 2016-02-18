@@ -2,6 +2,7 @@
 
 #include "../QcApplication.h"
 
+#include <QtGlobal>
 #include <QWebView>
 #include <QStyleOptionSlider>
 #include <QPainter>
@@ -13,13 +14,13 @@
 using namespace QtCollider;
 
 static bool AlwaysShowScrollbars() {
-#ifdef Q_OS_MAC
+#if defined(Q_OS_MAC)
   return QtCollider::Mac::AlwaysShowScrollbars();
 
-#elif Q_OS_X11
+#elif defined(Q_OS_X11)
   return !QcApplication::SystemHasMouseWheel();
 
-#elif Q_OS_WIN
+#elif defined(Q_OS_WIN)
   return !QcApplication::SystemHasMouseWheel();
 
 #else
@@ -43,7 +44,7 @@ void ProxyStyle::drawComplexControl ( ComplexControl ctrl, const QStyleOptionCom
     QProxyStyle::drawComplexControl( ctrl, &opt2, p, w );
     return;
   }
-  
+
   if (ctrl == QStyle::CC_ScrollBar && AlwaysShowScrollbars()) {
     const QStyleOptionSlider *optSlider = static_cast<const QStyleOptionSlider*>(opt);
     QStyleOptionSlider opt2( *optSlider );

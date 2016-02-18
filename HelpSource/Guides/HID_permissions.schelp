@@ -1,6 +1,6 @@
 title:: HID permissions
 summary:: Details how to configure your computer to set the permissions to access HID's
-categories:: External control>HID
+categories:: External Control>HID
 related:: Guides/Working_with_HID, Classes/HID
 
 section:: On Linux
