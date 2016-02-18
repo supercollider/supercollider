@@ -37,7 +37,6 @@ if(WIN32)
     endif()
 endif(WIN32)
 
-
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules
                       ${CMAKE_MODULE_PATH})
 
