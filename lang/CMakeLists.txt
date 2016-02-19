@@ -178,8 +178,8 @@ endif()
 if(SC_IDE)
 	add_definitions(-DSC_IDE -DQT_NO_KEYWORDS)
 
-	qt5_wrap_cpp( SCLANG_MOC_SRCS ../editors/sc-ide/primitives/sc_ipc_client.hpp )
-	list(APPEND sclang_sources ../editors/sc-ide/primitives/sc_ipc_client.cpp)
+	qt5_wrap_cpp( SCLANG_MOC_SRCS ../editors/sc-ide/primitives/sc_ipc_client.hpp ../editors/sc-ide/primitives/sc_ipc_channel.hpp)
+	list(APPEND sclang_sources ../editors/sc-ide/primitives/sc_ipc_client.cpp ../editors/sc-ide/primitives/sc_ipc_channel.cpp)
 	list(APPEND sclang_sources ${SCLANG_MOC_SRCS})
 endif()
 
