@@ -25,9 +25,6 @@
 #include <QAction>
 #include <QObject>
 
-#include <QtNetwork/QLocalSocket>
-#include <QtNetwork/QLocalServer>
-
 #include "sc_process.hpp"
 #include "sc_server.hpp"
 #include "doc_manager.hpp"
@@ -40,26 +37,25 @@ class SessionManager;
 // scide instances have a LocalServer. when called with an argument, it will try to reconnect
 // to the instance with the lowest number.
 class SingleInstanceGuard:
-        public QObject
+    public QObject, public IIpcHandler
 {
     Q_OBJECT
 
 public:
+    static const int Port = 6770;
     bool tryConnect(QStringList const & arguments);
+    void onIpcLog(const QString & message) override;
+    void onIpcMessage(const QString &selector, const QVariantList &data) override;
 
 public Q_SLOTS:
-    void onNewIpcConnection()
-    {
-        mIpcSocket = mIpcServer->nextPendingConnection();
-        connect(mIpcSocket, SIGNAL(disconnected()), mIpcSocket, SLOT(deleteLater()));
-        connect(mIpcSocket, SIGNAL(readyRead()), this, SLOT(onIpcData()));
-    }
-
+    void onNewIpcConnection();
     void onIpcData();
 
 private:
-    QLocalServer * mIpcServer;
-    QLocalSocket * mIpcSocket;
+    IIpcHandler * mHandler;
+    ScIpcChannel * mIpcChannel;
+        QTcpServer * mIpcServer;
+        QTcpSocket * mIpcSocket;
 };
 
 class Main:
@@ -84,7 +80,7 @@ public:
     {
         instance()->scProcess()->evaluateCode(text, silent);
     }
-    
+
     static void evaluateCodeIfCompiled(QString const & text, bool silent = false)
     {
         if(instance()->scProcess()->compiled())
@@ -96,6 +92,8 @@ public:
     static void openDefinition(const QString &string, QWidget * parent);
     static void openCommandLine(const QString &string);
     static void findReferences(const QString &string, QWidget * parent);
+
+    void onIpcLog(const QString & message);
 
 public Q_SLOTS:
     void storeSettings() {
@@ -117,7 +115,7 @@ private:
     Main(void);
     bool eventFilter(QObject *obj, QEvent *event);
     bool nativeEventFilter(const QByteArray&, void* message, long*);
-    
+
     Settings::Manager *mSettings;
     ScProcess * mScProcess;
     ScServer * mScServer;
