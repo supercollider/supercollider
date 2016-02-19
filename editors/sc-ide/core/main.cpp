@@ -128,72 +128,56 @@ int main( int argc, char *argv[] )
     return app.exec();
 }
 
+void SingleInstanceGuard::onNewIpcConnection()
+{
+    mIpcSocket = mIpcServer->nextPendingConnection();
+    connect(mIpcSocket, SIGNAL(disconnected()), mIpcSocket, SLOT(deleteLater()));
+    connect(mIpcSocket, SIGNAL(readyRead()), this, SLOT(onIpcData()));
+}
+
+void SingleInstanceGuard::onIpcLog(const QString &message) {
+
+}
 
 bool SingleInstanceGuard::tryConnect(QStringList const & arguments)
 {
-    const int maxNumberOfInstances = 128;
     if (!arguments.empty()) {
-        for (int socketID = 0; socketID != maxNumberOfInstances; ++socketID) {
-            QString serverName = QStringLiteral("SuperColliderIDE_Singleton_%1").arg(socketID);
-            QSharedPointer<QLocalSocket> socket (new QLocalSocket(this));
-            socket->connectToServer(serverName);
+        QTcpSocket *socket = new QTcpSocket(this);
+        socket->connectToHost(QHostAddress(QHostAddress::LocalHost), SingleInstanceGuard::Port);
 
-            QStringList canonicalArguments;
-            foreach (QString path, arguments) {
-                QFileInfo info(path);
-                canonicalArguments << info.canonicalFilePath();
-            }
+        QVariantList canonicalArguments;
+        foreach (QString path, arguments) {
+            QFileInfo info(path);
+            canonicalArguments << info.canonicalFilePath();
+        }
 
-            if (socket->waitForConnected(200)) {
-                QDataStream stream(socket.data());
-                stream.setVersion(QDataStream::Qt_4_6);
+        if (socket->waitForConnected(200)) {
+            ScIpcChannel *ipcChannel = new ScIpcChannel(socket, QString("SingleInstanceGuard"), this);
+            ipcChannel->write(QString("open"), canonicalArguments);
 
-                stream << QStringLiteral("open");
-                stream << canonicalArguments;
-                if (!socket->waitForBytesWritten(300))
-                    qWarning("SingleInstanceGuard: writing data to another IDE instance timed out");
-
-                return true;
-            }
+            return true;
         }
     }
 
-    mIpcServer = new QLocalServer(this);
-    for (int socketID = 0; socketID != maxNumberOfInstances; ++socketID) {
-        QString serverName = QStringLiteral("SuperColliderIDE_Singleton_%1").arg(socketID);
+    mIpcServer = new QTcpServer(this);
+    bool listening = mIpcServer->listen(QHostAddress(QHostAddress::LocalHost), SingleInstanceGuard::Port);
+    if (listening) {
+        mIpcChannel = new ScIpcChannel(mIpcServer->nextPendingConnection(), QString("SingleInstanceGuard"), this);
 
-        bool listening = mIpcServer->listen(serverName);
-        if (listening) {
-            connect(mIpcServer, SIGNAL(newConnection()), this, SLOT(onNewIpcConnection()));
-            return false;
-        }
+        connect(mIpcServer, SIGNAL(newConnection()), this, SLOT(onNewIpcConnection()));
+        return false;
     }
     return false;
 }
 
-void SingleInstanceGuard::onIpcData()
-{
-    QByteArray ipcData = mIpcSocket->readAll();
+void SingleInstanceGuard::onIpcMessage(const QString &selector, const QVariantList &data) {
+    if (selector == QString("open"))
+        foreach(QVariant path, data)
+            Main::documentManager()->open(path.toString());
+}
 
-    QBuffer receivedData ( &ipcData );
-    receivedData.open ( QIODevice::ReadOnly );
-
-    QDataStream in ( &receivedData );
-    in.setVersion ( QDataStream::Qt_4_6 );
-    QString id;
-    in >> id;
-    if ( in.status() != QDataStream::Ok )
-        return;
-
-    QStringList message;
-    in >> message;
-    if ( in.status() != QDataStream::Ok )
-        return;
-
-    if (id == QStringLiteral("open")) {
-        foreach (QString path, message)
-            Main::documentManager()->open(path);
-    }
+void SingleInstanceGuard::onIpcData() {
+    mIpcChannel->read();
 }
 
 
@@ -266,8 +250,8 @@ bool Main::nativeEventFilter(const QByteArray &, void * message, long *)
     {
         result = true;
     }
-#endif 
-  
+#endif
+
     return result;
 }
 
@@ -316,4 +300,3 @@ void Main::findReferences(const QString &string, QWidget * parent)
         dialog.query(definitionString);
     dialog.exec();
 }
-
