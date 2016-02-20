@@ -602,27 +602,27 @@ is required.
       $> cd pa-build
       $> cmake -G "MinGW Makefiles" ..\supercollider\external-libraries\portaudio
 
-- build. As SC links statically to PA by default, it is enough to build the
-  target portaudio_static:
+- build:
 
-      cmake --build . --target portaudio_static
+      cmake --build .
 
-The resulting file `libportaudio_x86.a` should go into the folder
-`x86\portaudio\lib` next to the SC source. The folder `portaudio` must also
-contain a folder `include` with the header file `portaudio.h`. Copy it from
-the include-folder in the portaudio source:
+The resulting file into the folder `x86\portaudio` next to the SC source. The
+folder `portaudio` must also contain a folder `include` with the header file
+`portaudio.h`. Copy it from the include-folder in the portaudio source:
 
     x86
         portaudio
-            lib
-                libportaudio_x86.a
+            libportaudio_x86.dll
+            libportaudio_x86.dll.a
+            libportaudio_static_x86.a
             include
                 portaudio.h
 
 
 If Cmake finds a portaudio library in the defined location at the beginning of
 a SC build, it will not run the embedded portaudio build, but use the provided
-library.
+library. The SC build preferrs the dll over the static library. So if you want
+to link statically, zou have to remove the .dll and .dll.a from the folder.
 
 
 #### VS
@@ -640,7 +640,7 @@ as the SC build. Therefore a debug- and a release-version of the library must be
 built. VS builds a debug version by default, so we have to repeat the command
 above and add `--config Release`
 
-    $> cmake --build . --target portaudio_static --config Release
+    $> cmake --build . --config Release
 
 The file- and folder-arrangement in x64\portaudio folder differs. We have to
 provide a `Debug` and a `Release` folder. Also the bin/lib distinction is
@@ -650,47 +650,28 @@ flattened. The include folder is on the same level as Debug and Release:
         portaudio
             Debug
                 portaudio_static_x64.lib
+                portauido_x86.dll
+                portauido_x86.exp
+                portauido_x86.ilp
+                portauido_x86.lib
+                portauido_x86.pdb
             Release
                 portaudio_static_x64.lib
+                portauido_x86.dll
+                portauido_x86.dll.manifest
+                portauido_x86.exp
+                portauido_x86.lib
             include
                 portaudio.h
 
-You can also chose to provide dynamic or shared libraries. The linking method
-used for the build only depends on the library provided. In order to build
-dynamic libraries, specify `portaudio` as target (rather than portaudio_static).
-Providing these files will cause the SC build to do shared/dynamic linking:
+The linking method used in the SC build depends on the library provided. If both
+static and dynamic libraries are provided, dynamic ones will be chosen. In order
+to link to the static library, remove libraries for dynamic linking from the
+folder.
 
-    x86
-        portaudio
-            Debug
-                portaudio_x64.dll
-                portaudio_x64.lib
-                portaudio_x64.exp
-                portaudio_x64.ilk
-                portaudio_x64.pdb
-            Release
-                portaudio_x64.dll
-                portaudio_x64.lib
-                portaudio_x64.exp
-            include
-                portaudio.h
-
-If you provide both static and dynamic libraries, SC will pick the static ones.
-So if you want to use shared PA libraries, do not provide static libraries in
-the find location. In order to have the SC-build create a dynamic library with
-the embedded build, pass -DPA_LIBRARY_TYPE="shared" to the the configure
-command. To make the change permanent, change the assignment in the top-level
-`CMakeLists.txt` in SC.
-
-*Note*: when inspecting the values assigned to cmake variables relating to
-portaudio in CMake-Gui, or the file CMakeCache.txt, you will allways find some
-or all values to read "....NOT_FOUND". For other libraries this often indicates
-an error, but the case of portaudio is different. Cmake treats portaudio
-libraries for the VS build different from MinGW built ones. The paths to the
-respective libraries are stored in different variables (e.g. MinGW: PA_LIBRARY
-vs. Visual Studio: PA_LIBRARY_DEBUG). Therefore some variables will always be
-unassigned. And if you do not provide any portaudio libraries, all variables
-will be unassigned, but SC will happily do the PA build itself.
+In order to have the SC-build create and use a dynamic library with
+the embedded build, pass -DPA_LIBRARY_TYPE="shared" to the configure/cmake
+command.
 
 
 Walkthroughs

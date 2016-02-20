@@ -102,7 +102,7 @@ if(APPLE)
 elseif (WIN32)
     if(NOT TARGET portaudio)
         if(NOT SC_BUILD_PA)
-            add_library(portaudio STATIC IMPORTED GLOBAL)
+            add_library(portaudio ${PA_LIBRARY_TYPE} IMPORTED GLOBAL)
             if(MSVC)
                 set_target_properties(portaudio PROPERTIES
                     IMPORTED_LOCATION_DEBUG   ${PORTAUDIO_LIBRARY_DEBUG}
