@@ -4,14 +4,14 @@
 !include "FileFunc.nsh"
 !include "WordFunc.nsh"
 !include "MUI2.nsh"
-
+!include "LogicLib.nsh"
+!include "x64.nsh"
 
 Name "SuperCollider ${SC_VERSION}"
-OutFile ${SC_DST_DIR}\SuperCollider-${SC_VERSION}-win32.exe
-InstallDir $PROGRAMFILES\SuperCollider-${SC_VERSION}
+OutFile ${SC_DST_DIR}\SuperCollider-${SC_VERSION}_${FILE_NAME_SUFIX}.exe
 
-!define MUI_ICON "sc_cube.ico"
-!define MUI_UNICON "sc_cube.ico"
+!define MUI_ICON ${SC_ICON}
+!define MUI_UNICON ${SC_ICON}
 
 ; Get install-dir from registry if available
 InstallDirRegKey HKCU "Software\SuperCollider\${SC_VERSION}" ""
@@ -27,7 +27,7 @@ InstallDirRegKey HKCU "Software\SuperCollider\${SC_VERSION}" ""
 
 !insertmacro MUI_PAGE_WELCOME
 
-!insertmacro MUI_PAGE_LICENSE SuperCollider\LICENSE.txt
+!insertmacro MUI_PAGE_LICENSE SuperCollider\COPYING
 
 ; --- Hack to display Readme.md easily ---
 !define MUI_PAGE_HEADER_TEXT "Read me!"
@@ -72,7 +72,7 @@ Section "Core" core_sect
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SuperCollider-${SC_VERSION}" "UninstallString" "$INSTDIR\Uninstall.exe"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SuperCollider-${SC_VERSION}" "HelpLink" "http://doc.sccode.org/"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SuperCollider-${SC_VERSION}" "URLUpdateInfo" "http://sourceforge.net/projects/supercollider/files/Windows/"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SuperCollider-${SC_VERSION}" "URLInfoAbout" "http://supercollider.sourceforge.net/"
+	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SuperCollider-${SC_VERSION}" "URLInfoAbout" "http://supercollider.github.io/"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SuperCollider-${SC_VERSION}" "DisplayVersion" "${SC_VERSION}"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SuperCollider-${SC_VERSION}" "DisplayIcon" "$INSTDIR\sclang.exe"
 	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SuperCollider-${SC_VERSION}" "NoModify" 1
@@ -134,12 +134,15 @@ SectionEnd
 ; --- FUNCTIONS ---
 
 Function .onInit
-    IntOp $0 ${SF_SELECTED} | ${SF_RO}
-    SectionSetFlags ${core_sect} $0
+	${If} ${TARCH} == "x64"
+		StrCpy $INSTDIR "$PROGRAMFILES64\SuperCollider-${SC_VERSION}"
+	${Else}
+		StrCpy $INSTDIR "$PROGRAMFILES\SuperCollider-${SC_VERSION}"
+	${EndIf}
 FunctionEnd
 
 Function RefreshShellIcons
-  ; By jerome tremblay - april 2003
-  System::Call 'shell32.dll::SHChangeNotify(i, i, i, i) v \
-  (${SHCNE_ASSOCCHANGED}, ${SHCNF_IDLIST}, 0, 0)'
+	; By jerome tremblay - april 2003
+	System::Call 'shell32.dll::SHChangeNotify(i, i, i, i) v \
+	(${SHCNE_ASSOCCHANGED}, ${SHCNF_IDLIST}, 0, 0)'
 FunctionEnd

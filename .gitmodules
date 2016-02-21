@@ -7,3 +7,6 @@
 [submodule "external_libraries/hidapi"]
 	path = external_libraries/hidapi
 	url = git://github.com/sensestage/hidapi.git
+[submodule "external_libraries/portaudio"]
+	path = external_libraries/portaudio
+	url = https://github.com/bagong/portaudio

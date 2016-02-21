@@ -14,6 +14,28 @@ if(APPLE)
     endif()
 endif()
 
+if(WIN32)
+    find_path(READLINE_INCLUDE_DIR
+        NAMES readline/readline.h
+        PATHS "/${MINGW_ARCH}/include"
+              "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/include"
+              "$ENV{WD}/../../${MINGW_ARCH}/include"
+    )
+    find_library(READLINE_LIBRARY
+        NAMES libreadline6 readline5 libreadline readline
+        PATHS "/${MINGW_ARCH}/bin"
+              "$ENV{WD}/../../${MINGW_ARCH}/bin"
+              "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/bin"
+              "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/lib"
+    )
+    find_path(READLINE_LIBRARY_DIR
+        NAMES libreadline6.dll readline5.dll libreadline.dll
+        PATHS "/${MINGW_ARCH}/bin"
+              "$ENV{WD}/../../${MINGW_ARCH}/bin"
+              "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/bin"
+    )
+endif()
+
 if (READLINE_INCLUDE_DIR AND READLINE_LIBRARY)
     set(READLINE_FOUND TRUE)
 endif()
@@ -25,7 +47,7 @@ if (READLINE_INCLUDE_DIR AND EXISTS "${READLINE_INCLUDE_DIR}/readline/readline.h
   file(STRINGS "${READLINE_INCLUDE_DIR}/readline/readline.h"
                READLINE_MINOR_VERSION
        REGEX "^#define RL_VERSION_MINOR.*$")
-  
+
   string(REGEX REPLACE "^.*RL_VERSION_MAJOR.*([0-9]+).*$"
                        "\\1"
                        READLINE_MAJOR_VERSION
