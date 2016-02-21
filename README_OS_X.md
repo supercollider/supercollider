@@ -219,7 +219,7 @@ Common arguments to control the build configuration are:
 
     Check sc help for `ParGroup` to see how to make use of multi-core hardware.
 
-  * Build a 32-bit version:
+  * Build a 32-bit version (sc 3.6 only):
 
     `-DCMAKE_OSX_ARCHITECTURES='i386'`
 
@@ -229,9 +229,8 @@ Common arguments to control the build configuration are:
 
     `-DCMAKE_OSX_ARCHITECTURES='i386;x86_64'`
 
-  * Normally, homebrew installations of libsndfile are detected automatically. To link to a
-    non-standard version of libsndfile, you can use. This is also necessary if for some
-    (rare) reason your libsndfile install is not in /usr/local/include|lib:
+  * Homebrew installations of libsndfile should be detected automatically. To link to a
+    version of libsndfile that is not installed in /usr/local/include|lib, you can use:
 
     `-DSNDFILE_INCLUDE_DIR='/path/to/libsndfile/include'`
     `-DSNDFILE_LIBRARY='/path/to/libsndfile/lib/libreadline.dylib'`
