@@ -53,7 +53,7 @@ static inline bool stringEqual(const char * a, const char * b)
 %locations
 %error-verbose
 %union {
-    int i;
+    intptr_t i;
     const char *id;
     char *str;
     DocNode *doc_node;

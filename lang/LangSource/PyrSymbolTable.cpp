@@ -41,7 +41,7 @@ SCLANG_DLLEXPORT_C PyrSymbol* getmetasym(const char *name)
 {
 	char str[256];
 	strcpy(str, "Meta_");
-	strcat(str, name);
+	strncat(str, name, 250);
 	return getsym(str);
 }
 

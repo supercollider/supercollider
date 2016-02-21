@@ -1,6 +1,8 @@
 #ifndef SCDOC_H
 #define SCDOC_H
 
+#include <stdint.h>
+
 #define SCDOC_PARSE_FULL 0
 #define SCDOC_PARSE_PARTIAL 1
 #define SCDOC_PARSE_METADATA 2

@@ -4,9 +4,11 @@ else()
 	add_definitions("-DNO_LIBSNDFILE")
 endif()
 
-include_directories(${CMAKE_SOURCE_DIR}/include/common
-                    ${CMAKE_SOURCE_DIR}/common
-                    ${CMAKE_SOURCE_DIR}/include/plugin_interface)
+include_directories(
+	${CMAKE_SOURCE_DIR}/include/common
+	${CMAKE_SOURCE_DIR}/common
+	${CMAKE_SOURCE_DIR}/include/plugin_interface
+)
 
 # large file support
 if (CMAKE_SIZEOF_VOID_P MATCHES "4")
@@ -69,9 +71,9 @@ endforeach(plugin)
 
 
 if (APPLE)
- add_library(UIUGens MODULE UIUGens.mm)
+	add_library(UIUGens MODULE UIUGens.mm)
 else()
- add_library(UIUGens MODULE UIUGens.cpp)
+	add_library(UIUGens MODULE UIUGens.cpp)
 endif()
 
 set(uiugens UIUGens)
@@ -79,44 +81,44 @@ set(uiugens UIUGens)
 list(APPEND plugins UIUGens)
 
 if (WIN32)
-    if(MSVC)
-        include_directories (../../platform/windows/compat_stuff) # for stdbool.h
-    endif()
+	if(MSVC)
+		include_directories (../../platform/windows/compat_stuff) # for stdbool.h
+	endif()
 endif()
 
 add_library(FFT_UGens MODULE
-			FFTInterfaceTable.cpp
-			FFT_UGens.cpp
-			PV_UGens.cpp
-			PartitionedConvolution.cpp
-			${scplugin_common_sources}
-			)
+	FFTInterfaceTable.cpp
+	FFT_UGens.cpp
+	PV_UGens.cpp
+	PartitionedConvolution.cpp
+	${scplugin_common_sources}
+)
 
 add_library(PV_ThirdParty MODULE
-			Convolution.cpp
-			FFT2InterfaceTable.cpp
-			FeatureDetection.cpp
-			PV_ThirdParty.cpp
-			${scplugin_common_sources}
-			)
+	Convolution.cpp
+	FFT2InterfaceTable.cpp
+	FeatureDetection.cpp
+	PV_ThirdParty.cpp
+	${scplugin_common_sources}
+)
 
 add_library(ML_UGens MODULE
-			ML.cpp
-			Loudness.cpp
-			BeatTrack.cpp
-			Onsets.cpp
-			onsetsds.c
-			KeyTrack.cpp
-			MFCC.cpp
-			BeatTrack2.cpp
-			ML_SpecStats.cpp
-			BeatTrack.h
-			BeatTrack2.h
-			ML.h
-			Onsets.h
-			onsetsds.h
-			${scplugin_common_sources}
-			)
+	ML.cpp
+	Loudness.cpp
+	BeatTrack.cpp
+	Onsets.cpp
+	onsetsds.c
+	KeyTrack.cpp
+	MFCC.cpp
+	BeatTrack2.cpp
+	ML_SpecStats.cpp
+	BeatTrack.h
+	BeatTrack2.h
+	ML.h
+	Onsets.h
+	onsetsds.h
+	${scplugin_common_sources}
+)
 
 if(NOT NO_LIBSNDFILE)
 	set(diskio_sources DiskIO_UGens.cpp)
@@ -147,33 +149,33 @@ if (SUPERNOVA)
 	endforeach(plugin)
 
 	add_library(FFT_UGens_supernova MODULE
-				FFTInterfaceTable.cpp
-				FFT_UGens.cpp
-				PV_UGens.cpp
-				PartitionedConvolution.cpp
-				${scplugin_common_sources}
-				)
+		FFTInterfaceTable.cpp
+		FFT_UGens.cpp
+		PV_UGens.cpp
+		PartitionedConvolution.cpp
+		${scplugin_common_sources}
+	)
 
 	add_library(PV_ThirdParty_supernova MODULE
-				Convolution.cpp
-				FFT2InterfaceTable.cpp
-				FeatureDetection.cpp
-				PV_ThirdParty.cpp
-				${scplugin_common_sources}
-				)
+		Convolution.cpp
+		FFT2InterfaceTable.cpp
+		FeatureDetection.cpp
+		PV_ThirdParty.cpp
+		${scplugin_common_sources}
+	)
 
 	add_library(ML_UGens_supernova MODULE
-				ML.cpp
-				Loudness.cpp
-				BeatTrack.cpp
-				Onsets.cpp
-				onsetsds.c
-				KeyTrack.cpp
-				MFCC.cpp
-				BeatTrack2.cpp
-				ML_SpecStats.cpp
-				${scplugin_common_sources}
-				)
+		ML.cpp
+		Loudness.cpp
+		BeatTrack.cpp
+		Onsets.cpp
+		onsetsds.c
+		KeyTrack.cpp
+		MFCC.cpp
+		BeatTrack2.cpp
+		ML_SpecStats.cpp
+		${scplugin_common_sources}
+	)
 
 	list(APPEND fft_ugens FFT_UGens_supernova PV_ThirdParty_supernova ML_UGens_supernova)
 	list(APPEND supernova_plugins FFT_UGens_supernova PV_ThirdParty_supernova ML_UGens_supernova UIUGens_supernova)
@@ -190,7 +192,7 @@ if (SUPERNOVA)
 
 		if(SNDFILE_FOUND)
 			target_include_directories(DiskIO_UGens_supernova PUBLIC ${SNDFILE_INCLUDE_DIR})
-            target_link_libraries(DiskIO_UGens_supernova ${SNDFILE_LIBRARIES} ${MATH_LIBRARY} ${Boost_THREAD_LIBRARY})
+				target_link_libraries(DiskIO_UGens_supernova ${SNDFILE_LIBRARIES} ${MATH_LIBRARY} ${Boost_THREAD_LIBRARY})
 			list(APPEND supernova_plugins DiskIO_UGens_supernova)
 		else()
 			message(SEND_ERROR "Cannot find libsndfile")
@@ -207,29 +209,29 @@ foreach(ugen ${fft_ugens})
 endforeach()
 
 foreach(ugen ${uiugens})
-    target_link_libraries(${ugen} ${Boost_THREAD_LIBRARY})
+	target_link_libraries(${ugen} ${Boost_THREAD_LIBRARY})
 endforeach()
 
 foreach(plugin ${plugins})
-    if(WIN32)
-        target_link_libraries(${plugin} wsock32 ws2_32)
-    endif()
+	if(WIN32)
+		target_link_libraries(${plugin} wsock32 ws2_32)
+	endif()
 endforeach()
 
 
 if(NOVA_SIMD)
-    foreach(plugin ${plugins} ${supernova_plugins})
-        target_include_directories(${plugin} PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/nova-simd)
-        target_compile_definitions(${plugin} PUBLIC NOVA_SIMD)
-    endforeach()
+	foreach(plugin ${plugins} ${supernova_plugins})
+		target_include_directories(${plugin} PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/nova-simd)
+		target_compile_definitions(${plugin} PUBLIC NOVA_SIMD)
+	endforeach()
 endif()
 
 foreach(plugin ${supernova_plugins})
-    target_compile_definitions(${plugin} PUBLIC SUPERNOVA)
+	target_compile_definitions(${plugin} PUBLIC SUPERNOVA)
 
-    if (WIN32)
-        target_link_libraries(${plugin} ws2_32)
-    endif()
+	if (WIN32)
+		target_link_libraries(${plugin} ws2_32)
+	endif()
 endforeach()
 
 if (CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -256,17 +258,17 @@ endif()
 
 if (WIN32)
 	install(TARGETS ${plugins} ${supernova_plugins}
-			DESTINATION "SuperCollider/plugins"
-			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+		DESTINATION "SuperCollider/plugins"
+		PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+
 elseif(APPLE)
+	foreach(plugin ${plugins} ${supernova_plugins})
+		add_custom_command(TARGET ${plugin} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../Resources/plugins/
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${plugin}> $<TARGET_FILE_DIR:SuperCollider>/../Resources/plugins/)
+	endforeach()
 
-    foreach(plugin ${plugins} ${supernova_plugins})
-        add_custom_command(TARGET ${plugin} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../Resources/plugins/
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${plugin}> $<TARGET_FILE_DIR:SuperCollider>/../Resources/plugins/)
-    endforeach()
-
-elseif(NOT APPLE)
+else()
 	install(TARGETS ${plugins} ${supernova_plugins}
 			DESTINATION "lib/SuperCollider/plugins"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
