@@ -12,9 +12,9 @@ ScIDE {
 		Class.initClassTree(Server);
 
 		StartUp.add {
-			if (ScIDE.connected) {
+			if (this.connected) {
 				this.handshake
-			};
+			}
 		}
 	}
 
@@ -37,11 +37,23 @@ ScIDE {
 		serverController = SimpleController(server)
 		.put(\serverRunning, { | server, what, extraArg |
 			this.send(\defaultServerRunningChanged, [
-				server.serverRunning, server.addr.hostname, server.addr.port]);
+				server.serverRunning, server.addr.hostname, server.addr.port, server.unresponsive]);
 		})
 		.put(\default, { | server, what, newServer |
 			("changed default server to:" + newServer.name).postln;
 			this.defaultServer = newServer;
+		})
+		.put(\dumpOSC, { | server, what, code |
+			this.send( if(code.asBoolean, \dumpOSCStarted, \dumpOSCStopped) );
+		})
+		.put(\recording, { | theChanger, what, flag |
+			this.send( if(flag.asBoolean, \recordingStarted, \recordingStopped) );
+		})
+		.put(\pausedRecording, { | theChanger, what |
+			this.send(\recordingPaused);
+		})
+		.put(\recordingDuration, { | theChanger, what, duration |
+			this.send(\recordingDuration, duration.asString);
 		})
 		.put(\dumpOSC, { | volume, what, code |
 			this.send( if(code.asBoolean, \dumpOSCStarted, \dumpOSCStopped) );
@@ -64,7 +76,7 @@ ScIDE {
 		defaultServer = server;
 
 		this.send(\defaultServerRunningChanged, [
-			server.serverRunning, server.addr.hostname, server.addr.port]);
+			server.serverRunning, server.addr.hostname, server.addr.port, server.unresponsive]);
 		this.send( if(server.volume.isMuted, \serverMuted, \serverUnmuted) );
 		this.send( if(server.dumpMode.asBoolean, \dumpOSCStarted, \dumpOSCStopped) );
 		this.send( \serverAmpRange, "%,%".format(server.volume.min, server.volume.max) );
@@ -413,8 +425,7 @@ ScIDE {
 		defer {
 			this.prSend(id, data)
 		}
-	}
-
+    }
 
 
 	// PRIVATE ///////////////////////////////////////////////////////////
