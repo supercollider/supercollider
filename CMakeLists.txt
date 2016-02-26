@@ -115,7 +115,7 @@ option(FINAL_BUILD "Build as single source file." OFF)
 
 option(FFT_GREEN "Use internal 'Green' FFT lib rather than FFTW. (Not recommended.)" OFF)
 
-include (${CMAKE_ROOT}/Modules/CheckCXXCompilerFlag.cmake)
+include (CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG(-msse HAS_CXX_SSE)
 if (HAS_CXX_SSE)
     option(SSE "Compile with support for SSE instructions." ON)
