@@ -283,7 +283,9 @@ sclang and scynth executables
 
 The executables `sclang`, `scsynth` and (if available) `supernova` are inside the application bundle:
 
-`SuperCollider.app/Contents/MacOS`
+`SuperCollider.app/Contents/MacOS/sclang`
+`SuperCollider.app/Contents/Resources/scsynth`
+`SuperCollider.app/Contents/Resources/supernova`
 
 The SuperCollider class library and help files are in:
 
@@ -314,7 +316,7 @@ For `sclang`:
 And for `scsynth`:
 
     #!/bin/sh
-    cd /full/path/to/SuperCollider.app/Contents/MacOS
+    cd /full/path/to/SuperCollider.app/Contents/Resources
     export SC_PLUGIN_PATH="/full/path/to/SuperCollider.app/Resources/plugins/";
     exec ./scsynth $*
 
