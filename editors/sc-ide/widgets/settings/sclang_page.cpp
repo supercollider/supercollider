@@ -76,6 +76,7 @@ void SclangPage::load( Manager *s )
 
     ui->autoStart->setChecked( s->value("autoStart").toBool() );
     ui->runtimeDir->setText( s->value("runtimeDir").toString() );
+    ui->sclang_standalone_mode->setChecked(s->value("standalone").toBool());
 
     QStringList availConfigFiles = availableLanguageConfigFiles();
     QString configSelectedLanguageConfigFile = s->value("configFile").toString();
@@ -98,6 +99,7 @@ void SclangPage::store( Manager *s )
     s->setValue("autoStart", ui->autoStart->isChecked());
     s->setValue("runtimeDir", ui->runtimeDir->text());
     s->setValue("configFile", ui->activeConfigFileComboBox->currentText());
+    s->setValue("standalone", ui->sclang_standalone_mode->isChecked());
     s->endGroup();
 
     writeLanguageConfig();
