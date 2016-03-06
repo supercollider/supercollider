@@ -119,11 +119,18 @@ option(FINAL_BUILD "Build as single source file." OFF)
 
 option(FFT_GREEN "Use internal 'Green' FFT lib rather than FFTW. (Not recommended.)" OFF)
 
-if(NOT ${CMAKE_SYSTEM_PROCESSOR} MATCHES "^arm")
+include (CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG(-msse HAS_CXX_SSE)
+if (HAS_CXX_SSE)
     option(SSE "Compile with support for SSE instructions." ON)
-    option(SSE2 "Compile with support for SSE2 instructions." ON)
-else() # ARM platforms do not have SSE
+else()
     set(SSE OFF)
+endif()
+
+CHECK_CXX_COMPILER_FLAG(-msse2 HAS_CXX_SSE2)
+if (HAS_CXX_SSE2)
+    option(SSE2 "Compile with support for SSE2 instructions." ON)
+else()
     set(SSE2 OFF)
 endif()
 
