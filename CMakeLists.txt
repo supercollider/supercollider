@@ -406,7 +406,7 @@ if (WIN32)
 	set( AdditionalInstallFiles
 		README.md
 		README_WINDOWS.md
-		ChangeLog
+		CHNANGELOG.md
 		COPYING
 		AUTHORS
 	)
@@ -414,7 +414,7 @@ elseif(APPLE)
 	set( AdditionalInstallFiles
 		README.md
 		README_OS_X.md
-		ChangeLog
+		CHNANGELOG.md
 		COPYING
 		AUTHORS
 	)
@@ -422,7 +422,7 @@ else()
 	set( AdditionalInstallFiles
 		README.md
 		README_LINUX.md
-		ChangeLog
+		CHNANGELOG.md
 		COPYING
 		AUTHORS
 	)
