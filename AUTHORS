@@ -1,50 +1,135 @@
-Alberto de Campo <decampo att iem dott at>
-Alex Norman <alex att x37v dot info>
-Anders Vinjar <anders dott vinjar att notam dott uio dott no>
-Andi Pieper <apieper att url dott de>
-Axel Balley <axel dott lists att gmail dott com>
-Batuhan Bozkurt <bbozkurt att users dott sourceforge dott net>
-Benjamin Golinvaux <Benjamin dott Golinvaux att euresys dott com>
-Blackrain <blackrain dott sc att gmail dott com>
-Charles Picasso <thelych att gmail dott com>
-Chris Sattinger (Crucial Felix) <felix att crucial-systems dott com>
-Christian A.  Hresko <christian dott hresko att verizon dott net>
-Christophe Costigan <ccos att users dott sourceforge dott net>
-Christopher Frauenberger <frauenberger att iem dott at>
-Dan Stowell <danstowell att users dott sourceforge dott net>
-Dave Watson <dave att elephantride dott org>
-Fredrik Olofsson <f att fredrikolofsson dott com>
-Gerard Roma <0001 att ooo000ooo dott org>
-Hanns Holger Rutz <contact at sciss dott de>
-James Harkins <jamshark70 att gmail dott com>
-James McCartney <asynth att gmail dott com>
-Jan Trutzschler <sc3 att sampleAndHold dott org>
-John Glover <glover dott john att gmail dott com>
-Jonatan Liljedahl <lijon att kymatica dott com>
-Josh Davison <iketa att users dott sourceforge dott net>
-Joshua Parmenter <josh att realizedsound dott net>
-Jost Muxfeldt <jost dott muxfeldt att glyph dott de>
-Julian Rohrhuber <rohrhuber att uni-hamburg dott de>
-Kasper Souren <Kasper dott Souren att ircam dott fr>
-Marije Baalman <nescivi att gmail dott com>
-Mario Lang <mlang att delysid dott org>
-Mark Polishook <polishook att optonline dott net>
-Martin Victory <martinvictory att users dott sourceforge dott net>
-Maurizio Umberto Puxeddu <umbpux att tin dott it>
-Miguel Negrao <zlb-dev att users dott sourceforge dott net>
-Mike Whyte <matrix6k att somahq dott com>
-Newton Armstrong <newton att silvertone dott princeton dott edu>
-Nick Collins <N dott Collins att sussex dott ac dott uk>
-Patrick Beard <pcbeard att mac dott com>
-Patrick Borgeat <patrick att borgeat dott de>
-Rohan Drape <rd att slavepianos dott org>
-Ron Kuivila <rkuivila att wesleyan dott edu>
-Ross Bencina <rossb att audiomulch dott com>
-Ryan Brown <ryan att wabdo dott com>
-Scott Wilson <i att scottwilson dott ca>
-Stefan Kersten <sk att k-hornz dott de>
-Thor Magnusson <T dott Magnusson att sussex dott ac dott uk>
-Till Bovermann <lfsaw att lfsaw dott de>
-Tim Blechmann <tim att klingt dott org>
-Tim Walters <walters att doubtfulpalace dott com>
-and others.
+8c6794b6 <8c6794b6 att gmail.com>
+Abel Abraham Camarillo Ojeda <acamari att verlet.org>
+Alberto J. Gomez <a.jaime.gomez att gmail.com>
+Alberto de Campo <decampo att udk-berlin.de>
+Alex Norman <x37v.alex att gmail.com>
+Anders Vinjar <anders.vinjar att bek.no>
+Andrew Smith <andrewchristophersmith att gmail.com>
+Arnaldo Russo <arnaldorusso att gmail.com>
+Axel Balley <axel.lists att gmail.com>
+BS Collist <bsollist att gmail.com>
+Batuhan Bozkurt <bbozkurt att users.sourceforge.net>
+Benjamin Golinvaux <golinvauxb att users.sourceforge.net>
+Bruno Ruviaro <bruviaro att scu.edu>
+Carlo Capocasa <carlo att carlocapocasa.com>
+Charles Picasso <thelych att users.sourceforge.net>
+Chris Sattinger <crucialfelix att gmail.com>
+Christopher Frauenberger <cfrb att users.sourceforge.net>
+Dan Buch <daniel.buch att gmail.com>
+Dan Stowell <danstowell att users.sourceforge.net>
+Daniel M Karlsson <danielmkarlsson att users.noreply.github.com>
+Dave Watson <watsond att users.sourceforge.net>
+David Granstrom <david att davidgranstrom.com>
+David Runge <david.runge att frqrec.com>
+Eirik Arthur Blekesaune <eirik.blekesaune att gmail.com>
+Fredrik Olofsson <redfrik att users.sourceforge.net>
+Georg Bernhard <georg att MacBook-Air.local>
+Glen Fraser <holaglen att gmail.com>
+Graeme Urquhart <g.urkhart att gmail.com>
+Guaka <guaka att users.sourceforge.net>
+Hanspeter Portner <dev att open-music-kontrollers.ch>
+Holger Ballweg <holger att music-nerds.net>
+Ioannis Zannos <zannos att gmail.com>
+Jakob Leben <jakob.leben att gmail.com>
+James Harkins <jamshark70 att dewdrop-world.net>
+James McCartney <asynth att users.sourceforge.net>
+Jan Trutzschler v. Falkenstein <ctrl-t att users.sourceforge.net>
+John Glover <johnglover att users.sourceforge.net>
+Jonas Bernoulli <jonas att bernoul.li>
+Jonatan Liljedahl <lijon att kymatica.com>
+Jonathan Wakely <github att kayari.org>
+Josh Davison <iketa att users.sourceforge.net>
+Joshua Parmenter <josh att realizedsound.net>
+Jost Muxfeldt <jmfuo att users.sourceforge.net>
+Juan A. Romero <rukano att gmail.com>
+Julian Rohrhuber <julian.rohrhuber att musikundmedien.net>
+LFSaw <lfsaw att lfsaw.de>
+Louis-Guillaume Gagnon <louis.guillaume.gagnon att gmail.com>
+Lucas Cornelisse <lucas att neoboolean.com>
+Lucas Samaruga <samarugalucas att gmail.com>
+Marije Baalman <marije att nescivi.nl>
+Mario Lang <mlang att users.sourceforge.net>
+Mark Polishook <polishoo att users.sourceforge.net>
+Marmaduke Woodman <mmwoodman att gmail.com>
+Martin Victory <martinvictory att users.sourceforge.net>
+Maurizio Umberto Puxeddu <mupuxeddu att users.sourceforge.net>
+Michael Zacherl <github-mz01 att blauwurf.info>
+Miguel Negrão <miguel.negrao att friendlyvirus.org>
+Nick Collins <clicksonnil att gmail.com>
+Patrick Beard <pcbeard att users.sourceforge.net>
+Peter Vasil <mail att petervasil.net>
+Raffael Seyfried <raffaelseyfried att gmail.com>
+Rainer Schütz <bagong att users.noreply.github.com>
+Rohan Drape <rd att slavepianos.org>
+Ron Kuivila <rkuivila att users.sourceforge.net>
+Ronald Kuivila <rkuivila att wesleyan.edu>
+Ross Bencina <rossb att users.sourceforge.net>
+Ryan Brown <rbrown46 att users.sourceforge.net>
+Sam Aaron <samaaron att gmail.com>
+Scott <scottcazan att gmail.com>
+Scott Carver <scott att artificia.org>
+Scott Wilson <i att scottwilson.ca>
+Sean Lee <iseansay att gmail.com>
+Seth Nickell <snickell att gmail.com>
+Stefan Kersten <sk att k-hornz.de>
+Stefan Nussbaumer <st9fan att gmail.com>
+Stuart Popejoy <spopejoy att panix.com>
+Thor Magnusson <thor_sc att users.sourceforge.net>
+Till Bovermann <tboverma att users.sourceforge.net>
+Tim Blechmann <tim att klingt.org>
+Tim Walters <slawmusic att users.sourceforge.net>
+Tristan Strange <tristan.strange att gmail.com>
+Victor Bombi <sonoro att telefonica.net>
+Vincent Donnefort <vdonnefort att gmail.com>
+Wouter Snoei <wsnoei att users.sourceforge.net>
+Yvan Volochine <yvan.volochine att gmail.com>
+ZLB <zlb-dev att users.sourceforge.net>
+a pieper <argl att users.sourceforge.net>
+adc <alberto.decampo att gmail.com>
+afischli <andreas.fischlin att env.ethz.ch>
+andersvi <andersvi att users.sourceforge.net>
+andrea valle <falurcu att users.sourceforge.net>
+artfwo <artfwo att users.sourceforge.net>
+attejensen <atte.jensen att gmail.com>
+backseatviolist <when.possible att gmail.com>
+bagong <rs att bagong.de>
+bion <bionjohnson att gmail.com>
+blackrain <e8472 att users.sourceforge.net>
+blacksound <blekesaune att gmail.com>
+cfrb <me att cfabric.net>
+christian a. hresko <chresko att users.sourceforge.net>
+christophe costigan <ccos att users.sourceforge.net>
+crucialfelix <crucialfelix att gmail.com>
+danstowell <danstowell+github att gmail.com>
+dlm <dlm att dlm-laptop.(none)>
+gerard roma <g_roma att users.sourceforge.net>
+groma <gerard.roma att upf.edu>
+hems <hems.inlet att gmail.com>
+henrique matias <hems.inlet att gmail.com>
+jamshark70 <biz att dewdrop-world.net>
+jpburstrom <johannes att ljud.org>
+jrhb <rohrhuber att uni-hamburg.de>
+lijon <lijon att kymatica.com>
+marierm <martin att martinmarier.com>
+mcGitGo <mc att aiguphonie.com>
+miczac <mz att cox.local>
+mike whyte <matrix6k att users.sourceforge.net>
+mohayonao <mohayonao att gmail.com>
+muellmusik <i att scottwilson.ca>
+newton armstrong <skadoo att users.sourceforge.net>
+nusss <st9fan att gmail.com>
+ogbornd att mcmaster.ca <ogbornd att Davids-MacBook-Pro.local>
+olafklingt <olaf att klingt.org>
+patrickdupuis <p.dupuis att live.com>
+porres <porres att gmail.com>
+redFrik <f att fredrikolofsson.com>
+rs <rs att bagong.de>
+sciss <sciss att users.sourceforge.net>
+scott <scott att artificia.org>
+sensestage <TestOSX107 att Arthurs-MacBook-Pro.local>
+steim <steim att Hera-3.local>
+uid91958 <uid91958 att users.sourceforge.net>
+vanhuman <vanhuman att gmail.com>
+ventosus <ventosus att airpost.net>
+vividsnow <vividsnow att gmail.com>
+wanninger <wanninger att wanninger-neu.local>
