@@ -28,19 +28,6 @@ if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 	message(WARNING "WARNING: IN-PLACE BUILDS ARE NOT RECOMMENDED - PLEASE USE A BUILD DIRECTORY")
 endif()
 
-# allows cmake-find modules and Windows installer to identify the right architecture
-if(WIN32)
-    if(CMAKE_CL_64 OR "$ENV{MSYSTEM}" MATCHES "64" OR CMAKE_C_COMPILER MATCHES "64")
-        SET(CMAKE_LIBRARY_ARCHITECTURE "x64" CACHE STRING "Architecture of target system (for 64bit)")
-    else()
-        SET(CMAKE_LIBRARY_ARCHITECTURE "x86" CACHE STRING "Architecture of target system (for 32bit)")
-    endif()
-
-    if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-        SET(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install" CACHE STRING "Cmake install path" FORCE)
-    endif()
-endif(WIN32)
-
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules
                       ${CMAKE_MODULE_PATH})
 
@@ -51,6 +38,28 @@ CONFIGURE_FILE(
 
 ADD_CUSTOM_TARGET(uninstall
   "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
+
+# identify target architecture, build portaudio before any SC specific
+# definitions break the pa-build
+if(WIN32)
+    SET(SC_WIN_BUNDLE_NAME "SuperCollider" CACHE STRING "Folder name of SC install")
+
+    if(CMAKE_CL_64 OR "$ENV{MSYSTEM}" MATCHES "64" OR CMAKE_C_COMPILER MATCHES "64")
+        SET(CMAKE_LIBRARY_ARCHITECTURE "x64" CACHE STRING "Architecture of target system (for 64bit)")
+    else()
+        SET(CMAKE_LIBRARY_ARCHITECTURE "x86" CACHE STRING "Architecture of target system (for 32bit)")
+    endif()
+
+    # installing to default application-location creates an error (a privileges and/or path syntax problem)
+    if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+        SET(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install" CACHE PATH "Cmake install path" FORCE)
+    endif()
+
+    # might work with "SHARED" as well.
+    set(PA_LIBRARY_TYPE "STATIC")
+    set(PORTAUDIO_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/external_libraries/portaudio/include" CACHE PATH "Portaudio include directory" FORCE)
+    add_subdirectory("${CMAKE_SOURCE_DIR}/external_libraries/portaudio")
+endif(WIN32)
 
 #############################################
 # Compiler flags etc
@@ -203,19 +212,6 @@ if (NOT WIN32)
     include_directories(${PTHREADS_INCLUDE_DIR})
 endif()
 
-if(WIN32)
-    find_package(Portaudio)
-    set(PA_LIBRARY_TYPE "STATIC")
-    if(MSVC AND NOT PORTAUDIO_FOUND_RELEASE_DEBUG)
-        set(SC_BUILD_PA ON CACHE BOOL "Building portaudio with SC" FORCE)
-        set(PORTAUDIO_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/external_libraries/portaudio/include )
-    elseif(MINGW AND NOT PORTAUDIO_FOUND)
-        set(SC_BUILD_PA ON CACHE BOOL "Building portaudio with SC" FORCE)
-        set(PORTAUDIO_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/external_libraries/portaudio/include )
-    endif()
-endif(WIN32)
-
-
 if(MSVC OR MINGW)
     set(MATH_LIBRARY "")
 else()
@@ -356,7 +352,7 @@ if(UNIX AND NOT APPLE)
 endif()
 
 if (WIN32)
-	set(auxresourcesdir "SuperCollider")
+  set(auxresourcesdir "${SC_WIN_BUNDLE_NAME}")
 elseif(APPLE)
 	set(auxresourcesdir ${scappbundlename})
 else()
@@ -457,15 +453,6 @@ if(INSTALL_HELP)
 			PATTERN "*#" EXCLUDE
 		)
 	endif()
-
-	if(NOT APPLE)
-		install(DIRECTORY HelpSource
-			DESTINATION ${auxresourcesdir}
-			REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
-			PATTERN "*~" EXCLUDE
-			PATTERN "*#" EXCLUDE
-		)
-	endif()
 endif()
 
 
@@ -494,11 +481,11 @@ if(SC_DOC_RENDER)
 	file(GLOB_RECURSE SCDocClasses RELATIVE SCClassLibrary/SCDoc *.sc)
 
 	add_custom_target(doc ALL
-					COMMAND ${CMAKE_CURRENT_BINARY_DIR}/lang/sclang${CMAKE_EXECUTABLE_SUFFIX}
-							-l ${CMAKE_CURRENT_BINARY_DIR}/build_sclang.cfg
-							platform/renderAllHelp.scd ${CMAKE_CURRENT_SOURCE_DIR}/HelpSource ${CMAKE_CURRENT_BINARY_DIR}/RenderedHelp
-					WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-					DEPENDS sclang ${SCDocSources} ${SCDocClasses})
+		COMMAND $<TARGET_FILE_DIR:sclang>/sclang${CMAKE_EXECUTABLE_SUFFIX}
+			-l ${CMAKE_CURRENT_BINARY_DIR}/build_sclang.cfg
+			platform/renderAllHelp.scd ${CMAKE_CURRENT_SOURCE_DIR}/HelpSource ${CMAKE_CURRENT_BINARY_DIR}/RenderedHelp
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+		DEPENDS sclang ${SCDocSources} ${SCDocClasses})
 
 endif()
 
