@@ -60,6 +60,9 @@ if(NOT Boost_FOUND) # we compile boost ourselves
 		set_property(TARGET boost_thread
 			APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 	endif()
+
+	set_property( TARGET boost_thread boost_program_options boost_system boost_filesystem PROPERTY FOLDER 3rdparty )
+
 endif()
 
 # tlsf
@@ -98,7 +101,7 @@ if(NOT YAMLCPP_FOUND)
 endif()
 
 
-set_property( TARGET oscpack tlsf boost_thread boost_program_options boost_system boost_filesystem PROPERTY FOLDER 3rdparty )
+set_property( TARGET oscpack tlsf PROPERTY FOLDER 3rdparty )
 
 
 ##### HID_API #######
