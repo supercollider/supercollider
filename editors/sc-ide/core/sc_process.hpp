@@ -53,6 +53,7 @@ public:
         Restart,
         RecompileClassLibrary,
         StopMain,
+        ShowQuarks,
 
         ActionCount
     };
@@ -61,7 +62,7 @@ public:
 
     void sendRequest( const QString &id, const QString &command, const QString &data )
     {
-        QString cmd = QString("ScIDE.request(\"%1\",'%2',\"%3\")")
+        QString cmd = QStringLiteral("ScIDE.request(\"%1\",'%2',\"%3\")")
             .arg(id)
             .arg(command)
             .arg(data);
@@ -87,6 +88,7 @@ public slots:
     void restartLanguage (void);
     void recompileClassLibrary (void);
     void stopMain(void);
+    void showQuarks(void);
     void evaluateCode(QString const & commandString, bool silent = false);
 
 signals:

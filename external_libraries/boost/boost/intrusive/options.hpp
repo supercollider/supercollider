@@ -13,15 +13,15 @@
 #ifndef BOOST_INTRUSIVE_OPTIONS_HPP
 #define BOOST_INTRUSIVE_OPTIONS_HPP
 
-#if defined(_MSC_VER)
-#  pragma once
-#endif
-
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/intrusive_fwd.hpp>
 #include <boost/intrusive/link_mode.hpp>
 #include <boost/intrusive/pack_options.hpp>
 #include <boost/intrusive/detail/mpl.hpp>
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
+#  pragma once
+#endif
 
 namespace boost {
 namespace intrusive {
@@ -37,8 +37,7 @@ struct fhtraits;
 template<class T, class Hook, Hook T::* P>
 struct mhtraits;
 
-//typedef void default_tag;
-struct default_tag;
+struct dft_tag;
 struct member_tag;
 
 template<class SupposedValueTraits>
@@ -61,6 +60,15 @@ BOOST_INTRUSIVE_OPTION_TYPE(size_type, SizeType, SizeType, size_type)
 //!This option setter specifies the strict weak ordering
 //!comparison functor for the value type
 BOOST_INTRUSIVE_OPTION_TYPE(compare, Compare, Compare, compare)
+
+//!This option setter specifies the a function object
+//!that specifies the type of the key of an associative
+//!container and an operator to obtain it from a value type.
+//!
+//!This function object must the define a `key_type` and
+//!a member with signature `const key_type & operator()(const value_type &) const`
+//!that will return the key from a value_type of an associative container
+BOOST_INTRUSIVE_OPTION_TYPE(key_of_value, KeyOfValue, KeyOfValue, key_of_value)
 
 //!This option setter for scapegoat containers specifies if
 //!the intrusive scapegoat container should use a non-variable
@@ -127,7 +135,7 @@ struct member_hook
 //      //always single inheritance, the offset of the node is exactly the offset of
 //      //the hook. Since the node type is shared between all member hooks, this saves
 //      //quite a lot of symbol stuff.
-//      , (Ptr2MemNode)PtrToMember 
+//      , (Ptr2MemNode)PtrToMember
 //      , MemberHook::hooktags::link_mode> member_value_traits;
    typedef mhtraits <Parent, MemberHook, PtrToMember> member_value_traits;
    template<class Base>
@@ -200,7 +208,7 @@ BOOST_INTRUSIVE_OPTION_CONSTANT(optimize_multikey, bool, Enabled, optimize_multi
 //!This allows using masks instead of the default modulo operation to determine
 //!the bucket number from the hash value, leading to better performance.
 //!In debug mode, if power of two buckets mode is activated, the bucket length
-//!will be checked to through assertions to assure the bucket length is power of two.
+//!will be checked with assertions.
 BOOST_INTRUSIVE_OPTION_CONSTANT(power_2_buckets, bool, Enabled, power_2_buckets)
 
 //!This option setter specifies if the container will cache a pointer to the first
@@ -231,7 +239,7 @@ struct hook_defaults
 {
    typedef void* void_pointer;
    static const link_mode_type link_mode = safe_link;
-   typedef default_tag tag;
+   typedef dft_tag tag;
    static const bool optimize_size = false;
    static const bool store_hash = false;
    static const bool linear = false;

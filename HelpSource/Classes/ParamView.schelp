@@ -1,0 +1,102 @@
+TITLE:: ParamView
+summary:: show a parameter of a JITLib process
+categories:: Libraries>JITLib
+related:: Classes/JITGui, Overviews/JITLib
+
+DESCRIPTION::
+ParamView displays a parameter value, and switches representation as appropriate for value: A single number is shown by an EZSlider, a pair of numbers by an EZRanger, and anything else as code on an EZText.
+
+First examples:
+code::
+
+w = Window("test", Rect(20, 820, 400, 100)).front;
+w.addFlowLayout;
+~pv = ParamView(w, Rect(20, 20, 360, 20));
+~pv2 = ParamView(w, Rect(20, 20, 360, 40));
+
+// not working properly yet
+~pv.bounds_(Rect(4, 4, 300, 40));
+
+~pv.dump
+~pv.viewType_(0); // EZNumber
+~pv.viewType_(1); // EZRanger
+~pv.viewType_(2); // EZText
+
+~pv.label_(\freq);
+~pv.spec_(\freq);  // needs spec for EZSlider
+
+
+~pv.value_(200);
+~pv.value_(2000);
+// switches to EZRanger
+~pv.value_([200, 2000]);
+// 3 numbers -> switches to EZText
+~pv.value_([20, 200, 2000]);
+// anything else -> EZText
+~pv.value_(\blonk);
+~pv.action = { |pv| pv.value.postcs };
+
+::
+
+CLASSMETHODS::
+
+METHOD:: new
+create a new ParamView with
+ARGUMENT:: parent
+the parent window or view
+ARGUMENT:: bounds
+the bounds of the view
+ARGUMENT:: label
+a label to display
+ARGUMENT:: spec
+a controlspec for the value
+ARGUMENT:: action
+an action to do when the value changes
+ARGUMENT:: initVal
+an initial value
+ARGUMENT:: initAction
+a boolean whether to perform the action on init.
+
+
+INSTANCEMETHODS::
+
+METHOD:: label
+get and set the view's label
+
+METHOD:: spec
+get and set the view's control spec
+
+METHOD:: action
+get and set the paramview's action
+
+private:: zone, zones
+
+METHOD:: ezviews, slider, ranger, textview
+the 3 ezviews between which the ParamView switches
+
+METHOD:: currview
+the currently shown view of these
+
+METHOD:: value
+get and set value
+
+METHOD:: valueAction
+get and set value and do action
+
+METHOD:: doAction
+do the view's action
+
+METHOD:: viewType
+get and set the view's type:
+0 is single number -> EZSlider,
+1 is pair of numbers -> EZRanger,
+2 is anything else
+
+METHOD:: valueType
+determine viewType for a given value
+
+
+METHOD:: background
+get and set background color
+
+private:: init

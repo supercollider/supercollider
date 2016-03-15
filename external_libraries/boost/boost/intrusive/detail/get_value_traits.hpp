@@ -13,7 +13,11 @@
 #ifndef BOOST_INTRUSIVE_DETAIL_GET_VALUE_TRAITS_HPP
 #define BOOST_INTRUSIVE_DETAIL_GET_VALUE_TRAITS_HPP
 
-#if defined(_MSC_VER)
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
 #  pragma once
 #endif
 
@@ -103,9 +107,9 @@ BOOST_INTRUSIVE_INTERNAL_STATIC_BOOL_IS_TRUE(internal_base_hook, hooktags::is_ba
 template <class T>
 struct internal_member_value_traits
 {
-   template <class U> static one test(...);
-   template <class U> static two test(typename U::member_value_traits* = 0);
-   static const bool value = sizeof(test<T>(0)) == sizeof(two);
+   template <class U> static yes_type test(...);
+   template <class U> static no_type test(typename U::member_value_traits* = 0);
+   static const bool value = sizeof(test<T>(0)) == sizeof(no_type);
 };
 
 template<class SupposedValueTraits, class T, bool = is_default_hook_tag<SupposedValueTraits>::value>

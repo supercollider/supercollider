@@ -1,6 +1,6 @@
 TITLE:: HIDdef
 summary:: HID response reference definition
-categories:: External control>HID
+categories:: External Control>HID
 related:: Classes/HID, Classes/HIDFunc, Classes/OSCdef, Classes/MIDIdef, Guides/Working_with_HID
 
 DESCRIPTION::

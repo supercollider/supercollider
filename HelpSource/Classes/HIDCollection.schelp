@@ -1,6 +1,6 @@
 TITLE:: HIDCollection
 summary:: A class describing a group of elements of an HID device
-categories::  External control>HID
+categories::  External Control>HID
 related:: Classes/HID, Guides/Working_with_HID, Classes/HIDElement, Classes/HIDUsage
 
 DESCRIPTION::

@@ -1,5 +1,5 @@
 //  cpu time info
-//  Copyright (C) 2011 Tim Blechmann
+//  Copyright (C) 2011-2015 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -25,13 +25,21 @@
 
 namespace nova {
 
-struct cpu_time_info
+class cpu_time_info
 {
-    static const size_t size = 512; // 700 ms at 128 samples 96kHz, 6.9 s at 512 samples 44.1kHz
+    typedef std::vector<float, aligned_allocator<float>> ringbuffer;
 
-    cpu_time_info(void):
-        index(size - 1), buffer(size, 0.f)
+public:
+    cpu_time_info()
     {}
+
+    void resize( int sampleRate, int blockSize, int seconds = 1 )
+    {
+        const size_t blocks = sampleRate * seconds / blockSize;
+        size = std::max( size_t(1), blocks );
+        buffer.resize( size, 0.f );
+        index = size - 1;
+    }
 
     void update(float f)
     {
@@ -46,16 +54,14 @@ struct cpu_time_info
     {
         const float average_factor = 1.f/size;
         float sum;
-#ifdef __PATHCC__
-        horizontal_maxsum_vec_simd(peak, sum, &buffer.front(), size);
-#else
         horizontal_maxsum_vec_simd(peak, sum, buffer.data(), size);
-#endif
         average = sum * average_factor;
     }
 
-    std::size_t index;
-    std::vector<float, aligned_allocator<float> > buffer;
+private:
+    std::size_t size  = 0;
+    std::size_t index = 0;
+    ringbuffer buffer;
 };
 
 }

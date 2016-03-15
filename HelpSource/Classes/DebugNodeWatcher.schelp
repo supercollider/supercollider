@@ -12,7 +12,6 @@ For debugging, it can be useful to see every node start and end. It doesn't requ
 Examples::
 
 code::
-s = Server.default;
 s.boot;
 
 d = DebugNodeWatcher(s);

@@ -507,8 +507,6 @@ s.listSendMsg([\b_gen, 80, \cheby, 7] ++ {1.0.rand2.squared}.dup(6));
 section:: Panning
 code::
 (
-s = Server.internal;
-Server.default = s;
 s.quit;
 s.options.numOutputBusChannels = 8;
 s.options.numInputBusChannels = 8;

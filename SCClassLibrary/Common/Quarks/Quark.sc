@@ -3,8 +3,8 @@ Quark {
 	var <name, url, >refspec, data, <localPath;
 	var <changed = false, <git;
 
-	*new { |name, refspec|
-		var args = Quark.parseQuarkName(name, refspec);
+	*new { |name, refspec, url, localPath|
+		var args = Quark.parseQuarkName(name, refspec, url, localPath);
 		if(args.isNil, {
 			Error("% not found".format(name)).throw;
 		});
@@ -12,7 +12,7 @@ Quark {
 	}
 	*fromLocalPath { |path|
 		var name, url, refspec;
-		path= Quarks.quarkNameAsLocalPath(path);
+		path = Quarks.quarkNameAsLocalPath(path);
 		name = path.basename;
 		^super.new.init(name, url, refspec, path)
 	}
@@ -64,7 +64,16 @@ Quark {
 		^Quarks.pathIsInstalled(this.localPath)
 	}
 	isCompatible {
-		^this.data['isCompatible'].value !== false
+		var isCompatible = true;
+		if(this.data.includesKey('isCompatible'), {
+			{
+				isCompatible = this.data['isCompatible'].value !== false
+			}.try({ |error|
+				("Failed to evalute quarkfile data field: isCompatible" + this).error;
+				error.reportError;
+			});
+		});
+		^isCompatible
 	}
 
 	install {
@@ -79,6 +88,7 @@ Quark {
 	}
 
 	checkout {
+		var rs;
 		if(this.isDownloaded.not, {
 			if(this.url.isNil, {
 				Error("No git url, cannot checkout quark" + this).throw;
@@ -100,15 +110,33 @@ Quark {
 				if(refspec == "HEAD", {
 					git.pull()
 				}, {
-					// when do you have to fetch ?
-					// if offline then you do not want to fetch
-					// just checkout. fast switching
-					git.checkout(refspec)
+					rs = this.validateRefspec(refspec);
+					if(rs.notNil, {
+						git.checkout(rs)
+					});
 				});
 			});
 			changed = true;
 			data = nil;
 		});
+	}
+	validateRefspec { |refspec|
+		var tag;
+		if(refspec == "HEAD"
+			or: {refspec.findRegexp("^[a-zA-Z0-9]{40}$").size != 0}, {
+			^refspec
+		});
+		if(refspec.beginsWith("tags/").not, {
+			tag = refspec;
+			refspec = "tags/" ++ tag;
+		}, {
+			tag = refspec.copyToEnd(5);
+		});
+		if(this.tags.includesEqual(tag).not, {
+			("Tag not found:" + this + tag + Char.nl + "Possible tags:" + this.tags).warn;
+			^nil
+		});
+		^refspec
 	}
 	checkForUpdates {
 		var tags;
@@ -183,30 +211,30 @@ Quark {
 		});
 		^super.new.init(*args)
 	}
-	*parseQuarkName { |name, refspec|
+	*parseQuarkName { |name, refspec, url, localPath|
 		// determine which quark the string 'name' refers to
 		// name is one of: quarkname, url, localPath
 		// returns: [name, url, refspec, localPath]
 		var directoryEntry;
 		if(name.contains("://"), {
-			^[PathName(name).fileNameWithoutExtension(), name, refspec, nil]
+			^[PathName(name).fileNameWithoutExtension(), name, refspec, localPath]
 		});
 		if(Quarks.isPath(name), {
-			// url can be determined later by the Quark
-			^[name.basename, nil, refspec, name]
+			// if not provided then url can be determined later by the Quark
+			^[name.basename, url, refspec, name]
 		});
 		// search Quarks folders
 		(Quarks.additionalFolders ++ [Quarks.folder]).do({ |f|
-			var localPath = f +/+ name, url;
-			if(File.existsCaseSensitive(localPath), {
-				^[name, nil, refspec, localPath]
+			var lp = localPath ?? {f +/+ name};
+			if(File.existsCaseSensitive(lp), {
+				^[name, url, refspec, lp]
 			});
 		});
 		// lookup url in directory
 		directoryEntry = Quarks.findQuarkURL(name);
 		if(directoryEntry.notNil, {
 			directoryEntry = directoryEntry.split($@);
-			^[name, directoryEntry[0], refspec ? directoryEntry[1], nil]
+			^[name, url ? directoryEntry[0], refspec ? directoryEntry[1], localPath]
 		});
 		// not found
 		^nil

@@ -268,7 +268,7 @@ namespace boost { namespace program_options {
 
     void error_with_option_name::replace_token(const string& from, const string& to) const
     {
-        while (1)
+        for (;;)
         {
             std::size_t pos = m_message.find(from.c_str(), 0, from.length());
             // not found: all replaced

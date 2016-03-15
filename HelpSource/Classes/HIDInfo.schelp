@@ -1,6 +1,6 @@
 TITLE:: HIDInfo
 summary:: This class contains the basic information about an HID device to access and open it.
-categories:: External control>HID
+categories:: External Control>HID
 related:: Classes/HID, Guides/Working_with_HID
 
 DESCRIPTION::

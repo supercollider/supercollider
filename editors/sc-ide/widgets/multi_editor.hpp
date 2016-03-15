@@ -92,6 +92,7 @@ public:
         CopyLineDown,
         MoveLineUp,
         MoveLineDown,
+	DeleteWord,
 
         GotoPreviousBlock,
         GotoNextBlock,

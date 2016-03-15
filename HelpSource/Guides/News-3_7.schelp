@@ -3,83 +3,105 @@ summary:: A summary of news in SC 3.7
 categories:: News
 related::Guides/News-3_6, Guides/News-3_5, Guides/Debugging-tips
 
-NOTE::This is an incomplete stub::
 
-NOTE::3.7 is an alpha version, which fixes many issues, but may also introduce new ones. Please do not hesitate to add them to the LINK::https://github.com/supercollider/supercollider/issues##issue tracker:: or mention them on any of the supercollider LINK::http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx##mailing list::.::
+NOTE::3.7.0 fixes many issues, but may also introduce new ones. See also STRONG::Known Issues:: section below. Please do not hesitate to add new issues you find to the LINK::https://github.com/supercollider/supercollider/issues##issue tracker:: or mention them on any of the supercollider LINK::http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx##mailing list::.::
 
-	This document focusses on features, there are STRONG::many bugfixes and interesting improvements::, which can be found by exploring the recent changes file and snooping around the system itself.
-
-
-	SECTION:: Editor
-
-	LIST::
-	##Menu entries for Recording, scope and server inspection
-	##Modify and query IDE documents from sclang
-	##Support for the Atom text editor
-	::
-
-	SECTION:: Language-side news
-
-	LIST::
-	##Improved link::Classes/Quark:: system and many new interesting Quarks.
-	##LINK::Classes/TempoClock#-beats:: can be set.
-	##An interface for key-value-pairs, see link::Reference/Key-Value-Pairs::
-	##Refactored JITLib, see link::Other/JITLibChanges3.7:: (in particular dynamic channel expansion).
-	##LINK::Classes/QuartzComposerView::
-	::
+This document focusses on features, there are STRONG::many bugfixes and interesting improvements::, which can be found by exploring the recent changes file and snooping around the system itself.
 
 
-	SUBSECTION::External Interfacing
+SECTION:: Editor
 
-	There is an entirely new HID implementation: see link::Guides/Working_with_HID::.
+LIST::
+##Menu entries for Recording, scope and server inspection
+##Modify and query IDE documents from sclang
+##Support for the Atom text editor
+::
 
-
-	SUBSECTION::List of new methods and classes
-
-	LIST::
-	##link::Classes/Collection#-collectCopy::, link::Classes/Collection#-collectInPlace::
-	##link::Classes/SimpleNumber#-lcm:: and link::Classes/SimpleNumber#-gcd:: have consistent interpretations of negative values and zero.
-	##link::Classes/Dictionary#-embedInStream:: can be customized from within the dictionary.
-	##link::Classes/Server#*remote:: Create a new Server instance corresponding to a server app running on a separate machine.
-	::
-
-	SUBSECTION::List of deprecated methods/classes, or that will be deprecated soon
-	LIST::
-	##GeneralHID, GeneralHIDSpec, GeneralHIDDevice (replaced by the new LINK::Classes/HID:: system)
-	::
+SECTION:: Language-side news
 
 
 
-	SECTION::Server-side news
 
-	Apart from UDP, the TCP-protocol is now supported
-
-	SUBSECTION::List of new UGens
-
-	LIST::
-	##NodeID (UGen that returns the current node id)
-	##LINK::Classes/Dconst::
-	::
-
-	SUBSECTION::Improved or corrected behavior
-	LIST::
-	##LINK::Classes/LinXFade2:: (correct fading direction)
-	##Instances of PV_Copy are added automatically where necessary for parallel processing
-	##LINK::Classes/Env#*new:: accepts a new TELETYPE::step2:: shape, which steps to a value at the end of a shape
-	##LINK::Classes/UGen#-curvelin:: is now inverse of LINK::Classes/UGen#-lincurve::
-	::
+LIST::
+##Improved link::Classes/Quark:: system and many new interesting Quarks.
+##LINK::Classes/TempoClock#-beats:: can be set.
+##An interface for key-value-pairs, see link::Reference/Key-Value-Pairs::
+##Refactored JITLib, see link::Other/JITLibChanges3.7:: (in particular dynamic channel expansion).
+##LINK::Classes/QuartzComposerView::
+::
 
 
-	SUBSECTION::More operators work uniformly across sclang and scserver
+SUBSECTION::External Interfacing
 
-	The following operators have been added as ugens and work the same as in sclang:
+There is an entirely new HID implementation: see link::Guides/Working_with_HID:: that works cross platform (Linux and OSX thus far). This deprecates the GeneralHID interface. Also the link::Classes/LID:: interface has been updated to match the API of the new HID implementation.
 
-	TABLE::
-	##unary operators || code::rand, rand2, linrand, bilinrand, sum3rand, coin::
 
-	##binary operators || code::lcm, gcd, rrand, exprand::
-	::
 
-	See link::Overviews/Operators::
+SUBSECTION::List of new methods and classes
 
-	
+LIST::
+##link::Classes/Collection#-collectCopy::, link::Classes/Collection#-collectInPlace::
+##link::Classes/SimpleNumber#-lcm:: and link::Classes/SimpleNumber#-gcd:: have consistent interpretations of negative values and zero.
+##link::Classes/Dictionary#-embedInStream:: can be customized from within the dictionary.
+##link::Classes/Server#*remote:: Create a new Server instance corresponding to a server app running on a separate machine.
+::
+
+SUBSECTION::List of deprecated methods/classes, or that will be deprecated soon
+LIST::
+##GeneralHID, GeneralHIDSpec, GeneralHIDDevice (replaced by the new LINK::Classes/HID:: system)
+::
+
+
+
+SECTION::Server-side news
+
+Apart from UDP, the TCP-protocol is now supported.
+
+When mapping controls of synths to busses, their number of channels is limited to the number of control channels, avoiding a "spill-over" of mappings.
+
+SUBSECTION::List of new UGens
+
+LIST::
+##NodeID (UGen that returns the current node id)
+##LINK::Classes/Dconst::
+::
+
+SUBSECTION::Improved or corrected behavior
+LIST::
+##LINK::Classes/LinXFade2:: (correct fading direction)
+##LINK::Classes/LFPulse:: (when width = 0.5, return exacly as many 0 as 1)
+##LINK::Classes/TrigControl:: is now independent of synth order, like LINK::Classes/Control::.
+##LINK::Classes/TRand::, LINK::Classes/TExpRand::, LINK::Classes/TIRand:: (can operate at audio rate)
+##LINK::Classes/Env#*new:: accepts a new TELETYPE::step2:: shape, which steps to a value at the end of a shape
+##LINK::Classes/UGen#-curvelin:: is now inverse of LINK::Classes/UGen#-lincurve::
+##LINK::Classes/Server#-record:: correcty closes short files
+##In combinations of demand-ugens: Instances of PV_Copy are added automatically where necessary for parallel processing
+::
+
+
+SUBSECTION::More operators work uniformly across sclang and scserver
+
+The following operators have been added as ugens and work the same as in sclang:
+
+TABLE::
+##unary operators || code::rand, rand2, linrand, bilinrand, sum3rand, coin::
+
+##binary operators || code::lcm, gcd, rrand, exprand::
+::
+
+See link::Overviews/Operators::
+
+
+SECTION:: Known Issues
+
+While much has improved and many bugs from 3.6 have been fixed, there are still many known issues. For a complete list see: link::https://github.com/supercollider/supercollider/issues/::
+
+Here is one few that are worth a special mention:
+
+LIST::
+##(OSX) Evaluating code in the help document works only with teletype::shift-enter:: and not with teletype::cmd-enter:: LINK::https://github.com/supercollider/supercollider/issues/1385::
+##(WIN) When running "Quit Interpreter" from the IDE-Language menu, sclang crashes. LINK::https://github.com/supercollider/supercollider/issues/1578::
+::
+
+
+

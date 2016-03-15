@@ -295,26 +295,26 @@ AbstractGroup : Node {
 	*tail { arg aGroup; 	^this.new(aGroup, \addToTail) }
 	*replace { arg nodeToReplace; ^this.new(nodeToReplace, \addReplace) }
 
-  // move Nodes to this group
-  moveNodeToHead { arg aNode;
-    aNode.group = this;
-    server.sendMsg(22, nodeID, aNode.nodeID) //"/g_head"
-  }
+	// move Nodes to this group
+	moveNodeToHead { arg aNode;
+		aNode.group = this;
+		server.sendMsg(22, nodeID, aNode.nodeID) //"/g_head"
+	}
 
 	moveNodeToTail { arg aNode;
-    aNode.group = this;
-    server.sendMsg(23, nodeID, aNode.nodeID) //"/g_tail"
-  }
+		aNode.group = this;
+		server.sendMsg(23, nodeID, aNode.nodeID) //"/g_tail"
+	}
 
 	moveNodeToHeadMsg { arg aNode;
-    aNode.group = this;
-    ^[22, nodeID, aNode.nodeID]       //"/g_head"
-  }
+		aNode.group = this;
+		^[22, nodeID, aNode.nodeID]	   //"/g_head"
+	}
 
 	moveNodeToTailMsg { arg aNode;
-    aNode.group = this;
-    ^[23, nodeID, aNode.nodeID]      //g_tail
-  }
+		aNode.group = this;
+		^[23, nodeID, aNode.nodeID]	  //g_tail
+	}
 
 	freeAll {
 		// free my children, but this node is still playing
@@ -397,13 +397,11 @@ AbstractGroup : Node {
 
 	*creationCmd { ^this.subclassMustImplementThisMethod }
 
-
 }
 
 Group : AbstractGroup {
 
 	*creationCmd { ^21 }	//"/g_new"
-
 
 }
 

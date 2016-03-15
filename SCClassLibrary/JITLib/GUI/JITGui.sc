@@ -148,7 +148,7 @@ JITGui {
 		skipjack = SkipJack({
 			this.checkUpdate
 		},
-		0.5,
+		0.1,
 		{ parent.isNil or: { parent.isClosed } },
 		this.getName
 		);

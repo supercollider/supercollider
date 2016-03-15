@@ -110,10 +110,35 @@ they will still be performed at the scheduled time in beats.
 note::
 When changing code::beats::, you are only changing the clocks's notion of time, and not
 the current Thread's link::Classes/Thread#-beats#logical time::, which will stay the
-same while the Thread is running. Hence, if this clock is the current Thread's
+same until the Thread is called again. Hence, if this clock is the current Thread's
 link::Classes/Thread#-clock#associated clock::, and you ask the clock for time in beats
 just after changing it, you will see no effect. Nevertheless, the effect will be visible
 immediately on a different Thread.
+::
+
+code::
+(
+t = TempoClock.new;
+
+t.sched(3, {
+    t.beats = 100;
+    t.beats.postln; // still 3
+    nil
+});
+)
+
+(
+c = TempoClock.new;
+fork {
+    loop {
+		c.beats.postln; // updates, because ".wait" calls the thread
+        1.wait;
+    }
+};
+)
+
+c.beats = 100;
+
 ::
 
 

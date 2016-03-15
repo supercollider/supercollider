@@ -1,4 +1,4 @@
-//  (C) Copyright Gennadiy Rozental 2005-2008.
+//  (C) Copyright Gennadiy Rozental 2001.
 //  Distributed under the Boost Software License, Version 1.0.
 //  (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
@@ -18,10 +18,9 @@
 // Boost.Test
 #include <boost/test/unit_test_log.hpp>
 #include <boost/test/unit_test_log_formatter.hpp>
-#include <boost/test/unit_test_suite_impl.hpp>
 #include <boost/test/execution_monitor.hpp>
-
-#include <boost/test/detail/unit_test_parameters.hpp>
+#include <boost/test/framework.hpp>
+#include <boost/test/unit_test_parameters.hpp>
 
 #include <boost/test/utils/basic_cstring/compare.hpp>
 
@@ -38,7 +37,6 @@ typedef ::boost::io::ios_base_all_saver io_saver_type;
 //____________________________________________________________________________//
 
 namespace boost {
-
 namespace unit_test {
 
 // ************************************************************************** //
@@ -57,7 +55,7 @@ entry_value_collector::operator<<( lazy_ostream const& v ) const
 
 //____________________________________________________________________________//
 
-entry_value_collector const& 
+entry_value_collector const&
 entry_value_collector::operator<<( const_string v ) const
 {
     unit_test_log << v;
@@ -86,8 +84,8 @@ namespace {
 struct unit_test_log_impl {
     // Constructor
     unit_test_log_impl()
-    : m_stream( runtime_config::log_sink() )
-    , m_stream_state_saver( new io_saver_type( *m_stream ) )
+    : m_stream( &std::cout )
+    , m_stream_state_saver( new io_saver_type( std::cout ) )
     , m_threshold_level( log_all_errors )
     , m_log_formatter( new output::compiler_log_formatter )
     {
@@ -111,11 +109,14 @@ struct unit_test_log_impl {
     log_checkpoint_data m_checkpoint_data;
 
     // helper functions
-    std::ostream&       stream()            { return *m_stream; }
+    std::ostream&       stream()
+    {
+        return *m_stream;
+    }
     void                set_checkpoint( const_string file, std::size_t line_num, const_string msg )
     {
         assign_op( m_checkpoint_data.m_message, msg, 0 );
-        m_checkpoint_data.m_file_name    = file;
+        m_checkpoint_data.m_file_name   = file;
         m_checkpoint_data.m_line_num    = line_num;
     }
 };
@@ -134,7 +135,7 @@ unit_test_log_t::test_start( counter_t test_cases_amount )
 
     s_log_impl().m_log_formatter->log_start( s_log_impl().stream(), test_cases_amount );
 
-    if( runtime_config::show_build_info() )
+    if( runtime_config::get<bool>( runtime_config::BUILD_INFO ) )
         s_log_impl().m_log_formatter->log_build_info( s_log_impl().stream() );
 
     s_log_impl().m_entry_in_progress = false;
@@ -194,7 +195,7 @@ unit_test_log_t::test_unit_finish( test_unit const& tu, unsigned long elapsed )
 //____________________________________________________________________________//
 
 void
-unit_test_log_t::test_unit_skipped( test_unit const& tu )
+unit_test_log_t::test_unit_skipped( test_unit const& tu, const_string reason )
 {
     if( s_log_impl().m_threshold_level > log_test_units )
         return;
@@ -202,23 +203,7 @@ unit_test_log_t::test_unit_skipped( test_unit const& tu )
     if( s_log_impl().m_entry_in_progress )
         *this << log::end();
 
-    s_log_impl().m_log_formatter->test_unit_skipped( s_log_impl().stream(), tu );
-}
-
-//____________________________________________________________________________//
-
-void
-unit_test_log_t::test_unit_aborted( test_unit const& )
-{
-    // do nothing
-}
-
-//____________________________________________________________________________//
-
-void
-unit_test_log_t::assertion_result( bool )
-{
-    // do nothing
+    s_log_impl().m_log_formatter->test_unit_skipped( s_log_impl().stream(), tu, reason );
 }
 
 //____________________________________________________________________________//
@@ -235,8 +220,14 @@ unit_test_log_t::exception_caught( execution_exception const& ex )
         if( s_log_impl().m_entry_in_progress )
             *this << log::end();
 
-        s_log_impl().m_log_formatter->log_exception( s_log_impl().stream(), s_log_impl().m_checkpoint_data, ex );
+        s_log_impl().m_log_formatter->log_exception_start( s_log_impl().stream(), s_log_impl().m_checkpoint_data, ex );
+
+        log_entry_context( l );
+
+        s_log_impl().m_log_formatter->log_exception_finish( s_log_impl().stream() );
     }
+
+    clear_entry_context();
 }
 
 //____________________________________________________________________________//
@@ -254,7 +245,7 @@ set_unix_slash( char in )
 {
     return in == '\\' ? '/' : in;
 }
-    
+
 unit_test_log_t&
 unit_test_log_t::operator<<( log::begin const& b )
 {
@@ -282,10 +273,15 @@ unit_test_log_t::operator<<( log::begin const& b )
 unit_test_log_t&
 unit_test_log_t::operator<<( log::end const& )
 {
-    if( s_log_impl().m_entry_in_progress )
+    if( s_log_impl().m_entry_in_progress ) {
+        log_entry_context( s_log_impl().m_entry_data.m_level );
+
         s_log_impl().m_log_formatter->log_entry_finish( s_log_impl().stream() );
 
-    s_log_impl().m_entry_in_progress = false;
+        s_log_impl().m_entry_in_progress = false;
+    }
+
+    clear_entry_context();
 
     return *this;
 }
@@ -315,7 +311,7 @@ unit_test_log_t::operator()( log_level l )
 bool
 unit_test_log_t::log_entry_start()
 {
-    if( s_log_impl().m_entry_in_progress ) 
+    if( s_log_impl().m_entry_in_progress )
         return true;
 
     switch( s_log_impl().m_entry_data.m_level ) {
@@ -377,6 +373,33 @@ unit_test_log_t::operator<<( lazy_ostream const& value )
 //____________________________________________________________________________//
 
 void
+unit_test_log_t::log_entry_context( log_level l )
+{
+    framework::context_generator const& context = framework::get_context();
+    if( context.is_empty() )
+        return;
+
+    const_string frame;
+
+    s_log_impl().m_log_formatter->entry_context_start( s_log_impl().stream(), l );
+
+    while( !(frame=context.next()).is_empty() )
+        s_log_impl().m_log_formatter->log_entry_context( s_log_impl().stream(), frame );
+
+    s_log_impl().m_log_formatter->entry_context_finish( s_log_impl().stream() );
+}
+
+//____________________________________________________________________________//
+
+void
+unit_test_log_t::clear_entry_context()
+{
+    framework::clear_context();
+}
+
+//____________________________________________________________________________//
+
+void
 unit_test_log_t::set_stream( std::ostream& str )
 {
     if( s_log_impl().m_entry_in_progress )
@@ -405,10 +428,15 @@ unit_test_log_t::set_format( output_format log_format )
     if( s_log_impl().m_entry_in_progress )
         return;
 
-    if( log_format == CLF )
+    switch( log_format ) {
+    default:
+    case OF_CLF:
         set_formatter( new output::compiler_log_formatter );
-    else
+        break;
+    case OF_XML:
         set_formatter( new output::xml_log_formatter );
+        break;
+    }
 }
 
 //____________________________________________________________________________//
@@ -434,10 +462,7 @@ unit_test_log_formatter::log_entry_value( std::ostream& ostr, lazy_ostream const
 //____________________________________________________________________________//
 
 } // namespace unit_test
-
 } // namespace boost
-
-//____________________________________________________________________________//
 
 #include <boost/test/detail/enable_warnings.hpp>
 

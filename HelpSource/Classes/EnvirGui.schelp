@@ -12,15 +12,18 @@ subsection::Creation
 
 method::new
 create a new EnvirGui
-
+NdefParamGui
 code::
 // simple example
-g = EnvirGui.new(nil, 5);				// empty with 5 slots
+g = EnvirGui.new(nil, 5);    // empty with 5 slots
+g.parent.alwaysOnTop_(true);
 g.object_((a: 1, b: \werty, freq: [500, 2000]));	// put some things in
-g.envir.put(\karl, \otto1);				// one more
+g.envir.put(\karl1, \otto1);				// one more
+g.envir.put(\caesar, \julius);				// one more
+
 g.envir.putAll((b: -12, r: 1, s: 2, t: 3, u: 4, v: 5))
 
-g.object_((x: 2));	// put something else in
+g.object_((x: 2));	// put another object in
 
 g.envir.putAll((b: -12, r: 1, s: 2, t: 3, u: 4, v: 5))
 
@@ -30,8 +33,7 @@ g.envir.removeAt(\s)
 g.envir.removeAt(\t)
 g.envir.removeAt(\u)
 g.envir.removeAt(\v)
-
-g.parent.close;
+g.close;
 ::
 
 argument::object
@@ -65,28 +67,27 @@ the envir displayed - actually an alias for object.
 method::zone
 the composite view the envirgui makes for itself
 
-method::valFields
-the areas in which the key-value pairs are displayed.
 
-method::widgets
-the EZGuis that display the values:
+method::paramViews
+the paramViews that display the values:
 list::
-## Single numbers will have an link::Classes/EZSlider::,
-## pairs of numbers will be shown as an link::Classes/EZRanger::,
+## Single numbers appear in an link::Classes/EZSlider::,
+## pairs of numbers will be shown in an link::Classes/EZRanger::,
 ## all other values are shown as compileStrings in an link::Classes/EZText::.
 ::
+See link::Classes/ParamView:: for details.
 
 method::specs
-EZSlider and EZRanger needs specs for their display ranges; if there is a global spec for that key (key.asSpec), it will be used. If not, a spec is generated (see the link::#-getSpec:: method) and kept in these (local) specs. (With the JITLibExtensions quark, one can also use the Halo class to attach specs to objects, and use those.)
+a local dictionary of the specs used for display ranges of numerical parameters by the paramViews of this envirgui. See the link::#-getSpec:: method for details.
 
 method::editKeys
 the keys of the currently displayed items in the dict.
 
 method::keysRotation
-if the size of envir exceeds numItems, the keys displayed can be rotated: e.g. with 10 keys displayed on 5 valFields, keysRotation 0 means show keys (0..4), keysRotation 2 means show keys (2..6), etc.
+if the size of envir exceeds numItems, the keys displayed can be rotated: e.g. with 10 keys displayed on 5 paramViews, keysRotation 0 means show keys (0..4), keysRotation 2 means show keys (2..6), etc.
 
 strong::gui elements present if requested in options::
-method:: widgets, docBut, knowBut, parentBut, protoBut
+method:: docBut, knowBut, parentBut, protoBut
 
 subsection::Some Methods
 
@@ -116,7 +117,7 @@ For editing, numerical parameters need control specs for the ranges on the gui. 
 
 code::
 // inline example
-g = EnvirGui.new;
+g = EnvirGui.new; g.parent.alwaysOnTop_(true);
 g.getSpec(\freq, 400);		// \freq exists as global spec, so use that
 g.object_((freq: 150));
 
@@ -130,62 +131,72 @@ argument::key
 the parameter name for which to find a spec
 
 argument::value
-the current value of that param, which may be used for guessing specs.
+the current value of that param, which is used when guessing specs.
 
 method::putSpec
 add a spec for a given key, or (if it is a global key) override a global spec with a local one:
 
 code::
+// set a desired range and warp:
 g.putSpec(\iFrek, [10, 1000, \exp]);
-g.putSpec(\freq, [100, 1000, \exp]);
+g.putSpec(\freq, [10, 1000, \exp]);
+g.specs;
+g.putSpec(\freq, \freq);
+
+// specs are remembered when object changes
+g.putSpec(\freq, [10, 1000, \exp]);
 g.object_((freq: 200, iFrek: 20));
+
+// if needed, clear specs by hand when switching objects
+g.specs.clear; g.object_((freq: 200, iFrek: 20));
+
+g.close
 ::
 
 method::replaceKeys, addReplaceKey, removeReplaceKey, showKeyFor
 keys with technical names can be replaced in the display with clearer names.
 
+e = (longFreq: 123, amp: 0.25);
+g = EnvirGui(e); g.parent.alwaysOnTop_(true);
+
+g.editKeys;
+g.addReplaceKey(\longFreq, \freq1, [50, 500, \exp]);
+g.viewForParam(\longFreq).visible_(false);
+g.viewForParam(\freq1).visible_(true);
+
+e.put(\z, 345);
+e.put(\a, 34);
+
+g.replaceKeys
+g.removeReplaceKey(\longFreq)
+
 method::highlight, unhighlight, colorizeArea
 methods for visually emphasizing areas.
 
+g.highlight(0, ">>_", Color.red(1, 0.5));
+g.unhighlight(0);
 
 subsection::Some internal methods
 
-method::setField
-set a field by index, with the new key, value;
-
-argument::index
-the index
-
-argument::key
-a new key
-
-argument::value
-the value
-
-argument::sameKey
-means the field had the same key already.
 
 method::setByKeys
 update the widgets for the current keys
 
-method::clearField
-remove the link::Classes/EZGui:: at this index
 
-method::clearFields
-remove all unused EZGuis
+method::showFields
+show (num) active fields, make others invisible.
 
 method::useRanger
 set and get whether arrays of 2 number values should be displayed with EZRangers.
 
 
-strong::methods that update and replace gui elements based on current envir content: ::
-method::findWidget,  setFunc, setToRanger, setToSlider, setToText
-
 strong::methods that make gui elements: ::
 method::makeViews, makeNameView, makeOptionalViews, makeKnowBut, makeDocBut, makeClrBut, makeProtoBut, makeParentBut
 
 strong::standard JITGui methods: ::
-method::accepts, getState, checkUpdate, updateButtons
+method::accepts, setDefaults, getState, checkUpdate, updateButtons
+
+private:: clearFields, updateViewSpecs, viewForParam
 
 Examples::
 
@@ -212,9 +223,10 @@ Tdef(\text, { |ev|
 )
 
 	// or equivalently, use the built-in EnvirGui in TdefGui:
-TdefGui(Tdef(\text), 4);
+TdefGui(Tdef(\text), 8);
 
 Tdef(\text).set(\yuhu, Prand([2, 3, 5, 8, 13], inf), \magic, [\abra, \cadabra]);
 
 Tdef(\text).clear;
+Tdef(\text).envir.clear;
 ::

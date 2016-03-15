@@ -10,17 +10,17 @@ MIDIEndPoint {
 }
 
 MIDIClient {
-   classvar <myinports, <myoutports; // for linux it is useful to keep track of how many we open ourselves
+	classvar <myinports, <myoutports; // for linux it is useful to keep track of how many we open ourselves
 	classvar <sources, <destinations;
 	classvar <initialized=false;
-	*init { arg inports, outports; // by default initialize all available ports
+	*init { arg inports, outports, verbose=true; // by default initialize all available ports
 								// you still must connect to them using MIDIIn.connect
 
 		this.prInitClient;
 		this.list;
 		if(inports.isNil,{inports = sources.size});
 		if(outports.isNil,{outports = destinations.size});
-//			this.disposeClient;
+		// this.disposeClient;
 
 		this.prInit(inports,outports);
 		initialized = true;
@@ -35,17 +35,19 @@ MIDIClient {
 				++ " outport(s).").postln;
 			"Some expected MIDI devices may not be available.".postln;
 		});
-      myinports = inports;
-      myoutports = outports;
+		myinports = inports;
+		myoutports = outports;
 
 		this.list;
 
 		ShutDown.add { this.disposeClient };
 
-		Post << "MIDI Sources:" << Char.nl;
-		sources.do({ |x| Post << Char.tab << x << Char.nl });
-		Post << "MIDI Destinations:" << Char.nl;
-		destinations.do({ |x| Post << Char.tab << x << Char.nl });
+		if ( verbose,{
+			Post << "MIDI Sources:" << Char.nl;
+			sources.do({ |x| Post << Char.tab << x << Char.nl });
+			Post << "MIDI Destinations:" << Char.nl;
+			destinations.do({ |x| Post << Char.tab << x << Char.nl });
+		});
 	}
 	*list {
 		var list;
@@ -72,12 +74,25 @@ MIDIClient {
 		^this.primitiveFailed
 	}
 	*disposeClient {
+		this.prDisposeClient;
+		initialized = false;
+	}
+	*prDisposeClient {
 		_DisposeMIDIClient
 		^this.primitiveFailed
 	}
 	*restart {
 		_RestartMIDI
 		^this.primitiveFailed
+	}
+
+	// overridden in Linux:
+	*externalSources{
+		^sources;
+	}
+
+	*externalDestinations{
+		^destinations;
 	}
 }
 
@@ -248,12 +263,25 @@ MIDIIn {
 	*findPort { arg deviceName,portName;
 		^MIDIClient.sources.detect({ |endPoint| endPoint.device == deviceName and: {endPoint.name == portName}});
 	}
-	*connectAll {
-		if(MIDIClient.initialized.not,{ MIDIClient.init });
-		MIDIClient.sources.do({ |src,i|
+
+	*disconnectAll {
+		if(MIDIClient.initialized,{
+			MIDIClient.externalSources.do({ |src,i|
+				MIDIIn.disconnect(i,src);
+			});
+		});
+	}
+
+	*connectAll { |verbose=true|
+		if(MIDIClient.initialized.not,
+			{ MIDIClient.init(verbose: verbose) },
+			{ MIDIIn.disconnectAll; MIDIClient.list; }
+		);
+		MIDIClient.externalSources.do({ |src,i|
 			MIDIIn.connect(i,src);
 		});
 	}
+
 	*connect { arg inport=0, device=0;
 		var uid,source;
 		if(MIDIClient.initialized.not,{ MIDIClient.init });
@@ -312,9 +340,11 @@ MIDIIn {
 	}
 	*connectByUID {arg inport, uid;
 		_ConnectMIDIIn
+		^this.primitiveFailed;
 	}
 	*disconnectByUID {arg inport, uid;
 		_DisconnectMIDIIn
+		^this.primitiveFailed;
 	}
 
 	*prDispatchEvent { arg eventList, status, port, chan, b, c;
@@ -358,15 +388,15 @@ MIDIOut {
 				("Failed to find MIDIOut port " + deviceName + portName).warn;
 			});
 		});
-      if(thisProcess.platform.name != \linux) {
-         ^this.new(index,endPoint.uid)
-      }{
-         if ( index < MIDIClient.myoutports ){
-            ^this.new(index,endPoint.uid)
-         }{
-            ^this.new(0,endPoint.uid)
-         }
-      }
+		if(thisProcess.platform.name != \linux) {
+			^this.new(index,endPoint.uid)
+		} {
+			if (index < MIDIClient.myoutports){
+				^this.new(index,endPoint.uid)
+			} {
+				^this.new(0,endPoint.uid)
+			}
+		}
 	}
 	*findPort { arg deviceName,portName;
 		^MIDIClient.destinations.detect({ |endPoint| endPoint.device == deviceName and: {endPoint.name == portName}});
@@ -439,6 +469,7 @@ MIDIOut {
 
 	send { arg outport, uid, len, hiStatus, loStatus, a=0, b=0, late;
 		_SendMIDIOut
+		^this.primitiveFailed;
 	}
 
 	prSysex { arg uid, packet;

@@ -82,20 +82,17 @@ BeatTrack2 : MultiOutUGen {
 
 
 
-SpecFlatness : UGen
-{
+SpecFlatness : UGen {
 	*kr { | buffer |
 		^this.multiNew('control', buffer)
 	}
 }
-SpecPcile : UGen
-{
+SpecPcile : UGen {
 	*kr { | buffer, fraction = 0.5, interpolate = 0 |
 		^this.multiNew('control', buffer, fraction, interpolate)
 	}
 }
-SpecCentroid : UGen
-{
+SpecCentroid : UGen {
 	*kr { | buffer |
 		^this.multiNew('control', buffer)
 	}

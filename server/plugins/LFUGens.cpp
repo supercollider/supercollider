@@ -32,6 +32,7 @@ struct Vibrato : public Unit
 	double mPhase, m_attackSlope, m_attackLevel;
 	float mFreqMul, m_scaleA, m_scaleB, mFreq;
 	int m_delay, m_attack;
+    float trig;
 };
 
 struct LFPulse : public Unit
@@ -322,6 +323,28 @@ void Vibrato_next(Vibrato *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
+	
+	float curtrig = ZIN0(8);
+	if (unit->trig <= 0.f && curtrig > 0.f){
+	
+		unit->mFreqMul = 4.0 * SAMPLEDUR;
+		unit->mPhase = 4.0 * sc_wrap(ZIN0(7), 0.f, 1.f) - 1.0;
+	
+		RGen& rgen = *unit->mParent->mRGen;
+		float rate = ZIN0(1) * unit->mFreqMul;
+		float depth = ZIN0(2);
+		float rateVariation = ZIN0(5);
+		float depthVariation = ZIN0(6);
+		unit->mFreq    = rate  * (1.f + rateVariation  * rgen.frand2());
+		unit->m_scaleA = depth * (1.f + depthVariation * rgen.frand2());
+		unit->m_scaleB = depth * (1.f + depthVariation * rgen.frand2());
+		unit->m_delay = (int)(ZIN0(3) * SAMPLERATE);
+		unit->m_attack = (int)(ZIN0(4) * SAMPLERATE);
+		unit->m_attackSlope = 1. / (double)(1 + unit->m_attack);
+		unit->m_attackLevel = unit->m_attackSlope;
+	}
+	
+	unit->trig = curtrig;
 
 	double ffreq = unit->mFreq;
 	double phase = unit->mPhase;
@@ -440,7 +463,7 @@ void Vibrato_Ctor(Vibrato* unit)
 	unit->m_attack = (int)(ZIN0(4) * SAMPLERATE);
 	unit->m_attackSlope = 1. / (double)(1 + unit->m_attack);
 	unit->m_attackLevel = unit->m_attackSlope;
-
+	unit->trig = 0.0f;
 	SETCALC(Vibrato_next);
 	Vibrato_next(unit, 1);
 }
@@ -1245,8 +1268,6 @@ struct K2A:
 	}
 };
 
-DEFINE_XTORS(K2A)
-
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 void A2K_next(A2K *unit, int inNumSamples)
@@ -1365,8 +1386,6 @@ struct DC:
 			set_vec<type>(out(0), value, inNumSamples);
 	}
 };
-
-DEFINE_XTORS(DC)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1993,6 +2012,7 @@ void Clip_next_nova_ki(Clip* unit, int inNumSamples)
 
 	float lo_slope = CALCSLOPE(next_lo, lo);
 	nova::clip_vec_simd(OUT(0), IN(0), slope_argument(lo, lo_slope), hi, inNumSamples);
+	unit->m_lo = next_lo;
 }
 
 void Clip_next_nova_ik(Clip* unit, int inNumSamples)
@@ -2008,6 +2028,7 @@ void Clip_next_nova_ik(Clip* unit, int inNumSamples)
 
 	float hi_slope = CALCSLOPE(next_hi, hi);
 	nova::clip_vec_simd(OUT(0), IN(0), lo, slope_argument(hi, hi_slope), inNumSamples);
+	unit->m_hi = next_hi;
 }
 
 void Clip_next_nova_kk(Clip* unit, int inNumSamples)
@@ -2036,6 +2057,8 @@ void Clip_next_nova_kk(Clip* unit, int inNumSamples)
 	float hi_slope = CALCSLOPE(next_hi, hi);
 
 	nova::clip_vec_simd(OUT(0), IN(0), slope_argument(lo, lo_slope), slope_argument(hi, hi_slope), inNumSamples);
+	unit->m_lo = next_lo;
+	unit->m_hi = next_hi;
 }
 
 void Clip_next_nova_ai(Clip* unit, int inNumSamples)
@@ -2057,6 +2080,7 @@ void Clip_next_nova_ak(Clip* unit, int inNumSamples)
 	float hi_slope = CALCSLOPE(next_hi, hi);
 
 	nova::clip_vec_simd(OUT(0), IN(0), IN(1), slope_argument(hi, hi_slope), inNumSamples);
+	unit->m_hi = next_hi;
 }
 
 void Clip_next_nova_ia(Clip* unit, int inNumSamples)
@@ -2077,6 +2101,7 @@ void Clip_next_nova_ka(Clip* unit, int inNumSamples)
 
 	float lo_slope = CALCSLOPE(next_lo, lo);
 	nova::clip_vec_simd(OUT(0), IN(0), slope_argument(lo, lo_slope), IN(2), inNumSamples);
+	unit->m_lo = next_lo;
 }
 
 
@@ -2702,6 +2727,8 @@ enum {
 void EnvGen_next_ak_nova(EnvGen *unit, int inNumSamples);
 #endif
 
+#define ENVGEN_NOT_STARTED 1000000000
+
 void EnvGen_Ctor(EnvGen *unit)
 {
 	//Print("EnvGen_Ctor A\n");
@@ -2726,7 +2753,8 @@ void EnvGen_Ctor(EnvGen *unit)
 
 	unit->m_endLevel = unit->m_level = ZIN0(kEnvGen_initLevel) * ZIN0(kEnvGen_levelScale) + ZIN0(kEnvGen_levelBias);
 	unit->m_counter = 0;
-	unit->m_stage = 1000000000;
+	unit->m_stage = ENVGEN_NOT_STARTED;
+	unit->m_shape = shape_Hold;
 	unit->m_prevGate = 0.f;
 	unit->m_released = false;
 	unit->m_releaseNode = (int)ZIN0(kEnvGen_releaseNode);
@@ -2785,6 +2813,8 @@ static inline bool check_gate_ar(EnvGen * unit, int i, float & prevGate, float *
 
 static inline bool EnvGen_nextSegment(EnvGen * unit, int & counter, double & level)
 {
+    //if (unit->m_stage == ENVGEN_NOT_STARTED) { return true; } // this fixes doneAction 14, but breaks with EnvGen_next_aa
+
 	//Print("stage %d rel %d\n", unit->m_stage, (int)ZIN0(kEnvGen_releaseNode));
 	int numstages = (int)ZIN0(kEnvGen_numStages);
 
@@ -2895,8 +2925,8 @@ initSegment:
 			unit->m_grow = (unit->m_y2 - unit->m_y1) / counter;
 		} break;
 		case shape_Cubed : {
-			unit->m_y1 = pow(level, 0.33333333);
-			unit->m_y2 = pow(endLevel, 0.33333333);
+			unit->m_y1 = pow(level, 1.0/3.0);//0.33333333);
+			unit->m_y2 = pow(endLevel, 1.0/3.0);
 			unit->m_grow = (unit->m_y2 - unit->m_y1) / counter;
 		} break;
 		}
@@ -3003,6 +3033,7 @@ static inline void EnvGen_perform(EnvGen * unit, float *& out, double & level, i
 				break;
 			ZXP(out) = level;
 			y1 += grow;
+            y1 = sc_max(y1,0);
 			level = y1*y1*y1;
 		}
 		unit->m_y1 = y1;
@@ -3660,11 +3691,11 @@ PluginLoad(LF)
 	DefineSimpleUnit(Impulse);
 	DefineSimpleUnit(VarSaw);
 	DefineSimpleUnit(SyncSaw);
-	DefineSimpleUnit(K2A);
+	registerUnit<K2A>( ft, "K2A" );
 	DefineSimpleUnit(A2K);
 	DefineSimpleUnit(T2K);
 	DefineSimpleUnit(T2A);
-	DefineSimpleUnit(DC);
+	registerUnit<DC>( ft, "DC" );
 	DefineSimpleUnit(Line);
 	DefineSimpleUnit(XLine);
 

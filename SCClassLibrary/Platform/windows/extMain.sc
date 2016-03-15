@@ -1,4 +1,3 @@
-+ Main
-{
++ Main {
 	platformClass { ^WindowsPlatform }
 }

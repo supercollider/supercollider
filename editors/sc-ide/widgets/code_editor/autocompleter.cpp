@@ -209,7 +209,6 @@ inline QTextDocument *AutoCompleter::document()
 
 void AutoCompleter::keyPress( QKeyEvent *e )
 {
-    int key = e->key();
     switch (e->key())
     {
     case Qt::Key_ParenLeft:
@@ -447,7 +446,7 @@ void AutoCompleter::triggerCompletion(bool forceShow)
 
     mCompletion.on = true;
 
-    qDebug() << QString("Completion: ON <%1>").arg(mCompletion.base);
+    qDebug() << QStringLiteral("Completion: ON <%1>").arg(mCompletion.base);
 
     showCompletionMenu(forceShow);
 
@@ -459,7 +458,7 @@ void AutoCompleter::quitCompletion( const QString & reason )
 {
     Q_ASSERT(mCompletion.on);
 
-    qDebug() << QString("Completion: OFF (%1)").arg(reason);
+    qDebug() << QStringLiteral("Completion: OFF (%1)").arg(reason);
 
     if (mCompletion.menu) {
         mCompletion.menu->hide();
@@ -703,37 +702,37 @@ const ScLanguage::Class * AutoCompleter::classForToken( Token::Type tokenType, c
         ;
     }
 
-    if (tokenString == QString("true"))
+    if (tokenString == QStringLiteral("true"))
         return introspection.findClass("True");
 
-    if (tokenString == QString("false"))
+    if (tokenString == QStringLiteral("false"))
         return introspection.findClass("False");
 
-    if (tokenString == QString("nil"))
+    if (tokenString == QStringLiteral("nil"))
         return introspection.findClass("Nil");
 
-    if (tokenString == QString("thisProcess"))
+    if (tokenString == QStringLiteral("thisProcess"))
         return introspection.findClass("Main");
 
-    if (tokenString == QString("thisFunction"))
+    if (tokenString == QStringLiteral("thisFunction"))
         return introspection.findClass("Function");
 
-    if (tokenString == QString("thisMethod"))
+    if (tokenString == QStringLiteral("thisMethod"))
         return introspection.findClass("Method");
 
-    if (tokenString == QString("thisFunctionDef"))
+    if (tokenString == QStringLiteral("thisFunctionDef"))
         return introspection.findClass("FunctionDef");
 
-    if (tokenString == QString("thisThread"))
+    if (tokenString == QStringLiteral("thisThread"))
         return introspection.findClass("Thread");
 
-    if (tokenString == QString("currentEnvironment"))
+    if (tokenString == QStringLiteral("currentEnvironment"))
         return introspection.findClass("Environment");
 
-    if (tokenString == QString("topEnvironment"))
+    if (tokenString == QStringLiteral("topEnvironment"))
         return introspection.findClass("Environment");
 
-    if (tokenString == QString("inf"))
+    if (tokenString == QStringLiteral("inf"))
         return introspection.findClass("Float");
 
     return NULL;
@@ -809,7 +808,7 @@ void AutoCompleter::updateCompletionMenuInfo()
     if (!examples.isEmpty())
         examples.prepend("<h4>Examples</h4>");
 
-    QString infos = QString("<h4>%1</h4>%2%3"
+    QString infos = QStringLiteral("<h4>%1</h4>%2%3"
                             "<p><a href=\"%4\">go to help</a>")
                     .arg(parseClassElement(node, "SUMMARY"))
                     .arg(parseClassElement(node, "DESCRIPTION"))
@@ -829,7 +828,6 @@ void AutoCompleter::triggerMethodCallAid( bool explicitTrigger )
         return;
     }
 
-    QTextDocument *doc = document();
     QTextCursor cursor( mEditor->textCursor() );
 
     // Find the first bracket that defines a method call
@@ -1287,14 +1285,14 @@ void AutoCompleter::parseClassNode(DocNode *node, QString *str)
 
             /* if empty, the link is on the same page. No HTML link */
             if (locations.first().isEmpty())
-                str->append(QString(" %1 ").arg(locations.first()));
+                str->append(QStringLiteral(" %1 ").arg(locations.first()));
             else
-                str->append(QString("<a href=\"%1\">%2</a>").arg(locations.first())
+                str->append(QStringLiteral("<a href=\"%1\">%2</a>").arg(locations.first())
                                                             .arg(locations.last()));
         } else if (id == "CODE")  {
-            str->append(QString("<code>%1</code>").arg(node->text));
+            str->append(QStringLiteral("<code>%1</code>").arg(node->text));
         } else if (id == "CODEBLOCK")  {
-            str->append(QString("<pre><code>%1</code></pre>").arg(node->text));
+            str->append(QStringLiteral("<pre><code>%1</code></pre>").arg(node->text));
         } else {
             str->append(node->text);
         }

@@ -143,6 +143,19 @@
 #if defined(__SIZEOF_INT128__) && !defined(__CUDACC__)
 #  define BOOST_HAS_INT128
 #endif
+//
+// Recent GCC versions have a __float128 native type, we need to
+// include a std lib header to detect this - not ideal, but we'll
+// be including <cstddef> later anyway when we select the std lib.
+//
+#ifdef __cplusplus
+#include <cstddef>
+#else
+#include <stddef.h>
+#endif
+#if defined(_GLIBCXX_USE_FLOAT128) && !defined(__STRICT_ANSI__)
+# define BOOST_HAS_FLOAT128
+#endif
 
 // C++0x features in 4.3.n and later
 //
@@ -263,7 +276,12 @@
 //
 // Unused attribute:
 #if __GNUC__ >= 4
-#  define BOOST_ATTRIBUTE_UNUSED __attribute__((unused))
+#  define BOOST_ATTRIBUTE_UNUSED __attribute__((__unused__))
+#endif
+//
+// __builtin_unreachable:
+#if BOOST_GCC_VERSION >= 40800
+#define BOOST_UNREACHABLE_RETURN(x) __builtin_unreachable();
 #endif
 
 #ifndef BOOST_COMPILER

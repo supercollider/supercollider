@@ -9,9 +9,8 @@
 
 #include <boost/fusion/support/config.hpp>
 #include <boost/fusion/support/detail/access.hpp>
-#include <boost/type_traits/is_const.hpp>
-#include <boost/mpl/at.hpp>
-#include <boost/mpl/int.hpp>
+#include <boost/fusion/container/vector/detail/value_at_impl.hpp>
+#include <boost/static_assert.hpp>
 
 namespace boost { namespace fusion
 {
@@ -28,10 +27,10 @@ namespace boost { namespace fusion
             template <typename Sequence, typename N>
             struct apply
             {
-                typedef typename mpl::at<typename Sequence::types, N>::type element;
+                typedef typename value_at_impl<vector_tag>::template apply<Sequence, N>::type element;
                 typedef typename detail::ref_result<element>::type type;
 
-                BOOST_FUSION_GPU_ENABLED
+                BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
                 static type
                 call(Sequence& v)
                 {
@@ -43,10 +42,10 @@ namespace boost { namespace fusion
             template <typename Sequence, typename N>
             struct apply <Sequence const, N>
             {
-                typedef typename mpl::at<typename Sequence::types, N>::type element;
+                typedef typename value_at_impl<vector_tag>::template apply<Sequence, N>::type element;
                 typedef typename detail::cref_result<element>::type type;
 
-                BOOST_FUSION_GPU_ENABLED
+                BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
                 static type
                 call(Sequence const& v)
                 {

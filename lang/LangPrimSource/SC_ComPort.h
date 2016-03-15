@@ -113,7 +113,7 @@ public:
 
 public:
 	SC_TcpClientPort(long inAddress, int inPort, ClientNotifyFunc notifyFunc=0, void* clientData=0);
-	void Close();
+	int Close();
 
 	boost::asio::ip::tcp::socket & Socket () { return socket; }
 

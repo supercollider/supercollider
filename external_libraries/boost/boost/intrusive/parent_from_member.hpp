@@ -12,14 +12,14 @@
 #ifndef BOOST_INTRUSIVE_PARENT_FROM_MEMBER_HPP
 #define BOOST_INTRUSIVE_PARENT_FROM_MEMBER_HPP
 
-#if defined(_MSC_VER)
-#  pragma once
-#endif
-
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/intrusive_fwd.hpp>
 
 #include <boost/intrusive/detail/parent_from_member.hpp>
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
+#  pragma once
+#endif
 
 namespace boost {
 namespace intrusive {

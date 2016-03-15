@@ -204,7 +204,7 @@ table::
 ## "CAF" || Core Audio File format
 ::
 ::
-Additionally, a huge number of other formats are supported read only.
+Additionally, a huge number of other formats are supported read only. Please note that WAV file support is limited to 4GB. For output of multiple channels or very long recordings we suggest to use W64 (or CAF on OSX).
 
 method::sampleFormat
 A link::Classes/String:: indicating the format of the sample data which was read by link::#-openRead:: and will be written by link::#-openWrite::. libsndfile determines which header formats support which sample formats. This information is detailed at http://www.mega-nerd.com/libsndfile . The possible header formats are:

@@ -38,7 +38,7 @@ void defineQWidgetPrimitives();
 void defineQPalettePrimitives();
 void defineQImagePrimitives();
     
-#ifdef SC_DARWIN
+#ifdef __APPLE__
     void defineQcQuartzComposerPrimitives();
 #endif
 
@@ -54,7 +54,7 @@ void initPrimitives () {
   defineQPalettePrimitives();
   defineQImagePrimitives();
     
-#ifdef SC_DARWIN
+#ifdef __APPLE__
     defineQcQuartzComposerPrimitives();
 #endif
 

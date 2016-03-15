@@ -8,7 +8,7 @@
 #define FUSION_VALUE_OF_IMPL_05052005_1128
 
 #include <boost/fusion/support/config.hpp>
-#include <boost/mpl/at.hpp>
+#include <boost/fusion/container/vector/detail/value_at_impl.hpp>
 
 namespace boost { namespace fusion
 {
@@ -23,13 +23,11 @@ namespace boost { namespace fusion
         struct value_of_impl<vector_iterator_tag>
         {
             template <typename Iterator>
-            struct apply 
+            struct apply
             {
                 typedef typename Iterator::vector vector;
                 typedef typename Iterator::index index;
-                typedef typename mpl::at<
-                    typename vector::types, index>::type
-                type;
+                typedef typename value_at_impl<vector_tag>::template apply<vector, index>::type type;
             };
         };
     }

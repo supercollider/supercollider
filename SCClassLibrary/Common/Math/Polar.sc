@@ -27,7 +27,7 @@ Polar : Number {
 	// do math as Complex
 	+ { arg aNumber;  ^this.asComplex + aNumber  }
 	- { arg aNumber;  ^this.asComplex - aNumber  }
-  	* { arg aNumber;  ^this.asComplex * aNumber  }
+	* { arg aNumber;  ^this.asComplex * aNumber  }
 	/ { arg aNumber;  ^this.asComplex / aNumber  }
 
 	== { arg aPolar;

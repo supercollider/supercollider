@@ -21,7 +21,7 @@ argument:: interpolate
 examples::
 
 code::
-s = Server.internal.boot;
+s.boot;
 b = Buffer.alloc(s,2048,1);
 
 // Simple demo with filtering white noise, and trying to infer the cutoff freq.

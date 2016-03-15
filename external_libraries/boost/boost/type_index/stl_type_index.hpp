@@ -39,7 +39,6 @@
 #include <boost/type_traits/remove_reference.hpp>
 #include <boost/mpl/if.hpp>
 #include <boost/mpl/or.hpp>
-#include <boost/functional/hash_fwd.hpp>
 
 #if (defined(__EDG_VERSION__) && __EDG_VERSION__ < 245) \
         || (defined(__sgi) && defined(_COMPILER_VERSION) && _COMPILER_VERSION <= 744)

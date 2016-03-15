@@ -45,6 +45,9 @@ METHOD:: read
     argument:: closeFile
         If true, closes the SoundFile after reading.
 
+    argument:: doneAction
+        A Function called when the file reading has completed.
+
 
 METHOD:: readFile
 
@@ -66,6 +69,8 @@ METHOD:: readFile
 
     argument:: closeFile
         If true, closes the SoundFile after reading.
+    argument:: doneAction
+        A Function called when the file reading has completed.
 
 METHOD:: readWithTask
 
@@ -95,7 +100,6 @@ METHOD:: readFileWithTask
 
         The 'block' argument has no effect; the display resolution is infinite.
         The 'showProgress' argument has no effect; the view always displays reading progress within itself.
-    ::
 
     argument:: soundfile
         An open instance of SoundFile.
@@ -131,7 +135,7 @@ METHOD:: setData
     Sets custom display data instead of a sound file, interpreting it using specified number of channels and sample rate.
 
 
-    argument:: arr
+    argument:: data
         An Array of Floats; multiple channel data should be interleaved.
 
     argument:: block

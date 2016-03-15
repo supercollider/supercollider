@@ -136,3 +136,11 @@ QColorRole {
 
 	*new { arg name; ^this.perform(name) }
 }
+
+QLevelIndicatorStyle {
+	classvar
+	<continuous = 0,
+	<led = 1;
+
+	*new { arg style; style.isInteger.if(style, { this.perform(style) }) }
+}

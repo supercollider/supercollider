@@ -13,14 +13,14 @@
 #ifndef BOOST_INTRUSIVE_PRIORITY_COMPARE_HPP
 #define BOOST_INTRUSIVE_PRIORITY_COMPARE_HPP
 
-#if defined(_MSC_VER)
-#  pragma once
-#endif
-
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/intrusive_fwd.hpp>
 
-#include <functional>
+#include <boost/intrusive/detail/minimal_less_equal_header.hpp>
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
+#  pragma once
+#endif
 
 namespace boost {
 namespace intrusive {
@@ -56,8 +56,8 @@ struct get_prio<void, T>
 
 /// @endcond
 
-} //namespace intrusive 
-} //namespace boost 
+} //namespace intrusive
+} //namespace boost
 
 #include <boost/intrusive/detail/config_end.hpp>
 

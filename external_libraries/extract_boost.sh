@@ -16,8 +16,6 @@ bcp --boost=${BOOST_ROOT} \
 	--scan external_libraries/boost*/*/*pp \
 	--scan external_libraries/boost*/*/*/*pp \
 	--scan external_libraries/boost*/*/*/*/*pp \
-	--scan external_libraries/threadpool/boost/*/*pp \
-	--scan external_libraries/threadpool/boost/*/*/*pp \
 	--scan external_libraries/boost_sync/*/*/*/*pp \
 	--scan external_libraries/boost_sync/*/*/*/*/*pp \
 	--scan testsuite/supernova/*pp \

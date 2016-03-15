@@ -19,10 +19,7 @@ Another important distinction is between Synth in SC2 and link::Classes/Synth:: 
 examples::
 
 code::
-(
-s = Server.local;
 s.boot;
-)
 
 // Compile a SynthDef and write it to disk
 (

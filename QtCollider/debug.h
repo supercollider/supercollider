@@ -39,7 +39,7 @@ extern void error(const char *fmt, ...);
 #endif
 
 #define qcSCObjectDebugMsg( LEVEL, OBJ, MSG ) \
-  qcDebugMsg( LEVEL, QString("[%1] %2") \
+  qcDebugMsg( LEVEL, QStringLiteral("[%1] %2") \
                     .arg( OBJ ? slotRawSymbol( &OBJ->classptr->name )->name : "null" ) \
                     .arg(MSG) )
 

@@ -20,18 +20,14 @@
 #define UTILITIES_FREELIST_HPP
 
 #include <boost/lockfree/detail/tagged_ptr.hpp>
-#include <boost/atomic.hpp>
-#include <boost/noncopyable.hpp>
-
-// FIXME: port to std::atomic, once a fixed clang 3.5 has been released
+#include <atomic>
 
 namespace nova {
 
 /**
  * simple freelist implementation without any memory allocation features
  * */
-class freelist:
-    boost::noncopyable
+class freelist
 {
     struct freelist_node
     {
@@ -42,17 +38,20 @@ class freelist:
 
 public:
     freelist(void):
-        pool_(tagged_ptr(NULL))
+        pool_(tagged_ptr(nullptr))
     {}
+
+	freelist( freelist const & rhs )             = delete;
+	freelist & operator=( freelist const & rhs ) = delete;
 
     void * pop (void)
     {
         for(;;)
         {
-            tagged_ptr old_pool = pool_.load(boost::memory_order_consume);
+            tagged_ptr old_pool = pool_.load(std::memory_order_consume);
 
             if (!old_pool.get_ptr())
-                return 0;
+                return nullptr;
 
             freelist_node * new_pool_ptr = old_pool->next.get_ptr();
             tagged_ptr new_pool (new_pool_ptr, old_pool.get_tag() + 1);
@@ -69,7 +68,7 @@ public:
         void * node = n;
         for(;;)
         {
-            tagged_ptr old_pool = pool_.load(boost::memory_order_consume);
+            tagged_ptr old_pool = pool_.load(std::memory_order_consume);
 
             freelist_node * new_pool_ptr = reinterpret_cast<freelist_node*>(node);
             tagged_ptr new_pool (new_pool_ptr, old_pool.get_tag() + 1);
@@ -82,7 +81,7 @@ public:
     }
 
 private:
-    boost::atomic<tagged_ptr> pool_;
+    std::atomic<tagged_ptr> pool_;
 };
 
 

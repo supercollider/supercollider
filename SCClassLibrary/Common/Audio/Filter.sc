@@ -1,5 +1,5 @@
 Filter : PureUGen {
- 	checkInputs { ^this.checkSameRateAsFirstInput }
+	checkInputs { ^this.checkSameRateAsFirstInput }
 }
 
 Resonz : Filter {
@@ -257,13 +257,13 @@ Median : Filter {
 		^this.multiNew('control', length, in).madd(mul, add)
 	}
 	checkInputs {
- 		if (rate == 'audio', {
- 			if (inputs.at(1).rate != 'audio', {
- 				^"input was not audio rate";
- 			});
- 		});
- 		^this.checkValidInputs
- 	}
+		if (rate == 'audio', {
+			if (inputs.at(1).rate != 'audio', {
+				^"input was not audio rate";
+			});
+		});
+		^this.checkValidInputs
+	}
 
 }
 

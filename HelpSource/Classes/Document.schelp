@@ -328,7 +328,7 @@ Document.current.mouseUpAction = nil; // clear mouseUpActiont
 method:: keyDownAction
 Get/set the action to be performed on link::Classes/Document#keyDown::.
 argument:: value
-An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::char::, code::modifiers::, code::unicode::, code::keycode::.
+An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::char::, code::modifiers::, code::unicode::, code::keycode::. See link::Classes/View#Key actions:: for details on these arguments.
 discussion::
 code::
 Document.current.keyDownAction = { arg ...args; args.postln };
@@ -339,7 +339,8 @@ Document.current.keyDownAction = nil;
 method:: keyUpAction
 Get/set the action to be performed on link::Classes/Document#keyUp::.
 argument:: value
-An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::char::, code::modifiers::, code::unicode::, code::keycode::.
+An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::char::, code::modifiers::, code::unicode::, code::keycode::. See link::Classes/View#Key actions:: for details on these arguments.
+discussion::
 code::
 Document.current.keyUpAction = { arg ...args; args.postln };
 // now type some text

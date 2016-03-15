@@ -13,60 +13,21 @@
 #ifndef BOOST_INTRUSIVE_DETAIL_IITERATOR_HPP
 #define BOOST_INTRUSIVE_DETAIL_IITERATOR_HPP
 
-#if defined(_MSC_VER)
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
 #  pragma once
 #endif
 
+#include <boost/intrusive/detail/iterator.hpp>
 #include <boost/intrusive/pointer_traits.hpp>
 #include <boost/intrusive/detail/mpl.hpp>
 #include <boost/intrusive/detail/is_stateful_value_traits.hpp>
-#include <boost/intrusive/detail/std_fwd.hpp>
-
-#include <cstddef>
-
 
 namespace boost {
 namespace intrusive {
-
-template<class Category, class T, class Distance, class Pointer, class Reference>
-struct iterator
-{
-   typedef Category  iterator_category;
-   typedef T         value_type;
-   typedef Distance  difference_type;
-   typedef Pointer   pointer;
-   typedef Reference reference;
-};
-
-template<class Iterator>
-struct iterator_traits
-{
-   typedef typename Iterator::difference_type   difference_type;
-   typedef typename Iterator::value_type        value_type;
-   typedef typename Iterator::pointer           pointer;
-   typedef typename Iterator::reference         reference;
-   typedef typename Iterator::iterator_category iterator_category;
-};
-
-template<class T>
-struct iterator_traits<T*>
-{
-   typedef std::ptrdiff_t                    difference_type;
-   typedef T                                 value_type;
-   typedef T*                                pointer;
-   typedef T&                                reference;
-   typedef std::random_access_iterator_tag   iterator_category;
-};
-
-template<class T>
-struct iterator_traits<const T*>
-{
-   typedef std::ptrdiff_t                    difference_type;
-   typedef T                                 value_type;
-   typedef const T*                          pointer;
-   typedef const T&                          reference;
-   typedef std::random_access_iterator_tag   iterator_category;
-};
 
 template<class ValueTraits>
 struct value_traits_pointers
@@ -74,10 +35,10 @@ struct value_traits_pointers
    typedef BOOST_INTRUSIVE_OBTAIN_TYPE_WITH_DEFAULT
       (boost::intrusive::detail::
       , ValueTraits, value_traits_ptr
-      , typename pointer_traits<typename ValueTraits::node_traits::node_ptr>::template
+      , typename boost::intrusive::pointer_traits<typename ValueTraits::node_traits::node_ptr>::template
          rebind_pointer<ValueTraits>::type)   value_traits_ptr;
 
-   typedef typename pointer_traits<value_traits_ptr>::template
+   typedef typename boost::intrusive::pointer_traits<value_traits_ptr>::template
       rebind_pointer<ValueTraits const>::type const_value_traits_ptr;
 };
 
@@ -153,73 +114,6 @@ struct iiterator_members<NodePtr, StoredPointer, false>
 
    NodePtr nodeptr_;
 };
-
-namespace detail {
-
-template<class InputIt, class Distance> inline
-void advance_impl(InputIt& it, Distance n, const std::input_iterator_tag&)
-{
-   while(n--)
-	   ++it;
-}
-
-template<class InputIt, class Distance> inline
-void advance_impl(InputIt& it, Distance n, std::forward_iterator_tag &)
-{
-   while(n--)
-	   ++it;
-}
-
-template<class InputIt, class Distance> inline
-void advance_impl(InputIt& it, Distance n, std::bidirectional_iterator_tag &)
-{
-   for (; 0 < n; --n)
-	   ++it;
-   for (; n < 0; ++n)
-	   --it;
-}
-
-template<class InputIt, class Distance>
-inline void advance_impl(InputIt& it, Distance n, const std::random_access_iterator_tag &)
-{
-   it += n;
-}
-
-} //namespace detail
-
-template<class InputIt, class Distance>
-inline void iterator_advance(InputIt& it, Distance n)
-{	// increment iterator by offset, arbitrary iterators
-   boost::intrusive::detail::advance_impl(it, n, boost::intrusive::iterator_traits<InputIt>::iterator_category());
-}
-
-namespace detail{
-
-template<class InputIt, class Distance, class Category>
-inline void distance_impl(InputIt first, InputIt last, Distance& off, const Category &)
-{
-   while(first != last){
-	   ++off;
-      ++first;
-   }
-}
-
-template<class InputIt, class Distance> inline
-void distance_impl(InputIt first, InputIt last, Distance& off, const std::random_access_iterator_tag&)
-{
-   off += last - first;
-}
-
-}  //namespace detail
-
-template<class InputIt> inline
-typename iterator_traits<InputIt>::difference_type iterator_distance(InputIt first, InputIt last)
-{
-   typename iterator_traits<InputIt>::difference_type off = 0;
-   boost::intrusive::detail::distance_impl(first, last, off, boost::intrusive::iterator_traits<InputIt>::iterator_category());
-   return off;
-}
-
 
 } //namespace intrusive
 } //namespace boost

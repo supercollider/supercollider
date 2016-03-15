@@ -6,13 +6,22 @@ related:: Classes/FBSineC, Classes/FBSineN
 description::
 A linear-interpolating sound generator based on the difference equations:
 
-code::
-	x[n+1] = sin(im * y[n] + fb * x[n])
-	y[n+1] = (a * y[n] + c) % 2pi
+teletype::
+        x(n+1) = sin(im * y(n) + fb * x(n))
+        y(n+1) = (a * y(n) + c) % 2pi
 ::
-warning:: reviser formulae conversion to c like code. ::
+
 
 This uses a linear congruential function to drive the phase indexing of a sine wave. For code:: im = 1 ::, code:: fb = 0 ::, and code:: a = 1 :: a normal sinewave results.
+
+sclang code translation:
+
+code::
+(
+var im = 1, fb = 0.1, a = 1.1, c = 0.5, xi = 0.1, yi = 0.1, size = 64;
+plot(size.collect { xi = sin((im * yi) + (fb * xi)); yi = (a * yi + c) % 2pi; xi });
+)
+::
 
 classmethods::
 method:: ar

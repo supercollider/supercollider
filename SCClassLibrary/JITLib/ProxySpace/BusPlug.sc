@@ -176,7 +176,7 @@ BusPlug : AbstractFunction {
 			^true // already there
 		};
 
-		if(reshaping.isNil) {
+		if(reshaping.isNil or: { reshaping == \static }) {
 			^(this.rate === rate) and: { numChannels <= bus.numChannels }
 		};
 		// for now: always reshape on rate change, because rate adaption happens earlier.

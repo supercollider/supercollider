@@ -220,7 +220,7 @@ namespace boost { namespace program_options {
                     {   
                         // Intel-Win-7.1 does not understand
             // push_back on string.         
-                        result += tolower(s[n]);
+                        result += static_cast<char>(tolower(s[n]));
                     }
                 }
                 return result;

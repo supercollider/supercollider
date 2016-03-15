@@ -1,5 +1,4 @@
-ServerOptions
-{
+ServerOptions {
 	// order of variables is important here. Only add new instance variables to the end.
 	var <numAudioBusChannels=128;
 	var <>numControlBusChannels=4096;
@@ -479,7 +478,7 @@ Server {
 	listSendMsg { arg msg;
 		addr.sendMsg(*msg);
 	}
- 	listSendBundle { arg time, msgs;
+	listSendBundle { arg time, msgs;
 		addr.sendBundle(time, *(msgs.asArray));
 	}
 
@@ -788,7 +787,7 @@ Server {
 				this.wait(\done);
 				0.1.wait;
 				func.value;
-				this.boot;
+				defer { this.boot }
 			}
 		} {
 			func.value;

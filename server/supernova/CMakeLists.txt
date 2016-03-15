@@ -28,7 +28,6 @@ set(libsupernova_src
     ${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp
     server/buffer_manager.cpp
-    server/dsp_context.cpp
     server/memory_pool.cpp
     server/node_graph.cpp
     server/server.cpp
@@ -36,12 +35,12 @@ set(libsupernova_src
 )
 
 if(APPLE)
-	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
+    set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
 endif()
 
 
 if (FFT_GREEN)
-	list(APPEND libsupernova_src ../../common/fftlib.c)
+    list(APPEND libsupernova_src ../../common/fftlib.c)
 endif()
 
 if(WIN32)
@@ -62,7 +61,7 @@ if(NOT WIN32)
                PROPERTY OUTPUT_NAME supernova)
 endif()
 
-target_link_libraries(libsupernova oscpack tlsf ${PTHREADS_LIBRARIES})
+target_link_libraries(libsupernova oscpack tlsf ${PTHREADS_LIBRARIES} boost_thread)
 
 target_compile_definitions(libsupernova PUBLIC SUPERNOVA)
 target_include_directories(libsupernova PUBLIC
@@ -118,8 +117,8 @@ else()
 endif()
 
 if (FFTW3F_FOUND)
-	target_include_directories(libsupernova PUBLIC ${FFTW3F_INCLUDE_DIR})
-	target_link_libraries(libsupernova ${FFTW3F_LIBRARY})
+    target_include_directories(libsupernova PUBLIC ${FFTW3F_INCLUDE_DIR})
+    target_link_libraries(libsupernova ${FFTW3F_LIBRARY})
 endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -129,12 +128,17 @@ endif()
 
 if(Boost_FOUND)
     target_link_libraries(libsupernova ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY})
-	target_include_directories(libsupernova PUBLIC ${Boost_INCLUDE_DIRS})
+    target_include_directories(libsupernova PUBLIC ${Boost_INCLUDE_DIRS})
 else()
     target_include_directories(libsupernova PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/boost)
-    target_link_libraries(libsupernova boost_system boost_filesystem boost_program_options boost_thread)
+    target_link_libraries(libsupernova boost_system boost_filesystem boost_program_options)
 endif()
 
+if(CMAKE_COMPILER_IS_GNUCXX)
+    if( ${_gcc_version} VERSION_GREATER 5 )
+      target_link_libraries( libsupernova atomic )
+    endif()
+endif()
 
 if(WIN32)
     target_link_libraries(libsupernova wsock32 ws2_32 winmm)
@@ -146,10 +150,14 @@ target_link_libraries(supernova libsupernova)
 
 
 if(WIN32)
-	install(TARGETS supernova
+    install(TARGETS supernova
         DESTINATION "SuperCollider"
         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-elseif(NOT APPLE)
+elseif(APPLE)
+    add_custom_command(TARGET supernova POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../MacOS/
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:supernova> $<TARGET_FILE_DIR:SuperCollider>/../MacOS)
+else(NOT APPLE)
   install(TARGETS supernova
           DESTINATION "bin"
           PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
@@ -165,5 +173,5 @@ endif()
 
 if (APPLE)
     target_link_libraries(libsupernova "-framework Accelerate")
-    target_link_libraries(libsupernova "-framework CoreAudio -framework CoreServices -framework Foundation")
+    target_link_libraries(libsupernova "-framework CoreAudio -framework CoreServices -framework Foundation -framework ApplicationServices")
 endif()

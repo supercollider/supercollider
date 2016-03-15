@@ -6,10 +6,18 @@ related:: Classes/CuspL
 description::
 A non-interpolating sound generator based on the difference equation:
 
-code::
-	x[n+1] = a - b * sqrt(abs(x[n]))
+teletype::
+	x(n+1) = a - b * sqrt(|x(n)|)
 ::
-warning:: revise formulae converted to c like code ::
+
+sclang code translation:
+
+code::
+(
+var a = 1.0, b = 1.9, xi = 0, size = 64;
+plot(size.collect { xi = a - (b * sqrt(abs(xi))) });
+)
+::
 
 classmethods::
 

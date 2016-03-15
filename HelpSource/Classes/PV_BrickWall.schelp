@@ -42,16 +42,14 @@ code::
 
 s.boot;
 
-b = Buffer.alloc(s,2048,1);
-
 (
-SynthDef("help-brick", { arg out=0, bufnum=0;
+{
 	var in, chain;
-	in = {WhiteNoise.ar(0.2)}.dup;
-	chain = FFT(bufnum, in);
+	in = WhiteNoise.ar(0.2);
+	chain = FFT(LocalBuf(2048), in);
 	chain = PV_BrickWall(chain, SinOsc.kr(0.1));
-	Out.ar(out, IFFT(chain).dup);
-}).play(s,[\out, 0, \bufnum, b.bufnum]);
+	IFFT(chain);
+}.play
 )
 
 ::

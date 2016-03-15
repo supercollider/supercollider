@@ -13,7 +13,11 @@
 #ifndef BOOST_INTRUSIVE_DETAIL_IS_STATEFUL_VALUE_TRAITS_HPP
 #define BOOST_INTRUSIVE_DETAIL_IS_STATEFUL_VALUE_TRAITS_HPP
 
-#if defined(_MSC_VER)
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
 #  pragma once
 #endif
 
@@ -28,7 +32,7 @@ namespace detail {
 template<class ValueTraits>
 struct is_stateful_value_traits
 {
-   static const bool value = !detail::is_empty_class<ValueTraits>::value;
+   static const bool value = !detail::is_empty<ValueTraits>::value;
 };
 
 }}}

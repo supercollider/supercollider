@@ -1,6 +1,6 @@
 TITLE:: HIDUsage
 summary:: Helper class to read usage information from HID usage tables
-categories:: External control>HID
+categories:: External Control>HID
 related:: Classes/HID, Classes/HIDElement, Classes/HIDCollection, Guides/Working_with_HID
 
 DESCRIPTION::

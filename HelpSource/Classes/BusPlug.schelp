@@ -66,9 +66,10 @@ method::reshaping
 Determines how to behave when link::#initBus:: is called.
 Current options:
 list::
-## nil Once initialized, keep the same bus - this is the default
-## \elastic On a change, shrink and grow according to need, replace bus. Monitoring is adjusted.
-## \expanding On a change, only grow according to need, replace bus. Monitoring is adjusted.
+## teletype::nil:: Once initialized, keep the same bus - this is the default
+## teletype::\static:: Same as nil, but allows you to override the default in instances
+## teletype::\elastic:: On a change, shrink and grow according to need, replace bus. Monitoring is adjusted.
+## teletype::\expanding:: On a change, only grow according to need, replace bus. Monitoring is adjusted.
 ::
 
 subsection::In UGen graphs and Patterns

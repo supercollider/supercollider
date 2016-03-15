@@ -331,7 +331,7 @@ code::
 subsection:: Searching strings
 
 method::find
-Returns the index of the string in the receiver, or nil if not found. If strong::ignoreCase:: is true, find makes no difference between uppercase and lowercase letters. The strong::offset:: is the point in the string where the search begins.
+Returns the index of the string in the receiver, or nil if not found. If strong::ignoreCase:: is true, find makes no difference between uppercase and lowercase letters. The strong::offset:: is the point in the string where the search begins. string may be a String or a link::Classes/Char::.
 code::
 "These are several words".find("are").postln;
 "These are several words".find("fish").postln;
@@ -398,7 +398,7 @@ code::
 
 
 method::replace
-Like link::#-tr::, but with strings as arguments.
+Like link::#-tr::, but with Strings as well as Chars as arguments.
 code::
 "Here are several words which are fish".replace("are", "were");
 ::
@@ -539,7 +539,7 @@ Despite the fact that the method is called 'unixCmd', strong::it does work in Wi
 ::
 
 method::unixCmd
-Execute a unix command asynchronously using the standard shell (sh).
+Execute a unix command strong::asynchronously:: using the standard shell (sh).
 argument:: action
 A link::Classes/Function:: that is called when the process has exited. It is passed two arguments: the exit code and pid of the exited process.
 argument:: postOutput
@@ -554,19 +554,19 @@ code::
 ::
 
 method::unixCmdGetStdOut
-Similar to link::#-unixCmd:: except that the stdout of the process is returned (synchronously) rather than sent to the post window.
+Similar to link::#-unixCmd:: except that the stdout of the process is returned (strong::synchronously::) rather than sent to the post window.
 code::
 ~listing = "ls Help".unixCmdGetStdOut; // Grab
 ~listing.reverse.as(Array).stutter.join.postln; // Mangle
 ::
 
 method::systemCmd
-Executes a unix command synchronously using the standard shell (sh).
+Executes a unix command strong::synchronously:: using the standard shell (sh).
 
 returns:: Error code of the unix command
 
 method::runInTerminal
-Execute the String in a new terminal window (asynchronously).
+Execute the String in a new terminal window (strong::asynchronously::).
 argument::shell
 The shell used to execute the string.
 discussion::

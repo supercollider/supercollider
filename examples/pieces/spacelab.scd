@@ -3,9 +3,7 @@
 old school exercise -- jy
 *******************************************************************************/
 
-s = Server.default;
 s.boot;
-
 
 // SynthDefs //
 (

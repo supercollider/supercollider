@@ -1,12 +1,32 @@
 #include "ProxyStyle.hpp"
 
+#include "../QcApplication.h"
+
 #include <QWebView>
 #include <QStyleOptionSlider>
 #include <QPainter>
 
+#ifdef Q_OS_MAC
+  #include "../hacks/hacks_mac.hpp"
+#endif
+
 using namespace QtCollider;
 
+static bool AlwaysShowScrollbars() {
 #ifdef Q_OS_MAC
+  return QtCollider::Mac::AlwaysShowScrollbars();
+
+#elif Q_OS_X11
+  return !QcApplication::SystemHasMouseWheel();
+
+#elif Q_OS_WIN
+  return !QcApplication::SystemHasMouseWheel();
+
+#else
+  return !QcApplication::SystemHasMouseWheel();
+#endif
+};
+
 void ProxyStyle::drawComplexControl ( ComplexControl ctrl, const QStyleOptionComplex *opt,
                                       QPainter *p, const QWidget * w) const
 {
@@ -21,13 +41,19 @@ void ProxyStyle::drawComplexControl ( ComplexControl ctrl, const QStyleOptionCom
     opt2.styleObject = NULL;
 
     QProxyStyle::drawComplexControl( ctrl, &opt2, p, w );
-
+    return;
+  }
+  
+  if (ctrl == QStyle::CC_ScrollBar && AlwaysShowScrollbars()) {
+    const QStyleOptionSlider *optSlider = static_cast<const QStyleOptionSlider*>(opt);
+    QStyleOptionSlider opt2( *optSlider );
+    opt2.state = State_On;
+    QProxyStyle::drawComplexControl( ctrl, static_cast<const QStyleOptionComplex*>(&opt2), p, w );
     return;
   }
 
   QProxyStyle::drawComplexControl( ctrl, opt, p, w );
 }
-#endif
 
 int ProxyStyle::styleHint ( StyleHint hint, const QStyleOption * option,
                             const QWidget * widget, QStyleHintReturn * returnData ) const

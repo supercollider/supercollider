@@ -244,24 +244,6 @@ bool SC_JackDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 		}
 	}
 
-#ifdef SC_USE_JACK_CLIENT_NEW
-	// old style client startup for Jack <0.100 -- AG
-	if (clientName) {
-		mClient = jack_client_new(clientName);
-	} else {
-		clientName = strdup("SuperCollider");
-		mClient = jack_client_new(clientName);
-		if (mClient == 0) {
-			char uniqueName[64];
-			sprintf(uniqueName, "SuperCollider-%d", getpid());
-			clientName = strdup(uniqueName);
-			mClient = jack_client_new(uniqueName);
-		}
-	}
-	if (mClient) scprintf("%s: client name is '%s'\n", kJackDriverIdent, clientName);
-	if (serverName) free(serverName); if (clientName) free(clientName);
-	if (mClient == 0) return false;
-#else
 	mClient = jack_client_open(
 		clientName ? clientName : kJackDefaultClientName,
 		serverName ? JackServerName : JackNullOption,
@@ -270,7 +252,6 @@ bool SC_JackDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 	if (mClient == 0) return false;
 
 	scprintf("%s: client name is '%s'\n", kJackDriverIdent, jack_get_client_name(mClient));
-#endif
 
 	// create jack I/O ports
 	mInputList = new SC_JackPortList(mClient, mWorld->mNumInputs, JackPortIsInput);
@@ -395,9 +376,10 @@ bool SC_JackDriver::DriverStop()
 	if (mClient) err = jack_deactivate(mClient);
 	return err == 0;
 }
-
+void sc_SetDenormalFlags();
 void SC_JackDriver::Run()
 {
+    sc_SetDenormalFlags();
 	jack_client_t* client = mClient;
 	World* world = mWorld;
 

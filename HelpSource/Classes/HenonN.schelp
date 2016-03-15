@@ -6,12 +6,20 @@ related:: Classes/HenonL, Classes/HenonC
 description::
 A non-interpolating sound generator based on the difference equation:
 
-code::
-	x[n+2] = 1 - a * pow(x[n+1], 2) + b * x[n]
+teletype::
+        x(n+2) = 1 - a * x(n+1)^2 + b * x(n)
 ::
-warning:: revise formulae converted to c like code. ::
 
 This equation was discovered by French astronomer Michel Hénon while studying the orbits of stars in globular clusters.
+
+sclang code translation:
+
+code::
+(
+var a = 1.4, b = 0.3, x0 = 0, x1 = 1, size = 64;
+plot(size.collect { var aux = 1 - (a * (x1 ** 2)) + (b * x0); x0 = x1; x1 = aux; aux });
+)
+::
 
 classmethods::
 method:: ar

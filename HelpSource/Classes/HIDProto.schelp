@@ -1,6 +1,6 @@
 TITLE:: HIDProto
 summary:: Prototype HID device to match with HIDFunc
-categories:: External control>HID
+categories:: External Control>HID
 related::  Classes/HIDFunc, Classes/HIDdef, Classes/HIDElementProto, Classes/HID, Classes/HIDInfo, Guides/Working_with_HID
 
 DESCRIPTION::

@@ -245,7 +245,7 @@ BOOST_AUTO_TEST_CASE( queue_construction_test_2 )
 
     n.add_node(g);
     unique_ptr<node_graph::dsp_thread_queue> q = n.generate_dsp_queue();
-    BOOST_REQUIRE_EQUAL(q->get_total_node_count(), 0u);
+    BOOST_REQUIRE_EQUAL(q->total_node_count(), 0u);
 
     n.remove_node(g);
 }
@@ -258,13 +258,13 @@ BOOST_AUTO_TEST_CASE( queue_construction_test_3 )
     n.add_node(s);
 
     unique_ptr<node_graph::dsp_thread_queue> q1 = n.generate_dsp_queue();
-    BOOST_REQUIRE_EQUAL(q1->get_total_node_count(), 1u);
+    BOOST_REQUIRE_EQUAL(q1->total_node_count(), 1u);
 
     test_synth * s2 = new test_synth(3, 0);
     n.add_node(s2);
 
     unique_ptr<node_graph::dsp_thread_queue> q2 = n.generate_dsp_queue();
-    BOOST_REQUIRE_EQUAL(q2->get_total_node_count(), 1u);
+    BOOST_REQUIRE_EQUAL(q2->total_node_count(), 1u);
 
     n.remove_node(s);
     n.remove_node(s2);
@@ -282,7 +282,7 @@ BOOST_AUTO_TEST_CASE( pgroup_test_1 )
     BOOST_REQUIRE_EQUAL(n.find_group(1), g);
 
     unique_ptr<node_graph::dsp_thread_queue> q = n.generate_dsp_queue();
-    BOOST_REQUIRE_EQUAL(q->get_total_node_count(), 0u);
+    BOOST_REQUIRE_EQUAL(q->total_node_count(), 0u);
     n.remove_node(g);
 }
 
@@ -337,7 +337,7 @@ BOOST_AUTO_TEST_CASE( pgroup_test_4 )
         n.add_node(s, to_group);
 
         unique_ptr<node_graph::dsp_thread_queue> q = n.generate_dsp_queue();
-        BOOST_REQUIRE_EQUAL(q->get_total_node_count(), 1u);
+        BOOST_REQUIRE_EQUAL(q->total_node_count(), 1u);
 
         n.remove_node(s);
     }
@@ -363,7 +363,7 @@ BOOST_AUTO_TEST_CASE( pgroup_test_5 )
 
         unique_ptr<node_graph::dsp_thread_queue> q = n.generate_dsp_queue();
 
-        BOOST_REQUIRE_EQUAL(q->get_total_node_count(), 2u);
+        BOOST_REQUIRE_EQUAL(q->total_node_count(), 2u);
 
         n.remove_node(s1);
         n.remove_node(s2);
@@ -390,7 +390,7 @@ BOOST_AUTO_TEST_CASE( pgroup_test_6 )
         n.add_node(s3, to_group);
 
         unique_ptr<node_graph::dsp_thread_queue> q = n.generate_dsp_queue();
-        BOOST_REQUIRE_EQUAL(q->get_total_node_count(), 3u);
+        BOOST_REQUIRE_EQUAL(q->total_node_count(), 3u);
     }
     n.remove_node(g);
 }
@@ -421,7 +421,7 @@ BOOST_AUTO_TEST_CASE( pgroup_test_7 )
         n.add_node(s2, to_g2);
 
         unique_ptr<node_graph::dsp_thread_queue> q = n.generate_dsp_queue();
-        BOOST_REQUIRE_EQUAL(q->get_total_node_count(), 2u);
+        BOOST_REQUIRE_EQUAL(q->total_node_count(), 2u);
     }
     n.remove_node(g);
 }

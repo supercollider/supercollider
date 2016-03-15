@@ -40,9 +40,12 @@ void SC_StandAloneInfo::SC_StandAloneInfoInit() {
 		if ( enablerURL ) {
 			// If sclang or SuperCollider binary is run within the .app bundle,
 			// this is how we find the Resources path.
-			CFStringRef rawPath = CFURLCopyFileSystemPath(enablerURL, kCFURLPOSIXPathStyle);
-			rawPath = CFStringCreateWithFormat(NULL, NULL, CFSTR("%@/.."), rawPath);
+			CFStringRef rawUrlPath = CFURLCopyFileSystemPath(enablerURL, kCFURLPOSIXPathStyle);
+			CFStringRef rawPath = CFStringCreateWithFormat(NULL, NULL, CFSTR("%@/.."), rawUrlPath);
 			CFStringGetCString(rawPath, relDir, PATH_MAX, encoding);
+			CFRelease( rawUrlPath );
+			CFRelease( rawPath );
+			CFRelease( enablerURL );
 		} else {
 			// when sclang is run from a symlink, the resource URL above will not be found,
 			// so we need to find the path of the executable.

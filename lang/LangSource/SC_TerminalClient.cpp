@@ -124,7 +124,7 @@ void SC_TerminalClient::printUsage()
 			"   -s                             Call Main.stop on shutdown\n"
 			"   -u <network-port-number>       Set UDP listening port (default %d)\n"
 			"   -i <ide-name>                  Specify IDE name (for enabling IDE-specific class code, default \"%s\")\n"
-			"   -a                             Standalone mode\n",
+			"   -a                             Standalone mode (exclude SCClassLibrary and user and system Extensions folders from search path)\n",
 			memGrowBuf,
 			memSpaceBuf,
 			opt.mPort,
@@ -393,7 +393,7 @@ void SC_TerminalClient::onQuit( int exitCode )
 	stop();
 }
 
-extern void ElapsedTimeToChrono(double elapsed, chrono::system_clock::time_point & out_time_point);
+extern void ElapsedTimeToChrono(double elapsed, std::chrono::system_clock::time_point & out_time_point);
 
 void SC_TerminalClient::tick( const boost::system::error_code& error )
 {
@@ -406,7 +406,7 @@ void SC_TerminalClient::tick( const boost::system::error_code& error )
 
 	flush();
 
-	chrono::system_clock::time_point nextAbsTime;
+	std::chrono::system_clock::time_point nextAbsTime;
 	ElapsedTimeToChrono( secs, nextAbsTime );
 
 	if (haveNext) {
@@ -658,7 +658,7 @@ int SC_TerminalClient::prArgv(struct VMGlobals* g, int)
 		PyrString* str = newPyrString(g->gc, argv[i], 0, true);
 		SetObject(argvObj->slots+i, str);
 		argvObj->size++;
-		g->gc->GCWrite(argvObj, (PyrObject*)str);
+		g->gc->GCWriteNew(argvObj, (PyrObject*)str); // we know str is white so we can use GCWriteNew
 	}
 
 	return errNone;

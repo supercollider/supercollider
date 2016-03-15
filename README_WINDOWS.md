@@ -12,7 +12,7 @@ documentation which you can access online at
 
 To get further information on SuperCollider usage or development, you
 should subscribe to the mailing lists:
-   http://www.beast.bham.ac.uk/research/sc_mailing_lists.shtml
+   http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx
 
 
 System Requirements

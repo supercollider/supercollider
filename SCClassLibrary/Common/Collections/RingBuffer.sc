@@ -1,6 +1,5 @@
 // Fixed size ringbuffer
-RingBuffer : SequenceableCollection
-{
+RingBuffer : SequenceableCollection {
 	var <array, <readPos, <writePos;
 
 	*new { | size, collectionClass(Array) |

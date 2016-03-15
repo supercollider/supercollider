@@ -36,29 +36,26 @@ Examples::
 
 code::
 
-s.boot;
-
-b = Buffer.alloc(s,2048,1);
 
 (
-SynthDef("help-rectcomb", { arg out=0, bufnum=0;
-	var in, chain;
-	in = {WhiteNoise.ar(0.2)}.dup;
-	chain = FFT(bufnum, in);
+{
+	var sig, chain;
+	sig = WhiteNoise.ar(0.2);
+	chain = FFT(LocalBuf(2048), sig);
 	chain = PV_RectComb(chain, 8, LFTri.kr(0.097, 0, 0.4, 0.5),
-		LFTri.kr(0.24, 0, -0.5, 0.5));
-	Out.ar(out, IFFT(chain).dup);
-}).play(s,[\out, 0, \bufnum, b.bufnum]);
+	LFTri.kr(0.24, 0, -0.5, 0.5));
+	IFFT(chain).dup
+}.play;
 )
 
 (
-SynthDef("help-rectcomb2", { arg out=0, bufnum=0;
-	var in, chain;
-	in = {WhiteNoise.ar(0.2)}.dup;
-	chain = FFT(bufnum, in);
+{
+	var sig, chain;
+	sig = WhiteNoise.ar(0.2);
+	chain = FFT(LocalBuf(2048), sig);
 	chain = PV_RectComb(chain,  MouseX.kr(0, 32), MouseY.kr, 0.2);
-	Out.ar(out, IFFT(chain).dup);
-}).play(s,[\out, 0, \bufnum, b.bufnum]);
+	IFFT(chain).dup
+}.play;
 )
 
 ::

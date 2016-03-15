@@ -86,7 +86,7 @@ void LangClient::customEvent( QEvent *e )
   case Event_SCRequest_Quit:
   {
     int code = static_cast<SCRequestEvent*>(e)->data.toInt();
-    qcDebugMsg( 1, QString("Quit requested with code %1").arg(code) );
+    qcDebugMsg( 1, QStringLiteral("Quit requested with code %1").arg(code) );
     qApp->exit( code );
     break;
   }
@@ -107,7 +107,7 @@ void LangClient::tick()
     secs -= elapsedTime();
     secs *= 1000;
     int ti = qMax(0, qCeil(secs));
-    qcDebugMsg(2, QString("next at %1").arg(ti) );
+    qcDebugMsg(2, QStringLiteral("next at %1").arg(ti) );
     appClockTimer.start( ti, this );
   } else
 	  appClockTimer.stop();

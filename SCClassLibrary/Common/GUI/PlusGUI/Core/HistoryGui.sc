@@ -29,8 +29,8 @@ HistoryGui : JITGui {
 
 	*new { |object, numItems = 8, parent, bounds, makeSkip = true, options = #[]|
 		^super.newCopyArgs(nil, numItems, parent, bounds)
-			.init(makeSkip, options)
-			.object_(object);
+		.init(makeSkip, options)
+		.object_(object);
 	}
 
 	accepts { |obj| ^obj.isNil or: { obj.isKindOf(History) } }
@@ -46,7 +46,7 @@ HistoryGui : JITGui {
 			(numItems * skin.buttonHeight) // textView
 			+ (skin.buttonHeight + (skin.margin.y * 2)) // buttonline
 			+ (numItems * skin.buttonHeight * 1.62).round(1)
-			);
+		);
 		//	"minSize: %\n".postf(minSize);
 		"minSize: %\n".postf(minSize); GUI.skins.jit.margin
 	}
@@ -65,9 +65,9 @@ HistoryGui : JITGui {
 		// as it is useful for many JITGuis.
 		if (hasWindow.not) {
 			nameView = DragBoth(zone, Rect(0,0, zone.bounds.width - 4, skin.buttonHeight))
-				// .font_(skin.font)
-				.align_(\center)
-				.receiveDragHandler_({ arg obj; this.object = View.currentDrag });
+			// .font_(skin.font)
+			.align_(\center)
+			.receiveDragHandler_({ arg obj; this.object = View.currentDrag });
 			listViewHeight = listViewHeight - (skin.buttonHeight + 2);
 		};
 
@@ -76,24 +76,26 @@ HistoryGui : JITGui {
 		filters = [\all, ""];
 
 		textV = TextView(zone, Rect(0, 0, (zone.bounds.width - 4), textViewHeight))
-			.string_("")
-			.enterInterpretsSelection_(false)
-			.keyDownAction_({ |txvw, char, mod, uni, keycode|
-				// char.postcs;
+		.string_("")
+		.enterInterpretsSelection_(false)
+		.keyDownAction_({ |txvw, char, mod, uni, keycode|
+			// char.postcs;
+			char !? {
 				if ([3, 13].includes(char.ascii)) {
 					this.rip(textV.string);
 				};
-			})
-			.resize_(2);
+			};
+		})
+		.resize_(2);
 
-			// to do: disable if history is not current!
+		// to do: disable if history is not current!
 		startBut = Button(zone, Rect(0, 0, 40, 20)) ////
-			.states_([ ["start"], ["end"]])
-			.canFocus_(false)
-			.action_({ |btn, mod|
-				mod.postln;
-				switch(btn.value,
-					0, {
+		.states_([ ["start"], ["end"]])
+		.canFocus_(false)
+		.action_({ |btn, mod|
+			mod.postln;
+			switch(btn.value,
+				0, {
 					if (object == History.current) {
 						if (mod.isAlt) {
 							History.end
@@ -101,46 +103,46 @@ HistoryGui : JITGui {
 							"please alt-click to end history.".postln;
 							btn.value_(1);
 						}
-					} },
-					1, { if (object == History.current) { History.start } }
-				);
-			});
+				} },
+				1, { if (object == History.current) { History.start } }
+			);
+		});
 
 		filtBut = Button(zone, Rect(0, 0, 32, 20)) ////
-			.canFocus_(false)
-			.states_([["all"], ["filt"]]).action_({ |btn|
-				this.filtering_(btn.value > 0);
-				if (filtering) { this.filterLines };
-				 object.hasMovedOn = true;
-			});
+		.canFocus_(false)
+		.states_([["all"], ["filt"]]).action_({ |btn|
+			this.filtering_(btn.value > 0);
+			if (filtering) { this.filterLines };
+			object.hasMovedOn = true;
+		});
 
 		keyPop = PopUpMenu(zone, Rect(0, 0, 50, 20))
-			.items_([\all]).value_(0)
-			.action_({ |pop| this.setKeyFilter(pop.items[pop.value]) });
+		.items_([\all]).value_(0)
+		.action_({ |pop| this.setKeyFilter(pop.items[pop.value]) });
 
 		filTextV = TextView(zone, Rect(0,0, 88 + 12, 20)).string_("")
-			.enterInterpretsSelection_(false)
-			.resize_(2)
-			.keyDownAction_({ |txvw, char, mod, uni, keycode|
-				defer ({
-					this.setStrFilter(txvw.string);
-					if (this.filtering) {
-						this.updateLines;
-					};
+		.enterInterpretsSelection_(false)
+		.resize_(2)
+		.keyDownAction_({ |txvw, char, mod, uni, keycode|
+			defer ({
+				this.setStrFilter(txvw.string);
+				if (this.filtering) {
+					this.updateLines;
+				};
 			}, 0.01)
-			});
+		});
 
 		topBut = Button(zone, Rect(0, 0, 32, 20))
-			.states_([["top"], ["keep"]]).value_(0)
-			.resize_(3)
-			.canFocus_(false)
-			.action_({ |but| this.stickMode_(but.value) });
+		.states_([["top"], ["keep"]]).value_(0)
+		.resize_(3)
+		.canFocus_(false)
+		.action_({ |but| this.stickMode_(but.value) });
 
 		Button(zone, Rect(0, 0, 32, 20)) ////
-			.states_([["rip"]])
-			.resize_(3)
-			.canFocus_(false)
-			.action_({ |btn| this.rip(textV.string) });
+		.states_([["rip"]])
+		.resize_(3)
+		.canFocus_(false)
+		.action_({ |btn| this.rip(textV.string) });
 
 		// // not sure that this still works in Qt as intended
 		// Button(zone, Rect(0,0, 16, 20))
@@ -158,33 +160,33 @@ HistoryGui : JITGui {
 		// };
 
 		listV = ListView(zone, bounds.copy.insetBy(2).height_(listViewHeight))
-			.font_(font)
-			.items_([])
-			.resize_(5)
-			.background_(Color.grey(0.62))
-			.action_({ |lview|
-				var index = lview.value;
-				if (lview.items.isEmpty) {
-					"no entries yet.".postln;
+		.font_(font)
+		.items_([])
+		.resize_(5)
+		.background_(Color.grey(0.62))
+		.action_({ |lview|
+			var index = lview.value;
+			if (lview.items.isEmpty) {
+				"no entries yet.".postln;
+			} {
+				lastLineSelected = listV.items[index];
+				if (filtering.not) {
+					this.postInlined(index)
 				} {
-					lastLineSelected = listV.items[index];
-					if (filtering.not) {
-						this.postInlined(index)
-					} {
-						this.postInlined(filteredIndices[index])
-					}
+					this.postInlined(filteredIndices[index])
 				}
-			})
-			.enterKeyAction_({ |lview|
-				var index = lview.value;
-				if (filtering) { index = filteredIndices[index] };
-				try {
-					object.lines[index][2].postln.interpret.postln;
+			}
+		})
+		.enterKeyAction_({ |lview|
+			var index = lview.value;
+			if (filtering) { index = filteredIndices[index] };
+			try {
+				object.lines[index][2].postln.interpret.postln;
 				//	"did execute.".postln;
-				} {
-					"execute line from history failed.".postln;
-				};
-			});
+			} {
+				"execute line from history failed.".postln;
+			};
+		});
 		this.checkUpdate;
 	}
 
@@ -212,8 +214,8 @@ HistoryGui : JITGui {
 		listV.items = [];
 	}
 
-		// these three should move to JITGui in general,
-		// to simplify the checkUpdate methods
+	// these three should move to JITGui in general,
+	// to simplify the checkUpdate methods
 	updateFunc { |newState, key, func, post = false|
 		var val = newState[key];
 		if (val != prevState[key]) { func.value(val) }
@@ -260,7 +262,7 @@ HistoryGui : JITGui {
 		var newState = this.getState;
 		var keys;
 
-	///	if (newState == prevState) { ^this };
+		///	if (newState == prevState) { ^this };
 
 		this.updateFunc(newState, \object, { |obj| zone.enabled_(obj.notNil) });
 
@@ -279,7 +281,7 @@ HistoryGui : JITGui {
 		// 	this.setStrFilter(newState[\filtStr]);
 		// };
 
-			// could be factored a bit more
+		// could be factored a bit more
 		if (newState[\hasMovedOn] or: {
 			newState[\numLines] != prevState[\numLines] }) {
 

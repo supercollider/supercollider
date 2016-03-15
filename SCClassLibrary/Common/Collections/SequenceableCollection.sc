@@ -84,7 +84,7 @@ SequenceableCollection : Collection {
 			obj.add(start + (i * step));
 		};
 		^obj
- 	}
+	}
 
 
 	++ { arg aSequenceableCollection;
@@ -240,6 +240,24 @@ SequenceableCollection : Collection {
 		div = b - a;
 		if(div == 0) { ^i };
 		^((val - a) / div) + i - 1
+	}
+
+	selectIndices { | function |
+		^this.selectIndicesAs(function, this.species);
+	}
+	selectIndicesAs { | function, class |
+		var res = class.new(this.size);
+		this.do {|elem, i| if (function.value(elem, i)) { res.add(i) } }
+		^res;
+	}
+
+	rejectIndices { | function |
+		^this.rejectIndicesAs(function, this.species);
+	}
+	rejectIndicesAs { | function, class |
+		var res = class.new(this.size);
+		this.do {|elem, i| if (function.value(elem, i).not) { res.add(i) } }
+		^res;
 	}
 
 	isSeries { arg step;
@@ -795,7 +813,7 @@ SequenceableCollection : Collection {
 	}
 
 	performBinaryOp { arg aSelector, theOperand, adverb;
- 		^theOperand.performBinaryOpOnSeqColl(aSelector, this, adverb);
+		^theOperand.performBinaryOpOnSeqColl(aSelector, this, adverb);
 	}
 	performBinaryOpOnSeqColl { arg aSelector, theOperand, adverb;
 		var size, newList;

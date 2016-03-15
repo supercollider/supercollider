@@ -20,12 +20,12 @@ Poll : UGen {
 		^super.new.rate_(rate).addToSynth.init([trig, in, trigid, label.size] ++ label);
 	}
 
- 	checkInputs { ^this.checkSameRateAsFirstInput }
+	checkInputs { ^this.checkSameRateAsFirstInput }
 
- 	init { arg theInputs;
- 		// store the inputs as an array
- 		inputs = theInputs;
- 	}
+	init { arg theInputs;
+		// store the inputs as an array
+		inputs = theInputs;
+	}
 }
 
 /*

@@ -33,7 +33,7 @@ public:
     {}
 
 private:
-    virtual void run(void) {
+    virtual void run(void) override {
         instance->set_node_slot(node_id, slot_id, value);
     }
 
@@ -59,7 +59,8 @@ public:
     }
 
 private:
-    virtual void run(void) {
+    virtual void run(void) override
+    {
         instance->set_node_slot(node_id, slot_id, value);
     }
 

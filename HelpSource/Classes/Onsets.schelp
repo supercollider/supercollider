@@ -56,13 +56,13 @@ list::
 examples::
 code::
 (
-s.boot.doWhenBooted {
+s.waitForBoot({
 	// Prepare the buffers
 	b = Buffer.alloc(s, 512);
 	// Feel free to load a more interesting clip!
 	// a11wlk01 is not an ideal example of musical onsets.
 	d = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
-};
+});
 )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////

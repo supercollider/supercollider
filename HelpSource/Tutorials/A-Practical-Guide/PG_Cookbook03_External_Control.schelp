@@ -7,9 +7,7 @@ section::Pattern control by external device
 
 subsection::Control of parameters by MIDI or HID
 
-To get pattern values from a HID device, use the link::Classes/PhidKey:: or link::Classes/PhidSlot:: pattern.
-
-For MIDI, the best approach is to save an incoming value into a variable, and then use link::Classes/Pfunc:: to access the variable for each event.
+The best approach is to save an incoming value into a variable, and then use link::Classes/Pfunc:: to access the variable for each event.
 
 code::
 (

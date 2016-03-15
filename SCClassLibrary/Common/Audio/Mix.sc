@@ -11,7 +11,7 @@ Mix {
 					a.sum
 				}
 			}
-        };
+		};
 
 		if (mixedArray.size < 3) {
 			^mixedArray.sum

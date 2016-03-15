@@ -44,7 +44,7 @@ public:
 private:
     friend class sc_synth;
 
-    virtual abstract_synth * create_instance(int);
+    virtual abstract_synth * create_instance(int) override;
 };
 
 typedef boost::intrusive_ptr<sc_synth_definition> sc_synth_definition_ptr;

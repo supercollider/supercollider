@@ -37,7 +37,7 @@ QString CmdLineEdit::symbolUnderCursor()
         return selectedText();
     else {
         int position = cursorPosition();
-        return wordInStringAt( position, text() );
+        return tokenInStringAt( position, text() );
     }
 }
 

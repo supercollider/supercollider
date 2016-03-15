@@ -53,7 +53,7 @@ SynthDef(\wah, { arg out=0, gate=1;
 )
 
  // watch the node structure as it changes
-s.waitForBoot { s.plotTree };
+s.waitForBoot({ s.plotTree });
 
 
 (

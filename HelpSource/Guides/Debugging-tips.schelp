@@ -11,7 +11,7 @@ subsection:: SendTrig / OSCFunc
 
 SendTrig is originally intended to send a trigger message back to the client, so the client can take further action on the server. However, it can be used to send any numeric value back to the client, which can then be printed out.
 
-To print out the values, you need to create an OSCresponderNode as follows:
+To print out the values, you need to create an OSCFunc as follows:
 code::
 o = OSCFunc({ |msg| msg.postln }, '/tr', s.addr);
 ::

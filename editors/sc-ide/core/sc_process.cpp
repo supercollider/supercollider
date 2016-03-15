@@ -96,6 +96,10 @@ void ScProcess::prepareActions(Settings::Manager * settings)
     action->setShortcutContext(Qt::ApplicationShortcut);
     connect(action, SIGNAL(triggered()), this, SLOT(stopMain()));
     settings->addAction( action, "interpreter-main-stop", interpreterCategory);
+    
+    mActions[ShowQuarks] = action = new QAction(tr("Quarks"), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(showQuarks()));
+    settings->addAction( action, "interpreter-show-quarks-gui", interpreterCategory);
 
     connect( mActions[Start], SIGNAL(changed()), this, SLOT(updateToggleRunningAction()) );
     connect( mActions[Stop], SIGNAL(changed()), this, SLOT(updateToggleRunningAction()) );
@@ -135,6 +139,7 @@ void ScProcess::startLanguage (void)
 
     QString workingDirectory = settings->value("runtimeDir").toString();
     QString configFile = settings->value("configFile").toString();
+    bool standalone = settings->value("standalone").toBool();
 
     settings->endGroup();
 
@@ -149,6 +154,8 @@ void ScProcess::startLanguage (void)
     if(!configFile.isEmpty())
         sclangArguments << "-l" << configFile;
     sclangArguments << "-i" << "scqt";
+    if(standalone)
+        sclangArguments << "-a";
 
     if(!workingDirectory.isEmpty())
         setWorkingDirectory(workingDirectory);
@@ -208,6 +215,11 @@ void ScProcess::restartLanguage()
 void ScProcess::stopMain(void)
 {
     evaluateCode("thisProcess.stop", true);
+}
+
+void ScProcess::showQuarks(void)
+{
+    evaluateCode("Quarks.gui",true);
 }
 
 
@@ -274,6 +286,7 @@ void ScProcess::onProcessStateChanged(QProcess::ProcessState state)
 
     case QProcess::Running:
         mActions[StopMain]->setEnabled(true);
+        mActions[ShowQuarks]->setEnabled(true);
         mActions[RecompileClassLibrary]->setEnabled(true);
 
         onStart();
@@ -285,6 +298,7 @@ void ScProcess::onProcessStateChanged(QProcess::ProcessState state)
         mActions[Stop]->setEnabled(false);
         mActions[Restart]->setEnabled(false);
         mActions[StopMain]->setEnabled(false);
+        mActions[ShowQuarks]->setEnabled(false);
         mActions[RecompileClassLibrary]->setEnabled(false);
         updateToggleRunningAction();
         postQuitNotification();
@@ -356,7 +370,7 @@ void ScProcess::onStart()
     if(!mIpcServer->isListening()) // avoid a warning on stderr
         mIpcServer->listen(mIpcServerName);
 
-    QString command = QString("ScIDE.connect(\"%1\")").arg(mIpcServerName);
+    QString command = QStringLiteral("ScIDE.connect(\"%1\")").arg(mIpcServerName);
     evaluateCode ( command, true );
     Main::documentManager()->sendActiveDocument();
 }
@@ -378,10 +392,10 @@ void ScProcess::updateTextMirrorForDocument ( Document * doc, int position, int 
     try {
         QDataStream stream(mIpcSocket);
         stream.setVersion(QDataStream::Qt_4_6);
-        stream << QString("updateDocText");
+        stream << QStringLiteral("updateDocText");
         stream << argList;
     } catch (std::exception const & e) {
-        scPost(QString("Exception during ScIDE_Send: %1\n").arg(e.what()));
+        scPost(QStringLiteral("Exception during ScIDE_Send: %1\n").arg(e.what()));
     }
 }
     
@@ -396,10 +410,10 @@ void ScProcess::updateSelectionMirrorForDocument ( Document * doc, int start, in
     try {
         QDataStream stream(mIpcSocket);
         stream.setVersion(QDataStream::Qt_4_6);
-        stream << QString("updateDocSelection");
+        stream << QStringLiteral("updateDocSelection");
         stream << argList;
     } catch (std::exception const & e) {
-        scPost(QString("Exception during ScIDE_Send: %1\n").arg(e.what()));
+        scPost(QStringLiteral("Exception during ScIDE_Send: %1\n").arg(e.what()));
     }
 }
 

@@ -30,7 +30,7 @@ The input signal.
 argument::freq
 
 Resonant frequency in Hertz.
-
+WARNING: due to the nature of its implementation frequency values close to 0 may cause glitches and/or extremely loud audio artifacts!
 
 argument::bwr
 

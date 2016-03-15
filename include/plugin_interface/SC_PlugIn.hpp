@@ -21,8 +21,12 @@
 #ifndef SC_PLUGIN_HPP
 #define SC_PLUGIN_HPP
 
+#include <cassert>
+
 #include "SC_PlugIn.h"
 #include "function_attributes.h"
+
+#include <type_traits>
 
 /// c++ wrapper for Unit struct
 class SCUnit:
@@ -100,6 +104,7 @@ public:
 	/// get input signal at index
 	const float * in(int index) const
 	{
+		assert( index < mNumInputs );
 		const Unit * unit = this;
 		return IN(index);
 	}
@@ -107,6 +112,7 @@ public:
 	/// get input signal at index (to be used with ZXP)
 	const float * zin(int index) const
 	{
+		assert( index < mNumInputs );
 		const Unit * unit = this;
 		return ZIN(index);
 	}
@@ -114,6 +120,7 @@ public:
 	/// get first sample of input signal
 	const float in0(int index) const
 	{
+		assert( index < mNumInputs );
 		const Unit * unit = this;
 		return IN0(index);
 	}
@@ -121,6 +128,7 @@ public:
 	/// get output signal at index
 	float * out(int index) const
 	{
+		assert( index < mNumOutputs );
 		const Unit * unit = this;
 		return OUT(index);
 	}
@@ -128,6 +136,7 @@ public:
 	/// get output signal at index (to be used with ZXP)
 	float * zout(int index) const
 	{
+		assert( index < mNumOutputs );
 		const Unit * unit = this;
 		return ZOUT(index);
 	}
@@ -135,6 +144,7 @@ public:
 	/// get reference to first sample of output signal
 	float & out0(int index) const
 	{
+		assert( index < mNumOutputs );
 		const Unit * unit = this;
 		return OUT0(index);
 	}
@@ -142,37 +152,55 @@ public:
 	/// get rate of input signal
 	int inRate(int index) const
 	{
+		assert( index < mNumInputs );
 		const Unit * unit = this;
 		return INRATE(index);
+	}
+
+	/// get number of inputs
+	int numInputs() const
+	{
+		return mNumInputs;
+	}
+
+	/// get number of outputs
+	int numOutputs() const
+	{
+		return mNumOutputs;
 	}
 
 	/// test if input signal at index is scalar rate
 	bool isScalarRateIn(int index) const
 	{
+		assert( index < mNumInputs );
 		return inRate(index) == calc_ScalarRate;
 	}
 
 	/// test if input signal at index is demand rate
 	bool isDemandRateIn(int index) const
 	{
+		assert( index < mNumInputs );
 		return inRate(index) == calc_DemandRate;
 	}
 
 	/// test if input signal at index is control rate
 	bool isControlRateIn(int index) const
 	{
+		assert( index < mNumInputs );
 		return inRate(index) == calc_BufRate;
 	}
 
 	/// test if input signal at index is audio rate
 	bool isAudioRateIn(int index) const
 	{
+		assert( index < mNumInputs );
 		return inRate(index) == calc_FullRate;
 	}
 
 	/// get the blocksize of the input
 	int inBufferSize(int index) const
 	{
+		assert( index < mNumInputs );
 		const Unit * unit = this;
 		return INBUFLENGTH(index);
 	}
@@ -276,5 +304,25 @@ void CLASSNAME##_Dtor(CLASSNAME * unit) \
 {                                       \
 	unit->~CLASSNAME();                 \
 }
+
+namespace detail {
+
+template <class UGenClass>
+void constructClass( Unit * unit ) { new( static_cast<UGenClass*>(unit) ) UGenClass(); }
+template <class UGenClass>
+void destroyClass( Unit * unit )   { static_cast<UGenClass*>(unit)->~UGenClass();      }
+
+}
+
+template <class Unit>
+void registerUnit( InterfaceTable * ft, const char * name )
+{
+    UnitCtorFunc ctor = detail::constructClass<Unit>;
+    UnitDtorFunc dtor = std::is_trivially_destructible<Unit>::value ? nullptr
+                                                                    : detail::destroyClass<Unit>;
+
+    (*ft->fDefineUnit)( name, sizeof(Unit), ctor, dtor, 0 );
+}
+
 
 #endif /* SC_PLUGIN_HPP */

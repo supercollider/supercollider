@@ -8,7 +8,7 @@ EventTypesWithCleanup {
 
 			table: #{ | server |
 			 	var bufNum;
- 				if ( (bufNum = ~bufNum).notNil) {
+				if ( (bufNum = ~bufNum).notNil) {
 					~schedBundle.value(~lag, ~timingOffset, server, [\b_setn, bufNum.asUGenInput, 0, ~amps.size] ++ ~amps)
 				} {
 					~type = \buffer;
@@ -24,7 +24,7 @@ EventTypesWithCleanup {
 
 			cheby: #{ | server |
 			 	var bufNum;
- 				if ( (bufNum = ~bufNum).notNil) {
+				if ( (bufNum = ~bufNum).notNil) {
 					~schedBundle.value(~lag, ~timingOffset, server, [\b_gen, bufNum.asUGenInput, \cheby, ~genflags ? 7] ++ ~amps)
 				} {
 					~type = \buffer;
@@ -40,7 +40,7 @@ EventTypesWithCleanup {
 
 			sine1: #{ | server |
 			 	var bufNum;
- 				if ( (bufNum = ~bufNum).notNil) {
+				if ( (bufNum = ~bufNum).notNil) {
 					~schedBundle.value(~lag, ~timingOffset, server, [\b_gen, bufNum.asUGenInput, \sine1, ~genflags ? 7] ++ ~amps)
 				} {
 					~type = \buffer;
@@ -57,7 +57,7 @@ EventTypesWithCleanup {
 			sine2: #{ | server |
 			 	var bufNum,
 			 		array = [~freqs, ~amps].lace(~freqs.size * 2);
- 				if ( (bufNum = ~bufNum).notNil) {
+				if ( (bufNum = ~bufNum).notNil) {
 					~schedBundle.value(~lag, ~timingOffset, server, [\b_gen, bufNum.asUGenInput, \sine2, ~genflags ? 7] ++ array)
 				} {
 					~type = \buffer;
@@ -74,7 +74,7 @@ EventTypesWithCleanup {
 			sine3: #{ | server |
 			 	var bufNum,
 			 		array = [~freqs, ~amps, ~phases].lace(~freqs.size * 3);
- 				if ( (bufNum = ~bufNum).notNil) {
+				if ( (bufNum = ~bufNum).notNil) {
 					~schedBundle.value(~lag, ~timingOffset, server, [\b_gen, bufNum.asUGenInput, \sine3, ~genflags ? 7] ++ array)
 				} {
 					~type = \buffer;
@@ -88,7 +88,7 @@ EventTypesWithCleanup {
 				}
 			},
 
- 			buffer: #{ | server |
+			buffer: #{ | server |
 				~bufNum = server.bufferAllocator.alloc(~numBufs ?? { ~numBufs =  1});
 				~schedBundle.value(~lag, ~timingOffset, server, [\b_alloc, ~bufNum, ~numFrames, ~numChannels]);
 			},
@@ -136,12 +136,12 @@ EventTypesWithCleanup {
 
 			freeCue: #{ | server |
 				var bufNum = ~bufNum;
-				server.schedBundleArray.value(~lag, ~timingOffset, server, [["/b_close", bufNum], ["/b_free", bufNum ] ]  );
+				~schedBundleArray.value(~lag, ~timingOffset, server, [['/b_close', bufNum],['/b_free', bufNum ]] );
 			},
 
 			freeCueID: #{ | server |
 				var bufNum = ~bufNum;
-				server.schedBundleArray.value(~lag, ~timingOffset, server, [["/b_close", bufNum], ["/b_free", bufNum ] ]  );
+				~schedBundleArray.value(~lag, ~timingOffset, server, [['/b_close', bufNum], ['/b_free', bufNum ]] );
 				server.bufferAllocator.free(bufNum);
 			},
 
@@ -223,9 +223,17 @@ EventTypesWithCleanup {
 		type = ev[\type];
 		notNode = notNodeType[type] ? true;
 		if (flag || notNode) {
-			 (	parent: ev,
-				type: cleanupTypes[type]
-			).play;
+			if(cleanupTypes[type].notNil,
+				{
+					(
+						parent: ev,
+						type: cleanupTypes[type]
+					).play;
+				},
+				{
+					"Cleanup type for event type '%' not found".format(type).warn;
+				}
+			);
 		}
 	}
 

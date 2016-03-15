@@ -6,13 +6,22 @@ related:: Classes/GbmanL
 description::
 A non-interpolating sound generator based on the difference equations:
 
-code::
-	x[n+1] = 1 - y[n] + abs(x[n])
-	y[n+1] = x[n]
+teletype::
+        x(n+1) = 1 - y(n) + |x(n)|
+        y(n+1) = x(n)
 ::
-warning:: reviser formulae converted to c like code ::
+
 
 The behavior of the system is only dependent on its initial conditions.
+
+sclang code translation:
+
+code::
+(
+var xi = 1.2, yi = 2.1, size = 64;
+plot(size.collect { var x; xi = 1 - yi + abs(x = xi); yi = x; xi });
+)
+::
 
 Reference: emphasis:: Devaney, R. L. "The Gingerbreadman." Algorithm 3, 15-16, Jan. 1992. ::
 

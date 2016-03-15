@@ -78,6 +78,7 @@ void PublishPortToRendezvous(SCRendezvousProtocol protocol, short portNum)
 	}
 
 	CFNetServiceRegisterWithOptions(netServiceRef, 0, NULL); // don't care about the error
+	CFRelease( netServiceRef );
 }
 
 #elif HAVE_AVAHI

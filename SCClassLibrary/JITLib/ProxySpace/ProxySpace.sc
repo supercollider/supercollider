@@ -21,11 +21,15 @@ ProxySpace : LazyEnvir {
 	init { | argServer, argName, argClock |
 		server = argServer;
 		clock = argClock;
-		name = argName;
+		this.name = argName;
 		if(clock.notNil) { this.quant = 1.0 };
-		if(argName.notNil) { this.add };
 	}
 
+	name_ { |argName|
+		if (name.notNil) { this.remove };
+		name = argName;
+		if(argName.notNil) { this.add };
+	}
 
 	makeProxy {
 		var proxy = NodeProxy.new(server);

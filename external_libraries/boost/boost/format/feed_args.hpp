@@ -172,6 +172,10 @@ namespace detail {
         typedef typename string_type::size_type size_type;
 
         basic_oaltstringstream<Ch, Tr, Alloc>  oss( &buf);
+
+        if(loc_p != NULL)
+            oss.imbue(*loc_p);
+        
         specs.fmtstate_.apply_on(oss, loc_p);
 
         // the stream format state can be modified by manipulators in the argument :
@@ -274,7 +278,7 @@ namespace detail {
 
     template< class Ch, class Tr, class Alloc, class T> 
     void distribute (basic_format<Ch,Tr, Alloc>& self, T x) {
-        // call put(x, ..) on every occurence of the current argument :
+        // call put(x, ..) on every occurrence of the current argument :
         if(self.cur_arg_ >= self.num_args_)  {
             if( self.exceptions() & too_many_args_bit )
                 boost::throw_exception(too_many_args(self.cur_arg_, self.num_args_)); 

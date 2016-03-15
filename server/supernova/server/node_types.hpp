@@ -22,7 +22,6 @@
 #include <boost/detail/atomic_count.hpp>
 #include <boost/intrusive/list.hpp>
 #include <boost/intrusive/unordered_set.hpp>
-#include <boost/intrusive_ptr.hpp>
 
 #include "memory_pool.hpp"
 #include "synth_definition.hpp"
@@ -47,7 +46,7 @@ class server_node:
 {
 protected:
     server_node(int32_t node_id, bool type):
-        node_id(node_id), synth_(type), running_(true), parent_(0), use_count_(0)
+        node_id(node_id), node_is_synth(type), use_count_(0)
     {}
 
     virtual ~server_node(void)
@@ -98,12 +97,12 @@ public:
 
     bool is_synth(void) const
     {
-        return synth_;
+        return node_is_synth;
     }
 
     bool is_group(void) const
     {
-        return !synth_;
+        return !node_is_synth;
     }
 
     /* @{ */
@@ -136,11 +135,11 @@ public:
     /* @} */
 
 private:
-    bool synth_;
+    const bool node_is_synth;
 
     /** support for pausing node */
     /* @{ */
-    bool running_;
+    bool running_ = true;
 
 public:
     virtual void pause(void)
@@ -184,7 +183,7 @@ public:
     /* @} */
 
 private:
-    abstract_group * parent_;
+    abstract_group * parent_ = nullptr;
 
 public:
     /* memory management for server_nodes */
@@ -229,18 +228,14 @@ inline void intrusive_ptr_release(server_node * p)
     p->release();
 }
 
-typedef boost::intrusive_ptr<server_node> server_node_ptr;
-typedef boost::intrusive_ptr<class abstract_synth> synth_ptr;
-typedef boost::intrusive_ptr<group> group_ptr;
-
 enum node_position
 {
-    head = 0,
-    tail = 1,
-    before = 2,
-    after = 3,
+    head    = 0,
+    tail    = 1,
+    before  = 2,
+    after   = 3,
     replace = 4,
-    insert = 5                  /* for pgroups */
+    insert  = 5                  /* for pgroups */
 };
 
 typedef std::pair<server_node *, node_position> node_position_constraint;

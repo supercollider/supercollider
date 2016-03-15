@@ -65,6 +65,8 @@ static bool QtColliderUseGui(void)
 // undefine some interfering X11 definitions
 #undef KeyPress
 
+bool QcApplication::_systemHasMouseWheel = false;
+
 QcApplication::QcApplication( int & argc, char ** argv )
 : QApplication( argc, argv, QtColliderUseGui() )
 {
@@ -111,7 +113,7 @@ void QcApplication::interpret( const QString &str, bool print )
       PyrString *strObj = newPyrString( g->gc, str.toStdString().c_str(), 0, true );
 
       SetObject(&slotRawInterpreter(&g->process->interpreter)->cmdLine, strObj);
-      g->gc->GCWrite(slotRawObject(&g->process->interpreter), strObj);
+      g->gc->GCWriteNew(slotRawObject(&g->process->interpreter), strObj); // we know strObj is white so we can use GCWriteNew
 
       runLibrary( print ? SC_SYM(interpretPrintCmdLine) : SC_SYM(interpretCmdLine) );
   }
@@ -124,7 +126,7 @@ bool QcApplication::event( QEvent *event )
     case QEvent::FileOpen: {
         // open the file dragged onto the application icon on Mac
         QFileOpenEvent *fe = static_cast<QFileOpenEvent*>(event);
-        interpret( QString("Document.open(\"%1\")").arg(fe->file()), false );
+        interpret( QStringLiteral("Document.open(\"%1\")").arg(fe->file()), false );
         event->accept();
         return true;
     }
@@ -148,6 +150,10 @@ bool QcApplication::notify( QObject * object, QEvent * event )
             interpret(cmdPeriodCommand, false);
         }
         break;
+    }
+    case QEvent::Wheel: {
+      _systemHasMouseWheel = true;
+      break;
     }
     default:
         break;

@@ -356,8 +356,6 @@ struct MulAdd:
 	}
 };
 
-DEFINE_XTORS(MulAdd)
-
 struct Sum3:
 	SIMD_Unit
 {
@@ -481,8 +479,6 @@ struct Sum3:
 		sum_vec<SIMD>(out(0), in(0), in0(1), in0(2), inNumSamples);
 	}
 };
-
-DEFINE_XTORS(Sum3)
 
 struct Sum4:
 	SIMD_Unit
@@ -706,8 +702,6 @@ struct Sum4:
 	}
 };
 
-DEFINE_XTORS(Sum4)
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -716,7 +710,7 @@ PluginLoad(MulAdd)
 {
 	ft = inTable;
 
-	DefineSimpleUnit(MulAdd);
-	DefineSimpleUnit(Sum3);
-	DefineSimpleUnit(Sum4);
+	registerUnit<MulAdd>(ft, "MulAdd" );
+	registerUnit<Sum3>(ft,   "Sum3"   );
+	registerUnit<Sum4>(ft,   "Sum4"   );
 }

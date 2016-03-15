@@ -17,7 +17,7 @@ Up until now we've been using Functions to generate audio. This way of working i
 
 The server, however, doesn't understand Functions, or OOP, or the SC language. It wants information on how to create audio output in a special form called a synth definition. A synth defintion is data about UGens and how they're interconnected. This is sent in a kind of special optimised form, called 'byte code', which the server can deal with very efficiently.
 
-Once the server has a synth definition, it's can very efficiently use it to make a number of synths based on it. Synths on the server are basically just things that make or process sound, or produce control signals to drive other synths.
+Once the server has a synth definition, it can very efficiently use it to make a number of synths based on it. Synths on the server are basically just things that make or process sound, or produce control signals to drive other synths.
 
 This relationship between synth definitions and synths is something like that between classes and instances, in that the former is a template for the latter. But remember that the server app knows nothing about OOP.
 

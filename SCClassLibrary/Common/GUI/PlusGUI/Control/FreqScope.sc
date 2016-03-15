@@ -171,7 +171,7 @@ FreqScopeView {
 			scope.server = server;
 			scope.fill = false;
 		} {
-			scope = Scope(parent, bounds);
+			scope = SCScope(parent, bounds);
 		};
 
 		active = false;
@@ -182,7 +182,7 @@ FreqScopeView {
 		freqMode = 0;
 		bufSize = 2048;
 		ServerQuit.add(this, server);
-        ^this;
+		^this;
 	}
 
 	allocBuffers {
@@ -307,7 +307,8 @@ FreqScopeView {
 	}
 
 	shmScopeAvailable {
-		^server.isLocal and: { server.inProcess.not }
+		^server.isLocal
+		// and: { server.inProcess.not }
 	}
 }
 

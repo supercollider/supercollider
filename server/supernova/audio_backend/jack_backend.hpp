@@ -1,5 +1,5 @@
 //  native jack backend
-//  Copyright (C) 2009, 2010 Tim Blechmann
+//  Copyright (C) 2009-2015 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -52,9 +52,7 @@ class jack_backend:
     typedef detail::audio_backend_base<sample_type, jack_default_audio_sample_t, blocking, false> super;
 
 public:
-    jack_backend(void):
-        client(NULL), is_active(false), time_is_synced(false)
-    {}
+    jack_backend(void) = default;
 
     ~jack_backend(void)
     {
@@ -93,7 +91,7 @@ public:
         jack_set_thread_init_callback (client, jack_thread_init_callback, this);
         jack_set_process_callback (client, jack_process_callback, this);
         jack_set_xrun_callback(client, jack_xrun_callback, this);
-        jack_on_info_shutdown(client, (JackInfoShutdownCallback)jack_on_info_shutdown_callback, NULL);
+        jack_on_info_shutdown(client, (JackInfoShutdownCallback)jack_on_info_shutdown_callback, nullptr);
 
         /* register ports */
         input_ports.clear();
@@ -123,19 +121,21 @@ public:
 
         if (jack_frames % blocksize_)
             throw std::runtime_error("Jack buffer size is not a multiple of blocksize");
+
+        cpu_time_accumulator.resize( samplerate_, jack_frames, 1 );
     }
 
     void close_client(void)
     {
         if (client) {
             jack_client_close(client);
-            client = NULL;
+            client = nullptr;
         }
     }
 
     bool audio_is_opened(void)
     {
-        return client != NULL;
+        return client != nullptr;
     }
 
     bool audio_is_active(void)
@@ -178,7 +178,7 @@ public:
 
     int connect_all_inputs(const char * client_name)
     {
-        const char **ports = jack_get_ports (client, client_name, NULL, JackPortIsOutput);
+        const char **ports = jack_get_ports (client, client_name, nullptr, JackPortIsOutput);
 
         if (!ports)
             return -1;
@@ -200,7 +200,7 @@ public:
 
     int connect_all_outputs(const char * client_name)
     {
-        const char **ports = jack_get_ports (client, client_name, NULL, JackPortIsInput);
+        const char **ports = jack_get_ports (client, client_name, nullptr, JackPortIsInput);
 
         if (!ports)
             return -1;
@@ -308,11 +308,11 @@ private:
         return 0;
     }
 
-    jack_client_t * client;
+    jack_client_t * client = nullptr;
     jack_status_t status;
 
-    bool is_active;
-    bool time_is_synced;
+    bool is_active      = false;
+    bool time_is_synced = false;
     uint32_t blocksize_;
 
     std::vector<jack_port_t*> input_ports, output_ports;

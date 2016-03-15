@@ -138,7 +138,8 @@ private:
     long m_total_waiter_count;
 
 public:
-    BOOST_CONSTEXPR basic_condition_variable() BOOST_NOEXCEPT : m_notify_state(NULL), m_wait_state(NULL), m_total_waiter_count(0)
+    BOOST_SYNC_DETAIL_CONSTEXPR_WITH_NON_LITERAL_BASE basic_condition_variable() BOOST_NOEXCEPT :
+        m_notify_state(NULL), m_wait_state(NULL), m_total_waiter_count(0)
     {
     }
 

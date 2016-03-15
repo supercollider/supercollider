@@ -108,8 +108,9 @@ int prInitSpeech(struct VMGlobals *g, int numArgsPushed){
 	OSErr theErr = noErr;
 	//PyrSlot *a = g->sp-1;
 	PyrSlot *b = g->sp;
-    int chan;
-    slotIntVal(b, &chan);
+    int chan, err;
+    err = slotIntVal(b, &chan);
+	if (err) return err;
 	if (chan < 0 || chan >= kMaxSpeechChannels) return errIndexOutOfRange;
 #ifdef useCarbonSpeech
 	for (int i=0; i<chan; ++i) {
@@ -150,10 +151,10 @@ int prSpeakText(struct VMGlobals *g, int numArgsPushed){
 	PyrSlot *a = g->sp-1;
 	PyrSlot *str = g->sp;
 
-	int chan;
+	int chan, err;
 
-
-	slotIntVal(a, &chan);
+	err = slotIntVal(a, &chan);
+	if (err) return err;
 	chan = sc_clip(chan, 0, kMaxSpeechChannels);
 #ifdef useCarbonSpeech
 	chan = sc_clip(chan, 0, kMaxSpeechChannels);
@@ -197,9 +198,11 @@ int prSetSpeechRate(struct VMGlobals *g, int numArgsPushed){
 	PyrSlot *b = g->sp-1;
 	PyrSlot *c = g->sp;
 	double val;
-	int chan;
-	slotIntVal(b, &chan);
-	slotDoubleVal(c, &val);
+	int chan, err;
+	err = slotIntVal(b, &chan);
+	if (err) return err;
+	err = slotDoubleVal(c, &val);
+	if (err) return err;
 #ifdef useCarbonSpeech
 	Fixed newRate = (Fixed)(val * 65536.0);
     theErr = SetSpeechInfo (fCurSpeechChannel[chan], soRate, &newRate);
@@ -219,16 +222,17 @@ int prSetSpeechPitch(struct VMGlobals *g, int numArgsPushed){
 	PyrSlot *b = g->sp-1;
 	PyrSlot *c = g->sp;
 	double val;
-	int chan;
-	slotIntVal(b, &chan);
-	slotDoubleVal(c, &val);
+	int chan, err;
+	err = slotIntVal(b, &chan);
+	if (err) return err;
+	err = slotDoubleVal(c, &val);
+	if (err) return err;
 #ifdef useCarbonSpeech
 	Fixed newVal = (Fixed)(val * 65536.0);
 	//if(!fCurSpeechChannel) theErr = NewSpeechChannel( NULL, &fCurSpeechChannel );
     theErr = SetSpeechPitch (fCurSpeechChannel[chan], newVal);
 #else
 	NSSpeechSynthesizer * spsynth = [speechSynthsArray objectAtIndex: chan];
-	NSError * err;
 	if(!spsynth) return errNone;
 // 10.5 only ... ;-(
 //	[spsynth setObject: val forProperty: NSSpeechPitchBaseProperty error: &err];
@@ -244,9 +248,11 @@ int prSetSpeechPitchMod(struct VMGlobals *g, int numArgsPushed){
 	PyrSlot *b = g->sp-1;
 	PyrSlot *c = g->sp;
 	double val;
-	int chan;
-	slotIntVal(b, &chan);
-	slotDoubleVal(c, &val);
+	int chan, err;
+	err = slotIntVal(b, &chan);
+	if (err) return err;
+	err = slotDoubleVal(c, &val);
+	if (err) return err;
 #ifdef useCarbonSpeech
 	Fixed newVal = (Fixed)(val * 65536.0);
 //	if(!fCurSpeechChannel) theErr = NewSpeechChannel( NULL, &fCurSpeechChannel );
@@ -263,9 +269,11 @@ int prSetSpeechVolume(struct VMGlobals *g, int numArgsPushed) {
 	PyrSlot *b = g->sp-1;
 	PyrSlot *c = g->sp;
 	double val;
-	int chan;
-	slotIntVal(b, &chan);
-	slotDoubleVal(c, &val);
+	int chan, err;
+	err = slotIntVal(b, &chan);
+	if (err) return err;
+	err = slotDoubleVal(c, &val);
+	if (err) return err;
 #ifdef useCarbonSpeech
 
 	Fixed newVal = (Fixed)(val * 65536.0);
@@ -290,9 +298,11 @@ int prSetSpeechPause(struct VMGlobals *g, int numArgsPushed){
 	PyrSlot *b = g->sp-1;
 	PyrSlot *c = g->sp;
 	int val;
-	int chan;
-	slotIntVal(b, &chan);
-	slotIntVal(c, &val);
+	int chan, err;
+	err = slotIntVal(b, &chan);
+	if (err) return err;
+	err = slotIntVal(c, &val);
+	if (err) return err;
 #ifdef useCarbonSpeech
 	if(val) {
         theErr = ContinueSpeech(fCurSpeechChannel[chan] );
@@ -315,9 +325,11 @@ int prSetSpeechStop(struct VMGlobals *g, int numArgsPushed){
 	PyrSlot *c = g->sp;
 	int  selector [3] = {kImmediate, kEndOfWord, kEndOfWord};
 	int val;
-	int chan;
-	slotIntVal(b, &chan);
-	slotIntVal(c, &val);
+	int chan, err;
+	err = slotIntVal(b, &chan);
+	if (err) return err;
+	err = slotIntVal(c, &val);
+	if (err) return err;
 #ifdef useCarbonSpeech
 	StopSpeechAt(fCurSpeechChannel[chan], selector[val]);
 	if(speechStrings[chan] != NULL) {
@@ -341,15 +353,20 @@ int prSetSpeechVoice(struct VMGlobals *g, int numArgsPushed){
 	PyrSlot *b = g->sp-1;
 	PyrSlot *c = g->sp;
 	int val;
-	int chan;
+	int chan, err;
 
-	slotIntVal(b, &chan);
-	slotIntVal(c, &val);
+	err = slotIntVal(b, &chan);
+	if (err) return err;
+	err = slotIntVal(c, &val);
+	if (err) return err;
 #ifdef useCarbonSpeech
 	VoiceSpec theVoiceSpec;
 
 	theErr = GetIndVoice (val, &theVoiceSpec);
-	if (SetSpeechInfo (fCurSpeechChannel[chan], soCurrentVoice, &theVoiceSpec) == incompatibleVoice) return (!errNone);
+	if (SetSpeechInfo (fCurSpeechChannel[chan], soCurrentVoice, &theVoiceSpec) == incompatibleVoice) {
+		post("ERROR: Incompatible Voice\n");
+		return errFailed;
+	}
 #else
 	NSSpeechSynthesizer * spsynth =  [speechSynthsArray objectAtIndex: chan];
 	if(!spsynth) return errNone;
@@ -372,6 +389,7 @@ int prGetSpeechVoiceNames(struct VMGlobals *g, int numArgsPushed){
 	NSString * aVoice = NULL;
 	NSEnumerator * voiceEnumerator = [[NSSpeechSynthesizer availableVoices] objectEnumerator];
 	PyrObject* allVoices = newPyrArray(g->gc, (int) [[NSSpeechSynthesizer availableVoices] count]  * sizeof(PyrObject), 0 , true);
+	SetObject(a, allVoices);
 
 	while(aVoice = [voiceEnumerator nextObject]) {
 		NSDictionary * dictionaryOfVoiceAttributes = [NSSpeechSynthesizer attributesForVoice:aVoice];
@@ -379,12 +397,11 @@ int prGetSpeechVoiceNames(struct VMGlobals *g, int numArgsPushed){
 
 		PyrString *namestring = newPyrString(g->gc, [voiceDisplayName cStringUsingEncoding:[NSString defaultCStringEncoding]], 0, true);
 		SetObject(allVoices->slots+allVoices->size++, namestring);
-		g->gc->GCWrite(allVoices, (PyrObject*) namestring);
+		g->gc->GCWriteNew(allVoices, (PyrObject*) namestring); // we know namestring is white so we can use GCWriteNew
 
 	}
 	[autoreleasepool release];
 
-	SetObject(a, allVoices);
 	return errNone;
 
 }
@@ -394,8 +411,9 @@ int prSpeechVoiceIsSpeaking(struct VMGlobals *g, int numArgsPushed);
 int prSpeechVoiceIsSpeaking(struct VMGlobals *g, int numArgsPushed){
 	PyrSlot *out = g->sp-1;
 	PyrSlot *b = g->sp;
-    int chan;
-    slotIntVal(b, &chan);
+    int chan, err;
+    err = slotIntVal(b, &chan);
+	if (err) return err;
 #ifdef useCarbonSpeech
 
 	if(speechStrings[chan] != NULL) SetTrue(out);

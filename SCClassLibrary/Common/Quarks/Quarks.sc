@@ -7,7 +7,9 @@ Quarks {
 		directory,
 		<>directoryUrl="https://github.com/supercollider-quarks/quarks.git",
 		fetched=false,
-		cache;
+		cache,
+		regex,
+		installedPaths;
 
 	*install { |name, refspec|
 		var path, quark;
@@ -43,12 +45,16 @@ Quarks {
 			LanguageConfig.removeIncludePath(quark.localPath);
 		});
 		LanguageConfig.store(LanguageConfig.currentPath);
-		cache = Dictionary.new;
+		this.clearCache;
 	}
-	*load { |path|
+	*clearCache {
+		cache = Dictionary.new;
+		installedPaths = nil;
+	}
+	*load { |path, done|
 		// install a list of quarks from a text file
 		var file, line, dir,re, nameRe;
-		var match, localPath, url, name, refspec;
+		var match, localPath, url, name, refspec, q;
 		// localPath=url[@refspec]
 		re = "^([^=]+)=?([^@]+)@?(.*)$";
 		// quarkname[@refspec]
@@ -56,43 +62,50 @@ Quarks {
 		path = this.asAbsolutePath(path);
 		dir = path.dirname;
 		if(File.exists(path).not, {
-			^("Path does not exist" + path).error;
+			^("Quark set file does not exist:" + path).error;
 		});
 		this.clear();
-		file = File.open(path, "r");
-		while({
-			line = file.getLine();
-			line.notNil
-		}, {
-			// resolve any paths relative to the quark file
-			match = line.findRegexp(re);
-			if(match.size > 0, {
-				localPath = match[1][1];
-				name = localPath.basename;
-				url = match[2][1];
-				refspec = match[3];
-				if(refspec.notNil, {
-					refspec = refspec[1];
-				});
-				this.install(this.asAbsolutePath(localPath, dir), refspec);
+		Routine.run({
+			file = File.open(path, "r");
+			while({
+				line = file.getLine();
+				line.notNil
 			}, {
-				match = line.findRegexp(nameRe);
+				0.05.wait;
+				// resolve any paths relative to the quark file
+				match = line.findRegexp(re);
 				if(match.size > 0, {
-					name = match[1][1];
-					refspec = match[2];
+					localPath = match[1][1];
+					name = localPath.basename;
+					localPath = this.asAbsolutePath(localPath, dir);
+					url = match[2][1];
+					refspec = match[3];
 					if(refspec.notNil, {
 						refspec = refspec[1];
 					});
-					if(Quarks.isPath(name), {
-						this.install(this.asAbsolutePath(name, dir), refspec);
-					}, {
-						this.install(name, refspec);
-					});
+					q = Quark(name, refspec, url, localPath);
+					q.install();
 				}, {
-					"Unreadable line: %".format(line).error;
+					match = line.findRegexp(nameRe);
+					if(match.size > 0, {
+						name = match[1][1];
+						refspec = match[2];
+						if(refspec.notNil, {
+							refspec = refspec[1];
+						});
+						if(Quarks.isPath(name), {
+							this.install(this.asAbsolutePath(name, dir), refspec);
+						}, {
+							this.install(name, refspec);
+						});
+					}, {
+						"Unreadable line: %".format(line).error;
+					});
 				});
 			});
-		});
+			cache = Dictionary.new;
+			done.value();
+		}, clock: AppClock);
 	}
 	*save { |path|
 		// save currently installed quarks to a text file
@@ -132,16 +145,20 @@ Quarks {
 		^LanguageConfig.includePaths
 			.collect(Quark.fromLocalPath(_))
 	}
+	*installedPaths {
+		^installedPaths ?? {
+			installedPaths = LanguageConfig.includePaths.collect({ |apath|
+				apath.withoutTrailingSlash
+			});
+		}
+	}
 	*isInstalled { |name|
-		^LanguageConfig.includePaths.any({ |path|
-			path.withoutTrailingSlash.endsWith(name)
+		^this.installedPaths.any({ |path|
+			path.endsWith(name)
 		})
 	}
-	*pathIsInstalled{ |path|
-		path = path.withoutTrailingSlash;
-		^LanguageConfig.includePaths.any({ |apath|
-			apath.withoutTrailingSlash == path
-		})
+	*pathIsInstalled { |path|
+		^this.installedPaths.includesEqual(path.withoutTrailingSlash)
 	}
 	*openFolder {
 		this.folder.openOS;
@@ -191,6 +208,7 @@ Quarks {
 			path.debug("Adding path");
 			LanguageConfig.addIncludePath(path);
 			LanguageConfig.store(LanguageConfig.currentPath);
+			installedPaths = installedPaths.add(path.withoutTrailingSlash);
 			^true
 		});
 		^false
@@ -201,6 +219,7 @@ Quarks {
 			path.debug("Removing path");
 			LanguageConfig.removeIncludePath(path);
 			LanguageConfig.store(LanguageConfig.currentPath);
+			installedPaths.remove(path.withoutTrailingSlash);
 			^true
 		});
 		^false
@@ -212,7 +231,18 @@ Quarks {
 		if(File.exists(folder).not, {
 			folder.mkdir();
 		});
-		cache = Dictionary.new;
+		this.clearCache;
+		if(thisProcess.platform.name !== 'windows', {
+			regex = (
+				isPath: "^[~\\.]?/",
+				isAbsolutePath: "^/"
+			);
+		}, {
+			regex = (
+				isPath: "\\\\|/",
+				isAbsolutePath: "^[A-Za-z]:\\\\"
+			);
+		});
 	}
 	*at { |name|
 		var q;
@@ -250,10 +280,11 @@ Quarks {
 
 		f = { |path|
 			// \directory or \not_found, but not a file
+			var downloadedQuarks = "downloaded-quarks" +/+ "quarks";
 			if(File.type(path) !== \regular, {
 				path = path.withoutTrailingSlash;
 				// ignore the directory
-				if(path.endsWith("downloaded-quarks/quarks").not, {
+				if(path.endsWith(downloadedQuarks).not, {
 					all[path] = Quark.fromLocalPath(path);
 				});
 			});
@@ -271,7 +302,7 @@ Quarks {
 			fetch = true;
 
 		if(File.exists(dirTxtPath), {
-			fetch = force or: fetched.not
+			fetch = force // or: fetched.not
 		});
 		{
 			if(fetch, { this.prFetchDirectory });
@@ -290,12 +321,16 @@ Quarks {
 			});
 		});
 	}
-	*checkForUpdates {
-		this.all.do { arg quark;
-			if(quark.isGit, {
-				quark.checkForUpdates();
-			});
-		}
+	*checkForUpdates { |done|
+		Routine.run({
+			this.all.do { arg quark;
+				if(quark.isGit, {
+					quark.checkForUpdates();
+				});
+				0.05.wait;
+			};
+			done.value();
+		});
 	}
 	*prReadDirectoryFile { |dirTxtPath|
 		var file;
@@ -341,18 +376,17 @@ Quarks {
 		});
 	}
 	*isPath { |string|
-		var re = if(thisProcess.platform.name !== 'windows', "^[~\\.]?/", "^(\\\\|[a-zA-Z]:)");
-		^string.findRegexp(re).size != 0
+		^string.findRegexp(regex.isPath).size != 0
 	}
 	*asAbsolutePath { |path, relativeTo|
-		^if(path.at(0).isPathSeparator, {
+		^if(path.findRegexp(regex.isAbsolutePath).size != 0, {
 			path
 		}, {
 			if(path.at(0) == $~, {
 				^path.standardizePath
 			});
 			// scroot is the cwd at startup
-			if(path.beginsWith("./"), {
+			if(path.beginsWith("." ++ Platform.pathSeparator), {
 				^(relativeTo ?? {PathName.scroot}) +/+ path.copyToEnd(2)
 			});
 			(relativeTo ?? {PathName.scroot}) +/+ path

@@ -238,9 +238,9 @@ void ScServer::dumpNodeTreeWithControls()
 
 void ScServer::queryAllNodes(bool dumpControls)
 {
-    QString arg = dumpControls ? QString("true") : QString("false");
+    QString arg = dumpControls ? QStringLiteral("true") : QStringLiteral("false");
 
-    mLang->evaluateCode( QString("ScIDE.defaultServer.queryAllNodes(%1)").arg(arg), true );
+    mLang->evaluateCode( QStringLiteral("ScIDE.defaultServer.queryAllNodes(%1)").arg(arg), true );
 }
 
 void ScServer::plotTree()
@@ -310,7 +310,7 @@ void ScServer::sendDumpingOSC(bool dumping)
 
 void ScServer::sendVolume( float volume )
 {
-    mLang->evaluateCode( QString("ScIDE.setServerVolume(%1)").arg(volume), true );
+    mLang->evaluateCode( QStringLiteral("ScIDE.setServerVolume(%1)").arg(volume), true );
 }
 
 bool ScServer::isRecording() const { return mIsRecording; }
@@ -427,7 +427,7 @@ void ScServer::handleRuningStateChangedMsg( const QString & data )
     stream << data.toStdString();
     YAML::Parser parser(stream);
 
-    bool serverRunningState;
+    bool serverRunningState = false;
     std::string hostName;
     int port;
 

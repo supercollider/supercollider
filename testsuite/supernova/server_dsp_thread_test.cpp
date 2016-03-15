@@ -37,7 +37,7 @@ dummy_runnable dummy;
 template <typename Alloc>
 void run_test_1(void)
 {
-    nova::dsp_threads<dummy_runnable, nova::nop_thread_init, Alloc> t(1);
+    nova::dsp_thread_pool<dummy_runnable, nova::nop_thread_init, Alloc> t(1);
 }
 
 BOOST_AUTO_TEST_CASE( dsp_thread_test_1 )
@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE( dsp_thread_test_1 )
 template <typename Alloc>
 void run_test_2(void)
 {
-    nova::dsp_threads<dummy_runnable, nova::nop_thread_init, Alloc> t(5);
+    nova::dsp_thread_pool<dummy_runnable, nova::nop_thread_init, Alloc> t(5);
     t.start_threads();
     t.terminate_threads();
 }
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE( dsp_thread_test_2 )
 template <typename Alloc>
 void run_test_3(void)
 {
-    nova::dsp_threads<dummy_runnable, nova::nop_thread_init, Alloc> t(2);
+    nova::dsp_thread_pool<dummy_runnable, nova::nop_thread_init, Alloc> t(2);
     t.start_threads();
     t.run();
     t.terminate_threads();
@@ -83,10 +83,10 @@ void run_test_4(void)
     typedef typename nova::dsp_thread_queue_item<dummy_runnable, Alloc> dsp_thread_queue_item;
     typedef typename nova::dsp_thread_queue<dummy_runnable, Alloc> dsp_thread_queue;
 
-    typedef typename nova::dsp_threads<dummy_runnable, nova::nop_thread_init, Alloc> dsp_threads;
+    typedef typename nova::dsp_thread_pool<dummy_runnable, nova::nop_thread_init, Alloc> dsp_thread_pool;
     typedef std::unique_ptr<dsp_thread_queue> dsp_thread_queue_ptr;
 
-    dsp_threads t(1);
+    dsp_thread_pool t(1);
     t.start_threads();
 
     dsp_thread_queue_ptr q (new dsp_thread_queue(2));
@@ -122,11 +122,11 @@ void run_test_5(void)
 {
     typedef nova::dsp_thread_queue_item<dummy_runnable, Alloc> dsp_thread_queue_item;
     typedef nova::dsp_thread_queue<dummy_runnable, Alloc> dsp_thread_queue;
-    typedef nova::dsp_threads<dummy_runnable, nova::nop_thread_init, Alloc> dsp_threads;
+    typedef nova::dsp_thread_pool<dummy_runnable, nova::nop_thread_init, Alloc> dsp_thread_pool;
 
     typedef std::unique_ptr<dsp_thread_queue> dsp_thread_queue_ptr;
 
-    dsp_threads t(2);
+    dsp_thread_pool t(2);
     t.start_threads();
 
     dsp_thread_queue_ptr q (new dsp_thread_queue(5));
@@ -174,11 +174,11 @@ void run_test_6(void)
 {
     typedef nova::dsp_thread_queue_item<dummy_runnable, Alloc> dsp_thread_queue_item;
     typedef nova::dsp_thread_queue<dummy_runnable, Alloc> dsp_thread_queue;
-    typedef nova::dsp_threads<dummy_runnable, nova::nop_thread_init, Alloc> dsp_threads;
+    typedef nova::dsp_thread_pool<dummy_runnable, nova::nop_thread_init, Alloc> dsp_thread_pool;
 
     typedef std::unique_ptr<dsp_thread_queue> dsp_thread_queue_ptr;
 
-    dsp_threads t(2);
+    dsp_thread_pool t(2);
     t.start_threads();
 
     dsp_thread_queue_ptr q (new dsp_thread_queue(20));

@@ -20,15 +20,13 @@ ScIDE {
 
 	*connect {|ideName|
 		this.prConnect(ideName);
-		defer {
-			this.handshake
-		}
+		this.handshake
 	}
 
 	*handshake {
-		this.prSend(\classLibraryRecompiled);
-		this.prSend(\requestDocumentList);
-		this.prSend(\requestCurrentPath);
+		this.send(\classLibraryRecompiled);
+		this.send(\requestDocumentList);
+		this.send(\requestCurrentPath);
 
 		this.defaultServer = Server.default;
 		this.sendIntrospection;
@@ -38,7 +36,7 @@ ScIDE {
 		serverController.remove;
 		serverController = SimpleController(server)
 		.put(\serverRunning, { | server, what, extraArg |
-			this.prSend(\defaultServerRunningChanged, [
+			this.send(\defaultServerRunningChanged, [
 				server.serverRunning, server.addr.hostname, server.addr.port]);
 		})
 		.put(\default, { | server, what, newServer |
@@ -46,31 +44,31 @@ ScIDE {
 			this.defaultServer = newServer;
 		})
 		.put(\dumpOSC, { | volume, what, code |
-			this.prSend( if(code.asBoolean, \dumpOSCStarted, \dumpOSCStopped) );
+			this.send( if(code.asBoolean, \dumpOSCStarted, \dumpOSCStopped) );
 		});
 
 		volumeController.remove;
 		volumeController = SimpleController(server.volume)
 		.put(\mute, { | volume, what, muted |
-			this.prSend( if(muted, \serverMuted, \serverUnmuted) );
+			this.send( if(muted, \serverMuted, \serverUnmuted) );
 		})
 		.put(\amp, { | volume, what, amp |
 			if (not(suppressAmpResponse)) {
-				this.prSend( \serverAmp, amp.asString );
+				this.send( \serverAmp, amp.asString );
 			};
 		})
 		.put(\ampRange, { |volume, what, min, max|
-			this.prSend( \serverAmpRange, "%,%".format(min, max) );
+			this.send( \serverAmpRange, "%,%".format(min, max) );
 		});
 
 		defaultServer = server;
 
-		this.prSend(\defaultServerRunningChanged, [
+		this.send(\defaultServerRunningChanged, [
 			server.serverRunning, server.addr.hostname, server.addr.port]);
-		this.prSend( if(server.volume.isMuted, \serverMuted, \serverUnmuted) );
-		this.prSend( if(server.dumpMode.asBoolean, \dumpOSCStarted, \dumpOSCStopped) );
-		this.prSend( \serverAmpRange, "%,%".format(server.volume.min, server.volume.max) );
-		this.prSend( \serverAmp, server.volume.volume.asString );
+		this.send( if(server.volume.isMuted, \serverMuted, \serverUnmuted) );
+		this.send( if(server.dumpMode.asBoolean, \dumpOSCStarted, \dumpOSCStopped) );
+		this.send( \serverAmpRange, "%,%".format(server.volume.min, server.volume.max) );
+		this.send( \serverAmp, server.volume.volume.asString );
 
 	}
 
@@ -104,11 +102,11 @@ ScIDE {
 			];
 			res = res.add(classData);
 		};
-		this.prSend(\introspection, res);
+		this.send(\introspection, res);
 	}
 
 	*sendAllClasses { |id|
-		this.prSend(id, Class.allClasses.collectAs(_.asString, Array))
+		this.send(id, Class.allClasses.collectAs(_.asString, Array))
 	}
 
 	*sendSymbolTable { |id|
@@ -130,7 +128,7 @@ ScIDE {
 
 		"ScIDE: Built symbol table in % seconds\n".postf(dt.asStringPrec(3));
 
-		this.prSend(id, result)
+		this.send(id, result)
 	}
 
 	*completeClass { |id, text|
@@ -142,7 +140,7 @@ ScIDE {
 			};
 		};
 		if (res.size > 0) {
-			this.prSend(id, res);
+			this.send(id, res);
 		};
 	}
 
@@ -165,7 +163,7 @@ ScIDE {
 				class = class.superclass;
 			};
 			res = methods.values.collect { |m| this.serializeMethod(m) };
-			if (res.size > 0) { this.prSend(id, res) };
+			if (res.size > 0) { this.send(id, res) };
 		}
 	}
 
@@ -180,7 +178,7 @@ ScIDE {
 				};
 			};
 		};
-		if (res.size > 0) { this.prSend(id, res) };
+		if (res.size > 0) { this.send(id, res) };
 	}
 
 	*findMethod { |id, text|
@@ -207,7 +205,7 @@ ScIDE {
 				warn("No such method:" + cname.asString ++ "." ++ mname.asString);
 				^this;
 			};
-			this.prSend(id, [this.serializeMethod(method)]);
+			this.send(id, [this.serializeMethod(method)]);
 		}{
 			res = [];
 			this.allMethodsDo { |method|
@@ -216,7 +214,7 @@ ScIDE {
 				};
 			};
 			if (res.size > 0) {
-				this.prSend(id, res)
+				this.send(id, res)
 			}{
 				warn("No such method:" + mname.asString);
 				^this;
@@ -290,12 +288,12 @@ ScIDE {
 			}
 		};
 
-		ScIDE.prSend(requestId, [symbol, result.asArray])
+		this.send(requestId, [symbol, result.asArray])
 	}
 
 	*openHelpUrl { |url|
-		ScIDE.processUrl(url, { |processedUrl|
-			this.prSend("openHelpUrl", processedUrl.asString)
+		this.processUrl(url, { |processedUrl|
+			this.send("openHelpUrl", processedUrl.asString)
 		});
 	}
 
@@ -330,12 +328,12 @@ ScIDE {
 	// Document Support //////////////////////////////////////////////////
 
 	*newDocument {|title="Untitled", string="", id|
-		this.prSend(\newDocument, [title, string, id]);
+		this.send(\newDocument, [title, string, id]);
 	}
 
 
 	*open { |path, charPos = 0, selectionLength = 0, id|
-		this.prSend(\openFile, [path, charPos, selectionLength, id])
+		this.send(\openFile, [path, charPos, selectionLength, id])
 	}
 
 	*getQUuid {
@@ -344,71 +342,77 @@ ScIDE {
 	}
 
 	*getTextByQUuid {|quuid, funcID, start = 0, range = -1|
-		this.prSend(\getDocumentText, [quuid, funcID, start, range]);
+		this.send(\getDocumentText, [quuid, funcID, start, range]);
 	}
 
 	*setTextByQUuid {|quuid, funcID, text, start = 0, range = -1|
-		this.prSend(\setDocumentText, [quuid, funcID, text, start, range]);
+		this.send(\setDocumentText, [quuid, funcID, text, start, range]);
 	}
-    
+
     *setSelectionByQUuid {|quuid, start, length|
-        this.prSend(\setDocumentSelection, [quuid, start, length]);
+        this.send(\setDocumentSelection, [quuid, start, length]);
     }
-	
+
 	*setEditablebyQUuid {|quuid, editable|
-		this.prSend(\setDocumentEditable, [quuid, editable]);
+		this.send(\setDocumentEditable, [quuid, editable]);
 	}
-	
+
 	*setPromptsToSavebyQUuid {|quuid, prompts|
-		this.prSend(\setDocumentPromptsToSave, [quuid, prompts]);
+		this.send(\setDocumentPromptsToSave, [quuid, prompts]);
 	}
 
 	*setCurrentDocumentByQUuid {|quuid|
-		this.prSend(\setCurrentDocument, [quuid]);
+		this.send(\setCurrentDocument, [quuid]);
 	}
-	
+
 	*removeDocUndoByQUuid {|quuid|
-		this.prSend(\removeDocUndo, [quuid]);
+		this.send(\removeDocUndo, [quuid]);
 	}
 
 	*close {|quuid|
-		this.prSend(\closeDocument, [quuid]);
+		this.send(\closeDocument, [quuid]);
 	}
 
 	*setDocumentTitle {|quuid, newTitle|
-		this.prSend(\setDocumentTitle, [quuid, newTitle]);
+		this.send(\setDocumentTitle, [quuid, newTitle]);
 	}
 
 	*setDocumentKeyDownEnabled {|quuid, bool|
-		this.prSend(\enableDocumentKeyDownAction, [quuid, bool]);
+		this.send(\enableDocumentKeyDownAction, [quuid, bool]);
 	}
 
 	*setDocumentKeyUpEnabled {|quuid, bool|
-		this.prSend(\enableDocumentKeyUpAction, [quuid, bool]);
+		this.send(\enableDocumentKeyUpAction, [quuid, bool]);
 	}
-	
+
 	*setDocumentGlobalKeyDownEnabled {|bool|
-		this.prSend(\enableDocumentGlobalKeyDownAction, [bool]);
+		this.send(\enableDocumentGlobalKeyDownAction, [bool]);
 	}
-	
+
 	*setDocumentGlobalKeyUpEnabled {|bool|
-		this.prSend(\enableDocumentGlobalKeyUpAction, [bool]);
+		this.send(\enableDocumentGlobalKeyUpAction, [bool]);
 	}
 
 	*setDocumentMouseDownEnabled {|quuid, bool|
-		this.prSend(\enableDocumentMouseDownAction, [quuid, bool]);
+		this.send(\enableDocumentMouseDownAction, [quuid, bool]);
 	}
 
 	*setDocumentMouseUpEnabled {|quuid, bool|
-		this.prSend(\enableDocumentMouseUpAction, [quuid, bool]);
+		this.send(\enableDocumentMouseUpAction, [quuid, bool]);
 	}
 
 	*setDocumentTextChangedEnabled {|quuid, bool|
-		this.prSend(\enableDocumentTextChangedAction, [quuid, bool]);
+		this.send(\enableDocumentTextChangedAction, [quuid, bool]);
 	}
 
 	*setDocumentTextMirrorEnabled {|bool|
-		this.prSend(\enableDocumentTextMirror, [bool]);
+		this.send(\enableDocumentTextMirror, [bool]);
+	}
+
+	*send { |id, data|
+		defer {
+			this.prSend(id, data)
+		}
 	}
 
 
@@ -639,7 +643,7 @@ Document {
 		_ScIDE_SetDocTextMirror
 		this.primitiveFailed
 	}
-    
+
     prSetSelectionMirror {|quuid, start, size|
 		_ScIDE_SetDocSelectionMirror
 		this.primitiveFailed
@@ -785,6 +789,7 @@ Document {
 
 	prGetSelectionStart {|id|
 		_ScIDE_GetDocSelectionStart
+		^this.primitiveFailed;
 	}
 
 	selectionSize {
@@ -793,6 +798,7 @@ Document {
 
 	prGetSelectionRange {|id|
 		_ScIDE_GetDocSelectionRange
+		^this.primitiveFailed;
 	}
 
 	string { | rangestart, rangesize = 1 |
@@ -899,12 +905,12 @@ Document {
 		this.prSetSelectionMirror(quuid, start, length); // set the backend mirror
         ScIDE.setSelectionByQUuid(quuid, start, length); // set the IDE doc
     }
-    
+
 	editable_ { | bool=true |
 		editable = bool;
 		ScIDE.setEditablebyQUuid(quuid, bool);
 	}
-	
+
 	promptToSave_ { | bool |
 		promptToSave = bool;
 		ScIDE.setPromptsToSavebyQUuid(quuid, bool);
