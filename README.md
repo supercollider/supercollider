@@ -95,6 +95,7 @@ version. See [COPYING](COPYING) for the license text.
 - SuperCollider 3.4 was released on July 15, 2010
 - SuperCollider 3.5 was released on March 16, 2012
 - SuperCollider 3.6 was released on November 28, 2012
+- SuperCollider 3.7 was released on March 13, 2016
 
 Outro
 -----
