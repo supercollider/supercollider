@@ -18,23 +18,18 @@ add_custom_target(install_server_only
 
 if(MSVC)
   SET(BUILD_ENV "VS")
-  # todo: how to retrieve build configuration, which is only set at build time
-  SET(BUILD_CONFIGURATION "")
   # size for win 3.7 release build
   SET(SC_WIN_INSTALL_SIZE "102298")
 elseif(MSYS)
   SET(BUILD_ENV "MSYS")
-  SET(BUILD_CONFIGURATION "${CMAKE_BUILD_TYPE}-")
   # size for win 3.7 release build
   SET(SC_WIN_INSTALL_SIZE "")
 elseif(MINGW)
   set(BUILD_ENV "MinGW")
-  SET(BUILD_CONFIGURATION "${CMAKE_BUILD_TYPE}-")
   # size for win 3.7 release build
   SET(SC_WIN_INSTALL_SIZE "121856")
 else()
-  set(BUILD_ENV "unknown_buildEnv")
-  SET(BUILD_CONFIGURATION "")
+  set(BUILD_ENV "NN")
   SET(SC_WIN_INSTALL_SIZE "")
 endif(MSVC)
 
@@ -44,7 +39,7 @@ add_custom_target( installer
         "-DSC_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
         "-DNSIS_SCRIPT=${CMAKE_CURRENT_SOURCE_DIR}/supercollider.nsi"
         "-DSC_CUBE_PATH=${CMAKE_CURRENT_SOURCE_DIR}/Resources/sc_cube.ico"
-        "-DBUILD_DEF=${BUILD_CONFIGURATION}${CMAKE_LIBRARY_ARCHITECTURE}-${BUILD_ENV}-${GIT_COMMIT_HASH}"
+        "-DBUILD_DEF=$<CONFIG>-${CMAKE_LIBRARY_ARCHITECTURE}-${BUILD_ENV}-${GIT_COMMIT_HASH}"
         "-DTARGET_ARCH=${CMAKE_LIBRARY_ARCHITECTURE}"
         "-DSC_WIN_BUNDLE_NAME=${SC_WIN_BUNDLE_NAME}"
         "-DSC_WIN_INSTALL_SIZE=${SC_WIN_INSTALL_SIZE}"

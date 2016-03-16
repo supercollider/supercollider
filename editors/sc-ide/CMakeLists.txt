@@ -355,6 +355,15 @@ elseif(WIN32)
     if(NOT MSVC)
         set_target_properties(SuperCollider PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<CONFIG>")
     endif(NOT MSVC)
+
+    foreach(translation ${translations})
+      add_custom_command(TARGET SuperCollider
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/translations
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${translation} $<TARGET_FILE_DIR:SuperCollider>/translations
+      )
+    endforeach()
+
     install(TARGETS SuperCollider
         DESTINATION "${SC_WIN_BUNDLE_NAME}"
         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE

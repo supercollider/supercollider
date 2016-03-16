@@ -51,7 +51,7 @@ Table of contents
 - Description of SC 3.7 release build
 - Known problems
 - Outro
-
+- Links
 
 Introduction
 ============
@@ -265,9 +265,9 @@ Introduction
 ------------
 
 In order to provide the same build logic for all platforms, SC uses the cross
-platform build system [CMake][cmake]. It can configure builds and generate 
-intermediary build files for many OS/toolchain combinations. The separation of 
-build system, and actual application development allows to define cross-platform 
+platform build system [CMake][cmake]. It can configure builds and generate
+intermediary build files for many OS/toolchain combinations. The separation of
+build system, and actual application development allows to define cross-platform
 build definitions in a single framework, and still do actual application
 development in your preferred native environment. On Windows this works nicely
 with Visual Studio and Qt Creator. While CMake is command line oriented, it can
@@ -449,8 +449,8 @@ source folder:
 
 For DSound support the DirectX SDK has to be obtained. Unfortunately MinGW and
 VS build require different versions. For VS download [version 9][dx9sdk] and
-install it in the system. For the MinGW build obtain [version 7][dx7sdk], copy 
-the folders `lib` and `include` to a parent folder called dx7sdk, and again 
+install it in the system. For the MinGW build obtain [version 7][dx7sdk], copy
+the folders `lib` and `include` to a parent folder called dx7sdk, and again
 place it next to the SC source:
 
     sc-source
@@ -611,8 +611,8 @@ extension/Quark groups easier.
 *Note*: the preceding MinGW chapter contains a few details not repeated here.
 You may want to read it if questions arise.
 
-- add the Qt binaries location at the beginning of the system path (while this
-  is not strictly required, it helps to avoid that potential alternative
+- add the Qt binaries location at the beginning of the environment PATH (while
+  this is not strictly required, it helps to avoid that potential alternative
   Qt-installs on your system interfere during install).
 
       SET PATH=C:\Qt\5.5\msvc2013_64\bin;%PATH%
@@ -679,8 +679,8 @@ SDKs have to be added to the build.
 
 ASIO: download the SDK from [Steinberg][asiosdk], extract the zip and place
 the folder in a sibling folder of the supercollider source (not the portaudio
-folder in external_libraries). The folder name should not contain dots, start 
-with `as`, and be the immediate parent of the library folders (asio, 
+folder in external_libraries). The folder name should not contain dots, start
+with `as`, and be the immediate parent of the library folders (asio,
 common, ...). You should end up with a folder tree like this:
 
     sc-source
@@ -691,9 +691,9 @@ common, ...). You should end up with a folder tree like this:
         host
 
 DSound/DirectX: unfortunately the MinGW- and the VS-build require different DX
-versions. The MinGW-build only works with [version 7][dx7sdk], whereas the 
-VS-build only works with [version 9 (June 2010)][dx9sdk]. Version 9 can still be 
-downloaded from MS and installed into the OS. Acquiring version 7 needs some 
+versions. The MinGW-build only works with [version 7][dx7sdk], whereas the
+VS-build only works with [version 9 (June 2010)][dx9sdk]. Version 9 can still be
+downloaded from MS and installed into the OS. Acquiring version 7 needs some
 research, at the time of this writing no official MS download was provided. Once
 you get the files, don't install them, just copy the folders `include` and `lib`
 into a folder. The folder's name needs to start with `dx`. Make that folder a
@@ -756,7 +756,7 @@ adjustment is likely to be required.
 In order to find out which CMake variables need values, we can do a trial run.
 For this to be meaningful we need to
 
-  - add the toolchain binary path to the system path before running `cmake`
+  - add the toolchain binary path to the environment path before running `cmake`
   - specify the generator (element after flag `-G`)
   - point `cmake` to the source (last element in `cmake` command, cannot be
     omitted on subsequent runs):
@@ -1096,13 +1096,13 @@ Once cmake returns no errors you should be ready to build.
 
 For managing your build you will typically visit the "Project Pane". It offers
 two pages where you can make choices relating to build definition and install/
-deployment. It is the place to add predefined alternative kits with a dedicated 
-build folder (for alternative builds), modify the environment in which the build 
+deployment. It is the place to add predefined alternative kits with a dedicated
+build folder (for alternative builds), modify the environment in which the build
 is executed, or add additional build steps or targets (e.g. install, installer).
 You can also chose individual targets to be built here. Each build step can be
-conveniently clicked on or off. You may also assign additional build steps to 
-the second project pane "run", where install related steps are best placed. This 
-is also the place to select the target that is started when SC is "Run" or 
+conveniently clicked on or off. You may also assign additional build steps to
+the second project pane "run", where install related steps are best placed. This
+is also the place to select the target that is started when SC is "Run" or
 "Debug"ged from the mode selector ribbon. Note though that the steps defined there
 are executed each time you hit "Run" or "Debug", so it is not always helpful to
 have these steps active during a development cycle. In order to create a binary
@@ -1349,10 +1349,10 @@ if you require an advanced configuration, and are interested in this approach.
 
 There is a new star on the horizon of building unixy software in Windows, a
 relatively recent msys/cygwin-offspring called [msys2][msys2]. Git has already
-recognized it's advantages and uses it as base of Git for Windows. Apart from 
-being a rapidly progressing distribution using the rolling update model, and 
+recognized it's advantages and uses it as base of Git for Windows. Apart from
+being a rapidly progressing distribution using the rolling update model, and
 providing many more packages than just build tools (among them everything
-required for SC, including the tools), msys2 features a package manager just 
+required for SC, including the tools), msys2 features a package manager just
 as comfortable as in big Linux distributions, a clone of Arch Linux' `pacman`.
 Starting from a binary installer, it is pretty simple to assemble a complete
 build environment for SC, including Qt5, *both* in 32- and 64-bit versions. Once

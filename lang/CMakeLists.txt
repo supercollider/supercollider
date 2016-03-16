@@ -330,12 +330,7 @@ elseif(WIN32)
         COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/sounds" $<TARGET_FILE_DIR:sclang>/sounds
     )
 
-    if(SC_QT)
-        add_custom_command(TARGET sclang
-            PRE_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/editors/sc-ide/translations" $<TARGET_FILE_DIR:sclang>/translations
-        )
-    else(SC_QT)  # TODP: clean (and cross platform) solution for language boot for case SC_QT=OFF (this is a quick fix for language boot error)
+    if(NOT SC_QT)  # TODP: clean (and cross platform) solution for language boot for case SC_QT=OFF (this is a quick fix for language boot error)
         add_custom_command(TARGET sclang
             PRE_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/SCClassLibrary/Common/GUI" $<TARGET_FILE_DIR:sclang>/SCClassLibrary/scide_scqt/Common/GUI
@@ -347,7 +342,7 @@ elseif(WIN32)
             COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:sclang>/SCClassLibrary/Common/GUI/Base
             COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/SCClassLibrary/Common/GUI/Base/Model.sc" $<TARGET_FILE_DIR:sclang>/SCClassLibrary/Common/GUI/Base
         )
-    endif(SC_QT)
+    endif(NOT SC_QT)
 
     set(SC_WIN_DLL_DIRS)
     if(SNDFILE_LIBRARY_DIR)
