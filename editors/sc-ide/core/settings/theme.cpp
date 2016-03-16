@@ -133,7 +133,7 @@ void Theme::fillDefault()
     addToTheme(mFormats, "char", QColor(0,115,0).lighter(shade));
     addToTheme(mFormats, "comment", QColor(191,0,0).lighter(shade));
     addToTheme(mFormats, "primitive", QColor(51,51,191).lighter(shade));
-    addToTheme(mFormats, "lineNumbers", plt.color(QPalette::ButtonText), 
+    addToTheme(mFormats, "lineNumbers", plt.color(QPalette::ButtonText),
                                         plt.color(QPalette::Mid));
     addToTheme(mFormats, "selection", plt.color(QPalette::HighlightedText),
                                       plt.color(QPalette::Highlight));
@@ -246,7 +246,7 @@ void Theme::setFormat(const QString & key, const QTextCharFormat & newFormat)
                     QColor(Qt::transparent): newFormat.background().color();
 
     if (i == mFormats.end()) {
-        qDebug() << __func__ << "Failed to find key " << key;
+        qDebug() <<  __FUNCTION__ << "Theme::setFormat" << "Failed to find key " << key;
         return;
     }
 

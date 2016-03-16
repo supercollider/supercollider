@@ -136,7 +136,7 @@ ServerOptions {
 			o = o ++ " -H % %".format(inDevice.asString.quote, outDevice.asString.quote);
 		};
 		if (verbosity != 0, {
-			o = o ++ " -v " ++ verbosity;
+			o = o ++ " -V " ++ verbosity;
 		});
 		if (zeroConf.not, {
 			o = o ++ " -R 0";
@@ -360,7 +360,7 @@ Server {
 		var n = options.maxLogins ? 1;
 
 		numControl = options.numControlBusChannels div: n;
-		numAudio = options.numAudioBusChannels div: n;
+		numAudio = options.numPrivateAudioBusChannels div: n;
 
 		controlBusOffset = numControl * offset;
 		audioBusOffset = options.firstPrivateBus + (numAudio * offset);

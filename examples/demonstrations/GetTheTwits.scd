@@ -39,6 +39,6 @@ Document( "supercollider tweets", "// #supercollider tweets\n\n\n" +
 // THE CAVEAT SLIDE
 // a slight delay is to be expected, to await the gathering of twitters' reply.
 // (do not be alarmed. all part of the show, my friends)
-// oh and yeah you'll need the XML Quark 
+// oh and yeah you'll need the XML Quark
 // (http://quarks.svn.sourceforge.net/viewvc/quarks/XML/)
 // and it only works if you can run Pipe

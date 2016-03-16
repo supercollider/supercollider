@@ -13,11 +13,11 @@ SynthDef(\LMFAP, {|combdecay=1, allpassdecay=0.5, wet=0.1, bufnum, rate=1, end=2
 	var in, signal;
 	in = AudioIn.ar([1,2]);
 	z = DelayN.ar(in, 0.1, 0.51);
-	y = Mix.ar(Array.fill(3,{ CombL.ar(z, 0.05, rrand(0.03, 0.05), combdecay) })); 
+	y = Mix.ar(Array.fill(3,{ CombL.ar(z, 0.05, rrand(0.03, 0.05), combdecay) }));
 	6.do({ y = AllpassN.ar(y, 0.030, rrand(0.01, 0.03), allpassdecay) });
 	BufWr.ar(in+(y*wet), bufnum, Phasor.ar(0, 1, 0, end));
 	signal = BufRd.ar(2, bufnum, Phasor.ar(0, BufRateScale.kr(0)*rate, 0, end));
-	y = Mix.ar(Array.fill(7,{ CombL.ar(signal, 0.05, rrand(0.03, 0.05), combdecay) })); 
+	y = Mix.ar(Array.fill(7,{ CombL.ar(signal, 0.05, rrand(0.03, 0.05), combdecay) }));
 	6.do({ y = AllpassN.ar(y, 0.050, rrand(0.03, 0.05), allpassdecay) });
 	Out.ar(0, signal+(y*wet));
 }).add;

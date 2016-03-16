@@ -1,5 +1,5 @@
 
-// james mccartney 
+// james mccartney
 
 /*
 Triggering functions from the Keyboard
@@ -19,7 +19,7 @@ var w; // window object
 var courier; // font object
 
 // an Array of Strings representing the key layout.
-var keyboard = #["`1234567890-=", "QWERTYUIOP[]\\", 
+var keyboard = #["`1234567890-=", "QWERTYUIOP[]\\",
 							"ASDFGHJKL;'", "ZXCVBNM,./"];
 
 // horizontal offsets for keys.
@@ -70,11 +70,11 @@ w.view.decorator = FlowLayout(w.view.bounds);
 // define a function to handle key downs.
 w.view.keyDownAction = {|view, char, modifiers, unicode, keycode|
 	 var result;
-	 
+
 	// call the function
 	result = actions[char].value(char, modifiers);
-	
-	// if the result is a function, that function becomes the 
+
+	// if the result is a function, that function becomes the
 	// new action for the key
 	if (result.isKindOf(Function)) {
 		actions[char] = result;
@@ -82,7 +82,7 @@ w.view.keyDownAction = {|view, char, modifiers, unicode, keycode|
 };
 
 // make the rows of the keyboard
-keyboard.do {|row, i| 
+keyboard.do {|row, i|
 	row.do {|key| makeKey.(key) };
 	if (i==0) { makeKey.(127.asAscii, "del", 38 @ 24) };
 	if (i==2) { makeKey.($\r, "rtrn", 46 @ 24) };
@@ -116,13 +116,13 @@ w.front;
 
 (
 {
-	{ 
+	{
 		Pan2.ar(
 			SinOsc.ar(
-				ExpRand(300,3000), 
+				ExpRand(300,3000),
 				0,
-				SinOsc.kr(ExpRand(1,15),0,0.05).max(0)), 
-			Rand(-1,1)) 
+				SinOsc.kr(ExpRand(1,15),0,0.05).max(0)),
+			Rand(-1,1))
 	}.play;
 }
 )
@@ -145,8 +145,8 @@ w.front;
 (
 {{
 	var in, sr;
-    in = LFSaw.ar([21000,21001], 0, LFPulse.kr(ExpRand(0.1,1),0,0.3,0.2,0.02));
-    sr = ExpRand(300,3000) + [-0.6,0.6];
+	in = LFSaw.ar([21000,21001], 0, LFPulse.kr(ExpRand(0.1,1),0,0.3,0.2,0.02));
+	sr = ExpRand(300,3000) + [-0.6,0.6];
 	Out.ar(0,  RLPF.ar(in * LFPulse.ar(sr, 0, MouseY.kr(0.01, 0.99)), sr * (LFPulse.kr(ExpRand(0.1,12),0,0.4,0.2,0.2) + LFPulse.kr(ExpRand(0.1,12),0,0.7,0.2)), 0.1));
 }.play;})
 
@@ -161,4 +161,3 @@ w.front;
 	in = In.ar(0,2);
 	ReplaceOut.ar(0, in * SinOsc.ar(MouseX.kr(2,2000,1)));
 }.play})
-
