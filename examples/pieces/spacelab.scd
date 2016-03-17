@@ -63,7 +63,7 @@ s.boot;
 	SynthDef(\soloControl, { | gateBus freqBus gate=1 freq |
 		ReplaceOut.kr(gateBus, gate);
 		ReplaceOut.kr(freqBus, freq);
-		EnvGen.kr(Env.asr(0,1,0), gate, doneAction: 2); 
+		EnvGen.kr(Env.asr(0,1,0), gate, doneAction: 2);
 	}).add;
 
 	SynthDef(\string, { | out=0 gate=1 freq=1000 |
@@ -388,7 +388,7 @@ s.boot;
 	);
 
 	~string_intro = Pbind(
-		\instrument, \string, 
+		\instrument, \string,
 		\out, ~ch6,
 		\scale, [0, 2, 3, 5, 7, 8, 10],
 		\degree, Pseq([7]),
@@ -399,7 +399,7 @@ s.boot;
 	);
 
 	~string_chorus = Pbind(
-		\instrument, \string, 
+		\instrument, \string,
 		\out, ~ch6,
 		\scale, [0, 2, 3, 5, 7, 8, 10],
 		\degree, Pseq([7]),
@@ -410,7 +410,7 @@ s.boot;
 	);
 
 	~string_verse = Pbind(
-		\instrument, \string, 
+		\instrument, \string,
 		\out, ~ch6,
 		\scale, [0, 2, 3, 5, 7, 8, 10],
 		\degree, Pseq([7, 6, 5, 4], 2),
@@ -421,7 +421,7 @@ s.boot;
 	);
 
 	~string_break = Pbind(
-		\instrument, \string, 
+		\instrument, \string,
 		\out, ~ch6,
 		\scale, [0, 2, 3, 5, 7, 8, 10],
 		\degree, Pseq([7], 16),

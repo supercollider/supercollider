@@ -6,7 +6,7 @@ RM octaver
 inSignal is RingModulated by a sinusoidal tone with half frequency.
 The resulting spectrum is given by all the components of inSignal with
 half freqs.
-This means that the new spectrum is a one 8ve below version of the input signal's one, 
+This means that the new spectrum is a one 8ve below version of the input signal's one,
 with only odd partials.
 As a consequence, if inSignal is added again, even partials are
 recovered.
@@ -31,5 +31,3 @@ s = Server.local.waitForBoot({
 
 
 Synth.new(\RmOctaver) ;
-
-

@@ -27,6 +27,7 @@ A PyrSymbol is a unique string that resides in a global hash table.
 #define _PYRSYMBOL_H_
 
 #include "SC_Types.h"
+#include "PyrSlot.h"
 
 struct PyrSymbol {
 	char *name;
@@ -35,7 +36,7 @@ struct PyrSymbol {
 	uint8 flags;
 	uint8 length;
 	union {
-		long index; // index in row table or primitive table
+		intptr_t index; // index in row table or primitive table
 		struct PyrClass *classobj;	// pointer to class with this name.
 		char *source; // source code for sym_Filename; used only during compilation.
 	} u;
@@ -55,4 +56,3 @@ enum {
 
 
 #endif
-
