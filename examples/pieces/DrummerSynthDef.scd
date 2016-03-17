@@ -11,7 +11,7 @@ SynthDef(\drummer, { arg out=0, tempo=4;
 	snare = 	WhiteNoise.ar(Decay2.ar(PulseDivider.ar(tempo, 4, 2), 0.005, 0.5));
 	base = 	SinOsc.ar(Line.ar(120,60, 1), 0, Decay2.ar(PulseDivider.ar(tempo, 4, 0), 0.005, 0.5));
 	hihat = 	HPF.ar(WhiteNoise.ar(1), 10000) * Decay2.ar(tempo, 0.005, 0.5);
-	
+
 	Out.ar(out,(snare + base + hihat) * 0.4 ! 2)
 }).add;
 )

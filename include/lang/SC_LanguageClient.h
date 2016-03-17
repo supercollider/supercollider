@@ -150,7 +150,7 @@ private:
 	friend void initGUI();
 
 private:
-	struct HiddenLanguageClient * mHiddenClient;
+	class HiddenLanguageClient * mHiddenClient;
 };
 
 // =====================================================================

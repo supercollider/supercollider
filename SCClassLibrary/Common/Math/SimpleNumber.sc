@@ -383,6 +383,10 @@ SimpleNumber : Number {
 	varlag { ^this }
 	slew   { ^this }
 
+	poll { arg trig = 10, label, trigid = -1;
+		^Poll(trig, this, label, trigid)
+	}
+
 	// support for writing synth defs
 	writeInputSpec { arg file, synth;
 		var constIndex = synth.constants.at(this.asFloat);

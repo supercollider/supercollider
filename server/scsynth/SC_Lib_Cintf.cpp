@@ -45,11 +45,7 @@
 #endif
 
 // Plugin directory in resource directory
-#if defined(_WIN32) && defined(_DEBUG)
-# define SC_PLUGIN_DIR_NAME "plugins_debug"
-#else
 # define SC_PLUGIN_DIR_NAME "plugins"
-#endif
 
 // Extension for binary plugins
 #ifndef SC_PLUGIN_EXT
@@ -367,7 +363,7 @@ static bool PlugIn_Load(const char *filename)
 
 	LoadPlugInFunc loadFunc = (LoadPlugInFunc)ptr;
 	(*loadFunc)(&gInterfaceTable);
-	
+
 	open_handles.push_back(handle);
 	return true;
 

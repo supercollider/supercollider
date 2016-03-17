@@ -15,15 +15,31 @@ enable_testing()
 
 include (cmake_modules/FinalFile.cmake)
 
-if (NOT CMAKE_BUILD_TYPE)
-	message(STATUS "Build type defaulting to \"RelWithDebInfo\"")
-	set(CMAKE_BUILD_TYPE "RelWithDebInfo")
+if(CMAKE_GENERATOR MATCHES "Visual Studio" OR CMAKE_GENERATOR MATCHES "Xcode")
+	message(STATUS "Please specify the build configuration in the next step")
+else()
+	if (NOT CMAKE_BUILD_TYPE)
+		message(STATUS "Build type defaulting to \"RelWithDebInfo\"")
+		set(CMAKE_BUILD_TYPE "RelWithDebInfo")
+	endif()
 endif()
 
 if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 	message(WARNING "WARNING: IN-PLACE BUILDS ARE NOT RECOMMENDED - PLEASE USE A BUILD DIRECTORY")
 endif()
 
+# allows cmake-find modules and Windows installer to identify the right architecture
+if(WIN32)
+    if(CMAKE_CL_64 OR "$ENV{MSYSTEM}" MATCHES "64" OR CMAKE_C_COMPILER MATCHES "64")
+        SET(CMAKE_LIBRARY_ARCHITECTURE "x64" CACHE STRING "Architecture of target system (for 64bit)")
+    else()
+        SET(CMAKE_LIBRARY_ARCHITECTURE "x86" CACHE STRING "Architecture of target system (for 32bit)")
+    endif()
+
+    if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+        SET(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install" CACHE STRING "Cmake install path" FORCE)
+    endif()
+endif(WIN32)
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules
                       ${CMAKE_MODULE_PATH})
@@ -374,7 +390,7 @@ if (WIN32)
 	set( AdditionalInstallFiles
 		README.md
 		README_WINDOWS.md
-		ChangeLog
+		CHANGELOG.md
 		COPYING
 		AUTHORS
 	)
@@ -382,16 +398,15 @@ elseif(APPLE)
 	set( AdditionalInstallFiles
 		README.md
 		README_OS_X.md
-		ChangeLog
+		CHANGELOG.md
 		COPYING
 		AUTHORS
-		MOVED_STUFF.txt
 	)
 else()
 	set( AdditionalInstallFiles
 		README.md
 		README_LINUX.md
-		ChangeLog
+		CHANGELOG.md
 		COPYING
 		AUTHORS
 	)

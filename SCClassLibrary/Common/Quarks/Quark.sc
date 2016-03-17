@@ -6,7 +6,7 @@ Quark {
 	*new { |name, refspec, url, localPath|
 		var args = Quark.parseQuarkName(name, refspec, url, localPath);
 		if(args.isNil, {
-			Error("% not found".format(name)).throw;
+			Error("Quark '%' not found".format(name)).throw;
 		});
 		^super.new.init(*args)
 	}

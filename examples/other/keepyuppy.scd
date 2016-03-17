@@ -23,13 +23,13 @@
 * audio-only games.
 *
 * RULES:
-*  You are kicking a football into the air. You can hear it fly 
-*  up into the air and down again, and when it comes down you 
+*  You are kicking a football into the air. You can hear it fly
+*  up into the air and down again, and when it comes down you
 *  must press SPACE to kick it up again.
 *
 *  The ball may move slightly towards the left or right so you
-*  may need to move left or right using the cursor keys to 
-*  keep within range of the ball (wear headphones for best 
+*  may need to move left or right using the cursor keys to
+*  keep within range of the ball (wear headphones for best
 *  control!)
 *
 *  The aim is to kick it up as many times as you can.
@@ -52,7 +52,7 @@ SynthDef(\gameover, { Out.ar(0, SinOsc.ar(
 				EnvGen.kr(Env([0.3, 0.2, 0.2, 0], [0.1, 0.8, 0.1]), 1, doneAction:2)
 				).dup(2))}).send(s);
 
-SynthDef(\whackit, {Out.ar(0, SinOsc.ar(74, 0.5pi, 
+SynthDef(\whackit, {Out.ar(0, SinOsc.ar(74, 0.5pi,
 		EnvGen.kr(Env.perc(0, 0.05), doneAction:2)).dup(2))}).send(s);
 
 );
@@ -71,24 +71,24 @@ xvel   = 0;
 yvel   = 10;
 framedur = 0.1; // The amount of time between two "frames" of calculation
 whackdisabled = false;
-whackspacing = 0.3; // The amount of time you must wait between whacks 
+whackspacing = 0.3; // The amount of time you must wait between whacks
 
 whack = {
   if(ypos < 20,
   {
-    if(xpos.abs < 1,
-    {
-      if((yvel < 0) && (whackdisabled==false),
-      {
-        yvel = rrand(6.0, 14.0);
-        ypos = max(0.1, ypos);
-        xvel = 0.1.bilinrand;
-        Synth(\whackit);
-        whackdisabled = true;
-        Task({whackspacing.wait; whackdisabled = false}).play;
-        whacks = whacks + 1;
-      });
-    });
+	if(xpos.abs < 1,
+	{
+	  if((yvel < 0) && (whackdisabled==false),
+	  {
+		yvel = rrand(6.0, 14.0);
+		ypos = max(0.1, ypos);
+		xvel = 0.1.bilinrand;
+		Synth(\whackit);
+		whackdisabled = true;
+		Task({whackspacing.wait; whackdisabled = false}).play;
+		whacks = whacks + 1;
+	  });
+	});
   });
 }; // End of whack function
 
@@ -99,56 +99,56 @@ dogravity = {
 };
 
 Task({
-  var kuball;
-  
-  kuball = Synth(\kuball);
-  
-  // Set up keyboard handlers
-  {
-  	doc = Window("Use LEFT and RIGHT arrows and SPACEBAR");
-  	doc.front;
-  }.defer;
-  
-  0.1.wait;
-  doc.view.keyDownAction_({arg ...args;
-    switch(args[3],
-      32   , {whack.value}, // space
-      63234, {xpos = xpos + 0.1}, // left arrow
-      63235, {xpos = xpos - 0.1} // right arrow
-    );
-  });
+	var kuball;
 
-  // This is the loop which runs the game
-  while({ypos >= 0},
-  {
-    dogravity.value;
-    kuball.set(\amp, 0.5 * (1.0/max(1.0, ypos)), 
-               \pan, max(-1.0, min(1.0, xpos)), 
-               \freq, 200 + max(0, ypos * 10));
-    framedur.wait;
-  });
-  
-  // Destroy keyboard handlers
-  doc.view.keyDownAction_(nil);
-  kuball.free;
-  
-  // Run the end-of-game feedback etc
-  Synth(\gameover);
-  1.5.wait;
-  AppClock.sched(0.0, {doc.close;});
-  switch(whacks,
-     0, {("You didn't hit the ball - sorry").speak;}, 
-     1, {("You hit the ball once").speak;},
-     2, {("You hit the ball twice").speak;},
-     3, {("You hit the ball 3 times").speak;},
-     4, {("You hit the ball 4 times - well done").speak;},
-     5, {("You hit the ball 5 times - well done").speak;},
-      {("You hit the ball "+whacks+" times - well done indeed!").speak;}
-  );
+	kuball = Synth(\kuball);
+
+	// Set up keyboard handlers
+	{
+		doc = Window("Use LEFT and RIGHT arrows and SPACEBAR");
+		doc.front;
+	}.defer;
+
+	0.1.wait;
+	doc.view.keyDownAction_({arg ...args;
+	switch(args[3],
+	  32   , {whack.value}, // space
+	  63234, {xpos = xpos + 0.1}, // left arrow
+	  63235, {xpos = xpos - 0.1} // right arrow
+	);
+	});
+
+	// This is the loop which runs the game
+	while({ypos >= 0},
+	{
+	dogravity.value;
+	kuball.set(\amp, 0.5 * (1.0/max(1.0, ypos)),
+			   \pan, max(-1.0, min(1.0, xpos)),
+			   \freq, 200 + max(0, ypos * 10));
+	framedur.wait;
+	});
+
+	// Destroy keyboard handlers
+	doc.view.keyDownAction_(nil);
+	kuball.free;
+
+	// Run the end-of-game feedback etc
+	Synth(\gameover);
+	1.5.wait;
+	AppClock.sched(0.0, {doc.close;});
+	switch(whacks,
+	 0, {("You didn't hit the ball - sorry").speak;},
+	 1, {("You hit the ball once").speak;},
+	 2, {("You hit the ball twice").speak;},
+	 3, {("You hit the ball 3 times").speak;},
+	 4, {("You hit the ball 4 times - well done").speak;},
+	 5, {("You hit the ball 5 times - well done").speak;},
+	  {("You hit the ball "+whacks+" times - well done indeed!").speak;}
+	);
 
 }).play;
- 
- 
+
+
 }
 )
 ~game.value; // Press Enter to play!

@@ -629,6 +629,6 @@ QuarkRowView {
 		// 1 is the install button. its not possible to sort by this column
 		treeItem.setString(2, quark.name ? "");
 		treeItem.setString(3, (quark.version ? "").asString);
-		treeItem.setString(4, (quark.summary ? "").replace(Char.nl," ").replace(Char.tab, ""));
+		treeItem.setString(4, (quark.summary ? "").replace(Char.nl.asString," ").replace(Char.tab.asString, ""));
 	}
 }

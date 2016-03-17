@@ -37,40 +37,40 @@ var volumeSpec = ControlSpec(0.0, 1.0, \lin, 0.1, 0.1);
 
 // a SynthDef
 SynthDef(\asaSine1, { |out=0, freq=440, dur=1.0, levels=#[0, 1, 1, 0, 0], durVar=#[1, 1, 1, 1], mul=0.5|
-    var env, snd;
+	var env, snd;
 
-    env = Env.new(levels, dur * durVar, 'welch');
-    snd = SinOsc.ar(freq, mul: mul);
+	env = Env.new(levels, dur * durVar, 'welch');
+	snd = SinOsc.ar(freq, mul: mul);
 
-    Out.ar(out, snd * EnvGen.kr(env));
+	Out.ar(out, snd * EnvGen.kr(env));
 }).add;
 
 
 // a Routine
 r = Routine {
-    inf.do { |i|
-        var k;
-        var arr1 = [0, 0, 1, 0, 2],
-        arr2 = [1, 0, 3, 1, 2];
+	inf.do { |i|
+		var k;
+		var arr1 = [0, 0, 1, 0, 2],
+		arr2 = [1, 0, 3, 1, 2];
 
-        // 1st Synth
-        synth1 = Synth.new(\asaSine1, [\levels, levels1, \durVar, durVar1]);
-        k = arr1[i.mod(5)] * 100 + base;
-        synth1.set(\freq, k);
-        synth1.set(\dur, rateSlide.value);
-        synth1.set(\mul, volumeSlide.value * volume1);
+		// 1st Synth
+		synth1 = Synth.new(\asaSine1, [\levels, levels1, \durVar, durVar1]);
+		k = arr1[i.mod(5)] * 100 + base;
+		synth1.set(\freq, k);
+		synth1.set(\dur, rateSlide.value);
+		synth1.set(\mul, volumeSlide.value * volume1);
 
-        // 2nd Synth
-        synth2 = Synth(\asaSine1, [\levels, levels2, \durVar, durVar2]);
-        k = arr2[i.mod(5)] * 100 + base + deltaSlide.value;
-        synth2.set(\freq, k);
-        synth2.set(\dur, rateSlide.value);
-        synth2.set(\mul, volumeSlide.value * volume2);
+		// 2nd Synth
+		synth2 = Synth(\asaSine1, [\levels, levels2, \durVar, durVar2]);
+		k = arr2[i.mod(5)] * 100 + base + deltaSlide.value;
+		synth2.set(\freq, k);
+		synth2.set(\dur, rateSlide.value);
+		synth2.set(\mul, volumeSlide.value * volume2);
 
-        // wait and free the Synths
-        rateSlide.value.wait;
-        [synth1, synth2].do(_.free);
-    }
+		// wait and free the Synths
+		rateSlide.value.wait;
+		[synth1, synth2].do(_.free);
+	}
 };
 
 
@@ -86,28 +86,28 @@ w.view.decorator.nextLine.shift(50, 20);
 
 pauseButton1 = Button(w, 110@30);
 pauseButton1.states = [
-    ["1 now is active", Color.black, Color.red],
-    ["1 now is muted", Color.white, Color.black],
+	["1 now is active", Color.black, Color.red],
+	["1 now is muted", Color.white, Color.black],
 ];
 pauseButton1.action = { |state|
-    switch(state.value,
-        1, { volume1 = 0; "muted 1".postln },
-        0, { volume1 = 1; "activated 1".postln }
-    )
+	switch(state.value,
+		1, { volume1 = 0; "muted 1".postln },
+		0, { volume1 = 1; "activated 1".postln }
+	)
 };
 
 w.view.decorator.shift(10, 0);
 
 pauseButton2 = Button(w, 110@30);
 pauseButton2.states = [
-    ["2 now is active", Color.black, Color.red],
-    ["2 now is muted", Color.white, Color.black],
+	["2 now is active", Color.black, Color.red],
+	["2 now is muted", Color.white, Color.black],
 ];
 pauseButton2.action = { |state|
-    switch(state.value,
-        1, { volume2 = 0; "muted 2".postln },
-        0, { volume2 = 1; "activated 2".postln }
-    )
+	switch(state.value,
+		1, { volume2 = 0; "muted 2".postln },
+		0, { volume2 = 1; "activated 2".postln }
+	)
 };
 
 
@@ -140,39 +140,39 @@ var volumeSpec = ControlSpec(0.0, 1.0, \lin, 0.1, 0.1);
 
 // a SynthDef
 SynthDef(\asaSine2, { |out=0, freq=1000, dur=1.0, durVar=#[1,1,1,1,1], mul=0.35, shift=0|
-    var env, snd;
+	var env, snd;
 
-    env = Env.new([0, 0, 1, 1, 0, 0], dur * (durVar + (shift * [1, 0, 0, 0, 1])), 'welch');
-    snd = SinOsc.ar(freq, 0, mul);
+	env = Env.new([0, 0, 1, 1, 0, 0], dur * (durVar + (shift * [1, 0, 0, 0, 1])), 'welch');
+	snd = SinOsc.ar(freq, 0, mul);
 
-    Out.ar(out, snd * EnvGen.kr(env));
+	Out.ar(out, snd * EnvGen.kr(env));
 }).add;
 
 
 // a Routine
 r = Routine {
-    inf.do { |i|
+	inf.do { |i|
 
-        // 1st Synth
-        synth1 = Synth(\asaSine2, [\durVar, durVar1]);
-        synth1.set(\freq, freqASlide.value);
-        synth1.set(\dur, rateSlide.value);
-        synth1.set(\mul, volumeSlide.value * volume1);
-        // 2nd Synth
-        synth2 = Synth(\asaSine2, [\freq, 500, \durVar, durVar2]);
-        synth2.set(\dur, rateSlide.value);
-        synth2.set(\mul, volumeSlide.value * volume2);
-        // 3rd Synth
-        synth3 = Synth(\asaSine2, [\durVar, durVar3]);
-        synth3.set(\freq, freqCSlide.value);
-        synth3.set(\dur, rateSlide.value);
-        synth3.set(\mul, volumeSlide.value * volume3);
-        synth3.set(\shift, shiftSlide.value);
+		// 1st Synth
+		synth1 = Synth(\asaSine2, [\durVar, durVar1]);
+		synth1.set(\freq, freqASlide.value);
+		synth1.set(\dur, rateSlide.value);
+		synth1.set(\mul, volumeSlide.value * volume1);
+		// 2nd Synth
+		synth2 = Synth(\asaSine2, [\freq, 500, \durVar, durVar2]);
+		synth2.set(\dur, rateSlide.value);
+		synth2.set(\mul, volumeSlide.value * volume2);
+		// 3rd Synth
+		synth3 = Synth(\asaSine2, [\durVar, durVar3]);
+		synth3.set(\freq, freqCSlide.value);
+		synth3.set(\dur, rateSlide.value);
+		synth3.set(\mul, volumeSlide.value * volume3);
+		synth3.set(\shift, shiftSlide.value);
 
-        // wait and free the Synths
-        rateSlide.value.wait;
-        [synth1, synth2, synth3].do(_.free);
-    }
+		// wait and free the Synths
+		rateSlide.value.wait;
+		[synth1, synth2, synth3].do(_.free);
+	}
 };
 
 
@@ -200,28 +200,28 @@ w.view.decorator.nextLine.shift(50, 20);
 
 pauseButton1 = Button(w, 110@30);
 pauseButton1.states = [
-    ["A now is active", Color.black, Color.red],
-    ["A now is muted", Color.white, Color.black],
+	["A now is active", Color.black, Color.red],
+	["A now is muted", Color.white, Color.black],
 ];
 pauseButton1.action = { |state|
-    switch(state.value,
-        1, { volume1 = 0; "muted A".postln },
-        0, { volume1 = 1; "activated A".postln }
-    )
+	switch(state.value,
+		1, { volume1 = 0; "muted A".postln },
+		0, { volume1 = 1; "activated A".postln }
+	)
 };
 
 w.view.decorator.shift(10, 0);
 
 pauseButton2 = Button(w, 110@30);
 pauseButton2.states = [
-    ["C now is active", Color.black, Color.red],
-    ["C now is muted", Color.white, Color.black],
+	["C now is active", Color.black, Color.red],
+	["C now is muted", Color.white, Color.black],
 ];
 pauseButton2.action = { |state|
-    switch(state.value,
-        1, { volume3 = 0; "muted C".postln },
-        0, { volume3 = 1; "activated C".postln }
-    )
+	switch(state.value,
+		1, { volume3 = 0; "muted C".postln },
+		0, { volume3 = 1; "activated C".postln }
+	)
 };
 
 w.onClose_({ r.stop; [synth1, synth2, synth3].do(_.free); });
