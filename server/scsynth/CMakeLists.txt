@@ -1,21 +1,5 @@
 find_package(Sndfile)
 
-if(WIN32 AND NOT MSYS)
-	if(NOT SC_BUILD_PA)
-		add_library(portaudio ${PA_LIBRARY_TYPE} IMPORTED GLOBAL)
-		if(MSVC)
-			set_target_properties(portaudio PROPERTIES
-				IMPORTED_LOCATION_DEBUG   ${PORTAUDIO_LIBRARY_DEBUG}
-				IMPORTED_LOCATION         ${PORTAUDIO_LIBRARY_RELEASE}
-			)
-		else(MSVC)
-			set_target_properties(portaudio PROPERTIES
-				IMPORTED_LOCATION         ${PORTAUDIO_LIBRARIES}
-			)
-		endif(MSVC)
-	endif(NOT SC_BUILD_PA)
-endif(WIN32 AND NOT MSYS)
-
 # Here we work out which audio API to use, from system type and/or user option.
 if(AUDIOAPI STREQUAL "default")
 	if(APPLE)
@@ -32,15 +16,15 @@ if(NOT AUDIOAPI MATCHES "^(jack|coreaudio|portaudio)$")
 endif()
 
 if(AUDIOAPI STREQUAL jack)
-	find_package(Jack)
-	if(NOT JACK_FOUND)
-		message(FATAL_ERROR "Jack selected as audio API, but development files not found")
-	endif()
-elseif(AUDIOAPI STREQUAL portaudio AND NOT WIN32)
-		find_package(Portaudio)
-		if(NOT PORTAUDIO_FOUND)
-			message(FATAL_ERROR "Portaudio selected as audio API, but development files not found")
-		endif()
+  find_package(Jack)
+  if(NOT JACK_FOUND)
+    message(FATAL_ERROR "Jack selected as audio API, but development files not found")
+  endif()
+elseif(AUDIOAPI STREQUAL portaudio AND NOT MINGW AND NOT MSVC) # MSYS like Apple
+    find_package(Portaudio)
+    if(NOT PORTAUDIO_FOUND)
+      message(FATAL_ERROR "Portaudio selected as audio API, but development files not found")
+    endif()
 endif()
 message(STATUS "Audio API: ${AUDIOAPI}")
 
@@ -258,9 +242,45 @@ if(APPLE)
 		COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../Resources/
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:scsynth> $<TARGET_FILE_DIR:SuperCollider>/../Resources)
 elseif(WIN32)
+    if(NOT MSVC)
+      set_target_properties(scsynth libscsynth PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<CONFIG>")
+    endif(NOT MSVC)
+
+    if(FFTW3F_FOUND)
+      file(GLOB FFTW3F_DLL "${FFTW3F_LIBRARY_DIR}/*fftw3f*.dll")
+      add_custom_command(TARGET scsynth
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${FFTW3F_DLL}" $<TARGET_FILE_DIR:scsynth>
+      )
+    endif(FFTW3F_FOUND)
+
+    if(SNDFILE_FOUND)
+      file(GLOB SNDFILE_DLL "${SNDFILE_LIBRARY_DIR}/*sndfile*.dll")
+      add_custom_command(TARGET scsynth
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SNDFILE_DLL}" $<TARGET_FILE_DIR:scsynth>
+      )
+    endif(SNDFILE_FOUND)
+
+    add_custom_command(TARGET scsynth
+      POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_FILE_DIR:scsynth> $<TARGET_FILE_DIR:sclang>
+      COMMENT "Adding scynth to target sclang"
+    )
+
+    if(SC_IDE)
+      add_custom_command(TARGET scsynth
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_FILE_DIR:scsynth> $<TARGET_FILE_DIR:SuperCollider>
+        COMMENT "Adding scynth to target SuperCollider"
+      )
+    endif(SC_IDE)
+
     install(TARGETS ${INSTALL_TARGETS}
-        DESTINATION "SuperCollider"
-        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+        DESTINATION "${SC_WIN_BUNDLE_NAME}"
+    )
+
 else()
 	install(TARGETS ${INSTALL_TARGETS}
 			RUNTIME DESTINATION "bin"
