@@ -36,6 +36,7 @@ QcSlider::QcSlider() :
 {
   setFocusPolicy( Qt::StrongFocus );
   setOrientation( Qt::Vertical );
+  setAttribute(Qt::WA_AcceptTouchEvents);
 }
 
 double QcSlider::pixelStep()
