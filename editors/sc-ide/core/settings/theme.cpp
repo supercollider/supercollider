@@ -46,7 +46,8 @@ int legacyTheme(Manager * settings)
 
     QList<QString> keys;
     keys << "evaluatedCode" << "lineNumbers" << "matchingBrackets"
-         << "searchResult" << "selection" << "text";
+         << "searchResult" << "selection" << "text" << "currentLine"
+         << "matchingBrackets" << "postwindowtext";
 
     foreach(QString key, keys) {
         if (settings->contains(group + key)) {
@@ -60,7 +61,9 @@ int legacyTheme(Manager * settings)
     keys.clear();
 
     keys << "keyword" << "built-in" << "env-var" << "class" << "number"
-         << "symbol" << "string" << "char" << "comment" << "primitive";
+         << "symbol" << "string" << "char" << "comment" << "primitive"
+         << "postwindowemphasis" << "postwindowerror" << "postwindowsuccess"
+         << "postwindowwarning" << "whitespace";
 
     foreach(QString key, keys) {
         if (settings->contains(group + key)) {
@@ -84,7 +87,9 @@ static void addToTheme(QMap<QString, QTextCharFormat *> & map, const char *key,
 
     if (bg != QColor(Qt::transparent))
         format->setBackground(bg);
-    format->setForeground(fg);
+
+    if (fg != QColor(Qt::transparent))
+        format->setForeground(fg);
 
     if (bold)
         format->setFontWeight(QFont::Bold);
@@ -244,6 +249,8 @@ void Theme::setFormat(const QString & key, const QTextCharFormat & newFormat)
     bool fontWeight = (newFormat.fontWeight() == QFont::Bold) ? true : false;
     QColor bg = (newFormat.background() == Qt::NoBrush) ?
                     QColor(Qt::transparent): newFormat.background().color();
+    QColor fg = (newFormat.foreground() == Qt::NoBrush) ?
+                    QColor(Qt::transparent): newFormat.foreground().color();
 
     if (i == mFormats.end()) {
         qDebug() <<  __FUNCTION__ << "Theme::setFormat" << "Failed to find key " << key;
@@ -251,8 +258,8 @@ void Theme::setFormat(const QString & key, const QTextCharFormat & newFormat)
     }
 
     mFormats.remove(key);
-    addToTheme(mFormats, key.toStdString().c_str(), newFormat.foreground().color(),
-               bg, fontWeight, newFormat.fontItalic());
+    addToTheme(mFormats, key.toStdString().c_str(), fg, bg, fontWeight,
+                                                    newFormat.fontItalic());
 }
 
 const QTextCharFormat & Theme::format(const QString & key)

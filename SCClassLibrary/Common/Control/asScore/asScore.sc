@@ -18,7 +18,7 @@
 		score = this.asScore(maxTime);
 		score.recordNRT(
 			oscFilePath, path, inputFilePath, sampleRate, headerFormat, sampleFormat,
-			options, "; rm" + oscFilePath, action: action;
+			options, "", action: {File.delete(oscFilePath)}.addFunc(action);
 		);
 	}
 

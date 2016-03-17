@@ -36,7 +36,7 @@ before_script:
  - iflin export SCLANG=$TRAVIS_BUILD_DIR/BUILD/Install/bin/sclang
 
 script:
- - make install
+ - sudo make install
  - $TRAVIS_BUILD_DIR/testsuite/sclang/launch_test.py $SCLANG
 
  - export COMMIT_NAME=$TRAVIS_COMMIT

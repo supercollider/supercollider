@@ -48,6 +48,7 @@ struct MouseInputUGen : public Unit
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+std::atomic_bool inputThreadRunning = { false };
 
 void gstate_update_func()
 {
@@ -56,7 +57,7 @@ void gstate_update_func()
 	float rscreenWidth = 1. / bounds.size.width;
 	float rscreenHeight = 1. / bounds.size.height;
 
-	for (;;) {
+	while ( inputThreadRunning.load( std::memory_order_relaxed ) ) {
 
 		NSPoint p;
 		p = [NSEvent mouseLocation];
@@ -64,7 +65,7 @@ void gstate_update_func()
 		gMouseUGenGlobals.mouseY = (float)p.y * rscreenHeight;
 		gMouseUGenGlobals.mouseButton = (bool)[NSEvent pressedMouseButtons];
 
-		usleep(17000);
+		std::this_thread::sleep_for( std::chrono::milliseconds( 17 ) );
 	}
 
 	return;
@@ -348,9 +349,8 @@ PluginLoad(UIUGens)
 {
 	ft = inTable;
 
-	thread thread( gstate_update_func );
-	uiListenThread = std::move(thread);
-	uiListenThread.detach();
+	inputThreadRunning = true;
+	uiListenThread = std::thread ( gstate_update_func );
 
 	DefineSimpleUnit(KeyState);
 
@@ -362,4 +362,10 @@ PluginLoad(UIUGens)
 	gMyPlugin.a = 1.2f;
 	gMyPlugin.b = 3.4f;
 	DefinePlugInCmd("pluginCmdDemo", cmdDemoFunc, (void*)&gMyPlugin);
+}
+
+C_LINKAGE SC_API_EXPORT void unload(InterfaceTable *inTable)
+{
+	inputThreadRunning = false;
+	uiListenThread.join();
 }

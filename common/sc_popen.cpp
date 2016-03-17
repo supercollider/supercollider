@@ -19,6 +19,9 @@
 #include <signal.h>
 #include <unistd.h>
 #include <paths.h>
+#include <vector>
+#include <array>
+#include <string>
 
 // allows for linking into a dylib on darwin
 #if defined(__APPLE__) && !defined(SC_IPHONE)
@@ -31,10 +34,29 @@
 FILE *
 sc_popen(const char *command, pid_t *pidp, const char *type)
 {
+	std::array<char*, 4> argv;
+	std::string str0 = "/bin/sh";
+	std::vector<char> v0( str0.begin(), str0.end() );
+	v0.push_back('\0');
+	argv[0] = v0.data();
+	std::string str1 = "-c";
+	std::vector<char> v1( str1.begin(), str1.end() );
+	v1.push_back('\0');
+	argv[1] = v1.data();
+	std::string str2 = command;
+	std::vector<char> v2( str2.begin(), str2.end() );
+	v2.push_back('\0');
+	argv[2] = v2.data();
+	argv[3] = nullptr;	
+	
+	return sc_popen_argv(v0.data(), argv.data(), pidp, type);
+}
+
+FILE *
+sc_popen_argv(const char *filename, char *const argv[], pid_t *pidp, const char *type)
+{
 	FILE *iop;
 	int pdes[2], pid, twoway;
-	char *argv[4];
-
 	/*
 	 * Lite2 introduced two-way popen() pipes using _socketpair().
 	 * FreeBSD's pipe() is bidirectional, so we use that.
@@ -45,21 +67,16 @@ sc_popen(const char *command, pid_t *pidp, const char *type)
 	} else  {
 		twoway = 0;
 		if ((*type != 'r' && *type != 'w') || type[1])
-			return (NULL);
+			return (nullptr);
 	}
 	if (pipe(pdes) < 0)
-		return (NULL);
-
-	argv[0] = (char *)"sh";
-	argv[1] = (char *)"-c";
-	argv[2] = (char *)command;
-	argv[3] = NULL;
+		return (nullptr);
 
 	switch (pid = fork()) {
 	case -1:			/* Error. */
 		(void)close(pdes[0]);
 		(void)close(pdes[1]);
-		return (NULL);
+		return (nullptr);
 		/* NOTREACHED */
 	case 0:				/* Child. */
 		if (*type == 'r') {
@@ -87,7 +104,7 @@ sc_popen(const char *command, pid_t *pidp, const char *type)
 			(void)close(pdes[1]);
 		}
 
-		execve("/bin/sh", argv, environ);
+		execve(filename, argv, environ);
 		exit(127);
 		/* NOTREACHED */
 	}
@@ -326,6 +343,14 @@ sc_pclose(FILE *f, pid_t pid)
 	free(cur);
 
 	return exit_code;
+}
+
+FILE *
+sc_popen_argv(const char *filename, char *const argv[], pid_t *pidp, const char *type)
+{
+    printf("sc_popen_argv: not implemented\n");
+    return (nullptr);
+
 }
 
 #endif

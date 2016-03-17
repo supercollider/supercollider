@@ -712,18 +712,18 @@ FLATTEN void LinXFade2_next_k_nova(LinXFade2 *unit, int inNumSamples)
 	float amp = unit->m_amp;
 
 	if (pos != unit->m_pos) {
-		float oldAmpLeft  = amp;
-		float oldAmpRight = 1.f - amp;
+		float oldAmpRight = amp;
+		float oldAmpLeft  = 1.f - amp;
 
 		pos = sc_clip(pos, -1.f, 1.f);
 
 		float nextAmpRight = pos * 0.5f + 0.5f;
-		float nextAmpLeft  = 1.f - nextAmpRight;
+		float nextAmpLeft = 1.f - nextAmpRight;
 
 		float leftSlope =  CALCSLOPE(nextAmpLeft, oldAmpLeft);
 		float rightSlope = CALCSLOPE(nextAmpRight, oldAmpRight);
 
-		unit->m_amp = nextAmpLeft;
+		unit->m_amp = nextAmpRight;
 		unit->m_pos = pos;
 
 		nova::mix_vec_simd(OUT(0), IN(0), nova::slope_argument(oldAmpLeft, leftSlope),
