@@ -7,7 +7,7 @@ SoundFileView : View {
 
 	*qtClass { ^'QcWaveform' }
 
-	load { arg filename, startframe, frames, block, doneAction;
+	load { arg filename, startFrame, frames, block, doneAction;
 		if( filename.isString && filename != "" ) {
 			if( curDoneAction.notNil )
 			{ this.disconnectFunction( 'loadingDone()', curDoneAction ) };
@@ -17,8 +17,8 @@ SoundFileView : View {
 
 			curDoneAction = doneAction;
 
-			if( startframe.notNil && frames.notNil ) {
-				this.invokeMethod( \load, [filename, startframe.asInteger, frames.asInteger] );
+			if( startFrame.notNil && frames.notNil ) {
+				this.invokeMethod( \load, [filename, startFrame.asInteger, frames.asInteger] );
 			}{
 				this.invokeMethod( \load, filename );
 			}
@@ -33,10 +33,10 @@ SoundFileView : View {
 		this.setData(data);
 	}
 
-	setData { arg data, block, startframe=0, channels=1, samplerate=44100;
+	setData { arg data, block, startFrame=0, channels=1, samplerate=44100;
 		if( data.isKindOf(DoubleArray).not and: {data.isKindOf(FloatArray).not} )
 		{ data = data.as(DoubleArray) };
-		this.invokeMethod( \load, [data, startframe, channels, samplerate] );
+		this.invokeMethod( \load, [data, startFrame, channels, samplerate] );
 	}
 
 	set { arg offset=0, data;
@@ -45,22 +45,22 @@ SoundFileView : View {
 		this.invokeMethod( \write, [data, offset.asInteger] );
 	}
 
-	readFile { arg aSoundFile, startframe, frames, block, closeFile, doneAction;
-		this.load( aSoundFile.path, startframe, frames, block, doneAction );
+	readFile { arg aSoundFile, startFrame, frames, block, closeFile, doneAction;
+		this.load( aSoundFile.path, startFrame, frames, block, doneAction );
 	}
 
-	read { arg startframe, frames, block, closeFile, doneAction;
+	read { arg startFrame, frames, block, closeFile, doneAction;
 		if( soundfile.notNil ) {
-			this.readFile( soundfile, startframe, frames, block, nil, doneAction );
+			this.readFile( soundfile, startFrame, frames, block, nil, doneAction );
 		};
 	}
 
-	readFileWithTask { arg aSoundFile, startframe, frames, block, doneAction, showProgress;
-		this.readFile( aSoundFile, startframe, frames, block, nil, doneAction );
+	readFileWithTask { arg soundFile, startFrame, frames, block, doneAction, showProgress;
+		this.readFile( soundFile, startFrame, frames, block, nil, doneAction );
 	}
 
-	readWithTask { arg startframe, frames, block, doneAction, showProgress;
-		this.read( startframe, frames, block, nil, doneAction );
+	readWithTask { arg startFrame, frames, block, doneAction, showProgress;
+		this.read( startFrame, frames, block, nil, doneAction );
 	}
 
 	drawsWaveForm { ^this.getProperty( \drawsWaveform ); }
