@@ -22,6 +22,7 @@
 #include <boost/intrusive/set.hpp>
 #include <boost/intrusive/unordered_set.hpp>
 #include <boost/checked_delete.hpp>
+#include <boost/dll/shared_library.hpp>
 
 #include "sc_synthdef.hpp"
 #include "sc_synth.hpp"
@@ -193,6 +194,22 @@ public:
     bool run_cmd_plugin(World * world , const char * name, struct sc_msg_iter *args, void *replyAddr);
 };
 
+struct sc_server_plugin
+{
+public:
+    explicit sc_server_plugin( boost::filesystem::path const & path, struct InterfaceTable * );
+
+    // move semantics
+    sc_server_plugin( sc_server_plugin && )             = default;
+    sc_server_plugin & operator=( sc_server_plugin && ) = default;
+
+    ~sc_server_plugin();
+
+private:
+    boost::dll::shared_library plugin;
+    bool initialised = false;
+};
+
 /** factory class for supercollider ugens
  *
  *  \todo do we need to take care of thread safety? */
@@ -202,11 +219,6 @@ class sc_ugen_factory:
 {
 public:
     sc_ugen_factory() = default;
-
-    ~sc_ugen_factory(void)
-    {
-        close_handles();
-    }
 
     /* @{ */
     /** ugen count handling */
@@ -233,7 +245,7 @@ private:
     void close_handles(void);
 
     uint32_t ugen_count_ = 0;
-    std::vector<void*> open_handles;
+    std::vector<sc_server_plugin> plugins;
 };
 
 extern std::unique_ptr<sc_ugen_factory> sc_factory;

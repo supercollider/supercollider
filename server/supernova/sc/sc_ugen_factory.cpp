@@ -1,5 +1,5 @@
 //  prototype of a supercollider-synthdef-based synth prototype
-//  Copyright (C) 2009-2013 Tim Blechmann
+//  Copyright (C) 2009-2016 Tim Blechmann
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -16,16 +16,11 @@
 //  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 //  Boston, MA 02111-1307, USA.
 
-/* \todo for now we use dlopen, later we want to become cross-platform
- */
 
-#ifdef DLOPEN
-#include <dlfcn.h>
-#elif defined(_WIN32)
-#include "Windows.h"
-#endif
-
+#include <boost/dll.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/predef.h>
+
 
 #include "sc_ugen_factory.hpp"
 
@@ -218,6 +213,55 @@ bool sc_plugin_container::run_cmd_plugin(World * world, const char * name, struc
     return true;
 }
 
+struct wrong_server_type: public std::exception
+{};
+
+sc_server_plugin::sc_server_plugin(const boost::filesystem::path &path, struct InterfaceTable * table):
+    plugin( path, boost::dll::load_mode::rtld_now | boost::dll::load_mode::rtld_local )
+{
+    namespace dll = boost::dll;
+
+    if( !plugin.is_loaded() )
+        throw std::runtime_error( std::string("cannot load ") + path.string() );
+
+    try {
+        auto api_version = plugin.get<int()>( "api_version" );
+        const int plugin_api_version = sc_api_version; // default
+        if( api_version() != plugin_api_version )
+            throw std::runtime_error( std::string("ABI VersionMismatch: ") + path.string() );
+    } catch( boost::system::system_error const & ) {
+        throw std::runtime_error( std::string("ABI VersionMismatch: ") + path.string() );
+    }
+
+    try {
+        auto supernova_check = plugin.get<int()>( "server_type");
+        if( supernova_check() != sc_server_supernova )
+            throw wrong_server_type();
+    } catch( boost::system::system_error const & ) {
+        throw wrong_server_type();
+    }
+
+    try {
+        auto loadFunction = plugin.get<void(struct InterfaceTable *)>( "load" );
+        loadFunction( table );
+    } catch( boost::system::system_error const & ) {
+        throw std::runtime_error( std::string("Problem when loading plugin: \"load\" function undefined: ") + path.string() );
+    }
+
+    initialised = true;
+}
+
+sc_server_plugin::~sc_server_plugin()
+{
+    if( initialised ) {
+        try {
+            auto unloadFunction = plugin.get<void(void)>( "unload" );
+            unloadFunction();
+        } catch( boost::system::system_error const & ) {
+        }
+    }
+}
+
 
 void sc_ugen_factory::load_plugin_folder (boost::filesystem::path const & path)
 {
@@ -236,135 +280,28 @@ void sc_ugen_factory::load_plugin_folder (boost::filesystem::path const & path)
     }
 }
 
-#ifdef DLOPEN
 void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
 {
-    using namespace std;
-
-    void * handle = dlopen(path.string().c_str(), RTLD_NOW | RTLD_LOCAL);
-    if (handle == nullptr)
+#ifdef BOOST_OS_LINUX
+    if( path.extension() != ".so" )
         return;
-
-    typedef int (*info_function)();
-
-    info_function api_version = reinterpret_cast<info_function>(dlsym(handle, "api_version"));
-    int plugin_api_version = 1; // default
-    if (api_version)
-        plugin_api_version = (*api_version)();
-
-    if (plugin_api_version != sc_api_version) {
-        cout << "API Version Mismatch: " << path << endl;
-        dlclose(handle);
+#elif BOOST_OS_WINDOWS
+    if( path.extension() != ".dll" )
         return;
-    }
-
-    info_function supernova_check = reinterpret_cast<info_function>(dlsym(handle, "server_type"));
-    if (!supernova_check || (*supernova_check)() == sc_server_scsynth) {
-        // silently ignore
-        dlclose(handle);
+#elif BOOST_OS_MACOS
+    if( path.extension() != ".scx" )
         return;
-    }
-
-    void * load_symbol = dlsym(handle, "load");
-    if (!load_symbol) {
-        cout << "Problem when loading plugin: \"load\" function undefined" << path << endl;
-        dlclose(handle);
-        return;
-    }
-
-    open_handles.push_back(handle);
-    LoadPlugInFunc load_func = reinterpret_cast<LoadPlugInFunc>(load_symbol);
-    (*load_func)(&sc_interface);
-
-    /* don't close the handle */
-    return;
-}
-
-void sc_ugen_factory::close_handles(void)
-{
-    for(void * handle : open_handles){
-        void *ptr = dlsym(handle, "unload");
-        if(ptr){
-            UnLoadPlugInFunc unloadFunc = (UnLoadPlugInFunc)ptr;
-            (*unloadFunc)();
-        }
-        dlclose(handle);
-    }
-
-}
-
-#elif defined(_WIN32)
-
-void sc_ugen_factory::load_plugin ( boost::filesystem::path const & path )
-{
-    //std::cout << "try open plugin: " << path << std::endl;
-    const char * filename = path.string().c_str();
-    HINSTANCE hinstance = LoadLibrary( path.string().c_str() );
-    if (!hinstance) {
-        char *s;
-        DWORD lastErr = GetLastError();
-        FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                       nullptr, lastErr , MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&s, 0, NULL );
-
-        std::cout << "Cannot open plugin: " << path << s << std::endl;
-        LocalFree( s );
-        return;
-    }
-
-    typedef int (*info_function)();
-    info_function api_version = reinterpret_cast<info_function>(GetProcAddress( hinstance, "api_version" ));
-
-    if ((*api_version)() != sc_api_version) {
-        std::cout << "API Version Mismatch: " << filename << std::endl;
-        FreeLibrary(hinstance);
-        return;
-    }
-
-    typedef int (*info_function)();
-    info_function server_type = reinterpret_cast<info_function>(GetProcAddress( hinstance, "server_type" ));
-    if (!server_type) {
-        FreeLibrary(hinstance);
-        return;
-    }
-
-    if ((*server_type)() != sc_server_supernova) {
-        FreeLibrary(hinstance);
-        return;
-    }
-
-    void *ptr = (void *)GetProcAddress( hinstance, "load" );
-    if (!ptr) {
-        char *s;
-        FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                       nullptr, GetLastError() , MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&s, 0, NULL );
-
-        std::cout << "*** ERROR: GetProcAddress err " << s << std::endl;
-        LocalFree( s );
-
-        FreeLibrary(hinstance);
-        return;
-    }
-    open_handles.push_back(hinstance);
-    LoadPlugInFunc loadFunc = (LoadPlugInFunc)ptr;
-    (*loadFunc)(&sc_interface);
-
-    return;
-}
-
-void sc_ugen_factory::close_handles(void)
-{
-    for(void * ptrhinstance : open_handles){
-        HINSTANCE hinstance = (HINSTANCE)ptrhinstance;
-        void *ptr = (void *)GetProcAddress( hinstance, "unload" );
-        if(ptr){
-            UnLoadPlugInFunc unloadFunc = (UnLoadPlugInFunc)ptr;
-            (*unloadFunc)();
-        }
-        FreeLibrary(hinstance);
-    }
-}
-#else
-
 #endif
+
+    try {
+        sc_server_plugin plugin( path, &sc_interface );
+
+        plugins.emplace_back( std::move( plugin ) );
+
+    } catch( wrong_server_type const & ) {
+    } catch( std::exception const & error) {
+        std::cout << error.what() << std::endl;
+    }
+}
 
 } /* namespace nova */
