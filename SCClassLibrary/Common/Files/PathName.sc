@@ -12,15 +12,16 @@ PathName {
 	*initClass {
 		scroot = File.getcwd;
 		tmp = Platform.defaultTempDir;
-		tmp.isNil.if(
-			{"No valid temp directory found. Please set this manually using PathName.tmp_".warn});
+		if(tmp.isNil, {
+			"No valid temp directory found. Please set it manually using PathName.tmp_".warn
+		})
 	}
 
 	colonIndices {
 		^colonIndices ?? {
 			colonIndices = List.new;
 		 	fullPath.do({ | eachChar, i |
-				if (eachChar.isPathSeparator, { colonIndices.add(i) });
+				if(eachChar.isPathSeparator, { colonIndices.add(i) })
 			});
 			colonIndices
 		}
@@ -115,13 +116,12 @@ PathName {
 	}
 
 	folderName {
-		var indexBeforeFolder,ci;
-		ci = this.colonIndices;
+		var indexBeforeFolder;
+		var ci = this.colonIndices;
 		if (ci.isEmpty, { ^"" });
 
 		indexBeforeFolder =
-		if (ci.size == 1, 0,
-			{ ci.at(ci.size - 2) + 1 });
+		if (ci.size == 1, 0, { ci.at(ci.size - 2) + 1 });
 
 		^fullPath.copyRange(indexBeforeFolder, this.lastColonIndex - 1)
 	}
@@ -133,41 +133,28 @@ PathName {
 
 	nextName {
 		^if(fullPath.last.isDecDigit, {
-			this.noEndNumbers ++ (this.endNumber + 1).asString
+			this.noEndNumbers ++ (this.endNumber + 1)
 		}, {
 			fullPath ++ "1"
 		})
 	}
 
 	noEndNumbers {
-		var count = 0, char;
-		var result = fullPath.copy;
-		while({
-			count = count + 1;
-			char = fullPath.at(fullPath.size - count);
-			char.notNil and: { char.isDecDigit};
-		}, {
-			result = result.copyRange(0,  result.size - 2)
-		});
-		^result
+		^fullPath[..this.endNumberIndex]
 	}
 
 	endNumber {	// turn consecutive digits at the end of fullPath into a number.
-		var reverseNumString = "";
-		var count = 0, char;
+		^fullPath[this.endNumberIndex + 1..].asInteger
+	}
 
+	endNumberIndex {
+		var index = fullPath.lastIndex;
 		while({
-			count = count + 1;
-			char = fullPath.at(fullPath.size - count);
-			char.notNil and: { char.isDecDigit};
+			index > 0 and: { fullPath.at(index).isDecDigit }
 		}, {
-			reverseNumString = reverseNumString ++ char
+			index = index - 1
 		});
-
-		// convert reverseNumString back to number (digits times powers of 10)
-		^reverseNumString.inject(0,
-			{ arg sum, eachChar, i; sum = sum + (eachChar.digit * (10 ** i)) }
-		)
+		^index
 	}
 
 	/* concatenation */
@@ -179,8 +166,7 @@ PathName {
 	entries {
 		var path = fullPath;
 		if(path.isEmpty) { ^[] };
-		if(path.last.isPathSeparator.not, { path = path ++ thisProcess.platform.pathSeparator });
-		^pathMatch(path ++ "*").collect({ | item | PathName(item) })
+		^pathMatch(path +/+ "*").collect({ | item | PathName(item) })
 	}
 
 	pathMatch {
