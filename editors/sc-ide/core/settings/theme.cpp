@@ -151,29 +151,29 @@ void Theme::fillDefault()
 
 void Theme::fillDark()
 {
-    addToTheme(mFormats, "text", QColor("#e4e4e4"), Qt::black);
-    addToTheme(mFormats, "currentLine", QColor("#e4e4e4"), QColor("#393939"));
-    addToTheme(mFormats, "searchResult", QColor("#e4e4e4"), QColor("#194c7f"));
-    addToTheme(mFormats, "matchingBrackets", QColor("#ff5500"), QColor("#95e000"), true);
-    addToTheme(mFormats, "mismatchedBrackets", QColor("#ffaa00"), QColor("#ff0000"));
-    addToTheme(mFormats, "evaluatedCode", QColor("#e4e4e4"), QColor("#aaaaff"));
-    addToTheme(mFormats, "whitespace", QColor("#e4e4e4"));
-    addToTheme(mFormats, "keyword", QColor("#aaaaff"), Qt::transparent, true);
-    addToTheme(mFormats, "built-in", QColor("#ffaaff"));
-    addToTheme(mFormats, "env-var", QColor("#55aa7f"));
-    addToTheme(mFormats, "class", QColor("#00aaff"), Qt::transparent, true);
-    addToTheme(mFormats, "number", QColor("#aa00ff"));
-    addToTheme(mFormats, "symbol", QColor("#555500"));
-    addToTheme(mFormats, "string", QColor("#5f5f5f"));
-    addToTheme(mFormats, "char", QColor("#ff55ff"));
-    addToTheme(mFormats, "comment", QColor("#aa9569"));
-    addToTheme(mFormats, "primitive", QColor("#aaff7f"));
-    addToTheme(mFormats, "lineNumbers", QColor("#676767"));
-    addToTheme(mFormats, "selection", QColor("#ff5500"));
-    addToTheme(mFormats, "postwindowtext", QColor("#e4e4e4"));
-    addToTheme(mFormats, "postwindowerror", QColor(209, 28, 36));
-    addToTheme(mFormats, "postwindowwarning", QColor(165, 119, 6));
-    addToTheme(mFormats, "postwindowsuccess", QColor(115, 138, 5));
+    addToTheme(mFormats, "text",               QColor("#ffa4e2"), Qt::black);
+    addToTheme(mFormats, "currentLine",        QColor("#e4e4e4"), QColor("#393939"));
+    addToTheme(mFormats, "searchResult",       QColor("#e4e4e4"), QColor("#194c7f"));
+    addToTheme(mFormats, "matchingBrackets",   QColor("#ff5500"), QColor("#001d49"), true);
+    addToTheme(mFormats, "mismatchedBrackets", QColor("#ffaa00"), QColor("#980000"));
+    addToTheme(mFormats, "evaluatedCode",      QColor("#e4e4e4"), QColor("#636397"));
+    addToTheme(mFormats, "whitespace",         QColor("#e4e4e4"));
+    addToTheme(mFormats, "keyword",            QColor("#aaaaff"), Qt::transparent, true);
+    addToTheme(mFormats, "built-in",           QColor("#ffa4e2"));
+    addToTheme(mFormats, "env-var",            QColor("#73e7ad"));
+    addToTheme(mFormats, "class",              QColor("#00abff"), Qt::transparent, true);
+    addToTheme(mFormats, "number",             QColor("#4aff00"));
+    addToTheme(mFormats, "symbol",             QColor("#ddde00"));
+    addToTheme(mFormats, "string",             QColor("#d7d7d7"));
+    addToTheme(mFormats, "char",               QColor("#ff55ff"));
+    addToTheme(mFormats, "comment",            QColor("#d4b982"));
+    addToTheme(mFormats, "primitive",          QColor("#aaff7f"));
+    addToTheme(mFormats, "lineNumbers",        QColor("#cfcfcf"));
+    addToTheme(mFormats, "selection",          QColor("#ff5500"));
+    addToTheme(mFormats, "postwindowtext",     QColor("#e4e4e4"));
+    addToTheme(mFormats, "postwindowerror",    QColor("#ff1f2a"));
+    addToTheme(mFormats, "postwindowwarning",  QColor("#de7100"));
+    addToTheme(mFormats, "postwindowsuccess",  QColor("#b0d206"));
     addToTheme(mFormats, "postwindowemphasis", QColor("#e4e4e4"), Qt::transparent, true);
 }
 
