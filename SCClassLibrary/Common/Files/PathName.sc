@@ -3,40 +3,23 @@ PathName {
 	var <fullPath, colonIndices;
 
 	classvar <>scroot;
-	classvar <>secondVolume; //needed only for OS9 path conversions
 	classvar <>tmp;
 
 	*new { arg path = "";
 		^super.new.init(path.standardizePath);
 	}
-	*fromOS9 { arg path="";
-		if(secondVolume.notNil and:
-			{ path.copyRange(0,secondVolume.size - 1) == secondVolume },{
-				path = "/Volumes/" ++ path;
-		});
-		^super.new.init(
-			String.streamContents({ arg s;
-				path.do({ arg char,i;
-					if(char == $:,{
-						if(i != 0,{ // leading : is not wanted in unix
-							s << $/
-						})
-					},{
-						s <<  char
-					});
-				})
-			})
-		)
-	}
+
 	*initClass {
 		scroot = File.getcwd;
 		tmp = Platform.defaultTempDir;
 		tmp.isNil.if(
 			{"No valid temp directory found. Please set this manually using PathName.tmp_".warn});
 	}
+
 	init { arg inPath;
 		fullPath = inPath;
 	}
+
 	colonIndices {
 		^colonIndices ?? {
 			colonIndices = List.new;
@@ -46,6 +29,7 @@ PathName {
 			colonIndices
 		}
 	}
+
 	fileName {
 		^fullPath.copyRange((this.lastColonIndex) + 1, (fullPath.size -1).max(0));
 	}
@@ -78,6 +62,7 @@ PathName {
 		});
 		^""
 	}
+
 	pathOnly {
 		^fullPath.copyRange(0, this.lastColonIndex);
 	}
@@ -109,6 +94,7 @@ PathName {
 		};
 		^(".."++r).dup(b.size-i).join ++ a[i..].join(r)
 	}
+
 	asAbsolutePath {
 		if(this.isAbsolutePath,{
 			^fullPath
@@ -119,6 +105,7 @@ PathName {
 			^fullPath.absolutePath
 		})
 	}
+
 	allFolders {
 		var folderNames, pathCopy;
 		folderNames = List.new;
@@ -219,6 +206,7 @@ PathName {
 			path.at(0).last.isPathSeparator
 		}, { false });
 	}
+
 	isFile {
 		var path;
 		path = this.pathMatch;
@@ -230,9 +218,11 @@ PathName {
 	files {
 		^this.entries.select({ arg item; item.isFile })
 	}
+
 	folders {
 		^this.entries.select({ arg item; item.isFolder })
 	}
+
 	deepFiles {
 		^this.entries.collect({ arg item;
 			if(item.isFile,{
@@ -253,34 +243,9 @@ PathName {
 		});
 	}
 
-	foldersWithoutCVS { arg path;
-		^this.folders(path).reject({ arg item; item.isCVS })
-	}
-	isCVS {
-		^this.fileName == "CVS";
-	}
-	foldersWithoutSVN { arg path;
-		^this.folders(path).reject({ arg item; item.isSVN })
-	}
-	isSVN {
-		^this.fileName == ".svn";
-	}
 	filesDo { arg func;
 		this.files.do(func);
-		this.foldersWithoutSVN.do { arg pathname;
-			pathname.filesDo(func)
-		}
-	}
-	filesDoNoCVS { arg func;
-		this.files.do(func);
-		this.foldersWithoutCVS.do { arg pathname;
-			pathname.filesDo(func)
-		}
-	}
-
-	filesDoNoSVN { arg func;
-		this.files.do(func);
-		this.foldersWithoutSVN.do { arg pathname;
+		this.folders.do { arg pathname;
 			pathname.filesDo(func)
 		}
 	}
@@ -303,17 +268,7 @@ PathName {
 			tabs.do({ str << Char.tab });
 			str << item.fileNameWithoutExtension  << Char.nl
 		});
-		this.foldersWithoutSVN.do({ arg item;
-			item.streamTree(str, tabs + 1);
-		});
-	}
-	streamTreeNoCVS { arg str, tabs=0;
-		str << this.fullPath << Char.nl;
-		this.files.do({ arg item;
-			tabs.do({ str << Char.tab });
-			str << item.fileNameWithoutExtension  << Char.nl
-		});
-		this.foldersWithoutCVS.do({ arg item;
+		this.folders.do({ arg item;
 			item.streamTree(str, tabs + 1);
 		});
 	}
@@ -334,5 +289,16 @@ PathName {
 		doc.string = str.collection;
 		^doc
 	}
+
+	// deprecated messages
+
+	*fromOS9 { arg path=""; ^this.deprecated(thisMethod) }
+	foldersWithoutCVS { arg path; ^this.deprecated(thisMethod) }
+	isCVS { ^this.deprecated(thisMethod) }
+	foldersWithoutSVN { arg path; ^this.deprecated(thisMethod) }
+	isSVN { ^this.deprecated(thisMethod) }
+	filesDoNoCVS { arg func; ^this.deprecated(thisMethod) }
+	filesDoNoSVN { arg func; ^this.deprecated(thisMethod) }
+	streamTreeNoCVS { arg str, tabs=0; ^this.deprecated(thisMethod) }
 
 }
