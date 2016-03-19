@@ -5,8 +5,8 @@ PathName {
 	classvar <>scroot;
 	classvar <>tmp;
 
-	*new { arg path = "";
-		^super.new.init(path.standardizePath);
+	*new { | path = "" |
+		^super.newCopyArgs(path.standardizePath)
 	}
 
 	*initClass {
@@ -16,14 +16,10 @@ PathName {
 			{"No valid temp directory found. Please set this manually using PathName.tmp_".warn});
 	}
 
-	init { arg inPath;
-		fullPath = inPath;
-	}
-
 	colonIndices {
 		^colonIndices ?? {
 			colonIndices = List.new;
-		 	fullPath.do({ arg eachChar, i;
+		 	fullPath.do({ | eachChar, i |
 				if (eachChar.isPathSeparator, { colonIndices.add(i) });
 			});
 			colonIndices
@@ -31,13 +27,13 @@ PathName {
 	}
 
 	fileName {
-		^fullPath.copyRange((this.lastColonIndex) + 1, (fullPath.size -1).max(0));
+		^fullPath.copyRange((this.lastColonIndex) + 1, (fullPath.size -1).max(0))
 	}
 
 	fileNameWithoutExtension {
 		var fileName;
 		fileName = this.fileName;
-		fileName.reverseDo({ arg char,i;
+		fileName.reverseDo({ | char, i |
 			if(char == $.,{
 				^fileName.copyRange(0,fileName.size - (i + 2))
 			})
@@ -49,14 +45,14 @@ PathName {
 		var fileName, pathName;
 		fileName = this.fileNameWithoutExtension;
 		pathName = PathName( fileName );
-		^pathName.fileNameWithoutExtension;
+		^pathName.fileNameWithoutExtension
 	}
 
 	extension {
 		var fileName;
 		fileName = this.fileName;
-		fileName.reverseDo({ arg char,i;
-			if(char == $.,{
+		fileName.reverseDo({ | char, i |
+			if(char == $., {
 				^fileName.copyRange(fileName.size - i,fileName.size - 1)
 			})
 		});
@@ -64,10 +60,12 @@ PathName {
 	}
 
 	pathOnly {
-		^fullPath.copyRange(0, this.lastColonIndex);
+		^fullPath.copyRange(0, this.lastColonIndex)
 	}
 
-	diskName {  ^fullPath.copyRange(0, this.colonIndices.first - 1) }
+	diskName {
+		^fullPath.copyRange(0, this.colonIndices.first - 1)
+	}
 
 	isRelativePath { ^this.isAbsolutePath.not }
 
@@ -76,7 +74,7 @@ PathName {
 	}
 
 	absolutePath{
-		^fullPath.absolutePath;
+		^fullPath.absolutePath
 	}
 
 	asRelativePath { |relativeTo|
@@ -89,10 +87,10 @@ PathName {
 		b = relativeTo.split(r);
 
 		i=0;
-		while{a[i]==b[i] and:{i<a.size}}{
+		while{ a[i] == b[i] and: { i < a.size } } {
 		        i = i + 1;
 		};
-		^(".."++r).dup(b.size-i).join ++ a[i..].join(r)
+		^(".." ++ r).dup(b.size - i).join ++ a[i..].join(r)
 	}
 
 	asAbsolutePath {
@@ -100,8 +98,6 @@ PathName {
 			^fullPath
 		},{
 			// this assumes relative to the sc app
-			// deprecated b/c String:absolutePath uses File.getcwd, more robust
-//			^scroot ++ "/" ++ fullPath;
 			^fullPath.absolutePath
 		})
 	}
@@ -111,8 +107,8 @@ PathName {
 		folderNames = List.new;
 		pathCopy = fullPath;
 
-		this.colonIndices.doAdjacentPairs({ arg startColon, endColon;
-			folderNames.add( fullPath.copyRange(startColon + 1, endColon - 1) );
+		this.colonIndices.doAdjacentPairs({ | startColon, endColon |
+			folderNames.add( fullPath.copyRange(startColon + 1, endColon - 1) )
 		});
 
 		^folderNames
@@ -127,58 +123,51 @@ PathName {
 		if (ci.size == 1, 0,
 			{ ci.at(ci.size - 2) + 1 });
 
-		^fullPath.copyRange(indexBeforeFolder, this.lastColonIndex - 1);
+		^fullPath.copyRange(indexBeforeFolder, this.lastColonIndex - 1)
 	}
 
 	lastColonIndex {
-		var ci;
-		ci = this.colonIndices;
-		^if (ci.isEmpty, { -1 }, { ci.last }) ;
+		var ci = this.colonIndices;
+		^if(ci.isEmpty, { -1 }, { ci.last }) ;
 	}
 
 	nextName {
-		var nextName;
-		nextName = if (fullPath.last.isDecDigit,
-			{ this.noEndNumbers ++ (this.endNumber + 1).asString;
-			},
-			{fullPath ++ "1"; }
-		);
-		^nextName;
+		^if(fullPath.last.isDecDigit, {
+			this.noEndNumbers ++ (this.endNumber + 1).asString
+		}, {
+			fullPath ++ "1"
+		})
 	}
 
 	noEndNumbers {
-		var result, count = 0, char;
-
-		result = fullPath.copy;
-		while(
-			{ 	count = count + 1;
-				char = fullPath.at(fullPath.size - count);
-				char.notNil and: { char.isDecDigit};
-			},
-			{ result = result.copyRange(0,  result.size - 2) }
-			);
-		^result;
+		var count = 0, char;
+		var result = fullPath.copy;
+		while({
+			count = count + 1;
+			char = fullPath.at(fullPath.size - count);
+			char.notNil and: { char.isDecDigit};
+		}, {
+			result = result.copyRange(0,  result.size - 2)
+		});
+		^result
 	}
 
 	endNumber {	// turn consecutive digits at the end of fullPath into a number.
-
 		var reverseNumString = "";
-		var count = 0, char, number;
+		var count = 0, char;
 
-		while(
-			{ 	count = count + 1;
-				char = fullPath.at(fullPath.size - count);
-				char.notNil and: { char.isDecDigit};
-			},
-			{ reverseNumString = reverseNumString ++ char }
-			);
+		while({
+			count = count + 1;
+			char = fullPath.at(fullPath.size - count);
+			char.notNil and: { char.isDecDigit};
+		}, {
+			reverseNumString = reverseNumString ++ char
+		});
 
-			// convert reverseNumString back to number (digits times powers of 10)
-		number = reverseNumString.inject(0,
-			{ arg sum, eachChar, i; sum = sum + (eachChar.digit * (10 ** i))
-			}
-		);
-		^number
+		// convert reverseNumString back to number (digits times powers of 10)
+		^reverseNumString.inject(0,
+			{ arg sum, eachChar, i; sum = sum + (eachChar.digit * (10 ** i)) }
+		)
 	}
 
 	/* concatenation */
@@ -188,11 +177,10 @@ PathName {
 	}
 
 	entries {
-		var path;
-		path = fullPath;
+		var path = fullPath;
 		if(path.isEmpty) { ^[] };
 		if(path.last.isPathSeparator.not, { path = path ++ thisProcess.platform.pathSeparator });
-		^pathMatch(path ++ "*").collect({ arg item; PathName(item) });
+		^pathMatch(path ++ "*").collect({ | item | PathName(item) })
 	}
 
 	pathMatch {
@@ -200,32 +188,30 @@ PathName {
 	}
 
 	isFolder {
-		var path;
-		path = this.pathMatch;
+		var path = this.pathMatch;
 		^if(path.notEmpty, {
 			path.at(0).last.isPathSeparator
-		}, { false });
+		}, { false })
 	}
 
 	isFile {
-		var path;
-		path = this.pathMatch;
+		var path = this.pathMatch;
 		^if(path.notEmpty, {
 			path.at(0).last.isPathSeparator.not
-		}, { false });
+		}, { false })
 	}
 
 	files {
-		^this.entries.select({ arg item; item.isFile })
+		^this.entries.select({ | item | item.isFile })
 	}
 
 	folders {
-		^this.entries.select({ arg item; item.isFolder })
+		^this.entries.select({ | item | item.isFolder })
 	}
 
 	deepFiles {
-		^this.entries.collect({ arg item;
-			if(item.isFile,{
+		^this.entries.collect({ | item |
+			if(item.isFile, {
 				item
 			},{
 				item.deepFiles
@@ -236,18 +222,18 @@ PathName {
 	parentPath {
 		var ci = this.colonIndices;
 
-		^if((fullPath.last.isPathSeparator) && (ci.size > 1), {
-			fullPath.copyRange(0, ci[ci.size - 2]);
+		^if((fullPath.last.isPathSeparator) and: { ci.size > 1 }, {
+			fullPath.copyRange(0, ci[ci.size - 2])
 		}, {
 			fullPath.copyRange(0, this.lastColonIndex)
-		});
+		})
 	}
 
-	filesDo { arg func;
+	filesDo { | func |
 		this.files.do(func);
-		this.folders.do { arg pathname;
+		this.folders.do { | pathname |
 			pathname.filesDo(func)
-		}
+		};
 	}
 
 	// Iterates over all files within this path which match criteria for being help files.
@@ -262,13 +248,14 @@ PathName {
 				pathname.helpFilesDo(func)
 			}
 	}
-	streamTree { arg str, tabs=0;
+
+	streamTree { | str, tabs = 0 |
 		str << this.fullPath << Char.nl;
-		this.files.do({ arg item;
+		this.files.do({ | item |
 			tabs.do({ str << Char.tab });
 			str << item.fileNameWithoutExtension  << Char.nl
 		});
-		this.folders.do({ arg item;
+		this.folders.do({ | item |
 			item.streamTree(str, tabs + 1);
 		});
 	}
@@ -277,11 +264,11 @@ PathName {
 		this.streamTree(Post)
 	}
 
-	printOn { arg stream;
-		stream << "PathName(" << fullPath <<")"
+	printOn { | stream |
+		stream << "PathName(" << fullPath << ")"
 	}
 
-	dumpToDoc { arg title="Untitled";
+	dumpToDoc { | title="Untitled" |
 		var str, doc;
 		doc = Document.new(title);
 		str = CollStream.new;
@@ -292,13 +279,13 @@ PathName {
 
 	// deprecated messages
 
-	*fromOS9 { arg path=""; ^this.deprecated(thisMethod) }
-	foldersWithoutCVS { arg path; ^this.deprecated(thisMethod) }
+	*fromOS9 { | path | ^this.deprecated(thisMethod) }
+	foldersWithoutCVS { | path | ^this.deprecated(thisMethod) }
 	isCVS { ^this.deprecated(thisMethod) }
-	foldersWithoutSVN { arg path; ^this.deprecated(thisMethod) }
+	foldersWithoutSVN { | path |^this.deprecated(thisMethod) }
 	isSVN { ^this.deprecated(thisMethod) }
-	filesDoNoCVS { arg func; ^this.deprecated(thisMethod) }
-	filesDoNoSVN { arg func; ^this.deprecated(thisMethod) }
-	streamTreeNoCVS { arg str, tabs=0; ^this.deprecated(thisMethod) }
+	filesDoNoCVS { | func | ^this.deprecated(thisMethod) }
+	filesDoNoSVN { | func | ^this.deprecated(thisMethod) }
+	streamTreeNoCVS { | str, tabs=0 | ^this.deprecated(thisMethod) }
 
 }
