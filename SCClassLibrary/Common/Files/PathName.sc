@@ -32,8 +32,7 @@ PathName {
 	}
 
 	fileNameWithoutExtension {
-		var fileName;
-		fileName = this.fileName;
+		var fileName = this.fileName;
 		fileName.reverseDo({ | char, i |
 			if(char == $.,{
 				^fileName.copyRange(0,fileName.size - (i + 2))
@@ -87,8 +86,8 @@ PathName {
 		a = mePath.split(r);
 		b = relativeTo.split(r);
 
-		i=0;
-		while{ a[i] == b[i] and: { i < a.size } } {
+		i = 0;
+		while { a[i] == b[i] and: { i < a.size } } {
 		        i = i + 1;
 		};
 		^(".." ++ r).dup(b.size - i).join ++ a[i..].join(r)
@@ -222,19 +221,6 @@ PathName {
 		};
 	}
 
-	// Iterates over all files within this path which match criteria for being help files.
-	// Doesn't iterate over the help files listed in the Help tree - see Help:do for that.
-	helpFilesDo { arg func;
-		var extensions    = #['html', 'htm', 'scd', 'rtf', 'rtfd']; // included
-		var ignoreFolders = #['ignore', '.svn', '_darcs', 'CVS', '.git']; // excluded
-		this.files.select{|afile| extensions.includes(afile.extension.asSymbol) }
-			.do(func);
-		this.folders.reject{|afolder| ignoreFolders.includes(afolder.folderName.asSymbol) }
-			.do{ arg pathname;
-				pathname.helpFilesDo(func)
-			}
-	}
-
 	streamTree { | str, tabs = 0 |
 		str << this.fullPath << Char.nl;
 		this.files.do({ | item |
@@ -273,5 +259,5 @@ PathName {
 	filesDoNoCVS { | func | ^this.deprecated(thisMethod) }
 	filesDoNoSVN { | func | ^this.deprecated(thisMethod) }
 	streamTreeNoCVS { | str, tabs=0 | ^this.deprecated(thisMethod) }
-
+	helpFilesDo { |func| ^this.deprecated(thisMethod) }
 }
