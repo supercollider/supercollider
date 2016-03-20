@@ -1,4 +1,4 @@
-message( "===hidapi2osc cmakelists===" )
+message(STATUS "    hidapi2osc" )
 
 include(FindPkgConfig)
 # pkg_check_modules
