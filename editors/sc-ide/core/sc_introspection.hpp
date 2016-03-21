@@ -112,8 +112,11 @@ class Introspection
 {
 public:
     Introspection();
-    Introspection( QString const & yamlString );
-    ~Introspection();
+    Introspection( Introspection const & rhs) = default;
+    explicit Introspection( QString const & yamlString );
+
+    Introspection & operator=( Introspection const & rhs) = default;
+    Introspection & operator=( Introspection && rhs);
 
     typedef QMap< QString, QList<Method*> > ClassMethodMap; // maps Path to List of Methods
 
