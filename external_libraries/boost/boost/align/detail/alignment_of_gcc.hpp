@@ -6,21 +6,20 @@ Distributed under the Boost Software
 License, Version 1.0.
 http://boost.org/LICENSE_1_0.txt
 */
-#ifndef BOOST_ALIGN_DETAIL_ADDRESS_HPP
-#define BOOST_ALIGN_DETAIL_ADDRESS_HPP
+#ifndef BOOST_ALIGN_DETAIL_ALIGNMENT_OF_GCC_HPP
+#define BOOST_ALIGN_DETAIL_ALIGNMENT_OF_GCC_HPP
 
-#include <boost/cstdint.hpp>
+#include <boost/align/detail/integral_constant.hpp>
 #include <cstddef>
 
 namespace boost {
 namespace alignment {
 namespace detail {
 
-#if defined(BOOST_HAS_INTPTR_T)
-typedef boost::uintptr_t address;
-#else
-typedef std::size_t address;
-#endif
+template<class T>
+struct alignment_of
+    : integral_constant<std::size_t, __alignof__(T)> {
+};
 
 } /* .detail */
 } /* .alignment */
