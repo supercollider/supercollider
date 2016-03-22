@@ -20,7 +20,7 @@ GUI.swing;	// use SwingGUI (Java based GUI)
 				var x0 = x.(phi, a, b);
 				var y0 = y.(phi, a, b);
 				pen.lineTo((50 * x0) @ (50 * y0 + 150));
-			};			
+			};
 
 			pen.stroke
 		};
@@ -71,5 +71,3 @@ p = ProxySpace.push(s.boot); // enter
 )
 
 p.clear.pop; // exit
-
-

@@ -43,6 +43,7 @@ QC_DECLARE_FACTORY( QcScrollWidget, QcScrollWidgetFactory );
 QcScrollWidget::QcScrollWidget( QWidget *parent ) : QcCanvas( parent )
 {
   setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum );
+  setAttribute(Qt::WA_AcceptTouchEvents);
 }
 
 QSize QcScrollWidget::sizeHint() const

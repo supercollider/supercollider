@@ -28,6 +28,7 @@ QcButton::QcButton():
   QtCollider::Style::Client(this),
   currentState(0)
 {
+  setAttribute(Qt::WA_AcceptTouchEvents);
   connect( this, SIGNAL(clicked()), this, SLOT(doAction()) );
 }
 

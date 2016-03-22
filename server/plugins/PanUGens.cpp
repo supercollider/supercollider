@@ -31,6 +31,8 @@ using nova::slope_argument;
 
 #endif
 
+#include <boost/align/is_aligned.hpp>
+
 using namespace std; // for math functions
 
 static InterfaceTable *ft;
@@ -165,7 +167,7 @@ void LinPan2_Ctor(LinPan2 *unit)
 #ifdef NOVA_SIMD
 	if (BUFLENGTH == 64)
 		SETCALC(LinPan2_next_ak_nova_64);
-	if (!(BUFLENGTH & 15))
+	if (boost::alignment::is_aligned( BUFLENGTH, 16 ))
 		SETCALC(LinPan2_next_ak_nova);
 	else
 #endif
@@ -306,7 +308,7 @@ void Balance2_Ctor(Balance2 *unit)
 #ifdef NOVA_SIMD
 		if (BUFLENGTH == 64)
 			SETCALC(Balance2_next_ak_nova_64);
-		else if (!(BUFLENGTH & 15))
+		else if (boost::alignment::is_aligned( BUFLENGTH, 16 ))
 			SETCALC(Balance2_next_ak_nova);
 		else
 			SETCALC(Balance2_next_ak);
@@ -484,7 +486,7 @@ void XFade2_Ctor(XFade2 *unit)
 #ifdef NOVA_SIMD
 		if (BUFLENGTH == 64)
 			SETCALC(XFade2_next_ak_nova_64);
-		if (!(BUFLENGTH & 15))
+		if (boost::alignment::is_aligned( BUFLENGTH, 16 ))
 			SETCALC(XFade2_next_ak_nova);
 		else
 #endif
@@ -712,18 +714,18 @@ FLATTEN void LinXFade2_next_k_nova(LinXFade2 *unit, int inNumSamples)
 	float amp = unit->m_amp;
 
 	if (pos != unit->m_pos) {
-		float oldAmpLeft  = amp;
-		float oldAmpRight = 1.f - amp;
+		float oldAmpRight = amp;
+		float oldAmpLeft  = 1.f - amp;
 
 		pos = sc_clip(pos, -1.f, 1.f);
 
 		float nextAmpRight = pos * 0.5f + 0.5f;
-		float nextAmpLeft  = 1.f - nextAmpRight;
+		float nextAmpLeft = 1.f - nextAmpRight;
 
 		float leftSlope =  CALCSLOPE(nextAmpLeft, oldAmpLeft);
 		float rightSlope = CALCSLOPE(nextAmpRight, oldAmpRight);
 
-		unit->m_amp = nextAmpLeft;
+		unit->m_amp = nextAmpRight;
 		unit->m_pos = pos;
 
 		nova::mix_vec_simd(OUT(0), IN(0), nova::slope_argument(oldAmpLeft, leftSlope),
@@ -744,7 +746,7 @@ void LinXFade2_Ctor(LinXFade2 *unit)
 
 	case calc_BufRate:
 #ifdef NOVA_SIMD
-		if (!(BUFLENGTH & 15))
+		if (boost::alignment::is_aligned( BUFLENGTH, 16 ))
 			SETCALC(LinXFade2_next_k_nova);
 		else
 			SETCALC(LinXFade2_next_k);
@@ -754,7 +756,7 @@ void LinXFade2_Ctor(LinXFade2 *unit)
 		break;
 	case calc_ScalarRate:
 #ifdef NOVA_SIMD
-		if (!(BUFLENGTH & 15))
+		if (boost::alignment::is_aligned( BUFLENGTH, 16 ))
 			SETCALC(LinXFade2_next_i_nova);
 		else
 			SETCALC(LinXFade2_next_i);
@@ -923,7 +925,7 @@ void Pan2_Ctor(Pan2 *unit)
 #if defined(NOVA_SIMD)
 		if (BUFLENGTH == 64)
 			SETCALC(Pan2_next_ak_nova_64);
-		if (!(BUFLENGTH & 15))
+		if (boost::alignment::is_aligned( BUFLENGTH, 16 ))
 			SETCALC(Pan2_next_ak_nova);
 		else
 			SETCALC(Pan2_next_ak);
@@ -1305,7 +1307,7 @@ FLATTEN void PanB2_next_nova(PanB2 *unit, int inNumSamples)
 void PanB2_Ctor(PanB2 *unit)
 {
 #if defined(NOVA_SIMD)
-	if (!(BUFLENGTH & 15))
+	if (boost::alignment::is_aligned( BUFLENGTH, 16 ))
 		SETCALC(PanB2_next_nova);
 	else
 #endif
@@ -1483,7 +1485,7 @@ void PanAz_Ctor(PanAz *unit)
 		std::fill_n(unit->m_chanamp, numOutputs, 0);
 
 #ifdef NOVA_SIMD
-		if (!(BUFLENGTH & 15))
+		if (boost::alignment::is_aligned( BUFLENGTH, 16 ))
 			SETCALC(PanAz_next_ak_nova);
 		else
 			SETCALC(PanAz_next_ak);
@@ -1703,7 +1705,7 @@ void Rotate2_Ctor(Rotate2 *unit)
 void DecodeB2_Ctor(DecodeB2 *unit)
 {
 #if defined(NOVA_SIMD)
-	if (!(BUFLENGTH & 15))
+	if (boost::alignment::is_aligned( BUFLENGTH, 16 ))
 		SETCALC(DecodeB2_next_nova);
 	else
 #endif

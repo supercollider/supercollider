@@ -815,7 +815,6 @@ void sc_done_action_handler::apply_done_actions(void)
 sc_plugin_interface::~sc_plugin_interface(void)
 {
     delete[] world.mAudioBusTouched;
-    delete[] world.mControlBus;
     delete[] world.mControlBusTouched;
     delete[] world.mSndBufs;
     delete[] world.mSndBufsNonRealTimeMirror;

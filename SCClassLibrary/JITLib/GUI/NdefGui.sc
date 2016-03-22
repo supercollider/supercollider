@@ -23,7 +23,7 @@ NdefGui : JITGui {
 
 	proxy_ { |proxy| ^this.object_(proxy) }
 	proxy { ^this.object }
-	edits { ^paramGui.widgets }
+	edits { ^paramGui.paramViews }
 
 	editKeys {
 		if (paramGui.isNil) { ^[] };
@@ -52,7 +52,7 @@ NdefGui : JITGui {
 		var highIndices = (0..num-1) + parOffset;
 
 		defer {
-			paramGui.widgets.do {|widget, i|
+			paramGui.paramViews.do {|widget, i|
 				if(highIndices.includes(i)) {
 					paramGui.highlight(i, highNames[i-parOffset],onCol);
 				} {
@@ -70,7 +70,8 @@ NdefGui : JITGui {
 	*big {
 			// two lines - for big editor
 		^[\name, \type, \CLR, \reset, \scope, \doc, \end, \fade, \poll,
-			\monitorL, /*\play,*/ \pausR, \sendR  ]
+			\monitorL, /*\play,*/ \pausR, \sendR
+		]
 	}
 
 	*full {
@@ -154,7 +155,7 @@ NdefGui : JITGui {
 		};
 
 
-			// a clumsy way to figure out how to set resizes for all children.
+		// a clumsy way to figure out how to set resizes for all children.
 		lineBreakIndex = zone.children.detectIndex { |a, i|
 			var b = zone.children[i + 1];
 			b.notNil and: { b.bounds.left < a.bounds.left }
@@ -385,7 +386,7 @@ NdefGui : JITGui {
 
 		if (typeView.notNil) {
 			if (newState[\type] != prevState[\type]) {
-				typeView.string_(newState[\type])
+				// typeView.string_(newState[\type].asString)
 			}
 		};
 

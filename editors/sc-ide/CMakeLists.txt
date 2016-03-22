@@ -5,19 +5,20 @@ SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 find_package(Qt5Core)
-find_package(Qt5Widgets)
+find_package(Qt5Concurrent)
 find_package(Qt5LinguistTools)
-find_package(Qt5WebKitWidgets)
 find_package(Qt5OpenGL)
-find_package(Qt5PrintSupport)
-find_package(Qt5Sensors)
-find_package(Qt5Quick)
-find_package(Qt5Qml)
-find_package(Qt5Sql)
 find_package(Qt5Positioning)
+find_package(Qt5PrintSupport)
+find_package(Qt5Qml)
+find_package(Qt5Quick)
+find_package(Qt5Sensors)
+find_package(Qt5Sql)
+find_package(Qt5WebKitWidgets)
+find_package(Qt5Widgets)
 
-set(QT_IDE_LIBRARIES 
-    Qt5::Core Qt5::WebKitWidgets Qt5::OpenGL Qt5::PrintSupport Qt5::Sensors Qt5::Quick Qt5::Qml Qt5::Sql Qt5::Positioning)
+set(QT_IDE_LIBRARIES
+    Qt5::Core Qt5::Concurrent Qt5::WebKitWidgets Qt5::OpenGL Qt5::PrintSupport Qt5::Sensors Qt5::Quick Qt5::Qml Qt5::Sql Qt5::Positioning)
 
 if(${CMAKE_COMPILER_IS_GNUCXX})
     add_definitions(-Wreorder)
@@ -181,7 +182,7 @@ if(APPLE)
 endif()
 
 if(APPLE)
-	list(APPEND ide_src 
+	list(APPEND ide_src
         ${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp
         ${CMAKE_SOURCE_DIR}/QtCollider/hacks/hacks_mac.mm
     )
@@ -242,14 +243,14 @@ if(APPLE)
     endforeach()
 endif()
 
-# This sets up the exe icon for windows under mingw.
-if(MINGW)
+# This sets up the exe icon for windows.
+if(WIN32)
  set(RES_FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/scide.rc)
  set(CMAKE_RC_COMPILER_INIT windres)
  ENABLE_LANGUAGE(RC)
  SET(CMAKE_RC_COMPILE_OBJECT
  "<CMAKE_RC_COMPILER> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
-endif(MINGW)
+endif(WIN32)
 
 
 # final builds of the IDE seem to be broken atm
@@ -350,21 +351,34 @@ if(APPLE)
                 #fixup_qt5_executable(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\")
                 " COMPONENT Runtime)
 
-
 elseif(WIN32)
-	install(TARGETS SuperCollider
-			DESTINATION "SuperCollider"
-			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-    install(FILES ${translations}
-            DESTINATION "SuperCollider/translations")
+  install(TARGETS SuperCollider
+      DESTINATION "SuperCollider"
+      PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+  install(FILES ${translations}
+      DESTINATION "SuperCollider/translations")
+
+  SET(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider/platforms")
+    include(InstallRequiredSystemLibraries)
+
+  if(MSYS)
+    SET(QT_PLATFORM_PLUGIN_PREFIX "${Qt5Core_DIR}/../../../share/qt5/plugins/platforms" CACHE STRING "Location of qt platform plugin for windows as provided by MSYS2!")
+  else()
+    SET(QT_PLATFORM_PLUGIN_PREFIX "${Qt5Core_DIR}/../../../plugins/platforms" CACHE STRING "Location of qt platform plugin for windows")
+  endif()
+
+  install(FILES "${QT_PLATFORM_PLUGIN_PREFIX}/qwindows$<$<CONFIG:DEBUG>:d>.dll"
+    DESTINATION ${CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION}
+  )
+
 else()
-	install(TARGETS SuperCollider
-			RUNTIME DESTINATION "bin"
-			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-    install(FILES ${translations}
-            DESTINATION "share/SuperCollider/translations")
+  install(TARGETS SuperCollider
+      RUNTIME DESTINATION "bin"
+      PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+  install(FILES ${translations}
+      DESTINATION "share/SuperCollider/translations")
 endif()
 
 if (LINUX)
-   install( PROGRAMS SuperColliderIDE.desktop  DESTINATION "share/applications")
+  install( PROGRAMS SuperColliderIDE.desktop  DESTINATION "share/applications")
 endif()

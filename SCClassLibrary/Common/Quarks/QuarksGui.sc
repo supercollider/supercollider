@@ -255,7 +255,7 @@ QuarkDetailView {
 		^view
 	}
 	update {
-		var tags, refspec, isInstalled = false, isDownloaded = false,
+		var tags, refspec, isInstalled = false, isDownloaded = false, path,
 			url,
 			webpage,
 			dependencies,
@@ -301,7 +301,9 @@ QuarkDetailView {
 			});
 
 			if(isDownloaded or: isInstalled, {
-				this.pushRow("Local path", makeBtn.value("Open Folder", {
+				path =  model.localPath;
+				if(path.size > 64) { path = "..." + path.keep(-64) };
+				this.pushRow("Local path", makeBtn.value("Open Folder:" + path, {
 					this.openLocalPath;
 				}));
 			});
@@ -627,6 +629,6 @@ QuarkRowView {
 		// 1 is the install button. its not possible to sort by this column
 		treeItem.setString(2, quark.name ? "");
 		treeItem.setString(3, (quark.version ? "").asString);
-		treeItem.setString(4, (quark.summary ? "").replace(Char.nl," ").replace(Char.tab, ""));
+		treeItem.setString(4, (quark.summary ? "").replace(Char.nl.asString," ").replace(Char.tab.asString, ""));
 	}
 }

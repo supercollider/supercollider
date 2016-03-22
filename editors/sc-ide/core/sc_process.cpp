@@ -18,9 +18,13 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include <QCoreApplication>
 #include <QBuffer>
+#include <QCoreApplication>
+#include <QtCore/QFuture>
+#include <QtCore/QFutureWatcher>
 #include <QTextDocumentFragment>
+
+#include <QtConcurrent>
 
 #include "main.hpp"
 #include "main_window.hpp"
@@ -45,17 +49,11 @@ ScProcess::ScProcess( Settings::Manager * settings, QObject * parent ):
     mTerminationRequested(false),
     mCompiled(false)
 {
-    mIntrospectionParser = new ScIntrospectionParser( this );
-    mIntrospectionParser->start();
-
     prepareActions(settings);
 
     connect(this, SIGNAL( readyRead() ),
             this, SLOT( onReadyRead() ));
     connect(mIpcServer, SIGNAL(newConnection()), this, SLOT(onNewIpcConnection()));
-    connect(mIntrospectionParser, SIGNAL(done(ScLanguage::Introspection*)),
-            this, SLOT(swapIntrospection(ScLanguage::Introspection*)));
-
     connect(this, SIGNAL(stateChanged(QProcess::ProcessState)), this, SLOT(onProcessStateChanged(QProcess::ProcessState)));
 }
 
@@ -96,6 +94,10 @@ void ScProcess::prepareActions(Settings::Manager * settings)
     action->setShortcutContext(Qt::ApplicationShortcut);
     connect(action, SIGNAL(triggered()), this, SLOT(stopMain()));
     settings->addAction( action, "interpreter-main-stop", interpreterCategory);
+    
+    mActions[ShowQuarks] = action = new QAction(tr("Quarks"), this);
+    connect(action, SIGNAL(triggered()), this, SLOT(showQuarks()));
+    settings->addAction( action, "interpreter-show-quarks-gui", interpreterCategory);
 
     connect( mActions[Start], SIGNAL(changed()), this, SLOT(updateToggleRunningAction()) );
     connect( mActions[Stop], SIGNAL(changed()), this, SLOT(updateToggleRunningAction()) );
@@ -135,6 +137,7 @@ void ScProcess::startLanguage (void)
 
     QString workingDirectory = settings->value("runtimeDir").toString();
     QString configFile = settings->value("configFile").toString();
+    bool standalone = settings->value("standalone").toBool();
 
     settings->endGroup();
 
@@ -149,6 +152,8 @@ void ScProcess::startLanguage (void)
     if(!configFile.isEmpty())
         sclangArguments << "-l" << configFile;
     sclangArguments << "-i" << "scqt";
+    if(standalone)
+        sclangArguments << "-a";
 
     if(!workingDirectory.isEmpty())
         setWorkingDirectory(workingDirectory);
@@ -208,6 +213,11 @@ void ScProcess::restartLanguage()
 void ScProcess::stopMain(void)
 {
     evaluateCode("thisProcess.stop", true);
+}
+
+void ScProcess::showQuarks(void)
+{
+    evaluateCode("Quarks.gui",true);
 }
 
 
@@ -274,6 +284,7 @@ void ScProcess::onProcessStateChanged(QProcess::ProcessState state)
 
     case QProcess::Running:
         mActions[StopMain]->setEnabled(true);
+        mActions[ShowQuarks]->setEnabled(true);
         mActions[RecompileClassLibrary]->setEnabled(true);
 
         onStart();
@@ -285,6 +296,7 @@ void ScProcess::onProcessStateChanged(QProcess::ProcessState state)
         mActions[Stop]->setEnabled(false);
         mActions[Restart]->setEnabled(false);
         mActions[StopMain]->setEnabled(false);
+        mActions[ShowQuarks]->setEnabled(false);
         mActions[RecompileClassLibrary]->setEnabled(false);
         updateToggleRunningAction();
         postQuitNotification();
@@ -335,19 +347,34 @@ void ScProcess::onIpcData()
 
 void ScProcess::onResponse( const QString & selector, const QString & data )
 {
-    static QString introspectionSelector("introspection");
-    static QString classLibraryRecompiledSelector("classLibraryRecompiled");
-    static QString requestCurrentPathSelector("requestCurrentPath");
+    if (selector == QStringLiteral("introspection")) {
+        using ScLanguage::Introspection;
 
-    if (selector == introspectionSelector)
-        mIntrospectionParser->process(data);
+        auto watcher = new QFutureWatcher<Introspection>(this);
+        connect( watcher, &QFutureWatcher<Introspection>::finished, [=]{
+            try {
+                Introspection newIntrospection = watcher->result();
+                mIntrospection = std::move(newIntrospection);
+                emit introspectionChanged();
+            } catch (std::exception & e) {
+                MainWindow::instance()->showStatusMessage(e.what());
+            }
+            watcher->deleteLater();
+        });
 
-    else if (selector == classLibraryRecompiledSelector){
+        // Start the computation.
+        QFuture<Introspection> future = QtConcurrent::run( [] (QString data) {
+            return ScLanguage::Introspection(data);
+        }, data );
+        watcher->setFuture(future);
+    }
+
+    else if (selector == QStringLiteral("classLibraryRecompiled")){
         mCompiled = true;
         emit classLibraryRecompiled();
     }
 
-    else if (selector == requestCurrentPathSelector)
+    else if (selector == QStringLiteral("requestCurrentPath"))
         Main::documentManager()->sendActiveDocument();
 }
 
@@ -403,14 +430,5 @@ void ScProcess::updateSelectionMirrorForDocument ( Document * doc, int start, in
     }
 }
 
-void ScIntrospectionParserWorker::process(const QString &input)
-{
-    try {
-        ScLanguage::Introspection *introspection = new ScLanguage::Introspection (input);
-        emit done(introspection);
-    } catch (std::exception & e) {
-        MainWindow::instance()->showStatusMessage(e.what());
-    }
-}
 
 } // namespace ScIDE

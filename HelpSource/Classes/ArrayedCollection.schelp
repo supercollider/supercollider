@@ -284,8 +284,7 @@ code::
 ::
 
 method::copyRange
-Return a new ArrayedCollection which is a copy of the indexed slots of the receiver from strong::start:: to strong::end::.
-code::x.copyRange(a, b):: can also be written as code::x[a..b]::
+Return a new ArrayedCollection which is a copy of the indexed slots of the receiver from strong::start:: to strong::end::. If strong::end:: < strong::start::, an empty ArrayedCollection is returned.
 code::
 (
 var y, z;
@@ -295,10 +294,13 @@ z.postln;
 y.postln;
 )
 ::
+warning:: code::x.copyRange(a, b):: is strong::not:: equivalent to code::x[a..b]::. The latter compiles to link::#-copySeries::, which has different behavior when strong::end:: < strong::start::. ::
 
 method::copySeries
-Return a new ArrayedCollection consisting of the values starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::.
-code::x.copySeries(a, b, c):: can also be written as code::x[a, b..c]::
+Return a new ArrayedCollection consisting of the values starting at strong::first::, then every step of the distance between strong::first:: and strong::second::, up until strong::last::. If strong::second:: is code::nil::, a step of 1 or -1 is used as appropriate.
+
+code::x.copySeries(a, nil, c):: is equivalent to code::x[a..c]::, and code::x.copySeries(a, b, c):: is equivalent to code::x[a,b..c]::
+
 code::
 (
 var y, z;

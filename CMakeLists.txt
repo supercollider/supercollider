@@ -15,15 +15,31 @@ enable_testing()
 
 include (cmake_modules/FinalFile.cmake)
 
-if (NOT CMAKE_BUILD_TYPE)
-	message(STATUS "Build type defaulting to \"RelWithDebInfo\"")
-	set(CMAKE_BUILD_TYPE "RelWithDebInfo")
+if(CMAKE_GENERATOR MATCHES "Visual Studio" OR CMAKE_GENERATOR MATCHES "Xcode")
+	message(STATUS "Please specify the build configuration in the next step")
+else()
+	if (NOT CMAKE_BUILD_TYPE)
+		message(STATUS "Build type defaulting to \"RelWithDebInfo\"")
+		set(CMAKE_BUILD_TYPE "RelWithDebInfo")
+	endif()
 endif()
 
 if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 	message(WARNING "WARNING: IN-PLACE BUILDS ARE NOT RECOMMENDED - PLEASE USE A BUILD DIRECTORY")
 endif()
 
+# allows cmake-find modules and Windows installer to identify the right architecture
+if(WIN32)
+    if(CMAKE_CL_64 OR "$ENV{MSYSTEM}" MATCHES "64" OR CMAKE_C_COMPILER MATCHES "64")
+        SET(CMAKE_LIBRARY_ARCHITECTURE "x64" CACHE STRING "Architecture of target system (for 64bit)")
+    else()
+        SET(CMAKE_LIBRARY_ARCHITECTURE "x86" CACHE STRING "Architecture of target system (for 32bit)")
+    endif()
+
+    if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+        SET(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install" CACHE STRING "Cmake install path" FORCE)
+    endif()
+endif(WIN32)
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules
                       ${CMAKE_MODULE_PATH})
@@ -46,14 +62,11 @@ if (${CMAKE_COMPILER_IS_GNUCXX})
 
 	add_definitions("-Wreturn-type")
 
-	if(${_gcc_version} VERSION_LESS 4.7)
-		message(FATAL_ERROR "SuperCollider requires at least gcc-4.7 when compiled with gcc.")
+	if(${_gcc_version} VERSION_LESS 4.8)
+		message(FATAL_ERROR "SuperCollider requires at least gcc-4.8 when compiled with gcc.")
 	endif()
 
-#	disabled for now: -ffast-math breaks avx intrinsics and -fsigned-zeros/-fno-associative-math are not available in some versions
-#	if (${_gcc_version} VERSION_GREATER 4.0.99)
-#		add_definitions("-ffast-math -fsigned-zeros -fno-associative-math")
-#	endif()
+	add_definitions("-ffast-math -fsigned-zeros -fno-associative-math")
 
 	if(APPLE)
 		exec_program(${CMAKE_CXX_COMPILER} ARGS --version OUTPUT_VARIABLE _gcc_version_info)
@@ -70,9 +83,7 @@ elseif(${CMAKE_CXX_COMPILER} MATCHES icpc)
 	add_definitions(-Wno-unknown-pragmas)
 	add_definitions(-simd)
 
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(CMAKE_COMPILER_IS_CLANG 1)
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
     set(CMAKE_COMPILER_IS_CLANG 1)
 endif()
 
@@ -94,6 +105,17 @@ endif()
 
 add_definitions(-DBOOST_CHRONO_HEADER_ONLY -DBOOST_NO_AUTO_PTR)
 
+
+#############################################
+# Detect CCache
+
+find_program(CCacheExectuable ccache)
+if( CCacheExectuable )
+  # only used with >=cmake-3.4
+  set( CMAKE_C_COMPILER_LAUNCHER   "${CCacheExectuable}" )
+  set( CMAKE_CXX_COMPILER_LAUNCHER "${CCacheExectuable}" )
+endif()
+
 #############################################
 # Options
 option(NOVA_SIMD "Build with nova-simd support." ON)
@@ -101,8 +123,13 @@ option(FINAL_BUILD "Build as single source file." OFF)
 
 option(FFT_GREEN "Use internal 'Green' FFT lib rather than FFTW. (Not recommended.)" OFF)
 
-option(SSE "Compile with support for SSE instructions." ON)
-option(SSE2 "Compile with support for SSE2 instructions." ON)
+if(NOT ${CMAKE_SYSTEM_PROCESSOR} MATCHES "^arm")
+    option(SSE "Compile with support for SSE instructions." ON)
+    option(SSE2 "Compile with support for SSE2 instructions." ON)
+else() # ARM platforms do not have SSE
+    set(SSE OFF)
+    set(SSE2 OFF)
+endif()
 
 set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio})")
 
@@ -169,11 +196,6 @@ if (NOT WIN32)
     include_directories(${PTHREADS_INCLUDE_DIR})
 endif()
 
-if(MSVC OR MINGW)
-    set(MATH_LIBRARY "")
-else()
-    find_library(MATH_LIBRARY m)
-endif()
 
 if(SYSTEM_BOOST)
   set(Boost_USE_MULTITHREADED      ON)
@@ -369,7 +391,7 @@ if (WIN32)
 	set( AdditionalInstallFiles
 		README.md
 		README_WINDOWS.md
-		ChangeLog
+		CHANGELOG.md
 		COPYING
 		AUTHORS
 	)
@@ -377,16 +399,15 @@ elseif(APPLE)
 	set( AdditionalInstallFiles
 		README.md
 		README_OS_X.md
-		ChangeLog
+		CHANGELOG.md
 		COPYING
 		AUTHORS
-		MOVED_STUFF.txt
 	)
 else()
 	set( AdditionalInstallFiles
 		README.md
 		README_LINUX.md
-		ChangeLog
+		CHANGELOG.md
 		COPYING
 		AUTHORS
 	)

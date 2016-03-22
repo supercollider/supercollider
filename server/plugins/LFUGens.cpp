@@ -25,6 +25,8 @@
 #include <cstdio>
 #include "function_attributes.h"
 
+#include <boost/align/is_aligned.hpp>
+
 static InterfaceTable *ft;
 
 struct Vibrato : public Unit
@@ -32,6 +34,7 @@ struct Vibrato : public Unit
 	double mPhase, m_attackSlope, m_attackLevel;
 	float mFreqMul, m_scaleA, m_scaleB, mFreq;
 	int m_delay, m_attack;
+    float trig;
 };
 
 struct LFPulse : public Unit
@@ -322,6 +325,28 @@ void Vibrato_next(Vibrato *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
+	
+	float curtrig = ZIN0(8);
+	if (unit->trig <= 0.f && curtrig > 0.f){
+	
+		unit->mFreqMul = 4.0 * SAMPLEDUR;
+		unit->mPhase = 4.0 * sc_wrap(ZIN0(7), 0.f, 1.f) - 1.0;
+	
+		RGen& rgen = *unit->mParent->mRGen;
+		float rate = ZIN0(1) * unit->mFreqMul;
+		float depth = ZIN0(2);
+		float rateVariation = ZIN0(5);
+		float depthVariation = ZIN0(6);
+		unit->mFreq    = rate  * (1.f + rateVariation  * rgen.frand2());
+		unit->m_scaleA = depth * (1.f + depthVariation * rgen.frand2());
+		unit->m_scaleB = depth * (1.f + depthVariation * rgen.frand2());
+		unit->m_delay = (int)(ZIN0(3) * SAMPLERATE);
+		unit->m_attack = (int)(ZIN0(4) * SAMPLERATE);
+		unit->m_attackSlope = 1. / (double)(1 + unit->m_attack);
+		unit->m_attackLevel = unit->m_attackSlope;
+	}
+	
+	unit->trig = curtrig;
 
 	double ffreq = unit->mFreq;
 	double phase = unit->mPhase;
@@ -440,7 +465,7 @@ void Vibrato_Ctor(Vibrato* unit)
 	unit->m_attack = (int)(ZIN0(4) * SAMPLERATE);
 	unit->m_attackSlope = 1. / (double)(1 + unit->m_attack);
 	unit->m_attackLevel = unit->m_attackSlope;
-
+	unit->trig = 0.0f;
 	SETCALC(Vibrato_next);
 	Vibrato_next(unit, 1);
 }
@@ -1245,8 +1270,6 @@ struct K2A:
 	}
 };
 
-DEFINE_XTORS(K2A)
-
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 void A2K_next(A2K *unit, int inNumSamples)
@@ -1330,7 +1353,7 @@ void T2A_Ctor(T2A* unit)
 #ifdef NOVA_SIMD
 	if (BUFLENGTH == 64)
 		SETCALC(T2A_next_nova_64);
-	else if (!(BUFLENGTH & 15))
+	else if (boost::alignment::is_aligned( BUFLENGTH, 16 ))
 		SETCALC(T2A_next_nova);
 	else
 #endif
@@ -1365,8 +1388,6 @@ struct DC:
 			set_vec<type>(out(0), value, inNumSamples);
 	}
 };
-
-DEFINE_XTORS(DC)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1468,7 +1489,7 @@ void Line_Ctor(Line* unit)
 #ifdef NOVA_SIMD
 	if (BUFLENGTH == 64)
 		SETCALC(Line_next_nova);
-	else if (!(BUFLENGTH & 15))
+	else if (boost::alignment::is_aligned( BUFLENGTH, 16 ))
 		SETCALC(Line_next_nova);
 	else
 #endif
@@ -1585,7 +1606,7 @@ void XLine_Ctor(XLine* unit)
 #ifdef NOVA_SIMD
 	if (BUFLENGTH == 64)
 		SETCALC(XLine_next_nova_64);
-	else if (!(BUFLENGTH & 15))
+	else if (boost::alignment::is_aligned( BUFLENGTH, 16 ))
 		SETCALC(XLine_next_nova);
 	else
 #endif
@@ -2104,7 +2125,7 @@ static ClipCalcFunc Clip_SelectCalc(Clip * unit)
 	int hiRate = INRATE(2);
 
 #ifdef NOVA_SIMD
-	if (!(BUFLENGTH & 15)) {
+	if (boost::alignment::is_aligned( BUFLENGTH, 16 )) {
 		switch (loRate)
 		{
 		case calc_FullRate:
@@ -2718,7 +2739,7 @@ void EnvGen_Ctor(EnvGen *unit)
 			SETCALC(EnvGen_next_aa);
 		} else {
 #ifdef NOVA_SIMD
-			if (!(BUFLENGTH & 15))
+			if (boost::alignment::is_aligned( BUFLENGTH, 16 ))
 				SETCALC(EnvGen_next_ak_nova);
 			else
 #endif
@@ -3672,11 +3693,11 @@ PluginLoad(LF)
 	DefineSimpleUnit(Impulse);
 	DefineSimpleUnit(VarSaw);
 	DefineSimpleUnit(SyncSaw);
-	DefineSimpleUnit(K2A);
+	registerUnit<K2A>( ft, "K2A" );
 	DefineSimpleUnit(A2K);
 	DefineSimpleUnit(T2K);
 	DefineSimpleUnit(T2A);
-	DefineSimpleUnit(DC);
+	registerUnit<DC>( ft, "DC" );
 	DefineSimpleUnit(Line);
 	DefineSimpleUnit(XLine);
 

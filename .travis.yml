@@ -13,7 +13,9 @@ before_install:
  - ifmac () { if [[ $TRAVIS_OS_NAME == osx ]]; then eval $@; fi; }
  - iflin () { if [[ $TRAVIS_OS_NAME == linux ]]; then eval $@; fi; }
  - ifmac brew update
- - ifmac brew install cmake qt5 || true
+ - ifmac brew tap homebrew/versions
+ - ifmac brew install cmake qt55 || true
+ - ifmac brew link qt55 --force
  #- iflin sudo apt-add-repository -y ppa:ubuntu-sdk-team/ppa
  - iflin "curl https://s3-us-west-2.amazonaws.com/supercollider/build-tools/linux/qt-5.3.2.zip -o qt.zip; unzip qt.zip -d $HOME/qt"
  - iflin sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
@@ -29,14 +31,14 @@ before_script:
  - cd BUILD
  - export QT_PREFIX=$HOME/qt/gcc_64
  - export QT_PLUGIN_PATH=$QT_PREFIX/plugins
- - ifmac cmake -DCMAKE_PREFIX_PATH=`brew --prefix qt5` -DSC_QT=1 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 .. --debug-output
+ - ifmac cmake -DCMAKE_PREFIX_PATH=`brew --prefix qt55` -DSC_QT=1 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 .. --debug-output
  - iflin cmake -DSC_EL=no -DCMAKE_PREFIX_PATH=$QT_PREFIX -DCMAKE_INSTALL_PREFIX:PATH=$PWD/Install -DCMAKE_BUILD_TYPE=Release -DSC_QT=1 .. --debug-output
 # some paths
  - ifmac export SCLANG=$TRAVIS_BUILD_DIR/BUILD/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
  - iflin export SCLANG=$TRAVIS_BUILD_DIR/BUILD/Install/bin/sclang
 
 script:
- - make install
+ - sudo make install
  - $TRAVIS_BUILD_DIR/testsuite/sclang/launch_test.py $SCLANG
 
  - export COMMIT_NAME=$TRAVIS_COMMIT

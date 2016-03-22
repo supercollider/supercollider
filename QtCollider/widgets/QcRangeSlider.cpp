@@ -41,6 +41,7 @@ QcRangeSlider::QcRangeSlider() :
 {
   setFocusPolicy( Qt::StrongFocus );
   setOrientation( Qt::Vertical );
+  setAttribute(Qt::WA_AcceptTouchEvents);
 }
 
 void QcRangeSlider::setOrientation( Qt::Orientation o )

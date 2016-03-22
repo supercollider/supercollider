@@ -76,6 +76,7 @@ QcGraph::QcGraph() :
 
   setFocusPolicy( Qt::StrongFocus );
   setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
+  setAttribute(Qt::WA_AcceptTouchEvents);
 
   connect( &_model, SIGNAL(removed(QcGraphElement*)), this, SLOT(onElementRemoved(QcGraphElement*)) );
 }

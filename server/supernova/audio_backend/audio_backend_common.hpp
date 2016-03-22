@@ -22,13 +22,13 @@
 #include <vector>
 
 #include <boost/mpl/if.hpp>
+#include <boost/align/aligned_allocator.hpp>
 
 #include "nova-simd/simd_memory.hpp"
 #include "nova-tt/dummy_mutex.hpp"
 #include "nova-tt/spin_lock.hpp"
 
 #include "utilities/malloc_aligned.hpp"
-
 
 namespace nova   {
 namespace detail {
@@ -137,7 +137,7 @@ protected:
     }
 
     std::vector<aligned_storage_ptr<sample_type, managed_memory>,
-                aligned_allocator<aligned_storage_ptr<sample_type, managed_memory>> > input_samples, output_samples;
+                boost::alignment::aligned_allocator<aligned_storage_ptr<sample_type, managed_memory>, 64>> input_samples, output_samples;
 };
 
 class audio_settings_basic

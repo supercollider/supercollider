@@ -68,6 +68,12 @@ add_library(tlsf STATIC "TLSF-2.4.6/src/tlsf.c")
 target_compile_definitions( tlsf PRIVATE TLSF_STATISTIC=1 )
 target_include_directories( tlsf INTERFACE TLSF-2.4.6/src )
 
+#oscpack
+add_library(oscpack STATIC EXCLUDE_FROM_ALL "oscpack_build.cpp")
+target_include_directories(oscpack PRIVATE boost)
+target_include_directories(oscpack INTERFACE oscpack_1_1_0 )
+
+
 if(LTO)
 	set_property(TARGET oscpack tlsf
 				 APPEND PROPERTY COMPILE_FLAGS "-flto -flto-report")
@@ -75,11 +81,6 @@ if(LTO)
 	set_property(TARGET oscpack tlsf
 				 APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 endif()
-
-#oscpack
-add_library(oscpack STATIC EXCLUDE_FROM_ALL "oscpack_build.cpp")
-target_include_directories(oscpack PRIVATE boost)
-target_include_directories(oscpack INTERFACE oscpack_1_1_0 )
 
 if(NOT YAMLCPP_FOUND)
   message(STATUS "using bundled libyaml-cpp")
@@ -134,3 +135,26 @@ if(WIN32)
   target_link_libraries(portmidi PRIVATE winmm.lib)
   target_compile_definitions(portmidi INTERFACE HAVE_PORTMIDI)
 endif()
+
+# portaudio
+if (WIN32)
+
+  # Currently only WMME builds if portaudio is built as subproject of SC.
+  # Build portaudio independently (using the same source) for a build with all
+  # APIs (A VS build can support all APIs, a MinGW build misses out on WASAPI).
+  # The resulting libraries can be stored in a siblingfolder of the SC source
+  # and will be used instead of the built library. See README_WINDOWS.md for
+  # details.
+  # The values below override the default values in CMakeLists.txt proper of
+  # Portaudio.
+
+  OPTION(PA_USE_ASIO "Enable support for ASIO" OFF)
+  OPTION(PA_USE_WDMKS "Enable support for WDMKS" OFF)
+  OPTION(PA_USE_DS "Enable support for Direct Sound" OFF)
+  OPTION(PA_USE_WASAPI "Enable support for WASAPI" OFF)
+
+  if(SC_BUILD_PA)
+    add_subdirectory(portaudio)
+  endif(SC_BUILD_PA)
+
+endif(WIN32)

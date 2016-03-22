@@ -2298,7 +2298,7 @@ void b_write_nrt_1(uint32_t bufnum, movable_string const & filename, movable_str
 
 void fire_b_write_exception(void)
 {
-    throw std::runtime_error("wrong arguments for /b_allocReadChannel");
+    throw std::runtime_error("wrong arguments for /b_write");
 }
 
 template <bool realtime>
