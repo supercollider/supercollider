@@ -37,6 +37,7 @@ before_install:
  - iflin sudo apt-get install build-essential gcc g++ cmake pkg-config qt55-meta libjack-jackd2-dev libsndfile1-dev libasound2-dev libavahi-client-dev libreadline6-dev libfftw3-dev libicu-dev libxt-dev libudev-dev 
 
 before_script:
+ - source /opt/qt55/bin/qt55-env.sh
  - mkdir BUILD
  - cd BUILD
 <<<<<<< HEAD
