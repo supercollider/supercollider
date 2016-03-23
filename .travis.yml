@@ -28,6 +28,7 @@ before_install:
 =======
  - ifmac brew install cmake qt5 || true
 <<<<<<< HEAD
+<<<<<<< HEAD
  - iflin sudo add-apt-repository -y ppa:beineri/opt-qt551-trusty
 <<<<<<< HEAD
 >>>>>>> ca1de2a... Update .travis.yml
@@ -37,6 +38,9 @@ before_install:
 >>>>>>> aff156f... add sudo apt-get-update -qq
  - iflin sudo apt-get install build-essential gcc g++ cmake pkg-config qt55-meta libjack-jackd2-dev libsndfile1-dev libasound2-dev libavahi-client-dev libreadline6-dev libfftw3-dev libicu-dev libxt-dev libudev-dev 
 =======
+=======
+#  - iflin sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+>>>>>>> 7d1cd1a... added ppa:ubuntu-toolchain-r/test
  - iflin sudo add-apt-repository --yes ppa:beineri/opt-qt551-trusty
  - iflin sudo apt-get update -qq
  - iflin sudo apt-get install --yes build-essential gcc g++ cmake pkg-config qt55-meta libjack-jackd2-dev libsndfile1-dev libasound2-dev libavahi-client-dev libreadline6-dev libfftw3-dev libicu-dev libxt-dev libudev-dev 
