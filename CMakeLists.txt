@@ -302,8 +302,9 @@ if (SC_MEMORY_DEBUGGING)
 endif()
 
 if(MINGW)
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mstackrealign")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mstackrealign")
+# no-strict-aliasing was introduced because of problems with MinGW/GCC 4.9.2
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mstackrealign -fno-strict-aliasing")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mstackrealign -fno-strict-aliasing")
 endif()
 
 if (NO_GPL3)
