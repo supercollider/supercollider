@@ -60,6 +60,9 @@ if(NOT Boost_FOUND) # we compile boost ourselves
 		set_property(TARGET boost_thread
 			APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 	endif()
+
+	set_property( TARGET boost_thread boost_program_options boost_system boost_filesystem PROPERTY FOLDER 3rdparty )
+
 endif()
 
 # tlsf
@@ -98,7 +101,7 @@ if(NOT YAMLCPP_FOUND)
 endif()
 
 
-set_property( TARGET oscpack tlsf boost_thread boost_program_options boost_system boost_filesystem PROPERTY FOLDER 3rdparty )
+set_property( TARGET oscpack tlsf PROPERTY FOLDER 3rdparty )
 
 
 ##### HID_API #######
@@ -133,26 +136,3 @@ if(WIN32)
   target_link_libraries(portmidi PRIVATE winmm.lib)
   target_compile_definitions(portmidi INTERFACE HAVE_PORTMIDI)
 endif()
-
-# portaudio
-if (WIN32)
-
-  # Currently only WMME builds if portaudio is built as subproject of SC.
-  # Build portaudio independently (using the same source) for a build with all
-  # APIs (A VS build can support all APIs, a MinGW build misses out on WASAPI).
-  # The resulting libraries can be stored in a siblingfolder of the SC source
-  # and will be used instead of the built library. See README_WINDOWS.md for
-  # details.
-  # The values below override the default values in CMakeLists.txt proper of
-  # Portaudio.
-
-  OPTION(PA_USE_ASIO "Enable support for ASIO" OFF)
-  OPTION(PA_USE_WDMKS "Enable support for WDMKS" OFF)
-  OPTION(PA_USE_DS "Enable support for Direct Sound" OFF)
-  OPTION(PA_USE_WASAPI "Enable support for WASAPI" OFF)
-
-  if(SC_BUILD_PA)
-    add_subdirectory(portaudio)
-  endif(SC_BUILD_PA)
-
-endif(WIN32)

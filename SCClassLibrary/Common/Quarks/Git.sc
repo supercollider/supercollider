@@ -65,17 +65,14 @@ Git {
 	}
 	sha {
 		// find what hash is currently checked out
-		var out;
 		^sha ?? {
 			sha = this.git(["rev-parse HEAD"]);
 		}
 	}
 	remoteLatest {
 		// find what the latest commit on the remote is
-		var out;
 		^remoteLatest ?? {
-			out = this.git(["rev-parse origin/master"]);
-			remoteLatest = out.copyRange(0, out.size - 2)
+			remoteLatest = this.git(["rev-parse origin/master"]);
 		}
 	}
 	tags {
