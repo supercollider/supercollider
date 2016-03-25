@@ -20,11 +20,11 @@ elseif (SNDFILE_INCLUDE_DIR AND SNDFILE_LIBRARY)
 elseif (APPLE)
 
   find_path(SNDFILE_INCLUDE_DIR sndfile.h
-    PATHS /usr/local/include
+    HINTS /usr/local/opt/libsndfile/include
   )
 
   find_library(SNDFILE_LIBRARY NAMES libsndfile.dylib
-    PATHS /usr/local/lib
+    HINTS /usr/local/opt/libsndfile/lib
   )
 
   if(NOT SNDFILE_INCLUDE_DIR OR NOT SNDFILE_LIBRARY)
