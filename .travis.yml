@@ -27,7 +27,7 @@ before_install:
  - iflin sudo update-alternatives --auto gcc
 
 before_script:
- - source /opt/qt55/bin/qt55-env.sh
+ - iflin source /opt/qt55/bin/qt55-env.sh
  - mkdir BUILD
  - cd BUILD
 
