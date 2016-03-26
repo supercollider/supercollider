@@ -46,13 +46,17 @@ Prerequisites:
   `xcode-select --install`
 - **homebrew** is recommended to install required libraries
   See http://brew.sh for installation instructions.
-- **git, cmake, readline, and qt5**, installed via homebrew:
-  `brew install git cmake readline qt5`
+- **git, cmake, readline, and qt5.5.x**, installed via homebrew:
+  `brew install git cmake readline homebrew/versions/qt55`
 
-  As of this writing the latest stable Qt is 5.5.x. The 5.6 beta has also been reported to work fine.
+  *Note*: As of this writing the latest stable Qt is 5.6.x. SC depends on Qt5WebKit, which was dropped from the binary distribution of Qt 5.6
+  (functionally replaced by Qt5WebEngine). Therefore you cannot simply install the latest Qt5 via homebrew and rely on the defaults set during
+  the install. If this is you first Qt5 install, use the package name given above and replace `brew --prefix qt5` by `brew --prefix qt55` in 
+  the build instructions below. If you already had Qt5, and were caught by an update, or you need several Qt5 installs, you can set the version
+  to be used by default with `brew switch`, for example `brew switch qt5 5.5.1_2` (you can also "freeze" the Qt5 version with `brew pin`).
 
 Obtaining the source code
-----------------------------
+-------------------------
 
 **Note** Please do not use non-ASCII characters (above code point 127) in your
 SuperCollider program path (i.e. the names of the folders containing SuperCollider).
@@ -92,21 +96,25 @@ To install, you may move this to /Applications or use it in place from the build
 
     cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt5`  ..
 
-This specifies to cmake that we will be using Xcode to build. It also specifies the location of qt so that the complier/linker can find it. Qt was installed with brew, so we ask brew to tell us where it installed it to.
+This specifies to cmake that we will be using Xcode to build. It also specifies the location of qt so that the complier/linker can find it 
+(note that you might have to set `qt55` instead of `qt5`, depending on how you installed you qt5 version (see above, "Prerequisites")). 
+`brew --prefix qt5` will be expanded to the path to current Qt5 when the command is run.
 
-If you are not using the Homebrew install then you should substitute the path to parent folder of the bin/include/lib folders in that Qt tree.
+If you are not using the Homebrew install then you should substitute the path to the parent folder of the bin/include/lib folders in that 
+Qt tree.
 
 ##### Build
 
     cmake --build . --target install --config RelWithDebInfo
 
-Cmake will build the application, looking for the `CMakeCache.txt` configuration file in the specified directory (the current directory: `.` ).
-
-The operation it will build is named 'install'.
+Cmake will build the application looking up configuration information in the file `CMakeCache.txt` in the specified directory 
+(the current directory: `.` ). By specifying '--target install' you build all targets and trigger the creation of a portable
+bundle containing all files contained in the SC distribution. The default install location is `./Install`.
 
 The flag `--config RelWithDebInfo` will build an optimized binary but will still include some useful debug information.
 
-By default Xcode builds the application in debug mode which runs much slower and has a larger application size. Its intended for use with the XCode debugger. For normal usage you will want an optimized release version.
+By default Xcode builds the application in debug mode which runs much slower and has a larger application size. It is intended for use with
+the XCode debugger. For normal usage you will want an optimized release version.
 
 The four possible build configs are:
 
@@ -126,9 +134,10 @@ The most common build problems are related to incorrect versions of the core dep
 
 **Xcode**: `xcodebuild -version`, or the "About" dialog of the Xcode application. Any build from the 6.x series or greater should generally work.
 
-**cmake, qt5, readline**: `brew info ____` will show you what you have installed - for example, `brew info qt5` should show you the Qt5 version information.
+**cmake, qt5(.5.x), readline**: `brew info ____` will show you what you have installed - for example, `brew info qt5` should show you the Qt5 version
+information. A build using v5.6 and above will fail at the time of this writing because Qt5WebKit is missing in its binary distribution.
 
-`brew upgrade ____` will update the dependency to a newer version.
+`brew upgrade ____` will update the dependency to a newer version (avoid this for Qt5 or handle different Qt5 versions with `brew switch`).
 
 Other common homebrew problems can be fixed using `brew doctor`.
 
