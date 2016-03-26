@@ -22,7 +22,7 @@ before_install:
  - iflin sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
  - iflin sudo add-apt-repository --yes ppa:beineri/opt-qt551-trusty
  - iflin sudo apt-get update
- - iflin sudo apt-get install --yes build-essential gcc-4.9 g++-4.9 cmake pkg-config qt55-meta-full libjack-jackd2-dev libsndfile1-dev libasound2-dev libavahi-client-dev libreadline6-dev libfftw3-dev libicu-dev libxt-dev libudev-dev 
+ - iflin sudo apt-get install --yes build-essential gcc-4.9 g++-4.9 cmake pkg-config qt55base qt55location qt55declarative qt55sensors qt55tools qt55webengine qt55webchannel qt55webkit qt55xmlpatterns  libjack-jackd2-dev libsndfile1-dev libasound2-dev libavahi-client-dev libreadline6-dev libfftw3-dev libicu-dev libxt-dev libudev-dev 
  - iflin sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.9 
  - iflin sudo update-alternatives --auto gcc
 
