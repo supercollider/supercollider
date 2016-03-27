@@ -116,7 +116,7 @@ Quarks {
 		dir = path.dirname;
 		lines = this.installed.collect({ |quark|
 			var localPath, url="", refspec;
-			localPath = this.asRelativePath(quark.localPath);
+			localPath = this.asRelativePath(quark.localPath, dir);
 			if(Git.isGit(quark.localPath), {
 				url = quark.url;
 				if(Git(quark.localPath).isDirty, {
@@ -403,7 +403,7 @@ Quarks {
 	*asRelativePath { |path, relativeToDir|
 		var d;
 		if(path.beginsWith(relativeToDir), {
-			^"." ++ path.copyToEnd(relativeToDir)
+			^"." ++ path.copyToEnd(relativeToDir.size)
 		});
 		d = Platform.userHomeDir;
 		// ~/path if in home
