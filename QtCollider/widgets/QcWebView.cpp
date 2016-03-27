@@ -22,22 +22,21 @@
 #include "QcWebView.h"
 #include "web_page.hpp"
 #include "../QcWidgetFactory.h"
-#include <QWebPage>
-#include <QWebFrame>
-#include <QWebElement>
+#include <QWebEnginePage>
 #include <QAction>
 #include <QMenu>
 #include <QShortcut>
 #include <QKeyEvent>
 #include <QApplication>
 #include <QStyle>
+#include <QSemaphore>
 
 QC_DECLARE_QWIDGET_FACTORY(WebView);
 
 namespace QtCollider {
 
 WebView::WebView( QWidget *parent ) :
-  QWebView( parent ),
+  QWebEngineView( parent ),
   _interpretSelection(false),
   _editable(false)
 {
@@ -51,11 +50,11 @@ WebView::WebView( QWidget *parent ) :
 
   setAttribute(Qt::WA_AcceptTouchEvents);
 
-  page->action( QWebPage::Copy )->setShortcut( QKeySequence::Copy );
-  page->action( QWebPage::Paste )->setShortcut( QKeySequence::Paste );
+  page->action( QWebEnginePage::Copy )->setShortcut( QKeySequence::Copy );
+  page->action( QWebEnginePage::Paste )->setShortcut( QKeySequence::Paste );
 
   connect( this, SIGNAL(linkClicked(QUrl)), this, SLOT(onLinkClicked(QUrl)) );
-  connect( page->action(QWebPage::Reload), SIGNAL(triggered(bool)),
+  connect( page->action(QWebEnginePage::Reload), SIGNAL(triggered(bool)),
            this, SLOT(onPageReload()) );
 
   connect( this, SIGNAL(interpret(QString)),
@@ -70,7 +69,7 @@ WebView::WebView( QWidget *parent ) :
 
 QString WebView::url() const
 {
-  return QWebView::url().toString();
+  return QWebEngineView::url().toString();
 }
 
 void WebView::setUrl( const QString & str )
@@ -80,29 +79,49 @@ void WebView::setUrl( const QString & str )
 
 QString WebView::html () const
 {
-  return page()->mainFrame()->toHtml();
+  QString result;
+  QSemaphore sem;
+
+  page()->toHtml( [&] (QString text) {
+    result = text;
+    sem.release();
+  });
+
+  sem.acquire();
+
+  return result;
 }
 
 void WebView::setHtml ( const QString &html, const QString &baseUrl )
 {
   QUrl url( baseUrl.isEmpty() ? QUrl() : urlFromString(baseUrl) );
-  QWebView::setHtml( html, url );
+  QWebEngineView::setHtml( html, url );
 }
 
 QString WebView::plainText () const
 {
-  return page()->mainFrame()->toPlainText();
+  QString result;
+  QSemaphore sem;
+
+  page()->toPlainText( [&] (QString text) {
+    result = text;
+    sem.release();
+  });
+
+  sem.acquire();
+
+  return result;
 }
 
-QWebPage::LinkDelegationPolicy WebView::linkDelegationPolicy () const
-{
-  return page()->linkDelegationPolicy();
-}
+//QWebEnginePage::LinkDelegationPolicy WebView::linkDelegationPolicy () const
+//{
+//  return page()->linkDelegationPolicy();
+//}
 
-void WebView::setLinkDelegationPolicy ( QWebPage::LinkDelegationPolicy p )
-{
-  page()->setLinkDelegationPolicy( p );
-}
+//void WebView::setLinkDelegationPolicy ( QWebEnginePage::LinkDelegationPolicy p )
+//{
+//  page()->setLinkDelegationPolicy( p );
+//}
 
 bool WebView::delegateReload() const
 {
@@ -120,21 +139,21 @@ void WebView::setDelegateReload( bool flag )
 
 void WebView::setFontFamily( int generic, const QString & specific )
 {
-  settings()->setFontFamily( (QWebSettings::FontFamily) generic, specific );
+//  settings()->setFontFamily( (QWebEngineSettings::FontFamily) generic, specific );
 }
 
 void WebView::evaluateJavaScript ( const QString &script )
 {
-  if( script.isEmpty() ) return;
-  QWebFrame *frame = page()->currentFrame();
-  if( frame ) frame->evaluateJavaScript( script );
+  if( !script.isEmpty() )
+    page()->runJavaScript( script );
 }
 
 void WebView::findText( const QString &searchText, bool reversed )
 {
-  QWebPage::FindFlags flags( QWebPage::FindWrapsAroundDocument );
-  if( reversed ) flags |= QWebPage::FindBackward;
-  QWebView::findText( searchText, flags );
+  QWebEnginePage::FindFlags flags;
+  if( reversed )
+    flags |= QWebEnginePage::FindFlag( QWebEnginePage::FindBackward);
+  QWebEngineView::findText( searchText, flags );
 }
 
 void WebView::onLinkClicked( const QUrl &url )
@@ -153,23 +172,23 @@ void WebView::contextMenuEvent ( QContextMenuEvent * event )
 
     QPoint pos = event->pos();
 
-    QWebHitTestResult hitTest = page()->mainFrame()->hitTestContent( pos );
+//    QWebHitTestResult hitTest = page()->mainFrame()->hitTestContent( pos );
 
-    if (!hitTest.linkElement().isNull()) {
-        menu.addAction( pageAction(QWebPage::CopyLinkToClipboard) );
-        menu.addSeparator();
-    }
+//    if (!hitTest.linkElement().isNull()) {
+//        menu.addAction( pageAction(QWebEnginePage::CopyLinkToClipboard) );
+//        menu.addSeparator();
+//    }
 
-    if (hitTest.isContentEditable() || hitTest.isContentSelected()) {
-        menu.addAction( pageAction(QWebPage::Copy) );
-        if (hitTest.isContentEditable())
-            menu.addAction( pageAction(QWebPage::Paste) );
-        menu.addSeparator();
-    }
+//    if (hitTest.isContentEditable() || hitTest.isContentSelected()) {
+//        menu.addAction( pageAction(QWebEnginePage::Copy) );
+//        if (hitTest.isContentEditable())
+//            menu.addAction( pageAction(QWebEnginePage::Paste) );
+//        menu.addSeparator();
+//    }
 
-    menu.addAction( pageAction(QWebPage::Back) );
-    menu.addAction( pageAction(QWebPage::Forward) );
-    menu.addAction( pageAction(QWebPage::Reload) );
+    menu.addAction( pageAction(QWebEnginePage::Back) );
+    menu.addAction( pageAction(QWebEnginePage::Forward) );
+    menu.addAction( pageAction(QWebEnginePage::Reload) );
 
     menu.exec( event->globalPos() );
 }
@@ -190,7 +209,16 @@ void WebView::keyPressEvent( QKeyEvent *e )
         }
     }
 
-    QWebView::keyPressEvent( e );
+    QWebEngineView::keyPressEvent( e );
+}
+
+void WebView::setEditable( bool b )
+{
+    _editable = b;
+    if( b )
+        page()->runJavaScript("document.documentElement.contentEditable = true");
+    else
+        page()->runJavaScript("document.documentElement.contentEditable = false");
 }
 
 } // namespace QtCollider

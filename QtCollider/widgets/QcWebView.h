@@ -22,22 +22,22 @@
 #ifndef QC_WEB_VIEW_H
 #define QC_WEB_VIEW_H
 
-#include <QWebView>
-#include <QWebPage>
+#include <QWebEngineView>
+#include <QWebEnginePage>
 #include <QUrl>
 
 namespace QtCollider {
 
 class WebPage;
 
-class WebView : public QWebView
+class WebView : public QWebEngineView
 {
   Q_OBJECT
   Q_PROPERTY( QString url READ url WRITE setUrl );
   Q_PROPERTY( QString html READ html )
   Q_PROPERTY( QString plainText READ plainText )
-  Q_PROPERTY( QWebPage::LinkDelegationPolicy linkDelegationPolicy
-              READ linkDelegationPolicy WRITE setLinkDelegationPolicy )
+//  Q_PROPERTY( QWebEnginePage::LinkDelegationPolicy linkDelegationPolicy
+//              READ linkDelegationPolicy WRITE setLinkDelegationPolicy )
   Q_PROPERTY( bool delegateReload READ delegateReload WRITE setDelegateReload );
   Q_PROPERTY( bool enterInterpretsSelection
               READ interpretSelection WRITE setInterpretSelection );
@@ -67,14 +67,14 @@ public:
   QString html () const;
   QString plainText () const;
 
-  QWebPage::LinkDelegationPolicy linkDelegationPolicy () const;
-  void setLinkDelegationPolicy ( QWebPage::LinkDelegationPolicy );
+//  QWebEnginePage::LinkDelegationPolicy linkDelegationPolicy () const;
+//  void setLinkDelegationPolicy ( QWebEnginePage::LinkDelegationPolicy );
   bool delegateReload() const;
   void setDelegateReload( bool );
   bool interpretSelection() const { return _interpretSelection; }
   void setInterpretSelection( bool b ) { _interpretSelection = b; }
-    bool editable() const { return _editable; }
-  void setEditable( bool b ) { _editable = b; page()->setContentEditable(b); }
+  bool editable() const { return _editable; }
+  void setEditable( bool b );
 
   inline static QUrl urlFromString( const QString & str ) {
       return QUrl::fromUserInput(str);
@@ -87,7 +87,8 @@ protected:
 private Q_SLOTS:
   void onLinkClicked( const QUrl & );
   void onPageReload();
-  void updateEditable(bool ok) { if(ok) page()->setContentEditable(_editable); }
+  void updateEditable(bool ok) { if(ok) setEditable( _editable ); }
+
 
 private:
   bool _interpretSelection;
