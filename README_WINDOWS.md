@@ -88,7 +88,11 @@ SC has a life in social media too. Visit a lively community at sccode.org:
 
     http://sccode.org/
 
-There is a Facebook group SuperCollider, or find SuperCollider tweets, e.g.
+Listen to music composed with SuperCollider on SoundCloud:
+
+    https://soundcloud.com/groups/supercollider
+
+There are several SuperCollider Facebook groups, some SuperCollider tweets, e.g.
 @sc140tweets. In addition you are strongly encouraged to subscribe to the two SC
 mailing lists 'sc-users' and 'sc-devel'. You will get friendly and qualified
 replies there, as well as interest, and encouragement for your projects:
@@ -280,7 +284,7 @@ develop for SC proper, by any luck, you might not have to care much about CMake,
 and can spend most of the time in your preferred IDE.
 
 The Windows port of SC is in a stage of transition. The older build system used
-the Windows port of GCC (MinGW), the newer uses the native Windows build  tools
+the Windows port of GCC (MinGW), the newer uses the native Windows build tools
 integrated into the IDE Visual Studio. This transition is not complete yet. The
 sc3-plugins collection can currently only be built with the old build system, as
 can SuperNova, an alternative server with multi-core capabilities. Also sclang's
@@ -310,11 +314,13 @@ Quick Steps
 - Build tools
   - [CMake][cmake], latest stable version
   - One of:
-    - [MinGW][Qt], version *4.82* 32-bit, the distribution shipped with Qt (QT\Tools\mingw482_32)
+    - [MinGW][Qt], version *4.92* 32-bit, the distribution shipped with Qt (QT\Tools\mingw492_32)
     - [Visual Studio 12 2013][VS]
 - Libraries
   - Required
-    - *[Qt][Qt]* >= 5.5.1 (versions from 5.3 upwards should work but have not been tested)
+    - *[Qt][Qt]* versions 5.5.x Versions from 5.3 upwards should work but are 
+        little tested. Qt5.6 does not work with SC 3.7 because WebKit was dropped
+        from the binary distribution.
         Use the official download from qt.io and the online-installer. It offers
         flexibility in choosing different packages in a single go (e.g. Qt,
         MinGW and Qt Creator), and helps managing maintenance. It provides a
@@ -323,10 +329,11 @@ Quick Steps
         will be referring to that file structure throughout this text.
 
         *Important note*: the flavour of Qt (e.g. msvc2013_64 or mingw492_32) must
-        match your toolchain as closely as possible!
+        match your toolchain!
 
         For a 64-bit VS build select msvc2013_64
         for a 32-bit MinGW build select mingw492_32
+
     - *[libsndfile][libsndfile]* >= 1.0.25
 - Recommended
   - *[fftw][fftw]* >= 3.3.4
@@ -335,7 +342,9 @@ Quick Steps
     MinGW build
   - *[ASIO-SDK][asiosdk]* = 2.3 (Asio support in Portaudio)
 - Optional
-  - *DirectX SDK* [v.7][dx7sdk] for MinGW, [v.9][dx9sdk] for VS. (Direct Sound support in Portaudio)
+  - *DirectX SDK* version 7 for MinGW, [v.9][dx9sdk] for VS. (Direct Sound support in Portaudio)
+        *Note*: at the time of this writing there was no official download of dx7sdk. Please do
+        some research or enquire on the SC mailing list, how to get hold of a download.
   - *[NSIS][nsis]*, if you want to create a binary SC installer (add the binary `makensis` to PATH)
 - Convenience
   - a Unix line-ending friendly text editor like *[Atom][atomeditor]* or *[Notepad++][notepad++]*.
@@ -376,12 +385,12 @@ the source tree.
   - *[MinGW][Qt]*: embedded in the Qt folder tree, downloaded together with Qt. Likely
     location after install:
 
-      C:\Qt\Tools\mingw482_32
+      C:\Qt\Tools\mingw492_32
 
     Compiler and other tools required for the build are found in the binaries
     subdirectory. It needs to be added to the environment PATH:
 
-      C:\Qt\Tools\mingw482_32\bin
+      C:\Qt\Tools\mingw492_32\bin
 
 
   - *[VS][VS]*: default install of VS2013, paths are handled automatically
@@ -402,7 +411,7 @@ the source tree.
 - *[readline][readline]* (only works in MinGW build)
 
 *Important note*: creating the folder structure described here will save you
-from likely frustration when cmake cannot find dependencies:
+from likely frustration when CMake cannot find dependencies:
 
 - if you build a 32-bit SC, create a folder `x86` as a sibling of your
 SC source. For a 64-bit SC call it `x64`
@@ -449,7 +458,7 @@ source folder:
 
 For DSound support the DirectX SDK has to be obtained. Unfortunately MinGW and
 VS build require different versions. For VS download [version 9][dx9sdk] and
-install it in the system. For the MinGW build obtain [version 7][dx7sdk], copy
+install it in the system. For the MinGW build obtain version 7, copy
 the folders `lib` and `include` to a parent folder called dx7sdk, and again
 place it next to the SC source:
 
@@ -504,22 +513,13 @@ delimiters.
   The other arguments are stored in the file "CMakeCache.txt" in the build
   folder and used by CMake on subsequent runs.
 
-*Important Note*: The MinGW build of SC 3.7 uses the compiler coming with MinGW
-4.8.2, while MinGW-Qt5.5 is built with MinGW/GCC 4.9.2. This divergence makes it
-necessary to add the binary folder of Qt5.5.1 to the environment PATH as well.
-Both Qt and MinGW provide the same runtime libraries (libstdc++.dll,
-libgcc_s_dw2-1.dll and libwinpthread-1.dll). Therefore the position of Qt in the
-PATH needs to be in front of the toolchain, to make sure that any search
-routines using the environment PATH find the more recent libraries required by
-Qt.
-
 The following steps use a subfolder of the SC source as build folder (called
 'build') and assume Qt (including the MinGW branch) installed in the default
 location. They should be enough to successfully create the intermediary build
 files required to start the build, if the smaller dependencies are in the place
 expected:
 
-    $> SET PATH=C:\Qt\5.5\mingw492_32\bin;C:\Qt\Tools\mingw482_32\bin;%PATH%
+    $> SET PATH=C:\Qt\5.5\mingw492_32\bin;C:\Qt\Tools\mingw492_32\bin;%PATH%
     $> SET CMAKE_PREFIX_PATH=C:\Qt\5.5\mingw492_32
     $> cd supercollider
     $> mkdir build
@@ -586,7 +586,7 @@ If you want to create a binary installer, run:
       $> cmake --build . --target installer
 
 For this to work, the install target will have to be built already, and NSIS has
-to be installed on your system with its command line tool `makensis` added to
+to be installed on your system, with its command line tool `makensis` added to
 the PATH.
 
 The SC installer executable will be written to the same parent folder as the
@@ -602,8 +602,8 @@ removing some registry settings during uninstall. The userAppSupportDirectory
 will be created from scratch if SuperCollider doesn't find it during start-up.
 Whether you copy the SC install folder, or use the full installer, you will
 always loose the local customizations and additions stored in the
-userAppSupportDirectory. The new Quarks system provides means to make porting of
-extension/Quark groups easier.
+userAppSupportDirectory. The new Quarks system provides means to make porting
+of extension/Quark groups easier.
 
 
 ### VS
@@ -674,7 +674,7 @@ walkthrough on CMake-Gui and VS for more details on using the VS IDE).
 ### Portaudio
 
 Portaudio is provided as submodule of SC and is built automatically as part
-of the SC-build. In order to add Asio- and DSound support, the respective
+of the SC-build. In order to add ASIO- and/or DSound support, the respective
 SDKs have to be added to the build.
 
 ASIO: download the SDK from [Steinberg][asiosdk], extract the zip and place
@@ -691,10 +691,10 @@ common, ...). You should end up with a folder tree like this:
         host
 
 DSound/DirectX: unfortunately the MinGW- and the VS-build require different DX
-versions. The MinGW-build only works with [version 7][dx7sdk], whereas the
-VS-build only works with [version 9 (June 2010)][dx9sdk]. Version 9 can still be
-downloaded from MS and installed into the OS. Acquiring version 7 needs some
-research, at the time of this writing no official MS download was provided. Once
+versions. The MinGW-build only works with version 7, whereas the VS-build only 
+works with [version 9 (June 2010)][dx9sdk]. Version 9 can still be downloaded 
+from MS and installed into the OS. Acquiring version 7 needs some research, at 
+the time of this writing no official MS download was provided. Once
 you get the files, don't install them, just copy the folders `include` and `lib`
 into a folder. The folder's name needs to start with `dx`. Make that folder a
 sibling of the SuperCollider source.
@@ -761,7 +761,7 @@ For this to be meaningful we need to
   - point `cmake` to the source (last element in `cmake` command, cannot be
     omitted on subsequent runs):
 
-        $> SET PATH=C:\Qt\Tools\mingw482_32\bin;%PATH%
+        $> SET PATH=C:\Qt\Tools\mingw492_32\bin;%PATH%
         $> mkdir sc3-plugins-build
         $> cd sc3-plugins-build
         $> cmake -G "MinGW Makefiles" ..\sc3-plugins
@@ -913,13 +913,13 @@ Settings/Environment Variables). Setting the PATH on system level brings along
 some risks that need to be managed carefully, most importantly: adding Qt5 (or a
 toolchain) at the head of the system PATH can cause other applications that may
 depend on similar path settings, to malfunction. This can be easily corrected by
-removing the offending entry when finished with SC (and avoiding the competing
-application in the meantime), but this might not always be possible. So we need
-to keep in mind: While working on a SC build with changed *system environment*
-settings, other applications might get into trouble. Most common cases are
-applications that depend on some implicit Qt install addressed in the path, or
-MinGW applications that require MinGW runtime libraries that don't fit the ones
-used in the build. It is not best practice to rely on the path to find
+removing the offending entry when done with SC development (and avoiding the 
+conflicting application in the meantime), but this might not always be possible.
+So we need to keep in mind: While working on a SC build with changed *system
+environment* settings, other applications might get into trouble. Most common 
+cases are applications that depend on some implicit Qt install added to the
+PATH, or MinGW applications that require MinGW runtime libraries that don't fit
+the ones used in our build. It is not best practice to rely on the path to find
 libraries, but it is quite common, especially among free applications stemming
 from the unix world, where people are used to a homogenous system, in which all
 applications use the same shared libraries. To avoid potential trouble, you
@@ -954,7 +954,7 @@ Once CMake-Gui is running it will need to know (just like on the command line):
     Only start CMake-Gui *after* this adjustment has been made.
 
 2. the path to the build folder and the SC source
-  - they can be comfortably be selected in the two text boxes at the top of
+  - they can be comfortably selected in the two text boxes at the top of
     the window.
 
 3. the generator to use
@@ -1017,7 +1017,7 @@ as well, to run Visual Studio in the same environment as CMake-Gui:
 If you set the environment on Windows system level, you can start Visual Studio
 in your preferred way. Once the "solution file" is open in Visual Studio, you
 are ready to build. You can either chose "Build->Build solution" or right-click
-the *target* ALL_BUILD or Supercollider and select "BUILD". Once the build is
+the *target* "ALL_BUILD", or "Supercollider" and select "BUILD". Once the build is
 completed you should be able to run any of the targets that contain executables:
 
     SuperCollider
@@ -1080,36 +1080,37 @@ CMakeLists.txt files themselves in a meaningful context.
 
 In a kit, among other things (debugger, source control system and more), you can
 select one (among potentially several) Qts on your system, and chose a toolchain
-to combine with. If your Qt is installed in a standard location, it is possible
-(though unlikely) that QtC already created a kit at start-up that fits the
-needs. While QtC can be used to build with the MS toolchain, it is the more
-likely choice when building with MinGW. So before opening the SC project, we
-need to create the right kit: Qt5.5.1-mingw492_32 combined with mingw482_32.
-This can be done in Tools -> Options -> Kits and should be self-explanatory.
+to combine with. If your Qt is installed in a standard location, it is likely
+that QtC already created a kit at start-up that fits the needs. While QtC can be
+used to build with the MS toolchain, it is the more likely choice when building
+with MinGW. So before opening the SC project, we may need to create the right kit: 
+Qt5.5.1-mingw492_32 combined with mingw492_32. This can be done in Tools -> 
+Options -> Kits and should be self-explanatory.
 
 Next step is to open the project (File -> Open File or Project) by pointing to
 the root CMake script (CMakeLists.txt) in the top parent folder of the SC
 source. Then QtC will prompt you for a build folder and run `cmake`. This dialog
 is well adapted to the trial-error approach of aggregating the required variable
 assignments for the build (see "CMake-Gui to VS", or "Building sc3-plugins").
-Once cmake returns no errors you should be ready to build.
+Once CMake returns no errors you should be ready to build.
 
 For managing your build you will typically visit the "Project Pane". It offers
-two pages where you can make choices relating to build definition and install/
+two sub-panes where you can make choices relating to build definition and install/
 deployment. It is the place to add predefined alternative kits with a dedicated
 build folder (for alternative builds), modify the environment in which the build
-is executed, or add additional build steps or targets (e.g. install, installer).
+is executed, or add more build steps or targets (e.g. install, installer).
 You can also chose individual targets to be built here. Each build step can be
 conveniently clicked on or off. You may also assign additional build steps to
 the second project pane "run", where install related steps are best placed. This
 is also the place to select the target that is started when SC is "Run" or
 "Debug"ged from the mode selector ribbon. Note though that the steps defined there
 are executed each time you hit "Run" or "Debug", so it is not always helpful to
-have these steps active during a development cycle. In order to create a binary
-installer, you will want to add the (custom) target `installer` here. It creates
-a binary containing all files required to run SC autonomously (NSIS required).
-But if you are not working on the installer itself, you will likely only want to
-activate that step at the end of a development cycle.
+have these steps active during a development cycle.
+
+In order to create a binary installer, you will want to add the (custom) target
+`installer`. It creates a binary containing all files required to run SC autonomously 
+(NSIS required). But if you are not working on the installer itself, you will likely
+only want to activate that step at the end of a development cycle.
 
 
 ### More `cmake`: building supernova, qt-less, verbosity and more
@@ -1119,16 +1120,17 @@ the SC build configuration is the file CMakeCache.txt in the build folder. The
 most comprehensive information is of course contained in the CMakeLists.txt
 files scattered over the project source tree, starting from the source root
 folder. A longer list of variables defined for the SC build is retrieved by
-adding the flags -L or -LA to the command `cmake ..`.
+adding the flags -L or -LA ('list advanced') to the command `cmake ..`.
 
 The file CMakeCache.txt can be manually edited and is the best place to verify
 that variables have been assigned the values expected. Keep in mind that the
 `clean` step does not delete or change this file. This simplifies configuration,
 but may also cause trouble if wrong values are kept. To make sure CMake
-generated values are updated correctly, delete this file. To make sure object
-files are recompiled, run the `target clean`. To avoid any contamination by an
-old build, delete the entire build folder. Of course each of these measures
-significantly extends the time needed to complete a build.
+generated values are updated correctly, remove the respective variables from
+the file or delete the entire file. To make sure object files are recompiled,
+"build" the `target clean`. To avoid any contamination by an old build, delete 
+the entire build folder. Of course each of these measures significantly extends
+the time needed to complete a build.
 
 If you get mysterious build failures (i.e. no CMake error message that helps),
 sometimes increasing cmake output verbosity during the build gives you
@@ -1143,11 +1145,11 @@ your build "-j4" with MinGW ("-m4" with VS) might work:
 
 Commonly used variables to modify the build configuration are:
 
-* Location where SC get's "installed", which in this context means: where the
-  SC files get copied to if you build the target "install". The default location
-  is set to './Install'. If you maintain multiple builds you could either use
-  different build trees or install to different folders. Change this for example
-  like so:
+* Location where SC gets "installed", which in this context means: where the
+  SC files - including required external libraries - get copied to if you
+  build the target "install". The default location is set to './Install'.
+  If you maintain multiple builds you could either use different build trees
+  or install to different folders. Change this for example like so:
 
       -D CMAKE_INSTALL_PREFIX=./x86/AllPullRequests
 
@@ -1174,8 +1176,7 @@ Commonly used variables to modify the build configuration are:
   *Note*: When you build with supernova, an alternative server executable and
   a supernova version of each plugin is built. If you also use the 'sc3-plugins'
   package, make sure to compile them with supernova support too. At the time
-  of this writing supernova could only be built with the MinGW toolchain (both
-  32- and 64-bit).
+  of this writing supernova could only be built with the MinGW toolchain.
 
   Within SC you will be able to switch between scsynth and supernova by
   evaluating one of lines below and then booting the server as usual:
@@ -1187,7 +1188,11 @@ Commonly used variables to modify the build configuration are:
 
   *Note*: If you experience problems getting the supernova plugins recognized
   (plugins related error at supernova boot), try placing them in a folder called
-  "plugins" in the "userAppSupportDirectory\Extensions" folder.
+  "plugins" in the "userAppSupportDirectory\Extensions" folder. It may also be
+  required to separate binary plugins and classes. The class files may reside
+  anywhere in the Extensions folder (or in any "included" class folder), whereas
+  the binary plugins should reside in a folder "plugins" (this mirrors the situation
+  in the application directory)
 
   *Note*: While there is no readily available 64-bit Qt version for the MinGW
   build, supernova does not depend on Qt. Therefore a qt-less build could be
@@ -1219,7 +1224,7 @@ Commonly used variables to modify the build configuration are:
 
   You cannot use the Help browser in Qt-less SC. An option is, to render Help
   with sclang (`SCDoc.renderAll`) and run it in a browser. There is also the
-  option to build or pre-render the entire documentation during build time to a
+  option to build, or pre-render the entire documentation during build time to a
   subfolder "RenderedHelp" in the build folder. This is enabled by setting
   "SC_DOC_RENDER" to on:
 
@@ -1278,14 +1283,14 @@ opening a command line window. Just copy the link called "Command prompt" and
 access the properties for that link. The "Target" input-box can take the command
 that opens the command line window *and* runs your batch file, e.g.:
 
-    %COMSPEC% /A /Q /K %USERPROFILE%\qtenvQt5.5mingw482_32.bat
+    %COMSPEC% /A /Q /K %USERPROFILE%\qtenvQt5.5mingw492_32.bat
 
 If the batch file contains these lines:
 
     echo off
     echo Setting up environment for Qt usage...
-    echo Qt 5.5 mingw492_32 paired with MinGW 4.8.2
-    set PATH=C:\Qt\5.5\mingw492_32\bin;C:\Qt\Tools\mingw482_32\bin;%PATH%
+    echo Qt 5.5 mingw492_32 paired with MinGW 4.9.2
+    set PATH=C:\Qt\5.5\mingw492_32\bin;C:\Qt\Tools\mingw492_32\bin;%PATH%
     set CMAKE_PREFIX_PATH=C:\Qt\5.5\mingw492_32
 
 You are set to start the environment for the MinGW build system with a
@@ -1299,7 +1304,7 @@ Unix' `alias`, e.g.:
     DOSKEY cds=cd %USERPROFILE%\Projects\sc\supercollider
     DOSKEY cdbdb=cd %USERPROFILE%\Projects\sc\supercollider\build_MW_Db
     DOSKEY cdbrl=cd %USERPROFILE%\Projects\sc\supercollider\build_MW_Rl
-    DOSKEY cdd=cd %USERPROFILE%\Projects\sc\deployment\mingw482_32
+    DOSKEY cdd=cd %USERPROFILE%\Projects\sc\deployment\mingw492_32
 
 These lines create a VS environment:
 
@@ -1375,11 +1380,12 @@ In this case the generator has to be "MinGW Makefiles". For example:
 Ready to build!
 
 Unfortunately the resulting SC binaries don't work for now (segfault in the
-IDE). At the time of this writing, msys2 had already progressed to using GCC
-5.3, while SC was still stuck in 4.82. Once this changes, big times lay ahead
-for the MinGW build of SC. 64-bit IDE, sclang, scsynth, supernova, base- &
-sc3-plugins are in close reach, and shouldn't be too difficult to maintain
-alongside mainstream SC development on the unixy platforms.
+IDE). It is unclear whether this is due to a bug in 32-bit MSYS2 or SC. Once
+this changes, and once the SC codebase is updated to support a MinGW 64-bit
+build, big times lay ahead for the SCWin build. 64-bit IDE, sclang, scsynth,
+supernova, base- & sc3-plugins are in close reach, and shouldn't be too
+difficult to maintain alongside mainstream SC development on the unixy 
+platforms.
 
 
 Diagnosing build problems
@@ -1390,11 +1396,11 @@ These are likely the most common causes of build problems:
 - after run- or debug-sessions sometimes scsynth or sclang "zombies" stay
   in memory. That will create file-access errors during build. End the process
   the in the task manager
-- too old or new compiler/toolchain: tested are MinGW 4.8.2 32-bit and
+- too old or new compiler/toolchain: tested are MinGW 4.9.2 32-bit and
   VS 12/2013 64-bit
 - incorrect versions of the dependencies (readline 5.0.1, libsndfile 1.0.25/26,
   fftw 3.3.4, Qt 5.5.1)
-- too old cmake version (2.8.12 and bigger should be fine)
+- too old cmake version (3.0.2 and bigger should be fine)
 - dynamic/runtime-library mismatch. This can happen if dependencies and
   core SC require different versions of the same runtime library. Reach out
   for libraries that do not depend on MinGW runtimes or make sure all components
@@ -1403,7 +1409,7 @@ These are likely the most common causes of build problems:
   architecture (32- or 64-bit) but also the toolchain used to compile SC and Qt
   (sometimes called flavour in this text). They have to match as closely as
   possible (anything but an exact match is likely to cause trouble). SC built
-  with VS requires the msvc2013_64 flavour, the MinGW 4.8.2 build requires
+  with VS requires the msvc2013_64 flavour, the MinGW 4.9.2 build requires
   the mingw492_32 flavour
 - dirty states in your build folder (usually resulting from changes in the build
   configuration). See below for various "fixes"
@@ -1451,7 +1457,7 @@ the build, when CMake find-modules try to identify the libraries required for
 the build on your system, or at the very end (during "install"), when a CMake
 utility (bundle utilities) tries to find the libraries required to allow your
 build to work outside of the build environment (*standalone* in the meaning of
-*build environment independent*).
+*build environment independent* or *autonomous*).
 
 There are two relatively easy ways to identify wrong finds at the beginning:
 
@@ -1488,9 +1494,9 @@ CMakeCache.txt. So keep in mind that implementing a different logic to create a
 value for a cmake variable (or e.g. moving a library to a place where it will be
 found by cmake) will not necessarily become effective in the next configure run.
 If the cache already contains a value assigned to that variable it will continue
-using that value. A safe fix for this kind of problems is to delete the entire
+to use that value. A safe fix for this kind of problems is to delete the entire
 cache file, but it is usually sufficient to delete the variable(s) that should be
-regenerated.
+reassigned values.
 
 If you get wrong finds because of a conflicting system configuration (Qt4,
 different toolchains, individual libraries in high priority system locations
@@ -1508,23 +1514,21 @@ the target "install") is not required, SC can be run in the respective target
 folders - using and depending on the build environment settings. The development
 IDEs should be able to find the correct executable if you hit "run target". But
 if you want to start SC from the file explorer, or use a copy on another
-computer, you will need to "install" an run from/copy the generated install
-folder.
+computer, you will need to "install" and then run from/copy the generated
+installation folder.
 
 On Windows the bundle utility just reads out the dynamic libraries required to
 run an executable, tries to find them in the system, and copies them to the
 folder in which the executable resides. This is the safest way to guarantee that
 SC can be used independently of the build environment, because Windows
-executables always look for libraries in their own wording directory *first*.
+executables always look for libraries in their own working directory *first*.
 Fixup_bundle just identifies libraries by their names (version and architecture
 are not verified). When it tries to find the libraries in the system, the
 environment PATH is taken into consideration with relatively high priority.
 Therefore it is theoretically possible that fixup_bundle finds different
 libraries from the ones used at build time. As a result your build will work,
-but the install won't. Even worse: the error messages produced by trying to
-start an executable using a library with the correct name, but a wrong version
-or architecture, are far less specific than the ones produced if a library is
-simply missing.
+but the install won't. Even worse: the error messages produced in this case
+are far less specific than the ones produced if a library is simply missing.
 
 Fortunately it is not too difficult to identify wrong finds of fixup_bundle,
 because it produces output that tells exactly, which libraries were copied to
@@ -1552,9 +1556,9 @@ current build status of SC is the travis-ci status page:
 
 Unfortunately though there is no Continuous Integration system in place for
 Windows yet. Therefore you are strongly encouraged to report Windows build
-issues in one of the mailing lists, or in the SC issue tracker on Github.
+issues in one of the mailing lists, or the SC issue tracker on Github.
 Reporting Windows build issues is currently the only way to detect errors
-created for SC Windows by progress in mainstream SC development.
+for SCWin resulting from progress in mainstream SC development.
 
 
 Description of the SC 3.7 release build
@@ -1570,12 +1574,12 @@ SCWin64 3.7 was built with Visual Studio 12/2013
 - libsndfile 1.0.26
 - FFTW 3.3.4
 
-SCWin32 3.7 was built using Qt Creator, combining MinGW 4.8.2 and Qt 5.5.1
+SCWin32 3.7 was built using Qt Creator, combining MinGW 4.9.2 and Qt 5.5.1
 mingw492_32 into a kit. The MinGW distribution provided by Qt was used.
 
 - linsndfile 1.0.26
 - FFTW 3.3.4
-- Readline 5.0 (as provided by gnuwin32)
+- Readline 5.0.1 (as provided by gnuwin32)
 
 For both builds all other external libraries (including portaudio) were compiled
 as part of the SC build, using the sources embedded in the SC source tree (in
@@ -1593,10 +1597,10 @@ build. For VS:
 
 For MinGW:
 
-- DirectX v7
+- DirectX v7 (extinct MS download)
 
-The tools used were Git (2.7.0.windows.2), cmake (3.4.3), and NSIS (3.0b1) to
-create the binary installer.
+The tools used were Git for Windows v2.7.3.windows.1, cmake v3.5, and NSIS v3.0b1
+to create the binary installer.
 
 
 Known problems
@@ -1639,8 +1643,8 @@ Known problems
 
 - HID doesn't work (and never did on Windows)
 
-- using shell commands from SC only works in a very limited way (and always did).
-  .unixCmd expects a unix shell, only for most essential requirements workarounds
+- using shell commands from SC only works in a quite limited way (and always did).
+  .unixCmd expects a unix shell, only for essential requirements workarounds
   are in place on Windows.
 
 More specific smaller Windows bugs are:
@@ -1680,7 +1684,6 @@ software publicly and freely available.
 [cmake]: http://www.cmake.org/download/
 [conemu]: https://conemu.github.io/ (free console emulator)
 [dependency walker]: http://www.dependencywalker.com/ (inspect missing library errors)
-[dx7sdk]: ftp://ftp.physik.hu-berlin.de/pub/useful/dx7asdk/ (MS DirectX 7 SDK for MinGW build, ftp-download only)
 [dx9sdk]: http://www.microsoft.com/en-us/download/details.aspx?id=6812 (MS DirectX 9 SDK (June 2010) for VS build)
 [fftw]: http://www.fftw.org/install/windows.html
 [Git]: http://git-scm.com/download/win (Git for Windows)
