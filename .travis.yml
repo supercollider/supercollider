@@ -14,7 +14,7 @@ before_install:
  - iflin () { if [[ $TRAVIS_OS_NAME == linux ]]; then eval $@; fi; }
  - ifmac brew update
  - ifmac brew tap homebrew/versions
- - ifmac brew install cmake qt55 || true
+ - ifmac brew install cmake libsndfile qt55 || true
  - ifmac brew link qt55 --force
  #- iflin sudo apt-add-repository -y ppa:ubuntu-sdk-team/ppa
  - iflin "curl https://s3-us-west-2.amazonaws.com/supercollider/build-tools/linux/qt-5.3.2.zip -o qt.zip; unzip qt.zip -d $HOME/qt"
