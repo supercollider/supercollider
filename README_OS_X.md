@@ -20,7 +20,6 @@ Table of contents
  * Using cmake with Xcode or QtCreator
  * Building without Qt or the IDE
  * sclang and scynth executables
- * On libsndfile
 
 Executables
 -----------
@@ -46,7 +45,7 @@ Prerequisites:
   `xcode-select --install`
 - **homebrew** is recommended to install required libraries
   See http://brew.sh for installation instructions.
-- **git, cmake, readline, and qt5.5.x**, installed via homebrew:
+- **git, cmake, libsndfile, readline, and qt5.5.x**, installed via homebrew:
   `brew install git cmake readline homebrew/versions/qt55`
 
   *Note*: As of this writing the latest stable Qt is 5.6.x. SC depends on Qt5WebKit, which was dropped from the binary distribution of Qt 5.6
@@ -134,7 +133,7 @@ The most common build problems are related to incorrect versions of the core dep
 
 **Xcode**: `xcodebuild -version`, or the "About" dialog of the Xcode application. Any build from the 6.x series or greater should generally work.
 
-**cmake, qt5(.5.x), readline**: `brew info ____` will show you what you have installed - for example, `brew info qt5` should show you the Qt5 version
+**cmake, qt5(.5.x), libsndfile, readline**: `brew info ____` will show you what you have installed - for example, `brew info qt5` should show you the Qt5 version
 information. A build using v5.6 and above will fail at the time of this writing because Qt5WebKit is missing in its binary distribution.
 
 `brew upgrade ____` will update the dependency to a newer version (avoid this for Qt5 or handle different Qt5 versions with `brew switch`).
@@ -224,12 +223,12 @@ Common arguments to control the build configuration are:
 
     Within SC you will be able to switch between scsynth and supernova by evaluating one of:
 
-    `Server.supernova`  
+    `Server.supernova`
     `Server.scsynth`
 
     Check sc help for `ParGroup` to see how to make use of multi-core hardware.
 
-  * Build a 32-bit version:
+  * Build a 32-bit version (sc 3.6 only):
 
     `-DCMAKE_OSX_ARCHITECTURES='i386'`
 
@@ -239,8 +238,14 @@ Common arguments to control the build configuration are:
 
     `-DCMAKE_OSX_ARCHITECTURES='i386;x86_64'`
 
-  * Normally, homebrew installations of readline are detected automatically, and building with  
-    readline is only required if you plan to use SuperCollider from the terminal. To link to a  
+  * Homebrew installations of libsndfile should be detected automatically. To link to a
+    version of libsndfile that is not installed in /usr/local/include|lib, you can use:
+
+    `-DSNDFILE_INCLUDE_DIR='/path/to/libsndfile/include'`
+    `-DSNDFILE_LIBRARY='/path/to/libsndfile/lib/libreadline.dylib'`
+
+  * Normally, homebrew installations of readline are detected automatically, and building with
+    readline is only required if you plan to use SuperCollider from the terminal. To link to a
     non-standard version of readline, you can use:
 
     `-DREADLINE_INCLUDE_DIR='/path/to/readline/include'`
@@ -338,24 +343,3 @@ This application failed to start because it could not find or load the Qt platfo
 
 - scsynth will not find the included "plugins", unless given explicitly
   with the -U commandline flag or using the SC_PLUGIN_PATH environment variable as shown above.
-
-
-On libsndfile
--------------
-
-In the past compiling a universal binary of libsndfile used to require accessing both a
-i386 and PPC Mac. The reasons for this are described here:
-
-http://www.mega-nerd.com/libsndfile/FAQ.html#Q018
-
-Because of this, libsndfile is included with the source as a precompiled
-universal binary. This UB contains ppc, i386 and x86_64 archs. By default SC uses this
-file, although the currently built universal does not contain Power PC versions any more
-and intel universal binaries of libsndfile are readily available via package managers.
-
-If you would like to build using the latest version of libsndfile, then specify its path to the cmake configuration:
-
-`-DSNDFILE_INCLUDE_DIR=/opt/local/include`
-`-DSNDFILE_LIBRARY=/opt/local/lib/libsndfile.dylib`
-
-The actual paths you need to include will vary depending on how you installed libsndfile.
