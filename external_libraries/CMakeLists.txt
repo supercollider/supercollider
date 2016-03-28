@@ -82,40 +82,43 @@ if(LTO)
 				 APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 endif()
 
-if(NOT YAMLCPP_FOUND)
-  message(STATUS "using bundled libyaml-cpp")
+if(SC_SCLANG)
+  if(NOT YAMLCPP_FOUND)
+    message(STATUS "using bundled libyaml-cpp")
 
-  # yaml-cpp
-  aux_source_directory(${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/src yaml_src)
-  CREATE_FINAL_FILE(${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp ${yaml_src})
+    # yaml-cpp
+    aux_source_directory(${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/src yaml_src)
+    CREATE_FINAL_FILE(${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp ${yaml_src})
 
-  add_library(yaml STATIC ${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp)
-  target_include_directories(yaml PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include)
-  set_property( TARGET yaml PROPERTY FOLDER 3rdparty )
+    add_library(yaml STATIC ${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp)
+    target_include_directories(yaml PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include)
+    set_property( TARGET yaml PROPERTY FOLDER 3rdparty )
 
-  if(CMAKE_COMPILER_IS_GNUCXX)
-    target_compile_options(yaml PRIVATE -Wno-deprecated-declarations)
+    if(CMAKE_COMPILER_IS_GNUCXX)
+      target_compile_options(yaml PRIVATE -Wno-deprecated-declarations)
+    endif()
+
   endif()
-
 endif()
-
 
 set_property( TARGET oscpack tlsf boost_thread boost_program_options boost_system boost_filesystem PROPERTY FOLDER 3rdparty )
 
 
 ##### HID_API #######
 
-if (HID_LIBUSB)
-  set( LIBUSB ON )
-  set( HIDRAW OFF )
+if(SC_SCLANG)
+  if (HID_LIBUSB)
+    set( LIBUSB ON )
+    set( HIDRAW OFF )
+  endif()
+  if (HID_HIDRAW)
+    set( HIDRAW ON )
+    set( LIBUSB OFF )
+  endif()
+  set( EXAMPLE_TEST OFF )
+  set( EXAMPLE_OSC OFF )
+  add_subdirectory(hidapi)
 endif()
-if (HID_HIDRAW)
-  set( HIDRAW ON )
-  set( LIBUSB OFF )
-endif()
-set( EXAMPLE_TEST OFF )
-set( EXAMPLE_OSC OFF )
-add_subdirectory(hidapi)
 
 if(WIN32)
   add_library(portmidi portmidi/pm_common/pminternal.h

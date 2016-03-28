@@ -138,6 +138,7 @@ option(LIBSCSYNTH "Compile libscsynth as shared library" OFF)
 option(INSTALL_HELP "Install help docs and examples along with the software" ON)
 option(SC_DOC_RENDER "Pre-render SCDoc documentation. (For putting online, etc)" OFF)
 option(SC_QT "Build SuperCollider with Qt GUI features" ON)
+option(SC_SCLANG "Build SuperCollider language interpreter (sclang)." ON)
 option(SC_IDE "Build Qt IDE." ON)
 if (SC_QT)
   message( STATUS "Compiling with Qt GUI" )
@@ -147,7 +148,10 @@ else()
     set(SC_IDE False)
   endif()
 endif (SC_QT)
-
+if(SC_DOC_RENDER AND NOT SC_SCLANG)
+	message( STATUS "SC_SCLANG is disabled, so automatically disabling SC_DOC_RENDER" )
+	set(SC_DOC_RENDER False)
+endif()
 
 option(ENABLE_TESTSUITE "Compile testsuite." ON)
 
@@ -208,10 +212,12 @@ else()
 	message(STATUS "building boost libraries manually")
 endif()
 
-if(SYSTEM_YAMLCPP)
-  find_package(YamlCpp)
-else()
-  set(YAMLCPP_FOUND OFF)
+if(SC_SCLANG)
+  if(SYSTEM_YAMLCPP)
+    find_package(YamlCpp)
+  else()
+    set(YAMLCPP_FOUND OFF)
+  endif()
 endif()
 
 #############################################
@@ -292,11 +298,12 @@ endif()
 # subdirectories
 add_subdirectory(external_libraries)
 
-if(NOT YAMLCPP_FOUND)
-  set(YAMLCPP_LIBRARY yaml)
-  set(YAMLCPP_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include)
+if(SC_SCLANG)
+  if(NOT YAMLCPP_FOUND)
+    set(YAMLCPP_LIBRARY yaml)
+    set(YAMLCPP_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include)
+  endif()
 endif()
-
 
 configure_file(common/SC_Version.hpp.in common/SC_Version.hpp)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/common)
@@ -315,9 +322,11 @@ else()
 endif()
 
 add_subdirectory(server)
-add_subdirectory(lang)
 add_subdirectory(platform)
-add_subdirectory(editors)
+if(SC_SCLANG)
+  add_subdirectory(lang)
+  add_subdirectory(editors)
+endif()
 
 if(UNIX AND NOT APPLE)
     install(DIRECTORY include/common include/plugin_interface include/server include/lang
@@ -347,37 +356,39 @@ if(WIN32)
 	set(SCCLASSLIB_EXCLUDE_REGEX "${SCCLASSLIB_EXCLUDE_REGEX}")
 endif()
 
-if(APPLE)
-	if(SC_SYMLINK_CLASSLIB)
-		#if there are folders inside SCCLassLibrary abort cmake.
-		file(GLOB classlibraryfolders "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary/[^.]*")
-		foreach(onedirectory ${classlibraryfolders})
-			message( "${onedirectory}" )
-			if(NOT IS_SYMLINK "${onedirectory}")
-				message(FATAL_ERROR "Symlinking will fail ! SCClassLibrary folder already exists and has directories inside, please delete it first." )
-			endif()
-		endforeach(onedirectory)
+if(SC_SCLANG)
+	if(APPLE)
+		if(SC_SYMLINK_CLASSLIB)
+			#if there are folders inside SCClassLibrary abort cmake.
+			file(GLOB classlibraryfolders "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary/[^.]*")
+			foreach(onedirectory ${classlibraryfolders})
+				message( "${onedirectory}" )
+				if(NOT IS_SYMLINK "${onedirectory}")
+					message(FATAL_ERROR "Symlinking will fail ! SCClassLibrary folder already exists and has directories inside, please delete it first." )
+				endif()
+			endforeach(onedirectory)
 
-		message(STATUS "Will create symlink of SCClassLibrary to ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary" )
-		if(NOT EXISTS "{CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary")
-			install( CODE "EXECUTE_PROCESS(COMMAND mkdir ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary)" )
-		endif()
-		#symlink the folders inside SCCLassLibrary. Check if QtCollider folder should be symlinked or not.
-		file(GLOB classlibraryfolders RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary" "SCClassLibrary/[^.]*")
-		foreach(onedirectory ${classlibraryfolders})
-			if(NOT "${onedirectory}" MATCHES "${SCCLASSLIB_EXCLUDE_REGEX}")
-				install( CODE
-					"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/${onedirectory} ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary/${onedirectory} )" )
+			message(STATUS "Will create symlink of SCClassLibrary to ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary" )
+			if(NOT EXISTS "{CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary")
+				install( CODE "EXECUTE_PROCESS(COMMAND mkdir ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary)" )
 			endif()
-		endforeach(onedirectory)
+			#symlink the folders inside SCCLassLibrary. Check if QtCollider folder should be symlinked or not.
+			file(GLOB classlibraryfolders RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary" "SCClassLibrary/[^.]*")
+			foreach(onedirectory ${classlibraryfolders})
+				if(NOT "${onedirectory}" MATCHES "${SCCLASSLIB_EXCLUDE_REGEX}")
+					install( CODE
+						"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/${onedirectory} ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary/${onedirectory} )" )
+				endif()
+			endforeach(onedirectory)
+		endif()
+	else()
+		install(DIRECTORY SCClassLibrary
+			DESTINATION ${auxresourcesdir}
+			REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
+			PATTERN "*~" EXCLUDE
+			PATTERN "*#" EXCLUDE
+		)
 	endif()
-else()
-	install(DIRECTORY SCClassLibrary
-		DESTINATION ${auxresourcesdir}
-		REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
-		PATTERN "*~" EXCLUDE
-		PATTERN "*#" EXCLUDE
-	)
 endif()
 
 if(NOT APPLE)
@@ -461,7 +472,9 @@ foreach(arg ${BUILD_CLASSLIBRARIES})
 	set(BUILD_CLASSLIBRARYPATH "${BUILD_CLASSLIBRARYPATH}+${arg}\n")
 endforeach()
 
-configure_file(build_sclang.cfg.in ${CMAKE_CURRENT_BINARY_DIR}/build_sclang.cfg)
+if(SC_SCLANG)
+	configure_file(build_sclang.cfg.in ${CMAKE_CURRENT_BINARY_DIR}/build_sclang.cfg)
+endif()
 
 if(SC_DOC_RENDER)
 	file(GLOB_RECURSE SCDocSources RELATIVE HelpSource .*[^~])
