@@ -142,5 +142,19 @@ x = Synth(\default);
 OSCdef(\watchForXEnd, { 'ended!'.postln }, '/n_end', s.addr, nil, [x.nodeID]).oneShot;
 x.release(3);
 
+// Args for which nil is passed will use the old values. While this facilitates swapping only parts of an OSCdef, such as the function, it also means you will have to free and recreate an OSCdef to remove parts.
+
+OSCdef(\argtest, {|msg ... args| msg[1].postln}, '/hey', argTemplate: ['you']);
+m.sendMsg("/hey", "you"); // oscdef will respond
+m.sendMsg("/hey", "there"); // oscdef will not respond, filtered out by argTemplate
+
+OSCdef(\argtest, argTemplate: nil); // this has no effect
+m.sendMsg("/hey", "you"); // oscdef will respond
+m.sendMsg("/hey", "there"); // oscdef will not respond, still filtered out by argTemplate
+
+OSCdef(\argtest).free; // in order to get rid of the argTemplate, free the def...
+OSCdef(\argtest, {|msg ... args| msg[1].postln}, '/hey'); // ... and recreate it.
+m.sendMsg("/hey", "you"); // oscdef will respond
+m.sendMsg("/hey", "there"); // oscdef will respond
 
 ::
