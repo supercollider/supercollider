@@ -18,22 +18,22 @@ if (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
   # in cache already
   set(PORTAUDIO_FOUND TRUE)
 else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
-  if (NOT WIN32 OR MSYS)
+  if (NOT WIN32)
    include(FindPkgConfig)
    pkg_check_modules(PORTAUDIO2 portaudio-2.0)
-  endif (NOT WIN32 OR MSYS)
+  endif (NOT WIN32)
 
   if (PORTAUDIO2_FOUND)
     set(PORTAUDIO_INCLUDE_DIRS
       ${PORTAUDIO2_INCLUDE_DIRS}
     )
-    if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" OR MSYS)
+    if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
       set(PORTAUDIO_LIBRARIES "${PORTAUDIO2_LIBRARY_DIRS}/lib${PORTAUDIO2_LIBRARIES}.dylib")
-    else (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" OR MSYS)
+    else (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
       set(PORTAUDIO_LIBRARIES
         ${PORTAUDIO2_LIBRARIES}
       )
-    endif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin" OR MSYS)
+    endif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(PORTAUDIO_VERSION
       19
     )
@@ -75,19 +75,11 @@ else (PORTAUDIO_LIBRARIES AND PORTAUDIO_INCLUDE_DIRS)
       set(PORTAUDIO_FOUND TRUE)
     endif ()
 
-    if (PORTAUDIO_INCLUDE_DIRS AND PORTAUDIO_LIBRARY_DEBUG AND PORTAUDIO_LIBRARY_RELEASE)
-      set(PORTAUDIO_FOUND_RELEASE_DEBUG TRUE)
-    endif()
-
     if (PORTAUDIO_FOUND)
       if (NOT Portaudio_FIND_QUIETLY)
         message(STATUS "Found Portaudio: ${PORTAUDIO_LIBRARIES}")
       endif (NOT Portaudio_FIND_QUIETLY)
     else (PORTAUDIO_FOUND)
-      if(PORTAUDIO_FOUND_RELEASE_DEBUG)
-        message(STATUS "Found Portaudio debug: ${PORTAUDIO_LIBRARY_DEBUG}")
-        message(STATUS "Found Portaudio release: ${PORTAUDIO_LIBRARY_RELEASE}")
-      endif(PORTAUDIO_FOUND_RELEASE_DEBUG)
       if (Portaudio_FIND_REQUIRED)
         message(FATAL_ERROR "Could not find Portaudio")
       endif (Portaudio_FIND_REQUIRED)
