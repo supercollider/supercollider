@@ -146,9 +146,12 @@ SCDocHTMLRenderer {
             << "</div>\n";
         };
 
-        stream << "<h1>" << doc.title;
+        stream << "<h1>";
         if((folder=="") and: {doc.title=="Help"}) {
+            stream << "SuperCollider " << Main.version;
             stream << "<span class='headerimage'><img src='" << baseDir << "/images/SC_icon.png'/></span>";
+        } {
+            stream << doc.title;
         };
         stream
         << "</h1>\n"
