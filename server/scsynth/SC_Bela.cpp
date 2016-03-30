@@ -30,6 +30,12 @@
 #include <posix/time.h>		// For Xenomai clock_gettime()
 
 #include "BeagleRT.h"
+// Xenomai-specific includes
+#include <sys/mman.h>
+#include <native/task.h>
+#include <native/timer.h>
+#include <native/intr.h>
+#include <rtdk.h>
 
 using namespace std;
 
@@ -72,10 +78,17 @@ public:
 	virtual ~SC_BelaDriver();
 
 	void BelaAudioCallback(BeagleRTContext *belaContext);
-
+    static void staticMAudioSyncSignal();
+    static AuxiliaryTask mAudioSyncSignalTask;
+    static int countInstances;
+    static SC_SyncCondition* staticMAudioSync;
 private:
 	uint32 mSCBufLength;
 };
+
+AuxiliaryTask SC_BelaDriver::mAudioSyncSignalTask;
+int SC_BelaDriver::countInstances;
+SC_SyncCondition* SC_BelaDriver::staticMAudioSync;
 
 SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)
 {
@@ -87,12 +100,20 @@ SC_BelaDriver::SC_BelaDriver(struct World *inWorld)
 {
 	mStartHostSecs = 0;
 	mSCBufLength = inWorld->mBufLength;
+    mAudioSyncSignalTask = BeagleRT_createAuxiliaryTask(staticMAudioSyncSignal, 94, "mAudioSyncSignalTask");
+    staticMAudioSync = &mAudioSync;
+    countInstances++;
+    if(countInstances != 1){
+        printf("Error: there are %d instances of SC_BelaDriver running at the same time. Exiting\n", countInstances);
+        exit(1);
+    }
 }
 
 SC_BelaDriver::~SC_BelaDriver()
 {
 	// Clean up any resources allocated for audio
 	BeagleRT_cleanupAudio();
+    countInstances--;
 }
 
 void render(BeagleRTContext *belaContext, void *userData)
@@ -103,6 +124,7 @@ void render(BeagleRTContext *belaContext, void *userData)
 }
 
 void sc_SetDenormalFlags();
+
 void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 {
 	struct timespec tspec;
@@ -240,9 +262,13 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 	}
 
 	// FIXME: this triggers a mode switch in Xenomai.
-	mAudioSync.Signal();
+    BeagleRT_scheduleAuxiliaryTask(mAudioSyncSignalTask);
 }
 
+void SC_BelaDriver::staticMAudioSyncSignal(){
+    staticMAudioSync->Signal();
+    rt_task_suspend(rt_task_self());
+}
 // ====================================================================
 
 bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
