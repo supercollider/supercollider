@@ -228,7 +228,7 @@ int SC_PortAudioDriver::PortAudioCallback( const void *input, void *output,
 			{
 				const float *src = inBuffers[k] + bufFramePos;
 				float *dst = inBuses + k * bufFrames;
-				memcpy(dst, src, bufFrames*sizeof(float));
+				memcpy(dst, src, bufFrames * sizeof(float));
 				*tch++ = bufCounter;
 			}
 
@@ -265,9 +265,9 @@ int SC_PortAudioDriver::PortAudioCallback( const void *input, void *output,
 				float *dst = outBuffers[k] + bufFramePos;
 				if (*tch++ == bufCounter) {
 					const float *src = outBuses + k * bufFrames;
-					memcpy(dst, src, bufFrames*sizeof(float));
+					memcpy(dst, src, bufFrames * sizeof(float));
 				} else {
-					memset(dst, 0, bufFrames*sizeof(float));
+					memset(dst, 0, bufFrames * sizeof(float));
 				}
 			}
 
