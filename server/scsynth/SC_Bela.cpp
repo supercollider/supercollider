@@ -78,10 +78,10 @@ public:
 	virtual ~SC_BelaDriver();
 
 	void BelaAudioCallback(BeagleRTContext *belaContext);
-    static void staticMAudioSyncSignal();
-    static AuxiliaryTask mAudioSyncSignalTask;
-    static int countInstances;
-    static SC_SyncCondition* staticMAudioSync;
+	static void staticMAudioSyncSignal();
+	static AuxiliaryTask mAudioSyncSignalTask;
+	static int countInstances;
+	static SC_SyncCondition* staticMAudioSync;
 private:
 	uint32 mSCBufLength;
 };
@@ -100,20 +100,20 @@ SC_BelaDriver::SC_BelaDriver(struct World *inWorld)
 {
 	mStartHostSecs = 0;
 	mSCBufLength = inWorld->mBufLength;
-    mAudioSyncSignalTask = BeagleRT_createAuxiliaryTask(staticMAudioSyncSignal, 94, "mAudioSyncSignalTask");
-    staticMAudioSync = &mAudioSync;
-    countInstances++;
-    if(countInstances != 1){
-        printf("Error: there are %d instances of SC_BelaDriver running at the same time. Exiting\n", countInstances);
-        exit(1);
-    }
+	mAudioSyncSignalTask = BeagleRT_createAuxiliaryTask(staticMAudioSyncSignal, 90, "mAudioSyncSignalTask");
+	staticMAudioSync = &mAudioSync;
+	++countInstances;
+	if(countInstances != 1){
+		printf("Error: there are %d instances of SC_BelaDriver running at the same time. Exiting\n", countInstances);
+		exit(1);
+	}
 }
 
 SC_BelaDriver::~SC_BelaDriver()
 {
 	// Clean up any resources allocated for audio
 	BeagleRT_cleanupAudio();
-    countInstances--;
+    --countInstances;
 }
 
 void render(BeagleRTContext *belaContext, void *userData)
@@ -261,13 +261,15 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 		scprintf("SC_BelaDriver: unknown exception in real time\n");
 	}
 
-	// FIXME: this triggers a mode switch in Xenomai.
+    // this avoids Xenomai mode switches in the audio thread ...
     BeagleRT_scheduleAuxiliaryTask(mAudioSyncSignalTask);
 }
 
 void SC_BelaDriver::staticMAudioSyncSignal(){
-    staticMAudioSync->Signal();
-    rt_task_suspend(rt_task_self());
+	// ... but mode switches are still happening here, in a lower priority thread.
+    // FIXME: this triggers a mode switch in Xenomai.
+	staticMAudioSync->Signal();
+	rt_task_suspend(rt_task_self());
 }
 // ====================================================================
 
