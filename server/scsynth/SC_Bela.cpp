@@ -100,7 +100,7 @@ SC_BelaDriver::SC_BelaDriver(struct World *inWorld)
 {
 	mStartHostSecs = 0;
 	mSCBufLength = inWorld->mBufLength;
-	mAudioSyncSignalTask = BeagleRT_createAuxiliaryTask(staticMAudioSyncSignal, 94, "mAudioSyncSignalTask");
+	mAudioSyncSignalTask = BeagleRT_createAuxiliaryTask(staticMAudioSyncSignal, 90, "mAudioSyncSignalTask");
 	staticMAudioSync = &mAudioSync;
 	++countInstances;
 	if(countInstances != 1){
@@ -113,7 +113,7 @@ SC_BelaDriver::~SC_BelaDriver()
 {
 	// Clean up any resources allocated for audio
 	BeagleRT_cleanupAudio();
-    --countInstances;
+	--countInstances;
 }
 
 void render(BeagleRTContext *belaContext, void *userData)
@@ -125,7 +125,6 @@ void render(BeagleRTContext *belaContext, void *userData)
 
 void sc_SetDenormalFlags();
 
-static int gStaticMAudioSyncShouldSignal = false;
 void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 {
 	struct timespec tspec;
@@ -262,20 +261,15 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 		scprintf("SC_BelaDriver: unknown exception in real time\n");
 	}
 
-	// set a flag here that is read by staticMAudioSyncSignal in the other thread
-	gStaticMAudioSyncShouldSignal = true;
+	// this avoids Xenomai mode switches in the audio thread ...
+	BeagleRT_scheduleAuxiliaryTask(mAudioSyncSignalTask);
 }
 
 void SC_BelaDriver::staticMAudioSyncSignal(){
-	while(!gShouldStop){
-		// running this in a loop will make sure only one mode switch
-		// ever happens (first time you run it)
-		if(gStaticMAudioSyncShouldSignal){
-			gStaticMAudioSyncShouldSignal = false;
-			staticMAudioSync->Signal();
-		}
-		usleep(1000);
-	}
+	// ... but mode switches are still happening here, in a lower priority thread.
+	// FIXME: this triggers a mode switch in Xenomai.
+	staticMAudioSync->Signal();
+	rt_task_suspend(rt_task_self());
 }
 // ====================================================================
 
@@ -326,7 +320,7 @@ bool setup(BeagleRTContext* belaContext, void* userData)
 		scprintf("SC_BelaDriver: error, setup() got no user data\n");
 		return false;
 	}
-	BeagleRT_scheduleAuxiliaryTask(SC_BelaDriver::mAudioSyncSignalTask);
+
 	return true;
 }
 
