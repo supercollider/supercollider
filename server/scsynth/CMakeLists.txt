@@ -39,6 +39,11 @@ elseif(AUDIOAPI STREQUAL bela)
 		message(FATAL_ERROR "Bela selected as audio API, but Bela development files not found")
 	endif()
 	message(STATUS "bela libs: ${BELA_LIBRARIES}")
+	if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
+		# recommended compile flags for beaglebone etc; set here because bela api flag directly implies the architecture
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=armv7-a -mtune=cortex-a8 -mfloat-abi=hard -mfpu=neon")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=armv7-a -mtune=cortex-a8 -mfloat-abi=hard -mfpu=neon")
+	endif()
 endif()
 message(STATUS "Audio API: ${AUDIOAPI}")
 
