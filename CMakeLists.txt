@@ -212,12 +212,10 @@ else()
 	message(STATUS "building boost libraries manually")
 endif()
 
-if(SC_SCLANG)
-  if(SYSTEM_YAMLCPP)
-    find_package(YamlCpp)
-  else()
-    set(YAMLCPP_FOUND OFF)
-  endif()
+if(SYSTEM_YAMLCPP)
+  find_package(YamlCpp)
+else()
+  set(YAMLCPP_FOUND OFF)
 endif()
 
 #############################################
@@ -298,11 +296,9 @@ endif()
 # subdirectories
 add_subdirectory(external_libraries)
 
-if(SC_SCLANG)
-  if(NOT YAMLCPP_FOUND)
-    set(YAMLCPP_LIBRARY yaml)
-    set(YAMLCPP_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include)
-  endif()
+if(NOT YAMLCPP_FOUND)
+  set(YAMLCPP_LIBRARY yaml)
+  set(YAMLCPP_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include)
 endif()
 
 configure_file(common/SC_Version.hpp.in common/SC_Version.hpp)
