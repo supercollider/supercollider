@@ -105,6 +105,27 @@ So now you should have scsynth running on the device. You should be able to send
     z = Synth("mic");
     z.free;
 
+Monitoring its performance
+======================================================
+Here's a tip from a Bela user on how to check CPU load and "mode switches" for the running program, to make sure it's running properly in realtime etc. (A "mode switch" is something to be avoided: it means the code is dropping out of the Xenomai real-time execution and into normal Linux mode, which can be caused by certain operations in the realtime thread.)
+
+    watch -n 0.5 cat /proc/xenomai/stat
+
+which produces output like:
+
+<pre>
+Every 0.5s: cat /proc/xenomai/stat                                                                                                                         Fri Apr  1 12:37:24 2016
+
+CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
+  0  0      0          159371     0     00500080   76.4  ROOT
+  0  2282   1          1          0     00b00380    0.0  scsynth
+  0  2286   1          2          0     00300380    0.0  mAudioSyncSignalTask
+  0  2288   2          159368     1     00300184   21.0  beaglert-audio
+  0  0      0          251165     0     00000000    1.9  IRQ67: [timer]
+</pre>
+
+the "MSW" column indicates mode switches; this number should NEVER increase in the beaglert-audio thread. It is fine if it increases on a task that runs occasionally, but keep in mind that each mode switch carries an additional overhead.
+
 Optional: Bonus level: Even more plugins (sc3-plugins)
 ======================================================
 
