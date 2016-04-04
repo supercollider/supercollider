@@ -282,11 +282,11 @@ bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 				// frame sizes, numbers of channels, volume levels and other parameters.
 
 	if(mPreferredHardwareBufferFrameSize){
-		settings.periodSize = mPreferredHardwareBufferFrameSize / 2; // halved because "periodSize" in bela is for the analogue pins not the audio pins
+		settings.periodSize = mPreferredHardwareBufferFrameSize;
 	}
-	if(settings.periodSize * 2 < mSCBufLength) {
+	if(settings.periodSize < mSCBufLength) {
 		scprintf("Error in SC_BelaDriver::DriverSetup(): hardware buffer size (%i) smaller than SC audio buffer size (%i). It is recommended to have them set to the same value, using both the '-Z' and '-z' command-line options respectively.\n",
-				settings.periodSize * 2, mSCBufLength);
+				settings.periodSize, mSCBufLength);
 		return false;
 	}
 
@@ -300,7 +300,7 @@ bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 		return false;
 	}
 
-	*outNumSamples = settings.periodSize * 2;	// ... which in turn is just mPreferredHardwareBufferFrameSize
+	*outNumSamples = settings.periodSize;
 	*outSampleRate = 44100.0;					// This is fixed in Bela at the moment
 
 	return true;
