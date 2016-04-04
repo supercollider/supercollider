@@ -25,6 +25,11 @@
 
 #include <jack/jack.h>
 #include <jack/thread.h>
+#ifdef SC_JACK_USE_METADATA_API
+#    include <jack/metadata.h>
+#    include <jack/uuid.h>
+#    include <jackey.h>
+#endif
 
 #include "utilities/branch_hints.hpp"
 
@@ -101,6 +106,21 @@ public:
             jack_port_t * port =
                 jack_port_register(client, portname.c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
             input_ports.push_back(port);
+
+#ifdef SC_JACK_USE_METADATA_API
+            jack_uuid_t uuid = jack_port_uuid(port);
+            if(!jack_uuid_empty(uuid)) {
+                std::string prettyname ("Input ");
+                prettyname += std::to_string(i+1);
+                jack_set_property(client, uuid,
+                    JACK_METADATA_PRETTY_NAME, prettyname.c_str(), "text/plain");
+                
+                std::string order ("");
+                order += std::to_string(i);
+                jack_set_property(client, uuid,
+                    JACKEY_ORDER, order.c_str(), "http://www.w3.org/2001/XMLSchema#integer");
+            }
+#endif
         }
         input_channels = input_port_count;
         super::input_samples.resize(input_port_count);
@@ -112,6 +132,21 @@ public:
             jack_port_t * port =
                 jack_port_register(client, portname.c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
             output_ports.push_back(port);
+
+#ifdef SC_JACK_USE_METADATA_API
+            jack_uuid_t uuid = jack_port_uuid(port);
+            if(!jack_uuid_empty(uuid)) {
+                std::string prettyname ("Output ");
+                prettyname += std::to_string(i+1);
+                jack_set_property(client, uuid, JACK_METADATA_PRETTY_NAME,
+                    prettyname.c_str(), "text/plain");
+                
+                std::string order ("");
+                order += std::to_string(input_port_count + i);
+                jack_set_property(client, uuid, JACKEY_ORDER,
+                    order.c_str(), "http://www.w3.org/2001/XMLSchema#integer");
+            }
+#endif
         }
         output_channels = output_port_count;
         super::output_samples.resize(output_port_count);
