@@ -109,9 +109,14 @@ Git {
 		^result;
 	}
 	*checkForGit {
+		var gitFind;
 		if(gitIsInstalled.isNil, {
-			// does not work on windows
-			Pipe.callSync("which git", {
+			if(thisProcess.platform.name !== 'windows', {
+				gitFind = "which git";
+			}, {
+				gitFind = "where git";
+			});
+			Pipe.callSync(gitFind, {
 				gitIsInstalled = true;
 			}, { arg error;
 				"Quarks requires git to be installed".error;
