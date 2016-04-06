@@ -18,7 +18,7 @@ Git {
 		this.url = url;
 	}
 	pull {
-		this.git(["pull"])
+		this.git(["pull", "origin", "master"])
 	}
 	checkout { |refspec|
 		this.git(["checkout", refspec])
