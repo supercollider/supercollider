@@ -72,7 +72,7 @@ bool Introspection::parse(const QString & yamlString )
 
     clear();
 
-    //qDebug("parsing introspection...");
+    qDebug("parsing introspection...");
 
     std::stringstream stream;
     stream << yamlString.toStdString();
@@ -102,6 +102,7 @@ bool Introspection::parse(const QString & yamlString )
         assert(it != mClassMap.end());
         Class *klass = it->second.data();
 
+        // LC debugging
         //qDebug() << klass->name;
 
         ClassMap::iterator class_it;
@@ -127,7 +128,9 @@ bool Introspection::parse(const QString & yamlString )
         if (methodSeq.Type() != YAML::NodeType::Sequence)
             continue;
 
+        // LC debugging
         //assert(methodSeq.Type() == YAML::NodeType::Sequence);
+
         for (YAML::Iterator mit = methodSeq.begin(); mit != methodSeq.end(); ++mit)
         {
             const YAML::Node &methodNode = *mit;
@@ -143,6 +146,7 @@ bool Introspection::parse(const QString & yamlString )
             method->definition.path = methodNode[2].to<std::string>().c_str();
             method->definition.position = methodNode[3].to<int>();
 
+            // LC debugging
             //qDebug() << "--" << method->name;
 
             const YAML::Node &argNode = methodNode[4];
@@ -156,6 +160,7 @@ bool Introspection::parse(const QString & yamlString )
                 assert(arg->Type() == YAML::NodeType::Scalar);
                 argument.name = arg->to<std::string>().c_str();
 
+                // LC debugging
                 //qDebug() << "---# " << argument.name;
 
                 // get arg default value
@@ -182,7 +187,8 @@ bool Introspection::parse(const QString & yamlString )
 
     inferClassLibraryPath();
 
-    //qDebug("done parsing introspection.");
+    // LC debugging
+    qDebug("done parsing introspection.");
     return true;
 }
 
@@ -294,7 +300,7 @@ Introspection::ClassMethodMap Introspection::constructMethodMap(const Class * kl
     }
     return methodMap;
 }
-  
+
 bool Method::matches(const QString& toMatch) const
 {
     return toMatch.isEmpty() ? true : name.get().startsWith(toMatch, Qt::CaseInsensitive);

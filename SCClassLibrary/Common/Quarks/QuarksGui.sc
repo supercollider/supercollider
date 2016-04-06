@@ -617,7 +617,7 @@ QuarkRowView {
 
 		btn.states = [
 			["+", nil, nil],
-			["✓", quarksGui.colors.primary.text, quarksGui.colors.primary.bg],
+			["i", quarksGui.colors.primary.text, quarksGui.colors.primary.bg],
 		];
 
 		isInstalled = quark.isInstalled;
