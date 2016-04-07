@@ -248,7 +248,8 @@ Quarks {
 		}, {
 			regex = (
 				isPath: "\\\\|/",
-				isAbsolutePath: "^[A-Za-z]:\\\\"
+				isAbsolutePath: "^[A-Za-z]:\\\\",
+				isURL: "://"
 			);
 		});
 	}
@@ -384,7 +385,11 @@ Quarks {
 		});
 	}
 	*isPath { |string|
-		^string.findRegexp(regex.isPath).size != 0
+		if(thisProcess.platform.name !== 'windows', {
+			^string.findRegexp(regex.isPath).size != 0
+		}, {
+			^(string.findRegexp(regex.isPath).size != 0).and(string.findRegexp(regex.isURL).size == 0)
+		});
 	}
 	*asAbsolutePath { |path, relativeTo|
 		^if(path.findRegexp(regex.isAbsolutePath).size != 0, {
