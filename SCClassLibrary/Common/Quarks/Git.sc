@@ -80,7 +80,11 @@ Git {
 		// all tags
 		// only includes ones that have been fetched from remote
 		^tags ?? {
-			raw = this.git(["for-each-ref --format='%(refname)' --sort=taggerdate refs/tags"]);
+			if(thisProcess.platform.name !== 'windows', {
+				raw = this.git(["for-each-ref --format='%(refname)' --sort=taggerdate refs/tags"]);
+			}, {
+				raw = this.git(["for-each-ref --format=%(refname) --sort=taggerdate refs/tags"]);
+			});
 			tags = raw.split(Char.nl)
 				.select({ |t| t.size != 0 })
 				.reverse()
@@ -109,9 +113,14 @@ Git {
 		^result;
 	}
 	*checkForGit {
+		var gitFind;
 		if(gitIsInstalled.isNil, {
-			// does not work on windows
-			Pipe.callSync("which git", {
+			if(thisProcess.platform.name !== 'windows', {
+				gitFind = "which git";
+			}, {
+				gitFind = "where git";
+			});
+			Pipe.callSync(gitFind, {
 				gitIsInstalled = true;
 			}, { arg error;
 				"Quarks requires git to be installed".error;
