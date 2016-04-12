@@ -66,9 +66,8 @@ View : QObject {
 	}
 
 	// ----------------- properties --------------------------
-	font_ { arg f;
-		font = f;
-		this.setProperty( \font, f );
+	font_ { arg font;
+		this.setProperty( \font, font );
 	}
 
 	toolTip { ^this.getProperty(\toolTip) }
