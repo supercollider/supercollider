@@ -141,19 +141,19 @@ public:
 		for(;;) {
 			T *item = mItems[index];
 			if (!item) return index;
-            if (GetHash(item) == inHashID && str4eq(inKey, GetKey(item))) return index;
+			if (GetHash(item) == inHashID && str4eq(inKey, GetKey(item))) return index;
 			index = (index + 1) & mHashMask;
 		}
 	}
 
 	T* Get(int32* inKey) const
-        {
-            return Get(Hash(inKey), inKey);
-        }
+	{
+		return Get(Hash(inKey), inKey);
+	}
 
 	T* Get(int32 inHashID, int32* inKey) const
 	{
-        //printf("Get hash %d %s\n", inHashID, inKey);
+		//printf("Get hash %d %s\n", inHashID, inKey);
 		int32 index = IndexFor(inHashID, inKey);
 		//printf("index %d\n", index);
 		return mItems[index];
@@ -290,21 +290,21 @@ public:
 		for(;;) {
 			T *item = mItems[index];
 			if (!item) return index;
-            if (GetHash(item) == inHashID && inKey == GetKey(item)) return index;
+			if (GetHash(item) == inHashID && inKey == GetKey(item)) return index;
 			index = (index + 1) & mHashMask;
 		}
 	}
 
 	T* Get(int32 inKey) const
-        {
-        	//printf("Get key %d\n", inKey);
-            return Get(Hash(inKey), inKey);
-        }
+	{
+		//printf("Get key %d\n", inKey);
+		return Get(Hash(inKey), inKey);
+	}
 
 	T* Get(int32 inHashID, int32 inKey) const
 	{
 		int32 index = IndexFor(inHashID, inKey);
-        //printf("Get index %d  hash %d  key %d\n", index, inHashID, inKey);
+		//printf("Get index %d  hash %d  key %d\n", index, inHashID, inKey);
 		return mItems[index];
 	}
 
