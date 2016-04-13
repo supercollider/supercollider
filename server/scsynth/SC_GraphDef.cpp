@@ -571,7 +571,7 @@ SCErr GraphDef_Remove(World *inWorld, int32 *inName)
 			return GraphDef_DeleteMsg(inWorld, graphDef);
 		}
 	}
-    return kSCErr_None;
+	return kSCErr_None;
 }
 
 SCErr SendReplyCmd_d_removed(World * inWorld,int inSize,char* inData, ReplyAddress *inReply)
@@ -587,13 +587,13 @@ SCErr SendReplyCmd_d_removed(World * inWorld,int inSize,char* inData, ReplyAddre
 	} 
 	if (inWorld->mRealTime) cmd->CallNextStage(); 
 	else cmd->CallEveryStage();
-    return kSCErr_None;
+	return kSCErr_None;
 }
 
 SCErr GraphDef_DeleteMsg(World *inWorld, GraphDef *inDef)
 {
 
-    DeleteGraphDefMsg msg;
+	DeleteGraphDefMsg msg;
 	msg.mDef = inDef;
 	inWorld->hw->mDeleteGraphDefs.Write(msg);
 
@@ -607,11 +607,11 @@ SCErr GraphDef_DeleteMsg(World *inWorld, GraphDef *inDef)
 	ReplyAddress *users = inWorld->hw->mUsers;
 	int numUsers = inWorld->hw->mNumUsers;
 	for (int i=0; i<numUsers; ++i) {
-        SCErr err = SendReplyCmd_d_removed(inWorld, packet.size(), packet.data(), users+i);
-        if(err!=kSCErr_None)
-            return err;
+		SCErr err = SendReplyCmd_d_removed(inWorld, packet.size(), packet.data(), users+i);
+		if(err!=kSCErr_None)
+			return err;
 	}
-    return kSCErr_None;
+	return kSCErr_None;
 }
 
 GraphDef* GraphDef_Recv(World *inWorld, char *buffer, GraphDef *inList)

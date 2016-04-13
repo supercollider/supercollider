@@ -378,50 +378,50 @@ SCErr meth_n_mapn(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 SCErr meth_n_mapa(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_n_mapa(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
-    sc_msg_iter msg(inSize, inData);
-    Node *node = Msg_GetNode(inWorld, msg);
-    if (!node) return kSCErr_NodeNotFound;
+	sc_msg_iter msg(inSize, inData);
+	Node *node = Msg_GetNode(inWorld, msg);
+	if (!node) return kSCErr_NodeNotFound;
 
-    while (msg.remain() >= 8) {
-	if (msg.nextTag('i') == 's') {
-	    int32* name = msg.gets4();
-	    int bus = msg.geti();
-	    Node_MapAudioControl(node, Hash(name), name, 0, bus);
-	} else {
-	    int32 index = msg.geti();
-	    int32 bus = msg.geti();
-	    Node_MapAudioControl(node, index, bus);
+	while (msg.remain() >= 8) {
+		if (msg.nextTag('i') == 's') {
+			int32* name = msg.gets4();
+			int bus = msg.geti();
+			Node_MapAudioControl(node, Hash(name), name, 0, bus);
+		} else {
+			int32 index = msg.geti();
+			int32 bus = msg.geti();
+			Node_MapAudioControl(node, index, bus);
+		}
 	}
-    }
-    return kSCErr_None;
+	return kSCErr_None;
 }
 
 SCErr meth_n_mapan(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_n_mapan(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
-    sc_msg_iter msg(inSize, inData);
-    Node *node = Msg_GetNode(inWorld, msg);
-    if (!node) return kSCErr_NodeNotFound;
+	sc_msg_iter msg(inSize, inData);
+	Node *node = Msg_GetNode(inWorld, msg);
+	if (!node) return kSCErr_NodeNotFound;
 
-    while (msg.remain() >= 12) {
-	if (msg.nextTag('i') == 's') {
-	    int32* name = msg.gets4();
-	    int32 hash = Hash(name);
-	    int bus = msg.geti();
-	    int n = msg.geti();
-	    for (int i=0; i<n; ++i) {
-		Node_MapAudioControl(node, hash, name, i, bus == -1 ? -1 : bus+i);
-	    }
-	} else {
-	    int32 index = msg.geti();
-	    int32 bus = msg.geti();
-	    int n = msg.geti();
-	    for (int i=0; i<n; ++i) {
-		Node_MapAudioControl(node, index+i, bus == -1 ? -1 : bus+i);
-	    }
+	while (msg.remain() >= 12) {
+		if (msg.nextTag('i') == 's') {
+			int32* name = msg.gets4();
+			int32 hash = Hash(name);
+			int bus = msg.geti();
+			int n = msg.geti();
+			for (int i=0; i<n; ++i) {
+				Node_MapAudioControl(node, hash, name, i, bus == -1 ? -1 : bus+i);
+			}
+		} else {
+			int32 index = msg.geti();
+			int32 bus = msg.geti();
+			int n = msg.geti();
+			for (int i=0; i<n; ++i) {
+				Node_MapAudioControl(node, index+i, bus == -1 ? -1 : bus+i);
+			}
+		}
 	}
-    }
-    return kSCErr_None;
+	return kSCErr_None;
 }
 
 SCErr meth_n_set(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
@@ -592,8 +592,8 @@ SCErr meth_n_setn(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 						Node_MapControl(node, hash, name, i, bus);
 					}
 					if (*string == 'a') {
-					    int bus = sc_atoi(string+1);
-					    Node_MapAudioControl(node, hash, name, i, bus);
+						int bus = sc_atoi(string+1);
+						Node_MapAudioControl(node, hash, name, i, bus);
 					}
 
 				} else {
@@ -612,8 +612,8 @@ SCErr meth_n_setn(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRe
 						Node_MapControl(node, index+i, bus);
 					}
 					if (*string == 'a') {
-					    int bus = sc_atoi(string+1);
-					    Node_MapAudioControl(node, index+i, bus);
+						int bus = sc_atoi(string+1);
+						Node_MapAudioControl(node, index+i, bus);
 					}
 				} else {
 					float32 value = msg.getf();
@@ -777,8 +777,8 @@ SCErr meth_d_free(World *inWorld, int inSize, char *inData, ReplyAddress *inRepl
 		int32* defname = msg.gets4();
 		if (!defname) return kSCErr_SynthDefNotFound;
 		SCErr err = GraphDef_Remove(inWorld, defname);
-        if(err != kSCErr_None)
-            return err;
+	if(err != kSCErr_None)
+		return err;
 	}
 	return kSCErr_None;
 }
@@ -979,8 +979,8 @@ SCErr meth_g_new(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 			case 4 : {
 				Node *replaceThisNode = Msg_GetNode(inWorld, msg);
 				if (!replaceThisNode) return kSCErr_TargetNodeNotFound;
-        if (replaceThisNode->mID == 0) return kSCErr_ReplaceRootGroup;
-        Node_RemoveID(replaceThisNode);
+				if (replaceThisNode->mID == 0) return kSCErr_ReplaceRootGroup;
+				Node_RemoveID(replaceThisNode);
 
 				err = Group_New(inWorld, newGroupID, &newGroup);
 				if (err) return err;
