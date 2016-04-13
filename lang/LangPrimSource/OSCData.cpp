@@ -45,6 +45,9 @@
 
 #include <boost/asio.hpp>
 
+#include <sys/socket.h>
+#include <ifaddrs.h>
+
 struct InternalSynthServerGlobals
 {
 	struct World *mWorld;
@@ -875,37 +878,38 @@ int prMatchLangIP(VMGlobals *g, int numArgsPushed)
     char ipstring[40];
     int err = slotStrVal(argString, ipstring, 39);
 	if (err) return err;
-    try
-    {
-        std::string loopback ("127.0.0.1");
-        // check for loopback address
-        if (!loopback.compare(ipstring)) {
-            SetTrue(g->sp - 1);
-            return errNone;
-        }
-        
-        boost::asio::io_service io_service;
-        
-        boost::asio::ip::udp::resolver resolver(io_service);
-        boost::asio::ip::udp::resolver::query query(boost::asio::ip::host_name(),"",boost::asio::ip::resolver_query_base::numeric_service);
-        boost::asio::ip::udp::resolver::iterator it=resolver.resolve(query);
-        
-        while(it!=boost::asio::ip::udp::resolver::iterator())
-        {
-            boost::asio::ip::address addr=(it++)->endpoint().address();
-            std::string candidate = addr.to_string();
-            if (!candidate.compare(ipstring)) {
-                SetTrue(g->sp - 1);
-                return errNone;
-            }
-            
-        }
-    }
-    catch(std::exception &e)
-    {
-        std::cout<<e.what()<<std::endl;
-        return errFailed;
-    }
+	std::string loopback ("127.0.0.1");
+	// check for loopback address
+	if (!loopback.compare(ipstring)) {
+		SetTrue(g->sp - 1);
+		return errNone;
+	}
+	
+	struct ifaddrs *ifap, *ifa;
+	struct sockaddr_in *sa;
+	char *addr;
+	
+	int result = getifaddrs (&ifap);
+	if(result) {
+		error(strerror(errno));
+		return errFailed;
+	}
+	
+	for (ifa = ifap; ifa; ifa = ifa->ifa_next) {
+		int family = ifa->ifa_addr->sa_family;
+		if (family==AF_INET || family == AF_INET6) {
+			sa = (struct sockaddr_in *) ifa->ifa_addr;
+			addr = inet_ntoa(sa->sin_addr);
+			if (strcmp(ipstring, addr) == 0) {
+				SetTrue(g->sp - 1);
+				freeifaddrs(ifap);
+				return errNone;
+			}
+		}
+	}
+	
+	freeifaddrs(ifap);
+
     SetFalse(g->sp - 1);
 	return errNone;
 }
