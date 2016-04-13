@@ -466,6 +466,8 @@ If you want to add `supernova`, add `-DSUPERNOVA=ON`
 
       $> cmake -DSUPERNOVA=ON ..
 
+The available cmake configuration options can be found in the "Options" section of CMakeLists.txt
+
 Remains the actual `build`. We can also use `cmake`, the following command works
 on all platforms with all generators:
 
