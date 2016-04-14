@@ -119,7 +119,7 @@ if(SC_SCLANG)
 endif()
 
 if(WIN32)
-  add_library(portmidi portmidi/pm_common/pminternal.h
+  add_library(portmidi EXCLUDE_FROM_ALL portmidi/pm_common/pminternal.h
                        portmidi/pm_common/pmutil.c
                        portmidi/pm_common/pmutil.h
                        portmidi/pm_common/portmidi.c
