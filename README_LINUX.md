@@ -112,9 +112,6 @@ builds in a specific build directory:
    $> cmake -DCMAKE_PREFIX_PATH=/path/to/qt5 ..
    ```
 
-   The available cmake configuration options can be found in the "Options"
-   section of CMakeLists.txt
-
  - to run the build process run:
 
    ```

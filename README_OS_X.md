@@ -77,8 +77,6 @@ Build instructions
 
 If successful this will build the application into `build/Install/SuperCollider/`
 
-The available cmake configuration options can be found in the "Options" section of CMakeLists.txt
-
 To install, you may move this to /Applications or use it in place from the build directory.
 
 **Note**: You can also open the produced SuperCollider.xcodeproj in Xcode, and build the "Install" scheme in place of the last step. Do make sure you run the previous configuration steps.
