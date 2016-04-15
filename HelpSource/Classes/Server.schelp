@@ -140,11 +140,11 @@ free all nodes in all registered servers
 
 method:: supernova
 
-Switches server program to use supernova. Check link::Classes/ParGroup:: how to make use of multicore hardware with the supernova server.
+Switches the server program to supernova. Check link::Classes/ParGroup:: how to make use of multicore hardware with the supernova server.
 
 method:: scsynth
 
-Switches server program to use supernova.
+Switches the server program to scsynth. This is the default server.
 
 
 InstanceMethods::

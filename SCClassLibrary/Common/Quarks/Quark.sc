@@ -82,6 +82,18 @@ Quark {
 		data = nil;
 		^success
 	}
+	update {
+		if(Git.isGit(localPath), {
+			data = git = refspec = nil;
+			changed = true;
+			git = Git(localPath);
+			git.pull();
+			git.checkout("master");
+			("Quark '%' updated to version: % tag: % refspec: %".format(name, this.version, this.git.tag, this.refspec)).inform;
+		}, {
+			("Quark" + name + "was not installed using git, cannot update.").warn;
+		});
+	}
 	uninstall {
 		Quarks.uninstallQuark(this);
 		changed = true;
