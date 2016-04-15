@@ -61,6 +61,8 @@ if(NOT Boost_FOUND) # we compile boost ourselves
 			APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 	endif()
 
+	set_property( TARGET boost_thread boost_program_options boost_system boost_filesystem PROPERTY FOLDER 3rdparty )
+
 endif()
 
 # tlsf
