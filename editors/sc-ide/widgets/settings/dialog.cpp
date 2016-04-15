@@ -22,6 +22,7 @@
 #include "ui_settings_dialog.h"
 #include "general_page.hpp"
 #include "sclang_page.hpp"
+#include "sclang_project_page.hpp"
 #include "editor_page.hpp"
 #include "shortcuts_page.hpp"
 #include "../../core/settings/manager.hpp"
@@ -54,7 +55,9 @@ Dialog::Dialog( Manager *settings, QWidget * parent ):
     connect(this, SIGNAL(storeRequest(Manager*)), w, SLOT(store(Manager*)));
     connect(this, SIGNAL(loadRequest(Manager*)), w, SLOT(load(Manager*)));
 
-    w = new SclangPage;
+    if( settings->value("IDE/interpreter/project").toBool() )
+    { w = new SclangProjectPage; } else
+    { w = new SclangPage; }
     ui->configPageStack->addWidget(w);
     ui->configPageList->addItem (
         new QListWidgetItem(QIcon::fromTheme("applications-system"), tr("Interpreter")));
