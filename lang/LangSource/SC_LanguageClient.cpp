@@ -147,9 +147,9 @@ void SC_LanguageClient::shutdownRuntime()
 #endif
 }
 
-void SC_LanguageClient::compileLibrary(bool standalone)
+void SC_LanguageClient::compileLibrary()
 {
-	::compileLibrary(standalone);
+	::compileLibrary();
 }
 
 extern void shutdownLibrary();
@@ -159,9 +159,9 @@ void SC_LanguageClient::shutdownLibrary()
 	flush();
 }
 
-void SC_LanguageClient::recompileLibrary(bool standalone)
+void SC_LanguageClient::recompileLibrary()
 {
-	compileLibrary(standalone);
+	compileLibrary();
 }
 
 void SC_LanguageClient::setCmdLine(const char* buf, size_t size)

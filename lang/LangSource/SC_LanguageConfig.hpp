@@ -26,18 +26,22 @@
 
 #include <vector>
 #include <string>
+#include <boost/filesystem.hpp>
 
 class SC_LanguageConfig
 {
 public:
+	SC_LanguageConfig(const char* fileName);
 	typedef std::vector<std::string> DirVector;
-	SC_LanguageConfig(bool standalone);
+	void setDefaultPaths();
 
 	const DirVector& includedDirectories() { return mIncludedDirectories; }
 	const DirVector& excludedDirectories() { return mExcludedDirectories; }
 
 	void postExcludedDirectories(void);
 	bool forEachIncludedDirectory(bool (*func)(const char *, int));
+	void doRelativeProject(std::function<void(const char *path)> func, const char *path);
+	void doRelativeProject(std::function<void(std::string path)> func, std::string path);
 
 	bool pathIsExcluded(const char *path);
 
@@ -51,19 +55,34 @@ public:
 	{
 		gConfigFile = fileName;
 	}
-
-	static bool readLibraryConfigYAML(const char* fileName, bool standalone);
+	
+	static bool readLibraryConfigYAML(const char* fileName);
 	static bool writeLibraryConfigYAML(const char* fileName);
 	static void freeLibraryConfig();
-	static bool defaultLibraryConfig(   bool standalone);
-	static bool readLibraryConfig(bool standalone);
+	static bool defaultLibraryConfig();
+	static bool readLibraryConfig();
 	
 	const char* getCurrentConfigPath();
+	boost::filesystem::path getConfigFileDirectory() { return mConfigFileDirectory; }
+
+	bool getExcludeDefaultPaths() const;
+	void setExcludeDefaultPaths(bool value);
+
+	bool getProject() const;
+	void setProject(bool value);
+
+	std::string mResourceDir;
+	std::string mSystemExtensionDir;
+	std::string mUserExtensionDir;
 
 private:
 	DirVector mIncludedDirectories;
 	DirVector mExcludedDirectories;
 	DirVector mDefaultClassLibraryDirectories;
+	bool mExcludeDefaultPaths = false;
+	bool mProject = false;
+	boost::filesystem::path mConfigFileDirectory;
+
 	static std::string gConfigFile;
 };
 

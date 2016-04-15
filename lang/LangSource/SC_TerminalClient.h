@@ -65,7 +65,6 @@ public:
 			  mDaemon(false),
 			  mCallRun(false),
 			  mCallStop(false),
-			  mStandalone(false),
 			  mArgc(0), mArgv(0)
 		{ }
 
@@ -75,7 +74,6 @@ public:
 		bool			mCallStop;
 		int				mArgc;
 		char**			mArgv;
-		bool			mStandalone;
 	};
 
 	SC_TerminalClient(const char* name);

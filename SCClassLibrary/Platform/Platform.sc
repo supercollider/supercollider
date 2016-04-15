@@ -91,9 +91,12 @@ Platform {
 		}
 	}
 
-	loadStartupFiles { this.startupFiles.do{|afile|
-		afile = afile.standardizePath;
-		if(File.exists(afile), {afile.load})
+	loadStartupFiles {
+		if (LanguageConfig.defaultPathsExcluded.not) {
+			this.startupFiles.do{|afile|
+				afile = afile.standardizePath;
+				if(File.exists(afile), {afile.load})
+			}
 		}
 	}
 
