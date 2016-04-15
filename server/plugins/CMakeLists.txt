@@ -257,9 +257,40 @@ elseif (APPLE)
 endif()
 
 if (WIN32)
+	foreach(plugin ${plugins} ${supernova_plugins})
+		add_custom_command(TARGET ${plugin}
+			POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:scsynth>/plugins
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${plugin}> $<TARGET_FILE_DIR:scsynth>/plugins
+			COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:sclang>/plugins
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${plugin}> $<TARGET_FILE_DIR:sclang>/plugins
+		)
+	endforeach()
+
+	if(SC_IDE)
+		foreach(plugin ${plugins} ${supernova_plugins})
+			add_custom_command(TARGET ${plugin}
+				POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/plugins
+				COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${plugin}> $<TARGET_FILE_DIR:SuperCollider>/plugins
+			)
+		endforeach()
+	endif(SC_IDE)
+
+	if(SUPERNOVA)
+		foreach(plugin ${supernova_plugins})
+			add_custom_command(TARGET ${plugin}
+				POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:supernova>/plugins
+				COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${plugin}> $<TARGET_FILE_DIR:supernova>/plugins
+			)
+		endforeach()
+	endif(SUPERNOVA)
+
 	install(TARGETS ${plugins} ${supernova_plugins}
-		DESTINATION "SuperCollider/plugins"
-		PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+		PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+		DESTINATION "${SC_WIN_BUNDLE_NAME}/plugins"
+	)
 
 elseif(APPLE)
 	foreach(plugin ${plugins} ${supernova_plugins})

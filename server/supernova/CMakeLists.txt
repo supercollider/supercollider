@@ -102,21 +102,6 @@ if(APPLE)
     target_include_directories(libsupernova PUBLIC ${PORTAUDIO_INCLUDE_DIRS})
     target_link_libraries(libsupernova ${PORTAUDIO_LIBRARIES})
 elseif (WIN32)
-    if(NOT TARGET portaudio)
-        if(NOT SC_BUILD_PA)
-            add_library(portaudio ${PA_LIBRARY_TYPE} IMPORTED GLOBAL)
-            if(MSVC)
-                set_target_properties(portaudio PROPERTIES
-                    IMPORTED_LOCATION_DEBUG   ${PORTAUDIO_LIBRARY_DEBUG}
-                    IMPORTED_LOCATION         ${PORTAUDIO_LIBRARY_RELEASE}
-                )
-            else(MSVC)
-                set_target_properties(portaudio PROPERTIES
-                    IMPORTED_LOCATION         ${PORTAUDIO_LIBRARIES}
-                )
-            endif(MSVC)
-        endif(NOT SC_BUILD_PA)
-    endif(NOT TARGET portaudio)
     target_compile_definitions(libsupernova PUBLIC PORTAUDIO_BACKEND -DPORTAUDIO_BACKEND)
     target_include_directories(libsupernova PUBLIC ${PORTAUDIO_INCLUDE_DIRS})
     if(MSYS)
@@ -174,9 +159,46 @@ add_executable(supernova server/main.cpp ${supernova_headers})
 target_link_libraries(supernova libsupernova)
 
 if(WIN32)
+    if(NOT MSVC)
+      set_target_properties(supernova libsupernova PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<CONFIG>")
+    endif(NOT MSVC)
+
+    if(FFTW3F_FOUND)
+      file(GLOB FFTW3F_DLL "${FFTW3F_LIBRARY_DIR}/*fftw3f*.dll")
+      add_custom_command(TARGET supernova
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${FFTW3F_DLL}" $<TARGET_FILE_DIR:supernova>
+      )
+    endif(FFTW3F_FOUND)
+
+    if(SNDFILE_FOUND)
+      file(GLOB SNDFILE_DLL "${SNDFILE_LIBRARY_DIR}/*sndfile*.dll")
+      add_custom_command(TARGET supernova
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SNDFILE_DLL}" $<TARGET_FILE_DIR:supernova>
+      )
+    endif(SNDFILE_FOUND)
+
+    add_custom_command(TARGET supernova
+      POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:supernova> $<TARGET_FILE_DIR:scsynth>
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:supernova> $<TARGET_FILE_DIR:sclang>
+      COMMENT "Copying supernova to targets scsynth and sclang"
+    )
+
+    if(SC_IDE)
+      add_custom_command(TARGET supernova
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:supernova> $<TARGET_FILE_DIR:SuperCollider>
+        COMMENT "Copying supernova to target SuperCollider"
+      )
+    endif(SC_IDE)
+
     install(TARGETS supernova
-        DESTINATION "SuperCollider"
-        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+        DESTINATION ${SC_WIN_BUNDLE_NAME}
+    )
+
 elseif(APPLE)
     add_custom_command(TARGET supernova POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../Resources/

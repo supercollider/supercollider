@@ -346,30 +346,56 @@ if(APPLE)
     install(CODE "
            file(GLOB_RECURSE QTPLUGINS
                   \"${plugin_dest_dir}/*.dylib\")
+           file(GLOB_RECURSE SCPLUGINS
+                  \"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/plugins/*.scx\")
                 include(BundleUtilities)
-                fixup_bundle(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\" \"\${QTPLUGINS}\" \"${QT_LIBRARY_DIR}\")
+                fixup_bundle(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\" \"\${QTPLUGINS};\${SCPLUGINS}\" \"${QT_LIBRARY_DIR}\")
                 #fixup_qt5_executable(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\")
                 " COMPONENT Runtime)
 
 elseif(WIN32)
-  install(TARGETS SuperCollider
-      DESTINATION "SuperCollider"
-      PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-  install(FILES ${translations}
-      DESTINATION "SuperCollider/translations")
 
-  SET(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider/platforms")
-    include(InstallRequiredSystemLibraries)
+    if(NOT MSVC)
+        set_target_properties(SuperCollider PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<CONFIG>")
+    endif(NOT MSVC)
 
-  if(MSYS)
-    SET(QT_PLATFORM_PLUGIN_PREFIX "${Qt5Core_DIR}/../../../share/qt5/plugins/platforms" CACHE STRING "Location of qt platform plugin for windows as provided by MSYS2!")
-  else()
-    SET(QT_PLATFORM_PLUGIN_PREFIX "${Qt5Core_DIR}/../../../plugins/platforms" CACHE STRING "Location of qt platform plugin for windows")
-  endif()
+    foreach(translation ${translations})
+      add_custom_command(TARGET SuperCollider
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/translations
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${translation} $<TARGET_FILE_DIR:SuperCollider>/translations
+      )
+    endforeach()
 
-  install(FILES "${QT_PLATFORM_PLUGIN_PREFIX}/qwindows$<$<CONFIG:DEBUG>:d>.dll"
-    DESTINATION ${CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION}
-  )
+    install(TARGETS SuperCollider
+        DESTINATION "${SC_WIN_BUNDLE_NAME}"
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+    )
+    install(FILES ${translations}
+        DESTINATION "${SC_WIN_BUNDLE_NAME}/translations"
+    )
+
+    set(SC_WIN_DLL_DIRS)
+    if(SNDFILE_LIBRARY_DIR)
+      list(APPEND SC_WIN_DLL_DIRS "${SNDFILE_LIBRARY_DIR}")
+    endif(SNDFILE_LIBRARY_DIR)
+    if(FFTW3F_LIBRARY_DIR)
+      list(APPEND SC_WIN_DLL_DIRS "${FFTW3F_LIBRARY_DIR}")
+    endif(FFTW3F_LIBRARY_DIR)
+    if(READLINE_LIBRARY_DIR)
+      list(APPEND SC_WIN_DLL_DIRS "${READLINE_LIBRARY_DIR}")
+    endif(READLINE_LIBRARY_DIR)
+    if(QT_BIN_PATH)
+      list(APPEND SC_WIN_DLL_DIRS "${QT_BIN_PATH}")
+    endif(QT_BIN_PATH)
+
+    include(DeployQt5)
+    install_qt5_executable(
+      "${SC_WIN_BUNDLE_NAME}/sclang.exe"
+      ""
+      ""
+      "${SC_WIN_DLL_DIRS}"
+    )
 
 else()
   install(TARGETS SuperCollider

@@ -325,7 +325,7 @@ View : QObject {
 	}
 
 	close {
-		if( this.getProperty( \fullScreen ) ) { this.invokeMethod( \showNormal, synchronous:false ) };
+		if( this.getProperty( \fullScreen ) ? false ) { this.invokeMethod( \showNormal, synchronous:false ) };
 		if( deleteOnClose )
 		{ this.remove; }
 		{ this.visible_( false ); }

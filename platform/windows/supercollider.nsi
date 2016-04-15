@@ -7,14 +7,14 @@
 !include "LogicLib.nsh"
 !include "x64.nsh"
 
-Name "SuperCollider ${SC_VERSION}"
-OutFile ${SC_DST_DIR}\SuperCollider-${SC_VERSION}_${FILE_NAME_SUFIX}.exe
+Name "${BUNDLE_NAME} ${SC_VERSION}"
+OutFile ${SC_DST_DIR}\${BUNDLE_NAME}-${SC_VERSION}_${FILE_NAME_SUFIX}.exe
 
 !define MUI_ICON ${SC_ICON}
 !define MUI_UNICON ${SC_ICON}
 
 ; Get install-dir from registry if available
-InstallDirRegKey HKCU "Software\SuperCollider\${SC_VERSION}" ""
+InstallDirRegKey HKCU "Software\${BUNDLE_NAME}\${SC_VERSION}" ""
 
 ;Addition to refresh shell-icons
 !define SHCNE_ASSOCCHANGED 0x08000000
@@ -27,15 +27,15 @@ InstallDirRegKey HKCU "Software\SuperCollider\${SC_VERSION}" ""
 
 !insertmacro MUI_PAGE_WELCOME
 
-!insertmacro MUI_PAGE_LICENSE SuperCollider\COPYING
+!insertmacro MUI_PAGE_LICENSE ${BUNDLE_NAME}\COPYING
 
 ; --- Hack to display Readme.md easily ---
 !define MUI_PAGE_HEADER_TEXT "Read me!"
 !define MUI_PAGE_HEADER_SUBTEXT "Find below useful information regarding installation and usage"
 !define MUI_LICENSEPAGE_TEXT_TOP "Press Page Down to see the rest of the information"
-!define MUI_LICENSEPAGE_TEXT_BOTTOM "This information will be available in your SuperCollider application folder as README.txt"
+!define MUI_LICENSEPAGE_TEXT_BOTTOM "For more Windows specific information please consult the file README_WINDOWS.md in the ${BUNDLE_NAME} application folder"
 !define MUI_LICENSEPAGE_BUTTON "Next >"
-!insertmacro MUI_PAGE_LICENSE SuperCollider\README.md
+!insertmacro MUI_PAGE_LICENSE ${BUNDLE_NAME}\README.md
 
 !insertmacro MUI_PAGE_DIRECTORY
 
@@ -59,48 +59,50 @@ InstallDirRegKey HKCU "Software\SuperCollider\${SC_VERSION}" ""
 
 Section "Core" core_sect
     SetOutPath $INSTDIR
-    File /r SuperCollider\*
+    File /r ${BUNDLE_NAME}\*
 
     ;Store installation folder
-	WriteRegStr HKCU "Software\SuperCollider\${SC_VERSION}" "" $INSTDIR
+  WriteRegStr HKCU "Software\${BUNDLE_NAME}\${SC_VERSION}" "" $INSTDIR
 
     ;Create uninstaller
     WriteUninstaller "$INSTDIR\Uninstall.exe"
 
-	; Register uninstaller in Add-/remove programs and add some Metadata
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SuperCollider-${SC_VERSION}" "DisplayName" "SuperCollider Version ${SC_VERSION}"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SuperCollider-${SC_VERSION}" "UninstallString" "$INSTDIR\Uninstall.exe"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SuperCollider-${SC_VERSION}" "HelpLink" "http://doc.sccode.org/"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SuperCollider-${SC_VERSION}" "URLUpdateInfo" "http://sourceforge.net/projects/supercollider/files/Windows/"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SuperCollider-${SC_VERSION}" "URLInfoAbout" "http://supercollider.github.io/"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SuperCollider-${SC_VERSION}" "DisplayVersion" "${SC_VERSION}"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SuperCollider-${SC_VERSION}" "DisplayIcon" "$INSTDIR\sclang.exe"
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SuperCollider-${SC_VERSION}" "NoModify" 1
-	WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SuperCollider-${SC_VERSION}" "NoRepair" 1
+  ; Register uninstaller in Add-/remove programs and add some Metadata
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${BUNDLE_NAME}-${SC_VERSION}" "DisplayName" "${BUNDLE_NAME} Version ${SC_VERSION}"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${BUNDLE_NAME}-${SC_VERSION}" "UninstallString" "$INSTDIR\Uninstall.exe"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${BUNDLE_NAME}-${SC_VERSION}" "Publisher" "SuperCollider Community"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${BUNDLE_NAME}-${SC_VERSION}" "HelpLink" "http://doc.sccode.org/"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${BUNDLE_NAME}-${SC_VERSION}" "URLUpdateInfo" "https://github.com/supercollider/supercollider/releases/"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${BUNDLE_NAME}-${SC_VERSION}" "URLInfoAbout" "http://supercollider.github.io/"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${BUNDLE_NAME}-${SC_VERSION}" "DisplayVersion" "${SC_VERSION}"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${BUNDLE_NAME}-${SC_VERSION}" "EstimatedSize" "${SC_SIZE}"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${BUNDLE_NAME}-${SC_VERSION}" "DisplayIcon" "$INSTDIR\sclang.exe"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${BUNDLE_NAME}-${SC_VERSION}" "NoModify" 1
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${BUNDLE_NAME}-${SC_VERSION}" "NoRepair" 1
 
-	;Associate file-types scd, sc and schelp with SuperCollider
-	WriteRegStr HKCR ".scd" "" "SuperCollider.Document"
-	WriteRegStr HKCR "SuperCollider.Document" "" "SuperCollider Document"
-	WriteRegStr HKCR "SuperCollider.Document\DefaultIcon" "" "$INSTDIR\sclang.exe,0"
-	WriteRegStr HKCR "SuperCollider.Document\shell\open\command" "" '"$INSTDIR\scide.exe" "%1"'
+  ;Associate file-types scd, sc and schelp with SuperCollider
+  WriteRegStr HKCR ".scd" "" "${BUNDLE_NAME}.Document"
+  WriteRegStr HKCR "${BUNDLE_NAME}.Document" "" "${BUNDLE_NAME} Document"
+  WriteRegStr HKCR "${BUNDLE_NAME}.Document\DefaultIcon" "" "$INSTDIR\sclang.exe,0"
+  WriteRegStr HKCR "${BUNDLE_NAME}.Document\shell\open\command" "" '"$INSTDIR\scide.exe" "%1"'
 
-	WriteRegStr HKCR ".sc" "" "SuperCollider.ClassFile"
-	WriteRegStr HKCR "SuperCollider.ClassFile" "" "SuperCollider ClassFile"
-	WriteRegStr HKCR "SuperCollider.ClassFile\DefaultIcon" "" "$INSTDIR\sclang.exe,0"
-	WriteRegStr HKCR "SuperCollider.ClassFile\shell\open\command" "" '"$INSTDIR\scide.exe" "%1"'
+  WriteRegStr HKCR ".sc" "" "${BUNDLE_NAME}.ClassFile"
+  WriteRegStr HKCR "${BUNDLE_NAME}.ClassFile" "" "${BUNDLE_NAME} ClassFile"
+  WriteRegStr HKCR "${BUNDLE_NAME}.ClassFile\DefaultIcon" "" "$INSTDIR\sclang.exe,0"
+  WriteRegStr HKCR "${BUNDLE_NAME}.ClassFile\shell\open\command" "" '"$INSTDIR\scide.exe" "%1"'
 
-	WriteRegStr HKCR ".schelp" "" "SuperCollider.HelpFile"
-	WriteRegStr HKCR "SuperCollider.HelpFile" "" "SuperCollider HelpFile"
-	WriteRegStr HKCR "SuperCollider.HelpFile\DefaultIcon" "" "$INSTDIR\sclang.exe,0"
-	WriteRegStr HKCR "SuperCollider.HelpFile\shell\open\command" "" '"$INSTDIR\scide.exe" "%1"'
+  WriteRegStr HKCR ".schelp" "" "${BUNDLE_NAME}.HelpFile"
+  WriteRegStr HKCR "${BUNDLE_NAME}.HelpFile" "" "${BUNDLE_NAME} HelpFile"
+  WriteRegStr HKCR "${BUNDLE_NAME}.HelpFile\DefaultIcon" "" "$INSTDIR\sclang.exe,0"
+  WriteRegStr HKCR "${BUNDLE_NAME}.HelpFile\shell\open\command" "" '"$INSTDIR\scide.exe" "%1"'
 
-	; Create Startmenu item
-	SetShellVarContext all
-	createDirectory "$SMPROGRAMS\SuperCollider"
-	createShortCut "$SMPROGRAMS\SuperCollider\SuperCollider-${SC_VERSION}.lnk" "$INSTDIR\scide.exe" "" "$INSTDIR\scide.exe"
+  ; Create Startmenu item
+  SetShellVarContext all
+  createDirectory "$SMPROGRAMS\${BUNDLE_NAME}"
+  createShortCut "$SMPROGRAMS\${BUNDLE_NAME}\${BUNDLE_NAME}-${SC_VERSION}.lnk" "$INSTDIR\scide.exe" "" "$INSTDIR\scide.exe"
 
-	; Refresh shell-icons
-	Call RefreshShellIcons
+  ; Refresh shell-icons
+  Call RefreshShellIcons
 
 SectionEnd
 
@@ -108,41 +110,41 @@ Section "Uninstall"
 
     RMDir /r "$INSTDIR"
 
-	DeleteRegKey HKCU "Software\SuperCollider\${SC_VERSION}"
-	DeleteRegKey /ifempty HKCU "Software\SuperCollider"
+  DeleteRegKey HKCU "Software\${BUNDLE_NAME}\${SC_VERSION}"
+  DeleteRegKey /ifempty HKCU "Software\${BUNDLE_NAME}"
 
-	;Remove filetype associations
-	DeleteRegKey HKCR ".scd"
-	DeleteRegKey HKCR "SuperCollider.Document"
+  ;Remove filetype associations
+  DeleteRegKey HKCR ".scd"
+  DeleteRegKey HKCR "${BUNDLE_NAME}.Document"
 
-	DeleteRegKey HKCR ".sc"
-	DeleteRegKey HKCR "SuperCollider.ClassFile"
+  DeleteRegKey HKCR ".sc"
+  DeleteRegKey HKCR "${BUNDLE_NAME}.ClassFile"
 
-	DeleteRegKey HKCR ".schelp"
-	DeleteRegKey HKCR "SuperCollider.HelpFile"
+  DeleteRegKey HKCR ".schelp"
+  DeleteRegKey HKCR "${BUNDLE_NAME}.HelpFile"
 
-	;Try to remove StartMenu item
-	SetShellVarContext all
-	delete "$SMPROGRAMS\SuperCollider\SuperCollider-${SC_VERSION}.lnk"
-	rmDir "$SMPROGRAMS\SuperCollider"
+  ;Try to remove StartMenu item
+  SetShellVarContext all
+  delete "$SMPROGRAMS\${BUNDLE_NAME}\${BUNDLE_NAME}-${SC_VERSION}.lnk"
+  rmDir "$SMPROGRAMS\${BUNDLE_NAME}"
 
-	;Remove from Add-/remove programs
-	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\SuperCollider-${SC_VERSION}"
+  ;Remove from Add-/remove programs
+  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${BUNDLE_NAME}-${SC_VERSION}"
 
 SectionEnd
 
 ; --- FUNCTIONS ---
 
 Function .onInit
-	${If} ${TARCH} == "x64"
-		StrCpy $INSTDIR "$PROGRAMFILES64\SuperCollider-${SC_VERSION}"
-	${Else}
-		StrCpy $INSTDIR "$PROGRAMFILES\SuperCollider-${SC_VERSION}"
-	${EndIf}
+  ${If} ${TARCH} == "x64"
+    StrCpy $INSTDIR "$PROGRAMFILES64\${BUNDLE_NAME}-${SC_VERSION}"
+  ${Else}
+    StrCpy $INSTDIR "$PROGRAMFILES\${BUNDLE_NAME}-${SC_VERSION}"
+  ${EndIf}
 FunctionEnd
 
 Function RefreshShellIcons
-	; By jerome tremblay - april 2003
-	System::Call 'shell32.dll::SHChangeNotify(i, i, i, i) v \
-	(${SHCNE_ASSOCCHANGED}, ${SHCNF_IDLIST}, 0, 0)'
+  ; By jerome tremblay - april 2003
+  System::Call 'shell32.dll::SHChangeNotify(i, i, i, i) v \
+  (${SHCNE_ASSOCCHANGED}, ${SHCNF_IDLIST}, 0, 0)'
 FunctionEnd
