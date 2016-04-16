@@ -45,8 +45,15 @@
 
 #include <boost/asio.hpp>
 
+#ifndef _WIN32
 #include <sys/socket.h>
 #include <ifaddrs.h>
+
+#else
+
+#include <iphlpapi.h>
+
+#endif
 
 struct InternalSynthServerGlobals
 {
@@ -878,12 +885,52 @@ int prMatchLangIP(VMGlobals *g, int numArgsPushed)
     char ipstring[40];
     int err = slotStrVal(argString, ipstring, 39);
 	if (err) return err;
+	
 	std::string loopback ("127.0.0.1");
 	// check for loopback address
 	if (!loopback.compare(ipstring)) {
 		SetTrue(g->sp - 1);
 		return errNone;
 	}
+	
+#ifdef _WIN32
+	
+	DWORD rv, size = 0;
+	PIP_ADAPTER_ADDRESSES adapter_addresses, aa;
+	PIP_ADAPTER_UNICAST_ADDRESS ua;
+	
+	// first get the size of the required buffer
+	rv = GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, NULL, NULL, &size);
+	if (rv != ERROR_BUFFER_OVERFLOW) {
+		error("GetAdaptersAddresses() failed...");
+		return errFailed;
+	}
+	// now allocate a buffer for the linked list
+	adapter_addresses = (PIP_ADAPTER_ADDRESSES)malloc(size);
+	
+	rv = GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, NULL, adapter_addresses, &size);
+	if (rv != ERROR_SUCCESS) {
+		error("GetAdaptersAddresses() failed...");
+		free(adapter_addresses);
+		return errFailed;
+	}
+	
+	for (aa = adapter_addresses; aa != NULL; aa = aa->Next) {
+		for (ua = aa->FirstUnicastAddress; ua != NULL; ua = ua->Next) {
+			char buf[40];
+			memset(buf, 0, sizeof(buf));
+			getnameinfo(ua->Address.lpSockaddr, ua->Address.iSockaddrLength, buf, sizeof(buf), NULL, 0,NI_NUMERICHOST);
+			if (strcmp(ipstring, buf) == 0) {
+				SetTrue(g->sp - 1);
+				free(adapter_addresses);
+				return errNone;
+			}
+		}
+	}
+	
+	free(adapter_addresses);
+	
+#else
 	
 	struct ifaddrs *ifap, *ifa;
 	struct sockaddr_in *sa;
@@ -909,6 +956,7 @@ int prMatchLangIP(VMGlobals *g, int numArgsPushed)
 	}
 	
 	freeifaddrs(ifap);
+#endif
 
     SetFalse(g->sp - 1);
 	return errNone;
