@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/supercollider/supercollider.svg?branch=master)](https://travis-ci.org/supercollider/supercollider)
+
 Welcome to SuperCollider!
 =========================
 

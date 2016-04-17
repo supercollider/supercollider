@@ -17,22 +17,26 @@ endif()
 if(WIN32)
     find_path(READLINE_INCLUDE_DIR
         NAMES readline/readline.h
-        PATHS "/${MINGW_ARCH}/include"
-              "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/include"
-              "$ENV{WD}/../../${MINGW_ARCH}/include"
+        HINTS "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/include"
+          "$ENV{ProgramW6432}/GnuWin32/include"
+          "$ENV{ProgramFiles}/GnuWin32/include"
+
     )
     find_library(READLINE_LIBRARY
-        NAMES libreadline6 readline5 libreadline readline
-        PATHS "/${MINGW_ARCH}/bin"
-              "$ENV{WD}/../../${MINGW_ARCH}/bin"
-              "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/bin"
-              "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/lib"
+        NAMES readline6 readline5 readline libreadline6 libreadline5 libreadline
+        HINTS "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/lib"
+          "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/bin"
+          "$ENV{ProgramW6432}/GnuWin32/lib"
+          "$ENV{ProgramW6432}/GnuWin32/bin"
+          "$ENV{ProgramFiles}/GnuWin32/lib"
+          "$ENV{ProgramFiles}/GnuWin32/bin"
     )
+
     find_path(READLINE_LIBRARY_DIR
-        NAMES libreadline6.dll readline5.dll libreadline.dll
-        PATHS "/${MINGW_ARCH}/bin"
-              "$ENV{WD}/../../${MINGW_ARCH}/bin"
-              "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/bin"
+        NAMES readline5.dll libreadline5.dll readline6.dll libreadline6.dll readline.dll libreadline.dll
+        HINTS "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/readline/bin"
+          "$ENV{ProgramW6432}/GnuWin32/bin"
+          "$ENV{ProgramFiles}/GnuWin32/bin"
     )
 endif()
 

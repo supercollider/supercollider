@@ -23,7 +23,7 @@ ProxySynthDef : SynthDef {
 			};
 			// protect from accidentally wrong array shapes
 			if(output.containsSeqColl) {
-				"Synth output should be a flat array.\n%".format(output).warn;
+				"Synth output should be a flat array.\n%\nFlattened to: %\n".format(output, output.flat).warn;
 				output = output.flat;
 			};
 

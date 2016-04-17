@@ -248,7 +248,7 @@ Stethoscope {
 		var win;
 		this.stop;
 		synth.free;
-		if(window.notNil) { win = window; window = nil; { win.close }.defer; };
+		if( window.notNil and: { window.isClosed.not } ) { win = window; window = nil; { win.close }.defer; };
 		ServerTree.remove(this, server);
 		ServerQuit.remove(this, server);
 	}

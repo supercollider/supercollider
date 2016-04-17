@@ -5,7 +5,10 @@ os:
  - linux
  - osx
 
-cache: 
+sudo: required
+dist: trusty
+
+cache:
  - apt
  - bundler
 
@@ -16,23 +19,22 @@ before_install:
  - ifmac brew tap homebrew/versions
  - ifmac brew install cmake qt55 || true
  - ifmac brew link qt55 --force
- #- iflin sudo apt-add-repository -y ppa:ubuntu-sdk-team/ppa
- - iflin "curl https://s3-us-west-2.amazonaws.com/supercollider/build-tools/linux/qt-5.3.2.zip -o qt.zip; unzip qt.zip -d $HOME/qt"
- - iflin sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
- - iflin sudo add-apt-repository -y ppa:andykimpe/cmake  # backport of cmake 2.8.12
- - iflin sudo add-apt-repository -y ppa:ondrej/php5 # libicu-dev 52
+ - iflin sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
+ - iflin sudo add-apt-repository --yes ppa:beineri/opt-qt551-trusty
  - iflin sudo apt-get update
- - iflin sudo apt-get install libicu-dev=52.1-1+debphp.org~precise+1 gcc-4.8 g++-4.8 aptitude build-essential libjack-dev libsndfile1-dev libasound2-dev libavahi-client-dev libreadline6-dev libfftw3-dev libxt-dev libudev-dev pkg-config cmake=2.8.12.2-3 subversion libstdc++5
- - iflin sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.8 
+ - iflin sudo apt-get install --yes build-essential gcc-4.9 g++-4.9 cmake pkg-config qt55base qt55location qt55declarative qt55sensors qt55tools qt55webengine qt55webchannel qt55webkit qt55xmlpatterns  libjack-jackd2-dev libsndfile1-dev libasound2-dev libavahi-client-dev libreadline6-dev libfftw3-dev libicu-dev libxt-dev libudev-dev
+ - iflin sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.9
  - iflin sudo update-alternatives --auto gcc
 
 before_script:
+ - iflin source /opt/qt55/bin/qt55-env.sh
  - mkdir BUILD
  - cd BUILD
+
  - export QT_PREFIX=$HOME/qt/gcc_64
  - export QT_PLUGIN_PATH=$QT_PREFIX/plugins
  - ifmac cmake -DCMAKE_PREFIX_PATH=`brew --prefix qt55` -DSC_QT=1 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 .. --debug-output
- - iflin cmake -DSC_EL=no -DCMAKE_PREFIX_PATH=$QT_PREFIX -DCMAKE_INSTALL_PREFIX:PATH=$PWD/Install -DCMAKE_BUILD_TYPE=Release -DSC_QT=1 .. --debug-output
+ - iflin cmake -DSC_EL=no -DCMAKE_INSTALL_PREFIX:PATH=$PWD/Install -DCMAKE_BUILD_TYPE=Release .. --debug-output
 # some paths
  - ifmac export SCLANG=$TRAVIS_BUILD_DIR/BUILD/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
  - iflin export SCLANG=$TRAVIS_BUILD_DIR/BUILD/Install/bin/sclang
@@ -91,5 +93,3 @@ notifications:
       - https://webhooks.gitter.im/e/51b9b53ca50a7bfca97d
     on_success: change
     on_failure: always
-  
- 

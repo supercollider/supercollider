@@ -16,46 +16,66 @@ if(NO_LIBSNDFILE)
 elseif (SNDFILE_INCLUDE_DIR AND SNDFILE_LIBRARY)
   set(SNDFILE_LIBRARIES ${SNDFILE_LIBRARY})
   set(SNDFILE_FOUND TRUE)
+
 elseif (APPLE)
-  set(SNDFILE_FOUND TRUE)
-  set(SNDFILE_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/../external_libraries/libsndfile/)
-  set(SNDFILE_LIBRARIES ${CMAKE_CURRENT_LIST_DIR}/../platform/mac/lib/scUBlibsndfile.a)
-  add_definitions("-isystem ${CMAKE_CURRENT_LIST_DIR}/../external_libraries/libsndfile")
+
+  find_path(SNDFILE_INCLUDE_DIR sndfile.h
+    HINTS /usr/local/opt/libsndfile/include
+  )
+
+  find_library(SNDFILE_LIBRARY NAMES libsndfile.dylib
+    HINTS /usr/local/opt/libsndfile/lib
+  )
+
+  if(NOT SNDFILE_INCLUDE_DIR OR NOT SNDFILE_LIBRARY)
+    set(SNDFILE_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/../external_libraries/libsndfile/)
+    set(SNDFILE_LIBRARIES ${CMAKE_CURRENT_LIST_DIR}/../platform/mac/lib/scUBlibsndfile.a)
+    set(SNDFILE_FOUND TRUE)
+    add_definitions("-isystem ${CMAKE_CURRENT_LIST_DIR}/../external_libraries/libsndfile")
+    message(STATUS "Could not find homebrew install of libsndfile, using old bundled version instead")
+  else()
+    set(SNDFILE_FOUND TRUE)
+    message(STATUS "Found homebrew install of libsndfile")
+    set(SNDFILE_LIBRARIES ${SNDFILE_LIBRARY})
+  endif()
 
   # TODO on non-apple platforms, we need to be able to test for >=1018.
   # (On apple it is known true, because we bundle a later version.)
+  # I think this is not necessary anymore in 2016
+
   add_definitions("-DLIBSNDFILE_1018")
 
 else()
   find_path(SNDFILE_INCLUDE_DIR sndfile.h
-    PATHS /usr/local/include
-      /usr/include
-      "/${MINGW_ARCH}/include"
-      "$ENV{WD}/../../${MINGW_ARCH}/include"
+    HINTS
       "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/libsndfile/include"
       "$ENV{ProgramW6432}/Mega-Nerd/libsndfile/include"
       "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/include"
+    PATHS /usr/local/include
+      /usr/include
   )
+
   find_library(SNDFILE_LIBRARY
     NAMES sndfile sndfile-1 libsndfile libsndfile-1
+    HINTS
+      "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/libsndfile/lib"
+      "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/libsndfile/bin"
+      "$ENV{ProgramW6432}/Mega-Nerd/libsndfile/lib"
+      "$ENV{ProgramW6432}/Mega-Nerd/libsndfile/bin"
+      "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/lib"
+      "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/bin"
     PATHS /usr/local/
       /usr/lib
-      "/${MINGW_ARCH}/bin"
-      "$ENV{WD}/../../${MINGW_ARCH}/bin"
-      "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/libsndfile/bin"
-      "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/libsndfile/lib"
-      "$ENV{ProgramW6432}/Mega-Nerd/libsndfile/bin"
-      "$ENV{ProgramW6432}/Mega-Nerd/libsndfile/lib"
-      "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/bin"
-      "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/lib"
   )
-  # used for Windows only
+  # used by Windows only
   find_path(SNDFILE_LIBRARY_DIR
-    NAMES sndfile.dll sndfile-1.dll libsndfile.dll libsndfile-1.dll
-    PATHS "/${MINGW_ARCH}/bin"
-      "$ENV{WD}/../../${MINGW_ARCH}/bin"
+    NAMES libsndfile.dll libsndfile-1.dll
+    HINTS
+      "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/libsndfile/lib"
       "${CMAKE_SOURCE_DIR}/../${CMAKE_LIBRARY_ARCHITECTURE}/libsndfile/bin"
+      "$ENV{ProgramW6432}/Mega-Nerd/libsndfile/lib"
       "$ENV{ProgramW6432}/Mega-Nerd/libsndfile/bin"
+      "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/lib"
       "$ENV{ProgramFiles}/Mega-Nerd/libsndfile/bin"
   )
 

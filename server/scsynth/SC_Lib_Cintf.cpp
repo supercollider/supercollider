@@ -127,7 +127,7 @@ void deinitialize_library()
 			(*unloadFunc)();
 		}
 	}
-       //FreeLibrary dlclose(handle);
+	//FreeLibrary dlclose(handle);
 #else
 	for(void * handle : open_handles){
 		void *ptr = dlsym(handle, "unload");
@@ -137,7 +137,7 @@ void deinitialize_library()
 		}
 	}
 #endif
-    open_handles.clear();
+	open_handles.clear();
 }
 void initialize_library(const char *uGensPluginPath)
 {
@@ -295,7 +295,7 @@ static bool PlugIn_Load(const char *filename)
 		char *s;
 		DWORD lastErr = GetLastError();
 		FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                       NULL, lastErr , MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&s, 0, NULL );
+			NULL, lastErr , MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&s, 0, NULL );
 		scprintf("*** ERROR: LoadLibrary '%s' err '%s'\n", filename, s);
 		LocalFree( s );
 		return false;
@@ -317,7 +317,7 @@ static bool PlugIn_Load(const char *filename)
 	if (!ptr) {
 		char *s;
 		FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                       NULL, GetLastError() , MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&s, 0, NULL );
+			NULL, GetLastError() , MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&s, 0, NULL );
 		scprintf("*** ERROR: GetProcAddress err '%s'\n", s);
 		LocalFree( s );
 
@@ -391,16 +391,16 @@ static bool PlugIn_LoadDir(const char *dirname, bool reportError)
 		if (!validItem) break;
 		if (skipItem || (*(diritem+firstCharOffset) == '.')) continue;  // skip files+folders whose first char is a dot
 
-        if (sc_DirectoryExists(diritem)) {
+	if (sc_DirectoryExists(diritem)) {
 			success = PlugIn_LoadDir(diritem, reportError);
-        } else {
+	} else {
 			int dnamelen = strlen(diritem);
 			int extlen = strlen(SC_PLUGIN_EXT);
 			char *extptr = diritem+dnamelen-extlen;
 			if (strncmp(extptr, SC_PLUGIN_EXT, extlen) == 0) {
 				success = PlugIn_Load(diritem);
 			}
-        }
+	}
 
 		if (!success) continue;
 	}

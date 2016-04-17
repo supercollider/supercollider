@@ -59,11 +59,11 @@ int Node_New(World *inWorld, NodeDef *def, int32 inID, Node** outNode)
 	node->mIsGroup = false;
 
 	node->mID = inID;
-    node->mHash = Hash(inID);
-    if (!World_AddNode(inWorld, node)) {
+	node->mHash = Hash(inID);
+	if (!World_AddNode(inWorld, node)) {
 		World_Free(inWorld, node);
 		return kSCErr_TooManyNodes;
-    }
+	}
 
 	inWorld->hw->mRecentID = inID;
 
@@ -85,16 +85,16 @@ void Node_Dtor(Node *inNode)
 // remove a node from a group
 void Node_Remove(Node* s)
 {
-    Group *group = s->mParent;
+	Group *group = s->mParent;
 
-    if (s->mPrev) s->mPrev->mNext = s->mNext;
-    else if (group) group->mHead = s->mNext;
+	if (s->mPrev) s->mPrev->mNext = s->mNext;
+	else if (group) group->mHead = s->mNext;
 
-    if (s->mNext) s->mNext->mPrev = s->mPrev;
-    else if (group) group->mTail = s->mPrev;
+	if (s->mNext) s->mNext->mPrev = s->mPrev;
+	else if (group) group->mTail = s->mPrev;
 
-    s->mPrev = s->mNext = 0;
-    s->mParent = 0;
+	s->mPrev = s->mNext = 0;
+	s->mParent = 0;
 }
 
 void Node_RemoveID(Node *inNode)
@@ -175,8 +175,8 @@ void Node_Replace(Node* s, Node *replaceThisOne)
 	if (s->mNext) s->mNext->mPrev = s;
 	else group->mTail = s;
 
-    replaceThisOne->mPrev = replaceThisOne->mNext = 0;
-    replaceThisOne->mParent = 0;
+	replaceThisOne->mPrev = replaceThisOne->mNext = 0;
+	replaceThisOne->mParent = 0;
 
 	Node_Delete(replaceThisOne);
 	//scprintf("<-Node_Replace\n");
@@ -205,21 +205,21 @@ void Node_MapControl(Node* inNode, int32 inHash, int32 *inName, int inIndex, int
 // set a node's control so that it reads from a control bus - index argument
 void Node_MapAudioControl(Node* inNode, int inIndex, int inBus)
 {
-    if (inNode->mIsGroup) {
-	Group_MapAudioControl((Group*)inNode, inIndex, inBus);
-    } else {
-	Graph_MapAudioControl((Graph*)inNode, inIndex, inBus);
-    }
+	if (inNode->mIsGroup) {
+		Group_MapAudioControl((Group*)inNode, inIndex, inBus);
+	} else {
+		Graph_MapAudioControl((Graph*)inNode, inIndex, inBus);
+	}
 }
 
 // set a node's control so that it reads from a control bus - name argument
 void Node_MapAudioControl(Node* inNode, int32 inHash, int32 *inName, int inIndex, int inBus)
 {
-    if (inNode->mIsGroup) {
-	Group_MapAudioControl((Group*)inNode, inHash, inName, inIndex, inBus);
-    } else {
-	Graph_MapAudioControl((Graph*)inNode, inHash, inName, inIndex, inBus);
-    }
+	if (inNode->mIsGroup) {
+		Group_MapAudioControl((Group*)inNode, inHash, inName, inIndex, inBus);
+	} else {
+		Graph_MapAudioControl((Graph*)inNode, inHash, inName, inIndex, inBus);
+	}
 }
 
 // set a node's control value - index argument
