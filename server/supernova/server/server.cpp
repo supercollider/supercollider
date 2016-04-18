@@ -55,7 +55,7 @@ nova_server::nova_server(server_arguments const & args):
     if (!args.non_rt)
         io_interpreter.start_thread();
 
-    sc_factory = new sc_ugen_factory;
+    sc_factory.reset( new sc_ugen_factory );
     sc_factory->initialize(args, server_shared_memory_creator::shm->get_control_busses());
 
     /** first guess: needs to be updated, once the backend is started */
@@ -98,6 +98,8 @@ nova_server::~nova_server(void)
 
     scheduler<thread_init_functor>::terminate();
     io_interpreter.join_thread();
+
+    sc_factory.reset();
     instance = nullptr;
 }
 
@@ -246,10 +248,10 @@ static bool set_realtime_priority(int thread_index)
 
 #ifdef __APPLE__
 
-    success = thread_set_priority_rt(AudioConvertNanosToHostTime(ns_per_block),
-                                     AudioConvertNanosToHostTime(ns_per_block - 2),
-                                     AudioConvertNanosToHostTime(ns_per_block - 1),
-                                     false);
+    success = thread_set_priority_rt( 0,
+                                     AudioConvertNanosToHostTime( ns_per_block - 5000 ),
+                                     AudioConvertNanosToHostTime( ns_per_block ),
+                                     true);
 
 #else
 

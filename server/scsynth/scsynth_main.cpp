@@ -127,16 +127,16 @@ void Usage()
 int main(int argc, char* argv[]);
 int main(int argc, char* argv[])
 {
-    setlinebuf(stdout);
+	setlinebuf(stdout);
 
 #ifdef _WIN32
-    // initialize winsock
-    WSAData wsaData;
+	// initialize winsock
+	WSAData wsaData;
 	int nCode;
-    if ((nCode = WSAStartup(MAKEWORD(1, 1), &wsaData)) != 0) {
+	if ((nCode = WSAStartup(MAKEWORD(1, 1), &wsaData)) != 0) {
 		scprintf( "WSAStartup() failed with error code %d.\n", nCode );
-        return 1;
-    }
+		return 1;
+	}
 #endif
 
 	int udpPortNum = -1;
@@ -247,7 +247,7 @@ int main(int argc, char* argv[])
 				checkNumArgs(2);
 				options.mOutputStreamsEnabled = argv[j+1];
 				break;
-            case 'M':
+			case 'M':
 #endif
 			case 'H' :
 				checkNumArgs(2);
@@ -295,9 +295,9 @@ int main(int argc, char* argv[])
 				checkNumArgs(2);
 				options.mRestrictedPath = argv[j+1];
 				break;
-            case 'C' :
+			case 'C' :
 				checkNumArgs(2);
-                break;
+				break;
 			case 'h':
 			default: Usage();
 		}
@@ -364,8 +364,8 @@ int main(int argc, char* argv[])
 
 
 #ifdef _WIN32
-    // clean up winsock
-    WSACleanup();
+	// clean up winsock
+	WSACleanup();
 
 #endif // _WIN32
 

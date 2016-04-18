@@ -11,7 +11,11 @@
 #ifndef BOOST_INTERPROCESS_SHARED_MEMORY_OBJECT_HPP
 #define BOOST_INTERPROCESS_SHARED_MEMORY_OBJECT_HPP
 
-#if defined(_MSC_VER)
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+#
+#if defined(BOOST_HAS_PRAGMA_ONCE)
 #  pragma once
 #endif
 
@@ -25,13 +29,11 @@
 #include <boost/interprocess/detail/os_file_functions.hpp>
 #include <boost/interprocess/detail/shared_dir_helpers.hpp>
 #include <boost/interprocess/permissions.hpp>
+#include <boost/move/adl_move_swap.hpp>
 #include <cstddef>
 #include <string>
-#include <algorithm>
 
-#if defined(BOOST_INTERPROCESS_XSI_SHARED_MEMORY_OBJECTS_ONLY)
-#  include <sys/shm.h>      //System V shared memory...
-#elif defined(BOOST_INTERPROCESS_POSIX_SHARED_MEMORY_OBJECTS)
+#if defined(BOOST_INTERPROCESS_POSIX_SHARED_MEMORY_OBJECTS)
 #  include <fcntl.h>        //O_CREAT, O_*...
 #  include <sys/mman.h>     //shm_xxx
 #  include <unistd.h>       //ftruncate, close
@@ -164,8 +166,8 @@ inline bool shared_memory_object::get_size(offset_t &size) const
 
 inline void shared_memory_object::swap(shared_memory_object &other)
 {
-   std::swap(m_handle,  other.m_handle);
-   std::swap(m_mode,    other.m_mode);
+   boost::adl_move_swap(m_handle, other.m_handle);
+   boost::adl_move_swap(m_mode,   other.m_mode);
    m_filename.swap(other.m_filename);
 }
 

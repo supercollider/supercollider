@@ -68,23 +68,20 @@ typedef boost::basic_regex<char, c_regex_traits<char> > c_regex_type;
 
 BOOST_REGEX_DECL int BOOST_REGEX_CCALL regcompA(regex_tA* expression, const char* ptr, int f)
 {
-   if(expression->re_magic != magic_value)
-   {
-      expression->guts = 0;
 #ifndef BOOST_NO_EXCEPTIONS
-      try{
+   try{
 #endif
       expression->guts = new c_regex_type();
 #ifndef BOOST_NO_EXCEPTIONS
-      } catch(...)
-      {
-         return REG_ESPACE;
-      }
-#else
-      if(0 == expression->guts)
-         return REG_E_MEMORY;
-#endif
+   } catch(...)
+   {
+      expression->guts = 0;
+      return REG_ESPACE;
    }
+#else
+   if(0 == expression->guts)
+      return REG_E_MEMORY;
+#endif
    // set default flags:
    boost::uint_fast32_t flags = (f & REG_PERLEX) ? 0 : ((f & REG_EXTENDED) ? regex::extended : regex::basic);
    expression->eflags = (f & REG_NEWLINE) ? match_not_dot_newline : match_default;
@@ -154,7 +151,7 @@ BOOST_REGEX_DECL regsize_t BOOST_REGEX_CCALL regerrorA(int code, const regex_tA*
       {
          result = std::strlen(names[code]) + 1;
          if(buf_size >= result)
-            re_detail::strcpy_s(buf, buf_size, names[code]);
+            BOOST_REGEX_DETAIL_NS::strcpy_s(buf, buf_size, names[code]);
          return result;
       }
       return result;
@@ -180,7 +177,7 @@ BOOST_REGEX_DECL regsize_t BOOST_REGEX_CCALL regerrorA(int code, const regex_tA*
             if(r < 0)
                return 0; // sprintf failed
             if(std::strlen(localbuf) < buf_size)
-               re_detail::strcpy_s(buf, buf_size, localbuf);
+               BOOST_REGEX_DETAIL_NS::strcpy_s(buf, buf_size, localbuf);
             return std::strlen(localbuf) + 1;
          }
       }
@@ -190,7 +187,7 @@ BOOST_REGEX_DECL regsize_t BOOST_REGEX_CCALL regerrorA(int code, const regex_tA*
       (std::sprintf)(localbuf, "%d", 0);
 #endif
       if(std::strlen(localbuf) < buf_size)
-         re_detail::strcpy_s(buf, buf_size, localbuf);
+         BOOST_REGEX_DETAIL_NS::strcpy_s(buf, buf_size, localbuf);
       return std::strlen(localbuf) + 1;
    }
    if(code <= (int)REG_E_UNKNOWN)
@@ -200,12 +197,12 @@ BOOST_REGEX_DECL regsize_t BOOST_REGEX_CCALL regerrorA(int code, const regex_tA*
          p = static_cast<c_regex_type*>(e->guts)->get_traits().error_string(static_cast< ::boost::regex_constants::error_type>(code));
       else
       {
-         p = re_detail::get_default_error_string(static_cast< ::boost::regex_constants::error_type>(code));
+         p = BOOST_REGEX_DETAIL_NS::get_default_error_string(static_cast< ::boost::regex_constants::error_type>(code));
       }
       std::size_t len = p.size();
       if(len < buf_size)
       {
-         re_detail::strcpy_s(buf, buf_size, p.c_str());
+         BOOST_REGEX_DETAIL_NS::strcpy_s(buf, buf_size, p.c_str());
       }
       return len + 1;
    }

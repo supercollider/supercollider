@@ -45,11 +45,11 @@ private:
     sync::detail::windows::basic_condition_variable m_cond;
 
 public:
-#if !defined(BOOST_NO_CXX11_CONSTEXPR)
+#if !defined(BOOST_NO_CXX11_CONSTEXPR) && !defined(BOOST_SYNC_DETAIL_NO_CONSTEXPR_WITH_NON_LITERAL_BASE)
 #define BOOST_SYNC_DEFINES_CONDITION_VARIABLE_CONSTEXPR_CONSTRUCTOR
 #endif
 
-    BOOST_CONSTEXPR condition_variable() BOOST_NOEXCEPT : m_cond()
+    BOOST_SYNC_DETAIL_CONSTEXPR_WITH_NON_LITERAL_BASE condition_variable() BOOST_NOEXCEPT : m_cond()
     {
     }
 

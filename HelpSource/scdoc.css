@@ -600,3 +600,146 @@ li.L9 { background: #eee }
   .atn { color: #404; }
   .atv { color: #060; }
 }
+
+/* from HelpSource/Search.html */
+
+div#search_box {
+    margin: 1.5em;
+    text-align: center;
+}
+
+#search_input {
+    border: 1px solid #aaa;
+    background: #eee;
+    margin-left: 0.5em;
+}
+div#search_count {
+    border-bottom: 2px solid #aaa;
+    color: #333;
+}
+
+div.result_category {
+    color: #555;
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+/*    font-size: 9.5pt;
+    border-bottom: 1px solid #ccc;*/
+    font-weight: bold;
+/*    font-size: 11pt;*/
+}
+div.met_docs {
+    margin-bottom: 0.2em;
+/*    margin-left: 2em;*/
+}
+div.met_subclasses {
+    font-size: 9pt;
+    color: #777;
+    margin-left: 3em;
+    text-align: left;
+}
+div.met_subclasses a {
+    color: #444;
+}
+div.met_subclasses a.seemore {
+    margin-left: 0.2em;
+    color: #558;
+}
+#search_checks {
+    padding: 0.5em;
+    padding-top: 0.25em;
+    padding-bottom: 0.25em;
+    font-size: 9pt;
+    color: #555;
+    background: #eee;
+}
+#search_checks0 {
+    font-size: 9pt;
+    color: #555;
+    border-bottom: 1px solid #ddd;
+    margin-top: 1em;
+    padding-bottom: 1em;
+}
+table#search_settings {
+    font-size: 9pt;
+    color: #555;
+    width: 100%;
+    margin-left: 0px;
+    margin-right: 0px;*/
+    margin: 0px;
+    padding: 0px;
+    border-collapse: collapse;
+}
+#search_settings td {
+    border: none;
+    padding: 2px;
+}
+#random {
+    text-align: right;
+    font-size: 9pt;
+}
+#js_error {
+    font-family: Andale Mono, monospace;
+    font-size: 9pt;
+    color: red;
+}
+
+/* from Methods.html in HelpSource/Overview/ */
+
+.method_item {
+    margin-top: 1em;
+}
+
+.method_doc {
+    margin-bottom: 0.2em;
+    margin-left: 2em;
+}
+div.met_subclasses {
+    font-size: 9pt;
+    color: #777;
+    margin-left: 3em;
+    text-align: left;
+}
+div.met_subclasses a {
+    color: #444;
+}
+
+div.met_subclasses a.seemore {
+    margin-left: 0.2em;
+    color: #558;
+}
+
+.method_name {
+    font-family: Andale Mono, monospace;
+    font-size: 9.5pt;
+}
+#method_note {
+    font-size: 9pt;
+    color: #777;
+    border-top: 1px solid #ddd;
+    text-align: center;
+    margin-top: 2em;
+}
+#total_count {
+    font-size: 9pt;
+    color: #777;
+}
+.searchlink {
+    background: #eed;
+    text-align: center;
+    font-size: 9pt;
+    padding: 0.25em;
+    margin: 0.25em 0;
+}
+
+/* from Documents.html and Classes.html in HelpSource/Overview/ */
+#doclist {
+    margin-top: 1em;
+}
+.result_item {
+    margin-left: 1.5em;
+    margin-top: 0.2em;
+}
+#total_count {
+    font-size: 9pt;
+    color: #777;
+}

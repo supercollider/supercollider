@@ -223,9 +223,17 @@ EventTypesWithCleanup {
 		type = ev[\type];
 		notNode = notNodeType[type] ? true;
 		if (flag || notNode) {
-			 (	parent: ev,
-				type: cleanupTypes[type]
-			).play;
+			if(cleanupTypes[type].notNil,
+				{
+					(
+						parent: ev,
+						type: cleanupTypes[type]
+					).play;
+				},
+				{
+					"Cleanup type for event type '%' not found".format(type).warn;
+				}
+			);
 		}
 	}
 

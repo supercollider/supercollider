@@ -575,7 +575,7 @@ int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 
 	MIDIEndpointRef src=0;
 	MIDIObjectType mtype;
-	MIDIObjectFindByUniqueID(uid, (MIDIObjectRef*)&src, &mtype);
+	MIDIObjectFindByUniqueID(uid, &src, &mtype);
 	if (mtype != kMIDIObjectType_Source) return errFailed;
 
 	//pass the uid to the midiReadProc to identify the src
@@ -599,7 +599,7 @@ int prDisconnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 
 	MIDIEndpointRef src=0;
 	MIDIObjectType mtype;
-	MIDIObjectFindByUniqueID(uid, (MIDIObjectRef*)&src, &mtype);
+	MIDIObjectFindByUniqueID(uid, &src, &mtype);
 	if (mtype != kMIDIObjectType_Source) return errFailed;
 
 	MIDIPortDisconnectSource(gMIDIInPort[inputIndex], src);

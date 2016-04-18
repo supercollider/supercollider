@@ -822,7 +822,7 @@ bool BufAllocReadChannelCmd::Stage2()
 	} else {
 		// verify channel indexes
 		if (!CheckChannels(fileinfo.channels)) {
-            const char* str = "Channel index out of range.\n";
+			const char* str = "Channel index out of range.\n";
 			SendFailureWithIntValue(&mReplyAddress, "/b_allocReadChannel", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_allocRead", str);
 			scprintf(str);
 			sf_close(sf);
@@ -937,7 +937,7 @@ bool BufReadChannelCmd::Stage2()
 	if (mNumChannels > 0) {
 		// verify channel indexes
 		if (!( CheckChannels(fileinfo.channels)) ) { // nescivi:  && CheckChannels(buf->channels) (should not check here for buf->channels)
-            const char* str = "Channel index out of range.\n";
+			const char* str = "Channel index out of range.\n";
 			SendFailureWithIntValue(&mReplyAddress, "/b_readChannel", str, mBufIndex); //SendFailure(&mReplyAddress, "/b_allocRead", str);
 			scprintf(str);
 			sf_close(sf);
@@ -1296,8 +1296,8 @@ bool NotifyCmd::Stage2()
 			return false;
 		}
 
-        uint32 clientID = hw->mClientIDs[hw->mClientIDTop++]; // pop an ID
-        hw->mClientIDdict->insert(std::pair<ReplyAddress, uint32>(mReplyAddress,clientID));
+		uint32 clientID = hw->mClientIDs[hw->mClientIDTop++]; // pop an ID
+		hw->mClientIDdict->insert(std::pair<ReplyAddress, uint32>(mReplyAddress,clientID));
 		hw->mUsers[hw->mNumUsers++] = mReplyAddress;
 
 		SendDoneWithIntValue("/notify", clientID);
@@ -1305,8 +1305,8 @@ bool NotifyCmd::Stage2()
 		for (uint32 i=0; i<hw->mNumUsers; ++i) {
 			if (mReplyAddress == hw->mUsers[i]) {
 				// remove from list
-                hw->mClientIDs[--hw->mClientIDTop] = hw->mClientIDdict->at(mReplyAddress); // push the freed ID
-                hw->mClientIDdict->erase(mReplyAddress);
+				hw->mClientIDs[--hw->mClientIDTop] = hw->mClientIDdict->at(mReplyAddress); // push the freed ID
+				hw->mClientIDdict->erase(mReplyAddress);
 				hw->mUsers[i] = hw->mUsers[--hw->mNumUsers];
 				SendDone("/notify");
 				return false;

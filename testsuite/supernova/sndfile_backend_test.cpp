@@ -1,5 +1,6 @@
 #include <boost/test/unit_test.hpp>
-#include <boost/thread.hpp>
+#include <chrono>
+#include <thread>
 
 #include "audio_backend/sndfile_backend.hpp"
 
@@ -41,11 +42,7 @@ BOOST_AUTO_TEST_CASE( sndfile_backend_test_1 )
     be.activate_audio();
     BOOST_REQUIRE(be.audio_is_active());
 
-
-    boost::xtime xt;
-    boost::xtime_get(&xt, boost::TIME_UTC_);
-    xt.sec += 1;
-    boost::thread::sleep(xt);
+    std::this_thread::sleep_for( std::chrono::seconds (1) );
 
     be.deactivate_audio();
     BOOST_REQUIRE(!be.audio_is_active());

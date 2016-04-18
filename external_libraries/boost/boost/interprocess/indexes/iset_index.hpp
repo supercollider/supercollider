@@ -11,19 +11,23 @@
 #ifndef BOOST_INTERPROCESS_ISET_INDEX_HPP
 #define BOOST_INTERPROCESS_ISET_INDEX_HPP
 
-#if defined(_MSC_VER)
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+#
+#if defined(BOOST_HAS_PRAGMA_ONCE)
 #  pragma once
 #endif
 
 #include <boost/interprocess/detail/config_begin.hpp>
 #include <boost/interprocess/detail/workaround.hpp>
 
-#include <string>
-#include <functional>
-#include <utility>
+#include <boost/intrusive/detail/minimal_pair_header.hpp>
 #include <boost/interprocess/detail/utilities.hpp>
+#include <boost/intrusive/detail/minimal_pair_header.hpp>         //std::pair
+#include <boost/intrusive/detail/minimal_less_equal_header.hpp>   //std::less
+#include <boost/container/detail/minimal_char_traits_header.hpp>  //std::char_traits
 #include <boost/intrusive/set.hpp>
-
 
 //!\file
 //!Describes index adaptor of boost::intrusive::set container, to use it

@@ -40,6 +40,7 @@
 #include "GC.h"
 
 #include <atomic>
+#include <cstring>
 
 #include "SC_LanguageClient.h"
 
@@ -68,7 +69,6 @@ static inline void trace(...)
 #include <hidapi.h>
 #include <hidapi_parser.h>
 
-#include <boost/thread/thread.hpp>
 #include <map>
 
 typedef std::map<int, hid_dev_desc* > hid_map_t;
@@ -90,7 +90,7 @@ wchar_t * char_to_wchar( char * chs )
 	if (chs == nullptr)
 		return nullptr;
 
-	int len = strlen( chs ) + 1;
+	int len = std::strlen( chs ) + 1;
 	wchar_t * wchs = (wchar_t*) malloc( sizeof( wchar_t ) * len );
 	std::mbstowcs( wchs, chs, len );
 	return wchs;
@@ -104,7 +104,7 @@ static PyrSymbol* s_hidClosed = nullptr;
 
 class SC_HID_API_Threadpool
 {
-	typedef std::map<hid_dev_desc *, boost::thread*> ThreadMap;
+	typedef std::map<hid_dev_desc *, std::thread> ThreadMap;
 
 public:
 	void openDevice(hid_dev_desc * desc, std::atomic<bool> &shouldBeRunning)
@@ -115,7 +115,7 @@ public:
 			// thread already polling device
 			return;
 
-		boost::thread * deviceThread = threads.create_thread( [=, &shouldBeRunning] {
+		std::thread deviceThread( [=, &shouldBeRunning] {
 			trace("start polling thread for %d\n", desc);
 
 			while( true ) {
@@ -132,17 +132,18 @@ public:
 				}
 			}
 			std::lock_guard<std::mutex> lock_(guard);
-                        auto it = map.find(desc);
-                        threads.remove_thread(it->second);
-                        map.erase(it);
+			auto it = map.find(desc);
+			std::thread thisThread = std::move( it->second );
+			map.erase(it);
+			thisThread.detach();
 		});
 
-		map.insert( std::make_pair(desc, deviceThread) );
+		map.emplace( desc, std::move(deviceThread) );
 	}
 
 	void closeDevice(hid_dev_desc * desc)
 	{
-		boost::thread * thread;
+		std::thread thread;
 		{
 			std::lock_guard<std::mutex> lock(guard);
 			auto it = map.find(desc);
@@ -150,16 +151,15 @@ public:
 				std::printf("device already closed %p\n", desc->device);
 				return;
 			}
-			thread = it->second;
+			thread = std::move(it->second);
 		}
 
-		thread->detach();
+		thread.detach();
 		hid_close_device( desc );
 		trace("close device: interrupted \n");
 	}
 
 private:
-	boost::thread_group threads;
 	ThreadMap map;
 	std::mutex guard;
 };

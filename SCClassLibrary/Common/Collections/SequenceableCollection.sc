@@ -1300,4 +1300,22 @@ SequenceableCollection : Collection {
 			}
 		}
 	}
+
+	unixCmd { arg action, postOutput = true;
+		var pid;
+		if(this.notEmpty) {
+			pid = this.prUnixCmd(postOutput);
+			if(action.notNil) {
+				String.unixCmdActions.put(pid, action);
+			};
+			^pid
+		} {
+			Error("Collection should have at least the filepath of the program to run.").throw
+		}
+	}
+
+	prUnixCmd { arg postOutput = true;
+		_ArrayPOpen
+		^this.primitiveFailed
+	}
 }

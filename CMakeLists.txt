@@ -71,14 +71,11 @@ if (${CMAKE_COMPILER_IS_GNUCXX})
 
 	add_definitions("-Wreturn-type")
 
-	if(${_gcc_version} VERSION_LESS 4.7)
-		message(FATAL_ERROR "SuperCollider requires at least gcc-4.7 when compiled with gcc.")
+	if(${_gcc_version} VERSION_LESS 4.8)
+		message(FATAL_ERROR "SuperCollider requires at least gcc-4.8 when compiled with gcc.")
 	endif()
 
-#	disabled for now: -ffast-math breaks avx intrinsics and -fsigned-zeros/-fno-associative-math are not available in some versions
-#	if (${_gcc_version} VERSION_GREATER 4.0.99)
-#		add_definitions("-ffast-math -fsigned-zeros -fno-associative-math")
-#	endif()
+	add_definitions("-ffast-math -fsigned-zeros -fno-associative-math")
 
 	if(APPLE)
 		exec_program(${CMAKE_CXX_COMPILER} ARGS --version OUTPUT_VARIABLE _gcc_version_info)
@@ -95,9 +92,7 @@ elseif(${CMAKE_CXX_COMPILER} MATCHES icpc)
 	add_definitions(-Wno-unknown-pragmas)
 	add_definitions(-simd)
 
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(CMAKE_COMPILER_IS_CLANG 1)
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
     set(CMAKE_COMPILER_IS_CLANG 1)
 endif()
 
@@ -112,14 +107,23 @@ endif()
 if(WIN32)
     add_definitions(-DWIN32_LEAN_AND_MEAN -DNOMINMAX -D_WIN32_WINNT=0x0500)
 
-    # correctly link the static Boost Thread library:
-    add_definitions(-DBOOST_THREAD_USE_LIB)
     #avoid unnecesary autolink
     add_definitions(-DBOOST_DATE_TIME_NO_LIB -DBOOST_ALL_NO_LIB)
 
 endif()
 
 add_definitions(-DBOOST_CHRONO_HEADER_ONLY -DBOOST_NO_AUTO_PTR)
+
+
+#############################################
+# Detect CCache
+
+find_program(CCacheExectuable ccache)
+if( CCacheExectuable )
+  # only used with >=cmake-3.4
+  set( CMAKE_C_COMPILER_LAUNCHER   "${CCacheExectuable}" )
+  set( CMAKE_CXX_COMPILER_LAUNCHER "${CCacheExectuable}" )
+endif()
 
 #############################################
 # Options
@@ -128,18 +132,11 @@ option(FINAL_BUILD "Build as single source file." OFF)
 
 option(FFT_GREEN "Use internal 'Green' FFT lib rather than FFTW. (Not recommended.)" OFF)
 
-include (CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG(-msse HAS_CXX_SSE)
-if (HAS_CXX_SSE)
+if(NOT ${CMAKE_SYSTEM_PROCESSOR} MATCHES "^arm")
     option(SSE "Compile with support for SSE instructions." ON)
-else()
-    set(SSE OFF)
-endif()
-
-CHECK_CXX_COMPILER_FLAG(-msse2 HAS_CXX_SSE2)
-if (HAS_CXX_SSE2)
     option(SSE2 "Compile with support for SSE2 instructions." ON)
-else()
+else() # ARM platforms do not have SSE
+    set(SSE OFF)
     set(SSE2 OFF)
 endif()
 
@@ -155,7 +152,7 @@ if (SC_QT)
   message( STATUS "Compiling with Qt GUI" )
 else()
   if (SC_IDE)
-      message( STATUS "Not compiling SC IDE, because it requires Qt but SC_QT is False" )
+	  message( STATUS "Not compiling SC IDE, because it requires Qt but SC_QT is False" )
     set(SC_IDE False)
   endif()
 endif (SC_QT)
@@ -210,12 +207,6 @@ if (NOT WIN32)
         message(SEND_ERROR "cannot find libpthreads")
     endif()
     include_directories(${PTHREADS_INCLUDE_DIR})
-endif()
-
-if(MSVC OR MINGW)
-    set(MATH_LIBRARY "")
-else()
-    find_library(MATH_LIBRARY m)
 endif()
 
 if(SYSTEM_BOOST)
@@ -280,10 +271,9 @@ if (CMAKE_COMPILER_IS_INTEL AND NOT WIN32)
 	add_definitions(-diag-disable 279) # controlling expression is constant
 endif()
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL MSVC)
+if(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
   foreach(flag CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
     set(${flag} "${${flag}} /wd4018") # signed/unsigned mismatch
-    set(${flag} "${${flag}} /wd4065") # switch statement contains 'default' but no 'case' labels
     set(${flag} "${${flag}} /wd4102") # unreferenced label
     set(${flag} "${${flag}} /wd4267") # conversion from 'size_t' to 'int', possible loss of data
     set(${flag} "${${flag}} /wd4244") # conversion from '__int64' to 'int', possible loss of data

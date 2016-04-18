@@ -300,20 +300,20 @@ SelectXFocus {
 Vibrato : PureUGen {
 	*ar {
 		arg freq = 440.0, rate = 6, depth = 0.02, delay = 0.0, onset = 0.0,
-				rateVariation = 0.04, depthVariation = 0.1, iphase = 0.0;
-		^this.multiNew('audio', freq, rate, depth, delay, onset, rateVariation, depthVariation, iphase)
+				rateVariation = 0.04, depthVariation = 0.1, iphase = 0.0, trig = 0.0;
+		^this.multiNew('audio', freq, rate, depth, delay, onset, rateVariation, depthVariation, iphase, trig)
 	}
 	*kr {
 		arg freq = 440.0, rate = 6, depth = 0.02, delay = 0.0, onset = 0.0,
-				rateVariation = 0.04, depthVariation = 0.1, iphase = 0.0;
-		^this.multiNew('control', freq, rate, depth, delay, onset, rateVariation, depthVariation, iphase)
+				rateVariation = 0.04, depthVariation = 0.1, iphase = 0.0, trig = 0.0;
+		^this.multiNew('control', freq, rate, depth, delay, onset, rateVariation, depthVariation, iphase, trig)
 	}
 }
 
 
 TChoose {
 	*ar { arg trig, array;
-		^Select.ar(TIRand.kr(0, array.lastIndex, trig), array)
+		^Select.ar(TIRand.ar(0, array.lastIndex, trig), array)
 
 	}
 	*kr { arg trig, array;

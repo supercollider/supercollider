@@ -34,11 +34,11 @@ if(NOT Boost_FOUND) # we compile boost ourselves
 					 APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 	endif()
 
-	# still required by threadpool
 	add_library(boost_thread STATIC EXCLUDE_FROM_ALL ${boost_thread_src} ${boost_thread_platform})
 	target_link_libraries(boost_thread boost_system)
 #	target_compile_definitions(boost_thread PUBLIC BOOST_THREAD_DONT_PROVIDE_INTERRUPTIONS)
 	target_include_directories(boost_thread PUBLIC boost)
+	target_compile_definitions(boost_thread PUBLIC BOOST_THREAD_USE_LIB) # for win32
 
 	if(PTHREADS_FOUND)
 		target_include_directories(boost_thread PUBLIC ${PTHREADS_INCLUDE_DIR})
@@ -61,14 +61,18 @@ if(NOT Boost_FOUND) # we compile boost ourselves
 			APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 	endif()
 
-	set_property( TARGET boost_thread boost_program_options boost_system boost_filesystem PROPERTY FOLDER 3rdparty )
-
 endif()
 
 # tlsf
 add_library(tlsf STATIC "TLSF-2.4.6/src/tlsf.c")
 target_compile_definitions( tlsf PRIVATE TLSF_STATISTIC=1 )
 target_include_directories( tlsf INTERFACE TLSF-2.4.6/src )
+
+#oscpack
+add_library(oscpack STATIC EXCLUDE_FROM_ALL "oscpack_build.cpp")
+target_include_directories(oscpack PRIVATE boost)
+target_include_directories(oscpack INTERFACE oscpack_1_1_0 )
+
 
 if(LTO)
 	set_property(TARGET oscpack tlsf
@@ -77,11 +81,6 @@ if(LTO)
 	set_property(TARGET oscpack tlsf
 				 APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 endif()
-
-#oscpack
-add_library(oscpack STATIC EXCLUDE_FROM_ALL "oscpack_build.cpp")
-target_include_directories(oscpack PRIVATE boost)
-target_include_directories(oscpack INTERFACE oscpack_1_1_0 )
 
 if(NOT YAMLCPP_FOUND)
   message(STATUS "using bundled libyaml-cpp")

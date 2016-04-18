@@ -14,7 +14,7 @@ Build requirements
 
 (most of these will be available in your linux distribution as packages )
 
- * gcc >= 4.6
+ * gcc >= 4.8
    http://www.gnu.org/software/gcc
 
  * jack and libjack

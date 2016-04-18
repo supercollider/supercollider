@@ -13,7 +13,11 @@
 #ifndef BOOST_INTRUSIVE_DETAIL_KEY_NODEPTR_COMP_HPP
 #define BOOST_INTRUSIVE_DETAIL_KEY_NODEPTR_COMP_HPP
 
-#if defined(_MSC_VER)
+#ifndef BOOST_CONFIG_HPP
+#  include <boost/config.hpp>
+#endif
+
+#if defined(BOOST_HAS_PRAGMA_ONCE)
 #  pragma once
 #endif
 
@@ -24,17 +28,27 @@ namespace boost {
 namespace intrusive {
 namespace detail {
 
-template<class KeyValueCompare, class ValueTraits>
+template < class KeyTypeKeyCompare
+         , class ValueTraits
+         , class KeyOfValue = void
+         >
 struct key_nodeptr_comp
-   :  private ebo_functor_holder<KeyValueCompare>
+   //Use public inheritance to avoid MSVC bugs with closures
+   :  public ebo_functor_holder<KeyTypeKeyCompare>
 {
    typedef ValueTraits                             value_traits;
    typedef typename value_traits::value_type       value_type;
    typedef typename value_traits::node_ptr         node_ptr;
    typedef typename value_traits::const_node_ptr   const_node_ptr;
-   typedef ebo_functor_holder<KeyValueCompare>     base_t;
+   typedef ebo_functor_holder<KeyTypeKeyCompare>   base_t;
+   typedef typename detail::if_c
+            < detail::is_same<KeyOfValue, void>::value
+            , detail::identity<value_type>
+            , KeyOfValue
+            >::type                                key_of_value;
+   typedef typename key_of_value::type         key_type;
 
-   key_nodeptr_comp(KeyValueCompare kcomp, const ValueTraits *traits)
+   key_nodeptr_comp(KeyTypeKeyCompare kcomp, const ValueTraits *traits)
       :  base_t(kcomp), traits_(traits)
    {}
 
@@ -44,30 +58,36 @@ struct key_nodeptr_comp
       static const bool value = is_same<T, const_node_ptr>::value || is_same<T, node_ptr>::value;
    };
 
+   //key_forward
    template<class T>
-   const value_type & key_forward
-      (const T &node, typename enable_if_c<is_node_ptr<T>::value>::type * = 0) const
-   {  return *traits_->to_value_ptr(node);  }
+   typename enable_if<is_node_ptr<T>, const key_type &>::type key_forward(const T &node) const
+   {  return key_of_value()(*traits_->to_value_ptr(node));  }
 
    template<class T>
-   const T & key_forward(const T &key, typename enable_if_c<!is_node_ptr<T>::value>::type* = 0) const
+   #if defined(BOOST_MOVE_HELPERS_RETURN_SFINAE_BROKEN)
+   const T &key_forward (const T &key, typename disable_if<is_node_ptr<T> >::type* =0) const
+   #else
+   typename disable_if<is_node_ptr<T>, const T &>::type key_forward(const T &key) const
+   #endif
    {  return key;  }
 
-   template<class T>
-   T & key_forward(T &key, typename enable_if_c<!is_node_ptr<T>::value>::type* = 0) const
-   {  return key;  }
-
-   template<class KeyType, class KeyType2>
-   bool operator()(const KeyType &key1, const KeyType2 &key2) const
-   {  return base_t::get()(this->key_forward(key1), this->key_forward(key2));  }
-
+   //operator() 1 arg
    template<class KeyType>
    bool operator()(const KeyType &key1) const
    {  return base_t::get()(this->key_forward(key1));  }
 
    template<class KeyType>
-   bool operator()(KeyType &key1)
+   bool operator()(const KeyType &key1)
    {  return base_t::get()(this->key_forward(key1));  }
+
+   //operator() 2 arg
+   template<class KeyType, class KeyType2>
+   bool operator()(const KeyType &key1, const KeyType2 &key2) const
+   {  return base_t::get()(this->key_forward(key1), this->key_forward(key2));  }
+
+   template<class KeyType, class KeyType2>
+   bool operator()(const KeyType &key1, const KeyType2 &key2)
+   {  return base_t::get()(this->key_forward(key1), this->key_forward(key2));  }
 
    const ValueTraits *const traits_;
 };

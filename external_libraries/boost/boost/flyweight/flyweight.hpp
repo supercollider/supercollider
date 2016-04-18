@@ -1,6 +1,6 @@
 /* Flyweight class. 
  *
- * Copyright 2006-2014 Joaquin M Lopez Munoz.
+ * Copyright 2006-2015 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -47,6 +47,7 @@
 
 #if BOOST_WORKAROUND(BOOST_MSVC,BOOST_TESTED_AT(1400))
 #pragma warning(push)
+#pragma warning(disable:4520)  /* multiple default ctors */
 #pragma warning(disable:4521)  /* multiple copy ctors */
 #endif
 
@@ -435,6 +436,56 @@ BOOST_TEMPLATED_STREAM(istream,ElemType,Traits)& operator>>(
 } /* namespace flyweights */
 
 } /* namespace boost */
+
+#if !defined(BOOST_FLYWEIGHT_DISABLE_HASH_SUPPORT)
+
+/* hash support */
+
+#if !defined(BOOST_NO_CXX11_HDR_FUNCTIONAL)
+namespace std{
+
+template<typename T,BOOST_FLYWEIGHT_TYPENAME_TEMPL_ARGS(_)>
+BOOST_FLYWEIGHT_STD_HASH_STRUCT_KEYWORD
+hash<boost::flyweight<T,BOOST_FLYWEIGHT_TEMPL_ARGS(_)> >
+{
+public:
+  typedef std::size_t                result_type;
+  typedef boost::flyweight<
+    T,BOOST_FLYWEIGHT_TEMPL_ARGS(_)> argument_type;
+
+  result_type operator()(const argument_type& x)const
+  {
+    typedef typename argument_type::value_type value_type;
+
+    std::hash<const value_type*> h;
+    return h(&x.get());
+  }
+};
+
+} /* namespace std */
+#endif /* !defined(BOOST_NO_CXX11_HDR_FUNCTIONAL) */
+
+namespace boost{
+#if !defined(BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP)
+namespace flyweights{
+#endif
+
+template<typename T,BOOST_FLYWEIGHT_TYPENAME_TEMPL_ARGS(_)>
+std::size_t hash_value(const flyweight<T,BOOST_FLYWEIGHT_TEMPL_ARGS(_)>& x)
+{
+  typedef typename flyweight<
+    T,BOOST_FLYWEIGHT_TEMPL_ARGS(_)
+  >::value_type                     value_type;
+
+  boost::hash<const value_type*> h;
+  return h(&x.get());
+}
+
+#if !defined(BOOST_NO_ARGUMENT_DEPENDENT_LOOKUP)
+} /* namespace flyweights */
+#endif
+} /* namespace boost */
+#endif /* !defined(BOOST_FLYWEIGHT_DISABLE_HASH_SUPPORT) */
 
 #undef BOOST_FLYWEIGHT_COMPLETE_COMP_OPS
 #undef BOOST_FLYWEIGHT_TEMPL_ARGS

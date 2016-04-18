@@ -235,10 +235,13 @@ function SendLineToSC(linenum)
   "silent exe cmd
 endfunction
 
+let s:trackoflines = ""
+
 function! SClang_send()
-  let cmd = ".w! >> " . s:sclangPipeLoc
-  exe cmd
+  let s:trackoflines .= getline(".") . "\n"
   if line(".") == a:lastline
+    call SendToSC(s:trackoflines)
+    let s:trackoflines = ""
     call SendToSC('')
     "redraw!
   endif

@@ -13,7 +13,7 @@
 #ifndef BOOST_INTRUSIVE_LINK_MODE_HPP
 #define BOOST_INTRUSIVE_LINK_MODE_HPP
 
-#if defined(_MSC_VER)
+#if defined(BOOST_HAS_PRAGMA_ONCE)
 #  pragma once
 #endif
 
@@ -50,7 +50,7 @@ enum link_mode_type{
 template <link_mode_type link_mode>
 struct is_safe_autounlink
 {
-   static const bool value = 
+   static const bool value =
       (int)link_mode == (int)auto_unlink   ||
       (int)link_mode == (int)safe_link;
 };

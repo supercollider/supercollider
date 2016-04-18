@@ -192,7 +192,7 @@ AutoCompleter::AutoCompleter( ScCodeEditor *editor ):
              this, SLOT(hideWidgets()) );
     connect( editor->verticalScrollBar(), SIGNAL(valueChanged(int)),
              this, SLOT(hideWidgets()) );
-    connect(Main::scProcess(), SIGNAL(introspectionAboutToSwap()),
+    connect(Main::scProcess(), SIGNAL(introspectionChanged()),
             this, SLOT(clearMethodCallStack()));
 }
 

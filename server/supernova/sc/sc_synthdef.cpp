@@ -22,7 +22,7 @@
 #include <sstream>
 
 #include <boost/format.hpp>
-#include <boost/integer/endian.hpp>
+#include <boost/endian/arithmetic.hpp>
 
 #include "sc_synthdef.hpp"
 #include "sc_ugen_factory.hpp"
@@ -36,9 +36,9 @@ typedef std::int16_t int16;
 typedef std::int32_t int32;
 typedef std::int8_t int8;
 
-using boost::integer::big32_t;
-using boost::integer::big16_t;
-using boost::integer::big8_t;
+using boost::endian::big_int32_t;
+using boost::endian::big_int16_t;
+using boost::endian::big_int8_t;
 
 using std::size_t;
 
@@ -69,7 +69,7 @@ float read_float(const char *& buffer, const char *buffer_end)
 {
     verify_synthdef_buffer(buffer, buffer_end);
 
-    big32_t data = *(big32_t*)buffer;
+    big_int32_t data = *(big_int32_t*)buffer;
     buffer += 4;
 
     union {
@@ -85,7 +85,7 @@ int8_t read_int8(const char *& buffer, const char *buffer_end)
 {
     verify_synthdef_buffer(buffer, buffer_end);
 
-    big8_t data = *(big8_t*)buffer;
+    big_int8_t data = *(big_int8_t*)buffer;
     buffer += 1;
     return data;
 }
@@ -95,7 +95,7 @@ int16_t read_int16(const char *& buffer, const char *buffer_end)
 {
     verify_synthdef_buffer(buffer, buffer_end);
 
-    big16_t data = *(big16_t*)buffer;
+    big_int16_t data = *(big_int16_t*)buffer;
     buffer += 2;
     return data;
 }
@@ -104,7 +104,7 @@ int32_t read_int32(const char *& buffer, const char *buffer_end)
 {
     verify_synthdef_buffer(buffer, buffer_end);
 
-    big32_t data = *(big32_t*)buffer;
+    big_int32_t data = *(big_int32_t*)buffer;
     buffer += 4;
     return data;
 }
@@ -209,6 +209,7 @@ void sc_synthdef::read_synthdef(const char *& buffer, const char* buffer_end, in
 
     /* read constants */
     int32_t constant_count = read_int(buffer, buffer_end, short_int_size);
+    constants.reserve( constant_count );
 
     for (int i = 0; i != constant_count; ++i) {
         float data = read_float(buffer, buffer_end);
@@ -216,9 +217,10 @@ void sc_synthdef::read_synthdef(const char *& buffer, const char* buffer_end, in
     }
 
     /* read parameters */
-    int32_t paramenter_count = read_int(buffer, buffer_end, short_int_size);
+    int32_t par_count = read_int(buffer, buffer_end, short_int_size);
+    parameters.reserve( par_count );
 
-    for (int i = 0; i != paramenter_count; ++i) {
+    for (int i = 0; i != par_count; ++i) {
         float data = read_float(buffer, buffer_end);
         parameters.push_back(data);
     }

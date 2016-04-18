@@ -110,6 +110,7 @@ struct operations< 4u, Signed > :
 {
     typedef windows_operations< typename make_storage_type< 4u, Signed >::type, operations< 4u, Signed > > base_type;
     typedef typename base_type::storage_type storage_type;
+    typedef typename make_storage_type< 4u, Signed >::aligned aligned_storage_type;
 
     static BOOST_FORCEINLINE storage_type fetch_add(storage_type volatile& storage, storage_type v, memory_order order) BOOST_NOEXCEPT
     {

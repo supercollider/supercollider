@@ -570,12 +570,6 @@ ReceivedMessage::ReceivedMessage( const ReceivedBundleElement& bundleElement )
 }
 
 
-bool ReceivedMessage::AddressPatternIsUInt32() const
-{
-	return (addressPattern_[0] == '\0');
-}
-
-
 uint32 ReceivedMessage::AddressPatternAsUInt32() const
 {
     return ToUInt32( addressPattern_ );
