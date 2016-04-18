@@ -257,6 +257,7 @@ if(READLINE_FOUND)
 	target_include_directories(libsclang PUBLIC ${READLINE_INCLUDE_DIR})
 	target_link_libraries(libsclang ${READLINE_LIBRARY})
 endif(READLINE_FOUND)
+mark_as_advanced(READLINE_INCLUDE_DIR READLINE_LIBRARY)
 
 if (APPLE)
 	target_link_libraries(libsclang "-framework Carbon")
