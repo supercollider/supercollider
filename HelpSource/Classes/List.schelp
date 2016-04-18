@@ -272,7 +272,7 @@ y.postln;
 ::
 
 method::foldExtend
-Same as link::#-lace:: but the sequences fold back on the list elements.
+Same as link::#-wrapExtend:: but the sequences fold back on the list elements.
 code::
 (
 x = List[ 1, 2, "foo"];
