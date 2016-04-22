@@ -64,7 +64,7 @@ n.free;
 
 The answer to the question of whether one should work with node objects or directly with messages depends to some extent on context, and to some extent is a matter of personal taste.
 
-The encapsulation of node objects results in a certain generalization, meaning that other compound objects can respond to the same messages and thus exploit polymorphism. They also provide a certain level of convienence, keeping track of indexes and IDs, etc.
+The encapsulation of node objects results in a certain generalization, meaning that other compound objects can respond to the same messages and thus exploit polymorphism. They also provide a certain level of convenience, keeping track of indexes and IDs, etc.
 
 In certain cases, such as for granular synthesis it is recommended to use messages directly, because there is no benefit to be gained from the node objects (i.e. no need to message them) and they add cpu load to the client side.
 code::
@@ -86,7 +86,7 @@ Routine({
 
 In cases where you need to keep track of the synth's state, it is advisable to use node objects and register them with a link::Classes/NodeWatcher::. (see helpfile)
 
-Apart from such cases it is a matter of taste whether you want to use the combination of message and a numerical global representation or an object representation. The two can be mixed, and certain advantages of the object style can be accessed when using messaging style. For instance code::Server.nextNodeID:: allows one to use dynamically assigned IDs in messaging style. As a gross generalization, it is probably fair to say that object style is more convienent, but messaging style is more efficient, due to reduce client-side CPU load.
+Apart from such cases it is a matter of taste whether you want to use the combination of message and a numerical global representation or an object representation. The two can be mixed, and certain advantages of the object style can be accessed when using messaging style. For instance code::Server.nextNodeID:: allows one to use dynamically assigned IDs in messaging style. As a gross generalization, it is probably fair to say that object style is more convenient, but messaging style is more efficient, due to reduce client-side CPU load.
 
 note::
 IMPORTANT: If you wish to have the functionality of the default_group (e.g. problem free use of Server's record and scope functionality) you should treat ID 1 (the default_group) as the root of your node tree rather than ID 0 (the RootNode). See default_group for more details.

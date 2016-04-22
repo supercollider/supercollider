@@ -47,7 +47,7 @@ definitionlist::
 ## Classes || class reference, file must be named as the class.
 ## Reference || other reference documentation.
 ## Tutorials || yes, tutorials.
-## Guides || guides that explain stuff but without beeing a real tutorial.
+## Guides || guides that explain stuff but without being a real tutorial.
 ## Overviews || overviews of other documents, these are mostly auto-generated.
 ## Other || stuff that don't fit in any other directory.
 ::
@@ -325,7 +325,7 @@ section:: Contributing with the documentation
 
 The easiest way to contribute to the documentation is:
 
-    1. Fork the supercolider respository https://github.com/supercollider/supercollider
+    1. Fork the supercollider repository https://github.com/supercollider/supercollider
     2. Clone your repository
     code::
     git clone --recursive git://github.com/{your_username}/supercollider.git

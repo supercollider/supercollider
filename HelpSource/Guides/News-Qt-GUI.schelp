@@ -73,7 +73,7 @@ SECTION:: Color management
 
 SUBSECTION:: The palette
 
-Qt has the notion of the color palette - a collection of colors from wich the views pick when drawing themselves. It is represented by the link::Classes/QPalette:: class, and can be set on a view using link::Classes/View#-palette::.
+Qt has the notion of the color palette - a collection of colors from which the views pick when drawing themselves. It is represented by the link::Classes/QPalette:: class, and can be set on a view using link::Classes/View#-palette::.
 
 By default, a window will get the global palette ( link::Classes/QtGUI#*palette:: ), and the palette is inherited by child views from their parent. Thus, changing the parent's palette will also affect its children, unless the palette has been overridden on a particular child. You can easily change the appearance of the whole GUI by changing the global palette.
 
