@@ -47,13 +47,13 @@ n = s.nextNodeID;                   // get an available nodeID from the server a
 s.sendMsg("/s_new", "default", n);  // use the SynthDef "default" to create a synth with ID n
 s.sendMsg("/n_free", n);            // release the synth n
 ::
-## indirectly || the language app provides you with convienent OOP functionality to keep track of and manipulate things on the server. The high-level syntax is translated into low-level OSC messages by sclang and sent to the server (language wrapping).
+## indirectly || the language app provides you with convenient OOP functionality to keep track of and manipulate things on the server. The high-level syntax is translated into low-level OSC messages by sclang and sent to the server (language wrapping).
 code::
 x = Synth("default");   // create a synth on the default server (s) and allocate an ID for it
 x.free;                 // free the synth, its ID and resources
 ::
 ::
-Working this way you have gained certain functionality. It provides a node ID for you automatically, it allows you to control the Synth in syntactically elegant and efficient ways (see the link::Classes/Synth:: and link::Classes/Node:: helpfiles), and to access all the advantages of object oriented programming while doing so.  Encapsulating the complexities and bookeeping greatly reduces the chance of bugs in your own code.
+Working this way you have gained certain functionality. It provides a node ID for you automatically, it allows you to control the Synth in syntactically elegant and efficient ways (see the link::Classes/Synth:: and link::Classes/Node:: helpfiles), and to access all the advantages of object oriented programming while doing so.  Encapsulating the complexities and bookkeeping greatly reduces the chance of bugs in your own code.
 
 image::scEn.png#Figure 3. Sclang as a high-level client::
 
@@ -62,7 +62,7 @@ code::
 // assuming the server is already booted
 {SinOsc.ar}.play ;
 ::
-In this case many server operations are hidden. To understand the  passages inolved in the evalutation of this code see link::Tutorials/Getting-Started/04-Functions-and-Other-Functionality:: and link::Tutorials/Getting-Started/10-SynthDefs-and-Synths:: (part of Scott Wilson's tutorial).
+In this case many server operations are hidden. To understand the  passages involved in the evaluation of this code see link::Tutorials/Getting-Started/04-Functions-and-Other-Functionality:: and link::Tutorials/Getting-Started/10-SynthDefs-and-Synths:: (part of Scott Wilson's tutorial).
 
 The OOP-style also has a small amount of overhead. It requires clientside CPU cycles and memory to create and manipulate an object. Normally this is not significant, but there may be times when you would prefer to use the less elegant, and less expensive first method, for instance when creating large numbers of grains which will simply play and then deallocate themselves.
 

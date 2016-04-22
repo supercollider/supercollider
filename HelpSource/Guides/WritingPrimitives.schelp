@@ -53,7 +53,7 @@ flop {
 }
 ::
 
-Note that returning anything besides errNone will result in executing the SC method emphasis::ignoring:: the primitive call. For this reason, if you need to do some prepatory work in SC before calling the primitive, it is best practice to do this in a separate method to avoid duplication. For example:
+Note that returning anything besides errNone will result in executing the SC method emphasis::ignoring:: the primitive call. For this reason, if you need to do some preparatory work in SC before calling the primitive, it is best practice to do this in a separate method to avoid duplication. For example:
 
 code::
 // do initial work here

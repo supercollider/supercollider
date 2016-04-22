@@ -24,7 +24,7 @@ SUBSECTION:: 1. Setup instance vars appropriate to your widget
 
 You inherit all of the instance variables from SCUserView and SCView, of course, but many gui widgets need their own variables.
 
-In particular, you need to overide value, to return whatever you want your view to return. The instance variable, step, is also often used to allow value to be quantized. thumbSize is used for both width and height of a slider handle, while thumbWidth or thumbHeight are typically used for only one dimension. x and y are used for mouse clicks. Take a look at a similar widget to see what the standard instance variables are.
+In particular, you need to override value, to return whatever you want your view to return. The instance variable, step, is also often used to allow value to be quantized. thumbSize is used for both width and height of a slider handle, while thumbWidth or thumbHeight are typically used for only one dimension. x and y are used for mouse clicks. Take a look at a similar widget to see what the standard instance variables are.
 
 
 SUBSECTION:: 2. Define the *viewClass method

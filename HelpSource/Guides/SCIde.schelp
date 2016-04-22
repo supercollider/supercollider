@@ -327,7 +327,7 @@ Section:: Various handy shortcuts
 
 definitionlist::
 ## Focus Post Window: Ctrl+P ||  Gives focus to the Post Window. Then you can use arrow keys and Page Up / Page Down to scroll through output from the interpreter. Press Tab to return to the Code Editor.
-## Clear Post Window: Ctrl+Shift+P || Cleares the Post Window contents.
+## Clear Post Window: Ctrl+Shift+P || Clears the Post Window contents.
 ## Enlarge/Shrink Font: Ctrl++ / Ctrl+- || Enlarges or shrinks font in Code Editor, Post Window, or Help Browser.
 ::
 

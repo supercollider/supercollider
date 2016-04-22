@@ -67,7 +67,7 @@ The GUI elements contained within a Window are called strong::views::. They all 
 There are also special types of views that can contain other views and are thus called strong::containers::, for example the CompositeView. They allow for structuring GUI in a hierarchical way. A container view is called a strong::parent:: of the views it contains, and they are called its strong::children::. Hierarchical organization allows to easily change aspects of all the views within a container: if the parent view is hidden, so are all the children; if the parent view is moved, so are they. Children are positioned with coordinates relative to their parent.
 
 note::
-In many aspects, a Window is also considered to be a parent of the views it contains, and can functionally take the same place in code as container views, although that is not true in all cases. When a Window is created it implicitely creates a container view occupying its entire space. When a view is created with a Window as its parent it will actually become a child of that container. See Window's link::Classes/Window#-view#view:: method and View's link::Classes/View#*new#constructor:: for details.
+In many aspects, a Window is also considered to be a parent of the views it contains, and can functionally take the same place in code as container views, although that is not true in all cases. When a Window is created it implicitly creates a container view occupying its entire space. When a view is created with a Window as its parent it will actually become a child of that container. See Window's link::Classes/Window#-view#view:: method and View's link::Classes/View#*new#constructor:: for details.
 ::
 
 note::
@@ -92,7 +92,7 @@ w.front;
 
 SECTION:: Automatic positioning and resizing of views
 
-As a handy alternative to specifying all the dimensions and positions of views explicitely in code, SuperCollider allows for automatic positioning and resizing of views in relation to each other and in relation to window size - at the view creation and dynamically, when window is resized. There is several mechanisms for this purpose.
+As a handy alternative to specifying all the dimensions and positions of views explicitly in code, SuperCollider allows for automatic positioning and resizing of views in relation to each other and in relation to window size - at the view creation and dynamically, when window is resized. There is several mechanisms for this purpose.
 
 subsection:: View's resize options
 
@@ -227,7 +227,7 @@ SECTION:: Actions and hooks: Make that button do something!
 
 Views and windows can be assigned strong::actions:: that they will perform whenever a specific event occurs as a result of user's interaction. Technically, an action can be any Object, and when the relevant event occurs, it's link::Classes/Object#-value#value#:: method will be called. For example, it is useful to assign a Function as an action, which allows one to define an arbitrary chunk of code to be performed in response to a GUI event.
 
-Objects can also be given to views and windows to evalute on events that are not a direct result of user's interaction, but convey useful information about the view's operation and the state it moved in. In this case they are often differentiated from actions and called strong::hooks::.
+Objects can also be given to views and windows to evaluate on events that are not a direct result of user's interaction, but convey useful information about the view's operation and the state it moved in. In this case they are often differentiated from actions and called strong::hooks::.
 
 Here, we will give an overview of different kinds of actions and hooks. See link::Classes/View#Actions in general:: and following sections for precise explanation of how to assign and make use of them.
 
@@ -449,4 +449,4 @@ Routine{
 }.play(SystemClock)
 ::
 
-As mentioned above, using the GUI system is also not allowed in code performed directly in response to OSC messages (this includes functions given to all kinds of OSC reponder classes). The same solutions as above apply:
+As mentioned above, using the GUI system is also not allowed in code performed directly in response to OSC messages (this includes functions given to all kinds of OSC responder classes). The same solutions as above apply:

@@ -107,9 +107,9 @@ image::standalones_rename.png::
 
 	## teletype::Standalone Resources/SCcube.icns:: can be overridden to provide a custom icon.
 
-	## teletype::Standalone Resources/English.lproj/MainMenu.nib:: can be overriden to provide a custom menu bar
+	## teletype::Standalone Resources/English.lproj/MainMenu.nib:: can be overridden to provide a custom menu bar
 
-	## teletype::Standalone Resources/English.lproj/Credits.rtf:: can be overidden to provide a new about box.
+	## teletype::Standalone Resources/English.lproj/Credits.rtf:: can be overridden to provide a new about box.
 	::
 
 	The template "Standalone Resources" directory implements an application that shows a window with a button that generates a tone when clicked.
