@@ -50,7 +50,7 @@ Therefore it is usually better style to fully parenthesize your expressions.
 
 section:: Functional notation messages
 
-The message selector preceeds the parenthesized argument list. The first argument in the list is actually
+The message selector precedes the parenthesized argument list. The first argument in the list is actually
 the receiver.
 code::
 sin(x)      // sine of x

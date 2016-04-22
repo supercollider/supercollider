@@ -8,7 +8,7 @@ The link::Overviews/Methods#plot#plot method:: provides the ability to plot data
 
 method:: plot
 All arguments are optional.
-note::The arguments avaliable vary from object to object. The below list is only for explanation of possible arguments.::
+note::The arguments available vary from object to object. The below list is only for explanation of possible arguments.::
 
 
 argument:: name

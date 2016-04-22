@@ -15,7 +15,7 @@ emphasis::Just in time programming:: (or: emphasis::conversational programming, 
 	Being a dynamic programming language, SuperCollider provides several possibilities for modification of a running program - this library extends, unifies and develops them, mainly by providing abstract placeholders, called emphasis::proxies::, which can be used in calculations and modified at runtime.
 
 	subsection::Overview
-	JITLib consists of a number of strong::placeholders:: (server side and client side emphasis::proxies::) and strong::schemes of access::footnote::They have in common that they treat assignment as a method. In such a way, they are an extension of the assignment implementation in Smalltalk-72, which makes "=" a message sent to the recieving object.::.
+	JITLib consists of a number of strong::placeholders:: (server side and client side emphasis::proxies::) and strong::schemes of access::footnote::They have in common that they treat assignment as a method. In such a way, they are an extension of the assignment implementation in Smalltalk-72, which makes "=" a message sent to the receiving object.::.
 These two aspects of space corresponding to emphasis::inclusion:: and emphasis::reference::, depend on their context - here the placeholders are like roles which have a certain behaviour and can be fulfilled by certain objects.
 It is useful to be aware of the three aspects of such a placeholder: a certain set of elements can be their strong::source::, they can be used in a set of strong::contexts:: and have a default source, if none is given.
 
