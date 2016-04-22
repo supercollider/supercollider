@@ -51,7 +51,9 @@ before_deploy:
  # required for github releases
  - git fetch --tags
  - export BUILD_PREFIX=$TRAVIS_REPO_SLUG/$TRAVIS_OS_NAME
- - export FWD_HTML='<html><head><meta http-equiv="refresh" content="0; url=SC-'$COMMIT_NAME'.zip" /></head></html>'
+ - export S3_BUILDS_LOCATION=builds/$BUILD_PREFIX
+ - export S3_URL=https://supercollider.s3.amazonaws.com/$S3_BUILDS_LOCATION/SC-$COMMIT_NAME.zip
+ - export FWD_HTML='<html><head><meta http-equiv="refresh" content="0; url='$S3_URL'" /></head></html>'
  # put everything to be archived in artifacts/
  - mkdir -p "$HOME/artifacts/${TRAVIS_BRANCH%/*}"
  - mkdir -p "$HOME/artifacts/${TRAVIS_TAG%/*}"
@@ -65,25 +67,27 @@ deploy:
    secret_access_key: $AWS_SECRET
    bucket: supercollider
    local-dir: $HOME/artifacts
-   upload-dir: builds/$BUILD_PREFIX
+   upload-dir: $S3_BUILDS_LOCATION
    region: us-west-2
    skip_cleanup: true
    endpoint: s3-us-west-2.amazonaws.com
    acl: public_read
    on:
-     condition: $TRAVIS_OS_NAME = osx
+     condition: $TRAVIS_OS_NAME = osx && ! -z $AWS_KEY && ! -z $AWS_SECRET
      all_branches: true
  # github releases - only tags
  - provider: releases
-   api_key:
-     secure: YN33x5V66b6xepehiEoIm2+UNdbjAPvgrg713F5FdTmWfmuPbLYX6a9zYQYYQ0ZO6w5kofBuWZKL1arw0ABYgUE9kmnNFgx8nR//wsfOnCcgvhGHMXpImzhWX3tPelCW4gyEBF0w8tmN9o4CCC5dcjgHJcpz/q8+eCfg0VeZOZE=
+   api_key: $GITHUB_KEY
    file: $HOME/artifacts/SC-$COMMIT_NAME.zip
    prerelease: true
    skip_cleanup: true
    on:
-     condition: $TRAVIS_OS_NAME = osx
+     condition: $TRAVIS_OS_NAME = osx && ! -z $GITHUB_KEY
      tags: true
      all_branches: true
+after-deploy:
+ - "echo S3 Build Location: $S3_URL"
+
 
 notifications:
   on_success: change
