@@ -83,7 +83,7 @@ definitionlist::
 ::
 subsection:: Search and replace
 definitionlist::
-## C-s || Search / find. This allows you to set a string in the mini-buffer. The occurences in the text will be highlighted and you can press C-s again and again to jump to next occurences
+## C-s || Search / find. This allows you to set a string in the mini-buffer. The occurrences in the text will be highlighted and you can press C-s again and again to jump to next occurrences
 ## C-r || Search / find backwards.
 ## M-% || Replace and find next
 ## M-, || Replace

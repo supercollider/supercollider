@@ -48,7 +48,7 @@ subsection::Radix
 Numbers can also be written in radices other than base 10 up to base 36.
 The radix is specified in base 10 followed by the letter 'r' followed by the value written in
 that radix using characters 0-9,A-Z, or a-z, for digit values from 0 to 35.
-For example you can write hexidecimal numbers as follows:
+For example you can write hexadecimal numbers as follows:
 code::
 16rF0
 16rA9FF
@@ -128,7 +128,7 @@ code::
 '.+o*o+.'
 ::
 
-A symbol consisting of a single word can be written with a preceeding backslash.
+A symbol consisting of a single word can be written with a preceding backslash.
 code::
 \x
 \aiff
@@ -198,7 +198,7 @@ z = nil;
 
 section::Arrays
 
-link::Classes/Array::s of literals are created at compile time and are written with a # preceeding the array as follows:
+link::Classes/Array::s of literals are created at compile time and are written with a # preceding the array as follows:
 code::
 #[1, 2, 'abc', "def", 4]
 ::

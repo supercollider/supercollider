@@ -7,7 +7,7 @@ section:: Introduction
 
 Every link::Classes/Thread:: in sclang has a (pseudo-) random number generator that is responsible for all randomization within this thread. Each random number generator has its own seed (starting point) from which the series of values is generated. This seed can be set and after that, the randgen (being strictly deterministic) produces exactly the same numbers again.
 
-In order to save diskspace, you can reproduce any sequence of randomized data just by one Integer number that you can write down in your notebook.
+In order to save disk space, you can reproduce any sequence of randomized data just by one Integer number that you can write down in your notebook.
 
 method:: randSeed
 

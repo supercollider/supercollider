@@ -831,7 +831,7 @@ Replies to sender with strong::/done:: when complete.
 
 section:: Replies to Commands
 
-These messages are sent by the server in reponse to some commands.
+These messages are sent by the server in response to some commands.
 
 subsection:: /done
 An asynchronous message has completed.

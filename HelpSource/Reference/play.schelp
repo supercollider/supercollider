@@ -81,7 +81,7 @@ subsection:: function.play (target, outbus, fadeTime, addAction, args)
 returns: a link::Classes/Synth::
 table::
 ## outbus || on what bus to play (default: 0)
-## fadeTime || in what time to fade out when released (defaulr: 0.02)
+## fadeTime || in what time to fade out when released (default: 0.02)
 ## addAction || where to add the node (\addToHead by default)
 ## args || controls to set when starting the synth
 ::
