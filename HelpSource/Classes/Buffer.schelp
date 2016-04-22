@@ -29,7 +29,7 @@ In some cases it is simpler to use multiple single channel buffers instead of a 
 subsection:: Completion Messages and Action Functions
 
 Many buffer operations (such as reading and writing files) are asynchronous, meaning that they will take an arbitrary amount of time to complete. Asynchronous commands are passed to a background thread on the server so as not to steal CPU time from the audio synthesis thread.
-Since they can last an aribitrary amount of time it is convenient to be able to specify something else that can be done immediately on completion.
+Since they can last an arbitrary amount of time it is convenient to be able to specify something else that can be done immediately on completion.
 The ability to do this is implemented in two ways in Buffer's various methods: completion messages and action functions.
 
 A completion message is a second OSC command which is included in the message which is sent to the server. (See link::Guides/NodeMessaging:: for a discussion of OSC messages.)
@@ -86,7 +86,7 @@ A valid OSC message or a Function which will return one. A Function will be pass
 argument:: bufnum
 An explicitly specified buffer number for the initial buffer. Generally this is not needed.
 discussion::
-N.B. You must treat the array of Buffers as a group. Freeing them individually or resuing them can result in allocation errors. You should free all Buffers in the array at the same time by iterating over it with do.
+N.B. You must treat the array of Buffers as a group. Freeing them individually or reusing them can result in allocation errors. You should free all Buffers in the array at the same time by iterating over it with do.
 code::
 s.boot;
 // allocate an array of Buffers and fill them with different harmonics

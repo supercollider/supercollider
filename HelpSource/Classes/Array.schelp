@@ -188,7 +188,7 @@ code::
 [1, 2, 3, 4, 5].rotate(3).postln;
 ::
 argument::n
-Number of elements to rotate. Negative n values rotate left, postive n values
+Number of elements to rotate. Negative n values rotate left, positive n values
 rotate right.
 
 method::pyramid
@@ -321,7 +321,7 @@ e.use {
 ::
 
 method::flop
-Invert rows and colums in a two dimensional Array (turn inside out).
+Invert rows and columns in a two dimensional Array (turn inside out).
 See also: Function, SequenceableCollection.
 code::
 [[1, 2, 3], [4, 5, 6]].flop;
@@ -397,7 +397,7 @@ method::atIdentityHashInPairs
 This method is used by IdentityDictionary to search for a key among its members.
 
 method::asString
-Returns a string representing the Array. May not be compileable due to ellision (...) of excessive arguments.
+Returns a string representing the Array. May not be compilable due to elision (...) of excessive arguments.
 
 method::asCompileString
 Returns a string that will compile to return an Array equal to the receiver.
@@ -406,7 +406,7 @@ method::isValidUGenInput
 Returns true. Arrays are valid UGen inputs.
 
 method::asRawOSC
-Returns the OSC measse as an Int8Array. Receiver must be a bundle.
+Returns the OSC message as an Int8Array. Receiver must be a bundle.
 code::
 [0.1, [\s_new, \default, -1, 1, 1, \freq, 1961]].asRawOSC;
 ::
