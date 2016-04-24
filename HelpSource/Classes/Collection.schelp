@@ -224,7 +224,7 @@ List[1, 2, 3, 4].detectIndex({ arg item, i; item.even });
 
 method::inject
 In functional programming, the operation known as a left fold.
-inject takes an initial value and a function and combines the elements of the collection by applying the function to the accumulated value and an element from the collection starting from the first element in the collection. The strong::function:: takes two arguments and returns the new value. The accumulated value is initialzed to strong::initialValue::.
+inject takes an initial value and a function and combines the elements of the collection by applying the function to the accumulated value and an element from the collection starting from the first element in the collection. The strong::function:: takes two arguments and returns the new value. The accumulated value is initialized to strong::initialValue::.
 code::
 [1,2,3,4,5].inject(0, _+_); // 15
 
@@ -239,7 +239,7 @@ code::
 
 method::injectr
 In functional programming, the operation known as a right fold.
-inject takes an initial value and a function and combines the elements of the collection by applying the function to the accumulated value and an element from the collection starting from the last element in the collection. The strong::function:: takes two arguments and returns the new value. The accumulated value is initialzed to strong::initialValue::.
+inject takes an initial value and a function and combines the elements of the collection by applying the function to the accumulated value and an element from the collection starting from the last element in the collection. The strong::function:: takes two arguments and returns the new value. The accumulated value is initialized to strong::initialValue::.
 code::
 [1,2,3,4,5].injectr([], _++_); // [ 5, 4, 3, 2, 1 ]
 
@@ -445,13 +445,13 @@ method::printOn
 Print a representation of the collection to a stream.
 
 method::storeOn
-Write a compileable representation of the collection to a stream.
+Write a compilable representation of the collection to a stream.
 
 method::printItemsOn
-Print a comma separated compileable representation of the items in the collection to a stream.
+Print a comma separated compilable representation of the items in the collection to a stream.
 
 method::storeItemsOn
-Write a comma separated compileable representation of the items in the collection to a stream.
+Write a comma separated compilable representation of the items in the collection to a stream.
 
 subsection::Set specific operations
 

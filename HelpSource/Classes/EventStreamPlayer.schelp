@@ -17,7 +17,7 @@ ClassMethods::
 
 method::new
 note::
-You do not explictly create an EventStreamPlayers, they are created for you when you call link::Classes/Pattern#-play::.
+You do not explicitly create an EventStreamPlayers, they are created for you when you call link::Classes/Pattern#-play::.
 ::
 
 InstanceMethods::

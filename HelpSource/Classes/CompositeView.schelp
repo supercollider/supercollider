@@ -38,8 +38,8 @@ c.background = Color.rand;
 w.front;
 )
 
-c.bounds_(Rect(100, 0, 300, 300)); // contents adust since coords are relative
-c.resize_(6); // contents adust since coords are relative
+c.bounds_(Rect(100, 0, 300, 300)); // contents adjust since coords are relative
+c.resize_(6); // contents adjust since coords are relative
 ::
 
 subsection:: Keydown Bubbling

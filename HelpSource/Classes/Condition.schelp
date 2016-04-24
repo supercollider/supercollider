@@ -63,7 +63,7 @@ c.test = true;
 c.signal;
 )
 
-// a typical use is a routine that can pause under certin conditions:
+// a typical use is a routine that can pause under certain conditions:
 (
 c = Condition.new;
 fork { loop { 1.wait; "going".postln; c.wait } };

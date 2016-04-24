@@ -36,7 +36,7 @@ argument:: action
 An instance of link::Classes/Function::.
 
 method:: insertItem
-Inserts a list/menu item at positiion of index.
+Inserts a list/menu item at index position.
 argument:: index
 An link::Classes/Integer::. The index where to insert an item.
 argument:: name
@@ -45,7 +45,7 @@ argument:: action
 An instance of link::Classes/Function::.
 
 method:: replaceItemAt
-Replace a list/menu item at positiion of index.
+Replace a list/menu item at index position.
 argument:: index
 An link::Classes/Integer::. The index where to insert an item.
 argument:: name
@@ -54,7 +54,7 @@ argument:: action
 An instance of link::Classes/Function::. Default is the current item action.
 
 method:: removeItemAt
-Removes a list/menu item at positiion of index.
+Removes a list/menu item at index position.
 argument:: index
 An link::Classes/Integer::. The index where to remove an item.
 
@@ -77,4 +77,4 @@ method:: doAction
 Performs the action at the current index and the global action.
 
 method:: initViews
-Called by init and overriden by all subclasses. This is where the class specific views are built.
+Called by init and overridden by all subclasses. This is where the class specific views are built.
