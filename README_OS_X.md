@@ -80,6 +80,8 @@ Build instructions
 
 If successful this will build the application into `build/Install/SuperCollider/`
 
+You can see the available build options with ```cmake -LH```.
+
 To install, you may move this to /Applications or use it in place from the build directory.
 
 **Note**: You can also open the produced SuperCollider.xcodeproj in Xcode, and build the "Install" scheme in place of the last step. Do make sure you run the previous configuration steps.
