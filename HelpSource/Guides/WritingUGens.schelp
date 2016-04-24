@@ -26,19 +26,31 @@ list::
 ## A SynthDef can only have two link::Classes/LocalIn::/link::Classes/LocalOut:: pairings — one for control rate and one for audio rate. Putting LocalIn and LocalOut in a pseudo-ugen is a bad idea, as it could interfere with other feedback loops in the SynthDef.
 ::
 
-section:: Basics of real UGens
+section:: Basics of UGens
 
-A real UGen needs two components: a plugin for the server, and a class for the language. The class goes in an ordinary code::*.sc:: file, and defines the interface for your UGen in the language. This class is generally just a few lines of code that ultimately call the class method link::Classes/UGen#-multiNew::.
+A (real) UGen needs two components: a plugin for the server, and a class for the language. The class goes in an ordinary code::*.sc:: file, and defines the interface for your UGen in the language. This class is generally just a few lines of code that ultimately call the class method link::Classes/UGen#-multiNew::.
 
-The server plugin is where the actual UGen behavior is defined. It is given by a platform-dependent library file: code::*.so:: for *nix, code::*.dll:: for Windows, and code::*.scx:: for OS X [fact check needed on the last two -NH]. A library file can contain more than one UGen.
+The server plugin is where the actual UGen behavior is defined. It is given by a dynamically loaded library written in C++, whose format is platform-dependent:
 
-When scsynth boots, it will look for such library files in code::Platform.userExtensionDir::. Since sclang also looks for class files in the same location, the class file and the library file can go in the same place.
+list::
+## code::*.so:: for *nix
+## code::*.dll:: for Windows
+## code::*.scx:: for OS X
+::
 
-section:: FAUST (the easy way)
+A plugin file can contain more than one UGen, and it can also define things other than ugens such as buffer fill ("/b_gen") commands.
+
+When scsynth boots, it will look for plugin files in code::Platform.userExtensionDir::. Since sclang also looks for class files in the same location, the class file and the library file can go in the same place.
+
+Plug-ins are loaded during the startup of scsynth, so the server will have to be restarted after (re-)compiling a plugin. If you modify the plugin file but not the class file, you don't need to reboot the interpreter.
+
+section:: FAUST
 
 note:: This section is currently Linux only. Please expand to include instructions for other platforms. ::
 
 FAUST footnote::http://faust.grame.fr/:: is an open source DSP language that describes real-time audio units. Its greatest strength is that it can be compiled into a huge variety of contexts: standalone GUI applications, Flash plugins, Max/MSP or Pure Data externals, CSOUND opcodes, VST plugins, etc. It can also compile to SuperCollider plugins, providing the easiest way to create real UGens in SuperCollider.
+
+subsection:: The easy way
 
 First, write a FAUST program such as the below:
 
@@ -54,7 +66,7 @@ faust2supercollider BoringMixer.dsp
 
 This will generate BoringMixer.sc and BoringMixer.so files in the current directory. Both of these need to go into your extensions directory. After installing them, reboot both the interpreter and the server, and a class named code::FaustBoringMixer:: should show up in sclang. You can verify that code::FaustBoringMixer.ar:: and code::FaustBoringMixer.kr:: both work as expected.
 
-section:: FAUST (the hard way)
+subsection:: The hard way
 
 note:: This section is currently Linux only. Please expand to include instructions for other platforms. ::
 
@@ -109,13 +121,7 @@ BoringMixer : UGen {
 
 Save this as BoringMixer.sc (although any name will do, really) and copy both the .so file and the .sc file into somewhere in the code::Platform.userExtensionDir:: directory. Reboot the interpreter and server and you will have a working code::BoringMixer:: ugen.
 
-section:: How Unit Generator plug-ins work.
-
-The server loads unit generator plug-ins when it starts up. Unit Generator plug-ins are dynamically loaded libraries
-written in C++. Each library may contain one or multiple unit generator definitions. A plug-in can also define things
-other than unit generators such as buffer fill ("/b_gen") commands. Plug-ins are loaded during the startup of the
-synthesis server. Therefore the server will have to be restarted after (re-)compiling the plugin.
-
+FAUST plugins are easy to develop and can be painlessly ported to other environments. Unfortunately, they can't take advantage of all of scsynth's features, such as accessing Buffers or random number generators, and some ugens featuring very complex logic are difficult or impossible to write in FAUST. FAUST is most ideal for audio units that are easy to express with block diagrams. Furthermore, the FAUST compiler is quite intelligent but it might not always offer the best efficiency in its results. If a ugen you are developing hits these limitations, it is time to move on to handwritten C++.
 
 section:: The Entry Point
 
