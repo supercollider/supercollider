@@ -9,9 +9,9 @@ Pseudo-ugens are useful when you want to abbreviate a certain configuration of U
 The below example has only a code::.ar:: method, but you can just as easily have both code::.ar:: and code::.kr:: methods.
 
 code::
-Chorus {
-    *ar { arg in, lfofreq = 2, maxdepth = 0.1, depth = 0.005;
-        ^(in + DelayC.ar(lfofreq, maxdepth, depth)) * 0.7;
+BoringMixer {
+    *ar { arg left, right;
+        ^(left + right) * 0.5;
     }
 }
 ::
@@ -34,9 +34,11 @@ The server plugin is where the actual UGen behavior is defined. It is given by a
 
 When scsynth boots, it will look for such library files in code::Platform.userExtensionDir::. Since sclang also looks for class files in the same location, the class file and the library file can go in the same place.
 
-section:: Using FAUST
+section:: FAUST (the easy way)
 
-FAUST is an open source DSP language that describes real-time audio units. Its greatest strength is that it can be compiled into a huge variety of contexts: standalone GUI applications, Flash plugins, Max/MSP or Pure Data externals, CSOUND opcodes, VST plugins, etc. It can also compile to SuperCollider plugins, providing the easiest way to create real UGens in SuperCollider.
+note:: This section is currently Linux only. Please expand to include instructions for other platforms. ::
+
+FAUST footnote::http://faust.grame.fr/:: is an open source DSP language that describes real-time audio units. Its greatest strength is that it can be compiled into a huge variety of contexts: standalone GUI applications, Flash plugins, Max/MSP or Pure Data externals, CSOUND opcodes, VST plugins, etc. It can also compile to SuperCollider plugins, providing the easiest way to create real UGens in SuperCollider.
 
 First, write a FAUST program such as the below:
 
@@ -52,11 +54,13 @@ faust2supercollider BoringMixer.dsp
 
 This will generate BoringMixer.sc and BoringMixer.so files in the current directory. Both of these need to go into your extensions directory. After installing them, reboot both the interpreter and the server, and a class named code::FaustBoringMixer:: should show up in sclang. You can verify that code::FaustBoringMixer.ar:: and code::FaustBoringMixer.kr:: both work as expected.
 
-section:: Manual compilation
+section:: FAUST (the hard way)
+
+note:: This section is currently Linux only. Please expand to include instructions for other platforms. ::
 
 faust2supercollider is not actually the FAUST compiler. It's a handy shell script that hides a somewhat more complicated process: first, it compiles your FAUST .dsp file into a C++ file with the SuperCollider architecture, and then into a shared library usable by scsynth. It generates a file for sclang on the side.
 
-On another note, it would be nice to get rid of the Faust prefix on our ugen. We'll take this as an opportunity to walk through the above manual process. (It also makes for a good transition into the next section, where we'll reuse some of these steps.) Get yourself into an empty directory, drop your DSP file there and compile into C++ with the following command:
+On another note, it would be nice to get rid of the Faust prefix on our ugen. We'll take this as an opportunity to walk through the above manual process, making for a good transition into hand-written C++ ugens. Get yourself into an empty directory, drop your DSP file there and compile into C++ with the following command:
 
 code::
 faust -a supercollider.cpp BoringMixer.dsp -o BoringMixer.cpp
