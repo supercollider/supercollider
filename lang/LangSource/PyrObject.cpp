@@ -2728,38 +2728,6 @@ int getIndexedDouble(PyrObject *obj, int index, double *value)
 }
 
 
-void getIndexedSlot(PyrObject *obj, PyrSlot *a, int index)
-{
-//	postfl("getIndexedSlot %s %X %d\n", slotRawSymbol(&obj->classptr->name)->name,
-//		obj, index);
-	switch (obj->obj_format) {
-		case obj_slot :
-			slotCopy(a, &obj->slots[index]);
-			break;
-		case obj_double :
-			SetFloat(a, ((double*)(obj->slots))[index]);
-			break;
-		case obj_float :
-			SetFloat(a, ((float*)(obj->slots))[index]);
-			break;
-		case obj_int32 :
-			SetInt(a, ((int32*)(obj->slots))[index]);
-			break;
-		case obj_int16 :
-			SetInt(a, ((int16*)(obj->slots))[index]);
-			break;
-		case obj_int8 :
-			SetInt(a, ((int8*)(obj->slots))[index]);
-			break;
-		case obj_symbol :
-			SetSymbol(a, (PyrSymbol*)((int**)(obj->slots))[index]);
-			break;
-		case obj_char :
-			SetChar(a, ((unsigned char*)(obj->slots))[index]);
-			break;
-	}
-}
-
 int putIndexedSlot(VMGlobals *g, PyrObject *obj, PyrSlot *c, int index)
 {
 	PyrSlot *slot;

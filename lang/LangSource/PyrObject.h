@@ -28,6 +28,8 @@ PyrObject represents the structure of all SC Objects.
 
 #include "PyrSlot.h"
 
+#include <boost/config.hpp>
+
 /* special gc colors */
 enum {
 	obj_permanent		= 1,		// sent to gc->New as a flag
@@ -85,14 +87,14 @@ struct PyrObjectHdr {
 
 	int scratch1;
 
-	int SizeClass()          { return obj_sizeclass; }
+	BOOST_FORCEINLINE int SizeClass()          { return obj_sizeclass; }
 
-	void SetMark()           { obj_flags |= obj_marked; }
-	void ClearMark()         { obj_flags &= ~obj_marked; }
-	bool IsMarked() const    { return obj_flags & obj_marked; }
-	bool IsPermanent() const { return gc_color == obj_permanent; }
-	bool IsImmutable() const { return obj_flags & obj_immutable; }
-	bool IsMutable() const   { return !IsImmutable(); }
+	BOOST_FORCEINLINE void SetMark()           { obj_flags |= obj_marked; }
+	BOOST_FORCEINLINE void ClearMark()         { obj_flags &= ~obj_marked; }
+	BOOST_FORCEINLINE bool IsMarked() const    { return obj_flags & obj_marked; }
+	BOOST_FORCEINLINE bool IsPermanent() const { return gc_color == obj_permanent; }
+	BOOST_FORCEINLINE bool IsImmutable() const { return obj_flags & obj_immutable; }
+	BOOST_FORCEINLINE bool IsMutable() const   { return !IsImmutable(); }
 };
 
 struct PyrObject : public PyrObjectHdr {
@@ -241,7 +243,7 @@ bool isSubclassOf(struct PyrClass *classobj, struct PyrClass *testclass);
 
 extern struct PyrClass* gTagClassTable[16];
 
-inline struct PyrClass* classOfSlot(PyrSlot *slot)
+BOOST_FORCEINLINE struct PyrClass* classOfSlot(PyrSlot *slot)
 {
 	PyrClass *classobj;
 	int tag;
@@ -278,7 +280,36 @@ inline int getIndexedVal(struct PyrObject *obj, int index, double *value)
 	return getIndexedDouble(obj, index, value);
 }
 
-void getIndexedSlot(struct PyrObject *obj, PyrSlot *a, int index);
+inline void getIndexedSlot(struct PyrObject *obj, PyrSlot *a, int index)
+{
+	switch (obj->obj_format) {
+		case obj_slot :
+			slotCopy(a, &obj->slots[index]);
+			break;
+		case obj_double :
+			SetFloat(a, ((double*)(obj->slots))[index]);
+			break;
+		case obj_float :
+			SetFloat(a, ((float*)(obj->slots))[index]);
+			break;
+		case obj_int32 :
+			SetInt(a, ((int32*)(obj->slots))[index]);
+			break;
+		case obj_int16 :
+			SetInt(a, ((int16*)(obj->slots))[index]);
+			break;
+		case obj_int8 :
+			SetInt(a, ((int8*)(obj->slots))[index]);
+			break;
+		case obj_symbol :
+			SetSymbol(a, (PyrSymbol*)((int**)(obj->slots))[index]);
+			break;
+		case obj_char :
+			SetChar(a, ((unsigned char*)(obj->slots))[index]);
+			break;
+	}
+}
+
 int putIndexedSlot(struct VMGlobals *g, struct PyrObject *obj, PyrSlot *c, int index);
 int putIndexedFloat(PyrObject *obj, double val, int index);
 

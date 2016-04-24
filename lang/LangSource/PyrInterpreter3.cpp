@@ -546,7 +546,7 @@ static inline void checkStackDepth(VMGlobals* g, PyrSlot * sp)
 #pragma GCC optimize("-fno-gcse")
 #endif
 
-HOT void Interpret(VMGlobals *g)
+HOT FLATTEN void Interpret(VMGlobals *g)
 {
 	// byte code values
 	unsigned char *ip;
