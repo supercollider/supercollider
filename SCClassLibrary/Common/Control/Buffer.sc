@@ -367,16 +367,22 @@ Buffer {
 	}
 
 	free { arg completionMessage;
-		server.listSendMsg( this.freeMsg(completionMessage) )
+		if(bufnum.notNil) {
+			server.listSendMsg( this.freeMsg(completionMessage) )
+		};
 	}
 
 	freeMsg { arg completionMessage;
 		var msg;
-		this.uncache;
-		server.bufferAllocator.free(bufnum);
-		msg = ["/b_free", bufnum, completionMessage.value(this)];
-		bufnum = numFrames = numChannels = sampleRate = path = startFrame = nil;
-		^msg
+		if(bufnum.notNil) {
+			this.uncache;
+			server.bufferAllocator.free(bufnum);
+			msg = ["/b_free", bufnum, completionMessage.value(this)];
+			bufnum = numFrames = numChannels = sampleRate = path = startFrame = nil;
+			^msg
+		} {
+			^nil
+		}
 	}
 
 	*freeAll { arg server;
