@@ -924,7 +924,7 @@ int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
 
 				slotCopy(&slots1[index],c);
 				if (remain) memcpy(slots1 + index + 1, slots2 + index, remain * elemsize);
-				if (!g->gc->ObjIsGrey(array)) g->gc->ToGrey(array);
+				if (!g->gc->IsGrey(array)) g->gc->ToGrey(array);
 				break;
 			case obj_int32 :
 				err = slotIntVal(c, &ival);
@@ -995,7 +995,7 @@ int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
 			case obj_slot :
 				if (remain) memmove(slots1 + index + 1, slots1 + index, remain * elemsize);
 				slotCopy(&slots1[index],c);
-				if (!g->gc->ObjIsGrey(array)) g->gc->ToGrey(array);
+				if (!g->gc->IsGrey(array)) g->gc->ToGrey(array);
 				break;
 			case obj_int32 :
 				if (remain) {
@@ -1412,7 +1412,7 @@ int prArrayAddAll(struct VMGlobals *g, int numArgsPushed)
 		SetObject(a, obj);
 	} else {
 		obj = aobj;
-		if (format == obj_slot && !g->gc->ObjIsGrey(obj))
+		if (format == obj_slot && !g->gc->IsGrey(obj))
 			g->gc->ToGrey(obj);
 	}
 	obj->size = newindexedsize;
@@ -1453,7 +1453,7 @@ int prArrayOverwrite(struct VMGlobals *g, int numArgsPushed)
 		SetObject(a, obj);
 	} else {
 		obj = aobj;
-		if (format == obj_slot && !g->gc->ObjIsGrey(obj))
+		if (format == obj_slot && !g->gc->IsGrey(obj))
 			g->gc->ToGrey(obj);
 
 	}

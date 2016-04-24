@@ -581,21 +581,3 @@ void stringFromPyrString(PyrString *obj, char *str, int maxlength)
 		sprintf(str, "not a string");
 	}
 }
-
-void pstrncpy(unsigned char *s1, unsigned char *s2, int n);
-
-void pstringFromPyrString(PyrString *obj, unsigned char *str, int maxlength)
-{
-	static const char not_a_string[] = "not a string";
-	const char * src;
-	int len;
-	if (obj && obj->classptr == class_string) {
-		len = sc_min(maxlength-1, obj->size);
-		src = obj->s;
-	} else {
-		len =  sizeof(not_a_string);
-		src = not_a_string;
-	}
-	memcpy(str+1, src, len);
-	str[0] = len;
-}

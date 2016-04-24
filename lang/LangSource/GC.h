@@ -94,10 +94,6 @@ public:
 													IsWhite(inObj) ||
 													IsGrey(inObj))); }
 
-	bool ObjIsBlack(PyrObjectHdr* inObj) { return IsBlack(inObj); }
-	bool ObjIsGrey(PyrObjectHdr* inObj) { return IsGrey(inObj); }
-	bool ObjIsFree(PyrObjectHdr* inObj) { return IsFree(inObj); }
-
 
 	// general purpose write barriers:
 	BOOST_FORCEINLINE void GCWrite(PyrObjectHdr* inParent, PyrSlot* inSlot)

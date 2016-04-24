@@ -2886,7 +2886,7 @@ void switchToThread(VMGlobals *g, PyrThread *newthread, int oldstate, int *numAr
 		SetRaw(&oldthread->numpop, g->numpop);
 
 		//gc->ToGrey(oldthread);
-		if (gc->ObjIsBlack(oldthread)) {
+		if (gc->IsBlack(oldthread)) {
 			gc->GCWriteBlack(gc->Stack());
 			gc->GCWriteBlack(g->method);
 			gc->GCWriteBlack(g->block);

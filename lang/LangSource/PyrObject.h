@@ -257,7 +257,6 @@ BOOST_FORCEINLINE struct PyrClass* classOfSlot(PyrSlot *slot)
 typedef int (*ObjFuncPtr)(struct VMGlobals*, struct PyrObject*);
 
 void stringFromPyrString(PyrString *obj, char *str, int maxlength);
-void pstringFromPyrString(PyrString *obj, unsigned char *str, int maxlength);
 
 int instVarOffset(const char *classname, const char *instvarname);
 int classVarOffset(const char *classname, const char *classvarname, PyrClass** classobj);
