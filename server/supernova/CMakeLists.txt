@@ -199,3 +199,7 @@ if (APPLE)
     target_link_libraries(libsupernova "-framework Accelerate")
     target_link_libraries(libsupernova "-framework CoreAudio -framework CoreServices -framework Foundation -framework ApplicationServices")
 endif()
+
+if(${JACK_USE_METADATA_API})
+    target_compile_definitions(libsupernova PUBLIC "-DSC_JACK_USE_METADATA_API")
+endif()
