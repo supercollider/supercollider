@@ -2,6 +2,109 @@ title:: Writing Unit Generators
 summary:: Get started with writing unit generators
 categories:: Internals
 
+section:: Pseudo-ugens
+
+Pseudo-ugens are useful when you want to abbreviate a certain configuration of UGens that gets used repeatedly. A pseudo-ugen is a class that superficially resembles a UGen class, but it only returns a composition of existing UGens. Pseudo-ugens exist only in the client -- the server isn't aware of them and only receives their components.
+
+The below example has only a code::.ar:: method, but you can just as easily have both code::.ar:: and code::.kr:: methods.
+
+code::
+Chorus {
+    *ar { arg in, lfofreq = 2, maxdepth = 0.1, depth = 0.005;
+        ^(in + DelayC.ar(lfofreq, maxdepth, depth)) * 0.7;
+    }
+}
+::
+
+Examples of pseudo-ugens found in SC include link::Classes/BLowPass4:: and link::Classes/BHiPass4::, which break down into link::Classes/SOS:: UGens.
+
+There are very few restrictions on what these classes can contain, but you should keep the following in mind:
+
+list::
+## It is courteous to leave a note in your class's help file that identifies it as a pseudo-ugen.
+## To avoid confusion, pseudo-ugens should not inherit from the base class link::Classes/UGen::.
+## A SynthDef can only have two link::Classes/LocalIn::/link::Classes/LocalOut:: pairings — one for control rate and one for audio rate. Putting LocalIn and LocalOut in a pseudo-ugen is a bad idea, as it could interfere with other feedback loops in the SynthDef.
+::
+
+section:: Basics of real UGens
+
+A real UGen needs two components: a plugin for the server, and a class for the language. The class goes in an ordinary code::*.sc:: file, and defines the interface for your UGen in the language. This class is generally just a few lines of code that ultimately call the class method link::Classes/UGen#-multiNew::.
+
+The server plugin is where the actual UGen behavior is defined. It is given by a platform-dependent library file: code::*.so:: for *nix, code::*.dll:: for Windows, and code::*.scx:: for OS X [fact check needed on the last two -NH]. A library file can contain more than one UGen.
+
+When scsynth boots, it will look for such library files in code::Platform.userExtensionDir::. Since sclang also looks for class files in the same location, the class file and the library file can go in the same place.
+
+section:: Using FAUST
+
+FAUST is an open source DSP language that describes real-time audio units. Its greatest strength is that it can be compiled into a huge variety of contexts: standalone GUI applications, Flash plugins, Max/MSP or Pure Data externals, CSOUND opcodes, VST plugins, etc. It can also compile to SuperCollider plugins, providing the easiest way to create real UGens in SuperCollider.
+
+First, write a FAUST program such as the below:
+
+code::
+process = + : *(0.5);
+::
+
+which is a boring ugen that just averages its two inputs. Save this as BoringMixer.dsp, and run the following at the command line:
+
+code::
+faust2supercollider BoringMixer.dsp
+::
+
+This will generate BoringMixer.sc and BoringMixer.so files in the current directory. Both of these need to go into your extensions directory. After installing them, reboot both the interpreter and the server, and a class named code::FaustBoringMixer:: should show up in sclang. You can verify that code::FaustBoringMixer.ar:: and code::FaustBoringMixer.kr:: both work as expected.
+
+section:: Manual compilation
+
+faust2supercollider is not actually the FAUST compiler. It's a handy shell script that hides a somewhat more complicated process: first, it compiles your FAUST .dsp file into a C++ file with the SuperCollider architecture, and then into a shared library usable by scsynth. It generates a file for sclang on the side.
+
+On another note, it would be nice to get rid of the Faust prefix on our ugen. We'll take this as an opportunity to walk through the above manual process. (It also makes for a good transition into the next section, where we'll reuse some of these steps.) Get yourself into an empty directory, drop your DSP file there and compile into C++ with the following command:
+
+code::
+faust -a supercollider.cpp BoringMixer.dsp -o BoringMixer.cpp
+::
+
+This is the actual FAUST compiler. We're compiling BoringMixer.dsp using the SuperCollider architecture (as indicated by the argument to the -a option) and writing output to BoringMixer.cpp.
+
+Next we'll set up a build system with CMake. This is overkill for just compiling one ugen, but this results in a rigorous, cross-platform environment that we'll be using again when we start constructing UGens by hand. Create a file in the same directory called `CMakeLists.txt` and add the following:
+
+code::
+cmake_minimum_required (VERSION 2.8)
+project (MyUGens)
+
+include_directories(${SC_PATH}/include/plugin_interface)
+include_directories(${SC_PATH}/include/common)
+include_directories(${SC_PATH}/external_libraries/libsndfile/)
+
+set(CMAKE_SHARED_MODULE_PREFIX "")
+if(APPLE OR WIN32)
+set(CMAKE_SHARED_MODULE_SUFFIX ".scx")
+endif()
+
+add_library(BoringMixer MODULE BoringMixer.cpp)
+::
+
+You can replace the MyUGens name with anything else.
+
+To compile, you'll need to have a copy of the SuperCollider source code sitting around (since your plugin uses includes provided by SC). Having obtained that:
+
+code::
+cmake -G "Unix Makefiles" -DSC_PATH=/path/to/SuperCollider-Source/
+make
+::
+
+If all goes well, compilation will complete and a file named BoringMixer.so should show up in the current directory.
+
+We'll also create an sclang class file by hand:
+
+code::
+BoringMixer : UGen {
+	*ar { |left, right|
+		^this.multiNew('audio', left, right);
+	}
+}
+::
+
+Save this as BoringMixer.sc (although any name will do, really) and copy both the .so file and the .sc file into somewhere in the code::Platform.userExtensionDir:: directory. Reboot the interpreter and server and you will have a working code::BoringMixer:: ugen.
+
 section:: How Unit Generator plug-ins work.
 
 The server loads unit generator plug-ins when it starts up. Unit Generator plug-ins are dynamically loaded libraries
