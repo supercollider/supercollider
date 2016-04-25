@@ -142,6 +142,11 @@ sc_atan2
 
 section:: Unroll macros
 
+The macros in this section are legacy features. They are seen in many of SuperCollider's built-in ugens, and are
+intended to provide more efficient alternatives to the standard code::for (int i = 0; i < inNumSamples; i++) { out[i]
+= in[i] }:: loop. These efficiency savings are negligible on modern systems and use of these macros is not recommended,
+especially since they make debugging difficult.
+
 definitionlist::
 ## code::LOOP(length, stmt)::
 || Execute code code::stmt::, code::length:: times.
