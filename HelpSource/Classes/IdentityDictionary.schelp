@@ -111,7 +111,7 @@ image::IdentityDictionary_01.png#Example schema: order of overriding in proto an
 
 
 method::insertParent
-Inserts a dictionary into the chain of parents of the reciever (rather than replacing the parent).
+Inserts a dictionary into the chain of parents of the receiver (rather than replacing the parent).
 argument::newParent
 The dictionary that is added to the parent chain
 argument::insertionDepth

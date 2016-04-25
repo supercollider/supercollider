@@ -98,7 +98,7 @@ returns:: A new instance of HIDdef which responds to a specific element usage fo
 METHOD:: usageID
 Create a new, enabled HIDdef. If an HIDdef already exists at this key, its parameters will be replaced with the ones provided (args for which nil is passed will use the old values).
 
-A convenience method to filter an incoming HID value based on the number of its control usage. If the device is using a non-standard usage number, then this method can be used to look for it. A controls usage is fully specified by the combinaton of its usage ID and its usage page.
+A convenience method to filter an incoming HID value based on the number of its control usage. If the device is using a non-standard usage number, then this method can be used to look for it. A controls usage is fully specified by the combination of its usage ID and its usage page.
 
 ARGUMENT:: key
 The key at which to store this HIDdef in the global collection. Generally this will be a link::Classes/Symbol::.

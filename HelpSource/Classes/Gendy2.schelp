@@ -11,7 +11,7 @@ GENDYN is closer to that presented in emphasis::Hoffmann, Peter. (2000) The New 
 
 note::
 Random walk is of the amplitude and time delta, not the amp and time
-directly. The amplitude step random walk uses a lehmer style number
+directly. The amplitude step random walk uses a Lehmer style number
 generator whose parameters are accessible.
 ::
 
@@ -160,7 +160,7 @@ MouseY.kr(10,10000,'exponential'),0.05)
 //1 CP = random noise effect
 {Pan2.ar(Gendy2.ar(initCPs:1))}.play
 
-//2 CPs = suudenly an oscillator (though a fast modulating one here)
+//2 CPs = suddenly an oscillator (though a fast modulating one here)
 {Pan2.ar(Gendy2.ar(initCPs:2))}.play
 
 

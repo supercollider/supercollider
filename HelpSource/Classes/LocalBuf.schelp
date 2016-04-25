@@ -51,7 +51,7 @@ SynthDescLib.at(\bigLocalBuf).constants;
 method:: clear
 set the buffer slot to zero.
 discussion::
-This is important when randomly acessing buffer slots
+This is important when randomly accessing buffer slots
 (e.g. with a BufRd) or not overwriting them. Clear is not an efficient real time operation
 for larger buffers, so it should be only used when really needed - but then it is essential:
 a LocalBuf is "created" in each new synth, and it may reuse old space. So if an older

@@ -626,7 +626,7 @@ retrieve the pixel value at x @ y as a link::Classes/Color::.
 METHOD::pixels
 retrieve or set all the pixels of the receiver.
 NOTE::
-Carefull: the returned Array is a link::Classes/Int32Array:: of size receiver.width * receiver.height containing all pixel values as 32bit Integer
+Careful: the returned Array is a link::Classes/Int32Array:: of size receiver.width * receiver.height containing all pixel values as 32bit Integer
 ::
 
 ARGUMENT::array

@@ -89,7 +89,7 @@ METHOD:: selectionMode
 	## \single          || Only a single item can be selected at once.
 	## \multi           || Multiple items can be selected. An item's selection is toggled when clicked.
 	## \extended        || Multiple items can be selected, individually by holding the Ctrl key, and in a batch by holding the Shift key.
-	## \contiguous      || Mutliple neighbouring items can be selected by holding the Shift key.
+	## \contiguous      || Multiple neighbouring items can be selected by holding the Shift key.
 	::
 
 	argument::

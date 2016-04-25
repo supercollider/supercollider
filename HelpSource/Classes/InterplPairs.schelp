@@ -5,7 +5,7 @@ categories:: Control, Envelopes
 
 description::
 Takes an array of [x, y] pairs and a curve value for all break points.
-x values can be negative (for use in indexing with negartive values or signals).
+x values can be negative (for use in indexing with negative values or signals).
 See link::Classes/InterplEnv:: Help for more info.
 
 Examples::

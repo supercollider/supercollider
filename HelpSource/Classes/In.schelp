@@ -29,7 +29,7 @@ information on buses and how they are used.
 The hardware input busses begin just after the hardware output busses and
 can be read from using In.ar (See link::Reference/Server-Architecture:: for more
 details). The number of hardware input and output busses can vary
-depending on your Server's options. For a convienent wrapper class which
+depending on your Server's options. For a convenient wrapper class which
 deals with this issue see  link::Classes/SoundIn:: .
 
 

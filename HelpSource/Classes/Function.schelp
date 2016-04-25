@@ -126,7 +126,7 @@ e = Environment.make({ ~a = 3; ~b = 10 });
 
 method::functionPerformList
 
-For Function, this behaves the same as valueArray(arglist). It is used  where Functions and other objects should behave differently to value, such as in the objecr prototyping implementation of Environment.
+For Function, this behaves the same as valueArray(arglist). It is used  where Functions and other objects should behave differently to value, such as in the object prototyping implementation of Environment.
 
 
 method::performWithEnvir
@@ -233,7 +233,7 @@ method::fork
 Returns a Routine using the receiver as it's function, and plays it in a TempoClock.
 
 code::
-{ 4.do({ "Threadin...".postln; 1.wait;}) }.fork;
+{ 4.do({ "Threading...".postln; 1.wait;}) }.fork;
 ::
 
 method::forkIfNeeded
@@ -241,7 +241,7 @@ method::forkIfNeeded
 If needed, creates a new Routine to evaluate the function in, if the message is called within a routine already, it simply evaluates it.
 
 code::
-f = { 4.do({ "Threadin...".postln; 1.wait;}) };
+f = { 4.do({ "Threading...".postln; 1.wait;}) };
 f.forkIfNeeded;
 { "we are now in a routine".postln; 1.wait; f.forkIfNeeded }.fork;
 ::
@@ -271,7 +271,7 @@ x.value;
 
 method::flop
 
-Return a function that, when evaluated with nested arguments, does multichannel expansion by evaluting the receiver function for each channel. A flopped function responds like the "map" function in languages like Lisp.
+Return a function that, when evaluated with nested arguments, does multichannel expansion by evaluating the receiver function for each channel. A flopped function responds like the "map" function in languages like Lisp.
 
 code::
 f = { |a, b| if(a > 0) { a + b } { -inf } }.flop;
@@ -392,7 +392,7 @@ code::
 SynthDef(\help_FuncPlay, { Out.ar(0, SinOsc.ar(440, 0, 0.3))}).play;
 ::
 
-Function.play is often more convienent than SynthDef.play, particularly for short examples and quick testing. The latter does have some additional options, such as lagtimes for controls, etc. Where reuse and maximum flexibility are of greater importance, SynthDef and its various methods are usually the better choice.
+Function.play is often more convenient than SynthDef.play, particularly for short examples and quick testing. The latter does have some additional options, such as lagtimes for controls, etc. Where reuse and maximum flexibility are of greater importance, SynthDef and its various methods are usually the better choice.
 
 argument::target
 a Node, Server, or Nil. A Server will be converted to the default group of that server. Nil will be converted to the default group of the default Server.

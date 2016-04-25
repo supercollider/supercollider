@@ -105,7 +105,7 @@ code::
 { LFGauss.ar(1/60, XLine.kr(0.1, 0.001, 10)) * 0.2 }.play;
 
 // modulating both: x position is frequency, y is width factor.
-// note the artefacts due to alisasing at high frequencies
+// note the artefacts due to aliasing at high frequencies
 { LFGauss.ar(MouseX.kr(1/8000, 0.1, 1), MouseY.kr(0.001, 0.1, 1)) * 0.1 }.play;
 
 // LFGauss as amplitude modulator
@@ -126,7 +126,7 @@ code::
 );
 
 
-// several frequecies and widths combined
+// several frequencies and widths combined
 (
 {
 	var mod = LFGauss.ar(MouseX.kr(1, 0.07, 1), 1 * (MouseY.kr(1, 3) ** (-1..-6)));
