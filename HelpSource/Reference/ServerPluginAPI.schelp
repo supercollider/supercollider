@@ -89,7 +89,7 @@ definitionlist::
 ## code::zapgremlins(x)::
 || Replaces NaNs, infinities, very large and very small numbers (including denormals) with zero. This is useful in ugen feedback to safeguard from pathological behavior. (Note lack of sc_ prefix.)
 
-## code::sc_bitriwindow::
+## code::sc_bitriwindow(x)::
 || Alternative to code::sc_triwindow:: using absolute value.
 
 ## code::sc_scurve0(x)::
@@ -108,52 +108,46 @@ definitionlist::
 || Determines the feedback coefficient for a feedback comb filter with the given delay and decay times.
 
 ## code::sc_wrap1(x)::
-|| Same as code::sc_wrap::, but wraps only once.
+|| Wrap code::x:: around ±1, wrapping only once.
 
 ## code::sc_fold1(x)::
-|| Same as code::sc_fold::, but folds only once.
+|| Fold code::x:: around ±1, folding only once.
+::
+
+section:: Binary operators
+
+definitionlist::
+## code::sc_mod(in, hi)::
+|| code::in:: modulo code::hi::.
+
+## code::sc_wrap(in, lo, hi [, range])::
+||
+
+## code::sc_fold(in, lo, hi [, range [, range2]])::
+||
+
+## code::sc_pow(a, b)::
+|| Compute code::pow(a, b)::, retaining the sign of code::a::.
+::
+
+The following functions are available for both floats and doubles, and are the same as in sclang (minus the "sc_" prefixes):
+
+code::
+sc_mod
+sc_round
+sc_roundUp
+sc_trunc
+sc_atan2
 ::
 
 section:: Unroll macros
-
-Audio-rate ugens often use loops that look like this:
-
-code::
-float* in = IN(0);
-float* out = OUT(0);
-for (int i = 0; i < inNumSamples; i++) {
-	out[i] = in[i] * 0.5;
-}
-::
-
-The indexing operations code::out[i]:: and code::in[i]:: invoke pointer addition at every sample. We can speed this up by using increments rather than addition, and speed it up further by using pre-increments, not post-increments (so there is no need for the CPU to preserve the old value). The result is the following:
-
-code::
-float* in = IN(0) - 1;
-float* out = OUT(0) - 1;
-for (int i = 0; i < inNumSamples; i++) {
-	*(++out) = *(++in) * 0.5;
-}
-::
-
-A header file by the name of "Unroll.h" provides macros that clean up this code a bit:
-
-code::
-float* in = ZIN(0);
-float* out = ZOUT(0);
-LOOP1(inNumSamples,
-	ZXP(out) = ZXP(in) * 0.5;
-);
-::
-
-These seem like negligible improvements, but real-time audio can be very sensitive to efficiency losses. Many of SC's built-in ugens use the above format.
 
 definitionlist::
 ## code::LOOP(length, stmt)::
 || Execute code code::stmt::, code::length:: times.
 
 ## code::LOOP1(length, stmt)::
-|| A faster drop-in alternative to code::LOOP::, which assumes that code::length > 0:: so a branch instruction is saved. This is recommended for the well-known "inNumSamples loop" because inNumSamples is never zero.
+|| A faster drop-in alternative to code::LOOP::, which assumes that code::length > 0:: so a branch instruction is saved.
 
 ## code::LooP(length) stmt::
 || An alternative to LOOP/LOOP1 that is more debugger-friendly. The body of the loop comes after the call to code::LooP::.
@@ -185,5 +179,3 @@ definitionlist::
 ## code::ZOFF::
 || Return 1.
 ::
-
-The macros on this list -- especially the last few -- seem odd and unnecessary, and that is because the Unroll macros are designed to be swappable in case a platform is found where post-increment is faster.
