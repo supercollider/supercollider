@@ -21,7 +21,7 @@ code::
 // create a new Ref object
 y = `(nil);
 
-// you can start to calcuate with y, even if its value is not yet given:
+// you can start to calculate with y, even if its value is not yet given:
 z = y + 10; // returns a function
 
 // now the source can be set:
@@ -46,7 +46,7 @@ z = y + 10; // this fails.
 // an environment without sufficient defaults has the same problem:
 
 currentEnvironment.postln; // anEnvironment
-~x; // access the enironment: there is nothing stored: nil
+~x; // access the environment: there is nothing stored: nil
 ~x = 9; // store something
 ~x; 	// now 9 is stored
 ~x + 100; // calculate with it

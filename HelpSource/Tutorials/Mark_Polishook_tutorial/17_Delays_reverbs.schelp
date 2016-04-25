@@ -61,7 +61,7 @@ Synth.head(~effects, "aDelay");
 
 section::Feedback filters
 
-Comb and Allpass filters are examples of ugens that feed some of their output back into their input. Allpass filters change the phase of signals passed through them. For this reason, they're useful even though don't seeem to differ much from comb filters.
+Comb and Allpass filters are examples of ugens that feed some of their output back into their input. Allpass filters change the phase of signals passed through them. For this reason, they're useful even though don't seem to differ much from comb filters.
 
 code::
 /////////////////////////////////////////////////////////////////////////////////////////
