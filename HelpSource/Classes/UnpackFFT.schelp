@@ -6,7 +6,7 @@ related:: Classes/PackFFT, Classes/Unpack1FFT
 description::
 Takes an FFT chain and separates the magnitude and phase data into separate demand-rate streams, for arithmetic manipulation etc.
 
-This is technically a demand-rate UGen. The actual "demand" is usually created by PackFFT later on in the graph, which requests the values in order to re-pack the data. This allows for processing to occur imbetween...
+This is technically a demand-rate UGen. The actual "demand" is usually created by PackFFT later on in the graph, which requests the values in order to re-pack the data. This allows for processing to occur in between...
 
 See also pvcollect, pvcalc and pvcalc2 methods ( in link::Classes/PV_ChainUGen:: ) which provide convenient ways to process audio in the frequency domain. The help for pvcollect includes notes on efficiency considerations.
 

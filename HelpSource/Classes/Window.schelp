@@ -194,7 +194,7 @@ METHOD:: background
 		A Color.
 
 METHOD:: alpha
-	The transparancy of the window.
+	The transparency of the window.
 
 	argument::
 		A Float between 0.0 (invisible) and 1.0 (opaque).
@@ -231,7 +231,7 @@ METHOD:: acceptsMouseOver
 SUBSECTION:: Actions and hooks
 
 METHOD:: drawFunc
-	Just like the link::Classes/UserView::, the window can be given a Function to evalute whenever it is asked to redraw itself, so you can use the link::Classes/Pen:: class to draw on the window. See link::Classes/UserView#-drawFunc:: for explanation.
+	Just like the link::Classes/UserView::, the window can be given a Function to evaluate whenever it is asked to redraw itself, so you can use the link::Classes/Pen:: class to draw on the window. See link::Classes/UserView#-drawFunc:: for explanation.
 
 	argument::
 		A Function.

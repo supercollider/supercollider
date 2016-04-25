@@ -99,7 +99,7 @@ METHOD:: asView
 SUBSECTION:: Visibility
 
 METHOD:: visible
-	Gets or sets wether the view is visible.
+	Gets or sets whether the view is visible.
 
 	Making a child view invisible means it does not occupy any space from the standpoint of the layout that contains it, so the layout will distribute the space the view occupied when visible among other views. When the view becomes visible again it is given back the same space.
 
@@ -278,7 +278,7 @@ METHOD:: addFlowLayout
 METHOD:: flow
 
 
-	Creates a FlowView as a child of the view, and then evalutes the object given in the 'func' argument. It is most common to pass a Function for 'func' in which the FlowView is filled with other child views.
+	Creates a FlowView as a child of the view, and then evaluates the object given in the 'func' argument. It is most common to pass a Function for 'func' in which the FlowView is filled with other child views.
 
 	argument:: func
 		The object that will be evaluated after the creation of the FlowView, passing the new FlowView instance as an argument.
@@ -359,7 +359,7 @@ METHOD:: palette
 
 	When setting a palette, only those colors that have been set on the palette will take effect, other colors will be inherited from the parent view's palette. See also link::Classes/QPalette#-hasColor::.
 
-	When getting a palette, it will return everytime a new copy of the view's palette. Therefore, if you wish to change the view's palette, you have to set the changed palette back on the view:
+	When getting a palette, it will return a new copy of the view's palette every time. Therefore, if you wish to change the view's palette, you have to set the changed palette back on the view:
 
 code::
 	w = Window().front.layout_( HLayout( a = Slider() ) );
@@ -423,7 +423,7 @@ METHOD:: canFocus
 		A Boolean.
 
 METHOD:: focus
-	If 'flag' is true, gives keyboard focus to the view (if possible), otherwise removes the keayboard focus from it.
+	If 'flag' is true, gives keyboard focus to the view (if possible), otherwise removes the keyboard focus from it.
 
 	argument:: flag
 		A Boolean.

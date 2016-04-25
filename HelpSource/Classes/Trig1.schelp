@@ -57,7 +57,7 @@ Routine({
 
 )
 
-This should sound like a continous sine wave, although it is actually a series of 0.25 second synths.
+This should sound like a continuous sine wave, although it is actually a series of 0.25 second synths.
 (
 SynthDef("trig1",{
 	var gate;
