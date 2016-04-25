@@ -11,7 +11,7 @@ private:: new1
 
 method:: new
 argument:: in
-ugen to poll vaues from
+ugen to poll values from
 argument:: label
 a label string
 argument:: run

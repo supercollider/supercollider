@@ -7,7 +7,7 @@ categories::  UGens>Analysis>Amplitude
 Description::
 
 Higher frequencies are normally perceived as louder, which AmpCompA
-compensates. Following the measurings by Fletcher and Munson, the
+compensates. Following the measurements by Fletcher and Munson, the
 ANSI standard describes a function for loudness vs. frequency.
 
 Note that this curve is only valid for standardized amplitude.

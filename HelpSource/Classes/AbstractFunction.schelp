@@ -524,7 +524,7 @@ code::
 // compose a function that will return an array of random length
 a = { |n| { 16.rand } ! n } <> { |x, y| rrand(4, 8) };
 a.value;
-// compose a fucntion from a that selects only odd values
+// compose a function from a that selects only odd values
 b = { |x| x.select(_.odd) } <> a;
 b.value;
 ::

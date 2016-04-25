@@ -9,7 +9,7 @@ EZKnob is wrapper class which creates an (optional) link::Classes/StaticText::, 
 subsection:: Some Important Issues Regarding NumberBox
 
 warning::
-EZKnob replaces the EZKnob Quark, which is now called EZKnobOld.  It is encouraged to update your code. The two classes have different creation methods and approaches, particularly concerning the strong::dimensions:: (now strong::bounds::). To make the conversion process easier,  EZKnobOld has an instance method called convert which will post the equivallent creation code for the new EZKnob.
+EZKnob replaces the EZKnob Quark, which is now called EZKnobOld.  It is encouraged to update your code. The two classes have different creation methods and approaches, particularly concerning the strong::dimensions:: (now strong::bounds::). To make the conversion process easier,  EZKnobOld has an instance method called convert which will post the equivalent creation code for the new EZKnob.
 ::
 
 note::
@@ -45,7 +45,7 @@ argument:: labelWidth
 Number of pixels width for the label. default is 60. This is only valid for the code::\horz:: layout.
 
 argument:: knobSize
-An instance of link::Classes/Point::.  It will adjust itself to maximize the space use of code::width/height::. By default, it uses the maximum availabel height, and adjusts the withd accordingly.
+An instance of link::Classes/Point::.  It will adjust itself to maximize the space use of code::width/height::. By default, it uses the maximum available height, and adjusts the width accordingly.
 
 argument:: unitWidth
 Number of pixels width for the unit label. Default is 0. If 0, then no unitLabel is created.

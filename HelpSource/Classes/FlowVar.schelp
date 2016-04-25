@@ -36,7 +36,7 @@ INSTANCEMETHODS::
 METHOD:: value
 Set the value bound to the FlowVar.
 
-The getter returns the value bound to the FlowVar. If the value is not yet available, hold execution (this requires thie method to be called from within a link::Classes/Routine:: or similar thread.).
+The getter returns the value bound to the FlowVar. If the value is not yet available, hold execution (this requires the method to be called from within a link::Classes/Routine:: or similar thread.).
 
 
 ARGUMENT:: inVal

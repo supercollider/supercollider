@@ -221,7 +221,7 @@ List[1, 2, 3].stutter(2).postln;
 ::
 
 rotate
-Return a new List whose elements are in rotated order. Negative strong::n:: values rotate left, postive strong::n:: values rotate right. The receiver is unchanged.
+Return a new List whose elements are in rotated order. Negative strong::n:: values rotate left, positive strong::n:: values rotate right. The receiver is unchanged.
 code::
 List[1, 2, 3, 4, 5].rotate(1).postln;
 List[1, 2, 3, 4, 5].rotate(-1).postln;

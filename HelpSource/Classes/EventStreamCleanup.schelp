@@ -188,7 +188,7 @@ Pbus : FilterPattern {
 		cleanup.addFunction(event, { defer({ freeBus.value;}, fadeTime.abs + dur) });
 
 		// doneAction = 3;
-		// remove and deallocate both this synth and the preceeding node
+		// remove and deallocate both this synth and the preceding node
 		// (which is the group).
 		inevent = event.yield;
 

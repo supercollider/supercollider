@@ -129,7 +129,7 @@ Complex(2, 9).neg
 ::
 
 method:: abs
-the absoulte value of a complex number is its magnitude.
+the absolute value of a complex number is its magnitude.
 discussion::
 code::
 Complex(3, 4).abs

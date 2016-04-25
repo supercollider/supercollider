@@ -25,7 +25,7 @@ PRIVATE:: key
 INSTANCEMETHODS::
 
 METHOD:: defaultCanReceiveDrag
-	RETURNS:: Allways True.
+	RETURNS:: Always True.
 
 METHOD:: defaultReceiveDrag
 	Sets the link::Classes/StaticText#-object#-object:: to the current drag data.
@@ -66,9 +66,9 @@ s.waitForBoot({	// only needed if you are using sound
 	f.string = "My label is independent";
 	f.dragLabel = " My dragLabel_() says \n I am dragging a sound function ";
 
-	// receive anthing
+	// receive anything
 	g = DragSink(w, Rect(170, 10, 200, 20)).align_(\center);
-	g.string = "recieve anything, do nothing";
+	g.string = "receive anything, do nothing";
 
 	// receive only floats
 	g = DragSink(w, Rect(170, 40, 200, 20)).align_(\center);

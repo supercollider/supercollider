@@ -343,7 +343,7 @@ code::
 server:		nil,		// if nil, Server.default is used
 instrument:	\default,	// this is the name of a SynthDef
 group:		1,		// nodeID of group on the server
-				// whening adding before or after a node
+				// when adding before or after a node
 				// this could be the nodeID of a synth instead of a group
 addAction:	0,		// 0, 1, 2, 3 or \addToHead, \addToTail, \addBefore, \addAfter
 out:		0,		// usually an output bus number, but depends on the SynthDef

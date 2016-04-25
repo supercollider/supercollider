@@ -21,7 +21,7 @@ Returns code::($ )::
 method::comma
 Returns code::($\,)::
 method::bullet
-Returns a bullet character (•) in SuperCollider.app on OSX, but a simple asterix (*) on other frontends.
+Returns a bullet character (•) in SuperCollider.app on OSX, but a simple asterisk (*) on other frontends.
 This method is not recommended, since it's actually not cross-platform.
 
 instancemethods::

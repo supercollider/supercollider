@@ -5,7 +5,7 @@ categories::  UGens>InOut, UGens>Triggers
 
 Description::
 
-Any time the bus is "touched" ie. has its value set (using "/c_set"
+Any time the bus is "touched", ie. has its value set (using "/c_set"
 etc.), a single impulse trigger will be generated. Its amplitude is the
 value that the bus was set to.
 

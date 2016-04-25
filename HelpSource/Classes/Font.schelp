@@ -126,7 +126,7 @@ Returns:: an link::Classes/Array::, code:: [ name, size ] ::.
 
 method:: boldVariant
 
-note:: On the Cocoa GUI it appendes teletype::"-Bold":: to the name. This is only useful for fonts that have bold
+note:: On the Cocoa GUI it appends teletype::"-Bold":: to the name. This is only useful for fonts that have bold
 variants.
 ::
 returns::
@@ -148,7 +148,7 @@ t.font = Font("Monaco", 24);
 var updateFont;
 w = Window("Fonts", Rect(150, Window.screenBounds.height - 500, 400, 400)).front;
 w.view.decorator = FlowLayout(w.view.bounds);
-StaticText.new(w, Rect(5, 0, 30, 20)).string_("Font").align_(\rght);
+StaticText.new(w, Rect(5, 0, 30, 20)).string_("Font").align_(\right);
 m = PopUpMenu(w, Rect(40, 0, 250, 20));
 m.items = Font.availableFonts;
 
