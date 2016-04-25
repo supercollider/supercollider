@@ -4,9 +4,12 @@ categories:: Internals
 
 section:: Pseudo-ugens
 
-Pseudo-ugens are useful when you want to abbreviate a certain configuration of UGens that gets used repeatedly. A pseudo-ugen is a class that superficially resembles a UGen class, but it only returns a composition of existing UGens. Pseudo-ugens exist only in the client -- the server isn't aware of them and only receives their components.
+Pseudo-ugens are useful when you want to abbreviate a certain configuration of UGens that gets used repeatedly. A
+pseudo-ugen is a class that superficially resembles a UGen class, but it only returns a composition of existing UGens.
+Pseudo-ugens exist only in the client -- the server isn't aware of them and only receives their components.
 
-The below example has only a code::.ar:: method, but you can just as easily have both code::.ar:: and code::.kr:: methods.
+The below example has only a code::.ar:: method, but you can just as easily have both code::.ar:: and code::.kr::
+methods.
 
 code::
 BoringMixer {
@@ -16,21 +19,27 @@ BoringMixer {
 }
 ::
 
-Examples of pseudo-ugens found in SC include link::Classes/BLowPass4:: and link::Classes/BHiPass4::, which break down into link::Classes/SOS:: UGens.
+Examples of pseudo-ugens found in SC include link::Classes/BLowPass4:: and link::Classes/BHiPass4::, which break down
+into link::Classes/SOS:: UGens.
 
 There are very few restrictions on what these classes can contain, but you should keep the following in mind:
 
 list::
 ## It is courteous to leave a note in your class's help file that identifies it as a pseudo-ugen.
 ## To avoid confusion, pseudo-ugens should not inherit from the base class link::Classes/UGen::.
-## A SynthDef can only have two link::Classes/LocalIn::/link::Classes/LocalOut:: pairings — one for control rate and one for audio rate. Putting LocalIn and LocalOut in a pseudo-ugen is a bad idea, as it could interfere with other feedback loops in the SynthDef.
+## A SynthDef can only have two link::Classes/LocalIn::/link::Classes/LocalOut:: pairings — one for control rate and one
+for audio rate. Putting LocalIn and LocalOut in a pseudo-ugen is a bad idea, as it could interfere with other feedback
+loops in the SynthDef.
 ::
 
 section:: Basics of UGens
 
-A (real) UGen needs two components: a plugin for the server, and a class for the language. The class goes in an ordinary code::*.sc:: file, and defines the interface for your UGen in the language. This class is generally just a few lines of code that ultimately call the class method link::Classes/UGen#-multiNew::.
+A (real) UGen needs two components: a plugin for the server, and a class for the language. The class goes in an ordinary
+code::*.sc:: file, and defines the interface for your UGen in the language. This class is generally just a few lines of
+code that ultimately call the class method link::Classes/UGen#-multiNew::.
 
-The server plugin is where the actual UGen behavior is defined. It is given by a dynamically loaded library written in C++, whose format is platform-dependent:
+The server plugin is where the actual UGen behavior is defined. It is given by a dynamically loaded library written in
+C++, whose format is platform-dependent:
 
 list::
 ## code::*.so:: for *nix
@@ -38,90 +47,28 @@ list::
 ## code::*.scx:: for OS X
 ::
 
-A plugin file can contain more than one UGen, and it can also define things other than ugens such as buffer fill ("/b_gen") commands.
+A plugin file can contain more than one UGen, and it can also define things other than ugens such as buffer fill
+("/b_gen") commands.
 
-When scsynth boots, it will look for plugin files in code::Platform.userExtensionDir::. Since sclang also looks for class files in the same location, the class file and the library file can go in the same place.
+When scsynth boots, it will look for plugin files in code::Platform.userExtensionDir::. Since sclang also looks for
+class files in the same location, the class file and the library file can go in the same place.
 
-Plug-ins are loaded during the startup of scsynth, so the server will have to be restarted after (re-)compiling a plugin. If you modify the plugin file but not the class file, you don't need to reboot the interpreter.
+Plug-ins are loaded during the startup of scsynth, so the server will have to be restarted after (re-)compiling a
+plugin. If you modify the plugin file but not the class file, you don't need to reboot the interpreter.
 
 section:: FAUST
 
-note:: This section is currently Linux only. Please expand to include instructions for other platforms. ::
+FAUST footnote::http://faust.grame.fr/:: is an open source DSP language that describes real-time audio units. It can
+compile to SuperCollider plugins, providing an easy way to create UGens in SuperCollider.
 
-FAUST footnote::http://faust.grame.fr/:: is an open source DSP language that describes real-time audio units. Its greatest strength is that it can be compiled into a huge variety of contexts: standalone GUI applications, Flash plugins, Max/MSP or Pure Data externals, CSOUND opcodes, VST plugins, etc. It can also compile to SuperCollider plugins, providing the easiest way to create real UGens in SuperCollider.
+FAUST provides a shell script useful for SuperCollider users called code::faust2supercollider::. This compiles a .dsp
+file into a class file and server plugin, which you can then drop into your extensions directory.
 
-subsection:: The easy way
-
-First, write a FAUST program such as the below:
-
-code::
-process = + : *(0.5);
-::
-
-which is a boring ugen that just averages its two inputs. Save this as BoringMixer.dsp, and run the following at the command line:
-
-code::
-faust2supercollider BoringMixer.dsp
-::
-
-This will generate BoringMixer.sc and BoringMixer.so files in the current directory. Both of these need to go into your extensions directory. After installing them, reboot both the interpreter and the server, and a class named code::FaustBoringMixer:: should show up in sclang. You can verify that code::FaustBoringMixer.ar:: and code::FaustBoringMixer.kr:: both work as expected.
-
-subsection:: The hard way
-
-note:: This section is currently Linux only. Please expand to include instructions for other platforms. ::
-
-faust2supercollider is not actually the FAUST compiler. It's a handy shell script that hides a somewhat more complicated process: first, it compiles your FAUST .dsp file into a C++ file with the SuperCollider architecture, and then into a shared library usable by scsynth. It generates a file for sclang on the side.
-
-On another note, it would be nice to get rid of the Faust prefix on our ugen. We'll take this as an opportunity to walk through the above manual process, making for a good transition into hand-written C++ ugens. Get yourself into an empty directory, drop your DSP file there and compile into C++ with the following command:
-
-code::
-faust -a supercollider.cpp BoringMixer.dsp -o BoringMixer.cpp
-::
-
-This is the actual FAUST compiler. We're compiling BoringMixer.dsp using the SuperCollider architecture (as indicated by the argument to the -a option) and writing output to BoringMixer.cpp.
-
-Next we'll set up a build system with CMake. This is overkill for just compiling one ugen, but this results in a rigorous, cross-platform environment that we'll be using again when we start constructing UGens by hand. Create a file in the same directory called `CMakeLists.txt` and add the following:
-
-code::
-cmake_minimum_required (VERSION 2.8)
-project (MyUGens)
-
-include_directories(${SC_PATH}/include/plugin_interface)
-include_directories(${SC_PATH}/include/common)
-include_directories(${SC_PATH}/external_libraries/libsndfile/)
-
-set(CMAKE_SHARED_MODULE_PREFIX "")
-if(APPLE OR WIN32)
-set(CMAKE_SHARED_MODULE_SUFFIX ".scx")
-endif()
-
-add_library(BoringMixer MODULE BoringMixer.cpp)
-::
-
-You can replace the MyUGens name with anything else.
-
-To compile, you'll need to have a copy of the SuperCollider source code sitting around (since your plugin uses includes provided by SC). Having obtained that:
-
-code::
-cmake -G "Unix Makefiles" -DSC_PATH=/path/to/SuperCollider-Source/
-make
-::
-
-If all goes well, compilation will complete and a file named BoringMixer.so should show up in the current directory.
-
-We'll also create an sclang class file by hand:
-
-code::
-BoringMixer : UGen {
-	*ar { |left, right|
-		^this.multiNew('audio', left, right);
-	}
-}
-::
-
-Save this as BoringMixer.sc (although any name will do, really) and copy both the .so file and the .sc file into somewhere in the code::Platform.userExtensionDir:: directory. Reboot the interpreter and server and you will have a working code::BoringMixer:: ugen.
-
-FAUST plugins are easy to develop and can be painlessly ported to other environments. Unfortunately, they can't take advantage of all of scsynth's features, such as accessing Buffers or random number generators, and some ugens featuring very complex logic are difficult or impossible to write in FAUST. FAUST is most ideal for audio units that are easy to express with block diagrams. Furthermore, the FAUST compiler is quite intelligent but it might not always offer the best efficiency in its results. If a ugen you are developing hits these limitations, it is time to move on to handwritten C++.
+FAUST plugins are often quick to develop and can be painlessly ported to other environments. Unfortunately, they can't
+take advantage of all of scsynth's features, such as accessing Buffers or random number generators, and some ugens
+featuring very complex logic are difficult or impossible to write in FAUST. Furthermore, the FAUST compiler is quite
+intelligent but it might not always offer the best efficiency in its results. If a ugen you are developing hits these
+limitations, it is time to move on to handwritten C++.
 
 section:: The Entry Point
 
