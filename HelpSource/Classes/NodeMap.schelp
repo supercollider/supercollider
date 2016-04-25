@@ -4,7 +4,7 @@ categories:: Libraries>JITLib>NodeProxy, Server>Nodes, Server>Abstractions
 related:: Classes/Bus
 
 description::
-Object to store control values and bus mappings independantly of a specific node.
+Object to store control values and bus mappings independently of a specific node.
 
 code::
 a = NodeMap.new;

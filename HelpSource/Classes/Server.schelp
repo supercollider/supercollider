@@ -12,7 +12,7 @@ The server application is a commandline program, so all commands apart from OSC 
 
 The server application represented by a Server object might be running on the same machine as the client (in the same address space as the language application or separately; see below), or it may be running on a remote machine.
 
-Most of a Server's options are contolled through its instance of ServerOptions. See the link::Classes/ServerOptions:: helpfile for more detail.
+Most of a Server's options are controlled through its instance of ServerOptions. See the link::Classes/ServerOptions:: helpfile for more detail.
 
 subsection:: Paths
 

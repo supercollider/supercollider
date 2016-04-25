@@ -8,7 +8,7 @@ A RootNode is the Group with the nodeID of 0 which is always present on each Ser
 
 It is always playing, and always running, cannot be freed, or moved anywhere.
 
-Cacheing is used so that there is always one RootNode per link::Classes/Server::.
+Caching is used so that there is always one RootNode per link::Classes/Server::.
 code::
 s = Server.local;
 

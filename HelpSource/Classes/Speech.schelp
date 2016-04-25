@@ -73,7 +73,7 @@ Speech.pause(0,1);
 ::
 
 Initialization happens automatically, by default with one voice channel.
-You may explicitly initalize with more channels, up to 16:
+You may explicitly initialize with more channels, up to 16:
 code::
 (
 Speech.init(16);

@@ -41,7 +41,7 @@ METHOD:: value
 		An integer, or nil meaning no selected item.
 
 METHOD:: valueAction
-	Sets link::#-value:: and triggeres link::#-action::.
+	Sets link::#-value:: and triggers link::#-action::.
 
 	argument::
 		An integer, or nil meaning no selected item.

@@ -6,7 +6,7 @@ related:: Classes/SelectX, Classes/SelectXFocus, Classes/LinSelectX
 Description::
 The output is selected from an array of inputs.
 
-note:: All the UGens are continously running. This may not be the most efficient
+note:: All the UGens are continuously running. This may not be the most efficient
 way if each input is CPU-expensive. ::
 
 Note that the array is fixed at the time of writing the SynthDef, and the

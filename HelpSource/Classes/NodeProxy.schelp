@@ -254,7 +254,7 @@ a.numChannels; // 8
 ::
 
 method::mold
-Adjust the proxy to a given rate / numChannels. If there are any child proxies that have elastic link::#-reshaping::, they are adjusted accordigly.
+Adjust the proxy to a given rate / numChannels. If there are any child proxies that have elastic link::#-reshaping::, they are adjusted accordingly.
 
 code::
 a = NodeProxy(s);
@@ -428,8 +428,8 @@ The unique key (a link::Classes/Symbol::) specifies the control name to be set.
 For value anything can be specified that responds to "asControlInput", in particular:
 definitionList::
 ## number || set the control to that number
-## array of numbers || set the subsequent control channels to the correspoding value
-## node proxy || map subsequent control channels to the corrseponding proxy output channel
+## array of numbers || set the subsequent control channels to the corresponding value
+## node proxy || map subsequent control channels to the corresponding proxy output channel
 ::
 
 
@@ -490,7 +490,7 @@ argument::freeLast
 if to free the last synth at that index or not (default: true)
 
 method::sendEach
-Like send, just iterating seperately over the objects.
+Like send, just iterating separately over the objects.
 
 method::wakeUp
 Until the proxy is not used by any output ( either .play or .ar/.kr ) it is not running on the server. you can wake it up to force it playing. Normally this is not needed.
@@ -568,7 +568,7 @@ a.source = { SinOsc.ar([350, 351.3], 0, 0.2) };
 a.numChannels.postln;
 a.source = { SinOsc.ar([390, 286] * 1.2, 0, 0.2) };
 
-// exeeding channels wrap:
+// exceeding channels wrap:
 a.source = { SinOsc.ar([390, 286, 400, 420, 300] * 1.2, 0, 0.2) };
 
 // other inputs

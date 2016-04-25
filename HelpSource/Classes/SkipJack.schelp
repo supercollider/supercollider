@@ -99,7 +99,7 @@ Using stopTest:
 code::
 a = 5;
 w = SkipJack({ "watch...".postln; }, 0.5, { a == 10 }, "test");
-a = 10;	// fulfil stopTest
+a = 10;	// fulfill stopTest
 ::
 
 Typical use: SkipJack updates a window displaying the state of some objects every now and then.

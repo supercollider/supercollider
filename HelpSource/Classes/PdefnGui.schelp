@@ -29,6 +29,6 @@ g.object_(Pdefn(\abc));
 Pdefn(\abc, 345);
 
 // Note: When editing code in the csView and evaluating,
-// there is a short dely before displaying. this is intended.
+// there is a short delay before displaying. this is intended.
 
 ::

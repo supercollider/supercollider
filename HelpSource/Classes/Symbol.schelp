@@ -14,7 +14,7 @@ A symbol can be written by surrounding characters by single quotes (may include 
 
 code::'foo bar'::
 
-Or by a preceeding backslash (then it may not include whitespace):
+Or by a preceding backslash (then it may not include whitespace):
 
 code::\foo::
 
@@ -143,7 +143,7 @@ code::
 
 subsection::Synthesis
 
-Inside SynthDefs and UGen functions, symbols can be used to conventiently specify control inputs of different rates and with lags (see:  NamedControl, ControlName, and Control).
+Inside SynthDefs and UGen functions, symbols can be used to conveniently specify control inputs of different rates and with lags (see:  NamedControl, ControlName, and Control).
 
 
 method::kr
@@ -165,7 +165,7 @@ Return an audio rate NamedControl input with a default value (val), and if suppl
 
 method::ir
 
-Return an intitalization rate NamedControl input with a default value (val). If val is an array, the control will be multichannel.
+Return an initialization rate NamedControl input with a default value (val). If val is an array, the control will be multichannel.
 
 method::tr
 

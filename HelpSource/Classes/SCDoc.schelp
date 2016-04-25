@@ -129,7 +129,7 @@ Returns:: code::true:: if the class responds to ar, kr or ir classmethods.
 section:: Parser node tree output
 The SCDoc parser outputs a tree of link::Classes/SCDocNode::s
 
-The nodes reflects the tags in the input, but it's not a one-to-one correspondation.
+The nodes reflects the tags in the input, but it's not a one-to-one correspondence.
 A more detailed structure is added in the node tree, for easier rendering.
 
 Example:
