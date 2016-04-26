@@ -20,7 +20,7 @@ definitionlist::
 || Demand rate. 
 ::
 
-section:: UGen I/O
+section:: UGen basics
 
 definitionlist::
 ## code::IN(index)::
@@ -37,6 +37,82 @@ definitionlist::
 
 ## code::INRATE(index)::
 || Get the rate of a given input index. This will be one of the four rates.
+
+## code::INBUFLENGTH(index)::
+|| Get the block size of a given input index.
+
+## code::SAMPLERATE::
+|| Sample rate of the server in Hertz.
+
+## code::SAMPLEDUR::
+|| Sample period of the server in seconds.
+
+## code::BUFLENGTH::
+|| Length in samples of an audio buffer (that is, the number of samples in a control period).
+
+## code::BUFRATE::
+|| Control rate of the server in Hertz.
+
+## code::BUFDUR::
+|| Control period of the server in seconds.
+
+## code::FULLRATE::
+||
+
+## code::FULLBUFLENGTH::
+||
+::
+
+section:: Buffers
+
+definitionlist::
+## code::GET_BUF::
+|| The recommended way to retrieve a buffer. Take the first input of this UGen and use it as a buffer number. This dumps
+a number of variables into the local scope:
+
+list::
+## code::buf:: - a pointer to the code::SndBuf:: instance
+## code::bufData:: - the raw float data from the buffer
+## code::bufChannels:: - the number of channels in the buffer
+## code::bufSamples:: - the number of samples in the buffer
+## code::bufFrames:: - the number of frames in the buffer
+::
+
+The buffer is locked using the code::LOCK_SNDBUF:: macro. Buffer lock operations are specific to supernova, and don't
+do anything in vanilla scsynth.
+
+## code::GET_BUF_SHARED::
+|| Like code::GET_BUF::, but the buffer is locked using code::LOCK_SNDBUF_SHARED::.
+
+## code::SIMPLE_GET_BUF::
+|| Like code::GET_BUF::, but only creates the code::buf:: variable and does not lock the buffer.
+
+## code::SIMPLE_GET_BUF_EXCLUSIVE::
+|| Like code::SIMPLE_GET_BUF::, but locks the buffer with code::LOCK_SNDBUF::.
+
+## code::SIMPLE_GET_BUF_SHARED::
+|| Like code::SIMPLE_GET_BUF::, but locks the buffer with code::LOCK_SNDBUF_SHARED::.
+::
+
+The following macros are for use in supernova. They still exist in scsynth, but will have no effect.
+
+code::
+ACQUIRE_BUS_AUDIO(index)
+ACQUIRE_BUS_AUDIO_SHARED(index)
+RELEASE_BUS_AUDIO(index)
+RELEASE_BUS_AUDIO_SHARED(index)
+LOCK_SNDBUF(buf)
+LOCK_SNDBUF_SHARED(buf)
+LOCK_SNDBUF2(buf1, buf2)
+LOCK_SNDBUF2_SHARED(buf1, buf2)
+LOCK_SNDBUF2_EXCLUSIVE_SHARED(buf1, buf2)
+LOCK_SNDBUF2_SHARED_EXCLUSIVE(buf1, buf2)
+ACQUIRE_SNDBUF(buf)
+ACQUIRE_SNDBUF_SHARED(buf)
+RELEASE_SNDBUF(buf)
+RELEASE_SNDBUF_SHARED(buf)
+ACQUIRE_BUS_CONTROL(index)
+RELEASE_BUS_CONTROL(index)
 ::
 
 section:: Unary operators
