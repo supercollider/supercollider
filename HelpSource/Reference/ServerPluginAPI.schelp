@@ -115,6 +115,82 @@ ACQUIRE_BUS_CONTROL(index)
 RELEASE_BUS_CONTROL(index)
 ::
 
+section:: RGen
+
+RGen is a pseudorandom number generator API. Most ugen developers are not interested in seeding their own RGens and
+would prefer to draw from a global RGen instance supplied by SuperCollider. This can be retrieved with the code:
+
+code::
+RGen& rgen = *unit->mParent->mRGen;
+::
+
+definitionlist::
+## code::uint32 RGen\::trand()::
+|| Return a uniformly distributed random 32-bit integer.
+
+## code::double RGen\::drand()::
+|| Return a uniformly distributed random double in [0,1).
+
+## code::float RGen\::frand()::
+|| Random float in [0,1).
+
+## code::float RGen\::frand0()::
+|| Random float in [1,2).
+
+## code::float RGen\::frand2()::
+|| Random float in [-1,1).
+
+## code::float RGen\::frand8()::
+|| Random float in [-0.125,0.125).
+
+## code::float RGen\::fcoin()::
+|| Either -1 or +1.
+
+## code::float RGen\::flinrand()::
+|| Linearly distributed random float in [0,1), with a bias towards the 0 end.
+
+## code::float RGen\::fbilinrand()::
+|| Bilinearly distributed random float in (-1,1), with a bias towards 0.
+
+## code::float RGen\::fsum3rand()::
+|| A crude but fast approximation to a Gaussian distribution. Results are always in the range (-1,1). The variance is
+1/6 and the standard deviation is 0.41. footnote:: The formula is code::(rand() + rand() + rand() - 1.5) * 2/3::,
+technically a shifted and stretched order-3 Irwin-Hall distribution. ::
+
+## code::int32 RGen\::irand(int32 scale)::
+|| Random int in [0,scale).
+
+## code::int32 RGen\::irand2(int32 scale)::
+|| Random int in [-scale,+scale].
+
+## code::int32 RGen\::ilinrand(int32 scale)::
+|| Linearly distributed random int in [0,scale), with a bias towards the 0 end.
+
+## code::int32 RGen\::ibilinrand(int32 scale)::
+|| Bilinearly distributed random int in (-scale,scale), with a bias towards the 0.
+
+## code::double RGen\::linrand()::
+|| Linearly distributed random double in [0,1), with a bias towards the 0 end.
+
+## code::double RGen\::bilinrand()::
+|| Bilinearly distributed random double in (-1,1), with a bias towards 0.
+
+## code::double RGen\::exprandrng(double lo, double hi)::
+|| Exponentially distributed random double in [lo,hi).
+
+## code::double RGen\::exprand(double scale)::
+||
+
+## code::double RGen\::biexprand(double scale)::
+||
+
+## code::double RGen\::exprand(double scale)::
+||
+
+## code::double RGen\::sum3rand(double scale)::
+|| Double version of code::RGen\::fsum3rand::.
+::
+
 section:: Unary operators
 
 definitionlist::
