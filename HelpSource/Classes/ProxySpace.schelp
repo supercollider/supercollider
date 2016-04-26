@@ -19,7 +19,7 @@ s.boot;
 
 p = ProxySpace.new;
 p.fadeTime = 2; // fadeTime specifies crossfade
-p[\out].play; // monitor an empty placeholder through hardware ouput
+p[\out].play; // monitor an empty placeholder through hardware output
 // set its source
 p[\out] = { SinOsc.ar([350, 351.3], 0, 0.2) };
 p[\out] = { Pulse.ar([350, 351.3] / 4, 0.4) * 0.2 };

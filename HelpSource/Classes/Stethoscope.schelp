@@ -49,7 +49,7 @@ METHOD:: new
     argument:: bufsize
         The size of the analysis buffer. Default is 4096. See also link::#-bufsize::.
     argument:: zoom
-        Horizontal maginification of the displayed wave. Default is 1. See also link::#-xZoom::.
+        Horizontal magnification of the displayed wave. Default is 1. See also link::#-xZoom::.
     argument:: rate
         \audio or \control. Default is \audio.
     argument:: view
@@ -125,7 +125,7 @@ METHOD:: cycle
 
     The exact scoping period, in signal frames. Reciprocal to what is also known as emphasis::sweep speed:: in analog oscilloscopes. It is dynamically adjustable while the scope is running.
 
-    Data from scoped signals will be accumulated into a buffer until it reaches code::cycle:: amount frames, at which point the buffering will immediatly restart. The view will repeatedly display the entire buffer; it may skip a cycle if the drawing is too slow to keep up with the speed of incoming data, but the cycle boundaries will never shift with respect to signals.
+    Data from scoped signals will be accumulated into a buffer until it reaches code::cycle:: amount frames, at which point the buffering will immediately restart. The view will repeatedly display the entire buffer; it may skip a cycle if the drawing is too slow to keep up with the speed of incoming data, but the cycle boundaries will never shift with respect to signals.
 
     If you are scoping a periodic signal, setting code::cycle:: to match the signal's period will keep the waveform locked in place.
 
@@ -164,7 +164,7 @@ METHOD:: style
     The plotting style:
     list::
     ## 0 = the channels are vertically spaced
-    ## 1 = the channels are overlayed
+    ## 1 = the channels are overlaid
     ## 2 = lissajou; the first two channels are used for 2D plotting (as streams of x and y coordinates).
     ::
 

@@ -13,7 +13,7 @@ CLASSMETHODS::
 INSTANCEMETHODS::
 
 METHOD:: value
-Check to see if a message matches, and evaulate func if it does.
+Check to see if a message matches, and evaluate func if it does.
 
 argument:: num
 The message number (e.g. note number, etc.) of the MIDI message as an link::Classes/Integer::. Note this should be in the range 0-127.

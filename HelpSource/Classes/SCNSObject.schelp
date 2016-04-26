@@ -53,7 +53,7 @@ c.invoke("makeKeyAndOrderFront:", [nil], true);
 
 subsection::Common Conversion Table
 
-SuperCollider will try to convert types when possible, here are the most common types and their translation betweem the two languages.
+SuperCollider will try to convert types when possible, here are the most common types and their translation between the two languages.
 
 table::
 ## strong::SuperCollider Types ->:: || strong::Objective-C Types (when using invoke / SCNSObject.new)::
@@ -167,7 +167,7 @@ a.release; // should be fine
 ::
 
 method::initAction
-Creates a CocoaAction object, a special delegate to handle Target / Action mechanism (See explainations above). strong::initAction:: is a convenience method to add an action to a gui element, mostly for strong::NSControl:: subclasses. Once an action is setted, a special delegate is created on your behalf to wich you can attach a action. You can access this delegate using the strong::nsAction:: accessor method.
+Creates a CocoaAction object, a special delegate to handle Target / Action mechanism (See explanations above). strong::initAction:: is a convenience method to add an action to a gui element, mostly for strong::NSControl:: subclasses. Once an action is set, a special delegate is created on your behalf to which you can attach a action. You can access this delegate using the strong::nsAction:: accessor method.
 
 code::
 (

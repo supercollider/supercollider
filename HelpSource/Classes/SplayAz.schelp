@@ -20,7 +20,7 @@ Each of the inputs is evenly spaced over a cyclic period of
 2.0 in pos with 0.0 equal to channel zero and 2.0/numChans equal
 to channel 1, 4.0/numChans equal to channel 2, etc.
 
-The distance between the input signals in the output range is determned by the spread argument.
+The distance between the input signals in the output range is determined by the spread argument.
 
 argument:: numChans
 Number of output channels of the UGen

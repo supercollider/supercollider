@@ -7,7 +7,7 @@ description::
 
 subsection::Patterns versus Streams
 
-strong::Pattern:: is an abstract class that is the base for the Patterns library. These classes form a rich and concise score language for music. The series of help files entitled link::Tutorials/Streams-Patterns-Events1:: gives a detailed introduction. This attemps a briefer characterization.
+strong::Pattern:: is an abstract class that is the base for the Patterns library. These classes form a rich and concise score language for music. The series of help files entitled link::Tutorials/Streams-Patterns-Events1:: gives a detailed introduction. This attempts a briefer characterization.
 
 A strong::Stream:: is an object that responds to code::next::, code::reset::, and code::embedInStream::. Streams represent sequences of values that are obtained one at a time by with message code::next::. A code::reset:: message will cause the stream to restart (many but not all streams actually repeat themselves.) If a stream runs out of values it returns code::nil:: in response to code::next::. The message code::embedInStream:: allows a stream definition to allow another stream to "take over control" of the stream.
 All objects respond to code::next:: and code::reset::, most by returning themselves in response to next. Thus, the number 7 defines a Stream that produces an infinite sequence of 7's. Most objects respond to code::embedInStream:: with a singleton Stream that returns the object once.
@@ -159,7 +159,7 @@ argument::sampleFormat
 Sample format, default "float".
 
 argument::numChannels
-Number of channels to recorde, default 2.
+Number of channels to record, default 2.
 
 argument::dur
 How long to run the pattern before stopping. If nil (default), the pattern will run until it finishes on its own; then recording stops. Or, use cmd-period to stop the recording. If a number is given, the pattern will run for that many beats and then stop (using link::Classes/Pfindur::), ending the recording as well.

@@ -20,7 +20,7 @@ The input signal.
 
 argument::freq
 
-Cuttoff frequency in Hertz.
+Cutoff frequency in Hertz.
 WARNING: due to the nature of its implementation frequency values close to 0 may cause glitches and/or extremely loud audio artifacts!
 
 argument::rq

@@ -324,7 +324,7 @@ code::
 ::
 
 method::flop
-Invert rows and colums in a two dimensional Collection (turn inside out). See also: link::Classes/Function::.
+Invert rows and columns in a two dimensional Collection (turn inside out). See also: link::Classes/Function::.
 code::
 [[1, 2, 3], [4, 5, 6]].flop;
 [[1, 2, 3], [4, 5, 6], [7, 8]].flop; // shorter array wraps
@@ -352,7 +352,7 @@ argument::func
 A function taking as many arguments as elements in the array.
 
 method::flopTogether
-Invert rows and colums in a an array of dimensional Collections (turn inside out), so that they all match up in size, but remain separated.
+Invert rows and columns in a an array of dimensional Collections (turn inside out), so that they all match up in size, but remain separated.
 code::
 (
 a = flopTogether(

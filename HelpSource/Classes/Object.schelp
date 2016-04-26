@@ -78,7 +78,7 @@ code::
 
 method::isKindOf
 
-Answer a Boolean indicationg whether the receiver is a direct or indirect instance of aClass. Use of this message in code must be questioned, because it often indicates a missed opportunity to exploit object polymorphism.
+Answer a Boolean indicating whether the receiver is a direct or indirect instance of aClass. Use of this message in code must be questioned, because it often indicates a missed opportunity to exploit object polymorphism.
 
 code::
 5.isKindOf(Magnitude);
@@ -201,7 +201,7 @@ non-equality: Answer whether the receiver does not equal anotherObject. The defa
 
 method::fuzzyEqual
 
-Retruns the degree of equality (in the range from 0 to 1) between two objects with regard to a given precision. Objects to compare must support max, substraction and division.
+Returns the degree of equality (in the range from 0 to 1) between two objects with regard to a given precision. Objects to compare must support max, substraction and division.
 
 code::
 5.0.fuzzyEqual(5.0, 0.5); // 1 - full equality
@@ -399,7 +399,7 @@ x.postln;
 
 subsection::Messaging
 
-Instead of directly sending a method to an object, a method may be invoked given a method selector only (a Symbol). The other arguments may be provided by passing them directly, from an environment. If it si not known whether the receiver implements the metod, tryPerform only sends if it does, and superPerform invokes the method of the superclass.
+Instead of directly sending a method to an object, a method may be invoked given a method selector only (a Symbol). The other arguments may be provided by passing them directly, from an environment. If it is not known whether the receiver implements the method, tryPerform only sends if it does, and superPerform invokes the method of the superclass.
 
 
 method::perform
@@ -666,7 +666,7 @@ subsection::Iteration
 
 method::do
 
-Object evaluates the function with itself as an argument, returning the reasult. Different classes interpret this message differently.
+Object evaluates the function with itself as an argument, returning the result. Different classes interpret this message differently.
 discussion::
 code::
 f = { |x, i| [x, i].postln; };
@@ -729,7 +729,7 @@ Does nothing; simply returns the object itself.
 
 subsection::Routine Support
 
-Objects support the basic interface of Stream, just returning itself in respone to the following messages:
+Objects support the basic interface of Stream, just returning itself in response to the following messages:
 next, reset, stop, free, clear, removedFromScheduler, asStream.
 
 method::yield
@@ -808,7 +808,7 @@ Number of message calls
 
 argument:: inval
 
-argument passed to the next messagy
+argument passed to the next message
 
 code::
 Routine { inf.do { |i| i.rand.yield } }.nextN(8)

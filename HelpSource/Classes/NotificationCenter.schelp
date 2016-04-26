@@ -23,7 +23,7 @@ NotificationCenter.register(Server.default, \newAllocators, yourself, {
 });
 ::
 
-The link::Classes/Buffer:: class register a function to clear its info cache whenever a server restarts. The server is emiting changed messages quite often (every 0.4 secs for the status updates), and the Buffer class is only interested in boot/quit events, so this is a more lightweight system for this purpose.
+The link::Classes/Buffer:: class register a function to clear its info cache whenever a server restarts. The server is emitting changed messages quite often (every 0.4 secs for the status updates), and the Buffer class is only interested in boot/quit events, so this is a more lightweight system for this purpose.
 
 ClassMethods::
 
@@ -39,7 +39,7 @@ method::unregister
 Remove the registrations.
 
 method::registerOneShot
-After the notification has been emited and handled, automatically unregister.
+After the notification has been emitted and handled, automatically unregister.
 
 method::registrationExists
 Simply confirms if a registration is already in place.

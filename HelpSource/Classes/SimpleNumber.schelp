@@ -418,7 +418,7 @@ l = [0, 1, 5, 9, 11]; // pentatonic scale
 ::
 
 method:: series
-return an artithmetic series from this over second to last.
+return an arithmetic series from this over second to last.
 discussion::
 This is used in the shortcuts:
 code::
@@ -483,7 +483,7 @@ code::
 ::
 
 method::magnitude
-returns:: abolute value (see link::Classes/Polar::, link::Classes/Complex::)
+returns:: absolute value (see link::Classes/Polar::, link::Classes/Complex::)
 
 method::angle
 returns:: angle of receiver conceived as link::Classes/Polar:: or link::Classes/Complex:: number.
@@ -534,7 +534,7 @@ map the receiver onto a gauss function.
 discussion::
 Uses the formula:
 code::
-a * (exp(squared(this - b) / (-2.0 * squared(c)))) Defalt values: a = 1; b = 0; c = 1
+a * (exp(squared(this - b) / (-2.0 * squared(c)))) Default values: a = 1; b = 0; c = 1
 ::
 Example code
 code::
@@ -848,7 +848,7 @@ subsection:: streams
 method:: storeOn
 stores this on the given stream
 method:: printOn
-printrs this on the given stream
+prints this on the given stream
 
 subsection:: random
 

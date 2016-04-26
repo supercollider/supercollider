@@ -130,7 +130,7 @@ Routine({ loop {
 
 subsection::Iteration
 
-The method link::#-do:: effectively 'plays' a stream by iterating all of its contects.
+The method link::#-do:: effectively 'plays' a stream by iterating all of its contents.
 
 And the following messages create a stream by filtering another stream in some way: link::#-collect::, link::#-reject::, link::#-select::, link::#-dot::, link::#-interlace::, link::#-appendStream::, link::#-embedInStream::, link::#-trace::.
 

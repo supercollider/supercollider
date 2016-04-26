@@ -29,7 +29,7 @@ z = ProxyMonitorGui();
 
 	// switching between proxies: drag-view displays proxy key
 z.proxy = ~otto12345;	// up to 9 letters or so on OSX
-z.proxy = ~test;		// make audio controls available if proy is audio
+z.proxy = ~test;		// make audio controls available if proxy is audio
 z.proxy = nil;
 z.proxy = ~otto; ~otto.kr;	//
 z.proxy = ~test;
