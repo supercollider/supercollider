@@ -42,7 +42,7 @@ METHOD:: value
 		Any object, typically one which makes sense to display as a string, such as a Float.
 
 METHOD:: valueAction
-	Sets link::#-value:: and triggeres link::#-action::.
+	Sets link::#-value:: and triggers link::#-action::.
 
 
 SUBSECTION:: Appearance

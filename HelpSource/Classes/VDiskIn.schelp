@@ -20,7 +20,7 @@ argument:: rate
 controls the rate of playback. Values below 4 are probably fine, but the higher the value, the more disk activity there is, and the more likelihood there will be a problem.
 
 warning::
-the rate does have a practical limit. The following must be true: rate < Buffer's size / ( 2 * s.options.blockSize) e.g with typical default values, this wil be 32768 / (2 * 64) = 256.
+the rate does have a practical limit. The following must be true: rate < Buffer's size / ( 2 * s.options.blockSize) e.g with typical default values, this will be 32768 / (2 * 64) = 256.
 ::
 
 If the rate is too high, the UGen will not execute, posting a warning.
