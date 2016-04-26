@@ -43,51 +43,53 @@ section:: Unary operators
 
 definitionlist::
 ## code::bool sc_isnan(float/double x)::
-|| Is code::x:: NaN?
+|| Checks whether code::x:: is NaN. This is a legacy function, use code::std\::isnan:: instead.
 
 ## code::bool sc_isfinite(float/double x)::
-|| Is code::x:: finite?
+|| Checks whether code::x:: is finite. This is a legacy function, use code::std\::isfinite:: instead.
 
 ## code::int32 sc_grayCode(int32 x)::
 || Convert binary to Gray code.
 ::
 
-The following unary functions are available for both float32 and float64, and are the same as in sclang (minus the "sc_" prefixes):
+The following unary functions are available for both float32 and float64, and are the same as in sclang (minus the "sc_"
+prefixes):
 
-code::
-sc_log2
-sc_log10
-sc_midicps
-sc_cpsmidi
-sc_midiratio
-sc_ratiomidi
-sc_octcps
-sc_cpsoct
-sc_ampdb
-sc_dbamp
-sc_cubed
-sc_sqrt
-sc_hanwindow
-sc_welwindow
-sc_triwindow
-sc_rectwindow
-sc_scurve
-sc_ramp
-sc_sign
-sc_distort
-sc_softclip
-sc_trunc
-sc_ceil
-sc_floor
-sc_reciprocal
-sc_frac
+list::
+## code::sc_midicps::
+## code::sc_cpsmidi::
+## code::sc_midiratio::
+## code::sc_ratiomidi::
+## code::sc_octcps::
+## code::sc_cpsoct::
+## code::sc_ampdb::
+## code::sc_dbamp::
+## code::sc_cubed::
+## code::sc_sqrt::
+## code::sc_hanwindow::
+## code::sc_welwindow::
+## code::sc_triwindow::
+## code::sc_rectwindow::
+## code::sc_scurve::
+## code::sc_ramp::
+## code::sc_sign::
+## code::sc_distort::
+## code::sc_softclip::
+## code::sc_ceil::
+## code::sc_floor::
+## code::sc_reciprocal::
+## code::sc_frac::
+## code::sc_log2:: (legacy -- use code::std\::log2(std\::abs(x))::)
+## code::sc_log10:: (legacy -- use code::std\::log10(std\::abs(x))::)
+## code::sc_trunc:: (legacy -- use code::std\::trunc::)
 ::
 
 The following unary functions are available for both float32 and float64, but have no sclang equivalent:
 
 definitionlist::
 ## code::zapgremlins(x)::
-|| Replaces NaNs, infinities, very large and very small numbers (including denormals) with zero. This is useful in ugen feedback to safeguard from pathological behavior. (Note lack of sc_ prefix.)
+|| Replaces NaNs, infinities, very large and very small numbers (including denormals) with zero. This is useful in ugen
+feedback to safeguard from pathological behavior. (Note lack of sc_ prefix.)
 
 ## code::sc_bitriwindow(x)::
 || Alternative to code::sc_triwindow:: using absolute value.
@@ -117,9 +119,6 @@ definitionlist::
 section:: Binary operators
 
 definitionlist::
-## code::sc_mod(in, hi)::
-|| code::in:: modulo code::hi::.
-
 ## code::sc_wrap(in, lo, hi [, range])::
 ||
 
@@ -128,16 +127,45 @@ definitionlist::
 
 ## code::sc_pow(a, b)::
 || Compute code::pow(a, b)::, retaining the sign of code::a::.
+
+## code::sc_powi(x, unsigned int n)::
+|| Compute code::x^n::, not necessarily retaining the sign of code::x::.
+
+## code::sc_hypotx(x, y)::
+|| Compute code::abs(x) + abs(y) - (min(abs(x), abs(y)) * (sqrt(2) - 1))::, the minimum distance one will have to travel
+from the origin to (x,y) using only orthogonal and diagonal movements.
 ::
 
-The following functions are available for both floats and doubles, and are the same as in sclang (minus the "sc_" prefixes):
+The following functions are the same as in sclang (minus the "sc_" prefixes):
 
-code::
-sc_mod
-sc_round
-sc_roundUp
-sc_trunc
-sc_atan2
+list::
+## code::sc_mod(in, hi):: (floats, doubles, ints)
+## code::sc_round(x, quant):: (floats, doubles, ints)
+## code::sc_roundUp(x, quant):: (floats, doubles, ints)
+## code::sc_trunc(x, quant):: (floats, doubles, ints)
+## code::sc_gcd(a, b):: (ints, longs, floats)
+## code::sc_lcm(a, b):: (ints, longs, floats)
+## code::sc_bitAnd(a, b):: (ints)
+## code::sc_bitOr(a, b):: (ints)
+## code::sc_leftShift(a, b):: (ints)
+## code::sc_rightShift(a, b):: (ints)
+## code::sc_unsignedRightShift(a, b):: (ints)
+## code::sc_thresh(a, b)::
+## code::sc_clip2(a, b)::
+## code::sc_wrap2(a, b)::
+## code::sc_fold2(a, b)::
+## code::sc_excess(a, b)::
+## code::sc_scaleneg(a, b)::
+## code::sc_amclip(a, b)::
+## code::sc_ring1(a, b)::
+## code::sc_ring2(a, b)::
+## code::sc_ring3(a, b)::
+## code::sc_ring4(a, b)::
+## code::sc_difsqr(a, b)::
+## code::sc_sumsqr(a, b)::
+## code::sc_sqrsum(a, b)::
+## code::sc_sqrdif(a, b)::
+## code::sc_atan2(a, b):: (legacy -- use code::std\::atan2::)
 ::
 
 section:: Unroll macros
