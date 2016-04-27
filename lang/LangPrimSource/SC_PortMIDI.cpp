@@ -86,9 +86,6 @@ SC_Lock gPmStreamMutex;
 #define PMSTREAM_TIME_PROC NULL
 #define PMSTREAM_TIME_INFO NULL
 
-/* use zero latency because we want output to be immediate */
-#define LATENCY 0
-
 extern bool compiledOK;
 
 /* timer "interrupt" for processing midi data */
@@ -200,7 +197,7 @@ static void PMProcessMidi(PtTimestamp timestamp, void *userData)
 -------------------------------------------------------------
 */
 static void midiCleanUp();
-static int initMIDI()
+static int initMIDI(int numIn, int numOut)
 {
 	midiCleanUp();
 
@@ -211,31 +208,66 @@ static int initMIDI()
 		return errFailed;
 	}
 
+	/* Here, numIn and numOut are 0, even if the inputs to lang (MIDIClient init) were nil, but according to the documentation, it should be the number of inputs or outputs. 
+	   That matches what I see in MIDIOut.sc -> MIDIClient *init, in which it is setting that to sources.size, and destinations.size, so I guess that the problem is that 
+	   this information is not known at this point, or there is something missing. */
+	numIn = sc_clip(numIn, 1, kMaxMidiPorts);
+	numOut = sc_clip(numOut, 1, kMaxMidiPorts);
+
 	int inIndex = 0;
 	int outIndex = 0;
 
-	for( int i = 0; i < Pm_CountDevices(); ++i ) {
+	for (int i = 0; i < Pm_CountDevices(); ++i) {
 		const PmDeviceInfo* devInfo = Pm_GetDeviceInfo(i);
 		if( devInfo->input )
 		{
 			gNumMIDIInPorts++;
 			gMidiInputIndexToPmDevIndex[inIndex++] = i;
 		}
-		if( devInfo->output )
+
+		/* Ignore the MIDI Mapper. Otherwise, if it is allocated, we get "already allocated" errors */
+		if ((devInfo->output) && (strnicmp(devInfo->name, "Microsoft MIDI Mapper", 50) != 0))
 		{
 			gNumMIDIOutPorts++;
 			gMidiOutputIndexToPmDevIndex[outIndex++] = i;
 		}
+	}	
+
+	if (gNumMIDIInPorts > numIn)
+		gNumMIDIInPorts = numIn;
+
+	for (int i = 0; i < gNumMIDIInPorts; i++) {
+		PmStream* inStream = NULL;
+		int pmdid = gMidiInputIndexToPmDevIndex[i];
+		const PmDeviceInfo* devInfo = Pm_GetDeviceInfo(pmdid);
+		const PmError error = Pm_OpenInput(&gMIDIInStreams[i], pmdid, PMSTREAM_DRIVER_INFO, PMSTREAM_INPUT_BUFFER_SIZE, PMSTREAM_TIME_PROC, PMSTREAM_TIME_INFO);
+
+		if (error) {
+			std::printf("cannot open MIDI input: %s\n", Pm_GetErrorText(error));
+
+			int hostError;
+			if ((hostError = Pm_HasHostError(nullptr))) {
+				char hostErrorString[PM_HOST_ERROR_MSG_LEN];
+				Pm_GetHostErrorText(hostErrorString, PM_HOST_ERROR_MSG_LEN);
+				std::printf("MIDI: Host error %s\n", hostErrorString);
+			}
+
+			return errFailed;
+		}
 	}
+	
+	if (gNumMIDIOutPorts > numOut)
+		gNumMIDIOutPorts = numOut;
 
-	for( int i = 0; i < gNumMIDIOutPorts; i++) {
+	for (int i = 0; i < gNumMIDIOutPorts; i++) {
 		const int pmdid = gMidiOutputIndexToPmDevIndex[i];
-		const PmError error = Pm_OpenOutput(&gMIDIOutStreams[i], pmdid, NULL, 512, NULL, NULL, 0);
+		const PmDeviceInfo* devInfo = Pm_GetDeviceInfo(pmdid);
+		const PmError error = Pm_OpenOutput(&gMIDIOutStreams[i], pmdid, NULL, 512L, NULL, NULL, 0);
 
-		const PmDeviceInfo* devInfo = Pm_GetDeviceInfo(i);
+		std::printf("MIDI: device %d %d %d %s (%s)\n", i, pmdid, &gMIDIOutStreams[i], Pm_GetErrorText(error), devInfo->name);
 
 		if( error ) {
-			std::printf("MIDI: cannot open device %d %d %s\n", i, pmdid, Pm_GetErrorText(error));
+			std::printf("MIDI: cannot open device %d %d %s (%s)\n", i, pmdid, Pm_GetErrorText(error), devInfo->name);
 
 			int hostError;
 			if( (hostError = Pm_HasHostError(nullptr)) ) {
@@ -473,7 +505,7 @@ int prInitMIDI(struct VMGlobals *g, int numArgsPushed)
 	if (err)
 		return errWrongType;
 
-	return initMIDI();
+	return initMIDI(numIn, numOut);
 }
 
 int prDisposeMIDIClient(VMGlobals *g, int numArgsPushed)
@@ -484,7 +516,7 @@ int prDisposeMIDIClient(VMGlobals *g, int numArgsPushed)
 
 int prRestartMIDI(VMGlobals *g, int numArgsPushed)
 {
-	initMIDI();
+	/* Do nothing */
 	return errNone;
 }
 
