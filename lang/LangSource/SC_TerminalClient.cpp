@@ -631,6 +631,7 @@ void SC_TerminalClient::startInput()
 
 void SC_TerminalClient::endInput()
 {
+	mStdIn.cancel();
 	mInputService.stop();
 	postfl("main: waiting for input thread to join...\n");
 	mInputThread.join();
