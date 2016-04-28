@@ -528,12 +528,13 @@ void SC_TerminalClient::startInputRead()
 		else {
 			DWORD bytes_transferred;
 
+			postfl("Going to ReadFile()\n");
 			::ReadFile(GetStdHandle(STD_INPUT_HANDLE),
 					   inputBuffer.data(),
 					   inputBuffer.size(),
 					   &bytes_transferred,
 					   nullptr);
-
+			postfl("Done ReadFile()\n");
 			onInputRead(error, bytes_transferred);
 		}
 	});
@@ -632,8 +633,14 @@ void SC_TerminalClient::startInput()
 
 void SC_TerminalClient::endInput()
 {
+	postfl("endInput()\n");
+#ifdef _WIN32
 	::CancelIoEx(GetStdHandle(STD_INPUT_HANDLE), nullptr);
+#endif
+	postfl("endInput() 2\n");
 	mInputService.stop();
+	postfl("endInput() 3\n");
+	mStdIn.cancel();
 	postfl("main: waiting for input thread to join...\n");
 	mInputThread.join();
 	postfl("main: quitting...\n");
