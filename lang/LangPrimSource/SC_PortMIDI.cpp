@@ -73,6 +73,7 @@ int gNumMIDIInPorts = 0, gNumMIDIOutPorts = 0;
 bool gMIDIInitialized = false;
 
 PmStream* gMIDIInStreams[kMaxMidiPorts];
+bool gMIDIInStreamUsed[kMaxMidiPorts];
 PmStream* gMIDIOutStreams[kMaxMidiPorts];
 
 std::map<int,int> gMidiInputIndexToPmDevIndex;
@@ -236,26 +237,6 @@ static int initMIDI(int numIn, int numOut)
 	if (gNumMIDIInPorts > numIn)
 		gNumMIDIInPorts = numIn;
 
-	for (int i = 0; i < gNumMIDIInPorts; i++) {
-		PmStream* inStream = NULL;
-		int pmdid = gMidiInputIndexToPmDevIndex[i];
-		const PmDeviceInfo* devInfo = Pm_GetDeviceInfo(pmdid);
-		const PmError error = Pm_OpenInput(&gMIDIInStreams[i], pmdid, PMSTREAM_DRIVER_INFO, PMSTREAM_INPUT_BUFFER_SIZE, PMSTREAM_TIME_PROC, PMSTREAM_TIME_INFO);
-
-		if (error) {
-			std::printf("cannot open MIDI input: %s\n", Pm_GetErrorText(error));
-
-			int hostError;
-			if ((hostError = Pm_HasHostError(nullptr))) {
-				char hostErrorString[PM_HOST_ERROR_MSG_LEN];
-				Pm_GetHostErrorText(hostErrorString, PM_HOST_ERROR_MSG_LEN);
-				std::printf("MIDI: Host error %s\n", hostErrorString);
-			}
-
-			return errFailed;
-		}
-	}
-	
 	if (gNumMIDIOutPorts > numOut)
 		gNumMIDIOutPorts = numOut;
 
@@ -284,6 +265,33 @@ static int initMIDI(int numIn, int numOut)
 	gMIDIInitialized = true;
 	return errNone;
 }
+
+
+static int getNumSources()
+{
+	int n = 0;
+	for (int i = 0; i < Pm_CountDevices(); ++i) {
+		const PmDeviceInfo* devInfo = Pm_GetDeviceInfo(i);
+		if (devInfo->input){
+			n++;
+		}
+	}
+	return n;
+}
+
+static int getNumDestinations()
+{
+	int n = 0;
+	for (int i = 0; i < Pm_CountDevices(); ++i) {
+		const PmDeviceInfo* devInfo = Pm_GetDeviceInfo(i);
+		if ((devInfo->output) && (strnicmp(devInfo->name, "Microsoft MIDI Mapper", 50) != 0)){
+			n++;
+		}
+	}
+	return n;
+}
+
+
 /*
 -------------------------------------------------------------
 */
@@ -297,8 +305,10 @@ static void midiCleanUp()
 			Pm_Close(gMIDIOutStreams[i]);
 		}
 		for (int i=0; i<gNumMIDIInPorts; ++i) {
-			Pm_Abort(gMIDIInStreams[i]);
-			Pm_Close(gMIDIInStreams[i]);
+			if (gMIDIInStreamUsed[i]){
+				Pm_Abort(gMIDIInStreams[i]);
+				Pm_Close(gMIDIInStreams[i]);
+			}
 		}
 
 		gNumMIDIOutPorts = 0;
@@ -308,6 +318,12 @@ static void midiCleanUp()
 	// set the stream pointers to NULL
 	memset(gMIDIInStreams,0,kMaxMidiPorts*sizeof(PmStream*));
 	memset(gMIDIOutStreams,0,kMaxMidiPorts*sizeof(PmStream*));
+
+	// Mark the MIDI ins as not used
+	for (int i = 0; i < kMaxMidiPorts; i++){
+		gMIDIInStreamUsed[i] = false;
+	}
+
 
 	// delete the objects that map in/out indices to Pm dev indices
 	gMidiInputIndexToPmDevIndex.clear();
@@ -327,8 +343,8 @@ void midiListEndpoints()
 int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	int numSrc = gNumMIDIInPorts;
-	int numDst = gNumMIDIOutPorts;
+	int numSrc = getNumSources();
+	int numDst = getNumDestinations();
 
 	PyrObject* idarray = newPyrArray(g->gc, 6 * sizeof(PyrObject), 0 , true);
 	SetObject(a, idarray);
@@ -458,6 +474,8 @@ int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 	}
 
 	gMIDIInStreams[uid] = inStream;
+	gMIDIInStreamUsed[uid] = true;
+
 	return errNone;
 }
 /*
@@ -478,14 +496,17 @@ int prDisconnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 	if (err)
 		return err;
 
-	const PmError error = Pm_Close(gMIDIInStreams[uid]);
+	if (gMIDIInStreamUsed[uid]){
+		const PmError error = Pm_Close(gMIDIInStreams[uid]);
 
-	if(error) {
-		std::printf("cannot close MIDI device: %s\n", Pm_GetErrorText(error));
-		return errFailed;
+		if (error) {
+			std::printf("cannot close MIDI device: %s\n", Pm_GetErrorText(error));
+			return errFailed;
+		}
+
+		gMIDIInStreamUsed[uid] = false;
+		gMIDIInStreams[uid] = NULL;
 	}
-
-	gMIDIInStreams[uid] = NULL;
 	return errNone;
 }
 /*
