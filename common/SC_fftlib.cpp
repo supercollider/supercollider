@@ -274,7 +274,6 @@ scfft * scfft_create(size_t fullsize, size_t winsize, SCFFT_WindowFunction winty
 
 	// Buffer is larger than the range of sizes we provide for at startup; we can get ready just-in-time though
 	if (fullsize > largest_fftsize){
-		//printf("calling scfft_ensurewindow\n");
 		scfft_ensurewindow(f->log2nfull, f->log2nwin, wintype);
 	}
 
