@@ -579,7 +579,7 @@ void SC_TerminalClient::inputThreadFn()
 
 	startInputRead();
 
-	boost::asio::io_service::work work(mInputService);
+	mWorkInputService = new boost::asio::io_service::work(mInputService);
 	mInputService.run();
 }
 
@@ -632,6 +632,7 @@ void SC_TerminalClient::startInput()
 void SC_TerminalClient::endInput()
 {
 	mStdIn.cancel();
+	delete mWorkInputService;
 	mInputService.stop();
 	postfl("main: waiting for input thread to join...\n");
 	mInputThread.join();
