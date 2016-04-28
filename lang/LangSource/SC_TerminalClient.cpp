@@ -37,6 +37,7 @@
 # include "SC_Win32Utils.h"
 # include <io.h>
 # include <windows.h>
+# include <ioapiset.h>
 #endif
 
 #ifdef __APPLE__
@@ -631,6 +632,7 @@ void SC_TerminalClient::startInput()
 
 void SC_TerminalClient::endInput()
 {
+	::CancelIoEx(GetStdHandle(STD_INPUT_HANDLE), nullptr);
 	mInputService.stop();
 	postfl("main: waiting for input thread to join...\n");
 	mInputThread.join();
