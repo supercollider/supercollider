@@ -317,7 +317,7 @@ void PartConv_next( PartConv *unit, int inNumSamples )
 				number= unit->m_numamort;
 			}
 
-			starti= unit->m_partitionsdone-1;
+			starti= unit->m_partitionsdone;//-1;
 			stopi= starti+number-1;
 
 			//printf("amort check count %d starti %d stopi %d number %d framesdone %d \n",unit->m_amortcount, starti, stopi, number, unit->m_partitionsdone);
