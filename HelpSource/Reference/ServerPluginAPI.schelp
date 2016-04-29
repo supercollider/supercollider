@@ -11,13 +11,13 @@ definitionlist::
 || Initial rate. Conventionally known in the language as ".ir".
 
 ## code::calc_BufRate::
-|| Control rate. Conventionally known in the language as ".kr". 
+|| Control rate. Conventionally known in the language as ".kr".
 
 ## code::calc_FullRate::
 || Audio rate. Conventionally known in the language as ".ar".
 
 ## code::calc_DemandRate::
-|| Demand rate. 
+|| Demand rate.
 ::
 
 section:: UGen basics
@@ -344,7 +344,7 @@ definitionlist::
 || Same as code::OUT::, but subtracts 1 from the pointer to correct for off-by-one errors when using code::LOOP:: and code::ZXP::.
 
 ## code::ZIN0(index)::
-|| Alias for code::IN0::. 
+|| Alias for code::IN0::.
 
 ## code::ZOUT0(index)::
 || Alias for code::OUT0::.
