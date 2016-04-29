@@ -22,6 +22,8 @@ definitionlist::
 
 section:: UGen basics
 
+These helper macros assume that there is a ugen object called code::unit:: in the local scope.
+
 definitionlist::
 ## code::IN(index)::
 || A single block of audio-rate input as a float* at the given index. Index 0 is the first input to the ugen, index 1 the second input, and so forth.
@@ -318,6 +320,37 @@ list::
 ## code::sc_sqrsum(a, b)::
 ## code::sc_sqrdif(a, b)::
 ## code::sc_atan2(a, b):: (legacy -- use code::std\::atan2::)
+::
+
+section:: Constants
+
+The following constants are doubles:
+
+list::
+## code::pi::
+## code::pi2:: = pi/2
+## code::pi32:: = 3pi/2
+## code::twopi:: = 2pi
+## code::rtwopi:: (1/2pi)
+## code::log001:: = log(0.001)
+## code::log01:: = log(0.01)
+## code::log1:: = log(0.1)
+## code::rlog2:: = 1/log(2)
+## code::sqrt2:: = sqrt(2)
+## code::rsqrt2:: = 1/sqrt(2)
+## code::truncDouble:: = 3 * 2^51 (used to truncate precision)
+::
+
+The following constants are floats:
+
+list::
+## code::pi_f::
+## code::pi2_f::
+## code::pi32_f::
+## code::twopi_f::
+## code::sqrt2_f::
+## code::rsqrt2_f::
+## code::truncFloat:: = 3 * 2^22 (used to truncate precision)
 ::
 
 section:: Unroll macros
