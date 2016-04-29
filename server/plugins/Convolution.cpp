@@ -317,6 +317,7 @@ void Convolution2_Ctor(Convolution2 *unit)
 		if(!unit->m_scfft1 || !unit->m_scfft2 || !unit->m_scfftR){
 			printf( "Could not create scfft.\n" );
 			SETCALC(*ClearUnitOutputs);
+			unit->mDone = true;
 			return;
 		}
 		//calculate fft for kernel straight away

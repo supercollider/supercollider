@@ -29,7 +29,7 @@ Processing target.
 argument::kernel
 
 Buffer index for the fixed kernel, may be modulated in
-combination with the trigger.
+combination with the trigger. It's size must be <= framesize.
 
 
 argument::trigger
