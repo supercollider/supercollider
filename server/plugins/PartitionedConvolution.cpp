@@ -326,7 +326,7 @@ void PartConv_next( PartConv *unit, int inNumSamples )
 			++unit->m_amortcount;
 
 			for (int i=starti; i<=stopi; ++i) {
-				int posnow= (accumpos+(i*fftsize))%fullsize;
+				int posnow= (accumpos+((i-1)*fftsize))%fullsize;
 				float * target= accumbuffer+posnow;
 				int irpos= (i*fftsize);
 				float * ir= irspectrum+irpos;
