@@ -230,7 +230,7 @@ private:
 };
 
 template <typename T>
-void consume( T && object )
+static inline void consume( T && object )
 {
     T sink( std::forward<T> ( object ) ); // move object here (and destroy)
 }
@@ -1092,11 +1092,11 @@ void handle_quit(endpoint_ptr endpoint)
 }
 
 template <bool realtime>
-void handle_notify(ReceivedMessage const & message, endpoint_ptr endpoint)
+void handle_notify(ReceivedMessage const & message, endpoint_ptr const & endpoint)
 {
     int enable = first_arg_as_int(message);
 
-    cmd_dispatcher<realtime>::fire_system_callback( [=]() {
+    cmd_dispatcher<realtime>::fire_system_callback( [=, endpoint=endpoint_ptr(endpoint)]() {
 
         int observer = 0;
 
@@ -1155,14 +1155,14 @@ void handle_dumpOSC(ReceivedMessage const & message)
 }
 
 template <bool realtime>
-void handle_sync(ReceivedMessage const & message, endpoint_ptr endpoint)
+void handle_sync(ReceivedMessage const & message, endpoint_ptr const & endpoint)
 {
     int id = first_arg_as_int(message);
 
     // ping pong: we go through the nrt->rt channel to ensure that earlier messages have been completely dispatched
-    cmd_dispatcher<realtime>::fire_system_callback([=]() {
-        cmd_dispatcher<realtime>::fire_rt_callback([=]() {
-            cmd_dispatcher<realtime>::fire_io_callback([=]() {
+    cmd_dispatcher<realtime>::fire_system_callback([=, endpoint=endpoint_ptr(endpoint)]() {
+        cmd_dispatcher<realtime>::fire_rt_callback([=, endpoint=endpoint_ptr(endpoint)]() {
+            cmd_dispatcher<realtime>::fire_io_callback([=, endpoint=endpoint_ptr(endpoint)]() {
                 char buffer[128];
                 osc::OutboundPacketStream p(buffer, 128);
                 p << osc::BeginMessage("/synced")
@@ -3878,11 +3878,11 @@ template <bool realtime>
 void handle_asynchronous_command( World * world, const char* cmdName, void *cmdData, AsyncStageFn stage2, AsyncStageFn stage3, AsyncStageFn stage4, AsyncFreeFn cleanup,
                                   completion_message && message, endpoint_ptr endpoint)
 {
-    cmd_dispatcher<realtime>::fire_system_callback( [=, message=std::move(message)] () mutable {
+    cmd_dispatcher<realtime>::fire_system_callback( [=, message=std::move(message), endpoint=std::move(endpoint)] () mutable {
         if (stage2)
             (stage2)(world, cmdData);
 
-        cmd_dispatcher<realtime>::fire_rt_callback( [=, message=std::move(message)] () mutable {
+        cmd_dispatcher<realtime>::fire_rt_callback( [=, message=std::move(message), endpoint=std::move(endpoint)] () mutable {
             if (stage3) {
                 bool success = (stage3)(world, cmdData);
                 if (success)
@@ -3890,16 +3890,17 @@ void handle_asynchronous_command( World * world, const char* cmdName, void *cmdD
             }
             consume( std::move( message ) );
 
-            cmd_dispatcher<realtime>::fire_system_callback( [=] {
+            cmd_dispatcher<realtime>::fire_system_callback( [=, endpoint=std::move(endpoint)] {
                 if (stage4)
                     (stage4)(world, cmdData);
 
-                cmd_dispatcher<realtime>::fire_rt_callback( [=] {
+                send_done_message(endpoint, cmdName);
+
+                cmd_dispatcher<realtime>::fire_rt_callback( [=, endpoint=std::move(endpoint)] {
                     if (cleanup)
                         (cleanup)(world, cmdData);
                 });
 
-                send_done_message(endpoint, cmdName);
             });
         });
     });
