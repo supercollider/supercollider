@@ -642,6 +642,10 @@ QC_QPEN_PRIMITIVE( QPen_StringInRect, 5, PyrSlot *r, PyrSlot *a, VMGlobals *g )
   if( NotNil(a+4) ) align = static_cast<Qt::Alignment>( QtCollider::get<int>( a+4 ) );
   else align = Qt::AlignTop | Qt::AlignLeft;
 
+  painter->setRenderHints(QPainter::Antialiasing |
+      QPainter::SmoothPixmapTransform |
+      QPainter::HighQualityAntialiasing);
+
   painter->drawText( rect, align, str );
 
   painter->restore();
