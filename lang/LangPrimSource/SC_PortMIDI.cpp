@@ -92,27 +92,36 @@ extern bool compiledOK;
 /* timer "interrupt" for processing midi data */
 static void PMProcessMidi(PtTimestamp timestamp, void *userData)
 {
-	lock_guard<SC_Lock> mulo(gPmStreamMutex);
+	
 	PmEvent buffer; /* just one message at a time */
 
 	for( int i = 0 ; i < gNumMIDIInPorts; ++i ) {
 		PmStream* midi_in = gMIDIInStreams[i];
 		if( midi_in ) {
-			while(const PmError result = Pm_Poll(midi_in)) {
-				if (result != pmGotData) {
-					std::printf("errrr %s\n", Pm_GetErrorText(result));
-					continue;
-				}
-
+			for (;;){
 				long Tstatus, data1, data2;
-				if (Pm_Read(midi_in, &buffer, 1) == pmBufferOverflow) 
-					continue;
-				// unless there was overflow, we should have a message now 
+				// Only lock the PM mutex while accessing the PortMidi functionality. It is very important to not acquire the lang mutex while holding
+				// the PM mutex to avoid a deadlock, since the laguage may try to acquire the PM mutex for a MIDIOut operation
+				{
+					lock_guard<SC_Lock> mulo(gPmStreamMutex);
+					const PmError result = Pm_Poll(midi_in);
+					if (result == pmNoData){
+						break;
+					}
+					else if (result != pmGotData) {
+						std::printf("errrr %s\n", Pm_GetErrorText(result));
+						continue;
+					}
 
-				Tstatus = Pm_MessageStatus(buffer.message);
-				data1 = Pm_MessageData1(buffer.message);
-				data2 = Pm_MessageData2(buffer.message);
+					if (Pm_Read(midi_in, &buffer, 1) == pmBufferOverflow)
+						continue;
+					// unless there was overflow, we should have a message now 
 
+					Tstatus = Pm_MessageStatus(buffer.message);
+					data1 = Pm_MessageData1(buffer.message);
+					data2 = Pm_MessageData2(buffer.message);
+					// The PM mutex is released here
+				}
 				// +---------------------------------------------+
 				// | Lock the interp. mutex and dispatch message |
 				// +---------------------------------------------+
