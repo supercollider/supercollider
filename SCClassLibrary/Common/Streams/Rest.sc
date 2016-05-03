@@ -33,6 +33,8 @@ Rest {
 			}
 		})
 	}
+	*isRest { ^true }
+	isRest { ^true }
 	value { ^dur }
 	storeOn { |stream| stream << "Rest(" << dur << ")" }
 }
