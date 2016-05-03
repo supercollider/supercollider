@@ -562,27 +562,27 @@ free(pk);
 
 int prSendSysex(VMGlobals *g, int numArgsPushed)
 {	
-	/*
-int err, uid, size;
-PyrInt8Array* packet = g->sp->uob;				
-size = packet->size;
-Byte *data = (Byte *)malloc(size);
+	lock_guard<SC_Lock> mulo(gPmStreamMutex);
+	int err, uid;
+	
+	PyrSlot* args = g->sp - 2;
 
-memcpy(data,packet->b, size);
+	// args[1] contains the uid and args[2] contains the array
+	err = slotIntVal(&args[1], &uid);
+	if (err) return err;
 
-PyrSlot *u = g->sp - 1;
-err = slotIntVal(u, &uid);
-if (err) return err;
+	if (!isKindOfSlot(&args[2], s_int8array->u.classobj))
+		return errWrongType;
 
-MIDIEndpointRef dest;
-MIDIObjectType mtype;
-MIDIObjectFindByUniqueID(uid, (MIDIObjectRef*)&dest, &mtype);
-if (mtype != kMIDIObjectType_Destination) return errFailed;            
-if (!dest) return errFailed;
+	PyrInt8Array *packet = slotRawInt8Array(&args[2]);
 
-sendsysex(dest, size, data);
-return errNone;
-*/
+	if (gMIDIOutStreams[uid]){
+		PmError result = Pm_WriteSysEx(gMIDIOutStreams[uid], 0, packet->b);
+		if (result != pmNoError)
+			return errFailed;
+		else
+			return errNone;
+	}
 	return errFailed;
 }
 /*
