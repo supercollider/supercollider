@@ -596,16 +596,20 @@ Pstutter : FilterPattern {
 	}
 	storeArgs { ^[n,pattern] }
 	embedInStream { arg event;
-		var inevent, nn;
+		var inevent, nn, wasRest, shouldSetRest;
 
 		var stream = pattern.asStream;
 		var nstream = n.asStream;
 
 		while {
+			wasRest = event.isRest;
 			(inevent = stream.next(event)).notNil
 		} {
+			// did *this particular stream.next* change the rest status?
+			shouldSetRest = wasRest.not and: { event.isRest };
 			if((nn = nstream.next(event)).notNil) {
 				nn.abs.do {
+					if(shouldSetRest) { event[\isRest] = true };
 					event = inevent.copy.yield;
 				};
 			} { ^event };
