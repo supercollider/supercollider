@@ -269,20 +269,13 @@ Server {
 
 	var <name, <>addr, <clientID, userSpecifiedClientID = false;
 	var <isLocal, <inProcess, <>sendQuit, <>remoteControlled;
-	var <serverRunning = false, <serverBooting = false, bootNotifyFirst = false;
-	var <>options, <>latency = 0.2, <dumpMode = 0, <notify = true, <notified=false;
-	var <nodeAllocator;
-	var <controlBusAllocator;
-	var <audioBusAllocator;
-	var <bufferAllocator;
-	var <scopeBufferAllocator;
+
+	var <>options, <>latency = 0.2, <dumpMode = 0;
+
+	var <nodeAllocator, <controlBusAllocator, <audioBusAllocator, <bufferAllocator, <scopeBufferAllocator;
+
 	var <syncThread, <syncTasks;
 
-	var <numUGens=0, <numSynths=0, <numGroups=0, <numSynthDefs=0;
-	var <avgCPU, <peakCPU;
-	var <sampleRate, <actualSampleRate;
-
-	var alive = false, booting = false, aliveThread, <>aliveThreadPeriod = 0.7, statusWatcher;
 	var <>tree;
 
 	var <window, <>scopeWindow;
@@ -290,12 +283,11 @@ Server {
 	var recordBuf, <recordNode, <>recHeaderFormat="aiff", <>recSampleFormat="float";
 	var <>recChannels=2, <>recBufSize;
 
-	var <volume;
+	var <volume, <statusWatcher;
 
 	var <pid;
 	var serverInterface;
 
-	var reallyDeadCount = 0;
 
 	*default_ { |server|
 		default = server; // sync with s?
@@ -320,14 +312,14 @@ Server {
 	init { arg argName, argAddr, argOptions, argClientID;
 		name = argName.asSymbol;
 		addr = argAddr;
-		if(argClientID.notNil, { userSpecifiedClientID = true;});
+		if(argClientID.notNil, { userSpecifiedClientID = true });
 		clientID = argClientID ? 0;
 		options = argOptions ? ServerOptions.new;
 		if (addr.isNil, { addr = NetAddr("127.0.0.1", 57110) });
 		inProcess = addr.addr == 0;
 		isLocal = inProcess || { addr.isLocal };
 		remoteControlled = isLocal;
-		serverRunning = false;
+		statusWatcher = ServerStatusWatcher(this);
 		named.put(name, this);
 		set.add(this);
 		this.newAllocators;
@@ -340,6 +332,12 @@ Server {
 		this.sendMsg("/g_new", 1, 0, 0);
 		tree.value(this);
 		ServerTree.run(this);
+	}
+	clientID_ { |val|
+		if(val.notNil and: { clientID != val }) {
+			clientID = val;
+			this.newAllocators;
+		}
 	}
 	newAllocators {
 		this.newNodeAllocators;
@@ -508,50 +506,7 @@ Server {
 		this.listSendMsg(["/d_loadDir", dir, completionMsg]);
 	}
 
-	serverRunning_ { arg val;
-		// var countNotRunning = 0;
-		if(addr.hasBundle) {
-			{ this.changed(\bundling); }.defer;
-		} {
-			// We should not have a hair trigger for ServerQuit and ServerBoot.
-			// One or two unanswered /status messages are a temporary glitch.
-			// So here, require 5 consecutive "not running" calls
-			// before panicking. 5 * 0.7 = 3.5 sec
-			// Aside: If you explicitly shut down the server then newAllocators
-			// and the \newAllocators notification will happen immediately
-			if(val.not) {
-				reallyDeadCount = reallyDeadCount - 1;
-			};
-			if (val != serverRunning or: { reallyDeadCount == 0 }) {
-				if(thisProcess.platform.isSleeping.not) {
-					serverRunning = val;
 
-					if (serverRunning.not) {
-						if(reallyDeadCount <= 0) {
-							ServerQuit.run(this);
-
-							if (serverInterface.notNil) {
-								serverInterface.disconnect;
-								serverInterface = nil;
-							};
-
-							NotificationCenter.notify(this, \didQuit);
-							recordNode = nil;
-							if(this.isLocal.not) {
-								notified = false;
-							};
-						};
-					} {
-						if(reallyDeadCount <= 0) {
-							ServerBoot.run(this);
-						};
-						reallyDeadCount = this.options.pingsBeforeConsideredDead;
-					};
-					{ this.changed(\serverRunning); }.defer;
-				}
-			}
-		};
-	}
 
 	wait { arg responseName;
 		var routine;
@@ -567,37 +522,14 @@ Server {
 		// doWhenBooted prints the normal boot failure message.
 		// if the server fails to boot, the failure error gets posted TWICE.
 		// So, we suppress one of them.
-		if(serverRunning.not) { this.boot(onFailure: true) };
+		if(this.serverRunning.not) { this.boot(onFailure: true) };
 		this.doWhenBooted(onComplete, limit, onFailure);
 	}
 
 	doWhenBooted { arg onComplete, limit=100, onFailure;
-		var mBootNotifyFirst = bootNotifyFirst, postError = true;
-		bootNotifyFirst = false;
-
-		^Routine({
-			while({
-				((serverRunning.not
-				  or: (serverBooting and: mBootNotifyFirst.not))
-				 and: {(limit = limit - 1) > 0})
-				and: { pid.tryPerform(\pidRunning) == true }
-			},{
-				0.2.wait;
-			});
-
-			if(serverRunning.not,{
-				if(onFailure.notNil) {
-					postError = (onFailure.value == false);
-				};
-				if(postError) {
-					"server failed to start".error;
-					"For advice: [http://supercollider.sf.net/wiki/index.php/ERROR:_server_failed_to_start]".postln;
-				};
-				serverBooting = false;
-				this.changed(\serverRunning);
-			}, onComplete);
-		}).play(AppClock);
+		statusWatcher.doWhenBooted(onComplete, limit, onFailure)
 	}
+
 
 	bootSync { arg condition;
 		condition ?? { condition = Condition.new };
@@ -612,7 +544,7 @@ Server {
 
 	ping { arg n=1, wait=0.1, func;
 		var result=0, pingFunc;
-		if(serverRunning.not) { "server not running".postln; ^this };
+		if(statusWatcher.serverRunning.not) { "server not running".postln; ^this };
 		pingFunc = {
 			Routine.run {
 					var t, dt;
@@ -633,30 +565,6 @@ Server {
 		pingFunc.value;
 	}
 
-	addStatusWatcher {
-		if(statusWatcher.isNil) {
-			statusWatcher =
-				OSCFunc({ arg msg;
-					var cmd, one;
-					if(notify){
-						if(notified.not){
-							this.sendNotifyRequest;
-							"Receiving notification messages from server %\n".postf(this.name);
-						}
-					};
-					alive = true;
-					#cmd, one, numUGens, numSynths, numGroups, numSynthDefs,
-						avgCPU, peakCPU, sampleRate, actualSampleRate = msg;
-					{
-						this.serverRunning_(true);
-						this.changed(\counts);
-						nil // no resched
-					}.defer;
-				}, '/status.reply', addr).fix;
-		} {
-			statusWatcher.enable;
-		};
-	}
 
 	cachedBuffersDo { |func| Buffer.cachedBuffersDo(this, func) }
 	cachedBufferAt { |bufnum| ^Buffer.cachedBufferAt(this, bufnum) }
@@ -669,77 +577,91 @@ Server {
 		^Bus(\audio, 0, this.options.numOutputBusChannels, this);
 	}
 
-	startAliveThread { arg delay=0.0;
-		this.addStatusWatcher;
-		^aliveThread ?? {
-			aliveThread = Routine({
-				// this thread polls the server to see if it is alive
-				delay.wait;
-				loop({
-					this.status;
-					aliveThreadPeriod.wait;
-					this.serverRunning = alive;
-					alive = false;
-				});
-			});
-			AppClock.play(aliveThread);
-			aliveThread
-		}
+
+	/* server status */
+
+	numUGens { ^statusWatcher.numUGens }
+	numSynths { ^statusWatcher.numSynths }
+	numGroups { ^statusWatcher.numGroups }
+	numSynthDefs { ^statusWatcher.numSynthDefs }
+	avgCPU { ^statusWatcher.avgCPU }
+	peakCPU { ^statusWatcher.peakCPU }
+	sampleRate { ^statusWatcher.sampleRate }
+	actualSampleRate { ^statusWatcher.actualSampleRate }
+	serverRunning { ^statusWatcher.serverRunning }
+	serverBooting { ^statusWatcher.serverBooting }
+	unresponsive { ^statusWatcher.unresponsive }
+
+	startAliveThread { | delay=0.0 |
+		statusWatcher.startAliveThread(delay)
 	}
 	stopAliveThread {
-		if( aliveThread.notNil, {
-			aliveThread.stop;
-			aliveThread = nil;
-		});
-		if( statusWatcher.notNil, {
-			statusWatcher.free;
-			statusWatcher = nil;
-		});
+		statusWatcher.stopAliveThread
 	}
 	aliveThreadIsRunning {
-		^aliveThread.notNil and: {aliveThread.isPlaying}
+		^statusWatcher.aliveThread.isPlaying
 	}
+
+	aliveThreadPeriod_ { |val|
+		statusWatcher.aliveThreadPeriod_(val)
+	}
+	aliveThreadPeriod { |val|
+		^statusWatcher.aliveThreadPeriod
+	}
+
+
+
+	disconnectSharedMemory {
+		if (serverInterface.notNil) {
+			"server '%' disconnected shared memory interface\n".postf(name);
+			serverInterface.disconnect;
+			serverInterface = nil;
+		}
+	}
+
+
 	*resumeThreads {
-		set.do({ arg server;
-			server.stopAliveThread;
-			server.startAliveThread(server.aliveThreadPeriod);
-		});
+		set.do { |server| server.statusWatcher.resumeThread }
 	}
 
-	boot { arg startAliveThread=true, recover=false, onFailure;
-		if (serverRunning, { "server already running".inform; ^this });
-		if (serverBooting, { "server already booting".inform; ^this });
+	boot { | startAliveThread=true, recover=false, onFailure |
 
-		serverBooting = true;
-		if(startAliveThread, { this.startAliveThread });
+		if (statusWatcher.serverRunning) { "server already running".inform; ^this };
+		if (statusWatcher.serverBooting) { "server already booting".inform; ^this };
+
+		statusWatcher.serverBooting = true;
+
+		if(startAliveThread) { statusWatcher.startAliveThread };
 		if(recover) { this.newNodeAllocators } { this.newAllocators };
-		bootNotifyFirst = true;
-		this.doWhenBooted({
-			serverBooting = false;
+
+		statusWatcher.bootNotifyFirst = true; // unclear what this means.
+		statusWatcher.doWhenBooted({
+			statusWatcher.serverBooting = false;
 			if (recChannels.notNil and: (recChannels != options.numOutputBusChannels)) {
 				"Resetting recChannels to %".format(options.numOutputBusChannels).inform
 			};
 			recChannels = options.numOutputBusChannels;
 
-			if (sendQuit.isNil) {
+			if(sendQuit.isNil) {
 				sendQuit = this.inProcess or: {this.isLocal};
 			};
 
-			if (this.inProcess) {
+			if(this.inProcess) {
 				serverInterface = ServerShmInterface(thisProcess.pid);
 			} {
-				if (isLocal) {
+				if(isLocal) {
 					serverInterface = ServerShmInterface(addr.port);
 				}
 			};
 			if(dumpMode != 0) { this.sendMsg(\dumpOSC, dumpMode) };
 			this.initTree;
 		}, onFailure: onFailure ? false);
-		if (remoteControlled.not, {
+
+		if(remoteControlled.not) {
 			"You will have to manually boot remote server.".inform;
-		},{
+		} {
 			this.bootServerApp;
-		});
+		}
 	}
 
 	bootServerApp {
@@ -749,10 +671,7 @@ Server {
 			this.bootInProcess;
 			pid = thisProcess.pid;
 		} {
-			if (serverInterface.notNil) {
-				serverInterface.disconnect;
-				serverInterface = nil;
-			};
+			this.disconnectSharedMemory;
 
 			pid = (program ++ options.asOptionsString(addr.port)).unixCmd;
 			if( options.protocol == \tcp ){
@@ -781,7 +700,7 @@ Server {
 
 	reboot { arg func; // func is evaluated when server is off
 		if (isLocal.not) { "can't reboot a remote server".inform; ^this };
-		if(serverRunning) {
+		if(statusWatcher.serverRunning) {
 			Routine.run {
 				this.quit;
 				this.wait(\done);
@@ -799,44 +718,16 @@ Server {
 		addr.sendStatusMsg
 	}
 
-	notify_ { |flag = true|
-		notify = flag;
-		if(flag){
-			if(serverRunning){
-				this.sendNotifyRequest(true);
-				notified = true;
-				"Receiving notification messages from server %\n".postf(this.name);
-			}
-		}{
-			this.sendNotifyRequest(false);
-			notified = false;
-			"Switched off notification messages from server %\n".postf(this.name);
-		}
+	notify {
+		^statusWatcher.notify
+	}
+	notify_ { |flag|
+		statusWatcher.notify_(flag)
+	}
+	notified {
+		^statusWatcher.notified
 	}
 
-	sendNotifyRequest { arg flag=true;
-		var doneOSCFunc, failOSCFunc;
-		notified = flag;
-		if(userSpecifiedClientID.not , {
-			doneOSCFunc = OSCFunc({|msg|
-				if(flag && { msg[2] != clientID }, {
-					if(msg[2].notNil, {
-						clientID = msg[2];
-						this.newAllocators;
-					})
-				});
-				failOSCFunc.free;
-			}, '/done', addr, argTemplate:['/notify', nil]).oneShot;
-			failOSCFunc = OSCFunc({|msg|
-				if(msg[3].notNil && { msg[3] != clientID }, {
-					clientID = msg[3];
-					this.newAllocators;
-				});
-				doneOSCFunc.free;
-			}, '/fail', addr, argTemplate:['/notify', nil, nil]).oneShot;
-		});
-		addr.sendMsg("/notify", flag.binaryValue);
-	}
 
 	dumpOSC { arg code=1;
 		/*
@@ -850,45 +741,24 @@ Server {
 		this.changed(\dumpOSC, code);
 	}
 
-	quit {
-		var	serverReallyQuitWatcher, serverReallyQuit = false;
-		statusWatcher !? {
-			statusWatcher.disable;
-			if(notified) {
-				serverReallyQuitWatcher = OSCFunc({ |msg|
-					if(msg[1] == '/quit') {
-						if (statusWatcher.notNil) {
-							statusWatcher.enable;
-						};
-						serverReallyQuit = true;
-						serverReallyQuitWatcher.free;
-					};
-				}, '/done', addr);
-				// don't accumulate quit-watchers if /done doesn't come back
-				AppClock.sched(3.0, {
-					if(serverReallyQuit.not) {
-						"Server % failed to quit after 3.0 seconds.".format(this.name).warn;
-						serverReallyQuitWatcher.free;
-					};
-				});
-			};
-		};
+	quit { |watchShutDown = true|
+
 		addr.sendMsg("/quit");
-		if( options.protocol == \tcp ){ fork{ 0.1.wait; addr.disconnect } };
-		this.stopAliveThread;
+
+		statusWatcher.quit(watchShutDown);
+
+		if( options.protocol == \tcp ){ fork{ 0.1.wait; addr.disconnect } }; // sure? can we receive the above reply?
+
 		if (inProcess, {
 			this.quitInProcess;
 			"quit done\n".inform;
 		},{
 			"/quit sent\n".inform;
 		});
-		alive = false;
-		notified = false;
+
 		pid = nil;
-		serverBooting = false;
 		sendQuit = nil;
-		reallyDeadCount = 0;  // force serverRunning_ to act on the quit NOW
-		this.serverRunning = false;
+
 		if(scopeWindow.notNil) { scopeWindow.quit };
 		if(volume.isPlaying) {
 			volume.free
@@ -897,10 +767,10 @@ Server {
 		this.newAllocators;
 	}
 
-	*quitAll {
+	*quitAll { |watchShutDown = true|
 		set.do({ arg server;
 			if (server.sendQuit === true) {
-				server.quit
+				server.quit(watchShutDown)
 			};
 		})
 	}
@@ -912,7 +782,7 @@ Server {
 
 		// this brutally kills them all off
 		thisProcess.platform.killAll(this.program.basename);
-		this.quitAll;
+		this.quitAll(false);
 	}
 	freeAll {
 		this.sendMsg("/g_freeAll", 0);
@@ -1007,14 +877,14 @@ Server {
 
 	// recording output
 	record { |path|
-		if(recordBuf.isNil){
+		if(recordBuf.isNil) {
 			this.prepareForRecord(path);
 			Routine({
 				this.sync;
 				this.record;
 			}).play;
-		}{
-			if(recordNode.isNil){
+		} {
+			if(this.isRecording.not) {
 				recordNode = Synth.tail(RootNode(this), "server-record",
 						[\bufnum, recordBuf.bufnum]);
 				CmdPeriod.doOnce {
@@ -1026,6 +896,10 @@ Server {
 			};
 			"Recording: %\n".postf(recordBuf.path);
 		};
+	}
+
+	isRecording {
+		^recordNode.isPlaying
 	}
 
 	pauseRecording {
@@ -1058,7 +932,7 @@ Server {
 				path = thisProcess.platform.recordingsDir +/+ "SC_" ++ Date.localtime.stamp ++ "." ++ recHeaderFormat;
 			};
 		};
-		recordBuf = Buffer.alloc(this, recBufSize ?? { sampleRate.nextPowerOfTwo }, recChannels,
+		recordBuf = Buffer.alloc(this, recBufSize ?? { this.sampleRate.nextPowerOfTwo }, recChannels,
 			{arg buf; buf.writeMsg(path, recHeaderFormat, recSampleFormat, 0, 0, true);},
 			this.options.numBuffers + 1); // prevent buffer conflicts by using reserved bufnum
 		recordBuf.path = path;
