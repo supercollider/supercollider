@@ -10,3 +10,6 @@
 [submodule "external_libraries/portaudio"]
 	path = external_libraries/portaudio
 	url = https://github.com/bagong/portaudio
+[submodule "editors/scvim"]
+	path = editors/scvim
+	url = https://github.com/supercollider/scvim.git

@@ -1,5 +1,0 @@
-2011-05-35
-   Updated README to reflect new cmake install system, see the README for more
-   information.  The installation process is quite simple now.
-   scvim now works quite well on osx, uses Terminal.app instead of xterm.
-   The help generation is now done in SC, removed dependence on unrtf and unhtml.
