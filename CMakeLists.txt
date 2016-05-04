@@ -110,7 +110,7 @@ elseif(UNIX)
 endif()
 
 if(WIN32)
-    add_definitions(-DWIN32_LEAN_AND_MEAN -DNOMINMAX -D_WIN32_WINNT=0x0601)
+    add_definitions(-DWIN32_LEAN_AND_MEAN -DNOMINMAX -D_WIN32_WINNT=0x0600)
 
     # correctly link the static Boost Thread library:
     add_definitions(-DBOOST_THREAD_USE_LIB)
