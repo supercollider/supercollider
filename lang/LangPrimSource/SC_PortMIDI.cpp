@@ -48,6 +48,7 @@ added prRestartMIDI
 #include "SC_Lock.h"
 #include <map>
 #include <cstring>
+#include <vector>
 
 using std::memset;
 
@@ -72,6 +73,11 @@ const int kMaxMidiPorts = 16;
 int gNumMIDIInPorts = 0, gNumMIDIOutPorts = 0;
 bool gMIDIInitialized = false;
 
+static std::vector<uint8_t> gSysexData;
+static bool gSysexFlag = false;
+static uint8_t gRunningStatus = 0;
+
+
 PmStream* gMIDIInStreams[kMaxMidiPorts];
 bool gMIDIInStreamUsed[kMaxMidiPorts];
 PmStream* gMIDIOutStreams[kMaxMidiPorts];
@@ -88,6 +94,125 @@ SC_Lock gPmStreamMutex;
 #define PMSTREAM_TIME_INFO NULL
 
 extern bool compiledOK;
+
+
+
+static void sysexBegin() {
+	gRunningStatus = 0; // clear running status
+	gSysexData.clear();
+	gSysexFlag = true;
+}
+
+static void scCallSysexAction(PyrSymbol* action) {
+	VMGlobals *g = gMainVMGlobals;
+	uint8_t *pSysexData = &gSysexData[0]; // Convert to array access
+	PyrInt8Array* sysexArray = newPyrInt8Array(g->gc, gSysexData.size(), 0, true);
+	sysexArray->size = gSysexData.size();
+	memcpy(sysexArray->b, pSysexData, gSysexData.size());	
+	++g->sp; SetObject(g->sp, (PyrObject*)sysexArray);			// chan argument unneeded as there
+	runInterpreter(g, action, 3);			// special sysex action in the lang
+}
+
+static void sysexEnd() {
+	gSysexFlag = false;
+	scCallSysexAction(s_midiSysexAction);
+}
+
+static void sysexEndInvalid() {
+	gSysexFlag = false;
+	scCallSysexAction(s_midiInvalidSysexAction);
+}
+
+
+
+static int midiProcessPartialSystemPacket(uint32_t msg)
+{
+	int index, data;
+	VMGlobals *g = gMainVMGlobals;
+	// to iterate over the contents of the message byte by byte
+	uint8_t *p = reinterpret_cast<uint8_t *>(&msg);
+
+	int i = 0;
+	while (i < 4){
+		switch (p[i]){
+			/* SysEx start */
+			case 0xF0:
+				if (gSysexFlag) {
+					sysexEndInvalid();
+				}
+				sysexBegin(); // new sysex in
+				gSysexData.push_back(p[i]); // add SOX
+				i++;
+				break;
+
+
+			/* SysEx end */
+			case 0xF7:
+				gSysexData.push_back(p[i]); // add EOX
+				if (gSysexFlag)
+					sysexEnd(); // if last_uid != 0 rebuild the VM.
+				else
+					sysexEndInvalid(); // invalid 1 byte with only EOX can happen
+				return 0;
+
+			/* MIDI clock. Can only be received as the first byte */
+			case 0xF1:
+				index = p[i + 1] >> 4;
+				data = p[i + 1] & 0xf;
+				if (index % 2) { data = data << 4; }
+				SetInt(g->sp, index);		 						// chan unneeded
+				++g->sp; SetInt(g->sp, data);						// special smpte action in the lang
+				runInterpreter(g, s_midiSMPTEAction, 4);
+				return 0;
+
+			/* Song pointer. Can only be received as the first byte */
+			case 0xF2:
+				++g->sp; SetInt(g->sp, (p[i + 2] << 7) | p[i + 1]);
+				runInterpreter(g, s_midiSysrtAction, 4);
+				return 0;
+
+			/* Song select. Can only be received as the first byte */
+			case 0xF3:
+				++g->sp; SetInt(g->sp, p[i + 1]);
+				runInterpreter(g, s_midiSysrtAction, 4);
+				return 0;
+
+			/* Realtime messages. Can be anywhere within a message */
+			case 0xF6:
+			case 0xF8:
+			case 0xF9:
+			case 0xFA:
+			case 0xFB:
+			case 0xFC:
+			case 0xFE:
+				gRunningStatus = 0; // clear running status
+				++g->sp; SetInt(g->sp, (p[i] >> 4) & 0xF);
+				++g->sp; SetInt(g->sp, 0);
+				runInterpreter(g, s_midiSysrtAction, 4);
+				i++;
+				break;
+
+			default: // This should be data
+				if (p[i] & 0x80){ // if it a command byte, it is an error
+					gSysexData.push_back(p[i]); // add it as an abort message
+					sysexEndInvalid(); // flush invalid
+					return 0;
+				}
+				else if (gSysexFlag){
+					gSysexData.push_back(p[i]); // add Byte
+					i++;
+				}
+				else{ // garbage - handle in case - discard it
+					i++;
+					break;
+				}
+		}
+	}
+
+	return 0;
+}
+
+
 
 /* timer "interrupt" for processing midi data */
 static void PMProcessMidi(PtTimestamp timestamp, void *userData)
@@ -121,8 +246,6 @@ static void PMProcessMidi(PtTimestamp timestamp, void *userData)
 				// unless there was overflow, we should have a message now 
 
 				Tstatus = Pm_MessageStatus(buffer.message);
-				data1 = Pm_MessageData1(buffer.message);
-				data2 = Pm_MessageData2(buffer.message);
 				// The PM mutex is released here
 			}
 			// +---------------------------------------------+
@@ -137,66 +260,75 @@ static void PMProcessMidi(PtTimestamp timestamp, void *userData)
 
 				g->canCallOS = false; // cannot call the OS
 
-				++g->sp; SetObject(g->sp, s_midiin->u.classobj); // Set the class MIDIIn
-				//set arguments: 
+				// Do not put the data in the stack again if we are in the middle of processing a System Message, 
+				if (!gSysexFlag){
+					++g->sp; SetObject(g->sp, s_midiin->u.classobj); // Set the class MIDIIn
+					++g->sp; SetInt(g->sp, i); //src					
+				}
 
-				++g->sp; SetInt(g->sp, i); //src
-				// ++g->sp;  SetInt(g->sp, status); //status
-				++g->sp;  SetInt(g->sp, chan); //chan
+				if(status & 0x80) // set the running status for voice messages
+					gRunningStatus = ((status >> 4) == 0xF) ? 0 : Tstatus; // keep also additional info
 
-				//if(status & 0x80) // set the running status for voice messages
-				//gRunningStatus = ((status >> 4) == 0xF) ? 0 : pkt->data[i]; // keep also additional info
+			L:
 				switch (status)
 				{
 				case 0x80: //noteOff
-					++g->sp; SetInt(g->sp, data1);
-					++g->sp; SetInt(g->sp, data2);
+					++g->sp; SetInt(g->sp, chan); //chan
+					++g->sp; SetInt(g->sp, Pm_MessageData1(buffer.message));
+					++g->sp; SetInt(g->sp, Pm_MessageData2(buffer.message));
 					runInterpreter(g, s_midiNoteOffAction, 5);
 					break;
 				case 0x90: //noteOn 
-					++g->sp; SetInt(g->sp, data1);
-					++g->sp; SetInt(g->sp, data2);
+					++g->sp; SetInt(g->sp, chan); //chan
+					++g->sp; SetInt(g->sp, Pm_MessageData1(buffer.message));
+					++g->sp; SetInt(g->sp, Pm_MessageData2(buffer.message));
 					// 						runInterpreter(g, data2 ? s_midiNoteOnAction : s_midiNoteOffAction, 5);
 					runInterpreter(g, s_midiNoteOnAction, 5);
 					break;
 				case 0xA0: //polytouch
-					++g->sp; SetInt(g->sp, data1);
-					++g->sp; SetInt(g->sp, data2);
+					++g->sp; SetInt(g->sp, chan); //chan
+					++g->sp; SetInt(g->sp, Pm_MessageData1(buffer.message));
+					++g->sp; SetInt(g->sp, Pm_MessageData2(buffer.message));
 					runInterpreter(g, s_midiPolyTouchAction, 5);
 					break;
 				case 0xB0: //control
-					++g->sp; SetInt(g->sp, data1);
-					++g->sp; SetInt(g->sp, data2);
+					++g->sp; SetInt(g->sp, chan); //chan
+					++g->sp; SetInt(g->sp, Pm_MessageData1(buffer.message));
+					++g->sp; SetInt(g->sp, Pm_MessageData2(buffer.message));
 					runInterpreter(g, s_midiControlAction, 5);
 					break;
 				case 0xC0: //program
-					++g->sp; SetInt(g->sp, data1);
+					++g->sp; SetInt(g->sp, chan); //chan
+					++g->sp; SetInt(g->sp, Pm_MessageData1(buffer.message));
 					runInterpreter(g, s_midiProgramAction, 4);
 					break;
 				case 0xD0: //touch
-					++g->sp; SetInt(g->sp, data1);
+					++g->sp; SetInt(g->sp, chan); //chan
+					++g->sp; SetInt(g->sp, Pm_MessageData1(buffer.message));
 					runInterpreter(g, s_midiTouchAction, 4);
 					break;
 				case 0xE0: //bend	
-					++g->sp; SetInt(g->sp, (data2 << 7) | data1);
+					++g->sp; SetInt(g->sp, chan); //chan
+					++g->sp; SetInt(g->sp, (Pm_MessageData2(buffer.message) << 7) | Pm_MessageData1(buffer.message));
 					runInterpreter(g, s_midiBendAction, 4);
 					break;
-					/*case 0xF0 :
+				case 0xF0:
 						// only the first Pm_Event will carry the 0xF0 byte
-						// sysex message will be terminated by the EOX status byte 0xF7
-						midiProcessSystemPacket(data1, data2, chan);
-						break;
-						default :	// data byte => continuing sysex message
-						if(gRunningStatus && !gSysexFlag) { // handle running status
+						// we pass the messages to the processing function, which will take care of assembling the,					
+					midiProcessPartialSystemPacket(buffer.message);
+					break;
+				
+				default :	// data byte => continuing sysex message ir running status
+					if(gRunningStatus && !gSysexFlag) { // handle running status
 						status = gRunningStatus & 0xF0; // accept running status only inside a packet beginning
 						chan = gRunningStatus & 0x0F;	// with a valid status byte
 						SetInt(g->sp, chan);
-						--i;
-						//goto L; // parse again with running status set // mv - get next byte
-						}
-						chan = 0;
-						i += midiProcessSystemPacket(pkt, chan); // process sysex packet
-						break; */
+						goto L; // parse again with running status set // mv - get next byte
+					}
+					if (gSysexFlag){
+						midiProcessPartialSystemPacket(buffer.message); // process sysex packet
+					}
+					break; 
 				}
 				g->canCallOS = false;
 			}
