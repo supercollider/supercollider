@@ -33,19 +33,26 @@ before_script:
 
  - export QT_PREFIX=$HOME/qt/gcc_64
  - export QT_PLUGIN_PATH=$QT_PREFIX/plugins
+ - export COMMIT_NAME=$TRAVIS_COMMIT
  - ifmac cmake -DCMAKE_PREFIX_PATH=`brew --prefix qt55` -DSC_QT=1 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 .. --debug-output
  - iflin cmake -DSC_EL=no -DCMAKE_INSTALL_PREFIX:PATH=$PWD/Install -DCMAKE_BUILD_TYPE=Release .. --debug-output
 # some paths
  - ifmac export SCLANG=$TRAVIS_BUILD_DIR/BUILD/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
  - iflin export SCLANG=$TRAVIS_BUILD_DIR/BUILD/Install/bin/sclang
+# prep for testing 
+ - sudo pip install git+https://github.com/scztt/qpm.git@qpm-unit
+ - qpm quark checkout CommonTests CommonTestsGUI --location $HOME/Quarks
+ - cp ../travis_test_run_proto.json ./travis_test_run.json
 
 script:
+# build
  - sudo make install
+# test
  - $TRAVIS_BUILD_DIR/testsuite/sclang/launch_test.py $SCLANG
-
- - export COMMIT_NAME=$TRAVIS_COMMIT
+ - qpm test.run -l ./travis_test_run.json --path $SCLANG --include $HOME/Quarks
+# package
  - ifmac mkdir -p $HOME/artifacts
- - (ifmac cd Install; ifmac zip -r $HOME/artifacts/SC-$COMMIT_NAME.zip SuperCollider)
+ - (ifmac cd Install; ifmac zip -q -r $HOME/artifacts/SC-$COMMIT_NAME.zip SuperCollider)
 
 before_deploy:
  # required for github releases
