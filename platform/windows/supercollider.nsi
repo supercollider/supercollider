@@ -126,6 +126,9 @@ Section "Uninstall"
 
   DeleteRegKey HKCR ".schelp"
   DeleteRegKey HKCR "${BUNDLE_NAME}.HelpFile"
+  
+  ;Remove path information
+  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\App Paths\scide.exe"
 
   ;Try to remove StartMenu item
   SetShellVarContext all
