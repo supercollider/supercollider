@@ -22,6 +22,7 @@
 #define SCIDE_WIDGETS_UTIL_VOLUME_WIDGET_INCLUDED
 
 #include <QWidget>
+
 class QLabel;
 class QSlider;
 
@@ -31,25 +32,27 @@ class VolumeWidget : public QWidget
 {
     Q_OBJECT
 public:
-    VolumeWidget( QWidget * parent = 0 );
-    float volume() const { return mVolume; }
-    float setVolume( float volume );
-    void setRange( float min, float max );
+    explicit VolumeWidget( QWidget * parent = 0 );
+
+public slots:
+    void setVolumeRange( float min, float max );
+    void setVolume( float volume );
+
 signals:
-    void volumeChanged( float volumet );
+    void volumeChangeRequested( float volume );
+
 private slots:
     void onVolumeSliderAction();
+
 private:
-    void updateVolumeLabel( float volume );
     int volumeToSlider( float volume );
     float volumeFromSlider( int slider );
     bool eventFilter( QObject *, QEvent * );
 
     QLabel *mVolumeLabel;
     QSlider *mVolumeSlider;
-    float mVolume;
-    float mVolumeMin;
-    float mVolumeMax;
+
+    float mVolumeMin = -10000, mVolumeMax = 10000;
 };
 
 } // namespace ScIDE
