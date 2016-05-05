@@ -182,9 +182,7 @@ void ScProcess::stopLanguage (void)
         return;
     }
 
-    evaluateCode("0.exit", true);
-    closeWriteChannel();
-    
+    evaluateCode("0.exit", true);    
     mCompiled = false;
     mTerminationRequested   = true;
     mTerminationRequestTime = QDateTime::currentDateTimeUtc();
@@ -196,6 +194,7 @@ void ScProcess::stopLanguage (void)
         if (!reallyFinished)
             emit statusMessage(tr("Failed to stop interpreter!"));
     }
+    closeWriteChannel();
     mTerminationRequested = false;
 }
 
