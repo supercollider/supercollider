@@ -43,6 +43,10 @@ void ScIpcChannel::bail() {
   mIpcHandler = nullptr;
 }
 
+void ScIpcChannel::setSocket(QTcpSocket *socket){
+  mSocket = socket;
+}
+
 void ScIpcChannel::log(const QString &message) {
   if (mIpcHandler != nullptr)
     mIpcHandler->onIpcLog(QString("%1 - IPC - %2\n").arg(mTag, message));
