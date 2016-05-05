@@ -631,12 +631,12 @@ void SC_TerminalClient::startInput()
 
 void SC_TerminalClient::endInput()
 {
+	mInputService.stop();
+	mStdIn.cancel();
 #ifdef _WIN32
 	// Note this breaks Windows XP compatibility, since this function is only defined in Vista and later 
 	::CancelIoEx(GetStdHandle(STD_INPUT_HANDLE), nullptr);
 #endif
-	mInputService.stop();
-	mStdIn.cancel();
 	postfl("main: waiting for input thread to join...\n");
 	mInputThread.join();
 	postfl("main: quitting...\n");
