@@ -186,7 +186,7 @@ static int midiProcessPartialSystemPacket(uint32_t msg)
 			case 0xFC:
 			case 0xFE:
 				gRunningStatus = 0; // clear running status
-				++g->sp; SetInt(g->sp, (p[i] >> 4) & 0xF);
+				++g->sp; SetInt(g->sp, p[i] & 0xF);
 				++g->sp; SetInt(g->sp, 0);
 				runInterpreter(g, s_midiSysrtAction, 4);
 				i++;
