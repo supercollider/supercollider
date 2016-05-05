@@ -192,7 +192,7 @@ void ScProcess::stopLanguage (void)
     mTerminationRequested   = true;
     mTerminationRequestTime = QDateTime::currentDateTimeUtc();
 
-    bool finished = waitForFinished(1000);
+    bool finished = waitForFinished(3000);
     if ( !finished && (state() != QProcess::NotRunning) ) {
     terminate();
         bool reallyFinished = waitForFinished(200);
