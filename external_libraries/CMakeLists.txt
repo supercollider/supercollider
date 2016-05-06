@@ -69,9 +69,7 @@ endif()
 add_library(tlsf STATIC "TLSF-2.4.6/src/tlsf.c")
 target_compile_definitions( tlsf PRIVATE TLSF_STATISTIC=1 )
 target_include_directories( tlsf INTERFACE TLSF-2.4.6/src )
-if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-	target_compile_options(tlsf PRIVATE -fPIC)
-endif()
+set_property(TARGET tlsf PROPERTY POSITION_INDEPENDENT_CODE TRUE)
 
 if(LTO)
 	set_property(TARGET oscpack tlsf
