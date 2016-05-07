@@ -102,7 +102,6 @@ if(NOT YAMLCPP_FOUND)
   endif()
 
 endif()
-endif()
 
 
 set_property( TARGET oscpack tlsf PROPERTY FOLDER 3rdparty )
