@@ -9,6 +9,8 @@ At time of writing, I'm compiling just the server `scsynth`, so I've deactivated
 This branch `bela_hackery` contains that plus other modifications to get the SC source code master branch building.
 The main addition in this branch is a **Xenomai/BeagleRT audio driver for scsynth**, to use Bela's ultra-low-latency audio thread *instead* of jack/portaudio.
 
+> *NOTE:* If you have a prototype Bela board (from 2015) you'll need to [get a fresh SD card image](https://code.soundsoftware.ac.uk/projects/beaglert/wiki) since the Bela API changed a little.
+
 All of the commands here are to be executed *on the Bela device itself*. Normally you would SSH to it from a computer connected by USB, in order to do the following stuff.
 
 Preparation
