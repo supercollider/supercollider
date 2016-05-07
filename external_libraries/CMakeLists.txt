@@ -119,9 +119,7 @@ if (HID_HIDRAW)
 endif()
 set( EXAMPLE_TEST OFF )
 set( EXAMPLE_OSC OFF )
-if(FALSE) # HACK -- currently just compiling the server
 add_subdirectory(hidapi)
-endif()
 
 if(WIN32)
   add_library(portmidi portmidi/pm_common/pminternal.h
