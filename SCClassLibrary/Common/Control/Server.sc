@@ -9,7 +9,7 @@ ServerOptions {
 	var <>maxNodes=1024;
 	var <>maxSynthDefs=1024;
 	var <>protocol = \udp;
-	var <>blockSize = 64;
+	var <>blockSize = 16;
 	var <>hardwareBufferSize = nil;
 
 	var <>memSize = 8192;
