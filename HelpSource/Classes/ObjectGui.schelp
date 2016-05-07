@@ -10,7 +10,7 @@ Each class specifies its Gui class via the guiClass method.
 
 The default guiClass for an Object is ObjectGui.  So if a class does not implement guiClass at all, then at least there is a default ObjectGui that will display the name.
 
-Many subclasses overide the guiClass method to specify a different class, one that subclasses ObjectGui.
+Many subclasses override the guiClass method to specify a different class, one that subclasses ObjectGui.
 
 It is the simplest display, it is just the object asString.
 
@@ -63,7 +63,7 @@ argument:: changed
 The model.  Within your gui class the model is already in the instance variable 'model'.
 
 argument:: changer
-Depends on the conventions of how .changed was called.  If an object called someModel.changed(this) then it is supplying itself as the changer and will be passed through here.  Sometimes a flag is used: someModel.changed('points') and the gui may know of and particpate in that convention.  Sometimes no changer is passed in.
+Depends on the conventions of how .changed was called.  If an object called someModel.changed(this) then it is supplying itself as the changer and will be passed through here.  Sometimes a flag is used: someModel.changed('points') and the gui may know of and participate in that convention.  Sometimes no changer is passed in.
 
 
 METHOD:: gui
@@ -119,7 +119,7 @@ Each ObjectGui subclass may implement a default background color.
 returns:: a color
 
 METHOD:: writeName
-ObjectGui by default makes a nameplate with the name of the model.  Implement this in subclasses if a different name style or no nameplate is desired.  Note: this may change in the near future.  So many classes overide this to shut off the name.
+ObjectGui by default makes a nameplate with the name of the model.  Implement this in subclasses if a different name style or no nameplate is desired.  Note: this may change in the near future.  So many classes override this to shut off the name.
 
 argument:: layout
 The layout to place the nameplate on.  Probably the same as is being passed to guiBody

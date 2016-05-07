@@ -63,7 +63,7 @@
 					this.quit;
 				});
 			};
-			booter.setProperty(\value,serverRunning.binaryValue);
+			booter.setProperty(\value, this.serverRunning.binaryValue);
 
 			killer = gui.button.new(w, Rect(0,0, 20, 18));
 			killer.states = [["K"]];
@@ -76,7 +76,7 @@
 		active.string = this.name.asString;
 		active.align = \center;
 		active.font = Font.sansSerif( 12 ).boldVariant;
-		if(serverRunning,running,stopped);
+		if(this.serverRunning, running, stopped);
 
 		makeDefault = gui.button.new(w, Rect(0,0, 54, 18));
 		makeDefault.font = font;
@@ -109,8 +109,8 @@
 				{char === $n } { this.queryAllNodes(false) }
 				{char === $N } { this.queryAllNodes(true) }
 				{char === $l } { this.tryPerform(\meter) }
-				{char === $p}  { if(serverRunning) { this.plotTree } }
-				{char === $ }  { if(serverRunning.not) { this.boot } }
+				{char === $p}  { if(this.serverRunning) { this.plotTree } }
+				{char === $ }  { if(this.serverRunning.not) { this.boot } }
 				{char === $s } { if( (this.isLocal and: (GUI.id == \qt)) or: ( this.inProcess ))
 					                 {this.scope(options.numOutputBusChannels)}
 					                 {warn("Scope not supported")}
@@ -171,7 +171,7 @@
 			};
 			stopDump = {
 				this.dumpOSC(0);
-				if(serverRunning) { this.startAliveThread };
+				if(this.serverRunning) { this.startAliveThread };
 				dumping = false;
 				w.name = label;
 				CmdPeriod.remove(blockAliveThread);
@@ -215,7 +215,7 @@
 			makeDefault.value = (Server.default == this).binaryValue;
 		};
 
-		if(serverRunning,running,stopped);
+		if(this.serverRunning, running, stopped);
 
 		w.view.decorator.nextLine;
 
@@ -270,13 +270,13 @@
 					["M", nil, faintRed]
 					])
 				.action_({arg me;
-					this.serverRunning.if({
+					if(this.serverRunning) {
 						muteActions[me.value].value;
-						}, {
+					} {
 						"The server must be booted to mute it".warn;
 						me.value_(0);
-						})
-					});
+					}
+				});
 
 			volumeNum = gui.numberBox.new(w, Rect(0, 0, 28, 18))
 				.font_(font)
@@ -331,14 +331,14 @@
 		w.front;
 
 		ctlr = SimpleController(this)
-			.put(\serverRunning, {	if(serverRunning,running,stopped) })
+			.put(\serverRunning, {	if(this.serverRunning, running, stopped) })
 			.put(\counts,{
-				countsViews.at(0).string = avgCPU.round(0.1);
-				countsViews.at(1).string = peakCPU.round(0.1);
-				countsViews.at(2).string = numUGens;
-				countsViews.at(3).string = numSynths;
-				countsViews.at(4).string = numGroups;
-				countsViews.at(5).string = numSynthDefs;
+				countsViews.at(0).string = statusWatcher.avgCPU.round(0.1);
+				countsViews.at(1).string = statusWatcher.peakCPU.round(0.1);
+				countsViews.at(2).string = statusWatcher.numUGens;
+				countsViews.at(3).string = statusWatcher.numSynths;
+				countsViews.at(4).string = statusWatcher.numGroups;
+				countsViews.at(5).string = statusWatcher.numSynthDefs;
 			})
 			.put(\bundling, bundling)
 			.put(\default, showDefault);

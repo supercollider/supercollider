@@ -115,10 +115,6 @@ inline const Parent *parent_from_member(const Member *member, const Member Paren
 }  //namespace intrusive {
 }  //namespace boost {
 
-#ifdef BOOST_INTRUSIVE_MSVC_ABI_PTR_TO_MEMBER
-#undef BOOST_INTRUSIVE_MSVC_ABI_PTR_TO_MEMBER
-#endif
-
 #include <boost/intrusive/detail/config_end.hpp>
 
 #endif   //#ifndef BOOST_INTRUSIVE_DETAIL_PARENT_FROM_MEMBER_HPP

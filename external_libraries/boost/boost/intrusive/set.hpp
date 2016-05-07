@@ -328,7 +328,7 @@ class set_impl
    //! @copydoc ::boost::intrusive::rbtree::equal_range(const KeyType&,KeyTypeKeyCompare)
    template<class KeyType, class KeyTypeKeyCompare>
    std::pair<iterator,iterator> equal_range(const KeyType& key, KeyTypeKeyCompare comp)
-   {  return this->tree_type::lower_bound_range(key, comp); }
+   {  return this->tree_type::equal_range(key, comp); }
 
    //! @copydoc ::boost::intrusive::rbtree::equal_range(const key_type &)const
    std::pair<const_iterator, const_iterator>
@@ -339,7 +339,7 @@ class set_impl
    template<class KeyType, class KeyTypeKeyCompare>
    std::pair<const_iterator, const_iterator>
       equal_range(const KeyType& key, KeyTypeKeyCompare comp) const
-   {  return this->tree_type::lower_bound_range(key, comp); }
+   {  return this->tree_type::equal_range(key, comp); }
 
    #ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
 

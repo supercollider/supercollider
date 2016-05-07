@@ -105,7 +105,7 @@ f.attributes.keysDo({|attr|
 ::
 
 METHOD::values
-returns all the values you setted for each attributes. If a value is not explicitely setted for an attribute, it will be set to default when applied to the SCImage.
+returns all the values you set for each attributes. If a value is not explicitly set for an attribute, it will be set to default when applied to the SCImage.
 code::
 (
 	f = SCImageFilter.new(\CIStarShineGenerator);
@@ -139,7 +139,7 @@ EXAMPLES::
 
 code::
 // thor's fast experimentation request
-// example with the filters array wich allows you to use filters without applying them in place
+// example with the filters array which allows you to use filters without applying them in place
 // convenient for RT use / test or whatever...
 
 // here scale down the image otherwise with the zoomblur it will take your computer
@@ -200,7 +200,7 @@ w = b.plot(freeOnClose:true, background:Color.clear); // set to clear color to s
 // *** Kinda very simple real time FX using the .filters property of SCImage **
 // SCImage.filters provides a way to set up filters to apply in the rendering chain
 // this can be useful to modify in RT some filter properties
-// but they won't be processed inplace, they will be computed at each rendering
+// but they won't be processed in place, they will be computed at each rendering
 // here the filter calc is performed at each rendering call
 // so this is convenient but not optimal
 // SCPhotoshop :)

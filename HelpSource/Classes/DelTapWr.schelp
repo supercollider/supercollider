@@ -22,7 +22,7 @@ code::
 // a Buffer for the UGens to use, one second at the current sample rate
 b = Buffer.alloc(s, s.sampleRate * 1, 1);
 
-// write a signal into a delay, tap it at mutiple times
+// write a signal into a delay, tap it at multiple times
 SynthDef(\test, {arg buffer;
 	var src, tapPhase, tap1, tap2, tap3;
 	src = WhiteNoise.ar(0.2) * Decay.kr(Dust.kr(3), 0.2);
@@ -44,7 +44,7 @@ code::
 // a Buffer for the UGens to use
 b = Buffer.alloc(s, 44100, 1);
 
-// write a signal into a delay, tap it at mutiple times
+// write a signal into a delay, tap it at multiple times
 SynthDef(\write, {arg buffer, cout;
 	var src, tapPhase, tap1, tap2, tap3;
 	src = WhiteNoise.ar(0.2) * Decay.kr(Dust.kr(3), 0.7);

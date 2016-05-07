@@ -34,7 +34,7 @@ METHOD:: value
 		A Float.
 
 METHOD:: valueAction
-	Sets link::#-value:: and triggeres link::#-action::.
+	Sets link::#-value:: and triggers link::#-action::.
 
 METHOD:: increment
 	Increments the value by link::#-step:: multiplied by 'factor'.

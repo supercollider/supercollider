@@ -5,7 +5,7 @@ related:: Classes/Slider, Classes/Slider2D
 
 DESCRIPTION::
 
-Knob displays a value from 0.0 to 1.0 in rotary fashon, and allows to control it with either circular or linear mouse motion.
+Knob displays a value from 0.0 to 1.0 in rotary fashion, and allows to control it with either circular or linear mouse motion.
 
 It also displays the deviation of the value from either 0.0 or 0.5, which you can choose using link::#-centered::.
 
@@ -36,7 +36,7 @@ METHOD:: value
 
 METHOD:: valueAction
 
-    Sets the value and triggeres link::#-action::.
+    Sets the value and triggers link::#-action::.
 
 METHOD:: increment
     Increments the value by link::#-keystep:: multiplied by the argument.

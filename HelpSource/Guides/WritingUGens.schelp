@@ -26,7 +26,7 @@ can be used to simplify the process.
 
 definitionList::
 ## DefineSimpleUnit || Define a `simple' unit generator
-## DefineDtorUnit || Define a unit generator with a descructor
+## DefineDtorUnit || Define a unit generator with a destructor
 ## DefineSimpleCantAliasUnit || Define a `simple' unit generator, whose input and output buffers cannot alias
 ## DefineDtorCantAliasUnit || Define a unit generator with a destructor, whose input and output buffers cannot alias
 ::

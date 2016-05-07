@@ -12,7 +12,7 @@ ClassMethods::
 method::new
 
 argument::list
-a list consisting of the stream which gives input signals to determine state transitions, and then dictionary entries, one for each state, mapping the destinattion state and yield streams to those input signals.
+a list consisting of the stream which gives input signals to determine state transitions, and then dictionary entries, one for each state, mapping the destination state and yield streams to those input signals.
 
 argument::startState
 an integer index for the state to start with.

@@ -6,8 +6,8 @@ A palette (see link::Classes/QPalette::) consists of colors assigned to various 
 
 table::
 ## strong::Group::      || strong::Meaning::
-## 'active'             || Containes colors used by views on the active window.
-## 'inactive'           || Containes colors used by views on inactive windows.
-## 'disabled'           || Containes colors used by disabled views.
+## 'active'             || Contains colors used by views on the active window.
+## 'inactive'           || Contains colors used by views on inactive windows.
+## 'disabled'           || Contains colors used by disabled views.
 ## 'normal'             || A synonym for 'active'.
 ::

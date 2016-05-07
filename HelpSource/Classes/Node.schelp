@@ -184,7 +184,7 @@ discussion::
 If this Node is a Group this will release all Nodes within the Group.
 code::
 x = { arg gate=1; BrownNoise.ar(0.5) * EnvGen.kr(Env.cutoff(1), gate, doneAction:2) }.play;
-x.release(5); // overide the Env's specified 1 second release time
+x.release(5); // override the Env's specified 1 second release time
 ::
 
 method:: query

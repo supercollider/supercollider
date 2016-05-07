@@ -13,7 +13,7 @@ f = File("Cmds.osc","w");
 
 // start a sine oscillator at 0.2 seconds.
 c = [ 0.2, [\s_new, \NRTsine, 1001, 0, 0]].asRawOSC;
-f.write(c.size); // each bundle is preceeded by a 32 bit size.
+f.write(c.size); // each bundle is preceded by a 32 bit size.
 f.write(c); // write the bundle data.
 
 // stop sine oscillator at 3.0 seconds.

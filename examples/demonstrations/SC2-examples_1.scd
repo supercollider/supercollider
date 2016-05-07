@@ -1,5 +1,5 @@
 //////////////////////////////////////////////////////////////////////////
- 
+
 (
 // analog bubbles
 {
@@ -11,9 +11,9 @@
 
 (
 // LFO modulation of Pulse waves and resonant filters
-play({ 
+play({
 	CombL.ar(
-		RLPF.ar(LFPulse.ar(FSinOsc.kr(0.05,0,80,160),0,0.4,0.05), 
+		RLPF.ar(LFPulse.ar(FSinOsc.kr(0.05,0,80,160),0,0.4,0.05),
 		   FSinOsc.kr([0.6,0.7],0,3600,4000), 0.2),
 		0.3, [0.2,0.25], 2)
 }))
@@ -23,7 +23,7 @@ play({
 (
 // moto rev
 {
-	RLPF.ar(LFPulse.ar(SinOsc.kr(0.2, 0, 10, 21), 0.1), 100, 0.1).clip2(0.4) 
+	RLPF.ar(LFPulse.ar(SinOsc.kr(0.2, 0, 10, 21), 0.1), 100, 0.1).clip2(0.4)
 }.play)
 
 //////////////////////////////////////////////////////////////////////////
@@ -62,11 +62,11 @@ play({
 				0,
 				max(0, 			// clip negative amplitudes to zero
 					LFNoise1.kr(
-						6 + [4.0.rand2, 4.0.rand2],	// amplitude rate 
+						6 + [4.0.rand2, 4.0.rand2],	// amplitude rate
 						0.02, 					// amplitude scale
 						offset					// amplitude offset
 					)
-				), 
+				),
 				z
 		)
 	});
@@ -88,10 +88,10 @@ play({
 				f * (i+1), 		// freq of partial
 				0,
 				Decay2.kr(
-					Dust.kr(	
+					Dust.kr(
 						trig,		// trigger rate
 						0.02		// trigger amplitude
-					), 
+					),
 					0.005, 	// grain attack time
 					0.5.rand	// grain decay time
 				),
@@ -151,14 +151,14 @@ p = 8;	// number of partials per instrument
 		Pulse.ar(
 			max( SinOsc.kr(4, 0, 1, 80),
 				Decay.ar(LFPulse.ar(0.1, 0, 0.05, Impulse.ar(8, 0, 500)), 2)
-			), 
-			LFNoise1.kr(0.157, 0.4, 0.5), 
+			),
+			LFNoise1.kr(0.157, 0.4, 0.5),
 			0.04),
 		LFNoise1.kr(0.2, 2000, 2400),
 		0.2);
 	y = z * 0.6;
 	z +  [
-			  CombL.ar(y, 0.06, LFNoise1.kr(0.3.rand, 0.025, 0.035), 1) 
+			  CombL.ar(y, 0.06, LFNoise1.kr(0.3.rand, 0.025, 0.035), 1)
 			+ CombL.ar(y, 0.06, LFNoise1.kr(0.3.rand, 0.025, 0.035), 1)
 		,
 			  CombL.ar(y, 0.06, LFNoise1.kr(0.3.rand, 0.025, 0.035), 1)
@@ -178,14 +178,14 @@ play({
 		Mix.arFill(n, {
 			Pan2.ar(
 				SinOsc.ar(
-					SinOsc.kr(0.1.rand + 0.02, 2pi.rand, 600.rand, 1000 + 300.rand2), 
-					0, 
+					SinOsc.kr(0.1.rand + 0.02, 2pi.rand, 600.rand, 1000 + 300.rand2),
+					0,
 					LFNoise2.ar(100 + 20.0.rand2, 0.1)
 				),
 				1.0.rand2
 			)
-		}) 
-		+ LFNoise2.ar(LFNoise2.kr([0.4,0.4], 90, 620), LFNoise2.kr([0.3,0.3], 0.15, 0.18)), 
+		})
+		+ LFNoise2.ar(LFNoise2.kr([0.4,0.4], 90, 620), LFNoise2.kr([0.3,0.3], 0.15, 0.18)),
 		0.3, 0.3, 3)
 }))
 
@@ -219,9 +219,9 @@ n = 6;	// number of keys playing
 play({
 	Mix.ar(Array.fill(n, {	// mix an array of notes
 		var delayTime, pitch, detune, strike, hammerEnv, hammer;
-	
+
 		// calculate delay based on a random note
-		pitch = (36 + 54.rand); 
+		pitch = (36 + 54.rand);
 		strike = Impulse.ar(0.1+0.4.rand, 2pi.rand, 0.1); // random period for each key
 		hammerEnv = Decay2.ar(strike, 0.008, 0.04); // excitation envelope
 		Pan2.ar(
@@ -255,16 +255,16 @@ a = 4; // number of allpass delays
 play({
 		// sine percolation sound :
 	s = Mix.ar(Array.fill(d, { Resonz.ar(Dust.ar(2/d, 50), 200 + 3000.0.rand, 0.003)}) );
-	
+
 		// reverb predelay time :
 	z = DelayN.ar(s, 0.048);
-	
+
 		// 7 length modulated comb delays in parallel :
-	y = Mix.ar(CombL.ar(z, 0.1, LFNoise1.kr(Array.fill(c,{0.1.rand}), 0.04, 0.05), 15)); 
-	
+	y = Mix.ar(CombL.ar(z, 0.1, LFNoise1.kr(Array.fill(c,{0.1.rand}), 0.04, 0.05), 15));
+
 		// chain of 4 allpass delays on each of two channels (8 total) :
 	a.do({ y = AllpassN.ar(y, 0.050, [0.050.rand,0.050.rand], 1) });
-	
+
 		// add original sound to reverb and play it :
 	s+(0.2*y)
 }))
@@ -277,16 +277,16 @@ var a, c, d, s, z, y;
 play({
 		// pink noise percussion sound :
 	s = Decay.ar(Dust.ar(0.6, 0.2), 0.15, PinkNoise.ar);
-	
+
 		// reverb predelay time :
 	z = DelayN.ar(s, 0.048);
-	
+
 		// 6 modulated comb delays in parallel :
-	y = Mix.ar(CombL.ar(z, 0.1, LFNoise1.kr(Array.fill(6,{0.1.rand}), 0.04, 0.05), 15)); 
-	
+	y = Mix.ar(CombL.ar(z, 0.1, LFNoise1.kr(Array.fill(6,{0.1.rand}), 0.04, 0.05), 15));
+
 		// chain of 4 allpass delays on each of two channels (8 total) :
 	4.do({ y = AllpassN.ar(y, 0.050, [0.050.rand,0.050.rand], 1) });
-	
+
 		// add original sound to reverb and play it :
 	s+y
 }))
@@ -307,12 +307,12 @@ play({
 	freq = Latch.kr(WhiteNoise.kr(centerFreq * 0.5, centerFreq), clock);
 	panPos = Latch.kr(WhiteNoise.kr, clock);
 	patch = CombN.ar(
-			Pan2.ar( 
+			Pan2.ar(
 				SinOsc.ar(
-					freq, 
-					0, 
+					freq,
+					0,
 					Decay2.kr(clock, 0.1 * clockTime, 0.9 * clockTime)
-				), 
+				),
 				panPos
 			),
 			0.3, 0.3, 2
@@ -360,21 +360,21 @@ play({
 	var amp, density, dmul, dadd, signal;
 	amp = 0.07;
 	density = MouseX.kr(0.01,1); // mouse determines density of excitation
-	
+
 	// calculate multiply and add for excitation probability
 	dmul = density.reciprocal * 0.5 * amp;
 	dadd = dmul.neg + amp;
-	
+
 	signal = Mix.ar(	// mix an array of 4 instruments
 		Array.fill(4, {
 			var excitation, freq;
-			
+
 			excitation = PinkNoise.ar(
 				// if amplitude is below zero it is clipped
 				// density determines the probability of being above zero
-				max(0, LFNoise1.kr(8, dmul, dadd)) 
+				max(0, LFNoise1.kr(8, dmul, dadd))
 			);
-			
+
 			freq = Lag.kr(			// lag the pitch so it glissandos between pitches
 				LFNoise0.kr(				// use low freq step noise as a pitch control
 					[1, 0.5, 0.25].choose, 	// choose a frequency of pitch change
@@ -383,13 +383,13 @@ play({
 				).round(1), 		// round to nearest semitone
 				0.2				// gliss time
 			).midicps;			// convert to hertz
-			
+
 			Pan2.ar(	// pan each intrument
 				CombL.ar(excitation, 0.02, freq.reciprocal, 3), // comb delay simulates string
 				1.0.rand2		// random pan position
 			);
 	}));
-	
+
 	// add some reverb via allpass delays
 	5.do({ signal = AllpassN.ar(signal, 0.05, [0.05.rand,0.05.rand], 1) });
 	LeakDC.ar( signal, 0.995);		// delays build up a lot of DC, so leak it out here.
@@ -528,8 +528,8 @@ var root, scale;
 (
 {
 	var x, r, f;
-	x = Mix.fill(4, { 
-		LFSaw.ar((LFPulse.kr(0.06,0,0.5,2,34 + {0.1.rand2}.dup)).midicps, 0, 0.01) 
+	x = Mix.fill(4, {
+		LFSaw.ar((LFPulse.kr(0.06,0,0.5,2,34 + {0.1.rand2}.dup)).midicps, 0, 0.01)
 	});
 	r = MouseY.kr(0.1,0.7);
 	f = LinExp.kr(SinOsc.kr(0.07),-1,1,300,5000);
@@ -542,11 +542,11 @@ var root, scale;
 {
 Pan2.ar(
 	SinOsc.ar(rrand(24,108).midicps, 2pi.rand,
-		 
+
 		Mix.ar(SinOsc.ar(exprand(0.3,8) * [rrand(0.7,1.3),1], [2pi.rand,2pi.rand], 0.1)).max(0)
 		* Mix.ar(SinOsc.ar(exprand(6,24) * [rrand(0.7,1.3),1], [2pi.rand,2pi.rand], 0.1)).abs
 	), 1.0.rand2);
-	
+
 }.play;
 )
 
@@ -555,10 +555,10 @@ Pan2.ar(
 {
 		Pan2.ar(
 	HPZ1.ar(LFTri.ar(rrand(24,128).midicps, 2pi.rand,
-		 
+
 		Mix.ar(SinOsc.ar(exprand(0.3,8) * [rrand(0.7,1.3),1], [2pi.rand,2pi.rand], 0.04)).max(0)
 		* Mix.ar(SinOsc.ar(exprand(6,24) * [rrand(0.7,1.3),1], [2pi.rand,2pi.rand])).abs
-	)), 1.0.rand2); 
+	)), 1.0.rand2);
 }.play;
 )
 
@@ -567,14 +567,14 @@ Pan2.ar(
 
 		x = Pan2.ar(
 		LPZ2.ar(LFPulse.ar(80 * rrand(1,32), 2pi.rand, 0.1,
-			 
+
 			Mix.ar(SinOsc.ar(exprand(0.3,8) * [rrand(0.7,1.3),1], [2pi.rand,2pi.rand], 0.04)).max(0)
 			* Mix.ar(SinOsc.ar(exprand(6,24) * [rrand(0.7,1.3),1], [2pi.rand,2pi.rand])).abs
-		
-		)), 1.0.rand2); 
+
+		)), 1.0.rand2);
 		2.do({ x = AllpassN.ar(x, 0.05, [0.05.rand,0.05.rand], 3.0.rand, 2); });
 		x
-	
+
 }.play
 )
 
@@ -583,14 +583,14 @@ Pan2.ar(
 {
 		x = Pan2.ar(
 		LPZ2.ar(LFPulse.ar(80 * (1 + 32.linrand), 2pi.rand, 0.1,
-			 
+
 			Mix.ar(SinOsc.ar(0.125 * [2**rrand(0,6),2**rrand(0,6)], [2pi.rand,2pi.rand], 0.04)).max(0)
 			* Mix.ar(SinOsc.ar(4 * [rrand(1,6),rrand(1,6)], [2pi.rand,2pi.rand])).abs
-		
-		)), 1.0.rand2); 
+
+		)), 1.0.rand2);
 		2.do({ x = AllpassN.ar(x, 0.05, [0.05.rand,0.05.rand], 4.0.rand, 2); });
 		x
-	
+
 	}.play;
 )
 
@@ -599,10 +599,10 @@ Pan2.ar(
 
 		Pan2.ar(
 	BPZ2.ar(LFPulse.ar(120 * 100.rand, 2pi.rand, 0.5,
-		 
+
 		Mix.ar(SinOsc.ar(exprand(0.3,8) * [rrand(0.7,1.3),1], [2pi.rand,2pi.rand], 0.04)).max(0)
 		* Mix.ar(SinOsc.ar(exprand(6,24) * [rrand(0.7,1.3),1], [2pi.rand,2pi.rand])).abs
-	)), 1.0.rand2); 
+	)), 1.0.rand2);
 }.play
 )
 
@@ -611,10 +611,10 @@ Pan2.ar(
 
 		Pan2.ar(
 	Resonz.ar(LFPulse.ar(exprand(50,600), 2pi.rand, 0.5,
-		 
+
 		Mix.ar(SinOsc.ar(exprand(0.3,8) * [rrand(0.7,1.3),1], [2pi.rand,2pi.rand], 0.1)).max(0)
 		* Mix.ar(SinOsc.ar(exprand(6,24) * [rrand(0.7,1.3),1], [2pi.rand,2pi.rand])).abs
-	), exprand(100,2000), 0.2), 1.0.rand2); 
+	), exprand(100,2000), 0.2), 1.0.rand2);
 }.play
 )
 
@@ -623,10 +623,10 @@ Pan2.ar(
 
 		Pan2.ar(
 	RLPF.ar(LFPulse.ar(exprand(50,600), 2pi.rand, 0.5,
-		 
+
 		Mix.ar(SinOsc.ar(exprand(0.3,8) * [rrand(0.7,1.3),1], [2pi.rand,2pi.rand], 0.1)).max(0)
 		* Mix.ar(SinOsc.ar(exprand(6,24) * [rrand(0.7,1.3),1], [2pi.rand,2pi.rand])).abs
-	), exprand(100,2000), 0.2), 1.0.rand2); 
+	), exprand(100,2000), 0.2), 1.0.rand2);
 }.play
 )
 
@@ -637,10 +637,10 @@ Pan2.ar(
 
 		Pan2.ar(
 		RLPF.ar(LFPulse.ar(exprand(50,600), 2pi.rand, 0.5,
-			 
+
 			Mix.ar(SinOsc.ar(exprand(0.3,8) * [rrand(0.7,1.3),1], [2pi.rand,2pi.rand], 0.1)).max(0)
 			* Mix.ar(SinOsc.ar(exprand(6,24) * [rrand(0.7,1.3),1], [2pi.rand,2pi.rand])).abs
-		), exprand(100,2000), 0.2), 1.0.rand2); 
+		), exprand(100,2000), 0.2), 1.0.rand2);
 }.play;
 )
 
@@ -650,9 +650,9 @@ Pan2.ar(
 (
 {
 		var freq, x;
-		freq = LFPulse.kr(20.0.rand, 0, 1.0.rand, 
+		freq = LFPulse.kr(20.0.rand, 0, 1.0.rand,
 			LFPulse.kr(4.0.rand, 0, 1.0.rand, 8000.rand, 2000.rand));
-		freq = freq + LFPulse.kr(20.0.rand, 0, 1.0.rand, 
+		freq = freq + LFPulse.kr(20.0.rand, 0, 1.0.rand,
 			LFPulse.kr(4.0.rand, 0, 1.0.rand, 8000.rand, 2000.rand));
 		x = LFPulse.ar(freq+[0.5,0.5].rand2, 0, 0.5, 0.15, -0.05);
 		AllpassN.ar(x, 0.05, [0.05,0.05].rand, 0.3);
@@ -680,8 +680,8 @@ Pan2.ar(
 	var exc, amp;
 	amp = LFPulse.kr(4,0,0.1,0.002);
 	exc = LPZ1.ar(GrayNoise.ar([amp,amp]));
-	Klank.ar(`[FloatArray.fill(4, { rrand(80.0,400.0) }), 
-			nil, 
+	Klank.ar(`[FloatArray.fill(4, { rrand(80.0,400.0) }),
+			nil,
 			FloatArray[1, 1, 1, 1]], exc);
 }.play;
 )
@@ -691,8 +691,8 @@ Pan2.ar(
 	var exc, amp;
 	amp = LFPulse.kr(8,0,0.1,0.002);
 	exc = LPZ1.ar(GrayNoise.ar([amp,amp]));
-	Klank.ar(`[FloatArray.fill(4, { rrand(80.0,400.0) }), 
-			nil, 
+	Klank.ar(`[FloatArray.fill(4, { rrand(80.0,400.0) }),
+			nil,
 			FloatArray[1, 1, 1, 1]], exc).abs;
 }.play;
 )

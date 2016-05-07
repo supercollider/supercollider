@@ -24,17 +24,7 @@
 
 #include <cstddef>
 
-#if defined(__clang__) && defined(_LIBCPP_VERSION)
-   #define BOOST_MOVE_CLANG_INLINE_STD_NS
-   #pragma GCC diagnostic push
-   #pragma GCC diagnostic ignored "-Wc++11-extensions"
-   #define BOOST_MOVE_STD_NS_BEG _LIBCPP_BEGIN_NAMESPACE_STD
-   #define BOOST_MOVE_STD_NS_END _LIBCPP_END_NAMESPACE_STD
-#else
-   #define BOOST_MOVE_STD_NS_BEG namespace std{
-   #define BOOST_MOVE_STD_NS_END }
-#endif
-
+#include <boost/move/detail/std_ns_begin.hpp>
 BOOST_MOVE_STD_NS_BEG
 
 struct input_iterator_tag;
@@ -44,11 +34,7 @@ struct random_access_iterator_tag;
 struct output_iterator_tag;
 
 BOOST_MOVE_STD_NS_END
-
-#ifdef BOOST_MOVE_CLANG_INLINE_STD_NS
-   #pragma GCC diagnostic pop
-   #undef BOOST_MOVE_CLANG_INLINE_STD_NS
-#endif   //BOOST_MOVE_CLANG_INLINE_STD_NS
+#include <boost/move/detail/std_ns_end.hpp>
 
 namespace boost{  namespace movelib{
 

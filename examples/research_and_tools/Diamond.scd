@@ -5,20 +5,20 @@ Diamond by James McCartney
 
 
 
-Partch "otonalities" (i.e. a set of ratios with the same denominator 
+Partch "otonalities" (i.e. a set of ratios with the same denominator
 and changing numerator, i.e. overtone series) run horizontally.
 
-Partch "utonalities" (i.e. a set of ratios with the same numerator and 
+Partch "utonalities" (i.e. a set of ratios with the same numerator and
 changing denominator, a.k.a. undertone series) run vertically.
 
-The ratio between a pair of buttons in any two columns is the same for 
+The ratio between a pair of buttons in any two columns is the same for
 any row in those columns.
-The ratio between a pair of buttons in any two rows is the same for any 
+The ratio between a pair of buttons in any two rows is the same for any
 column in those rows.
 ..there must be a less confusing way of stating that...
-a set of buttons pressed in one row will be a transposition of the same 
+a set of buttons pressed in one row will be a transposition of the same
 columns' buttons pressed in any row.
-a set of buttons pressed in one column will be a transposition of the 
+a set of buttons pressed in one column will be a transposition of the
 same rows' buttons pressed in any column.
 
 */
@@ -72,7 +72,7 @@ series2.reverse.do {|denom|
 			}{
 				s.sendMsg(\n_set, id, \gate, 0);
 				[\off, rnumer, rdenom].postln
-			};	
+			};
 		};
 	};
 	w.view.decorator.nextLine;
@@ -137,18 +137,18 @@ series.reverse.do {|denom|
 		freq = 50.midicps * ratio;
 		b = Button(w, 40 @ 20);
 		label = rnumer.asString ++ "/" ++ rdenom;
-		color = if (rnumer.isPowerOfTwo && rdenom.isPowerOfTwo) 
+		color = if (rnumer.isPowerOfTwo && rdenom.isPowerOfTwo)
 {Color.red(1,0.4)}{
-			if(numer.isPowerOfTwo || denom.isPowerOfTwo) 
+			if(numer.isPowerOfTwo || denom.isPowerOfTwo)
 {Color.yellow(1,0.4)}{Color.clear}};
-		b.states = [[label, Color.black, color],[label, Color.white, 
+		b.states = [[label, Color.black, color],[label, Color.white,
 Color.black]];
 		b.action = {
 			if (b.value == 1) {
 				s.sendMsg(\s_new, \tone, id = s.nextNodeID, 0, 1, \freq, freq);
 			}{
 				s.sendMsg(\n_set, id, \gate, 0);
-			};	
+			};
 		};
 	};
 	w.view.decorator.nextLine;
@@ -205,13 +205,13 @@ series.reverse.do {|denom|
 		ratio = rnumer / rdenom;
 		freq = 50.midicps * ratio;
 		b = Button(w, 40 @ 40);
-		label = rnumer.asString ++ " / " ++ rdenom ++ "\n" ++ 
+		label = rnumer.asString ++ " / " ++ rdenom ++ "\n" ++
 ((ratio.ratiomidi * 100).round.asInteger % 1200);
-		color = if (rnumer.isPowerOfTwo && rdenom.isPowerOfTwo) 
+		color = if (rnumer.isPowerOfTwo && rdenom.isPowerOfTwo)
 {Color.red(1,0.4)}{
-			if(numer.isPowerOfTwo || denom.isPowerOfTwo) 
+			if(numer.isPowerOfTwo || denom.isPowerOfTwo)
 {Color.yellow(1,0.4)}{Color.clear}};
-		b.states = [[label, Color.black, color],[label, Color.white, 
+		b.states = [[label, Color.black, color],[label, Color.white,
 Color.black]];
 		b.font = buttonFont;
 		b.action = {
@@ -219,7 +219,7 @@ Color.black]];
 				s.sendMsg(\s_new, \tone, id = s.nextNodeID, 0, 1, \freq, freq);
 			}{
 				s.sendMsg(\n_set, id, \gate, 0);
-			};	
+			};
 		};
 	};
 	w.view.decorator.nextLine;
@@ -230,5 +230,3 @@ w.front;
 
 
 /////////////////////////////////
-
-

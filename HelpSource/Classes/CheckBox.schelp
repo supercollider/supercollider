@@ -27,7 +27,7 @@ METHOD:: value
 		A Boolean.
 
 METHOD:: valueAction
-	Sets link::#-value:: and triggeres link::#-action::.
+	Sets link::#-value:: and triggers link::#-action::.
 
 	argument::
 		A Boolean.

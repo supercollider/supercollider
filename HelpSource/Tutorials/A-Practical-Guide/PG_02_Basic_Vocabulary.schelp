@@ -286,7 +286,7 @@ definitionList::
 
 ## code::Pbeta(lo, hi, prob1, prob2, length):: || Beta distribution, where code::prob1 = α :: (alpha) and code::prob2 = β :: (beta).
 ## code::Pcauchy(mean, spread, length):: || Cauchy distribution.
-## code::Pgauss(mean, dev, length):: || Guassian (normal) distribution.
+## code::Pgauss(mean, dev, length):: || Gaussian (normal) distribution.
 ## code::Phprand(lo, hi, length):: || Returns the greater of two equal-distribution random numbers.
 ## code::Plprand(lo, hi, length):: || Returns the lesser of two equal-distribution random numbers.
 ## code::Pmeanrand(lo, hi, length):: || Returns the average of two equal-distribution random numbers, i.e., code::(x + y) / 2 ::.

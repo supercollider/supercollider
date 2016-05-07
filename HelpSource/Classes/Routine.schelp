@@ -371,7 +371,7 @@ w.front;
 ::
 
 code::
-// drawing in a window dynamcially with Pen
+// drawing in a window dynamically with Pen
 (
 var w, much = 0.02, string, synth;
 

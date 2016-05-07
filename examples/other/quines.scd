@@ -128,5 +128,3 @@ a.collect {|c| (c / 0.00019).round.asInteger.asAscii}.join.interpret.(a)
 // and a concluding question, posed by James McCartney, 09/14/2006:
 // If I GPL a quine program, is the output GPL?
 // (nb. a quine is a program whose output is the same program).
-
-

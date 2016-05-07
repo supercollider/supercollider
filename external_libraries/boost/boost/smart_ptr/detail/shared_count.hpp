@@ -28,6 +28,7 @@
 #include <boost/smart_ptr/bad_weak_ptr.hpp>
 #include <boost/smart_ptr/detail/sp_counted_base.hpp>
 #include <boost/smart_ptr/detail/sp_counted_impl.hpp>
+#include <boost/smart_ptr/detail/sp_disable_deprecated.hpp>
 #include <boost/detail/workaround.hpp>
 // In order to avoid circular dependencies with Boost.TR1
 // we make sure that our include of <memory> doesn't try to
@@ -41,6 +42,11 @@
 #endif
 
 #include <boost/core/addressof.hpp>
+
+#if defined( BOOST_SP_DISABLE_DEPRECATED )
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 
 namespace boost
 {
@@ -691,6 +697,10 @@ inline shared_count::shared_count( weak_count const & r, sp_nothrow_tag ): pi_( 
 } // namespace detail
 
 } // namespace boost
+
+#if defined( BOOST_SP_DISABLE_DEPRECATED )
+#pragma GCC diagnostic pop
+#endif
 
 #ifdef __BORLANDC__
 # pragma warn .8027     // Functions containing try are not expanded inline

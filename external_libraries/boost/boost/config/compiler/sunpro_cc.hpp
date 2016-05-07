@@ -125,19 +125,15 @@
 #define BOOST_NO_CXX11_FINAL
 #endif
 
-//
-// Issues that effect all known versions:
-//
-// Variadic templates pass our test case, but enabling this
-// causes the compiler to issue a signal 11 and bail out
-// in various libraries.  The others fail our test cases.
-//
+#if (__SUNPRO_CC < 0x5140) || (__cplusplus < 201103)
 #define BOOST_NO_CXX11_VARIADIC_TEMPLATES
 #define BOOST_NO_CXX11_UNIFIED_INITIALIZATION_SYNTAX
 #define BOOST_NO_CXX11_FIXED_LENGTH_VARIADIC_TEMPLATE_EXPANSION_PACKS
 #define BOOST_NO_CXX11_DECLTYPE_N3276
 #define BOOST_NO_CXX11_USER_DEFINED_LITERALS
 #define BOOST_NO_CXX11_REF_QUALIFIERS
+#endif
+
 #define BOOST_NO_COMPLETE_VALUE_INITIALIZATION
 //
 // C++0x features

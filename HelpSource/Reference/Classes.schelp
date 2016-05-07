@@ -13,7 +13,7 @@ The data of an object is contained in its instance variables. Instance variables
 
 Some classes' instances have no instance variables at all but instead have an atomic value. Classes whose instances consist of an atomic value are link::Classes/Integer::, link::Classes/Float::, link::Classes/Symbol::, link::Classes/True::, link::Classes/False::, link::Classes/Nil::, link::Classes/Char::, link::Classes/Color::.
 
-Instance variables declaration lists occur after the open curly bracket of the class definition and are preceeded by the reserved word code::var::. Instance variables names in the list may be initialized to a default literal value by using an equals sign. Instance variables which are not explicitly initialized will be set to nil. Instance variables that are immutable are defined by the reserved word code::const::.
+Instance variables declaration lists occur after the open curly bracket of the class definition and are preceded by the reserved word code::var::. Instance variables names in the list may be initialized to a default literal value by using an equals sign. Instance variables which are not explicitly initialized will be set to nil. Instance variables that are immutable are defined by the reserved word code::const::.
 
 Instance variables may only be directly accessed and changed from within the class' own methods. Instance variables may be exposed to clients by adding getter and setter messages to the class. A getter message is a message with the same name as the variable which returns the value of that variable when sent to the receiver. A setter message is a message with the name of the variable with an underscore appended which sets the value of the instance variable to the value of the argument to the message.
 
@@ -46,7 +46,7 @@ b = p.y;		// send getter message for y
 
 section:: Class Variables
 
-Class variables are values that are shared by all objects in the class. Class variable declaration lists are preceeded by the reserved word code::classvar:: and may be interspersed with instance variable declaration lists.
+Class variables are values that are shared by all objects in the class. Class variable declaration lists are preceded by the reserved word code::classvar:: and may be interspersed with instance variable declaration lists.
 Class variables like instance variables may only be directly accessed by methods of the class. Class variables may also have getter and setter methods created for them using the less than code::<:: and greater than code::>:: symbols.
 
 section:: Instance Methods
@@ -60,7 +60,7 @@ Methods however have an implicit first argument named this which is the receiver
 
 section:: Class Methods
 
-Class Methods are methods that implement messages sent to the class object. A common example is the message new which is sent to the class object to create a new instance of the class. Class method names have an asterisk code::*:: preceeding the message selector.
+Class Methods are methods that implement messages sent to the class object. A common example is the message new which is sent to the class object to create a new instance of the class. Class method names have an asterisk code::*:: preceding the message selector.
 
 section:: Determine the class of an object
 link::Classes/Object:: defines the method code::isKindOf:::

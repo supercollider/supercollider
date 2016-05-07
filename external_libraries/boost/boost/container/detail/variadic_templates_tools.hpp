@@ -54,7 +54,7 @@ class tuple<Head, Tail...>
    // Construct tuple from another tuple.
    template<typename... VValues>
    tuple(const tuple<VValues...>& other)
-      : m_head(other.head()), inherited(other.tail())
+      : inherited(other.tail()), m_head(other.head())
    {}
 
    template<typename... VValues>

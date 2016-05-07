@@ -20,6 +20,9 @@
 
 #include <boost/config/compiler/visualc.hpp>
 
+#undef BOOST_MSVC
+#undef BOOST_MSVC_FULL_VER
+
 #if (__INTEL_COMPILER >= 1500) && (_MSC_VER >= 1900)
 //
 // These appear to be supported, even though VC++ may not support them:
@@ -35,6 +38,9 @@
 #else
 
 #include <boost/config/compiler/gcc.hpp>
+
+#undef BOOST_GCC_VERSION
+#undef BOOST_GCC_CXX11
 
 #endif
 

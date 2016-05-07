@@ -6,7 +6,7 @@ categories:: External Control>MIDI
 description::
 This document explains technical details of the MIDI hardware interface class, MIDIIn.
 
-MIDIIn is a simple and direct interface. When MIDI events come into Super Collider, MIDIIn evaluates simple handler functions.
+MIDIIn is a simple and direct interface. When MIDI events come into SuperCollider, MIDIIn evaluates simple handler functions.
 
 note::
 For general programming, strong::users should not use the MIDIIn class directly::. See the link::Classes/MIDIFunc:: and link::Classes/MIDIdef:: classes for higher level event matching and more flexible handling of event handlers.

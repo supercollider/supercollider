@@ -209,6 +209,7 @@ void sc_synthdef::read_synthdef(const char *& buffer, const char* buffer_end, in
 
     /* read constants */
     int32_t constant_count = read_int(buffer, buffer_end, short_int_size);
+    constants.reserve( constant_count );
 
     for (int i = 0; i != constant_count; ++i) {
         float data = read_float(buffer, buffer_end);
@@ -216,9 +217,10 @@ void sc_synthdef::read_synthdef(const char *& buffer, const char* buffer_end, in
     }
 
     /* read parameters */
-    int32_t paramenter_count = read_int(buffer, buffer_end, short_int_size);
+    int32_t par_count = read_int(buffer, buffer_end, short_int_size);
+    parameters.reserve( par_count );
 
-    for (int i = 0; i != paramenter_count; ++i) {
+    for (int i = 0; i != par_count; ++i) {
         float data = read_float(buffer, buffer_end);
         parameters.push_back(data);
     }

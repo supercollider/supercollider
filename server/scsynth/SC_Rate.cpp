@@ -35,8 +35,8 @@ void Rate_Init(Rate *inRate, double inSampleRate, int inBufLength)
 	inRate->mSlopeFactor = 1. / inRate->mBufLength;
 	inRate->mFilterLoops = inRate->mBufLength / 3;
 	inRate->mFilterRemain = inRate->mBufLength % 3;
-    if( inRate->mFilterLoops == 0. )
-        inRate->mFilterSlope = 0.;
-    else
-	    inRate->mFilterSlope = 1. / inRate->mFilterLoops;
+	if( inRate->mFilterLoops == 0. )
+		inRate->mFilterSlope = 0.;
+	else
+		inRate->mFilterSlope = 1. / inRate->mFilterLoops;
 }

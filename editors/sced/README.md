@@ -48,7 +48,7 @@ Place wrapper-scripts for sclang and scsynth into `/usr/local/bin`.
 
 ```
 #!/bin/sh
-cd /full/path/to/SuperCollider.app/Contents/Resources
+cd /full/path/to/SuperCollider.app/Contents/MacOS
 exec ./sclang $*
 ```
 

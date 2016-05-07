@@ -55,8 +55,8 @@ p = ProxySpace.push(s.boot);
 ~out[1] = \filter -> #{ arg in; BPF.ar(in * 5, 700, 0.1) };
 
 (
-~out[2] = \filter -> #{ arg in; 
-	CombL.ar(LPF.ar(in * LFNoise1.kr(0.1).max(0), 800), 0.5, 0.5) + in.reverse 
+~out[2] = \filter -> #{ arg in;
+	CombL.ar(LPF.ar(in * LFNoise1.kr(0.1).max(0), 800), 0.5, 0.5) + in.reverse
 };
 )
 
@@ -75,4 +75,3 @@ p = ProxySpace.push(s.boot);
 
 
 p.clear(10).pop;
-

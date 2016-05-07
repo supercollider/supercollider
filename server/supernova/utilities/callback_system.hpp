@@ -56,14 +56,9 @@ public:
     /** \brief run all callbacks */
     inline void run_callbacks(void)
     {
-        for (;;) {
-            callback_type* runme;
-
-            if (not callbacks.pop(runme))
-                break;
-
-            run_callback(runme);
-        }
+        callbacks.consume_all( [this]( callback_type * cb) {
+            run_callback( cb );
+        });
     }
 
     /** \brief run one callback
@@ -73,11 +68,9 @@ public:
      * */
     void run_callback(void)
     {
-        callback_type* runme;
-        bool dequeued = callbacks.pop(&runme);
-        assert(dequeued);
-
-        run_callback(runme);
+        callbacks.consume_one( [this]( callback_type * cb) {
+            run_callback( cb );
+        });
     }
 
 private:

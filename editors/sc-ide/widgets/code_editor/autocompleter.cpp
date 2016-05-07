@@ -192,7 +192,7 @@ AutoCompleter::AutoCompleter( ScCodeEditor *editor ):
              this, SLOT(hideWidgets()) );
     connect( editor->verticalScrollBar(), SIGNAL(valueChanged(int)),
              this, SLOT(hideWidgets()) );
-    connect(Main::scProcess(), SIGNAL(introspectionAboutToSwap()),
+    connect(Main::scProcess(), SIGNAL(introspectionChanged()),
             this, SLOT(clearMethodCallStack()));
 }
 
@@ -807,9 +807,9 @@ void AutoCompleter::updateCompletionMenuInfo()
     QString examples = parseClassElement(node, "EXAMPLES");
     if (!examples.isEmpty())
         examples.prepend("<h4>Examples</h4>");
-
-    QString infos = QStringLiteral("<h4>%1</h4>%2%3"
-                            "<p><a href=\"%4\">go to help</a>")
+// MSVStudio 2013 does not concatenate multiple QStringliterals ("""") properly
+// see http://blog.qt.io/blog/2014/06/13/qt-weekly-13-qstringliteral/
+    QString infos = QStringLiteral("<h4>%1</h4>%2%3<p><a href=\"%4\">go to help</a>")
                     .arg(parseClassElement(node, "SUMMARY"))
                     .arg(parseClassElement(node, "DESCRIPTION"))
                     .arg(examples)

@@ -11,7 +11,7 @@ argument::envir
 an environment with objects to embed.
 
 argument::pattern
-pattern or stream, ususally a link::Classes/Pfunc::, link::Classes/Prout::.
+pattern or stream, usually a link::Classes/Pfunc::, link::Classes/Prout::.
 
 argument::independent
 if true streams can write to the environment without influencing other streams created from this pattern. if false, the streams write to a common namespace.

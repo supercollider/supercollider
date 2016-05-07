@@ -22,6 +22,7 @@
 #ifndef _PYRLEXER_H_
 #define _PYRLEXER_H_
 
+#include "PyrSlot.h"
 #include "PyrSymbol.h"
 #include "SC_Export.h"
 #include "SCBase.h"

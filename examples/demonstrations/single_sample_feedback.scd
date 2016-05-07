@@ -56,9 +56,9 @@ var x, y, rate, a, c, m, u1, u2, b;
 	y = Dbufwr(x, b); // write to buffer
 	u1 = LinCongN.ar(rate, a, c, m);
 	u2 = Duty.ar(1 / rate, 0, y);
-	
+
 	// not exactly the same, but very similar. lincong uses doubles
-	[u1, u2]; 
+	[u1, u2];
 }.plot(0.1);
 )
 
@@ -75,14 +75,12 @@ var x, y, rate, a, c, m, z, b;
 	x = Dbufrd(b); // read from buffer
 	x = x * a + c % m;
 	z = Duty.ar(1 / rate, 0, Dbufwr(x, b));// write to buffer
-	
+
 	// insert a delay and some amplitude modulation
 	z = LFSaw.ar(MouseY.kr(1, 10000, 1)) * z;
 	z = DelayL.ar(z, 1, 1);
-	
+
 	z = Duty.ar(1 / rate, 0, Dbufwr(z, b));// write to buffer
 	z * 0.1;
 }.scope;
 )
-
-

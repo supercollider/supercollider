@@ -162,7 +162,7 @@ T gamma_imp(T z, const Policy& pol, const Lanczos& l)
    {
       if (z < 1 / tools::max_value<T>())
          result = policies::raise_overflow_error<T>(function, 0, pol);
-	   result *= 1 / z - constants::euler<T>();
+      result *= 1 / z - constants::euler<T>();
    }
    else
    {
@@ -238,13 +238,13 @@ T lgamma_imp(T z, const Policy& pol, const Lanczos& l, int* sign = 0)
    }
    else if (z < tools::root_epsilon<T>())
    {
-	   if (0 == z)
-		   return policies::raise_pole_error<T>(function, "Evaluation of lgamma at %1%.", z, pol);
+     if (0 == z)
+	      return policies::raise_pole_error<T>(function, "Evaluation of lgamma at %1%.", z, pol);
       if (fabs(z) < 1 / tools::max_value<T>())
          result = -log(fabs(z));
       else
-	      result = log(fabs(1 / z - constants::euler<T>()));
-	   if (z < 0)
+         result = log(fabs(1 / z - constants::euler<T>()));
+      if (z < 0)
 		sresult = -1;
    }
    else if(z < 15)
@@ -526,9 +526,9 @@ T lgamma_imp(T z, const Policy& pol, const lanczos::undefined_lanczos&, int* sig
 
    if (zz < min_arg_for_recursion)
    {
-	   // Here we simply take the logarithm of tgamma(). This is somewhat
-	   // inefficient, but simple. The rationale is that the argument here
-	   // is relatively small and overflow is not expected to be likely.
+      // Here we simply take the logarithm of tgamma(). This is somewhat
+      // inefficient, but simple. The rationale is that the argument here
+      // is relatively small and overflow is not expected to be likely.
       if (z > -tools::root_epsilon<T>())
       {
          // Reflection formula may fail if z is very close to zero, let the series
@@ -540,7 +540,7 @@ T lgamma_imp(T z, const Policy& pol, const lanczos::undefined_lanczos&, int* sig
          }
          return log_gamma_value;
       }
-	   else
+      else
       {
          // No issue with spurious overflow in reflection formula, 
          // just fall through to regular code:
@@ -1394,7 +1394,7 @@ T tgamma_delta_ratio_imp_lanczos(T z, T delta, const Policy& pol, const Lanczos&
          return 1 / (z * boost::math::tgamma(z + delta, pol));
       }
    }
-   T zgh = z + Lanczos::g() - constants::half<T>();
+   T zgh = static_cast<T>(z + Lanczos::g() - constants::half<T>());
    T result;
    if(fabs(delta) < 10)
    {

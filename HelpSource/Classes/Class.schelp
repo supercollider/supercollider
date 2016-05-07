@@ -22,7 +22,7 @@ As above, but climb the class tree to see if the method is inherited from a supe
 
 method::dumpAllMethods
 
-Post all instance methods which instances of this class responde too, including inherited ones. code::this.class.dumpAllMethods:: will post all class methods which this class responds to.
+Post all instance methods which instances of this class responds too, including inherited ones. code::this.class.dumpAllMethods:: will post all class methods which this class responds to.
 
 method::dumpByteCodes
 

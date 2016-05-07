@@ -16,17 +16,28 @@ code::
 p = ProxySpace.push(s.boot, p);
 "abcde".do { |k| p[k.asSymbol].ar };
 m = ProxyMixer(p, 8);
-p.do(_.play(0));
+n.parent.alwaysOnTop_(true); // show mixer in front of IDE
 )
 
+p.do(_.play(0));
 m.object_(nil);
 m.object_(p);
+
+// if you have JITLibExtensions installed, try ProxyMeter to see the proxy levels:
+if (\ProxyMeter.asClass.notNil) { ProxyMeter.addMixer(m); };
+
 
 "abcdefghijk".do { |k| p[k.asSymbol].ar };
 
 "lmnopqrtuvw".do { |k| p[k.asSymbol].kr };
 
-"abcdefghijk".do { |k| p[k.asSymbol].playN };
+"abcdefghijk".do { |k, i|
+	p[k.asSymbol].playN(vol: 0.8 - (0.1 * i) );
+	p[k.asSymbol].source = {
+		VarSaw.ar((i + 1 * 100) + [-1, 1])
+		* LFSaw.ar((i + 1 * 0.25));
+	};
+};
 ::
 
 ClassMethods::
@@ -48,7 +59,7 @@ argument::bounds
 window bounds - default is nil, so it determines it size.
 
 argument::makeSkip
-a flag whether to make make a skijack
+a flag whether to make make a skipjack
 
 argument::options
 additional settings - currently none provided.
@@ -83,6 +94,17 @@ if too many proxies are present, by how much to rotate arKeys or krKeys to displ
 method:: title
 get the proxymixer window title.
 
+
+method:: getNameLeftBorder, setNameLeftBorder, shiftNameLeftBorder
+trade nameView size and volume slider size:
+code::
+m.getNameLeftBorder; // get its current left border position
+m.setNameLeftBorder(250); // default
+m.setNameLeftBorder(200); // aps left pos, smaller slider
+// relative adjust:
+m.shiftNameLeftBorder(10);
+m.shiftNameLeftBorder(-10);
+
 strong::standard JITGui methods: ::
 method:: setDefaults, accepts, getState, checkUpdate
 
@@ -103,6 +125,9 @@ p.do(_.play(0));
 
 m.object_(nil); // no object
 m.object_(p);   // the proxyspace
+
+// if you have JITLibExtensions installed, try ProxyMeter to see the proxy levels:
+if (\ProxyMeter.asClass.notNil) { ProxyMeter.addMixer(m); };
 
     // make too many ar proxies, get a scroller
 "abcdefghijk".do { |k| p[k.asSymbol].ar };

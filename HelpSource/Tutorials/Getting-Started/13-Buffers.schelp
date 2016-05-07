@@ -65,7 +65,7 @@ PlayBuf.ar(
 
 Number of channels: When working with PlayBuf you must let it know how many channels any buffer it will read in will have. emphasis::You cannot make this an argument in the SynthDef and change it later.:: Why? Remember that SynthDefs must have a fixed number of output channels. So a one channel PlayBuf is always a one channel PlayBuf. If you need versions that can play varying numbers of channels then make multiple SynthDefs or use Function-play.
 
-Bufffer Number: As noted above, Buffers are numbered, starting from zero. You can get a Buffer's number using its strong::bufnum:: method, but you will not normally need to do this, since Buffer objects can be passed directly as UGen inputs or Synth args.
+Buffer Number: As noted above, Buffers are numbered, starting from zero. You can get a Buffer's number using its strong::bufnum:: method, but you will not normally need to do this, since Buffer objects can be passed directly as UGen inputs or Synth args.
 
 Rate of Playback: A rate of 1 would be normal speed, 2 twice as fast, etc. But here we see a UGen called BufRateScale. What this does is check the samplerate of the the buffer (this is set to correspond to that of the soundfile when it is loaded) and outputs the rate which would correspond to normal speed. This is useful because the soundfile we loaded (a11wlk01.wav) actually has a samplerate of 11025 Hz. With a rate of 1, PlayBuf would play it back using the sampling rate of the server, which is usually 44100 Hz, or four times as fast! BufRateScale thus brings things back to normal.
 

@@ -296,7 +296,7 @@ public:
 
     tag_t get_next_tag() const
     {
-        tag_t next = (get_tag() + 1) & (std::numeric_limits<tag_t>::max)();
+        tag_t next = (get_tag() + 1u) & (std::numeric_limits<tag_t>::max)();
         return next;
     }
 

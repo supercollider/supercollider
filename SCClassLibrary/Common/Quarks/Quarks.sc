@@ -39,6 +39,7 @@ Quarks {
 	}
 	*uninstallQuark { |quark|
 		this.unlink(quark.localPath);
+		this.clearCache;
 	}
 	*clear {
 		this.installed.do({ |quark|
@@ -103,7 +104,7 @@ Quarks {
 					});
 				});
 			});
-			cache = Dictionary.new;
+			this.clearCache();
 			done.value();
 		}, clock: AppClock);
 	}
@@ -115,7 +116,7 @@ Quarks {
 		dir = path.dirname;
 		lines = this.installed.collect({ |quark|
 			var localPath, url="", refspec;
-			localPath = this.asRelativePath(quark.localPath);
+			localPath = this.asRelativePath(quark.localPath, dir);
 			if(Git.isGit(quark.localPath), {
 				url = quark.url;
 				if(Git(quark.localPath).isDirty, {
@@ -139,7 +140,13 @@ Quarks {
 	*update { |name|
 		// by quark name or by supplying a local path
 		// resolving / ~/ ./
-		Git.update(this.quarkNameAsLocalPath(name));
+		// is it a git
+		var quark, localPath = this.quarkNameAsLocalPath(name);
+		if(Git.isGit(localPath), {
+			Quark.fromLocalPath(localPath).update();
+		}, {
+			("Quark" + name + "was not installed using git, cannot update.").warn;
+		});
 	}
 	*installed {
 		^LanguageConfig.includePaths
@@ -199,6 +206,7 @@ Quarks {
 		};
 		this.link(quark.localPath);
 		(quark.name + "installed").inform;
+		this.clearCache();
 		^true
 	}
 
@@ -240,7 +248,8 @@ Quarks {
 		}, {
 			regex = (
 				isPath: "\\\\|/",
-				isAbsolutePath: "^[A-Za-z]:\\\\"
+				isAbsolutePath: "^[A-Za-z]:\\\\",
+				isURL: "://"
 			);
 		});
 	}
@@ -376,7 +385,11 @@ Quarks {
 		});
 	}
 	*isPath { |string|
-		^string.findRegexp(regex.isPath).size != 0
+		if(thisProcess.platform.name !== 'windows', {
+			^string.findRegexp(regex.isPath).size != 0
+		}, {
+			^(string.findRegexp(regex.isPath).size != 0).and(string.findRegexp(regex.isURL).size == 0)
+		});
 	}
 	*asAbsolutePath { |path, relativeTo|
 		^if(path.findRegexp(regex.isAbsolutePath).size != 0, {
@@ -395,7 +408,7 @@ Quarks {
 	*asRelativePath { |path, relativeToDir|
 		var d;
 		if(path.beginsWith(relativeToDir), {
-			^"." ++ path.copyToEnd(relativeToDir)
+			^"." ++ path.copyToEnd(relativeToDir.size)
 		});
 		d = Platform.userHomeDir;
 		// ~/path if in home

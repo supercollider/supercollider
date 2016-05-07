@@ -85,7 +85,7 @@ code::
 ~x = ~e;
 ::
 
-if a rate-1 proxy is used as rate-2 input, the rate is converted and the channels are expanded in the ususal multichannel expansion pattern:
+if a rate-1 proxy is used as rate-2 input, the rate is converted and the channels are expanded in the usual multichannel expansion pattern:
 
 code::
 ~f.defineBus(\control);

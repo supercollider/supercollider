@@ -15,15 +15,18 @@ enable_testing()
 
 include (cmake_modules/FinalFile.cmake)
 
-if (NOT CMAKE_BUILD_TYPE)
-	message(STATUS "Build type defaulting to \"RelWithDebInfo\"")
-	set(CMAKE_BUILD_TYPE "RelWithDebInfo")
+if(CMAKE_GENERATOR MATCHES "Visual Studio" OR CMAKE_GENERATOR MATCHES "Xcode")
+	message(STATUS "Please specify the build configuration in the next step")
+else()
+	if (NOT CMAKE_BUILD_TYPE)
+		message(STATUS "Build type defaulting to \"RelWithDebInfo\"")
+		set(CMAKE_BUILD_TYPE "RelWithDebInfo")
+	endif()
 endif()
 
 if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 	message(WARNING "WARNING: IN-PLACE BUILDS ARE NOT RECOMMENDED - PLEASE USE A BUILD DIRECTORY")
 endif()
-
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules
                       ${CMAKE_MODULE_PATH})
@@ -36,6 +39,28 @@ CONFIGURE_FILE(
 ADD_CUSTOM_TARGET(uninstall
   "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
 
+# identify target architecture, build portaudio before any SC specific
+# definitions break the pa-build
+if(WIN32)
+    SET(SC_WIN_BUNDLE_NAME "SuperCollider" CACHE STRING "Folder name of SC install")
+
+    if(CMAKE_CL_64 OR "$ENV{MSYSTEM}" MATCHES "64" OR CMAKE_C_COMPILER MATCHES "64")
+        SET(CMAKE_LIBRARY_ARCHITECTURE "x64" CACHE STRING "Architecture of target system (for 64bit)")
+    else()
+        SET(CMAKE_LIBRARY_ARCHITECTURE "x86" CACHE STRING "Architecture of target system (for 32bit)")
+    endif()
+
+    # installing to default application-location creates an error (a privileges and/or path syntax problem)
+    if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+        SET(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install" CACHE PATH "Cmake install path" FORCE)
+    endif()
+
+    # might work with "SHARED" as well.
+    set(PA_LIBRARY_TYPE "STATIC")
+    set(PORTAUDIO_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/external_libraries/portaudio/include" CACHE PATH "Portaudio include directory" FORCE)
+    add_subdirectory("${CMAKE_SOURCE_DIR}/external_libraries/portaudio")
+endif(WIN32)
+
 #############################################
 # Compiler flags etc
 
@@ -46,14 +71,11 @@ if (${CMAKE_COMPILER_IS_GNUCXX})
 
 	add_definitions("-Wreturn-type")
 
-	if(${_gcc_version} VERSION_LESS 4.7)
-		message(FATAL_ERROR "SuperCollider requires at least gcc-4.7 when compiled with gcc.")
+	if(${_gcc_version} VERSION_LESS 4.8)
+		message(FATAL_ERROR "SuperCollider requires at least gcc-4.8 when compiled with gcc.")
 	endif()
 
-#	disabled for now: -ffast-math breaks avx intrinsics and -fsigned-zeros/-fno-associative-math are not available in some versions
-#	if (${_gcc_version} VERSION_GREATER 4.0.99)
-#		add_definitions("-ffast-math -fsigned-zeros -fno-associative-math")
-#	endif()
+	add_definitions("-ffast-math -fsigned-zeros -fno-associative-math")
 
 	if(APPLE)
 		exec_program(${CMAKE_CXX_COMPILER} ARGS --version OUTPUT_VARIABLE _gcc_version_info)
@@ -70,9 +92,7 @@ elseif(${CMAKE_CXX_COMPILER} MATCHES icpc)
 	add_definitions(-Wno-unknown-pragmas)
 	add_definitions(-simd)
 
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(CMAKE_COMPILER_IS_CLANG 1)
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
     set(CMAKE_COMPILER_IS_CLANG 1)
 endif()
 
@@ -93,6 +113,17 @@ if(WIN32)
 endif()
 
 add_definitions(-DBOOST_CHRONO_HEADER_ONLY -DBOOST_NO_AUTO_PTR)
+
+
+#############################################
+# Detect CCache
+
+find_program(CCacheExectuable ccache)
+if( CCacheExectuable )
+  # only used with >=cmake-3.4
+  set( CMAKE_C_COMPILER_LAUNCHER   "${CCacheExectuable}" )
+  set( CMAKE_CXX_COMPILER_LAUNCHER "${CCacheExectuable}" )
+endif()
 
 #############################################
 # Options
@@ -140,7 +171,11 @@ option(SC_MEMORY_DEBUGGING "Build sclang&scsynth for memory debugging (disable m
 option(GC_SANITYCHECK "Enable sanity checks in the sclang garbage collector.")
 
 option(NO_LIBSNDFILE "Disable soundfile functionality. (Not recommended.)" OFF)
-option(NO_AVAHI "Disable Avahi support. (Not recommended.)" OFF)
+if(WIN32)
+    option(NO_AVAHI "Disable Avahi support. (Not recommended.)" ON)
+else(WIN32)
+    option(NO_AVAHI "Disable Avahi support. (Not recommended.)" OFF)
+endif(WIN32)
 option(NO_GPL3 "Disable GPL3 code, for pure-GPL2 situations. (Not recommended.)" OFF)
 
 option(SCLANG_SERVER "Build with internal server." ON)
@@ -172,12 +207,6 @@ if (NOT WIN32)
         message(SEND_ERROR "cannot find libpthreads")
     endif()
     include_directories(${PTHREADS_INCLUDE_DIR})
-endif()
-
-if(MSVC OR MINGW)
-    set(MATH_LIBRARY "")
-else()
-    find_library(MATH_LIBRARY m)
 endif()
 
 if(SYSTEM_BOOST)
@@ -263,8 +292,9 @@ if (SC_MEMORY_DEBUGGING)
 endif()
 
 if(MINGW)
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mstackrealign")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mstackrealign")
+# no-strict-aliasing was introduced because of problems with MinGW/GCC 4.9.2
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mstackrealign -fno-strict-aliasing")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mstackrealign -fno-strict-aliasing")
 endif()
 
 if (NO_GPL3)
@@ -315,7 +345,7 @@ if(UNIX AND NOT APPLE)
 endif()
 
 if (WIN32)
-	set(auxresourcesdir "SuperCollider")
+  set(auxresourcesdir "${SC_WIN_BUNDLE_NAME}")
 elseif(APPLE)
 	set(auxresourcesdir ${scappbundlename})
 else()
@@ -376,7 +406,7 @@ if (WIN32)
 	set( AdditionalInstallFiles
 		README.md
 		README_WINDOWS.md
-		ChangeLog
+		CHANGELOG.md
 		COPYING
 		AUTHORS
 	)
@@ -384,16 +414,15 @@ elseif(APPLE)
 	set( AdditionalInstallFiles
 		README.md
 		README_OS_X.md
-		ChangeLog
+		CHANGELOG.md
 		COPYING
 		AUTHORS
-		MOVED_STUFF.txt
 	)
 else()
 	set( AdditionalInstallFiles
 		README.md
 		README_LINUX.md
-		ChangeLog
+		CHANGELOG.md
 		COPYING
 		AUTHORS
 	)
@@ -410,15 +439,6 @@ if(INSTALL_HELP)
 		install( CODE
 					"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/HelpSource ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource )" )
 	elseif(NOT APPLE)
-		install(DIRECTORY HelpSource
-			DESTINATION ${auxresourcesdir}
-			REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
-			PATTERN "*~" EXCLUDE
-			PATTERN "*#" EXCLUDE
-		)
-	endif()
-
-	if(NOT APPLE)
 		install(DIRECTORY HelpSource
 			DESTINATION ${auxresourcesdir}
 			REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
@@ -456,11 +476,11 @@ if(SC_DOC_RENDER)
 	file(GLOB_RECURSE SCDocClasses RELATIVE SCClassLibrary/SCDoc *.sc)
 
 	add_custom_target(doc ALL
-					COMMAND ${CMAKE_CURRENT_BINARY_DIR}/lang/sclang${CMAKE_EXECUTABLE_SUFFIX}
-							-l ${CMAKE_CURRENT_BINARY_DIR}/build_sclang.cfg
-							platform/renderAllHelp.scd ${CMAKE_CURRENT_SOURCE_DIR}/HelpSource ${CMAKE_CURRENT_BINARY_DIR}/RenderedHelp
-					WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-					DEPENDS sclang ${SCDocSources} ${SCDocClasses})
+		COMMAND $<TARGET_FILE_DIR:sclang>/sclang${CMAKE_EXECUTABLE_SUFFIX}
+			-l ${CMAKE_CURRENT_BINARY_DIR}/build_sclang.cfg
+			platform/renderAllHelp.scd ${CMAKE_CURRENT_SOURCE_DIR}/HelpSource ${CMAKE_CURRENT_BINARY_DIR}/RenderedHelp
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+		DEPENDS sclang ${SCDocSources} ${SCDocClasses})
 
 endif()
 
@@ -503,8 +523,8 @@ endif()
 mark_as_advanced(AVAHI_LIBRARIES AVAHI_INCLUDE_DIRS AVAHI_INCLUDE_DIR AVAHI_LIBRARY-COMMON AVAHI_LIBRARY-CLIENT)
 mark_as_advanced(DL)
 mark_as_advanced(EMACS_EXECUTABLE)
-mark_as_advanced(FFTW3F_INCLUDE_DIR FFTW3F_LIBRARY)
+mark_as_advanced(FFTW3F_INCLUDE_DIR FFTW3F_LIBRARY FFTW3F_LIBRARY_DIR)
 mark_as_advanced(JACK JACK_INCLUDE_DIR JACK_LIBRARY)
 mark_as_advanced(MATH_LIBRARY)
 mark_as_advanced(QT_QMAKE_EXECUTABLE)
-mark_as_advanced(SNDFILE)
+mark_as_advanced(SNDFILE SNDFILE_LIBRARY_DIR)

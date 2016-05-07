@@ -354,12 +354,12 @@ World* World_New(WorldOptions *inOptions)
 		hw->mUsers = (ReplyAddress*)zalloc(inOptions->mMaxLogins, sizeof(ReplyAddress));
 		hw->mNumUsers = 0;
 		hw->mMaxUsers = inOptions->mMaxLogins;
-        hw->mClientIDs = (uint32*)zalloc(inOptions->mMaxLogins, sizeof(uint32));
-        for (int i = 0; i<hw->mMaxUsers; i++) {
-            hw->mClientIDs[i] = i;
-        }
-        hw->mClientIDTop = 0;
-        hw->mClientIDdict = new ClientIDDict();
+		hw->mClientIDs = (uint32*)zalloc(inOptions->mMaxLogins, sizeof(uint32));
+		for (int i = 0; i<hw->mMaxUsers; i++) {
+			hw->mClientIDs[i] = i;
+		}
+		hw->mClientIDTop = 0;
+		hw->mClientIDdict = new ClientIDDict();
 		hw->mHiddenID = -8;
 		hw->mRecentID = -8;
 
@@ -550,8 +550,8 @@ bool nextOSCPacket(FILE *file, OSC_Packet *packet, int64& outTime)
 	if (msglen > 1073741824){
 		throw std::runtime_error("OSC packet too long. > 2^30 bytes\n");
 	}
-        packet->mData = (char *)realloc((void *)packet->mData, (size_t)msglen);
-        if(!packet->mData) throw std::runtime_error("nextOSCPacket: realloc failed...\n");
+	packet->mData = (char *)realloc((void *)packet->mData, (size_t)msglen);
+	if(!packet->mData) throw std::runtime_error("nextOSCPacket: realloc failed...\n");
 
 	size_t read = fread(packet->mData, 1, msglen, file);
 	if (read != msglen)
@@ -648,12 +648,12 @@ void World_NonRealTimeSynthesis(struct World *world, WorldOptions *inOptions)
 	World_Start(world);
 
 	int64 oscTime = 0;
-        double oscToSeconds = 1. / pow(2.,32.);
+	double oscToSeconds = 1. / pow(2.,32.);
 	double oscToSamples = inOptions->mPreferredSampleRate * oscToSeconds;
 	int64 oscInc = (int64)((double)bufLength / oscToSamples);
 
 	if(inOptions->mVerbosity >= 0) {
-        printf("start time %g\n", schedTime * oscToSeconds);
+		printf("start time %g\n", schedTime * oscToSeconds);
 	}
 
 	bool run = true;
@@ -1007,10 +1007,10 @@ void World_Cleanup(World *world, bool unload_plugins)
 	if (!world) return;
 
 	scsynth::stopAsioThread();
-    
-    if(unload_plugins)
-        deinitialize_library();
-    
+
+	if(unload_plugins)
+		deinitialize_library();
+
 	HiddenWorld *hw = world->hw;
 
 	if (hw && world->mRealTime) hw->mAudioDriver->Stop();
@@ -1062,8 +1062,8 @@ void World_Cleanup(World *world, bool unload_plugins)
 		if (hw->mNRTCmdFile) fclose(hw->mNRTCmdFile);
 #endif
 		free_alig(hw->mUsers);
-        free_alig(hw->mClientIDs);
-        delete hw->mClientIDdict;
+		free_alig(hw->mClientIDs);
+		delete hw->mClientIDdict;
 		delete hw->mNodeLib;
 		delete hw->mGraphDefLib;
 		delete hw->mQuitProgram;

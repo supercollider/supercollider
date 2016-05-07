@@ -5,7 +5,6 @@ Maybe : Ref {
 	classvar <callers, <current, <>callFunc;
 	classvar <>defaultValue;
 	classvar <>protected = false, <>verbose = false;
-	classvar <>defaultValue=1;
 
 	source { ^value }
 	source_ { arg obj;
@@ -91,27 +90,26 @@ Maybe : Ref {
 	// used by AbstractFunction:reduceFuncProxy
 	// to prevent reduction of enclosed functions
 	valueFuncProxy { arg args;
-		^this.catchRecursion {
-			value.valueFuncProxy(args)
-		} ?? { this.valueEmpty(args) };
-	}
-
-	valueEmpty { arg args;
-		if(verbose) {
-			("* ? incomplete definition: %\n").postf(this.infoString(args))
+		if(verbose and: { value.isNil }) {
+			("Maybe: incomplete definition: %\n").postf(this.infoString(args))
 		};
-		^defaultValue
+		^this.catchRecursion {
+			(value ? defaultValue).valueFuncProxy(args)
+		}
 	}
 
 	reduceFuncProxy { arg args, protect=true;
+		if(verbose and: { value.isNil }) {
+			("Maybe: incomplete definition: %\n").postf(this.infoString(args))
+		};
 
 		^if(protect.not) {
-			value.reduceFuncProxy(args)
+			(value ? defaultValue).reduceFuncProxy(args)
 		} {
 			this.catchRecursion {
-				value.reduceFuncProxy(args)
+				(value ? defaultValue).reduceFuncProxy(args)
 			}
-		} ?? { this.valueEmpty(args) };
+		}
 	}
 
 	catchRecursion { arg func;

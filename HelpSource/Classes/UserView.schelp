@@ -8,7 +8,7 @@ An empty view on which you can draw using the link::Classes/Pen:: class.
 
 This view displays and does nothing by itself, but allows you to define how it will be drawn, and expects you to define its entire mode of interaction using mouse, key, and drag and drop actions.
 
-To define how the view is drawn you set the link::#-drawFunc:: variable to a link::Classes/Function:: within which you can use the link::Classes/Pen:: class to draw graphical primitives, such as lines, rectangles, elipses, curves, and also text.
+To define how the view is drawn you set the link::#-drawFunc:: variable to a link::Classes/Function:: within which you can use the link::Classes/Pen:: class to draw graphical primitives, such as lines, rectangles, ellipses, curves, and also text.
 
 This class offers convenient mechanisms for creating animations, that is, to automatically redraw itself in regular time intervals. See the link::#animation#Animation:: section of this document.
 
@@ -28,7 +28,7 @@ SUBSECTION:: Drawing
 
 METHOD:: drawFunc
 
-	Sets the Function to evalute whenever the view is asked to redraw itself. This may be, for example, due to being hidden and shown again, being resized, another view moving on top of it, or after the link::Classes/View#-refresh:: method has been called.
+	Sets the Function to evaluate whenever the view is asked to redraw itself. This may be, for example, due to being hidden and shown again, being resized, another view moving on top of it, or after the link::Classes/View#-refresh:: method has been called.
 
 	Within that Function you are allowed to use the link::Classes/Pen:: class to draw withing the bounds of the view. All the coordinates given to methods of Pen are relative to the top-left corner of the view. Usage of Pen is not allowed outside of that Function.
 
@@ -82,7 +82,7 @@ METHOD:: animate
 		A Boolean.
 
 METHOD:: frameRate
-	The interval at which the view regularily redraws itself, if link::#-animate:: is code::true::. You can change the desired frame rate by setting this variable.
+	The interval at which the view regularly redraws itself, if link::#-animate:: is code::true::. You can change the desired frame rate by setting this variable.
 
 
 	The default frame rate is 60fps.
@@ -291,7 +291,7 @@ w.refresh;
 )
 ::
 
-The following example uses the link::#-clearOnRefresh:: option to keep the old contents when redrawn, allowing you to draw a line which follows the mouse cursor by clicking and draging on the view.
+The following example uses the link::#-clearOnRefresh:: option to keep the old contents when redrawn, allowing you to draw a line which follows the mouse cursor by clicking and dragging on the view.
 
 It also uses the mouse position to compute the color of the line.
 

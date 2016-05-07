@@ -8,7 +8,7 @@ Human input devices can be used as controllers for making music. This class prov
 
 HIDFunc (and its subclass link::Classes/HIDdef::) registers one or more functions to respond to an incoming HID message. Many of its methods are inherited from its superclass link::Classes/AbstractResponderFunc::.
 
-note:: HIDFuncs are removed on Cmd-. by default. This can be overriden using either of the fix or permanent methods.::
+note:: HIDFuncs are removed on Cmd-. by default. This can be overridden using either of the fix or permanent methods.::
 
 
 The development of this SuperCollider implementation of HID access was funded by the SuperCollider community and BEK, Bergen Elektronisk Kunst, Bergen, Norway, http://www.bek.no
@@ -79,7 +79,7 @@ returns:: A new instance of HIDFunc which responds to a specific element usage f
 
 
 METHOD:: usageID
-A convenience method to filter an incoming HID value based on the number of its control usage. If the device is using a non-standard usage number, then this method can be used to look for it. A controls usage is fully specified by the combinaton of its usage ID and its usage page.
+A convenience method to filter an incoming HID value based on the number of its control usage. If the device is using a non-standard usage number, then this method can be used to look for it. A controls usage is fully specified by the combination of its usage ID and its usage page.
 
 ARGUMENT:: func
 A link::Classes/Function:: or similar object which will respond to the incoming message. It will be passed...usage

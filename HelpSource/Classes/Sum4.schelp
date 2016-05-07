@@ -4,7 +4,7 @@ categories:: UGens>Algebraic
 related:: Classes/Mix
 
 DESCRIPTION::
-Sum four signals. Internal ugen to efficiently mix three signals. Should be used via link::Classes/Mix::.
+Sum four signals. Internal ugen to efficiently mix four signals. Should be used via link::Classes/Mix::.
 
 CLASSMETHODS::
 private:: new1

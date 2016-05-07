@@ -41,7 +41,7 @@ SynthDef("combdist", { arg out, freq = 400, decay=2, wet=1, gate=1;
 	freq = Lag3.kr(freq, 0.1);
 	env = Linen.kr(gate, 1, 1, 1);
 	wet  = Ramp.kr(wet, 0.1);
-	zout = CombN.ar(zin, 24.midicps.reciprocal, freq.reciprocal, decay).distort.reverse; 
+	zout = CombN.ar(zin, 24.midicps.reciprocal, freq.reciprocal, decay).distort.reverse;
 	XOut.ar(out, wet * env, zout);
 	FreeSelfWhenDone.kr(env);
 }).add;
@@ -52,7 +52,7 @@ SynthDef("echo", { arg out, maxdelay = 0.5, delay = 0.4, decay=3, wet=1, gate=1;
 	delay = Lag3.kr(delay, 0.1);
 	env = Linen.kr(gate, 1, 1, 1);
 	wet  = Ramp.kr(wet, 0.1);
-	zout = CombN.ar(zin * env, maxdelay, delay, decay).reverse; 
+	zout = CombN.ar(zin * env, maxdelay, delay, decay).reverse;
 	XOut.ar(out, wet * env, zout);
 	FreeSelfWhenDone.kr(env);
 }).load(s);
@@ -63,8 +63,8 @@ SynthDef("reverb", { arg out, decay=6, wet=1, gate=1;
 	env = Linen.kr(gate, 0.1, 1, 0.1);
 	wet = Ramp.kr(wet, 0.1);
 	decay = Ramp.kr(decay, 0.1);
-	8.do({ 
-		zout = AllpassN.ar(zout, 0.04, {Rand(0.001,0.04)}.dup, decay) 
+	8.do({
+		zout = AllpassN.ar(zout, 0.04, {Rand(0.001,0.04)}.dup, decay)
 	});
 	XOut.ar(out, wet * env, zout);
 	FreeSelfWhenDone.kr(env);
@@ -124,7 +124,7 @@ SynthDef("xline", { arg out, start=1, end=0.0001, dur=3;
 	FreeSelfWhenDone.kr(line);
 }).add;
 
-	
+
 )
 
 
@@ -136,26 +136,26 @@ SynthDef("xline", { arg out, start=1, end=0.0001, dur=3;
 
 (
 	var server;
-	server = Server.local;	
+	server = Server.local;
 
 	d = 0.04;
 	r = Routine({
-		
-		3.do({	
-					
+
+		3.do({
+
 		0.5.postln.wait;
-		
+
 		server.sendBundle(d, ["/s_new", "moto-rev", 1000, 0]);
-		
+
 		3.wait;
 
 		//server.sendBundle(d, ["nod.free", 1000]);
-		
-		
+
+
 		server.sendMsg("/n_free", 1000);
 		1.wait;
 		});
-						
+
 	});
 	SystemClock.play(r);
 )
@@ -164,49 +164,49 @@ SynthDef("xline", { arg out, start=1, end=0.0001, dur=3;
 	d = 0.05;
 	r = Routine({
 		var server;
-		server = Server.local;	
-		
+		server = Server.local;
+
 		1.do({
-						
+
 			0.5.postln.wait;
-			
+
 			server.sendBundle(d, ["/s_new", "bubbles", 1000, 0].postln);
-	
+
 			// add effects, each one (processing order) after the previous one
 			4.wait;
 			server.sendBundle(d, ["/s_new", "combdist", 1004, 3,1000, \freq, rrand(24,60).midicps].postln);
 			4.wait;
 			server.sendBundle(d, ["/s_new", "wah", 1001, 3,1004].postln);
-	
+
 			4.wait;
 			server.sendBundle(d, ["/s_new", "echo", 1002, 3, 1001,\delay, 0.2, \decay, 4].postln);
-	
+
 			4.wait;
 			server.sendBundle(d, ["/s_new", "ring-mod", 1003, 3,1002, \delay, 0.2, \decay, 4].postln);
-			
+
 			12.wait;
 
 			// release the gates by setting them to 0, allowing synths to die
 			server.sendBundle(d, ["/n_set", 1004, "gate", 0].postln);
-			
+
 			4.wait;
 			server.sendBundle(d, ["/n_set", 1001, "gate", 0].postln);
-	
+
 			4.wait;
 			server.sendBundle(d, ["/n_set", 1002, "gate", 0].postln);
-	
+
 			4.wait;
 			server.sendBundle(d, ["/n_set", 1003, "gate", 0].postln);
-	
-			4.wait;			
+
+			4.wait;
 			server.sendBundle(d, ["/n_free", 1000].postln);
-			1.wait;			
-	
+			1.wait;
+
 			server.sendBundle(d, ["/g_freeAll", 0].postln);
 		});
-					
+
 		1.wait;
-		
+
 	});
 	SystemClock.play(r);
 )

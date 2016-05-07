@@ -364,7 +364,6 @@ namespace boost {
 #endif
         };
 
-#ifndef BOOST_LCAST_NO_COMPILE_TIME_PRECISION
         // Helper for floating point types.
         // -1.23456789e-123456
         // ^                   sign
@@ -380,6 +379,8 @@ namespace boost {
                 Source, BOOST_DEDUCED_TYPENAME boost::enable_if<boost::is_float<Source> >::type
             >
         {
+
+#ifndef BOOST_LCAST_NO_COMPILE_TIME_PRECISION
             BOOST_STATIC_ASSERT(
                     std::numeric_limits<Source>::max_exponent10 <=  999999L &&
                     std::numeric_limits<Source>::min_exponent10 >= -999999L
@@ -388,8 +389,10 @@ namespace boost {
             BOOST_STATIC_CONSTANT(std::size_t, value =
                     5 + lcast_precision<Source>::value + 6
                 );
-        };
+#else // #ifndef BOOST_LCAST_NO_COMPILE_TIME_PRECISION
+            BOOST_STATIC_CONSTANT(std::size_t, value = 156);
 #endif // #ifndef BOOST_LCAST_NO_COMPILE_TIME_PRECISION
+        };
     }
 
     namespace detail // lexical_cast_stream_traits<Source, Target>

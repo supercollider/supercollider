@@ -44,7 +44,7 @@
         // x is crazy large, just concentrate on the first part of the expression and use logs:
         if(n == 1) return 1 / x;
         T nlx = n * log(x);
-        if((nlx < tools::log_max_value<T>()) && (n < max_factorial<T>::value))
+        if((nlx < tools::log_max_value<T>()) && (n < (int)max_factorial<T>::value))
            return ((n & 1) ? 1 : -1) * boost::math::factorial<T>(n - 1) * pow(x, -n);
         else
          return ((n & 1) ? 1 : -1) * exp(boost::math::lgamma(T(n), pol) - n * log(x));
@@ -71,13 +71,13 @@
      // or the power term underflows, this just gets set to 0 and then we
      // know that we have to use logs for the initial terms:
      //
-     part_term = ((n > boost::math::max_factorial<T>::value) && (T(n) * n > tools::log_max_value<T>())) 
+     part_term = ((n > (int)boost::math::max_factorial<T>::value) && (T(n) * n > tools::log_max_value<T>())) 
         ? T(0) : static_cast<T>(boost::math::factorial<T>(n - 1, pol) * pow(x, -n - 1));
      if(part_term == 0)
      {
         // Either n is very large, or the power term underflows,
         // set the initial values of part_term, term and sum via logs:
-        part_term = boost::math::lgamma(n, pol) - (n + 1) * log(x);
+        part_term = static_cast<T>(boost::math::lgamma(n, pol) - (n + 1) * log(x));
         sum = exp(part_term + log(n + 2 * x) - boost::math::constants::ln_two<T>());
         part_term += log(T(n) * (n + 1)) - boost::math::constants::ln_two<T>() - log(x);
         part_term = exp(part_term);
@@ -505,7 +505,7 @@
     // would mean setting the limit to ~ 1 / n,
     // but we can tolerate a small amount of divergence:
     //
-    T small_x_limit = std::min(T(T(5) / n), T(0.25f));
+    T small_x_limit = (std::min)(T(T(5) / n), T(0.25f));
     if(x < small_x_limit)
     {
       return polygamma_nearzero(n, x, pol, function);

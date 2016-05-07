@@ -306,7 +306,7 @@ Pseq([a, b]).play;
 
 If a key "embedInStream" is given, use this function instead. The behaviour of the event can be configured easily this way.
 
-The arguments event (the reciever) and inevent (the inevent) are passed to the function. note::In infinite patterns, you strong::must:: call yield or embedInStream in the function, otherwise it will loop forever.::
+The arguments event (the receiver) and inevent (the inevent) are passed to the function. note::In infinite patterns, you strong::must:: call yield or embedInStream in the function, otherwise it will loop forever.::
 
 
 code::

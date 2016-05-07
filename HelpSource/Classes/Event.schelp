@@ -332,6 +332,7 @@ subsection::Useful keys for notes
 
 Using Events is largely a matter of overwriting keys. Here is a list of keys useful for defining notes with their default values, grouped by the partialEvent within which they are defined.
 
+
 list::
 
 ## strong::serverEvent keys:::
@@ -342,7 +343,7 @@ code::
 server:		nil,		// if nil, Server.default is used
 instrument:	\default,	// this is the name of a SynthDef
 group:		1,		// nodeID of group on the server
-				// whening adding before or after a node
+				// when adding before or after a node
 				// this could be the nodeID of a synth instead of a group
 addAction:	0,		// 0, 1, 2, 3 or \addToHead, \addToTail, \addBefore, \addAfter
 out:		0,		// usually an output bus number, but depends on the SynthDef
@@ -359,6 +360,8 @@ velocity:	64		// midi velocity
 trig:		0.5		// trigger value
 ::
 
+
+
 ## strong::durEvent keys:::
 
 The durEvent has keys that determine the timing of a note. Notice that code::~sustain:: is a function that uses code::~legato:: to determine the sustain. Like code::~amp:: this can be overwritten to set the sustain directly.
@@ -374,6 +377,8 @@ strum:			0.0	// "breaks" a chord. May be negative, playing the chord backward
 strumEndsTogether:	false	// if true, the strummed notes end together (with gated synths)
 sendGate:		nil  // override: true == always send a gate-release message; false == never send
 ::
+
+
 
 ## strong::pitchEvent keys:::
 
@@ -423,6 +428,10 @@ detunedFreq: #{	// finally sent as "freq" to the synth as a parameter, if given
 	~freq.value + ~detune
 }
 ::
+
+IMAGE::Event-default-note.png::
+
+
 ::
 
 subsection::Event types

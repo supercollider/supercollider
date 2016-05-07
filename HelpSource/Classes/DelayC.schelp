@@ -28,7 +28,7 @@ Delay time in seconds.
 
 discussion::
 note::
-DelayC needs at least 4 samples buffer. Therefore the minimum code::maxdealytime:: and code::delaytime:: must be code::SampleDur.ir * 4::.
+DelayC needs at least 4 samples buffer. Therefore the minimum code::maxdelaytime:: and code::delaytime:: must be code::SampleDur.ir * 4::.
 ::
 
 Examples::

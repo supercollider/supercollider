@@ -24,9 +24,9 @@
 #include <string>
 #include <vector>
 
+#include <boost/align/aligned_allocator.hpp>
 #include <boost/filesystem/path.hpp>
 
-#include "utilities/malloc_aligned.hpp"
 #include "utilities/named_hash_entry.hpp"
 
 #include "SC_Types.h"
@@ -36,9 +36,13 @@ namespace nova {
 
 class sc_synthdef
 {
-    typedef std::vector<float, aligned_allocator<float> > float_vector;
-    typedef std::vector<char, aligned_allocator<char> > char_vector;
-    typedef std::map<symbol, int32_t, std::less<symbol>, aligned_allocator<std::pair<symbol, int32_t>>> parameter_index_map_t;
+    typedef std::vector<float, boost::alignment::aligned_allocator<float, 64> > float_vector;
+    typedef std::vector<char, boost::alignment::aligned_allocator<char, 64> > char_vector;
+#if BOOST_VERSION > 106000
+    typedef std::map<symbol, int32_t, std::less<symbol>, boost::alignment::aligned_allocator<std::pair<symbol, int32_t>, 64>> parameter_index_map_t;
+#else
+    typedef std::map<symbol, int32_t, std::less<symbol>> parameter_index_map_t;
+#endif
 
 public:
     struct input_spec
@@ -60,7 +64,7 @@ public:
         int32_t index;    /* number of output or constant index */
     };
 
-    typedef std::vector<input_spec, aligned_allocator<input_spec> > input_spec_vector;
+    typedef std::vector<input_spec, boost::alignment::aligned_allocator<input_spec, 64> > input_spec_vector;
 
     struct unit_spec_t
     {
@@ -83,7 +87,7 @@ public:
 
         input_spec_vector input_specs;
         char_vector output_specs;      /* calculation rates */
-        std::vector<int32_t, aligned_allocator<int32_t> > buffer_mapping;
+        std::vector<int32_t, boost::alignment::aligned_allocator<int32_t, 64> > buffer_mapping;
 
         std::size_t memory_requirement(void) const
         {
@@ -100,8 +104,8 @@ public:
     friend class sc_ugen_factory;
     friend class sc_ugen_def;
 
-    typedef std::vector<unit_spec_t, aligned_allocator<unit_spec_t> > graph_t;
-    typedef std::vector<int32_t, aligned_allocator<int32_t> > calc_units_t;
+    typedef std::vector<unit_spec_t, boost::alignment::aligned_allocator<unit_spec_t, 64> > graph_t;
+    typedef std::vector<int32_t, boost::alignment::aligned_allocator<int32_t, 64> > calc_units_t;
 
     sc_synthdef(const char *& buffer, const char * buffer_end, int version);
 

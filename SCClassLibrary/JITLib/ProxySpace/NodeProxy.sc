@@ -546,6 +546,17 @@ NodeProxy : BusPlug {
 		^NdefGui(this, nSliders ? this.getKeysValues.size.max(5), parent, bounds);
 	}
 
+	trace { |index = 0|
+		var obj = objects[index];
+		if(obj.nodeID.notNil) {
+			server.sendMsg(\n_trace, obj.nodeID);
+		} {
+			"Cannot trace a% %".format(
+				if(obj.class.name.asString.first.isVowel) { "n" } { "" },
+				obj.class.name
+			).warn;
+		};
+	}
 
 
 
@@ -1052,6 +1063,5 @@ Ndef : NodeProxy {
 		};
 		stream << this.class.name << "(" <<< this.key << serverString << ")"
 	}
-
 
 }

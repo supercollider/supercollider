@@ -45,6 +45,9 @@ argument::iphase
 
 Initial phase of vibrato modulation, allowing starting above or below the fundamental rather than on it.
 
+argument::trig
+
+Start again if transition from trig <= 0 to trig > 0.
 Examples::
 
 code::

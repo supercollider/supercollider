@@ -38,7 +38,7 @@ argument::object
 the nodeproxy to be shown and edited, or nil.
 
 argument::numItems
-How many sliders or textviews for paramaters to provide. Default value is 0.
+How many sliders or textviews for parameters to provide. Default value is 0.
 
 argument::parent
 a parent view where NdefGui is to be shown. If nil, a window is made.

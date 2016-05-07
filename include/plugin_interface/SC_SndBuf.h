@@ -21,13 +21,130 @@
 #ifndef _SndBuf_
 #define _SndBuf_
 
-#include <sys/types.h>
-
-#ifdef SUPERNOVA
-#include "nova-tt/rw_spinlock.hpp"
-#endif
+#include <stdint.h>
 
 typedef struct SNDFILE_tag SNDFILE;
+
+#ifdef SUPERNOVA
+
+#include <atomic>
+#include <cassert>
+
+#ifdef __SSE2__
+#include <emmintrin.h>
+#endif
+
+
+class rw_spinlock
+{
+	static const uint32_t unlocked_state = 0;
+	static const uint32_t locked_state   = 0x80000000;
+	static const uint32_t reader_mask    = 0x7fffffff;
+
+#ifdef __SSE2__
+	static inline void pause() { _mm_pause(); }
+#else
+	static inline void pause() { }
+#endif
+
+public:
+	struct unique_lock
+	{
+		explicit unique_lock(rw_spinlock & sl) : sl_(sl) { sl_.lock();   }
+		~unique_lock()                                   { sl_.unlock(); }
+
+	private:
+		rw_spinlock & sl_;
+	};
+
+	typedef unique_lock unique_lock;
+
+	struct shared_lock
+	{
+		explicit shared_lock(rw_spinlock & sl): sl_(sl) { sl_.lock_shared();   }
+		~shared_lock()                                  { sl_.unlock_shared(); }
+
+	private:
+		rw_spinlock & sl_;
+	};
+
+	rw_spinlock()                                    = default;
+	rw_spinlock(rw_spinlock const & rhs)             = delete;
+	rw_spinlock & operator=(rw_spinlock const & rhs) = delete;
+	rw_spinlock(rw_spinlock && rhs)                  = delete;
+	rw_spinlock & operator=(rw_spinlock & rhs)       = delete;
+
+	~rw_spinlock() { assert(state == unlocked_state); }
+
+	void lock()
+	{
+		for (;;) {
+			while( state.load(std::memory_order_relaxed) != unlocked_state )
+				pause();
+
+			uint32_t expected = unlocked_state;
+			if( state.compare_exchange_weak(expected, locked_state, std::memory_order_acquire) )
+				break;
+		}
+	}
+
+	bool try_lock()
+	{
+		uint32_t expected = unlocked_state;
+		if( state.compare_exchange_strong(expected, locked_state, std::memory_order_acquire) )
+			return true;
+		else
+			return false;
+	}
+
+	void unlock()
+	{
+		assert( state.load(std::memory_order_relaxed) == locked_state) ;
+		state.store( unlocked_state, std::memory_order_release );
+	}
+
+	void lock_shared()
+	{
+		for(;;) {
+			/* with the mask, the cas will fail, locked exclusively */
+			uint32_t current_state    = state.load( std::memory_order_acquire ) & reader_mask;
+			const uint32_t next_state = current_state + 1;
+
+			if( state.compare_exchange_weak(current_state, next_state, std::memory_order_acquire) )
+				break;
+			pause();
+		}
+	}
+
+	bool try_lock_shared()
+	{
+		/* with the mask, the cas will fail, locked exclusively */
+		uint32_t current_state    = state.load(std::memory_order_acquire) & reader_mask;
+		const uint32_t next_state = current_state + 1;
+
+		if( state.compare_exchange_strong(current_state, next_state, std::memory_order_acquire) )
+			return true;
+		else
+			return false;
+	}
+
+	void unlock_shared()
+	{
+		for(;;) {
+			uint32_t current_state    = state.load(std::memory_order_relaxed); /* we don't need the reader_mask */
+			const uint32_t next_state = current_state - 1;
+
+			if( state.compare_exchange_weak(current_state, uint32_t(next_state)) )
+				break;
+			pause();
+		}
+	}
+
+private:
+	std::atomic<uint32_t> state {unlocked_state};
+};
+
+#endif
 
 struct SndBuf
 {
@@ -44,9 +161,10 @@ struct SndBuf
 	// SF_INFO fileinfo; // used by disk i/o
 #ifdef SUPERNOVA
 	bool isLocal;
-	mutable nova::rw_spinlock lock;
+	mutable rw_spinlock lock;
 #endif
 };
+
 typedef struct SndBuf SndBuf;
 
 struct SndBufUpdates
@@ -58,21 +176,21 @@ typedef struct SndBufUpdates SndBufUpdates;
 
 enum { coord_None, coord_Complex, coord_Polar };
 
-inline float PhaseFrac(uint32 inPhase)
+inline float PhaseFrac(uint32_t inPhase)
 {
-	union { uint32 itemp; float ftemp; } u;
+	union { uint32_t itemp; float ftemp; } u;
 	u.itemp = 0x3F800000 | (0x007FFF80 & ((inPhase)<<7));
 	return u.ftemp - 1.f;
 }
 
-inline float PhaseFrac1(uint32 inPhase)
+inline float PhaseFrac1(uint32_t inPhase)
 {
-	union { uint32 itemp; float ftemp; } u;
+	union { uint32_t itemp; float ftemp; } u;
 	u.itemp = 0x3F800000 | (0x007FFF80 & ((inPhase)<<7));
 	return u.ftemp;
 }
 
-inline float lookup(const float *table, int32 phase, int32 mask)
+inline float lookup(const float *table, int32_t phase, int32_t mask)
 {
 	return table[(phase >> 16) & mask];
 }
@@ -81,7 +199,7 @@ inline float lookup(const float *table, int32 phase, int32 mask)
 #define xlobits 14
 #define xlobits1 13
 
-inline float lookupi(const float *table, uint32 phase, uint32 mask)
+inline float lookupi(const float *table, uint32_t phase, uint32_t mask)
 {
 	float frac = PhaseFrac(phase);
 	const float *tbl = table + ((phase >> 16) & mask);
@@ -90,7 +208,7 @@ inline float lookupi(const float *table, uint32 phase, uint32 mask)
 	return a + frac * (b - a);
 }
 
-inline float lookupi2(const float *table, uint32 phase, uint32 mask)
+inline float lookupi2(const float *table, uint32_t phase, uint32_t mask)
 {
 	float frac = PhaseFrac1(phase);
 	const float *tbl = table + ((phase >> 16) & mask);
@@ -99,10 +217,10 @@ inline float lookupi2(const float *table, uint32 phase, uint32 mask)
 	return a + frac * b;
 }
 
-inline float lookupi1(const float* table0, const float* table1, uint32 pphase, int32 lomask)
+inline float lookupi1(const float* table0, const float* table1, uint32_t pphase, int32_t lomask)
 {
 	float pfrac = PhaseFrac1(pphase);
-	uint32 index = ((pphase >> xlobits1) & lomask);
+	uint32_t index = ((pphase >> xlobits1) & lomask);
 	float val1 = *(const float*)((const char*)table0 + index);
 	float val2 = *(const float*)((const char*)table1 + index);
 	return val1 + val2 * pfrac;

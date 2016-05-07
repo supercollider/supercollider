@@ -78,8 +78,8 @@ kernel vec4 _invertColor(sampler source)
 ");
 
 // the argument order should be kept in the array
-// here we need only the "sampler" argument wich should be as the translation table informs you a SCImage
-// the signature of the Kernel function is normaly 'kernel vec4'
+// here we need only the "sampler" argument which should be as the translation table informs you a SCImage
+// the signature of the Kernel function is normally 'kernel vec4'
 // you can of course add other functions in the shader
 k.values_([a]);
 
@@ -132,7 +132,7 @@ w = a.plot(freeOnClose:true);
 
 
 (
-// OK a Better Colorfull Kernel
+// OK a Better Colorful Kernel
 a = SCImage.new(600@600); // get the image
 k = SCImageKernel.new;
 

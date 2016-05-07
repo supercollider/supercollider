@@ -124,7 +124,7 @@ Pdef(\sweep,
 )
 )
 
-// play directly, emebdded in stream (see Pdef.help)
+// play directly, embedded in stream (see Pdef.help)
 
 Pn(Pdef(\sweep), 2).play;
 Pdef(\sweep).fork; // play without changing player state (see Pdef.help)

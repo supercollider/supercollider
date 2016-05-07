@@ -1186,8 +1186,10 @@ void buildBigMethodMatrix()
 	double t0 = elapsedTime();
 #endif
 
-	const int cpuCount = thread::hardware_concurrency();
-	boost::basic_thread_pool pool( std::min( cpuCount - 1, 1 ) );
+	const int hw_concurrency    = thread::hardware_concurrency();
+	const int cpuCount          = hw_concurrency > 0 ? hw_concurrency    : 1;
+	const int helperThreadCount = cpuCount       > 1 ? cpuCount - 1      : 1;
+	boost::basic_thread_pool pool( helperThreadCount );
 
 	// pyrmalloc:
 	// lifetime: kill after compile
@@ -1380,18 +1382,18 @@ static size_t fillClassRow(const PyrClass *classobj, PyrMethod** bigTable, boost
 
 	if (IsObj(&classobj->subclasses)) {
 		const PyrObject * subclasses = slotRawObject(&classobj->subclasses);
-		size_t numSubclasses = subclasses->size;
+		int numSubclasses = subclasses->size;
 
 		if( numSubclasses ) {
 
 			if( numSubclasses <= 2 ) {
-				for( int subClassIndex : boost::irange(0UL, numSubclasses) )
+				for( int subClassIndex : boost::irange(0, numSubclasses) )
 					result += fillClassRow( slotRawClass(&subclasses->slots[subClassIndex]), bigTable, pool );
 			} else {
 				typedef std::vector< boost::future<size_t> > VectorOfFutures;
 
 				VectorOfFutures subclassResults;
-				for( int subClassIndex : boost::irange(1UL, numSubclasses) ) {
+				for( int subClassIndex : boost::irange(1, numSubclasses) ) {
 					auto subclassResult = boost::async( pool, fillClassRow, slotRawClass(&subclasses->slots[subClassIndex]), bigTable, boost::ref(pool) );
 					subclassResults.emplace_back( std::move( subclassResult ) );
 				}

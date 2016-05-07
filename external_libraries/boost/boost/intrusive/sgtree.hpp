@@ -826,18 +826,17 @@ class sgtree_impl
    //! <b>Complexity</b>: Linear to the elements in the subtree.
    void balance_factor(float new_alpha)
    {
-      BOOST_INTRUSIVE_INVARIANT_ASSERT((new_alpha > 0.5f && new_alpha < 1.0f));
-      if(new_alpha < 0.5f && new_alpha >= 1.0f)  return;
-
       //The alpha factor CAN't be changed if the fixed, floating operation-less
       //1/sqrt(2) alpha factor option is activated
       BOOST_STATIC_ASSERT((floating_point));
-      float old_alpha = this->get_alpha_traits().get_alpha();
-      this->get_alpha_traits().set_alpha(new_alpha);
-
-      if(new_alpha < old_alpha){
-         this->max_tree_size_ = this->size();
-         this->rebalance();
+      BOOST_INTRUSIVE_INVARIANT_ASSERT((new_alpha > 0.5f && new_alpha < 1.0f));
+      if(new_alpha >= 0.5f && new_alpha < 1.0f){
+         float old_alpha = this->get_alpha_traits().get_alpha();
+         this->get_alpha_traits().set_alpha(new_alpha);
+         if(new_alpha < old_alpha){
+            this->max_tree_size_ = this->size();
+            this->rebalance();
+         }
       }
    }
 

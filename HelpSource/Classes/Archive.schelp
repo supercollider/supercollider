@@ -4,7 +4,7 @@ categories:: Collections, Files
 related::Classes/Library, Classes/Object, Classes/LibraryBase
 
 DESCRIPTION::
-Archives can write any object to disk and read from file again. Compex structures of objects can thus be restored. Writing an object to file as a strong::compile string:: is usually more readable, but does not account for the internal structure of the object.
+Archives can write any object to disk and read from file again. Complex structures of objects can thus be restored. Writing an object to file as a strong::compile string:: is usually more readable, but does not account for the internal structure of the object.
 
 There is only one global instance: Archive.global, which is initialized automatically.
 

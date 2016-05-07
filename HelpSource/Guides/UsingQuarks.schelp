@@ -286,7 +286,7 @@ If you use Quarks.gui you should now be able to see both the downloaded version 
 
 section:: Offline Usage
 
-Quarks should be useable even when offline.
+Quarks should be usable even when offline.
 The directory is cached, refreshed every four hours.
 Cloned quarks can switch versions without needing to be online.
 

@@ -103,7 +103,7 @@ public slots:
     void setRecording( bool active );
 
 signals:
-    void runningStateChange( bool running, QString const & hostName, int port );
+    void runningStateChange( bool running, QString const & hostName, int port, bool unresponsive );
     void updateServerStatus (int ugenCount, int synthCount,
                              int groupCount, int defCount,
                              float avgCPU, float peakCPU);

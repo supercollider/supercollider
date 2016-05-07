@@ -7,7 +7,7 @@ There are a number of ways in which SuperCollider 3 (or SCServer) is very differ
 definitionList::
 ## link::Guides/ClientVsServer:: || Separate language and synthesis apps.
 ## link::Guides/SynthDefsVsSynths:: || The use of precompiled SynthDefs as opposed to always compiling on the fly.
-## link::Guides/Spawning:: || The lack of the Spawn and TSpawn UGens and their various convienence classes.
+## link::Guides/Spawning:: || The lack of the Spawn and TSpawn UGens and their various convenience classes.
 ## link::Guides/Sync-Async:: || The problem of simultaneous synchronous and asynchronous execution.
 ## link::Guides/Backwards-Compatibility:: || A discussion some classes and methods which have been added to improve compatibility with SC2 code, and their limitations.
 ::

@@ -5,7 +5,7 @@ categories::  UGens>InOut, UGens>Buffer
 
 Description::
 
-Continously play a longer soundfile from disk. This requires a buffer to
+Continuously play a longer soundfile from disk. This requires a buffer to
 be preloaded with one buffer size of sound.
 
 

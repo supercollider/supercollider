@@ -11,14 +11,14 @@ s.waitForBoot({
 	b = Buffer.alloc(s,2048,2);
 	a = SynthDef(\scopeExample, { arg freq=400, rate=2, amp=0.4, pan=0;
 		var signal, scope;
-		signal = [LFSaw.ar(freq, 0, amp/2)*SinOsc.ar(rate), 
+		signal = [LFSaw.ar(freq, 0, amp/2)*SinOsc.ar(rate),
 				Pulse.ar( freq, 0.51, amp)*SinOsc.ar(rate)];
 		signal = Balance2.ar(signal[0], signal[1], pan);
 		scope  = if( GUI.id === \cocoa, \ScopeOut, \JScopeOut ).asClass;
 		scope.ar( signal, b );
 		Out.ar(0, signal);
 	}).play(s);
-	
+
 	w = Window("scope in a gui", Rect(100, 400, 400, 300))
 		.onClose_({a.free;}) // free synth on closing window
 		.front;
@@ -39,7 +39,7 @@ s.waitForBoot({
 				{2} { a.set(\amp, sl.value[sl.index]) }
 				{3} { a.set(\pan, (sl.value[sl.index]*2)-1) };
 		});
-	
+
 	StaticText(w, Rect(14, 4, 90, 30))
 		.string_("Freq");
 	StaticText(w, Rect(14, 34, 90, 30))
@@ -62,4 +62,3 @@ s.waitForBoot({
 		.waveColors_([Color.black, Color.black]);
 });
 )
-

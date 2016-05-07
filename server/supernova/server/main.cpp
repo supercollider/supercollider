@@ -39,6 +39,12 @@
 #include <sys/resource.h>
 #endif
 
+#ifdef __APPLE__
+# include <ApplicationServices/ApplicationServices.h>
+# include <SC_Apple.hpp>
+#endif
+
+
 #if (_POSIX_MEMLOCK - 0) >=  200112L
 # include <sys/resource.h>
 # include <sys/mman.h>
@@ -362,6 +368,15 @@ int main(int argc, char * argv[])
         cout << "supernova " << SC_VersionString() << endl;
         return 0;
     }
+
+#ifdef __APPLE__
+    ProcessSerialNumber psn;
+    if (GetCurrentProcess(&psn) == noErr) {
+        TransformProcessType(&psn, kProcessTransformToUIElementApplication);
+    }
+
+    SC::Apple::disableAppNap();
+#endif
 
     rt_pool.init(args.rt_pool_size * 1024, args.memory_locking);
     lock_memory(args);

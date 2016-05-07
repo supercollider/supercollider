@@ -45,7 +45,7 @@ Event.default contains a function bound to the Symbol code::'finish':: which is 
 
 section::The pitch model
 
-Event.default implements a multi level pitch model which allows composition using modal scale degrees, equal division note values, midi note values, or frequencies in Hertz. These different ways of specifying the pitch can all be used interchangably.
+Event.default implements a multi level pitch model which allows composition using modal scale degrees, equal division note values, midi note values, or frequencies in Hertz. These different ways of specifying the pitch can all be used interchangeably.
 
 The way this works is due to the default values bound to the Symbols of the pitch model.
 

@@ -19,7 +19,7 @@ Each item can be assigned an strong::alignment:: either at layout link::#*rows#c
 
 Each row or column can be assigned a strong::stretch factor:: using link::#-setRowStretch:: and link::#-setColumnStretch::. Rows or columns that would otherwise get equal space are then distributed according to the relative proportions of their stretch factors.
 
-Each row or column can also be assigned a strong::minimum:: size using link::#-setMinRowHeight:: and link::#-setMinColumnWidth::, to override the size contraints imposed by the contained views.
+Each row or column can also be assigned a strong::minimum:: size using link::#-setMinRowHeight:: and link::#-setMinColumnWidth::, to override the size constraints imposed by the contained views.
 
 In addition to adjusting the spacing between cells using link::Classes/Layout#-spacing:: you can control the spacing between rows and between columns separately using link::#-hSpacing:: and link::#-vSpacing::.
 
@@ -108,7 +108,7 @@ METHOD:: addSpanning
     The amount of cells to occupy in vertical direction.
 
     argument:: columnSpan
-    The amount of cells to occpy in horizontal direction.
+    The amount of cells to occupy in horizontal direction.
 
     argument:: align
     A symbol denoting the alignment, or nil. See link::Reference/gui_alignments:: for possible values.

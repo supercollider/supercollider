@@ -71,6 +71,11 @@ Float : SimpleNumber {
 		}
 	}
 
+	asCompileString {
+		// do not rely on _ObjectCompileString, because precision is too low
+		^String.streamContents { |stream| this.storeOn(stream) }
+	}
+
 	switch { | ... cases|
 		"Float:switch is unsafe, rounding via Float:asInteger:switch".warn;
 		^this.asInteger.switch(*cases)

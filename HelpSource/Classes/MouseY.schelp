@@ -31,7 +31,7 @@ times). Alternatively you can specify: 'linear' or 'exponential'.
 
 argument::lag
 
-Lag factor to dezpipper cursor movement.
+Lag factor to dezipper cursor movement.
 
 
 Examples::

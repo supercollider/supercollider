@@ -26,7 +26,7 @@ subsection:: Useful Tasks
 
 Objects of different classes may do different things in response to being
 scheduled on a clock by having own implementation of the code::awake:: method.
-The link::Classes/Object#-awake:: method that all clases inherit simply
+The link::Classes/Object#-awake:: method that all classes inherit simply
 calls the same object's link::Classes/Object#-next#next:: method, forwarding the
 code::beats:: argument as well as the return value, so subclasses may implement
 either one to equivalent effect, as far as clock scheduling is concerned.

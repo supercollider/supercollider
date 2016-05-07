@@ -29,7 +29,7 @@ list::
 ::
 
 argument:: envbufnum
-the buffer number containing a singal to use for the grain envelope. -1 uses a built-in Hann envelope.
+the buffer number containing a signal to use for the grain envelope. -1 uses a built-in Hann envelope.
 
 argument:: maxGrains
 the maximum number of overlapping grains that can be used at a given time. This value is set at the UGens init time and can't be modified. Defaults to 512. This can be set lower for more efficient use of memory.

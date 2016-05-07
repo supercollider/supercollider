@@ -22,7 +22,7 @@ nil
 section::Common errors
 
 numberedList::
-## the name of a class or a variable is mispelled
+## the name of a class or a variable is misspelled
 ## a variable is used before being declared
 ## a parenthesis or a square or curly brace is missing or used in the wrong context
 ## a required comma or semicolon is missing or used improperly
@@ -33,7 +33,7 @@ numberedList::
 Two helpful commands in the SuperCollider Edit menu:
 
 numberedList::
-## "Go to Line ..." transports you to the line number of your choice. Use this when an error message identifies the line number on which a problem occured.
+## "Go to Line ..." transports you to the line number of your choice. Use this when an error message identifies the line number on which a problem occurred.
 
 ## "Find" searches for words or phrases. Use "Find" to locate code that has been identified in error messages or to replace all instances of an improperly spelled word.
 ::

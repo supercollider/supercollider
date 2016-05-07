@@ -1,4 +1,4 @@
-//  (C) Copyright Gennadiy Rozental 2006-2014.
+//  (C) Copyright Gennadiy Rozental 2001.
 //  Use, modification, and distribution are subject to the
 //  Boost Software License, Version 1.0. (See accompanying file
 //  http://www.boost.org/LICENSE_1_0.txt)
@@ -305,8 +305,8 @@ prepare_window_title( dbg_startup_info const& dsi )
 
     str_t path_sep( "\\/" );
 
-    str_t::iterator  it = unit_test::find_last_of( dsi.binary_path.begin(), dsi.binary_path.end(),
-                                                   path_sep.begin(), path_sep.end() );
+    str_t::iterator  it = unit_test::utils::find_last_of( dsi.binary_path.begin(), dsi.binary_path.end(),
+                                                          path_sep.begin(), path_sep.end() );
 
     if( it == dsi.binary_path.end() )
         it = dsi.binary_path.begin();
