@@ -32,10 +32,7 @@
 namespace ScIDE {
 
 VolumeWidget::VolumeWidget( QWidget *parent ):
-    QWidget(parent),
-    mVolume(0),
-    mVolumeMin(0),
-    mVolumeMax(0)
+    QWidget(parent)
 {
     mVolumeLabel = new QLabel;
 
@@ -53,49 +50,26 @@ VolumeWidget::VolumeWidget( QWidget *parent ):
 
     setLayout( layout );
 
-    connect( mVolumeSlider, SIGNAL(actionTriggered(int)), this, SLOT(onVolumeSliderAction()) );
+    connect( mVolumeSlider, &QSlider::actionTriggered, [=] {
+        onVolumeSliderAction();
+    });
 }
 
-float VolumeWidget::setVolume( float volume )
+void VolumeWidget::setVolume( float volume )
 {
-    volume = qBound(mVolumeMin, volume, mVolumeMax);
-    if (volume == mVolume)
-        return mVolume;
-    mVolume = volume;
-    mVolumeSlider->setValue( volumeToSlider(mVolume) );
-    updateVolumeLabel(mVolume);
-    emit volumeChanged( mVolume );
-    return mVolume;
+    mVolumeSlider->setValue( volumeToSlider( volume ) );
+    mVolumeLabel->setText( QString::number(volume, 'f', 1) + " dB" );
 }
 
-void VolumeWidget::setRange( float min, float max )
+void VolumeWidget::setVolumeRange(float min, float max)
 {
-    if (min == mVolumeMin && max == mVolumeMax)
-        return;
     mVolumeMin = min;
     mVolumeMax = max;
-    float old_volume = mVolume;
-    mVolume = qBound(mVolumeMin, old_volume, mVolumeMax);
-    mVolumeSlider->setValue( volumeToSlider(mVolume) );
-    if (old_volume != mVolume) {
-        updateVolumeLabel(mVolume);
-        emit volumeChanged( mVolume );
-    }
 }
 
 void VolumeWidget::onVolumeSliderAction()
 {
-    float volume = volumeFromSlider( mVolumeSlider->sliderPosition() );
-    if (volume == mVolume)
-        return;
-    mVolume = volume;
-    updateVolumeLabel( mVolume );
-    emit volumeChanged( mVolume );
-}
-
-void VolumeWidget::updateVolumeLabel( float volume )
-{
-    mVolumeLabel->setText( QString::number(volume, 'f', 1) + " dB" );
+    emit volumeChangeRequested( volumeFromSlider( mVolumeSlider->sliderPosition() ) );
 }
 
 int VolumeWidget::volumeToSlider( float volume )
@@ -103,11 +77,8 @@ int VolumeWidget::volumeToSlider( float volume )
     float ampMax = sc_dbamp(mVolumeMax);
     float ampMin = sc_dbamp(mVolumeMin);
     float ampRange = ampMax - ampMin;
-    float slider;
-    if (ampRange >= 0)
-        slider = std::sqrt( (sc_dbamp(volume) - ampMin) / ampRange );
-    else
-        slider = 1 - std::sqrt( 1 - ((sc_dbamp(volume) - ampMin) / ampRange) );
+    float slider = (ampRange >= 0) ? std::sqrt( (sc_dbamp(volume) - ampMin) / ampRange )
+                                   : 1 - std::sqrt( 1 - ((sc_dbamp(volume) - ampMin) / ampRange) );
     return slider * 1000.f;
 }
 
@@ -129,19 +100,17 @@ bool VolumeWidget::eventFilter( QObject *object, QEvent *event )
     if (object != mVolumeSlider)
         return false;
 
-    switch (event->type())
-    {
-    case QEvent::KeyPress:
-    {
+    switch (event->type()) {
+    case QEvent::KeyPress: {
         QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
         switch(keyEvent->key())
         {
         case Qt::Key_Home:
-            setVolume(0.f);
+            emit volumeChangeRequested( 0.f );
             event->accept();
             return true;
         case Qt::Key_End:
-            setVolume(mVolumeMin);
+            emit volumeChangeRequested( -9999 );
             event->accept();
             return true;
         default:
