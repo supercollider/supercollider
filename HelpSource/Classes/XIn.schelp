@@ -1,0 +1,11 @@
+TITLE:: XIn
+summary:: Helper class used by InBus.
+categories:: UGens>Input
+related:: Classes/InBus, Classes/In, Classes/InFeedback, Classes/XInFeedback
+
+DESCRIPTION::
+A private class used in the implementation of link::Classes/InBus::.
+You should never need to use this UGen directly.
+
+
+

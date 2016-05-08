@@ -1,0 +1,54 @@
+TITLE:: ServerMeter
+summary:: Graphical feedback window showing input/output levels
+categories:: GUI>Interfaces
+related:: Classes/Stethoscope, Classes/FreqScope, Classes/ServerMeterView
+
+DESCRIPTION::
+A ServerMeter is a simple graphical display showing the volume levels of inputs and outputs on the server.
+
+Also see:
+link::Classes/Server#-meter::
+
+CLASSMETHODS::
+
+METHOD:: new
+Create a new ServerMeter.
+
+ARGUMENT:: server
+The link::Classes/Server:: whose inputs and outputs you wish to visualize.
+
+ARGUMENT:: numIns
+The number of inputs you want to display (starts counting at the first input bus, similar to link::Classes/SoundIn::)
+
+ARGUMENT:: numOuts
+The number of outputs you want to display (starts counting at bus 0)
+
+returns:: A reference to the newly created ServerMeter
+
+
+INSTANCEMETHODS::
+
+METHOD:: window
+Get a reference to the link::Classes/Window:: of this ServerView
+
+returns:: a link::Classes/Window:: reference
+
+METHOD:: meterView
+Get a reference to the link::Classes/ServerMeterView:: of this ServerView
+
+returns:: a link::Classes/ServerMeterView:: reference
+
+note::
+A ServerMeter encapsulates both a link::Classes/Window:: and a link::Classes/ServerMeterView:: within that Window. For more information about Windows and views see link::Guides/GUI-Introduction#Basic elements: Windows, views and containers::
+::
+
+
+EXAMPLES::
+
+code::
+
+s = Server.internal; // use the internal server
+s.boot;
+// display 4 input channels & main stereo output
+m = ServerMeter.new(s, 4, 2);
+::
