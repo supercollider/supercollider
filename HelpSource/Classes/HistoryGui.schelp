@@ -5,7 +5,7 @@ related:: Classes/History
 
 DESCRIPTION::
 
-HistoryGui allows easy access to History as it happens: one can read recent lines, when they were written and by whom; one can search for text strings and by author names; and one can quickly grab lines of code for rewriting. Apart from documenting just in time programming sessions, all of this can be useful in live coding performances. See e.g. the system developed by powerbooks_unplugged: link::Republic:: 
+HistoryGui allows easy access to History as it happens: one can read recent lines, when they were written and by whom; one can search for text strings and by author names; and one can quickly grab lines of code for rewriting. Apart from documenting just in time programming sessions, all of this can be useful in live coding performances. See e.g. the system developed by powerbooks_unplugged, in the Quark called Republic.
 
 The gui elements in detail:
 DEFINITIONLIST::
