@@ -77,6 +77,9 @@ Unix style tildas (~/supercollider/quarks/my-quark) resolve to the user's home d
 By convention the file is called quarks.txt
 ARGUMENT:: path
 path of file to load. May contain ~ or relative paths (root is current working directory)
+ARGUMENT:: done
+function to be evaluated when loading is done
+
 returns:: this
 
 METHOD:: update
@@ -158,11 +161,8 @@ private. gets or creates a Quark by name, storing it in a central cache.
 ARGUMENT:: name
 returns:: Quark
 
-METHOD:: prReadDirectoryFile
-private
-ARGUMENT:: fetch
-ARGUMENT:: dirCachePath
-returns:: this
+PRIVATE:: prReadDirectoryFile
+
 
 
 INSTANCEMETHODS::
