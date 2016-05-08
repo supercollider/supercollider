@@ -33,7 +33,7 @@ METHOD:: read
 
     The 'block' argument has no effect; the display resolution is infinite.
 
-    argument:: startFrame
+    argument:: startframe
         The beginning of the section, in frames.
 
     argument:: frames
@@ -55,10 +55,10 @@ METHOD:: readFile
 
    The 'block' argument has no effect; the display resolution is infinite.
 
-    argument:: soundfile
+    argument:: aSoundFile
         An open instance of SoundFile.
 
-    argument:: startFrame
+    argument:: startframe
         The beginning of the section, in frames.
 
     argument:: frames
@@ -78,7 +78,7 @@ METHOD:: readWithTask
 
    The 'block' argument has no effect; the display resolution is infinite. The 'showProgress' argument has no effect; the view always displays reading progress within itself.
 
-    argument:: startFrame
+    argument:: startframe
         The beginning of the section, in frames.
 
     argument:: frames
@@ -101,10 +101,10 @@ METHOD:: readFileWithTask
         The 'block' argument has no effect; the display resolution is infinite.
         The 'showProgress' argument has no effect; the view always displays reading progress within itself.
 
-    argument:: soundfile
+    argument:: aSoundFile
         An open instance of SoundFile.
 
-    argument:: startFrame
+    argument:: startframe
         The beginning of the section, in frames.
 
     argument:: frames
