@@ -1,6 +1,7 @@
 title:: Server Plugin API
-summary:: Writing unit generators
+summary:: Reference for writing unit generators
 categories:: Internals
+related:: Guides/WritingUGens
 
 section:: Input rates
 
