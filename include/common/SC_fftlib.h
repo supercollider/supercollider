@@ -32,9 +32,9 @@ Copyright (c) 2008 Dan Stowell. All rights reserved.
 
 
 // Note that things like *fftWindow actually allow for other sizes, to be created on user request.
-#define SC_FFT_ABSOLUTE_MAXSIZE 2147483648
-#define SC_FFT_LOG2_ABSOLUTE_MAXSIZE 31
-#define SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1 32
+#define SC_FFT_ABSOLUTE_MAXSIZE 262144
+#define SC_FFT_LOG2_ABSOLUTE_MAXSIZE 18
+#define SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1 19
 
 struct scfft;
 

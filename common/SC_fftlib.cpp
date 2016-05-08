@@ -241,11 +241,13 @@ static size_t scfft_trbufsize(unsigned int fullsize)
 #endif
 }
 
+static int largest_log2n = SC_FFT_LOG2_MAXSIZE;
+static int largest_fftsize = 1 << largest_log2n;
 
 scfft * scfft_create(size_t fullsize, size_t winsize, SCFFT_WindowFunction wintype,
 					 float *indata, float *outdata, SCFFT_Direction forward, SCFFT_Allocator & alloc)
 {
-	if ( (fullsize > SC_FFT_MAXSIZE) || (fullsize < SC_FFT_MINSIZE) )
+	if ( (fullsize > SC_FFT_ABSOLUTE_MAXSIZE) || (fullsize < SC_FFT_MINSIZE) )
 		return NULL;
 
 	const int alignment = 128; // in bytes
@@ -271,8 +273,9 @@ scfft * scfft_create(size_t fullsize, size_t winsize, SCFFT_WindowFunction winty
 	f->trbuf   = trbuf;
 
 	// Buffer is larger than the range of sizes we provide for at startup; we can get ready just-in-time though
-	if (fullsize > SC_FFT_MAXSIZE)
+	if (fullsize > largest_fftsize){
 		scfft_ensurewindow(f->log2nfull, f->log2nwin, wintype);
+	}
 
 	// The scale factors rescale the data to unity gain. The old Green lib did this itself, meaning scalefacs would here be 1...
 	if (forward) {
@@ -294,22 +297,39 @@ scfft * scfft_create(size_t fullsize, size_t winsize, SCFFT_WindowFunction winty
 	return f;
 }
 
-static int largest_log2n = SC_FFT_LOG2_MAXSIZE;
+
 
 // check the global list of windows incs ours; create if not.
 // Note that expanding the table, if triggered, will cause a CPU hit as things are malloc'ed, realloc'ed, etc.
 void scfft_ensurewindow(unsigned short log2_fullsize, unsigned short log2_winsize, short wintype)
 {
 	// Ensure we have enough space to do our calcs
+	int old_log2n = largest_log2n;
 	if(log2_fullsize > largest_log2n){
 		largest_log2n = log2_fullsize;
+		largest_fftsize = 1 << largest_log2n;
 #if SC_FFT_VDSP
 		size_t newsize = (1 << largest_log2n) * sizeof(float) / 2;
 		splitBuf.realp = (float*) realloc (splitBuf.realp, newsize);
 		splitBuf.imagp = (float*) realloc (splitBuf.imagp, newsize);
 #endif
 	}
+#if SC_FFT_FFTW
+	size_t maxSize = 1<<largest_log2n;
+	float * buffer1 = (float*)fftwf_malloc((maxSize + 1) * sizeof(float));
+	float * buffer2 = (float*)fftwf_malloc((maxSize + 1) * sizeof(float));
+	for (int i= old_log2n; i < largest_log2n+1; ++i) {
+		size_t currentSize = 1<<i;
 
+		precompiledForwardPlans[i]  = fftwf_plan_dft_r2c_1d(currentSize, buffer1, (fftwf_complex*) buffer2, FFTW_ESTIMATE);
+		precompiledBackwardPlans[i] = fftwf_plan_dft_c2r_1d(currentSize, (fftwf_complex*) buffer2, buffer1, FFTW_ESTIMATE);
+
+		precompiledForwardPlansInPlace[i]  = fftwf_plan_dft_r2c_1d(currentSize, buffer1, (fftwf_complex*) buffer1, FFTW_ESTIMATE);
+		precompiledBackwardPlansInPlace[i] = fftwf_plan_dft_c2r_1d(currentSize, (fftwf_complex*) buffer1, buffer1, FFTW_ESTIMATE);
+	}
+	fftwf_free(buffer1);
+	fftwf_free(buffer2);
+#endif
 	// Ensure our window has been created
 	if ( (wintype != kRectWindow) && (fftWindow[wintype][log2_winsize] == 0)){
 		fftWindow[wintype][log2_winsize] = scfft_create_fftwindow(wintype, log2_winsize);
@@ -331,7 +351,10 @@ static void scfft_dowindowing(float *data, unsigned int winsize, unsigned int fu
 {
 	if (wintype != kRectWindow) {
 		float *win = fftWindow[wintype][log2_winsize];
-		if (!win) return;
+		if (!win){
+			//return;
+			win = fftWindow[wintype][log2_winsize] = scfft_create_fftwindow(wintype, log2_winsize);
+		}
 #if SC_FFT_VDSP
 		vDSP_vmul(data, 1, win, 1, data, 1, winsize);
 #elif defined (NOVA_SIMD)

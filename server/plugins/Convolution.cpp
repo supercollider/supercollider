@@ -291,8 +291,8 @@ void Convolution2_Ctor(Convolution2 *unit)
 
 		unit->m_fftsize=2*(unit->m_framesize);
 
-		if(unit->m_fftsize > SC_FFT_MAXSIZE){
-			printf( "Convolution2: FFT size is larger than SC_FFT_MAXSIZE, cannot run. We suggest PartConv instead.\n" );
+		if(unit->m_fftsize > SC_FFT_ABSOLUTE_MAXSIZE){
+			printf( "Convolution2: FFT size is larger than SC_FFT_ABSOLUTE_MAXSIZE, cannot run. We suggest PartConv instead.\n" );
 			SETCALC(*ClearUnitOutputs);
 		}
 
@@ -314,7 +314,12 @@ void Convolution2_Ctor(Convolution2 *unit)
 		unit->m_scfft1 = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf1, unit->m_fftbuf1, kForward, alloc);
 		unit->m_scfft2 = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf2, unit->m_fftbuf2, kForward, alloc);
 		unit->m_scfftR = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf1, unit->m_outbuf, kBackward, alloc);
-
+		if(!unit->m_scfft1 || !unit->m_scfft2 || !unit->m_scfftR){
+			printf( "Could not create scfft.\n" );
+			SETCALC(*ClearUnitOutputs);
+			unit->mDone = true;
+			return;
+		}
 		//calculate fft for kernel straight away
 		// we cannot use a kernel larger than the fft size, so truncate if needed. the kernel may be smaller though.
 		uint32 framesize = unit->m_framesize;
@@ -342,6 +347,7 @@ void Convolution2_Ctor(Convolution2 *unit)
 		printf("Convolution2_Ctor: can't get kernel buffer, giving up.\n");
 		SETCALC(*ClearUnitOutputs);
 	}
+
 }
 
 void Convolution2_Dtor(Convolution2 *unit)
