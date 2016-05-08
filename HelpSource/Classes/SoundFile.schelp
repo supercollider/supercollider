@@ -83,6 +83,10 @@ e = f[1].cue;
 e = f[1].cue( (addAction: 2, group: 1) );	// synth will play ahead of the default group
 ::
 
+argument:: closeWhenDone
+
+A flag to indicate wether the code::SoundFile:: will be closed after it's done playing. Default is False.
+
 subsection::Read/Write
 
 method::openRead
