@@ -1,7 +1,0 @@
-class:: SCControlView
-summary:: An abstract class for backward compatibility
-categories:: GUI>Kits>Cocoa
-
-warning::
-For backward compatibility only. Inherits everything from link::Classes/SCView::. No new methods.
-::
