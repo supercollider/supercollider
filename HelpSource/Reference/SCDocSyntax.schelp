@@ -5,55 +5,65 @@ related:: Guides/WritingHelp, Classes/SCDoc, Classes/SCDocHTMLRenderer
 
 section:: Introduction
 
-This document specifies the syntax and link::#Grammar:: of the link::Classes/SCDoc:: markup language, used in SuperCollider for writing documents with semantic annotations, in a manner which does not target a specific layout or output format.
+This document specifies the syntax and link::#Grammar:: of the link::Classes/SCDoc:: markup language.
+code::SCDoc Markup:: is used in SuperCollider mainly for helpfiles.
+It is a syntax that features semantic a semantic level specific to the requirements of SuperCollider.
 
-A guide to writing help can be found here: link::Guides/WritingHelp::.
+note::A guide to writing help can be found at link::Guides/WritingHelp::.::
 
 section:: Specification
-SCDoc documents consists of tags and text.
 
-Tags consists of single words ending with teletype::\:::: (double-colon). They are case-insensitive, so teletype::TITLE\::::, teletype::Title\:::: and teletype::title\:::: all mean the same thing.
-Some tags take the remaining text on the same line, while others enclose the following text until a single end-tag (double-colon teletype::\::::). Some of these can be nested, while others are modal and ignores any tag until the end-tag.
+A document is split into a header section and a body. The header contains only header tags, which are not allowed in the document body.
 
-Untagged text becomes plain prose. Paragraphs are separated by one or more empty lines.
+SCDoc documents consist of EMPHASIS::tags:: and EMPHASIS::text::.
 
-A document has a header section and a body. The header has only header tags, and these tags are not allowed in the document body.
+
+list::
+## Tags consists of single words ending with teletype::\:::: (double-colon).
+## Untagged text becomes plain prose.
+## Paragraphs are separated by one or more empty lines.
+## Tags are case-insensitive: teletype::TITLE\::::, teletype::Title\:::: and teletype::title\:::: are interepreted equally.
+## Some tags take the remaining text on the same line as their argument
+## Some tags enclose the following text until a single end-tag (double-colon teletype::\::::).
+## Some enclosing tags can be nested, while others are modal and ignore any tag until an end-tag.
+::
+
 
 subsection:: Header tags
-All header tags take the remaining line of text as input. There is no end-tag other than a newline.
+Header tags take the remaining text in their definition line as their argument.
+They expect no end-tag.
 
 definitionlist::
 ## keyword:: title\::
 teletype:: TITLE\:: :: name
-|| Title of document. Must equal classname for class reference docs. Example:
+|| Title of the document. For class reference documents, this must be the same as the classname.
+
 teletype::
 title:: SCDoc
 ::
-
-## keyword:: class\::
-teletype:: CLASS\:: :: name
-|| Deprecated, use TITLE instead.
 
 ## keyword:: categories\::
 teletype:: CATEGORIES\:: :: list
 || A comma-separated list of document categories. Mainly used by the link::Browse:: page.
 
 Categories can be hierarchical, where levels are denoted with teletype::>::.
-Example:
+
 teletype::
 categories:: External Control>OSC, Scheduling>Clocks
 ::
 
 ## keyword:: related\::
 teletype:: RELATED\:: :: link(s)
-|| A comma-separated list of related docs. Example:
+|| A comma-separated list of related docs.
+
 teletype::
 related:: Classes/SCDoc, Reference/SCDocSyntax
 ::
 
 ## keyword:: summary\::
 teletype:: SUMMARY\:: :: text
-|| A short summary of this document. Example:
+|| A short summary of this document.
+
 teletype::
 summary:: SCDoc markup language syntax
 ::
@@ -65,22 +75,29 @@ Example:
 teletype::
 redirect:: implClass
 ::
+
+## keyword:: class\::
+teletype:: CLASS\:: :: name
+|| Deprecated, use TITLE instead.
 ::
 
 subsection:: Section tags
-A document is divided in sections and subsections. The section body consists of everything following the section tag until there is another section tag with the same or higher level.
+A document can be divided into sections and subsections. Section bodies consist of everything that follows its section tag until another section tag of same or higher level.
 
-All kinds of sections automatically creates a link anchor with the same name as the section. Methods also creates an anchor, with the methodname prefixed with teletype::*:: for class methods and teletype::-:: for instance methods.
+Sections have a link anchor with the same name as the section.
+note::Method tags also create such anchors. The methodname then is prefixed with teletype::*:: (class methods) or teletype::-:: (instance methods).::
 
-Structural tags at the same level in the hierarchy may be functionally equivalent, but treated differently for rendering or querying purposes. For example teletype::examples\:::: is equivalent to teletype::section\:::: but imply particular formatting or specially identify the examples section for customised uses like concatenating all examples for classes with a given parent class.
+Structural tags at the same level in the hierarchy may be functionally equivalent but treated differently for rendering or querying purposes.
+For example teletype::examples\:::: is equivalent to teletype::section\:::: but imply particular formatting or specially identify the examples section for customised uses like concatenating all examples for classes with a given parent class.
 
-All structural tags has children elements, for example the items in a list or the subsections and prose in a section.
+Structural tags can have child elements, for example the items in a list or the subsections and prose in a section.
 
 Level 1 (highest):
 definitionlist::
 ## keyword:: section\::
 teletype:: SECTION\:: :: name
-|| A named section. The name should be plain text and can not contain any tags. Example:
+|| A named section. The name should be plain text and can not contain any tags.
+
 teletype::
 section:: Introduction
 ::
@@ -137,10 +154,11 @@ For real methods, the argstring is not allowed, instead the argument names and d
 
 ## keyword:: private\::
 teletype:: PRIVATE\:: :: methodname(s)
-|| This tag behaves like a section but does not have a section body. It marks one or more methods as private, so that it does not show up under the auto-generated emphasis::Undocumented Methods:: sections.
+|| This tag behaves like a section but does not have a section body. It marks one or more methods as private, so that it does not show up under the auto-generated emphasis::Undocumented Methods:: sections. Expects a comma-separated list of methodnames.
 ## keyword:: copymethod\::
 teletype:: COPYMETHOD\:: :: classname methodname
-|| This tag behaves like a section but does not have a section body. Copy a method documentation from a class reference and insert it here as if the method was documented in this document. The methodname must be prefixed with teletype::*:: for classmethods and teletype::-:: for instancemethods. Example:
+|| This tag behaves like a section but does not have a section body. Copy a method documentation from a class reference and insert it here as if the method was documented in this document. The methodname must be prefixed with teletype::*:: for classmethods and teletype::-:: for instancemethods.
+
 teletype::
 copymethod:: SinOsc *ar
 ::
@@ -164,7 +182,7 @@ teletype:: DISCUSSION\:: ::
 || This optional section can contain a more detailed discussion and code examples related to this method.
 ::
 
-Example:
+
 teletype::
 method:: ar, kr
 This is a nice method, try it out!
@@ -198,7 +216,8 @@ Optionally, the path can be followed by teletype::#anchor:: to jump to a specifi
 
 All kinds of sections automatically creates an anchor with the same name as the section. Methods also creates an anchor, with the methodname prefixed with teletype::*:: for class methods and teletype::-:: for instance methods.
 
-The path can be empty for linking to an anchor inside the current document, and the anchor can be empty to only specify the link label. Example:
+The path can be empty for linking to an anchor inside the current document, and the anchor can be empty to only specify the link label.
+
 teletype::
 See section link::#Introduction:: in this document.
 Take a look at link::Classes/SCDoc#*indexAllDocuments::
@@ -213,7 +232,8 @@ teletype:: ANCHOR\:: ::
 || Manually create an anchor at this position in the document.
 ## keyword:: image\::
 teletype:: IMAGE\:: ::
-|| Insert image, the text should be the relative path to the image. Example:
+|| Insert image, the text should be the relative path to the image.
+
 teletype::
 image::foo.png::
 ::
@@ -233,7 +253,8 @@ Just leave the caption empty if you want a link but no caption.
 
 The following tags (CODE and TELETYPE) can be written in two forms, either inline or block.
 strong::Inline:: form has the end-tag on the same line, and need any enclosed double-colons that should be part of the text to be escaped with backslash (teletype:: \ ::).
-strong::Block:: form has the tag and end-tag on lines by themselves, and can take multi-line text. In block form, only a single end-tag on its own line counts and any end-tags inside the text should not be escaped (except if it's on a single line). Example:
+strong::Block:: form has the tag and end-tag on lines by themselves, and can take multi-line text. In block form, only a single end-tag on its own line counts and any end-tags inside the text should not be escaped (except if it's on a single line).
+
 teletype::
 code:: inline form ::
 
