@@ -67,8 +67,14 @@ file into a class file and server plugin, which you can then drop into your exte
 FAUST plugins are often quick to develop and can be painlessly ported to other environments. Unfortunately, they can't
 take advantage of all of scsynth's features, such as accessing Buffers or random number generators, and some ugens
 featuring very complex logic are difficult or impossible to write in FAUST. Furthermore, the FAUST compiler is quite
-intelligent but it might not always offer the best efficiency in its results. If a ugen you are developing hits these
+intelligent but it might not always offer the best efficiency in its results. If a UGen you are developing hits these
 limitations, it is time to move on to handwritten C++.
+
+section:: A Minimal Working Example
+
+To get an idea of the necessary ingredients for writing UGens, it's often best to poke around at a complete example.
+We've set up a GitHub repository at https://github.com/snappizz/plugin-example. You can fork this to create your own
+UGens.
 
 section:: The Entry Point
 
@@ -98,6 +104,20 @@ list::
 ## The unit generator destructor is named code::PluginName_Dtor::
 ::
 
+section:: The Calculation Function
+
+The meat of the UGen is its calculation function, which gets called every control period with the UGen object as an
+argument. (This is for control-rate and audio-rate UGens -- demand-rate is different.) In this function, the UGen reads
+from its inputs and writes to its outputs.
+
+The calculation function is selected in the code::PluginName_Ctor:: function with the code::SETCALC:: macro. You can
+name the calculation function whatever you want, but the convention is code::PluginName_next::.
+
+UGens often have multiple calculation functions, depending on the rate of the UGen itself and the rate of its inputs.
+For example, Phasor can be .ar or .kr, and its argument can be either .ar or .kr. So it has four calculation functions:
+Phasor_next_aa, Phasor_next_ak, Phasor_next_ka, and Phasor_next_kk. You don't need to be this thorough for your own
+UGens, however. For example, link::Classes/FreeVerb:: has only one calculation function. Who would want a control-rate
+reverb?
 
 section:: A Simple Unit Generator Plugin
 
@@ -107,7 +127,8 @@ example implements a simple Sawtooth oscillator
 
 subsection:: C++-side Definition of Unit Generators
 
-The following code shows the C++ source of a simple unit generator.
+The following code shows the C++ source of a simple unit generator. It's the same as MySaw.cpp in the example
+repository.
 
 code::
 #include "SC_PlugIn.h"
