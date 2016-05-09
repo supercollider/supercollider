@@ -27,7 +27,10 @@
 #include <string.h>
 #include <math.h>
 
+#include <windows.h>
 #include "hidapi_parser.h"
+#include <hidsdi.h>
+
 
 // SET IN CMAKE
 // #define DEBUG_PARSER
@@ -1241,6 +1244,7 @@ int hid_parse_input_elements_values( unsigned char* buf, struct hid_dev_desc * d
 void hid_parse_element_info( struct hid_dev_desc * devdesc ){
 
     hid_device * dev = devdesc->device;
+    struct hid_device_info *dev_info = devdesc->info;
 
     struct hid_device_collection * device_collection = hid_new_collection();
     devdesc->device_collection = device_collection;
@@ -1262,8 +1266,22 @@ void hid_parse_element_info( struct hid_dev_desc * devdesc ){
     int numColls = 0;
 
     int nt_res, nt_res2;
+    PHIDP_PREPARSED_DATA pp_data = NULL;
+    HIDP_CAPS caps;
+
+    /* Open a handle to the device */
+    HANDLE dev_handle = CreateFileA(dev_info->path, 0, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, 0);
+
+    /* Check validity of write_handle. */
+    if (dev_handle == INVALID_HANDLE_VALUE) {
+        /* Unable to open the device. */
+        //register_error(dev, "CreateFile");
+        // TODO: not sure what to do here
+        return;
+    }   
+
     /* Get the Usage Page and Usage for this device. */
-    res = HidD_GetPreparsedData(write_handle, &pp_data);
+    BOOLEAN res = HidD_GetPreparsedData(dev_handle, &pp_data);
     if (res) {
         nt_res = HidP_GetCaps(pp_data, &caps);
         if (nt_res == HIDP_STATUS_SUCCESS) {
@@ -1271,7 +1289,7 @@ void hid_parse_element_info( struct hid_dev_desc * devdesc ){
 
             device_collection->num_collections = numColls;
             device_collection->usage_page = caps.UsagePage;
-            device_collection->usage = caps.Usage;
+            device_collection->usage_index = caps.Usage;
 
             device_collection->index = 0;
             // type
@@ -1292,23 +1310,27 @@ void hid_parse_element_info( struct hid_dev_desc * devdesc ){
                     caps.NumberFeatureButtonCaps + caps.NumberFeatureValueCaps;
 
 
-            PHIDP_LINK_COLLECTION_NODE linkCollectionNodes[ numColls ];
+            PHIDP_LINK_COLLECTION_NODE *linkCollectionNodes;
+            linkCollectionNodes = malloc(numColls * sizeof(HIDP_LINK_COLLECTION_NODE));
             nt_res2 = HidP_GetLinkCollectionNodes( linkCollectionNodes, numColls, pp_data );
             if (nt_res2 == HIDP_STATUS_SUCCESS) {
                 // then I have the linkCollectionNodes
             }
             // input
             int numValueCaps = caps.NumberInputValueCaps;
-            PHIDP_VALUE_CAPS pInputValueCaps[ numValueCaps ];
+            PHIDP_VALUE_CAPS *pInputValueCaps;
+            pInputValueCaps = malloc(numValueCaps * sizeof(HIDP_VALUE_CAPS));
             nt_res2 = HidP_GetValueCaps( HidP_Input, pInputValueCaps, numValueCaps, pp_data );
             // output
             // feature
+
+            free(linkCollectionNodes);
+            free(pInputValueCaps);
         }
-
         HidD_FreePreparsedData(pp_data);
+        CloseHandle(dev_handle);
+        
     }
-
-
 }
 #endif
 

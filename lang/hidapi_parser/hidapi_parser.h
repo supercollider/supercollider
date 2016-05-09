@@ -32,7 +32,7 @@
 extern "C" {
 #endif
 
-#include <hidapi.h>
+#include "hidapi.h"
 
 struct hid_device_element;
 struct hid_device_collection;
