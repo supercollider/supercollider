@@ -49,6 +49,7 @@ struct AnalogInputUGen : public Unit
 
 struct AnalogOutputUGen : public Unit
 {
+  int mAudioFramesPerAnalogFrame;
 };
 
 // static digital pin, static function (in)
@@ -130,10 +131,9 @@ void AnalogOutput_next(AnalogOutputUGen *unit, int inNumSamples)
 	// read input
 	analogPin = (++*fin);
 	newinput = ++*in; // read next input sample
-	analogWriteFrameOnce(context, n, (int) analogPin, newinput);
-// 	if(!(n % gAudioFramesPerAnalogFrame)) {
-// 	  analogValue = analogReadFrame(context, n/gAudioFramesPerAnalogFrame, iAnalogIn);
-// 	}
+	if(!(n % gAudioFramesPerAnalogFrame)) {
+	  analogWriteFrameOnce(context,  n/ unit->mAudioFramesPerAnalogFrame, (int) analogPin, newinput);
+	}
   }
 }
 
@@ -146,7 +146,7 @@ void AnalogOutput_Ctor(AnalogOutputUGen *unit)
 		return false;
 	}
 
-// 	unit->gAudioFramesPerAnalogFrame = context->audioFrames / context->analogFrames;
+	unit->mAudioFramesPerAnalogFrame = context->audioFrames / context->analogFrames;
 
 	// initiate first sample
 	AnalogOutput_next( unit, 1);  
@@ -209,6 +209,7 @@ void DigitalOutput_next(DigitalOutputUGen *unit, int inNumSamples)
   for(unsigned int n = 0; n < inNumSamples; n++) {
 	// read input
 	newinput = ++*in; // read next input sample
+	if ( newinput > 0 ){ newinput = 1; }{ newinput = 0; }
 	digitalWriteFrameOnce(context, n, pinid, (int) newinput);
   }
 }
