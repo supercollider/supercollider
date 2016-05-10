@@ -70,6 +70,15 @@ foreach(plugin ${plugin_sources})
 endforeach(plugin)
 
 
+if (BELA_FOUND)
+	add_library(BELAUGens MODULE BELAUGens.cpp)
+	set(belaugens BELAUGens)
+	list(APPEND plugins BELAUGens ${BELA_SOURCES})
+	add_definitions("-DBELA" ${XENOMAI_DEFINITIONS} ${BELA_DEFINITIONS})
+	include_directories(${XENOMAI_INCLUDE_DIRS})
+	include_directories(${BELA_INCLUDE_DIRS})
+endif()
+
 if (APPLE)
 	add_library(UIUGens MODULE UIUGens.mm)
 else()
@@ -211,6 +220,12 @@ endforeach()
 foreach(ugen ${uiugens})
 	target_link_libraries(${ugen} ${Boost_THREAD_LIBRARY})
 endforeach()
+
+if( BELA_FOUND )
+  foreach(ugen ${belaugens})
+	target_link_libraries(${ugen} ${XENOMAI_LIBRARIES} ${BELA_LIBRARIES})
+  endforeach()
+endif()
 
 foreach(plugin ${plugins})
 	if(WIN32)
