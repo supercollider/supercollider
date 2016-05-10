@@ -78,6 +78,12 @@ struct WorldOptions
 	const char *mRestrictedPath;
 
 	int mSharedMemoryID;
+	
+#ifdef BELA
+	uint32 mBelaAnalogChannels;
+// 	uint32 mBelaAnalogInputChannels;
+// 	uint32 mBelaAnalogOutputChannels;
+#endif
 };
 
 const struct WorldOptions kDefaultWorldOptions =

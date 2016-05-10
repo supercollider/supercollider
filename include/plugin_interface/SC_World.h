@@ -22,6 +22,10 @@
 #ifndef _SC_World_
 #define _SC_World_
 
+#ifdef BELA
+#include "BeagleRT.h"
+#endif
+
 #include "SC_Types.h"
 #include "SC_Rate.h"
 #include "SC_SndBuf.h"
@@ -105,6 +109,13 @@ struct World
 #ifdef SUPERNOVA
 	nova::padded_rw_spinlock * mAudioBusLocks;
 	nova::spin_lock * mControlBusLock;
+#endif
+
+#ifdef BELA
+	BeagleRTContext *mBelaContext;
+	uint32 mBelaAnalogChannels;
+// 	uint32 mBelaAnalogInputChannels;
+// 	uint32 mBelaAnalogOutputChannels;
 #endif
 };
 

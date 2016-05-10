@@ -81,6 +81,11 @@ void Usage()
 		"   -I <input-streams-enabled>\n"
 		"   -O <output-streams-enabled>\n"
 #endif
+#ifdef BELA
+		"   -J <bela-analog-channels>\n"
+// 		"   -J <bela-analog-input-channels>\n"
+// 		"   -K <bela-analog-output-channels>\n"
+#endif
 #if (_POSIX_MEMLOCK - 0) >=  200112L
 		"   -L enable memory locking\n"
 #endif
@@ -275,6 +280,16 @@ int main(int argc, char* argv[])
 				options.mMemoryLocking = false;
 #endif
 				break;
+#ifdef BELA
+			case 'J' :
+				checkNumArgs(2);
+				options.mBelaAnalogChannels = atoi(argv[j+1]);
+				break;
+// 			case 'K' :
+// 				checkNumArgs(2);
+// 				options.mBelaAnalogOutputChannels = atoi(argv[j+1]);
+// 				break;
+#endif
 			case 'V' :
 				checkNumArgs(2);
 				options.mVerbosity = atoi(argv[j+1]);
