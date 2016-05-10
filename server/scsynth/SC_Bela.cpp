@@ -67,6 +67,8 @@ class SC_BelaDriver : public SC_AudioDriver
 {
 
 	int mInputChannelCount, mOutputChannelCount;
+	int mAudioFramesPerAnalogFrame;
+	
 protected:
 	// Driver interface methods
 	virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
@@ -176,8 +178,17 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 		int32 *inTouched = mWorld->mAudioBusTouched + mWorld->mNumOutputs;
 		int32 *outTouched = mWorld->mAudioBusTouched;
 
-		int minInputs = sc_min(numInputs, (int)mWorld->mNumInputs);
-		int minOutputs = sc_min(numOutputs, (int)mWorld->mNumOutputs);
+		int minInputs = sc_min(numInputs, mWorld->mNumInputs);
+		int minOutputs = sc_min(numOutputs, mWorld->mNumOutputs);
+		
+		int anaInputs = 0;
+		if ( numInputs < (int)mWorld->mNumInputs ){
+		  anaInputs = sc_min( belaContext->analogChannels, (int) (mWorld->mNumInputs - numInputs) );
+		}
+		int anaOutputs = 0;
+		if ( numOutputs < (int)mWorld->mNumOutputs ){
+		  anaOutputs = sc_min( belaContext->analogChannels, (int) (mWorld->mNumOutputs - numOutputs) );
+		}
 
 		int bufFramePos = 0;
 
@@ -209,10 +220,23 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 
 			// copy+touch inputs
 			tch = inTouched;
+			float *dst;
 			for (int k = 0; k < minInputs; ++k) {
-				float *dst = inBuses + k * bufFrames;
+				*dst = inBuses + k * bufFrames;
 				for (int n = 0; n < bufFrames; ++n) {
 					*dst++ = belaContext->audioIn[n * numInputs + k];
+				}
+				*tch++ = bufCounter;
+			}
+			for ( int k = minInputs; k < ( minInputs + anaInputs ); ++k ) {
+				*dst = inBuses + k * bufFrames;
+				int analogPin = k - minInputs; // starting at 0
+				float analogValue; // placeholder for analogvalue
+				for (int n = 0; n < bufFrames; ++n) {
+				  if(!(n % mAudioFramesPerAnalogFrame)) {
+				    analogValue = analogReadFrame(context, n / mAudioFramesPerAnalogFrame, analogPin);
+				  }
+				  *dst++ = analogValue;
 				}
 				*tch++ = bufCounter;
 			}
@@ -250,6 +274,19 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 				} else {
 					for (int n = 0; n < bufFrames; ++n) {
 						belaContext->audioOut[n * numOutputs + k] = 0.0f;
+					}
+				}
+			}
+			for (int k = minOutputs; k < ( minOutputs + anaOutputs ); ++k) {
+				int analogPin = k - minOutputs; // starting at 0
+				if (*tch++ == bufCounter) {
+					float *src = outBuses + k * bufFrames;
+					for (int n = 0; n < bufFrames; ++n) {
+						analogWriteOnce( belaContext, n, analogPin, *src++; );
+					}
+				} else {
+					for (int n = 0; n < bufFrames; ++n) {
+						analogWriteOnce( belaContext, n, analogPin, 0.0f );
 					}
 				}
 			}
@@ -291,8 +328,21 @@ bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 				settings.periodSize, mSCBufLength);
 		return false;
 	}
-
 	// note that Bela doesn't give us an option to choose samplerate, since it's baked-in.
+	
+	// configure the number of analog channels - this will determine their samplerate
+	if ( mWorld->mBelaAnalogChannels > 0 ){
+	  settings.useAnalog = 1;
+	  if ( mWorld->mBelaAnalogChannels < 5 ){ // always use a minimum of 4 analog channels, as we cannot read analog I/O faster than audio rate	    
+	    settings.numAnalogChannels = 4; // analog rate == audio rate
+	  } else {
+	    settings.numAnalogChannels = 8; // analog rate == audie rate / 2
+	  }
+	} else {
+	  settings.useAnalog = 0;
+	  settings.numAnalogChannels = 0;
+	}
+	scprintf("SC_BelaDriver: >>DriverSetup - configured with (%i) analog channels\n", settings.numAnalogChannels );
 
 	// Initialise the PRU audio device. This function prepares audio rendering in BeagleRT. It should be called from main() sometime
 	// after command line option parsing has finished. It will initialise the rendering system, which
@@ -321,6 +371,12 @@ bool setup(BeagleRTContext* belaContext, void* userData)
 	if(userData == 0){
 		scprintf("SC_BelaDriver: error, setup() got no user data\n");
 		return false;
+	}
+	
+	// cast void pointer
+	SC_BelaDriver *belaDriver = (SC_BelaDriver*) userData;
+	if ( belaContext->analogChannels > 0 ){
+	  belaDriver->mAudioFramesPerAnalogFrame = belaContext->audioFrames / belaContext->analogFrames;
 	}
 
 	return true;
