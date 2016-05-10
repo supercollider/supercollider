@@ -1,0 +1,40 @@
+class:: AnalogInput
+summary:: Read data from an analog input of the BELA board
+related:: Classes/AnalogOutput, Classes/DigitalInput, Classes/DigitalOutput, Classes/DigitalIO
+categories::  UGens>BELA
+
+
+Description::
+
+Reads analog data from an analog input of the BELA board.
+
+note::
+This UGEn only works on BeLa
+::
+
+classmethods::
+
+method::ar
+
+argument::analogPin
+
+Analog pin number to read. Pin numbers begin at 0. This value can be modulated at audiorate.
+
+argument::mul
+
+argument::add
+
+Examples::
+
+code::
+// modulate frequency of a sine oscillator
+
+(
+SynthDef("help-AnalogInput",{ arg out=0;
+	Out.ar(out,
+	  SinOsc.ar( AnalogInput.ar( 0 ).exprange( 200, 5000 ), 0, 0.1 )
+	)
+}).play;
+)
+::
+

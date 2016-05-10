@@ -1,0 +1,47 @@
+class:: DigitalOutput
+summary:: Write data to a digital input of the BELA board
+related:: Classes/AnalogInput, Classes/AnalogOutput, Classes/DigitalInput, Classes/DigitalIO
+categories::  UGens>BELA
+
+
+Description::
+
+Write digital data to a digital output of the BELA board.
+
+note::
+This UGEn only works on BeLa.
+::
+
+note::
+If you want to modulate the pin number, you should use the UGen link::Classes/DigitalIO::
+::
+
+classmethods::
+
+method::ar
+
+argument::digitalPin
+
+Digital pin number to write to. Pin numbers begin at 0. This value cannot be modulated.
+
+argument::output
+
+Value to write out to the pin - the value will be 1 when the argument is larger than 0, otherwise 0.
+
+argument::mul
+
+argument::add
+
+Examples::
+
+code::
+// write a sine oscillator's output to a pin
+
+(
+SynthDef("help-DigitalOutput",{ arg out=0;
+    DigitalOutput.ar( 0, SinOsc.ar( 10 ) );
+}).play;
+)
+
+::
+

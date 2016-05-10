@@ -1,0 +1,44 @@
+class:: DigitalInput
+summary:: Read data from a digital input of the BELA board
+related:: Classes/AnalogInput, Classes/AnalogOutput, Classes/DigitalOutput, Classes/DigitalIO
+categories::  UGens>BELA
+
+
+Description::
+
+Reads digital data from an digital input of the BELA board.
+
+note::
+This UGEn only works on BeLa.
+::
+
+note::
+If you want to modulate the pin number, you should use the UGen link::Classes/DigitalIO::
+::
+
+classmethods::
+
+method::ar
+
+argument::digitalPin
+
+Digital pin number to read. Pin numbers begin at 0. This value cannot be modulated.
+
+argument::mul
+
+argument::add
+
+Examples::
+
+code::
+// turn on and off a sine oscillator
+
+(
+SynthDef("help-DigitalInput",{ arg out=0;
+	Out.ar(out,
+	  SinOsc.ar( 500, 0, 0.1 * DigitalInput.ar( 0 ) )
+	)
+}).play;
+)
+::
+
