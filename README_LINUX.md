@@ -99,6 +99,13 @@ for building supercollider:
  - cmake (on some platforms, cmake >= 2.9 may require manual build)
  - qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5webkit5-dev qtpositioning5-dev libqt5sensors5-dev
 
+More details for building on embedded linux platforms (Raspberry Pi, 
+Beaglebone Black) can be found here:
+
+    http://supercollider.github.io/development/building
+
+The recommended version of gcc is 4.8
+
 
 Building
 --------
@@ -161,6 +168,17 @@ If you want to build without it configure cmake like this:
 ```
 $> cmake -DSC_QT=OFF ..
 ```
+
+Note: running headless SC in a X-less environment requires
+jackd without D-bus support. On Raspbian Jessie this requires
+compiling jackd rather than using the packaged version.
+Also note that you will get errors on sclang startup from
+classes requiring Qt. A workaround and more details are 
+described in:
+
+    http://supercollider.github.io/development/building-raspberrypi 
+
+
 
 ### Speeding up repeated builds
 
