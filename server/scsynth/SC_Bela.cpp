@@ -1,6 +1,7 @@
 /*
 	Bela (BeagleRT) audio driver for SuperCollider.
 	Copyright (c) 2015 Dan Stowell. All rights reserved.
+	Copyright (c) 2016 Marije Baalman. All rights reserved.
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -282,11 +283,16 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 				if (*tch++ == bufCounter) {
 					float *src = outBuses + k * bufFrames;
 					for (int n = 0; n < bufFrames; ++n) {
-						analogWriteOnce( belaContext, n, analogPin, *src++; );
+					  if(!(n % mAudioFramesPerAnalogFrame)) {
+					    analogWriteFrameOnce( belaContext, n /   mAudioFramesPerAnalogFrame,
+> analogPin, *src++ ); 
+					  }
 					}
 				} else {
 					for (int n = 0; n < bufFrames; ++n) {
-						analogWriteOnce( belaContext, n, analogPin, 0.0f );
+					  if(!(n % mAudioFramesPerAnalogFrame)) {
+					    analogWriteFrameOnce(context, n /   mAudioFramesPerAnalogFrame,
+> analogPin, 0.0f ); 
 					}
 				}
 			}
