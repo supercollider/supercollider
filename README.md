@@ -106,6 +106,37 @@ So now you should have scsynth running on the device. You should be able to send
     SynthDef("mic", { Out.ar(0, SoundIn.ar([0,1])) }).add;
     z = Synth("mic");
     z.free;
+    
+BELA I/O's
+==========
+
+I/O support for the BeLa is implemented.
+
+The startup flag ```-J``` defines how many analog channels will be enabled.
+
+So for all analog channels to be enabled run scsynth like this:
+
+       scsynth -u 57110 -z 16 -J 8
+
+To use the analog channels all as audio I/O 
+
+       scsynth -u 57110 -z 16 -J 8 -i 10 -o 10
+
+This will start scsynth with 10 inputs and outputs, inputs/outputs 2 - 9 are the analog pins
+
+To use the analog channels all via the UGens only:
+
+       scsynth -u 57110 -z 16 -J 8 -i 2 -o 2
+       
+This will start scsynth with 2 audio inputs and outputs, the analog I/O will only be accessible through UGens, but are all enabled.
+
+If you want higher sample rates of the analog I/O, you can set the number of channels to 4; the number of available channels is then 4.
+
+       scsynth -u 57110 -z 16 -J 4 -i 2 -o 2
+
+
+The UGens ```AnalogInput```, ```AnalogOutput```, ```DigitalInput```, ```DigitalOutput```, ```DigitalIO``` give access to the pins.
+
 
 Monitoring its performance
 ======================================================
