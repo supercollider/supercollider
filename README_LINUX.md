@@ -172,7 +172,12 @@ $> cmake -DSC_QT=OFF ..
 Note: running headless SC in a X-less environment requires
 jackd without D-bus support. On Raspbian Jessie this requires
 compiling jackd rather than using the packaged version.
-For details see the link given above under "Build Requirements"
+Also note that you will get errors on sclang startup from
+classes requiring Qt. A workaround and more details are 
+described in:
+
+    http://supercollider.github.io/development/building-raspberrypi 
+
 
 
 ### Speeding up repeated builds
