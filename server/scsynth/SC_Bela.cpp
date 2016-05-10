@@ -131,7 +131,9 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 
 	sc_SetDenormalFlags();
 	World *world = mWorld;
-
+	// add a pointer to belaWorld
+	mWorld->mBelaContext = belaContext;
+	
 	// NOTE: code here is adapted from the SC_Jack.cpp, the version not using the DLL
 
 	// Use Xenomai-friendly clock_gettime() -- note that this requires a -wrap argument to build
