@@ -1,6 +1,7 @@
 /*
  * BELAUGens to access the analog and digital I/O
- *  
+ *  created by nescivi, (c) 2016
+ *  https://www.nescivi.eu
  */
 
 /* input: id of analog pin to read; can be modulated at audiorate
