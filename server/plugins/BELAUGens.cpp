@@ -100,7 +100,7 @@ void AnalogInput_Ctor(AnalogInputUGen *unit)
   
 	if(context->analogFrames == 0 || context->analogFrames > context->audioFrames) {
 		rt_printf("Error: the UGen needs BELA analog enabled, with 4 or 8 channels\n");
-		return false;
+		return;
 	}
 
 	unit->mAudioFramesPerAnalogFrame = context->audioFrames / context->analogFrames;
@@ -143,7 +143,7 @@ void AnalogOutput_Ctor(AnalogOutputUGen *unit)
   
 	if(context->analogFrames == 0 ) {
 		rt_printf("Error: the UGen needs BELA analog enabled\n");
-		return false;
+		return;
 	}
 
 	unit->mAudioFramesPerAnalogFrame = context->audioFrames / context->analogFrames;
