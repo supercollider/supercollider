@@ -297,10 +297,9 @@ if(MINGW)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mstackrealign -fno-strict-aliasing")
 endif()
 
-# support building on Raspberry Pi 1/2/3 and BBB
+# support for building on Raspberry Pi 1/2/3 and BBB
 if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_SYSTEM_PROCESSOR STREQUAL "armv7l")
   foreach(flag CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
-    set(${flag} "${${flag}} -mtune=cortex-a7")
     set(${flag} "${${flag}} -mfloat-abi=hard")
     set(${flag} "${${flag}} -mfpu=neon")
   endforeach()
