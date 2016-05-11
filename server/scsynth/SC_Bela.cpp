@@ -235,7 +235,7 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 				float analogValue; // placeholder for analogvalue
 				for (int n = 0; n < bufFrames; ++n) {
 				  if(!(n % mAudioFramesPerAnalogFrame)) {
-				    analogValue = analogReadFrame(context, n / mAudioFramesPerAnalogFrame, analogPin);
+				    analogValue = analogReadFrame(belaContext, n / mAudioFramesPerAnalogFrame, analogPin);
 				  }
 				  *dst++ = analogValue;
 				}
@@ -291,7 +291,7 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 				} else {
 					for (int n = 0; n < bufFrames; ++n) {
 					  if(!(n % mAudioFramesPerAnalogFrame)) {
-					    analogWriteFrameOnce(context, n /   mAudioFramesPerAnalogFrame,
+					    analogWriteFrameOnce(belaContext, n /   mAudioFramesPerAnalogFrame,
 > analogPin, 0.0f ); 
 					}
 				}
