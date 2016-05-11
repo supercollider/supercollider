@@ -88,11 +88,11 @@ if(AUDIOAPI STREQUAL bela)
 endif()
 
 if (BELA_FOUND)
-	set( bela_pluginsources
+	add_library(BELAUGens MODULE 
 	  BELAUGens.cpp
-	  )
-	list(APPEND bela_pluginsources ${BELA_SOURCES})
-	add_library(BELAUGens MODULE bela_pluginsources ${scplugin_common_sources})
+	  ${BELA_SOURCES}
+# 	  ${scplugin_common_sources}
+	)
 	set(belaugens BELAUGens)
 	add_definitions("-DBELA" ${XENOMAI_DEFINITIONS} ${BELA_DEFINITIONS})
 	include_directories(${XENOMAI_INCLUDE_DIRS})
