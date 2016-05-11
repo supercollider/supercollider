@@ -298,14 +298,8 @@ void DigitalIO_Ctor(DigitalIO *unit)
 bool setup(BeagleRTContext* belaContext, void* userData)
 {
 	if(userData == 0){
-		printf("SC_BelaDriver: error, setup() got no user data\n");
+		printf("BelaPLUGINS: error, setup() got no user data\n");
 		return false;
-	}
-	
-	// cast void pointer
-	SC_BelaDriver *belaDriver = (SC_BelaDriver*) userData;
-	if ( belaContext->analogChannels > 0 ){
-	  belaDriver->setAudioFramesPerAnalogFrame( belaContext->audioFrames / belaContext->analogFrames );
 	}
 
 	return true;
