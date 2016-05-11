@@ -268,7 +268,7 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 	// (even another TempoClock's logical time).
 	tempo_ { arg newTempo;
 		this.setTempoAtBeat(newTempo, this.beats);
-		this.changed(\tempo);  // this line is added
+		this.changed(\tempo);
 	}
 	beatsPerBar_ { arg newBeatsPerBar;
 		if (thisThread.clock != this) {
@@ -281,6 +281,7 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 	// for setting the tempo at the current elapsed time .
 	etempo_ { arg newTempo;
 		this.setTempoAtSec(newTempo, Main.elapsedTime);
+		this.changed(\tempo);
 	}
 
 	beats2secs { arg beats;
