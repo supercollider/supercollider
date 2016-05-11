@@ -43,6 +43,9 @@ ServerOptions {
 	var <>pingsBeforeConsideredDead = 5;
 
 	var <>maxLogins = 1;
+	
+	// extension for BELA
+	var <>numAnalogIOChannels;
 
 	device {
 		^if(inDevice == outDevice)
@@ -164,6 +167,10 @@ ServerOptions {
 		});
 		if (maxLogins.notNil, {
 			o = o ++ " -l " ++ maxLogins;
+		});
+		// addition for BELA
+		if (numAnalogIOChannels.notNil, {
+			o = o ++ " -J " ++ numAnalogIOChannels;
 		});
 		^o
 	}
