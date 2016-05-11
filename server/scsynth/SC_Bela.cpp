@@ -80,6 +80,8 @@ public:
 	SC_BelaDriver(struct World *inWorld);
 	virtual ~SC_BelaDriver();
 
+	void setAudioFramesPerAnalogFrame( int afpaf );
+	
 	void BelaAudioCallback(BeagleRTContext *belaContext);
 	static void staticMAudioSyncSignal();
 	static AuxiliaryTask mAudioSyncSignalTask;
@@ -362,6 +364,12 @@ bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 	return true;
 }
 
+
+void SC_BelaDriver::setAudioFramesPerAnalogFrame( int afpaf ){
+  mAudioFramesPerAnalogFrame = afpaf;
+}
+
+
 // setup() is called once before the audio rendering starts.
 // Use it to perform any initialisation and allocation which is dependent
 // on the period size or sample rate.
@@ -380,7 +388,7 @@ bool setup(BeagleRTContext* belaContext, void* userData)
 	// cast void pointer
 	SC_BelaDriver *belaDriver = (SC_BelaDriver*) userData;
 	if ( belaContext->analogChannels > 0 ){
-	  belaDriver->mAudioFramesPerAnalogFrame = belaContext->audioFrames / belaContext->analogFrames;
+	  belaDriver->setAudioFramesPerAnalogFrame( belaContext->audioFrames / belaContext->analogFrames );
 	}
 
 	return true;
