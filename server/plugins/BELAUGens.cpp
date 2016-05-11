@@ -76,9 +76,9 @@ void AnalogInput_next(AnalogInputUGen *unit, int inNumSamples)
 {
   World *world = unit->mWorld;
   int bufLength = world->mBufLength;
-  BeagleRTContext *context = world>mBelaContext;
+  BeagleRTContext *context = world->mBelaContext;
 
-  float *fin = IN0(0); // analog in pin, can be modulated
+  float *fin = IN(0); // analog in pin, can be modulated
   float analogPin;
   float analogValue = 0;
   float *out = ZOUT(0);
@@ -117,9 +117,9 @@ void AnalogOutput_next(AnalogOutputUGen *unit, int inNumSamples)
 {
   World *world = unit->mWorld;
   int bufLength = world->mBufLength;
-  BeagleRTContext *context = world>mBelaContext;
+  BeagleRTContext *context = world->mBelaContext;
 
-  float *fin = IN0(0); // analog in pin, can be modulated
+  float *fin = IN(0); // analog in pin, can be modulated
   float analogPin;
   float *in = IN(1);
   
@@ -160,7 +160,7 @@ void DigitalInput_next(DigitalInputUGen *unit, int inNumSamples)
 {
   World *world = unit->mWorld;
   int bufLength = world->mBufLength;
-  BeagleRTContext *context = world>mBelaContext;
+  BeagleRTContext *context = world->mBelaContext;
 
   int pinid = unit->mDigitalPin;
   int digitalValue;
@@ -197,7 +197,7 @@ void DigitalOutput_next(DigitalOutputUGen *unit, int inNumSamples)
 {
   World *world = unit->mWorld;
   int bufLength = world->mBufLength;
-  BeagleRTContext *context = world>mBelaContext;
+  BeagleRTContext *context = world->mBelaContext;
 
   int pinid = unit->mDigitalPin;
   float *in = IN(1);
@@ -235,7 +235,7 @@ void DigitalIO_next(DigitalIOUGen *unit, int inNumSamples)
 {
   World *world = unit->mWorld;
   int bufLength = world->mBufLength;
-  BeagleRTContext *context = world>mBelaContext;
+  BeagleRTContext *context = world->mBelaContext;
 
   float *pinid = IN(0);
   float *in = IN(1); // input value
