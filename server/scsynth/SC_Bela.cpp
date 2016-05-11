@@ -223,14 +223,14 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 			tch = inTouched;
 			float *dst;
 			for (int k = 0; k < minInputs; ++k) {
-				*dst = inBuses + k * bufFrames;
+				dst = inBuses + k * bufFrames;
 				for (int n = 0; n < bufFrames; ++n) {
 					*dst++ = belaContext->audioIn[n * numInputs + k];
 				}
 				*tch++ = bufCounter;
 			}
 			for ( int k = minInputs; k < ( minInputs + anaInputs ); ++k ) {
-				*dst = inBuses + k * bufFrames;
+				dst = inBuses + k * bufFrames;
 				int analogPin = k - minInputs; // starting at 0
 				float analogValue; // placeholder for analogvalue
 				for (int n = 0; n < bufFrames; ++n) {
@@ -284,19 +284,17 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 					float *src = outBuses + k * bufFrames;
 					for (int n = 0; n < bufFrames; ++n) {
 					  if(!(n % mAudioFramesPerAnalogFrame)) {
-					    analogWriteFrameOnce( belaContext, n /   mAudioFramesPerAnalogFrame,
-> analogPin, *src++ ); 
+					    analogWriteFrameOnce( belaContext, n / mAudioFramesPerAnalogFrame, analogPin, *src++ ); 
 					  }
 					}
 				} else {
 					for (int n = 0; n < bufFrames; ++n) {
 					  if(!(n % mAudioFramesPerAnalogFrame)) {
-					    analogWriteFrameOnce(belaContext, n /   mAudioFramesPerAnalogFrame,
-> analogPin, 0.0f ); 
+					    analogWriteFrameOnce(belaContext, n / mAudioFramesPerAnalogFrame, analogPin, 0.0f ); 
+					  }
 					}
 				}
 			}
-
 			// advance OSC time
 			mOSCbuftime = oscTime = nextTime;
 		}
