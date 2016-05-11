@@ -1200,12 +1200,18 @@ int prTempoClock_SetTempoAtBeat(struct VMGlobals *g, int numArgsPushed)
 		error("clock is not running.\n");
 		return errFailed;
 	}
+	if(clock->mTempo <= 0.f) {
+		error("cannot set tempo from this method. The message 'etempo_' can be used instead.\n");
+		// prTempoClock_SetTempoAtTime can be used.
+		return errFailed;
+	}
 
 	double tempo, beat;
 	int err = slotDoubleVal(b, &tempo);
 	if (err) return errFailed;
 	if (tempo <= 0.) {
-		error("invalid tempo %g\n", tempo);
+		error("invalid tempo %g. The message 'etempo_' can be used instead.\n", tempo);
+		// prTempoClock_SetTempoAtTime can be used.
 		return errFailed;
 	}
 
