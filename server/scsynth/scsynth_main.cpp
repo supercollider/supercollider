@@ -150,7 +150,11 @@ int main(int argc, char* argv[])
 	WorldOptions options = kDefaultWorldOptions;
 
 	for (int i=1; i<argc;) {
+#ifdef BELA
+		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utaioczblndpmwZrCNSDIOMHvVRUhPLJ", argv[i][1]) == 0) {
+#else
 		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utaioczblndpmwZrCNSDIOMHvVRUhPL", argv[i][1]) == 0) {
+#endif
 			scprintf("ERROR: Invalid option %s\n", argv[i]);
 			Usage();
 		}
