@@ -77,9 +77,9 @@ Next we install. **CLASH WARNING:** Note that my version of Bela already comes w
     make install
 
 
-# FROM testing image - https://github.com/BelaPlatform/bela-image/releases/tag/v0.1-testing-2016.04.19
+# FROM testing image
 
-This image already has a good version of gcc and g++ (4.9).
+Image from (https://github.com/BelaPlatform/bela-image/releases/tag/v0.1-testing-2016.04.19)
 
 Preparation
 ===========
@@ -116,6 +116,10 @@ I believe that the Bela system image already includes most of SuperCollider's bu
 Compiling and installing
 ========================
 
+We need gcc-4.8 / g++-4.8 as 4.9 causes a weird bug (https://github.com/supercollider/supercollider/issues/1450):
+
+    apt-get install gcc-4.8 g++-4.8
+
 Get the newest cmake:
 
     apt-get update
@@ -134,11 +138,11 @@ Then here's how to build:
 
     mkdir /extrabela/build
     cd /extrabela/build
-    # note that we explicitly choose the compiler version 4.9 here too, whichever command we use
+    # note that we explicitly choose the compiler version 4.8 here too, whichever command we use
     # here's the command WITHOUT ccache
-    cmake /extrabela/supercollider -DCMAKE_C_COMPILER=gcc-4.9 -DCMAKE_CXX_COMPILER=g++-4.9 -DNOVA_SIMD=ON -DSSE=OFF -DSSE2=OFF -DINSTALL_HELP=OFF -DSC_QT=OFF -DSC_IDE=OFF -DSC_EL=OFF -DSC_ED=OFF -DSC_VIM=OFF -DSUPERNOVA=OFF -DNO_AVAHI=ON -DNATIVE=ON -DENABLE_TESTSUITE=OFF -DAUDIOAPI=bela
+    cmake /extrabela/supercollider -DCMAKE_C_COMPILER=gcc-4.8 -DCMAKE_CXX_COMPILER=g++-4.8 -DNOVA_SIMD=ON -DSSE=OFF -DSSE2=OFF -DINSTALL_HELP=OFF -DSC_QT=OFF -DSC_IDE=OFF -DSC_EL=OFF -DSC_ED=OFF -DSC_VIM=OFF -DSUPERNOVA=OFF -DNO_AVAHI=ON -DNATIVE=ON -DENABLE_TESTSUITE=OFF -DAUDIOAPI=bela
     # or here's the command WITH ccache
-    cmake /extrabela/supercollider -DCMAKE_C_COMPILER=/usr/lib/ccache/gcc-4.9 -DCMAKE_CXX_COMPILER=/usr/lib/ccache/g++-4.9 -DNOVA_SIMD=ON -DSSE=OFF -DSSE2=OFF -DINSTALL_HELP=OFF -DSC_QT=OFF -DSC_IDE=OFF -DSC_EL=OFF -DSC_ED=OFF -DSC_VIM=OFF -DSUPERNOVA=OFF -DNO_AVAHI=ON -DNATIVE=ON -DENABLE_TESTSUITE=OFF -DAUDIOAPI=bela
+    cmake /extrabela/supercollider -DCMAKE_C_COMPILER=/usr/lib/ccache/gcc-4.8 -DCMAKE_CXX_COMPILER=/usr/lib/ccache/g++-4.8 -DNOVA_SIMD=ON -DSSE=OFF -DSSE2=OFF -DINSTALL_HELP=OFF -DSC_QT=OFF -DSC_IDE=OFF -DSC_EL=OFF -DSC_ED=OFF -DSC_VIM=OFF -DSUPERNOVA=OFF -DNO_AVAHI=ON -DNATIVE=ON -DENABLE_TESTSUITE=OFF -DAUDIOAPI=bela
     make
 
 The `make` step will take a little while, about 30 minutes for me. It seems it is stuck for a long time at compiling the BinaryOpUGens, but it will get past that.
