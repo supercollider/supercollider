@@ -287,36 +287,36 @@ void DigitalIO_Ctor(DigitalIO *unit)
 //   
 // }
 
-// the functions below are needed
-
-void render(BeagleRTContext *belaContext, void *userData)
-{
-// 	SC_BelaDriver *driver = (SC_BelaDriver*)userData;
-// 	driver->BelaAudioCallback(belaContext);
-}
-// setup() is called once before the audio rendering starts.
-// Use it to perform any initialisation and allocation which is dependent
-// on the period size or sample rate.
-//
-// userData holds an opaque pointer to a data structure that was passed
-// in from the call to initAudio().
-//
-// Return true on success; returning false halts the program.
-bool setup(BeagleRTContext* belaContext, void* userData)
-{
-	if(userData == 0){
-		printf("BelaPLUGINS: error, setup() got no user data\n");
-		return false;
-	}
-
-	return true;
-}
-
-// cleanup() is called once at the end, after the audio has stopped.
-// Release any resources that were allocated in setup().
-void cleanup(BeagleRTContext *belaContext, void *userData)
-{
-}
+// // the functions below are needed??
+// 
+// void render(BeagleRTContext *belaContext, void *userData)
+// {
+// // 	SC_BelaDriver *driver = (SC_BelaDriver*)userData;
+// // 	driver->BelaAudioCallback(belaContext);
+// }
+// // setup() is called once before the audio rendering starts.
+// // Use it to perform any initialisation and allocation which is dependent
+// // on the period size or sample rate.
+// //
+// // userData holds an opaque pointer to a data structure that was passed
+// // in from the call to initAudio().
+// //
+// // Return true on success; returning false halts the program.
+// bool setup(BeagleRTContext* belaContext, void* userData)
+// {
+// 	if(userData == 0){
+// 		printf("BelaPLUGINS: error, setup() got no user data\n");
+// 		return false;
+// 	}
+// 
+// 	return true;
+// }
+// 
+// // cleanup() is called once at the end, after the audio has stopped.
+// // Release any resources that were allocated in setup().
+// void cleanup(BeagleRTContext *belaContext, void *userData)
+// {
+// }
 
 
 PluginLoad(BELA)

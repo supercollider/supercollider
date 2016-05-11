@@ -102,7 +102,7 @@ if (BELA_FOUND)
 	set(CMAKE_EXECUTABLE_RUNTIME_CXX_FLAG     "-Wl,-wrap,clock_gettime,-rpath,")
 	set(CMAKE_SHARED_LIBRARY_RUNTIME_C_FLAG   "-Wl,-wrap,clock_gettime,-rpath,")
 	set(CMAKE_SHARED_LIBRARY_RUNTIME_CXX_FLAG "-Wl,-wrap,clock_gettime,-rpath,")
-	target_link_libraries(BELAUGens ${XENOMAI_LIBRARIES} ${BELA_LIBRARIES})
+	target_link_libraries(BELAUGens ${XENOMAI_LIBRARIES} ${BELA_LIBRARIES} libscsynth)
 
 	list(APPEND plugins BELAUGens)
 endif()
