@@ -287,6 +287,37 @@ void DigitalIO_Ctor(DigitalIO *unit)
 //   
 // }
 
+// setup() is called once before the audio rendering starts.
+// Use it to perform any initialisation and allocation which is dependent
+// on the period size or sample rate.
+//
+// userData holds an opaque pointer to a data structure that was passed
+// in from the call to initAudio().
+//
+// Return true on success; returning false halts the program.
+bool setup(BeagleRTContext* belaContext, void* userData)
+{
+	if(userData == 0){
+		scprintf("SC_BelaDriver: error, setup() got no user data\n");
+		return false;
+	}
+	
+	// cast void pointer
+	SC_BelaDriver *belaDriver = (SC_BelaDriver*) userData;
+	if ( belaContext->analogChannels > 0 ){
+	  belaDriver->setAudioFramesPerAnalogFrame( belaContext->audioFrames / belaContext->analogFrames );
+	}
+
+	return true;
+}
+
+// cleanup() is called once at the end, after the audio has stopped.
+// Release any resources that were allocated in setup().
+void cleanup(BeagleRTContext *belaContext, void *userData)
+{
+}
+
+
 PluginLoad(BELA)
 {
 	ft = inTable;
