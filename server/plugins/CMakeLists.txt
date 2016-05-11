@@ -97,6 +97,8 @@ if (BELA_FOUND)
 	add_definitions("-DBELA" ${XENOMAI_DEFINITIONS} ${BELA_DEFINITIONS})
 	include_directories(${XENOMAI_INCLUDE_DIRS})
 	include_directories(${BELA_INCLUDE_DIRS})
+	
+	list(APPEND plugins BELAUGens)
 endif()
 
 if (APPLE)
