@@ -298,7 +298,7 @@ void DigitalIO_Ctor(DigitalIO *unit)
 bool setup(BeagleRTContext* belaContext, void* userData)
 {
 	if(userData == 0){
-		scprintf("SC_BelaDriver: error, setup() got no user data\n");
+		printf("SC_BelaDriver: error, setup() got no user data\n");
 		return false;
 	}
 	
