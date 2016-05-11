@@ -287,6 +287,13 @@ void DigitalIO_Ctor(DigitalIO *unit)
 //   
 // }
 
+// the functions below are needed
+
+void render(BeagleRTContext *belaContext, void *userData)
+{
+// 	SC_BelaDriver *driver = (SC_BelaDriver*)userData;
+// 	driver->BelaAudioCallback(belaContext);
+}
 // setup() is called once before the audio rendering starts.
 // Use it to perform any initialisation and allocation which is dependent
 // on the period size or sample rate.
