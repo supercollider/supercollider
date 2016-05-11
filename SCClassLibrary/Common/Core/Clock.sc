@@ -251,7 +251,7 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		_TempoClock_SchedAbs
 		^this.primitiveFailed
 	}
-	clear { | releaseNodes = true |
+	clear { arg releaseNodes = true;
 		// flag tells EventStreamPlayers that CmdPeriod is removing them, so
 		// nodes are already freed
 		// NOTE: queue is an Array, not a PriorityQueue, but it's used as such internally. That's why each item uses 3 slots.
@@ -278,7 +278,7 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		this.setMeterAtBeat(newBeatsPerBar, thisThread.beats);
 	}
 
-	// for setting the tempo at the current elapsed time .
+	// for setting the tempo at the current elapsed time.
 	etempo_ { arg newTempo;
 		this.setTempoAtSec(newTempo, Main.elapsedTime);
 		this.changed(\tempo);
