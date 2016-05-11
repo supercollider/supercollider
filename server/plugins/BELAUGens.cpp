@@ -131,7 +131,7 @@ void AnalogOutput_next(AnalogOutputUGen *unit, int inNumSamples)
 	// read input
 	analogPin = (++*fin);
 	newinput = ++*in; // read next input sample
-	if(!(n % gAudioFramesPerAnalogFrame)) {
+	if(!(n % unit->mAudioFramesPerAnalogFrame)) {
 	  analogWriteFrameOnce(context,  n/ unit->mAudioFramesPerAnalogFrame, (int) analogPin, newinput);
 	}
   }
