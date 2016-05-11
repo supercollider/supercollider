@@ -28,8 +28,9 @@
 #include <math.h>
 
 #include <windows.h>
-#include "hidapi_parser.h"
 #include <hidsdi.h>
+#include "hidapi_parser.h"
+
 
 
 // SET IN CMAKE
@@ -1235,17 +1236,157 @@ void hid_element_set_output_value( struct hid_dev_desc * devdesc, struct hid_dev
 
 
 #ifdef WIN32
+
+void debug_element(struct hid_device_element *element)
+{
+    printf("index: %d\n", element->index);
+    printf("parent_collection: %p\n", element->parent_collection);
+    printf("io_type: %d\n", element->io_type);
+    printf("usage_page: %d\n", element->usage_page);
+    printf("usage_min: %d\n", element->usage_min);
+    printf("usage_max: %d\n", element->usage_max);
+    printf("usage: %d\n", element->usage);
+    printf("type: %d\n", element->type);
+    printf("isarray: %d\n", element->isarray);
+    printf("isrelative: %d\n", element->isrelative);
+    printf("isvariable: %d\n", element->isvariable);
+    printf("logical_min: %d\n", element->logical_min);
+    printf("logical_max: %d\n", element->logical_max);
+    printf("phys_min: %d\n", element->phys_min);
+    printf("phys_max: %d\n", element->phys_max);
+    printf("unit: %d\n", element->unit);
+    printf("unit_exponent: %d\n", element->unit_exponent);
+    printf("report_id: %d\n", element->report_id);
+    printf("report_size: %d\n", element->report_size);
+    printf("report_index: %d\n", element->report_index);
+    fflush(stdout);
+}
+
+void debug_collection(struct hid_device_collection *collection, int col_index)
+{
+    printf("COLLECTION[%d] @%p:\n", col_index, collection);
+    printf("index: %d\n", collection->index);
+    printf("type: %d\n", collection->type);
+    printf("usage_page: %d\n", collection->usage_page);
+    printf("usage_index: %d\n", collection->usage_index);
+    printf("parent: %p\n", collection->parent_collection);
+    printf("children: %d\n", collection->num_collections);
+    if (collection->num_collections > 0)
+        printf("first_collection: %p\n", collection->first_collection);
+    if (collection->next_collection)
+        printf("next_collection: %p\n", collection->next_collection);
+    fflush(stdout);
+}
+
+
+
+static int hid_parse_caps(struct hid_device_element **elements, int *elements_array_index, struct hid_device_collection **collections, struct hid_device_collection *device_collection, 
+    const PHIDP_PREPARSED_DATA pp_data, const PHIDP_CAPS caps, int report_type, BOOL is_button, int *index)
+{
+    USHORT numCaps;
+    enum _HIDP_REPORT_TYPE api_report_type;
+
+    if (is_button){
+        switch (report_type){
+            case HID_REPORT_TYPE_INPUT: numCaps = caps->NumberInputButtonCaps; api_report_type = HidP_Input; break;
+            case HID_REPORT_TYPE_OUTPUT: numCaps = caps->NumberOutputButtonCaps; api_report_type = HidP_Output; break;
+            case HID_REPORT_TYPE_FEATURE: numCaps = caps->NumberFeatureButtonCaps; api_report_type = HidP_Feature; break;
+        }
+        PHIDP_BUTTON_CAPS pButtonCaps;
+        pButtonCaps = malloc(numCaps * sizeof(HIDP_BUTTON_CAPS));
+        if (HidP_GetButtonCaps(api_report_type, pButtonCaps, &numCaps, pp_data) != HIDP_STATUS_SUCCESS){
+            free(pButtonCaps);
+            return -1;
+        }
+        for (int i = 0; i < numCaps; i++, (*elements_array_index)++){
+            PHIDP_BUTTON_CAPS pCaps = &pButtonCaps[i];
+            elements[*elements_array_index]->parent_collection = collections[pCaps->LinkCollection];
+            if (!collections[pCaps->LinkCollection]->first_element){
+                collections[pCaps->LinkCollection]->first_element = elements[*elements_array_index];
+            }elements[*elements_array_index]->io_type = report_type;
+            elements[*elements_array_index]->index = (*index)++;
+            elements[*elements_array_index]->usage_page = pCaps->UsagePage;
+            if (pCaps->IsRange){
+                elements[*elements_array_index]->usage_min = pCaps->Range.UsageMin;
+                elements[*elements_array_index]->usage_max = pCaps->Range.UsageMax;
+            }
+            else{
+                elements[*elements_array_index]->usage = pCaps->NotRange.Usage;
+            }
+            USHORT bitField = pCaps->BitField;
+            elements[*elements_array_index]->type = bitField & 0xf;
+            elements[*elements_array_index]->isarray = ((bitField & HID_ITEM_VARIABLE) == 0);
+            elements[*elements_array_index]->isrelative = pCaps->IsAbsolute ? 0 : 1;
+            elements[*elements_array_index]->isvariable = ((bitField & HID_ITEM_CONSTANT) == 0);
+            elements[*elements_array_index]->report_id = pCaps->ReportID;
+            elements[*elements_array_index]->report_size = 0; // TODO: not sure about this one. The API does not seem to provide this
+            elements[*elements_array_index]->report_index = 0; // TODO: not sure about this one. The API does not seem to provide this
+            debug_element(elements[*elements_array_index]);
+        }
+        free(pButtonCaps);
+
+    }
+    else {
+        switch (report_type){
+            case HID_REPORT_TYPE_INPUT: numCaps = caps->NumberInputValueCaps; api_report_type = HidP_Input; break;
+            case HID_REPORT_TYPE_OUTPUT: numCaps = caps->NumberOutputValueCaps; api_report_type = HidP_Output; break;
+            case HID_REPORT_TYPE_FEATURE: numCaps = caps->NumberFeatureValueCaps; api_report_type = HidP_Feature; break;
+        }
+        PHIDP_VALUE_CAPS pValueCaps;
+        pValueCaps = malloc(numCaps * sizeof(HIDP_VALUE_CAPS));
+        if (HidP_GetValueCaps(api_report_type, pValueCaps, &numCaps, pp_data) != HIDP_STATUS_SUCCESS){
+            free(pValueCaps);
+            return -1;
+        }
+        for (int i = 0; i < numCaps; i++, *(elements_array_index)++){
+            PHIDP_VALUE_CAPS pCaps = &pValueCaps[i];
+            elements[*elements_array_index]->parent_collection = collections[pCaps->LinkCollection];
+            if (!collections[pCaps->LinkCollection]->first_element){
+                collections[pCaps->LinkCollection]->first_element = elements[*elements_array_index];
+            }
+            elements[*elements_array_index]->io_type = HID_REPORT_TYPE_INPUT;
+            elements[*elements_array_index]->index = (*index)++;
+            elements[*elements_array_index]->usage_page = pCaps->UsagePage;
+            if (pCaps->IsRange){
+                elements[*elements_array_index]->usage_min = pCaps->Range.UsageMin;
+                elements[*elements_array_index]->usage_max = pCaps->Range.UsageMax;
+            }
+            else{
+                elements[*elements_array_index]->usage = pCaps->NotRange.Usage;
+            }
+            USHORT bitField = pCaps->BitField;
+            elements[*elements_array_index]->type = bitField & 0xf;
+            elements[*elements_array_index]->isarray = ((bitField & HID_ITEM_VARIABLE) == 0);
+            elements[*elements_array_index]->isrelative = pCaps->IsAbsolute ? 0 : 1;
+            elements[*elements_array_index]->isvariable = ((bitField & HID_ITEM_CONSTANT) == 0);
+            elements[*elements_array_index]->logical_min = pCaps->LogicalMin;
+            elements[*elements_array_index]->logical_max = pCaps->LogicalMax;
+            elements[*elements_array_index]->phys_min = pCaps->PhysicalMin;
+            elements[*elements_array_index]->phys_max = pCaps->PhysicalMax;
+            elements[*elements_array_index]->unit = pCaps->Units;
+            elements[*elements_array_index]->unit_exponent = pCaps->UnitsExp;
+            elements[*elements_array_index]->report_id = pCaps->ReportID;
+            elements[*elements_array_index]->report_size = pCaps->BitSize;
+            elements[*elements_array_index]->report_index = pCaps->ReportCount;
+            debug_element(elements[*elements_array_index]);
+        }
+        free(pValueCaps);
+    }
+}
+
+
+
 int hid_send_element_output( struct hid_dev_desc * devdesc, struct hid_device_element * element ){
 
 }
 int hid_parse_input_elements_values( unsigned char* buf, struct hid_dev_desc * devdesc ){
-
+    // TO see how to handle HID Reports
+    //See https ://msdn.microsoft.com/en-us/library/windows/hardware/ff538783(v=vs.85).aspx
 }
 void hid_parse_element_info( struct hid_dev_desc * devdesc ){
 
     hid_device * dev = devdesc->device;
-    struct hid_device_info *dev_info = devdesc->info;
-
+    
     struct hid_device_collection * device_collection = hid_new_collection();
     devdesc->device_collection = device_collection;
 
@@ -1262,15 +1403,17 @@ void hid_parse_element_info( struct hid_dev_desc * devdesc ){
     report_ids[0] = 0;
     report_lengths[0] = 0;
 
+    // To keep track of indices
+    int new_index = 0; 
 
     int numColls = 0;
 
-    int nt_res, nt_res2;
+    NTSTATUS nt_res;
     PHIDP_PREPARSED_DATA pp_data = NULL;
     HIDP_CAPS caps;
 
     /* Open a handle to the device */
-    HANDLE dev_handle = CreateFileA(dev_info->path, 0, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, 0);
+    HANDLE dev_handle = get_device_handle(dev);
 
     /* Check validity of write_handle. */
     if (dev_handle == INVALID_HANDLE_VALUE) {
@@ -1282,55 +1425,133 @@ void hid_parse_element_info( struct hid_dev_desc * devdesc ){
 
     /* Get the Usage Page and Usage for this device. */
     BOOLEAN res = HidD_GetPreparsedData(dev_handle, &pp_data);
-    if (res) {
-        nt_res = HidP_GetCaps(pp_data, &caps);
-        if (nt_res == HIDP_STATUS_SUCCESS) {
-            numColls = caps.NumberLinkCollectionNodes;
-
-            device_collection->num_collections = numColls;
-            device_collection->usage_page = caps.UsagePage;
-            device_collection->usage_index = caps.Usage;
-
-            device_collection->index = 0;
-            // type
-            // num_elements
-            // usage_min , usage_max
-            // parent_collection
-            // next_collection
-            // first_collection
-            // first_element
-
-            // num_elements:
-            // NumberInputButtonCaps + NumberInputValueCaps +
-            // NumberOutputButtonCaps + NumberOutputValueCaps +
-            // NumberFeatureButtonCaps + NumberFeatureValueCaps
-            device_collection->num_elements =
-                    caps.NumberInputButtonCaps + caps.NumberInputValueCaps +
-                    caps.NumberOutputButtonCaps + caps.NumberOutputValueCaps +
-                    caps.NumberFeatureButtonCaps + caps.NumberFeatureValueCaps;
-
-
-            PHIDP_LINK_COLLECTION_NODE *linkCollectionNodes;
-            linkCollectionNodes = malloc(numColls * sizeof(HIDP_LINK_COLLECTION_NODE));
-            nt_res2 = HidP_GetLinkCollectionNodes( linkCollectionNodes, numColls, pp_data );
-            if (nt_res2 == HIDP_STATUS_SUCCESS) {
-                // then I have the linkCollectionNodes
-            }
-            // input
-            int numValueCaps = caps.NumberInputValueCaps;
-            PHIDP_VALUE_CAPS *pInputValueCaps;
-            pInputValueCaps = malloc(numValueCaps * sizeof(HIDP_VALUE_CAPS));
-            nt_res2 = HidP_GetValueCaps( HidP_Input, pInputValueCaps, numValueCaps, pp_data );
-            // output
-            // feature
-
-            free(linkCollectionNodes);
-            free(pInputValueCaps);
-        }
-        HidD_FreePreparsedData(pp_data);
-        CloseHandle(dev_handle);
-        
+    if (!res){
+        // TODO: what should we do here?
+        return;
     }
+
+    nt_res = HidP_GetCaps(pp_data, &caps);
+    if (nt_res != HIDP_STATUS_SUCCESS) {
+        // TODO: what should we do here
+        return;
+    }
+    numColls = caps.NumberLinkCollectionNodes;
+
+    device_collection->num_collections = numColls;
+    device_collection->usage_page = caps.UsagePage;
+    device_collection->usage_index = caps.Usage;
+
+    device_collection->index = new_index++;
+    device_collection->num_elements =
+            caps.NumberInputButtonCaps + caps.NumberInputValueCaps +
+            caps.NumberOutputButtonCaps + caps.NumberOutputValueCaps +
+            caps.NumberFeatureButtonCaps + caps.NumberFeatureValueCaps;
+
+    PHIDP_LINK_COLLECTION_NODE linkCollectionNodes;
+    linkCollectionNodes = malloc(numColls * sizeof(HIDP_LINK_COLLECTION_NODE));
+    struct hid_device_collection **collections = malloc(numColls * sizeof(struct hid_device_collection *));
+    nt_res = HidP_GetLinkCollectionNodes( linkCollectionNodes, &numColls, pp_data );
+    if (nt_res != HIDP_STATUS_SUCCESS){
+        // TODO: what to do here?
+        return;
+    }            
+            
+    // Create the N collections, and put them in an array, so that we can efficiently construct the pointers to each other using the Windows API                
+    for (int i = 0; i < numColls; i++){
+        collections[i] = hid_new_collection();
+    }
+
+    // And now fill the data and create the collection links
+    for (int i = 0; i < numColls; i++){
+        PHIDP_LINK_COLLECTION_NODE p_collection = &linkCollectionNodes[i];
+        // Documentation says that if parent is 0, then there is no parent, but then how do you indicate that the parent is at index 0???
+        // I think that is wrong, and 0 indicates that the parent is the collection at index 
+        // I will assume that the collection at index 0 is always the outermost one
+        if (i == 0){
+            device_collection->first_collection = collections[i];
+            collections[i]->parent_collection = device_collection;
+        }
+        else{
+            collections[i]->parent_collection = collections[p_collection->Parent];
+        }
+        if (p_collection->NextSibling)
+            collections[i]->next_collection = collections[p_collection->NextSibling];
+
+        if (p_collection->FirstChild)
+            collections[i]->first_collection = collections[p_collection->FirstChild];
+
+        collections[i]->num_collections = p_collection->NumberOfChildren;
+        // TODO set pointer to first element
+        collections[i]->type = p_collection->CollectionType;
+        collections[i]->usage_page = p_collection->LinkUsagePage;
+        collections[i]->usage_index = p_collection->LinkUsage;
+        collections[i]->index = new_index++; // TODO not sure about this one
+        debug_collection(collections[i], i);
+    }            
+    debug_collection(device_collection, 100);
+
+    /* And create all the element structures with pointers, so that we can create the links. We create the links at the beginning for convenience */
+    struct hid_device_element **elements = malloc(device_collection->num_elements * sizeof(struct hid_device_element *));
+    for (int i = 0; i < device_collection->num_elements; i++){
+        elements[i] = hid_new_element();
+    }
+    for (int i = 0; i < device_collection->num_elements - 1; i++){
+        elements[i]->next = elements[i + 1];
+    }
+
+    device_collection->first_element = elements[0];
+
+    /* Now parse the (input, output, feature) x (button, values) capabilities */
+    int index_element = 0;
+    hid_parse_caps(elements, &index_element, collections, device_collection, pp_data, &caps, HID_REPORT_TYPE_INPUT, FALSE, &new_index);
+    hid_parse_caps(elements, &index_element, collections, device_collection, pp_data, &caps, HID_REPORT_TYPE_OUTPUT, FALSE, &new_index);
+    hid_parse_caps(elements, &index_element, collections, device_collection, pp_data, &caps, HID_REPORT_TYPE_FEATURE, FALSE, &new_index);
+    hid_parse_caps(elements, &index_element, collections, device_collection, pp_data, &caps, HID_REPORT_TYPE_INPUT, TRUE, &new_index);
+    hid_parse_caps(elements, &index_element, collections, device_collection, pp_data, &caps, HID_REPORT_TYPE_OUTPUT, TRUE, &new_index);
+    hid_parse_caps(elements, &index_element, collections, device_collection, pp_data, &caps, HID_REPORT_TYPE_FEATURE, TRUE, &new_index);
+
+    /* Reports */
+    // Pehaps look at this (from MSDN):  The XxxReportByteLength members of a HID collection's HIDP_CAPS structure specify the required size of input, output, and feature reports
+    for (int i = 0; i < index_element; i++){
+        int report_id = elements[i]->report_id;
+        int report_size = elements[i]->report_size;
+        int report_count = elements[i]->report_index;
+
+        int reportexists = 0;
+        for (int j = 0; j < numreports; j++){
+            reportexists = (report_ids[j] == report_id);
+        }
+        if (!reportexists){
+            report_ids[numreports] = report_id;
+            report_lengths[numreports] = 0;
+            numreports++;
+        }
+        int k = 0;
+        int index = 0;
+        for (k = 0; k<numreports; k++){
+            if (report_id == report_ids[k]){
+                index = k;
+                break;
+            }
+        }
+        report_lengths[index] += report_size;
+    }
+
+    devdesc->number_of_reports = numreports;
+    devdesc->report_lengths = (int*)malloc(sizeof(int) * numreports);
+    devdesc->report_ids = (int*)malloc(sizeof(int) * numreports);
+    for (int j = 0; j<numreports; j++){
+        devdesc->report_lengths[j] = report_lengths[j];
+        devdesc->report_ids[j] = report_ids[j];
+    }
+
+    /* And clean up the temp structures */
+    free(elements);
+    free(collections);
+    free(linkCollectionNodes);
+    HidD_FreePreparsedData(pp_data);
+    CloseHandle(dev_handle);   
+    
 }
 #endif
 
