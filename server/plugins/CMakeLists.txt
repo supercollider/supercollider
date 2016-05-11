@@ -70,6 +70,23 @@ foreach(plugin ${plugin_sources})
 endforeach(plugin)
 
 
+if(AUDIOAPI STREQUAL bela)
+	find_package(Xenomai)
+	if(NOT XENOMAI_FOUND)
+		message(FATAL_ERROR "Bela selected as audio API, but Xenomai development files not found")
+	endif()
+	find_package(Bela)
+	if(NOT BELA_FOUND)
+		message(FATAL_ERROR "Bela selected as audio API, but Bela development files not found")
+	endif()
+	message(STATUS "bela libs: ${BELA_LIBRARIES}")
+	if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
+		# recommended compile flags for beaglebone etc; set here because bela api flag directly implies the architecture
+		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=armv7-a -mtune=cortex-a8 -mfloat-abi=hard -mfpu=neon")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=armv7-a -mtune=cortex-a8 -mfloat-abi=hard -mfpu=neon")
+	endif()
+endif()
+
 if (BELA_FOUND)
 	add_library(BELAUGens MODULE BELAUGens.cpp)
 	set(belaugens BELAUGens)
