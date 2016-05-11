@@ -42,37 +42,37 @@
 static InterfaceTable *ft;
 
 
-struct AnalogInputUGen : public Unit
+struct AnalogInput : public Unit
 {
   int mAudioFramesPerAnalogFrame;
 };
 
-struct AnalogOutputUGen : public Unit
+struct AnalogOutput : public Unit
 {
   int mAudioFramesPerAnalogFrame;
 };
 
 // static digital pin, static function (in)
-struct DigitalInputUGen : public Unit
+struct DigitalInput : public Unit
 {
   int mDigitalPin;
 };
 
 // static digital pin, static function (out)
-struct DigitalOutputUGen : public Unit
+struct DigitalOutput : public Unit
 {
   int mDigitalPin;
 };
 
 // flexible digital pin, flexible function (in or out)
-struct DigitalIOUGen : public Unit
+struct DigitalIO : public Unit
 {
   int mLastOutput;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void AnalogInput_next(AnalogInputUGen *unit, int inNumSamples)
+void AnalogInput_next(AnalogInput *unit, int inNumSamples)
 {
   World *world = unit->mWorld;
   int bufLength = world->mBufLength;
@@ -94,7 +94,7 @@ void AnalogInput_next(AnalogInputUGen *unit, int inNumSamples)
   }
 }
 
-void AnalogInput_Ctor(AnalogInputUGen *unit)
+void AnalogInput_Ctor(AnalogInput *unit)
 {
 	BeagleRTContext *context = unit->mWorld->mBelaContext;
   
@@ -113,7 +113,7 @@ void AnalogInput_Ctor(AnalogInputUGen *unit)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void AnalogOutput_next(AnalogOutputUGen *unit, int inNumSamples)
+void AnalogOutput_next(AnalogOutput *unit, int inNumSamples)
 {
   World *world = unit->mWorld;
   int bufLength = world->mBufLength;
@@ -137,7 +137,7 @@ void AnalogOutput_next(AnalogOutputUGen *unit, int inNumSamples)
   }
 }
 
-void AnalogOutput_Ctor(AnalogOutputUGen *unit)
+void AnalogOutput_Ctor(AnalogOutput *unit)
 {
 	BeagleRTContext *context = unit->mWorld->mBelaContext;
   
@@ -156,7 +156,7 @@ void AnalogOutput_Ctor(AnalogOutputUGen *unit)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void DigitalInput_next(DigitalInputUGen *unit, int inNumSamples)
+void DigitalInput_next(DigitalInput *unit, int inNumSamples)
 {
   World *world = unit->mWorld;
   int bufLength = world->mBufLength;
@@ -177,7 +177,7 @@ void DigitalInput_next(DigitalInputUGen *unit, int inNumSamples)
   }
 }
 
-void DigitalInput_Ctor(DigitalInputUGen *unit)
+void DigitalInput_Ctor(DigitalInput *unit)
 {
 	BeagleRTContext *context = unit->mWorld->mBelaContext;
   
@@ -193,7 +193,7 @@ void DigitalInput_Ctor(DigitalInputUGen *unit)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void DigitalOutput_next(DigitalOutputUGen *unit, int inNumSamples)
+void DigitalOutput_next(DigitalOutput *unit, int inNumSamples)
 {
   World *world = unit->mWorld;
   int bufLength = world->mBufLength;
@@ -214,7 +214,7 @@ void DigitalOutput_next(DigitalOutputUGen *unit, int inNumSamples)
   }
 }
 
-void DigitalOutput_Ctor(DigitalOutputUGen *unit)
+void DigitalOutput_Ctor(DigitalOutput *unit)
 {
 	BeagleRTContext *context = unit->mWorld->mBelaContext;
 
@@ -231,7 +231,7 @@ void DigitalOutput_Ctor(DigitalOutputUGen *unit)
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-void DigitalIO_next(DigitalIOUGen *unit, int inNumSamples)
+void DigitalIO_next(DigitalIO *unit, int inNumSamples)
 {
   World *world = unit->mWorld;
   int bufLength = world->mBufLength;
@@ -267,7 +267,7 @@ void DigitalIO_next(DigitalIOUGen *unit, int inNumSamples)
   unit->mLastOutput = newoutput;
 }
 
-void DigitalIO_Ctor(DigitalIOUGen *unit)
+void DigitalIO_Ctor(DigitalIO *unit)
 {
 	BeagleRTContext *context = unit->mWorld->mBelaContext;
 
