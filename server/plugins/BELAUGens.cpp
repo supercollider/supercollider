@@ -255,11 +255,11 @@ void DigitalIO_next(DigitalIOUGen *unit, int inNumSamples)
 	newinput = ++*in; // read next input sample
 	newmode = ++*iomode; // get mode for this pin
 	if ( newmode < 0.5 ){
-	  pinModeFrameOnce( context, n, pinid, INPUT );
-	  newoutput=digitalReadFrame(context, n, pinid);
+	  pinModeFrameOnce( context, n, newpin, INPUT );
+	  newoutput=digitalReadFrame(context, n, newpin);
 	} else {	  
-	  pinModeFrameOnce( context, n, pinid, OUTPUT );
-	  digitalWriteFrameOnce(context, n, pinid, (int) newinput);
+	  pinModeFrameOnce( context, n, newpin, OUTPUT );
+	  digitalWriteFrameOnce(context, n, newpin, (int) newinput);
 	}
 	// always write to the output of the UGen
 	*++out = (float) newoutput;
