@@ -141,6 +141,7 @@ int main(int argc, char* argv[])
 
 	int udpPortNum = -1;
 	int tcpPortNum = -1;
+	std::string bindTo("0.0.0.0");
 
 	WorldOptions options = kDefaultWorldOptions;
 
@@ -158,6 +159,10 @@ int main(int argc, char* argv[])
 			case 't' :
 				checkNumArgs(2);
 				tcpPortNum = atoi(argv[j+1]);
+				break;
+			case 'B':
+				checkNumArgs(2);
+				bindTo = argv[j+1];
 				break;
 			case 'a' :
 				checkNumArgs(2);
@@ -339,7 +344,7 @@ int main(int argc, char* argv[])
 	}
 
 	if (udpPortNum >= 0) {
-		if (!World_OpenUDP(world, udpPortNum)) {
+		if (!World_OpenUDP(world, bindTo.c_str(), udpPortNum)) {
 			World_Cleanup(world,true);
 			return 1;
 		}
