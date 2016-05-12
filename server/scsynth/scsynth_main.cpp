@@ -54,6 +54,7 @@ void Usage()
 		"   -v print the supercollider version and exit\n"
 		"   -u <udp-port-number>    a port number 0-65535\n"
 		"   -t <tcp-port-number>    a port number 0-65535\n"
+		"   -B <bind-to-address>    an IP address\n"
 		"   -c <number-of-control-bus-channels> (default %d)\n"
 		"   -a <number-of-audio-bus-channels>   (default %d)\n"
 		"   -i <number-of-input-bus-channels>   (default %d)\n"
