@@ -147,7 +147,7 @@ int main(int argc, char* argv[])
 	WorldOptions options = kDefaultWorldOptions;
 
 	for (int i=1; i<argc;) {
-		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utaioczblndpmwZrCNSDIOMHvVRUhPL", argv[i][1]) == 0) {
+		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utBaioczblndpmwZrCNSDIOMHvVRUhPL", argv[i][1]) == 0) {
 			scprintf("ERROR: Invalid option %s\n", argv[i]);
 			Usage();
 		}
