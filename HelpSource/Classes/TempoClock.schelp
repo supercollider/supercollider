@@ -90,27 +90,7 @@ t.tempo;
 ::
 
 method::etempo
-Sets or gets the current tempo at the current strong::elapsed time::. This allows you to set it to zero or even a negative value.
-code::
-t= TempoClock.new;
-t.etempo_(0); // halts.
-t.tempo;
-t.beats;
-t.beats; // remain the same
-t.etempo_(1) // start again.
-t.beats; // move on
-::
-
-note::
-When code::tempo <= 0::, you can only set it via code::etempo_:: and not via code::tempo_::.
-::
-
-method::setTempoAtBeat
-Sets or gets the current tempo assuming a given strong::logical time::.
-
-
-method::setTempoAtSec
-Sets or gets the current tempo assuming a given strong::elapsed time::.
+Sets or gets the current tempo at the current strong::elapsed time::.
 
 method::permanent
 Sets or gets a link::Classes/Boolean:: value indicating whether the clock will survive cmd-period. If false the clock is stopped (and thus removed) on cmd-period. If true the clock survives cmd-period. It is false by default.
