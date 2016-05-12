@@ -1259,6 +1259,7 @@ void debug_element(struct hid_device_element *element)
     printf("report_id: %d\n", element->report_id);
     printf("report_size: %d\n", element->report_size);
     printf("report_index: %d\n", element->report_index);
+    printf("\n\n");
     fflush(stdout);
 }
 
@@ -1275,6 +1276,8 @@ void debug_collection(struct hid_device_collection *collection, int col_index)
         printf("first_collection: %p\n", collection->first_collection);
     if (collection->next_collection)
         printf("next_collection: %p\n", collection->next_collection);
+
+    printf("\n\n");
     fflush(stdout);
 }
 
@@ -1319,8 +1322,8 @@ static int hid_parse_caps(struct hid_device_element **elements, int *elements_ar
             elements[*elements_array_index]->isrelative = pCaps->IsAbsolute ? 0 : 1;
             elements[*elements_array_index]->isvariable = ((bitField & HID_ITEM_CONSTANT) == 0);
             elements[*elements_array_index]->report_id = pCaps->ReportID;
-            elements[*elements_array_index]->report_size = 0; // TODO: not sure about this one. The API does not seem to provide this
-            elements[*elements_array_index]->report_index = 0; // TODO: not sure about this one. The API does not seem to provide this
+            elements[*elements_array_index]->report_size = pCaps->Range.UsageMax - pCaps->Range.UsageMin + 1; // TODO: not sure about this one. The API does not seem to provide this. Perhaps set to usage_max - usage_min + 1 (1 bit per usage)?
+            elements[*elements_array_index]->report_index = 1; // TODO: not sure about this one. The API does not seem to provide this. Perhaps set to 1?
             debug_element(elements[*elements_array_index]);
         }
         free(pButtonCaps);
@@ -1338,7 +1341,7 @@ static int hid_parse_caps(struct hid_device_element **elements, int *elements_ar
             free(pValueCaps);
             return -1;
         }
-        for (int i = 0; i < numCaps; i++, *(elements_array_index)++){
+        for (int i = 0; i < numCaps; i++, (*elements_array_index)++){
             PHIDP_VALUE_CAPS pCaps = &pValueCaps[i];
             elements[*elements_array_index]->parent_collection = collections[pCaps->LinkCollection];
             if (!collections[pCaps->LinkCollection]->first_element){
@@ -1372,6 +1375,7 @@ static int hid_parse_caps(struct hid_device_element **elements, int *elements_ar
         }
         free(pValueCaps);
     }
+    return 0;
 }
 
 
@@ -1504,10 +1508,10 @@ void hid_parse_element_info( struct hid_dev_desc * devdesc ){
     /* Now parse the (input, output, feature) x (button, values) capabilities */
     int index_element = 0;
     hid_parse_caps(elements, &index_element, collections, device_collection, pp_data, &caps, HID_REPORT_TYPE_INPUT, FALSE, &new_index);
-    hid_parse_caps(elements, &index_element, collections, device_collection, pp_data, &caps, HID_REPORT_TYPE_OUTPUT, FALSE, &new_index);
-    hid_parse_caps(elements, &index_element, collections, device_collection, pp_data, &caps, HID_REPORT_TYPE_FEATURE, FALSE, &new_index);
     hid_parse_caps(elements, &index_element, collections, device_collection, pp_data, &caps, HID_REPORT_TYPE_INPUT, TRUE, &new_index);
+    hid_parse_caps(elements, &index_element, collections, device_collection, pp_data, &caps, HID_REPORT_TYPE_OUTPUT, FALSE, &new_index);
     hid_parse_caps(elements, &index_element, collections, device_collection, pp_data, &caps, HID_REPORT_TYPE_OUTPUT, TRUE, &new_index);
+    hid_parse_caps(elements, &index_element, collections, device_collection, pp_data, &caps, HID_REPORT_TYPE_FEATURE, FALSE, &new_index);
     hid_parse_caps(elements, &index_element, collections, device_collection, pp_data, &caps, HID_REPORT_TYPE_FEATURE, TRUE, &new_index);
 
     /* Reports */
@@ -1515,7 +1519,7 @@ void hid_parse_element_info( struct hid_dev_desc * devdesc ){
     for (int i = 0; i < index_element; i++){
         int report_id = elements[i]->report_id;
         int report_size = elements[i]->report_size;
-        int report_count = elements[i]->report_index;
+        int report_count = elements[i]->report_index; // TODO: report_count is not used????
 
         int reportexists = 0;
         for (int j = 0; j < numreports; j++){
