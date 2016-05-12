@@ -350,7 +350,7 @@ int main(int argc, char* argv[])
 		}
 	}
 	if (tcpPortNum >= 0) {
-		if (!World_OpenTCP(world, tcpPortNum, options.mMaxLogins, 8)) {
+		if (!World_OpenTCP(world, bindTo.c_str(), tcpPortNum, options.mMaxLogins, 8)) {
 			World_Cleanup(world,true);
 			return 1;
 		}

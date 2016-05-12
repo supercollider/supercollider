@@ -401,9 +401,9 @@ class SC_TcpInPort
 	friend class SC_TcpConnection;
 
 public:
-	SC_TcpInPort(struct World * world, int inPortNum, int inMaxConnections, int inBacklog):
+	SC_TcpInPort(struct World * world, std::string bindTo, int inPortNum, int inMaxConnections, int inBacklog):
 		mWorld(world),
-		acceptor(ioService, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), inPortNum)),
+        acceptor(ioService, boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(bindTo), inPortNum)),
 		mAvailableConnections(inMaxConnections)
 	{
 		// FIXME: backlog???
@@ -513,7 +513,7 @@ SCSYNTH_DLLEXPORT_C bool World_SendPacket(World *inWorld, int inSize, char *inDa
 	return World_SendPacketWithContext(inWorld, inSize, inData, inFunc, 0);
 }
 
-SCSYNTH_DLLEXPORT_C int World_OpenUDP(struct World *inWorld, const char* bindTo, int inPort)
+SCSYNTH_DLLEXPORT_C int World_OpenUDP(struct World *inWorld, const char *bindTo, int inPort)
 {
 	try {
 		new SC_UdpInPort(inWorld, bindTo, inPort);
@@ -525,10 +525,10 @@ SCSYNTH_DLLEXPORT_C int World_OpenUDP(struct World *inWorld, const char* bindTo,
 	return false;
 }
 
-SCSYNTH_DLLEXPORT_C int World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog)
+SCSYNTH_DLLEXPORT_C int World_OpenTCP(struct World *inWorld, const char *bindTo, int inPort, int inMaxConnections, int inBacklog)
 {
 	try {
-		new SC_TcpInPort(inWorld, inPort, inMaxConnections, inBacklog);
+		new SC_TcpInPort(inWorld, bindTo, inPort, inMaxConnections, inBacklog);
 		return true;
 	} catch (std::exception& exc) {
 		scprintf("Exception in World_OpenTCP: %s\n", exc.what());
