@@ -1381,11 +1381,87 @@ static int hid_parse_caps(struct hid_device_element **elements, int *elements_ar
 
 
 int hid_send_element_output( struct hid_dev_desc * devdesc, struct hid_device_element * element ){
-
+    return 0;
 }
 int hid_parse_input_elements_values( unsigned char* buf, struct hid_dev_desc * devdesc ){
     // TO see how to handle HID Reports
     //See https ://msdn.microsoft.com/en-us/library/windows/hardware/ff538783(v=vs.85).aspx
+    // If there is only one report, there will be no report ID in the report. Otherwise, it is the first byte
+    int report_id = 0;
+    int report_length = 0;
+    struct hid_device_collection * device_collection = devdesc->device_collection;
+    struct hid_device_element * cur_element = device_collection->first_element;
+    NTSTATUS res;
+
+    if (devdesc->number_of_reports != 1){
+        report_id = buf[0];
+    }
+
+    // Look for the size of the report (in bits), and convert to bytes (rounding up)
+    for (int i = 0; i < devdesc->number_of_reports; i++){
+        if (devdesc->report_ids[i] == report_id){
+            report_length = ((devdesc->report_lengths[i] - 1) / 8) + 1;
+        }
+    }
+    if (report_length == 0){
+        // This should not happen, the report was not found
+        return -1;
+    }
+
+    if (cur_element->io_type != HID_REPORT_TYPE_INPUT){
+        cur_element = hid_get_next_input_element(cur_element);
+    }
+    printf("cur_element %p\n", cur_element );
+
+    // The Windows API has a function to get the data of all the buttons that are on, and another to get the value data by component page and usage
+    // We get all the buttons that are on
+    // TODO: perhaps we could put the preparsed data in the devdesc structure (only for Windows)
+    HANDLE dev_handle = get_device_handle(devdesc->device);
+    PHIDP_PREPARSED_DATA pp_data = NULL;
+    if (HidD_GetPreparsedData(dev_handle, &pp_data) != HIDP_STATUS_SUCCESS){
+        return -1;
+    }
+    long max_usage_and_page_length = HidP_MaxUsageListLength(HidP_Input, 0, pp_data);
+    PUSAGE_AND_PAGE usage_and_page_list = malloc(max_usage_and_page_length * sizeof(USAGE_AND_PAGE));;
+
+    if (HidP_GetButtonsEx(HidP_Input, 0, usage_and_page_list, &max_usage_and_page_length, pp_data, buf, report_length) != HIDP_STATUS_SUCCESS){
+        free(usage_and_page_list);
+        return -1;
+    }
+
+    while (cur_element != NULL){
+        // Check that the element is part of this report
+        if (cur_element->report_id != report_id){
+            cur_element = hid_get_next_input_element(cur_element);
+            continue;
+        }
+
+        if (devdesc->_element_callback != NULL){
+            // First see if it is a Value element (not a button), trying to get its value
+            // TODO may need to use HidP_GetUsageValueArray, if element->report_index > 1
+            unsigned long new_value;
+            res = HidP_GetUsageValue(HidP_Input, cur_element->usage_page, 0, cur_element->usage, &new_value, pp_data, buf, report_length);
+            if (res == HIDP_STATUS_USAGE_NOT_FOUND){
+                // Then see if we can find the element's page and usage in the buttons that are set to on, if not, it is implicitly 0
+                new_value = 0;
+                for (int i = 0; i < max_usage_and_page_length; i++){
+                    if (usage_and_page_list[i].UsagePage = cur_element->usage_page && usage_and_page_list[i].Usage == cur_element->usage){
+                        new_value = 1;
+                    }
+                }
+            }            
+            // printf("element page %i, usage %i, index %i, value %i, rawvalue %i, newvalueref %i\n", cur_element->usage_page, cur_element->usage, cur_element->index, cur_element->value, cur_element->rawvalue, newValueRef );
+            if (new_value != cur_element->rawvalue || cur_element->repeat){
+                printf("element page %i, usage %i, index %i, value %i, rawvalue %i, newvalue %i\n", cur_element->usage_page, cur_element->usage, cur_element->index, cur_element->value, cur_element->rawvalue, new_value);
+                hid_element_set_value_from_input(cur_element, new_value);
+                devdesc->_element_callback(cur_element, devdesc->_element_data);
+            }
+        }
+        cur_element = hid_get_next_input_element(cur_element);
+    }
+    free(usage_and_page_list);
+
+    return 0;
 }
 void hid_parse_element_info( struct hid_dev_desc * devdesc ){
 
@@ -1395,8 +1471,6 @@ void hid_parse_element_info( struct hid_dev_desc * devdesc ){
     devdesc->device_collection = device_collection;
 
     struct hid_device_collection * parent_collection = devdesc->device_collection;
-    struct hid_device_collection * prev_collection;
-    struct hid_device_element * prev_element;
 
     device_collection->num_collections = 0;
     device_collection->num_elements = 0;
@@ -1518,7 +1592,7 @@ void hid_parse_element_info( struct hid_dev_desc * devdesc ){
     // Pehaps look at this (from MSDN):  The XxxReportByteLength members of a HID collection's HIDP_CAPS structure specify the required size of input, output, and feature reports
     for (int i = 0; i < index_element; i++){
         int report_id = elements[i]->report_id;
-        int report_size = elements[i]->report_size;
+        int report_size = elements[i]->report_size;  
         int report_count = elements[i]->report_index; // TODO: report_count is not used????
 
         int reportexists = 0;
