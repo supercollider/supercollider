@@ -6,20 +6,18 @@ Distributed under the Boost Software
 License, Version 1.0.
 http://boost.org/LICENSE_1_0.txt
 */
-#ifndef BOOST_ALIGN_DETAIL_MAX_OBJECTS_HPP
-#define BOOST_ALIGN_DETAIL_MAX_OBJECTS_HPP
-
-#include <boost/align/detail/integral_constant.hpp>
-#include <cstddef>
+#ifndef BOOST_ALIGN_DETAIL_ALIGNOF_HELPER_HPP
+#define BOOST_ALIGN_DETAIL_ALIGNOF_HELPER_HPP
 
 namespace boost {
 namespace alignment {
 namespace detail {
 
 template<class T>
-struct max_objects
-    : integral_constant<std::size_t,
-        ~static_cast<std::size_t>(0) / sizeof(T)> { };
+struct alignof_helper {
+    char value;
+    T object;
+};
 
 } /* .detail */
 } /* .alignment */

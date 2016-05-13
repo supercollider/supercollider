@@ -31,7 +31,7 @@ struct integral_constant {
         return Value;
     }
 
-    static BOOST_CONSTEXPR_OR_CONST T value = Value;
+    BOOST_STATIC_CONSTEXPR T value = Value;
 };
 #endif
 

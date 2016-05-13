@@ -6,20 +6,21 @@ Distributed under the Boost Software
 License, Version 1.0.
 http://boost.org/LICENSE_1_0.txt
 */
-#ifndef BOOST_ALIGN_DETAIL_MAX_OBJECTS_HPP
-#define BOOST_ALIGN_DETAIL_MAX_OBJECTS_HPP
+#ifndef BOOST_ALIGN_DETAIL_ADDRESS_HPP
+#define BOOST_ALIGN_DETAIL_ADDRESS_HPP
 
-#include <boost/align/detail/integral_constant.hpp>
+#include <boost/cstdint.hpp>
 #include <cstddef>
 
 namespace boost {
 namespace alignment {
 namespace detail {
 
-template<class T>
-struct max_objects
-    : integral_constant<std::size_t,
-        ~static_cast<std::size_t>(0) / sizeof(T)> { };
+#if defined(BOOST_HAS_INTPTR_T)
+typedef boost::uintptr_t address;
+#else
+typedef std::size_t address;
+#endif
 
 } /* .detail */
 } /* .alignment */

@@ -40,8 +40,7 @@ namespace alignment {
 template<class T>
 struct alignment_of
     : detail::alignment_of<typename
-        detail::element_type<T>::type>::type {
-};
+        detail::element_type<T>::type>::type { };
 
 #if !defined(BOOST_NO_CXX14_VARIABLE_TEMPLATES)
 template<class T>

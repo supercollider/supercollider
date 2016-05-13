@@ -18,8 +18,7 @@ namespace detail {
 
 template<class T>
 struct alignment_of
-    : integral_constant<std::size_t, __alignof(T)> {
-};
+    : integral_constant<std::size_t, __alignof(T)> { };
 
 } /* .detail */
 } /* .alignment */
