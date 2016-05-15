@@ -884,7 +884,7 @@ int hid_parse_input_report( unsigned char* buf, int size, struct hid_dev_desc * 
   return hid_parse_input_elements_values( buf, devdesc );
 #endif
 #ifdef WIN32
-  return hid_parse_input_elements_values( buf, devdesc );
+  return hid_parse_input_elements_values( buf, size, devdesc );
 #endif
 #ifdef LINUX_FREEBSD
   struct hid_parsing_byte pbyte; 
@@ -1347,7 +1347,7 @@ static int hid_parse_caps(struct hid_device_element **elements, int *elements_ar
             if (!collections[pCaps->LinkCollection]->first_element){
                 collections[pCaps->LinkCollection]->first_element = elements[*elements_array_index];
             }
-            elements[*elements_array_index]->io_type = HID_REPORT_TYPE_INPUT;
+            elements[*elements_array_index]->io_type = report_type;
             elements[*elements_array_index]->index = (*index)++;
             elements[*elements_array_index]->usage_page = pCaps->UsagePage;
             if (pCaps->IsRange){
@@ -1383,7 +1383,7 @@ static int hid_parse_caps(struct hid_device_element **elements, int *elements_ar
 int hid_send_element_output( struct hid_dev_desc * devdesc, struct hid_device_element * element ){
     return 0;
 }
-int hid_parse_input_elements_values( unsigned char* buf, struct hid_dev_desc * devdesc ){
+int hid_parse_input_elements_values( unsigned char* buf, int size, struct hid_dev_desc * devdesc ){
     // TO see how to handle HID Reports
     //See https ://msdn.microsoft.com/en-us/library/windows/hardware/ff538783(v=vs.85).aspx
     // If there is only one report, there will be no report ID in the report. Otherwise, it is the first byte
@@ -1397,10 +1397,11 @@ int hid_parse_input_elements_values( unsigned char* buf, struct hid_dev_desc * d
         report_id = buf[0];
     }
 
+    // TODO: perhaps on Windows we do not need to calculate the report size here, and we can just get it from the size parameter that we got from above
     // Look for the size of the report (in bits), and convert to bytes (rounding up)
     for (int i = 0; i < devdesc->number_of_reports; i++){
         if (devdesc->report_ids[i] == report_id){
-            report_length = ((devdesc->report_lengths[i] - 1) / 8) + 1;
+            report_length = size;
         }
     }
     if (report_length == 0){
@@ -1411,20 +1412,22 @@ int hid_parse_input_elements_values( unsigned char* buf, struct hid_dev_desc * d
     if (cur_element->io_type != HID_REPORT_TYPE_INPUT){
         cur_element = hid_get_next_input_element(cur_element);
     }
-    printf("cur_element %p\n", cur_element );
+    //printf("cur_element %p\n", cur_element );
 
     // The Windows API has a function to get the data of all the buttons that are on, and another to get the value data by component page and usage
     // We get all the buttons that are on
     // TODO: perhaps we could put the preparsed data in the devdesc structure (only for Windows)
     HANDLE dev_handle = get_device_handle(devdesc->device);
-    PHIDP_PREPARSED_DATA pp_data = NULL;
-    if (HidD_GetPreparsedData(dev_handle, &pp_data) != HIDP_STATUS_SUCCESS){
+    PHIDP_PREPARSED_DATA pp_data;
+    if (!HidD_GetPreparsedData(dev_handle, &pp_data)){
         return -1;
     }
     long max_usage_and_page_length = HidP_MaxUsageListLength(HidP_Input, 0, pp_data);
-    PUSAGE_AND_PAGE usage_and_page_list = malloc(max_usage_and_page_length * sizeof(USAGE_AND_PAGE));;
+    PUSAGE_AND_PAGE usage_and_page_list = malloc(max_usage_and_page_length * sizeof(USAGE_AND_PAGE));
+    memset(usage_and_page_list, 0, max_usage_and_page_length * sizeof(USAGE_AND_PAGE));
 
-    if (HidP_GetButtonsEx(HidP_Input, 0, usage_and_page_list, &max_usage_and_page_length, pp_data, buf, report_length) != HIDP_STATUS_SUCCESS){
+    NTSTATUS ntres = HidP_GetButtonsEx(HidP_Input, 0, usage_and_page_list, &max_usage_and_page_length, pp_data, buf, report_length);
+    if ( ntres != HIDP_STATUS_SUCCESS){
         free(usage_and_page_list);
         return -1;
     }
@@ -1437,7 +1440,6 @@ int hid_parse_input_elements_values( unsigned char* buf, struct hid_dev_desc * d
         }
 
         if (devdesc->_element_callback != NULL){
-            // First see if it is a Value element (not a button), trying to get its value
             // TODO may need to use HidP_GetUsageValueArray, if element->report_index > 1
             unsigned long new_value;
             res = HidP_GetUsageValue(HidP_Input, cur_element->usage_page, 0, cur_element->usage, &new_value, pp_data, buf, report_length);
@@ -1453,6 +1455,7 @@ int hid_parse_input_elements_values( unsigned char* buf, struct hid_dev_desc * d
             // printf("element page %i, usage %i, index %i, value %i, rawvalue %i, newvalueref %i\n", cur_element->usage_page, cur_element->usage, cur_element->index, cur_element->value, cur_element->rawvalue, newValueRef );
             if (new_value != cur_element->rawvalue || cur_element->repeat){
                 printf("element page %i, usage %i, index %i, value %i, rawvalue %i, newvalue %i\n", cur_element->usage_page, cur_element->usage, cur_element->index, cur_element->value, cur_element->rawvalue, new_value);
+                fflush(stdout);
                 hid_element_set_value_from_input(cur_element, new_value);
                 devdesc->_element_callback(cur_element, devdesc->_element_data);
             }
@@ -1581,6 +1584,7 @@ void hid_parse_element_info( struct hid_dev_desc * devdesc ){
 
     /* Now parse the (input, output, feature) x (button, values) capabilities */
     int index_element = 0;
+    new_index = 0;
     hid_parse_caps(elements, &index_element, collections, device_collection, pp_data, &caps, HID_REPORT_TYPE_INPUT, FALSE, &new_index);
     hid_parse_caps(elements, &index_element, collections, device_collection, pp_data, &caps, HID_REPORT_TYPE_INPUT, TRUE, &new_index);
     hid_parse_caps(elements, &index_element, collections, device_collection, pp_data, &caps, HID_REPORT_TYPE_OUTPUT, FALSE, &new_index);
@@ -1628,8 +1632,6 @@ void hid_parse_element_info( struct hid_dev_desc * devdesc ){
     free(collections);
     free(linkCollectionNodes);
     HidD_FreePreparsedData(pp_data);
-    CloseHandle(dev_handle);   
-    
 }
 #endif
 
