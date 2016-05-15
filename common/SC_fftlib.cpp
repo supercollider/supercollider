@@ -82,10 +82,6 @@ extern "C" {
 
 #endif
 
-// Note that things like *fftWindow actually allow for other sizes, to be created on user request.
-#define SC_FFT_ABSOLUTE_MAXSIZE 2147483648
-#define SC_FFT_LOG2_ABSOLUTE_MAXSIZE 31
-#define SC_FFT_LOG2_ABSOLUTE_MAXSIZE_PLUS1 32
 
 // This struct is a bit like FFTW's idea of a "plan": it represents an FFT operation that may be applied once or repeatedly.
 // It should be possible for indata and outdata to be the same, for quasi-in-place operation.
