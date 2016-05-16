@@ -3761,9 +3761,9 @@ void doPrimitive(VMGlobals* g, PyrMethod* meth, int numArgsPushed)
 
 	if (diff != 0) { // incorrect num of args
 		if (diff > 0) {  // not enough args
-			PyrSlot* pslot = g->sp;
-			PyrSlot* qslot = slotRawObject(&meth->prototypeFrame)->slots + numArgsPushed - 1;
-			for (int m=0; m<diff; ++m) slotCopy(++pslot, ++qslot);
+			PyrSlot* pslot = g->sp + 1;
+			PyrSlot* qslot = slotRawObject(&meth->prototypeFrame)->slots + numArgsPushed;
+			slotCopy( pslot, qslot, diff );
 
 			g->sp += diff;
 		} else if (def->varArgs) { // has var args
