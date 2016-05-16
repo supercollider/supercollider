@@ -98,7 +98,7 @@ struct PyrObjectHdr {
 };
 
 struct PyrObject : public PyrObjectHdr {
-	PyrSlot slots[1];
+	PyrSlot slots[];
 };
 
 struct PyrList : public PyrObjectHdr
@@ -108,37 +108,37 @@ struct PyrList : public PyrObjectHdr
 
 struct PyrDoubleArray : public PyrObjectHdr
 {
-	double d[1];
+	double d[];
 };
 
 struct PyrFloatArray : public PyrObjectHdr
 {
-	float f[1];
+	float f[];
 };
 
 struct PyrInt32Array : public PyrObjectHdr
 {
-	uint32 i[1];
+	uint32 i[];
 };
 
 struct PyrInt16Array : public PyrObjectHdr
 {
-	uint16 i[1];
+	uint16 i[];
 };
 
 struct PyrInt8Array : public PyrObjectHdr
 {
-	uint8 b[1];
+	uint8 b[];
 };
 
 struct PyrString : public PyrObjectHdr
 {
-	char s[1];
+	char s[];
 };
 
 struct PyrSymbolArray : public PyrObjectHdr
 {
-	PyrSymbol* symbols[1];
+	PyrSymbol* symbols[];
 };
 
 extern struct PyrClass *class_object;
