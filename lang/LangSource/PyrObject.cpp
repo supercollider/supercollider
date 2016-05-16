@@ -1206,7 +1206,7 @@ void buildBigMethodMatrix()
 	ColumnDescriptor *sels = (ColumnDescriptor*)pyr_pool_compile->Alloc(numSelectors * sizeof(ColumnDescriptor));
 	MEMFAIL(sels);
 #ifdef _MSC_VER
-	auto filledSelectorsFuture = std::async( std::launch::async, std::bind( &prepareColumnTable, sels, numSelectors )    );
+	auto filledSelectorsFuture = std::async( std::launch::deferred, std::bind( &prepareColumnTable, sels, numSelectors )    );
 #else
 	auto filledSelectorsFuture = boost::async( pool, std::bind( &prepareColumnTable, sels, numSelectors )    );
 #endif
@@ -1223,7 +1223,7 @@ void buildBigMethodMatrix()
 		return classes;
 	};
 #ifdef _MSC_VER
-	auto filledClassIndices = std::async( std::launch::async, fillClassIndices, classes);
+	auto filledClassIndices = std::async( std::launch::deferred, fillClassIndices, classes);
 #else
 	auto filledClassIndices = boost::async( pool, fillClassIndices, classes);
 #endif
@@ -1253,7 +1253,7 @@ void buildBigMethodMatrix()
 	for( size_t beginSelectorIndex : boost::irange(selectorsPerJob, numSelectors, selectorsPerJob) ) {
 		size_t endSelectorIndex = std::min( beginSelectorIndex + selectorsPerJob, numSelectors );
 #ifdef _MSC_VER
-		auto future = std::async( std::launch::async, calcRowStats, bigTable, filledSelectors, numClasses, numSelectors, beginSelectorIndex, endSelectorIndex );
+		auto future = std::async( std::launch::deferred, calcRowStats, bigTable, filledSelectors, numClasses, numSelectors, beginSelectorIndex, endSelectorIndex );
 #else
 		auto future = boost::async( pool, calcRowStats, bigTable, filledSelectors, numClasses, numSelectors, beginSelectorIndex, endSelectorIndex );
 #endif
@@ -1264,7 +1264,7 @@ void buildBigMethodMatrix()
 
 	for( auto & future : columnDescriptorsWithStats ) {
 #ifdef _MSC_VER
-        future.wait();
+		future.wait();
 #else
 		while( !future.is_ready() )
 			pool.schedule_one_or_yield();
@@ -1440,7 +1440,7 @@ static size_t fillClassRow(const PyrClass *classobj, PyrMethod** bigTable, boost
 
 				VectorOfFutures subclassResults;
 				for( int subClassIndex : boost::irange(1, numSubclasses) ) {
-					auto subclassResult = std::async(std::launch::async, fillClassRow, slotRawClass(&subclasses->slots[subClassIndex]), bigTable);
+					auto subclassResult = std::async(std::launch::deferred, fillClassRow, slotRawClass(&subclasses->slots[subClassIndex]), bigTable);
 					subclassResults.emplace_back( std::move( subclassResult ) );
 				}
 
