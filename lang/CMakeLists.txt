@@ -371,9 +371,10 @@ elseif(WIN32)
         DESTINATION "${SC_WIN_BUNDLE_NAME}"
     )
 
+    SET(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}")
+    include(InstallRequiredSystemLibraries)
+
     if(SC_QT)
-        SET(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}")
-        include(InstallRequiredSystemLibraries)
         if(MSYS)
             SET(QT_PLUGINS_DIR "${QT_BIN_PATH}/../share/qt5/plugins" CACHE PATH "Location of qt plugins for windows as provided by MSYS2")
         else()

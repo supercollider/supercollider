@@ -389,6 +389,9 @@ elseif(WIN32)
       list(APPEND SC_WIN_DLL_DIRS "${QT_BIN_PATH}")
     endif(QT_BIN_PATH)
 
+    SET(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}")
+    include(InstallRequiredSystemLibraries)
+
     include(DeployQt5)
     install_qt5_executable(
       "${SC_WIN_BUNDLE_NAME}/sclang.exe"
