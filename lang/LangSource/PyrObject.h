@@ -269,17 +269,17 @@ int calcHash(PyrSlot *a);
 int getIndexedFloat(struct PyrObject *obj, int index, float *value);
 int getIndexedDouble(struct PyrObject *obj, int index, double *value);
 
-inline int getIndexedVal(struct PyrObject *obj, int index, float *value)
+BOOST_FORCEINLINE int getIndexedVal(struct PyrObject *obj, int index, float *value)
 {
 	return getIndexedFloat(obj, index, value);
 }
 
-inline int getIndexedVal(struct PyrObject *obj, int index, double *value)
+BOOST_FORCEINLINE int getIndexedVal(struct PyrObject *obj, int index, double *value)
 {
 	return getIndexedDouble(obj, index, value);
 }
 
-inline void getIndexedSlot(struct PyrObject *obj, PyrSlot *a, int index)
+BOOST_FORCEINLINE void getIndexedSlot(struct PyrObject *obj, PyrSlot *a, int index)
 {
 	switch (obj->obj_format) {
 		case obj_slot :
@@ -312,12 +312,12 @@ inline void getIndexedSlot(struct PyrObject *obj, PyrSlot *a, int index)
 int putIndexedSlot(struct VMGlobals *g, struct PyrObject *obj, PyrSlot *c, int index);
 int putIndexedFloat(PyrObject *obj, double val, int index);
 
-inline long ARRAYMAXINDEXSIZE(PyrObjectHdr* obj)
+BOOST_FORCEINLINE long ARRAYMAXINDEXSIZE(PyrObjectHdr* obj)
 {
 	return (1L << obj->obj_sizeclass);
 }
 
-inline long MAXINDEXSIZE(PyrObjectHdr* obj)
+BOOST_FORCEINLINE long MAXINDEXSIZE(PyrObjectHdr* obj)
 {
 	return ((1L << obj->obj_sizeclass) * gFormatElemCapc[ obj->obj_format ]);
 }
