@@ -182,9 +182,16 @@ if(WIN32)
     add_custom_command(TARGET supernova
       POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:supernova> $<TARGET_FILE_DIR:scsynth>
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:supernova> $<TARGET_FILE_DIR:sclang>
-      COMMENT "Copying supernova to targets scsynth and sclang"
+      COMMENT "Copying supernova to target scsynth"
     )
+
+    if(SC_SCLANG)
+      add_custom_command(TARGET supernova
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:supernova> $<TARGET_FILE_DIR:sclang>
+        COMMENT "Copying supernova to target sclang"
+      )
+    endif(SC_SCLANG)
 
     if(SC_IDE)
       add_custom_command(TARGET supernova

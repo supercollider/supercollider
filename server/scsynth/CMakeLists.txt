@@ -262,11 +262,13 @@ elseif(WIN32)
       )
     endif(SNDFILE_FOUND)
 
-    add_custom_command(TARGET scsynth
-      POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_FILE_DIR:scsynth> $<TARGET_FILE_DIR:sclang>
-      COMMENT "Adding scynth to target sclang"
-    )
+    if(SC_SCLANG)
+      add_custom_command(TARGET scsynth
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_FILE_DIR:scsynth> $<TARGET_FILE_DIR:sclang>
+        COMMENT "Adding scynth to target sclang"
+      )
+    endif(SC_SCLANG)
 
     if(SC_IDE)
       add_custom_command(TARGET scsynth
