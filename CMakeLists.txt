@@ -57,8 +57,8 @@ if(WIN32)
 
     # might work with "SHARED" as well.
     set(PA_LIBRARY_TYPE "STATIC")
-    set(PORTAUDIO_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/external_libraries/portaudio/include" CACHE PATH "Portaudio include directory" FORCE)
-    add_subdirectory("${CMAKE_SOURCE_DIR}/external_libraries/portaudio")
+    set(PORTAUDIO_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/external_libraries/portaudio_sc_org/include" CACHE PATH "Portaudio include directory" FORCE)
+    add_subdirectory("${CMAKE_SOURCE_DIR}/external_libraries/portaudio_sc_org")
 endif(WIN32)
 
 #############################################
