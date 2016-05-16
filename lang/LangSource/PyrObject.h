@@ -245,6 +245,26 @@ extern struct PyrClass* gTagClassTable[16];
 
 BOOST_FORCEINLINE struct PyrClass* classOfSlot(PyrSlot *slot)
 {
+#ifdef SC_USE_128BIT_SLOT
+	switch( GetTag(slot) ) {
+
+	case tagObj:   return slotRawObject(slot)->classptr;
+
+	case tagFloat: return class_float;
+	case tagInt:   return class_int;
+	case tagSym:   return class_symbol;
+	case tagChar:  return class_char;
+	case tagNil:   return class_nil;
+	case tagFalse: return class_false;
+	case tagTrue:  return class_true;
+	case tagPtr:   return class_rawptr;
+
+	default:
+		assert(false);
+		return nullptr;
+	}
+
+#else
 	PyrClass *classobj;
 	int tag;
 	if (IsFloat(slot)) classobj = class_float;
@@ -252,6 +272,7 @@ BOOST_FORCEINLINE struct PyrClass* classOfSlot(PyrSlot *slot)
 	else classobj = gTagClassTable[tag];
 
 	return classobj;
+#endif
 }
 
 typedef int (*ObjFuncPtr)(struct VMGlobals*, struct PyrObject*);
