@@ -215,6 +215,12 @@ void EditorTabBar::mousePressEvent(QMouseEvent *event)
         event->accept();
         return;
     }
+    else if (event->button() == Qt::MiddleButton){
+        mTabUnderCursor = tabAt(event->pos());
+        onCloseTab();
+        event->accept();
+        return;
+    }
 
     QTabBar::mousePressEvent(event);
 }
