@@ -39,7 +39,7 @@ Table of contents
     - Avoiding the command line: from CMake-Gui to Visual Studio (environment
       and GUI-applications)
     - Using Qt Creator
-    - More `cmake`: building supernova, qt-less, verbosity and more
+    - More `cmake`: building supernova, qt-less, server only, verbosity and more
     - Recalling environment- and build settings on the command line
     - On the horizon: MSYS2
   - Diagnosing build problems
@@ -1160,18 +1160,17 @@ Commonly used variables to modify the build configuration are:
 
       -DINSTALL_HELP=OFF
 
-* Server-only: Currently there is no straightforward way to build server-only.
-  Even if you mark only the server target (and the plugins), sclang is pulled in
-  as well. So a bit of patience is required. You can turn off Qt (`-DSC_QT=OFF`)
-  and skip Readline, to save on the dependencies. To make it easier to assemble a
-  server bundle, the custom target "install_server_only" is provided. It can be
-  used in place of the comprehensive "install". The custom target will copy
-  scsynth's target folder and run fixup_bundle on scsynth to pull in required
-  libraries.
+* Server-only: the simplest way to install "server only" is to add
 
-  *Note VS*: As this is not a proper install, the MS runtime libraries
-  (msvcp120.dll and msvcr120.dll) are not copied. If required, get
-  them from a full SC install, or from the VS/VC/redist folder.
+    -DSC_SERVER_ONLY=ON
+
+  to the cmake command.
+
+  This will set the settings `SC_IDE`, `SC_SCLANG` and `SC_QT` to off. For a
+  more finegrained control you can set the variables individually. Note that
+  if after building server only you want to add other components, you need
+  to unset `SC_SERVER_ONLY` before additional components can be controlled
+  individually.
 
 * SClang-no-Qt: the modifications to the SCClassLibrary are only done
   automatically in the build to the target folder. If you run the target
