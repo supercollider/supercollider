@@ -7,6 +7,7 @@ os:
 
 sudo: required
 dist: trusty
+osx_image: xcode7.3
 
 cache:
  - apt
@@ -17,7 +18,8 @@ before_install:
  - iflin () { if [[ $TRAVIS_OS_NAME == linux ]]; then eval $@; fi; }
  - ifmac brew update
  - ifmac brew tap homebrew/versions
- - ifmac brew install cmake qt55 || true
+ - ifmac brew outdated cmake || brew upgrade cmake
+ - ifmac brew install qt55 libsndfile python || true
  - ifmac brew link qt55 --force
  - iflin sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
  - iflin sudo add-apt-repository --yes ppa:beineri/opt-qt551-trusty
@@ -34,19 +36,20 @@ before_script:
  - export QT_PREFIX=$HOME/qt/gcc_64
  - export QT_PLUGIN_PATH=$QT_PREFIX/plugins
  - export COMMIT_NAME=$TRAVIS_COMMIT
- - ifmac cmake -DCMAKE_PREFIX_PATH=`brew --prefix qt55` -DSC_QT=1 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 .. --debug-output
+ - ifmac cmake -G"Xcode" -DCMAKE_PREFIX_PATH=`brew --prefix qt55` -DCMAKE_OSX_DEPLOYMENT_TARGET=10.7 .. --debug-output
  - iflin cmake -DSC_EL=no -DCMAKE_INSTALL_PREFIX:PATH=$PWD/Install -DCMAKE_BUILD_TYPE=Release .. --debug-output
 # some paths
  - ifmac export SCLANG=$TRAVIS_BUILD_DIR/BUILD/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
  - iflin export SCLANG=$TRAVIS_BUILD_DIR/BUILD/Install/bin/sclang
-# prep for testing 
+# prep for testing
  - sudo pip install git+https://github.com/scztt/qpm.git@qpm-unit
  - qpm quark checkout CommonTests CommonTestsGUI --location $HOME/Quarks
  - cp ../travis_test_run_proto.json ./travis_test_run.json
 
 script:
 # build
- - sudo make install
+ - iflin sudo make install
+ - ifmac cmake --build . --config Release --target install
 # test
  - $TRAVIS_BUILD_DIR/testsuite/sclang/launch_test.py $SCLANG
  - qpm test.run -l ./travis_test_run.json --path $SCLANG --include $HOME/Quarks
