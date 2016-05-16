@@ -91,8 +91,14 @@ A single Tdef may serve as a definition for multiple tasks. These methods show h
 method::fork
 Play an independent task in parallel.
 
+argument::clock
+the clock on which to play the forked task
+
 argument::quant
 can be an array of [quant, phase, offset], or a link::Classes/Quant:: value.
+
+argument::event
+an event to pass into the forked task
 
 method::embed
 Pass a value (typically an link::Classes/Event::) into the task function, and embed the Tdef in the stream.
@@ -107,6 +113,10 @@ For live coding, each Tdef also may control one instance that plays one task. Th
 method::play
 Starts the Tdef and creates a player.
 
+argument::argClock
+a clock on which to play the Tdef
+argument::doReset
+a flag whether to reset the task if already playing
 argument::quant
 can be an array of [quant, phase, offset] or a link::Classes/Quant:: value.
 

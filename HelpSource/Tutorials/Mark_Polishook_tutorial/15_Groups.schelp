@@ -21,7 +21,7 @@ link::Browse#UGens::
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Many synthesis processes, because they use more than a few ugens, are often best divided into component parts. This can make code modular, resusable, and easier to read.
+Many synthesis processes, because they use more than a few ugens, are often best divided into component parts. This can make code modular, reusable, and easier to read.
 
 The link::Classes/Group:: class, which is the means to specify a collection of nodes, provides a mechanism through which to control several synths at once.
 

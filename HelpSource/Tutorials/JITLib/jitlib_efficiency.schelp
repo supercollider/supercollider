@@ -5,7 +5,7 @@ related:: Overviews/JITLib
 
 link::Classes/NodeProxy:: (and, in disguise link::Classes/ProxySpace::) represent "pronouns", placeholders for all kinds of sound producing objects that are able to write to a specific bus on the server.
 
-To prepare such an object for playing, different objects require different things, some very little, some more. As working with the placeolders does not show directly which actions are very efficient and whic ones are not, it is shown here more in detail.
+To prepare such an object for playing, different objects require different things, some very little, some more. As working with the placeholders does not show directly which actions are very efficient and which ones are not, it is shown here more in detail.
 
 This is also important if you want to automate certain processes (e.g. for control by an external interface or a task) - some things (a) are not meant to be used in certain ways and better solutions should be used instead then, others are much more efficient (b, c).
 
@@ -46,7 +46,7 @@ code::
 ~a.refresh; ~a.wakeUp; // waking up a stopped proxy does not require a resend
 ::
 
-these resend the synth with new properies
+these resend the synth with new properties
 
 code::
 ~a.send(...)	// directly sends a message. the mapping bundle of the proxy is cached

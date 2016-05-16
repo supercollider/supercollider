@@ -19,7 +19,7 @@ Use the Find and Find Next commands, available through the Edit menu, to search 
 
 section::grep
 
-Use grep in the Terminal (in the Applications->Utilities folder) to search for all occurences of a given word or phrase. For example, to see all documents that use the LFSaw class, evaluate (in the Terminal application)
+Use grep in the Terminal (in the Applications->Utilities folder) to search for all occurrences of a given word or phrase. For example, to see all documents that use the LFSaw class, evaluate (in the Terminal application)
 
 code::
 grep -r LFSaw /Applications/SuperCollider

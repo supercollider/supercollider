@@ -4,7 +4,7 @@ categories:: GUI
 related:: Classes/View
 
 DESCRIPTION::
-When writing gui widgets it is sometimes not desireable to subclass a view class. Its preferable to write a class that acts like a View and is used where Views normally are used but isn't a direct subclass of a View class.
+When writing gui widgets it is sometimes not desirable to subclass a view class. Its preferable to write a class that acts like a View and is used where Views normally are used but isn't a direct subclass of a View class.
 
 In the View hierarchy it is not possible to subclass an View class because under the hood there is always a strict relationship between the View subclass and its paired C++ class.  The C++ class makes the actual view, the SC class is an interface to that C++ object.
 

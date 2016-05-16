@@ -40,7 +40,7 @@ comment
  */
 ::
 
-If (when) evaluated, a comment will return nil, which is the value SuperCollider uses for unitialized data.
+If (when) evaluated, a comment will return nil, which is the value SuperCollider uses for uninitialized data.
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

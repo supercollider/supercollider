@@ -44,10 +44,10 @@ link::Classes/Sum4:: ugens.
 subsection:: Basic dead code elimination for SynthDefs
 
 The process of building synthdefs now performs a simple dead code elimination pass, which removes all
-link::Classes/PureUGen:: instaces without successor.
+link::Classes/PureUGen:: instances without successor.
 
-subsection:: Case sensitive String comparision
-String comparision operators (teletype::==, !=, <=, >=, >, <::) are now case sensitive.
+subsection:: Case sensitive String comparison
+String comparison operators (teletype::==, !=, <=, >=, >, <::) are now case sensitive.
 code::
 "Foo" == "fOo"; // false
 ::

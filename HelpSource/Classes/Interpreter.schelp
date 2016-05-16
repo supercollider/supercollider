@@ -40,7 +40,7 @@ g.stop; a.free;
 this.inspect;
 ::
 
-note::Use these variables with a bit of extra care – as they are global, they remain in memory and one piece of code may happen to interfer with another one. The variable code::s:: is by convention bound to the default server (link::Classes/Server::) and should not be changed.::
+note::Use these variables with a bit of extra care – as they are global, they remain in memory and one piece of code may happen to interfere with another one. The variable code::s:: is by convention bound to the default server (link::Classes/Server::) and should not be changed.::
 
 
 
@@ -99,7 +99,7 @@ This will not compile class definitions, only expressions.
 
 method::cmdLine
 
-Returns the previosly interpreted code.
+Returns the previously interpreted code.
 
 code::
 1 + 2;
@@ -108,11 +108,11 @@ this.cmdLine
 
 method::codeDump
 
-this interpreter variable can be set to evaluate a function with any sucessfully compiled code.
+this interpreter variable can be set to evaluate a function with any successfully compiled code.
 see e.g. the class History.
 
 code::
-a = [ ]; // store all the code evaulated in a
+a = [ ]; // store all the code evaluated in a
 this.codeDump = { |code| a = a.add(code) };
 1 + 3;
 f = { "hallo" };

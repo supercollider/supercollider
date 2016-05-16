@@ -352,7 +352,7 @@ code::
 
 
 
-// hardsyncing a saw, som random elements
+// hardsyncing a saw, some random elements
 (
 	{
 
@@ -369,7 +369,7 @@ code::
 	}.scope;
 )
 
-// softsyncing a saw, som random elements
+// softsyncing a saw, some random elements
 (
 	{
 

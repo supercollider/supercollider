@@ -153,6 +153,40 @@ a.source = { Pulse.ar(130, Saw.kr(0.3)) * 0.1 }; // change this line while runni
 argument::obj
 can be one of the supported inputs (see link::#Supported sources::)
 
+note::
+When reshaping is set, e.g. to \elastic, setting the source can change the number of channels of the proxy. This means that its bus changes, and that child proxies, which read signals from it, may also change. See the example in link::#routing::.
+::
+
+subsection::Routing
+Signals can be routed between any number of node proxies.
+
+See also: link::Classes/BusPlug#ar::, link::Classes/BusPlug#value::, link::#reshaping::.
+
+Here is a simple example, using Ndef (NodeProxy works similarly):
+
+code::
+Ndef(\maus, { MouseX.kr });
+Ndef(\haus, { Pan2.ar(Blip.ar(Ndef.kr(\maus, 1) * 70), SinOsc.kr(Ndef.ar(\maus, 1) * 5)) }).play;
+::
+
+note::
+If you don't specify the number of channels, an expression like code::Ndef.kr(\maus):: will return an Array. Subsequently, e.g. by a code::Pan2:: UGen, you may get the message:
+
+code::WARNING: Synth output should be a flat array.::
+
+If you intend the output to be really mono, make it explicit by writing: code::Ndef.kr(\maus, 1)::
+::
+
+With elastic reshaping, you can use the parent to expand the child, if you omit the number of channels in the routing:
+
+code::
+Ndef(\maus, { MouseX.kr });
+Ndef(\haus, { Blip.ar(Ndef.kr(\maus) * 70) }).play;
+Ndef(\haus).reshaping = \elastic;
+Ndef(\maus).reshaping = \elastic;
+Ndef(\maus, { LFNoise0.kr(1 ! 8) + 1 }); // now 8 parallel channels of audio are audible.
+::
+
 
 
 
@@ -220,7 +254,7 @@ a.numChannels; // 8
 ::
 
 method::mold
-Adjust the proxy to a given rate / numChannels. If there are any child proxies that have elastic link::#-reshaping::, they are adjusted accordigly.
+Adjust the proxy to a given rate / numChannels. If there are any child proxies that have elastic link::#-reshaping::, they are adjusted accordingly.
 
 code::
 a = NodeProxy(s);
@@ -394,8 +428,8 @@ The unique key (a link::Classes/Symbol::) specifies the control name to be set.
 For value anything can be specified that responds to "asControlInput", in particular:
 definitionList::
 ## number || set the control to that number
-## array of numbers || set the subsequent control channels to the correspoding value
-## node proxy || map subsequent control channels to the corrseponding proxy output channel
+## array of numbers || set the subsequent control channels to the corresponding value
+## node proxy || map subsequent control channels to the corresponding proxy output channel
 ::
 
 
@@ -456,7 +490,7 @@ argument::freeLast
 if to free the last synth at that index or not (default: true)
 
 method::sendEach
-Like send, just iterating seperately over the objects.
+Like send, just iterating separately over the objects.
 
 method::wakeUp
 Until the proxy is not used by any output ( either .play or .ar/.kr ) it is not running on the server. you can wake it up to force it playing. Normally this is not needed.
@@ -534,7 +568,7 @@ a.source = { SinOsc.ar([350, 351.3], 0, 0.2) };
 a.numChannels.postln;
 a.source = { SinOsc.ar([390, 286] * 1.2, 0, 0.2) };
 
-// exeeding channels wrap:
+// exceeding channels wrap:
 a.source = { SinOsc.ar([390, 286, 400, 420, 300] * 1.2, 0, 0.2) };
 
 // other inputs

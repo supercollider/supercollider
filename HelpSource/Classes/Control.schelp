@@ -11,7 +11,7 @@ Typically, Controls are created from the arguments of a SynthDef function.
 Generally you do not create Controls yourself. (See Arrays example
 below).
 
-The rate may be either .kr (continous control rate signal) or .ir (a
+The rate may be either .kr (continuous control rate signal) or .ir (a
 static value, set at the time the synth starts up, and subsequently
 unchangeable). For .ar, see link::Classes/AudioControl::
 
@@ -131,7 +131,7 @@ b.setn(\ring, Array.rand(4, 0.005, 1.0))
 
 subsection:: Symbols
 
-Inside SynthDefs and UGen functions, symbols can be used to conventiently specify control inputs of different rates and with lags (see: link::Classes/NamedControl::, and link::Classes/Symbol::)
+Inside SynthDefs and UGen functions, symbols can be used to conveniently specify control inputs of different rates and with lags (see: link::Classes/NamedControl::, and link::Classes/Symbol::)
 
 definitionlist::
 ## code:: \name.kr(val, lag) ::
@@ -149,7 +149,7 @@ a.release;
 || Return an audio rate link::Classes/NamedControl:: input with a default value (val), and if supplied, with a lag. If val is an array, the control will be multichannel.
 
 ## code:: \name.ir(val) ::
-|| Return an intitalization rate link::Classes/NamedControl:: input with a default value (val). If val is an array, the control will be multichannel.
+|| Return an initialization rate link::Classes/NamedControl:: input with a default value (val). If val is an array, the control will be multichannel.
 
 ## code:: \name.tr(val) ::
 || Return a link::Classes/TrigControl:: input with a default value (val). If val is an array, the control will be multichannel.

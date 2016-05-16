@@ -33,25 +33,34 @@ before_script:
 
  - export QT_PREFIX=$HOME/qt/gcc_64
  - export QT_PLUGIN_PATH=$QT_PREFIX/plugins
+ - export COMMIT_NAME=$TRAVIS_COMMIT
  - ifmac cmake -DCMAKE_PREFIX_PATH=`brew --prefix qt55` -DSC_QT=1 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 .. --debug-output
  - iflin cmake -DSC_EL=no -DCMAKE_INSTALL_PREFIX:PATH=$PWD/Install -DCMAKE_BUILD_TYPE=Release .. --debug-output
 # some paths
  - ifmac export SCLANG=$TRAVIS_BUILD_DIR/BUILD/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
  - iflin export SCLANG=$TRAVIS_BUILD_DIR/BUILD/Install/bin/sclang
+# prep for testing 
+ - sudo pip install git+https://github.com/scztt/qpm.git@qpm-unit
+ - qpm quark checkout CommonTests CommonTestsGUI --location $HOME/Quarks
+ - cp ../travis_test_run_proto.json ./travis_test_run.json
 
 script:
+# build
  - sudo make install
+# test
  - $TRAVIS_BUILD_DIR/testsuite/sclang/launch_test.py $SCLANG
-
- - export COMMIT_NAME=$TRAVIS_COMMIT
+ - qpm test.run -l ./travis_test_run.json --path $SCLANG --include $HOME/Quarks
+# package
  - ifmac mkdir -p $HOME/artifacts
- - (ifmac cd Install; ifmac zip -r $HOME/artifacts/SC-$COMMIT_NAME.zip SuperCollider)
+ - (ifmac cd Install; ifmac zip -q -r $HOME/artifacts/SC-$COMMIT_NAME.zip SuperCollider)
 
 before_deploy:
  # required for github releases
  - git fetch --tags
  - export BUILD_PREFIX=$TRAVIS_REPO_SLUG/$TRAVIS_OS_NAME
- - export FWD_HTML='<html><head><meta http-equiv="refresh" content="0; url=SC-'$COMMIT_NAME'.zip" /></head></html>'
+ - export S3_BUILDS_LOCATION=builds/$BUILD_PREFIX
+ - export S3_URL=https://supercollider.s3.amazonaws.com/$S3_BUILDS_LOCATION/SC-$COMMIT_NAME.zip
+ - export FWD_HTML='<html><head><meta http-equiv="refresh" content="0; url='$S3_URL'" /></head></html>'
  # put everything to be archived in artifacts/
  - mkdir -p "$HOME/artifacts/${TRAVIS_BRANCH%/*}"
  - mkdir -p "$HOME/artifacts/${TRAVIS_TAG%/*}"
@@ -65,25 +74,27 @@ deploy:
    secret_access_key: $AWS_SECRET
    bucket: supercollider
    local-dir: $HOME/artifacts
-   upload-dir: builds/$BUILD_PREFIX
+   upload-dir: $S3_BUILDS_LOCATION
    region: us-west-2
    skip_cleanup: true
    endpoint: s3-us-west-2.amazonaws.com
    acl: public_read
    on:
-     condition: $TRAVIS_OS_NAME = osx
+     condition: $TRAVIS_OS_NAME = osx && ! -z $AWS_KEY && ! -z $AWS_SECRET
      all_branches: true
  # github releases - only tags
  - provider: releases
-   api_key:
-     secure: YN33x5V66b6xepehiEoIm2+UNdbjAPvgrg713F5FdTmWfmuPbLYX6a9zYQYYQ0ZO6w5kofBuWZKL1arw0ABYgUE9kmnNFgx8nR//wsfOnCcgvhGHMXpImzhWX3tPelCW4gyEBF0w8tmN9o4CCC5dcjgHJcpz/q8+eCfg0VeZOZE=
+   api_key: $GITHUB_KEY
    file: $HOME/artifacts/SC-$COMMIT_NAME.zip
    prerelease: true
    skip_cleanup: true
    on:
-     condition: $TRAVIS_OS_NAME = osx
+     condition: $TRAVIS_OS_NAME = osx && ! -z $GITHUB_KEY
      tags: true
      all_branches: true
+after-deploy:
+ - "echo S3 Build Location: $S3_URL"
+
 
 notifications:
   on_success: change

@@ -29,7 +29,7 @@ METHOD:: style
     The plotting style:
     list::
     ## 0 = the channels are vertically spaced
-    ## 1 = the channels are overlayed
+    ## 1 = the channels are overlaid
     ## 2 = lissajou; the first two channels are used for 2D plotting (as streams of x and y coordinates).
     ::
 

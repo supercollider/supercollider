@@ -29,30 +29,16 @@ Patching input to output
 code::
 // patching input to output
 
-// watch the feedback
+// beware of the feedback
 
 (
-SynthDef("help-AudioIn",{ arg out=0;
-	Out.ar(out,
-		AudioIn.ar(1)
-	)
-}).play;
+ServerOptions.inDevices.postln;	//  post available audio input devices
+s.meter;	// display level meters for monitoring
+SynthDef("help-AudioIn", {
+	var input = AudioIn.ar(1); // first input
+	// delay output to tame feedback in case of microphones are configured:
+	Out.ar(0, CombN.ar(input * -25.dbamp, 0.5, 0.5, 0.001))
+}).play
 )
-
-::
-Stereo through patching from input to output
-code::
-// stereo through patching from input to output
-
-// watch the feedback
-
-(
-SynthDef("help-AudioIn",{ arg out=0;
-	Out.ar(out,
-		AudioIn.ar([1,2])
-	)
-}).play;
-)
-
 ::
 

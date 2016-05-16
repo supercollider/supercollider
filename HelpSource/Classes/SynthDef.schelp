@@ -301,7 +301,7 @@ x = Synth(\arrayarg);
 x.setn(\freqs, [440, 441, 442, 443]);
 
 // Don't accidentally set too many values, or you may have unexpected side effects
-// The code below inadvertantly sets the gate arg, and frees the synth
+// The code below inadvertently sets the gate arg, and frees the synth
 x.setn(\freqs, [300, 400, 500, 600, 0]);
 
 // Mr. McCartney's more complex example

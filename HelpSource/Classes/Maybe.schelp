@@ -32,7 +32,7 @@ method::value
 set the contained object or return the source, or the value of the contained object, if it is a Maybe. If there is a recursion, return nil.
 
 method::apply
-return the value, or the value of the contained object, if it is a Maybe. This method allows recursion, so that recursive calcualtions can be made.
+return the value, or the value of the contained object, if it is a Maybe. This method allows recursion, so that recursive calculations can be made.
 
 method::doesNotUnderstand
 (called by any message that Maybe doesn't understand.)
@@ -53,7 +53,7 @@ code::
 // the following examples use a LazyEnvir with a Maybe as a proxy class.
 // instead of writing a = Maybe.new; a.value = something;
 // one can simply write ~a = something.
-// the Maybe is implictly created for you.
+// the Maybe is implicitly created for you.
 
 (
 	p.pop.clear;

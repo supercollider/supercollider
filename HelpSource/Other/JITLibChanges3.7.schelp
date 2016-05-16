@@ -4,7 +4,7 @@ summary:: A Changelog for JITLib
 
 
 section:: Overview
-In general, the changes in this version try to to strenghten the ideal of proxies being true placeholders that behave in many ways like their source objects:
+In general, the changes in this version try to to strengthen the ideal of proxies being true placeholders that behave in many ways like their source objects:
 
 list::
 ## Pattern proxies now should behave more like their source pattern
@@ -47,14 +47,14 @@ subsection:: Changes in node proxy (NodeProxy, Ndef, BusPlug)
 list::
 ## controls are now set at synth creation time, not in an extra set message. This means that i-rate controls can be set in the nodemap.
 ## send and spawn extraArgs now override any existing nodeMap settings for each synth
-## when setting the source of a node proxy to a number or an array of numbers, the bus is set by a precompiled synth def, which is much more efficient and consistent than build ing one. This means the source can be now set to a number/array librally at higher rates (e.g. Ndef(\x, [100, 200])).
+## when setting the source of a node proxy to a number or an array of numbers, the bus is set by a precompiled synth def, which is much more efficient and consistent than building one. This means the source can be now set to a number/array liberally at higher rates (e.g. Ndef(\x, [100, 200])).
 ## For implementation reasons, it is now not possible anymore to add up numbers in a single node proxy. One slot will overwrite the next. E.g. code::Ndef(\x)[0] = 100; Ndef(\x)[1] = 200;:: the output will be 200 and not (as ist used to be) 300.
 ## play (Monitor) can now map from any number of channels to any number of channels
 ## play and playN  (Monitor) previously passed arguments are kept and can be partially overridden by new ones (the message clear removes them).
 ## nodeProxy.value(n) (e.g. code::SinOsc.ar(Ndef(\x)::) will keep the rate the proxy already has).
 ## using code::x.ar(n):: and code::x.kr(n):: will automatically expand when code::n:: is nil. It remains fixed if n is given.
 ## code::nodeProxy.ar(n):: / code::nodeProxy.kr(n):: if no code::n:: is given, they will now always return an array, code::nodeProxy.value(x):: returns an array, if no input is given. This is for general consistency: a few ugens expect an array as an input, and as the numChannels of a proxy can change now, this has to be specified. In order to have a UGen and not an array, use code::nodeProxy.ar(1)::, or code::nodeProxy.kr(1)::, respectively.
-## unlike it was before, code::x.ar(n, offset):: will now wrap around the avaliable proxy bus channels. There is a third argument (wrap), when set to false, it will clip instead
+## unlike it was before, code::x.ar(n, offset):: will now wrap around the available proxy bus channels. There is a third argument (wrap), when set to false, it will clip instead
 ## a third argument, clip, was added to ar/kr: code::x.ar(n, offset, clip)::. When set to \wrap it will extend the output size of the existing channels by wrapping (the default is \wrap). Set it to \clip if you want to keep it in range by repeating the last value.
 ## InBus is more flexible and logical in terms of multichannel expansion now and has a helpfile
 ::
@@ -664,7 +664,7 @@ Ndef(\x)[0] = { "rebuild two".postln; [1, 2] };
 Ndef(\x)[1] = { "rebuild four".postln; [1, 2, 3, 4] }
 Ndef(\x)[2] = { "rebuild one".postln; 1 };
 Ndef(\x).rate == \control;
-Ndef(\x).mold; // shouln't do anything either. Well, I suppose that in this case it has to, unless we check the max rate of the whole set to sources. This is impossible if the sources themselves initialise the proxy.
+Ndef(\x).mold; // shouldn't do anything either. Well, I suppose that in this case it has to, unless we check the max rate of the whole set to sources. This is impossible if the sources themselves initialise the proxy.
 Ndef(\x).isNeutral.not;
 Ndef(\x).mold(4); // this should
 Ndef(\x).numChannels == 4;

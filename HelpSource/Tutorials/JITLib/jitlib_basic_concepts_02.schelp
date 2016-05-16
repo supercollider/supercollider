@@ -189,7 +189,7 @@ This initialisation happens whenever the proxy is first used. Later, the proxy c
 
 code::
 ~u.play(0, 2);	// initialize 2 audio channels (default). 0 is the output bus number.
-		// if the proxy is not inititialized, play defaults to 2 channels.
+		// if the proxy is not initialized, play defaults to 2 channels.
 		// here it is explicitly given only to make it more clear.
 ~u = { PinkNoise.ar(0.2) }; // use only one
 ~u.numChannels;	// 2 channels

@@ -4,7 +4,7 @@ categories:: UGens>Triggers, UGens>Random
 related:: Classes/TWChoose
 
 description::
-An output is selected randomly on recieving a trigger from an array of inputs.
+An output is selected randomly on receiving a trigger from an array of inputs.
 
 TChoose returns a combination of link::Classes/Select:: and link::Classes/TIRand::.
 
@@ -30,4 +30,4 @@ code::
 )
 ::
 
-note:: all the ugens are continously running. This may not be the most efficient way if each input is  cpu-expensive.::
+note:: all the ugens are continuously running. This may not be the most efficient way if each input is  cpu-expensive.::

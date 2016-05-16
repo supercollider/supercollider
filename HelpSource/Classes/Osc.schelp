@@ -15,7 +15,7 @@ signal. This preprocesses the Signal into a form which can be used
 efficiently by the Oscillator. The buffer size must be a power of 2.
 
 
-This can be acheived by creating a Buffer object and sending it one of
+This can be achieved by creating a Buffer object and sending it one of
 the "b_gen" messages ( link::Classes/Buffer#-sine1::, link::Classes/Buffer#-sine2::, link::Classes/Buffer#-sine3:: ) with the wavetable flag set
 to true.
 

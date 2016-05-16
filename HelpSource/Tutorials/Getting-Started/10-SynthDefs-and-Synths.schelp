@@ -15,7 +15,7 @@ section::Meet the SynthDef
 
 Up until now we've been using Functions to generate audio. This way of working is very useful for quick testing, and in cases where maximum flexibility is needed. This is because each time we execute the code, the Function is evaluated anew, which means the results can vary greatly.
 
-The server, however, doesn't understand Functions, or OOP, or the SC language. It wants information on how to create audio output in a special form called a synth definition. A synth defintion is data about UGens and how they're interconnected. This is sent in a kind of special optimised form, called 'byte code', which the server can deal with very efficiently.
+The server, however, doesn't understand Functions, or OOP, or the SC language. It wants information on how to create audio output in a special form called a synth definition. A synth definition is data about UGens and how they're interconnected. This is sent in a kind of special optimised form, called 'byte code', which the server can deal with very efficiently.
 
 Once the server has a synth definition, it can very efficiently use it to make a number of synths based on it. Synths on the server are basically just things that make or process sound, or produce control signals to drive other synths.
 

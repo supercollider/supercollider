@@ -30,7 +30,7 @@ An instance of link::Classes/String::. The contents of the document.
 argument:: makeListener
 Makes this document the listener, i.e. the place where SC-lang posts messages.
 argument:: envir
-An instance of link::Classes/Environment::. The link::Classes/Environment:: to be used by the interpreter of the document window. By defualt, it is set to the current link::Classes/Environment::.
+An instance of link::Classes/Environment::. The link::Classes/Environment:: to be used by the interpreter of the document window. By default, it is set to the current link::Classes/Environment::.
 discussion::
 code::
 Document.new("this is the title", "this is the text");
@@ -45,7 +45,7 @@ The beginning of the cursor selection of the file content.
 argument:: selectionLength
 The length of the cursor selection of the file content.
 argument:: envir
-An instance of link::Classes/Environment::. The Environment to be used by the interpreter of the document window. By defualt, it is set to the current link::Classes/Environment::.
+An instance of link::Classes/Environment::. The Environment to be used by the interpreter of the document window. By default, it is set to the current link::Classes/Environment::.
 discussion::
 code::
 Document.open("README", 292,253); // notice the selected text in the open document
@@ -103,7 +103,7 @@ argument:: value
 An instance of link::Classes/Function:: or link::Classes/FunctionList::.
 
 method:: autoRun
-If a document begins with the link::Classes/String::, code::"/*RUN*/"::, then the code following it int he file will be exectued on opening the file, if autorun is set to true.
+If a document begins with the link::Classes/String::, code::"/*RUN*/"::, then the code following it int he file will be executed on opening the file, if autorun is set to true.
 argument:: value
 An instance of link::Classes/Boolean::. Default value is code::true::.
 
@@ -114,7 +114,7 @@ A class for implementing Document, e.g. link::Classes/CocoaDocument::.
 
 subsection:: Path Utilities
 
-Utilities and settings for dealing with documents such as super collider code files. By default the document directory is SuperCollider's application directory.
+Utilities and settings for dealing with documents such as supercollider code files. By default the document directory is SuperCollider's application directory.
 
 method:: dir
 Get/set the default document directory. The default is dependent on link::Classes/Document#implementationClass::.
@@ -185,12 +185,12 @@ argument:: doc
 An instance of Document.
 discussion::
 code::
-Document.current == Document.listener; // presumaably returns false
+Document.current == Document.listener; // presumably returns false
 ::
 
 method:: editable
 Get / set the the document is editable.
-argument:: abool
+argument:: boolean
 An instance of link::Classes/Boolean::.
 
 method:: name

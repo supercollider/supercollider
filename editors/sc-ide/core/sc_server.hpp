@@ -35,6 +35,7 @@ class ScProcess;
 class VolumeWidget;
 namespace Settings { class Manager; }
 
+
 class ScServer : public QObject
 {
     Q_OBJECT
@@ -69,8 +70,11 @@ public:
 
     QAction *action(ActionRole role) { return mActions[role]; }
 
+    Q_PROPERTY( float volume READ volume WRITE setVolume NOTIFY volumeChanged )
+
     float volume() const;
     void setVolume( float volume );
+    void setVolumeRange( float min, float max );
 
     bool isMuted() const;
     void setMuted( bool muted );
@@ -103,11 +107,12 @@ public slots:
     void setRecording( bool active );
 
 signals:
-    void runningStateChange( bool running, QString const & hostName, int port );
+    void runningStateChanged( bool running, QString const & hostName, int port, bool unresponsive );
     void updateServerStatus (int ugenCount, int synthCount,
                              int groupCount, int defCount,
                              float avgCPU, float peakCPU);
     void volumeChanged( float volume );
+    void volumeRangeChanged( float min, float max);
     void mutedChanged( bool muted );
     void recordingChanged( bool recording );
 
@@ -162,6 +167,7 @@ private:
 
     QAction * mActions[ActionCount];
 
+    float mVolume = 0, mVolumeMin = -90, mVolumeMax = 6;
     VolumeWidget *mVolumeWidget;
     QTimer mRecordTimer;
     boost::chrono::system_clock::time_point mRecordTime;

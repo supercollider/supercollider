@@ -147,7 +147,7 @@ public:
 #ifdef __APPLE__
         suggestedLatencyIn = Pa_GetDeviceInfo(input_device_index)->defaultHighInputLatency;
         suggestedLatencyOut = Pa_GetDeviceInfo(output_device_index)->defaultHighOutputLatency;
-#elif
+#else
 
         if (h_blocksize == 0){
             if (inchans)

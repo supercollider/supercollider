@@ -22,7 +22,7 @@ argument:: levelComp
 
 
 method:: arFill
-In analogy to Mix:arFill, this method takes a function that produces the channels. The countinmg index is passed to it.
+In analogy to Mix:arFill, this method takes a function that produces the channels. The counting index is passed to it.
 argument:: n
 Number of channels
 argument:: function

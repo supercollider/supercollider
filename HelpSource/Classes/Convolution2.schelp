@@ -29,7 +29,7 @@ Processing target.
 argument::kernel
 
 Buffer index for the fixed kernel, may be modulated in
-combination with the trigger.
+combination with the trigger. It's size must be <= framesize.
 
 
 argument::trigger
@@ -169,7 +169,7 @@ b.sine1(1.0/[1,2,3,4,5,6], true, true, true);
 ::
 
 Instead of triggering the kernel update yourself, as in the first example, you can use a UGen trigger signal to do so. In the next example, we use two Convolution2 UGens in order to continuously and smoothly change the impulse response: link::Classes/RecordBuf:: is used to record a random frequency link::Classes/Saw:: oscillator every code::trigPeriod:: seconds.
-Right after the recording (trigPeriod gets delayed by the buffer duration link::Classes/BufDur::, using the link::Classes/TDelay:: UGen) the two convolution UGens alternatingly update their kernels (using two triggers convTrigs). At the frequency of the kernel updates a crossfader link::Classes/XFade2:: moves between conv1 and conv2, using a triangle oscillator link::Classes/LFTri:: at half the trigger frequency as a panning input. The result is a constantly shifting spectral colorization of the Dust impulses:
+Right after the recording (trigPeriod gets delayed by the buffer duration link::Classes/BufDur::, using the link::Classes/TDelay:: UGen) the two convolution UGens alternatively update their kernels (using two triggers convTrigs). At the frequency of the kernel updates a crossfader link::Classes/XFade2:: moves between conv1 and conv2, using a triangle oscillator link::Classes/LFTri:: at half the trigger frequency as a panning input. The result is a constantly shifting spectral colorization of the Dust impulses:
 
 code::
 b = Buffer.alloc( s, 2048, 1, _.zeroMsg );

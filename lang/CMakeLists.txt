@@ -257,6 +257,7 @@ if(READLINE_FOUND)
 	target_include_directories(libsclang PUBLIC ${READLINE_INCLUDE_DIR})
 	target_link_libraries(libsclang ${READLINE_LIBRARY})
 endif(READLINE_FOUND)
+mark_as_advanced(READLINE_INCLUDE_DIR READLINE_LIBRARY)
 
 if (APPLE)
 	target_link_libraries(libsclang "-framework Carbon")
@@ -286,7 +287,7 @@ if (FFTW3F_FOUND)
 endif()
 
 if (WIN32)
-	target_link_libraries(libsclang wsock32 ws2_32 portmidi)
+	target_link_libraries(libsclang wsock32 ws2_32 portmidi iphlpapi)
 endif()
 
 if (GC_SANITYCHECK)
@@ -333,13 +334,9 @@ elseif(WIN32)
         add_custom_command(TARGET sclang
             PRE_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/SCClassLibrary/Common/GUI" $<TARGET_FILE_DIR:sclang>/SCClassLibrary/scide_scqt/Common/GUI
-            COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/SCClassLibrary/deprecated/3.7" $<TARGET_FILE_DIR:sclang>/SCClassLibrary/scide_scqt/deprecated/3.7
             COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/SCClassLibrary/JITLib/GUI" $<TARGET_FILE_DIR:sclang>/SCClassLibrary/scide_scqt/JITLib/GUI
             COMMAND ${CMAKE_COMMAND} -E remove_directory $<TARGET_FILE_DIR:sclang>/SCClassLibrary/Common/GUI
-            COMMAND ${CMAKE_COMMAND} -E remove_directory $<TARGET_FILE_DIR:sclang>/SCClassLibrary/deprecated/3.7
             COMMAND ${CMAKE_COMMAND} -E remove_directory $<TARGET_FILE_DIR:sclang>/SCClassLibrary/JITLib/GUI
-            COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:sclang>/SCClassLibrary/Common/GUI/Base
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/SCClassLibrary/Common/GUI/Base/Model.sc" $<TARGET_FILE_DIR:sclang>/SCClassLibrary/Common/GUI/Base
         )
     endif(NOT SC_QT)
 

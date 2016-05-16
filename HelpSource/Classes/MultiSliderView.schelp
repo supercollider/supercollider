@@ -57,7 +57,7 @@ METHOD:: value
 
 METHOD:: valueAction
 
-	Sets link::#-value:: and triggeres link::#-action::.
+	Sets link::#-value:: and triggers link::#-action::.
 
 METHOD:: reference
 
@@ -139,7 +139,7 @@ SUBSECTION:: Appearance
 
 METHOD:: showIndex
 
-	Wether the slider selection is visually indicated.
+	Whether the slider selection is visually indicated.
 
 	argument::
 		A Boolean.

@@ -25,7 +25,7 @@ INSTANCEMETHODS::
 private:: init
 
 METHOD:: value
-Check to see if a message matches, and evaulate func if it does.
+Check to see if a message matches, and evaluate func if it does.
 
 argument:: value
 The message value (e.g. velocity, etc.) of the MIDI message as an link::Classes/Integer::. Note this should be in the range 0-127.

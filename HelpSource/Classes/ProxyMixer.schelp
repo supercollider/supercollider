@@ -59,7 +59,7 @@ argument::bounds
 window bounds - default is nil, so it determines it size.
 
 argument::makeSkip
-a flag whether to make make a skijack
+a flag whether to make make a skipjack
 
 argument::options
 additional settings - currently none provided.

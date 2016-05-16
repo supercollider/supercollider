@@ -20,7 +20,7 @@ ARGUMENT:: inports
 the number of MIDI input connections to open; if code::nil:: then opens as many inports as there are MIDI sources.
 
 ARGUMENT:: outports
-the number of MIDI output connections to open; if code::nil:: then opens as many inports as there are MIDI destinations.
+the number of MIDI output connections to open; if code::nil:: then opens as many outports as there are MIDI destinations.
 
 ARGUMENT:: verbose
 A flag whether or not to post the MIDI sources and destinations that were found. Default is true.

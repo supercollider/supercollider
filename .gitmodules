@@ -7,6 +7,10 @@
 [submodule "external_libraries/hidapi"]
 	path = external_libraries/hidapi
 	url = git://github.com/sensestage/hidapi.git
-[submodule "external_libraries/portaudio"]
-	path = external_libraries/portaudio
-	url = https://github.com/bagong/portaudio
+[submodule "editors/scvim"]
+	path = editors/scvim
+	url = https://github.com/supercollider/scvim.git
+[submodule "external_libraries/portaudio_sc_org"]
+	path = external_libraries/portaudio_sc_org
+	url = https://github.com/supercollider/portaudio.git
+	branch = supercollider

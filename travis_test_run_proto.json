@@ -1,0 +1,92 @@
+{
+  "tests": [
+    {
+      "test": "*", 
+      "suite": "TestPlotter"
+    }, 
+    {
+      "test": "*", 
+      "suite": "TestUnitTest"
+    }, 
+    {
+      "test": "*", 
+      "suite": "TestEnv"
+    }, 
+    {
+      "test": "*", 
+      "suite": "TestArray"
+    }, 
+    {
+      "test": "*", 
+      "suite": "TestEvent"
+    }, 
+    {
+      "test": "*", 
+      "suite": "TestOSCBundle"
+    }, 
+    {
+      "test": "*", 
+      "suite": "TestNoOps"
+    }, 
+    {
+      "test": "*", 
+      "suite": "TestMixedBundleTester"
+    }, 
+    {
+      "test": "*", 
+      "suite": "TestFloat"
+    }, 
+    {
+      "test": "*", 
+      "suite": "TestNetAddr"
+    }, 
+    {
+      "test": "*", 
+      "suite": "TestCurveWarp"
+    }, 
+    {
+      "test": "*", 
+      "suite": "UnitTestScript"
+    }, 
+    {
+      "test": "*", 
+      "suite": "TestSignal"
+    }, 
+    {
+      "suite": "TestUnitTest", "test": "test_toreDown", 
+      "skip": true, "skipReason": "UnitTest bug"
+    }, 
+    {
+      "suite": "TestUnitTest", "test": "test_setUp2", 
+      "skip": true, "skipReason": "UnitTest bug"
+    }, 
+    {
+      "suite": "TestUnitTest", "test": "test_bootServer", 
+      "skip": true, "skipReason": "No server support on travis"
+    }, 
+    {
+      "test": "test_sendBundle50", 
+      "suite": "TestNetAddr", 
+      "skipReason": "No server support on travis", 
+      "skip": true
+    }, 
+    {
+      "test": "test_send", 
+      "suite": "TestMixedBundleTester", 
+      "skipReason": "No server support on travis", 
+      "skip": true
+    }, 
+    {
+      "test": "test_findPreparationMessage", 
+      "suite": "TestMixedBundleTester", 
+      "skipReason": "No server support on travis", 
+      "skip": true
+    }, 
+    {
+      "test": "test_prepare", 
+      "suite": "TestOSCBundle", 
+      "skipReason": "No server support on travis", 
+      "skip": true
+    }
+  ]
+}

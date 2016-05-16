@@ -163,7 +163,7 @@ argument:: aScheme
 An instance of link::Classes/Symbol::. The scheme to use as current scheme.
 
 method:: use
-Executes a function body, temporarily setting the current GUI scheme. This is usefull inside view's action functions in order to make this function use the GUI scheme that was originally used for the view of the action, even if the scheme has been switched meanwhile.
+Executes a function body, temporarily setting the current GUI scheme. This is useful inside view's action functions in order to make this function use the GUI scheme that was originally used for the view of the action, even if the scheme has been switched meanwhile.
 argument:: aScheme
 The scheme to use during the function execution.
 argument:: func

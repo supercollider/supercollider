@@ -9,7 +9,7 @@ There are three very similar ways to represent maps between keys and values, eac
 
 TABLE::
 ## key value pairs || common representation of arguments || code::[\freq, 452, \amp, 0.2]::
-## collections of asscociations || ordering, array and collection methods || code::[0 -> [1, 2, 3], 1 -> [2, 1]]::
+## collections of associations || ordering, array and collection methods || code::[0 -> [1, 2, 3], 1 -> [2, 1]]::
 ## dictionaries: fast lookup || event compatibility || code::(instrument: \sine, freq: 561)::
 ::
 

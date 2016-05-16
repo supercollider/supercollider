@@ -9,7 +9,7 @@ MovieView can play movies such as .mov and mpg, and image files like jpg, png, t
 
 note:: Not available in strong::Qt GUI:: ::
 
-note:: strong:: prerequisits in SwingOSC ::
+note:: strong:: prerequisites in SwingOSC ::
 
 JSCMovieView is currently based on the Java Media Framework (JMF) which is not part of the standard java environment (Java SE) but needs to be installed separately. There is a reference implementation from Sun available for Linux, Windows and Mac OS X. It can be downloaded from http://java.sun.com/products/java-media/jmf/index.jsp (note: for Mac OS X you need the generic cross-platform version).
 

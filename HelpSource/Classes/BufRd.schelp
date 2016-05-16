@@ -18,7 +18,7 @@ method::ar, kr
 
 argument::numChannels
 Number of channels that the buffer will be. This must be a fixed
-integer. The architechture of the SynthDef cannot change after it
+integer. The architecture of the SynthDef cannot change after it
 is compiled.
 note::
 If you supply a  code::bufnum::  of a buffer that has a

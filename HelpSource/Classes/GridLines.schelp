@@ -8,9 +8,9 @@ GridLines is a strategy object that implements a general strategy for finding a 
 
 The object that does the actual drawing on a view is DrawGrid.
 
-A GridLines object uses a ControlSpec to define the minimum and maximum possible values.  Given a data set's actual mininum and maximum values, the GridLines object can choose a logical range for graphing that encompasses the data that will be plotted.  
+A GridLines object uses a ControlSpec to define the minimum and maximum possible values.  Given a data set's actual minimum and maximum values, the GridLines object can choose a logical range for graphing that encompasses the data that will be plotted.  
 
-Future development work will add subclasses of GridLines that can bind more tightly with the data they are representing.  For instance a FreqGridLines (not yet impemented) could apply stronger lines to octave divisions.  A DegreeGridLines could be used to draw pitch degree gridlines behind a frequency plot.
+Future development work will add subclasses of GridLines that can bind more tightly with the data they are representing.  For instance a FreqGridLines (not yet implemented) could apply stronger lines to octave divisions.  A DegreeGridLines could be used to draw pitch degree gridlines behind a frequency plot.
 
 Spec has a .grid variable that points to its preferred GridLines object that should be used for graphing.
 
