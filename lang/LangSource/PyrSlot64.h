@@ -295,16 +295,46 @@ BOOST_FORCEINLINE const PyrObject* slotRawObject(const PyrSlot *slot)
 	return slot->u.o;
 }
 
+#ifdef __SSE2__
+#include <xmmintrin.h>
+#endif
+
 /* slot copy functions */
-BOOST_FORCEINLINE void slotCopy(PyrSlot *dst, const PyrSlot *src)
+BOOST_FORCEINLINE void slotCopy(PyrSlot * __restrict__ dst, const PyrSlot * __restrict__ src)
 {
+#ifdef __SSE2__
+	_mm_storeu_si128( (__m128i*)dst, _mm_loadu_si128( (__m128i*)(src) ) );
+#else
 	*dst = *src;
+#endif
 }
 
-BOOST_FORCEINLINE void slotCopy(PyrSlot *dst, const PyrSlot *src, int num)
+BOOST_FORCEINLINE void slotCopy(PyrSlot * __restrict__ dst, const PyrSlot * __restrict__ src, int num)
 {
+#ifdef __SSE2__
+	const int loops = num / 4;
+	for (int i=0; i<loops; ++i) {
+		__m128i slot0 = _mm_loadu_si128( (__m128i*)(src+0) );
+		__m128i slot1 = _mm_loadu_si128( (__m128i*)(src+1) );
+		__m128i slot2 = _mm_loadu_si128( (__m128i*)(src+2) );
+		__m128i slot3 = _mm_loadu_si128( (__m128i*)(src+3) );
+		_mm_storeu_si128( (__m128i*)dst+0, slot0 );
+		_mm_storeu_si128( (__m128i*)dst+1, slot1 );
+		_mm_storeu_si128( (__m128i*)dst+2, slot2 );
+		_mm_storeu_si128( (__m128i*)dst+3, slot3 );
+
+		src += 4;
+		dst += 4;
+	}
+
+	const int remain = num - loops * 4;
+	for (int i=0; i<remain; ++i)
+		slotCopy(dst + i, src + i);
+
+#else
 	for (int i=0; i<num; ++i)
 		slotCopy(dst + i, src + i);
+#endif
 }
 
 #endif
