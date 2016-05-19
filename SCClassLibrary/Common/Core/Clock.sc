@@ -12,11 +12,12 @@ Clock {
 	*beats2bars { ^0 }
 	*bars2beats { ^0 }
 	*timeToNextBeat { ^0 }
-	*nextTimeOnGrid { | quant = 1, phase = 0|
+	*getNextTimeOnGrid { | quant = 1, phase = 0|
 		if (quant ==0) { ^this.beats + phase };
 		if (phase < 0) { phase = phase % quant };
 		^roundUp(this.beats - (phase % quant), quant) + phase;
 	}
+	*nextTimeOnGrid { | quant = 1, phase = 0 | ^this.getNextTimeOnGrid(quant, phase) }
 }
 
 SystemClock : Clock {
