@@ -131,6 +131,7 @@ int main( int argc, char *argv[] )
 void SingleInstanceGuard::onNewIpcConnection()
 {
     mIpcSocket = mIpcServer->nextPendingConnection();
+	mIpcChannel->setSocket(mIpcSocket);
     connect(mIpcSocket, SIGNAL(disconnected()), mIpcSocket, SLOT(deleteLater()));
     connect(mIpcSocket, SIGNAL(readyRead()), this, SLOT(onIpcData()));
 }
@@ -162,8 +163,9 @@ bool SingleInstanceGuard::tryConnect(QStringList const & arguments)
     mIpcServer = new QTcpServer(this);
     bool listening = mIpcServer->listen(QHostAddress(QHostAddress::LocalHost), SingleInstanceGuard::Port);
     if (listening) {
-        mIpcChannel = new ScIpcChannel(mIpcServer->nextPendingConnection(), QString("SingleInstanceGuard"), this);
-
+		// socket is NULL here in Windows, so we pass it in onNewIpcConnection()
+        QTcpSocket *socket = mIpcServer->nextPendingConnection();
+        mIpcChannel = new ScIpcChannel(socket, QString("SingleInstanceGuard"), this);
         connect(mIpcServer, SIGNAL(newConnection()), this, SLOT(onNewIpcConnection()));
         return false;
     }

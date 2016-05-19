@@ -57,6 +57,8 @@ public:
   ScIpcChannel(QTcpSocket *socket, const QString &tag, IIpcHandler *logger);
   ~ScIpcChannel();
 
+  void setSocket(QTcpSocket *socket);
+
   void log(const QString &message);
 
   void read();
