@@ -95,6 +95,10 @@ Section "Core" core_sect
   WriteRegStr HKCR "${BUNDLE_NAME}.HelpFile" "" "${BUNDLE_NAME} HelpFile"
   WriteRegStr HKCR "${BUNDLE_NAME}.HelpFile\DefaultIcon" "" "$INSTDIR\sclang.exe,0"
   WriteRegStr HKCR "${BUNDLE_NAME}.HelpFile\shell\open\command" "" '"$INSTDIR\scide.exe" "%1"'
+  
+  ; Add path information
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\App Paths\scide.exe" "" "$INSTDIR\scide.exe"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\App Paths\scide.exe" "Path" "$INSTDIR"  
 
   ; Create Startmenu item
   SetShellVarContext all
@@ -122,6 +126,9 @@ Section "Uninstall"
 
   DeleteRegKey HKCR ".schelp"
   DeleteRegKey HKCR "${BUNDLE_NAME}.HelpFile"
+  
+  ;Remove path information
+  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\App Paths\scide.exe"
 
   ;Try to remove StartMenu item
   SetShellVarContext all
