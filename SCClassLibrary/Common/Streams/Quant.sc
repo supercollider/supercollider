@@ -2,6 +2,7 @@
 // quant and phase determine the starting time of something scheduled by a TempoClock
 // timingOffset is an additional timing factor that allows an EventStream to compute "ahead of time" enough to allow
 // negative lags for strumming a chord, etc
+
 Quant {
 	classvar	default;
 	var <>quant, <>phase, <>timingOffset;
@@ -12,7 +13,7 @@ Quant {
 	*new { |quant = 0, phase, timingOffset| ^super.newCopyArgs(quant, phase, timingOffset) }
 
 	nextTimeOnGrid { | clock |
-		^clock.nextTimeOnGrid(quant, (phase ? 0) - (timingOffset ? 0));
+		^clock.getNextTimeOnGrid(quant, (phase ? 0) - (timingOffset ? 0));
 	}
 
 	asQuant { ^this.copy }
