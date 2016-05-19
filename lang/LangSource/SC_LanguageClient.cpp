@@ -142,7 +142,8 @@ extern thread gResyncThread;
 void SC_LanguageClient::shutdownRuntime()
 {
 	cleanup_OSC();
-#if __APPLE__
+
+#if __APPLE__ || _WIN32
 	gResyncThread.detach(); // leak!
 #endif
 }
