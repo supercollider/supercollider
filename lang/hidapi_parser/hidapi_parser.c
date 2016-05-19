@@ -1301,21 +1301,15 @@ static int hid_parse_caps(struct hid_device_element **elements, int *elements_ar
             free(pButtonCaps);
             return -1;
         }
-        for (int i = 0; i < numCaps; i++, (*elements_array_index)++){
+        for (int i = 0; i < numCaps; i++){
             PHIDP_BUTTON_CAPS pCaps = &pButtonCaps[i];
             elements[*elements_array_index]->parent_collection = collections[pCaps->LinkCollection];
             if (!collections[pCaps->LinkCollection]->first_element){
                 collections[pCaps->LinkCollection]->first_element = elements[*elements_array_index];
-            }elements[*elements_array_index]->io_type = report_type;
+            }
+            elements[*elements_array_index]->io_type = report_type;
             elements[*elements_array_index]->index = (*index)++;
             elements[*elements_array_index]->usage_page = pCaps->UsagePage;
-            if (pCaps->IsRange){
-                elements[*elements_array_index]->usage_min = pCaps->Range.UsageMin;
-                elements[*elements_array_index]->usage_max = pCaps->Range.UsageMax;
-            }
-            else{
-                elements[*elements_array_index]->usage = pCaps->NotRange.Usage;
-            }
             USHORT bitField = pCaps->BitField;
             elements[*elements_array_index]->type = bitField & 0xf;
             elements[*elements_array_index]->isarray = ((bitField & HID_ITEM_VARIABLE) == 0);
@@ -1324,7 +1318,20 @@ static int hid_parse_caps(struct hid_device_element **elements, int *elements_ar
             elements[*elements_array_index]->report_id = pCaps->ReportID;
             elements[*elements_array_index]->report_size = pCaps->Range.UsageMax - pCaps->Range.UsageMin + 1; // TODO: not sure about this one. The API does not seem to provide this. Perhaps set to usage_max - usage_min + 1 (1 bit per usage)?
             elements[*elements_array_index]->report_index = 1; // TODO: not sure about this one. The API does not seem to provide this. Perhaps set to 1?
-            debug_element(elements[*elements_array_index]);
+            if (pCaps->IsRange){
+                elements[*elements_array_index]->usage = pCaps->Range.UsageMin;                
+                for (int j = pCaps->Range.UsageMin + 1; j <= pCaps->Range.UsageMax; j++){
+                    (*elements_array_index)++;
+                    elements[*elements_array_index] = elements[(*elements_array_index) - 1];
+                    elements[*elements_array_index]->usage = j;
+                }
+            }
+            else{
+                elements[*elements_array_index]->usage = pCaps->NotRange.Usage;
+                debug_element(elements[*elements_array_index]);
+                
+            }
+            (*elements_array_index)++;            
         }
         free(pButtonCaps);
 
@@ -1350,6 +1357,7 @@ static int hid_parse_caps(struct hid_device_element **elements, int *elements_ar
             elements[*elements_array_index]->io_type = report_type;
             elements[*elements_array_index]->index = (*index)++;
             elements[*elements_array_index]->usage_page = pCaps->UsagePage;
+            // TODO convert to one element per usage, as above
             if (pCaps->IsRange){
                 elements[*elements_array_index]->usage_min = pCaps->Range.UsageMin;
                 elements[*elements_array_index]->usage_max = pCaps->Range.UsageMax;
@@ -1422,11 +1430,11 @@ int hid_parse_input_elements_values( unsigned char* buf, int size, struct hid_de
     if (!HidD_GetPreparsedData(dev_handle, &pp_data)){
         return -1;
     }
-    long max_usage_and_page_length = HidP_MaxUsageListLength(HidP_Input, 0, pp_data);
-    PUSAGE_AND_PAGE usage_and_page_list = malloc(max_usage_and_page_length * sizeof(USAGE_AND_PAGE));
-    memset(usage_and_page_list, 0, max_usage_and_page_length * sizeof(USAGE_AND_PAGE));
+    long usage_and_page_length = HidP_MaxUsageListLength(HidP_Input, 0, pp_data);
+    PUSAGE_AND_PAGE usage_and_page_list = malloc(usage_and_page_length * sizeof(USAGE_AND_PAGE));
+    memset(usage_and_page_list, 0, usage_and_page_length * sizeof(USAGE_AND_PAGE));
 
-    NTSTATUS ntres = HidP_GetButtonsEx(HidP_Input, 0, usage_and_page_list, &max_usage_and_page_length, pp_data, buf, report_length);
+    NTSTATUS ntres = HidP_GetButtonsEx(HidP_Input, 0, usage_and_page_list, &usage_and_page_length, pp_data, buf, report_length);
     if ( ntres != HIDP_STATUS_SUCCESS){
         free(usage_and_page_list);
         return -1;
@@ -1443,22 +1451,28 @@ int hid_parse_input_elements_values( unsigned char* buf, int size, struct hid_de
             // TODO may need to use HidP_GetUsageValueArray, if element->report_index > 1
             unsigned long new_value;
             res = HidP_GetUsageValue(HidP_Input, cur_element->usage_page, 0, cur_element->usage, &new_value, pp_data, buf, report_length);
-            if (res == HIDP_STATUS_USAGE_NOT_FOUND){
+            if (res == HIDP_STATUS_SUCCESS){
+            	// printf("element page %i, usage %i, index %i, value %i, rawvalue %i, newvalueref %i\n", cur_element->usage_page, cur_element->usage, cur_element->index, cur_element->value, cur_element->rawvalue, newValueRef );
+                if (new_value != cur_element->rawvalue || cur_element->repeat){
+                    printf("element page %i, usage %i, index %i, value %i, rawvalue %i, newvalue %i\n", cur_element->usage_page, cur_element->usage, cur_element->index, cur_element->value, cur_element->rawvalue, new_value);
+                    fflush(stdout);
+                    hid_element_set_value_from_input(cur_element, new_value);
+                    devdesc->_element_callback(cur_element, devdesc->_element_data);
+                }
+            }
+            else if (res == HIDP_STATUS_USAGE_NOT_FOUND){                
                 // Then see if we can find the element's page and usage in the buttons that are set to on, if not, it is implicitly 0
                 new_value = 0;
-                for (int i = 0; i < max_usage_and_page_length; i++){
-                    if (usage_and_page_list[i].UsagePage = cur_element->usage_page && usage_and_page_list[i].Usage == cur_element->usage){
+                for (int i = 0; i < usage_and_page_length; i++){
+                    USAGE usage = usage_and_page_list[i].Usage;
+                    if (usage_and_page_list[i].UsagePage = cur_element->usage_page && usage == cur_element->usage){
                         new_value = 1;
+                        hid_element_set_value_from_input(cur_element, new_value);
+                        devdesc->_element_callback(cur_element, devdesc->_element_data);
+                        break;
                     }
                 }
             }            
-            // printf("element page %i, usage %i, index %i, value %i, rawvalue %i, newvalueref %i\n", cur_element->usage_page, cur_element->usage, cur_element->index, cur_element->value, cur_element->rawvalue, newValueRef );
-            if (new_value != cur_element->rawvalue || cur_element->repeat){
-                printf("element page %i, usage %i, index %i, value %i, rawvalue %i, newvalue %i\n", cur_element->usage_page, cur_element->usage, cur_element->index, cur_element->value, cur_element->rawvalue, new_value);
-                fflush(stdout);
-                hid_element_set_value_from_input(cur_element, new_value);
-                devdesc->_element_callback(cur_element, devdesc->_element_data);
-            }
         }
         cur_element = hid_get_next_input_element(cur_element);
     }
