@@ -26,9 +26,11 @@ TestPattern : UnitTest {
 			Pbind(\x, 7, \y, 8),
 			Pn((x: 7, y: 8)),
 			Pbindf((y:  8), \x, 7),
+			Pbindf((y:  8), \x, Pn(7, 1)).loop,
 			Pseq([(x: 7, y: 8)], inf),
 			Pfset({ ~x = 7 }, Pbind(\y, 8)),
 			Pfset({ ~y = 8 }, Pbind(\x, 7)),
+			Pbind(\x, 7).collect { |event| event.put(\y, 8) },
 		];
 
 		[identical, identical].allTuples.postln.do { |pair|
