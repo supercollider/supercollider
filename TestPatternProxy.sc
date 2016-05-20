@@ -25,13 +25,13 @@ TestPatternProxy : UnitTest {
 		};
 
 		var functions = [
-			{ |x| Pseq([x, 2, 3]) },
 			{ |x| x },
+			{ |x| Pseq([x, 2, 3]) },
 			{ |x| Pn(x, 3) },
 			{ |x| Pswitch([10, 20, 30], x) },
 			{ |x| Pswitch([10, x, 30], Pseq([0, 1, 2], 2)) },
 			{ |x| Pfin(6, x) },
-			{ |x| Pn(Pfin(4, x)) }
+			{ |x| Pn(Pfin(4, x)) },
 		];
 
 		var sources = [
@@ -66,8 +66,8 @@ TestPatternProxy : UnitTest {
 
 			proxy = EventPatternProxy.new;
 			proxy.source = source;
-			a = Pevent(f.(proxy)).asStream;
-			b = Pevent(f.(proxy.source)).asStream;
+			a = Pevent(f.(proxy), Event.default).asStream;
+			b = Pevent(f.(proxy.source), Event.default).asStream;
 			resultA = Array.fill(n, { a.next }).collect(removeCleanup);
 			resultB = Array.fill(n, { b.next }).collect(removeCleanup);
 			errorString = "The function % should behave the same for a PatternProxy and its source:\n%\n".format(f.cs, source.cs);
@@ -83,6 +83,7 @@ TestPatternProxy : UnitTest {
 		*/
 
 		var functions = [
+			{ |x| x },
 			{ |x| Pseq([x, x]) },
 			{ |x| Pseq([x, (y: 10)]) },
 			//{ |x| Pselect({ |event| event[\zz].notNil }, x) },
@@ -90,16 +91,31 @@ TestPatternProxy : UnitTest {
 			{ |x| Pfset({ ~gg = 8; ~zz = 9; }, x) },
 			{ |x| Psetpre({ ~gg = 8; ~zz = 9; }, x) },
 			{ |x| Ppar([x, x]) },
-			{ |x| Pfin(3, x) }
+			{ |x| Pfin(3, x) },
+			{ |x| Pfin(6, x) },
+			{ |x| Pchain(x, Pseq([(zz: 9), (yy: 10), (zz: 10, yy: 2)], inf)) },
+			{ |x|
+				Pchain(
+					Pbindf(x,
+						\xx, Pseq([1, 2]),
+						\yy, Pfunc { |event| event[\zz] }
+					),
+					Pbind(\zz, Pseries())
+				)
+			},
+			{ |x| Pfindur(2, x).loop },
+			{ |x| Ppar([x, Plazy { x }]) },
+			{ |x| Psym(Pseq([\a, \b], 2), (a: x), (b: Pfin(2, x))) },
+			{ |x| Psym1(Pseq([\a, \b], 2), (a: x), (b: Pfin(2, x))) }
 		];
 
 		var sources = [
 			(x: 9),
-			Pbind(\x, Pseq([1, 2, 3])),
-			Pseq([(), (), (zz: 300), (zz: 500)], 2),
 			Pbind.new,
-			Pseq([(zz: 300), (zz: 500)], 4),
-			Pseq([(zz: 300), (zz: 500)], 1)
+			Pbind(\x, Pseq([1, 2, 3]), \dur,  Pseq([1, 0.5, 0.5], inf)),
+			Pseq([(), Event.default, (zz: 300), (zz: 500)], 2),
+			Pseq([(zz: 300), (zz: 500, yy: 9, dur: 0.5)], 1),
+			Plazy({ Plazy({ (zz: 99) }, 4) })
 		];
 
 		functions.do { |f|
