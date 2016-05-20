@@ -18,6 +18,7 @@
 #  pragma once
 #endif
 
+#include <boost/intrusive/detail/workaround.hpp>
 #include <boost/intrusive/detail/mpl.hpp>
 #include <boost/intrusive/detail/ebo_functor_holder.hpp>
 
@@ -53,10 +54,10 @@ struct tree_value_compare
    tree_value_compare &operator=(const key_compare &x)
    {  this->base_t::get() = x;   return *this;  }
 
-   const key_compare &key_comp() const
+   BOOST_INTRUSIVE_FORCEINLINE const key_compare &key_comp() const
    {  return static_cast<const key_compare &>(*this);  }
 
-   key_compare &key_comp()
+   BOOST_INTRUSIVE_FORCEINLINE key_compare &key_comp()
    {  return static_cast<key_compare &>(*this);  }
 
    template<class U>
@@ -70,16 +71,16 @@ struct tree_value_compare
    {  return key; }
 
    template<class U>
-   const key_type & key_forward
+   BOOST_INTRUSIVE_FORCEINLINE const key_type & key_forward
       (const U &key, typename boost::intrusive::detail::disable_if<is_key<U> >::type* = 0) const
    {  return KeyOfValue()(key);  }
 
    template<class KeyType, class KeyType2>
-   bool operator()(const KeyType &key1, const KeyType2 &key2) const
+   BOOST_INTRUSIVE_FORCEINLINE bool operator()(const KeyType &key1, const KeyType2 &key2) const
    {  return key_compare::operator()(this->key_forward(key1), this->key_forward(key2));  }
 
    template<class KeyType, class KeyType2>
-   bool operator()(const KeyType &key1, const KeyType2 &key2)
+   BOOST_INTRUSIVE_FORCEINLINE bool operator()(const KeyType &key1, const KeyType2 &key2)
    {  return key_compare::operator()(this->key_forward(key1), this->key_forward(key2));  }
 };
 

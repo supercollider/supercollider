@@ -278,7 +278,7 @@ lexicographic_compare( Lhs const& lhs, Rhs const& rhs )
 
 template <typename Lhs, typename Rhs, typename OP>
 inline assertion_result
-compare_collections( Lhs const& lhs, Rhs const& rhs, boost::type<OP>* tp, mpl::true_ )
+compare_collections( Lhs const& lhs, Rhs const& rhs, boost::type<OP>*, mpl::true_ )
 {
     return lexicographic_compare<OP>( lhs, rhs );
 }
@@ -287,7 +287,7 @@ compare_collections( Lhs const& lhs, Rhs const& rhs, boost::type<OP>* tp, mpl::t
 
 template <typename Lhs, typename Rhs, typename L, typename R>
 inline assertion_result
-compare_collections( Lhs const& lhs, Rhs const& rhs, boost::type<op::LT<L, R> >* tp, mpl::false_ )
+compare_collections( Lhs const& lhs, Rhs const& rhs, boost::type<op::LT<L, R> >*, mpl::false_ )
 {
     return lhs < rhs;
 }
@@ -296,7 +296,7 @@ compare_collections( Lhs const& lhs, Rhs const& rhs, boost::type<op::LT<L, R> >*
 
 template <typename Lhs, typename Rhs, typename L, typename R>
 inline assertion_result
-compare_collections( Lhs const& lhs, Rhs const& rhs, boost::type<op::LE<L, R> >* tp, mpl::false_ )
+compare_collections( Lhs const& lhs, Rhs const& rhs, boost::type<op::LE<L, R> >*, mpl::false_ )
 {
     return lhs <= rhs;
 }
@@ -305,7 +305,7 @@ compare_collections( Lhs const& lhs, Rhs const& rhs, boost::type<op::LE<L, R> >*
 
 template <typename Lhs, typename Rhs, typename L, typename R>
 inline assertion_result
-compare_collections( Lhs const& lhs, Rhs const& rhs, boost::type<op::GT<L, R> >* tp, mpl::false_ )
+compare_collections( Lhs const& lhs, Rhs const& rhs, boost::type<op::GT<L, R> >*, mpl::false_ )
 {
     return lhs > rhs;
 }
@@ -314,7 +314,7 @@ compare_collections( Lhs const& lhs, Rhs const& rhs, boost::type<op::GT<L, R> >*
 
 template <typename Lhs, typename Rhs, typename L, typename R>
 inline assertion_result
-compare_collections( Lhs const& lhs, Rhs const& rhs, boost::type<op::GE<L, R> >* tp, mpl::false_ )
+compare_collections( Lhs const& lhs, Rhs const& rhs, boost::type<op::GE<L, R> >*, mpl::false_ )
 {
     return lhs >= rhs;
 }

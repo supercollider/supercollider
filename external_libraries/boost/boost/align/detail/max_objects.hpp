@@ -19,8 +19,7 @@ namespace detail {
 template<class T>
 struct max_objects
     : integral_constant<std::size_t,
-        ~static_cast<std::size_t>(0) / sizeof(T)> {
-};
+        ~static_cast<std::size_t>(0) / sizeof(T)> { };
 
 } /* .detail */
 } /* .alignment */

@@ -1,6 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////
 //
-// (C) Copyright Ion Gaztanaga 2010-2012.
+// (C) Copyright Ion Gaztanaga 2010-2016.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
@@ -20,8 +20,9 @@
 #  pragma once
 #endif
 
+#include <boost/move/core.hpp>
 #include <boost/move/utility_core.hpp>
-#include <boost/move/detail/meta_utils.hpp>
+#include <boost/move/detail/type_traits.hpp>
 
 #if defined(BOOST_NO_CXX11_RVALUE_REFERENCES)
 
@@ -43,6 +44,30 @@
 ////////////////////////////////////////
 
 #ifdef BOOST_NO_CXX11_RVALUE_REFERENCES
+
+   template<class RETURN_VALUE, class BOOST_MOVE_TEMPL_PARAM, class TYPE>
+   struct boost_move_conversion_aware_catch_1
+      : public ::boost::move_detail::enable_if_and
+                        < RETURN_VALUE
+                        , ::boost::move_detail::is_same<TYPE, BOOST_MOVE_TEMPL_PARAM>
+                        , ::boost::move_detail::is_class<TYPE>
+                        , ::boost::has_move_emulation_disabled<BOOST_MOVE_TEMPL_PARAM>
+                        >
+   {};
+
+   template<class RETURN_VALUE, class BOOST_MOVE_TEMPL_PARAM, class TYPE>
+   struct boost_move_conversion_aware_catch_2
+      : public ::boost::move_detail::disable_if_or
+                        < RETURN_VALUE
+                        , ::boost::move_detail::is_same<TYPE, BOOST_MOVE_TEMPL_PARAM> 
+                        , ::boost::move_detail::is_rv_impl<BOOST_MOVE_TEMPL_PARAM>
+                        , ::boost::move_detail::and_
+                                    < ::boost::move_detail::is_rv_impl<BOOST_MOVE_TEMPL_PARAM>
+                                    , ::boost::move_detail::is_class<BOOST_MOVE_TEMPL_PARAM>
+                                    >
+                        >
+   {};
+
    #define BOOST_MOVE_CONVERSION_AWARE_CATCH_COMMON(PUB_FUNCTION, TYPE, RETURN_VALUE, FWD_FUNCTION)\
       RETURN_VALUE PUB_FUNCTION(BOOST_MOVE_CATCH_CONST(TYPE) x)\
       {  return FWD_FUNCTION(static_cast<const TYPE&>(x)); }\
@@ -59,26 +84,14 @@
          \
          template<class BOOST_MOVE_TEMPL_PARAM>\
          RETURN_VALUE PUB_FUNCTION(const BOOST_MOVE_TEMPL_PARAM &u,\
-            typename ::boost::move_detail::enable_if_and\
-                                 < ::boost::move_detail::nat \
-                                 , ::boost::move_detail::is_same<TYPE, BOOST_MOVE_TEMPL_PARAM>\
-                                 , ::boost::move_detail::is_class<TYPE>\
-                                 , ::boost::has_move_emulation_disabled<BOOST_MOVE_TEMPL_PARAM>\
-                                 >::type* = 0)\
+            typename boost_move_conversion_aware_catch_1< ::boost::move_detail::nat, BOOST_MOVE_TEMPL_PARAM, TYPE>::type* = 0)\
          { return FWD_FUNCTION(u); }\
          \
          template<class BOOST_MOVE_TEMPL_PARAM>\
          RETURN_VALUE PUB_FUNCTION(const BOOST_MOVE_TEMPL_PARAM &u,\
-            typename ::boost::move_detail::disable_if_or\
-                              < ::boost::move_detail::nat \
-                              , ::boost::move_detail::is_same<TYPE, BOOST_MOVE_TEMPL_PARAM> \
-                              , ::boost::move_detail::and_ \
-                                 < ::boost::move_detail::is_rv<BOOST_MOVE_TEMPL_PARAM> \
-                                 , ::boost::move_detail::is_class<BOOST_MOVE_TEMPL_PARAM> \
-                                 > \
-                              >::type* = 0)\
+            typename boost_move_conversion_aware_catch_2< ::boost::move_detail::nat, BOOST_MOVE_TEMPL_PARAM, TYPE>::type* = 0)\
          {\
-            TYPE t(u);\
+            TYPE t((u));\
             return FWD_FUNCTION(::boost::move(t));\
          }\
       //
@@ -87,27 +100,15 @@
          BOOST_MOVE_CONVERSION_AWARE_CATCH_COMMON(PUB_FUNCTION, TYPE, RETURN_VALUE, FWD_FUNCTION)\
          \
          template<class BOOST_MOVE_TEMPL_PARAM>\
-         typename ::boost::move_detail::enable_if_and\
-                                       < RETURN_VALUE \
-                                       , ::boost::move_detail::is_same<TYPE, BOOST_MOVE_TEMPL_PARAM>\
-                                       , ::boost::move_detail::is_class<TYPE>\
-                                       , ::boost::has_move_emulation_disabled<BOOST_MOVE_TEMPL_PARAM>\
-                                       >::type\
+         typename boost_move_conversion_aware_catch_1<RETURN_VALUE, BOOST_MOVE_TEMPL_PARAM, TYPE>::type\
             PUB_FUNCTION(const BOOST_MOVE_TEMPL_PARAM &u)\
          { return FWD_FUNCTION(u); }\
          \
          template<class BOOST_MOVE_TEMPL_PARAM>\
-         typename ::boost::move_detail::disable_if_or\
-                           < RETURN_VALUE \
-                           , ::boost::move_detail::is_same<TYPE, BOOST_MOVE_TEMPL_PARAM> \
-                           , ::boost::move_detail::and_ \
-                              < ::boost::move_detail::is_rv<BOOST_MOVE_TEMPL_PARAM> \
-                              , ::boost::move_detail::is_class<BOOST_MOVE_TEMPL_PARAM> \
-                              > \
-                           >::type\
+         typename boost_move_conversion_aware_catch_2<RETURN_VALUE, BOOST_MOVE_TEMPL_PARAM, TYPE>::type\
             PUB_FUNCTION(const BOOST_MOVE_TEMPL_PARAM &u)\
          {\
-            TYPE t(u);\
+            TYPE t((u));\
             return FWD_FUNCTION(::boost::move(t));\
          }\
       //
@@ -127,7 +128,7 @@
                         , RETURN_VALUE >::type\
       PUB_FUNCTION(const BOOST_MOVE_TEMPL_PARAM &u)\
       {\
-         TYPE t(u);\
+         TYPE t((u));\
          return FWD_FUNCTION(::boost::move(t));\
       }\
    //
@@ -151,6 +152,27 @@
 ////////////////////////////////////////
 
 #ifdef BOOST_NO_CXX11_RVALUE_REFERENCES
+
+   template<class RETURN_VALUE, class BOOST_MOVE_TEMPL_PARAM, class UNLESS_CONVERTIBLE_TO, class TYPE>
+   struct boost_move_conversion_aware_catch_1arg_1
+      : public ::boost::move_detail::enable_if_and
+                        < RETURN_VALUE
+                        , ::boost::move_detail::not_< ::boost::move_detail::is_same_or_convertible<BOOST_MOVE_TEMPL_PARAM, UNLESS_CONVERTIBLE_TO> >
+                        , ::boost::move_detail::is_same<TYPE, BOOST_MOVE_TEMPL_PARAM>
+                        , ::boost::has_move_emulation_disabled<BOOST_MOVE_TEMPL_PARAM>
+                        >
+   {};
+
+   template<class RETURN_VALUE, class BOOST_MOVE_TEMPL_PARAM, class UNLESS_CONVERTIBLE_TO, class TYPE>
+   struct boost_move_conversion_aware_catch_1arg_2
+      : public ::boost::move_detail::disable_if_or
+                        < RETURN_VALUE
+                        , ::boost::move_detail::is_same_or_convertible< BOOST_MOVE_TEMPL_PARAM, UNLESS_CONVERTIBLE_TO>
+                        , ::boost::move_detail::is_rv_impl<BOOST_MOVE_TEMPL_PARAM>
+                        , ::boost::move_detail::is_same<TYPE, BOOST_MOVE_TEMPL_PARAM>
+                        >
+   {};
+
    #define BOOST_MOVE_CONVERSION_AWARE_CATCH_1ARG_COMMON(PUB_FUNCTION, TYPE, RETURN_VALUE, FWD_FUNCTION, ARG1, UNLESS_CONVERTIBLE_TO)\
       RETURN_VALUE PUB_FUNCTION(ARG1 arg1, BOOST_MOVE_CATCH_CONST(TYPE) x)\
       {  return FWD_FUNCTION(arg1, static_cast<const TYPE&>(x)); }\
@@ -167,23 +189,14 @@
          \
          template<class BOOST_MOVE_TEMPL_PARAM>\
          RETURN_VALUE PUB_FUNCTION(ARG1 arg1, const BOOST_MOVE_TEMPL_PARAM &u,\
-            typename ::boost::move_detail::enable_if_and\
-                              < ::boost::move_detail::nat \
-                              , ::boost::move_detail::is_same<TYPE, BOOST_MOVE_TEMPL_PARAM>\
-                              , ::boost::has_move_emulation_disabled<BOOST_MOVE_TEMPL_PARAM>\
-                              >::type* = 0)\
+            typename boost_move_conversion_aware_catch_1arg_1<void, BOOST_MOVE_TEMPL_PARAM, UNLESS_CONVERTIBLE_TO, TYPE>::type* = 0)\
          { return FWD_FUNCTION(arg1, u); }\
          \
          template<class BOOST_MOVE_TEMPL_PARAM>\
          RETURN_VALUE PUB_FUNCTION(ARG1 arg1, const BOOST_MOVE_TEMPL_PARAM &u,\
-            typename ::boost::move_detail::disable_if_or\
-                              < void \
-                              , ::boost::move_detail::is_rv<BOOST_MOVE_TEMPL_PARAM>\
-                              , ::boost::move_detail::is_same<TYPE, BOOST_MOVE_TEMPL_PARAM>\
-                              , ::boost::move_detail::is_convertible<BOOST_MOVE_TEMPL_PARAM, UNLESS_CONVERTIBLE_TO>\
-                              >::type* = 0)\
+            typename boost_move_conversion_aware_catch_1arg_2<void, BOOST_MOVE_TEMPL_PARAM, UNLESS_CONVERTIBLE_TO, TYPE>::type* = 0)\
          {\
-            TYPE t(u);\
+            TYPE t((u));\
             return FWD_FUNCTION(arg1, ::boost::move(t));\
          }\
       //
@@ -192,24 +205,15 @@
          BOOST_MOVE_CONVERSION_AWARE_CATCH_1ARG_COMMON(PUB_FUNCTION, TYPE, RETURN_VALUE, FWD_FUNCTION, ARG1, UNLESS_CONVERTIBLE_TO)\
          \
          template<class BOOST_MOVE_TEMPL_PARAM>\
-         typename ::boost::move_detail::enable_if_and\
-                           < RETURN_VALUE \
-                           , ::boost::move_detail::is_same<TYPE, BOOST_MOVE_TEMPL_PARAM>\
-                           , ::boost::has_move_emulation_disabled<BOOST_MOVE_TEMPL_PARAM>\
-                           >::type\
+         typename boost_move_conversion_aware_catch_1arg_1<RETURN_VALUE, BOOST_MOVE_TEMPL_PARAM, UNLESS_CONVERTIBLE_TO, TYPE>::type\
             PUB_FUNCTION(ARG1 arg1, const BOOST_MOVE_TEMPL_PARAM &u)\
          { return FWD_FUNCTION(arg1, u); }\
          \
          template<class BOOST_MOVE_TEMPL_PARAM>\
-         typename ::boost::move_detail::disable_if_or\
-                           < RETURN_VALUE \
-                           , ::boost::move_detail::is_rv<BOOST_MOVE_TEMPL_PARAM>\
-                           , ::boost::move_detail::is_same<TYPE, BOOST_MOVE_TEMPL_PARAM>\
-                           , ::boost::move_detail::is_convertible<BOOST_MOVE_TEMPL_PARAM, UNLESS_CONVERTIBLE_TO>\
-                           >::type\
+         typename boost_move_conversion_aware_catch_1arg_2<RETURN_VALUE, BOOST_MOVE_TEMPL_PARAM, UNLESS_CONVERTIBLE_TO, TYPE>::type\
             PUB_FUNCTION(ARG1 arg1, const BOOST_MOVE_TEMPL_PARAM &u)\
          {\
-            TYPE t(u);\
+            TYPE t((u));\
             return FWD_FUNCTION(arg1, ::boost::move(t));\
          }\
       //
@@ -228,11 +232,11 @@
       typename ::boost::move_detail::disable_if_or\
                         < RETURN_VALUE \
                         , ::boost::move_detail::is_same<TYPE, BOOST_MOVE_TEMPL_PARAM> \
-                        , ::boost::move_detail::is_convertible<BOOST_MOVE_TEMPL_PARAM, UNLESS_CONVERTIBLE_TO> \
+                        , ::boost::move_detail::is_same_or_convertible<BOOST_MOVE_TEMPL_PARAM, UNLESS_CONVERTIBLE_TO> \
                         >::type\
       PUB_FUNCTION(ARG1 arg1, const BOOST_MOVE_TEMPL_PARAM &u)\
       {\
-         TYPE t(u);\
+         TYPE t((u));\
          return FWD_FUNCTION(arg1, ::boost::move(t));\
       }\
    //

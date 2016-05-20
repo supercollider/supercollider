@@ -89,7 +89,7 @@ struct emulated_operations
     }
 
     static BOOST_FORCEINLINE bool compare_exchange_weak(
-        storage_type volatile& storage, storage_type& expected, storage_type desired, memory_order success_order, memory_order failure_order) BOOST_NOEXCEPT
+        storage_type volatile& storage, storage_type& expected, storage_type desired, memory_order, memory_order) BOOST_NOEXCEPT
     {
         // Note: This function is the exact copy of compare_exchange_strong. The reason we're not just forwarding the call
         // is that MSVC-12 ICEs in this case.

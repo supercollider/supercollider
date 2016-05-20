@@ -281,9 +281,13 @@ class sgtree_impl
 
    typedef BOOST_INTRUSIVE_IMPDEF(typename node_algorithms::insert_commit_data) insert_commit_data;
 
+   //! @copydoc ::boost::intrusive::bstree::bstree()
+   sgtree_impl()
+      :  tree_type()
+   {}
+
    //! @copydoc ::boost::intrusive::bstree::bstree(const key_compare &,const value_traits &)
-   explicit sgtree_impl( const key_compare &cmp = key_compare()
-                       , const value_traits &v_traits = value_traits())
+   explicit sgtree_impl( const key_compare &cmp, const value_traits &v_traits = value_traits())
       :  tree_type(cmp, v_traits)
    {}
 
@@ -486,7 +490,11 @@ class sgtree_impl
 
    //! @copydoc ::boost::intrusive::bstree::insert_unique_check(const KeyType&,KeyTypeKeyCompare,insert_commit_data&)
    template<class KeyType, class KeyTypeKeyCompare>
-   std::pair<iterator, bool> insert_unique_check
+   BOOST_INTRUSIVE_DOC1ST(std::pair<iterator BOOST_INTRUSIVE_I bool>
+      , typename detail::disable_if_convertible
+         <KeyType BOOST_INTRUSIVE_I const_iterator BOOST_INTRUSIVE_I 
+         std::pair<iterator BOOST_INTRUSIVE_I bool> >::type)
+      insert_unique_check
       (const KeyType &key, KeyTypeKeyCompare comp, insert_commit_data &commit_data)
    {
       std::pair<node_ptr, bool> ret =
@@ -506,6 +514,16 @@ class sgtree_impl
             (this->tree_type::header_ptr(), hint.pointed_node(), key, this->key_node_comp(comp), commit_data);
       return std::pair<iterator, bool>(iterator(ret.first, this->priv_value_traits_ptr()), ret.second);
    }
+
+   //! @copydoc ::boost::intrusive::bstree::insert_unique_check(const key_type&,insert_commit_data&)
+   std::pair<iterator, bool> insert_unique_check
+      (const key_type &key, insert_commit_data &commit_data)
+   {  return this->insert_unique_check(key, this->key_comp(), commit_data);   }
+
+   //! @copydoc ::boost::intrusive::bstree::insert_unique_check(const_iterator,const key_type&,insert_commit_data&)
+   std::pair<iterator, bool> insert_unique_check
+      (const_iterator hint, const key_type &key, insert_commit_data &commit_data)
+   {  return this->insert_unique_check(hint, key, this->key_comp(), commit_data);   }
 
    //! @copydoc ::boost::intrusive::bstree::insert_unique_commit
    iterator insert_unique_commit(reference value, const insert_commit_data &commit_data)
@@ -934,8 +952,11 @@ class sgtree
    //Assert if passed value traits are compatible with the type
    BOOST_STATIC_ASSERT((detail::is_same<typename value_traits::value_type, T>::value));
 
-   explicit sgtree( const key_compare &cmp = key_compare()
-                  , const value_traits &v_traits = value_traits())
+   sgtree()
+      :  Base()
+   {}
+
+   explicit sgtree(const key_compare &cmp, const value_traits &v_traits = value_traits())
       :  Base(cmp, v_traits)
    {}
 

@@ -67,7 +67,7 @@ http://www.boost.org/LICENSE_1_0.txt)
 
      [[`__FMA__`] [BOOST_HW_SIMD_X86_FMA3_VERSION]]
 
-     [[`__AVX2__`] [BOOST_HW_SIMD_x86_AVX2_VERSION]]
+     [[`__AVX2__`] [BOOST_HW_SIMD_X86_AVX2_VERSION]]
      ]
 
  */
@@ -99,10 +99,10 @@ http://www.boost.org/LICENSE_1_0.txt)
 #if !defined(BOOST_HW_SIMD_X86) && defined(__SSE3__)
 #   define BOOST_HW_SIMD_X86 BOOST_HW_SIMD_X86_SSE3_VERSION
 #endif
-#if !defined(BOOST_HW_SIMD_X86) && (defined(__SSE2__) || defined(_M_X64) || _M_IX86_FP >= 2)
+#if !defined(BOOST_HW_SIMD_X86) && (defined(__SSE2__) || defined(_M_X64) || (defined(_M_IX86_FP) && _M_IX86_FP >= 2))
 #   define BOOST_HW_SIMD_X86 BOOST_HW_SIMD_X86_SSE2_VERSION
 #endif
-#if !defined(BOOST_HW_SIMD_X86) && (defined(__SSE__) || defined(_M_X64) || _M_IX86_FP >= 1)
+#if !defined(BOOST_HW_SIMD_X86) && (defined(__SSE__) || defined(_M_X64) || (defined(_M_IX86_FP) && _M_IX86_FP >= 1))
 #   define BOOST_HW_SIMD_X86 BOOST_HW_SIMD_X86_SSE_VERSION
 #endif
 #if !defined(BOOST_HW_SIMD_X86) && defined(__MMX__)

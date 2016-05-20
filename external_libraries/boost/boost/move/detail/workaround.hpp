@@ -52,4 +52,17 @@
    #define BOOST_MOVE_MSVC_AUTO_MOVE_RETURN_BUG
 #endif
 
+#define BOOST_MOVE_DISABLE_FORCEINLINE
+
+#if defined(BOOST_MOVE_DISABLE_FORCEINLINE)
+   #define BOOST_MOVE_FORCEINLINE inline
+#elif defined(BOOST_MOVE_FORCEINLINE_IS_BOOST_FORCELINE)
+   #define BOOST_MOVE_FORCEINLINE BOOST_FORCEINLINE
+#elif defined(BOOST_MSVC) && defined(_DEBUG)
+   //"__forceinline" and MSVC seems to have some bugs in debug mode
+   #define BOOST_MOVE_FORCEINLINE inline
+#else
+   #define BOOST_MOVE_FORCEINLINE BOOST_FORCEINLINE
+#endif
+
 #endif   //#ifndef BOOST_MOVE_DETAIL_WORKAROUND_HPP

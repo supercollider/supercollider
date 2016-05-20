@@ -22,6 +22,7 @@
 #ifdef __cplusplus
 #  include <boost/cstdint.hpp>
 #endif
+#include <boost/detail/workaround.hpp>
 
 #ifdef __cplusplus
 namespace boost{
@@ -71,7 +72,7 @@ typedef enum _match_flags
 
 } match_flags;
 
-#if defined(__BORLANDC__)
+#if defined(__BORLANDC__) || BOOST_WORKAROUND(BOOST_MSVC, <= 1310)
 typedef unsigned long match_flag_type;
 #else
 typedef match_flags match_flag_type;

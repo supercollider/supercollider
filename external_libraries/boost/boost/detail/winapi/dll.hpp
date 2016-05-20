@@ -77,8 +77,17 @@ GetModuleFileNameW(
 BOOST_SYMBOL_IMPORT boost::detail::winapi::BOOL_ WINAPI
 FreeLibrary(boost::detail::winapi::HMODULE_ hModule);
 
+#if !defined( UNDER_CE )
 BOOST_SYMBOL_IMPORT boost::detail::winapi::FARPROC_ WINAPI
 GetProcAddress(boost::detail::winapi::HMODULE_ hModule, boost::detail::winapi::LPCSTR_ lpProcName);
+#else
+// On Windows CE there are two functions: GetProcAddressA (since Windows CE 3.0) and GetProcAddressW.
+// GetProcAddress is a macro that is _always_ defined to GetProcAddressW.
+BOOST_SYMBOL_IMPORT boost::detail::winapi::FARPROC_ WINAPI
+GetProcAddressA(boost::detail::winapi::HMODULE_ hModule, boost::detail::winapi::LPCSTR_ lpProcName);
+BOOST_SYMBOL_IMPORT boost::detail::winapi::FARPROC_ WINAPI
+GetProcAddressW(boost::detail::winapi::HMODULE_ hModule, boost::detail::winapi::LPCWSTR_ lpProcName);
+#endif
 
 struct _MEMORY_BASIC_INFORMATION;
 
@@ -140,7 +149,23 @@ using ::LoadLibraryExW;
 using ::GetModuleHandleW;
 using ::GetModuleFileNameW;
 using ::FreeLibrary;
+
+#if !defined( UNDER_CE )
+// For backward compatibility, don't use directly. Use get_proc_address instead.
 using ::GetProcAddress;
+#else
+using ::GetProcAddressA;
+using ::GetProcAddressW;
+#endif
+
+BOOST_FORCEINLINE FARPROC_ get_proc_address(HMODULE_ hModule, LPCSTR_ lpProcName)
+{
+#if !defined( UNDER_CE )
+    return ::GetProcAddress(hModule, lpProcName);
+#else
+    return ::GetProcAddressA(hModule, lpProcName);
+#endif
+}
 
 BOOST_FORCEINLINE SIZE_T_ VirtualQuery(LPCVOID_ lpAddress, MEMORY_BASIC_INFORMATION_* lpBuffer, ULONG_PTR_ dwLength)
 {

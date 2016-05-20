@@ -2057,8 +2057,7 @@ class hashtable_impl
    std::pair<iterator, bool> insert_unique(reference value)
    {
       insert_commit_data commit_data;
-      std::pair<iterator, bool> ret = this->insert_unique_check
-         (key_of_value()(value), this->priv_hasher(), this->priv_equal(), commit_data);
+      std::pair<iterator, bool> ret = this->insert_unique_check(key_of_value()(value), commit_data);
       if(ret.second){
          ret.first = this->insert_unique_commit(value, commit_data);
       }
@@ -2133,6 +2132,37 @@ class hashtable_impl
          ( iterator(pos, &this->get_bucket_value_traits())
          , pos == this->priv_invalid_local_it());
    }
+
+   //! <b>Effects</b>: Checks if a value can be inserted in the unordered_set, using
+   //!   a user provided key instead of the value itself.
+   //!
+   //! <b>Returns</b>: If there is an equivalent value
+   //!   returns a pair containing an iterator to the already present value
+   //!   and false. If the value can be inserted returns true in the returned
+   //!   pair boolean and fills "commit_data" that is meant to be used with
+   //!   the "insert_commit" function.
+   //!
+   //! <b>Complexity</b>: Average case O(1), worst case O(this->size()).
+   //!
+   //! <b>Throws</b>: If hasher or key_compare throw. Strong guarantee.
+   //!
+   //! <b>Notes</b>: This function is used to improve performance when constructing
+   //!   a value_type is expensive: if there is an equivalent value
+   //!   the constructed object must be discarded. Many times, the part of the
+   //!   node that is used to impose the hash or the equality is much cheaper to
+   //!   construct than the value_type and this function offers the possibility to
+   //!   use that the part to check if the insertion will be successful.
+   //!
+   //!   If the check is successful, the user can construct the value_type and use
+   //!   "insert_commit" to insert the object in constant-time.
+   //!
+   //!   "commit_data" remains valid for a subsequent "insert_commit" only if no more
+   //!   objects are inserted or erased from the unordered_set.
+   //!
+   //!   After a successful rehashing insert_commit_data remains valid.
+   std::pair<iterator, bool> insert_unique_check
+      ( const key_type &key, insert_commit_data &commit_data)
+   {  return this->insert_unique_check(key, this->priv_hasher(), this->priv_equal(), commit_data);  }
 
    //! <b>Requires</b>: value must be an lvalue of type value_type. commit_data
    //!   must have been obtained from a previous call to "insert_check".

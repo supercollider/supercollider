@@ -77,6 +77,9 @@ namespace container {
 
 #ifndef BOOST_CONTAINER_DOXYGEN_INVOKED
 
+template<class Allocator>
+class small_vector_allocator;
+
 namespace allocator_traits_detail {
 
 BOOST_INTRUSIVE_HAS_STATIC_MEMBER_FUNC_SIGNATURE(has_max_size, max_size)
@@ -94,6 +97,10 @@ struct is_std_allocator
 
 template<class T>
 struct is_std_allocator< std::allocator<T> >
+{  static const bool value = true; };
+
+template<class T>
+struct is_std_allocator< small_vector_allocator< std::allocator<T> > >
 {  static const bool value = true; };
 
 template<class Allocator>

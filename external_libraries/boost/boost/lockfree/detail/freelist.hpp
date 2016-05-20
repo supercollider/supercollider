@@ -1,6 +1,6 @@
 //  lock-free freelist
 //
-//  Copyright (C) 2008-2013 Tim Blechmann
+//  Copyright (C) 2008-2016 Tim Blechmann
 //
 //  Distributed under the Boost Software License, Version 1.0. (See
 //  accompanying file LICENSE_1_0.txt or copy at
@@ -17,6 +17,9 @@
 #include <boost/cstdint.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/static_assert.hpp>
+
+#include <boost/align/align_up.hpp>
+#include <boost/align/aligned_allocator_adaptor.hpp>
 
 #include <boost/lockfree/detail/atomic.hpp>
 #include <boost/lockfree/detail/parameter.hpp>
@@ -328,7 +331,7 @@ struct compiletime_sized_freelist_storage
     // array-based freelists only support a 16bit address space.
     BOOST_STATIC_ASSERT(size < 65536);
 
-    boost::array<char, size * sizeof(T)> data;
+    boost::array<char, size * sizeof(T) + 64> data;
 
     // unused ... only for API purposes
     template <typename Allocator>
@@ -337,7 +340,8 @@ struct compiletime_sized_freelist_storage
 
     T * nodes(void) const
     {
-        return reinterpret_cast<T*>(const_cast<char*>(data.data()));
+        char * data_pointer = const_cast<char*>(data.data());
+        return reinterpret_cast<T*>( boost::alignment::align_up( data_pointer, BOOST_LOCKFREE_CACHELINE_BYTES ) );
     }
 
     std::size_t node_count(void) const
@@ -349,23 +353,24 @@ struct compiletime_sized_freelist_storage
 template <typename T,
           typename Alloc = std::allocator<T> >
 struct runtime_sized_freelist_storage:
-    Alloc
+    boost::alignment::aligned_allocator_adaptor<Alloc, BOOST_LOCKFREE_CACHELINE_BYTES >
 {
+    typedef boost::alignment::aligned_allocator_adaptor<Alloc, BOOST_LOCKFREE_CACHELINE_BYTES > allocator_type;
     T * nodes_;
     std::size_t node_count_;
 
     template <typename Allocator>
     runtime_sized_freelist_storage(Allocator const & alloc, std::size_t count):
-        Alloc(alloc), node_count_(count)
+        allocator_type(alloc), node_count_(count)
     {
         if (count > 65535)
             boost::throw_exception(std::runtime_error("boost.lockfree: freelist size is limited to a maximum of 65535 objects"));
-        nodes_ = Alloc::allocate(count);
+        nodes_ = allocator_type::allocate(count);
     }
 
     ~runtime_sized_freelist_storage(void)
     {
-        Alloc::deallocate(nodes_, node_count_);
+        allocator_type::deallocate(nodes_, node_count_);
     }
 
     T * nodes(void) const

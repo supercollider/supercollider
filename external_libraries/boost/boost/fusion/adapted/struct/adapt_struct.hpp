@@ -14,9 +14,8 @@
 #include <boost/preprocessor/config/config.hpp>
 #include <boost/preprocessor/cat.hpp>
 #include <boost/preprocessor/empty.hpp>
-#include <boost/preprocessor/control/if.hpp>
+#include <boost/preprocessor/control/iif.hpp>
 #include <boost/preprocessor/comparison/less.hpp>
-#include <boost/preprocessor/comparison/equal.hpp>
 #include <boost/preprocessor/seq/seq.hpp>
 #include <boost/preprocessor/variadic/to_seq.hpp>
 #include <boost/type_traits/add_reference.hpp>
@@ -45,13 +44,11 @@
             NAME_SEQ,                                                           \
             IS_VIEW,                                                            \
             I,                                                                  \
-            BOOST_PP_IF(IS_VIEW, BOOST_FUSION_PROXY_PREFIX, BOOST_PP_EMPTY),    \
+            BOOST_PP_IIF(IS_VIEW, BOOST_FUSION_PROXY_PREFIX, BOOST_PP_EMPTY),   \
             BOOST_FUSION_ADAPT_STRUCT_WRAPPEDATTR(ATTRIBUTE),                   \
             BOOST_FUSION_ADAPT_STRUCT_WRAPPEDATTR_SIZE(ATTRIBUTE),              \
-            BOOST_PP_IF(                                                        \
-                BOOST_PP_LESS(                                                  \
-                    BOOST_FUSION_ADAPT_STRUCT_WRAPPEDATTR_SIZE(ATTRIBUTE), 2)   \
-                , 1, 0))
+            BOOST_PP_LESS(                                                      \
+                BOOST_FUSION_ADAPT_STRUCT_WRAPPEDATTR_SIZE(ATTRIBUTE), 2))
 
 
 
@@ -86,7 +83,7 @@
             BOOST_FUSION_ADAPT_STRUCT_ATTRIBUTES_FILLER(                        \
               BOOST_PP_SEQ_TAIL(BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))),        \
             BOOST_FUSION_ADAPT_STRUCT_C)
-        
+
 #else // BOOST_PP_VARIADICS
 
 #   define BOOST_FUSION_ADAPT_TPL_STRUCT(                                       \

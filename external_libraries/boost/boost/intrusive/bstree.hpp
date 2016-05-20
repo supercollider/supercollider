@@ -476,8 +476,20 @@ struct bstbase2
    }
 
    //insert_unique_check
-   template<class KeyType, class KeyTypeKeyCompare>
    std::pair<iterator, bool> insert_unique_check
+      (const key_type &key, insert_commit_data &commit_data)
+   {  return this->insert_unique_check(key, this->key_comp(), commit_data);   }
+
+   std::pair<iterator, bool> insert_unique_check
+      (const_iterator hint, const key_type &key, insert_commit_data &commit_data)
+   {  return this->insert_unique_check(hint, key, this->key_comp(), commit_data);   }
+
+   template<class KeyType, class KeyTypeKeyCompare>
+   BOOST_INTRUSIVE_DOC1ST(std::pair<iterator BOOST_INTRUSIVE_I bool>
+      , typename detail::disable_if_convertible
+         <KeyType BOOST_INTRUSIVE_I const_iterator BOOST_INTRUSIVE_I 
+         std::pair<iterator BOOST_INTRUSIVE_I bool> >::type)
+      insert_unique_check
       (const KeyType &key, KeyTypeKeyCompare comp, insert_commit_data &commit_data)
    {
       std::pair<node_ptr, bool> ret =
@@ -488,8 +500,7 @@ struct bstbase2
 
    template<class KeyType, class KeyTypeKeyCompare>
    std::pair<iterator, bool> insert_unique_check
-      (const_iterator hint, const KeyType &key
-      ,KeyTypeKeyCompare comp, insert_commit_data &commit_data)
+      (const_iterator hint, const KeyType &key, KeyTypeKeyCompare comp, insert_commit_data &commit_data)
    {
       std::pair<node_ptr, bool> ret =
          (node_algorithms::insert_unique_check
@@ -679,8 +690,18 @@ class bstree_impl
    //! <b>Throws</b>: If value_traits::node_traits::node
    //!   constructor throws (this does not happen with predefined Boost.Intrusive hooks)
    //!   or the copy constructor of the key_compare object throws. Basic guarantee.
-   explicit bstree_impl( const key_compare &cmp = key_compare()
-                       , const value_traits &v_traits = value_traits())
+   bstree_impl()
+      :  data_type(key_compare(), value_traits())
+   {}
+
+   //! <b>Effects</b>: Constructs an empty container with given comparison and traits.
+   //!
+   //! <b>Complexity</b>: Constant.
+   //!
+   //! <b>Throws</b>: If value_traits::node_traits::node
+   //!   constructor throws (this does not happen with predefined Boost.Intrusive hooks)
+   //!   or the copy constructor of the key_compare object throws. Basic guarantee.
+   explicit bstree_impl( const key_compare &cmp, const value_traits &v_traits = value_traits())
       :  data_type(cmp, v_traits)
    {}
 
@@ -2052,8 +2073,11 @@ class bstree
    //Assert if passed value traits are compatible with the type
    BOOST_STATIC_ASSERT((detail::is_same<typename value_traits::value_type, T>::value));
 
-   bstree( const key_compare &cmp = key_compare()
-         , const value_traits &v_traits = value_traits())
+   bstree()
+      :  Base()
+   {}
+
+   explicit bstree( const key_compare &cmp, const value_traits &v_traits = value_traits())
       :  Base(cmp, v_traits)
    {}
 

@@ -58,14 +58,12 @@ public:
 #if !defined(BOOST_NO_CXX11_DEFAULTED_FUNCTIONS)
     aligned_allocator() = default;
 #else
-    aligned_allocator() BOOST_NOEXCEPT {
-    }
+    aligned_allocator() BOOST_NOEXCEPT { }
 #endif
 
     template<class U>
     aligned_allocator(const aligned_allocator<U, Alignment>&)
-        BOOST_NOEXCEPT {
-    }
+        BOOST_NOEXCEPT { }
 
     pointer address(reference value) const BOOST_NOEXCEPT {
         return detail::addressof(value);
