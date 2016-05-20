@@ -48,6 +48,7 @@ added prRestartMIDI
 #include "SC_Lock.h"
 #include <map>
 #include <cstring>
+#include <vector>
 
 using std::memset;
 
@@ -72,7 +73,13 @@ const int kMaxMidiPorts = 16;
 int gNumMIDIInPorts = 0, gNumMIDIOutPorts = 0;
 bool gMIDIInitialized = false;
 
+static std::vector<uint8_t> gSysexData;
+static bool gSysexFlag = false;
+static uint8_t gRunningStatus = 0;
+
+
 PmStream* gMIDIInStreams[kMaxMidiPorts];
+bool gMIDIInStreamUsed[kMaxMidiPorts];
 PmStream* gMIDIOutStreams[kMaxMidiPorts];
 
 std::map<int,int> gMidiInputIndexToPmDevIndex;
@@ -86,112 +93,246 @@ SC_Lock gPmStreamMutex;
 #define PMSTREAM_TIME_PROC NULL
 #define PMSTREAM_TIME_INFO NULL
 
-/* use zero latency because we want output to be immediate */
-#define LATENCY 0
-
 extern bool compiledOK;
+
+
+
+static void sysexBegin() {
+	gRunningStatus = 0; // clear running status
+	gSysexData.clear();
+	gSysexFlag = true;
+}
+
+static void scCallSysexAction(PyrSymbol* action) {
+	VMGlobals *g = gMainVMGlobals;
+	uint8_t *pSysexData = &gSysexData[0]; // Convert to array access
+	PyrInt8Array* sysexArray = newPyrInt8Array(g->gc, gSysexData.size(), 0, true);
+	sysexArray->size = gSysexData.size();
+	memcpy(sysexArray->b, pSysexData, gSysexData.size());	
+	++g->sp; SetObject(g->sp, (PyrObject*)sysexArray);			// chan argument unneeded as there
+	runInterpreter(g, action, 3);			// special sysex action in the lang
+}
+
+static void sysexEnd() {
+	gSysexFlag = false;
+	scCallSysexAction(s_midiSysexAction);
+}
+
+static void sysexEndInvalid() {
+	gSysexFlag = false;
+	scCallSysexAction(s_midiInvalidSysexAction);
+}
+
+
+
+static int midiProcessPartialSystemPacket(uint32_t msg)
+{
+	int index, data;
+	VMGlobals *g = gMainVMGlobals;
+	// to iterate over the contents of the message byte by byte
+	uint8_t *p = reinterpret_cast<uint8_t *>(&msg);
+
+	int i = 0;
+	while (i < 4){
+		switch (p[i]){
+			/* SysEx start */
+			case 0xF0:
+				if (gSysexFlag) {
+					sysexEndInvalid();
+				}
+				sysexBegin(); // new sysex in
+				gSysexData.push_back(p[i]); // add SOX
+				i++;
+				break;
+
+
+			/* SysEx end */
+			case 0xF7:
+				gSysexData.push_back(p[i]); // add EOX
+				if (gSysexFlag)
+					sysexEnd(); // if last_uid != 0 rebuild the VM.
+				else
+					sysexEndInvalid(); // invalid 1 byte with only EOX can happen
+				return 0;
+
+			/* MIDI clock. Can only be received as the first byte */
+			case 0xF1:
+				index = p[i + 1] >> 4;
+				data = p[i + 1] & 0xf;
+				if (index % 2) { data = data << 4; }
+				SetInt(g->sp, index);		 						// chan unneeded
+				++g->sp; SetInt(g->sp, data);						// special smpte action in the lang
+				runInterpreter(g, s_midiSMPTEAction, 4);
+				return 0;
+
+			/* Song pointer. Can only be received as the first byte */
+			case 0xF2:
+				++g->sp; SetInt(g->sp, (p[i + 2] << 7) | p[i + 1]);
+				runInterpreter(g, s_midiSysrtAction, 4);
+				return 0;
+
+			/* Song select. Can only be received as the first byte */
+			case 0xF3:
+				++g->sp; SetInt(g->sp, p[i + 1]);
+				runInterpreter(g, s_midiSysrtAction, 4);
+				return 0;
+
+			/* Realtime messages. Can be anywhere within a message */
+			case 0xF6:
+			case 0xF8:
+			case 0xF9:
+			case 0xFA:
+			case 0xFB:
+			case 0xFC:
+			case 0xFE:
+				gRunningStatus = 0; // clear running status
+				++g->sp; SetInt(g->sp, p[i] & 0xF);
+				++g->sp; SetInt(g->sp, 0);
+				runInterpreter(g, s_midiSysrtAction, 4);
+				i++;
+				break;
+
+			default: // This should be data
+				if (p[i] & 0x80){ // if it a command byte, it is an error
+					gSysexData.push_back(p[i]); // add it as an abort message
+					sysexEndInvalid(); // flush invalid
+					return 0;
+				}
+				else if (gSysexFlag){
+					gSysexData.push_back(p[i]); // add Byte
+					i++;
+				}
+				else{ // garbage - handle in case - discard it
+					i++;
+					break;
+				}
+		}
+	}
+
+	return 0;
+}
+
+
 
 /* timer "interrupt" for processing midi data */
 static void PMProcessMidi(PtTimestamp timestamp, void *userData)
 {
-	lock_guard<SC_Lock> mulo(gPmStreamMutex);
+	
 	PmEvent buffer; /* just one message at a time */
 
 	for( int i = 0 ; i < gNumMIDIInPorts; ++i ) {
-		PmStream* midi_in = gMIDIInStreams[i];
-		if( midi_in ) {
-			while(const PmError result = Pm_Poll(midi_in)) {
-				if (result != pmGotData) {
+		for (;;){
+			long Tstatus, data1, data2;
+			// Only lock the PM mutex while accessing the PortMidi functionality. It is very important to not acquire the lang mutex while holding
+			// the PM mutex to avoid a deadlock, since the laguage may try to acquire the PM mutex for a MIDIOut operation
+			{
+				lock_guard<SC_Lock> mulo(gPmStreamMutex);
+				PmStream* midi_in = gMIDIInStreams[i];
+				if (!midi_in) {
+					break;
+				}
+
+				const PmError result = Pm_Poll(midi_in);
+				if (result == pmNoData){
+					break;
+				}
+				else if (result != pmGotData) {
 					std::printf("errrr %s\n", Pm_GetErrorText(result));
 					continue;
 				}
 
-				long Tstatus, data1, data2;
-				if (Pm_Read(midi_in, &buffer, 1) == pmBufferOverflow) 
+				if (Pm_Read(midi_in, &buffer, 1) == pmBufferOverflow)
 					continue;
 				// unless there was overflow, we should have a message now 
 
 				Tstatus = Pm_MessageStatus(buffer.message);
-				data1 = Pm_MessageData1(buffer.message);
-				data2 = Pm_MessageData2(buffer.message);
-
-				// +---------------------------------------------+
-				// | Lock the interp. mutex and dispatch message |
-				// +---------------------------------------------+
-				gLangMutex.lock();
-				if (compiledOK) 
-				{
-					VMGlobals *g = gMainVMGlobals;
-					uint8 status = static_cast<uint8>(Tstatus & 0xF0);			
-					uint8 chan = static_cast<uint8>(Tstatus & 0x0F);
-
-					g->canCallOS = false; // cannot call the OS
-
-					++g->sp; SetObject(g->sp, s_midiin->u.classobj); // Set the class MIDIIn
-					//set arguments: 
-
-					++g->sp; SetInt(g->sp,  i); //src
-					// ++g->sp;  SetInt(g->sp, status); //status
-					++g->sp;  SetInt(g->sp, chan); //chan
-
-					//if(status & 0x80) // set the running status for voice messages
-						//gRunningStatus = ((status >> 4) == 0xF) ? 0 : pkt->data[i]; // keep also additional info
-					switch (status) 
-					{
-					case 0x80 : //noteOff
-						++g->sp; SetInt(g->sp, data1);
-						++g->sp; SetInt(g->sp, data2);
-						runInterpreter(g, s_midiNoteOffAction, 5);
-						break;
-					case 0x90 : //noteOn 
-						++g->sp; SetInt(g->sp, data1);
-						++g->sp; SetInt(g->sp, data2);
-// 						runInterpreter(g, data2 ? s_midiNoteOnAction : s_midiNoteOffAction, 5);
-						runInterpreter(g, s_midiNoteOnAction, 5);
-						break;
-					case 0xA0 : //polytouch
-						++g->sp; SetInt(g->sp, data1);
-						++g->sp; SetInt(g->sp, data2);
-						runInterpreter(g, s_midiPolyTouchAction, 5);
-						break;
-					case 0xB0 : //control
-						++g->sp; SetInt(g->sp, data1);
-						++g->sp; SetInt(g->sp, data2);
-						runInterpreter(g, s_midiControlAction, 5);
-						break;
-					case 0xC0 : //program
-						++g->sp; SetInt(g->sp, data1);
-						runInterpreter(g, s_midiProgramAction, 4);
-						break;
-					case 0xD0 : //touch
-						++g->sp; SetInt(g->sp, data1);
-						runInterpreter(g, s_midiTouchAction, 4);
-						break;
-					case 0xE0 : //bend	
-						++g->sp; SetInt(g->sp, (data2 << 7) | data1);
-						runInterpreter(g, s_midiBendAction, 4);
-						break;
-					/*case 0xF0 :
-						// only the first Pm_Event will carry the 0xF0 byte
-						// sysex message will be terminated by the EOX status byte 0xF7
-						midiProcessSystemPacket(data1, data2, chan);
-						break;
-					default :	// data byte => continuing sysex message
-						if(gRunningStatus && !gSysexFlag) { // handle running status
-							status = gRunningStatus & 0xF0; // accept running status only inside a packet beginning
-							chan = gRunningStatus & 0x0F;	// with a valid status byte 
-							SetInt(g->sp, chan);			
-							--i;
-							//goto L; // parse again with running status set // mv - get next byte
-						}
-						chan = 0;
-						i += midiProcessSystemPacket(pkt, chan); // process sysex packet
-						break; */
-					}
-					g->canCallOS = false;
-				} 
-				gLangMutex.unlock();
+				// The PM mutex is released here
 			}
+			// +---------------------------------------------+
+			// | Lock the interp. mutex and dispatch message |
+			// +---------------------------------------------+
+			gLangMutex.lock();
+			if (compiledOK)
+			{
+				VMGlobals *g = gMainVMGlobals;
+				uint8 status = static_cast<uint8>(Tstatus & 0xF0);
+				uint8 chan = static_cast<uint8>(Tstatus & 0x0F);
+
+				g->canCallOS = false; // cannot call the OS
+
+				// Do not put the data in the stack again if we are in the middle of processing a System Message, 
+				if (!gSysexFlag){
+					++g->sp; SetObject(g->sp, s_midiin->u.classobj); // Set the class MIDIIn
+					++g->sp; SetInt(g->sp, i); //src					
+				}
+
+				if(status & 0x80) // set the running status for voice messages
+					gRunningStatus = ((status >> 4) == 0xF) ? 0 : Tstatus; // keep also additional info
+
+			L:
+				switch (status)
+				{
+				case 0x80: //noteOff
+					++g->sp; SetInt(g->sp, chan); //chan
+					++g->sp; SetInt(g->sp, Pm_MessageData1(buffer.message));
+					++g->sp; SetInt(g->sp, Pm_MessageData2(buffer.message));
+					runInterpreter(g, s_midiNoteOffAction, 5);
+					break;
+				case 0x90: //noteOn 
+					++g->sp; SetInt(g->sp, chan); //chan
+					++g->sp; SetInt(g->sp, Pm_MessageData1(buffer.message));
+					++g->sp; SetInt(g->sp, Pm_MessageData2(buffer.message));
+					// 						runInterpreter(g, data2 ? s_midiNoteOnAction : s_midiNoteOffAction, 5);
+					runInterpreter(g, s_midiNoteOnAction, 5);
+					break;
+				case 0xA0: //polytouch
+					++g->sp; SetInt(g->sp, chan); //chan
+					++g->sp; SetInt(g->sp, Pm_MessageData1(buffer.message));
+					++g->sp; SetInt(g->sp, Pm_MessageData2(buffer.message));
+					runInterpreter(g, s_midiPolyTouchAction, 5);
+					break;
+				case 0xB0: //control
+					++g->sp; SetInt(g->sp, chan); //chan
+					++g->sp; SetInt(g->sp, Pm_MessageData1(buffer.message));
+					++g->sp; SetInt(g->sp, Pm_MessageData2(buffer.message));
+					runInterpreter(g, s_midiControlAction, 5);
+					break;
+				case 0xC0: //program
+					++g->sp; SetInt(g->sp, chan); //chan
+					++g->sp; SetInt(g->sp, Pm_MessageData1(buffer.message));
+					runInterpreter(g, s_midiProgramAction, 4);
+					break;
+				case 0xD0: //touch
+					++g->sp; SetInt(g->sp, chan); //chan
+					++g->sp; SetInt(g->sp, Pm_MessageData1(buffer.message));
+					runInterpreter(g, s_midiTouchAction, 4);
+					break;
+				case 0xE0: //bend	
+					++g->sp; SetInt(g->sp, chan); //chan
+					++g->sp; SetInt(g->sp, (Pm_MessageData2(buffer.message) << 7) | Pm_MessageData1(buffer.message));
+					runInterpreter(g, s_midiBendAction, 4);
+					break;
+				case 0xF0:
+						// only the first Pm_Event will carry the 0xF0 byte
+						// we pass the messages to the processing function, which will take care of assembling the,					
+					midiProcessPartialSystemPacket(buffer.message);
+					break;
+				
+				default :	// data byte => continuing sysex message ir running status
+					if(gRunningStatus && !gSysexFlag) { // handle running status
+						status = gRunningStatus & 0xF0; // accept running status only inside a packet beginning
+						chan = gRunningStatus & 0x0F;	// with a valid status byte
+						SetInt(g->sp, chan);
+						goto L; // parse again with running status set // mv - get next byte
+					}
+					if (gSysexFlag){
+						midiProcessPartialSystemPacket(buffer.message); // process sysex packet
+					}
+					break; 
+				}
+				g->canCallOS = false;
+			}
+			gLangMutex.unlock();		
 		} // if (midi_in)
 	} // for loop until numMIDIInPorts
 }
@@ -200,7 +341,7 @@ static void PMProcessMidi(PtTimestamp timestamp, void *userData)
 -------------------------------------------------------------
 */
 static void midiCleanUp();
-static int initMIDI()
+static int initMIDI(int numIn, int numOut)
 {
 	midiCleanUp();
 
@@ -211,31 +352,46 @@ static int initMIDI()
 		return errFailed;
 	}
 
+	/* Here, numIn and numOut are 0, even if the inputs to lang (MIDIClient init) were nil, but according to the documentation, it should be the number of inputs or outputs. 
+	   That matches what I see in MIDIOut.sc -> MIDIClient *init, in which it is setting that to sources.size, and destinations.size, so I guess that the problem is that 
+	   this information is not known at this point, or there is something missing. */
+	numIn = sc_clip(numIn, 1, kMaxMidiPorts);
+	numOut = sc_clip(numOut, 1, kMaxMidiPorts);
+
 	int inIndex = 0;
 	int outIndex = 0;
 
-	for( int i = 0; i < Pm_CountDevices(); ++i ) {
+	for (int i = 0; i < Pm_CountDevices(); ++i) {
 		const PmDeviceInfo* devInfo = Pm_GetDeviceInfo(i);
 		if( devInfo->input )
 		{
 			gNumMIDIInPorts++;
 			gMidiInputIndexToPmDevIndex[inIndex++] = i;
 		}
-		if( devInfo->output )
+
+		/* Ignore the MIDI Mapper. Otherwise, if it is allocated, we get "already allocated" errors */
+		if ((devInfo->output) && (strnicmp(devInfo->name, "Microsoft MIDI Mapper", 50) != 0))
 		{
 			gNumMIDIOutPorts++;
 			gMidiOutputIndexToPmDevIndex[outIndex++] = i;
 		}
-	}
+	}	
 
-	for( int i = 0; i < gNumMIDIOutPorts; i++) {
+	if (gNumMIDIInPorts > numIn)
+		gNumMIDIInPorts = numIn;
+
+	if (gNumMIDIOutPorts > numOut)
+		gNumMIDIOutPorts = numOut;
+
+	for (int i = 0; i < gNumMIDIOutPorts; i++) {
 		const int pmdid = gMidiOutputIndexToPmDevIndex[i];
-		const PmError error = Pm_OpenOutput(&gMIDIOutStreams[i], pmdid, NULL, 512, NULL, NULL, 0);
+		const PmDeviceInfo* devInfo = Pm_GetDeviceInfo(pmdid);
+		const PmError error = Pm_OpenOutput(&gMIDIOutStreams[i], pmdid, NULL, 512L, NULL, NULL, 0);
 
-		const PmDeviceInfo* devInfo = Pm_GetDeviceInfo(i);
+		std::printf("MIDI: device %d %d %d %s (%s)\n", i, pmdid, &gMIDIOutStreams[i], Pm_GetErrorText(error), devInfo->name);
 
 		if( error ) {
-			std::printf("MIDI: cannot open device %d %d %s\n", i, pmdid, Pm_GetErrorText(error));
+			std::printf("MIDI: cannot open device %d %d %s (%s)\n", i, pmdid, Pm_GetErrorText(error), devInfo->name);
 
 			int hostError;
 			if( (hostError = Pm_HasHostError(nullptr)) ) {
@@ -252,6 +408,33 @@ static int initMIDI()
 	gMIDIInitialized = true;
 	return errNone;
 }
+
+
+static int getNumSources()
+{
+	int n = 0;
+	for (int i = 0; i < Pm_CountDevices(); ++i) {
+		const PmDeviceInfo* devInfo = Pm_GetDeviceInfo(i);
+		if (devInfo->input){
+			n++;
+		}
+	}
+	return n;
+}
+
+static int getNumDestinations()
+{
+	int n = 0;
+	for (int i = 0; i < Pm_CountDevices(); ++i) {
+		const PmDeviceInfo* devInfo = Pm_GetDeviceInfo(i);
+		if ((devInfo->output) && (strnicmp(devInfo->name, "Microsoft MIDI Mapper", 50) != 0)){
+			n++;
+		}
+	}
+	return n;
+}
+
+
 /*
 -------------------------------------------------------------
 */
@@ -265,8 +448,10 @@ static void midiCleanUp()
 			Pm_Close(gMIDIOutStreams[i]);
 		}
 		for (int i=0; i<gNumMIDIInPorts; ++i) {
-			Pm_Abort(gMIDIInStreams[i]);
-			Pm_Close(gMIDIInStreams[i]);
+			if (gMIDIInStreamUsed[i]){
+				Pm_Abort(gMIDIInStreams[i]);
+				Pm_Close(gMIDIInStreams[i]);
+			}
 		}
 
 		gNumMIDIOutPorts = 0;
@@ -276,6 +461,12 @@ static void midiCleanUp()
 	// set the stream pointers to NULL
 	memset(gMIDIInStreams,0,kMaxMidiPorts*sizeof(PmStream*));
 	memset(gMIDIOutStreams,0,kMaxMidiPorts*sizeof(PmStream*));
+
+	// Mark the MIDI ins as not used
+	for (int i = 0; i < kMaxMidiPorts; i++){
+		gMIDIInStreamUsed[i] = false;
+	}
+
 
 	// delete the objects that map in/out indices to Pm dev indices
 	gMidiInputIndexToPmDevIndex.clear();
@@ -295,8 +486,8 @@ void midiListEndpoints()
 int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	int numSrc = gNumMIDIInPorts;
-	int numDst = gNumMIDIOutPorts;
+	int numSrc = getNumSources();
+	int numDst = getNumDestinations();
 
 	PyrObject* idarray = newPyrArray(g->gc, 6 * sizeof(PyrObject), 0 , true);
 	SetObject(a, idarray);
@@ -426,6 +617,8 @@ int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 	}
 
 	gMIDIInStreams[uid] = inStream;
+	gMIDIInStreamUsed[uid] = true;
+
 	return errNone;
 }
 /*
@@ -446,14 +639,17 @@ int prDisconnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 	if (err)
 		return err;
 
-	const PmError error = Pm_Close(gMIDIInStreams[uid]);
+	if (gMIDIInStreamUsed[uid]){
+		const PmError error = Pm_Close(gMIDIInStreams[uid]);
 
-	if(error) {
-		std::printf("cannot close MIDI device: %s\n", Pm_GetErrorText(error));
-		return errFailed;
+		if (error) {
+			std::printf("cannot close MIDI device: %s\n", Pm_GetErrorText(error));
+			return errFailed;
+		}
+
+		gMIDIInStreamUsed[uid] = false;
+		gMIDIInStreams[uid] = NULL;
 	}
-
-	gMIDIInStreams[uid] = NULL;
 	return errNone;
 }
 /*
@@ -473,7 +669,7 @@ int prInitMIDI(struct VMGlobals *g, int numArgsPushed)
 	if (err)
 		return errWrongType;
 
-	return initMIDI();
+	return initMIDI(numIn, numOut);
 }
 
 int prDisposeMIDIClient(VMGlobals *g, int numArgsPushed)
@@ -484,7 +680,7 @@ int prDisposeMIDIClient(VMGlobals *g, int numArgsPushed)
 
 int prRestartMIDI(VMGlobals *g, int numArgsPushed)
 {
-	initMIDI();
+	/* Do nothing */
 	return errNone;
 }
 
@@ -498,27 +694,27 @@ free(pk);
 
 int prSendSysex(VMGlobals *g, int numArgsPushed)
 {	
-	/*
-int err, uid, size;
-PyrInt8Array* packet = g->sp->uob;				
-size = packet->size;
-Byte *data = (Byte *)malloc(size);
+	lock_guard<SC_Lock> mulo(gPmStreamMutex);
+	int err, uid;
+	
+	PyrSlot* args = g->sp - 2;
 
-memcpy(data,packet->b, size);
+	// args[1] contains the uid and args[2] contains the array
+	err = slotIntVal(&args[1], &uid);
+	if (err) return err;
 
-PyrSlot *u = g->sp - 1;
-err = slotIntVal(u, &uid);
-if (err) return err;
+	if (!isKindOfSlot(&args[2], s_int8array->u.classobj))
+		return errWrongType;
 
-MIDIEndpointRef dest;
-MIDIObjectType mtype;
-MIDIObjectFindByUniqueID(uid, (MIDIObjectRef*)&dest, &mtype);
-if (mtype != kMIDIObjectType_Destination) return errFailed;            
-if (!dest) return errFailed;
+	PyrInt8Array *packet = slotRawInt8Array(&args[2]);
 
-sendsysex(dest, size, data);
-return errNone;
-*/
+	if (gMIDIOutStreams[uid]){
+		PmError result = Pm_WriteSysEx(gMIDIOutStreams[uid], 0, packet->b);
+		if (result != pmNoError)
+			return errFailed;
+		else
+			return errNone;
+	}
 	return errFailed;
 }
 /*
