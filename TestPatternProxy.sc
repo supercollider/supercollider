@@ -80,17 +80,16 @@ TestPatternProxy : UnitTest {
 		/*
 		the ones commented out need to be checked
 		Pcollect crashes the interpreter
-		Ppar has a binary op failure
 		*/
 
 		var functions = [
 			{ |x| Pseq([x, x]) },
 			{ |x| Pseq([x, (y: 10)]) },
 			//{ |x| Pselect({ |event| event[\zz].notNil }, x) },
-			//{ |x| Pcollect({ |event| event[\zz] = 100 }, x) },
+			{ |x| Pcollect({ |event| event[\zz] = 100 }, x) },
 			{ |x| Pfset({ ~gg = 8; ~zz = 9; }, x) },
 			{ |x| Psetpre({ ~gg = 8; ~zz = 9; }, x) },
-			//{ |x| Ppar([x, x]) },
+			{ |x| Ppar([x, x]) },
 			{ |x| Pfin(3, x) }
 		];
 
@@ -112,10 +111,3 @@ TestPatternProxy : UnitTest {
 	}
 
 }
-
-/*
-
-	{ |x| Pswitch([(x: 10), (x:20), (x:30)], x) },
-
-*/
-
