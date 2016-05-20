@@ -694,38 +694,42 @@ int hid_parse_report_descriptor( unsigned char* descr_buf, int size, struct hid_
 }
 
 void hid_element_set_value_from_input( struct hid_device_element * element, int value ){
-  element->rawvalue = value;
-  if ( element->logical_min < 0 ){
-    // value should be interpreted as signed value
-    // so: check report size, test the highest bit, if one, invert and add one, otherwise keep value
-    int bitSignIndex = element->report_size - 1;
-    int signBit = 0x1 << bitSignIndex; 
-    if ( signBit & value ){
-      unsigned int bitMask = BITMASK1( element->report_size );
-      unsigned int uvalue = (unsigned int) value;
-      unsigned int negvalue = ~(uvalue);
-      negvalue = ~(uvalue) & bitMask;
-      negvalue = negvalue + 1;
-      element->value = -1 * negvalue;
-    } else {
-	element->value = value;
-    }    
-  } else {
-    // value should be interpreted as unsigned value
-    // so: keep value as is
-    if ( element->isarray ){ // array elements should be parsed differently
-      if ( value == 0 ){ // previous key was pressed, so keep previous usage
-	element->value = 0;
-	element->array_value = 0;
-      } else { // new key, so value + usage min is the current usage
-	element->usage = element->usage_min + value;
-	element->value = 1;
-	element->array_value = value;
-      }
-    } else {
-      element->value = value;
+    element->rawvalue = value;
+    if (element->logical_min < 0){
+        // value should be interpreted as signed value
+        // so: check report size, test the highest bit, if one, invert and add one, otherwise keep value
+        int bitSignIndex = element->report_size - 1;
+        int signBit = 0x1 << bitSignIndex;
+        if (signBit & value){
+            unsigned int bitMask = BITMASK1(element->report_size);
+            unsigned int uvalue = (unsigned int)value;
+            unsigned int negvalue = ~(uvalue);
+            negvalue = ~(uvalue)& bitMask;
+            negvalue = negvalue + 1;
+            element->value = -1 * negvalue;
+        }
+        else {
+            element->value = value;
+        }
     }
-  }  
+    else {
+        // value should be interpreted as unsigned value
+        // so: keep value as is
+        if (element->isarray){ // array elements should be parsed differently
+            if (value == 0){ // previous key was pressed, so keep previous usage
+                element->value = 0;
+                element->array_value = 0;
+            }
+            else { // new key, so value + usage min is the current usage
+                element->usage = element->usage_min + value;
+                element->value = 1;
+                element->array_value = value;
+            }
+        }
+        else {
+            element->value = value;
+        }
+    }
 }
 
 float hid_element_map_logical( struct hid_device_element * element ){  
@@ -1514,7 +1518,7 @@ int hid_parse_input_elements_values( unsigned char* buf, int size, struct hid_de
             if (res == HIDP_STATUS_SUCCESS){
             	// printf("element page %i, usage %i, index %i, value %i, rawvalue %i, newvalueref %i\n", cur_element->usage_page, cur_element->usage, cur_element->index, cur_element->value, cur_element->rawvalue, newValueRef );
                 if (new_value != cur_element->rawvalue || cur_element->repeat){
-                    printf("element page %i, usage %i, index %i, value %i, rawvalue %i, newvalue %i\n", cur_element->usage_page, cur_element->usage, cur_element->index, cur_element->value, cur_element->rawvalue, new_value);
+                    //printf("element page %i, usage %i, index %i, value %i, rawvalue %i, newvalue %i\n", cur_element->usage_page, cur_element->usage, cur_element->index, cur_element->value, cur_element->rawvalue, new_value);
                     fflush(stdout);
                     hid_element_set_value_from_input(cur_element, new_value);
                     devdesc->_element_callback(cur_element, devdesc->_element_data);
@@ -1527,10 +1531,12 @@ int hid_parse_input_elements_values( unsigned char* buf, int size, struct hid_de
                     USAGE usage = usage_and_page_list[i].Usage;
                     if (usage_and_page_list[i].UsagePage = cur_element->usage_page && usage == cur_element->usage){
                         new_value = 1;
-                        hid_element_set_value_from_input(cur_element, new_value);
-                        devdesc->_element_callback(cur_element, devdesc->_element_data);
                         break;
                     }
+                }
+                if (new_value != cur_element->rawvalue || cur_element->repeat){
+                    hid_element_set_value_from_input(cur_element, new_value);
+                    devdesc->_element_callback(cur_element, devdesc->_element_data);
                 }
             }            
         }
