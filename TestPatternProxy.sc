@@ -360,6 +360,9 @@ TestPatternProxy : UnitTest {
 			7.3
 		);
 
+		Pdefn.clear;
+		Pdef.clear;
+
 
 
 	}
