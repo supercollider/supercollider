@@ -26,6 +26,7 @@ TestEnv : UnitTest {
 			"Exponential Env.cutoff should be same as linear Env.cutoff.linexp");
 	}
 
+	/*
 	test_initial_value {
 		var value = rrand(10.0, 100.0);
 		var assert = { |x, curve, selector, label=""|
@@ -44,5 +45,6 @@ TestEnv : UnitTest {
 			}
 		}
 	}
+	*/
 }
 
