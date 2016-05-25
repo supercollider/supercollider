@@ -744,7 +744,7 @@ HIDUsage {
 
 	*initClass {
 		Class.initClassTree(PathName);
-		hutDirectory = Platform.resourceDir +/+ "hidapi/hut/";
+		hutDirectory = Platform.resourceDir +/+ "HID_Support/hut/";
 		usageNameToIDs = IdentityDictionary.new;
 		usageIDsToName = MultiLevelIdentityDictionary.new;
 	}
