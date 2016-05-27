@@ -3,11 +3,11 @@ summary:: Get started with writing unit generators
 categories:: Internals
 related:: Reference/ServerPluginAPI
 
-section:: Pseudo-ugens
+section:: Pseudo-UGens
 
-Pseudo-ugens are useful when you want to abbreviate a certain configuration of UGens that gets used repeatedly. A
-pseudo-ugen is a class that superficially resembles a UGen class, but it only returns a composition of existing UGens.
-Pseudo-ugens exist only in the client -- the server isn't aware of them and only receives their components.
+Pseudo-UGens are useful when you want to abbreviate a certain configuration of UGens that gets used repeatedly. A
+pseudo-UGen is a class that superficially resembles a UGen class, but it only returns a composition of existing UGens.
+Pseudo-UGens exist only in the client -- the server isn't aware of them and only receives their components.
 
 The below example has only a code::.ar:: method, but you can just as easily have both code::.ar:: and code::.kr::
 methods.
@@ -20,16 +20,16 @@ BoringMixer {
 }
 ::
 
-Examples of pseudo-ugens found in SC include link::Classes/BLowPass4:: and link::Classes/BHiPass4::, which break down
+Examples of pseudo-UGens found in SC include link::Classes/BLowPass4:: and link::Classes/BHiPass4::, which break down
 into link::Classes/SOS:: UGens.
 
 There are very few restrictions on what these classes can contain, but you should keep the following in mind:
 
 list::
-## It is courteous to leave a note in your class's help file that identifies it as a pseudo-ugen.
-## To avoid confusion, pseudo-ugens should not inherit from the base class link::Classes/UGen::.
+## It is courteous to leave a note in your class's help file that identifies it as a pseudo-UGen.
+## To avoid confusion, pseudo-UGens should not inherit from the base class link::Classes/UGen::.
 ## A SynthDef can only have two link::Classes/LocalIn::/link::Classes/LocalOut:: pairings — one for control rate and one
-for audio rate. Putting LocalIn and LocalOut in a pseudo-ugen is a bad idea, as it could interfere with other feedback
+for audio rate. Putting LocalIn and LocalOut in a pseudo-UGen is a bad idea, as it could interfere with other feedback
 loops in the SynthDef.
 ::
 
@@ -48,7 +48,7 @@ list::
 ## code::*.scx:: for OS X
 ::
 
-A plugin file can contain more than one UGen, and it can also define things other than ugens such as buffer fill
+A plugin file can contain more than one UGen, and it can also define things other than UGens such as buffer fill
 ("/b_gen") commands.
 
 When scsynth boots, it will look for plugin files in code::Platform.userExtensionDir::. Since sclang also looks for
@@ -66,7 +66,7 @@ FAUST provides a shell script useful for SuperCollider users called code::faust2
 file into a class file and server plugin, which you can then drop into your extensions directory.
 
 FAUST plugins are often quick to develop and can be painlessly ported to other environments. Unfortunately, they can't
-take advantage of all of scsynth's features, such as accessing Buffers or random number generators, and some ugens
+take advantage of all of scsynth's features, such as accessing Buffers or random number generators, and some UGens
 featuring very complex logic are difficult or impossible to write in FAUST. Furthermore, the FAUST compiler is quite
 intelligent but it might not always offer the best efficiency in its results. If a UGen you are developing hits these
 limitations, it is time to move on to handwritten C++.
@@ -358,9 +358,9 @@ In order to prevent deadlocks, a simple deadlock prevention scheme is implemente
 
 list::
 ## Lock resources only when required: few unit generators actually require the access to more than one resource at the same time.
-   The main exception of this rule are the FFT Chain ugens, which access multiple buffers at the same time. There is no known unit
+   The main exception of this rule are the FFT Chain UGens, which access multiple buffers at the same time. There is no known unit
    generator, which accesses both buffers and busses at the same time.
-## Acquire reader locks if possible. Since multiple ugens can acquire a reader lock to the same resource at the same time, their
+## Acquire reader locks if possible. Since multiple UGens can acquire a reader lock to the same resource at the same time, their
    use reduces contention.
 ## Resources have to be acquired in a well-defined order: busses should be acquired before buffers and resources with a high index
    should be acquired before resources with a low index.
