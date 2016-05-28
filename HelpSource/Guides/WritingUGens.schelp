@@ -91,7 +91,13 @@ section:: Example Plugins
 To get an idea of the necessary ingredients for writing UGens, it's often best to poke around at complete examples.
 We've set up a GitHub repository at https://github.com/supercollider/example-plugins, which contains some example
 plugins numbered roughly by complexity. Each directory in that repository is self-contained with its own build system,
-so you can copy out a directory to form a starting point for your own UGens.
+so you can copy out a directory to form a starting point for your own UGens. The source codes of these plugins are
+heavily commented.
+
+The first example, BoringMixer, is very minimal. The UGen is stateless and has only one calculation function, which is
+audio rate.
+
+The second example, MySaw, introduces states and multiple calculation functions.
 
 section:: Anatomy of a UGen
 
