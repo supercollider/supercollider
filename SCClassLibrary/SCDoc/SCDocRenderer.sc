@@ -163,8 +163,8 @@ SCDocHTMLRenderer {
             if(currentClass.notNil) {
                 m = currentClass.filenameSymbol.asString;
                 stream << "<div id='filename'>Source: "
-                << m.dirname << "/<a href='" << URI.fromLocalPath(m).asString << "'>"
-                << m.basename << "</a></div>";
+                << "<a href='" << URI.fromLocalPath(m).asString << "'>"
+                << m.dirname << "/" << m.basename << "</a></div>";
                 if(currentClass != Object) {
                     stream << "<div id='superclasses'>"
                     << "Inherits from: "
