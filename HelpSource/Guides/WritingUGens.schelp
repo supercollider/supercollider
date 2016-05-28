@@ -97,7 +97,8 @@ heavily commented.
 The first example, BoringMixer, is very minimal. The UGen is stateless and has only one calculation function, which is
 audio rate.
 
-The second example, MySaw, introduces states and multiple calculation functions.
+MySaw introduces states and multiple calculation functions. AnalogEcho introduces real-time memory management through
+internal buffers, and demonstrates how to do cubic interpolation from an array of samples.
 
 section:: Anatomy of a UGen
 
