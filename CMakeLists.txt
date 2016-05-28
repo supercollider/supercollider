@@ -271,7 +271,7 @@ if (CMAKE_COMPILER_IS_INTEL AND NOT WIN32)
 	add_definitions(-diag-disable 279) # controlling expression is constant
 endif()
 
-if(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
+if(MSVC)
   foreach(flag CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
     set(${flag} "${${flag}} /wd4018") # signed/unsigned mismatch
     set(${flag} "${${flag}} /wd4102") # unreferenced label
@@ -284,7 +284,7 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
   endforeach()
 
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS)
-endif()
+endif(MSVC)
 
 if (SC_MEMORY_DEBUGGING)
 	add_definitions(-DDISABLE_MEMORY_POOLS)
