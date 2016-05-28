@@ -342,12 +342,12 @@ inline PyrObject * PyrGC::Allocate(size_t inNumBytes, int32 sizeclass, bool inRu
 	GCSet *gcs = mSets + sizeclass;
 
 	PyrObject * obj = (PyrObject*)gcs->mFree;
-	if (!IsMarker(obj)) {
+	if ( BOOST_LIKELY( !IsMarker(obj) )) {
 		// from free list
 		gcs->mFree = obj->next;
 		assert(obj->obj_sizeclass == sizeclass);
 	} else {
-		if (sizeclass > kMaxPoolSet) {
+		if ( BOOST_LIKELY( sizeclass > kMaxPoolSet) ) {
 			SweepBigObjects();
 			size_t allocSize = sizeof(PyrObjectHdr) + (sizeof(PyrSlot) << sizeclass);
 			obj = (PyrObject*)mPool->Alloc(allocSize);
