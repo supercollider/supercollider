@@ -6210,7 +6210,7 @@ void TGrains_next(TGrains *unit, int inNumSamples)
 				if (grain->chan >= (int)numOutputs) grain->chan -= numOutputs;
 			} else {
 				grain->chan = 0;
-				pan = sc_wrap(pan * 0.5f + 0.5f, 0.f, 1.f);
+				pan = sc_clip(pan * 0.5f + 0.5f, 0.f, 1.f);
 				panangle = pan * pi2_f;
 			}
 			float pan1 = grain->pan1 = amp * cos(panangle);
