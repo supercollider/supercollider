@@ -93,7 +93,12 @@ We've set up a GitHub repository at https://github.com/supercollider/example-plu
 plugins numbered roughly by complexity. Each directory in that repository is self-contained with its own build system,
 so you can copy out a directory to form a starting point for your own UGens.
 
-section:: The Entry Point
+section:: Anatomy of a UGen
+
+The SC source code has a header file, code::server/plugins/SC_Plugin.h::, that gives you your interface to the scsynth
+architecture as well as a bunch of helper functions. These are documented at link::Reference/ServerPluginAPI::.
+
+subsection:: The Entry Point
 
 When the library is loaded the server calls a function in the library, which is defined by the code::PluginLoad()::
 macro.  This entry point has two responsibilities:
@@ -121,7 +126,7 @@ list::
 ## The unit generator destructor is named code::PluginName_Dtor::
 ::
 
-section:: The Calculation Function
+subsection:: The Calculation Function
 
 The meat of the UGen is its calculation function, which gets called every control period with the UGen object as an
 argument. (This is for control-rate and audio-rate UGens -- demand-rate is different.) In this function, the UGen reads
@@ -136,202 +141,12 @@ Phasor_next_aa, Phasor_next_ak, Phasor_next_ka, and Phasor_next_kk. You don't ne
 UGens, however. For example, link::Classes/FreeVerb:: has only one calculation function. Who would want a control-rate
 reverb?
 
-section:: A Simple Unit Generator Plugin
-
-Unit generator plugins require two parts: A C++ part, which implements the server-side code that is loaded as a
-dynamically loaded library, and an SCLang class, that is required to build the link::Classes/SynthDef::. The following
-example implements a simple Sawtooth oscillator
-
-subsection:: C++-side Definition of Unit Generators
-
-The following code shows the C++ source of a simple unit generator. It's the same as MySaw.cpp in the example
-repository.
-
-code::
-#include "SC_PlugIn.h"
-
-// InterfaceTable contains pointers to functions in the host (server).
-static InterfaceTable *ft;
-
-// declare struct to hold unit generator state
-struct MySaw : public Unit
-{
-	double mPhase; // phase of the oscillator, from -1 to 1.
-	float mFreqMul; // a constant for multiplying frequency
-};
-
-// declare unit generator functions
-static void MySaw_next_a(MySaw *unit, int inNumSamples);
-static void MySaw_next_k(MySaw *unit, int inNumSamples);
-static void MySaw_Ctor(MySaw* unit);
-
-
-//////////////////////////////////////////////////////////////////
-
-// Ctor is called to initialize the unit generator.
-// It only executes once.
-
-// A Ctor usually does 3 things.
-// 1. set the calculation function.
-// 2. initialize the unit generator state variables.
-// 3. calculate one sample of output.
-void MySaw_Ctor(MySaw* unit)
-{
-	// 1. set the calculation function.
-	if (INRATE(0) == calc_FullRate) {
-		// if the frequency argument is audio rate
-		SETCALC(MySaw_next_a);
-	} else {
-		// if the frequency argument is control rate (or a scalar).
-		SETCALC(MySaw_next_k);
-	}
-
-	// 2. initialize the unit generator state variables.
-	// initialize a constant for multiplying the frequency
-	unit->mFreqMul = 2.0 * SAMPLEDUR;
-	// get initial phase of oscillator
-	unit->mPhase = IN0(1);
-
-	// 3. calculate one sample of output.
-	MySaw_next_k(unit, 1);
-}
-
-
-//////////////////////////////////////////////////////////////////
-
-// The calculation function executes once per control period
-// which is typically 64 samples.
-
-// calculation function for an audio rate frequency argument
-void MySaw_next_a(MySaw *unit, int inNumSamples)
-{
-	// get the pointer to the output buffer
-	float *out = OUT(0);
-
-	// get the pointer to the input buffer
-	float *freq = IN(0);
-
-	// get phase and freqmul constant from struct and store it in a
-	// local variable.
-	// The optimizer will cause them to be loaded it into a register.
-	float freqmul = unit->mFreqMul;
-	double phase = unit->mPhase;
-
-	// perform a loop for the number of samples in the control period.
-	// If this unit is audio rate then inNumSamples will be 64 or whatever
-	// the block size is. If this unit is control rate then inNumSamples will
-	// be 1.
-	for (int i=0; i < inNumSamples; ++i)
-	{
-		// out must be written last for in place operation
-		float z = phase;
-		phase += freq[i] * freqmul;
-
-		// these if statements wrap the phase a +1 or -1.
-		if (phase >= 1.f) phase -= 2.f;
-		else if (phase <= -1.f) phase += 2.f;
-
-		// write the output
-		out[i] = z;
-	}
-
-	// store the phase back to the struct
-	unit->mPhase = phase;
-}
-
-//////////////////////////////////////////////////////////////////
-
-// calculation function for a control rate frequency argument
-void MySaw_next_k(MySaw *unit, int inNumSamples)
-{
-	// get the pointer to the output buffer
-	float *out = OUT(0);
-
-	// freq is control rate, so calculate it once.
-	float freq = IN0(0) * unit->mFreqMul;
-
-	// get phase from struct and store it in a local variable.
-	// The optimizer will cause it to be loaded it into a register.
-	double phase = unit->mPhase;
-
-	// since the frequency is not changing then we can simplify the loops
-	// by separating the cases of positive or negative frequencies.
-	// This will make them run faster because there is less code inside the loop.
-	if (freq >= 0.f) {
-		// positive frequencies
-		for (int i=0; i < inNumSamples; ++i)
-		{
-			out[i] = phase;
-			phase += freq;
-			if (phase >= 1.f) phase -= 2.f;
-		}
-	} else {
-		// negative frequencies
-		for (int i=0; i < inNumSamples; ++i)
-		{
-			out[i] = phase;
-			phase += freq;
-			if (phase <= -1.f) phase += 2.f;
-		}
-	}
-
-	// store the phase back to the struct
-	unit->mPhase = phase;
-}
-
-
-// the entry point is called by the host when the plug-in is loaded
-PluginLoad(MySaw)
-{
-    // InterfaceTable *inTable implicitly given as argument to the load function
-	ft = inTable; // store pointer to InterfaceTable
-
-	DefineSimpleUnit(MySaw);
-}
-::
-
-subsection:: SCLang-side Definition of Unit Generators
-
-SuperCollider requires an SCLang class in order to build SynthDefs.
-
-The arguments to the MySaw UGen are code::freq:: and code::iphase::.  The code::multiNew:: method handles multi channel
-expansion.  The code::madd:: method provides support for the mul and add arguments. It will create a MulAdd UGen if
-necessary. You could write the class without mul and add arguments, but providing them makes it more convenient for the
-user. See link::Guides/WritingClasses:: for details on writing sclang classes.
-
-code::
-// without mul and add.
-MySaw : UGen {
-	*ar { arg freq = 440.0, iphase = 0.0;
-		^this.multiNew('audio', freq, iphase)
-	}
-	*kr { arg freq = 440.0, iphase = 0.0;
-		^this.multiNew('control', freq, iphase)
-	}
-}
-::
-
 subsection:: Building Unit Generator Plugins
 
 The most portable way to build plugins is using cmake footnote::http://www.cmake.org::, a cross-platform build
-system. In order build the example with cmake, the following code should go into a code::CMakeLists.txt:: file.
+system.
 
-code::
-cmake_minimum_required (VERSION 2.8)
-project (MySaw)
-
-include_directories(${SC_PATH}/include/plugin_interface)
-include_directories(${SC_PATH}/include/common)
-include_directories(${SC_PATH}/external_libraries/libsndfile/)
-
-set(CMAKE_SHARED_MODULE_PREFIX "")
-if(APPLE OR WIN32)
-set(CMAKE_SHARED_MODULE_SUFFIX ".scx")
-endif()
-
-add_library(MySaw MODULE MySaw.cpp)
-::
-
+The examples in the example repository contain code::CMakeLists.txt:: files.
 
 section:: Coding Guidelines
 
@@ -350,7 +165,7 @@ definitionList::
 ::
 
 
-section:: Thread Safety
+subsection:: Thread Safety
 
 There are two different implementations of the SuperCollider server. strong::scsynth:: is the traditional server and
 strong::supernova:: is a new implementation with support for multi-processor audio synthesis. Since the plugins in
