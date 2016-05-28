@@ -771,7 +771,7 @@ SCDocHTMLRenderer {
     *renderFooter {|stream, doc|
         stream << "<div class='doclink'>";
         doc.fullPath !? {
-            stream << "source: <a href='" << URI.fromLocalPath(doc.fullPath).asString << "'>"
+            stream << "helpfile source: <a href='" << URI.fromLocalPath(doc.fullPath).asString << "'>"
             << doc.fullPath << "</a><br>"
         };
         stream << "link::" << doc.path << "::<br>"
