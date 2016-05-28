@@ -39,7 +39,7 @@ determines where to pan the output.
 list::
 ## If numChannels = 1, no panning is done.
 ## If numChannels = 2, panning is similar to Pan2.
-## If numChannels > 2, pannins is the same as PanAz.
+## If numChannels > 2, panning is the same as PanAz.
 ::
 
 argument:: envbufnum
