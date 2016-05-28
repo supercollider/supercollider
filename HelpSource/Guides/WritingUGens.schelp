@@ -3,11 +3,26 @@ summary:: Get started with writing unit generators
 categories:: Internals
 related:: Reference/ServerPluginAPI
 
+SuperCollider has a vast library of unit generators that can be assembled in unlimited ways, but sometimes even those
+aren't sufficient. You may have a need for an unusual signal processing algorithm, or you're running into efficiency
+problems that can be solved by condensing parts of your SynthDef into a single UGen.
+
+UGens are defined in server plugins written in C++. Server plugins are not to be confused with quarks, which extend the
+SuperCollider language. UGens exist more or less independently of the interpreter and you don't need much familiarity
+with SC to write them.
+
+Writing UGens is not too difficult, but it's arguably far less convenient and intuitive than the high-level tools that
+SuperCollider provides. You'll need a build system and a good amount of boilerplate code -- even fairly basic signal
+processing operations can require a lot of code. You don't have an instant live coding environment, and mistakes can
+easily crash the server. SuperCollider's UGens are stable and well-tested, and custom UGens are best viewed as a last
+resort for when the limitations of SC are impassable.
+
 section:: Pseudo-UGens
 
-Pseudo-UGens are useful when you want to abbreviate a certain configuration of UGens that gets used repeatedly. A
-pseudo-UGen is a class that superficially resembles a UGen class, but it only returns a composition of existing UGens.
-Pseudo-UGens exist only in the client -- the server isn't aware of them and only receives their components.
+Before we proceed to the real UGens, we'll take a quick detour for the sake of completeness. A pseudo-UGen is a bit of
+SuperCollider code that abbreviates a certain configuration of UGens that gets used repeatedly. A pseudo-UGen is a class
+that superficially resembles a UGen class, but it only returns a composition of existing UGens. It has no efficiency
+savings, but it does save typing.
 
 The below example has only a code::.ar:: method, but you can just as easily have both code::.ar:: and code::.kr::
 methods.
@@ -71,11 +86,12 @@ featuring very complex logic are difficult or impossible to write in FAUST. Furt
 intelligent but it might not always offer the best efficiency in its results. If a UGen you are developing hits these
 limitations, it is time to move on to handwritten C++.
 
-section:: A Minimal Working Example
+section:: Example Plugins
 
-To get an idea of the necessary ingredients for writing UGens, it's often best to poke around at a complete example.
-We've set up a GitHub repository at https://github.com/snappizz/plugin-example. You can fork this to create your own
-UGens.
+To get an idea of the necessary ingredients for writing UGens, it's often best to poke around at complete examples.
+We've set up a GitHub repository at https://github.com/supercollider/example-plugins, which contains some example
+plugins numbered roughly by complexity. Each directory in that repository is self-contained with its own build system,
+so you can copy out a directory to form a starting point for your own UGens.
 
 section:: The Entry Point
 
