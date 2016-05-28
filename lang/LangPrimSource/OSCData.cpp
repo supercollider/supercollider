@@ -116,7 +116,9 @@ static int addMsgSlot(big_scpacket *packet, PyrSlot *slot)
 				PyrObject *arrayObj = slotRawObject(slot);
 				big_scpacket packet2;
 				if (arrayObj->size > 1 && isKindOfSlot(arrayObj->slots+1, class_array)) {
-					makeSynthBundle(&packet2, arrayObj->slots, arrayObj->size, true);
+					int error = makeSynthBundle(&packet2, arrayObj->slots, arrayObj->size, true);
+					if (error != errNone)
+						return error;
 				} else {
 					int error = makeSynthMsgWithTags(&packet2, arrayObj->slots, arrayObj->size);
 					if (error != errNone)
@@ -165,7 +167,9 @@ static int addMsgSlotWithTags(big_scpacket *packet, PyrSlot *slot)
 					packet->addtag('b');
 					big_scpacket packet2;
 					if (arrayObj->size > 1 && isKindOfSlot(arrayObj->slots+1, class_array)) {
-						makeSynthBundle(&packet2, arrayObj->slots, arrayObj->size, true);
+						int error = makeSynthBundle(&packet2, arrayObj->slots, arrayObj->size, true);
+						if (error != errNone)
+							return error;
 					} else {
 						int error = makeSynthMsgWithTags(&packet2, arrayObj->slots, arrayObj->size);
 						if (error != errNone)
@@ -363,8 +367,6 @@ inline size_t OSCStrLen(char *str)
 }
 
 
-int makeSynthBundle(big_scpacket *packet, PyrSlot *slots, int size, bool useElapsed);
-
 static void netAddrTcpClientNotifyFunc(void *clientData)
 {
 	extern bool compiledOK;
@@ -450,7 +452,9 @@ static int prNetAddr_SendBundle(VMGlobals *g, int numArgsPushed)
 		SetFloat(args, time);
 	}
 	int numargs = numArgsPushed - 1;
-	makeSynthBundle(&packet, args, numargs, true);
+	int error = makeSynthBundle(&packet, args, numargs, true);
+	if (error != errNone)
+		return error;
 
 	//for (int i=0; i<packet.size()/4; i++) post("%d %p\n", i, packet.buf[i]);
 
@@ -512,7 +516,9 @@ static int prNetAddr_BundleSize(VMGlobals *g, int numArgsPushed)
 	big_scpacket packet;
 	int numargs = slotRawObject(args)->size;
 	if (numargs < 1) return errFailed;
-	makeSynthBundle(&packet, slotRawObject(args)->slots, numargs, true);
+	int error = makeSynthBundle(&packet, slotRawObject(args)->slots, numargs, true);
+	if (error != errNone)
+		return error;
 	SetInt(args, packet.size());
 	return errNone;
 }
@@ -542,6 +548,7 @@ static int prNetAddr_UseDoubles(VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+
 static int prArray_OSCBytes(VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot* a = g->sp;
@@ -552,7 +559,9 @@ static int prArray_OSCBytes(VMGlobals *g, int numArgsPushed)
 	big_scpacket packet;
 
 	if (IsFloat(args) || IsNil(args) || IsInt(args)) {
-		makeSynthBundle(&packet, args, numargs, false);
+		int error = makeSynthBundle(&packet, args, numargs, false);
+		if (error != errNone)
+			return error;
 	} else if (IsSym(args) || isKindOfSlot(args, class_string)) {
 		int error = makeSynthMsgWithTags(&packet, args, numargs);
 		if (error != errNone)
@@ -565,8 +574,7 @@ static int prArray_OSCBytes(VMGlobals *g, int numArgsPushed)
 	PyrInt8Array* obj = newPyrInt8Array(g->gc, size, 0, true);
 	obj->size = size;
 	memcpy(obj->b, packet.data(), size);
-	SetObject(a, (PyrObject*)obj);
-	//for (int i=0; i<packet.size()/4; i++) post("%d %p\n", i, packet.buf[i]);
+	SetObject(a, obj);
 
 	return errNone;
 }
