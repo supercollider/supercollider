@@ -21,7 +21,9 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/external_libraries/hidapi/hidapi_parser
 
                     ${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
-                    LangSource/Bison)
+                    LangSource/Bison
+)
+
 
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -287,7 +289,7 @@ if (FFTW3F_FOUND)
 endif()
 
 if (WIN32)
-	target_link_libraries(libsclang wsock32 ws2_32 portmidi iphlpapi)
+	target_link_libraries(libsclang wsock32 ws2_32 portmidi iphlpapi hid)
 endif()
 
 if (GC_SANITYCHECK)
