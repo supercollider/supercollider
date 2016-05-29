@@ -2009,10 +2009,8 @@ static inline const SndBuf * VOscGetBuf(int & bufnum, World * world, Unit * unit
 void VOsc_Ctor(VOsc *unit)
 {
 	if (INRATE(2) == calc_FullRate) {
-		printf("VOsc_next_ika\n");
 		SETCALC(VOsc_next_ika);
 	} else {
-		printf("VOsc_next_ikk\n");
 		SETCALC(VOsc_next_ikk);
 	}
 
