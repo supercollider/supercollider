@@ -2008,12 +2008,6 @@ static inline const SndBuf * VOscGetBuf(int & bufnum, World * world, Unit * unit
 
 void VOsc_Ctor(VOsc *unit)
 {
-	if (INRATE(2) == calc_FullRate) {
-		SETCALC(VOsc_next_ika);
-	} else {
-		SETCALC(VOsc_next_ikk);
-	}
-
 	float nextbufpos = ZIN0(0);
 	unit->m_bufpos = nextbufpos;
 	int bufnum = sc_floor(nextbufpos);
@@ -2031,7 +2025,14 @@ void VOsc_Ctor(VOsc *unit)
 
 	unit->m_phasein = ZIN0(2);
 	unit->m_phaseoffset = (int32)(unit->m_phasein * unit->m_radtoinc);
-	unit->m_phase = unit->m_phaseoffset;
+
+	if (INRATE(2) == calc_FullRate) {
+		SETCALC(VOsc_next_ika);
+		unit->m_phase = 0;
+	} else {
+		SETCALC(VOsc_next_ikk);
+		unit->m_phase = unit->m_phaseoffset;
+	}
 
 	VOsc_next_ikk(unit, 1);
 }
