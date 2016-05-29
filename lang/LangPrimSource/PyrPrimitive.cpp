@@ -733,8 +733,6 @@ int blockValueArray(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *b;
 	PyrObject *array;
 	PyrList *list;
-	PyrSlot *pslot, *qslot;
-	int m, size;
 
 	//a = g->sp - numArgsPushed + 1;
 	b = g->sp;
@@ -743,7 +741,7 @@ int blockValueArray(struct VMGlobals *g, int numArgsPushed)
 		if (slotRawObject(b)->classptr == class_array) {
 			array = (PyrObject*)slotRawObject(b);
 			above:
-			size = array->size;
+			const int size = array->size;
 
 			PyrObject *stack = g->gc->Stack();
 			int stackDepth = g->sp - stack->slots + 1;
@@ -754,11 +752,7 @@ int blockValueArray(struct VMGlobals *g, int numArgsPushed)
 				b = g->sp;
 			}
 
-			pslot = array->slots - 1;
-			qslot = b - 1;
-			//pend = (double*)(pslot + size);
-			//while (pslot<pend) slotCopy(++qslot, ++pslot);
-			for (int m=0; m<size; ++m) slotCopy(++qslot, ++pslot);
+			slotCopy( b, array->slots, size );
 
 			g->sp += size - 1;
 			return blockValue(g, size+numArgsPushed-1);
@@ -784,7 +778,6 @@ static int blockValueArrayEnvir(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *b;
 	PyrObject *array;
 	PyrList *list;
-	PyrSlot *pslot, *qslot;
 
 	//a = g->sp - numArgsPushed + 1;
 	b = g->sp;
@@ -793,7 +786,7 @@ static int blockValueArrayEnvir(struct VMGlobals *g, int numArgsPushed)
 		if (slotRawObject(b)->classptr == class_array) {
 			array = (PyrObject*)slotRawObject(b);
 		above:
-			int size = array->size;
+			const int size = array->size;
 
 			PyrObject *stack = g->gc->Stack();
 			int stackDepth = g->sp - stack->slots + 1;
@@ -804,11 +797,7 @@ static int blockValueArrayEnvir(struct VMGlobals *g, int numArgsPushed)
 				b = g->sp;
 			}
 
-			pslot = array->slots - 1;
-			qslot = b - 1;
-			//pend = (double*)(pslot + size);
-			//while (pslot<pend) slotCopy(++qslot, ++pslot);
-			for (int m=0; m<size; ++m) slotCopy(++qslot, ++pslot);
+			slotCopy( b, array->slots, size );
 
 			g->sp += size - 1;
 			return blockValueEnvir(g, size+numArgsPushed-1);
@@ -827,7 +816,21 @@ static int blockValueArrayEnvir(struct VMGlobals *g, int numArgsPushed)
 	}
 }
 
-HOT int blockValue(struct VMGlobals *g, int numArgsPushed)
+
+bool identDict_lookupNonNil(PyrObject *dict, PyrSlot *key, int hash, PyrSlot *result);
+
+enum {
+	withKeywordArguments,
+	withoutKeywordArguments
+};
+
+enum {
+	withEnvironmentArguments,
+	withoutEnvironmentArguments
+};
+
+template <int KeywordArguments, int EnvironmentArguments>
+HOT static inline int doBlockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushed)
 {
 #if TAILCALLOPTIMIZE
 	int tailCall = g->tailCall;
@@ -840,24 +843,25 @@ HOT int blockValue(struct VMGlobals *g, int numArgsPushed)
 	}
 #endif
 
-	g->execMethod = 30;
+	PyrSlot * newSp       = g->sp - allArgsPushed;
+	PyrSlot * closureSlot = g->sp - allArgsPushed + 1;
+	PyrSlot * args        = g->sp - allArgsPushed + 2;
 
-	PyrSlot * args = g->sp - numArgsPushed + 1;
+	allArgsPushed -- ;
 
-	numArgsPushed -- ;
-	g->numpop = 0;
-
-	PyrClosure * closure = (PyrClosure*)slotRawObject(args);
+	PyrClosure * closure = (PyrClosure*)slotRawObject(closureSlot);
 	PyrBlock * block = slotRawBlock(&closure->block);
 	PyrFrame * context = slotRawFrame(&closure->context);
 
 	PyrObject * proto = IsObj(&block->prototypeFrame) ? slotRawObject(&block->prototypeFrame) : NULL;
-	PyrMethodRaw *methraw = METHRAW(block);
+
+	PyrMethodRaw * methraw = METHRAW(block);
 	const int numtemps = methraw->numtemps;
 	PyrFrame * caller = g->frame;
+	const int numArgsPushed = allArgsPushed - (numKeyArgsPushed<<1);
 
 	PyrFrame * frame = (PyrFrame*)g->gc->NewFrame(methraw->frameSize, 0, obj_slot, methraw->needsHeapContext);
-	PyrSlot * vars = frame->vars - 1;
+	PyrSlot * vars = frame->vars;
 	frame->classptr = class_frame;
 	frame->size = FRAMESIZE + numtemps;
 	SetObject(&frame->method, block);
@@ -872,485 +876,119 @@ HOT int blockValue(struct VMGlobals *g, int numArgsPushed)
 	}
 	SetPtr(&frame->ip,  0);
 
+	g->ip     = slotRawInt8Array(&block->code)->b - 1;
+	g->frame  = frame;
+	g->block  = block;
+	g->sp     = newSp;
+	g->numpop = 0;
 
-	g->sp = args - 1;
-	g->ip = slotRawInt8Array(&block->code)->b - 1;
-	g->frame = frame;
-	g->block = block;
+	if (KeywordArguments == withoutKeywordArguments && EnvironmentArguments == withoutEnvironmentArguments)
+		g->execMethod = 30;
+
+	if (KeywordArguments == withKeywordArguments    && EnvironmentArguments == withoutEnvironmentArguments)
+		g->execMethod = 40;
+
+	if (KeywordArguments == withoutKeywordArguments && EnvironmentArguments == withEnvironmentArguments)
+		g->execMethod = 50;
+
+	if (KeywordArguments == withKeywordArguments    && EnvironmentArguments == withEnvironmentArguments)
+		g->execMethod = 60;
+
+	/* push all (normal) args to frame */
+	slotCopy( vars, args, std::min( numArgsPushed, int( methraw->numargs ) ) );
 
 	if (numArgsPushed <= methraw->numargs) {	/* not enough args pushed */
-		/* push all args to frame */
-		slotCopy( vars + 1, args + 1, numArgsPushed );
-
 		/* push default arg values */
-		slotCopy( vars + numArgsPushed + 1, proto->slots + numArgsPushed, numtemps - numArgsPushed );
+		slotCopy( vars + numArgsPushed, proto->slots + numArgsPushed, numtemps - numArgsPushed );
 
-	} else if (methraw->varargs) {
-		/* push all normal args to frame */
-		slotCopy( vars + 1, args + 1, methraw->numargs );
+		if( EnvironmentArguments == withEnvironmentArguments ) {
+			// replace defaults with environment variables
+			PyrSlot * curEnvirSlot = &g->classvars->slots[1]; // currentEnvironment is the second class var.
 
-		/* push list */
-		const int i = numArgsPushed - methraw->numargs;
-		PyrObject * list = newPyrArray(g->gc, i, 0, false);
-		list->size = i;
-
-		PyrSlot * rslot = vars + methraw->numargs + 1;
-		SetObject(rslot, list);
-		//SetObject(vars + methraw->numargs + 1, list);
-
-		/* put extra args into list */
-		// fixed and raw sizes are zero
-		slotCopy( list->slots, args + methraw->numargs + 1, numArgsPushed - methraw->numargs );
-
-		if (methraw->numvars) {
-			slotCopy( vars + methraw->numargs + 2, proto->slots + methraw->numargs + 1, methraw->numvars );
+			if (isKindOfSlot(curEnvirSlot, s_identitydictionary->u.classobj)) {
+				PyrSymbol **argNames = slotRawSymbolArray(&block->argNames)->symbols;
+				for (int m=numArgsPushed; m<methraw->numargs; ++m) {
+					// replace the args with values from the environment if they exist
+					PyrSlot keyslot;
+					SetSymbol(&keyslot, argNames[m]);
+					identDict_lookupNonNil(slotRawObject(curEnvirSlot), &keyslot, calcHash(&keyslot), vars+m);
+				}
+			}
 		}
 	} else {
-		if (methraw->numargs) {
-			/* push all args to frame */
-			slotCopy( vars + 1, args + 1, methraw->numargs );
+		if (methraw->varargs) {
+			/* push list */
+			const int i = numArgsPushed - methraw->numargs;
+			PyrObject * list = newPyrArray(g->gc, i, 0, false);
+			list->size = i;
+
+			SetObject(vars + methraw->numargs, list);
+
+			/* put extra args into list */
+			// fixed and raw sizes are zero
+			slotCopy( list->slots, args + methraw->numargs, numArgsPushed - methraw->numargs );
 		}
+
 		if (methraw->numvars) {
+			int varArgOffset = methraw->varargs ? 1 : 0;
+
 			/* push default keyword and var values */
-			slotCopy( vars + methraw->numargs + 1, proto->slots + methraw->numargs, methraw->numvars );
+			slotCopy( vars + methraw->numargs + varArgOffset, proto->slots + methraw->numargs + varArgOffset, methraw->numvars );
+		}
+	}
+
+	if( KeywordArguments == withKeywordArguments ) {
+		// do keyword lookup:
+		if (numKeyArgsPushed && methraw->posargs) {
+			PyrSymbol **name0 = slotRawSymbolArray(&block->argNames)->symbols;
+			const PyrSlot *key = args + numArgsPushed;
+			for (int i=0; i<numKeyArgsPushed; ++i, key+=2) {
+				PyrSymbol **name = name0;
+				for (int j=0; j<methraw->posargs; ++j, ++name) {
+					if (*name == slotRawSymbol(key)) {
+						slotCopy(vars + j, key + 1);
+						goto found1;
+					}
+				}
+				if ( BOOST_UNLIKELY( gKeywordError ) ) {
+					post("WARNING: keyword arg '%s' not found in call to function.\n",
+						 slotRawSymbol(key)->name);
+				}
+			found1:
+				;
+			}
 		}
 	}
 
 	PyrFrame * homeContext = slotRawFrame(&frame->homeContext);
 	if (homeContext) {
-		PyrMethodRaw *methraw;
 		g->method = slotRawMethod(&homeContext->method);
-		methraw = METHRAW(g->method);
-		slotCopy(&g->receiver,&homeContext->vars[0]);
+		slotCopy(&g->receiver, homeContext->vars );
 	} else {
-		slotCopy(&g->receiver,&g->process->interpreter);
+		slotCopy(&g->receiver, &g->process->interpreter);
 	}
-
 	return errNone;
 }
 
-int blockValueWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushed)
+HOT FLATTEN int blockValue(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *args;
-	PyrSlot *vars;
-	PyrFrame *frame;
-	PyrSlot *pslot;
-	PyrSlot *rslot;
-	PyrObject *proto;
-	PyrBlock *block;
-	PyrFrame *context;
-	PyrFrame *caller;
-	PyrFrame *homeContext;
-	PyrClosure *closure;
-	PyrMethodRaw *methraw;
-
-#if TAILCALLOPTIMIZE
-	int tailCall = g->tailCall;
-	if (tailCall) {
-		if (tailCall == 1) {
-			returnFromMethod(g);
-		} else {
-			returnFromBlock(g);
-		}
-	}
-#endif
-
-	g->execMethod = 40;
-
-	args = g->sp - allArgsPushed + 1;
-
-	allArgsPushed -- ;
-	g->numpop = 0;
-
-	closure = (PyrClosure*)slotRawObject(args);
-	block = slotRawBlock(&closure->block);
-	context = slotRawFrame(&closure->context);
-
-	proto = IsObj(&block->prototypeFrame) ? slotRawObject(&block->prototypeFrame) : NULL;
-
-	methraw = METHRAW(block);
-	const int numtemps = methraw->numtemps;
-	caller = g->frame;
-	const int numArgsPushed = allArgsPushed - (numKeyArgsPushed<<1);
-
-	frame = (PyrFrame*)g->gc->NewFrame(methraw->frameSize, 0, obj_slot, methraw->needsHeapContext);
-	vars = frame->vars - 1;
-	frame->classptr = class_frame;
-	frame->size = FRAMESIZE + numtemps;
-	SetObject(&frame->method, block);
-	slotCopy(&frame->homeContext,&context->homeContext);
-	slotCopy(&frame->context,&closure->context);
-
-	if (caller) {
-		SetPtr(&caller->ip, g->ip);
-		SetObject(&frame->caller, g->frame);
-	} else {
-		SetInt(&frame->caller, 0);
-	}
-	SetPtr(&frame->ip,  0);
-
-	g->sp = args - 1;
-	g->ip = slotRawInt8Array(&block->code)->b - 1;
-	g->frame = frame;
-	g->block = block;
-
-	if (numArgsPushed <= methraw->numargs) {	/* not enough args pushed */
-		/* push all args to frame */
-		slotCopy( vars + 1, args + 1, numArgsPushed );
-
-		/* push default arg values */
-		slotCopy( vars + numArgsPushed + 1, proto->slots + numArgsPushed, numtemps - numArgsPushed );
-	} else if (methraw->varargs) {
-		PyrSlot *lslot;
-
-		/* push all normal args to frame */
-		slotCopy( vars + 1, args + 1, methraw->numargs );
-		/* push list */
-		const int i = numArgsPushed - methraw->numargs;
-		PyrObject * list = newPyrArray(g->gc, i, 0, false);
-		list->size = i;
-
-		rslot = pslot+1;
-		SetObject(rslot, list);
-		//SetObject(vars + methraw->numargs + 1, list);
-
-		/* put extra args into list */
-		lslot = list->slots - 1;
-		// fixed and raw sizes are zero
-		//lend = lslot + i;
-		//while (lslot < lend) slotCopy(++lslot, ++qslot);
-		slotCopy( list->slots, args + methraw->numargs + 1, numArgsPushed - methraw->numargs );
-
-		if (methraw->numvars) {
-			slotCopy( vars + methraw->numargs + 2, proto->slots + methraw->numargs + 1, methraw->numvars );
-		}
-	} else {
-		if (methraw->numargs) {
-			/* push all args to frame */
-			slotCopy( vars + 1, args + 1, methraw->numargs );
-		}
-		if (methraw->numvars) {
-			/* push default keyword and var values */
-			slotCopy( vars + methraw->numargs + 1, proto->slots + methraw->numargs, methraw->numvars );
-		}
-	}
-	// do keyword lookup:
-	if (numKeyArgsPushed && methraw->posargs) {
-		PyrSlot *key;
-		PyrSymbol **name0, **name;
-		name0 = slotRawSymbolArray(&block->argNames)->symbols;
-		key = args + numArgsPushed + 1;
-		for (int i=0; i<numKeyArgsPushed; ++i, key+=2) {
-			name = name0;
-			for (int j=0; j<methraw->posargs; ++j, ++name) {
-				if (*name == slotRawSymbol(key)) {
-					slotCopy(&vars[j+1],&key[1]);
-					goto found1;
-				}
-			}
-			if (gKeywordError) {
-				post("WARNING: keyword arg '%s' not found in call to function.\n",
-					slotRawSymbol(key)->name);
-			}
-			found1: ;
-		}
-	}
-
-	homeContext = slotRawFrame(&frame->homeContext);
-	if (homeContext) {
-		PyrMethodRaw *methraw;
-		g->method = slotRawMethod(&homeContext->method);
-		methraw = METHRAW(g->method);
-		slotCopy(&g->receiver,&homeContext->vars[0]);
-	} else {
-		slotCopy(&g->receiver,&g->process->interpreter);
-	}
-	return errNone;
+	return doBlockValueEnvirWithKeys< withoutKeywordArguments, withoutEnvironmentArguments >( g, numArgsPushed, 0 );
 }
 
-bool identDict_lookupNonNil(PyrObject *dict, PyrSlot *key, int hash, PyrSlot *result);
-
-static int blockValueEnvir(struct VMGlobals *g, int numArgsPushed)
+HOT FLATTEN int blockValueWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushed)
 {
-	PyrSlot *args;
-	PyrSlot *vars;
-	PyrFrame *frame;
-	PyrSlot *pslot, *qslot;
-	PyrSlot *rslot;
-	PyrObject *proto;
-	// int i, m, mmax, numtemps;
-	PyrBlock *block;
-	PyrFrame *context;
-	PyrFrame *caller;
-	PyrFrame *homeContext;
-	PyrClosure *closure;
-	PyrMethodRaw *methraw;
-	PyrSlot *curEnvirSlot;
-
-#if TAILCALLOPTIMIZE
-	int tailCall = g->tailCall;
-	if (tailCall) {
-		if (tailCall == 1) {
-			returnFromMethod(g);
-		} else {
-			returnFromBlock(g);
-		}
-	}
-#endif
-
-	g->execMethod = 50;
-
-	args = g->sp - numArgsPushed + 1;
-
-	numArgsPushed -- ;
-	g->numpop = 0;
-
-	closure = (PyrClosure*)slotRawObject(args);
-	block = slotRawBlock(&closure->block);
-	context = slotRawFrame(&closure->context);
-
-	proto = IsObj(&block->prototypeFrame) ? slotRawObject(&block->prototypeFrame) : NULL;
-
-	methraw = METHRAW(block);
-	const int numtemps = methraw->numtemps;
-	caller = g->frame;
-
-	frame = (PyrFrame*)g->gc->NewFrame(methraw->frameSize, 0, obj_slot, methraw->needsHeapContext);
-	vars = frame->vars - 1;
-	frame->classptr = class_frame;
-	frame->size = FRAMESIZE + numtemps;
-	SetObject(&frame->method, block);
-	slotCopy(&frame->homeContext,&context->homeContext);
-	slotCopy(&frame->context,&closure->context);
-
-	if (caller) {
-		SetPtr(&caller->ip, g->ip);
-		SetObject(&frame->caller, g->frame);
-	} else {
-		SetInt(&frame->caller, 0);
-	}
-	SetPtr(&frame->ip,  0);
-
-
-	g->sp = args - 1;
-	g->ip = slotRawInt8Array(&block->code)->b - 1;
-	g->frame = frame;
-	g->block = block;
-
-	if (numArgsPushed <= methraw->numargs) {	/* not enough args pushed */
-		/* push all args to frame */
-		slotCopy( vars + 1, args + 1, numArgsPushed );
-
-
-		/* push default arg values */
-		slotCopy( vars + numArgsPushed + 1, proto->slots + numArgsPushed, numtemps - numArgsPushed );
-		// replace defaults with environment variables
-		curEnvirSlot = &g->classvars->slots[1]; // currentEnvironment is the second class var.
-
-		if (isKindOfSlot(curEnvirSlot, s_identitydictionary->u.classobj)) {
-			PyrSymbol **argNames;
-			argNames = slotRawSymbolArray(&block->argNames)->symbols;
-			for (int m=numArgsPushed; m<methraw->numargs; ++m) {
-				// replace the args with values from the environment if they exist
-				PyrSlot keyslot;
-				SetSymbol(&keyslot, argNames[m]);
-				identDict_lookupNonNil(slotRawObject(curEnvirSlot), &keyslot, calcHash(&keyslot), vars+m+1);
-			}
-		}
-	} else if (methraw->varargs) {
-		/* push all normal args to frame */
-		slotCopy( vars + 1, args + 1, methraw->numargs );
-		/* push list */
-		const int i = numArgsPushed - methraw->numargs;
-		PyrObject * list = newPyrArray(g->gc, i, 0, false);
-		list->size = i;
-
-		rslot = pslot+1;
-		SetObject(rslot, list);
-		//SetObject(vars + methraw->numargs + 1, list);
-
-		/* put extra args into list */
-		// fixed and raw sizes are zero
-		slotCopy( list->slots, args + methraw->numargs + 1, numArgsPushed - methraw->numargs );
-
-		if (methraw->numvars) {
-			slotCopy( vars + methraw->numargs + 2, proto->slots + methraw->numargs + 1, methraw->numvars );
-		}
-	} else {
-		if (methraw->numargs) {
-			/* push all args to frame */
-			slotCopy( vars + 1, args + 1, methraw->numargs );
-		}
-		if (methraw->numvars) {
-			/* push default keyword and var values */
-			slotCopy( vars + methraw->numargs + 1, proto->slots + methraw->numargs, methraw->numvars );
-		}
-	}
-
-	homeContext = slotRawFrame(&frame->homeContext);
-	if (homeContext) {
-		PyrMethodRaw *methraw;
-		g->method = slotRawMethod(&homeContext->method);
-		methraw = METHRAW(g->method);
-		slotCopy(&g->receiver,&homeContext->vars[0]);
-	} else {
-		slotCopy(&g->receiver,&g->process->interpreter);
-	}
-	return errNone;
+	return doBlockValueEnvirWithKeys< withKeywordArguments, withoutEnvironmentArguments >( g, allArgsPushed, numKeyArgsPushed );
 }
 
-static int blockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushed)
+HOT FLATTEN static int blockValueEnvir(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *args;
-	PyrSlot *vars;
-	PyrFrame *frame;
-	PyrSlot *pslot;
-	PyrSlot *rslot;
-	PyrObject *proto;
-	PyrBlock *block;
-	PyrFrame *context;
-	PyrFrame *caller;
-	PyrFrame *homeContext;
-	PyrClosure *closure;
-	PyrMethodRaw *methraw;
-	PyrSlot *curEnvirSlot;
-
-#if TAILCALLOPTIMIZE
-	int tailCall = g->tailCall;
-	if (tailCall) {
-		if (tailCall == 1) {
-			returnFromMethod(g);
-		} else {
-			returnFromBlock(g);
-		}
-	}
-#endif
-
-	g->execMethod = 60;
-
-	args = g->sp - allArgsPushed + 1;
-
-	allArgsPushed -- ;
-	g->numpop = 0;
-
-	closure = (PyrClosure*)slotRawObject(args);
-	block = slotRawBlock(&closure->block);
-	context = slotRawFrame(&closure->context);
-
-	proto = IsObj(&block->prototypeFrame) ? slotRawObject(&block->prototypeFrame) : NULL;
-
-	methraw = METHRAW(block);
-	const int numtemps = methraw->numtemps;
-	caller = g->frame;
-	const int numArgsPushed = allArgsPushed - (numKeyArgsPushed<<1);
-
-	frame = (PyrFrame*)g->gc->NewFrame(methraw->frameSize, 0, obj_slot, methraw->needsHeapContext);
-	vars = frame->vars - 1;
-	frame->classptr = class_frame;
-	frame->size = FRAMESIZE + numtemps;
-	SetObject(&frame->method, block);
-	slotCopy(&frame->homeContext,&context->homeContext);
-	slotCopy(&frame->context,&closure->context);
-
-	if (caller) {
-		SetPtr(&caller->ip, g->ip);
-		SetObject(&frame->caller, g->frame);
-	} else {
-		SetInt(&frame->caller, 0);
-	}
-	SetPtr(&frame->ip,  0);
-
-
-	g->sp = args - 1;
-	g->ip = slotRawInt8Array(&block->code)->b - 1;
-	g->frame = frame;
-	g->block = block;
-
-	if (numArgsPushed <= methraw->numargs) {	/* not enough args pushed */
-		/* push all args to frame */
-		slotCopy( vars + 1, args + 1, numArgsPushed );
-
-		/* push default arg values */
-		slotCopy( vars + numArgsPushed + 1, proto->slots + numArgsPushed, numtemps - numArgsPushed );
-		// replace defaults with environment variables
-		curEnvirSlot = &g->classvars->slots[1]; // currentEnvironment is the second class var.
-
-		if (isKindOfSlot(curEnvirSlot, s_identitydictionary->u.classobj)) {
-			PyrSymbol **argNames;
-			argNames = slotRawSymbolArray(&block->argNames)->symbols;
-			for (int m=numArgsPushed; m<methraw->numargs; ++m) {
-				// replace the args with values from the environment if they exist
-				PyrSlot keyslot;
-				SetSymbol(&keyslot, argNames[m]);
-				identDict_lookupNonNil(slotRawObject(curEnvirSlot), &keyslot, calcHash(&keyslot), vars+m+1);
-			}
-		}
-
-
-	} else if (methraw->varargs) {
-		/* push all normal args to frame */
-		slotCopy( vars + 1, args + 1, methraw->numargs );
-
-		/* push list */
-		const int i = numArgsPushed - methraw->numargs;
-		PyrObject * list = newPyrArray(g->gc, i, 0, false);
-		list->size = i;
-
-		rslot = pslot+1;
-		SetObject(rslot, list);
-		//SetObject(vars + methraw->numargs + 1, list);
-
-		/* put extra args into list */
-		// fixed and raw sizes are zero
-		slotCopy( list->slots, args + methraw->numargs + 1, numArgsPushed - methraw->numargs );
-
-		if (methraw->numvars) {
-			slotCopy( vars + methraw->numargs + 2, proto->slots + methraw->numargs + 1, methraw->numvars );
-		}
-	} else {
-		if (methraw->numargs) {
-			/* push all args to frame */
-			slotCopy( vars + 1, args + 1, methraw->numargs );
-		}
-		if (methraw->numvars) {
-			/* push default keyword and var values */
-			slotCopy( vars + methraw->numargs + 1, proto->slots + methraw->numargs, methraw->numvars );
-		}
-	}
-	// do keyword lookup:
-	if (numKeyArgsPushed && methraw->posargs) {
-		PyrSymbol **name0, **name;
-		PyrSlot *key;
-		name0 = slotRawSymbolArray(&block->argNames)->symbols;
-		key = args + numArgsPushed + 1;
-		for (int i=0; i<numKeyArgsPushed; ++i, key+=2) {
-			name = name0;
-			for (int j=0; j<methraw->posargs; ++j, ++name) {
-				if (*name == slotRawSymbol(key)) {
-					slotCopy(&vars[j+1],&key[1]);
-					goto found1;
-				}
-			}
-			if (gKeywordError) {
-				post("WARNING: keyword arg '%s' not found in call to function.\n",
-					slotRawSymbol(key)->name);
-			}
-			found1: ;
-		}
-	}
-
-	homeContext = slotRawFrame(&frame->homeContext);
-	if (homeContext) {
-		PyrMethodRaw *methraw;
-		g->method = slotRawMethod(&homeContext->method);
-		methraw = METHRAW(g->method);
-		slotCopy(&g->receiver,&homeContext->vars[0]);
-	} else {
-		slotCopy(&g->receiver,&g->process->interpreter);
-	}
-	return errNone;
+	return doBlockValueEnvirWithKeys< withoutKeywordArguments, withEnvironmentArguments >( g, numArgsPushed, 0 );
 }
 
+HOT FLATTEN static int blockValueEnvirWithKeys(VMGlobals *g, int allArgsPushed, int numKeyArgsPushed)
+{
+	return doBlockValueEnvirWithKeys< withKeywordArguments, withEnvironmentArguments >( g, allArgsPushed, numKeyArgsPushed );
+}
 
 int objectPerform(struct VMGlobals *g, int numArgsPushed)
 {
