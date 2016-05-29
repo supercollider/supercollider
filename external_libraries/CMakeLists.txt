@@ -88,11 +88,11 @@ if(NOT YAMLCPP_FOUND)
   message(STATUS "using bundled libyaml-cpp")
 
   # yaml-cpp
-  aux_source_directory(${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/src yaml_src)
+  aux_source_directory(${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/src yaml_src)
   CREATE_FINAL_FILE(${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp ${yaml_src})
 
   add_library(yaml STATIC ${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp)
-  target_include_directories(yaml PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include)
+  target_include_directories(yaml PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/include boost)
   set_property( TARGET yaml PROPERTY FOLDER 3rdparty )
 
   if(CMAKE_COMPILER_IS_GNUCXX)

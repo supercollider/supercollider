@@ -60,39 +60,38 @@ static QVariant parseTextFormat( const YAML::Node & node )
         return QVariant();
     }
 
-    const Node *n;
     std::string val;
     QTextCharFormat fm;
 
-    n = node.FindValue("color");
-    if(n && n->Type() == NodeType::Scalar) {
-        n->GetScalar(val);
+    Node n = node[ "color" ];
+    if(n && n.IsScalar()) {
+        val = n.as<std::string>();
         fm.setForeground(QColor(val.c_str()));
     }
 
-    n = node.FindValue("background");
-    if(n && n->Type() == NodeType::Scalar) {
-        n->GetScalar(val);
+    n = node[ "background" ];
+    if(n && n.IsScalar()) {
+        val = n.as<std::string>();
         QColor color(val.c_str());
         if(color.isValid())
             fm.setBackground(color);
     }
 
-    n = node.FindValue("bold");
-    if(n && n->Type() == NodeType::Scalar) {
-        bool bold = n->to<bool>();
+    n = node["bold"];
+    if(n && n.IsScalar()) {
+        bool bold = n.as<bool>();
         if(bold) fm.setFontWeight(QFont::Bold);
     }
 
-    n = node.FindValue("italic");
-    if(n && n->Type() == NodeType::Scalar) {
-        bool italic = n->to<bool>();
+    n = node["italic"];
+    if(n && n.IsScalar()) {
+        bool italic = n.as<bool>();
         fm.setFontItalic(italic);
     }
 
-    n = node.FindValue("underline");
-    if(n && n->Type() == NodeType::Scalar) {
-        bool underline = n->to<bool>();
+    n = node["underline"];
+    if(n && n.IsScalar()) {
+        bool underline = n.as<bool>();
         fm.setFontUnderline(underline);
     }
 
@@ -103,44 +102,39 @@ static QVariant parseScalar( const YAML::Node & node )
 {
     using namespace YAML;
 
-    switch (node.Type())
+    switch (node.Type()) {
+
+    case NodeType::Scalar:
     {
-        case NodeType::Scalar:
-        {
-            std::string val;
-            node >> val;
-            return QVariant( QString::fromUtf8(val.c_str()) );
+        std::string val = node.as<std::string>();
+        return QVariant( QString::fromUtf8(val.c_str()) );
+    }
+
+    case NodeType::Sequence:
+    {
+        QVariantList list;
+        for( auto const & element : node )
+            list.append( parseScalar( element ) );
+        return QVariant::fromValue<QVariantList>( list );
+    }
+
+    case NodeType::Map:
+    {
+        QVariantMap map;
+        for( auto const & element : node ) {
+            std::string key = element.first.as<std::string>();
+            QVariant value = parseScalar( element.second );
+            map.insert( QString(key.c_str()), value );
         }
+        return QVariant::fromValue<QVariantMap>( map );
+    }
 
-        case NodeType::Sequence:
-        {
-            QVariantList list;
-            YAML::Iterator it;
-            for(it = node.begin(); it != node.end(); ++it)
-                list.append( parseScalar( *it ) );
-            return QVariant::fromValue<QVariantList>( list );
-        }
+    case NodeType::Null:
+        return QVariant();
 
-        case NodeType::Map:
-        {
-            QVariantMap map;
-            YAML::Iterator it;
-            for(it = node.begin(); it != node.end(); ++it)
-            {
-                std::string key;
-                it.first() >> key;
-                QVariant value = parseScalar( it.second() );
-                map.insert( QString(key.c_str()), value );
-            }
-            return QVariant::fromValue<QVariantMap>( map );
-        }
-
-        case NodeType::Null:
-            return QVariant();
-
-        default:
-            qWarning("YAML parsing: unsupported node type.");
-            return QVariant();
+    default:
+        qWarning("YAML parsing: unsupported node type.");
+        return QVariant();
     }
 }
 
@@ -153,16 +147,13 @@ static void parseNode( const YAML::Node &node, const QString &parentKey, QSettin
     static const std::string qVariantMapTag("!QVariantMap");
 
     Q_ASSERT(node.Type() == NodeType::Map);
-
-    YAML::Iterator it;
-    for(it = node.begin(); it != node.end(); ++it) {
-        std::string key;
-        it.first() >> key;
+    for( auto const & element : node) {
+        std::string key = element.first.as<std::string>();
         QString childKey( parentKey );
         if (!childKey.isEmpty()) childKey += "/";
         childKey += key.c_str();
 
-        const YAML::Node & childNode = it.second();
+        const YAML::Node & childNode = element.second;
         const std::string & childTag = childNode.Tag();
 
         if (childTag == textFormatTag)
@@ -180,12 +171,12 @@ bool readSettings(QIODevice &device, QSettings::SettingsMap &map)
 
     try {
         boost::iostreams::stream<IODeviceSource> in( &device );
-        Parser parser(in);
-        Node doc;
-        while(parser.GetNextDocument(doc)) {
-            if( doc.Type() != NodeType::Map ) continue;
-            QString key;
-            parseNode( doc, key, map );
+        Node doc = Load( in );
+        if( doc ) {
+            if( doc.IsMap() ) {
+                QString key;
+                parseNode( doc, key, map );
+            }
         }
 
         return true;

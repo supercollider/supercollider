@@ -193,7 +193,6 @@ endif()
 include_directories(${CMAKE_SOURCE_DIR}/include/common)
 include_directories(${CMAKE_SOURCE_DIR}/common)
 include_directories(${CMAKE_SOURCE_DIR}/include/plugin_interface)
-include_directories(${YAMLCPP_INCLUDE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost)
 # For QtCollider headers:
 include_directories(${CMAKE_SOURCE_DIR})
@@ -269,7 +268,7 @@ endif()
 
 target_link_libraries( SuperCollider
     ${QT_IDE_LIBRARIES}
-    ${YAMLCPP_LIBRARY}
+    yaml
     oscpack
 )
 

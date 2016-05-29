@@ -26,7 +26,7 @@
 #include <cstdlib>
 
 #include <yaml-cpp/emitter.h>
-#include "yaml-cpp/node.h"
+#include <yaml-cpp/node/node.h>
 #include "yaml-cpp/parser.h"
 
 #include "PyrPrimitive.h"

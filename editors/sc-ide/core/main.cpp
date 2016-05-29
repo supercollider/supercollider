@@ -29,7 +29,7 @@
 #include "../widgets/style/style.hpp"
 #include "../../../QtCollider/hacks/hacks_mac.hpp"
 
-#include "yaml-cpp/node.h"
+#include <yaml-cpp/node/node.h>
 #include "yaml-cpp/parser.h"
 
 #include <QAction>

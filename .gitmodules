@@ -14,3 +14,7 @@
 	path = external_libraries/portaudio_sc_org
 	url = https://github.com/supercollider/portaudio.git
 	branch = supercollider
+[submodule "external_libraries/yaml-cpp"]
+	path = external_libraries/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp.git
+
