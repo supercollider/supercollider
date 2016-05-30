@@ -1316,51 +1316,6 @@ void postErrorLine(int linenum, int start, int charpos)
 	post("-----------------------------------\n", str);
 }
 
-/*
-void c2pstrcpy(unsigned char* dst, const char *src);
-void c2pstrcpy(unsigned char* dst, const char *src)
-{
-	int c;
-	unsigned char *dstp = &dst[1];
-	while ((c = *src++) != 0) *dstp++ = c;
-	dst[0] = dstp - dst - 1;
-}
-
-void p2cstrcpy(char *dst, const unsigned char* src);
-void p2cstrcpy(char *dst, const unsigned char* src)
-{
-	int n = *src++;
-	for (int i=0; i<n; ++i) *dst++ = *src++;
-	*dst++ = 0;
-}
-*/
-
-void pstrncpy(unsigned char *s1, unsigned char *s2, int n);
-void pstrncpy(unsigned char *s1, unsigned char *s2, int n)
-{
-	int i, m;
-	m = *s2++;
-	n = (n < m) ? n : m;
-	*s1 = n; s1++;
-	for (i=0; i<n; ++i) { *s1 = *s2; s1++; s2++; }
-}
-
-int pstrcmp(unsigned char *s1, unsigned char *s2);
-int pstrcmp(unsigned char *s1, unsigned char *s2)
-{
-	int i, len1, len2, len;
-	len1 = *s1++;
-	len2 = *s2++;
-	len = sc_min(len1, len2);
-	for (i=0; i<len; ++i) {
-		if (s1[i] < s2[i]) return -1;
-		if (s1[i] > s2[i]) return 1;
-	}
-	if (len1 < len2) return -1;
-	if (len1 > len2) return 1;
-	return 0;
-}
-
 bool scanForClosingBracket()
 {
 	int r, c, startLevel;

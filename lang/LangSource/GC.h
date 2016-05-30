@@ -32,6 +32,8 @@ Based on Wilson and Johnstone's real time collector and the Baker treadmill.
 #include "AdvancingAllocPool.h"
 #include "function_attributes.h"
 
+#include <boost/config.hpp>
+
 void DumpSimpleBackTrace(VMGlobals *g);
 
 const int kMaxPoolSet = 7;
@@ -82,36 +84,32 @@ public:
 
 	MALLOC PyrObject* NewFinalizer(ObjFuncPtr finalizeFunc, PyrObject *inObject, bool inCollect);
 
-	bool IsBlack(PyrObjectHdr* inObj)  { return inObj->gc_color == mBlackColor; }
-	bool IsWhite(PyrObjectHdr* inObj)  { return inObj->gc_color == mWhiteColor; }
-	bool IsGrey(PyrObjectHdr* inObj)   { return inObj->gc_color == mGreyColor; }
-	static bool IsMarker(PyrObjectHdr* inObj) { return inObj->gc_color == obj_gcmarker; }
-	bool IsFree(PyrObjectHdr* inObj)   { return (!(IsMarker(inObj) ||
+	BOOST_FORCEINLINE bool IsBlack(PyrObjectHdr* inObj)  { return inObj->gc_color == mBlackColor; }
+	BOOST_FORCEINLINE bool IsWhite(PyrObjectHdr* inObj)  { return inObj->gc_color == mWhiteColor; }
+	BOOST_FORCEINLINE bool IsGrey(PyrObjectHdr* inObj)   { return inObj->gc_color == mGreyColor; }
+	BOOST_FORCEINLINE static bool IsMarker(PyrObjectHdr* inObj) { return inObj->gc_color == obj_gcmarker; }
+	BOOST_FORCEINLINE bool IsFree(PyrObjectHdr* inObj)   { return (!(IsMarker(inObj) ||
 													inObj->IsPermanent() ||
 													IsBlack(inObj) ||
 													IsWhite(inObj) ||
 													IsGrey(inObj))); }
 
-	bool ObjIsBlack(PyrObjectHdr* inObj) { return IsBlack(inObj); }
-	bool ObjIsGrey(PyrObjectHdr* inObj) { return IsGrey(inObj); }
-	bool ObjIsFree(PyrObjectHdr* inObj) { return IsFree(inObj); }
-
 
 	// general purpose write barriers:
-	void GCWrite(PyrObjectHdr* inParent, PyrSlot* inSlot)
+	BOOST_FORCEINLINE void GCWrite(PyrObjectHdr* inParent, PyrSlot* inSlot)
 		{
 			if (IsBlack(inParent) && IsObj(inSlot) && IsWhite(slotRawObject(inSlot))) {
 				ToGrey(slotRawObject(inSlot));
 			}
 		}
-	void GCWrite(PyrObjectHdr* inParent, PyrObjectHdr* inChild)
+	BOOST_FORCEINLINE void GCWrite(PyrObjectHdr* inParent, PyrObjectHdr* inChild)
 		{
 			if (IsBlack(inParent) && IsWhite(inChild)) {
 				ToGrey(inChild);
 			}
 		}
 	// when you know the parent is black:
-	void GCWriteBlack(PyrSlot* inSlot)
+	BOOST_FORCEINLINE void GCWriteBlack(PyrSlot* inSlot)
 		{
 			if (IsObj(inSlot)) {
 				if (IsWhite(slotRawObject(inSlot))) {
@@ -119,14 +117,14 @@ public:
 				}
 			}
 		}
-	void GCWriteBlack(PyrObjectHdr* inChild)
+	BOOST_FORCEINLINE void GCWriteBlack(PyrObjectHdr* inChild)
 		{
 			if (IsWhite(inChild)) {
 				ToGrey(inChild);
 			}
 		}
 	// when you know the child is white
-	void GCWriteNew(PyrObjectHdr* inParent, PyrObjectHdr* inChild)
+	BOOST_FORCEINLINE void GCWriteNew(PyrObjectHdr* inParent, PyrObjectHdr* inChild)
 		{
 			assert(IsWhite(inChild));
 			if (IsBlack(inParent)) {
@@ -149,8 +147,8 @@ public:
 	GCSet* GetGCSet(PyrObjectHdr* inObj);
 	void CompletePartialScan(PyrObject *obj);
 
-	inline void ToGrey(PyrObjectHdr* inObj);
-	inline void ToGrey2(PyrObjectHdr* inObj);
+	BOOST_FORCEINLINE void ToGrey(PyrObjectHdr* inObj);
+	BOOST_FORCEINLINE void ToGrey2(PyrObjectHdr* inObj);
 	void ToBlack(PyrObjectHdr* inObj);
 	void ToWhite(PyrObjectHdr *inObj);
 	void Free(PyrObjectHdr* inObj);
@@ -220,13 +218,13 @@ private:
 	bool mRunning;
 };
 
-inline void PyrGC::DLRemove(PyrObjectHdr *obj)
+BOOST_FORCEINLINE void PyrGC::DLRemove(PyrObjectHdr *obj)
 {
 	obj->next->prev = obj->prev;
 	obj->prev->next = obj->next;
 }
 
-inline void PyrGC::DLInsertAfter(PyrObjectHdr *after, PyrObjectHdr *obj)
+BOOST_FORCEINLINE void PyrGC::DLInsertAfter(PyrObjectHdr *after, PyrObjectHdr *obj)
 {
 	obj->next = after->next;
 	obj->prev = after;
@@ -234,7 +232,7 @@ inline void PyrGC::DLInsertAfter(PyrObjectHdr *after, PyrObjectHdr *obj)
 	after->next = obj;
 }
 
-inline void PyrGC::DLInsertBefore(PyrObjectHdr *before, PyrObjectHdr *obj)
+BOOST_FORCEINLINE void PyrGC::DLInsertBefore(PyrObjectHdr *before, PyrObjectHdr *obj)
 {
 	obj->prev = before->prev;
 	obj->next = before;
@@ -294,7 +292,7 @@ inline void PyrGC::Free(PyrObjectHdr* obj)
 	obj->size = 0;
 }
 
-inline void PyrGC::ToGrey(PyrObjectHdr* obj)
+BOOST_FORCEINLINE void PyrGC::ToGrey(PyrObjectHdr* obj)
 {
 	/* move obj from white to grey */
 	/* link around object */
@@ -309,7 +307,7 @@ inline void PyrGC::ToGrey(PyrObjectHdr* obj)
 	mNumToScan += 1L << obj->obj_sizeclass;
 }
 
-inline void PyrGC::ToGrey2(PyrObjectHdr* obj)
+BOOST_FORCEINLINE void PyrGC::ToGrey2(PyrObjectHdr* obj)
 {
 	/* move obj from white to grey */
 	/* link around object */
