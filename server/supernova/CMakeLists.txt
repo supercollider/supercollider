@@ -1,3 +1,5 @@
+cmake_minimum_required( VERSION 3.1 )
+
 if(CMAKE_COMPILER_IS_GNUCXX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-4096")
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -fomit-frame-pointer")
@@ -57,6 +59,9 @@ if(COMPACT_BUILD)
 else()
   add_library (libsupernova STATIC ${libsupernova_src})
 endif()
+
+set_property(TARGET libsupernova PROPERTY CXX_STANDARD 14)
+
 
 if(NOT WIN32)
   set_property(TARGET libsupernova
