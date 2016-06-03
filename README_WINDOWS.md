@@ -312,13 +312,13 @@ Quick Steps
 - Source management
   - [Git][Git] for Windows (latest version)
 - Build tools
-  - [CMake][cmake], latest stable version
+  - [CMake][cmake], latest stable version (minimum 3.4.3)
   - One of:
     - [MinGW][Qt], version *4.92* 32-bit, the distribution shipped with Qt (QT\Tools\mingw492_32)
     - [Visual Studio 12 2013][VS]
 - Libraries
   - Required
-    - *[Qt][Qt]* versions 5.5.x Versions from 5.3 upwards should work but are 
+    - *[Qt][Qt]* versions 5.5.x Versions from 5.3 upwards should work but are
         little tested. Qt5.6 does not work with SC 3.7 because WebKit was dropped
         from the binary distribution.
         Use the official download from qt.io and the online-installer. It offers
@@ -444,6 +444,10 @@ More practical explanations are easily found via Google. Don't forget that `lib`
 needs the /MACHINE:X64 argument for the 64-bit build, and use the "Developer
 Command Prompt for VS2013" to have the tools available in a pre-set environment
 for this kind of work. The MinGW-build can use the .dll-files directly.
+
+*Note*: if you compile fftw yourself please make sure that the install is
+configured to copy all files to a single flat folder, otherwise cmake will not
+find the required files automatically.
 
 In order to get support for ASIO drivers, the [ASIO SDK][asiosdk] has to be downloaded
 from Steinberg. The parent folder has to be placed next to the supercollider
@@ -691,9 +695,9 @@ common, ...). You should end up with a folder tree like this:
         host
 
 DSound/DirectX: unfortunately the MinGW- and the VS-build require different DX
-versions. The MinGW-build only works with version 7, whereas the VS-build only 
-works with [version 9 (June 2010)][dx9sdk]. Version 9 can still be downloaded 
-from MS and installed into the OS. Acquiring version 7 needs some research, at 
+versions. The MinGW-build only works with version 7, whereas the VS-build only
+works with [version 9 (June 2010)][dx9sdk]. Version 9 can still be downloaded
+from MS and installed into the OS. Acquiring version 7 needs some research, at
 the time of this writing no official MS download was provided. Once
 you get the files, don't install them, just copy the folders `include` and `lib`
 into a folder. The folder's name needs to start with `dx`. Make that folder a
@@ -913,10 +917,10 @@ Settings/Environment Variables). Setting the PATH on system level brings along
 some risks that need to be managed carefully, most importantly: adding Qt5 (or a
 toolchain) at the head of the system PATH can cause other applications that may
 depend on similar path settings, to malfunction. This can be easily corrected by
-removing the offending entry when done with SC development (and avoiding the 
+removing the offending entry when done with SC development (and avoiding the
 conflicting application in the meantime), but this might not always be possible.
 So we need to keep in mind: While working on a SC build with changed *system
-environment* settings, other applications might get into trouble. Most common 
+environment* settings, other applications might get into trouble. Most common
 cases are applications that depend on some implicit Qt install added to the
 PATH, or MinGW applications that require MinGW runtime libraries that don't fit
 the ones used in our build. It is not best practice to rely on the path to find
@@ -1083,8 +1087,8 @@ select one (among potentially several) Qts on your system, and chose a toolchain
 to combine with. If your Qt is installed in a standard location, it is likely
 that QtC already created a kit at start-up that fits the needs. While QtC can be
 used to build with the MS toolchain, it is the more likely choice when building
-with MinGW. So before opening the SC project, we may need to create the right kit: 
-Qt5.5.1-mingw492_32 combined with mingw492_32. This can be done in Tools -> 
+with MinGW. So before opening the SC project, we may need to create the right kit:
+Qt5.5.1-mingw492_32 combined with mingw492_32. This can be done in Tools ->
 Options -> Kits and should be self-explanatory.
 
 Next step is to open the project (File -> Open File or Project) by pointing to
@@ -1108,7 +1112,7 @@ are executed each time you hit "Run" or "Debug", so it is not always helpful to
 have these steps active during a development cycle.
 
 In order to create a binary installer, you will want to add the (custom) target
-`installer`. It creates a binary containing all files required to run SC autonomously 
+`installer`. It creates a binary containing all files required to run SC autonomously
 (NSIS required). But if you are not working on the installer itself, you will likely
 only want to activate that step at the end of a development cycle.
 
@@ -1128,7 +1132,7 @@ that variables have been assigned the values expected. Keep in mind that the
 but may also cause trouble if wrong values are kept. To make sure CMake
 generated values are updated correctly, remove the respective variables from
 the file or delete the entire file. To make sure object files are recompiled,
-"build" the `target clean`. To avoid any contamination by an old build, delete 
+"build" the `target clean`. To avoid any contamination by an old build, delete
 the entire build folder. Of course each of these measures significantly extends
 the time needed to complete a build.
 
@@ -1384,7 +1388,7 @@ IDE). It is unclear whether this is due to a bug in 32-bit MSYS2 or SC. Once
 this changes, and once the SC codebase is updated to support a MinGW 64-bit
 build, big times lay ahead for the SCWin build. 64-bit IDE, sclang, scsynth,
 supernova, base- & sc3-plugins are in close reach, and shouldn't be too
-difficult to maintain alongside mainstream SC development on the unixy 
+difficult to maintain alongside mainstream SC development on the unixy
 platforms.
 
 
@@ -1400,7 +1404,8 @@ These are likely the most common causes of build problems:
   VS 12/2013 64-bit
 - incorrect versions of the dependencies (readline 5.0.1, libsndfile 1.0.25/26,
   fftw 3.3.4, Qt 5.5.1)
-- too old cmake version (3.0.2 and bigger should be fine)
+- too old cmake version (3.4.3 and bigger should be fine, with 3.3.x and lower
+  the build breaks)
 - dynamic/runtime-library mismatch. This can happen if dependencies and
   core SC require different versions of the same runtime library. Reach out
   for libraries that do not depend on MinGW runtimes or make sure all components
@@ -1656,7 +1661,6 @@ More specific smaller Windows bugs are:
 - in general shutdown behavior of the server is not clean. When quit from
   sclang it crashes rather than closes properly (this seems not to have
   serious consequences though)
-- version control of Quarks via git doesn't work (related to .unixCmd)
 
 A build issue that does not seem to create a problem:
 
