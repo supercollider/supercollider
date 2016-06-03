@@ -3,11 +3,42 @@ summary:: Buffer granulator.
 categories::  UGens>Buffer, UGens>Generators>Granular
 
 Description::
+
+/////////////////////
+/////////////////////
+/////////////////////
+
 Triggers generate grains from a buffer. Each grain has a Hanning envelope
 code::
 (sin2(x) for x from 0 to π)
 ::
 and is panned between two channels of multiple outputs.
+
+/////////////////////
+/////////////////////
+/////////////////////
+
+one cool thing you can do, is actually grabbing really large buffers (i.e.: one hour length buffers), and loading them into a buffer, and scrubbing through it in all possible forms. it works particularly well with post-modern kinds of musicm but also with another genres of music, and is a typical kind of scenario you might want to use when you grab a controller such as a wiimote, or a bi-dimensional kind of thing
+
+/////////////////////
+/////////////////////
+/////////////////////
+
+about granular synthesis
+
+Granular synthesis is a basic sound synthesis method that operates on the microsound time scale.
+
+It is based on the same principle as sampling. However, the samples are not played back conventionally, but are instead split into small pieces of around 1 to 50 ms. These small pieces are called grains. Multiple grains may be layered on top of each other, and may play at different speeds, phases, volume, and frequency, among other parameters.
+
+At low speeds of playback, the result is a kind of soundscape, often described as a cloud, that is manipulatable in a manner unlike that for natural sound sampling or other synthesis techniques. At high speeds, the result is heard as a note or notes of a novel timbre. By varying the waveform, envelope, duration, spatial position, and density of the grains, many different sounds can be produced.
+
+Both have been used for musical purposes: as sound effects, raw material for further processing by other synthesis or digital signal processing effects, or as complete musical works in their own right. Conventional effects that can be achieved include amplitude modulation and time stretching. More experimentally, stereo or multichannel scattering, random reordering, disintegration and morphing are possible.
+
+from wikipedia the free encyplopedia
+
+/////////////////////
+/////////////////////
+/////////////////////
 
 classmethods::
 
@@ -58,138 +89,154 @@ Examples::
 code::
 
 s.boot;
-b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff");
 
 (
-{
-	var trate, dur, rate;
-	trate = MouseY.kr(2,200,1);
-	dur = 4 / trate;
-	rate = Dseq([10, 1, 1, 0.5, 0.5, 0.2, 0.1], inf);
-	TGrains.ar(2, Impulse.ar(trate), b, rate, MouseX.kr(0,BufDur.kr(b)), dur, Dseq([-1, 1], inf), 0.1, 2);
-}.scope(zoom: 4);
+SynthDef(\TgrainsExample1, {arg buffer, granular;
+	granular = TGrains.ar(
+		numChannels: 2,
+		trigger: Impulse.ar(MouseY.kr(2,200,1)),
+		bufnum: buffer,
+		rate: Dseq([10, 1, 1, 0.5, 0.5, 0.2, 0.1], inf),
+		centerPos: MouseX.kr(0,BufDur.kr(buffer)),
+		dur: 4 / MouseY.kr(2,200,1),
+		pan: Dseq([-1, 1], inf),
+		amp: 0.1,
+		interp: 2);
+	Out.ar(0, granular ! 2);
+}).add;
+)
+
+
+(
+SynthDef(\TgrainsExample2, {arg buffer, granular; var trate, dur, clk, pos, pan;
+	trate = MouseY.kr(8,120,1); dur = 12 / trate; clk = Impulse.kr(trate);
+	pos = MouseX.kr(0,BufDur.kr(buffer)) + TRand.kr(0, 0.01, clk); pan = WhiteNoise.kr(0.6);
+	    granular = TGrains.ar(
+		    numChannels: 2, trigger: clk, bufnum: buffer, rate: 1,
+		    centerPos: MouseX.kr(0,BufDur.kr(b)) + TRand.kr(0, 0.01, clk),
+		    dur: dur, pan: pan, amp: 0.1, interp: 2);
+    Out.ar(0, granular);
+}).add;
 )
 
 (
-{
+SynthDef(\TgrainsExample2b, {arg buffer, granular; var trate, dur, clk, pos, pan;
+	trate = MouseY.kr(8,120,1); dur = 12 / trate; clk = Impulse.kr(trate);
+	pos = MouseX.kr(0,BufDur.kr(buffer)) + TRand.kr(0, 0.01, clk); pan = WhiteNoise.kr(0.6);
+	    granular = TGrains.ar(
+		    numChannels: 4, trigger: clk, bufnum: buffer, rate: 1,
+		    centerPos: MouseX.kr(0,BufDur.kr(b)) + TRand.kr(0, 0.01, clk),
+		    dur: dur, pan: pan, amp: 0.1, interp: 2);
+    Out.ar(0, granular);
+}).add;
+)
+
+(
+SynthDef(\TgrainsExample3, {arg buffer, granular;
 	var trate, dur, clk, pos, pan;
-	trate = MouseY.kr(8,120,1);
-	dur = 12 / trate;
-	clk = Impulse.kr(trate);
+    trate = MouseY.kr(8,120,1); dur = 12 / trate;
+    clk = Impulse.kr(trate); pan = WhiteNoise.kr(0.6);
 	pos = MouseX.kr(0,BufDur.kr(b)) + TRand.kr(0, 0.01, clk);
-	pan = WhiteNoise.kr(0.6);
-	TGrains.ar(2, clk, b, 1, pos, dur, pan, 0.1);
-}.scope(zoom: 4);
+    TGrains.ar(2, clk, b, 1, pos, dur, pan, 0.1);
+	    granular = TGrains.ar(
+        numChannels: 4, trigger: clk, bufnum: buffer, rate: trate,
+		centerPos: pos, dur: dur, pan: pan, amp: 0.1, interp: 2);
+    Out.ar(0, granular);
+}).add;
 )
 
-// 4 channels
 (
-{
+SynthDef(\TgrainsExample4, {arg buffer, granular;
 	var trate, dur, clk, pos, pan;
-	trate = MouseY.kr(8,120,1);
-	dur = 12 / trate;
-	clk = Impulse.kr(trate);
+	trate = MouseY.kr(8,120,1); dur = 4 / trate; clk = Dust.kr(trate);
 	pos = MouseX.kr(0,BufDur.kr(b)) + TRand.kr(0, 0.01, clk);
-	pan = WhiteNoise.kr(0.6);
-	TGrains.ar(4, clk, b, 1, pos, dur, pan, 0.1);
-}.scope(4, zoom: 4);
+	pan = WhiteNoise.kr(0.6);    TGrains.ar(2, clk, b, 1, pos, dur, pan, 0.1);
+    granular = TGrains.ar(
+        numChannels: 2, trigger: clk, bufnum: buffer, rate: trate,
+		centerPos: pos, dur: dur, pan: pan, amp: 0.1, interp: 2);
+    Out.ar(0, granular);
+}).add;
 )
 
 (
-{
+SynthDef(\TgrainsExample5, {arg buffer, granular;
 	var trate, dur, clk, pos, pan;
-	trate = MouseY.kr(8,120,1);
-	dur = 4 / trate;
-	clk = Dust.kr(trate);
-	pos = MouseX.kr(0,BufDur.kr(b)) + TRand.kr(0, 0.01, clk);
-	pan = WhiteNoise.kr(0.6);
-	TGrains.ar(2, clk, b, 1, pos, dur, pan, 0.1);
-}.scope(zoom: 4);
+	trate = LinExp.kr(LFTri.kr(MouseY.kr(0.1,2,1)),-1,1,8,120); dur = 12 / trate;
+	clk = Impulse.ar(trate); pos = MouseX.kr(0,BufDur.kr(b)); pan = WhiteNoise.kr(0.6);
+	granular = TGrains.ar(
+        numChannels: 2, trigger: clk, bufnum: buffer, rate: trate,
+		centerPos: pos, dur: dur, pan: pan, amp: 0.1, interp: 2);
+    Out.ar(0, granular);
+}).add;
 )
 
-
-
 (
-{
+SynthDef(\TgrainsExample6, {arg buffer, granular;
 	var trate, dur, clk, pos, pan;
-	trate = LinExp.kr(LFTri.kr(MouseY.kr(0.1,2,1)),-1,1,8,120);
-	dur = 12 / trate;
-	clk = Impulse.ar(trate);
-	pos = MouseX.kr(0,BufDur.kr(b));
-	pan = WhiteNoise.kr(0.6);
-	TGrains.ar(2, clk, b, 1, pos, dur, pan, 0.1);
-}.scope(zoom: 4);
+	trate = 12; dur = MouseY.kr(0.2,24,1) / trate; pan = WhiteNoise.kr(0.6);
+	clk = Impulse.kr(trate); pos = MouseX.kr(0,BufDur.kr(b)) + TRand.kr(0, 0.01, clk);
+	granular = TGrains.ar(
+        numChannels: 2, trigger: clk, bufnum: buffer, rate: trate,
+		centerPos: pos, dur: dur, pan: pan, amp: 0.1, interp: 2);
+    Out.ar(0, granular);
+}).add;
 )
 
-
 (
-{
+SynthDef(\TgrainsExample7, {arg buffer, granular;
 	var trate, dur, clk, pos, pan;
-	trate = 12;
-	dur = MouseY.kr(0.2,24,1) / trate;
-	clk = Impulse.kr(trate);
-	pos = MouseX.kr(0,BufDur.kr(b)) + TRand.kr(0, 0.01, clk);
-	pan = WhiteNoise.kr(0.6);
-	TGrains.ar(2, clk, b, 1, pos, dur, pan, 0.1);
-}.scope(zoom: 4);
+	trate = 12; dur = MouseY.kr(0.2,24,1) / trate; pan = WhiteNoise.kr(0.6);
+	clk = Impulse.kr(trate); pos = MouseX.kr(0,BufDur.kr(b)) + TRand.kr(0, 0.01, clk);
+	granular = TGrains.ar(
+        numChannels: 2, trigger: clk, bufnum: buffer, rate: trate,
+		centerPos: pos, dur: dur, pan: pan, amp: 0.1, interp: 2);
+    Out.ar(0, granular);
+}).add;
 )
 
 (
-{
+SynthDef(\TgrainsExample8, {arg buffer, granular;
 	var trate, dur, clk, pos, pan;
-	trate = 100;
-	dur = 8 / trate;
-	clk = Impulse.kr(trate);
-	pos = Integrator.kr(BrownNoise.kr(0.001));
-	pan = WhiteNoise.kr(0.6);
-	TGrains.ar(2, clk, b, 1, pos, dur, pan, 0.1);
-}.scope(zoom: 4);
+	trate = MouseY.kr(1,400,1); dur = 8 / trate; clk = Impulse.kr(trate);
+	pos = MouseX.kr(0,BufDur.kr(b)); pan = WhiteNoise.kr(0.8);
+	granular = TGrains.ar(2, clk, b, 2 ** WhiteNoise.kr(2), pos, dur, pan, 0.1);
+    Out.ar(0, granular);
+}).add;
 )
 
+// super cool duper thing
 (
-{
-	var trate, dur, clk, pos, pan;
-	trate = MouseY.kr(1,400,1);
-	dur = 8 / trate;
-	clk = Impulse.kr(trate);
-	pos = MouseX.kr(0,BufDur.kr(b));
-	pan = WhiteNoise.kr(0.8);
-	TGrains.ar(2, clk, b, 2 ** WhiteNoise.kr(2), pos, dur, pan, 0.1);
-}.scope(zoom: 4);
+~tgrainsomega = Synth(Mix.new([
+	Synth(\TgrainsExample1, [\buffer, b]),
+	Synth(\TgrainsExample2, [\buffer, b]),
+	Synth(\TgrainsExample2b, [\buffer, b]),
+	Synth(\TgrainsExample3, [\buffer, b]),
+	Synth(\TgrainsExample4, [\buffer, b]),
+	Synth(\TgrainsExample5, [\buffer, b]),
+	Synth(\TgrainsExample6, [\buffer, b]),
+	Synth(\TgrainsExample7, [\buffer, b]),
+	Synth(\TgrainsExample8, [\buffer, b])]));
 )
 
+~tgrainsthing = Synth(\TgrainsExample1, [\buffer, b])
+~tgrainsthing2 = Synth(\TgrainsExample2, [\buffer, b])
+~tgrainsthing2b = Synth(\TgrainsExample2b, [\buffer, b])
+~tgrainsthins3 = Synth(\TgrainsExample3, [\buffer, b])
+~tgrainsthing4 = Synth(\TgrainsExample4, [\buffer, b])
+~tgrainsthing5 = Synth(\TgrainsExample5, [\buffer, b])
+~tgrainsthing6 = Synth(\TgrainsExample6, [\buffer, b])
+~tgrainsthing7 = Synth(\TgrainsExample7, [\buffer, b])
+~tgrainsthing8 = Synth(\TgrainsExample8, [\buffer, b])
 
-(
-{
-	var trate, dur;
-	trate = MouseY.kr(2,120,1);
-	dur = 1.2 / trate;
-	TGrains.ar(2, Impulse.ar(trate), b, (1.2 ** WhiteNoise.kr(3).round(1)), MouseX.kr(0,BufDur.kr(b)), dur, WhiteNoise.kr(0.6), 0.1);
-}.scope(zoom: 4);
-)
 
 
-// demand ugens as inputs
-(
-{
-	var trate, dur, z, d;
-	trate = MouseX.kr(1, 100, 1);
-	d = { Dwhite(0.1, 0.2, 1) };
-	z = {
-		Drand([Dgeom(0.1, 1 + d.value, Diwhite(20, 40)), Dgeom(1, 1 - d.value, Diwhite(20, 40))])
-	};
-	TGrains.ar(2,
-		Impulse.ar(trate),
-		bufnum: 10,
-		rate: Dseq([1, 1, z.value, 0.5, 0.5, 0.2, 0.1, 0.1, 0.1, 0.1], inf) * 2 + 1,
-		centerPos: Dseq(z.dup(8), inf),
-		dur: Dseq([1, d.value, 1, z.value, 0.5, 0.5, 0.1, z.value] * 2, inf) / trate,
-		pan: Dseq([1, 1, 1, 0.5, 0.2, 0.1, 0, 0, 0], inf) * 2 - 1,
-		amp: Dseq([1, 0, z.value, 0, 2, 1.0, 1, 0.1, 0.1], inf)
-	);
-}.scope(zoom: 4);
-)
 
-b.free
+
+
+
+
+
+
 
 ::
