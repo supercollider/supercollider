@@ -41,9 +41,14 @@ Examples::
 
 code::
 // modulate frequency
-{ Blip.ar(XLine.kr(20000,200,6),100,0.2) }.play;
+(~blip1={Blip.ar(ChaosGen.allSubclasses.choose.ar(ChaosGen.allSubclasses.choose.ar*10+0.01)*240+60,100,0.2)!2};)
 
 // modulate numharmonics
-{ Blip.ar(200,Line.kr(1,100,20),0.2) }.play;
+(~blip2={ Blip.ar(60, ChaosGen.allSubclasses.choose.ar*10+0.01*240+60,0.2)!2};)
+
+(~thing={~blipT.free;~blipT={[~blip1,~blip2].choose}.play;})
+
+~thing.value;
+~bliptT.free;
 ::
 
