@@ -20,21 +20,7 @@ and is panned between two channels of multiple outputs.
 
 one cool thing you can do, is actually grabbing really large buffers (i.e.: one hour length buffers), and loading them into a buffer, and scrubbing through it in all possible forms. it works particularly well with post-modern music, specially, but not necessarely if rhytms are pretty irregular, aperiodic, and if the music materials are spectrally complex (although not necessarely). and in a typical kind of scenario you might want to use when you grab a controller such as a wiimote, or a bi-dimension vectorial controller, such as a joystick, a bi-dimensional axis in a graphic user interface
 
-/////////////////////
-/////////////////////
-/////////////////////
-
-about granular synthesis
-
-Granular synthesis is a basic sound synthesis method that operates on the microsound time scale.
-
-It is based on the same principle as sampling. However, the samples are not played back conventionally, but are instead split into small pieces of around 1 to 50 ms. These small pieces are called grains. Multiple grains may be layered on top of each other, and may play at different speeds, phases, volume, and frequency, among other parameters.
-
-At low speeds of playback, the result is a kind of soundscape, often described as a cloud, that is manipulatable in a manner unlike that for natural sound sampling or other synthesis techniques. At high speeds, the result is heard as a note or notes of a novel timbre. By varying the waveform, envelope, duration, spatial position, and density of the grains, many different sounds can be produced.
-
-Both have been used for musical purposes: as sound effects, raw material for further processing by other synthesis or digital signal processing effects, or as complete musical works in their own right. Conventional effects that can be achieved include amplitude modulation and time stretching. More experimentally, stereo or multichannel scattering, random reordering, disintegration and morphing are possible.
-
-from wikipedia the free encyplopedia
+if you want to know more about granular synthesis, please check: https://en.wikipedia.org/wiki/Granular_synthesis
 
 /////////////////////
 /////////////////////
