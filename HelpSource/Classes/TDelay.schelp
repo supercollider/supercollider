@@ -27,10 +27,9 @@ Examples::
 
 code::
 
-(
-{
-	z = Impulse.ar(2);
-	[z * 0.1, ToggleFF.ar(TDelay.ar(z, 0.5)) * SinOsc.ar(mul: 0.1)]
+({
+	z = [Impulse, Blip].choose.ar(2);
+	[z * 0.1, [ToggleFF, Trig].choose.ar(TDelay.ar(z, 0.5)) * [SinOsc, FSinOsc, SinOscFB].choose.ar(mul: 0.1)]
 }.scope)
 
 ::
