@@ -49,6 +49,10 @@ examples::
 code::
 // default initial params
 { LatoocarfianC.ar(MouseX.kr(20, SampleRate.ir)) * 0.2 }.play(s);
+//you can also do
+{ ChaosGen.allSubclasses.choose.ar(MouseX.kr(20, SampleRate.ir)) * 0.2 }.play(s);
+// and
+~lce1 = { ChaosGen.allSubclasses.choose.ar(MouseX.kr(20, SampleRate.ir)) * 0.2 };
 ::
 
 code::
@@ -62,4 +66,33 @@ code::
 	LFNoise2.kr(2,0.5,1.5)
 ) * 0.2 }.play(s);
 )
+
+// you can also do
+(
+{ ChaosGen.allSubclasses.choose.ar(
+	SampleRate.ir/4,
+	LFNoise2.kr(2,1.5,1.5),
+	LFNoise2.kr(2,1.5,1.5),
+	LFNoise2.kr(2,0.5,1.5),
+	LFNoise2.kr(2,0.5,1.5)
+) * 0.2 }.play(s);
+)
+
+// or
+(
+~chaosGen = (
+{ ChaosGen.allSubclasses.choose.ar(
+	SampleRate.ir/4,
+	LFNoise2.kr(2,1.5,1.5),
+	LFNoise2.kr(2,1.5,1.5),
+	LFNoise2.kr(2,0.5,1.5),
+	LFNoise2.kr(2,0.5,1.5)
+) * 0.2 };
+)
+)
+::
+
+code::
+// you can then do
+(~thing.free;~thing={[~chaosGen, ~lce1].choose}.play;)
 ::
