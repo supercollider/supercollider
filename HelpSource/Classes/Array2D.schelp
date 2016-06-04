@@ -41,7 +41,7 @@ method::put
 Put a value into the array.
 code::
 a.put(2,3, 72);
-a[2,3];
+a[2,3] = 72;
 ::
 
 method::colsDo
