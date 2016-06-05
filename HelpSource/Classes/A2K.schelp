@@ -8,6 +8,9 @@ Description::
 
 Audio to control rate converter. Only needed in specific cases.
 
+That's the most basic way to make a distinction between Audio and control rate signals are one of them are better to  modulate parameters, wether audio rate signals are ideal to generate audio.
+
+
 
 classmethods::
 
@@ -16,3 +19,25 @@ method::kr
 argument::in
 The input signal.
 
+Examples::
+
+code::
+(
+~signal   = { A2K.kr ( SinOsc.ar ( 1, 0, 1 ) ) };
+~signal2 = { A2K.kr ( LFDNoise0.ar ( 10, 1, 0 ) ) };
+~signal3 = { A2K.kr ( HenonC.ar ( 1 ) ) };
+~signal4 = { A2K.kr ( Dust.ar ( 1000 ) ) };
+)
+::
+
+code::
+~signal.scope;
+~signal2.scope;
+~signal3.scope;
+~signal4.scope;
+::
+
+code::
+// this may be deleted if you the community agrees. i understand people don't want to see these examples in the schelp, despite i think they are actually pretty useful, but that's a personal concern, simply
+~signalrand = {[~signal, ~signal2, ~signal3, ~signal4].choose};
+::
