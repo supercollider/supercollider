@@ -25,9 +25,10 @@ Build requirements
    * http://www.mega-nerd.com/libsndfile
    * _the_ soundfile i/o library
 
- * cmake >= 2.8.11
+ * cmake >= 3.1
    * http://www.cmake.org
    * cross-platform build system
+   * Many Linux distributions have an out of date version of CMake. If CMake is too old, please uninstall it and get a new version from the CMake website.
 
  * fftw >= 3.0
    * http://www.fftw.org
