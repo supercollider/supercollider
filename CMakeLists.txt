@@ -5,6 +5,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 endif()
 
 cmake_minimum_required (VERSION 2.8.12)
+set(SUPERNOVA_CMAKE_MINVERSION 3.1)
 
 include("SCVersion.txt")
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}${PROJECT_VERSION_PATCH}")
@@ -160,7 +161,7 @@ endif (SC_QT)
 
 option(ENABLE_TESTSUITE "Compile testsuite." ON)
 
-if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+if(CMAKE_SYSTEM_NAME MATCHES "Linux" AND NOT CMAKE_VERSION VERSION_LESS SUPERNOVA_CMAKE_MINVERSION)
     option(SUPERNOVA "Build with supernova as optional audio synthesis server" ON)
 else()
     option(SUPERNOVA "Build with supernova as optional audio synthesis server" OFF)
