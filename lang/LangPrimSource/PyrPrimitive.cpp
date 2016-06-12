@@ -390,6 +390,10 @@ int prFloat_AsStringPrec(struct VMGlobals *g, int numArgsPushed)
 	if (err) return err;
 
 	char fmt[8], str[256];
+	// if our precision is bigger than our stringsize, we can generate a very nasty buffer overflow here. So
+	if( precision <= 0 ) precision = 1;
+	if( precision >= 200 ) precision = 200; // Nothing is that big anyway. And we know we will be smaller than our 256 char string
+
 	sprintf(fmt, "%%.%dg", precision);
 	sprintf(str, fmt, slotRawFloat(a));
 
