@@ -69,6 +69,7 @@ endif()
 add_library(tlsf STATIC "TLSF-2.4.6/src/tlsf.c")
 target_compile_definitions( tlsf PRIVATE TLSF_STATISTIC=1 )
 target_include_directories( tlsf INTERFACE TLSF-2.4.6/src )
+set_property(TARGET tlsf PROPERTY POSITION_INDEPENDENT_CODE TRUE)
 
 #oscpack
 add_library(oscpack STATIC EXCLUDE_FROM_ALL "oscpack_build.cpp")
