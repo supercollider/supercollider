@@ -27,6 +27,13 @@
 
 }
 
++String {
+
+	asOSCArgEmbeddedArray { | array| ^array.add(this) }
+
+	asOSCArgArray { ^this }
+}
+
 +Env {
 
 	asControlInput { ^this.asArray }
