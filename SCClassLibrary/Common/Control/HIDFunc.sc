@@ -540,7 +540,7 @@ HIDdef : HIDFunc {
 	*element { arg key, func, elID, deviceName, deviceInfo, argTemplate, argTemplateType, dispatcher;
 		var res = all.at(key), wasDisabled;
 		if(res.isNil) {
-			^super.element( key, func, elID, deviceName, deviceInfo, argTemplate, argTemplateType, dispatcher ).addToAll(key);
+			^super.element( func, elID, deviceName, deviceInfo, argTemplate, argTemplateType, dispatcher ).addToAll(key);
 		} {
 			if(func.notNil) {
 				wasDisabled = res.enabled.not;

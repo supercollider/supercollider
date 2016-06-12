@@ -952,10 +952,13 @@ NodeProxy : BusPlug {
 	}
 
 	generateUniqueName {
-		// if named, give us the name so we see it
+		var uniqueName = this.identityHash;
+		// if named, add the name so we see it
 		// in synthdef names of the server's nodes.
-		var key = this.key ?? this.identityHash.abs;
-		^server.clientID.asString ++ key ++ "_";
+		if(this.key.notNil, {
+			uniqueName = this.key ++ uniqueName;
+		});
+		^server.clientID.asString ++ uniqueName ++ "_";
 	}
 
 	prepareOutput {

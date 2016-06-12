@@ -178,9 +178,9 @@ the up and down arrow keys.
 
 5. Important keyboard shortcuts:
 
-      `Ctrl+t`: stop sound, equivalent to CmdPeriod.run  
-      `Ctrl+x`: recompile the class library  
-      `Ctrl+d`: quit the SuperCollider command line  
+      `Ctrl+t`: stop sound, equivalent to CmdPeriod.run
+      `Ctrl+x`: recompile the class library
+      `Ctrl+d`: quit the SuperCollider command line
 
 The interface uses the GNU library [Readline][Readline doc].
 
@@ -297,7 +297,7 @@ Quick Steps
 - Source management
   - [Git][Git] for Windows (latest version)
 - Build tools
-  - [CMake][cmake], latest stable version
+  - [CMake][cmake], latest stable version (minimum 3.4.3)
   - One of:
     - [MinGW][Qt], version *4.82* 32-bit, the distribution shipped with Qt (QT\Tools\mingw482_32)
     - [Visual Studio 12 2013][VS]
@@ -429,6 +429,10 @@ More practical explanations are easily found via Google. Don't forget that `lib`
 needs the /MACHINE:X64 argument for the 64-bit build, and use the "Developer
 Command Prompt for VS2013" to have the tools available in a pre-set environment
 for this kind of work. The MinGW-build can use the .dll-files directly.
+
+*Note*: if you compile fftw yourself please make sure that the install is
+configured to copy all files to a single flat folder, otherwise cmake will not
+find the required files automatically.
 
 In order to get support for ASIO drivers, the [ASIO SDK][asiosdk] has to be downloaded
 from Steinberg. The parent folder has to be placed next to the supercollider
@@ -1538,7 +1542,7 @@ Known problems
   written by Lucas Cornelisse, is contained in a topic branch in the SC repo
   (topic/IPC_QTcp)
 
-- READLINE/Command line-mode does not work properly.  
+- READLINE/Command line-mode does not work properly.
   You have to wait a short while with the key pressed to get it to register - if
   you wait for too long, the key will repeat. It's kind of possible to get used
   to it for a short while. Second problem: sclang will crash if you use ctrl-d.
