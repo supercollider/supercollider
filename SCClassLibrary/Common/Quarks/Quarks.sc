@@ -141,7 +141,11 @@ Quarks {
 		// by quark name or by supplying a local path
 		// resolving / ~/ ./
 		// is it a git
-		var quark, localPath = this.quarkNameAsLocalPath(name);
+		var quark, localPath;
+		if(name.isNil, {
+			("Missing required argument: quark name").throw;
+		});
+		localPath = this.quarkNameAsLocalPath(name);
 		if(Git.isGit(localPath), {
 			Quark.fromLocalPath(localPath).update();
 		}, {
