@@ -65,7 +65,7 @@ For more details on the code::\set:: event type, see its description in Chapter 
 
 subsection::SynthDef variant support
 
-SynthDefs allow alternate sets of default values to be defined (see "Variants" in link::Classes/SynthDef:: help). Most event patterns, such as Pbind, specify the variant using the variant key in the output events. (Note that variants are always optional.) In Pmono, the mechanism is different because the the SynthDef name, including variant suffix, must be known before evaluating the first event. So, the variant suffix is provided in the first Pmono argument:
+SynthDefs allow alternate sets of default values to be defined (see "Variants" in link::Classes/SynthDef:: help). Most event patterns, such as Pbind, specify the variant using the variant key in the output events. (Note that variants are always optional.) In Pmono, the mechanism is different because the SynthDef name, including variant suffix, must be known before evaluating the first event. So, the variant suffix is provided in the first Pmono argument:
 
 code::
 Pmono('synthDefName.variant', pairs...)
