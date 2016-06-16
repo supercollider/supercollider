@@ -424,13 +424,11 @@ void SC_TerminalClient::daemonLoop()
 
 void SC_TerminalClient::linenoiseRecompile()
 {
-	fprintf(stdout, "linenoiseRecompile()\n");
 	static_cast<SC_TerminalClient*>(SC_LanguageClient::instance())->sendSignal(sig_recompile);
 }
 
 void SC_TerminalClient::linenoiseQuit()
 {
-	fprintf(stdout, "linenoiseQuit()\n");
 	SC_TerminalClient *client = static_cast<SC_TerminalClient*>(instance());
 	mWantsToExit = true;
 	client->onQuit(0);
@@ -438,7 +436,6 @@ void SC_TerminalClient::linenoiseQuit()
 
 static void linenoise_mainstop()
 {
-	fprintf(stdout, "linenoise_mainstop()\n");
 	static_cast<SC_TerminalClient*>(SC_LanguageClient::instance())
 		->sendSignal(SC_TerminalClient::sig_stop);
 }
