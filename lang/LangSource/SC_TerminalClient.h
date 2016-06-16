@@ -31,6 +31,8 @@
 #include "SC_StringBuffer.h"
 #include "SC_Lock.h"
 
+#include <future>
+
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
 #include <boost/sync/semaphore.hpp>
@@ -140,12 +142,11 @@ protected:
 
 private:
 	// NOTE: called from input thread:
-#ifdef HAVE_READLINE
-	static void readlineInit();
-	static void readlineFunc(SC_TerminalClient *);
-	static int readlineRecompile(int, int);
-	static void readlineCmdLine(char *cmdLine);
-#endif
+	static void linenoiseInit();
+	static void linenoiseRecompile();
+	static void linenoiseQuit();
+	void startInputRead_();
+
 	static void *pipeFunc( void * );
 	void pushCmdLine( const char *newData, size_t size );
 
@@ -181,9 +182,11 @@ private:
 	void startInputRead();
 	void onInputRead(const boost::system::error_code& error, std::size_t bytes_transferred);
 
+	std::future<void> m_future;
+
 	// command input
 	bool mUseReadline;
-	boost::sync::semaphore mReadlineSem;
+	static bool mWantsToExit;
 };
 
 #endif // SC_TERMINALCLIENT_H_INCLUDED
