@@ -580,6 +580,10 @@ void SC_TerminalClient::endInput()
 {
 	mInputService.stop();
 	mStdIn.cancel();
+	if (m_future.valid()){
+		m_future.get();
+	}
+
 #ifdef _WIN32
 	// Note this breaks Windows XP compatibility, since this function is only defined in Vista and later
 	::CancelIoEx(GetStdHandle(STD_INPUT_HANDLE), nullptr);
