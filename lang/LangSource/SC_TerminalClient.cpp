@@ -580,12 +580,12 @@ void SC_TerminalClient::endInput()
 {
 	mInputService.stop();
 	mStdIn.cancel();
+	if (mUseLinenoise)
+	  linenoiseWantToExit();
 
 #ifdef _WIN32
 	// Note this breaks Windows XP compatibility, since this function is only defined in Vista and later
 	::CancelIoEx(GetStdHandle(STD_INPUT_HANDLE), nullptr);
-    if (mUseLinenoise)
-        linenoiseWantToExit();
 #endif
 	postfl("main: waiting for input thread to join...\n");
 	mInputThread.join();
