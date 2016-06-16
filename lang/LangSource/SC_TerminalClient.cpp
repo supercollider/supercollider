@@ -64,7 +64,7 @@ bool SC_TerminalClient::mWantsToExit = false;
 SC_TerminalClient::SC_TerminalClient(const char* name)
 	: SC_LanguageClient(name),
 	  mReturnCode(0),
-	  mUseReadline(false),
+	  mUseLinenoise(false),
 	  mWork(mIoService),
 	  mTimer(mIoService),
 #ifndef _WIN32
@@ -460,7 +460,7 @@ void SC_TerminalClient::startInputRead()
 void SC_TerminalClient::startInputRead_()
 {
 	char* result;
-	if (mUseReadline){
+	if (mUseLinenoise){
 		do {
 			result = linenoise("sc3>");
 			if (result){
@@ -522,12 +522,12 @@ void SC_TerminalClient::onInputRead(const boost::system::error_code &error, std:
 
 void SC_TerminalClient::inputThreadFn()
 {
-	if (mUseReadline)
+	if (mUseLinenoise)
 		linenoiseInit();
 
 	startInputRead();
 
-	if (!mUseReadline){
+	if (!mUseLinenoise){
 		boost::asio::io_service::work work(mInputService);
 		mInputService.run();
 	}
@@ -564,7 +564,7 @@ void SC_TerminalClient::pushCmdLine( const char *newData, size_t size)
 void SC_TerminalClient::initInput()
 {
 	if (strcmp(gIdeName, "none") == 0) {
-		mUseReadline = true;
+		mUseLinenoise = true;
 		return;
 	}
 }

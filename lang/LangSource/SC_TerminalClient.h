@@ -185,7 +185,7 @@ private:
 	std::future<void> m_future;
 
 	// command input
-	bool mUseReadline;
+	bool mUseLinenoise;
 	static bool mWantsToExit;
 };
 
