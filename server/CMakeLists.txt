@@ -34,16 +34,6 @@ else()
 	endif()
 endif()
 
-if (AUDIOAPI STREQUAL jack)
-	# here we check for JACK metadata API
-	include(CheckIncludeFiles)
-	CHECK_INCLUDE_FILES("jack/metadata.h" JACK_USE_METADATA_API)
-	if(${JACK_USE_METADATA_API})
-		message(STATUS "using JACK metadata API")
-		include_directories(${PROJECT_SOURCE_DIR}/external_libraries/jackey)
-	endif()
-endif()
-
 add_subdirectory(plugins)
 add_subdirectory(scsynth)
 
