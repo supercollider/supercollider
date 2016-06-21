@@ -113,7 +113,7 @@ private:
     void prepareActions(Settings::Manager * settings);
     void postQuitNotification();
 
-    QByteArray ScProcess::IntToArray(qint32 source);
+    QByteArray IntToArray(qint32 source);
 
     QAction * mActions[ActionCount];
 

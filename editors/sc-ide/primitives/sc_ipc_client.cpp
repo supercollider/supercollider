@@ -41,7 +41,8 @@
 SCIpcClient::SCIpcClient( const char * ideName ):
         mSocket(NULL),
         mUpdateDocTextRegex("!updateDocText/([\\{\\}\\-A-Za-z0-9]+)/(\\d+)/(\\d+)/(.*)&", QRegularExpression::DotMatchesEverythingOption),
-        mUpdateDocSelRegex("!updateDocSelection/([\\{\\}\\-A-Za-z0-9]+)/(\\d+)/(\\d+)&")
+        mUpdateDocSelRegex("!updateDocSelection/([\\{\\}\\-A-Za-z0-9]+)/(\\d+)/(\\d+)&"),
+        mReadSize(0)
 {
     mSocket = new QLocalSocket();
     mSocket->connectToServer(QString(ideName));
@@ -59,22 +60,22 @@ SCIpcClient::~SCIpcClient()
 }
 
 void SCIpcClient::readIDEData() {
-    static int readSize = 0;
+    
     QByteArray ba = mSocket->readAll();
     mIpcData.append(ba);
 
     // After we have put the data in the buffer, process it    
     int avail = mIpcData.length();
-    if (readSize == 0 && avail > 4){
-        readSize = ArrayToInt(mIpcData.left(4));
+    if (mReadSize == 0 && avail > 4){
+        mReadSize = ArrayToInt(mIpcData.left(4));
         mIpcData.remove(0, 4);
         avail -= 4;
     }
 
-    if (readSize > 0 && avail >= readSize){
-        QString str(mIpcData.left(readSize));
-        mIpcData.remove(0, readSize);
-        readSize = 0;
+    if (mReadSize > 0 && avail >= mReadSize){
+        QString str(mIpcData.left(mReadSize));
+        mIpcData.remove(0, mReadSize);
+        mReadSize = 0;
         QVariantList argList;
         QRegularExpressionMatch match;
         match = mUpdateDocTextRegex.match(str);
