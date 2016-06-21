@@ -22,7 +22,6 @@
 #include <QUuid>
 #include <QBuffer>
 #include <QMutex>
-#include <QRegularExpression>
 
 #include <cstdlib>
 
@@ -40,8 +39,6 @@
 
 SCIpcClient::SCIpcClient( const char * ideName ):
         mSocket(NULL),
-        mUpdateDocTextRegex("!updateDocText/([\\{\\}\\-A-Za-z0-9]+)/(\\d+)/(\\d+)/(.*)&", QRegularExpression::DotMatchesEverythingOption),
-        mUpdateDocSelRegex("!updateDocSelection/([\\{\\}\\-A-Za-z0-9]+)/(\\d+)/(\\d+)&"),
         mReadSize(0)
 {
     mSocket = new QLocalSocket();
@@ -59,10 +56,8 @@ SCIpcClient::~SCIpcClient()
     mSocket->disconnectFromServer();
 }
 
-void SCIpcClient::readIDEData() {
-    
-    QByteArray ba = mSocket->readAll();
-    mIpcData.append(ba);
+void SCIpcClient::readIDEData() {    
+    mIpcData.append(mSocket->readAll());
 
     // After we have put the data in the buffer, process it    
     int avail = mIpcData.length();
@@ -73,30 +68,26 @@ void SCIpcClient::readIDEData() {
     }
 
     if (mReadSize > 0 && avail >= mReadSize){
-        QString str(mIpcData.left(mReadSize));
+        QByteArray baReceived(mIpcData.left(mReadSize));
         mIpcData.remove(0, mReadSize);
         mReadSize = 0;
+
+        QDataStream in(baReceived);
+        in.setVersion(QDataStream::Qt_4_6);
+        QString selector;
         QVariantList argList;
-        QRegularExpressionMatch match;
-        match = mUpdateDocTextRegex.match(str);
-        if (match.hasMatch()){
-            argList.append(match.captured(1));
-            argList.append(match.captured(2).toInt());
-            argList.append(match.captured(3).toInt());
-            argList.append(match.captured(4));
-            onResponse("updateDocText", argList);            
+        in >> selector;
+        if (in.status() != QDataStream::Ok)
             return;
-        }
-        match = mUpdateDocSelRegex.match(str);
-        if (match.hasMatch()){
-            argList.append(match.captured(1));
-            argList.append(match.captured(2).toInt());
-            argList.append(match.captured(3).toInt());
-            return;
-        }
+
+        in >> argList;
+        if (in.status() != QDataStream::Ok)
+            return;		
+
+        onResponse(selector, argList);
     }
 }
-    
+
 void SCIpcClient::onResponse( const QString & selector, const QVariantList & argList )
 {
     static QString upDateDocTextSelector("updateDocText");

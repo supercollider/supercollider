@@ -63,9 +63,6 @@ private:
     QHash<QByteArray, QPair<int, int>> mDocumentSelectionMirrors;
     QMutex mTextMirrorHashMutex;
     QMutex mSelMirrorHashMutex;
-
-    QRegularExpression mUpdateDocTextRegex;
-    QRegularExpression mUpdateDocSelRegex;
 };
 
 

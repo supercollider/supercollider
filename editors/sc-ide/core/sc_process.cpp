@@ -390,25 +390,28 @@ void ScProcess::onStart()
     
 void ScProcess::updateTextMirrorForDocument ( Document * doc, int position, int charsRemoved, int charsAdded )
 {
-    QString str(QStringLiteral("!updateDocText/"));
-    str.append(doc->id());
-    str.append("/");
-    str.append(QString::number(position));
-    str.append("/");
-    str.append(QString::number(charsRemoved));
-    str.append("/");
+    QVariantList argList;
+
+    argList.append(QVariant(doc->id()));
+    argList.append(QVariant(position));
+    argList.append(QVariant(charsRemoved));
 
     QTextCursor cursor = QTextCursor(doc->textDocument());
     cursor.setPosition(position, QTextCursor::MoveAnchor);
     cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, charsAdded);
-    str.append(cursor.selection().toPlainText());
-    str.append("&");
-    
+    argList.append(QVariant(cursor.selection().toPlainText()));
+
     try {
-        int len = str.length();
-        QByteArray ba = IntToArray(len);
-        mIpcSocket->write(ba);
-        mIpcSocket->write(str.toLatin1());
+        QByteArray baToStream;
+        QDataStream stream(&baToStream, QIODevice::WriteOnly);
+        stream.setVersion(QDataStream::Qt_4_6);
+        stream << QStringLiteral("updateDocText");
+        stream << argList;
+        // Write the length so that we know how long it is on the other end
+        int len = baToStream.length();
+        QByteArray baLen = IntToArray(len);
+        mIpcSocket->write(baLen);
+        mIpcSocket->write(baToStream);
         mIpcSocket->flush();
     } catch (std::exception const & e) {
         scPost(QStringLiteral("Exception during ScIDE_Send: %1\n").arg(e.what()));
@@ -417,26 +420,29 @@ void ScProcess::updateTextMirrorForDocument ( Document * doc, int position, int 
     
 void ScProcess::updateSelectionMirrorForDocument ( Document * doc, int start, int range )
 {
-    QString str(QStringLiteral("!updateDocSelection/"));
-    str.append(doc->id());
-    str.append("/");
-    str.append(QString::number(start));
-    str.append("/");
-    str.append(QString::number(range));
-    str.append("&");
+    QVariantList argList;
 
-    try {
-        if (!mIpcSocket) 
-            return;
+    argList.append(QVariant(doc->id()));
+    argList.append(QVariant(start));
+    argList.append(QVariant(range));
 
-        if (mIpcSocket->state() != QAbstractSocket::ConnectedState) 
-            return;
+    if (!mIpcSocket)
+        return;
 
-        // Write the length and the QString itself, so that we know how long it is on the other end
-        int len = str.length();
-        QByteArray ba = IntToArray(len);
-        int rc = mIpcSocket->write(ba);
-        mIpcSocket->write(str.toLatin1());
+    if (mIpcSocket->state() != QAbstractSocket::ConnectedState)
+        return;
+
+    try {        
+        QByteArray baToStream;
+        QDataStream stream(&baToStream, QIODevice::WriteOnly);
+        stream.setVersion(QDataStream::Qt_4_6);
+        stream << QStringLiteral("updateDocSelection");
+        stream << argList;
+        // Write the length so that we know how long it is on the other end
+        int len = baToStream.length();
+        QByteArray baLen = IntToArray(len);
+        mIpcSocket->write(baLen);
+        mIpcSocket->write(baToStream);
         mIpcSocket->flush();        
     } catch (std::exception const & e) {
         scPost(QStringLiteral("Exception during ScIDE_Send: %1\n").arg(e.what()));
