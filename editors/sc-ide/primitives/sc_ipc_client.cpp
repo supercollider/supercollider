@@ -56,7 +56,7 @@ SCIpcClient::~SCIpcClient()
     mSocket->disconnectFromServer();
 }
 
-void SCIpcClient::readIDEData() {    
+void SCIpcClient::readIDEData() {
     mIpcData.append(mSocket->readAll());
 
     // After we have put the data in the buffer, process it    

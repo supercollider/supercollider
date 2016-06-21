@@ -25,7 +25,6 @@
 #include <QLocalSocket>
 #include <QMutex>
 #include <QHash>
-#include <QRegularExpression>
 
 class SCIpcClient : public QObject
 {
