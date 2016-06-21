@@ -57,6 +57,7 @@ private:
     
     qint32 SCIpcClient::ArrayToInt(QByteArray source);
     
+    int mReadSize;
     QByteArray mIpcData;
     QHash<QByteArray, QString> mDocumentTextMirrors;
     QHash<QByteArray, QPair<int, int>> mDocumentSelectionMirrors;

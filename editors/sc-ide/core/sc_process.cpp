@@ -390,7 +390,7 @@ void ScProcess::onStart()
     
 void ScProcess::updateTextMirrorForDocument ( Document * doc, int position, int charsRemoved, int charsAdded )
 {
-    QString str("!updateDocText/");
+    QString str(QStringLiteral("!updateDocText/"));
     str.append(doc->id());
     str.append("/");
     str.append(QString::number(position));
@@ -417,7 +417,7 @@ void ScProcess::updateTextMirrorForDocument ( Document * doc, int position, int 
     
 void ScProcess::updateSelectionMirrorForDocument ( Document * doc, int start, int range )
 {
-    QString str("!updateDocSelection/");
+    QString str(QStringLiteral("!updateDocSelection/"));
     str.append(doc->id());
     str.append("/");
     str.append(QString::number(start));
@@ -426,9 +426,11 @@ void ScProcess::updateSelectionMirrorForDocument ( Document * doc, int start, in
     str.append("&");
 
     try {
-        if (!mIpcSocket) return;
+        if (!mIpcSocket) 
+            return;
 
-        if (mIpcSocket->state() != QAbstractSocket::ConnectedState) return;
+        if (mIpcSocket->state() != QAbstractSocket::ConnectedState) 
+            return;
 
         // Write the length and the QString itself, so that we know how long it is on the other end
         int len = str.length();
