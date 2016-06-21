@@ -22,6 +22,7 @@
 #include <QUuid>
 #include <QBuffer>
 #include <QMutex>
+#include <QRegularExpression>
 
 #include <cstdlib>
 
@@ -38,7 +39,9 @@
 #include "sc_ipc_client.hpp"
 
 SCIpcClient::SCIpcClient( const char * ideName ):
-        mSocket(NULL)
+        mSocket(NULL),
+        mUpdateDocTextRegex("!updateDocText/([\\{\\}\\-A-Za-z0-9]+)/(\\d+)/(\\d+)/(.*)&", QRegularExpression::DotMatchesEverythingOption),
+        mUpdateDocSelRegex("!updateDocSelection/([\\{\\}\\-A-Za-z0-9]+)/(\\d+)/(\\d+)&")
 {
     mSocket = new QLocalSocket();
     mSocket->connectToServer(QString(ideName));
@@ -56,28 +59,40 @@ SCIpcClient::~SCIpcClient()
 }
 
 void SCIpcClient::readIDEData() {
-    mIpcData.append(mSocket->readAll());
-    
-    while (mIpcData.size()) {
-        QBuffer receivedData ( &mIpcData );
-        receivedData.open ( QIODevice::ReadOnly );
-        
-        QDataStream in ( &receivedData );
-        in.setVersion ( QDataStream::Qt_4_6 );
-        QString selector;
-        QVariantList argList;
-        in >> selector;
-        if ( in.status() != QDataStream::Ok )
-            return;
+    static int readSize = 0;
+    QByteArray ba = mSocket->readAll();
+    mIpcData.append(ba);
 
-        in >> argList;
-        
-        if ( in.status() != QDataStream::Ok )
+    // After we have put the data in the buffer, process it    
+    int avail = mIpcData.length();
+    if (readSize == 0 && avail > 4){
+        readSize = ArrayToInt(mIpcData.left(4));
+        mIpcData.remove(0, 4);
+        avail -= 4;
+    }
+
+    if (readSize > 0 && avail >= readSize){
+        QString str(mIpcData.left(readSize));
+        mIpcData.remove(0, readSize);
+        readSize = 0;
+        QVariantList argList;
+        QRegularExpressionMatch match;
+        match = mUpdateDocTextRegex.match(str);
+        if (match.hasMatch()){
+            argList.append(match.captured(1));
+            argList.append(match.captured(2).toInt());
+            argList.append(match.captured(3).toInt());
+            argList.append(match.captured(4));
+            onResponse("updateDocText", argList);            
             return;
-        
-        mIpcData.remove ( 0, receivedData.pos() );
-        
-        onResponse(selector, argList);
+        }
+        match = mUpdateDocSelRegex.match(str);
+        if (match.hasMatch()){
+            argList.append(match.captured(1));
+            argList.append(match.captured(2).toInt());
+            argList.append(match.captured(3).toInt());
+            return;
+        }
     }
 }
     
@@ -171,6 +186,14 @@ void SCIpcClient::setSelectionMirrorForDocument(QByteArray & id, int start, int 
     mSelMirrorHashMutex.lock();
     mDocumentSelectionMirrors[id] = qMakePair(start, range);
     mSelMirrorHashMutex.unlock();
+}
+
+qint32 SCIpcClient::ArrayToInt(QByteArray source)
+{
+    qint32 temp;
+    QDataStream data(&source, QIODevice::ReadWrite);
+    data >> temp;
+    return temp;
 }
 
 static SCIpcClient * gIpcClient = NULL;

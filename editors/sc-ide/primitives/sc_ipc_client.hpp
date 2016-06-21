@@ -25,6 +25,7 @@
 #include <QLocalSocket>
 #include <QMutex>
 #include <QHash>
+#include <QRegularExpression>
 
 class SCIpcClient : public QObject
 {
@@ -54,11 +55,16 @@ private:
     void updateDocText( const QVariantList & argList );
     void updateDocSelection( const QVariantList & argList );
     
+    qint32 SCIpcClient::ArrayToInt(QByteArray source);
+    
     QByteArray mIpcData;
     QHash<QByteArray, QString> mDocumentTextMirrors;
     QHash<QByteArray, QPair<int, int>> mDocumentSelectionMirrors;
     QMutex mTextMirrorHashMutex;
     QMutex mSelMirrorHashMutex;
+
+    QRegularExpression mUpdateDocTextRegex;
+    QRegularExpression mUpdateDocSelRegex;
 };
 
 
