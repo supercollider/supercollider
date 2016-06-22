@@ -38,8 +38,6 @@
 #include "sc_ipc_client.hpp"
 #include "localsocket_utils.hpp"
 
-#define DEBUG_IPC
-
 SCIpcClient::SCIpcClient( const char * ideName ):
         mSocket(NULL),
         mReadSize(0)
