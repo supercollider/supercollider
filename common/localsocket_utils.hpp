@@ -11,13 +11,13 @@ QByteArray IntToArray(qint32 source);
 qint32 ArrayToInt(QByteArray source);
 
 template <typename T>
-void sendSelectorAndList(QLocalSocket *socket, const QString& selector, const T& list)
+void sendSelectorAndData(QLocalSocket *socket, const QString& selector, const T& data)
 {
     QByteArray baToStream;
     QDataStream stream(&baToStream, QIODevice::WriteOnly);
     stream.setVersion(QDataStream::Qt_4_6);
     stream << selector;
-    stream << list;
+    stream << data;
     // Write the length so that we know how long it is on the other end
     int len = baToStream.length();
     QByteArray baLen = IntToArray(len);
