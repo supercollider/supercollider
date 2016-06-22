@@ -112,7 +112,7 @@ void SCIpcClient::updateDocText( const QVariantList & argList )
     int charsRemoved = argList[2].toInt();
     QString newChars = argList[3].toString();
 #ifdef DEBUG_IPC
-    printf("RECEIVED updateDocText with args pos: %d, charsR: %d, newC: %s\n", pos, charsRemoved, newChars.toLatin1().data());
+    post("RECEIVED updateDocText with args id: %s, pos: %d, charsR: %d, newC: %s\n", quuid.constData(), pos, charsRemoved, newChars.toLatin1().data());
     fflush(stdout);
 #endif
     setTextMirrorForDocument(quuid, newChars, pos, charsRemoved);
@@ -325,19 +325,15 @@ int ScIDE_Send(struct VMGlobals *g, int numArgsPushed)
     }
 
     PyrSlot * idSlot = g->sp - 1;
-    char id[255];
-    if (slotStrVal( idSlot, id, 255 ))
+    char selector[255];
+    if (slotStrVal( idSlot, selector, 255 ))
         return errWrongType;
 
     PyrSlot * argSlot = g->sp;
 
     try {
         YAMLSerializer serializer(argSlot);
-
-        QDataStream stream(gIpcClient->mSocket);
-        stream.setVersion(QDataStream::Qt_4_6);
-        stream << QString(id);
-        stream << QString::fromUtf8(serializer.data());
+        sendSelectorAndData(gIpcClient->mSocket, selector, QString::fromUtf8(serializer.data()));
     } catch (std::exception const & e) {
         postfl("Exception during ScIDE_Send: %s\n", e.what());
         return errFailed;

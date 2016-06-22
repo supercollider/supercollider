@@ -121,6 +121,7 @@ private:
     QLocalSocket *mIpcSocket;
     QString mIpcServerName;
     QByteArray mIpcData;
+    int mReadSize;
 
     bool mTerminationRequested;
     QDateTime mTerminationRequestTime;
