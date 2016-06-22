@@ -39,8 +39,7 @@
 #include "localsocket_utils.hpp"
 
 SCIpcClient::SCIpcClient( const char * ideName ):
-        mSocket(NULL),
-        mReadSize(0)
+        mSocket(NULL)
 {
     mSocket = new QLocalSocket();
     mSocket->connectToServer(QString(ideName));
@@ -111,7 +110,6 @@ void SCIpcClient::updateDocText( const QVariantList & argList )
     QString newChars = argList[3].toString();
 #ifdef DEBUG_IPC
     post("RECEIVED updateDocText with args id: %s, pos: %d, charsR: %d, newC: %s\n", quuid.constData(), pos, charsRemoved, newChars.toLatin1().data());
-    fflush(stdout);
 #endif
     setTextMirrorForDocument(quuid, newChars, pos, charsRemoved);
 }
@@ -122,8 +120,7 @@ void SCIpcClient::updateDocSelection( const QVariantList & argList )
     int start = argList[1].toInt();
     int range = argList[2].toInt();
 #ifdef DEBUG_IPC
-    printf("RECEIVED updateDocSelection with args start: %d, range: %d\n", start, range);
-    fflush(stdout);
+    post("RECEIVED updateDocText with args id: %s, pos: %d, charsR: %d, newC: %s\n", quuid.constData(), pos, charsRemoved, newChars.toLatin1().data());
 #endif
     setSelectionMirrorForDocument(quuid, start, range);
 }

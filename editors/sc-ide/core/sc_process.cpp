@@ -48,8 +48,7 @@ ScProcess::ScProcess( Settings::Manager * settings, QObject * parent ):
     mIpcSocket(NULL),
     mIpcServerName("SCIde_" + QString::number(QCoreApplication::applicationPid())),
     mTerminationRequested(false),
-    mCompiled(false),
-    mReadSize(0)
+    mCompiled(false)
 {
     prepareActions(settings);
 
