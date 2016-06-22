@@ -54,7 +54,7 @@ private:
     void updateDocText( const QVariantList & argList );
     void updateDocSelection( const QVariantList & argList );
     
-    qint32 ArrayToInt(QByteArray source);
+
     
     int mReadSize;
     QByteArray mIpcData;

@@ -154,6 +154,7 @@ set ( ide_src
     ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.cpp
 
     ${CMAKE_SOURCE_DIR}/common/SC_TextUtils.cpp
+    ${CMAKE_SOURCE_DIR}/common/localsocket_utils.cpp
 
     ${CMAKE_SOURCE_DIR}/SCDoc/SCDoc.cpp
     ${CMAKE_SOURCE_DIR}/SCDoc/SCDoc.tab.cpp

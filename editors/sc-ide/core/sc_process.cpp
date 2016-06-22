@@ -33,6 +33,7 @@
 #include "sc_server.hpp"
 #include "settings/manager.hpp"
 #include "util/standard_dirs.hpp"
+#include "localsocket_utils.hpp"
 
 #include "../widgets/help_browser.hpp"
 
@@ -387,11 +388,17 @@ void ScProcess::onStart()
     evaluateCode ( command, true );
     Main::documentManager()->sendActiveDocument();
 }
+
     
 void ScProcess::updateTextMirrorForDocument ( Document * doc, int position, int charsRemoved, int charsAdded )
 {
-    QVariantList argList;
+    if (!mIpcSocket)
+        return;
 
+    if (mIpcSocket->state() != QAbstractSocket::ConnectedState)
+        return;
+
+    QVariantList argList;
     argList.append(QVariant(doc->id()));
     argList.append(QVariant(position));
     argList.append(QVariant(charsRemoved));
@@ -402,17 +409,7 @@ void ScProcess::updateTextMirrorForDocument ( Document * doc, int position, int 
     argList.append(QVariant(cursor.selection().toPlainText()));
 
     try {
-        QByteArray baToStream;
-        QDataStream stream(&baToStream, QIODevice::WriteOnly);
-        stream.setVersion(QDataStream::Qt_4_6);
-        stream << QStringLiteral("updateDocText");
-        stream << argList;
-        // Write the length so that we know how long it is on the other end
-        int len = baToStream.length();
-        QByteArray baLen = IntToArray(len);
-        mIpcSocket->write(baLen);
-        mIpcSocket->write(baToStream);
-        mIpcSocket->flush();
+        sendSelectorAndList(mIpcSocket, QStringLiteral("updateDocText"), argList);
     } catch (std::exception const & e) {
         scPost(QStringLiteral("Exception during ScIDE_Send: %1\n").arg(e.what()));
     }
@@ -420,41 +417,23 @@ void ScProcess::updateTextMirrorForDocument ( Document * doc, int position, int 
     
 void ScProcess::updateSelectionMirrorForDocument ( Document * doc, int start, int range )
 {
-    QVariantList argList;
-
-    argList.append(QVariant(doc->id()));
-    argList.append(QVariant(start));
-    argList.append(QVariant(range));
-
     if (!mIpcSocket)
         return;
 
     if (mIpcSocket->state() != QAbstractSocket::ConnectedState)
         return;
 
-    try {        
-        QByteArray baToStream;
-        QDataStream stream(&baToStream, QIODevice::WriteOnly);
-        stream.setVersion(QDataStream::Qt_4_6);
-        stream << QStringLiteral("updateDocSelection");
-        stream << argList;
-        // Write the length so that we know how long it is on the other end
-        int len = baToStream.length();
-        QByteArray baLen = IntToArray(len);
-        mIpcSocket->write(baLen);
-        mIpcSocket->write(baToStream);
-        mIpcSocket->flush();        
+    QVariantList argList;
+    argList.append(QVariant(doc->id()));
+    argList.append(QVariant(start));
+    argList.append(QVariant(range));
+
+
+    try {
+        sendSelectorAndList(mIpcSocket, QStringLiteral("updateDocSelection"), argList);
     } catch (std::exception const & e) {
         scPost(QStringLiteral("Exception during ScIDE_Send: %1\n").arg(e.what()));
     }
-}
-
-QByteArray ScProcess::IntToArray(qint32 source)
-{
-    QByteArray temp;
-    QDataStream data(&temp, QIODevice::ReadWrite);
-    data << source;
-    return temp;
 }
 
 } // namespace ScIDE

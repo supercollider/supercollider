@@ -36,6 +36,9 @@
 #include "PyrSymbol.h"
 
 #include "sc_ipc_client.hpp"
+#include "localsocket_utils.hpp"
+
+#define DEBUG_IPC
 
 SCIpcClient::SCIpcClient( const char * ideName ):
         mSocket(NULL),
@@ -61,31 +64,34 @@ void SCIpcClient::readIDEData() {
 
     // After we have put the data in the buffer, process it    
     int avail = mIpcData.length();
-    if (mReadSize == 0 && avail > 4){
-        mReadSize = ArrayToInt(mIpcData.left(4));
-        mIpcData.remove(0, 4);
-        avail -= 4;
-    }
+    do {
+        if (mReadSize == 0 && avail > 4){
+            mReadSize = ArrayToInt(mIpcData.left(4));
+            mIpcData.remove(0, 4);
+            avail -= 4;
+        }
 
-    if (mReadSize > 0 && avail >= mReadSize){
-        QByteArray baReceived(mIpcData.left(mReadSize));
-        mIpcData.remove(0, mReadSize);
-        mReadSize = 0;
+        if (mReadSize > 0 && avail >= mReadSize){
+            QByteArray baReceived(mIpcData.left(mReadSize));
+            mIpcData.remove(0, mReadSize);
+            mReadSize = 0;
+            avail -= mReadSize;
 
-        QDataStream in(baReceived);
-        in.setVersion(QDataStream::Qt_4_6);
-        QString selector;
-        QVariantList argList;
-        in >> selector;
-        if (in.status() != QDataStream::Ok)
-            return;
+            QDataStream in(baReceived);
+            in.setVersion(QDataStream::Qt_4_6);
+            QString selector;
+            QVariantList argList;
+            in >> selector;
+            if (in.status() != QDataStream::Ok)
+                return;
 
-        in >> argList;
-        if (in.status() != QDataStream::Ok)
-            return;		
+            in >> argList;
+            if (in.status() != QDataStream::Ok)
+                return;
 
-        onResponse(selector, argList);
-    }
+            onResponse(selector, argList);
+        }
+    } while ((mReadSize == 0 && avail > 4) || (mReadSize > 0 && avail > mReadSize));
 }
 
 void SCIpcClient::onResponse( const QString & selector, const QVariantList & argList )
@@ -105,6 +111,10 @@ void SCIpcClient::updateDocText( const QVariantList & argList )
     int pos = argList[1].toInt();
     int charsRemoved = argList[2].toInt();
     QString newChars = argList[3].toString();
+#ifdef DEBUG_IPC
+    printf("RECEIVED updateDocText with args pos: %d, charsR: %d, newC: %s\n", pos, charsRemoved, newChars.toLatin1().data());
+    fflush(stdout);
+#endif
     setTextMirrorForDocument(quuid, newChars, pos, charsRemoved);
 }
 
@@ -113,6 +123,10 @@ void SCIpcClient::updateDocSelection( const QVariantList & argList )
     QByteArray quuid = argList[0].toByteArray();
     int start = argList[1].toInt();
     int range = argList[2].toInt();
+#ifdef DEBUG_IPC
+    printf("RECEIVED updateDocSelection with args start: %d, range: %d\n", start, range);
+    fflush(stdout);
+#endif
     setSelectionMirrorForDocument(quuid, start, range);
 }
 
@@ -180,13 +194,6 @@ void SCIpcClient::setSelectionMirrorForDocument(QByteArray & id, int start, int 
     mSelMirrorHashMutex.unlock();
 }
 
-qint32 SCIpcClient::ArrayToInt(QByteArray source)
-{
-    qint32 temp;
-    QDataStream data(&source, QIODevice::ReadWrite);
-    data >> temp;
-    return temp;
-}
 
 static SCIpcClient * gIpcClient = NULL;
 
