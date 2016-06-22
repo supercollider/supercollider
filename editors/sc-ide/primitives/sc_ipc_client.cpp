@@ -325,15 +325,15 @@ int ScIDE_Send(struct VMGlobals *g, int numArgsPushed)
     }
 
     PyrSlot * idSlot = g->sp - 1;
-    char selector[255];
-    if (slotStrVal( idSlot, selector, 255 ))
+    char id[255];
+    if (slotStrVal( idSlot, id, 255 ))
         return errWrongType;
 
     PyrSlot * argSlot = g->sp;
 
     try {
         YAMLSerializer serializer(argSlot);
-        sendSelectorAndData(gIpcClient->mSocket, selector, QString::fromUtf8(serializer.data()));
+        sendSelectorAndData(gIpcClient->mSocket, QString(id), QString::fromUtf8(serializer.data()));
     } catch (std::exception const & e) {
         postfl("Exception during ScIDE_Send: %s\n", e.what());
         return errFailed;
