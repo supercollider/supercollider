@@ -321,7 +321,6 @@ void ScProcess::postQuitNotification()
 }
 
 
-#include <string>
 void ScProcess::onIpcData()
 {
     mIpcData.append(mIpcSocket->readAll());
@@ -351,9 +350,7 @@ void ScProcess::onIpcData()
             if (in.status() != QDataStream::Ok)
                 return;
 
-            std::string s1(selector.toLatin1().data());
-            std::string s2(message.toLatin1().data());
-
+            onResponse(selector, message);
             emit response(selector, message);
         }
     } while ((mReadSize == 0 && avail > 4) || (mReadSize > 0 && avail > mReadSize));
