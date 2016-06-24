@@ -280,16 +280,16 @@ SCDocHTMLRenderer {
                 << mname2 << "'>" << mname2 << "</a>"
             };
 
-            x.value;
             switch (mstat,
                 // getter only
-                1, { stream << " " << args << "</h3>\n"; },
+                1, { x.value; stream << " " << args << "</h3>\n"; },
                 // getter and setter
-                3, { stream << "</h3>\n"; },
+                3, { x.value; stream << "</h3>\n"; },
                 // method not found
                 0, {
                     "SCDoc: In %\n"
                     "  Method %% not found.".format(currDoc.fullPath,pfx,mname2).warn;
+                    x.value;
                     stream << ": METHOD NOT FOUND!</h3>\n";
                 }
             );
