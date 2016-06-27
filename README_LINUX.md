@@ -28,6 +28,7 @@ Build requirements
  * cmake >= 2.8.11
    * http://www.cmake.org
    * cross-platform build system
+   * cmake >= 3.1 is required for supernova (an alternate server with parallel processing capabilities). supernova is built by default if cmake is new enough.
 
  * fftw >= 3.0
    * http://www.fftw.org
