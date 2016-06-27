@@ -14,12 +14,12 @@ env= EnvGen.kr(Env([0,1,0.4,0.7,0],[Rand(0.001,0.005),0.005,0.005,sustain]), don
 
 Out.ar(0,Pan2.ar(source*env,pan))
 
-}).send(s);
+}).add;
 
 //preferred version if you have the FreeVerb UGen, commented out by default
 //SynthDef(\goeyfx, {
 //ReplaceOut.ar(0,FreeVerb.ar(In.ar(0,2),0.33,1.5))
-//}).send(s);
+//}).add;
 
 //adapted from JmC reverb
 SynthDef(\goeyfx, {
@@ -40,7 +40,7 @@ a.do({ y = AllpassN.ar(y, 0.051, [rrand(0.01, 0.05),rrand(0.01, 0.05)], 1) });
 // add original sound to reverb and play it :
 Out.ar(0,(0.2*y));
 
-}).send(s);
+}).add;
 
 )
 

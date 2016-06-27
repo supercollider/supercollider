@@ -15,7 +15,7 @@ detune=SinOsc.kr(detrate,0,det,det);
 
 slip= Mix.ar(Pulse.ar([note-detune,note+detune].midicps,Lag.kr(LFNoise0.kr(wrate,wspan,0.5)),0.1))*EnvGen.ar(Env([0,1,0],[atk,0.5]),doneAction:2);
 Out.ar(0,Pan2.ar(slip,pan));
-}).send(s);
+}).add;
 
 SynthDef(\fastatk,{arg note=60,dcy=0.3,pan=0.0;
 var osc;
@@ -24,7 +24,7 @@ osc= LPF.ar(Mix.ar(LFPar.ar(note.midicps,[0,1],0.12, PinkNoise.ar(XLine.kr(0.3,0
 *EnvGen.ar(Env([0,1,0],[0.01,dcy]),doneAction:2);
 
 Out.ar(0,Pan2.ar(osc,pan));
-}).send(s);
+}).add;
 
 SynthDef(\reverb,{
 var a,c,z,y,in;
@@ -43,7 +43,7 @@ a.do({ y = AllpassN.ar(y, 0.051, [rrand(0.01, 0.05),rrand(0.01, 0.05)], 1) });
 
 // add original sound to reverb and play it :
 ReplaceOut.ar(0,in+(0.2*y));
-}).send(s)
+}).add
 )
 
 
