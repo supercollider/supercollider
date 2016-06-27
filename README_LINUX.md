@@ -122,7 +122,7 @@ builds in a specific build directory:
    The location of `/path/to/qt5` will depend on how you installed Qt:
 
    - If you used your Linux distribution's repositories, it will be `/usr/lib/i386-linux-gnu/` (32-bit) or `/usr/lib/x86_64-linux-gnu/` (64-bit).
-   - If you downloaded Qt from the Qt website, the setting will be `Qt5.x.x/5.x/gcc/` (32-bit) or `Qt5.x.x/5.x/gcc_64/` (64-bit).
+   - If you downloaded Qt from the Qt website, the path is two directories down from the top-level unpacked Qt directory: `Qt5.x.x/5.x/gcc/` (32-bit) or `Qt5.x.x/5.x/gcc_64/` (64-bit).
 
    You can see the available build options with ```cmake -LH```.
 
