@@ -80,9 +80,9 @@ public:
 
 	// library startup/shutdown
 	bool isLibraryCompiled();
-	void compileLibrary(bool standalone);
+	void compileLibrary();
 	void shutdownLibrary();
-	void recompileLibrary(bool standalone);
+	void recompileLibrary();
 
 	// interpreter access
 	void lock();

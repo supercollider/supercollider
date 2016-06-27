@@ -8,8 +8,32 @@ LanguageConfig {
 		_LanguageConfig_getCurrentConfigPath
 	}
 
+	*currentDirectory {
+		_LanguageConfig_getCurrentConfigDirectory
+		^this.primitiveFailed
+	}
+
+	*prMakeAbsoluteToProjectRoot { |paths|
+		var root;
+		^if( LanguageConfig.projectOpen ) {
+			root = this.currentDirectory;
+			paths.collect{ |p|
+				if( PathName(p).isRelativePath ) {
+					root +/+ p
+				} {
+					p
+				}
+			}
+		} {
+			paths
+		}
+	}
+
 	*includePaths {
 		_LanguageConfig_getIncludePaths
+	}
+	*includePathsAbsolute {
+		^this.prMakeAbsoluteToProjectRoot(this.includePaths)
 	}
 	*addIncludePath {|aPath|
 		_LanguageConfig_addIncludePath
@@ -22,6 +46,9 @@ LanguageConfig {
 
 	*excludePaths {
 		_LanguageConfig_getExcludePaths
+	}
+	*excludePathsAbsolute {
+		^this.prMakeAbsoluteToProjectRoot(this.excludePaths)
 	}
 	*addExcludePath {|aPath|
 		_LanguageConfig_addExcludePath
@@ -37,6 +64,16 @@ LanguageConfig {
 	}
 	*postInlineWarnings_ {|aBoolean|
 		_LanguageConfig_setPostInlineWarnings
+		^this.primitiveFailed
+	}
+
+	*projectOpen {
+		_LanguageConfig_getProjectOpen
+		^this.primitiveFailed
+	}
+
+	*defaultPathsExcluded {
+		_LanguageConfig_getExcludeDefaultPaths
 		^this.primitiveFailed
 	}
 }

@@ -29,6 +29,8 @@
 
 #include "util/status_box.hpp"
 
+#include <functional>
+
 namespace ScIDE {
 
 class Main;
@@ -70,6 +72,11 @@ public:
         DocCloseAll,
         DocReload,
         ClearRecentDocs,
+        ProjectNew,
+        ProjectOpen,
+        ProjectSaveAs,
+        ProjectClose,
+        ClearRecentProjects,
 
         // Sessions
         NewSession,
@@ -148,6 +155,11 @@ public Q_SLOTS:
     void closeDocument();
     void closeAllDocuments();
 
+    void newProject();
+    void openProject();
+    void closeProject();
+    void saveProjectAs();
+
     void showCmdLine();
     void showCmdLine( const QString & );
     void showFindTool();
@@ -176,6 +188,8 @@ private Q_SLOTS:
     void onDocDialogFinished();
     void updateRecentDocsMenu();
     void onOpenRecentDocument( QAction * );
+    void onOpenRecentProject( QAction * );
+    void clearRecentProjects();
     void onOpenSessionAction( QAction * );
     void updateWindowTitle();
     void toggleFullScreen();
@@ -208,10 +222,15 @@ private:
     template <class T> void restoreWindowState(T * settings);
     void updateSessionsMenu();
     void updateClockWidget( bool isFullScreen );
+    void prOpenProject(QString path);
     void openSession( QString const & sessionName );
     bool checkFileExtension( const QString & fpath );
     void toggleInterpreterActions( bool enabled);
+    void applyRecentProjectsSettings( Settings::Manager * );
+    void addToRecentProjects( QString path);
+    void updateRecentProjectsMenu();
     void applyCursorBlinkingSettings( Settings::Manager * );
+    static void projectWriteDialog(std::function<void (QString)>);
     QString documentOpenPath() const;
     QString documentSavePath( Document * ) const;
 
@@ -244,6 +263,10 @@ private:
     DocumentsDialog * mDocDialog;
 
     QString mLastDocumentSavePath;
+
+    QMenu * mRecentProjectsMenu;
+    QStringList mRecentProjects;
+    static const int mMaxRecentProjects = 10;
 
     static MainWindow *mInstance;
 };

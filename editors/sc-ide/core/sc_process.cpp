@@ -114,6 +114,11 @@ void ScProcess::updateToggleRunningAction()
     mActions[ToggleRunning]->setShortcut( targetAction->shortcut() );
 }
 
+bool ScProcess::running()
+{
+    return state() == QProcess::Running;
+}
+
 void ScProcess::toggleRunning()
 {
     switch(state()) {
@@ -152,8 +157,6 @@ void ScProcess::startLanguage (void)
     if(!configFile.isEmpty())
         sclangArguments << "-l" << configFile;
     sclangArguments << "-i" << "scqt";
-    if(standalone)
-        sclangArguments << "-a";
 
     if(!workingDirectory.isEmpty())
         setWorkingDirectory(workingDirectory);

@@ -149,12 +149,12 @@ Quarks {
 		});
 	}
 	*installed {
-		^LanguageConfig.includePaths
+		^LanguageConfig.includePathsAbsolute
 			.collect(Quark.fromLocalPath(_))
 	}
 	*installedPaths {
 		^installedPaths ?? {
-			installedPaths = LanguageConfig.includePaths.collect({ |apath|
+			installedPaths = LanguageConfig.includePathsAbsolute.collect({ |apath|
 				apath.withoutTrailingSlash
 			});
 		}
@@ -212,7 +212,7 @@ Quarks {
 
 	*link { |path|
 		path = path.withoutTrailingSlash;
-		if(LanguageConfig.includePaths.includesEqual(path).not, {
+		if(LanguageConfig.includePathsAbsolute.includesEqual(path).not, {
 			path.debug("Adding path");
 			LanguageConfig.addIncludePath(path);
 			LanguageConfig.store(LanguageConfig.currentPath);
@@ -223,7 +223,7 @@ Quarks {
 	}
 	*unlink { |path|
 		path = path.withoutTrailingSlash;
-		if(LanguageConfig.includePaths.includesEqual(path), {
+		if(LanguageConfig.includePathsAbsolute.includesEqual(path), {
 			path.debug("Removing path");
 			LanguageConfig.removeIncludePath(path);
 			LanguageConfig.store(LanguageConfig.currentPath);
@@ -234,7 +234,9 @@ Quarks {
 	}
 
 	*initClass {
-		folder = Platform.userAppSupportDir +/+ "downloaded-quarks";
+		folder = if(LanguageConfig.projectOpen){
+			LanguageConfig.currentDirectory
+		}{ Platform.userAppSupportDir } +/+ "downloaded-quarks";
 		additionalFolders = additionalFolders ? [];
 		if(File.exists(folder).not, {
 			folder.mkdir();
@@ -302,7 +304,7 @@ Quarks {
 		additionalFolders.do({ |folder|
 			(folder +/+ "*").pathMatch.do(f);
 		});
-		LanguageConfig.includePaths.do(f);
+		LanguageConfig.includePathsAbsolute.do(f);
 		^all.values
 	}
 	*fetchDirectory { |force=true|

@@ -40,6 +40,7 @@
 #endif
 
 #include <fstream>
+#include <functional>
 
 #include <boost/filesystem.hpp>
 #include "yaml-cpp/yaml.h"
@@ -48,6 +49,13 @@ using namespace std;
 
 SC_LanguageConfig *gLanguageConfig = 0;
 string SC_LanguageConfig::gConfigFile;
+
+SC_LanguageConfig::SC_LanguageConfig(const char *fileName)
+{
+	if(fileName != nullptr) {
+		mConfigFileDirectory = boost::filesystem::absolute(boost::filesystem::path(fileName)).parent_path();
+	}
+}
 
 static bool findPath( SC_LanguageConfig::DirVector & vec, const char * path, bool addIfMissing)
 {
@@ -70,23 +78,30 @@ static bool findPath( SC_LanguageConfig::DirVector & vec, const char * path, boo
 	return false;
 }
 
-SC_LanguageConfig::SC_LanguageConfig(bool optStandalone)
+void SC_LanguageConfig::setDefaultPaths()
 {
+	char resourceDir[MAXPATHLEN];
 	char classLibraryDir[MAXPATHLEN];
 	char systemExtensionDir[MAXPATHLEN];
 	char userExtensionDir[MAXPATHLEN];
 
-	if( !optStandalone ) {
-		sc_GetResourceDirectory(classLibraryDir, MAXPATHLEN-32);
+	sc_GetResourceDirectory(resourceDir, MAXPATHLEN-32);
+	sc_GetSystemExtensionDirectory(systemExtensionDir, MAXPATHLEN);
+	sc_GetUserExtensionDirectory(userExtensionDir, MAXPATHLEN);
+
+	strcpy(classLibraryDir, resourceDir);
+
+	mResourceDir = resourceDir;
+	mSystemExtensionDir = systemExtensionDir;
+	mUserExtensionDir = userExtensionDir;
+
+	if( !mExcludeDefaultPaths ) {
 		sc_AppendToPath(classLibraryDir, MAXPATHLEN, "SCClassLibrary");
 		findPath(mDefaultClassLibraryDirectories, classLibraryDir, true);
 	}
 
-	if ( !( sc_IsStandAlone() || optStandalone ) ) {
-		sc_GetSystemExtensionDirectory(systemExtensionDir, MAXPATHLEN);
+	if ( !( sc_IsStandAlone() || mExcludeDefaultPaths ) ) {
 		findPath(mDefaultClassLibraryDirectories, systemExtensionDir, true);
-
-		sc_GetUserExtensionDirectory(userExtensionDir, MAXPATHLEN);
 		findPath(mDefaultClassLibraryDirectories, userExtensionDir, true);
 	}
 }
@@ -124,16 +139,36 @@ bool SC_LanguageConfig::pathIsExcluded(const char *path)
 	return findPath(mExcludedDirectories, path, false);
 }
 
+void SC_LanguageConfig::doRelativeProject(std::function<void(const char *)> func, const char *path) {
+	if( mProject ) {
+		const char *confDir = mConfigFileDirectory.c_str();
+		 if (strncmp(path, confDir, strlen(confDir) ) == 0) {
+			boost::filesystem::path path2 = boost::filesystem::path(path);
+			func(boost::filesystem::relative(path2, mConfigFileDirectory).c_str());
+		} else func(path);
+	} else func(path);
+}
+
+void SC_LanguageConfig::doRelativeProject(std::function<void(string)> func, string path) {
+	if( mProject ) {
+		string confDir = mConfigFileDirectory.string();
+		if( path.size() >= confDir.size() && std::equal( confDir.begin(), confDir.end(), path.begin() ) ) {
+			boost::filesystem::path path2 = boost::filesystem::path(path);
+			func(boost::filesystem::relative(path2, mConfigFileDirectory).string());
+		} else func(path);
+	} else func(path);
+}
+
 void SC_LanguageConfig::addIncludedDirectory(const char *path)
 {
 	if (path == 0) return;
-	findPath(mIncludedDirectories, path, true);
+	doRelativeProject([this](const char *p){findPath(mIncludedDirectories, p, true);}, path);
 }
 
 void SC_LanguageConfig::addExcludedDirectory(const char *path)
 {
 	if (path == 0) return;
-	findPath(mExcludedDirectories, path, true);
+	doRelativeProject([this](const char *p){findPath(mExcludedDirectories, p, true);}, path);
 }
 
 void SC_LanguageConfig::removeIncludedDirectory(const char *path)
@@ -141,15 +176,19 @@ void SC_LanguageConfig::removeIncludedDirectory(const char *path)
 	char standardPath[PATH_MAX];
 	sc_StandardizePath(path, standardPath);
 	string str(standardPath);
-	DirVector::iterator end = std::remove(mIncludedDirectories.begin(), mIncludedDirectories.end(), str);
-	mIncludedDirectories.erase(end, mIncludedDirectories.end());
+	doRelativeProject([this](string p){
+		DirVector::iterator end = std::remove(mIncludedDirectories.begin(), mIncludedDirectories.end(), p);
+		mIncludedDirectories.erase(end, mIncludedDirectories.end());
+	}, str);
 }
 
 void SC_LanguageConfig::removeExcludedDirectory(const char *path)
 {
 	string str(path);
-	DirVector::iterator end = std::remove(mExcludedDirectories.begin(), mExcludedDirectories.end(), str);
-	mExcludedDirectories.erase(end, mExcludedDirectories.end());
+	doRelativeProject([this](string p){
+		DirVector::iterator end = std::remove(mExcludedDirectories.begin(), mExcludedDirectories.end(), p);
+		mExcludedDirectories.erase(end, mExcludedDirectories.end());
+	}, str);
 }
 
 const char* SC_LanguageConfig::getCurrentConfigPath()
@@ -157,11 +196,31 @@ const char* SC_LanguageConfig::getCurrentConfigPath()
 	return gConfigFile.c_str();
 }
 
+bool SC_LanguageConfig::getExcludeDefaultPaths() const
+{
+	return mExcludeDefaultPaths;
+}
+
+void SC_LanguageConfig::setExcludeDefaultPaths(bool value)
+{
+	mExcludeDefaultPaths = value;
+}
+
+void SC_LanguageConfig::setProject(bool value)
+{
+	mProject = value;
+}
+
+bool SC_LanguageConfig::getProject() const
+{
+	return mProject;
+}
+
 extern bool gPostInlineWarnings;
-bool SC_LanguageConfig::readLibraryConfigYAML(const char* fileName, bool standalone)
+bool SC_LanguageConfig::readLibraryConfigYAML(const char* fileName)
 {
 	freeLibraryConfig();
-	gLanguageConfig = new SC_LanguageConfig(standalone);
+	gLanguageConfig = new SC_LanguageConfig(fileName);
 
 	using namespace YAML;
 	try {
@@ -202,7 +261,28 @@ bool SC_LanguageConfig::readLibraryConfigYAML(const char* fileName, bool standal
 					postfl("Warning: Cannot parse config file entry \"postInlineWarnings\"\n");
 				}
 			}
+
+			const Node * excludeDefaultPathsNode = doc.FindValue("excludeDefaultPaths");
+			if (excludeDefaultPathsNode) {
+				try {
+					gLanguageConfig->setExcludeDefaultPaths( excludeDefaultPathsNode->to<bool>() );
+				} catch(...) {
+					postfl("Warning: Cannot parse config file entry \"excludeDefaultPaths\"\n");
+				}
+			}
+
+			const Node * isProject = doc.FindValue("project");
+			if (isProject) {
+				try {
+					gLanguageConfig->setProject( isProject->to<bool>() );
+				} catch(...) {
+					postfl("Warning: Cannot parse config file entry \"project\"\n");
+				}
+			}
 		}
+
+		gLanguageConfig->setDefaultPaths();
+
 		return true;
 	} catch (std::exception & e)
 	{
@@ -240,16 +320,26 @@ bool SC_LanguageConfig::writeLibraryConfigYAML(const char* fileName)
 	out << Key << "postInlineWarnings";
 	out << Value << gPostInlineWarnings;
 
+	out << Key << "excludeDefaultPaths";
+	out << Value << gLanguageConfig->mExcludeDefaultPaths;
+
+	if(gLanguageConfig->mProject)
+	{
+	out << Key << "project";
+	out << Value << true;
+	}
+
 	out << EndMap;
 	ofstream fout(fileName);
 	fout << out.c_str();
 	return true;
 }
 
-bool SC_LanguageConfig::defaultLibraryConfig(bool standalone)
+bool SC_LanguageConfig::defaultLibraryConfig()
 {
 	freeLibraryConfig();
-	gLanguageConfig = new SC_LanguageConfig(standalone);
+	gLanguageConfig = new SC_LanguageConfig(nullptr);
+	gLanguageConfig->setDefaultPaths();
 
 	return true;
 }
@@ -267,35 +357,37 @@ static bool file_exists(std::string const & fileName)
 	return file_exists(fileName.c_str());
 }
 
-bool SC_LanguageConfig::readLibraryConfig(bool standalone)
+bool SC_LanguageConfig::readLibraryConfig()
 {
 	bool configured = false;
 
 	if (!gConfigFile.empty() && file_exists(gConfigFile)) {
-		configured = readLibraryConfigYAML(gConfigFile.c_str(), standalone);
+		configured = readLibraryConfigYAML(gConfigFile.c_str());
 		if (configured)
 			return true;
 	}
 
-	if( !standalone ) {
-		char config_dir[PATH_MAX];
-		sc_GetUserConfigDirectory(config_dir, PATH_MAX);
+	char config_dir[PATH_MAX];
+	sc_GetUserConfigDirectory(config_dir, PATH_MAX);
 
-		std::string user_yaml_config_file = std::string(config_dir) + SC_PATH_DELIMITER + "sclang_conf.yaml";
-		if (file_exists(user_yaml_config_file))
-			configured = readLibraryConfigYAML(user_yaml_config_file.c_str(), standalone);
+	std::string user_yaml_config_file = std::string(config_dir) + SC_PATH_DELIMITER + "sclang_conf.yaml";
+	if (file_exists(user_yaml_config_file)) {
+		gConfigFile = user_yaml_config_file;
+		configured = readLibraryConfigYAML(user_yaml_config_file.c_str());
+	}
 
-		if (!configured) {
-			char global_yaml_config_file[] = "/etc/sclang_conf.yaml";
-			if (file_exists(global_yaml_config_file))
-				configured = readLibraryConfigYAML(global_yaml_config_file, standalone);
+	if (!configured) {
+		char global_yaml_config_file[] = "/etc/sclang_conf.yaml";
+		if (file_exists(global_yaml_config_file)) {
+			gConfigFile = global_yaml_config_file;
+			configured = readLibraryConfigYAML(global_yaml_config_file);
 		}
-
-		if (configured)
-			return true;
 	}
 
-	SC_LanguageConfig::defaultLibraryConfig(standalone);
+	if (configured)
+		return true;
+
+	SC_LanguageConfig::defaultLibraryConfig();
 	return false;
 }
 
