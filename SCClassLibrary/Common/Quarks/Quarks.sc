@@ -303,7 +303,7 @@ Quarks {
 			(folder +/+ "*").pathMatch.do(f);
 		});
 		LanguageConfig.includePaths.do(f);
-		^all.values
+		^all.atAll(all.order)
 	}
 	*fetchDirectory { |force=true|
 		// will only pull every 15 minutes unless force is true
