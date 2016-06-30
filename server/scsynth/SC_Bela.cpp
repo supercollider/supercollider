@@ -137,7 +137,8 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 	sc_SetDenormalFlags();
 	World *world = mWorld;
 	// add a pointer to belaWorld
-	mWorld->mBelaContext = belaContext;
+// 	mWorld->mBelaContext = belaContext;
+	world->mBelaContext = belaContext;
 	
 	// NOTE: code here is adapted from the SC_Jack.cpp, the version not using the DLL
 
