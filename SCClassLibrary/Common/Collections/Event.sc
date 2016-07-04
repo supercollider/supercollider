@@ -19,6 +19,7 @@ Event : Environment {
 		^inEvent
 	}
 	*addEventType { arg type, func, protoEvent;
+		if(protoEvent.notNil and: { protoEvent.parent.isNil }) { protoEvent.parent = defaultParentEvent };
 		partialEvents.playerEvent.eventTypes.put(type, func);
 		partialEvents.playerEvent.parentTypes.put(type, protoEvent);
 	}
