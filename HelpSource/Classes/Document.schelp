@@ -262,16 +262,15 @@ An instance of link::Classes/Function:: or link::Classes/FunctionList::.
 
 method:: mouseDownAction
 Get/set the action to be performed on link::Classes/Document#mouseDown::.
-note::
-::
+
 argument:: action
-An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::x::, code::y::, code::modifiers::, code::buttonNumber::, code::clickCount::, code::clickPos::.
+An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::document::, code::x::, code::y::, code::modifiers::, code::buttonNumber::, code::clickCount::, code::clickPos::.
 
 
 method:: mouseUpAction
 Get/set the action to be performed on link::Classes/Document#mouseUp::.
 argument:: action
-An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::x::, code::y::, code::modifiers::, code::buttonNumber::, code::clickCount::, code::clickPos::.
+An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::document::, code::x::, code::y::, code::modifiers::, code::buttonNumber::, code::clickCount::, code::clickPos::.
 discussion::
 code::
 (
@@ -302,7 +301,7 @@ Document.current.mouseUpAction = nil; // clear mouseUpActiont
 method:: keyDownAction
 Get/set the action to be performed on link::Classes/Document#keyDown::.
 argument:: action
-An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::char::, code::modifiers::, code::unicode::, code::keycode::. See link::Classes/View#Key actions:: for details on these arguments.
+An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::document::, code::char::, code::modifiers::, code::unicode::, code::keycode::. See link::Classes/View#Key actions:: for details on these arguments.
 discussion::
 code::
 Document.current.keyDownAction = { arg ...args; args.postln };
@@ -313,7 +312,7 @@ Document.current.keyDownAction = nil;
 method:: keyUpAction
 Get/set the action to be performed on link::Classes/Document#keyUp::.
 argument:: action
-An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::char::, code::modifiers::, code::unicode::, code::keycode::. See link::Classes/View#Key actions:: for details on these arguments.
+An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::document::, code::char::, code::modifiers::, code::unicode::, code::keycode::. See link::Classes/View#Key actions:: for details on these arguments.
 discussion::
 code::
 Document.current.keyUpAction = { arg ...args; args.postln };
