@@ -263,7 +263,6 @@ An instance of link::Classes/Function:: or link::Classes/FunctionList::.
 method:: mouseDownAction
 Get/set the action to be performed on link::Classes/Document#mouseDown::.
 note::
-The Mac OSX built-in editor does not supports this feature. A mouseDownAction that you supply will be ignored.
 ::
 argument:: action
 An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::x::, code::y::, code::modifiers::, code::buttonNumber::, code::clickCount::, code::clickPos::.
