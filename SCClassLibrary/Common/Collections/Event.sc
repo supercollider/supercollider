@@ -1,4 +1,5 @@
 Event : Environment {
+
 	classvar defaultParentEvent;
 	classvar <parentEvents;
 	classvar <partialEvents;
@@ -17,9 +18,9 @@ Event : Environment {
 		.put(\delta, dur * (inEvent[\stretch] ? 1));
 		^inEvent
 	}
-	*addEventType { arg type, func;
-		var types = partialEvents.playerEvent.eventTypes;
-		types.put(type, func)
+	*addEventType { arg type, func, protoEvent;
+		partialEvents.playerEvent.eventTypes.put(type, func);
+		partialEvents.playerEvent.parentTypes.put(type, protoEvent);
 	}
 
 	next { arg inval; ^composeEvents(inval, this) }
@@ -414,7 +415,12 @@ Event : Environment {
 				type: \note,
 
 				play: #{
-					var tempo, server;
+					var tempo, server, eventType, parentType;
+
+					eventType = ~eventTypes[~type];
+					parentType = ~parentTypes[~type];
+
+					parentType !? { currentEnvironment.parent = parentType };
 
 					~finish.value;
 
@@ -424,7 +430,7 @@ Event : Environment {
 					if (tempo.notNil) {
 						thisThread.clock.tempo = tempo;
 					};
-					if(currentEnvironment.isRest.not) { ~eventTypes[~type].value(server) };
+					if(currentEnvironment.isRest.not) { eventType.value(server) };
 				},
 
 				// synth / node interface
@@ -462,6 +468,8 @@ Event : Environment {
 
 
 				// the event types
+
+				parentTypes: (),
 
 				eventTypes: (
 
