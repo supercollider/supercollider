@@ -1,22 +1,21 @@
 class:: Document
 redirect:: implementationClass
-summary:: An abstract class for editor-specific text document editing classes
+summary:: Editor-specific text document editing
 categories:: Frontends
-related:: Classes/CocoaDocument, Classes/EmacsDocument, Classes/ScelDocument
+related:: Classes/EmacsDocument, Classes/ScelDocument
 
 description::
-The Document class represents a text document within the context of your text editing environment. You can use the class to programmatically create, modify, and query these documents. While it is an abstract class, you still use it to create a code::new:: Document. It simply passes on code::new:: to the appropriate document implementation, e.g. link::Classes/CocoaDocument::.
+The Document class represents a text document within the context of your text editing environment. You can use the class to programmatically create, modify, and query these documents.
 
-subsection:: Some Important Issues Regarding Document
+Document used to be an abstract class, meaning it didn't provide all the functionality itself, but instead relied on subclasses to complete the functionality. One such subclass was CocoaDocument. Although CocoaDocument was available only to OS X and had an ad hoc interface, it possessed many additional features like code animation and rich text.
 
-Different text-editing environments can be used with SuperCollider. Therefore Document is an abstract class, meaning it doesn't provide all the functionality itself, but relies on subclasses to complete the functionality. Calls to code::Document.new:: or code::Document.open:: are actually passed down to the relevant class for the editor you're using, such as link::Classes/CocoaDocument:: (for most Mac users) or link::Classes/ScelDocument:: (containing an link::Classes/EmacsDocument::).
+In SuperCollider 3.6, Document changed a bit and now the "abstract class" descriptor is only partially true. The SuperCollider IDE provides its own version of the Document class. The Emacs editor still supplies link::Classes/ScelDocument:: (which links to link::Classes/EmacsDocument::) as a subclass of Document. As an unfortunate byproduct of the history of Document, there are inconsistencies in the APIs of SCIDE's Document and Emacs' ScelDocument. This help file describes that of SCIDE.
+
+Future versions of SuperCollider will aim to fix these API inconsistencies and restore the functionality of CocoaDocument.
 
 subsection:: Setting the Environment
 
 By default code::envir:: it is set to the current link::Classes/Environment::. However, you can make it use its own link::Classes/Environment:: also. Thus, e.g., if you were to set the link::Classes/Environment:: variable code::~myVar = 12:: in the current link::Classes/Environment::, you can create a new Document window in which that link::Classes/Environment:: variable is not set.
-
-
-
 
 classmethods::
 
@@ -110,7 +109,7 @@ An instance of link::Classes/Boolean::. Default value is code::true::.
 method:: implementationClass
 The editor implementation specific class which will handle Documents.
 argument:: value
-A class for implementing Document, e.g. link::Classes/CocoaDocument::.
+A class for implementing Document.
 
 subsection:: Path Utilities
 
