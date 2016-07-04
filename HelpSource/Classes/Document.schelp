@@ -26,8 +26,6 @@ argument:: title
 An instance of link::Classes/String:: or link::Classes/Symbol::.
 argument:: string
 An instance of link::Classes/String::. The contents of the document.
-argument:: makeListener
-Makes this document the listener, i.e. the place where SC-lang posts messages.
 argument:: envir
 An instance of link::Classes/Environment::. The link::Classes/Environment:: to be used by the interpreter of the document window. By default, it is set to the current link::Classes/Environment::.
 discussion::
@@ -80,25 +78,22 @@ code::
 Document.current.name.postln; // Prints "Document.html"
 ::
 
-method:: listener
-Returns the current Document which is the listener, i.e. the Document where interpreter messages are posted.
-
 method:: allDocuments
 Returns all documents.
 
 method:: globalKeyDownAction
 Get/set A global action to be performed when a key is pressed.
-argument:: value
+argument:: action
 An instance of link::Classes/Function:: or link::Classes/FunctionList::.
 
 method:: globalKeyUpAction
 Get/set A global action to be performed when a key is released.
-argument:: value
+argument:: action
 An instance of link::Classes/Function:: or link::Classes/FunctionList::.
 
 method:: initAction
 Get/set A an action to be performed up opening or creating a Document.
-argument:: value
+argument:: action
 An instance of link::Classes/Function:: or link::Classes/FunctionList::.
 
 method:: autoRun
@@ -157,11 +152,6 @@ private:: prGetBackgroundColor, prGetBounds, prIsEditable, propen, prGetTitle, p
 
 subsection:: General Document Properties
 
-method:: bounds
-Get/set the bounds of the document.
-argument:: argBounds
-An instance of link::Classes/Rect::.
-
 method:: path
 Get / set the the Document's path.
 argument:: apath
@@ -180,7 +170,7 @@ Document.current.dir.postln;
 
 method:: ==
 A binary operator.
-argument:: doc
+argument:: that
 An instance of Document.
 discussion::
 code::
@@ -189,7 +179,7 @@ Document.current == Document.listener; // presumably returns false
 
 method:: editable
 Get / set the the document is editable.
-argument:: boolean
+argument:: bool
 An instance of link::Classes/Boolean::.
 
 method:: name
@@ -203,13 +193,8 @@ Document.current.name.postln;
 
 method:: title
 Get / set the title (same as link::Classes/Document#name::).
-argument:: argName
+argument:: newTitle
 An instance of link::Classes/String::.
-
-method:: alwaysOnTop
-Get/set whether a document is always on top.
-argument:: boolean
-An instance of link::Classes/Boolean::.
 
 method:: promptToSave
 Get/set whether a document is prompts to save if it has been changed. Use this with caution.
@@ -227,9 +212,6 @@ Document.current.isEdited.postln;
 
 method:: isFront
 Returns code::true:: if the document is in front.
-
-method:: isListener
-Returns if the document is the listener.
 
 method:: didBecomeKey
 Saves the current link::Classes/Environment::, makes the document current, and performs its link::Classes/Document#toFrontAction::.
@@ -263,12 +245,6 @@ code::
 Document.listener.front;
 ::
 
-method:: unfocusedFront
-Bring a document to the front without focusing it.
-code::
-Document.listener.unfocusedFront;
-::
-
 method:: onClose
 Get/set the action to be performed on closing the document.
 argument:: value
@@ -289,13 +265,13 @@ Get/set the action to be performed on link::Classes/Document#mouseDown::.
 note::
 The Mac OSX built-in editor does not supports this feature. A mouseDownAction that you supply will be ignored.
 ::
-argument:: value
+argument:: action
 An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::x::, code::y::, code::modifiers::, code::buttonNumber::, code::clickCount::, code::clickPos::.
 
 
 method:: mouseUpAction
 Get/set the action to be performed on link::Classes/Document#mouseUp::.
-argument:: value
+argument:: action
 An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::x::, code::y::, code::modifiers::, code::buttonNumber::, code::clickCount::, code::clickPos::.
 discussion::
 code::
@@ -326,7 +302,7 @@ Document.current.mouseUpAction = nil; // clear mouseUpActiont
 
 method:: keyDownAction
 Get/set the action to be performed on link::Classes/Document#keyDown::.
-argument:: value
+argument:: action
 An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::char::, code::modifiers::, code::unicode::, code::keycode::. See link::Classes/View#Key actions:: for details on these arguments.
 discussion::
 code::
@@ -337,7 +313,7 @@ Document.current.keyDownAction = nil;
 
 method:: keyUpAction
 Get/set the action to be performed on link::Classes/Document#keyUp::.
-argument:: value
+argument:: action
 An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::char::, code::modifiers::, code::unicode::, code::keycode::. See link::Classes/View#Key actions:: for details on these arguments.
 discussion::
 code::
@@ -444,29 +420,6 @@ Document.current.string_(": test test test test test ",
 )
 // Watch me change content
 ::
-
-method:: font
-Gets or sets the font within a certain range.
-argument:: font
-An instance of link::Classes/Font::.
-argument:: rangestart
-An link::Classes/Integer::. Default value is -1. If code::rangestart = -1::, the whole document is selected.
-argument:: rangesize
-An link::Classes/Integer::. Default value is 0.
-discussion::
-code::
-// Select the following code in parentheses and execute it
-(
-Document.current.font_(Font("Impact", 14),
-	Document.current.selectedRangeLocation + 12,
-	18);
-)
-// Watch me change font
-::
-
-method:: underlineSelection
-Underlines the current selection of a Document.
-
 
 subsection:: Subclassing and Internal Methods
 
