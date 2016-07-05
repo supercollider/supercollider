@@ -554,6 +554,7 @@ bool DocumentManager::doSaveAs( Document *doc, const QString & path )
         mFsWatcher.addPath(cpath);
 
     Q_EMIT(saved(doc));
+    syncLangDocument(doc);
 
     return true;
 }
@@ -1305,7 +1306,7 @@ void DocumentManager::syncLangDocument(Document *doc)
         range = doc->initialSelectionRange();
     }
     QString command =
-            QStringLiteral("Document.syncFromIDE(\'%1\', %2, %3, %4, \'%5\', %6, %7)")
+            QStringLiteral("Document.syncFromIDE(\'%1\', %2, %3, %4, %5, %6, %7)")
             .arg(doc->id().constData())
             .arg(doc->titleAsSCArrayOfCharCodes())
             .arg(doc->textAsSCArrayOfCharCodes(0, -1))
