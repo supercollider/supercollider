@@ -166,7 +166,7 @@ QString Document::pathAsSCArrayOfCharCodes()
 {
     QString path;
     if(mFilePath.isEmpty()) {
-        path = QStringLiteral("nil");
+        return QStringLiteral("nil");
     } else {
         path = mFilePath;
     }
