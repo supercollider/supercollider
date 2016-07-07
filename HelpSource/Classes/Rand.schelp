@@ -32,7 +32,7 @@ SynthDef("help-Rand", { arg out=0;
 			Rand(200.0, 400.0),
 			0, Line.kr(0.2, 0, 1, doneAction:2))
 	)
-}).send(s);
+}).add;
 )
 
 (

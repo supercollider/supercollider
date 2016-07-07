@@ -25,7 +25,7 @@ code::
 SynthDef("freeSelf-help", { arg out, t_trig;
 	FreeSelf.kr(t_trig);
 	Out.ar(out, SinOsc.ar(400,0,0.2));
-}).send(s);
+}).add;
 )
 
 s.sendMsg("/s_new", "freeSelf-help", 1731);
@@ -41,7 +41,7 @@ SynthDef("dirac", { arg out, amp=0.1;
 	Out.ar(out, u * amp);
 		// multiply by amp after using for release, so amp = 0
 		// doesn't cause synth buildup.
-}).send(s);
+}).add;
 )
 
 (
