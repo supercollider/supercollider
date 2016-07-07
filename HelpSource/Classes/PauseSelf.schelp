@@ -27,7 +27,7 @@ code::
 SynthDef("pauseSelf-help", { arg out, t_trig;
 	PauseSelf.kr(t_trig);
 	Out.ar(out, SinOsc.ar(400,0,0.2));
-}).send(s);
+}).add;
 )
 
 s.sendMsg("/s_new", "pauseSelf-help", 1731);

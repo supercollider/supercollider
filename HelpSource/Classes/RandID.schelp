@@ -29,7 +29,7 @@ SynthDef("help-RandID", { arg out=0, id=1;
 	Out.ar(out,
 		WhiteNoise.ar(0.05) + Dust2.ar(70)
 	)
-}).send(s);
+}).add;
 )
 
 //reset the seed of my rgen at a variable rate
@@ -37,7 +37,7 @@ SynthDef("help-RandID", { arg out=0, id=1;
 SynthDef("help-RandSeed", { arg seed=1910, id=1;
 		RandID.kr(id);
 		RandSeed.kr(Impulse.kr(FSinOsc.kr(0.2, 0, 10, 11)), seed);
-}).send(s);
+}).add;
 
 )
 

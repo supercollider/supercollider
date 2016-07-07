@@ -79,7 +79,7 @@ SynthDef( "conv-test", { arg kernel, trig=0;
 
 	//must have power of two framesize
 	Out.ar(0,Convolution2.ar(input,kernel,trig,2048, 0.5));
-}).send(s)
+}).add
 
 )
 
