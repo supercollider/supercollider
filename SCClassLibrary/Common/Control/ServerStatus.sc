@@ -138,7 +138,7 @@ ServerStatusWatcher {
 						avgCPU, peakCPU, sampleRate, actualSampleRate = msg;
 				{
 					this.updateRunningState(true);
-					this.changed(\counts);
+					server.changed(\counts);
 					nil // no resched
 				}.defer;
 			}, '/status.reply', server.addr).fix;
