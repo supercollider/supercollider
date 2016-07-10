@@ -385,8 +385,10 @@ template <> struct TypeCodec<QObject*>
 
 #define TYPE_IS_QOBJECT(type) std::is_convertible<QObjectT, QObject*>::value
   
+//template<typename QObjectT>
+//  struct TypeCodec<QObjectT, typename std::enable_if<TYPE_IS_QOBJECT(QObjectT)>::value>
 template<typename QObjectT>
-  struct TypeCodec<QObjectT, typename std::enable_if<TYPE_IS_QOBJECT(QObjectT)>::value>
+  struct TypeCodec<QObjectT, void>
 {
   static QObjectT read( PyrSlot *slot )
   {
