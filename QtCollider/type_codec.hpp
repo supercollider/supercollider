@@ -47,7 +47,7 @@ class QObjectProxy;
 
 namespace QtCollider {
 
-template <typename T> struct TypeCodec { };
+template <typename T, typename EnabledT=void> struct TypeCodec { };
 
 // Forwarding from QtCollider namespace to TypeCodec
 
@@ -357,18 +357,35 @@ template <> struct TypeCodec<QObject*>
   static void write( PyrSlot *, QObject * );
 };
 
-template <> struct TypeCodec<QWidget*>
+
+#define TYPE_IS_QOBJECT(type) std::is_convertible<QObjectT, QObject*>::value
+  
+template<typename QObjectT>
+  struct TypeCodec<QObjectT, typename std::enable_if<TYPE_IS_QOBJECT(QObjectT)>::value>
 {
-  static QWidget* read( PyrSlot * )
+  static QObjectT read( PyrSlot *slot )
   {
-    qWarning("WARNING: QtCollider: reading QWidget* from PyrSlot not supported.");
-    return 0;
+    return safeRead(slot);
   }
 
-  static void write( PyrSlot *slot, QWidget * widget )
+  static QObjectT safeRead( PyrSlot *slot )
   {
-    TypeCodec<QObject*>::write(slot, widget);
+    QObjectProxy* proxy = TypeCodec<QObjectProxy*>::safeRead(slot);
+    
+    if (proxy) {
+      QObjectT action = qobject_cast<QObjectT>(proxy->object());
+      return action;
+    } else {
+      return 0;
+    }
   }
+  
+  static void write(PyrSlot * slot, QObjectT object)
+  {
+    QObject* qobject = qobject_cast<QObject*>(object);
+    TypeCodec<QObject*>::write(slot, qobject);
+  }
+
 };
 
 template <> struct TypeCodec<PyrObject*>
