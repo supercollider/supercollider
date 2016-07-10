@@ -46,6 +46,7 @@ set( QT_COLLIDER_HDRS
   ${QT_COLLIDER_DIR}/widgets/QcListWidget.h
   ${QT_COLLIDER_DIR}/widgets/QcPopUpMenu.h
   ${QT_COLLIDER_DIR}/widgets/QcTreeWidget.h
+  ${QT_COLLIDER_DIR}/widgets/QcMenu.h
   ${QT_COLLIDER_DIR}/widgets/QcScrollArea.h
   ${QT_COLLIDER_DIR}/widgets/QcNumberBox.h
   ${QT_COLLIDER_DIR}/widgets/QcSlider.h
@@ -97,6 +98,7 @@ set( QT_COLLIDER_SRCS
   ${QT_COLLIDER_DIR}/widgets/QcListWidget.cpp
   ${QT_COLLIDER_DIR}/widgets/QcPopUpMenu.cpp
   ${QT_COLLIDER_DIR}/widgets/QcTreeWidget.cpp
+  ${QT_COLLIDER_DIR}/widgets/QcMenu.cpp
   ${QT_COLLIDER_DIR}/widgets/QcScrollArea.cpp
   ${QT_COLLIDER_DIR}/widgets/QcAbstractStepValue.cpp
   ${QT_COLLIDER_DIR}/widgets/QcNumberBox.cpp

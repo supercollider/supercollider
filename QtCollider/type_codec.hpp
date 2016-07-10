@@ -23,6 +23,7 @@
 #define QT_COLLIDER_TYPE_CODEC_INCLUDED
 
 #include "widgets/QcTreeWidget.h"
+#include "widgets/QcMenu.h"
 #include "image.h"
 
 #include <PyrSlot.h>
@@ -41,6 +42,7 @@
 #include <QFont>
 #include <QPalette>
 #include <QWidget>
+#include <QLayout>
 #include <QVector>
 #include <QVariantList>
 

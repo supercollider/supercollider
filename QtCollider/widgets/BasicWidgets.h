@@ -23,6 +23,7 @@
 #define _WIDGETS_H
 
 #include "QcCanvas.h"
+#include "QcMenu.h"
 #include "../layouts/classic_layouts.hpp"
 #include "image_painter.h"
 
@@ -30,6 +31,7 @@ class QcSimpleWidget : public QWidget
 {
   Q_OBJECT
   Q_PROPERTY( QColor background READ background WRITE setBackground );
+  Q_PROPERTY( QList<QAction*> actions READ actions());
 
 public:
   const QColor & background() const { return _bkg; }
@@ -39,7 +41,14 @@ public:
                            int tileMode, double opacity );
   Q_INVOKABLE
   void removeBackgroundImage() { _bkg_image.clear(); update(); }
+  
+  Q_INVOKABLE void addAction(QAction* action)        { QWidget::addAction(action); }
+  
+  Q_INVOKABLE void removeAction(QAction* action)     { QWidget::removeAction(action); }
 
+  Q_INVOKABLE void insertAction(QAction* before, QAction* action)
+                                                     { QWidget::insertAction(before, action); }
+  
 protected:
   virtual void paintEvent( QPaintEvent * );
 
