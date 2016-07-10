@@ -77,23 +77,14 @@ public:
       return;
     }
 
-    QObjectProxy *p = varObject.value<QObjectProxy*>();
-    if( !p || !p->object() ) return;
-
-    QWidget *w = qobject_cast<QWidget*>( p->object() );
+    QWidget *w = varObject.value<QWidget*>();
     if( w ) {
       BOXLAYOUT::addWidget( w, stretch, alignment );
       return;
     }
 
-    QLayout *l2 = qobject_cast<QLayout*>( p->object() );
+    QLayout *l2 = varObject.value<QLayout*>();
     if(l2) {
-      if (l2->parent()) {
-        // FIXME: inserting layout that already has parent is broken in Qt.
-        // See Qt bug 30758.
-        qcErrorMsg("Can not insert a layout that already has a parent into another layout!");
-        return;
-      }
       BOXLAYOUT::addLayout( l2, stretch );
       return;
     }
@@ -119,16 +110,13 @@ public:
       return;
     }
 
-    QObjectProxy *p = varObject.value<QObjectProxy*>();
-    if( !p || !p->object() ) return;
-
-    QWidget *w = qobject_cast<QWidget*>( p->object() );
+    QWidget *w = varObject.value<QWidget*>();
     if( w ) {
       BOXLAYOUT::insertWidget( index, w, stretch, alignment );
       return;
     }
 
-    QLayout *l2 = qobject_cast<QLayout*>( p->object() );
+    QLayout *l2 = varObject.value<QLayout*>();
     if(l2) {
       BOXLAYOUT::insertLayout( index, l2, stretch );
       return;
@@ -271,9 +259,7 @@ public:
   Q_INVOKABLE QcStackLayout( const QVariantList &items )
   {
     Q_FOREACH(const QVariant & var, items) {
-      QObjectProxy *p = var.value<QObjectProxy*>();
-      if(!p) return;
-      QWidget *w = qobject_cast<QWidget*>( p->object() );
+      QWidget *w = var.value<QWidget*>();
       if(w) addWidget(w);
     }
   }
