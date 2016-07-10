@@ -279,6 +279,36 @@ QC_LANG_PRIMITIVE( Qt_CursorPosition, 0, PyrSlot *r, PyrSlot *a, VMGlobals *g )
 
     return errNone;
 }
+	
+QC_LANG_PRIMITIVE( Qt_SetAppMenus, 1, PyrSlot *r, PyrSlot *a, VMGlobals *g )
+{
+	if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
+	
+	QList<QMenu*> menuList;
+	
+	
+	if( isKindOfSlot( a, class_array ) ) {
+		QMenuBar* menuBar = QcApplication::getMainMenu();
+		if (menuBar) {
+			menuBar->clear();
+
+			PyrObject *obj = slotRawObject( a );
+			PyrSlot *slots = obj->slots;
+			int size = obj->size;
+
+			for( int i = 0; i < size; ++i, ++slots ) {
+				QMenu* menu = QtCollider::get<QMenu*>(slots);
+				if (menu) {
+					menuBar->addMenu(menu);
+				} else {
+					menuBar->addSeparator();
+				}
+			}
+		}
+	}
+
+	return errNone;
+}
 
 void defineMiscPrimitives()
 {
@@ -299,6 +329,7 @@ void defineMiscPrimitives()
   definer.define<Qt_IsMethodOverridden>();
   definer.define<QWebView_ClearMemoryCaches>();
   definer.define<Qt_CursorPosition>();
+	definer.define<Qt_SetAppMenus>();
 }
 
 } // namespace QtCollider

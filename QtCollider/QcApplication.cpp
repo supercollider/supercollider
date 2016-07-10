@@ -32,6 +32,8 @@
 #include <QFileOpenEvent>
 #include <QKeyEvent>
 #include <QIcon>
+#include <QMenuBar>
+#include <QSharedPointer>
 
 #ifdef Q_OS_MAC
 #include "../../common/SC_Apple.hpp"
@@ -81,6 +83,7 @@ QcApplication::QcApplication( int & argc, char ** argv )
     icon.addFile(":/icons/sc-cube-32");
     icon.addFile(":/icons/sc-cube-16");
     setWindowIcon(icon);
+    _mainMenu = QSharedPointer<QMenuBar>(new QMenuBar(0));
   }
   
 #ifdef Q_OS_MAC

@@ -27,6 +27,7 @@
 #include <QApplication>
 #include <QEventLoop>
 #include <QMutex>
+#include <QMenuBar>
 
 namespace QtCollider {
 
@@ -57,6 +58,7 @@ class QcApplication : public QApplication
       if( _instance ) _instance->_eventProc.work();
     }
     static inline bool SystemHasMouseWheel() { return _systemHasMouseWheel; }
+    static QMenuBar* getMainMenu() { return _instance->_mainMenu.data(); }
 
   public Q_SLOTS:
     void interpret( const QString & code, bool printResult = true );
@@ -66,6 +68,8 @@ class QcApplication : public QApplication
     virtual bool notify( QObject *, QEvent * );
 
   private:
+  
+    QSharedPointer<QMenuBar> _mainMenu;
 
     QtCollider::EventProcessor _eventProc;
 
