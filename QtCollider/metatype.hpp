@@ -31,8 +31,6 @@
 
 namespace QtCollider {
 
-template <typename T> struct TypeCodec;
-
 struct MetaType
 {
 public:
