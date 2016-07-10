@@ -65,8 +65,7 @@ public:
     // in constructor, or set later, but for some reason it is cheaper
     // if it is set here, before setting other stuff like geometry, etc.
 
-    QObjectProxy *parentProxy( arg[0].value<QObjectProxy*>() );
-    QWidget *parent = parentProxy ? qobject_cast<QWidget*>( parentProxy->object() ) : 0;
+    QWidget *parent = arg[0].value<QWidget*>();
 
     if( parent )
     {

@@ -66,6 +66,7 @@ void MetaType::initAll()
   qc_init_metatype<QObjectProxy*>();
   qc_init_metatype<QObject*>();
   qc_init_metatype<QWidget*>();
+  qc_init_metatype<QLayout*>();
   qc_init_metatype<PyrObject*>();
   qc_init_metatype<QcTreeWidget::ItemPtr>();
   qc_init_metatype<SharedImage>();
@@ -123,6 +124,12 @@ MetaType *MetaType::find( PyrSlot *slot )
       }
       else if( isKindOfSlot( slot, SC_CLASS(QPalette) ) ) {
         return metaType<QPalette>();
+      }
+      else if( isKindOfSlot( slot, SC_CLASS(View) ) || isKindOfSlot( slot, SC_CLASS(ScrollCanvas) ) ) {
+        return metaType<QWidget*>();
+      }
+      else if( isKindOfSlot( slot, SC_CLASS(Layout) ) ) {
+        return metaType<QLayout*>();
       }
       else if( isKindOfSlot( slot, SC_CLASS(QObject) ) ) {
         return metaType<QObjectProxy*>();

@@ -52,7 +52,7 @@ class QcScrollArea : public QScrollArea, public QcHelper
 
   public:
     QcScrollArea();
-    Q_INVOKABLE void setWidget( QObjectProxy * );
+    Q_INVOKABLE void setWidget( QWidget * );
     Q_INVOKABLE void addChild( QWidget* w );
     void setHasBorder( bool b );
     QRectF innerBounds() const;
