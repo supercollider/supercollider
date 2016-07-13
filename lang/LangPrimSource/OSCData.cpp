@@ -394,8 +394,10 @@ static int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
 	err = slotIntVal(netAddrObj->slots + ivxNetAddr_Hostaddr, &addr);
 	if (err) return err;
 
+	unsigned long ulAddress = (unsigned int)addr;
+
 	try {
-		SC_TcpClientPort *comPort = new SC_TcpClientPort(addr, port, netAddrTcpClientNotifyFunc, netAddrObj);
+		SC_TcpClientPort *comPort = new SC_TcpClientPort(ulAddress, port, netAddrTcpClientNotifyFunc, netAddrObj);
 		SetPtr(netAddrObj->slots + ivxNetAddr_Socket, comPort);
 	} catch (std::exception const & e) {
 		printf("NetAddr-Connect failed with exception: %s\n", e.what());
