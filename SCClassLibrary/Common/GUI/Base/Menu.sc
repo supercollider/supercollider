@@ -258,7 +258,7 @@ Menu : AbstractActionView {
 
 	init {
 		this.connectMethod('triggered(QAction*)', 'onTriggered');
-		this.connectMethod('aboutToShow()', 'onShow', true);   // @TODO - Is this safe? Deadlock potential?
+		this.connectMethod('aboutToShow()', 'onShow' /*, true*/);   // @TODO - Is this safe? Deadlock potential?
 		this.connectMethod('aboutToHide()', 'onHide');
 	}
 
