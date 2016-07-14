@@ -7,7 +7,7 @@ Triggers generate grains from a buffer. Each grain has a Hanning envelope
 code::
 (sin2(x) for x from 0 to π)
 ::
-and is panned between two or more channels of output.
+and can be panned over multichannel output.
 
 classmethods::
 
@@ -42,6 +42,7 @@ Duration of the grain in seconds.
 argument::pan
 determines where to pan the output.
 list::
+## If numChannels = 1, the pan argument is ignored.
 ## If numChannels = 2, panning is similar to Pan2.
 ## If numChannels > 2, panning is the same as PanAz.
 ::
