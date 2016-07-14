@@ -112,7 +112,7 @@ public:
 	typedef void (*ClientNotifyFunc)(void* clientData);
 
 public:
-	SC_TcpClientPort(long inAddress, int inPort, ClientNotifyFunc notifyFunc=0, void* clientData=0);
+	SC_TcpClientPort(unsigned long inAddress, int inPort, ClientNotifyFunc notifyFunc=0, void* clientData=0);
 	int Close();
 
 	boost::asio::ip::tcp::socket & Socket () { return socket; }
