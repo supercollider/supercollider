@@ -163,7 +163,7 @@ AbstractServerAction : AbstractSystemAction {
 	}
 
 	*remove { arg object, server;
-		if(server.isNil) { server = \default };
+		if(server.isNil) { server = \all };
 		this.objects !? { this.objects.at(server).remove(object) };
 	}
 
