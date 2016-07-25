@@ -314,7 +314,7 @@ Causes a synth to print out the values of the inputs and outputs of its unit gen
 subsection:: /n_order
 Move and order a list of nodes.
 table::
-## strong::int:: || add action (0,1,2 or 3 see below)
+## strong::int:: || add action (0,1,2, 3 or 4 see below)
 ## strong::int:: || add target ID
 ## N * strong::int:: || node IDs
 ::
