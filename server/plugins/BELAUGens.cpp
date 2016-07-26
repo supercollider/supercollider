@@ -222,14 +222,15 @@ void DigitalOutput_next(DigitalOutput *unit, int inNumSamples)
 	newinput = in[n];
 // 	newinput = ++*in; // read next input sample
 	if ( newinput > 0.5 ){ 
-	  newinputInt = 1; 
-	  rt_printf( "A: pin %i, newinput %f, int %i \n", pinid, newinput, newinputInt );
+	  digitalWriteFrameOnce(context, n, pinid, HIGH );
+// 	  newinputInt = 1; 
+// 	  rt_printf( "A: pin %i, newinput %f, int %i \n", pinid, newinput, newinputInt );
 	}{ 
-	  newinputInt = 0;
-	  rt_printf( "B: pin %i, newinput %f, int %i \n", pinid, newinput, newinputInt );
+	  digitalWriteFrameOnce(context, n, pinid, LOW );
+// 	  newinputInt = 0;
+// 	  rt_printf( "B: pin %i, newinput %f, int %i \n", pinid, newinput, newinputInt );
 	}
 // 	rt_printf( "pin %i, newinput %f, int %i \n", pinid, newinput, newinputInt );
-	digitalWriteFrameOnce(context, n, pinid, newinputInt );
   }
 }
 
