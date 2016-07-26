@@ -142,7 +142,9 @@ void AnalogOutput_next(AnalogOutput *unit, int inNumSamples)
 	newinput = in[n];
 // 	newinput = ++*in; // read next input sample
 	if(!(n % unit->mAudioFramesPerAnalogFrame)) {
-	  analogWriteFrameOnce(context,  n/ unit->mAudioFramesPerAnalogFrame, (int) analogPin, newinput);
+// 	  analogWriteFrameOnce(context,  n/ unit->mAudioFramesPerAnalogFrame, (int) analogPin, newinput);
+	  analogWriteFrame(context,  n/ unit->mAudioFramesPerAnalogFrame, (int) analogPin, newinput);
+	  rt_printf( "analog pin %f, n %i, inNumSamples %i, newinput %f \n", analogPin, n, inNumSamples, newinput );
 	}
   }
 }
