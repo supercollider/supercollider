@@ -196,7 +196,7 @@ void DigitalInput_Ctor(DigitalInput *unit)
   
 	float fDigitalIn = ZIN0(0); // digital in pin -- cannot change after construction
 // 	unit->mDigitalPin = (int) fDigitalIn;
-	unit->mDigitalPin = (int) sc_clip( fDigital, 0., 15.0 );
+	unit->mDigitalPin = (int) sc_clip( fDigitalIn, 0., 15.0 );
 	pinModeFrame(context, 0, unit->mDigitalPin, INPUT);
 	
 	// initiate first sample
