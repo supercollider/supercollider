@@ -213,6 +213,7 @@ void DigitalOutput_next(DigitalOutput *unit, int inNumSamples)
   float *in = IN(1);
   
   float newinput = 0;
+  int newinputInt = 0;
 
   // context->audioFrames should be equal to inNumSamples
 //   for(unsigned int n = 0; n < context->audioFrames; n++) {
@@ -220,10 +221,9 @@ void DigitalOutput_next(DigitalOutput *unit, int inNumSamples)
 	// read input
 	newinput = in[n];
 // 	newinput = ++*in; // read next input sample
-	rt_printf( "pin %i, newinput %f \n", pinid, newinput );
-	if ( newinput > 0.5 ){ newinput = 1; }{ newinput = 0; }
-// 	rt_printf( "pin %i, newinput %f \n", pinid, newinput );
-	digitalWriteFrameOnce(context, n, pinid, (int) newinput);
+	if ( newinput > 0.5 ){ newinputInt = 1; }{ newinputInt = 0; }
+	rt_printf( "pin %i, newinput %f, int %i \n", pinid, newinput, newinputInt );
+	digitalWriteFrameOnce(context, n, pinid, newinputInt );
   }
 }
 
