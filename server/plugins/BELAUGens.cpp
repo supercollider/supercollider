@@ -257,16 +257,16 @@ void DigitalIO_next(DigitalIO *unit, int inNumSamples)
   for(unsigned int n = 0; n < inNumSamples; n++) {
 	// read input
 // 	newpin = (int) ++*pinid; // get pin id
-	newpin = (int) (pinid[n]);
+	newpin = (int) pinid[n];
 	newpin = sc_clip( newpin, 0, 15 );
 // 	newinput = ++*in; // read next input sample
 	newinput = in[n];
-	newmode = iomode[n];
+// 	newmode = ++*iomode; // get mode for this pin
+// 	newmode = iomode[n];
 
 // 	newinput = 1; // value 1
-	newmode = 1; // output
-	// 	newmode = ++*iomode; // get mode for this pin
-	rt_printf( "digital io, pin %i, in %f, mode %f \n", newpin, newinput, newmode );
+	newmode = 1.0; // output
+	rt_printf( "pin %i, in %f, mode %f \n", newpin, newinput, newmode );
 
 	if ( newinput > 0.5 ){ 
 	  newinputInt = GPIO_HIGH; 
