@@ -81,14 +81,15 @@ void AnalogInput_next(AnalogInput *unit, int inNumSamples)
 //   rt_printf("INFO: world %p, context %p.\n", world, context );
   
   float *fin = IN(0); // analog in pin, can be modulated
-  float analogPin;
-  float analogValue = 0;
   float *out = ZOUT(0);
+  float analogPin = 0;
+  float analogValue = 0;
   
   // context->audioFrames should be equal to inNumSamples
 //   for(unsigned int n = 0; n < context->audioFrames; n++) {
   for(unsigned int n = 0; n < inNumSamples; n++) {
-	analogPin = (++*fin);
+// 	analogPin = (++*fin);
+	analogPin = fin[n];
 	rt_printf( "analog pin %f, n %i, inNumSamples %i", analogPin, n, inNumSamples );
 	if(!(n % unit->mAudioFramesPerAnalogFrame)) {
 	  analogValue = analogReadFrame(context, n/unit->mAudioFramesPerAnalogFrame, (int) analogPin);
@@ -125,17 +126,19 @@ void AnalogOutput_next(AnalogOutput *unit, int inNumSamples)
   BeagleRTContext *context = world->mBelaContext;
 
   float *fin = IN(0); // analog in pin, can be modulated
-  float analogPin;
   float *in = IN(1);
   
+  float analogPin = 0;
   float newinput = 0;
 //   float analogValue = 0;
   // context->audioFrames should be equal to inNumSamples
 //   for(unsigned int n = 0; n < context->audioFrames; n++) {
   for(unsigned int n = 0; n < inNumSamples; n++) {
 	// read input
-	analogPin = (++*fin);
-	newinput = ++*in; // read next input sample
+// 	analogPin = (++*fin);
+	analogPin = fin[n];
+	newinput = in[n];
+// 	newinput = ++*in; // read next input sample
 	if(!(n % unit->mAudioFramesPerAnalogFrame)) {
 	  analogWriteFrameOnce(context,  n/ unit->mAudioFramesPerAnalogFrame, (int) analogPin, newinput);
 	}
