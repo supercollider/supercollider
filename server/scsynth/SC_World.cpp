@@ -430,7 +430,7 @@ World* World_New(WorldOptions *inOptions)
 		}
 #ifdef BELA
 		world->mBelaAnalogChannels = inOptions->mBelaAnalogChannels;
-		scprintf("INFO: WORLD: number of analog channels %i.\n", world->mBelaAnalogChannels );
+// 		scprintf("INFO: WORLD: number of analog channels %i.\n", world->mBelaAnalogChannels );
 // 		world->mBelaAnalogInputChannels = inOptions->mBelaAnalogInputChannels;
 // 		world->mBelaAnalogOutputChannels = inOptions->mBelaAnalogOutputChannels;
 #endif
