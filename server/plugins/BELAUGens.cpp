@@ -136,16 +136,12 @@ void AnalogOutput_next(AnalogOutput *unit, int inNumSamples)
 //   for(unsigned int n = 0; n < context->audioFrames; n++) {
   for(unsigned int n = 0; n < inNumSamples; n++) {
 	// read input
-// 	analogPin = (++*fin);
 	analogPin = fin[n];
 	analogPin = sc_clip( analogPin, 0.0, 7.0 );
-	newinput = in[n];
-// 	newinput = ++*in; // read next input sample
+	newinput = in[n]; // read next input sample
 	if(!(n % unit->mAudioFramesPerAnalogFrame)) {
 // 	  analogWriteFrameOnce(context,  n/ unit->mAudioFramesPerAnalogFrame, (int) analogPin, newinput);
-
 	  analogWriteFrame(context,  n/ unit->mAudioFramesPerAnalogFrame, (int) analogPin, newinput);
-
 // 	  analogWriteFrame(context,  n/ unit->mAudioFramesPerAnalogFrame, (int) analogPin, 0.75 );	  
 // 	  analogWriteFrame(context,  n/ unit->mAudioFramesPerAnalogFrame, 0, 0.75);
 // 	  analogWriteFrame(context,  n/2, 0, 0.75);	  
@@ -165,7 +161,7 @@ void AnalogOutput_Ctor(AnalogOutput *unit)
 
 	unit->mAudioFramesPerAnalogFrame = context->audioFrames / context->analogFrames;
 
-	rt_printf( "audio frames per analog frame: %i \n", unit->mAudioFramesPerAnalogFrame );
+// 	rt_printf( "audio frames per analog frame: %i \n", unit->mAudioFramesPerAnalogFrame );
 	// initiate first sample
 	AnalogOutput_next( unit, 1);  
 	// set calculation method
