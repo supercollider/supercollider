@@ -220,8 +220,9 @@ void DigitalOutput_next(DigitalOutput *unit, int inNumSamples)
 	// read input
 	newinput = in[n];
 // 	newinput = ++*in; // read next input sample
+	rt_printf( "pin %i, newinput %f \n", pinid, newinput );
 	if ( newinput > 0.5 ){ newinput = 1; }{ newinput = 0; }
-	rt_printf( "pin %i, newinput %f", pinid, newinput );
+// 	rt_printf( "pin %i, newinput %f \n", pinid, newinput );
 	digitalWriteFrameOnce(context, n, pinid, (int) newinput);
   }
 }
