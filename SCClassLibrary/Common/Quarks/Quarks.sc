@@ -183,7 +183,7 @@ Quarks {
 			deps,
 			incompatible = { arg name;
 				(quark.name
-					+ "reports an incompatibility with this Super Collider version"
+					+ "reports an incompatibility with this SuperCollider version"
 					+ "or with other already installed quarks."
 				).inform;
 				false
