@@ -78,7 +78,7 @@ void AnalogInput_next(AnalogInput *unit, int inNumSamples)
   int bufLength = world->mBufLength;
   BeagleRTContext *context = world->mBelaContext;
 
-  rt_printf("INFO: world %p, context %p.\n", world, context );
+//   rt_printf("INFO: world %p, context %p.\n", world, context );
   
   float *fin = IN(0); // analog in pin, can be modulated
   float analogPin;
@@ -89,6 +89,7 @@ void AnalogInput_next(AnalogInput *unit, int inNumSamples)
 //   for(unsigned int n = 0; n < context->audioFrames; n++) {
   for(unsigned int n = 0; n < inNumSamples; n++) {
 	analogPin = (++*fin);
+	rt_printf( "analog pin %f, n %i, inNumSamples %i", analogPin, n, inNumSamples );
 	if(!(n % unit->mAudioFramesPerAnalogFrame)) {
 	  analogValue = analogReadFrame(context, n/unit->mAudioFramesPerAnalogFrame, (int) analogPin);
 	}
