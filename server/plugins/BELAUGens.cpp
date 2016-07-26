@@ -78,6 +78,8 @@ void AnalogInput_next(AnalogInput *unit, int inNumSamples)
   int bufLength = world->mBufLength;
   BeagleRTContext *context = world->mBelaContext;
 
+  rt_printf("INFO: world %p, context %p.\n", world, context );
+  
   float *fin = IN(0); // analog in pin, can be modulated
   float analogPin;
   float analogValue = 0;
@@ -98,6 +100,8 @@ void AnalogInput_Ctor(AnalogInput *unit)
 {
 	BeagleRTContext *context = unit->mWorld->mBelaContext;
   
+	rt_printf("INFO: constructor - belaContext %p.\n", context );
+	
 	if(context->analogFrames == 0 || context->analogFrames > context->audioFrames) {
 		rt_printf("Error: the UGen needs BELA analog enabled, with 4 or 8 channels\n");
 		return;
