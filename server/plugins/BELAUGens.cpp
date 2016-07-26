@@ -103,7 +103,7 @@ void AnalogInput_Ctor(AnalogInput *unit)
 {
 	BeagleRTContext *context = unit->mWorld->mBelaContext;
   
-	rt_printf("INFO: constructor - belaContext %p.\n", context );
+// 	rt_printf("INFO: constructor - belaContext %p.\n", context );
 	
 	if(context->analogFrames == 0 || context->analogFrames > context->audioFrames) {
 		rt_printf("Error: the UGen needs BELA analog enabled, with 4 or 8 channels\n");
@@ -220,7 +220,8 @@ void DigitalOutput_next(DigitalOutput *unit, int inNumSamples)
 	// read input
 	newinput = in[n];
 // 	newinput = ++*in; // read next input sample
-	if ( newinput > 0 ){ newinput = 1; }{ newinput = 0; }
+	if ( newinput > 0.5 ){ newinput = 1; }{ newinput = 0; }
+	rt_printf( "pin %i, newinput %f", pinid, newinput );
 	digitalWriteFrameOnce(context, n, pinid, (int) newinput);
   }
 }
@@ -231,6 +232,7 @@ void DigitalOutput_Ctor(DigitalOutput *unit)
 
 	float fDigital = ZIN0(0); // digital in pin -- cannot change after construction
 	unit->mDigitalPin = (int) fDigital;
+	rt_printf( "digital pin %i", unit->mDigitalPin );
 	pinModeFrame(context, 0, unit->mDigitalPin, OUTPUT);
 
 	// initiate first sample
@@ -267,6 +269,7 @@ void DigitalIO_next(DigitalIO *unit, int inNumSamples)
 	newpin = sc_clip( newpin, 0, 7 );
 // 	newinput = ++*in; // read next input sample
 	newinput = in[n];
+	if ( newinput > 0.5 ){ newinput = 1; }{ newinput = 0; }
 // 	newmode = ++*iomode; // get mode for this pin
 	newmode = iomode[n];
 	if ( newmode < 0.5 ){
