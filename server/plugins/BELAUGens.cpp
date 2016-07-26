@@ -290,14 +290,19 @@ void DigitalIO_next(DigitalIO *unit, int inNumSamples)
 	newpin = sc_clip( newpin, 0, 15 );
 // 	newinput = ++*in; // read next input sample
 	newinput = in[n];
-	if ( newinput > 0.5 ){ newinputInt = GPIO_HIGH; } else { newinputInt = GPIO_LOW; }
-// 	newmode = ++*iomode; // get mode for this pin
 	newmode = iomode[n];
+
+	if ( newinput > 0.5 ){ 
+	  newinputInt = GPIO_HIGH; 
+	} else { 
+	  newinputInt = GPIO_LOW;  
+	}
+// 	newmode = ++*iomode; // get mode for this pin
 	rt_printf( "digital io, pin %i, in %f, %i, mode %f \n", newpin, newinput, newinputInt, newmode );
 	if ( newmode < 0.5 ){
 // 	  pinModeFrameOnce( context, n, newpin, INPUT );
 	  pinModeFrame( context, n, newpin, INPUT );
-	  newoutput=digitalReadFrame(context, n, newpin);
+	  newoutput = digitalReadFrame(context, n, newpin);
 	} else {	  
 // 	  pinModeFrameOnce( context, n, newpin, OUTPUT );
 	  pinModeFrame( context, n, newpin, OUTPUT );
