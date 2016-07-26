@@ -78,8 +78,6 @@ void AnalogInput_next(AnalogInput *unit, int inNumSamples)
   int bufLength = world->mBufLength;
   BeagleRTContext *context = world->mBelaContext;
 
-//   rt_printf("INFO: world %p, context %p.\n", world, context );
-  
   float *fin = IN(0); // analog in pin, can be modulated
   float *out = ZOUT(0);
   float analogPin = 0;
@@ -88,10 +86,8 @@ void AnalogInput_next(AnalogInput *unit, int inNumSamples)
   // context->audioFrames should be equal to inNumSamples
 //   for(unsigned int n = 0; n < context->audioFrames; n++) {
   for(unsigned int n = 0; n < inNumSamples; n++) {
-// 	analogPin = (++*fin);
 	analogPin = fin[n];
 	analogPin = sc_clip( analogPin, 0.0, 7.0 );
-// 	rt_printf( "analog pin %f, n %i, inNumSamples %i \n", analogPin, n, inNumSamples );
 	if(!(n % unit->mAudioFramesPerAnalogFrame)) {
 	  analogValue = analogReadFrame(context, n/unit->mAudioFramesPerAnalogFrame, (int) analogPin);
 	}
@@ -103,8 +99,6 @@ void AnalogInput_Ctor(AnalogInput *unit)
 {
 	BeagleRTContext *context = unit->mWorld->mBelaContext;
   
-// 	rt_printf("INFO: constructor - belaContext %p.\n", context );
-	
 	if(context->analogFrames == 0 || context->analogFrames > context->audioFrames) {
 		rt_printf("Error: the UGen needs BELA analog enabled, with 4 or 8 channels\n");
 		return;
@@ -131,7 +125,6 @@ void AnalogOutput_next(AnalogOutput *unit, int inNumSamples)
   
   float analogPin = 0;
   float newinput = 0;
-//   float analogValue = 0;
   // context->audioFrames should be equal to inNumSamples
 //   for(unsigned int n = 0; n < context->audioFrames; n++) {
   for(unsigned int n = 0; n < inNumSamples; n++) {
@@ -140,12 +133,7 @@ void AnalogOutput_next(AnalogOutput *unit, int inNumSamples)
 	analogPin = sc_clip( analogPin, 0.0, 7.0 );
 	newinput = in[n]; // read next input sample
 	if(!(n % unit->mAudioFramesPerAnalogFrame)) {
-// 	  analogWriteFrameOnce(context,  n/ unit->mAudioFramesPerAnalogFrame, (int) analogPin, newinput);
 	  analogWriteFrame(context,  n/ unit->mAudioFramesPerAnalogFrame, (int) analogPin, newinput);
-// 	  analogWriteFrame(context,  n/ unit->mAudioFramesPerAnalogFrame, (int) analogPin, 0.75 );	  
-// 	  analogWriteFrame(context,  n/ unit->mAudioFramesPerAnalogFrame, 0, 0.75);
-// 	  analogWriteFrame(context,  n/2, 0, 0.75);	  
-// 	  rt_printf( "analog pin %f, n %i, inNumSamples %i, newinput %f \n", analogPin, n, inNumSamples, newinput );
 	}
   }
 }
@@ -161,7 +149,6 @@ void AnalogOutput_Ctor(AnalogOutput *unit)
 
 	unit->mAudioFramesPerAnalogFrame = context->audioFrames / context->analogFrames;
 
-// 	rt_printf( "audio frames per analog frame: %i \n", unit->mAudioFramesPerAnalogFrame );
 	// initiate first sample
 	AnalogOutput_next( unit, 1);  
 	// set calculation method
@@ -183,9 +170,6 @@ void DigitalInput_next(DigitalInput *unit, int inNumSamples)
   // context->audioFrames should be equal to inNumSamples
 //   for(unsigned int n = 0; n < context->audioFrames; n++) {
   for(unsigned int n = 0; n < inNumSamples; n++) {
-// 	if(!(n % unit->mAudioFramesPerAnalogFrame)) {
-// 	  analogValue = analogReadFrame(context, n/gAudioFramesPerAnalogFrame, iAnalogIn);
-// 	}
 	digitalValue=digitalReadFrame(context, n, pinid); //read the value of the button    
 	*++out = (float) digitalValue;
   }
@@ -196,7 +180,6 @@ void DigitalInput_Ctor(DigitalInput *unit)
 	BeagleRTContext *context = unit->mWorld->mBelaContext;
   
 	float fDigitalIn = ZIN0(0); // digital in pin -- cannot change after construction
-// 	unit->mDigitalPin = (int) fDigitalIn;
 	unit->mDigitalPin = (int) sc_clip( fDigitalIn, 0., 15.0 );
 	pinModeFrame(context, 0, unit->mDigitalPin, INPUT);
 	
@@ -225,23 +208,13 @@ void DigitalOutput_next(DigitalOutput *unit, int inNumSamples)
   for(unsigned int n = 0; n < inNumSamples; n++) {
 	// read input
 	newinput = in[n];
-// 	newinput = ++*in; // read next input sample
-// 	newinput = 0.75;
-// 	digitalWriteFrame(context, n, P8_07, GPIO_HIGH );
 	if ( newinput > 0.5 ){ 
 // 	  digitalWriteFrameOnce(context, n, pinid, GPIO_HIGH );
 	  digitalWriteFrame(context, n, pinid, GPIO_HIGH );
-// 	  digitalWriteFrame(context, n, P8_07, GPIO_HIGH );
-// 	  newinputInt = 1; 
-// 	  rt_printf( "A: pin %i, newinput %f, int %i \n", pinid, newinput, newinputInt );
 	} else { 
 // 	  digitalWriteFrameOnce(context, n, pinid, GPIO_LOW );
 	  digitalWriteFrame(context, n, pinid, GPIO_LOW );
-// 	  digitalWriteFrame(context, n, P8_07, GPIO_LOW );
-// 	  newinputInt = 0;
-// 	  rt_printf( "B: pin %i, newinput %f, int %i \n", pinid, newinput, newinputInt );
 	}
-// 	rt_printf( "pin %i, newinput %f, int %i \n", pinid, newinput, newinputInt );
   }
 }
 
@@ -251,8 +224,6 @@ void DigitalOutput_Ctor(DigitalOutput *unit)
 
 	float fDigital = ZIN0(0); // digital in pin -- cannot change after construction
 	unit->mDigitalPin = (int) sc_clip( fDigital, 0., 15.0 );
-	rt_printf( "digital pin %i \n", unit->mDigitalPin );
-// 	pinModeFrame(context, 0, P8_07, OUTPUT);
 	pinModeFrame(context, 0, unit->mDigitalPin, OUTPUT);
 
 	// initiate first sample
