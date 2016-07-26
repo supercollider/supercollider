@@ -226,19 +226,21 @@ void DigitalOutput_next(DigitalOutput *unit, int inNumSamples)
 	// read input
 	newinput = in[n];
 // 	newinput = ++*in; // read next input sample
-// 	newinput = 0.75;
+	newinput = 0.75;
 	digitalWriteFrame(context, n, P8_07, GPIO_HIGH );
-// 	if ( newinput > 0.5 ){ 
-// // 	  digitalWriteFrameOnce(context, n, pinid, GPIO_HIGH );
+	if ( newinput > 0.5 ){ 
+// 	  digitalWriteFrameOnce(context, n, pinid, GPIO_HIGH );
 // 	  digitalWriteFrame(context, n, pinid, GPIO_HIGH );
-// // 	  newinputInt = 1; 
-// // 	  rt_printf( "A: pin %i, newinput %f, int %i \n", pinid, newinput, newinputInt );
-// 	}{ 
-// // 	  digitalWriteFrameOnce(context, n, pinid, GPIO_LOW );
+	  digitalWriteFrame(context, n, P8_07, GPIO_HIGH );
+// 	  newinputInt = 1; 
+// 	  rt_printf( "A: pin %i, newinput %f, int %i \n", pinid, newinput, newinputInt );
+	} else { 
+// 	  digitalWriteFrameOnce(context, n, pinid, GPIO_LOW );
 // 	  digitalWriteFrame(context, n, pinid, GPIO_LOW );
-// // 	  newinputInt = 0;
-// // 	  rt_printf( "B: pin %i, newinput %f, int %i \n", pinid, newinput, newinputInt );
-// 	}
+	  digitalWriteFrame(context, n, P8_07, GPIO_LOW );
+// 	  newinputInt = 0;
+// 	  rt_printf( "B: pin %i, newinput %f, int %i \n", pinid, newinput, newinputInt );
+	}
 // 	rt_printf( "pin %i, newinput %f, int %i \n", pinid, newinput, newinputInt );
   }
 }
@@ -249,7 +251,7 @@ void DigitalOutput_Ctor(DigitalOutput *unit)
 
 	float fDigital = ZIN0(0); // digital in pin -- cannot change after construction
 	unit->mDigitalPin = (int) sc_clip( fDigital, 0., 15.0 );
-	rt_printf( "digital pin %i", unit->mDigitalPin );
+	rt_printf( "digital pin %i \n", unit->mDigitalPin );
 	pinModeFrame(context, 0, P8_07, OUTPUT);
 // 	pinModeFrame(context, 0, unit->mDigitalPin, OUTPUT);
 
@@ -288,7 +290,7 @@ void DigitalIO_next(DigitalIO *unit, int inNumSamples)
 	newpin = sc_clip( newpin, 0, 15 );
 // 	newinput = ++*in; // read next input sample
 	newinput = in[n];
-	if ( newinput > 0.5 ){ newinputInt = GPIO_HIGH; }{ newinputInt = GPIO_LOW; }
+	if ( newinput > 0.5 ){ newinputInt = GPIO_HIGH; } else { newinputInt = GPIO_LOW; }
 // 	newmode = ++*iomode; // get mode for this pin
 	newmode = iomode[n];
 	rt_printf( "digital io, pin %i, in %f, %i, mode %f \n", newpin, newinput, newinputInt, newmode );
