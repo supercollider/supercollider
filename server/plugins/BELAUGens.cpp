@@ -90,7 +90,8 @@ void AnalogInput_next(AnalogInput *unit, int inNumSamples)
   for(unsigned int n = 0; n < inNumSamples; n++) {
 // 	analogPin = (++*fin);
 	analogPin = fin[n];
-	rt_printf( "analog pin %f, n %i, inNumSamples %i", analogPin, n, inNumSamples );
+	analogPin = sc_clip( analogPin, 0.0, 7.0 );
+	rt_printf( "analog pin %f, n %i, inNumSamples %i \n", analogPin, n, inNumSamples );
 	if(!(n % unit->mAudioFramesPerAnalogFrame)) {
 	  analogValue = analogReadFrame(context, n/unit->mAudioFramesPerAnalogFrame, (int) analogPin);
 	}
@@ -137,6 +138,7 @@ void AnalogOutput_next(AnalogOutput *unit, int inNumSamples)
 	// read input
 // 	analogPin = (++*fin);
 	analogPin = fin[n];
+	analogPin = sc_clip( analogPin, 0.0, 7.0 );
 	newinput = in[n];
 // 	newinput = ++*in; // read next input sample
 	if(!(n % unit->mAudioFramesPerAnalogFrame)) {
@@ -216,7 +218,8 @@ void DigitalOutput_next(DigitalOutput *unit, int inNumSamples)
 //   for(unsigned int n = 0; n < context->audioFrames; n++) {
   for(unsigned int n = 0; n < inNumSamples; n++) {
 	// read input
-	newinput = ++*in; // read next input sample
+	newinput = in[n];
+// 	newinput = ++*in; // read next input sample
 	if ( newinput > 0 ){ newinput = 1; }{ newinput = 0; }
 	digitalWriteFrameOnce(context, n, pinid, (int) newinput);
   }
@@ -259,9 +262,12 @@ void DigitalIO_next(DigitalIO *unit, int inNumSamples)
 //   for(unsigned int n = 0; n < context->digitalFrames; n++) {
   for(unsigned int n = 0; n < inNumSamples; n++) {
 	// read input
-	newpin = (int) ++*pinid; // get pin id
-	newinput = ++*in; // read next input sample
-	newmode = ++*iomode; // get mode for this pin
+// 	newpin = (int) ++*pinid; // get pin id
+	newpin = (int) (pinid[n]);
+// 	newinput = ++*in; // read next input sample
+	newinput = in[n];
+// 	newmode = ++*iomode; // get mode for this pin
+	newmode = iomode[n];
 	if ( newmode < 0.5 ){
 	  pinModeFrameOnce( context, n, newpin, INPUT );
 	  newoutput=digitalReadFrame(context, n, newpin);
