@@ -222,11 +222,13 @@ void DigitalOutput_next(DigitalOutput *unit, int inNumSamples)
 	newinput = in[n];
 // 	newinput = ++*in; // read next input sample
 	if ( newinput > 0.5 ){ 
-	  digitalWriteFrameOnce(context, n, pinid, HIGH );
+// 	  digitalWriteFrameOnce(context, n, pinid, GPIO_HIGH );
+	  digitalWriteFrame(context, n, pinid, GPIO_HIGH );
 // 	  newinputInt = 1; 
 // 	  rt_printf( "A: pin %i, newinput %f, int %i \n", pinid, newinput, newinputInt );
 	}{ 
-	  digitalWriteFrameOnce(context, n, pinid, LOW );
+// 	  digitalWriteFrameOnce(context, n, pinid, GPIO_LOW );
+	  digitalWriteFrame(context, n, pinid, GPIO_LOW );
 // 	  newinputInt = 0;
 // 	  rt_printf( "B: pin %i, newinput %f, int %i \n", pinid, newinput, newinputInt );
 	}
