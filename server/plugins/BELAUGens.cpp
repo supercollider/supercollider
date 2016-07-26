@@ -143,9 +143,9 @@ void AnalogOutput_next(AnalogOutput *unit, int inNumSamples)
 // 	newinput = ++*in; // read next input sample
 	if(!(n % unit->mAudioFramesPerAnalogFrame)) {
 // 	  analogWriteFrameOnce(context,  n/ unit->mAudioFramesPerAnalogFrame, (int) analogPin, newinput);
-// 	  analogWriteFrame(context,  n/ unit->mAudioFramesPerAnalogFrame, (int) analogPin, newinput);
-	  analogWriteFrame(context,  n/ unit->mAudioFramesPerAnalogFrame, 0, newinput);
-	  rt_printf( "analog pin %f, n %i, inNumSamples %i, newinput %f \n", analogPin, n, inNumSamples, newinput );
+	  analogWriteFrame(context,  n/ unit->mAudioFramesPerAnalogFrame, (int) analogPin, newinput);
+// 	  analogWriteFrame(context,  n/ unit->mAudioFramesPerAnalogFrame, 0, newinput);
+// 	  rt_printf( "analog pin %f, n %i, inNumSamples %i, newinput %f \n", analogPin, n, inNumSamples, newinput );
 	}
   }
 }
@@ -195,7 +195,8 @@ void DigitalInput_Ctor(DigitalInput *unit)
 	BeagleRTContext *context = unit->mWorld->mBelaContext;
   
 	float fDigitalIn = ZIN0(0); // digital in pin -- cannot change after construction
-	unit->mDigitalPin = (int) fDigitalIn;
+// 	unit->mDigitalPin = (int) fDigitalIn;
+	unit->mDigitalPin = (int) sc_clip( fDigital, 0., 15.0 );
 	pinModeFrame(context, 0, unit->mDigitalPin, INPUT);
 	
 	// initiate first sample
@@ -244,7 +245,7 @@ void DigitalOutput_Ctor(DigitalOutput *unit)
 	BeagleRTContext *context = unit->mWorld->mBelaContext;
 
 	float fDigital = ZIN0(0); // digital in pin -- cannot change after construction
-	unit->mDigitalPin = (int) fDigital;
+	unit->mDigitalPin = (int) sc_clip( fDigital, 0., 15.0 );
 	rt_printf( "digital pin %i", unit->mDigitalPin );
 	pinModeFrame(context, 0, unit->mDigitalPin, OUTPUT);
 
@@ -271,6 +272,7 @@ void DigitalIO_next(DigitalIO *unit, int inNumSamples)
   int newpin;
   float newmode = 0; // input
   float newinput = 0;
+  int newinputInt = 0;
   int newoutput = unit->mLastOutput;
 
   // context->audioFrames should be equal to inNumSamples
@@ -279,18 +281,21 @@ void DigitalIO_next(DigitalIO *unit, int inNumSamples)
 	// read input
 // 	newpin = (int) ++*pinid; // get pin id
 	newpin = (int) (pinid[n]);
-	newpin = sc_clip( newpin, 0, 7 );
+	newpin = sc_clip( newpin, 0, 15 );
 // 	newinput = ++*in; // read next input sample
 	newinput = in[n];
-	if ( newinput > 0.5 ){ newinput = 1; }{ newinput = 0; }
+	if ( newinput > 0.5 ){ newinputInt = GPIO_HIGH; }{ newinputInt = GPIO_LOW; }
 // 	newmode = ++*iomode; // get mode for this pin
 	newmode = iomode[n];
 	if ( newmode < 0.5 ){
-	  pinModeFrameOnce( context, n, newpin, INPUT );
+// 	  pinModeFrameOnce( context, n, newpin, INPUT );
+	  pinModeFrame( context, n, newpin, INPUT );
 	  newoutput=digitalReadFrame(context, n, newpin);
 	} else {	  
-	  pinModeFrameOnce( context, n, newpin, OUTPUT );
-	  digitalWriteFrameOnce(context, n, newpin, (int) newinput);
+// 	  pinModeFrameOnce( context, n, newpin, OUTPUT );
+	  pinModeFrame( context, n, newpin, OUTPUT );
+// 	  digitalWriteFrameOnce(context, n, newpin, (int) newinputInt);
+	  digitalWriteFrame(context, n, newpin, (int) newinputInt);
 	}
 	// always write to the output of the UGen
 	*++out = (float) newoutput;
