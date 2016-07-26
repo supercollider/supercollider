@@ -225,6 +225,7 @@ void DigitalOutput_next(DigitalOutput *unit, int inNumSamples)
   for(unsigned int n = 0; n < inNumSamples; n++) {
 	// read input
 	newinput = in[n];
+	newinput = 0.75;
 // 	newinput = ++*in; // read next input sample
 	if ( newinput > 0.5 ){ 
 // 	  digitalWriteFrameOnce(context, n, pinid, GPIO_HIGH );
