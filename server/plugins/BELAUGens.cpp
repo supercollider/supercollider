@@ -266,7 +266,7 @@ void DigitalIO_next(DigitalIO *unit, int inNumSamples)
 
 // 	newinput = 1; // value 1
 	newmode = 1.0; // output
-	rt_printf( "pin %i, in %f, mode %f \n", newpin, newinput, newmode );
+// 	rt_printf( "pin %i, in %f, mode %f \n", newpin, newinput, newmode );
 
 	if ( newinput > 0.5 ){ 
 	  newinputInt = GPIO_HIGH; 
