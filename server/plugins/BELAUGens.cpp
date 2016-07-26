@@ -263,7 +263,7 @@ void DigitalIO_next(DigitalIO *unit, int inNumSamples)
 	newinput = in[n];
 	newmode = iomode[n];
 
-	newinput = 1; // value 1
+// 	newinput = 1; // value 1
 	newmode = 1; // output
 	// 	newmode = ++*iomode; // get mode for this pin
 	rt_printf( "digital io, pin %i, in %f, mode %f \n", newpin, newinput, newmode );
