@@ -230,14 +230,14 @@ void DigitalOutput_next(DigitalOutput *unit, int inNumSamples)
 // 	digitalWriteFrame(context, n, P8_07, GPIO_HIGH );
 	if ( newinput > 0.5 ){ 
 // 	  digitalWriteFrameOnce(context, n, pinid, GPIO_HIGH );
-// 	  digitalWriteFrame(context, n, pinid, GPIO_HIGH );
-	  digitalWriteFrame(context, n, P8_07, GPIO_HIGH );
+	  digitalWriteFrame(context, n, pinid, GPIO_HIGH );
+// 	  digitalWriteFrame(context, n, P8_07, GPIO_HIGH );
 // 	  newinputInt = 1; 
 // 	  rt_printf( "A: pin %i, newinput %f, int %i \n", pinid, newinput, newinputInt );
 	} else { 
 // 	  digitalWriteFrameOnce(context, n, pinid, GPIO_LOW );
-// 	  digitalWriteFrame(context, n, pinid, GPIO_LOW );
-	  digitalWriteFrame(context, n, P8_07, GPIO_LOW );
+	  digitalWriteFrame(context, n, pinid, GPIO_LOW );
+// 	  digitalWriteFrame(context, n, P8_07, GPIO_LOW );
 // 	  newinputInt = 0;
 // 	  rt_printf( "B: pin %i, newinput %f, int %i \n", pinid, newinput, newinputInt );
 	}
@@ -252,8 +252,8 @@ void DigitalOutput_Ctor(DigitalOutput *unit)
 	float fDigital = ZIN0(0); // digital in pin -- cannot change after construction
 	unit->mDigitalPin = (int) sc_clip( fDigital, 0., 15.0 );
 	rt_printf( "digital pin %i \n", unit->mDigitalPin );
-	pinModeFrame(context, 0, P8_07, OUTPUT);
-// 	pinModeFrame(context, 0, unit->mDigitalPin, OUTPUT);
+// 	pinModeFrame(context, 0, P8_07, OUTPUT);
+	pinModeFrame(context, 0, unit->mDigitalPin, OUTPUT);
 
 	// initiate first sample
 	DigitalOutput_next( unit, 1);  
