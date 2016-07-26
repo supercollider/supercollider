@@ -288,6 +288,7 @@ int main(int argc, char* argv[])
 			case 'J' :
 				checkNumArgs(2);
 				options.mBelaAnalogChannels = atoi(argv[j+1]);
+				scprintf("INFO: number of analog channels %i.\n", options.mBelaAnalogChannels );
 				break;
 // 			case 'K' :
 // 				checkNumArgs(2);
