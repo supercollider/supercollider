@@ -262,9 +262,9 @@ void DigitalIO_next(DigitalIO *unit, int inNumSamples)
 // 	newinput = ++*in; // read next input sample
 	newinput = in[n];
 // 	newmode = ++*iomode; // get mode for this pin
-// 	newmode = iomode[n];
+	newmode = iomode[n];
 // 	newinput = 0.0; // value 1
-	newmode = 1.0; // output
+// 	newmode = 1.0; // output
 // 	rt_printf( "pin %i, in %f, mode %f \n", newpin, newinput, newmode );
 
 	if ( newmode < 0.5 ){
