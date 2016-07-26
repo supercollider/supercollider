@@ -257,22 +257,16 @@ void DigitalIO_next(DigitalIO *unit, int inNumSamples)
   for(unsigned int n = 0; n < inNumSamples; n++) {
 	// read input
 // 	newpin = (int) ++*pinid; // get pin id
-	newpin = (int) pinid[n];
-	newpin = sc_clip( newpin, 0, 15 );
+	newpin = (int) sc_clip( pinid[n], 0.0, 15.0 );
+// 	newpin = sc_clip( newpin, 0, 15 );
 // 	newinput = ++*in; // read next input sample
 // 	newinput = in[n];
 // 	newmode = ++*iomode; // get mode for this pin
 // 	newmode = iomode[n];
-
-	newinput = 1.0; // value 1
+	newinput = 0.0; // value 1
 	newmode = 1.0; // output
 // 	rt_printf( "pin %i, in %f, mode %f \n", newpin, newinput, newmode );
 
-	if ( newinput > 0.5 ){ 
-	  newinputInt = GPIO_HIGH; 
-	} else { 
-	  newinputInt = GPIO_LOW;  
-	}
 	if ( newmode < 0.5 ){
 // 	  pinModeFrameOnce( context, n, newpin, INPUT );
 	  pinModeFrame( context, n, newpin, INPUT );
@@ -281,6 +275,11 @@ void DigitalIO_next(DigitalIO *unit, int inNumSamples)
 // 	  pinModeFrameOnce( context, n, newpin, OUTPUT );
 	  pinModeFrame( context, n, newpin, OUTPUT );
 // 	  digitalWriteFrameOnce(context, n, newpin, (int) newinputInt);
+	  if ( newinput > 0.5 ){ 
+	    newinputInt = GPIO_HIGH; 
+	  } else { 
+	    newinputInt = GPIO_LOW;  
+	  }
 	  digitalWriteFrame(context, n, newpin, (int) newinputInt);
 	}
 	// always write to the output of the UGen
