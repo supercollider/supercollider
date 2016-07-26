@@ -260,11 +260,11 @@ void DigitalIO_next(DigitalIO *unit, int inNumSamples)
 	newpin = (int) pinid[n];
 	newpin = sc_clip( newpin, 0, 15 );
 // 	newinput = ++*in; // read next input sample
-	newinput = in[n];
+// 	newinput = in[n];
 // 	newmode = ++*iomode; // get mode for this pin
 // 	newmode = iomode[n];
 
-// 	newinput = 1; // value 1
+	newinput = 1.0; // value 1
 	newmode = 1.0; // output
 // 	rt_printf( "pin %i, in %f, mode %f \n", newpin, newinput, newmode );
 
