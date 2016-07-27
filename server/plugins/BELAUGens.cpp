@@ -87,9 +87,13 @@ void AnalogInput_next(AnalogInput *unit, int inNumSamples)
 //   for(unsigned int n = 0; n < context->audioFrames; n++) {
   for(unsigned int n = 0; n < inNumSamples; n++) {
 	analogPin = fin[n];
-	analogPin = sc_clip( analogPin, 0.0, 7.0 );
-	if(!(n % unit->mAudioFramesPerAnalogFrame)) {
-	  analogValue = analogReadFrame(context, n/unit->mAudioFramesPerAnalogFrame, (int) analogPin);
+// 	analogPin = sc_clip( analogPin, 0.0, context->analogInChannels );
+	if ( (analogPin < 0) || (analogPin > context->analogInChannels) ){
+	    rt_printf( "analog pin must be between %i and %i, it is %f", 0, context->analogInChannels, analogPin );
+	} else {
+	  if(!(n % unit->mAudioFramesPerAnalogFrame)) {
+	    analogValue = analogReadFrame(context, n/unit->mAudioFramesPerAnalogFrame, (int) analogPin);
+	  }
 	}
 	*++out = analogValue;
   }
@@ -130,10 +134,14 @@ void AnalogOutput_next(AnalogOutput *unit, int inNumSamples)
   for(unsigned int n = 0; n < inNumSamples; n++) {
 	// read input
 	analogPin = fin[n];
-	analogPin = sc_clip( analogPin, 0.0, 7.0 );
-	newinput = in[n]; // read next input sample
-	if(!(n % unit->mAudioFramesPerAnalogFrame)) {
-	  analogWriteFrame(context,  n/ unit->mAudioFramesPerAnalogFrame, (int) analogPin, newinput);
+// 	analogPin = sc_clip( analogPin, 0.0, 7.0 );
+	if ( (analogPin < 0) || (analogPin > context->analogOutChannels) ){
+	    rt_printf( "analog pin must be between %i and %i, it is %f", 0, context->analogOutChannels, analogPin );
+	} else {
+	  newinput = in[n]; // read next input sample
+	  if(!(n % unit->mAudioFramesPerAnalogFrame)) {
+	    analogWriteFrame(context,  n/ unit->mAudioFramesPerAnalogFrame, (int) analogPin, newinput);
+	  }
 	}
   }
 }
@@ -175,18 +183,35 @@ void DigitalInput_next(DigitalInput *unit, int inNumSamples)
   }
 }
 
+void DigitalInput_next_dummy(DigitalInput *unit, int inNumSamples)
+{
+  float *out = ZOUT(0);
+  
+  for(unsigned int n = 0; n < inNumSamples; n++) {
+	*++out = 0.0;
+  }
+}
+
 void DigitalInput_Ctor(DigitalInput *unit)
 {
 	BelaContext *context = unit->mWorld->mBelaContext;
   
 	float fDigitalIn = ZIN0(0); // digital in pin -- cannot change after construction
-	unit->mDigitalPin = (int) sc_clip( fDigitalIn, 0., 15.0 );
-	pinModeFrame(context, 0, unit->mDigitalPin, INPUT);
-	
-	// initiate first sample
-	DigitalInput_next( unit, 1);  
-	// set calculation method
-	SETCALC(DigitalInput_next);
+// 	unit->mDigitalPin = (int) sc_clip( fDigitalIn, 0., 15.0 );
+	if ( (fDigitalIn < 0) || (fDigitalIn > context->digitalChannels) ){
+	    rt_printf( "digital pin must be between %i and %i, it is %f", 0, context->digitalChannels, fDigitalIn );
+	  // initiate first sample
+	  DigitalInput_next_dummy( unit, 1);  
+	  // set calculation method
+	  SETCALC(DigitalInput_next_dummy);
+	} else {
+	  unit->mDigitalPin = (int) fDigitalIn;
+	  pinModeFrame(context, 0, unit->mDigitalPin, INPUT);
+	  // initiate first sample
+	  DigitalInput_next( unit, 1);  
+	  // set calculation method
+	  SETCALC(DigitalInput_next);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -218,18 +243,29 @@ void DigitalOutput_next(DigitalOutput *unit, int inNumSamples)
   }
 }
 
+void DigitalOutput_next_dummy(DigitalOutput *unit, int inNumSamples)
+{
+}
+
 void DigitalOutput_Ctor(DigitalOutput *unit)
 {
 	BelaContext *context = unit->mWorld->mBelaContext;
 
 	float fDigital = ZIN0(0); // digital in pin -- cannot change after construction
-	unit->mDigitalPin = (int) sc_clip( fDigital, 0., 15.0 );
-	pinModeFrame(context, 0, unit->mDigitalPin, OUTPUT);
-
-	// initiate first sample
-	DigitalOutput_next( unit, 1);  
-	// set calculation method
-	SETCALC(DigitalOutput_next);
+	if ( (fDigital < 0) || (fDigital > context->digitalChannels) ){
+	    rt_printf( "digital pin must be between %i and %i, it is %f", 0, context->digitalChannels, fDigital );
+	  // initiate first sample
+	    DigitalOutput_next_dummy( unit, 1);  
+	  // set calculation method	    
+	    SETCALC(DigitalOutput_next_dummy);
+	} else {
+	    unit->mDigitalPin = (int) fDigital;
+	    pinModeFrame(context, 0, unit->mDigitalPin, OUTPUT);
+	  // initiate first sample
+	  DigitalOutput_next( unit, 1);  
+	  // set calculation method
+	  SETCALC(DigitalOutput_next);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -256,33 +292,29 @@ void DigitalIO_next(DigitalIO *unit, int inNumSamples)
 //   for(unsigned int n = 0; n < context->digitalFrames; n++) {
   for(unsigned int n = 0; n < inNumSamples; n++) {
 	// read input
-// 	newpin = (int) ++*pinid; // get pin id
-	newpin = (int) sc_clip( pinid[n], 0.0, 15.0 );
-// 	newpin = sc_clip( newpin, 0, 15 );
-// 	newinput = ++*in; // read next input sample
-	newinput = in[n];
-// 	newmode = ++*iomode; // get mode for this pin
-	newmode = iomode[n];
-// 	newinput = 0.0; // value 1
-// 	newmode = 1.0; // output
-// 	rt_printf( "pin %i, in %f, mode %f \n", newpin, newinput, newmode );
-
-	if ( newmode < 0.5 ){
-// 	  pinModeFrameOnce( context, n, newpin, INPUT );
-	  pinModeFrame( context, n, newpin, INPUT );
-	  newoutput = digitalReadFrame(context, n, newpin);
-	} else {	  
-// 	  pinModeFrameOnce( context, n, newpin, OUTPUT );
-	  pinModeFrame( context, n, newpin, OUTPUT );
-// 	  digitalWriteFrameOnce(context, n, newpin, (int) newinputInt);
-	  if ( newinput > 0.5 ){ 
-	    newinputInt = GPIO_HIGH; 
-	  } else { 
-	    newinputInt = GPIO_LOW;  
+	newpin = (int) pinid[n];
+	if ( (newpin < 0) || (newpin > context->digitalChannels) ){
+	    rt_printf( "digital pin must be between %i and %i, it is %i", 0, context->digitalChannels, newpin );
+	} else {
+	  newinput = in[n];
+	  newmode = iomode[n];
+	  if ( newmode < 0.5 ){
+  // 	    pinModeFrameOnce( context, n, newpin, INPUT );
+	    pinModeFrame( context, n, newpin, INPUT );
+	    newoutput = digitalReadFrame(context, n, newpin);
+	  } else {	  
+  // 	    pinModeFrameOnce( context, n, newpin, OUTPUT );
+	    pinModeFrame( context, n, newpin, OUTPUT );
+  // 	    digitalWriteFrameOnce(context, n, newpin, (int) newinputInt);
+	    if ( newinput > 0.5 ){ 
+	      newinputInt = GPIO_HIGH; 
+	    } else { 
+	      newinputInt = GPIO_LOW;  
+	    }
+	    digitalWriteFrame(context, n, newpin, (int) newinputInt);
 	  }
-	  digitalWriteFrame(context, n, newpin, (int) newinputInt);
 	}
-	// always write to the output of the UGen
+	  // always write to the output of the UGen
 	*++out = (float) newoutput;
   }
   unit->mLastOutput = newoutput;
