@@ -49,7 +49,7 @@ if(NOT Boost_FOUND) # we compile boost ourselves
 
 
 	if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-		target_compile_options(boost_thread PRIVATE -fPIC)		
+		target_compile_options(boost_thread PRIVATE -fPIC)
 		target_link_libraries(boost_thread rt)
 	endif()
 
