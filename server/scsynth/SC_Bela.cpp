@@ -30,7 +30,7 @@
 #include <stdlib.h>
 #include <posix/time.h>		// For Xenomai clock_gettime()
 
-#include "BeagleRT.h"
+#include "Bela.h"
 // Xenomai-specific includes
 #include <sys/mman.h>
 #include <native/task.h>
@@ -82,7 +82,7 @@ public:
 
 	void setAudioFramesPerAnalogFrame( int afpaf );
 	
-	void BelaAudioCallback(BeagleRTContext *belaContext);
+	void BelaAudioCallback(BelaContext *belaContext);
 	static void staticMAudioSyncSignal();
 	static AuxiliaryTask mAudioSyncSignalTask;
 	static int countInstances;
@@ -105,7 +105,7 @@ SC_BelaDriver::SC_BelaDriver(struct World *inWorld)
 {
 	mStartHostSecs = 0;
 	mSCBufLength = inWorld->mBufLength;
-	mAudioSyncSignalTask = BeagleRT_createAuxiliaryTask(staticMAudioSyncSignal, 90, "mAudioSyncSignalTask");
+	mAudioSyncSignalTask = Bela_createAuxiliaryTask(staticMAudioSyncSignal, 90, "mAudioSyncSignalTask");
 	staticMAudioSync = &mAudioSync;
 	++countInstances;
 	if(countInstances != 1){
@@ -117,11 +117,11 @@ SC_BelaDriver::SC_BelaDriver(struct World *inWorld)
 SC_BelaDriver::~SC_BelaDriver()
 {
 	// Clean up any resources allocated for audio
-	BeagleRT_cleanupAudio();
+	Bela_cleanupAudio();
 	--countInstances;
 }
 
-void render(BeagleRTContext *belaContext, void *userData)
+void render(BelaContext *belaContext, void *userData)
 {
 	SC_BelaDriver *driver = (SC_BelaDriver*)userData;
 
@@ -130,7 +130,7 @@ void render(BeagleRTContext *belaContext, void *userData)
 
 void sc_SetDenormalFlags();
 
-void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
+void SC_BelaDriver::BelaAudioCallback(BelaContext *belaContext)
 {
 	struct timespec tspec;
 
@@ -170,8 +170,8 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 		mToEngine.Perform();
 		mOscPacketsToEngine.Perform();
 
-		const uint32_t numInputs = belaContext->audioChannels;
-		const uint32_t numOutputs = belaContext->audioChannels;
+		const uint32_t numInputs = belaContext->audioInChannels;
+		const uint32_t numOutputs = belaContext->audioOutChannels;
 
 		int numSamples = NumSamplesPerCallback();
 		int bufFrames = mWorld->mBufLength;
@@ -187,11 +187,11 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 		
 		int anaInputs = 0;
 		if ( numInputs < (int)mWorld->mNumInputs ){
-		  anaInputs = sc_min( belaContext->analogChannels, (int) (mWorld->mNumInputs - numInputs) );
+		  anaInputs = sc_min( belaContext->analogInChannels, (int) (mWorld->mNumInputs - numInputs) );
 		}
 		int anaOutputs = 0;
 		if ( numOutputs < (int)mWorld->mNumOutputs ){
-		  anaOutputs = sc_min( belaContext->analogChannels, (int) (mWorld->mNumOutputs - numOutputs) );
+		  anaOutputs = sc_min( belaContext->analogOutChannels, (int) (mWorld->mNumOutputs - numOutputs) );
 		}
 
 		int bufFramePos = 0;
@@ -214,7 +214,7 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 		double oscToSamples = mOSCtoSamples;
 
 		// clear out anything left over in audioOut buffer
-		for (int i = 0; i < belaContext->audioFrames * belaContext->audioChannels; i++) {
+		for (int i = 0; i < belaContext->audioFrames * belaContext->audioOutChannels; i++) {
 			belaContext->audioOut[i] = 0;
 		}
 
@@ -238,7 +238,7 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 				float analogValue; // placeholder for analogvalue
 				for (int n = 0; n < bufFrames; ++n) {
 				  if(!(n % mAudioFramesPerAnalogFrame)) {
-				    analogValue = analogReadFrame(belaContext, n / mAudioFramesPerAnalogFrame, analogPin);
+				    analogValue = analogRead(belaContext, n / mAudioFramesPerAnalogFrame, analogPin);
 				  }
 				  *dst++ = analogValue;
 				}
@@ -287,13 +287,15 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 					float *src = outBuses + k * bufFrames;
 					for (int n = 0; n < bufFrames; ++n) {
 					  if(!(n % mAudioFramesPerAnalogFrame)) {
-					    analogWriteFrameOnce( belaContext, n / mAudioFramesPerAnalogFrame, analogPin, *src++ ); 
+// 					    analogWriteOnce( belaContext, n / mAudioFramesPerAnalogFrame, analogPin, *src++ );
+					    analogWrite( belaContext, n / mAudioFramesPerAnalogFrame, analogPin, *src++ ); 
 					  }
 					}
 				} else {
 					for (int n = 0; n < bufFrames; ++n) {
 					  if(!(n % mAudioFramesPerAnalogFrame)) {
-					    analogWriteFrameOnce(belaContext, n / mAudioFramesPerAnalogFrame, analogPin, 0.0f ); 
+// 					    analogWriteOnce(belaContext, n / mAudioFramesPerAnalogFrame, analogPin, 0.0f );
+					    analogWrite(belaContext, n / mAudioFramesPerAnalogFrame, analogPin, 0.0f ); 
 					  }
 					}
 				}
@@ -308,7 +310,7 @@ void SC_BelaDriver::BelaAudioCallback(BeagleRTContext *belaContext)
 	}
 
 	// this avoids Xenomai mode switches in the audio thread ...
-	BeagleRT_scheduleAuxiliaryTask(mAudioSyncSignalTask);
+	Bela_scheduleAuxiliaryTask(mAudioSyncSignalTask);
 }
 
 void SC_BelaDriver::staticMAudioSyncSignal(){
@@ -322,8 +324,8 @@ void SC_BelaDriver::staticMAudioSyncSignal(){
 bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 {
 	scprintf("SC_BelaDriver: >>DriverSetup\n");
-	BeagleRTInitSettings settings;
-	BeagleRT_defaultSettings(&settings);	// This function should be called in main() before parsing any command-line arguments. It
+	BelaInitSettings settings;
+	Bela_defaultSettings(&settings);	// This function should be called in main() before parsing any command-line arguments. It
 				// sets default values in the data structure which specifies the BeagleRT settings, including
 				// frame sizes, numbers of channels, volume levels and other parameters.
 
@@ -338,23 +340,43 @@ bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 	// note that Bela doesn't give us an option to choose samplerate, since it's baked-in.
 	
 	// configure the number of analog channels - this will determine their samplerate
-	if ( mWorld->mBelaAnalogChannels > 0 ){
+	settings.useAnalog = 0;
+	
+	if ( mWorld->mBelaAnalogInputChannels > 0 }
 	  settings.useAnalog = 1;
-	  if ( mWorld->mBelaAnalogChannels < 5 ){ // always use a minimum of 4 analog channels, as we cannot read analog I/O faster than audio rate	    
-	    settings.numAnalogChannels = 4; // analog rate == audio rate
+	  if ( mWorld->mBelaAnalogInputChannels < 5 ){ // always use a minimum of 4 analog channels, as we cannot read analog I/O faster than audio rate	    
+	    settings.numAnalogInChannels = 4; // analog rate == audio rate
 	  } else {
-	    settings.numAnalogChannels = 8; // analog rate == audie rate / 2
+	    settings.numAnalogInChannels = 8; // analog rate == audie rate / 2
 	  }
 	} else {
-	  settings.useAnalog = 0;
-	  settings.numAnalogChannels = 0;
+	  settings.numAnalogInChannels = 0;
 	}
-	scprintf("SC_BelaDriver: >>DriverSetup - configured with (%i) analog channels\n", settings.numAnalogChannels );
+	
+	if ( mWorld->mBelaAnalogOutputChannels > 0 ) ){
+	  if ( mWorld->mBelaAnalogOutputChannels < 5 ){ // always use a minimum of 4 analog channels, as we cannot read analog I/O faster than audio rate	    
+	    settings.numAnalogOutChannels = 4; // analog rate == audio rate
+	  } else {
+	    settings.numAnalogOutChannels = 8; // analog rate == audie rate / 2
+	  }
+	} else {
+	  settings.numAnalogOutChannels = 0;
+	}
+	
+// 	// configure the number of digital channels
+// 	settings.useDigital = 0;
+// 	
+// 	if ( mWorld->mBelaDigitalChannels > 0 }
+// 	  settings.numDigitalChannels = mWorld->mBelaDigitalChannels;
+// 	  settings.useDigital = 1;
+// 	}
+	
+	scprintf("SC_BelaDriver: >>DriverSetup - configured with (%i) input and (%i) output analog channels\n", settings.numAnalogInChannels, settings.numAnalogOutChannels );
 
 	// Initialise the PRU audio device. This function prepares audio rendering in BeagleRT. It should be called from main() sometime
 	// after command line option parsing has finished. It will initialise the rendering system, which
 	// in the process will result in a call to the user-defined setup() function.
-	if(BeagleRT_initAudio(&settings, this) != 0) {
+	if(Bela_initAudio(&settings, this) != 0) {
 		scprintf("Error in SC_BelaDriver::DriverSetup(): unable to initialise audio\n");
 		return false;
 	}
@@ -379,7 +401,7 @@ void SC_BelaDriver::setAudioFramesPerAnalogFrame( int afpaf ){
 // in from the call to initAudio().
 //
 // Return true on success; returning false halts the program.
-bool setup(BeagleRTContext* belaContext, void* userData)
+bool setup(BelaContext* belaContext, void* userData)
 {
 	if(userData == 0){
 		scprintf("SC_BelaDriver: error, setup() got no user data\n");
@@ -397,14 +419,14 @@ bool setup(BeagleRTContext* belaContext, void* userData)
 
 // cleanup() is called once at the end, after the audio has stopped.
 // Release any resources that were allocated in setup().
-void cleanup(BeagleRTContext *belaContext, void *userData)
+void cleanup(BelaContext *belaContext, void *userData)
 {
 }
 
 bool SC_BelaDriver::DriverStart()
 {
 	scprintf("SC_BelaDriver: >>DriverStart\n");
-	if(BeagleRT_startAudio()) {
+	if(Bela_startAudio()) {
 		scprintf("Error in SC_BelaDriver::DriverStart(): unable to start real-time audio\n");
 		return false;
 	}
@@ -414,6 +436,6 @@ bool SC_BelaDriver::DriverStart()
 bool SC_BelaDriver::DriverStop()
 {
 	scprintf("SC_BelaDriver: >>DriverStop\n");
-	BeagleRT_stopAudio();
+	Bela_stopAudio();
 	return true;
 }

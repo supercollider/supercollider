@@ -29,7 +29,7 @@
 
 #include <atomic>
 
-#include "BeagleRT.h"
+#include "Bela.h"
 // Xenomai-specific includes
 #include <sys/mman.h>
 #include <native/task.h>
@@ -76,7 +76,7 @@ void AnalogInput_next(AnalogInput *unit, int inNumSamples)
 {
   World *world = unit->mWorld;
   int bufLength = world->mBufLength;
-  BeagleRTContext *context = world->mBelaContext;
+  BelaContext *context = world->mBelaContext;
 
   float *fin = IN(0); // analog in pin, can be modulated
   float *out = ZOUT(0);
@@ -97,7 +97,7 @@ void AnalogInput_next(AnalogInput *unit, int inNumSamples)
 
 void AnalogInput_Ctor(AnalogInput *unit)
 {
-	BeagleRTContext *context = unit->mWorld->mBelaContext;
+	BelaContext *context = unit->mWorld->mBelaContext;
   
 	if(context->analogFrames == 0 || context->analogFrames > context->audioFrames) {
 		rt_printf("Error: the UGen needs BELA analog enabled, with 4 or 8 channels\n");
@@ -118,7 +118,7 @@ void AnalogOutput_next(AnalogOutput *unit, int inNumSamples)
 {
   World *world = unit->mWorld;
   int bufLength = world->mBufLength;
-  BeagleRTContext *context = world->mBelaContext;
+  BelaContext *context = world->mBelaContext;
 
   float *fin = IN(0); // analog in pin, can be modulated
   float *in = IN(1);
@@ -140,7 +140,7 @@ void AnalogOutput_next(AnalogOutput *unit, int inNumSamples)
 
 void AnalogOutput_Ctor(AnalogOutput *unit)
 {
-	BeagleRTContext *context = unit->mWorld->mBelaContext;
+	BelaContext *context = unit->mWorld->mBelaContext;
   
 	if(context->analogFrames == 0 ) {
 		rt_printf("Error: the UGen needs BELA analog enabled\n");
@@ -161,7 +161,7 @@ void DigitalInput_next(DigitalInput *unit, int inNumSamples)
 {
   World *world = unit->mWorld;
   int bufLength = world->mBufLength;
-  BeagleRTContext *context = world->mBelaContext;
+  BelaContext *context = world->mBelaContext;
 
   int pinid = unit->mDigitalPin;
   int digitalValue;
@@ -177,7 +177,7 @@ void DigitalInput_next(DigitalInput *unit, int inNumSamples)
 
 void DigitalInput_Ctor(DigitalInput *unit)
 {
-	BeagleRTContext *context = unit->mWorld->mBelaContext;
+	BelaContext *context = unit->mWorld->mBelaContext;
   
 	float fDigitalIn = ZIN0(0); // digital in pin -- cannot change after construction
 	unit->mDigitalPin = (int) sc_clip( fDigitalIn, 0., 15.0 );
@@ -195,7 +195,7 @@ void DigitalOutput_next(DigitalOutput *unit, int inNumSamples)
 {
   World *world = unit->mWorld;
   int bufLength = world->mBufLength;
-  BeagleRTContext *context = world->mBelaContext;
+  BelaContext *context = world->mBelaContext;
 
   int pinid = unit->mDigitalPin;
   float *in = IN(1);
@@ -220,7 +220,7 @@ void DigitalOutput_next(DigitalOutput *unit, int inNumSamples)
 
 void DigitalOutput_Ctor(DigitalOutput *unit)
 {
-	BeagleRTContext *context = unit->mWorld->mBelaContext;
+	BelaContext *context = unit->mWorld->mBelaContext;
 
 	float fDigital = ZIN0(0); // digital in pin -- cannot change after construction
 	unit->mDigitalPin = (int) sc_clip( fDigital, 0., 15.0 );
@@ -239,7 +239,7 @@ void DigitalIO_next(DigitalIO *unit, int inNumSamples)
 {
   World *world = unit->mWorld;
   int bufLength = world->mBufLength;
-  BeagleRTContext *context = world->mBelaContext;
+  BelaContext *context = world->mBelaContext;
 
   float *pinid = IN(0);
   float *in = IN(1); // input value
@@ -290,7 +290,7 @@ void DigitalIO_next(DigitalIO *unit, int inNumSamples)
 
 void DigitalIO_Ctor(DigitalIO *unit)
 {
-	BeagleRTContext *context = unit->mWorld->mBelaContext;
+	BelaContext *context = unit->mWorld->mBelaContext;
 
 	unit->mLastOutput = 0;
 
@@ -310,7 +310,7 @@ void DigitalIO_Ctor(DigitalIO *unit)
 
 // // the functions below are needed??
 // 
-// void render(BeagleRTContext *belaContext, void *userData)
+// void render(BelaContext *belaContext, void *userData)
 // {
 // // 	SC_BelaDriver *driver = (SC_BelaDriver*)userData;
 // // 	driver->BelaAudioCallback(belaContext);
@@ -323,7 +323,7 @@ void DigitalIO_Ctor(DigitalIO *unit)
 // // in from the call to initAudio().
 // //
 // // Return true on success; returning false halts the program.
-// bool setup(BeagleRTContext* belaContext, void* userData)
+// bool setup(BelaContext* belaContext, void* userData)
 // {
 // 	if(userData == 0){
 // 		printf("BelaPLUGINS: error, setup() got no user data\n");
@@ -335,7 +335,7 @@ void DigitalIO_Ctor(DigitalIO *unit)
 // 
 // // cleanup() is called once at the end, after the audio has stopped.
 // // Release any resources that were allocated in setup().
-// void cleanup(BeagleRTContext *belaContext, void *userData)
+// void cleanup(BelaContext *belaContext, void *userData)
 // {
 // }
 

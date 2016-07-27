@@ -80,9 +80,9 @@ struct WorldOptions
 	int mSharedMemoryID;
 	
 #ifdef BELA
-	uint32 mBelaAnalogChannels;
-// 	uint32 mBelaAnalogInputChannels;
-// 	uint32 mBelaAnalogOutputChannels;
+// 	uint32 mBelaAnalogChannels;
+	uint32 mBelaAnalogInputChannels;
+	uint32 mBelaAnalogOutputChannels;
 #endif
 };
 
