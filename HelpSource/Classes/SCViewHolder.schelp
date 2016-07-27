@@ -1,9 +1,16 @@
 CLASS:: SCViewHolder
-summary:: Instead of subclassing a (Q/SC)View, this is a proxy/adapter object that holds the View
+summary:: [DEPRECATED] Instead of subclassing a (Q/SC)View, this is a proxy/adapter object that holds the View
 categories:: GUI
 related:: Classes/View
 
 DESCRIPTION::
+
+warning::
+This is a legacy method. Don't use it.
+
+The correct way to write your own custom view class is to use simple composition. That is, use other view classes to create the components of your custom view, and store these as properties in your custom view class.
+::
+
 When writing gui widgets it is sometimes not desirable to subclass a view class. Its preferable to write a class that acts like a View and is used where Views normally are used but isn't a direct subclass of a View class.
 
 In the View hierarchy it is not possible to subclass an View class because under the hood there is always a strict relationship between the View subclass and its paired C++ class.  The C++ class makes the actual view, the SC class is an interface to that C++ object.
