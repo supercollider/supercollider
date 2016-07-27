@@ -45,9 +45,8 @@ code::
 
 (
 SynthDef("help-DigitalIO",{ arg out=0;
-    DigitalIO.ar( 0, SinOsc.ar( 10 ), K2A.ar( LFPulse.kr( 0.1 ) ) ).poll;
+    DigitalIO.ar( DC.ar( 0 ), SinOsc.ar( 10 ), K2A.ar( LFPulse.kr( 0.1 ) ) ).poll;
 }).play;
 )
 
 ::
-

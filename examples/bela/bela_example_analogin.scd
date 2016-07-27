@@ -15,7 +15,7 @@ s.waitForBoot({
   (	
   SynthDef("help-AnalogInput",{ arg out=0; 
     Out.ar(out, 
-      SinOsc.ar( AnalogInput.ar( 0 ).exprange( 200, 5000 ), 0, 0.1 ) 
+      SinOsc.ar( AnalogInput.ar( DC.ar( 0 ) ).exprange( 200, 5000 ), 0, 0.1 ) 
       ) 
   }).send(s);
   );

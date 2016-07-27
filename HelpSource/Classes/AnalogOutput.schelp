@@ -35,7 +35,7 @@ code::
 
 (
 SynthDef("help-AnalogOutput",{ arg out=0;
-    AnalogOutput.ar( 0, SinOsc.ar( 10 ) );
+    AnalogOutput.ar( DC.ar( 0 ), SinOsc.ar( 10 ) );
 }).play;
 )
 ::
