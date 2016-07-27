@@ -47,7 +47,7 @@ ServerOptions {
 	// extension for BELA
 	var <>numAnalogInChannels;
 	var <>numAnalogOutChannels;
-	var <>numDigitialChannels;
+	var <>numDigitalChannels;
 
 	device {
 		^if(inDevice == outDevice)
