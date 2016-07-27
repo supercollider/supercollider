@@ -45,7 +45,7 @@ Get the source code
 My modified source code is in this git branch here, called `bela_hackery`. If your Bela is still connected to the network you can grab it directly:
 
     cd /extrabela
-    git clone --recursive -b bela_hackery_v01 https://github.com/sensestage/supercollider.git
+    git clone --recursive -b bela_hackery_v01_master https://github.com/sensestage/supercollider.git
     cd supercollider
 
 I believe that the Bela system image already includes most of SuperCollider's build dependencies. The updates to cmake/gcc described above are incurred because I'm using the latest `master` version of SC rather than 3.6.
