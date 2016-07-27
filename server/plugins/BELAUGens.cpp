@@ -78,19 +78,19 @@ void AnalogInput_next(AnalogInput *unit, int inNumSamples)
 
   float *fin = IN(0); // analog in pin, can be modulated
   float *out = ZOUT(0);
-  float analogPin = 0;
+  int analogPin = 0;
   float analogValue = 0;
   
   // context->audioFrames should be equal to inNumSamples
 //   for(unsigned int n = 0; n < context->audioFrames; n++) {
   for(unsigned int n = 0; n < inNumSamples; n++) {
-	analogPin = fin[n];
+	analogPin = (int) fin[n];
 // 	analogPin = sc_clip( analogPin, 0.0, context->analogInChannels );
-	if ( (analogPin < 0) || (analogPin > context->analogInChannels) ){
-	    rt_printf( "analog pin must be between %i and %i, it is %f", 0, context->analogInChannels, analogPin );
+	if ( (analogPin < 0) || (analogPin >= context->analogInChannels) ){
+	    rt_printf( "analog pin must be between %i and %i, it is %i", 0, context->analogInChannels, analogPin );
 	} else {
 	  if(!(n % unit->mAudioFramesPerAnalogFrame)) {
-	    analogValue = analogRead(context, n/unit->mAudioFramesPerAnalogFrame, (int) analogPin);
+	    analogValue = analogRead(context, n/unit->mAudioFramesPerAnalogFrame, analogPin);
 	  }
 	}
 	*++out = analogValue;
@@ -125,20 +125,20 @@ void AnalogOutput_next(AnalogOutput *unit, int inNumSamples)
   float *fin = IN(0); // analog in pin, can be modulated
   float *in = IN(1);
   
-  float analogPin = 0;
+  int analogPin = 0;
   float newinput = 0;
   // context->audioFrames should be equal to inNumSamples
 //   for(unsigned int n = 0; n < context->audioFrames; n++) {
   for(unsigned int n = 0; n < inNumSamples; n++) {
 	// read input
-	analogPin = fin[n];
+	analogPin = (int) fin[n];
 // 	analogPin = sc_clip( analogPin, 0.0, 7.0 );
-	if ( (analogPin < 0) || (analogPin > context->analogOutChannels) ){
-	    rt_printf( "analog pin must be between %i and %i, it is %f", 0, context->analogOutChannels, analogPin );
+	if ( (analogPin < 0) || (analogPin >= context->analogOutChannels) ){
+	    rt_printf( "analog pin must be between %i and %i, it is %i", 0, context->analogOutChannels, analogPin );
 	} else {
 	  newinput = in[n]; // read next input sample
 	  if(!(n % unit->mAudioFramesPerAnalogFrame)) {
-	    analogWrite(context,  n/ unit->mAudioFramesPerAnalogFrame, (int) analogPin, newinput);
+	    analogWrite(context,  n/ unit->mAudioFramesPerAnalogFrame, analogPin, newinput);
 	  }
 	}
   }
@@ -195,15 +195,15 @@ void DigitalInput_Ctor(DigitalInput *unit)
 	BelaContext *context = unit->mWorld->mBelaContext;
   
 	float fDigitalIn = ZIN0(0); // digital in pin -- cannot change after construction
+	unit->mDigitalPin = (int) fDigitalIn;
 // 	unit->mDigitalPin = (int) sc_clip( fDigitalIn, 0., 15.0 );
-	if ( (fDigitalIn < 0) || (fDigitalIn > context->digitalChannels) ){
-	    rt_printf( "digital pin must be between %i and %i, it is %f", 0, context->digitalChannels, fDigitalIn );
+	if ( (unit->mDigitalPin < 0) || (unit->mDigitalPin >= context->digitalChannels) ){
+	    rt_printf( "digital pin must be between %i and %i, it is %i", 0, context->digitalChannels, unit->mDigitalPin );
 	  // initiate first sample
 	  DigitalInput_next_dummy( unit, 1);  
 	  // set calculation method
 	  SETCALC(DigitalInput_next_dummy);
 	} else {
-	  unit->mDigitalPin = (int) fDigitalIn;
 	  pinMode(context, 0, unit->mDigitalPin, INPUT);
 	  // initiate first sample
 	  DigitalInput_next( unit, 1);  
@@ -250,15 +250,15 @@ void DigitalOutput_Ctor(DigitalOutput *unit)
 	BelaContext *context = unit->mWorld->mBelaContext;
 
 	float fDigital = ZIN0(0); // digital in pin -- cannot change after construction
-	if ( (fDigital < 0) || (fDigital > context->digitalChannels) ){
-	    rt_printf( "digital pin must be between %i and %i, it is %f", 0, context->digitalChannels, fDigital );
+	unit->mDigitalPin = (int) fDigital;
+	if ( (unit->mDigitalPin < 0) || (unit->mDigitalPin >= context->digitalChannels) ){
+	  rt_printf( "digital pin must be between %i and %i, it is %i", 0, context->digitalChannels, unit->mDigitalPin );
 	  // initiate first sample
-	    DigitalOutput_next_dummy( unit, 1);  
+	  DigitalOutput_next_dummy( unit, 1);  
 	  // set calculation method	    
-	    SETCALC(DigitalOutput_next_dummy);
+	  SETCALC(DigitalOutput_next_dummy);
 	} else {
-	    unit->mDigitalPin = (int) fDigital;
-	    pinMode(context, 0, unit->mDigitalPin, OUTPUT);
+	  pinMode(context, 0, unit->mDigitalPin, OUTPUT);
 	  // initiate first sample
 	  DigitalOutput_next( unit, 1);  
 	  // set calculation method
@@ -291,7 +291,7 @@ void DigitalIO_next(DigitalIO *unit, int inNumSamples)
   for(unsigned int n = 0; n < inNumSamples; n++) {
 	// read input
 	newpin = (int) pinid[n];
-	if ( (newpin < 0) || (newpin > context->digitalChannels) ){
+	if ( (newpin < 0) || (newpin >= context->digitalChannels) ){
 	    rt_printf( "digital pin must be between %i and %i, it is %i", 0, context->digitalChannels, newpin );
 	} else {
 	  newinput = in[n];
