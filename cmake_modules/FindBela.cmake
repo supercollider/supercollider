@@ -32,10 +32,10 @@ else (BELA_INCLUDE_DIRS)
   endif (${CMAKE_MAJOR_VERSION} EQUAL 2 AND ${CMAKE_MINOR_VERSION} EQUAL 4)
   find_path(BELA_INCLUDE_DIR
     NAMES
-      BeagleRT.h
+      Bela.h
     PATHS
       ${_BELA_INCLUDEDIR}
-      /root/BeagleRT/include
+      /root/Bela/include
       /usr/include
       /usr/local/include
       /opt/local/include
@@ -47,7 +47,7 @@ else (BELA_INCLUDE_DIRS)
       RTAudio.cpp
     PATHS
       ${_BELA_SOURCES_DIR}
-      /root/BeagleRT/core
+      /root/Bela/core
   )
 
   file(GLOB BELA_SOURCE_FILES ${BELA_SOURCES_DIR}/*.cpp)
