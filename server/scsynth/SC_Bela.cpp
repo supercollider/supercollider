@@ -146,7 +146,7 @@ void SC_BelaDriver::BelaAudioCallback(BelaContext *belaContext)
 	clock_gettime(CLOCK_HOST_REALTIME, &tspec);
 
 	double hostSecs = (double)tspec.tv_sec + (double)tspec.tv_nsec * 1.0e-9;
-	double sampleTime = static_cast<double>(belaContext->audioSampleCount);
+	double sampleTime = static_cast<double>(belaContext->audioFramesElapsed);
 
 	if (mStartHostSecs == 0) {
 		mStartHostSecs = hostSecs;
@@ -342,7 +342,7 @@ bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 	// configure the number of analog channels - this will determine their samplerate
 	settings.useAnalog = 0;
 	
-	if ( mWorld->mBelaAnalogInputChannels > 0 }
+	if ( mWorld->mBelaAnalogInputChannels > 0 ){
 	  settings.useAnalog = 1;
 	  if ( mWorld->mBelaAnalogInputChannels < 5 ){ // always use a minimum of 4 analog channels, as we cannot read analog I/O faster than audio rate	    
 	    settings.numAnalogInChannels = 4; // analog rate == audio rate
@@ -353,7 +353,7 @@ bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 	  settings.numAnalogInChannels = 0;
 	}
 	
-	if ( mWorld->mBelaAnalogOutputChannels > 0 ) ){
+	if ( mWorld->mBelaAnalogOutputChannels > 0 ){
 	  if ( mWorld->mBelaAnalogOutputChannels < 5 ){ // always use a minimum of 4 analog channels, as we cannot read analog I/O faster than audio rate	    
 	    settings.numAnalogOutChannels = 4; // analog rate == audio rate
 	  } else {
@@ -366,7 +366,7 @@ bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 	// configure the number of digital channels
 	settings.useDigital = 0;
 	
-	if ( mWorld->mBelaDigitalChannels > 0 }
+	if ( mWorld->mBelaDigitalChannels > 0 ){
 	  settings.numDigitalChannels = mWorld->mBelaDigitalChannels;
 	  settings.useDigital = 1;
 	}
