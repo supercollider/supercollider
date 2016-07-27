@@ -7,7 +7,7 @@ fork{
     	
 	(	
 	SynthDef("help-AnalogOutput",{ arg out=0;
-	    AnalogOutput.ar( DC.ar( 0 ), SinOsc.ar( 10 ) );
+	    AnalogOutput.ar( DC.ar( 0 ), SinOsc.ar( 10, 0, 0.5, 0.5 ) );
 	}).send(s);
 	);
 
