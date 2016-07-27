@@ -192,8 +192,6 @@ int SC_PortAudioDriver::PortAudioCallback( const void *input, void *output,
 		mToEngine.Perform();
 		mOscPacketsToEngine.Perform();
 
-		int numInputs = mInputChannelCount;
-		int numOutputs = mOutputChannelCount;
 		const float **inBuffers = (const float**)input;
 		float **outBuffers = (float**)output;
 
@@ -205,9 +203,6 @@ int SC_PortAudioDriver::PortAudioCallback( const void *input, void *output,
 		float *outBuses = mWorld->mAudioBus;
 		int32 *inTouched = mWorld->mAudioBusTouched + mWorld->mNumOutputs;
 		int32 *outTouched = mWorld->mAudioBusTouched;
-
-		int minInputs = std::min<size_t>(numInputs, mWorld->mNumInputs);
-		int minOutputs = std::min<size_t>(numOutputs, mWorld->mNumOutputs);
 
 		int bufFramePos = 0;
 #ifdef SC_PA_USE_DLL
@@ -229,11 +224,11 @@ int SC_PortAudioDriver::PortAudioCallback( const void *input, void *output,
 
 			// copy+touch inputs
 			tch = inTouched;
-			for (int k = 0; k < minInputs; ++k)
+			for (int k = 0; k < mInputChannelCount; ++k)
 			{
 				const float *src = inBuffers[k] + bufFramePos;
 				float *dst = inBuses + k * bufFrames;
-				for (int n = 0; n < bufFrames; ++n) *dst++ = *src++;
+				memcpy(dst, src, bufFrames * sizeof(float));
 				*tch++ = bufCounter;
 			}
 
@@ -260,19 +255,19 @@ int SC_PortAudioDriver::PortAudioCallback( const void *input, void *output,
 				event.Perform();
 			}
 			world->mSampleOffset = 0;
-			world->mSubsampleOffset = 0.f;
+			world->mSubsampleOffset = 0.0f;
 
 			World_Run(world);
 
 			// copy touched outputs
 			tch = outTouched;
-			for (int k = 0; k < minOutputs; ++k) {
+			for (int k = 0; k < mOutputChannelCount; ++k) {
 				float *dst = outBuffers[k] + bufFramePos;
 				if (*tch++ == bufCounter) {
-					float *src = outBuses + k * bufFrames;
-					for (int n = 0; n < bufFrames; ++n) *dst++ = *src++;
+					const float *src = outBuses + k * bufFrames;
+					memcpy(dst, src, bufFrames * sizeof(float));
 				} else {
-					for (int n = 0; n < bufFrames; ++n) *dst++ = 0.0f;
+					memset(dst, 0, bufFrames * sizeof(float));
 				}
 			}
 
@@ -340,7 +335,7 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 	for( int i=0; i<numDevices; i++ ) {
 		pdi = Pa_GetDeviceInfo( i );
 		apiInfo = Pa_GetHostApiInfo(pdi->hostApi);
-		fprintf(stdout, "  - %s : %s   (device #%d with %d ins %d outs)\n",apiInfo->name,pdi->name, i, pdi->maxInputChannels, pdi->maxOutputChannels);
+		fprintf(stdout, "  - %s : %s   (device #%d with %d ins %d outs)\n", apiInfo->name,pdi->name, i, pdi->maxInputChannels, pdi->maxOutputChannels);
 	}
 
 	mDeviceInOut[0] = paNoDevice;
@@ -372,8 +367,9 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 		fprintf(stdout, "\nBooting with:\n");
 		PaSampleFormat fmt = paFloat32 | paNonInterleaved;
 		if (mDeviceInOut[0]!=paNoDevice){
-			mInputChannelCount = Pa_GetDeviceInfo( mDeviceInOut[0] )->maxInputChannels;
-			fprintf(stdout, "  In: %s : %s \n",
+			// avoid to allocate the 128 virtual channels reported by the portaudio library for ALSA "default"
+			mInputChannelCount = std::min<size_t>(mWorld->mNumInputs, Pa_GetDeviceInfo( mDeviceInOut[0] )->maxInputChannels);
+			fprintf(stdout, "  In: %s : %s\n",
 			Pa_GetHostApiInfo(Pa_GetDeviceInfo( mDeviceInOut[0] )->hostApi)->name,
 			Pa_GetDeviceInfo( mDeviceInOut[0] )->name);
 		}else{
@@ -381,8 +377,9 @@ bool SC_PortAudioDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 		}
 
 		if (mDeviceInOut[1]!=paNoDevice){
-			mOutputChannelCount = Pa_GetDeviceInfo( mDeviceInOut[1] )->maxOutputChannels;
-			fprintf(stdout, "  Out: %s : %s \n",
+			// avoid to allocate the 128 virtual channels reported by the portaudio library for ALSA "default"
+			mOutputChannelCount =  std::min<size_t>(mWorld->mNumOutputs, Pa_GetDeviceInfo( mDeviceInOut[1] )->maxOutputChannels);
+			fprintf(stdout, "  Out: %s : %s\n",
 			Pa_GetHostApiInfo(Pa_GetDeviceInfo( mDeviceInOut[1] )->hostApi)->name,
 			Pa_GetDeviceInfo( mDeviceInOut[1] )->name);
 		}else{

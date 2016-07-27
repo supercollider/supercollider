@@ -819,7 +819,7 @@ void DemandEnvGen_next_k(DemandEnvGen *unit, int inNumSamples)
 							double a1 = (endLevel - level) / (1.0 - exp(curve));
 							unit->m_a2 = level + a1;
 							unit->m_b1 = a1;
-							unit->m_grow = exp(curve / count);
+							unit->m_grow = exp(curve / ceil( count) );
 						}
 					} break;
 					case shape_Squared : {
@@ -1079,7 +1079,7 @@ void DemandEnvGen_next_a(DemandEnvGen *unit, int inNumSamples)
 							double a1 = (endLevel - level) / (1.0 - exp(curve));
 							unit->m_a2 = level + a1;
 							unit->m_b1 = a1;
-							unit->m_grow = exp(curve / count);
+							unit->m_grow = exp(curve / ceil( count ) );
 						}
 					} break;
 					case shape_Squared : {

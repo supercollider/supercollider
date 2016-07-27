@@ -2650,7 +2650,7 @@ option_group_jump:
       //
       // allow backrefs to this mark:
       //
-      if((markid > 0) && (markid < (int)(sizeof(unsigned) * CHAR_BIT)))
+      if(markid < (int)(sizeof(unsigned) * CHAR_BIT))
          this->m_backrefs |= 1u << (markid - 1);
    }
    return true;

@@ -30,7 +30,7 @@ namespace nova {
 class synth_factory
 {
 public:
-    void register_definition(synth_definition_ptr const & prototype)
+    void register_definition(synth_definition_ptr && prototype)
     {
         prototype_map_type::iterator it = definition_map.find(prototype->name(), named_hash_hash(), named_hash_equal());
         if (it != definition_map.end()) {
@@ -38,8 +38,10 @@ public:
             it->release();
         }
 
-        definition_map.insert(*prototype.get());
-        prototype->add_ref();
+        synth_definition_ptr ptr( std::forward<synth_definition_ptr>(prototype) );
+
+        ptr->add_ref();
+        definition_map.insert(*ptr.get());
     }
 
     abstract_synth * create_instance(const char * name, int node_id)

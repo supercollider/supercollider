@@ -28,6 +28,7 @@ Build requirements
  * cmake >= 2.8.11
    * http://www.cmake.org
    * cross-platform build system
+   * cmake >= 3.1 is required for supernova (an alternate server with parallel processing capabilities). supernova is built by default if cmake is new enough.
 
  * fftw >= 3.0
    * http://www.fftw.org
@@ -97,7 +98,14 @@ for building supercollider:
  - pkg-config
  - git (used by the Quarks package management system)
  - cmake (on some platforms, cmake >= 2.9 may require manual build)
- - qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5webkit5-dev qtpositioning5-dev libqt5sensors5-dev
+ - qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5webkit5-dev qtpositioning5-dev libqt5sensors5-dev libqt5opengl5-dev
+
+More details for building on embedded linux platforms (Raspberry Pi, 
+Beaglebone Black) can be found here:
+
+    http://supercollider.github.io/development/building
+
+The recommended version of gcc is 4.8
 
 
 Building
@@ -111,6 +119,11 @@ builds in a specific build directory:
    $> cd build
    $> cmake -DCMAKE_PREFIX_PATH=/path/to/qt5 ..
    ```
+
+   The location of `/path/to/qt5` will depend on how you installed Qt:
+
+   - If you used your Linux distribution's repositories, it will be `/usr/lib/i386-linux-gnu/` (32-bit) or `/usr/lib/x86_64-linux-gnu/` (64-bit).
+   - If you downloaded Qt from the Qt website, the path is two directories down from the top-level unpacked Qt directory: `Qt5.x.x/5.x/gcc/` (32-bit) or `Qt5.x.x/5.x/gcc_64/` (64-bit).
 
    You can see the available build options with ```cmake -LH```.
 
@@ -161,6 +174,17 @@ If you want to build without it configure cmake like this:
 ```
 $> cmake -DSC_QT=OFF ..
 ```
+
+Note: running headless SC in a X-less environment requires
+jackd without D-bus support. On Raspbian Jessie this requires
+compiling jackd rather than using the packaged version.
+Also note that you will get errors on sclang startup from
+classes requiring Qt. A workaround and more details are 
+described in:
+
+    http://supercollider.github.io/development/building-raspberrypi 
+
+
 
 ### Speeding up repeated builds
 

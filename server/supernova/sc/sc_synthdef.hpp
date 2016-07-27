@@ -38,7 +38,7 @@ class sc_synthdef
 {
     typedef std::vector<float, boost::alignment::aligned_allocator<float, 64> > float_vector;
     typedef std::vector<char, boost::alignment::aligned_allocator<char, 64> > char_vector;
-#if BOOST_VERSION > 106000
+#if BOOST_VERSION > 107000
     typedef std::map<symbol, int32_t, std::less<symbol>, boost::alignment::aligned_allocator<std::pair<symbol, int32_t>, 64>> parameter_index_map_t;
 #else
     typedef std::map<symbol, int32_t, std::less<symbol>> parameter_index_map_t;

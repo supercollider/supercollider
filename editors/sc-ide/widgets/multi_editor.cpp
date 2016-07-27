@@ -215,6 +215,12 @@ void EditorTabBar::mousePressEvent(QMouseEvent *event)
         event->accept();
         return;
     }
+    else if (event->button() == Qt::MiddleButton){
+        mTabUnderCursor = tabAt(event->pos());
+        onCloseTab();
+        event->accept();
+        return;
+    }
 
     QTabBar::mousePressEvent(event);
 }
@@ -238,10 +244,15 @@ void EditorTabBar::showContextMenu(QMouseEvent * event)
     mTabUnderCursor = tabAt(event->pos());
 
     QMenu * menu = new QMenu(this);
-
-    menu->addAction(tr("Close"),                   this, SLOT(onCloseTab())           );
-    menu->addAction(tr("Close Other Tabs"),        this, SLOT(onCloseOtherTabs())     );
-    menu->addAction(tr("Close Tabs to the Right"), this, SLOT(onCloseTabsToTheRight()));
+    // Cannot have a close tab action if we are not over a tab
+    if (mTabUnderCursor == -1){
+        menu->addAction(tr("Close All Tabs"), this, SLOT(onCloseOtherTabs()));
+    }
+    else{
+        menu->addAction(tr("Close"), this, SLOT(onCloseTab()));
+        menu->addAction(tr("Close Other Tabs"), this, SLOT(onCloseOtherTabs()));
+        menu->addAction(tr("Close Tabs to the Right"), this, SLOT(onCloseTabsToTheRight()));
+    }
 
     menu->popup(event->pos());
 }

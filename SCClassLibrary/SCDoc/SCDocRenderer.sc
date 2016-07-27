@@ -163,8 +163,8 @@ SCDocHTMLRenderer {
             if(currentClass.notNil) {
                 m = currentClass.filenameSymbol.asString;
                 stream << "<div id='filename'>Source: "
-                << m.dirname << "/<a href='" << URI.fromLocalPath(m).asString << "'>"
-                << m.basename << "</a></div>";
+                << "<a href='" << URI.fromLocalPath(m).asString << "'>"
+                << m.dirname << "/" << m.basename << "</a></div>";
                 if(currentClass != Object) {
                     stream << "<div id='superclasses'>"
                     << "Inherits from: "
@@ -280,16 +280,16 @@ SCDocHTMLRenderer {
                 << mname2 << "'>" << mname2 << "</a>"
             };
 
-            x.value;
             switch (mstat,
                 // getter only
-                1, { stream << " " << args << "</h3>\n"; },
+                1, { x.value; stream << " " << args << "</h3>\n"; },
                 // getter and setter
-                3, { stream << "</h3>\n"; },
+                3, { x.value; stream << "</h3>\n"; },
                 // method not found
                 0, {
                     "SCDoc: In %\n"
                     "  Method %% not found.".format(currDoc.fullPath,pfx,mname2).warn;
+                    x.value;
                     stream << ": METHOD NOT FOUND!</h3>\n";
                 }
             );
@@ -771,7 +771,7 @@ SCDocHTMLRenderer {
     *renderFooter {|stream, doc|
         stream << "<div class='doclink'>";
         doc.fullPath !? {
-            stream << "source: <a href='" << URI.fromLocalPath(doc.fullPath).asString << "'>"
+            stream << "helpfile source: <a href='" << URI.fromLocalPath(doc.fullPath).asString << "'>"
             << doc.fullPath << "</a><br>"
         };
         stream << "link::" << doc.path << "::<br>"

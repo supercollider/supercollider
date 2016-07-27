@@ -22,7 +22,7 @@ After creation they will be controllable through link::Classes/Node::'s code::se
 There are four special types of arguments, which are treated differently:
 definitionlist::
 ## audio rate
-|| Arguments that begin with "a_" (e.g. code::a_input::), or that are specified as code::\ar:: in the def's rates argument (see below), will be able to read and audio rate bus when mapped to it with code::/n_mapa::.
+|| Arguments that begin with "a_" (e.g. code::a_input::), or that are specified as code::\ar:: in the def's rates argument (see below), will be able to read an audio rate bus when mapped to it with code::/n_mapa::.
 ## initial rate
 || Arguments that begin with "i_" (e.g. code::i_freq::), or that are specified as code::\ir:: in the def's rates argument (see below), will be static and non-modulatable. They will not respond to code::/n_set:: or code::/n_map::. This is slightly more efficient in terms of CPU than a regular arg.
 ## trigger rate

@@ -11,7 +11,8 @@
 #define BOOST_DETAIL_WINAPI_THREAD_HPP
 
 #include <boost/detail/winapi/basic_types.hpp>
-#include <boost/detail/winapi/GetCurrentThread.hpp>
+#include <boost/detail/winapi/get_current_thread.hpp>
+#include <boost/detail/winapi/get_current_thread_id.hpp>
 
 #ifdef BOOST_HAS_PRAGMA_ONCE
 #pragma once
@@ -19,10 +20,6 @@
 
 #if !defined( BOOST_USE_WINDOWS_H )
 extern "C" {
-// Windows CE define GetCurrentThreadId as an inline function in kfuncs.h
-#if !defined( UNDER_CE )
-BOOST_SYMBOL_IMPORT boost::detail::winapi::DWORD_ WINAPI GetCurrentThreadId(BOOST_DETAIL_WINAPI_VOID);
-#endif
 BOOST_SYMBOL_IMPORT boost::detail::winapi::DWORD_ WINAPI
 SleepEx(
     boost::detail::winapi::DWORD_ dwMilliseconds,
@@ -35,7 +32,6 @@ BOOST_SYMBOL_IMPORT boost::detail::winapi::BOOL_ WINAPI SwitchToThread(BOOST_DET
 namespace boost {
 namespace detail {
 namespace winapi {
-using ::GetCurrentThreadId;
 using ::SleepEx;
 using ::Sleep;
 using ::SwitchToThread;

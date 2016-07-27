@@ -93,7 +93,7 @@ SynthDef("help-Linen",{ arg out=0,freq=440,attackTime=0.01,susLevel=0.6,releaseT
 		Linen.kr(Impulse.kr(0), attackTime, susLevel, releaseTime, doneAction: 2)
 			* SinOsc.ar(freq, 0, 0.1)
 	)
-}).send(s);
+}).add;
 )
 
 (

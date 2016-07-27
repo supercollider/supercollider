@@ -239,7 +239,7 @@
      if(boost::math::tools::max_value<T>() / scale < sum)
         return boost::math::policies::raise_overflow_error<T>(function, 0, pol);
      sum *= scale;
-     return n & 1 ? sum : -sum;
+     return n & 1 ? sum : T(-sum);
   }
 
   //

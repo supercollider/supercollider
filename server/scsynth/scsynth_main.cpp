@@ -54,6 +54,7 @@ void Usage()
 		"   -v print the supercollider version and exit\n"
 		"   -u <udp-port-number>    a port number 0-65535\n"
 		"   -t <tcp-port-number>    a port number 0-65535\n"
+		"   -B <bind-to-address>    an IP address\n"
 		"   -c <number-of-control-bus-channels> (default %d)\n"
 		"   -a <number-of-audio-bus-channels>   (default %d)\n"
 		"   -i <number-of-input-bus-channels>   (default %d)\n"
@@ -147,6 +148,7 @@ int main(int argc, char* argv[])
 
 	int udpPortNum = -1;
 	int tcpPortNum = -1;
+	std::string bindTo("0.0.0.0");
 
 	WorldOptions options = kDefaultWorldOptions;
 
@@ -159,9 +161,9 @@ int main(int argc, char* argv[])
 
 	for (int i=1; i<argc;) {
 #ifdef BELA
-		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utaioczblndpmwZrCNSDIOMHvVRUhPLJKG", argv[i][1]) == 0) {
+		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utBaioczblndpmwZrCNSDIOMHvVRUhPLJKG", argv[i][1]) == 0) {
 #else
-		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utaioczblndpmwZrCNSDIOMHvVRUhPL", argv[i][1]) == 0) {
+		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utBaioczblndpmwZrCNSDIOMHvVRUhPL", argv[i][1]) == 0) {
 #endif
 			scprintf("ERROR: Invalid option %s\n", argv[i]);
 			Usage();
@@ -175,6 +177,10 @@ int main(int argc, char* argv[])
 			case 't' :
 				checkNumArgs(2);
 				tcpPortNum = atoi(argv[j+1]);
+				break;
+			case 'B':
+				checkNumArgs(2);
+				bindTo = argv[j+1];
 				break;
 			case 'a' :
 				checkNumArgs(2);
@@ -296,7 +302,6 @@ int main(int argc, char* argv[])
 			case 'J' :
 				checkNumArgs(2);
 				options.mBelaAnalogInputChannels = atoi(argv[j+1]);
-// 				scprintf("INFO: number of analog channels %i.\n", options.mBelaAnalogChannels );
 				break;
 			case 'K' :
 				checkNumArgs(2);
@@ -370,13 +375,13 @@ int main(int argc, char* argv[])
 	}
 
 	if (udpPortNum >= 0) {
-		if (!World_OpenUDP(world, udpPortNum)) {
+		if (!World_OpenUDP(world, bindTo.c_str(), udpPortNum)) {
 			World_Cleanup(world,true);
 			return 1;
 		}
 	}
 	if (tcpPortNum >= 0) {
-		if (!World_OpenTCP(world, tcpPortNum, options.mMaxLogins, 8)) {
+		if (!World_OpenTCP(world, bindTo.c_str(), tcpPortNum, options.mMaxLogins, 8)) {
 			World_Cleanup(world,true);
 			return 1;
 		}

@@ -5,6 +5,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 endif()
 
 cmake_minimum_required (VERSION 2.8.12)
+set(SUPERNOVA_CMAKE_MINVERSION 3.1)
 
 include("SCVersion.txt")
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}${PROJECT_VERSION_PATCH}")
@@ -57,8 +58,8 @@ if(WIN32)
 
     # might work with "SHARED" as well.
     set(PA_LIBRARY_TYPE "STATIC")
-    set(PORTAUDIO_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/external_libraries/portaudio/include" CACHE PATH "Portaudio include directory" FORCE)
-    add_subdirectory("${CMAKE_SOURCE_DIR}/external_libraries/portaudio")
+    set(PORTAUDIO_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/external_libraries/portaudio_sc_org/include" CACHE PATH "Portaudio include directory" FORCE)
+    add_subdirectory("${CMAKE_SOURCE_DIR}/external_libraries/portaudio_sc_org")
 endif(WIN32)
 
 #############################################
@@ -105,7 +106,7 @@ elseif(UNIX)
 endif()
 
 if(WIN32)
-    add_definitions(-DWIN32_LEAN_AND_MEAN -DNOMINMAX -D_WIN32_WINNT=0x0500)
+    add_definitions(-DWIN32_LEAN_AND_MEAN -DNOMINMAX -D_WIN32_WINNT=0x0600)
 
     #avoid unnecesary autolink
     add_definitions(-DBOOST_DATE_TIME_NO_LIB -DBOOST_ALL_NO_LIB)
@@ -142,6 +143,16 @@ endif()
 
 set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio,bela})")
 
+if (AUDIOAPI STREQUAL jack)
+	# here we check for JACK metadata API
+	include(CheckIncludeFiles)
+	CHECK_INCLUDE_FILES("jack/metadata.h" JACK_USE_METADATA_API)
+	if(${JACK_USE_METADATA_API})
+		message(STATUS "using JACK metadata API")
+	    include_directories(${CMAKE_SOURCE_DIR}/external_libraries/jackey)
+	endif()
+endif()
+
 option(LIBSCSYNTH "Compile libscsynth as shared library" OFF)
 
 option(INSTALL_HELP "Install help docs and examples along with the software" ON)
@@ -160,7 +171,7 @@ endif (SC_QT)
 
 option(ENABLE_TESTSUITE "Compile testsuite." ON)
 
-if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+if(CMAKE_SYSTEM_NAME MATCHES "Linux" AND NOT CMAKE_VERSION VERSION_LESS SUPERNOVA_CMAKE_MINVERSION)
     option(SUPERNOVA "Build with supernova as optional audio synthesis server" ON)
 else()
     option(SUPERNOVA "Build with supernova as optional audio synthesis server" OFF)
@@ -246,12 +257,22 @@ if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 	endif()
 
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-	set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -std=c++11")
-	if(CMAKE_COMPILER_IS_CLANG)
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-		set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -stdlib=libc++")
-	endif()
+    if( CMAKE_VERSION VERSION_LESS 3.1 )
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+        set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -std=c++11")
+        if(CMAKE_COMPILER_IS_CLANG)
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+            set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -stdlib=libc++")
+        endif()
+    else()
+        set( CMAKE_CXX_STANDARD 11 )
+
+        if(CMAKE_COMPILER_IS_CLANG)
+            # workaround
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+            set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -stdlib=libc++")
+        endif()
+     endif()
 
 	if(FORTIFY)
 		add_definitions( -D_FORTIFY_SOURCE=2 )
@@ -271,7 +292,7 @@ if (CMAKE_COMPILER_IS_INTEL AND NOT WIN32)
 	add_definitions(-diag-disable 279) # controlling expression is constant
 endif()
 
-if(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
+if(MSVC)
   foreach(flag CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
     set(${flag} "${${flag}} /wd4018") # signed/unsigned mismatch
     set(${flag} "${${flag}} /wd4102") # unreferenced label
@@ -284,7 +305,7 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
   endforeach()
 
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS)
-endif()
+endif(MSVC)
 
 if (SC_MEMORY_DEBUGGING)
 	add_definitions(-DDISABLE_MEMORY_POOLS)
@@ -295,6 +316,21 @@ if(MINGW)
 # no-strict-aliasing was introduced because of problems with MinGW/GCC 4.9.2
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mstackrealign -fno-strict-aliasing")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mstackrealign -fno-strict-aliasing")
+endif()
+
+# support for building on Raspberry Pi 1/2/3 and BBB
+if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_SYSTEM_PROCESSOR STREQUAL "armv7l")
+  foreach(flag CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
+    set(${flag} "${${flag}} -mfloat-abi=hard")
+    set(${flag} "${${flag}} -mfpu=neon")
+  endforeach()
+elseif(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_SYSTEM_PROCESSOR STREQUAL "armv6l")
+  foreach(flag CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
+    set(${flag} "${${flag}} -march=armv6")
+    set(${flag} "${${flag}} -mtune=arm1176jzf-s")
+    set(${flag} "${${flag}} -mfloat-abi=hard")
+    set(${flag} "${${flag}} -mfpu=vfp")
+  endforeach()
 endif()
 
 if (NO_GPL3)
@@ -343,11 +379,11 @@ if(UNIX AND NOT APPLE)
 endif()
 
 if (WIN32)
-  set(auxresourcesdir "${SC_WIN_BUNDLE_NAME}")
+  set(auxresourcesdir "${SC_WIN_BUNDLE_NAME}" CACHE STRING "Resources directory")
 elseif(APPLE)
-	set(auxresourcesdir ${scappbundlename})
+	set(auxresourcesdir ${scappbundlename} CACHE STRING "Resources directory")
 else()
-	set(auxresourcesdir "share/SuperCollider")
+	set(auxresourcesdir "share/SuperCollider" CACHE STRING "Resources directory")
 endif()
 
 set(SCCLASSLIB_EXCLUDE_REGEX "IGNOREME")

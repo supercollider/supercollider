@@ -26,7 +26,7 @@ This example comes from supercollider.sourceforge.net as of 2003. It uses a loop
 		i_bus,
 		Pan2.ar( out, rrand(-1.0,1.0))
 	  );
-  }).send(s); // send synthdef to server
+  }).add;
 });
 )
 

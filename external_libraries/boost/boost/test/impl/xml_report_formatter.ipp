@@ -65,7 +65,7 @@ xml_report_formatter::test_unit_report_start( test_unit const& tu, std::ostream&
         descr = "failed";
 
     ostr << '<' << ( tu.p_type == TUT_CASE ? "TestCase" : "TestSuite" )
-         << " name"                     << utils::attr_value() << tu.p_name
+         << " name"                     << utils::attr_value() << tu.p_name.get()
          << " result"                   << utils::attr_value() << descr
          << " assertions_passed"        << utils::attr_value() << tr.p_assertions_passed
          << " assertions_failed"        << utils::attr_value() << tr.p_assertions_failed

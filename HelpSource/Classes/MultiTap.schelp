@@ -9,6 +9,9 @@ Description::
 This is a wrapper which creates a multiple tap delay line using
 link::Classes/RecordBuf::  and  link::Classes/PlayBuf:: .
 
+note:: code::RecordBuf.ar:: and code::PlayBuf.ar:: operate block by block. If a delay time is greater than the buffer
+size minus the server's block size, the write and read heads might interfere in unintended ways. Use a slightly larger
+buffer if this happens. ::
 
 classmethods::
 

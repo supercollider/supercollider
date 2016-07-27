@@ -24,6 +24,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include <boost/fusion/support/sequence_base.hpp>
 #include <boost/fusion/support/is_sequence.hpp>
+#include <boost/fusion/support/void.hpp>
+#include <boost/fusion/support/detail/enabler.hpp>
 #include <boost/fusion/support/detail/index_sequence.hpp>
 #include <boost/fusion/container/vector/detail/at_impl.hpp>
 #include <boost/fusion/container/vector/detail/value_at_impl.hpp>
@@ -164,7 +166,7 @@ namespace boost { namespace fusion
             template <typename U>
             BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
             store(U&& rhs
-                , typename disable_if<is_same<typename pure<U>::type, store> >::type* = 0)
+                , typename disable_if<is_same<typename pure<U>::type, store>, detail::enabler_>::type = detail::enabler)
                 : elem(std::forward<U>(rhs))
             {}
 
@@ -274,37 +276,19 @@ namespace boost { namespace fusion
             static BOOST_FUSION_GPU_ENABLED
             mpl::identity<U> value_at_impl(store<N, U>*);
         };
-
-        template <typename V, typename... T>
-        struct trim_void_;
-
-        template <typename... T>
-        struct trim_void_<vector<T...> >
-        {
-            typedef vector_data<
-                typename detail::make_index_sequence<sizeof...(T)>::type
-              , T...
-            > type;
-        };
-
-        template <typename... T, typename... Tail>
-        struct trim_void_<vector<T...>, void_, Tail...>
-            : trim_void_<vector<T...> > {};
-
-        template <typename... T, typename Head, typename... Tail>
-        struct trim_void_<vector<T...>, Head, Tail...>
-            : trim_void_<vector<T..., Head>, Tail...> {};
-
-        template <typename... T>
-        struct trim_void : trim_void_<vector<>, T...> {};
     } // namespace boost::fusion::vector_detail
 
-    // This class provides backward compatibility: vector<T, ..., void_, void_, ...>.
     template <typename... T>
     struct vector
-        : vector_detail::trim_void<T...>::type
+        : vector_detail::vector_data<
+              typename detail::make_index_sequence<sizeof...(T)>::type
+            , T...
+          >
     {
-        typedef typename vector_detail::trim_void<T...>::type base;
+        typedef vector_detail::vector_data<
+            typename detail::make_index_sequence<sizeof...(T)>::type
+          , T...
+        > base;
 
         BOOST_CONSTEXPR BOOST_FUSION_GPU_ENABLED
         vector()

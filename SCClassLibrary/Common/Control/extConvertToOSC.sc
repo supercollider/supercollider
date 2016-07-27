@@ -5,7 +5,7 @@
 // This makes it possible to write Synth("test", [0, [[100,200,300], [0.1,0.2,0.3], [10,20,30]] ])
 // and have all the arguments be assigned to consecutive controls in the synth.
 
-+Array {
++SequenceableCollection {
 
 	asOSCArgBundle {
 		var array = Array(100);		// allocate a bunch of space
@@ -25,6 +25,13 @@
 		^array.add($])
 	}
 
+}
+
++String {
+
+	asOSCArgEmbeddedArray { | array| ^array.add(this) }
+
+	asOSCArgArray { ^this }
 }
 
 +Env {

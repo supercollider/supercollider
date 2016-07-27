@@ -34,7 +34,7 @@ SynthDef( \lagud_help,
 			0.2 // sine amplitude
 		)
 	);
-}).send(s);
+}).add;
 )
 x = Synth.new( \lagud_help ); // create the synth
 x.set( \freq, 500 ); // set the frequency to a higher value (takes 1 second)

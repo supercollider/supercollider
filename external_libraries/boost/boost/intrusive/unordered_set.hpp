@@ -208,6 +208,10 @@ class unordered_set_impl
    void insert(Iterator b, Iterator e)
    {  table_type::insert_unique(b, e);  }
 
+   //! @copydoc ::boost::intrusive::hashtable::insert_unique_check(const key_type&,insert_commit_data&)
+   std::pair<iterator, bool> insert_check(const key_type &key, insert_commit_data &commit_data)
+   {  return table_type::insert_unique_check(key, commit_data); }
+
    //! @copydoc ::boost::intrusive::hashtable::insert_unique_check(const KeyType&,KeyHasher,KeyEqual,insert_commit_data&)
    template<class KeyType, class KeyHasher, class KeyEqual>
    std::pair<iterator, bool> insert_check

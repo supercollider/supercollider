@@ -2,7 +2,7 @@ ServerStatusWatcher {
 
 	var server;
 
-	var <>notified = false, <notify = false;
+	var <>notified = false, <notify = true;
 	var alive = false, <aliveThread, <>aliveThreadPeriod = 0.7, statusWatcher;
 
 	var <serverRunning = false, <>serverBooting = false, <unresponsive = false;
@@ -85,7 +85,7 @@ ServerStatusWatcher {
 				};
 				if(postError) {
 					"server failed to start".error;
-					"For advice: [http://supercollider.sf.net/wiki/index.php/ERROR:_server_failed_to_start]".postln;
+					"For advice: [http://supercollider.github.io/tutorials/server-failed-to-start]".postln;
 				};
 				serverBooting = false;
 				server.changed(\serverRunning);
@@ -138,7 +138,7 @@ ServerStatusWatcher {
 						avgCPU, peakCPU, sampleRate, actualSampleRate = msg;
 				{
 					this.updateRunningState(true);
-					this.changed(\counts);
+					server.changed(\counts);
 					nil // no resched
 				}.defer;
 			}, '/status.reply', server.addr).fix;
@@ -217,7 +217,7 @@ ServerStatusWatcher {
 		} {
 			if(val) {
 				this.serverRunning = true;
-				unresponsive = false;
+				this.unresponsive = false;
 				reallyDeadCount = server.options.pingsBeforeConsideredDead;
 			} {
 				reallyDeadCount = reallyDeadCount - 1;

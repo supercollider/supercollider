@@ -141,7 +141,11 @@ Quarks {
 		// by quark name or by supplying a local path
 		// resolving / ~/ ./
 		// is it a git
-		var quark, localPath = this.quarkNameAsLocalPath(name);
+		var quark, localPath;
+		if(name.isNil, {
+			("Missing required argument: quark name").throw;
+		});
+		localPath = this.quarkNameAsLocalPath(name);
 		if(Git.isGit(localPath), {
 			Quark.fromLocalPath(localPath).update();
 		}, {
@@ -179,7 +183,7 @@ Quarks {
 			deps,
 			incompatible = { arg name;
 				(quark.name
-					+ "reports an incompatibility with this Super Collider version"
+					+ "reports an incompatibility with this SuperCollider version"
 					+ "or with other already installed quarks."
 				).inform;
 				false
@@ -303,7 +307,7 @@ Quarks {
 			(folder +/+ "*").pathMatch.do(f);
 		});
 		LanguageConfig.includePaths.do(f);
-		^all.values
+		^all.atAll(all.order)
 	}
 	*fetchDirectory { |force=true|
 		// will only pull every 15 minutes unless force is true

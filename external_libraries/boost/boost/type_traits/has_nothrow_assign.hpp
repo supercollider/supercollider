@@ -24,7 +24,7 @@
 #include <boost/type_traits/remove_reference.hpp>
 #endif
 #endif
-#if defined(__GNUC__) || defined(__SUNPRO_CC)
+#if defined(__GNUC__) || defined(__SUNPRO_CC) || defined(__clang__)
 #include <boost/type_traits/is_const.hpp>
 #include <boost/type_traits/is_volatile.hpp>
 #include <boost/type_traits/is_assignable.hpp>

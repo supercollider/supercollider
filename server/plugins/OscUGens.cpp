@@ -294,7 +294,8 @@ void COsc_Ctor(COsc *unit);
 void COsc_next(COsc *unit, int inNumSamples);
 
 void VOsc_Ctor(VOsc *unit);
-void VOsc_next_ik(VOsc *unit, int inNumSamples);
+void VOsc_next_ikk(VOsc *unit, int inNumSamples);
+void VOsc_next_ika(VOsc *unit, int inNumSamples);
 
 void VOsc3_Ctor(VOsc3 *unit);
 void VOsc3_next_ik(VOsc3 *unit, int inNumSamples);
@@ -2007,8 +2008,6 @@ static inline const SndBuf * VOscGetBuf(int & bufnum, World * world, Unit * unit
 
 void VOsc_Ctor(VOsc *unit)
 {
-	SETCALC(VOsc_next_ik);
-
 	float nextbufpos = ZIN0(0);
 	unit->m_bufpos = nextbufpos;
 	int bufnum = sc_floor(nextbufpos);
@@ -2026,12 +2025,19 @@ void VOsc_Ctor(VOsc *unit)
 
 	unit->m_phasein = ZIN0(2);
 	unit->m_phaseoffset = (int32)(unit->m_phasein * unit->m_radtoinc);
-	unit->m_phase = unit->m_phaseoffset;
 
-	VOsc_next_ik(unit, 1);
+	if (INRATE(2) == calc_FullRate) {
+		SETCALC(VOsc_next_ika);
+		unit->m_phase = 0;
+	} else {
+		SETCALC(VOsc_next_ikk);
+		unit->m_phase = unit->m_phaseoffset;
+	}
+
+	VOsc_next_ikk(unit, 1);
 }
 
-void VOsc_next_ik(VOsc *unit, int inNumSamples)
+void VOsc_next_ikk(VOsc *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float nextbufpos = ZIN0(0);
@@ -2121,6 +2127,116 @@ void VOsc_next_ik(VOsc *unit, int inNumSamples)
 			LOOP(nsmps,
 				float pfrac = PhaseFrac1(phase);
 				uint32 index = ((phase >> xlobits1) & lomask);
+				float val0 = *(float*)((char*)table0 + index);
+				float val1 = *(float*)((char*)table1 + index);
+				float val2 = *(float*)((char*)table2 + index);
+				float val3 = *(float*)((char*)table3 + index);
+				float a = val0 + val1 * pfrac;
+				float b = val2 + val3 * pfrac;
+				ZXP(out) = a + level * (b - a);
+				phase += phaseinc;
+				level += slope;
+			);
+			donesmps += nsmps;
+			remain -= nsmps;
+			cur = cut;
+		}
+	}
+	unit->m_bufpos = nextbufpos;
+	unit->m_phase = phase;
+}
+
+void VOsc_next_ika(VOsc *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float nextbufpos = ZIN0(0);
+	float freqin = ZIN0(1);
+	float *phasein = ZIN(2);
+
+	float prevbufpos = unit->m_bufpos;
+	float bufdiff = nextbufpos - prevbufpos;
+
+	int32 phase = unit->m_phase;
+	int32 lomask = unit->m_lomask;
+
+	int32 freq = (int32)(unit->m_cpstoinc * freqin);
+	int32 phaseinc = freq;
+	int tableSize = unit->mTableSize;
+	float cur = prevbufpos;
+	World *world = unit->mWorld;
+
+	if (bufdiff == 0.f) {
+		float level = cur - sc_floor(cur);
+		int32 bufnum = (int)sc_floor(cur);
+
+		const SndBuf *bufs = VOscGetBuf(bufnum, world, unit);
+		if (!verify_wavetable(unit, "VOsc", tableSize, inNumSamples)) return;
+
+		const float *table0  = bufs[0].data;
+		const float *table2  = bufs[1].data;
+		if (!table0 || !table2 || tableSize != bufs[0].samples|| tableSize != bufs[1].samples) {
+			ClearUnitOutputs(unit, inNumSamples);
+			return;
+		}
+
+		const float *table1 = table0 + 1;
+		const float *table3 = table2 + 1;
+
+		LOOP1(inNumSamples,
+			int32 pphase = phase + (int32)(ZXP(phasein) * unit->m_radtoinc);
+			float pfrac = PhaseFrac1(pphase);
+			uint32 index = ((pphase >> xlobits1) & lomask);
+			float val0 = *(float*)((char*)table0 + index);
+			float val1 = *(float*)((char*)table1 + index);
+			float val2 = *(float*)((char*)table2 + index);
+			float val3 = *(float*)((char*)table3 + index);
+			float a = val0 + val1 * pfrac;
+			float b = val2 + val3 * pfrac;
+			ZXP(out) = a + level * (b - a);
+			phase += phaseinc;
+		);
+	} else {
+		int nsmps;
+		int donesmps = 0;
+		int remain = inNumSamples;
+		while (remain) {
+			float level = cur - sc_floor(cur);
+
+			float cut;
+			if (bufdiff > 0.) {
+				cut = sc_min(nextbufpos, sc_floor(cur+1.f));
+			} else {
+				cut = sc_max(nextbufpos, sc_ceil(cur-1.f));
+			}
+
+			float sweepdiff = cut - cur;
+			if (cut == nextbufpos) nsmps = remain;
+			else {
+				float sweep = (float)inNumSamples / bufdiff;
+				nsmps = (int)sc_floor(sweep * sweepdiff + 0.5f) - donesmps;
+				nsmps = sc_clip(nsmps, 1, remain);
+			}
+
+			float slope = sweepdiff / (float)nsmps;
+
+			int32 bufnum = (int32)sc_floor(cur);
+			const SndBuf *bufs = VOscGetBuf(bufnum, world, unit);
+			if (!verify_wavetable(unit, "VOsc", tableSize, inNumSamples)) return;
+
+			const float *table0  = bufs[0].data;
+			const float *table2  = bufs[1].data;
+			if (!table0 || !table2 || tableSize != bufs[0].samples|| tableSize != bufs[1].samples) {
+				ClearUnitOutputs(unit, inNumSamples);
+				return;
+			}
+
+			const float *table1 = table0 + 1;
+			const float *table3 = table2 + 1;
+
+			LOOP(nsmps,
+				int32 pphase = phase + (int32)(ZXP(phasein) * unit->m_radtoinc);
+				float pfrac = PhaseFrac1(pphase);
+				uint32 index = ((pphase >> xlobits1) & lomask);
 				float val0 = *(float*)((char*)table0 + index);
 				float val1 = *(float*)((char*)table1 + index);
 				float val2 = *(float*)((char*)table2 + index);

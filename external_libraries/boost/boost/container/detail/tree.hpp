@@ -50,6 +50,7 @@
 #if !defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)
 #include <boost/move/detail/fwd_macros.hpp>
 #endif
+#include <boost/move/detail/move_helpers.hpp>
 // other
 #include <boost/core/no_exceptions_support.hpp>
 
@@ -136,13 +137,13 @@ struct tree_node
    typedef tree_node< T, VoidPointer
                     , tree_type_value, OptimizeSize>     node_type;
 
-   T &get_data()
+   BOOST_CONTAINER_FORCEINLINE T &get_data()
    {
       T* ptr = reinterpret_cast<T*>(&this->m_data);
       return *ptr;
    }
 
-   const T &get_data() const
+   BOOST_CONTAINER_FORCEINLINE const T &get_data() const
    {
       const T* ptr = reinterpret_cast<const T*>(&this->m_data);
       return *ptr;
@@ -151,39 +152,39 @@ struct tree_node
    internal_type m_data;
 
    template<class T1, class T2>
-   void do_assign(const std::pair<const T1, T2> &p)
+   BOOST_CONTAINER_FORCEINLINE void do_assign(const std::pair<const T1, T2> &p)
    {
       const_cast<T1&>(m_data.first) = p.first;
       m_data.second  = p.second;
    }
 
    template<class T1, class T2>
-   void do_assign(const pair<const T1, T2> &p)
+   BOOST_CONTAINER_FORCEINLINE void do_assign(const pair<const T1, T2> &p)
    {
       const_cast<T1&>(m_data.first) = p.first;
       m_data.second  = p.second;
    }
 
    template<class V>
-   void do_assign(const V &v)
+   BOOST_CONTAINER_FORCEINLINE void do_assign(const V &v)
    {  m_data = v; }
 
    template<class T1, class T2>
-   void do_move_assign(std::pair<const T1, T2> &p)
+   BOOST_CONTAINER_FORCEINLINE void do_move_assign(std::pair<const T1, T2> &p)
    {
       const_cast<T1&>(m_data.first) = ::boost::move(p.first);
       m_data.second = ::boost::move(p.second);
    }
 
    template<class T1, class T2>
-   void do_move_assign(pair<const T1, T2> &p)
+   BOOST_CONTAINER_FORCEINLINE void do_move_assign(pair<const T1, T2> &p)
    {
       const_cast<T1&>(m_data.first) = ::boost::move(p.first);
       m_data.second  = ::boost::move(p.second);
    }
 
    template<class V>
-   void do_move_assign(V &v)
+   BOOST_CONTAINER_FORCEINLINE void do_move_assign(V &v)
    {  m_data = ::boost::move(v); }
 };
 
@@ -526,12 +527,12 @@ class tree
       const const_iterator end_it(this->cend());
       if(unique_insertion){
          for ( ; first != last; ++first){
-            this->insert_unique(end_it, *first);
+            this->insert_unique_convertible(end_it, *first);
          }
       }
       else{
          for ( ; first != last; ++first){
-            this->insert_equal(end_it, *first);
+            this->insert_equal_convertible(end_it, *first);
          }
       }
    }
@@ -555,7 +556,7 @@ class tree
          //for the constructor
          const const_iterator end_it(this->cend());
          for ( ; first != last; ++first){
-            this->insert_unique(end_it, *first);
+            this->insert_unique_convertible(end_it, *first);
          }
       }
       else{
@@ -983,19 +984,8 @@ class tree
 
    #endif   // !defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)
 
-   iterator insert_unique(const_iterator hint, const value_type& v)
-   {
-      BOOST_ASSERT((priv_is_linked)(hint));
-      insert_commit_data data;
-      std::pair<iterator,bool> ret =
-         this->insert_unique_check(hint, KeyOfValue()(v), data);
-      if(!ret.second)
-         return ret.first;
-      return this->insert_unique_commit(v, data);
-   }
-
    template<class MovableConvertible>
-   iterator insert_unique(const_iterator hint, BOOST_FWD_REF(MovableConvertible) v)
+   iterator insert_unique_convertible(const_iterator hint, BOOST_FWD_REF(MovableConvertible) v)
    {
       BOOST_ASSERT((priv_is_linked)(hint));
       insert_commit_data data;
@@ -1005,6 +995,8 @@ class tree
          return ret.first;
       return this->insert_unique_commit(boost::forward<MovableConvertible>(v), data);
    }
+
+   BOOST_MOVE_CONVERSION_AWARE_CATCH_1ARG(insert_unique, value_type, iterator, this->insert_unique_convertible, const_iterator, const_iterator)
 
    template <class InputIterator>
    void insert_unique(InputIterator first, InputIterator last)
@@ -1032,18 +1024,8 @@ class tree
       return ret;
    }
 
-   iterator insert_equal(const_iterator hint, const value_type& v)
-   {
-      BOOST_ASSERT((priv_is_linked)(hint));
-      NodePtr tmp(AllocHolder::create_node(v));
-      scoped_destroy_deallocator<NodeAlloc> destroy_deallocator(tmp, this->node_alloc());
-      iterator ret(this->icont().insert_equal(hint.get(), *tmp));
-      destroy_deallocator.release();
-      return ret;
-   }
-
    template<class MovableConvertible>
-   iterator insert_equal(const_iterator hint, BOOST_FWD_REF(MovableConvertible) v)
+   iterator insert_equal_convertible(const_iterator hint, BOOST_FWD_REF(MovableConvertible) v)
    {
       BOOST_ASSERT((priv_is_linked)(hint));
       NodePtr tmp(AllocHolder::create_node(boost::forward<MovableConvertible>(v)));
@@ -1053,11 +1035,36 @@ class tree
       return ret;
    }
 
+   BOOST_MOVE_CONVERSION_AWARE_CATCH_1ARG(insert_equal, value_type, iterator, this->insert_equal_convertible, const_iterator, const_iterator)
+
    template <class InputIterator>
    void insert_equal(InputIterator first, InputIterator last)
    {
       for( ; first != last; ++first)
          this->insert_equal(*first);
+   }
+
+   template<class KeyConvertible>
+   iterator insert_from_key(BOOST_FWD_REF(KeyConvertible) key)
+   {
+      insert_commit_data data;
+      const key_type & k = key;  //Support emulated rvalue references
+      std::pair<iiterator, bool> ret =
+         this->icont().insert_unique_check(k, KeyNodeCompare(value_comp()), data);
+      return ret.second
+               ? this->insert_unique_key_commit(boost::forward<KeyConvertible>(key), data)
+               : iterator(ret.first);
+   }
+
+   template<class KeyConvertible>
+   iterator insert_unique_key_commit
+      (BOOST_FWD_REF(KeyConvertible) key, insert_commit_data &data)
+   {
+      NodePtr tmp = AllocHolder::create_node_from_key(boost::forward<KeyConvertible>(key));
+      scoped_destroy_deallocator<NodeAlloc> destroy_deallocator(tmp, this->node_alloc());
+      iterator ret(this->icont().insert_unique_commit(*tmp, data));
+      destroy_deallocator.release();
+      return ret;
    }
 
    iterator erase(const_iterator position)

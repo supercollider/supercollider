@@ -377,7 +377,7 @@ class default_init_construct_iterator
 template <class T, class Difference = std::ptrdiff_t>
 class repeat_iterator
   : public ::boost::container::iterator
-      <std::random_access_iterator_tag, T, Difference>
+      <std::random_access_iterator_tag, T, Difference, T*, T&>
 {
    typedef repeat_iterator<T, Difference> this_type;
    public:
@@ -493,13 +493,13 @@ class emplace_iterator
 
    public:
    typedef Difference difference_type;
-   explicit emplace_iterator(EmplaceFunctor&e)
+   BOOST_CONTAINER_FORCEINLINE explicit emplace_iterator(EmplaceFunctor&e)
       :  m_num(1), m_pe(&e){}
 
-   emplace_iterator()
+   BOOST_CONTAINER_FORCEINLINE emplace_iterator()
       :  m_num(0), m_pe(0){}
 
-   this_type& operator++()
+   BOOST_CONTAINER_FORCEINLINE this_type& operator++()
    { increment();   return *this;   }
 
    this_type operator++(int)
@@ -509,7 +509,7 @@ class emplace_iterator
       return result;
    }
 
-   this_type& operator--()
+   BOOST_CONTAINER_FORCEINLINE this_type& operator--()
    { decrement();   return *this;   }
 
    this_type operator--(int)
@@ -519,29 +519,29 @@ class emplace_iterator
       return result;
    }
 
-   friend bool operator== (const this_type& i, const this_type& i2)
+   BOOST_CONTAINER_FORCEINLINE friend bool operator== (const this_type& i, const this_type& i2)
    { return i.equal(i2); }
 
-   friend bool operator!= (const this_type& i, const this_type& i2)
+   BOOST_CONTAINER_FORCEINLINE friend bool operator!= (const this_type& i, const this_type& i2)
    { return !(i == i2); }
 
-   friend bool operator< (const this_type& i, const this_type& i2)
+   BOOST_CONTAINER_FORCEINLINE friend bool operator< (const this_type& i, const this_type& i2)
    { return i.less(i2); }
 
-   friend bool operator> (const this_type& i, const this_type& i2)
+   BOOST_CONTAINER_FORCEINLINE friend bool operator> (const this_type& i, const this_type& i2)
    { return i2 < i; }
 
-   friend bool operator<= (const this_type& i, const this_type& i2)
+   BOOST_CONTAINER_FORCEINLINE friend bool operator<= (const this_type& i, const this_type& i2)
    { return !(i > i2); }
 
-   friend bool operator>= (const this_type& i, const this_type& i2)
+   BOOST_CONTAINER_FORCEINLINE friend bool operator>= (const this_type& i, const this_type& i2)
    { return !(i < i2); }
 
-   friend difference_type operator- (const this_type& i, const this_type& i2)
+   BOOST_CONTAINER_FORCEINLINE friend difference_type operator- (const this_type& i, const this_type& i2)
    { return i2.distance_to(i); }
 
    //Arithmetic
-   this_type& operator+=(difference_type off)
+   BOOST_CONTAINER_FORCEINLINE this_type& operator+=(difference_type off)
    {  this->advance(off); return *this;   }
 
    this_type operator+(difference_type off) const
@@ -551,13 +551,13 @@ class emplace_iterator
       return other;
    }
 
-   friend this_type operator+(difference_type off, const this_type& right)
+   BOOST_CONTAINER_FORCEINLINE friend this_type operator+(difference_type off, const this_type& right)
    {  return right + off; }
 
-   this_type& operator-=(difference_type off)
+   BOOST_CONTAINER_FORCEINLINE this_type& operator-=(difference_type off)
    {  this->advance(-off); return *this;   }
 
-   this_type operator-(difference_type off) const
+   BOOST_CONTAINER_FORCEINLINE this_type operator-(difference_type off) const
    {  return *this + (-off);  }
 
    //This pseudo-iterator's dereference operations have no sense since value is not
@@ -575,28 +575,28 @@ class emplace_iterator
    difference_type m_num;
    EmplaceFunctor *            m_pe;
 
-   void increment()
+   BOOST_CONTAINER_FORCEINLINE void increment()
    { --m_num; }
 
-   void decrement()
+   BOOST_CONTAINER_FORCEINLINE void decrement()
    { ++m_num; }
 
-   bool equal(const this_type &other) const
+   BOOST_CONTAINER_FORCEINLINE bool equal(const this_type &other) const
    {  return m_num == other.m_num;   }
 
-   bool less(const this_type &other) const
+   BOOST_CONTAINER_FORCEINLINE bool less(const this_type &other) const
    {  return other.m_num < m_num;   }
 
-   const T & dereference() const
+   BOOST_CONTAINER_FORCEINLINE const T & dereference() const
    {
       static T dummy;
       return dummy;
    }
 
-   void advance(difference_type n)
+   BOOST_CONTAINER_FORCEINLINE void advance(difference_type n)
    {  m_num -= n; }
 
-   difference_type distance_to(const this_type &other)const
+   BOOST_CONTAINER_FORCEINLINE difference_type distance_to(const this_type &other)const
    {  return difference_type(m_num - other.m_num);   }
 };
 
@@ -616,7 +616,7 @@ struct emplace_functor
    {  emplace_functor::inplace_impl(a, ptr, index_tuple_t());  }
 
    template<class Allocator, class T, int ...IdxPack>
-   void inplace_impl(Allocator &a, T* ptr, const container_detail::index_tuple<IdxPack...>&)
+   BOOST_CONTAINER_FORCEINLINE void inplace_impl(Allocator &a, T* ptr, const container_detail::index_tuple<IdxPack...>&)
    {
       allocator_traits<Allocator>::construct
          (a, ptr, ::boost::forward<Args>(container_detail::get<IdxPack>(args_))...);
@@ -762,54 +762,54 @@ class iterator_from_iiterator
    typedef typename types_t::iterator_category   iterator_category;
    typedef typename types_t::value_type          value_type;
 
-   iterator_from_iiterator()
+   BOOST_CONTAINER_FORCEINLINE iterator_from_iiterator()
    {}
 
-   explicit iterator_from_iiterator(IIterator iit) BOOST_NOEXCEPT_OR_NOTHROW
+   BOOST_CONTAINER_FORCEINLINE explicit iterator_from_iiterator(IIterator iit) BOOST_NOEXCEPT_OR_NOTHROW
       : m_iit(iit)
    {}
 
-   iterator_from_iiterator(iterator_from_iiterator<IIterator, false> const& other) BOOST_NOEXCEPT_OR_NOTHROW
+   BOOST_CONTAINER_FORCEINLINE iterator_from_iiterator(iterator_from_iiterator<IIterator, false> const& other) BOOST_NOEXCEPT_OR_NOTHROW
       :  m_iit(other.get())
    {}
 
-   iterator_from_iiterator& operator++() BOOST_NOEXCEPT_OR_NOTHROW
+   BOOST_CONTAINER_FORCEINLINE iterator_from_iiterator& operator++() BOOST_NOEXCEPT_OR_NOTHROW
    {  ++this->m_iit;   return *this;  }
 
-   iterator_from_iiterator operator++(int) BOOST_NOEXCEPT_OR_NOTHROW
+   BOOST_CONTAINER_FORCEINLINE iterator_from_iiterator operator++(int) BOOST_NOEXCEPT_OR_NOTHROW
    {
       iterator_from_iiterator result (*this);
       ++this->m_iit;
       return result;
    }
 
-   iterator_from_iiterator& operator--() BOOST_NOEXCEPT_OR_NOTHROW
+   BOOST_CONTAINER_FORCEINLINE iterator_from_iiterator& operator--() BOOST_NOEXCEPT_OR_NOTHROW
    {
       //If the iterator_from_iiterator is not a bidirectional iterator, operator-- should not exist
       BOOST_STATIC_ASSERT((is_bidirectional_iterator<iterator_from_iiterator>::value));
       --this->m_iit;   return *this;
    }
 
-   iterator_from_iiterator operator--(int) BOOST_NOEXCEPT_OR_NOTHROW
+   BOOST_CONTAINER_FORCEINLINE iterator_from_iiterator operator--(int) BOOST_NOEXCEPT_OR_NOTHROW
    {
       iterator_from_iiterator result (*this);
       --this->m_iit;
       return result;
    }
 
-   friend bool operator== (const iterator_from_iiterator& l, const iterator_from_iiterator& r) BOOST_NOEXCEPT_OR_NOTHROW
+   BOOST_CONTAINER_FORCEINLINE friend bool operator== (const iterator_from_iiterator& l, const iterator_from_iiterator& r) BOOST_NOEXCEPT_OR_NOTHROW
    {  return l.m_iit == r.m_iit;   }
 
-   friend bool operator!= (const iterator_from_iiterator& l, const iterator_from_iiterator& r) BOOST_NOEXCEPT_OR_NOTHROW
+   BOOST_CONTAINER_FORCEINLINE friend bool operator!= (const iterator_from_iiterator& l, const iterator_from_iiterator& r) BOOST_NOEXCEPT_OR_NOTHROW
    {  return !(l == r); }
 
-   reference operator*()  const BOOST_NOEXCEPT_OR_NOTHROW
+   BOOST_CONTAINER_FORCEINLINE reference operator*()  const BOOST_NOEXCEPT_OR_NOTHROW
    {  return this->m_iit->get_data();  }
 
-   pointer   operator->() const BOOST_NOEXCEPT_OR_NOTHROW
+   BOOST_CONTAINER_FORCEINLINE pointer   operator->() const BOOST_NOEXCEPT_OR_NOTHROW
    {  return ::boost::intrusive::pointer_traits<pointer>::pointer_to(this->operator*());  }
 
-   const IIterator &get() const BOOST_NOEXCEPT_OR_NOTHROW
+   BOOST_CONTAINER_FORCEINLINE const IIterator &get() const BOOST_NOEXCEPT_OR_NOTHROW
    {  return this->m_iit;   }
 
    private:

@@ -47,7 +47,7 @@ s.boot;
 (
 SynthDef("help-SharedOut", {
 	SharedOut.kr(0, SinOsc.kr(0.2));
-}).send(s);
+}).add;
 )
 
 (

@@ -1338,8 +1338,11 @@ void DocumentManager::sendActiveDocument()
         return;
     if(mCurrentDocument){
         QString command = QStringLiteral("Document.setActiveDocByQUuid(\'%1\');").arg(mCurrentDocument->id().constData());
-        if (!mCurrentDocumentPath.isEmpty())
+        if (mCurrentDocumentPath.isEmpty()) {
+            command = command.append(QStringLiteral("ScIDE.currentPath_(nil);"));
+        } else {
             command = command.append(QStringLiteral("ScIDE.currentPath_(\"%1\");").arg(mCurrentDocumentPath));
+        }
         Main::evaluateCodeIfCompiled(command, true);
     } else
         Main::evaluateCodeIfCompiled(QStringLiteral("ScIDE.currentPath_(nil); Document.current = nil;"), true);

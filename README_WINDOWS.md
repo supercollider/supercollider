@@ -1,10 +1,7 @@
-Welcome to Supercollider 3.7 for Windows!
+Welcome to Supercollider 3.8 for Windows!
 =========================================
 
 **IMPORTANT NOTE**:
-
-Currently the Windows version of SC has several serious issues. Please read
-the chapter "Known problems" close to the end.
 
 This Readme has two blocks: "Installing SuperCollider", and "Building
 SuperCollider for Windows". The first block provides basic information to get
@@ -16,7 +13,7 @@ reading to build the Windows version of SC. Furthermore the individual chapters
 in "Walkthroughs" are not expected to be read consecutively, they might appear
 quite repetitive if done so.
 
-March 2016
+May 2016
 
 
 Table of contents
@@ -94,10 +91,10 @@ Listen to music composed with SuperCollider on SoundCloud:
 
 There are several SuperCollider Facebook groups, some SuperCollider tweets, e.g.
 @sc140tweets. In addition you are strongly encouraged to subscribe to the two SC
-mailing lists 'sc-users' and 'sc-devel'. You will get friendly and qualified
+mailing lists 'sc-users' and 'sc-dev'. You will get friendly and qualified
 replies there, as well as interest, and encouragement for your projects:
 
-    http://www.beast.bham.ac.uk/research/sc_mailing_lists.shtml
+    http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx
 
 
 Installing SuperCollider
@@ -111,12 +108,13 @@ that files created in the 'user support directory' are not deleted (see below
 for details and an explanation).
 
 IMPORTANT: in order to use the Quarks extension system you *need* to install
-Git. It is available from
+Git and add it to the PATH. The Git installer will prompt you to the addition.
+For SC it is enough to add Git itself to the path, the additional unix tools
+(curl, find etc.) are not required.
+
+Git for Windows is available from
 
     http://git-scm.com/downloads
-
-Git for Windows also supplies a unix-shell running in Windows. This is likely
-to help applications of "unixCmd" in the future.
 
 
 System Requirements
@@ -146,26 +144,26 @@ interface to be used by SC.
 Using the SuperCollider IDE
 ---------------------------
 
-To start up the IDE use the startmenu link or run the scide.exe program found
+To start up the IDE use the start menu link or run the scide.exe program found
 within the installation folder. On first start-up expect several firewall
 warnings to pop up. The SuperCollider components - the language interpreter
-`sclang`, the sound server `scsynth` and the IDE `scide` - communicate among
+'sclang', the sound server 'scsynth' and the IDE 'scide' - communicate among
 each other over the network, so you will get a warning for each of the three
 executables. If you are new to SuperCollider, inspect the help system and look
 for the tutorials. You can open the help system using Ctrl+D. This keyboard
 shortcut is context sensitive - if your cursor is on a term from the
-supercollider language, the help system will likely open with the page
-explaining that term. Of course there is also the menu entry `Help` -> `Show
-Help Browser`.
+supercollider language ('sclang'), the help system will likely open with the page
+explaining that term. Of course there is also the menu entry 'Help' -> 'Show
+Help Browser'.
 
 
 Using SuperCollider in command line mode
 ----------------------------------------
 
-*Note*: this is currently broken (March 2016, SC3.7). If you are using the 32-bit
+*Note*: this is currently broken (May 2016, SC3.8). If you are using the 32-bit
 version, you can get output in emergency situations: either keep your finger on
 the key for about halph a second or type each keystroke twice for it to
-register. You can also send textfiles to sclang by passing the filename as
+register. You can also send text files to sclang by passing the filename as
 argument to `sclang`.
 
 1. Open a Windows command line window (the cmd.exe program).
@@ -180,9 +178,9 @@ the up and down arrow keys.
 
 5. Important keyboard shortcuts:
 
-      `Ctrl+t`: stop sound, equivalent to CmdPeriod.run  
-      `Ctrl+x`: recompile the class library  
-      `Ctrl+d`: quit the SuperCollider command line  
+      `Ctrl+t`: stop sound, equivalent to CmdPeriod.run
+      `Ctrl+x`: recompile the class library
+      `Ctrl+d`: quit the SuperCollider command line
 
 The interface uses the GNU library [Readline][Readline doc].
 
@@ -199,8 +197,8 @@ Configuration- and support files
 An important folder containing application related user data (for example
 extensions, quarks, Help files, plugins, configuration files, synthdefs) is
 located in the Windows 'local application data' folder. In SC-speak this folder
-is called the userAppSupportDir. This location is a bit tricky to find outside
-of SC (in the File Explorer its grandparent `AppData` is hidden by default). You
+is called the userAppSupportDir. This location is a bit tricky to find when not
+using SC-IDE because its grandparent `AppData` is hidden by default. You
 can see it in the environment variable LOCALAPPDATA. Type this on a command
 line:
 
@@ -285,23 +283,10 @@ and can spend most of the time in your preferred IDE.
 
 The Windows port of SC is in a stage of transition. The older build system used
 the Windows port of GCC (MinGW), the newer uses the native Windows build tools
-integrated into the IDE Visual Studio. This transition is not complete yet. The
-sc3-plugins collection can currently only be built with the old build system, as
-can SuperNova, an alternative server with multi-core capabilities. Also sclang's
-interactive command line functionality (readline based) cannot be added in the
-Visual Studio build at the time of this writing.
-
-While sc3-plubins cannot be built with Visual Studio yet, 64-bit MinGW built
-plugins can be used with VS built SC, if you add the MinGW runtime libraries
-to the SC application folder. This setup is little tested though.
-
-On the other hand it must be said that the Windows build system is in pretty
-good shape now, and differs in use simplicity from the other platforms only
-in the necessity to download and install dependencies without the availability
-of comfortable package managers. Once the files needed are in place, the
-actual use of the system boils down to pressing a few buttons. So while SCWin
-still has pretty serious issues, getting to solving those issues should be
-a lot easier now than it used to be.
+integrated into the IDE Visual Studio. This transition is not complete yet.
+SuperNova, an alternative server with multi-core capabilities cannot be built
+with VS yet. Also sclang's interactive command line functionality (readline
+based) cannot be added in the Visual Studio build at the time of this writing.
 
 
 Quick Steps
@@ -312,13 +297,13 @@ Quick Steps
 - Source management
   - [Git][Git] for Windows (latest version)
 - Build tools
-  - [CMake][cmake], latest stable version
+  - [CMake][cmake], latest stable version (minimum 3.4.3)
   - One of:
-    - [MinGW][Qt], version *4.92* 32-bit, the distribution shipped with Qt (QT\Tools\mingw492_32)
+    - [MinGW][Qt], version *4.82* 32-bit, the distribution shipped with Qt (QT\Tools\mingw482_32)
     - [Visual Studio 12 2013][VS]
 - Libraries
   - Required
-    - *[Qt][Qt]* versions 5.5.x Versions from 5.3 upwards should work but are 
+    - *[Qt][Qt]* versions 5.5.x Versions from 5.3 upwards should work but are
         little tested. Qt5.6 does not work with SC 3.7 because WebKit was dropped
         from the binary distribution.
         Use the official download from qt.io and the online-installer. It offers
@@ -329,10 +314,10 @@ Quick Steps
         will be referring to that file structure throughout this text.
 
         *Important note*: the flavour of Qt (e.g. msvc2013_64 or mingw492_32) must
-        match your toolchain!
+        match your toolchain as closely as possible!
 
         For a 64-bit VS build select msvc2013_64
-        for a 32-bit MinGW build select mingw492_32
+        for a 32-bit MinGW build select mingw482_32
 
     - *[libsndfile][libsndfile]* >= 1.0.25
 - Recommended
@@ -342,9 +327,7 @@ Quick Steps
     MinGW build
   - *[ASIO-SDK][asiosdk]* = 2.3 (Asio support in Portaudio)
 - Optional
-  - *DirectX SDK* version 7 for MinGW, [v.9][dx9sdk] for VS. (Direct Sound support in Portaudio)
-        *Note*: at the time of this writing there was no official download of dx7sdk. Please do
-        some research or enquire on the SC mailing list, how to get hold of a download.
+  - *DirectX SDK* [v.9][dx9sdk] for VS build. (Direct Sound support in Portaudio)
   - *[NSIS][nsis]*, if you want to create a binary SC installer (add the binary `makensis` to PATH)
 - Convenience
   - a Unix line-ending friendly text editor like *[Atom][atomeditor]* or *[Notepad++][notepad++]*.
@@ -376,7 +359,8 @@ Git will usually tell if a resynchronization/update is required.
 patched version of the pa-source is provided as submodule of the SC source and
 built automatically during the SC build. In order to add ASIO and/or DSound
 support, the respective SDKs (gratis downloads) have to be obtained and added to
-the source tree.
+the source tree. DSound support in the MinGW build uses the library provided by
+MinGW, so no SDK is needed.
 
 
 ### Arrangement of toolchain, libraries and SDKs
@@ -385,12 +369,12 @@ the source tree.
   - *[MinGW][Qt]*: embedded in the Qt folder tree, downloaded together with Qt. Likely
     location after install:
 
-      C:\Qt\Tools\mingw492_32
+      C:\Qt\Tools\mingw482_32
 
     Compiler and other tools required for the build are found in the binaries
     subdirectory. It needs to be added to the environment PATH:
 
-      C:\Qt\Tools\mingw492_32\bin
+      C:\Qt\Tools\mingw482_32\bin
 
 
   - *[VS][VS]*: default install of VS2013, paths are handled automatically
@@ -433,6 +417,7 @@ You should end up with this folder structure:
           lib
       fftw
 
+
 Unfortunately "fftw", as distributed by fftw.org, does not come with import
 libraries required for a VS build (fftw3f-3.lib). If you can't get hold of
 a prepared import library, you have to create it by using VS tools. This is not
@@ -445,6 +430,10 @@ needs the /MACHINE:X64 argument for the 64-bit build, and use the "Developer
 Command Prompt for VS2013" to have the tools available in a pre-set environment
 for this kind of work. The MinGW-build can use the .dll-files directly.
 
+*Note*: if you compile fftw yourself please make sure that the install is
+configured to copy all files to a single flat folder, otherwise cmake will not
+find the required files automatically.
+
 In order to get support for ASIO drivers, the [ASIO SDK][asiosdk] has to be downloaded
 from Steinberg. The parent folder has to be placed next to the supercollider
 source folder:
@@ -456,18 +445,8 @@ source folder:
         common
         ...
 
-For DSound support the DirectX SDK has to be obtained. Unfortunately MinGW and
-VS build require different versions. For VS download [version 9][dx9sdk] and
-install it in the system. For the MinGW build obtain version 7, copy
-the folders `lib` and `include` to a parent folder called dx7sdk, and again
-place it next to the SC source:
-
-    sc-source
-    x86
-    asiosdk
-    dx7sdk
-        lib
-        include
+DSound support uses MinGW libraries in the MinGW build. For VS you have to
+download the DirectX SDK [version 9][dx9sdk] and install it in the system.
 
 
 ### Configuring and executing the build
@@ -519,7 +498,7 @@ location. They should be enough to successfully create the intermediary build
 files required to start the build, if the smaller dependencies are in the place
 expected:
 
-    $> SET PATH=C:\Qt\5.5\mingw492_32\bin;C:\Qt\Tools\mingw492_32\bin;%PATH%
+    $> SET PATH=C:\Qt\5.5\mingw492_32\bin;C:\Qt\Tools\mingw482_32\bin;%PATH%
     $> SET CMAKE_PREFIX_PATH=C:\Qt\5.5\mingw492_32
     $> cd supercollider
     $> mkdir build
@@ -690,41 +669,24 @@ common, ...). You should end up with a folder tree like this:
         driver
         host
 
-DSound/DirectX: unfortunately the MinGW- and the VS-build require different DX
-versions. The MinGW-build only works with version 7, whereas the VS-build only 
-works with [version 9 (June 2010)][dx9sdk]. Version 9 can still be downloaded 
-from MS and installed into the OS. Acquiring version 7 needs some research, at 
-the time of this writing no official MS download was provided. Once
-you get the files, don't install them, just copy the folders `include` and `lib`
-into a folder. The folder's name needs to start with `dx`. Make that folder a
-sibling of the SuperCollider source.
-
-In the VS-build, a properly installed dx9-SDK will be found automatically. In
-the MinGW-build, the dx7 files will be found if your folder arrangement is
-like so:
-
-    sc-source
-    dx7sdk
-        include
-        lib
+DSound/DirectX: The VS-build requires DirectX. It should be installed as usual.
+[version 9 (June 2010)][dx9sdk].
 
 You can study the file `CMakeLists.txt` in the portaudio folder
-(external_libraries\portaudio) to learn about the options that the build
+(external_libraries\portaudio_sc_org) to learn about the options that the build
 provides. With default settings, all APIs that work out of the box are enabled
 and only the library for static linking is built. In the VS-build all APIs are
-enabled, in the MinGW build WASAPI had to be omitted.
+enabled, in the MinGW build WASAPI had to be omitted, and some features of full
+duplex mode in DSound had to be disabled. If you would like to tweak the PA-
+build you can single it out from the SC build like so:
+
+    cmake --build . --target portaudio
 
 
 Walkthroughs
 ------------
 
 ### The trial-error approach: building sc3-plugins and passing build settings to `cmake`
-
-*Note*: at the time of this writing sc3-plugins could not be built with Visual
-Studio. This chapter is MinGW only. It is likely possible (though almost
-untested) to run a MinGW built 64-bit version of the plugins with a 64-bit
-Visual Studio build of SC, provided the MinGW runtimes are copied to the
-SC install folder (see below for details).
 
 sc3-plugins is a popular collection of binary extension to SC, providing many
 additional UGens. They are hosted in the SuperCollider repository on Github:
@@ -759,12 +721,17 @@ For this to be meaningful we need to
   - add the toolchain binary path to the environment path before running `cmake`
   - specify the generator (element after flag `-G`)
   - point `cmake` to the source (last element in `cmake` command, cannot be
-    omitted on subsequent runs):
+    omitted on subsequent runs). For MinGW do:
 
-        $> SET PATH=C:\Qt\Tools\mingw492_32\bin;%PATH%
+        $> SET PATH=C:\Qt\Tools\mingw482_32\bin;%PATH%
         $> mkdir sc3-plugins-build
         $> cd sc3-plugins-build
-        $> cmake -G "MinGW Makefiles" ..\sc3-plugins
+        $> cmake -G "MinGW Makefiles" -D CMAKE_BUILD_TYPE=Release ..\sc3-plugins
+
+    For VS Studio the toolchain need not be added to the path. You just need
+    to specify the generator like so:
+
+    $> cmake -G "Visual Studio 12 2013 Win64" ..\sc3-plugins
 
 CMake will likely return two or three errors:
 
@@ -806,8 +773,8 @@ run:
     $> cmake .. -L
 
 This will show us amongst other things, that an option to build plugin versions
-for the alternative audio server `supernova` is available. To add them to the
-build, just run:
+for the alternative audio server `supernova` is available (not availale in
+VS builds). To add them to the build, just run:
 
     $> cmake -DSUPERNOVA=ON ..
 
@@ -816,6 +783,12 @@ The old settings will stay in place.
 Ready to build:
 
     $> cmake --build . --target install
+
+This works for both MinGW and VS. In the VS build you may want to specify
+the build type:
+
+    $> cmake --build . --target install --config Release
+
 
 Unfortunately on Windows we will get an error at the end of this build, because
 CMake wants to install the files to the Windows default install location, which
@@ -844,49 +817,6 @@ execute the build command without running CMake manually. CMake will be triggere
 automatically if required (according to what CMake believes is correct in
 a certain situation - which isn't necessarily correct ;) ).
 
-
-#### 64-bit sc3-plugins
-
-It is not clear yet whether MinGW compiled plugins can be used reliably with a
-VS studio built 64-bit SC. It seems to work and no negative feedback has arrived,
-but the opinion of experts vary between "no problem" and "unlikely to work
-well".
-
-As to the build: switching to a 64-bit build is done by pointing to a toolchain
-that builds 64-bit applications. The path should be prepended to the
-environment search PATH, to minimize the risk of wrong files being found in other
-folders (the folders in the search path are searched from head to tail until
-a match is made, so the first hit wins):
-
-    $> SET PATH=C:\MinGW64\bin;%PATH%
-
-We need to point to the FFTW3F library again, but this time from the x64
-folder:
-
-    $> cmake -G "MinGW Makefiles" -DFFTW3F_INCLUDE_DIR=..\x64\fftw\include -DFFTW3F_LIBRARY=..\x64\fftw\libfftw3f-3.dll -DSC_PATH=..\supercollider ..\sc3-plugins
-
-Binaries built with MinGW require MinGW provided runtime libraries. These will
-have to be added to the SC install directory where `scsynth` is located. You can
-identify the libraries one by one by starting scsynth, and providing the files
-reported as missing. You will find them in the MinGW binaries folder. A more
-systematic approach would be using a (gratis) tool like `depends`. Most likely
-the libraries are:
-
-    libstdc++-6.dll
-    libwinpthread-1.dll
-    libgcc_s_seh-1.dll
-
-The third library's name varies in accordance with the compiler used.
-
-To sum up: When working in this interactive trial-error mode with CMake,
-variables that have been assigned values, are stored in the cache file
-(CMakeCache.txt) and kept for a subsequent run. There is no need to enter
-assignments repeatedly, except if you want to change the value. Passing in
-arguments with `-D` will store new variables with their values, or overwrite
-existing ones in the cache. Manually assigned variables have higher priority
-than variables auto-generated by the build system. So you can gradually aggregate
-the required values error by error.
-
 On the command line two things are important time savers: when entering paths,
 tab completion works, which helps avoiding typos. Also the history function
 (arrow up) is very useful. CMake will not always detect typos in path
@@ -913,10 +843,10 @@ Settings/Environment Variables). Setting the PATH on system level brings along
 some risks that need to be managed carefully, most importantly: adding Qt5 (or a
 toolchain) at the head of the system PATH can cause other applications that may
 depend on similar path settings, to malfunction. This can be easily corrected by
-removing the offending entry when done with SC development (and avoiding the 
+removing the offending entry when done with SC development (and avoiding the
 conflicting application in the meantime), but this might not always be possible.
 So we need to keep in mind: While working on a SC build with changed *system
-environment* settings, other applications might get into trouble. Most common 
+environment* settings, other applications might get into trouble. Most common
 cases are applications that depend on some implicit Qt install added to the
 PATH, or MinGW applications that require MinGW runtime libraries that don't fit
 the ones used in our build. It is not best practice to rely on the path to find
@@ -1083,8 +1013,8 @@ select one (among potentially several) Qts on your system, and chose a toolchain
 to combine with. If your Qt is installed in a standard location, it is likely
 that QtC already created a kit at start-up that fits the needs. While QtC can be
 used to build with the MS toolchain, it is the more likely choice when building
-with MinGW. So before opening the SC project, we may need to create the right kit: 
-Qt5.5.1-mingw492_32 combined with mingw492_32. This can be done in Tools -> 
+with MinGW. So before opening the SC project, we may need to create the right kit:
+Qt5.5.1-mingw492_32 combined with mingw482_32. This can be done in Tools ->
 Options -> Kits and should be self-explanatory.
 
 Next step is to open the project (File -> Open File or Project) by pointing to
@@ -1108,7 +1038,7 @@ are executed each time you hit "Run" or "Debug", so it is not always helpful to
 have these steps active during a development cycle.
 
 In order to create a binary installer, you will want to add the (custom) target
-`installer`. It creates a binary containing all files required to run SC autonomously 
+`installer`. It creates a binary containing all files required to run SC autonomously
 (NSIS required). But if you are not working on the installer itself, you will likely
 only want to activate that step at the end of a development cycle.
 
@@ -1128,7 +1058,7 @@ that variables have been assigned the values expected. Keep in mind that the
 but may also cause trouble if wrong values are kept. To make sure CMake
 generated values are updated correctly, remove the respective variables from
 the file or delete the entire file. To make sure object files are recompiled,
-"build" the `target clean`. To avoid any contamination by an old build, delete 
+"build" the `target clean`. To avoid any contamination by an old build, delete
 the entire build folder. Of course each of these measures significantly extends
 the time needed to complete a build.
 
@@ -1234,14 +1164,6 @@ Commonly used variables to modify the build configuration are:
 
       -DINSTALL_HELP=OFF
 
-  *Note*: At the time of this writing rendering SCDoc during SC compile ends with
-  an error. This is non-critical. The error occurs after the documentation was
-  rendered. The crash is owed to buggy sclang shutdown behaviour and has no
-  consequences for documentation rendering. The build will not continue after
-  the error though, so you must make sure anything else required has been built
-  earlier. If no other workaround is available you can build twice, with and
-  without doc- rendering. The rendered help-files will stay where they are.
-
 * Server-only: Currently there is no straightforward way to build server-only.
   Even if you mark only the server target (and the plugins), sclang is pulled in
   as well. So a bit of patience is required. You can turn off Qt (`-DSC_QT=OFF`)
@@ -1259,9 +1181,7 @@ Commonly used variables to modify the build configuration are:
   automatically in the build to the target folder. If you run the target
   "install", you get the unmodified class library. The changes are just:
 
-    - move Common/GUI and JITLib/GUI to scide_scqt
-    - move Common/GUI/Base/Model.sc back into the scanned area
-    - remove references to Document class from deprecated/3.7
+    - move or delete Common/GUI and JITLib/GUI
 
 More options can be explored by studying CMakeCache.txt in the build folder,
 or file CMakeLists.txt in the root folder of the SC source.
@@ -1289,8 +1209,8 @@ If the batch file contains these lines:
 
     echo off
     echo Setting up environment for Qt usage...
-    echo Qt 5.5 mingw492_32 paired with MinGW 4.9.2
-    set PATH=C:\Qt\5.5\mingw492_32\bin;C:\Qt\Tools\mingw492_32\bin;%PATH%
+    echo Qt 5.5 mingw492_32 paired with MinGW 4.8.2
+    set PATH=C:\Qt\5.5\mingw492_32\bin;C:\Qt\Tools\mingw482_32\bin;%PATH%
     set CMAKE_PREFIX_PATH=C:\Qt\5.5\mingw492_32
 
 You are set to start the environment for the MinGW build system with a
@@ -1380,12 +1300,11 @@ In this case the generator has to be "MinGW Makefiles". For example:
 Ready to build!
 
 Unfortunately the resulting SC binaries don't work for now (segfault in the
-IDE). It is unclear whether this is due to a bug in 32-bit MSYS2 or SC. Once
-this changes, and once the SC codebase is updated to support a MinGW 64-bit
-build, big times lay ahead for the SCWin build. 64-bit IDE, sclang, scsynth,
-supernova, base- & sc3-plugins are in close reach, and shouldn't be too
-difficult to maintain alongside mainstream SC development on the unixy 
-platforms.
+IDE). This is likely due to a bug in 32-bit MSYS2. Once this changes, and once
+the SC codebase is updated to support a MinGW 64-bit build, big times lay ahead
+for the SCWin build. 64-bit IDE, sclang, scsynth, supernova, base- &
+sc3-plugins are in close reach, and shouldn't be too difficult to maintain
+alongside mainstream SC development on the unixy platforms.
 
 
 Diagnosing build problems
@@ -1400,7 +1319,7 @@ These are likely the most common causes of build problems:
   VS 12/2013 64-bit
 - incorrect versions of the dependencies (readline 5.0.1, libsndfile 1.0.25/26,
   fftw 3.3.4, Qt 5.5.1)
-- too old cmake version (3.0.2 and bigger should be fine)
+- too old cmake version (3.4.2 or bigger are required)
 - dynamic/runtime-library mismatch. This can happen if dependencies and
   core SC require different versions of the same runtime library. Reach out
   for libraries that do not depend on MinGW runtimes or make sure all components
@@ -1409,7 +1328,7 @@ These are likely the most common causes of build problems:
   architecture (32- or 64-bit) but also the toolchain used to compile SC and Qt
   (sometimes called flavour in this text). They have to match as closely as
   possible (anything but an exact match is likely to cause trouble). SC built
-  with VS requires the msvc2013_64 flavour, the MinGW 4.9.2 build requires
+  with VS requires the msvc2013_64 flavour, the MinGW 4.8.2 build requires
   the mingw492_32 flavour
 - dirty states in your build folder (usually resulting from changes in the build
   configuration). See below for various "fixes"
@@ -1561,20 +1480,20 @@ Reporting Windows build issues is currently the only way to detect errors
 for SCWin resulting from progress in mainstream SC development.
 
 
-Description of the SC 3.7 release build
+Description of the SC 3.8 release build
 ---------------------------------------
 
 All dependencies not contained in the SC source (external_libraries) were
 downloaded from the original providers (see links at the end). For both VS and
 QT the free community editions were used.
 
-SCWin64 3.7 was built with Visual Studio 12/2013
+SCWin64 3.8 was built with Visual Studio 12/2013
 
 - Qt5.5.1 (flavour msvc2013_64)
 - libsndfile 1.0.26
 - FFTW 3.3.4
 
-SCWin32 3.7 was built using Qt Creator, combining MinGW 4.9.2 and Qt 5.5.1
+SCWin32 3.8 was built using Qt Creator, combining MinGW 4.8.2 and Qt 5.5.1
 mingw492_32 into a kit. The MinGW distribution provided by Qt was used.
 
 - linsndfile 1.0.26
@@ -1585,8 +1504,7 @@ For both builds all other external libraries (including portaudio) were compiled
 as part of the SC build, using the sources embedded in the SC source tree (in
 the folder external libraries) and the settings defined there.
 
-The portaudio build was extended by adding ASIO- and DirectX SDKs for ASIO and
-DSound support. Both builds use the:
+The portaudio build was extended for ASIO support by adding the ASIO-SDK:
 
 - ASIO SDK 2.3
 
@@ -1595,11 +1513,9 @@ build. For VS:
 
 - DirectX v9 (June 2010)
 
-For MinGW:
+The MinGW build uses the libraries coming with MinGW.
 
-- DirectX v7 (extinct MS download)
-
-The tools used were Git for Windows v2.7.3.windows.1, cmake v3.5, and NSIS v3.0b1
+The tools used were Git for Windows v2.8.2.windows.1, cmake v3.52, and NSIS v3.0b1
 to create the binary installer.
 
 
@@ -1626,7 +1542,7 @@ Known problems
   written by Lucas Cornelisse, is contained in a topic branch in the SC repo
   (topic/IPC_QTcp)
 
-- READLINE/Command line-mode does not work properly.  
+- READLINE/Command line-mode does not work properly.
   You have to wait a short while with the key pressed to get it to register - if
   you wait for too long, the key will repeat. It's kind of possible to get used
   to it for a short while. Second problem: sclang will crash if you use ctrl-d.
@@ -1637,26 +1553,11 @@ Known problems
   link to the readline lib yet (and you can only use v. 5.0.1 which isn't
   available as 64-bit binary).
 
-- you need to shut the server down manually to avoid scsynth zombies.
-
-- Midi doesn't work
-
 - HID doesn't work (and never did on Windows)
 
 - using shell commands from SC only works in a quite limited way (and always did).
   .unixCmd expects a unix shell, only for essential requirements workarounds
   are in place on Windows.
-
-More specific smaller Windows bugs are:
-
-- sclang shutdown behaviour is broken, it crashes before at a late stage
-  of shutdown. To circumvent this, sclang is killed from the IDE rather
-  than terminated.
-- on the command line the server can sometimes not be closed with ctrl-c
-- in general shutdown behavior of the server is not clean. When quit from
-  sclang it crashes rather than closes properly (this seems not to have
-  serious consequences though)
-- version control of Quarks via git doesn't work (related to .unixCmd)
 
 A build issue that does not seem to create a problem:
 
@@ -1697,7 +1598,7 @@ software publicly and freely available.
 [readline]:http://gnuwin32.sourceforge.net/packages/readline.htm
 [readline doc]: https://cnswww.cns.cwru.edu/php/chet/readline/rltop.html
 [SC]: https://supercollider.github.io (Main SC-site)
-[SC mailing lists]: http://www.beast.bham.ac.uk/research/sc_mailing_lists.shtml
+[SC mailing lists]: http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx
 [SC repo]: https://github.com/supercollider/supercollider (SC source repository on Github with issue tracker)
 [SC help]: http://doc.sccode.org/Help.html (SC online help)
 [VS]: https://www.visualstudio.com/downloads/download-visual-studio-vs (Visual Studio 2013, community edition)

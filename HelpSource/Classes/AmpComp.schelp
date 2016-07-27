@@ -116,7 +116,7 @@ SynthDef("pgrain",
 			) * EnvGen.ar(window, doneAction:2)
 		)
 	}
-).send(s);
+).add;
 )
 
 // send grains
@@ -147,7 +147,7 @@ SynthDef("pgrain",
 			) * EnvGen.ar(window, doneAction:2)
 		)
 	}
-).send(s);
+).add;
 )
 
 // with AmpCompA
@@ -163,7 +163,7 @@ SynthDef("pgrain",
 			) * EnvGen.ar(window, doneAction:2)
 		)
 	}
-).send(s);
+).add;
 )
 ::
 

@@ -53,7 +53,7 @@ x.free; b.close; b.free;
 (
 SynthDef("help-VDiskin", { arg bufnum = 0;
 	Out.ar(0, VDiskIn.ar(1, bufnum, MouseX.kr(0.5, 2.0)));
-}).send(s);
+}).add;
 )
 (
 x = Synth.basicNew("help-VDiskin");

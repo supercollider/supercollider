@@ -143,16 +143,6 @@ method::pid
 
 Returns:: The operating system's pid (process ID) for the process.
 
-method::preferencesAction
-note::SCApp only!::
-
-A function to evaluate when the SuperCollider preferences menu is selected.
-
-code::
-thisProcess.preferencesAction = { arg process; SCWindow.new.front; }
-::
-
-
 method::recompile
 
 Recompiles the class library. This is equivalent to restarting SC. Currently OSX (SuperCollider.app) only.

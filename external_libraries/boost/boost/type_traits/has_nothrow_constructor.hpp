@@ -17,7 +17,7 @@
 #if defined(BOOST_MSVC) || defined(BOOST_INTEL)
 #include <boost/type_traits/has_trivial_constructor.hpp>
 #endif
-#if defined(__GNUC__ ) || defined(__SUNPRO_CC)
+#if defined(__GNUC__ ) || defined(__SUNPRO_CC) || defined(__clang__)
 #include <boost/type_traits/is_default_constructible.hpp>
 #endif
 

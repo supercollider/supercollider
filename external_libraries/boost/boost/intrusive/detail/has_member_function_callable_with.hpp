@@ -164,13 +164,14 @@ BOOST_INTRUSIVE_HAS_MEMBER_FUNCTION_CALLABLE_WITH_NS_BEG
       {
          struct BaseMixin
          {
-            void BOOST_INTRUSIVE_HAS_MEMBER_FUNCTION_CALLABLE_WITH_FUNCNAME();
+            void BOOST_INTRUSIVE_HAS_MEMBER_FUNCTION_CALLABLE_WITH_FUNCNAME()
+            {} //Some compilers require the definition or linker errors happen
          };
 
          struct Base
             : public boost_intrusive_hmfcw::remove_cv<Type>::type, public BaseMixin
          {  //Declare the unneeded default constructor as some old compilers wrongly require it with is_convertible
-            Base();
+            Base(){}
          };
          template <typename T, T t> class Helper{};
 

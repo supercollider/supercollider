@@ -35,11 +35,11 @@
 #include <windows.h>
 
 #  if defined(BOOST_INTERPROCESS_BOOTSTAMP_IS_LASTBOOTUPTIME)
-#  include <Wbemidl.h>
-#  include <Objbase.h>
+#  include <wbemidl.h>
+#  include <objbase.h>
 #  endif
 
-#include <Shlobj.h>
+#include <shlobj.h>
 #endif
 
 #if defined(_MSC_VER)

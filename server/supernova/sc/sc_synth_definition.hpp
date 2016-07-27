@@ -39,7 +39,7 @@ class sc_synth_definition:
     public sc_synthdef
 {
 public:
-    sc_synth_definition(sc_synthdef const & sd);
+    sc_synth_definition(sc_synthdef && sd);
 
 private:
     friend class sc_synth;

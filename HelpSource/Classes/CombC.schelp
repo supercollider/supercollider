@@ -11,6 +11,11 @@ which uses no interpolation, and  link::Classes/CombL::  which uses linear
 interpolation. Cubic interpolation is more computationally expensive
 than linear, but more accurate.
 
+A very good tip for anyone who is interested in delay lines, 
+and is willing to get a simple way of processing a live source 
+in a pretty effective way, is setting up a larger memory pool in the server,
+and basically setting up pretty large delay lines, randomizing all their parameters
+
 
 classmethods::
 
@@ -56,7 +61,23 @@ code::
 { CombC.ar(WhiteNoise.ar(0.01), 0.01, XLine.kr(0.0001, 0.01, 20), -0.2) }.play;
 
 // used as an echo.
-{ CombC.ar(Decay.ar(Dust.ar(1,0.5), 0.2, WhiteNoise.ar), 0.2, 0.2, 3) }.play;
+{ CombN.ar(Decay.ar(Dust.ar(1,0.5), 0.2, WhiteNoise.ar), 0.2, 0.2, 3) }.play;
+
+// large delay lines
+(
+s.options.memSize= 8192*2;
+s.reboot;
+)
+({
+	var in, del1, del2, del3, del4;
+	in = SoundIn.ar(0); 
+	del1 = CombC.ar(in, 8, LFNoise2.kr(0.01).range(1, 8), 1);
+	del2 = CombC.ar(del1, 8, LFNoise2.kr(0.01).range(1, 8), 1);
+	del3 = CombC.ar(del2, 8, LFNoise2.kr(0.01).range(1, 8), 1);
+	del4 = CombC.ar(del3, 8, LFNoise2.kr(0.01).range(1, 8), 1);
+	(del1 + del2 + del3 + del4)!2;
+}.play;
+);
 
 ::
 

@@ -1,0 +1,101 @@
+TITLE:: Git
+summary:: git interface
+categories:: Frontend
+related:: Classes/Quarks, Classes/Quark
+
+DESCRIPTION::
+An interface to the git toolchain. For more information on git, see link::http://git.io::.
+
+
+CLASSMETHODS::
+
+
+
+METHOD:: new
+creates a new instance of code::Git::, pointing to an existing local git repository.
+argument:: localPath
+path to the git repository.
+
+
+METHOD:: isGit
+returns code::true::, if a local directory is a git repository.
+argument:: localPath
+
+METHOD:: checkForGit
+returns code::true::, if the git toolchain is found on the system.
+
+
+INSTANCEMETHODS::
+
+subsection:: info
+
+METHOD:: remote, url
+returns:: url of the first remote that it finds.
+
+METHOD:: remoteLatest
+returns:: hash of latest commit on the remote
+
+METHOD:: localPath
+returns:: path to local repository
+
+METHOD:: tag
+returns:: currently checked out tag
+
+METHOD:: tags
+returns:: avaliable tags
+
+METHOD:: sha
+returns:: hash of the currently checked out version
+
+METHOD:: shaForTag
+argument:: tag
+one of the tags returned by link::#-tags::
+returns:: hash of the given tag
+
+
+METHOD:: isDirty
+returns:: code::true:: if there are local changes
+
+
+
+subsection:: perform actions on remote
+
+METHOD:: fetch
+perform a fetch from remote
+
+
+METHOD:: checkout
+perform a checkout from remote with argument code::refspec::
+argument:: refspec
+
+METHOD:: pull
+perform a pull from remote
+
+METHOD:: clone
+perform a clone from url into link::#-localPath::
+argument:: url
+the url of the remotes
+
+
+PRIVATE:: git, refspec
+
+
+
+EXAMPLES::
+
+code::
+// create a Git that points to a Quark directory
+g = Git(Quarks.all.choose.localPath);
+
+// alternatively, provide a pathname to a local git repository:
+g = Git("/path/to/local/repo");
+
+// get all available tags
+g.tags;
+
+// return local path
+g.localPath;
+
+// return url
+g.url;
+::
