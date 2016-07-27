@@ -149,9 +149,16 @@ int main(int argc, char* argv[])
 
 	WorldOptions options = kDefaultWorldOptions;
 
+#ifdef BELA
+	// defaults
+	options.mBelaAnalogInputChannels = 0;
+	options.mBelaAnalogOutputChannels = 0;
+	options.mBelaDigitalChannels = 0;
+#endif
+
 	for (int i=1; i<argc;) {
 #ifdef BELA
-		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utaioczblndpmwZrCNSDIOMHvVRUhPLJK", argv[i][1]) == 0) {
+		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utaioczblndpmwZrCNSDIOMHvVRUhPLJKG", argv[i][1]) == 0) {
 #else
 		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utaioczblndpmwZrCNSDIOMHvVRUhPL", argv[i][1]) == 0) {
 #endif
@@ -294,6 +301,10 @@ int main(int argc, char* argv[])
 				checkNumArgs(2);
 				options.mBelaAnalogOutputChannels = atoi(argv[j+1]);
 				break;
+			case 'G' :
+				checkNumArgs(2);
+				options.mBelaDigitalChannels = atoi(argv[j+1]);
+				break;
 #endif
 			case 'V' :
 				checkNumArgs(2);
@@ -338,7 +349,6 @@ int main(int argc, char* argv[])
 		options.mSharedMemoryID = port;
 	} else
 		options.mSharedMemoryID = 0;
-
 
 	struct World *world = World_New(&options);
 	if (!world) return 1;

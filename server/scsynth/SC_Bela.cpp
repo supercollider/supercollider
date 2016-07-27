@@ -363,15 +363,15 @@ bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 	  settings.numAnalogOutChannels = 0;
 	}
 	
-// 	// configure the number of digital channels
-// 	settings.useDigital = 0;
-// 	
-// 	if ( mWorld->mBelaDigitalChannels > 0 }
-// 	  settings.numDigitalChannels = mWorld->mBelaDigitalChannels;
-// 	  settings.useDigital = 1;
-// 	}
+	// configure the number of digital channels
+	settings.useDigital = 0;
 	
-	scprintf("SC_BelaDriver: >>DriverSetup - configured with (%i) input and (%i) output analog channels\n", settings.numAnalogInChannels, settings.numAnalogOutChannels );
+	if ( mWorld->mBelaDigitalChannels > 0 }
+	  settings.numDigitalChannels = mWorld->mBelaDigitalChannels;
+	  settings.useDigital = 1;
+	}
+
+	scprintf("SC_BelaDriver: >>DriverSetup - configured with (%i) analog input and (%i) analog output channels, and (%i) digital channels\n", settings.numAnalogInChannels, settings.numAnalogOutChannels, settings.numDigitalChannels );
 
 	// Initialise the PRU audio device. This function prepares audio rendering in BeagleRT. It should be called from main() sometime
 	// after command line option parsing has finished. It will initialise the rendering system, which
@@ -382,7 +382,7 @@ bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 	}
 
 	*outNumSamples = settings.periodSize;
-	*outSampleRate = 44100.0;					// This is fixed in Bela at the moment
+	*outSampleRate = 44100.0;		// This is fixed in Bela at the moment
 
 	return true;
 }
