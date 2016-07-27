@@ -81,6 +81,7 @@ Platform specific build and install instructions can be found in the following f
  - [README_WINDOWS.md](README_WINDOWS.md)
  - [README_IPHONE.md](README_IPHONE.md)
  - [README_JAILBROKEN_IPHONE.md](README_JAILBROKEN_IPHONE.md)
+ - [README_BELA.md](README_BELA.md)
 
 
 License
