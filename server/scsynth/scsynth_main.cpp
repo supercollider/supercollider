@@ -85,6 +85,7 @@ void Usage()
 // 		"   -J <bela-analog-channels>\n"
 		"   -J <bela-analog-input-channels>\n"
 		"   -K <bela-analog-output-channels>\n"
+		"   -G <bela-digital-channels>\n"		
 #endif
 #if (_POSIX_MEMLOCK - 0) >=  200112L
 		"   -L enable memory locking\n"
