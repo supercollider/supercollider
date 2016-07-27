@@ -18,8 +18,6 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-// ********** this version for windows and linux. for mac see UIUGens.mm
-
 /*
  *  BELA I/O UGens created by nescivi, (c) 2016
  *  https://www.nescivi.eu
