@@ -3,32 +3,31 @@ Compiling SuperCollider scsynth on Bela
 
 See [README_main.md](README_main.md) for the "real" SuperCollider readme.
 
-This file is Dan's notes about compiling SC on [Bela (BeagleRT)](http://beaglert.cc/) platform.
+This file is Dan's and Marije's notes about compiling SC on [Bela (BeagleRT)](http://beaglert.cc/) platform.
 
-At time of writing, I'm compiling just the server `scsynth`, so I've deactivated other components in the cmake.
-This branch `bela_hackery` contains that plus other modifications to get the SC source code master branch building.
-The main addition in this branch is a **Xenomai/BeagleRT audio driver for scsynth**, to use Bela's ultra-low-latency audio thread *instead* of jack/portaudio.
+This branch `bela_hackery_v01` contains that plus other modifications to get the SC source code master branch building.
+The main addition in this branch is a **Xenomai/BeagleRT audio driver for scsynth**, to use Bela's ultra-low-latency audio thread *instead* of jack/portaudio, and **plugins to access the analog and digital channels of the Bela-cape**
 
-> *NOTE:* If you have a prototype Bela board (from 2015) you'll need to [get a fresh SD card image](https://code.soundsoftware.ac.uk/projects/beaglert/wiki) since the Bela API changed a little.
+> *NOTE:* This guide assumes you have the [Bela image v0.1.0](https://github.com/BelaPlatform/bela-image/releases/tag/v0.1.0) (or higher).
 
 All of the commands here are to be executed *on the Bela device itself*. Normally you would SSH to it from a computer connected by USB, in order to do the following stuff.
 
 Preparation
 ===========
 
-Plug in an ethernet cable (or connect to the Internet some other way). Then we need to (a) install/update packages and (b) set the system time:
+Plug in an ethernet cable (or connect to the Internet some other way, see also [Bela Documentation](https://github.com/BelaPlatform/Bela/wiki/Getting-started-with-Bela#software-setup)). Then we need to (a) install/update packages and (b) set the system time:
 
-    ifup eth0
+a) See below at compiling and installing
 
-    echo "deb http://http.debian.net/debian wheezy-backports main" >> /etc/apt/sources.list
-    apt-get update
-    apt-get install gcc-4.7 g++-4.7
-    apt-get -t wheezy-backports install cmake    # need this updated version
+b) Set the system time:
 
     dpkg-reconfigure tzdata
     ntpdate pool.ntp.org
     date  # make sure this gives the right result
 
+Working partition
+=================
+
 On my Bela's SD card I added an extra partition and mounted it at `/extrabela` - all my work will be in this partition.
 You'll need at least maybe 250 MB spare (estimated).
 
@@ -46,68 +45,7 @@ Get the source code
 My modified source code is in this git branch here, called `bela_hackery`. If your Bela is still connected to the network you can grab it directly:
 
     cd /extrabela
-    git clone --recursive -b bela_hackery https://github.com/danstowell/supercollider.git
-    cd supercollider
-
-I believe that the Bela system image already includes most of SuperCollider's build dependencies. The updates to cmake/gcc described above are incurred because I'm using the latest `master` version of SC rather than 3.6.
-
-Compiling and installing
-========================
-
-Before we compile, here's an optional step: installing ccache makes repeated builds faster, if you have spare disk space for it. It's especially helpful if you're going to be changing the cmake build scripts.
-
-    apt-get install ccache
-    echo "cache_dir = '/extrabela/ccache'" >> ~/.ccache/ccache.conf
-
-Then here's how to build:
-
-    mkdir /extrabela/build
-    cd /extrabela/build
-    # note that we must explicitly choose the compiler version 4.7 here too, whichever command we use
-    # here's the command WITHOUT ccache
-    cmake /extrabela/supercollider -DCMAKE_C_COMPILER=gcc-4.7 -DCMAKE_CXX_COMPILER=g++-4.7 -DNOVA_SIMD=ON -DSSE=OFF -DSSE2=OFF -DINSTALL_HELP=OFF -DSC_QT=OFF -DSC_IDE=OFF -DSC_EL=OFF -DSC_ED=OFF -DSC_VIM=OFF -DSUPERNOVA=OFF -DNO_AVAHI=ON -DNATIVE=ON -DENABLE_TESTSUITE=OFF -DAUDIOAPI=bela
-    # or here's the command WITH ccache
-    cmake /extrabela/supercollider -DCMAKE_C_COMPILER=/usr/lib/ccache/gcc-4.7 -DCMAKE_CXX_COMPILER=/usr/lib/ccache/g++-4.7 -DNOVA_SIMD=ON -DSSE=OFF -DSSE2=OFF -DINSTALL_HELP=OFF -DSC_QT=OFF -DSC_IDE=OFF -DSC_EL=OFF -DSC_ED=OFF -DSC_VIM=OFF -DSUPERNOVA=OFF -DNO_AVAHI=ON -DNATIVE=ON -DENABLE_TESTSUITE=OFF -DAUDIOAPI=bela
-    make
-
-The `make` step will take a little while, about 30 minutes for me.
-
-Next we install. **CLASH WARNING:** Note that my version of Bela already comes with a standard compile of SuperCollider in `/usr/local/bin/scsynth`, plus plugins at `/usr/local/lib/SuperCollider/plugins`. To avoid confusion, you might want to destroy those before installing, else you might accidentally end up using the vanilla version.
-
-    make install
-
-
-# FROM testing image
-
-Image from (https://github.com/BelaPlatform/bela-image/releases/tag/v0.1-testing-2016.04.19)
-
-Preparation
-===========
-
-Plug in an ethernet cable (or connect to the Internet some other way). Then we need to (a) install/update packages and (b) set the system time:
-
-    ntpdate -b -u pool.ntp.org
-    date  # make sure this gives the right result
-
-On my Bela's SD card I added an extra partition and mounted it at `/extrabela` - all my work will be in this partition.
-You'll need at least maybe 250 MB spare (estimated).
-
-    mkdir /extrabela
-    mount /dev/mmcblk0p3 /extrabela
-
-Actually I added this line to my /etc/fstab so the partition automounts:
-
-    /dev/mmcblk0p3  /extrabela   ext4  noatime,errors=remount-ro  0  1
-
-
-
-Get the source code
-===================
-
-My modified source code is in this git branch here, called `bela_hackery`. If your Bela is still connected to the network you can grab it directly:
-
-    cd /extrabela
-    git clone --recursive -b bela_hackery https://github.com/danstowell/supercollider.git
+    git clone --recursive -b bela_hackery_v01 https://github.com/sensestage/supercollider.git
     cd supercollider
 
 I believe that the Bela system image already includes most of SuperCollider's build dependencies. The updates to cmake/gcc described above are incurred because I'm using the latest `master` version of SC rather than 3.6.
@@ -115,6 +53,9 @@ I believe that the Bela system image already includes most of SuperCollider's bu
 
 Compiling and installing
 ========================
+
+Update apt source list:
+    apt-get update
 
 We need gcc-4.8 / g++-4.8 as 4.9 causes a weird bug (https://github.com/supercollider/supercollider/issues/1450):
 
@@ -122,17 +63,18 @@ We need gcc-4.8 / g++-4.8 as 4.9 causes a weird bug (https://github.com/supercol
 
 Get the newest cmake:
 
-    apt-get update
     apt-get -t jessie install cmake    # need this updated version
+
+Get dependent libraries:
+    
+    apt-get install libudev-dev
+
 
 Before we compile, here's an optional step: installing ccache makes repeated builds faster, if you have spare disk space for it. It's especially helpful if you're going to be changing the cmake build scripts.
 
     apt-get install ccache
+    mkdir /root/.ccache
     echo "cache_dir = '/extrabela/ccache'" >> ~/.ccache/ccache.conf
-
-Dependencies:
-
-    apt-get install libudev-dev
 
 Then here's how to build:
 
@@ -147,8 +89,20 @@ Then here's how to build:
 
 The `make` step will take a little while, about 30 minutes for me. It seems it is stuck for a long time at compiling the BinaryOpUGens, but it will get past that.
 
-Next we install. 
+Next we install.
+
 **CLASH WARNING:** Note that my version of Bela already comes with a standard compile of SuperCollider in `/usr/local/bin/scsynth`, `/usr/local/bin/sclang`, `/usr/local/bin/sclang_pipeapp`, `/usr/local/bin/scvim`, plus plugins at `/usr/local/lib/SuperCollider/plugins` and class library in `/usr/local/share/SuperCollider`. To avoid confusion, you might want to destroy those before installing, else you might accidentally end up using the vanilla version.
+
+With these commands you remove the old stuff:
+    
+    rm -r /usr/local/lib/SuperCollider/
+    rm -r /usr/local/share/SuperCollider/
+    rm /usr/local/bin/sclang
+    rm /usr/local/bin/sclangpipe_app 
+    rm /usr/local/bin/scsynth
+    rm /usr/local/bin/scvim
+
+Installation the new version:
 
     make install
 
@@ -177,8 +131,6 @@ So now you should have scsynth running on the device. You should be able to send
     x.free;
     y.free;
 
-
-
     // You could use this to test mic input - be careful of feedback!
     SynthDef("mic", { Out.ar(0, SoundIn.ar([0,1])) }).add;
     z = Synth("mic");
@@ -189,31 +141,60 @@ BELA I/O's
 
 I/O support for the BeLa is implemented.
 
-The startup flag ```-J``` defines how many analog channels will be enabled.
+The startup flag ```-J``` defines how many analog input channels will be enabled, the startup flag ```-K``` how many analog output channels will be enabled, the startup flag ```-G``` how many digital channels will be enabled; by default all are set to 0.
 
-So for all analog channels to be enabled run scsynth like this:
+So for all analog and digital channels to be enabled run scsynth like this:
 
-       scsynth -u 57110 -z 16 -J 8
+       scsynth -u 57110 -z 16 -J 8 -K 8 -G 16
 
 To use the analog channels all as audio I/O 
 
-       scsynth -u 57110 -z 16 -J 8 -i 10 -o 10
+       scsynth -u 57110 -z 16 -J 8 -K 8 -G 16 -i 10 -o 10
 
 This will start scsynth with 10 inputs and outputs, inputs/outputs 2 - 9 are the analog pins
 
 To use the analog channels all via the UGens only:
 
-       scsynth -u 57110 -z 16 -J 8 -i 2 -o 2
+       scsynth -u 57110 -z 16 -J 8 -K 8 -G 16 -i 2 -o 2
        
 This will start scsynth with 2 audio inputs and outputs, the analog I/O will only be accessible through UGens, but are all enabled.
 
 If you want higher sample rates of the analog I/O, you can set the number of channels to 4; the number of available channels is then 4.
 
-       scsynth -u 57110 -z 16 -J 4 -i 2 -o 2
+       scsynth -u 57110 -z 16 -J 4 -K 4 -G 16 -i 2 -o 2
+
+The amount of analog inputs and outputs actually used will be rounded to a multiple of 4, so the actual options are 0, 4 or 8 analog channels. This is because in SuperCollider we cannot sample the analog channels faster than audio rate (right now).
+
+The ```ServerOptions``` class has appropriate variables to set the command line arguments, so you can set them with (but also see the comment below):
+
+    s.options.numAnalogInChannels = 8;
+    s.options.numAnalogOutChannels = 8;
+    s.options.numDigitalChannels = 16;
 
 
-The UGens ```AnalogInput```, ```AnalogOutput```, ```DigitalInput```, ```DigitalOutput```, ```DigitalIO``` give access to the pins.
+The UGens ```AnalogInput```, ```AnalogOutput```, ```DigitalInput```, ```DigitalOutput```, ```DigitalIO``` give access to the pins; they all have helpfiles with examples of usage.
 
+
+Examples
+======================================================
+
+Example files are available in the folder ```examples/bela```, and will be installed to ```/usr/local/share/SuperCollider/examples/bela```.
+
+
+Running scsynth *and* sclang
+======================================================
+
+If we run scsynth from sclang, it seems code execution stops after that - this is an unresolved issue for now.
+
+But - we can start scsynth manually, and then connect to it from a separate instance of sclang.
+
+So make one connection and start scsynth:
+
+    scsynth -u 57110 -z 16 -J 8 -K 8 -G 16 -i 2 -o 2
+
+And another to start sclang:
+
+    sclang examples/bela/bela_example_analogin_2.scd
 
 Monitoring its performance
 ======================================================
@@ -246,7 +227,7 @@ SuperCollider comes with a built-in set of UGen plugins but there's an extra set
     cd sc3-plugins
     mkdir build
     cd build
-    cmake -DSC_PATH=/extrabela/supercollider -DCMAKE_C_COMPILER=/usr/lib/ccache/gcc-4.7 -DCMAKE_CXX_COMPILER=/usr/lib/ccache/g++-4.7  ..
+    cmake -DSC_PATH=/extrabela/supercollider -DCMAKE_C_COMPILER=/usr/lib/ccache/gcc-4.8 -DCMAKE_CXX_COMPILER=/usr/lib/ccache/g++-4.8  ..
     make
     make install
 
