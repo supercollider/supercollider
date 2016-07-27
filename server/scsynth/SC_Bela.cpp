@@ -410,7 +410,7 @@ bool setup(BelaContext* belaContext, void* userData)
 	
 	// cast void pointer
 	SC_BelaDriver *belaDriver = (SC_BelaDriver*) userData;
-	if ( belaContext->analogChannels > 0 ){
+	if ( (belaContext->analogInChannels > 0) || (belaContext->analogOutChannels > 0) ){
 	  belaDriver->setAudioFramesPerAnalogFrame( belaContext->audioFrames / belaContext->analogFrames );
 	}
 
