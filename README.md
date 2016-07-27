@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/supercollider/supercollider.svg?branch=master)](https://travis-ci.org/supercollider/supercollider)
+
 Welcome to SuperCollider!
 =========================
 
@@ -21,17 +23,18 @@ the site listed above, including links to forums and mailing lists.
 Usage
 -----
 
-Since version 3.6 SuperCollider consists of three separate components:
+SuperCollider consists of three separate components:
 
-1. sound synthesiser (audio server)
-2. programming language (and language interpreter)
-3. code editor (integrated development environment, or shortly, IDE)
+1. scsynth - audio engine (the "server")
+2. sclang - programming language runtime interpreter including Qt graphical user interfaces
+3. IDE (integrated development environment) - an editor for writing code and running supercollider
 
-To begin using SuperCollider, you usually first start up the IDE:
-- on Mac OS simply start up the `SuperCollider.app` application
-- on Linux and Windows, start up the `scide` executable
+To begin using SuperCollider, you usually start up the IDE:
 
-From here on, you can get further help by using the IDE's integrated help
+- on Mac OS this is `SuperCollider.app`
+- on Linux and Windows, this is the `scide` executable
+
+You can get further help by using the IDE's integrated help
 system which can be invoked via the "Help" menu or using the key combination
 `Ctrl+D` (on Linux, Windows) or `Cmd+D` (on Mac OS). In the Help menu, you will
 also find an action that will take you directly to the help page on using the
@@ -52,6 +55,21 @@ about the new SuperCollider IDE.
 Also, please explore the IDE menus, which will let you discover a lot of
 functionality of the coding environment.
 
+To get further information on SuperCollider usage or development, you should subscribe
+to the mailing lists:
+
+http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx
+
+We hope you enjoy SuperCollider; please get involved in the active community!
+
+
+Reporting bugs
+--------------
+
+Please report bugs to the github issue tracker or discuss on the sc-users mailing list.
+
+https://github.com/supercollider/supercollider/issues
+
 
 Building the Source Code
 ------------------------
@@ -63,8 +81,6 @@ Platform specific build and install instructions can be found in the following f
  - [README_WINDOWS.md](README_WINDOWS.md)
  - [README_IPHONE.md](README_IPHONE.md)
  - [README_JAILBROKEN_IPHONE.md](README_JAILBROKEN_IPHONE.md)
-
-We hope you enjoy SuperCollider; please get involved in the active community!
 
 
 License
@@ -81,3 +97,10 @@ version. See [COPYING](COPYING) for the license text.
 - SuperCollider 3.4 was released on July 15, 2010
 - SuperCollider 3.5 was released on March 16, 2012
 - SuperCollider 3.6 was released on November 28, 2012
+- SuperCollider 3.7 was released on March 13, 2016
+
+Outro
+-----
+
+Thanks to James McCartney, for making this great piece of audio
+software publicly and freely available!
