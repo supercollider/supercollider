@@ -82,7 +82,7 @@ struct WorldOptions
 
 const struct WorldOptions kDefaultWorldOptions =
 {
-	0,1024,64,1024,1024,64,1024,8,8,4096,64,8192, 0,0, 1, 0, 0,0,0,0,0
+	0,1024,64,1024,1024,64,1024,8,8,16384,64,8192, 0,0, 1, 0, 0,0,0,0,0
 #if defined(_WIN32)
 	,44100
 #else

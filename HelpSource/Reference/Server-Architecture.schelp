@@ -63,7 +63,7 @@ definitionlist::
 || number of audio output bus channels (default = 8)
 
 ## -c num-control-bus-channels
-|| number of control bus channels (default = 4096). The space allocated for control buses is: (numchannels * 8)
+|| number of control bus channels (default = 16384). The space allocated for control buses is: (numchannels * 8)
 
 ## -b num-buffers
 || number of sample buffers (default = 1024)

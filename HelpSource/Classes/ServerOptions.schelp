@@ -88,7 +88,7 @@ method:: numBuffers
 The number of global sample buffers available. (See Buffer.) The default is 1024.
 
 method:: numControlBusChannels
-The number of internal control rate busses. The default is 4096.
+The number of internal control rate busses. The default is 16384.
 
 method:: numInputBusChannels
 The number of audio input bus channels. This need not correspond to the number of hardware inputs. The default is 2.
