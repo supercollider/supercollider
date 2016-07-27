@@ -90,7 +90,7 @@ void AnalogInput_next(AnalogInput *unit, int inNumSamples)
 	    rt_printf( "analog pin must be between %i and %i, it is %f", 0, context->analogInChannels, analogPin );
 	} else {
 	  if(!(n % unit->mAudioFramesPerAnalogFrame)) {
-	    analogValue = analogReadFrame(context, n/unit->mAudioFramesPerAnalogFrame, (int) analogPin);
+	    analogValue = analogRead(context, n/unit->mAudioFramesPerAnalogFrame, (int) analogPin);
 	  }
 	}
 	*++out = analogValue;
@@ -138,7 +138,7 @@ void AnalogOutput_next(AnalogOutput *unit, int inNumSamples)
 	} else {
 	  newinput = in[n]; // read next input sample
 	  if(!(n % unit->mAudioFramesPerAnalogFrame)) {
-	    analogWriteFrame(context,  n/ unit->mAudioFramesPerAnalogFrame, (int) analogPin, newinput);
+	    analogWrite(context,  n/ unit->mAudioFramesPerAnalogFrame, (int) analogPin, newinput);
 	  }
 	}
   }
@@ -176,7 +176,7 @@ void DigitalInput_next(DigitalInput *unit, int inNumSamples)
   // context->audioFrames should be equal to inNumSamples
 //   for(unsigned int n = 0; n < context->audioFrames; n++) {
   for(unsigned int n = 0; n < inNumSamples; n++) {
-	digitalValue=digitalReadFrame(context, n, pinid); //read the value of the button    
+	digitalValue=digitalRead(context, n, pinid); //read the value of the button    
 	*++out = (float) digitalValue;
   }
 }
@@ -204,7 +204,7 @@ void DigitalInput_Ctor(DigitalInput *unit)
 	  SETCALC(DigitalInput_next_dummy);
 	} else {
 	  unit->mDigitalPin = (int) fDigitalIn;
-	  pinModeFrame(context, 0, unit->mDigitalPin, INPUT);
+	  pinMode(context, 0, unit->mDigitalPin, INPUT);
 	  // initiate first sample
 	  DigitalInput_next( unit, 1);  
 	  // set calculation method
@@ -232,11 +232,11 @@ void DigitalOutput_next(DigitalOutput *unit, int inNumSamples)
 	// read input
 	newinput = in[n];
 	if ( newinput > 0.5 ){ 
-// 	  digitalWriteFrameOnce(context, n, pinid, GPIO_HIGH );
-	  digitalWriteFrame(context, n, pinid, GPIO_HIGH );
+// 	  digitalWriteOnce(context, n, pinid, GPIO_HIGH );
+	  digitalWrite(context, n, pinid, GPIO_HIGH );
 	} else { 
-// 	  digitalWriteFrameOnce(context, n, pinid, GPIO_LOW );
-	  digitalWriteFrame(context, n, pinid, GPIO_LOW );
+// 	  digitalWriteOnce(context, n, pinid, GPIO_LOW );
+	  digitalWrite(context, n, pinid, GPIO_LOW );
 	}
   }
 }
@@ -258,7 +258,7 @@ void DigitalOutput_Ctor(DigitalOutput *unit)
 	    SETCALC(DigitalOutput_next_dummy);
 	} else {
 	    unit->mDigitalPin = (int) fDigital;
-	    pinModeFrame(context, 0, unit->mDigitalPin, OUTPUT);
+	    pinMode(context, 0, unit->mDigitalPin, OUTPUT);
 	  // initiate first sample
 	  DigitalOutput_next( unit, 1);  
 	  // set calculation method
@@ -297,19 +297,19 @@ void DigitalIO_next(DigitalIO *unit, int inNumSamples)
 	  newinput = in[n];
 	  newmode = iomode[n];
 	  if ( newmode < 0.5 ){
-  // 	    pinModeFrameOnce( context, n, newpin, INPUT );
-	    pinModeFrame( context, n, newpin, INPUT );
-	    newoutput = digitalReadFrame(context, n, newpin);
+  // 	    pinModeOnce( context, n, newpin, INPUT );
+	    pinMode( context, n, newpin, INPUT );
+	    newoutput = digitalRead(context, n, newpin);
 	  } else {	  
-  // 	    pinModeFrameOnce( context, n, newpin, OUTPUT );
-	    pinModeFrame( context, n, newpin, OUTPUT );
-  // 	    digitalWriteFrameOnce(context, n, newpin, (int) newinputInt);
+  // 	    pinModeOnce( context, n, newpin, OUTPUT );
+	    pinMode( context, n, newpin, OUTPUT );
 	    if ( newinput > 0.5 ){ 
 	      newinputInt = GPIO_HIGH; 
 	    } else { 
 	      newinputInt = GPIO_LOW;  
 	    }
-	    digitalWriteFrame(context, n, newpin, (int) newinputInt);
+  // 	    digitalWriteOnce(context, n, newpin, newinputInt);
+	    digitalWrite(context, n, newpin, newinputInt);
 	  }
 	}
 	  // always write to the output of the UGen
@@ -379,7 +379,6 @@ PluginLoad(BELA)
 	DefineSimpleUnit(DigitalInput);
 	DefineSimpleUnit(DigitalOutput);
 	DefineSimpleUnit(DigitalIO);
-// 	DefineUnit("AnalogInput", sizeof(AnalogInputUGen), (UnitCtorFunc)&AnalogInput_Ctor, 0, 0);
 }
 
 
