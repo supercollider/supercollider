@@ -25,7 +25,7 @@ Usage
 
 SuperCollider consists of three separate components:
 
-1. scsynth - audio engine (the "server")
+1. scsynth or supernova - audio engine (the "server")
 2. sclang - programming language runtime interpreter including Qt graphical user interfaces
 3. IDE (integrated development environment) - an editor for writing code and running supercollider
 
