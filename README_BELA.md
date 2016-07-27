@@ -1,7 +1,7 @@
 Compiling SuperCollider scsynth on Bela
 =======================================
 
-See [README_main.md](README_main.md) for the "real" SuperCollider readme.
+See [README.md](README.md) for the "real" SuperCollider readme.
 
 This file is Dan's and Marije's notes about compiling SC on [Bela (BeagleRT)](http://beaglert.cc/) platform.
 
