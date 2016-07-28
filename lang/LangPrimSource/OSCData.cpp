@@ -809,7 +809,6 @@ void closeAllCustomPorts();
 void closeAllCustomPorts()
 {
 	// close all custom sockets
-	if(gCustomUdpPorts.empty()) postfl("empty\n");
 	for(int i=0; i<gCustomUdpPorts.size(); i++){
 		delete gCustomUdpPorts[i];
 	}
