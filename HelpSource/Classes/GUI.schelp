@@ -1,202 +1,206 @@
-class:: GUI
-summary:: Factory abstraction for all GUI related core classes
-categories:: GUI>Kits
-related:: Overviews/GUI-Classes, Guides/GUI-Introduction, Classes/ViewRedirect
+title:: gui
+categories:: GUI, Common methods
+summary:: Create a Graphical User Interface
+related:: Classes/ObjectGui
 
+method:: gui
+The code::gui:: message is of common use in SC. It originated in the crucial library where it is used to create an link::Classes/ObjectGui:: or an ObjectGui subclass as part of a Model View Controller system.
 
-description::
-SuperCollider currently supports three operating system platforms: Macintosh OSX, UNIX (Linux and FreeBSD) and Windows (with some limitations).
+The implementation and accepted arguments to .gui varies.  This helpfile explains the default behavior of Object and hence of all Object subclasses that haven't implemented their own .gui method. This helpfile and the implementation come from the original crucial library.
 
-warning::The redirect system has been deprecated, please use the view classes directly.::
+Any object can create a GUI, albeit a very simple one that just displays the object's string representation on a view:
 
-Graphical User Interface (GUI) code, for the most part, does not need to worry about which platform is executing the code because of the strong::view redirect:: system. At any time, one and only one strong::GUI kit:: is active. This determines which GUI classes will be used for rendering. These classes, the active views, have prefixes for the GUI kit that created the view object: SCWindow vs. JSCWindow vs. QWindow.
-
-table::
-## strong::GUI kit:: || strong::Code to activate:: || strong::Supported platform(s):: || strong::Framework:: || strong::Prefix::
-## Cocoa || code::GUI.cocoa:: || Mac OSX only || Cocoa || SC-
-## SwingOSC || code::GUI.swing:: || All || Java + Swing || JSC-
-## Qt || code::GUI.qt:: || All || Qt || Q-
+code::
+nil.gui;
+"2".gui;
+2.gui;
+[1,nil,"tree"].gui;
 ::
 
-In general, users should not concern themselves with the prefixes. Instead, work with the emphasis::redirect:: classes, which have no prefix: Window, Button, Slider, etc. The redirect class will ask the currently-selected kit which emphasis::implementation class:: should be used.
+This means that any object can be .gui(ed) without knowing exactly what the object is.  This is identical in purpose to .asString which is used for posting an object's representation to the post window.
 
-The GUI kit (CocoaGUI, QtGUI, SwingGUI) maps the generic view names to the implementing classes: code::Window --> SCWindow, QWindow or JSCWindow::. These schemes are in turn used by link::Classes/ViewRedirect:: to provide a simple cross-platform gui syntax. The GUI class provides utilities for switching kits and other cross platform tasks.
 
-You can get your available schemes (depending on what you installed) with:
+section:: Argument conventions
+
+The convention as stated in crucial library states that the .gui method should accept parent and bounds as its arguments in the same manner as a View does.
+
 code::
-GUI.schemes;
-::
-For a complete list of gui classes and redirects, see link::Overviews/GUI-Classes::.
-
-
-subsection:: Switching and Referring to GUI Kits
-
-As of this writing, three GUI kits are available through the GUI class: link::Classes/QtGUI:: (Qt framework), link::Classes/CocoaGUI:: (Mac OS X native) and link::Classes/SwingGUI:: (Java). Note that link::Classes/SwingOSC:: is not part of every SuperCollider distribution, so you may have to install it separately.
-
-You can switch the GUI kit by calling one of the following class methods:
-code::
-GUI.qt;		// use Qt in subsequent GUI creation procedures
-GUI.cocoa;	// use cocoa in subsequent GUI creation procedures
-GUI.swing;	// use swing in subsequent GUI creation procedures
-		// NOTE: If you do not have SwingOSC installed, you get
-		// a warning only, and do not switch; so you cannot
-		// accidentally disable your gui system.
+thing.gui(parent,bounds);
+// or with optional additional arguments:
+things.gui(parent,bounds,arg1,arg2,...argN)
 ::
 
-These methods return the new GUI kit implementation. The current implementation can be queried by calling
-code::
-GUI.current;	// returns the current GUI kit implementation
+This convention hasn't been followed by many who have written their own .gui methods (perhaps calling it that rather than .makeView or .makeWindow because they liked that .gui was nice and short to type)
+
+This is the default implementation for Object, and is thus the implementation for all subclasses that have not written an explicit .gui method
+
+definitionlist::
+## parent ||
+list::
+##  a Window,
+##  a FlowView
+##  CompositeVIew
+##  HLayoutView
+##  VLayoutView
+##  nil (which will create a Window with a FlowView on it)
+::
+## bounds ||
+list::
+## anything that responds to asRect:
+## Nil - the gui will use its own default size
+## Point - width @ height
+::
 ::
 
-If you want to make a GUI kit specific switch (e.g. in a class), then you should use the following instead, as on non-OSX systems the class CocoaGUI is not in the class library path, and you cannot check for an undefined class:
+Usually the bounds are not specified.  The object's gui class first adds a container, lays its things inside that container and then shrinks the container to fit it. If you do specify a bounds, the container will be set to exactly that size.
+
+Add a view to a parent view (window)
 code::
-GUI.id;	// returns the current GUI kit implementation id; this is currently either \cocoa or \swing
-::
-
-For persistency, you can store the identifier of the kit implementation and recall the kit through the class method code::fromID:::
-code::
-x = GUI.cocoa;
-y = x.id;		// store the identifier of a kit implementation
-y.postln;		// the id could be stored in a preferences file for example
-GUI.swing;
-// now switch back to the kit implementation with identifier y
-GUI.fromID( y );
-GUI.current.id.postln;	// --> cocoa
-::
-
-The code::*use:: and code::*useID:: methods allow you to temporarily switch the kit, so as to use it only for a dedicated block of statements:
-code::
-GUI.cocoa;
-GUI.useID(\swing, { Array.rand( 1000, 0.0, 1.0 ).plot });
-GUI.current.id.postln;	// --> still cocoa
-::
-
-You can get a particular kit using the code::*get:: method. You can switch to a particular kit using the code::*set:: method:
-code::
-x = GUI.get( \swing );	// note: unlike *swing and *cocoa, this does not _switch_ the current kit!
-GUI.current.id.postln;	// --> still cocoa
-GUI.set( x );			// now we make SwingOSC the current kit
-GUI.window.viewPalette;
-::
-
-subsection:: Extending GUI Kits
-
-GUI Kits can be extended with custom classes by using their respective code::put:: methods:
-code::
-GUI.get( \cocoa ).put( \myText, SCStaticText );
-GUI.get( \swing ).put( \myText, JSCStaticText );
-
-GUI.cocoa;
-GUI.swing;
 (
-	w = GUI.window.new;
-	GUI.myText.new( w, w.view.bounds.insetBy( 20, 20 )).string_( "schoko" ).background_( Color.red );
-	w.front;
+	f = FlowView.new;
+	nil.gui(f);
+	"2".gui(f);
+	2.gui(f);
 )
-::
 
-If you intend to add extensions from within your own classes upon class library initialization time, the preferred way is to do this in the startup process:
-code::
-MyGUIExtension {
-	*initClass {
-		StartUp.add({
-			var scheme;
+/////////////////////////////////////////////
+/////////////////////////////////////////////
 
-			scheme = GUI.get( \cocoa );
-			if( scheme.notNil, {scheme.put( \myText, SCStaticText )});
-			scheme = GUI.get( \swing );
-			if( scheme.notNil, {scheme.put( \myText, JSCStaticText )});
-		});
+/**
+ * Two Auditory Scene Analysis (ASA) experiences
+ * as proposed by Albert Bregman, Auditory Scene Analysis, MIT Press, 1990
+ *
+ * 1. Streaming: if rate of presentation and
+ * frequency gap between the two series of sinusoidal tones are varied,
+ * one or two stream(s) appear(s).
+ *
+ * 2. Miniature ASA Problem:
+ * Three short sinusoidal segments.
+ * Varying frequency distance of A and C with respect to B, and attack time of C, two groupings are possible:
+ * (A-B)/C: a two note melody with a low tone (parallel)
+ * A-(B+C): a simple tone and a complex tone (sequence)
+ *
+ * (andrea valle)
+ */
+
+// start server
+s.boot;
+
+(
+// Streaming
+var r;
+var rateSlide, deltaSlide, volumeSlide;
+var pauseButton1, pauseButton2, recButton;
+var volume1 = 1.0, volume2 = 1.0;
+var base = 500;
+var durVar1 = [0.05, 0.3, 0.15, 0.5], durVar2 = [0.5, 0.05, 0.3, 0.15];
+var levels1 = [0, 1, 1, 0, 0], levels2 = [0, 0, 1, 1, 0];
+var synth1, synth2;
+var ezFunc = { |ez| ez.() };
+var rateSpec = ControlSpec(0.05, 2.0, \exp, 1e-3, 0.01);
+var deltaSpec = ControlSpec(0, 1000, \lin, 1, 1);
+var volumeSpec = ControlSpec(0.0, 1.0, \lin, 0.1, 0.1);
+
+
+// a SynthDef
+SynthDef(\asaSine1, { |out=0, freq=440, dur=1.0, levels=#[0, 1, 1, 0, 0], durVar=#[1, 1, 1, 1], mul=0.5|
+	var env, snd;
+
+	env = Env.new(levels, dur * durVar, 'welch');
+	snd = SinOsc.ar(freq, mul: mul);
+
+	Out.ar(out, snd * EnvGen.kr(env));
+}).add;
+
+// a Routine
+r = Routine {
+	inf.do { |i|
+		var k;
+		var arr1 = [0, 0, 1, 0, 2],
+		arr2 = [1, 0, 3, 1, 2];
+
+		// 1st Synth
+		synth1 = Synth.new(\asaSine1, [\levels, levels1, \durVar, durVar1]);
+		k = arr1[i.mod(5)] * 100 + base;
+		synth1.set(\freq, k);
+		synth1.set(\dur, rateSlide.value);
+		synth1.set(\mul, volumeSlide.value * volume1);
+
+		// 2nd Synth
+		synth2 = Synth(\asaSine1, [\levels, levels2, \durVar, durVar2]);
+		k = arr2[i.mod(5)] * 100 + base + deltaSlide.value;
+		synth2.set(\freq, k);
+		synth2.set(\dur, rateSlide.value);
+		synth2.set(\mul, volumeSlide.value * volume2);
+
+		// wait and free the Synths
+		rateSlide.value.wait;
+		[synth1, synth2].do(_.free);
 	}
-}
+};
+
+// GUI stuff
+w = Window("ASA: Streaming", Rect(20, 400, 440, 150)).front;
+w.view.decorator = FlowLayout(w.view.bounds);
+
+rateSlide = EZSlider(w, 400@20, "DurEach", rateSpec, ezFunc, 0.1);
+deltaSlide = EZSlider(w, 400@20, "Delta", deltaSpec, ezFunc, 500);
+volumeSlide = EZSlider(w, 400@20, "Volume", volumeSpec, ezFunc, 0.5);
+
+w.view.decorator.nextLine.shift(50, 20);
+
+pauseButton1 = Button(w, 110@30);
+pauseButton1.states = [
+	["1 now is active", Color.black, Color.red],
+	["1 now is muted", Color.white, Color.black],
+];
+pauseButton1.action = { |state|
+	switch(state.value,
+		1, { volume1 = 0; "muted 1".postln },
+		0, { volume1 = 1; "activated 1".postln }
+	)
+};
+
+w.view.decorator.shift(10, 0);
+
+pauseButton2 = Button(w, 110@30);
+pauseButton2.states = [
+	["2 now is active", Color.black, Color.red],
+	["2 now is muted", Color.white, Color.black],
+];
+pauseButton2.action = { |state|
+	switch(state.value,
+		1, { volume2 = 0; "muted 2".postln },
+		0, { volume2 = 1; "activated 2".postln }
+	)
+};
+
+w.onClose_({ r.stop; [synth1, synth2].do(_.free); });
+
+SystemClock.play(r);
+)
+
+/////////////////////////////////////////////
+/////////////////////////////////////////////
+
+
 ::
 
-classmethods::
 
-subsection:: Methods and Variables for GUI
+method:: guiClass
 
-method:: new
+Each class can specify an associated guiClass, which is a subclass of ObjectGui.
+Writing useful subclasses is the purpose of the ObjectGui system and many can be found in the crucial library.
 
-method:: makeGUI
+Examples specifying guiClass:
 
-method:: initClass
-Sets the code::skin:: to default values on compile.
 code::
-fontSpecs: ["Helvetica", 10],
-fontColor: Color.black,
-background: Color(0.8, 0.85, 0.7, 0.5),
-foreground: Color.grey(0.95),
-onColor: Color(0.5, 1, 0.5),
-offColor: Color.clear,
-gap: 0@0,
-margin: 2@2,
-buttonHeight: 16
+	Object-guiClass {  ^ObjectGui }
+	Server-guiClass {  ^ServerGui }
+	AbstractPlayer-guiClass { ^AbstractPlayerGui }
+	Patch-guiClass { ^PatchGui }
 ::
 
-method:: cocoa
-Makes Cocoa (Mac OS X GUI) the current scheme and returns it. Subsequent GUI object calls to GUI are delegated to cocoa. Returns the current (cocoa) scheme.
+For any class where it is appropriate, a separate gui class is implemented, usually inheriting much of its behavior from the gui class of its superclass.
 
-method:: swing
-Makes Swing (Java GUI) the current scheme and returns it. Subsequent GUI object calls to GUI are delegated to swing. Returns the current (swing) scheme.
-
-method:: fromID
-Changes the current scheme and returns the new scheme.
-argument:: id
-A link::Classes/Symbol::. The identifier of the scheme to use.
-
-
-method:: current
-
-Returns the current scheme. This is useful for objects that, upon instantiation, wish to store the then-current scheme, so as to be able to consistently use the same scheme in future method calls.
-
-Note:: the caller shouldn't make any assumptions about the nature (the class) of the returned object, so that the actual implementation (an Event) may change in the future. ::
-
-
-method:: get
-Returns the scheme for a given identifier. Does not switch the current scheme.
-argument:: id
-A link::Classes/Symbol::. The identifier of the scheme to retrieve, such as returned by calling code::aScheme.id::.
-
-method:: set
-Changes the current scheme.
-argument:: aScheme
-An instance of link::Classes/Symbol::. The scheme to use as current scheme.
-
-method:: use
-Executes a function body, temporarily setting the current GUI scheme. This is useful inside view's action functions in order to make this function use the GUI scheme that was originally used for the view of the action, even if the scheme has been switched meanwhile.
-argument:: aScheme
-The scheme to use during the function execution.
-argument:: func
-An Instance of link::Classes/Function::.
-
-method:: useID
-Same as code::use:: but using a scheme's id as first argument.
-argument:: id
-The id of the scheme to use during the function execution.
-argument:: func
-A body to execute.
-
-method:: add
-Registers a new scheme. This is typically called by external libraries in their startup procedure. If a scheme with the same identifier (code::scheme.id::) exists, it is overwritten.
-argument:: aScheme
-The scheme to add.
-
-method:: doesNotUnderstand
-All method calls are mapped to the current scheme, so that for example code::GUI.button:: can be used and is delegated to the button association of the current scheme.
-argument:: selector
-argument:: ... args
-
-method:: setSkin
-argument:: skinName
-
-method:: scheme
-A class variable. Returns the current scheme.
-
-method:: schemes
-A class variable. Returns an link::Classes/IdentityDictionary:: of registered schemes.
-
-method:: skin
-A class variable. Returns the current skin.
-
-method:: skins
-A class variable. Returns an link::Classes/IdentityDictionary:: of registered skins.
+see link::Classes/ObjectGui::
