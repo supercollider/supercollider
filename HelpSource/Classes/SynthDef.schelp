@@ -194,6 +194,7 @@ A convenience method which compiles the def and sends it to target's server. Whe
 Returns:: a corresponding Synth object.
 
 
+
 Examples::
 
 subsection:: Basic
@@ -301,7 +302,7 @@ x = Synth(\arrayarg);
 x.setn(\freqs, [440, 441, 442, 443]);
 
 // Don't accidentally set too many values, or you may have unexpected side effects
-// The code below inadvertently sets the gate arg, and frees the synth
+// The code below inadvertantly sets the gate arg, and frees the synth
 x.setn(\freqs, [300, 400, 500, 600, 0]);
 
 // Mr. McCartney's more complex example
@@ -439,5 +440,164 @@ Pbind(
 	\out, Pseq([0, 1], inf)
 ).play;
 )
+
+///////////////////////////////////////
+///////////////////////////////////////
+
+/**
+ * Two Auditory Scene Analysis (ASA) experiences
+ * as proposed by Albert Bregman, Auditory Scene Analysis, MIT Press, 1990
+ *
+ * 1. Streaming: if rate of presentation and
+ * frequency gap between the two series of sinusoidal tones are varied,
+ * one or two stream(s) appear(s).
+ *
+ * 2. Miniature ASA Problem:
+ * Three short sinusoidal segments.
+ * Varying frequency distance of A and C with respect to B, and attack time of C, two groupings are possible:
+ * (A-B)/C: a two note melody with a low tone (parallel)
+ * A-(B+C): a simple tone and a complex tone (sequence)
+ *
+ * (andrea valle)
+ */
+
+
+// start server
+s.boot;
+
+(
+// Streaming
+var r;
+var rateSlide, deltaSlide, volumeSlide;
+var pauseButton1, pauseButton2, recButton;
+var volume1 = 1.0, volume2 = 1.0;
+var base = 500;
+var durVar1 = [0.05, 0.3, 0.15, 0.5], durVar2 = [0.5, 0.05, 0.3, 0.15];
+var levels1 = [0, 1, 1, 0, 0], levels2 = [0, 0, 1, 1, 0];
+var synth1, synth2;
+var ezFunc = { |ez| ez.() };
+var rateSpec = ControlSpec(0.05, 2.0, \exp, 1e-3, 0.01);
+var deltaSpec = ControlSpec(0, 1000, \lin, 1, 1);
+var volumeSpec = ControlSpec(0.0, 1.0, \lin, 0.1, 0.1);
+
+
+// a SynthDef
+SynthDef(\asaSine1, { |out=0, freq=440, dur=1.0, levels=#[0, 1, 1, 0, 0], durVar=#[1, 1, 1, 1], mul=0.5|
+	var env, snd;
+
+	env = Env.new(levels, dur * durVar, 'welch');
+	snd = SinOsc.ar(freq, mul: mul);
+
+	Out.ar(out, snd * EnvGen.kr(env));
+}).add;
+
+
+// a Routine
+r = Routine {
+	inf.do { |i|
+		var k;
+		var arr1 = [0, 0, 1, 0, 2],
+		arr2 = [1, 0, 3, 1, 2];
+
+		// 1st Synth
+		synth1 = Synth.new(\asaSine1, [\levels, levels1, \durVar, durVar1]);
+		k = arr1[i.mod(5)] * 100 + base;
+		synth1.set(\freq, k);
+		synth1.set(\dur, rateSlide.value);
+		synth1.set(\mul, volumeSlide.value * volume1);
+
+		// 2nd Synth
+		synth2 = Synth(\asaSine1, [\levels, levels2, \durVar, durVar2]);
+		k = arr2[i.mod(5)] * 100 + base + deltaSlide.value;
+		synth2.set(\freq, k);
+		synth2.set(\dur, rateSlide.value);
+		synth2.set(\mul, volumeSlide.value * volume2);
+
+		// wait and free the Synths
+		rateSlide.value.wait;
+		[synth1, synth2].do(_.free);
+	}
+};
+
+
+// GUI stuff
+w = Window("ASA: Streaming", Rect(20, 400, 440, 150)).front;
+w.view.decorator = FlowLayout(w.view.bounds);
+
+rateSlide = EZSlider(w, 400@20, "DurEach", rateSpec, ezFunc, 0.1);
+deltaSlide = EZSlider(w, 400@20, "Delta", deltaSpec, ezFunc, 500);
+volumeSlide = EZSlider(w, 400@20, "Volume", volumeSpec, ezFunc, 0.5);
+
+w.view.decorator.nextLine.shift(50, 20);
+
+pauseButton1 = Button(w, 110@30);
+pauseButton1.states = [
+	["1 now is active", Color.black, Color.red],
+	["1 now is muted", Color.white, Color.black],
+];
+pauseButton1.action = { |state|
+	switch(state.value,
+		1, { volume1 = 0; "muted 1".postln },
+		0, { volume1 = 1; "activated 1".postln }
+	)
+};
+
+w.view.decorator.shift(10, 0);
+
+pauseButton2 = Button(w, 110@30);
+pauseButton2.states = [
+	["2 now is active", Color.black, Color.red],
+	["2 now is muted", Color.white, Color.black],
+];
+pauseButton2.action = { |state|
+	switch(state.value,
+		1, { volume2 = 0; "muted 2".postln },
+		0, { volume2 = 1; "activated 2".postln }
+	)
+};
+
+
+w.onClose_({ r.stop; [synth1, synth2].do(_.free); });
+
+SystemClock.play(r);
+)
+
+///////////////////////////////////////
+///////////////////////////////////////
+
+/*
+
+RM octaver
+
+inSignal is RingModulated by a sinusoidal tone with half frequency.
+The resulting spectrum is given by all the components of inSignal with
+half freqs.
+This means that the new spectrum is a one 8ve below version of the input signal's one,
+with only odd partials.
+As a consequence, if inSignal is added again, even partials are
+recovered.
+
+See:
+Miller Puckette, The Theory and Technique of Electronic Music, p. 126
+http://crca.ucsd.edu/~msp/techniques/latest/book.pdf
+http://crca.ucsd.edu/~msp/techniques/latest/book-html/node77.html#sect5.ringmod
+
+andreavalle
+
+*/
+
+s = Server.local.waitForBoot({
+	SynthDef.new(\RmOctaver, { var in, out = 0, freq, hasFreq ;
+		in = SoundIn.ar(0) ;
+		# freq, hasFreq = Pitch.kr(in) ;
+		Out.ar(out, SinOsc.ar(freq: freq*0.5)*in+in);
+	}).send(s) ;
+})
+)
+
+Synth.new(\RmOctaver) ;
+
+/////////////////////////////////////////
+/////////////////////////////////////////
 ::
 
