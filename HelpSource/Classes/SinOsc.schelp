@@ -75,6 +75,13 @@ code::
 //////////////////////////////////////////
 //////////////////////////////////////////
 
+// create an audio-rate sine wave at 200 Hz,
+// starting with phase 0 and an amplitude of 0.5
+{ SinOsc.ar(200, 0, 0.5) }.play;
+
+//////////////////////////////////////////
+//////////////////////////////////////////
+
 (
 ~fibbonacciinvocation={Mix.new(SinOsc.ar(Array.fib(rrand(5, 10), [1, 2, 4, 8, 16, 32, 64, 128].choose, [1, 2, 4, 8, 16, 32, 64, 128].choose), mul: SinOsc.kr([0.02, 0.0202], mul: 0.005)))!2};
 )
