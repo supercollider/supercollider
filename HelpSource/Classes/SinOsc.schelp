@@ -1,6 +1,6 @@
 class:: SinOsc
 summary:: Interpolating sine wavetable oscillator.
-related:: Classes/FSinOsc, Classes/SinOscFB
+related:: Classes/Osc, Classes/FSinOsc, Classes/SinOscFB, Classes/PMOsc, Classes/Klang
 categories::  UGens>Generators>Deterministic
 
 
