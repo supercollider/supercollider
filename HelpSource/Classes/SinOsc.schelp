@@ -55,6 +55,7 @@ classmethods::
 method::ar, kr
 
 argument::freq
+Sampled at audio-rate.
 Frequency in Hertz.
 
 argument::phase
