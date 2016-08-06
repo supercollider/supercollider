@@ -6,6 +6,21 @@ categories::  UGens>Generators>Deterministic
 
 Description::
 
+Generates a sine wave.
+Uses a wavetable lookup oscillator with linear interpolation.
+Frequency and phase modulation are provided for audio-rate modulation.
+Technically, code::SinOsc:: uses the same implementation as  link::Classes/Osc::  except that its table is fixed to be a sine wave made of code::8192:: samples.
+
+subsection:: Other sinewaves oscillators
+
+ LIST::
+ ## link::Classes/FSinOsc:: – fast sinewave oscillator
+ ## link::Classes/SinOscFB:: – sinewave with phase feedback
+ ## link::Classes/PMOsc:: – phase modulation sine oscillator
+ ## link::Classes/Klang:: – bank of sinewave oscillators
+ ## link::Classes/DynKlang:: – modulable bank of sinewave oscillators
+ ::
+
 This is the same as  link::Classes/Osc::  except that the table is
 a sine table of 8192 entries.
 
