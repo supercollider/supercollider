@@ -55,11 +55,10 @@ classmethods::
 method::ar, kr
 
 argument::freq
-Sampled at audio-rate.
 Frequency in Hertz.
 
 argument::phase
-Phase offset or modulator in radians.
+Sampled at audio-rate; phase offset or modulator in radians
 (Note: phase values should be within the range +-8pi. If your phase values are larger then simply use code::.mod(2pi):: to wrap them.)
 
 argument::mul
