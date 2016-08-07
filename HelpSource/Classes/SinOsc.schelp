@@ -24,13 +24,6 @@ This can be acheived by creating a Buffer object and sending it one of the "b_ge
 
 This can also be achieved by creating a Signal object and sending it the 'asWavetable' message, thereby creating a Wavetable object in the required format. Then, the wavetable data may be transmitted to the server using the Buffer: *sendCollection or Buffer: *loadCollection methods.
 
-About wavetable synthesis:
-
-Wavetable synthesis is a sound synthesis technique that employs arbitrary periodic waveforms in the production of musical tones or notes. The technique was developed by Wolfgang Palm of PPG in the late 1970s [1] and published in 1979,[2] and has since been used as the primary synthesis method in synthesizers built by PPG and Waldorf Music and as an auxiliary synthesis method by Ensoniq and Access. It is currently used in software-based synthesizers for PCs and tablets, including apps offered by PPG and Waldorf, among others.
-
-It was also independently developed by Michael Mcnabb in a similar time frame, and used in his classic work, "Dreamsong" (1977).[3][4]
-
-from wikipedia, the free encylopedia "https://en.wikipedia.org/wiki/Wavetable_synthesis"
 
 classmethods::
 
