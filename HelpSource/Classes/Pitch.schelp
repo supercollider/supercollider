@@ -112,7 +112,6 @@ andreavalle
 		Out.ar(out, SinOsc.ar(freq: freq*0.5)*in+in);
 	}).add;
 	)
-)
 
 Synth.new(\RmOctaver) ;
 
