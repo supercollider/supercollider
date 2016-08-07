@@ -52,7 +52,6 @@ examples::
 (use headphones!)
 
 code::
-s = Server.local;
 
 (
 SynthDef("pitchFollow1",{
@@ -85,9 +84,6 @@ SynthDef("pitchFollow2",{
 }).play(s);
 )
 
-/////////////////////////////////////////
-/////////////////////////////////////////
-
 /*
 
 RM octaver
@@ -109,19 +105,16 @@ andreavalle
 
 */
 
-s = Server.local.waitForBoot({
+	(
 	SynthDef.new(\RmOctaver, { var in, out = 0, freq, hasFreq ;
 		in = SoundIn.ar(0) ;
 		# freq, hasFreq = Pitch.kr(in) ;
 		Out.ar(out, SinOsc.ar(freq: freq*0.5)*in+in);
-	}).send(s) ;
-})
+	}).add;
+	)
 )
 
 Synth.new(\RmOctaver) ;
-
-/////////////////////////////////////////
-/////////////////////////////////////////
 
 ::
 
