@@ -124,7 +124,7 @@ method:: ugenPluginsPath
 A path or an Array of paths. If non-nil, the standard paths are NOT searched for plugins. This corresponds with the option "-U".
 
 method:: restrictedPath
-Allows you to restrict the system paths in which scsynth is allowed to read/write files during running. A nil value (the default) means no restriction. Otherwise, set it as a string representing a single path.
+Allows you to restrict the system paths in which the server is allowed to read/write files during running. A nil value (the default) means no restriction. Otherwise, set it as a string representing a single path.
 
 method:: threads
 Number of audio threads that are spawned by supernova. For scsynth this value is ignored. If it is code::nil::or 0, it
@@ -152,7 +152,7 @@ subsection:: Other Instance Methods
 method:: asOptionsString
 argument:: port
 The port number for the resulting server app. Default value is 57110.
-Returns:: a String specifying the options in the format required by the command-line scsynth app.
+Returns:: a String specifying the options in the format required by the command-line server app (scsynth or supernova).
 
 method:: firstPrivateBus
 Returns:: the index of the first audio bus on this server which is not used by the input and output hardware.
