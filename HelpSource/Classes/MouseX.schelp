@@ -38,27 +38,8 @@ Examples::
 
 code::
 
-/////////////////////////////////
-/////////////////////////////////
-
 { SinOsc.ar(MouseX.kr(40, 10000, 1), 0, 0.1) }.play;
-
-/////////////////////////////////
-/////////////////////////////////
-
-(
-SynthDef( \mousepoll, { |out=0|
-	var mousex;
-	mousex = MouseX.kr( 500, 10000, \exponential ).poll; // .poll will print the current value
-	Out.ar( out, SinOsc.ar( mousex, 0, 0.1 ) );
-}).add
-)
-
-y = Synth.new( \mousepoll );
-y.free;
-
-/////////////////////////////////
-/////////////////////////////////
+{ SinOsc.ar(MouseX.kr(500, 10000, 1).poll, 0, 0.1) }.play;
 
 ::
 
