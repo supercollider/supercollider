@@ -42,40 +42,17 @@ Examples::
 
 code::
 
-////////////////////////////////
-////////////////////////////////
-
 // try wiggling mouse quickly:
 // LFNoise2 overshoots when going from high to low freqs, LFDNoise changes smoothly.
-
 {  SinOsc.ar(LFNoise2.ar(MouseX.kr(0.1, 1000, 1), 200, 500), 0, 0.2)  }.play
-
 {  SinOsc.ar(LFDNoise3.ar(MouseX.kr(0.1, 1000, 1), 200, 500), 0, 0.2)  }.play
 
-////////////////////////////////
-////////////////////////////////
-
 // LFNoise quantizes time steps at high freqs, LFDNoise does not:
-
 { LFNoise2.ar(XLine.kr(2000, 20000, 8), 0.1) }.scope;
-
 { LFDNoise3.ar(XLine.kr(2000, 20000, 8), 0.1) }.scope;
 
-////////////////////////////////
-////////////////////////////////
-
 // use as frequency control
-(
-{
-		SinOsc.ar(
-			LFDNoise3.ar(4, 400, 450),
-			0, 0.2
-		)
-}.play;
-)
-
-////////////////////////////////
-////////////////////////////////
+({SinOsc.ar(LFDNoise3.ar(4, 400, 450), 0, 0.2)}.play;)
 
 /* example from wouter snoei canto ostinato classes*/
 
@@ -109,16 +86,12 @@ SynthDef( "canto_revDelay", { |in = 0, private = 0, amp = 0.1,
 	});
 
 	out = out.collect({ |sig, i|
-		RoundPan.ar( ~canto.numChan ? 4, sig, LFDNoise3.kr(0.05, 2) );
-	}).sum;
-
+		Pan4.ar(sig, trig * 0.25, LFDNoise3.kr(modSpeed) * pan, trig * 0.25, LFDNoise1.kr(modSpeed) * pan)});
+		
 	out = RemoveBadValues.ar( out );
 
 	Out.ar(0, Env.cutoff(0.1).kr(2,gate) * out * 2 * amp );
 }).load(s);
-
-////////////////////////////////
-////////////////////////////////
 
 /* example from wouter snoei canto ostinato classes*/
 
@@ -151,9 +124,7 @@ SynthDef( "canto_revDelay_quadIn", { |in = 0, private = 0, amp = 0.1,
 	});
 
 	out = out.collect({ |sig, i|
-		RoundPan.ar( ~canto.numChan ? 4,
-			LFDNoise3.kr(0.2).range(-0.5,1).max(0) * sig,
-			LFDNoise3.kr(0.05, 2) );
+	Pan4.ar(sig, trig * 0.25, LFDNoise3.kr(modSpeed) * pan, trig * 0.25, LFDNoise1.kr(modSpeed) * pan);
 	}).sum;
 
 	out = RemoveBadValues.ar( out );
@@ -161,14 +132,10 @@ SynthDef( "canto_revDelay_quadIn", { |in = 0, private = 0, amp = 0.1,
 	Out.ar(0, Env.cutoff(0.1).kr(2,gate) * out * amp * 2);
 }).load(s);
 
-////////////////////////////////
-////////////////////////////////
-
 /* example from wouter snoei canto ostinato classes*/
-
 // lfdnoise used for means of controlling envelope parameters
-
 // TR-909 style kick
+
 (
 SynthDef( "bassdrum", { |amp = 0.25, freq = 42, pulse = 0.1, attackFreq = 100, decay = 0.075,
 		sustain = 3, pan = 0|
@@ -179,17 +146,13 @@ SynthDef( "bassdrum", { |amp = 0.25, freq = 42, pulse = 0.1, attackFreq = 100, d
 			LFDNoise3.kr(0.1).exprange(-0.1.midiratio, 0.1.midiratio),
 		-1);
 	sig = sig * Env([1,0], [sustain], -4).kr(2);
-	sig = RoundPan.ar( 4, sig, pan + Rand(-0.1,0.1)) * amp;
+	sig = Pan4.ar(sig, trig * 0.25, LFDNoise3.kr(modSpeed) * pan, trig * 0.25, LFDNoise1.kr(modSpeed) * pan);
 	//CheckBadValues.ar( sig, 100, 2 );
 	sig = RemoveBadValues.ar( sig );
 	OffsetOut.ar(0, sig )
 }).load(s);
 
-////////////////////////////////
-////////////////////////////////
-
 /* example from wouter snoei canto ostinato classes*/
-
 // lfdnoise using for controlling frequency modulation parameters
 
 (
@@ -226,18 +189,14 @@ SynthDef( "canto_note", { |amp = 0.1, sustain = 1, damp = 16, freq = 440, sharpn
 		0.01 + (mod * 0.04) );
 	sig = BPeakEQ.ar( sig, 1000, 1, mod * -3 );
 	sig = BLowCut.ar( sig, hpf, 2 );
-	sig = RoundPan.ar(~canto.numChan ? 4, sig, Rand(-0.05,0.05) + pan);
+	sig = Pan4.ar(sig, trig * 0.25, LFDNoise3.kr(modSpeed) * pan, trig * 0.25, LFDNoise1.kr(modSpeed) * pan);
 	env = Env([1,1,0], [sustain * sharpness.linlin(16,32,1,0.01).clip(0.01,1), 0.1]).ar(2);
 	sig = RemoveBadValues.ar(sig);
 	OffsetOut.ar( 0, sig * env * amp );
 }).load(s);
 );
 
-////////////////////////////////
-////////////////////////////////
-
 /* example from wouter snoei canto ostinato classes*/
-
 ( // new bass
 SynthDef( "canto_bass", { |amp = 0.1, sustain = 1, damp = 16, freq = 440, dev = 0.0075, sharpness = 2, pan = 0, mfreq = 1, mamt = 0, mod = 0.25, hpf = 20|
 	var sig, envs, env, n=5;
@@ -278,11 +237,7 @@ SynthDef( "canto_bass", { |amp = 0.1, sustain = 1, damp = 16, freq = 440, dev = 
 }).load(s);
 );
 
-////////////////////////////////
-////////////////////////////////
-
 /* example from wouter snoei canto ostinato classes*/
-
 // lfdnoise used for controlling frequency modulation parameters
 
 (
@@ -345,7 +300,7 @@ SynthDef( "canto_noteNoise", { |amp = 0.1, sustain = 1, damp = 16, freq = 440, s
 
 	sig = BPeakEQ.ar( sig, 1000, 1, mod * -3 );
 	sig = BLowCut.ar( sig, hpf, 2 );
-	sig = RoundPan.ar(~canto.numChan ? 4, sig, Rand(-0.05,0.05) + pan);
+	sig = Pan4.ar(sig, trig * 0.25, LFDNoise3.kr(modSpeed) * pan, trig * 0.25, LFDNoise1.kr(modSpeed) * pan);
 	env = Env([1,1,0], [sustain * sharpness.linlin(16,32,1,0.01).clip(0.01,1), 0.1]).ar(2);
 	sig = RemoveBadValues.ar(sig);
 	OffsetOut.ar( 0, sig * env * amp );
@@ -422,15 +377,54 @@ SynthDef( "canto_noteFormant", { |amp = 0.1, sustain = 1, damp = 16, freq = 440,
 
 	sig = BPeakEQ.ar( sig, 1000, 1, mod * -3 );
 	sig = BLowCut.ar( sig, hpf, 2 );
-	sig = RoundPan.ar(~canto.numChan ? 4, sig, Rand(-0.05,0.05) + pan);
+	sig = Pan4.ar(sig, trig * 0.25, LFDNoise3.kr(modSpeed) * pan, trig * 0.25, LFDNoise1.kr(modSpeed) * pan);
 	env = Env([1,1,0], [sustain * sharpness.linlin(16,32,1,0.01).clip(0.01,1), 0.1]).ar(2);
 	sig = RemoveBadValues.ar(sig);
 	OffsetOut.ar( 0, sig * env * amp * 2 );
 }).load(s);
 );
 
-////////////////////////////////
-////////////////////////////////
+/* example from wouter snoei canto ostinato classes*/
+
+( // new bass
+SynthDef( "canto_bass", { |amp = 0.1, sustain = 1, damp = 16, freq = 440, dev = 0.0075, sharpness = 2, pan = 0, mfreq = 1, mamt = 0, mod = 0.25, hpf = 20|
+	var sig, envs, env, n=5;
+	var amps, cutenv;
+	var inclick;
+	inclick = In.kr(1);
+	mod = mod * 0.25;
+	sig = Pulse.ar( (freq * 0.5) + ([-0.5,0.5] +(mod * [-1,1])),
+		LFDNoise1.kr(0.25.dup(4)).range(0.01,0.99)
+	);
+	sig = sig + BrownNoise.ar(0.15);
+
+	cutenv = Slew.kr(
+		Select.kr( Latch.kr( inclick, inclick ) * 5, \amps.kr( 1.dup(n) ) )
+			.clip(-80.dbamp,1)
+			.lincurve( -80.dbamp, 1,
+				sharpness.linlin(18,32,1,2), sharpness.linlin(18,32,1,36), -4
+			),
+		400,
+		400
+	);
+
+	sig = BLowPass.ar( sig, (
+		freq.blend(
+			LFDNoise3.kr(0.1).exprange( 40,100 ), 0.1)
+				* sharpness.linlin(1,15,32,1)
+				* cutenv
+		)
+		.clip(20,20000), 0.125 );
+
+	sig = BLowCut.ar( sig, hpf, 2 );
+	sig = sig.sineclip2(mod.linlin(0,0.25,10,0.8) );
+	sig = Splay.ar( sig, levelComp: false );
+	env = Env([0,1,1,0], [0.01, sustain * 1.2, 0.1]).kr(2);
+	//Poll.kr( Impulse.kr(10), sharpness );
+	sig = RemoveBadValues.ar(sig);
+	OffsetOut.ar( 0, sig * env * amp * 0.25 );
+}).load(s);
+);
 
 /* example from wouter snoei canto ostinato classes*/
 
@@ -474,56 +468,7 @@ SynthDef( "canto_bass", { |amp = 0.1, sustain = 1, damp = 16, freq = 440, dev = 
 }).load(s);
 );
 
-////////////////////////////////
-////////////////////////////////
-
 /* example from wouter snoei canto ostinato classes*/
-
-( // new bass
-SynthDef( "canto_bass", { |amp = 0.1, sustain = 1, damp = 16, freq = 440, dev = 0.0075, sharpness = 2, pan = 0, mfreq = 1, mamt = 0, mod = 0.25, hpf = 20|
-	var sig, envs, env, n=5;
-	var amps, cutenv;
-	var inclick;
-	inclick = In.kr(1);
-	mod = mod * 0.25;
-	sig = Pulse.ar( (freq * 0.5) + ([-0.5,0.5] +(mod * [-1,1])),
-		LFDNoise1.kr(0.25.dup(4)).range(0.01,0.99)
-	);
-	sig = sig + BrownNoise.ar(0.15);
-
-	cutenv = Slew.kr(
-		Select.kr( Latch.kr( inclick, inclick ) * 5, \amps.kr( 1.dup(n) ) )
-			.clip(-80.dbamp,1)
-			.lincurve( -80.dbamp, 1,
-				sharpness.linlin(18,32,1,2), sharpness.linlin(18,32,1,36), -4
-			),
-		400,
-		400
-	);
-
-	sig = BLowPass.ar( sig, (
-		freq.blend(
-			LFDNoise3.kr(0.1).exprange( 40,100 ), 0.1)
-				* sharpness.linlin(1,15,32,1)
-				* cutenv
-		)
-		.clip(20,20000), 0.125 );
-
-	sig = BLowCut.ar( sig, hpf, 2 );
-	sig = sig.sineclip2(mod.linlin(0,0.25,10,0.8) );
-	sig = Splay.ar( sig, levelComp: false );
-	env = Env([0,1,1,0], [0.01, sustain * 1.2, 0.1]).kr(2);
-	//Poll.kr( Impulse.kr(10), sharpness );
-	sig = RemoveBadValues.ar(sig);
-	OffsetOut.ar( 0, sig * env * amp * 0.25 );
-}).load(s);
-);
-
-////////////////////////////////
-////////////////////////////////
-
-/* example from wouter snoei canto ostinato classes*/
-
 // lfdnoise used for controlling panning parameters
 
 (
@@ -580,8 +525,7 @@ SynthDef( "canto_fastFreeze", { |amp = 0.1, active = 1, spd = 5, modrange = 0, g
 	pan = LFDNoise3.kr(0.05).range(pan.neg, pan);
 
 	sig = sig.collect({ |sig, i|
-		RoundPan.ar( ~canto.numChan ? 4, sig, [-0.25,0.25][i] + pan );
-	}).sum;
+		Pan4.ar(sig, trig * 0.25, LFDNoise3.kr(modSpeed) * pan, trig * 0.25, LFDNoise1.kr(modSpeed) * pan)});
 
 	//sig = (sig ++ sig) * PanAz.kr( 4, 1, pan );
 
@@ -590,9 +534,6 @@ SynthDef( "canto_fastFreeze", { |amp = 0.1, active = 1, spd = 5, modrange = 0, g
 	Out.ar(0,sig * amp.lag(1) * Env.cutoff(2).kr(2,gate) );
 }).load(s);
 );
-
-////////////////////////////////
-////////////////////////////////
 
 /* example from wouter snoei canto ostinato classes*/
 
@@ -640,16 +581,13 @@ SynthDef( "canto_clicks", { |modSpeed = 0.1, pan = 0.25, gate = 1, amp = 0.1,
 			4
 		);
 
-		RoundPan.ar( 4, trig * 0.25, LFDNoise3.kr(modSpeed) * pan);
+		Pan4.ar(sig, trig * 0.25, LFDNoise3.kr(modSpeed) * pan, trig * 0.25, LFDNoise1.kr(modSpeed) * pan);
 	}).sum;
 
 	env = Env.asr(0.1,1,0.1).kr(2,gate);
 	Out.ar( 0, sig * env * amp.lag(0.1) );
-}).load(s);
+}).add;
 );
-
-////////////////////////////////
-////////////////////////////////
 
 ::
 
