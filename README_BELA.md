@@ -3,10 +3,10 @@ Compiling SuperCollider scsynth on Bela
 
 See [README.md](README.md) for the "real" SuperCollider readme.
 
-This file is Dan's and Marije's notes about compiling SC on [Bela (BeagleRT)](http://beaglert.cc/) platform.
+This file is Dan's and Marije's notes about compiling SC on [Bela](http://bela.io) platform.
 
 This branch `bela_hackery_v01` contains that plus other modifications to get the SC source code master branch building.
-The main addition in this branch is a **Xenomai/BeagleRT audio driver for scsynth**, to use Bela's ultra-low-latency audio thread *instead* of jack/portaudio, and **plugins to access the analog and digital channels of the Bela-cape**
+The main addition in this branch is a **Xenomai/Bela audio driver for scsynth**, to use Bela's ultra-low-latency audio thread *instead* of jack/portaudio, and **plugins to access the analog and digital channels of the Bela-cape**
 
 > *NOTE:* This guide assumes you have the [Bela image v0.1.0](https://github.com/BelaPlatform/bela-image/releases/tag/v0.1.0) (or higher).
 
@@ -138,7 +138,7 @@ So now you should have scsynth running on the device. You should be able to send
     
 BELA I/O's
 ==========
-
+be
 I/O support for the BeLa is implemented.
 
 The startup flag ```-J``` defines how many analog input channels will be enabled, the startup flag ```-K``` how many analog output channels will be enabled, the startup flag ```-G``` how many digital channels will be enabled; by default all are set to 0.
@@ -211,11 +211,11 @@ CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
   0  0      0          159371     0     00500080   76.4  ROOT
   0  2282   1          1          0     00b00380    0.0  scsynth
   0  2286   1          2          0     00300380    0.0  mAudioSyncSignalTask
-  0  2288   2          159368     1     00300184   21.0  beaglert-audio
+  0  2288   2          159368     1     00300184   21.0  bela-audio
   0  0      0          251165     0     00000000    1.9  IRQ67: [timer]
 </pre>
 
-the "MSW" column indicates mode switches; this number should NEVER increase in the beaglert-audio thread. It is fine if it increases on a task that runs occasionally, but keep in mind that each mode switch carries an additional overhead.
+the "MSW" column indicates mode switches; this number should NEVER increase in the bela-audio thread. It is fine if it increases on a task that runs occasionally, but keep in mind that each mode switch carries an additional overhead.
 
 Optional: Bonus level: Even more plugins (sc3-plugins)
 ======================================================
