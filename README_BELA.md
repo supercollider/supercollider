@@ -227,7 +227,7 @@ SuperCollider comes with a built-in set of UGen plugins but there's an extra set
     cd sc3-plugins
     mkdir build
     cd build
-    cmake -DSC_PATH=/extrabela/supercollider -DCMAKE_C_COMPILER=/usr/lib/ccache/gcc-4.8 -DCMAKE_CXX_COMPILER=/usr/lib/ccache/g++-4.8  ..
+    cmake -DSC_PATH=~/supercollider -DCMAKE_C_COMPILER=/usr/lib/ccache/gcc-4.8 -DCMAKE_CXX_COMPILER=/usr/lib/ccache/g++-4.8 -DCMAKE_C_FLAGS="-march=armv7-a -mtune=cortex-a8 -mfloat-abi=hard -mfpu=neon -O2" -DCMAKE_CPP_FLAGS="-march=armv7-a -mtune=cortex-a8 -mfloat-abi=hard -mfpu=neon -O2" ..
     make
     make install
 
