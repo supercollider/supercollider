@@ -184,9 +184,23 @@ Example files are available in the folder ```examples/bela```, and will be insta
 Running scsynth *and* sclang
 ======================================================
 
-If we run scsynth from sclang, it seems code execution stops after that - this is an unresolved issue for now.
+You can start the server as normal from the language. To set the settings for the analog I/O you should set them to some reasonable values. The defaults are to not pass the flags to scsynth.
 
-But - we can start scsynth manually, and then connect to it from a separate instance of sclang.
+    s = Server.default;
+
+    s.options.numAnalogInChannels = 8;
+    s.options.numAnalogOutChannels = 8;
+    s.options.numDigitalChannels = 16;
+
+    s.options.blockSize = 16;
+    s.options.numInputBusChannels = 2;
+    s.options.numOutputBusChannels = 2;
+    
+    s.waitForBoot({
+        "THE SERVER IS BOOTED! Start of my actually interesting code".postln;
+    });
+
+Alternatively, you can start scsynth manually, and then connect to it from a separate instance of sclang.
 
 So make one connection and start scsynth:
 
