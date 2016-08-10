@@ -9,7 +9,7 @@ Description::
 Writes analog data to an analog output of the BELA board.
 
 note::
-This UGEn only works on BeLa
+This UGen only works on BeLa
 ::
 
 classmethods::
@@ -18,7 +18,7 @@ method::ar
 
 argument::analogPin
 
-Analog pin number to read. Pin numbers begin at 0. This value can be modulated at audiorate.
+Analog pin number to read. Pin numbers begin at 0. This value can be modulated at audiorate. If you use a constant value, you should wrap it in a code::DC.ar:: UGen as in the example below.
 
 argument::output
 

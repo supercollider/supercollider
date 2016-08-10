@@ -9,7 +9,7 @@ Description::
 Write digital data to a digital output of the BELA board.
 
 note::
-This UGEn only works on BeLa.
+This UGen only works on BeLa.
 ::
 
 note::

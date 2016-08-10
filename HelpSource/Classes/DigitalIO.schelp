@@ -9,7 +9,7 @@ Description::
 Read or write digital data from or to a digital pin. The pin number of this UGen can be modulated, as well as its I/O mode.
 
 note::
-This UGEn only works on BeLa.
+This UGen only works on BeLa.
 ::
 
 note::
@@ -24,7 +24,7 @@ The output of this UGen is always the last value read when the digital pin was a
 
 argument::digitalPin
 
-Digital pin number to write to. Pin numbers begin at 0. This value cannot be modulated.
+Digital pin number to write to. Pin numbers begin at 0. This value can be modulated at audiorate. If you use a constant value, you should wrap it in a code::DC.ar:: UGen as in the example below.
 
 argument::output
 
@@ -32,7 +32,7 @@ Value to write out to the pin - the value will be 1 when the argument is larger 
 
 argument::mode
 
-Value to write out to the pin - the pin will be an input when the argument is smaller than 0.5, otherwise an output.
+Value to write out to the pin - the pin will be an input when the argument is smaller than 0.5, otherwise an output. This value can be modulated at audiorate. If you use a constant value, you should wrap it in a code::DC.ar:: UGen as in the example below.
 
 argument::mul
 
