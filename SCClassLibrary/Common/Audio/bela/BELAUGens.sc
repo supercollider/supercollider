@@ -8,6 +8,8 @@
  * output: value of analog analogPin
  */
 AnalogIn : UGen {
+    signalRange { ^\unipolar }
+    
     *ar { arg analogPin = 0, mul=1.0, add=0.0;
         ^this.multiNew('audio', analogPin ).madd(mul,add)
     }
@@ -27,6 +29,8 @@ AnalogOut : UGen {
  * output: value of digital pin
  */
 DigitalIn : UGen {
+    signalRange { ^\unipolar }
+    
     *ar { arg digitalPin = 0, mul=1.0, add=0.0;
         ^this.multiNew('audio', digitalPin ).madd(mul,add)
     }
@@ -48,6 +52,8 @@ DigitalOut : UGen {
  * output: value of digital pin (last read value)
  */
 DigitalIO : UGen {
+    signalRange { ^\unipolar }
+    
     *ar { arg digitalPin = 0, output=0, pinMode=0, mul=1.0, add=0.0;
         ^this.multiNew('audio', digitalPin, output, pinMode ).madd(mul,add)
     }
