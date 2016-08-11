@@ -6,11 +6,11 @@ fork{
 	s.sync;
     	
 	(	
-	SynthDef("help-DigitalOutput",{ arg out=0;
+	SynthDef("help-DigitalOut",{ arg out=0;
 		DigitalOutput.ar( 0, SinOsc.ar( 10 ) );
 	}).send(s);
 	);
 
 	s.sync;
-	Synth.new("help-DigitalOutput", target: s).postln;
+	Synth.new("help-DigitalOut", target: s).postln;
 };

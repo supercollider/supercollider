@@ -1,6 +1,6 @@
-class:: DigitalOutput
+class:: DigitalOut
 summary:: Write data to a digital input of the BELA board
-related:: Classes/AnalogInput, Classes/AnalogOutput, Classes/DigitalInput, Classes/DigitalIO
+related:: Classes/AnalogIn, Classes/AnalogOut, Classes/DigitalIn, Classes/DigitalIO
 categories::  UGens>BELA
 
 
@@ -38,8 +38,8 @@ code::
 // write a sine oscillator's output to a pin
 
 (
-SynthDef("help-DigitalOutput",{ arg out=0;
-    DigitalOutput.ar( 0, SinOsc.ar( 10 ) );
+SynthDef("help-DigitalOut",{ arg out=0;
+    DigitalOut.ar( 0, SinOsc.ar( 10 ) );
 }).play;
 )
 

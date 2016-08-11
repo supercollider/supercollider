@@ -40,24 +40,24 @@
 static InterfaceTable *ft;
 
 
-struct AnalogInput : public Unit
+struct AnalogIn : public Unit
 {
   int mAudioFramesPerAnalogFrame;
 };
 
-struct AnalogOutput : public Unit
+struct AnalogOut : public Unit
 {
   int mAudioFramesPerAnalogFrame;
 };
 
 // static digital pin, static function (in)
-struct DigitalInput : public Unit
+struct DigitalIn : public Unit
 {
   int mDigitalPin;
 };
 
 // static digital pin, static function (out)
-struct DigitalOutput : public Unit
+struct DigitalOut : public Unit
 {
   int mDigitalPin;
 };
@@ -65,12 +65,12 @@ struct DigitalOutput : public Unit
 // flexible digital pin, flexible function (in or out)
 struct DigitalIO : public Unit
 {
-  int mLastOutput;
+  int mLastOut;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void AnalogInput_next(AnalogInput *unit, int inNumSamples)
+void AnalogIn_next(AnalogIn *unit, int inNumSamples)
 {
   World *world = unit->mWorld;
   int bufLength = world->mBufLength;
@@ -97,7 +97,7 @@ void AnalogInput_next(AnalogInput *unit, int inNumSamples)
   }
 }
 
-void AnalogInput_Ctor(AnalogInput *unit)
+void AnalogIn_Ctor(AnalogIn *unit)
 {
 	BelaContext *context = unit->mWorld->mBelaContext;
   
@@ -109,14 +109,14 @@ void AnalogInput_Ctor(AnalogInput *unit)
 	unit->mAudioFramesPerAnalogFrame = context->audioFrames / context->analogFrames;
 
 	// initiate first sample
-	AnalogInput_next( unit, 1);  
+	AnalogIn_next( unit, 1);  
 	// set calculation method
-	SETCALC(AnalogInput_next);
+	SETCALC(AnalogIn_next);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void AnalogOutput_next(AnalogOutput *unit, int inNumSamples)
+void AnalogOut_next(AnalogOut *unit, int inNumSamples)
 {
   World *world = unit->mWorld;
   int bufLength = world->mBufLength;
@@ -144,7 +144,7 @@ void AnalogOutput_next(AnalogOutput *unit, int inNumSamples)
   }
 }
 
-void AnalogOutput_Ctor(AnalogOutput *unit)
+void AnalogOut_Ctor(AnalogOut *unit)
 {
 	BelaContext *context = unit->mWorld->mBelaContext;
   
@@ -156,14 +156,14 @@ void AnalogOutput_Ctor(AnalogOutput *unit)
 	unit->mAudioFramesPerAnalogFrame = context->audioFrames / context->analogFrames;
 
 	// initiate first sample
-	AnalogOutput_next( unit, 1);  
+	AnalogOut_next( unit, 1);  
 	// set calculation method
-	SETCALC(AnalogOutput_next);
+	SETCALC(AnalogOut_next);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void DigitalInput_next(DigitalInput *unit, int inNumSamples)
+void DigitalIn_next(DigitalIn *unit, int inNumSamples)
 {
   World *world = unit->mWorld;
   int bufLength = world->mBufLength;
@@ -181,7 +181,7 @@ void DigitalInput_next(DigitalInput *unit, int inNumSamples)
   }
 }
 
-void DigitalInput_next_dummy(DigitalInput *unit, int inNumSamples)
+void DigitalIn_next_dummy(DigitalIn *unit, int inNumSamples)
 {
   float *out = ZOUT(0);
   
@@ -190,7 +190,7 @@ void DigitalInput_next_dummy(DigitalInput *unit, int inNumSamples)
   }
 }
 
-void DigitalInput_Ctor(DigitalInput *unit)
+void DigitalIn_Ctor(DigitalIn *unit)
 {
 	BelaContext *context = unit->mWorld->mBelaContext;
   
@@ -200,21 +200,21 @@ void DigitalInput_Ctor(DigitalInput *unit)
 	if ( (unit->mDigitalPin < 0) || (unit->mDigitalPin >= context->digitalChannels) ){
 	    rt_printf( "digital pin must be between %i and %i, it is %i", 0, context->digitalChannels, unit->mDigitalPin );
 	  // initiate first sample
-	  DigitalInput_next_dummy( unit, 1);  
+	  DigitalIn_next_dummy( unit, 1);  
 	  // set calculation method
-	  SETCALC(DigitalInput_next_dummy);
+	  SETCALC(DigitalIn_next_dummy);
 	} else {
 	  pinMode(context, 0, unit->mDigitalPin, INPUT);
 	  // initiate first sample
-	  DigitalInput_next( unit, 1);  
+	  DigitalIn_next( unit, 1);  
 	  // set calculation method
-	  SETCALC(DigitalInput_next);
+	  SETCALC(DigitalIn_next);
 	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-void DigitalOutput_next(DigitalOutput *unit, int inNumSamples)
+void DigitalOut_next(DigitalOut *unit, int inNumSamples)
 {
   World *world = unit->mWorld;
   int bufLength = world->mBufLength;
@@ -241,11 +241,11 @@ void DigitalOutput_next(DigitalOutput *unit, int inNumSamples)
   }
 }
 
-void DigitalOutput_next_dummy(DigitalOutput *unit, int inNumSamples)
+void DigitalOut_next_dummy(DigitalOut *unit, int inNumSamples)
 {
 }
 
-void DigitalOutput_Ctor(DigitalOutput *unit)
+void DigitalOut_Ctor(DigitalOut *unit)
 {
 	BelaContext *context = unit->mWorld->mBelaContext;
 
@@ -254,15 +254,15 @@ void DigitalOutput_Ctor(DigitalOutput *unit)
 	if ( (unit->mDigitalPin < 0) || (unit->mDigitalPin >= context->digitalChannels) ){
 	  rt_printf( "digital pin must be between %i and %i, it is %i", 0, context->digitalChannels, unit->mDigitalPin );
 	  // initiate first sample
-	  DigitalOutput_next_dummy( unit, 1);  
+	  DigitalOut_next_dummy( unit, 1);  
 	  // set calculation method	    
-	  SETCALC(DigitalOutput_next_dummy);
+	  SETCALC(DigitalOut_next_dummy);
 	} else {
 	  pinMode(context, 0, unit->mDigitalPin, OUTPUT);
 	  // initiate first sample
-	  DigitalOutput_next( unit, 1);  
+	  DigitalOut_next( unit, 1);  
 	  // set calculation method
-	  SETCALC(DigitalOutput_next);
+	  SETCALC(DigitalOut_next);
 	}
 }
 
@@ -284,7 +284,7 @@ void DigitalIO_next(DigitalIO *unit, int inNumSamples)
   float newmode = 0; // input
   float newinput = 0;
   int newinputInt = 0;
-  int newoutput = unit->mLastOutput;
+  int newoutput = unit->mLastOut;
 
   // context->audioFrames should be equal to inNumSamples
 //   for(unsigned int n = 0; n < context->digitalFrames; n++) {
@@ -315,14 +315,14 @@ void DigitalIO_next(DigitalIO *unit, int inNumSamples)
 	  // always write to the output of the UGen
 	*++out = (float) newoutput;
   }
-  unit->mLastOutput = newoutput;
+  unit->mLastOut = newoutput;
 }
 
 void DigitalIO_Ctor(DigitalIO *unit)
 {
 	BelaContext *context = unit->mWorld->mBelaContext;
 
-	unit->mLastOutput = 0;
+	unit->mLastOut = 0;
 
 	// initiate first sample
 	DigitalIO_next( unit, 1);  
@@ -374,10 +374,10 @@ PluginLoad(BELA)
 {
 	ft = inTable;
 
-	DefineSimpleUnit(AnalogInput);
-	DefineSimpleUnit(AnalogOutput);
-	DefineSimpleUnit(DigitalInput);
-	DefineSimpleUnit(DigitalOutput);
+	DefineSimpleUnit(AnalogIn);
+	DefineSimpleUnit(AnalogOut);
+	DefineSimpleUnit(DigitalIn);
+	DefineSimpleUnit(DigitalOut);
 	DefineSimpleUnit(DigitalIO);
 }
 

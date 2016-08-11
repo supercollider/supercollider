@@ -6,11 +6,11 @@ fork{
 	s.sync;
     	
 	(	
-	SynthDef("help-AnalogOutput",{ arg out=0;
-	    AnalogOutput.ar( DC.ar( 0 ), SinOsc.ar( 10, 0, 0.5, 0.5 ) );
+	SynthDef("help-AnalogOut",{ arg out=0;
+	    AnalogOut.ar( DC.ar( 0 ), SinOsc.ar( 10, 0, 0.5, 0.5 ) );
 	}).send(s);
 	);
 
 	s.sync;
-	Synth.new("help-AnalogOutput", target: s).postln;
+	Synth.new("help-AnalogOut", target: s).postln;
 };
