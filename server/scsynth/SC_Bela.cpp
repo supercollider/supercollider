@@ -286,17 +286,10 @@ void SC_BelaDriver::BelaAudioCallback(BelaContext *belaContext)
 				if (*tch++ == bufCounter) {
 					float *src = outBuses + k * bufFrames;
 					for (int n = 0; n < bufFrames; ++n) {
-					  if(!(n % mAudioFramesPerAnalogFrame)) {
-// 					    analogWriteOnce( belaContext, n / mAudioFramesPerAnalogFrame, analogPin, *src++ );
-					    analogWrite( belaContext, n / mAudioFramesPerAnalogFrame, analogPin, *src++ ); 
+						if(!(n % mAudioFramesPerAnalogFrame)){
+ 							analogWriteOnce( belaContext, n / mAudioFramesPerAnalogFrame, analogPin, *src * 0.5 + 0.5 );
 					  }
-					}
-				} else {
-					for (int n = 0; n < bufFrames; ++n) {
-					  if(!(n % mAudioFramesPerAnalogFrame)) {
-// 					    analogWriteOnce(belaContext, n / mAudioFramesPerAnalogFrame, analogPin, 0.0f );
-					    analogWrite(belaContext, n / mAudioFramesPerAnalogFrame, analogPin, 0.0f ); 
-					  }
+					  ++src;
 					}
 				}
 			}
