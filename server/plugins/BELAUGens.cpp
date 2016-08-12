@@ -664,7 +664,6 @@ void DigitalIO_next_aakk_once(DigitalIO *unit, int inNumSamples)
 //   int newDigOut = unit->mLastDigitalOut;
   int newDigOut = (int) in;
 
-  int newpin;
   if ( iomode < 0.5 ){
     for(unsigned int n = 0; n < inNumSamples; n++) {
 	newpin = (int) pinid[n];
@@ -737,7 +736,49 @@ void DigitalIO_next_akaa_once(DigitalIO *unit, int inNumSamples)
   unit->mLastDigitalOut = newDigOut;
 }
 
-// pin changing at control rate, output at control rate, mode at audio rate
+//TODO pin changing at control rate, output control rate, rest audio rate
+void DigitalIO_next_akak_once(DigitalIO *unit, int inNumSamples)
+{
+  World *world = unit->mWorld;
+  int bufLength = world->mBufLength;
+  BelaContext *context = world->mBelaContext;
+
+  float pinid = IN0(0);
+  float in = IN0(1); // input value
+  float *iomode = IN(2); // IO mode : < 0.5 = input, else output
+  float *out = ZOUT(0); // output value = last output value
+  
+  int newpin = (int) pinid;
+  float newmode = 0; // input
+//   float newinput;
+  
+  int newDigInInt = unit->mLastDigitalIn;
+  float newDigIn = (float) newDigInInt;
+  
+  int newDigOut = (int) in;
+
+  if ( (newpin < 0) || (newpin >= context->digitalChannels) ){
+	    rt_printf( "digital pin must be between %i and %i, it is %i", 0, context->digitalChannels, newpin );
+  } else {
+    for(unsigned int n = 0; n < inNumSamples; n++) {
+// 	  newinput = in[n];
+	  newmode = iomode[n];
+	  if ( newmode < 0.5 ){
+            pinModeOnce( context, n, newpin, INPUT );
+	    newDigInInt = digitalRead(context, n, newpin);
+	  } else {	  
+	    pinModeOnce( context, n, newpin, OUTPUT );
+	    digitalWriteOnce(context, n, newpin, newDigOut);
+	  }
+        // always write to the output of the UGen
+	*++out = (float) newDigInInt;
+    }
+  }
+  unit->mLastDigitalIn = newDigInInt;
+  unit->mLastDigitalOut = newDigOut;
+}
+
+//TODO pin changing at control rate, output at control rate, mode at audio rate
 void DigitalIO_next_akka_once(DigitalIO *unit, int inNumSamples)
 {
   World *world = unit->mWorld;
@@ -751,6 +792,7 @@ void DigitalIO_next_akka_once(DigitalIO *unit, int inNumSamples)
   
   int newpin;
   float newmode = 0; // input
+  float newinput;
   
   int newDigInInt = unit->mLastDigitalIn;
   float newDigIn = (float) newDigInInt;
@@ -807,7 +849,7 @@ void DigitalIO_next_ak(DigitalIO *unit, int inNumSamples)
     rt_printf( "digital pin must be between %i and %i, it is %i", 0, context->digitalChannels, newpin );
   } else {
     if ( iomode < 0.5 ){
-        pinMode( context, n, newpin, INPUT );
+        pinMode( context, 0, newpin, INPUT );
         for(unsigned int n = 0; n < inNumSamples; n++) {
             // read input
             newDigInInt = digitalRead(context, n, newpin);
@@ -815,7 +857,7 @@ void DigitalIO_next_ak(DigitalIO *unit, int inNumSamples)
             *++out = (float) newDigInInt;
         }
     } else {  
-        pinMode( context, n, newpin, OUTPUT );
+        pinMode( context, 0, newpin, OUTPUT );
         for(unsigned int n = 0; n < inNumSamples; n++) {
             if ( in > 0.5 ){ 
                 newDigOut = GPIO_HIGH; 
@@ -848,19 +890,19 @@ void DigitalIO_next_kk(DigitalIO *unit, int inNumSamples)
   int newDigOut = unit->mLastDigitalOut;
 
   if ( (pinid < 0) || (pinid >= context->digitalChannels) ){
-    rt_printf( "digital pin must be between %i and %i, it is %i", 0, context->digitalChannels, newpin );
+    rt_printf( "digital pin must be between %i and %i, it is %i", 0, context->digitalChannels, pinid );
   } else {
     if ( iomode < 0.5 ){
-        pinMode( context, n, newpin, INPUT );
-	newDigInInt = digitalRead(context, n, newpin);
+        pinMode( context, 0, pinid, INPUT );
+	newDigInInt = digitalRead(context, 0, pinid);
     } else {  
-        pinMode( context, n, newpin, OUTPUT );
+        pinMode( context, 0, pinid, OUTPUT );
         if ( in > 0.5 ){ 
             newDigOut = GPIO_HIGH; 
         } else { 
 	    newDigOut = GPIO_LOW;  
         }
-	digitalWrite(context, n, newpin, newDigOut);
+	digitalWrite(context, 0, pinid, newDigOut);
     }
   }
   ZOUT0(0) = (float) newDigInInt;
