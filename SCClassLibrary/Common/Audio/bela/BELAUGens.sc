@@ -13,6 +13,9 @@ AnalogIn : UGen {
     *ar { arg analogPin = 0, mul=1.0, add=0.0;
         ^this.multiNew('audio', analogPin ).madd(mul,add)
     }
+    *kr { arg analogPin = 0, mul=1.0, add=0.0;
+        ^this.multiNew('control', analogPin ).madd(mul,add)
+    }
 }
 
 /* input 1: id of analog pin to read; can be modulated at audiorate
@@ -22,6 +25,9 @@ AnalogIn : UGen {
 AnalogOut : UGen {
     *ar { arg analogPin = 0, output=0, mul=1.0, add=0.0;
         ^this.multiNew('audio', analogPin, output ).madd(mul,add)
+    }
+    *kr { arg analogPin = 0, output=0, mul=1.0, add=0.0;
+        ^this.multiNew('control', analogPin, output ).madd(mul,add)
     }
 }
 
@@ -34,6 +40,9 @@ DigitalIn : UGen {
     *ar { arg digitalPin = 0, mul=1.0, add=0.0;
         ^this.multiNew('audio', digitalPin ).madd(mul,add)
     }
+    *kr { arg digitalPin = 0, mul=1.0, add=0.0;
+        ^this.multiNew('control', digitalPin ).madd(mul,add)
+    }
 }
 
 /* input 1: id of digital pin to read; cannot be modulated
@@ -41,8 +50,11 @@ DigitalIn : UGen {
  * output: none
  */
 DigitalOut : UGen {
-    *ar { arg digitalPin = 0, output=0, mul=1.0, add=0.0;
+    *ar { arg digitalPin = 0, output=0, writeMode=0, mul=1.0, add=0.0;
         ^this.multiNew('audio', digitalPin, output ).madd(mul,add)
+    }
+    *ar { arg digitalPin = 0, output=0, writeMode=0, mul=1.0, add=0.0;
+        ^this.multiNew('control', digitalPin, output ).madd(mul,add)
     }
 }
 
@@ -57,4 +69,8 @@ DigitalIO : UGen {
     *ar { arg digitalPin = 0, output=0, pinMode=0, mul=1.0, add=0.0;
         ^this.multiNew('audio', digitalPin, output, pinMode ).madd(mul,add)
     }
+    *kr { arg digitalPin = 0, output=0, pinMode=0, mul=1.0, add=0.0;
+        ^this.multiNew('control', digitalPin, output, pinMode ).madd(mul,add)
+    }
+    
 }
