@@ -53,7 +53,7 @@ DigitalOut : UGen {
     *ar { arg digitalPin = 0, output=0, writeMode=0, mul=1.0, add=0.0;
         ^this.multiNew('audio', digitalPin, output ).madd(mul,add)
     }
-    *ar { arg digitalPin = 0, output=0, writeMode=0, mul=1.0, add=0.0;
+    *kr { arg digitalPin = 0, output=0, writeMode=0, mul=1.0, add=0.0;
         ^this.multiNew('control', digitalPin, output ).madd(mul,add)
     }
 }
