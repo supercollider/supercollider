@@ -138,10 +138,9 @@ void AnalogIn_next_ak(AnalogIn *unit, int inNumSamples)
             if(!(n % unit->mAudioFramesPerAnalogFrame)) {
                 analogValue = analogRead(context, n/unit->mAudioFramesPerAnalogFrame, analogPin);
             }
-        *++out = analogValue;
+            *++out = analogValue;
         }
     }
-  }
 }
 
 
