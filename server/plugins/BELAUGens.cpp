@@ -60,6 +60,7 @@ struct DigitalIn : public Unit
 struct DigitalOut : public Unit
 {
   int mDigitalPin;
+  int mLastOut;
 };
 
 // flexible digital pin, flexible function (in or out)
@@ -224,7 +225,8 @@ void DigitalOut_next(DigitalOut *unit, int inNumSamples)
   float *in = IN(1);
   
   float newinput = 0;
-  int newinputInt = 0;
+//   int newinputInt = 0;
+  int lastOut = unit->mLastOut;
 
   // context->audioFrames should be equal to inNumSamples
 //   for(unsigned int n = 0; n < context->audioFrames; n++) {
@@ -232,13 +234,18 @@ void DigitalOut_next(DigitalOut *unit, int inNumSamples)
 	// read input
 	newinput = in[n];
 	if ( newinput > 0.5 ){ 
+            if (lastOut == 0) {
+                lastOut = 1;
 // 	  digitalWriteOnce(context, n, pinid, GPIO_HIGH );
-	  digitalWrite(context, n, pinid, GPIO_HIGH );
-	} else { 
+                digitalWrite(context, n, pinid, GPIO_HIGH );
+            }
+	} else if ( lastOut == 1 ) {
+          lastOut = 0;
 // 	  digitalWriteOnce(context, n, pinid, GPIO_LOW );
 	  digitalWrite(context, n, pinid, GPIO_LOW );
 	}
   }
+  unit->mLastOut = lastOut;
 }
 
 void DigitalOut_next_dummy(DigitalOut *unit, int inNumSamples)
@@ -251,7 +258,9 @@ void DigitalOut_Ctor(DigitalOut *unit)
 
 	float fDigital = ZIN0(0); // digital in pin -- cannot change after construction
 	unit->mDigitalPin = (int) fDigital;
-	if ( (unit->mDigitalPin < 0) || (unit->mDigitalPin >= context->digitalChannels) ){
+	unit->mLastOut = 0;
+
+        if ( (unit->mDigitalPin < 0) || (unit->mDigitalPin >= context->digitalChannels) ){
 	  rt_printf( "digital pin must be between %i and %i, it is %i", 0, context->digitalChannels, unit->mDigitalPin );
 	  // initiate first sample
 	  DigitalOut_next_dummy( unit, 1);  
