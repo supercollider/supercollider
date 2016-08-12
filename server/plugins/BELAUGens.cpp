@@ -253,7 +253,7 @@ void AnalogOut_next_aak(AnalogOut *unit, int inNumSamples)
 	if ( (analogPin < 0) || (analogPin >= context->analogOutChannels) ){
 	    rt_printf( "analog pin must be between %i and %i, it is %i", 0, context->analogOutChannels, analogPin );
 	} else {
-	  newinput = in[n]; // read next input sample
+// 	  newinput = in[n]; // read next input sample
 	  if(!(n % unit->mAudioFramesPerAnalogFrame)) {
 	    analogWriteOnce(context,  n/ unit->mAudioFramesPerAnalogFrame, analogPin, in);
 	  }
@@ -375,8 +375,6 @@ void DigitalIn_Ctor(DigitalIn *unit)
           } else {
             DigitalIn_next_dummy_k( unit, 1);  
           }
-	  // set calculation method
-	  SETCALC(DigitalIn_next_dummy);
 	} else {
 	  pinMode(context, 0, unit->mDigitalPin, INPUT);
 	  // initiate first sample
@@ -459,10 +457,10 @@ void DigitalOut_next_k(DigitalOut *unit, int inNumSamples)
   if ( in > 0.5 ){ 
     if (lastOut == 0) {
         lastOut = 1;
-        digitalWrite(context, n, pinid, GPIO_HIGH );
+        digitalWrite(context, 0, pinid, GPIO_HIGH );
     } else if ( lastOut == 1 ) {
         lastOut = 0;
-        digitalWrite(context, n, pinid, GPIO_LOW );
+        digitalWrite(context, 0, pinid, GPIO_LOW );
     }
   }
   unit->mLastOut = lastOut;
@@ -507,6 +505,7 @@ void DigitalOut_Ctor(DigitalOut *unit)
                 rt_printf("DigitalOut warning: UGen rate is control rate, so cannot change inputs at audio rate\n");
             }
             SETCALC(DigitalOut_next_k);
+            }
         }
 }
 
@@ -732,6 +731,7 @@ void DigitalIO_next_akaa_once(DigitalIO *unit, int inNumSamples)
 	  }
         // always write to the output of the UGen
 	*++out = (float) newDigInInt;
+    }
   }
   unit->mLastDigitalIn = newDigInInt;
   unit->mLastDigitalOut = newDigOut;
