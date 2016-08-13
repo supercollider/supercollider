@@ -1,8 +1,8 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 10pt;
-    color: black;
-    background: white;
+    font-size: 8pt;
+    color: white;
+    background: black;
 /*    max-width: 60em;*/
 /*    margin-left: 20em;*/
     padding: 0;
@@ -10,7 +10,7 @@ body {
 }
 
 html {
-    height: 100%;
+    height: 64.756%;
     margin: 0 0 1px;
 }
 
@@ -44,7 +44,7 @@ p {
 
 a:link, a:visited, a:hover {
     text-decoration: none;
-    color: #449;
+    color: white;
     /* add padding to work around "text-decoration: underline" not
      * having effect when hovered if font size less then 11pt */
     padding-bottom: 1px;
@@ -60,12 +60,12 @@ a:hover {
 
 .inheritedmets_class {
     font-weight: bold;
-    color: #555;
+    color: grey;
     margin-top: 0.5em;
     margin-bottom: 0.25em;
 }
 .inheritedmets_class a {
-    color: #333;
+    color: white;
 }
 ul.inheritedmets {
     list-style: none;
@@ -79,37 +79,37 @@ ul.inheritedmets li {
 }
 a.inheritedmets_toggle {
     font-size: 9pt;
-    color: #558;
+    color: grey;
     font-weight: normal;
 /*    margin-left: 2em;*/
 }
 
 a.inheritedmets_toggle:hover {
     text-decoration: none;
-    color: #000;
+    color: white;
 }
 
 a.subclass_toggle {
-    color: #555;
+    color: grey;
     font-weight: normal;
 }
 
 a.subclass_toggle:hover {
     text-decoration: none;
-    color: #000;
+    color: white;
 }
 
 
 #menubar {
     font-family: Arial, Helvetica, sans-serif;
-    width: 100%;
+    width: 64.657%;
     position: fixed;
 /*    background: #555;*/
-    background: #eee;
+    background: black;
     top: 0px;
     padding: 2px;
     margin: 0px;
-    border-bottom: 1px solid #bbb;
+    border-bottom: 1px solid white;
 /*    border-bottom: 2px solid #999;*/
     z-index: 30;
 }
@@ -122,14 +122,14 @@ a.subclass_toggle:hover {
     padding-left: 0.75em;
     padding-right: 0.75em;
 /*    border-right: 1px solid #999;*/
-    border-right: 1px solid #ddd;
+    border-right: 1px white;
     font-size: 10pt;
     display: block;
 }
 
 .menuitem a {
 /*    color: #ddd;*/
-    color: #666;
+    color: grey;
 }
 .menuitem a:hover {
     text-decoration: none;
@@ -140,14 +140,14 @@ a.subclass_toggle:hover {
 /*    font-weight: bold;*/
     font-style: italic;
 /*    color: #fff;*/
-    color: #444;
+    color: white;
     cursor: pointer;
 }
 
 .submenu {
     margin-top: 2px;
     padding: 0.5em;
-    background: #eee;
+    background: black;
     display: none;
     position: absolute;
     border: 1px solid #aaa;
@@ -164,13 +164,13 @@ a.subclass_toggle:hover {
 		white-space: nowrap;
 		text-align: left;
 /*		text-decoration: none;*/
-		color: #447;
+		color: white;
 		font-weight: bold;
 }
 
 .toc_search {
     margin-left: 10px;
-    color: #999;
+    color: black;
     font-size: 9pt;
 }
 
@@ -180,25 +180,25 @@ a.subclass_toggle:hover {
 
 a.navlink {
 /*    color: #fff;*/
-    color: #447;
+    color: white;
     font-weight: bold;
 }
 
 
 .header {
-  border-bottom: 2.5px solid #000; padding-bottom:0.18em;
+  border-bottom: 2.5px solid white; padding-bottom:0.18em;
 }
 #label, #label a {
     font-weight: bold;
-    color: #999;
-    border-bottom: 1px solid #bbb;
+    color: black;
+    border-bottom: 1px solid white;
 }
 #summary {
     font-weight: normal;
     font-size: 1.1em;
 }
 #categories {
-    color: #888;
+    color: black;
     font-size: 9pt;
 }
 #related {
@@ -217,13 +217,13 @@ a.navlink {
 .subheader {
     text-align: right;
     font-size: 9pt;
-    color: #444;
+    color: white;
 }
 
 .jump {
     text-align: right;
     font-size: 9pt;
-    color: #555;
+    color: grey;
 }
 .jump a {
     font-weight: bold;
@@ -236,7 +236,7 @@ a.footnote {
     top: -0.1em;
 }
 div.footnotes {
-    border-top: 1px solid #aaa;
+    border-top: 1px solid white;
     margin-left: 2em;
     margin-top: 3em;
     margin-right: 2em;
@@ -248,7 +248,7 @@ div.footnote {
 }
 
 .soft {
-    color: #777;
+    color: black;
 }
 
 h1 {
@@ -258,7 +258,7 @@ h1 {
 }
 
 h2 {
-    border-bottom: 2px solid #ccc;
+    border-bottom: 2px solid white;
     margin-top: 1.0em;
     text-align: left;
     margin-bottom: 2px;
@@ -276,8 +276,8 @@ h4 {
     margin-top: 1em;
     margin-bottom: 0em;
     margin-left: 0em;
-    color: #777;
-    border-bottom: 1px solid #ddd;
+    color: white;
+    border-bottom: 1px solid white;
 }
 
 dt {
@@ -294,7 +294,7 @@ code, pre {
 }
 
 pre {
-    border-left: 2px solid #e0e0e0;
+    border-left: 2px solid white;
     padding-left: 1em;
 }
 
@@ -317,7 +317,7 @@ pre.code {
 
 .methprefix {
     font-weight: normal;
-    color: #777;
+    color: black;
     padding-right: 0.5em;
     margin-left: -1em;
 }
@@ -330,11 +330,11 @@ pre.code {
     margin-top: 0.75em;
     padding: 0.25em;
     border: none;
-    background: #e7ebe7;
+    background: black;
 }
 
 .methodname a, .imethodname a, .cmethodname a {
-    color: black;
+    color: white;
     font-weight: bold;
 }
 
@@ -349,16 +349,16 @@ pre.code {
 
 .extmethod {
     font-size: 9pt;
-    color: #444;
-    background: #fee;
+    color: grey;
+    background: black;
     padding-left: 0.2em;
     text-align: right;
 }
 
 .supmethod {
     font-size: 9pt;
-    color: #444;
-    background: #ffe;
+    color: grey;
+    background: black;
     padding-left: 0.2em;
     text-align: right;
 }
@@ -391,7 +391,7 @@ td p {
 
 .note, .warning {
 /*    border-left: 4px solid #eea;*/
-    background: #f7f7d7;
+    background: black;
     padding: 0.5em;
     margin-top: 1em;
     margin-bottom: 1em;
@@ -413,14 +413,14 @@ td p {
 
 .doclink {
     font-size: 9pt;
-    color: #888;
+    color: black;
     text-align: right;
     margin-top: 2em;
     margin-bottom: 2em;
-    border-top: 1px solid #ddd;
+    border-top: 1px solid white;
 }
 .doclink a {
-    color: #444;
+    color: grey;
 }
 
 #sidetoc {
@@ -433,13 +433,13 @@ td p {
     height: 100%;
     overflow: auto;
 /*    background: #eee;*/
-    background: #fff;
-    border-right: 1px solid #bbb;
+    background: black;
+    border-right: 1px solid white;
 }
 
 #sidetoc a:hover {
     text-decoration: none;
-    color: black;
+    color: white;
 }
 
 #toc {
@@ -449,17 +449,17 @@ td p {
     line-height: 130%;
     display: none;
     overflow: auto;
-    background: #fff;
+    background: black;
     position: absolute;
-    border: 1px solid #aaa;
+    border: 1px solid white;
     margin-top: 2px;
     border-radius: 4px;
 }
 #toctitle {
-    border-bottom: 1px solid #aaa;
+    border-bottom: 1px solid white;
     margin-bottom: 0.5em;
     font-weight: normal;
-    color: #777;
+    color: black;
 }
 
 li {
@@ -485,20 +485,20 @@ ul.toc li a {
 }
 
 ul.toc li a:hover {
-    background: #eee;
+    background: black;
 }
 
 .toc1 {
     font-weight: bold;
 }
 .toc1 a {
-    color: #444;
+    color: grey;
 }
 .toc2 {
     font-weight: normal;
 }
 .toc2 a {
-    color: #444;
+    color: white;
 }
 .toc3 {
     font-family: monospace;
@@ -506,13 +506,13 @@ ul.toc li a:hover {
 /*    font-size: 9.5pt;*/
 }
 .toc3 a {
-    color: #555;
+    color: grey;
 }
 
 a.popoutlink {
     float: right;
     font-size: 9pt;
-    color: #558;
+    color: grey;
     padding-right: 8px;
     display: inline-block;
 }
@@ -549,7 +549,7 @@ ul.tree li:last-child {
 }
 
 a.undoc {
-    color: #88b;
+    color: white;
     text-decoration: line-through;
 }
 
@@ -559,17 +559,17 @@ a.clslnk {
 
 /* Pretty printing styles. Used with prettify.js. */
 
-.str { color: #070; } /* strings */
-.kwd { color: #880; } /* special values like true, nil.. */
-.com { color: #822; } /* comments */
-.typ { color: #008; } /* class names */
-.lit { color: #066; } /* numbers and character literals */
-.pun { color: #555; } /* punctuation */
-.pln { color: #000; } /* plain text, methods and variable names */
-.tag { color: #059; } /* special variables like super, thisProcess... */
-.dec { color: #508; } /* declarations like var, const... */
-.atn { color: #285; } /* symbols */
-.atv { color: #750; } /* environment vars */
+.str { color: white; } /* strings */
+.kwd { color: grey; } /* special values like true, nil.. */
+.com { color: grey; } /* comments */
+.typ { color: white; } /* class names */
+.lit { color: white; } /* numbers and character literals */
+.pun { color: grey; } /* punctuation */
+.pln { color: white; } /* plain text, methods and variable names */
+.tag { color: white; } /* special variables like super, thisProcess... */
+.dec { color: grey; } /* declarations like var, const... */
+.atn { color: white; } /* symbols */
+.atv { color: black; } /* environment vars */
 
 /* Specify class=linenums on a pre to get line numbering */
 ol.linenums { margin-top: 0; margin-bottom: 0 } /* IE indents via margin-left */
@@ -589,16 +589,16 @@ li.L7,
 li.L9 { background: #eee }
 
 @media print {
-  .str { color: #060; }
-  .kwd { color: #006; font-weight: bold; }
-  .com { color: #600; font-style: italic; }
-  .typ { color: #404; font-weight: bold; }
-  .lit { color: #044; }
-  .pun { color: #440; }
-  .pln { color: #000; }
-  .tag { color: #006; font-weight: bold; }
-  .atn { color: #404; }
-  .atv { color: #060; }
+  .str { color: white; }
+  .kwd { color: white; font-weight: bold; }
+  .com { color: grey; font-style: italic; }
+  .typ { color: white; font-weight: bold; }
+  .lit { color: white; }
+  .pun { color: grey; }
+  .pln { color: white; }
+  .tag { color: white; font-weight: bold; }
+  .atn { color: grey; }
+  .atv { color: white; }
 }
 
 /* from HelpSource/Search.html */
@@ -610,16 +610,16 @@ div#search_box {
 
 #search_input {
     border: 1px solid #aaa;
-    background: #eee;
+    background: black;
     margin-left: 0.5em;
 }
 div#search_count {
-    border-bottom: 2px solid #aaa;
-    color: #333;
+    border-bottom: 2px solid white;
+    color: white;
 }
 
 div.result_category {
-    color: #555;
+    color: grey;
     margin-top: 1em;
     margin-bottom: 0.5em;
 /*    font-size: 9.5pt;
@@ -633,35 +633,35 @@ div.met_docs {
 }
 div.met_subclasses {
     font-size: 9pt;
-    color: #777;
+    color: black;
     margin-left: 3em;
     text-align: left;
 }
 div.met_subclasses a {
-    color: #444;
+    color: grey;
 }
 div.met_subclasses a.seemore {
     margin-left: 0.2em;
-    color: #558;
+    color: grey;
 }
 #search_checks {
     padding: 0.5em;
     padding-top: 0.25em;
     padding-bottom: 0.25em;
     font-size: 9pt;
-    color: #555;
-    background: #eee;
+    color: grey;
+    background: black;
 }
 #search_checks0 {
     font-size: 9pt;
-    color: #555;
-    border-bottom: 1px solid #ddd;
+    color: grey;
+    border-bottom: 1px solid white;
     margin-top: 1em;
     padding-bottom: 1em;
 }
 table#search_settings {
     font-size: 9pt;
-    color: #555;
+    color: grey;
     width: 100%;
     margin-left: 0px;
     margin-right: 0px;*/
@@ -695,17 +695,17 @@ table#search_settings {
 }
 div.met_subclasses {
     font-size: 9pt;
-    color: #777;
+    color: black;
     margin-left: 3em;
     text-align: left;
 }
 div.met_subclasses a {
-    color: #444;
+    color: grey;
 }
 
 div.met_subclasses a.seemore {
     margin-left: 0.2em;
-    color: #558;
+    color: grey;
 }
 
 .method_name {
@@ -714,17 +714,17 @@ div.met_subclasses a.seemore {
 }
 #method_note {
     font-size: 9pt;
-    color: #777;
+    color: black;
     border-top: 1px solid #ddd;
     text-align: center;
     margin-top: 2em;
 }
 #total_count {
     font-size: 9pt;
-    color: #777;
+    color: black;
 }
 .searchlink {
-    background: #eed;
+    background: black;
     text-align: center;
     font-size: 9pt;
     padding: 0.25em;
@@ -741,5 +741,5 @@ div.met_subclasses a.seemore {
 }
 #total_count {
     font-size: 9pt;
-    color: #777;
+    color: black;
 }
