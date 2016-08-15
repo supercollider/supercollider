@@ -314,53 +314,53 @@ Synth.new(\RmOctaver) ;
 
 // midi mapping to some simple stuff using sinosc
 
-mapping sine-waves to MIDI input
+// mapping sine-waves to MIDI input
 
 (
 ~testNote = MIDIFunc.noteOn( { arg ...args;
-	if(args[1] == 60, {~cenaB.value; args.postln;});
-	if(args[1] == 61, {~cenaB.value; ~cenaC1.value; args.postln;});
-	if(args[1] == 62, {~cenaB.value; ~cenaC2.value; args.postln;});
-	if(args[1] == 63, {~cenaB.value; ~cenaC3.value; args.postln;});
-	if(args[1] == 64, {~cenaB.value; ~cenaC4.value; args.postln;});
-	if(args[1] == 65, {~cenaB.value; ~cenaC5.value; args.postln;});
-	if(args[1] == 66, {~cenaB.value; ~cenaC6.value; args.postln;});
-	if(args[1] == 67, {~cenaB.value; ~cenaC7.value; args.postln;});
-	if(args[1] == 68, {~cenaB.value; ~cenaC8.value; args.postln;});
-	if(args[1] == 69, {~cenaB.value; ~cenaC9.value; args.postln;});
+	if(args[1] == 60, {~midiSinB.value; args.postln;});
+	if(args[1] == 61, {~midiSinB.value; ~midiSinC1.value; args.postln;});
+	if(args[1] == 62, {~midiSinB.value; ~midiSinC2.value; args.postln;});
+	if(args[1] == 63, {~midiSinB.value; ~midiSinC3.value; args.postln;});
+	if(args[1] == 64, {~midiSinB.value; ~midiSinC4.value; args.postln;});
+	if(args[1] == 65, {~midiSinB.value; ~midiSinC5.value; args.postln;});
+	if(args[1] == 66, {~midiSinB.value; ~midiSinC6.value; args.postln;});
+	if(args[1] == 67, {~midiSinB.value; ~midiSinC7.value; args.postln;});
+	if(args[1] == 68, {~midiSinB.value; ~midiSinC8.value; args.postln;});
+	if(args[1] == 69, {~midiSinB.value; ~midiSinC9.value; args.postln;});
 }
 )
 )
 MIDIIn.connectAll;
 
-~cenaB={~cenaA1_2.free; ~cenaA2_2.free; ~cenaA3_2.free; ~cenaA4_2.free; ~cenaA5_2.free; ~cenaA6_2.free; ~cenaA7_2.free; ~cenaA8_2.free; ~cenaA9_2.free;}
+~midiSinB={~midiSinA1_2.free; ~midiSinA2_2.free; ~midiSinA3_2.free; ~midiSinA4_2.free; ~midiSinA5_2.free; ~midiSinA6_2.free; ~midiSinA7_2.free; ~midiSinA8_2.free; ~midiSinA9_2.free;}
 
-~cenaA1={~cenaA1_2={SinOsc.ar([30, 31])}.play;};
-~cenaC1={~cenaB.value;~cenaA1.value};
+~midiSinA1={~midiSinA1_2={SinOsc.ar([30, 31])}.play;};
+~midiSinC1={~midiSinB.value;~midiSinA1.value};
 
-~cenaA2={~cenaA2_2={SinOsc.ar([30, 31]*2)}.play;};
-~cenaC2={~cenaB.value;~cenaA2.value};
+~midiSinA2={~midiSinA2_2={SinOsc.ar([30, 31]*2)}.play;};
+~midiSinC2={~midiSinB.value;~midiSinA2.value};
 
-~cenaA3={~cenaA3_2={SinOsc.ar([30, 31]*3)}.play;};
-~cenaC3={~cenaB.value;~cenaA3.value};
+~midiSinA3={~midiSinA3_2={SinOsc.ar([30, 31]*3)}.play;};
+~midiSinC3={~midiSinB.value;~midiSinA3.value};
 
-~cenaA4={~cenaA4_2={SinOsc.ar([30, 31]*4)}.play;};
-~cenaC4={~cenaB.value;~cenaA4.value};
+~midiSinA4={~midiSinA4_2={SinOsc.ar([30, 31]*4)}.play;};
+~midiSinC4={~midiSinB.value;~midiSinA4.value};
 
-~cenaA5={~cenaA5_2={SinOsc.ar([30, 31]*5)}.play;};
-~cenaC5={~cenaB.value;~cenaA5.value};
+~midiSinA5={~midiSinA5_2={SinOsc.ar([30, 31]*5)}.play;};
+~midiSinC5={~midiSinB.value;~midiSinA5.value};
 
-~cenaA6={~cenaA6_2={SinOsc.ar([30, 31]*6)}.play;};
-~cenaC6={~cenaB.value;~cenaA6.value};
+~midiSinA6={~midiSinA6_2={SinOsc.ar([30, 31]*6)}.play;};
+~midiSinC6={~midiSinB.value;~midiSinA6.value};
 
-~cenaA7={~cenaA7_2={SinOsc.ar([30, 31]*7)}.play;};
-~cenaC7={~cenaB.value;~cenaA7.value};
+~midiSinA7={~midiSinA7_2={SinOsc.ar([30, 31]*7)}.play;};
+~midiSinC7={~midiSinB.value;~midiSinA7.value};
 
-~cenaA8={~cenaA8_2={SinOsc.ar([30, 31]*8)}.play;};
-~cenaC8={~cenaB.value;~cenaA8.value};
+~midiSinA8={~midiSinA8_2={SinOsc.ar([30, 31]*8)}.play;};
+~midiSinC8={~midiSinB.value;~midiSinA8.value};
 
-~cenaA9={~cenaA1_2={SinOsc.ar([30, 31]*9)}.play;};
-~cenaC9={~cenaB.value;~cenaA9.value};
+~midiSinA9={~midiSinA1_2={SinOsc.ar([30, 31]*9)}.play;};
+~midiSinC9={~midiSinB.value;~midiSinA9.value};
 
 ::
 
