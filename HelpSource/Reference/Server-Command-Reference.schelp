@@ -931,6 +931,15 @@ table::
 ## 4 || clear - if set then the buffer is cleared before new partials are written into it. Otherwise the new partials are summed with the existing contents of the buffer.
 ::
 
+These flags can be added together to create a unique single integer flag that describes the true/false combinations for these three options:
+
+table::
+## 3 || 1 + 2 || normalize + wavetable
+## 5 || 1 + 4 || normalize + clear
+## 6 || 2 + 4 || wavetable + clear
+## 7 || 1 + 2 + 4 || normalize + wavetable + clear
+::
+
 definitionlist::
 ## sine1 ||
 table::
