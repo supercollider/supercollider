@@ -83,6 +83,8 @@ s = Server.local;
 	a = Array.fill(n, { arg j; ((n-j)/n).squared.round(0.001) });
 	// fill table
 	s.performList(\sendMsg, \b_gen, i, \sine1, 7, a);
+	// the argument '7' here is a flag for the \sine1 wave fill method -
+	// see the "Wave Fill Commands" section in the Server Command Reference 
 });
 )
 
