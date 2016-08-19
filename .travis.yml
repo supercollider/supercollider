@@ -21,6 +21,7 @@ before_install:
  - ifmac brew outdated cmake || brew upgrade cmake
  - ifmac brew install qt55 libsndfile python || true
  - ifmac brew link qt55 --force
+ - iflin npm install -g lintspaces-cli
  - iflin sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
  - iflin sudo add-apt-repository --yes ppa:beineri/opt-qt551-trusty
  - iflin sudo apt-get update
@@ -45,8 +46,12 @@ before_script:
  - sudo pip install git+https://github.com/scztt/qpm.git@qpm-unit
  - qpm quark checkout CommonTests CommonTestsGUI --location $HOME/Quarks
  - cp ../travis_test_run_proto.json ./travis_test_run.json
+# for wildcard in linting command
+ - iflin shopt -s globstar
 
 script:
+# lint (linux only as osx-ci environment uses bash3 which does not support wildcard)
+ - iflin lintspaces -e $TRAVIS_BUILD_DIR/.editorconfig $TRAVIS_BUILD_DIR/SCClassLibrary/**/*.sc
 # build
  - iflin sudo make install
  - ifmac cmake --build . --config Release --target install
