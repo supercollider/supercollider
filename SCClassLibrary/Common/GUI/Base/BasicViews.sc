@@ -404,3 +404,75 @@ PopUpMenu : ItemViewBase {
 		this.valueAction = View.currentDrag;
 	}
 }
+
+WMenu : ItemViewBase {
+
+	*qtClass { ^'QcWMenu' }
+
+	allowsReselection { ^this.getProperty( \reactivationEnabled ) }
+
+	allowsReselection_ { arg flag; ^this.setProperty( \reactivationEnabled, flag ) }
+
+	value {
+		var v = this.getProperty( \currentIndex );
+		if( v.isNil or: { v < 0 }) { ^nil } { ^v };
+	}
+
+	value_ { arg val;
+		this.setProperty( \currentIndex, val ? -1 );
+	}
+
+	background { ^this.palette.button; }
+
+	background_ { arg color; this.palette = this.palette.button_(color); }
+
+	stringColor {
+		^this.palette.buttonText;
+	}
+
+	stringColor_ { arg color;
+		this.palette = this.palette.buttonText_(color);
+	}
+
+	defaultGetDrag { ^this.value; }
+	defaultCanReceiveDrag { ^View.currentDrag.isNumber; }
+	defaultReceiveDrag {
+		this.valueAction = View.currentDrag;
+	}
+}
+
+WMenuBar : ItemViewBase {
+
+	*qtClass { ^'QcWMenuBar' }
+
+	allowsReselection { ^this.getProperty( \reactivationEnabled ) }
+
+	allowsReselection_ { arg flag; ^this.setProperty( \reactivationEnabled, flag ) }
+
+	value {
+		var v = this.getProperty( \currentIndex );
+		if( v.isNil or: { v < 0 }) { ^nil } { ^v };
+	}
+
+	value_ { arg val;
+		this.setProperty( \currentIndex, val ? -1 );
+	}
+
+	background { ^this.palette.button; }
+
+	background_ { arg color; this.palette = this.palette.button_(color); }
+
+	stringColor {
+		^this.palette.buttonText;
+	}
+
+	stringColor_ { arg color;
+		this.palette = this.palette.buttonText_(color);
+	}
+
+	defaultGetDrag { ^this.value; }
+	defaultCanReceiveDrag { ^View.currentDrag.isNumber; }
+	defaultReceiveDrag {
+		this.valueAction = View.currentDrag;
+	}
+}

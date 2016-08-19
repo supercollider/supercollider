@@ -46,6 +46,8 @@ QSlider : Slider {}
 QSlider2D : Slider2D {}
 QSoundFileView : SoundFileView {}
 QPopUpMenu : PopUpMenu {}
+QWMenu : WMenu {}
+QWMenuBar : WMenuBar {}
 QCheckBox : CheckBox {}
 QFont : Font {}
 QTreeViewItem : TreeViewItem {}
