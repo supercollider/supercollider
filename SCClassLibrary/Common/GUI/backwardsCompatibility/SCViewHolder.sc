@@ -292,4 +292,3 @@ FlowView : SCViewHolder {
 	}
 	prClose { view.prClose }
 }
-

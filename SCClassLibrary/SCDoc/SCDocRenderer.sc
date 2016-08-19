@@ -823,4 +823,3 @@ SCDocHTMLRenderer {
         }
     }
 }
-

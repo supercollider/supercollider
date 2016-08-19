@@ -138,7 +138,7 @@ NodeProxy : BusPlug {
 
 
 		if(this.shouldAddObject(container, index)) {
-			 // server sync happens here if necessary
+			// server sync happens here if necessary
 			if(server.serverRunning) { container.loadToBundle(bundle, server) } { loaded = false; };
 			this.prepareOtherObjects(bundle, index, oldBus.notNil and: { oldBus !== bus });
 		} {

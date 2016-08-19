@@ -7,7 +7,7 @@ EventTypesWithCleanup {
 		// ~bufnum has a default of 0, so we use ~bufNum instead....
 
 			table: #{ | server |
-			 	var bufNum;
+				var bufNum;
 				if ( (bufNum = ~bufNum).notNil) {
 					~schedBundle.value(~lag, ~timingOffset, server, [\b_setn, bufNum.asUGenInput, 0, ~amps.size] ++ ~amps)
 				} {
@@ -23,7 +23,7 @@ EventTypesWithCleanup {
 			},
 
 			cheby: #{ | server |
-			 	var bufNum;
+				var bufNum;
 				if ( (bufNum = ~bufNum).notNil) {
 					~schedBundle.value(~lag, ~timingOffset, server, [\b_gen, bufNum.asUGenInput, \cheby, ~genflags ? 7] ++ ~amps)
 				} {
@@ -39,7 +39,7 @@ EventTypesWithCleanup {
 			},
 
 			sine1: #{ | server |
-			 	var bufNum;
+				var bufNum;
 				if ( (bufNum = ~bufNum).notNil) {
 					~schedBundle.value(~lag, ~timingOffset, server, [\b_gen, bufNum.asUGenInput, \sine1, ~genflags ? 7] ++ ~amps)
 				} {
@@ -55,8 +55,8 @@ EventTypesWithCleanup {
 			},
 
 			sine2: #{ | server |
-			 	var bufNum,
-			 		array = [~freqs, ~amps].lace(~freqs.size * 2);
+				var bufNum,
+					array = [~freqs, ~amps].lace(~freqs.size * 2);
 				if ( (bufNum = ~bufNum).notNil) {
 					~schedBundle.value(~lag, ~timingOffset, server, [\b_gen, bufNum.asUGenInput, \sine2, ~genflags ? 7] ++ array)
 				} {
@@ -72,8 +72,8 @@ EventTypesWithCleanup {
 			},
 
 			sine3: #{ | server |
-			 	var bufNum,
-			 		array = [~freqs, ~amps, ~phases].lace(~freqs.size * 3);
+				var bufNum,
+					array = [~freqs, ~amps, ~phases].lace(~freqs.size * 3);
 				if ( (bufNum = ~bufNum).notNil) {
 					~schedBundle.value(~lag, ~timingOffset, server, [\b_gen, bufNum.asUGenInput, \sine3, ~genflags ? 7] ++ array)
 				} {

@@ -454,7 +454,7 @@ EventStreamPlayer : PauseStream {
 	prStop {
 		stream = nextBeat = nil;
 		isWaiting = false;
-	 }
+	}
 
 	stop {
 		cleanup.terminate;

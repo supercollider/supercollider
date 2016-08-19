@@ -52,7 +52,7 @@
 			booter.canFocus = false;
 			booter.font = font;
 			booter.states = [["Boot"],
-						     ["Quit", nil, faintGreen]];
+				["Quit", nil, faintGreen]];
 
 			booter.action = { arg view;
 				if(view.value == 1, {
@@ -112,13 +112,13 @@
 				{char === $p}  { if(this.serverRunning) { this.plotTree } }
 				{char === $ }  { if(this.serverRunning.not) { this.boot } }
 				{char === $s } { if( (this.isLocal and: (GUI.id == \qt)) or: ( this.inProcess ))
-					                 {this.scope(options.numOutputBusChannels)}
-					                 {warn("Scope not supported")}
-				               }
+					{this.scope(options.numOutputBusChannels)}
+					{warn("Scope not supported")}
+				}
 				{char === $f } { if( (this.isLocal and: (GUI.id == \qt)) or: ( this.inProcess ))
-					                 {this.freqscope}
-					                 {warn("FreqScope not supported")}
-				               }
+					{this.freqscope}
+					{warn("FreqScope not supported")}
+				}
 				{char == $d } {
 					if(this.isLocal or: { this.inProcess }) {
 						if(dumping, stopDump, startDump)

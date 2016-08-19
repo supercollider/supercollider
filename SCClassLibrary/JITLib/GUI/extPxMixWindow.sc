@@ -74,5 +74,4 @@ n.shiftArBorder(-10);
 	shiftNameLeftBorder { |x = 0|
 		this.setNameLeftBorder(this.getNameLeftBorder + x);
 	}
-
 }
