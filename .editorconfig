@@ -21,10 +21,6 @@ indent_size = 4
 indent_style = tab
 indent_size = 4
 
-[SCClassLibrary/SCDoc/SCDocRenderer.sc]
-indent_style = space
-indent_size = 4
-
 [CMakeLists.txt]
 indent_style = tab
 indent_size = 4
