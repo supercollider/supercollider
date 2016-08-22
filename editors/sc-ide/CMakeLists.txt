@@ -345,11 +345,11 @@ if(APPLE)
 
     install(CODE "
            file(GLOB_RECURSE QTPLUGINS
-                  \"${plugin_dest_dir}/*.dylib\")
+                \"${plugin_dest_dir}/*.dylib\")
            file(GLOB_RECURSE SCPLUGINS
-                  \"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/plugins/*.scx\")
+                \"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/plugins/*.scx\")
                 include(BundleUtilities)
-                fixup_bundle(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\" \"\${QTPLUGINS};\${SCPLUGINS}\" \"${QT_LIBRARY_DIR}\")
+                fixup_bundle(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\" \"\${QTPLUGINS};\${SCPLUGINS};${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/scsynth\" \"${QT_LIBRARY_DIR}\")
                 #fixup_qt5_executable(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\")
                 " COMPONENT Runtime)
 
