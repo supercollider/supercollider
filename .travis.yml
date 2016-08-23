@@ -30,6 +30,7 @@ before_install:
  - iflin sudo update-alternatives --auto gcc
 
 before_script:
+ - iflin $TRAVIS_BUILD_DIR/.travis/lint.sh $TRAVIS_BUILD_DIR
  - iflin source /opt/qt55/bin/qt55-env.sh
  - mkdir BUILD
  - cd BUILD
@@ -46,12 +47,8 @@ before_script:
  - sudo pip install git+https://github.com/scztt/qpm.git@qpm-unit
  - qpm quark checkout CommonTests CommonTestsGUI --location $HOME/Quarks
  - cp ../travis_test_run_proto.json ./travis_test_run.json
-# for wildcard in linting command
- - iflin shopt -s globstar
 
 script:
-# lint (linux only as osx-ci environment uses bash3 which does not support wildcard)
- - iflin lintspaces -e $TRAVIS_BUILD_DIR/.editorconfig $TRAVIS_BUILD_DIR/SCClassLibrary/**/*.sc
 # build
  - iflin sudo make install
  - ifmac cmake --build . --config Release --target install
