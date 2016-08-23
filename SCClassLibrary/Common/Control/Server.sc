@@ -1,7 +1,7 @@
 ServerOptions {
 	// order of variables is important here. Only add new instance variables to the end.
-	var <numAudioBusChannels=128;
-	var <>numControlBusChannels=4096;
+	var <numAudioBusChannels=1024;
+	var <>numControlBusChannels=16384;
 	var <numInputBusChannels=2;
 	var <numOutputBusChannels=2;
 	var numBuffers=1026;
@@ -80,7 +80,7 @@ ServerOptions {
 
 		o = o ++ " -a " ++ (numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels) ;
 
-		if (numControlBusChannels != 4096, {
+		if (numControlBusChannels != 16384, {
 			o = o ++ " -c " ++ numControlBusChannels;
 		});
 		if (numInputBusChannels != 8, {
@@ -182,7 +182,7 @@ ServerOptions {
 		this.recalcChannels;
 	}
 
-	numAudioBusChannels_ {arg numChannels=128;
+	numAudioBusChannels_ {arg numChannels=1024;
 		numAudioBusChannels = numChannels;
 		numPrivateAudioBusChannels = numAudioBusChannels - numInputBusChannels - numOutputBusChannels;
 	}

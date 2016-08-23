@@ -37,6 +37,7 @@
 # include "SC_Win32Utils.h"
 # include <io.h>
 # include <windows.h>
+# include <ioapiset.h>
 #endif
 
 #ifdef __APPLE__
@@ -632,6 +633,11 @@ void SC_TerminalClient::startInput()
 void SC_TerminalClient::endInput()
 {
 	mInputService.stop();
+	mStdIn.cancel();
+#ifdef _WIN32
+	// Note this breaks Windows XP compatibility, since this function is only defined in Vista and later 
+	::CancelIoEx(GetStdHandle(STD_INPUT_HANDLE), nullptr);
+#endif
 	postfl("main: waiting for input thread to join...\n");
 	mInputThread.join();
 	postfl("main: quitting...\n");

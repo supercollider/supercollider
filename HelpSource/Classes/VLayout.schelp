@@ -4,7 +4,7 @@ categories:: GUI>Layout
 related:: Classes/HLayout, Classes/GridLayout, Classes/StackLayout, Guides/GUI-Layout-Management
 
 DESCRIPTION::
-See documentation of superclass link::Classes/QLineLayout:: for details.
+See documentation of superclass link::Classes/LineLayout:: for details.
 
 CLASSMETHODS::
 
