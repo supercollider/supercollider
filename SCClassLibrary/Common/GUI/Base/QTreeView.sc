@@ -84,6 +84,20 @@ TreeView : View {
 	background { ^this.palette.base; }
 	background_ { arg color; this.palette = this.palette.base_(color) }
 
+	// For compatibility with methods from TreeViewItem
+
+	addChild { arg strings;
+		^this.addItem(strings);
+	}
+
+	insertChild { arg index, strings;
+		^this.insertItem(index, strings);
+	}
+
+	childAt { arg index;
+		^this.itemAt(index);
+	}
+
 	/////////// PRIVATE:
 
 	prForEachColumnDataPair { arg data, func;
