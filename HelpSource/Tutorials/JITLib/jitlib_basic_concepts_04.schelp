@@ -8,10 +8,10 @@ whenever the put method is called (or, in ProxySpace, the assignment operation =
 Sometimes it is desirable to time these changes relative to a clock.
 
 list::
-## link::#a)_clock#a) clock::
-## link::#b)_quant_and_offset#b) quant and offset::
-## link::#c)_connecting_client_and_server_tempo#c) client and server tempo::
-## link::#d)_sample_accurate_output#d) sample accurate output::
+## link::#a) clock#a) clock::
+## link::#b) quant and offset#b) quant and offset::
+## link::#c) connecting client and server tempo#c) client and server tempo::
+## link::#d) sample accurate output#d) sample accurate output::
 ::
 
 section::a) clock
