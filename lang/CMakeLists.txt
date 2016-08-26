@@ -35,7 +35,7 @@ find_package(Readline 5.0)
 find_package(Sndfile)
 
 if (SC_QT OR SC_IDE)
-	set(LOCALSOCK_UTIL_FILE ${CMAKE_SOURCE_DIR}/editors/sc-ide/primitives/localsocket_utils.hpp)
+	set(LOCALSOCK_UTIL_FILE ${CMAKE_SOURCE_DIR}/editors/sc-ide/primitives/localsocket_utils.cpp)
 else ()
 	set(LOCALSOCK_UTIL_FILE)
 endif ()
