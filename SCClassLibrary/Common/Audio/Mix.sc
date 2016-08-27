@@ -78,19 +78,19 @@ NumChannels {
 	*ar { arg input, numChannels = 2, mixdown = true;
 
 		if(input.size > 1) { // collection
-		   ^input
-			.clump(roundUp(input.size / numChannels))
-			.collect { arg chan, i;
-				if(chan.size == 1) {
-					chan.at(0)
-				} {
-					if(mixdown) {
-						Mix.new(chan)
-					} {
+			^input
+				.clump(roundUp(input.size / numChannels))
+				.collect { arg chan, i;
+					if(chan.size == 1) {
 						chan.at(0)
+					} {
+						if(mixdown) {
+							Mix.new(chan)
+						} {
+							chan.at(0)
+						}
 					}
 				}
-			}
 		} {
 			// single ugen or single item collection
 			if(input.isSequenceableCollection) {

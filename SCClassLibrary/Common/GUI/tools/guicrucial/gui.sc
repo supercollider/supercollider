@@ -35,4 +35,3 @@
 		^FlowView(nil,bounds)
 	}
 }
-

@@ -467,7 +467,7 @@ Server {
 				var c; c = Condition.new;
 				while { syncTasks.notEmpty } { syncTasks.removeAt(0).value(c) };
 				syncThread = nil;
-		 	};
+			};
 		};
 
 	}

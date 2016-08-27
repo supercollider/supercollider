@@ -233,5 +233,4 @@ ServerStatusWatcher {
 			{ server.changed(\serverRunning) }.defer;
 		}
 	}
-
 }

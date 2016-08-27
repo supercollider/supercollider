@@ -246,7 +246,7 @@ Pnaryop : Pattern {
 	embedInStream { arg inval;
 		var streamA, streamlist, vala, values, isNumeric;
 		streamA = a.asStream;
-			 // optimization
+			// optimization
 		isNumeric = arglist.every { arg item;
 			item.isNumber or: {item.class === Symbol}
 		};
@@ -331,7 +331,7 @@ Pevent : Pattern {
 			outval = stream.next(event);
 			if (outval.isNil) { ^inval };
 			inval = outval.yield
-		 }
+		}
 	}
 }
 

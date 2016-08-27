@@ -40,7 +40,7 @@ SCWindow {
 			{view.decorator_( FlowLayout( view.bounds.moveTo(0,0), margin, gap ) )}
 			{view.decorator_( FlowLayout( view.bounds, margin, gap ) )};
 		^this.view.decorator;
-		 }
+	}
 
 	*closeAll {
 		var list;

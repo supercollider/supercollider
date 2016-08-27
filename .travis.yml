@@ -21,6 +21,7 @@ before_install:
  - ifmac brew outdated cmake || brew upgrade cmake
  - ifmac brew install qt55 libsndfile python || true
  - ifmac brew link qt55 --force
+ - iflin npm install -g lintspaces-cli
  - iflin sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
  - iflin sudo add-apt-repository --yes ppa:beineri/opt-qt551-trusty
  - iflin sudo apt-get update
@@ -29,6 +30,7 @@ before_install:
  - iflin sudo update-alternatives --auto gcc
 
 before_script:
+ - iflin $TRAVIS_BUILD_DIR/.travis/lint.sh $TRAVIS_BUILD_DIR
  - iflin source /opt/qt55/bin/qt55-env.sh
  - mkdir BUILD
  - cd BUILD

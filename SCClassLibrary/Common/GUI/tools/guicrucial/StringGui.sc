@@ -37,4 +37,3 @@ StringGui : ObjectGui {
 		});
 	}
 }
-
