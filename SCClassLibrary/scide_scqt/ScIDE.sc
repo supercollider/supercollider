@@ -474,7 +474,11 @@ Document {
 		isEdited = isEdited.booleanValue;
 		chars = String.fill(chars.size, {|i| chars[i].asAscii});
 		title = String.fill(title.size, {|i| title[i].asAscii});
-		path = String.fill(path.size, {|i| path[i].asAscii});
+		if(path.isArray) {
+			path = String.fill(path.size, {|i| path[i].asAscii});
+		} {
+			path = nil;
+		};
 		if((doc = this.findByQUuid(quuid)).isNil, {
 			doc = super.new.initFromIDE(quuid, title, chars, isEdited, path, selStart, selSize);
 			allDocuments = allDocuments.add(doc);
