@@ -68,3 +68,12 @@ Go back.
 method:: goForward
 Go forward.
 
+method:: zoomIn
+Zoom In.
+
+method:: zoomOut
+Zoom Out.
+
+method:: resetZoom
+Reset zoom.
+

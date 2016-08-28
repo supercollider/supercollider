@@ -48,6 +48,9 @@ public:
   Q_INVOKABLE void setHtml ( const QString &html, const QString &baseUrl = QString() );
   Q_INVOKABLE void evaluateJavaScript ( const QString &script );
   Q_INVOKABLE void setFontFamily( int genericFontFamily, const QString & fontFamily );
+  Q_INVOKABLE void zoomIn();
+  Q_INVOKABLE void zoomOut();
+  Q_INVOKABLE void resetZoom();
 
 public Q_SLOTS:
   void findText( const QString &searchText, bool reversed = false );
