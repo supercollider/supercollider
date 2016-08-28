@@ -28,7 +28,7 @@
 #include "../widgets/code_editor/highlighter.hpp"
 #include "../widgets/style/style.hpp"
 #include "../../../QtCollider/hacks/hacks_mac.hpp"
-#include "localsocket_utils.hpp"
+#include "../primitives/localsocket_utils.hpp"
 
 #include "yaml-cpp/node.h"
 #include "yaml-cpp/parser.h"

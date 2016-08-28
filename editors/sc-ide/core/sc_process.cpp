@@ -33,7 +33,7 @@
 #include "sc_server.hpp"
 #include "settings/manager.hpp"
 #include "util/standard_dirs.hpp"
-#include "localsocket_utils.hpp"
+#include "../primitives/localsocket_utils.hpp"
 
 #include "../widgets/help_browser.hpp"
 
