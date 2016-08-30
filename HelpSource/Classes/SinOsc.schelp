@@ -11,6 +11,9 @@ Uses a wavetable lookup oscillator with linear interpolation.
 Frequency and phase modulation are provided for audio-rate modulation.
 Technically, code::SinOsc:: uses the same implementation as  link::Classes/Osc::  except that its table is fixed to be a sine wave made of code::8192:: samples.
 
+If you want to know more about wavetable synthesis, please check:
+"https://en.wikipedia.org/wiki/Wavetable_synthesis"
+
 subsection:: Other sinewaves oscillators
 
 LIST::
@@ -46,18 +49,29 @@ Examples::
 
 code::
 
-// create an audio-rate sine wave at 200 Hz,
-// starting with phase 0 and an amplitude of 0.5
-{ SinOsc.ar(200, 0, 0.5) }.play;
+// create a mono sine wave with a frequency of 200 hz and 0.5 of amplitude
+~exampleSound1 = { SinOsc.ar(200, 0, 0.5) };
 
-// modulate the frequency with an exponential ramp
-{ SinOsc.ar(XLine.kr(2000, 200), 0, 0.5) }.play;
+// modulate freq
+~exampleSound2 = { SinOsc.ar(XLine.kr(2000, 200), 0, 0.5) };
 
-// more complex frequency modulatation
-{ SinOsc.ar(SinOsc.ar(XLine.kr(1, 1000, 9), 0, 200, 800), 0, 0.25) }.play;
+// modulate freq
+~exampleSound3 = { SinOsc.ar(SinOsc.ar(XLine.kr(1, 1000, 9), 0, 200, 800), 0, 0.25) };
 
-// phase modulation (see also PMOsc)
-{ SinOsc.ar(800, SinOsc.ar(XLine.kr(1, 1000, 9), 0, 2pi), 0.25) }.play;
+// modulate phase
+~exampleSound4 = { SinOsc.ar(800, SinOsc.ar(XLine.kr(1, 1000, 9), 0, 2pi), 0.25) };
+
+// play each one of the sounds separately
+
+~exampleSound1.play
+~exampleSound2.play
+~exampleSound3.play
+~exampleSound4.play
+
+// a good tip -> changing sounds stochastically
+
+[~exampleSound1, ~exampleSound2, ~exampleSound3, ~exampleSound4].choose.play
+
 
 ::
 
