@@ -31,10 +31,19 @@
 FILE *
 sc_popen(const char *command, pid_t *pidp, const char *type)
 {
+	char *argv[4];
+	argv[0] = (char *)"sh";
+	argv[1] = (char *)"-c";
+	argv[2] = (char *)command;
+	argv[3] = NULL;
+	return sc_popen_argv((char *)"/bin/sh", argv, pidp, type);
+}
+
+FILE *
+sc_popen_argv(const char *filename, char *const argv[], pid_t *pidp, const char *type)
+{
 	FILE *iop;
 	int pdes[2], pid, twoway;
-	char *argv[4];
-
 	/*
 	 * Lite2 introduced two-way popen() pipes using _socketpair().
 	 * FreeBSD's pipe() is bidirectional, so we use that.
@@ -49,11 +58,6 @@ sc_popen(const char *command, pid_t *pidp, const char *type)
 	}
 	if (pipe(pdes) < 0)
 		return (NULL);
-
-	argv[0] = (char *)"sh";
-	argv[1] = (char *)"-c";
-	argv[2] = (char *)command;
-	argv[3] = NULL;
 
 	switch (pid = fork()) {
 	case -1:			/* Error. */
@@ -87,7 +91,7 @@ sc_popen(const char *command, pid_t *pidp, const char *type)
 			(void)close(pdes[1]);
 		}
 
-		execve("/bin/sh", argv, environ);
+		execve(filename, argv, environ);
 		exit(127);
 		/* NOTREACHED */
 	}

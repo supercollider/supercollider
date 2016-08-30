@@ -29,6 +29,19 @@ Primitives for Arrays.
 #include "SC_InlineBinaryOp.h"
 #include "SC_Constants.h"
 #include <string.h>
+#include "sc_popen.h"
+#include "PyrSched.h"
+#include "SCBase.h"
+#include <boost/filesystem.hpp>
+
+using namespace std;
+using namespace boost::filesystem;
+
+struct sc_process {
+	pid_t pid;
+	FILE *stream;
+	bool postOutput;
+};
 
 int basicSize(VMGlobals *g, int numArgsPushed);
 int basicMaxSize(VMGlobals *g, int numArgsPushed);
@@ -67,6 +80,7 @@ int prArrayContainsSeqColl(VMGlobals *g, int numArgsPushed);
 int prArrayWIndex(VMGlobals *g, int numArgsPushed);
 int prArrayNormalizeSum(VMGlobals *g, int numArgsPushed);
 int prArrayIndexOfGreaterThan(VMGlobals *g, int numArgsPushed);
+int prArrayUnixCmd(VMGlobals *g, int numArgsPushed);
 
 
 int basicSize(struct VMGlobals *g, int numArgsPushed)
@@ -2369,12 +2383,142 @@ int prArrayUnlace(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+extern bool compiledOK;
+PyrSymbol* symb_unixCmdAction;
+
+static void string_popen_thread_func(struct sc_process *process)
+{
+	FILE *stream = process->stream;
+	pid_t pid = process->pid;
+	char buf[1024];
+
+	while (process->postOutput) {
+		char *string = fgets(buf, 1024, stream);
+		if (!string) break;
+		postText(string, strlen(string));
+	}
+
+	int res;
+	res = sc_pclose(stream, pid);
+	res = WEXITSTATUS(res);
+
+	if(process->postOutput)
+		postfl("RESULT = %d\n", res);
+
+	free(process);
+
+	gLangMutex.lock();
+	if(compiledOK) {
+		VMGlobals *g = gMainVMGlobals;
+		g->canCallOS = true;
+		++g->sp;  SetObject(g->sp, class_string);
+		++g->sp; SetInt(g->sp, res);
+		++g->sp; SetInt(g->sp, pid);
+		runInterpreter(g, symb_unixCmdAction, 3);
+		g->canCallOS = false;
+	}
+	gLangMutex.unlock();
+}
+
+int prArrayPOpen(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrObject *obj;
+	struct sc_process *process;
+	int err;
+
+	PyrSlot *a = g->sp - 1;
+	PyrSlot *b = g->sp;
+	
+	if (NotObj(a)) return errWrongType;
+
+	obj = slotRawObject(a);
+	if (!(slotRawInt(&obj->classptr->classFlags) & classHasIndexableInstances))
+		return errNotAnIndexableObject;
+		
+	if( obj->size < 1)
+		return errFailed;
+		
+	PyrSlot filenameSlot;
+		
+	getIndexedSlot(obj, &filenameSlot, 0);
+	if (!isKindOfSlot(&filenameSlot, class_string)) return errWrongType;
+	char *filename = (char*)malloc(slotRawObject(&filenameSlot)->size + 1);
+	err = slotStrVal(&filenameSlot, filename, slotRawObject(&filenameSlot)->size + 1);
+	if(err) {
+		free(filename);
+		return errFailed;
+	} 	
+	
+	char *argv[obj->size + 1];
+	
+	//execve expects first argument is command name
+	path p;
+	p /= filename;
+	const char *f = p.filename().string().c_str();
+	char *command = (char*)malloc(strlen(f));
+	strcpy(command, f );
+	argv[0] = command;
+	argv[obj->size] = NULL;
+		
+	if(obj->size > 1) {
+		for (int i=1; i<obj->size; ++i) {
+			PyrSlot argSlot;
+			getIndexedSlot(obj, &argSlot, i);
+			if (!isKindOfSlot(&argSlot, class_string)) return errWrongType;
+			char *arg = (char*)malloc(slotRawObject(&argSlot)->size + 1);
+			err = slotStrVal(&argSlot, arg, slotRawObject(&argSlot)->size + 1);
+			if(err) {
+				free(filename);
+				free(command);
+				free(arg);
+				if(i>1){
+					for (int j=1; j < (i-1); ++j) {
+						free(argv[j]);
+					}
+				}
+				return errFailed;
+			}
+			argv[i] = arg;
+		}
+	}
+
+#ifdef SC_IPHONE
+	SetInt(a, 0);
+	return errNone;
+#endif
+
+	process = (struct sc_process *)malloc(sizeof(struct sc_process));
+	process->stream = sc_popen_argv(filename, argv, &process->pid, "r");
+	setvbuf(process->stream, 0, _IONBF, 0);
+
+	process->postOutput = IsTrue(b);
+
+	free(filename);
+	for (int i=0; i<obj->size; ++i) {
+		free(argv[i]);
+	}
+
+	if(process->stream == NULL) {
+		free(process);
+		return errFailed;
+	}
+
+	thread thread(std::bind(string_popen_thread_func, process));
+	thread.detach();
+
+	SetInt(a, process->pid);
+	return errNone;
+	
+}
+
 void initArrayPrimitives()
 {
 	int base, index;
 
 	base = nextPrimitiveIndex();
 	index = 0;
+	
+	symb_unixCmdAction = getsym("doUnixCmdAction");
 
 	definePrimitive(base, index++, "_BasicSize", basicSize, 1, 0);
 	definePrimitive(base, index++, "_BasicMaxSize", basicMaxSize, 1, 0);
@@ -2428,6 +2572,7 @@ void initArrayPrimitives()
 	definePrimitive(base, index++, "_ArrayEnvAt", prArrayEnvAt, 2, 0);
 	definePrimitive(base, index++, "_ArrayIndexOfGreaterThan", prArrayIndexOfGreaterThan, 2, 0);
 	definePrimitive(base, index++, "_ArrayUnlace", prArrayUnlace, 3, 0);
+	definePrimitive(base, index++, "_ArrayPOpen", prArrayPOpen, 2, 0);
 
 }
 
