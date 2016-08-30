@@ -199,6 +199,7 @@ class SC_UdpInPort
 {
 	struct World * mWorld;
 	int mPortNum;
+    std::string mbindTo;
 	boost::array<char, kTextBufSize> recvBuffer;
 
 	boost::asio::ip::udp::endpoint remoteEndpoint;
@@ -249,14 +250,14 @@ class SC_UdpInPort
 public:
 	boost::asio::ip::udp::socket udpSocket;
 
-	SC_UdpInPort(struct World * world, int inPortNum):
-		mWorld(world), mPortNum(inPortNum), udpSocket(ioService)
+	SC_UdpInPort(struct World * world, std::string bindTo, int inPortNum):
+		mWorld(world), mPortNum(inPortNum), mbindTo(bindTo), udpSocket(ioService)
 	{
 		using namespace boost::asio;
 		BOOST_AUTO(protocol, ip::udp::v4());
 		udpSocket.open(protocol);
 
-		udpSocket.bind(ip::udp::endpoint(protocol, inPortNum));
+		udpSocket.bind(ip::udp::endpoint(boost::asio::ip::address::from_string(bindTo), inPortNum));
 
 		boost::asio::socket_base::send_buffer_size option(65536);
 		udpSocket.set_option(option);
@@ -400,9 +401,9 @@ class SC_TcpInPort
 	friend class SC_TcpConnection;
 
 public:
-	SC_TcpInPort(struct World * world, int inPortNum, int inMaxConnections, int inBacklog):
+	SC_TcpInPort(struct World * world, std::string bindTo, int inPortNum, int inMaxConnections, int inBacklog):
 		mWorld(world),
-		acceptor(ioService, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), inPortNum)),
+        acceptor(ioService, boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(bindTo), inPortNum)),
 		mAvailableConnections(inMaxConnections)
 	{
 		// FIXME: backlog???
@@ -512,10 +513,10 @@ SCSYNTH_DLLEXPORT_C bool World_SendPacket(World *inWorld, int inSize, char *inDa
 	return World_SendPacketWithContext(inWorld, inSize, inData, inFunc, 0);
 }
 
-SCSYNTH_DLLEXPORT_C int World_OpenUDP(struct World *inWorld, int inPort)
+SCSYNTH_DLLEXPORT_C int World_OpenUDP(struct World *inWorld, const char *bindTo, int inPort)
 {
 	try {
-		new SC_UdpInPort(inWorld, inPort);
+		new SC_UdpInPort(inWorld, bindTo, inPort);
 		return true;
 	} catch (std::exception& exc) {
 		scprintf("Exception in World_OpenUDP: %s\n", exc.what());
@@ -524,10 +525,10 @@ SCSYNTH_DLLEXPORT_C int World_OpenUDP(struct World *inWorld, int inPort)
 	return false;
 }
 
-SCSYNTH_DLLEXPORT_C int World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog)
+SCSYNTH_DLLEXPORT_C int World_OpenTCP(struct World *inWorld, const char *bindTo, int inPort, int inMaxConnections, int inBacklog)
 {
 	try {
-		new SC_TcpInPort(inWorld, inPort, inMaxConnections, inBacklog);
+		new SC_TcpInPort(inWorld, bindTo, inPort, inMaxConnections, inBacklog);
 		return true;
 	} catch (std::exception& exc) {
 		scprintf("Exception in World_OpenTCP: %s\n", exc.what());
