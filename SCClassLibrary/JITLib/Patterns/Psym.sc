@@ -105,28 +105,39 @@ Psym1 : Psym {
 
 	embedInStream { arg inval;
 
-		var which, outval, pat, currentStream;
+		var which, outval, last;
 		var str = pattern.asStream;
 		var streams = IdentityDictionary.new;
 		var cleanup = EventStreamCleanup.new;
+
+		var embedKeyInStream = { |key, parallel = false|
+			var currentStream = streams.at(key);
+			var outval;
+			if(currentStream.isNil) {
+				currentStream = this.lookUp(key).asStream;
+				streams.put(key, currentStream);
+			};
+			outval = currentStream.next(inval);
+			if(outval.isNil) { ^cleanup.exit(inval) };
+			if(parallel) { outval.put(\delta, 0) };
+			cleanup.update(outval);
+			inval = outval.yield
+		};
 
 		while {
 			which = str.next(inval);
 			which.notNil
 		} {
-			pat = this.getPattern(which);
-			currentStream = streams.at(pat);
-			if(currentStream.isNil) {
-				currentStream = pat.asStream;
-				streams.put(pat, currentStream);
-			};
-			outval = currentStream.next(inval);
-			if(outval.isNil) { ^cleanup.exit(inval) };
-
-			cleanup.update(outval);
-			inval = outval.yield
+			if(which.isSequenceableCollection) {
+				last = which.lastIndex;
+				which.do { |key, i| embedKeyInStream.value(key, i < last) }
+			} {
+				embedKeyInStream.value(which)
+			}
 		};
 
 		^cleanup.exit(inval);
 	}
+
+
 }
