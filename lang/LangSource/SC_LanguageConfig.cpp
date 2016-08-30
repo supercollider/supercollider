@@ -163,41 +163,35 @@ bool SC_LanguageConfig::readLibraryConfigYAML(const char* fileName, bool standal
 	freeLibraryConfig();
 	gLanguageConfig = new SC_LanguageConfig(standalone);
 
+	std::string emptyString;
+
 	using namespace YAML;
 	try {
 		std::ifstream fin(fileName);
-		Parser parser(fin);
-
-		Node doc;
-		while(parser.GetNextDocument(doc)) {
-			const Node * includePaths = doc.FindValue("includePaths");
-			if (includePaths && includePaths->Type() == NodeType::Sequence) {
-				for (Iterator it = includePaths->begin(); it != includePaths->end(); ++it) {
-					Node const & pathNode = *it;
-					if (pathNode.Type() != NodeType::Scalar)
-						continue;
-					string path;
-					pathNode.GetScalar(path);
-					gLanguageConfig->addIncludedDirectory(path.c_str());
+		Node doc = YAML::Load( fin );
+		if (doc) {
+			const Node & includePaths = doc[ "includePaths" ];
+			if (includePaths && includePaths.Type() == NodeType::Sequence) {
+				for (auto const & pathNode : includePaths ) {
+					string path = pathNode.as<string>( emptyString );
+					if( !path.empty() )
+						gLanguageConfig->addIncludedDirectory( path.c_str() );
 				}
 			}
 
-			const Node * excludePaths = doc.FindValue("excludePaths");
-			if (excludePaths && excludePaths->Type() == NodeType::Sequence) {
-				for (Iterator it = excludePaths->begin(); it != excludePaths->end(); ++it) {
-					Node const & pathNode = *it;
-					if (pathNode.Type() != NodeType::Scalar)
-						continue;
-					string path;
-					pathNode.GetScalar(path);
-					gLanguageConfig->addExcludedDirectory(path.c_str());
+			const Node & excludePaths = doc[ "excludePaths" ];
+			if (excludePaths && excludePaths.Type() == NodeType::Sequence) {
+				for (auto const & pathNode : excludePaths ) {
+					string path = pathNode.as<string>( emptyString );
+					if( !path.empty() )
+						gLanguageConfig->addExcludedDirectory( path.c_str() );
 				}
 			}
 
-			const Node * inlineWarnings = doc.FindValue("postInlineWarnings");
+			const Node & inlineWarnings = doc[ "postInlineWarnings" ];
 			if (inlineWarnings) {
 				try {
-					gPostInlineWarnings = inlineWarnings->to<bool>();
+					gPostInlineWarnings = inlineWarnings.as<bool>();
 				} catch(...) {
 					postfl("Warning: Cannot parse config file entry \"postInlineWarnings\"\n");
 				}

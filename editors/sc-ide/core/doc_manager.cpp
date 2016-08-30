@@ -34,8 +34,7 @@
 #include <QTextBlock>
 #include <QApplication>
 
-#include <yaml-cpp/node.h>
-#include <yaml-cpp/parser.h>
+#include <yaml-cpp/yaml.h>
 
 using namespace ScIDE;
 
@@ -744,398 +743,280 @@ void DocumentManager::handleDocListScRequest()
 
 void DocumentManager::handleNewDocScRequest( const QString & data )
 {
-    QByteArray utf8_bytes = data.toUtf8();
-    std::stringstream stream(utf8_bytes.constData());
-    YAML::Parser parser(stream);
+    try {
+        YAML::Node doc = YAML::Load( data.toStdString() );
+        if ( doc ) {
+            if (doc.Type() != YAML::NodeType::Sequence)
+                return;
 
-    YAML::Node doc;
-    if (parser.GetNextDocument(doc)) {
-        if (doc.Type() != YAML::NodeType::Sequence)
-            return;
+            std::string title = doc[0].as<std::string>();
+            std::string text  = doc[1].as<std::string>();
+            std::string id    = doc[2].as<std::string>();
 
-        std::string title;
-        bool success = doc[0].Read(title);
-        if (!success)
-            return;
-
-        std::string text;
-        success = doc[1].Read(text);
-        if (!success)
-            return;
-
-        std::string id;
-        success = doc[2].Read(id);
-        if (!success)
-            return;
-
-        Document *document = createDocument( false, id.c_str(),
-                                             QString::fromUtf8(title.c_str()),
-                                             QString::fromUtf8(text.c_str()) );
-        syncLangDocument(document);
-        Q_EMIT( opened(document, 0, 0) );
+            Document *document = createDocument( false, id.c_str(),
+                                                 QString::fromUtf8(title.c_str()),
+                                                 QString::fromUtf8(text.c_str()) );
+            syncLangDocument(document);
+            Q_EMIT( opened(document, 0, 0) );
+        }
+    } catch(...) {
+        return;
     }
 }
 
 void DocumentManager::handleOpenFileScRequest( const QString & data )
 {
-    std::stringstream stream;
-    stream << data.toStdString();
-    YAML::Parser parser(stream);
-    
-    YAML::Node doc;
-    if (parser.GetNextDocument(doc)) {
-        if (doc.Type() != YAML::NodeType::Sequence)
-            return;
-        
-        std::string path;
-        bool success = doc[0].Read(path);
-        if (!success)
-            return;
-        
-        int position = 0;
-        success = doc[1].Read(position);
-        if (!success)
-            return;
-        
-        int selectionLength = 0;
-        success = doc[2].Read(selectionLength);
-        if (!success)
-            return;
-        
-        std::string id;
-        success = doc[3].Read(id);
-        if (!success)
-            return;
-        
-        // we don't need to sync with lang in this case
-        open(QString(path.c_str()), position, selectionLength, true, id.c_str(), false);
+    try {
+        YAML::Node doc = YAML::Load( data.toStdString() );
+        if ( doc ) {
+            if (doc.Type() != YAML::NodeType::Sequence)
+                return;
+
+            std::string path    = doc[0].as<std::string>();
+            int position        = doc[1].as<int>();
+            int selectionLength = doc[2].as<int>();
+            std::string id      = doc[3].as<std::string>();
+
+            // we don't need to sync with lang in this case
+            open(QString(path.c_str()), position, selectionLength, true, id.c_str(), false);
+        }
+    } catch(...) {
+        return;
     }
 }
 
 void DocumentManager::handleGetDocTextScRequest( const QString & data )
 {
-    std::stringstream stream;
-    stream << data.toStdString();
-    YAML::Parser parser(stream);
+    try {
+        YAML::Node doc = YAML::Load( data.toStdString() );
+        if ( doc ) {
+            if (doc.Type() != YAML::NodeType::Sequence)
+                return;
 
-    YAML::Node doc;
-    if (parser.GetNextDocument(doc)) {
-        if (doc.Type() != YAML::NodeType::Sequence)
-            return;
+            std::string id     = doc[0].as<std::string>();
+            std::string funcID = doc[1].as<std::string>();
+            int start          = doc[2].as<int>();
+            int range          = doc[3].as<int>();
 
-        std::string id;
-        bool success = doc[0].Read(id);
-        if (!success)
-            return;
+            Document *document = documentForId(id.c_str());
+            if(document){
+                QString docText = document->textAsSCArrayOfCharCodes(start, range);
 
-        std::string funcID;
-        success = doc[1].Read(funcID);
-        if (!success)
-            return;
-
-        int start;
-        success = doc[2].Read(start);
-        if (!success)
-            return;
-
-        int range;
-        success = doc[3].Read(range);
-        if (!success)
-            return;
-
-        Document *document = documentForId(id.c_str());
-        if(document){
-            QString docText = document->textAsSCArrayOfCharCodes(start, range);
-
-            QString command = QStringLiteral("Document.executeAsyncResponse(\'%1\', %2.asAscii)").arg(funcID.c_str(), docText);
-            Main::evaluateCode ( command, true );
+                QString command = QStringLiteral("Document.executeAsyncResponse(\'%1\', %2.asAscii)").arg(funcID.c_str(), docText);
+                Main::evaluateCode ( command, true );
+            }
         }
-
+    } catch(...) {
+        return;
     }
 }
 
 void DocumentManager::handleSetDocTextScRequest( const QString & data )
 {
-    QByteArray utf8_bytes = data.toUtf8();
-    std::stringstream stream(utf8_bytes.constData());
-    YAML::Parser parser(stream);
+    try {
+        YAML::Node doc = YAML::Load( data.toStdString() );
+        if ( doc ) {
+            if (doc.Type() != YAML::NodeType::Sequence)
+                return;
 
-    YAML::Node doc;
-    if (parser.GetNextDocument(doc)) {
-        if (doc.Type() != YAML::NodeType::Sequence)
-            return;
+            std::string id     = doc[0].as<std::string>();
+            std::string funcID = doc[1].as<std::string>();
+            std::string text   = doc[2].as<std::string>();
+            int start          = doc[3].as<int>();
+            int range          = doc[4].as<int>();
 
-        std::string id;
-        bool success = doc[0].Read(id);
-        if (!success)
-            return;
+            Document *document = documentForId(id.c_str());
+            if(document){
+                // avoid a loop
+                if(document == mCurrentDocument){
+                    disconnect(document->textDocument(), SIGNAL(contentsChange(int, int, int)), this, SLOT(updateCurrentDocContents(int, int, int)));
+                }
 
-        std::string funcID;
-        success = doc[1].Read(funcID);
-        if (!success)
-            return;
+                document->setTextInRange(QString::fromUtf8(text.c_str()), start, range);
 
-        std::string text;
-        success = doc[2].Read(text);
-        if (!success)
-            return;
+                if(document == mCurrentDocument){
+                    connect(document->textDocument(), SIGNAL(contentsChange(int, int, int)), this, SLOT(updateCurrentDocContents(int, int, int)));
+                }
 
-        int start;
-        success = doc[3].Read(start);
-        if (!success)
-            return;
-
-        int range;
-        success = doc[4].Read(range);
-        if (!success)
-            return;
-
-        Document *document = documentForId(id.c_str());
-        if(document){
-            // avoid a loop
-            if(document == mCurrentDocument){
-                disconnect(document->textDocument(), SIGNAL(contentsChange(int, int, int)), this, SLOT(updateCurrentDocContents(int, int, int)));
+                QString command = QStringLiteral("Document.executeAsyncResponse(\'%1\')").arg(funcID.c_str());
+                Main::evaluateCode ( command, true );
             }
-            
-            document->setTextInRange(QString::fromUtf8(text.c_str()), start, range);
-            
-            if(document == mCurrentDocument){
-                connect(document->textDocument(), SIGNAL(contentsChange(int, int, int)), this, SLOT(updateCurrentDocContents(int, int, int)));
-            }
-            
-            QString command = QStringLiteral("Document.executeAsyncResponse(\'%1\')").arg(funcID.c_str());
-            Main::evaluateCode ( command, true );
         }
-
+    } catch(...) {
+        return;
     }
 }
 
 void DocumentManager::handleSetDocSelectionScRequest( const QString & data )
 {
-    QByteArray utf8_bytes = data.toUtf8();
-    std::stringstream stream(utf8_bytes.constData());
-    YAML::Parser parser(stream);
-    
-    YAML::Node doc;
-    if (parser.GetNextDocument(doc)) {
-        if (doc.Type() != YAML::NodeType::Sequence)
-            return;
-        
-        std::string id;
-        bool success = doc[0].Read(id);
-        if (!success)
-            return;
-        
-        int start;
-        success = doc[1].Read(start);
-        if (!success)
-            return;
-        
-        int range;
-        success = doc[2].Read(range);
-        if (!success)
-            return;
-        
-        Document *document = documentForId(id.c_str());
-        if(document){
-            if(document->lastActiveEditor()){
-                document->lastActiveEditor()->showPosition(start, range);
+    try {
+        YAML::Node doc = YAML::Load( data.toStdString() );
+        if ( doc ) {
+            if (doc.Type() != YAML::NodeType::Sequence)
+                return;
+
+            std::string id     = doc[0].as<std::string>();
+            int start          = doc[1].as<int>();
+            int range          = doc[2].as<int>();
+
+            Document *document = documentForId(id.c_str());
+            if(document){
+                if(document->lastActiveEditor()){
+                    document->lastActiveEditor()->showPosition(start, range);
+                }
             }
         }
+    } catch(...) {
+        return;
     }
 }
 
 void DocumentManager::handleSetDocEditableScRequest( const QString & data )
 {
-    QByteArray utf8_bytes = data.toUtf8();
-    std::stringstream stream(utf8_bytes.constData());
-    YAML::Parser parser(stream);
-    
-    YAML::Node doc;
-    if (parser.GetNextDocument(doc)) {
-        if (doc.Type() != YAML::NodeType::Sequence)
-            return;
-        
-        std::string id;
-        bool success = doc[0].Read(id);
-        if (!success)
-            return;
-        
-        bool editable;
-        success = doc[1].Read(editable);
-        if (!success)
-            return;
-        
-        Document *document = documentForId(id.c_str());
-        if(document){
-            document->setEditable(editable);
-            if(document->lastActiveEditor()){
-                document->lastActiveEditor()->setReadOnly(!editable);
+    try {
+        YAML::Node doc = YAML::Load( data.toStdString() );
+        if ( doc ) {
+            if (doc.Type() != YAML::NodeType::Sequence)
+                return;
+
+            std::string id     = doc[0].as<std::string>();
+            bool editable      = doc[1].as<bool>();
+
+            Document *document = documentForId(id.c_str());
+            if(document){
+                document->setEditable(editable);
+                if(document->lastActiveEditor()){
+                    document->lastActiveEditor()->setReadOnly(!editable);
+                }
             }
         }
+    } catch(...) {
+        return;
     }
 }
 
 void DocumentManager::handleSetDocPromptsToSaveScRequest( const QString & data )
 {
-    QByteArray utf8_bytes = data.toUtf8();
-    std::stringstream stream(utf8_bytes.constData());
-    YAML::Parser parser(stream);
-    
-    YAML::Node doc;
-    if (parser.GetNextDocument(doc)) {
-        if (doc.Type() != YAML::NodeType::Sequence)
-            return;
-        
-        std::string id;
-        bool success = doc[0].Read(id);
-        if (!success)
-            return;
-        
-        bool promptsToSave;
-        success = doc[1].Read(promptsToSave);
-        if (!success)
-            return;
-        
-        Document *document = documentForId(id.c_str());
-        if(document){
-            document->setPromptsToSave(promptsToSave);
+    try {
+        YAML::Node doc = YAML::Load( data.toStdString() );
+        if ( doc ) {
+            if (doc.Type() != YAML::NodeType::Sequence)
+                return;
+
+            std::string id     = doc[0].as<std::string>();
+            bool promptsToSave = doc[1].as<bool>();
+
+            Document *document = documentForId(id.c_str());
+            if(document){
+                document->setPromptsToSave(promptsToSave);
+            }
         }
+    } catch(...) {
+        return;
     }
 }
 
 void DocumentManager::handleSetCurrentDocScRequest( const QString & data )
 {
-    std::stringstream stream;
-    stream << data.toStdString();
-    YAML::Parser parser(stream);
+    try {
+        YAML::Node doc = YAML::Load( data.toStdString() );
+        if ( doc ) {
+            if (doc.Type() != YAML::NodeType::Sequence)
+                return;
 
-    YAML::Node doc;
-    if (parser.GetNextDocument(doc)) {
-        if (doc.Type() != YAML::NodeType::Sequence)
-            return;
+            std::string id     = doc[0].as<std::string>();
 
-        std::string id;
-        bool success = doc[0].Read(id);
-        if (!success)
-            return;
-
-        Document *document = documentForId(id.c_str());
-        if(document)
-            Q_EMIT( showRequest(document) );
+            Document *document = documentForId(id.c_str());
+            if(document)
+                Q_EMIT( showRequest(document) );
+        }
+    } catch(...) {
+        return;
     }
-
 }
 
 void DocumentManager::handleRemoveDocUndoScRequest( const QString & data )
 {
-    std::stringstream stream;
-    stream << data.toStdString();
-    YAML::Parser parser(stream);
-    
-    YAML::Node doc;
-    if (parser.GetNextDocument(doc)) {
-        if (doc.Type() != YAML::NodeType::Sequence)
-            return;
-        
-        std::string id;
-        bool success = doc[0].Read(id);
-        if (!success)
-            return;
-        
-        Document *document = documentForId(id.c_str());
-        if(document){
-            QTextDocument *textDoc = document->textDocument();
-            textDoc->clearUndoRedoStacks();
-            textDoc->setModified(false);
+    try {
+        YAML::Node doc = YAML::Load( data.toStdString() );
+        if ( doc ) {
+            if (doc.Type() != YAML::NodeType::Sequence)
+                return;
+
+            std::string id     = doc[0].as<std::string>();
+
+            Document *document = documentForId(id.c_str());
+            if(document){
+                QTextDocument *textDoc = document->textDocument();
+                textDoc->clearUndoRedoStacks();
+                textDoc->setModified(false);
+            }
         }
+    } catch(...) {
+        return;
     }
-    
 }
 
 void DocumentManager::handleCloseDocScRequest( const QString & data )
 {
-    std::stringstream stream;
-    stream << data.toStdString();
-    YAML::Parser parser(stream);
+    try {
+        YAML::Node doc = YAML::Load( data.toStdString() );
+        if ( doc ) {
+            if (doc.Type() != YAML::NodeType::Sequence)
+                return;
 
-    YAML::Node doc;
-    if (parser.GetNextDocument(doc)) {
-        if (doc.Type() != YAML::NodeType::Sequence)
-            return;
-
-        std::string id;
-        bool success = doc[0].Read(id);
-        if (!success)
-            return;
-
-        Document *document = documentForId(id.c_str());
-        if(document){
-            close(document);
+            std::string id     = doc[0].as<std::string>();
+            Document *document = documentForId(id.c_str());
+            if(document){
+                close(document);
+            }
         }
+    } catch(...) {
+        return;
     }
 }
 
 void DocumentManager::handleSetDocTitleScRequest( const QString & data )
 {
-    QByteArray utf8_bytes = data.toUtf8();
-    std::stringstream stream(utf8_bytes.constData());
-    YAML::Parser parser(stream);
+    try {
+        YAML::Node doc = YAML::Load( data.toStdString() );
+        if ( doc ) {
+            if (doc.Type() != YAML::NodeType::Sequence)
+                return;
 
-    YAML::Node doc;
-    if (parser.GetNextDocument(doc)) {
-        if (doc.Type() != YAML::NodeType::Sequence)
-            return;
+            std::string id     = doc[0].as<std::string>();
+            std::string title  = doc[1].as<std::string>();
+            Document *document = documentForId(id.c_str());
+            if(document) {
+                document->mTitle = QString::fromUtf8(title.c_str());
+                Q_EMIT(titleChanged(document));
+            }
 
-        std::string id;
-        bool success = doc[0].Read(id);
-        if (!success)
-            return;
-
-        std::string title;
-        success = doc[1].Read(title);
-        if (!success)
-            return;
-
-        Document *document = documentForId(id.c_str());
-        if(document)
-        {
-            document->mTitle = QString::fromUtf8(title.c_str());
-            Q_EMIT(titleChanged(document));
         }
-
+    } catch(...) {
+        return;
     }
-
 }
 
 bool DocumentManager::parseActionEnabledRequest( const QString & data, std::string *idString, bool *en)
 {
-    QByteArray utf8_bytes = data.toUtf8();
-    std::stringstream stream(utf8_bytes.constData());
-    YAML::Parser parser(stream);
-    
-    YAML::Node doc;
-    if (parser.GetNextDocument(doc)) {
-        if (doc.Type() != YAML::NodeType::Sequence)
-            return false;
-        
-        std::string id;
-        bool success = doc[0].Read(id);
-        if (!success)
-            return false;
-        
-        bool enabled;
-        success = doc[1].Read(enabled);
-        if (!success)
-            return false;
-        
-        *idString = id;
-        
-        *en = enabled;
-        
-        return true;
+    try {
+        YAML::Node doc = YAML::Load( data.toStdString() );
+        if ( doc ) {
+            if (doc.Type() != YAML::NodeType::Sequence)
+                return false;
+
+            std::string id     = doc[0].as<std::string>();
+            bool enabled       = doc[1].as<bool>();
+
+            *idString = id;
+            *en = enabled;
+
+            return true;
+        }
+    } catch(...) {
     }
-    return false;
+	return false;
 }
 
 void DocumentManager::handleEnableKeyDownScRequest( const QString & data )
@@ -1144,13 +1025,10 @@ void DocumentManager::handleEnableKeyDownScRequest( const QString & data )
     bool enabled;
     if (parseActionEnabledRequest(data, &id, &enabled)) {
         Document *document = documentForId(id.c_str());
-        if(document)
-        {
+        if(document) {
             document->setKeyDownActionEnabled(enabled);
         }
-        
     }
-    
 }
 
 void DocumentManager::handleEnableKeyUpScRequest( const QString & data )
@@ -1170,44 +1048,33 @@ void DocumentManager::handleEnableKeyUpScRequest( const QString & data )
 
 void DocumentManager::handleEnableGlobalKeyDownScRequest( const QString & data )
 {
-    QByteArray utf8_bytes = data.toUtf8();
-    std::stringstream stream(utf8_bytes.constData());
-    YAML::Parser parser(stream);
-    
-    YAML::Node doc;
-    if (parser.GetNextDocument(doc)) {
-        if (doc.Type() != YAML::NodeType::Sequence)
-            return;
-        
-        bool enabled;
-        bool success = doc[0].Read(enabled);
-        if (!success)
-            return;
-        
-        mGlobalKeyDownEnabled = enabled;
+    try {
+        YAML::Node doc = YAML::Load( data.toStdString() );
+        if ( doc ) {
+            if (doc.Type() != YAML::NodeType::Sequence)
+                return;
+
+            bool enabled = doc[0].as<bool>(enabled);
+            mGlobalKeyDownEnabled = enabled;
+        }
+    } catch( ... ) {
     }
-    
 }
 
 void DocumentManager::handleEnableGlobalKeyUpScRequest( const QString & data )
 {
-    QByteArray utf8_bytes = data.toUtf8();
-    std::stringstream stream(utf8_bytes.constData());
-    YAML::Parser parser(stream);
-    
-    YAML::Node doc;
-    if (parser.GetNextDocument(doc)) {
-        if (doc.Type() != YAML::NodeType::Sequence)
-            return;
-        
-        bool enabled;
-        bool success = doc[0].Read(enabled);
-        if (!success)
-            return;
-        
-        mGlobalKeyUpEnabled = enabled;
+    try {
+        YAML::Node doc = YAML::Load( data.toStdString() );
+        if ( doc ) {
+            if (doc.Type() != YAML::NodeType::Sequence)
+                return;
+
+            bool enabled = doc[0].as<bool>();
+
+            mGlobalKeyUpEnabled = enabled;
+        }
+    } catch( ... ) {
     }
-    
 }
 
 void DocumentManager::handleEnableMouseDownScRequest( const QString & data )
@@ -1257,41 +1124,36 @@ void DocumentManager::handleEnableTextChangedScRequest( const QString & data )
 
 void DocumentManager::handleEnableTextMirrorScRequest( const QString & data )
 {
-    QByteArray utf8_bytes = data.toUtf8();
-    std::stringstream stream(utf8_bytes.constData());
-    YAML::Parser parser(stream);
-    
-    YAML::Node doc;
-    if (parser.GetNextDocument(doc)) {
-        if (doc.Type() != YAML::NodeType::Sequence)
-            return;
-        
-        bool enabled;
-        bool success = doc[0].Read(enabled);
-        if (!success)
-            return;
-        
-        mTextMirrorEnabled = enabled;
-        
-        QList<Document*> docs = documents();
-        QList<Document*>::Iterator it;
-        if(enabled) {
-            for (it = docs.begin(); it != docs.end(); ++it) {
-                Document * doc = *it;
-                Main::scProcess()->updateTextMirrorForDocument(doc, 0, -1, doc->textDocument()->characterCount());
-                doc->lastActiveEditor()->updateDocLastSelection();
+    try {
+        YAML::Node doc = YAML::Load( data.toStdString() );
+        if ( doc ) {
+            if (doc.Type() != YAML::NodeType::Sequence)
+                return;
+
+            bool enabled = doc[0].as<bool>();
+
+            mTextMirrorEnabled = enabled;
+
+            QList<Document*> docs = documents();
+            QList<Document*>::Iterator it;
+            if(enabled) {
+                for (it = docs.begin(); it != docs.end(); ++it) {
+                    Document * doc = *it;
+                    Main::scProcess()->updateTextMirrorForDocument(doc, 0, -1, doc->textDocument()->characterCount());
+                    doc->lastActiveEditor()->updateDocLastSelection();
+                }
+            } else {
+                // this sets the mirror to empty strings
+                for (it = docs.begin(); it != docs.end(); ++it) {
+                    Document * doc = *it;
+                    Main::scProcess()->updateTextMirrorForDocument(doc, 0, -1, 0);
+                }
+                QString warning = QStringLiteral("Document Text Mirror Disabled\n");
+                Main::scProcess()->post(warning);
             }
-        } else {
-            // this sets the mirror to empty strings
-            for (it = docs.begin(); it != docs.end(); ++it) {
-                Document * doc = *it;
-                Main::scProcess()->updateTextMirrorForDocument(doc, 0, -1, 0);
-            }
-            QString warning = QStringLiteral("Document Text Mirror Disabled\n");
-            Main::scProcess()->post(warning);
         }
+    } catch(...) {
     }
-    
 }
 
 void DocumentManager::syncLangDocument(Document *doc)
