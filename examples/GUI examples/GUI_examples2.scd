@@ -9,22 +9,11 @@ w.front; // make window visible and front window.
 w.view.background = Color.rand;
 w.view.background = Color.rand;
 w.view.background = Color.rand;
-w.view.background = Gradient(Color.blue,Color.green,\v);
-w.view.background = Gradient(Color.black,Color.red,\h);
-w.view.background = Gradient(Color.black,Color.red,\h, 16);
-w.view.background = Gradient(Color.black,Color.red,\h, 128);
-w.view.background = HiliteGradient(Color.blue,Color.yellow,\v);
-w.view.background = HiliteGradient(Color.blue,Color.yellow,\v, 16);
-w.view.background = HiliteGradient(Color.blue,Color.yellow,\v, 256);
-w.view.background = HiliteGradient(Color.red(0.6),Color.green,\h, 16);
-w.view.background = HiliteGradient(Color.red(0.6),Color.green,\h, 256);
 
 (
 Routine({
 	30.do {
-		w.view.background =
-			HiliteGradient(Color.rand(0.0,1.0),Color.rand(0.0,1.0),
-					[\h,\v].choose, 100, rrand(0.1,0.9));
+		w.view.background = Color.rand(0.0,1.0);
 		0.5.wait;
 	};
 }).play(AppClock);
@@ -55,10 +44,7 @@ f.value;
 b = Button(w, 75 @ 24);
 b.states = [["Backgnd", Color.white, Color.rand]];
 b.action = {
-		w.view.background = Color.rand(0.0,1.0); // fallback for SwingOSC
-		w.view.background =
-			HiliteGradient(Color.rand(0.0,1.0),Color.rand(0.0,1.0),
-					[\h,\v].choose, 100, rrand(0.1,0.9));
+		w.view.background = Color.rand(0.0,1.0);
 };
 )
 
@@ -139,9 +125,7 @@ SynthDef("window-test", { arg note = 36, fc = 1000, rq = 0.25, bal=0, amp=0.4, g
 w = Window("another control panel", Rect(20, 400, 440, 360));
 w.front; // make window visible and front window.
 w.view.decorator = FlowLayout(w.view.bounds);
-w.view.background = Color.rand(0.0,1.0); // fallback for SwingOSC
-w.view.background = HiliteGradient(Color.rand(0.0,1.0),Color.rand(0.0,1.0),
-					[\h,\v].choose, 100, rrand(0.1,0.9));
+w.view.background = Color.rand(0.0,1.0);
 )
 
 (
@@ -252,8 +236,7 @@ w = Window("another control panel", Rect(20, 400, 440, 180));
 w.front; // make window visible and front window.
 w.view.decorator = FlowLayout(w.view.bounds);
 
-w.view.background = HiliteGradient(Color.rand(0.0,1.0),Color.rand(0.0,1.0),
-					[\h,\v].choose, 100, rrand(0.1,0.9));
+w.view.background = Color.rand(0.0,1.0);
 
 // add a button to start and stop the sound.
 startButton = Button(w, 75 @ 24);
