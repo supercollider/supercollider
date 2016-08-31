@@ -377,9 +377,9 @@ SequenceableCollection : Collection {
 		var list = Array.new((this.size / groupSize).roundUp.asInteger);
 		var sublist = this.species.new(groupSize);
 		this.do({ arg item;
-			sublist.add(item);
+			sublist = sublist.add(item);
 			if (sublist.size >= groupSize, {
-				list.add(sublist);
+				list = list.add(sublist);
 				sublist = this.species.new(groupSize);
 			});
 		});
