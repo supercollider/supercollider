@@ -3,6 +3,8 @@
 Welcome to SuperCollider!
 =========================
 
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/supercollider/supercollider?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 **SuperCollider** is an environment and programming language for real time audio
 synthesis and algorithmic composition. It provides an interpreted
 object-oriented language which functions as a network client to a state of the
