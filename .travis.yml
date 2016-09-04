@@ -18,6 +18,7 @@ matrix:
       env: QT=false
     - os: osx
       osx_image: xcode7.3
+      env: QT=true
 
 cache:
  - apt
@@ -37,7 +38,6 @@ before_script:
 # some paths
  - ifmac export SCLANG=$TRAVIS_BUILD_DIR/BUILD/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
  - iflin export SCLANG=$TRAVIS_BUILD_DIR/BUILD/Install/bin/sclang
- - echo $SCLANG
 # prep for testing
  - sudo pip install git+https://github.com/scztt/qpm.git@qpm-unit
  - qpm quark checkout CommonTests CommonTestsGUI --location $HOME/Quarks
@@ -48,6 +48,7 @@ script:
  - iflin $TRAVIS_BUILD_DIR/.travis/script-linux.sh
  - ifmac $TRAVIS_BUILD_DIR/.travis/script-osx.sh
 # test
+ - if [[ $QT != true ]]; then $TRAVIS_BUILD_DIR/.travis/fix-non-Qt.sh; fi
  - $TRAVIS_BUILD_DIR/testsuite/sclang/launch_test.py $SCLANG
  - qpm test.run -l ./travis_test_run.json --path $SCLANG --include $HOME/Quarks
 # package
