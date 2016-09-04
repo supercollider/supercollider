@@ -1,18 +1,23 @@
 compiler:
  - gcc
 
-os:
- - linux
- - osx
-
-env:
-  global:
-    - QT_PREFIX=$HOME/qt/gcc_64
-    - QT_PLUGIN_PATH=$QT_PREFIX/plugins
-
-sudo: required
-dist: trusty
-osx_image: xcode7.3
+matrix:
+  fast_finish: true
+  env:
+    global:
+      - QT_PREFIX=$HOME/qt/gcc_64
+      - QT_PLUGIN_PATH=$QT_PREFIX/plugins
+  include:
+    - os: linux
+      sudo: required
+      dist: trusty
+      env: QT=true
+    - os: linux
+      sudo: required
+      dist: trusty
+      env: QT=false
+    - os: osx
+      osx_image: xcode7.3
 
 cache:
  - apt
@@ -21,18 +26,18 @@ cache:
 before_install:
  - iflin () { if [[ $TRAVIS_OS_NAME == linux ]]; then eval $@; fi; }
  - ifmac () { if [[ $TRAVIS_OS_NAME == osx ]]; then eval $@; fi; }
- - iflin .travis/before-install-linux.sh
+ - iflin .travis/before-install-linux.sh --qt=$QT
  - ifmac .travis/before-install-osx.sh
 
 before_script:
- - iflin source /opt/qt55/bin/qt55-env.sh
  - mkdir BUILD && cd BUILD
- - iflin $TRAVIS_BUILD_DIR/.travis/before-script-linux.sh
+ - iflin $TRAVIS_BUILD_DIR/.travis/before-script-linux.sh --qt=$QT
  - ifmac $TRAVIS_BUILD_DIR/.travis/before-script-osx.sh
 
 # some paths
  - ifmac export SCLANG=$TRAVIS_BUILD_DIR/BUILD/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
  - iflin export SCLANG=$TRAVIS_BUILD_DIR/BUILD/Install/bin/sclang
+ - echo $SCLANG
 # prep for testing
  - sudo pip install git+https://github.com/scztt/qpm.git@qpm-unit
  - qpm quark checkout CommonTests CommonTestsGUI --location $HOME/Quarks
