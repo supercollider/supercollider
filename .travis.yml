@@ -25,6 +25,9 @@ before_install:
 
 before_script:
  - mkdir BUILD && cd BUILD
+ - if [[ $QT == true ]]; then export QT_PREFIX=$HOME/qt/gcc_64; fi
+ - if [[ $QT == true ]]; then export QT_PLUGIN_PATH=$QT_PREFIX/plugins; fi
+
  - $TRAVIS_BUILD_DIR/.travis/before-script-$TRAVIS_OS_NAME.sh --qt=$QT
 # prep for testing
  - if [[ $QT == true ]]; then $TRAVIS_BUILD_DIR/.travis/qpm-prep.sh; fi
