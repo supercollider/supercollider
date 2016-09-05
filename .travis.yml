@@ -23,27 +23,19 @@ cache:
 before_install:
  - iflin () { if [[ $TRAVIS_OS_NAME == linux ]]; then eval $@; fi; }
  - ifmac () { if [[ $TRAVIS_OS_NAME == osx ]]; then eval $@; fi; }
- - iflin $TRAVIS_BUILD_DIR/.travis/before-install-linux.sh --qt=$QT
- - ifmac $TRAVIS_BUILD_DIR/.travis/before-install-osx.sh
+ - $TRAVIS_BUILD_DIR/.travis/before-install-$TRAVIS_OS_NAME.sh --qt=$QT
 
 before_script:
  - mkdir BUILD && cd BUILD
- - iflin $TRAVIS_BUILD_DIR/.travis/before-script-linux.sh --qt=$QT
- - ifmac $TRAVIS_BUILD_DIR/.travis/before-script-osx.sh
-# some paths
- - ifmac export SCLANG=$TRAVIS_BUILD_DIR/BUILD/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
- - iflin export SCLANG=$TRAVIS_BUILD_DIR/BUILD/Install/bin/sclang
+ - $TRAVIS_BUILD_DIR/.travis/before-script-$TRAVIS_OS_NAME.sh --qt=$QT
 # prep for testing
  - if [[ $QT == true ]]; then $TRAVIS_BUILD_DIR/.travis/qpm-prep.sh; fi
 
 script:
 # build
- - iflin $TRAVIS_BUILD_DIR/.travis/script-linux.sh
- - ifmac $TRAVIS_BUILD_DIR/.travis/script-osx.sh
+ - $TRAVIS_BUILD_DIR/.travis/script-$TRAVIS_OS_NAME.sh
 # test
- - if [[ $QT != true ]]; then $TRAVIS_BUILD_DIR/.travis/fix-non-Qt.sh; fi
- - $TRAVIS_BUILD_DIR/testsuite/sclang/launch_test.py $SCLANG
- - if [[ $QT == true ]]; then $TRAVIS_BUILD_DIR/.travis/qpm-test.sh; fi
+ - $TRAVIS_BUILD_DIR/.travis/test.sh
 # package
  - ifmac mkdir -p $HOME/artifacts
  - (ifmac cd Install; ifmac zip -q -r $HOME/artifacts/SC-$TRAVIS_COMMIT.zip SuperCollider)
