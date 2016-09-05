@@ -21,8 +21,6 @@ cache:
  - bundler
 
 before_install:
- - iflin () { if [[ $TRAVIS_OS_NAME == linux ]]; then eval $@; fi; }
- - ifmac () { if [[ $TRAVIS_OS_NAME == osx ]]; then eval $@; fi; }
  - $TRAVIS_BUILD_DIR/.travis/before-install-$TRAVIS_OS_NAME.sh --qt=$QT
 
 before_script:
@@ -32,13 +30,9 @@ before_script:
  - if [[ $QT == true ]]; then $TRAVIS_BUILD_DIR/.travis/qpm-prep.sh; fi
 
 script:
-# build
  - $TRAVIS_BUILD_DIR/.travis/script-$TRAVIS_OS_NAME.sh
-# test
  - $TRAVIS_BUILD_DIR/.travis/test.sh
-# package
- - ifmac mkdir -p $HOME/artifacts
- - (ifmac cd Install; ifmac zip -q -r $HOME/artifacts/SC-$TRAVIS_COMMIT.zip SuperCollider)
+ - if [[ $TRAVIS_OS_NAME == osx ]]; then $TRAVIS_BUILD_DIR/.travis/package-osx.sh; fi
 
 before_deploy:
  # required for github releases
