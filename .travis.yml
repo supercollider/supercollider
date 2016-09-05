@@ -5,6 +5,7 @@ matrix:
   fast_finish: true
   env:
     global:
+      - TRAVIS_SCRIPT_DIR=$TRAVIS_BUILD_DIR/.travis
       - QT_PREFIX=$HOME/qt/gcc_64
       - QT_PLUGIN_PATH=$QT_PREFIX/plugins
   include:
@@ -27,30 +28,27 @@ cache:
 before_install:
  - iflin () { if [[ $TRAVIS_OS_NAME == linux ]]; then eval $@; fi; }
  - ifmac () { if [[ $TRAVIS_OS_NAME == osx ]]; then eval $@; fi; }
- - iflin .travis/before-install-linux.sh --qt=$QT
- - ifmac .travis/before-install-osx.sh
+ - iflin $TRAVIS_SCRIPT_DIR/before-install-linux.sh --qt=$QT
+ - ifmac $TRAVIS_SCRIPT_DIR/before-install-osx.sh
 
 before_script:
  - mkdir BUILD && cd BUILD
- - iflin $TRAVIS_BUILD_DIR/.travis/before-script-linux.sh --qt=$QT
- - ifmac $TRAVIS_BUILD_DIR/.travis/before-script-osx.sh
-
+ - iflin $TRAVIS_SCRIPT_DIR/before-script-linux.sh --qt=$QT
+ - ifmac $TRAVIS_SCRIPT_DIR/before-script-osx.sh
 # some paths
  - ifmac export SCLANG=$TRAVIS_BUILD_DIR/BUILD/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
  - iflin export SCLANG=$TRAVIS_BUILD_DIR/BUILD/Install/bin/sclang
 # prep for testing
- - sudo pip install git+https://github.com/scztt/qpm.git@qpm-unit
- - qpm quark checkout CommonTests CommonTestsGUI --location $HOME/Quarks
- - cp ../travis_test_run_proto.json ./travis_test_run.json
+ - $TRAVIS_SCRIPT_DIR/qpm-prep.sh
 
 script:
 # build
- - iflin $TRAVIS_BUILD_DIR/.travis/script-linux.sh
- - ifmac $TRAVIS_BUILD_DIR/.travis/script-osx.sh
+ - iflin $TRAVIS_SCRIPT_DIR/script-linux.sh
+ - ifmac $TRAVIS_SCRIPT_DIR/script-osx.sh
 # test
- - if [[ $QT != true ]]; then $TRAVIS_BUILD_DIR/.travis/fix-non-Qt.sh; fi
+ - if [[ $QT != true ]]; then $TRAVIS_SCRIPT_DIR/fix-non-Qt.sh; fi
  - $TRAVIS_BUILD_DIR/testsuite/sclang/launch_test.py $SCLANG
- - qpm test.run -l ./travis_test_run.json --path $SCLANG --include $HOME/Quarks
+ - $TRAVIS_SCRIPT_DIR/qpm-test.sh
 # package
  - ifmac mkdir -p $HOME/artifacts
  - (ifmac cd Install; ifmac zip -q -r $HOME/artifacts/SC-$TRAVIS_COMMIT.zip SuperCollider)
