@@ -9,10 +9,6 @@ Description::
 
 Grabs audio signal data from any form of transducer connected to an analogue to digital converter in your soundcard, and takes advantage of its DC offset values, to either be used as a controller rate signal, or an audio rate signal, meaning that it can both be used for controlling, for instance, an Oscillator, when passed throughout an audio feature extractor, and interpolated with either envelopes or chaotic functions whatever (controller rate), or to feed data to a buffer or a pfft sound  transformation (audio rate).
 
-note::
-
-This is provided for backwards compatibility with SC2 code. For normal use link::Classes/SoundIn::, which has bus numbers beginning at 0, as AudioIn may be deprecated and removed at some point in the future.
-
 ::
 
 classmethods::
