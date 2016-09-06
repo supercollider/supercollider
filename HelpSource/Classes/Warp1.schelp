@@ -3,7 +3,7 @@ summary:: Warp a buffer with a time pointer
 categories:: UGens>Buffer, UGens>Generators>Granular
 
 description::
-UGen inspired by SuperCollider2 Warp1 class, itself referenced on Richard Karpen's sndwarp (CSound). Consists of a granular time stretcher with pitchshifting features.
+UGen inspired by Chad Kirby's SuperCollider2 Warp1 class, itself referenced on Richard Karpen's sndwarp (CSound). Consists of a granular time stretcher with pitchshifting features.
 
 classmethods::
 private:: categories
