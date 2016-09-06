@@ -914,8 +914,8 @@ SequenceableCollection : Collection {
 
 	rate {
 		var rate, rates;
-		if(this.size == 1, { ^this.first.rate });
-		^this.collect({ arg item; item.rate }).minItem;
+		if(this.size == 1) { ^this.first.rate };
+		^this.collect({ arg item; item.rate ? 'scalar' }).minItem
 		// 'scalar' > 'control' > 'audio'
 	}
 
