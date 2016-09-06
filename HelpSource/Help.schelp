@@ -2,14 +2,14 @@ TITLE::Help
 summary::Documentation home
 categories::Help
 
-SuperCollider environment and programming language aims at (non-)real time audio synthesis and algorithmic composition. It provides an interpreted object-oriented language which acts as a network client to a state of the art, realtime sound synthesis server (sound engine).
+-SuperCollider is an environment and programming language for real time audio synthesis and algorithmic composition. It provides an interpreted object-oriented language which functions as a network client to a state of the art, realtime sound synthesis server.
 
 NOTE:: link::Guides/News-3_7##News in SuperCollider version 3.7:: ::
 
 SECTION::Search and browse
 definitionlist::
-## link::Search:: || Search among all documents and methods
-## link::Browse:: || Browse among all documents by categories
+## link::Search:: || Search all documents and methods
+## link::Browse:: || Browse all documents by categories
 ::
 
 SECTION::Getting started
