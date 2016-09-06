@@ -123,6 +123,9 @@ LagControl : Control {
 		});
 		^outputs
 	}
+	*ar { arg values, lags;
+		^AudioControl.ar(values).lag(lags)
+	}
 	*ir {
 		^this.shouldNotImplement(thisMethod)
 	}
