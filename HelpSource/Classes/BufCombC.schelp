@@ -6,12 +6,7 @@ categories::  UGens>Delays>Buffer
 
 Description::
 
-Comb delay line with cubic interpolation which uses a buffer for its
-internal memory. See also  link::Classes/BufCombN::  which uses no
-interpolation, and  link::Classes/BufCombL::  which uses linear
-interpolation. Cubic interpolation is more computationally expensive
-than linear, but more accurate.
-
+UGen consisting of a Comb delay line featuring cubic interpolation, taking advantage of a buffer for internal memory. Check link::Classes/BufCombN::  (using no interpolation), and link::Classes/BufCombL::  (uses linear interpolation). Cubic interpolation is more CPU intensive than linear, yet more accurate (sounds better).
 
 classmethods::
 
@@ -24,7 +19,7 @@ argument::in
 The input signal.
 
 argument::delaytime
-Delay time in seconds.
+Delay time expressed in seconds.
 
 argument::decaytime
 Time for the echoes to decay by 60 decibels. If this time is negative then the feedback coefficient will be negative, thus emphasizing only odd harmonics at an octave lower.
@@ -61,4 +56,3 @@ b = Buffer.alloc(s,44100,1);
 { BufCombC.ar(b.bufnum, Decay.ar(Dust.ar(1,0.5), 0.2, WhiteNoise.ar), 0.2, 3) }.play;
 
 ::
-
