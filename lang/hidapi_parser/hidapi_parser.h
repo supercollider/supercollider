@@ -32,7 +32,7 @@
 extern "C" {
 #endif
 
-#include <hidapi.h>
+#include "hidapi.h"
 
 struct hid_device_element;
 struct hid_device_collection;
@@ -184,7 +184,7 @@ void hid_parse_element_info( struct hid_dev_desc * devdesc );
 
 #ifdef WIN32
 int hid_send_element_output( struct hid_dev_desc * devdesc, struct hid_device_element * element );
-int hid_parse_input_elements_values( unsigned char* buf, struct hid_dev_desc * devdesc );
+int hid_parse_input_elements_values( unsigned char* buf, int size, struct hid_dev_desc * devdesc );
 void hid_parse_element_info( struct hid_dev_desc * devdesc );
 #endif
 
