@@ -1039,7 +1039,7 @@ void Convolution3_Ctor(Convolution3 *unit)
 			SETCALC(Convolution3_next_k);
 
 		// initialize output
-		IN0(0) = OUT0(0);
+		OUT0(0) = IN0(0);
 	}
 }
 
