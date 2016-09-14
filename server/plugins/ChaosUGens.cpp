@@ -30,26 +30,27 @@
 static InterfaceTable *ft;
 
 struct NonLinear : public Unit {
-	double x0, y0, xn, yn, xnm1, ynm1;
+	double xn;
 	float counter;
 	//bool stable;
 };
 
 struct CuspN : public NonLinear {
+    double x0;
 };
 struct CuspL : public CuspN {
-	double frac;
+	double xnm1, frac;
 };
 
 struct GbmanN : public NonLinear {
+    double yn;
 };
 struct GbmanL : public GbmanN {
 	double frac;
 };
 
-struct HenonN : public Unit {
-	double x0, x1, xn, xnm1, xnm2, a, b;
-	float counter;
+struct HenonN : public NonLinear {
+	double x0, x1, xnm1, xnm2, a, b;
 	bool stable;
 };
 struct HenonL : public HenonN {
@@ -60,34 +61,34 @@ struct HenonC : public HenonL {
 };
 
 struct LatoocarfianN : public NonLinear {
+    double x0, y0, yn;
 };
 struct LatoocarfianL : public LatoocarfianN {
-	double frac;
+	double xnm1, frac;
 };
 struct LatoocarfianC : public LatoocarfianL {
-	double xnm3, xnm2, c0,c1,c2,c3;
+	double xnm2,xnm3, c0,c1,c2,c3;
 };
 
 struct LinCongN : public NonLinear {
 };
 struct LinCongL : public LinCongN {
-	double frac;
+	double xnm1, frac;
 };
 struct LinCongC : public LinCongL {
 	double xnm3, xnm2, c0,c1,c2,c3;
 };
 
-struct LorenzN : public NonLinear {
-	double z0, zn, znm1;
-};
-struct LorenzL : public LorenzN {
+struct LorenzL : public NonLinear {
+    double x0, xnm1, y0, yn, ynm1, z0, zn, znm1;
 	double frac;
 };
 
 struct QuadN : public NonLinear {
+    double x0;
 };
 struct QuadL : public QuadN {
-	double frac;
+	double xnm1, frac;
 };
 struct QuadC : public QuadL {
 	double xnm3, xnm2;
@@ -95,15 +96,18 @@ struct QuadC : public QuadL {
 };
 
 struct StandardN : public NonLinear {
+    double x0, y0, yn;
 };
 struct StandardL : public StandardN {
+    double xnm1;
 	double frac;
 };
 
 struct FBSineN : public NonLinear {
+    double x0, y0, yn;
 };
 struct FBSineL : public FBSineN {
-	double frac;
+	double xnm1, frac;
 };
 struct FBSineC : public FBSineL {
 	double xnm3, xnm2;
@@ -1298,13 +1302,13 @@ void LinCongC_next(LinCongC *unit, int inNumSamples)
 void LinCongC_Ctor(LinCongC* unit)
 {
 	SETCALC(LinCongC_next);
-
-	unit->x0 = ZIN0(4);
-	unit->xn = unit->x0;
-	unit->xnm1 = unit->xnm2 = unit->xnm3 = unit->x0;
+    
+	double x0 = ZIN0(4);
+	unit->xn = x0;
+	unit->xnm1 = unit->xnm2 = unit->xnm3 = x0;
 	unit->counter = 0.f;
 	unit->frac = 0.0;
-	unit->c0 = unit->c1 = unit->c2 = unit->c3 = unit->x0;
+	unit->c0 = unit->c1 = unit->c2 = unit->c3 = x0;
 
 	LinCongC_next(unit, 1);
 }
