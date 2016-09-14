@@ -778,7 +778,7 @@ void StereoConvolution2L_Ctor(StereoConvolution2L *unit)
 
 		// initialize outputs
 		OUT0(0) = IN0(0);
-		OUT0(1) = IN0(1);
+		OUT0(1) = IN0(0);
 	}
 }
 
