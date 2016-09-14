@@ -26,11 +26,17 @@ SCDocHTMLRenderer {
 		};
 		^x;
 	}
+	*escapeSpacesInAnchor { |str|
+		^str.replace(" ", "%20")
+	}
 
 	*htmlForLink {|link,escape=true|
 		var n, m, f, c, doc;
 		// FIXME: how slow is this? can we optimize
 		#n, m, f = link.split($#); // link, anchor, label
+		if(m.size > 0) {
+			m = this.escapeSpacesInAnchor(m);
+		};
 		^if ("^[a-zA-Z]+://.+".matchRegexp(link) or: (link.first==$/)) {
 			if(f.size<1) {f=link};
 			c = if(m.size>0) {n++"#"++m} {n};
@@ -363,7 +369,7 @@ SCDocHTMLRenderer {
 				this.renderChildren(stream, node);
 			},
 			\NL, { }, // these shouldn't be here..
-			// Plain text and modal tags
+// Plain text and modal tags
 			\TEXT, {
 				stream << this.escapeSpecialChars(node.text);
 			},
@@ -396,11 +402,11 @@ SCDocHTMLRenderer {
 				stream << "<span class='soft'>" << this.escapeSpecialChars(node.text) << "</span>";
 			},
 			\ANCHOR, {
-				stream << "<a class='anchor' name='" << node.text << "'>&nbsp;</a>";
+				stream << "<a class='anchor' name='" << this.escapeSpacesInAnchor(node.text) << "'>&nbsp;</a>";
 			},
 			\KEYWORD, {
 				node.children.do {|child|
-					stream << "<a class='anchor' name='kw_" << child.text << "'>&nbsp;</a>";
+					stream << "<a class='anchor' name='kw_" << this.escapeSpacesInAnchor(child.text) << "'>&nbsp;</a>";
 				}
 			},
 			\IMAGE, {
@@ -415,7 +421,7 @@ SCDocHTMLRenderer {
 				f[1] !? { stream << "<br><b>" << f[1] << "</b>" }; // ugly..
 				stream << "</div>\n";
 			},
-			// Other stuff
+// Other stuff
 			\NOTE, {
 				stream << "<div class='note'><span class='notelabel'>NOTE:</span> ";
 				noParBreak = true;
@@ -443,7 +449,7 @@ SCDocHTMLRenderer {
 				this.renderClassTree(stream, node.text.asSymbol.asClass);
 				stream << "</ul>";
 			},
-			// Lists and tree
+// Lists and tree
 			\LIST, {
 				stream << "<ul>\n";
 				this.renderChildren(stream, node);
@@ -464,7 +470,7 @@ SCDocHTMLRenderer {
 				noParBreak = true;
 				this.renderChildren(stream, node);
 			},
-			// Definitionlist
+// Definitionlist
 			\DEFINITIONLIST, {
 				stream << "<dl>\n";
 				this.renderChildren(stream, node);
@@ -483,7 +489,7 @@ SCDocHTMLRenderer {
 				noParBreak = true;
 				this.renderChildren(stream, node);
 			},
-			// Tables
+// Tables
 			\TABLE, {
 				stream << "<table>\n";
 				this.renderChildren(stream, node);
@@ -498,7 +504,7 @@ SCDocHTMLRenderer {
 				noParBreak = true;
 				this.renderChildren(stream, node);
 			},
-			// Methods
+// Methods
 			\CMETHOD, {
 				this.renderMethod (
 					stream, node,
@@ -567,7 +573,7 @@ SCDocHTMLRenderer {
 							f = currentMethod.argNames[currArg].asString;
 							if(
 								(z = if(currentMethod.varArgs and: {currArg==(currentMethod.argNames.size-1)})
-									{"... "++f} {f}
+										{"... "++f} {f}
 								) != node.text;
 							) {
 								"SCDoc: In %\n"
@@ -602,7 +608,7 @@ SCDocHTMLRenderer {
 				stream << "<h4>Discussion:</h4>\n";
 				this.renderChildren(stream, node);
 			},
-			// Sections
+// Sections
 			\CLASSMETHODS, {
 				if(node.notPrivOnly) {
 					stream << "<h2><a class='anchor' name='classmethods'>Class Methods</a></h2>\n";
@@ -624,7 +630,7 @@ SCDocHTMLRenderer {
 				this.renderChildren(stream, node);
 			},
 			\SECTION, {
-				stream << "<h2><a class='anchor' name='" << node.text
+				stream << "<h2><a class='anchor' name='" << this.escapeSpacesInAnchor(node.text)
 				<< "'>" << this.escapeSpecialChars(node.text) << "</a></h2>\n";
 				if(node.makeDiv.isNil) {
 					this.renderChildren(stream, node);
@@ -635,7 +641,7 @@ SCDocHTMLRenderer {
 				};
 			},
 			\SUBSECTION, {
-				stream << "<h3><a class='anchor' name='" << node.text
+				stream << "<h3><a class='anchor' name='" << this.escapeSpacesInAnchor(node.text)
 				<< "'>" << this.escapeSpecialChars(node.text) << "</a></h3>\n";
 				if(node.makeDiv.isNil) {
 					this.renderChildren(stream, node);
@@ -701,12 +707,12 @@ SCDocHTMLRenderer {
 					},
 
 					\SECTION, {
-						stream << "<li class='toc1'><a href='#" << n.text << "'>"
+						stream << "<li class='toc1'><a href='#" << this.escapeSpacesInAnchor(n.text) << "'>"
 						<< this.escapeSpecialChars(n.text) << "</a></li>\n";
 						this.renderTOC(stream, n);
 					},
 					\SUBSECTION, {
-						stream << "<li class='toc2'><a href='#" << n.text << "'>"
+						stream << "<li class='toc2'><a href='#" << this.escapeSpacesInAnchor(n.text) << "'>"
 						<< this.escapeSpecialChars(n.text) << "</a></li>\n";
 						this.renderTOC(stream, n);
 					}
