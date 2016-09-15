@@ -69,7 +69,6 @@ struct SendReply : public Unit
 
 struct Poll : public Unit
 {
-	int m_samplesRemain, m_intervalSamples;
 	float m_trig;
 	float m_lastPoll;
 	char *m_id_string;
