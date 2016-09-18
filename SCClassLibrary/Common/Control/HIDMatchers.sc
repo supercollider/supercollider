@@ -206,13 +206,13 @@ HIDElementProto {
 	matches { |ele|
 		var matches = true; // check all until a match is false
 		shouldMatch.copy.do { |key|
-			this.perform( key ).isNil {
+			if ( this.perform( key ).isNil ) {
 				shouldMatch = shouldMatch.reject { |it| it == key };
 			} {
 				switch( key,
 					\usageMin, { matches = matches and: ( ele.usage >= this.usageMin ) },
 					\usageMax, { matches = matches and: ( ele.usage <= this.usageMax ) },
-					 { // default
+					{ // default
 						matches = matches and: ( this.perform( key ).matchItem( ele.perform( key ) ) )
 					}
 				);
@@ -220,5 +220,4 @@ HIDElementProto {
 		};
 		^matches;
 	}
-
 }

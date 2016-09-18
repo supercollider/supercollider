@@ -29,7 +29,7 @@ list::
 ::
 
 argument:: envbufnum
-the buffer number containing a singal to use for the grain envelope. -1 uses a built-in Hann envelope.
+the buffer number containing a signal to use for the grain envelope. -1 uses a built-in Hann envelope.
 
 argument:: maxGrains
 the maximum number of overlapping grains that can be used at a given time. This value is set at the UGens init time and can't be modified. Defaults to 512. This can be set lower for more efficient use of memory.
@@ -65,7 +65,7 @@ SynthDef(\in_grain_test, {arg gate = 1, amp = 1, envbuf;
 		doneAction: 2);
 	Out.ar(0,
 		GrainIn.ar(2, Impulse.kr(32), 1, PinkNoise.ar * 0.05, pan, envbuf) * env)
-	}).send(s);
+	}).add;
 
 )
 

@@ -22,7 +22,7 @@ After creation they will be controllable through link::Classes/Node::'s code::se
 There are four special types of arguments, which are treated differently:
 definitionlist::
 ## audio rate
-|| Arguments that begin with "a_" (e.g. code::a_input::), or that are specified as code::\ar:: in the def's rates argument (see below), will be able to read and audio rate bus when mapped to it with code::/n_mapa::.
+|| Arguments that begin with "a_" (e.g. code::a_input::), or that are specified as code::\ar:: in the def's rates argument (see below), will be able to read an audio rate bus when mapped to it with code::/n_mapa::.
 ## initial rate
 || Arguments that begin with "i_" (e.g. code::i_freq::), or that are specified as code::\ir:: in the def's rates argument (see below), will be static and non-modulatable. They will not respond to code::/n_set:: or code::/n_map::. This is slightly more efficient in terms of CPU than a regular arg.
 ## trigger rate
@@ -127,8 +127,11 @@ method:: removeAt
 Remove the synthdef code::name:: from the SynthDescLib named code::libname:: and from its servers.
 
 method:: writeOnce
-Create a new SynthDef and write it to disk, but only if a def file with this name does not already exist. This is useful in class definitions so that the def is not written every time the library is compiled. Note that this will not check for differences, so you will need to delete the defFile to get it to rebuild. Default for dir is to use the path specified by code::SynthDef.synthDefDir::.
+Create a new SynthDef. It is written to disk only if a def file with this name does not already exist. Note that this will not check for differences, so you will need to delete the defFile to get it to rebuild. Default for dir is to use the path specified by code::SynthDef.synthDefDir::.
 
+warning:: code::SynthDef.writeOnce:: is a legacy method. Its main use was to improve the efficiency of SynthDefs in quarks, but this is superseded by link::Classes/SynthDescLib::. Being completely impervious to changes, it can cause difficult-to-diagnose bugs (such as having version 1.1 of a quark but with a SynthDef stuck in version 1.0). Quark developers should now use link::#-add:: instead.
+
+The exception is very large SynthDefs, where you have a choice between link::#-writeDefFile:: and this method. Even then, the efficiency savings of code::writeOnce:: are only in disk I/O -- both methods build the SynthDef every time they run. ::
 
 InstanceMethods::
 
@@ -298,7 +301,7 @@ x = Synth(\arrayarg);
 x.setn(\freqs, [440, 441, 442, 443]);
 
 // Don't accidentally set too many values, or you may have unexpected side effects
-// The code below inadvertantly sets the gate arg, and frees the synth
+// The code below inadvertently sets the gate arg, and frees the synth
 x.setn(\freqs, [300, 400, 500, 600, 0]);
 
 // Mr. McCartney's more complex example

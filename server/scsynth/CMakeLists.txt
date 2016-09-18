@@ -1,8 +1,4 @@
 find_package(Sndfile)
-if (WIN32)
-	find_package(Portaudio)
-endif()
-
 
 # Here we work out which audio API to use, from system type and/or user option.
 if(AUDIOAPI STREQUAL "default")
@@ -20,15 +16,15 @@ if(NOT AUDIOAPI MATCHES "^(jack|coreaudio|portaudio)$")
 endif()
 
 if(AUDIOAPI STREQUAL jack)
-	find_package(Jack)
-	if(NOT JACK_FOUND)
-		message(FATAL_ERROR "Jack selected as audio API, but development files not found")
-	endif()
-elseif(AUDIOAPI STREQUAL portaudio)
-	find_package(Portaudio)
-	if(NOT PORTAUDIO_FOUND)
-		message(FATAL_ERROR "Portaudio selected as audio API, but development files not found")
-	endif()
+  find_package(Jack)
+  if(NOT JACK_FOUND)
+    message(FATAL_ERROR "Jack selected as audio API, but development files not found")
+  endif()
+elseif(AUDIOAPI STREQUAL portaudio AND NOT MINGW AND NOT MSVC) # MSYS like Apple
+    find_package(Portaudio)
+    if(NOT PORTAUDIO_FOUND)
+      message(FATAL_ERROR "Portaudio selected as audio API, but development files not found")
+    endif()
 endif()
 message(STATUS "Audio API: ${AUDIOAPI}")
 
@@ -73,8 +69,8 @@ set(scsynth_sources
 
 if(APPLE)
 	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
-	
-	list(APPEND scsynth_sources 
+
+	list(APPEND scsynth_sources
 		${CMAKE_SOURCE_DIR}/common/SC_Apple.mm
 	)
 	set_source_files_properties( ${CMAKE_SOURCE_DIR}/common/SC_Apple.mm
@@ -175,7 +171,11 @@ endif()
 if (AUDIOAPI STREQUAL jack)
 	target_link_libraries(libscsynth ${JACK_LIBRARIES})
 elseif(AUDIOAPI STREQUAL portaudio)
-	target_link_libraries(libscsynth ${PORTAUDIO_LIBRARIES})
+	if(WIN32 AND NOT MSYS)
+		target_link_libraries(libscsynth portaudio)
+	else()
+		target_link_libraries(libscsynth ${PORTAUDIO_LIBRARIES})
+	endif()
 elseif(AUDIOAPI STREQUAL coreaudio)
 	target_link_libraries(libscsynth "-framework CoreAudio")
 endif()
@@ -238,16 +238,56 @@ else()
 endif()
 
 if(APPLE)
-    add_custom_command(TARGET scsynth POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../MacOS/
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:scsynth> $<TARGET_FILE_DIR:SuperCollider>/../MacOS)
+	add_custom_command(TARGET scsynth POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../Resources/
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:scsynth> $<TARGET_FILE_DIR:SuperCollider>/../Resources)
 elseif(WIN32)
-	install(TARGETS ${INSTALL_TARGETS}
-			DESTINATION "SuperCollider"
-			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+    if(NOT MSVC)
+      set_target_properties(scsynth libscsynth PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<CONFIG>")
+    endif(NOT MSVC)
+
+    if(FFTW3F_FOUND)
+      file(GLOB FFTW3F_DLL "${FFTW3F_LIBRARY_DIR}/*fftw3f*.dll")
+      add_custom_command(TARGET scsynth
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${FFTW3F_DLL}" $<TARGET_FILE_DIR:scsynth>
+      )
+    endif(FFTW3F_FOUND)
+
+    if(SNDFILE_FOUND)
+      file(GLOB SNDFILE_DLL "${SNDFILE_LIBRARY_DIR}/*sndfile*.dll")
+      add_custom_command(TARGET scsynth
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${SNDFILE_DLL}" $<TARGET_FILE_DIR:scsynth>
+      )
+    endif(SNDFILE_FOUND)
+
+    add_custom_command(TARGET scsynth
+      POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_FILE_DIR:scsynth> $<TARGET_FILE_DIR:sclang>
+      COMMENT "Adding scynth to target sclang"
+    )
+
+    if(SC_IDE)
+      add_custom_command(TARGET scsynth
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_FILE_DIR:scsynth> $<TARGET_FILE_DIR:SuperCollider>
+        COMMENT "Adding scynth to target SuperCollider"
+      )
+    endif(SC_IDE)
+
+    install(TARGETS ${INSTALL_TARGETS}
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+        DESTINATION "${SC_WIN_BUNDLE_NAME}"
+    )
+
 else()
 	install(TARGETS ${INSTALL_TARGETS}
 			RUNTIME DESTINATION "bin"
 			LIBRARY DESTINATION "lib"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+endif()
+
+if(${JACK_USE_METADATA_API})
+	target_compile_definitions(libscsynth PUBLIC "-DSC_JACK_USE_METADATA_API")
 endif()

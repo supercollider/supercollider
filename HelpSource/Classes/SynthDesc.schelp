@@ -44,7 +44,7 @@ For example, by listing argument names and link::Classes/ControlSpec::s under th
 Currently only the 'specs' key is reserved. Other keys may be used as needed for specific applications. As the use of SynthDef metadata evolves, other keys may be standardized.
 
 subsection:: Creation and access
-Metadata are specified when creating a link::Classes/SynthDef::. If the SynthDef is .store'd (or .added'd) into a SynthDescLib, the metadata become part of the SynthDesc as well. Thereafter, the metadata can be accessed through SynthDescLib:
+Metadata are specified when creating a link::Classes/SynthDef::. If the SynthDef is .store'd (or .add'd) into a SynthDescLib, the metadata become part of the SynthDesc as well. Thereafter, the metadata can be accessed through SynthDescLib:
 code::
 SynthDescLib.global[\synthDefName].metadata
 ::

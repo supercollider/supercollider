@@ -32,28 +32,23 @@ class AudioStatusBox : public StatusBox
     Q_OBJECT
 public:
     AudioStatusBox(ScServer *, QWidget *parent = 0);
-private slots:
-    void onServerStatusReply(int ugens, int synths, int groups, int synthDefs,
-                             float avgCPU, float peakCPU);
-    void onServerRunningChanged( bool running, QString const & hostName, int port );
 
-    void updateStatistics();
+private slots:
+    void onServerRunningChanged( bool running, QString const & hostName, int port, bool unresponsive );
+
+    void updateStatistics( int ugens, int synths, int groups, int synthDefs,
+                           float avgCPU, float peakCPU );
+
     void updateVolumeLabel(float volume);
     void updateMuteLabel(bool muted);
     void updateRecordLabel(bool recording);
 
-protected:
-    void wheelEvent(QWheelEvent *);
+signals:
+    void increaseVolume();
+    void decreaseVolume();
 
 private:
-    class ScServer * mServer;
-
-    float m_avg_cpu;
-    float m_peak_cpu;
-    int m_ugens;
-    int m_synths;
-    int m_groups;
-    int m_synthdefs;
+    void wheelEvent(QWheelEvent *);
 
     StatusLabel *mStatisticsLabel;
     StatusLabel *mVolumeLabel;

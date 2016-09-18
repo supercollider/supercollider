@@ -1,11 +1,11 @@
 class:: Pseries
-summary:: artithmetic series pattern
+summary:: arithmetic series pattern
 related:: Classes/Pgeom
 categories:: Streams-Patterns-Events>Patterns>List
 
 description::
 
-Returns a stream that behaves like an arithmetric series.
+Returns a stream that behaves like an arithmetic series.
 
 ClassMethods::
 

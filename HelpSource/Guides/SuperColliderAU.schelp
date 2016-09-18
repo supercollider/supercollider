@@ -37,12 +37,12 @@ list::
 ## BlockSize: block size configuration for the server.
 ## MemorySize: amount of real time memory allocated to this server.
 ## NumWireBufs: maximum number of buffers for connecting ugens.
-## DoNoteOn: (experimental) if true the server will send an OSC bundle setting the "note" and "velocity" parameters when a MIDI noteon or noteoff message is received. For this to work you need a host that supports Midi effect AudioUnits and sends them MIDI mesages.
-## BeatDiv: For linking Demand Ugens to the Host tempo. If this number is set, SuperColliderAU wil trigger bus 0 each beat division and use bus 1 for reset.
+## DoNoteOn: (experimental) if true the server will send an OSC bundle setting the "note" and "velocity" parameters when a MIDI noteon or noteoff message is received. For this to work you need a host that supports Midi effect AudioUnits and sends them MIDI messages.
+## BeatDiv: For linking Demand Ugens to the Host tempo. If this number is set, SuperColliderAU will trigger bus 0 each beat division and use bus 1 for reset.
 ::
 
 subsection::pluginSpec.plist
-Stores parameter configuration for standalone plugins. SuperColliderAU will use this to display and set the parameters of your synth definition. Note that the defalt values must be the same for the synth definition, they wil not be set by the wrapper. The value in this file is only for display.
+Stores parameter configuration for standalone plugins. SuperColliderAU will use this to display and set the parameters of your synth definition. Note that the default values must be the same for the synth definition, they will not be set by the wrapper. The value in this file is only for display.
 
 subsection::synthdefs
 For standalone plugins you should have your synth definition here. When controlling the server remotely you can just send the synth definitions.
@@ -52,4 +52,4 @@ Here you need all the SC plugins you intend to use with that server.
 
 section::Making standalone plugins
 
-Besides controlling SuperColliderAU from within the language, you can create AudioUnits plugins that are controlled from the host using the default GUI. This can be done manually by duplicating SupercolliderAU.component, adding a synthdef and associated SC plugins and editing pluginSpec.plist. However, if you want an AudioUnit with a unique identifier (the identifier is what you see from within the host GUI) you have to recompile its resource file (with the new identifier) using Rez. This program is included in Apple's Developer Tools. A helper class that automates all this process is mantained in the AudioUnitBuilder quark. Using the class AudioUnitBuilder you can create standalone AudioUnit plugins without leaving SuperCollider.
+Besides controlling SuperColliderAU from within the language, you can create AudioUnits plugins that are controlled from the host using the default GUI. This can be done manually by duplicating SupercolliderAU.component, adding a synthdef and associated SC plugins and editing pluginSpec.plist. However, if you want an AudioUnit with a unique identifier (the identifier is what you see from within the host GUI) you have to recompile its resource file (with the new identifier) using Rez. This program is included in Apple's Developer Tools. A helper class that automates all this process is maintained in the AudioUnitBuilder quark. Using the class AudioUnitBuilder you can create standalone AudioUnit plugins without leaving SuperCollider.

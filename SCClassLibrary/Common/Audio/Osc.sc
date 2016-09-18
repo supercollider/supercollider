@@ -313,7 +313,7 @@ Vibrato : PureUGen {
 
 TChoose {
 	*ar { arg trig, array;
-		^Select.ar(TIRand.kr(0, array.lastIndex, trig), array)
+		^Select.ar(TIRand.ar(0, array.lastIndex, trig), array)
 
 	}
 	*kr { arg trig, array;

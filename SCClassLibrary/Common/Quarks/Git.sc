@@ -18,7 +18,7 @@ Git {
 		this.url = url;
 	}
 	pull {
-		this.git(["pull"])
+		this.git(["pull", "origin", "master"])
 	}
 	checkout { |refspec|
 		this.git(["checkout", refspec])
@@ -65,18 +65,14 @@ Git {
 	}
 	sha {
 		// find what hash is currently checked out
-		var out;
 		^sha ?? {
-			out = this.git(["rev-parse HEAD"]);
-			sha = out.copyRange(0, out.size - 2)
+			sha = this.git(["rev-parse HEAD"]);
 		}
 	}
 	remoteLatest {
 		// find what the latest commit on the remote is
-		var out;
 		^remoteLatest ?? {
-			out = this.git(["rev-parse origin/master"]);
-			remoteLatest = out.copyRange(0, out.size - 2)
+			remoteLatest = this.git(["rev-parse origin/master"]);
 		}
 	}
 	tags {
@@ -84,7 +80,11 @@ Git {
 		// all tags
 		// only includes ones that have been fetched from remote
 		^tags ?? {
-			raw = this.git(["for-each-ref --format='%(refname)' --sort=taggerdate refs/tags"]);
+			if(thisProcess.platform.name !== 'windows', {
+				raw = this.git(["for-each-ref --format='%(refname)' --sort=taggerdate refs/tags"]);
+			}, {
+				raw = this.git(["for-each-ref --format=%(refname) --sort=taggerdate refs/tags"]);
+			});
 			tags = raw.split(Char.nl)
 				.select({ |t| t.size != 0 })
 				.reverse()
@@ -113,9 +113,14 @@ Git {
 		^result;
 	}
 	*checkForGit {
+		var gitFind;
 		if(gitIsInstalled.isNil, {
-			// does not work on windows
-			Pipe.callSync("which git", {
+			if(thisProcess.platform.name !== 'windows', {
+				gitFind = "which git";
+			}, {
+				gitFind = "where git";
+			});
+			Pipe.callSync(gitFind, {
 				gitIsInstalled = true;
 			}, { arg error;
 				"Quarks requires git to be installed".error;

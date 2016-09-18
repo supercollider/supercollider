@@ -22,9 +22,12 @@
 
 // Boost
 #include <boost/mpl/or.hpp>
+#include <boost/static_assert.hpp>
 #include <boost/type_traits/is_array.hpp>
 #include <boost/type_traits/is_function.hpp>
 #include <boost/type_traits/is_abstract.hpp>
+#include <boost/type_traits/has_left_shift.hpp>
+
 #include <limits>
 
 #include <boost/test/detail/suppress_warnings.hpp>
@@ -41,6 +44,9 @@ namespace tt_detail {
 
 template<typename T>
 struct print_log_value {
+    BOOST_STATIC_ASSERT_MSG( (boost::has_left_shift<std::ostream,T>::value),
+                             "Type has to implement operator<< to be printable");
+
     void    operator()( std::ostream& ostr, T const& t )
     {
         typedef typename mpl::or_<is_array<T>,is_function<T>,is_abstract<T> >::type cant_use_nl;

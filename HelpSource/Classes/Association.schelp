@@ -50,7 +50,7 @@ method::printOn
 Write a string representation to the stream.
 
 method::storeOn
-Write a compileable string representation to the stream.
+Write a compilable string representation to the stream.
 
 EXAMPLES::
 

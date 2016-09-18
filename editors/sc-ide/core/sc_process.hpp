@@ -96,16 +96,9 @@ signals:
     void statusMessage(const QString &);
     void response(const QString & selector, const QString & data);
     void classLibraryRecompiled();
-    void introspectionAboutToSwap();
+    void introspectionChanged();
 
 private slots:
-    void swapIntrospection (ScLanguage::Introspection *newIntrospection)
-    {
-        emit introspectionAboutToSwap();
-        // LATER: use c++11/std::move
-        mIntrospection = *newIntrospection;
-        delete newIntrospection;
-    }
     void onNewIpcConnection();
     void onIpcData();
     void finalizeConnection();
@@ -118,8 +111,7 @@ private:
     void onResponse( const QString & selector, const QString & data );
 
     void prepareActions(Settings::Manager * settings);
-    void postQuitNotification();
-
+    void postQuitNotification();    
     QAction * mActions[ActionCount];
 
     ScLanguage::Introspection mIntrospection;
@@ -129,6 +121,7 @@ private:
     QLocalSocket *mIpcSocket;
     QString mIpcServerName;
     QByteArray mIpcData;
+    int mReadSize = 0;
 
     bool mTerminationRequested;
     QDateTime mTerminationRequestTime;
@@ -180,53 +173,6 @@ private:
     QUuid mId;
     ScProcess *mSc;
 };
-
-class ScIntrospectionParserWorker : public QObject
-{
-    Q_OBJECT
-signals:
-    void done( ScLanguage::Introspection * output );
-private slots:
-    void process( const QString & input );
-
-    void quit()
-    {
-        thread()->quit();
-    }
-};
-
-class ScIntrospectionParser : public QThread
-{
-    Q_OBJECT
-public:
-    ScIntrospectionParser( QObject * parent = 0 ):
-        QThread(parent)
-    {
-        connect(this, SIGNAL(newIntrospectionData(QString)),
-                &mWorker, SLOT(process(QString)), Qt::QueuedConnection);
-        connect(&mWorker, SIGNAL(done(ScLanguage::Introspection*)),
-                this, SIGNAL(done(ScLanguage::Introspection*)), Qt::QueuedConnection);
-        mWorker.moveToThread(this);
-    }
-    ~ScIntrospectionParser()
-    {
-        QMetaObject::invokeMethod(&mWorker, "quit");
-        wait();
-    }
-
-    void process( const QString & introspectionData )
-    {
-        emit newIntrospectionData(introspectionData);
-    }
-
-signals:
-    void newIntrospectionData( const QString & data );
-    void done( ScLanguage::Introspection * );
-
-private:
-    ScIntrospectionParserWorker mWorker;
-};
-
 }
 
 #endif

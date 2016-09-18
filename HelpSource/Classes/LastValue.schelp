@@ -6,7 +6,7 @@ categories::  UGens>Triggers
 
 Description::
 
-Output the last value before the input changed more than a threshhold.
+Output the last value before the input changed more than a threshold.
 
 
 classmethods::
@@ -20,7 +20,7 @@ The input signal.
 
 argument::diff
 
-Difference threshhold.
+Difference threshold.
 
 
 Examples::
@@ -36,7 +36,7 @@ d.set(\freq, 695);
 d.free;
 ::
 
-Return the difference between currrent and the last changed:
+Return the difference between current and the last changed:
 code::
 (
 d = { arg out=0, val=1;

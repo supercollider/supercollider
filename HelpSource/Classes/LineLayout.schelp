@@ -14,7 +14,7 @@ The strong::stretch factor:: only affects distribution in the direction of the l
 
 subsection:: Leaving empty space
 
-An empty space with an arbitrary stretch factor may be inserted using nil in place of an item in combination with the stretch factor. Similarily, an empty space of fixed size may be inserted using an integer in place of an item. See link::#*new#constructor:: and link::#-add:: for details.
+An empty space with an arbitrary stretch factor may be inserted using nil in place of an item in combination with the stretch factor. Similarly, an empty space of fixed size may be inserted using an integer in place of an item. See link::#*new#constructor:: and link::#-add:: for details.
 
 
 CLASSMETHODS::

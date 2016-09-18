@@ -31,7 +31,7 @@ SynthDef("help-IRand", {
 		FSinOsc.ar(500,
 			0, Line.kr(0.2, 0, 0.1, doneAction:2))
 	)
-}).send(s);
+}).add;
 )
 
 (

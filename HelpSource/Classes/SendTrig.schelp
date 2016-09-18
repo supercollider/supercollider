@@ -61,7 +61,7 @@ s.boot;
 (
 SynthDef("help-SendTrig",{
 	SendTrig.kr(Dust.kr(1.0),0,0.9);
-}).send(s);
+}).add;
 
 // register to receive this message
 o = OSCFunc({ arg msg, time;

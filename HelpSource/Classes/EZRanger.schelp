@@ -29,7 +29,7 @@ argument:: action
 A link::Classes/Function:: called when the value changes. The function is passed the EZRanger instance as its argument.
 
 argument:: initVal
-An inistance of link::Classes/Array:: code::[lo, hi]::. If code::nil::, then it uses the link::Classes/ControlSpec::'s default value.
+An instance of link::Classes/Array:: code::[lo, hi]::. If code::nil::, then it uses the link::Classes/ControlSpec::'s default value.
 
 argument:: initAction
 A link::Classes/Boolean:: indicating whether the action function should be called when setting the initial value. The default is code::false::.

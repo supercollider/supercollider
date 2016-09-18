@@ -18,6 +18,8 @@
 
 #include <cstdio>
 
+#include <boost/align/align_up.hpp>
+
 #include "sc_synth.hpp"
 #include "sc_ugen_factory.hpp"
 #include "../server/server.hpp"
@@ -96,8 +98,7 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const & prototype):
     calc_units   = allocator.alloc<Unit*>(calc_unit_count + 1); // over-allocate to allow prefetching
     unit_buffers = allocator.alloc<sample>(sample_alloc_size);
 
-    const int alignment_mask = wire_buffer_alignment - 1;
-    unit_buffers = (sample*) ((intptr_t(unit_buffers) + alignment_mask) & ~alignment_mask);     /* next aligned pointer */
+    unit_buffers = static_cast<sample*>( boost::alignment::align_up( unit_buffers, wire_buffer_alignment ) );
 
     /* allocate unit generators */
     sc_factory->allocate_ugens(synthdef.graph.size());

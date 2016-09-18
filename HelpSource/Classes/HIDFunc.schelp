@@ -8,7 +8,7 @@ Human input devices can be used as controllers for making music. This class prov
 
 HIDFunc (and its subclass link::Classes/HIDdef::) registers one or more functions to respond to an incoming HID message. Many of its methods are inherited from its superclass link::Classes/AbstractResponderFunc::.
 
-note:: HIDFuncs are removed on Cmd-. by default. This can be overriden using either of the fix or permanent methods.::
+note:: HIDFuncs are removed on Cmd-. by default. This can be overridden using either of the fix or permanent methods.::
 
 
 The development of this SuperCollider implementation of HID access was funded by the SuperCollider community and BEK, Bergen Elektronisk Kunst, Bergen, Norway, http://www.bek.no
@@ -31,7 +31,7 @@ ARGUMENT:: func
 A link::Classes/Function:: or similar object which will respond to the incoming message. It will be passed...
 
 ARGUMENT:: elUsageName
-The name of the usage to look for. This can be one usage name, or an array of usage names.
+The name of the usage to look for. This can be one usage name, or an array of usage names. If nil, it will match any usage.
 
 ARGUMENT:: devUsageName
 The name of the device usage to look for, e.g. code::\GamePad:: or code::\Mouse::. If left blank, the code::HIDFunc:: will match any device.
@@ -79,13 +79,13 @@ returns:: A new instance of HIDFunc which responds to a specific element usage f
 
 
 METHOD:: usageID
-A convenience method to filter an incoming HID value based on the number of its control usage. If the device is using a non-standard usage number, then this method can be used to look for it. A controls usage is fully specified by the combinaton of its usage ID and its usage page.
+A convenience method to filter an incoming HID value based on the number of its control usage. If the device is using a non-standard usage number, then this method can be used to look for it. A controls usage is fully specified by the combination of its usage ID and its usage page.
 
 ARGUMENT:: func
 A link::Classes/Function:: or similar object which will respond to the incoming message. It will be passed...usage
 
 ARGUMENT:: elUsageID
-The id (an link::Classes/Integer::) of the usage to look for. This can be one usage id, or an array of usage ids.
+The id (an link::Classes/Integer::) of the usage to look for. This can be one usage id, or an array of usage ids. If nil, it will match any usage id.
 
 ARGUMENT:: elPageID
 The id (an link::Classes/Integer::) of the page of the usage to look for. This can be one page id, or an array of page ids.

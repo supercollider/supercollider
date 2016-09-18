@@ -8,7 +8,7 @@ The purpose of layouts is to distribute the amount of space given to the view on
 A layout is installed on a view to manage the space the view occupies and distribute it among its child views. These child views can in turn have other layouts installed, managing the space given to them. But a layout can also manage other layouts directly - one layout can directly occupy a place in another layout's distribution pattern. A basic unit on which a layout operates is therefore abstractly called an item and can be a view or another layout.
 
 note::
-While layouts can form a hierachy on their own, in terms of view hierarchy all views managed by those layouts are direct children of the view on which the top layout is installed.
+While layouts can form a hierarchy on their own, in terms of view hierarchy all views managed by those layouts are direct children of the view on which the top layout is installed.
 ::
 
 The following is an example of a VLayout, organizing a series of TextFields in a vertical line, and its last item is a HLayout, organizing a series of Buttons in a horizontal line.
@@ -82,7 +82,7 @@ A layout works strong::dynamically::, meaning that it redistributes the space wh
 
 A layout will affect space distribution strong::up the layout hierarchy:: - it will define its own constraints and preferences according to its distribution pattern as well as the sum of constraints and preferences of its items. Ultimately, this means that the user's ability to resize a window will be limited by size constraints determined on the basis of window's contents.
 
-For example: in a HLayout (a layout organizing items in a horizontal line) containing a Button and a TextField, the Button will be given a fixed amount of width according to the text it displays, while the TextField will be given all the width that is left. The other Button in the example code below will occupy all the width of the window, since there is no other item competing for that particular space. Note that both Button and TextField have an instrinsically fixed height and so their height never changes when resizing the window. The size constraints also limit the minimum size that the window can be resized to.
+For example: in a HLayout (a layout organizing items in a horizontal line) containing a Button and a TextField, the Button will be given a fixed amount of width according to the text it displays, while the TextField will be given all the width that is left. The other Button in the example code below will occupy all the width of the window, since there is no other item competing for that particular space. Note that both Button and TextField have an intrinsically fixed height and so their height never changes when resizing the window. The size constraints also limit the minimum size that the window can be resized to.
 
 code::
 (
@@ -162,14 +162,14 @@ w = Window.new.layout_(
 ::
 
 
-section:: View vs. layout hierachies
+section:: View vs. layout hierarchies
 
-A layout starts to operate on the space that a view occupies from the moment it is installed on that view on. However, it will not automatically affect child views that where created before the layout was. For views to be managed by a layout they have to be created as children of a view after the layout has been installed on it, or they have to be explicitely inserted into the layout via layout's constructor or its instance methods for this purpose.
+A layout starts to operate on the space that a view occupies from the moment it is installed on that view on. However, it will not automatically affect child views that where created before the layout was. For views to be managed by a layout they have to be created as children of a view after the layout has been installed on it, or they have to be explicitly inserted into the layout via layout's constructor or its instance methods for this purpose.
 
 subsection:: View constructed with a parent
 
-When a view is created with another view as parent it will implicitely become subject to the management of the parent's layout - it will be inserted into the layout in some default way. However, layouts like link::Classes/GridLayout:: have a complex space distribution pattern and so you will need to use their dedicated methods to specify exactly what place in the layout's distribution pattern a view will occupy.
+When a view is created with another view as parent it will implicitly become subject to the management of the parent's layout - it will be inserted into the layout in some default way. However, layouts like link::Classes/GridLayout:: have a complex space distribution pattern and so you will need to use their dedicated methods to specify exactly what place in the layout's distribution pattern a view will occupy.
 
-subsection:: View explicitely inserted into a layout
+subsection:: View explicitly inserted into a layout
 
-A view can also be constructed with no parent given; after it is explicitely inserted into a layout via the layout's constructor or an instance method, it will automatically become a child of the view on which the layout is or will be installed. In case the layout occupies place directly in another layout, the view will become a child of the view on wich the topmost layout is installed.
+A view can also be constructed with no parent given; after it is explicitly inserted into a layout via the layout's constructor or an instance method, it will automatically become a child of the view on which the layout is or will be installed. In case the layout occupies place directly in another layout, the view will become a child of the view on which the topmost layout is installed.

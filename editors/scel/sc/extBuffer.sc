@@ -22,7 +22,7 @@
 					this.quit;
 				});
 			};
-			booter.value=serverRunning.binaryValue;
+			booter.value=this.serverRunning.binaryValue;
 
 			killer = EmacsButton(w, ["K"], { Server.killAll });
 			killer.enabled = false;
@@ -30,7 +30,7 @@
 
 		active = EmacsText(w, this.name.asString, 12, \center);
 		//		active.background = Color.black;
-		if(serverRunning,running,stopped);
+		if(this.serverRunning,running,stopped);
 
 		makeDefault = EmacsButton(w, ["-> default"], {
 			thisProcess.interpreter.s = this;
@@ -53,7 +53,7 @@
 			SystemClock.sched(0.2, { this.stopAliveThread });
 		};
 		w.defineKey("n", { this.queryAllNodes })
-		 .defineKey(" ", { if(serverRunning.not) { this.boot } })
+		 .defineKey(" ", { if(this.serverRunning.not) { this.boot } })
 		 .defineKey("d", {
 			 startDump = {
 				 this.dumpOSC(1);
@@ -111,7 +111,7 @@
 				ctlr.remove;
 			};
 		});
-		if(serverRunning,running,stopped);
+		if(this.serverRunning,running,stopped);
 
 		w.newline;
 
@@ -134,14 +134,14 @@
 		});
 
 		ctlr = SimpleController(this)
-			.put(\serverRunning, {	if(serverRunning,running,stopped) })
+			.put(\serverRunning, {	if(this.serverRunning,running,stopped) })
 			.put(\counts,{
-				countsViews.at(0).string = avgCPU.round(0.1);
-				countsViews.at(1).string = peakCPU.round(0.1);
-				countsViews.at(2).string = numUGens;
-				countsViews.at(3).string = numSynths;
-				countsViews.at(4).string = numGroups;
-				countsViews.at(5).string = numSynthDefs;
+				countsViews.at(0).string = this.avgCPU.round(0.1);
+				countsViews.at(1).string = this.peakCPU.round(0.1);
+				countsViews.at(2).string = this.numUGens;
+				countsViews.at(3).string = this.numSynths;
+				countsViews.at(4).string = this.numGroups;
+				countsViews.at(5).string = this.numSynthDefs;
 			})
 			.put(\cmdPeriod,{
 				recorder.value=0;

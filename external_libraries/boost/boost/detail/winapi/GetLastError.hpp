@@ -10,24 +10,16 @@
 #ifndef BOOST_DETAIL_WINAPI_GETLASTERROR_HPP
 #define BOOST_DETAIL_WINAPI_GETLASTERROR_HPP
 
-#include <boost/detail/winapi/basic_types.hpp>
+#include <boost/detail/winapi/get_last_error.hpp>
 
 #ifdef BOOST_HAS_PRAGMA_ONCE
 #pragma once
 #endif
 
-#if !defined( BOOST_USE_WINDOWS_H )
-extern "C" {
-BOOST_SYMBOL_IMPORT boost::detail::winapi::DWORD_ WINAPI GetLastError(BOOST_DETAIL_WINAPI_VOID);
-}
+#if defined(__GNUC__)
+#pragma message "This header is deprecated, use boost/detail/winapi/get_last_error.hpp instead."
+#elif defined(_MSC_VER)
+#pragma message("This header is deprecated, use boost/detail/winapi/get_last_error.hpp instead.")
 #endif
-
-namespace boost {
-namespace detail {
-namespace winapi {
-using ::GetLastError;
-}
-}
-}
 
 #endif // BOOST_DETAIL_WINAPI_GETLASTERROR_HPP

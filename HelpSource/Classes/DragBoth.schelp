@@ -27,7 +27,7 @@ METHOD:: defaultGetDrag
 	RETURNS:: The link::Classes/StaticText#-object#-object::.
 
 METHOD:: defaultCanReceiveDrag
-	RETURNS:: Allways True.
+	RETURNS:: Always True.
 
 METHOD:: defaultReceiveDrag
 	Sets the link::Classes/StaticText#-object#-object:: to the current drag data.

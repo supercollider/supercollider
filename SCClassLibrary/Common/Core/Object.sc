@@ -237,7 +237,7 @@ Object  {
 		^if(embed) {
 			Routine { arg inval; this.embedInStream(inval) }
 		} {
-			Routine { loop { this.yield } }
+			Routine { arg inval; loop { inval = this.next(inval).yield } }
 		}
 	}
 

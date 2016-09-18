@@ -42,6 +42,12 @@
 
 #endif // BOOST_CLANG
 
+// Stdlib should also be checked
+#include <boost/config.hpp>
+#if defined(BOOST_NO_CXX11_HDR_ATOMIC) && !defined(BOOST_LOCKFREE_NO_HDR_ATOMIC)
+#  define BOOST_LOCKFREE_NO_HDR_ATOMIC
+#endif
+
 #endif // BOOST_LOCKFREE_FORCE_STD_ATOMIC
 
 

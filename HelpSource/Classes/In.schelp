@@ -29,7 +29,7 @@ information on buses and how they are used.
 The hardware input busses begin just after the hardware output busses and
 can be read from using In.ar (See link::Reference/Server-Architecture:: for more
 details). The number of hardware input and output busses can vary
-depending on your Server's options. For a convienent wrapper class which
+depending on your Server's options. For a convenient wrapper class which
 deals with this issue see  link::Classes/SoundIn:: .
 
 
@@ -58,14 +58,14 @@ s.boot;
 (
 SynthDef("help-PinkNoise", { arg out=0;
 	Out.ar(out, PinkNoise.ar(0.1))
-}).send(s);
+}).add;
 
 SynthDef("help-In", { arg out=0, in=0;
 	var input;
 		input = In.ar(in, 1);
 		Out.ar(out, input);
 
-}).send(s);
+}).add;
 )
 
 //play noise on the right channel
@@ -82,10 +82,10 @@ SynthDef("help-InKr",{ arg out=0, in=0;
 	Out.ar(out,
 		SinOsc.ar(In.kr(in, 1), 0, 0.1)
 	)
-}).send(s);
+}).add;
 SynthDef("help-lfo", { arg out=0;
 	Out.kr(out, LFNoise1.kr(0.3, 200, 800))
-}).send(s);
+}).add;
 )
 
 
@@ -103,11 +103,11 @@ code::
 (
 SynthDef("help-Infreq", { arg bus;
 	Out.ar(0, FSinOsc.ar(In.kr(bus), 0, 0.5));
-}).send(s);
+}).add;
 
 SynthDef("help-Outfreq", { arg freq = 400, bus;
 	Out.kr(bus, SinOsc.kr(1, 0, freq/40, freq));
-}).send(s);
+}).add;
 
 b = Bus.control(s,1);
 )

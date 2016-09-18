@@ -36,7 +36,7 @@ METHOD:: value
 		A Float.
 
 METHOD:: valueAction
-	Sets link::#-value:: to the argument and triggeres link::#-action::.
+	Sets link::#-value:: to the argument and triggers link::#-action::.
 
 METHOD:: increment
 	Increments the value by link::#-step:: multiplied by 'factor'.
@@ -234,7 +234,7 @@ b.decrement;
 
 subsection:: Sound Example
 
-Change freqency of a playing synth by step using arrow keys:
+Change frequency of a playing synth by step using arrow keys:
 
 code::
 (

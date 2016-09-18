@@ -1,5 +1,5 @@
 class:: Tap
-summary:: Single tap into a delayline
+summary:: Single tap into a delay line
 related:: Classes/MultiTap, Classes/PlayBuf
 categories::  UGens>Buffer, UGens>Delays>Buffer
 
@@ -37,7 +37,7 @@ SynthDef(\helpTap, {|bufnum|
 	capture= BufWr.ar(source, bufnum, Phasor.ar(0,1, 0, BufFrames.ir(bufnum),1));
 
 	Out.ar(0, Tap.ar(bufnum, 1, [0.1,0.9])); //multichannel expansion, so one tap each ear
-}).send(s);
+}).add;
 )
 
 x=Synth(\helpTap,[\bufnum, b]);

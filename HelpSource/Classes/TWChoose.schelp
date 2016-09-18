@@ -4,7 +4,7 @@ categories:: UGens>Triggers, UGens>Random
 related:: Classes/TChoose
 
 description::
-An output is selected randomly on recieving a trigger from an array of inputs.
+An output is selected randomly on receiving a trigger from an array of inputs.
 
 the code::weights:: of this choice are determined from the weights array.
 
@@ -36,4 +36,4 @@ code::
 )
 ::
 
-note:: all the ugens are continously running. This may not be the most efficient way if each input is  cpu-expensive.::
+note:: all the ugens are continuously running. This may not be the most efficient way if each input is  cpu-expensive.::

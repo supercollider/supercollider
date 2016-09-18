@@ -21,7 +21,7 @@ CLASSMETHODS::
 
 
 METHOD:: ar, kr
-Return a new instance with the respective rate. If the bus rate dosen't match the signal is converted. Multi channel arguments expand.
+Return a new instance with the respective rate. If the bus rate doesn't match the signal is converted. Multi channel arguments expand.
 
 ARGUMENT:: bus
 An instance of link::Classes/Bus::

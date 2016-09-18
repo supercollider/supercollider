@@ -7,7 +7,7 @@ description::
 This beat tracker footnote::
 Research note: Designed by Nick Collins following work by Jean Laroche
 :: is based on exhaustively testing particular template patterns against feature streams; the testing takes place every 0.5 seconds. The two basic templates are a straight (groove=0) and a swung triplet (groove=1) pattern of 16th notes; this pattern is tried out at scalings corresponding to the tempi from 60 to 180 bpm.
-This is the cross-corellation method of beat tracking. A majority vote is taken on the best tempo detected, but this must be confirmed by a consistency check after a phase estimate. Such a consistency check helps to avoid wild fluctuating estimates, but is at the expense of an additional half second delay.
+This is the cross-correlation method of beat tracking. A majority vote is taken on the best tempo detected, but this must be confirmed by a consistency check after a phase estimate. Such a consistency check helps to avoid wild fluctuating estimates, but is at the expense of an additional half second delay.
 The latency of the beat tracker with default settings is thus at least 2.5 seconds; because of block-based amortisation of calculation, it is actually around 2.8 seconds latency for a 2.0 second temporal window.
 
 This beat tracker is designed to be flexible for user needs; you can try out different window sizes, tempo weights and combinations of features. However, there are no guarantees on stability and effectiveness, and you will need to explore such parameters for a particular situation.
@@ -27,7 +27,7 @@ argument:: windowsize
 [s] Size of the temporal window desired (2.0 to 3.0 seconds models the human temporal window). You might use longer values for stability of estimate at the expense of reactiveness.
 
 argument:: phaseaccuracy
-[s] Relates to how many different phases to test. At the default, 50 different phases spaced by phaseaccuracy seconds would be tried out for 60bpm; 16 would be trialed for 180 bpm. Larger phaseaccuracy means more tests and more CPU cost.
+[s] Relates to how many different phases to test. At the default, 50 different phases spaced by phaseaccuracy seconds would be tried out for 60bpm; 16 would be tried for 180 bpm. Larger phaseaccuracy means more tests and more CPU cost.
 
 argument:: lock
 [sk] If this argument is greater than 0.5, the tracker will lock at its current periodicity and continue from the current phase. Whilst it updates the model's phase and period, this is not reflected in the output until lock goes back below 0.5.

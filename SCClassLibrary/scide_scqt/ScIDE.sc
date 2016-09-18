@@ -37,7 +37,7 @@ ScIDE {
 		serverController = SimpleController(server)
 		.put(\serverRunning, { | server, what, extraArg |
 			this.send(\defaultServerRunningChanged, [
-				server.serverRunning, server.addr.hostname, server.addr.port]);
+				server.serverRunning, server.addr.hostname, server.addr.port, server.unresponsive]);
 		})
 		.put(\default, { | server, what, newServer |
 			("changed default server to:" + newServer.name).postln;
@@ -64,7 +64,7 @@ ScIDE {
 		defaultServer = server;
 
 		this.send(\defaultServerRunningChanged, [
-			server.serverRunning, server.addr.hostname, server.addr.port]);
+			server.serverRunning, server.addr.hostname, server.addr.port, server.unresponsive]);
 		this.send( if(server.volume.isMuted, \serverMuted, \serverUnmuted) );
 		this.send( if(server.dumpMode.asBoolean, \dumpOSCStarted, \dumpOSCStopped) );
 		this.send( \serverAmpRange, "%,%".format(server.volume.min, server.volume.max) );
@@ -349,9 +349,9 @@ ScIDE {
 		this.send(\setDocumentText, [quuid, funcID, text, start, range]);
 	}
 
-    *setSelectionByQUuid {|quuid, start, length|
-        this.send(\setDocumentSelection, [quuid, start, length]);
-    }
+	*setSelectionByQUuid {|quuid, start, length|
+		this.send(\setDocumentSelection, [quuid, start, length]);
+	}
 
 	*setEditablebyQUuid {|quuid, editable|
 		this.send(\setDocumentEditable, [quuid, editable]);
@@ -474,7 +474,11 @@ Document {
 		isEdited = isEdited.booleanValue;
 		chars = String.fill(chars.size, {|i| chars[i].asAscii});
 		title = String.fill(title.size, {|i| title[i].asAscii});
-		path = String.fill(path.size, {|i| path[i].asAscii});
+		if(path.isArray) {
+			path = String.fill(path.size, {|i| path[i].asAscii});
+		} {
+			path = nil;
+		};
 		if((doc = this.findByQUuid(quuid)).isNil, {
 			doc = super.new.initFromIDE(quuid, title, chars, isEdited, path, selStart, selSize);
 			allDocuments = allDocuments.add(doc);
@@ -581,11 +585,11 @@ Document {
 		isEdited = argisEdited;
 	}
 
-    initFromIDE {|id, argtitle, argstring, argisEdited, argPath, selStart, selSize|
+	initFromIDE {|id, argtitle, argstring, argisEdited, argPath, selStart, selSize|
 		quuid = id;
 		title = argtitle;
 		this.prSetTextMirror(id, argstring, 0, -1);
-        this.prSetSelectionMirror(id, selStart, selSize);
+		this.prSetSelectionMirror(id, selStart, selSize);
 		isEdited = argisEdited;
 		path = argPath;
 	}
@@ -644,7 +648,7 @@ Document {
 		this.primitiveFailed
 	}
 
-    prSetSelectionMirror {|quuid, start, size|
+	prSetSelectionMirror {|quuid, start, size|
 		_ScIDE_SetDocSelectionMirror
 		this.primitiveFailed
 	}
@@ -903,8 +907,8 @@ Document {
 
 	selectRange { | start=0, length=0 |
 		this.prSetSelectionMirror(quuid, start, length); // set the backend mirror
-        ScIDE.setSelectionByQUuid(quuid, start, length); // set the IDE doc
-    }
+		ScIDE.setSelectionByQUuid(quuid, start, length); // set the IDE doc
+	}
 
 	editable_ { | bool=true |
 		editable = bool;

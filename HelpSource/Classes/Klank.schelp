@@ -10,7 +10,7 @@ Description::
 Klank is a bank of fixed frequency resonators which can be used to
 simulate the resonant modes of an object. Each mode is given a ring time,
 which is the time for the mode to decay by 60 dB.
-
+Note::for dynamic changes of parameters refer to link::Classes/DynKlank:: ::
 
 classmethods::
 
@@ -22,7 +22,7 @@ A link::Classes/Ref:: to an link::Classes/Array:: of three Arrays:
 definitionlist::
 ## frequencies: || An Array of filter frequencies.
 ## amplitudes: || an Array of filter amplitudes, or nil. If nil, then amplitudes default to 1.0.
-## ring times: || an Array of 60 dB decay times for the filters.
+## ring times: || an Array of 60 dB decay times in seconds for the filters.
 ::
 All subarrays, if not nil, should have the same length.
 
@@ -45,6 +45,8 @@ For a modulatable but less efficient version, see link::Classes/DynKlank::.
 
 Examples::
 
+Four resonators each at maximum amplitude of 1.0 and ring times of 1 second, different exciters and no scaling:
+Note:: Watch the ` before the opening bracket of the parameter array! Also see link::Guides/Multichannel-Expansion::::
 code::
 { Klank.ar(`[[800, 1071, 1153, 1723], nil, [1, 1, 1, 1]], Impulse.ar(2, 0, 0.1)) }.play;
 
@@ -54,6 +56,11 @@ code::
 
 { Klank.ar(`[[200, 671, 1153, 1723], nil, [1, 1, 1, 1]], PinkNoise.ar([0.007, 0.007])) }.play;
 
+::
+
+Three resonators at maximum amplitude of 1.0, random frequency and ring times.
+Excited by two pulses at 2 and 2.5 Hz:
+code::
 (
 play({
 	Klank.ar(`[
@@ -63,26 +70,28 @@ play({
 		], Decay.ar(Impulse.ar(4), 0.03, ClipNoise.ar(0.01)))
 })
 )
+::
 
-// multi channel expansion:
-// an array of specs
+link::Guides/Multichannel-Expansion:: via an array of specs
+(note the ` before the opening bracket of the parameter array!):
+code::
 (
 {
-Klank.ar([
-	`[[500, 1078, 1201.5, 1723], nil, [1, 1, 0.5, 0.3]],
-	`[[700, 1071, 1053, 1723], nil, [1, 1, 1, 1]]
-	], Impulse.ar([2, 2.5], 0, 0.1))
+Klank.ar([ // the multichannel-expansion
+	`[[500, 1078, 1201.5, 1723], nil, [1, 1, 0.5, 0.3]], // left channel
+	`[[700, 1071, 1053, 1723], nil, [1, 1, 1, 1]] // right channel
+	], Impulse.ar([1.5, 1.875], 0, 0.1))
 }.play
 );
 
-// expanding specs
+// expanding specs within the parameter array
 { Klank.ar(`[[[800, 6000], 1071, [1153, 8000], 1723], nil, [1, 1, 1, 1]], Impulse.ar([2, 3], 0, 0.1)) }.play;
 
+::
 
-
-// a synth def that has 4 partials
+A SynthDef that generates 4 partials used in different configurations:
+code::
 (
-
 SynthDef(\help_Klank, { arg out=0, i_freq;
 	var klank, n, harm, amp, ring;
 
@@ -127,8 +136,10 @@ a = Synth(\help_Klank, [
 ])
 );
 
+::
 
-
+Advanced examples:
+code::
 
 // -- overlap texture
 (
@@ -263,5 +274,6 @@ r.play;
 
 r.stop;
 ::
+
 
 

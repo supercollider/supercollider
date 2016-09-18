@@ -40,6 +40,9 @@ using nova::slope_argument;
 
 #endif
 
+#include <boost/align/is_aligned.hpp>
+
+
 static InterfaceTable *ft;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -588,7 +591,7 @@ void In_Ctor(IOUnit* unit)
 #ifdef NOVA_SIMD
 		if (BUFLENGTH == 64)
 			SETCALC(In_next_a_nova_64);
-		else if (!(BUFLENGTH & 15))
+		else if (boost::alignment::is_aligned( BUFLENGTH, 16 ))
 			SETCALC(In_next_a_nova);
 		else
 #endif
@@ -852,7 +855,7 @@ void ReplaceOut_Ctor(IOUnit* unit)
 #ifdef NOVA_SIMD
 		if (BUFLENGTH == 64)
 			SETCALC(ReplaceOut_next_a_nova_64);
-		else if (!(BUFLENGTH & 15))
+		else if (boost::alignment::is_aligned( BUFLENGTH, 16 ))
 			SETCALC(ReplaceOut_next_a_nova);
 		else
 #endif
@@ -1031,7 +1034,7 @@ void Out_Ctor(IOUnit* unit)
 #if defined(NOVA_SIMD)
 		if (BUFLENGTH == 64)
 			SETCALC(Out_next_a_nova_64);
-		else if (!(BUFLENGTH & 15))
+		else if (boost::alignment::is_aligned( BUFLENGTH, 16 ))
 			SETCALC(Out_next_a_nova);
 		else
 			SETCALC(Out_next_a);
@@ -1243,7 +1246,7 @@ void XOut_Ctor(XOut* unit)
 	unit->m_xfade = ZIN0(1);
 	if (unit->mCalcRate == calc_FullRate) {
 #ifdef NOVA_SIMD
-		if (!(BUFLENGTH & 15))
+		if (boost::alignment::is_aligned( BUFLENGTH, 16 ))
 			SETCALC(XOut_next_a_nova);
 #endif
 		SETCALC(XOut_next_a);
@@ -1567,7 +1570,7 @@ void LocalIn_Ctor(LocalIn* unit)
 #ifdef NOVA_SIMD
 		if (BUFLENGTH == 64)
 			SETCALC(LocalIn_next_a_nova_64);
-		else if (!(BUFLENGTH & 15))
+		else if (boost::alignment::is_aligned( BUFLENGTH, 16 ))
 			SETCALC(LocalIn_next_a_nova);
 		else
 #endif
@@ -1723,7 +1726,7 @@ void LocalOut_Ctor(IOUnit* unit)
 #ifdef NOVA_SIMD
 		if (BUFLENGTH == 64)
 			SETCALC(LocalOut_next_a_nova_64);
-		else if (!(BUFLENGTH & 15))
+		else if (boost::alignment::is_aligned( BUFLENGTH, 16 ))
 			SETCALC(LocalOut_next_a_nova);
 		else
 #endif

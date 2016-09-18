@@ -83,31 +83,19 @@ class treap_set_impl
    static const bool constant_time_size = implementation_defined::constant_time_size;
 
    public:
-   //! <b>Effects</b>: Constructs an empty treap_set.
-   //!
-   //! <b>Complexity</b>: Constant.
-   //!
-   //! <b>Throws</b>: If value_traits::node_traits::node
-   //!   constructor throws (this does not happen with predefined Boost.Intrusive hooks)
-   //!   or the copy constructor of the key_compare object throws.
-   explicit treap_set_impl( const key_compare &cmp      = key_compare()
+   //! @copydoc ::boost::intrusive::treap::treap()
+   treap_set_impl()
+      :  tree_type()
+   {}
+
+   //! @copydoc ::boost::intrusive::treap::treap(const key_compare &,const priority_compare &,const value_traits &)
+   explicit treap_set_impl( const key_compare &cmp
                           , const priority_compare &pcmp  = priority_compare()
                           , const value_traits &v_traits  = value_traits())
       :  tree_type(cmp, pcmp, v_traits)
    {}
 
-   //! <b>Requires</b>: Dereferencing iterator must yield an lvalue of type value_type.
-   //!   cmp must be a comparison function that induces a strict weak ordering.
-   //!
-   //! <b>Effects</b>: Constructs an empty treap_set and inserts elements from
-   //!   [b, e).
-   //!
-   //! <b>Complexity</b>: Linear in N if [b, e) is already sorted using
-   //!   comp and otherwise N * log N, where N is distance(last, first).
-   //!
-   //! <b>Throws</b>: If value_traits::node_traits::node
-   //!   constructor throws (this does not happen with predefined Boost.Intrusive hooks)
-   //!   or the copy constructor/operator() of the key_compare object throws.
+   //! @copydoc ::boost::intrusive::treap::treap(bool,Iterator,Iterator,const key_compare &,const priority_compare &,const value_traits &)
    template<class Iterator>
    treap_set_impl( Iterator b, Iterator e
            , const key_compare &cmp = key_compare()
@@ -241,6 +229,15 @@ class treap_set_impl
    iterator insert(const_iterator hint, reference value)
    {  return tree_type::insert_unique(hint, value);  }
 
+   //! @copydoc ::boost::intrusive::treap::insert_unique_check(const key_type,insert_commit_data&)
+   std::pair<iterator, bool> insert_check( const key_type &key, insert_commit_data &commit_data)
+   {  return tree_type::insert_unique_check(key, commit_data); }
+
+   //! @copydoc ::boost::intrusive::treap::insert_unique_check(const_iterator,const key_type&,insert_commit_data&)
+   std::pair<iterator, bool> insert_check
+      ( const_iterator hint, const key_type &key, insert_commit_data &commit_data)
+   {  return tree_type::insert_unique_check(hint, key, commit_data); }
+
    //! @copydoc ::boost::intrusive::treap::insert_unique_check(const KeyType&,KeyTypeKeyCompare,KeyValuePrioCompare,insert_commit_data&)
    template<class KeyType, class KeyTypeKeyCompare, class KeyValuePrioCompare>
    std::pair<iterator, bool> insert_check
@@ -368,21 +365,21 @@ class treap_set_impl
 
    #endif   //   #ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
 
-   //! @copydoc ::boost::intrusive::rbtree::equal_range(const key_type &)
+   //! @copydoc ::boost::intrusive::treap::equal_range(const key_type &)
    std::pair<iterator,iterator> equal_range(const key_type &key)
    {  return this->tree_type::lower_bound_range(key); }
 
-   //! @copydoc ::boost::intrusive::rbtree::equal_range(const KeyType&,KeyTypeKeyCompare)
+   //! @copydoc ::boost::intrusive::treap::equal_range(const KeyType&,KeyTypeKeyCompare)
    template<class KeyType, class KeyTypeKeyCompare>
    std::pair<iterator,iterator> equal_range(const KeyType& key, KeyTypeKeyCompare comp)
    {  return this->tree_type::equal_range(key, comp); }
 
-   //! @copydoc ::boost::intrusive::rbtree::equal_range(const key_type &)const
+   //! @copydoc ::boost::intrusive::treap::equal_range(const key_type &)const
    std::pair<const_iterator, const_iterator>
       equal_range(const key_type &key) const
    {  return this->tree_type::lower_bound_range(key); }
 
-   //! @copydoc ::boost::intrusive::rbtree::equal_range(const KeyType&,KeyTypeKeyCompare)const
+   //! @copydoc ::boost::intrusive::treap::equal_range(const KeyType&,KeyTypeKeyCompare)const
    template<class KeyType, class KeyTypeKeyCompare>
    std::pair<const_iterator, const_iterator>
       equal_range(const KeyType& key, KeyTypeKeyCompare comp) const
@@ -508,7 +505,11 @@ class treap_set
    //Assert if passed value traits are compatible with the type
    BOOST_STATIC_ASSERT((detail::is_same<typename value_traits::value_type, T>::value));
 
-   explicit treap_set( const key_compare &cmp    = key_compare()
+   treap_set()
+      :  Base()
+   {}
+
+   explicit treap_set( const key_compare &cmp
                      , const priority_compare &pcmp = priority_compare()
                      , const value_traits &v_traits = value_traits())
       :  Base(cmp, pcmp, v_traits)
@@ -608,31 +609,20 @@ class treap_multiset_impl
    static const bool constant_time_size = implementation_defined::constant_time_size;
 
    public:
-   //! <b>Effects</b>: Constructs an empty treap_multiset.
-   //!
-   //! <b>Complexity</b>: Constant.
-   //!
-   //! <b>Throws</b>: If value_traits::node_traits::node
-   //!   constructor throws (this does not happen with predefined Boost.Intrusive hooks)
-   //!   or the copy constructor of the key_compare object throws.
-   explicit treap_multiset_impl( const key_compare &cmp      = key_compare()
+
+   //! @copydoc ::boost::intrusive::treap::treap()
+   treap_multiset_impl()
+      :  tree_type()
+   {}
+
+   //! @copydoc ::boost::intrusive::treap::treap(const key_compare &,const priority_compare &,const value_traits &)
+   explicit treap_multiset_impl( const key_compare &cmp
                           , const priority_compare &pcmp  = priority_compare()
                           , const value_traits &v_traits  = value_traits())
       :  tree_type(cmp, pcmp, v_traits)
    {}
 
-   //! <b>Requires</b>: Dereferencing iterator must yield an lvalue of type value_type.
-   //!   cmp must be a comparison function that induces a strict weak ordering.
-   //!
-   //! <b>Effects</b>: Constructs an empty treap_multiset and inserts elements from
-   //!   [b, e).
-   //!
-   //! <b>Complexity</b>: Linear in N if [b, e) is already sorted using
-   //!   comp and otherwise N * log N, where N is distance(last, first).
-   //!
-   //! <b>Throws</b>: If value_traits::node_traits::node
-   //!   constructor throws (this does not happen with predefined Boost.Intrusive hooks)
-   //!   or the copy constructor/operator() of the key_compare object throws.
+   //! @copydoc ::boost::intrusive::treap::treap(bool,Iterator,Iterator,const key_compare &,const priority_compare &,const value_traits &)
    template<class Iterator>
    treap_multiset_impl( Iterator b, Iterator e
            , const key_compare &cmp = key_compare()
@@ -1000,7 +990,11 @@ class treap_multiset
    //Assert if passed value traits are compatible with the type
    BOOST_STATIC_ASSERT((detail::is_same<typename value_traits::value_type, T>::value));
 
-   explicit treap_multiset( const key_compare &cmp    = key_compare()
+   treap_multiset()
+      :  Base()
+   {}
+
+   explicit treap_multiset( const key_compare &cmp
                           , const priority_compare &pcmp = priority_compare()
                           , const value_traits &v_traits = value_traits())
       :  Base(cmp, pcmp, v_traits)

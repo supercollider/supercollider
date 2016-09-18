@@ -76,7 +76,7 @@ SequenceableCollection : Collection {
 	}
 
 	// fill with interpolation of values between start and end
-	 *interpolation { arg size, start=0.0, end=1.0;
+	*interpolation { arg size, start=0.0, end=1.0;
 		var obj = this.new(size), step;
 		if(size == 1) { ^obj.add(start) };
 		step = (end - start) / (size - 1);
@@ -914,8 +914,8 @@ SequenceableCollection : Collection {
 
 	rate {
 		var rate, rates;
-		if(this.size == 1, { ^this.first.rate });
-		^this.collect({ arg item; item.rate }).minItem;
+		if(this.size == 1) { ^this.first.rate };
+		^this.collect({ arg item; item.rate ? 'scalar' }).minItem
 		// 'scalar' > 'control' > 'audio'
 	}
 
@@ -1027,9 +1027,9 @@ SequenceableCollection : Collection {
 		dj = this.at(j);
 		if (function.value(di, dj).not, { // i.e., should di precede dj?
 			this.swap(i,j);
-				 tt = di;
-				 di = dj;
-				 dj = tt;
+				tt = di;
+				di = dj;
+				dj = tt;
 		});
 		if ( n > 2, { // More than two elements.
 			ij = (i + j) div: 2;  // ij is the midpoint of i and j.
@@ -1049,15 +1049,15 @@ SequenceableCollection : Collection {
 				k = i;
 				l = j;
 				while ({
-				 	while ({
-				 		l = l - 1;
-				 		k <= l and: { function.value(dij, this.at(l)) }
-				 	}); // i.e. while dl succeeds dij
-				 	while ({
-				 		k = k + 1;
-				 		k <= l and: { function.value(this.at(k), dij) };
-				 	}); // i.e. while dij succeeds dk
-				 	k <= l
+					while ({
+						l = l - 1;
+						k <= l and: { function.value(dij, this.at(l)) }
+					}); // i.e. while dl succeeds dij
+					while ({
+						k = k + 1;
+						k <= l and: { function.value(this.at(k), dij) };
+					}); // i.e. while dij succeeds dk
+					k <= l
 				},{
 					this.swap(k, l);
 				});
@@ -1153,7 +1153,7 @@ SequenceableCollection : Collection {
 		if(this.isEmpty) { ^nil };
 		^if(this.size.even, {
 			[this.hoareFind(this.size/ 2 - 1, function),
-			 this.hoareFind(this.size/ 2,     function)].mean;
+			this.hoareFind(this.size/ 2,     function)].mean;
 		}, {
 			this.hoareFind(this.size - 1 / 2, function);
 		});
@@ -1299,5 +1299,23 @@ SequenceableCollection : Collection {
 				})
 			}
 		}
+	}
+
+	unixCmd { arg action, postOutput = true;
+		var pid;
+		if(this.notEmpty) {
+			pid = this.prUnixCmd(postOutput);
+			if(action.notNil) {
+				String.unixCmdActions.put(pid, action);
+			};
+			^pid
+		} {
+			Error("Collection should have at least the filepath of the program to run.").throw
+		}
+	}
+
+	prUnixCmd { arg postOutput = true;
+		_ArrayPOpen
+		^this.primitiveFailed
 	}
 }

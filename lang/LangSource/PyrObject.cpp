@@ -49,6 +49,10 @@
 #include <boost/thread/executor.hpp>
 #include <boost/thread/executors/basic_thread_pool.hpp>
 
+#ifdef _MSC_VER
+#include <future>
+#endif
+
 #if 0 // not yet
 #include <parallel/algorithm>
 #endif
@@ -1084,7 +1088,11 @@ int compareColDescs(const void *va, const void *vb)
 double elapsedTime();
 #endif
 
+#ifdef _MSC_VER
+static size_t fillClassRows(const PyrClass *classobj, PyrMethod** bigTable);
+#else
 static size_t fillClassRows(const PyrClass *classobj, PyrMethod** bigTable, boost::basic_thread_pool & pool);
+#endif
 
 
 static void binsortClassRows(PyrMethod const ** bigTable, const ColumnDescriptor* sels, size_t numSelectors, size_t begin, size_t end)
@@ -1197,8 +1205,11 @@ void buildBigMethodMatrix()
 	//post("bigTableSize %d %d %d\n", bigTableSize, numSelectors, numClasses);
 	ColumnDescriptor *sels = (ColumnDescriptor*)pyr_pool_compile->Alloc(numSelectors * sizeof(ColumnDescriptor));
 	MEMFAIL(sels);
-
+#ifdef _MSC_VER
+	auto filledSelectorsFuture = std::async( std::launch::deferred, std::bind( &prepareColumnTable, sels, numSelectors )    );
+#else
 	auto filledSelectorsFuture = boost::async( pool, std::bind( &prepareColumnTable, sels, numSelectors )    );
+#endif
 
 	classes = (PyrClass**)pyr_pool_compile->Alloc(numClasses * sizeof(PyrClass*));
 	MEMFAIL(classes);
@@ -1211,33 +1222,53 @@ void buildBigMethodMatrix()
 		}
 		return classes;
 	};
-
+#ifdef _MSC_VER
+	auto filledClassIndices = std::async( std::launch::deferred, fillClassIndices, classes);
+#else
 	auto filledClassIndices = boost::async( pool, fillClassIndices, classes);
+#endif
 
 	bigTable = (PyrMethod**)pyr_pool_compile->Alloc(bigTableSize * sizeof(PyrMethod*));
 	MEMFAIL(bigTable);
 
+#ifndef _MSC_VER
 	pool.try_executing_one();
+#endif	
 	filledClassIndices.wait();
+#ifdef _MSC_VER
+	size_t numentries = fillClassRows(class_object, bigTable);
+#else
 	size_t numentries = fillClassRows(class_object, bigTable, pool);
+#endif
 	post("\tnumentries = %lu / %d = %.2g\n", numentries, bigTableSize, (double)numentries/(double)bigTableSize);
 
 
 	ColumnDescriptor * filledSelectors = filledSelectorsFuture.get();
-
+#ifdef _MSC_VER
+	std::vector< std::future<void> > columnDescriptorsWithStats;
+#else
 	std::vector< boost::future<void> > columnDescriptorsWithStats;
+#endif
 	size_t selectorsPerJob = numSelectors / cpuCount / 2;
 	for( size_t beginSelectorIndex : boost::irange(selectorsPerJob, numSelectors, selectorsPerJob) ) {
 		size_t endSelectorIndex = std::min( beginSelectorIndex + selectorsPerJob, numSelectors );
+#ifdef _MSC_VER
+		auto future = std::async( std::launch::deferred, calcRowStats, bigTable, filledSelectors, numClasses, numSelectors, beginSelectorIndex, endSelectorIndex );
+#else
 		auto future = boost::async( pool, calcRowStats, bigTable, filledSelectors, numClasses, numSelectors, beginSelectorIndex, endSelectorIndex );
+#endif
 		columnDescriptorsWithStats.push_back( std::move(future) );
 	}
 
 	calcRowStats(bigTable, filledSelectors, numClasses, numSelectors, 0, std::min( selectorsPerJob, numSelectors) );
 
 	for( auto & future : columnDescriptorsWithStats ) {
+#ifdef _MSC_VER
+		future.wait();
+#else
 		while( !future.is_ready() )
 			pool.schedule_one_or_yield();
+#endif
 	}
 
 	//post("qsort\n");
@@ -1255,20 +1286,31 @@ void buildBigMethodMatrix()
 
 	// bin sort the class rows to the new ordering
 	//post("reorder rows\n");
-
+#ifdef _MSC_VER
+	std::vector< std::future<void> > binsortedClassRowFuture;
+#else
 	std::vector< boost::future<void> > binsortedClassRowFuture;
+#endif
 	size_t classesPerJob = numClasses / cpuCount / 2;
 	for( size_t beginClassIndex : boost::irange(classesPerJob, numClasses, classesPerJob) ) {
 		size_t endClassIndex = std::min( beginClassIndex + classesPerJob, numClasses );
+#ifdef _MSC_VER
+		auto future = std::async( std::launch::deferred, binsortClassRows, (PyrMethod const **)bigTable, sels, numSelectors, beginClassIndex, endClassIndex );
+#else
 		auto future = boost::async( pool, binsortClassRows, (PyrMethod const **)bigTable, sels, numSelectors, beginClassIndex, endClassIndex );
+#endif
 		binsortedClassRowFuture.push_back( std::move(future) );
 	}
 
 	binsortClassRows( (PyrMethod const **)bigTable, sels, numSelectors, 0, std::min( classesPerJob, numClasses) );
 
 	for( auto & future : binsortedClassRowFuture ) {
+#ifdef _MSC_VER
+        future.wait();
+#else
 		while( !future.is_ready() )
 			pool.schedule_one_or_yield();
+#endif
 	}
 
 	//post("calc row offsets %d\n", numSelectors);
@@ -1344,7 +1386,11 @@ void buildBigMethodMatrix()
 */
 }
 
+#ifdef _MSC_VER
+static size_t fillClassRow(const PyrClass *classobj, PyrMethod** bigTable)
+#else
 static size_t fillClassRow(const PyrClass *classobj, PyrMethod** bigTable, boost::basic_thread_pool & pool)
+#endif
 {
 	size_t count = 0;
 
@@ -1385,7 +1431,26 @@ static size_t fillClassRow(const PyrClass *classobj, PyrMethod** bigTable, boost
 		int numSubclasses = subclasses->size;
 
 		if( numSubclasses ) {
+#ifdef _MSC_VER
+			if( numSubclasses <= 2 ) {
+				for( int subClassIndex : boost::irange(0, numSubclasses) )
+					result += fillClassRow( slotRawClass(&subclasses->slots[subClassIndex]), bigTable);
+			} else {
+				typedef std::vector< std::future<size_t> > VectorOfFutures;
 
+				VectorOfFutures subclassResults;
+				for( int subClassIndex : boost::irange(1, numSubclasses) ) {
+					auto subclassResult = std::async(std::launch::deferred, fillClassRow, slotRawClass(&subclasses->slots[subClassIndex]), bigTable);
+					subclassResults.emplace_back( std::move( subclassResult ) );
+				}
+
+				result += fillClassRow( slotRawClass(&subclasses->slots[0]), bigTable);
+
+				for( auto & subclassResult : subclassResults ) {
+					result += subclassResult.get();
+				}
+			}
+#else
 			if( numSubclasses <= 2 ) {
 				for( int subClassIndex : boost::irange(0, numSubclasses) )
 					result += fillClassRow( slotRawClass(&subclasses->slots[subClassIndex]), bigTable, pool );
@@ -1407,16 +1472,24 @@ static size_t fillClassRow(const PyrClass *classobj, PyrMethod** bigTable, boost
 					result += subclassResult.get();
 				}
 			}
+#endif
 		}
 	}
 
 	return result;
 }
 
+#ifdef _MSC_VER
+static size_t fillClassRows(const PyrClass *classobj, PyrMethod** bigTable)
+{
+	return fillClassRow(classobj, bigTable);
+}
+#else
 static size_t fillClassRows(const PyrClass *classobj, PyrMethod** bigTable, boost::basic_thread_pool & pool)
 {
 	return fillClassRow(classobj, bigTable, pool );
 }
+#endif
 
 bool funcFindArg(PyrBlock* func, PyrSymbol *name, int *index)
 {

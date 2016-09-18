@@ -299,7 +299,7 @@ UGen : AbstractFunction {
 					^("input " ++ i ++ " is not audio rate: " + inputs.at(i) + inputs.at(0).rate);
 				};
 			};
-		 };
+		};
 		^this.checkValidInputs
 	}
 
@@ -529,6 +529,9 @@ MultiOutUGen : UGen {
 	}
 
 	initOutputs { arg numChannels, rate;
+		if(numChannels.isNil or: { numChannels < 1 }, {
+			Error("%: wrong number of channels (%)".format(this, numChannels)).throw
+		});
 		channels = Array.fill(numChannels, { arg i;
 			OutputProxy(rate, this, i);
 		});

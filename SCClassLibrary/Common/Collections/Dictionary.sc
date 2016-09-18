@@ -206,7 +206,7 @@ Dictionary : Set {
 		if(func.notNil) {
 			old = this.at(key);
 			if(old.notNil) {
-				 val = func.value(val, old)
+				val = func.value(val, old)
 			}
 		};
 		this.put(key, val)

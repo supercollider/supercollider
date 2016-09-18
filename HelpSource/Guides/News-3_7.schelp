@@ -4,20 +4,20 @@ categories:: News
 related::Guides/News-3_6, Guides/News-3_5, Guides/Debugging-tips
 
 
-NOTE::3.7.0 fixes many issues, but may also introduce new ones. See also STRONG::Known Issues:: section below. Please do not hesitate to add new issues you find to the LINK::https://github.com/supercollider/supercollider/issues##issue tracker:: or mention them on any of the supercollider LINK::http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx##mailing list::.::
-
-This document focusses on features, there are STRONG::many bugfixes and interesting improvements::, which can be found by exploring the recent changes file and snooping around the system itself.
+In addition to the new features and changes described here, there are STRONG::many bugfixes and interesting improvements::, a full list of which can be found in CHANGELOG.md.
 
 
-SECTION:: Editor
+SECTION::SuperCollider IDE
 
 LIST::
 ##Menu entries for Recording, scope and server inspection
 ##Modify and query IDE documents from sclang
 ##Support for the Atom text editor
+##Integrated help with auto-completion
+##Autosave feature
 ::
 
-SECTION:: Language-side news
+SECTION::SuperCollider Language
 
 
 
@@ -33,11 +33,11 @@ LIST::
 
 SUBSECTION::External Interfacing
 
-There is an entirely new HID implementation: see link::Guides/Working_with_HID:: that works cross platform (Linux and OSX thus far). This deprecates the GeneralHID interface. Also the link::Classes/LID:: interface has been updated to match the API of the new HID implementation.
+There is an entirely new HID (Human Interface Device) implementation: see link::Guides/Working_with_HID:: that works cross platform (Linux and OSX thus far). This deprecates the GeneralHID interface. Also the link::Classes/LID:: interface has been updated to match the API of the new HID implementation.
 
 
 
-SUBSECTION::List of new methods and classes
+SUBSECTION::New methods and classes
 
 LIST::
 ##link::Classes/Collection#-collectCopy::, link::Classes/Collection#-collectInPlace::
@@ -46,14 +46,19 @@ LIST::
 ##link::Classes/Server#*remote:: Create a new Server instance corresponding to a server app running on a separate machine.
 ::
 
-SUBSECTION::List of deprecated methods/classes, or that will be deprecated soon
+SUBSECTION::Deprecated classes and methods
 LIST::
-##GeneralHID, GeneralHIDSpec, GeneralHIDDevice (replaced by the new LINK::Classes/HID:: system)
+##TuningInfo
+##ScaleInfo
+##Proutine (use Prout instead)
+##Document style api - set postColor background etc.
+##Date-bootTime
+##Platform-getMouseCoords (use GUI.cursorPosition instead)
 ::
 
 
 
-SECTION::Server-side news
+SECTION::SuperCollider Server
 
 Apart from UDP, the TCP-protocol is now supported.
 
@@ -69,19 +74,19 @@ LIST::
 SUBSECTION::Improved or corrected behavior
 LIST::
 ##LINK::Classes/LinXFade2:: (correct fading direction)
-##LINK::Classes/LFPulse:: (when width = 0.5, return exacly as many 0 as 1)
+##LINK::Classes/LFPulse:: (when width = 0.5, return exactly as many 0 as 1)
 ##LINK::Classes/TrigControl:: is now independent of synth order, like LINK::Classes/Control::.
 ##LINK::Classes/TRand::, LINK::Classes/TExpRand::, LINK::Classes/TIRand:: (can operate at audio rate)
 ##LINK::Classes/Env#*new:: accepts a new TELETYPE::step2:: shape, which steps to a value at the end of a shape
 ##LINK::Classes/UGen#-curvelin:: is now inverse of LINK::Classes/UGen#-lincurve::
-##LINK::Classes/Server#-record:: correcty closes short files
+##LINK::Classes/Server#-record:: correctly closes short files
 ##In combinations of demand-ugens: Instances of PV_Copy are added automatically where necessary for parallel processing
 ::
 
 
 SUBSECTION::More operators work uniformly across sclang and scserver
 
-The following operators have been added as ugens and work the same as in sclang:
+The following operators have been added as UGens and work the same as in sclang:
 
 TABLE::
 ##unary operators || code::rand, rand2, linrand, bilinrand, sum3rand, coin::
@@ -96,12 +101,4 @@ SECTION:: Known Issues
 
 While much has improved and many bugs from 3.6 have been fixed, there are still many known issues. For a complete list see: link::https://github.com/supercollider/supercollider/issues/::
 
-Here is one few that are worth a special mention:
-
-LIST::
-##(OSX) Evaluating code in the help document works only with teletype::shift-enter:: and not with teletype::cmd-enter:: LINK::https://github.com/supercollider/supercollider/issues/1385::
-##(WIN) When running "Quit Interpreter" from the IDE-Language menu, sclang crashes. LINK::https://github.com/supercollider/supercollider/issues/1578::
-::
-
-
-
+Please do not hesitate to add new issues you find to the LINK::https://github.com/supercollider/supercollider/issues##issue tracker:: or mention them on the  LINK::http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx##mailing list::

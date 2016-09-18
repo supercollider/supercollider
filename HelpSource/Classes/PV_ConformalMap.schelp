@@ -13,7 +13,7 @@ z → (z - a) / (1 - za*)
 
 ::
 
-to the phase vocoder bins z with a given by the real and imag imputs to
+to the phase vocoder bins z with a given by the real and imag inputs to
 the UGen.
 
 

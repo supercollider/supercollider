@@ -1,0 +1,59 @@
+TITLE:: Message
+summary:: A message to an object
+categories:: Language
+related:: Classes/MethodQuote
+
+DESCRIPTION::
+A message to an object, to be evaluated later.
+
+CLASSMETHODS::
+
+METHOD:: new
+argument:: receiver
+the receiver of the message
+argument:: selector
+the method to be called
+argument:: args
+arguments to the call
+
+INSTANCEMETHODS::
+
+METHOD:: receiver
+the object to which the message is relayed
+
+METHOD:: selector
+the method to be called
+
+METHOD:: args
+the arguments to the call
+
+METHOD:: value
+send the message to the receiver and call the selector with the arguments
+argument::  ... moreArgs
+
+private:: storeArgs
+
+EXAMPLES::
+
+code::
+// an object
+a = 36
+
+
+// a message to the object
+m = Message(a, \sqrt)
+
+// deliver the message
+m.value
+// -> 6
+
+// a message that lacks an argument
+m = Message(a, '+')
+
+// evaluate with the argument
+m.value(6)
+// -> 42
+
+m.value(-13)
+// -> 23
+::

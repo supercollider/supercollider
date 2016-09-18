@@ -39,7 +39,7 @@ MyClass { // :Object is implied
 
 section:: Methods
 
-class methods are specified with the asterix within the class method, the keyword code::this:: refers to the class. A
+class methods are specified with the asterisk within the class method, the keyword code::this:: refers to the class. A
 class in SuperCollider is itself an object.  It is an instance of link::Classes/Class::. Instance methods are specified
 within the instance method, the keyword code::this:: refers to the instance.
 
@@ -271,7 +271,7 @@ code::
 
 section:: Slotted classes
 
-Classes defined with [slot] can use the syntax myClass[i] which will call myClass.at(i). This is usefull when defining
+Classes defined with [slot] can use the syntax myClass[i] which will call myClass.at(i). This is useful when defining
 classes that inherit from a Collection type class.
 
 code::

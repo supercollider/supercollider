@@ -1,5 +1,5 @@
 class::NAryOpFunction
-summary::represent a n-ary oparation on a function
+summary::represent a n-ary operation on a function
 categories::Core
 related::Classes/BinaryOpFunction, Classes/UnaryOpFunction, Classes/NAryOpStream, Classes/Pnaryop, Overviews/Operators
 

@@ -138,7 +138,7 @@ SimpleNumber : Number {
 	raddeg { ^this*180/pi }
 
 	performBinaryOpOnSimpleNumber { arg aSelector, aNumber, adverb;
-		 BinaryOpFailureError(this, aSelector, [aNumber, adverb]).throw;
+		BinaryOpFailureError(this, aSelector, [aNumber, adverb]).throw;
 	}
 	performBinaryOpOnComplex { arg aSelector, aComplex, adverb; ^aComplex.perform(aSelector, this.asComplex, adverb) }
 	performBinaryOpOnSignal { arg aSelector, aSignal, adverb;
@@ -382,6 +382,10 @@ SimpleNumber : Number {
 	lag3ud { ^this }
 	varlag { ^this }
 	slew   { ^this }
+
+	poll { arg trig = 10, label, trigid = -1;
+		^Poll(trig, this, label, trigid)
+	}
 
 	// support for writing synth defs
 	writeInputSpec { arg file, synth;

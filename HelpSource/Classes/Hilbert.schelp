@@ -6,7 +6,7 @@ categories::  UGens>Filters>Nonlinear
 
 Description::
 
-Returns two channels with the original signal and a copy of that signal that has been shifted in phase by 90 degrees (0.5 pi radians). Hilbert outputs two channels containing the input signal and the transformed signal. Due to the method used, distortion occurs in the upper octave of the frequency spectrum (See HilbertFIR for an FFT implementation that avoids this, but introduces a signigicant delay).
+Returns two channels with the original signal and a copy of that signal that has been shifted in phase by 90 degrees (0.5 pi radians). Hilbert outputs two channels containing the input signal and the transformed signal. Due to the method used, distortion occurs in the upper octave of the frequency spectrum (See HilbertFIR for an FFT implementation that avoids this, but introduces a significant delay).
 
 
 classmethods::

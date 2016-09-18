@@ -8,7 +8,7 @@ Strict convolution with fixed kernel which can be updated using a trigger signal
 
 
 note::
-Doing conmvolution in time domain is highly inefficient, and probably only useful for either very short kernel sizes, or for control rate signals.
+Doing convolution in time domain is highly inefficient, and probably only useful for either very short kernel sizes, or for control rate signals.
 See link::Classes/Convolution2:: and link::Classes/Convolution2L:: for more efficient convolution UGens.
 ::
 

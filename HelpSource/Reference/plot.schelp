@@ -4,11 +4,11 @@ categories:: Common methods, GUI
 
 
 section:: Description
-The link::Reference/plot:: provides the ability to plot data in a GUI window. The method is implemented in the link::Classes/ArrayedCollection:: class but is also available for other classes for convenience, including link::Classes/Function::, link::Classes/Bus:, link::Classes/Env::, link::Classes/Buffer::, link::Classes/SoundFile::, link::Classes/Wavetable::.
+The link::Overviews/Methods#plot#plot method:: provides the ability to plot data in a GUI window. The method is implemented in the link::Classes/ArrayedCollection:: class but is also available for other classes for convenience, including link::Classes/Function::, link::Classes/Bus::, link::Classes/Env::, link::Classes/Buffer::, link::Classes/SoundFile::, link::Classes/Wavetable::.
 
 method:: plot
 All arguments are optional.
-note::The arguments avaliable vary from object to object. The below list is only for explanation of possible arguments.::
+note::The arguments available vary from object to object. The below list is only for explanation of possible arguments.::
 
 
 argument:: name

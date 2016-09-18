@@ -34,7 +34,7 @@ METHOD:: value
 		A Float.
 
 METHOD:: valueAction
-	Sets link::#-value:: and triggeres link::#-action::.
+	Sets link::#-value:: and triggers link::#-action::.
 
 METHOD:: increment
 	Increments the value by link::#-step:: multiplied by 'factor'.
@@ -256,7 +256,7 @@ s.waitForBoot({
 			10,
 		coef:0.1)
 		);
-	}).send(s);
+	}).add;
 
 
 	w = Window.new("Hold arrow keys to trigger sound",Rect(300,Window.screenBounds.height-300,400,100)).front;

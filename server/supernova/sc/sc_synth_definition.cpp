@@ -20,6 +20,7 @@
 #include <future>
 
 #include <boost/filesystem/operations.hpp>
+#include <boost/range/iterator_range.hpp>
 
 #include "sc_synth.hpp"
 #include "sc_ugen_factory.hpp"
@@ -33,10 +34,9 @@ using namespace std;
 
 void register_synthdefs(synth_factory & factory, std::vector<sc_synthdef> && defs)
 {
-    std::vector<sc_synthdef> synthdefs(std::move(defs));
-    for (sc_synthdef & def : synthdefs) {
-        sc_synth_definition * sp = new sc_synth_definition(std::move(def));
-        factory.register_definition(sp);
+    for (sc_synthdef & def : defs) {
+        sc_synth_definition_ptr sp = new sc_synth_definition( std::move(def) );
+        factory.register_definition( std::move(sp) );
     }
 }
 
@@ -68,24 +68,24 @@ std::vector<sc_synthdef> sc_read_synthdefs_dir(path const & dir)
 
     vector<future<def_vector> > futures;
 
-    recursive_directory_iterator end;
-    for (recursive_directory_iterator it(dir); it != end; ++it) {
-        if (!is_directory(it->status())) {
-            auto path_name = it->path();
+    for( auto const & entry : boost::make_iterator_range( recursive_directory_iterator(dir),
+                                                          recursive_directory_iterator()     )) {
+        if (!is_directory( entry.status() )) {
+            auto path_name = entry.path();
             futures.emplace_back( std::move(async(launch_policy, [=]() { return sc_read_synthdefs_file(path_name);} )) );
         }
     }
 
     for (future<def_vector> & synthdef_future : futures) {
         for (sc_synthdef & definition : synthdef_future.get())
-            ret.emplace_back(std::move(definition));
+            ret.emplace_back( std::move(definition) );
     }
 
     return ret;
 }
 
-sc_synth_definition::sc_synth_definition(sc_synthdef const & sd):
-    synth_definition(sd.name()), sc_synthdef(sd)
+sc_synth_definition::sc_synth_definition(sc_synthdef && sd):
+    synth_definition(sd.name()), sc_synthdef( std::forward<sc_synthdef>(sd) )
 {
     std::map<int, symbol> reversed_parameter_map;
     for( auto const & elem : parameter_map)

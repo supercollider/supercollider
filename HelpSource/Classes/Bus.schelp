@@ -101,7 +101,7 @@ Get a new Bus that is a subset of this bus (see code::newFrom::).
 subsection:: Asynchronous Control Bus Methods
 
 The following commands apply only to control buses and are asynchronous. For synchronous access to control busses please
-consult link::#Synchronous control bus methods::.
+consult link::#Synchronous Control Bus Methods::.
 
 method:: value
 Set all channels to this float value. This command is asynchronous.

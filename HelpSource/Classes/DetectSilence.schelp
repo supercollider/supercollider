@@ -1,11 +1,11 @@
 class:: DetectSilence
-summary:: When input falls below a threshhold, evaluate doneAction.
+summary:: When input falls below a threshold, evaluate doneAction.
 categories::  UGens>Synth control, UGens>Analysis>Amplitude
 
 
 Description::
 
-When input falls below a threshhold, evaluate doneAction.
+When input falls below a threshold, evaluate doneAction.
 
 code::
 // this frees after the Decay has become quiet enough for a long enough time

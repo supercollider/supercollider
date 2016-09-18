@@ -336,14 +336,15 @@ namespace boost
                                                    cv_status::timeout;
         }
 
+        template <class lock_type>
         inline cv_status wait_until(
-            unique_lock<mutex>& lk,
+            lock_type& lock,
             chrono::time_point<chrono::steady_clock, chrono::nanoseconds> tp)
         {
             using namespace chrono;
             nanoseconds d = tp.time_since_epoch();
             timespec ts = boost::detail::to_timespec(d);
-            if (do_wait_until(lk, ts)) return cv_status::no_timeout;
+            if (do_wait_until(lock, ts)) return cv_status::no_timeout;
             else return cv_status::timeout;
         }
 
@@ -391,7 +392,7 @@ namespace boost
     private: // used by boost::thread::try_join_until
 
         template <class lock_type>
-        inline bool do_wait_until(
+        bool do_wait_until(
           lock_type& m,
           struct timespec const &timeout)
         {

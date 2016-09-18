@@ -1,22 +1,21 @@
 class:: Document
 redirect:: implementationClass
-summary:: An abstract class for editor-specific text document editing classes
+summary:: Editor-specific text document editing
 categories:: Frontends
-related:: Classes/CocoaDocument, Classes/EmacsDocument, Classes/ScelDocument
+related:: Classes/EmacsDocument, Classes/ScelDocument
 
 description::
-The Document class represents a text document within the context of your text editing environment. You can use the class to programmatically create, modify, and query these documents. While it is an abstract class, you still use it to create a code::new:: Document. It simply passes on code::new:: to the appropriate document implementation, e.g. link::Classes/CocoaDocument::.
+The Document class represents a text document within the context of your text editing environment. You can use the class to programmatically create, modify, and query these documents.
 
-subsection:: Some Important Issues Regarding Document
+Document used to be an abstract class, meaning it didn't provide all the functionality itself, but instead relied on subclasses to complete the functionality. One such subclass was CocoaDocument. Although CocoaDocument was available only to OS X and had an ad hoc interface, it possessed many additional features like code animation and rich text.
 
-Different text-editing environments can be used with SuperCollider. Therefore Document is an abstract class, meaning it doesn't provide all the functionality itself, but relies on subclasses to complete the functionality. Calls to code::Document.new:: or code::Document.open:: are actually passed down to the relevant class for the editor you're using, such as link::Classes/CocoaDocument:: (for most Mac users) or link::Classes/ScelDocument:: (containing an link::Classes/EmacsDocument::).
+In SuperCollider 3.6, Document changed a bit and now the "abstract class" descriptor is only partially true. The SuperCollider IDE provides its own version of the Document class. The Emacs editor still supplies link::Classes/ScelDocument:: (which links to link::Classes/EmacsDocument::) as a subclass of Document. As an unfortunate byproduct of the history of Document, there are inconsistencies in the APIs of SCIDE's Document and Emacs' ScelDocument. This help file describes that of SCIDE.
+
+Future versions of SuperCollider will aim to fix these API inconsistencies and restore the functionality of CocoaDocument.
 
 subsection:: Setting the Environment
 
 By default code::envir:: it is set to the current link::Classes/Environment::. However, you can make it use its own link::Classes/Environment:: also. Thus, e.g., if you were to set the link::Classes/Environment:: variable code::~myVar = 12:: in the current link::Classes/Environment::, you can create a new Document window in which that link::Classes/Environment:: variable is not set.
-
-
-
 
 classmethods::
 
@@ -27,10 +26,8 @@ argument:: title
 An instance of link::Classes/String:: or link::Classes/Symbol::.
 argument:: string
 An instance of link::Classes/String::. The contents of the document.
-argument:: makeListener
-Makes this document the listener, i.e. the place where SC-lang posts messages.
 argument:: envir
-An instance of link::Classes/Environment::. The link::Classes/Environment:: to be used by the interpreter of the document window. By defualt, it is set to the current link::Classes/Environment::.
+An instance of link::Classes/Environment::. The link::Classes/Environment:: to be used by the interpreter of the document window. By default, it is set to the current link::Classes/Environment::.
 discussion::
 code::
 Document.new("this is the title", "this is the text");
@@ -45,7 +42,7 @@ The beginning of the cursor selection of the file content.
 argument:: selectionLength
 The length of the cursor selection of the file content.
 argument:: envir
-An instance of link::Classes/Environment::. The Environment to be used by the interpreter of the document window. By defualt, it is set to the current link::Classes/Environment::.
+An instance of link::Classes/Environment::. The Environment to be used by the interpreter of the document window. By default, it is set to the current link::Classes/Environment::.
 discussion::
 code::
 Document.open("README", 292,253); // notice the selected text in the open document
@@ -81,40 +78,37 @@ code::
 Document.current.name.postln; // Prints "Document.html"
 ::
 
-method:: listener
-Returns the current Document which is the listener, i.e. the Document where interpreter messages are posted.
-
 method:: allDocuments
 Returns all documents.
 
 method:: globalKeyDownAction
 Get/set A global action to be performed when a key is pressed.
-argument:: value
+argument:: action
 An instance of link::Classes/Function:: or link::Classes/FunctionList::.
 
 method:: globalKeyUpAction
 Get/set A global action to be performed when a key is released.
-argument:: value
+argument:: action
 An instance of link::Classes/Function:: or link::Classes/FunctionList::.
 
 method:: initAction
 Get/set A an action to be performed up opening or creating a Document.
-argument:: value
+argument:: action
 An instance of link::Classes/Function:: or link::Classes/FunctionList::.
 
 method:: autoRun
-If a document begins with the link::Classes/String::, code::"/*RUN*/"::, then the code following it int he file will be exectued on opening the file, if autorun is set to true.
+If a document begins with the link::Classes/String::, code::"/*RUN*/"::, then the code following it int he file will be executed on opening the file, if autorun is set to true.
 argument:: value
 An instance of link::Classes/Boolean::. Default value is code::true::.
 
 method:: implementationClass
 The editor implementation specific class which will handle Documents.
 argument:: value
-A class for implementing Document, e.g. link::Classes/CocoaDocument::.
+A class for implementing Document.
 
 subsection:: Path Utilities
 
-Utilities and settings for dealing with documents such as super collider code files. By default the document directory is SuperCollider's application directory.
+Utilities and settings for dealing with documents such as supercollider code files. By default the document directory is SuperCollider's application directory.
 
 method:: dir
 Get/set the default document directory. The default is dependent on link::Classes/Document#implementationClass::.
@@ -158,11 +152,6 @@ private:: prGetBackgroundColor, prGetBounds, prIsEditable, propen, prGetTitle, p
 
 subsection:: General Document Properties
 
-method:: bounds
-Get/set the bounds of the document.
-argument:: argBounds
-An instance of link::Classes/Rect::.
-
 method:: path
 Get / set the the Document's path.
 argument:: apath
@@ -181,16 +170,16 @@ Document.current.dir.postln;
 
 method:: ==
 A binary operator.
-argument:: doc
+argument:: that
 An instance of Document.
 discussion::
 code::
-Document.current == Document.listener; // presumaably returns false
+Document.current == Document.listener; // presumably returns false
 ::
 
 method:: editable
 Get / set the the document is editable.
-argument:: abool
+argument:: bool
 An instance of link::Classes/Boolean::.
 
 method:: name
@@ -204,13 +193,8 @@ Document.current.name.postln;
 
 method:: title
 Get / set the title (same as link::Classes/Document#name::).
-argument:: argName
+argument:: newTitle
 An instance of link::Classes/String::.
-
-method:: alwaysOnTop
-Get/set whether a document is always on top.
-argument:: boolean
-An instance of link::Classes/Boolean::.
 
 method:: promptToSave
 Get/set whether a document is prompts to save if it has been changed. Use this with caution.
@@ -228,9 +212,6 @@ Document.current.isEdited.postln;
 
 method:: isFront
 Returns code::true:: if the document is in front.
-
-method:: isListener
-Returns if the document is the listener.
 
 method:: didBecomeKey
 Saves the current link::Classes/Environment::, makes the document current, and performs its link::Classes/Document#toFrontAction::.
@@ -264,12 +245,6 @@ code::
 Document.listener.front;
 ::
 
-method:: unfocusedFront
-Bring a document to the front without focusing it.
-code::
-Document.listener.unfocusedFront;
-::
-
 method:: onClose
 Get/set the action to be performed on closing the document.
 argument:: value
@@ -287,17 +262,15 @@ An instance of link::Classes/Function:: or link::Classes/FunctionList::.
 
 method:: mouseDownAction
 Get/set the action to be performed on link::Classes/Document#mouseDown::.
-note::
-The Mac OSX built-in editor does not supports this feature. A mouseDownAction that you supply will be ignored.
-::
-argument:: value
-An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::x::, code::y::, code::modifiers::, code::buttonNumber::, code::clickCount::, code::clickPos::.
+
+argument:: action
+An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::document::, code::x::, code::y::, code::modifiers::, code::buttonNumber::, code::clickCount::, code::clickPos::.
 
 
 method:: mouseUpAction
 Get/set the action to be performed on link::Classes/Document#mouseUp::.
-argument:: value
-An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::x::, code::y::, code::modifiers::, code::buttonNumber::, code::clickCount::, code::clickPos::.
+argument:: action
+An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::document::, code::x::, code::y::, code::modifiers::, code::buttonNumber::, code::clickCount::, code::clickPos::.
 discussion::
 code::
 (
@@ -327,8 +300,8 @@ Document.current.mouseUpAction = nil; // clear mouseUpActiont
 
 method:: keyDownAction
 Get/set the action to be performed on link::Classes/Document#keyDown::.
-argument:: value
-An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::char::, code::modifiers::, code::unicode::, code::keycode::. See link::Classes/View#Key actions:: for details on these arguments.
+argument:: action
+An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::document::, code::char::, code::modifiers::, code::unicode::, code::keycode::. See link::Classes/View#Key actions:: for details on these arguments.
 discussion::
 code::
 Document.current.keyDownAction = { arg ...args; args.postln };
@@ -338,8 +311,8 @@ Document.current.keyDownAction = nil;
 
 method:: keyUpAction
 Get/set the action to be performed on link::Classes/Document#keyUp::.
-argument:: value
-An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::char::, code::modifiers::, code::unicode::, code::keycode::. See link::Classes/View#Key actions:: for details on these arguments.
+argument:: action
+An instance of link::Classes/Function:: or link::Classes/FunctionList::. The arguments passed to the function are: code::document::, code::char::, code::modifiers::, code::unicode::, code::keycode::. See link::Classes/View#Key actions:: for details on these arguments.
 discussion::
 code::
 Document.current.keyUpAction = { arg ...args; args.postln };
@@ -445,29 +418,6 @@ Document.current.string_(": test test test test test ",
 )
 // Watch me change content
 ::
-
-method:: font
-Gets or sets the font within a certain range.
-argument:: font
-An instance of link::Classes/Font::.
-argument:: rangestart
-An link::Classes/Integer::. Default value is -1. If code::rangestart = -1::, the whole document is selected.
-argument:: rangesize
-An link::Classes/Integer::. Default value is 0.
-discussion::
-code::
-// Select the following code in parentheses and execute it
-(
-Document.current.font_(Font("Impact", 14),
-	Document.current.selectedRangeLocation + 12,
-	18);
-)
-// Watch me change font
-::
-
-method:: underlineSelection
-Underlines the current selection of a Document.
-
 
 subsection:: Subclassing and Internal Methods
 

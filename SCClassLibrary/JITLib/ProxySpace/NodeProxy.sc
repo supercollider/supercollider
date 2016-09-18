@@ -138,7 +138,7 @@ NodeProxy : BusPlug {
 
 
 		if(this.shouldAddObject(container, index)) {
-			 // server sync happens here if necessary
+			// server sync happens here if necessary
 			if(server.serverRunning) { container.loadToBundle(bundle, server) } { loaded = false; };
 			this.prepareOtherObjects(bundle, index, oldBus.notNil and: { oldBus !== bus });
 		} {
@@ -450,6 +450,7 @@ NodeProxy : BusPlug {
 
 	spawn { | extraArgs, index = 0 |
 		var bundle, obj, i;
+		if(server.serverRunning.not) { "server '%' not running\n".postf(server); ^this };
 		obj = objects.at(index);
 		if(obj.notNil) {
 			i = this.index;
@@ -464,6 +465,7 @@ NodeProxy : BusPlug {
 	send { | extraArgs, index, freeLast = true |
 		var bundle, obj, fadeTime = this.fadeTime;
 		if(objects.isEmpty) { ^this };
+		if(server.serverRunning.not) { "server '%' not running\n".postf(server); ^this };
 		if(index.isNil) {
 			bundle = this.getBundle;
 			if(freeLast) { this.stopAllToBundle(bundle, fadeTime) };
@@ -489,11 +491,13 @@ NodeProxy : BusPlug {
 
 	sendEach { | extraArgs, freeLast = true |
 		var bundle;
+		if(server.serverRunning.not) { "server '%' not running\n".postf(server); ^this };
 		bundle = this.getBundle;
 		if(freeLast, { this.stopAllToBundle(bundle) });
 		if(loaded.not) { this.loadToBundle(bundle) };
 		this.sendEachToBundle(bundle, extraArgs);
-		bundle.schedSend(server);
+		bundle.schedSend(server)
+
 
 	}
 
@@ -511,6 +515,7 @@ NodeProxy : BusPlug {
 
 	deepWakeUp {
 		var bundle = MixedBundle.new;
+		if(server.serverRunning.not) { "server '%' not running\n".postf(server); ^this };
 		this.wakeUpToBundle(bundle);
 		bundle.schedSend(server, clock ? TempoClock.default, quant)
 	}
@@ -546,6 +551,17 @@ NodeProxy : BusPlug {
 		^NdefGui(this, nSliders ? this.getKeysValues.size.max(5), parent, bounds);
 	}
 
+	trace { |index = 0|
+		var obj = objects[index];
+		if(obj.nodeID.notNil) {
+			server.sendMsg(\n_trace, obj.nodeID);
+		} {
+			"Cannot trace a% %".format(
+				if(obj.class.name.asString.first.isVowel) { "n" } { "" },
+				obj.class.name
+			).warn;
+		};
+	}
 
 
 
@@ -936,10 +952,13 @@ NodeProxy : BusPlug {
 	}
 
 	generateUniqueName {
-		// if named, give us the name so we see it
+		var uniqueName = this.identityHash;
+		// if named, add the name so we see it
 		// in synthdef names of the server's nodes.
-		var key = this.key ?? this.identityHash.abs;
-		^server.clientID.asString ++ key ++ "_";
+		if(this.key.notNil, {
+			uniqueName = this.key ++ uniqueName;
+		});
+		^server.clientID.asString ++ uniqueName ++ "_";
 	}
 
 	prepareOutput {
@@ -1052,6 +1071,5 @@ Ndef : NodeProxy {
 		};
 		stream << this.class.name << "(" <<< this.key << serverString << ")"
 	}
-
 
 }

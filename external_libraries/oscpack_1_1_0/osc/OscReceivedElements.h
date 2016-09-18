@@ -100,12 +100,6 @@ public:
         : contents_( contents )
         , size_( ValidateSize( (osc_bundle_element_size_t)size ) ) {}
 
-#if !(defined(__x86_64__) || defined(_M_X64))
-    ReceivedPacket( const char *contents, int size )
-        : contents_( contents )
-        , size_( ValidateSize( (osc_bundle_element_size_t)size ) ) {}
-#endif
-
     bool IsMessage() const { return !IsBundle(); }
     bool IsBundle() const;
 
@@ -480,7 +474,11 @@ public:
 	const char *AddressPattern() const { return addressPattern_; }
 
 	// Support for non-standard SuperCollider integer address patterns:
-	bool AddressPatternIsUInt32() const;
+	bool AddressPatternIsUInt32() const
+    {
+        return (addressPattern_[0] == '\0');
+    }
+
 	uint32 AddressPatternAsUInt32() const;
 
 	uint32 ArgumentCount() const { return static_cast<uint32>(typeTagsEnd_ - typeTagsBegin_); }

@@ -21,7 +21,9 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     ${CMAKE_SOURCE_DIR}/external_libraries/hidapi/hidapi_parser
 
                     ${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
-                    LangSource/Bison)
+                    LangSource/Bison
+)
+
 
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -31,6 +33,12 @@ endif()
 find_package(Readline 5.0)
 
 find_package(Sndfile)
+
+if (SC_QT OR SC_IDE)
+	set(LOCALSOCK_UTIL_FILE ${CMAKE_SOURCE_DIR}/editors/sc-ide/primitives/localsocket_utils.cpp)
+else ()
+	set(LOCALSOCK_UTIL_FILE)
+endif ()
 
 set(sclang_sources
 	LangPrimSource/SC_HID_api.cpp
@@ -81,6 +89,7 @@ set(sclang_sources
 	${CMAKE_SOURCE_DIR}/common/SC_StringBuffer.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_TextUtils.cpp
+	${LOCALSOCK_UTIL_FILE}
 
 	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
 )
@@ -140,14 +149,14 @@ if(WIN32)
         list(APPEND sclang_sources LangPrimSource/SC_PortMidi.cpp)
 endif()
 
-# This sets up the exe icon for windows under mingw.
-if(MINGW)
+# This sets up the exe icon for windows.
+if(WIN32)
  set(RES_FILES ${CMAKE_SOURCE_DIR}/platform/windows/Resources/sclang.rc)
  set(CMAKE_RC_COMPILER_INIT windres)
  ENABLE_LANGUAGE(RC)
  SET(CMAKE_RC_COMPILE_OBJECT
  "<CMAKE_RC_COMPILER> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
-endif(MINGW)
+endif(WIN32)
 
 if(SC_WII)
 	if(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -198,7 +207,8 @@ target_link_libraries(libsclang tlsf ${PTHREADS_LIBRARIES})
 if(SC_IDE OR SC_QT)
 	find_package(Qt5Core)
 	get_target_property(QtCore_location Qt5::Core LOCATION)
-	message("Qt: " ${QtCore_location} )
+	message(STATUS "Found Qt: " ${QtCore_location} )
+  get_filename_component(QT_BIN_PATH ${QtCore_location} DIRECTORY CACHE)
 
 	target_link_libraries(libsclang ${QT_COLLIDER_LIBS})
 endif()
@@ -256,6 +266,7 @@ if(READLINE_FOUND)
 	target_include_directories(libsclang PUBLIC ${READLINE_INCLUDE_DIR})
 	target_link_libraries(libsclang ${READLINE_LIBRARY})
 endif(READLINE_FOUND)
+mark_as_advanced(READLINE_INCLUDE_DIR READLINE_LIBRARY)
 
 if (APPLE)
 	target_link_libraries(libsclang "-framework Carbon")
@@ -285,8 +296,7 @@ if (FFTW3F_FOUND)
 endif()
 
 if (WIN32)
-	target_link_libraries(libsclang wsock32 ws2_32)
-    target_link_libraries(libsclang portmidi)
+	target_link_libraries(libsclang wsock32 ws2_32 portmidi iphlpapi hid)
 endif()
 
 if (GC_SANITYCHECK)
@@ -306,10 +316,10 @@ target_link_libraries(sclang ${ICU_LIBRARIES})
 target_compile_definitions(sclang PUBLIC USE_SC_TERMINAL_CLIENT)
 
 if(LTO)
-	target_compile_definitions(libsclang PUBLIC -flto -flto-report)
+  target_compile_definitions(libsclang PUBLIC -flto -flto-report)
 
-	set_property(TARGET sclang libsclang
-					APPEND PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program")
+  set_property(TARGET sclang libsclang
+        APPEND PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program")
 endif()
 
 if(APPLE)
@@ -317,11 +327,95 @@ if(APPLE)
         COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../MacOS/
         COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:sclang> $<TARGET_FILE_DIR:SuperCollider>/../MacOS)
 elseif(WIN32)
-	install(TARGETS sclang
-			DESTINATION "SuperCollider"
-			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-elseif(NOT APPLE)
-	install(TARGETS sclang
-			RUNTIME DESTINATION "bin"
-			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+    if(NOT MSVC)
+        set_target_properties(sclang PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<CONFIG>")
+    endif(NOT MSVC)
+
+    add_custom_command(TARGET sclang
+        PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/SCClassLibrary" $<TARGET_FILE_DIR:sclang>/SCClassLibrary
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/HelpSource" $<TARGET_FILE_DIR:sclang>/HelpSource
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/examples" $<TARGET_FILE_DIR:sclang>/examples
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/sounds" $<TARGET_FILE_DIR:sclang>/sounds
+    )
+
+    if(NOT SC_QT)  # TODP: clean (and cross platform) solution for language boot for case SC_QT=OFF (this is a quick fix for language boot error)
+        add_custom_command(TARGET sclang
+            PRE_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/SCClassLibrary/Common/GUI" $<TARGET_FILE_DIR:sclang>/SCClassLibrary/scide_scqt/Common/GUI
+            COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/SCClassLibrary/JITLib/GUI" $<TARGET_FILE_DIR:sclang>/SCClassLibrary/scide_scqt/JITLib/GUI
+            COMMAND ${CMAKE_COMMAND} -E remove_directory $<TARGET_FILE_DIR:sclang>/SCClassLibrary/Common/GUI
+            COMMAND ${CMAKE_COMMAND} -E remove_directory $<TARGET_FILE_DIR:sclang>/SCClassLibrary/JITLib/GUI
+        )
+    endif(NOT SC_QT)
+
+    set(SC_WIN_DLL_DIRS)
+    if(SNDFILE_LIBRARY_DIR)
+      list(APPEND SC_WIN_DLL_DIRS "${SNDFILE_LIBRARY_DIR}")
+    endif(SNDFILE_LIBRARY_DIR)
+    if(FFTW3F_LIBRARY_DIR)
+      list(APPEND SC_WIN_DLL_DIRS "${FFTW3F_LIBRARY_DIR}")
+    endif(FFTW3F_LIBRARY_DIR)
+    if(READLINE_LIBRARY_DIR)
+      file(GLOB READLINE_DLL "${READLINE_LIBRARY_DIR}/*readline*.dll")
+      list(APPEND SC_WIN_DLL_DIRS "${READLINE_LIBRARY_DIR}")
+      add_custom_command(TARGET sclang
+          POST_BUILD
+          COMMAND ${CMAKE_COMMAND} -E copy_if_different "${READLINE_DLL}" $<TARGET_FILE_DIR:sclang>
+      )
+    endif(READLINE_LIBRARY_DIR)
+    if(QT_BIN_PATH)
+      list(APPEND SC_WIN_DLL_DIRS "${QT_BIN_PATH}")
+    endif(QT_BIN_PATH)
+
+    if(SC_IDE)
+        add_custom_command(TARGET sclang
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_FILE_DIR:sclang> $<TARGET_FILE_DIR:SuperCollider>
+      )
+    endif(SC_IDE)
+
+    install(TARGETS sclang
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+        DESTINATION "${SC_WIN_BUNDLE_NAME}"
+    )
+
+    if(SC_QT)
+        SET(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}")
+        include(InstallRequiredSystemLibraries)
+        if(MSYS)
+            SET(QT_PLUGINS_DIR "${QT_BIN_PATH}/../share/qt5/plugins" CACHE PATH "Location of qt plugins for windows as provided by MSYS2")
+        else()
+            SET(QT_PLUGINS_DIR "${QT_BIN_PATH}/../plugins" CACHE PATH "Location of qt plugins for windows")
+        endif()
+
+        foreach(plugin ${Qt5Network_PLUGINS} ${Qt5Gui_PLUGINS} ${Qt5Sensors_PLUGINS} ${Qt5Sql_PLUGINS} ${Qt5PrintSupport_PLUGINS})
+            get_target_property(_loc ${plugin} LOCATION)
+            get_filename_component(_parent_dir ${_loc} DIRECTORY)
+            get_filename_component(_name_we ${_loc} NAME_WE)
+            get_filename_component(_abs ${QT_PLUGINS_DIR} ABSOLUTE)
+            string(REPLACE "${_abs}/" "" _dest_dir ${_parent_dir})
+            install(FILES "${_parent_dir}/${_name_we}$<$<CONFIG:DEBUG>:d>.dll"
+                DESTINATION "${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}/${_dest_dir}"
+            )
+        endforeach()
+    endif(SC_QT)
+
+    if(NOT SC_IDE)
+        install(CODE "
+            include(BundleUtilities)
+            fixup_bundle(
+                \"${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}/sclang.exe\"
+                \"\"
+                \"${SC_WIN_DLL_DIRS}\" )
+            "
+            COMMENT "Looking for libraries..."
+            VERBATIM
+        )
+    endif(NOT SC_IDE)
+
+else()
+    install(TARGETS sclang
+        RUNTIME DESTINATION "bin"
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endif()

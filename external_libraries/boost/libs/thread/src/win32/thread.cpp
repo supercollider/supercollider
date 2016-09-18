@@ -24,6 +24,7 @@
 #include <boost/cstdint.hpp>
 #if defined BOOST_THREAD_USES_DATETIME
 #include <boost/date_time/posix_time/conversion.hpp>
+#include <boost/thread/thread_time.hpp>
 #endif
 #include <boost/thread/csbl/memory/unique_ptr.hpp>
 #include <memory>
@@ -467,7 +468,7 @@ namespace boost
 #if defined BOOST_THREAD_USES_DATETIME
     bool thread::timed_join(boost::system_time const& wait_until)
     {
-      return do_try_join_until(get_milliseconds_until(wait_until));
+      return do_try_join_until(boost::detail::get_milliseconds_until(wait_until));
     }
 #endif
     bool thread::do_try_join_until_noexcept(uintmax_t milli, bool& res)
@@ -529,7 +530,7 @@ namespace boost
     {
       // a bit too strict: Windows XP with SP3 would be sufficient
 #if BOOST_PLAT_WINDOWS_RUNTIME                                    \
-    || ( BOOST_USE_WINAPI_VERSION <= BOOST_WINAPI_VERSION_WINXP ) \
+    || ( defined(BOOST_USE_WINAPI_VERSION) && ( BOOST_USE_WINAPI_VERSION <= BOOST_WINAPI_VERSION_WINXP ) ) \
     || ( ( defined(__MINGW32__) && !defined(__MINGW64__) ) && _WIN32_WINNT < 0x0600)
         return 0;
 #else

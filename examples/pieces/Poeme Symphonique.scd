@@ -21,8 +21,8 @@ var env, signal;
 (
 13.do({
 	Synth(\ligetignome).set(
-		\tempo, (rrand(0.5,1.5)).reciprocal, 
-		\filterfreq, rrand(2000,4000), 
+		\tempo, (rrand(0.5,1.5)).reciprocal,
+		\filterfreq, rrand(2000,4000),
 		\rq, rrand(0.3,0.9) )
 });
 )

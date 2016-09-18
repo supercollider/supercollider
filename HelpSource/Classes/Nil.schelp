@@ -97,7 +97,7 @@ method::push
 Executes function.
 
 method::appendStream
-Retuns stream.
+Returns stream.
 
 subsection::Dependancy
 
@@ -113,7 +113,7 @@ subsection::Generic Collectors
 There are a number of methods that can be applied to nil so that variables do not need to be initialized. Nil is just the "ground" (default case) from which the rest is bootstrapped.
 
 method::add
-Returns an array with the value. This makes it unecessary to initialize when adding to a variable.
+Returns an array with the value. This makes it unnecessary to initialize when adding to a variable.
 code::
 x = nil;
 x = x.add(8);  // returns an array
@@ -121,7 +121,7 @@ x = x.add(7); // appends to the array
 ::
 
 method::addAll
-Returns an array with all the values. This makes it unecessary to initialize when adding to a variable.
+Returns an array with all the values. This makes it unnecessary to initialize when adding to a variable.
 code::
 x = nil;
 x = x.addAll([0, 2, 1, 2]);  // returns an array
@@ -129,7 +129,7 @@ x = x.addAll(7); // single objects are converted
 ::
 
 method::remove
-For nil, it just returns nil. This makes it unecessary to initialize when removing from a variable and adding to it again.
+For nil, it just returns nil. This makes it unnecessary to initialize when removing from a variable and adding to it again.
 code::
 x = nil;
 x.remove(1); // stays nil, returns nil
@@ -139,10 +139,10 @@ x;
 ::
 
 method::++
-Returns an array with all the values. This makes it unecessary to initialize when adding to a variable.
+Returns an array with all the values. This makes it unnecessary to initialize when adding to a variable.
 code::
 x = nil;
-x = x ++ [7, 8, 9]; // returns the reciever
+x = x ++ [7, 8, 9]; // returns the receiver
 x = x ++ [3, 0, 1, 2]; // adds to the array
 ::
 

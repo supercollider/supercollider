@@ -4,7 +4,7 @@ categories:: Libraries>JITLib>Environments, Collections>Unordered, Live Coding
 related:: Classes/Environment
 
 description::
-Environment that redirects access (strong::put::) and assignment (strong::at::). It is used as a base class for redirecing Environments. For example uses, see link::Classes/LazyEnvir:: and link::Classes/ProxySpace::.
+Environment that redirects access (strong::put::) and assignment (strong::at::). It is used as a base class for redirecting Environments. For example uses, see link::Classes/LazyEnvir:: and link::Classes/ProxySpace::.
 
 ClassMethods::
 

@@ -49,6 +49,8 @@ QcMultiSlider::QcMultiSlider() :
 {
   setFocusPolicy( Qt::StrongFocus );
   setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
+  setAttribute(Qt::WA_AcceptTouchEvents);
+
   connect( this, SIGNAL(modified()), this, SLOT(update()) );
   connect( this, SIGNAL(interacted()), this, SLOT(doAction()) );
 }

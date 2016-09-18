@@ -3,7 +3,7 @@ summary:: Warp a buffer with a time pointer
 categories:: UGens>Buffer, UGens>Generators>Granular
 
 description::
-Inspired by Chad Kirby's SuperCollider2 Warp1 class, which was inspired by Richard Karpen's sndwarp for CSound. A granular time strecher and pitchshifter.
+Inspired by Chad Kirby's SuperCollider2 Warp1 class, which was inspired by Richard Karpen's sndwarp for CSound. A granular time stretcher and pitchshifter.
 
 classmethods::
 private:: categories
@@ -16,7 +16,7 @@ argument::bufnum
 the buffer number of a mono soundfile.
 
 argument::pointer
-the position in the buffer.  The value should be between 0 and 1, with 0 being the begining
+the position in the buffer.  The value should be between 0 and 1, with 0 being the beginning
 of the buffer, and 1 the end.
 
 argument::freqScale
@@ -27,11 +27,11 @@ argument::windowSize
 the size of each grain window.
 
 argument::envbufnum
-the buffer number containing a singal to use for the grain envelope. -1 uses a built-in
+the buffer number containing a signal to use for the grain envelope. -1 uses a built-in
 Hanning envelope.
 
 argument::overlaps
-the number of overlaping windows.
+the number of overlapping windows.
 
 argument::windowRandRatio
 the amount of randomness to the windowing function.  Must be between 0 (no
@@ -66,7 +66,7 @@ SynthDef(\warp, {arg buffer = 0, envbuf = -1;
 	env = EnvGen.kr(Env([0.001, 1, 1, 0.001], [0.1, 14, 0.9], 'exp'), doneAction: 2);
 	out = Warp1.ar(1, buffer, pointer, pitch, 0.1, envbuf, 8, 0.1, 2);
 	Out.ar(0, out * env);
-}).send(s);
+}).add;
 
 )
 

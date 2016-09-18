@@ -9,7 +9,7 @@ UnpackFFT : MultiOutUGen {
 		var upperlimit = bufsize/2;
 		tobin = if(tobin.isNil, upperlimit, {tobin.min(upperlimit)});
 		^[Unpack1FFT(chain, bufsize, (frombin..tobin), 0),
-		  Unpack1FFT(chain, bufsize, (frombin..tobin), 1)].flop.flatten;
+			Unpack1FFT(chain, bufsize, (frombin..tobin), 1)].flop.flatten;
 	}
 }
 
@@ -45,7 +45,7 @@ PV_ChainUGen : WidthFirstUGen {
 			1, {magsphases ++ origmagsphases[1]},
 			2, {magsphases},
 			// any larger than 2 and we assume it's a list of magnitudes
-			   {[magsphases, origmagsphases[1]]}
+				{[magsphases, origmagsphases[1]]}
 			);
 		magsphases = magsphases.flop.flatten;
 		^PackFFT(this, numframes, magsphases, frombin, tobin, zeroothers);
@@ -61,7 +61,7 @@ PV_ChainUGen : WidthFirstUGen {
 			1, {magsphases ++ origmagsphases[1]},
 			2, {magsphases},
 			// any larger than 2 and we assume it's a list of magnitudes
-			   {[magsphases, origmagsphases[1]]}
+				{[magsphases, origmagsphases[1]]}
 			);
 		magsphases = magsphases.flop.flatten;
 		^PackFFT(this, numframes, magsphases, frombin, tobin, zeroothers);

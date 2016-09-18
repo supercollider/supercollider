@@ -45,7 +45,7 @@ Library.put(\colorFix, Environment.make {
 // these are the real colors, from SuperCollider.app syntax colorize
 ~red = "bf0000";
 ~green = "007300";
-~blue = "0000bf"; 
+~blue = "0000bf";
 ~gray = "606060";
 ~signatures = [~red, ~green, ~blue];
 
@@ -135,14 +135,14 @@ Library.put(\colorFix, Environment.make {
 		success = false;
 	};
 	success
-};	
+};
 
 ~scanStream = { |stream, numFixes|
 	var	keepGoing = true;
-	
+
 	try {
 		while { keepGoing and: { ~scanToColorKey.(stream) } } {
-			keepGoing = ~fixColor.(stream, numFixes); 
+			keepGoing = ~fixColor.(stream, numFixes);
 		};
 		true	// == success
 	} { |error|
@@ -187,7 +187,7 @@ Library.put(\colorFix, Environment.make {
 		};	// else: keep scanning with next char
 	};
 	notEOF and: { ch.notNil }	// anything left?
-};		
+};
 
 // assumes stream is at the position of a 6-digit color
 ~fixColor = { |stream, numFixes|
@@ -253,7 +253,7 @@ if(~cocoaMenu.notNil) {
 			"Not an HTML file. Cannot proceed.".postln;
 		};
 	};
-	
+
 	~confirmWrite = { |prompt, checkFunc = true|
 		var	w, c,
 			bigFont = Font(GUI.skin.fontSpecs[0], 28);
@@ -298,7 +298,7 @@ if(~cocoaMenu.notNil) {
 			.action_({ w.close; "Color fix canceled.".postln });
 		w.front;
 	};
-	
+
 	~cocoaMenu.add(["HTML Color Fix"], {
 		Library.at(\colorFix).use {
 			~checkSaved.()

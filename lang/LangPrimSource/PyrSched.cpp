@@ -27,7 +27,11 @@
 #ifdef __APPLE__
 # include <CoreAudio/HostTime.h>
 #endif
+#ifdef _MSC_VER
+#include "wintime.h"
+#else
 #include <sys/time.h>
+#endif
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
@@ -43,6 +47,10 @@
 #include "SCBase.h"
 
 #include "SC_Lock.h"
+
+
+#include <boost/sync/semaphore.hpp>
+#include <boost/sync/support/std_chrono.hpp>
 
 static const double dInfinity = std::numeric_limits<double>::infinity();
 
@@ -207,10 +215,12 @@ void dumpheap(PyrObject *heapArg)
 
 
 bool gRunSched = false;
-thread gSchedThread;
-thread gResyncThread;
-condition_variable_any gSchedCond;
-timed_mutex gLangMutex;
+static std::thread gSchedThread;
+static std::thread gResyncThread;
+static boost::sync::semaphore gResyncThreadSemaphore;
+
+std::condition_variable_any gSchedCond;
+std::timed_mutex gLangMutex;
 
 int64 gHostOSCoffset = 0;
 int64 gHostStartNanos = 0;
@@ -224,9 +234,9 @@ static void syncOSCOffsetWithTimeOfDay();
 void resyncThread();
 
 // Use the highest resolution clock available for monotonic clock time
-typedef typename std::conditional<std::chrono::high_resolution_clock::is_steady,
-								  std::chrono::high_resolution_clock,
-								  std::chrono::steady_clock>::type monotonic_clock;
+using monotonic_clock = std::conditional<std::chrono::high_resolution_clock::is_steady,
+										  std::chrono::high_resolution_clock,
+										  std::chrono::steady_clock>::type;
 
 static std::chrono::high_resolution_clock::time_point hrTimeOfInitialization;
 
@@ -246,8 +256,7 @@ SCLANG_DLLEXPORT_C void schedInit()
 	hrTimeOfInitialization     = high_resolution_clock::now();
 
 	syncOSCOffsetWithTimeOfDay();
-	thread thread(resyncThread);
-	gResyncThread = std::move(thread);
+	gResyncThread = std::thread(resyncThread);
 
 	gHostStartNanos = duration_cast<nanoseconds>(hrTimeOfInitialization.time_since_epoch()).count();
 	gElapsedOSCoffset = (int64)(gHostStartNanos * kNanosToOSC) + gHostOSCoffset;
@@ -255,6 +264,8 @@ SCLANG_DLLEXPORT_C void schedInit()
 
 SCLANG_DLLEXPORT_C void schedCleanup()
 {
+	gResyncThreadSemaphore.post();
+	gResyncThread.join();
 }
 
 double elapsedTime()
@@ -397,7 +408,9 @@ void post(const char *fmt, ...);
 void resyncThread()
 {
 	while (true) {
-		std::this_thread::sleep_for(std::chrono::seconds(20));
+
+		if( gResyncThreadSemaphore.wait_for( std::chrono::seconds(20) ) )
+			return;
 
 		syncOSCOffsetWithTimeOfDay();
 		gElapsedOSCoffset = (int64)(gHostStartNanos * kNanosToOSC) + gHostOSCoffset;

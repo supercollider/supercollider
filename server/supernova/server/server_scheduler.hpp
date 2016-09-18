@@ -40,7 +40,7 @@ namespace nova
  * */
 struct audio_sync_callback:
     public static_pooled_class<audio_sync_callback, 1<<20 /* 1mb pool of realtime memory */,
-                               true>
+                               true, 16>
 {
     virtual ~audio_sync_callback() = default;
 

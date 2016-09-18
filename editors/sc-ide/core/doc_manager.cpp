@@ -166,7 +166,7 @@ QString Document::pathAsSCArrayOfCharCodes()
 {
     QString path;
     if(mFilePath.isEmpty()) {
-        path = QStringLiteral("nil");
+        return QStringLiteral("nil");
     } else {
         path = mFilePath;
     }
@@ -554,6 +554,7 @@ bool DocumentManager::doSaveAs( Document *doc, const QString & path )
         mFsWatcher.addPath(cpath);
 
     Q_EMIT(saved(doc));
+    syncLangDocument(doc);
 
     return true;
 }
@@ -1305,7 +1306,7 @@ void DocumentManager::syncLangDocument(Document *doc)
         range = doc->initialSelectionRange();
     }
     QString command =
-            QStringLiteral("Document.syncFromIDE(\'%1\', %2, %3, %4, \'%5\', %6, %7)")
+            QStringLiteral("Document.syncFromIDE(\'%1\', %2, %3, %4, %5, %6, %7)")
             .arg(doc->id().constData())
             .arg(doc->titleAsSCArrayOfCharCodes())
             .arg(doc->textAsSCArrayOfCharCodes(0, -1))
@@ -1338,8 +1339,11 @@ void DocumentManager::sendActiveDocument()
         return;
     if(mCurrentDocument){
         QString command = QStringLiteral("Document.setActiveDocByQUuid(\'%1\');").arg(mCurrentDocument->id().constData());
-        if (!mCurrentDocumentPath.isEmpty())
+        if (mCurrentDocumentPath.isEmpty()) {
+            command = command.append(QStringLiteral("ScIDE.currentPath_(nil);"));
+        } else {
             command = command.append(QStringLiteral("ScIDE.currentPath_(\"%1\");").arg(mCurrentDocumentPath));
+        }
         Main::evaluateCodeIfCompiled(command, true);
     } else
         Main::evaluateCodeIfCompiled(QStringLiteral("ScIDE.currentPath_(nil); Document.current = nil;"), true);

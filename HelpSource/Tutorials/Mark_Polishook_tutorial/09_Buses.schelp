@@ -4,7 +4,7 @@ categories:: Tutorials>Mark_Polishook_tutorial
 related:: Tutorials/Mark_Polishook_tutorial/00_Introductory_tutorial
 
 
-By default, SuperCollider has 128 buses for audio signals and 4096 for control signals. The buses, which are items in an array, are what SuperCollider uses to represent audio and control rate data.
+By default, SuperCollider has 1024 buses for audio signals and 16,384 for control signals. The buses, which are items in an array, are what SuperCollider uses to represent audio and control rate data.
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 

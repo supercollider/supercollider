@@ -35,10 +35,10 @@ code::
 s.boot;
 //sound example:
 (
-var clutch, pat, decicion;
-decicion = Pseq([Pn(true,10), Prand([true, false], 10)], inf).asStream;
+var clutch, pat, decision;
+decision = Pseq([Pn(true,10), Prand([true, false], 10)], inf).asStream;
 pat = Pbind(\freq, Pseq([200, [300, 302], 400, 450], inf), \dur, 0.3);
-clutch = StreamClutch(pat, decicion);
+clutch = StreamClutch(pat, decision);
 clutch.asEventStreamPlayer.play;
 )
 ::
@@ -46,7 +46,7 @@ clutch.asEventStreamPlayer.play;
 code::
 // independant stepping
 (
-var clutch, pat, decicion;
+var clutch, pat, decision;
 pat = Pbind(\freq, Pseq([200, [300, 302], 400, 450], inf), \dur, 0.3);
 b = StreamClutch(pat);
 b.connected = false;

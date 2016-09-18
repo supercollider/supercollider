@@ -12,7 +12,7 @@ The server application is a commandline program, so all commands apart from OSC 
 
 The server application represented by a Server object might be running on the same machine as the client (in the same address space as the language application or separately; see below), or it may be running on a remote machine.
 
-Most of a Server's options are contolled through its instance of ServerOptions. See the link::Classes/ServerOptions:: helpfile for more detail.
+Most of a Server's options are controlled through its instance of ServerOptions. See the link::Classes/ServerOptions:: helpfile for more detail.
 
 subsection:: Paths
 
@@ -140,11 +140,11 @@ free all nodes in all registered servers
 
 method:: supernova
 
-Switches server program to use supernova. Check link::Classes/ParGroup:: how to make use of multicore hardware with the supernova server.
+Switches the server program to supernova. Check link::Classes/ParGroup:: how to make use of multicore hardware with the supernova server.
 
 method:: scsynth
 
-Switches server program to use supernova.
+Switches the server program to scsynth. This is the default server.
 
 
 InstanceMethods::
@@ -547,10 +547,6 @@ SynthDef("bubbles", {
 	zout = CombN.ar(SinOsc.ar(f, 0, 0.04), 0.2, 0.2, 4); // echoing sine wave
 	Out.ar(0, zout);
 }).add;
-SynthDef("tpulse", { arg out=0,freq=700,sawFreq=440.0;
-	Out.ar(out, SyncSaw.ar(freq,  sawFreq,0.1) )
-}).add;
-
 )
 
 x = Synth.new("bubbles");

@@ -74,7 +74,7 @@ T ellint_e_imp(T phi, T k, const Policy& pol)
     }
     else if(fabs(k) == 1)
     {
-       return invert ? T(-sin(phi)) : sin(phi);
+       return invert ? T(-sin(phi)) : T(sin(phi));
     }
     else
     {

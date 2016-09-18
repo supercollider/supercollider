@@ -120,7 +120,7 @@ list::
 ::
 The sclang part is a sophisticated programming language with nice GUI features; and the server part is a mean, lean, efficient UNIX command line application (meaning it runs without any GUI representation).
 
-They communicate by a protocol called Open Sound Control (OSC), over either UDP or TCP, which are network protocols also used on the internet. Don't think from this that the two applications must run on different computers (they can, which can have definite performance advantages), or that they need to be connected to the internet (although it is possible to have clients and servers in diffferent parts of the world communicating!!). Most of the time they will be running on the same machine, and the 'networking' aspect of things will be relatively transparent for you.
+They communicate by a protocol called Open Sound Control (OSC), over either UDP or TCP, which are network protocols also used on the internet. Don't think from this that the two applications must run on different computers (they can, which can have definite performance advantages), or that they need to be connected to the internet (although it is possible to have clients and servers in different parts of the world communicating!!). Most of the time they will be running on the same machine, and the 'networking' aspect of things will be relatively transparent for you.
 
 You can only communicate with the server using OSC messages over the network, but luckily the language app has lots of powerful objects which represent things on the server and allow you to control them easily and elegantly. Understanding how exactly that works is crucial to mastering SC, so we'll be talking about that in some depth.
 

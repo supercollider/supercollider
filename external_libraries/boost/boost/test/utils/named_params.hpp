@@ -331,7 +331,7 @@ struct typed_keyword<bool,unique_id,required>
 
 template<typename T, typename Params, typename Keyword>
 inline typename enable_if_c<!has_param<Params,Keyword>::value,void>::type
-opt_assign( T& target, Params const& p, Keyword k )
+opt_assign( T& /*target*/, Params const& /*p*/, Keyword /*k*/ )
 {
 }
 

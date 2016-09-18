@@ -241,7 +241,7 @@ code::
 (
 i = SCImage.new(SCDoc.helpSourceDir +/+ "images/vduck2.jpg");
 w = i.plot;
-i.interpolation;			// get the image currrent interpolation mode
+i.interpolation;			// get the image current interpolation mode
 )
 
 (

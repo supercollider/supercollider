@@ -77,7 +77,7 @@ public:
     }
 
 private:
-    void send(const char * data, size_t length) override;
+    void send(const char * data, size_t length) override final;
 
     udp::endpoint endpoint_;
 };
@@ -236,9 +236,9 @@ public:
         detail::network_thread::start_receive();
     }
 
-    typedef osc::ReceivedPacket osc_received_packet;
-    typedef osc::ReceivedBundle received_bundle;
-    typedef osc::ReceivedMessage received_message;
+    typedef osc::ReceivedPacket  ReceivedPacket;
+    typedef osc::ReceivedBundle  ReceivedBundle;
+    typedef osc::ReceivedMessage ReceivedMessage;
 
     class received_packet:
         public audio_sync_callback
@@ -267,8 +267,7 @@ private:
     /* @{ */
     /** udp socket handling */
     void start_receive_udp();
-    void handle_receive_udp(const boost::system::error_code& error,
-                            std::size_t bytes_transferred);
+    void handle_receive_udp(const boost::system::error_code& error, std::size_t bytes_transferred);
     /* @} */
 
     /* @{ */
@@ -302,7 +301,7 @@ public:
             : socket_(io_service)
         {}
 
-        void send(const char *data, size_t length) override;
+        void send(const char *data, size_t length) override final;
 
         void async_read_msg_size();
         void handle_message_size();
@@ -351,13 +350,13 @@ public:
 
 private:
     template <bool realtime>
-    void handle_bundle(received_bundle const & bundle, endpoint_ptr const & endpoint);
+    void handle_bundle(ReceivedBundle const & bundle, endpoint_ptr const & endpoint);
     template <bool realtime>
-    void handle_message(received_message const & message, size_t msg_size, endpoint_ptr const & endpoint);
+    void handle_message(ReceivedMessage const & message, size_t msg_size, endpoint_ptr const & endpoint);
     template <bool realtime>
-    void handle_message_int_address(received_message const & message, size_t msg_size, endpoint_ptr const & endpoint);
+    void handle_message_int_address(ReceivedMessage const & message, size_t msg_size, endpoint_ptr const & endpoint);
     template <bool realtime>
-    void handle_message_sym_address(received_message const & message, size_t msg_size, endpoint_ptr const & endpoint);
+    void handle_message_sym_address(ReceivedMessage const & message, size_t msg_size, endpoint_ptr const & endpoint);
 
     friend struct sc_scheduled_bundles::bundle_node;
     /* @} */
@@ -380,13 +379,13 @@ public:
         last = now;
         now += diff;
     }
-	
+
     void set_last_now(time_tag const & lasts, time_tag const & nows)
     {
         now = nows;
         last = lasts;
     }
-	
+
     void update_time_from_system(void)
     {
         now = time_tag::from_ptime(boost::date_time::microsec_clock<boost::posix_time::ptime>::universal_time());

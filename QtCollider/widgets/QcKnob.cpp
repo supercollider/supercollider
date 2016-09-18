@@ -39,6 +39,7 @@ QcKnob::QcKnob() :
 {
   setFocusPolicy( Qt::StrongFocus );
   setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum );
+  setAttribute(Qt::WA_AcceptTouchEvents);
 }
 
 void QcKnob::setValue( double val )

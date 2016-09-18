@@ -182,10 +182,12 @@ BOOST_REGEX_DECL regsize_t BOOST_REGEX_CCALL regerrorA(int code, const regex_tA*
          }
       }
 #if BOOST_WORKAROUND(BOOST_MSVC, >= 1400) && !defined(_WIN32_WCE) && !defined(UNDER_CE)
-      (::sprintf_s)(localbuf, 5, "%d", 0);
+      int r = (::sprintf_s)(localbuf, 5, "%d", 0);
 #else
-      (std::sprintf)(localbuf, "%d", 0);
+      int r = (std::sprintf)(localbuf, "%d", 0);
 #endif
+      if(r < 0)
+         return 0; // sprintf failed
       if(std::strlen(localbuf) < buf_size)
          BOOST_REGEX_DETAIL_NS::strcpy_s(buf, buf_size, localbuf);
       return std::strlen(localbuf) + 1;

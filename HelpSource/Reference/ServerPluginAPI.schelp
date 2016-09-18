@@ -1,0 +1,400 @@
+title:: Server Plugin API
+summary:: Reference for writing unit generators
+categories:: Internals
+related:: Guides/WritingUGens
+
+section:: Input rates
+
+These four constants identify the calculation rates of inputs in SuperCollider.
+
+definitionlist::
+## code::calc_ScalarRate::
+|| Initial rate. Conventionally known in the language as ".ir".
+
+## code::calc_BufRate::
+|| Control rate. Conventionally known in the language as ".kr".
+
+## code::calc_FullRate::
+|| Audio rate. Conventionally known in the language as ".ar".
+
+## code::calc_DemandRate::
+|| Demand rate.
+::
+
+section:: UGen basics
+
+These helper macros assume that there is a ugen object called code::unit:: in the local scope.
+
+definitionlist::
+## code::IN(index)::
+|| A single block of audio-rate input as a float* at the given index. Index 0 is the first input to the ugen, index 1 the second input, and so forth.
+
+## code::IN0(index)::
+|| A single sample of control-rate input as a float, at the given index.
+
+## code::OUT(index)::
+|| A single block of audio-rate output as a float* at the given index.
+
+## code::OUT0(index)::
+|| A single sample of control-rate input as a float, at the given index.
+
+## code::INRATE(index)::
+|| Get the rate of a given input index. This will be one of the four rates.
+
+## code::INBUFLENGTH(index)::
+|| Get the block size of a given input index.
+
+## code::SAMPLERATE::
+|| Sample rate of the server in Hertz.
+
+## code::SAMPLEDUR::
+|| Sample period of the server in seconds.
+
+## code::BUFLENGTH::
+|| Length in samples of an audio buffer (that is, the number of samples in a control period).
+
+## code::BUFRATE::
+|| Control rate of the server in Hertz.
+
+## code::BUFDUR::
+|| Control period of the server in seconds.
+
+## code::FULLRATE::
+||
+
+## code::FULLBUFLENGTH::
+||
+::
+
+section:: Buffers
+
+definitionlist::
+## code::GET_BUF::
+|| The recommended way to retrieve a buffer. Take the first input of this UGen and use it as a buffer number. This dumps
+a number of variables into the local scope:
+
+list::
+## code::buf:: - a pointer to the code::SndBuf:: instance
+## code::bufData:: - the raw float data from the buffer
+## code::bufChannels:: - the number of channels in the buffer
+## code::bufSamples:: - the number of samples in the buffer
+## code::bufFrames:: - the number of frames in the buffer
+::
+
+The buffer is locked using the code::LOCK_SNDBUF:: macro. Buffer lock operations are specific to supernova, and don't
+do anything in vanilla scsynth.
+
+## code::GET_BUF_SHARED::
+|| Like code::GET_BUF::, but the buffer is locked using code::LOCK_SNDBUF_SHARED::.
+
+## code::SIMPLE_GET_BUF::
+|| Like code::GET_BUF::, but only creates the code::buf:: variable and does not lock the buffer.
+
+## code::SIMPLE_GET_BUF_EXCLUSIVE::
+|| Like code::SIMPLE_GET_BUF::, but locks the buffer with code::LOCK_SNDBUF::.
+
+## code::SIMPLE_GET_BUF_SHARED::
+|| Like code::SIMPLE_GET_BUF::, but locks the buffer with code::LOCK_SNDBUF_SHARED::.
+::
+
+The following macros are for use in supernova. They still exist in scsynth, but will have no effect.
+
+code::
+ACQUIRE_BUS_AUDIO(index)
+ACQUIRE_BUS_AUDIO_SHARED(index)
+RELEASE_BUS_AUDIO(index)
+RELEASE_BUS_AUDIO_SHARED(index)
+LOCK_SNDBUF(buf)
+LOCK_SNDBUF_SHARED(buf)
+LOCK_SNDBUF2(buf1, buf2)
+LOCK_SNDBUF2_SHARED(buf1, buf2)
+LOCK_SNDBUF2_EXCLUSIVE_SHARED(buf1, buf2)
+LOCK_SNDBUF2_SHARED_EXCLUSIVE(buf1, buf2)
+ACQUIRE_SNDBUF(buf)
+ACQUIRE_SNDBUF_SHARED(buf)
+RELEASE_SNDBUF(buf)
+RELEASE_SNDBUF_SHARED(buf)
+ACQUIRE_BUS_CONTROL(index)
+RELEASE_BUS_CONTROL(index)
+::
+
+section:: RGen
+
+RGen is a pseudorandom number generator API. Most ugen developers are not interested in seeding their own RGens and
+would prefer to draw from a global RGen instance supplied by SuperCollider. This can be retrieved with the code:
+
+code::
+RGen& rgen = *unit->mParent->mRGen;
+::
+
+definitionlist::
+## code::uint32 RGen\::trand()::
+|| Return a uniformly distributed random 32-bit integer.
+
+## code::double RGen\::drand()::
+|| Return a uniformly distributed random double in [0,1).
+
+## code::float RGen\::frand()::
+|| Random float in [0,1).
+
+## code::float RGen\::frand0()::
+|| Random float in [1,2).
+
+## code::float RGen\::frand2()::
+|| Random float in [-1,1).
+
+## code::float RGen\::frand8()::
+|| Random float in [-0.125,0.125).
+
+## code::float RGen\::fcoin()::
+|| Either -1 or +1.
+
+## code::float RGen\::flinrand()::
+|| Linearly distributed random float in [0,1), with a bias towards the 0 end.
+
+## code::float RGen\::fbilinrand()::
+|| Bilinearly distributed random float in (-1,1), with a bias towards 0.
+
+## code::float RGen\::fsum3rand()::
+|| A crude but fast approximation to a Gaussian distribution. Results are always in the range (-1,1). The variance is
+1/6 and the standard deviation is 0.41. footnote:: The formula is code::(rand() + rand() + rand() - 1.5) * 2/3::,
+technically a shifted and stretched order-3 Irwin-Hall distribution. ::
+
+## code::int32 RGen\::irand(int32 scale)::
+|| Random int in [0,scale).
+
+## code::int32 RGen\::irand2(int32 scale)::
+|| Random int in [-scale,+scale].
+
+## code::int32 RGen\::ilinrand(int32 scale)::
+|| Linearly distributed random int in [0,scale), with a bias towards the 0 end.
+
+## code::int32 RGen\::ibilinrand(int32 scale)::
+|| Bilinearly distributed random int in (-scale,scale), with a bias towards the 0.
+
+## code::double RGen\::linrand()::
+|| Linearly distributed random double in [0,1), with a bias towards the 0 end.
+
+## code::double RGen\::bilinrand()::
+|| Bilinearly distributed random double in (-1,1), with a bias towards 0.
+
+## code::double RGen\::exprandrng(double lo, double hi)::
+|| Exponentially distributed random double in [lo,hi).
+
+## code::double RGen\::exprand(double scale)::
+||
+
+## code::double RGen\::biexprand(double scale)::
+||
+
+## code::double RGen\::exprand(double scale)::
+||
+
+## code::double RGen\::sum3rand(double scale)::
+|| Double version of code::RGen\::fsum3rand::.
+::
+
+section:: Unary operators
+
+definitionlist::
+## code::bool sc_isnan(float/double x)::
+|| Checks whether code::x:: is NaN. This is a legacy function, use code::std\::isnan:: instead.
+
+## code::bool sc_isfinite(float/double x)::
+|| Checks whether code::x:: is finite. This is a legacy function, use code::std\::isfinite:: instead.
+
+## code::int32 sc_grayCode(int32 x)::
+|| Convert binary to Gray code.
+::
+
+The following unary functions are available for both float32 and float64, and are the same as in sclang (minus the "sc_"
+prefixes):
+
+list::
+## code::sc_midicps::
+## code::sc_cpsmidi::
+## code::sc_midiratio::
+## code::sc_ratiomidi::
+## code::sc_octcps::
+## code::sc_cpsoct::
+## code::sc_ampdb::
+## code::sc_dbamp::
+## code::sc_cubed::
+## code::sc_sqrt::
+## code::sc_hanwindow::
+## code::sc_welwindow::
+## code::sc_triwindow::
+## code::sc_rectwindow::
+## code::sc_scurve::
+## code::sc_ramp::
+## code::sc_sign::
+## code::sc_distort::
+## code::sc_softclip::
+## code::sc_ceil::
+## code::sc_floor::
+## code::sc_reciprocal::
+## code::sc_frac::
+## code::sc_log2:: (legacy -- use code::std\::log2(std\::abs(x))::)
+## code::sc_log10:: (legacy -- use code::std\::log10(std\::abs(x))::)
+## code::sc_trunc:: (legacy -- use code::std\::trunc::)
+::
+
+The following unary functions are available for both float32 and float64, but have no sclang equivalent:
+
+definitionlist::
+## code::zapgremlins(x)::
+|| Replaces NaNs, infinities, very large and very small numbers (including denormals) with zero. This is useful in ugen
+feedback to safeguard from pathological behavior. (Note lack of sc_ prefix.)
+
+## code::sc_bitriwindow(x)::
+|| Alternative to code::sc_triwindow:: using absolute value.
+
+## code::sc_scurve0(x)::
+|| Same as code::sc_scurve::, but assumes that code::x:: is in the interval [0, 1].
+
+## code::sc_distortneg(x)::
+|| A one-sided distortion function. Same as code::distort:: for code::x > 0::, and the identity function for code::x <= 0::.
+
+## code::taylorsin(x)::
+|| Taylor series approximation of code::sin(x):: out to code::x**9 / 9!::. (Note lack of sc_ prefix.)
+
+## code::sc_lg3interp(x1, a, b, c, d)::
+|| Cubic Lagrange interpolator.
+
+## code::sc_CalcFeedback(delaytime, decaytime)::
+|| Determines the feedback coefficient for a feedback comb filter with the given delay and decay times.
+
+## code::sc_wrap1(x)::
+|| Wrap code::x:: around ±1, wrapping only once.
+
+## code::sc_fold1(x)::
+|| Fold code::x:: around ±1, folding only once.
+::
+
+section:: Binary operators
+
+definitionlist::
+## code::sc_wrap(in, lo, hi [, range])::
+||
+
+## code::sc_fold(in, lo, hi [, range [, range2]])::
+||
+
+## code::sc_pow(a, b)::
+|| Compute code::pow(a, b)::, retaining the sign of code::a::.
+
+## code::sc_powi(x, unsigned int n)::
+|| Compute code::x^n::, not necessarily retaining the sign of code::x::.
+
+## code::sc_hypotx(x, y)::
+|| Compute code::abs(x) + abs(y) - (min(abs(x), abs(y)) * (sqrt(2) - 1))::, the minimum distance one will have to travel
+from the origin to (x,y) using only orthogonal and diagonal movements.
+::
+
+The following functions are the same as in sclang (minus the "sc_" prefixes):
+
+list::
+## code::sc_mod(in, hi):: (floats, doubles, ints)
+## code::sc_round(x, quant):: (floats, doubles, ints)
+## code::sc_roundUp(x, quant):: (floats, doubles, ints)
+## code::sc_trunc(x, quant):: (floats, doubles, ints)
+## code::sc_gcd(a, b):: (ints, longs, floats)
+## code::sc_lcm(a, b):: (ints, longs, floats)
+## code::sc_bitAnd(a, b):: (ints)
+## code::sc_bitOr(a, b):: (ints)
+## code::sc_leftShift(a, b):: (ints)
+## code::sc_rightShift(a, b):: (ints)
+## code::sc_unsignedRightShift(a, b):: (ints)
+## code::sc_thresh(a, b)::
+## code::sc_clip2(a, b)::
+## code::sc_wrap2(a, b)::
+## code::sc_fold2(a, b)::
+## code::sc_excess(a, b)::
+## code::sc_scaleneg(a, b)::
+## code::sc_amclip(a, b)::
+## code::sc_ring1(a, b)::
+## code::sc_ring2(a, b)::
+## code::sc_ring3(a, b)::
+## code::sc_ring4(a, b)::
+## code::sc_difsqr(a, b)::
+## code::sc_sumsqr(a, b)::
+## code::sc_sqrsum(a, b)::
+## code::sc_sqrdif(a, b)::
+## code::sc_atan2(a, b):: (legacy -- use code::std\::atan2::)
+::
+
+section:: Constants
+
+The following constants are doubles:
+
+list::
+## code::pi::
+## code::pi2:: = pi/2
+## code::pi32:: = 3pi/2
+## code::twopi:: = 2pi
+## code::rtwopi:: (1/2pi)
+## code::log001:: = log(0.001)
+## code::log01:: = log(0.01)
+## code::log1:: = log(0.1)
+## code::rlog2:: = 1/log(2)
+## code::sqrt2:: = sqrt(2)
+## code::rsqrt2:: = 1/sqrt(2)
+## code::truncDouble:: = 3 * 2^51 (used to truncate precision)
+::
+
+The following constants are floats:
+
+list::
+## code::pi_f::
+## code::pi2_f::
+## code::pi32_f::
+## code::twopi_f::
+## code::sqrt2_f::
+## code::rsqrt2_f::
+## code::truncFloat:: = 3 * 2^22 (used to truncate precision)
+::
+
+section:: Unroll macros
+
+The macros in this section are legacy features. They are seen in many of SuperCollider's built-in ugens, and are
+intended to provide more efficient alternatives to the standard code::for (int i = 0; i < inNumSamples; i++) { out[i]
+= in[i] }:: loop. These efficiency savings are negligible on modern systems and use of these macros is not recommended,
+especially since they make debugging difficult.
+
+definitionlist::
+## code::LOOP(length, stmt)::
+|| Execute code code::stmt::, code::length:: times.
+
+## code::LOOP1(length, stmt)::
+|| A faster drop-in alternative to code::LOOP::, which assumes that code::length > 0:: so a branch instruction is saved.
+
+## code::LooP(length) stmt::
+|| An alternative to LOOP/LOOP1 that is more debugger-friendly. The body of the loop comes after the call to code::LooP::.
+
+## code::ZIN(index)::
+|| Similar to code::IN::, but subtracts 1 from the pointer to correct for off-by-one errors when using code::LOOP:: and code::ZXP::.
+
+## code::ZOUT(index)::
+|| Same as code::OUT::, but subtracts 1 from the pointer to correct for off-by-one errors when using code::LOOP:: and code::ZXP::.
+
+## code::ZIN0(index)::
+|| Alias for code::IN0::.
+
+## code::ZOUT0(index)::
+|| Alias for code::OUT0::.
+
+## code::ZXP(z)::
+|| Pre-increment and dereference code::z::.
+
+## code::ZX(z)::
+|| Dereference code::z::.
+
+## code::PZ(z)::
+|| Pre-increment code::z::.
+
+## code::ZP(z)::
+|| Does nothing.
+
+## code::ZOFF::
+|| Return 1.
+::

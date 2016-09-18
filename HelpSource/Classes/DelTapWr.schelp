@@ -4,7 +4,11 @@ summary:: Write to a buffer for a DelTapRd UGen
 related:: Classes/DelTapRd
 
 description::
-Write to a buffer for a link::Classes/DelTapRd:: UGen
+Write to a buffer for a link::Classes/DelTapRd:: UGen.
+
+note:: If you run a code::DelTapRd.ar:: and a code::DelTapWr.ar:: in tandem, keep in mind that they read and write in blocks
+equal to the server's block size. If the delay time is greater than the buffer size minus a block, the write and read
+heads might interfere in unintended ways. Use a slightly larger buffer if this happens. ::
 
 classmethods::
 private:: categories
@@ -22,7 +26,7 @@ code::
 // a Buffer for the UGens to use, one second at the current sample rate
 b = Buffer.alloc(s, s.sampleRate * 1, 1);
 
-// write a signal into a delay, tap it at mutiple times
+// write a signal into a delay, tap it at multiple times
 SynthDef(\test, {arg buffer;
 	var src, tapPhase, tap1, tap2, tap3;
 	src = WhiteNoise.ar(0.2) * Decay.kr(Dust.kr(3), 0.2);
@@ -33,7 +37,7 @@ SynthDef(\test, {arg buffer;
 		[1.0, 0.4, 0.2] 		// muls for each tap
 		);
 	Out.ar(0, [src + tap2, tap1 + tap3])
-	}).send(s);
+	}).add;
 
 x = Synth(\test, [\buffer, b]);
 x.free;
@@ -44,13 +48,13 @@ code::
 // a Buffer for the UGens to use
 b = Buffer.alloc(s, 44100, 1);
 
-// write a signal into a delay, tap it at mutiple times
+// write a signal into a delay, tap it at multiple times
 SynthDef(\write, {arg buffer, cout;
 	var src, tapPhase, tap1, tap2, tap3;
 	src = WhiteNoise.ar(0.2) * Decay.kr(Dust.kr(3), 0.7);
 	tapPhase = DelTapWr.ar(buffer, src);
 	Out.kr(cout, tapPhase);
-	}).send(s);
+	}).add;
 
 SynthDef(\readFilt, {arg buffer, cin;
 	var phase, src, filt;
@@ -58,7 +62,7 @@ SynthDef(\readFilt, {arg buffer, cin;
 	src = DelTapRd.ar(buffer, phase, [0.01, 0.2]);
 	filt = BPF.ar(src, 880, 0.01) * 10;
 	Out.ar(0, filt);
-	}).send(s);
+	}).add;
 
 c = Bus.control;
 

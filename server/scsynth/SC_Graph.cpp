@@ -131,7 +131,7 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 		for (uint32 i=0; i<numControls; ++i, ++graphControls) {
 			*graphControls = initialControlValues[i];
 			graphMapControls[i] = graphControls;
-		        /* add */
+			/* add */
 			graphControlRates[i] = 0;  // init to 0 for now... control bus is 1, audio is 2
 		}
 	}
@@ -300,10 +300,10 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 						Graph_MapControl(graph, hash, name, i, bus);
 						//Node_MapControl(node, hash, name, i, bus);
 					} else {
-					    if (*string == 'a') {
-						int bus = sc_atoi(string+1);
-						Graph_MapAudioControl(graph, hash, name, i, bus);
-					    }
+						if (*string == 'a') {
+							int bus = sc_atoi(string+1);
+							Graph_MapAudioControl(graph, hash, name, i, bus);
+						}
 					}
 				} else {
 					float32 value = msg->getf();
@@ -322,10 +322,10 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 						Graph_MapControl(graph, index+i, bus);
 						//Node_MapControl(node, index+i, bus);
 					} else {
-					    if (*string == 'a') {
-						int bus = sc_atoi(string+1);
-						Graph_MapAudioControl(graph, index + i, bus);
-					    }
+						if (*string == 'a') {
+							int bus = sc_atoi(string+1);
+							Graph_MapAudioControl(graph, index + i, bus);
+						}
 					}
 				} else {
 					float32 value = msg->getf();
@@ -605,23 +605,23 @@ void Graph_MapControl(Graph* inGraph, uint32 inIndex, uint32 inBus)
 
 void Graph_MapAudioControl(Graph* inGraph, int32 inHash, int32 *inName, uint32 inIndex, uint32 inBus)
 {
-    ParamSpecTable* table = GRAPH_PARAM_TABLE(inGraph);
-    ParamSpec *spec = table->Get(inHash, inName);
+	ParamSpecTable* table = GRAPH_PARAM_TABLE(inGraph);
+	ParamSpec *spec = table->Get(inHash, inName);
 	if (!spec || inIndex >= spec->mNumChannels) return;
 	//printf("mapping: %s: to bus index %i\n", spec->mName, inBus);
-    if (spec) Graph_MapAudioControl(inGraph, spec->mIndex + inIndex, inBus);
+	if (spec) Graph_MapAudioControl(inGraph, spec->mIndex + inIndex, inBus);
 }
 
 void Graph_MapAudioControl(Graph* inGraph, uint32 inIndex, uint32 inBus)
 {
-    if (inIndex >= GRAPHDEF(inGraph)->mNumControls) return;
-    World *world = inGraph->mNode.mWorld;
-    /* what is the below doing??? it is unmapping by looking for negative ints */
-    if (inBus >= 0x80000000) {
+	if (inIndex >= GRAPHDEF(inGraph)->mNumControls) return;
+	World *world = inGraph->mNode.mWorld;
+	/* what is the below doing??? it is unmapping by looking for negative ints */
+	if (inBus >= 0x80000000) {
 		inGraph->mControlRates[inIndex] = 0;
 		inGraph->mMapControls[inIndex] = inGraph->mControls + inIndex;
 	} else if (inBus < world->mNumAudioBusChannels) {
-        inGraph->mControlRates[inIndex] = 2;
+	inGraph->mControlRates[inIndex] = 2;
 		inGraph->mMapControls[inIndex] = world->mAudioBus + (inBus * world->mBufLength);
-    }
+	}
 }

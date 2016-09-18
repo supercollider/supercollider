@@ -66,7 +66,7 @@ BusPlug : AbstractFunction {
 		};
 		this.prepareOutput;
 		output = InBus.ar(bus, numChannels, offset, clip);
-		 // always return an array if no channel size is specified
+		// always return an array if no channel size is specified
 		^if(numChannels.isNil) { output.asArray } { output }
 	}
 
@@ -77,7 +77,7 @@ BusPlug : AbstractFunction {
 		};
 		this.prepareOutput;
 		output = InBus.kr(bus, numChannels, offset, clip);
-		 // always return an array if no channel size is specified
+		// always return an array if no channel size is specified
 		^if(numChannels.isNil) { output.asArray } { output }
 	}
 
@@ -150,7 +150,8 @@ BusPlug : AbstractFunction {
 
 	// you have to stop and play explicitly
 	setBus { | inBus |
-		if(bus != inBus and: { inBus.notNil }) {
+		if(inBus.isNil) { Error("BusPlug:setBus: bus can't be set to nil.").throw };
+		if(bus != inBus) {
 			//postf("% has new bus: % \nold bus was: %\n", this, inBus, bus);
 			this.freeBus;
 			bus = inBus;

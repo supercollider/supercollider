@@ -94,13 +94,13 @@ Use the synthdef browser to examine synthdefs that have been written to disk.
 
 code::
 (
-// a synthdef browswer
+// a synthdef browser
 SynthDescLib.global.read;
 SynthDescLib.global.browse;
 )
 ::
 
-The middle box (in the top row) shows the names of synthsdefs. Each name, when selected, causes the other boxes to display the ugens, controls, and inputs and outputs for a particular synthdef.
+The middle box (in the top row) shows the names of synthdefs. Each name, when selected, causes the other boxes to display the ugens, controls, and inputs and outputs for a particular synthdef.
 
 The box labeled "SynthDef controls" is useful because it shows the arguments that can be passed to a given synthdef.
 

@@ -86,7 +86,7 @@ void CodeEditorBox::onDocumentClosed(Document *doc)
     if (editor) {
         bool wasCurrent = editor == currentEditor();
         mHistory.removeAll(editor);
-        delete editor;
+        editor->deleteLater();
         if (wasCurrent) {
             editor = currentEditor();
             if (editor)

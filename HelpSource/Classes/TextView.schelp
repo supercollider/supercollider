@@ -245,7 +245,7 @@ METHOD:: autohidesScrollers
 
 SUBSECTION:: Drag and Drop
 
-note:: Default drag-and-drop behavior of TextView is not defined in standard SC methods (see link::Classes/View#subclassing::), but in the view implementation instead (except for link::#-defaultGetDrag::). It may or may not be overridable by adding your own handlers (see link::Classes/View#Drag and drop::), depending on the GUI kit in use.
+note:: Default drag-and-drop behavior of TextView is not defined in standard SC methods, but in the view implementation instead (except for link::#-defaultGetDrag::). It may or may not be overridable by adding your own handlers (see link::Classes/View#Drag and drop::), depending on the GUI kit in use.
 ::
 
 Dragging from TextView will give the selected text in a String as drag data, while dropping will accept any object and insert it link::Classes/Object#-asString#as String:: at the drop location.

@@ -17,7 +17,10 @@
 # pragma once
 #endif
 
-#if defined( __clang__ ) && defined( __has_include )
+// __has_include is currently supported by GCC and Clang. However GCC 4.9 may have issues and
+// returns 1 for 'defined( __has_include )', while '__has_include' is actually not supported:
+// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=63662
+#if defined( __has_include ) && (!defined( BOOST_GCC ) || (__GNUC__ + 0) >= 5)
 # if __has_include(<cxxabi.h>)
 #  define BOOST_CORE_HAS_CXXABI_H
 # endif

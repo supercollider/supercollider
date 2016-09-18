@@ -61,12 +61,21 @@ if(NOT Boost_FOUND) # we compile boost ourselves
 			APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 	endif()
 
+	set_property( TARGET boost_thread boost_program_options boost_system boost_filesystem PROPERTY FOLDER 3rdparty )
+
 endif()
 
 # tlsf
 add_library(tlsf STATIC "TLSF-2.4.6/src/tlsf.c")
 target_compile_definitions( tlsf PRIVATE TLSF_STATISTIC=1 )
 target_include_directories( tlsf INTERFACE TLSF-2.4.6/src )
+set_property(TARGET tlsf PROPERTY POSITION_INDEPENDENT_CODE TRUE)
+
+#oscpack
+add_library(oscpack STATIC EXCLUDE_FROM_ALL "oscpack_build.cpp")
+target_include_directories(oscpack PRIVATE boost)
+target_include_directories(oscpack INTERFACE oscpack_1_1_0 )
+
 
 if(LTO)
 	set_property(TARGET oscpack tlsf
@@ -75,11 +84,6 @@ if(LTO)
 	set_property(TARGET oscpack tlsf
 				 APPEND PROPERTY LINK_FLAGS "-flto -flto-report")
 endif()
-
-#oscpack
-add_library(oscpack STATIC EXCLUDE_FROM_ALL "oscpack_build.cpp")
-target_include_directories(oscpack PRIVATE boost)
-target_include_directories(oscpack INTERFACE oscpack_1_1_0 )
 
 if(NOT YAMLCPP_FOUND)
   message(STATUS "using bundled libyaml-cpp")
@@ -99,7 +103,7 @@ if(NOT YAMLCPP_FOUND)
 endif()
 
 
-set_property( TARGET oscpack tlsf boost_thread boost_program_options boost_system boost_filesystem PROPERTY FOLDER 3rdparty )
+set_property( TARGET oscpack tlsf PROPERTY FOLDER 3rdparty )
 
 
 ##### HID_API #######

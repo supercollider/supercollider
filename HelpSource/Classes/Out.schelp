@@ -57,7 +57,7 @@ SynthDef("help-out", { arg out=0, freq=440;
 		// write to the bus, adding to previous contents
 		Out.ar(out, source);
 
-}).send(s);
+}).add;
 )
 
 

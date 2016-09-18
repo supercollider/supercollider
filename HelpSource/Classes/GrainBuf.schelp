@@ -39,11 +39,11 @@ determines where to pan the output.
 list::
 ## If numChannels = 1, no panning is done.
 ## If numChannels = 2, panning is similar to Pan2.
-## If numChannels > 2, pannins is the same as PanAz.
+## If numChannels > 2, panning is the same as PanAz.
 ::
 
 argument:: envbufnum
-the buffer number containing a singal to use for the grain envelope. -1 uses a built-in Hann envelope.
+the buffer number containing a signal to use for the grain envelope. -1 uses a built-in Hann envelope.
 
 argument:: maxGrains
 the maximum number of overlapping grains that can be used at a given time. This value is set at the UGens init time and can't be modified. Defaults to 512. This can be set lower for more efficient use of memory.
@@ -82,7 +82,7 @@ SynthDef(\buf_grain_test, {arg gate = 1, amp = 1, sndbuf, envbuf;
 	Out.ar(0,
 		GrainBuf.ar(2, Impulse.kr(10), 0.1, sndbuf, LFNoise1.kr.range(0.5, 2),
 			LFNoise2.kr(0.1).range(0, 1), 2, pan, envbuf) * env)
-	}).send(s);
+	}).add;
 
 )
 

@@ -1,4 +1,4 @@
-title:: Pattern Guide 06a: Repetition Contraint Patterns
+title:: Pattern Guide 06a: Repetition Constraint Patterns
 summary:: Patterns that repeat values, or cut other patterns off early
 related:: Tutorials/A-Practical-Guide/PG_060_Filter_Patterns, Tutorials/A-Practical-Guide/PG_06b_Time_Based_Patterns
 categories:: Streams-Patterns-Events>A-Practical-Guide

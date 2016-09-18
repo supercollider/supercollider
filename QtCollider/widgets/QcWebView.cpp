@@ -49,6 +49,8 @@ WebView::WebView( QWidget *parent ) :
   // get in the way of rendering web pages
   setPalette( style()->standardPalette() );
 
+  setAttribute(Qt::WA_AcceptTouchEvents);
+
   page->action( QWebPage::Copy )->setShortcut( QKeySequence::Copy );
   page->action( QWebPage::Paste )->setShortcut( QKeySequence::Paste );
 

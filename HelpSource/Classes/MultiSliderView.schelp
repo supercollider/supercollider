@@ -21,10 +21,8 @@ METHOD:: new
 
 
 	A new MultiSliderView is created empty, without any columns. link::#-size:: or link::#-value:: has to be set in order to create some columns.
-	::
 
 	So if you want a specific number of sliders, then it is best to specify the link::#-size:: and set link::#-elasticMode:: to 1. Then you will get a MultiSliderView which distributes link::#-size:: amount of sliders over code::bounds.width::, where the slider widths are at maximum link::#-indexThumbSize:: (default 12) and the link::#-gap:: is adjusted accordingly.
-	::
 
 
 
@@ -59,7 +57,7 @@ METHOD:: value
 
 METHOD:: valueAction
 
-	Sets link::#-value:: and triggeres link::#-action::.
+	Sets link::#-value:: and triggers link::#-action::.
 
 METHOD:: reference
 
@@ -141,7 +139,7 @@ SUBSECTION:: Appearance
 
 METHOD:: showIndex
 
-	Wether the slider selection is visually indicated.
+	Whether the slider selection is visually indicated.
 
 	argument::
 		A Boolean.

@@ -6,7 +6,7 @@ Quark {
 	*new { |name, refspec, url, localPath|
 		var args = Quark.parseQuarkName(name, refspec, url, localPath);
 		if(args.isNil, {
-			Error("% not found".format(name)).throw;
+			Error("Quark '%' not found".format(name)).throw;
 		});
 		^super.new.init(*args)
 	}
@@ -82,6 +82,18 @@ Quark {
 		data = nil;
 		^success
 	}
+	update {
+		if(Git.isGit(localPath), {
+			data = git = refspec = nil;
+			changed = true;
+			git = Git(localPath);
+			git.pull();
+			git.checkout("master");
+			("Quark '%' updated to version: % tag: % refspec: %".format(name, this.version, this.git.tag, this.refspec)).inform;
+		}, {
+			("Quark" + name + "was not installed using git, cannot update.").warn;
+		});
+	}
 	uninstall {
 		Quarks.uninstallQuark(this);
 		changed = true;
@@ -89,11 +101,13 @@ Quark {
 
 	checkout {
 		var rs;
+		if(git.isNil, {
+			git = Git(localPath);
+		});
 		if(this.isDownloaded.not, {
 			if(this.url.isNil, {
 				Error("No git url, cannot checkout quark" + this).throw;
 			});
-			git = Git(localPath);
 			git.clone(url);
 			// get tags etc
 			git.fetch();

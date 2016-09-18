@@ -48,7 +48,7 @@ code::
 ::
 
 method::ascii
-Returns an Array of asci numbers of the Strings's characters.
+Returns an Array of ascii numbers of the Strings's characters.
 code::
 "wertvoll".ascii
 ::
@@ -129,7 +129,7 @@ this is a test. pi = 3.1416, list = [ 1, 2, 3, 4 ]
 ::
 
 method::postcs
-As link::#-postln::, but posts the link::#-asCompileString#compileString:: of the reciever.
+As link::#-postln::, but posts the link::#-asCompileString#compileString:: of the receiver.
 code::
 List[1, 2, ["comment", [3, 2]], { 1.0.rand }].postcs;
 ::
@@ -752,7 +752,7 @@ code::
 subsection::Misc methods
 
 method::speak
-Sends string to the speech synthesisier of the OS. (OS X only.) see: link::Classes/Speech::
+Sends string to the speech synthesiser of the OS. (OS X only.) see: link::Classes/Speech::
 code::
 "hi i'm talking with the default voice now, i guess".speak;
 ::
@@ -873,7 +873,7 @@ w.refresh;
 ::
 
 method::bounds
-Tries to return a link::Classes/Rect:: with the size needed to fit this string if drawed with given font.
+Tries to return a link::Classes/Rect:: with the size needed to fit this string if drawn with given font.
 argument:: font
 A link::Classes/Font::
 

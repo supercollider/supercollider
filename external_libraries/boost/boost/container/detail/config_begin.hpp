@@ -45,7 +45,9 @@
    #pragma warning (disable : 4702) // unreachable code
    #pragma warning (disable : 4706) // assignment within conditional expression
    #pragma warning (disable : 4710) // function not inlined
+   #pragma warning (disable : 4714) // "function": marked as __forceinline not inlined
    #pragma warning (disable : 4711) // function selected for automatic inline expansion
    #pragma warning (disable : 4786) // identifier truncated in debug info
    #pragma warning (disable : 4996) // "function": was declared deprecated
+ 
 #endif   //BOOST_MSVC

@@ -138,8 +138,14 @@ void ScServer::createActions(Settings::Manager * settings)
 
     mActions[Volume] = widgetAction = new QWidgetAction(this);
     widgetAction->setDefaultWidget( mVolumeWidget );
-    connect( mVolumeWidget, SIGNAL(volumeChanged(float)), this, SLOT(sendVolume(float)) );
-    connect( mVolumeWidget, SIGNAL(volumeChanged(float)), this, SIGNAL(volumeChanged(float)) );
+
+    connect( mVolumeWidget, &VolumeWidget::volumeChangeRequested, [this](float newValue) {
+        setVolume( newValue );
+    });
+    connect( this, SIGNAL(volumeChanged(float)),            mVolumeWidget, SLOT(setVolume(float))            );
+    connect( this, SIGNAL(volumeRangeChanged(float,float)), mVolumeWidget, SLOT(setVolumeRange(float,float)) );
+    emit volumeChanged( mVolume );
+    emit volumeRangeChanged( mVolumeMin, mVolumeMax );
 
     mActions[VolumeUp] = action = new QAction(tr("Increase Volume"), this);
     action->setShortcut(tr("Ctrl+Alt+PgUp", "Increase volume"));
@@ -264,11 +270,25 @@ void ScServer::setDumpingOSC( bool dumping )
     sendDumpingOSC(dumping);
 }
 
-float ScServer::volume() const { return mVolumeWidget->volume(); }
+float ScServer::volume() const { return mVolume; }
 
 void ScServer::setVolume( float volume )
 {
-    mVolumeWidget->setVolume( volume );
+    volume = qBound( mVolumeMin, volume, mVolumeMax );
+
+    if( volume != mVolume ) {
+        mVolume = volume;
+        sendVolume( volume );
+        emit volumeChanged( volume );
+    }
+}
+
+
+void ScServer::setVolumeRange(float min, float max)
+{
+    mVolumeMin = min;
+    mVolumeMax = max;
+    emit volumeRangeChanged( min, max );
 }
 
 void ScServer::increaseVolume()
@@ -378,8 +398,8 @@ void ScServer::onScLangReponse( const QString & selector, const QString & data )
     static QString unmutedSelector("serverUnmuted");
     static QString ampSelector("serverAmp");
     static QString ampRangeSelector("serverAmpRange");
-	static QString startDumpOSCSelector("dumpOSCStarted");
-	static QString stopDumpOSCSelector("dumpOSCStopped");
+    static QString startDumpOSCSelector("dumpOSCStarted");
+    static QString stopDumpOSCSelector("dumpOSCStopped");
 
 
     if (selector == defaultServerRunningChangedSelector)
@@ -389,20 +409,18 @@ void ScServer::onScLangReponse( const QString & selector, const QString & data )
     } else if (selector == unmutedSelector) {
         mActions[Mute]->setChecked(false);
     }
-	else if (selector == startDumpOSCSelector) {
+    else if (selector == startDumpOSCSelector) {
         mActions[DumpOSC]->setChecked(true);
     }
-	else if (selector == stopDumpOSCSelector) {
+    else if (selector == stopDumpOSCSelector) {
         mActions[DumpOSC]->setChecked(false);
     }
     else if (selector == ampSelector) {
         bool ok;
         float volume = data.mid(1, data.size() - 2).toFloat(&ok);
         if (ok) {
-            bool signals_blocked = mVolumeWidget->blockSignals(true);
-            volume = mVolumeWidget->setVolume(volume);
-            mVolumeWidget->blockSignals(signals_blocked);
-            emit volumeChanged(volume);
+            mVolume = volume;
+            emit volumeChanged( volume );
         }
     }
     else if (selector == ampRangeSelector) {
@@ -414,10 +432,9 @@ void ScServer::onScLangReponse( const QString & selector, const QString & data )
         if (!ok) return;
         float max = dataList[1].toFloat(&ok);
         if (!ok) return;
-        bool signals_blocked = mVolumeWidget->blockSignals(true);
-        mVolumeWidget->setRange( min, max );
-        mVolumeWidget->blockSignals(signals_blocked);
-        emit volumeChanged(mVolumeWidget->volume());
+        mVolumeMin = min;
+        mVolumeMax = max;
+        setVolumeRange( min, max );
     }
 }
 
@@ -427,7 +444,7 @@ void ScServer::handleRuningStateChangedMsg( const QString & data )
     stream << data.toStdString();
     YAML::Parser parser(stream);
 
-    bool serverRunningState = false;
+    bool serverRunningState, serverUnresponsive;
     std::string hostName;
     int port;
 
@@ -443,13 +460,16 @@ void ScServer::handleRuningStateChangedMsg( const QString & data )
 
         success = doc[2].Read(port);
         if (!success) return; // LATER: report error?
+
+        success = doc[3].Read(serverUnresponsive);
+        if (!success) return; // LATER: report error?
     }
 
     QString qstrHostName( hostName.c_str() );
 
-    onRunningStateChanged( serverRunningState, qstrHostName, port );
+    onRunningStateChanged( serverRunningState, qstrHostName, port);
 
-    emit runningStateChange( serverRunningState, qstrHostName, port );
+    emit runningStateChanged( serverRunningState, qstrHostName, port, serverUnresponsive );
 }
 
 void ScServer::timerEvent(QTimerEvent * event)

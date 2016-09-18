@@ -6,7 +6,7 @@ related:: Guides/MIDI, Classes/MIDIFunc
 DESCRIPTION::
 MIDIdef provides a global reference to the functionality of its superclass link::Classes/MIDIFunc::. Essentially it stores itself at a key within a global dictionary, allowing replacement at any time. Most methods are inherited from its superclass.
 
-note:: MIDIdef and link::Classes/MIDIFunc:: aim to improve upon the MIDIresponder classes by being faster, easier to use, and providing support for all MIDI message types. They were made with the intention of creating a more convenient, logical and consistent interface, which shares a common design with link::Classes/OSCFunc:: and link::Classes/OSCdef::. Note that unlike the older classes, MIDIdefs are removed on Cmd-. by default. This can be overriden using either of the fix or permanent methods.::
+note:: MIDIdef and link::Classes/MIDIFunc:: aim to improve upon the MIDIresponder classes by being faster, easier to use, and providing support for all MIDI message types. They were made with the intention of creating a more convenient, logical and consistent interface, which shares a common design with link::Classes/OSCFunc:: and link::Classes/OSCdef::. Note that unlike the older classes, MIDIdefs are removed on Cmd-. by default. This can be overridden using either of the fix or permanent methods.::
 
 
 CLASSMETHODS::
@@ -24,10 +24,10 @@ argument:: key
 The key at which to store this OSCdef in the global collection. Generally this will be a link::Classes/Symbol::.
 
 argument:: func
-A link::Classes/Function:: or similar object which will respond to the incoming message. When evaluated for noteOn, noteOff, control, and polytouch messages it will be passed the arguments val, num, chan, and src, corresponding to the message value (e.g. velocity, control value, etc.), message number (e.g. note number), MIDI channel, and MIDI source uid. For touch, programme change and bend messages it will be passed only val, chan, and src. For information on the args passed for the other sorts of code::msgType:: see the convenience methods below.
+A link::Classes/Function:: or similar object which will respond to the incoming message. When evaluated for noteOn, noteOff, control, and polytouch messages it will be passed the arguments val, num, chan, and src, corresponding to the message value (e.g. velocity, control value, etc.), message number (e.g. note number), MIDI channel, and MIDI source uid. For touch, program change and bend messages it will be passed only val, chan, and src. For information on the args passed for the other sorts of code::msgType:: see the convenience methods below.
 
 argument:: msgNum
-An link::Classes/Integer:: indicating the MIDI message number (note number, control number, or programme number) for this MIDIdef. This can be an array. If nil, the MIDIdef will respond to messages of all possible message numbers.
+An link::Classes/Integer:: indicating the MIDI message number (note number, control number, or program number) for this MIDIdef. This can be an array. If nil, the MIDIdef will respond to messages of all possible message numbers.
 
 argument:: chan
 An link::Classes/Integer:: indicating the MIDI channel number for this MIDIdef. This can be an array. If nil, the MIDIdef will respond to messages received on all channels.

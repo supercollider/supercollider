@@ -94,7 +94,7 @@ An instance of link::Classes/String::.
 
 method:: size
 Gets/sets the size of the font.
-Setting this variable is always considered as setting the link::#-pixelSize::, while getting it will return any size set. See link::#-hasPointSize:: for distinction.::
+Setting this variable is always considered as setting the link::#-pixelSize::, while getting it will return any size set. See link::#-hasPointSize:: for distinction.
 
 argument:: pixelSize
 A Float.
@@ -126,7 +126,7 @@ Returns:: an link::Classes/Array::, code:: [ name, size ] ::.
 
 method:: boldVariant
 
-note:: On the Cocoa GUI it appendes teletype::"-Bold":: to the name. This is only useful for fonts that have bold
+note:: On the Cocoa GUI it appends teletype::"-Bold":: to the name. This is only useful for fonts that have bold
 variants.
 ::
 returns::
@@ -148,7 +148,7 @@ t.font = Font("Monaco", 24);
 var updateFont;
 w = Window("Fonts", Rect(150, Window.screenBounds.height - 500, 400, 400)).front;
 w.view.decorator = FlowLayout(w.view.bounds);
-StaticText.new(w, Rect(5, 0, 30, 20)).string_("Font").align_(\rght);
+StaticText.new(w, Rect(5, 0, 30, 20)).string_("Font").align_(\right);
 m = PopUpMenu(w, Rect(40, 0, 250, 20));
 m.items = Font.availableFonts;
 
@@ -195,15 +195,15 @@ w.view.decorator = f = FlowLayout(w.view.bounds,Point(4, 4),Point(4, 2));
 ].do({ arg name;
 	var v, s, n, spec, p, height = 16;
 
-		v = StaticText(w, Rect(0, 0, 56, height + 2));
+		v = StaticText(w, Rect(0, 0, 110, height + 20));
 		v.font = Font(name, 13);
 		v.string = name;
 
-		s = Button(w, Rect(0, 0, 140, height + 2));
+		s = Button(w, Rect(0, 0, 140, height + 20));
 		s.font = Font(name, 13);
 		s.states = [[name]];
 
-		n = NumberBox(w, Rect(0, 0, 56, height + 2));
+		n = NumberBox(w, Rect(0, 0, 56, height + 20));
 		n.font = Font(name, 13);
 		n.object = pi;
 
@@ -217,7 +217,7 @@ w.front;
 (
 var w, f, i = 0;
 
-w = Window("Fonts", Rect(128, 64, 820, 760));
+w = Window("Fonts", Rect(128, 64, 1024, 768));
 b = ScrollView(w, w.view.bounds);
 
 b.decorator = f = FlowLayout(b.bounds, Point(4,4), Point(4,2));
@@ -226,16 +226,16 @@ Font.availableFonts.do({ arg name;
 	var v, s, n, spec, p, height = 16, font;
 	font = Font(name,13);
 
-		v = StaticText(b, Rect(0, 0, 56, height + 2));
+		v = StaticText(b, Rect(0, 0, 120, height + 20));
 		v.font = font;
 		v.string = name;
 
-		s = Button(b, Rect(0, 0, 140, height + 2));
+		s = Button(b, Rect(0, 0, 140, height + 20));
 		s.font = font;
 		s.states = [[name]];
 		s.action = { font.asCompileString.postln; };
 
-		n = NumberBox(b, Rect(0, 0, 56, height + 2));
+		n = NumberBox(b, Rect(0, 0, 56, height + 20));
 		n.font = font;
 		n.object = pi;
 	if( (i = i + 1) % 3 == 0,{

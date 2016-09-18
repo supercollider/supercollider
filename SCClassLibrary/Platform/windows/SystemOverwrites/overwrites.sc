@@ -29,4 +29,3 @@
 				or: { fullPath[0] == $/ and: { fullPath[1] != $/ } }
 	}
 }
-

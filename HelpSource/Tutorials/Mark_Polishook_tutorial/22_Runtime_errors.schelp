@@ -147,9 +147,9 @@ CALL STACK:
 		arg this = <instance of Main>
 ::
 
-section::Unitialized variable (binary operation fails)
+section::Uninitialized variable (binary operation fails)
 
-Here, the variable a is initialized to an integer and the variable b isn't initialized. Multiplying a (the integer 10) by b (nil, the value that SuperCollider uses for unitialized data) will create a runtime error.
+Here, the variable a is initialized to an integer and the variable b isn't initialized. Multiplying a (the integer 10) by b (nil, the value that SuperCollider uses for uninitialized data) will create a runtime error.
 
 code::
 (

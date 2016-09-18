@@ -46,7 +46,7 @@ code::
 ::
 
 note::
-all the ugens are continously running. This may not be the most efficient way if each input is  cpu-expensive. The array is fixed at the time of writing the SynthDef, and the whole array is embedded in the SynthDef file itself.  For small arrays this is more efficient than reading from a buffer.
+all the ugens are continuously running. This may not be the most efficient way if each input is  cpu-expensive. The array is fixed at the time of writing the SynthDef, and the whole array is embedded in the SynthDef file itself.  For small arrays this is more efficient than reading from a buffer.
 ::
 
 code::

@@ -2,7 +2,7 @@
 
 basename=`basename $PWD`
 if [ $basename != "package" ]; then
-    echo "This script must be ran from within the Packager directory."
+    echo "This script must be ran from within the 'package' directory."
     exit 1
 fi
 

@@ -5,11 +5,11 @@ categories::  UGens>InOut, UGens>Triggers
 
 Description::
 
-Any time the bus is "touched" ie. has its value set (using "/c_set"
+Any time the bus is "touched", ie. has its value set (using "/c_set"
 etc.), a single impulse trigger will be generated. Its amplitude is the
 value that the bus was set to.
 
-If the bus is set link::Classes/Bus#Synchronous control bus methods#synchronously:: no trigger will be generated.
+If the bus is set link::Classes/Bus#Synchronous Control Bus Methods#synchronously:: no trigger will be generated.
 
 
 classmethods::

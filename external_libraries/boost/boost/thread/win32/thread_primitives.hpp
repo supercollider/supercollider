@@ -156,7 +156,7 @@ namespace boost
             {
                 struct _SECURITY_ATTRIBUTES;
 # ifdef BOOST_NO_ANSI_APIS
-# if BOOST_USE_WINAPI_VERSION < BOOST_WINAPI_VERSION_VISTA
+# if defined(BOOST_USE_WINAPI_VERSION) && ( BOOST_USE_WINAPI_VERSION < BOOST_WINAPI_VERSION_VISTA )
                 __declspec(dllimport) void* __stdcall CreateMutexW(_SECURITY_ATTRIBUTES*,int,wchar_t const*);
                 __declspec(dllimport) void* __stdcall CreateSemaphoreW(_SECURITY_ATTRIBUTES*,long,long,wchar_t const*);
                 __declspec(dllimport) void* __stdcall CreateEventW(_SECURITY_ATTRIBUTES*,int,int,wchar_t const*);
@@ -339,7 +339,7 @@ namespace boost
             {
 #if !defined(BOOST_NO_ANSI_APIS)
                 handle const res = win32::CreateEventA(0, type, state, mutex_name);
-#elif BOOST_USE_WINAPI_VERSION < BOOST_WINAPI_VERSION_VISTA
+#elif defined(BOOST_USE_WINAPI_VERSION) && ( BOOST_USE_WINAPI_VERSION < BOOST_WINAPI_VERSION_VISTA )
                 handle const res = win32::CreateEventW(0, type, state, mutex_name);
 #else
                 handle const res = win32::CreateEventExW(
@@ -366,7 +366,7 @@ namespace boost
 #if !defined(BOOST_NO_ANSI_APIS)
                 handle const res=win32::CreateSemaphoreA(0,initial_count,max_count,0);
 #else
-#if BOOST_USE_WINAPI_VERSION < BOOST_WINAPI_VERSION_VISTA
+#if defined(BOOST_USE_WINAPI_VERSION) && ( BOOST_USE_WINAPI_VERSION < BOOST_WINAPI_VERSION_VISTA )
                 handle const res=win32::CreateSemaphoreEx(0,initial_count,max_count,0,0);
 #else
                 handle const res=win32::CreateSemaphoreExW(0,initial_count,max_count,0,0,semaphore_all_access);
