@@ -164,6 +164,7 @@ ControlSpec : Spec {
 
 
 	*initClass {
+		Class.initClassTree(Spec);
 		Class.initClassTree(Warp);
 		Class.initClassTree(Server);
 		specs = specs.addAll([
