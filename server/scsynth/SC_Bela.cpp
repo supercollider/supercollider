@@ -365,10 +365,10 @@ bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 	}
 
 	if ( mWorld->mBelaPGAGainLeft > 0 ){
-	  settings.mBelaPGAGainLeft = mWorld->mBelaPGAGainLeft;
+	  settings.pgaGain[0] = mWorld->mBelaPGAGainLeft;
 	}
 	if ( mWorld->mBelaPGAGainRight > 0 ){
-	  settings.mBelaPGAGainRight = mWorld->mBelaPGAGainRight;
+	  settings.pgaGain[1] = mWorld->mBelaPGAGainRight;
 	}
 
 
