@@ -434,6 +434,8 @@ World* World_New(WorldOptions *inOptions)
 		world->mBelaAnalogInputChannels = inOptions->mBelaAnalogInputChannels;
 		world->mBelaAnalogOutputChannels = inOptions->mBelaAnalogOutputChannels;
 		world->mBelaDigitalChannels = inOptions->mBelaDigitalChannels;
+		world->mBelaPGAGainLeft = inOptions->mBelaPGAGainLeft;
+		world->mBelaPGAGainRight = inOptions->mBelaPGAGainRight;
 #endif
 
 #ifdef __APPLE__
