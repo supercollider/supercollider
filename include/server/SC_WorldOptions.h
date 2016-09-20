@@ -84,6 +84,8 @@ struct WorldOptions
 	uint32 mBelaAnalogInputChannels;
 	uint32 mBelaAnalogOutputChannels;
 	uint32 mBelaDigitalChannels;
+	float mBelaPGAGainLeft;
+	float mBelaPGAGainRight;
 #endif
 };
 
@@ -103,6 +105,8 @@ const struct WorldOptions kDefaultWorldOptions =
 	,0
 	,0
 	,0
+	,20
+	,20
 };
 
 struct SndBuf;
