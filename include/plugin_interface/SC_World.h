@@ -118,6 +118,7 @@ struct World
 	uint32 mBelaAnalogOutputChannels;
 	uint32 mBelaDigitalChannels;
 
+    float mBelaHeadphoneLevel;
     float mBelaPGAGainLeft; //janMod
     float mBelaPGAGainRight;
 #endif

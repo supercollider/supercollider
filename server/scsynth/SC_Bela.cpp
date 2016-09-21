@@ -363,7 +363,10 @@ bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 	  settings.numDigitalChannels = mWorld->mBelaDigitalChannels;
 	  settings.useDigital = 1;
 	}
-
+    if ( (mWorld->mBelaHeadphoneLevel >= -63.5) && ( mWorld->mBelaHeadphoneLevel <= 0. )) {             //headphone output level (0dB max; -63.5dB min)
+        settings.headphoneLevel = mBelaHeadphoneLevel;
+    }
+    
 	if ( mWorld->mBelaPGAGainLeft > 0 ){
 	  settings.pgaGain[0] = mWorld->mBelaPGAGainLeft;
 	}
@@ -372,7 +375,7 @@ bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 	}
 
 
-	scprintf("SC_BelaDriver: >>DriverSetup - configured with (%i) analog input and (%i) analog output channels, and (%i) digital channels, with pga_gain_left (%f) and pga_gain_right (%f)\n", settings.numAnalogInChannels, settings.numAnalogOutChannels, settings.numDigitalChannels, settings.pgaGain[0],settings.pgaGain[1] );
+	scprintf("SC_BelaDriver: >>DriverSetup - configured with (%i) analog input and (%i) analog output channels, and (%i) digital channels, with headphoneLevel (%f), pga_gain_left (%f) and pga_gain_right (%f)\n", settings.numAnalogInChannels, settings.numAnalogOutChannels, settings.numDigitalChannels, settings.headphoneLevel, settings.pgaGain[0],settings.pgaGain[1] );
 
 	// Initialise the PRU audio device. This function prepares audio rendering in BeagleRT. It should be called from main() sometime
 	// after command line option parsing has finished. It will initialise the rendering system, which

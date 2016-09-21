@@ -87,7 +87,8 @@ void Usage()
 		"   -J <bela-analog-input-channels>\n"
 		"   -K <bela-analog-output-channels>\n"
 		"   -G <bela-digital-channels>\n"
-		"   -X <bela-pga-gain-left>\n"
+		"   -Q <bela-headphone-level> (0dB max, -63.5dB min)\n"
+        "   -X <bela-pga-gain-left>\n"
 		"   -Y <bela-pga-gain-right>\n"
 #endif
 #if (_POSIX_MEMLOCK - 0) >=  200112L
@@ -165,7 +166,7 @@ int main(int argc, char* argv[])
 
 	for (int i=1; i<argc;) {
 #ifdef BELA
-		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utBaioczblndpmwZrCNSDIOMHvVRUhPLJKGXY", argv[i][1]) == 0) {
+		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utBaioczblndpmwZrCNSDIOMHvVRUhPLJKGXYQ", argv[i][1]) == 0) {
 #else
 		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utBaioczblndpmwZrCNSDIOMHvVRUhPL", argv[i][1]) == 0) {
 #endif
@@ -339,13 +340,17 @@ int main(int argc, char* argv[])
 			case 'C' :
 				checkNumArgs(2);
 				break;
+            case 'Q' :
+                checkNumArgs(2);
+                options.mBelaHeadphoneLevel = atof(argv[j+1]);
+                break;
 			case 'X' :
 				checkNumArgs(2);
-				options.mBelaPGAGainLeft = atof(argv[j+1]); //placeholder
+				options.mBelaPGAGainLeft = atof(argv[j+1]);
 				break;
 			case 'Y' :
 				checkNumArgs(2);
-				options.mBelaPGAGainRight = atof(argv[j+1]);//placeholder
+				options.mBelaPGAGainRight = atof(argv[j+1]);
 				break;
 			case 'h':
 			default: Usage();
