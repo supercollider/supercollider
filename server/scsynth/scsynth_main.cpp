@@ -341,11 +341,11 @@ int main(int argc, char* argv[])
 				break;
 			case 'X' :
 				checkNumArgs(2);
-				//options.mBelaAnalogInputChannels = atoi(argv[j+1]); //placeholder
+				options.mBelaPGAGainLeft = atof(argv[j+1]); //placeholder
 				break;
 			case 'Y' :
 				checkNumArgs(2);
-				//options.mBelaAnalogInputChannels = atoi(argv[j+1]); //placeholder
+				options.mBelaPGAGainRight = atof(argv[j+1]);//placeholder
 				break;
 			case 'h':
 			default: Usage();
