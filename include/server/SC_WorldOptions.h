@@ -105,8 +105,6 @@ const struct WorldOptions kDefaultWorldOptions =
 	,0
 	,0
 	,0
-	,20
-	,20
 };
 
 struct SndBuf;
