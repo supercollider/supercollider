@@ -364,7 +364,7 @@ bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 	  settings.useDigital = 1;
 	}
     if ( (mWorld->mBelaHeadphoneLevel >= -63.5) && ( mWorld->mBelaHeadphoneLevel <= 0. )) {             //headphone output level (0dB max; -63.5dB min)
-        settings.headphoneLevel = mBelaHeadphoneLevel;
+        settings.headphoneLevel = mWorld->mBelaHeadphoneLevel;
     }
     
 	if ( mWorld->mBelaPGAGainLeft > 0 ){
