@@ -1233,14 +1233,13 @@ void buildBigMethodMatrix()
 
 #ifndef _MSC_VER
 	pool.try_executing_one();
-#endif	
+#endif
 	filledClassIndices.wait();
 #ifdef _MSC_VER
 	size_t numentries = fillClassRows(class_object, bigTable);
 #else
 	size_t numentries = fillClassRows(class_object, bigTable, pool);
 #endif
-	post("\tnumentries = %lu / %d = %.2g\n", numentries, bigTableSize, (double)numentries/(double)bigTableSize);
 
 
 	ColumnDescriptor * filledSelectors = filledSelectorsFuture.get();
@@ -1374,9 +1373,6 @@ void buildBigMethodMatrix()
 			100. * (double)numFilled/(rowTableSize/sizeof(PyrMethod*)));
 	}
 #endif
-	post("\t%d method selectors, %d classes\n", numSelectors, numClasses);
-	post("\tmethod table size %d bytes, ", rowTableSize);
-	post("big table size %d\n", numSelectors * numClasses * sizeof(PyrMethod*));
 	//postfl("%p %p %p\n", classes, bigTable, sels);
 /*
 	// not necessary since the entire pool will be freed..
