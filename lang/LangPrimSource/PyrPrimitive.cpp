@@ -3544,7 +3544,7 @@ static int prLanguageConfig_getCurrentConfigPath(struct VMGlobals * g, int numAr
     } else {
         SetObject(a, str);
     }
-    
+
 	return errNone;
 }
 
@@ -4245,7 +4245,7 @@ void initSchedPrimitives();
 
 void initHIDAPIPrimitives();
 	initHIDAPIPrimitives();
-	
+
 #if defined(__APPLE__) || defined(HAVE_ALSA) || defined(HAVE_PORTMIDI)
 void initMIDIPrimitives();
 	initMIDIPrimitives();
@@ -4265,7 +4265,7 @@ void initSerialPrimitives();
 void initWiiPrimitives();
 	initWiiPrimitives();
 #endif
-	
+
 #endif
 #ifdef __APPLE__
 void initCoreAudioPrimitives();
@@ -4294,7 +4294,7 @@ void initOpenGLPrimitives();
 	initSCDocPrimitives();
 
 	s_recvmsg = getsym("receiveMsg");
-	post("\tNumPrimitives = %d\n", nextPrimitiveIndex());
+	// post("\tNumPrimitives = %d\n", nextPrimitiveIndex());
 }
 
 void deinitPrimitives()
