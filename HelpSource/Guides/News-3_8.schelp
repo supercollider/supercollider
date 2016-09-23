@@ -1,0 +1,56 @@
+title:: News in 3.8
+summary:: A summary of news in SC 3.8
+categories:: News
+related::Guides/News-3_7, Guides/News-3_6, Guides/News-3_5, Guides/Debugging-tips
+
+(Work in progress)
+
+In addition to the new features and changes described here, there are STRONG::many bugfixes and interesting improvements::, a full list of which can be found in CHANGELOG.md.
+
+
+SECTION::SuperCollider IDE
+
+LIST::
+##
+##
+::
+
+SECTION::SuperCollider Language
+
+LIST::
+##
+##
+::
+
+
+SUBSECTION::New methods and classes
+
+LIST::
+##
+::
+
+SUBSECTION::Deprecated classes and methods
+LIST::
+##
+::
+
+
+
+SECTION::SuperCollider Server
+
+SUBSECTION::List of new UGens
+
+LIST::
+##
+::
+
+SUBSECTION::Improved or corrected behavior
+LIST::
+##
+::
+
+SECTION:: Known Issues
+
+While much has improved and many bugs from 3.7 have been fixed, there are still many known issues. For a complete list see: link::https://github.com/supercollider/supercollider/issues/::
+
+Please do not hesitate to add new issues you find to the LINK::https://github.com/supercollider/supercollider/issues##issue tracker:: or mention them on the  LINK::http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx##mailing list::

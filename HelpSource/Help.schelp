@@ -4,7 +4,7 @@ categories::Help
 
 SuperCollider is an environment and programming language for real time audio synthesis and algorithmic composition. It provides an interpreted object-oriented language which functions as a network client to a state of the art, realtime sound synthesis server.
 
-NOTE:: link::Guides/News-3_7##News in SuperCollider version 3.7:: ::
+NOTE:: link::Guides/News-3_8##News in SuperCollider version 3.8:: ::
 
 SECTION::Search and browse
 definitionlist::
@@ -37,4 +37,3 @@ SECTION::Licensing
 SuperCollider is free software published under the GPL: link::Other/Licensing::.
 
 SuperCollider help docs are published under the Creative Commons CC-BY-SA-3 license: link::Other/HelpDocsLicensing::.
-
