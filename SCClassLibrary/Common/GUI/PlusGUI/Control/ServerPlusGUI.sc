@@ -13,7 +13,7 @@
 
 	calculateViewBounds {
 		var width = 288, height = 98, taskBarHeight = 27; // the latter should be in SCWindow
-		var keys = set.asArray.collect(_.name).sort;
+		var keys = all.asArray.collect(_.name).sort;
 		^Rect(5, keys.indexOf(name) * (height + taskBarHeight) + 5, width, height)
 	}
 
@@ -332,7 +332,7 @@
 
 		w.front;
 
-		serverStatusController = SimpleController(statusWatcher)
+		ctlr = SimpleController(this)
 			.put(\serverRunning, {	if(this.serverRunning, running, stopped) })
 			.put(\counts,{
 				countsViews.at(0).string = statusWatcher.avgCPU.round(0.1);
@@ -341,9 +341,7 @@
 				countsViews.at(3).string = statusWatcher.numSynths;
 				countsViews.at(4).string = statusWatcher.numGroups;
 				countsViews.at(5).string = statusWatcher.numSynthDefs;
-			});
-
-		serverController = SimpleController(this)
+			})
 			.put(\bundling, bundling)
 			.put(\default, showDefault);
 		if(isLocal){
