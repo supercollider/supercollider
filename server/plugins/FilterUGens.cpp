@@ -4501,6 +4501,7 @@ void DetectSilence_Ctor(DetectSilence* unit)
 	}
 	unit->mDoneAction = ZIN0(3);
 	unit->mCounter = -1;
+	ClearUnitOutputs(unit, 1);
 }
 
 
