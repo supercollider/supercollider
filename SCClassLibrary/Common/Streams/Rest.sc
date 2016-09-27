@@ -1,52 +1,17 @@
-Rest {
-	var <>dur = 1;
-	*new { |dur(1)|
-		^super.newCopyArgs(dur)
-	}
-	// for use by Pfunc and Pfuncn
-	*processRest { |inval|
-		inval.put(\isRest, true);
-		^1
-	}
-	processRest { |inval|
-		inval.put(\isRest, true);
-		^dur.value(inval)
-	}
-	// for use e.g. in ListPatterns
-	*embedInStream { |inval|
-		^this.processRest(inval).yield;  // the actual return value is the next inval
-	}
-	embedInStream { |inval|
-		^this.processRest(inval).yield;
-	}
-	*asStream {
-		^Routine({ |inval|
-			loop {
-				inval = this.embedInStream(inval);
-			}
-		})
-	}
-	asStream {
-		^Routine({ |inval|
-			loop {
-				inval = this.embedInStream(inval);
-			}
-		})
-	}
-	value { ^dur }
-	storeOn { |stream| stream << "Rest(" << dur << ")" }
-}
 
-+ Object {
-	processRest { ^this }
-}
 
-+ Collection {
-	processRest { |inval|
-		this.do(_.processRest(inval))
-	}
-}
+Rest : Operand  {
 
+	dur_ { |dt| value = dt }
+	dur { ^value }
+
+	// EVENT SUPPORT
+	asControlInput { ^value ? 1 }
+	playAndDelta { ^value ? 1 }
+	isRest { ^true }
+
+
+}
 
 + SimpleNumber {
 	// Some patterns call .delta on the eventstream's yield value
