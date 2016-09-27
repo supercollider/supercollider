@@ -10,6 +10,19 @@ Rest : Operand  {
 	playAndDelta { ^value ? 1 }
 	isRest { ^true }
 
+	prescribeRest { |event|
+		event.put(\isRest, true);
+		if(value.notNil) {
+			event.put(\dur, value.(event))
+		}
+	}
+
+
+}
+
++ Object {
+
+	prescribeRest {}
 
 }
 

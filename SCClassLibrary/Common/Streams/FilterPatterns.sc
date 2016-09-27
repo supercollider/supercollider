@@ -207,6 +207,7 @@ Pset : FilterPattern {
 			if (inEvent.isNil) { ^cleanup.exit(event) };
 			val = valStream.next(inEvent);
 			if (val.isNil) { ^cleanup.exit(event) };
+			val.prescribeRest(event);
 
 			this.filterEvent(inEvent, val);
 			cleanup.update(inEvent);
@@ -565,6 +566,8 @@ Pbindf : FilterPattern {
 				var streamout = stream.next(outevent);
 
 				if (streamout.isNil) { ^cleanup.exit(event) };
+				streamout.prescribeRest(event);
+
 				if (name.isSequenceableCollection) {
 					if (name.size > streamout.size) {
 						("the pattern is not providing enough values to assign to the key set:" + name).warn;

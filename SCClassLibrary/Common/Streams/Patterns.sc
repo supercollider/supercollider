@@ -362,6 +362,7 @@ Pbind : Pattern {
 				var stream = streampairs[i+1];
 				var streamout = stream.next(event);
 				if (streamout.isNil) { ^inevent };
+				streamout.prescribeRest(event);
 
 				if (name.isSequenceableCollection) {
 					if (name.size > streamout.size) {
