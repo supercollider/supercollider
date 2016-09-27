@@ -96,6 +96,7 @@ AudioStatusBox::AudioStatusBox(ScServer *server, QWidget *parent):
 
 
 void AudioStatusBox::onServerRunningChanged(bool running, const QString &, int, bool unresponsive)
+{
 
     if (unresponsive) {
         mStatisticsLabel->setTextColor(Qt::yellow);
@@ -107,8 +108,9 @@ void AudioStatusBox::onServerRunningChanged(bool running, const QString &, int, 
         mStatisticsLabel->setTextColor(Qt::white);
         mVolumeLabel->setTextColor(Qt::white);
     };
-    if (!running)
+	if (!running) {
         updateStatistics(0, 0, 0, 0, 0, 0);
+	}
 }
 
 void AudioStatusBox::wheelEvent(QWheelEvent * event)
