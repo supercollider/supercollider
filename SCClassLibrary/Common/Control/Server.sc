@@ -4,7 +4,7 @@ ServerOptions {
 	var <>numControlBusChannels=16384;
 	var <numInputBusChannels=2;
 	var <numOutputBusChannels=2;
-	var numBuffers=1026;
+	var <>numBuffers=1026;
 
 	var <>maxNodes=1024;
 	var <>maxSynthDefs=1024;
