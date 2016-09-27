@@ -308,8 +308,7 @@
 					if (unicode == 16rF701, { slider.decrement; });
 					if (unicode == 16rF702, { slider.decrement; });
 					nil;
-					})
-					;
+					});
 			volController = SimpleController(volume)
 				.put(\amp, {|changer, what, vol|
 					{
@@ -332,7 +331,7 @@
 
 		w.front;
 
-		ctlr = SimpleController(this)
+		serverController = SimpleController(this)
 			.put(\serverRunning, {	if(this.serverRunning, running, stopped) })
 			.put(\counts,{
 				countsViews.at(0).string = statusWatcher.avgCPU.round(0.1);
