@@ -358,3 +358,46 @@ FunctionList : AbstractFunction {
 	storeArgs { ^[array] }
 	copy { ^super.copy.array_(array.copy) }
 }
+
+
+
+Operand : AbstractFunction {
+	var <>value;
+
+	*new { |value|
+		^super.newCopyArgs(value)
+	}
+
+	// MATH SUPPORT
+	composeUnaryOp { arg aSelector;
+		^this.class.new(value.perform(aSelector))
+	}
+	composeBinaryOp { arg aSelector, something, adverb;
+		^this.class.new(value.perform(aSelector, something, adverb))
+	}
+	reverseComposeBinaryOp { arg aSelector, something, adverb;
+		^this.class.new(something.perform(aSelector, value, adverb))
+	}
+	composeNAryOp { arg aSelector, anArgList;
+		^this.class.new(value.perform(aSelector, *anArgList))
+	}
+
+	performBinaryOpOnComplex { arg aSelector, aComplex, adverb;
+		^this.class.new(aComplex.perform(aSelector, value, adverb))
+	}
+
+	performBinaryOpOnSeqColl { arg aSelector, aSeqColl, adverb;
+		^this.class.new(aSeqColl.perform(aSelector, value, adverb))
+	}
+
+	performBinaryOpOnSignal { arg aSelector, aSignal, adverb;
+		^this.class.new(aSignal.perform(aSelector, value, adverb))
+	}
+
+	printOn { |stream|
+		stream << this.class.name << "(";
+		value !? { stream << value };
+		stream << ")"
+	}
+
+}
