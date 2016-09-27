@@ -764,7 +764,7 @@ code::
 subsection::Misc methods
 
 method::speak
-Sends string to the speech synthesiser of the OS. (OS X only.) see: link::Classes/Speech::
+Deprecated. See link::Classes/Speech:: for the full reason and possible replacements. Sends string to the OS X speech synthesizer.
 code::
 "hi i'm talking with the default voice now, i guess".speak;
 ::
