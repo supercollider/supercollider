@@ -509,7 +509,7 @@ void ScServer::handleRuningStateChangedMsg( const QString & data )
 
     onRunningStateChanged( serverRunningState, qstrHostName, port);
 
-    emit runningStateChange( serverRunningState, qstrHostName, port, serverUnresponsive );
+    emit runningStateChanged( serverRunningState, qstrHostName, port, serverUnresponsive );
 }
 
 void ScServer::timerEvent(QTimerEvent * event)
