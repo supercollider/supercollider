@@ -110,11 +110,10 @@ Recorder {
 		"Preparing recording on '%'\n".postf(server.name);
 	}
 
-
 	/* private implementation */
 
-	prRecord { |bus, node, duration|
-		recordNode = Synth.tail(node ? 0, synthDef.name, [\bufnum, recordBuf, \in, bus, \duration, duration ? -1]);
+	prRecord { |bus, node, dur|
+		recordNode = Synth.tail(node ? 0, synthDef.name, [\bufnum, recordBuf, \in, bus, \duration, dur ? -1]);
 		recordNode.register(true);
 		recordNode.onFree { this.stopRecording };
 		if(responder.isNil) {
