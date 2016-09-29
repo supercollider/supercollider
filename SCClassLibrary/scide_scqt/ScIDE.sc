@@ -12,9 +12,9 @@ ScIDE {
 		Class.initClassTree(Server);
 
 		StartUp.add {
-			if (ScIDE.connected) {
+			if (this.connected) {
 				this.handshake
-			};
+			}
 		}
 	}
 
@@ -42,6 +42,18 @@ ScIDE {
 		.put(\default, { | server, what, newServer |
 			("changed default server to:" + newServer.name).postln;
 			this.defaultServer = newServer;
+		})
+		.put(\dumpOSC, { | server, what, code |
+			this.send( if(code.asBoolean, \dumpOSCStarted, \dumpOSCStopped) );
+		})
+		.put(\recording, { | theChanger, what, flag |
+			this.send( if(flag.asBoolean, \recordingStarted, \recordingStopped) );
+		})
+		.put(\pausedRecording, { | theChanger, what |
+			this.send(\recordingPaused);
+		})
+		.put(\recordingDuration, { | theChanger, what, duration |
+			this.send(\recordingDuration, duration.asString);
 		})
 		.put(\dumpOSC, { | volume, what, code |
 			this.send( if(code.asBoolean, \dumpOSCStarted, \dumpOSCStopped) );
@@ -413,8 +425,7 @@ ScIDE {
 		defer {
 			this.prSend(id, data)
 		}
-	}
-
+    }
 
 
 	// PRIVATE ///////////////////////////////////////////////////////////
