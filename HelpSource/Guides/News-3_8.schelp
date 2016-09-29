@@ -3,50 +3,38 @@ summary:: A summary of news in SC 3.8
 categories:: News
 related::Guides/News-3_7, Guides/News-3_6, Guides/News-3_5, Guides/Debugging-tips
 
-(Work in progress)
-
-In addition to the new features and changes described here, there are STRONG::many bugfixes and interesting improvements::, a full list of which can be found in CHANGELOG.md.
-
+3.8 is light on new features and heavy on small bugfixes. See CHANGELOG.md for more details.
 
 SECTION::SuperCollider IDE
 
 LIST::
-##
-##
+## The middle mouse button now closes tabs.
+## A new menu entry, Language > Quarks, launches Quarks.gui.
 ::
 
 SECTION::SuperCollider Language
 
 LIST::
-##
-##
+## New methods: link::Classes/Function#-plotAudio::, link::Classes/Bus#-plotAudio::.
+## It is now easier to insert custom views, in particular subclasses of link::Classes/SCViewHolder::, into layouts.
+## New methods: link::Classes/TreeView#-addChild::, link::Classes/TreeView#-insertChild::, and link::Classes/TreeView#-childAt::, alias methods provided for symmetry with TreeViewItem.
 ::
-
-
-SUBSECTION::New methods and classes
-
-LIST::
-##
-::
-
-SUBSECTION::Deprecated classes and methods
-LIST::
-##
-::
-
-
 
 SECTION::SuperCollider Server
 
-SUBSECTION::List of new UGens
-
 LIST::
-##
+## A new command-line option for scsynth, -B, allows binding to a specific address.
+## link::Classes/VOsc:: supports an audio-rate phasein argument.
+## link::Classes/TGrains:: supports numChannels set to 1.
 ::
 
-SUBSECTION::Improved or corrected behavior
+SECTION::API changes
+
 LIST::
-##
+## The number of default audio buses has been increased from 128 to 1024.
+## link::Classes/TGrains::, link::Classes/GrainBuf::, link::Classes/GrainSin::, link::Classes/GrainFM::, and link::Classes/GrainIn:: now have unified panning behavior when numChannels is 2 and the pan exceeds the range [-1, 1].
+## Several old methods have been deprecated from link::Classes/PathName::: *fromOS9, foldersWithoutCVS, isCVS, foldersWithoutSVN, isSVN, filesDoNoCVS, filesDoNoSVN, streamTreeNoCVS.
+## The argument "startframe" has been renamed to "startFrame" and "aSoundFile" to "soundFile" in the following methods of link::Classes/SoundFileView::: loadFile, setData, readFile, read, readFileWithTask, readWithTask.
 ::
 
 SECTION:: Known Issues
