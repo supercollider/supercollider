@@ -570,9 +570,8 @@ x.free; // stop the synths
 
 // look in your recordings folder and you'll find a file named for this date and time
 ::
-=======
+
 Recording is done via an of link::Classes/Recorder:: - a server holds one instance implicitly.
->>>>>>> topic/refactor-server-clean
 
 method:: prepareForRecord
 Allocates the necessary buffer, etc. for recording the server's output. (See code::record:: below.)
