@@ -425,7 +425,7 @@ ScIDE {
 		defer {
 			this.prSend(id, data)
 		}
-    }
+	}
 
 
 	// PRIVATE ///////////////////////////////////////////////////////////
@@ -626,7 +626,7 @@ Document {
 
 	close { ScIDE.close(quuid); }
 
-/*	// asynchronous get
+	/*	// asynchronous get
 	// range -1 means to the end of the Document
 	getText {|action, start = 0, range -1|
 		var funcID;
@@ -818,7 +818,7 @@ Document {
 
 	string { | rangestart, rangesize = 1 |
 		if(rangestart.isNil,{
-		^this.text;
+			^this.text;
 		});
 		^this.rangeText(rangestart, rangesize);
 	}
