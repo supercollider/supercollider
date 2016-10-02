@@ -910,7 +910,7 @@ int hid_parse_input_report( unsigned char* buf, int size, struct hid_dev_desc * 
   struct hid_device_collection * device_collection = devdesc->device_collection;
   struct hid_device_element * cur_element = device_collection->first_element;
   int newvalue;
-  int i;
+  int i = 0;
   int starti = 0;
   int reportid = 0;
 
