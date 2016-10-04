@@ -48,6 +48,7 @@ ARGUMENT:: path
 In addition to the default downloaded-quarks
 add folders that contain quarks to offer on the menu for installation.
 These may be private quarks, cloned working copies or folders where you have manually downloaded quarks.
+NOTE:: The argument should be a path to a directory emphasis::containing quark directories::. It should emphasis::not:: be an isolated quark directory by itself. Users are discouraged from scattering quark directories in isolated locations. ::
 returns:: this
 
 METHOD:: all
