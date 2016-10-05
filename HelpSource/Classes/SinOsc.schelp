@@ -1,26 +1,39 @@
 class:: SinOsc
 summary:: Interpolating sine wavetable oscillator.
-related:: Classes/Osc, Classes/FSinOsc, Classes/SinOscFB, Classes/PMOsc, Classes/Klang
+related:: Classes/FSinOsc, Classes/SinOscFB
 categories::  UGens>Generators>Deterministic
 
 
 Description::
 
-Generates a sine wave.
-Uses a wavetable lookup oscillator with linear interpolation.
-Frequency and phase modulation are provided for audio-rate modulation.
-Technically, code::SinOsc:: uses the same implementation as  link::Classes/Osc::  except that its table is fixed to be a sine wave made of code::8192:: samples.
+This is the same as  link::Classes/Osc::  except that the table is
+a sine table of 8192 entries.
 
-subsection:: Other sinewaves oscillators
+From Osc Supercollider Documentation Description:
 
-LIST::
-## link::Classes/FSinOsc:: – fast sinewave oscillator
-## link::Classes/SinOscFB:: – sinewave with phase feedback
-## link::Classes/PMOsc:: – phase modulation sine oscillator
-## link::Classes/Klang:: – bank of sinewave oscillators
-## link::Classes/DynKlang:: – modulable bank of sinewave oscillators
-::
+Linear interpolating wavetable lookup oscillator with frequency and phase modulation inputs.
 
+This oscillator requires a buffer to be filled with a wavetable format signal. This preprocesses the Signal into a form which can be used efficiently by the Oscillator. The buffer size must be a power of 2.
+
+This can be acheived by creating a Buffer object and sending it one of the "b_gen" messages ( Buffer: -sine1, Buffer: -sine2, Buffer: -sine3 ) with the wavetable flag set to true.
+
+This can also be achieved by creating a Signal object and sending it the 'asWavetable' message, thereby creating a Wavetable object in the required format. Then, the wavetable data may be transmitted to the server using the Buffer: *sendCollection or Buffer: *loadCollection methods.
+
+////////////////////////////////
+////////////////////////////////
+////////////////////////////////
+
+About wavetable synthesis:
+
+Wavetable synthesis is a sound synthesis technique that employs arbitrary periodic waveforms in the production of musical tones or notes. The technique was developed by Wolfgang Palm of PPG in the late 1970s [1] and published in 1979,[2] and has since been used as the primary synthesis method in synthesizers built by PPG and Waldorf Music and as an auxiliary synthesis method by Ensoniq and Access. It is currently used in software-based synthesizers for PCs and tablets, including apps offered by PPG and Waldorf, among others.
+
+It was also independently developed by Michael Mcnabb in a similar time frame, and used in his classic work, "Dreamsong" (1977).[3][4]
+
+for more details on granular synthesis, check: "https://en.wikipedia.org/wiki/Wavetable_synthesis"
+
+////////////////////////////////
+////////////////////////////////
+////////////////////////////////
 
 classmethods::
 
@@ -28,12 +41,10 @@ method::ar, kr
 
 argument::freq
 Frequency in Hertz.
-Sampled at audio-rate.
 
 argument::phase
-Phase in radians.
-Sampled at audio-rate.
-note::phase values should be within the range +-8pi. If your phase values are larger then simply use code::.mod(2pi):: to wrap them.::
+Phase offset or modulator in radians.
+(Note: phase values should be within the range +-8pi. If your phase values are larger then simply use code::.mod(2pi):: to wrap them.)
 
 argument::mul
 Output will be multiplied by this value.
@@ -41,23 +52,27 @@ Output will be multiplied by this value.
 argument::add
 This value will be added to the output.
 
-
 Examples::
 
 code::
 
-// create an audio-rate sine wave at 200 Hz,
-// starting with phase 0 and an amplitude of 0.5
-{ SinOsc.ar(200, 0, 0.5) }.play;
+~exampleSound1 = { SinOsc.ar(200, 0, 0.5) };
 
-// modulate the frequency with an exponential ramp
-{ SinOsc.ar(XLine.kr(2000, 200), 0, 0.5) }.play;
+// modulate freq
+~exampleSound2 = { SinOsc.ar(XLine.kr(2000, 200), 0, 0.5) };
 
-// more complex frequency modulatation
-{ SinOsc.ar(SinOsc.ar(XLine.kr(1, 1000, 9), 0, 200, 800), 0, 0.25) }.play;
+// modulate freq
+~exampleSound3 = { SinOsc.ar(SinOsc.ar(XLine.kr(1, 1000, 9), 0, 200, 800), 0, 0.25) };
 
-// phase modulation (see also PMOsc)
-{ SinOsc.ar(800, SinOsc.ar(XLine.kr(1, 1000, 9), 0, 2pi), 0.25) }.play;
+// modulate phase
+~exampleSound4 = { SinOsc.ar(800, SinOsc.ar(XLine.kr(1, 1000, 9), 0, 2pi), 0.25) };
+
+~exampleSound1.play
+~exampleSound2.play
+~exampleSound3.play
+~exampleSound4.play
+
+[~exampleSound1, ~exampleSound2, ~exampleSound3, ~exampleSound4].choose.play
 
 ::
 
