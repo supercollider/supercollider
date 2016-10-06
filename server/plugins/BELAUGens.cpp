@@ -176,14 +176,17 @@ void AnalogIn_Ctor(AnalogIn *unit)
 	// set calculation method
         if (unit->mCalcRate == calc_FullRate) {
             if (INRATE(0) == calc_FullRate) {
+                rt_printf("AnalogIn: aa\n");
                 SETCALC(AnalogIn_next_aa);
             } else {
+                rt_printf("AnalogIn: ak\n");
                 SETCALC(AnalogIn_next_ak);
             }
         } else {
-            if (INRATE(0) == calc_FullRate) {
+            if (INRATE(0) == calc_FullRate) {                
                 rt_printf("AnalogIn warning: output rate is control rate, so cannot change analog pin at audio rate\n");
             }
+            rt_printf("AnalogIn: kk\n");
             SETCALC(AnalogIn_next_kk);
         }
 }
