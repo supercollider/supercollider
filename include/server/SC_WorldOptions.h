@@ -87,6 +87,10 @@ struct WorldOptions
 	float mBelaHeadphoneLevel;
 	float mBelaPGAGainLeft;
 	float mBelaPGAGainRight;
+        bool mBelaSpeakerMuted;
+        float mBelaDACLevel;
+        float mBelaADCLevel;
+        uint32 mBelaNumMuxChannels;        
 #endif
 };
 

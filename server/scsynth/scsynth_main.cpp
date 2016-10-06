@@ -163,11 +163,15 @@ int main(int argc, char* argv[])
 	options.mBelaHeadphoneLevel = -6.;
 	options.mBelaPGAGainLeft = 20;
 	options.mBelaPGAGainRight = 20;
+        options.mBelaSpeakerMuted = 0;
+        options.mBelaADCLevel = 0;
+        options.mBelaDACLevel = 0;
+        options.mBelaNumMuxChannels = 0;
 #endif
 
 	for (int i=1; i<argc;) {
 #ifdef BELA
-		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utBaioczblndpmwZrCNSDIOMHvVRUhPLJKGXYQ", argv[i][1]) == 0) {
+		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utBaioczblndpmwZrCNSDIOMHvVRUhPLJKGXYQsxyg", argv[i][1]) == 0) {
 #else
 		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utBaioczblndpmwZrCNSDIOMHvVRUhPL", argv[i][1]) == 0) {
 #endif
@@ -328,6 +332,22 @@ int main(int argc, char* argv[])
 			case 'Y' :
 				checkNumArgs(2);
 				options.mBelaPGAGainRight = atof(argv[j+1]);
+				break;
+                        case 's' :
+				checkNumArgs(2);
+				options.mBelaSpeakerMuted = atoi(argv[j+1]) > 0;
+				break;
+                        case 'x' :
+				checkNumArgs(2);
+				options.mBelaDACLevel = atof(argv[j+1]);
+				break;
+                        case 'y' :
+				checkNumArgs(2);
+				options.mBelaADCLevel = atof(argv[j+1]);
+				break;
+                        case 'g' :
+				checkNumArgs(2);
+				options.mBelaNumMuxChannels = atoi(argv[j+1]);
 				break;
 #endif
 			case 'V' :

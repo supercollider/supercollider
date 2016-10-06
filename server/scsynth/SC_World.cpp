@@ -436,7 +436,11 @@ World* World_New(WorldOptions *inOptions)
 		world->mBelaDigitalChannels = inOptions->mBelaDigitalChannels;
 		world->mBelaHeadphoneLevel = inOptions->mBelaHeadphoneLevel;
 		world->mBelaPGAGainLeft = inOptions->mBelaPGAGainLeft;
-		world->mBelaPGAGainRight = inOptions->mBelaPGAGainRight;
+		world->mBelaPGAGainRight = inOptions->mBelaPGAGainRight;                
+                world->mBelaSpeakerMuted = inOptions->mBelaSpeakerMuted;
+                world->mBelaDACLevel = inOptions->mBelaDACLevel;
+                world->mBelaADCLevel = inOptions->mBelaADCLevel;
+                world->mBelaNumMuxChannels = inOptions->mBelaNumMuxChannels;
 #endif
 
 #ifdef __APPLE__

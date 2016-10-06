@@ -367,15 +367,33 @@ bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 	if ( (mWorld->mBelaHeadphoneLevel >= -63.5) && ( mWorld->mBelaHeadphoneLevel <= 0. )) {             //headphone output level (0dB max; -63.5dB min)
 	  settings.headphoneLevel = mWorld->mBelaHeadphoneLevel;
 	}
-	if ( mWorld->mBelaPGAGainLeft > 0 ){
+	if ( (mWorld->mBelaPGAGainLeft >= 0)  && ( mWorld->mBelaPGAGainLeft <= 59.5) ){ // (0db min; 59.5db max)
 	  settings.pgaGain[0] = mWorld->mBelaPGAGainLeft;
 	}
-	if ( mWorld->mBelaPGAGainRight > 0 ){
+	if ( (mWorld->mBelaPGAGainRight >= 0) && ( mWorld->mBelaPGAGainRight <= 59.5)){// (0db min; 59.5db max)
 	  settings.pgaGain[1] = mWorld->mBelaPGAGainRight;
 	}
+	
+	if ( mWorld->mBelaSpeakerMuted ){
+            settings.beginMuted = 1;
+        } else {
+            settings.beginMuted = 0;
+        }
+        if ( (mWorld->mBelaDACLevel >= -63.5) && ( mWorld->mBelaDACLevel <= 0. )) {             // (0dB max; -63.5dB min)
+            settings.dacLevel = mWorld->mBelaDACLevel;
+        }
+        if ( (mWorld->mBelaADCLevel >= -12) && ( mWorld->mBelaADCLevel <= 0. )) {             // (0dB max; -12dB min)
+            settings.adcLevel = mWorld->mBelaADCLevel;
+        }
+        
+        settings.numMuxChannels = mWorld->mBelaNumMuxChannels;
 
-
-	scprintf("SC_BelaDriver: >>DriverSetup - configured with (%i) analog input and (%i) analog output channels, and (%i) digital channels, with headphoneLevel (%f), pga_gain_left (%f) and pga_gain_right (%f)\n", settings.numAnalogInChannels, settings.numAnalogOutChannels, settings.numDigitalChannels, settings.headphoneLevel, settings.pgaGain[0],settings.pgaGain[1] );
+	scprintf("SC_BelaDriver: >>DriverSetup - configured with \n (%i) analog input and (%i) analog output channels, (%i) digital channels, and (%i) multiplexer channels.\n HeadphoneLevel (%f dB), pga_gain_left (%f dB) and pga_gain_right (%f dB)\n DAC Level (%f dB), ADC Level (%f dB)\n", settings.numAnalogInChannels, settings.numAnalogOutChannels, settings.numDigitalChannels, settings.numMuxChannels, settings.headphoneLevel, settings.pgaGain[0],settings.pgaGain[1], settings.dacLevel, settings.adcLevel );
+        if ( settings.beginMuted == 1 ){
+            scprintf( "Speakers are muted.\n" );
+        } else {
+            scprintf( "Speakers are not muted.\n" );
+        }
 
 	// Initialise the PRU audio device. This function prepares audio rendering in BeagleRT. It should be called from main() sometime
 	// after command line option parsing has finished. It will initialise the rendering system, which
