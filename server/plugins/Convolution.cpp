@@ -333,7 +333,6 @@ void Convolution2_Ctor(Convolution2 *unit)
 		unit->m_pos = 0;
 
 		unit->m_prevtrig = 0.f;
-		unit->m_prevtrig = ZIN0(2);
 
 		if ( unit->m_framesize >= world->mFullRate.mBufLength ) {
 			SETCALC(Convolution2_next);
