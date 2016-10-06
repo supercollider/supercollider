@@ -30,7 +30,7 @@ argument::output
 
 Value to write out to the pin - the value will be 1 when the argument is larger than 0, otherwise 0. This value can be modulated at audio rate.
 
-argument::mode
+argument::pinMode
 
 Value to write out to the pin - the pin will be an input when the argument is smaller than 0.5, otherwise an output. This value can be modulated at audiorate.
 
@@ -50,7 +50,7 @@ argument::output
 
 Value to write out to the pin - the value will be 1 when the argument is larger than 0, otherwise 0.
 
-argument::mode
+argument::pinMode
 
 Value to write out to the pin - the pin will be an input when the argument is smaller than 0.5, otherwise an output.
 
