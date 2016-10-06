@@ -55,6 +55,7 @@ ServerOptions {
 	var <>dacLevel;
 	var <>adcLevel;
 	var <>numMultiplexChannels;
+	var <>belaPRU;
 
 	device {
 		^if(inDevice == outDevice)
@@ -208,6 +209,9 @@ ServerOptions {
 		});
 		if (numMultiplexChannels.notNil, {
 			o = o ++ " -g " ++ numMultiplexChannels;
+		});
+		if (belaPRU.notNil, {
+			o = o ++ " -T " ++ belaPRU;
 		});
 		^o
 	}
