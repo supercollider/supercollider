@@ -165,6 +165,8 @@ If you want higher sample rates of the analog I/O, you can set the number of cha
 
 The amount of analog inputs and outputs actually used will be rounded to a multiple of 4, so the actual options are 0, 4 or 8 analog channels. This is because in SuperCollider we cannot sample the analog channels faster than audio rate (right now).
 
+![Channel explanation](bela_analog_audio_io.png)
+
 The ```ServerOptions``` class has appropriate variables to set the command line arguments, so you can set them with (but also see the comment below):
 
     s.options.numAnalogInChannels = 8;
