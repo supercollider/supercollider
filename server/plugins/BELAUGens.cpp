@@ -108,7 +108,7 @@ void AnalogIn_next_aa(AnalogIn *unit, int inNumSamples)
 	analogPin = (int) fin[n];
 // 	analogPin = sc_clip( analogPin, 0.0, context->analogInChannels );
 	if ( (analogPin < 0) || (analogPin >= context->analogInChannels) ){
-	    rt_printf( "analog pin must be between %i and %i, it is %i", 0, context->analogInChannels, analogPin );
+	    rt_printf( "analog pin must be between %i and %i, it is %i \n", 0, context->analogInChannels, analogPin );
 	} else {
 	  if(!(n % unit->mAudioFramesPerAnalogFrame)) {
 	    analogValue = analogRead(context, n/unit->mAudioFramesPerAnalogFrame, analogPin);
@@ -129,7 +129,7 @@ void AnalogIn_next_ak(AnalogIn *unit, int inNumSamples)
   float analogValue = 0;
 
     if ( (analogPin < 0) || (analogPin >= context->analogInChannels) ){
-        rt_printf( "analog pin must be between %i and %i, it is %i", 0, context->analogInChannels, analogPin );
+        rt_printf( "analog pin must be between %i and %i, it is %i \n", 0, context->analogInChannels, analogPin );
         for(unsigned int n = 0; n < inNumSamples; n++) {
             *++out = 0;
         }
@@ -153,7 +153,7 @@ void AnalogIn_next_kk(AnalogIn *unit, int inNumSamples)
   int analogPin = (float) IN0(0);
 
   if ( (analogPin < 0) || (analogPin >= context->analogInChannels) ){
-    rt_printf( "analog pin must be between %i and %i, it is %i", 0, context->analogInChannels, analogPin );
+    rt_printf( "analog pin must be between %i and %i, it is %i \n", 0, context->analogInChannels, analogPin );
     ZOUT0(0) = 0.0;  
   } else {
     ZOUT0(0) = analogRead(context, 0, analogPin);
@@ -205,7 +205,7 @@ void AnalogOut_next_aaa(AnalogOut *unit, int inNumSamples)
 	// read input
 	analogPin = (int) fin[n];
 	if ( (analogPin < 0) || (analogPin >= context->analogOutChannels) ){
-	    rt_printf( "analog pin must be between %i and %i, it is %i", 0, context->analogOutChannels, analogPin );
+	    rt_printf( "analog pin must be between %i and %i, it is %i \n", 0, context->analogOutChannels, analogPin );
 	} else {
 	  newinput = in[n]; // read next input sample
 	  if(!(n % unit->mAudioFramesPerAnalogFrame)) {
@@ -226,7 +226,7 @@ void AnalogOut_next_aka(AnalogOut *unit, int inNumSamples)
   
   float newinput = 0;
   if ( (analogPin < 0) || (analogPin >= context->analogOutChannels) ){
-    rt_printf( "analog pin must be between %i and %i, it is %i", 0, context->analogOutChannels, analogPin );
+    rt_printf( "analog pin must be between %i and %i, it is %i \n", 0, context->analogOutChannels, analogPin );
   } else {
     for(unsigned int n = 0; n < inNumSamples; n++) {
         newinput = in[n]; // read next input sample
@@ -251,7 +251,7 @@ void AnalogOut_next_aak(AnalogOut *unit, int inNumSamples)
 	// read input
 	analogPin = (int) fin[n];
 	if ( (analogPin < 0) || (analogPin >= context->analogOutChannels) ){
-	    rt_printf( "analog pin must be between %i and %i, it is %i", 0, context->analogOutChannels, analogPin );
+	    rt_printf( "analog pin must be between %i and %i, it is %i \n", 0, context->analogOutChannels, analogPin );
 	} else {
 // 	  newinput = in[n]; // read next input sample
 	  if(!(n % unit->mAudioFramesPerAnalogFrame)) {
@@ -272,7 +272,7 @@ void AnalogOut_next_kk(AnalogOut *unit, int inNumSamples)
   float in = IN0(1);
   
   if ( (analogPin < 0) || (analogPin >= context->analogOutChannels) ){
-    rt_printf( "analog pin must be between %i and %i, it is %i", 0, context->analogOutChannels, analogPin );
+    rt_printf( "analog pin must be between %i and %i, it is %i \n", 0, context->analogOutChannels, analogPin );
   } else {
     analogWrite(context, 0, analogPin, in);
   }
@@ -368,7 +368,7 @@ void DigitalIn_Ctor(DigitalIn *unit)
 	unit->mDigitalPin = (int) fDigitalIn;
 // 	unit->mDigitalPin = (int) sc_clip( fDigitalIn, 0., 15.0 );
 	if ( (unit->mDigitalPin < 0) || (unit->mDigitalPin >= context->digitalChannels) ){
-	    rt_printf( "digital pin must be between %i and %i, it is %i", 0, context->digitalChannels, unit->mDigitalPin );
+	    rt_printf( "digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, unit->mDigitalPin );
 	  // initiate first sample
           if (unit->mCalcRate == calc_FullRate) { // ugen running at audio rate;
             DigitalIn_next_dummy_a( unit, 1);  
@@ -480,7 +480,7 @@ void DigitalOut_Ctor(DigitalOut *unit)
 	unit->mLastOut = 0;
 
         if ( (unit->mDigitalPin < 0) || (unit->mDigitalPin >= context->digitalChannels) ){
-	  rt_printf( "digital pin must be between %i and %i, it is %i", 0, context->digitalChannels, unit->mDigitalPin );
+	  rt_printf( "digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, unit->mDigitalPin );
 	  // initiate first sample
 	  DigitalOut_next_dummy( unit, 1);  
 	  // set calculation method	    
@@ -533,7 +533,7 @@ void DigitalIO_next_aaaa_once(DigitalIO *unit, int inNumSamples)
 	// read input
 	newpin = (int) pinid[n];
 	if ( (newpin < 0) || (newpin >= context->digitalChannels) ){
-	    rt_printf( "digital pin must be between %i and %i, it is %i", 0, context->digitalChannels, newpin );
+	    rt_printf( "digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, newpin );
 	} else {
           newDigOut = (int) in[n];
 	  newmode = iomode[n];
@@ -576,7 +576,7 @@ void DigitalIO_next_aaak_once(DigitalIO *unit, int inNumSamples)
     for(unsigned int n = 0; n < inNumSamples; n++) {
 	newpin = (int) pinid[n];
 	if ( (newpin < 0) || (newpin >= context->digitalChannels) ){
-	    rt_printf( "digital pin must be between %i and %i, it is %i", 0, context->digitalChannels, newpin );
+	    rt_printf( "digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, newpin );
 	} else {
           pinModeOnce( context, n, newpin, INPUT );
           newDigInInt = digitalRead(context, n, newpin);
@@ -588,7 +588,7 @@ void DigitalIO_next_aaak_once(DigitalIO *unit, int inNumSamples)
     for(unsigned int n = 0; n < inNumSamples; n++) {
 	newpin = (int) pinid[n];
 	if ( (newpin < 0) || (newpin >= context->digitalChannels) ){
-	    rt_printf( "digital pin must be between %i and %i, it is %i", 0, context->digitalChannels, newpin );
+	    rt_printf( "digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, newpin );
 	} else {
           pinModeOnce( context, n, newpin, OUTPUT );
 	  newDigOut = (int) in[n];
@@ -625,7 +625,7 @@ void DigitalIO_next_aaka_once(DigitalIO *unit, int inNumSamples)
 	// read input
 	newpin = (int) pinid[n];
 	if ( (newpin < 0) || (newpin >= context->digitalChannels) ){
-	    rt_printf( "digital pin must be between %i and %i, it is %i", 0, context->digitalChannels, newpin );
+	    rt_printf( "digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, newpin );
 	} else {
 	  newmode = iomode[n];
 	  if ( newmode < 0.5 ){
@@ -668,7 +668,7 @@ void DigitalIO_next_aakk_once(DigitalIO *unit, int inNumSamples)
     for(unsigned int n = 0; n < inNumSamples; n++) {
 	newpin = (int) pinid[n];
 	if ( (newpin < 0) || (newpin >= context->digitalChannels) ){
-	    rt_printf( "digital pin must be between %i and %i, it is %i", 0, context->digitalChannels, newpin );
+	    rt_printf( "digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, newpin );
 	} else {
           pinModeOnce( context, n, newpin, INPUT );
           newDigInInt = digitalRead(context, n, newpin);
@@ -680,7 +680,7 @@ void DigitalIO_next_aakk_once(DigitalIO *unit, int inNumSamples)
     for(unsigned int n = 0; n < inNumSamples; n++) {
 	newpin = (int) pinid[n];
 	if ( (newpin < 0) || (newpin >= context->digitalChannels) ){
-	    rt_printf( "digital pin must be between %i and %i, it is %i", 0, context->digitalChannels, newpin );
+	    rt_printf( "digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, newpin );
 	} else {
           pinModeOnce( context, n, newpin, OUTPUT );
 	  digitalWriteOnce(context, n, newpin, newDigOut);
@@ -716,7 +716,7 @@ void DigitalIO_next_akaa_once(DigitalIO *unit, int inNumSamples)
   int newDigOut = (int) in;
 
   if ( (newpin < 0) || (newpin >= context->digitalChannels) ){
-	    rt_printf( "digital pin must be between %i and %i, it is %i", 0, context->digitalChannels, newpin );
+	    rt_printf( "digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, newpin );
   } else {
     for(unsigned int n = 0; n < inNumSamples; n++) {
 // 	  newinput = in[n];
@@ -758,7 +758,7 @@ void DigitalIO_next_akak_once(DigitalIO *unit, int inNumSamples)
   int newDigOut = (int) in;
 
   if ( (newpin < 0) || (newpin >= context->digitalChannels) ){
-	    rt_printf( "digital pin must be between %i and %i, it is %i", 0, context->digitalChannels, newpin );
+	    rt_printf( "digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, newpin );
   } else {
     for(unsigned int n = 0; n < inNumSamples; n++) {
 // 	  newinput = in[n];
@@ -802,7 +802,7 @@ void DigitalIO_next_akka_once(DigitalIO *unit, int inNumSamples)
 	// read input
 	newpin = (int) pinid[n];
 	if ( (newpin < 0) || (newpin >= context->digitalChannels) ){
-	    rt_printf( "digital pin must be between %i and %i, it is %i", 0, context->digitalChannels, newpin );
+	    rt_printf( "digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, newpin );
 	} else {
 	  newinput = in[n];
 	  newmode = iomode[n];
@@ -846,7 +846,7 @@ void DigitalIO_next_ak(DigitalIO *unit, int inNumSamples)
   int newDigOut = (int) in;
 
   if ( (pinid < 0) || (pinid >= context->digitalChannels) ){
-    rt_printf( "digital pin must be between %i and %i, it is %i", 0, context->digitalChannels, newpin );
+    rt_printf( "digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, newpin );
   } else {
     if ( iomode < 0.5 ){
         pinMode( context, 0, newpin, INPUT );
@@ -890,7 +890,7 @@ void DigitalIO_next_kk(DigitalIO *unit, int inNumSamples)
   int newDigOut = unit->mLastDigitalOut;
 
   if ( (pinid < 0) || (pinid >= context->digitalChannels) ){
-    rt_printf( "digital pin must be between %i and %i, it is %i", 0, context->digitalChannels, pinid );
+    rt_printf( "digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, pinid );
   } else {
     if ( iomode < 0.5 ){
         pinMode( context, 0, pinid, INPUT );
