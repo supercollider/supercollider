@@ -200,14 +200,14 @@ ServerOptions {
 		if (speakerMuted.notNil, {
 			o = o ++ " -s " ++ speakerMuted;
 		});
-		if (mBelaDACLevel.notNil, {
-			o = o ++ " -x " ++ mBelaDACLevel;
+		if (dacLevel.notNil, {
+			o = o ++ " -x " ++ dacLevel;
 		});
-		if (mBelaADCLevel.notNil, {
-			o = o ++ " -y " ++ mBelaADCLevel;
+		if (adcLevel.notNil, {
+			o = o ++ " -y " ++ adcLevel;
 		});
-		if (mBelaNumMuxChannels.notNil, {
-			o = o ++ " -g " ++ mBelaNumMuxChannels;
+		if (numMultiplexChannels.notNil, {
+			o = o ++ " -g " ++ numMultiplexChannels;
 		});
 		^o
 	}
