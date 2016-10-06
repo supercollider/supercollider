@@ -10,7 +10,7 @@ s.options.headphoneLevel = -8;
 s.options.speakerMuted = 0;
 s.options.dacLevel = 5;
 s.options.adcLevel = 3;
-s.options.numMultiplexerChannels = 4;
+s.options.numMultiplexChannels = 0;
 
 s.options.blockSize = 16;
 s.options.numInputBusChannels = 2;
