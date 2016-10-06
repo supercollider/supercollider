@@ -1,4 +1,4 @@
-Server.default = s = Server("belaServer", NetAddr("127.0.0.1", 57110));
+Server.default = s = Server("belaServer", NetAddr("192.168.7.2", 57110));
 s.initTree;
 s.startAliveThread;
 
