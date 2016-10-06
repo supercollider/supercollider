@@ -28,6 +28,17 @@ argument::mul
 
 argument::add
 
+method::kr
+
+argument::digitalPin
+
+Digital pin number to read. Pin numbers begin at 0. This value cannot be modulated.
+
+argument::mul
+
+argument::add
+
+
 Examples::
 
 code::

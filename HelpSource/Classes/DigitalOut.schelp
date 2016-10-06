@@ -28,9 +28,33 @@ argument::output
 
 Value to write out to the pin - the value will be 1 when the argument is larger than 0, otherwise 0.
 
+argument::writeMode
+
+Mode of writing to the output, this can be 0 (using Bela's DigitalWrite and only when value changes) or 1 (using Bela's DigitalWriteOnce). This value cannot be modulated.
+
 argument::mul
 
 argument::add
+
+
+method::kr
+
+argument::digitalPin
+
+Digital pin number to write to. Pin numbers begin at 0. This value cannot be modulated.
+
+argument::output
+
+Value to write out to the pin - the value will be 1 when the argument is larger than 0, otherwise 0.
+
+argument::writeMode
+
+Mode of writing to the output, this can be 0 (using Bela's DigitalWrite and only when value changes) or 1 (using Bela's DigitalWriteOnce). This value cannot be modulated.
+
+argument::mul
+
+argument::add
+
 
 Examples::
 
