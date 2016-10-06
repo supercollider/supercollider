@@ -51,10 +51,10 @@ DigitalIn : UGen {
  */
 DigitalOut : UGen {
     *ar { arg digitalPin = 0, output=0, writeMode=0, mul=1.0, add=0.0;
-        ^this.multiNew('audio', digitalPin, output ).madd(mul,add)
+        ^this.multiNew('audio', digitalPin, output, writeMode ).madd(mul,add)
     }
     *kr { arg digitalPin = 0, output=0, writeMode=0, mul=1.0, add=0.0;
-        ^this.multiNew('control', digitalPin, output ).madd(mul,add)
+        ^this.multiNew('control', digitalPin, output, writeMode ).madd(mul,add)
     }
 }
 
