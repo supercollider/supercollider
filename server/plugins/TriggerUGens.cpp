@@ -884,7 +884,7 @@ void Poll_Ctor(Poll* unit)
 		SETCALC(Poll_next_kk);
 	}
 
-	unit->m_trig = IN0(0);
+	unit->m_trig = 0.f;
 	const int idSize = (int)IN0(3); // number of chars in the id string
 	unit->m_id_string = (char*)RTAlloc(unit->mWorld, (idSize + 1) * sizeof(char));
 
@@ -1652,7 +1652,7 @@ void Sweep_Ctor(Sweep *unit)
 		}
 	}
 
-	unit->m_previn = ZIN0(0);
+	unit->m_previn = 0.f;
 	ZOUT0(0) = unit->mLevel = 0.f;
 }
 
@@ -1800,7 +1800,7 @@ void Phasor_Ctor(Phasor *unit)
 		SETCALC(Phasor_next_ak);
 	}
 
-	unit->m_previn = ZIN0(0);
+	unit->m_previn = 0.f;
 	ZOUT0(0) = unit->mLevel = ZIN0(2);
 }
 
@@ -2206,6 +2206,7 @@ void RunningMin_next_aa(RunningMin *unit, int inNumSamples)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void RunningMax_Ctor(RunningMax *unit)
 {
 	if (INRATE(1) == calc_FullRate) {
