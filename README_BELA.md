@@ -29,7 +29,7 @@ Working partition
 =================
 
 On my Bela's SD card I added an extra partition and mounted it at `/extrabela` - all my work will be in this partition.
-You'll need at least maybe 250 MB spare (estimated).
+You'll need at least maybe 500 MB spare (estimated).
 
     mkdir /extrabela
     mount /dev/mmcblk0p3 /extrabela
@@ -174,7 +174,7 @@ The ```ServerOptions``` class has appropriate variables to set the command line 
     s.options.numDigitalChannels = 16;
 
 
-The UGens ```AnalogInput```, ```AnalogOutput```, ```DigitalInput```, ```DigitalOutput```, ```DigitalIO``` give access to the pins; they all have helpfiles with examples of usage.
+The UGens ```AnalogIn```, ```AnalogOut```, ```DigitalIn```, ```DigitalOut```, ```DigitalIO``` give access to the pins; they all have helpfiles with examples of usage.
 
 
 Examples
