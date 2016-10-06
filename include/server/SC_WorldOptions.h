@@ -90,7 +90,8 @@ struct WorldOptions
         bool mBelaSpeakerMuted;
         float mBelaDACLevel;
         float mBelaADCLevel;
-        uint32 mBelaNumMuxChannels;        
+        uint32 mBelaNumMuxChannels;
+        uint32 mBelaPRU;
 #endif
 };
 

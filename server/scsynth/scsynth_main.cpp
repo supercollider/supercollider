@@ -90,6 +90,11 @@ void Usage()
 		"   -Q <bela-headphone-level> (0dB max, -63.5dB min)\n"
 		"   -X <bela-pga-gain-left>\n"
 		"   -Y <bela-pga-gain-right>\n"
+                "   -s <bela-speaker-mute>\n"
+                "   -x <bela-dac-level>\n"
+                "   -y <bela-adc-level>\n"
+                "   -g <bela-multiplexer-channels>\n"
+                "   -T <bela-pru-id>\n"
 #endif
 #if (_POSIX_MEMLOCK - 0) >=  200112L
 		"   -L enable memory locking\n"
@@ -167,11 +172,12 @@ int main(int argc, char* argv[])
         options.mBelaADCLevel = 0;
         options.mBelaDACLevel = 0;
         options.mBelaNumMuxChannels = 0;
+        options.mBelaPRU = 0;
 #endif
 
 	for (int i=1; i<argc;) {
 #ifdef BELA
-		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utBaioczblndpmwZrCNSDIOMHvVRUhPLJKGXYQsxyg", argv[i][1]) == 0) {
+		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utBaioczblndpmwZrCNSDIOMHvVRUhPLJKGXYQsxygT", argv[i][1]) == 0) {
 #else
 		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utBaioczblndpmwZrCNSDIOMHvVRUhPL", argv[i][1]) == 0) {
 #endif
@@ -348,6 +354,10 @@ int main(int argc, char* argv[])
                         case 'g' :
 				checkNumArgs(2);
 				options.mBelaNumMuxChannels = atoi(argv[j+1]);
+				break;
+                        case 'T' :
+				checkNumArgs(2);
+				options.mBelaPRU = atoi(argv[j+1]);
 				break;
 #endif
 			case 'V' :

@@ -441,6 +441,7 @@ World* World_New(WorldOptions *inOptions)
                 world->mBelaDACLevel = inOptions->mBelaDACLevel;
                 world->mBelaADCLevel = inOptions->mBelaADCLevel;
                 world->mBelaNumMuxChannels = inOptions->mBelaNumMuxChannels;
+                world->mBelaPRU = inOptions->mBelaPRU;
 #endif
 
 #ifdef __APPLE__
