@@ -308,7 +308,8 @@ void AnalogOut_Ctor(AnalogOut *unit)
                 if (INRATE(1) == calc_FullRate) { // output changed at audio rate
                     SETCALC(AnalogOut_next_aka);
                     rt_printf("AnalogOut: aka\n");
-                } else { // 
+                } else { // analog output only changes at control rate anyways
+                    rt_printf("AnalogOut warning: inputs are control rate, so AnalogOut is also running at control rate\n");
                     rt_printf("AnalogOut: kk\n");
                     SETCALC(AnalogOut_next_kk);
                 }
@@ -510,6 +511,7 @@ void DigitalOut_Ctor(DigitalOut *unit)
                     SETCALC(DigitalOut_next_a);
                 }
             } else { // not much reason to actually do audiorate output
+                rt_printf("DigitalOut warning: inputs are control rate, so DigitalOut will run at control rate\n");
                 rt_printf("DigitalOut: k\n");
                 SETCALC(DigitalOut_next_k);
             }
