@@ -798,7 +798,7 @@ void DigitalIO_next_akak_once(DigitalIO *unit, int inNumSamples)
   unit->mLastDigitalOut = newDigOut;
 }
 
-//TODO audio rate ugen output, pin changing at control rate, output at control rate, mode at audio rate
+// audio rate ugen output, pin changing at control rate, output at control rate, mode at audio rate
 void DigitalIO_next_akka_once(DigitalIO *unit, int inNumSamples)
 {
   World *world = unit->mWorld;
@@ -1061,7 +1061,7 @@ void DigitalIO_Ctor(DigitalIO *unit)
                 }
             }
         } else { // ugen at control rate
-            if ( (INRATE(0) == calc_FullRate) || (INRATE(1) == calc_FullRate) || (INRATE(2) == calc_FullRate) ) ) {
+            if ( (INRATE(0) == calc_FullRate) || (INRATE(1) == calc_FullRate) || (INRATE(2) == calc_FullRate) ) {
                 rt_printf("DigitalIO warning: UGen rate is control rate, so cannot change inputs at audio rate\n");
             }
             rt_printf("DigitalIO: kk\n");
