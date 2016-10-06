@@ -7,10 +7,11 @@ s.options.numDigitalChannels = 16;
 s.options.pgaGainLeft = 4;
 s.options.pgaGainRight = 5;
 s.options.headphoneLevel = -8;
-s.options.speakerMuted = 0;
+s.options.speakerMuted = 1;
 s.options.dacLevel = -5;
 s.options.adcLevel = -3;
-s.options.numMultiplexChannels = 0;
+s.options.numMultiplexChannels = 6;
+s.options.belaPRU = 1;
 
 s.options.blockSize = 16;
 s.options.numInputBusChannels = 2;
