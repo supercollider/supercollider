@@ -108,7 +108,7 @@ void AnalogIn_next_aa(AnalogIn *unit, int inNumSamples)
 	analogPin = (int) fin[n];
 // 	analogPin = sc_clip( analogPin, 0.0, context->analogInChannels );
 	if ( (analogPin < 0) || (analogPin >= context->analogInChannels) ){
-	    rt_printf( "analog pin must be between %i and %i, it is %i \n", 0, context->analogInChannels, analogPin );
+	    rt_printf( "AnalogIn warning: analog pin must be between %i and %i, it is %i \n", 0, context->analogInChannels, analogPin );
 	} else {
 	  if(!(n % unit->mAudioFramesPerAnalogFrame)) {
 	    analogValue = analogRead(context, n/unit->mAudioFramesPerAnalogFrame, analogPin);
@@ -129,7 +129,7 @@ void AnalogIn_next_ak(AnalogIn *unit, int inNumSamples)
   float analogValue = 0;
 
     if ( (analogPin < 0) || (analogPin >= context->analogInChannels) ){
-        rt_printf( "analog pin must be between %i and %i, it is %i \n", 0, context->analogInChannels, analogPin );
+        rt_printf( "AnalogIn warning: analog pin must be between %i and %i, it is %i \n", 0, context->analogInChannels, analogPin );
         for(unsigned int n = 0; n < inNumSamples; n++) {
             *++out = 0;
         }
@@ -153,7 +153,7 @@ void AnalogIn_next_kk(AnalogIn *unit, int inNumSamples)
   int analogPin = (float) IN0(0);
 
   if ( (analogPin < 0) || (analogPin >= context->analogInChannels) ){
-    rt_printf( "analog pin must be between %i and %i, it is %i \n", 0, context->analogInChannels, analogPin );
+    rt_printf( "AnalogIn warning: analog pin must be between %i and %i, it is %i \n", 0, context->analogInChannels, analogPin );
     ZOUT0(0) = 0.0;  
   } else {
     ZOUT0(0) = analogRead(context, 0, analogPin);
@@ -165,7 +165,7 @@ void AnalogIn_Ctor(AnalogIn *unit)
 	BelaContext *context = unit->mWorld->mBelaContext;
   
 	if(context->analogFrames == 0 || context->analogFrames > context->audioFrames) {
-		rt_printf("Error: the UGen needs BELA analog enabled, with 4 or 8 channels\n");
+		rt_printf("AnalogIn Error: the UGen needs BELA analog enabled, with 4 or 8 channels\n");
 		return;
 	}
 
@@ -176,17 +176,17 @@ void AnalogIn_Ctor(AnalogIn *unit)
 	// set calculation method
         if (unit->mCalcRate == calc_FullRate) {
             if (INRATE(0) == calc_FullRate) {
-                rt_printf("AnalogIn: aa\n");
+//                 rt_printf("AnalogIn: aa\n");
                 SETCALC(AnalogIn_next_aa);
             } else {
-                rt_printf("AnalogIn: ak\n");
+//                 rt_printf("AnalogIn: ak\n");
                 SETCALC(AnalogIn_next_ak);
             }
         } else {
             if (INRATE(0) == calc_FullRate) {                
                 rt_printf("AnalogIn warning: output rate is control rate, so cannot change analog pin at audio rate\n");
             }
-            rt_printf("AnalogIn: kk\n");
+//             rt_printf("AnalogIn: kk\n");
             SETCALC(AnalogIn_next_kk);
         }
 }
@@ -208,7 +208,7 @@ void AnalogOut_next_aaa(AnalogOut *unit, int inNumSamples)
 	// read input
 	analogPin = (int) fin[n];
 	if ( (analogPin < 0) || (analogPin >= context->analogOutChannels) ){
-	    rt_printf( "analog pin must be between %i and %i, it is %i \n", 0, context->analogOutChannels, analogPin );
+	    rt_printf( "AnalogOut warning: analog pin must be between %i and %i, it is %i \n", 0, context->analogOutChannels, analogPin );
 	} else {
 	  newinput = in[n]; // read next input sample
 	  if(!(n % unit->mAudioFramesPerAnalogFrame)) {
@@ -229,7 +229,7 @@ void AnalogOut_next_aka(AnalogOut *unit, int inNumSamples)
   
   float newinput = 0;
   if ( (analogPin < 0) || (analogPin >= context->analogOutChannels) ){
-    rt_printf( "analog pin must be between %i and %i, it is %i \n", 0, context->analogOutChannels, analogPin );
+    rt_printf( "AnalogOut warning: analog pin must be between %i and %i, it is %i \n", 0, context->analogOutChannels, analogPin );
   } else {
     for(unsigned int n = 0; n < inNumSamples; n++) {
         newinput = in[n]; // read next input sample
@@ -254,7 +254,7 @@ void AnalogOut_next_aak(AnalogOut *unit, int inNumSamples)
 	// read input
 	analogPin = (int) fin[n];
 	if ( (analogPin < 0) || (analogPin >= context->analogOutChannels) ){
-	    rt_printf( "analog pin must be between %i and %i, it is %i \n", 0, context->analogOutChannels, analogPin );
+	    rt_printf( "AnalogOut warning: analog pin must be between %i and %i, it is %i \n", 0, context->analogOutChannels, analogPin );
 	} else {
 // 	  newinput = in[n]; // read next input sample
 	  if(!(n % unit->mAudioFramesPerAnalogFrame)) {
@@ -275,7 +275,7 @@ void AnalogOut_next_kk(AnalogOut *unit, int inNumSamples)
   float in = IN0(1);
   
   if ( (analogPin < 0) || (analogPin >= context->analogOutChannels) ){
-    rt_printf( "analog pin must be between %i and %i, it is %i \n", 0, context->analogOutChannels, analogPin );
+    rt_printf( "AnalogOut warning: analog pin must be between %i and %i, it is %i \n", 0, context->analogOutChannels, analogPin );
   } else {
     analogWrite(context, 0, analogPin, in);
   }
@@ -286,7 +286,7 @@ void AnalogOut_Ctor(AnalogOut *unit)
 	BelaContext *context = unit->mWorld->mBelaContext;
   
 	if(context->analogFrames == 0 ) {
-		rt_printf("Error: the UGen needs BELA analog enabled\n");
+		rt_printf("AnalogOut Error: the UGen needs BELA analog enabled\n");
 		return;
 	}
 
@@ -299,18 +299,18 @@ void AnalogOut_Ctor(AnalogOut *unit)
             if (INRATE(0) == calc_FullRate) { // pin changed at audio rate                
                 if (INRATE(1) == calc_FullRate) { // output changed at audio rate
                     SETCALC(AnalogOut_next_aaa);
-                    rt_printf("AnalogOut: aaa\n");
+//                     rt_printf("AnalogOut: aaa\n");
                 } else {
                     SETCALC(AnalogOut_next_aak);
-                    rt_printf("AnalogOut: aak\n");
+//                     rt_printf("AnalogOut: aak\n");
                 }
             } else { // pin changed at control rate
                 if (INRATE(1) == calc_FullRate) { // output changed at audio rate
                     SETCALC(AnalogOut_next_aka);
-                    rt_printf("AnalogOut: aka\n");
+//                     rt_printf("AnalogOut: aka\n");
                 } else { // analog output only changes at control rate anyways
                     rt_printf("AnalogOut warning: inputs are control rate, so AnalogOut is also running at control rate\n");
-                    rt_printf("AnalogOut: kk\n");
+//                     rt_printf("AnalogOut: kk\n");
                     SETCALC(AnalogOut_next_kk);
                 }
             }
@@ -318,7 +318,7 @@ void AnalogOut_Ctor(AnalogOut *unit)
             if ( (INRATE(0) == calc_FullRate) || (INRATE(1) == calc_FullRate) ) {
                 rt_printf("AnalogOut warning: output rate is control rate, so cannot change inputs at audio rate\n");
             }
-            rt_printf("AnalogOut: kk\n");
+//             rt_printf("AnalogOut: kk\n");
             SETCALC(AnalogOut_next_kk);
         }
 
@@ -377,7 +377,7 @@ void DigitalIn_Ctor(DigitalIn *unit)
 	unit->mDigitalPin = (int) fDigitalIn;
 // 	unit->mDigitalPin = (int) sc_clip( fDigitalIn, 0., 15.0 );
 	if ( (unit->mDigitalPin < 0) || (unit->mDigitalPin >= context->digitalChannels) ){
-	    rt_printf( "digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, unit->mDigitalPin );
+	    rt_printf( "DigitalIn warning: digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, unit->mDigitalPin );
 	  // initiate first sample
           if (unit->mCalcRate == calc_FullRate) { // ugen running at audio rate;
             DigitalIn_next_dummy_a( unit, 1);  
@@ -391,10 +391,10 @@ void DigitalIn_Ctor(DigitalIn *unit)
 	  // set calculation method
           if (unit->mCalcRate == calc_FullRate) { // ugen running at audio rate;
                 SETCALC(DigitalIn_next_a);
-                rt_printf("DigitalIn: a\n");
+//                 rt_printf("DigitalIn: a\n");
           } else {
                 SETCALC(DigitalIn_next_k);
-                rt_printf("DigitalIn: k\n");
+//                 rt_printf("DigitalIn: k\n");
           }
 	}
 	
@@ -486,12 +486,12 @@ void DigitalOut_Ctor(DigitalOut *unit)
 	BelaContext *context = unit->mWorld->mBelaContext;
 
 	float fDigital = ZIN0(0); // digital in pin -- cannot change after construction
-        int writeMode = (int) ZIN0(2); // method of writing; 1 = writeOnce; 0 = write on change
+        int writeMode = (int) ZIN0(2); // method of writing; 1 = writeOnce; 0 = write on change -- cannot change after construction
 	unit->mDigitalPin = (int) fDigital;
 	unit->mLastOut = 0;
 
         if ( (unit->mDigitalPin < 0) || (unit->mDigitalPin >= context->digitalChannels) ){
-	  rt_printf( "digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, unit->mDigitalPin );
+	  rt_printf( "DigitalOut warning: digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, unit->mDigitalPin );
 	  // initiate first sample
 	  DigitalOut_next_dummy( unit, 1);  
 	  // set calculation method	    
@@ -504,22 +504,22 @@ void DigitalOut_Ctor(DigitalOut *unit)
           if (unit->mCalcRate == calc_FullRate) { // ugen running at audio rate;
             if (INRATE(1) == calc_FullRate) { // output changed at audio rate
                 if ( writeMode ){
-                    rt_printf("DigitalOut: a once\n");
+//                     rt_printf("DigitalOut: a once\n");
                     SETCALC(DigitalOut_next_a_once);
                 } else {
-                    rt_printf("DigitalOut: a\n");
+//                     rt_printf("DigitalOut: a\n");
                     SETCALC(DigitalOut_next_a);
                 }
             } else { // not much reason to actually do audiorate output
                 rt_printf("DigitalOut warning: inputs are control rate, so DigitalOut will run at control rate\n");
-                rt_printf("DigitalOut: k\n");
+//                 rt_printf("DigitalOut: k\n");
                 SETCALC(DigitalOut_next_k);
             }
         } else { // ugen at control rate
             if ( INRATE(1) == calc_FullRate ) {
                 rt_printf("DigitalOut warning: UGen rate is control rate, so cannot change inputs at audio rate\n");
             }
-            rt_printf("DigitalOut: k\n");
+//             rt_printf("DigitalOut: k\n");
             SETCALC(DigitalOut_next_k);
             }
         }
@@ -549,7 +549,7 @@ void DigitalIO_next_aaaa_once(DigitalIO *unit, int inNumSamples)
 	// read input
 	newpin = (int) pinid[n];
 	if ( (newpin < 0) || (newpin >= context->digitalChannels) ){
-	    rt_printf( "digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, newpin );
+	    rt_printf( "DigitalIO warning: digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, newpin );
 	} else {
           newDigOut = (int) in[n];
 	  newmode = iomode[n];
@@ -592,7 +592,7 @@ void DigitalIO_next_aaak_once(DigitalIO *unit, int inNumSamples)
     for(unsigned int n = 0; n < inNumSamples; n++) {
 	newpin = (int) pinid[n];
 	if ( (newpin < 0) || (newpin >= context->digitalChannels) ){
-	    rt_printf( "digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, newpin );
+	    rt_printf( "DigitalIO warning: digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, newpin );
 	} else {
           pinModeOnce( context, n, newpin, INPUT );
           newDigInInt = digitalRead(context, n, newpin);
@@ -604,7 +604,7 @@ void DigitalIO_next_aaak_once(DigitalIO *unit, int inNumSamples)
     for(unsigned int n = 0; n < inNumSamples; n++) {
 	newpin = (int) pinid[n];
 	if ( (newpin < 0) || (newpin >= context->digitalChannels) ){
-	    rt_printf( "digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, newpin );
+	    rt_printf( "DigitalIO warning: digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, newpin );
 	} else {
           pinModeOnce( context, n, newpin, OUTPUT );
 	  newDigOut = (int) in[n];
@@ -641,7 +641,7 @@ void DigitalIO_next_aaka_once(DigitalIO *unit, int inNumSamples)
 	// read input
 	newpin = (int) pinid[n];
 	if ( (newpin < 0) || (newpin >= context->digitalChannels) ){
-	    rt_printf( "digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, newpin );
+	    rt_printf( "DigitalIO warning: digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, newpin );
 	} else {
 	  newmode = iomode[n];
 	  if ( newmode < 0.5 ){
@@ -684,7 +684,7 @@ void DigitalIO_next_aakk_once(DigitalIO *unit, int inNumSamples)
     for(unsigned int n = 0; n < inNumSamples; n++) {
 	newpin = (int) pinid[n];
 	if ( (newpin < 0) || (newpin >= context->digitalChannels) ){
-	    rt_printf( "digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, newpin );
+	    rt_printf( "DigitalIO warning: digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, newpin );
 	} else {
           pinModeOnce( context, n, newpin, INPUT );
           newDigInInt = digitalRead(context, n, newpin);
@@ -696,7 +696,7 @@ void DigitalIO_next_aakk_once(DigitalIO *unit, int inNumSamples)
     for(unsigned int n = 0; n < inNumSamples; n++) {
 	newpin = (int) pinid[n];
 	if ( (newpin < 0) || (newpin >= context->digitalChannels) ){
-	    rt_printf( "digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, newpin );
+	    rt_printf( "DigitalIO warning: digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, newpin );
 	} else {
           pinModeOnce( context, n, newpin, OUTPUT );
 	  digitalWriteOnce(context, n, newpin, newDigOut);
@@ -732,7 +732,7 @@ void DigitalIO_next_akaa_once(DigitalIO *unit, int inNumSamples)
   int newDigOut = (int) in;
 
   if ( (newpin < 0) || (newpin >= context->digitalChannels) ){
-	    rt_printf( "digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, newpin );
+	    rt_printf( "DigitalIO warning: digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, newpin );
   } else {
     for(unsigned int n = 0; n < inNumSamples; n++) {
 // 	  newinput = in[n];
@@ -774,7 +774,7 @@ void DigitalIO_next_akak_once(DigitalIO *unit, int inNumSamples)
   int newDigOut = (int) in;
 
   if ( (newpin < 0) || (newpin >= context->digitalChannels) ){
-    rt_printf( "digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, newpin );
+    rt_printf( "DigitalIO warning: digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, newpin );
   } else {
     if ( iomode < 0.5 ){
         pinMode( context, 0, newpin, INPUT );
@@ -819,7 +819,7 @@ void DigitalIO_next_akka_once(DigitalIO *unit, int inNumSamples)
   int newDigOut = unit->mLastDigitalOut;
 
   if ( (newpin < 0) || (newpin >= context->digitalChannels) ){
-    rt_printf( "digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, newpin );
+    rt_printf( "DigitalIO warning: digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, newpin );
   }
   
   for(unsigned int n = 0; n < inNumSamples; n++) {
@@ -863,7 +863,7 @@ void DigitalIO_next_ak(DigitalIO *unit, int inNumSamples)
   int newDigOut = (int) in;
 
   if ( (pinid < 0) || (pinid >= context->digitalChannels) ){
-    rt_printf( "digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, newpin );
+    rt_printf( "DigitalIO warning: digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, newpin );
   } else {
     if ( iomode < 0.5 ){
         pinMode( context, 0, newpin, INPUT );
@@ -907,7 +907,7 @@ void DigitalIO_next_kk(DigitalIO *unit, int inNumSamples)
   int newDigOut = unit->mLastDigitalOut;
 
   if ( (pinid < 0) || (pinid >= context->digitalChannels) ){
-    rt_printf( "digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, pinid );
+    rt_printf( "DigitalIO warning: digital pin must be between %i and %i, it is %i \n", 0, context->digitalChannels, pinid );
   } else {
     if ( iomode < 0.5 ){
         pinMode( context, 0, pinid, INPUT );
@@ -999,14 +999,14 @@ void DigitalIO_Ctor(DigitalIO *unit)
                 if (INRATE(1) == calc_FullRate) { // output changed at audio rate
                     if (INRATE(2) == calc_FullRate) { // pinmode changed at audio rate
 //                         if ( writeMode ){
-                            rt_printf("DigitalIO: aaaa once\n");
+//                             rt_printf("DigitalIO: aaaa once\n");
                             SETCALC(DigitalIO_next_aaaa_once);
 //                         } else {
 //                             SETCALC(DigitalIO_next_aaaa);
 //                         }
                     } else {
 //                         if ( writeMode ){
-                            rt_printf("DigitalIO: aaak once\n");
+//                             rt_printf("DigitalIO: aaak once\n");
                             SETCALC(DigitalIO_next_aaak_once);
 //                         } else {
 //                             SETCALC(DigitalIO_next_aaak);
@@ -1015,14 +1015,14 @@ void DigitalIO_Ctor(DigitalIO *unit)
                 } else { // output changed at control rate
                     if (INRATE(2) == calc_FullRate) { // pinmode changed at audio rate
 //                         if ( writeMode ){
-                            rt_printf("DigitalIO: aaka once\n");
+//                             rt_printf("DigitalIO: aaka once\n");
                             SETCALC(DigitalIO_next_aaka_once);
 //                         } else {
 //                             SETCALC(DigitalIO_next_aaka);
 //                         }
                     } else {
 //                         if ( writeMode ){
-                            rt_printf("DigitalIO: aakk once\n");
+//                             rt_printf("DigitalIO: aakk once\n");
                             SETCALC(DigitalIO_next_aakk_once);
 //                         } else {
 //                             SETCALC(DigitalIO_next_aakk);
@@ -1033,14 +1033,14 @@ void DigitalIO_Ctor(DigitalIO *unit)
                 if (INRATE(1) == calc_FullRate) { // output changed at audio rate
                     if (INRATE(2) == calc_FullRate) { // pinmode changed at audio rate
 //                         if ( writeMode ){
-                            rt_printf("DigitalIO: akaa once\n");
+//                             rt_printf("DigitalIO: akaa once\n");
                             SETCALC(DigitalIO_next_akaa_once);
 //                         } else {
 //                             SETCALC(DigitalIO_next_akaa);
 //                         }
                     } else {
 //                         if ( writeMode ){
-                            rt_printf("DigitalIO: akak once\n");
+//                             rt_printf("DigitalIO: akak once\n");
                             SETCALC(DigitalIO_next_akak_once);
 //                         } else {
 //                             SETCALC(DigitalIO_next_akak);
@@ -1049,13 +1049,13 @@ void DigitalIO_Ctor(DigitalIO *unit)
                 } else {  // output changed at control rate
                     if (INRATE(2) == calc_FullRate) { // pinmode changed at audio rate
 //                         if ( writeMode ){
-                            rt_printf("DigitalIO: akka once\n");
+//                             rt_printf("DigitalIO: akka once\n");
                             SETCALC(DigitalIO_next_akka_once);
 //                         } else {
 //                             SETCALC(DigitalIO_next_akka);
 //                         }
                     } else { // pinmode at control rate
-                        rt_printf("DigitalIO: ak once\n");
+//                         rt_printf("DigitalIO: ak once\n");
                         SETCALC(DigitalIO_next_ak);
                     }
                 }
@@ -1064,7 +1064,7 @@ void DigitalIO_Ctor(DigitalIO *unit)
             if ( (INRATE(0) == calc_FullRate) || (INRATE(1) == calc_FullRate) || (INRATE(2) == calc_FullRate) ) {
                 rt_printf("DigitalIO warning: UGen rate is control rate, so cannot change inputs at audio rate\n");
             }
-            rt_printf("DigitalIO: kk\n");
+//             rt_printf("DigitalIO: kk\n");
             SETCALC(DigitalIO_next_kk);
         }
 }
