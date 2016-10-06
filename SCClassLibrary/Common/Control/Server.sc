@@ -48,6 +48,9 @@ ServerOptions {
 	var <>numAnalogInChannels;
 	var <>numAnalogOutChannels;
 	var <>numDigitalChannels;
+	var <>headphoneLevel;
+	var <>pgaGainLeft;
+	var <>pgaGainRight;
 
 	device {
 		^if(inDevice == outDevice)
@@ -170,7 +173,8 @@ ServerOptions {
 		if (maxLogins.notNil, {
 			o = o ++ " -l " ++ maxLogins;
 		});
-		// addition for BELA
+		
+		// additions for BELA
 		if (numAnalogInChannels.notNil, {
 			o = o ++ " -J " ++ numAnalogInChannels;
 		});
@@ -179,6 +183,15 @@ ServerOptions {
 		});
 		if (numDigitalChannels.notNil, {
 			o = o ++ " -G " ++ numDigitalChannels;
+		});
+		if (headphoneLevel.notNil, {
+			o = o ++ " -Q " ++ headphoneLevel;
+		});
+		if (pgaGainLeft.notNil, {
+			o = o ++ " -X " ++ pgaGainLeft;
+		});
+		if (pgaGainRight.notNil, {
+			o = o ++ " -Y " ++ pgaGainRight;
 		});
 		^o
 	}
