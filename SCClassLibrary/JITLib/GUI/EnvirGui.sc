@@ -325,7 +325,7 @@ EnvirGui : JITGui {
 	// precedence: global specs first, then cached local,
 	// else guess an initial spec and remember it.
 	getSpec { |key, value|
-		var spec = specs[key];
+		var spec = specs[key] ?? { key.asSpec };
 		if (spec.isNil) {
 			spec = Spec.guess(key, value);
 			specs.put(key, spec);
