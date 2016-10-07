@@ -9,7 +9,6 @@
 			ControlSpec(-2, 2, \lin, 0, 0, \guess);
 		};
 	}
-	}
 
 	*suggestString { |key, value|
 		^"Spec.add(" + this.guess(key, value).storeArgs + ");"
