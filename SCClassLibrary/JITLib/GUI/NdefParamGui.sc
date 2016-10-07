@@ -162,6 +162,14 @@ NdefParamGui : EnvirGui {
 		};
 	}
 
+	showFields { |num = 0|
+		paramViews.do { |pv, i|
+			var isInUse = i < num;
+			pv.visible_(isInUse);
+			drags[i].visible_(isInUse);
+		}
+	}
+
 	setFunc { |key|
 		^{ |sl|
 			// this special key (#) allows to set the source from a slider
