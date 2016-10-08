@@ -1023,6 +1023,7 @@ Ndef : NodeProxy {
 		res = dict.envir.at(key);
 		if(res.isNil) {
 			res = super.new(server).key_(key);
+			dict.initProxy(res);
 			dict.envir.put(key, res)
 		};
 
