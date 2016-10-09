@@ -1,7 +1,9 @@
+See [SuperCollider-on-Bela](https://github.com/BelaPlatform/Bela/wiki/SuperCollider-on-Bela) for general information on SuperCollider on Bela.
+
 Compiling SuperCollider scsynth on Bela
 =======================================
 
-See [README.md](README.md) for the "real" SuperCollider readme.
+See [README.md](README.md) for the main SuperCollider readme.
 
 This file is Dan's and Marije's notes about compiling SC on [Bela](http://bela.io) platform.
 
