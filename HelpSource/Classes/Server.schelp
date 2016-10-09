@@ -520,7 +520,6 @@ returns:: Function to be evaluated in order to clean up all actions performed in
 
 subsection:: Recording Support
 
-<<<<<<< HEAD
 The following methods are for convenience use. For recording with sample accurate start and stop times you should make your own nodes. See the link::Classes/DiskOut:: helpfile for more info. For non-realtime recording, see the link::Guides/Non-Realtime-Synthesis:: helpfile.
 
 This functionality is also available through the recording button on the server windows.
