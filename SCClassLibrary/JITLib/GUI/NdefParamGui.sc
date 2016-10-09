@@ -53,7 +53,8 @@ NdefParamGui : EnvirGui {
 
 			var parView = ParamView(zone, Rect(0, 0, bounds.width - sinkWidth - 20, height))
 			// .resize_(2)
-			.background_(skin.background);
+			.background_(skin.background)
+			.useRanger_({ this.useRanger });
 
 			parView.zone.visible_(false);
 

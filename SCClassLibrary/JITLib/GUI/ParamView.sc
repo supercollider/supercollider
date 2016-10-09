@@ -3,6 +3,7 @@ ParamView {
 	var <value, <label, <>action, <spec;
 	var <zone, <zones, <slider, <ranger, <textview;
 	var <ezviews, <currview, <viewType;
+	var <>useRanger = true;
 
 	*new { |parent, bounds, label, spec, action, initVal, initAction = false|
 		^super.new.init(parent, bounds, label, spec, action, initVal, initAction);
@@ -53,6 +54,9 @@ ParamView {
 
 	// types: 0 = slider, 1 = ranger, 2 = text
 	viewType_ { |newType = 0, force = false|
+		if (spec.isNil or: { useRanger.value != true }) {
+			newType = newType.roundUp(2);
+		};
 		if (force or: { newType != viewType }) {
 			if (newType.inclusivelyBetween(0, 2)) {
 				zones.do { |z, i| z.visible_(newType == i) };
@@ -74,9 +78,7 @@ ParamView {
 	}
 
 	value_ { |val|
-		if (val != value) {
-			this.viewType_(this.valueType(val));
-		};
+		this.viewType_(this.valueType(val));
 		value = val;
 		currview.value_(value);
 	}

@@ -48,7 +48,8 @@ EnvirGui : JITGui {
 
 		paramViews = {
 			ParamView(zone, Rect(0, 0, bounds.width - 20, height))
-			.background_(skin.background);
+			.background_(skin.background)
+			.useRanger_({ this.useRanger });
 		}.dup(numItems);
 		paramViews.do { |pv| pv.zone.visible_(false); };
 
