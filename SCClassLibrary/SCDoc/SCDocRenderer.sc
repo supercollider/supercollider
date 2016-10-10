@@ -153,7 +153,7 @@ SCDocHTMLRenderer {
 		};
 
 		stream << "<h1>";
-		if((folder=="") and: {doc.title=="Help"}) {
+		if((doc.title=="Help") and: {((thisProcess.platform.name===\windows) and: (folder=="Help")) or: {folder==""}}) {
 			stream << "SuperCollider " << Main.version;
 			stream << "<span class='headerimage'><img src='" << baseDir << "/images/SC_icon.png'/></span>";
 		} {
