@@ -329,7 +329,7 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 
 	sync { arg tempo, secs = 4, resolution = 1;
 		var next, time, durCur, durNew, durDif, durAvg, stepsPerBeat,
-			delta, factor, steps, sum, durs, index = 0;
+			delta, factor, steps, stepSize, sum, durs, lastDur, index = 0;
 
 		secs = secs.max(0.03);				// saftey and lower jitter limit
 		next = this.timeToNextBeat(1);
@@ -338,7 +338,7 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 			this.tempo_(next / secs);		// set a high tempo
 			this.sched(next, { this.tempo_(tempo); nil });
 		} {							// else interpolate
-			this.sched(next, {				// offset the thing to next beat
+			this.sched(next, {		// start at next beat
 				durCur = this.tempo.reciprocal;
 				durNew = tempo.reciprocal;
 				durDif = durNew - durCur;
@@ -346,13 +346,15 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 				stepsPerBeat = resolution.max(0.001).reciprocal.round;
 				steps = (time / durAvg).round * stepsPerBeat;
 				delta = stepsPerBeat.reciprocal;		// quantized resolution
-				durs = Array.series(steps, durCur, durDif / steps);
-				sum = durs.sum / stepsPerBeat;
+				stepSize = durDif / steps;
+				lastDur = (steps - 1 * stepSize) + durCur;
+				sum = durCur + lastDur / 2 * steps / stepsPerBeat; // sum of an arithmetic progression
 				factor = time / sum;
 				this.sched(0, {
 					var tmp;
 					if(index < steps) {
-						tmp = (durs[index] * factor).reciprocal;
+						durCur = durCur + stepSize;
+						tmp = (durCur * factor).reciprocal;
 						this.tempo_(tmp);
 						index = index + 1;
 						delta;
