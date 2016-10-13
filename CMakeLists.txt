@@ -121,6 +121,7 @@ add_definitions(-DBOOST_CHRONO_HEADER_ONLY -DBOOST_NO_AUTO_PTR)
 
 find_program(CCacheExectuable ccache)
 if( CCacheExectuable )
+	MESSAGE("Using ccache")
   # only used with >=cmake-3.4
   set( CMAKE_C_COMPILER_LAUNCHER   "${CCacheExectuable}" )
   set( CMAKE_CXX_COMPILER_LAUNCHER "${CCacheExectuable}" )
