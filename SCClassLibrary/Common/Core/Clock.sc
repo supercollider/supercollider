@@ -329,7 +329,7 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 
 	sync { arg tempo, secs = 4, resolution = 1;
 		var next, time, durCur, durNew, durDif, durAvg, stepsPerBeat,
-			delta, factor, steps, stepSize, sum, durs, lastDur, index = 0;
+			delta, factor, steps, stepSize, sum, lastDur, index = 0;
 
 		secs = secs.max(0.03);				// saftey and lower jitter limit
 		next = this.timeToNextBeat(1);
