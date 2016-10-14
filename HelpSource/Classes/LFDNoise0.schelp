@@ -42,7 +42,7 @@ Examples::
 
 Code::
 // Wiggle mouse in a fast pace;
-// LFNoise seems stuck, LFDNoise changes on a smooth way.
+// LFNoise seems stuck, LFDNoise changes smoothly.
 
 { LFNoise0.ar(MouseX.kr(0.1, 1000, 1), 0.1) }.play
 
