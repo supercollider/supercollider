@@ -55,8 +55,10 @@ ServerStatusWatcher {
 				failOSCFunc.free;
 			}, '/done', server.addr, argTemplate:['/notify', nil]).oneShot;
 
-			failOSCFunc = OSCFunc({|msg|
-				server.clientID = msg[2];
+			failOSCFunc = OSCFunc({|msg, time, replyAddr|
+				//replyAddr.sendMsg("/quit");
+				server.addr = replyAddr;
+				"failed to notify sclang by scserver. Please reboot the server '%'".format(server.name).warn;
 				doneOSCFunc.free;
 			}, '/fail', server.addr, argTemplate:['/notify', nil, nil]).oneShot;
 
