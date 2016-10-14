@@ -30,32 +30,32 @@ classmethods::
 method::ar, kr
 
 argument::freq
-Approximate rate at which to generate random values.
+Random values output rate.
 
 argument::mul
-Output will be multiplied by this value.
+Output is multiplied by this value.
 
 argument::add
-This value will be added to the output.
+This value is added to the output.
 
 Examples::
 
-code::
-// try wiggling mouse quickly;
-// LFNoise frequently seems stuck, LFDNoise changes smoothly.
+Code::
+// Wiggle mouse in a fast pace;
+// LFNoise seems stuck, LFDNoise changes on a smooth way.
 
-{ LFNoise0.ar(MouseX.kr(0.1, 1000, 1), 0.1)  }.play
+{ LFNoise0.ar(MouseX.kr(0.1, 1000, 1), 0.1) }.play
 
-{ LFDNoise0.ar(MouseX.kr(0.1, 1000, 1), 0.1)  }.play
+{ LFDNoise0.ar(MouseX.kr(0.1, 1000, 1), 0.1) }.play
 
-// silent for 2 secs before going up in freq
+// Silence is heard for 2 seconds before any sound is played
 
 { LFNoise0.ar(XLine.kr(0.5, 10000, 3), 0.1) }.scope;
 
 { LFDNoise0.ar(XLine.kr(0.5, 10000, 3), 0.1) }.scope;
 
 
-// LFNoise quantizes time steps at high freqs, LFDNoise does not:
+// LFDNoise does not quantize time steps in high frequencies, in contrary to LFNoise:
 
 { LFNoise0.ar(XLine.kr(1000, 20000, 10), 0.1) }.scope;
 
