@@ -59,6 +59,9 @@ CollStream : IOStream {
 	pos_ { arg toPos;
 		pos = toPos.clip(0, collection.size);
 	}
+	rewind { |n = 1|
+		pos = max(0, pos - n);
+	}
 	peek {
 		^collection.at(pos)
 	}
