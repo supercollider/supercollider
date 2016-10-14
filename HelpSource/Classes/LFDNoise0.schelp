@@ -30,7 +30,7 @@ classmethods::
 method::ar, kr
 
 argument::freq
-Approximate Rate at which random values are generated.
+Approximate random values output rate.
 
 argument::mul
 Output is multiplied by this value.
