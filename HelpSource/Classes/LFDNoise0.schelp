@@ -48,7 +48,7 @@ Code::
 
 { LFDNoise0.ar(MouseX.kr(0.1, 1000, 1), 0.1) }.play
 
-// Silence is heard for 2 seconds before any sound is played
+// Silence for 2 seconds before any sound becomes audible
 
 { LFNoise0.ar(XLine.kr(0.5, 10000, 3), 0.1) }.scope;
 
