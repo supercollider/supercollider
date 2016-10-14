@@ -30,7 +30,7 @@ classmethods::
 method::ar, kr
 
 argument::freq
-Random values output rate.
+Rate at which random values are generated.
 
 argument::mul
 Output is multiplied by this value.
