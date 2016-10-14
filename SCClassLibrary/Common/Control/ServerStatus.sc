@@ -46,8 +46,12 @@ ServerStatusWatcher {
 				failOSCFunc.free;
 			}, '/done', server.addr, argTemplate:['/notify', nil]).oneShot;
 
-			failOSCFunc = OSCFunc({|msg|
-				server.clientID = msg[2];
+			failOSCFunc = OSCFunc({|msg, time, replyAddr|
+				if(flag) {
+					"failed to switch on notifications from server. Please reboot the server '%'".format(server.name).warn;
+				} {
+					"failed to switch off notifications from server '%'.".format(server.name).warn;
+				};
 				doneOSCFunc.free;
 			}, '/fail', server.addr, argTemplate:['/notify', nil, nil]).oneShot;
 
