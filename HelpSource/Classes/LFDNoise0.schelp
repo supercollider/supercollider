@@ -41,7 +41,7 @@ This value is added to the output.
 Examples::
 
 Code::
-// Wiggle mouse in a fast pace;
+// Wiggle mouse at a fast pace;
 // LFNoise seems stuck, LFDNoise changes smoothly.
 
 { LFNoise0.ar(MouseX.kr(0.1, 1000, 1), 0.1) }.play
