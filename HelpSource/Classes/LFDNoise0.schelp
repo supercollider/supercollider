@@ -3,7 +3,6 @@ summary:: Dynamic step noise
 related:: Classes/LFClipNoise, Classes/LFDClipNoise, Classes/LFDNoise1, Classes/LFDNoise3, Classes/LFNoise0, Classes/LFNoise1, Classes/LFNoise2
 categories::  UGens>Generators>Stochastic
 
-
 Description::
 
 Like link::Classes/LFNoise0::, it generates random values at a rate
@@ -55,7 +54,7 @@ Code::
 { LFDNoise0.ar(XLine.kr(0.5, 10000, 3), 0.1) }.scope;
 
 
-// LFDNoise does not quantize time steps in high frequencies, in contrary to LFNoise:
+// LFDNoise does not quantize time steps in high frequencies, in contrast with LFNoise:
  
 { LFNoise0.ar(XLine.kr(1000, 20000, 10), 0.1) }.scope;
 
