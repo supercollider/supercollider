@@ -404,6 +404,7 @@ Object  {
 		if (levels <= 1) { ^[this] };
 		^[this.bubble(depth,levels-1)]
 	}
+	flatten { ^this }
 
 	// compatibility with sequenceable collection
 
@@ -909,4 +910,5 @@ Object  {
 	prFlat { |list|
 		^list.add(this)
 	}
+
 }

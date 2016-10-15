@@ -419,11 +419,7 @@ SequenceableCollection : Collection {
 
 		list = this.species.new;
 		this.do({ arg item;
-			if (item.respondsTo('flatten'), {
-				list = list.addAll(item.flatten(numLevels));
-			},{
-				list = list.add(item);
-			});
+			list = list.addAll(item.flatten(numLevels))
 		});
 		^list
 	}
