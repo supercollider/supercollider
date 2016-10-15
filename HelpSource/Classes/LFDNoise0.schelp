@@ -37,11 +37,11 @@ Output is multiplied by this value.
 argument::add
 This value is added to the output.
 
-Examples::
+Examples:: 
 
 Code::
 // Wiggle mouse at a fast pace;
-// LFNoise seems stuck, LFDNoise changes smoothly.
+// LFNoise frequently seems stuck, LFDNoise changes smoothly.
 
 { LFNoise0.ar(MouseX.kr(0.1, 1000, 1), 0.1) }.play
 
