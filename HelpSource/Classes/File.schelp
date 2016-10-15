@@ -26,7 +26,7 @@ definitionList::
 ## "r+" || Opens a file for update both reading and writing. The file must exist.
 ## "w+" || Creates an empty file for both reading and writing. If a file with the same name already exists its content is erased and the file is treated as a new empty file.
 ## "a+" || Opens a file for reading and appending. All writing operations are performed at the end of the file, protecting the previous content to be overwritten. You can reposition the internal pointer using the seek method to anywhere in the file for reading, but writing operations will move it back to the end of file. The file is created if it does not exist.
-## "rb+", wb+", "ab+" || same as above, but data is binary
+## "rb+", "wb+", "ab+" || same as above, but data is binary
 ::
 
 method::open
@@ -40,7 +40,22 @@ File.getcwd;
 ::
 
 method::use
-open the file, evaluate the function with the file and close it.
+open the file, evaluate the function with the file as argument, and close it again. If the process fails, close the file and throw an error.
+
+method::read
+given a path, make a new temporary file, and read the contents, close the file and return them. By default, it calls link::#-readAllString::. If the process fails, close the file and throw an error.
+
+argument::pathName
+the path (link::Classes/String::) that points to the file
+
+argument::mode
+the file mode to use.
+
+argument::selector
+the method to be called on the file once it is open.
+
+
+
 
 subsection:: Filesystem utilities
 

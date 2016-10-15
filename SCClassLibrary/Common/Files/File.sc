@@ -18,6 +18,11 @@ File : UnixFILE {
 		file = this.new(pathName, mode);
 		^{ function.value(file) }.protect({ file.close });
 	}
+	*read { arg pathName, mode = "r", selector = \readAllString;
+		var res;
+		this.use(pathName, mode, { |file| res = file.perform(selector) });
+		^res
+	}
 	*delete { arg pathName;
 		_FileDelete
 		^this.primitiveFailed
@@ -63,12 +68,12 @@ File : UnixFILE {
 		_FileSize
 		^this.primitiveFailed
 	}
-
 	*getcwd {
 		var string;
 		this.prGetcwd(string = String.new(256));
 		^string
 	}
+
 	open { arg pathName, mode;
 		/* open the file. mode is a string passed
 			to fopen, so should be one of:
