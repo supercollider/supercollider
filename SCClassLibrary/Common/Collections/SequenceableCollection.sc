@@ -428,13 +428,7 @@ SequenceableCollection : Collection {
 	}
 
 	prFlat { |list|
-		this.do({ arg item, i;
-			if (item.respondsTo('prFlat'), {
-				list = item.prFlat(list);
-			},{
-				list = list.add(item);
-			});
-		});
+		this.do({ |item| list = item.prFlat(list) });
 		^list
 	}
 
