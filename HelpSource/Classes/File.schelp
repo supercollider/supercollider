@@ -49,12 +49,20 @@ argument::pathName
 The path (link::Classes/String::) that points to the file
 
 argument::mode
-The file mode to use, valid modes are "r" (read) and "rb" (read binary).
+The file mode to use, valid modes are code::"r":: (read) and code::"rb":: (read binary).
 
 argument::selector
 The method to be called on the file once it is open. Possible selectors are: code::\readAllString:: (or just code::\contents::),
 code::\readAllStringRTF::, code::\readAllStringHTML::, code::\readAllSignal::.
 
+
+code::
+// write a file
+File.use("~/test.txt".standardizePath, "w", { |f| f.write("The green fox fell into the blue lake") });
+
+// read it again
+File.read("~/test.txt".standardizePath);
+::
 
 
 subsection:: Filesystem utilities
