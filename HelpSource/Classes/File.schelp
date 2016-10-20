@@ -14,7 +14,7 @@ method::new
 Create a File instance and open the file. If the open fails, link::Classes/UnixFILE#-isOpen#isOpen:: will return false.
 
 argument::pathName
-a link::Classes/String:: containing the path name of the file to open.
+A link::Classes/String:: containing the path name of the file to open.
 
 argument::mode
 a link::Classes/String:: indicating one of the following modes:
@@ -30,7 +30,7 @@ definitionList::
 ::
 
 method::open
-same as link::#*new::, but a more intuitive name.
+Same as link::#*new::, but a more intuitive name.
 
 method::getcwd
 POSIX standard 'get current working directory'.
@@ -40,19 +40,19 @@ File.getcwd;
 ::
 
 method::use
-open the file, evaluate the function with the file as argument, and close it again. If the process fails, close the file and throw an error.
+Open the file, evaluate the function with the file as argument, and close it again. If the process fails, close the file and throw an error.
 
 method::read
-given a path for an existing file, read and return the contents. By default, it calls link::#-readAllString::. If the process fails, close the file and throw an error.
+Given a path for an existing file, read and return the contents. By default, it calls link::#-readAllString::. If the process fails, close the file and throw an error.
 
 argument::pathName
-the path (link::Classes/String::) that points to the file
+The path (link::Classes/String::) that points to the file
 
 argument::mode
-the file mode to use, valid modes are "r" (read) and "rb" (read binary).
+The file mode to use, valid modes are "r" (read) and "rb" (read binary).
 
 argument::selector
-the method to be called on the file once it is open. Possible selectors are: code::\readAllString:: (or just code::\contents::),
+The method to be called on the file once it is open. Possible selectors are: code::\readAllString:: (or just code::\contents::),
 code::\readAllStringRTF::, code::\readAllStringHTML::, code::\readAllSignal::.
 
 
@@ -60,7 +60,7 @@ code::\readAllStringRTF::, code::\readAllStringHTML::, code::\readAllSignal::.
 subsection:: Filesystem utilities
 
 method::exists
-answers if a file exists at that path.
+Answers if a file exists at that path.
 note::
 Some filesystems, like the one used by OSX, are case insensitive.
 On such systems, this method will return true for "fOo" even if the file is actually named "Foo".
@@ -76,33 +76,33 @@ This is slower than the normal code::exists:: method, so use it only when really
 ::
 
 method::systemIsCaseSensitive
-answers if the filesystem is case sensitive or not.
+Answers if the filesystem is case sensitive or not.
 
 method::mkdir
-create directory at path, including any missing parent directories.
+Create directory at path, including any missing parent directories.
 
 method::delete
-deletes the file at that path. Use only for good, never for evil.
+Deletes the file at that path. Use only for good, never for evil.
 
 method::realpath
-follow symbolic links (and aliases on OSX) and any parent directory references (like "..") and return the true absolute path.
+Follow symbolic links (and aliases on OSX) and any parent directory references (like "..") and return the true absolute path.
 returns:: a link::Classes/String:: or code::nil:: if path did not exist.
 
 method::copy
-copy file, symlink or directory. this method will fail if pathNameTo already exists.
+Copy file, symlink or directory. this method will fail if pathNameTo already exists.
 
-symlinks are copied as symlinks (re-created).
+Symlinks are copied as symlinks (re-created).
 
 method::type
-get file type as one of code::\error, \not_found, \regular, \directory, \symlink, \block, \character, \fifo, \socket, \unknown::
+Get file type as one of code::\error, \not_found, \regular, \directory, \symlink, \block, \character, \fifo, \socket, \unknown::
 returns:: a link::Classes/Symbol::
 
 method::fileSize
-get size of file in bytes.
+Get size of file in bytes.
 returns:: an link::Classes/Integer::
 
 method::mtime
-get last modification time in seconds since the Epoch.
+Get last modification time in seconds since the Epoch.
 returns:: an link::Classes/Integer::
 
 
@@ -126,7 +126,7 @@ method::readAllStringRTF
 Reads the entire file as a link::Classes/String::, stripping RTF formatting.
 
 method::seek
-moves the read/write pointer to a given location in the file, where offset is location given in bytes, and origin is the reference of the offset:
+Moves the read/write pointer to a given location in the file, where offset is location given in bytes, and origin is the reference of the offset:
 definitionList::
 ## 0 || offset is from the beginning of the file
 ## 1 || offset is relative to the current position in the file
@@ -134,11 +134,11 @@ definitionList::
 ::
 
 method::pos
-sets or returns the current position in the file (in bytes).
+Sets or returns the current position in the file (in bytes).
 when used as a setter, this method is a shortcut for seek(0, value). so setting the pos moves the current file position to a given location from the beginning of the file. the value is clipped so that it lies between 0 inclusively and the file length exclusively.
 
 method::length
-returns the current file size in bytes.
+Returns the current file size in bytes.
 
 Examples::
 
