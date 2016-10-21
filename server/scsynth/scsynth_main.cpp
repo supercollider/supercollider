@@ -172,7 +172,7 @@ int main(int argc, char* argv[])
         options.mBelaADCLevel = 0;
         options.mBelaDACLevel = 0;
         options.mBelaNumMuxChannels = 0;
-        options.mBelaPRU = 0;
+        options.mBelaPRU = 1;
 #endif
 
 	for (int i=1; i<argc;) {
