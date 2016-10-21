@@ -313,10 +313,12 @@ void SC_BelaDriver::staticMAudioSyncSignal(){
 	staticMAudioSync->Signal();
 	rt_task_suspend(rt_task_self());
 }
+
 // ====================================================================
 
 bool SC_BelaDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 {
+	SetPrintFunc((PrintFunc)rt_vprintf);
 	scprintf("SC_BelaDriver: >>DriverSetup\n");
 	BelaInitSettings settings;
 	Bela_defaultSettings(&settings);	// This function should be called in main() before parsing any command-line arguments. It
