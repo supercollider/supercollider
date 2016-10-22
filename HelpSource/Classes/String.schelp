@@ -272,8 +272,20 @@ code::
 
 subsection:: Regular expressions
 
+Note the inversion of the arguments:
+
+List::
+## Code::regexp.matchRegexp(stringToSearch)::
+## Code::stringToSearch.findRegexp(regexp):: (and similar for code::findAllRegexp:: and code::findRegexpAt::).
+::
+
+Code::findRegexp:: follows the pattern established by link::Classes/String#-find::, where the receiver is the string to be searched. Code::matchRegexp:: follows the pattern of link::Reference/matchItem::, where the receiver is the pattern to match and the first argument is the object to be tested. This is a common source of confusion, but it is based on this precedent.
+
 method::matchRegexp
 POSIX regular expression matching. Returns true if the receiver (a regular expression pattern) matches the string passed to it. The strong::start:: is an offset where to start searching in the string (default: 0), strong::end:: where to stop.
+
+note::This is code::regexp.matchRegexp(stringToSearch):: and not the other way around! See above: link::Classes/String#Regular expressions::.::
+
 code::
 "c".matchRegexp("abcdefg", 2, 5); // true: substring exists
 "c".matchRegexp("abcdefg", 4, 5); // false: substring doesn't exist

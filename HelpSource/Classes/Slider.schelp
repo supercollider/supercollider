@@ -256,7 +256,7 @@ s.waitForBoot({
 			10,
 		coef:0.1)
 		);
-	}).send(s);
+	}).add;
 
 
 	w = Window.new("Hold arrow keys to trigger sound",Rect(300,Window.screenBounds.height-300,400,100)).front;

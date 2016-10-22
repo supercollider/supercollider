@@ -142,7 +142,7 @@ ServerMeterView {
 		numRMSSampsRecip = 1 / numRMSSamps;
 		if(numIns > 0) {
 			inresp = OSCFunc( {|msg|
-				 {
+				{
 					try {
 						var channelCount = min(msg.size - 3 / 2, numIns);
 
@@ -166,7 +166,7 @@ ServerMeterView {
 		};
 		if(numOuts > 0) {
 			outresp = OSCFunc( {|msg|
-				 {
+				{
 					try {
 						var channelCount = min(msg.size - 3 / 2, numOuts);
 
@@ -246,7 +246,7 @@ ServerMeter {
 		meterView.view.keyDownAction_( { arg view, char, modifiers;
 			if(modifiers & 16515072 == 0) {
 				case
-				 {char === 27.asAscii } { window.close };
+					{char === 27.asAscii } { window.close };
 			};
 		});
 

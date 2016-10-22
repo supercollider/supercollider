@@ -44,16 +44,16 @@ s.boot; // First make sure the server is on
 (
 SynthDef(\kuball, { |amp=0.5, pan=0, freq=100|
   Out.ar(0, Pan2.ar(amp * 2 * (BPF.ar(WhiteNoise.ar, freq, 0.1)*10).clip2 * SinOsc.ar(4.5), pan))
-}).send(s);
+}).add;
 
 SynthDef(\gameover, { Out.ar(0, SinOsc.ar(
 				Line.kr(200, 100, 1.0, doneAction:0),
 				0,
 				EnvGen.kr(Env([0.3, 0.2, 0.2, 0], [0.1, 0.8, 0.1]), 1, doneAction:2)
-				).dup(2))}).send(s);
+				).dup(2))}).add;
 
 SynthDef(\whackit, {Out.ar(0, SinOsc.ar(74, 0.5pi,
-		EnvGen.kr(Env.perc(0, 0.05), doneAction:2)).dup(2))}).send(s);
+		EnvGen.kr(Env.perc(0, 0.05), doneAction:2)).dup(2))}).add;
 
 );
 

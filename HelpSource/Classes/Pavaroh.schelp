@@ -34,7 +34,7 @@ SynthDef("ivg", { arg out, freq=900, pan;
 		, 554, 0.3)
 	* 0.1;
 	Out.ar(out, Pan2.ar(snd, pan))
- }).send(s);
+ }).add;
 )
 
 (

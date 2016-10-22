@@ -12,9 +12,9 @@ To define how the view is drawn you set the link::#-drawFunc:: variable to a lin
 
 This class offers convenient mechanisms for creating animations, that is, to automatically redraw itself in regular time intervals. See the link::#animation#Animation:: section of this document.
 
-For a guide to using this view, see link::Guides/GUI-Introduction#Custom views::. For a tutorial on how to write a emphasis::subclass:: of UserView to make your own custom view classes, see the link::Guides/UserView-Subclassing:: guide.
+For a guide to using this view, see link::Guides/GUI-Introduction#Custom views::.
 
-
+note:: Older tutorials might recommend subclassing UserView. Don't do that. Use composition, not inheritance. Make the UserView a property of your custom view class. ::
 
 CLASSMETHODS::
 

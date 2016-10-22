@@ -153,7 +153,7 @@ SynthDef("help-2DTabletSlider", {
         RLPF.ar(Mix.ar(p),freq * ffreqInterval.midiratio,rq)
             * EnvGen.kr(Env.adsr, gate, gate)
     )
-},[0.1,0.1,0.1,0.1,0.1,nil]).send(s);
+},[0.1,0.1,0.1,0.1,0.1,nil]).add;
 )
 
 (

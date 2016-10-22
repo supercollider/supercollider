@@ -314,7 +314,7 @@ Causes a synth to print out the values of the inputs and outputs of its unit gen
 subsection:: /n_order
 Move and order a list of nodes.
 table::
-## strong::int:: || add action (0,1,2, 3 or 4 see below)
+## strong::int:: || add action (0,1,2 or 3 see below)
 ## strong::int:: || add target ID
 ## N * strong::int:: || node IDs
 ::
@@ -929,6 +929,15 @@ table::
 ## 1 || normalize - Normalize peak amplitude of wave to 1.0.
 ## 2 || wavetable - If set, then the buffer is written in wavetable format so that it can be read by interpolating oscillators.
 ## 4 || clear - if set then the buffer is cleared before new partials are written into it. Otherwise the new partials are summed with the existing contents of the buffer.
+::
+
+These flags can be added together to create a unique single integer flag that describes the true/false combinations for these three options:
+
+table::
+## 3 || 1 + 2 || normalize + wavetable
+## 5 || 1 + 4 || normalize + clear
+## 6 || 2 + 4 || wavetable + clear
+## 7 || 1 + 2 + 4 || normalize + wavetable + clear
 ::
 
 definitionlist::

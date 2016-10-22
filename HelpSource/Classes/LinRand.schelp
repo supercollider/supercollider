@@ -35,7 +35,7 @@ SynthDef("help-LinRand", { arg out=0, minmax=1;
 			LinRand(200.0, 10000.0, minmax),
 			0, Line.kr(0.2, 0, 0.01, doneAction:2))
 	)
-}).send(s);
+}).add;
 )
 
 //towards hi

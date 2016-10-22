@@ -217,7 +217,7 @@ EZKnob : EZGui {
 		numHeight=labelSize.y;
 
 		switch (layout,
-			 \line2, {
+			\line2, {
 				knobSize.isNil.if{knobSize=( ((rect.height/compactRatio)-margin.x)@(rect.height))};
 				knobSize=(knobSize.x-margin.x)@(knobSize.y.min(rect.height));
 				hasUnit.not.if{ gap2 = 0@0; unitWidth = 0};
@@ -239,18 +239,18 @@ EZKnob : EZGui {
 				};
 				knobBounds=knobSize.asRect.moveTo(rect.width-knobSize.x,0);
 			},
-			 \horz, {
+			\horz, {
 				knobSize.isNil.if{knobSize=( ((rect.height/compactRatio)-margin.x)@(rect.height))};
 				knobSize=(knobSize.x-margin.x)@(knobSize.y.min(rect.height));
 				knobBounds=knobSize.asRect.moveTo(rect.width-knobSize.x,0);
 				hasUnit.not.if{ gap2 = 0@0; unitWidth = 0};
 				hasLabel.not.if{ gap1 = 0@0; labelSize.x = 0};
-			 	labelBounds = (labelSize.x@rect.height).asRect;
-			 	unitBounds = (unitWidth@rect.height).asRect
-			 		.moveTo(rect.width-knobBounds.width-gap2.x-unitWidth,0);
-			 	numBounds = Rect.newSides(labelSize.x+gap1.x,0,unitBounds.left-gap2.x,rect.height);
-			 },
-			 \vert , {
+				labelBounds = (labelSize.x@rect.height).asRect;
+				unitBounds = (unitWidth@rect.height).asRect
+					.moveTo(rect.width-knobBounds.width-gap2.x-unitWidth,0);
+				numBounds = Rect.newSides(labelSize.x+gap1.x,0,unitBounds.left-gap2.x,rect.height);
+			},
+			\vert , {
 				hasUnit.not.if{ gap3 = 0@0; unitWidth = 0};
 				hasLabel.not.if{ gap1 = 0@0; labelSize.y = 0};
 
@@ -261,15 +261,15 @@ EZKnob : EZGui {
 				knobSize=((knobSize.x).min(rect.width))
 					@(knobSize.y.min(rect.height-labelSize.y-numHeight-gap1.y-gap2.y));
 
-			 	labelBounds = (rect.width@labelSize.y).asRect;
+				labelBounds = (rect.width@labelSize.y).asRect;
 				knobBounds=knobSize.asRect.moveTo(0,labelSize.y+gap1.y);
 
-			 	numBounds = Rect(0,rect.height-numHeight,rect.width-unitWidth-gap3.x, numHeight);
+				numBounds = Rect(0,rect.height-numHeight,rect.width-unitWidth-gap3.x, numHeight);
 
-			 	unitBounds = Rect(rect.width-unitWidth,rect.height-numHeight,unitWidth,numHeight);
+				unitBounds = Rect(rect.width-unitWidth,rect.height-numHeight,unitWidth,numHeight);
 
-			 },
-			 \vert2 , {
+			},
+			\vert2 , {
 				hasUnit.not.if{ gap3 = 0@0; unitWidth = 0};
 				hasLabel.not.if{ gap1 = 0@0; labelSize.y = 0};
 
@@ -281,18 +281,17 @@ EZKnob : EZGui {
 					@(knobSize.y.min(rect.height-labelSize.y-numHeight-gap1.y-gap2.y));
 
 
-			 	labelBounds = (rect.width@labelSize.y).asRect;
+				labelBounds = (rect.width@labelSize.y).asRect;
 				knobBounds=knobSize.asRect.moveTo(0,labelSize.y+gap1.y);
 				knobBounds=knobBounds.moveBy((rect.width-knobBounds.width)/2,0);
-			 	numBounds = Rect(0,rect.height-numHeight,rect.width-unitWidth-gap3.x, numHeight);
+				numBounds = Rect(0,rect.height-numHeight,rect.width-unitWidth-gap3.x, numHeight);
 
-			 	unitBounds = Rect(rect.width-unitWidth,rect.height-numHeight,unitWidth,numHeight);
+				unitBounds = Rect(rect.width-unitWidth,rect.height-numHeight,unitWidth,numHeight);
 
-			 }
+			}
 		);
 		((knobBounds.height<0)||(knobBounds.width<0)).if{knobBounds=knobBounds.height_(0).width_(0)};
 
 		^[labelBounds, numBounds, knobBounds, unitBounds].collect{arg v; v.moveBy(margin.x,margin.y)}
 	}
-
 }

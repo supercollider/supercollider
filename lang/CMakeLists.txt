@@ -33,6 +33,12 @@ endif()
 
 find_package(Sndfile)
 
+if (SC_QT OR SC_IDE)
+	set(LOCALSOCK_UTIL_FILE ${CMAKE_SOURCE_DIR}/editors/sc-ide/primitives/localsocket_utils.cpp)
+else ()
+	set(LOCALSOCK_UTIL_FILE)
+endif ()
+
 set(sclang_sources
 	LangPrimSource/SC_HID_api.cpp
 	LangPrimSource/SC_Wii.cpp
@@ -82,6 +88,7 @@ set(sclang_sources
 	${CMAKE_SOURCE_DIR}/common/SC_StringBuffer.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_TextUtils.cpp
+	${LOCALSOCK_UTIL_FILE}
 
 	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
 

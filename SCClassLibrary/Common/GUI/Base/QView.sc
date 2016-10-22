@@ -786,4 +786,3 @@ View : QObject {
 		if( QtGUI.debugLevel >= level ) { ("Qt: " ++ this.asString ++ ": " ++ msg).postln }
 	}
 }
-

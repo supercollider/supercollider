@@ -45,7 +45,7 @@ SynthDef("trig1",{ arg dur=0.125;
 			gate,
 			doneAction: 2)
 	)
-}).send(s);
+}).add;
 
 Routine({
 	1.0.wait;
@@ -69,7 +69,7 @@ SynthDef("trig1",{
 			gate,
 			doneAction: 2)
 	)
-}).send(s);
+}).add;
 
 Routine({
 	1.0.wait;

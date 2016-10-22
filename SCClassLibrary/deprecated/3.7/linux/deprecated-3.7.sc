@@ -26,12 +26,12 @@
 
 	*all {
 		this.deprecated(thisMethod, LID.findMethod( \openDevices ) );
-	 	^this.openDevices;
+		^this.openDevices;
 	}
 
 	*eventLoopIsRunning{
 		this.deprecated(thisMethod, LID.findMethod( \running ) );
-	 	^this.running;
+		^this.running;
 	}
 
 }

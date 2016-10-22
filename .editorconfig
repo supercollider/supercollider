@@ -1,0 +1,31 @@
+# EditorConfig is awesome: http://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+# Unix-style newlines with a newline ending every file
+[*]
+end_of_line = lf
+insert_final_newline = true
+
+[*.{h,hpp,cpp}]
+indent_style = space
+indent_size = 4
+
+[lang/**.cpp]
+indent_style = tab
+indent_size = 4
+
+# Tab indentation
+[*.{sc,schelp}]
+indent_style = tab
+indent_size = 4
+
+[CMakeLists.txt]
+indent_style = tab
+indent_size = 4
+
+# Matches the exact files either .travis.yml
+[*.{yml,yaml,json,js}}]
+indent_style = space
+indent_size = 2

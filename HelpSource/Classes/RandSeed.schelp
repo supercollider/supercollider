@@ -80,7 +80,7 @@ SynthDef("pseudorandom", { arg out, sustain=1, seed=1967, id=0;
 		Line.kr(1, 0, sustain, doneAction:2)
 	)
 
-}).send(s);
+}).add;
 )
 
 // the exact same sound is reproduced

@@ -3,15 +3,15 @@
 Welcome to SuperCollider!
 =========================
 
-**SuperCollider** is an environment and programming language for real time audio
-synthesis and algorithmic composition. It provides an interpreted
-object-oriented language which functions as a network client to a state of the
-art, realtime sound synthesis server.
+**SuperCollider** is a platform for audio synthesis and algorithmic composition, used by musicians, artists, and researchers working with sound. It is free and open source software available for Windows, Mac OS X, and Linux.
 
-SuperCollider was written by James McCartney (http://audiosynth.com) over a period of
-many years. It is now an open source GPL'd project maintained and developed by
-James and various others. It is used by musicians, scientists, and artists
-working with sound.
+SuperCollider features three major components:
+
+- scsynth, a real-time audio server, forms the core of the platform. It features 400+ unit generators ("UGens") for analysis, synthesis, and processing. Some of the audio techniques it supports include additive synthesis, subtractive, FM, granular, FFT, and physical modelling. You can write your own UGens in C++, and users have already contributed several hundred more to the sc3-plugins repository.
+- sclang, an interpreted programming language, controls scsynth via Open Sound Control. You can use sclang for algorithmic sequencing, connecting your app to external hardware including MIDI controllers, or writing GUIs and visual displays. sclang has a stock of user-contributed extensions called Quarks.
+- scide is an editor for sclang with an integrated help system.
+
+SuperCollider was developed by James McCartney and originally released in 1996. In 2002, he generously released it as free software under the GNU General Public License. It is now maintained and developed by an active and enthusiastic community.
 
 http://supercollider.github.io/
 
@@ -25,7 +25,7 @@ Usage
 
 SuperCollider consists of three separate components:
 
-1. scsynth - audio engine (the "server")
+1. scsynth or supernova - audio engine (the "server")
 2. sclang - programming language runtime interpreter including Qt graphical user interfaces
 3. IDE (integrated development environment) - an editor for writing code and running supercollider
 

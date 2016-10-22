@@ -44,7 +44,7 @@ Examples::
 code::
 a = ProxySynthDef("xtest", { SinOsc.ar(400) * 0.1 });
 
-a.send(s);
+a.add;
 
 x = Synth("xtest");
 x.release;

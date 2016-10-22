@@ -21,15 +21,15 @@ signal changes from non-positive to positive.
 
 argument::div
 
-Number of pulses to divide by.
+Number of triggers to count before outputting an impulse.
 
 
 argument::start
 
 Starting value for the trigger count. This lets you start
-somewhere in the middle of a count, or if startCount is negative
+somewhere in the middle of a count. If start is negative
 it adds that many counts to the first time the output is
-triggers.
+triggered.
 
 
 Examples::
