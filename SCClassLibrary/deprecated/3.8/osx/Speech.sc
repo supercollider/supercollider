@@ -146,9 +146,10 @@ Speech {
 
 + String {
 	speak { arg channel = 0, force = false;
+		var speech;
 		this.deprecated(thisMethod);
 		// FIXME: this should better be handled by Platform than GUI
-		var speech = GUI.current.speech;
+		speech = GUI.current.speech;
 		if( speech.initialized.not, { speech.init });
 		speech.channels[ channel ].speak( this, force );
 	}
