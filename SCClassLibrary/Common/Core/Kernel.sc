@@ -391,6 +391,8 @@ Process {
 	archiveAsCompileString { ^true }
 
 	prSchedulerQueue { ^schedulerQueue }
+
+	verbosity { _GetVerbosity }
 }
 
 
