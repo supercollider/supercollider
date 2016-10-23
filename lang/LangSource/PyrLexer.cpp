@@ -1762,11 +1762,6 @@ void traverseFullDepTree2()
 		} else {
 			double elapsed;
 			buildBigMethodMatrix();
-			SymbolTable* symbolTable = gMainVMGlobals->symbolTable;
-			post("\tNumber of Symbols %d\n", symbolTable->NumItems());
-			post("\tByte Code Size %d\n", totalByteCodes);
-			//elapsed = TickCount() - compileStartTime;
-			//elapsed = 0;
 			elapsed = elapsedTime() - compileStartTime;
 			post("\tcompiled %d files in %.2f seconds\n",
 				 gNumCompiledFiles, elapsed );
