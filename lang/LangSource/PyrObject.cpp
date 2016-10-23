@@ -1377,9 +1377,11 @@ void buildBigMethodMatrix()
 			100. * (double)numFilled/(rowTableSize/sizeof(PyrMethod*)));
 	}
 #endif
-	post("\t%d method selectors, %d classes\n", numSelectors, numClasses);
-	post("\tmethod table size %d bytes, ", rowTableSize);
-	post("big table size %d\n", numSelectors * numClasses * sizeof(PyrMethod*));
+	if (gVerbosity >= 1) {
+		post("\tFound %d classes and %d method selectors.\n", numClasses, numSelectors);
+		post("\tMethod lookup table is %d bytes, ", rowTableSize);
+		post("out of a maximum of %d bytes.\n", numSelectors * numClasses * sizeof(PyrMethod*));
+	}
 	//postfl("%p %p %p\n", classes, bigTable, sels);
 /*
 	// not necessary since the entire pool will be freed..
