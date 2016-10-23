@@ -2134,8 +2134,6 @@ SCLANG_DLLEXPORT_C bool compileLibrary(bool standalone)
 	bool res = passOne();
 	if (res) {
 
-		postfl("\tpass 1 done\n");
-
 		if (!compileErrors) {
 			buildDepTree();
 			traverseFullDepTree();
