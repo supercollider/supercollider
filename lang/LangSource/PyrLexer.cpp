@@ -1760,11 +1760,13 @@ void traverseFullDepTree2()
 			findDiscrepancy();
 			compileErrors++;
 		} else {
-			double elapsed;
 			buildBigMethodMatrix();
-			elapsed = elapsedTime() - compileStartTime;
-			post("\tcompiled %d files in %.2f seconds\n",
-				 gNumCompiledFiles, elapsed );
+			if (gVerbosity >= 1) {
+				double elapsed;
+				elapsed = elapsedTime() - compileStartTime;
+				post("\tCompiled %d files in %.2f seconds.\n",
+					 gNumCompiledFiles, elapsed );
+			}
 			if(numOverwrites == 1){
 				post("\nInfo: One method is currently overwritten by an extension. To see which, execute:\nMethodOverride.printAll\n\n");
 			}
