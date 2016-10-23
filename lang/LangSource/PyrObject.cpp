@@ -1233,14 +1233,17 @@ void buildBigMethodMatrix()
 
 #ifndef _MSC_VER
 	pool.try_executing_one();
-#endif	
+#endif
 	filledClassIndices.wait();
 #ifdef _MSC_VER
 	size_t numentries = fillClassRows(class_object, bigTable);
 #else
 	size_t numentries = fillClassRows(class_object, bigTable, pool);
 #endif
-	post("\tnumentries = %lu / %d = %.2g\n", numentries, bigTableSize, (double)numentries/(double)bigTableSize);
+	if (gVerbosity >= 1) {
+		post("\tMethod lookup table has %lu entries out of a maximum of %d (%.2g%% full).\n",
+			numentries, bigTableSize, (double)numentries/(double)bigTableSize * 100);
+	}
 
 
 	ColumnDescriptor * filledSelectors = filledSelectorsFuture.get();
