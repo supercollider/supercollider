@@ -1874,7 +1874,6 @@ void pyrmath_init_globs();
 
 void initPassOne()
 {
-	post("initPassOne started\n");
 	aboutToFreeRuntime();
 
 	//dump_pool_histo(pyr_pool_runtime);
@@ -1905,7 +1904,6 @@ void initPassOne()
 	compiledOK = false;
 	compiledDirectories.clear();
 	sc_InitCompileDirectory();
-	post("initPassOne done\n");
 }
 
 void finiPassOne()
