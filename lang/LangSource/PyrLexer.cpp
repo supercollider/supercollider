@@ -1762,12 +1762,21 @@ void traverseFullDepTree2()
 		} else {
 			double elapsed;
 			buildBigMethodMatrix();
+			SymbolTable* symbolTable = gMainVMGlobals->symbolTable;
+			post("\tNumber of Symbols %d\n", symbolTable->NumItems());
+			post("\tByte Code Size %d\n", totalByteCodes);
+			//elapsed = TickCount() - compileStartTime;
+			//elapsed = 0;
+			elapsed = elapsedTime() - compileStartTime;
+			post("\tcompiled %d files in %.2f seconds\n",
+				 gNumCompiledFiles, elapsed );
 			if(numOverwrites == 1){
 				post("\nInfo: One method is currently overwritten by an extension. To see which, execute:\nMethodOverride.printAll\n\n");
 			}
 			else if(numOverwrites > 1){
 				post("\nInfo: %i methods are currently overwritten by extensions. To see which, execute:\nMethodOverride.printAll\n\n", numOverwrites);
 			}
+			post("compile done\n");
 		}
 	}
 }
@@ -1868,6 +1877,7 @@ void pyrmath_init_globs();
 
 void initPassOne()
 {
+	post("initPassOne started\n");
 	aboutToFreeRuntime();
 
 	//dump_pool_histo(pyr_pool_runtime);
@@ -1898,6 +1908,7 @@ void initPassOne()
 	compiledOK = false;
 	compiledDirectories.clear();
 	sc_InitCompileDirectory();
+	post("initPassOne done\n");
 }
 
 void finiPassOne()
@@ -2127,6 +2138,8 @@ SCLANG_DLLEXPORT_C bool compileLibrary(bool standalone)
 
 	bool res = passOne();
 	if (res) {
+
+		postfl("\tpass 1 done\n");
 
 		if (!compileErrors) {
 			buildDepTree();
