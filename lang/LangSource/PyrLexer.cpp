@@ -1773,7 +1773,7 @@ void traverseFullDepTree2()
 			else if(numOverwrites > 1){
 				post("\nInfo: %i methods are currently overwritten by extensions. To see which, execute:\nMethodOverride.printAll\n\n", numOverwrites);
 			}
-			post("compile done\n");
+			post("Class library compiled successfully.\n");
 		}
 	}
 }
