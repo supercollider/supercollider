@@ -4291,7 +4291,9 @@ void initOpenGLPrimitives();
 	initSCDocPrimitives();
 
 	s_recvmsg = getsym("receiveMsg");
-	post("\tNumPrimitives = %d\n", nextPrimitiveIndex());
+	if (gVerbosity >= 1) {
+		post("\tFound %d primitives.\n", nextPrimitiveIndex());
+	}
 }
 
 void deinitPrimitives()
