@@ -125,7 +125,8 @@ void SC_TerminalClient::printUsage()
 			"   -s                             Call Main.stop on shutdown\n"
 			"   -u <network-port-number>       Set UDP listening port (default %d)\n"
 			"   -i <ide-name>                  Specify IDE name (for enabling IDE-specific class code, default \"%s\")\n"
-			"   -a                             Standalone mode (exclude SCClassLibrary and user and system Extensions folders from search path)\n",
+			"   -a                             Standalone mode (exclude SCClassLibrary and user and system Extensions folders from search path)\n"
+			"   -V <level>                     Verbosity level.\n",
 			memGrowBuf,
 			memSpaceBuf,
 			opt.mPort,
@@ -135,7 +136,7 @@ void SC_TerminalClient::printUsage()
 
 bool SC_TerminalClient::parseOptions(int& argc, char**& argv, Options& opt)
 {
-	const char* optstr = ":d:Dg:hl:m:rsu:i:av";
+	const char* optstr = ":d:Dg:hl:m:rsu:i:avV:";
 	int c;
 
 	// inhibit error reporting
@@ -194,6 +195,9 @@ bool SC_TerminalClient::parseOptions(int& argc, char**& argv, Options& opt)
 				break;
 			case 'a':
 				opt.mStandalone = true;
+				break;
+			case 'V':
+				gVerbosity = atoi(optarg);
 				break;
 			default:
 				::post("%s: unknown error (getopt)\n", getName());
@@ -635,7 +639,7 @@ void SC_TerminalClient::endInput()
 	mInputService.stop();
 	mStdIn.cancel();
 #ifdef _WIN32
-	// Note this breaks Windows XP compatibility, since this function is only defined in Vista and later 
+	// Note this breaks Windows XP compatibility, since this function is only defined in Vista and later
 	::CancelIoEx(GetStdHandle(STD_INPUT_HANDLE), nullptr);
 #endif
 	postfl("main: waiting for input thread to join...\n");
