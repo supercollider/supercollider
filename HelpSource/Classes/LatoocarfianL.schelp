@@ -7,8 +7,8 @@ description::
 A linear-interpolating sound generator based on a function given in Clifford Pickover's book Chaos In Wonderland, pg 26. The function is:
 
 teletype::
-        x(n+1) = sin(b * y(n)) + c * sin(b * x(n))
-        y(n+1) = sin(a * x(n)) + d * sin(a * y(n))
+		x(n+1) = sin(b * y(n)) + c * sin(b * x(n))
+		y(n+1) = sin(a * x(n)) + d * sin(a * y(n))
 ::
 
 According to Pickover, parameters code::a:: and code::b:: should be in the range from -3 to +3, and parameters code::c:: and code::d:: should be in the range from 0.5 to 1.5. The function can, depending on the parameters given, give continuous chaotic output, converge to a single value (silence) or oscillate in a cycle (tone).
@@ -61,5 +61,21 @@ code::
 	LFNoise2.kr(2,0.5,1.5),
 	LFNoise2.kr(2,0.5,1.5)
 ) * 0.2 }.play(s);
+)
+::
+
+code::
+(
+{ LatoocarfianL.ar(
+	SampleRate.ir/4,
+	[LFDNoise0,LFClipNoise,LFDNoise1,LFDNoise3,
+		LFNoise0,LFNoise1,LFNoise2].choose.kr(rrand(2,20),rrand(2,20)*0.1,rrand(2,20)*0.2),
+		[LFDNoise0,LFClipNoise,LFDNoise1,LFDNoise3,
+		LFNoise0,LFNoise1,LFNoise2].choose.kr(rrand(2,20),rrand(2,20)*0.1,rrand(2,20)*0.2),
+		[LFDNoise0,LFClipNoise,LFDNoise1,LFDNoise3,
+		LFNoise0,LFNoise1,LFNoise2].choose.kr(rrand(2,20),rrand(2,20)*0.1,rrand(2,20)*0.2),
+		[LFDNoise0,LFClipNoise,LFDNoise1,LFDNoise3,
+		LFNoise0,LFNoise1,LFNoise2].choose.kr(rrand(2,20),rrand(2,20)*0.1,rrand(2,20)*0.2)
+) * 0.2 !2}.play;
 )
 ::

@@ -53,7 +53,8 @@ NdefParamGui : EnvirGui {
 
 			var parView = ParamView(zone, Rect(0, 0, bounds.width - sinkWidth - 20, height))
 			// .resize_(2)
-			.background_(skin.background);
+			.background_(skin.background)
+			.useRanger_({ this.useRanger });
 
 			parView.zone.visible_(false);
 
@@ -160,6 +161,14 @@ NdefParamGui : EnvirGui {
 				if (oldVal != newVal) { paramView.value_(newVal) };
 			};
 		};
+	}
+
+	showFields { |num = 0|
+		paramViews.do { |pv, i|
+			var isInUse = i < num;
+			pv.visible_(isInUse);
+			drags[i].visible_(isInUse);
+		}
 	}
 
 	setFunc { |key|

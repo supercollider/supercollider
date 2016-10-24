@@ -33,6 +33,7 @@
 #include "sc_server.hpp"
 #include "settings/manager.hpp"
 #include "util/standard_dirs.hpp"
+#include "../primitives/localsocket_utils.hpp"
 
 #include "../widgets/help_browser.hpp"
 
@@ -182,24 +183,19 @@ void ScProcess::stopLanguage (void)
         return;
     }
 
-    evaluateCode("0.exit", true);
-    closeWriteChannel();
-    
+    evaluateCode("0.exit", true);    
     mCompiled = false;
     mTerminationRequested   = true;
     mTerminationRequestTime = QDateTime::currentDateTimeUtc();
 
-    bool finished = waitForFinished(200);
+    bool finished = waitForFinished(1000);
     if ( !finished && (state() != QProcess::NotRunning) ) {
-#ifdef Q_OS_WIN32
-        kill();
-#else
         terminate();
-#endif
         bool reallyFinished = waitForFinished(200);
         if (!reallyFinished)
             emit statusMessage(tr("Failed to stop interpreter!"));
     }
+    closeWriteChannel();
     mTerminationRequested = false;
 }
 
@@ -318,31 +314,40 @@ void ScProcess::postQuitNotification()
     emit scPost(message);
 }
 
+
 void ScProcess::onIpcData()
 {
     mIpcData.append(mIpcSocket->readAll());
+    // After we have put the data in the buffer, process it    
+    int avail = mIpcData.length();
+    do {
+        if (mReadSize == 0 && avail > 4){
+            mReadSize = ArrayToInt(mIpcData.left(4));
+            mIpcData.remove(0, 4);
+            avail -= 4;
+        }
 
-    while (mIpcData.size()) {
-        QBuffer receivedData ( &mIpcData );
-        receivedData.open ( QIODevice::ReadOnly );
+        if (mReadSize > 0 && avail >= mReadSize){
+            QByteArray baReceived(mIpcData.left(mReadSize));
+            mIpcData.remove(0, mReadSize);
+            mReadSize = 0;
+            avail -= mReadSize;
 
-        QDataStream in ( &receivedData );
-        in.setVersion ( QDataStream::Qt_4_6 );
-        QString selector, message;
-        in >> selector;
-        if ( in.status() != QDataStream::Ok )
-            return;
+            QDataStream in(baReceived);
+            in.setVersion(QDataStream::Qt_4_6);
+            QString selector, message;
+            in >> selector;
+            if (in.status() != QDataStream::Ok)
+                return;
 
-        in >> message;
-        if ( in.status() != QDataStream::Ok )
-            return;
+            in >> message;
+            if (in.status() != QDataStream::Ok)
+                return;
 
-        mIpcData.remove ( 0, receivedData.pos() );
-
-        onResponse(selector, message);
-
-        emit response(selector, message);
-    }
+            onResponse(selector, message);
+            emit response(selector, message);
+        }
+    } while ((mReadSize == 0 && avail > 4) || (mReadSize > 0 && avail > mReadSize));
 }
 
 void ScProcess::onResponse( const QString & selector, const QString & data )
@@ -387,26 +392,28 @@ void ScProcess::onStart()
     evaluateCode ( command, true );
     Main::documentManager()->sendActiveDocument();
 }
+
     
 void ScProcess::updateTextMirrorForDocument ( Document * doc, int position, int charsRemoved, int charsAdded )
 {
+    if (!mIpcSocket)
+        return;
+
+    if (mIpcSocket->state() != QAbstractSocket::ConnectedState)
+        return;
+
     QVariantList argList;
-    
     argList.append(QVariant(doc->id()));
     argList.append(QVariant(position));
     argList.append(QVariant(charsRemoved));
-    
+
     QTextCursor cursor = QTextCursor(doc->textDocument());
     cursor.setPosition(position, QTextCursor::MoveAnchor);
     cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, charsAdded);
-    
     argList.append(QVariant(cursor.selection().toPlainText()));
-    
+
     try {
-        QDataStream stream(mIpcSocket);
-        stream.setVersion(QDataStream::Qt_4_6);
-        stream << QStringLiteral("updateDocText");
-        stream << argList;
+        sendSelectorAndData(mIpcSocket, QStringLiteral("updateDocText"), argList);
     } catch (std::exception const & e) {
         scPost(QStringLiteral("Exception during ScIDE_Send: %1\n").arg(e.what()));
     }
@@ -414,21 +421,23 @@ void ScProcess::updateTextMirrorForDocument ( Document * doc, int position, int 
     
 void ScProcess::updateSelectionMirrorForDocument ( Document * doc, int start, int range )
 {
+    if (!mIpcSocket)
+        return;
+
+    if (mIpcSocket->state() != QAbstractSocket::ConnectedState)
+        return;
+
     QVariantList argList;
-    
     argList.append(QVariant(doc->id()));
     argList.append(QVariant(start));
     argList.append(QVariant(range));
-    
+
+
     try {
-        QDataStream stream(mIpcSocket);
-        stream.setVersion(QDataStream::Qt_4_6);
-        stream << QStringLiteral("updateDocSelection");
-        stream << argList;
+        sendSelectorAndData(mIpcSocket, QStringLiteral("updateDocSelection"), argList);
     } catch (std::exception const & e) {
         scPost(QStringLiteral("Exception during ScIDE_Send: %1\n").arg(e.what()));
     }
 }
-
 
 } // namespace ScIDE

@@ -224,7 +224,7 @@ Dunique : UGen {
 			ird = LocalBuf(1).clear;
 			index = Dbufwr(Dseries(0, 1, inf), ird);
 			overrun = Dbufrd(iwr) - Dbufrd(ird) > buffer.numFrames;
-			 // catch buffer overrun by switching to a zero length series
+			// catch buffer overrun by switching to a zero length series
 			brd = Dswitch1([brd, Dseries(length:0)], overrun);
 		} {
 			index = Dseq([Dseries(0, 1, buffer.numFrames)], inf)

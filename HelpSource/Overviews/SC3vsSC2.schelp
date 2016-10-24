@@ -2,7 +2,9 @@ title:: SuperCollider 3 versus SuperCollider 2
 summary:: Design changes between the versions 2 and 3 of SuperCollider
 categories:: SC3 vs SC2
 
-There are a number of ways in which SuperCollider 3 (or SCServer) is very different from SC2. A discussion of this is organised in the following documents:
+SuperCollider 3 came out in 2002. If you're reading this, the chances that these SC3 vs. SC2 guides are useful to you are practically zero, but we're keeping them here for historical reasons.
+
+There are a number of ways in which SuperCollider 3 is very different from SC2. A discussion of this is organised in the following documents:
 
 definitionList::
 ## link::Guides/ClientVsServer:: || Separate language and synthesis apps.

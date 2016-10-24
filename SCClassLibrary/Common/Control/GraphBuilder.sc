@@ -131,7 +131,11 @@ NamedControl {
 
 		if(fixedLag && lags.notNil && prefix.isNil) {
 			buildSynthDef.addKr(name, values.unbubble);
-			control = LagControl.kr(values.flat.unbubble, lags);
+			if(rate === \audio) {
+				control = LagControl.ar(values.flat.unbubble, lags)
+			} {
+				control = LagControl.kr(values.flat.unbubble, lags)
+			};
 		} {
 			if(prefix == $a or: {rate === \audio}) {
 				buildSynthDef.addAr(name, values.unbubble);

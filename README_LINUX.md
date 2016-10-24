@@ -46,6 +46,7 @@ Build requirements (optional features)
    * http://qt-project.org
    * cross-platform graphical user interface library, for Qt IDE and sclang's Qt GUI kit
    * Qt >= 5.0 should work, but build-test is done against 5.3
+   * As of this writing, there are known issues with building on Qt >= 5.6.
 
  * alsa
    * http://www.alsa-project.org

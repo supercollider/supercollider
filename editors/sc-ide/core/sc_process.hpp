@@ -111,8 +111,7 @@ private:
     void onResponse( const QString & selector, const QString & data );
 
     void prepareActions(Settings::Manager * settings);
-    void postQuitNotification();
-
+    void postQuitNotification();    
     QAction * mActions[ActionCount];
 
     ScLanguage::Introspection mIntrospection;
@@ -122,6 +121,7 @@ private:
     QLocalSocket *mIpcSocket;
     QString mIpcServerName;
     QByteArray mIpcData;
+    int mReadSize = 0;
 
     bool mTerminationRequested;
     QDateTime mTerminationRequestTime;
@@ -173,7 +173,6 @@ private:
     QUuid mId;
     ScProcess *mSc;
 };
-
 }
 
 #endif

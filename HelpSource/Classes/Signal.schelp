@@ -151,7 +151,7 @@ b = Signal.sineFill(512, [1]).play(true, 0.2);
 b.free;	// free the buffer again.
 ::
 argument::loop
-A link::Classes/Boolean:: whether to loop the entire signal or play it once. Default is to loop.
+A link::Classes/Boolean:: whether to loop the entire signal or play it once. Default is false.
 argument::mul
 volume at which to play it, 0.2 by default.
 argument::numChannels

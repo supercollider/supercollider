@@ -358,9 +358,5 @@
 				stream << namestring << ".setRates(" <<<* rates << ");" << Char.nl;
 			}
 		});
-
 	}
 }
-
-
-

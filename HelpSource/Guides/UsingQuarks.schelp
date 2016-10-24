@@ -62,6 +62,8 @@ Quarks.addFolder("~/supercollider/quarks");
 
 Now each quark inside that folder will appear on the GUI for you to un/install.
 
+If you wish to be able to uninstall local quarks, but still see them in the GUI, it is highly recommended to collect your local quark directories under a single master directory. Then, use link::Classes/Quarks#*addFolder:: to add the master directory. code::addFolder:: does not add individual quark directories.
+
 subsection::Recompile the class library
 
 After installing or uninstalling you need to strong::Language > Recompile Class Library::

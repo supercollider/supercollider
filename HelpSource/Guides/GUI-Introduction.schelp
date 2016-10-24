@@ -2,61 +2,11 @@ title:: Introduction to GUI
 summary:: An introduction to writing graphical user interface code
 categories:: GUI
 
+note::
+To avoid confusion, we start off with an important historical note. SuperCollider used to have a pretty nasty GUI class system that involved platform-dependent classes like SCWindow. This system is completely gone in 3.7 with a unified Qt GUI.
 
-
-SECTION:: First problem: Platform independence
-
-strong::Why do you need to know about this?::
-
-numberedlist::
-## You'll create a Window.new and wonder why you got back a SCWindow or QWindow.
-## You might use Mac-only GUI objects and wonder why your friend on Windows can't run your code.
-## On Mac, you might run some examples that are specific to Q- objects and wonder why they don't work right away.
+You will still see remnants of the old GUI classes in some SuperCollider help files and quarks. We're still working on updating all the help files. If you encounter such old classes in a quark, you can do a public service by informing the quark author.
 ::
-
-strong::Short answer::
-
-Make sure you select the right strong::GUI kit::.
-
-When SuperCollider starts, one of the available kits becomes the default.
-
-table::
-## strong::Platform:: || strong::Default kit::
-## Mac OSX || Cocoa -- code::GUI.cocoa::
-## Linux/FreeBSD || Qt -- code::GUI.qt::
-## Windows || Qt -- code::GUI.qt::
-::
-
-For most cases, the Qt GUI kit is sufficient. Cocoa is retained as the default in Mac OSX for historical reasons. (This may change in a future release.)
-
-warning:: Some GUI examples are Qt-specific. They are labeled as such in the documentation. Strong::These examples will not work in OSX unless you manually switch to the Qt kit:: by running the following code:
-
-code::GUI.qt;::
-::
-
-See the link::Classes/GUI:: help file for more background on the GUI kits.
-
-
-subsection:: Use "GUI redirect" classes whenever possible
-
-It is strongly recommended to use generic view class names: Window, Button, Slider, etc. Code written using the generic names can run in other GUI kits.
-
-code::
-// DO write
-w = Window.new.front;
-
-// DO NOT write
-w = SCWindow.new.front;
-::
-
-In the second example, the use of the Cocoa-specific window class ensures that the code will not run in Linux or Windows without modification. This is usually not a good idea.
-
-For a list of all the generic GUI classes and their kit-specific equivalents see link::Overviews/GUI-Classes::.
-
-In the rest of this document we will refer to GUI classes by their generic name, adding notes where important differences between GUI kits are of concern.
-
-
-
 
 SECTION:: Basic elements: Windows, views and containers
 
@@ -319,11 +269,11 @@ SECTION:: Custom views
 
 The UserView is a view that displays and does nothing on itself, but allows emphasis::you:: to define how it will be drawn, and for which you can  define the entire behavior using mouse, key, and drag and drop actions. For documentation on all of these aspects, see link::Classes/UserView::, link::Classes/View::, and link::Classes/Pen::. The explanation below, however, will demonstrate the basic techniques for designing a custom view.
 
-There is two ways of using the UserView class: either creating it and using its methods to define its behavior, or subclassing it, which gives you more freedom but is more complex. Either way, you will be using the link::Classes/Pen:: class to draw the view. Pen is a powerful class that allows you to algorithmically draw using simple visual primitives like lines, arcs, curves, rectangles, ellipses, etc. and fill the shapes with colors and gradients.
+You will be using the link::Classes/Pen:: class to draw the view. Pen is a powerful class that allows you to algorithmically draw using simple visual primitives like lines, arcs, curves, rectangles, ellipses, etc. and fill the shapes with colors and gradients.
 
-subsection:: The simple way: using the UserView class
+note:: Older tutorials might recommend subclassing UserView. Don't do that. Use composition, not inheritance. Make the UserView a property of your custom view class. ::
 
-The simple way comprises the following steps:
+Creating a custom view involves the following steps:
 
 numberedList::
 ## create a User View
@@ -397,15 +347,6 @@ StaticText(w,Rect(50,150,350,50)).string_("To Test Drag and Drop,\nHold down Cmd
 
 )
 ::
-
-subsection:: The advanced way: subclassing the UserView
-
-Subclassing the UserView differs in many aspects from the example above. For a subclassing template and a quick tutorial on how to write a custom widget as a UserView subclass, see the link::Guides/UserView-Subclassing:: guide.
-
-
-
-
-
 
 SECTION:: Caution: GUI and timing
 

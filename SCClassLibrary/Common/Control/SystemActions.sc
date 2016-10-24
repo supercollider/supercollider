@@ -93,7 +93,7 @@ StartUp : AbstractSystemAction {
 
 
 	*defer { arg object;
-		 if(done) { object.doOnStartUp } { this.add(object) }
+		if(done) { object.doOnStartUp } { this.add(object) }
 	}
 
 
