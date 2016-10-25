@@ -155,7 +155,6 @@ String[char] : RawArray {
 	}
 	error { "ERROR: ".post; this.postln; }
 	warn { "WARNING: ".post; this.postln }
-	inform { ^this.postln }
 	++ { arg anObject; ^this prCat: anObject.asString; }
 	+ { arg anObject; ^this prCat: " " prCat: anObject.asString; }
 	catArgs { arg ... items; ^this.catList(items) }

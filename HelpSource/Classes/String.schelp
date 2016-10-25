@@ -147,10 +147,7 @@ code::
 ::
 
 method::inform
-Posts the string.
-code::
-"Do not press this button again".inform;
-::
+Deprecated. Alias for link::#-postln::.
 
 subsection:: Interpreting strings as code
 
