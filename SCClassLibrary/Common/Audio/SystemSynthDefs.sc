@@ -18,7 +18,7 @@ SystemSynthDefs {
 
 			// clean up any written synthdefs starting with "temp__"
 			var path = SynthDef.synthDefDir ++ tempNamePrefix ++ "*";
-			"Cleaning up temp synthdefs...".inform;
+			"Cleaning up temp synthdefs...".postln;
 			pathMatch(path).do { |file| File.delete(file) };
 
 			// add system synth defs

@@ -626,8 +626,8 @@ Server {
 
 	boot { | startAliveThread=true, recover=false, onFailure |
 
-		if (statusWatcher.serverRunning) { "server already running".inform; ^this };
-		if (statusWatcher.serverBooting) { "server already booting".inform; ^this };
+		if (statusWatcher.serverRunning) { "server already running".postln; ^this };
+		if (statusWatcher.serverBooting) { "server already booting".postln; ^this };
 
 		statusWatcher.serverBooting = true;
 
@@ -638,7 +638,7 @@ Server {
 		statusWatcher.doWhenBooted({
 			statusWatcher.serverBooting = false;
 			if (recChannels.notNil and: (recChannels != options.numOutputBusChannels)) {
-				"Resetting recChannels to %".format(options.numOutputBusChannels).inform
+				"Resetting recChannels to %".format(options.numOutputBusChannels).postln
 			};
 			recChannels = options.numOutputBusChannels;
 
@@ -658,7 +658,7 @@ Server {
 		}, onFailure: onFailure ? false);
 
 		if(remoteControlled.not) {
-			"You will have to manually boot remote server.".inform;
+			"You will have to manually boot remote server.".postln;
 		} {
 			this.bootServerApp;
 		}
@@ -667,7 +667,7 @@ Server {
 	bootServerApp {
 		var f;
 		if (inProcess) {
-			"booting internal".inform;
+			"booting internal".postln;
 			this.bootInProcess;
 			pid = thisProcess.pid;
 		} {
@@ -694,12 +694,12 @@ Server {
 				};
 				fork{ f.(10) }
 			};
-			("booting " ++ addr.port.asString).inform;
+			("booting " ++ addr.port.asString).postln;
 		};
 	}
 
 	reboot { arg func; // func is evaluated when server is off
-		if (isLocal.not) { "can't reboot a remote server".inform; ^this };
+		if (isLocal.not) { "can't reboot a remote server".postln; ^this };
 		if(statusWatcher.serverRunning) {
 			Routine.run {
 				this.quit;
@@ -751,9 +751,9 @@ Server {
 
 		if (inProcess, {
 			this.quitInProcess;
-			"quit done\n".inform;
+			"quit done\n".postln;
 		},{
-			"/quit sent\n".inform;
+			"/quit sent\n".postln;
 		});
 
 		pid = nil;
