@@ -611,13 +611,13 @@ Server {
 
 	ifRunning { |func, failFunc|
 		^if(statusWatcher.unresponsive) {
-			"server '%' not responsive".format(this.name).inform;
+			"server '%' not responsive".format(this.name).postln;
 			failFunc.value(this)
 		} {
 			if(statusWatcher.serverRunning) {
 				func.value(this)
 			} {
-				"server '%' not running".format(this.name).inform;
+				"server '%' not running".format(this.name).postln;
 				failFunc.value(this)
 			}
 		}
@@ -643,7 +643,7 @@ Server {
 
 	ping { |n = 1, wait = 0.1, func|
 		var result = 0, pingFunc;
-		if(statusWatcher.serverRunning.not) { "server not running".inform; ^this };
+		if(statusWatcher.serverRunning.not) { "server not running".postln; ^this };
 		pingFunc = {
 			Routine.run {
 				var t, dt;
@@ -740,11 +740,11 @@ Server {
 	boot { | startAliveThread = true, recover = false, onFailure |
 
 		if(statusWatcher.unresponsive) {
-			"server '%' unresponsive, rebooting ...".format(this.name).inform;
+			"server '%' unresponsive, rebooting ...".format(this.name).postln;
 			this.quit(watchShutDown: false)
 		};
-		if(statusWatcher.serverRunning) { "server '%' already running".format(this.name).inform; ^this };
-		if(statusWatcher.serverBooting) { "server '%' already booting".format(this.name).inform; ^this };
+		if(statusWatcher.serverRunning) { "server '%' already running".format(this.name).postln; ^this };
+		if(statusWatcher.serverBooting) { "server '%' already booting".format(this.name).postln; ^this };
 
 
 		statusWatcher.serverBooting = true;
@@ -755,7 +755,7 @@ Server {
 		}, onFailure: onFailure ? false);
 
 		if(remoteControlled.not) {
-			"You will have to manually boot remote server.".inform;
+			"You will have to manually boot remote server.".postln;
 		} {
 			this.prPingApp({
 				this.quit;
@@ -780,19 +780,19 @@ Server {
 
 	bootServerApp { |onComplete|
 		if(inProcess) {
-			"booting internal".inform;
+			"booting internal".postln;
 			this.bootInProcess;
 			pid = thisProcess.pid;
 		} {
 			this.disconnectSharedMemory;
 			pid = unixCmd(program ++ options.asOptionsString(addr.port), { statusWatcher.quit(watchShutDown:false) });
-			("booting server '%' on address: %:%").format(this.name, addr.hostname, addr.port.asString).inform;
+			("booting server '%' on address: %:%").format(this.name, addr.hostname, addr.port.asString).postln;
 			if(options.protocol == \tcp, { addr.tryConnectTCP(onComplete) }, onComplete);
 		}
 	}
 
 	reboot { |func, onFailure| // func is evaluated when server is off
-		if(isLocal.not) { "can't reboot a remote server".inform; ^this };
+		if(isLocal.not) { "can't reboot a remote server".postln; ^this };
 		if(statusWatcher.serverRunning and: { this.unresponsive.not }) {
 			this.quit({
 				func.value;
@@ -858,9 +858,9 @@ Server {
 
 		if(inProcess) {
 			this.quitInProcess;
-			"quit done\n".inform;
+			"quit done\n".postln;
 		} {
-			"'/quit' sent\n".inform;
+			"'/quit' sent\n".postln;
 		};
 
 		pid = nil;
