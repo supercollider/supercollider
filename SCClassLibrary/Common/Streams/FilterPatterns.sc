@@ -64,11 +64,7 @@ Pcollect : FuncFilterPattern {
 		loop {
 			outval = stream.next(inval);
 			if (outval.isNil) { ^inval };
-			// NOTE: Normally we would expect 'stream' to do processRest.
-			// But the 'collect' func is not under control of the stream,
-			// so that's not a safe assumption here. The func may return
-			// a rest, so we have to 'processRest' the collect value.
-			inval = yield(func.value(outval, inval).processRest(inval));
+			inval = yield(func.value(outval, inval));
 		}
 	}
 	asStream {
@@ -211,6 +207,7 @@ Pset : FilterPattern {
 			if (inEvent.isNil) { ^cleanup.exit(event) };
 			val = valStream.next(inEvent);
 			if (val.isNil) { ^cleanup.exit(event) };
+			val.prescribeRest(event);
 
 			this.filterEvent(inEvent, val);
 			cleanup.update(inEvent);
@@ -569,13 +566,15 @@ Pbindf : FilterPattern {
 				var streamout = stream.next(outevent);
 
 				if (streamout.isNil) { ^cleanup.exit(event) };
+				streamout.prescribeRest(event);
+
 				if (name.isSequenceableCollection) {
 					if (name.size > streamout.size) {
 						("the pattern is not providing enough values to assign to the key set:" + name).warn;
 						^outevent
 					};
 					name.do { arg key, i;
-						outevent.put(key, streamout[i].processRest(outevent));
+						outevent.put(key, streamout[i]);
 					};
 				}{
 					outevent.put(name, streamout);

@@ -182,7 +182,7 @@ Pfuncn : Pattern {
 	storeArgs { ^[func,repeats] }
 	embedInStream {  arg inval;
 		repeats.value(inval).do({
-			inval = func.value(inval).processRest(inval).yield;
+			inval = func.value(inval).yield;
 		});
 		^inval
 	}
@@ -362,6 +362,7 @@ Pbind : Pattern {
 				var stream = streampairs[i+1];
 				var streamout = stream.next(event);
 				if (streamout.isNil) { ^inevent };
+				streamout.prescribeRest(event);
 
 				if (name.isSequenceableCollection) {
 					if (name.size > streamout.size) {
@@ -369,7 +370,7 @@ Pbind : Pattern {
 						^inevent
 					};
 					name.do { arg key, i;
-						event.put(key, streamout[i].processRest(event));
+						event.put(key, streamout[i]);
 					};
 				}{
 					event.put(name, streamout);
