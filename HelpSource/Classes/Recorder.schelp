@@ -33,7 +33,7 @@ NOTE::
 By default, record creates the recording synth after the Server's default group and uses In.ar. Thus if you add nodes after the recording synth their output will not be captured.
 To avoid this, either use Node objects (which use the default node as their target) or (when using messaging style) use a target nodeID of 1.
 code::
-s.sendMsg("/s_new", "default", s.nextNodeID, 1,1);
+s.sendMsg("/s_new", "default", s.nextNodeID, 1, 1);
 ::
 ::
 
@@ -56,15 +56,35 @@ InstanceMethods::
 
 method:: prepareForRecord
 Allocates the necessary buffer, etc. for recording the server's output. (See code::record:: below.)
+
 argument:: path
 a link::Classes/String:: representing the path and name of the output file.
+
+argument::numChannels
+The number of output channels to record.
+
 discussion::
-If you do not specify a path than a file will be created in your recordings folder (see the note above on this) called SC_thisDateAndTime. Changes to the header or sample format, or to the number of channels must be made strong::before:: calling this.
+If you do not specify a path than a file will be created in your recordings folder (see the note above on this) called code::SC_thisDateAndTime::. Changes to the header or sample format, or to the number of channels must be made strong::before:: calling this.
+
+
 
 method:: record
 Starts or resumes recording the output.
 argument:: path
 this is optional, and is passed to code::prepareForRecord:: (above).
+
+argument:: bus
+The bus (link::Classes/Bus:: object or integer bus index), the offset at which to start to count the number of channels. You can record any adjacent number of bus channels.
+
+argument:: numChannels
+The number of output channels to record.
+
+argument:: node
+The link::Classes/Node:: to record immediately after. By default, this is the default group 1.
+
+argument:: duration
+If set, this limits recording to a given time in seconds.
+
 discussion::
 If you have not called prepareForRecord first (see above) then it will be invoked for you (but that adds a slight delay before recording starts for real).
 
