@@ -129,10 +129,16 @@ Recorder {
 	}
 
 	prStopRecord {
+		var recordPath;
 		if(recordNode.isPlaying) { recordNode.unregister; recordNode.free; recordNode = nil };
 		server.sendMsg("/d_free", synthDef.name);
 		synthDef = nil;
-		if(recordBuf.notNil) { recordBuf.close({ |buf| buf.freeMsg }); recordBuf = nil };
+		if(recordBuf.notNil) {
+			recordPath = recordBuf.path;
+			recordBuf.close({ |buf| buf.freeMsg });
+			"Recording Stopped: (%)\n".postf(recordPath.basename);
+			recordBuf = nil
+		};
 		responder.disable;
 		paused = false;
 		duration = 0;
