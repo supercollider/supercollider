@@ -286,7 +286,7 @@ int main(int argc, char* argv[])
 				options.mVerbosity = atoi(argv[j+1]);
 				break;
 			case 'v' :
-				scprintf("scsynth %s\n", SC_VersionString().c_str());
+				scprintf("scsynth %s (%s)\n", SC_VersionString().c_str(), SC_BuildString().c_str());
 				exit(0);
 				break;
 			case 'R' :

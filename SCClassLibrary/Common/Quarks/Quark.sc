@@ -101,11 +101,13 @@ Quark {
 
 	checkout {
 		var rs;
+		if(git.isNil, {
+			git = Git(localPath);
+		});
 		if(this.isDownloaded.not, {
 			if(this.url.isNil, {
 				Error("No git url, cannot checkout quark" + this).throw;
 			});
-			git = Git(localPath);
 			git.clone(url);
 			// get tags etc
 			git.fetch();

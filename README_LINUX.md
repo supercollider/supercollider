@@ -4,7 +4,7 @@ Supercollider 3 for linux
 Intro
 -----
 
-SuperCollider is a synthesis engine (scsynth) and programming language (sclang), originally Mac-based but now very widely used and actively developed on Linux.
+SuperCollider is a synthesis engine (scsynth or supernova) and programming language (sclang), originally Mac-based but now very widely used and actively developed on Linux.
 
 Stefan Kersten first ported the code to Linux in 2003.
 
@@ -46,6 +46,7 @@ Build requirements (optional features)
    * http://qt-project.org
    * cross-platform graphical user interface library, for Qt IDE and sclang's Qt GUI kit
    * Qt >= 5.0 should work, but build-test is done against 5.3
+   * As of this writing, there are known issues with building on Qt >= 5.6.
 
  * alsa
    * http://www.alsa-project.org
@@ -207,11 +208,11 @@ Debian Multimedia team. Repository (with debian/ folder):
 http://anonscm.debian.org/gitweb/?p=pkg-multimedia/supercollider.git;a=summary
 
 
-Running scsynth (standalone)
+Running scsynth or supernova (standalone)
 ----------------------------
 
-Run `scsynth` without options to get an option summary. Don't forget to
-start jackd before trying to use scsynth. If you want to add
+Run `scsynth --help`  or `supernova --help` to get an option summary. Don't forget to
+start jackd before starting the server. If you want to add
 directories to supercollider's search path or assign default jack
 ports, set up your environment as described below.
 
@@ -263,7 +264,7 @@ Environment
 The jack audio driver interface is configured based on various
 environment variables:
 
- * SC_JACK_DEFAULT_INPUTS comma separated list of jack ports that scsynth's inputs should connect to by default
+ * SC_JACK_DEFAULT_INPUTS comma separated list of jack ports that the server's inputs should connect to by default
 
    ```
    $> export SC_JACK_DEFAULT_INPUTS="system:capture_1,system:capture_2"
@@ -275,7 +276,7 @@ environment variables:
    $> export SC_JACK_DEFAULT_INPUTS="system"
    ```
 
- * SC_JACK_DEFAULT_OUTPUTS comma separated list of jack ports that scsynth's outputs should be connected to by default.
+ * SC_JACK_DEFAULT_OUTPUTS comma separated list of jack ports that the server's outputs should be connected to by default.
 
    ```
    $> export SC_JACK_DEFAULT_OUTPUTS="system:playback_1,system:playback_2"

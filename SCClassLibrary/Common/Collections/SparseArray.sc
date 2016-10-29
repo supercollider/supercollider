@@ -18,7 +18,7 @@ Order : SequenceableCollection {
 	makeEmpty { this.clear }
 
 	copy {
-		 ^this.class.newCopyArgs(array.copy, indices.copy)
+		^this.class.newCopyArgs(array.copy, indices.copy)
 	}
 
 	asArray { ^array.copy }
@@ -208,7 +208,7 @@ SparseArray : Order {
 	}
 
 	copy {
-		 ^this.class.newCopyArgs(array.copy, indices.copy, default, defaultSize)
+		^this.class.newCopyArgs(array.copy, indices.copy, default, defaultSize)
 	}
 
 	asArray { ^this[_] ! this.size }

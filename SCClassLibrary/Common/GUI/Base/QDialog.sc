@@ -13,8 +13,8 @@ FileDialog : QObject {
 			QFileDialog::AcceptSave		1
 
 		stripResult:
-		   true: okFunc(path1, path2, path3)
-		   false: okFunc(paths)
+			true: okFunc(path1, path2, path3)
+			false: okFunc(paths)
 		**/
 
 		var me = super.new( [fileMode, acceptMode] );

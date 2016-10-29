@@ -66,10 +66,10 @@ list::
 A plugin file can contain more than one UGen, and it can also define things other than UGens such as buffer fill
 ("/b_gen") commands.
 
-When scsynth boots, it will look for plugin files in code::Platform.userExtensionDir::. Since sclang also looks for
+When the server boots, it will look for plugin files in code::Platform.userExtensionDir::. Since sclang also looks for
 class files in the same location, the class file and the library file can go in the same place.
 
-Plug-ins are loaded during the startup of scsynth, so the server will have to be restarted after (re-)compiling a
+Plug-ins are loaded during the startup of the server, so it will have to be restarted after (re-)compiling a
 plugin. If you modify the plugin file but not the class file, you don't need to reboot the interpreter.
 
 section:: FAUST
@@ -81,7 +81,7 @@ FAUST provides a shell script useful for SuperCollider users called code::faust2
 file into a class file and server plugin, which you can then drop into your extensions directory.
 
 FAUST plugins are often quick to develop and can be painlessly ported to other environments. Unfortunately, they can't
-take advantage of all of scsynth's features, such as accessing Buffers or random number generators, and some UGens
+take advantage of all of the server's features, such as accessing Buffers or random number generators, and some UGens
 featuring very complex logic are difficult or impossible to write in FAUST. Furthermore, the FAUST compiler is quite
 intelligent but it might not always offer the best efficiency in its results. If a UGen you are developing hits these
 limitations, it is time to move on to handwritten C++.
@@ -102,7 +102,7 @@ internal buffers, and demonstrates how to do cubic interpolation from an array o
 
 section:: Anatomy of a UGen
 
-The SC source code has a header file, code::server/plugins/SC_Plugin.h::, that gives you your interface to the scsynth
+The SC source code has a header file, code::include/plugin_interface/SC_PlugIn.h::, that gives you your interface to the server
 architecture as well as a bunch of helper functions. These are documented at link::Reference/ServerPluginAPI::.
 
 subsection:: The Entry Point

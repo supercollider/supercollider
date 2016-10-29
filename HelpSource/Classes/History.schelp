@@ -178,7 +178,7 @@ Document.open("~/Desktop/myTestStory.scd");	// the story file is human-readable.
 
 	// Various Internals
 	// make a new instance of History by hand:
-h = History([[0, \me, "1+2"], [1.234, \me, "q = q ? ();"], [3, \me, "\"History\".speak"]]);
+h = History([[0, \me, "1+2"], [1.234, \me, "q = q ? ();"], [3, \me, "\"History\".postln"]]);
 h.lines.printcsAll; "";
 h.lineShorts.printcsAll; "";
 
@@ -217,7 +217,7 @@ History.showLogFile;	// current logfile...
 	// filtering lines, to get subsets of all lines by key and/or searchstring:
 
 	// get indices for specific keys
-h = History([[0, \me, "a=1+2"], [1, \me, "3+5"], [1.234, \you, "q = q ? ();"], [3, \her, "\"Herstory ==== \".speak"]]);
+h = History([[0, \me, "a=1+2"], [1, \me, "3+5"], [1.234, \you, "q = q ? ();"], [3, \her, "\"Herstory ==== \".postln"]]);
 h.keys;
 h.matchKeys(\me);
 h.matchKeys(\you);

@@ -7,7 +7,7 @@ Main : Process {
 		// should be nil most of the time
 
 	startup {
-	    var didWarnOverwrite = false;
+		var didWarnOverwrite = false;
 		// setup the platform first so that class initializers can call platform methods.
 		// create the platform, then intialize it so that initPlatform can call methods
 		// that depend on thisProcess.platform methods.
@@ -45,9 +45,9 @@ Main : Process {
 				(
 					osx: "For help type cmd-d.",
 					linux: "For help type ctrl-c ctrl-h (Emacs) or :SChelp (vim) or ctrl-U (sced/gedit).",
-				 	windows: "For help press F1.",
+					windows: "For help press F1.",
 					iphone: ""
-				 ).at(platform.name);
+				).at(platform.name);
 
 			})
 		).postln;

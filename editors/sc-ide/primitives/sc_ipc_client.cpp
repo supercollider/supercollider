@@ -36,6 +36,7 @@
 #include "PyrSymbol.h"
 
 #include "sc_ipc_client.hpp"
+#include "localsocket_utils.hpp"
 
 SCIpcClient::SCIpcClient( const char * ideName ):
         mSocket(NULL)
@@ -57,30 +58,39 @@ SCIpcClient::~SCIpcClient()
 
 void SCIpcClient::readIDEData() {
     mIpcData.append(mSocket->readAll());
-    
-    while (mIpcData.size()) {
-        QBuffer receivedData ( &mIpcData );
-        receivedData.open ( QIODevice::ReadOnly );
-        
-        QDataStream in ( &receivedData );
-        in.setVersion ( QDataStream::Qt_4_6 );
-        QString selector;
-        QVariantList argList;
-        in >> selector;
-        if ( in.status() != QDataStream::Ok )
-            return;
 
-        in >> argList;
-        
-        if ( in.status() != QDataStream::Ok )
-            return;
-        
-        mIpcData.remove ( 0, receivedData.pos() );
-        
-        onResponse(selector, argList);
-    }
+    // After we have put the data in the buffer, process it    
+    int avail = mIpcData.length();
+    do {
+        if (mReadSize == 0 && avail > 4){
+            mReadSize = ArrayToInt(mIpcData.left(4));
+            mIpcData.remove(0, 4);
+            avail -= 4;
+        }
+
+        if (mReadSize > 0 && avail >= mReadSize){
+            QByteArray baReceived(mIpcData.left(mReadSize));
+            mIpcData.remove(0, mReadSize);
+            mReadSize = 0;
+            avail -= mReadSize;
+
+            QDataStream in(baReceived);
+            in.setVersion(QDataStream::Qt_4_6);
+            QString selector;
+            QVariantList argList;
+            in >> selector;
+            if (in.status() != QDataStream::Ok)
+                return;
+
+            in >> argList;
+            if (in.status() != QDataStream::Ok)
+                return;
+
+            onResponse(selector, argList);
+        }
+    } while ((mReadSize == 0 && avail > 4) || (mReadSize > 0 && avail > mReadSize));
 }
-    
+
 void SCIpcClient::onResponse( const QString & selector, const QVariantList & argList )
 {
     static QString upDateDocTextSelector("updateDocText");
@@ -98,6 +108,9 @@ void SCIpcClient::updateDocText( const QVariantList & argList )
     int pos = argList[1].toInt();
     int charsRemoved = argList[2].toInt();
     QString newChars = argList[3].toString();
+#ifdef DEBUG_IPC
+    post("RECEIVED updateDocText with args id: %s, pos: %d, charsR: %d, newC: %s\n", quuid.constData(), pos, charsRemoved, newChars.toLatin1().data());
+#endif
     setTextMirrorForDocument(quuid, newChars, pos, charsRemoved);
 }
 
@@ -106,6 +119,9 @@ void SCIpcClient::updateDocSelection( const QVariantList & argList )
     QByteArray quuid = argList[0].toByteArray();
     int start = argList[1].toInt();
     int range = argList[2].toInt();
+#ifdef DEBUG_IPC
+    post("RECEIVED updateDocText with args id: %s, pos: %d, charsR: %d, newC: %s\n", quuid.constData(), pos, charsRemoved, newChars.toLatin1().data());
+#endif
     setSelectionMirrorForDocument(quuid, start, range);
 }
 
@@ -172,6 +188,7 @@ void SCIpcClient::setSelectionMirrorForDocument(QByteArray & id, int start, int 
     mDocumentSelectionMirrors[id] = qMakePair(start, range);
     mSelMirrorHashMutex.unlock();
 }
+
 
 static SCIpcClient * gIpcClient = NULL;
 
@@ -311,11 +328,7 @@ int ScIDE_Send(struct VMGlobals *g, int numArgsPushed)
 
     try {
         YAMLSerializer serializer(argSlot);
-
-        QDataStream stream(gIpcClient->mSocket);
-        stream.setVersion(QDataStream::Qt_4_6);
-        stream << QString(id);
-        stream << QString::fromUtf8(serializer.data());
+        sendSelectorAndData(gIpcClient->mSocket, QString(id), QString::fromUtf8(serializer.data()));
     } catch (std::exception const & e) {
         postfl("Exception during ScIDE_Send: %s\n", e.what());
         return errFailed;

@@ -6,10 +6,10 @@ related:: Overviews/JITLib, Tutorials/JITLib/jitlib_basic_concepts_02, Tutorials
 internal structure of the node proxy, node order and the parameter context
 
 list::
-## link::#a)_nodeproxy_slots#a) slots::
-## link::#b)_fade_time#b) fadeTime::
-## link::#c)_play/stop,_send/free,_pause/resume#c) play/stop, send/release, pause/resume, clear::
-## link::#d)_the_parameter_context#d) the parameter context::
+## link::#a) NodeProxy slots#a) slots::
+## link::#b) fade time#b) fadeTime::
+## link::#c) play/stop, send/free, pause/resume#c) play/stop, send/release, pause/resume, clear::
+## link::#d) The parameter context#d) the parameter context::
 ::
 
 A NodeProxy has two internal contexts in which the objects are inserted: The group, which is on the server, and the nodeMap, which is a client side parameter context. As the group can contain an order of synths, there is a client side representation, in which the source objects are stored (see link::Classes/Order::).

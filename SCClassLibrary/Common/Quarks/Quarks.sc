@@ -183,7 +183,7 @@ Quarks {
 			deps,
 			incompatible = { arg name;
 				(quark.name
-					+ "reports an incompatibility with this Super Collider version"
+					+ "reports an incompatibility with this SuperCollider version"
 					+ "or with other already installed quarks."
 				).inform;
 				false
@@ -324,7 +324,7 @@ Quarks {
 			("Failed to read quarks directory listing: % %".format(if(fetch, directoryUrl, dirTxtPath), err)).error;
 			if(fetch, {
 				// if fetch failed, try read from cache
-				 if(File.exists(dirTxtPath), {
+				if(File.exists(dirTxtPath), {
 					this.prReadDirectoryFile(dirTxtPath);
 				});
 			}, {

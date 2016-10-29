@@ -220,5 +220,4 @@ HIDElementProto {
 		};
 		^matches;
 	}
-
 }

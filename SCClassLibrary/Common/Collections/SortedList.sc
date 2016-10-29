@@ -63,9 +63,9 @@ SortedList : List {
 		dj = array.at(j);
 		if (function.value(di, dj).not, { // i.e., should di precede dj?
 			array.swap(i,j);
-				 tt = di;
-				 di = dj;
-				 dj = tt;
+				tt = di;
+				di = dj;
+				dj = tt;
 		});
 		if ( n > 2, { // More than two elements.
 			ij = (i + j) div: 2;  // ij is the midpoint of i and j.
@@ -85,15 +85,15 @@ SortedList : List {
 				k = i;
 				l = j;
 				while ({
-				 	while ({
-				 		l = l - 1;
-				 		k <= l and: { function.value(dij, array.at(l)) }
-				 	}); // i.e. while dl succeeds dij
-				 	while ({
-				 		k = k + 1;
-				 		k <= l and: { function.value(array.at(k), dij) };
-				 	}); // i.e. while dij succeeds dk
-				 	k <= l
+					while ({
+						l = l - 1;
+						k <= l and: { function.value(dij, array.at(l)) }
+					}); // i.e. while dl succeeds dij
+					while ({
+						k = k + 1;
+						k <= l and: { function.value(array.at(k), dij) };
+					}); // i.e. while dij succeeds dk
+					k <= l
 				},{
 					array.swap(k, l);
 				});
