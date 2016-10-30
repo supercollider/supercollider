@@ -60,6 +60,8 @@
 #include "SC_LanguageConfig.hpp"
 #include "SC_Version.hpp"
 
+int gVerbosity = 0;
+
 static FILE* gPostDest = stdout;
 
 SC_TerminalClient::SC_TerminalClient(const char* name)

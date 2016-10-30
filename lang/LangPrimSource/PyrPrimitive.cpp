@@ -2410,6 +2410,8 @@ int prSetTailCallOptimize(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+extern int gVerbosity;
+
 int prGetVerbosity(struct VMGlobals *g, int numArgsPushed);
 int prGetVerbosity(struct VMGlobals *g, int numArgsPushed)
 {

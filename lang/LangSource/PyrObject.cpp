@@ -57,7 +57,7 @@
 #include <parallel/algorithm>
 #endif
 
-
+extern int gVerbosity;
 
 PyrClass *gClassList = NULL;
 int gNumSelectors = 0;

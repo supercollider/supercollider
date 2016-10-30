@@ -67,6 +67,4 @@ SCLANG_DLLEXPORT_C struct PyrSymbol* getsym(const char *inName);
 SCLANG_DLLEXPORT_C struct PyrSymbol* getmetasym(const char *name);
 SCLANG_DLLEXPORT_C struct PyrSymbol* findsym(const char *name);
 
-static int gVerbosity = 0;
-
 #endif

@@ -69,6 +69,8 @@
 #include "SC_DirUtils.h"
 #include "SC_TextUtils.hpp"
 
+extern int gVerbosity;
+
 int yyparse();
 int processaccidental1(char *s);
 int processaccidental2(char *s);
