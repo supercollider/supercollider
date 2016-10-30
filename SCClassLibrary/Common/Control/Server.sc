@@ -787,7 +787,7 @@ Server {
 
 	reboot { |func, onFailure| // func is evaluated when server is off
 		if(isLocal.not) { "can't reboot a remote server".inform; ^this };
-		if(statusWatcher.serverRunning) {
+		if(statusWatcher.serverRunning and: { this.unresponsive.not }) {
 			this.quit({
 				func.value;
 				defer { this.boot }
@@ -838,6 +838,12 @@ Server {
 		var func;
 
 		addr.sendMsg("/quit");
+
+		if(watchShutDown and: { this.unresponsive }) {
+			"Server '%' was unresponsive. Quitting anyway.".format(name).postln;
+			watchShutDown = false;
+		};
+
 		if(options.protocol == \tcp) {
 			statusWatcher.quit({ addr.tryDisconnectTCP(onComplete, onFailure) }, nil, watchShutDown);
 		} {
