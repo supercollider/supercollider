@@ -111,10 +111,14 @@ ServerStatusWatcher {
 
 				AppClock.sched(3.0, {
 					if(serverReallyQuit.not) {
-						"Server '%' failed to quit after 3.0 seconds.".format(server.name).warn;
+						if(unresponsive) {
+							"Server '%' remained unresponsive during quit."
+						} {
+							"Server '%' failed to quit after 3.0 seconds."
+						}.format(server.name).warn;
 						// don't accumulate quit-watchers if /done doesn't come back
 						serverReallyQuitWatcher.free;
-						statusWatcher.disable;
+						statusWatcher !? { statusWatcher.disable };
 						onFailure.value(server)
 					}
 				})
@@ -143,7 +147,7 @@ ServerStatusWatcher {
 	}
 
 	stopStatusWatcher {
-		statusWatcher.disable;
+		statusWatcher !? { statusWatcher.disable }
 	}
 
 	startAliveThread { | delay = 0.0 |
@@ -184,7 +188,7 @@ ServerStatusWatcher {
 
 		if(running != serverRunning) {
 			serverRunning = running;
-			unresponsive = false;
+			this.unresponsive = false;
 
 			if (server.serverRunning) {
 				ServerBoot.run(server);
