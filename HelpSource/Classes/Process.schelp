@@ -56,3 +56,9 @@ list::
 This means that link::Classes/Thread#.thisThread#thisThread:: will always initially point
 to the main Thread. However, when some code starts a link::Classes/Routine::, the Routine
 becomes the current Thread, with the main Thread as its parent.
+
+method::verbosity
+
+Returns the verbosity level of the interpreter, given by the -V command-line flag to sclang.
+
+note:: The verbosity level should only affect startup messages for the language itself. Don't use this unless the message in question is in some core component of the language. ::
