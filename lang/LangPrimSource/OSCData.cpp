@@ -763,7 +763,6 @@ void stopAsioThread();
 
 void init_OSC(int port)
 {
-	postfl("init_OSC\n");
 
 #ifdef _WIN32
 	WSAData wsaData;
