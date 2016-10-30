@@ -128,7 +128,10 @@ void SC_TerminalClient::printUsage()
 			"   -u <network-port-number>       Set UDP listening port (default %d)\n"
 			"   -i <ide-name>                  Specify IDE name (for enabling IDE-specific class code, default \"%s\")\n"
 			"   -a                             Standalone mode (exclude SCClassLibrary and user and system Extensions folders from search path)\n"
-			"   -V <level>                     Verbosity level.\n",
+			"   -V <level>                     Verbosity level, an integer. The verbosity level only affects startup messages.\n"
+			"                                      0: Default.\n"
+			"                                      1: Print additional statistics on startup, such as the number of primitives,\n"
+			"                                         size of the method lookup table, time to compile, etc.\n",
 			memGrowBuf,
 			memSpaceBuf,
 			opt.mPort,
