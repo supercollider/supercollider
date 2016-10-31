@@ -159,6 +159,13 @@ SCDocHTMLRenderer {
 		} {
 			stream << doc.title;
 		};
+		if(doc.isExtension) {
+			stream
+			<< "<div class='extension-indicator-ctr'>"
+			<< "<img class='extension-indicator-icon' alt='Extension' src='" << baseDir << "/images/plugin.png'>"
+			<< "<span class='extension-indicator-text'>Extension</span>"
+			<< "</div>";
+		};
 		stream
 		<< "</h1>\n"
 		<< "<div id='summary'>" << this.escapeSpecialChars(doc.summary) << "</div>\n"
