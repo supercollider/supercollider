@@ -3,7 +3,7 @@ Recorder {
 	var <server, <>numChannels;
 	var <>recHeaderFormat, <>recSampleFormat, <>recBufSize;
 	var recordBuf, recordNode, synthDef;
-	var <paused = false, <duration = 0;
+	var <paused = false, <duration = 0, <>notifyServer = false;
 	var <>filePrefix = "SC_";
 	var responder, id;
 
@@ -29,7 +29,7 @@ Recorder {
 			};
 			if(this.isRecording.not) {
 				this.prRecord(bus, node, duration);
-				server.changed(\recording, true);
+				this.changedServer(\recording, true);
 				"Recording channels % ... \npath: '%'\n"
 				.postf(bus + (0..this.numChannels - 1), recordBuf.path);
 			} {
@@ -49,7 +49,7 @@ Recorder {
 	pauseRecording {
 		if(recordNode.isPlaying) {
 			recordNode.run(false);
-			server.changed(\pausedRecording);
+			this.changedServer(\pausedRecording);
 			"... paused recording.\npath: '%'\n".postf(recordBuf.path);
 		} {
 			"Not Recording".warn
@@ -61,7 +61,7 @@ Recorder {
 		if(recordNode.isPlaying) {
 			if(paused) {
 				recordNode.run(true);
-				server.changed(\recording, true);
+				this.changedServer(\recording, true);
 				"Resumed recording ...\npath: '%'\n".postf(recordBuf.path);
 			}
 		} {
@@ -73,7 +73,7 @@ Recorder {
 	stopRecording {
 		if(synthDef.notNil) {
 			this.prStopRecord;
-			server.changed(\recording, false);
+			this.changedServer(\recording, false);
 		} {
 			"Not Recording".warn
 		}
@@ -120,7 +120,7 @@ Recorder {
 			responder = OSCFunc({ |msg|
 				if(msg[2] == id) {
 					duration = msg[3];
-					server.changed(\recordingDuration, duration);
+					this.changedServer(\recordingDuration, duration);
 				}
 			}, '/recordingDuration', server.addr);
 		} {
@@ -142,7 +142,7 @@ Recorder {
 		responder.disable;
 		paused = false;
 		duration = 0;
-		server.changed(\recordingDuration, 0);
+		this.changedServer(\recordingDuration, 0);
 	}
 
 	makePath {
@@ -161,6 +161,10 @@ Recorder {
 		};
 
 		^dir +/+ filePrefix ++ timestamp ++ "." ++ server.recHeaderFormat;
+	}
+
+	changedServer { | what ... moreArgs |
+		if(notifyServer) { server.changed(what, *moreArgs) }
 	}
 
 
