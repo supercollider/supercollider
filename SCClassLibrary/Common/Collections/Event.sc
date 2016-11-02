@@ -708,7 +708,12 @@ Event : Environment {
 							).throw;
 						};
 						if (~id.isNil) { ~id = server.nextNodeID };
-						instrument = "system_setbus_%_%".format(~rate.value ? \control, numChannels);
+						// the instrumentType can be system_setbus or system_setbus_hold
+						instrument = format(
+							if(~hold != true) { "system_setbus_%_%" } { "system_setbus_hold_%_%" },
+							~rate.value ? \control,
+							numChannels
+						);
 						// addToTail, so that old bus value can be overridden:
 						bundle = [9, instrument, ~id, 1, ~group.asControlInput,
 							"values", array,
