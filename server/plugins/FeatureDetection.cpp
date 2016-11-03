@@ -125,6 +125,7 @@ void PV_OnsetDetectionBase_Ctor(PV_OnsetDetectionBase *unit)
 	unit->m_waiting=0;
 	unit->m_waitSamp=0;
 	unit->m_waitLen=0;
+	ClearUnitOutputs(unit, 1);
 }
 
 void PV_OnsetDetectionBase_Dtor(PV_OnsetDetectionBase *unit)
@@ -364,6 +365,7 @@ void RunningSum_Ctor( RunningSum* unit )
 	//initialise to zeroes
 	for(int i=0; i<unit->msamp; ++i)
 	unit->msquares[i]=0.f;
+	OUT0(0) = 0.f;
 
 }
 
