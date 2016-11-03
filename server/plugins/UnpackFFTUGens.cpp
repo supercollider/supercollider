@@ -92,6 +92,8 @@ void Unpack1FFT_Ctor(Unpack1FFT* unit)
 			SETCALC(Unpack1FFT_next_phase);
 		}
 	}
+
+	ZOUT0(0) = unit->outval;
 }
 
 
