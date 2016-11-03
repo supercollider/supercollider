@@ -54,6 +54,7 @@ private:
     void updateDocText( const QVariantList & argList );
     void updateDocSelection( const QVariantList & argList );
     
+    int mReadSize = 0;
     QByteArray mIpcData;
     QHash<QByteArray, QString> mDocumentTextMirrors;
     QHash<QByteArray, QPair<int, int>> mDocumentSelectionMirrors;

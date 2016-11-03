@@ -122,7 +122,7 @@ SynthDef("delta_demand", { arg amp=0.5, out;
 	OffsetOut.ar(out,
 		TDuty.ar(Dseq([0]), 0, amp, 2)
 	)
-}).send(s);
+}).add;
 )
 
 fork { 10.do { s.sendBundle(0.2, ["/s_new", "delta_demand", -1]); 1.0.rand.wait } };
@@ -134,7 +134,7 @@ SynthDef("delta_demand2", {
 	OffsetOut.ar(0,
 		TDuty.ar(Dgeom(0.05, 0.9, 20), 0, 0.5, 2)
 	)
-}).send(s);
+}).add;
 )
 
 fork { 10.do { s.sendBundle(0.2, ["/s_new", "delta_demand2", -1]); 1.0.rand.wait } };

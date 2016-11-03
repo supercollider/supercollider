@@ -100,6 +100,10 @@ void Gendy1_Ctor( Gendy1* unit )
 		unit->mMemoryAmp[i] = 2*rgen.frand() - 1.0f;
 		unit->mMemoryDur[i] = rgen.frand();
 	}
+
+	// compute one sample of output to avoid sending garbage memory downstream to other Ctor functions
+	// first sample of the _next output will be the current amplitude (which is 0)
+	OUT0(0) = 0.0f;
 }
 
 void Gendy1_Dtor(Gendy1 *unit)
@@ -337,6 +341,10 @@ void Gendy2_Ctor( Gendy2* unit )
 		unit->mMemoryAmpStep[i] = 2*rgen.frand() - 1.0f;
 		unit->mMemoryDurStep[i] = 2*rgen.frand() - 1.0f;
 	}
+
+	// compute one sample of output to avoid sending garbage memory downstream to other Ctor functions
+	// first sample of the _next output will be the current amplitude (which is 0)
+	OUT0(0) = 0.0f;
 }
 
 void Gendy2_Dtor(Gendy2 *unit)
@@ -504,6 +512,10 @@ void Gendy3_Ctor( Gendy3* unit )
 	}
 
 	unit->mMemoryAmp[0] = 0.0f;	//always zeroed first BP
+
+	// compute one sample of output to avoid sending garbage memory downstream to other Ctor functions
+	// first sample of the _next output will be the current amplitude (which is 0)
+	OUT0(0) = 0.0f;
 }
 
 void Gendy3_Dtor(Gendy3 *unit)

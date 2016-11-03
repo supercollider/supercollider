@@ -43,7 +43,7 @@ SynthDef("ReplaceOutHelp", { arg out=0, freq=440;
 		// write to the bus, replacing previous contents
 		ReplaceOut.ar(out, source);
 
-}).send(s);
+}).add;
 )
 
 // each Synth replaces the output of the previous one

@@ -365,7 +365,7 @@ int main(int argc, char * argv[])
     server_arguments const & args = server_arguments::instance();
 
     if(args.dump_version){
-        cout << "supernova " << SC_VersionString() << endl;
+        cout << "supernova " << SC_VersionString() << " (" << SC_BuildString() << ")" << endl;
         return 0;
     }
 

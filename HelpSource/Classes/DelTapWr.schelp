@@ -37,7 +37,7 @@ SynthDef(\test, {arg buffer;
 		[1.0, 0.4, 0.2] 		// muls for each tap
 		);
 	Out.ar(0, [src + tap2, tap1 + tap3])
-	}).send(s);
+	}).add;
 
 x = Synth(\test, [\buffer, b]);
 x.free;
@@ -54,7 +54,7 @@ SynthDef(\write, {arg buffer, cout;
 	src = WhiteNoise.ar(0.2) * Decay.kr(Dust.kr(3), 0.7);
 	tapPhase = DelTapWr.ar(buffer, src);
 	Out.kr(cout, tapPhase);
-	}).send(s);
+	}).add;
 
 SynthDef(\readFilt, {arg buffer, cin;
 	var phase, src, filt;
@@ -62,7 +62,7 @@ SynthDef(\readFilt, {arg buffer, cin;
 	src = DelTapRd.ar(buffer, phase, [0.01, 0.2]);
 	filt = BPF.ar(src, 880, 0.01) * 10;
 	Out.ar(0, filt);
-	}).send(s);
+	}).add;
 
 c = Bus.control;
 

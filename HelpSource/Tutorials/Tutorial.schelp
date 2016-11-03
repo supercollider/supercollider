@@ -28,7 +28,7 @@ i = Server.internal;
 
 strong::VERY IMPORTANT:: : This line must be executed for the variable 'i' to be set. The mechanics are different depending on your platform. The MacOSX standard is to place the cursor anywhere on this line and press the "Enter" key on the numeric keypad. Pressing the main return key does not execute code! This allows you to write code fragments of multiple lines. To execute a multi-line block of code, select the block and press "Enter." For convenience, a code block can be enclosed in parentheses, and the entire block selected by double-clicking just inside either parenthesis. (For instructions in other editors (e.g. on Linux or Windows), consult the documentation specific to that platform. See also the helpfile link::Reference/KeyboardShortcuts:: for key commands in other editors.) If you don't have an enter key, then you can use ctrl-Return, Ctrl-c, fn-Return (on Some Macs), or Shift-Return.
 
-The local server runs on the same machine as the SuperCollider application, but is a separate program, 'scsynth'.
+The local server runs on the same machine as the SuperCollider application, but is a separate program, 'scsynth' (or 'supernova').
 Note:: By default the interpreter variable code::s:: is set to the local server at startup. For further information see the link::Classes/Server:: helpfile.
 ::
 

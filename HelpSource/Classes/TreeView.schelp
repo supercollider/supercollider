@@ -75,7 +75,14 @@ METHOD:: currentItem
 METHOD:: itemAt
 	The item at code::index::.
 
+METHOD:: childAt
+	Alias for link::#-itemAt::, provided for compatibility with TreeViewItem.
 
+METHOD:: addChild
+	Alias for link::#-addItem::, provided for compatibility with TreeViewItem.
+
+METHOD:: insertChild
+	Alias for link::#-addChild::, provided for compatibility with TreeViewItem.
 
 SUBSECTION:: Appearance
 

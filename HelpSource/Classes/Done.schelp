@@ -46,7 +46,7 @@ SynthDef("Done-help", { arg out, t_trig;
 	b= WhiteNoise.ar(Done.kr(line)*0.1); //noise starts at end of line
 
 	Out.ar(out, Pan2.ar(a+b));
-}).send(s);
+}).add;
 )
 
 Synth("Done-help"); //note that this synth doesn't have it's own doneAction, so you'll need to manually deallocate it

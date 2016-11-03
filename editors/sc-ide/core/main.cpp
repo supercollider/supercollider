@@ -28,6 +28,7 @@
 #include "../widgets/code_editor/highlighter.hpp"
 #include "../widgets/style/style.hpp"
 #include "../../../QtCollider/hacks/hacks_mac.hpp"
+#include "../primitives/localsocket_utils.hpp"
 
 #include "yaml-cpp/node.h"
 #include "yaml-cpp/parser.h"
@@ -145,11 +146,7 @@ bool SingleInstanceGuard::tryConnect(QStringList const & arguments)
             }
 
             if (socket->waitForConnected(200)) {
-                QDataStream stream(socket.data());
-                stream.setVersion(QDataStream::Qt_4_6);
-
-                stream << QStringLiteral("open");
-                stream << canonicalArguments;
+                sendSelectorAndData(socket.data(), QStringLiteral("open"), canonicalArguments);
                 if (!socket->waitForBytesWritten(300))
                     qWarning("SingleInstanceGuard: writing data to another IDE instance timed out");
 
@@ -173,27 +170,40 @@ bool SingleInstanceGuard::tryConnect(QStringList const & arguments)
 
 void SingleInstanceGuard::onIpcData()
 {
-    QByteArray ipcData = mIpcSocket->readAll();
+    mIpcData.append(mIpcSocket->readAll());
 
-    QBuffer receivedData ( &ipcData );
-    receivedData.open ( QIODevice::ReadOnly );
+    // After we have put the data in the buffer, process it    
+    int avail = mIpcData.length();
+    do{
+        if (mReadSize == 0 && avail > 4){
+            mReadSize = ArrayToInt(mIpcData.left(4));
+            mIpcData.remove(0, 4);
+            avail -= 4;
+        }
 
-    QDataStream in ( &receivedData );
-    in.setVersion ( QDataStream::Qt_4_6 );
-    QString id;
-    in >> id;
-    if ( in.status() != QDataStream::Ok )
-        return;
+        if (mReadSize > 0 && avail >= mReadSize){
+            QByteArray baReceived(mIpcData.left(mReadSize));
+            mIpcData.remove(0, mReadSize);
+            mReadSize = 0;
 
-    QStringList message;
-    in >> message;
-    if ( in.status() != QDataStream::Ok )
-        return;
+            QDataStream in(baReceived);
+            in.setVersion(QDataStream::Qt_4_6);
+            QString selector;
+            in >> selector;
+            if (in.status() != QDataStream::Ok)
+                return;
 
-    if (id == QStringLiteral("open")) {
-        foreach (QString path, message)
-            Main::documentManager()->open(path);
-    }
+            QStringList message;
+            in >> message;
+            if (in.status() != QDataStream::Ok)
+                return;
+
+            if (selector == QStringLiteral("open")) {
+                foreach(QString path, message)
+                    Main::documentManager()->open(path);
+            }
+        }
+    } while ((mReadSize == 0 && avail > 4) || (mReadSize > 0 && avail > mReadSize));
 }
 
 

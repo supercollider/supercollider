@@ -8,4 +8,3 @@
 		("start" + "\"SuperCollider\"" + this.quote).systemCmd
 	}
 }
-

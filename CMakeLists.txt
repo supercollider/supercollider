@@ -143,6 +143,16 @@ endif()
 
 set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio})")
 
+if (AUDIOAPI STREQUAL jack)
+	# here we check for JACK metadata API
+	include(CheckIncludeFiles)
+	CHECK_INCLUDE_FILES("jack/metadata.h" JACK_USE_METADATA_API)
+	if(${JACK_USE_METADATA_API})
+		message(STATUS "using JACK metadata API")
+	    include_directories(${CMAKE_SOURCE_DIR}/external_libraries/jackey)
+	endif()
+endif()
+
 option(LIBSCSYNTH "Compile libscsynth as shared library" OFF)
 
 option(INSTALL_HELP "Install help docs and examples along with the software" ON)

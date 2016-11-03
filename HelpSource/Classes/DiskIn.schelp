@@ -45,7 +45,7 @@ s.boot; // start the server
 (
 SynthDef("help-Diskin", { arg bufnum = 0;
 	Out.ar(0, DiskIn.ar(1, bufnum));
-}).send(s)
+}).add
 )
 ::
 
@@ -86,7 +86,7 @@ r.stop; x.free; b.close; b.free; // you need to do all these to properly cleanup
 (
 SynthDef("help-Diskin", { arg bufnum = 0;
 	Out.ar(0, DiskIn.ar(1, bufnum));
-}).send(s);
+}).add;
 )
 (
 x = Synth.basicNew("help-Diskin");

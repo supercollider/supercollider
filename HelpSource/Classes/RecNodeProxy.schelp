@@ -64,7 +64,7 @@ subsection::recording from some bus
 code::
 a = Bus.audio(s, 2);
 
-SynthDef("test", { arg out; Out.ar(out, { WhiteNoise.ar(0.1) }.dup(2)) }).send(s);
+SynthDef("test", { arg out; Out.ar(out, { WhiteNoise.ar(0.1) }.dup(2)) }).add;
 x = Synth("test", [\out, a]);
 
 

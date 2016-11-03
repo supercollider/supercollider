@@ -1,16 +1,111 @@
 title:: Writing Unit Generators
 summary:: Get started with writing unit generators
 categories:: Internals
+related:: Reference/ServerPluginAPI
 
-section:: How Unit Generator plug-ins work.
+SuperCollider has a vast library of unit generators that can be assembled in unlimited ways, but sometimes even those
+aren't sufficient. You may have a need for an unusual signal processing algorithm, or you're running into efficiency
+problems that can be solved by condensing parts of your SynthDef into a single UGen.
 
-The server loads unit generator plug-ins when it starts up. Unit Generator plug-ins are dynamically loaded libraries
-written in C++. Each library may contain one or multiple unit generator definitions. A plug-in can also define things
-other than unit generators such as buffer fill ("/b_gen") commands. Plug-ins are loaded during the startup of the
-synthesis server. Therefore the server will have to be restarted after (re-)compiling the plugin.
+UGens are defined in server plugins written in C++. Server plugins are not to be confused with quarks, which extend the
+SuperCollider language. UGens exist more or less independently of the interpreter and you don't need much familiarity
+with SC to write them.
 
+Writing UGens is not too difficult, but it's arguably far less convenient and intuitive than the high-level tools that
+SuperCollider provides. You'll need a build system and a good amount of boilerplate code -- even fairly basic signal
+processing operations can require a lot of code. You don't have an instant live coding environment, and mistakes can
+easily crash the server. SuperCollider's UGens are stable and well-tested, and custom UGens are best viewed as a last
+resort for when the limitations of SC are impassable.
 
-section:: The Entry Point
+section:: Pseudo-UGens
+
+Before we proceed to the real UGens, we'll take a quick detour for the sake of completeness. A pseudo-UGen is a bit of
+SuperCollider code that abbreviates a certain configuration of UGens that gets used repeatedly. A pseudo-UGen is a class
+that superficially resembles a UGen class, but it only returns a composition of existing UGens. It has no efficiency
+savings, but it does save typing.
+
+The below example has only a code::.ar:: method, but you can just as easily have both code::.ar:: and code::.kr::
+methods.
+
+code::
+BoringMixer {
+    *ar { arg left, right;
+        ^(left + right) * 0.5;
+    }
+}
+::
+
+Examples of pseudo-UGens found in SC include link::Classes/BLowPass4:: and link::Classes/BHiPass4::, which break down
+into link::Classes/SOS:: UGens.
+
+There are very few restrictions on what these classes can contain, but you should keep the following in mind:
+
+list::
+## It is courteous to leave a note in your class's help file that identifies it as a pseudo-UGen.
+## To avoid confusion, pseudo-UGens should not inherit from the base class link::Classes/UGen::.
+## A SynthDef can only have two link::Classes/LocalIn::/link::Classes/LocalOut:: pairings — one for control rate and one
+for audio rate. Putting LocalIn and LocalOut in a pseudo-UGen is a bad idea, as it could interfere with other feedback
+loops in the SynthDef.
+::
+
+section:: Basics of UGens
+
+A (real) UGen needs two components: a plugin for the server, and a class for the language. The class goes in an ordinary
+code::*.sc:: file, and defines the interface for your UGen in the language. This class is generally just a few lines of
+code that ultimately call the class method link::Classes/UGen#-multiNew::.
+
+The server plugin is where the actual UGen behavior is defined. It is given by a dynamically loaded library written in
+C++, whose format is platform-dependent:
+
+list::
+## code::*.so:: for *nix
+## code::*.dll:: for Windows
+## code::*.scx:: for OS X
+::
+
+A plugin file can contain more than one UGen, and it can also define things other than UGens such as buffer fill
+("/b_gen") commands.
+
+When the server boots, it will look for plugin files in code::Platform.userExtensionDir::. Since sclang also looks for
+class files in the same location, the class file and the library file can go in the same place.
+
+Plug-ins are loaded during the startup of the server, so it will have to be restarted after (re-)compiling a
+plugin. If you modify the plugin file but not the class file, you don't need to reboot the interpreter.
+
+section:: FAUST
+
+FAUST footnote::http://faust.grame.fr/:: is an open source DSP language that describes real-time audio units. It can
+compile to SuperCollider plugins, providing an easy way to create UGens in SuperCollider.
+
+FAUST provides a shell script useful for SuperCollider users called code::faust2supercollider::. This compiles a .dsp
+file into a class file and server plugin, which you can then drop into your extensions directory.
+
+FAUST plugins are often quick to develop and can be painlessly ported to other environments. Unfortunately, they can't
+take advantage of all of the server's features, such as accessing Buffers or random number generators, and some UGens
+featuring very complex logic are difficult or impossible to write in FAUST. Furthermore, the FAUST compiler is quite
+intelligent but it might not always offer the best efficiency in its results. If a UGen you are developing hits these
+limitations, it is time to move on to handwritten C++.
+
+section:: Example Plugins
+
+To get an idea of the necessary ingredients for writing UGens, it's often best to poke around at complete examples.
+We've set up a GitHub repository at https://github.com/supercollider/example-plugins, which contains some example
+plugins numbered roughly by complexity. Each directory in that repository is self-contained with its own build system,
+so you can copy out a directory to form a starting point for your own UGens. The source codes of these plugins are
+heavily commented.
+
+The first example, BoringMixer, is very minimal. The UGen is stateless and has only one calculation function, which is
+audio rate.
+
+MySaw introduces states and multiple calculation functions. AnalogEcho introduces real-time memory management through
+internal buffers, and demonstrates how to do cubic interpolation from an array of samples.
+
+section:: Anatomy of a UGen
+
+The SC source code has a header file, code::include/plugin_interface/SC_PlugIn.h::, that gives you your interface to the server
+architecture as well as a bunch of helper functions. These are documented at link::Reference/ServerPluginAPI::.
+
+subsection:: The Entry Point
 
 When the library is loaded the server calls a function in the library, which is defined by the code::PluginLoad()::
 macro.  This entry point has two responsibilities:
@@ -38,202 +133,27 @@ list::
 ## The unit generator destructor is named code::PluginName_Dtor::
 ::
 
+subsection:: The Calculation Function
 
-section:: A Simple Unit Generator Plugin
+The meat of the UGen is its calculation function, which gets called every control period with the UGen object as an
+argument. (This is for control-rate and audio-rate UGens -- demand-rate is different.) In this function, the UGen reads
+from its inputs and writes to its outputs.
 
-Unit generator plugins require two parts: A C++ part, which implements the server-side code that is loaded as a
-dynamically loaded library, and an SCLang class, that is required to build the link::Classes/SynthDef::. The following
-example implements a simple Sawtooth oscillator
+The calculation function is selected in the code::PluginName_Ctor:: function with the code::SETCALC:: macro. You can
+name the calculation function whatever you want, but the convention is code::PluginName_next::.
 
-subsection:: C++-side Definition of Unit Generators
-
-The following code shows the C++ source of a simple unit generator.
-
-code::
-#include "SC_PlugIn.h"
-
-// InterfaceTable contains pointers to functions in the host (server).
-static InterfaceTable *ft;
-
-// declare struct to hold unit generator state
-struct MySaw : public Unit
-{
-	double mPhase; // phase of the oscillator, from -1 to 1.
-	float mFreqMul; // a constant for multiplying frequency
-};
-
-// declare unit generator functions
-static void MySaw_next_a(MySaw *unit, int inNumSamples);
-static void MySaw_next_k(MySaw *unit, int inNumSamples);
-static void MySaw_Ctor(MySaw* unit);
-
-
-//////////////////////////////////////////////////////////////////
-
-// Ctor is called to initialize the unit generator.
-// It only executes once.
-
-// A Ctor usually does 3 things.
-// 1. set the calculation function.
-// 2. initialize the unit generator state variables.
-// 3. calculate one sample of output.
-void MySaw_Ctor(MySaw* unit)
-{
-	// 1. set the calculation function.
-	if (INRATE(0) == calc_FullRate) {
-		// if the frequency argument is audio rate
-		SETCALC(MySaw_next_a);
-	} else {
-		// if the frequency argument is control rate (or a scalar).
-		SETCALC(MySaw_next_k);
-	}
-
-	// 2. initialize the unit generator state variables.
-	// initialize a constant for multiplying the frequency
-	unit->mFreqMul = 2.0 * SAMPLEDUR;
-	// get initial phase of oscillator
-	unit->mPhase = IN0(1);
-
-	// 3. calculate one sample of output.
-	MySaw_next_k(unit, 1);
-}
-
-
-//////////////////////////////////////////////////////////////////
-
-// The calculation function executes once per control period
-// which is typically 64 samples.
-
-// calculation function for an audio rate frequency argument
-void MySaw_next_a(MySaw *unit, int inNumSamples)
-{
-	// get the pointer to the output buffer
-	float *out = OUT(0);
-
-	// get the pointer to the input buffer
-	float *freq = IN(0);
-
-	// get phase and freqmul constant from struct and store it in a
-	// local variable.
-	// The optimizer will cause them to be loaded it into a register.
-	float freqmul = unit->mFreqMul;
-	double phase = unit->mPhase;
-
-	// perform a loop for the number of samples in the control period.
-	// If this unit is audio rate then inNumSamples will be 64 or whatever
-	// the block size is. If this unit is control rate then inNumSamples will
-	// be 1.
-	for (int i=0; i < inNumSamples; ++i)
-	{
-		// out must be written last for in place operation
-		float z = phase;
-		phase += freq[i] * freqmul;
-
-		// these if statements wrap the phase a +1 or -1.
-		if (phase >= 1.f) phase -= 2.f;
-		else if (phase <= -1.f) phase += 2.f;
-
-		// write the output
-		out[i] = z;
-	}
-
-	// store the phase back to the struct
-	unit->mPhase = phase;
-}
-
-//////////////////////////////////////////////////////////////////
-
-// calculation function for a control rate frequency argument
-void MySaw_next_k(MySaw *unit, int inNumSamples)
-{
-	// get the pointer to the output buffer
-	float *out = OUT(0);
-
-	// freq is control rate, so calculate it once.
-	float freq = IN0(0) * unit->mFreqMul;
-
-	// get phase from struct and store it in a local variable.
-	// The optimizer will cause it to be loaded it into a register.
-	double phase = unit->mPhase;
-
-	// since the frequency is not changing then we can simplify the loops
-	// by separating the cases of positive or negative frequencies.
-	// This will make them run faster because there is less code inside the loop.
-	if (freq >= 0.f) {
-		// positive frequencies
-		for (int i=0; i < inNumSamples; ++i)
-		{
-			out[i] = phase;
-			phase += freq;
-			if (phase >= 1.f) phase -= 2.f;
-		}
-	} else {
-		// negative frequencies
-		for (int i=0; i < inNumSamples; ++i)
-		{
-			out[i] = phase;
-			phase += freq;
-			if (phase <= -1.f) phase += 2.f;
-		}
-	}
-
-	// store the phase back to the struct
-	unit->mPhase = phase;
-}
-
-
-// the entry point is called by the host when the plug-in is loaded
-PluginLoad(MySaw)
-{
-    // InterfaceTable *inTable implicitly given as argument to the load function
-	ft = inTable; // store pointer to InterfaceTable
-
-	DefineSimpleUnit(MySaw);
-}
-::
-
-subsection:: SCLang-side Definition of Unit Generators
-
-SuperCollider requires an SCLang class in order to build SynthDefs.
-
-The arguments to the MySaw UGen are code::freq:: and code::iphase::.  The code::multiNew:: method handles multi channel
-expansion.  The code::madd:: method provides support for the mul and add arguments. It will create a MulAdd UGen if
-necessary. You could write the class without mul and add arguments, but providing them makes it more convenient for the
-user. See link::Guides/WritingClasses:: for details on writing sclang classes.
-
-code::
-// without mul and add.
-MySaw : UGen {
-	*ar { arg freq = 440.0, iphase = 0.0;
-		^this.multiNew('audio', freq, iphase)
-	}
-	*kr { arg freq = 440.0, iphase = 0.0;
-		^this.multiNew('control', freq, iphase)
-	}
-}
-::
+UGens often have multiple calculation functions, depending on the rate of the UGen itself and the rate of its inputs.
+For example, Phasor can be .ar or .kr, and its argument can be either .ar or .kr. So it has four calculation functions:
+Phasor_next_aa, Phasor_next_ak, Phasor_next_ka, and Phasor_next_kk. You don't need to be this thorough for your own
+UGens, however. For example, link::Classes/FreeVerb:: has only one calculation function. Who would want a control-rate
+reverb?
 
 subsection:: Building Unit Generator Plugins
 
 The most portable way to build plugins is using cmake footnote::http://www.cmake.org::, a cross-platform build
-system. In order build the example with cmake, the following code should go into a code::CMakeLists.txt:: file.
+system.
 
-code::
-cmake_minimum_required (VERSION 2.8)
-project (MySaw)
-
-include_directories(${SC_PATH}/include/plugin_interface)
-include_directories(${SC_PATH}/include/common)
-include_directories(${SC_PATH}/external_libraries/libsndfile/)
-
-set(CMAKE_SHARED_MODULE_PREFIX "")
-if(APPLE OR WIN32)
-set(CMAKE_SHARED_MODULE_SUFFIX ".scx")
-endif()
-
-add_library(MySaw MODULE MySaw.cpp)
-::
-
+The examples in the example repository contain code::CMakeLists.txt:: files.
 
 section:: Coding Guidelines
 
@@ -252,7 +172,7 @@ definitionList::
 ::
 
 
-section:: Thread Safety
+subsection:: Thread Safety
 
 There are two different implementations of the SuperCollider server. strong::scsynth:: is the traditional server and
 strong::supernova:: is a new implementation with support for multi-processor audio synthesis. Since the plugins in
@@ -276,9 +196,9 @@ In order to prevent deadlocks, a simple deadlock prevention scheme is implemente
 
 list::
 ## Lock resources only when required: few unit generators actually require the access to more than one resource at the same time.
-   The main exception of this rule are the FFT Chain ugens, which access multiple buffers at the same time. There is no known unit
+   The main exception of this rule are the FFT Chain UGens, which access multiple buffers at the same time. There is no known unit
    generator, which accesses both buffers and busses at the same time.
-## Acquire reader locks if possible. Since multiple ugens can acquire a reader lock to the same resource at the same time, their
+## Acquire reader locks if possible. Since multiple UGens can acquire a reader lock to the same resource at the same time, their
    use reduces contention.
 ## Resources have to be acquired in a well-defined order: busses should be acquired before buffers and resources with a high index
    should be acquired before resources with a low index.

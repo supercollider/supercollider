@@ -1,4 +1,4 @@
-title:: Non-Realtime Synthesis
+title:: Non-Realtime Synthesis (NRT)
 summary:: Non-realtime synthesis with binary files of OSC commands
 categories:: Server>NRT, External Control>OSC
 related:: Classes/Score

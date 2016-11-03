@@ -32,7 +32,7 @@ EZListView : EZLists{
 	listView{^widget}
 
 	setColors{arg stringBackground, stringColor, listBackground,  listStringColor,
-	 selectedStringColor,hiliteColor, background ;
+		selectedStringColor,hiliteColor, background ;
 
 			stringBackground.notNil.if{
 				labelView.notNil.if{labelView.background_(stringBackground)};};

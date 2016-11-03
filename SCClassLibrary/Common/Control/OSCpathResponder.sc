@@ -47,11 +47,11 @@ OSCpathDispatcher : OSCMultiResponder {
 		if(responder.path.size > maxPathSize) { maxPathSize = responder.path.size };
 	}
 	removeChild { arg responder;
-		 pathResponders.remove(responder);
-		 if(responder.path.size == maxPathSize) {
-		 	maxPathSize = pathResponders.maxValue({ |resp| resp.path.size }) ? 0;
-		 };
-		 if(this.isEmpty) { this.remove };
+		pathResponders.remove(responder);
+		if(responder.path.size == maxPathSize) {
+			maxPathSize = pathResponders.maxValue({ |resp| resp.path.size }) ? 0;
+		};
+		if(this.isEmpty) { this.remove };
 	}
 
 	isEmpty { ^(nodes.size + pathResponders.size) == 0 }
