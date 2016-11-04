@@ -907,11 +907,13 @@ Server {
 	}
 
 	stopRecording {
+		var recordPath;
 		if(recordNode.notNil) {
 			recordNode.free;
 			recordNode = nil;
+			recordPath = recordBuf.path;
 			recordBuf.close({ |buf| buf.freeMsg });
-			"Recording Stopped: %\n".postf(recordBuf.path);
+			"Recording Stopped: %\n".postf(recordPath);
 			recordBuf = nil;
 		} {
 			"Not Recording".warn
