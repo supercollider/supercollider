@@ -27,6 +27,11 @@ Recorder {
 				"Cannot change recording number of channels while running".warn;
 				^this
 			};
+			if(path.notNil and: { path.standardizePath != this.path }) {
+				"Recording was prepared already with a different path: %\n"
+				"Tried with this path: %\n".format(this.path, path.standardizePath).error;
+				^this
+			};
 			if(this.isRecording.not) {
 				this.prRecord(bus, node, duration);
 				this.changedServer(\recording, true);
@@ -44,6 +49,10 @@ Recorder {
 
 	isRecording {
 		^recordNode.isPlaying
+	}
+
+	path {
+		^recordBuf !? { recordBuf.path }
 	}
 
 	pauseRecording {
