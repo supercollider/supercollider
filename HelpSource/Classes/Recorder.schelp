@@ -108,6 +108,12 @@ Stops recording, closes the file, and frees the associated resources.
 discussion::
 You must call this when finished recording or the output file will be unusable. Cmd-. while recording has the same effect.
 
+method::filePrefix
+a string used as prefix for the path when recording. This can be used to separate the outputs of several recorders. The default is code::"SC_"::.
+
+method::numChannels
+a number of sound file channels that is used always when using this recorder, unless a different one is specified in the link::#-record:: method. When not set, we use link::Classes/Server#-recChannels::.
+
 method:: recHeaderFormat
 Get/set the header format (string) of the output file. The default is "aiff". Must be called strong::before:: prepareForRecord.
 
@@ -118,15 +124,26 @@ method::recBufSize
 Get/set the size of the link::Classes/Buffer:: to use with the link::Classes/DiskOut:: UGen. This must be a power of two. The default is the code::sampleRate.nextPowerOfTwo:: or the first power of two number of samples longer than one second. Must be called strong::before:: prepareForRecord.
 
 method::isRecording
-returns true, if we are inthe process of recording
+returns true if we are in the process of recording
+
+method::paused
+returns true if recording is paused
 
 method::duration
 returns the number of seconds we have been recording so far
+
+method::notifyServer
+if set to true, it will send code::changed:: notifications to the server instance. This is used internally by the link::Classes/Server:: class.
+
+
+method::server
+server to record from
 
 private::cmdPeriod
 private::prRecord
 private::prStopRecord
 private::makePath
+private::changedServer
 
 section::Examples
 
