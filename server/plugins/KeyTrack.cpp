@@ -102,6 +102,8 @@ void KeyTrack_Ctor(KeyTrack* unit)
 
 	//unit->m_frame=0;
 
+	OUT0(0) = 0.f;
+
 	unit->mCalcFunc = (UnitCalcFunc)&KeyTrack_next;
 }
 
