@@ -1,6 +1,6 @@
-class:: PV_JensenAndersen
+class:: JensenAndersen
 summary:: FFT feature detector for onset detection.
-related:: Classes/PV_HainsworthFoote
+related:: Classes/HainsworthFoote
 categories::  UGens>FFT
 
 
@@ -65,7 +65,7 @@ code::
 (
 SynthDef(\fftod, { var source1, detect;
 		source1 = AudioIn.ar(1);
-		detect = PV_JensenAndersen.ar(FFT(LocalBuf(2048), source1),
+		detect = JensenAndersen.ar(FFT(LocalBuf(2048), source1),
 			threshold:MouseX.kr(0.1,1.0));
 		Out.ar(0, SinOsc.ar([440,445], 0, Decay.ar(0.1*detect, 0.1)));
 	}).play(s);
