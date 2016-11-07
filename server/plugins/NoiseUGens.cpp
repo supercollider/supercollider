@@ -619,7 +619,7 @@ void TRand_Ctor(TRand* unit)
 			SETCALC(TRand_next_aa);
 		} else { SETCALC(TRand_next_a); }
 	} else { SETCALC(TRand_next_k); }
-	unit->m_trig = ZIN0(2);
+	unit->m_trig = 0.f;
 }
 
 
@@ -704,7 +704,7 @@ void TExpRand_Ctor(TExpRand* unit)
 			SETCALC(TExpRand_next_aa);
 		} else { SETCALC(TExpRand_next_a); }
 	} else { SETCALC(TExpRand_next_k); }
-	unit->m_trig = ZIN0(2);
+	unit->m_trig = 0.f;
 }
 
 
@@ -801,7 +801,7 @@ void TIRand_Ctor(TIRand* unit)
 			SETCALC(TIRand_next_aa);
 		} else { SETCALC(TIRand_next_a); }
 	} else { SETCALC(TIRand_next_k); }
-	unit->m_trig = ZIN0(2);
+	unit->m_trig = 0.f;
 }
 
 
@@ -814,7 +814,7 @@ void CoinGate_Ctor(CoinGate* unit)
 	} else {
 		SETCALC(CoinGate_next_k);
 	}
-	unit->m_trig = ZIN0(1);
+	unit->m_trig = 0.f;
 }
 
 void CoinGate_next_k(CoinGate* unit, int inNumSamples)
