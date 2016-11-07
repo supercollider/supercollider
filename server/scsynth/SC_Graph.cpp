@@ -432,7 +432,7 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 }
 
 // Calls the unit's Ctor func.
-void InitializeUnit(Unit* unit)
+inline void InitializeUnit(Unit* unit)
 {
 	try {
 		(*unit->mUnitDef->mUnitCtorFunc)(unit);
