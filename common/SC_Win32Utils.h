@@ -49,7 +49,6 @@
 #define basename win32_basename
 #define dirname win32_dirname
 #define pipe win32_pipe
-typedef int pid_t;
 
 #if _MSC_VER
 #define snprintf _snprintf
