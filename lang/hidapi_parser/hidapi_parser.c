@@ -29,11 +29,7 @@
 
 #ifdef _WIN32
 #include <windows.h>
-#ifdef __MINGW32__
-#include "../windows/hidsdi.h"
-#else
 #include <hidsdi.h>
-#endif
 #endif
 
 #include "hidapi_parser.h"
