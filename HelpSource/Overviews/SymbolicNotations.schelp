@@ -354,10 +354,10 @@ definitionlist::
 ## code:: (..b) :: || produces an array 0 through b
 ## code:: (a..) :: || not legal (no endpoint given)
 
-## code:: a[i..j] :: || same as code:: a.copyRange(i, j) ::
+## code:: a[i..j] :: || same as code:: a.copySeries(i, j) :: (see link::Classes/ArrayedCollection#-copySeries::)
 ## code:: a[i, j..k] :: || e.g.: code:: a[1, 3..9] :: retrieves array elements 1, 3, 5, 7, 9
-## code:: a[..j] :: || same as code:: a.copyRange(0, j) ::
-## code:: a[j..] :: || same as code:: a.copyRange(i, a.size-1) :: (this is OK--Array is finite)
+## code:: a[..j] :: || same as code:: a.copySeries(0, j) ::
+## code:: a[j..] :: || same as code:: a.copySeries(i, a.size-1) :: (this is OK--Array is finite)
 
 ## code:: ~ :: || access an environment variable
 ## code:: ~abc :: || compiles to code:: \abc.envirGet ::
