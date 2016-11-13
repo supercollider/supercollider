@@ -327,8 +327,8 @@ int initMIDI(int numIn, int numOut)
 	int enc = kCFStringEncodingMacRoman;
 
 	midiCleanUp();
-	if(numIn > kMaxMidiPorts) { sprintf("MIDI: note that maximum midi in ports is limited to %d.\n", kMaxMidiPorts); }
-	if(numOut > kMaxMidiPorts) { sprintf("MIDI: note that maximum midi out ports is limited to %d.\n", kMaxMidiPorts); }
+	if(numIn > kMaxMidiPorts) { printf("MIDI: note that maximum midi in ports is limited to %d.\n", kMaxMidiPorts); }
+	if(numOut > kMaxMidiPorts) { printf("MIDI: note that maximum midi out ports is limited to %d.\n", kMaxMidiPorts); }
 	numIn = sc_clip(numIn, 1, kMaxMidiPorts);
 	numOut = sc_clip(numOut, 1, kMaxMidiPorts);
 
