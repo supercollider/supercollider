@@ -310,6 +310,15 @@ y.postln;
 )
 ::
 
+note::If the intent is to copy emphasis::forward:: in an array, and you are calculating start and end indices such that code::end:: may be less than code::start::, it is not safe to use code::copySeries:: or the shortcut syntax code::x[a..b]:: because it will adapt to use a positive or negative step as needed. In this case, code::copyRange:: is recommended.
+
+code::
+a = Array.series(10, 0, 1);
+a[2..0];  // [ 2, 1, 0 ]
+a.copyRange(2, 0);  // [  ]
+::
+::
+
 method::seriesFill
 Fill the receiver with an arithmetic progression. The first element will be strong::start::, the second strong::start + step::, the third strong::start + step + step:: ...
 code::
