@@ -355,6 +355,8 @@ static int initMIDI(int numIn, int numOut)
 	/* Here, numIn and numOut are 0, even if the inputs to lang (MIDIClient init) were nil, but according to the documentation, it should be the number of inputs or outputs. 
 	   That matches what I see in MIDIOut.sc -> MIDIClient *init, in which it is setting that to sources.size, and destinations.size, so I guess that the problem is that 
 	   this information is not known at this point, or there is something missing. */
+	if(numIn > kMaxMidiPorts) { std::printf("MIDI: note that maximum midi in ports is limited to %i.\n", kMaxMidiPorts);
+	if(numOut > kMaxMidiPorts) { std::printf("MIDI: note that maximum midi out ports is limited to %i.\n", kMaxMidiPorts);
 	numIn = sc_clip(numIn, 1, kMaxMidiPorts);
 	numOut = sc_clip(numOut, 1, kMaxMidiPorts);
 
