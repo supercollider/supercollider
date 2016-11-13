@@ -67,7 +67,7 @@ PyrSymbol* s_midiSMPTEAction;
 PyrSymbol * s_midiin;
 PyrSymbol * s_numMIDIDev;
 PyrSymbol * s_midiclient;
-const int kMaxMidiPorts = 16;
+const int kMaxMidiPorts = 128;
 MIDIClientRef gMIDIClient = 0;
 MIDIPortRef gMIDIInPort[kMaxMidiPorts], gMIDIOutPort[kMaxMidiPorts];
 int gNumMIDIInPorts = 0, gNumMIDIOutPorts = 0;
