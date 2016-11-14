@@ -24,15 +24,3 @@
 		^this.asCompileString
 	}
 }
-
-+ UnaryOpFunctionProxy {
-	postString {
-		^a.postString ++ "." ++ selector
-	}
-}
-
-+ BinaryOpFunctionProxy {
-	postString {
-		^a.postString + selector.asBinOpString + b.postString
-	}
-}
