@@ -45,7 +45,7 @@ Rest {
 
 + Collection {
 	processRest { |inval|
-		this.do(_.processRest(inval))
+		^this.collect(_.processRest(inval))
 	}
 }
 
