@@ -73,8 +73,8 @@ EZGui{ // an abstract class
 				// if bounds is a point the place the window on screen
 				if (bounds.class==Point)
 					{ bounds = bounds.x@max(bounds.y,bounds.y+extraHeight);// window minimum height;
-					 winBounds=Rect(200, Window.screenBounds.height-bounds.y-100,
-								bounds.x,bounds.y)
+						winBounds=Rect(200, Window.screenBounds.height-bounds.y-100,
+							bounds.x,bounds.y)
 					}{// window minimum height;
 					winBounds = bounds.height_(max(bounds.height,bounds.height+extraHeight))
 					};
@@ -106,7 +106,6 @@ EZGui{ // an abstract class
 
 		argMargin.isNil.if{margin=0@0}{margin=argMargin};
 	}
-
 }
 
 
@@ -177,7 +176,7 @@ EZLists : EZGui{  // an abstract class
 		var temp;
 		index = index ? items.size;
 		this.items=items.insert(index, name.asSymbol -> action);
-	 }
+	}
 
 	removeItemAt{ arg index;
 		var temp;

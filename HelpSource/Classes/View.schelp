@@ -686,9 +686,11 @@ METHOD:: onClose
 
 
 
-SUBSECTION:: Subclassing
+SUBSECTION:: Handlers
 
-The following methods are the default handlers of key press and release events. When subclassing, override them to implement custom functionality. Many view classes in the standard library do that.
+note:: Older tutorials might recommend subclassing View to override these methods. Don't do that. Use composition, not inheritance. Make the View a property of your custom view class. ::
+
+The following methods are the default handlers of key press and release events.
 
 METHOD:: defaultKeyDownAction
 

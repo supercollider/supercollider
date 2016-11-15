@@ -21,7 +21,7 @@
 		var active, booter, killer, makeDefault, running, booting, stopped, bundling, showDefault;
 		var startDump, stopDump, blockAliveThread, dumping = false;
 		var recorder, scoper;
-		var countsViews, ctlr;
+		var countsViews, serverController, serverStatusController;
 		var label, gui, font, volumeNum;
 		var buttonColor, faintGreen, faintRed;
 
@@ -52,7 +52,7 @@
 			booter.canFocus = false;
 			booter.font = font;
 			booter.states = [["Boot"],
-						     ["Quit", nil, faintGreen]];
+				["Quit", nil, faintGreen]];
 
 			booter.action = { arg view;
 				if(view.value == 1, {
@@ -112,13 +112,13 @@
 				{char === $p}  { if(this.serverRunning) { this.plotTree } }
 				{char === $ }  { if(this.serverRunning.not) { this.boot } }
 				{char === $s } { if( (this.isLocal and: (GUI.id == \qt)) or: ( this.inProcess ))
-					                 {this.scope(options.numOutputBusChannels)}
-					                 {warn("Scope not supported")}
-				               }
+					{this.scope(options.numOutputBusChannels)}
+					{warn("Scope not supported")}
+				}
 				{char === $f } { if( (this.isLocal and: (GUI.id == \qt)) or: ( this.inProcess ))
-					                 {this.freqscope}
-					                 {warn("FreqScope not supported")}
-				               }
+					{this.freqscope}
+					{warn("FreqScope not supported")}
+				}
 				{char == $d } {
 					if(this.isLocal or: { this.inProcess }) {
 						if(dumping, stopDump, startDump)
@@ -179,7 +179,8 @@
 
 			w.onClose = {
 				window = nil;
-				ctlr.remove;
+				serverController.remove;
+				serverStatusController.remove;
 			};
 
 		} {
@@ -207,7 +208,8 @@
 				// but do not remove other responders
 				this.stopAliveThread;
 				window = nil;
-				ctlr.remove;
+				serverController.remove;
+				serverStatusController.remove;
 			};
 		};
 
@@ -330,7 +332,7 @@
 
 		w.front;
 
-		ctlr = SimpleController(this)
+		serverStatusController = SimpleController(statusWatcher)
 			.put(\serverRunning, {	if(this.serverRunning, running, stopped) })
 			.put(\counts,{
 				countsViews.at(0).string = statusWatcher.avgCPU.round(0.1);
@@ -339,13 +341,15 @@
 				countsViews.at(3).string = statusWatcher.numSynths;
 				countsViews.at(4).string = statusWatcher.numGroups;
 				countsViews.at(5).string = statusWatcher.numSynthDefs;
-			})
+			});
+
+		serverController = SimpleController(this)
 			.put(\bundling, bundling)
 			.put(\default, showDefault);
 		if(isLocal){
-			ctlr.put(\cmdPeriod,{
-					recorder.setProperty(\value,0);
-				})
+			serverController.put(\cmdPeriod, {
+				recorder.setProperty(\value, 0)
+			})
 		};
 
 		this.startAliveThread;

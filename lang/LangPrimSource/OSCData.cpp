@@ -394,8 +394,10 @@ static int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
 	err = slotIntVal(netAddrObj->slots + ivxNetAddr_Hostaddr, &addr);
 	if (err) return err;
 
+	unsigned long ulAddress = (unsigned int)addr;
+
 	try {
-		SC_TcpClientPort *comPort = new SC_TcpClientPort(addr, port, netAddrTcpClientNotifyFunc, netAddrObj);
+		SC_TcpClientPort *comPort = new SC_TcpClientPort(ulAddress, port, netAddrTcpClientNotifyFunc, netAddrObj);
 		SetPtr(netAddrObj->slots + ivxNetAddr_Socket, comPort);
 	} catch (std::exception const & e) {
 		printf("NetAddr-Connect failed with exception: %s\n", e.what());
@@ -408,7 +410,7 @@ static int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
 static int prNetAddr_Disconnect(VMGlobals *g, int numArgsPushed)
 {
 	int err;
-	
+
 	PyrSlot* netAddrSlot = g->sp;
 	PyrObject* netAddrObj = slotRawObject(netAddrSlot);
 
@@ -807,7 +809,6 @@ void closeAllCustomPorts();
 void closeAllCustomPorts()
 {
 	// close all custom sockets
-	if(gCustomUdpPorts.empty()) postfl("empty\n");
 	for(int i=0; i<gCustomUdpPorts.size(); i++){
 		delete gCustomUdpPorts[i];
 	}
@@ -885,20 +886,20 @@ int prMatchLangIP(VMGlobals *g, int numArgsPushed)
     char ipstring[40];
     int err = slotStrVal(argString, ipstring, 39);
 	if (err) return err;
-	
+
 	std::string loopback ("127.0.0.1");
 	// check for loopback address
 	if (!loopback.compare(ipstring)) {
 		SetTrue(g->sp - 1);
 		return errNone;
 	}
-	
+
 #ifdef _WIN32
-	
+
 	DWORD rv, size = 0;
 	PIP_ADAPTER_ADDRESSES adapter_addresses, aa;
 	PIP_ADAPTER_UNICAST_ADDRESS ua;
-	
+
 	// first get the size of the required buffer
 	rv = GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, NULL, NULL, &size);
 	if (rv != ERROR_BUFFER_OVERFLOW) {
@@ -907,14 +908,14 @@ int prMatchLangIP(VMGlobals *g, int numArgsPushed)
 	}
 	// now allocate a buffer for the linked list
 	adapter_addresses = (PIP_ADAPTER_ADDRESSES)malloc(size);
-	
+
 	rv = GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, NULL, adapter_addresses, &size);
 	if (rv != ERROR_SUCCESS) {
 		error("GetAdaptersAddresses() failed...");
 		free(adapter_addresses);
 		return errFailed;
 	}
-	
+
 	for (aa = adapter_addresses; aa != NULL; aa = aa->Next) {
 		for (ua = aa->FirstUnicastAddress; ua != NULL; ua = ua->Next) {
 			char buf[40];
@@ -927,21 +928,21 @@ int prMatchLangIP(VMGlobals *g, int numArgsPushed)
 			}
 		}
 	}
-	
+
 	free(adapter_addresses);
-	
+
 #else
-	
+
 	struct ifaddrs *ifap, *ifa;
 	struct sockaddr_in *sa;
 	char *addr;
-	
+
 	int result = getifaddrs (&ifap);
 	if(result) {
 		error(strerror(errno));
 		return errFailed;
 	}
-	
+
 	for (ifa = ifap; ifa; ifa = ifa->ifa_next) {
 		int family = ifa->ifa_addr->sa_family;
 		if (family==AF_INET || family == AF_INET6) {
@@ -954,7 +955,7 @@ int prMatchLangIP(VMGlobals *g, int numArgsPushed)
 			}
 		}
 	}
-	
+
 	freeifaddrs(ifap);
 #endif
 

@@ -104,7 +104,7 @@
 
 include(BundleUtilities)
 set(DeployQt5_cmake_dir "${CMAKE_CURRENT_LIST_DIR}")
-set(DeployQt5_apple_plugins_dir "PlugIns")
+set(DeployQt5_apple_plugins_dir "Plugins")
 
 function(write_qt5_conf qt_conf_dir qt_conf_contents)
         set(qt_conf_path "${qt_conf_dir}/qt.conf")
