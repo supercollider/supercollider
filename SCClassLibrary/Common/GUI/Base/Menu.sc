@@ -97,46 +97,19 @@ CustomViewAction : AbstractAction {
 	}
 
 	defaultView { 		^this.getProperty(\defaultWidget) }
-	defaultView_{ |b| 	^this.setProperty(\defaultWidget, b) }
+	defaultView_{ |v| 	^this.setProperty(\defaultWidget, v) }
 }
 
 MainMenu {
 	classvar <otherMenus;
 	classvar <applicationMenu;
+	classvar <serversMenu;
 	classvar <registered;
+	classvar systemMenus;
+	classvar <>buildAppMenusAction;
 
 	*initClass {
-		var serversMenu = Menu(Action.separator).title_("Servers");
-		serversMenu.addDependant({
-			|menu, what|
-			if (what == \aboutToShow) {
-				menu.clear();
-				Server.all.do {
-					|s|
-					var running, options, default;
-
-					running = Action("Running");
-					running.checked = s.serverRunning;
-					running.func = {
-						if (running.checked) {
-							s.boot;
-						} {
-							s.quit;
-						}
-					};
-
-					options = Action("Options...");
-					options.func_({
-						ServerOptionsGui(s);
-					});
-
-					menu.addAction(Action("◎" + s.name).font_(Font(italic:true)));
-					menu.addAction(running);
-					menu.addAction(options);
-					menu.addAction(Action.separator);
-				}
-			}
-		});
+		serversMenu = Menu(Action.separator).title_("Servers");
 
 		applicationMenu = Menu(
 			Action("Stop", { CmdPeriod.run; }).shortcut_("Ctrl+."),
@@ -145,19 +118,38 @@ MainMenu {
 			Action("Quit", { 0.exit; }).shortcut_("Ctrl+Q")
 		).title_("SuperCollider");
 
-		registered = ();
+		this.prUpdateServersMenu();
+		applicationMenu.addDependant({
+			|menu, what|
+			if (what == \aboutToShow) {
+				this.prUpdateServersMenu();
+			}
+		});
+		Server.all.do(_.addDependant({ this.prUpdateServersMenu() }));
+
+		registered = List();
+
+		systemMenus = [\SuperCollider, \File, \Edit, \Server, \Quarks];
+		systemMenus.do({ |systemMenu| this.prGetMenu(systemMenu) });
 
 		this.clear();
 	}
 
 	*register {
 		|action, menu, group=\none|
+		var menuList, existingIndex;
+
 		menu = menu.asSymbol;
 		group = group.asSymbol;
 
-		registered[menu] = registered[menu] ?? { () };
-		registered[menu][group] = registered[menu][group] ?? { () };
-		registered[menu][group][action.string.asSymbol] = action;
+		menuList = this.prGetMenuGroup(menu, group);
+		existingIndex = menuList.detectIndex({ |existing| existing.string == action.string });
+		if (existingIndex.notNil) {
+			"Menu item '%' replaced an existing menu".format(action.string).warn;
+			menuList[existingIndex] = action;
+		} {
+			menuList.add(action);
+		};
 
 		this.clear().prUpdate();
 	}
@@ -185,20 +177,127 @@ MainMenu {
 		this.prUpdate();
 	}
 
-	*prUpdate {
-		var menus = registered.collect {
-			|groups, name|
-			var menu = Menu().title_(name.asString);
-			groups.do {
-				|group, groupName|
-				menu.addAction(Action.separator.string_(groupName));
-				group.do {
-					|action|
-					menu.addAction(action.asAction)
+	*prGetMenu {
+		|name|
+		var menu, insertIndex;
+		menu = registered.detect({ |m| m.isKindOf(Association) and: { m.key == name } });
+
+		if (menu.notNil) {
+			menu = menu.value;
+		} {
+			menu = List.newFrom([ \none -> List() ]);
+			insertIndex = systemMenus.detectIndex(_ == name);
+			if (insertIndex.isNil) {
+				insertIndex = registered.size();
+			};
+			registered.insert(insertIndex, name -> menu);
+		};
+
+		^menu;
+	}
+
+	*prGetMenuGroup {
+		|menuName, groupName|
+		var menu, group;
+
+		menu = this.prGetMenu(menuName);
+		group = menu.detect({ |g| g.isKindOf(Association) and: { g.key == groupName } });
+
+		if (group.notNil) {
+			group = group.value;
+		} {
+			group = List();
+			menu.add(groupName -> group);
+		};
+
+		^group;
+	}
+
+	*prUpdateServersMenu {
+		serversMenu.clear();
+		Server.all.do {
+			|s|
+			var running, options, kill, default;
+			var startString, runningString, defaultString;
+
+			startString = if (s.serverRunning, "Stop", "Boot");
+			runningString = if (s.serverRunning, "(running)", "(stopped)");
+			defaultString = if (s == Server.default, "◎", " ");
+
+			running = Action(startString);
+			running.func = {
+				if (s.serverRunning) {
+					s.quit;
+				} {
+					s.boot;
 				}
 			};
-			menu
+			if ((s == Server.default) && s.serverRunning.not) {
+				running.shortcut = "Ctrl+B";
+			};
+
+			kill = Action("Kill");
+			kill.func = { s.kill };
+
+			options = Action("Options...");
+			options.func_({
+				ServerOptionsGui(s);
+			});
+
+			serversMenu.addAction(Action(defaultString + s.name + runningString).font_(Font(italic:true)));
+			serversMenu.addAction(running);
+
+			if (s.serverRunning) {
+				serversMenu.addAction(kill)
+			};
+
+			if (\ServerOptionsGui.asClass.notNil) {
+				serversMenu.addAction(options);
+			};
+
+			serversMenu.addAction(Action.separator);
 		};
+
+		serversMenu.addAction(Action("Kill All", { Server.killAll; }));
+	}
+
+
+	*prBuildAppMenus {
+		if (buildAppMenusAction.notNil) {
+			^buildAppMenusAction.value(registered);
+		} {
+			^registered.collect {
+				|entry|
+				var menu, menuName, menuItems;
+
+				menuName = entry.key;
+				menuItems = entry.value;
+
+				menu = Menu().title_(menuName.asString);
+
+				menuItems.do {
+					|item, i|
+					var groupName, groupItems;
+					groupName = item.key;
+					groupItems = item.value;
+
+					if (i != 0) {
+						menu.addAction(Action.separator.string_(groupName));
+					};
+
+					groupItems.do {
+						|groupItem|
+						menu.addAction(groupItem);
+					}
+				};
+
+				menu
+			};
+		}
+	}
+
+	*prUpdate {
+		var menus = this.prBuildAppMenus();
 		var actualotherMenus = ([applicationMenu] ++ menus).asArray();
 		this.prSetAppMenus(actualotherMenus);
 	}
