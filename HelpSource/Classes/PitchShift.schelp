@@ -73,7 +73,7 @@ play({
 // pitch shift input - USE HEADPHONES to prevent feedback.
 play({
 	PitchShift.ar(
-		AudioIn.ar([1,2]),	// stereo audio input
+		SoundIn.ar([0, 1]),	// stereo audio input
 		0.1, 			// grain size
 		MouseX.kr(0,2),	// mouse x controls pitch shift ratio
 		0, 				// pitch dispersion
@@ -88,7 +88,7 @@ var grainSize;
 grainSize = 0.5;
 play({
 	PitchShift.ar(
-		AudioIn.ar([1,2]),
+		SoundIn.ar([0, 1]),
 		grainSize,
 		1,						// nominal pitch rate = 1
 		MouseX.kr(0,1), 			// pitch dispersion

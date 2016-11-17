@@ -137,6 +137,12 @@ void BeatTrack_Ctor(BeatTrack* unit)
 	unit->m_flagstep=0;
 
 	unit->mCalcFunc = (UnitCalcFunc)&BeatTrack_next;
+
+	// initialize outputs
+	ZOUT0(0) = 0.0;
+	ZOUT0(1) = 0.0;
+	ZOUT0(2) = 0.0;
+	ZOUT0(3) = unit->m_outputtempo;
 }
 
 

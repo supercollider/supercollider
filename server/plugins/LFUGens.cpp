@@ -325,13 +325,13 @@ void Vibrato_next(Vibrato *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
-	
+
 	float curtrig = ZIN0(8);
 	if (unit->trig <= 0.f && curtrig > 0.f){
-	
+
 		unit->mFreqMul = 4.0 * SAMPLEDUR;
 		unit->mPhase = 4.0 * sc_wrap(ZIN0(7), 0.f, 1.f) - 1.0;
-	
+
 		RGen& rgen = *unit->mParent->mRGen;
 		float rate = ZIN0(1) * unit->mFreqMul;
 		float depth = ZIN0(2);
@@ -345,7 +345,7 @@ void Vibrato_next(Vibrato *unit, int inNumSamples)
 		unit->m_attackSlope = 1. / (double)(1 + unit->m_attack);
 		unit->m_attackLevel = unit->m_attackSlope;
 	}
-	
+
 	unit->trig = curtrig;
 
 	double ffreq = unit->mFreq;
@@ -897,7 +897,9 @@ void LFGauss_Ctor(LFGauss* unit)
 	}
 	unit->mPhase = -1.0;
 
-	//LFGauss_next_k(unit, 1);
+	LFGauss_next_k(unit, 1);
+	// reset phase
+	unit->mPhase = -1.0;
 }
 
 

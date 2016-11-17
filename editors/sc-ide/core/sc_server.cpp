@@ -478,7 +478,7 @@ void ScServer::timerEvent(QTimerEvent * event)
     {
         char buffer[512];
         osc::OutboundPacketStream stream(buffer, 512);
-        stream << osc::BeginMessage("status");
+        stream << osc::BeginMessage("/status");
         stream << osc::MessageTerminator();
 
         qint64 sentSize = mUdpSocket->write(stream.Data(), stream.Size());
