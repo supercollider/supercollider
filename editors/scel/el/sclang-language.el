@@ -220,6 +220,10 @@ low-resource systems."
  (lambda (arg)
    (when (and sclang-use-symbol-table arg)
      (setq sclang-symbol-table (sort arg 'string<))
+     (setq sclang-class-list (remove-if
+                              (lambda (x) (or (not (sclang-class-name-p x))
+                                              (sclang-string-match "^Meta_" x)))
+                              sclang-symbol-table))
      (sclang-update-font-lock))))
 
 (add-hook 'sclang-library-startup-hook
