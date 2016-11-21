@@ -207,6 +207,9 @@ low-resource systems."
 (defvar sclang-symbol-table nil
   "List of all defined symbols.")
 
+(defvar sclang-class-list nil
+  "List of all defined classes.")
+
 (defvar sclang-symbol-history nil
   "List of recent symbols read from the minibuffer.")
 

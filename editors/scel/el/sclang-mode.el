@@ -244,10 +244,20 @@
 	 'font-lock-comment-face)))
 
 (defun sclang-font-lock-class-keyword-matcher (limit)
-  (let ((regexp (or sclang-font-lock-class-keywords
-		    (concat "\\<" sclang-class-name-regexp "\\>")))
-	(case-fold-search nil))
-    (re-search-forward regexp limit t)))
+  (let ((regexp (concat "\\<" sclang-class-name-regexp "\\>"))
+        (case-fold-search nil)
+        (continue t)
+        (res nil))
+    (while continue
+      (setq res (re-search-forward regexp limit t))
+      (if (or (null res) (null sclang-class-list))
+          (setq continue nil)
+        (let ((thing (thing-at-point 'word)))
+          (if (null thing)
+              (setq res nil continue nil)
+            (when (position (substring-no-properties thing) sclang-class-list :test 'equal)
+              (setq continue nil))))))
+    res))
 
 (defun sclang-set-font-lock-keywords ()
   (setq
@@ -255,7 +265,7 @@
    sclang-font-lock-keywords-1
    (list
     ;; keywords
-    (cons (regexp-opt sclang-font-lock-keyword-list'words)
+    (cons (regexp-opt sclang-font-lock-keyword-list 'words)
 	  'font-lock-keyword-face)
     ;; builtins
     (cons (regexp-opt sclang-font-lock-builtin-list 'words)
@@ -302,17 +312,6 @@
 
 (defun sclang-update-font-lock ()
   "Update font-lock information in all sclang-mode buffers."
-  (setq sclang-font-lock-class-keywords
-	(and sclang-symbol-table
-	     (let* ((list (remove-if
-			   (lambda (x) (or (not (sclang-class-name-p x))
-					   (sclang-string-match "^Meta_" x)))
-			   sclang-symbol-table))
-		    ;; need to set this for large numbers of classes
-		    (max-specpdl-size (* (length list) 2)))
-	       (condition-case nil
-		   (concat "\\<\\(?:Meta_\\)?\\(?:" (regexp-opt list) "\\)\\>")
-		 (error nil)))))
   ;; too expensive
   ;;   (dolist (buffer (buffer-list))
   ;;     (with-current-buffer buffer
