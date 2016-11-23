@@ -56,8 +56,10 @@ ServerStatusWatcher {
 			}, '/done', server.addr, argTemplate:['/notify', nil]).oneShot;
 
 			failOSCFunc = OSCFunc({|msg|
-				server.clientID = msg[2];
 				doneOSCFunc.free;
+				Error(
+					"Failed to register with server '%' for notifications: %\n"
+					"To recover, please reboot the server.".format(server.name, msg)).throw;
 			}, '/fail', server.addr, argTemplate:['/notify', nil, nil]).oneShot;
 
 		};

@@ -1,4 +1,4 @@
-SuperCollider 3.7 for OS X
+SuperCollider 3.8 for OS X
 ==========================
 
 These are installation and build instructions for the Mac OS X version of James McCartney's SuperCollider synthesis engine (scsynth) and programming language (sclang).
@@ -50,7 +50,7 @@ Prerequisites:
 
   *Note*: As of this writing the latest stable Qt is 5.6.x. SC depends on Qt5WebKit, which was dropped from the binary distribution of Qt 5.6
   (functionally replaced by Qt5WebEngine). Therefore you cannot simply install the latest Qt5 via homebrew and rely on the defaults set during
-  the install. If this is you first Qt5 install, use the package name given above and replace `brew --prefix qt5` by `brew --prefix qt55` in 
+  the install. If this is you first Qt5 install, use the package name given above and replace `brew --prefix qt5` by `brew --prefix qt55` in
   the build instructions below. If you already had Qt5, and were caught by an update, or you need several Qt5 installs, you can set the version
   to be used by default with `brew switch`, for example `brew switch qt5 5.5.1_2` (you can also "freeze" the Qt5 version with `brew pin`).
 
@@ -97,18 +97,18 @@ To install, you may move this to /Applications or use it in place from the build
 
     cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt5`  ..
 
-This specifies to cmake that we will be using Xcode to build. It also specifies the location of qt so that the complier/linker can find it 
-(note that you might have to set `qt55` instead of `qt5`, depending on how you installed you qt5 version (see above, "Prerequisites")). 
+This specifies to cmake that we will be using Xcode to build. It also specifies the location of qt so that the complier/linker can find it
+(note that you might have to set `qt55` instead of `qt5`, depending on how you installed you qt5 version (see above, "Prerequisites")).
 `brew --prefix qt5` will be expanded to the path to current Qt5 when the command is run.
 
-If you are not using the Homebrew install then you should substitute the path to the parent folder of the bin/include/lib folders in that 
+If you are not using the Homebrew install then you should substitute the path to the parent folder of the bin/include/lib folders in that
 Qt tree.
 
 ##### Build
 
     cmake --build . --target install --config RelWithDebInfo
 
-Cmake will build the application looking up configuration information in the file `CMakeCache.txt` in the specified directory 
+Cmake will build the application looking up configuration information in the file `CMakeCache.txt` in the specified directory
 (the current directory: `.` ). By specifying '--target install' you build all targets and trigger the creation of a portable
 bundle containing all files contained in the SC distribution. The default install location is `./Install`.
 
@@ -282,7 +282,7 @@ Building without Qt or the IDE
 
 The Qt framework is used for the SC-IDE, and to provide a graphical toolkit for the sclang language interpreter for users to build their own GUIs.
 
-The 3.7 release does not currently support building on OS X without also building the IDE.
+The 3.8 release does not currently support building on OS X without also building the IDE.
 It is also not currently possible to build sclang without Qt.
 
 This should be fixed at some point (its a build tool configuration issue). Until then these build flags do not work on OS X:

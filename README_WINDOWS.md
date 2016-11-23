@@ -13,7 +13,7 @@ reading to build the Windows version of SC. Furthermore the individual chapters
 in "Walkthroughs" are not expected to be read consecutively, they might appear
 quite repetitive if done so.
 
-May 2016
+November 2016
 
 
 Table of contents
@@ -108,7 +108,7 @@ that files created in the 'user support directory' are not deleted (see below
 for details and an explanation).
 
 IMPORTANT: in order to use the Quarks extension system you *need* to install
-Git and add it to the PATH. The Git installer will prompt you to the addition.
+Git *and* add it to the PATH. The Git installer will prompt you to the addition.
 For SC it is enough to add Git itself to the path, the additional unix tools
 (curl, find etc.) are not required.
 
@@ -160,7 +160,7 @@ Help Browser'.
 Using SuperCollider in command line mode
 ----------------------------------------
 
-*Note*: this is currently broken (May 2016, SC3.8). If you are using the 32-bit
+*Note*: this is currently broken (Nov 2016, SC3.8). If you are using the 32-bit
 version, you can get output in emergency situations: either keep your finger on
 the key for about halph a second or type each keystroke twice for it to
 register. You can also send text files to sclang by passing the filename as
@@ -297,7 +297,7 @@ Quick Steps
 - Source management
   - [Git][Git] for Windows (latest version)
 - Build tools
-  - [CMake][cmake], latest stable version (minimum 3.4.3)
+  - [CMake][cmake], minimum 3.4.3, maximum 3.5.2 (! when using MinGW)
   - One of:
     - [MinGW][Qt], version *4.82* 32-bit, the distribution shipped with Qt (QT\Tools\mingw482_32)
     - [Visual Studio 12 2013][VS]
@@ -319,7 +319,11 @@ Quick Steps
         For a 64-bit VS build select msvc2013_64
         for a 32-bit MinGW build select mingw482_32
 
+        It is also possible to build a 32-bit version with VS. The 64-bit
+        Mingw-build is currently broken.
+
     - *[libsndfile][libsndfile]* >= 1.0.25
+    - *[Windows SDK][Windows 10 SDK]* fitting your Windows version
 - Recommended
   - *[fftw][fftw]* >= 3.3.4
   - *[readline][readline]* = 5.0.1 (more recent versions, as found in MinGW distributions do
@@ -352,6 +356,13 @@ submodule is added to the repo, or if you switch to a branch that contains a
 submodule that has not been initialized yet. The command is:
 
     git submodule init
+
+Another helpful command that can update changes in the submodules configuration
+is
+
+    git submodule sync
+
+This is useful for example if the address of a submodule has changed.
 
 Git will usually tell if a resynchronization/update is required.
 
@@ -559,6 +570,9 @@ is done by appending `--target install` to the build command:
 The install step takes quite some time, as CMake's "bundle utilities" requires
 a lot of time to find, and copy all required libraries to the installation
 folder. Using MinGW this can take more than 10 minutes.
+
+Note: the install step is broken in the MinGW build when using cmake 3.6+ 3.7+,
+please use cmake 3.5.2 when building with MinGW.
 
 If you want to create a binary installer, run:
 
@@ -1270,43 +1284,6 @@ file. This is the CMake suggested method. Please look up the CMake documentation
 if you require an advanced configuration, and are interested in this approach.
 
 
-### On the horizon: MSYS2
-
-There is a new star on the horizon of building unixy software in Windows, a
-relatively recent msys/cygwin-offspring called [msys2][msys2]. Git has already
-recognized it's advantages and uses it as base of Git for Windows. Apart from
-being a rapidly progressing distribution using the rolling update model, and
-providing many more packages than just build tools (among them everything
-required for SC, including the tools), msys2 features a package manager just
-as comfortable as in big Linux distributions, a clone of Arch Linux' `pacman`.
-Starting from a binary installer, it is pretty simple to assemble a complete
-build environment for SC, including Qt5, *both* in 32- and 64-bit versions. Once
-the environment has been assembled, SC can be built with the same simplicity as
-on Linux, all that needs to be added is the selection of the generator "MSYS
-Makefiles":
-
-    $> cmake -G"MSYS Makefiles" ..
-
-It is also possible (though not officially supported) to use msys2 as toolchain
-and library repository only, and build from a normal Windows shell, or Qt
-Creator outside of msys2. This minimizes the necessity to deal with unix syntax
-and commands. All that needs to be done, is set the environment PATH to point to
-the right toolchain, and tell CMake about msys2's sysroot via CMAKE_PREFIX_PATH.
-In this case the generator has to be "MinGW Makefiles". For example:
-
-    $> SET PATH=C:\msys2\mingw64\bin;%PATH%
-    $> cmake -G "MinGW Makefiles" -D CMAKE_PREFIX_PATH=C:\msys2\mingw64 ..
-
-Ready to build!
-
-Unfortunately the resulting SC binaries don't work for now (segfault in the
-IDE). This is likely due to a bug in 32-bit MSYS2. Once this changes, and once
-the SC codebase is updated to support a MinGW 64-bit build, big times lay ahead
-for the SCWin build. 64-bit IDE, sclang, scsynth, supernova, base- &
-sc3-plugins are in close reach, and shouldn't be too difficult to maintain
-alongside mainstream SC development on the unixy platforms.
-
-
 Diagnosing build problems
 -------------------------
 
@@ -1315,11 +1292,12 @@ These are likely the most common causes of build problems:
 - after run- or debug-sessions sometimes scsynth or sclang "zombies" stay
   in memory. That will create file-access errors during build. End the process
   the in the task manager
-- too old or new compiler/toolchain: tested are MinGW 4.9.2 32-bit and
+- too old or new compiler/toolchain: tested are MinGW 4.8.2 32-bit and
   VS 12/2013 64-bit
-- incorrect versions of the dependencies (readline 5.0.1, libsndfile 1.0.25/26,
-  fftw 3.3.4, Qt 5.5.1)
-- too old cmake version (3.4.2 or bigger are required)
+- incorrect versions of the dependencies (readline 5.0.1, libsndfile 1.0.25/26/27,
+  fftw 3.3.4/5, Qt 5.5.1)
+- too old cmake version (3.4.2 or bigger are required), for the MinGW build
+  cmake max-version is 3.5.2
 - dynamic/runtime-library mismatch. This can happen if dependencies and
   core SC require different versions of the same runtime library. Reach out
   for libraries that do not depend on MinGW runtimes or make sure all components
@@ -1490,14 +1468,14 @@ QT the free community editions were used.
 SCWin64 3.8 was built with Visual Studio 12/2013
 
 - Qt5.5.1 (flavour msvc2013_64)
-- libsndfile 1.0.26
-- FFTW 3.3.4
+- libsndfile 1.0.27
+- FFTW 3.3.5
 
 SCWin32 3.8 was built using Qt Creator, combining MinGW 4.8.2 and Qt 5.5.1
 mingw492_32 into a kit. The MinGW distribution provided by Qt was used.
 
-- linsndfile 1.0.26
-- FFTW 3.3.4
+- linsndfile 1.0.27
+- FFTW 3.3.5
 - Readline 5.0.1 (as provided by gnuwin32)
 
 For both builds all other external libraries (including portaudio) were compiled
@@ -1515,32 +1493,12 @@ build. For VS:
 
 The MinGW build uses the libraries coming with MinGW.
 
-The tools used were Git for Windows v2.8.2.windows.1, cmake v3.52, and NSIS v3.0b1
+The tools used were Git for Windows v2.10.2.windows.1, cmake v3.52, and NSIS v3.0b1
 to create the binary installer.
 
 
 Known problems
 ==============
-
-- depending on the release used, communication between the IDE and sclang is
-  seriously troubled. Especially during the first 20 or so seconds after
-  start-up you can easily trigger the interpreter to crash. The exact cause is
-  not well understood yet. You will sometimes notice high system activity
-  shortly after the start-up of the IDE. You can see sclang spiking in the
-  Windows task manager when that happens. In that period the interpreter can be
-  easily crashed by keyboard input or mouse dragging (maybe the autocomplete
-  popup enforces the crash, but that is not clear either). Don't panic, the
-  interpreter can be restarted easily and the system will eventually stabilize
-  and become quite useable then. If you had a server running when the
-  interpreter crashed, the server will remain in memory as "zombie". The stray
-  process will have to be killed before starting a new server. This can be done
-  in the Windows task-manager (look out for `scsynth.exe`), or more  easily in
-  the popup menu that appears if you click on the server status indicator at the
-  right bottom of the IDE window ('Kill all servers', requires a running
-  interpreter). There is an alternative release of SCWin that contains a
-  elaborate fix for this problem (look for IPCfix). The code for this fix,
-  written by Lucas Cornelisse, is contained in a topic branch in the SC repo
-  (topic/IPC_QTcp)
 
 - READLINE/Command line-mode does not work properly.
   You have to wait a short while with the key pressed to get it to register - if
@@ -1553,11 +1511,13 @@ Known problems
   link to the readline lib yet (and you can only use v. 5.0.1 which isn't
   available as 64-bit binary).
 
-- HID doesn't work (and never did on Windows)
-
 - using shell commands from SC only works in a quite limited way (and always did).
   .unixCmd expects a unix shell, only for essential requirements workarounds
   are in place on Windows.
+
+- serial port communication does not work on Windows
+
+- your username should not contain spaces or non-ASCII characters
 
 A build issue that does not seem to create a problem:
 
@@ -1593,13 +1553,13 @@ software publicly and freely available.
 [notepad++]: http://notepad-plus-plus.org (free unixy text editor)
 [NSIS]: http://nsis.sourceforge.net/Download (create installer)
 [portaudio]: http://www.portaudio.com/
-[portmidi]: http://portmedia.sourceforge.net/portmidi/
 [Qt]: http://www.qt.io/download-open-source/#section-2 (Qt official distribution, choose online installer)
-[readline]:http://gnuwin32.sourceforge.net/packages/readline.htm
+[readline]: http://gnuwin32.sourceforge.net/packages/readline.htm
 [readline doc]: https://cnswww.cns.cwru.edu/php/chet/readline/rltop.html
 [SC]: https://supercollider.github.io (Main SC-site)
 [SC mailing lists]: http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailinglist.aspx
 [SC repo]: https://github.com/supercollider/supercollider (SC source repository on Github with issue tracker)
 [SC help]: http://doc.sccode.org/Help.html (SC online help)
-[VS]: https://www.visualstudio.com/downloads/download-visual-studio-vs (Visual Studio 2013, community edition)
-[Windows SDK]: https://msdn.microsoft.com/en-us/windows/desktop/bg162891.aspx (Windows 8.1 SDK including debugger used by Qt Creator)
+[VS]: https://my.visualstudio.com/downloads (you need to create a free developer account to download Visual Studio 2013, community edition)
+[Windows 8 SDK]: https://developer.microsoft.com/en-us/windows/downloads/windows-8-1-sdk (Windows 8.1 SDK including debugger used by Qt Creator)
+[Windows 10 SDK]: https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk  (Windows 10 SDK including debugger used by Qt Creator)
