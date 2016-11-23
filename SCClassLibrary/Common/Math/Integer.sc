@@ -219,6 +219,15 @@ Integer : SimpleNumber {
 			^product
 		}*/
 	}
+	
+	partition { arg parts=2, min=1;
+		// randomly partition a number into parts of at least min size :
+		var n = this.abs - (min - 1 * parts);
+		if(n < parts) {
+			Error("Integer-partition min (%) is too high to partition % into % parts.".format(min, this, parts)).throw;
+		};
+		^(1..n-1).scramble.keep(parts-1).sort.add(n).differentiate + (min - 1) * this.sign;
+	}
 
 		// support for modifiers keys
 	isCaps { ^this.bitAnd(65536) == 65536}
