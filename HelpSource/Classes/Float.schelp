@@ -25,6 +25,21 @@ iterates function from this-1 to 0
 argument:: function
 The function to iterate.
 
+method:: partition
+randomly partition a number into parts of at least min size.
+argument:: parts
+number of parts
+argument:: min
+the minimum size
+
+discussion::
+code::
+75.0.partition(8, 3.0);
+75.0.partition(75, 0.95);
+-75.0.partition(9, 3.5);
+10.0.partition(2, 6.0); // throws an error (2 * 6.0 > 10.0)
+::
+
 method:: coin
 Perform a random test whose probability of success in a range from
 zero to one is this and return the result.
