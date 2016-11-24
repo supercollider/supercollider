@@ -55,7 +55,8 @@ public:
 
     void showPosition( int charPosition, int selectionLength = 0 );
     QString symbolUnderCursor();
-    int inactiveFadeAlpha() { return mInactiveFadeAlpha; }
+    int inactiveFadeAlpha() { return mInactiveFadeAlpha; };
+    bool checkComboBox() { return mUseComboBox; };
 
 protected:
     virtual bool event( QEvent * );
@@ -123,6 +124,7 @@ protected:
 
     bool mHighlightCurrentLine;
     bool mEditorBoxIsActive;
+    bool mUseComboBox;
     int mLastCursorBlock;
     QTextCharFormat mCurrentLineTextFormat;
 
