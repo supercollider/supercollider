@@ -259,6 +259,10 @@ UGen : AbstractFunction {
 		^ModDif.multiNew(this.rate, this, that, mod)
 	}
 
+	sanitize {
+		^Sanitize.perform(this.methodSelectorForRate);
+	}
+
 	signalRange { ^\bipolar }
 	@ { arg y; ^Point.new(this, y) } // dynamic geometry support
 

@@ -44,15 +44,17 @@ struct CheckBadValues : public Unit
 	int		prevclass;
 };
 
+struct Sanitize : public Unit { };
+
 // declare unit generator functions
-extern "C"
-{
-	void CheckBadValues_Ctor(CheckBadValues* unit);
-	void CheckBadValues_next(CheckBadValues* unit, int inNumSamples);
-};
+static void CheckBadValues_Ctor(CheckBadValues* unit);
+static void CheckBadValues_next(CheckBadValues* unit, int inNumSamples);
 
 static const char *CheckBadValues_fpclassString(int fpclass);
 inline int CheckBadValues_fold_fpclasses(int fpclass);
+
+static void Sanitize_Ctor(Sanitize* unit);
+static void Sanitize_next(Sanitize* unit, int inNumSamples);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -185,6 +187,39 @@ inline int CheckBadValues_fold_fpclasses(int fpclass)
 }
 #endif
 
+///////////////////////////////////////////////////////////////////////////////////////
+
+void Sanitize_Ctor(Sanitize* unit)
+{
+	SETCALC(Sanitize_next);
+	Sanitize_next(unit, 1);
+}
+
+
+void Sanitize_next(Sanitize* unit, int inNumSamples)
+{
+	float *in = IN(0);
+	float *out = OUT(0);
+
+	float samp;
+	int classification;
+	for (int i = 0; i < inNumSamples; i++)
+	{
+		samp = in[i];
+		classification = sc_fpclassify(samp);
+		switch (classification)
+		{
+		case FP_INFINITE:
+		case FP_NAN:
+		case FP_SUBNORMAL:
+			out[i] = 0;
+			break;
+		default:
+			out[i] = samp;
+		};
+	};
+}
+
 ////////////////////////////////////////////////////////////////////
 
 // the load function is called by the host when the plug-in is loaded
@@ -192,4 +227,5 @@ PluginLoad(Test)
 {
 	ft = inTable;
 	DefineSimpleUnit(CheckBadValues);
+	DefineSimpleUnit(Sanitize);
 }
