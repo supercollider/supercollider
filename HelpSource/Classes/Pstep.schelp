@@ -1,15 +1,13 @@
 class:: Pstep
 summary:: timed, sample-and-hold embedding of values
-related:: Classes/Pseg, Classes/PstepDur
+related:: Classes/Pseg
 categories:: Streams-Patterns-Events>Patterns>Time
 
 description::
 
-Pstep and link::Classes/PstepDur:: are both "sample and hold" patterns: The value returned by teletype::next:: is held at each value in teletype::levels:: for the corresponding duration in teletype::durs::. This cycling is similar to link::Classes/Ptuple::, in that the current repeat ends when eiher pattern returns nil.
+Pstep is a "sample and hold" pattern: The value returned by teletype::next:: is held at each value in teletype::levels:: for the corresponding duration in teletype::durs::. This cycling is similar to link::Classes/Ptuple::, in that the current repeat ends when eiher pattern returns nil.
 
 Pstep measures elapsed time using the thread's logical time. That is, it assumes it will be evaluated only exactly when needed, not before.
-
-link::Classes/PstepDur:: measures time based on the input event's delta. Provided that duration keys have already been set in the event, PstepDur may be polled in advance.
 
 See link::Classes/Pseg:: for a pattern whose value changes like an link::Classes/Env::.
 
