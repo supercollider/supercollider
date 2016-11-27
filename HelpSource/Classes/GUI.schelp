@@ -1,7 +1,7 @@
 class:: GUI
 summary:: Factory abstraction for all GUI related core classes
 categories:: GUI>Kits
-related:: Overviews/GUI-Classes, Guides/GUI-Introduction, Classes/ViewRedirect
+related:: Overviews/GUI-Classes, Guides/GUI-Introduction
 
 
 description::
@@ -20,7 +20,7 @@ table::
 
 In general, users should not concern themselves with the prefixes. Instead, work with the emphasis::redirect:: classes, which have no prefix: Window, Button, Slider, etc. The redirect class will ask the currently-selected kit which emphasis::implementation class:: should be used.
 
-The GUI kit (CocoaGUI, QtGUI, SwingGUI) maps the generic view names to the implementing classes: code::Window --> SCWindow, QWindow or JSCWindow::. These schemes are in turn used by link::Classes/ViewRedirect:: to provide a simple cross-platform gui syntax. The GUI class provides utilities for switching kits and other cross platform tasks.
+The GUI kit (CocoaGUI, QtGUI, SwingGUI) maps the generic view names to the implementing classes: code::Window --> SCWindow, QWindow or JSCWindow::. The GUI class provides utilities for switching kits and other cross platform tasks.
 
 You can get your available schemes (depending on what you installed) with:
 code::

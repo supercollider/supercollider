@@ -898,9 +898,6 @@ Object  {
 	genNext { ^nil }
 	genCurrent { ^this }
 
-	// support for ViewRedirect
-	*classRedirect { ^this }
-
 	help {
 		this.class.asString.help
 	}
