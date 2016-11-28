@@ -5,8 +5,8 @@ Pstep : Pattern {
 		^super.newCopyArgs(levels, durs, repeats).init
 	}
 	init {
-		if (list.isKindOf(Collection)) { list = Pseq(list); };
-		if (durs.isKindOf(Collection)) { durs = Pseq(durs); };
+		if (list.isSequenceableCollection) { list = Pseq(list); };
+		if (durs.isSequenceableCollection) { durs = Pseq(durs); };
 	}
 
 	embedInStream { arg inval;
