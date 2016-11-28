@@ -39,11 +39,17 @@ CodeEditorBox::CodeEditorBox(QWidget *parent) :
     mTopLayout->setSpacing(1);
     mTopLayout->setContentsMargins(0, 0, 0, 0);
     
-    mLayout = new QStackedLayout();    
+    mLayout = new QStackedLayout();     
     mTopLayout->addLayout(mLayout);
     setLayout(mTopLayout);
 
-    mDocComboBox = nullptr; 
+    mDocComboBox = new QComboBox();
+    mDocComboBox->setFocusPolicy(Qt::NoFocus);
+    mTopLayout->addWidget(mDocComboBox);
+
+    mDocComboBox->setModel(Main::documentManager()->docModel());
+    
+    connect(mDocComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onComboSelectionChanged(int)));
 
     connect(Main::documentManager(), SIGNAL(closed(Document*)),
             this, SLOT(onDocumentClosed(Document*)));
@@ -61,35 +67,20 @@ void CodeEditorBox::applySettings( Settings::Manager *settings )
     bool comboBox = settings->value("useComboBox").toBool();
     settings->endGroup();        
 
-    if (comboBox) {
-        if (!mDocComboBox) 
-            useComboBox();
-    }
-    else {
-        if (mDocComboBox)
-            useTabs();
-    }
+    if (comboBox)
+        useComboBox();
+    else
+        useTabs();
 }
 
 void CodeEditorBox::useComboBox()
 {
-    mDocComboBox = new QComboBox();
-    mDocComboBox->setFocusPolicy(Qt::NoFocus);
-    mTopLayout->addWidget(mDocComboBox);   
-
-    mDocComboBox->setModel(Main::documentManager()->docModel());
-    
-    connect(mDocComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onComboSelectionChanged(int)));
+    mDocComboBox->show();
 }
 
 void CodeEditorBox::useTabs()
 {
-    mTopLayout->removeWidget(mDocComboBox);   
-
-    disconnect(mDocComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onComboSelectionChanged(int)));
-
-    delete mDocComboBox;
-    mDocComboBox = nullptr; 
+    mDocComboBox->hide(); 
 }
 
 void CodeEditorBox::onComboSelectionChanged(int index)
