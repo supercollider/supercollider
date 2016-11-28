@@ -54,7 +54,9 @@ static const char *CheckBadValues_fpclassString(int fpclass);
 inline int CheckBadValues_fold_fpclasses(int fpclass);
 
 static void Sanitize_Ctor(Sanitize* unit);
-static void Sanitize_next(Sanitize* unit, int inNumSamples);
+static void Sanitize_next_aa(Sanitize* unit, int inNumSamples);
+static void Sanitize_next_ak(Sanitize* unit, int inNumSamples);
+static void Sanitize_next_kk(Sanitize* unit, int inNumSamples);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -191,32 +193,79 @@ inline int CheckBadValues_fold_fpclasses(int fpclass)
 
 void Sanitize_Ctor(Sanitize* unit)
 {
-	SETCALC(Sanitize_next);
-	Sanitize_next(unit, 1);
+	if (INRATE(0) == calc_FullRate) {
+		if (INRATE(1) == calc_FullRate) {
+			SETCALC(Sanitize_next_aa);
+		} else {
+			SETCALC(Sanitize_next_ak);
+		}
+	} else {
+		SETCALC(Sanitize_next_kk);
+	}
+	Sanitize_next_kk(unit, 1);
 }
 
 
-void Sanitize_next(Sanitize* unit, int inNumSamples)
+void Sanitize_next_aa(Sanitize* unit, int inNumSamples)
 {
 	float *in = IN(0);
+	float *replace = IN(1);
 	float *out = OUT(0);
 
 	float samp;
-	int classification;
 	for (int i = 0; i < inNumSamples; i++)
 	{
 		samp = in[i];
-		classification = sc_fpclassify(samp);
-		switch (classification)
+		switch (sc_fpclassify(samp))
 		{
 		case FP_INFINITE:
 		case FP_NAN:
 		case FP_SUBNORMAL:
-			out[i] = 0;
+			out[i] = replace[i];
 			break;
 		default:
 			out[i] = samp;
 		};
+	};
+}
+
+void Sanitize_next_ak(Sanitize* unit, int inNumSamples)
+{
+	float *in = IN(0);
+	float replace = IN0(1);
+	float *out = OUT(0);
+
+	float samp;
+	for (int i = 0; i < inNumSamples; i++)
+	{
+		samp = in[i];
+		switch (sc_fpclassify(samp))
+		{
+		case FP_INFINITE:
+		case FP_NAN:
+		case FP_SUBNORMAL:
+			out[i] = replace;
+			break;
+		default:
+			out[i] = samp;
+		};
+	};
+}
+
+void Sanitize_next_kk(Sanitize* unit, int inNumSamples)
+{
+	float samp = IN0(0);
+	float replace = IN0(1);
+
+	switch (sc_fpclassify(samp))
+	{
+	case FP_INFINITE:
+	case FP_NAN:
+	case FP_SUBNORMAL:
+		OUT0(0) = replace;
+		break;
+	default:
+		OUT0(0) = samp;
 	};
 }
 

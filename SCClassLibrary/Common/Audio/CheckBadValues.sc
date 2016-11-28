@@ -18,12 +18,12 @@ CheckBadValues : UGen {
 
 Sanitize : UGen {
 
-	*ar {arg in = 0.0;
-		^this.multiNew('audio', in);
+	*ar { |in = 0.0, replace = 0.0|
+		^this.multiNew('audio', in, replace);
 	}
 
-	*kr {arg in = 0.0;
-		^this.multiNew('control', in);
+	*kr { |in = 0.0, replace = 0.0|
+		^this.multiNew('control', in, replace);
 	}
 
 	checkInputs {
