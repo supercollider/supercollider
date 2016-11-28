@@ -20,7 +20,7 @@
 
 #include "editor_box.hpp"
 #include "code_editor/sc_editor.hpp"
-#include "../../core/main.hpp"
+#include "../core/main.hpp"
 
 #include <QPainter>
 #include <QScrollBar>
@@ -35,13 +35,72 @@ CodeEditorBox::CodeEditorBox(QWidget *parent) :
     setFocusPolicy(Qt::StrongFocus);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    mLayout = new QStackedLayout();
-    setLayout(mLayout);
+    mTopLayout = new QBoxLayout(QBoxLayout::BottomToTop);
+    mTopLayout->setSpacing(1);
+    mTopLayout->setContentsMargins(0, 0, 0, 0);
+    
+    mLayout = new QStackedLayout();    
+    mTopLayout->addLayout(mLayout);
+    setLayout(mTopLayout);
+
+    mDocComboBox = nullptr; 
 
     connect(Main::documentManager(), SIGNAL(closed(Document*)),
             this, SLOT(onDocumentClosed(Document*)));
     connect(Main::documentManager(), SIGNAL(saved(Document*)),
             this, SLOT(onDocumentSaved(Document*)));
+    connect(Main::instance(), SIGNAL(applySettingsRequest(Settings::Manager*)),
+             this, SLOT(applySettings(Settings::Manager*)));
+
+    applySettings( Main::settings() );
+}
+
+void CodeEditorBox::applySettings( Settings::Manager *settings )
+{
+    settings->beginGroup("IDE/editor");
+    bool comboBox = settings->value("useComboBox").toBool();
+    settings->endGroup();        
+
+    if (comboBox) {
+        if (!mDocComboBox) {
+            QString warl = QStringLiteral("Using ComboBox mode");
+            Main::scProcess()->post(warl);
+        
+            useComboBox();
+        }
+    }
+    else {
+        if (mDocComboBox)
+            useTabs();
+    }
+}
+
+void CodeEditorBox::useComboBox()
+{
+    mDocComboBox = new QComboBox();
+    mDocComboBox->setFocusPolicy(Qt::NoFocus);
+    mTopLayout->addWidget(mDocComboBox);   
+
+    mDocComboBox->setModel(Main::documentManager()->docModel());
+    
+    connect(mDocComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onComboSelectionChanged(int)));
+}
+
+void CodeEditorBox::useTabs()
+{
+    mTopLayout->removeWidget(mDocComboBox);   
+
+    disconnect(mDocComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onComboSelectionChanged(int)));
+
+    delete mDocComboBox;
+    mDocComboBox = nullptr; 
+}
+
+void CodeEditorBox::onComboSelectionChanged(int index)
+{
+    if(index >=0 && mDocComboBox) {
+        setDocument(Main::documentManager()->docModel()->item(index)->data().value<Document *>(), -1, 0);
+    }
 }
 
 void CodeEditorBox::setDocument(Document *doc, int pos, int selectionLength)
@@ -71,6 +130,9 @@ void CodeEditorBox::setDocument(Document *doc, int pos, int selectionLength)
         editor->setReadOnly(!doc->editable());
         mLayout->setCurrentWidget(editor);
         setFocusProxy(editor);
+        int modelIndex = doc->modelItem()->index().row();
+        if (mDocComboBox)
+            mDocComboBox->setCurrentIndex(modelIndex);
     }
 
     if (pos != -1)

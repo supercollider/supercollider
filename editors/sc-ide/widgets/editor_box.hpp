@@ -25,6 +25,12 @@
 #include <QWidget>
 #include <QStackedLayout>
 #include <QPointer>
+#include <QComboBox>
+#include <QBoxLayout>
+#include <QStandardItemModel>
+
+#include "../core/doc_manager.hpp"
+#include "../core/main.hpp"
 
 namespace ScIDE {
 
@@ -88,14 +94,21 @@ public:
     QSize minimumSizeHint() const { return QSize(100, 100); }
     QSize sizeHint() const { return QSize(100, 100); }
 
+    void useComboBox();
+    void useTabs();
+
 signals:
     void currentChanged(GenericCodeEditor*);
     void activated( CodeEditorBox *me );
     void activeChanged(bool active);
 
+public slots:
+    void applySettings( Settings::Manager * );
+
 private slots:
     void onDocumentClosed(Document*);
     void onDocumentSaved(Document*);
+    void onComboSelectionChanged(int index);
 
 private:
     int historyIndexOf(Document*);
@@ -107,6 +120,8 @@ private:
     QStackedLayout *mLayout;
     History mHistory;
     static QPointer<CodeEditorBox> gActiveBox;
+    QBoxLayout *mTopLayout;
+    QComboBox *mDocComboBox;
 };
 
 } // namespace ScIDE

@@ -152,7 +152,6 @@ void GenericCodeEditor::applySettings( Settings::Manager *settings )
 
     mHighlightCurrentLine = settings->value("highlightCurrentLine").toBool();
     updateCurrentLineHighlighting();
-    mUseComboBox = settings->value("useComboBox").toBool();
 
     settings->endGroup(); // IDE/editor
 
