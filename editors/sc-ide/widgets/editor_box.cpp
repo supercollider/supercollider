@@ -62,12 +62,8 @@ void CodeEditorBox::applySettings( Settings::Manager *settings )
     settings->endGroup();        
 
     if (comboBox) {
-        if (!mDocComboBox) {
-            QString warl = QStringLiteral("Using ComboBox mode");
-            Main::scProcess()->post(warl);
-        
+        if (!mDocComboBox) 
             useComboBox();
-        }
     }
     else {
         if (mDocComboBox)
