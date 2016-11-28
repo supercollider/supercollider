@@ -774,9 +774,13 @@ void MultiEditor::applySettings( Settings::Manager * settings )
     mActions[ShowLinenumber]->setChecked( show_linenumber );
     mActions[ShowAutocompleteHelp]->setChecked(show_autocompletehelp);
 
-    bool setComboBox = settings->value("IDE/editor/useComboBox").toBool();
-    
-    if (setComboBox)
+    showEditorTabs(settings);    
+}
+
+void MultiEditor::showEditorTabs( Settings::Manager * settings ) 
+{
+    bool comboBoxActive = settings->value("IDE/editor/useComboBox").toBool();
+    if (comboBoxActive)
         mTabs->hide();
     else
         mTabs->show();
