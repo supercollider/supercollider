@@ -1318,4 +1318,8 @@ SequenceableCollection : Collection {
 		_ArrayPOpen
 		^this.primitiveFailed
 	}
+
+	sanitize { arg ... args;
+		^this.multiChannelPerform(\sanitize, *args);
+	}
 }
