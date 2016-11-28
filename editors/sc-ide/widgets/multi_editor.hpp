@@ -204,6 +204,7 @@ private:
     CodeEditorBox *mCurrentEditorBox;
     MultiSplitter *mSplitter;
     QIcon mDocModifiedIcon;
+    QVBoxLayout *multiEditorLayout;
 };
 
 } // namespace ScIDE

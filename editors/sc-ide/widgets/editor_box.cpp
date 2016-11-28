@@ -63,10 +63,8 @@ CodeEditorBox::CodeEditorBox(QWidget *parent) :
 
 void CodeEditorBox::applySettings( Settings::Manager *settings )
 {
-    settings->beginGroup("IDE/editor");
-    bool comboBox = settings->value("useComboBox").toBool();
-    settings->endGroup();        
-
+    bool comboBox = settings->value("IDE/editor/useComboBox").toBool();
+    
     if (comboBox)
         useComboBox();
     else
