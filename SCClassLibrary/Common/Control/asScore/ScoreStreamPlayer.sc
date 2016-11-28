@@ -65,7 +65,7 @@ ScoreStreamPlayer : Server {
 			}
 		);
 
-		event = event ? Event.default;
+		event = event ?? { Event.default };
 		event = event.copy.putAll(proto);
 		beats = timeOffset;
 		tempo = 1;
