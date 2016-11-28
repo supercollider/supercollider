@@ -302,9 +302,9 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
 {
     mTabs = new EditorTabBar;
 
-    CodeEditorBox *defaultBox = newBox();
+    mSplitter = new MultiSplitter(this);
+    CodeEditorBox *defaultBox = newBox(mSplitter);
 
-    mSplitter = new MultiSplitter();
     mSplitter->addWidget(defaultBox);
 
     multiEditorLayout = new QVBoxLayout;
@@ -774,13 +774,13 @@ void MultiEditor::applySettings( Settings::Manager * settings )
     mActions[ShowLinenumber]->setChecked( show_linenumber );
     mActions[ShowAutocompleteHelp]->setChecked(show_autocompletehelp);
 
-    showEditorTabs(settings);    
+    bool comboBoxActive = settings->value("IDE/editor/useComboBox").toBool();
+    showEditorTabs(comboBoxActive);    
 }
 
-void MultiEditor::showEditorTabs( Settings::Manager * settings ) 
+void MultiEditor::showEditorTabs( bool condition ) 
 {
-    bool comboBoxActive = settings->value("IDE/editor/useComboBox").toBool();
-    if (comboBoxActive)
+    if (condition)
         mTabs->hide();
     else
         mTabs->show();
@@ -870,7 +870,7 @@ void MultiEditor::loadBoxState( CodeEditorBox *box,
     }
 }
 
-void MultiEditor::loadSplitterState( QSplitter *splitter,
+void MultiEditor::loadSplitterState( MultiSplitter *splitter,
                                      const QVariantMap & data, const QList<Document*> & documentList )
 {
     QByteArray state = QByteArray::fromBase64( data.value("state").value<QByteArray>() );
@@ -878,13 +878,13 @@ void MultiEditor::loadSplitterState( QSplitter *splitter,
     QVariantList childrenData = data.value("elements").value<QVariantList>();
     foreach (const QVariant & childVar, childrenData) {
         if (childVar.type() == QVariant::List) {
-            CodeEditorBox *childBox = newBox();
+            CodeEditorBox *childBox = newBox(splitter);
             splitter->addWidget(childBox);
             QVariantList childBoxData = childVar.value<QVariantList>();
             loadBoxState( childBox, childBoxData, documentList );
         }
         else if (childVar.type() == QVariant::Map) {
-            QSplitter *childSplitter = new QSplitter;
+            MultiSplitter *childSplitter = new MultiSplitter(this);
             splitter->addWidget(childSplitter);
             QVariantMap childSplitterData = childVar.value<QVariantMap>();
             loadSplitterState( childSplitter, childSplitterData, documentList );
@@ -918,7 +918,7 @@ void MultiEditor::switchSession( Session *session )
 
     documentList.clear();
 
-    mSplitter = new MultiSplitter();
+    mSplitter = new MultiSplitter(this);
 
     CodeEditorBox *firstBox = 0;
 
@@ -946,7 +946,7 @@ void MultiEditor::switchSession( Session *session )
                 if (!firstBox) {
                     qWarning("Session seems to contain invalid editor split data!");
                     delete mSplitter;
-                    mSplitter = new MultiSplitter();
+                    mSplitter = new MultiSplitter(this);
                 }
             }
         }
@@ -954,7 +954,7 @@ void MultiEditor::switchSession( Session *session )
 
     if (!firstBox) {
         // Restoring the session didn't result in any editor box, so create one:
-        firstBox = newBox();
+        firstBox = newBox(mSplitter);
         mSplitter->addWidget( firstBox );
     }
 
@@ -1137,9 +1137,9 @@ int MultiEditor::tabForDocument( Document * doc )
     return -1;
 }
 
-CodeEditorBox *MultiEditor::newBox()
+CodeEditorBox *MultiEditor::newBox( MultiSplitter * currSplitter )
 {
-    CodeEditorBox *box = new CodeEditorBox();
+    CodeEditorBox *box = new CodeEditorBox( currSplitter );
 
     connect(box, SIGNAL(activated(CodeEditorBox*)),
             this, SLOT(onBoxActivated(CodeEditorBox*)));
@@ -1182,7 +1182,7 @@ GenericCodeEditor *MultiEditor::currentEditor()
 
 void MultiEditor::split( Qt::Orientation splitDirection )
 {
-    CodeEditorBox *box = newBox();
+    CodeEditorBox *box = newBox(mSplitter);
     CodeEditorBox *curBox = currentBox();
     GenericCodeEditor *curEditor = curBox->currentEditor();
 
@@ -1191,6 +1191,9 @@ void MultiEditor::split( Qt::Orientation splitDirection )
 
     mSplitter->insertWidget(box, curBox, splitDirection);
     box->setFocus( Qt::OtherFocusReason );
+
+    emit splitViewActivated();
+    showEditorTabs(true);
 }
 
 void MultiEditor::removeCurrentSplit()
@@ -1219,7 +1222,7 @@ void MultiEditor::removeAllSplits()
         // Nothing to do.
         return;
 
-    MultiSplitter *newSplitter = new MultiSplitter;
+    MultiSplitter *newSplitter = new MultiSplitter(this);
     newSplitter->addWidget(box);
 
     delete mSplitter;

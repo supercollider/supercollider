@@ -29,8 +29,8 @@ namespace ScIDE {
 
 QPointer<CodeEditorBox> CodeEditorBox::gActiveBox;
 
-CodeEditorBox::CodeEditorBox(QWidget *parent) :
-    QWidget(parent)
+CodeEditorBox::CodeEditorBox(MultiSplitter *splitter, QWidget *parent) :
+    QWidget(parent), mSplitter(splitter)
 {
     setFocusPolicy(Qt::StrongFocus);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -58,19 +58,28 @@ CodeEditorBox::CodeEditorBox(QWidget *parent) :
     connect(Main::instance(), SIGNAL(applySettingsRequest(Settings::Manager*)),
              this, SLOT(applySettings(Settings::Manager*)));
 
+    connect( mSplitter->editor(), SIGNAL(splitViewActivated()), this, SLOT(comboBoxWhenSplitting()) );
+
     applySettings( Main::settings() );
 }
 
 void CodeEditorBox::applySettings( Settings::Manager *settings )
 {
-        showComboBox(settings);
+    bool comboBoxActive = settings->value("IDE/editor/useComboBox").toBool();
+    showComboBox(comboBoxActive);
 }
 
-void CodeEditorBox::showComboBox( Settings::Manager *settings )
+void CodeEditorBox::comboBoxWhenSplitting() 
 {
-    bool comboBoxActive = settings->value("IDE/editor/useComboBox").toBool();
-    
-    if (comboBoxActive)
+    if ( mSplitter->count()>1 ) {
+        if( !( Main::settings()->value("IDE/editor/useComboBox").toBool() ) )
+            showComboBox(true);
+    }
+}
+
+void CodeEditorBox::showComboBox( bool condition )
+{    
+    if (condition)
         mDocComboBox->show();
     else
         mDocComboBox->hide();

@@ -31,11 +31,13 @@
 
 #include "../core/doc_manager.hpp"
 #include "../core/main.hpp"
+#include "util/multi_splitter.hpp"
 
 namespace ScIDE {
 
 class Document;
 class GenericCodeEditor;
+class MultiSplitter;
 
 /*
 A CodeEditorBox represents an IDE document split view: it contains a stack
@@ -62,7 +64,7 @@ class CodeEditorBox : public QWidget
 public:
     typedef QList< GenericCodeEditor * > History;
 
-    CodeEditorBox(QWidget *parent = 0);
+    CodeEditorBox(MultiSplitter *splitter, QWidget *parent = 0);
 
     void setDocument(Document *, int pos = -1, int selectionLength = 0);
 
@@ -94,7 +96,7 @@ public:
     QSize minimumSizeHint() const { return QSize(100, 100); }
     QSize sizeHint() const { return QSize(100, 100); }
 
-    void showComboBox( Settings::Manager * );
+    void showComboBox( bool );
 
 signals:
     void currentChanged(GenericCodeEditor*);
@@ -103,6 +105,7 @@ signals:
 
 public slots:
     void applySettings( Settings::Manager * );
+    void comboBoxWhenSplitting();
 
 private slots:
     void onDocumentClosed(Document*);
@@ -121,6 +124,7 @@ private:
     static QPointer<CodeEditorBox> gActiveBox;
     QBoxLayout *mTopLayout;
     QComboBox *mDocComboBox;
+    MultiSplitter *mSplitter;
 };
 
 } // namespace ScIDE

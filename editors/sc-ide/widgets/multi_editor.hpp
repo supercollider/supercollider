@@ -150,6 +150,7 @@ public:
 
 signals:
     void currentDocumentChanged( Document * );
+    void splitViewActivated();
 
 public slots:
 
@@ -187,14 +188,14 @@ private:
     void createActions();
     void updateActions();
     int addTab( Document * );
-    CodeEditorBox *newBox();
+    CodeEditorBox *newBox( MultiSplitter * );
     void setCurrentBox( CodeEditorBox * );
     void setCurrentEditor( GenericCodeEditor * );
     void loadBoxState( CodeEditorBox *box, const QVariantList & data, const QList<Document *> & documentList );
-    void loadSplitterState( QSplitter *, const QVariantMap & data, const QList<Document *> & documentList );
-    void showEditorTabs( Settings::Manager * );
+    void loadSplitterState( MultiSplitter *, const QVariantMap & data, const QList<Document *> & documentList );
+    void showEditorTabs( bool );
 
-    QAction *mActions[ActionRoleCount];
+    QAction *mActions[ActionRoleCount];                                                                                                                                                                                                                                             
 
     SignalMultiplexer * mEditorSigMux;
     SignalMultiplexer * mBoxSigMux;
