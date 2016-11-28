@@ -307,12 +307,12 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     mSplitter = new MultiSplitter();
     mSplitter->addWidget(defaultBox);
 
-    QVBoxLayout *l = new QVBoxLayout;
-    l->setContentsMargins(0,0,0,0);
-    l->setSpacing(0);
-    l->addWidget(mTabs);
-    l->addWidget(mSplitter);
-    setLayout(l);
+    multiEditorLayout = new QVBoxLayout;
+    multiEditorLayout->setContentsMargins(0,0,0,0);
+    multiEditorLayout->setSpacing(0);
+    multiEditorLayout->addWidget(mTabs);
+    multiEditorLayout->addWidget(mSplitter);
+    setLayout(multiEditorLayout);
 
     makeSignalConnections();
 
@@ -773,6 +773,17 @@ void MultiEditor::applySettings( Settings::Manager * settings )
     mActions[ShowWhitespace]->setChecked( show_whitespace );
     mActions[ShowLinenumber]->setChecked( show_linenumber );
     mActions[ShowAutocompleteHelp]->setChecked(show_autocompletehelp);
+
+    showEditorTabs(settings);    
+}
+
+void MultiEditor::showEditorTabs( Settings::Manager * settings ) 
+{
+    bool comboBoxActive = settings->value("IDE/editor/useComboBox").toBool();
+    if (comboBoxActive)
+        mTabs->hide();
+    else
+        mTabs->show();
 }
 
 static QVariantList saveBoxState( CodeEditorBox *box, const QList<Document*> & documentList )

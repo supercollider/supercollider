@@ -192,6 +192,7 @@ private:
     void setCurrentEditor( GenericCodeEditor * );
     void loadBoxState( CodeEditorBox *box, const QVariantList & data, const QList<Document *> & documentList );
     void loadSplitterState( QSplitter *, const QVariantMap & data, const QList<Document *> & documentList );
+    void showEditorTabs( Settings::Manager * );
 
     QAction *mActions[ActionRoleCount];
 
@@ -204,6 +205,7 @@ private:
     CodeEditorBox *mCurrentEditorBox;
     MultiSplitter *mSplitter;
     QIcon mDocModifiedIcon;
+    QVBoxLayout *multiEditorLayout;
 };
 
 } // namespace ScIDE

@@ -63,24 +63,17 @@ CodeEditorBox::CodeEditorBox(QWidget *parent) :
 
 void CodeEditorBox::applySettings( Settings::Manager *settings )
 {
-    settings->beginGroup("IDE/editor");
-    bool comboBox = settings->value("useComboBox").toBool();
-    settings->endGroup();        
+        showComboBox(settings);
+}
 
-    if (comboBox)
-        useComboBox();
+void CodeEditorBox::showComboBox( Settings::Manager *settings )
+{
+    bool comboBoxActive = settings->value("IDE/editor/useComboBox").toBool();
+    
+    if (comboBoxActive)
+        mDocComboBox->show();
     else
-        useTabs();
-}
-
-void CodeEditorBox::useComboBox()
-{
-    mDocComboBox->show();
-}
-
-void CodeEditorBox::useTabs()
-{
-    mDocComboBox->hide(); 
+        mDocComboBox->hide();
 }
 
 void CodeEditorBox::onComboSelectionChanged(int index)

@@ -94,8 +94,7 @@ public:
     QSize minimumSizeHint() const { return QSize(100, 100); }
     QSize sizeHint() const { return QSize(100, 100); }
 
-    void useComboBox();
-    void useTabs();
+    void showComboBox( Settings::Manager * );
 
 signals:
     void currentChanged(GenericCodeEditor*);
