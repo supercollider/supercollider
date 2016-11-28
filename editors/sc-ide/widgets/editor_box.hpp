@@ -106,6 +106,7 @@ signals:
 public slots:
     void applySettings( Settings::Manager * );
     void comboBoxWhenSplitting();
+    void tabsWhenRemovingSplits();
 
 private slots:
     void onDocumentClosed(Document*);

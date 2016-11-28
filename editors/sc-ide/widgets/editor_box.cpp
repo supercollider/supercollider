@@ -56,9 +56,12 @@ CodeEditorBox::CodeEditorBox(MultiSplitter *splitter, QWidget *parent) :
     connect(Main::documentManager(), SIGNAL(saved(Document*)),
             this, SLOT(onDocumentSaved(Document*)));
     connect(Main::instance(), SIGNAL(applySettingsRequest(Settings::Manager*)),
-             this, SLOT(applySettings(Settings::Manager*)));
+            this, SLOT(applySettings(Settings::Manager*)));
 
-    connect( mSplitter->editor(), SIGNAL(splitViewActivated()), this, SLOT(comboBoxWhenSplitting()) );
+    connect( mSplitter->editor(), SIGNAL(splitViewActivated()), 
+            this, SLOT(comboBoxWhenSplitting()) );
+    connect( mSplitter->editor(), SIGNAL(splitViewDeactivated()), 
+            this, SLOT(tabsWhenRemovingSplits()) );
 
     applySettings( Main::settings() );
 }
@@ -71,9 +74,15 @@ void CodeEditorBox::applySettings( Settings::Manager *settings )
 
 void CodeEditorBox::comboBoxWhenSplitting() 
 {
-    if ( mSplitter->count()>1 ) {
-        if( !( Main::settings()->value("IDE/editor/useComboBox").toBool() ) )
-            showComboBox(true);
+    if ( mSplitter->count()>1 )
+        showComboBox(true);
+}
+
+void CodeEditorBox::tabsWhenRemovingSplits() 
+{
+    if ( mSplitter->count()<2 ) {
+        bool comboBoxInUse = Main::settings()->value("IDE/editor/useComboBox").toBool();
+        showComboBox(comboBoxInUse);
     }
 }
 

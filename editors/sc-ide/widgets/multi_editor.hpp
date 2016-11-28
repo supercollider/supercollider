@@ -151,6 +151,7 @@ public:
 signals:
     void currentDocumentChanged( Document * );
     void splitViewActivated();
+    void splitViewDeactivated();
 
 public slots:
 
