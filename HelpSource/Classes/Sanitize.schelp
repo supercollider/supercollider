@@ -3,7 +3,7 @@ summary:: Remove infinity, NaN, and denormals
 categories:: UGens>Info
 
 description::
-Replaces infinities, NaNs, and subnormal numbers (denormals) with a value of your choice, usually zero. The method link::Classes/UGen#-sanitize:: provides a shorthand for this.
+Replaces infinities, NaNs, and subnormal numbers (denormals) with a given signal, zero by default. The method link::Classes/UGen#-sanitize:: provides a shorthand for this.
 
 See also link::Classes/CheckBadValues::, which allows you to discriminate specific kinds of bad values and print information about them to the post window.
 
