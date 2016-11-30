@@ -70,7 +70,7 @@ SplayZ {
 		if (levelComp) { level = level * n.reciprocal.sqrt };
 
 		"SplayZ is deprecated, because its geometry is wrong.
-Please convert to SplayAz.".inform;
+Please convert to SplayAz.".postln;
 
 		^Mix(PanAz.ar(
 			numChans,

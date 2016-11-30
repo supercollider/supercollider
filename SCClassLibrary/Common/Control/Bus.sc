@@ -235,7 +235,6 @@ Bus {
 		if(rate == \audio, {
 			^In.ar(index + offset, numChannels)
 		}, {
-			//"Bus converting control to audio rate".inform;
 			^K2A.ar( In.kr(index + offset, numChannels) )
 		})
 	}
