@@ -894,9 +894,6 @@ Object  {
 		_AsArchive
 		^this.primitiveFailed;
 	}
-	// support for Gen
-	genNext { ^nil }
-	genCurrent { ^this }
 
 	help {
 		this.class.asString.help
