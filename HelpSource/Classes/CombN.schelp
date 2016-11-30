@@ -11,6 +11,7 @@ which uses linear interpolation, and  link::Classes/CombC::  which uses
 cubic interpolation. Cubic interpolation is more computationally
 expensive than linear, but more accurate.
 
+The feedback coefficient is given by the equation code:: fb == 0.001 ** (delay / decay.abs) * decay.sign :: where 0.001 is -60 dBFS.
 
 classmethods::
 
