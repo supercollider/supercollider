@@ -55,6 +55,10 @@ Recorder {
 		^recordBuf !? { recordBuf.path }
 	}
 
+	numFrames {
+		^recordBuf !? { recordBuf.numFrames }
+	}
+
 	pauseRecording {
 		if(recordNode.isPlaying) {
 			recordNode.run(false);
