@@ -639,6 +639,20 @@ Server {
 		condition.wait;
 	}
 
+	findZombie { |wait = 0.1, trueFunc, falseFunc|
+		var foundZombie = false;
+		fork {
+			this.sync;
+			foundZombie = true;
+			trueFunc.value;
+		};
+		fork {
+			wait.wait;
+			if (foundZombie.not) {
+				falseFunc.value;
+			};
+		}
+	}
 
 	ping { |n = 1, wait = 0.1, func|
 		var result = 0, pingFunc;
@@ -745,21 +759,29 @@ Server {
 		if(statusWatcher.serverRunning) { "server '%' already running".format(this.name).inform; ^this };
 		if(statusWatcher.serverBooting) { "server '%' already booting".format(this.name).inform; ^this };
 
+		this.findZombie(0.1, {
 
-		statusWatcher.serverBooting = true;
+			warn("Could not boot server, because zombie present at %.\n".format(this.addr.cs));
+			"// Kill zombies first, then try booting again:"
+			"\nServer.killAll;\n%.boot;".postf(this.cs);
+		}, {
+			// all is well
 
-		statusWatcher.doWhenBooted({
-			statusWatcher.serverBooting = false;
-			this.bootInit(recover);
-		}, onFailure: onFailure ? false);
+			statusWatcher.serverBooting = true;
 
-		if(remoteControlled.not) {
-			"You will have to manually boot remote server.".inform;
-		} {
-			this.bootServerApp({
-				if(startAliveThread) { statusWatcher.startAliveThread }
-			})
-		}
+			statusWatcher.doWhenBooted({
+				statusWatcher.serverBooting = false;
+				this.bootInit(recover);
+			}, onFailure: onFailure ? false);
+
+			if(remoteControlled.not) {
+				"You will have to manually boot remote server.".inform;
+			} {
+				this.bootServerApp({
+					if(startAliveThread) { statusWatcher.startAliveThread }
+				})
+			}
+		});
 	}
 
 	bootInit { | recover = false |
