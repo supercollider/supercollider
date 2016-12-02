@@ -654,6 +654,8 @@ Server {
 		}
 	}
 
+	pidRunning { ^pid.notNil and: { pid.pidRunning } }
+
 	ping { |n = 1, wait = 0.1, func|
 		var result = 0, pingFunc;
 		if(statusWatcher.serverRunning.not) { "server not running".inform; ^this };
