@@ -161,7 +161,7 @@ SCDocHTMLRenderer {
 		};
 		if(doc.isExtension) {
 			stream
-			<< "<div class='extension-indicator-ctr'>"
+			<< "<div class='extension-indicator-ctr' title='This help file originates from a third-party quark or plugin for SuperCollider.'>"
 			<< "<img class='extension-indicator-icon' alt='Extension' src='" << baseDir << "/images/plugin.png'>"
 			<< "<span class='extension-indicator-text'>Extension</span>"
 			<< "</div>";
