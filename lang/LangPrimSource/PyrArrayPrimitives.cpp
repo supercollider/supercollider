@@ -64,6 +64,7 @@ int prArrayPyramid(VMGlobals *g, int numArgsPushed);
 int prArraySlide(VMGlobals *g, int numArgsPushed);
 int prArrayLace(VMGlobals *g, int numArgsPushed);
 int prArrayContainsSeqColl(VMGlobals *g, int numArgsPushed);
+int prArrayMaxDepth(VMGlobals *g, int numArgsPushed);
 int prArrayWIndex(VMGlobals *g, int numArgsPushed);
 int prArrayNormalizeSum(VMGlobals *g, int numArgsPushed);
 int prArrayIndexOfGreaterThan(VMGlobals *g, int numArgsPushed);
@@ -2087,6 +2088,44 @@ int prArrayContainsSeqColl(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+inline int sc_arrayMaxDepth(PyrSlot *a, int depth)
+{
+	PyrSlot *slot, *endptr;
+	PyrObject *obj;
+	int size, newdepth;
+	newdepth = depth;
+	obj = slotRawObject(a);
+	size = obj->size;
+	slot = obj->slots - 1;
+	endptr = slot + size;
+	while (slot < endptr) {
+		++slot;
+		if (IsObj(slot)) {
+			if (isKindOf(slotRawObject(slot), class_sequenceable_collection)) {
+				newdepth = sc_arrayMaxDepth(slot, depth + 1);
+			}
+		}
+	}
+	return newdepth;
+
+}
+
+int prArrayMaxDepth(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a, *b;
+
+	a = g->sp - 1;
+	b = g->sp;
+	
+	int maxdepth;
+	int err = slotIntVal(b, &maxdepth);
+	if (err) return err;
+	maxdepth = sc_arrayMaxDepth(a, maxdepth);
+	SetInt(a, maxdepth);
+	return errNone;
+}
+
+
 int prArrayNormalizeSum(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *slots2;
@@ -2424,6 +2463,8 @@ void initArrayPrimitives()
 	definePrimitive(base, index++, "_ArrayStutter", prArrayStutter, 2, 0);
 	definePrimitive(base, index++, "_ArraySlide", prArraySlide, 3, 0);
 	definePrimitive(base, index++, "_ArrayContainsSeqColl", prArrayContainsSeqColl, 1, 0);
+	definePrimitive(base, index++, "_ArrayMaxDepth", prArrayMaxDepth, 2, 0);
+
 
 	definePrimitive(base, index++, "_ArrayEnvAt", prArrayEnvAt, 2, 0);
 	definePrimitive(base, index++, "_ArrayIndexOfGreaterThan", prArrayIndexOfGreaterThan, 2, 0);

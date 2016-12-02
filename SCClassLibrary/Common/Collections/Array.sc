@@ -131,6 +131,10 @@ Array[slot] : ArrayedCollection {
 		_ArrayContainsSeqColl
 		^this.primitiveFailed
 	}
+	maxDepth { arg max = 1;
+		_ArrayMaxDepth
+		^this.primitiveFailed
+	}
 
 	//************** inconsistent argnames, see SequenceableColllection unlace!
 	unlace { arg clumpSize=2, numChan=1, clip=false;
