@@ -639,7 +639,7 @@ Server {
 		condition.wait;
 	}
 
-	findZombie { |wait = 0.1, trueFunc, falseFunc|
+	findZombies { |wait = 0.1, trueFunc, falseFunc|
 		var foundZombie = false;
 		fork {
 			this.sync;
@@ -759,11 +759,11 @@ Server {
 		if(statusWatcher.serverRunning) { "server '%' already running".format(this.name).inform; ^this };
 		if(statusWatcher.serverBooting) { "server '%' already booting".format(this.name).inform; ^this };
 
-		this.findZombie(0.1, {
+		this.findZombies(0.1, {
 
-			warn("Could not boot server, because zombie present at %.\n".format(this.addr.cs));
-			"// Kill zombies first, then try booting again:"
-			"\nServer.killAll;\n%.boot;".postf(this.cs);
+			warn("Cannot boot server because of a zombie server at %.".format(this.addr.cs));
+			"// Kill zombie(s) first, then try booting again:"
+			"\nServer.killAll;\n%.boot;\n".postf(this.cs);
 		}, {
 			// all is well
 
