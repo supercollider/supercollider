@@ -191,9 +191,7 @@ Process {
 		Class.initClassTree(AppClock); // AppClock first in case of error
 		time = this.class.elapsedTime;
 		Class.initClassTree(Object);
-		if(this.verbosity >= 1, {
-			("Class tree initialized in" + (this.class.elapsedTime - time).round(0.01) + "seconds.").inform;
-		});
+		("Class tree initialized in" + (this.class.elapsedTime - time).round(0.01) + "seconds.").inform;
 		Class.classesInited = nil;
 
 		topEnvironment = Environment.new;
