@@ -2102,7 +2102,7 @@ inline int sc_arrayMaxDepth(PyrSlot *a, int depth)
 		++slot;
 		if (IsObj(slot)) {
 			if (isKindOf(slotRawObject(slot), class_sequenceable_collection)) {
-				newdepth = sc_arrayMaxDepth(slot, depth + 1);
+				newdepth = sc_max(newdepth, sc_arrayMaxDepth(slot, depth + 1));
 			}
 		}
 	}
