@@ -85,13 +85,15 @@ The link::Classes/Node:: to record immediately after. By default, this is the de
 argument:: duration
 If set, this limits recording to a given time in seconds.
 
+note::The recording starts when the buffer has been allocated, and after the usually very short network latency. It will last for the code::duration:: exactly down to one server block size (64 samples). For scheduling the starting point of a recording precisely, call link::#-prepareForRecord:: first, and then call link::#-record:: a bundle (see link::Classes/Server#-bind:: and  link::Classes/Server#-sync::).::
+
 discussion::
 If you have not called prepareForRecord first (see above) then it will be invoked for you (but that adds a slight delay before recording starts for real).
 
 code::
 r = Recorder(s);
 { GVerb.ar(Dust.ar(4)) }.play; // play on bus 64
-r.record(numChannels:2, duration:2);
+r.record(numChannels:2);
 r.stopRecording;
 ::
 
