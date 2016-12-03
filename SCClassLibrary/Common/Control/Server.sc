@@ -322,6 +322,7 @@ Server {
 		statusWatcher = ServerStatusWatcher(server: this);
 		volume = Volume(server: this, persist: true);
 		recorder = Recorder(server: this);
+		recorder.notifyServer = true;
 
 		this.name = argName;
 		all.add(this);
