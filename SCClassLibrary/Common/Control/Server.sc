@@ -785,7 +785,7 @@ Server {
 			pid = thisProcess.pid;
 		} {
 			this.disconnectSharedMemory;
-			pid = (program ++ options.asOptionsString(addr.port)).unixCmd;
+			pid = unixCmd(program ++ options.asOptionsString(addr.port), { statusWatcher.quit(watchShutDown:false) });
 			("booting server '%' on address: %:%").format(this.name, addr.hostname, addr.port.asString).inform;
 			if(options.protocol == \tcp, { addr.tryConnectTCP(onComplete) }, onComplete);
 		}
