@@ -47,6 +47,12 @@ Recorder {
 		}
 	}
 
+	recordBus { |bus, duration, path, numChannels, node|
+		var n = bus.numChannels;
+		if(numChannels.notNil and: { n.notNil }) { n = min(numChannels, n) };
+		this.record(path, bus.index, n, node, duration)
+	}
+
 	isRecording {
 		^recordNode.isPlaying
 	}
