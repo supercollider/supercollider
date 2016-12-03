@@ -1377,8 +1377,8 @@ void buildBigMethodMatrix()
 			100. * (double)numFilled/(rowTableSize/sizeof(PyrMethod*)));
 	}
 #endif
+	post("\tFound %d classes and %d method names.\n", numClasses, numSelectors);
 	if (gVerbosity >= 1) {
-		post("\tFound %d classes and %d method selectors.\n", numClasses, numSelectors);
 		post("\tMethod lookup table is %d bytes, ", rowTableSize);
 		post("out of a maximum of %d bytes.\n", numSelectors * numClasses * sizeof(PyrMethod*));
 	}
