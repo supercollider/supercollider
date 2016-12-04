@@ -239,6 +239,7 @@ void DiskIn_Ctor(DiskIn* unit)
 	unit->m_buf = unit->mWorld->mSndBufs;
 	unit->m_framepos = 0;
 	SETCALC(DiskIn_next);
+	ClearUnitOutputs(unit, 1);
 }
 
 void DiskIn_next(DiskIn *unit, int inNumSamples)
@@ -328,6 +329,7 @@ void DiskOut_Ctor(DiskOut* unit)
 	unit->m_framepos = 0;
 	unit->m_framewritten = 0;
 	SETCALC(DiskOut_next);
+	ClearUnitOutputs(unit, 1);
 }
 
 
@@ -404,7 +406,7 @@ sendMessage:
 void DiskOut_Dtor(DiskOut* unit)
 {
     GET_BUF
-    
+
     uint32 framepos = unit->m_framepos;
     uint32 bufFrames2 = bufFrames >> 1;
     // check that we didn't just write
@@ -444,6 +446,8 @@ void VDiskIn_Ctor(VDiskIn* unit)
 		SETCALC(VDiskIn_next_rate1);
 	else
 		SETCALC(VDiskIn_first);
+
+	ClearUnitOutputs(unit, 1);
 }
 
 static void VDiskIn_request_buffer(VDiskIn * unit, float fbufnum, uint32 bufFrames2,
