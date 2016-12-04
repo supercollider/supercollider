@@ -86,14 +86,14 @@ Recorder {
 	}
 
 	stopRecording {
-		server.makeBundle(nil, {
-			if(synthDef.notNil) {
+		if(synthDef.notNil) {
+			server.makeBundle(nil, {
 				this.prStopRecord;
 				this.changedServer(\recording, false);
-			} {
-				"Not Recording".warn
-			}
-		})
+			})
+		} {
+			"Not Recording".warn
+		}
 	}
 
 	prepareForRecord { | path, numChannels |
