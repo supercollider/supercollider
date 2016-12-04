@@ -133,7 +133,11 @@ Array[slot] : ArrayedCollection {
 	}
 	maxDepth { arg max = 1;
 		_ArrayMaxDepth
-		^this.primitiveFailed
+		^super.maxDepth(max)
+	}
+	maxSizeAtDepth { arg rank;
+		_ArrayMaxSizeAtDepth
+		^super.maxSizeAtDepth(rank)
 	}
 
 	//************** inconsistent argnames, see SequenceableColllection unlace!
