@@ -424,35 +424,13 @@ SequenceableCollection : Collection {
 		^list
 	}
 
-	flattenBelow { |numLevels = 1|
+	flatBelow { |level = 1|
 
-		if (numLevels <= 0) { ^this };
-		if (numLevels == 1) { ^this.flat };
-		numLevels = numLevels - 1;
+		if (level <=0) { ^this.flat };
 
 		^this.collect { |item|
-			if (item.respondsTo(\flattenBelow)) {
-				item.flattenBelow(numLevels)
-			} {
-				item
-			}
-		}
-	}
-
-	flattenLowestFirst { |numLevels = 1, level|
-
-		if (numLevels <= 0) { ^this };
-
-		// get deepest level first time only
-		if (level.isNil) {
-			level = this.maxDepth - 1 - numLevels;
-		};
-
-		if (level <= 0) { ^this.flat };
-
-		^this.collect { |item|
-			if (item.respondsTo(\flattenLowestFirst)) {
-				item.flattenLowestFirst(numLevels, level - 1)
+			if (item.respondsTo(\flatBelow)) {
+				item.flatBelow(level - 1)
 			} {
 				item
 			}
