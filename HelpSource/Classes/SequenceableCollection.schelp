@@ -332,29 +332,8 @@ a.flatten(4); // [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 ]
 ::
 
 
-method::flattenLowestFirst
-Symmetric equivalent to link::#-flatten::. Implemented also in link::#-flatten2:: where code::numLevels:: is negative.
-
-argument::numLevels
-Specifies how many levels upward (outward) to flatten.
-
-argument::level
-From what level downward to calculate numLevels.
-
-
-code::
-a = [1, 2, [3, 4, [5, 6, [7, 8, [9, 0]]]]];
-
-a.flattenLowestFirst(1); // [ 1, 2, [ 3, 4, [ 5, 6, [ 7, 8, [ 9, 0 ] ] ] ] ]
-a.flattenLowestFirst(2); // [ 1, 2, [ 3, 4, [ 5, 6, [ 7, 8, 9, 0 ] ] ] ]
-a.flattenLowestFirst(3); // [ 1, 2, [ 3, 4, 5, 6, 7, 8, 9, 0 ] ]
-a.flattenLowestFirst(4); // [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 ]
-::
-
-
-
 method::flatten2
-A symmetric combination of link::#-flatten:: and link::#-flattenLowestFirst::. For a negative code::numLevels::, it flattens starting from the innermost arrays.
+A symmetric version of link::#-flatten::. For a negative code::numLevels::, it flattens starting from the innermost arrays.
 
 argument::numLevels
 Specifies how many levels downward (inward) or upward (outward) to flatten.
@@ -374,19 +353,17 @@ a.flatten2(-4); // [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 ]
 
 
 
-method::flattenBelow
+method::flatBelow
 Flatten all subarrays deeper than strong::numlevels::.
 
-argument::numLevels
+argument::level
 Specifies from what level onward to flatten.
 
 code::
 a = [1, 2, [3, 4, [5, 6, [7, 8, [9, 0]]]]];
-a.flattenBelow(1); // [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 ]
-a.flattenBelow(2); // [ 1, 2, [ 3, 4, 5, 6, 7, 8, 9, 0 ] ]
-a.flattenBelow(3); // [ 1, 2, [ 3, 4, [ 5, 6, 7, 8, 9, 0 ] ] ]
-
-a.flattenBelow(0); // neutral: returns original
+a.flatBelow(0); // [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 ]
+a.flatBelow(1); // [ 1, 2, [ 3, 4, 5, 6, 7, 8, 9, 0 ] ]
+a.flatBelow(2); // [ 1, 2, [ 3, 4, [ 5, 6, 7, 8, 9, 0 ] ] ]
 ::
 
 
