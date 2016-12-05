@@ -74,8 +74,10 @@ void CodeEditorBox::applySettings( Settings::Manager *settings )
 
 void CodeEditorBox::comboBoxWhenSplitting() 
 {
-    if ( mSplitter->count()>1 )
-        showComboBox(true);
+    if ( mSplitter->count()>1 ) {
+        bool comboBoxIsInUse = Main::settings()->value("IDE/editor/useComboBoxWhenSplitting").toBool();
+        showComboBox(comboBoxIsInUse);
+    }
 }
 
 void CodeEditorBox::tabsWhenRemovingSplits() 

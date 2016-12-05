@@ -95,6 +95,7 @@ void EditorPage::load( Manager *s )
     ui->highlightBracketContents->setChecked( s->value("highlightBracketContents").toBool() );
     ui->inactiveEditorFadeAlpha->setValue( s->value("inactiveEditorFadeAlpha").toInt() );
     ui->useComboBox->setChecked( s->value("useComboBox").toBool() );
+    ui->useComboBoxWhenSplitting->setChecked( s->value("useComboBoxWhenSplitting").toBool() );
 
     s->beginGroup("font");
     QString fontFamily = s->value("family").toString();
@@ -255,6 +256,7 @@ void EditorPage::store( Manager *s )
     s->setValue("highlightBracketContents", ui->highlightBracketContents->isChecked());
     s->setValue("inactiveEditorFadeAlpha", ui->inactiveEditorFadeAlpha->value());
     s->setValue("useComboBox", ui->useComboBox->isChecked());
+    s->setValue("useComboBoxWhenSplitting", ui->useComboBoxWhenSplitting->isChecked());
 
     s->setValue("blinkDuration", ui->blinkDuration->value());
 
