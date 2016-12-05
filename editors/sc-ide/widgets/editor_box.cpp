@@ -70,6 +70,8 @@ void CodeEditorBox::applySettings( Settings::Manager *settings )
 {
     bool comboBoxActive = settings->value("IDE/editor/useComboBox").toBool();
     showComboBox(comboBoxActive);
+
+    comboBoxWhenSplitting();
 }
 
 void CodeEditorBox::comboBoxWhenSplitting() 

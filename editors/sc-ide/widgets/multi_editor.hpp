@@ -195,6 +195,8 @@ private:
     void loadBoxState( CodeEditorBox *box, const QVariantList & data, const QList<Document *> & documentList );
     void loadSplitterState( MultiSplitter *, const QVariantMap & data, const QList<Document *> & documentList );
     void showEditorTabs( bool );
+    void activateComboBoxWhenSplitting();
+    void setMainComboBoxOption();
 
     QAction *mActions[ActionRoleCount];                                                                                                                                                                                                                                             
 

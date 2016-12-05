@@ -774,8 +774,23 @@ void MultiEditor::applySettings( Settings::Manager * settings )
     mActions[ShowLinenumber]->setChecked( show_linenumber );
     mActions[ShowAutocompleteHelp]->setChecked(show_autocompletehelp);
 
-    bool comboBoxActive = settings->value("IDE/editor/useComboBox").toBool();
-    showEditorTabs(comboBoxActive);    
+    setMainComboBoxOption();
+
+    int boxCount = mSplitter->findChildren<CodeEditorBox*>().count();
+    if (boxCount > 1) {
+        activateComboBoxWhenSplitting();  
+    }
+}
+
+void MultiEditor::activateComboBoxWhenSplitting() {
+    emit splitViewActivated();
+    bool comboBoxWhenSplitting = Main::settings()->value("IDE/editor/useComboBoxWhenSplitting").toBool();
+    showEditorTabs(comboBoxWhenSplitting);
+}
+
+void MultiEditor::setMainComboBoxOption() {
+    bool comboBoxInUse = Main::settings()->value("IDE/editor/useComboBox").toBool();
+    showEditorTabs( comboBoxInUse );
 }
 
 void MultiEditor::showEditorTabs( bool condition ) 
@@ -1192,9 +1207,7 @@ void MultiEditor::split( Qt::Orientation splitDirection )
     mSplitter->insertWidget(box, curBox, splitDirection);
     box->setFocus( Qt::OtherFocusReason );
 
-    emit splitViewActivated();
-    bool comboBoxWhenSplitting = Main::settings()->value("IDE/editor/useComboBoxWhenSplitting").toBool();
-    showEditorTabs(comboBoxWhenSplitting);
+    activateComboBoxWhenSplitting();
 }
 
 void MultiEditor::removeCurrentSplit()
@@ -1216,14 +1229,10 @@ void MultiEditor::removeCurrentSplit()
 
     if (boxCount == 2) {
         emit splitViewDeactivated();
-        bool comboBoxInUse = Main::settings()->value("IDE/editor/useComboBox").toBool();
-        showEditorTabs( comboBoxInUse );
+        setMainComboBoxOption();
     }
     else if (boxCount > 2) {
-        bool comboBoxInUse = Main::settings()->value("IDE/editor/useComboBoxWhenSplitting").toBool();
-        showEditorTabs( comboBoxInUse );
-        // Do not allow removing the one and only box.
-        return;
+        activateComboBoxWhenSplitting();
     }
 }
 
@@ -1244,8 +1253,7 @@ void MultiEditor::removeAllSplits()
     layout()->addWidget(newSplitter);
 
     emit splitViewDeactivated();
-    bool comboBoxInUse = Main::settings()->value("IDE/editor/useComboBox").toBool();
-    showEditorTabs( comboBoxInUse );
+    setMainComboBoxOption();
 
     box->setFocus( Qt::OtherFocusReason );
 }
