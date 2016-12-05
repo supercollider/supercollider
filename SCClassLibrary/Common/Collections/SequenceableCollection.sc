@@ -441,7 +441,7 @@ SequenceableCollection : Collection {
 	flatten2 { arg numLevels=1;
 		if (numLevels == 0) { ^this };
 		if (numLevels > 0) { ^this.flatten(numLevels) };
-		^this.flattenLowestFirst(numLevels.abs);
+		^this.flatBelow(this.maxDepth - 1 + numLevels);
 	}
 
 	flat {
