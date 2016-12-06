@@ -457,13 +457,13 @@ SequenceableCollection : Collection {
 		maxsize = 0;
 		this.do({ arg sublist;
 			var sz;
-			sz = if(sublist.isSequenceableCollection, { sublist.size }, { 1 });
+			sz = if(sublist.canHaveIndexableDepth, { sublist.size }, { 1 });
 			if (sz > maxsize, { maxsize = sz });
 		});
 
 		list = this.species.fill(maxsize, { this.species.new(size) });
 		this.do({ arg isublist, i;
-			if(isublist.isSequenceableCollection, {
+			if(isublist.canHaveIndexableDepth, {
 				list.do({ arg jsublist, j;
 					jsublist.add( isublist.wrapAt(j) );
 				});
@@ -478,12 +478,12 @@ SequenceableCollection : Collection {
 
 	flopWith { |func|
 		var maxsize = this.maxValue { |sublist|
-			if(sublist.isSequenceableCollection) { sublist.size } { 1 }
+			if(sublist.canHaveIndexableDepth) { sublist.size } { 1 }
 		};
 
 		^this.species.fill(maxsize, { |i|
 			func.value( *this.collect { |sublist|
-				if(sublist.isSequenceableCollection) {
+				if(sublist.canHaveIndexableDepth) {
 					sublist.wrapAt(i)
 				} {
 					sublist
@@ -522,7 +522,7 @@ SequenceableCollection : Collection {
 	wrapAtDepth { arg rank, index;
 		if(rank == 0) { ^this.wrapAt(index) };
 		^this.collect { |item, i|
-			if(item.isSequenceableCollection) {
+			if(item.canHaveIndexableDepth) {
 				item.wrapAtDepth(rank - 1, index)
 			} {
 				item
@@ -671,6 +671,7 @@ SequenceableCollection : Collection {
 	}
 
 	isSequenceableCollection { ^true }
+	canHaveIndexableDepth { ^true }
 	containsSeqColl { ^this.any(_.isSequenceableCollection) }
 	isAssociationArray { ^this.at(0).isKindOf(Association) }
 

@@ -266,6 +266,8 @@ Object  {
 	isCollection { ^false }
 	isArray { ^false }
 	isString { ^false }
+	canHaveDepth { ^false }
+	canHaveIndexableDepth { ^false }
 	containsSeqColl { ^false }
 	isValidUGenInput { ^false }
 	isException { ^false }
