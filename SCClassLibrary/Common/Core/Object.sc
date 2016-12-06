@@ -39,7 +39,7 @@ Object  {
 	//accessing
 	size { ^0 }
 	indexedSize { ^0 }
-	flatSize { ^1	}
+	flatSize { ^1 }
 
 	do { arg function; function.value(this, 0) }
 	generate { arg function, state; this.do(function); ^state }
@@ -404,6 +404,7 @@ Object  {
 		if (levels <= 1) { ^[this] };
 		^[this.bubble(depth,levels-1)]
 	}
+	flatten { ^this }
 
 	// compatibility with sequenceable collection
 
@@ -898,4 +899,10 @@ Object  {
 	help {
 		this.class.asString.help
 	}
+
+	// support for SequenceableCollection flat
+	prFlat { |list|
+		^list.add(this)
+	}
+
 }
