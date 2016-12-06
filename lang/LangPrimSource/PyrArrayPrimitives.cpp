@@ -2102,7 +2102,7 @@ inline int sc_arrayMaxDepth(PyrSlot *a, int depth)
 	while (slot < endptr) {
 		++slot;
 		if (IsObj(slot)) {
-			if (isKindOf(slotRawObject(slot), class_collection)) {
+			if (isKindOf(slotRawObject(slot), class_collection) && (!isKindOf(slotRawObject(slot), class_string))) {
 				if (isKindOf(slotRawObject(slot), class_arrayed_collection)) {
 					newdepth = sc_arrayMaxDepth(slot, depth + 1);
 					if(newdepth < 0) return -1;
@@ -2147,7 +2147,7 @@ inline int sc_arrayMaxSizeAtDepth(PyrSlot *a, int rank)
 	while (slot < endptr) {
 		++slot;
 		if (IsObj(slot)) {
-			if (isKindOf(slotRawObject(slot), class_collection)) {
+			if (isKindOf(slotRawObject(slot), class_collection) && (!isKindOf(slotRawObject(slot), class_string))) {
 				if (isKindOf(slotRawObject(slot), class_arrayed_collection)) {
 					newsize = sc_arrayMaxSizeAtDepth(slot, rank - 1);
 					if(newsize < 0) return -1;
