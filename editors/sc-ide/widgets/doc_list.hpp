@@ -43,10 +43,13 @@ public:
 public Q_SLOTS:
 
     void setCurrent( Document * );
+    void updateDockletOrder( int, int );
+    void setDockletEditable();
 
 Q_SIGNALS:
 
     void clicked( Document * );
+    void updateTabsOrder( QList<Document*> );
 
 private Q_SLOTS:
 
@@ -73,11 +76,16 @@ private:
         Document *mDoc;
     };
 
+    virtual void dropEvent( QDropEvent *);
+    QList<Document*> listDocuments();
+
     Item *addItemFor( Document * );
     Item *itemFor( Document * );
     Item *itemFor( QListWidgetItem * );
     QSignalMapper mModificationMapper;
     QIcon mDocModifiedIcon;
+    QList<Document*> dockletOrder;
+    bool holdList;
 };
 
 class DocumentsDocklet : public Docklet
@@ -91,6 +99,7 @@ public:
 private:
 
     DocumentListWidget *mDocList;
+
 };
 
 } // namespace ScIDE

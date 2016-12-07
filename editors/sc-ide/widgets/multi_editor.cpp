@@ -347,10 +347,23 @@ void MultiEditor::makeSignalConnections()
             this, SLOT(onCurrentTabChanged(int)));
     connect(mTabs, SIGNAL(tabCloseRequested(int)),
             this, SLOT(onCloseRequest(int)));
+    connect(mTabs, SIGNAL(tabMoved(int, int)),
+            this, SLOT(updateDocOrder(int, int)));
+    connect(mTabs, SIGNAL(tabBarClicked(int)),
+            this, SLOT(setDockletEditable(int)));
 
     mBoxSigMux->connect(SIGNAL(currentChanged(GenericCodeEditor*)),
             this, SLOT(onCurrentEditorChanged(GenericCodeEditor*)));
     
+}
+
+void MultiEditor::updateDocOrder(int from, int to)
+{
+    Q_EMIT( updateDockletOrder(from, to) );
+}
+
+void MultiEditor::setDockletEditable(int clickedTab) {
+    Q_EMIT( setDockletEditable() );
 }
 
 void MultiEditor::breakSignalConnections()
@@ -1018,6 +1031,17 @@ void MultiEditor::setCurrent( Document *doc )
     int tabIdx = tabForDocument(doc);
     if (tabIdx != -1)
         mTabs->setCurrentIndex(tabIdx);
+}
+
+void MultiEditor::updateTabsOrder( QList<Document*> docOrder ) {
+    for ( int idx = 0; idx < docOrder.count(); idx++ ) {
+        if ( docOrder.at(idx) != documentForTab(idx) ) {
+            Document *doc = docOrder.at(idx);
+            int tabIdx = tabForDocument(doc);
+            mTabs->moveTab(tabIdx, idx);
+//            updateDocOrder(tabIdx, idx);
+        }
+    }
 }
 
 void MultiEditor::showNextDocument()

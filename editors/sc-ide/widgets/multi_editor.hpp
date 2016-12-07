@@ -152,6 +152,8 @@ signals:
     void currentDocumentChanged( Document * );
     void splitViewActivated();
     void splitViewDeactivated();
+    void updateDockletOrder( int, int );
+    void setDockletEditable();
 
 public slots:
 
@@ -171,6 +173,8 @@ public slots:
 
     void setShowAutocompleteHelp(bool on);
 
+    void updateTabsOrder( QList<Document*> );
+
 private slots:
     void applySettings( Settings::Manager * );
     void onOpen( Document *, int initialCursorPosition, int selectionLength );
@@ -182,6 +186,8 @@ private slots:
     void onCurrentEditorChanged( GenericCodeEditor * );
     void onBoxActivated( CodeEditorBox * );
     void onDocModified( QObject * );
+    void updateDocOrder( int, int);
+    void setDockletEditable(int);
 
 private:
     void makeSignalConnections();
