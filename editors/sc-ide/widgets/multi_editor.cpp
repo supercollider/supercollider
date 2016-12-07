@@ -1020,6 +1020,16 @@ void MultiEditor::setCurrent( Document *doc )
         mTabs->setCurrentIndex(tabIdx);
 }
 
+void MultiEditor::updateTabsOrder( QList<Document*> docOrder ) {
+    for ( int idx = 0; idx < docOrder.count(); idx++ ) {
+        if ( docOrder.at(idx) != documentForTab(idx) ) {
+            Document *doc = docOrder.at(idx);
+            int tabIdx = tabForDocument(doc);
+            mTabs->moveTab(tabIdx, idx);
+        }
+    }
+}
+
 void MultiEditor::showNextDocument()
 {
     int currentIndex = mTabs->currentIndex();

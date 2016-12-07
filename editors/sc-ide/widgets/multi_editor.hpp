@@ -171,6 +171,8 @@ public slots:
 
     void setShowAutocompleteHelp(bool on);
 
+    void updateTabsOrder( QList<Document*> );
+
 private slots:
     void applySettings( Settings::Manager * );
     void onOpen( Document *, int initialCursorPosition, int selectionLength );

@@ -47,6 +47,7 @@ public Q_SLOTS:
 Q_SIGNALS:
 
     void clicked( Document * );
+    void updateTabsOrder( QList<Document*> );
 
 private Q_SLOTS:
 
@@ -73,6 +74,8 @@ private:
         Document *mDoc;
     };
 
+    virtual void dropEvent( QDropEvent *);
+
     Item *addItemFor( Document * );
     Item *itemFor( Document * );
     Item *itemFor( QListWidgetItem * );
@@ -91,6 +94,7 @@ public:
 private:
 
     DocumentListWidget *mDocList;
+
 };
 
 } // namespace ScIDE
