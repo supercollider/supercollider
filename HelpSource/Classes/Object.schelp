@@ -569,13 +569,19 @@ Throws a ShouldNotImplementError. Use this to indicate that this inherited metho
 
 method::deprecated
 
-Throws a DeprecatedError. Use this to indicate that the enclosing method has been replaced by a better one (possibly in another class), and that it will likely be removed in the future. Unlike other errors, DeprecatedError only halts execution if Error.debug == true. In all cases it posts a warning indicating that the method is deprecated and what is the recommended alternative.
+Throws a DeprecatedError. Use this to indicate that the enclosing method has been replaced by a better one (possibly in another class), and that it will likely be removed in the future. Unlike other errors, DeprecatedError only halts execution if code::Error.debug == true::. In all cases it posts a warning indicating that the method is deprecated and what is the recommended alternative.
 
 discussion::
 code::
 foo {
 	this.deprecated(thisMethod, ThisOrSomeOtherObject.findMethod(\foo);
-	… // execution of this method will continue unless Error.debug == true
+	... // execution of this method will continue unless Error.debug == true
+}
+
+// For a class method:
+*bar {
+	this.deprecated(thisMethod, OtherClass.class.findMethod(\bar));
+	...
 }
 ::
 
