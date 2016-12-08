@@ -28,6 +28,7 @@
 #include <QComboBox>
 #include <QBoxLayout>
 #include <QStandardItemModel>
+#include <QSortFilterProxyModel>
 
 #include "../core/doc_manager.hpp"
 #include "../core/main.hpp"
@@ -126,6 +127,7 @@ private:
     QBoxLayout *mTopLayout;
     QComboBox *mDocComboBox;
     MultiSplitter *mSplitter;
+    QSortFilterProxyModel *mProxyModel;
 };
 
 } // namespace ScIDE
