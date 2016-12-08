@@ -41,6 +41,7 @@ DocumentListWidget::DocumentListWidget(DocumentManager *manager, QWidget * paren
             this, SLOT(onItemClicked(QListWidgetItem*)));
 
     setDragDropMode(QAbstractItemView::InternalMove);
+    holdList = false;
 }
 
 void DocumentListWidget::setCurrent( Document *doc )
@@ -57,19 +58,39 @@ void DocumentListWidget::setCurrent( Document *doc )
 void DocumentListWidget::dropEvent( QDropEvent *event )
 {
     QListWidget::dropEvent(event);
-    QList<Document*> tempDocumentList;
+    QList<Document*> tempDocumentList = listDocuments();
 
+    holdList = true;
+
+    Q_EMIT( updateTabsOrder(tempDocumentList) );
+}
+
+QList<Document*> DocumentListWidget::listDocuments() {
+    QList<Document*> list;
     for ( int row = 0; row < count(); row++ ) {
         Item *itm = itemFor(item(row));
         if(itm) {
             Document * doc = itm->mDoc;
             if (doc) {
-                tempDocumentList << doc;
+                list << doc;
             }
         }
     }
+    return list;
+}
 
-    Q_EMIT( updateTabsOrder(tempDocumentList) );
+void DocumentListWidget::updateDockletOrder(int from, int to) 
+{
+    if (!holdList) {
+        QListWidgetItem *itemToMove = takeItem(to);
+        insertItem(from, itemToMove);
+        setCurrentRow(from);
+    }
+}
+
+void DocumentListWidget::setDockletEditable()
+{
+    holdList = false;
 }
 
 void DocumentListWidget::onOpen( Document *doc, int, int )
@@ -102,6 +123,7 @@ void DocumentListWidget::onModificationChanged( QObject * obj )
 
 void DocumentListWidget::onItemClicked(QListWidgetItem* litem)
 {
+    dockletOrder = listDocuments();
     Item *item = itemFor(litem);
     if(item)
         Q_EMIT( clicked(item->mDoc) );

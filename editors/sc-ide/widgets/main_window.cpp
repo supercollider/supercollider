@@ -193,6 +193,12 @@ MainWindow::MainWindow(Main * main) :
             Qt::QueuedConnection);
     connect(mDocumentsDocklet->list(), SIGNAL(updateTabsOrder(QList<Document*>)),
             mEditors, SLOT(updateTabsOrder(QList<Document*>)));
+    connect(mEditors, SIGNAL(updateDockletOrder(int, int)),
+            mDocumentsDocklet->list(), SLOT(updateDockletOrder(int, int)),
+            Qt::QueuedConnection);
+    connect(mEditors, SIGNAL(setDockletEditable()),
+            mDocumentsDocklet->list(), SLOT(setDockletEditable()),
+            Qt::QueuedConnection);
 
     // Update actions on document change
     connect(mEditors, SIGNAL(currentDocumentChanged(Document*)),
