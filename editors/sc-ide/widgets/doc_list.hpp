@@ -44,7 +44,6 @@ public Q_SLOTS:
 
     void setCurrent( Document * );
     void updateDockletOrder( int, int );
-    void setDockletEditable();
 
 Q_SIGNALS:
 
@@ -85,7 +84,6 @@ private:
     QSignalMapper mModificationMapper;
     QIcon mDocModifiedIcon;
     QList<Document*> dockletOrder;
-    bool holdList;
 };
 
 class DocumentsDocklet : public Docklet

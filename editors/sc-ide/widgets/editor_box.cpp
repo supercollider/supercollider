@@ -24,6 +24,7 @@
 
 #include <QPainter>
 #include <QScrollBar>
+#include <QModelIndex>
 
 namespace ScIDE {
 
@@ -47,9 +48,13 @@ CodeEditorBox::CodeEditorBox(MultiSplitter *splitter, QWidget *parent) :
     mDocComboBox->setFocusPolicy(Qt::NoFocus);
     mTopLayout->addWidget(mDocComboBox);
 
-    mDocComboBox->setModel(Main::documentManager()->docModel());
+    mProxyModel = new QSortFilterProxyModel();
+    mProxyModel->setSourceModel(Main::documentManager()->docModel());
+    mProxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
+    mProxyModel->sort( 0 );
+    mDocComboBox->setModel(mProxyModel);
     
-    connect(mDocComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onComboSelectionChanged(int)));
+    connect(mDocComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onComboSelectionChanged(int)), Qt::QueuedConnection);
 
     connect(Main::documentManager(), SIGNAL(closed(Document*)),
             this, SLOT(onDocumentClosed(Document*)));
@@ -100,8 +105,12 @@ void CodeEditorBox::showComboBox( bool condition )
 
 void CodeEditorBox::onComboSelectionChanged(int index)
 {
-    if(index >=0 && mDocComboBox) {
-        setDocument(Main::documentManager()->docModel()->item(index)->data().value<Document *>(), -1, 0);
+    QModelIndex proxyIndex = mProxyModel->index(index, 0);
+    QModelIndex mRow = mProxyModel->mapToSource(proxyIndex);
+    int mIndex = mRow.row();
+
+    if(mIndex >=0 && index>=0 && mDocComboBox) {
+        setDocument(Main::documentManager()->docModel()->item(mIndex)->data().value<Document *>(), -1, 0);
     }
 }
 
@@ -133,8 +142,16 @@ void CodeEditorBox::setDocument(Document *doc, int pos, int selectionLength)
         mLayout->setCurrentWidget(editor);
         setFocusProxy(editor);
         int modelIndex = doc->modelItem()->index().row();
-        if (mDocComboBox)
-            mDocComboBox->setCurrentIndex(modelIndex);
+        if (mDocComboBox) {
+            mDocComboBox->blockSignals(true);
+            QModelIndex mIndex = mProxyModel->index(modelIndex, 0);
+            QModelIndex proxyRow = mProxyModel->mapFromSource(mIndex);
+            int proxyIndex = proxyRow.row();
+            mDocComboBox->setCurrentIndex(proxyIndex);
+            mDocComboBox->setCurrentText(doc->title());
+            mDocComboBox->blockSignals(false);
+        }
+
     }
 
     if (pos != -1)
