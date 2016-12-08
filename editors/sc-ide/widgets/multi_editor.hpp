@@ -153,7 +153,6 @@ signals:
     void splitViewActivated();
     void splitViewDeactivated();
     void updateDockletOrder( int, int );
-    void setDockletEditable();
 
 public slots:
 
@@ -187,7 +186,6 @@ private slots:
     void onBoxActivated( CodeEditorBox * );
     void onDocModified( QObject * );
     void updateDocOrder( int, int);
-    void setDockletEditable(int);
 
 private:
     void makeSignalConnections();
