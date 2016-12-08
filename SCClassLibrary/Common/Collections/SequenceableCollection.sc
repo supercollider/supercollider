@@ -406,13 +406,14 @@ SequenceableCollection : Collection {
 	curdle { arg probability;
 		^this.separate({ probability.coin });
 	}
+
 	flatten { arg numLevels=1;
 		var list;
 
 		if (numLevels <= 0, { ^this });
 		numLevels = numLevels - 1;
 
-		list = this.species.new;
+		list = this.species.new(this.size);
 		this.do({ arg item;
 			if (item.respondsTo('flatten'), {
 				list = list.addAll(item.flatten(numLevels));
@@ -421,6 +422,26 @@ SequenceableCollection : Collection {
 			});
 		});
 		^list
+	}
+
+	flatBelow { |level = 1|
+
+		if (level <=0) { ^this.flat };
+
+		^this.collect { |item|
+			if (item.respondsTo(\flatBelow)) {
+				item.flatBelow(level - 1)
+			} {
+				item
+			}
+		}
+	}
+
+	// bidirectional flattening
+	flatten2 { arg numLevels=1;
+		if (numLevels == 0) { ^this };
+		if (numLevels > 0) { ^this.flatten(numLevels) };
+		^this.flatBelow(this.maxDepth - 1 + numLevels);
 	}
 
 	flat {
