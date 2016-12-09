@@ -1333,7 +1333,7 @@ SCErr meth_version(World *inWorld, int inSize, char *inData, ReplyAddress* inRep
 	sc_msg_iter msg(inSize, inData);
 
 	small_scpacket packet;
-	packet.adds("/version");
+	packet.adds("/version.reply");
 	packet.maketags(5);
 	packet.addtag(',');
 	packet.addtag('s');
