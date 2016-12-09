@@ -1334,12 +1334,16 @@ SCErr meth_version(World *inWorld, int inSize, char *inData, ReplyAddress* inRep
 
 	small_scpacket packet;
 	packet.adds("/version");
-	packet.maketags(3);
+	packet.maketags(5);
 	packet.addtag(',');
 	packet.addtag('s');
 	packet.adds("scsynth");
+	packet.addtag('i');
+	packet.addi(SC_VersionMajor);
+	packet.addtag('i');
+	packet.addi(SC_VersionMinor);
 	packet.addtag('s');
-	packet.adds(SC_VersionString().c_str());
+	packet.adds(SC_VersionPatch);
 
 	CallSequencedCommand(SendReplyCmd, inWorld, packet.size(), packet.data(), inReply);
 
