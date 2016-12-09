@@ -10,10 +10,10 @@ Speech has been deprecated for a number of reasons:
 list::
 ## The audio output is independent of the server, so it has major limitations when attempting to use it in SC compositions.
 ## The core library should be small, and speech synthesis is too niche to merit inclusion.
-## It is OS X only, and adding cross-platform compatibility is nontrivial.
+## It is OS X only, and implementing cross-platform compatibility is nontrivial.
 ::
 
-The recommended alternative is code:: "say".unixCmd ::. For alternative freeware TTS systems that may have better cross-platform support, we suggest eSpeak, Festival, MBROLA, and pico2wave.
+Generally, the replacement is to use unixCmd to invoke a speech synthesizer yourself. There is also a third-party quark that simplifies this for you: https://github.com/adcxyz/say.
 ::
 
 code::
