@@ -115,6 +115,20 @@ However, even if this is not done, the next bundle or message received will begi
 
 Temporary error suppression may not affect asynchronous commands in every case.
 
+subsection:: /version
+
+Query the SuperCollider version. Replies to sender with the following message:
+definitionlist::
+## /version.reply || table::
+## string || Program name. May be "scsynth" or "supernova".
+## int || Major version number. Equivalent to sclang's code::Main.scVersionMajor::.
+## int || Minor version number. Equivalent to sclang's code::Main.scVersionMinor::.
+## string || Patch version name. Equivalent to sclang's code::Main.scVersionPostfix::.
+::
+::
+
+The standard human-readable version string can be constructed by concatenating code:: major_version ++ "." ++ minor_version ++ patch_version ::. Since version information is easily accessible to sclang users via the methods described above, this command is mostly useful for alternate clients.
+
 section:: Synth Definition Commands
 
 subsection:: /d_recv
