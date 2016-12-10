@@ -341,7 +341,7 @@ Buffer {
 						startFrame = 0, leaveOpen = false, completionMessage;
 		// doesn't change my path
 		^["/b_write", bufnum, path,
-				headerFormat, sampleFormat, numFrames, startFrame,
+				headerFormat, sampleFormat, numFrames.asInt, startFrame.asInt,
 				leaveOpen.binaryValue, completionMessage.value(this)];
 	}
 
