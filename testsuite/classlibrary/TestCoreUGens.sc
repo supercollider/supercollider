@@ -342,7 +342,8 @@ test_bufugens{
 		// Copying data from b to c:
 		{
 			RecordBuf.ar(PlayBuf.ar(numchans, b, BufRateScale.ir(b), doneAction: 2), c, loop:0);
-            DC.ar(0);
+			// Return silence to avoid making noise
+			0;
 		}.play;
 		Server.default.sync;
 		1.0.wait;
@@ -374,7 +375,11 @@ test_demand {
 	o.add;
 
 	tests = [
-            {LPF.ar(LeakDC.ar(Duty.ar(0.1, 0, Dseq((1..8)), 2))); DC.ar(0);}
+		{
+			LPF.ar(LeakDC.ar(Duty.ar(0.1, 0, Dseq((1..8)), 2)));
+			// Return silence to avoid making noise
+			0;
+		}
 	];
 
 	tests.do{|item| nodestofree = nodestofree.add(item.play.nodeID) };
@@ -394,7 +399,12 @@ test_demand {
 			5453, {testNaN = msg[3] <= 0.0 or:{msg[3] >= 1.0}}		);
 	});
 	o.add;
-    {Line.kr(1, 0, 1, 1, 0, 2); SendTrig.kr(Impulse.kr(10, 0.5), 5453, LFTri.ar(Duty.ar(0.1, 0, Dseq(#[100], 1)))); DC.ar(0)}.play;
+	{
+		Line.kr(1, 0, 1, 1, 0, 2);
+		SendTrig.kr(Impulse.kr(10, 0.5), 5453, LFTri.ar(Duty.ar(0.1, 0, Dseq(#[100], 1))));
+		// Return silence to avoid making noise
+		0;
+	}.play;
 	1.5.wait;
 	s.sync;
 	this.assert(testNaN.not, "Duty+LFTri should not output NaN");
