@@ -416,7 +416,7 @@ Event : Environment {
 				play: #{
 					var tempo, server;
 
-					~finish.value;
+					~finish.value(currentEnvironment);
 
 					server = ~server ?? { Server.default };
 
@@ -425,6 +425,8 @@ Event : Environment {
 						thisThread.clock.tempo = tempo;
 					};
 					if(currentEnvironment.isRest.not) { ~eventTypes[~type].value(server) };
+
+					~callback.value(currentEnvironment);
 				},
 
 				// synth / node interface
@@ -632,7 +634,6 @@ Event : Environment {
 
 						~server = server;
 						~id = ids;
-						~callback.value(currentEnvironment)
 					},
 
 					set: #{|server|
@@ -851,6 +852,7 @@ Event : Environment {
 							ids = ids.add(id);
 							b[2] = id;
 						};
+						~id = ids;
 
 						if ((addAction == 0) || (addAction == 3)) {
 							bndl = bndl.reverse;
