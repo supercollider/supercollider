@@ -33,6 +33,7 @@
 #include "SC_Prototypes.h"
 #include "scsynthsend.h"
 #include "SC_WorldOptions.h"
+#include "SC_Version.hpp"
 
 extern int gMissingNodeID;
 
@@ -1326,6 +1327,33 @@ SCErr meth_dumpOSC(World *inWorld, int inSize, char *inData, ReplyAddress *inRep
 	return kSCErr_None;
 }
 
+SCErr meth_version(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_version(World *inWorld, int inSize, char *inData, ReplyAddress* inReply)
+{
+	sc_msg_iter msg(inSize, inData);
+
+	small_scpacket packet;
+	packet.adds("/version.reply");
+	packet.maketags(7);
+	packet.addtag(',');
+	packet.addtag('s');
+	packet.adds("scsynth");
+	packet.addtag('i');
+	packet.addi(SC_VersionMajor);
+	packet.addtag('i');
+	packet.addi(SC_VersionMinor);
+	packet.addtag('s');
+	packet.adds(SC_VersionPatch);
+	packet.addtag('s');
+	packet.adds(SC_Branch);
+	packet.addtag('s');
+	packet.adds(SC_CommitHash);
+
+	CallSequencedCommand(SendReplyCmd, inWorld, packet.size(), packet.data(), inReply);
+
+	return kSCErr_None;
+}
+
 SCErr meth_b_set(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_b_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
@@ -1862,6 +1890,7 @@ void initMiscCommands()
 	NEW_COMMAND(status);
 	NEW_COMMAND(quit);
 	NEW_COMMAND(clearSched);
+	NEW_COMMAND(version);
 
 	NEW_COMMAND(d_recv);
 	NEW_COMMAND(d_load);
