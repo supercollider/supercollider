@@ -1264,17 +1264,30 @@ void MultiEditor::removeAllSplits()
         // Nothing to do.
         return;
 
+    breakSignalConnections();
+
     MultiSplitter *newSplitter = new MultiSplitter(this);
-    newSplitter->addWidget(box);
+
+    CodeEditorBox *nBox = newBox(newSplitter);
+    newSplitter->addWidget(nBox);
+
+    GenericCodeEditor *curEditor = box->currentEditor();
+    if (curEditor)
+        nBox->setDocument(curEditor->document(), curEditor->textCursor().position());
 
     delete mSplitter;
     mSplitter = newSplitter;
-    layout()->addWidget(newSplitter);
+    layout()->addWidget(mSplitter);
 
     emit splitViewDeactivated();
     setMainComboBoxOption();
 
-    box->setFocus( Qt::OtherFocusReason );
+    mCurrentEditorBox = 0; // ensure complete update
+    setCurrentBox(nBox);   
+
+    makeSignalConnections(); // ensure signal connections
+
+    nBox->setFocus( Qt::OtherFocusReason );
 }
 
 void MultiEditor::setShowWhitespace(bool showWhitespace)
