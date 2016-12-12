@@ -427,10 +427,10 @@ SequenceableCollection : Collection {
 	flatBelow { |level = 1|
 
 		if (level <=0) { ^this.flat };
-
+		level = level - 1;
 		^this.collect { |item|
 			if (item.respondsTo(\flatBelow)) {
-				item.flatBelow(level - 1)
+				item.flatBelow(level)
 			} {
 				item
 			}
