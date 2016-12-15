@@ -33,8 +33,8 @@ These extra levels are meant for common, default values that should be the same 
 list::
 ## code::proto:: and code::parent:: values are not shown when posting the dictionary.
 ## Copying an IdentityDictionary transfers a reference to the parent and proto into the copy. It is a reference, not a copy: changing the copy's parent also affects the parent of the original. This is for efficiency.
-## Looping operations (link::Classes/Dictionary#-do::, link::Classes/Dictionary#-keysValuesDo::) only touch the main-level values.
-## link::Classes/Dictionary#-collect::, link::Classes/Dictionary#-select::, and link::Classes/Dictionary#-reject:: return new dictionaries. The parent and proto will be preserved emphasis::as is:: in the new result, but -- as with code::do:: -- they will not be processed in the loop, and as with code::copy::, they are identical references.
+## Iteration operations (link::Classes/Dictionary#-do::, link::Classes/Dictionary#-keysValuesDo::) only touch the main-level values.
+## link::Classes/Dictionary#-collect::, link::Classes/Dictionary#-select::, and link::Classes/Dictionary#-reject:: return new dictionaries. The parent and proto will be preserved emphasis::as is:: in the new result, but -- as with code::do:: -- they will not be processed in the iteration, and as with code::copy::, they are identical references.
 ::
 
 code::
@@ -48,11 +48,11 @@ e = IdentityDictionary(8,
 e[\a] + e[\b]
 -> 15
 
-// Looping touches 'a' only
+// Iteration touches 'a' only
 e.keysValuesDo { |key, value| [key, value].postln };
 -> [ a, 5 ]
 
-// 'collect' is also a loop, and doesn't touch the parent
+// 'collect' is also an iteration, and doesn't touch the parent
 g = e.collect { |x| x * 5 };
 -> IdentityDictionary[ (a -> 25) ]
 g[\b]
