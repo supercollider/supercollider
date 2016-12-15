@@ -1,8 +1,20 @@
 class:: Speech
-summary:: lets you use the Apple speech synthesizer
+summary:: [DEPRECATED] lets you use the Apple speech synthesizer
 categories:: Platform>OSX
 
 description::
+
+warning::
+Speech has been deprecated for a number of reasons:
+
+list::
+## The audio output is independent of the server, so it has major limitations when attempting to use it in SC compositions.
+## The core library should be small, and speech synthesis is too niche to merit inclusion.
+## It is OS X only, and adding cross-platform compatibility is nontrivial.
+::
+
+The recommended alternative is code:: "say".unixCmd ::. For alternative freeware TTS systems that may have better cross-platform support, we suggest eSpeak, Festival, MBROLA, and pico2wave.
+::
 
 code::
 "hi i'm talking with the default voice now, i guess".speak;
