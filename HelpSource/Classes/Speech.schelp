@@ -1,8 +1,20 @@
 class:: Speech
-summary:: lets you use the Apple speech synthesizer
+summary:: [DEPRECATED] lets you use the Apple speech synthesizer
 categories:: Platform>OSX
 
 description::
+
+warning::
+Speech has been deprecated for a number of reasons:
+
+list::
+## The audio output is independent of the server, so it has major limitations when attempting to use it in SC compositions.
+## The core library should be small, and speech synthesis is too niche to merit inclusion.
+## It is OS X only, and implementing cross-platform compatibility is nontrivial.
+::
+
+Generally, the replacement is to use unixCmd to invoke a speech synthesizer yourself. There is also a third-party quark that simplifies this for you: https://github.com/adcxyz/say.
+::
 
 code::
 "hi i'm talking with the default voice now, i guess".speak;

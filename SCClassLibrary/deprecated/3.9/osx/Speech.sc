@@ -59,6 +59,7 @@ SpeechChannel{
 
 
 	speak{|string, force=false|
+		this.deprecated(thisMethod);
 		if(force.not){
 			this.prSpeak(channel, string);
 			^this
@@ -118,6 +119,7 @@ Speech {
 	}
 	//private
 	*init { arg num= 1;
+		this.deprecated(thisMethod);
 		initialized = true;
 		channels = Array.new(num);
 		wordActions = Array.newClear(num);
@@ -139,6 +141,17 @@ Speech {
 	*doSpeechDoneAction { arg chan;
 		doneAction.value(chan);
 		doneActions[chan].value(channels[chan]);
+	}
+}
+
++ String {
+	speak { arg channel = 0, force = false;
+		var speech;
+		this.deprecated(thisMethod);
+		// FIXME: this should better be handled by Platform than GUI
+		speech = GUI.current.speech;
+		if( speech.initialized.not, { speech.init });
+		speech.channels[ channel ].speak( this, force );
 	}
 }
 
