@@ -167,7 +167,7 @@ Pipe : UnixFILE {
 		}, clock: AppClock);
 		cancel = {
 			r.stop();
-			("Closed:" + command).inform;
+			("Closed:" + command).postln;
 			closePipe.value();
 			CmdPeriod.remove(cancel);
 		};

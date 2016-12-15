@@ -147,10 +147,7 @@ code::
 ::
 
 method::inform
-Posts the string.
-code::
-"Do not press this button again".inform;
-::
+Legacy method (although due to widespread use, it will not be removed). This is identical to code::postln::.
 
 subsection:: Interpreting strings as code
 

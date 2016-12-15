@@ -31,7 +31,7 @@ Main : Process {
 			}
 		};
 		if(didWarnOverwrite) {
-			inform("Intentional overwrites must be put in a 'SystemOverwrites' subfolder.")
+			postln("Intentional overwrites must be put in a 'SystemOverwrites' subfolder.")
 		};
 
 		("\n\n*** Welcome to SuperCollider %. ***".format(Main.version)
