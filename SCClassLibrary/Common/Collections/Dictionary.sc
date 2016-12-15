@@ -451,18 +451,27 @@ IdentityDictionary : Dictionary {
 
 	collect { arg function;
 		var res = this.class.new(this.size, proto, parent, know);
-		this.keysValuesDo { arg key, elem; res.put(key, function.value(elem, key)) }
+		this.keysValuesDo { arg key, elem;
+			res.put(key, function.value(elem, key));
+		};
 		^res;
 	}
 	select { arg function;
 		var res = this.class.new(this.size, proto, parent, know);
-		this.keysValuesDo { arg key, elem; if(function.value(elem, key)) { res.put(key, elem) } }
+		this.keysValuesDo { arg key, elem;
+			if(function.value(elem, key)) {
+				res.put(key, elem);
+			};
+		};
 		^res;
 	}
 	reject { arg function;
 		var res = this.class.new(this.size, proto, parent, know);
-		this.keysValuesDo { arg key, elem; if(function.value(elem, key).not)
-			{ res.put(key, elem) } }
+		this.keysValuesDo { arg key, elem;
+			if(function.value(elem, key).not) {
+				res.put(key, elem);
+			};
+		};
 		^res;
 	}
 
