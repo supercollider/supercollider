@@ -81,15 +81,11 @@ copymethod:: ArrayedCollection -put
 
 copymethod:: ArrayedCollection -insert
 
-copymethod:: ArrayedCollection -overWrite
-
 copymethod:: ArrayedCollection -clipAt
 
 copymethod:: ArrayedCollection -wrapAt
 
 copymethod:: ArrayedCollection -foldAt
-
-copymethod:: ArrayedCollection -slice
 
 copymethod:: ArrayedCollection -clipPut
 
@@ -120,10 +116,6 @@ copymethod:: ArrayedCollection -reverseDo
 copymethod:: ArrayedCollection -deepCollect
 
 copymethod:: ArrayedCollection -reshape
-
-copymethod:: ArrayedCollection -bubble
-
-copymethod:: ArrayedCollection -unbubble
 
 copymethod:: ArrayedCollection -windex
 
