@@ -34,17 +34,12 @@ i = Image.new(400@200);	// Create a 400x200 pixel Image.
 i.dump;
 i.free;
 ::
-## link::Classes/String:: to create an image from a strong::local file:: or from an strong::URL:: (http://, ftp://, file:///)
+## link::Classes/String:: to create an image from a strong::local file::
 code::
 //	Path string
 i = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png"); // add a path to your image
 [i.width, i.height].postln;
 i.plot;
-i.free;
-//	URL string - NOT IMPLEMENTE YET
-i = Image.new("http://www.google.com/intl/en_ALL/images/logo.gif");
-i.plot;
-i.url;
 i.free;
 ::
 ::
