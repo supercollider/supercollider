@@ -13,24 +13,24 @@ CLASSMETHODS::
 PRIVATE::initClass, prFromWindowRect, prFreeAll
 
 METHOD::new
-Creates a new Image instance. multiple stands here for multiple arguments.
+Creates a new Image instance. "multiple" here stands for multiple arguments.
 
 ARGUMENT::multiple
-May be a...
+Any of the following:
 list::
 ## link::Classes/Number:: to create an strong::empty:: image of size multiple as width and height
 code::
-i = Image.new(400);		// Create a 400x400 pixels Image.
+i = Image.new(400);		// Create a 400x400 pixel Image.
 i.dump;
 i.free;
 
-i = Image.new(400, 200);	// Create a 400x200 pixels Image.
+i = Image.new(400, 200);	// Create a 400x200 pixel Image.
 i.dump;
 i.free;
 ::
 ## link::Classes/Point:: to create an strong::empty:: image of size multiple.x as width and multiple.y as height
 code::
-i = Image.new(400@200);	// Create a 400x200 pixels Image.
+i = Image.new(400@200);	// Create a 400x200 pixel Image.
 i.dump;
 i.free;
 ::
