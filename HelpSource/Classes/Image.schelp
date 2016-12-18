@@ -44,6 +44,10 @@ i.free;
 ::
 ::
 
+ARGUMENT::height
+If strong::multiple:: is a number, then this argument indicates the height of the new image.
+
+
 METHOD::color
 Creates a new Image instance filled with the specified color.
 code::
