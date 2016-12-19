@@ -41,6 +41,8 @@ ARGUMENT:: dep
 ARGUMENT:: forQuark
 returns:: this
 
+PRIVATE::prMakeDep
+
 INSTANCEMETHODS::
 
 METHOD:: name
@@ -140,3 +142,5 @@ returns:: this
 METHOD:: parseQuarkFile
 private
 returns:: this
+
+PRIVATE::prCollectDependencies
