@@ -305,6 +305,9 @@ the location where to save it
 ARGUMENT::format
 (optional) format to use. see Image.formats for supported formats. If nil, it will get the format depending on the path extension.
 
+ARGUMENT::quality
+The quality factor must be in the range 0 to 100 or -1. Specify 0 to obtain small compressed files, 100 for large uncompressed files, and -1 (the default) to use the default settings.
+
 SUBSECTION::rendering
 
 METHOD::plot
