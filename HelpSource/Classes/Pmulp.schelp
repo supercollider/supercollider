@@ -11,8 +11,12 @@ ClassMethods::
 
 method::new
 
+argument::name
+
 argument::value
 can be a pattern, a stream or an array. The resulting stream ends when that incoming stream ends.
+
+argument::pattern
 
 Examples::
 
