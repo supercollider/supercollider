@@ -224,12 +224,6 @@ i.plot;
 i.free;
 ::
 
-METHOD::accelerated
-if true, the receiver currently use the CoreImage model, possibly caching its data on GPU, if not the bitmap model. Set it to switch representation.
-WARNING::
-this method should never be used directly unless you know perfectly what you are doing. Since the Image will switch internally and manage itself the syncronization between representations.
-::
-
 METHOD::interpolation
 get or set the level of interpolation used when rendering the image - it has not effect when the Image is accelerated. see link::#*interpolations:: for a valid range of values.
 code::
