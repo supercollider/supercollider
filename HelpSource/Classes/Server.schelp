@@ -342,8 +342,10 @@ subsection:: Message Bundling
 
 Server provides support for automatically bundling messages. This is quite convenient in object style, and ensures synchronous execution. See also link::Guides/Bundled-Messages::
 
-method:: makeWindow
-Instantiates the "old school" SuperCollider server window, that was used to show up by default on startup up to version 3.5
+method:: makwindow
+Instantiates the "old school" SuperCollider server window, that was used to show up by default on startup up to version 3.5.
+in case you are running supercollider on emacs, it makes a server view made of emacs widgets.
+
 code::
 
 // boot the server and loads up the legacy server window
