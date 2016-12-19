@@ -35,6 +35,11 @@ ARGUMENT:: url
 ARGUMENT:: localPath
 returns:: this
 
+METHOD:: parseDependency
+private
+ARGUMENT:: dep
+ARGUMENT:: forQuark
+returns:: this
 
 INSTANCEMETHODS::
 
@@ -127,11 +132,6 @@ METHOD:: changed
 After un/installing or checking out, state is set to changed.
 code smell: this is for the gui
 returns:: Boolean
-
-METHOD:: parseDependency
-private
-ARGUMENT:: dep
-returns:: this
 
 METHOD:: printOn
 ARGUMENT:: stream
