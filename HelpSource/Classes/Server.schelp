@@ -504,6 +504,25 @@ Plot the node/group tree. As link::#-queryAllNodes:: but graphical.
 argument:: interval
 Polling interval.
 
+
+method:: serverBooting
+A method that aims at returning a boolean stating wether server is booting or not
+code::
+
+//returns a boolean stating wether server is booting or not
+Server.internal.serverBooting
+Server.local.serverBooting
+::
+
+method:: serverRunning
+A method that aims at returning a boolean stating wether server is running or not
+code::
+
+//returns a boolean stating wether server is running or not
+Server.internal.serverRunning
+Server.local.serverRunning
+::
+
 method:: plotTreeView
 Plot the node/group tree graphically on a given view.
 
