@@ -46,7 +46,7 @@ Draws a quad bezier curve from the current position to point.
 strong::cpoint1:: is a control point determining the curve's curvature.
 argument:: endPoint
 An instance of link::Classes/Point::
-argument:: cPoint1
+argument:: cPoint
 An instance of link::Classes/Point::
 
 method:: arcTo
