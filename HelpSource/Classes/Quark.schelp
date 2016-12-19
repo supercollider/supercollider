@@ -13,6 +13,8 @@ METHOD:: new
 ARGUMENT:: name
 Quark name, git url or local path (absolute or relative)
 ARGUMENT:: refspec
+ARGUMENT:: url
+ARGUMENT:: localPath
 returns:: this
 
 METHOD:: fromLocalPath
@@ -23,12 +25,14 @@ returns:: this
 METHOD:: fromDirectoryEntry
 alternate constructor
 ARGUMENT:: name
-ARGUMENT:: quarkUrl
+ARGUMENT:: directoryEntry
 returns:: this
 
 METHOD:: parseQuarkName
 ARGUMENT:: name
 ARGUMENT:: refspec
+ARGUMENT:: url
+ARGUMENT:: localPath
 returns:: this
 
 
