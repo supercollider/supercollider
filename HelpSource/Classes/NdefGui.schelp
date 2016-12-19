@@ -85,16 +85,15 @@ not a class var, but the method that inits buttonFuncs.
 
 InstanceMethods::
 
-subsection::Instance Variables
+subsection::Variables
 
-As in all JITGuis:
+See link::Classes/JITGui:: for more instance methods.
 
-... object, numItems, parent, bounds; zone, minSize, defPos, skin, font, skipjack ...
+Various views the NdefGui has if they were present in the options:
 
 method::nameView, typeView, monitorGui, paramGui, fadeBox, pauseBut, sendBut, edBut, wakeBut
-Various views the NdefGui has if they were present in the options.
 
-subsection::Instance Methods
+subsection::Basic Methods
 
 method::edits
 the paramGui's widgets (usually, EZSliders)
@@ -119,11 +118,11 @@ method::proxy
 an alias to method object, object_
 
 
-strong::Standard JITGui methods: ::
+subsection::Standard JITGui Methods
 
 method:: setDefaults, accepts, getState, checkUpdate
 
-strong:: Methods that make the various gui elements: ::
+subsection::GUI Element Creation
 
 method:: makeViews, makeNameView, makeTypeView, makeClrBut, makeWakeBut, makeResetBut, makeScopeBut, makeDocBut, makeEndBut, makeFadeBox, makeMonitor, makePauseBut, makeSendBut, makeEdBut, makeRipBut, makePollBut
 
