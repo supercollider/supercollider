@@ -506,19 +506,19 @@ Polling interval.
 
 
 method:: serverBooting
-A method that aims at returning a boolean stating wether server is booting or not
+Returns:: true/false depending if server is booting or not
 code::
 
-//returns a boolean stating wether server is booting or not
+// Returns true/false depending if server is booting or not
 Server.internal.serverBooting
 Server.local.serverBooting
 ::
 
 method:: serverRunning
-A method that aims at returning a boolean stating wether server is running or not
+Returns:: true/false depending if server is running or not
 code::
 
-//returns a boolean stating wether server is running or not
+// Returns true/false depending if server is running or not
 Server.internal.serverRunning
 Server.local.serverRunning
 ::
