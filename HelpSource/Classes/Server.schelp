@@ -595,39 +595,39 @@ discussion::
 You must call this when finished recording or the output file will be unusable. Cmd-. while recording has the same effect.
 
 method:: unresponsive
-A method that aims at returning a boolean stating wether server is unresponsive or not
+Returns:: true/false depending if server is unresponsive
 code::
 
-//returns a boolean stating wether server is unresponsive or not
-Server.local.unresponsive
-Server.internal.unresponsive
+//returns a boolean stating if server is unresponsive or not
+Server.local.unresponsive;
+Server.internal.unresponsive;
 ::
 
 method:: sampleRate
-A method that aims at returning a variable containing either the actual sampleRate of the specified server or nil, in case server rate is not set
-code::
+Returns:: a variable with the current sample rate (integer)
 
-// returns a variable containing the sample rate of the specified server
-Server.local.sampleRate
-Server.internal.sampleRate
+code::
+// returns a variable containing the sample rate (integer precision) of the specified server
+Server.local.sampleRate;
+Server.internal.sampleRate;
 ::
 
 method:: actualSampleRate
-A method that aims at returning the exact sample rate of the specified server, just like sampleRate, except in this case, the returned SampleRate is calculated with exact precision in the form of a floating point number
+Returns:: a variable with the current sample rate (floating point precision) of the specified server
 code::
 
 // returns floating point sample rate
-Server.local.actualSampleRate
-Server.internal.actualSampleRate
+Server.local.actualSampleRate;
+Server.internal.actualSampleRate;
 ::
 
 method:: remoteControlled
-A method that aims at returning a boolean stating wether specified server is remote controlled or not
+Returns:: true/false stating if server is unresponsive
 code::
 
-//returns a boolean stating wether specified server is remote controlled or not
-Server.local.remoteControlled
-Server.internal.remoteControlled
+//returns a boolean stating if specified server is remote controlled or not
+Server.local.remoteControlled;
+Server.internal.remoteControlled;
 ::
 
 method:: recChannels
