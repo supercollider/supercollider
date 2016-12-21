@@ -176,7 +176,10 @@ Object implements methods for writing and retrieving objects from disk. Note tha
 
 method::writeArchive
 
-Write an object to disk as a text archive. pathname is a String containing the resulting file's path.
+Write an object to disk as a text archive.
+
+argument::pathname
+A String containing the resulting file's path.
 
 
 subsection::Equality and Identity
