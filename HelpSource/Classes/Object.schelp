@@ -153,8 +153,7 @@ code::
 
 method::asCompileString
 
-Returns a String that can be interpreted to reconstruct a copy of the receiver.
-For the complementary method, see String interpret	.
+Returns a String that can be interpreted to reconstruct a copy of the receiver. For the complementary method, see link::Classes/String#-interpret::.
 
 code::
 a = { 10.do { 10.postln } };
