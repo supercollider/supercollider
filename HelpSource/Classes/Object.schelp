@@ -5,8 +5,7 @@ categories:: Core>Kernel, Language>OOP
 related:: Classes/Class, Guides/Intro-to-Objects, Reference/Classes
 
 description::
-Object is the root class of all other classes. All objects are indirect instances of class Object.
-We call "receiver" the object the message is sent to: receiver.method(argument).
+Object is the root class of all other classes. All objects are indirect instances of class Object. We call the "receiver" the object the message is sent to: code::receiver.method(argument)::.
 
 
 classmethods::
