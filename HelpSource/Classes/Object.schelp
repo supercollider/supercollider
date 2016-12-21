@@ -42,7 +42,7 @@ A String containing the archive file's path.
 
 method::new
 
-Create a new instance. The creation of new instances of any Object actually happens in this method (or with newCopyArgs ) when it is called by a child class. see link::Guides/WritingClasses::
+Create a new instance. The creation of new instances of any Object actually happens in this method (or with code::newCopyArgs::) when it is called by a child class. See link::Guides/WritingClasses::.
 
 method::newCopyArgs
 
