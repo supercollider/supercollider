@@ -681,7 +681,7 @@ tot bwf t sz: 174215  65476 7876722   8116413   341832120
 ::
 
 
-you can also query the amount of free memory with Object.totalFree and dump the currently grey objects with Object.dumpGrey. More memory status methods are: Object.largestFreeBlock, Object.gcDumpSet, and Object.gcSanity.
+You can also query the amount of free memory with code::Object.totalFree:: and dump the currently grey objects with code::Object.dumpGrey::. More memory status methods are: largestFreeBlock, gcDumpSet, and gcSanity.
 
 subsection::Iteration
 
