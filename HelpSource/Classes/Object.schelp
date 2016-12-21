@@ -9,16 +9,17 @@ Object is the root class of all other classes. All objects are indirect instance
 
 
 classmethods::
-private:: prNewCopyArgs,prNew
+private:: prNewCopyArgs, prNew
+
 method::readArchive
 
 Read in an object from a text archive. pathname is a String containing the archive file's path.
-discussion::
+
 code::
 a = Array.fill(100, { 100.0.rand });
 a.writeArchive(PathName.tmp ++ "myArray");
 b = Object.readArchive(PathName.tmp ++ "myArray");
-a == b // true
+a == b; // true
 
 /////////
 
