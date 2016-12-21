@@ -131,7 +131,7 @@ If object is immutable then return a shallow copy, else return receiver.
 
 subsection::Conversion
 
-To convert an object of a certain Class into a similar, Object provides a number of methods.
+To convert an object of a certain class into a similar object of another class, Object provides a number of methods.
 
 method::as
 
