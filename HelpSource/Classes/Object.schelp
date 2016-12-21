@@ -172,7 +172,7 @@ code::
 
 subsection::Archiving
 
-Object implements methods for writing and retrieving objects from disk. Note that you cannot archive instances of Thread and its subclasses (i.e. Routine), or open Functions (i.e. a Function which refers to variables from outside its own scope).
+Object implements methods for writing and retrieving objects from disk. Note that you cannot archive instances of Thread and its subclasses (i.e. Routine), or open Functions (i.e., a Function which refers to variables from outside its own scope).
 
 method::writeArchive
 
@@ -493,20 +493,19 @@ selector: A Symbol representing a method selector.
 args: Method arguments. If the last argument is a List or an Array, then its elements are unpacked and passed as arguments.
 
 method::multiChannelPerform
-Perform selector with multichannel-expansion.
+Perform selector with multichannel expansion. See also: link::Guides/Multichannel-Expansion::.
+
 argument:: selector
 A Symbol representing a method selector.
 argument:: ... args
-Method arguments, which if they contain an array, will call the method multiple times for each sub-element.
+Method arguments which, if they contain an array, will call the method multiple times for each sub-element.
 discussion::
-Example:
 code::
 a = { |a, b, c| format("% plus % times % is %", a, b, c, a + b * c).quote; };
 a.multiChannelPerform(\value, [1, 10, 100, 1000], [2, 7, 9], [3, 7]);
 
 ["foo","bar"].multiChannelPerform('++',["l","bro","t"]);
 ::
-See also link::Guides/Multichannel-Expansion::
 
 subsection::Unique Methods
 
@@ -665,10 +664,10 @@ Then for each size class: numer of black, white and free objects, total number o
 
 code::
 flips 241  collects 689096   nalloc 40173511   alloc 322496998   grey 346541
-	0  bwf t sz:    882      0 368573   369455    2955640
-	1  bwf t sz:   6197    122 5702377   5708696   91339136
+0  bwf t sz:    882      0 368573   369455    2955640
+1  bwf t sz:   6197    122 5702377   5708696   91339136
 2  bwf t sz:    947      4 1500009   1500960   48030720
-	3  bwf t sz:   8056  65201 301800   375057   24003648
+3  bwf t sz:   8056  65201 301800   375057   24003648
 4  bwf t sz:   4047    145   3457     7649     979072
 5  bwf t sz:    422      1    431      854     218624
 6  bwf t sz:    124      2     72      198     101376
