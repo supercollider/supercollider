@@ -108,8 +108,7 @@ subsection::Accessing
 
 method::size
 
-Different classes interpret this message differently.  Object always returns 0.
-
+Different classes respond to this message differently. Object always returns 0.
 
 subsection::Copying
 
@@ -688,7 +687,7 @@ subsection::Iteration
 
 method::do
 
-Object evaluates the function with itself as an argument, returning the result. Different classes interpret this message differently.
+Object evaluates the function with itself as an argument, returning the result. Different classes respond to this message differently.
 discussion::
 code::
 f = { |x, i| [x, i].postln; };
@@ -704,7 +703,7 @@ This method is used internally by list comprehensions.
 
 method::dup
 
-Duplicates the receiver n times, returning an array of n copies. Different classes interpret this message differently.  The shortcut "!" can be used in place.
+Duplicates the receiver n times, returning an array of n copies. Different classes respond to this message differently.  The shortcut "!" can be used in place.
 discussion::
 code::
 8.dup(10);
