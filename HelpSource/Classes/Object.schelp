@@ -228,7 +228,7 @@ returns::A number in the range 0 to 1.
 
 method::compareObject
 
-Tests if two Objects (of the same class) are the same in a certain respect: It returns true if instVarNames are equal in both. If none are given, all instance variables are tested (see also: instVarHash)
+Tests if two Objects (of the same class) are the same in a certain respect: It returns true if instVarNames are equal in both. If none are given, all instance variables are tested (see also: link::#-instVarHash::)
 
 code::
 a = Pseq([1, 2, 3], inf); b = Pseq([100, 200, 300], inf);
@@ -258,7 +258,7 @@ b.identityHash;
 
 method::instVarHash
 
-Returns a combined hash value for the object's instance variables and the object's class. If none are given, all instance variables are tested (see also: compareObject).
+Returns a combined hash value for the object's instance variables and the object's class. If none are given, all instance variables are tested (see also: link::#-compareObject::).
 
 
 code::
