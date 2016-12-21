@@ -13,7 +13,7 @@ private:: prNewCopyArgs, prNew
 
 method::readArchive
 
-Read in an object from a text archive. pathname is a String containing the archive file's path.
+Read in an object from a text archive.
 
 code::
 a = Array.fill(100, { 100.0.rand });
@@ -36,6 +36,9 @@ f = { num + 2 };
 f.writeArchive(PathName.tmp ++ "myFunc"); // fails
 )
 ::
+
+argument::pathname
+A String containing the archive file's path.
 
 method::new
 
