@@ -49,11 +49,13 @@ method::newCopyArgs
 Creates a new instance and copies the arguments to the instance variables in the order that the variables were defined. If the superclass's code::new:: method requires arguments, the first arguments passed to code::newCopyArgs:: will be passed on to that method, and the following arguments will be copied to this class's instance variables. Class variables are ignored.
 
 code::
-MyClass{
-	var a,b,c;
+MyClass {
+	var a, b, c;
 
-	*new{ |arg1,arg2,arg3|
-		^super.newCopyArgs(arg1,arg2,arg3) //will copy arg1,arg2,arg3 to variables a,b,c
+	*new {
+		arg arg1, arg2, arg3;
+		// will copy arg1, arg2, arg3 to variables a, b, c
+		^super.newCopyArgs(arg1, arg2, arg3);
 	}
 }
 ::
