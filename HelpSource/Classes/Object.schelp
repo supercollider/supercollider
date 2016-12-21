@@ -46,7 +46,7 @@ Create a new instance. The creation of new instances of any Object actually happ
 
 method::newCopyArgs
 
-Creates a new instance and copies the arguments to the instance variables in the order that the variables were defined.
+Creates a new instance and copies the arguments to the instance variables in the order that the variables were defined. If the superclass's code::new:: method requires arguments, the first arguments passed to code::newCopyArgs:: will be passed on to that method, and the following arguments will be copied to this class's instance variables. Class variables are ignored.
 
 code::
 MyClass{
