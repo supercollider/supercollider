@@ -182,7 +182,7 @@ subsection::Equality and Identity
 
 method::==
 
-equality: Answer whether the receiver equals anotherObject. The definition of equality depends on the class of the receiver. The default implementation in Object is to answer if the two objects are identical (see below).
+Answer whether the receiver equals anotherObject. The definition of equality depends on the class of the receiver. The default implementation in Object is to answer if the two objects are identical.
 
 note:: Whenever == is overridden in a class, hash should be overridden as well.::
 
@@ -198,7 +198,7 @@ a === b; // not identical
 
 method::===
 
-identity: Answer whether the receiver is the exact same object as anotherObject.
+Answer whether the receiver is the exact same object as anotherObject.
 
 code::
 5.0 === 5; // false
@@ -208,7 +208,7 @@ code::
 
 method::!=
 
-non-equality: Answer whether the receiver does not equal anotherObject. The default implementation in Object is to answer if the two objects are not identical (see below).
+Answer whether the receiver does not equal anotherObject. The default implementation in Object is to answer if the two objects are not identical (see below).
 
 method::fuzzyEqual
 
