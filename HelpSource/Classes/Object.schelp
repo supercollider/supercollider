@@ -78,7 +78,8 @@ method::respondsTo
 Answer a link::Classes/Boolean:: whether the receiver understands the message selector.
 
 code::
-5.respondsTo('+');
+5.respondsTo('+'); // true
+5.respondsTo('indexOf'); // false
 ::
 
 
@@ -90,7 +91,8 @@ method::isKindOf
 Answer a Boolean indicating whether the receiver is a direct or indirect instance of aClass. Use of this message in code must be questioned, because it often indicates a missed opportunity to exploit object polymorphism.
 
 code::
-5.isKindOf(Magnitude);
+5.isKindOf(Number); // true
+5.isKindOf(String); // false
 ::
 
 method::isMemberOf
@@ -98,7 +100,8 @@ method::isMemberOf
 Answer a Boolean whether the receiver is a direct instance of aClass. Use of this message in code is almost always a design mistake.
 
 code::
-5.isMemberOf(Magnitude);
+5.isMemberOf(Number); // false
+5.isMemberOf(Integer); // true
 ::
 
 subsection::Accessing
