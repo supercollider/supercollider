@@ -213,13 +213,15 @@ Answer whether the receiver does not equal anotherObject. The default implementa
 
 method::fuzzyEqual
 
-Returns the degree of equality (in the range from 0 to 1) between two objects with regard to a given precision. Objects to compare must support max, substraction and division.
+Returns the degree of equality between two objects with regard to a given precision. Objects to compare must support max, substraction, and division.
 
 code::
 5.0.fuzzyEqual(5.0, 0.5); // 1 - full equality
 5.25.fuzzyEqual(5.0, 0.5); // 0.5 - 50 % equality
 5.9.fuzzyEqual(5.0, 0.5); // 0 - no equality
 ::
+
+returns::A number in the range 0 to 1.
 
 method::compareObject
 
