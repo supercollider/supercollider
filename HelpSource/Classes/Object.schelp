@@ -75,11 +75,15 @@ code::
 
 method::respondsTo
 
-Answer a Boolean whether the receiver understands the message selector. selector must be a Symbol.
+Answer a link::Classes/Boolean:: whether the receiver understands the message selector.
 
 code::
 5.respondsTo('+');
 ::
+
+
+argument::aSymbol
+A selector name. Must be a link::Classes/Symbol::.
 
 method::isKindOf
 
