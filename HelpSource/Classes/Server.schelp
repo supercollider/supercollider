@@ -624,7 +624,7 @@ argument:: ... args
 one or more valid OSC messages.
 
 method:: latency
-Returns a floating point variable with the current server latency
+Returns a floating point variable with the specified server latency
 code::
 ~myLocalServer=Server.local;
 ~myLocalServer.quit.boot
