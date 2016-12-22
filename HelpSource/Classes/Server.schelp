@@ -623,6 +623,13 @@ an optional instance of link::Classes/Condition:: used for evaluating this.
 argument:: ... args
 one or more valid OSC messages.
 
+method:: isLocal
+Returns true if current server is local
+code::
+~myLocalServer=Server.local;
+~myLocalServer.isLocal;
+::
+
 method:: sync
 Send a code::/sync:: message to the server, which will replie with the message code::/synced:: when all pending asynchronous commands have been completed.
 argument:: condition
