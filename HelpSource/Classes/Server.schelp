@@ -623,6 +623,14 @@ an optional instance of link::Classes/Condition:: used for evaluating this.
 argument:: ... args
 one or more valid OSC messages.
 
+method:: latency
+Returns a floating point variable with the current server latency
+code::
+~myLocalServer=Server.local;
+~myLocalServer.quit.boot
+~myLocalServer.latency
+::
+
 method:: sync
 Send a code::/sync:: message to the server, which will replie with the message code::/synced:: when all pending asynchronous commands have been completed.
 argument:: condition
