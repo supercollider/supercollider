@@ -626,15 +626,8 @@ one or more valid OSC messages.
 method:: name
 Returns the curent server name
 code::
-//
-~myInternalServer=Server.internal;
-~myInternalServer.boot.reboot
-~myInternalServer.name
-
-//
-~myLocalServer=Server.local;
-~myLocalServer.boot.reboot
-~myLocalServer.name
+Server.local.name;
+Server.internal.name;
 ::
 
 method:: sync
