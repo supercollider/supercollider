@@ -625,10 +625,6 @@ one or more valid OSC messages.
 
 method:: name
 Returns the curent server name
-code::
-Server.local.name;
-Server.internal.name;
-::
 
 method:: sync
 Send a code::/sync:: message to the server, which will replie with the message code::/synced:: when all pending asynchronous commands have been completed.
