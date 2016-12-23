@@ -90,7 +90,7 @@ b.string = "hello button";
 
 method:: font
 Sets the Font of the button. Default value is the default font: Font.default .
-argument:: f
+argument:: font
 An instance of link::Classes/Font::.
 
 

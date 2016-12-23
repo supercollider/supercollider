@@ -10,7 +10,7 @@ an input demand ugen first before looking up the next index.
 
 classmethods::
 method:: new
-argument:: array
+argument:: list
 array of values or other ugens
 argument:: index
 which of the inputs to return
