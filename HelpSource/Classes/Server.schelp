@@ -626,10 +626,8 @@ one or more valid OSC messages.
 method:: addr
 Returns the ip and TCP/UDP port being used by the specified server
 code::
-~myLocalServer=Server.local;
-~myLocalServer.addr;
-~myInternalServer=Server.internal;
-~myInternalServer.addr;
+Server.local.addr;
+Server.internal.addr;
 ::
 
 method:: sync
