@@ -167,20 +167,20 @@ Event : Environment {
 
 				note: #{
 					(~degree + ~mtranspose).degreeToKey(
-						~scale,
-						~scale.respondsTo(\stepsPerOctave).if(
-							{ ~scale.stepsPerOctave },
+						~scale.respondsTo(\degrees).if({ ~scale.degrees }, ~scale),
+						~scale.respondsTo(\pitchesPerOctave).if(
+							{ ~scale.pitchesPerOctave },
 							~stepsPerOctave
 						)
 					);
 				},
 				midinote: #{
-					(((~note.value + ~gtranspose + ~root) /
-						~scale.respondsTo(\stepsPerOctave).if(
-							{ ~scale.stepsPerOctave },
-							~stepsPerOctave) + ~octave - 5.0) *
-						(12.0 * ~scale.respondsTo(\octaveRatio).if
-							({ ~scale.octaveRatio }, ~octaveRatio).log2) + 60.0);
+					var adjustedNote = ~note.value + ~gtranspose + ~root;
+					~scale.respondsTo(\eventMidiNote).if(
+						{ ~scale.eventMidiNote(adjustedNote, ~octave) },
+						(adjustedNote / ~stepsPerOctave + ~octave - 5.0) *
+						(12.0 * ~octaveRatio.log2) + 60.0
+					);
 				},
 				detunedFreq: #{
 					~freq.value + ~detune
@@ -191,8 +191,8 @@ Event : Environment {
 				freqToNote: #{ arg self, freq; // conversion from frequency to note value
 					self.use {
 						var midinote;
-						var steps = ~scale.respondsTo(\stepsPerOctave).if(
-							{ ~scale.stepsPerOctave }, ~stepsPerOctave
+						var steps = ~scale.respondsTo(\pitchesPerOctave).if(
+							{ ~scale.pitchesPerOctave }, ~stepsPerOctave
 						);
 						midinote = cpsmidi((freq / ~harmonic) - ~ctranspose);
 						midinote / 12.0 - ~octave * steps - ~root - ~gtranspose
@@ -201,8 +201,8 @@ Event : Environment {
 				freqToScale: #{ arg self, freq;
 					// conversion from frequency to scale value.
 					self.use {
-						var steps = ~scale.respondsTo(\stepsPerOctave).if(
-							{ ~scale.stepsPerOctave }, ~stepsPerOctave
+						var steps = ~scale.respondsTo(\pitchesPerOctave).if(
+							{ ~scale.pitchesPerOctave }, ~stepsPerOctave
 						);
 						var degree = self.freqToNote(freq).keyToDegree(~scale, steps)
 						- ~mtranspose;

@@ -1,5 +1,5 @@
 Scale {
-	var <degrees, <pitchesPerOctave, <tuning, <>name;
+	var <degrees, <pitchesPerOctave, <tuning, <>name, <>baseFreq;
 	classvar <all;
 
 	*new { | degrees = \ionian, pitchesPerOctave, tuning, name = "Unknown Scale" |
@@ -11,6 +11,7 @@ Scale {
 		degrees = inDegrees;
 		pitchesPerOctave = inPitchesPerOctave ? this.guessPPO(degrees);
 		name = inName;
+		baseFreq = 60.midicps;
 		^this.tuning_(inTuning ? Tuning.default(pitchesPerOctave));
 	}
 
@@ -65,7 +66,7 @@ Scale {
 	}
 
 	semitones {
-		^degrees.collect(tuning.wrapAt(_));
+		^degrees.collect(tuning.at(_));
 	}
 
 	cents {
@@ -81,26 +82,30 @@ Scale {
 	}
 
 	wrapAt { |index|
-		^tuning.wrapAt(degrees.wrapAt(index))
+		^tuning.at(degrees.wrapAt(index))
 	}
 
 	performDegreeToKey { | scaleDegree, stepsPerOctave, accidental = 0 |
 		var baseKey;
-		stepsPerOctave = stepsPerOctave ? tuning.stepsPerOctave;
-		baseKey = (stepsPerOctave * (scaleDegree div: this.size)) + this.wrapAt(scaleDegree);
-		^if(accidental == 0) { baseKey } { baseKey + (accidental * (stepsPerOctave / 12.0)) }
+		stepsPerOctave = stepsPerOctave ? this.pitchesPerOctave;
+		baseKey = (stepsPerOctave * (scaleDegree div: stepsPerOctave)) + degrees.wrapAt(scaleDegree);
+		^baseKey + accidental
 	}
 
-	performKeyToDegree { | degree, stepsPerOctave = 12 |
-		^degrees.performKeyToDegree(degree, stepsPerOctave)
+	performKeyToDegree { | degree, stepsPerOctave |
+		^degrees.performKeyToDegree(degree, stepsPerOctave ? this.pitchesPerOctave)
 	}
 
 	performNearestInList { | degree |
 		^degrees.performNearestInList(degree)
 	}
 
-	performNearestInScale { | degree, stepsPerOctave=12 | // collection is sorted
-		^degrees.performNearestInScale(degree, stepsPerOctave)
+	performNearestInScale { | degree, stepsPerOctave | // collection is sorted
+		^degrees.performNearestInScale(degree, stepsPerOctave ? this.pitchesPerOctave)
+	}
+
+	eventMidiNote { |note, octave = 5|
+		^this.tuning.midiAt(note + (octave - 5 * this.pitchesPerOctave)) + baseFreq.cpsmidi
 	}
 
 	degreeToRatio { |degree, octave = 0|
@@ -177,7 +182,7 @@ Tuning {
 	classvar <all;
 
 	*new { | tuning, octaveRatio = 2.0, name = "Unknown Tuning" |
-		^super.newCopyArgs(tuning, octaveRatio, name);
+		^super.new.init(tuning, octaveRatio, name);
 	}
 
 	*at { |key|
@@ -219,6 +224,13 @@ Tuning {
 		.choose.deepCopy;
 	}
 
+	init { |inTuning, inOctaveRatio, inName|
+		tuning = inTuning * (inOctaveRatio.ratiomidi / 12);
+		octaveRatio = inOctaveRatio;
+		name = inName;
+		^this
+	}
+
 	ratios {
 		^tuning.midiratio
 	}
@@ -240,11 +252,15 @@ Tuning {
 	}
 
 	at { |index|
-		^if(index.isInteger) { tuning.at(index) } { tuning.blendAt(index) }
+		var pitchClassRange = tuning ++ [octaveRatio.ratiomidi];
+		^pitchClassRange.blendAt(index)
 	}
 
-	wrapAt { |index|
-		^if(index.isInteger) { tuning.wrapAt(index) } { tuning.blendAt(index, \wrapAt) }
+	midiAt { |midiNote|
+		var octave = midiNote.div(this.size);
+		var pitchClass = midiNote % this.size;
+		var pitchClassRange = tuning ++ [octaveRatio.ratiomidi];
+		^octave * octaveRatio.ratiomidi + this.at(pitchClass)
 	}
 
 	== { |argTuning|
@@ -295,7 +311,7 @@ ScaleAD : Scale {
 	var <>descScale;
 	*new { | degrees, pitchesPerOctave, descDegrees, tuning, name = "Unknown Scale" |
 		^super.new(degrees, pitchesPerOctave, tuning, name)
-			.descScale_(Scale(descDegrees, pitchesPerOctave, tuning, name ++ "desc"))
+		.descScale_(Scale(descDegrees, pitchesPerOctave, tuning, name ++ "desc"))
 		;
 	}
 	asStream { ^ScaleStream(this, 0) }
@@ -554,7 +570,7 @@ ScaleStream {
 				8.94, 10.04, 10.9], 2, "Meantone, 1/6 Pythagorean Comma"),
 			\kirnberger -> Tuning.new([1, 256/243, (5.sqrt)/2, 32/27, 5/4, 4/3,
 				45/32, 5 ** 0.25, 128/81, (5 ** 0.75)/2, 16/9, 15/8].ratiomidi, 2,
-				"Kirnberger III"),
+			"Kirnberger III"),
 			\werckmeister -> Tuning.new(#[0, 0.92, 1.93, 2.94, 3.915, 4.98, 5.9, 6.965,
 				7.93, 8.895, 9.96, 10.935], 2, "Werckmeister III"),
 			\vallotti -> Tuning.new(#[0, 0.94135, 1.9609, 2.98045, 3.92180, 5.01955,
@@ -588,13 +604,13 @@ ScaleStream {
 				8/7, 7/6, 32/27, 6/5, 11/9, 5/4, 14/11, 9/7, 21/16, 4/3, 27/20, 11/8,
 				7/5, 10/7, 16/11, 40/27, 3/2, 32/21, 14/9, 11/7, 8/5, 18/11, 5/3, 27/16,
 				12/7, 7/4, 16/9, 9/5, 20/11, 11/6, 15/8, 40/21, 64/33, 160/81].ratiomidi, 2,
-				"Harry Partch"),
+			"Harry Partch"),
 			\catler -> Tuning.new([1, 33/32, 16/15, 9/8, 8/7, 7/6, 6/5, 128/105, 16/13,
 				5/4, 21/16, 4/3, 11/8, 45/32, 16/11, 3/2, 8/5, 13/8, 5/3, 27/16, 7/4,
 				16/9, 24/13, 15/8].ratiomidi, 2, "Jon Catler"),
 			\chalmers -> Tuning.new([1, 21/20, 16/15, 9/8, 7/6, 6/5, 5/4, 21/16, 4/3, 7/5,
 				35/24, 3/2, 63/40, 8/5, 5/3, 7/4, 9/5, 28/15, 63/32].ratiomidi, 2,
-				"John Chalmers"),
+			"John Chalmers"),
 			\harrison -> Tuning.new([1, 16/15, 10/9, 8/7, 7/6, 6/5, 5/4, 4/3, 17/12, 3/2,
 				8/5, 5/3, 12/7, 7/4, 9/5, 15/8].ratiomidi, 2, "Lou Harrison"),
 			\sruti -> Tuning.new([1, 256/243, 16/15, 10/9, 9/8, 32/27, 6/5, 5/4, 81/64,

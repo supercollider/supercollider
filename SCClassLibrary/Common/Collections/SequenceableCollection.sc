@@ -592,8 +592,8 @@ SequenceableCollection : Collection {
 	}
 
 	hammingDistance { |that|
-			// if this is shorter than that, size difference should be included
-			// (if this is longer, the do loop will take care of it)
+		// if this is shorter than that, size difference should be included
+		// (if this is longer, the do loop will take care of it)
 		var	count = (that.size - this.size).max(0);
 		this.do({ |elem, i|
 			if(elem != that[i]) { count = count + 1 };
@@ -629,8 +629,14 @@ SequenceableCollection : Collection {
 	}
 
 	performDegreeToKey { arg scaleDegree, stepsPerOctave = 12, accidental = 0;
-		var baseKey = (stepsPerOctave * (scaleDegree div: this.size)) + this.wrapAt(scaleDegree);
-		^if(accidental == 0) { baseKey } { baseKey + (accidental * (stepsPerOctave / 12.0)) }
+		var stepAdj, centAdj, baseKey;
+		stepAdj = accidental.abs.floor.asInteger * accidental.sign;
+		centAdj = accidental - stepAdj;
+		baseKey = (stepsPerOctave * (scaleDegree div: this.size)) + this.wrapAt(scaleDegree);
+		^baseKey + stepAdj + centAdj;
+
+		// var baseKey = (stepsPerOctave * (scaleDegree div: this.size)) + this.wrapAt(scaleDegree);
+		// ^if(accidental == 0) { baseKey } { baseKey + (accidental * (stepsPerOctave / 12.0)) }
 	}
 
 	performKeyToDegree { | degree, stepsPerOctave = 12 |
@@ -863,12 +869,12 @@ SequenceableCollection : Collection {
 			}
 		};
 		if (adverb == 't') {
-//			size = this.size;
-//			newList = this.species.new(size);
-//			size.do({ arg i;
-//				newList.add(theOperand.perform(aSelector, this.at(i)));
-//			});
-//			^newList
+			//			size = this.size;
+			//			newList = this.species.new(size);
+			//			size.do({ arg i;
+			//				newList.add(theOperand.perform(aSelector, this.at(i)));
+			//			});
+			//			^newList
 			size = theOperand.size;
 			newList = this.species.new(size);
 			size.do({ arg i;
@@ -877,12 +883,12 @@ SequenceableCollection : Collection {
 			^newList
 		};
 		if (adverb == 'x') {
-//			size = this.size;
-//			newList = this.species.new(size);
-//			size.do({ arg i;
-//				newList.add(theOperand.perform(aSelector, this.at(i)));
-//			});
-//			^newList
+			//			size = this.size;
+			//			newList = this.species.new(size);
+			//			size.do({ arg i;
+			//				newList.add(theOperand.perform(aSelector, this.at(i)));
+			//			});
+			//			^newList
 			size = theOperand.size * this.size;
 			newList = this.species.new(size);
 			theOperand.do({ arg a;
@@ -1048,9 +1054,9 @@ SequenceableCollection : Collection {
 		dj = this.at(j);
 		if (function.value(di, dj).not, { // i.e., should di precede dj?
 			this.swap(i,j);
-				tt = di;
-				di = dj;
-				dj = tt;
+			tt = di;
+			di = dj;
+			dj = tt;
 		});
 		if ( n > 2, { // More than two elements.
 			ij = (i + j) div: 2;  // ij is the midpoint of i and j.
@@ -1082,8 +1088,8 @@ SequenceableCollection : Collection {
 				},{
 					this.swap(k, l);
 				});
-		// Now l<k (either 1 or 2 less), and di through dl are all less than or equal to dk
-		// through dj.  Sort those two segments.
+				// Now l<k (either 1 or 2 less), and di through dl are all less than or equal to dk
+				// through dj.  Sort those two segments.
 				this.quickSortRange(i, l, function);
 				this.quickSortRange(k, j, function);
 			});
@@ -1174,7 +1180,7 @@ SequenceableCollection : Collection {
 		if(this.isEmpty) { ^nil };
 		^if(this.size.even, {
 			[this.hoareFind(this.size/ 2 - 1, function),
-			this.hoareFind(this.size/ 2,     function)].mean;
+				this.hoareFind(this.size/ 2,     function)].mean;
 		}, {
 			this.hoareFind(this.size - 1 / 2, function);
 		});
@@ -1301,7 +1307,7 @@ SequenceableCollection : Collection {
 	// we break up the array so that missing elements are set to nil in the Quant
 	asQuant { ^Quant(*this) }
 
-//	asUGenInput { ^this.asArray.asUGenInput }
+	//	asUGenInput { ^this.asArray.asUGenInput }
 
 	schedBundleArrayOnClock { |clock, bundleArray, lag = 0, server, latency|
 		latency = latency ? server.latency;
@@ -1309,14 +1315,14 @@ SequenceableCollection : Collection {
 			lag = lag.asArray;
 			this.do { |time, i|
 				clock.sched(time, {
-						SystemClock.sched(lag.wrapAt(i), {
-							server.sendBundle(latency, bundleArray.wrapAt(i)) })
+					SystemClock.sched(lag.wrapAt(i), {
+						server.sendBundle(latency, bundleArray.wrapAt(i)) })
 				})
 			}
 		} {
 			this.do { |time, i|
 				clock.sched(time, {
-						server.sendBundle(latency, bundleArray.wrapAt(i))
+					server.sendBundle(latency, bundleArray.wrapAt(i))
 				})
 			}
 		}
