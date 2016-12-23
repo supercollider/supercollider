@@ -624,7 +624,7 @@ argument:: ... args
 one or more valid OSC messages.
 
 method:: addr
-Returns the ip and TCP/UDP port being used by the specified server
+Returns the network address of the server as a NetAddr object.
 code::
 Server.local.addr;
 Server.internal.addr;
