@@ -11,7 +11,7 @@ ClassMethods::
 
 method::new
 
-argument::function
+argument::routineFunc
 The function defines a link::Classes/Routine:: that receives a link::Classes/Spawner:: as its sole argument. All control of subpatterns is through the spawner.
 
 link::Classes/Spawner:: responds to the messages:
@@ -114,7 +114,7 @@ p = Pspawner({ | sp |
 	sp.par(Pbind(*[octave: 7, degree: pat, dur: 1/6, db: -20]) );
 	sp.wait(4);
 	sp.par(Pbind(*[octave: 4, degree: pat, dur: 1/4]) );
-	
+
 	sp.wait(8);
 	sp.suspendAll;
 });
