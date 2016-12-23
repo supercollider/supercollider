@@ -625,10 +625,6 @@ one or more valid OSC messages.
 
 method:: addr
 Returns the network address of the server as a NetAddr object.
-code::
-Server.local.addr;
-Server.internal.addr;
-::
 
 method:: sync
 Send a code::/sync:: message to the server, which will replie with the message code::/synced:: when all pending asynchronous commands have been completed.
