@@ -506,22 +506,10 @@ Polling interval.
 
 
 method:: serverBooting
-Returns:: true/false depending if server is booting or not
-code::
-
-// Returns true/false depending if server is booting or not
-Server.internal.serverBooting
-Server.local.serverBooting
-::
+Returns:: true/false depending if specified server is booting or not
 
 method:: serverRunning
-Returns:: true/false depending if server is running or not
-code::
-
-// Returns true/false depending if server is running or not
-Server.internal.serverRunning
-Server.local.serverRunning
-::
+Returns:: true/false depending if specified server is running or not
 
 method:: plotTreeView
 Plot the node/group tree graphically on a given view.
