@@ -727,7 +727,9 @@ table::
 ## strong::string:: || command name
 ## strong::...:: || command arguments
 ::
-Plug-ins can define commands that operate on buffers. The arguments after the command name are defined by the command. The currently defined buffer fill commands are listed below in a separate section.
+Plug-ins can define commands that operate on buffers. The arguments after the command name are defined by the command. The currently defined link::Reference/Server-Command-Reference#Buffer Fill Commands#buffer fill commands:: are listed below in a separate section.
+
+code::/b_gen:: does not accept a completion message as the final argument.
 definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done /b_gen bufNum:: when complete.
 ::
@@ -737,6 +739,7 @@ subsection:: /b_close
 Close soundfile.
 table::
 ## strong::int:: || buffer number
+## strong::bytes:: || an OSC message to execute upon completion. (optional)
 ::
 After using a buffer with link::Classes/DiskOut::, close the soundfile and write header information.
 definitionlist::
