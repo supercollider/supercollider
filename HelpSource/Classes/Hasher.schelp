@@ -1,14 +1,12 @@
 class:: Hasher
-summary:: Randomized value.
+summary:: Scrambled value with a hash function.
 categories::  UGens>Filters>Nonlinear, UGens>Random
-
 
 Description::
 
-Returns a unique output value from zero to one for each input value
+Returns a unique output value from -1 to +1 for each input value
 according to a hash function. The same input value will always produce
-the same output value. The input need not be from 0 to 1.
-
+the same output value. The input need not be in the range -1 to +1.
 
 classmethods::
 
@@ -28,6 +26,7 @@ Examples::
 code::
 { Hasher.ar(Line.ar(0,1,1), 0.2) }.play;
 
+// Even adding a small amount to the input can result in a very different output. Compare these two examples:
 (
 {
 	SinOsc.ar(
@@ -44,6 +43,7 @@ code::
 }.play;
 )
 
+// Output stays constant while not moving the mouse.
 (
 {
 	SinOsc.ar(
