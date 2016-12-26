@@ -9,8 +9,8 @@ CheckBadValues : UGen {
 	}
 
 	checkInputs {
-		if ((rate==\audio) and:{ inputs.at(0).rate != \audio}) {
-			^("audio-rate, yet first input is not audio-rate");
+		if (rate == \audio) {
+			^this.checkSameRateAsFirstInput;
 		};
 		^this.checkValidInputs
 	}
@@ -27,8 +27,8 @@ Sanitize : UGen {
 	}
 
 	checkInputs {
-		if ((rate==\audio) and:{ inputs.at(0).rate != \audio}) {
-			^("audio-rate, yet first input is not audio-rate");
+		if (rate == \audio) {
+			^this.checkSameRateAsFirstInput;
 		};
 		^this.checkValidInputs
 	}
