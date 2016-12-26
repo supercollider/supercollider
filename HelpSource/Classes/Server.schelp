@@ -624,7 +624,7 @@ argument:: ... args
 one or more valid OSC messages.
 
 method:: name
-Returns the curent server name
+Returns the current server name
 
 method:: sync
 Send a code::/sync:: message to the server, which will replie with the message code::/synced:: when all pending asynchronous commands have been completed.
