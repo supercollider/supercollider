@@ -605,21 +605,9 @@ code::
 
 method:: actualSampleRate
 Returns:: a variable with the current sample rate (floating point precision) of the specified server
-code::
-
-// returns floating point sample rate
-Server.local.actualSampleRate;
-Server.internal.actualSampleRate;
-::
 
 method:: remoteControlled
 Returns:: true/false stating if server is unresponsive
-code::
-
-//returns a boolean stating if specified server is remote controlled or not
-Server.local.remoteControlled;
-Server.internal.remoteControlled;
-::
 
 method:: recChannels
 Get/set the number of channels (int) to record. Is automatically set to the value of link::Classes/ServerOptions#-numOutputBusChannels:: when booting the server. Must be called strong::before:: prepareForRecord.
