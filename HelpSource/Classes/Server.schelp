@@ -596,21 +596,12 @@ You must call this when finished recording or the output file will be unusable. 
 
 method:: unresponsive
 Returns:: true/false depending if server is unresponsive
-code::
-
-//returns a boolean stating if server is unresponsive or not
-Server.local.unresponsive;
-Server.internal.unresponsive;
-::
 
 method:: sampleRate
 Returns:: a variable with the current sample rate (integer)
 
 code::
 // returns a variable containing the sample rate (integer precision) of the specified server
-Server.local.sampleRate;
-Server.internal.sampleRate;
-::
 
 method:: actualSampleRate
 Returns:: a variable with the current sample rate (floating point precision) of the specified server
