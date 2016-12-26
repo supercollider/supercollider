@@ -108,7 +108,7 @@ A class for implementing Document.
 
 subsection:: Path Utilities
 
-Utilities and settings for dealing with documents such as supercollider code files. By default the document directory is SuperCollider's application directory.
+Utilities and settings for dealing with documents such as SuperCollider code files. By default the document directory is SuperCollider's application directory.
 
 method:: dir
 Get/set the default document directory. The default is dependent on link::Classes/Document#implementationClass::.
@@ -560,7 +560,7 @@ fork({
 )
 ::
 
-Changing the default look of documents can be done with the help of the link::#*initAction:: method. Run the following example once. Afterwards all newly created documents will have a dark grey background. To make this change happen every time you start supercollider, put the code inside your startup.scd file (and optionally wrap it in a code::{}.defer(0.1):: ).
+Changing the default look of documents can be done with the help of the link::#*initAction:: method. Run the following example once. Afterwards all newly created documents will have a dark grey background. To make this change happen every time you start SuperCollider, put the code inside your startup.scd file (and optionally wrap it in a code::{}.defer(0.1):: ).
 code::
 (
 Document.listener.background = Color.red;	//a special color for post document
