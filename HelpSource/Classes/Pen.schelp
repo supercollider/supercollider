@@ -1017,7 +1017,7 @@ subsection:: Blending modes
 code::
 /*
 different blend modes:
-OS X 10.4 and > Only
+macOS 10.4 and > Only
 --------------------
 0 - Normal
 1 - Multiply

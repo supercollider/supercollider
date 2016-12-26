@@ -19,13 +19,13 @@ method:: new
 Create and return a new instance of ServerOptions.
 
 method:: devices
-OS X only. Return an Array of Strings listing the audio devices currently available on the system.
+macOS only. Return an Array of Strings listing the audio devices currently available on the system.
 
 method:: inDevices
-OS X only. Return an Array of Strings listing the audio devices currently available on the system which have input channels.
+macOS only. Return an Array of Strings listing the audio devices currently available on the system which have input channels.
 
 method:: outDevices
-OS X only. Return an Array of Strings listing the audio devices currently available on the system which have output channels.
+macOS only. Return an Array of Strings listing the audio devices currently available on the system which have output channels.
 
 instancemethods::
 subsection:: The Options
