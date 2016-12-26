@@ -40,7 +40,7 @@ such as server messaging and pattern proxies which are not covered in tutorial f
 definitionList::
 ## content: ||
 definitionList::
-## placeholders in sc || link::Tutorials/JITLib/jitlib_basic_concepts_01::
+## placeholders in SuperCollider || link::Tutorials/JITLib/jitlib_basic_concepts_01::
 ## referencing and environments || link::Tutorials/JITLib/jitlib_basic_concepts_02::
 ## internal structure of node proxy || link::Tutorials/JITLib/jitlib_basic_concepts_03::
 ## timing in node proxy || link::Tutorials/JITLib/jitlib_basic_concepts_04::
