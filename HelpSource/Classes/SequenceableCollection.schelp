@@ -695,3 +695,17 @@ code::
 Pbind(\degree, Pseries(0, 1, inf), \dur, Pseq([2, [1, [1, [2, 1, 1, -1]]], 2].convertRhythm)).play;
 ::
 
+subsection:: Miscellaneous
+
+method:: unixCmd
+
+Asynchronously execute this collection of strings as a UNIX command. The first member is the path of an executable, and the remaining members are its arguments. Currently, this method ignores the PATH environment variable, so the executable must be an absolute path. An error is thrown if the collection is empty or contains anything other than strings.
+
+This is recommended over link::Classes/String#-unixCmd:: whenever possible, because it does not require sanitization of inputs and does not create an additional shell process between SuperCollider and your command.
+
+argument:: action
+A link::Classes/Function:: that is called when the process has exited. It is passed two arguments: the exit code and pid of the exited process.
+argument:: postOutput
+A link::Classes/Boolean:: that controls whether or not the output of the process is displayed in the post window.
+returns::
+An link::Classes/Integer:: - the pid of the newly created process. Use link::Classes/Integer#-pidRunning:: to test if a process is alive.

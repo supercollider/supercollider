@@ -549,6 +549,9 @@ Despite the fact that the method is called 'unixCmd', strong::it does work in Wi
 
 method::unixCmd
 Execute a unix command strong::asynchronously:: using the standard shell (sh).
+
+note:: link::Classes/SequenceableCollection#-unixCmd:: is generally preferred over this method, since it does not create an additional shell process and does not require you to escape arguments to commands. ::
+
 argument:: action
 A link::Classes/Function:: that is called when the process has exited. It is passed two arguments: the exit code and pid of the exited process.
 argument:: postOutput
