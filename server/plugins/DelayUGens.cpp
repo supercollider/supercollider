@@ -1072,6 +1072,7 @@ void PlayBuf_next_aa(PlayBuf *unit, int inNumSamples)
 	float *ratein  = ZIN(1);
 	float *trigin  = ZIN(2);
 	int32 loop     = (int32)ZIN0(4);
+	int32 endPos   = (int32)ZIN0(6);
 
 	float fbufnum  = ZIN0(0);
 	if (fbufnum != unit->m_fbufnum) {
@@ -1094,7 +1095,7 @@ void PlayBuf_next_aa(PlayBuf *unit, int inNumSamples)
 
 	CHECK_BUFFER_DATA;
 
-	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
+	double loopMax = (double)(endPos > 0 ? endPos : (loop ? bufFrames : bufFrames - 1));
 	double phase = unit->m_phase;
 	float prevtrig = unit->m_prevtrig;
 
@@ -1123,6 +1124,7 @@ void PlayBuf_next_ak(PlayBuf *unit, int inNumSamples)
 	float *ratein  = ZIN(1);
 	float trig     = ZIN0(2);
 	int32 loop     = (int32)ZIN0(4);
+	int32 endPos   = (int32)ZIN0(6);
 
 	float fbufnum  = ZIN0(0);
 	if (fbufnum != unit->m_fbufnum) {
@@ -1145,7 +1147,7 @@ void PlayBuf_next_ak(PlayBuf *unit, int inNumSamples)
 
 	CHECK_BUFFER_DATA
 
-	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
+	double loopMax = (double)(endPos > 0 ? endPos : (loop ? bufFrames : bufFrames - 1));
 	double phase = unit->m_phase;
 	if(phase == -1.) phase = bufFrames;
 	if (trig > 0.f && unit->m_prevtrig <= 0.f) {
@@ -1170,13 +1172,14 @@ void PlayBuf_next_kk(PlayBuf *unit, int inNumSamples)
 	float rate     = ZIN0(1);
 	float trig     = ZIN0(2);
 	int32 loop     = (int32)ZIN0(4);
+	int32 endPos   = (int32)ZIN0(6);
 
 	GET_BUF_SHARED
 	int numOutputs = unit->mNumOutputs;
 
 	CHECK_BUFFER_DATA
 
-	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
+	double loopMax = (double)(endPos > 0 ? endPos : (loop ? bufFrames : bufFrames - 1));
 	double phase = unit->m_phase;
 	if (trig > 0.f && unit->m_prevtrig <= 0.f) {
 		unit->mDone = false;
@@ -1198,13 +1201,14 @@ void PlayBuf_next_ka(PlayBuf *unit, int inNumSamples)
 	float rate     = ZIN0(1);
 	float *trigin  = ZIN(2);
 	int32 loop     = (int32)ZIN0(4);
+	int32 endPos   = (int32)ZIN0(6);
 
 	GET_BUF_SHARED
 	int numOutputs = unit->mNumOutputs;
 
 	CHECK_BUFFER_DATA
 
-	double loopMax = (double)(loop ? bufFrames : bufFrames - 1);
+	double loopMax = (double)(endPos > 0 ? endPos : (loop ? bufFrames : bufFrames - 1));
 	double phase = unit->m_phase;
 	float prevtrig = unit->m_prevtrig;
 	for (int i=0; i<inNumSamples; ++i) {

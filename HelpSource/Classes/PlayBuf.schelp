@@ -42,6 +42,9 @@ argument::loop
 argument:: doneAction
 an integer representing an action to be executed when the buffer is finished playing. This can be used to free the enclosing synth, etc. See link::Reference/UGen-doneActions:: for more detail. code::doneAction:: is only evaluated if loop is 0.
 
+argument::endPos
+Last sample frame to play back. If -1 (default), will play to the end of the buffer.
+
 Examples::
 
 code::
