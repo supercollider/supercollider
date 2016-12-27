@@ -5,7 +5,7 @@ related:: Classes/SCImageFilter, Classes/SCImageKernel
 
 DESCRIPTION::
 
-SCImage is an image component for the macOS supercollider client. SCImage is currently a wrapper around different models : you can use it for bitmap operations, image embedding for custom UI and for more advanced image processing as applying filters and kernels, both provided with the CoreImage framework.
+SCImage is an image component for the macOS SuperCollider client. SCImage is currently a wrapper around different models : you can use it for bitmap operations, image embedding for custom UI and for more advanced image processing as applying filters and kernels, both provided with the CoreImage framework.
 
 SCImage currently supports most formats including tiff, bmp, gif, jpeg, png, tga...ect.. for reading. But for for writing it supports only those in code::SCImage.formats::.
 
