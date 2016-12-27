@@ -124,7 +124,7 @@ method:: standardizePath
 argument:: p
 The file system path to the directory. An instance of link::Classes/String::.
 discussion::
-If it is a relative path, expand it to an absolute path relative to your document directory. Expand tildes in path (your home directory), resolve symbolic links (but not aliases). Also converts from macOS 9 path format. See PathName for more complex needs.
+If it is a relative path, expand it to an absolute path relative to your document directory. Expand tildes in path (your home directory), resolve symbolic links (but not aliases). Also converts from Mac OS 9 path format. See PathName for more complex needs.
 code::
 Document.standardizePath("~/"); // This will print your home directory
 
