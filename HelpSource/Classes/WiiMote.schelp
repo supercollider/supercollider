@@ -1,6 +1,6 @@
 class:: WiiMote
 summary:: use the Nintendo (tm) Wii Remote
-related:: Classes/GeneralHID
+related:: Classes/HID
 categories:: External Control
 
 description::

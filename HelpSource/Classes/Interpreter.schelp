@@ -1,7 +1,7 @@
 class::Interpreter
 summary:: The interpreter defines a context in which interactive commands are compiled and executed.
 categories:: Core>Kernel
-related::Guides/How to Use the Interpreter
+related::Guides/How-to-Use-the-Interpreter
 
 description::
 The interpreter is an object that handles the translation and execution of code at runtime. It is that what runs any program code and defines a context for it.

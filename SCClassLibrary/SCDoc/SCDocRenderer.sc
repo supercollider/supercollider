@@ -340,7 +340,7 @@ SCDocHTMLRenderer {
 
 		if(methArgsMismatch) {
 			"SCDoc: In %\n"
-			"  Grouped methods % does not have the same argument signature."
+			"  Grouped methods % do not have the same argument signature."
 			.format(currDoc.fullPath, names).warn;
 		};
 
