@@ -179,6 +179,9 @@ Which server to play and record. Server.default if not otherwise specified.
 argument::out
 Output bus to hear the pattern while recording, default = 0.
 
+argument::outNumChannels
+the number of out channels to play to the recorder. If larger than numChannels, outNumChannels will wrap .
+
 Examples::
 
 Below are brief examples for most of the classes derived from Pattern. These examples all rely on the patterns assigned to the Interpreter variable p, q, and r in the first block of code.
