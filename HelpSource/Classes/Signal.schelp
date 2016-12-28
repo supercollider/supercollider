@@ -139,10 +139,7 @@ code::
 Signal.sineFill(512, [1]).plot;
 Signal.sineFill(512, [1]).plot("Signal 1", Rect(50, 50, 150, 450));
 ::
-argument::name
-a String, the name of the window.
-argument::bounds
-a Rect giving the bounds of the window.
+For details, see link::Reference/plot::
 
 method::play
 Loads the signal into a buffer on the server and plays it. Returns the buffer so you can free it again.

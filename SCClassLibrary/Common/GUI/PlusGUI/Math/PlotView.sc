@@ -810,8 +810,8 @@ Plotter {
 }
 
 + Wavetable {
-	plot { |name, bounds, minval, maxval, separately = false|
-		^this.asSignal.plot(name, bounds, minval: minval, maxval: maxval, separately: separately)
+	plot { |name, bounds, minval, maxval|
+		^this.asSignal.plot(name, bounds, minval: minval, maxval: maxval)
 	}
 }
 
