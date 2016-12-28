@@ -40,6 +40,15 @@ EZGui { // an abstract class
 
 	bounds { ^view.bounds }
 
+
+	label {
+		^labelView !? { labelView.string }
+	}
+
+	prSetViewParams {
+		^this.subclassResponsibility
+	}
+
 	///////// private methods. You can still override these in subclasses
 
 	prSubViewBounds { |rect, hasLabel|
