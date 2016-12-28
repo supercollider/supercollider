@@ -21,14 +21,18 @@ w.front;
 
 ::
 
-
 classmethods::
+
+private::initClass
 
 method:: new
 argument:: parent
 The parent view.
 argument:: bounds
 An instance of link::Classes/Rect::, or a link::Classes/Point:: indicating code::width@height::.
+argument:: server
+The server to be shown in scope.
+
 discussion::
 Example:
 code::
@@ -85,12 +89,6 @@ subsection:: Subclassing and Internal Methods
 
 The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
 
-method:: initClass
-Sets the classvar, code::server = Server.default::.
-
-method:: server
-A classvar.
-
 instancemethods::
 
 method:: kill
@@ -128,26 +126,22 @@ subsection:: Subclassing and Internal Methods
 The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
 
 method:: start
-
-method:: eventSeq
-
-method:: cmdPeriod
-
 method:: initFreqScope
-
-method:: sendSynthDefs
-
 method:: allocBuffers
-
 method:: freeBuffers
-
-method:: node
-
 method:: scopebuf
-
-method:: fftbuf
-
 method:: bufSize
+
+method:: doOnServerQuit
+method:: doOnServerTree
+method:: doesNotUnderstand
+method:: scope
+method:: server
+method:: shmScopeAvailable
+method:: specialSynthArgs
+method:: specialSynthDef
+method:: synth
+
 
 examples::
 
