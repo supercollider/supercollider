@@ -111,7 +111,7 @@ table::
 ## " " || value + 1 || space
 ## \r || value + 1
 ## \n || value + 1
-## 3.asAscii || value + 1 || enter key or cmd-C on Mac OSX
+## 3.asAscii || value + 1 || enter key or cmd-C on macOS
 ::
 To change these use code::defaultKeyDownAction_::, see link::Classes/View::.
 

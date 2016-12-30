@@ -767,7 +767,7 @@ the crop region to finally use. This may be required for extending bounds since 
 
 ARGUMENT::region
 NOTE::
-supported only in Mac OS 10.5 and later.
+supported only in macOS 10.5 and later.
 ::
 option to constrain the filter to a specific region IN the Image.
 

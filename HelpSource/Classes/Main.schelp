@@ -51,7 +51,7 @@ Called after the class library has been compiled.
 discussion::
 This calls the superclass' startup, which among other things initializes the link::Classes/AppClock:: and the top-level link::Classes/Environment::.
 
-Main's startup then stores Server.default in the interpreter variable s, sets the platform default's link::Classes/GUI:: kit, calls a link::Classes/Platform:: specific startup method (for example OSXPlatform's startup opens the server windows), and finally invokes StartUp.run.
+Main's startup then stores Server.default in the interpreter variable s, sets the platform default's link::Classes/GUI:: kit, calls a link::Classes/Platform:: specific startup method (for example, OSXPlatform's startup opens the server windows), and finally invokes StartUp.run.
 
 To add your own startup functionalities, you could either edit the special startup-file (discussed in link::Reference/StartupFile::), or use StartUp.add as discussed in the link::Classes/StartUp:: help file.
 
@@ -145,7 +145,7 @@ Returns:: The operating system's pid (process ID) for the process.
 
 method::recompile
 
-Recompiles the class library. This is equivalent to restarting SC. Currently OSX (SuperCollider.app) only.
+Recompiles the class library. This is equivalent to restarting SC. Currently macOS (SuperCollider.app) only.
 
 method::platform
 Get the current link::Classes/Platform::

@@ -579,7 +579,7 @@ Execute the String in a new terminal window (strong::asynchronously::).
 argument::shell
 The shell used to execute the string.
 discussion::
-note:: On OSX, the string is incorporated into a temporary script file and executed using the shell. ::
+note:: On macOS, the string is incorporated into a temporary script file and executed using the shell. ::
 Example:
 code::
 "echo ---------Hello delightful SuperCollider user----------".runInTerminal;
@@ -653,14 +653,14 @@ method::resolveRelative
 Convert the receiver from a relative path to an absolute path, relative to the current document or text file. Requires that the current text file has been saved. Absolute paths are left untransformed.
 
 method::standardizePath
-Expand ~ to your home directory, and resolve aliases on OSX. See link::Classes/PathName:: for more complex needs. See link::Classes/File#*realpath:: if you want to resolve symlinks.
+Expand ~ to your home directory, and resolve aliases on macOS. See link::Classes/PathName:: for more complex needs. See link::Classes/File#*realpath:: if you want to resolve symlinks.
 code::
 "~/".standardizePath; //This will print your home directory
 ::
 
 
 method::openOS
-Open file, directory or URL via the operating system. On OSX this is implemented via teletype::open::, on Linux via
+Open file, directory or URL via the operating system. On macOS this is implemented via teletype::open::, on Linux via
 teletype::xdg-open:: and on Windows via teletype::start::.
 code::
 Platform.userConfigDir.openOS;
@@ -761,7 +761,7 @@ code::
 subsection::Misc methods
 
 method::speak
-Deprecated. See link::Classes/Speech:: for the full reason and possible replacements. Sends string to the OS X speech synthesizer.
+Deprecated. See link::Classes/Speech:: for the full reason and possible replacements. Sends string to the macOS speech synthesizer.
 code::
 "hi i'm talking with the default voice now, i guess".speak;
 ::
