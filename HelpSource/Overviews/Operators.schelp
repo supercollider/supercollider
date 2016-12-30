@@ -312,6 +312,7 @@ Least common multiple. This definition extends the usual definition and returns 
 
 Following the example of the programming language J (see: link::Guides/J-concepts-in-SC::), lcm is analogous to logical strong::and:: (see also: link::http://www.jsoftware.com/papers/eem/gcd.htm::).
 
+
 code::
 lcm(4, 6);
 lcm(1, 1); // and
@@ -330,10 +331,11 @@ code::
 )
 ::
 
+
 method:: gcd
 Greatest common divisor. This definition extends the usual definition and returns a negative number if strong::both operands:: are negative. This makes it consistent with the lattice-theoretical interpretation and its idempotency, commutative, associative, absorption laws.
 
-"greater" means "divisible by" in this interpretation, so code::gcd(-1, -1):: returns a negative number. This is necessary to make the whole system consistent (fundamental law of arithmetics, idempotency and absorption laws would fail).
+"greater" means "divisible by" in this interpretation, so code::gcd(-1, -1):: returns a negative number. This is necessary to make the whole system consistent (fundamental law of arithmetics, idempotency and absorption laws would fail). See examples below.
 
 Following the example of the programming language J (see: link::Guides/J-concepts-in-SC::), gcd is analogous to logical strong::or::  (see also: link::http://www.jsoftware.com/papers/eem/gcd.htm::).
 
@@ -356,6 +358,20 @@ code::
 }.play;
 )
 ::
+
+Here is an overview of how negative numbers are treated:
+
+code::
+
+lcm(4, 6) // -> 12. "least multiple" interpreted as smallest in Z
+lcm(4, -6) // -> -12 "least multiple" interpreted as smallest in Z
+lcm(-4, -6) // -> -12 "least multiple" interpreted as smallest in Z
+
+gcd(4, 6) // -> 2 "greatest divisor" interpreted as highest in Z
+gcd(4, -6) // -> 2 "greatest divisor" is interpreted as highest in Z
+gcd(-4, -6) // -> -2 "greatest divisor" is interpreted as *inverse* in Z. This is the only necessary asymmetry.
+::
+
 
 subsection:: Comparisons
 
