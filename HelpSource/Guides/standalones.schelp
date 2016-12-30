@@ -1,6 +1,6 @@
 TITLE:: Creating Standalone Applications
 SUMMARY:: A guide to creating SuperCollider-based applications
-CATEGORIES:: Platform>OSX, Tutorials
+CATEGORIES:: Platform>macOS (OS X), Tutorials
 KEYWORD:: standalones, stand-alones
 
 NOTE:: The concept of standalone applications is only relevant on macOS. There is no such concept on other platforms. ::
