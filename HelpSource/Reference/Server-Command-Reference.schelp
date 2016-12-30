@@ -1113,7 +1113,11 @@ enum {
     cmd_n_mapan = 61,
     cmd_n_order = 62,
 
-    NUMBER_OF_COMMANDS = 63
+    cmd_p_new = 63,
+
+    cmd_version = 64,
+
+    NUMBER_OF_COMMANDS = 65
 };
 ::
 
