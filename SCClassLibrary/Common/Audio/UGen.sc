@@ -1,5 +1,6 @@
 UGen : AbstractFunction {
 	classvar <>buildSynthDef; // the synth currently under construction
+	classvar <doneActionNames;
 	var <>synthDef;
 	var <>inputs;
 	var <>rate = 'audio';
@@ -7,6 +8,41 @@ UGen : AbstractFunction {
 	var <>synthIndex = -1, <>specialIndex=0;
 
 	var <>antecedents, <>descendants, <>widthFirstAntecedents; // topo sorting
+
+	*initClass {
+		doneActionNames = IdentityDictionary[
+			\noop -> 0,
+			\pauseSelf -> 1,
+			\freeSelf -> 2,
+			\free -> 2, // shorthand because it's so common
+			\freeSelfAndPrecedingNode -> 3,
+			\freeSelfAndFollowingNode -> 4,
+			\freeSelfAndNodesInPrecedingGroup -> 5,
+			\freeSelfAndNodesInFollowingGroup -> 6,
+			\freeSelfAndPrecedingNodesInGroup -> 7,
+			\freeSelfAndFollowingNodesInGroup -> 8,
+			\freeSelfAndPausePrecedingNode -> 9,
+			\freeSelfAndPauseFollowingNode -> 10,
+			\freeSelfAndDeepFreePrecedingGroup -> 11,
+			\freeSelfAndDeepFreeFollowingGroup -> 12,
+			\freeAllNodesInGroup -> 13,
+			\freeGroup -> 14
+		];
+		doneActionNames.freeze;
+	}
+
+	*processDoneAction { |doneActionName|
+		^doneActionName.asArray.collect { |name|
+			var doneAction;
+			if(doneActionName.isValidUGenInput) { doneActionName } {
+				doneAction = doneActionNames[name];
+				if(doneAction.isNil) {
+					Error("Invalid doneAction.").throw;
+				};
+				doneAction;
+			};
+		}.unbubble;
+	}
 
 	// instance creation
 	*new1 { arg rate ... args;
