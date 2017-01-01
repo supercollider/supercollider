@@ -11,10 +11,10 @@ note:: Not available in strong::Qt GUI:: ::
 
 note:: strong:: prerequisites in SwingOSC ::
 
-JSCMovieView is currently based on the Java Media Framework (JMF) which is not part of the standard java environment (Java SE) but needs to be installed separately. There is a reference implementation from Sun available for Linux, Windows and Mac OS X. It can be downloaded from http://java.sun.com/products/java-media/jmf/index.jsp (note: for Mac OS X you need the generic cross-platform version).
+JSCMovieView is currently based on the Java Media Framework (JMF) which is not part of the standard java environment (Java SE) but needs to be installed separately. There is a reference implementation from Sun available for Linux, Windows and macOS. It can be downloaded from http://java.sun.com/products/java-media/jmf/index.jsp (note: for macOS you need the generic cross-platform version).
 
 The reference implementation has rather poor media support (check this page: http://java.sun.com/products/java-media/jmf/2.1.1/formats.html ), so you might need to convert your movies or look out for extra JMF plug-ins. A really good plug-in is fobs4j !(ffpmeg objects for java) -> http://fobs.sourceforge.net/ !
-You need to install the "jmf.jar" file in your system's java extensions folder, e.g. on Mac OS X that's "/Library/Java/Extensions". For fobs, do the same with "fobs4jmf.jar" and copy "jmf.properties" into "SwingOSC/build".
+You need to install the "jmf.jar" file in your system's java extensions folder, e.g. on macOS that's "/Library/Java/Extensions". For fobs, do the same with "fobs4jmf.jar" and copy "jmf.properties" into "SwingOSC/build".
 
 (in the future, FMJ (freedom for media in java) might be an alternative: http://fmj-sf.net)
 ::

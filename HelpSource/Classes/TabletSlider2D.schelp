@@ -35,7 +35,7 @@ table::
 
 ## absoluteZ || the wheel on the side of some mice
 
-## rotation || in degrees. Used for example on the "4d mouse", and the "art marker". Note: on Mac OS X 10.4.11 using an Intuos3 tablet with Art Marker, the returned value must be multiplied by 1024 to actually obtain degrees (bug?).
+## rotation || in degrees. Used for example on the "4d mouse", and the "art marker". Note: on macOS 10.4.11 using an Intuos3 tablet with Art Marker, the returned value must be multiplied by 1024 to actually obtain degrees (bug?).
 
 ::
 

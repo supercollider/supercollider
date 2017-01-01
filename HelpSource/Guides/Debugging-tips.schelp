@@ -343,7 +343,7 @@ f.value(f);
 ::
 Infinite recursion, on the other hand, is more likely to cause SuperCollider to quit unexpectedly when the execution stack runs out of space.
 
-In Mac OS X, inserting "post" or "debug" calls will not help with infinite loops or recursion, because posted output is held in a buffer until execution is complete. If execution never completes, you never see the output.
+In macOS, inserting "post" or "debug" calls will not help with infinite loops or recursion, because posted output is held in a buffer until execution is complete. If execution never completes, you never see the output.
 
 One useful approach is to insert statements that will cause execution to halt. The easiest is .halt, but it provides you with no information about where or how it stopped, or how it got there. If you want a more descriptive message, make up an error and throw it:
 code::

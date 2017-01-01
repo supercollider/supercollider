@@ -42,7 +42,7 @@ METHOD:: string
 METHOD:: setString
 	Inserts the code::string:: at code::rangeStart:: position, replacing code::rangeSize:: amount of following characters. If code::rangeSize:: is 0, the text will be inserted without any characters being removed.
 
-	argument:: string
+	argument:: aString
 		A String - the text to insert.
 	argument:: rangeStart
 		An Integer position within the text, in characters.

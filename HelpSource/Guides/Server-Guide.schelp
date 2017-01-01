@@ -8,7 +8,7 @@ description::
 A Server object is the client-side representation of a server app and is used to control the app from the SuperCollider language application. (See link::Guides/ClientVsServer:: for more details on the distinction.)
 It forwards OSC messages and has a number of allocators that keep track of IDs for nodes, buses and buffers.
 
-The server application is a commandline program, so all commands apart from OSC messages are unix commands.
+The server application is a commandline program, so all commands apart from OSC messages are UNIX commands.
 
 The server application represented by a Server object might be running on the same machine as the client (in the same address space as the language application or separately; see below), or it may be running on a remote machine.
 
@@ -16,7 +16,7 @@ Most of a Server's options are contolled through its instance of ServerOptions. 
 
 subsection:: Paths
 
-Server apps running on the local machine have two unix environment variables: code::SC_SYNTHDEF_PATH:: and code::SC_PLUGIN_PATH::. These indicate directories of synthdefs and ugen plugins that will be loaded at startup. These are in addition to the default synthdef/ and plugin/ directories which are hard-coded.
+Server apps running on the local machine have two UNIX environment variables: code::SC_SYNTHDEF_PATH:: and code::SC_PLUGIN_PATH::. These indicate directories of synthdefs and ugen plugins that will be loaded at startup. These are in addition to the default synthdef/ and plugin/ directories which are hard-coded.
 
 These can be set within SC using the getenv and setenv methods of class link::Classes/String::.
 code::

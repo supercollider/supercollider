@@ -135,6 +135,9 @@ returns the number of seconds we have been recording so far
 method::path
 returns the path of the current recording
 
+method::numFrames
+returns the number of frames of the recording buffer
+
 method::notifyServer
 if set to true, it will send code::changed:: notifications to the server instance. This is used internally by the link::Classes/Server:: class.
 

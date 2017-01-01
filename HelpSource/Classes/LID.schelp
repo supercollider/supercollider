@@ -4,7 +4,7 @@ categories:: Platform>Linux, External Control>HID
 related:: Classes/HID, Classes/LIDInfo, Classes/LIDSlot, Classes/LIDGui
 
 description::
-This class provides a way to access devices in the linux input layer, which supports many input devices (mouse, keyboard, joystick, gamepad, tablet) and busses (serial, PS/2, USB).
+This class provides a way to access devices in the Linux input layer, which supports many input devices (mouse, keyboard, joystick, gamepad, tablet) and busses (serial, PS/2, USB).
 
 NOTE::For external HID devices it is recommended to use the link::Classes/HID:: interface, as described in link::Guides/Working_with_HID::, as it will ensure that your code is cross platform compatible. Only in cases where the raw HID interface does not provide access because the device needs a special driver (and this driver is provided in Linux kernel), or in case you want to access internal devices, you should use this class.
 ::

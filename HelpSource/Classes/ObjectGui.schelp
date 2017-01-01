@@ -59,10 +59,10 @@ returns:: this
 METHOD:: update
 When the model is changed and the .changed method is called then .update is called on all dependants including this gui object.  Update the views you have placed in the guiBody.
 
-argument:: changed
+argument:: theChanged
 The model.  Within your gui class the model is already in the instance variable 'model'.
 
-argument:: changer
+argument:: theChanger
 Depends on the conventions of how .changed was called.  If an object called someModel.changed(this) then it is supplying itself as the changer and will be passed through here.  Sometimes a flag is used: someModel.changed('points') and the gui may know of and participate in that convention.  Sometimes no changer is passed in.
 
 

@@ -5,7 +5,7 @@ related:: Tutorials/Getting-Started/00-Getting-Started-With-SC
 
 The following text is intended to serve as an introduction to SuperCollider 3, an object-oriented language for sound synthesis and digital signal processing (DSP). This tutorial does not assume a background in computer science, but does assume basic familiarity with your computer and its OS, as well as a basic knowledge of acoustics and digital audio. (I'm assuming here that words like frequency and sample will not cause any confusion.)
 
-The tutorial is written from a Mac OSX perspective, but much of it should apply to linux and windows as well. The parts which specifically differ have mostly to do with GUI aspects (Graphical User Interface).
+The tutorial is written from a macOS perspective, but much of it should apply to Linux and Windows as well. The parts which specifically differ have mostly to do with GUI aspects (Graphical User Interface).
 
 I should acknowledge that this tutorial is 'by' me in only a limited sense. In writing it I have drawn freely upon the general documentation, which was written by a number of people. This document is not intended to replace those (often more detailed) sources, and refers the reader to them constantly for further information.
 
