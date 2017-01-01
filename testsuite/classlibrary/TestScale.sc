@@ -35,22 +35,23 @@ TestScale : UnitTest {
 		^failures.isEmpty
 	}
 
+	scalesEquivalent { |rawEvent, scaleEvent|
+		var keys = [\note, \midinote, \freq, \octave, \gtranspose, \root]; //\freqToNote, \freqToScale
+		var event_results = [rawEvent, scaleEvent].collect { |event|
+			var result = IdentityDictionary[];
+			event.make { |e| keys.do { |key| result.put(key, e.at(key).value) } };
+			result;
+		};
+		var fail_message = "\nComparing:\ndegree %\nstepsPerOctave %\noctaveRatio %\nscale %\nScale %"
+		.format(rawEvent.degree, rawEvent.stepsPerOctave, rawEvent.octaveRatio, rawEvent.scale, scaleEvent.scale);
+		^this.assertResultDictsEqual(event_results[0], event_results[1], keys, fail_message);
+	}
+
 	test_event_integration {
 		var result_values = List[];
-		var keys = [\note, \midinote, \freq, \octave, \gtranspose, \root]; //\freqToNote, \freqToScale
-		var test_scale_equivalence = { |rawEvent, scaleEvent|
-			var event_results = [rawEvent, scaleEvent].collect { |event|
-				var result = IdentityDictionary[];
-				event.make { |e| keys.do { |key| result.put(key, e.at(key).value) } };
-				result;
-			};
-			var fail_message = "\nComparing:\ndegree %\nstepsPerOctave %\noctaveRatio %\nscale %\nScale %"
-			.format(rawEvent.degree, rawEvent.stepsPerOctave, rawEvent.octaveRatio, rawEvent.scale, scaleEvent.scale);
-			this.assertResultDictsEqual(event_results[0], event_results[1], keys, fail_message);
-		};
 		var degreeExamples = [0, 3, 19, -5, -37, 3s, 5b, 2s392, 8b104]
-		++ ({ rrand(-24, 24) } ! 10)
-		++ ({ rrand(-24.0, 24.0) } ! 10);
+		++ ({ rrand(-24, 24) } ! 5)
+		++ ({ rrand(-24.0, 24.0) } ! 5);
 		var stepCounts = [12, 16, 7];
 		var octaveRatios = [2.0, 1.9, 3.7];
 		var octaves = (0..9);
@@ -71,7 +72,7 @@ TestScale : UnitTest {
 									octave: octave
 								).play
 							};
-							result_values.add(test_scale_equivalence.(*events));
+							result_values.add(this.scalesEquivalent(*events));
 						}
 					}
 				}
@@ -79,10 +80,6 @@ TestScale : UnitTest {
 		};
 		Post << Char.nl << (currentMethod.asString + ":" + result_values.select(_.asBoolean).size.asString
 			+ "passed," + result_values.select(_.not).size.asString + "failed.\n");
-	}
-
-	test_libraries {
-		// TODO
 	}
 
 }
