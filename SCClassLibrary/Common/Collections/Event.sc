@@ -168,8 +168,8 @@ Event : Environment {
 				note: #{
 					(~degree + ~mtranspose).degreeToKey(
 						~scale.respondsTo(\degrees).if({ ~scale.degrees }, ~scale),
-						~scale.respondsTo(\pitchesPerOctave).if(
-							{ ~scale.pitchesPerOctave },
+						~scale.respondsTo(\stepsPerOctave).if(
+							{ ~scale.stepsPerOctave },
 							~stepsPerOctave
 						)
 					);
@@ -191,8 +191,8 @@ Event : Environment {
 				freqToNote: #{ arg self, freq; // conversion from frequency to note value
 					self.use {
 						var midinote;
-						var steps = ~scale.respondsTo(\pitchesPerOctave).if(
-							{ ~scale.pitchesPerOctave }, ~stepsPerOctave
+						var steps = ~scale.respondsTo(\stepsPerOctave).if(
+							{ ~scale.stepsPerOctave }, ~stepsPerOctave
 						);
 						midinote = cpsmidi((freq / ~harmonic) - ~ctranspose);
 						midinote / 12.0 - ~octave * steps - ~root - ~gtranspose
@@ -201,8 +201,8 @@ Event : Environment {
 				freqToScale: #{ arg self, freq;
 					// conversion from frequency to scale value.
 					self.use {
-						var steps = ~scale.respondsTo(\pitchesPerOctave).if(
-							{ ~scale.pitchesPerOctave }, ~stepsPerOctave
+						var steps = ~scale.respondsTo(\stepsPerOctave).if(
+							{ ~scale.stepsPerOctave }, ~stepsPerOctave
 						);
 						var degree = self.freqToNote(freq).keyToDegree(~scale, steps)
 						- ~mtranspose;
