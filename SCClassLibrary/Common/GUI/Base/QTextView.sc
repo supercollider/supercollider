@@ -9,35 +9,35 @@ TextView : QAbstractScroll {
 		this.setProperty( \enterInterpretsSelection, bool );
 	}
 
-	editable_ { arg aBool;
-		editable = aBool;
-		this.setProperty( \readOnly, aBool.not );
+	editable_ { arg bool;
+		editable = bool;
+		this.setProperty( \readOnly, bool.not );
 	}
 
-	usesTabToFocusNextView_ { arg aBool;
-		this.setProperty( \tabChangesFocus, aBool );
+	usesTabToFocusNextView_ { arg bool;
+		this.setProperty( \tabChangesFocus, bool );
 	}
 
-	open { arg aString;
-		this.setProperty( \document, aString );
+	open { arg path;
+		this.setProperty( \document, path );
 	}
 
 	string {
 		^this.getProperty( \plainText );
 	}
 
-	string_ { arg aString;
-		this.setProperty( \plainText, aString );
+	string_ { arg string;
+		this.setProperty( \plainText, string );
 	}
 
-	font_ { arg aFont;
-		font = aFont;
-		this.setProperty( \textFont, aFont );
+	font_ { arg argFont;
+		font = argFont;
+		this.setProperty( \textFont, font );
 	}
 
-	stringColor_ { arg aColor;
-		stringColor = aColor;
-		this.setProperty( \textColor, aColor );
+	stringColor_ { arg color;
+		stringColor = color;
+		this.setProperty( \textColor, color );
 	}
 
 	background { ^this.palette.base }
@@ -69,16 +69,16 @@ TextView : QAbstractScroll {
 		this.invokeMethod( \select, [start, size] );
 	}
 
-	setStringColor { arg aColor, intStart, intSize;
-		this.setProperty( \rangeColor, [aColor,intStart,intSize] );
+	setStringColor { arg color, start, size;
+		this.setProperty( \rangeColor, [color, start, size] );
 	}
 
-	setFont { arg aFont, intStart, intSize;
-		this.setProperty( \rangeFont, [aFont,intStart,intSize] );
+	setFont { arg font, start, size;
+		this.setProperty( \rangeFont, [font, start, size] );
 	}
 
-	setString { arg aString, intStart, intSize;
-		this.setProperty( \rangeText, [aString,intStart,intSize] );
+	setString { arg string, start, size;
+		this.setProperty( \rangeText, [string, start, size] );
 	}
 
 	tabWidth { ^this.getProperty( \tabStopWidth ); }
