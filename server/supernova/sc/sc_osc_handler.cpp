@@ -3118,7 +3118,7 @@ void handle_d_load(ReceivedMessage const & msg,
     cmd_dispatcher<realtime>::fire_system_callback( [=, message=std::move(message),
                                                      path_string=std::move(path_string) ] () mutable {
 
-        /* TODO: we need to implment some file name pattern matching */
+        /* TODO: we need to implement some file name pattern matching */
         std::vector<sc_synth_definition_ptr> wrappedSynthdefs = wrapSynthdefs( sc_read_synthdefs_file( path_string.c_str() ) );
 
         cmd_dispatcher<realtime>::fire_rt_callback( [=, message=std::move(message),
