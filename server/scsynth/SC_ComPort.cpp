@@ -296,6 +296,10 @@ public:
 		int32 size;
 		int32 msglen;
 
+		boost::system::error_code error;
+		boost::asio::ip::tcp::no_delay noDelayOption(true);
+		socket.set_option(noDelayOption, error);
+
 		// first message must be the password. 4 tries.
 		bool validated = mWorld->hw->mPassword[0] == 0;
 		for (int i=0; !validated && i<4; ++i) {
