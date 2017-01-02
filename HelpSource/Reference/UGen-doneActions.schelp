@@ -1,11 +1,11 @@
-title:: UGen done-actions
+title:: UGen doneActions
 summary:: Actions to take when an UGen has finished
 categories:: UGens, Server>Nodes
 related:: Classes/UGen, Classes/Done, Classes/FreeSelfWhenDone
 keyword:: doneAction
 keyword:: done action
 keyword:: done actions
-keyword:: doneactions
+keyword:: doneActions
 
 
 A number of UGens implement doneActions. These allow one to optionally free or pause the enclosing synth and other related nodes when the UGen is finished.
@@ -25,7 +25,7 @@ list::
 ::
 
 section:: Actions
-The available done actions are as follows:
+The available doneActions are as follows:
 table::
 ## 0 || do nothing when the UGen is finished
 ## 1 || pause the enclosing synth, but do not free it
