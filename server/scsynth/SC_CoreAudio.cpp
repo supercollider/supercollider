@@ -933,8 +933,21 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 			return false;
 		}
 
-		if (!mExplicitSampleRate && inputStreamDesc.mSampleRate != outputStreamDesc.mSampleRate) {
-			scprintf("input and output sample rates do not match. %g != %g\n", inputStreamDesc.mSampleRate, outputStreamDesc.mSampleRate);
+		if (
+			// We do not support mismatched input and output sample rates, but there's no harm in skipping
+			// this check if numInputBusChannels == 0. This allows the user to disable input entirely as
+			// a workaround for a sample rate mismatch.
+			mWorld->mNumInputs > 0 &&
+			!mExplicitSampleRate &&
+			inputStreamDesc.mSampleRate != outputStreamDesc.mSampleRate
+		) {
+			scprintf(
+				"ERROR: Input sample rate is %g, but output is %g. "
+				"Mismatched sample rates are not supported. "
+				"To disable input, set the number of input channels to 0.\n",
+				inputStreamDesc.mSampleRate,
+				outputStreamDesc.mSampleRate
+			);
 			return false;
 		}
 	}
