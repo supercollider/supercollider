@@ -541,22 +541,22 @@ std::vector<AudioValueRange> GetAvailableNominalSampleRates(const AudioDeviceID&
 	UInt32							size;
 	UInt32							count;
 	std::auto_ptr<AudioValueRange>	validSampleRateRanges;
-	
+
 	AudioObjectPropertyAddress addr = {
 		kAudioDevicePropertyAvailableNominalSampleRates,
 		kAudioObjectPropertyScopeGlobal,
 		kAudioObjectPropertyElementMaster
 	};
-	
+
 	err = AudioObjectGetPropertyDataSize(device, &addr, 0, NULL, &size);
-	
+
 	if (err != kAudioHardwareNoError) {
 		scprintf("get kAudioDevicePropertyAvailableNominalSampleRates data size error %4.4s\n", (char*)&err);
 	} else {
 		if (size > 0) {
 			count = size / sizeof(AudioValueRange);
 			validSampleRateRanges.reset(new AudioValueRange[count]);
-			
+
 			err = AudioObjectGetPropertyData(device, &addr, 0, NULL, &size, validSampleRateRanges.get());
 			if (err != kAudioHardwareNoError) {
 				scprintf("get kAudioDevicePropertyAvailableNominalSampleRates error %4.4s\n", (char*)&err);
@@ -567,7 +567,7 @@ std::vector<AudioValueRange> GetAvailableNominalSampleRates(const AudioDeviceID&
 			}
 		}
 	}
-	
+
 	return result;
 }
 
@@ -785,7 +785,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 
 		bool sampleRateSupported = false;
 		auto availableSampleRates = GetAvailableNominalSampleRates(mOutputDevice);
-		
+
 		// If we've got two devices, we need to use a sample rate list from both
 		//  This won't account for cases where there are overlapping ranges, but
 		//  that seems sufficiently edge-case to ignore for now.
@@ -801,25 +801,25 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 					return (lhs.mMaximum != rhs.mMaximum) ? (lhs.mMaximum < rhs.mMaximum) : (lhs.mMinimum < rhs.mMinimum);
 				}
 			);
-			
+
 			availableSampleRatesInputOutput.resize(rateListIter - availableSampleRatesInputOutput.begin());
 			availableSampleRates = availableSampleRatesInputOutput;
 		}
-		
+
 		for (const AudioValueRange& range : availableSampleRates) {
 			if (mPreferredSampleRate >= range.mMinimum && mPreferredSampleRate <= range.mMaximum) {
 				sampleRateSupported = true;
 				break;
 			}
 		}
-		
+
 		if (!sampleRateSupported) {
 			#define SR_MAX_VALUE  9999999
 			#define SR_MIN_VALUE -9999999
-			
+
 			Float64 nextHighestMatch = SR_MAX_VALUE;
 			Float64 nextLowestMatch = SR_MIN_VALUE;
-			
+
 			for (const AudioValueRange& range : availableSampleRates) {
 				if (range.mMinimum > mPreferredSampleRate && range.mMinimum < nextHighestMatch) {
 					nextHighestMatch = range.mMinimum;
@@ -828,7 +828,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 					nextLowestMatch = range.mMaximum;
 				}
 			}
-			
+
 			if (nextHighestMatch != SR_MAX_VALUE) {
 				sampleRate = nextHighestMatch;
 				sampleRateSupported = true;
@@ -838,7 +838,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 			} else {
 				sampleRateSupported = false;
 			}
-			
+
 			if (sampleRateSupported) {
 				scprintf("Requested sample rate %f was not available - attempting to use sample rate of %f\n", (double)mPreferredSampleRate, (double)sampleRate);
 			} else {
@@ -853,12 +853,12 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 				}
 			}
 		}
-		
+
 		// Requested sample rate is available - we're going to set and, if we don't hit an error,
 		// assume that our set was successful.
 		if (sampleRateSupported) {
 			bool sampleRateSetSuccess = true;
-			
+
 			propertyAddress.mSelector = kAudioDevicePropertyNominalSampleRate;
 			propertyAddress.mScope = kAudioDevicePropertyScopeOutput;
 
@@ -868,7 +868,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 				sampleRateSetSuccess = false;
 				scprintf("set kAudioDevicePropertyNominalSampleRate error %4.4s\n", (char*)&err);
 			}
-			
+
 			if (UseSeparateIO())
 			{
 				count = sizeof(Float64);
@@ -877,13 +877,13 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 				propertyAddress.mScope = kAudioDevicePropertyScopeInput;
 
 				err = AudioObjectSetPropertyData(mInputDevice, &propertyAddress, 0, NULL, count, &sampleRate);
-				
+
 				if (err != kAudioHardwareNoError) {
 					sampleRateSetSuccess = false;
 					scprintf("set kAudioDevicePropertyNominalSampleRate error %4.4s\n", (char*)&err);
 				}
 			}
-			
+
 			if (sampleRateSetSuccess) {
 				mExplicitSampleRate = sampleRate;
 			} else {
@@ -1618,7 +1618,7 @@ OSStatus	hardwareListenerProc (	AudioHardwarePropertyID	inPropertyID,
     fflush(stdout);
     return (noErr);
 }
- 
+
 OSStatus AddDeviceListeners(AudioDeviceID inDevice, void *inClientData);
 
 bool SC_CoreAudioDriver::DriverStart()
@@ -1884,7 +1884,7 @@ OSStatus AddDeviceListeners(AudioDeviceID inDevice, void *inClientData)
 {
     OSStatus err = noErr;
     AudioObjectPropertyAddress propertyAddress;
-    
+
     // ONLY REACTING TO HEADPHONE SWAPS FOR NOW - see version control history for removed dead code
     propertyAddress.mSelector = kAudioHardwarePropertyDevices;
     propertyAddress.mScope = kAudioObjectPropertyScopeGlobal;
