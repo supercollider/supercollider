@@ -834,8 +834,9 @@ void sc_osc_handler::tcp_connection::start(sc_osc_handler * self)
 {
     using namespace boost;
     typedef boost::endian::big_int32_t big_int32_t;
+    boost::system::error_code error;
     asio::ip::tcp::no_delay option(true);
-    socket_.set_option(option);
+    socket_.set_option(option, error);
 
     const bool check_password = self->tcp_password_;
 
