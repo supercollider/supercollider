@@ -1488,7 +1488,7 @@ int objectPerform(struct VMGlobals *g, int numArgsPushed)
 			goto badselector;
 		}
 		PyrObject *array = slotRawObject(listSlot);
-		if (array->size < 1 || !IsSym) {
+		if (array->size < 1) {
 			error("Array must have a selector.\n");
 			return errFailed;
 		}
