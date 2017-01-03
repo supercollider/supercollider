@@ -1488,11 +1488,16 @@ int objectPerform(struct VMGlobals *g, int numArgsPushed)
 			goto badselector;
 		}
 		PyrObject *array = slotRawObject(listSlot);
-		if (array->size < 1) {
+		if (array->size < 1 || !IsSym) {
 			error("Array must have a selector.\n");
 			return errFailed;
 		}
 		selSlot = array->slots;
+        if (!IsSym(selSlot)) {
+            error("First element of array must be a Symbol selector.\n");
+            dumpObjectSlot(selSlot);
+            return errWrongType;
+        }
 		selector = slotRawSymbol(selSlot);
 
 		if (numArgsPushed>2) {
