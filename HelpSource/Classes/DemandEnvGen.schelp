@@ -83,7 +83,7 @@ demand ugen returning time scaling values
 argument::doneAction
 
 A doneAction that is evaluated when level or duration stream
-ends. See link::Reference/UGen-doneActions::  for more detail.
+ends. See link::Classes/Done::  for more detail.
 
 
 Examples::

@@ -44,7 +44,7 @@ argument::doneAction
 
 An integer representing the doneAction. See
 
-link::Reference/UGen-doneActions::  for more detail.
+link::Classes/Done::  for more detail.
 
 returns::
 This UGen outputs 1 if silence is detected, otherwise 0.

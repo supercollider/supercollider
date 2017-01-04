@@ -24,7 +24,7 @@ argument:: loop
 if loop is > 0, UGen oscillates. Otherwise it calls doneAction after one cycle (default: 1)
 argument:: doneAction
 doneAction, which is evaluated after cycle completes (2 frees the synth, default: 0).
-See link::Reference/UGen-doneActions:: for more detail.
+See link::Classes/Done:: for more detail.
 
 
 instancemethods::
