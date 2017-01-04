@@ -9,7 +9,7 @@ When input falls below a threshold, evaluate doneAction.
 
 code::
 // this frees after the Decay has become quiet enough for a long enough time
-{ var signal = Decay.ar(Impulse.ar(0), 2, PinkNoise.ar(0.2)); DetectSilence.ar(signal, doneAction:2); signal }.play;
+{ var signal = Decay.ar(Impulse.ar(0), 2, PinkNoise.ar(0.2)); DetectSilence.ar(signal, doneAction: Done.freeSelf); signal }.play;
 ::
 
 note::
@@ -57,7 +57,7 @@ code::
 SynthDef("detectSilence-help", { arg out;
 	var z;
 	z = SinOsc.ar(Rand(400, 700), 0, LFDNoise3.kr(8).max(0)).softclip * 0.3;
-	DetectSilence.ar(z, doneAction:2);
+	DetectSilence.ar(z, doneAction: Done.freeSelf);
 	Out.ar(out, z);
 }).add;
 )

@@ -152,7 +152,7 @@ The SynthDef to play is named by the code::'instrument':: key. To play a pattern
 code::
 SynthDef(\harpsi, { |outbus = 0, freq = 440, amp = 0.1, gate = 1|
 	var out;
-	out = EnvGen.ar(Env.adsr, gate, doneAction: 2) * amp *
+	out = EnvGen.ar(Env.adsr, gate, doneAction: Done.freeSelf) * amp *
 		Pulse.ar(freq, 0.25, 0.75);
 	Out.ar(outbus, out ! 2);
 }).add;	// see below for more on .add
@@ -254,7 +254,7 @@ code::
 SynthDef(\trig_demo, { |freq, gate = 1, t_trig = 1|	// t_trig here
 	var	env = Decay2.kr(t_trig, 0.01, 0.1),
 		sig = SinOsc.ar(freq, 0, env)
-			* Linen.kr(gate, 0.01, 0.1, 0.1, doneAction: 2);
+			* Linen.kr(gate, 0.01, 0.1, 0.1, doneAction: Done.freeSelf);
 	Out.ar(0, sig ! 2)
 }).add;
 )
