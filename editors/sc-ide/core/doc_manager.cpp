@@ -362,7 +362,6 @@ Document *DocumentManager::open( const QString & path, int initialCursorPosition
     doc->mDoc->setModified(false);
     doc->mFilePath = filePath;
     QString fileTitle = info.fileName();
-    doc->mTitle = fileTitle;
     doc->setTitle(fileTitle);
     doc->mSaveTime = info.lastModified();
     doc->setInitialSelection(initialCursorPosition, selectionLength);
@@ -558,7 +557,6 @@ bool DocumentManager::doSaveAs( Document *doc, const QString & path )
     doc->mFilePath = cpath;
     QString fileTitle = info.fileName();
     doc->setTitle(fileTitle);
-    doc->mTitle = fileTitle;
     doc->mDoc->setModified(false);
     doc->setPlainText(fileIsPlainText);
     doc->removeTmpFile();
@@ -1116,7 +1114,6 @@ void DocumentManager::handleSetDocTitleScRequest( const QString & data )
         {
             QString newTitle = QString::fromUtf8(title.c_str());
             document->setTitle(newTitle);
-            document->mTitle = newTitle;
             Q_EMIT(titleChanged(document));
         }
 
