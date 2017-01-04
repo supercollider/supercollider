@@ -97,7 +97,6 @@ public:
 private:
 
     DocumentListWidget *mDocList;
-
 };
 
 } // namespace ScIDE
