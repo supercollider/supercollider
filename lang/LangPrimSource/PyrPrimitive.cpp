@@ -3359,7 +3359,6 @@ int prRoutineStop(struct VMGlobals *g, int numArgsPushed)
 
 
 	if (state == tSuspended || state == tInit) {
-		slotCopy(&g->process->nowExecutingPath, &thread->oldExecutingPath);
 		SetNil(&g->thread->terminalValue);
 		SetRaw(&thread->state, tDone);
 		slotRawObject(&thread->stack)->size = 0;
