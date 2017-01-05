@@ -58,6 +58,55 @@ o.free;  // when done, you need to clean up the OSCFunc
 l.flat.plot(numChannels: 2);
 ::
 
+subsection:: Polling
+
+Polling uses a UGen to have the server output values itself.
+
+The simplest way is to use the .poll method, which will output your value 10 times per second.
+
+code::
+{ LFNoise1.kr.poll; }.play;   // default poll
+::
+
+This can be too fast, so it can be specified how many times per second the value should be printed.
+
+code::
+{ LFNoise1.kr.poll(3); }.play;  // poll more slowly
+::
+
+Arrays can be polled
+
+code::
+{ [LFNoise1.kr, LFNoise1.kr].poll; }.play;  // poll an array
+::
+
+For more than one value or array at once, poll can become unwieldy, because so many values are printed to the screen that it is difficult to tell which is whic. Labels help with this.
+
+code::
+{ LFNoise1.kr.poll(3, "a value"); LFNoise1.kr.poll(5, "another value"); }.play;
+::
+
+Debugging triggers doesn't work this way, because for the most part the trigger will be in between polling intervals. In order to poll a triggered value, that value itself can be supplied instead of the number of polls per second. Then the value will be printed whenever a trigger occurs (the last value is zero or negative, while the current value is positive).
+
+code::
+{ var trig = Dust.kr; trig.poll(trig); }.play;
+::
+
+Values can also be done using a seperate trigger. This is useful for having the most control over when a poll occurs.
+
+code::
+~synth={ arg t_trig; [LFNoise1.kr, LFNoise1.kr].poll(t_trig); }.play;
+
+// the t_ in t_trig is shorthand to cause ~synth.set(\t_trig, 1) to trigger instead of set permanently
+~synth.set(\t_trig, 1); // run this line a couple of times 
+::
+
+All the examples above work the same for audio rate UGens.
+
+code::
+{ LFNoise1.ar.poll; }.play;
+::
+
 subsection:: Trace control signals using a control bus
 
 Another technique to watch control values is to output the signal to a control-rate bus. Then you can access the bus using link::Classes/Bus#-get:: or link::Classes/Bus#-getSynchronous::. Saving the values into an Array or List is a little more straightforward with getSynchronous.
