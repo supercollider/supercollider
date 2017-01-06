@@ -207,7 +207,6 @@ extern PyrSymbol *s_thread;
 extern PyrSymbol *s_routine;
 extern PyrSymbol *s_env;
 
-extern PyrSymbol *s_audio, *s_control, *s_scalar;
 extern PyrSymbol *s_run, *s_stop, *s_tick;
 extern PyrSymbol *s_next;
 extern PyrSymbol *s_at;

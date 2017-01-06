@@ -155,9 +155,6 @@ PyrSymbol *s_curProcess, *s_curMethod, *s_curBlock, *s_curClosure, *s_curThread;
 PyrSymbol *s_run, *s_stop, *s_tick;
 PyrSymbol *s_startup;
 PyrSymbol *s_docmdline;
-PyrSymbol *s_audio;
-PyrSymbol *s_control;
-PyrSymbol *s_scalar;
 PyrSymbol *s_next;
 PyrSymbol *s_env;
 PyrSymbol *s_ugen, *s_outputproxy;
@@ -265,9 +262,6 @@ void initSymbols()
     
     s_awake = getsym("awake");
     
-	s_audio = getsym("audio");
-	s_control = getsym("control");
-	s_scalar = getsym("scalar");
 	s_run = getsym("run");
 	s_stop = getsym("stop");
 	s_tick = getsym("tick");
