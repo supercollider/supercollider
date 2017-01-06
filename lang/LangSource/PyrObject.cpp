@@ -245,23 +245,24 @@ void initSymbols()
     s_ugen = getsym("UGen");
     s_outputproxy = getsym("OutputProxy");
     s_env = getsym("Env");
+    s_synth = getsym("Synth");
+    s_environment = getsym("Environment");
+    s_event = getsym("Event");
 
-	s_synth = getsym("Synth");
-	s_environment = getsym("Environment");
-	s_event = getsym("Event");
-	s_shutdown = getsym("shutdown");
-
-	s_interpretCmdLine = getsym("interpretCmdLine");
-	s_interpretPrintCmdLine = getsym("interpretPrintCmdLine");
-
+    // interpreter
+    s_interpretCmdLine = getsym("interpretCmdLine");
+    s_interpretPrintCmdLine = getsym("interpretPrintCmdLine");
+    
 	s_doesNotUnderstand = getsym("doesNotUnderstand");
     
+    s_startup = getsym("startup");
     s_awake = getsym("awake");
+    s_shutdown = getsym("shutdown");
     
+    // methods
 	s_run = getsym("run");
 	s_stop = getsym("stop");
 	s_tick = getsym("tick");
-	s_startup = getsym("startup");
 	s_next = getsym("next");
 	s_value = getsym("value");
 	s_performList = getsym("performList");
