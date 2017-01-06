@@ -60,39 +60,45 @@ l.flat.plot(numChannels: 2);
 
 subsection:: Polling
 
-Polling uses a UGen to have the server output values itself.
-
-The simplest way is to use the .poll method, which will output your value 10 times per second.
+Polling allows you to debug a SynthDef by printing samples of a UGen's output to the post window. To do this, use the .poll method (a shorthand for the Poll UGen), which prints 10 times per second by default.
 
 code::
 { LFNoise1.kr.poll; }.play;   // default poll
 ::
 
-This can be too fast, so it can be specified how many times per second the value should be printed.
+This can be too fast, so you can specify how many times per second the value should be printed.
 
 code::
 { LFNoise1.kr.poll(3); }.play;  // poll more slowly
 ::
 
-Arrays can be polled
+You can also poll arrays
 
 code::
 { [LFNoise1.kr, LFNoise1.kr].poll; }.play;  // poll an array
 ::
 
-For more than one value or array at once, poll can become unwieldy, because so many values are printed to the screen that it is difficult to tell which is whic. Labels help with this.
+For more than one value or array at once, poll can become unwieldy, because so many values are printed to the screen that it is difficult to tell which is which. Labels help with this.
 
 code::
 { LFNoise1.kr.poll(3, "a value"); LFNoise1.kr.poll(5, "another value"); }.play;
 ::
 
-Debugging triggers doesn't work this way, because for the most part the trigger will be in between polling intervals. In order to poll a triggered value, that value itself can be supplied instead of the number of polls per second. Then the value will be printed whenever a trigger occurs (the last value is zero or negative, while the current value is positive).
+Debugging triggers doesn't work with regular polling, because the trigger will mostly occur in between polling intervals. The output itself can be supplied instead of the number of polls per second. This way, the value is only printed whenthere is a trigger, rather than at a regular interval.
 
 code::
 { var trig = Dust.kr; trig.poll(trig); }.play;
 ::
 
-Values can also be done using a seperate trigger. This is useful for having the most control over when a poll occurs.
+You can debug a value that changes infrequently in a similar way, using the Changed UGen. This only prints the value when it just changed.
+
+Note that it will skip changes that occur immediately after a previous change, because any trigger needs to revert back to zero before triggering again.
+
+code::
+{ var steps = LFNoise0.kr; steps.poll(Changed.kr(steps); }.play;
+::
+
+You can also use a seperate trigger. This is useful for having the most control over when a poll occurs.
 
 code::
 ~synth={ arg t_trig; [LFNoise1.kr, LFNoise1.kr].poll(t_trig); }.play;
