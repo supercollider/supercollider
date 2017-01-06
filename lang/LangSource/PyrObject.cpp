@@ -163,9 +163,8 @@ PyrSymbol *s_synth, *s_environment, *s_event;
 PyrSymbol *s_shutdown;
 PyrSymbol *s_super, *s_this;
 PyrSlot o_nil, o_true, o_false;
-PyrSlot o_pi, o_twopi;
 PyrSlot o_fhalf, o_fnegone, o_fzero, o_fone, o_ftwo, o_inf;
-PyrSlot o_negtwo, o_negone, o_zero, o_one, o_two;
+PyrSlot o_negone, o_zero, o_one, o_two;
 PyrSlot o_none;
 PyrSlot o_emptyarray, o_onenilarray, o_argnamethis;
 
@@ -281,14 +280,11 @@ void initSymbols()
 	SetFalse(&o_false);
 	SetTrue(&o_true);
 
-	SetFloat(&o_pi, pi);
-	SetFloat(&o_twopi, twopi);
 	SetFloat(&o_fhalf, .5);
 	SetFloat(&o_fnegone, -1.);
 	SetFloat(&o_fzero, 0.);
 	SetFloat(&o_fone, 1.);
 	SetFloat(&o_ftwo, 2.);
-	SetInt(&o_negtwo, -2);
 	SetInt(&o_negone, -1);
 	SetInt(&o_zero, 0);
 	SetInt(&o_one, 1);

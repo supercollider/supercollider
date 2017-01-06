@@ -37,9 +37,8 @@ A PyrSlot is an 8-byte value which is either a double precision float or a
 #endif
 
 extern PyrSlot o_nil, o_true, o_false, o_inf;
-extern PyrSlot o_pi, o_twopi;
 extern PyrSlot o_fhalf, o_fnegone, o_fzero, o_fone, o_ftwo;
-extern PyrSlot o_negtwo, o_negone, o_zero, o_one, o_two;
+extern PyrSlot o_negone, o_zero, o_one, o_two;
 extern PyrSlot o_emptyarray, o_onenilarray, o_argnamethis;
 
 extern PyrSymbol *s_object; // "Object"
