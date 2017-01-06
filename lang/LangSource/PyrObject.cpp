@@ -275,13 +275,19 @@ void initSymbols()
 	s_putseries = getsym("putSeries");
     
 	s_envirGet = getsym("envirGet");
-	s_envirPut = getsym("envirPut");
+    s_envirPut = getsym("envirPut");
+    
+    // set special value slots
+    SetSymbol(&o_none, s_none);
 
 	SetNil(&o_nil);
 	SetFalse(&o_false);
 	SetTrue(&o_true);
     
-    SetSymbol(&o_none, s_none);
+    SetInt(&o_negone, -1);
+    SetInt(&o_zero, 0);
+    SetInt(&o_one, 1);
+    SetInt(&o_two, 2);
 
 	SetFloat(&o_fhalf, .5);
 	SetFloat(&o_fnegone, -1.);
@@ -289,19 +295,16 @@ void initSymbols()
 	SetFloat(&o_fone, 1.);
     SetFloat(&o_ftwo, 2.);
     SetFloat(&o_inf, std::numeric_limits<double>::infinity());
-    
-	SetInt(&o_negone, -1);
-	SetInt(&o_zero, 0);
-	SetInt(&o_one, 1);
-	SetInt(&o_two, 2);
 
 	slotCopy(&gSpecialValues[svNil], &o_nil);
 	slotCopy(&gSpecialValues[svFalse], &o_false);
 	slotCopy(&gSpecialValues[svTrue], &o_true);
+    
 	slotCopy(&gSpecialValues[svNegOne], &o_negone);
 	slotCopy(&gSpecialValues[svZero], &o_zero);
 	slotCopy(&gSpecialValues[svOne], &o_one);
 	slotCopy(&gSpecialValues[svTwo], &o_two);
+    
 	slotCopy(&gSpecialValues[svFHalf], &o_fhalf);
 	slotCopy(&gSpecialValues[svFNegOne], &o_fnegone);
 	slotCopy(&gSpecialValues[svFZero], &o_fzero);
@@ -309,6 +312,7 @@ void initSymbols()
 	slotCopy(&gSpecialValues[svFTwo], &o_ftwo);
 	slotCopy(&gSpecialValues[svInf], &o_inf);
 
+    
 	gFormatElemSize[obj_notindexed] = sizeof(PyrSlot);
 	gFormatElemSize[obj_slot  ] = sizeof(PyrSlot);
 	gFormatElemSize[obj_double] = sizeof(double);
