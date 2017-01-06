@@ -179,13 +179,21 @@ PyrSlot o_emptyarray, o_onenilarray, o_argnamethis;
 
 void initSymbols()
 {
+    // basic keywords
 	s_new = getsym("new");
-	s_ref = getsym("Ref");
 	s_none = getsym("none");
-	s_object = getsym("Object");
 	s_this = getsym("this");
 	s_super = getsym("super");
-
+    
+    s_curProcess = getsym("thisProcess");
+    s_curThread = getsym("thisThread");
+    s_curMethod = getsym("thisMethod");
+    s_curBlock = getsym("thisFunctionDef");
+    s_curClosure = getsym("thisFunction");
+    
+    // classes
+    s_object = getsym("Object");
+    s_ref = getsym("Ref");
 	s_dictionary = getsym("Dictionary");
 	s_bag = getsym("Bag");
 	s_set = getsym("Set");
@@ -245,7 +253,10 @@ void initSymbols()
 	s_awake = getsym("awake");
 	s_appclock = getsym("AppClock");
 	s_systemclock = getsym("SystemClock");
-	s_server_shm_interface = getsym("ServerShmInterface");
+    s_server_shm_interface = getsym("ServerShmInterface");
+    s_ugen = getsym("UGen");
+    s_outputproxy = getsym("OutputProxy");
+    s_env = getsym("Env");
 
 	s_linear = getsym("linear");
 	s_exponential = getsym("exponential");
@@ -266,14 +277,7 @@ void initSymbols()
 
 	s_nocomprendo = getsym("doesNotUnderstand");
 
-	s_curProcess = getsym("thisProcess");
-	s_curThread = getsym("thisThread");
-	s_curMethod = getsym("thisMethod");
-	s_curBlock = getsym("thisFunctionDef");
-	s_curClosure = getsym("thisFunction");
-	//s_sampleRate = getsym("gSR");
-	//s_logicalClock = getsym("gTime");
-	//s_audioClock = getsym("gAudioTime");
+    
 	s_audio = getsym("audio");
 	s_control = getsym("control");
 	s_scalar = getsym("scalar");
@@ -292,11 +296,7 @@ void initSymbols()
 	s_series = getsym("prSimpleNumberSeries");
 	s_copyseries = getsym("copySeries");
 	s_putseries = getsym("putSeries");
-
-	s_ugen = getsym("UGen");
-	s_outputproxy = getsym("OutputProxy");
-	s_env = getsym("Env");
-
+    
 	s_envirGet = getsym("envirGet");
 	s_envirPut = getsym("envirPut");
 
