@@ -167,7 +167,6 @@ PyrSymbol *s_series, *s_copyseries, *s_putseries;
 PyrSymbol *s_envirGet, *s_envirPut;
 PyrSymbol *s_synth, *s_spawn, *s_environment, *s_event;
 PyrSymbol *s_hardwaresetup, *s_shutdown;
-PyrSymbol *s_linear, *s_exponential, *s_gate;
 PyrSymbol *s_super, *s_this;
 PyrSlot o_nil, o_true, o_false, o_end;
 PyrSlot o_pi, o_twopi;
@@ -253,10 +252,6 @@ void initSymbols()
     s_ugen = getsym("UGen");
     s_outputproxy = getsym("OutputProxy");
     s_env = getsym("Env");
-
-	s_linear = getsym("linear");
-	s_exponential = getsym("exponential");
-	s_gate = getsym("gate");
 
 	s_synth = getsym("Synth");
 	s_spawn = getsym("BasicSpawn");

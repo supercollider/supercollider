@@ -205,7 +205,6 @@ extern PyrSymbol *s_process;
 extern PyrSymbol *s_main;
 extern PyrSymbol *s_thread;
 extern PyrSymbol *s_routine;
-extern PyrSymbol *s_linear, *s_exponential, *s_gate;
 extern PyrSymbol *s_env;
 
 extern PyrSymbol *s_audio, *s_control, *s_scalar;
