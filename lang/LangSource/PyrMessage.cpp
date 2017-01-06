@@ -717,7 +717,7 @@ void doesNotUnderstandWithKeys(VMGlobals *g, PyrSymbol *selector,
 
 	classobj = classOfSlot(recvrSlot);
 
-	index = slotRawInt(&classobj->classIndex) + s_nocomprendo->u.index;
+	index = slotRawInt(&classobj->classIndex) + s_doesNotUnderstand->u.index;
 	meth = gRowTable[index];
 
 
@@ -790,7 +790,7 @@ void doesNotUnderstand(VMGlobals *g, PyrSymbol *selector,
 
 	classobj = classOfSlot(recvrSlot);
 
-	index = slotRawInt(&classobj->classIndex) + s_nocomprendo->u.index;
+	index = slotRawInt(&classobj->classIndex) + s_doesNotUnderstand->u.index;
 	meth = gRowTable[index];
 
 

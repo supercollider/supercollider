@@ -1451,7 +1451,7 @@ void PyrMethodNode::compile(PyrSlot *result)
 				numArgs, getPrimitiveNumArgs(methraw->specialIndex));
 		}
 		*/
-	} else if (slotRawSymbol(&gCompilingMethod->name) == s_nocomprendo) {
+	} else if (slotRawSymbol(&gCompilingMethod->name) == s_doesNotUnderstand) {
 		methType = methNormal;
 	} else {
 		int bodyType = mBody->mClassno;

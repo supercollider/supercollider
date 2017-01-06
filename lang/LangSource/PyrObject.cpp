@@ -148,13 +148,12 @@ PyrSymbol *s_systemclock;
 PyrSymbol *s_server_shm_interface;
 PyrSymbol *s_interpretCmdLine, *s_interpretPrintCmdLine;
 
-PyrSymbol *s_nocomprendo;
+PyrSymbol *s_doesNotUnderstand;
 PyrSymbol *s_curProcess, *s_curMethod, *s_curBlock, *s_curClosure, *s_curThread;
 //PyrSymbol *s_sampleRate;
 //PyrSymbol *s_audioClock, *s_logicalClock;
 PyrSymbol *s_run, *s_stop, *s_tick;
 PyrSymbol *s_startup;
-PyrSymbol *s_docmdline;
 PyrSymbol *s_next;
 PyrSymbol *s_env;
 PyrSymbol *s_ugen, *s_outputproxy;
@@ -257,7 +256,7 @@ void initSymbols()
 	s_interpretCmdLine = getsym("interpretCmdLine");
 	s_interpretPrintCmdLine = getsym("interpretPrintCmdLine");
 
-	s_nocomprendo = getsym("doesNotUnderstand"); // rename
+	s_doesNotUnderstand = getsym("doesNotUnderstand");
     
     s_awake = getsym("awake");
     
@@ -265,7 +264,6 @@ void initSymbols()
 	s_stop = getsym("stop");
 	s_tick = getsym("tick");
 	s_startup = getsym("startup");
-	s_docmdline = getsym("doCmdLine");
 	s_next = getsym("next");
 	s_value = getsym("value");
 	s_performList = getsym("performList");
