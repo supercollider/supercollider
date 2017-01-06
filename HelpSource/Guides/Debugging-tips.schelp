@@ -84,7 +84,7 @@ code::
 { LFNoise1.kr.poll(3, "a value"); LFNoise1.kr.poll(5, "another value"); }.play;
 ::
 
-Debugging triggers doesn't work with regular polling, because the trigger will mostly occur in between polling intervals. The output itself can be supplied instead of the number of polls per second. This way, the value is only printed whenthere is a trigger, rather than at a regular interval.
+Debugging triggers doesn't work with regular polling, because the trigger will mostly occur in between polling intervals. The output itself can be supplied instead of the number of polls per second. This way, the value is only printed when there is a trigger, rather than at a regular interval.
 
 code::
 { var trig = Dust.kr; trig.poll(trig); }.play;
