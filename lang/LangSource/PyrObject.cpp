@@ -314,17 +314,17 @@ void initSymbols()
 	gFormatElemSize[obj_slot  ] = sizeof(PyrSlot);
 	gFormatElemSize[obj_double] = sizeof(double);
 	gFormatElemSize[obj_float ] = sizeof(float);
-	gFormatElemSize[obj_int32  ] = sizeof(int32);
+	gFormatElemSize[obj_int32 ] = sizeof(int32);
 	gFormatElemSize[obj_int16 ] = sizeof(int16);
 	gFormatElemSize[obj_int8  ] = sizeof(int8);
 	gFormatElemSize[obj_char  ] = sizeof(char);
-	gFormatElemSize[obj_symbol  ] = sizeof(PyrSymbol*);
+	gFormatElemSize[obj_symbol] = sizeof(PyrSymbol*);
 
 	gFormatElemCapc[obj_notindexed] = sizeof(PyrSlot) / sizeof(PyrSlot);
 	gFormatElemCapc[obj_slot  ] = sizeof(PyrSlot) / sizeof(PyrSlot);
 	gFormatElemCapc[obj_double] = sizeof(PyrSlot) / sizeof(double);
 	gFormatElemCapc[obj_float ] = sizeof(PyrSlot) / sizeof(float);
-	gFormatElemCapc[obj_int32  ] = sizeof(PyrSlot) / sizeof(int32);
+	gFormatElemCapc[obj_int32 ] = sizeof(PyrSlot) / sizeof(int32);
 	gFormatElemCapc[obj_int16 ] = sizeof(PyrSlot) / sizeof(int16);
 	gFormatElemCapc[obj_int8  ] = sizeof(PyrSlot) / sizeof(int8);
 	gFormatElemCapc[obj_char  ] = sizeof(PyrSlot) / sizeof(char);
@@ -334,7 +334,7 @@ void initSymbols()
 	gFormatElemTag[obj_slot  ] = -1;
 	gFormatElemTag[obj_double] = 0;
 	gFormatElemTag[obj_float ] = 0;
-	gFormatElemTag[obj_int32  ] = tagInt;
+	gFormatElemTag[obj_int32 ] = tagInt;
 	gFormatElemTag[obj_int16 ] = tagInt;
 	gFormatElemTag[obj_int8  ] = tagInt;
 	gFormatElemTag[obj_char  ] = tagChar;
