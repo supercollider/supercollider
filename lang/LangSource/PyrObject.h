@@ -183,7 +183,7 @@ extern PyrSymbol *s_list, *s_method, *s_fundef, *s_frame, *s_class;
 extern PyrSymbol *s_symbol, *s_nil;
 extern PyrSymbol *s_boolean, *s_true, *s_false;
 extern PyrSymbol *s_int, *s_char, *s_color, *s_float, *s_complex;
-extern PyrSymbol *s_rawptr, *s_objptr;
+extern PyrSymbol *s_rawptr;
 extern PyrSymbol *s_string;
 extern PyrSymbol *s_magnitude, *s_number, *s_collection;
 extern PyrSymbol *s_ordered_collection;

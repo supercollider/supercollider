@@ -114,7 +114,7 @@ PyrSymbol *s_list, *s_method, *s_fundef, *s_frame, *s_class;
 PyrSymbol *s_symbol, *s_nil;
 PyrSymbol *s_boolean, *s_true, *s_false;
 PyrSymbol *s_int, *s_char, *s_color, *s_float, *s_complex;
-PyrSymbol *s_rawptr, *s_objptr;
+PyrSymbol *s_rawptr;
 PyrSymbol *s_string;
 PyrSymbol *s_magnitude, *s_number, *s_collection, *s_ordered_collection;
 PyrSymbol *s_arrayed_collection;
@@ -215,7 +215,6 @@ void initSymbols()
 	s_char = getsym("Char");
 	s_color = getsym("Color");
 	s_rawptr = getsym("RawPointer");
-	s_objptr = getsym("ObjectPointer");
 	s_string = getsym("String");
 	s_magnitude = getsym("Magnitude");
 	s_number = getsym("Number");
