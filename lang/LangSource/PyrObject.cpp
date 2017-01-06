@@ -222,13 +222,11 @@ void initSymbols()
 	s_number = getsym("Number");
 	s_simple_number = getsym("SimpleNumber");
 	s_collection = getsym("Collection");
-	//s_ordered_collection = getsym("OrderedCollection");
 	s_arrayed_collection = getsym("ArrayedCollection");
 	s_sequenceable_collection = getsym("SequenceableCollection");
 	s_boolean = getsym("Boolean");
 	s_signal = getsym("Signal");
 	s_wavetable = getsym("Wavetable");
-	//s_signalnode = getsym("SignalNode");
 	s_rawarray = getsym("RawArray");
 	s_int8array = getsym("Int8Array");
 	s_int16array = getsym("Int16Array");
@@ -247,10 +245,8 @@ void initSymbols()
 	s_thread = getsym("Thread");
 	s_routine = getsym("Routine");
 	s_task = getsym("Task");
-	s_prstart = getsym("prStart");
 	s_interpreter = getsym("Interpreter");
 	s_finalizer = getsym("Finalizer");
-	s_awake = getsym("awake");
 	s_appclock = getsym("AppClock");
 	s_systemclock = getsym("SystemClock");
     s_server_shm_interface = getsym("ServerShmInterface");
@@ -262,8 +258,6 @@ void initSymbols()
 	s_exponential = getsym("exponential");
 	s_gate = getsym("gate");
 
-	//s_dsp = getsym("DSP");
-	//s_dspsettings = getsym("DSPSettings");
 	s_synth = getsym("Synth");
 	s_spawn = getsym("BasicSpawn");
 	s_environment = getsym("Environment");
@@ -274,9 +268,9 @@ void initSymbols()
 	s_interpretCmdLine = getsym("interpretCmdLine");
 	s_interpretPrintCmdLine = getsym("interpretPrintCmdLine");
 
-
-	s_nocomprendo = getsym("doesNotUnderstand");
-
+	s_nocomprendo = getsym("doesNotUnderstand"); // rename
+    
+    s_awake = getsym("awake");
     
 	s_audio = getsym("audio");
 	s_control = getsym("control");
@@ -291,8 +285,8 @@ void initSymbols()
 	s_performList = getsym("performList");
 	s_superPerformList = getsym("superPerformList");
 	s_at = getsym("at");
-	s_put = getsym("put");
-
+    s_put = getsym("put");
+    s_prstart = getsym("prStart");
 	s_series = getsym("prSimpleNumberSeries");
 	s_copyseries = getsym("copySeries");
 	s_putseries = getsym("putSeries");
