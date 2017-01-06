@@ -150,8 +150,6 @@ PyrSymbol *s_interpretCmdLine, *s_interpretPrintCmdLine;
 
 PyrSymbol *s_doesNotUnderstand;
 PyrSymbol *s_curProcess, *s_curMethod, *s_curBlock, *s_curClosure, *s_curThread;
-//PyrSymbol *s_sampleRate;
-//PyrSymbol *s_audioClock, *s_logicalClock;
 PyrSymbol *s_run, *s_stop, *s_tick;
 PyrSymbol *s_startup;
 PyrSymbol *s_next;
