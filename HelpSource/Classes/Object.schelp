@@ -424,7 +424,7 @@ method::perform
 
 The selector argument must be a Symbol. Sends the method named by the selector with the given arguments to the receiver.
 
-If the first argument is an Array or List, this method behaves like code::performMsg::. However, this usage is strongly discouraged.
+If the first argument is an Array or List, this method behaves like code::performMsg::. However, this usage is discouraged, and code::performMsg:: ought to be used instead.
 
 method::performList
 
