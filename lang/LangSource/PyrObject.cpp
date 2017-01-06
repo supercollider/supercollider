@@ -163,7 +163,7 @@ PyrSymbol *s_performList, *s_superPerformList;
 PyrSymbol *s_series, *s_copyseries, *s_putseries;
 PyrSymbol *s_envirGet, *s_envirPut;
 PyrSymbol *s_synth, *s_environment, *s_event;
-PyrSymbol *s_hardwaresetup, *s_shutdown;
+PyrSymbol *s_shutdown;
 PyrSymbol *s_super, *s_this;
 PyrSlot o_nil, o_true, o_false, o_end;
 PyrSlot o_pi, o_twopi;
@@ -252,7 +252,6 @@ void initSymbols()
 	s_synth = getsym("Synth");
 	s_environment = getsym("Environment");
 	s_event = getsym("Event");
-	s_hardwaresetup = getsym("hardwareSetup");
 	s_shutdown = getsym("shutdown");
 
 	s_interpretCmdLine = getsym("interpretCmdLine");
