@@ -166,7 +166,7 @@ PyrSlot o_nil, o_true, o_false, o_end;
 PyrSlot o_pi, o_twopi;
 PyrSlot o_fhalf, o_fnegone, o_fzero, o_fone, o_ftwo, o_inf;
 PyrSlot o_negtwo, o_negone, o_zero, o_one, o_two;
-PyrSlot o_nullframe, o_none;
+PyrSlot o_none;
 PyrSlot o_emptyarray, o_onenilarray, o_argnamethis;
 
 
