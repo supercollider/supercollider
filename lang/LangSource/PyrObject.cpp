@@ -162,7 +162,7 @@ PyrSymbol *s_envirGet, *s_envirPut;
 PyrSymbol *s_synth, *s_environment, *s_event;
 PyrSymbol *s_shutdown;
 PyrSymbol *s_super, *s_this;
-PyrSlot o_nil, o_true, o_false, o_end;
+PyrSlot o_nil, o_true, o_false;
 PyrSlot o_pi, o_twopi;
 PyrSlot o_fhalf, o_fnegone, o_fzero, o_fone, o_ftwo, o_inf;
 PyrSlot o_negtwo, o_negone, o_zero, o_one, o_two;
