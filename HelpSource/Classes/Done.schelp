@@ -34,8 +34,8 @@ table::
 ## freeSelf || 2 || free the enclosing synth
 ## freeSelfAndPrev || 3 || free both this synth and the preceding node
 ## freeSelfAndNext || 4 || free both this synth and the following node
-## freeSelfAndFreeAllPrev || 5 || free this synth; if the preceding node is a group then do g_freeAll on it, else free it
-## freeSelfAndFreeAllNext || 6 || free this synth; if the following node is a group then do g_freeAll on it, else free it
+## freeSelfAndFreeAllInPrev || 5 || free this synth; if the preceding node is a group then do g_freeAll on it, else free it
+## freeSelfAndFreeAllInNext || 6 || free this synth; if the following node is a group then do g_freeAll on it, else free it
 ## freeSelfToHead || 7 || free this synth and all preceding nodes in this group
 ## freeSelfToTail || 8 || free this synth and all following nodes in this group
 ## freeSelfPausePrev || 9 || free this synth and pause the preceding node
