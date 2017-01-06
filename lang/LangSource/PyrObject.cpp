@@ -162,6 +162,7 @@ PyrSymbol *s_envirGet, *s_envirPut;
 PyrSymbol *s_synth, *s_environment, *s_event;
 PyrSymbol *s_shutdown;
 PyrSymbol *s_super, *s_this;
+
 PyrSlot o_nil, o_true, o_false;
 PyrSlot o_fhalf, o_fnegone, o_fzero, o_fone, o_ftwo, o_inf;
 PyrSlot o_negone, o_zero, o_one, o_two;
@@ -279,18 +280,20 @@ void initSymbols()
 	SetNil(&o_nil);
 	SetFalse(&o_false);
 	SetTrue(&o_true);
+    
+    SetSymbol(&o_none, s_none);
 
 	SetFloat(&o_fhalf, .5);
 	SetFloat(&o_fnegone, -1.);
 	SetFloat(&o_fzero, 0.);
 	SetFloat(&o_fone, 1.);
-	SetFloat(&o_ftwo, 2.);
+    SetFloat(&o_ftwo, 2.);
+    SetFloat(&o_inf, std::numeric_limits<double>::infinity());
+    
 	SetInt(&o_negone, -1);
 	SetInt(&o_zero, 0);
 	SetInt(&o_one, 1);
 	SetInt(&o_two, 2);
-	SetSymbol(&o_none, s_none);
-	SetFloat(&o_inf, std::numeric_limits<double>::infinity());
 
 	slotCopy(&gSpecialValues[svNil], &o_nil);
 	slotCopy(&gSpecialValues[svFalse], &o_false);
