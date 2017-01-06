@@ -1519,7 +1519,7 @@ int objectPerform(struct VMGlobals *g, int numArgsPushed)
 
 		pslot = recvrSlot;
 		qslot = selSlot;
-		for (m=0, mmax=array->size-1; m < mmax; ++m)
+		for (m = 0, mmax=array->size-1; m < mmax; ++m)
             slotCopy(++pslot, ++qslot);
 
 		g->sp += array->size - 2;
