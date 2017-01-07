@@ -849,7 +849,10 @@ comment2 : {
                     break;
                 else
                     prevc = c, c = input0(); // eat both characters
-			} else if (c == '*' && prevc == '/') clevel++;
+            } else if (c == '*' && prevc == '/') {
+                clevel++;
+                prevc = c, c = input0(); // eat both characters
+            }
 			prevc = c;
 		} while (c != 0);
 		yylen = 0;
@@ -1517,7 +1520,10 @@ comment2 : {
                     break;
                 else
                     prevc = c, c = input0(); // eat both characters
-			} else if (c == '*' && prevc == '/') clevel++;
+            } else if (c == '*' && prevc == '/') {
+                clevel++;
+                prevc = c, c = input0(); // eat both characters
+            }
 			prevc = c;
 		} while (c != 0);
 		if (c == 0) {
