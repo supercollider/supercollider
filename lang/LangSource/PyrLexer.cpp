@@ -774,7 +774,7 @@ symbol3 : {
 		}
 		if (c == 0) {
 			asRelativePath(curfilename,extPath);
-			post("Open ended symbol ... started on line %d in file '%s'\n",
+			post("Open ended symbol started on line %d in file '%s'\n",
 				startline+errLineOffset, extPath);
 			yylen = 0;
 			r = 0;
@@ -808,9 +808,9 @@ string1 : {
 			if (c == 0) break;
 		}
 		if (c == 0) {
-			asRelativePath(curfilename,extPath);
-			post("Open ended string ... started on line %d in file '%s'\n",
-				startline+errLineOffset, extPath);
+			asRelativePath(curfilename, extPath);
+			post("Open ended string started on line %d in file '%s'\n",
+				startline + errLineOffset, extPath);
 			yylen = 0;
 			r = 0;
 			goto leave;
@@ -854,9 +854,9 @@ comment2 : {
 		} while (c != 0);
 		yylen = 0;
 		if (c == 0) {
-			asRelativePath(curfilename,extPath);
-			post("Open ended comment ... started on line %d in file '%s'\n",
-				startline+errLineOffset, extPath);
+			asRelativePath(curfilename, extPath);
+			post("Open ended comment started on line %d in file '%s'\n",
+				startline + errLineOffset, extPath);
 			r = 0;
 			goto leave;
 		}
@@ -1471,7 +1471,7 @@ symbol3 : {
 		if (c == 0) {
 			char extPath[MAXPATHLEN];
 			asRelativePath(curfilename, extPath);
-			post("Open ended symbol ... started on line %d in file '%s'\n",
+			post("Open ended symbol started on line %d in file '%s'\n",
 				 startline, extPath);
 			goto error2;
 		}
@@ -1492,7 +1492,7 @@ string1 : {
 		if (c == 0) {
 			char extPath[MAXPATHLEN];
 			asRelativePath(curfilename, extPath);
-			post("Open ended string ... started on line %d in file '%s'\n",
+			post("Open ended string started on line %d in file '%s'\n",
 				 startline, extPath);
 			goto error2;
 		}
@@ -1523,7 +1523,7 @@ comment2 : {
 		if (c == 0) {
 			char extPath[MAXPATHLEN];
 			asRelativePath(curfilename, extPath);
-			post("Open ended comment ... started on line %d in file '%s'\n",
+			post("Open ended comment started on line %d in file '%s'\n",
 				 startline, extPath);
 			goto error2;
 		}
