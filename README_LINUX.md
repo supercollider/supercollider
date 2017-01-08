@@ -121,6 +121,8 @@ builds in a specific build directory:
    $> cmake -DCMAKE_PREFIX_PATH=/path/to/qt5 ..
    ```
 
+   The `..` at the end is easy to miss. Don't forget it!
+
    The location of `/path/to/qt5` will depend on how you installed Qt:
 
    - If you used your Linux distribution's repositories, it will be `/usr/lib/i386-linux-gnu/` (32-bit) or `/usr/lib/x86_64-linux-gnu/` (64-bit).
