@@ -1,6 +1,7 @@
 TestParser : UnitTest {
 
-	// tests block comments /* */
+	// Regression tests for a specific bug in block comment parsing.
+	// See https://github.com/supercollider/supercollider/issues/2624
 	test_blockComments {
 		var openTests, closedTests, errorTests;
 		var testCs, testCsValue;
