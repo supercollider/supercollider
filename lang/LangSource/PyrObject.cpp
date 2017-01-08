@@ -154,7 +154,6 @@ PyrSymbol *s_run, *s_stop, *s_tick;
 PyrSymbol *s_startup;
 PyrSymbol *s_next;
 PyrSymbol *s_env;
-PyrSymbol *s_ugen, *s_outputproxy;
 PyrSymbol *s_new, *s_ref, *s_value, *s_at, *s_put;
 PyrSymbol *s_performList, *s_superPerformList;
 PyrSymbol *s_series, *s_copyseries, *s_putseries;
@@ -242,8 +241,6 @@ void initSymbols()
 	s_appclock = getsym("AppClock");
 	s_systemclock = getsym("SystemClock");
     s_server_shm_interface = getsym("ServerShmInterface");
-    s_ugen = getsym("UGen");
-    s_outputproxy = getsym("OutputProxy");
     s_env = getsym("Env");
     s_synth = getsym("Synth");
     s_environment = getsym("Environment");
