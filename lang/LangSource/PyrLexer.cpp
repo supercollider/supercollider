@@ -2049,7 +2049,6 @@ void compileSucceeded()
 			VMGlobals *g = gMainVMGlobals;
 
 			g->canCallOS = true;
-			//++g->sp; SetObject(g->sp, g->process);
 
 			++g->sp; SetObject(g->sp, g->process);
 			runInterpreter(g, s_startup, 1);
