@@ -143,7 +143,6 @@ PyrSymbol *s_prstart;
 PyrSymbol *s_interpreter;
 PyrSymbol *s_finalizer;
 PyrSymbol *s_awake;
-PyrSymbol *s_appclock;
 PyrSymbol *s_systemclock;
 PyrSymbol *s_server_shm_interface;
 PyrSymbol *s_interpretCmdLine, *s_interpretPrintCmdLine;
@@ -238,7 +237,6 @@ void initSymbols()
 	s_task = getsym("Task");
 	s_interpreter = getsym("Interpreter");
 	s_finalizer = getsym("Finalizer");
-	s_appclock = getsym("AppClock");
 	s_systemclock = getsym("SystemClock");
     s_server_shm_interface = getsym("ServerShmInterface");
     s_env = getsym("Env");

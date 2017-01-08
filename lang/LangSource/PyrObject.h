@@ -220,7 +220,6 @@ extern PyrSymbol *s_synth, *s_environment, *s_event;
 extern PyrSymbol *s_interpreter;
 extern PyrSymbol *s_finalizer;
 extern PyrSymbol *s_awake;
-extern PyrSymbol *s_appclock;
 extern PyrSymbol *s_systemclock;
 extern PyrSymbol *s_server_shm_interface;
 extern PyrSymbol *s_interpretCmdLine, *s_interpretPrintCmdLine;
