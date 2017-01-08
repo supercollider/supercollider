@@ -130,7 +130,6 @@ PyrSymbol *s_int32array;
 PyrSymbol *s_symbolarray;
 PyrSymbol *s_doublearray;
 PyrSymbol *s_floatarray;
-PyrSymbol *s_point;
 PyrSymbol *s_rect;
 PyrSymbol *s_func, *s_absfunc;
 PyrSymbol *s_stream;
@@ -225,7 +224,6 @@ void initSymbols()
 	s_floatarray = getsym("FloatArray");
 	s_doublearray = getsym("DoubleArray");
 	s_complex = getsym("Complex");
-	s_point = getsym("Point");
 	s_rect = getsym("Rect");
 	s_absfunc = getsym("AbstractFunction");
 	s_func = getsym("Function");

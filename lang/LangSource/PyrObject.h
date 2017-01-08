@@ -198,7 +198,6 @@ extern PyrSymbol *s_int32array;
 extern PyrSymbol *s_symbolarray;
 extern PyrSymbol *s_floatarray;
 extern PyrSymbol *s_doublearray;
-extern PyrSymbol *s_point;
 extern PyrSymbol *s_rect;
 extern PyrSymbol *s_stream;
 extern PyrSymbol *s_process;
