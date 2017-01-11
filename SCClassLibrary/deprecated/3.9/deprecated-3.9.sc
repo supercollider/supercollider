@@ -21,6 +21,9 @@ SplayZ {
 
     *arFill { arg numChans = 4, n, function, spread = 1, level = 1, width = 2, center = 0.0,
         orientation = 0.5, levelComp = true;
+
+        this.deprecated(thisMethod, SplayAz.class.findMethod(\arFill));
+
         ^this.ar(numChans, function ! n, spread, level, width, center,
             orientation, levelComp)
     }
