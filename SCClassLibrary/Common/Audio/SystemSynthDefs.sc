@@ -19,8 +19,13 @@ SystemSynthDefs {
 			// clean up any written synthdefs starting with "temp__"
 			var path = SynthDef.synthDefDir ++ tempNamePrefix ++ "*";
 			var match = pathMatch(path);
-			if(match.notEmpty) { "Cleaning up temporary SynthDefs...".postln };
-			pathMatch(path).do { |file| File.delete(file) };
+			if(match.notEmpty) {
+				"Cleaning up % temporary SynthDef%...\n".postf(
+					match.size,
+					if(match.size == 1, { "" }, { "s" })
+				);
+				match.do { |file| File.delete(file) };
+			};
 
 			// add system synth defs
 			(1..numChannels).do { arg i;
