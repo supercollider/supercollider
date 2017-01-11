@@ -39,7 +39,7 @@
 
 
 #include "PyrParseNode.h"
-#include "Bison/lang11d_tab.h"
+#include "Bison/lang11d_tab.hpp"
 #include "SCBase.h"
 #include "PyrObject.h"
 #include "PyrObjectProto.h"
@@ -1550,12 +1550,13 @@ static ClassExtFile* eClassExtFiles;
 ClassExtFile* newClassExtFile(PyrSymbol *fileSym, int startPos, int endPos);
 ClassExtFile* newClassExtFile(PyrSymbol *fileSym, int startPos, int endPos)
 {
+    post("\tin newClassExtFile: %d %d\n", startPos, endPos);
 	ClassExtFile* classext;
 	classext = (ClassExtFile*)pyr_pool_compile->Alloc(sizeof(ClassExtFile));
 	classext->fileSym = fileSym;
 	classext->next = 0;
 	classext->startPos = startPos;
-	classext->endPos = endPos;
+    classext->endPos = endPos;
 	if (!sClassExtFiles) sClassExtFiles = classext;
 	else eClassExtFiles->next = classext;
 	eClassExtFiles = classext;
@@ -1573,6 +1574,7 @@ ClassDependancy* newClassDependancy(PyrSymbol *className, PyrSymbol *superClassN
 	// pyrmalloc:
 	// lifetime: kill after compile.
 	numClassDeps++;
+    post("Class added: %s. Superclass: %s\n\tNum class deps/total: %d\t%d\n", className->name, superClassName->name, numClassDeps, gNumClasses);
 	if (className->classdep) {
 		error("duplicate Class found: '%s' \n", className->name);
 		post("%s\n",className->classdep->fileSym->name);
@@ -1833,6 +1835,7 @@ bool parseOneClass(PyrSymbol *fileSym)
 				return false;
 			}
 		} else if (token == OPENCURLY) {
+            post("got here 5. token: %d | opencurly: %d\n", token, OPENCURLY);
 			if (className == s_object) superClassName = s_none;
 			else superClassName = s_object;
 			scanForClosingBracket(); // eat class body
@@ -1844,12 +1847,31 @@ bool parseOneClass(PyrSymbol *fileSym)
 			return false;
 		}
 	} else if (token == '+') {
-		token = yylex();
+        post("got here 1\n");
+		token = yylex(); // get the supposed class name
 		if (token == 0) return false;
-		scanForClosingBracket();
-
-		newClassExtFile(fileSym, startPos, textpos);
-		return false;
+        if (token == CLASSNAME) {
+            post("got here 2\n");
+            token = yylex(); // get the supposed open curly
+            if(token == 0) return false;
+            post("token: %d | opencurly: %d\n", token, OPENCURLY);
+            if(token == OPENCURLY) {
+                post("got here 3\n");
+                scanForClosingBracket(); // find the end of the extension declaration
+                newClassExtFile(fileSym, startPos, textpos); // create a new file for it
+            } else {
+                post("got here 4\n");
+                compileErrors++;
+                post("Expected %c.  got token: '%s' %d\n", OPENCURLY, yytext, token);
+                postErrorLine(lineno, linepos, charno);
+                return false;
+            }
+        } else {
+            compileErrors++;
+            post("Expected class name.  got token: '%s' %d\n", yytext, token);
+            postErrorLine(lineno, linepos, charno);
+            return false;
+        }
 	} else {
 		if (token != 0) {
 			compileErrors++;
