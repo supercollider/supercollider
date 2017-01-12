@@ -27,7 +27,7 @@ a = SomeClass.new;
 a.methodThatPostsItself;
 ::
 
-It is frequently used along with error-throwing methods. For example, the implementation of code::Nil.new:: is:
+code::thisMethod:: is frequently used to pass information to error-throwing methods. For example, the implementation of code::Nil.new:: is:
 
 code::
 *new { ^this.shouldNotImplement(thisMethod) }
