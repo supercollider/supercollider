@@ -409,6 +409,12 @@ void MainWindow::createActions()
     connect(action, SIGNAL(triggered()), mPostDocklet, SLOT(focus()));
     settings->addAction( action, "post-focus", ideCategory);
 
+    mActions[ClearPostWindow] = action = new QAction(tr("Clear Post Window"), this);
+    action->setStatusTip(tr("Clear post window"));
+    action->setShortcut(tr("Ctrl+Shift+P", "Clear post window"));
+    connect(action, SIGNAL(triggered()), mPostDocklet->mPostWindow, SLOT(clear()));
+    settings->addAction( action, "post-clear", ideCategory);
+
     // Language
     mActions[LookupImplementation] = action = new QAction(
         QIcon::fromTheme("window-lookupdefinition"), tr("Look Up Implementations..."), this);
@@ -637,6 +643,7 @@ void MainWindow::createMenus()
     menu->addAction( mEditors->action(MultiEditor::RemoveAllSplits) );
     menu->addSeparator();
     menu->addAction( mActions[FocusPostWindow] );
+    menu->addAction( mActions[ClearPostWindow] );
     menu->addSeparator();
     menu->addAction( mActions[ShowFullScreen] );
 
