@@ -75,7 +75,7 @@ Section:: Interaction with sample rate
 
 Ringz (and UGens that are based on it: link::Classes/Klank::, link::Classes/DynKlank:: and link::Classes/Formlet::) are "sample-rate independent" with respect to emphasis::impulses:: at the input. That is, given single-sample impulses, the output signal at different sample rates should be the same frequency and amplitude.
 
-This design has a side effect: If the input is not made of impulses, the output amplitude depends on the sample rate. Higher sample rates produce louder signals, by an amount proportional to the ratio between sample rates.
+This design has a side effect: If the input is not made of impulses, the output amplitude is proportional to the sample rate.
 
 code::
 (
@@ -91,7 +91,7 @@ a = {
 )
 ::
 
-At 44.1kHz, this prints a RMS amplitude of 1.0758. At 88.2kHz, the amplitude doubles.
+At 44.1 kHz, this prints a RMS amplitude of 1.0758. At 88.2 kHz, the amplitude doubles.
 
 Modal synthesis (simulating the vibrating modes of a struck surface) feeds a short, decaying burst of noise into Ringz-style resonators. This is a common use case that emphasis::is:: subject to this amplitude effect.
 
