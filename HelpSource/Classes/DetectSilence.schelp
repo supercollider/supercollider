@@ -81,12 +81,14 @@ Task({
 
 section::DetectSilence and multiple inputs
 
-DetectSilence has a non-obvious interaction with multiple inputs. This code
+Be careful feeding multiple inputs into DoneAction, since multichannel expansion can lead to confusing behavior. This code
 
 code::DetectSilence.ar([left, right] + Impulse.ar(0), doneAction: 2)::
 
-spawns strong::two:: DetectSilences, and the enclosing Synth frees itself when channel 1 OR channel 2 becomes silent. (The code::Impulse.ar(0):: is there to ensure that DetectSilence starts detecting silence right away rather than waiting for non-silence.)
+spawns strong::two:: DetectSilences, and the enclosing Synth frees itself when left OR right becomes silent. (The code::Impulse.ar(0):: is there to ensure that DetectSilence starts detecting silence right away rather than waiting for non-silence.)
 
-What's a good way to change that OR into an AND? The solution is strong::not:: to run code::[left, right]:: through a Mix, because the two channels could have some kind of phase cancellation. The answer is to use DetectSilence's output instead of its doneAction, and use FreeSelfWhenDone. Recall that DetectSilence outputs 1 if silence is detected, and 0 otherwise. Taking the product of multiple DetectSilences will return 1 only if all the DetectSilences are 1. So here is the solution:
+Usually you want to detect silence for both inputs, so what's a good way to change that OR into an AND? The solution is strong::not:: to sum code::(left + right) / 2.sqrt::, because there may be phase cancellation in that sum. Instead, use DetectSilence's output instead of its doneAction, and use FreeSelf to do the freeing. Recall that DetectSilence outputs 1 if silence is detected, and 0 otherwise. Taking the product of multiple DetectSilences will return 1 only if all the DetectSilences are 1. So here is the correct solution to freeing a Synth when both code::left:: and code::right:: first fall silent:
 
-code::FreeSelfWhenDone.kr(DetectSilence.ar([left, right] + Impulse.ar(0)).product)::
+code::FreeSelf.kr(DetectSilence.ar([left, right] + Impulse.ar(0)).product)::
+
+It's also possible to mix the signals with full-wave rectification to avert phase cancellation issues (code::[left, right].abs.sum / 2.sqrt::).
