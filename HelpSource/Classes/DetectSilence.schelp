@@ -81,7 +81,7 @@ Task({
 
 section::DetectSilence and multiple inputs
 
-Be careful feeding multiple inputs into DoneAction, since multichannel expansion can lead to confusing behavior. This code
+Be careful feeding multiple inputs into DetectSilence, since multichannel expansion can lead to confusing behavior. This code
 
 code::DetectSilence.ar([left, right] + Impulse.ar(0), doneAction: 2)::
 
