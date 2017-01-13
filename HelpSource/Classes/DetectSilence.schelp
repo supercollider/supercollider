@@ -1,20 +1,20 @@
 class:: DetectSilence
-summary:: When input falls below a threshold, evaluate doneAction.
+summary:: Detect when input falls below an amplitude threshold
 categories::  UGens>Synth control, UGens>Analysis>Amplitude
 
 
 Description::
 
-When input falls below a threshold, evaluate doneAction.
+When the absolute value of the input signal remains below the threshold for a given window of time, output 1. Otherwise, output 0. If the output transitions from 0 to 1, doneAction is also evaluated.
 
 code::
 // this frees after the Decay has become quiet enough for a long enough time
 { var signal = Decay.ar(Impulse.ar(0), 2, PinkNoise.ar(0.2)); DetectSilence.ar(signal, doneAction:2); signal }.play;
 ::
 
-note::
 If the input signal starts with silence at the beginning of the synth's duration, then DetectSilence will wait indefinitely until the first sound before starting to monitor for silence. To avoid a hanging silent sound where the input may remain zero, you can add an code::Impulse.ar(0):: to its input.
-::
+
+DetectSilence does not distinguish a DC-biased signal from a loud signal. If your signal has DC bias, you should wrap it in link::Classes/LeakDC::.
 
 warning:: DetectSilence can be tricky with multi-channel input! See below. ::
 
