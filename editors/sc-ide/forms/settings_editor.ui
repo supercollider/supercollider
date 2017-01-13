@@ -321,14 +321,14 @@
         <item>
          <widget class="QCheckBox" name="useComboBox">
           <property name="text">
-           <string>Use ComboBox</string>
+           <string>Use a dropdown instead of tabs in the editor view</string>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QCheckBox" name="useComboBoxWhenSplitting">
           <property name="text">
-           <string>Convert automatically to ComboBox when splitting</string>
+           <string>Switch to dropdown mode when splitting the editor view</string>
           </property>
          </widget>
         </item>
