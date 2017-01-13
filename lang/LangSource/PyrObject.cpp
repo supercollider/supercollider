@@ -181,7 +181,10 @@ void initSymbols()
 {
 	s_new = getsym("new");
 	s_ref = getsym("Ref");
-	s_none = getsym("none");
+	s_none = getsym("__none");
+	/* Dummy symbol for null superclass or primitive. Prefixed with
+	 * `__` to avoid collisions with possible method names.
+	 */
 	s_object = getsym("Object");
 	s_this = getsym("this");
 	s_super = getsym("super");
