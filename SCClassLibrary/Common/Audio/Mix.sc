@@ -1,15 +1,14 @@
 Mix {
+
 	*new { |array|
 		^array.asArray.sum
 	}
 
-	// support this common idiom
 	*fill { |n, function|
 		var array = Array.fill(n, function);
 		^this.new(array);
 	}
 
-	// and these common idioms
 	*ar { |array|
 		var result = this.new(array);
 		^switch(result.rate)
