@@ -999,12 +999,10 @@ void MultiEditor::switchSession( Session *session )
     firstBox->setFocus(Qt::OtherFocusReason); // ensure focus
 
     setMainComboBoxOption();
-    if (mSplitter->count()>1) {
+    if (mSplitter->count()>1)
         activateComboBoxWhenSplitting();
-    }
-    else {
+    else
         emit splitViewDeactivated();
-    }
 }
 
 int MultiEditor::addTab( Document * doc )
