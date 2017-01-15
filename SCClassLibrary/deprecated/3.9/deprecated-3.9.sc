@@ -49,3 +49,15 @@ SharedIn : AbstractIn {
         ^this.initOutputs(numChannels, rate)
     }
 }
+
++ PathName {
+    *fromOS9 { | path | ^this.deprecated(thisMethod) }
+    foldersWithoutCVS { | path | ^this.deprecated(thisMethod) }
+    isCVS { ^this.deprecated(thisMethod) }
+    foldersWithoutSVN { | path |^this.deprecated(thisMethod) }
+    isSVN { ^this.deprecated(thisMethod) }
+    filesDoNoCVS { | func | ^this.deprecated(thisMethod) }
+    filesDoNoSVN { | func | ^this.deprecated(thisMethod) }
+    streamTreeNoCVS { | str, tabs=0 | ^this.deprecated(thisMethod) }
+    helpFilesDo { |func| ^this.deprecated(thisMethod) }
+}
