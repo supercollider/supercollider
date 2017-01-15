@@ -61,3 +61,20 @@ SharedIn : AbstractIn {
     streamTreeNoCVS { | str, tabs=0 | ^this.deprecated(thisMethod) }
     helpFilesDo { |func| ^this.deprecated(thisMethod) }
 }
+
++ Server {
+    recordNode {
+        this.deprecated(thisMethod, Recorder.class.findMethod('recordNode'));
+        ^recorder.recordNode
+    }
+
+    *set {
+        this.deprecated(thisMethod, this.class.findMethod('all'));
+        ^all
+    }
+
+    *set_ { |item|
+        this.deprecated(thisMethod, this.class.findMethod('all_'));
+        all = item
+    }
+}
