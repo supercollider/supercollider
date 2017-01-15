@@ -136,3 +136,7 @@ preProcessor = nil; // reset to nil.
 method::a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z
 
 Global variables ("interpreter variables") for interactive programming (see link::#Accessing::).
+
+method::functionCompileContext
+
+The compiler uses this method as a virtual context in which to compile code.
