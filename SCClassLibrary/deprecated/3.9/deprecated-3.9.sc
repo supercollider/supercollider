@@ -29,3 +29,23 @@ SplayZ {
     }
 }
 
+SharedOut : AbstractOut {
+    *kr { arg bus, channelsArray;
+        this.deprecated(thisMethod, Bus.findMethod(\getSynchronous));
+        this.multiNewList(['control', bus] ++ channelsArray.asArray)
+        ^0.0        // Out has no output
+    }
+    *numFixedArgs { ^1 }
+    writesToBus { ^false }
+}
+
+SharedIn : AbstractIn {
+    *kr { arg bus = 0, numChannels = 1;
+        this.deprecated(thisMethod, Bus.findMethod(\setSynchronous));
+        ^this.multiNew('control', numChannels, bus)
+    }
+    init { arg numChannels ... argBus;
+        inputs = argBus.asArray;
+        ^this.initOutputs(numChannels, rate)
+    }
+}
