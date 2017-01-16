@@ -508,13 +508,6 @@ String[char] : RawArray {
 		^time * sign;
 	}
 
-	speak { arg channel = 0, force = false;
-		// FIXME: this should better be handled by Platform than GUI
-		var speech = GUI.current.speech;
-		if( speech.initialized.not, { speech.init });
-		speech.channels[ channel ].speak( this, force );
-	}
-
 	toLower {
 		^this.collect(_.toLower)
 	}

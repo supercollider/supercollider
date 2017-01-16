@@ -88,7 +88,7 @@ code::
 
 
 
-// supercollider 'differential equations'
+// SuperCollider 'differential equations'
 
 ~out = { SinOsc.ar(Slope.ar(~out.ar) * MouseX.kr(1000, 18000, 1)) * 0.1 + SinOsc.ar(100, 0, 0.1) };
 

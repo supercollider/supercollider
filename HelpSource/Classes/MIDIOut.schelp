@@ -17,7 +17,7 @@ the index of the MIDIEndPoint in the code::MIDIClient.destinations:: array.
 
 argument::uid
 definitionList::
-## Mac OSX / Windows || uid is optional; if specified, it should be the uid of that port ie. MIDIClient.destinations[port].uid. If you don't provide a uid, the correct uid will be filled in for you (easier).
+## macOS / Windows || uid is optional; if specified, it should be the uid of that port ie. MIDIClient.destinations[port].uid. If you don't provide a uid, the correct uid will be filled in for you (easier).
 ## Linux || using the uid is optional as described below.
 ::
 
@@ -38,7 +38,7 @@ MIDIClient.destinations;
 ::
 
 method::connect, disconnect
-Linux only. OS X does not need to connect. On Linux it is an optional feature (see below).
+Linux only. macOS does not need to connect. On Linux it is an optional feature (see below).
 
 InstanceMethods::
 
@@ -113,7 +113,7 @@ You can also use other tools to connect to a MIDIOut port of SC, e.g. through ac
 
 If you set the uid in MIDIOut, a direct connection is established and data will only be sent to that MIDI input port, and not to any other connections made to SC's MIDI output port (through the connect message or external tools).
 
-subsection::OS X specific: Sending MIDI to other applications
+subsection::macOS specific: Sending MIDI to other applications
 
 Open the Audio MIDI Setup application. Double-click on IAC Driver and check "device is online".
 

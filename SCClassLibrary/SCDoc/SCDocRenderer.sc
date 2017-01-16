@@ -159,6 +159,13 @@ SCDocHTMLRenderer {
 		} {
 			stream << doc.title;
 		};
+		if(doc.isExtension) {
+			stream
+			<< "<div class='extension-indicator-ctr' title='This help file originates from a third-party quark or plugin for SuperCollider.'>"
+			<< "<img class='extension-indicator-icon' alt='Extension' src='" << baseDir << "/images/plugin.png'>"
+			<< "<span class='extension-indicator-text'>Extension</span>"
+			<< "</div>";
+		};
 		stream
 		<< "</h1>\n"
 		<< "<div id='summary'>" << this.escapeSpecialChars(doc.summary) << "</div>\n"
@@ -333,7 +340,7 @@ SCDocHTMLRenderer {
 
 		if(methArgsMismatch) {
 			"SCDoc: In %\n"
-			"  Grouped methods % does not have the same argument signature."
+			"  Grouped methods % do not have the same argument signature."
 			.format(currDoc.fullPath, names).warn;
 		};
 

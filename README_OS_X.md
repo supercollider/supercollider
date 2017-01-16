@@ -97,6 +97,8 @@ To install, you may move this to /Applications or use it in place from the build
 
     cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt5`  ..
 
+(The `..` at the end is easy to miss. Don't forget it!)
+
 This specifies to cmake that we will be using Xcode to build. It also specifies the location of qt so that the complier/linker can find it
 (note that you might have to set `qt55` instead of `qt5`, depending on how you installed you qt5 version (see above, "Prerequisites")).
 `brew --prefix qt5` will be expanded to the path to current Qt5 when the command is run.

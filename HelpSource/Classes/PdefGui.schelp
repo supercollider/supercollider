@@ -145,7 +145,7 @@ a compileString that recreates the Pdef's envir at edKey.
 method::editStrings
 a compileString that recreates the Pdef's envir at edKeys.
 
-argument::edKey
+argument::edKeys
 Default value is nil.
 
 code::

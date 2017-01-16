@@ -142,7 +142,7 @@ NodeProxy : BusPlug {
 			if(server.serverRunning) { container.loadToBundle(bundle, server) } { loaded = false; };
 			this.prepareOtherObjects(bundle, index, oldBus.notNil and: { oldBus !== bus });
 		} {
-			format("failed to add % to node proxy: %", obj, this).inform;
+			format("failed to add % to node proxy: %", obj, this).postln;
 			^this
 		};
 

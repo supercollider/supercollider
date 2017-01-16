@@ -170,12 +170,6 @@ Dconst : DUGen {
 	}
 }
 
-Donce : DUGen {
-	*new { arg in;
-		^this.multiNew('demand', in)
-	}
-}
-
 Dreset : DUGen {
 	*new { arg in, reset = 0.0;
 		^this.multiNew('demand', in, reset)

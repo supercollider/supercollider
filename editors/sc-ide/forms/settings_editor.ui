@@ -319,6 +319,20 @@
          </layout>
         </item>
         <item>
+         <widget class="QCheckBox" name="useComboBox">
+          <property name="text">
+           <string>Use ComboBox</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="useComboBoxWhenSplitting">
+          <property name="text">
+           <string>Convert automatically to ComboBox when splitting</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <spacer name="verticalSpacer_2">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
