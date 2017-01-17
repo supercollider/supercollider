@@ -53,7 +53,7 @@ fork { loop { 0.1.wait; defer { w.refresh; } } };
 
 
 
-// tetris
+// "tetris"
 (
 var xx, yy, x, y, c, d, width, viewheight;
 var phunz, steps, nKeep;
@@ -121,7 +121,7 @@ w.refresh;
 
 
 
-// sound for tetris
+// sound for "tetris"
 
 (
 q[\sendData] = {|q, data|
