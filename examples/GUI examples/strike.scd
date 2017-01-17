@@ -122,20 +122,13 @@ w.refresh;
 
 
 // sound for tetris
-(
-p = ProxySpace(s.boot);
-p.play(\out);
-p.clock = TempoClock.default;
-p.fadeTime = 3;
-);
 
 (
 q[\sendData] = {|q, data|
-
-	var ugens;
-	p[\out] = {
+	Ndef(\tetris, {
 		data.do { |array|
 			var xdata, ydata, xmul, ymul;
+			var ugens;
 			array.do { |point|
 				xdata = xdata.add(point.x);
 				ydata = ydata.add(point.y);
@@ -150,7 +143,7 @@ q[\sendData] = {|q, data|
 		};
 
 		LPF.ar(ugens.mean, 3000) * 0.2 ! 2
-	}
+	}).play;
 
 };
 );
