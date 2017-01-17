@@ -3799,9 +3799,9 @@ void FOS_Ctor(FOS* unit)
 		}
 	};
 	unit->m_y1 = 0.f;
-	unit->m_a0 = 0.f;
-	unit->m_a1 = 0.f;
-	unit->m_b1 = 0.f;
+	unit->m_a0 = ZIN0(1);
+	unit->m_a1 = ZIN0(2);
+	unit->m_b1 = ZIN0(3);
 	FOS_next_1(unit, 1);
 }
 
