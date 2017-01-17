@@ -322,10 +322,10 @@ method:: latency
 The current latency of the server. See link::Guides/ServerTiming:: for details.
 
 method:: sampleRate
-An integer representing the nominal sample rate of the server.
+An integer representing the nominal sample rate of the server; in other words, the sample rate that was requested of the server when it was booted.
 
 method:: actualSampleRate
-A floating-point number representing the true sample rate of the server.
+A floating-point number representing the current hardware sample rate, which may drift.
 
 method:: numSynths
 Get number of running link::Classes/Synth::s.
