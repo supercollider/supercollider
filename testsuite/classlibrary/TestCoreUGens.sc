@@ -431,6 +431,74 @@ TestCoreUGens : UnitTest {
 		this.wait{testsIncomplete==0};
 	} // test_pitchtrackers
 
+	test_out_ugens {
+		var testAudioRate, testControlRate;
+
+		testAudioRate = {
+			var failing = [nil, []];
+			var working = [0, [0], [0, 0, 0]];
+			var stubs = [
+				{ |args| LocalOut.kr(*args) },
+				{ |args| Out.kr(0, *args) },
+				{ |args| ReplaceOut.kr(0, *args) },
+				{ |args| XOut.kr(0, 0.5, *args) },
+			];
+
+			var fails = failing.every { |input|
+				stubs.every { |func|
+					var fails = false;
+					try { { func.(input) }.asSynthDef } { |err| fails = err.isException };
+					if(fails.not) { "This is a case that should have failed:\n%\nOn this input:\n%\n".postf(func.cs, input) };
+					fails
+				}
+			};
+			var works = working.every { |input|
+				stubs.every { |func|
+					var works = true;
+					try { { func.(input) }.asSynthDef } { |err| works = err.isException.not };
+					if(works.not) { "This is a case that should not have failed:\n%\nOn this input:\n%\n".postf(func.cs, input) };
+					works
+				}
+			};
+
+			fails and: works
+		};
+
+		testControlRate = {
+			var failing = [nil, []];
+			var working = [{DC.ar(0)}, {DC.ar([0, 0])}];
+			var stubs = [
+				{ |args| LocalOut.ar(*args) },
+				{ |args| Out.ar(0, *args) },
+				{ |args| ReplaceOut.ar(0, *args) },
+				{ |args| XOut.ar(0, 0.5, *args) },
+			];
+
+			var fails = failing.every { |input|
+				stubs.every { |func|
+					var fails = false;
+					try { { func.(input) }.asSynthDef } { |err| fails = err.isException };
+					if(fails.not) { "This is a case that should have failed:\n%\nOn this input:\n%\n".postf(func.cs, input) };
+					fails
+				}
+			};
+			var works = working.every { |input|
+				stubs.every { |func|
+					var works = true;
+					try { { func.(input) }.asSynthDef } { |err| works = err.isException.not };
+					if(works.not) { "This is a case that should not have failed:\n%\nOn this input:\n%\n".postf(func.cs, input) };
+					works
+				}
+			};
+
+			fails and: works
+		};
+
+		this.bootServer;
+		this.assert(testAudioRate.value, report:true, onFailure:"test_out_ugens: failed with audio rate ugens");
+		this.assert(testControlRate.value, report:true, onFailure:"test_out_ugens: failed with control rate ugens");
+
+	}
 
 
 } // end TestCoreUGens class
