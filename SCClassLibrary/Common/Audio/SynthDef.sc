@@ -565,8 +565,14 @@ SynthDef {
 	// methods for special optimizations
 
 	// only send to servers
-	send { arg server, completionMsg;
-		var servers = (server ?? { Server.allRunningServers }).asArray;
+	send { | server = \allRunningServers, completionMsg |
+		var servers;
+		if (server.isNil, {
+			"Provided server is nil, not sending SynthDef".warn;
+		});
+		servers = if (server == \allRunningServers,
+			{ Server.allRunningServers },
+			{ server.asArray });
 		servers.do { |each|
 			if(each.serverRunning.not) {
 				"Server % not running, could not send SynthDef.".format(server.name).warn
