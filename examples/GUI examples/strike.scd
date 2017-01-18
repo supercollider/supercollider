@@ -1,4 +1,5 @@
 // strike
+// click and drag to draw
 // Julian Rohrhuber, 2006
 
 
@@ -54,6 +55,7 @@ fork { loop { 0.1.wait; defer { w.refresh; } } };
 
 
 // "tetris"
+// click and drag to draw
 (
 var xx, yy, x, y, c, d, width, viewheight;
 var phunz, steps, nKeep;
@@ -117,6 +119,7 @@ w.drawFunc = {
 };
 w.refresh;
 { loop { 0.015.wait; w.refresh }}.fork( AppClock );
+w.onClose = { Ndef(\tetris).clear(2) };
 )
 
 
@@ -126,9 +129,10 @@ w.refresh;
 (
 q[\sendData] = {|q, data|
 	Ndef(\tetris, {
+		var ugens;
 		data.do { |array|
 			var xdata, ydata, xmul, ymul;
-			var ugens;
+
 			array.do { |point|
 				xdata = xdata.add(point.x);
 				ydata = ydata.add(point.y);
@@ -141,7 +145,6 @@ q[\sendData] = {|q, data|
 				Formant.ar(Duty.ar(0.5 * ymul, 0, Dseq(ydata, inf) * ymul), 500, Duty.ar(0.02 * xmul, 0, Dseq(xdata, inf) * xmul))
 			]);
 		};
-
 		LPF.ar(ugens.mean, 3000) * 0.2 ! 2
 	}).play;
 
