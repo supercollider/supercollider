@@ -568,7 +568,7 @@ SynthDef {
 	send { | server = \allRunningServers, completionMsg |
 		var servers;
 		if (server.isNil, {
-			"Provided server is nil, not sending SynthDef".warn;
+			"Provided server is nil, SynthDef may not be sent".warn;
 		});
 		servers = if ((server == \allRunningServers)  || server.isNil,
 			{ Server.allRunningServers },
