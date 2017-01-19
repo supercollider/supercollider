@@ -570,7 +570,7 @@ SynthDef {
 		if (server.isNil, {
 			"Provided server is nil, not sending SynthDef".warn;
 		});
-		servers = if (server == \allRunningServers,
+		servers = if ((server == \allRunningServers)  || server.isNil,
 			{ Server.allRunningServers },
 			{ server.asArray });
 		servers.do { |each|
