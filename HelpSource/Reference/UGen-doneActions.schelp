@@ -25,23 +25,26 @@ list::
 ::
 
 section:: Actions
+On the server, done actions are identified by numeric codes. For better readability, sclang also provides symbol aliases for them. These are currently only supported in the doneAction argument to EnvGen, but for other UGens you can call code::UGen.processDoneAction:: on the symbol to convert it into the corresponding number.
+
 The available done actions are as follows:
 table::
-## 0 || do nothing when the UGen is finished
-## 1 || pause the enclosing synth, but do not free it
-## 2 || free the enclosing synth
-## 3 || free both this synth and the preceding node
-## 4 || free both this synth and the following node
-## 5 || free this synth; if the preceding node is a group then do g_freeAll on it, else free it
-## 6 || free this synth; if the following node is a group then do g_freeAll on it, else free it
-## 7 || free this synth and all preceding nodes in this group
-## 8 || free this synth and all following nodes in this group
-## 9 || free this synth and pause the preceding node
-## 10 || free this synth and pause the following node
-## 11 || free this synth and if the preceding node is a group then do g_deepFree on it, else free it
-## 12 || free this synth and if the following node is a group then do g_deepFree on it, else free it
-## 13 || free this synth and all other nodes in this group (before and after)
-## 14 || free the enclosing group and all nodes within it (including this synth)
+## Number || Alias || Description
+## 0 || code::\noop:: || do nothing when the UGen is finished
+## 1 || code::\pauseSelf:: || pause the enclosing synth, but do not free it
+## 2 || code::\freeSelf::, code::\free:: || free the enclosing synth
+## 3 || code::\freeSelfAndPreceding:: ||  free both this synth and the preceding node
+## 4 || code::\freeSelfAndFollowing:: ||  free both this synth and the following node
+## 5 || code::\freeSelfAndNodesInPrecedingGroup:: ||  free this synth; if the preceding node is a group then do g_freeAll on it, else free it
+## 6 || code::\freeSelfAndNodesInFollowingGroup:: ||  free this synth; if the following node is a group then do g_freeAll on it, else free it
+## 7 || code::\freeSelfAndPrecedingNodesInGroup:: ||  free this synth and all preceding nodes in this group
+## 8 || code::\freeSelfAndFollowingNodesInGroup:: ||  free this synth and all following nodes in this group
+## 9 || code::\freeSelfAndPausePrecedingNode:: ||  free this synth and pause the preceding node
+## 10 || code::\freeSelfAndPauseFollowingNode:: ||  free this synth and pause the following node
+## 11 || code::\freeSelfAndDeepFreePrecedingGroup:: ||  free this synth and if the preceding node is a group then do g_deepFree on it, else free it
+## 12 || code::\freeSelfAndDeepFreeFollowingGroup:: ||  free this synth and if the following node is a group then do g_deepFree on it, else free it
+## 13 || code::\freeAllNodesInGroup:: ||  free this synth and all other nodes in this group (before and after)
+## 14 || code::\freeGroup:: ||  free the enclosing group and all nodes within it (including this synth)
 ::
 
 For information on code::freeAll:: and code::deepFree::, see link::Classes/Group:: and link::Reference/Server-Command-Reference::.

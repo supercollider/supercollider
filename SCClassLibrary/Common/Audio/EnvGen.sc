@@ -45,10 +45,12 @@ Free : UGen {
 EnvGen : UGen { // envelope generator
 	*ar { arg envelope, gate = 1.0, levelScale = 1.0, levelBias = 0.0, timeScale = 1.0, doneAction = 0;
 		envelope = this.convertEnv(envelope);
+		doneAction = UGen.processDoneAction(doneAction);
 		^this.multiNewList(['audio', gate, levelScale, levelBias, timeScale, doneAction, envelope])
 	}
 	*kr { arg envelope, gate = 1.0, levelScale = 1.0, levelBias = 0.0, timeScale = 1.0, doneAction = 0;
 		envelope = this.convertEnv(envelope);
+		doneAction = UGen.processDoneAction(doneAction);
 		^this.multiNewList(['control', gate, levelScale, levelBias, timeScale, doneAction, envelope])
 	}
 	*convertEnv { arg env;
