@@ -91,14 +91,6 @@ the terms of the GNU General Public License as published by the Free Software
 Foundation; either version 2 of the License, or (at your option) any later
 version. See [COPYING](COPYING) for the license text.
 
-- SuperCollider 3.1 was released on October 31, 2007
-- SuperCollider 3.2 was released on February 19, 2008
-- SuperCollider 3.3 was released on April 30, 2009
-- SuperCollider 3.4 was released on July 15, 2010
-- SuperCollider 3.5 was released on March 16, 2012
-- SuperCollider 3.6 was released on November 28, 2012
-- SuperCollider 3.7 was released on March 13, 2016
-
 Outro
 -----
 
