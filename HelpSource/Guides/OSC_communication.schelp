@@ -76,7 +76,7 @@ thisProcess.removeOSCRecvFunc(f);
 
 section::OSC type tags and sclang
 
-With an exception, sclang will only send the four basic OSC type tags. sclang understands seven additional nonstandard type tags. Inbound OSC messages must have type tags, or an error will be thrown.
+sclang is compliant with OSC v1.0, and can understand and send some type tags in OSC v1.1. Inbound OSC messages must have type tags, or an error will be thrown.
 
 The following conversions are supported outbound:
 
@@ -87,52 +87,44 @@ list::
 ## Floats become "f" (32-bit float). sclang's Floats are 64-bit, so the conversion to OSC is lossy.
 ## Strings and Symbols become "s" (string).
 ## Int8Arrays become "b" (blob).
-## Chars are added as a raw type tag, appending no data to the OSC packet.
+## Chars are added as a raw type tag, appending no data to the OSC packet. Be careful with going off standard -- if the destination entity doesn't agree that the tag consumes zero bytes, the remaining part of the OSC message may be corrupted! If the receiver is compliant with OSC v1.1, the following are safe:
+    list::
+    ## code::$N:: (nil)
+    ## code::$T:: (true)
+    ## code::$F:: (false)
+    ## code::$I:: (infinity/impulse)
+    ::
 ::
 
-If code::NetAddr.useDoubles:: is set to true, then in outbound messages, sclang will use the nonstandard "d" (double) type tag instead of "f". OSC doubles are 64-bit.
+If code::NetAddr.useDoubles:: is set to true, then in outbound messages, sclang will use the "d" (double) type tag instead of "f". OSC doubles are 64-bit. It is up to you to ensure that the receiver understands "d", which was standardized in OSC v1.1.
 
-warning::You shouldn't send a raw type tag unless the destination agrees that the character is supposed to consume zero bytes in the packet data (as in N/I/T/F), otherwise following arguments will be corrupted.
-
-In this example, sclang sends a message to itself containing a raw "i" type tag. Outbound, the raw type tag appends zero bytes, but inbound, "i" consumes four bytes. The "hell" in "hello" is interpreted as an integer, and the string starts at "o".
-
-code::
-(
-OSCFunc(_.postln, \test).oneShot;
-NetAddr.localAddr.sendMsg(\test, $i, "hello world");
-// -> [ /test, 1751477356, o world ]
-)
-::
-
-In general, raw type tags should be avoided.
-::
-
-The same four standard type tags are supported inbound:
+The following standard type tags are supported inbound:
 
 list::
 ## "i" (32-bit signed integer) becomes Integer
 ## "f" (32-bit float) becomes Float
 ## "s" (string) becomes Symbol
 ## "b" (blob) becomes Int8Array
+## "d" (64-bit float) becomes Float (OSC v1.1)
+## "T" (true) and "F" (false) become Booleans (OSC v1.1)
+## "I" (infinity/impulse) becomes code::+inf:: (OSC v1.1)
+## "N" (nil) becomes code::nil:: (OSC v1.1)
+## "t" (64-bit big-endian fixed-point time tag) becomes Float (OSC v1.1)
 ::
 
 The following nonstandard type tags are supported inbound:
 
 list::
-## "d" (64-bit float) becomes Float
 ## "m" (4-byte MIDI message) becomes Int8Array
 ## "c" (character) becomes Char
-## "t" (time tag) becomes ???
-## "T" (true) and "F" (false) become Boolean
-## "I" (infinity) becomes Float
-## "N" (nil) becomes nil
 ::
 
 The following nonstandard type tags are NOT supported:
 
 list::
 ## "r" (RGBA color)
+## "S" (symbol)
 ## "[" and "]" (array start and end)
 ::
 
-If an unrecognized tag is encountered, sclang will take the unrecognized tag as a Char and add that to the OSC message. It will then skip ahead in the OSC message as if it were reading a string -- it looks for the next null byte and then skips 0-3 bytes for 4-byte alignment.
+If an unrecognized tag is encountered, sclang will make that unrecognized tag into a Char object and add that to the OSC message. It will then skip ahead in the OSC message as if it were reading a string -- it looks for the next null byte and then skips 0-3 bytes for 4-byte alignment.
