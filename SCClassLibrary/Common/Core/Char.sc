@@ -1,6 +1,8 @@
 Char : Magnitude {
 
 	const <nl = $\n ;
+	const <ret = $\r ;
+	const <vtab = $\v ;
 	const <ff = $\f ;
 	const <tab = $\t ;
 	const <space = $  ;

@@ -12,13 +12,23 @@ Chars may be created from link::Classes/Integer::s using the methods link::Class
 classmethods::
 
 method::nl
-Returns code::($\n)::
-method::ff
-Returns code::($\f)::
+Newline code::($\n)::.
+
+method::ret
+Carriage return code::($\r)::.
+
 method::tab
-Returns code::($\t)::
+Horizontal tab code::($\t)::.
+
+method::ff
+Form feed code::($\f)::.
+
+method::vtab
+Vertical tab code::($\v)::.
+
 method::space
-Returns code::($ )::
+Single space code::($ )::.
+
 method::comma
 Comma code::($,)::.
 
