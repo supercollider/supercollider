@@ -202,16 +202,17 @@ code::
 
 If two or more strings are lexically adjacent, then they combine into a larger string:
 code::
-"This" " is " "also a " "string."
+a = "st" "ri" "ng"
+a.size // 6
 ::
 
-Strings may span more than one line. If so, then the new line characters become part of the string:
+Strings may span more than one line. The newline characters become part of the string:
 code::
-"This
-is
-also a
-string.
+a = "st
+ri
+ng
 "
+a.size // 9
 ::
 
 section::Identifiers
