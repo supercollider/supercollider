@@ -250,7 +250,7 @@ BYTECODES: (20)
  16   B0       TailCallReturnFromFunction
  17   C1 3A    SendSpecialMsg 'postln'
  19   F2       BlockReturn
-a FunctionDef in closed FunctionDef
+-> < closed FunctionDef >
 ::
 
 Failure to inline due to variable declarations:
@@ -267,9 +267,11 @@ code::
 )
 
 WARNING: FunctionDef contains variable declarations and so will not be inlined.
-   in file 'selected text'
-   line 4 char 14 :
-  		var notHere;•
+  in file 'selected text'
+  line 4 char 14:
+
+  		var notHere;
+
   		"hello".postln;
 -----------------------------------
 BYTECODES: (13)
@@ -281,6 +283,14 @@ BYTECODES: (13)
   9   B0       TailCallReturnFromFunction
  10   C3 0B    SendSpecialMsg 'if'
  12   F2       BlockReturn
-a FunctionDef in closed FunctionDef
+-> < closed FunctionDef >
 ::
+
+You can switch on and off the above warning (see: link::Classes/LanguageConfig#*postInlineWarnings::)
+
+code::
+LanguageConfig.postInlineWarnings_(true) // warn
+LanguageConfig.postInlineWarnings_(false) // ignore it.
+::
+
 
