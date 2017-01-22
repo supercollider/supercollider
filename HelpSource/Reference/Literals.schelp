@@ -217,27 +217,34 @@ a.size // 9
 
 section::Identifiers
 
-Names of methods and variables begin with a lower case alphabetic character, followed by zero or more
-alphanumeric characters. An underscore is also valid in an identifier.
+Names of methods and variables begin with a lower case alphabetic character,
+followed by zero or more alphanumeric or underscore characters.
 code::
 var abc, z123, trigger_func;
+var 1var; // not legal
+var _hmm; // not legal
+var hmm_; // Although this is legal, avoid it, since setter functions in
+          // SuperCollider typically end with underscores.
 ::
 
 section::Class Names
 
-Class names always begin with a capital letter followed by zero or more alphanumeric characters.
+Class names always begin with a capital letter followed by zero or more
+alphanumeric or underscore characters.
 code::
 Object
 Point
 Synth
 SinOsc
 Pan2
+MyClass_LikesUnderscores // legal
+MyClass_ // legal, but avoid
 ::
 
 section::Special Values
 
-The singular instances of the classes True, False and Nil are written as the
-words true, false, nil and inf.
+The singular instances of the classes True, False and Nil can
+be expressed with keywords code::true::, code::false::, and code::nil::.
 code::
 x = true;
 y = false;
