@@ -134,14 +134,36 @@ code::
 $A
 $B
 $C
+$.
+$$
 ::
 
-Tab, linefeed, carriage return, and backslash are preceded by a backslash. See link::#Escape character:: below.
+As in C and Java, backslash ('\') is the emphasis::escape character::.
+Escaping has two main purposes. First, to insert non-printing characters into a
+String. Secondly, to allow a String or Symbol delimiter to be included in the
+contents. For String, double-quote marks indicate the beginning and ending of
+the String literal. To put a double-quote in the middle of the string, the
+normal meaning of double-quote must be suspended ("escaped"), as in
+code::"He repeated, \"Madam, I'm Adam,\" only this time he had said it backward."::
+
+In all cases, the \ as an escape character does not appear in the String or
+Symbol. This is a frequent source of confusion for Windows file paths:
+e.g., code::"C:\Users\Somebody\SuperCollider":: translates into
+teletype::C:UsersSomebodySuperCollider::. The way to notate a literal backslash
+inside a String or Symbol is with a double-backslash:
+code::"C:\\Users\\Somebody\\SuperCollider"::. (Note, however, that it is
+preferable to write file paths using forward slashes, regardless of platform:
+code::"C:/Users/Somebody/SuperCollider"::.
+
+The following are the recognized escape characters in SuperCollider. A
+backslash before any other character will simply produce that character.
 code::
-$\t
-$\n
-$\r
-$\\
+$\t  // tab (horizontal tab)
+$\f  // form feed
+$\v  // vertical tab
+$\n  // newline (linefeed)
+$\r  // return
+$\\  // backslash`
 ::
 
 section::Symbols and Strings
@@ -185,17 +207,6 @@ also a
 string.
 "
 ::
-
-subsection::Escape character
-
-As in C and Java, a backslash, \, is the emphasis::escape character::. Escaping has two main purposes:
-
-list::
-## To insert non-printing characters into a string: teletype::\n:: for newline, teletype::\t:: for tab, teletype::\l:: for linefeed, teletype::\r:: for carriage return. (This usage is valid only for Strings, not Symbols.)
-## To allow a string or symbol delimiter to be included in the contents. That is, for strings, normally double-quote marks indicate the beginning and ending of the string literal. To put a double-quote in the middle of the string, the normal meaning of double-quote should be suspended -- "escaped" -- as in code::"He repeated, \"Madam, I'm Adam,\" only this time he had said it backward."::
-::
-
-In all cases, the \ as an escape character does not appear in the string or symbol. This is a frequent source of confusion for Windows file paths, e.g., code::"C:\Users\Somebody\SuperCollider":: translates into teletype::C:UsersSomebodySuperCollider::. Backslashes that should appear need to be escaped themselves: code::"C:\\Users\\Somebody\\SuperCollider"::. (Note, however, that it is preferable to write file paths using forward slashes, regardless of platform, as in Java: code::"C:/Users/Somebody/SuperCollider"::.)
 
 section::Identifiers
 
