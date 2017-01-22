@@ -17,6 +17,16 @@ code::
 96
 ::
 
+They can also also be expressed in hexidecimal with the prefix code::0x:: and
+either uppercase or lowercase letters:
+code::
+0xa    // 10
+-0xd   // -13
+0x29A  // 666
+0x840  // 2112
+0x60   // 96
+::
+
 subsection::Floats
 A float is one or more decimal digits followed by a decimal point followed by one or more decimal digits.
 You must have digits on both sides of the decimal point.  This distinguishes floating point numbers from
