@@ -100,7 +100,7 @@ TestParser : UnitTest {
 	test_symbolLiterals {
 		// if something is broken, these will fail just by virtue of being declared.
 		var testString = "12ab_";
-		var symbolStrings = Array.fill(string.size, string.rotate(_));
+		var symbolStrings = Array.fill(testString.size, testString.rotate(_));
 		var messageProto = "'%' should be a legal symbol literal when";
 
 		var testCs = ";3";
@@ -117,11 +117,11 @@ TestParser : UnitTest {
 			interpretString = "'" ++ symbolString ++ "'" ++ testCs;
 
 			this.assertEquals(interpretString.interpret, testCsValue, message);
-		}
+		};
 
 		// symbols containing spaces are valid with single quotes, but not with backslash
 		testString = "12 ab _";
-		symbolStrings = Array.fill(string.size, string.rotate(_));
+		symbolStrings = Array.fill(testString.size, testString.rotate(_));
 		messageProto = "'%' should be % symbol when";
 
 		symbolStrings.do {
@@ -137,7 +137,7 @@ TestParser : UnitTest {
 			interpretString = "'" ++ symbolString ++ "'" ++ testCs;
 
 			this.assertEquals(interpretString.interpret, testCsValue, message);
-		}
+		};
 
 		// escape sequences just give the escaped character with single quotes, but are illegal with backslash
 		// test every char from space (32) to ~ (126) -- 127 is non-printing
@@ -163,7 +163,7 @@ TestParser : UnitTest {
 			// test single quotes as successful
 			interpretString = "\'" ++ symbolString ++ "\'";
 			message = "'%' should be the same as '%' when enclosed in single quotes".format(symbolString, symbolString[1]);
-			this.assertEquals(interpretString.interpret.asString, symbolString[1].asSymbol, message);
-		}
+			this.assertEquals(interpretString.interpret, symbolString[1].asSymbol, message);
+		};
 	}
 }
