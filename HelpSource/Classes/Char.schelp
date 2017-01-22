@@ -4,7 +4,8 @@ categories:: Core
 
 description::
 Chars may be written as literals using the $ sign. For example $a, $b, $c.
-See link::Reference/Literals::
+Some special characters can be expressed as literals using escape sequences (for example, code::$\n:: for newline).
+See link::Reference/Literals#Characters##Literals:: for more information.
 
 Chars may be created from link::Classes/Integer::s using the methods link::Classes/Integer#-asAscii:: and link::Classes/Integer#-asDigit::.
 
