@@ -169,8 +169,10 @@ $\\  // backslash`
 section::Symbols and Strings
 
 subsection::Symbols
-A symbol is written as a string enclosed in single quotes.
-examples of symbols:
+A symbol can be written in two ways. One method is to enclose the contents in
+single quotes. Any printing character may be used within a symbol except for
+non-space whitespace characters (code::\f, \n, \r, \t, \v::). Any single quotes
+within the symbol must be escaped (code::\'::).
 code::
 'x'
 'aiff'
@@ -178,13 +180,17 @@ code::
 'nowhere here'
 'somewhere there'
 '.+o*o+.'
+'\'symbol_within_a_symbol\''
 ::
 
-A symbol consisting of a single word can be written with a preceding backslash.
+A second way of notating symbols is by prefixing the word with a backslash.
+This is only legal if the symbol consists of a single word (a sequence
+of alphanumeric and/or underscore characters).
 code::
 \x
 \aiff
-\BigSwiftyAndAssoc
+\Big_Swifty_And_Assoc
+\not really a symbol  // illegal
 ::
 
 subsection::Strings
