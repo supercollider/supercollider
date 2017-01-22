@@ -17,7 +17,7 @@ y = "this is a\n"
     "string";
 ::
 
-A backslash is the escape character. See link::Reference/Literals#Escape character::.
+Backslash is the escape character. See link::Reference/Literals#Characters::.
 
 CLASSMETHODS::
 
