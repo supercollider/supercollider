@@ -20,10 +20,10 @@ Returns code::($\t)::
 method::space
 Returns code::($ )::
 method::comma
-Returns code::($\,)::
+Comma code::($,)::.
+
 method::bullet
-Returns a bullet character (•) in SuperCollider.app on macOS, but a simple asterisk (*) on other frontends.
-This method is not recommended, since it's actually not cross-platform.
+Asterisk code::($*)::.
 
 instancemethods::
 private:: archiveAsCompileString
