@@ -132,6 +132,7 @@ public:
     static bool reload( Document * );
 
     void restoreDocuments();
+    MultiEditor * currentEditor() { return mCurrentEditor; }
 
 public Q_SLOTS:
     void newSession();
@@ -162,6 +163,8 @@ signals:
 
 public Q_SLOTS:
     void showStatusMessage( QString const & string );
+    void newWindow();
+    void setCurrentEditor(MultiEditor *);
 
 private Q_SLOTS:
     void openStartupFile();
@@ -203,7 +206,7 @@ protected:
 
 private:
     void createActions();
-    void createMenus();
+    QMenuBar *createMenus();
     template <class T> void saveWindowState(T * settings);
     template <class T> void restoreWindowState(T * settings);
     void updateSessionsMenu();
@@ -222,6 +225,7 @@ private:
     QMenu * mSessionsMenu;
 
     MultiEditor *mEditors;
+    MultiEditor *mCurrentEditor;
 
     // Tools
     ToolBox *mToolBox;
@@ -231,6 +235,7 @@ private:
 
     // Status bar
     QStatusBar  *mStatusBar;
+    QMenuBar *mMenu;
     StatusBox *mLangStatus;
     StatusBox *mServerStatus;
     ClockStatusBox *mClockLabel;

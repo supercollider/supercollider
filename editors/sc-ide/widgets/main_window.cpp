@@ -67,6 +67,7 @@
 #include <QUrl>
 #include <QMimeData>
 #include <QMetaMethod>
+#include <QWindow>
 
 namespace ScIDE {
 
@@ -119,6 +120,7 @@ MainWindow::MainWindow(Main * main) :
 
     // Code editor
     mEditors = new MultiEditor(main);
+    setCurrentEditor(mEditors);
 
     // Tools
 
@@ -187,18 +189,18 @@ MainWindow::MainWindow(Main * main) :
 
     // Document list interaction
     connect(mDocumentsDocklet->list(), SIGNAL(clicked(Document*)),
-            mEditors, SLOT(setCurrent(Document*)));
-    connect(mEditors, SIGNAL(currentDocumentChanged(Document*)),
+            mCurrentEditor, SLOT(setCurrent(Document*)));
+    connect(mCurrentEditor, SIGNAL(currentDocumentChanged(Document*)),
             mDocumentsDocklet->list(), SLOT(setCurrent(Document*)),
             Qt::QueuedConnection);
     connect(mDocumentsDocklet->list(), SIGNAL(updateTabsOrder(QList<Document*>)),
-            mEditors, SLOT(updateTabsOrder(QList<Document*>)));
-    connect(mEditors, SIGNAL(updateDockletOrder(int, int)),
+            mCurrentEditor, SLOT(updateTabsOrder(QList<Document*>)));
+    connect(mCurrentEditor, SIGNAL(updateDockletOrder(int, int)),
             mDocumentsDocklet->list(), SLOT(updateDockletOrder(int, int)),
             Qt::QueuedConnection);
 
     // Update actions on document change
-    connect(mEditors, SIGNAL(currentDocumentChanged(Document*)),
+    connect(mCurrentEditor, SIGNAL(currentDocumentChanged(Document*)),
             this, SLOT(onCurrentDocumentChanged(Document*)));
     // Document management
     DocumentManager *docMng = main->documentManager();
@@ -218,7 +220,8 @@ MainWindow::MainWindow(Main * main) :
     connect(mToolBox->closeButton(), SIGNAL(clicked()), this, SLOT(hideToolBox()));
 
     createActions();
-    createMenus();
+    mMenu = createMenus();
+    this->setMenuBar(mMenu);
 
     // Must be called after createAtions(), because it accesses an action:
     toggleInterpreterActions(false);
@@ -533,7 +536,7 @@ void MainWindow::createActions()
 
 }
 
-void MainWindow::createMenus()
+QMenuBar * MainWindow::createMenus()
 {
     QMenuBar *menuBar;
     QMenu *menu;
@@ -543,7 +546,7 @@ void MainWindow::createMenus()
 #ifdef Q_OS_MAC
     menuBar = new QMenuBar(0);
 #else
-    menuBar = this->menuBar();
+    menuBar = new QMenuBar();
 #endif
 
     menu = new QMenu(tr("&File"), this);
@@ -561,7 +564,7 @@ void MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( mActions[DocReload] );
     menu->addSeparator();
-    menu->addAction( mEditors->action(MultiEditor::DocClose) );
+    menu->addAction( mCurrentEditor->action(MultiEditor::DocClose) );
     menu->addAction( mActions[DocCloseAll] );
     menu->addSeparator();
     menu->addAction( mActions[Quit] );
@@ -583,24 +586,24 @@ void MainWindow::createMenus()
     menuBar->addMenu(menu);
 
     menu = new QMenu(tr("&Edit"), this);
-    menu->addAction( mEditors->action(MultiEditor::Undo) );
-    menu->addAction( mEditors->action(MultiEditor::Redo) );
+    menu->addAction( mCurrentEditor->action(MultiEditor::Undo) );
+    menu->addAction( mCurrentEditor->action(MultiEditor::Redo) );
     menu->addSeparator();
-    menu->addAction( mEditors->action(MultiEditor::Cut) );
-    menu->addAction( mEditors->action(MultiEditor::Copy) );
-    menu->addAction( mEditors->action(MultiEditor::Paste) );
+    menu->addAction( mCurrentEditor->action(MultiEditor::Cut) );
+    menu->addAction( mCurrentEditor->action(MultiEditor::Copy) );
+    menu->addAction( mCurrentEditor->action(MultiEditor::Paste) );
     menu->addSeparator();
     menu->addAction( mActions[Find] );
     menu->addAction( mFindReplaceTool->action(TextFindReplacePanel::FindNext) );
     menu->addAction( mFindReplaceTool->action(TextFindReplacePanel::FindPrevious) );
     menu->addAction( mActions[Replace] );
     menu->addSeparator();
-    menu->addAction( mEditors->action(MultiEditor::IndentWithSpaces) );
-    menu->addAction( mEditors->action(MultiEditor::IndentLineOrRegion) );
-    menu->addAction( mEditors->action(MultiEditor::ToggleComment) );
-    menu->addAction( mEditors->action(MultiEditor::ToggleOverwriteMode) );
-    menu->addAction( mEditors->action(MultiEditor::SelectRegion) );
-    menu->addAction( mEditors->action(MultiEditor::SelectEnclosingBlock) );
+    menu->addAction( mCurrentEditor->action(MultiEditor::IndentWithSpaces) );
+    menu->addAction( mCurrentEditor->action(MultiEditor::IndentLineOrRegion) );
+    menu->addAction( mCurrentEditor->action(MultiEditor::ToggleComment) );
+    menu->addAction( mCurrentEditor->action(MultiEditor::ToggleOverwriteMode) );
+    menu->addAction( mCurrentEditor->action(MultiEditor::SelectRegion) );
+    menu->addAction( mCurrentEditor->action(MultiEditor::SelectEnclosingBlock) );
 
     menu->addSeparator();
     menu->addAction( mActions[ShowSettings] );
@@ -623,23 +626,25 @@ void MainWindow::createMenus()
     submenu->addSeparator();
     submenu->addAction( mActions[CloseToolBox] );
     menu->addSeparator();
-    menu->addAction( mEditors->action(MultiEditor::EnlargeFont) );
-    menu->addAction( mEditors->action(MultiEditor::ShrinkFont) );
-    menu->addAction( mEditors->action(MultiEditor::ResetFontSize) );
+    menu->addAction( mCurrentEditor->action(MultiEditor::EnlargeFont) );
+    menu->addAction( mCurrentEditor->action(MultiEditor::ShrinkFont) );
+    menu->addAction( mCurrentEditor->action(MultiEditor::ResetFontSize) );
     menu->addSeparator();
-    menu->addAction( mEditors->action(MultiEditor::ShowWhitespace) );
-    menu->addAction( mEditors->action(MultiEditor::ShowLinenumber) );
+    menu->addAction( mCurrentEditor->action(MultiEditor::ShowWhitespace) );
+    menu->addAction( mCurrentEditor->action(MultiEditor::ShowLinenumber) );
     menu->addSeparator();
-    menu->addAction(mEditors->action(MultiEditor::ShowAutocompleteHelp));
+    menu->addAction(mCurrentEditor->action(MultiEditor::ShowAutocompleteHelp));
     menu->addSeparator();
-    menu->addAction( mEditors->action(MultiEditor::NextDocument) );
-    menu->addAction( mEditors->action(MultiEditor::PreviousDocument) );
-    menu->addAction( mEditors->action(MultiEditor::SwitchDocument) );
+    menu->addAction( mCurrentEditor->action(MultiEditor::NextDocument) );
+    menu->addAction( mCurrentEditor->action(MultiEditor::PreviousDocument) );
+    menu->addAction( mCurrentEditor->action(MultiEditor::SwitchDocument) );
     menu->addSeparator();
-    menu->addAction( mEditors->action(MultiEditor::SplitHorizontally) );
-    menu->addAction( mEditors->action(MultiEditor::SplitVertically) );
-    menu->addAction( mEditors->action(MultiEditor::RemoveCurrentSplit) );
-    menu->addAction( mEditors->action(MultiEditor::RemoveAllSplits) );
+    menu->addAction( mCurrentEditor->action(MultiEditor::NewWindow) );
+    menu->addSeparator();
+    menu->addAction( mCurrentEditor->action(MultiEditor::SplitHorizontally) );
+    menu->addAction( mCurrentEditor->action(MultiEditor::SplitVertically) );
+    menu->addAction( mCurrentEditor->action(MultiEditor::RemoveCurrentSplit) );
+    menu->addAction( mCurrentEditor->action(MultiEditor::RemoveAllSplits) );
     menu->addSeparator();
     menu->addAction( mActions[FocusPostWindow] );
     menu->addSeparator();
@@ -672,9 +677,9 @@ void MainWindow::createMenus()
     menu->addAction( mMain->scServer()->action(ScServer::VolumeRestore) );
     menu->addAction( mMain->scServer()->action(ScServer::Mute) );
     menu->addSeparator();
-    menu->addAction( mEditors->action(MultiEditor::EvaluateCurrentDocument) );
-    menu->addAction( mEditors->action(MultiEditor::EvaluateRegion) );
-    menu->addAction( mEditors->action(MultiEditor::EvaluateLine) );
+    menu->addAction( mCurrentEditor->action(MultiEditor::EvaluateCurrentDocument) );
+    menu->addAction( mCurrentEditor->action(MultiEditor::EvaluateRegion) );
+    menu->addAction( mCurrentEditor->action(MultiEditor::EvaluateLine) );
     menu->addAction( mMain->scProcess()->action(ScIDE::ScProcess::StopMain) );
     menu->addSeparator();
     menu->addAction( mActions[LookupImplementationForCursor] );
@@ -696,6 +701,8 @@ void MainWindow::createMenus()
     menu->addAction( mActions[ShowAboutQT] );
 
     menuBar->addMenu(menu);
+
+    return menuBar;
 }
 
 static void saveDetachedState( Docklet *docklet,  QVariantMap & data )
@@ -786,10 +793,10 @@ void MainWindow::restoreWindowState()
 
 void MainWindow::focusCodeEditor()
 {
-    if (mEditors->currentEditor())
-        mEditors->currentEditor()->setFocus();
+    if (mCurrentEditor->currentEditor())
+        mCurrentEditor->currentEditor()->setFocus();
     else
-        mEditors->setFocus();
+        mCurrentEditor->setFocus();
 }
 
 void MainWindow::newSession()
@@ -822,14 +829,14 @@ void MainWindow::switchSession( Session *session )
 
     updateWindowTitle();
 
-    mEditors->switchSession(session);
+    mCurrentEditor->switchSession(session);
 }
 
 void MainWindow::saveSession( Session *session )
 {
     saveWindowState(session);
 
-    mEditors->saveSession(session);
+    mCurrentEditor->saveSession(session);
 }
 
 void MainWindow::openSessionsDialog()
@@ -839,6 +846,11 @@ void MainWindow::openSessionsDialog()
     dialog.exec();
     if (mainwin)
         mainwin->updateSessionsMenu();
+}
+
+void MainWindow::setCurrentEditor(MultiEditor * ceditor)
+{
+    mCurrentEditor = ceditor;
 }
 
 QAction *MainWindow::action( ActionRole role )
@@ -876,7 +888,7 @@ void MainWindow::onCurrentDocumentChanged( Document * doc )
     mActions[DocSaveAs]->setEnabled(doc);
     mActions[DocSaveAsExtension]->setEnabled(doc);
 
-    GenericCodeEditor *editor = mEditors->currentEditor();
+    GenericCodeEditor *editor = mCurrentEditor->currentEditor();
     mFindReplaceTool->setEditor( editor );
     mGoToLineTool->setEditor( editor );
 }
@@ -1117,7 +1129,7 @@ void MainWindow::newDocument()
 
 QString MainWindow::documentOpenPath() const
 {
-    GenericCodeEditor * currentEditor = mEditors->currentEditor();
+    GenericCodeEditor * currentEditor = mCurrentEditor->currentEditor();
     if (currentEditor) {
         QString currentEditorPath = currentEditor->document()->filePath();
         if (!currentEditorPath.isEmpty())
@@ -1229,7 +1241,7 @@ void MainWindow::openUserSupportDirectory()
 
 void MainWindow::saveDocument()
 {
-    GenericCodeEditor *editor = mEditors->currentEditor();
+    GenericCodeEditor *editor = mCurrentEditor->currentEditor();
     if(!editor) return;
 
     Document *doc = editor->document();
@@ -1240,7 +1252,7 @@ void MainWindow::saveDocument()
 
 void MainWindow::saveDocumentAs()
 {
-    GenericCodeEditor *editor = mEditors->currentEditor();
+    GenericCodeEditor *editor = mCurrentEditor->currentEditor();
     if(!editor) return;
 
     Document *doc = editor->document();
@@ -1251,7 +1263,7 @@ void MainWindow::saveDocumentAs()
 
 void MainWindow::saveDocumentAsExtension()
 {
-    GenericCodeEditor *editor = mEditors->currentEditor();
+    GenericCodeEditor *editor = mCurrentEditor->currentEditor();
     if(!editor) return;
 
     Document *doc = editor->document();
@@ -1270,7 +1282,7 @@ void MainWindow::saveAllDocuments()
 
 void MainWindow::reloadDocument()
 {
-    GenericCodeEditor *editor = mEditors->currentEditor();
+    GenericCodeEditor *editor = mCurrentEditor->currentEditor();
     if(!editor) return;
 
     Q_ASSERT(editor->document());
@@ -1279,7 +1291,7 @@ void MainWindow::reloadDocument()
 
 void MainWindow::closeDocument()
 {
-    GenericCodeEditor *editor = mEditors->currentEditor();
+    GenericCodeEditor *editor = mCurrentEditor->currentEditor();
     if(!editor) return;
 
     Q_ASSERT(editor->document());
@@ -1318,7 +1330,7 @@ bool MainWindow::promptSaveDocs()
 void MainWindow::updateWindowTitle()
 {
     Session *session = mMain->sessionManager()->currentSession();
-    GenericCodeEditor *editor = mEditors->currentEditor();
+    GenericCodeEditor *editor = mCurrentEditor->currentEditor();
     Document *doc = editor ? editor->document() : 0;
 
     QString title;
@@ -1481,9 +1493,9 @@ void MainWindow::showAboutQT()
 
 void MainWindow::toggleInterpreterActions(bool enabled)
 {
-    mEditors->action(MultiEditor::EvaluateCurrentDocument)->setEnabled(enabled);
-    mEditors->action(MultiEditor::EvaluateLine)->setEnabled(enabled);
-    mEditors->action(MultiEditor::EvaluateRegion)->setEnabled(enabled);
+    mCurrentEditor->action(MultiEditor::EvaluateCurrentDocument)->setEnabled(enabled);
+    mCurrentEditor->action(MultiEditor::EvaluateLine)->setEnabled(enabled);
+    mCurrentEditor->action(MultiEditor::EvaluateRegion)->setEnabled(enabled);
 }
 
 
@@ -1510,7 +1522,7 @@ void MainWindow::cmdLineForCursor()
 
 void MainWindow::showGoToLineTool()
 {
-    GenericCodeEditor *editor = mEditors->currentEditor();
+    GenericCodeEditor *editor = mCurrentEditor->currentEditor();
     mGoToLineTool->setValue( editor ? editor->textCursor().blockNumber() + 1 : 0 );
 
     mToolBox->setCurrentWidget( mGoToLineTool );
@@ -1543,7 +1555,7 @@ void MainWindow::showReplaceTool()
 
 void MainWindow::hideToolBox()
 {
-    GenericCodeEditor *editor = mEditors->currentEditor();
+    GenericCodeEditor *editor = mCurrentEditor->currentEditor();
     if (editor) {
         // This slot is mapped to Escape, so also clear highlighting
         // whenever invoked:
@@ -1711,6 +1723,30 @@ bool MainWindow::eventFilter( QObject *object, QEvent *event )
     }
 
     return QMainWindow::eventFilter(object, event);
+}
+
+void MainWindow::newWindow()
+{
+    QWidget *window = new QWidget;
+    window->resize(640, 480);
+    window->show();
+    window->setWindowTitle(
+        QApplication::translate("toplevel", "Code Editor")
+    );
+
+    MultiEditor *newEditors = new MultiEditor(Main::instance());
+
+    QVBoxLayout *center_box = new QVBoxLayout;
+    center_box->setContentsMargins(0,0,0,0);
+    center_box->setSpacing(0);
+
+#ifndef Q_OS_MAC
+    QMenuBar *newMenu = createMenus();
+    center_box->addWidget(newMenu);
+#endif
+
+    center_box->addWidget(newEditors);
+    window->setLayout(center_box);
 }
 
 //////////////////////////// ClockStatusBox ////////////////////////////

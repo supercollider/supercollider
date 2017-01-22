@@ -645,6 +645,12 @@ void MultiEditor::createActions()
     connect(action, SIGNAL(triggered()), this, SLOT(switchDocument()));
     settings->addAction( action, "editor-document-switch", editorCategory);
 
+    mActions[NewWindow] = action = new QAction(tr("Open New Window"), this);
+    action->setStatusTip(tr("Open a new window"));
+    action->setShortcut( tr("Ctrl+Alt+N", "Open A New Window"));
+    connect(action, SIGNAL(triggered()), MainWindow::instance(), SLOT(newWindow()));
+    settings->addAction( action, "editor-new", editorCategory);
+
     mActions[SplitHorizontally] = action = new QAction(tr("Split To Right"), this);
     //action->setShortcut( tr("Ctrl+P, 3", "Split To Right"));
     connect(action, SIGNAL(triggered()), this, SLOT(splitHorizontally()));
@@ -1150,11 +1156,13 @@ void MultiEditor::onCurrentTabChanged( int index )
 
 void MultiEditor::onCurrentEditorChanged(GenericCodeEditor *editor)
 {
+    MainWindow::instance()->setCurrentEditor(this);
     setCurrentEditor(editor);
 }
 
 void MultiEditor::onBoxActivated(CodeEditorBox *box)
 {
+    MainWindow::instance()->setCurrentEditor(this);
     setCurrentBox(box);
 }
 

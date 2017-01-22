@@ -119,6 +119,7 @@ public:
         PreviousDocument,
         SwitchDocument,
 
+        NewWindow,
         SplitHorizontally,
         SplitVertically,
         RemoveCurrentSplit,
