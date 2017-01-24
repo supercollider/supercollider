@@ -17,7 +17,7 @@ character set—Chars with negative values are perfectly legal, and may be strun
 together in strings that use these encodings.
 
 The SuperCollider IDE uses UTF-8 to decode and display strings.
-See link::Classes/String#Character encodings##String:: for more information.
+See link::Classes/String:: for more information.
 
 classmethods::
 
