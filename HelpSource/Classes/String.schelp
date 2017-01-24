@@ -1,9 +1,10 @@
 CLASS::String
-summary::array of characters
+summary::array of Chars
+related::Classes/Char
 categories:: Collections>Ordered
 
 DESCRIPTION::
-String represents an array of characters.
+String represents an array of link::Classes/Char##Chars::.
 
 Strings can be written literally using double quotes:
 code::
