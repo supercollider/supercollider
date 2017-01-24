@@ -1,5 +1,6 @@
 class::Char
-summary::ascii character
+summary::ASCII character
+related::Classes/String
 categories:: Core
 
 description::
@@ -51,7 +52,7 @@ subsection::conversion
 
 method::ascii
 
-returns:: the integer ascii value of a Char.
+returns:: the integer ASCII value of a Char.
 
 method::digit
 
@@ -82,11 +83,11 @@ returns:: whether the char is printable.
 
 method::isPunct
 
-returns:: whether the char is a punctuation character
+returns:: whether the char is a punctuation character.
 
 method::isSpace
 
-returns:: true if the char is white space.
+returns:: true if the char is white space: any of code::[$ , $\f, $\n, $\r, $\t, $\v]::.
 
 method::isDecDigit
 
@@ -94,8 +95,8 @@ returns:: true if the char is a decimal digit $0 to $9.
 
 method::isFileSafe
 
-returns:: true if the char is safe for use as in a filename.
-excludes the path separators / and :
+returns:: true if the char is safe for use in a filename.
+Excludes the path separators / and :
 discussion::
 code::
  for(0,255,{ arg i;
