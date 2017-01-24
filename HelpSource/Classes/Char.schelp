@@ -3,11 +3,20 @@ summary::ascii character
 categories:: Core
 
 description::
+An ASCII character represented as a signed 8-bit integer. Valid ASCII values are in the range 0-127.
 Chars may be written as literals using the $ sign. For example $a, $b, $c.
 Some special characters can be expressed as literals using escape sequences (for example, code::$\n:: for newline).
 See link::Reference/Literals#Characters:: for more information.
 
-Chars may be created from link::Classes/Integer::s using the methods link::Classes/Integer#-asAscii:: and link::Classes/Integer#-asDigit::.
+Chars may be created from link::Classes/Integer##Integers:: using the methods link::Classes/Integer#-asAscii:: and link::Classes/Integer#-asDigit::.
+
+Note that, while Char does not support encodings aside from ASCII—such as
+multi-byte encodings like UTF-8 and UTF-16, or the full Latin-1 (ISO 8859-1)
+character set—Chars with negative values are perfectly legal, and may be strung
+together in strings that use these encodings.
+
+The SuperCollider IDE uses UTF-8 to decode and display strings.
+See link::Classes/String#Character encodings##String:: for more information.
 
 classmethods::
 

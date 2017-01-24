@@ -19,6 +19,25 @@ y = "this is a\n"
 
 Backslash is the escape character. See link::Reference/Literals#Characters::.
 
+subsection:: Character encodings
+
+Note that, while Char does not support encodings aside from ASCII—such as
+multi-byte encodings like UTF-8 and UTF-16, or the full Latin-1 (ISO 8859-1)
+character set—Chars with negative values are perfectly legal, and may be strung
+together in strings that use these encodings.
+
+The SuperCollider IDE uses UTF-8 (a superset of ASCII) to decode and display
+strings, which means that the string code::"🎹🙄🎻😂🎚️🎛️🎤😍":: can be written in
+the editor, posted in the post window, and treated for the most part like any
+other string.
+However, because non-ASCII UTF-8 characters consist of two or more bytes,
+and a SuperCollider String's members are one-bit Chars, concepts of size and
+indexing may not behave intuitively.
+For instance, the "code::size::" of the string above is 38, not 8, and the value
+of its first index is code::-16::, which is not a valid ASCII value at all but
+rather the signed 8-bit representation of the first byte of the UTF-8 value of
+the piano keyboard emoji (🎹), code::0xF09F8EB9::.
+
 CLASSMETHODS::
 
 private::initClass
@@ -48,9 +67,26 @@ code::
 ::
 
 method::ascii
-Returns an Array of ascii numbers of the Strings's characters.
+Returns an Array of ASCII values of the Strings's characters.
+Note that if a string contains multi-byte UTF-8 characters, this array will not
+be of the same length as the number of visible characters, nor will it
+necessarily be an array of valid 7-bit ASCII values.
 code::
 "wertvoll".ascii
+
+a = "😂"; // "face with tears of joy"
+          // Unicode codepoint U+1F602
+          // UTF-8 hex value 0xF09F9882
+a.size    // 4 (!)
+a.ascii   // [ -16, -97, -104, -126 ]
+          // although this is one UTF-8 character, because Chars can only hold
+          // 8 bits, it must be represented as 4 Chars
+
+b = a.ascii.wrap(0, 255)
+          // "wrap(0, 255)" converts these numbers to their unsigned 8-bit values
+
+b.collect(_.asHexString(2))
+          // [ F0, 9F, 98, 82 ]
 ::
 
 subsection:: Comparing strings

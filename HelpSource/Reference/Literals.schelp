@@ -214,6 +214,9 @@ ng
 a.size // 9
 ::
 
+The SuperCollider IDE uses UTF-8 to decode and display strings.
+See link::Classes/String#Character encodings##String:: for more information.
+
 section::Identifiers
 
 Names of methods and variables begin with a lower case alphabetic character,
