@@ -69,25 +69,25 @@ code::
 
 method::ascii
 Returns an Array of ASCII values of the Strings's characters.
+code::
+"wertvoll".ascii // [ 119, 101, 114, 116, 118, 111, 108, 108 ]
+::
+
 Note that if a string contains multi-byte UTF-8 characters, this array will not
 be of the same length as the number of visible characters, nor will it
 necessarily be an array of valid 7-bit ASCII values.
+
 code::
-"wertvoll".ascii
+a = "😂"; /* "face with tears of joy" is Unicode codepoint U+1F602, which is encoded in UTF-8 as hex value 0xF09F9882 */
+a.size // 4 (!)
+/* although this is one UTF-8 character, it must be stored as 4 Chars because Chars can only hold 1 byte each */
+a.ascii // [ -16, -97, -104, -126 ]
 
-a = "😂"; // "face with tears of joy"
-          // Unicode codepoint U+1F602
-          // UTF-8 hex value 0xF09F9882
-a.size    // 4 (!)
-a.ascii   // [ -16, -97, -104, -126 ]
-          // although this is one UTF-8 character, because Chars can only hold
-          // 8 bits, it must be represented as 4 Chars
+/* "wrap(0, 255)" converts these numbers to their unsigned 8-bit values */
+b = a.ascii.wrap(0, 255) // [ 240, 159, 152, 130 ]
 
-b = a.ascii.wrap(0, 255)
-          // "wrap(0, 255)" converts these numbers to their unsigned 8-bit values
-
-b.collect(_.asHexString(2))
-          // [ F0, 9F, 98, 82 ]
+/* if we represent these values in hexidecmial, it's the same as the UTF-8 above: 0xF09F9882 */
+b.collect(_.asHexString(2)) // [ F0, 9F, 98, 82 ]
 ::
 
 subsection:: Comparing strings
