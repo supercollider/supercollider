@@ -4,8 +4,9 @@ related::Classes/String
 categories:: Core
 
 description::
-An ASCII character represented as a signed 8-bit integer. Valid ASCII values are in the range 0-127.
-Chars may be written as literals using the $ sign. For example $a, $b, $c.
+An ASCII character represented as a signed 8-bit integer (-128 to 127).
+Valid ASCII values are in the range 0-127.
+Chars may be written as literals using the $ sign. For example: $a, $b, $c.
 Some special characters can be expressed as literals using escape sequences (for example, code::$\n:: for newline).
 See link::Reference/Literals#Characters:: for more information.
 
