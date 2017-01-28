@@ -43,6 +43,7 @@
 #include "../core/util/standard_dirs.hpp"
 #include "code_editor/sc_editor.hpp"
 #include "settings/dialog.hpp"
+#include "util/docklet.hpp"
 
 #include "QtCollider/hacks/hacks_qt.hpp"
 
@@ -64,6 +65,7 @@
 #include <QShortcut>
 #include <QStatusBar>
 #include <QVBoxLayout>
+#include <QHBoxLayout>
 #include <QUrl>
 #include <QMimeData>
 #include <QMetaMethod>
@@ -1735,18 +1737,48 @@ void MainWindow::newWindow()
     );
 
     MultiEditor *newEditors = new MultiEditor(Main::instance());
+    QVBoxLayout *outerLayout = new QVBoxLayout;
+    outerLayout->setContentsMargins(0,0,0,0);
+    outerLayout->setSpacing(0);
+
+#ifndef Q_OS_MAC
+    QMenuBar *newMenu = createMenus();
+    newMenu->setSizePolicy(QSizePolicy ::Expanding , QSizePolicy ::Fixed );
+    outerLayout->addWidget(newMenu);
+#endif
 
     QVBoxLayout *center_box = new QVBoxLayout;
     center_box->setContentsMargins(0,0,0,0);
     center_box->setSpacing(0);
-
-#ifndef Q_OS_MAC
-    QMenuBar *newMenu = createMenus();
-    center_box->addWidget(newMenu);
-#endif
-
     center_box->addWidget(newEditors);
-    window->setLayout(center_box);
+
+    QWidget * newEditorsDocklet = new QWidget;
+    newEditorsDocklet->setLayout(center_box);
+
+    DockletToolBar * documentsToolBar = new DockletToolBar("Documents");
+    QMenu *optionsMenu = documentsToolBar->optionsMenu();
+
+    DocumentListWidget * newDocumentsList = new DocumentListWidget(Main::instance()->documentManager(), window);
+
+    QVBoxLayout * documentsDocklet_layout = new QVBoxLayout;
+    documentsDocklet_layout->setContentsMargins(0,0,0,0);
+    documentsDocklet_layout->setSpacing(0);
+    documentsDocklet_layout->addWidget(documentsToolBar);
+    documentsDocklet_layout->addWidget(newDocumentsList);
+    QWidget * newDocumentsDocklet = new QWidget;
+    newDocumentsDocklet->setLayout(documentsDocklet_layout);
+
+    if(!mDocumentsDocklet->isVisible()) {
+        newDocumentsDocklet->hide();
+    }
+
+    QSplitter * h_layout = new QSplitter;
+    h_layout->setOrientation(Qt::Horizontal);
+    h_layout->addWidget(newDocumentsDocklet);
+    h_layout->addWidget(newEditorsDocklet);
+
+    outerLayout->addWidget(h_layout);
+    window->setLayout(outerLayout);
 }
 
 //////////////////////////// ClockStatusBox ////////////////////////////

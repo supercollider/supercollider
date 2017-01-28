@@ -302,6 +302,14 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
 {
     mTabs = new EditorTabBar;
 
+    DocumentManager *docManager = Main::documentManager();
+    QList<Document*> documentList = docManager->documents();
+
+    if(!documentList.isEmpty()) {
+        foreach ( Document * doc, documentList )
+            addTab(doc);
+    }
+
     mSplitter = new MultiSplitter(this);
     CodeEditorBox *defaultBox = newBox(mSplitter);
 
