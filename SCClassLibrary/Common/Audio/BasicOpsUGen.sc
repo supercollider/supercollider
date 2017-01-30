@@ -3,15 +3,15 @@
 BasicOpUGen : UGen {
 	var <operator;
 
-//	writeName { arg file;
-//		var name, opname;
-//		name = this.class.name.asString;
-//		opname = operator.asString;
-//		file.putInt8(name.size + opname.size + 1);
-//		file.putString(name);
-//		file.putInt8(0);
-//		file.putString(opname);
-//	}
+	//	writeName { arg file;
+	//		var name, opname;
+	//		name = this.class.name.asString;
+	//		opname = operator.asString;
+	//		file.putInt8(name.size + opname.size + 1);
+	//		file.putString(name);
+	//		file.putInt8(0);
+	//		file.putString(opname);
+	//	}
 	operator_ { arg op;
 		operator = op;
 		specialIndex = operator.specialIndex;
@@ -81,17 +81,17 @@ BinaryOpUGen : BasicOpUGen {
 			if (b == 1.0, { ^a });
 			if (b == -1.0, { ^a.neg });
 		},{
-		if (selector == '+', {
-			if (a == 0.0, { ^b });
-			if (b == 0.0, { ^a });
-		},{
-		if (selector == '-', {
-			if (a == 0.0, { ^b.neg });
-			if (b == 0.0, { ^a });
-		},{
-		if (selector == '/', {
-			if (b == 1.0, { ^a });
-			if (b == -1.0, { ^a.neg });
+			if (selector == '+', {
+				if (a == 0.0, { ^b });
+				if (b == 0.0, { ^a });
+			},{
+				if (selector == '-', {
+					if (a == 0.0, { ^b.neg });
+					if (b == 0.0, { ^a });
+				},{
+					if (selector == '/', {
+						if (b == 1.0, { ^a });
+						if (b == -1.0, { ^a.neg });
 		})})})});
 
 		^super.new1(rate, selector, a, b)
@@ -282,23 +282,23 @@ BinaryOpUGen : BasicOpUGen {
 					this.inputs[0] = aa.perform(operator, cc);
 					synthDef.removeUGen(a);
 				}{
-				if (dd.isKindOf(SimpleNumber)) {
-					b.inputs[1] = bb;
-					this.inputs[0] = aa.perform(operator, dd);
-					synthDef.removeUGen(a);
+					if (dd.isKindOf(SimpleNumber)) {
+						b.inputs[1] = bb;
+						this.inputs[0] = aa.perform(operator, dd);
+						synthDef.removeUGen(a);
 				}}
 			}{
-			if (bb.isKindOf(SimpleNumber)) {
-				if (cc.isKindOf(SimpleNumber)) {
-					b.inputs[0] = aa;
-					this.inputs[0] = bb.perform(operator, cc);
-					synthDef.removeUGen(a);
-				}{
-				if (dd.isKindOf(SimpleNumber)) {
-					b.inputs[1] = aa;
-					this.inputs[0] = bb.perform(operator, dd);
-					synthDef.removeUGen(a);
-				}}
+				if (bb.isKindOf(SimpleNumber)) {
+					if (cc.isKindOf(SimpleNumber)) {
+						b.inputs[0] = aa;
+						this.inputs[0] = bb.perform(operator, cc);
+						synthDef.removeUGen(a);
+					}{
+						if (dd.isKindOf(SimpleNumber)) {
+							b.inputs[1] = aa;
+							this.inputs[0] = bb.perform(operator, dd);
+							synthDef.removeUGen(a);
+					}}
 			}};
 
 		};
@@ -324,9 +324,9 @@ BinaryOpUGen : BasicOpUGen {
 				this.inputs[1] = aa;
 				a.inputs[0] = b;
 			}{
-			if (bb.isKindOf(SimpleNumber)) {
-				this.inputs[1] = bb;
-				a.inputs[1] = b;
+				if (bb.isKindOf(SimpleNumber)) {
+					this.inputs[1] = bb;
+					a.inputs[1] = b;
 			}};
 		};
 		#a, b = inputs;
@@ -351,9 +351,9 @@ BinaryOpUGen : BasicOpUGen {
 				this.inputs[0] = cc;
 				b.inputs[0] = a;
 			}{
-			if (dd.isKindOf(SimpleNumber)) {
-				this.inputs[0] = dd;
-				b.inputs[1] = a;
+				if (dd.isKindOf(SimpleNumber)) {
+					this.inputs[0] = dd;
+					b.inputs[1] = a;
 			}};
 		};
 		#a, b = inputs;
@@ -403,8 +403,8 @@ MulAdd : UGen {
 		if (in.rate == \control
 			and: { mul.rate == \control || { mul.rate == \scalar }}
 			and: { add.rate == \control || { add.rate == \scalar }},
-		{
-			^true
+			{
+				^true
 		});
 		^false
 	}
@@ -423,7 +423,15 @@ Sum3 : UGen {
 
 		argArray = [in0, in1, in2];
 		rate = argArray.rate;
-		sortedArgs = argArray.sort {|a b| a.rate < b.rate};
+		sortedArgs = argArray.sort {|a b| a.rate < b.rate };
+		if(sortedArgs.first.isNumber) {
+			sortedArgs = sortedArgs.separate { |a, b| a.isNumber and: { b.isNumber.not } };
+			^if(sortedArgs[1].isNil) {
+				sortedArgs[0].sum
+			} {
+				sortedArgs[0].sum ++ Mix(sortedArgs[1])
+			}
+		};
 
 		^super.new1(rate, *sortedArgs)
 	}
@@ -444,7 +452,15 @@ Sum4 : UGen {
 
 		argArray = [in0, in1, in2, in3];
 		rate = argArray.rate;
-		sortedArgs = argArray.sort {|a b| a.rate < b.rate};
+		sortedArgs = argArray.sort {|a b| a.rate < b.rate };
+		if(sortedArgs.first.isNumber) {
+			sortedArgs = sortedArgs.separate { |a, b| a.isNumber and: { b.isNumber.not } };
+			^if(sortedArgs[1].isNil) {
+				sortedArgs[0].sum
+			} {
+				sortedArgs[0].sum ++ Mix(sortedArgs[1])
+			}
+		};
 
 		^super.new1(rate, *sortedArgs)
 	}
