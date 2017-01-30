@@ -541,9 +541,12 @@ SynthDef {
 	}
 
 	// make SynthDef available to all servers
-	add { arg libname, completionMsg, keepDef = true;
-		var	servers, desc = this.asSynthDesc(libname ? \global, keepDef);
-		if(libname.isNil) {
+	add { | libname = \allRunningServers, completionMsg, keepDef = true |
+		var servers;
+		if(libname.isNil || (libname == \allRunningServers)) {
+			if (libname.isNil) {
+				"Provided server is nil, SynthDef may not be sent".warn;
+			};
 			servers = Server.allRunningServers
 		} {
 			servers = SynthDescLib.getLib(libname).servers
