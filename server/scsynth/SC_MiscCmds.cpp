@@ -570,7 +570,7 @@ SCErr meth_n_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 //	    while (loop);
 //	}
 //    }
-    return kSCErr_None;
+	return kSCErr_None;
 }
 
 SCErr meth_n_setn(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
