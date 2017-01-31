@@ -4550,10 +4550,10 @@ void DetectSilence_next_k(DetectSilence* unit, int inNumSamples)
 				DoneAction((int)ZIN0(3), unit);
 				*out++ = 1.f;
 			} else {
-                *out++ = 0.f;
-            }
-        }
-        else
+				*out++ = 0.f;
+			}
+		}
+		else
 			*out++ = 0.f;
 	}
 	unit->mCounter = counter;
