@@ -1,3 +1,9 @@
+/*
+THIS EXAMPLE DOES NOT WORK
+
+The SCImage class disappeared in 3.6 and returned in 3.7 as Image, but lost some features in the
+process. Among those include Image:lockFocus and Image:unlockFocus.
+*/
 
 (
 	// SCImage animation example - from a code of Tom Tlalim, adapted for SCImage by blackrain

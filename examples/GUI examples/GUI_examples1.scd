@@ -4,7 +4,6 @@
 
 (
 // create a window. set properties from a routine.
-// note: alpha transparency works on Mac OS X only!
 var w, r;
 w = Window("trem", Rect(512, 256, 360, 130));
 w.front;
@@ -41,7 +40,7 @@ w.front;
 
 (
 // create a GUI window with some NumberBoxes.
-// You can command click (CocoaGUI) or control click (SwingGUI) on a control
+// You can command click (OS X) or control click (Linux/Windows) on a control
 // to drag its value to another control
 var w, n, f, s;
 w = Window("number box test", Rect(128, 64, 260, 80));
@@ -110,7 +109,6 @@ w.view.decorator = f = FlowLayout(w.view.bounds,Point(4,4),Point(4,2));
 	f.nextLine;
 });
 w.view.background = Color.blue;
-w.view.background = HiliteGradient(Color.blue, Color.green, \h, 128, 0.3);
 w.front;
 w.refresh;
 )
@@ -162,14 +160,13 @@ w.refresh;
 )
 
 // properties you can set in the window above.
-w.view.background = Color.blue;	// fallback on SwingOSC
-w.view.background = HiliteGradient(Color.blue, Color.red, \v, 128, 0.2);
+w.view.background = Color.blue;
 r.background = Color.gray; r.hi = 0.2;
 
 z.visible = false;
 z.visible = true;
 
-z.enabled = false;	// NO EFFECT WITH SWINGOSC!
+z.enabled = false;
 z.enabled = true;
 
 b.visible = false;
@@ -225,37 +222,28 @@ SynthDef("moto-rev", {
 )
 
 (
-	var w, b1, b2, b3, name, a, s;
-	name = "moto-rev";
+	var w, b, name, a, s;
 	s = Server.local;
 	w = Window(name.asString, Rect(128, 64, 260, 80));
 	w.view.decorator = FlowLayout(w.view.bounds);
 
-	b1 = Button(w, Rect(0,0, 80, 24));
-	b1.states = [["Load", Color.black, Color.green]];
-	b1.action = { arg view;
-		s.sendMsg("/d_load", SynthDef.synthDefDir ++ name ++ ".scsyndef");
-	};
-	b1.enabled = s.serverRunning;
-
-	b2 = Button(w, Rect(0,0, 80, 24));
-	b2.states = [
+	b = Button(w, Rect(0,0, 80, 24));
+	b.states = [
 		["Play", Color.black, Color.green],
 		["Stop", Color.white, Color.red],
 	];
-	b2.action = { arg view;
-		if (b2.value == 1, {
-			s.sendMsg("/s_new", name, 1001, 1, 0);
+	b.action = { arg view;
+		if (b.value == 1, {
+			s.sendMsg("/s_new", "moto-rev", 1001, 1, 0);
 		},{
 			s.sendMsg("/n_free", 1001);
 		});
 	};
-	b2.enabled = s.serverRunning;
+	b.enabled = s.serverRunning;
 
 	a = SimpleController(s);
 	f = { arg server;
-		b1.enabled = server.serverRunning;
-		b2.enabled = server.serverRunning;
+		b.enabled = server.serverRunning;
 	};
 	a.put(\serverRunning, f);
 	w.onClose = {
@@ -283,7 +271,7 @@ SynthDef("trem", { arg freq=800, rate=8, amp=0.1;
 
 (
 var w, f, d, values, server, id, isOn = false;
-var b1, b2, s;
+var b, s;
 
 values = IdentityDictionary.new;
 server = Server.local;
@@ -325,19 +313,12 @@ id = 2001;
 w = Window("trem", Rect(512, 64, 360, 130));
 w.view.decorator = d = FlowLayout(w.view.bounds);
 
-b1 = Button(w, Rect(0,0, 80, 24));
-b1.states = [["Load", Color.black, Color.green]];
-b1.action = { arg view;
-	server.sendMsg("/d_load", "synthdefs/trem.scsyndef");
-};
-b1.enabled = server.serverRunning;
-
-b2 = Button(w, Rect(0,0, 80, 24));
-b2.states = [
+b = Button(w, Rect(0,0, 80, 24));
+b.states = [
 	["Play", Color.black, Color.green],
 	["Stop", Color.white, Color.red],
 ];
-b2.action = { arg view;
+b.action = { arg view;
 	var msg;
 	if (view.value == 1, {
 		isOn = true;
@@ -351,7 +332,7 @@ b2.action = { arg view;
 		server.sendMsg("/n_free", 2001);
 	});
 };
-b2.enabled = server.serverRunning;
+b.enabled = server.serverRunning;
 d.nextLine;
 
 f.value(\freq, \freq);
@@ -360,9 +341,8 @@ f.value(\amp, \amp, \db);
 
 a = SimpleController(server);
 f = { arg server;
-	b1.enabled = server.serverRunning;
-	b2.enabled = server.serverRunning;
-	if (server.serverRunning.not, { b2.value = 0 });
+	b.enabled = server.serverRunning;
+	if (server.serverRunning.not, { b.value = 0 });
 };
 a.put(\serverRunning, f);
 w.onClose = {

@@ -14,83 +14,16 @@
 //  along with this program; if not, write to the Free Software
 //  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
-// !! Evaluate the X Windows color data (x = [...]) below first !!
-
 // Make a GUI with a button for each X Window color
 // Pressing the buttons selects a colr and posts its name and 8-bit values
 // Closing the window makes a new window with selected colors (one time only)
 
-(
-var colorWindow, sortFn, screenBounds, btnWidth;
-colorWindow = {arg colors, btnWidth=60, fontSize=9, bounds, inclGrey=false, winOnClose=true;
-	var w, color, colArr, prevCol, colName, btn, txtCol, isGrey, colsCollect = [];	
-	bounds = bounds ? Rect(10, 10, 252, 240);
-	w = Window("Color browser", bounds, scroll: true);
-	w.view.decorator = FlowLayout(w.view.bounds, Point(0,0), Point(0,0));
-	colors.do({ arg colAssoc, i;
-		color = colAssoc.value;
-		colArr = color.asArray;
-		colName = colAssoc.key.asString;
-		if(colArr != prevCol, { 
-			if (inclGrey.not, {
-				isGrey = colName.containsi("gray") or: {colName.containsi("grey")};
-			}, {
-				isGrey = false; 
-			});
-			if (isGrey.not, {
-				txtCol = if(colArr.sum < 2.45, {Color.white}, {Color.black});
-				btn = Button(w, Rect(0,0, btnWidth, (btnWidth/3).round)); 
-				btn.font = Font("Helvetica", fontSize);
-				btn.states = [["", txtCol, color],[colName, txtCol, color]];
-				btn.action_({ arg butt;
-					var name, val256;
-					name = colors[i].key;
-					val256 = (colors[i].value.asArray * 255).keep(3);
-					format("%  %",name , val256).postln;
-					colsCollect = colsCollect.add(colors[i]);
-				});
-			});
-		});
-		prevCol = colArr;	
-	});
-	// Make a final window with selected colors
-	if (winOnClose, {
-		w.onClose = {
-			var winHeight, sortedCols;
-			if (colsCollect.notEmpty, {
-				winHeight =  colsCollect.size.round(2)/2 * 67;
-				sortedCols = colsCollect.sort({ arg a, b; (a.value.asArray.sum) > (b.value.asArray.sum)});
-				colorWindow.value(sortedCols, 200, 11, Rect(200, 200, 412, winHeight), true, false);
-				sortedCols.asCompileString.postln;
-			});
-		};
-	});
-	w.front;
-};
-
-// sort colors by intensity
-sortFn = { arg a, b; (a.value.asArray.sum) > (b.value.asArray.sum)};
-
-// calculate window and button sizes relatve to screen resolution
-screenBounds = Window.screenBounds.extent.asArray;
-// 508 colors including grey scale
-btnWidth = (((screenBounds[0]*screenBounds[1])/508).sqrt * 1.6).floor.round;
-
-// make the GUI (includes greys)
-colorWindow.value(x.sort(sortFn), btnWidth, (btnWidth/8).round, Rect(0, 0, screenBounds[0], screenBounds[1]), true);
-
-// Other layouts
-//colorWindow.value(x.sort(sortFn)) // small, excludes greys, with scrollbar
-//colorWindow.value(x.sort(sortFn), 56, 6, Rect(5, 40, 672, 628)) // excludes greys
-//colorWindow.value(x.sort(sortFn), 200, 11, Rect(200, 200, 412, 400)) // bigger buttons, excludes greys
-//colorWindow.value(x.sort(sortFn), 1000, 48, Rect(100, 100, 1012, 670)) // big buttons, excludes greys
-
-)
 
 // X Windows colors
 // see http://en.wikipedia.org/wiki/X11_color_names
 
 (
+var colorWindow, sortFn, screenBounds, btnWidth;
 x = [
 	'alice blue' -> Color.new255(240, 248, 255),
 	'AliceBlue' -> Color.new255(240, 248, 255),
@@ -830,7 +763,71 @@ x = [
 	'yellow3' -> Color.new255(205, 205, 0),
 	'yellow4' -> Color.new255(139, 139, 0),
 	'YellowGreen' -> Color.new255(154, 205, 50)
-]
+];
+
+colorWindow = {arg colors, btnWidth=60, fontSize=9, bounds, inclGrey=false, winOnClose=true;
+	var w, color, colArr, prevCol, colName, btn, txtCol, isGrey, colsCollect = [];
+	bounds = bounds ? Rect(10, 10, 252, 240);
+	w = Window("Color browser", bounds, scroll: true);
+	w.view.decorator = FlowLayout(w.view.bounds, Point(0,0), Point(0,0));
+	colors.do({ arg colAssoc, i;
+		color = colAssoc.value;
+		colArr = color.asArray;
+		colName = colAssoc.key.asString;
+		if(colArr != prevCol, {
+			if (inclGrey.not, {
+				isGrey = colName.containsi("gray") or: {colName.containsi("grey")};
+			}, {
+				isGrey = false;
+			});
+			if (isGrey.not, {
+				txtCol = if(colArr.sum < 2.45, {Color.white}, {Color.black});
+				btn = Button(w, Rect(0,0, btnWidth, (btnWidth/3).round));
+				btn.font = Font("Helvetica", fontSize);
+				btn.states = [["", txtCol, color],[colName, txtCol, color]];
+				btn.action_({ arg butt;
+					var name, val256;
+					name = colors[i].key;
+					val256 = (colors[i].value.asArray * 255).keep(3);
+					format("%  %",name , val256).postln;
+					colsCollect = colsCollect.add(colors[i]);
+				});
+			});
+		});
+		prevCol = colArr;
+	});
+	// Make a final window with selected colors
+	if (winOnClose, {
+		w.onClose = {
+			var winHeight, sortedCols;
+			if (colsCollect.notEmpty, {
+				winHeight =  colsCollect.size.round(2)/2 * 67;
+				sortedCols = colsCollect.sort({ arg a, b; (a.value.asArray.sum) > (b.value.asArray.sum)});
+				colorWindow.value(sortedCols, 200, 11, Rect(200, 200, 412, winHeight), true, false);
+				sortedCols.asCompileString.postln;
+			});
+		};
+	});
+	w.front;
+};
+
+// sort colors by intensity
+sortFn = { arg a, b; (a.value.asArray.sum) > (b.value.asArray.sum)};
+
+// calculate window and button sizes relatve to screen resolution
+screenBounds = Window.screenBounds.extent.asArray;
+// 508 colors including grey scale
+btnWidth = (((screenBounds[0]*screenBounds[1])/508).sqrt * 1.6).floor.round;
+
+// make the GUI (includes greys)
+colorWindow.value(x.sort(sortFn), btnWidth, (btnWidth/8).round, Rect(0, 0, screenBounds[0], screenBounds[1]), true);
+
+// Other layouts
+//colorWindow.value(x.sort(sortFn)) // small, excludes greys, with scrollbar
+//colorWindow.value(x.sort(sortFn), 56, 6, Rect(5, 40, 672, 628)) // excludes greys
+//colorWindow.value(x.sort(sortFn), 200, 11, Rect(200, 200, 412, 400)) // bigger buttons, excludes greys
+//colorWindow.value(x.sort(sortFn), 1000, 48, Rect(100, 100, 1012, 670)) // big buttons, excludes greys
+
 )
 
 
