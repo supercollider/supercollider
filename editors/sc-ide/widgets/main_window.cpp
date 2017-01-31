@@ -191,12 +191,12 @@ MainWindow::MainWindow(Main * main) :
 
     // Document list interaction
     connect(mDocumentsDocklet->list(), SIGNAL(clicked(Document*)),
-            mCurrentEditor, SLOT(setCurrent(Document*)));
+            mEditors, SLOT(setCurrent(Document*)));
     connect(mCurrentEditor, SIGNAL(currentDocumentChanged(Document*)),
             mDocumentsDocklet->list(), SLOT(setCurrent(Document*)),
             Qt::QueuedConnection);
     connect(mDocumentsDocklet->list(), SIGNAL(updateTabsOrder(QList<Document*>)),
-            mCurrentEditor, SLOT(updateTabsOrder(QList<Document*>)));
+            mEditors, SLOT(updateTabsOrder(QList<Document*>)));
     connect(mCurrentEditor, SIGNAL(updateDockletOrder(int, int)),
             mDocumentsDocklet->list(), SLOT(updateDockletOrder(int, int)),
             Qt::QueuedConnection);
@@ -250,6 +250,10 @@ MainWindow::MainWindow(Main * main) :
 
     // Custom event handling:
     qApp->installEventFilter(this);
+}
+
+void createDocumentConnections(DocumentListWidget * documentList, MultiEditor * ceditor) {
+
 }
 
 void MainWindow::createActions()
@@ -1776,9 +1780,19 @@ void MainWindow::newWindow()
     h_layout->setOrientation(Qt::Horizontal);
     h_layout->addWidget(newDocumentsDocklet);
     h_layout->addWidget(newEditorsDocklet);
+    QList<int> layoutInitialWidths;
+    layoutInitialWidths.append(mDocumentsDocklet->list()->width());
+    int editorWidth = h_layout->size().width() - mDocumentsDocklet->list()->width();
+    layoutInitialWidths.append(editorWidth);
+    h_layout->setSizes(layoutInitialWidths);
 
     outerLayout->addWidget(h_layout);
     window->setLayout(outerLayout);
+
+    connect(newDocumentsList, SIGNAL(clicked(Document*)),
+            newEditors, SLOT(setCurrent(Document*)));
+    connect(newDocumentsList, SIGNAL(updateTabsOrder(QList<Document*>)),
+            newEditors, SLOT(updateTabsOrder(QList<Document*>)));
 }
 
 //////////////////////////// ClockStatusBox ////////////////////////////
