@@ -41,8 +41,8 @@ public:
         pool_(tagged_ptr(nullptr))
     {}
 
-	freelist( freelist const & rhs )             = delete;
-	freelist & operator=( freelist const & rhs ) = delete;
+    freelist( freelist const & rhs )             = delete;
+    freelist & operator=( freelist const & rhs ) = delete;
 
     void * pop (void)
     {

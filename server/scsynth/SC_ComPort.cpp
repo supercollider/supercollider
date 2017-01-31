@@ -199,7 +199,7 @@ class SC_UdpInPort
 {
 	struct World * mWorld;
 	int mPortNum;
-    std::string mbindTo;
+	std::string mbindTo;
 	boost::array<char, kTextBufSize> recvBuffer;
 
 	boost::asio::ip::udp::endpoint remoteEndpoint;
@@ -209,7 +209,7 @@ class SC_UdpInPort
 #endif
 
 	void handleReceivedUDP(const boost::system::error_code& error,
-						   std::size_t bytes_transferred)
+	                       std::size_t bytes_transferred)
 	{
 		if (error == boost::asio::error::operation_aborted)
 			return;    /* we're done */
@@ -243,8 +243,8 @@ class SC_UdpInPort
 	{
 		using namespace boost;
 		udpSocket.async_receive_from(asio::buffer(recvBuffer), remoteEndpoint,
-									 boost::bind(&SC_UdpInPort::handleReceivedUDP, this,
-												 asio::placeholders::error, asio::placeholders::bytes_transferred));
+		                             boost::bind(&SC_UdpInPort::handleReceivedUDP, this,
+		                                         asio::placeholders::error, asio::placeholders::bytes_transferred));
 	}
 
 public:
@@ -283,7 +283,7 @@ public:
 	boost::asio::ip::tcp::socket socket;
 
 	SC_TcpConnection(struct World * world, boost::asio::io_service & ioService,
-					 class SC_TcpInPort * parent):
+	                 class SC_TcpInPort * parent):
 		mWorld(world), socket(ioService), mParent(parent)
 	{}
 
@@ -328,10 +328,10 @@ private:
 	{
 		namespace ba = boost::asio;
 		async_read(socket, ba::buffer(&OSCMsgLength, sizeof(OSCMsgLength)),
-				   boost::bind(&SC_TcpConnection::handleLengthReceived, shared_from_this(),
-							   ba::placeholders::error,
-							   ba::placeholders::bytes_transferred)
-				   );
+		           boost::bind(&SC_TcpConnection::handleLengthReceived, shared_from_this(),
+		           ba::placeholders::error,
+		           ba::placeholders::bytes_transferred)
+		          );
 	}
 
 	int32 OSCMsgLength;
@@ -339,7 +339,7 @@ private:
 	class SC_TcpInPort * mParent;
 
 	void handleLengthReceived(const boost::system::error_code& error,
-							  size_t bytes_transferred)
+	                          size_t bytes_transferred)
 	{
 		if (error) {
 			if (error == boost::asio::error::eof)
@@ -356,13 +356,13 @@ private:
 		data = (char*)malloc(OSCMsgLength);
 
 		async_read(socket, ba::buffer(data, OSCMsgLength),
-				   boost::bind(&SC_TcpConnection::handleMsgReceived, shared_from_this(),
-							   ba::placeholders::error,
-							   ba::placeholders::bytes_transferred));
+		           boost::bind(&SC_TcpConnection::handleMsgReceived, shared_from_this(),
+		           ba::placeholders::error,
+		           ba::placeholders::bytes_transferred));
 	}
 
 	void handleMsgReceived(const boost::system::error_code& error,
-						   size_t bytes_transferred)
+	                       size_t bytes_transferred)
 	{
 		if (error) {
 			free(data);
@@ -407,7 +407,7 @@ class SC_TcpInPort
 public:
 	SC_TcpInPort(struct World * world, std::string bindTo, int inPortNum, int inMaxConnections, int inBacklog):
 		mWorld(world),
-        acceptor(ioService, boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(bindTo), inPortNum)),
+		acceptor(ioService, boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(bindTo), inPortNum)),
 		mAvailableConnections(inMaxConnections)
 	{
 		// FIXME: backlog???
@@ -429,13 +429,13 @@ public:
 			SC_TcpConnection::pointer newConnection (new SC_TcpConnection(mWorld, ioService, this));
 
 			acceptor.async_accept(newConnection->socket,
-								  boost::bind(&SC_TcpInPort::handleAccept, this, newConnection,
-											  boost::asio::placeholders::error));
+			                      boost::bind(&SC_TcpInPort::handleAccept, this, newConnection,
+			                      boost::asio::placeholders::error));
 		}
 	}
 
 	void handleAccept(SC_TcpConnection::pointer newConnection,
-					  const boost::system::error_code& error)
+	                  const boost::system::error_code& error)
 	{
 		if (!error)
 			newConnection->start();

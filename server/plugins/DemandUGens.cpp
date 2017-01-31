@@ -194,9 +194,9 @@ struct Dreset : public Unit
 
 struct Dconst : public Unit
 {
-  float m_total;
-  float m_runningsum;
-  float m_tolerance;
+	float m_total;
+	float m_runningsum;
+	float m_tolerance;
 };
 
 extern "C"
