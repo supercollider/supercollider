@@ -89,8 +89,6 @@ typedef struct {
 
 extern PrimitiveTable gPrimitiveTable;
 
-extern PyrSlot o_nullframe;
-
 
 int getPrimitiveNumArgs(int index)
 {
