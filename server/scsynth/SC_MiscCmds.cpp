@@ -471,8 +471,7 @@ SCErr meth_n_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 						loop++;
 						break;
 				}
-			}
-			while (loop);
+			} while (loop);
 		} else {
 			int32 index = msg.geti();
 			do {
@@ -509,8 +508,7 @@ SCErr meth_n_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 						loop++;
 						break;
 				}
-			}
-			while (loop);
+			} while (loop);
 		}
 	}
 
@@ -541,8 +539,7 @@ SCErr meth_n_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 //		    }
 //		}
 //		++i;
-//	    }
-//	    while (loop);
+//	    } while (loop);
 //	} else {
 //	    int32 index = msg.geti();
 //	    if (msg.nextTag('f') == '[' ) {
@@ -566,8 +563,7 @@ SCErr meth_n_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 //		    }
 //		}
 //		++i;
-//	    }
-//	    while (loop);
+//	    } while (loop);
 //	}
 //    }
 	return kSCErr_None;
