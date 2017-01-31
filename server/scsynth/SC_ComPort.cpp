@@ -329,8 +329,8 @@ private:
 		namespace ba = boost::asio;
 		async_read(socket, ba::buffer(&OSCMsgLength, sizeof(OSCMsgLength)),
 		           boost::bind(&SC_TcpConnection::handleLengthReceived, shared_from_this(),
-		           ba::placeholders::error,
-		           ba::placeholders::bytes_transferred)
+		                       ba::placeholders::error,
+		                       ba::placeholders::bytes_transferred)
 		          );
 	}
 
@@ -357,8 +357,9 @@ private:
 
 		async_read(socket, ba::buffer(data, OSCMsgLength),
 		           boost::bind(&SC_TcpConnection::handleMsgReceived, shared_from_this(),
-		           ba::placeholders::error,
-		           ba::placeholders::bytes_transferred));
+		                       ba::placeholders::error,
+		                       ba::placeholders::bytes_transferred)
+		          );
 	}
 
 	void handleMsgReceived(const boost::system::error_code& error,
@@ -430,7 +431,7 @@ public:
 
 			acceptor.async_accept(newConnection->socket,
 			                      boost::bind(&SC_TcpInPort::handleAccept, this, newConnection,
-			                      boost::asio::placeholders::error));
+			                                  boost::asio::placeholders::error));
 		}
 	}
 

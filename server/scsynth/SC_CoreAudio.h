@@ -355,15 +355,15 @@ class SC_AndroidJNIAudioDriver : public SC_AudioDriver
 protected:
 
 	// Driver interface methods
-		virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
-		virtual bool DriverStart();
-		virtual bool DriverStop();
+	virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
+	virtual bool DriverStart();
+	virtual bool DriverStop();
         
 public:
 	SC_AndroidJNIAudioDriver(struct World *inWorld);
-		virtual ~SC_AndroidJNIAudioDriver();
+	virtual ~SC_AndroidJNIAudioDriver();
 
-		void genaudio(short* arri, int numSamples);
+	void genaudio(short* arri, int numSamples);
 
 };
 
