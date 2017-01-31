@@ -514,14 +514,14 @@ extern "C" void name##_a(UnaryOpUGen *unit, int inNumSamples)	\
 extern "C" void name##_1(UnaryOpUGen *unit, int inNumSamples)	\
 {													\
 	RGen& rgen = *unit->mParent->mRGen;				\
-    ZOUT0(0) = rgen.function() * ZIN0(0);			\
+	ZOUT0(0) = rgen.function() * ZIN0(0);				\
 }													\
 													\
 extern "C" void name##_d(UnaryOpUGen *unit, int inNumSamples)	\
 {													\
 	if (inNumSamples) {								\
 		float x = DEMANDINPUT_A(0, inNumSamples);	\
-        RGen& rgen = *unit->mParent->mRGen;				\
+		RGen& rgen = *unit->mParent->mRGen;			\
 		OUT0(0) = sc_isnan(x) ? NAN : (rgen.function() * x);	\
 	} else {										\
 		RESETINPUT(0);								\
@@ -541,7 +541,7 @@ void coin_a(UnaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	RGen& rgen = *unit->mParent->mRGen;			
 	LOOP1(inNumSamples,
-		  ZXP(out) = (rgen.frand() < ZXP(a)) ? 1.f : 0.f;
+	      ZXP(out) = (rgen.frand() < ZXP(a)) ? 1.f : 0.f;
 	);
 }												
 												
