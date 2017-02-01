@@ -69,7 +69,7 @@
 #include <QUrl>
 #include <QMimeData>
 #include <QMetaMethod>
-#include <QWindow>
+#include <QListWidgetItem>
 
 namespace ScIDE {
 
@@ -1805,7 +1805,17 @@ void MainWindow::newWindow()
     connect(newDocumentsList, SIGNAL(updateTabsOrder(QList<Document*>)),
             newEditors, SLOT(updateTabsOrder(QList<Document*>)));
 
+    // populate DocumentsDocklet
+    newDocumentsList->populateList(mDocumentsDocklet->list()->listDocuments());
+
+    connect(newDocumentsList, SIGNAL(reloadAllLists(QList<Document*>)),
+            this, SLOT(reloadAllLists(QList<Document*>)));
+
     setCurrentEditor(newEditors);
+}
+
+void MainWindow::reloadAllLists( QList<Document*> newlist) {
+    Q_EMIT( reloadDocumentDocklets( newlist ) );
 }
 
 //////////////////////////// ClockStatusBox ////////////////////////////

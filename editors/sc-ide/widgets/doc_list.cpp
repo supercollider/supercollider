@@ -20,6 +20,7 @@
 
 #include "doc_list.hpp"
 #include "../core/doc_manager.hpp"
+#include "main_window.hpp"
 
 #include <QApplication>
 #include <QStyle>
@@ -39,8 +40,17 @@ DocumentListWidget::DocumentListWidget(DocumentManager *manager, QWidget * paren
             this, SLOT(onModificationChanged(QObject*)));
     connect(this, SIGNAL(itemPressed(QListWidgetItem*)),
             this, SLOT(onItemClicked(QListWidgetItem*)));
+    connect(MainWindow::instance(), SIGNAL(reloadDocumentDocklets(QList<Document*>)),
+            this, SLOT(reloadList(QList<Document*>)));
 
     setDragDropMode(QAbstractItemView::InternalMove);
+}
+
+void DocumentListWidget::populateList( QList<Document*> docList )
+{
+    foreach (Document * doc, docList) {
+        addItemFor(doc);
+    }
 }
 
 void DocumentListWidget::setCurrent( Document *doc )
@@ -60,6 +70,14 @@ void DocumentListWidget::dropEvent( QDropEvent *event )
     QList<Document*> tempDocumentList = listDocuments();
 
     Q_EMIT( updateTabsOrder(tempDocumentList) );
+    Q_EMIT( reloadAllLists(tempDocumentList) );
+}
+
+void DocumentListWidget::reloadList( QList<Document*> docList )
+{
+    foreach( Document * doc, listDocuments() )
+        delete itemFor(doc);
+    populateList(docList);
 }
 
 QList<Document*> DocumentListWidget::listDocuments() {

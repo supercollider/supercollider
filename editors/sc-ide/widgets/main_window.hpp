@@ -163,6 +163,7 @@ public Q_SLOTS:
 
 signals:
     void evaluateCode( const QString &, bool silent = true );
+    void reloadDocumentDocklets( QList<Document*> );
 
 public Q_SLOTS:
     void showStatusMessage( QString const & string );
@@ -200,6 +201,7 @@ private Q_SLOTS:
     void showAbout();
     void showAboutQT();
     void cmdLineForCursor();
+    void reloadAllLists( QList<Document*> );
 
 protected:
     virtual void closeEvent(QCloseEvent *event);
