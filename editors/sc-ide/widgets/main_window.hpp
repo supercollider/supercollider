@@ -26,6 +26,7 @@
 #include <QProcess>
 #include <QSignalMapper>
 #include <QStatusBar>
+#include <QList>
 
 #include "util/status_box.hpp"
 
@@ -110,6 +111,8 @@ public:
         ActionCount
     };
 
+    typedef QList< MultiEditor * > History;
+
     explicit MainWindow(Main *);
 
     QAction *action( ActionRole );
@@ -132,7 +135,7 @@ public:
     static bool reload( Document * );
 
     void restoreDocuments();
-    MultiEditor * currentEditor() { return mCurrentEditor; }
+    MultiEditor * currentMultiEditor();
 
 public Q_SLOTS:
     void newSession();
@@ -215,7 +218,7 @@ private:
     bool checkFileExtension( const QString & fpath );
     void toggleInterpreterActions( bool enabled);
     void applyCursorBlinkingSettings( Settings::Manager * );
-    QString documentOpenPath() const;
+    QString documentOpenPath();
     QString documentSavePath( Document * ) const;
 
     Main *mMain;
@@ -225,7 +228,7 @@ private:
     QMenu * mSessionsMenu;
 
     MultiEditor *mEditors;
-    MultiEditor *mCurrentEditor;
+    History mEditorList;
 
     // Tools
     ToolBox *mToolBox;
