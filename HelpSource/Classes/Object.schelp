@@ -17,7 +17,7 @@ Read in an object from a text archive.
 
 code::
 (
-a = Array.fill(100, { 100.0.rand });
+a = Array.fill(100, { 100.rand });
 a.writeArchive(PathName.tmp ++ "myArray");
 b = Object.readArchive(PathName.tmp ++ "myArray");
 a == b; // true

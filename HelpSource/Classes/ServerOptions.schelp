@@ -158,7 +158,8 @@ method:: firstPrivateBus
 Returns:: the index of the first audio bus on this server which is not used by the input and output hardware.
 
 method:: pingsBeforeConsideredDead
-number of failed pings (attempts to contact server process) before server is considered dead.
+Number of failed pings (attempts to contact server process) before server is considered dead.
+Default value is 5.
 
 Examples::
 code::

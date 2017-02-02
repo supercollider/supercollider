@@ -12,6 +12,12 @@ simulate the resonant modes of an object. Each mode is given a ring time,
 which is the time for the mode to decay by 60 dB.
 Note::for dynamic changes of parameters refer to link::Classes/DynKlank:: ::
 
+Note::
+The amplitude of the resulting signal depends on the server's sample rate. See link::Classes/Ringz#Interaction with sample rate#Ringz: Interaction with sample rate:: for details.
+::
+
+Klank is a bank of Ringz filters. link::Classes/Formlet:: is equivalent to code::Ringz.ar(... decay...) - Ring.ar(... attack...)::. Therefore, a more efficient way to make a bank of fixed-parameter Formlet filters is code::Klank(`decaySpecs, ...) - Klank.ar(`attackSpecs, ...):: or code::Klank.ar(`specs, ..., decayscale: decay) - Klank.ar(`specs, ..., decayscale: attack)::.
+
 classmethods::
 
 method::ar

@@ -62,7 +62,7 @@ public:
     int32_t hardware_buffer_size;
     uint32_t buffers, max_nodes, max_synthdefs;
     uint16_t use_system_clock;
-    
+
     uint32_t rt_pool_size;
     uint32_t wires, rng_count;
 

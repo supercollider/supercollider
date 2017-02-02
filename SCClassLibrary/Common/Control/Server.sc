@@ -947,11 +947,6 @@ Server {
 	stopRecording { recorder.stopRecording }
 	prepareForRecord { |path, numChannels| recorder.prepareForRecord(path, numChannels) }
 
-	recordNode {
-		this.deprecated(thisMethod);
-		^recorder.recordNode
-	}
-
 	/* internal server commands */
 
 	bootInProcess {
@@ -1102,18 +1097,6 @@ Server {
 
 	*supernova {
 		this.program = this.program.replace("scsynth", "supernova")
-	}
-
-	/* backward compatibility */
-
-	*set {
-		this.deprecated(thisMethod, this.class.findMethod('all'));
-		^all
-	}
-
-	*set_ { |item|
-		this.deprecated(thisMethod, this.class.findMethod('all_'));
-		all = item
 	}
 
 }

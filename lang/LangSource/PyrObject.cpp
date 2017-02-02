@@ -114,7 +114,7 @@ PyrSymbol *s_list, *s_method, *s_fundef, *s_frame, *s_class;
 PyrSymbol *s_symbol, *s_nil;
 PyrSymbol *s_boolean, *s_true, *s_false;
 PyrSymbol *s_int, *s_char, *s_color, *s_float, *s_complex;
-PyrSymbol *s_rawptr, *s_objptr;
+PyrSymbol *s_rawptr;
 PyrSymbol *s_string;
 PyrSymbol *s_magnitude, *s_number, *s_collection, *s_ordered_collection;
 PyrSymbol *s_arrayed_collection;
@@ -130,7 +130,6 @@ PyrSymbol *s_int32array;
 PyrSymbol *s_symbolarray;
 PyrSymbol *s_doublearray;
 PyrSymbol *s_floatarray;
-PyrSymbol *s_point;
 PyrSymbol *s_rect;
 PyrSymbol *s_func, *s_absfunc;
 PyrSymbol *s_stream;
@@ -143,52 +142,50 @@ PyrSymbol *s_prstart;
 PyrSymbol *s_interpreter;
 PyrSymbol *s_finalizer;
 PyrSymbol *s_awake;
-PyrSymbol *s_appclock;
 PyrSymbol *s_systemclock;
 PyrSymbol *s_server_shm_interface;
 PyrSymbol *s_interpretCmdLine, *s_interpretPrintCmdLine;
 
-PyrSymbol *s_nocomprendo;
+PyrSymbol *s_doesNotUnderstand;
 PyrSymbol *s_curProcess, *s_curMethod, *s_curBlock, *s_curClosure, *s_curThread;
-//PyrSymbol *s_sampleRate;
-//PyrSymbol *s_audioClock, *s_logicalClock;
 PyrSymbol *s_run, *s_stop, *s_tick;
 PyrSymbol *s_startup;
-PyrSymbol *s_docmdline;
-PyrSymbol *s_audio;
-PyrSymbol *s_control;
-PyrSymbol *s_scalar;
 PyrSymbol *s_next;
 PyrSymbol *s_env;
-PyrSymbol *s_ugen, *s_outputproxy;
 PyrSymbol *s_new, *s_ref, *s_value, *s_at, *s_put;
 PyrSymbol *s_performList, *s_superPerformList;
 PyrSymbol *s_series, *s_copyseries, *s_putseries;
 PyrSymbol *s_envirGet, *s_envirPut;
-PyrSymbol *s_synth, *s_spawn, *s_environment, *s_event;
-PyrSymbol *s_hardwaresetup, *s_shutdown;
-PyrSymbol *s_linear, *s_exponential, *s_gate;
+PyrSymbol *s_synth, *s_environment, *s_event;
+PyrSymbol *s_shutdown;
 PyrSymbol *s_super, *s_this;
-PyrSlot o_nil, o_true, o_false, o_end;
-PyrSlot o_pi, o_twopi;
+
+PyrSlot o_nil, o_true, o_false;
 PyrSlot o_fhalf, o_fnegone, o_fzero, o_fone, o_ftwo, o_inf;
-PyrSlot o_negtwo, o_negone, o_zero, o_one, o_two;
-PyrSlot o_nullframe, o_none;
+PyrSlot o_negone, o_zero, o_one, o_two;
+PyrSlot o_none;
 PyrSlot o_emptyarray, o_onenilarray, o_argnamethis;
 
 
 void initSymbols()
 {
+    // basic keywords
 	s_new = getsym("new");
-	s_ref = getsym("Ref");
 	s_none = getsym("__none");
 	/* Dummy symbol for null superclass or primitive. Prefixed with
 	 * `__` to avoid collisions with possible method and primitive names.
 	 */
-	s_object = getsym("Object");
 	s_this = getsym("this");
 	s_super = getsym("super");
-
+    s_curProcess = getsym("thisProcess");
+    s_curThread = getsym("thisThread");
+    s_curMethod = getsym("thisMethod");
+    s_curBlock = getsym("thisFunctionDef");
+    s_curClosure = getsym("thisFunction");
+    
+    // classes
+    s_object = getsym("Object");
+    s_ref = getsym("Ref");
 	s_dictionary = getsym("Dictionary");
 	s_bag = getsym("Bag");
 	s_set = getsym("Set");
@@ -211,19 +208,16 @@ void initSymbols()
 	s_char = getsym("Char");
 	s_color = getsym("Color");
 	s_rawptr = getsym("RawPointer");
-	s_objptr = getsym("ObjectPointer");
 	s_string = getsym("String");
 	s_magnitude = getsym("Magnitude");
 	s_number = getsym("Number");
 	s_simple_number = getsym("SimpleNumber");
 	s_collection = getsym("Collection");
-	//s_ordered_collection = getsym("OrderedCollection");
 	s_arrayed_collection = getsym("ArrayedCollection");
 	s_sequenceable_collection = getsym("SequenceableCollection");
 	s_boolean = getsym("Boolean");
 	s_signal = getsym("Signal");
 	s_wavetable = getsym("Wavetable");
-	//s_signalnode = getsym("SignalNode");
 	s_rawarray = getsym("RawArray");
 	s_int8array = getsym("Int8Array");
 	s_int16array = getsym("Int16Array");
@@ -232,7 +226,6 @@ void initSymbols()
 	s_floatarray = getsym("FloatArray");
 	s_doublearray = getsym("DoubleArray");
 	s_complex = getsym("Complex");
-	s_point = getsym("Point");
 	s_rect = getsym("Rect");
 	s_absfunc = getsym("AbstractFunction");
 	s_func = getsym("Function");
@@ -242,93 +235,71 @@ void initSymbols()
 	s_thread = getsym("Thread");
 	s_routine = getsym("Routine");
 	s_task = getsym("Task");
-	s_prstart = getsym("prStart");
 	s_interpreter = getsym("Interpreter");
 	s_finalizer = getsym("Finalizer");
-	s_awake = getsym("awake");
-	s_appclock = getsym("AppClock");
 	s_systemclock = getsym("SystemClock");
-	s_server_shm_interface = getsym("ServerShmInterface");
+    s_server_shm_interface = getsym("ServerShmInterface");
+    s_env = getsym("Env");
+    s_synth = getsym("Synth");
+    s_environment = getsym("Environment");
+    s_event = getsym("Event");
 
-	s_linear = getsym("linear");
-	s_exponential = getsym("exponential");
-	s_gate = getsym("gate");
-
-	//s_dsp = getsym("DSP");
-	//s_dspsettings = getsym("DSPSettings");
-	s_synth = getsym("Synth");
-	s_spawn = getsym("BasicSpawn");
-	s_environment = getsym("Environment");
-	s_event = getsym("Event");
-	s_hardwaresetup = getsym("hardwareSetup");
-	s_shutdown = getsym("shutdown");
-
-	s_interpretCmdLine = getsym("interpretCmdLine");
-	s_interpretPrintCmdLine = getsym("interpretPrintCmdLine");
-
-
-	s_nocomprendo = getsym("doesNotUnderstand");
-
-	s_curProcess = getsym("thisProcess");
-	s_curThread = getsym("thisThread");
-	s_curMethod = getsym("thisMethod");
-	s_curBlock = getsym("thisFunctionDef");
-	s_curClosure = getsym("thisFunction");
-	//s_sampleRate = getsym("gSR");
-	//s_logicalClock = getsym("gTime");
-	//s_audioClock = getsym("gAudioTime");
-	s_audio = getsym("audio");
-	s_control = getsym("control");
-	s_scalar = getsym("scalar");
+    // interpreter
+    s_interpretCmdLine = getsym("interpretCmdLine");
+    s_interpretPrintCmdLine = getsym("interpretPrintCmdLine");
+    
+	s_doesNotUnderstand = getsym("doesNotUnderstand");
+    
+    s_startup = getsym("startup");
+    s_awake = getsym("awake");
+    s_shutdown = getsym("shutdown");
+    
+    // methods
 	s_run = getsym("run");
 	s_stop = getsym("stop");
 	s_tick = getsym("tick");
-	s_startup = getsym("startup");
-	s_docmdline = getsym("doCmdLine");
 	s_next = getsym("next");
 	s_value = getsym("value");
 	s_performList = getsym("performList");
 	s_superPerformList = getsym("superPerformList");
 	s_at = getsym("at");
-	s_put = getsym("put");
-
+    s_put = getsym("put");
+    s_prstart = getsym("prStart");
 	s_series = getsym("prSimpleNumberSeries");
 	s_copyseries = getsym("copySeries");
 	s_putseries = getsym("putSeries");
-
-	s_ugen = getsym("UGen");
-	s_outputproxy = getsym("OutputProxy");
-	s_env = getsym("Env");
-
+    
 	s_envirGet = getsym("envirGet");
-	s_envirPut = getsym("envirPut");
+    s_envirPut = getsym("envirPut");
+    
+    // set special value slots
+    SetSymbol(&o_none, s_none);
 
 	SetNil(&o_nil);
 	SetFalse(&o_false);
 	SetTrue(&o_true);
+    
+    SetInt(&o_negone, -1);
+    SetInt(&o_zero, 0);
+    SetInt(&o_one, 1);
+    SetInt(&o_two, 2);
 
-	SetFloat(&o_pi, pi);
-	SetFloat(&o_twopi, twopi);
 	SetFloat(&o_fhalf, .5);
 	SetFloat(&o_fnegone, -1.);
 	SetFloat(&o_fzero, 0.);
 	SetFloat(&o_fone, 1.);
-	SetFloat(&o_ftwo, 2.);
-	SetInt(&o_negtwo, -2);
-	SetInt(&o_negone, -1);
-	SetInt(&o_zero, 0);
-	SetInt(&o_one, 1);
-	SetInt(&o_two, 2);
-	SetSymbol(&o_none, s_none);
-	SetFloat(&o_inf, std::numeric_limits<double>::infinity());
+    SetFloat(&o_ftwo, 2.);
+    SetFloat(&o_inf, std::numeric_limits<double>::infinity());
 
 	slotCopy(&gSpecialValues[svNil], &o_nil);
 	slotCopy(&gSpecialValues[svFalse], &o_false);
 	slotCopy(&gSpecialValues[svTrue], &o_true);
+    
 	slotCopy(&gSpecialValues[svNegOne], &o_negone);
 	slotCopy(&gSpecialValues[svZero], &o_zero);
 	slotCopy(&gSpecialValues[svOne], &o_one);
 	slotCopy(&gSpecialValues[svTwo], &o_two);
+    
 	slotCopy(&gSpecialValues[svFHalf], &o_fhalf);
 	slotCopy(&gSpecialValues[svFNegOne], &o_fnegone);
 	slotCopy(&gSpecialValues[svFZero], &o_fzero);
@@ -336,21 +307,22 @@ void initSymbols()
 	slotCopy(&gSpecialValues[svFTwo], &o_ftwo);
 	slotCopy(&gSpecialValues[svInf], &o_inf);
 
+    
 	gFormatElemSize[obj_notindexed] = sizeof(PyrSlot);
 	gFormatElemSize[obj_slot  ] = sizeof(PyrSlot);
 	gFormatElemSize[obj_double] = sizeof(double);
 	gFormatElemSize[obj_float ] = sizeof(float);
-	gFormatElemSize[obj_int32  ] = sizeof(int32);
+	gFormatElemSize[obj_int32 ] = sizeof(int32);
 	gFormatElemSize[obj_int16 ] = sizeof(int16);
 	gFormatElemSize[obj_int8  ] = sizeof(int8);
 	gFormatElemSize[obj_char  ] = sizeof(char);
-	gFormatElemSize[obj_symbol  ] = sizeof(PyrSymbol*);
+	gFormatElemSize[obj_symbol] = sizeof(PyrSymbol*);
 
 	gFormatElemCapc[obj_notindexed] = sizeof(PyrSlot) / sizeof(PyrSlot);
 	gFormatElemCapc[obj_slot  ] = sizeof(PyrSlot) / sizeof(PyrSlot);
 	gFormatElemCapc[obj_double] = sizeof(PyrSlot) / sizeof(double);
 	gFormatElemCapc[obj_float ] = sizeof(PyrSlot) / sizeof(float);
-	gFormatElemCapc[obj_int32  ] = sizeof(PyrSlot) / sizeof(int32);
+	gFormatElemCapc[obj_int32 ] = sizeof(PyrSlot) / sizeof(int32);
 	gFormatElemCapc[obj_int16 ] = sizeof(PyrSlot) / sizeof(int16);
 	gFormatElemCapc[obj_int8  ] = sizeof(PyrSlot) / sizeof(int8);
 	gFormatElemCapc[obj_char  ] = sizeof(PyrSlot) / sizeof(char);
@@ -360,7 +332,7 @@ void initSymbols()
 	gFormatElemTag[obj_slot  ] = -1;
 	gFormatElemTag[obj_double] = 0;
 	gFormatElemTag[obj_float ] = 0;
-	gFormatElemTag[obj_int32  ] = tagInt;
+	gFormatElemTag[obj_int32 ] = tagInt;
 	gFormatElemTag[obj_int16 ] = tagInt;
 	gFormatElemTag[obj_int8  ] = tagInt;
 	gFormatElemTag[obj_char  ] = tagChar;
