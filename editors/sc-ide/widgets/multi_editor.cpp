@@ -329,6 +329,9 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     connect( main, SIGNAL(applySettingsRequest(Settings::Manager*)),
              this, SLOT(applySettings(Settings::Manager*)) );
 
+    connect( MainWindow::instance(), SIGNAL(reloadTabBar(QList<Document*>)),
+                this, SLOT(updateTabsOrder(QList<Document*>)));
+
     createActions();
 
     setCurrentBox( defaultBox ); // will updateActions();
@@ -360,12 +363,11 @@ void MultiEditor::makeSignalConnections()
 
     mBoxSigMux->connect(SIGNAL(currentChanged(GenericCodeEditor*)),
             this, SLOT(onCurrentEditorChanged(GenericCodeEditor*)));
-    
 }
 
 void MultiEditor::updateDocOrder(int from, int to)
 {
-    Q_EMIT( updateDockletOrder(from, to) );
+    Q_EMIT( tabsOrderChanged(from, to) );
 }
 
 void MultiEditor::breakSignalConnections()

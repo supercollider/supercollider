@@ -149,11 +149,13 @@ public:
     void saveSession( Session * );
     void switchSession( Session * );
 
+    QTabBar * tabBar() { return mTabs; };
+
 signals:
     void currentDocumentChanged( Document * );
     void splitViewActivated();
     void splitViewDeactivated();
-    void updateDockletOrder( int, int );
+    void tabsOrderChanged( int, int );
 
 public slots:
 
@@ -173,8 +175,6 @@ public slots:
 
     void setShowAutocompleteHelp(bool on);
 
-    void updateTabsOrder( QList<Document*> );
-
 private slots:
     void applySettings( Settings::Manager * );
     void onOpen( Document *, int initialCursorPosition, int selectionLength );
@@ -187,6 +187,7 @@ private slots:
     void onBoxActivated( CodeEditorBox * );
     void onDocModified( QObject * );
     void updateDocOrder( int, int);
+    void updateTabsOrder( QList<Document*> );
 
 private:
     void makeSignalConnections();

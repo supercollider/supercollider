@@ -48,6 +48,7 @@ class ClockStatusBox;
 class ScServer;
 class ScProcess;
 class GenericCodeEditor;
+class DocumentListWidget;
 
 namespace Settings { class Manager; }
 
@@ -164,6 +165,8 @@ public Q_SLOTS:
 signals:
     void evaluateCode( const QString &, bool silent = true );
     void reloadDocumentDocklets( QList<Document*> );
+    void reloadTabBar( QList<Document*> );
+    void tabsOrderChanged(int, int);
 
 public Q_SLOTS:
     void showStatusMessage( QString const & string );
@@ -202,6 +205,7 @@ private Q_SLOTS:
     void showAboutQT();
     void cmdLineForCursor();
     void reloadAllLists( QList<Document*> );
+    void reloadAllLists( int, int );
 
 protected:
     virtual void closeEvent(QCloseEvent *event);
@@ -222,6 +226,7 @@ private:
     void applyCursorBlinkingSettings( Settings::Manager * );
     QString documentOpenPath();
     QString documentSavePath( Document * ) const;
+    void createDocumentConnections(DocumentListWidget *, MultiEditor *);
 
     Main *mMain;
 

@@ -50,7 +50,6 @@ public Q_SLOTS:
 Q_SIGNALS:
 
     void clicked( Document * );
-    void updateTabsOrder( QList<Document*> );
     void reloadAllLists( QList<Document*> );
 
 private Q_SLOTS:

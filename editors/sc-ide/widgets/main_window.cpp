@@ -44,6 +44,7 @@
 #include "code_editor/sc_editor.hpp"
 #include "settings/dialog.hpp"
 #include "util/docklet.hpp"
+#include "editor_box.hpp"
 
 #include "QtCollider/hacks/hacks_qt.hpp"
 
@@ -189,18 +190,6 @@ MainWindow::MainWindow(Main * main) :
     connect(main->scProcess(), SIGNAL(statusMessage(const QString&)),
             this, SLOT(showStatusMessage(const QString&)));
 
-    // Document list interaction
-    connect(mDocumentsDocklet->list(), SIGNAL(clicked(Document*)),
-            mEditors, SLOT(setCurrent(Document*)));
-    connect(currentMultiEditor(), SIGNAL(currentDocumentChanged(Document*)),
-            mDocumentsDocklet->list(), SLOT(setCurrent(Document*)),
-            Qt::QueuedConnection);
-    connect(mDocumentsDocklet->list(), SIGNAL(updateTabsOrder(QList<Document*>)),
-            mEditors, SLOT(updateTabsOrder(QList<Document*>)));
-    connect(currentMultiEditor(), SIGNAL(updateDockletOrder(int, int)),
-            mDocumentsDocklet->list(), SLOT(updateDockletOrder(int, int)),
-            Qt::QueuedConnection);
-
     // Update actions on document change
     connect(currentMultiEditor(), SIGNAL(currentDocumentChanged(Document*)),
             this, SLOT(onCurrentDocumentChanged(Document*)));
@@ -217,6 +206,8 @@ MainWindow::MainWindow(Main * main) :
             this, SLOT(applySettings(Settings::Manager*)));
     connect(main, SIGNAL(storeSettingsRequest(Settings::Manager*)),
             this, SLOT(storeSettings(Settings::Manager*)));
+
+    createDocumentConnections(mDocumentsDocklet->list(), mEditors);
 
     // ToolBox
     connect(mToolBox->closeButton(), SIGNAL(clicked()), this, SLOT(hideToolBox()));
@@ -252,8 +243,19 @@ MainWindow::MainWindow(Main * main) :
     qApp->installEventFilter(this);
 }
 
-void createDocumentConnections(DocumentListWidget * documentList, MultiEditor * ceditor) {
+void MainWindow::createDocumentConnections(DocumentListWidget * documentList, MultiEditor * ceditor) {
+    // Editor-Document list interaction
+    connect(documentList, SIGNAL(clicked(Document*)),
+            ceditor, SLOT(setCurrent(Document*)));
+    connect(ceditor, SIGNAL(currentDocumentChanged(Document*)),
+            documentList, SLOT(setCurrent(Document*)),
+            Qt::QueuedConnection);
 
+    // General Document lists syncronization
+    connect(documentList, SIGNAL(reloadAllLists(QList<Document*>)),
+            this, SLOT(reloadAllLists(QList<Document*>)));
+    connect(ceditor, SIGNAL(tabsOrderChanged(int, int)),
+            this, SLOT(reloadAllLists(int, int)));
 }
 
 void MainWindow::createActions()
@@ -1751,6 +1753,8 @@ void MainWindow::newWindow()
         QApplication::translate("toplevel", "Code Editor")
     );
 
+    Document * currentDoc = currentMultiEditor()->currentBox()->currentDocument();
+
     MultiEditor *newEditors = new MultiEditor(Main::instance());
     QVBoxLayout *outerLayout = new QVBoxLayout;
     outerLayout->setContentsMargins(0,0,0,0);
@@ -1800,22 +1804,32 @@ void MainWindow::newWindow()
     outerLayout->addWidget(h_layout);
     window->setLayout(outerLayout);
 
-    connect(newDocumentsList, SIGNAL(clicked(Document*)),
-            newEditors, SLOT(setCurrent(Document*)));
-    connect(newDocumentsList, SIGNAL(updateTabsOrder(QList<Document*>)),
-            newEditors, SLOT(updateTabsOrder(QList<Document*>)));
+    createDocumentConnections(newDocumentsList, newEditors);
 
-    // populate DocumentsDocklet
+    // loadDocuments
     newDocumentsList->populateList(mDocumentsDocklet->list()->listDocuments());
-
-    connect(newDocumentsList, SIGNAL(reloadAllLists(QList<Document*>)),
-            this, SLOT(reloadAllLists(QList<Document*>)));
+    currentMultiEditor()->currentBox()->setDocument(currentDoc);
+    // this is to make sure Tabs are loaded in the right order
+    newDocumentsList->setCurrent(currentDoc);
+    reloadAllLists(newDocumentsList->listDocuments());
 
     setCurrentEditor(newEditors);
 }
 
 void MainWindow::reloadAllLists( QList<Document*> newlist) {
     Q_EMIT( reloadDocumentDocklets( newlist ) );
+    Q_EMIT( reloadTabBar( newlist ) );
+}
+
+void MainWindow::reloadAllLists( int from, int to) {
+    Q_EMIT( tabsOrderChanged( from, to ) );
+    foreach( MultiEditor * ed, mEditorList ) {
+        if( !(ed == currentMultiEditor()) ) {
+            ed->tabBar()->blockSignals(true);
+            ed->tabBar()->moveTab(to, from);
+            ed->tabBar()->blockSignals(false);
+        }
+    }
 }
 
 //////////////////////////// ClockStatusBox ////////////////////////////
