@@ -164,8 +164,7 @@ public Q_SLOTS:
 
 signals:
     void evaluateCode( const QString &, bool silent = true );
-    void reloadDocumentDocklets( QList<Document*> );
-    void reloadTabBar( QList<Document*> );
+    void reloadDocumentLists( QList<Document*> );
     void tabsOrderChanged(int, int);
 
 public Q_SLOTS:

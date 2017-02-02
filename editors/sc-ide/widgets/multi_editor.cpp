@@ -329,7 +329,7 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     connect( main, SIGNAL(applySettingsRequest(Settings::Manager*)),
              this, SLOT(applySettings(Settings::Manager*)) );
 
-    connect( MainWindow::instance(), SIGNAL(reloadTabBar(QList<Document*>)),
+    connect( MainWindow::instance(), SIGNAL(reloadDocumentLists(QList<Document*>)),
                 this, SLOT(updateTabsOrder(QList<Document*>)));
 
     createActions();

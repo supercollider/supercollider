@@ -41,7 +41,7 @@ DocumentListWidget::DocumentListWidget(DocumentManager *manager, QWidget * paren
             this, SLOT(onModificationChanged(QObject*)));
     connect(this, SIGNAL(itemPressed(QListWidgetItem*)),
             this, SLOT(onItemClicked(QListWidgetItem*)));
-    connect(MainWindow::instance(), SIGNAL(reloadDocumentDocklets(QList<Document*>)),
+    connect(MainWindow::instance(), SIGNAL(reloadDocumentLists(QList<Document*>)),
             this, SLOT(reloadList(QList<Document*>)));
     connect(MainWindow::instance(), SIGNAL(tabsOrderChanged(int, int)),
             this, SLOT(updateDockletOrder(int, int)));

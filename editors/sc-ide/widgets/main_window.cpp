@@ -1817,8 +1817,7 @@ void MainWindow::newWindow()
 }
 
 void MainWindow::reloadAllLists( QList<Document*> newlist) {
-    Q_EMIT( reloadDocumentDocklets( newlist ) );
-    Q_EMIT( reloadTabBar( newlist ) );
+    Q_EMIT( reloadDocumentLists( newlist ) );
 }
 
 void MainWindow::reloadAllLists( int from, int to) {
