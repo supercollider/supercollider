@@ -120,11 +120,6 @@ Volume {
 		window.close;
 	}
 
-	/* deprecated */
-
-	numChans { ^this.deprecated(thisMethod, this.class.findMethod(\numChannels)) }
-	numChans_ { ^this.deprecated(thisMethod, this.class.findMethod(\numChannels)) }
-
 }
 
 VolumeGui {

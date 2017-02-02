@@ -37,8 +37,10 @@ DocumentListWidget::DocumentListWidget(DocumentManager *manager, QWidget * paren
     connect(manager, SIGNAL(saved(Document*)), this, SLOT(onSaved(Document*)));
     connect(&mModificationMapper, SIGNAL(mapped(QObject*)),
             this, SLOT(onModificationChanged(QObject*)));
-    connect(this, SIGNAL(itemClicked(QListWidgetItem*)),
+    connect(this, SIGNAL(itemPressed(QListWidgetItem*)),
             this, SLOT(onItemClicked(QListWidgetItem*)));
+
+    setDragDropMode(QAbstractItemView::InternalMove);
 }
 
 void DocumentListWidget::setCurrent( Document *doc )
@@ -50,6 +52,35 @@ void DocumentListWidget::setCurrent( Document *doc )
         if(itm)
             setCurrentItem(itm);
     }
+}
+
+void DocumentListWidget::dropEvent( QDropEvent *event )
+{
+    QListWidget::dropEvent(event);
+    QList<Document*> tempDocumentList = listDocuments();
+
+    Q_EMIT( updateTabsOrder(tempDocumentList) );
+}
+
+QList<Document*> DocumentListWidget::listDocuments() {
+    QList<Document*> list;
+    for ( int row = 0; row < count(); row++ ) {
+        Item *itm = itemFor(item(row));
+        if(itm) {
+            Document * doc = itm->mDoc;
+            if (doc) {
+                list << doc;
+            }
+        }
+    }
+    return list;
+}
+
+void DocumentListWidget::updateDockletOrder(int from, int to) 
+{
+        QListWidgetItem *itemToMove = takeItem(to);
+        insertItem(from, itemToMove);
+        setCurrentRow(from);
 }
 
 void DocumentListWidget::onOpen( Document *doc, int, int )
@@ -82,6 +113,7 @@ void DocumentListWidget::onModificationChanged( QObject * obj )
 
 void DocumentListWidget::onItemClicked(QListWidgetItem* litem)
 {
+    dockletOrder = listDocuments();
     Item *item = itemFor(litem);
     if(item)
         Q_EMIT( clicked(item->mDoc) );

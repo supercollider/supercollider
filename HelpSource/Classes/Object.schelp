@@ -17,7 +17,7 @@ Read in an object from a text archive.
 
 code::
 (
-a = Array.fill(100, { 100.0.rand });
+a = Array.fill(100, { 100.rand });
 a.writeArchive(PathName.tmp ++ "myArray");
 b = Object.readArchive(PathName.tmp ++ "myArray");
 a == b; // true
@@ -423,6 +423,8 @@ Instead of directly sending a method to an object, a method may be invoked given
 method::perform
 
 The selector argument must be a Symbol. Sends the method named by the selector with the given arguments to the receiver.
+
+If the first argument is an Array or List, this method behaves like code::performMsg::. However, this usage is discouraged, and code::performMsg:: ought to be used instead.
 
 method::performList
 

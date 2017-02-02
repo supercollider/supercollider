@@ -17,10 +17,22 @@ code::
 96
 ::
 
+They can also also be expressed in hexidecimal with the prefix code::0x:: and
+either uppercase or lowercase letters:
+code::
+0xa    // 10
+-0xd   // -13
+0x29A  // 666
+0x840  // 2112
+0x60   // 96
+::
+
 subsection::Floats
-A float is one or more decimal digits followed by a decimal point followed by one or more decimal digits.
-You must have digits on both sides of the decimal point.  This distinguishes floating point numbers from
-integer expressions like code::8.rand::.
+A float, or floating-point number, is one or more decimal digits, followed by a
+decimal point, followed by one or more decimal digits.
+You must have digits on both sides of the decimal point.
+In SuperCollider, floating-point numbers are always 64-bit, except within a
+link::Classes/FloatArray::.
 
 Examples of floats:
 code::
@@ -33,10 +45,11 @@ code::
 Exponential notation is also supported:
 code::
 1.2e4
-1e-4
+1E-4
 ::
 
-The constant pi can be appended to a number to create a floating point constant:
+The keyword code::pi:: can also be used by itself, or appended to a float or
+integer to create a floating point constant:
 code::
 pi
 2pi
@@ -44,24 +57,41 @@ pi
 -0.25pi
 ::
 
+The keyword code::inf:: represents infinity, and is also treated as an instance
+of Float.
+code::
+inf   // and beyond!
+-inf
+::
+
 subsection::Radix
 Numbers can also be written in radices other than base 10 up to base 36.
-The radix is specified in base 10 followed by the letter 'r' followed by the value written in
-that radix using characters 0-9,A-Z, or a-z, for digit values from 0 to 35.
-For example you can write hexadecimal numbers as follows:
+The radix is specified in base 10, followed by the letter 'r', followed by the
+value written in that radix using characters 0-9 and A-Z (or a-z) for digit
+values from 0 to 35. For example, you can write hexadecimal numbers as follows:
 code::
-16rF0
-16rA9FF
+16rF // 15
+16ra9 // 169
+36rZIGZAG // 2147341480
 ::
+
 Binary numbers can be written as follows:
 code::
 2r01101011
 ::
 
-Floating point values may also be specified in any base:
+Floating point values may also be specified in any base. However, only
+uppercase letters may be used past the decimal point for bases greater than 10.
+This eliminates ambiguity: if lowercase letters were allowed,
+code::36rA.bitNot:: might be a function call, or it might be
+code::36rA.BITNOT == 10.320080118934::.
 code::
-12r4A.A
+12r4a.abc // wrong
+12r4a.ABC // works
+12r4A.ABC // better
 ::
+
+Hexidecimal numbers notated with code::0x:: may only be expressed as integers.
 
 subsection::Scale Degrees
 Integer numbers as scale degrees supports accidentals notation by adding the suffixes strong::s:: for sharp and strong::b:: for flat. Accidentals are represented as floating point values.
@@ -96,7 +126,6 @@ code::
 2s204 == 2.204 // scale degree two, 204 cents sharp
 ::
 
-
 section::Characters
 
 Characters are preceded by a dollar sign:
@@ -104,21 +133,45 @@ code::
 $A
 $B
 $C
+$.
+$$
 ::
 
-Tab, linefeed, carriage return, and backslash are preceded by a backslash. See link::#Escape character:: below.
+As in C and Java, backslash ('\') is the emphasis::escape character::.
+Escaping has two main purposes. First, to insert non-printing characters into a
+String. Secondly, to allow a String or Symbol delimiter to be included in the
+contents. For String, double-quote marks indicate the beginning and ending of
+the String literal. To put a double-quote in the middle of the string, the
+normal meaning of double-quote must be suspended ("escaped"), as in
+code::"He repeated, \"Madam, I'm Adam,\" only this time he had said it backward."::
+
+In all cases, the \ as an escape character does not appear in the String or
+Symbol. This is a frequent source of confusion for Windows file paths:
+e.g., code::"C:\Users\Somebody\SuperCollider":: translates into
+teletype::C:UsersSomebodySuperCollider::. The way to notate a literal backslash
+inside a String or Symbol is with a double-backslash:
+code::"C:\\Users\\Somebody\\SuperCollider"::. (Note, however, that it is
+preferable to write file paths using forward slashes, regardless of platform:
+code::"C:/Users/Somebody/SuperCollider"::.
+
+The following are the recognized escape characters in SuperCollider. A
+backslash before any other character will simply produce that character.
 code::
-$\t
-$\n
-$\r
-$\\
+$\t  // tab (horizontal tab)
+$\f  // form feed
+$\v  // vertical tab
+$\n  // newline (linefeed)
+$\r  // return
+$\\  // backslash`
 ::
 
 section::Symbols and Strings
 
 subsection::Symbols
-A symbol is written as a string enclosed in single quotes.
-examples of symbols:
+A symbol can be written in two ways. One method is to enclose the contents in
+single quotes. Any printing character may be used within a symbol except for
+non-space whitespace characters (code::\f, \n, \r, \t, \v::). Any single quotes
+within the symbol must be escaped (code::\'::).
 code::
 'x'
 'aiff'
@@ -126,13 +179,17 @@ code::
 'nowhere here'
 'somewhere there'
 '.+o*o+.'
+'\'symbol_within_a_symbol\''
 ::
 
-A symbol consisting of a single word can be written with a preceding backslash.
+A second way of notating symbols is by prefixing the word with a backslash.
+This is only legal if the symbol consists of a single word (a sequence
+of alphanumeric and/or underscore characters).
 code::
 \x
 \aiff
-\BigSwiftyAndAssoc
+\Big_Swifty_And_Assoc
+\not really a symbol  // illegal
 ::
 
 subsection::Strings
@@ -144,52 +201,52 @@ code::
 
 If two or more strings are lexically adjacent, then they combine into a larger string:
 code::
-"This" " is " "also a " "string."
+a = "st" "ri" "ng"
+a.size // 6
 ::
 
-Strings may span more than one line. If so, then the new line characters become part of the string:
+Strings may span more than one line. The newline characters become part of the string:
 code::
-"This
-is
-also a
-string.
+a = "st
+ri
+ng
 "
+a.size // 9
 ::
 
-subsection::Escape character
-
-As in C and Java, a backslash, \, is the emphasis::escape character::. Escaping has two main purposes:
-
-list::
-## To insert non-printing characters into a string: teletype::\n:: for newline, teletype::\t:: for tab, teletype::\l:: for linefeed, teletype::\r:: for carriage return. (This usage is valid only for Strings, not Symbols.)
-## To allow a string or symbol delimiter to be included in the contents. That is, for strings, normally double-quote marks indicate the beginning and ending of the string literal. To put a double-quote in the middle of the string, the normal meaning of double-quote should be suspended -- "escaped" -- as in code::"He repeated, \"Madam, I'm Adam,\" only this time he had said it backward."::
-::
-
-In all cases, the \ as an escape character does not appear in the string or symbol. This is a frequent source of confusion for Windows file paths, e.g., code::"C:\Users\Somebody\SuperCollider":: translates into teletype::C:UsersSomebodySuperCollider::. Backslashes that should appear need to be escaped themselves: code::"C:\\Users\\Somebody\\SuperCollider"::. (Note, however, that it is preferable to write file paths using forward slashes, regardless of platform, as in Java: code::"C:/Users/Somebody/SuperCollider"::.)
+The SuperCollider IDE uses UTF-8 to decode and display strings.
+See link::Classes/String#Character encodings##String:: for more information.
 
 section::Identifiers
 
-Names of methods and variables begin with a lower case alphabetic character, followed by zero or more
-alphanumeric characters. An underscore is also valid in an identifier.
+Names of methods and variables begin with a lower case alphabetic character,
+followed by zero or more alphanumeric or underscore characters.
 code::
 var abc, z123, trigger_func;
+var 1var; // not legal
+var _hmm; // not legal
+var hmm_; // Although this is legal, avoid it, since setter functions in
+          // SuperCollider typically end with underscores.
 ::
 
 section::Class Names
 
-Class names always begin with a capital letter followed by zero or more alphanumeric characters.
+Class names always begin with a capital letter followed by zero or more
+alphanumeric or underscore characters.
 code::
 Object
 Point
 Synth
 SinOsc
 Pan2
+MyClass_LikesUnderscores // legal
+MyClass_ // legal, but avoid
 ::
 
 section::Special Values
 
-The singular instances of the classes True, False and Nil are written as the
-words true, false, nil and inf.
+The singular instances of the classes True, False and Nil can
+be expressed with keywords code::true::, code::false::, and code::nil::.
 code::
 x = true;
 y = false;

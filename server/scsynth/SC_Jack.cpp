@@ -121,9 +121,9 @@ private:
 	{
 		int err = jack_connect(mClient, src, dst);
 		scprintf("%s: %s %s to %s\n",
-				 kJackDriverIdent,
-				 err ? "couldn't connect " : "connected ",
-				 src, dst);
+		         kJackDriverIdent,
+		         err ? "couldn't connect " : "connected ",
+		         src, dst);
 	}
 
 	void ConnectClientInputs(const char * pattern);
@@ -411,8 +411,8 @@ void SC_JackDriver::Run()
 	if (++tick >= 10) {
 		tick = 0;
 		scprintf("DLL: t %.6f p %.9f sr %.6f e %.9f avg(e) %.9f inc %.9f\n",
-				 mDLL.PeriodTime(), mDLL.Period(), mDLL.SampleRate(),
-				 mDLL.Error(), mDLL.AvgError(), mOSCincrement * kOSCtoSecs);
+		         mDLL.PeriodTime(), mDLL.Period(), mDLL.SampleRate(),
+		         mDLL.Error(), mDLL.AvgError(), mOSCincrement * kOSCtoSecs);
 	}
 #endif
 #else

@@ -144,6 +144,9 @@ void Convolution_Ctor(Convolution *unit)
 	unit->m_scfftR = scfft_create(unit->m_fftsize, unit->m_fftsize, kRectWindow, unit->m_fftbuf1, unit->m_outbuf, kBackward, alloc);
 
 	SETCALC(Convolution_next);
+
+	// initialize output
+	OUT0(0) = IN0(0);
 }
 
 
@@ -337,6 +340,9 @@ void Convolution2_Ctor(Convolution2 *unit)
 
 		if ( unit->m_framesize >= world->mFullRate.mBufLength ) {
 			SETCALC(Convolution2_next);
+
+			// initialize output
+			OUT0(0) = IN0(0);
 		} else {
 			printf( "Convolution2 framesize smaller than blocksize \n" );
 			SETCALC(*ClearUnitOutputs);
@@ -495,6 +501,9 @@ void Convolution2L_Ctor(Convolution2L *unit)
 		unit->m_prevtrig = 0.f;
 
 		SETCALC(Convolution2L_next);
+
+		// initialize output
+		OUT0(0) = IN0(0);
 	} else {
 		unit->m_scfft1 = unit->m_scfft2 = unit->m_scfft3 = unit->m_scfftR = unit->m_scfftR2 = NULL;
 	}
@@ -766,6 +775,10 @@ void StereoConvolution2L_Ctor(StereoConvolution2L *unit)
 		unit->m_prevtrig = 0.f;
 
 		SETCALC(StereoConvolution2L_next);
+
+		// initialize outputs
+		OUT0(0) = IN0(0);
+		OUT0(1) = IN0(0);
 	}
 }
 
@@ -1024,6 +1037,9 @@ void Convolution3_Ctor(Convolution3 *unit)
 			SETCALC(Convolution3_next_a);
 		else
 			SETCALC(Convolution3_next_k);
+
+		// initialize output
+		OUT0(0) = IN0(0);
 	}
 }
 

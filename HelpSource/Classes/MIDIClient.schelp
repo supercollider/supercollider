@@ -76,7 +76,6 @@ Linux only. This gets the client ID by which the MIDIClient is defined in the AL
 
 On non-linux systems, it posts a warning and returns nil.
 
-
 EXAMPLES::
 
 code::

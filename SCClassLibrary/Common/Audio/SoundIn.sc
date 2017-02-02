@@ -22,14 +22,3 @@ SoundIn  {
 		^NumOutputBuses.ir
 	}
 }
-
-// backward compatible version. Only difference: starts counting from channel 1
-
-AudioIn : SoundIn  {
-	*ar { arg channel = 0, mul=1.0, add=0.0;
-		^super.ar(channel, mul, add)
-	}
-	*channelOffset {
-		^NumOutputBuses.ir - 1
-	}
-}
