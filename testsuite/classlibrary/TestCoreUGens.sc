@@ -434,7 +434,7 @@ TestCoreUGens : UnitTest {
 	test_out_ugens {
 		var testAudioRate, testControlRate;
 
-		testAudioRate = {
+		testControlRate = {
 			var failing = [nil, []];
 			var working = [0, [0], [0, 0, 0]];
 			var stubs = [
@@ -464,12 +464,13 @@ TestCoreUGens : UnitTest {
 			fails and: works
 		};
 
-		testControlRate = {
+		testAudioRate = {
 			var failing = [nil, []];
 			var working = [{DC.ar(0)}, {DC.ar([0, 0])}];
 			var stubs = [
 				{ |args| LocalOut.ar(*args) },
 				{ |args| Out.ar(0, *args) },
+				{ |args| OffsetOut.ar(0, *args) },
 				{ |args| ReplaceOut.ar(0, *args) },
 				{ |args| XOut.ar(0, 0.5, *args) },
 			];
