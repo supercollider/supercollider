@@ -4550,10 +4550,10 @@ void DetectSilence_next_k(DetectSilence* unit, int inNumSamples)
 				DoneAction((int)ZIN0(3), unit);
 				*out++ = 1.f;
 			} else {
-                *out++ = 0.f;
-            }
-        }
-        else
+				*out++ = 0.f;
+			}
+		}
+		else
 			*out++ = 0.f;
 	}
 	unit->mCounter = counter;
@@ -4753,7 +4753,7 @@ void FreqShift_next_kk(FreqShift *unit, int inNumSamples)
 	int32 phaseinc = freq + (int32)(CALCSLOPE(phasein, unit->m_phasein) * unit->m_radtoinc);
 	unit->m_phasein = phasein;
 
-    // each filter's last sample
+	// each filter's last sample
 	for(int i = 0; i < 12; ++i) {
 		y1[i] = unit->m_y1[i];
 		coefs[i] = unit->m_coefs[i];
