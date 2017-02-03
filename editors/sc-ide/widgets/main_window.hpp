@@ -205,7 +205,7 @@ private Q_SLOTS:
     void cmdLineForCursor();
     void reloadAllLists( QList<Document*> );
     void reloadAllLists( int, int );
-
+    
 protected:
     virtual void closeEvent(QCloseEvent *event);
     virtual void dragEnterEvent( QDragEnterEvent * );

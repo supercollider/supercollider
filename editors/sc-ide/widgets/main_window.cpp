@@ -1775,7 +1775,6 @@ void MainWindow::newWindow()
     newEditorsDocklet->setLayout(center_box);
 
     DockletToolBar * documentsToolBar = new DockletToolBar("Documents");
-    QMenu *optionsMenu = documentsToolBar->optionsMenu();
 
     DocumentListWidget * newDocumentsList = new DocumentListWidget(Main::instance()->documentManager(), window);
 
@@ -1786,6 +1785,21 @@ void MainWindow::newWindow()
     documentsDocklet_layout->addWidget(newDocumentsList);
     QWidget * newDocumentsDocklet = new QWidget;
     newDocumentsDocklet->setLayout(documentsDocklet_layout);
+
+    QMenu *optionsMenu = documentsToolBar->optionsMenu();
+    optionsMenu->clear();
+
+    QAction *action;
+    action = optionsMenu->addAction(tr("Hide"));
+    connect(action, SIGNAL(triggered(bool)), 
+            newDocumentsDocklet, SLOT(hide()) );
+    
+    action = optionsMenu->addAction(tr("Close all"));
+    connect(action, SIGNAL(triggered(bool)), 
+            mDocumentsDocklet->dockWidget(), SLOT(hide()) );
+
+    connect(mDocumentsDocklet->dockWidget(), SIGNAL(visibilityChanged(bool)), 
+            newDocumentsDocklet, SLOT(setVisible(bool)) );
 
     if(!mDocumentsDocklet->isVisible()) {
         newDocumentsDocklet->hide();
