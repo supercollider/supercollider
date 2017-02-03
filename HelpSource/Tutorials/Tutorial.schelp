@@ -336,7 +336,7 @@ SynthDef("saw", { arg out=100, pan=0, trig=0.0, freq=500, amp=1, cutoff=10000, r
 
 SynthDef("envsaw",{ arg out=100, pan=0, sustain=0.5, freq=500, amp=1, cutoff=10000, rezz=1;
 	var env;
-	env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction: Done.idle, gate:amp);
+	env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction: Done.none, gate:amp);
 	Out.ar(out,Pan2.ar(RLPF.ar(Saw.ar(Lag.kr(freq,0.1),env),cutoff,rezz)*amp,
 		pan));
 }).add;

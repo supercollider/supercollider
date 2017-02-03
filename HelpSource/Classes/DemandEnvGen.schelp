@@ -167,7 +167,7 @@ code::
 				0,
 				MouseX.kr > 0.5, // gate
 				MouseButton.kr > 0.5, // reset
-				doneAction: Done.idle
+				doneAction: Done.none
 			);
 		SinOsc.ar(freq * [1, 1.001]) * 0.1
 
@@ -187,7 +187,7 @@ code::
 				3, 0,
 				MouseX.kr > 0.5 - 0.1, // gate: sample and hold
 				MouseButton.kr > 0.5 * 2, // hard reset
-				doneAction: Done.idle
+				doneAction: Done.none
 			);
 		SinOsc.ar(freq * [1, 1.001]) * 0.1
 

@@ -213,7 +213,7 @@ code::
 			*
 			EnvGen.kr(					// サイン波のそれぞれにエンベロープを与える
 				Env.sine(2.0.rrand(17)),
-				doneAction: Done.idle 				// サウンド全体が完了した時にだけ
+				doneAction: Done.none 				// サウンド全体が完了した時にだけ
 									// エンベロープを解放する（なぜ？）
 			)
 		}

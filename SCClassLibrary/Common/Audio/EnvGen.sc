@@ -1,6 +1,6 @@
 Done : UGen {
 	// aliases for UGen doneActions
-	const <idle = 0;
+	const <none = 0;
 	const <pauseSelf = 1;
 	const <freeSelf = 2;
 	const <freeSelfAndPrev = 3;

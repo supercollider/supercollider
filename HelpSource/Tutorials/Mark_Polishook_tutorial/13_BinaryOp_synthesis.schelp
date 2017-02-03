@@ -192,7 +192,7 @@ code::
 			*
 			EnvGen.kr(					// put an envelope on each of the sine waves
 				Env.sine(2.0.rrand(17)),
-				doneAction: Done.idle 				// deallocate envelopes only when the
+				doneAction: Done.none 				// deallocate envelopes only when the
 									// entire sound is complete (why?)
 			)
 		}
