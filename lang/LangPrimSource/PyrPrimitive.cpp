@@ -4305,7 +4305,6 @@ void initOpenGLPrimitives();
 	initSCDocPrimitives();
 
 	s_recvmsg = getsym("receiveMsg");
-	post("\tNumPrimitives = %d\n", nextPrimitiveIndex());
 }
 
 void deinitPrimitives()
