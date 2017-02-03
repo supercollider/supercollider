@@ -89,7 +89,7 @@ Quark {
 			git = Git(localPath);
 			git.pull();
 			git.checkout("master");
-			("Quark '%' updated to version: % tag: % refspec: %".format(name, this.version, this.git.tag, this.refspec)).inform;
+			("Quark '%' updated to version: % tag: % refspec: %".format(name, this.version, this.git.tag, this.refspec)).postln;
 		}, {
 			("Quark" + name + "was not installed using git, cannot update.").warn;
 		});

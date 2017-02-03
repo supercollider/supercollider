@@ -64,7 +64,8 @@ Pbind(
 				     	    Pseq([1/10, 0.5, 1, 2], inf)
 				        ])
 ).play;
-)::
+)
+::
 
 It is possible to specify a Pbind with an link::Classes/Array:: preceded by *. Arrays treat identifiers ending with a colon as link::Classes/Symbol::s, making the syntax of the Pbind specification a bit more concise:
 

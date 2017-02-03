@@ -157,7 +157,7 @@ Pen {
 	}
 
 	*quadCurveTo { arg endPoint, cPoint;
-		_QPen_CubicTo
+		_QPen_QuadTo
 		^this.primitiveFailed;
 	}
 

@@ -35,7 +35,7 @@ ParamView {
 		zones.do(_.resize_(2));
 
 		label = argLabel ? "-";
-		spec = argSpec.asSpec;
+		spec = argSpec !? { argSpec.asSpec };
 		action = argAction;
 
 		slider = EZSlider(zones[0], rect2, label, spec);
@@ -87,7 +87,7 @@ ParamView {
 	valueAction_ { |val| this.value_(val).doAction }
 
 	spec_ { |newspec|
-		spec = newspec.asSpec;
+		spec = newspec !? { newspec.asSpec };
 		slider.controlSpec_(spec);
 		ranger.controlSpec_(spec);
 	}

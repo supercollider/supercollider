@@ -1,8 +1,20 @@
 class:: Speech
-summary:: lets you use the Apple speech synthesizer
-categories:: Platform>OSX
+summary:: [DEPRECATED] lets you use the Apple speech synthesizer
+categories:: Platform>macOS (OS X)
 
 description::
+
+warning::
+Speech has been deprecated for a number of reasons:
+
+list::
+## The audio output is independent of the server, so it has major limitations when attempting to use it in SC compositions.
+## The core library should be small, and speech synthesis is too niche to merit inclusion.
+## It is macOS only, and implementing cross-platform compatibility is nontrivial.
+::
+
+Generally, the replacement is to use unixCmd to invoke a speech synthesizer yourself. There is also a third-party quark that simplifies this for you: https://github.com/adcxyz/say.
+::
 
 code::
 "hi i'm talking with the default voice now, i guess".speak;
@@ -13,7 +25,7 @@ Speech consists of an link::Classes/Array:: of SpeechChannels. By default Speech
 Speech is a function of the operating system and not the server. By consequence, strong::it is not possible to use UGens to filter or record the output directly::. You may be able to patch system output to system input (either by hardware of by software) to rout it to the server.
 
 note::
-Currently only supported on OS X. In SwingOSC there is the equivalent JSpeech.
+Currently only supported on macOS. In SwingOSC there is the equivalent JSpeech.
 ::
 
 ClassMethods::

@@ -1916,7 +1916,7 @@ void Peak_Ctor(Peak *unit)
 #else
 			SETCALC(Peak_next_ai_k);
 #endif
-        } else {
+		} else {
 #ifdef NOVA_SIMD
 			if (INBUFLENGTH(0) & 7)
 				SETCALC(Peak_next_ak_k);
@@ -2814,8 +2814,7 @@ void PauseSelfWhenDone_next(PauseSelfWhenDone *unit, int inNumSamples)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct SendPeakRMS:
-    public Unit
+struct SendPeakRMS: public Unit
 {
 	// rate, level lag, replyid, channel count, [channels, ], cmd name size, [cmdname, ]
 	static const int rateIndex = 0;

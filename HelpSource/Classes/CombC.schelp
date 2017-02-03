@@ -11,8 +11,10 @@ which uses no interpolation, and  link::Classes/CombL::  which uses linear
 interpolation. Cubic interpolation is more computationally expensive
 than linear, but more accurate.
 
-A very good tip for anyone who is interested in delay lines, 
-and is willing to get a simple way of processing a live source 
+The feedback coefficient is given by the equation code:: fb == 0.001 ** (delay / decay.abs) * decay.sign :: where 0.001 is -60 dBFS.
+
+A very good tip for anyone who is interested in delay lines,
+and is willing to get a simple way of processing a live source
 in a pretty effective way, is setting up a larger memory pool in the server,
 and basically setting up pretty large delay lines, randomizing all their parameters
 
@@ -70,7 +72,7 @@ s.reboot;
 )
 ({
 	var in, del1, del2, del3, del4;
-	in = SoundIn.ar(0); 
+	in = SoundIn.ar(0);
 	del1 = CombC.ar(in, 8, LFNoise2.kr(0.01).range(1, 8), 1);
 	del2 = CombC.ar(del1, 8, LFNoise2.kr(0.01).range(1, 8), 1);
 	del3 = CombC.ar(del2, 8, LFNoise2.kr(0.01).range(1, 8), 1);

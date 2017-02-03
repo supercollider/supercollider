@@ -1,7 +1,7 @@
 class:: SCDocHTMLRenderer
 summary:: Render SCDoc markup text to HTML
 categories:: HelpSystem
-related:: Classes/SCDoc, Classes/SCDocParser, Guides/WritingHelp, Reference/SCDocSyntax
+related:: Classes/SCDoc, Guides/WritingHelp, Reference/SCDocSyntax
 
 description::
 This class is part of the SCDoc help system, and handles the rendering of the parsed document tree into HTML output.
@@ -26,6 +26,8 @@ method:: htmlForLink
 Create a html string for the given scdoc link.
 argument:: link
 An scdoc link, such as a document key like "Classes/SinOsc", or an URL, or link to other file installed with the help.
+argument:: escape
+a boolean to set whether to escape special characters.
 returns::
 A String
 

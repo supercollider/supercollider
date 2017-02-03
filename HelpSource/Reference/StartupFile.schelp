@@ -8,7 +8,7 @@ specific customizations.
 
 definitionList::
 ## Linux   || teletype::~/.config/SuperCollider/startup.scd::, according to the xdg base directory specification
-## OSX     || teletype::~/Library/Application Support/SuperCollider/startup.scd::
+## macOS   || teletype::~/Library/Application Support/SuperCollider/startup.scd::
 ## Windows || teletype::C:\\SuperCollider\\startup.scd:: (or similar, depending on the location of the SuperCollider installation)
 ::
 

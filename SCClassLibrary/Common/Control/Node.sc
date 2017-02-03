@@ -160,6 +160,10 @@ Node {
 		NodeWatcher.register(this, assumePlaying)
 	}
 
+	unregister {
+		NodeWatcher.unregister(this)
+	}
+
 	onFree { arg func;
 		var f = {|n, m|
 			if(m == \n_end) {

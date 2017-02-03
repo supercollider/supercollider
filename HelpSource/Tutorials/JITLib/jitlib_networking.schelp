@@ -15,8 +15,8 @@ subsection::before you start
 
 remember to synchronize your system clocks. This can be done by:
 definitionList::
-## in OS X || SystemPreferences>Date&Time: set emphasis::"Set Date & Time automatically":: to true.
-## in linux || set the ntp clock
+## in macOS || SystemPreferences>Date&Time: set emphasis::"Set Date & Time automatically":: to true.
+## in Linux || set the ntp clock
 ::
 a local time server is better than the apple time server. if you cannot sync the time, you can set the server latency to code::nil::. This will break the pattern's functionality though.
 
