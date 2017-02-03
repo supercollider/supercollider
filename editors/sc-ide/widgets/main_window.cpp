@@ -107,15 +107,7 @@ MainWindow::MainWindow(Main * main) :
     setAcceptDrops(true);
 
     // Construct status bar:
-
-    mLangStatus = new LangStatusBox( main->scProcess() );
-    mServerStatus = new AudioStatusBox( main->scServer() );
-
     mStatusBar = statusBar();
-    mStatusBar->addPermanentWidget( new QLabel(tr("Interpreter:")) );
-    mStatusBar->addPermanentWidget( mLangStatus );
-    mStatusBar->addPermanentWidget( new QLabel(tr("Server:")) );
-    mStatusBar->addPermanentWidget( mServerStatus );
 
     // Code editor
     mEditors = new MultiEditor(main);
@@ -465,7 +457,7 @@ void MainWindow::createActions()
         new QAction(QIcon::fromTheme("system-help"), tr("Report a bug..."), this);
     action->setStatusTip(tr("Report a bug"));
     connect(action, SIGNAL(triggered()), this, SLOT(doBugReport()));
-    
+
     mActions[LookupDocumentationForCursor] = action =
             new QAction(tr("Look Up Documentation for Cursor"), this);
     action->setShortcut(tr("Ctrl+D", "Look Up Documentation for Cursor"));
@@ -1609,18 +1601,18 @@ void MainWindow::openHelpAboutIDE()
     mHelpBrowserDocklet->browser()->gotoHelpFor("Guides/SCIde");
     mHelpBrowserDocklet->focus();
 }
-    
+
 void MainWindow::doBugReport()
 {
     Settings::Manager *settings = mMain->settings();
     bool useGitHubBugReport = false;
-    
+
     if (settings->contains("IDE/useGitHubBugReport")) {
-        
+
         useGitHubBugReport = settings->value("IDE/useGitHubBugReport").toBool();
-        
+
     } else {
-        
+
         QMessageBox* dialog = new QMessageBox();
         dialog->setText("Do you want to submit bugs using <a href=\"https://www.github.com\">GitHub</a>?");
         dialog->setInformativeText("This requires a GitHub account.");
@@ -1629,7 +1621,7 @@ void MainWindow::doBugReport()
         dialog->addButton("Cancel", QMessageBox::RejectRole);
         dialog->exec();
         QMessageBox::ButtonRole clicked = dialog->buttonRole(dialog->clickedButton());
-        
+
         if (clicked == QMessageBox::YesRole || clicked == QMessageBox::NoRole) {
             useGitHubBugReport = (clicked == QMessageBox::YesRole);
             settings->setValue("IDE/useGitHubBugReport", useGitHubBugReport);
@@ -1638,7 +1630,7 @@ void MainWindow::doBugReport()
             return;
         }
     }
-    
+
     if (useGitHubBugReport) {
         QString url("https://github.com/supercollider/supercollider/issues/new");
         QString formData("?labels=bug&body=Bug%20description%3A%0A%0ASteps%20to%20reproduce%3A%0A1.%0A2.%0A3.%0A%0AActual%20result%3A%0A%0AExpected%20result%3A%0A");
