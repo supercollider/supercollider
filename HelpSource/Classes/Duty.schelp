@@ -42,7 +42,7 @@ argument::doneAction
 
 A doneAction that is evaluated when the duration stream ends. See
 
-link::Reference/UGen-doneActions::  for more detail.
+link::Classes/Done::  for more detail.
 
 
 Examples::

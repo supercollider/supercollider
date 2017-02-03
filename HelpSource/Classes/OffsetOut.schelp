@@ -51,14 +51,14 @@ code::
 SynthDef("help-OffsetOut",
 	{ arg out=0, freq=440, dur=0.05;
 		var env;
-		env = EnvGen.kr(Env.perc(0.01, dur, 0.2), doneAction:2);
+		env = EnvGen.kr(Env.perc(0.01, dur, 0.2), doneAction: Done.freeSelf);
 		OffsetOut.ar(out, SinOsc.ar(freq, 0, env))
 }).send(s);
 
 SynthDef("help-Out",
 	{ arg out=0, freq=440, dur=0.05;
 		var env;
-		env = EnvGen.kr(Env.perc(0.01, dur, 0.2), doneAction:2);
+		env = EnvGen.kr(Env.perc(0.01, dur, 0.2), doneAction: Done.freeSelf);
 		//compare to Out:
 		Out.ar(out, SinOsc.ar(freq, 0, env))
 }).send(s);
@@ -95,7 +95,7 @@ SynthDef("trig1",{
 	OffsetOut.ar(0,
 		tone * EnvGen.ar(
 				Env([0,0.1,0.1,0],[0.01,1.0,0.01],[-4,4],2),
-				gate,doneAction: 2
+				gate,doneAction: Done.freeSelf
 			)
 	)
 })

@@ -52,7 +52,7 @@ code::
 (
 SynthDef(\singrain, { |freq = 440, amp = 0.2, sustain = 1|
 	var sig;
-	sig = SinOsc.ar(freq, 0, amp) * EnvGen.kr(Env.perc(0.01, sustain), doneAction: 2);
+	sig = SinOsc.ar(freq, 0, amp) * EnvGen.kr(Env.perc(0.01, sustain), doneAction: Done.freeSelf);
 	Out.ar(0, sig ! 2);	// sig ! 2 is the same as [sig, sig]
 }).add;
 
@@ -170,7 +170,7 @@ dur = Routine({
 
 SynthDef(\smooth, { |freq = 440, sustain = 1, amp = 0.5|
 	var sig;
-	sig = SinOsc.ar(freq, 0, amp) * EnvGen.kr(Env.linen(0.05, sustain, 0.1), doneAction: 2);
+	sig = SinOsc.ar(freq, 0, amp) * EnvGen.kr(Env.linen(0.05, sustain, 0.1), doneAction: Done.freeSelf);
 	Out.ar(0, sig ! 2)
 }).add;
 

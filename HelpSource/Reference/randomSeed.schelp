@@ -57,7 +57,7 @@ code::
 (
 SynthDef(\help_randomSeed, { arg out=0, freq=440;
 	Out.ar(out,
-		Line.kr(1, 0, 0.3, doneAction:2) *
+		Line.kr(1, 0, 0.3, doneAction: Done.freeSelf) *
 		Resonz.ar(
 			Dust2.ar([10, 10], 270) + WhiteNoise.ar(4),
 		freq, 0.01)
