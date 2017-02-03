@@ -9,6 +9,7 @@ WiiMoteGUI {
 	var <rm, <nc, <cl;
 
 	*new { |wiimote, w|
+        this.deprecated(thisMethod);
 		^super.new.w_(w).wiimote_(wiimote).init;
 	}
 
@@ -79,6 +80,7 @@ WiiRemoteGUI{
 	var <onColor, <offColor;
 
 	*new{ |w,wiimote,offset|
+        this.deprecated(thisMethod);
 		^super.new.wiimote_(wiimote).w_(w).init( offset );
 	}
 
@@ -157,6 +159,7 @@ WiiNunchukGUI{
 	var <onColor, <offColor;
 
 	*new{ |w,wiimote,offset|
+        this.deprecated(thisMethod);
 		^super.new.wiimote_(wiimote).w_(w).init( offset );
 	}
 
