@@ -171,10 +171,12 @@ void initSymbols()
 {
     // basic keywords
 	s_new = getsym("new");
-	s_none = getsym("none");
+	s_none = getsym("__none");
+	/* Dummy symbol for null superclass or primitive. Prefixed with
+	 * `__` to avoid collisions with possible method and primitive names.
+	 */
 	s_this = getsym("this");
 	s_super = getsym("super");
-    
     s_curProcess = getsym("thisProcess");
     s_curThread = getsym("thisThread");
     s_curMethod = getsym("thisMethod");
