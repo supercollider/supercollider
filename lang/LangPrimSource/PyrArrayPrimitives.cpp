@@ -2089,7 +2089,7 @@ int prArrayContainsSeqColl(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-inline int sc_arrayMaxDepth(PyrSlot *a, int depth)
+int sc_arrayMaxDepth(PyrSlot *a, int depth)
 {
 	PyrSlot *slot, *endptr;
 	PyrObject *obj;
@@ -2133,7 +2133,7 @@ int prArrayMaxDepth(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-inline int sc_arrayMaxSizeAtDepth(PyrSlot *a, int rank)
+int sc_arrayMaxSizeAtDepth(PyrSlot *a, int rank)
 {
 	PyrSlot *slot, *endptr;
 	PyrObject *obj;
