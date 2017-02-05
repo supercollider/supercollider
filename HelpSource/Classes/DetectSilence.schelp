@@ -9,7 +9,7 @@ When the absolute value of the input signal remains below the threshold for a gi
 
 code::
 // this frees after the Decay has become quiet enough for a long enough time
-{ var signal = Decay.ar(Impulse.ar(0), 2, PinkNoise.ar(0.2)); DetectSilence.ar(signal, doneAction:2); signal }.play;
+{ var signal = Decay.ar(Impulse.ar(0), 2, PinkNoise.ar(0.2)); DetectSilence.ar(signal, doneAction: Done.freeSelf); signal }.play;
 ::
 
 If the input signal starts with silence at the beginning of the synth's duration, then DetectSilence will wait indefinitely until the first sound before starting to monitor for silence. To avoid a hanging silent sound where the input may remain zero, you can add an code::Impulse.ar(0):: to its input.
@@ -45,7 +45,7 @@ argument::doneAction
 
 An integer representing the doneAction. See
 
-link::Reference/UGen-doneActions::  for more detail.
+link::Classes/Done::  for more detail.
 
 returns::
 This UGen outputs 1 if silence is detected, otherwise 0.
@@ -58,7 +58,7 @@ code::
 SynthDef("detectSilence-help", { arg out;
 	var z;
 	z = SinOsc.ar(Rand(400, 700), 0, LFDNoise3.kr(8).max(0)).softclip * 0.3;
-	DetectSilence.ar(z, doneAction:2);
+	DetectSilence.ar(z, doneAction: Done.freeSelf);
 	Out.ar(out, z);
 }).add;
 )

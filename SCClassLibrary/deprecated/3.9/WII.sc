@@ -157,6 +157,7 @@ WiiMote {
 		all.copy.do({ | dev | dev.close });
 	}
 	*new { |id|
+		this.deprecated(thisMethod);
 		^super.new.id_(id).prInit();
 	}
 	isOpen {
@@ -268,6 +269,7 @@ WiiMote {
 
 	*discover{
 		var newid, newwii, newall;
+		this.deprecated(thisMethod);
 		if ( eventLoopIsRunning.not, { this.start; } );
 		newid = all.size;
 		newwii = WiiMote.new;

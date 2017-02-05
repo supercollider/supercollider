@@ -1,17 +1,31 @@
 CLASS::FloatArray
-summary::an array whose indexed slots are all of the same type
-related::Classes/Int8Array, Classes/Int16Array, Classes/Int32Array, Classes/DoubleArray, Classes/SymbolArray
+summary::an array of 32-bit single precision floating point numbers
+related::Classes/DoubleArray, Classes/Signal
 categories::Collections>Ordered
 
 DESCRIPTION::
-These classes implement arrays whose indexed slots are all of the same type.
+An array of 32-bit single precision floating point numbers.
+
+Note that despite the "Float" in its name, FloatArray does not hold a sequence
+of SuperCollider double precision link::Classes/Float##floats::, but rather
+32-bit (single precision) floats. For a raw array of 64-bit floats, use
+link::Classes/DoubleArray::.
+
+FloatArray and its subclass link::Classes/Signal:: are commonly used to hold
+audio data in SuperCollider. Since almost all audio has 16-bit or 24-bit
+precision, using double precision floats for this purpose would be a waste of
+space. In other words, FloatArray is meant for storage of large amounts of
+lower-precision data, but it is not meant for highly accurate math operations.
+
+The complete list of RawArray types in SuperCollider is:
+
 list::
-## Int8Array - 8 bit integer
-## Int16Array - 16 bit integer
-## Int32Array - 32 bit integer
+## link::Classes/Int8Array:: - 8 bit integer
+## link::Classes/Int16Array:: - 16 bit integer
+## link::Classes/Int32Array:: - 32 bit integer
 ## FloatArray - 32 bit floating point
 ## DoubleArray - 64 bit floating point
-## SymbolArray - symbols
+## link::Classes/SymbolArray:: - symbols
 ::
 
 INSTANCEMETHODS::

@@ -40,7 +40,7 @@
 // setlinebuf is equivalent to the setvbuf call below.
 inline int setlinebuf(FILE *stream)
 {
-    return setvbuf( stream, (char*)0, _IONBF, 0 );
+	return setvbuf( stream, (char*)0, _IONBF, 0 );
 }
 
 #endif

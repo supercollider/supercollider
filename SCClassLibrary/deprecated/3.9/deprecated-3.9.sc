@@ -29,3 +29,57 @@ SplayZ {
     }
 }
 
+SharedOut : AbstractOut {
+    *kr { arg bus, channelsArray;
+        this.deprecated(thisMethod, Bus.findMethod(\getSynchronous));
+        this.multiNewList(['control', bus] ++ channelsArray.asArray)
+        ^0.0        // Out has no output
+    }
+    *numFixedArgs { ^1 }
+    writesToBus { ^false }
+}
+
+SharedIn : AbstractIn {
+    *kr { arg bus = 0, numChannels = 1;
+        this.deprecated(thisMethod, Bus.findMethod(\setSynchronous));
+        ^this.multiNew('control', numChannels, bus)
+    }
+    init { arg numChannels ... argBus;
+        inputs = argBus.asArray;
+        ^this.initOutputs(numChannels, rate)
+    }
+}
+
++ PathName {
+    *fromOS9 { | path | ^this.deprecated(thisMethod) }
+    foldersWithoutCVS { | path | ^this.deprecated(thisMethod) }
+    isCVS { ^this.deprecated(thisMethod) }
+    foldersWithoutSVN { | path |^this.deprecated(thisMethod) }
+    isSVN { ^this.deprecated(thisMethod) }
+    filesDoNoCVS { | func | ^this.deprecated(thisMethod) }
+    filesDoNoSVN { | func | ^this.deprecated(thisMethod) }
+    streamTreeNoCVS { | str, tabs=0 | ^this.deprecated(thisMethod) }
+    helpFilesDo { |func| ^this.deprecated(thisMethod) }
+}
+
++ Server {
+    recordNode {
+        this.deprecated(thisMethod, Recorder.class.findMethod('recordNode'));
+        ^recorder.recordNode
+    }
+
+    *set {
+        this.deprecated(thisMethod, this.class.findMethod('all'));
+        ^all
+    }
+
+    *set_ { |item|
+        this.deprecated(thisMethod, this.class.findMethod('all_'));
+        all = item
+    }
+}
+
++ Volume {
+    numChans { ^this.deprecated(thisMethod, this.class.findMethod(\numChannels)) }
+    numChans_ { ^this.deprecated(thisMethod, this.class.findMethod(\numChannels)) }
+}

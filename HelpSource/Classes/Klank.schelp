@@ -12,6 +12,12 @@ simulate the resonant modes of an object. Each mode is given a ring time,
 which is the time for the mode to decay by 60 dB.
 Note::for dynamic changes of parameters refer to link::Classes/DynKlank:: ::
 
+Note::
+The amplitude of the resulting signal depends on the server's sample rate. See link::Classes/Ringz#Interaction with sample rate#Ringz: Interaction with sample rate:: for details.
+::
+
+Klank is a bank of Ringz filters. link::Classes/Formlet:: is equivalent to code::Ringz.ar(... decay...) - Ring.ar(... attack...)::. Therefore, a more efficient way to make a bank of fixed-parameter Formlet filters is code::Klank(`decaySpecs, ...) - Klank.ar(`attackSpecs, ...):: or code::Klank.ar(`specs, ..., decayscale: decay) - Klank.ar(`specs, ..., decayscale: attack)::.
+
 classmethods::
 
 method::ar
@@ -145,7 +151,7 @@ code::
 (
 SynthDef("help-KlankOverlapTexture",
 {|out = 0, freqs = #[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], rings = #[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], atk = 5, sus = 8, rel = 5, pan = 0|
-	var e = EnvGen.kr(Env.linen(atk, sus, rel, 1, 4), doneAction:2);
+	var e = EnvGen.kr(Env.linen(atk, sus, rel, 1, 4), doneAction: Done.freeSelf);
 	var i = Decay.ar(Impulse.ar(Rand(0.8, 2.2)), 0.03, ClipNoise.ar(0.01));
 	var z = Klank.ar(
 		`[freqs, nil, rings], 	// specs
@@ -180,7 +186,7 @@ r.stop;	// stop spawning new synths
 // -- frequency and decay scaling
 (
 SynthDef("help-KlankScaling", {|out = 0, freq = 0, rings = #[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], pan = 0|
-	var e = EnvGen.kr(Env(#[1, 1, 0], #[0.4, 0.01]), doneAction:2);
+	var e = EnvGen.kr(Env(#[1, 1, 0], #[0.4, 0.01]), doneAction: Done.freeSelf);
 	var i = Decay.ar(Impulse.ar(0), 0.03, ClipNoise.ar(0.01));
 	var z = Klank.ar(
 		`[(1..12), nil, rings], 				// specs (partials, amplitudes, ringtimes)
@@ -214,7 +220,7 @@ r.stop;
 (
 SynthDef("help-KlankOverlapTexture2",
 {|out = 0, freqs = #[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], rings = #[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], atk = 5, sus = 8, rel = 5, pan = 0|
-	var e = EnvGen.kr(Env.linen(atk, sus, rel, 1, 4), doneAction:2);
+	var e = EnvGen.kr(Env.linen(atk, sus, rel, 1, 4), doneAction: Done.freeSelf);
 	var i = BrownNoise.ar(0.0012);
 	var z = Klank.ar(
 		`[freqs, nil, rings], 	// specs
@@ -249,7 +255,7 @@ r.stop;
 (
 SynthDef("help-KlankOverlapTexture3",
 {|out = 0, freqs = #[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], rings = #[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], pan = 0|
-	var e = EnvGen.kr(Env(#[1, 1, 0], #[18, 3]), doneAction:2);
+	var e = EnvGen.kr(Env(#[1, 1, 0], #[18, 3]), doneAction: Done.freeSelf);
 	var i = Decay.ar(Impulse.ar(Rand(0.2, 0.6)), 0.8, ClipNoise.ar(0.001));
 	var z = Klank.ar(
 		`[freqs, 2, rings], 	// specs

@@ -81,11 +81,11 @@ static void syncOSCOffsetWithTimeOfDay()
 	// Then if this machine is synced via NTP, we are synced with the world.
 	// more accurate way to do this??
 
-    using namespace std::chrono;
+	using namespace std::chrono;
 	struct timeval tv;
 
-    nanoseconds systemTimeBefore, systemTimeAfter;
-    int64 diff, minDiff = 0x7fffFFFFffffFFFFLL;
+	nanoseconds systemTimeBefore, systemTimeAfter;
+	int64 diff, minDiff = 0x7fffFFFFffffFFFFLL;
 
 	// take best of several tries
 	const int numberOfTries = 5;
@@ -98,9 +98,9 @@ static void syncOSCOffsetWithTimeOfDay()
 		diff = (systemTimeAfter - systemTimeBefore).count();
 		if (diff < minDiff) {
 			minDiff = diff;
-            // assume that gettimeofday happens halfway between high_resolution_clock::now() calls
-            int64 systemTimeBetween = systemTimeBefore.count() + diff/2;
-            int64 systemTimeInOSCunits = (int64)((double)systemTimeBetween * kNanosToOSCunits);
+			// assume that gettimeofday happens halfway between high_resolution_clock::now() calls
+			int64 systemTimeBetween = systemTimeBefore.count() + diff/2;
+			int64 systemTimeInOSCunits = (int64)((double)systemTimeBetween * kNanosToOSCunits);
 			int64 timeOfDayInOSCunits  = ((int64)(tv.tv_sec + kSECONDS_FROM_1900_to_1970) << 32)
 								    + (int64)(tv.tv_usec * kMicrosToOSCunits);
 			newOffset = timeOfDayInOSCunits - systemTimeInOSCunits;
@@ -336,10 +336,10 @@ void FreeOSCPacket(FifoMsg *inMsg)
 		inMsg->mData = 0;
 #if _MSC_VER == 1310
 #pragma message("$$$todo fixme hack for the 'uninitialized packet->mData ptr when using MSVC 7.1 debug")
-    if (packet->mData != reinterpret_cast<char*>(0xcdcdcdcd))
-  		free(packet->mData);
+	if (packet->mData != reinterpret_cast<char*>(0xcdcdcdcd))
+		free(packet->mData);
 #else //#ifdef _MSC_VER
-    free(packet->mData);
+		free(packet->mData);
 #endif //#ifdef _MSC_VER
 		free(packet);
 	}
@@ -509,7 +509,7 @@ bool SC_AudioDriver::Stop()
 
 SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)
 {
-    return new SC_CoreAudioDriver(inWorld);
+	return new SC_CoreAudioDriver(inWorld);
 }
 
 #endif
@@ -1477,11 +1477,11 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 OSStatus	hardwareListenerProc (	AudioHardwarePropertyID	inPropertyID,
 								  void*					inClientData)
 {
-    OSStatus			err = noErr;
-    char				cStr[255];
-    UInt32				outSize;
-    Boolean				outWritable;
-    AudioDeviceID		deviceID;
+	OSStatus			err = noErr;
+	char				cStr[255];
+	UInt32				outSize;
+	Boolean				outWritable;
+	AudioDeviceID		deviceID;
 
 	AudioObjectPropertyAddress  propertyAddress;
 
@@ -1489,10 +1489,10 @@ OSStatus	hardwareListenerProc (	AudioHardwarePropertyID	inPropertyID,
 	propertyAddress.mScope = kAudioObjectPropertyScopeGlobal;
 	propertyAddress.mElement = kAudioObjectPropertyElementMaster;
 
-    switch(inPropertyID)
-    {
-        case kAudioHardwarePropertyDefaultOutputDevice:
-            scprintf("%s\n", "***** HARDWARE NOTIFICATION - kAudioHardwarePropertyDefaultOutputDevice\r");
+	switch(inPropertyID)
+	{
+		case kAudioHardwarePropertyDefaultOutputDevice:
+			scprintf("%s\n", "***** HARDWARE NOTIFICATION - kAudioHardwarePropertyDefaultOutputDevice\r");
 
 			//err =  AudioHardwareGetPropertyInfo(kAudioHardwarePropertyDefaultOutputDevice,  &outSize, &outWritable);
 
@@ -1531,10 +1531,10 @@ OSStatus	hardwareListenerProc (	AudioHardwarePropertyID	inPropertyID,
 
 			// do something
 
-            break;
+			break;
 
-        case kAudioHardwarePropertyDefaultInputDevice:
-            scprintf("%s\n", "***** HARDWARE NOTIFICATION - kAudioHardwarePropertyDefaultInputDevice\r");
+		case kAudioHardwarePropertyDefaultInputDevice:
+			scprintf("%s\n", "***** HARDWARE NOTIFICATION - kAudioHardwarePropertyDefaultInputDevice\r");
 			// err =  AudioHardwareGetPropertyInfo(kAudioHardwarePropertyDefaultInputDevice,  &outSize, &outWritable);
 
 			propertyAddress.mSelector = kAudioHardwarePropertyDefaultInputDevice;
@@ -1575,11 +1575,11 @@ OSStatus	hardwareListenerProc (	AudioHardwarePropertyID	inPropertyID,
 
 			// do something
 
-            break;
+			break;
 
-        case kAudioHardwarePropertyDefaultSystemOutputDevice:
-            scprintf("%s\n", "***** HARDWARE NOTIFICATION - kAudioHardwarePropertyDefaultSystemOutputDevice\r");
-            //err =  AudioHardwareGetPropertyInfo(kAudioHardwarePropertyDefaultSystemOutputDevice,  &outSize, &outWritable);
+		case kAudioHardwarePropertyDefaultSystemOutputDevice:
+			scprintf("%s\n", "***** HARDWARE NOTIFICATION - kAudioHardwarePropertyDefaultSystemOutputDevice\r");
+			//err =  AudioHardwareGetPropertyInfo(kAudioHardwarePropertyDefaultSystemOutputDevice,  &outSize, &outWritable);
 
 			propertyAddress.mSelector = kAudioHardwarePropertyDefaultSystemOutputDevice;
 
@@ -1617,19 +1617,19 @@ OSStatus	hardwareListenerProc (	AudioHardwarePropertyID	inPropertyID,
 
 			// do something
 
-            break;
+			break;
 
-        case kAudioHardwarePropertyDevices:
-        {
-            scprintf("%s\n", "***** HARDWARE NOTIFICATION - kAudioHardwarePropertyDevices\r");
-        }
-            break;
-		default:
-			scprintf("%s\n", "***** HARDWARE NOTIFICATION - %4.4s\r", &inPropertyID);
-	}
+		case kAudioHardwarePropertyDevices:
+		{
+			scprintf("%s\n", "***** HARDWARE NOTIFICATION - kAudioHardwarePropertyDevices\r");
+		}
+			break;
+			default:
+				scprintf("%s\n", "***** HARDWARE NOTIFICATION - %4.4s\r", &inPropertyID);
+		}
 
-    fflush(stdout);
-    return (noErr);
+		fflush(stdout);
+		return (noErr);
 }
 
 OSStatus AddDeviceListeners(AudioDeviceID inDevice, void *inClientData);
@@ -1875,38 +1875,38 @@ OSStatus deviceListenerProc (AudioObjectID inObjectID,
                              const AudioObjectPropertyAddress inAddresses[],
                              void* inClientData)
 {
-    OSStatus err = noErr;
+	OSStatus err = noErr;
 
 	SC_CoreAudioDriver* coredriver = (SC_CoreAudioDriver*) inClientData;
 
-    for (int i=0; i<inNumberAddresses; i++)
-    {
-        AudioObjectPropertyAddress propAddress = inAddresses[i];
-        if (inObjectID == kAudioObjectSystemObject &&
-            propAddress.mSelector == kAudioHardwarePropertyDefaultOutputDevice)
-        {
-            coredriver->StopStart();
-        }
-    }
+	for (int i=0; i<inNumberAddresses; i++)
+	{
+		AudioObjectPropertyAddress propAddress = inAddresses[i];
+		if (inObjectID == kAudioObjectSystemObject &&
+			propAddress.mSelector == kAudioHardwarePropertyDefaultOutputDevice)
+		{
+			coredriver->StopStart();
+		}
+	}
 
-    return (err);
+	return (err);
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 OSStatus AddDeviceListeners(AudioDeviceID inDevice, void *inClientData)
 {
-    OSStatus err = noErr;
-    AudioObjectPropertyAddress propertyAddress;
+	OSStatus err = noErr;
+	AudioObjectPropertyAddress propertyAddress;
 
-    // ONLY REACTING TO HEADPHONE SWAPS FOR NOW - see version control history for removed dead code
-    propertyAddress.mSelector = kAudioHardwarePropertyDevices;
-    propertyAddress.mScope = kAudioObjectPropertyScopeGlobal;
-    propertyAddress.mElement = kAudioObjectPropertyElementMaster;
+	// ONLY REACTING TO HEADPHONE SWAPS FOR NOW - see version control history for removed dead code
+	propertyAddress.mSelector = kAudioHardwarePropertyDevices;
+	propertyAddress.mScope = kAudioObjectPropertyScopeGlobal;
+	propertyAddress.mElement = kAudioObjectPropertyElementMaster;
 
-    err = AudioObjectAddPropertyListener(inDevice, &propertyAddress, deviceListenerProc, inClientData);
-    if (err) return err;
+	err = AudioObjectAddPropertyListener(inDevice, &propertyAddress, deviceListenerProc, inClientData);
+	if (err) return err;
 
-    return (err);
+	return (err);
 }
 
 #endif // SC_AUDIO_API_COREAUDIO
@@ -2361,10 +2361,10 @@ bool SC_iCoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* out
 	AudioStreamBasicDescription streamFormat;
 	streamFormat.mFormatID         = kAudioFormatLinearPCM;
 	streamFormat.mFormatFlags      =
-                  kAudioFormatFlagIsSignedInteger
-                | kAudioFormatFlagsNativeEndian
-                | kLinearPCMFormatFlagIsNonInterleaved
-                | (24 << kLinearPCMFormatFlagsSampleFractionShift);
+		  kAudioFormatFlagIsSignedInteger
+		| kAudioFormatFlagsNativeEndian
+		| kLinearPCMFormatFlagIsNonInterleaved
+		| (24 << kLinearPCMFormatFlagsSampleFractionShift);
 	streamFormat.mSampleRate       = 44100;
 	streamFormat.mBitsPerChannel   = 32;
 	streamFormat.mChannelsPerFrame = 2;

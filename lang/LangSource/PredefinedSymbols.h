@@ -20,10 +20,9 @@
 
 
 extern PyrSymbol *s_func, *s_absfunc;
-extern PyrSymbol *s_docmdline;
-extern PyrSymbol *s_nocomprendo;
+extern PyrSymbol *s_doesNotUnderstand;
 extern PyrSymbol *s_curProcess, *s_curMethod, *s_curBlock, *s_curClosure, *s_curThread;
 extern PyrSymbol *s_startup;
-extern PyrSymbol *s_hardwaresetup, *s_shutdown;
+extern PyrSymbol *s_shutdown;
 extern PyrSymbol *s_envirGet, *s_envirPut;
 

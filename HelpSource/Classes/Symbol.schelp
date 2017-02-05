@@ -6,7 +6,7 @@ description::
 A Symbol is a name that is guaranteed to be unique. They can be used to represent
 symbolic constant values, link::Classes/Dictionary:: keys, etc.
 
-Symbols are represented syntactically as literals which are described in link::Reference/Literals::
+Symbols are represented syntactically as literals which are described in link::Reference/Literals#Symbols::.
 
 subsection::Creating a Symbol
 
