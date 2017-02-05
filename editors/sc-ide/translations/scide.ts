@@ -4,19 +4,19 @@
 <context>
     <name>ScIDE::TextFindReplacePanel</name>
     <message numerus="yes">
-        <source>%n occurrences found.</source>
+        <source>%n matches found.</source>
         <comment>Find text in document...</comment>
         <translation>
-            <numerusform>%n occurrence found.</numerusform>
-            <numerusform>%n occurrences found.</numerusform>
+            <numerusform>%n match found.</numerusform>
+            <numerusform>%n matches found.</numerusform>
         </translation>
     </message>
     <message numerus="yes">
-        <source>%n occurrences replaced.</source>
+        <source>%n matches replaced.</source>
         <comment>Find/replace text in document...</comment>
         <translation>
-            <numerusform>%n occurrence replaced.</numerusform>
-            <numerusform>%n occurrences replaced.</numerusform>
+            <numerusform>%n match replaced.</numerusform>
+            <numerusform>%n matches replaced.</numerusform>
         </translation>
     </message>
 </context>

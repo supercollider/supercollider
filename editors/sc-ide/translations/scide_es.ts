@@ -2078,7 +2078,7 @@ Would you like to override it?</source>
     </message>
     <message numerus="yes">
         <location filename="../widgets/find_replace_tool.cpp" line="299"/>
-        <source>%n occurrences found.</source>
+        <source>%n matches found.</source>
         <comment>Find text in document...</comment>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -2087,7 +2087,7 @@ Would you like to override it?</source>
     </message>
     <message numerus="yes">
         <location filename="../widgets/find_replace_tool.cpp" line="305"/>
-        <source>%n occurrences replaced.</source>
+        <source>%n matches replaced.</source>
         <comment>Find/replace text in document...</comment>
         <translation type="unfinished">
             <numerusform></numerusform>
