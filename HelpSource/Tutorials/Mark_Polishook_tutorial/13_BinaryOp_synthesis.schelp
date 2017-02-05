@@ -101,7 +101,7 @@ Dynamically modulate any parameter in a ugen (such as frequency, phase, or ampli
 
 code::
 // modulate amplitude
-{ SinOsc.ar(440, 0, 0.1) * EnvGen.kr(Env.sine(1), doneAction: 2) }.scope;
+{ SinOsc.ar(440, 0, 0.1) * EnvGen.kr(Env.sine(1), doneAction: Done.freeSelf) }.scope;
 ::
 
 Setting the doneAction argument (control) to 2 insures that after the envelope reaches its endpoint, SuperCollider will release the memory it used for the instances of the SinOsc and the EnvGen.
@@ -119,7 +119,7 @@ SynthDef("timeScale", { arg ts = 1;
 		*
 		EnvGen.kr(
 			Env.sine(1),
-			doneAction: 2,
+			doneAction: Done.freeSelf,
 			timeScale: ts	// scale the duration of an envelope
 		)
 	)
@@ -163,7 +163,7 @@ code::
 		}
 	)
 	*
-	EnvGen.kr(Env.perc(11, 6), doneAction: 2)
+	EnvGen.kr(Env.perc(11, 6), doneAction: Done.freeSelf)
 }.scope
 )
 ::
@@ -192,7 +192,7 @@ code::
 			*
 			EnvGen.kr(					// put an envelope on each of the sine waves
 				Env.sine(2.0.rrand(17)),
-				doneAction: 0 				// deallocate envelopes only when the
+				doneAction: Done.none 				// deallocate envelopes only when the
 									// entire sound is complete (why?)
 			)
 		}
@@ -200,7 +200,7 @@ code::
 	*								// put an envelope over the whole patch
 	EnvGen.kr(
 		Env.perc(11, 6),
-		doneAction: 2,
+		doneAction: Done.freeSelf,
 		levelScale: 0.75
 	)
 

@@ -1,11 +1,11 @@
 class:: Server
-summary:: Object representing an sc-server application
+summary:: Object representing a server application
 categories:: Server>Abstractions
 related:: Classes/ServerOptions, Reference/Server-Architecture, Reference/Server-Command-Reference
 
 description::
 
-A Server object is a representation of a server application. It is used to control it from SuperCollider language. (See link::Guides/Server-Guide::, as well as link::Guides/ClientVsServer:: for more details on the distinction.) It forwards OSC messages and has a number of allocators that keep track of IDs for nodes, buses and buffers.
+A Server object is a representation of a server application. It is used to control scsynth (or supernova) from the SuperCollider language. (See link::Guides/Server-Guide::, as well as link::Guides/ClientVsServer:: for more details on the distinction.) It forwards OSC messages and has a number of allocators that keep track of IDs for nodes, buses and buffers.
 
 The server application represented by a Server object might be running on the same machine as the sclang, or it may be running on a remote machine.
 
@@ -27,8 +27,6 @@ The server application may be in three different states: running, not running, o
 code::
 s.serverRunning // returns true if it is true
 ::
-
-
 
 
 ClassMethods::
@@ -320,6 +318,15 @@ s.quit;
 method:: peakCPU, avgCPU
 Get peak and average CPU usage.
 
+method:: latency
+The current latency of the server. See link::Guides/ServerTiming:: for details.
+
+method:: sampleRate
+An integer representing the nominal sample rate of the server; in other words, the sample rate that was requested of the server when it was booted.
+
+method:: actualSampleRate
+A floating-point number representing the current hardware sample rate, which may drift.
+
 method:: numSynths
 Get number of running link::Classes/Synth::s.
 
@@ -335,10 +342,27 @@ Get number of loaded link::Classes/SynthDef::initions.
 method:: pid
 Get process ID of running server (if not internal).
 
+method:: addr
+The network address of the server as a link::Classes/NetAddr::.
+
 method:: hasShmInterface
 Returns true if a link::Classes/ServerShmInterface:: is available. See also link::Classes/Bus#Synchronous control bus methods::.
-discussion::
 The shared memory interface is initialized after first server boot.
+
+method:: serverBooting
+code::true:: if the server is booting, code::false:: otherwise.
+
+method:: serverRunning
+code::true:: if the server is running, code::false:: otherwise.
+
+method:: unresponsive
+code::true:: if the server is unresponsive (specifically, if it has failed to respond after link::Classes/ServerOptions#-pingsBeforeConsideredDead:: ping attempts); code::false:: otherwise.
+
+method:: isLocal
+code::true:: if the server is running on the same machine as sclang, code::false:: otherwise.
+
+method:: remoteControlled
+code::true:: if the server is not being controlled by the machine on which it is running, code::false:: otherwise. This value is the same as code::isLocal:: unless explicitly set.
 
 subsection:: Message Bundling
 
@@ -478,6 +502,9 @@ table::
 ## teletype::0:: || Reset volume to 0 db.
 ::
 
+method:: makeWindow
+On most platforms, this is equivalent to code::makeGui::.
+If you are running SuperCollider on Emacs, it makes a server view composed of Emacs widgets.
 
 method:: scope
 Open a scope window showing the output of the Server.

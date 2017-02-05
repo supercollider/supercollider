@@ -13,7 +13,7 @@ are polled when the EnvGen is triggered and remain constant for the
 duration of the envelope.
 
 code::
-{ PinkNoise.ar(EnvGen.kr(Env.perc, doneAction: 2)) }.play
+{ PinkNoise.ar(EnvGen.kr(Env.perc, doneAction: Done.freeSelf)) }.play
 ::
 
 classmethods::
@@ -60,7 +60,7 @@ argument::doneAction
 
 An integer representing an action to be executed when the env is
 finished playing. This can be used to free the enclosing synth,
-etc. See link::Reference/UGen-doneActions::  for more detail.
+etc. See link::Classes/Done::  for more detail.
 
 discussion::
 note::
@@ -73,7 +73,7 @@ code::
 (
 {
 	var env = Env([0, 1, 0.5, 1, 0], [0.01, 0.5, 0.02, 0.5]);
-	SinOsc.ar(470) * EnvGen.kr(env, doneAction: 2)
+	SinOsc.ar(470) * EnvGen.kr(env, doneAction: Done.freeSelf)
 }.play
 )
 
@@ -124,12 +124,12 @@ code::
 }.play
 );
 
-// an envelope in a SynthDef can be used to limit the synth's lifetime (doneAction: 2)
+// an envelope in a SynthDef can be used to limit the synth's lifetime (doneAction: Done.freeSelf)
 
 (
 SynthDef(\env_help, { | out, gate = 0, freq = 440 |
     var z;
-    z = EnvGen.kr(Env.perc, doneAction: 2) * SinOsc.ar(freq, 0, 0.1);
+    z = EnvGen.kr(Env.perc, doneAction: Done.freeSelf) * SinOsc.ar(freq, 0, 0.1);
     Out.ar(out, z)
 }).add;
 )
@@ -201,7 +201,7 @@ The cutoff shape is linear.
 code::
 (
 SynthDef(\stealMe, { |out, gate = 1|
-    Out.ar(out, {BrownNoise.ar}.dup * EnvGen.kr(Env.asr, gate, doneAction:2))
+    Out.ar(out, {BrownNoise.ar}.dup * EnvGen.kr(Env.asr, gate, doneAction: Done.freeSelf))
 }).add;
 )
 
@@ -215,7 +215,7 @@ s.sendMsg(\n_set, 1001, \gate, -1.1); // cutoff in 0.1 seconds
 
 If the synthDef has an arg named "gate", the convenience method of Node can be used: code::node.release(releaseTime)::
 code::
-d = { arg gate=1; {BrownNoise.ar}.dup * EnvGen.kr(Env.asr, gate, doneAction:2) }.play;
+d = { arg gate=1; {BrownNoise.ar}.dup * EnvGen.kr(Env.asr, gate, doneAction: Done.freeSelf) }.play;
 d.release(3);
 ::
 
@@ -285,7 +285,7 @@ SynthDef(\env, { arg i_outbus=0;
 	// create a control argument array
 	envctl = \env.kr( env.asArray );
 
-	ReplaceOut.kr(i_outbus, EnvGen.kr(envctl, doneAction: 2));
+	ReplaceOut.kr(i_outbus, EnvGen.kr(envctl, doneAction: Done.freeSelf));
 }).add;
 )
 

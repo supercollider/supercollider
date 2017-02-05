@@ -217,7 +217,7 @@ AbstractOut : UGen {
 				});
 			});
 		}, {
-			if(inputs.size <= 1, {
+			if(inputs.size <= this.class.numFixedArgs, {
 				^"missing input at index 1"
 			})
 		});
@@ -279,38 +279,5 @@ XOut : AbstractOut {
 		^0.0		// Out has no output
 	}
 	*numFixedArgs { ^2 }
-	checkInputs {
-		if (rate == 'audio', {
-			for(2, inputs.size - 1, { arg i;
-				if (inputs.at(i).rate != 'audio', {
-					^(" input at index " + i +
-						"(" + inputs.at(i) + ") is not audio rate");
-				});
-			});
-		});
-		^this.checkValidInputs
-	}
 	writesToBus { ^true }
-}
-
-
-SharedOut : AbstractOut {
-	*kr { arg bus, channelsArray;
-		warn("SharedOut is deprecated and will be removed. Please use Bus-getSynchronous instead.");
-		this.multiNewList(['control', bus] ++ channelsArray.asArray)
-		^0.0		// Out has no output
-	}
-	*numFixedArgs { ^1 }
-	writesToBus { ^false }
-}
-
-SharedIn : AbstractIn {
-	*kr { arg bus = 0, numChannels = 1;
-		warn("SharedIn is deprecated and will be removed. Please use Bus-setSynchronous instead.");
-		^this.multiNew('control', numChannels, bus)
-	}
-	init { arg numChannels ... argBus;
-		inputs = argBus.asArray;
-		^this.initOutputs(numChannels, rate)
-	}
 }

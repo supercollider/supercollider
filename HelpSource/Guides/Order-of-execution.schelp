@@ -177,7 +177,7 @@ SynthDef("order-of-ex-pulse", { arg freq, bus, ffreq, pan, lfobus;
 	noteLen = In.kr(lfobus, 1);
 	sig = RLPF.ar(Pulse.ar(freq, 0.2, 0.5), ffreq, 0.3);
 	Out.ar(bus, Pan2.ar(sig, pan)
-		* EnvGen.kr(Env.perc(0.1, 1), timeScale: noteLen, doneAction: 2));
+		* EnvGen.kr(Env.perc(0.1, 1), timeScale: noteLen, doneAction: Done.freeSelf));
 }).add;
 
 SynthDef("LFNoise1", { arg freq, mul, add, bus;

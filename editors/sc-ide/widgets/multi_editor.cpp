@@ -791,8 +791,11 @@ void MultiEditor::applySettings( Settings::Manager * settings )
 
 void MultiEditor::activateComboBoxWhenSplitting() {
     emit splitViewActivated();
-    bool comboBoxWhenSplitting = Main::settings()->value("IDE/editor/useComboBoxWhenSplitting").toBool();
-    showEditorTabs(comboBoxWhenSplitting);
+    bool comboBoxInUse = Main::settings()->value("IDE/editor/useComboBox").toBool();
+    if (!comboBoxInUse) {
+        bool comboBoxWhenSplitting = Main::settings()->value("IDE/editor/useComboBoxWhenSplitting").toBool();
+        showEditorTabs(comboBoxWhenSplitting);
+    }
 }
 
 void MultiEditor::setMainComboBoxOption() {
@@ -995,12 +998,11 @@ void MultiEditor::switchSession( Session *session )
 
     firstBox->setFocus(Qt::OtherFocusReason); // ensure focus
 
+    setMainComboBoxOption();
     if (mSplitter->count()>1)
         activateComboBoxWhenSplitting();
-    else {
+    else
         emit splitViewDeactivated();
-        setMainComboBoxOption();
-    }
 }
 
 int MultiEditor::addTab( Document * doc )

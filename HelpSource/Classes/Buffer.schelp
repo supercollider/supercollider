@@ -747,8 +747,9 @@ Note: This method used to be called copy, but this conflicts with the method for
 code::
 s.boot;
 (
-SynthDef(\help_Buffer_copy, { arg out=0, buf;
-	Line.ar(0, 0, dur: BufDur.kr(buf), doneAction: 2); // frees itself
+SynthDef(\help_Buffer_copy, {
+	arg out = 0, buf;
+	Line.ar(0, 0, dur: BufDur.kr(buf), doneAction: Done.freeSelf);
 	Out.ar(out, PlayBuf.ar(1, buf));
 }).add;
 )
