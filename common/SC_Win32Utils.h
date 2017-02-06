@@ -51,6 +51,7 @@
 #define pipe win32_pipe
 
 #if _MSC_VER
+typedef int pid_t;
 #define snprintf _snprintf
 #endif
 
