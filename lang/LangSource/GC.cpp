@@ -1033,7 +1033,7 @@ bool PyrGC::BlackToWhiteCheck(PyrObject *objA)
 			if (IsObj(slot) && slotRawObject(slot)) {
 				objB = slotRawObject(slot);
 			}
-			if (objB && (unsigned long)objB < 100) {
+			if (objB && (uintptr_t)objB < 100) {
 				fprintf(stderr, "weird obj ptr\n");
 				return false;
 			}
@@ -1277,5 +1277,3 @@ void PyrGC::throwMemfailed(size_t inNumBytes)
 	post("alloc failed. size = %d\n", inNumBytes);
 	MEMFAILED;
 }
-
-
