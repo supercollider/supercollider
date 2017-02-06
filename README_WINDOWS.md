@@ -33,7 +33,10 @@ Table of contents
     - Arrangement of toolchain and libraries
     - Configuring and executing the build
     - Portaudio
+    - HIDAPI
+
   - Walkthroughs
+    - Building with MSYS2
     - The trial-error approach: building sc3-plugins and aggregating
       build settings to pass to `cmake`
     - Avoiding the command line: from CMake-Gui to Visual Studio (environment
@@ -41,7 +44,6 @@ Table of contents
     - Using Qt Creator
     - More `cmake`: building supernova, qt-less, verbosity and more
     - Recalling environment- and build settings on the command line
-    - On the horizon: MSYS2
   - Diagnosing build problems
     - Dirty build states
     - Wrong libraries found
@@ -299,28 +301,33 @@ Quick Steps
 - Build tools
   - [CMake][cmake], minimum 3.4.3, maximum 3.5.2 (! when using MinGW)
   - One of:
-    - [MinGW][Qt], version *4.82* 32-bit, the distribution shipped with Qt (QT\Tools\mingw482_32)
+    - [MinGW][Qt], version *4.82* or *4.92* 32-bit, the distribution shipped with Qt (QT\Tools\mingw482_32)
+    - [MSYS2+MinGW][MSYS2], rolling release, at the time of this writing GCC 6.3 and Qt 5.8
     - [Visual Studio 12 2013][VS]
 - Libraries
   - Required
     - *[Qt][Qt]* versions 5.5.x Versions from 5.3 upwards should work but are
-        little tested. Qt5.6 does not work with SC 3.7 because WebKit was dropped
-        from the binary distribution.
-        Use the official download from qt.io and the online-installer. It offers
-        flexibility in choosing different packages in a single go (e.g. Qt,
-        MinGW and Qt Creator), and helps managing maintenance. It provides a
-        file structure that accommodates different Qt flavours (Qt built with
-        different toolchains), versions, and modules within a single tree. We
-        will be referring to that file structure throughout this text.
+        little tested. Qt5.6 - official distribution - does not work with SC 3.8
+        because WebKit was dropped from the binary distribution. Yet MSYS2
+        still provides WebKit in its current release (5.8).
+        Use either the official download from qt.io (online-installer) or MSYS2.
+        While the online installer provides many choices of different Qt-versions
+        and flavors, only the ones built with VS or MinGW can be used in our
+        builds. As we need Webkit, the choices are restricted to:
 
-        *Important note*: the flavour of Qt (e.g. msvc2013_64 or mingw492_32) must
-        match your toolchain as closely as possible!
+            - msvc2013_64
+            - msvc2013_32
+            - mingw492_32.
 
-        For a 64-bit VS build select msvc2013_64
-        for a 32-bit MinGW build select mingw482_32
-
-        It is also possible to build a 32-bit version with VS. The 64-bit
-        Mingw-build is currently broken.
+        MSYS2 offers 32- and 64-bit version of one flavor. They have a very
+        rapid release cycle and will usually stay close to the official Qt
+        release. Sticking to older versions is not easy as packages often
+        depend on each other. MSYS2 provides a full set of libraries built with the
+        same toolchain, so compatibility considerations are a thing of the past.
+        You should be comfortable with unix-style command line and package managers.
+        MSYS2 uses the Arch Linux' clone `pacman`. You can use it to comfortably
+        install many of the packages below (except ASIO SDK, MS DirectX SDK, NSIS,
+        which are all optional)
 
     - *[libsndfile][libsndfile]* >= 1.0.25
     - *[Windows SDK][Windows 10 SDK]* fitting your Windows version
@@ -371,10 +378,12 @@ patched version of the pa-source is provided as submodule of the SC source and
 built automatically during the SC build. In order to add ASIO and/or DSound
 support, the respective SDKs (gratis downloads) have to be obtained and added to
 the source tree. DSound support in the MinGW build uses the library provided by
-MinGW, so no SDK is needed.
+MinGW, so no SDK is needed. Portaudio is provided by MSYS, but ASIO and DirectX
+support need to be added if wished. This requires to re-build the package within
+the MSYS2 environment (very easy).
 
 
-### Arrangement of toolchain, libraries and SDKs
+### Arrangement of toolchain, libraries and SDKs (irrelevant for MSYS2)
 
 - Toolchain/IDE
   - *[MinGW][Qt]*: embedded in the Qt folder tree, downloaded together with Qt. Likely
@@ -446,18 +455,26 @@ configured to copy all files to a single flat folder, otherwise cmake will not
 find the required files automatically.
 
 In order to get support for ASIO drivers, the [ASIO SDK][asiosdk] has to be downloaded
-from Steinberg. The parent folder has to be placed next to the supercollider
-source folder:
+from Steinberg. The parent folder has to be placed next to the portaudio folder in
+the SC source tree:
 
-    sc-source
-    x86
-    asiosdk
-        asio
-        common
-        ...
+SC-source-root
+        external_libraries
+                portaudio_sc_org
+                asiosdk
+                        asio
+                        common
+                        ...
 
 DSound support uses MinGW libraries in the MinGW build. For VS you have to
 download the DirectX SDK [version 9][dx9sdk] and install it in the system.
+
+*Warning*: If you install the DirectX SDK in the system (v9) and try to build
+SC using MinGW, the portaudio-build will likely break. Try to avoid the DXSDK
+detection in that case, e.g. by editing CMakeLists.txt in the Portaudio root-
+folder. DSound support will nevertheless be built using MinGW libraries. If
+you want to avoid building in DS-support, the setting PA_USE_DS in the same file
+needs to be set to OFF or 0.
 
 
 ### Configuring and executing the build
@@ -598,6 +615,16 @@ always loose the local customizations and additions stored in the
 userAppSupportDirectory. The new Quarks system provides means to make porting
 of extension/Quark groups easier.
 
+### MSYS2
+
+MSYS2 provides system integration like a Linux system. Therefore you don't need
+to bother about paths and library locations. You just need to specify the
+generator and build-type:
+
+      $> cmake -G "MSYS Makefiles" -D CMAKE_BUILD_TYPE=Release ..
+      $> cmake --build . -- -j4
+
+See the walkthrough below for more detail on creating a build system based on MSYS2.
 
 ### VS
 
@@ -696,9 +723,122 @@ build you can single it out from the SC build like so:
 
     cmake --build . --target portaudio
 
+MSYS2 provides a portaudio package, but it only comes with MME and DSound support
+out of the box. If you want ASIO or WDM-KS, you need to build portaudio within
+the MSYS2 framework. At the time of this writing the WASAPI backend could not be
+built in MinGW-based environments. Use VS, if you need WASAPI.
+
+### HIDAPI
+
+Currently HIDAPI is disabled by default for MinGW builds using MinGW/GCC 
+versions below 5.3. It can be enabled easily though: 
+
+- Go to `SC-source/external-libraries/hidapi/hidapi_parser/hidapi_parser.c`.
+
+Comment out:
+
+    // #include <hidsdi.h>
+
+Uncomment:
+
+    #include "../windows/hidsdi.h"
+
+- Go to `SC-source/external-libraries/hidapi/windows/hid.c`.
+
+Comment out:
+
+    // #include <hidsdi.h>
+
+Uncomment:
+
+    #include "./hidsdi.h"
+
+Rerun the cmake configuration step and add the argument:
+
+    -D HIDAPI=ON
+
+Now you can go on with the build, and it should succeed.
+    
 
 Walkthroughs
 ------------
+
+### Building with MSYS2
+
+People who grew up with Windows hate MSYS2, people with a Unix background
+think it is God sent. Make your choice. As a build system it is as close
+as it can get to an Arch Linux clone running within Windows. But the resulting
+builds run natively on Windows, unlike CYGWIN, where the environment is also
+required to run the build application. So you only use MSYS2 to build. The unixy
+environment provides a bash shell, command line operation works just like in
+Linux, there is a feature rich package manager (`pacman`), and most importantly,
+if required, unix-build tools that have not been ported to support Windows can
+be used. You enter MSYS by opening a terminal (Mintty) in which by default a
+bash shell runs. Installing 64-bit Qt more or less boils down to typing:
+
+    pacman -S mingw-w64-x86_64-qt5
+
+Libsndfile is installed with:
+
+    pacman -S mingw-w64-x86_64-libsndfile
+
+If you are not sure what a package is called you can search:
+
+    pacman -Ss libsndfile
+
+and pacman will usually come up with something meaningful. The prefixes take
+some time to get used to, acknowledged... Once the necessary packages are
+assembled, building is just:
+
+    cmake -G "MSYS Makefiles" -D CMAKE_BUILD_TYPE=Release ..
+
+No worrying about versions and paths - MSYS2 takes care of tha automatically,
+and it usually provides very recent versions of the libraries. As long as
+SC supports these versions, the situation is pretty ideal. If ever SC cannot
+keep up with the pace though, one has to refrain from updating!
+
+If this teazer is enough to get you hooked, here a brief introduction to get
+you going:
+
+1. Get the MSYS2 installer from here and install, following the instructions on
+   the site:
+
+       https://msys2.github.io/
+
+2. You may need to repeat `pacman -Syuu` several times
+
+3. Install msys base development tools, mingw-toolchains and more, it's all
+   yours (only the toolchains, git and later cmake are really required):
+
+       pacman -S base-devel mingw-w64-{x86_64,i686}-toolchain git subversion p7zip perl ruby python2 nano vim emacs
+
+4. Install the Qt-stuff, 32- and/or 64-bit, for example by installing Qt-Creator
+   (the Qt IDE), the install of which will automatically pull in the Qt-libs.
+   Qt-Creator will suggest installing mingw-cmake, clang and gdb too (only qt5 and cmake
+   are really required):
+
+    pacman -S mingw-w64-{x86_64,i686}-qt-creator mingw-w64-{x86_64,i686}-gdb mingw-w64-{x86_64,i686}-clang ming-w64-{x86_64,i686}-cmake
+
+5. Install the "musical" SC dependencies 32- and/or 64-bit (readline was allready
+   pulled in earlier):
+
+   pacman -S mingw-w64-{x86_64,i686}-portaudio mingw-w64-{i686,x86_64}-libsndfile mingw-w64-{i686,x86_64}-fftw
+
+6. If you plan to build SuperNova, the sound server alternative that supports multiple processor-cores, install 
+   `dlfcn` (mingw-w64-x86_64-dlfcn) (Google is your friend). 64-bit SuperNova on Windows is almost yours!
+
+If you are really lazy but read to the end before starting, i.e. smart, here are all the packages in a single go:
+
+    pacman -S base-devel mingw-w64-{x86_64,i686}-toolchain git p7zip nano vim emacs mingw-w64-{x86_64,i686}-qt5 mingw-w64-{x86_64,i686}-cmake mingw-w64-{x86_64,i686}-portaudio mingw-w64-{i686,x86_64}-libsndfile mingw-w64-{i686,x86_64}-fftw mingw-w64-{x86_64,i686}-dlfcn
+
+This will take a while and pull in lots of other stuff - but it should work. Ready to build SCWin 32- and/or 64-bit.
+
+MSYS2 also provides a Wiki, which at the time of this writing was very useful:
+
+    https://github.com/msys2/msys2/wiki
+
+Usually links pointing to SourceForge and Qt are somewhat outdated. Github is the new center of MSYS2!
+
 
 ### The trial-error approach: building sc3-plugins and passing build settings to `cmake`
 
