@@ -218,8 +218,10 @@ if(FALSE) # libsclang is a shared library
   target_compile_definitions(libsclang INTERFACE BUILDING_SCLANG)
 endif()
 
-target_compile_definitions(libsclang PRIVATE HAVE_HIDAPI)
-target_link_libraries( libsclang hidapi hidapi_parser )
+if(HIDAPI)
+  target_compile_definitions(libsclang PRIVATE HAVE_HIDAPI)
+  target_link_libraries( libsclang hidapi hidapi_parser )
+endif()
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux" AND HID_HIDRAW)
   target_link_libraries( libsclang ${UDEV_LIBRARIES})
