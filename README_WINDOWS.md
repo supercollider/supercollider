@@ -730,8 +730,8 @@ built in MinGW-based environments. Use VS, if you need WASAPI.
 
 ### HIDAPI
 
-Currently HIDAPI is disabled by default for MinGW builds using MinGW/GCC 
-versions below 5.3. It can be enabled easily though: 
+Currently HIDAPI is disabled by default for MinGW builds using MinGW/GCC
+versions below 5.3. It can be enabled easily though:
 
 - Go to `SC-source/external-libraries/hidapi/hidapi_parser/hidapi_parser.c`.
 
@@ -755,10 +755,10 @@ Uncomment:
 
 Rerun the cmake configuration step and add the argument:
 
-    -D HIDAPI=ON
+    -D SC_HIDAPI=ON
 
 Now you can go on with the build, and it should succeed.
-    
+
 
 Walkthroughs
 ------------
@@ -824,7 +824,7 @@ you going:
 
    pacman -S mingw-w64-{x86_64,i686}-portaudio mingw-w64-{i686,x86_64}-libsndfile mingw-w64-{i686,x86_64}-fftw
 
-6. If you plan to build SuperNova, the sound server alternative that supports multiple processor-cores, install 
+6. If you plan to build SuperNova, the sound server alternative that supports multiple processor-cores, install
    `dlfcn` (mingw-w64-x86_64-dlfcn) (Google is your friend). 64-bit SuperNova on Windows is almost yours!
 
 If you are really lazy but read to the end before starting, i.e. smart, here are all the packages in a single go:

@@ -211,9 +211,9 @@ option(SYSTEM_YAMLCPP "Use yaml-cpp library from system" OFF)
 option(FORTIFY "Define -D_FORTIFY_SOURCE=2 to check for programming errors" OFF)
 
 if(MINGW AND (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 5.3.0))
-    option(HIDAPI "Build with HID support" OFF)
+    option(SC_HIDAPI "Build with HID support" OFF)
 else()
-    option(HIDAPI "Build with HID support" ON)
+    option(SC_HIDAPI "Build with HID support" ON)
 endif()
 
 #############################################

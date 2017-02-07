@@ -218,7 +218,7 @@ if(FALSE) # libsclang is a shared library
   target_compile_definitions(libsclang INTERFACE BUILDING_SCLANG)
 endif()
 
-if(HIDAPI)
+if(SC_HIDAPI)
   target_compile_definitions(libsclang PRIVATE HAVE_HIDAPI)
   target_link_libraries( libsclang hidapi hidapi_parser )
 endif()
@@ -297,8 +297,10 @@ if (FFTW3F_FOUND)
 	target_link_libraries(libsclang ${FFTW3F_LIBRARY})
 endif()
 
-if (WIN32)
+if (WIN32 AND SC_HIDAPI)
 	target_link_libraries(libsclang wsock32 ws2_32 portmidi iphlpapi hid)
+elseif(WIN32)
+	target_link_libraries(libsclang wsock32 ws2_32 portmidi iphlpapi)
 endif()
 
 if (GC_SANITYCHECK)

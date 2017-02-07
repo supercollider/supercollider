@@ -119,7 +119,7 @@ endif()
 set( EXAMPLE_TEST OFF )
 set( EXAMPLE_OSC OFF )
 
-if(HIDAPI)
+if(SC_HIDAPI)
     add_subdirectory(hidapi)
 		message(STATUS "Building with HID support")
 else()
