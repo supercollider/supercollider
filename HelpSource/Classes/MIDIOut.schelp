@@ -43,7 +43,13 @@ Linux only. MacOS does not need to connect. On Linux it is an optional feature (
 InstanceMethods::
 method::sysex
 Sends a sysex command to the device.
-WARNING:: On Windows, the function call must contain a full sysex message (i.e. needs to start with F0 and end with F7). 
+
+argument:: packet
+An link::Classes/Int8Array:: of data bytes.
+
+note::
+On Windows, the function call must contain a full sysex message. In other words,
+it must start with 0xF0 (240 or -16) and end with 0xF7 (247 or -9).
 ::
 
 private::send, prSysex
