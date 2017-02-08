@@ -38,7 +38,7 @@ MIDIClient.destinations;
 ::
 
 method::connect, disconnect
-Linux only. macOS does not need to connect. On Linux it is an optional feature (see below).
+Linux only. MacOS does not need to connect. On Linux it is an optional feature (see below).
 
 InstanceMethods::
 method::sysex
