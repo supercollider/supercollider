@@ -77,7 +77,7 @@ MIDIIn.sysex = { arg uid, packet; [uid,packet].postln };
 MIDIIn.sysrt = { arg src, chan, val;  [src, chan, val].postln; };
 MIDIIn.smpte = { arg src, chan, val;  [src, chan, val].postln; };
 
-m.sysex(Int8Array[ 16rf0, 0, 0, 27, 11, 0,16rf7])
+m.sysex(Int8Array[0xF0, 0, 0, 27, 11, 0, 0xF7])
 
 m.smpte(24, 16)
 m.midiClock
