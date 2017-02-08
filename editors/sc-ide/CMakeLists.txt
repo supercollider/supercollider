@@ -363,6 +363,11 @@ elseif(WIN32)
         set_target_properties(SuperCollider PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<CONFIG>")
     endif(NOT MSVC)
 
+    add_custom_command(TARGET SuperCollider
+      PRE_BUILD
+      COMMAND cmd /C ${CMAKE_SOURCE_DIR}/platform/windows/junctions.bat create \"$<TARGET_FILE_DIR:SuperCollider>\" \"${CMAKE_SOURCE_DIR}\"
+    )
+
     foreach(translation ${translations})
       add_custom_command(TARGET SuperCollider
         POST_BUILD

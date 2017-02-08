@@ -331,24 +331,6 @@ elseif(WIN32)
         set_target_properties(sclang PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<CONFIG>")
     endif(NOT MSVC)
 
-    add_custom_command(TARGET sclang
-        PRE_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/SCClassLibrary" $<TARGET_FILE_DIR:sclang>/SCClassLibrary
-        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/HelpSource" $<TARGET_FILE_DIR:sclang>/HelpSource
-        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/examples" $<TARGET_FILE_DIR:sclang>/examples
-        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/sounds" $<TARGET_FILE_DIR:sclang>/sounds
-    )
-
-    if(NOT SC_QT)  # TODP: clean (and cross platform) solution for language boot for case SC_QT=OFF (this is a quick fix for language boot error)
-        add_custom_command(TARGET sclang
-            PRE_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/SCClassLibrary/Common/GUI" $<TARGET_FILE_DIR:sclang>/SCClassLibrary/scide_scqt/Common/GUI
-            COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/SCClassLibrary/JITLib/GUI" $<TARGET_FILE_DIR:sclang>/SCClassLibrary/scide_scqt/JITLib/GUI
-            COMMAND ${CMAKE_COMMAND} -E remove_directory $<TARGET_FILE_DIR:sclang>/SCClassLibrary/Common/GUI
-            COMMAND ${CMAKE_COMMAND} -E remove_directory $<TARGET_FILE_DIR:sclang>/SCClassLibrary/JITLib/GUI
-        )
-    endif(NOT SC_QT)
-
     set(SC_WIN_DLL_DIRS)
     if(SNDFILE_LIBRARY_DIR)
       list(APPEND SC_WIN_DLL_DIRS "${SNDFILE_LIBRARY_DIR}")
@@ -372,6 +354,7 @@ elseif(WIN32)
         add_custom_command(TARGET sclang
             POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_FILE_DIR:sclang> $<TARGET_FILE_DIR:SuperCollider>
+            COMMAND cmd /C ${CMAKE_SOURCE_DIR}/platform/windows/junctions.bat create \"$<TARGET_FILE_DIR:sclang>\" \"${CMAKE_SOURCE_DIR}\"
       )
     endif(SC_IDE)
 
