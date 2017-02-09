@@ -203,7 +203,8 @@ struct Linen : public Unit
 
 extern "C"
 {
-	void Vibrato_next(Vibrato *unit, int inNumSamples);
+	void Vibrato_next_a(Vibrato *unit, int inNumSamples);
+	void Vibrato_next_k(Vibrato *unit, int inNumSamples);
 	void Vibrato_Ctor(Vibrato* unit);
 
 	void LFPulse_next_a(LFPulse *unit, int inNumSamples);
@@ -321,7 +322,7 @@ extern "C"
 // in, rate, depth, rateVariation, depthVariation
 // 0   1     2      3              4
 
-void Vibrato_next(Vibrato *unit, int inNumSamples)
+void Vibrato_next_a(Vibrato *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
@@ -448,6 +449,134 @@ doNormal:
 
 }
 
+
+void Vibrato_next_k(Vibrato *unit, int inNumSamples)
+{
+	float *out = ZOUT(0);
+	float in = ZIN0(0);
+	
+	float curtrig = ZIN0(8);
+	if (unit->trig <= 0.f && curtrig > 0.f){
+		
+		unit->mFreqMul = 4.0 * SAMPLEDUR;
+		unit->mPhase = 4.0 * sc_wrap(ZIN0(7), 0.f, 1.f) - 1.0;
+		
+		RGen& rgen = *unit->mParent->mRGen;
+		float rate = ZIN0(1) * unit->mFreqMul;
+		float depth = ZIN0(2);
+		float rateVariation = ZIN0(5);
+		float depthVariation = ZIN0(6);
+		unit->mFreq    = rate  * (1.f + rateVariation  * rgen.frand2());
+		unit->m_scaleA = depth * (1.f + depthVariation * rgen.frand2());
+		unit->m_scaleB = depth * (1.f + depthVariation * rgen.frand2());
+		unit->m_delay = (int)(ZIN0(3) * SAMPLERATE);
+		unit->m_attack = (int)(ZIN0(4) * SAMPLERATE);
+		unit->m_attackSlope = 1. / (double)(1 + unit->m_attack);
+		unit->m_attackLevel = unit->m_attackSlope;
+	}
+	
+	unit->trig = curtrig;
+	
+	double ffreq = unit->mFreq;
+	double phase = unit->mPhase;
+	float scaleA = unit->m_scaleA;
+	float scaleB = unit->m_scaleB;
+	if (unit->m_delay > 0)
+	{
+		int remain = sc_min(inNumSamples, unit->m_delay);
+		unit->m_delay -= remain;
+		inNumSamples -= remain;
+		LOOP(remain,
+			 ZXP(out) = in;
+			 );
+		if (unit->m_delay <= 0 && inNumSamples > 0) {
+			if (unit->m_attack > 0) goto doAttack;
+			else goto doNormal;
+		}
+	}
+	else if (unit->m_attack)
+	{
+	doAttack:
+		int remain = sc_min(inNumSamples, unit->m_attack);
+		unit->m_attack -= remain;
+		inNumSamples -= remain;
+		double attackSlope = unit->m_attackSlope;
+		double attackLevel = unit->m_attackLevel;
+		LOOP(remain,
+			 if (phase < 1.f)
+			 {
+				 float z = phase;
+				 ZXP(out) = in * (1.f + (float)attackLevel * scaleA * (1.f - z * z)) ;
+			 }
+			 else if (phase < 3.f)
+			 {
+				 float z = phase - 2.f;
+				 ZXP(out) = in * (1.f + (float)attackLevel * scaleB * (z * z - 1.f)) ;
+			 }
+			 else
+			 {
+				 phase -= 4.f;
+				 float z = phase;
+				 
+				 float depth = ZIN0(2);
+				 float rateVariation = ZIN0(5);
+				 float depthVariation = ZIN0(6);
+				 
+				 float rate = ZIN0(1) * unit->mFreqMul;
+				 RGen& rgen = *unit->mParent->mRGen;
+				 ffreq  = rate  * (1.f + rateVariation  * rgen.frand2());
+				 scaleA = depth * (1.f + depthVariation * rgen.frand2());
+				 scaleB = depth * (1.f + depthVariation * rgen.frand2());
+				 
+				 ZXP(out) = in * (1.f + (float)attackLevel * scaleA * (1.f - z * z)) ;
+			 }
+			 phase += ffreq;
+			 attackLevel += attackSlope;
+			 );
+		unit->m_attackLevel = attackLevel;
+		if (unit->m_attack <= 0 && inNumSamples > 0) goto doNormal;
+	}
+	else
+	{
+	doNormal:
+		LOOP1(inNumSamples,
+			  if (phase < 1.f)
+			  {
+				  float z = phase;
+				  ZXP(out) = in * (1.f + scaleA * (1.f - z * z)) ;
+			  }
+			  else if (phase < 3.f)
+			  {
+				  float z = phase - 2.f;
+				  ZXP(out) = in * (1.f + scaleB * (z * z - 1.f)) ;
+			  }
+			  else
+			  {
+				  phase -= 4.f;
+				  float z = phase;
+				  
+				  float depth = ZIN0(2);
+				  float rateVariation = ZIN0(5);
+				  float depthVariation = ZIN0(6);
+				  
+				  float rate = ZIN0(1) * unit->mFreqMul;
+				  RGen& rgen = *unit->mParent->mRGen;
+				  ffreq  = rate  * (1.f + rateVariation  * rgen.frand2());
+				  scaleA = depth * (1.f + depthVariation * rgen.frand2());
+				  scaleB = depth * (1.f + depthVariation * rgen.frand2());
+				  
+				  ZXP(out) = in * (1.f + scaleA * (1.f - z * z)) ;
+			  }
+			  phase += ffreq;
+			  );
+	}
+	unit->mPhase = phase;
+	unit->mFreq = ffreq;
+	unit->m_scaleA = scaleA;
+	unit->m_scaleB = scaleB;
+	
+}
+
 void Vibrato_Ctor(Vibrato* unit)
 {
 	unit->mFreqMul = 4.0 * SAMPLEDUR;
@@ -466,8 +595,14 @@ void Vibrato_Ctor(Vibrato* unit)
 	unit->m_attackSlope = 1. / (double)(1 + unit->m_attack);
 	unit->m_attackLevel = unit->m_attackSlope;
 	unit->trig = 0.0f;
-	SETCALC(Vibrato_next);
-	Vibrato_next(unit, 1);
+
+	if (INRATE(0) != calc_FullRate) {
+		SETCALC(Vibrato_next_k);
+	} else {
+		SETCALC(Vibrato_next_a);
+	}
+	
+	Vibrato_next_a(unit, 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
