@@ -207,7 +207,10 @@ MainWindow::MainWindow(Main * main) :
     connect(main, SIGNAL(storeSettingsRequest(Settings::Manager*)),
             this, SLOT(storeSettings(Settings::Manager*)));
 
-    createDocumentConnections(mDocumentsDocklet->list(), mEditors);
+    createDocumentConnections();
+
+    connect(mDocumentsDocklet->dockWidget(), SIGNAL(topLevelChanged(bool)),
+            this, SLOT(onDocumentDockletUndocked(bool)));
 
     // ToolBox
     connect(mToolBox->closeButton(), SIGNAL(clicked()), this, SLOT(hideToolBox()));
@@ -241,20 +244,24 @@ MainWindow::MainWindow(Main * main) :
 
     // Custom event handling:
     qApp->installEventFilter(this);
+
+    if(mDocumentsDocklet->isDetached()) {
+        onDocumentDockletUndocked( true );
+    }
 }
 
-void MainWindow::createDocumentConnections(DocumentListWidget * documentList, MultiEditor * ceditor) {
+void MainWindow::createDocumentConnections() {
     // Editor-Document list interaction
-    connect(documentList, SIGNAL(clicked(Document*)),
-            ceditor, SLOT(setCurrent(Document*)));
-    connect(ceditor, SIGNAL(currentDocumentChanged(Document*)),
-            documentList, SLOT(setCurrent(Document*)),
+    connect(mDocumentsDocklet->list(), SIGNAL(clicked(Document*)),
+            mEditors, SLOT(setCurrent(Document*)));
+    connect(mEditors, SIGNAL(currentDocumentChanged(Document*)),
+            mDocumentsDocklet->list(), SLOT(setCurrent(Document*)),
             Qt::QueuedConnection);
 
     // General Document lists syncronization
-    connect(documentList, SIGNAL(reloadAllLists(QList<Document*>)),
+    connect(mDocumentsDocklet->list(), SIGNAL(reloadAllLists(QList<Document*>)),
             this, SLOT(reloadAllLists(QList<Document*>)));
-    connect(ceditor, SIGNAL(tabsOrderChanged(int, int)),
+    connect(mEditors, SIGNAL(tabsOrderChanged(int, int)),
             this, SLOT(reloadAllLists(int, int)));
 }
 
@@ -1746,88 +1753,10 @@ bool MainWindow::eventFilter( QObject *object, QEvent *event )
 
 void MainWindow::newWindow()
 {
-    QWidget *window = new QWidget;
-    window->resize(640, 480);
-    window->show();
-    window->setWindowTitle(
-        QApplication::translate("toplevel", "Code Editor")
-    );
-
-    Document * currentDoc = currentMultiEditor()->currentBox()->currentDocument();
-
-    MultiEditor *newEditors = new MultiEditor(Main::instance());
-    QVBoxLayout *outerLayout = new QVBoxLayout;
-    outerLayout->setContentsMargins(0,0,0,0);
-    outerLayout->setSpacing(0);
-
-#ifndef Q_OS_MAC
-    QMenuBar *newMenu = createMenus();
-    newMenu->setSizePolicy(QSizePolicy ::Expanding , QSizePolicy ::Fixed );
-    outerLayout->addWidget(newMenu);
-#endif
-
-    QVBoxLayout *center_box = new QVBoxLayout;
-    center_box->setContentsMargins(0,0,0,0);
-    center_box->setSpacing(0);
-    center_box->addWidget(newEditors);
-
-    QWidget * newEditorsDocklet = new QWidget;
-    newEditorsDocklet->setLayout(center_box);
-
-    DockletToolBar * documentsToolBar = new DockletToolBar("Documents");
-
-    DocumentListWidget * newDocumentsList = new DocumentListWidget(Main::instance()->documentManager(), window);
-
-    QVBoxLayout * documentsDocklet_layout = new QVBoxLayout;
-    documentsDocklet_layout->setContentsMargins(0,0,0,0);
-    documentsDocklet_layout->setSpacing(0);
-    documentsDocklet_layout->addWidget(documentsToolBar);
-    documentsDocklet_layout->addWidget(newDocumentsList);
-    QWidget * newDocumentsDocklet = new QWidget;
-    newDocumentsDocklet->setLayout(documentsDocklet_layout);
-
-    QMenu *optionsMenu = documentsToolBar->optionsMenu();
-    optionsMenu->clear();
-
-    QAction *action;
-    action = optionsMenu->addAction(tr("Hide"));
-    connect(action, SIGNAL(triggered(bool)), 
-            newDocumentsDocklet, SLOT(hide()) );
-    
-    action = optionsMenu->addAction(tr("Close all"));
-    connect(action, SIGNAL(triggered(bool)), 
-            mDocumentsDocklet->dockWidget(), SLOT(hide()) );
-
-    connect(mDocumentsDocklet->dockWidget(), SIGNAL(visibilityChanged(bool)), 
-            newDocumentsDocklet, SLOT(setVisible(bool)) );
-
-    if(!mDocumentsDocklet->isVisible()) {
-        newDocumentsDocklet->hide();
-    }
-
-    QSplitter * h_layout = new QSplitter;
-    h_layout->setOrientation(Qt::Horizontal);
-    h_layout->addWidget(newDocumentsDocklet);
-    h_layout->addWidget(newEditorsDocklet);
-    QList<int> layoutInitialWidths;
-    layoutInitialWidths.append(mDocumentsDocklet->list()->width());
-    int editorWidth = h_layout->size().width() - mDocumentsDocklet->list()->width();
-    layoutInitialWidths.append(editorWidth);
-    h_layout->setSizes(layoutInitialWidths);
-
-    outerLayout->addWidget(h_layout);
-    window->setLayout(outerLayout);
-
-    createDocumentConnections(newDocumentsList, newEditors);
-
-    // loadDocuments
-    newDocumentsList->populateList(mDocumentsDocklet->list()->listDocuments());
-    currentMultiEditor()->currentBox()->setDocument(currentDoc);
-    // this is to make sure Tabs are loaded in the right order
-    newDocumentsList->setCurrent(currentDoc);
-    reloadAllLists(newDocumentsList->listDocuments());
-
-    setCurrentEditor(newEditors);
+    Document * cDoc = currentMultiEditor()->currentBox()->currentDocument();
+    SubWindow * newWindow = new SubWindow(cDoc);
+    setCurrentEditor(newWindow->editor());
+    newWindow->editor()->currentBox()->setDocument(cDoc);
 }
 
 void MainWindow::reloadAllLists( QList<Document*> newlist) {
@@ -1843,6 +1772,31 @@ void MainWindow::reloadAllLists( int from, int to) {
             ed->tabBar()->blockSignals(false);
         }
     }
+}
+
+void MainWindow::onDocumentDockletUndocked( bool undocked )
+{
+    Q_EMIT( documentDockletUndocked( undocked ) );
+    if( undocked ) {
+        connect(mDocumentsDocklet->list(), SIGNAL(clicked(Document*)),
+                this, SLOT(setCurrent(Document*)));
+        // Disconnect DocumentDocklet->MainWindow static connection
+        disconnect(mDocumentsDocklet->list(), SIGNAL(clicked(Document*)),
+                mEditors, SLOT(setCurrent(Document*)));
+    } else {
+        disconnect(mDocumentsDocklet->list(), SIGNAL(clicked(Document*)),
+                this, SLOT(setCurrent(Document*)));
+        // Restore DocumentDocklet->MainWindow connection
+        connect(mDocumentsDocklet->list(), SIGNAL(clicked(Document*)),
+                mEditors, SLOT(setCurrent(Document*)),
+                Qt::QueuedConnection);    
+    }
+    
+}
+
+void MainWindow::setCurrent( Document * doc ) 
+{
+    currentMultiEditor()->setCurrent(doc);
 }
 
 //////////////////////////// ClockStatusBox ////////////////////////////

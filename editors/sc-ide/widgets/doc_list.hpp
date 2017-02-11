@@ -46,6 +46,7 @@ public Q_SLOTS:
 
     void setCurrent( Document * );
     void updateDockletOrder( int, int );
+    void reloadList( QList<Document*> );
 
 Q_SIGNALS:
 
@@ -59,7 +60,6 @@ private Q_SLOTS:
     void onSaved( Document * );
     void onModificationChanged(QObject*);
     void onItemClicked(QListWidgetItem*);
-    void reloadList( QList<Document*> );
 
 protected:
 
