@@ -121,9 +121,11 @@ set( EXAMPLE_OSC OFF )
 
 if(SC_HIDAPI)
     add_subdirectory(hidapi)
-		message(STATUS "Building with HID support")
-else()
+    message(STATUS "Building with HID support")
+elseif(MINGW)
     message(WARNING "SC is by default built without HID-support if a MinGW/gcc-version below 5.3 is used. Please consult the Readme on how to enable it (easy).")
+else()
+    message(STATUS "HID support disabled")
 endif()
 
 if(WIN32)
