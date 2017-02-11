@@ -76,7 +76,7 @@ Building the Source Code
 
 Platform specific build and install instructions can be found in the following files:
 
- - [README_OS_X.md](README_OS_X.md)
+ - [README_MACOS.md](README_MACOS.md)
  - [README_LINUX.md](README_LINUX.md)
  - [README_WINDOWS.md](README_WINDOWS.md)
  - [README_IPHONE.md](README_IPHONE.md)
