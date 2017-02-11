@@ -162,6 +162,11 @@ if(SC_DOC_RENDER AND NOT SC_SCLANG)
 	set(SC_DOC_RENDER False)
 endif()
 
+if(NOT SC_IDE AND NOT SC_SCLANG)
+    message( STATUS "SC_IDE and SC_SCLANG are disabled, so automatically disabling SC_QT" )
+    set(SC_QT OFF)
+endif(NOT SC_IDE AND NOT SC_SCLANG)
+
 option(ENABLE_TESTSUITE "Compile testsuite." ON)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -194,26 +199,12 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     option(LTO "Use GCC's link time optimizer' (experimental).")
 endif()
 
-option(SC_SERVER_ONLY "Build server(s) only." OFF)
-
 option(SC_SYMLINK_CLASSLIB "Place a symlink of SCCLassLibrary instead of copying" OFF)
 
 option(SYSTEM_BOOST   "Use boost libraries from system" OFF)
 option(SYSTEM_YAMLCPP "Use yaml-cpp library from system" OFF)
 
 option(FORTIFY "Define -D_FORTIFY_SOURCE=2 to check for programming errors" OFF)
-
-# convenient handling of some options
-if(NOT SC_IDE AND NOT SC_SCLANG)
-    set(SC_QT OFF)
-endif(NOT SC_IDE AND NOT SC_SCLANG)
-
-if(SC_SERVER_ONLY)
-    set(SC_IDE OFF)
-    set(SC_SCLANG OFF)
-		set(SC_QT OFF)
-endif(SC_SERVER_ONLY)
-
 
 #############################################
 # some default libraries

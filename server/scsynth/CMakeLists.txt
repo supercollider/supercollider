@@ -266,7 +266,7 @@ elseif(WIN32)
       add_custom_command(TARGET scsynth
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_FILE_DIR:scsynth> $<TARGET_FILE_DIR:sclang>
-        COMMENT "Adding scynth to target sclang"
+        COMMENT "Adding scsynth to target sclang"
       )
     endif(SC_SCLANG)
 
@@ -274,7 +274,7 @@ elseif(WIN32)
       add_custom_command(TARGET scsynth
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_FILE_DIR:scsynth> $<TARGET_FILE_DIR:SuperCollider>
-        COMMENT "Adding scynth to target SuperCollider"
+        COMMENT "Adding scsynth to target SuperCollider"
       )
     endif(SC_IDE)
 

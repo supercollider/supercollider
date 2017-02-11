@@ -178,9 +178,9 @@ the up and down arrow keys.
 
 5. Important keyboard shortcuts:
 
-      `Ctrl+t`: stop sound, equivalent to CmdPeriod.run  
-      `Ctrl+x`: recompile the class library  
-      `Ctrl+d`: quit the SuperCollider command line  
+      `Ctrl+t`: stop sound, equivalent to CmdPeriod.run
+      `Ctrl+x`: recompile the class library
+      `Ctrl+d`: quit the SuperCollider command line
 
 The interface uses the GNU library [Readline][Readline doc].
 
@@ -1160,17 +1160,11 @@ Commonly used variables to modify the build configuration are:
 
       -DINSTALL_HELP=OFF
 
-* Server-only: the simplest way to install "server only" is to add
+* Server-only: this is achieved by building neither the IDE nor sclang:
 
-    -DSC_SERVER_ONLY=ON
+    -DSC_IDE=OFF -DSC_SCLANG=OFF
 
-  to the cmake command.
-
-  This will set the settings `SC_IDE`, `SC_SCLANG` and `SC_QT` to off. For a
-  more finegrained control you can set the variables individually. Note that
-  if after building server only you want to add other components, you need
-  to unset `SC_SERVER_ONLY` before additional components can be controlled
-  individually.
+  in the cmake build-configuration command.
 
 * SClang-no-Qt: the modifications to the SCClassLibrary are only done
   automatically in the build to the target folder. If you run the target
@@ -1537,7 +1531,7 @@ Known problems
   written by Lucas Cornelisse, is contained in a topic branch in the SC repo
   (topic/IPC_QTcp)
 
-- READLINE/Command line-mode does not work properly.  
+- READLINE/Command line-mode does not work properly.
   You have to wait a short while with the key pressed to get it to register - if
   you wait for too long, the key will repeat. It's kind of possible to get used
   to it for a short while. Second problem: sclang will crash if you use ctrl-d.
