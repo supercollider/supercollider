@@ -1,7 +1,7 @@
-SuperCollider 3.8 for OS X
-==========================
+SuperCollider 3.8 for macOS (OS X)
+==================================
 
-These are installation and build instructions for the Mac OS X version of James McCartney's SuperCollider synthesis engine (scsynth) and programming language (sclang).
+These are installation and build instructions for the macOS version of James McCartney's SuperCollider synthesis engine (scsynth) and programming language (sclang).
 
 Pre-compiled releases are available for download at:
 
@@ -38,7 +38,7 @@ Prerequisites:
 - **Xcode** can be installed free from the Apple App Store or downloaded from: http://developer.apple.com
 
   - Xcode 5 may work
-  - Xcode 6 is known to work - it requires a Mac running OS X version 10.9.4 or later or 10.10
+  - Xcode 6 is known to work - it requires a Mac running macOS version 10.9.4 or later or 10.10
   - Later versions should definitely work
 
 - **Xcode command line tools** must be installed - after installing Xcode, this can be done from the Xcode preferences or from the command line:
@@ -237,7 +237,7 @@ Common arguments to control the build configuration are:
     `-DCMAKE_OSX_ARCHITECTURES='i386'`
 
     or combine a 32- and 64-bit version into a bundle (i.e. build a universal binary).
-    This is only possible up until OSX 10.6 and requires the dependencies (Qtlibs &
+    This is only possible up until macOS 10.6 and requires the dependencies (Qtlibs &
     readline) to be universal builds too:
 
     `-DCMAKE_OSX_ARCHITECTURES='i386;x86_64'`
@@ -284,10 +284,10 @@ Building without Qt or the IDE
 
 The Qt framework is used for the SC-IDE, and to provide a graphical toolkit for the sclang language interpreter for users to build their own GUIs.
 
-The 3.8 release does not currently support building on OS X without also building the IDE.
+The 3.8 release does not currently support building on macOS without also building the IDE.
 It is also not currently possible to build sclang without Qt.
 
-This should be fixed at some point (its a build tool configuration issue). Until then these build flags do not work on OS X:
+This should be fixed at some point (its a build tool configuration issue). Until then these build flags do not work on macOS:
 
 `-DSC_IDE=OFF`
 
