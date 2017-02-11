@@ -45,14 +45,12 @@ Prerequisites:
   `xcode-select --install`
 - **homebrew** is recommended to install required libraries
   See http://brew.sh for installation instructions.
-- **git, cmake, libsndfile, readline, and qt5.5.x**, installed via homebrew:
-  `brew install git cmake readline homebrew/versions/qt55`
+- **git, cmake, libsndfile, readline, and qt5.5**, installed via homebrew:
+  `brew install git cmake readline qt55`
 
-  *Note*: As of this writing the latest stable Qt is 5.6.x. SC depends on Qt5WebKit, which was dropped from the binary distribution of Qt 5.6
-  (functionally replaced by Qt5WebEngine). Therefore you cannot simply install the latest Qt5 via homebrew and rely on the defaults set during
-  the install. If this is you first Qt5 install, use the package name given above and replace `brew --prefix qt5` by `brew --prefix qt55` in
-  the build instructions below. If you already had Qt5, and were caught by an update, or you need several Qt5 installs, you can set the version
-  to be used by default with `brew switch`, for example `brew switch qt5 5.5.1_2` (you can also "freeze" the Qt5 version with `brew pin`).
+  *Note*: As of this writing the latest stable Qt is version 5.8. SC depends on Qt5WebKit, which was dropped from the binary distributions of Qt since version 5.6 (functionally replaced by Qt5WebEngine). Therefore you cannot simply install the latest Qt5 via homebrew and rely on the defaults. You can either install qt55 (accessed at /usr/local/opt/qt@55) and replace `brew --prefix qt5` by `brew --prefix qt55` in
+  the build instructions below, or install the current Qt version with the option `--with-Webkit`. As this is a non-standard install, brew will build qt5 locally (go drink a coffee).
+  If you already had Qt5, and and your build broke after an update, or if you need several Qt5 installs, you can set the version to be used by default with `brew switch`. (for example `brew switch qt5 5.5.1_2`, you can also "freeze" the Qt5 version with `brew pin`).
 
 Obtaining the source code
 -------------------------
