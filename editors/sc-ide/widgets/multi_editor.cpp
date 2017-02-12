@@ -1218,6 +1218,7 @@ void MultiEditor::setCurrentBox( CodeEditorBox * box )
     setCurrentEditor( box->currentEditor() );
 
     mCurrentEditorBox->setActive();
+    
 }
 
 void MultiEditor::setCurrentEditor( GenericCodeEditor * editor )

@@ -191,7 +191,7 @@ MainWindow::MainWindow(Main * main) :
             this, SLOT(showStatusMessage(const QString&)));
 
     // Update actions on document change
-    connect(currentMultiEditor(), SIGNAL(currentDocumentChanged(Document*)),
+    connect(mEditors, SIGNAL(currentDocumentChanged(Document*)),
             this, SLOT(onCurrentDocumentChanged(Document*)));
     // Document management
     DocumentManager *docMng = main->documentManager();
@@ -871,6 +871,8 @@ void MainWindow::setCurrentEditor(MultiEditor * ceditor)
     if(mEditorList.contains(ceditor))
         mEditorList.removeOne(ceditor);
     mEditorList.prepend(ceditor);
+
+    Q_EMIT( currentEditorChanged( currentMultiEditor()->currentBox()->currentDocument() ) );
 }
 
 MultiEditor *MainWindow::currentMultiEditor()

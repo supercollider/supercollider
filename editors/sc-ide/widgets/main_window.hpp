@@ -184,6 +184,7 @@ signals:
     void reloadDocumentLists( QList<Document*> );
     void tabsOrderChanged(int, int);
     void documentDockletUndocked();
+    void currentEditorChanged( Document * );
 
 public Q_SLOTS:
     void showStatusMessage( QString const & string );
@@ -366,8 +367,13 @@ public Q_SLOTS:
         if( main->docDocklet()->isDetached() || main->docDocklet()->dockWidget()->isFloating() ) {
             connect(sEditors, SIGNAL(currentDocumentChanged(Document*)),
                     main->docDocklet()->list(), SLOT(setCurrent(Document*)));
+            connect(main, SIGNAL(currentEditorChanged(Document*)),
+                    main->docDocklet()->list(), SLOT(setCurrent(Document*)));
+
         } else {
             disconnect(sEditors, SIGNAL(currentDocumentChanged(Document*)),
+                    main->docDocklet()->list(), SLOT(setCurrent(Document*)));
+            disconnect(main, SIGNAL(currentEditorChanged(Document*)),
                     main->docDocklet()->list(), SLOT(setCurrent(Document*)));
         }
     }
