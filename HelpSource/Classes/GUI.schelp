@@ -39,7 +39,7 @@ buttonHeight: 16
 method:: add
 
 method:: qt
-Makes QtGUI the current scheme and returns it. Subsequent GUI object calls to GUI are delegated to swing. Returns the current (swing) scheme.
+Makes QtGUI the current scheme and returns it. Subsequent GUI object calls to GUI are delegated to Qt. Returns the current (Qt) scheme.
 
 method:: swing
 If SwingOSC is installed, makes SwingGUI (Java GUI) the current scheme and returns it. Subsequent GUI object calls to GUI are delegated to swing. Returns the current (swing) scheme.
