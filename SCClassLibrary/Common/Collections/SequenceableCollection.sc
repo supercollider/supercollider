@@ -359,19 +359,6 @@ SequenceableCollection : Collection {
 		^list
 	}
 
-	split { |separator=$/|
-		var sepSize, sepIndices, newColl;
-		if (separator.isCollection.not) { separator = [separator] };
-		sepSize = separator.size;
-		sepIndices = [sepSize.neg] ++ this.findAll(separator) ++ this.size;
-		newColl = Array.new;
-		sepIndices.doAdjacentPairs { |a, b|
-			var sublist = this.copyRange(a + sepSize, b - 1);
-			newColl = newColl.add(sublist);
-		};
-		^newColl;
-	}
-
 	delimit { arg function;
 		var list, sublist;
 		list = Array.new;
