@@ -3,7 +3,7 @@
 Welcome to SuperCollider!
 =========================
 
-**SuperCollider** is a platform for audio synthesis and algorithmic composition, used by musicians, artists, and researchers working with sound. It is free and open source software available for Windows, Mac OS X, and Linux.
+**SuperCollider** is a platform for audio synthesis and algorithmic composition, used by musicians, artists, and researchers working with sound. It is free and open source software available for Windows, macOS, and Linux.
 
 SuperCollider features three major components:
 
@@ -76,7 +76,7 @@ Building the Source Code
 
 Platform specific build and install instructions can be found in the following files:
 
- - [README_OS_X.md](README_OS_X.md)
+ - [README_MACOS.md](README_MACOS.md)
  - [README_LINUX.md](README_LINUX.md)
  - [README_WINDOWS.md](README_WINDOWS.md)
  - [README_IPHONE.md](README_IPHONE.md)

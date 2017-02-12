@@ -447,7 +447,7 @@ if (WIN32)
 elseif(APPLE)
 	set( AdditionalInstallFiles
 		README.md
-		README_OS_X.md
+		README_MACOS.md
 		CHANGELOG.md
 		COPYING
 		AUTHORS
