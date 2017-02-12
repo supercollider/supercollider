@@ -1791,7 +1791,9 @@ void MainWindow::onDocumentDockletUndocked( bool undocked )
         // Restore DocumentDocklet->MainWindow connection
         connect(mDocumentsDocklet->list(), SIGNAL(clicked(Document*)),
                 mEditors, SLOT(setCurrent(Document*)),
-                Qt::QueuedConnection);    
+                Qt::QueuedConnection);
+        // Restore main docDocklet selection
+        mDocumentsDocklet->list()->setCurrent( mEditors->currentBox()->currentDocument() );  
     }
     
 }
