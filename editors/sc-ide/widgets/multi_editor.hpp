@@ -160,6 +160,7 @@ signals:
 public slots:
 
     void setCurrent( Document * );
+    void updateTabsOrder( QList<Document*> );
 
     void showNextDocument();
     void showPreviousDocument();
@@ -187,7 +188,6 @@ private slots:
     void onBoxActivated( CodeEditorBox * );
     void onDocModified( QObject * );
     void updateDocOrder( int, int);
-    void updateTabsOrder( QList<Document*> );
 
 private:
     void makeSignalConnections();

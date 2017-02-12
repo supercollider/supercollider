@@ -183,7 +183,7 @@ signals:
     void evaluateCode( const QString &, bool silent = true );
     void reloadDocumentLists( QList<Document*> );
     void tabsOrderChanged(int, int);
-    void documentDockletUndocked( bool );
+    void documentDockletUndocked();
 
 public Q_SLOTS:
     void showStatusMessage( QString const & string );
@@ -298,7 +298,7 @@ class SubWindow : public QObject
     Q_OBJECT
 
 public:
-    explicit SubWindow(Document *initDoc):
+    explicit SubWindow():
     sEditors(new MultiEditor(Main::instance()))
     {
         window = new QWidget;
@@ -345,36 +345,45 @@ public:
 
         createDocumentConnections();
 
-        connect(main, SIGNAL(documentDockletUndocked(bool)),
-                this, SLOT(onDocumentDockletUndocked(bool)));
+        connect(main, SIGNAL(documentDockletUndocked()),
+                this, SLOT(onDocumentDockletUndocked()));
 
         // loadDocuments
         sDocumentListWidget->populateList(main->docDocklet()->list()->listDocuments());
+        sEditors->updateTabsOrder(sDocumentListWidget->listDocuments());
 
-//        if(mDocumentsDocklet->dockWidget()->isFloating()) {
-//            onDocumentDockletUndocked(true);
-//        }
+        sDocumentsDocklet->setVisible(main->docDocklet()->isVisible());
+        onDocumentDockletUndocked();
     }
 
     MultiEditor * editor() { return sEditors; }
     
-private Q_SLOTS:
+public Q_SLOTS:
 
-    void onDocumentDockletUndocked( bool undocked )
+    void onDocumentDockletUndocked()
     {
-
-        if( undocked ) {
+        setDocDockletVisibility();
+        if( main->docDocklet()->isDetached() || main->docDocklet()->dockWidget()->isFloating() ) {
             connect(sEditors, SIGNAL(currentDocumentChanged(Document*)),
                     main->docDocklet()->list(), SLOT(setCurrent(Document*)));
         } else {
             disconnect(sEditors, SIGNAL(currentDocumentChanged(Document*)),
-                        main->docDocklet()->list(), SLOT(setCurrent(Document*)));
+                    main->docDocklet()->list(), SLOT(setCurrent(Document*)));
+        }
+    }
+
+    void setDocDockletVisibility()
+    {
+        if (main->docDocklet()->isDetached() || main->docDocklet()->dockWidget()->isFloating()) {
+            sDocumentsDocklet->hide();
+        } else {
+            sDocumentsDocklet->setVisible(main->docDocklet()->isVisible());
         }
     }
 
 private:
 
-    QWidget * documentsDocklet()
+    void documentsDocklet()
     {
         DockletToolBar * documentsToolBar = new DockletToolBar("Documents");
         sDocumentListWidget = new DocumentListWidget(Main::instance()->documentManager(), window);
@@ -394,18 +403,14 @@ private:
         QAction *action;
         action = optionsMenu->addAction(tr("Hide"));
         connect(action, SIGNAL(triggered(bool)), 
-                sDocumentsDocklet, SLOT(hide()) );
+                sDocumentsDocklet, SLOT(setVisible(bool)) );
         
         action = optionsMenu->addAction(tr("Close all"));
         connect(action, SIGNAL(triggered(bool)), 
                 main->docDocklet()->dockWidget(), SLOT(hide()) );
 
         connect(main->docDocklet()->dockWidget(), SIGNAL(visibilityChanged(bool)), 
-                sDocumentsDocklet, SLOT(setVisible(bool)) );
-
-        if(!main->docDocklet()->isVisible()) {
-            sDocumentsDocklet->hide();
-        }
+                this, SLOT(setDocDockletVisibility()) );        
     }
 
     void createDocumentConnections()

@@ -245,7 +245,7 @@ MainWindow::MainWindow(Main * main) :
     // Custom event handling:
     qApp->installEventFilter(this);
 
-    if(mDocumentsDocklet->isDetached()) {
+    if(mDocumentsDocklet->isDetached() || mDocumentsDocklet->dockWidget()->isFloating()) {
         onDocumentDockletUndocked( true );
     }
 }
@@ -1754,16 +1754,16 @@ bool MainWindow::eventFilter( QObject *object, QEvent *event )
 void MainWindow::newWindow()
 {
     Document * cDoc = currentMultiEditor()->currentBox()->currentDocument();
-    SubWindow * newWindow = new SubWindow(cDoc);
+    SubWindow * newWindow = new SubWindow();
     setCurrentEditor(newWindow->editor());
     newWindow->editor()->currentBox()->setDocument(cDoc);
 }
 
-void MainWindow::reloadAllLists( QList<Document*> newlist) {
+void MainWindow::reloadAllLists( QList<Document*> newlist ) {
     Q_EMIT( reloadDocumentLists( newlist ) );
 }
 
-void MainWindow::reloadAllLists( int from, int to) {
+void MainWindow::reloadAllLists( int from, int to ) {
     Q_EMIT( tabsOrderChanged( from, to ) );
     foreach( MultiEditor * ed, mEditorList ) {
         if( !(ed == currentMultiEditor()) ) {
@@ -1776,7 +1776,7 @@ void MainWindow::reloadAllLists( int from, int to) {
 
 void MainWindow::onDocumentDockletUndocked( bool undocked )
 {
-    Q_EMIT( documentDockletUndocked( undocked ) );
+    Q_EMIT( documentDockletUndocked() );
     if( undocked ) {
         connect(mDocumentsDocklet->list(), SIGNAL(clicked(Document*)),
                 this, SLOT(setCurrent(Document*)));
