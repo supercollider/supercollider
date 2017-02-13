@@ -92,7 +92,7 @@ copymethod:: ArrayedCollection -foldAt
 
 copymethod:: ArrayedCollection -slice
 
-method:: put
+method:: clipPut
 Put item at index, replacing what is there.
 code::
 x=[1, 2,3 , 4, 5]
