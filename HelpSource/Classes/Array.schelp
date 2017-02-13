@@ -96,7 +96,7 @@ method:: put
 Put item at index, replacing what is there.
 code::
 x=[1, 2,3 , 4, 5]
-x.clipPut(rrand(0, 4), [33, 77, 99, 322, 555, 666, 999].choose)
+x.clipPut(rrand(0, 4), 1)
 ::
 
 copymethod:: ArrayedCollection -wrapPut
