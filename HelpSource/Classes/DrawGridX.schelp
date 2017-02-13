@@ -1,5 +1,5 @@
 CLASS:: DrawGridX
-SUMMARY:: A sub-method of DrawGrid, used for setting up its horizontal size
+SUMMARY:: A subclass of DrawGrid, used for setting up its horizontal size
 CATEGORIES:: GUI>Accessories
 RELATED:: Classes/GridLines, Classes/Plotter, Classes/UserView, Classes/DrawGrid
 
