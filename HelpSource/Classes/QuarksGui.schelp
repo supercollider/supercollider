@@ -1,5 +1,5 @@
 CLASS:: QuarksGui
-SUMMARY:: Allows Quarks Installation
+SUMMARY:: A frontend/user interface to manage Quarks extension packages
 RELATED:: Classes/Quarks
 
 DESCRIPTION::
