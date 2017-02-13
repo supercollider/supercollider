@@ -17,13 +17,9 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     LangSource
                     LangPrimSource
 
-                    ${CMAKE_SOURCE_DIR}/external_libraries/hidapi/hidapi
-                    ${CMAKE_SOURCE_DIR}/external_libraries/hidapi/hidapi_parser
-
                     ${CMAKE_SOURCE_DIR}/external_libraries/nova-tt
                     LangSource/Bison
 )
-
 
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -41,7 +37,6 @@ else ()
 endif ()
 
 set(sclang_sources
-	LangPrimSource/SC_HID_api.cpp
 	LangPrimSource/SC_Wii.cpp
 	LangPrimSource/PyrSignalPrim.cpp
 	LangPrimSource/PyrSched.cpp
@@ -158,6 +153,15 @@ if(WIN32)
  "<CMAKE_RC_COMPILER> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
 endif(WIN32)
 
+if(SC_HIDAPI)
+    list(APPEND sclang_sources LangPrimSource/SC_HID_api.cpp)
+    include_directories(
+        ${CMAKE_SOURCE_DIR}/external_libraries/hidapi/hidapi
+        ${CMAKE_SOURCE_DIR}/external_libraries/hidapi/hidapi_parser
+    )
+    add_definitions(-DSC_HIDAPI)
+endif(SC_HIDAPI)
+
 if(SC_WII)
 	if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 		find_package(CWiid)
@@ -218,14 +222,16 @@ if(FALSE) # libsclang is a shared library
   target_compile_definitions(libsclang INTERFACE BUILDING_SCLANG)
 endif()
 
-target_compile_definitions(libsclang PRIVATE HAVE_HIDAPI)
-target_link_libraries( libsclang hidapi hidapi_parser )
+if(SC_HIDAPI)
+  target_compile_definitions(libsclang PRIVATE HAVE_HIDAPI)
+  target_link_libraries( libsclang hidapi hidapi_parser )
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Linux" AND HID_HIDRAW)
-  target_link_libraries( libsclang ${UDEV_LIBRARIES})
-endif()
-if(HID_LIBUSB)
-  target_link_libraries( libsclang ${LIBUSB_1_LIBRARIES})
+  if(${CMAKE_SYSTEM_NAME} MATCHES "Linux" AND HID_HIDRAW)
+    target_link_libraries( libsclang ${UDEV_LIBRARIES})
+  endif()
+  if(HID_LIBUSB)
+    target_link_libraries( libsclang ${LIBUSB_1_LIBRARIES})
+  endif()
 endif()
 
 
@@ -295,8 +301,10 @@ if (FFTW3F_FOUND)
 	target_link_libraries(libsclang ${FFTW3F_LIBRARY})
 endif()
 
-if (WIN32)
+if (WIN32 AND SC_HIDAPI)
 	target_link_libraries(libsclang wsock32 ws2_32 portmidi iphlpapi hid)
+elseif(WIN32)
+	target_link_libraries(libsclang wsock32 ws2_32 portmidi iphlpapi)
 endif()
 
 if (GC_SANITYCHECK)

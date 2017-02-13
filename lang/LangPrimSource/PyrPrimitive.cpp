@@ -1468,10 +1468,10 @@ int objectPerform(struct VMGlobals *g, int numArgsPushed)
 
 	recvrSlot = g->sp - numArgsPushed + 1;
 	selSlot = recvrSlot + 1;
-    
+
 	if (IsSym(selSlot)) {
 		selector = slotRawSymbol(selSlot);
-        
+
 		// move args down one to fill selector's position
 		pslot = selSlot - 1;
 		qslot = selSlot;
@@ -1489,23 +1489,23 @@ int objectPerform(struct VMGlobals *g, int numArgsPushed)
 		if (NotObj(listSlot) || slotRawObject(listSlot)->classptr != class_array) {
 			goto badselector;
 		}
-        
+
 		PyrObject *array = slotRawObject(listSlot);
-        
+
 		if (array->size < 1) {
 			error("Array must have a selector.\n");
 			return errFailed;
 		}
-        
+
 		selSlot = array->slots;
-        
+
         // check the first slot to see if it's a symbol
         if (NotSym(selSlot)) {
             error("First element of array must be a Symbol selector.\n");
             dumpObjectSlot(selSlot);
             return errWrongType;
         }
-        
+
 		selector = slotRawSymbol(selSlot);
 
 		if (numArgsPushed > 2) {
@@ -4254,8 +4254,10 @@ void initCocoaFilePrimitives();
 void initSchedPrimitives();
 	initSchedPrimitives();
 
+#ifdef SC_HIDAPI
 void initHIDAPIPrimitives();
 	initHIDAPIPrimitives();
+#endif
 
 #if defined(__APPLE__) || defined(HAVE_ALSA) || defined(HAVE_PORTMIDI)
 void initMIDIPrimitives();
@@ -4310,9 +4312,10 @@ void initOpenGLPrimitives();
 
 void deinitPrimitives()
 {
+#ifdef SC_HIDAPI
 	void deinitHIDAPIPrimitives();
 	deinitHIDAPIPrimitives();
-
+#endif
 #if defined(HAVE_PORTMIDI) || defined(HAVE_ALSA)
 void deinitMIDIPrimitives();
 	deinitMIDIPrimitives();
@@ -4327,5 +4330,3 @@ void initThreads()
 	s_prrunnextthread = getsym("prRunNextThread");
 	s_prready = getsym("prReady");
 }
-
-

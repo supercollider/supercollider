@@ -118,7 +118,15 @@ if (HID_HIDRAW)
 endif()
 set( EXAMPLE_TEST OFF )
 set( EXAMPLE_OSC OFF )
-add_subdirectory(hidapi)
+
+if(SC_HIDAPI)
+    add_subdirectory(hidapi)
+    message(STATUS "Building with HID support")
+elseif(MINGW AND (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 5.3.0))
+    message(WARNING "SC is by default built without HID-support if a MinGW/gcc-version below 5.3 is used. Please consult the Readme on how to enable it (easy).")
+else()
+    message(STATUS "HID support disabled")
+endif()
 
 if(WIN32)
   add_library(portmidi portmidi/pm_common/pminternal.h

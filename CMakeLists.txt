@@ -58,8 +58,10 @@ if(WIN32)
 
     # might work with "SHARED" as well.
     set(PA_LIBRARY_TYPE "STATIC")
-    set(PORTAUDIO_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/external_libraries/portaudio_sc_org/include" CACHE PATH "Portaudio include directory" FORCE)
-    add_subdirectory("${CMAKE_SOURCE_DIR}/external_libraries/portaudio_sc_org")
+    if(NOT MSYS)
+      set(PORTAUDIO_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/external_libraries/portaudio_sc_org/include" CACHE PATH "Portaudio include directory" FORCE)
+      add_subdirectory("${CMAKE_SOURCE_DIR}/external_libraries/portaudio_sc_org")
+    endif(NOT MSYS)
 endif(WIN32)
 
 #############################################
@@ -208,6 +210,12 @@ option(SYSTEM_YAMLCPP "Use yaml-cpp library from system" OFF)
 
 option(FORTIFY "Define -D_FORTIFY_SOURCE=2 to check for programming errors" OFF)
 
+if(MINGW AND (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 5.3.0))
+    option(SC_HIDAPI "Build with HID support" OFF)
+else()
+    option(SC_HIDAPI "Build with HID support" ON)
+endif()
+
 #############################################
 # some default libraries
 
@@ -312,10 +320,13 @@ if (SC_MEMORY_DEBUGGING)
 	add_definitions(-DENABLE_MEMORY_CHECKS)
 endif()
 
-if(MINGW)
+if(MINGW AND (${CMAKE_CXX_COMPILER_VERSION} VERSION_GREATER 4.8.5) AND (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 5.3.0))
 # no-strict-aliasing was introduced because of problems with MinGW/GCC 4.9.2
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mstackrealign -fno-strict-aliasing")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mstackrealign -fno-strict-aliasing")
+elseif(MINGW)
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mstackrealign")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mstackrealign")
 endif()
 
 # support for building on Raspberry Pi 1/2/3 and BBB
@@ -560,3 +571,4 @@ mark_as_advanced(JACK JACK_INCLUDE_DIR JACK_LIBRARY)
 mark_as_advanced(MATH_LIBRARY)
 mark_as_advanced(QT_QMAKE_EXECUTABLE)
 mark_as_advanced(SNDFILE SNDFILE_LIBRARY_DIR)
+mark_as_advanced(SC_HIDAPI)
