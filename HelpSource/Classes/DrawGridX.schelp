@@ -1,7 +1,7 @@
 CLASS:: DrawGridX
 SUMMARY:: A sub-method of DrawGrid, used for setting up its horizontal size
 CATEGORIES:: GUI>Accessories
-RELATED:: Reference/plot, Classes/GridLines, Classes/Plotter, Classes/UserView, Classes/DrawGrid
+RELATED:: Classes/GridLines, Classes/Plotter, Classes/UserView, Classes/DrawGrid
 
 DESCRIPTION::
 DrawGridX, is a method instantiated by DrawGrid Class, in its init functon, to set the horizontal size of a GridUI Element, just as seen in the code below
