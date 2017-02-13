@@ -1,16 +1,16 @@
-class:: VolumeGui
-summary:: Acts as a Frontend to Volume Class
-categories:: Server
-related:: Classes/Server, Classes/Server/Volume
+CLASS:: VolumeGui
+SUMMARY:: Acts as a Frontend to Volume Class
+CATEGORIES:: Server
+RELATED:: Classes/Server, Classes/Server/Volume
 
-description::
+DESCRIPTION::
 VolumeGui is an abstraction method used by Volume to create a graphic user interface. If one looks into the volume source file, and look into the gui method, one may find the VolumeGui abstraction being used to instantiate the Volume UI Frontend.
 
-classmethods::
+CLASSMETHODS::
 method:: new
 Creates a new window for VolumeGui new window when instanced
 
-code::
+CODE::
 v = s.volume;
 
 v.min;
