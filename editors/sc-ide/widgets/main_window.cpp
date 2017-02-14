@@ -125,23 +125,6 @@ MainWindow::MainWindow(Main * main) :
     mEditors = new MultiEditor(main);
     setCurrentEditor(mEditors);
 
-    // Tools
-
-    mCmdLine = new CmdLine(tr("Command Line:"));
-    connect(mCmdLine, SIGNAL(invoked(QString, bool)),
-            main->scProcess(), SLOT(evaluateCode(QString, bool)));
-
-    mFindReplaceTool = new TextFindReplacePanel;
-
-    mGoToLineTool = new GoToLineTool();
-    connect(mGoToLineTool, SIGNAL(activated(int)), this, SLOT(hideToolBox()));
-
-    mToolBox = new ToolBox;
-    mToolBox->addWidget(mCmdLine);
-    mToolBox->addWidget(mFindReplaceTool);
-    mToolBox->addWidget(mGoToLineTool);
-    mToolBox->hide();
-
     // Docks
     mDocumentsDocklet = new DocumentsDocklet(main->documentManager(), this);
     mDocumentsDocklet->setObjectName("documents-dock");
@@ -162,7 +145,6 @@ MainWindow::MainWindow(Main * main) :
     center_box->setContentsMargins(0,0,0,0);
     center_box->setSpacing(0);
     center_box->addWidget(mEditors);
-    center_box->addWidget(mToolBox);
 
     QWidget *central = new QWidget;
     central->setLayout(center_box);
@@ -211,9 +193,6 @@ MainWindow::MainWindow(Main * main) :
 
     connect(mDocumentsDocklet->dockWidget(), SIGNAL(topLevelChanged(bool)),
             this, SLOT(onDocumentDockletUndocked(bool)));
-
-    // ToolBox
-    connect(mToolBox->closeButton(), SIGNAL(clicked()), this, SLOT(hideToolBox()));
 
     createActions();
     mMenu = createMenus();
@@ -609,8 +588,8 @@ QMenuBar * MainWindow::createMenus()
     menu->addAction( currentMultiEditor()->action(MultiEditor::Paste) );
     menu->addSeparator();
     menu->addAction( mActions[Find] );
-    menu->addAction( mFindReplaceTool->action(TextFindReplacePanel::FindNext) );
-    menu->addAction( mFindReplaceTool->action(TextFindReplacePanel::FindPrevious) );
+    menu->addAction( currentMultiEditor()->textFindReplacePanel()->action(TextFindReplacePanel::FindNext) );
+    menu->addAction( currentMultiEditor()->textFindReplacePanel()->action(TextFindReplacePanel::FindPrevious) );
     menu->addAction( mActions[Replace] );
     menu->addSeparator();
     menu->addAction( currentMultiEditor()->action(MultiEditor::IndentWithSpaces) );
@@ -915,10 +894,6 @@ void MainWindow::onCurrentDocumentChanged( Document * doc )
     mActions[DocSave]->setEnabled(doc);
     mActions[DocSaveAs]->setEnabled(doc);
     mActions[DocSaveAsExtension]->setEnabled(doc);
-
-    GenericCodeEditor *editor = currentMultiEditor()->currentEditor();
-    mFindReplaceTool->setEditor( editor );
-    mGoToLineTool->setEditor( editor );
 }
 
 void MainWindow::onDocumentChangedExternally( Document *doc )
@@ -1466,7 +1441,7 @@ void MainWindow::applySettings( Settings::Manager * settings )
 
     mPostDocklet->mPostWindow->applySettings(settings);
     mHelpBrowserDocklet->browser()->applySettings(settings);
-    mCmdLine->applySettings(settings);
+    currentMultiEditor()->cmdLine()->applySettings(settings);
 }
 
 void MainWindow::applyCursorBlinkingSettings( Settings::Manager * settings )
@@ -1529,15 +1504,15 @@ void MainWindow::toggleInterpreterActions(bool enabled)
 
 void MainWindow::showCmdLine()
 {
-    mToolBox->setCurrentWidget( mCmdLine );
-    mToolBox->show();
+    currentMultiEditor()->toolBox()->setCurrentWidget( currentMultiEditor()->cmdLine() );
+    currentMultiEditor()->toolBox()->show();
 
-    mCmdLine->setFocus(Qt::OtherFocusReason);
+    currentMultiEditor()->cmdLine()->setFocus(Qt::OtherFocusReason);
 }
 
 void MainWindow::showCmdLine( const QString & cmd)
 {
-    mCmdLine->setText(cmd);
+    currentMultiEditor()->cmdLine()->setText(cmd);
     showCmdLine();
 }
 
@@ -1551,34 +1526,34 @@ void MainWindow::cmdLineForCursor()
 void MainWindow::showGoToLineTool()
 {
     GenericCodeEditor *editor = currentMultiEditor()->currentEditor();
-    mGoToLineTool->setValue( editor ? editor->textCursor().blockNumber() + 1 : 0 );
+    currentMultiEditor()->goToLineTool()->setValue( editor ? editor->textCursor().blockNumber() + 1 : 0 );
 
-    mToolBox->setCurrentWidget( mGoToLineTool );
-    mToolBox->show();
+    currentMultiEditor()->toolBox()->setCurrentWidget( currentMultiEditor()->goToLineTool() );
+    currentMultiEditor()->toolBox()->show();
 
-    mGoToLineTool->setFocus();
+    currentMultiEditor()->goToLineTool()->setFocus();
 }
 
 void MainWindow::showFindTool()
 {
-    mFindReplaceTool->setMode( TextFindReplacePanel::Find );
-    mFindReplaceTool->initiate();
+    currentMultiEditor()->textFindReplacePanel()->setMode( TextFindReplacePanel::Find );
+    currentMultiEditor()->textFindReplacePanel()->initiate();
 
-    mToolBox->setCurrentWidget( mFindReplaceTool );
-    mToolBox->show();
+    currentMultiEditor()->toolBox()->setCurrentWidget( currentMultiEditor()->textFindReplacePanel() );
+    currentMultiEditor()->toolBox()->show();
 
-    mFindReplaceTool->setFocus(Qt::OtherFocusReason);
+    currentMultiEditor()->textFindReplacePanel()->setFocus(Qt::OtherFocusReason);
 }
 
 void MainWindow::showReplaceTool()
 {
-    mFindReplaceTool->setMode( TextFindReplacePanel::Replace );
-    mFindReplaceTool->initiate();
+    currentMultiEditor()->textFindReplacePanel()->setMode( TextFindReplacePanel::Replace );
+    currentMultiEditor()->textFindReplacePanel()->initiate();
 
-    mToolBox->setCurrentWidget( mFindReplaceTool );
-    mToolBox->show();
+    currentMultiEditor()->toolBox()->setCurrentWidget( currentMultiEditor()->textFindReplacePanel() );
+    currentMultiEditor()->toolBox()->show();
 
-    mFindReplaceTool->setFocus(Qt::OtherFocusReason);
+    currentMultiEditor()->textFindReplacePanel()->setFocus(Qt::OtherFocusReason);
 }
 
 void MainWindow::hideToolBox()
@@ -1592,7 +1567,7 @@ void MainWindow::hideToolBox()
             editor->setFocus(Qt::OtherFocusReason);
     }
 
-    mToolBox->hide();
+    currentMultiEditor()->toolBox()->hide();
 }
 
 void MainWindow::showSettings()

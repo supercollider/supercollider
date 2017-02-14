@@ -46,13 +46,9 @@ namespace ScIDE {
 
 class Main;
 class MultiEditor;
-class ToolBox;
-class TextFindReplacePanel;
-class GoToLineTool;
 class PostDocklet;
 class DocumentsDocklet;
 class HelpBrowserDocklet;
-class CmdLine;
 class Document;
 class DocumentsDialog;
 struct Session;
@@ -256,12 +252,6 @@ private:
     MultiEditor *mEditors;
     History mEditorList;
 
-    // Tools
-    ToolBox *mToolBox;
-    CmdLine *mCmdLine;
-    GoToLineTool *mGoToLineTool;
-    TextFindReplacePanel *mFindReplaceTool;
-
     // Status bar
     QStatusBar  *mStatusBar;
     QMenuBar *mMenu;
@@ -294,12 +284,13 @@ private:
     int mTimerId;
 };
 
-class SubWindow : public QObject
+class SubWindow : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit SubWindow():
+    explicit SubWindow( QWidget * parent = 0 ):
+    QWidget(parent),
     sEditors(new MultiEditor(Main::instance()))
     {
         window = new QWidget;

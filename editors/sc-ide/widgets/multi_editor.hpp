@@ -34,6 +34,11 @@
 #include <QSplitter>
 #include <QSignalMapper>
 
+#include "find_replace_tool.hpp"
+#include "goto_line_tool.hpp"
+#include "tool_box.hpp"
+#include "cmd_line.hpp"
+
 namespace ScIDE {
 
 class CodeEditorBox;
@@ -92,7 +97,7 @@ public:
         CopyLineDown,
         MoveLineUp,
         MoveLineDown,
-	DeleteWord,
+	    DeleteWord,
 
         GotoPreviousBlock,
         GotoNextBlock,
@@ -151,6 +156,11 @@ public:
 
     QTabBar * tabBar() { return mTabs; };
 
+    ToolBox * toolBox() { return mToolBox; }
+    CmdLine * cmdLine() { return mCmdLine; }
+    GoToLineTool * goToLineTool() { return mGoToLineTool; }
+    TextFindReplacePanel * textFindReplacePanel() { return mFindReplaceTool; }
+
 signals:
     void currentDocumentChanged( Document * );
     void splitViewActivated();
@@ -188,6 +198,7 @@ private slots:
     void onBoxActivated( CodeEditorBox * );
     void onDocModified( QObject * );
     void updateDocOrder( int, int);
+    void setEditorForToolBox( GenericCodeEditor * );
 
 private:
     void makeSignalConnections();
@@ -216,6 +227,11 @@ private:
     MultiSplitter *mSplitter;
     QIcon mDocModifiedIcon;
     QVBoxLayout *multiEditorLayout;
+
+    ToolBox *mToolBox;
+    CmdLine *mCmdLine;
+    GoToLineTool *mGoToLineTool;
+    TextFindReplacePanel *mFindReplaceTool;
 };
 
 } // namespace ScIDE

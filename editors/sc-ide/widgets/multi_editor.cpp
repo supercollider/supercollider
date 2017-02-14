@@ -315,11 +315,29 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
 
     mSplitter->addWidget(defaultBox);
 
+    mCmdLine = new CmdLine(tr("Command Line:"));
+    connect(mCmdLine, SIGNAL(invoked(QString, bool)),
+            main->scProcess(), SLOT(evaluateCode(QString, bool)));
+
+    mFindReplaceTool = new TextFindReplacePanel;
+    
+    mGoToLineTool = new GoToLineTool();
+    connect(mGoToLineTool, SIGNAL(activated(int)), this, SLOT(hideAllToolBoxes()));
+    //connect(MainWindow::instance(), SIGNAL(currentEditorChanged(GenericCodeEditor*)),
+    //        this, SLOT(updateEditorForToolBox(GenericCodeEditor*)));
+
+    mToolBox = new ToolBox;
+    mToolBox->addWidget(mCmdLine);
+    mToolBox->addWidget(mFindReplaceTool);
+    mToolBox->addWidget(mGoToLineTool);
+    mToolBox->hide();
+
     multiEditorLayout = new QVBoxLayout;
     multiEditorLayout->setContentsMargins(0,0,0,0);
     multiEditorLayout->setSpacing(0);
     multiEditorLayout->addWidget(mTabs);
     multiEditorLayout->addWidget(mSplitter);
+    multiEditorLayout->addWidget(mToolBox);
     setLayout(multiEditorLayout);
 
     makeSignalConnections();
@@ -332,12 +350,16 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     connect( MainWindow::instance(), SIGNAL(reloadDocumentLists(QList<Document*>)),
                 this, SLOT(updateTabsOrder(QList<Document*>)));
 
+    connect(mToolBox->closeButton(), SIGNAL(clicked()), MainWindow::instance(), SLOT(hideToolBox()));
+
     createActions();
 
+    mCurrentEditorBox = 0;
     setCurrentBox( defaultBox ); // will updateActions();
 
     applySettings( main->settings() );
 }
+
 
 void MultiEditor::makeSignalConnections()
 {
@@ -1213,6 +1235,13 @@ void MultiEditor::setCurrentBox( CodeEditorBox * box )
     if (mCurrentEditorBox == box)
         return;
 
+    if (mCurrentEditorBox) {
+        GenericCodeEditor *editor = currentEditor();
+        if (editor) {
+            editor->clearSearchHighlighting();
+        }
+    }
+
     mCurrentEditorBox = box;
     mBoxSigMux->setCurrentObject(box);
     setCurrentEditor( box->currentEditor() );
@@ -1235,7 +1264,16 @@ void MultiEditor::setCurrentEditor( GenericCodeEditor * editor )
     Document *currentDocument = editor ? editor->document() : 0;
     Main::documentManager()->setActiveDocument(currentDocument);
     emit currentDocumentChanged(currentDocument);
+    setEditorForToolBox( editor );
 }
+
+void MultiEditor::setEditorForToolBox( GenericCodeEditor * cgeditor )
+{
+    mFindReplaceTool->setEditor( cgeditor );
+    mGoToLineTool->setEditor( cgeditor );  
+    mFindReplaceTool->initiate();  
+}
+
 
 GenericCodeEditor *MultiEditor::currentEditor()
 {
