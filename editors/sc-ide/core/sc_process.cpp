@@ -94,7 +94,7 @@ void ScProcess::prepareActions(Settings::Manager * settings)
     action->setShortcutContext(Qt::ApplicationShortcut);
     connect(action, SIGNAL(triggered()), this, SLOT(stopMain()));
     settings->addAction( action, "interpreter-main-stop", interpreterCategory);
-    
+
     mActions[ShowQuarks] = action = new QAction(tr("Quarks"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(showQuarks()));
     settings->addAction( action, "interpreter-show-quarks-gui", interpreterCategory);
@@ -143,7 +143,11 @@ void ScProcess::startLanguage (void)
 
     QString sclangCommand;
 #ifdef Q_OS_MAC
+  #ifdef MACOS_FHS
+    sclangCommand = standardDirectory(ScResourceDir) + "/../../bin/sclang";
+  #else
     sclangCommand = standardDirectory(ScResourceDir) + "/../MacOS/sclang";
+  #endif
 #else
     sclangCommand = "sclang";
 #endif
@@ -184,7 +188,7 @@ void ScProcess::stopLanguage (void)
 
     evaluateCode("0.exit", true);
     closeWriteChannel();
-    
+
     mCompiled = false;
     mTerminationRequested   = true;
     mTerminationRequestTime = QDateTime::currentDateTimeUtc();
@@ -387,21 +391,21 @@ void ScProcess::onStart()
     evaluateCode ( command, true );
     Main::documentManager()->sendActiveDocument();
 }
-    
+
 void ScProcess::updateTextMirrorForDocument ( Document * doc, int position, int charsRemoved, int charsAdded )
 {
     QVariantList argList;
-    
+
     argList.append(QVariant(doc->id()));
     argList.append(QVariant(position));
     argList.append(QVariant(charsRemoved));
-    
+
     QTextCursor cursor = QTextCursor(doc->textDocument());
     cursor.setPosition(position, QTextCursor::MoveAnchor);
     cursor.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, charsAdded);
-    
+
     argList.append(QVariant(cursor.selection().toPlainText()));
-    
+
     try {
         QDataStream stream(mIpcSocket);
         stream.setVersion(QDataStream::Qt_4_6);
@@ -411,15 +415,15 @@ void ScProcess::updateTextMirrorForDocument ( Document * doc, int position, int 
         scPost(QStringLiteral("Exception during ScIDE_Send: %1\n").arg(e.what()));
     }
 }
-    
+
 void ScProcess::updateSelectionMirrorForDocument ( Document * doc, int start, int range )
 {
     QVariantList argList;
-    
+
     argList.append(QVariant(doc->id()));
     argList.append(QVariant(start));
     argList.append(QVariant(range));
-    
+
     try {
         QDataStream stream(mIpcSocket);
         stream.setVersion(QDataStream::Qt_4_6);

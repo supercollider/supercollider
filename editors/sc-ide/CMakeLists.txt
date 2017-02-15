@@ -253,10 +253,21 @@ if(WIN32)
 endif(WIN32)
 
 
-# final builds of the IDE seem to be broken atm
+# FIXME Build breaks with FINAL_BUILD enabled
 if(0 AND FINAL_BUILD)
+  OPTION(ENABLE_FINAL "Enable final build all-in-one compilation.")
   CREATE_FINAL_FILE(scide_final.cpp ${ide_sources})
-  add_executable( SuperCollider MACOSX_BUNDLE scide_final.cpp ${ide_rc_sources} ${RES_FILES} ${AdditionalBundleSources})
+    if(MACOS_FHS)
+      add_executable( SuperCollider scide_final.cpp ${ide_rc_sources} ${RES_FILES} ${AdditionalBundleSources})
+    elseif(WIN32)
+      add_executable( SuperCollider WIN32 scide_final.cpp ${ide_rc_sources} ${RES_FILES} ${AdditionalBundleSources})
+    else()
+      add_executable( SuperCollider MACOSX_BUNDLE scide_final.cpp ${ide_rc_sources} ${RES_FILES} ${AdditionalBundleSources})
+    endif()
+elseif(MACOS_FHS)
+  add_executable( SuperCollider ${ide_sources} ${ide_rc_sources} ${RES_FILES} ${AdditionalBundleSources})
+elseif(WIN32)
+  add_executable( SuperCollider WIN32 ${ide_sources} ${ide_rc_sources} ${RES_FILES} ${AdditionalBundleSources})
 else()
   add_executable( SuperCollider MACOSX_BUNDLE ${ide_sources} ${ide_rc_sources} ${RES_FILES} ${AdditionalBundleSources})
 endif()
