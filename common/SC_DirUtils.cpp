@@ -225,7 +225,7 @@ int sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int len
 
 // Support for Bundles
 
-#if defined(__APPLE__) && !defined(SC_IPHONE)	// running on OS X
+#if defined(__APPLE__) && !defined(SC_IPHONE) && !defined(MACOS_FHS) // running on MACOS
 
 // Support for stand-alone applications
 
@@ -239,6 +239,41 @@ void sc_GetResourceDirectory(char* pathBuf, int length)
 	SC_StandAloneInfo::GetResourceDir(pathBuf, length);
 }
 
+
+void sc_AppendBundleName(char *str, int size)
+{
+	CFBundleRef mainBundle;
+	mainBundle = CFBundleGetMainBundle();
+	if(mainBundle){
+		CFDictionaryRef dictRef = CFBundleGetInfoDictionary(mainBundle);
+		CFStringRef strRef;
+		strRef = (CFStringRef)CFDictionaryGetValue(dictRef, CFSTR("CFBundleName"));
+		if(strRef){
+			const char *bundleName = CFStringGetCStringPtr(strRef, CFStringGetSystemEncoding());
+			if(bundleName) {
+				sc_AppendToPath(str, size, bundleName);
+				return;
+			}
+		}
+	}
+	sc_AppendToPath(str, size, "SuperCollider");
+}
+
+#elif defined(MACOS_FHS)
+
+bool sc_IsStandAlone()
+{
+	return false;
+}
+
+void sc_GetResourceDirectory(char* pathBuf, int length)
+{
+#ifdef SC_DATA_DIR
+	strncpy(pathBuf, SC_DATA_DIR, length);
+#else
+	strncpy(pathBuf, "/usr/local/share/SuperCollider", length);
+#endif
+}
 
 void sc_AppendBundleName(char *str, int size)
 {
@@ -365,8 +400,8 @@ void sc_GetSystemAppSupportDirectory(char *str, int size)
 #endif
 			size);
 
-#if defined(__APPLE__)
-	// Get the main bundle name for the app from the enclosed Info.plist 
+#if defined(__APPLE__) && !defined(MACOS_FHS)
+	// Get the main bundle name for the app from the enclosed Info.plist
 	sc_AppendBundleName(str, size);
 #endif
 
