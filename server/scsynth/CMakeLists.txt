@@ -237,7 +237,7 @@ else()
 	set(INSTALL_TARGETS scsynth)
 endif()
 
-if(APPLE)
+if(APPLE AND NOT MACOS_FHS)
 	add_custom_command(TARGET scsynth POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../Resources/
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:scsynth> $<TARGET_FILE_DIR:SuperCollider>/../Resources)

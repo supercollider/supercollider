@@ -300,7 +300,7 @@ if (WIN32)
 		DESTINATION "${SC_WIN_BUNDLE_NAME}/plugins"
 	)
 
-elseif(APPLE)
+elseif(APPLE AND NOT MACOS_FHS)
 	foreach(plugin ${plugins} ${supernova_plugins})
 		add_custom_command(TARGET ${plugin} POST_BUILD
 			COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../Resources/plugins/
