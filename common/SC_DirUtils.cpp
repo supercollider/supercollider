@@ -26,6 +26,8 @@
 
 #ifdef __APPLE__
 #import <Foundation/Foundation.h>
+#include <mach-o/dyld.h>
+#include <libgen.h>
 #endif
 
 #ifdef _WIN32
@@ -268,11 +270,17 @@ bool sc_IsStandAlone()
 
 void sc_GetResourceDirectory(char* pathBuf, int length)
 {
-#ifdef SC_DATA_DIR
-	strncpy(pathBuf, SC_DATA_DIR, length);
-#else
-	strncpy(pathBuf, "/usr/local/share/SuperCollider", length);
-#endif
+	char path[1024];
+	uint32_t size = sizeof(path);
+	if (_NSGetExecutablePath(path, &size) != 0)
+		throw std::runtime_error("cannot get current working directory. (path too long?)");
+	char * exeDir = dirname(path);
+	char * sufix = "/../share/SuperCollider";
+	char * fullPath = (char *) malloc(1 + strlen(exeDir)+ strlen(sufix) );
+	strcpy(fullPath, exeDir);
+	strcat(fullPath, sufix);
+
+	strncpy(pathBuf, fullPath, length);
 }
 
 void sc_AppendBundleName(char *str, int size)
