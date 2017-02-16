@@ -20,11 +20,11 @@ OSXPlatform : UnixPlatform {
 	startup {
 		// this assumes sclang, scsynth, supernova and plugins are either installed
 		// in an MacOS app-bundle, or in a folder tree following the fhs-conventions
-		var resDir = Platform.resourceDir, prefixDir=Platform.resourceDir.dirname.dirname;
+		var resDir = Platform.resourceDir;
 		if(resDir.contains(".app"), {
 			Server.program = "exec %/scsynth".format((resDir +/+ "../Resources").shellQuote);
 		}, {
-			Server.program = ("exec %/scsynth -U " ++ prefixDir +/+ "lib/SuperCollider/plugins").format((prefixDir +/+ "bin").shellQuote);
+			Server.program = "exec %/scsynth".format((resDir +/+ "../../bin").shellQuote);
 		});
 
 		Score.program = Server.program;
