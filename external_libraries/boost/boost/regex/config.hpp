@@ -149,7 +149,7 @@
 /* disable our own file-iterators and mapfiles if we can't
  * support them: */
 #if defined(_WIN32)
-#  if defined(BOOST_REGEX_NO_W32) || BOOST_PLAT_WINDOWS_STORE
+#  if defined(BOOST_REGEX_NO_W32) || BOOST_PLAT_WINDOWS_RUNTIME
 #    define BOOST_REGEX_NO_FILEITER
 #  endif
 #else // defined(_WIN32)

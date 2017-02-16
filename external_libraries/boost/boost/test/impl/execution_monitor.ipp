@@ -1137,6 +1137,8 @@ execution_monitor::catch_signals( boost::function<int ()> const& F )
     detail::system_signal_exception SSE( this );
 
     int ret_val = 0;
+    // clang windows workaround: this not available in __finally scope
+    bool l_catch_system_errors = p_catch_system_errors;
 
     __try {
         __try {
@@ -1147,7 +1149,7 @@ execution_monitor::catch_signals( boost::function<int ()> const& F )
         }
     }
     __finally {
-        if( p_catch_system_errors ) {
+        if( l_catch_system_errors ) {
             BOOST_TEST_CRT_SET_HOOK( old_crt_hook );
 
            _set_invalid_parameter_handler( old_iph );
@@ -1380,8 +1382,8 @@ enable( unsigned mask )
 
     return ~old_cw & BOOST_FPE_ALL;
 #elif defined(__GLIBC__) && defined(__USE_GNU) && !defined(BOOST_CLANG) && !defined(BOOST_NO_FENV_H)
-    ::feclearexcept(BOOST_FPE_ALL);
-    int res = ::feenableexcept( mask );
+    feclearexcept(BOOST_FPE_ALL);
+    int res = feenableexcept( mask );
     return res == -1 ? (unsigned)BOOST_FPE_INV : (unsigned)res;
 #else
     /* Not Implemented  */
@@ -1417,8 +1419,8 @@ disable( unsigned mask )
 
     return ~old_cw & BOOST_FPE_ALL;
 #elif defined(__GLIBC__) && defined(__USE_GNU) && !defined(BOOST_CLANG) && !defined(BOOST_NO_FENV_H)
-    ::feclearexcept(BOOST_FPE_ALL);
-    int res = ::fedisableexcept( mask );
+    feclearexcept(BOOST_FPE_ALL);
+    int res = fedisableexcept( mask );
     return res == -1 ? (unsigned)BOOST_FPE_INV : (unsigned)res;
 #else
     /* Not Implemented */

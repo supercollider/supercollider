@@ -41,16 +41,6 @@ TDuty : Duty {
 	}
 }
 
-// old version with gap first
-TDuty_old  {
-	*ar { arg dur = 1.0, reset = 0.0, level = 1.0, doneAction = 0;
-		^TDuty.ar(dur, reset, level, doneAction, 1)
-	}
-	*kr { arg dur = 1.0, reset = 0.0, level = 1.0, doneAction = 0;
-		^TDuty.kr(dur, reset, level, doneAction, 1)
-	}
-}
-
 DemandEnvGen : UGen {
 
 	*kr { arg level, dur, shape = 1, curve = 0, gate = 1.0, reset = 1.0,
@@ -170,12 +160,6 @@ Dconst : DUGen {
 	}
 }
 
-Donce : DUGen {
-	*new { arg in;
-		^this.multiNew('demand', in)
-	}
-}
-
 Dreset : DUGen {
 	*new { arg in, reset = 0.0;
 		^this.multiNew('demand', in, reset)
@@ -224,7 +208,7 @@ Dunique : UGen {
 			ird = LocalBuf(1).clear;
 			index = Dbufwr(Dseries(0, 1, inf), ird);
 			overrun = Dbufrd(iwr) - Dbufrd(ird) > buffer.numFrames;
-			 // catch buffer overrun by switching to a zero length series
+			// catch buffer overrun by switching to a zero length series
 			brd = Dswitch1([brd, Dseries(length:0)], overrun);
 		} {
 			index = Dseq([Dseries(0, 1, buffer.numFrames)], inf)

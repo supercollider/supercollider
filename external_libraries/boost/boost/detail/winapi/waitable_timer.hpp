@@ -75,6 +75,25 @@ using ::OpenWaitableTimerA;
 using ::OpenWaitableTimerW;
 using ::CancelWaitableTimer;
 
+#if defined( BOOST_USE_WINDOWS_H )
+
+const DWORD_ TIMER_ALL_ACCESS_ = TIMER_ALL_ACCESS;
+const DWORD_ TIMER_MODIFY_STATE_ = TIMER_MODIFY_STATE;
+const DWORD_ TIMER_QUERY_STATE_ = TIMER_QUERY_STATE;
+
+#else // defined( BOOST_USE_WINDOWS_H )
+
+const DWORD_ TIMER_ALL_ACCESS_ = 0x001F0003;
+const DWORD_ TIMER_MODIFY_STATE_ = 0x00000002;
+const DWORD_ TIMER_QUERY_STATE_ = 0x00000001;
+
+#endif // defined( BOOST_USE_WINDOWS_H )
+
+const DWORD_ timer_all_access = TIMER_ALL_ACCESS_;
+const DWORD_ timer_modify_state = TIMER_MODIFY_STATE_;
+const DWORD_ timer_query_state = TIMER_QUERY_STATE_;
+
+
 #if !defined( BOOST_NO_ANSI_APIS )
 BOOST_FORCEINLINE HANDLE_ CreateWaitableTimerA(PSECURITY_ATTRIBUTES_ lpTimerAttributes, BOOL_ bManualReset, LPCSTR_ lpTimerName)
 {

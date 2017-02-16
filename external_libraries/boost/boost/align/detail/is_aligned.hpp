@@ -23,13 +23,6 @@ inline bool is_aligned(const void* ptr, std::size_t alignment)
     return is_aligned(reinterpret_cast<std::size_t>(ptr), alignment);
 }
 
-inline bool is_aligned(std::size_t alignment, const void* ptr)
-    BOOST_NOEXCEPT
-{
-    BOOST_ASSERT(detail::is_alignment(alignment));
-    return is_aligned(reinterpret_cast<std::size_t>(ptr), alignment);
-}
-
 } /* .alignment */
 } /* .boost */
 

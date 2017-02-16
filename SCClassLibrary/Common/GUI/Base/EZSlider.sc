@@ -245,7 +245,7 @@ EZSlider : EZGui {
 						);
 				},
 
-			 \vert, {
+			\vert, {
 				hasLabel.not.if{ gap1 = 0@0; labelSize.x = 0 ;};
 				hasLabel.not.if{labelH=0};
 				labelBounds = (rect.width@labelH).asRect; // to top
@@ -264,7 +264,7 @@ EZSlider : EZGui {
 					);
 				},
 
-			 \horz, {
+			\horz, {
 				hasLabel.not.if{ gap1 = 0@0; labelSize.x = 0 ;};
 				labelSize.y = rect.height;
 				labelBounds = (labelSize.x@labelSize.y).asRect; //to left

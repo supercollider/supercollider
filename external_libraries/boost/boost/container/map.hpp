@@ -596,7 +596,7 @@ class map
    //! <b>Complexity</b>: Logarithmic in general, but amortized constant if t
    //!   is inserted right before p.
    iterator insert(const_iterator p, BOOST_RV_REF(nonconst_value_type) x)
-   { return this->base_t::insert_unique(p, boost::move(x)); }
+   { return this->base_t::insert_unique_convertible(p, boost::move(x)); }
 
    //! <b>Effects</b>: Move constructs a new value from x if and only if there is
    //!   no element in the container with key equivalent to the key of x.
@@ -608,7 +608,7 @@ class map
    //! <b>Complexity</b>: Logarithmic in general, but amortized constant if t
    //!   is inserted right before p.
    iterator insert(const_iterator p, BOOST_RV_REF(movable_value_type) x)
-   { return this->base_t::insert_unique(p, boost::move(x)); }
+   { return this->base_t::insert_unique_convertible(p, boost::move(x)); }
 
    //! <b>Effects</b>: Inserts a copy of x in the container.
    //!   p is a hint pointing to where the insert should start to search.
@@ -617,7 +617,7 @@ class map
    //!
    //! <b>Complexity</b>: Logarithmic.
    iterator insert(const_iterator p, const nonconst_value_type& x)
-   { return this->base_t::insert_unique(p, x); }
+   { return this->base_t::insert_unique_convertible(p, x); }
 
    //! <b>Effects</b>: Inserts an element move constructed from x in the container.
    //!   p is a hint pointing to where the insert should start to search.
@@ -847,31 +847,10 @@ class map
 
    #ifndef BOOST_CONTAINER_DOXYGEN_INVOKED
    private:
-   mapped_type& priv_subscript(const key_type &k)
+   template<class KeyConvertible>
+   mapped_type& priv_subscript(BOOST_FWD_REF(KeyConvertible) k)
    {
-      //we can optimize this
-      iterator i = this->lower_bound(k);
-      // i->first is greater than or equivalent to k.
-      if (i == this->end() || this->key_comp()(k, (*i).first)){
-         container_detail::value_init<mapped_type> m;
-         movable_value_type val(k, boost::move(m.m_t));
-         i = insert(i, boost::move(val));
-      }
-      return (*i).second;
-   }
-
-   mapped_type& priv_subscript(BOOST_RV_REF(key_type) mk)
-   {
-      key_type &k = mk;
-      //we can optimize this
-      iterator i = this->lower_bound(k);
-      // i->first is greater than or equivalent to k.
-      if (i == this->end() || this->key_comp()(k, (*i).first)){
-         container_detail::value_init<mapped_type> m;
-         movable_value_type val(boost::move(k), boost::move(m.m_t));
-         i = insert(i, boost::move(val));
-      }
-      return (*i).second;
+      return this->insert_from_key(boost::forward<KeyConvertible>(k))->second;
    }
 
    #endif   //#ifndef BOOST_CONTAINER_DOXYGEN_INVOKED
@@ -1312,7 +1291,7 @@ class multimap
    //! <b>Complexity</b>: Logarithmic in general, but amortized constant if t
    //!   is inserted right before p.
    iterator insert(const_iterator p, const nonconst_value_type& x)
-   { return this->base_t::insert_equal(p, x); }
+   { return this->base_t::insert_equal_convertible(p, x); }
 
    //! <b>Effects</b>: Inserts a new value move constructed from x in the container.
    //!   p is a hint pointing to where the insert should start to search.
@@ -1323,7 +1302,7 @@ class multimap
    //! <b>Complexity</b>: Logarithmic in general, but amortized constant if t
    //!   is inserted right before p.
    iterator insert(const_iterator p, BOOST_RV_REF(nonconst_value_type) x)
-   { return this->base_t::insert_equal(p, boost::move(x)); }
+   { return this->base_t::insert_equal_convertible(p, boost::move(x)); }
 
    //! <b>Effects</b>: Inserts a new value move constructed from x in the container.
    //!   p is a hint pointing to where the insert should start to search.
@@ -1334,7 +1313,7 @@ class multimap
    //! <b>Complexity</b>: Logarithmic in general, but amortized constant if t
    //!   is inserted right before p.
    iterator insert(const_iterator p, BOOST_RV_REF(movable_value_type) x)
-   { return this->base_t::insert_equal(p, boost::move(x)); }
+   { return this->base_t::insert_equal_convertible(p, boost::move(x)); }
 
    //! <b>Requires</b>: first, last are not iterators into *this.
    //!

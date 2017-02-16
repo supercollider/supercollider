@@ -66,7 +66,7 @@ BusPlug : AbstractFunction {
 		};
 		this.prepareOutput;
 		output = InBus.ar(bus, numChannels, offset, clip);
-		 // always return an array if no channel size is specified
+		// always return an array if no channel size is specified
 		^if(numChannels.isNil) { output.asArray } { output }
 	}
 
@@ -77,7 +77,7 @@ BusPlug : AbstractFunction {
 		};
 		this.prepareOutput;
 		output = InBus.kr(bus, numChannels, offset, clip);
-		 // always return an array if no channel size is specified
+		// always return an array if no channel size is specified
 		^if(numChannels.isNil) { output.asArray } { output }
 	}
 

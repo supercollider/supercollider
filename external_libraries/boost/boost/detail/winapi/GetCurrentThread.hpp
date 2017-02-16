@@ -10,25 +10,16 @@
 #ifndef BOOST_DETAIL_WINAPI_GETCURRENTTHREAD_HPP
 #define BOOST_DETAIL_WINAPI_GETCURRENTTHREAD_HPP
 
-#include <boost/detail/winapi/basic_types.hpp>
+#include <boost/detail/winapi/get_current_thread.hpp>
 
 #ifdef BOOST_HAS_PRAGMA_ONCE
 #pragma once
 #endif
 
-// Windows CE define GetCurrentThread as an inline function in kfuncs.h
-#if !defined( BOOST_USE_WINDOWS_H ) && !defined( UNDER_CE )
-extern "C" {
-BOOST_SYMBOL_IMPORT boost::detail::winapi::HANDLE_ WINAPI GetCurrentThread(BOOST_DETAIL_WINAPI_VOID);
-}
+#if defined(__GNUC__)
+#pragma message "This header is deprecated, use boost/detail/winapi/get_current_thread.hpp instead."
+#elif defined(_MSC_VER)
+#pragma message("This header is deprecated, use boost/detail/winapi/get_current_thread.hpp instead.")
 #endif
-
-namespace boost {
-namespace detail {
-namespace winapi {
-using ::GetCurrentThread;
-}
-}
-}
 
 #endif // BOOST_DETAIL_WINAPI_GETCURRENTTHREAD_HPP

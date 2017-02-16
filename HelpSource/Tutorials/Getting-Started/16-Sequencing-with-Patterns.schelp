@@ -39,7 +39,7 @@ dur = Pseq([2, 2, 1, 0.5, 0.5, 1, 1, 2, 2, 3], 1).asStream;
 
 SynthDef(\smooth, { |freq = 440, sustain = 1, amp = 0.5|
 	var sig;
-	sig = SinOsc.ar(freq, 0, amp) * EnvGen.kr(Env.linen(0.05, sustain, 0.1), doneAction: 2);
+	sig = SinOsc.ar(freq, 0, amp) * EnvGen.kr(Env.linen(0.05, sustain, 0.1), doneAction: Done.freeSelf);
 	Out.ar(0, sig ! 2)
 }).add;
 
@@ -63,27 +63,27 @@ The SuperCollider pattern library is large (over 120 classes, not including exte
 Many patterns take lists of values and return them in some order.
 
 definitionList::
-## Pseq(list, repeats, offset) || return the list's values in order
-## Pshuf(list, repeats) || scramble the list into random order
-## Prand(list, repeats) || choose from the list's values randomly
-## Pxrand(list, repeats) || choose randomly, but never return the same list item twice in a row
-## Pwrand(list, weights, repeats) || like Prand, but chooses values according to a list of probabilities/weights
+## link::Classes/Pseq::(list, repeats, offset) || return the list's values in order
+## link::Classes/Pshuf::(list, repeats) || scramble the list into random order
+## link::Classes/Prand::(list, repeats) || choose from the list's values randomly
+## link::Classes/Pxrand::(list, repeats) || choose randomly, but never return the same list item twice in a row
+## link::Classes/Pwrand::(list, weights, repeats) || like Prand, but chooses values according to a list of probabilities/weights
 ::
 
 Other patterns generate values according to various parameters. In addition to these basic patterns, there is a whole set of random number generators that produce specific distributions, and also chaotic functions.
 
 definitionList::
-## Pseries(start, step, length) || arithmetic series, e.g., 1, 2, 3, 4, 5
-## Pgeom(start, grow, length) || geometric series, e.g., 1, 2, 4, 8, 16
-## Pwhite(lo, hi, length) || random number generator, uses rrand(lo, hi) -- equal distribution
-## Pexprand(lo, hi, length) || random number generator, uses exprand(lo, hi) -- exponential distribution
+## link::Classes/Pseries::(start, step, length) || arithmetic series, e.g., 1, 2, 3, 4, 5
+## link::Classes/Pgeom::(start, grow, length) || geometric series, e.g., 1, 2, 4, 8, 16
+## link::Classes/Pwhite::(lo, hi, length) || random number generator, uses rrand(lo, hi) -- equal distribution
+## link::Classes/Pexprand::(lo, hi, length) || random number generator, uses exprand(lo, hi) -- exponential distribution
 ::
 
 Other patterns modify the output of value patterns. These are called FilterPatterns.
 
 definitionList::
-## Pn(pattern, repeats) || repeat the pattern as many times as repeats indicates
-## Pstutter(n, pattern) || repeat individual values from a pattern emphasis::n:: times. emphasis::n:: may be a numeric pattern itself.
+## link::Classes/Pn::(pattern, repeats) || repeat the pattern as many times as repeats indicates
+## link::Classes/Pstutter::(n, pattern) || repeat individual values from a pattern emphasis::n:: times. emphasis::n:: may be a numeric pattern itself.
 ::
 
 You can use patterns inside of other patterns. Here, we generate random numbers over a gradually increasing range. The upper bound on the random number generator is a stream that starts at 0.01, then proceeds to 0.02, 0.03 and so on, as the plot shows clearly.
@@ -112,7 +112,7 @@ code::
 (
 SynthDef(\smooth, { |freq = 440, sustain = 1, amp = 0.5|
 	var sig;
-	sig = SinOsc.ar(freq, 0, amp) * EnvGen.kr(Env.linen(0.05, sustain, 0.1), doneAction: 2);
+	sig = SinOsc.ar(freq, 0, amp) * EnvGen.kr(Env.linen(0.05, sustain, 0.1), doneAction: Done.freeSelf);
 	Out.ar(0, sig ! 2)
 }).add;
 )
@@ -157,7 +157,7 @@ SynthDef(\bass, { |freq = 440, gate = 1, amp = 0.5, slideTime = 0.17, ffreq = 11
 		env = Env.adsr(0.01, 0.3, 0.4, 0.1);
 	freq = Lag.kr(freq, slideTime);
 	sig = Mix(VarSaw.ar([freq, freq * detune], 0, width, preamp)).distort * amp
-		* EnvGen.kr(env, gate, doneAction: 2);
+		* EnvGen.kr(env, gate, doneAction: Done.freeSelf);
 	sig = LPF.ar(sig, ffreq);
 	Out.ar(0, sig ! 2)
 }).add;
@@ -195,7 +195,7 @@ p = Pxrand([
 SynthDef(\kik, { |preamp = 1, amp = 1|
 	var	freq = EnvGen.kr(Env([400, 66], [0.08], -3)),
 		sig = SinOsc.ar(freq, 0.5pi, preamp).distort * amp
-			* EnvGen.kr(Env([0, 1, 0.8, 0], [0.01, 0.1, 0.2]), doneAction: 2);
+			* EnvGen.kr(Env([0, 1, 0.8, 0], [0.01, 0.1, 0.2]), doneAction: Done.freeSelf);
 	Out.ar(0, sig ! 2);
 }).add;
 

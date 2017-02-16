@@ -71,11 +71,11 @@ s.boot;
 SynthDef("modsine",
 	{ arg freq=320, amp=0.2;
 		Out.ar(0, SinOsc.ar(freq, 0, amp));
-	}).send(s);
+	}).add;
 SynthDef("lfo",
 	{ arg rate=2, busNum=0;
 		Out.kr(busNum, LFPulse.kr(rate, 0, 0.1, 0.2))
-	}).send(s);
+	}).add;
 )
 
 //start nodes

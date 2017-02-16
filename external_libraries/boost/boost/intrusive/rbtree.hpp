@@ -121,9 +121,13 @@ class rbtree_impl
 
    typedef typename implementation_defined::insert_commit_data insert_commit_data;
 
+   //! @copydoc ::boost::intrusive::bstree::bstree()
+   rbtree_impl()
+      :  tree_type()
+   {}
+
    //! @copydoc ::boost::intrusive::bstree::bstree(const key_compare &,const value_traits &)
-   explicit rbtree_impl( const key_compare &cmp = key_compare()
-                       , const value_traits &v_traits = value_traits())
+   explicit rbtree_impl( const key_compare &cmp, const value_traits &v_traits = value_traits())
       :  tree_type(cmp, v_traits)
    {}
 
@@ -258,6 +262,14 @@ class rbtree_impl
    std::pair<iterator, bool> insert_unique_check
       (const_iterator hint, const KeyType &key
       ,KeyTypeKeyCompare comp, insert_commit_data &commit_data);
+
+   //! @copydoc ::boost::intrusive::bstree::insert_unique_check(const key_type&,insert_commit_data&)
+   std::pair<iterator, bool> insert_unique_check
+      (const key_type &key, insert_commit_data &commit_data);
+
+   //! @copydoc ::boost::intrusive::bstree::insert_unique_check(const_iterator,const key_type&,insert_commit_data&)
+   std::pair<iterator, bool> insert_unique_check
+      (const_iterator hint, const key_type &key, insert_commit_data &commit_data);
 
    //! @copydoc ::boost::intrusive::bstree::insert_unique_commit
    iterator insert_unique_commit(reference value, const insert_commit_data &commit_data);
@@ -509,8 +521,11 @@ class rbtree
    //Assert if passed value traits are compatible with the type
    BOOST_STATIC_ASSERT((detail::is_same<typename value_traits::value_type, T>::value));
 
-   explicit rbtree( const key_compare &cmp = key_compare()
-                  , const value_traits &v_traits = value_traits())
+   rbtree()
+      :  Base()
+   {}
+
+   explicit rbtree( const key_compare &cmp, const value_traits &v_traits = value_traits())
       :  Base(cmp, v_traits)
    {}
 

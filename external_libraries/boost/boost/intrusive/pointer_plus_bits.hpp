@@ -67,19 +67,19 @@ struct pointer_plus_bits<T*, NumBits>
    static const uintptr_t Mask = uintptr_t((uintptr_t(1u) << NumBits) - 1);
    typedef T*        pointer;
 
-   static pointer get_pointer(pointer n)
+   BOOST_INTRUSIVE_FORCEINLINE static pointer get_pointer(pointer n)
    {  return pointer(uintptr_t(n) & uintptr_t(~Mask));  }
 
-   static void set_pointer(pointer &n, pointer p)
+   BOOST_INTRUSIVE_FORCEINLINE static void set_pointer(pointer &n, pointer p)
    {
       BOOST_INTRUSIVE_INVARIANT_ASSERT(0 == (uintptr_t(p) & Mask));
       n = pointer(uintptr_t(p) | (uintptr_t(n) & Mask));
    }
 
-   static std::size_t get_bits(pointer n)
+   BOOST_INTRUSIVE_FORCEINLINE static std::size_t get_bits(pointer n)
    {  return std::size_t(uintptr_t(n) & Mask);  }
 
-   static void set_bits(pointer &n, std::size_t c)
+   BOOST_INTRUSIVE_FORCEINLINE static void set_bits(pointer &n, std::size_t c)
    {
       BOOST_INTRUSIVE_INVARIANT_ASSERT(uintptr_t(c) <= Mask);
       n = pointer(uintptr_t((get_pointer)(n)) | uintptr_t(c));

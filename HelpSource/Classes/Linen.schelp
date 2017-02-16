@@ -37,7 +37,7 @@ argument::doneAction
 
 An integer representing an action to be executed when the
 envelope is finished. See
-link::Reference/UGen-doneActions::  for
+link::Classes/Done::  for
 more detail.
 
 
@@ -49,7 +49,7 @@ code::
 (
 SynthDef("help-Linen",{ arg out = 0;
 	Out.ar(out,
-		Linen.kr(Impulse.kr(2), 0.01, 0.6, 1.0, doneAction: 0) * SinOsc.ar(440, 0, 0.1)
+		Linen.kr(Impulse.kr(2), 0.01, 0.6, 1.0, doneAction: Done.none) * SinOsc.ar(440, 0, 0.1)
 	)
 }).play;
 )
@@ -58,7 +58,7 @@ SynthDef("help-Linen",{ arg out = 0;
 (
 SynthDef("help-Linen",{ arg out=0;
 	Out.ar(out,
-		Linen.kr(Impulse.kr(0), 0.01, 0.6, 1.0, doneAction: 2) * SinOsc.ar(440, 0, 0.1)
+		Linen.kr(Impulse.kr(0), 0.01, 0.6, 1.0, doneAction: Done.freeSelf) * SinOsc.ar(440, 0, 0.1)
 	)
 }).play;
 )
@@ -67,7 +67,7 @@ SynthDef("help-Linen",{ arg out=0;
 (
 x = SynthDef("help-Linen",{ arg gate = 1, out = 0; // use gate arg for release
 	Out.ar(out,
-		Linen.kr(gate, 0.01, 0.6, 1.0, doneAction: 2) * SinOsc.ar(440, 0, 0.1)
+		Linen.kr(gate, 0.01, 0.6, 1.0, doneAction: Done.freeSelf) * SinOsc.ar(440, 0, 0.1)
 	)
 }).play;
 )
@@ -79,7 +79,7 @@ SynthDef("help-Linen",{ arg out = 0, dur = 0.1;
 	var gate;
 	gate = Trig.kr(1.0, dur);
 	Out.ar(out,
-		Linen.kr(gate, 0.01, 0.6, 1.0, doneAction: 2) * SinOsc.ar(440, 0, 0.1)
+		Linen.kr(gate, 0.01, 0.6, 1.0, doneAction: Done.freeSelf) * SinOsc.ar(440, 0, 0.1)
 	)
 }).play(nil, [\out, 0, \dur, 2.0]);
 )
@@ -90,10 +90,10 @@ SynthDef("help-Linen",{ arg out = 0, dur = 0.1;
 (
 SynthDef("help-Linen",{ arg out=0,freq=440,attackTime=0.01,susLevel=0.6,releaseTime=0.1;
 	Out.ar(out,
-		Linen.kr(Impulse.kr(0), attackTime, susLevel, releaseTime, doneAction: 2)
+		Linen.kr(Impulse.kr(0), attackTime, susLevel, releaseTime, doneAction: Done.freeSelf)
 			* SinOsc.ar(freq, 0, 0.1)
 	)
-}).send(s);
+}).add;
 )
 
 (
@@ -120,7 +120,7 @@ SynthDef("help-Linen",{ arg out = 0;
 			// sustain level is polled at time of trigger
 			FSinOsc.kr(0.1).range(0, 1),
 			1.0,
-			doneAction: 0)
+			doneAction: Done.none)
 
 			* SinOsc.ar(440, 0, 0.1)
 	)

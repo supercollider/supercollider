@@ -317,6 +317,16 @@ struct is_class_or_union< ::boost::container::container_detail::pair<T1, T2> >
    static const bool value = true;
 };
 
+template <class T1, class T2>
+struct is_class_or_union< std::pair<T1, T2> >
+//This specialization is needed to avoid instantiation of pair in
+//is_class, and allow recursive maps.
+{
+   static const bool value = true;
+};
+
+
+
 
 }  //namespace move_detail{
 

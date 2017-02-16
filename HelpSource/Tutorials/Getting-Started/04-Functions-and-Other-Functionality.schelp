@@ -164,7 +164,7 @@ myFunc.value("bar");
 myFunc;			// throws an error
 ::
 
-You may be wondering why we haven't needed to declare variables like code::f::, and why they don't seem to have any particular scope (i.e. they keep there values even when executing code one line at a time). The letters a to z are what are called interpreter variables. These are pre-declared when you start up SC, and have an unlimited, or 'global', scope. This makes them useful for quick tests or examples. You've already encountered one of these, the variable 's', which you'll recall by default refers to the localhost server.
+You may be wondering why we haven't needed to declare variables like code::f::, and why they don't seem to have any particular scope (i.e. they keep their values even when executing code one line at a time). The letters a to z are what are called interpreter variables. These are pre-declared when you start up SC, and have an unlimited, or 'global', scope. This makes them useful for quick tests or examples. You've already encountered one of these, the variable 's', which you'll recall by default refers to the localhost server.
 
 For more information see:
 

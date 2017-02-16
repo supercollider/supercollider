@@ -138,11 +138,11 @@ NodeProxy : BusPlug {
 
 
 		if(this.shouldAddObject(container, index)) {
-			 // server sync happens here if necessary
+			// server sync happens here if necessary
 			if(server.serverRunning) { container.loadToBundle(bundle, server) } { loaded = false; };
 			this.prepareOtherObjects(bundle, index, oldBus.notNil and: { oldBus !== bus });
 		} {
-			format("failed to add % to node proxy: %", obj, this).inform;
+			format("failed to add % to node proxy: %", obj, this).postln;
 			^this
 		};
 
@@ -255,15 +255,6 @@ NodeProxy : BusPlug {
 		this.linkNodeMap;
 	}
 
-	server_ { | inServer |
-		this.deprecated(thisMethod);
-		if(this.isNeutral.not) {
-			this.end;
-			loaded = false;
-		};
-		server = inServer;
-	}
-
 	group_ { | inGroup |
 		var bundle;
 		if(inGroup.server !== server) { Error("cannot move to another server").throw };
@@ -321,11 +312,6 @@ NodeProxy : BusPlug {
 		this.set(*args)
 	}
 
-	mapn { | ... args |
-		"NodeProxy: mapn is deprecated, please use map instead".postln;
-		this.map(*args)
-	}
-
 	xset { | ... args |
 		this.xFadePerform(\set, args)
 	}
@@ -334,10 +320,6 @@ NodeProxy : BusPlug {
 	}
 	xsetn { | ... args |
 		this.xFadePerform(\set, args)
-	}
-	xmapn { | ... args |
-		"NodeProxy: xmapn is decrepated, please use xmap instead".postln;
-		this.xFadePerform(\map, args)
 	}
 	xunset { | ... args |
 		this.xFadePerform(\unset, args)
@@ -450,6 +432,7 @@ NodeProxy : BusPlug {
 
 	spawn { | extraArgs, index = 0 |
 		var bundle, obj, i;
+		if(server.serverRunning.not) { "server '%' not running\n".postf(server); ^this };
 		obj = objects.at(index);
 		if(obj.notNil) {
 			i = this.index;
@@ -464,6 +447,7 @@ NodeProxy : BusPlug {
 	send { | extraArgs, index, freeLast = true |
 		var bundle, obj, fadeTime = this.fadeTime;
 		if(objects.isEmpty) { ^this };
+		if(server.serverRunning.not) { "server '%' not running\n".postf(server); ^this };
 		if(index.isNil) {
 			bundle = this.getBundle;
 			if(freeLast) { this.stopAllToBundle(bundle, fadeTime) };
@@ -489,11 +473,13 @@ NodeProxy : BusPlug {
 
 	sendEach { | extraArgs, freeLast = true |
 		var bundle;
+		if(server.serverRunning.not) { "server '%' not running\n".postf(server); ^this };
 		bundle = this.getBundle;
 		if(freeLast, { this.stopAllToBundle(bundle) });
 		if(loaded.not) { this.loadToBundle(bundle) };
 		this.sendEachToBundle(bundle, extraArgs);
-		bundle.schedSend(server);
+		bundle.schedSend(server)
+
 
 	}
 
@@ -511,6 +497,7 @@ NodeProxy : BusPlug {
 
 	deepWakeUp {
 		var bundle = MixedBundle.new;
+		if(server.serverRunning.not) { "server '%' not running\n".postf(server); ^this };
 		this.wakeUpToBundle(bundle);
 		bundle.schedSend(server, clock ? TempoClock.default, quant)
 	}
@@ -947,10 +934,13 @@ NodeProxy : BusPlug {
 	}
 
 	generateUniqueName {
-		// if named, give us the name so we see it
+		var uniqueName = this.identityHash;
+		// if named, add the name so we see it
 		// in synthdef names of the server's nodes.
-		var key = this.key ?? this.identityHash.abs;
-		^server.clientID.asString ++ key ++ "_";
+		if(this.key.notNil, {
+			uniqueName = this.key ++ uniqueName;
+		});
+		^server.clientID.asString ++ uniqueName ++ "_";
 	}
 
 	prepareOutput {
@@ -1015,6 +1005,7 @@ Ndef : NodeProxy {
 		res = dict.envir.at(key);
 		if(res.isNil) {
 			res = super.new(server).key_(key);
+			dict.initProxy(res);
 			dict.envir.put(key, res)
 		};
 

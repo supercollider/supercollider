@@ -27,13 +27,13 @@ SerialPort {
 
 	*new {
 		| port,
-		  baudrate(9600),
-		  databits(8),
-		  stopbit(true),
-		  parity(nil),
-		  crtscts(false),
-		  xonxoff(false)
-		  exclusive(false) |
+			baudrate(9600),
+			databits(8),
+			stopbit(true),
+			parity(nil),
+			crtscts(false),
+			xonxoff(false)
+			exclusive(false) |
 
 		if (port.isNumber) {
 			port = this.devices[port] ?? {
@@ -56,9 +56,9 @@ SerialPort {
 	initSerialPort { | ... args |
 		semaphore = Semaphore(0);
 		if ( dataptr.isNil ){
-		  this.prOpen(*args);
-		  allPorts = allPorts.add(this);
-		  doneAction = { ("SerialPort"+args[0]+"was closed").postln; };
+			this.prOpen(*args);
+			allPorts = allPorts.add(this);
+			doneAction = { ("SerialPort"+args[0]+"was closed").postln; };
 		}
 	}
 
@@ -105,12 +105,12 @@ SerialPort {
 	// always blocks
 	put { | byte, timeout=0.005 |
 		if ( dataptr.notNil ){
-		    while { this.prPut(byte).not } {
-			    timeout.wait;
-			    timeout = timeout * 2;
-		    }
+			while { this.prPut(byte).not } {
+				timeout.wait;
+				timeout = timeout * 2;
+			}
 		}{
-		  "SerialPort not open".warn;
+			"SerialPort not open".warn;
 		}
 	}
 	putAll { | bytes, timeout=0.005 |

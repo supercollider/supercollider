@@ -75,7 +75,7 @@ SynthDef("Help_Subsample_Grain",
 		sd = SampleDur.ir;
 		offset = (1 - SubsampleOffset.ir) * sd;
 		// free synth after delay:
-		Line.ar(1,0, attack + sustain + offset, doneAction:2);
+		Line.ar(1,0, attack + sustain + offset, doneAction: Done.freeSelf);
 		env = EnvGen.kr(Env.perc(attack, sustain, 0.2));
 		sig = SinOsc.ar(freq, 0, env);
 

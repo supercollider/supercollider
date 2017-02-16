@@ -9,13 +9,13 @@ SuperCollider IDE is a new cross-platform coding environment, developed specific
 
 It is easy to start using, handy to work with, and sprinkled with powerful features for experienced SuperCollider coders. It is also very customizable.
 
-It runs equally well and looks almost the same on Mac OSX, Linux and Windows 7. (Issues with Windows XP remain to be solved.)
+It runs equally well and looks almost the same on macOS, Linux and Windows 7. (Issues with Windows XP remain to be solved.)
 
 
 
 Section:: Overview
 
-note:: Throughout this document, strong::Ctrl:: indicates the modifier key for keyboard shortcuts that is used on Linux and Windows platforms. strong::On Mac OSX, use Cmd instead::.::
+note:: Throughout this document, strong::Ctrl:: indicates the modifier key for keyboard shortcuts that is used on Linux and Windows platforms. strong::On macOS, use Cmd instead::.::
 
 Here is an annotated screenshot describing various components of the IDE.
 Click link::Guides/sc_ide_overview.png##here:: for a natural-size version.

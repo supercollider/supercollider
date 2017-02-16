@@ -161,7 +161,7 @@ f = FlowView.new;
 
 GUI.slider.new(f, Rect(0,0,100,100));
 
-// sc composite view
+// SuperCollider composite view
 g = f.comp({ arg g;
 	GUI.slider.new(g, Rect(50,30,50,100)).background_(Color.rand);
 	GUI.slider.new(g, Rect(120,30,50,100)).background_(Color.rand);

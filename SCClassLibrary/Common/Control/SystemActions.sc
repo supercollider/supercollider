@@ -43,7 +43,6 @@ CmdPeriod : AbstractSystemAction {
 		if(clearClocks, {
 			SystemClock.clear;
 			AppClock.clear;
-	//		TempoClock.default.clear;
 		});
 
 		objects.copy.do({ arg item; item.doOnCmdPeriod;  });
@@ -93,7 +92,7 @@ StartUp : AbstractSystemAction {
 
 
 	*defer { arg object;
-		 if(done) { object.doOnStartUp } { this.add(object) }
+		if(done) { object.doOnStartUp } { this.add(object) }
 	}
 
 

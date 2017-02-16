@@ -522,7 +522,7 @@ struct gcc_dcas_x86_64
         return compare_exchange_strong(storage, expected, desired, success_order, failure_order);
     }
 
-    static BOOST_FORCEINLINE storage_type exchange(storage_type volatile& storage, storage_type v, memory_order order) BOOST_NOEXCEPT
+    static BOOST_FORCEINLINE storage_type exchange(storage_type volatile& storage, storage_type v, memory_order) BOOST_NOEXCEPT
     {
 #if defined(__clang__)
         // Clang cannot allocate eax:edx register pairs but it has sync intrinsics

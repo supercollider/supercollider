@@ -90,28 +90,23 @@ public:
     aligned_allocator_adaptor() = default;
 #else
     aligned_allocator_adaptor()
-        : Allocator() {
-    }
+        : Allocator() { }
 #endif
 
 #if !defined(BOOST_NO_CXX11_RVALUE_REFERENCES)
     template<class A>
     explicit aligned_allocator_adaptor(A&& alloc) BOOST_NOEXCEPT
-        : Allocator(std::forward<A>(alloc)) {
-    }
+        : Allocator(std::forward<A>(alloc)) { }
 #else
     template<class A>
-    explicit aligned_allocator_adaptor(const A& alloc)
-        BOOST_NOEXCEPT
-        : Allocator(alloc) {
-    }
+    explicit aligned_allocator_adaptor(const A& alloc) BOOST_NOEXCEPT
+        : Allocator(alloc) { }
 #endif
 
     template<class U>
     aligned_allocator_adaptor(const aligned_allocator_adaptor<U,
         Alignment>& other) BOOST_NOEXCEPT
-        : Allocator(other.base()) {
-    }
+        : Allocator(other.base()) { }
 
     Allocator& base() BOOST_NOEXCEPT {
         return static_cast<Allocator&>(*this);

@@ -20,28 +20,101 @@
 
 #include "editor_box.hpp"
 #include "code_editor/sc_editor.hpp"
-#include "../../core/main.hpp"
+#include "../core/main.hpp"
 
 #include <QPainter>
 #include <QScrollBar>
+#include <QModelIndex>
 
 namespace ScIDE {
 
 QPointer<CodeEditorBox> CodeEditorBox::gActiveBox;
 
-CodeEditorBox::CodeEditorBox(QWidget *parent) :
-    QWidget(parent)
+CodeEditorBox::CodeEditorBox(MultiSplitter *splitter, QWidget *parent) :
+    QWidget(parent), mSplitter(splitter)
 {
     setFocusPolicy(Qt::StrongFocus);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    mLayout = new QStackedLayout();
-    setLayout(mLayout);
+    mTopLayout = new QBoxLayout(QBoxLayout::BottomToTop);
+    mTopLayout->setSpacing(1);
+    mTopLayout->setContentsMargins(0, 0, 0, 0);
+    
+    mLayout = new QStackedLayout();     
+    mTopLayout->addLayout(mLayout);
+    setLayout(mTopLayout);
+
+    mDocComboBox = new QComboBox();
+    mDocComboBox->setFocusPolicy(Qt::NoFocus);
+    mTopLayout->addWidget(mDocComboBox);
+
+    mProxyModel = new QSortFilterProxyModel();
+    mProxyModel->setSourceModel(Main::documentManager()->docModel());
+    mProxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
+    mProxyModel->sort( 0 );
+    mDocComboBox->setModel(mProxyModel);
+    
+    connect(mDocComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onComboSelectionChanged(int)), Qt::QueuedConnection);
 
     connect(Main::documentManager(), SIGNAL(closed(Document*)),
             this, SLOT(onDocumentClosed(Document*)));
     connect(Main::documentManager(), SIGNAL(saved(Document*)),
             this, SLOT(onDocumentSaved(Document*)));
+    connect(Main::instance(), SIGNAL(applySettingsRequest(Settings::Manager*)),
+            this, SLOT(applySettings(Settings::Manager*)));
+
+    connect( mSplitter->editor(), SIGNAL(splitViewActivated()), 
+            this, SLOT(comboBoxWhenSplitting()) );
+    connect( mSplitter->editor(), SIGNAL(splitViewDeactivated()), 
+            this, SLOT(tabsWhenRemovingSplits()) );
+
+    applySettings( Main::settings() );
+}
+
+void CodeEditorBox::applySettings( Settings::Manager *settings )
+{
+    bool comboBoxActive = settings->value("IDE/editor/useComboBox").toBool();
+    showComboBox(comboBoxActive);
+
+    comboBoxWhenSplitting();
+}
+
+void CodeEditorBox::comboBoxWhenSplitting() 
+{
+    if ( mSplitter->count()>1 ) {
+        bool comboBoxInUse = Main::settings()->value("IDE/editor/useComboBox").toBool();
+        if (!comboBoxInUse) {
+            bool comboBoxIsInUse = Main::settings()->value("IDE/editor/useComboBoxWhenSplitting").toBool();
+            showComboBox(comboBoxIsInUse);
+        }
+    }
+}
+
+void CodeEditorBox::tabsWhenRemovingSplits() 
+{
+    if ( mSplitter->count()<2 ) {
+        bool comboBoxInUse = Main::settings()->value("IDE/editor/useComboBox").toBool();
+        showComboBox(comboBoxInUse);
+    }
+}
+
+void CodeEditorBox::showComboBox( bool condition )
+{    
+    if (condition)
+        mDocComboBox->show();
+    else
+        mDocComboBox->hide();
+}
+
+void CodeEditorBox::onComboSelectionChanged(int index)
+{
+    QModelIndex proxyIndex = mProxyModel->index(index, 0);
+    QModelIndex mRow = mProxyModel->mapToSource(proxyIndex);
+    int mIndex = mRow.row();
+
+    if(mIndex >=0 && index>=0 && mDocComboBox) {
+        setDocument(Main::documentManager()->docModel()->item(mIndex)->data().value<Document *>(), -1, 0);
+    }
 }
 
 void CodeEditorBox::setDocument(Document *doc, int pos, int selectionLength)
@@ -71,6 +144,17 @@ void CodeEditorBox::setDocument(Document *doc, int pos, int selectionLength)
         editor->setReadOnly(!doc->editable());
         mLayout->setCurrentWidget(editor);
         setFocusProxy(editor);
+        int modelIndex = doc->modelItem()->index().row();
+        if (mDocComboBox) {
+            mDocComboBox->blockSignals(true);
+            QModelIndex mIndex = mProxyModel->index(modelIndex, 0);
+            QModelIndex proxyRow = mProxyModel->mapFromSource(mIndex);
+            int proxyIndex = proxyRow.row();
+            mDocComboBox->setCurrentIndex(proxyIndex);
+            mDocComboBox->setCurrentText(doc->title());
+            mDocComboBox->blockSignals(false);
+        }
+
     }
 
     if (pos != -1)
@@ -86,7 +170,7 @@ void CodeEditorBox::onDocumentClosed(Document *doc)
     if (editor) {
         bool wasCurrent = editor == currentEditor();
         mHistory.removeAll(editor);
-        delete editor;
+        editor->deleteLater();
         if (wasCurrent) {
             editor = currentEditor();
             if (editor)

@@ -105,7 +105,7 @@ function addInheritedMethods() {
             var m = mets[j];
             if(doc.methods.indexOf("_"+m.slice(1))<0) { // ignore methods already documented in this helpfile
                 var li = document.createElement("li");
-                li.innerHTML = "<a href='"+helpRoot+"/"+s.path+".html#"+m.slice(1)+"'>"+m.slice(2)+"</a>";
+                li.innerHTML = "<a href='"+helpRoot+"/"+s.path+".html#"+encodeURIComponent(m.slice(1))+"'>"+m.slice(2)+"</a>";
                 if(m[1]=="*") {
                     d[0].appendChild(li);
                 } else

@@ -69,5 +69,4 @@ Download : QObject {
 			progressFunc.value(bytesReceived, bytesTotal);
 		});
 	}
-
 }

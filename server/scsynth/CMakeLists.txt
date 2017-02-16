@@ -20,7 +20,7 @@ if(AUDIOAPI STREQUAL jack)
   if(NOT JACK_FOUND)
     message(FATAL_ERROR "Jack selected as audio API, but development files not found")
   endif()
-elseif(AUDIOAPI STREQUAL portaudio AND NOT MINGW AND NOT MSVC) # MSYS like Apple
+elseif(AUDIOAPI STREQUAL portaudio AND ((NOT WIN32) OR MSYS)) # MSYS like Apple
     find_package(Portaudio)
     if(NOT PORTAUDIO_FOUND)
       message(FATAL_ERROR "Portaudio selected as audio API, but development files not found")
@@ -312,4 +312,8 @@ else()
 			RUNTIME DESTINATION "bin"
 			LIBRARY DESTINATION "lib"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+endif()
+
+if(${JACK_USE_METADATA_API})
+	target_compile_definitions(libscsynth PUBLIC "-DSC_JACK_USE_METADATA_API")
 endif()

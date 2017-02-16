@@ -88,7 +88,7 @@ EZText : EZGui {
 	}
 
 	setColors { arg stringBackground, stringColor, textBackground, textStringColor,
-			 textNormalColor, textTypingColor, background ;
+			textNormalColor, textTypingColor, background ;
 
 		stringBackground.notNil.if{
 			labelView.notNil.if{labelView.background_(stringBackground)};

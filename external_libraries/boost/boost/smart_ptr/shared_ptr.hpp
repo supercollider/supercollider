@@ -1065,7 +1065,7 @@ template< class T > struct hash;
 
 template< class T > std::size_t hash_value( boost::shared_ptr<T> const & p ) BOOST_NOEXCEPT
 {
-    return boost::hash< T* >()( p.get() );
+    return boost::hash< typename boost::shared_ptr<T>::element_type* >()( p.get() );
 }
 
 } // namespace boost

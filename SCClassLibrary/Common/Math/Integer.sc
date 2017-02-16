@@ -169,10 +169,10 @@ Integer : SimpleNumber {
 	}
 
 	asIPString {
-	    ^this.rightShift(24).bitAnd(255).asString ++ "." ++
-		this.rightShift(16).bitAnd(255).asString ++ "." ++
-		this.rightShift(8).bitAnd(255).asString ++ "." ++
-		this.bitAnd(255).asString
+		^this.rightShift(24).bitAnd(255).asString ++ "." ++
+			this.rightShift(16).bitAnd(255).asString ++ "." ++
+			this.rightShift(8).bitAnd(255).asString ++ "." ++
+			this.bitAnd(255).asString
 	}
 
 	archiveAsCompileString { ^true }

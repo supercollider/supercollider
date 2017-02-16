@@ -1,0 +1,75 @@
+.browser {
+    margin: 0em;
+    border-collapse: collapse;
+    margin-top: 1em;
+}
+.result {
+    padding: 2px;
+}
+.browser td {
+    vertical-align: top;
+    border: none;
+}
+.result_doc {
+    border-bottom: 1px solid #ddd;
+    margin-top: 0.5em;
+}
+.result_summary {
+    color: #444;
+    font-size: 9pt;
+    max-width: 18em;
+    margin-bottom: 0.6em;
+}
+.category, .cat_selected {
+    margin-bottom: 0.25em;
+    border-bottom: 1px solid transparent;
+}
+.cat_selected {
+    border-bottom: 1px solid #777;
+}
+.cat_header {
+    border-bottom: 2px solid #999;
+    color: #777;
+/*    background: #aaa;
+    color: white;*/
+    margin-bottom: 0.25em;
+    padding: 2px;
+/*    font-weight: bold;*/
+}
+.category a {
+    color: #555;
+    font-weight: bold;
+}
+.cat_selected a {
+    color: #000;
+    font-weight: bold;
+}
+.cat_arrow {
+    float: right;
+    padding-left: 1ex;
+    color: #555;
+}
+
+#search_checks {
+    font-size: 9pt;
+    color: #555;
+    border-bottom: 1px solid #ddd;
+    margin-top: 1em;
+    padding-bottom: 1em;
+}
+.cat_count {
+    color: #777;
+    font-size: 9pt;
+}
+#total_count {
+    font-size: 9pt;
+    color: #777;
+}
+.doc_kind {
+    color: #666;
+    float: right;
+    font-size: 8pt;
+    padding: 0 2px;
+    margin-left: 0.5ex;
+    font-weight: bold;
+}

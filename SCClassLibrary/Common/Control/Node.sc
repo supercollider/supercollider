@@ -150,7 +150,7 @@ Node {
 				<< "next :" << next << Char.nl;
 			if(isGroup==1, {
 				Post << "head :" << head << Char.nl
-				 << "tail :" << tail << Char.nl << Char.nl;
+					<< "tail :" << tail << Char.nl << Char.nl;
 			});
 		}, '/n_info', server.addr).oneShot;
 		server.sendMsg(46, nodeID) //"/n_query"
@@ -158,6 +158,10 @@ Node {
 
 	register { arg assumePlaying=false;
 		NodeWatcher.register(this, assumePlaying)
+	}
+
+	unregister {
+		NodeWatcher.unregister(this)
 	}
 
 	onFree { arg func;

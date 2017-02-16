@@ -33,13 +33,13 @@ http://www.boost.org/LICENSE_1_0.txt)
  [table
      [[__predef_symbol__] [__predef_version__]]
 
-     [[`__SSE4A__`] [BOOST_HW_SIMD_x86_SSE4A_VERSION]]
+     [[`__SSE4A__`] [BOOST_HW_SIMD_X86_SSE4A_VERSION]]
 
-     [[`__FMA4__`] [BOOST_HW_SIMD_x86_FMA4_VERSION]]
+     [[`__FMA4__`] [BOOST_HW_SIMD_X86_FMA4_VERSION]]
 
-     [[`__XOP__`] [BOOST_HW_SIMD_x86_XOP_VERSION]]
+     [[`__XOP__`] [BOOST_HW_SIMD_X86_XOP_VERSION]]
 
-     [[`BOOST_HW_SIMD_X86`] [BOOST_HW_SIMD_x86]]
+     [[`BOOST_HW_SIMD_X86`] [BOOST_HW_SIMD_X86]]
      ]
 
  [note This predef includes every other x86 SIMD extensions and also has other

@@ -5,6 +5,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
 endif()
 
 cmake_minimum_required (VERSION 2.8.12)
+set(SUPERNOVA_CMAKE_MINVERSION 3.1)
 
 include("SCVersion.txt")
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}${PROJECT_VERSION_PATCH}")
@@ -57,8 +58,10 @@ if(WIN32)
 
     # might work with "SHARED" as well.
     set(PA_LIBRARY_TYPE "STATIC")
-    set(PORTAUDIO_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/external_libraries/portaudio_sc_org/include" CACHE PATH "Portaudio include directory" FORCE)
-    add_subdirectory("${CMAKE_SOURCE_DIR}/external_libraries/portaudio_sc_org")
+    if(NOT MSYS)
+      set(PORTAUDIO_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/external_libraries/portaudio_sc_org/include" CACHE PATH "Portaudio include directory" FORCE)
+      add_subdirectory("${CMAKE_SOURCE_DIR}/external_libraries/portaudio_sc_org")
+    endif(NOT MSYS)
 endif(WIN32)
 
 #############################################
@@ -147,6 +150,16 @@ endif()
 
 set(AUDIOAPI "default" CACHE STRING "Audio API to use (one of {default,coreaudio,jack,portaudio})")
 
+if (AUDIOAPI STREQUAL jack)
+	# here we check for JACK metadata API
+	include(CheckIncludeFiles)
+	CHECK_INCLUDE_FILES("jack/metadata.h" JACK_USE_METADATA_API)
+	if(${JACK_USE_METADATA_API})
+		message(STATUS "using JACK metadata API")
+	    include_directories(${CMAKE_SOURCE_DIR}/external_libraries/jackey)
+	endif()
+endif()
+
 option(LIBSCSYNTH "Compile libscsynth as shared library" OFF)
 
 option(INSTALL_HELP "Install help docs and examples along with the software" ON)
@@ -186,7 +199,7 @@ endif(NOT SC_IDE AND NOT SC_SCLANG)
 
 option(ENABLE_TESTSUITE "Compile testsuite." ON)
 
-if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+if(CMAKE_SYSTEM_NAME MATCHES "Linux" AND NOT CMAKE_VERSION VERSION_LESS SUPERNOVA_CMAKE_MINVERSION)
     option(SUPERNOVA "Build with supernova as optional audio synthesis server" ON)
 else()
     option(SUPERNOVA "Build with supernova as optional audio synthesis server" OFF)
@@ -223,6 +236,12 @@ option(SYSTEM_YAMLCPP "Use yaml-cpp library from system" OFF)
 
 option(FORTIFY "Define -D_FORTIFY_SOURCE=2 to check for programming errors" OFF)
 
+if(MINGW AND (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 5.3.0))
+    option(SC_HIDAPI "Build with HID support" OFF)
+else()
+    option(SC_HIDAPI "Build with HID support" ON)
+endif()
+
 #############################################
 # some default libraries
 
@@ -257,7 +276,7 @@ endif()
 if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
 	if (SSE)
 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}   -msse")
-		set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -msse")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse")
 		if(NOT APPLE AND NOT CMAKE_COMPILER_IS_CLANG)
 			set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mfpmath=sse")
 			set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mfpmath=sse")
@@ -272,12 +291,22 @@ if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 	endif()
 
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-	set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -std=c++11")
-	if(CMAKE_COMPILER_IS_CLANG)
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-		set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -stdlib=libc++")
-	endif()
+    if( CMAKE_VERSION VERSION_LESS 3.1 )
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+        set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -std=c++11")
+        if(CMAKE_COMPILER_IS_CLANG)
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+            set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -stdlib=libc++")
+        endif()
+    else()
+        set( CMAKE_CXX_STANDARD 11 )
+
+        if(CMAKE_COMPILER_IS_CLANG)
+            # workaround
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+            set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} -stdlib=libc++")
+        endif()
+     endif()
 
 	if(FORTIFY)
 		add_definitions( -D_FORTIFY_SOURCE=2 )
@@ -297,7 +326,7 @@ if (CMAKE_COMPILER_IS_INTEL AND NOT WIN32)
 	add_definitions(-diag-disable 279) # controlling expression is constant
 endif()
 
-if(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
+if(MSVC)
   foreach(flag CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
     set(${flag} "${${flag}} /wd4018") # signed/unsigned mismatch
     set(${flag} "${${flag}} /wd4102") # unreferenced label
@@ -310,17 +339,20 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
   endforeach()
 
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS)
-endif()
+endif(MSVC)
 
 if (SC_MEMORY_DEBUGGING)
 	add_definitions(-DDISABLE_MEMORY_POOLS)
 	add_definitions(-DENABLE_MEMORY_CHECKS)
 endif()
 
-if(MINGW)
+if(MINGW AND (${CMAKE_CXX_COMPILER_VERSION} VERSION_GREATER 4.8.5) AND (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 5.3.0))
 # no-strict-aliasing was introduced because of problems with MinGW/GCC 4.9.2
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mstackrealign -fno-strict-aliasing")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mstackrealign -fno-strict-aliasing")
+elseif(MINGW)
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mstackrealign")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mstackrealign")
 endif()
 
 # support for building on Raspberry Pi 1/2/3 and BBB
@@ -385,11 +417,12 @@ if(UNIX AND NOT (APPLE AND NOT MACOS_FHS))
 endif()
 
 if (WIN32)
-  set(auxresourcesdir "${SC_WIN_BUNDLE_NAME}")
+  set(auxresourcesdir "${SC_WIN_BUNDLE_NAME}" CACHE STRING "Resources directory")
 elseif(APPLE AND NOT MACOS_FHS)
-	set(auxresourcesdir ${scappbundlename})
+  set(auxresourcesdir ${scappbundlename} CACHE STRING "Resources directory")
+
 else()
-	set(auxresourcesdir "share/SuperCollider")
+  set(auxresourcesdir "share/SuperCollider" CACHE STRING "Resources directory")
 endif()
 
 set(SCCLASSLIB_EXCLUDE_REGEX "IGNOREME")
@@ -455,7 +488,7 @@ if (WIN32)
 elseif(APPLE)
 	set( AdditionalInstallFiles
 		README.md
-		README_OS_X.md
+		README_MACOS.md
 		CHANGELOG.md
 		COPYING
 		AUTHORS
@@ -571,3 +604,4 @@ mark_as_advanced(MATH_LIBRARY)
 mark_as_advanced(QT_QMAKE_EXECUTABLE)
 mark_as_advanced(SNDFILE SNDFILE_LIBRARY_DIR)
 mark_as_advanced(MACOS_FHS)
+mark_as_advanced(SC_HIDAPI)

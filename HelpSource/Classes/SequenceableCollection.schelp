@@ -313,15 +313,67 @@ code::
 method::flat
 Returns a collection from which all nesting has been flattened.
 code::
-[[1, 2, 3], [[4, 5], [[6]]]].flat;
+[[1, 2, 3], [[4, 5], [[6]]]].flat; // [ 1, 2, 3, 4, 5, 6 ]
+[1, 2, [3, 4, [5, 6, [7, 8, [9, 0]]]]].flat; // [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 ]
 ::
 
 method::flatten
 Returns a collection from which strong::numLevels:: of nesting has been flattened.
+
+argument::numLevels
+Specifies how many levels downward (inward) to flatten. Zero returns the original.
+
 code::
-[[1, 2, 3], [[4, 5], [[6]]]].flatten(1).postcs;
-[[1, 2, 3], [[4, 5], [[6]]]].flatten(2).postcs;
+a = [1, 2, [3, 4, [5, 6, [7, 8, [9, 0]]]]];
+a.flatten(1); // [ 1, 2, [ 3, 4, [ 5, 6, [ 7, 8, [ 9, 0 ] ] ] ] ]
+a.flatten(2); // [ 1, 2, 3, 4, 5, 6, [ 7, 8, [ 9, 0 ] ] ]
+a.flatten(3); // [ 1, 2, 3, 4, 5, 6, 7, 8, [ 9, 0 ] ]
+a.flatten(4); // [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 ]
 ::
+
+
+method::flatten2
+A symmetric version of link::#-flatten::. For a negative code::numLevels::, it flattens starting from the innermost arrays.
+
+argument::numLevels
+Specifies how many levels downward (inward) or upward (outward) to flatten.
+
+code::
+a = [1, 2, [3, 4, [5, 6, [7, 8, [9, 0]]]]];
+a.flatten2(4);  // [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 ]
+a.flatten2(3);  // [ 1, 2, 3, 4, 5, 6, 7, 8, [ 9, 0 ] ]
+a.flatten2(2);  // [ 1, 2, 3, 4, 5, 6, [ 7, 8, [ 9, 0 ] ] ]
+a.flatten2(1);  // [ 1, 2, 3, 4, [ 5, 6, [ 7, 8, [ 9, 0 ] ] ] ]
+a.flatten2(0);  // [ 1, 2, [ 3, 4, [ 5, 6, [ 7, 8, [ 9, 0 ] ] ] ] ]
+a.flatten2(-1); // [ 1, 2, [ 3, 4, [ 5, 6, [ 7, 8, 9, 0 ] ] ] ]
+a.flatten2(-2); // [ 1, 2, [ 3, 4, [ 5, 6, 7, 8, 9, 0 ] ] ]
+a.flatten2(-3); // [ 1, 2, [ 3, 4, 5, 6, 7, 8, 9, 0 ] ]
+a.flatten2(-4); // [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 ]
+::
+
+
+
+method::flatBelow
+Flatten all subarrays deeper than strong::level::.
+
+argument::level
+Specifies from what level onward to flatten.
+level 0 is outermost, so flatBelow(0) is like flat.
+
+code::
+a = [1, 2, [3, 4, [5, 6, [7, 8, [9, 0]]]]];
+a.flatBelow(0); // [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 ]
+a.flatBelow(1); // [ 1, 2, [ 3, 4, 5, 6, 7, 8, 9, 0 ] ]
+a.flatBelow(2); // [ 1, 2, [ 3, 4, [ 5, 6, 7, 8, 9, 0 ] ] ]
+
+// to set the level below which to flatten from the deepest level up,
+// one can use coll.maxDepth. E.g. to flatten only the innermost level:
+a.flatBelow( (a.maxDepth - 1) - 1);
+// for lowest two levels:
+a.flatBelow( (a.maxDepth - 1) - 2);
+::
+
+
 
 method::flop
 Invert rows and columns in a two dimensional Collection (turn inside out). See also: link::Classes/Function::.

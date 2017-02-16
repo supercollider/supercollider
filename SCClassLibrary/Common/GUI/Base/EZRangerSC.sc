@@ -132,7 +132,7 @@ EZRanger : EZGui {
 		rangeSlider.hi_(controlSpec.unmap(hi));
 	}
 	setColors{arg stringBackground, stringColor, sliderColor,  numBackground,numStringColor,
-			 numNormalColor, numTypingColor, knobColor,background ;
+			numNormalColor, numTypingColor, knobColor,background ;
 
 			stringBackground.notNil.if{
 				labelView.notNil.if{labelView.background_(stringBackground)};
@@ -249,7 +249,7 @@ EZRanger : EZGui {
 						);
 				},
 
-			 \vert, {
+			\vert, {
 				hasLabel.not.if{labelH=0; gap1.y=0};
 				labelBounds = (rect.width@labelH).asRect; // to top
 				hasUnit.not.if{unitH=0; gap4 = 0@0;};
@@ -267,7 +267,7 @@ EZRanger : EZGui {
 					);
 				},
 
-			 \horz, {
+			\horz, {
 				hasLabel.not.if{ gap1 = 0@0; labelSize.x = 0 ;};
 				hasUnit.not.if{ gap4 = 0@0; unitWidth = 0};
 				labelSize.y=rect.height;

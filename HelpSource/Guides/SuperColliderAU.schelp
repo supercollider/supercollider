@@ -1,8 +1,8 @@
 title:: SuperColliderAU
-categories:: Platform>OSX
+categories:: Platform>macOS (OS X)
 summary:: wraps scsynth as an AudioUnits plugin
 
-SuperColliderAU is an AudioUnit wrapper that allows using SuperCollider servers inside AudioUnits hosts on MacOSX. The embedded server may be controlled over OSC as usual. In addition, it may be packed with a synth definition and a configuration file that defines its parameters.
+SuperColliderAU is an AudioUnit wrapper that allows using SuperCollider servers inside AudioUnits hosts on macOS. The embedded server may be controlled over OSC as usual. In addition, it may be packed with a synth definition and a configuration file that defines its parameters.
 
 section::Installing
 

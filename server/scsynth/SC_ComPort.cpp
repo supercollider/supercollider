@@ -199,6 +199,7 @@ class SC_UdpInPort
 {
 	struct World * mWorld;
 	int mPortNum;
+	std::string mbindTo;
 	boost::array<char, kTextBufSize> recvBuffer;
 
 	boost::asio::ip::udp::endpoint remoteEndpoint;
@@ -208,7 +209,7 @@ class SC_UdpInPort
 #endif
 
 	void handleReceivedUDP(const boost::system::error_code& error,
-						   std::size_t bytes_transferred)
+	                       std::size_t bytes_transferred)
 	{
 		if (error == boost::asio::error::operation_aborted)
 			return;    /* we're done */
@@ -242,21 +243,21 @@ class SC_UdpInPort
 	{
 		using namespace boost;
 		udpSocket.async_receive_from(asio::buffer(recvBuffer), remoteEndpoint,
-									 boost::bind(&SC_UdpInPort::handleReceivedUDP, this,
-												 asio::placeholders::error, asio::placeholders::bytes_transferred));
+		                             boost::bind(&SC_UdpInPort::handleReceivedUDP, this,
+		                                         asio::placeholders::error, asio::placeholders::bytes_transferred));
 	}
 
 public:
 	boost::asio::ip::udp::socket udpSocket;
 
-	SC_UdpInPort(struct World * world, int inPortNum):
-		mWorld(world), mPortNum(inPortNum), udpSocket(ioService)
+	SC_UdpInPort(struct World * world, std::string bindTo, int inPortNum):
+		mWorld(world), mPortNum(inPortNum), mbindTo(bindTo), udpSocket(ioService)
 	{
 		using namespace boost::asio;
 		BOOST_AUTO(protocol, ip::udp::v4());
 		udpSocket.open(protocol);
 
-		udpSocket.bind(ip::udp::endpoint(protocol, inPortNum));
+		udpSocket.bind(ip::udp::endpoint(boost::asio::ip::address::from_string(bindTo), inPortNum));
 
 		boost::asio::socket_base::send_buffer_size option(65536);
 		udpSocket.set_option(option);
@@ -282,7 +283,7 @@ public:
 	boost::asio::ip::tcp::socket socket;
 
 	SC_TcpConnection(struct World * world, boost::asio::io_service & ioService,
-					 class SC_TcpInPort * parent):
+	                 class SC_TcpInPort * parent):
 		mWorld(world), socket(ioService), mParent(parent)
 	{}
 
@@ -294,6 +295,10 @@ public:
 		char buf[kMaxPasswordLen];
 		int32 size;
 		int32 msglen;
+
+		boost::system::error_code error;
+		boost::asio::ip::tcp::no_delay noDelayOption(true);
+		socket.set_option(noDelayOption, error);
 
 		// first message must be the password. 4 tries.
 		bool validated = mWorld->hw->mPassword[0] == 0;
@@ -323,10 +328,10 @@ private:
 	{
 		namespace ba = boost::asio;
 		async_read(socket, ba::buffer(&OSCMsgLength, sizeof(OSCMsgLength)),
-				   boost::bind(&SC_TcpConnection::handleLengthReceived, shared_from_this(),
-							   ba::placeholders::error,
-							   ba::placeholders::bytes_transferred)
-				   );
+		           boost::bind(&SC_TcpConnection::handleLengthReceived, shared_from_this(),
+		                       ba::placeholders::error,
+		                       ba::placeholders::bytes_transferred)
+		          );
 	}
 
 	int32 OSCMsgLength;
@@ -334,7 +339,7 @@ private:
 	class SC_TcpInPort * mParent;
 
 	void handleLengthReceived(const boost::system::error_code& error,
-							  size_t bytes_transferred)
+	                          size_t bytes_transferred)
 	{
 		if (error) {
 			if (error == boost::asio::error::eof)
@@ -351,13 +356,14 @@ private:
 		data = (char*)malloc(OSCMsgLength);
 
 		async_read(socket, ba::buffer(data, OSCMsgLength),
-				   boost::bind(&SC_TcpConnection::handleMsgReceived, shared_from_this(),
-							   ba::placeholders::error,
-							   ba::placeholders::bytes_transferred));
+		           boost::bind(&SC_TcpConnection::handleMsgReceived, shared_from_this(),
+		                       ba::placeholders::error,
+		                       ba::placeholders::bytes_transferred)
+		          );
 	}
 
 	void handleMsgReceived(const boost::system::error_code& error,
-						   size_t bytes_transferred)
+	                       size_t bytes_transferred)
 	{
 		if (error) {
 			free(data);
@@ -400,9 +406,9 @@ class SC_TcpInPort
 	friend class SC_TcpConnection;
 
 public:
-	SC_TcpInPort(struct World * world, int inPortNum, int inMaxConnections, int inBacklog):
+	SC_TcpInPort(struct World * world, std::string bindTo, int inPortNum, int inMaxConnections, int inBacklog):
 		mWorld(world),
-		acceptor(ioService, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), inPortNum)),
+		acceptor(ioService, boost::asio::ip::tcp::endpoint(boost::asio::ip::address::from_string(bindTo), inPortNum)),
 		mAvailableConnections(inMaxConnections)
 	{
 		// FIXME: backlog???
@@ -424,13 +430,13 @@ public:
 			SC_TcpConnection::pointer newConnection (new SC_TcpConnection(mWorld, ioService, this));
 
 			acceptor.async_accept(newConnection->socket,
-								  boost::bind(&SC_TcpInPort::handleAccept, this, newConnection,
-											  boost::asio::placeholders::error));
+			                      boost::bind(&SC_TcpInPort::handleAccept, this, newConnection,
+			                                  boost::asio::placeholders::error));
 		}
 	}
 
 	void handleAccept(SC_TcpConnection::pointer newConnection,
-					  const boost::system::error_code& error)
+	                  const boost::system::error_code& error)
 	{
 		if (!error)
 			newConnection->start();
@@ -512,10 +518,10 @@ SCSYNTH_DLLEXPORT_C bool World_SendPacket(World *inWorld, int inSize, char *inDa
 	return World_SendPacketWithContext(inWorld, inSize, inData, inFunc, 0);
 }
 
-SCSYNTH_DLLEXPORT_C int World_OpenUDP(struct World *inWorld, int inPort)
+SCSYNTH_DLLEXPORT_C int World_OpenUDP(struct World *inWorld, const char *bindTo, int inPort)
 {
 	try {
-		new SC_UdpInPort(inWorld, inPort);
+		new SC_UdpInPort(inWorld, bindTo, inPort);
 		return true;
 	} catch (std::exception& exc) {
 		scprintf("Exception in World_OpenUDP: %s\n", exc.what());
@@ -524,10 +530,10 @@ SCSYNTH_DLLEXPORT_C int World_OpenUDP(struct World *inWorld, int inPort)
 	return false;
 }
 
-SCSYNTH_DLLEXPORT_C int World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog)
+SCSYNTH_DLLEXPORT_C int World_OpenTCP(struct World *inWorld, const char *bindTo, int inPort, int inMaxConnections, int inBacklog)
 {
 	try {
-		new SC_TcpInPort(inWorld, inPort, inMaxConnections, inBacklog);
+		new SC_TcpInPort(inWorld, bindTo, inPort, inMaxConnections, inBacklog);
 		return true;
 	} catch (std::exception& exc) {
 		scprintf("Exception in World_OpenTCP: %s\n", exc.what());

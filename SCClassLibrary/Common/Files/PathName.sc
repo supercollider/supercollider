@@ -20,7 +20,7 @@ PathName {
 	colonIndices {
 		^colonIndices ?? {
 			colonIndices = List.new;
-		 	fullPath.do({ | eachChar, i |
+			fullPath.do({ | eachChar, i |
 				if(eachChar.isPathSeparator, { colonIndices.add(i) })
 			});
 			colonIndices
@@ -88,7 +88,7 @@ PathName {
 
 		i = 0;
 		while { a[i] == b[i] and: { i < a.size } } {
-		        i = i + 1;
+			i = i + 1;
 		};
 		^(".." ++ r).dup(b.size - i).join ++ a[i..].join(r)
 	}
@@ -249,15 +249,4 @@ PathName {
 		^doc
 	}
 
-	// deprecated messages
-
-	*fromOS9 { | path | ^this.deprecated(thisMethod) }
-	foldersWithoutCVS { | path | ^this.deprecated(thisMethod) }
-	isCVS { ^this.deprecated(thisMethod) }
-	foldersWithoutSVN { | path |^this.deprecated(thisMethod) }
-	isSVN { ^this.deprecated(thisMethod) }
-	filesDoNoCVS { | func | ^this.deprecated(thisMethod) }
-	filesDoNoSVN { | func | ^this.deprecated(thisMethod) }
-	streamTreeNoCVS { | str, tabs=0 | ^this.deprecated(thisMethod) }
-	helpFilesDo { |func| ^this.deprecated(thisMethod) }
 }

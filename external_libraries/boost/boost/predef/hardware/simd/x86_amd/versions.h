@@ -30,9 +30,9 @@ http://www.boost.org/LICENSE_1_0.txt)
 #define BOOST_HW_SIMD_X86_AMD_SSE4A_VERSION BOOST_VERSION_NUMBER(4, 0, 0)
 
 /*`
- [heading `BOOST_HW_SIMD_X86_XOP_VERSION`]
+ [heading `BOOST_HW_SIMD_X86_FMA4_VERSION`]
 
- [@https://en.wikipedia.org/wiki/XOP_instruction_set XOP] x86 extension (AMD specific).
+ [@https://en.wikipedia.org/wiki/FMA_instruction_set#FMA4_instruction_set FMA4] x86 extension (AMD specific).
 
  Version number is: *5.1.0*.
  */

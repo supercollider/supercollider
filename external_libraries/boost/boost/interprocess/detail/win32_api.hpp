@@ -26,6 +26,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <cstdio>
+#include <ctime>
 
 #include <boost/assert.hpp>
 #include <string>
@@ -35,11 +36,11 @@
 #include <windows.h>
 
 #  if defined(BOOST_INTERPROCESS_BOOTSTAMP_IS_LASTBOOTUPTIME)
-#  include <Wbemidl.h>
-#  include <Objbase.h>
+#  include <wbemidl.h>
+#  include <objbase.h>
 #  endif
 
-#include <Shlobj.h>
+#include <shlobj.h>
 #endif
 
 #if defined(_MSC_VER)
@@ -851,6 +852,7 @@ extern "C" __declspec(dllimport) int __stdcall GetProcessTimes
    , interprocess_filetime *lpUserTime );
 extern "C" __declspec(dllimport) void __stdcall Sleep(unsigned long);
 extern "C" __declspec(dllimport) unsigned long __stdcall GetTickCount(void);
+extern "C" __declspec(dllimport) unsigned long long __stdcall GetTickCount64(void);
 extern "C" __declspec(dllimport) int __stdcall SwitchToThread();
 extern "C" __declspec(dllimport) unsigned long __stdcall GetLastError();
 extern "C" __declspec(dllimport) void __stdcall SetLastError(unsigned long);
@@ -2208,6 +2210,7 @@ inline bool get_last_bootup_time(std::string &stamp)
    unsigned long dwBytesToRead = 0;
    unsigned long dwBytesRead = 0;
    unsigned long dwMinimumBytesToRead = 0;
+   char stamp_str[sizeof(unsigned long long) * 3 + 1];
 
    // The source name (provider) must exist as a subkey of Application.
    void *hEventLog = OpenEventLogA(0, source_name);
@@ -2239,27 +2242,28 @@ inline bool get_last_bootup_time(std::string &stamp)
                   dwBytesToRead = dwMinimumBytesToRead;
                   heap_deleter.realloc_mem(dwMinimumBytesToRead);
                   if (!heap_deleter.get()){
-                     return false;
+                     break;
                   }
                }
                else{  //Not found or EOF
-                  return false;
+                  break;
                }
             }
             else
             {
                interprocess_eventlogrecord *pTypedRecord;
                // Print the contents of each record in the buffer.
-               if(find_record_in_buffer(heap_deleter.get(), dwBytesRead, provider_name, event_id, pTypedRecord)){
-                  char stamp_str[sizeof(unsigned long)*3+1];
+               if(find_record_in_buffer(heap_deleter.get(), dwBytesRead, provider_name, event_id, pTypedRecord)){                  
                   std::sprintf(&stamp_str[0], "%u", ((unsigned int)pTypedRecord->TimeGenerated));
                   stamp = stamp_str;
-                  break;
+                  return true;
                }
             }
          }
       }
    }
+   std::sprintf(&stamp_str[0], "%llu", std::time(nullptr) - GetTickCount64() / 1000); // Seconds since 1-1-1970
+   stamp = stamp_str;
    return true;
 }
 

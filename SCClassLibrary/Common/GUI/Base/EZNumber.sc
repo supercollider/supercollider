@@ -1,6 +1,6 @@
 EZNumber : EZGui{
 	var <numberView, <unitView, <>controlSpec,
-		 numSize,numberWidth,unitWidth, gap2;
+		numSize,numberWidth,unitWidth, gap2;
 	var <>round = 0.001;
 
 	*new { arg parent, bounds, label, controlSpec, action, initVal,
@@ -113,7 +113,7 @@ EZNumber : EZGui{
 	}
 
 	setColors{ arg stringBackground, stringColor,numBackground,numStringColor,
-			 numNormalColor, numTypingColor, background ;
+			numNormalColor, numTypingColor, background ;
 
 		stringBackground.notNil.if{
 			labelView.notNil.if{labelView.background_(stringBackground)};
@@ -192,7 +192,7 @@ EZNumber : EZGui{
 
 				},
 
-			 \horz, {
+			\horz, {
 				labelSize.y=rect.height;
 				labelBounds = (labelSize.x@labelSize.y).asRect; // to left
 				unitBounds = (unitWidth@labelSize.y).asRect.left_(rect.width-unitWidth); // to right

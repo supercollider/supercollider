@@ -601,28 +601,28 @@ public:
     template <typename ConstIterator>
     ConstIterator push(ConstIterator begin, ConstIterator end)
     {
-        return ringbuffer_base<T>::push(begin, end, array_, max_elements_);
+        return ringbuffer_base<T>::push(begin, end, &*array_, max_elements_);
     }
 
     size_type pop(T * ret, size_type size)
     {
-        return ringbuffer_base<T>::pop(ret, size, array_, max_elements_);
+        return ringbuffer_base<T>::pop(ret, size, &*array_, max_elements_);
     }
 
     template <typename OutputIterator>
     size_type pop_to_output_iterator(OutputIterator it)
     {
-        return ringbuffer_base<T>::pop_to_output_iterator(it, array_, max_elements_);
+        return ringbuffer_base<T>::pop_to_output_iterator(it, &*array_, max_elements_);
     }
 
     const T& front(void) const
     {
-        return ringbuffer_base<T>::front(array_);
+        return ringbuffer_base<T>::front(&*array_);
     }
 
     T& front(void)
     {
-        return ringbuffer_base<T>::front(array_);
+        return ringbuffer_base<T>::front(&*array_);
     }
 };
 

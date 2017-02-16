@@ -133,7 +133,7 @@ T ellint_pi_imp(T v, T phi, T k, T vc, const Policy& pol)
          if((m > 0) && (vc > 0))
             result += m * ellint_pi_imp(v, k, vc, pol);
       }
-      return phi < 0 ? -result : result;
+      return phi < 0 ? T(-result) : result;
    }
    if(k == 0)
    {

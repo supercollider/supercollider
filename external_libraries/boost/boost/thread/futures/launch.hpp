@@ -23,6 +23,7 @@ namespace boost
       executor = 4,
 #endif
       inherit = 8,
+      sync = 16,
       any = async | deferred
   }
   BOOST_SCOPED_ENUM_DECLARE_END(launch)

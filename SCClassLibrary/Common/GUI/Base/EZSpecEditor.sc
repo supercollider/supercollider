@@ -76,7 +76,7 @@ EZControlSpecEditor : EZGui {
 				labelBounds = (labelSize.x@labelSize.y).asRect.width_(minBounds.left-gap.x); //adjust width
 			},
 
-			 \vert, {
+			\vert, {
 				componentSize = labelSize.x@((rect.height - (3 * gap.y) - labelH) / 4);
 				labelBounds = (rect.width@labelH).asRect; // to top
 				minBounds = (rect.width@componentSize.y)
@@ -89,18 +89,17 @@ EZControlSpecEditor : EZGui {
 					.asRect.top_(warpBounds.bottom + gap.y);
 			},
 
-			 \horz, {
+			\horz, {
 				componentSize = ((rect.width - (3 * gap.x) - labelSize.x) / 4)@labelH;
 				stepBounds = componentSize.asRect.left_(rect.width - componentSize.x);
 				warpBounds = componentSize.asRect.left_(stepBounds.left-componentSize.x-gap.x);
 				maxBounds = componentSize.asRect.left_(warpBounds.left-componentSize.x-gap.x);
 				minBounds = componentSize.asRect.left_(maxBounds.left-componentSize.x-gap.x);
 				labelBounds = (labelSize.x@labelSize.y).asRect.width_(minBounds.left-gap.x); //adjust width
-			 }
+			}
 		);
 
 
 		^[labelBounds, minBounds, maxBounds, warpBounds, stepBounds].collect{arg v; v.moveBy(margin.x,margin.y)}
 	}
-
 }
