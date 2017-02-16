@@ -99,7 +99,7 @@ for building supercollider:
  - cmake (on some platforms, cmake >= 2.9 may require manual build)
  - qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5webkit5-dev qtpositioning5-dev libqt5sensors5-dev
 
-More details for building on embedded linux platforms (Raspberry Pi, 
+More details for building on embedded linux platforms (Raspberry Pi,
 Beaglebone Black) can be found here:
 
     http://supercollider.github.io/development/building
@@ -173,12 +173,20 @@ Note: running headless SC in a X-less environment requires
 jackd without D-bus support. On Raspbian Jessie this requires
 compiling jackd rather than using the packaged version.
 Also note that you will get errors on sclang startup from
-classes requiring Qt. A workaround and more details are 
+classes requiring Qt. A workaround and more details are
 described in:
 
-    http://supercollider.github.io/development/building-raspberrypi 
+    http://supercollider.github.io/development/building-raspberrypi
 
 
+### Server only
+
+Next to the SC-IDE it is also possible to switch off building
+sclang so that only the server(s), plugins and resources are built:
+
+```
+$> cmake -DSC_IDE=OFF -DSC_SCLANG=OFF ..
+```
 
 ### Speeding up repeated builds
 
