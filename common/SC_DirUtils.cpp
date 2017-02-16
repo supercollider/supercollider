@@ -276,7 +276,7 @@ void sc_GetResourceDirectory(char* pathBuf, int length)
 		throw std::runtime_error("cannot get current working directory. (path too long?)");
 	char * exeDir = dirname(path);
 	char * sufix = "/../share/SuperCollider";
-	char * fullPath = (char *) malloc(1 + strlen(exeDir)+ strlen(sufix) );
+	char fullPath[1088];
 	strcpy(fullPath, exeDir);
 	strcat(fullPath, sufix);
 
