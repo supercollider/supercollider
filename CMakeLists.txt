@@ -176,7 +176,7 @@ if(APPLE AND NOT SC_IDE)
     message(STATUS "Not compiling IDE so using FHS install (default: /usr/local)")
     option(MACOS_FHS "Use unix style install (FHS), by default to /usr/local on MacOS" ON)
 elseif(APPLE)
-	message(STATUS "Not building IDE so not creating application bundle and installing to /usr/local")
+	message(STATUS "Building IDE")
 	option(MACOS_FHS "Use unix style install (FHS), by default to /usr/local on MacOS" OFF)
 endif()
 if (SC_QT)
@@ -392,7 +392,9 @@ file(GLOB_RECURSE Sounds       sounds/*)
 file(GLOB_RECURSE Examples     examples/*)
 
 
-if(APPLE AND NOT MACOS_FHS)
+if(APPLE AND MACOS_FHS)
+  set(scappbundlename "SuperCollider")
+elseif(APPLE)
   include(cmake_modules/MacAppFolder.cmake)
   set(ide_name ${scappbundlename})
 else()
@@ -420,7 +422,6 @@ if (WIN32)
   set(auxresourcesdir "${SC_WIN_BUNDLE_NAME}" CACHE STRING "Resources directory")
 elseif(APPLE AND NOT MACOS_FHS)
   set(auxresourcesdir ${scappbundlename} CACHE STRING "Resources directory")
-
 else()
   set(auxresourcesdir "share/SuperCollider" CACHE STRING "Resources directory")
 endif()
@@ -562,6 +563,20 @@ endif()
 set_directory_properties(
 	PROPERTIES
 	ADDITIONAL_MAKE_CLEAN_FILES "RenderedHelp")
+
+if(SC_HIDAPI)
+  if(APPLE AND NOT MACOS_FHS)
+    set(HID_HUT_PATH "${CMAKE_INSTALL_PREFIX}/${scappbundlename}/${scappbundlename}.app/Contents/Resources/HID_Support")
+  else()
+    set(HID_HUT_PATH "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HID_Support")
+  endif()
+  # FIXME: won't appear in MacOS SC-IDE build-folder (just in install)
+  install(DIRECTORY external_libraries/hidapi/hut
+  DESTINATION ${HID_HUT_PATH}
+  FILES_MATCHING PATTERN "*.yaml"
+  )
+endif()
+
 
 #############################################
 #
