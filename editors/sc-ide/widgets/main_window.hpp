@@ -294,16 +294,15 @@ public:
     explicit SubWindow( QWidget * parent = 0 ):
     QWidget(parent)
     {
-        window = new QWidget;
-        window->resize(640, 480);
-        window->show();
-        window->setWindowTitle(
+        this->resize(640, 480);
+        this->show();
+        this->setWindowTitle(
             QApplication::translate("toplevel", "Code Editor")
         );
 
         main = MainWindow::instance();
 
-        sEditors = new MultiEditor(Main::instance(), window);
+        sEditors = new MultiEditor(Main::instance(), this);
 
         QVBoxLayout *windowLayout = new QVBoxLayout;
         windowLayout->setContentsMargins(0,0,0,0);
@@ -338,7 +337,7 @@ public:
         editors_layout->setSizes(layoutInitialWidths);
 
         windowLayout->addWidget(editors_layout);
-        window->setLayout(windowLayout);
+        this->setLayout(windowLayout);
 
         createDocumentConnections();
 
@@ -355,7 +354,7 @@ public:
         //connect(sEditors, &MultiEditor::closeWindow,
         //        this, &QWidget::close);
 
-        setAttribute(Qt::WA_DeleteOnClose);
+        this->setAttribute(Qt::WA_DeleteOnClose);
         connect(sEditors, SIGNAL(closeWindow()), this, SLOT(close()));
         connect(this, SIGNAL(destroyed()), main, SLOT(closeWindow()));
     }
