@@ -564,7 +564,7 @@ set_directory_properties(
 	PROPERTIES
 	ADDITIONAL_MAKE_CLEAN_FILES "RenderedHelp")
 
-if(SC_HIDAPI)
+if(SC_HIDAPI AND SC_SCLANG)
   if(APPLE AND NOT MACOS_FHS)
     set(HID_HUT_PATH "${CMAKE_INSTALL_PREFIX}/${scappbundlename}/${scappbundlename}.app/Contents/Resources/HID_Support")
   else()
