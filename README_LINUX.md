@@ -197,6 +197,10 @@ sclang so that only the server(s), plugins and resources are built:
 $> cmake -DSC_IDE=OFF -DSC_SCLANG=OFF ..
 ```
 
+Once you set these two values manually, you need to specify both, each time
+you want to change one of them. Also: The default build setting prevent building 
+IDE and server without building sclang as well.
+
 ### Speeding up repeated builds
 
 If you build SuperCollider repeatedly, we recommend installing `ccache`

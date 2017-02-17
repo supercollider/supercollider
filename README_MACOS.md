@@ -316,6 +316,33 @@ Experimentally supported is the full set including the IDE, installed to the FHS
 
 You cannot switch building the server scsynth off. Supernova can be added to all variants.
 
+NOTE: the build system tries to handle these arguments cleverly. For example it will not build
+SC-IDE if you set SC_SCLANG off. BUT: this only works automatically if you haven't set
+the dependant value manually before. Manually set arguments are written to a cache, the values
+in which override automatically generated values. Any argument that has been set manually, must therefore be changed explicitly if required by the build logic. For example:
+
+You start a fresh *server-only* build:
+
+    cmake -G Xcode -D SC_SCLANG=OFF ..
+
+Later, using the same build folder you decide to add the IDE (and implicitly sclang). In that
+case it is not enough to set SC-IDE=ON, you also need to set SC_SCLANG explicitly:
+
+    cmake -D CMAKE_PREFIX_PATH=`brew --prefix qt5` -D SC_IDE=ON -D SC_SCLANG=ON ..
+
+NOTE: as SC_QT was not specified manually at any point it was switched off automatically
+for the server-only build and switched on for the build including the IDE. However once
+the IDE is added, specifying the CMAKE_PREFIX_PATH explicitly cannot be avoided.
+
+The interplay between arguments provided on the command line, values generated automatically
+by cmake, values stored in the cache, and also the visiblity of such values in different
+parts of the build system, is a bit more involved than described here. Therefore a good
+rule of thumbs is: if you change any of a set of interrelated values, set all of the values
+in that set explicitly. Or: if you get build configuration errors, try to find out if another
+value could be stored in the cache that conflicts with the value you set. If everything
+fails, deleting the cache (CMakeCache.txt) should help if the arguments you set manually
+are supported by the build system.
+
 
 ### Qt-less build
 
@@ -377,3 +404,5 @@ This application failed to start because it could not find or load the Qt platfo
 
 - scsynth will not find the included "plugins", unless given explicitly
   with the -U commandline flag or using the SC_PLUGIN_PATH environment variable as shown above.
+
+NOTE: Making an FHS install of SC will circumvent these problems because the libraries required will be installed as a prerequisite of the build. Sclang and scsynth do not see the libraries contained in the SuperCollider application bundle. But: if the libraries used in the FHS-build subsequently get replaced by updated versions, incompatibilities may arise. In that case you should repeat the FHS build with the updated libraries.

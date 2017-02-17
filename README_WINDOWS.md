@@ -1341,13 +1341,6 @@ Commonly used variables to modify the build configuration are:
   the binary plugins should reside in a folder "plugins" (this mirrors the situation
   in the application directory)
 
-  *Note*: While there is no readily available 64-bit Qt version for the MinGW
-  build, supernova does not depend on Qt. Therefore a qt-less build could be
-  used to build a 64-bit version of SuperNova, and combine it with the 64-bit
-  VS build of the IDE and sclang (using MinGW runtimes for supernova). The
-  64-bit build of supernova currently breaks, but might be more easy to fix
-  than the VS build.
-
 * It is possible to build SuperCollider without the IDE, and even without Qt
   (and implicitly without the IDE). This is not controlled via build targets,
   but via CMake variables:
@@ -1361,13 +1354,12 @@ Commonly used variables to modify the build configuration are:
 
   SC will not link to Qt at all, and implicitly build without the IDE. This
   build variation is used in low resources environments and graphic-less use
-  scenarios of SC. In the Qt-less build some Qt/GUI related classes are
-  removed from the SCClassLibrary to avoid primitive not found errors at
-  sclang start-up. The removed classes can be found in the folder
-  SCClassLibrary/scide_scqt. If you need to run code with elements considered
-  deprecated in SC3.7, you can move the deprecated/3.7 folder back into place.
-  You should remove the unsupported Document-class related entries to avoid
-  (non-fatal) errors at sclang start-up.
+  scenarios of SC.
+
+  NOTE: in a qt-less build of sclang you will need to modify the class-library
+  for a successfull class compilation. The required changes are:
+
+    - move or delete Common/GUI and JITLib/GUI
 
   You cannot use the Help browser in Qt-less SC. An option is, to render Help
   with sclang (`SCDoc.renderAll`) and run it in a browser. There is also the
@@ -1387,14 +1379,35 @@ Commonly used variables to modify the build configuration are:
 
   in the cmake build-configuration command.
 
-* SClang-no-Qt: the modifications to the SCClassLibrary are only done
-  automatically in the build to the target folder. If you run the target
-  "install", you get the unmodified class library. The changes are just:
-
-    - move or delete Common/GUI and JITLib/GUI
-
 More options can be explored by studying CMakeCache.txt in the build folder,
 or file CMakeLists.txt in the root folder of the SC source.
+
+NOTE: the build system tries to handle these arguments cleverly. For example it will not build
+SC-IDE if you set SC_SCLANG off. BUT: this only works automatically if you haven't set
+the dependant value manually before. Manually set arguments are written to a cache, the values
+in which override automatically generated values. Any argument that has been set manually, must therefore be changed explicitly if required by the build logic. For example:
+
+You start a fresh *server-only* build:
+
+    cmake -G Xcode -D SC_SCLANG=OFF ..
+
+Later, using the same build folder you decide to add the IDE (and implicitly sclang). In that
+case it is not enough to set SC-IDE=ON, you also need to set SC_SCLANG explicitly:
+
+    cmake -D CMAKE_PREFIX_PATH=`brew --prefix qt5` -D SC_IDE=ON -D SC_SCLANG=ON ..
+
+NOTE: as SC_QT was not specified manually at any point it was switched off automatically
+for the server-only build and switched on for the build including the IDE. However once
+the IDE is added, specifying the CMAKE_PREFIX_PATH explicitly cannot be avoided.
+
+The interplay between arguments provided on the command line, values generated automatically
+by cmake, values stored in the cache, and also the visiblity of such values in different
+parts of the build system, is a bit more involved than described here. Therefore a good
+rule of thumbs is: if you change any of a set of interrelated values, set all of the values
+in that set explicitly. Or: if you get build configuration errors, try to find out if another
+value could be stored in the cache that conflicts with the value you set. If everything
+fails, deleting the cache (CMakeCache.txt) should help if the arguments you set manually
+are supported by the build system.
 
 
 ### Recalling environment- and build settings on the command line
