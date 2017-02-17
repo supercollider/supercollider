@@ -125,6 +125,7 @@ public:
         SwitchDocument,
 
         NewWindow,
+        CloseWindow,
         SplitHorizontally,
         SplitVertically,
         RemoveCurrentSplit,
@@ -166,6 +167,7 @@ signals:
     void splitViewActivated();
     void splitViewDeactivated();
     void tabsOrderChanged( int, int );
+    void closeWindow();
 
 public slots:
 

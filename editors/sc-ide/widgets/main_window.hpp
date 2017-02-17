@@ -27,6 +27,7 @@
 #include <QSignalMapper>
 #include <QStatusBar>
 #include <QList>
+#include <QCloseEvent>
 
 #include <QApplication>
 #include <QVBoxLayout>
@@ -185,7 +186,8 @@ signals:
 public Q_SLOTS:
     void showStatusMessage( QString const & string );
     void newWindow();
-    void setCurrentEditor(MultiEditor *);
+    void closeWindow();
+    void setCurrentEditor( MultiEditor * );
 
 private Q_SLOTS:
     void openStartupFile();
@@ -290,8 +292,7 @@ class SubWindow : public QWidget
 
 public:
     explicit SubWindow( QWidget * parent = 0 ):
-    QWidget(parent),
-    sEditors(new MultiEditor(Main::instance()))
+    QWidget(parent)
     {
         window = new QWidget;
         window->resize(640, 480);
@@ -301,6 +302,8 @@ public:
         );
 
         main = MainWindow::instance();
+
+        sEditors = new MultiEditor(Main::instance(), window);
 
         QVBoxLayout *windowLayout = new QVBoxLayout;
         windowLayout->setContentsMargins(0,0,0,0);
@@ -326,6 +329,8 @@ public:
         editors_layout->setOrientation(Qt::Horizontal);
         editors_layout->addWidget(sDocumentsDocklet);
         editors_layout->addWidget(sEditorsDocklet);
+
+        // We assume that all additional DocumentsDocklets' size must be as the current MainWindow's DocumentsDocklet's one 
         QList<int> layoutInitialWidths;
         layoutInitialWidths.append(main->docDockletWidth());
         int editorWidth = editors_layout->size().width() - main->docDockletWidth();
@@ -346,6 +351,13 @@ public:
 
         sDocumentsDocklet->setVisible(main->docDocklet()->isVisible());
         onDocumentDockletUndocked();
+
+        //connect(sEditors, &MultiEditor::closeWindow,
+        //        this, &QWidget::close);
+
+        setAttribute(Qt::WA_DeleteOnClose);
+        connect(sEditors, SIGNAL(closeWindow()), this, SLOT(close()));
+        connect(this, SIGNAL(destroyed()), main, SLOT(closeWindow()));
     }
 
     MultiEditor * editor() { return sEditors; }

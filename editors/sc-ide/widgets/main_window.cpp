@@ -634,6 +634,7 @@ QMenuBar * MainWindow::createMenus()
     menu->addAction( currentMultiEditor()->action(MultiEditor::SwitchDocument) );
     menu->addSeparator();
     menu->addAction( currentMultiEditor()->action(MultiEditor::NewWindow) );
+    menu->addAction( currentMultiEditor()->action(MultiEditor::CloseWindow) );
     menu->addSeparator();
     menu->addAction( currentMultiEditor()->action(MultiEditor::SplitHorizontally) );
     menu->addAction( currentMultiEditor()->action(MultiEditor::SplitVertically) );
@@ -843,13 +844,16 @@ void MainWindow::openSessionsDialog()
 }
 
 void MainWindow::setCurrentEditor(MultiEditor * ceditor)
-{
-    if(ceditor == mEditorList.first())
-        return;     
+{   
+    if(!mEditorList.isEmpty())
+        if(ceditor == mEditorList.first())
+            return;     
 
     if(mEditorList.contains(ceditor))
         mEditorList.removeOne(ceditor);
     mEditorList.prepend(ceditor);
+
+    currentMultiEditor()->currentBox()->setActive();
 
     Q_EMIT( currentEditorChanged( currentMultiEditor()->currentBox()->currentDocument() ) );
 }
@@ -1734,6 +1738,16 @@ void MainWindow::newWindow()
     SubWindow * newWindow = new SubWindow();
     setCurrentEditor(newWindow->editor());
     newWindow->editor()->currentBox()->setDocument(cDoc);
+}
+
+void MainWindow::closeWindow()
+{        
+    if( mEditorList.count() > 1 ) {
+        MultiEditor * prevEditor = mEditorList.at(1);
+        MultiEditor * curEditor = mEditorList.first();
+        setCurrentEditor(prevEditor);
+        mEditorList.removeOne(curEditor);
+    }
 }
 
 void MainWindow::reloadAllLists( QList<Document*> newlist ) {

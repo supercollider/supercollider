@@ -683,6 +683,12 @@ void MultiEditor::createActions()
     connect(action, SIGNAL(triggered()), MainWindow::instance(), SLOT(newWindow()));
     settings->addAction( action, "editor-new", editorCategory);
 
+    mActions[CloseWindow] = action = new QAction(tr("Close Current Window"), this);
+    action->setStatusTip(tr("Close the current window"));
+    action->setShortcut( tr("Ctrl+Alt+W", "Close The Current Window"));
+    connect(action, SIGNAL(triggered()), this, SIGNAL(closeWindow()));
+    settings->addAction( action, "editor-new", editorCategory);
+
     mActions[SplitHorizontally] = action = new QAction(tr("Split To Right"), this);
     //action->setShortcut( tr("Ctrl+P, 3", "Split To Right"));
     connect(action, SIGNAL(triggered()), this, SLOT(splitHorizontally()));
