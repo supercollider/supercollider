@@ -42,8 +42,8 @@ Document {
 	}
 
 	*new {|title = "untitled", string = "", envir|
-		var quuid = ScIDE.getQUuid, doc;
-		ScIDE.newDocument(title, string, quuid);
+		var quuid = linkedIDE.getQUuid, doc;
+		linkedIDE.newDocument(title, string, quuid);
 		doc = super.new.init(quuid, title, string);
 		if (envir.notNil and: { doc.notNil }) { doc.envir_(envir) };
 		doc.prAdd;
@@ -170,7 +170,7 @@ Document {
 
 	front {
 		this.class.prCurrent_(this);
-		ScIDE.setCurrentDocumentByQUuid(quuid);
+		linkedIDE.setCurrentDocumentByQUuid(quuid);
 	}
 
 	init {|id, argtitle, argstring, argisEdited|
@@ -190,7 +190,7 @@ Document {
 	}
 
 	initFromPath { | argpath, selectionStart, selectionLength |
-		quuid = ScIDE.getQUuid;
+		quuid = linkedIDE.getQUuid;
 		this.prReadTextFromFile(argpath);
 		this.propen(argpath, selectionStart, selectionLength);
 		path = argpath;
@@ -205,10 +205,10 @@ Document {
 	}
 
 	propen {|path, selectionStart, selectionLength, envir|
-		^ScIDE.open(path, selectionStart, selectionLength, quuid)
+		^linkedIDE.open(path, selectionStart, selectionLength, quuid)
 	}
 
-	close { ScIDE.close(quuid); }
+	close { linkedIDE.close(quuid); }
 
 	/*	// asynchronous get
 	// range -1 means to the end of the Document
@@ -233,8 +233,8 @@ Document {
 		var funcID;
 		// first set the back end mirror
 		this.prSetTextMirror(quuid, text, start, range);
-		// set the SCIDE Document
-		ScIDE.setTextByQUuid(quuid, funcID, text, start, range);
+		// set the linked IDE Document
+		linkedIDE.setTextByQUuid(quuid, funcID, text, start, range);
 	}
 
 	// set the backend mirror
@@ -313,42 +313,42 @@ Document {
 
 	keyDownAction_ {|action|
 		keyDownAction = action;
-		ScIDE.setDocumentKeyDownEnabled(quuid, action.notNil);
+		linkedIDE.setDocumentKeyDownEnabled(quuid, action.notNil);
 	}
 
 	keyUpAction_ {|action|
 		keyUpAction = action;
-		ScIDE.setDocumentKeyUpEnabled(quuid, action.notNil);
+		linkedIDE.setDocumentKeyUpEnabled(quuid, action.notNil);
 	}
 
 	mouseDownAction_ {|action|
 		mouseDownAction = action;
-		ScIDE.setDocumentMouseDownEnabled(quuid, action.notNil);
+		linkedIDE.setDocumentMouseDownEnabled(quuid, action.notNil);
 	}
 
 	mouseUpAction_ {|action|
 		mouseUpAction = action;
-		ScIDE.setDocumentMouseUpEnabled(quuid, action.notNil);
+		linkedIDE.setDocumentMouseUpEnabled(quuid, action.notNil);
 	}
 
 	textChangedAction_ {|action|
 		textChangedAction = action;
-		ScIDE.setDocumentTextChangedEnabled(quuid, action.notNil);
+		linkedIDE.setDocumentTextChangedEnabled(quuid, action.notNil);
 	}
 
 	*globalKeyDownAction_ {|action|
 		globalKeyDownAction = action;
-		ScIDE.setDocumentGlobalKeyDownEnabled(action.notNil);
+		linkedIDE.setDocumentGlobalKeyDownEnabled(action.notNil);
 	}
 
 	*globalKeyUpAction_ {|action|
 		globalKeyUpAction = action;
-		ScIDE.setDocumentGlobalKeyUpEnabled(action.notNil);
+		linkedIDE.setDocumentGlobalKeyUpEnabled(action.notNil);
 	}
 
 	title_ {|newTitle|
 		title = newTitle;
-		ScIDE.setDocumentTitle(quuid, newTitle);
+		linkedIDE.setDocumentTitle(quuid, newTitle);
 	}
 
 	prSetEdited {|flag|
@@ -502,21 +502,21 @@ Document {
 
 	selectRange { | start=0, length=0 |
 		this.prSetSelectionMirror(quuid, start, length); // set the backend mirror
-		ScIDE.setSelectionByQUuid(quuid, start, length); // set the IDE doc
+		linkedIDE.setSelectionByQUuid(quuid, start, length); // set the IDE doc
 	}
 
 	editable_ { | bool=true |
 		editable = bool;
-		ScIDE.setEditablebyQUuid(quuid, bool);
+		linkedIDE.setEditablebyQUuid(quuid, bool);
 	}
 
 	promptToSave_ { | bool |
 		promptToSave = bool;
-		ScIDE.setPromptsToSavebyQUuid(quuid, bool);
+		linkedIDE.setPromptsToSavebyQUuid(quuid, bool);
 	}
 
 	removeUndo {
-		ScIDE.removeDocUndoByQUuid(quuid);
+		linkedIDE.removeDocUndoByQUuid(quuid);
 	}
 
 	// probably still needed for compatibility
