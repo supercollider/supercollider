@@ -26,7 +26,13 @@ Document {
 	  removeDocUndoByQUuid
 
 	TODO: Add code to actually link `linkedIDE`
-	TODO: Replace all references to ScIDE with linkedIDE
+	TODO: Replace all references to ScIDE with linkedIDE.
+	Functions that still ref ScIDE primitives:
+	- prGetTextFromMirror
+	- prSetTextMirror
+	- prSetSelectionMirror
+	- prGetSelectionStart
+	- prGetSelectionRange
 	*/
 
 
