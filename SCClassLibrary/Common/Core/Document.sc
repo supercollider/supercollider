@@ -3,6 +3,33 @@ Document {
 	classvar <globalKeyDownAction, <globalKeyUpAction, <>initAction;
 	classvar <>autoRun = true;
 	classvar <asyncActions;
+
+	classvar <linkedIDE;
+	/* the IDE that will instantiate documents. It is that IDE's responsibility to implement
+	methods that may be invoked on it from the Document class:
+	  getQUuid
+	  newDocument
+	  setCurrentDocumentByQUuid
+	  open
+	  close
+	  setDocumentKeyDownEnabled
+	  setDocumentKeyUpEnabled
+	  setDocumentMouseDownEnabled
+	  setDocumentMouseUpEnabled
+	  setDocumentTextChangedEnabled
+	  setDocumentGlobalKeyDownEnabled
+	  setDocumentGlobalKeyUpEnabled
+	  setDocumentTitle
+	  setSelectionByQUuid
+	  setEditablebyQUuid
+	  setPromptsToSavebyQUuid
+	  removeDocUndoByQUuid
+
+	TODO: Add code to actually link `linkedIDE`
+	TODO: Replace all references to ScIDE with linkedIDE
+	*/
+
+
 	var <quuid, <title, <isEdited = false, <path;
 	var <keyDownAction, <keyUpAction, <mouseUpAction, <mouseDownAction;
 	var <>toFrontAction, <>endFrontAction, <>onClose, <textChangedAction;
