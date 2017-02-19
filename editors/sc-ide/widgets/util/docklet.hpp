@@ -107,6 +107,9 @@ public:
     QByteArray saveDetachedState() const;
     void restoreDetachedState( const QByteArray & );
 
+signals:
+    void dockletDetached(bool);
+
 public slots:
     void toggleFloating();
     void toggleDetached();

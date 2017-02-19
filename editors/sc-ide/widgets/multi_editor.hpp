@@ -126,6 +126,8 @@ public:
 
         NewWindow,
         CloseWindow,
+        SwitchEditor,
+
         SplitHorizontally,
         SplitVertically,
         RemoveCurrentSplit,

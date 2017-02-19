@@ -272,6 +272,7 @@ void Docklet::setCurrentContainer(ContainerType containerType )
         break;
     }
 
+    Q_EMIT(dockletDetached( containerType == WindowContainer ? true : false ));
     mDetachAction->setText( containerType == WindowContainer ? tr("Attach") : tr("Detach") );
 }
 

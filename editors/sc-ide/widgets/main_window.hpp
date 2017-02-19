@@ -224,6 +224,7 @@ private Q_SLOTS:
     void reloadAllLists( int, int );
     void onDocumentDockletUndocked( bool );
     void setCurrent(Document *);
+    void switchEditor();
     
 protected:
     virtual void closeEvent(QCloseEvent *event);
@@ -341,15 +342,15 @@ public:
 
         createDocumentConnections();
 
-        connect(main, SIGNAL(documentDockletUndocked()),
-                this, SLOT(onDocumentDockletUndocked()));
+        connect(main->docDocklet(), SIGNAL(dockletDetached(bool)),
+                this, SLOT(onDocumentDockletUndocked(bool)));
 
         // loadDocuments
         sDocumentListWidget->populateList(main->docDocklet()->list()->listDocuments());
         sEditors->updateTabsOrder(sDocumentListWidget->listDocuments());
 
-        sDocumentsDocklet->setVisible(main->docDocklet()->isVisible());
-        onDocumentDockletUndocked();
+        setDocDockletVisibility();
+        onDocumentDockletUndocked( main->docDocklet()->isDetached() );
 
         //connect(sEditors, &MultiEditor::closeWindow,
         //        this, &QWidget::close);
@@ -363,10 +364,9 @@ public:
     
 public Q_SLOTS:
 
-    void onDocumentDockletUndocked()
+    void onDocumentDockletUndocked( bool undocked )
     {
-        setDocDockletVisibility();
-        if( main->docDocklet()->isDetached() || main->docDocklet()->dockWidget()->isFloating() ) {
+        if( undocked ) {
             connect(sEditors, SIGNAL(currentDocumentChanged(Document*)),
                     main->docDocklet()->list(), SLOT(setCurrent(Document*)));
             connect(main, SIGNAL(currentEditorChanged(Document*)),
@@ -382,7 +382,7 @@ public Q_SLOTS:
 
     void setDocDockletVisibility()
     {
-        if (main->docDocklet()->isDetached() || main->docDocklet()->dockWidget()->isFloating()) {
+        if (main->docDocklet()->isDetached()) {
             sDocumentsDocklet->hide();
         } else {
             sDocumentsDocklet->setVisible(main->docDocklet()->isVisible());
@@ -409,6 +409,10 @@ private:
         optionsMenu->clear();
 
         QAction *action;
+        action = optionsMenu->addAction(tr("Detach"));
+        connect(action, SIGNAL(triggered(bool)), 
+                main->docDocklet(), SLOT(toggleDetached()) );
+
         action = optionsMenu->addAction(tr("Hide"));
         connect(action, SIGNAL(triggered(bool)), 
                 sDocumentsDocklet, SLOT(setVisible(bool)) );

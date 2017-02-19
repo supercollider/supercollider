@@ -323,8 +323,6 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     
     mGoToLineTool = new GoToLineTool();
     connect(mGoToLineTool, SIGNAL(activated(int)), this, SLOT(hideAllToolBoxes()));
-    //connect(MainWindow::instance(), SIGNAL(currentEditorChanged(GenericCodeEditor*)),
-    //        this, SLOT(updateEditorForToolBox(GenericCodeEditor*)));
 
     mToolBox = new ToolBox;
     mToolBox->addWidget(mCmdLine);
@@ -406,6 +404,7 @@ void MultiEditor::createActions()
 
     QAction * action;
     const QString editorCategory(tr("Text Editor"));
+    const QString ideCategory("IDE");
 
     // Edit
 
@@ -674,7 +673,7 @@ void MultiEditor::createActions()
 #else
     action->setShortcut( tr("Alt+Tab", "Switch Document"));
 #endif
-    connect(action, SIGNAL(triggered()), this, SLOT(switchDocument()));
+    connect(action, SIGNAL(triggered()), MainWindow::instance(), SLOT(switchDocument()));
     settings->addAction( action, "editor-document-switch", editorCategory);
 
     mActions[NewWindow] = action = new QAction(tr("Open New Window"), this);
@@ -688,6 +687,12 @@ void MultiEditor::createActions()
     action->setShortcut( tr("Ctrl+Alt+W", "Close The Current Window"));
     connect(action, SIGNAL(triggered()), this, SIGNAL(closeWindow()));
     settings->addAction( action, "editor-new", editorCategory);
+
+    mActions[SwitchEditor] = action = new QAction(tr("Switch Editor"), this);
+    action->setStatusTip(tr("Shows the editorList popup"));
+    action->setShortcut( tr("Ctrl+Alt+Tab", "Switch Editor"));
+    connect(action, SIGNAL(triggered()), this, SLOT(switchEditor()));
+    settings->addAction( action, "editor-switch", ideCategory);
 
     mActions[SplitHorizontally] = action = new QAction(tr("Split To Right"), this);
     //action->setShortcut( tr("Ctrl+P, 3", "Split To Right"));

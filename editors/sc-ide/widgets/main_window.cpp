@@ -191,7 +191,7 @@ MainWindow::MainWindow(Main * main) :
 
     createDocumentConnections();
 
-    connect(mDocumentsDocklet->dockWidget(), SIGNAL(topLevelChanged(bool)),
+    connect(mDocumentsDocklet, SIGNAL(dockletDetached(bool)),
             this, SLOT(onDocumentDockletUndocked(bool)));
 
     createActions();
@@ -224,7 +224,7 @@ MainWindow::MainWindow(Main * main) :
     // Custom event handling:
     qApp->installEventFilter(this);
 
-    if(mDocumentsDocklet->isDetached() || mDocumentsDocklet->dockWidget()->isFloating()) {
+    if(mDocumentsDocklet->isDetached()) {
         onDocumentDockletUndocked( true );
     }
 }
@@ -1767,29 +1767,43 @@ void MainWindow::reloadAllLists( int from, int to ) {
 
 void MainWindow::onDocumentDockletUndocked( bool undocked )
 {
-    Q_EMIT( documentDockletUndocked() );
     if( undocked ) {
         connect(mDocumentsDocklet->list(), SIGNAL(clicked(Document*)),
                 this, SLOT(setCurrent(Document*)));
-        // Disconnect DocumentDocklet->MainWindow static connection
         disconnect(mDocumentsDocklet->list(), SIGNAL(clicked(Document*)),
                 mEditors, SLOT(setCurrent(Document*)));
+        mDocumentsDocklet->list()->setCurrent( currentMultiEditor()->currentBox()->currentDocument() );  
     } else {
         disconnect(mDocumentsDocklet->list(), SIGNAL(clicked(Document*)),
                 this, SLOT(setCurrent(Document*)));
-        // Restore DocumentDocklet->MainWindow connection
         connect(mDocumentsDocklet->list(), SIGNAL(clicked(Document*)),
                 mEditors, SLOT(setCurrent(Document*)),
                 Qt::QueuedConnection);
-        // Restore main docDocklet selection
         mDocumentsDocklet->list()->setCurrent( mEditors->currentBox()->currentDocument() );  
-    }
-    
+    }   
 }
 
 void MainWindow::setCurrent( Document * doc ) 
 {
     currentMultiEditor()->setCurrent(doc);
+}
+
+void MainWindow::switchEditor()
+{
+/*    CodeEditorBox *box = currentBox();
+
+    DocumentSelectPopUp * popup = new DocumentSelectPopUp(box->history(), this);
+
+    QRect popupRect(0,0,300,200);
+    popupRect.moveCenter(rect().center());
+    popup->resize(popupRect.size());
+    QPoint globalPosition = mapToGlobal(popupRect.topLeft());
+
+    Document * selectedDocument = popup->exec(globalPosition);
+
+    if (selectedDocument)
+        box->setDocument(selectedDocument);
+*/
 }
 
 //////////////////////////// ClockStatusBox ////////////////////////////
