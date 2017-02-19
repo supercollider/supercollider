@@ -26,7 +26,9 @@
 
 #ifdef __APPLE__
 #import <Foundation/Foundation.h>
+// required for _NSGetExecutablePath() MACOS_FHS:
 #include <mach-o/dyld.h>
+// required for dirname() MACOS_FHS:
 #include <libgen.h>
 #endif
 
