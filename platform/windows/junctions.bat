@@ -11,7 +11,7 @@ IF NOT EXIST %2\SCClassLibrary (mklink /J %2\SCClassLibrary %3\SCClassLibrary)
 IF NOT EXIST %2\HelpSource (mklink /J %2\HelpSource %3\HelpSource)
 IF NOT EXIST %2\examples (mklink /J %2\examples %3\examples)
 IF NOT EXIST %2\sounds (mklink /J %2\sounds %3\sounds)
-GOTO :END
+GOTO END
 
 :REMOVE
 IF EXIST %2\SCClassLibrary (rmdir %2\SCClassLibrary)
