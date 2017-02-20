@@ -71,8 +71,152 @@
 #include <QMimeData>
 #include <QMetaMethod>
 #include <QListWidgetItem>
+#include <QDialog>
+#include <QString>
 
 namespace ScIDE {
+
+class EditorSelectPopUp : public QDialog
+{
+public:
+    EditorSelectPopUp(const MainWindow::History & history, QWidget * parent):
+    #ifndef Q_OS_MAC
+        QDialog(parent, Qt::Popup  | Qt::FramelessWindowHint)
+    #else
+        QDialog(parent, Qt::Dialog | Qt::FramelessWindowHint)
+    #endif
+    {
+        mModel = new QStandardItemModel(this);
+        populateModel(history);
+
+        mListView = new QListView();
+        mListView->setModel(mModel);
+        mListView->setFrameShape(QFrame::NoFrame);
+
+        QHBoxLayout *layout = new QHBoxLayout(this);
+        layout->addWidget(mListView);
+        layout->setContentsMargins(1,1,1,1);
+
+        connect(mListView, SIGNAL(activated(QModelIndex)), this, SLOT(accept()));
+
+        mListView->setFocus(Qt::OtherFocusReason);
+
+        QModelIndex nextIndex = mModel->index(1, 0);
+        mListView->setCurrentIndex(nextIndex);
+
+        mListView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    }
+
+    MultiEditor * exec( const QPoint & pos )
+    {
+        move(pos);
+        if (QDialog::exec()) {
+            return currentEditor();
+        }
+        else
+            return 0;
+    }
+
+private:
+    bool event(QEvent * event)
+    {
+        if (event->type() == QEvent::ShortcutOverride) {
+            event->accept();
+            return true;
+        }
+        return QWidget::event(event);
+    }
+
+    void keyReleaseEvent (QKeyEvent * ke)
+    {
+        // adapted from qtcreator
+        if (ke->modifiers() == 0
+            /*HACK this is to overcome some event inconsistencies between platforms*/
+            || (ke->modifiers() == Qt::AltModifier
+                && (ke->key() == Qt::Key_Alt || ke->key() == -1))) {
+            ke->accept();
+            accept();
+        }
+        QDialog::keyReleaseEvent(ke);
+    }
+
+    void keyPressEvent(QKeyEvent * ke)
+    {
+        switch (ke->key()) {
+        case Qt::Key_Down:
+        case Qt::Key_Tab:
+            cycleDown();
+            ke->accept();
+            return;
+
+        case Qt::Key_Up:
+        case Qt::Key_Backtab:
+            cycleUp();
+            ke->accept();
+            return;
+
+        case Qt::Key_Escape:
+            reject();
+            return;
+
+        default:
+            ;
+        }
+
+        QDialog::keyPressEvent(ke);
+    }
+
+    void paintEvent( QPaintEvent * )
+    {
+        QPainter painter(this);
+        painter.setBrush(Qt::NoBrush);
+        painter.setPen(palette().color(QPalette::Dark));
+        painter.drawRect(rect().adjusted(0,0,-1,-1));
+    }
+
+    void cycleDown()
+    {
+        int row = mListView->currentIndex().row() + 1;
+        if (!mModel->hasIndex(row, 0))
+            row = 0;
+
+        QModelIndex nextIndex = mModel->index(row, 0);
+        mListView->setCurrentIndex(nextIndex);
+    }
+
+    void cycleUp()
+    {
+        int row = mListView->currentIndex().row() - 1;
+        if (!mModel->hasIndex(row, 0))
+            row = mModel->rowCount() - 1;
+
+        QModelIndex nextIndex = mModel->index(row, 0);
+        mListView->setCurrentIndex(nextIndex);
+    }
+
+    MultiEditor * currentEditor()
+    {
+        QStandardItem * currentItem = mModel->itemFromIndex(mListView->currentIndex());
+        return currentItem ? currentItem->data().value<MultiEditor*>()
+                           : NULL;
+    }
+
+    void populateModel( const MainWindow::History & history )
+    {
+        QList<MultiEditor*> displayEditors;
+        foreach(MultiEditor *editor, history)
+            displayEditors << editor;
+
+        foreach (MultiEditor * editor, displayEditors) {
+            QStandardItem * item = new QStandardItem(editor->currentBox()->currentDocument()->title());
+            item->setData(QVariant::fromValue(editor));
+            mModel->appendRow(item);
+        }
+    }
+
+    QListView *mListView;
+    QStandardItemModel *mModel;
+};
 
 static QWidget * findFirstResponder
 ( QWidget *widget, const char * methodSignature, int & methodIndex )
@@ -635,6 +779,7 @@ QMenuBar * MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( currentMultiEditor()->action(MultiEditor::NewWindow) );
     menu->addAction( currentMultiEditor()->action(MultiEditor::CloseWindow) );
+    menu->addAction( currentMultiEditor()->action(MultiEditor::SwitchEditor) );
     menu->addSeparator();
     menu->addAction( currentMultiEditor()->action(MultiEditor::SplitHorizontally) );
     menu->addAction( currentMultiEditor()->action(MultiEditor::SplitVertically) );
@@ -853,7 +998,9 @@ void MainWindow::setCurrentEditor(MultiEditor * ceditor)
         mEditorList.removeOne(ceditor);
     mEditorList.prepend(ceditor);
 
-    currentMultiEditor()->currentBox()->setActive();
+    currentMultiEditor()->currentBox()->raise();
+    currentMultiEditor()->currentBox()->show();
+    currentMultiEditor()->currentBox()->activateWindow();
 
     Q_EMIT( currentEditorChanged( currentMultiEditor()->currentBox()->currentDocument() ) );
 }
@@ -1790,20 +1937,17 @@ void MainWindow::setCurrent( Document * doc )
 
 void MainWindow::switchEditor()
 {
-/*    CodeEditorBox *box = currentBox();
-
-    DocumentSelectPopUp * popup = new DocumentSelectPopUp(box->history(), this);
+    EditorSelectPopUp * popup = new EditorSelectPopUp(mEditorList, this);
 
     QRect popupRect(0,0,300,200);
     popupRect.moveCenter(rect().center());
     popup->resize(popupRect.size());
     QPoint globalPosition = mapToGlobal(popupRect.topLeft());
 
-    Document * selectedDocument = popup->exec(globalPosition);
+    MultiEditor * selectedEditor = popup->exec(globalPosition);
 
-    if (selectedDocument)
-        box->setDocument(selectedDocument);
-*/
+    if (selectedEditor)
+        setCurrentEditor(selectedEditor);
 }
 
 //////////////////////////// ClockStatusBox ////////////////////////////

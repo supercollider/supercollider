@@ -42,7 +42,6 @@
 #include "../core/main.hpp"
 #include "editor_box.hpp"
 
-
 namespace ScIDE {
 
 class Main;
@@ -188,6 +187,7 @@ public Q_SLOTS:
     void newWindow();
     void closeWindow();
     void setCurrentEditor( MultiEditor * );
+    void switchEditor();
 
 private Q_SLOTS:
     void openStartupFile();
@@ -223,8 +223,7 @@ private Q_SLOTS:
     void reloadAllLists( QList<Document*> );
     void reloadAllLists( int, int );
     void onDocumentDockletUndocked( bool );
-    void setCurrent(Document *);
-    void switchEditor();
+    void setCurrent( Document * );
     
 protected:
     virtual void closeEvent(QCloseEvent *event);

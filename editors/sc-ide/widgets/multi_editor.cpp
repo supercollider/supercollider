@@ -673,7 +673,7 @@ void MultiEditor::createActions()
 #else
     action->setShortcut( tr("Alt+Tab", "Switch Document"));
 #endif
-    connect(action, SIGNAL(triggered()), MainWindow::instance(), SLOT(switchDocument()));
+    connect(action, SIGNAL(triggered()), this, SLOT(switchDocument()));
     settings->addAction( action, "editor-document-switch", editorCategory);
 
     mActions[NewWindow] = action = new QAction(tr("Open New Window"), this);
@@ -690,8 +690,8 @@ void MultiEditor::createActions()
 
     mActions[SwitchEditor] = action = new QAction(tr("Switch Editor"), this);
     action->setStatusTip(tr("Shows the editorList popup"));
-    action->setShortcut( tr("Ctrl+Alt+Tab", "Switch Editor"));
-    connect(action, SIGNAL(triggered()), this, SLOT(switchEditor()));
+    action->setShortcut( tr("Ctrl+Alt+E", "Switch Editor"));
+    connect(action, SIGNAL(triggered()), MainWindow::instance(), SLOT(switchEditor()));
     settings->addAction( action, "editor-switch", ideCategory);
 
     mActions[SplitHorizontally] = action = new QAction(tr("Split To Right"), this);
@@ -747,6 +747,7 @@ void MultiEditor::createActions()
     addAction(mActions[TriggerAutoCompletion]);
     addAction(mActions[TriggerMethodCallAid]);
     addAction(mActions[SwitchDocument]);
+    addAction(mActions[SwitchEditor]);
 
     // These actions have to be added because to the widget because they have
     // Qt::WidgetWithChildrenShortcut context:
