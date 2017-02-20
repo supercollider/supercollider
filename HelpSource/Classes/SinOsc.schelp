@@ -46,7 +46,7 @@ Examples::
 
 code::
 
-// create an audio-rate sine wave at 200 Hz,
+// creates an audio-rate sine wave at 200 Hz,
 // starting with phase 0 and an amplitude of 0.5
 { SinOsc.ar(200, 0, 0.5) }.play;
 
