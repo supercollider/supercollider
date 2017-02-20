@@ -362,6 +362,7 @@ elseif(WIN32)
       if(MSYS)
         add_custom_command(TARGET sclang
           POST_BUILD
+          COMMAND "${CMAKE_SOURCE_DIR}/platform/windows/symlinks.sh" "remove" "$<TARGET_FILE_DIR:sclang>"
           COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_FILE_DIR:sclang> $<TARGET_FILE_DIR:SuperCollider>
           COMMAND "${CMAKE_SOURCE_DIR}/platform/windows/symlinks.sh" "create" "${CMAKE_SOURCE_DIR}" "$<TARGET_FILE_DIR:sclang>"
           COMMENT "Copying files in target sclang to target SuperCollider (scide) and creating links to SCClassLibrary e.a."
@@ -369,6 +370,7 @@ elseif(WIN32)
       else()
         add_custom_command(TARGET sclang
           POST_BUILD
+          COMMAND cmd /C ${CMAKE_SOURCE_DIR}/platform/windows/junctions.bat remove \"$<TARGET_FILE_DIR:sclang>\"
           COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_FILE_DIR:sclang> $<TARGET_FILE_DIR:SuperCollider>
           COMMAND cmd /C ${CMAKE_SOURCE_DIR}/platform/windows/junctions.bat create \"$<TARGET_FILE_DIR:sclang>\" \"${CMAKE_SOURCE_DIR}\"
           COMMENT "Copying files in target sclang to target SuperCollider (scide) and creating links to SCClassLibrary e.a."
