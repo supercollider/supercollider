@@ -44,7 +44,7 @@ b = Buffer.alloc(s,44100,1);
 // Since the allpass delay has no audible effect as a resonator on
 // steady state sound ...
 
-{ BufAllpassC.ar(b.bufnum, WhiteNoise.ar(0.1), XLine.kr(0.0001, 0.01, 20), 0.2) }.play;
+{ BufAllpassC.ar(b.bufnum, WhiteNoise.ar(0.1), XLine.kr(0.0001, 0.01, 20, doneAction: 2), 0.2) }.play;
 
 // ...these examples add the input to the effected sound and compare variants so that you can hear
 // the effect of the phase comb:
@@ -52,19 +52,19 @@ b = Buffer.alloc(s,44100,1);
 (
 {
 	z = WhiteNoise.ar(0.2);
-	z + BufAllpassN.ar(b.bufnum, z, XLine.kr(0.0001, 0.01, 20), 0.2)
+	z + BufAllpassN.ar(b.bufnum, z, XLine.kr(0.0001, 0.01, 20, doneAction: 2), 0.2)
 }.play)
 
 (
 {
 	z = WhiteNoise.ar(0.2);
-	z + BufAllpassL.ar(b.bufnum, z, XLine.kr(0.0001, 0.01, 20), 0.2)
+	z + BufAllpassL.ar(b.bufnum, z, XLine.kr(0.0001, 0.01, 20, doneAction: 2), 0.2)
 }.play)
 
 (
 {
 	z = WhiteNoise.ar(0.2);
-	z + BufAllpassC.ar(b.bufnum, z, XLine.kr(0.0001, 0.01, 20), 0.2)
+	z + BufAllpassC.ar(b.bufnum, z, XLine.kr(0.0001, 0.01, 20, doneAction: 2), 0.2)
 }.play)
 
 // used as an echo - doesn't really sound different than Comb,
