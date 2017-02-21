@@ -517,7 +517,7 @@ int prStringCompare(struct VMGlobals *g, int numArgsPushed)
 	c = g->sp;
 
 	if (NotObj(b) || !isKindOf(slotRawObject(b), class_string)) return errWrongType;
-	
+
 	length = sc_min(slotRawObject(a)->size, slotRawObject(b)->size);
 	if (IsTrue(c)) cmp = memcmpi(slotRawString(a)->s, slotRawString(b)->s, length);
 	else cmp = memcmp(slotRawString(a)->s, slotRawString(b)->s, length);
@@ -614,8 +614,10 @@ int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
   }
 
+// for Unix-compatibility, where files and folders starting with '.' are hidden
+// these are excluded here too
   do {
-    if(strcmp(findData.cFileName, "..")!=0 && strcmp(findData.cFileName, "..")!=0){
+    if(strcmp(findData.cFileName, "..")!=0 && strcmp(findData.cFileName, ".")!=0  && findData.cFileName[0]!='.' && !(findData.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)){
       nbPaths++;
     }
   } while( ::FindNextFile(hFind, &findData));
@@ -636,7 +638,7 @@ int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
 
   int i = 0;
   do {
-    if(strcmp(findData.cFileName, "..")!=0 && strcmp(findData.cFileName, ".")!=0){
+    if(strcmp(findData.cFileName, "..")!=0 && strcmp(findData.cFileName, ".")!=0  && findData.cFileName[0]!='.' && !(findData.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)){
       std::string strPath(folder);
       strPath += std::string(findData.cFileName);
       if(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY){
@@ -763,7 +765,7 @@ int prString_Find(struct VMGlobals *g, int numArgsPushed)
 	int offset;
 	int err = slotIntVal(d, &offset);
 	if (err) return err;
-	
+
 	int alength = slotRawObject(a)->size - offset;
 	if (alength <= 0)
 	{
@@ -809,7 +811,7 @@ int prString_Find(struct VMGlobals *g, int numArgsPushed)
 			SetNil(a);
 		}
 		return errNone;
-		
+
 	} else if (IsChar(b)) {
 		char *achar = slotRawString(a)->s + offset;
 		char bchar = slotRawChar(b);
@@ -846,7 +848,7 @@ int prString_FindBackwards(struct VMGlobals *g, int numArgsPushed)
 	int offset;
 	int err = slotIntVal(d, &offset);
 	if (err) return err;
-	
+
 	int alength = sc_min(offset + 1, slotRawObject(a)->size);
 	if (alength <= 0)
 	{
