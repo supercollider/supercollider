@@ -13,12 +13,6 @@ than linear, but more accurate.
 
 The feedback coefficient is given by the equation code:: fb == 0.001 ** (delay / decay.abs) * decay.sign :: where 0.001 is -60 dBFS.
 
-A very good tip for anyone who is interested in delay lines,
-and is willing to get a simple way of processing a live source
-in a pretty effective way, is setting up a larger memory pool in the server,
-and basically setting up pretty large delay lines, randomizing all their parameters
-
-
 classmethods::
 
 method::ar, kr
@@ -34,6 +28,8 @@ Delay time in seconds.
 
 argument::decaytime
 Time for the echoes to decay by 60 decibels. If this time is negative then the feedback coefficient will be negative, thus emphasizing only odd harmonics at an octave lower.
+
+Infinite decay times are permitted. A decay time of code::inf:: leads to a feedback coefficient of 1, and a decay time of code::-inf:: leads to a feedback coefficient of -1.
 
 argument::mul
 Output will be multiplied by this value.
