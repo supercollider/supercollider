@@ -191,6 +191,11 @@ MainWindow::MainWindow(Main * main) :
     connect(mEditors, SIGNAL(currentDocumentChanged(Document*)),
             mDocumentsDocklet->list(), SLOT(setCurrent(Document*)),
             Qt::QueuedConnection);
+    connect(mDocumentsDocklet->list(), SIGNAL(updateTabsOrder(QList<Document*>)),
+            mEditors, SLOT(updateTabsOrder(QList<Document*>)));
+    connect(mEditors, SIGNAL(updateDockletOrder(int, int)),
+            mDocumentsDocklet->list(), SLOT(updateDockletOrder(int, int)),
+            Qt::QueuedConnection);
 
     // Update actions on document change
     connect(mEditors, SIGNAL(currentDocumentChanged(Document*)),
@@ -660,6 +665,8 @@ void MainWindow::createMenus()
     menu->addAction( mMain->scServer()->action(ScServer::DumpNodeTreeWithControls) );
     menu->addAction( mMain->scServer()->action(ScServer::PlotTree) );
     menu->addAction( mMain->scServer()->action(ScServer::DumpOSC) );
+    menu->addAction( mMain->scServer()->action(ScServer::Record) );
+    menu->addAction( mMain->scServer()->action(ScServer::PauseRecord) );
     menu->addAction( mMain->scServer()->action(ScServer::VolumeUp) );
     menu->addAction( mMain->scServer()->action(ScServer::VolumeDown) );
     menu->addAction( mMain->scServer()->action(ScServer::VolumeRestore) );

@@ -84,7 +84,7 @@ extern "C"
 
 	void DiskOut_next(DiskOut *unit, int inNumSamples);
 	void DiskOut_Ctor(DiskOut* unit);
-    void DiskOut_Dtor(DiskOut* unit);
+	void DiskOut_Dtor(DiskOut* unit);
 
 	void VDiskIn_next(VDiskIn *unit, int inNumSamples);
 	void VDiskIn_first(VDiskIn *unit, int inNumSamples);
@@ -239,6 +239,7 @@ void DiskIn_Ctor(DiskIn* unit)
 	unit->m_buf = unit->mWorld->mSndBufs;
 	unit->m_framepos = 0;
 	SETCALC(DiskIn_next);
+	ClearUnitOutputs(unit, 1);
 }
 
 void DiskIn_next(DiskIn *unit, int inNumSamples)
@@ -328,6 +329,7 @@ void DiskOut_Ctor(DiskOut* unit)
 	unit->m_framepos = 0;
 	unit->m_framewritten = 0;
 	SETCALC(DiskOut_next);
+	ClearUnitOutputs(unit, 1);
 }
 
 
@@ -403,29 +405,29 @@ sendMessage:
 
 void DiskOut_Dtor(DiskOut* unit)
 {
-    GET_BUF
-    
-    uint32 framepos = unit->m_framepos;
-    uint32 bufFrames2 = bufFrames >> 1;
-    // check that we didn't just write
-    if (framepos != 0 && framepos != bufFrames2) {
-        // if not write the last chunk of samples
-        uint32 writeStart;
-        if (framepos > bufFrames2) {
-            writeStart = bufFrames2;
-        } else {
-            writeStart = 0;
-        }
-        DiskIOMsg msg;
-        msg.mWorld = unit->mWorld;
-        msg.mCommand = kDiskCmd_Write;
-        msg.mBufNum = (int)fbufnum;
-        msg.mPos = writeStart;
-        msg.mFrames = framepos - writeStart;
-        msg.mChannels = bufChannels;
-        //printf("sendMessage %d  %d %d %d\n", msg.mBufNum, msg.mPos, msg.mFrames, msg.mChannels);
-        gDiskIO->Write(msg);
-    }
+	GET_BUF
+
+	uint32 framepos = unit->m_framepos;
+	uint32 bufFrames2 = bufFrames >> 1;
+	// check that we didn't just write
+	if (framepos != 0 && framepos != bufFrames2) {
+		// if not write the last chunk of samples
+		uint32 writeStart;
+		if (framepos > bufFrames2) {
+		    writeStart = bufFrames2;
+		} else {
+		    writeStart = 0;
+		}
+		DiskIOMsg msg;
+		msg.mWorld = unit->mWorld;
+		msg.mCommand = kDiskCmd_Write;
+		msg.mBufNum = (int)fbufnum;
+		msg.mPos = writeStart;
+		msg.mFrames = framepos - writeStart;
+		msg.mChannels = bufChannels;
+		//printf("sendMessage %d  %d %d %d\n", msg.mBufNum, msg.mPos, msg.mFrames, msg.mChannels);
+		gDiskIO->Write(msg);
+	}
 }
 
 
@@ -444,6 +446,8 @@ void VDiskIn_Ctor(VDiskIn* unit)
 		SETCALC(VDiskIn_next_rate1);
 	else
 		SETCALC(VDiskIn_first);
+
+	ClearUnitOutputs(unit, 1);
 }
 
 static void VDiskIn_request_buffer(VDiskIn * unit, float fbufnum, uint32 bufFrames2,
@@ -644,7 +648,7 @@ C_LINKAGE SC_API_EXPORT void unload(InterfaceTable *inTable)
 PluginLoad(DiskIO)
 {
 	ft = inTable;
-    gDiskIO = new DiskIOThread();
+	gDiskIO = new DiskIOThread();
 	gDiskIO->launchThread();
 
 	DefineSimpleUnit(DiskIn);

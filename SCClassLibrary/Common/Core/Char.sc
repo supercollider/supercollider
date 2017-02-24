@@ -1,11 +1,13 @@
 Char : Magnitude {
 
 	const <nl = $\n ;
+	const <ret = $\r ;
+	const <vtab = $\v ;
 	const <ff = $\f ;
 	const <tab = $\t ;
 	const <space = $  ;
-	const <comma = $\, ;
-
+	const <comma = $, ;
+	const <bullet = $* ;
 
 	*new { ^this.shouldNotImplement(thisMethod) }
 	// to create a Char use the Integer methods asAscii or asDigit
@@ -86,8 +88,6 @@ Char : Magnitude {
 	== { arg aChar;  ^aChar respondsTo: \ascii and: { this.ascii == aChar.ascii } }
 
 	++ { |that| ^this.asString ++ that }
-
-	*bullet { ^$* }
 
 	printOn { arg stream;
 		stream.put(this);

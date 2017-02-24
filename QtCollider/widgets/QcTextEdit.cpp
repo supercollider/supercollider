@@ -98,8 +98,8 @@ void QcTextEdit::replaceSelectedText( const QString &string )
   QTextCursor cursor( textCursor() );
   if( cursor.hasSelection() ) {
     cursor.removeSelectedText();
-    cursor.insertText( string );
-  }
+  };
+  cursor.insertText( string );
 }
 
 QString QcTextEdit::currentLine() const

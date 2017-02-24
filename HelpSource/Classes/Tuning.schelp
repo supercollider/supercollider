@@ -25,7 +25,7 @@ subsection::Creation
 
 strong::just, pythagorean, werckmeister, johnston, partch, wcAlpha, bp, etc.::
 
-Creates a tuning from the library stored in link::Classes/TuningInfo::. For a complete list of available tunings, execute
+Creates a tuning from the library stored in code::Tuning.all::. For a complete list of available tunings, execute
 code::
 Tuning.directory
 ::

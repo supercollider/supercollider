@@ -331,7 +331,7 @@ HistoryGui : JITGui {
 		var line;
 		if (object.lines.isNil) { "no history lines yet.".postln; ^this };
 		line = object.lines[index];
-		if (line.isNil) { "history: no line found!".inform; ^this };
+		if (line.isNil) { "history: no line found!".postln; ^this };
 		textV.string_(line[2]);
 	}
 
@@ -339,7 +339,7 @@ HistoryGui : JITGui {
 		var line;
 		if (object.lines.isNil) { "no history lines yet.".postln; ^this };
 		line = object.lines[index];
-		if (line.isNil) { "history: no line found!".inform; ^this };
+		if (line.isNil) { "history: no line found!".postln; ^this };
 		this.setDocStr(line[2]);
 		doc.front;
 		try { this.alignDoc };

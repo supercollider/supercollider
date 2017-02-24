@@ -69,7 +69,7 @@ METHOD::attributes
 returns an link::Classes/IdentityDictionary:: containing for each association:
 list::
 ## the attribute/property name as the key.
-## the supercollider link::Classes/Class:: you should use as an argument to set the attribute.
+## the SuperCollider link::Classes/Class:: you should use as an argument to set the attribute.
 ::
 Once you know the attributes you can set them like using normal instance setters, use the name and append '_'.
 code::

@@ -544,7 +544,7 @@ Pbindf : FilterPattern {
 	var <>patternpairs;
 	*new { arg pattern ... pairs;
 		if (pairs.size.odd, { Error("Pbindf should have odd number of args.\n").throw });
-		^super.new(pattern ? Event.default).patternpairs_(pairs)
+		^super.new(pattern ?? { Event.default }).patternpairs_(pairs)
 	}
 	storeArgs { ^[pattern] ++ patternpairs }
 	embedInStream { arg event;

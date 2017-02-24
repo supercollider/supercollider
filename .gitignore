@@ -9,6 +9,7 @@ platform/mac/build
 # Windows related files
 *Thumbs.db
 CMakeLists.txt.user
+external_libraries/asio*
 
 # working files made by packager script
 common/Packager/LinuxExclusions.txt

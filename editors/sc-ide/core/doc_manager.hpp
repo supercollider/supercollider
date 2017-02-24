@@ -33,6 +33,9 @@
 #include <QPlainTextDocumentLayout>
 #include <QUuid>
 #include <QTimer>
+#include <QStandardItemModel>
+#include <QApplication>
+#include <QStyle>
 
 #define RESTORE_COAL 100
 #define RESTORE_COAL_MSECS 60000
@@ -60,6 +63,7 @@ public:
     const QByteArray & id() { return mId; }
     const QString & filePath() { return mFilePath; }
     const QString & title() { return mTitle; }
+    void setTitle(QString & newTitle) { mTitle = newTitle; mModelItem->setText(mTitle); }
 
     QFont defaultFont() const { return mDoc->defaultFont(); }
     void setDefaultFont( const QFont & font );
@@ -71,6 +75,8 @@ public:
 
     bool isPlainText() const { return mHighlighter == NULL; }
     bool isModified() const  { return mDoc->isModified(); }
+
+    QStandardItem * modelItem() { return mModelItem; }
     
     QString textAsSCArrayOfCharCodes(int start, int range);
     QString titleAsSCArrayOfCharCodes();
@@ -108,6 +114,14 @@ public slots:
     void storeTmpFile();
     void onTmpCoalUsecs();
 
+    void onModificationChanged(bool changed) {
+         if(changed){
+             mModelItem->setIcon(QApplication::style()->standardIcon(QStyle::SP_DialogSaveButton));
+         } else {
+             mModelItem->setIcon(QIcon());
+         }
+     }
+
 signals:
     void defaultFontChanged();
 
@@ -133,6 +147,7 @@ private:
     int mInitialSelectionStart, mInitialSelectionRange;
     bool mEditable;
     bool mPromptsToSave;
+    QStandardItem * mModelItem;
 };
 
 class DocumentManager : public QObject
@@ -166,6 +181,7 @@ public:
     Document * activeDocument() { return mCurrentDocument; }
     bool globalKeyDownActionEnabled() { return mGlobalKeyDownEnabled; }
     bool globalKeyUpActionEnabled() { return mGlobalKeyUpEnabled; }
+    QStandardItemModel * docModel() { return mDocumentModel; }
 
 public slots:
     // initialCursorPosition -1 means "don't change position if already open"
@@ -234,6 +250,7 @@ private:
     QString mCurrentDocumentPath;
     class Document * mCurrentDocument;
     bool mGlobalKeyDownEnabled, mGlobalKeyUpEnabled;
+    QStandardItemModel * mDocumentModel;
 };
 
 } // namespace ScIDE

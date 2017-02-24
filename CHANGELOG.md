@@ -1,5 +1,580 @@
 # Change Log
 
+## [3.8.0](https://github.com/supercollider/supercollider/tree/3.8.0) (2016-09-23)
+[Full Changelog](https://github.com/supercollider/supercollider/compare/3.7.2...3.8.0)
+
+##  API change
+
+- Increase the default number of audio buses from 128 to 1024
+  [#2239](https://github.com/supercollider/supercollider/pull/2239) by [vivid-synth](https://github.com/vivid-synth)
+- server plugins: Unify panning behavior of granular ugens
+  [#2136](https://github.com/supercollider/supercollider/pull/2136) by [snappizz](https://github.com/snappizz)
+- scsynth: commandline option  (-B) to bind to specific address
+  [#2095](https://github.com/supercollider/supercollider/pull/2095) by [llloret](https://github.com/llloret)
+- PathName has potentially superfluous methods
+  [#1909](https://github.com/supercollider/supercollider/issues/1909) by [telephon](https://github.com/telephon)
+- class library: sound file view - rename argument startframe -> startFrame to match convention
+  [#1684](https://github.com/supercollider/supercollider/pull/1684) by [telephon](https://github.com/telephon)
+
+##  comp: scsynth
+
+- Add commit to version info
+  [#2243](https://github.com/supercollider/supercollider/pull/2243) by [vivid-synth](https://github.com/vivid-synth)
+- fftlib: remove duplicate defines
+  [#2089](https://github.com/supercollider/supercollider/pull/2089) by [sonoro1234](https://github.com/sonoro1234)
+- SC_fftlib: allow ensurewindow to be called
+  [#2008](https://github.com/supercollider/supercollider/pull/2008) by [sonoro1234](https://github.com/sonoro1234)
+- jack: add metadata support
+  [#1951](https://github.com/supercollider/supercollider/pull/1951) by [ventosus](https://github.com/ventosus)
+- reboot of the internal server crashes interpreter
+  [#1526](https://github.com/supercollider/supercollider/issues/1526) by [ceremona](https://github.com/ceremona)
+
+##  comp: server plugins
+
+- server plugins: Gendy*: fix initialization bug
+  [#2331](https://github.com/supercollider/supercollider/pull/2331) by [snappizz](https://github.com/snappizz)
+- Bug 1355 demand env overshoot
+  [#2164](https://github.com/supercollider/supercollider/pull/2164) by [baconpaul](https://github.com/baconpaul)
+- Allow audio-rate phasein argument to VOsc
+  [#2140](https://github.com/supercollider/supercollider/pull/2140) by [snappizz](https://github.com/snappizz)
+- PartConv avoid using first ir section twice
+  [#2015](https://github.com/supercollider/supercollider/pull/2015) by [sonoro1234](https://github.com/sonoro1234)
+- plugins: do not advance stages before env start
+  [#1424](https://github.com/supercollider/supercollider/pull/1424) by [scztt](https://github.com/scztt)
+
+##  comp: supernova
+
+- Add supernova to some scsynth-specific docs
+  [#2256](https://github.com/supercollider/supercollider/pull/2256) by [vivid-synth](https://github.com/vivid-synth)
+- build: don't auto-enable supernova if old cmake
+  [#2170](https://github.com/supercollider/supercollider/pull/2170) by [danstowell](https://github.com/danstowell)
+- supernova: use c++14 move captures and proper move semantics
+  [#2141](https://github.com/supercollider/supercollider/pull/2141) by [timblechmann](https://github.com/timblechmann)
+- supernova: relax handling of malformed c_set messages
+  [#2113](https://github.com/supercollider/supercollider/pull/2113) by [timblechmann](https://github.com/timblechmann)
+- supernova: portaudio_backend changed #elif for #else
+  [#1947](https://github.com/supercollider/supercollider/pull/1947) by [sonoro1234](https://github.com/sonoro1234)
+- supernova: minor improvements
+  [#1908](https://github.com/supercollider/supercollider/pull/1908) by [timblechmann](https://github.com/timblechmann)
+
+##  comp: sclang
+
+- remove references to CocoaBridge
+  [#2351](https://github.com/supercollider/supercollider/pull/2351) by [snappizz](https://github.com/snappizz)
+- lang: Remove debug message
+  [#2250](https://github.com/supercollider/supercollider/pull/2250) by [gusano](https://github.com/gusano)
+- sclang: Ensure git object is defined for checkout
+  [#2216](https://github.com/supercollider/supercollider/pull/2216) by [scztt](https://github.com/scztt)
+- asStringPerc SCLang Crash
+  [#2168](https://github.com/supercollider/supercollider/pull/2168) by [baconpaul](https://github.com/baconpaul)
+- Classname as Selector crashes
+  [#2166](https://github.com/supercollider/supercollider/pull/2166) by [baconpaul](https://github.com/baconpaul)
+- Reimplement match lang ip
+  [#1972](https://github.com/supercollider/supercollider/pull/1972) by [muellmusik](https://github.com/muellmusik)
+- sclang resolves relative paths in the language configuration file relative to the current working directory
+  [#1927](https://github.com/supercollider/supercollider/issues/1927) by [miguel-negrao](https://github.com/miguel-negrao)
+- class library: plot does not specify min and max, so add 'plotAudio' method with -1 .. 1 range
+  [#1846](https://github.com/supercollider/supercollider/pull/1846) by [telephon](https://github.com/telephon)
+- Fix presumed bug in d0f475d (min should be max). Fixes #1842
+  [#1843](https://github.com/supercollider/supercollider/pull/1843) by [danstowell](https://github.com/danstowell)
+- parser doesn't catch backward variable definitions
+  [#1514](https://github.com/supercollider/supercollider/issues/1514) by [telephon](https://github.com/telephon)
+- sclang crashes on 0.exit
+  [#1438](https://github.com/supercollider/supercollider/issues/1438) by [jamshark70](https://github.com/jamshark70)
+- Crash when using a class name in binop method call syntax
+  [#669](https://github.com/supercollider/supercollider/issues/669) by [jamshark70](https://github.com/jamshark70)
+
+##  comp: class library
+
+- Fix printing filepath at end of recording
+  [#2435](https://github.com/supercollider/supercollider/pull/2435) by [bagong](https://github.com/bagong)
+- Add default value to second argument in string replace
+  [#2433](https://github.com/supercollider/supercollider/pull/2433) by [bagong](https://github.com/bagong)
+- server: don't set client id on failure
+  [#2405](https://github.com/supercollider/supercollider/pull/2405) by [telephon](https://github.com/telephon)
+- class library: add missing proxy init in Ndef
+  [#2387](https://github.com/supercollider/supercollider/pull/2387) by [telephon](https://github.com/telephon)
+- EnvirGui calls `this.widgets` but has none
+  [#2371](https://github.com/supercollider/supercollider/issues/2371) by [telephon](https://github.com/telephon)
+- Topic/deprecating
+  [#2370](https://github.com/supercollider/supercollider/pull/2370) by [crucialfelix](https://github.com/crucialfelix)
+- Make sure Spec is inited before ControlSpec
+  [#2346](https://github.com/supercollider/supercollider/pull/2346) by [antonhornquist](https://github.com/antonhornquist)
+- Handle spaces in SCDoc internal links
+  [#2336](https://github.com/supercollider/supercollider/pull/2336) by [crucialfelix](https://github.com/crucialfelix)
+- Usage of Class.initClassTree(ControlSpec) can remove common mappings
+  [#2318](https://github.com/supercollider/supercollider/issues/2318) by [antonhornquist](https://github.com/antonhornquist)
+- SoundFileView.schelp wrong argument names
+  [#2311](https://github.com/supercollider/supercollider/issues/2311) by [jamshark70](https://github.com/jamshark70)
+- Add linting and fix classlib indention
+  [#2298](https://github.com/supercollider/supercollider/pull/2298) by [gusano](https://github.com/gusano)
+- class library: TreeView: add alias methods addChild, insertChild, childAt
+  [#2260](https://github.com/supercollider/supercollider/pull/2260) by [snappizz](https://github.com/snappizz)
+- Classlib: Quarks: Fix typo in incompatibility message (SC: camel case…
+  [#2245](https://github.com/supercollider/supercollider/pull/2245) by [jamshark70](https://github.com/jamshark70)
+- Classlib: GUI: asLayoutElement interface for non-Views that work in layouts
+  [#2234](https://github.com/supercollider/supercollider/pull/2234) by [jamshark70](https://github.com/jamshark70)
+- ServerStatus - watcher notifies the server
+  [#2226](https://github.com/supercollider/supercollider/pull/2226) by [gusano](https://github.com/gusano)
+- class library: server gui updates better
+  [#2215](https://github.com/supercollider/supercollider/pull/2215) by [telephon](https://github.com/telephon)
+- class library: update link when server failed to start
+  [#2209](https://github.com/supercollider/supercollider/pull/2209) by [snappizz](https://github.com/snappizz)
+- s.makeGui server window broken in master
+  [#2202](https://github.com/supercollider/supercollider/issues/2202) by [jamshark70](https://github.com/jamshark70)
+- Classlib: GUI: Support "has-a" GUI objects by calling asView within Layouts
+  [#2188](https://github.com/supercollider/supercollider/pull/2188) by [jamshark70](https://github.com/jamshark70)
+- Move Spec/Warp etc. out of GUI back into Control
+  [#2182](https://github.com/supercollider/supercollider/pull/2182) by [crucialfelix](https://github.com/crucialfelix)
+- asOSCArgArray : do not expand a string into an array
+  [#2133](https://github.com/supercollider/supercollider/pull/2133) by [telephon](https://github.com/telephon)
+- class library: implement audio rate lag control
+  [#2127](https://github.com/supercollider/supercollider/pull/2127) by [telephon](https://github.com/telephon)
+- cmake needs to install HUT directory on OSX
+  [#2116](https://github.com/supercollider/supercollider/issues/2116) by [sensestage](https://github.com/sensestage)
+- class library: streamArg correctly yields
+  [#2110](https://github.com/supercollider/supercollider/pull/2110) by [telephon](https://github.com/telephon)
+- class library: move asOSCArgArray out of backwards_compatibility
+  [#2108](https://github.com/supercollider/supercollider/pull/2108) by [telephon](https://github.com/telephon)
+- class library: fix compatibility of asOSCArgArray
+  [#2097](https://github.com/supercollider/supercollider/pull/2097) by [telephon](https://github.com/telephon)
+- List can't be used in Synth arg list
+  [#2096](https://github.com/supercollider/supercollider/issues/2096) by [jamshark70](https://github.com/jamshark70)
+- deprecated-3.7: remove it in master?
+  [#2038](https://github.com/supercollider/supercollider/issues/2038) by [danstowell](https://github.com/danstowell)
+- Topic/server unresponsive
+  [#1935](https://github.com/supercollider/supercollider/pull/1935) by [crucialfelix](https://github.com/crucialfelix)
+- clean up PathName code
+  [#1912](https://github.com/supercollider/supercollider/pull/1912) by [telephon](https://github.com/telephon)
+- returning nil as UGen graph returns uninformative error
+  [#1771](https://github.com/supercollider/supercollider/issues/1771) by [telephon](https://github.com/telephon)
+- Improve error handling in Server:prepareForRecord
+  [#1580](https://github.com/supercollider/supercollider/issues/1580) by [bagong](https://github.com/bagong)
+- Fix range in Function:plot
+  [#1454](https://github.com/supercollider/supercollider/pull/1454) by [thormagnusson](https://github.com/thormagnusson)
+- Move Spec back into Control
+  [#2181](https://github.com/supercollider/supercollider/issues/2181) by [multivac61](https://github.com/multivac61)
+
+##  comp: help
+
+- add News in 3.8
+  [#2365](https://github.com/supercollider/supercollider/pull/2365) by [snappizz](https://github.com/snappizz)
+- help: History: remove use of .speak in examples
+  [#2352](https://github.com/supercollider/supercollider/pull/2352) by [snappizz](https://github.com/snappizz)
+- help: SoundFileView: fix argument names
+  [#2350](https://github.com/supercollider/supercollider/pull/2350) by [snappizz](https://github.com/snappizz)
+- Add example to LatoocarfianL
+  [#2335](https://github.com/supercollider/supercollider/pull/2335) by [crucialfelix](https://github.com/crucialfelix)
+- Update Pitch.schelp
+  [#2334](https://github.com/supercollider/supercollider/pull/2334) by [crucialfelix](https://github.com/crucialfelix)
+- Revert "Update Ndef.schelp"
+  [#2323](https://github.com/supercollider/supercollider/pull/2323) by [nuss](https://github.com/nuss)
+- move SVG logo from HelpSource/images to icons
+  [#2312](https://github.com/supercollider/supercollider/pull/2312) by [snappizz](https://github.com/snappizz)
+- Signal.schelp: small typo fix in play:loop desc
+  [#2308](https://github.com/supercollider/supercollider/pull/2308) by [jaschanarveson](https://github.com/jaschanarveson)
+- Fix some anchor links in help
+  [#2293](https://github.com/supercollider/supercollider/pull/2293) by [vivid-synth](https://github.com/vivid-synth)
+- Reference: Server-Command: clarify Wave Fill flags
+  [#2288](https://github.com/supercollider/supercollider/pull/2288) by [jaschanarveson](https://github.com/jaschanarveson)
+- help: SC3 vs SC2: add historical note
+  [#2287](https://github.com/supercollider/supercollider/pull/2287) by [snappizz](https://github.com/snappizz)
+- help: create help file for ScIDE
+  [#2285](https://github.com/supercollider/supercollider/pull/2285) by [snappizz](https://github.com/snappizz)
+- help: VLayout: change QLineLayout to LineLayout
+  [#2283](https://github.com/supercollider/supercollider/pull/2283) by [snappizz](https://github.com/snappizz)
+- help: Dialog: expand explanation of openPanel and savePanel
+  [#2282](https://github.com/supercollider/supercollider/pull/2282) by [snappizz](https://github.com/snappizz)
+- Add "(NRT)" to the NRT help file title (searchability)
+  [#2281](https://github.com/supercollider/supercollider/pull/2281) by [vivid-synth](https://github.com/vivid-synth)
+- Update Ndef.schelp
+  [#2273](https://github.com/supercollider/supercollider/pull/2273) by [tiagmoraismorgado](https://github.com/tiagmoraismorgado)
+- Update MouseX.schelp
+  [#2272](https://github.com/supercollider/supercollider/pull/2272) by [tiagmoraismorgado](https://github.com/tiagmoraismorgado)
+- Update MouseButton.schelp
+  [#2271](https://github.com/supercollider/supercollider/pull/2271) by [tiagmoraismorgado](https://github.com/tiagmoraismorgado)
+- help: Remove some outdated GUI info
+  [#2248](https://github.com/supercollider/supercollider/pull/2248) by [snappizz](https://github.com/snappizz)
+- Add supernova to the list of components
+  [#2244](https://github.com/supercollider/supercollider/pull/2244) by [vivid-synth](https://github.com/vivid-synth)
+- help: add SVG logo to images dir
+  [#2235](https://github.com/supercollider/supercollider/pull/2235) by [snappizz](https://github.com/snappizz)
+- Replace use of .send(s) with .add in class examples.
+  [#2223](https://github.com/supercollider/supercollider/pull/2223) by [kisielk](https://github.com/kisielk)
+- help: update Document.schelp to match current API
+  [#2219](https://github.com/supercollider/supercollider/pull/2219) by [snappizz](https://github.com/snappizz)
+- help: RangeSlider: correct dragging instructions
+  [#2210](https://github.com/supercollider/supercollider/pull/2210) by [snappizz](https://github.com/snappizz)
+- examples: replace .send(s) with .add
+  [#2208](https://github.com/supercollider/supercollider/pull/2208) by [snappizz](https://github.com/snappizz)
+- PulseDivider.schelp: Fix typo and clarify div
+  [#2199](https://github.com/supercollider/supercollider/pull/2199) by [kisielk](https://github.com/kisielk)
+- Pmono.schelp: fix duplicate "the"
+  [#2187](https://github.com/supercollider/supercollider/pull/2187) by [kisielk](https://github.com/kisielk)
+- Fix a typo in SynthDef.schelp
+  [#2186](https://github.com/supercollider/supercollider/pull/2186) by [kisielk](https://github.com/kisielk)
+- fixing Henon help
+  [#2150](https://github.com/supercollider/supercollider/pull/2150) by [tiagmoraismorgado](https://github.com/tiagmoraismorgado)
+- document DelTapWr/DelTapRd/MultiTap delay time caveats
+  [#2132](https://github.com/supercollider/supercollider/pull/2132) by [snappizz](https://github.com/snappizz)
+- help: document range better for LFGauss UGen
+  [#2121](https://github.com/supercollider/supercollider/pull/2121) by [telephon](https://github.com/telephon)
+- help: hidfunc, clarify nil on usage and usageID
+  [#2104](https://github.com/supercollider/supercollider/pull/2104) by [llloret](https://github.com/llloret)
+- help fixes  for OSCfunc & Env
+  [#2087](https://github.com/supercollider/supercollider/pull/2087) by [miczac](https://github.com/miczac)
+- RecordBuf.schelp: corrected Synthnames for proper playback, lower volume for overdub
+  [#2071](https://github.com/supercollider/supercollider/pull/2071) by [miczac](https://github.com/miczac)
+- AudioIn.schelp: tamed feedback in example, removed "patching" example
+  [#2070](https://github.com/supercollider/supercollider/pull/2070) by [miczac](https://github.com/miczac)
+- Pulse.schelp: added missing .kr method, beautified examples
+  [#2069](https://github.com/supercollider/supercollider/pull/2069) by [miczac](https://github.com/miczac)
+- Helpfile fixing
+  [#2061](https://github.com/supercollider/supercollider/pull/2061) by [LFSaw](https://github.com/LFSaw)
+- Helpfile fixing
+  [#2057](https://github.com/supercollider/supercollider/pull/2057) by [jreus](https://github.com/jreus)
+- Revert "LFSaw.schelp: Note and example for special initial-phase behaviour"
+  [#2056](https://github.com/supercollider/supercollider/pull/2056) by [miczac](https://github.com/miczac)
+- Klank & DynKlank - better structure for examples
+  [#2055](https://github.com/supercollider/supercollider/pull/2055) by [miczac](https://github.com/miczac)
+- RLPF.schelp: adjust example to avoid exploding filter due to frequency folding when modulated.
+  [#2053](https://github.com/supercollider/supercollider/pull/2053) by [miczac](https://github.com/miczac)
+- Helpfile fixing
+  [#2042](https://github.com/supercollider/supercollider/pull/2042) by [adcxyz](https://github.com/adcxyz)
+- Added closeWhenDone to .cue
+  [#2039](https://github.com/supercollider/supercollider/pull/2039) by [tapage](https://github.com/tapage)
+- help: minor spell fixes in tutorials area
+  [#2004](https://github.com/supercollider/supercollider/pull/2004) by [llloret](https://github.com/llloret)
+- help: and some more help typos and spell fixes
+  [#2003](https://github.com/supercollider/supercollider/pull/2003) by [llloret](https://github.com/llloret)
+- help: fixed some more typos and spelling
+  [#2002](https://github.com/supercollider/supercollider/pull/2002) by [llloret](https://github.com/llloret)
+- help: Help updates for the Classes directory
+  [#1999](https://github.com/supercollider/supercollider/pull/1999) by [llloret](https://github.com/llloret)
+- Improve "Writing UGens" documentation
+  [#1997](https://github.com/supercollider/supercollider/pull/1997) by [snappizz](https://github.com/snappizz)
+- More help documentation updates
+  [#1989](https://github.com/supercollider/supercollider/pull/1989) by [llloret](https://github.com/llloret)
+- help: fixed some typos and spelling
+  [#1988](https://github.com/supercollider/supercollider/pull/1988) by [llloret](https://github.com/llloret)
+- link was wrong
+  [#1980](https://github.com/supercollider/supercollider/pull/1980) by [grirgz](https://github.com/grirgz)
+- Document ServerOptions.*devices as OS X only
+  [#1949](https://github.com/supercollider/supercollider/pull/1949) by [snappizz](https://github.com/snappizz)
+- Clarified nil argument behavior in OSCdef help
+  [#1940](https://github.com/supercollider/supercollider/pull/1940) by [antonhornquist](https://github.com/antonhornquist)
+- Change title of main help file from "Help" to "SuperCollider [version]"
+  [#1928](https://github.com/supercollider/supercollider/pull/1928) by [snappizz](https://github.com/snappizz)
+- MultiTap and DelTapRd/Wr could use a Note in help doc
+  [#1883](https://github.com/supercollider/supercollider/issues/1883) by [mtmccrea](https://github.com/mtmccrea)
+- CocoaBridge seems dead, but examples and doc are still there
+  [#1629](https://github.com/supercollider/supercollider/issues/1629) by [muellmusik](https://github.com/muellmusik)
+
+##  comp: HID
+
+- Update pointer to submodule hidapi
+  [#2420](https://github.com/supercollider/supercollider/pull/2420) by [bagong](https://github.com/bagong)
+- Adjust pointer to hidapi to fix cmp0048 bug breaking build for cmake …
+  [#2342](https://github.com/supercollider/supercollider/pull/2342) by [bagong](https://github.com/bagong)
+- Update pointer to hidapi submodule
+  [#2330](https://github.com/supercollider/supercollider/pull/2330) by [bagong](https://github.com/bagong)
+- HID: various small additions to adjust to developments in hid submodule
+  [#2123](https://github.com/supercollider/supercollider/pull/2123) by [bagong](https://github.com/bagong)
+- Switch to hidapi subomodule in sc org repo
+  [#2111](https://github.com/supercollider/supercollider/pull/2111) by [bagong](https://github.com/bagong)
+
+##  comp: Qt GUI
+
+- Move Qt primitives out of "common" to fix non-Qt builds
+  [#2299](https://github.com/supercollider/supercollider/pull/2299) by [vivid-synth](https://github.com/vivid-synth)
+- build: fix qt configuration for case-sensitive OS X
+  [#2262](https://github.com/supercollider/supercollider/pull/2262) by [snappizz](https://github.com/snappizz)
+- Document Qt >= 5.6 not working in Linux
+  [#2206](https://github.com/supercollider/supercollider/pull/2206) by [snappizz](https://github.com/snappizz)
+- QPen - add RenderHints to StringInRect
+  [#2019](https://github.com/supercollider/supercollider/pull/2019) by [gusano](https://github.com/gusano)
+
+##  comp: SCDoc
+
+- Adjust Help title for Windows return value of folder
+  [#2392](https://github.com/supercollider/supercollider/pull/2392) by [bagong](https://github.com/bagong)
+- fix link to class file source in scdoc header
+  [#2131](https://github.com/supercollider/supercollider/pull/2131) by [snappizz](https://github.com/snappizz)
+- Change "source" to "helpfile source" in scdoc footer
+  [#2130](https://github.com/supercollider/supercollider/pull/2130) by [snappizz](https://github.com/snappizz)
+- SCDoc HTML renderer includes literal spaces in links with anchors
+  [#1650](https://github.com/supercollider/supercollider/issues/1650) by [jamshark70](https://github.com/jamshark70)
+- SCDoc shows getters where there are only setters
+  [#837](https://github.com/supercollider/supercollider/issues/837) by [muellmusik](https://github.com/muellmusik)
+
+##  comp: build
+
+- Document cmake dependency for supernova
+  [#2207](https://github.com/supercollider/supercollider/pull/2207) by [snappizz](https://github.com/snappizz)
+- Explain /path/to/qt5 in Linux README
+  [#2205](https://github.com/supercollider/supercollider/pull/2205) by [snappizz](https://github.com/snappizz)
+- move jackey include dir from server to scsynth
+  [#2179](https://github.com/supercollider/supercollider/pull/2179) by [flv0](https://github.com/flv0)
+- Fix oscpack build fail on various architectures
+  [#2174](https://github.com/supercollider/supercollider/pull/2174) by [danstowell](https://github.com/danstowell)
+- Simplify MS Compiler detection to avoid cmake warning
+  [#2120](https://github.com/supercollider/supercollider/pull/2120) by [bagong](https://github.com/bagong)
+- Travis: Update OSX build system and correct omissions
+  [#2092](https://github.com/supercollider/supercollider/pull/2092) by [bagong](https://github.com/bagong)
+- sclang: changed some boost code to std
+  [#2091](https://github.com/supercollider/supercollider/pull/2091) by [llloret](https://github.com/llloret)
+- Switch to portaudio repo in supercollider org
+  [#2088](https://github.com/supercollider/supercollider/pull/2088) by [bagong](https://github.com/bagong)
+- travis: move git key to env, aws fixes
+  [#1987](https://github.com/supercollider/supercollider/pull/1987) by [scztt](https://github.com/scztt)
+- Set correct hash for portaudio submodule
+  [#1971](https://github.com/supercollider/supercollider/pull/1971) by [bagong](https://github.com/bagong)
+- cmake: library locations, hide them from the default listing of user cmake variables
+  [#1968](https://github.com/supercollider/supercollider/pull/1968) by [danstowell](https://github.com/danstowell)
+- Add cmake options list to READMEs
+  [#1965](https://github.com/supercollider/supercollider/pull/1965) by [vivid-synth](https://github.com/vivid-synth)
+- Update linux travis recipe
+  [#1932](https://github.com/supercollider/supercollider/pull/1932) by [patrickdupuis](https://github.com/patrickdupuis)
+- build: bump GCC version requirement up from 4.7 to 4.8
+  [#1839](https://github.com/supercollider/supercollider/pull/1839) by [danstowell](https://github.com/danstowell)
+- Building master with gcc 4.7 fails due to 'is_trivially_destructible' in SC_PlugIn.hpp
+  [#1820](https://github.com/supercollider/supercollider/issues/1820) by [danstowell](https://github.com/danstowell)
+
+##  env: Qt IDE
+
+- IDE: Server status bar should send properly formatted /status message (not 'status')
+  [#2450](https://github.com/supercollider/supercollider/pull/2450) by [jamshark70](https://github.com/jamshark70)
+- Fix Document path sync problems
+  [#2222](https://github.com/supercollider/supercollider/pull/2222) by [jamshark70](https://github.com/jamshark70)
+- fix #1985
+  [#2102](https://github.com/supercollider/supercollider/pull/2102) by [miguel-negrao](https://github.com/miguel-negrao)
+- scide: update document path also if nil
+  [#2098](https://github.com/supercollider/supercollider/pull/2098) by [telephon](https://github.com/telephon)
+- sc-ide: fix behaviour of right context button when out of tab
+  [#2085](https://github.com/supercollider/supercollider/pull/2085) by [llloret](https://github.com/llloret)
+- sc-ide: middle mouse button closes tab
+  [#2083](https://github.com/supercollider/supercollider/pull/2083) by [llloret](https://github.com/llloret)
+- ide: menu option "Show Quarks"
+  [#1867](https://github.com/supercollider/supercollider/pull/1867) by [miguel-negrao](https://github.com/miguel-negrao)
+
+##  env: scel
+
+- bug with scide_scel
+  [#2036](https://github.com/supercollider/supercollider/pull/2036) by [simdax](https://github.com/simdax)
+
+##  env: scvim
+
+- Replace built-in scvim with submodule scvim
+  [#1991](https://github.com/supercollider/supercollider/pull/1991) by [danstowell](https://github.com/danstowell)
+- Makes Vim support more reliable by sending larger buffers
+  [#1930](https://github.com/supercollider/supercollider/pull/1930) by [mzyzik](https://github.com/mzyzik)
+- scvim as submodules repo
+  [#1921](https://github.com/supercollider/supercollider/issues/1921) by [blacksound](https://github.com/blacksound)
+
+##  os: Linux
+
+- Do not allocate all channels reported by Pa_GetDeviceInfo / use memcpy instead of for-loop
+  [#1943](https://github.com/supercollider/supercollider/pull/1943) by [hzulla](https://github.com/hzulla)
+- Fixes/alsa midi fixes
+  [#1760](https://github.com/supercollider/supercollider/pull/1760) by [timblechmann](https://github.com/timblechmann)
+- HID final cleanup, and LID adaption to use similar API
+  [#1573](https://github.com/supercollider/supercollider/pull/1573) by [sensestage](https://github.com/sensestage)
+
+##  os: Windows
+
+- Fix problem with boost interprocess module on Win
+  [#2457](https://github.com/supercollider/supercollider/pull/2457) by [llloret](https://github.com/llloret)
+- Update Windows Readme
+  [#2419](https://github.com/supercollider/supercollider/pull/2419) by [bagong](https://github.com/bagong)
+- Exception in World_New: boost::interprocess::intermodule_singleton initialization failed
+  [#2409](https://github.com/supercollider/supercollider/issues/2409) by [brachna](https://github.com/brachna)
+- Fix QLocalSocket problem under Windows
+  [#2197](https://github.com/supercollider/supercollider/pull/2197) by [llloret](https://github.com/llloret)
+- Windows exit nicely master
+  [#2107](https://github.com/supercollider/supercollider/pull/2107) by [llloret](https://github.com/llloret)
+- Make MIDI work on Windows (PR for master)
+  [#2106](https://github.com/supercollider/supercollider/pull/2106) by [llloret](https://github.com/llloret)
+- nsis windows for master branch
+  [#2103](https://github.com/supercollider/supercollider/pull/2103) by [llloret](https://github.com/llloret)
+- Make Vista the minimum required Windows version
+  [#2017](https://github.com/supercollider/supercollider/pull/2017) by [llloret](https://github.com/llloret)
+- Make the required version Windows Vista
+  [#2016](https://github.com/supercollider/supercollider/pull/2016) by [llloret](https://github.com/llloret)
+- sclang: Fix to get Object: render to work on Windows
+  [#1899](https://github.com/supercollider/supercollider/pull/1899) by [antonhornquist](https://github.com/antonhornquist)
+- Windows: sclang crashes on executing menu-item "Quit interpreter"/freezes on evaluating 0.exit
+  [#1578](https://github.com/supercollider/supercollider/issues/1578) by [bagong](https://github.com/bagong)
+- Server not shut down on IDE-close
+  [#1449](https://github.com/supercollider/supercollider/issues/1449) by [bagong](https://github.com/bagong)
+- MIDI sysex is not implemented for Windows (SC_PortMIDI.cpp)
+  [#1200](https://github.com/supercollider/supercollider/issues/1200) by [sensestage](https://github.com/sensestage)
+
+##  qt5
+
+- WIP: ide/qtcollider: prototype port to qwebengine
+  [#1936](https://github.com/supercollider/supercollider/pull/1936) by [timblechmann](https://github.com/timblechmann)
+
+##  quarks
+
+- quarks: sort list by name
+  [#2214](https://github.com/supercollider/supercollider/pull/2214) by [gusano](https://github.com/gusano)
+- quarks: throw an error when updating without name
+  [#2183](https://github.com/supercollider/supercollider/pull/2183) by [gusano](https://github.com/gusano)
+
+##  architecture: arm
+
+- Provide compiler flags for armv6l and armv7l and add a few hints for building on RPi and headless
+  [#2065](https://github.com/supercollider/supercollider/pull/2065) by [bagong](https://github.com/bagong)
+
+##  bug
+
+- ServerStatus failOSCFunc shouldn't set clientID
+  [#2328](https://github.com/supercollider/supercollider/issues/2328) by [crucialfelix](https://github.com/crucialfelix)
+- class library: server notify dependants correctly
+  [#2093](https://github.com/supercollider/supercollider/pull/2093) by [telephon](https://github.com/telephon)
+- Topic fix server notify
+  [#2066](https://github.com/supercollider/supercollider/pull/2066) by [telephon](https://github.com/telephon)
+- OSC/Trigger functionality broken in master
+  [#2058](https://github.com/supercollider/supercollider/issues/2058) by [miczac](https://github.com/miczac)
+- Problem with matchLangIP primitive: boost seems to give wrong hostname
+  [#1950](https://github.com/supercollider/supercollider/issues/1950) by [muellmusik](https://github.com/muellmusik)
+- crash on exit, 3.7b
+  [#1422](https://github.com/supercollider/supercollider/issues/1422) by [chriskiefer](https://github.com/chriskiefer)
+- DemandEnvGen overshooting at high curve
+  [#1355](https://github.com/supercollider/supercollider/issues/1355) by [eleses](https://github.com/eleses)
+- scsynth OSC packet size in NRT mode
+  [#61](https://github.com/supercollider/supercollider/issues/61) by [jleben](https://github.com/jleben)
+
+##  enhancement
+
+- Novacollider/alignment cleanups
+  [#1906](https://github.com/supercollider/supercollider/pull/1906) by [timblechmann](https://github.com/timblechmann)
+- ide: introspection - use qt's concurrency functionality
+  [#1905](https://github.com/supercollider/supercollider/pull/1905) by [timblechmann](https://github.com/timblechmann)
+- Novacollider/dll
+  [#1904](https://github.com/supercollider/supercollider/pull/1904) by [timblechmann](https://github.com/timblechmann)
+- Tab does not work in IDE (on OSX)
+  [#1453](https://github.com/supercollider/supercollider/issues/1453) by [thormagnusson](https://github.com/thormagnusson)
+- Use reader/writer thread for all disk IO (DiskIn / DiskOut ugens, others if applicable)
+  [#1381](https://github.com/supercollider/supercollider/issues/1381) by [scztt](https://github.com/scztt)
+
+##  Miscellaneous
+
+- Add missing proxy init 3.8
+  [#2407](https://github.com/supercollider/supercollider/pull/2407) by [telephon](https://github.com/telephon)
+- Merge 3.7.2 to master
+  [#2177](https://github.com/supercollider/supercollider/pull/2177) by [crucialfelix](https://github.com/crucialfelix)
+- Update CombC.schelp
+  [#2157](https://github.com/supercollider/supercollider/pull/2157) by [tiagmoraismorgado](https://github.com/tiagmoraismorgado)
+- Array2D.schelp: Fix put example
+  [#2154](https://github.com/supercollider/supercollider/pull/2154) by [kisielk](https://github.com/kisielk)
+- jitlib: better warnings when Server is not available
+  [#2119](https://github.com/supercollider/supercollider/pull/2119) by [telephon](https://github.com/telephon)
+- Topic/boost 1.61
+  [#2086](https://github.com/supercollider/supercollider/pull/2086) by [timblechmann](https://github.com/timblechmann)
+- lang: correctly join resync thread
+  [#2079](https://github.com/supercollider/supercollider/pull/2079) by [timblechmann](https://github.com/timblechmann)
+- Helpfile-fixing branch, final merge
+  [#2076](https://github.com/supercollider/supercollider/pull/2076) by [LFSaw](https://github.com/LFSaw)
+- ide: mark scide as able to handle multiple files
+  [#2062](https://github.com/supercollider/supercollider/pull/2062) by [fsateler](https://github.com/fsateler)
+- removed method::preferencesAction
+  [#2046](https://github.com/supercollider/supercollider/pull/2046) by [tapage](https://github.com/tapage)
+- fixed naming startframe & aSoundFile
+  [#2045](https://github.com/supercollider/supercollider/pull/2045) by [tapage](https://github.com/tapage)
+- prReadDirectoryFile private, added done as arg
+  [#2044](https://github.com/supercollider/supercollider/pull/2044) by [tapage](https://github.com/tapage)
+- added Pmul arguments name & pattern
+  [#2043](https://github.com/supercollider/supercollider/pull/2043) by [tapage](https://github.com/tapage)
+- LFSaw.schelp: Note and example for special initial-phase behaviour
+  [#2041](https://github.com/supercollider/supercollider/pull/2041) by [miczac](https://github.com/miczac)
+- Emacs and extBuffer.sc
+  [#2035](https://github.com/supercollider/supercollider/issues/2035) by [simdax](https://github.com/simdax)
+- Help: Removed double PlayBuf in doneAction help file
+  [#2026](https://github.com/supercollider/supercollider/pull/2026) by [cappelnord](https://github.com/cappelnord)
+- Classlib: Add NodeProxy:trace
+  [#2020](https://github.com/supercollider/supercollider/pull/2020) by [jamshark70](https://github.com/jamshark70)
+- PartConv not working (duplicate impulses)
+  [#2014](https://github.com/supercollider/supercollider/issues/2014) by [sonoro1234](https://github.com/sonoro1234)
+- Server crash when calling play on a not-yet ready Buffer
+  [#2005](https://github.com/supercollider/supercollider/issues/2005) by [patrickdupuis](https://github.com/patrickdupuis)
+- Make sure NodeProxy generates unique name.
+  [#1994](https://github.com/supercollider/supercollider/pull/1994) by [blacksound](https://github.com/blacksound)
+- class library: node proxy, improve documentation
+  [#1986](https://github.com/supercollider/supercollider/pull/1986) by [telephon](https://github.com/telephon)
+- Osc.sc: fix audio rate TChoose
+  [#1979](https://github.com/supercollider/supercollider/pull/1979) by [miczac](https://github.com/miczac)
+- Osc.sc: fix audio rate TChoose
+  [#1974](https://github.com/supercollider/supercollider/pull/1974) by [miczac](https://github.com/miczac)
+- Readd wrongly removed part of system-boost fix
+  [#1970](https://github.com/supercollider/supercollider/pull/1970) by [bagong](https://github.com/bagong)
+- Merge 3.7 into master
+  [#1969](https://github.com/supercollider/supercollider/pull/1969) by [bagong](https://github.com/bagong)
+- Add CommonTests and CommonTestsGUI to travis
+  [#1967](https://github.com/supercollider/supercollider/pull/1967) by [scztt](https://github.com/scztt)
+- Fix lines and functions with mixed tabs and spaces
+  [#1963](https://github.com/supercollider/supercollider/pull/1963) by [vivid-synth](https://github.com/vivid-synth)
+- Remove unused variable
+  [#1960](https://github.com/supercollider/supercollider/pull/1960) by [patrickdupuis](https://github.com/patrickdupuis)
+- error message: wrong path in unsaved file
+  [#1953](https://github.com/supercollider/supercollider/issues/1953) by [telephon](https://github.com/telephon)
+- class library: don't declare variables in an if statement, please.
+  [#1925](https://github.com/supercollider/supercollider/pull/1925) by [telephon](https://github.com/telephon)
+- Add custom.css to help files that don't include it
+  [#1920](https://github.com/supercollider/supercollider/pull/1920) by [snappizz](https://github.com/snappizz)
+- Document SynthDef.writeOnce as a legacy method
+  [#1918](https://github.com/supercollider/supercollider/pull/1918) by [snappizz](https://github.com/snappizz)
+- Move internal css to scdoc.css
+  [#1917](https://github.com/supercollider/supercollider/pull/1917) by [rygen](https://github.com/rygen)
+- Fix Scope Window Error
+  [#1915](https://github.com/supercollider/supercollider/pull/1915) by [patrickdupuis](https://github.com/patrickdupuis)
+- Quarks: fix save method
+  [#1897](https://github.com/supercollider/supercollider/pull/1897) by [jpburstrom](https://github.com/jpburstrom)
+- ide: Add standalone option in settings.
+  [#1863](https://github.com/supercollider/supercollider/pull/1863) by [miguel-negrao](https://github.com/miguel-negrao)
+- sclang: introduce unixCmd for array of arguments
+  [#1856](https://github.com/supercollider/supercollider/pull/1856) by [miguel-negrao](https://github.com/miguel-negrao)
+- uiugens: correctly terminate input threads
+  [#1855](https://github.com/supercollider/supercollider/pull/1855) by [timblechmann](https://github.com/timblechmann)
+- supernova: don't delete shared memory data
+  [#1854](https://github.com/supercollider/supercollider/pull/1854) by [timblechmann](https://github.com/timblechmann)
+- Novacollider/mac
+  [#1853](https://github.com/supercollider/supercollider/pull/1853) by [timblechmann](https://github.com/timblechmann)
+- class library: HIDMatchers: Add missing if statement
+  [#1851](https://github.com/supercollider/supercollider/pull/1851) by [davidgranstrom](https://github.com/davidgranstrom)
+- class library: protect MultiOutUGen from void numChannels
+  [#1847](https://github.com/supercollider/supercollider/pull/1847) by [telephon](https://github.com/telephon)
+- Fixes/for master
+  [#1844](https://github.com/supercollider/supercollider/pull/1844) by [timblechmann](https://github.com/timblechmann)
+- Topic/rate fallthrough
+  [#1835](https://github.com/supercollider/supercollider/pull/1835) by [telephon](https://github.com/telephon)
+- Novacollider/cmake modernisation
+  [#1822](https://github.com/supercollider/supercollider/pull/1822) by [timblechmann](https://github.com/timblechmann)
+- LinXFade2 - fix pos slope
+  [#1798](https://github.com/supercollider/supercollider/pull/1798) by [timblechmann](https://github.com/timblechmann)
+- ide cleanup
+  [#1715](https://github.com/supercollider/supercollider/pull/1715) by [timblechmann](https://github.com/timblechmann)
+- MultiOutUGen with numchannels less than 1 return an empty array
+  [#1686](https://github.com/supercollider/supercollider/issues/1686) by [telephon](https://github.com/telephon)
+- use c++17-style executors to compile class library
+  [#1677](https://github.com/supercollider/supercollider/pull/1677) by [timblechmann](https://github.com/timblechmann)
+- scide: improve dark color scheme
+  [#1609](https://github.com/supercollider/supercollider/pull/1609) by [timblechmann](https://github.com/timblechmann)
+- scide: add qt-creator style shortcut sequence to visualise whitespaces
+  [#1607](https://github.com/supercollider/supercollider/pull/1607) by [timblechmann](https://github.com/timblechmann)
+- Topic/refactor server status
+  [#1547](https://github.com/supercollider/supercollider/pull/1547) by [telephon](https://github.com/telephon)
+- Enabling multi-touch on Qt widgets (for multi-touch screens)
+  [#1533](https://github.com/supercollider/supercollider/pull/1533) by [scazan](https://github.com/scazan)
+- import boost-1.58
+  [#1528](https://github.com/supercollider/supercollider/pull/1528) by [timblechmann](https://github.com/timblechmann)
+- Scide/line number fix
+  [#1330](https://github.com/supercollider/supercollider/pull/1330) by [vdonnefort](https://github.com/vdonnefort)
+- Scide/theme mgmt fix
+  [#1297](https://github.com/supercollider/supercollider/pull/1297) by [vdonnefort](https://github.com/vdonnefort)
+- Made performKeyToDegree much closer to inverse of performDegreeToKey
+  [#1164](https://github.com/supercollider/supercollider/pull/1164) by [triss](https://github.com/triss)
+
 
 ## [3.7.2](https://github.com/supercollider/supercollider/tree/3.7.2) (2016-06-03)
 [Full Changelog](https://github.com/supercollider/supercollider/compare/Version-3.7.1...Version-3.7.2)

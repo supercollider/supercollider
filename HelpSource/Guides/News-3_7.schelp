@@ -33,7 +33,7 @@ LIST::
 
 SUBSECTION::External Interfacing
 
-There is an entirely new HID (Human Interface Device) implementation: see link::Guides/Working_with_HID:: that works cross platform (Linux and OSX thus far). This deprecates the GeneralHID interface. Also the link::Classes/LID:: interface has been updated to match the API of the new HID implementation.
+There is an entirely new HID (Human Interface Device) implementation: see link::Guides/Working_with_HID:: that works cross platform (Linux and macOS thus far). This deprecates the GeneralHID interface. Also the link::Classes/LID:: interface has been updated to match the API of the new HID implementation.
 
 
 

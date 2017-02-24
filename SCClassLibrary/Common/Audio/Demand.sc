@@ -41,16 +41,6 @@ TDuty : Duty {
 	}
 }
 
-// old version with gap first
-TDuty_old  {
-	*ar { arg dur = 1.0, reset = 0.0, level = 1.0, doneAction = 0;
-		^TDuty.ar(dur, reset, level, doneAction, 1)
-	}
-	*kr { arg dur = 1.0, reset = 0.0, level = 1.0, doneAction = 0;
-		^TDuty.kr(dur, reset, level, doneAction, 1)
-	}
-}
-
 DemandEnvGen : UGen {
 
 	*kr { arg level, dur, shape = 1, curve = 0, gate = 1.0, reset = 1.0,
@@ -167,12 +157,6 @@ Dstutter : DUGen {
 Dconst : DUGen {
 	*new { arg sum, in, tolerance = 0.001;
 		^this.multiNew('demand', sum, in, tolerance);
-	}
-}
-
-Donce : DUGen {
-	*new { arg in;
-		^this.multiNew('demand', in)
 	}
 }
 

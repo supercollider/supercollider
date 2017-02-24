@@ -49,7 +49,7 @@ play({ Klang.ar(`[ Array.rand(12, 600.0, 1000.0), nil, nil ], 1, 0) * 0.05 });
 loop({
 	play({
 		Pan2.ar(Klang.ar(`[ Array.rand(12, 200.0, 2000.0), nil, nil ], 1, 0), 1.0.rand)
-			 * EnvGen.kr(Env.sine(4), 1, 0.02, doneAction: 2);
+			 * EnvGen.kr(Env.sine(4), 1, 0.02, doneAction: Done.freeSelf);
 	});
 	2.wait;
 })
@@ -64,7 +64,7 @@ loop({
 	play({
 		var nPartials = 12, nChans = 5, n = nPartials * nChans;
 		Splay.ar(Klang.ar(`[ { { rrand(200.0, 2000.0) } ! nPartials } ! nChans, nil, nil ], 1, 0))
-			 * EnvGen.kr(Env.sine(4), 1, 0.02, doneAction: 2);
+			 * EnvGen.kr(Env.sine(4), 1, 0.02, doneAction: Done.freeSelf);
 	});
 	2.wait;
 })

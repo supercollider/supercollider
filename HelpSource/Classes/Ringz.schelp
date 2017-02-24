@@ -71,3 +71,28 @@ code::
 )
 ::
 
+Section:: Interaction with sample rate
+
+Ringz (and UGens that are based on it: link::Classes/Klank::, link::Classes/DynKlank:: and link::Classes/Formlet::) are "sample-rate independent" with respect to emphasis::impulses:: at the input. That is, given single-sample impulses, the output signal at different sample rates should be the same frequency and amplitude.
+
+This design has a side effect: If the input is not made of impulses, the output amplitude is proportional to the sample rate.
+
+code::
+(
+a = {
+	// rectangular pulse exciter (deterministic input)
+	var exc = EnvGen.ar(Env([1, 1, 0], [0.01, 0], \lin)),
+	sig = Ringz.ar(exc, 440, decaytime: 0.2),
+	rms = sqrt(Integrator.ar(sig.squared) * (0.2 / SampleRate.ir)),
+	end = DetectSilence.ar(sig, doneAction: 2);
+	rms.poll(end);
+	Silent.ar(1)
+}.play;
+)
+::
+
+At 44.1 kHz, this prints a RMS amplitude of 1.0758. At 88.2 kHz, the amplitude doubles.
+
+Modal synthesis (simulating the vibrating modes of a struck surface) feeds a short, decaying burst of noise into Ringz-style resonators. This is a common use case that emphasis::is:: subject to this amplitude effect.
+
+If you will need the results to be compatible at different sample rates, make sure to scale the volume appropriately: if code::sig:: is the Ringz, Klank or Formlet signal, use code::sig * (originalSampleRate / SampleRate.ir):: and substitute the right value in place of code::originalSampleRate::.

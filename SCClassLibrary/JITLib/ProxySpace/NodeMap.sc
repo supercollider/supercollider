@@ -81,19 +81,6 @@ NodeMap : IdentityDictionary {
 		};
 		if(args.notNil) { bundle.add([48, target.asNodeID] ++ args) };
 	}
-
-	setn {
-		^this.deprecated(thisMethod, this.class.findRespondingMethodFor(\set))
-	}
-
-	mapn {
-		^this.deprecated(thisMethod, this.class.findRespondingMethodFor(\set))
-	}
-
-	map {
-		^this.deprecated(thisMethod, this.class.findRespondingMethodFor(\set))
-	}
-
 }
 
 ProxyNodeMap : NodeMap {
@@ -186,12 +173,6 @@ ProxyNodeMap : NodeMap {
 	}
 	ratesFor { arg keys;
 		^rates !? { rates.atAll(keys) }
-	}
-	// maybe not needed at all
-	isMapped { |key|
-		var val = this.at(key);
-		this.deprecated(thisMethod);
-		^val.isNumber.not and: { val.isSequenceableCollection.not }
 	}
 }
 

@@ -19,6 +19,10 @@ The great advantage to this filter over FOF is that there is no limit to
 the number of overlapping grains since the grain is just the impulse
 response of the filter.
 
+Note::
+The amplitude of the resulting signal depends on the server's sample rate. See link::Classes/Ringz#Interaction with sample rate#Ringz: Interaction with sample rate:: for details.
+::
+
 
 classmethods::
 

@@ -305,7 +305,7 @@ struct Amplitude : public Unit
 struct DetectSilence : public Unit
 {
 	float mThresh;
-	int32 mCounter, mEndCounter, mDoneAction;
+	int32 mCounter, mEndCounter;
 };
 
 struct Hilbert : public Unit
@@ -3799,9 +3799,9 @@ void FOS_Ctor(FOS* unit)
 		}
 	};
 	unit->m_y1 = 0.f;
-	unit->m_a0 = 0.f;
-	unit->m_a1 = 0.f;
-	unit->m_b1 = 0.f;
+	unit->m_a0 = ZIN0(1);
+	unit->m_a1 = ZIN0(2);
+	unit->m_b1 = ZIN0(3);
 	FOS_next_1(unit, 1);
 }
 
@@ -4499,8 +4499,8 @@ void DetectSilence_Ctor(DetectSilence* unit)
 	} else {
 		SETCALC(DetectSilence_next_k);
 	}
-	unit->mDoneAction = ZIN0(3);
 	unit->mCounter = -1;
+	ClearUnitOutputs(unit, 1);
 }
 
 
@@ -4510,21 +4510,6 @@ void DetectSilence_next(DetectSilence* unit, int inNumSamples)
 	int counter = unit->mCounter;
 	float val;
 
-	// I thought of a better way to do this...
-	/*
-	for (int i=0; i<inNumSamples; ++i) {
-		float val = std::abs(ZXP(in));
-		if (val >= thresh) counter = 0;
-		else if (counter >= 0) {
-			if (++counter >= unit->mEndCounter && doneAction) {
-				int doneAction = (int)ZIN0(3);
-				DoneAction(doneAction, unit);
-				SETCALC(DetectSilence_done);
-			}
-		}
-		ZXP(out) = 0.f;
-	}
-	*/
 	float *in = IN(0);
 	float *out = OUT(0);
 	for (int i=0; i<inNumSamples; ++i) {
@@ -4534,9 +4519,8 @@ void DetectSilence_next(DetectSilence* unit, int inNumSamples)
 			*out++ = 0.f;
 		} else if (counter >= 0) {
 			if (++counter >= unit->mEndCounter) {
-				DoneAction(unit->mDoneAction, unit);
+				DoneAction((int)ZIN0(3), unit);
 				*out++ = 1.f;
-//				SETCALC(DetectSilence_done);
 			} else {
 				*out++ = 0.f;
 			}
@@ -4563,20 +4547,18 @@ void DetectSilence_next_k(DetectSilence* unit, int inNumSamples)
 			*out++ = 0.f;
 		} else if (counter >= 0) {
 			if (++counter >= endCounter) {
-				DoneAction(unit->mDoneAction, unit);
+				DoneAction((int)ZIN0(3), unit);
 				*out++ = 1.f;
 			} else {
-                *out++ = 0.f;
-            }
-        }
-        else
+				*out++ = 0.f;
+			}
+		}
+		else
 			*out++ = 0.f;
 	}
 	unit->mCounter = counter;
 }
 
-//void DetectSilence_done(DetectSilence* unit, int inNumSamples)
-//{}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 // Based on HilbertIIR from SC2
@@ -4771,7 +4753,7 @@ void FreqShift_next_kk(FreqShift *unit, int inNumSamples)
 	int32 phaseinc = freq + (int32)(CALCSLOPE(phasein, unit->m_phasein) * unit->m_radtoinc);
 	unit->m_phasein = phasein;
 
-    // each filter's last sample
+	// each filter's last sample
 	for(int i = 0; i < 12; ++i) {
 		y1[i] = unit->m_y1[i];
 		coefs[i] = unit->m_coefs[i];
