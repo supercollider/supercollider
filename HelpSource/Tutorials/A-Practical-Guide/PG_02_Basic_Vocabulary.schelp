@@ -97,7 +97,7 @@ p = Pbind(
 )
 ::
 
-To stop the examples in this file, use the "stop" keyboard shortcut (cmd-. on Mac OSX, alt-. on Windows, check documentation for other editors). Or:
+To stop the examples in this file, use the "stop" keyboard shortcut (cmd-. on macOS, alt-. on Windows, check documentation for other editors). Or:
 
 code::
 p.stop;

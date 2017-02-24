@@ -278,6 +278,7 @@ void IFFT_Ctor(IFFT* unit){
 	}
 
 	SETCALC(IFFT_next);
+	ClearUnitOutputs(unit, 1);
 }
 
 void IFFT_Dtor(IFFT* unit)

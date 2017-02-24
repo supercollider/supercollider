@@ -55,7 +55,7 @@ PyrSymbol* s_midiSysexAction;
 PyrSymbol* s_midiSysrtAction;
 PyrSymbol* s_midiSMPTEAction;
 
-const int kMaxMidiPorts = 16;
+const int kMaxMidiPorts = 128;
 bool gMIDIInitialized = false;
 
 extern bool compiledOK;
@@ -486,6 +486,8 @@ int initMIDI(int numIn, int numOut)
 
 	if (client->mHandle) cleanUpMIDI();
 
+	if(numIn > kMaxMidiPorts) { printf("MIDI: note that maximum midi in ports is limited to %d.\n", kMaxMidiPorts); }
+	if(numOut > kMaxMidiPorts) { printf("MIDI: note that maximum midi out ports is limited to %d.\n", kMaxMidiPorts); }
 	numIn = sc_clip(numIn, 1, kMaxMidiPorts);
 	numOut = sc_clip(numOut, 1, kMaxMidiPorts);
 

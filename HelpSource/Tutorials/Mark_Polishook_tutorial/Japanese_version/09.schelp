@@ -122,7 +122,7 @@ UGenの任意のアスペクト、例えば、周波数、位相、振幅とい�
 
 code::
 // 振幅を変調する
-{ SinOsc.ar(440, 0, 0.1) * EnvGen.kr(Env.sine(1), doneAction: 2) }.scope;
+{ SinOsc.ar(440, 0, 0.1) * EnvGen.kr(Env.sine(1), doneAction: Done.freeSelf) }.scope;
 ::
 
 doneActionアーギュメント（コントロール）を2にセットすると、SuperColliderはSinOscとEnvGenのインスタンスを保持するために要求されていたメモリを解放することを確約します。アーギュメントがキーワードのスタイルで与えられていることに注意して下さい。キーワードのスタイルとは、アーギュメントの名前の後にコロン（‘:’）が続き、コロンの後に値が続く、というものです。
@@ -138,7 +138,7 @@ code::
 SynthDef("timeScale", { arg ts = 1;
 	Out.ar(
 		0,
-		SinOsc.ar(440, 0, 0.4) * EnvGen.kr(Env.sine(1), doneAction: 2, timeScale: ts)
+		SinOsc.ar(440, 0, 0.4) * EnvGen.kr(Env.sine(1), doneAction: Done.freeSelf, timeScale: ts)
 	)
 }).add;
 )
@@ -182,7 +182,7 @@ code::
 		}
 	)
 	*
-	EnvGen.kr(Env.perc(11, 6), doneAction: 2)
+	EnvGen.kr(Env.perc(11, 6), doneAction: Done.freeSelf)
 }.scope
 )
 ::
@@ -213,7 +213,7 @@ code::
 			*
 			EnvGen.kr(					// サイン波のそれぞれにエンベロープを与える
 				Env.sine(2.0.rrand(17)),
-				doneAction: 0 				// サウンド全体が完了した時にだけ
+				doneAction: Done.none 				// サウンド全体が完了した時にだけ
 									// エンベロープを解放する（なぜ？）
 			)
 		}
@@ -221,7 +221,7 @@ code::
 	*								// パッチ全体に対してエンベロープを与える
 	EnvGen.kr(
 		Env.perc(11, 6),
-		doneAction: 2,
+		doneAction: Done.freeSelf,
 		levelScale: 0.75
 	)
 

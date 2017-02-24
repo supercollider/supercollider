@@ -359,11 +359,9 @@ DetectSilence : Filter {
 
 	*ar { arg in = 0.0, amp = 0.0001, time = 0.1, doneAction = 0;
 		^this.multiNew('audio', in, amp, time, doneAction)
-		//		^0.0		// DetectSilence has no output
 	}
 	*kr { arg in = 0.0, amp = 0.0001, time = 0.1, doneAction = 0;
 		^this.multiNew('control', in, amp, time, doneAction)
-		//		^0.0		// DetectSilence has no output
 	}
 }
 

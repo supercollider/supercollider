@@ -56,14 +56,14 @@ code::
 SynthDef(\kik, { |basefreq = 50, ratio = 7, sweeptime = 0.05, preamp = 1, amp = 1,
 		decay1 = 0.3, decay1L = 0.8, decay2 = 0.15, out|
 	var	fcurve = EnvGen.kr(Env([basefreq * ratio, basefreq], [sweeptime], \exp)),
-		env = EnvGen.kr(Env([1, decay1L, 0], [decay1, decay2], -4), doneAction: 2),
+		env = EnvGen.kr(Env([1, decay1L, 0], [decay1, decay2], -4), doneAction: Done.freeSelf),
 		sig = SinOsc.ar(fcurve, 0.5pi, preamp).distort * env * amp;
 	Out.ar(out, sig ! 2)
 }).add;
 
 SynthDef(\kraftySnr, { |amp = 1, freq = 2000, rq = 3, decay = 0.3, pan, out|
 	var	sig = PinkNoise.ar(amp),
-		env = EnvGen.kr(Env.perc(0.01, decay), doneAction: 2);
+		env = EnvGen.kr(Env.perc(0.01, decay), doneAction: Done.freeSelf);
 	sig = BPF.ar(sig, freq, rq, env);
 	Out.ar(out, Pan2.ar(sig, pan))
 }).add;

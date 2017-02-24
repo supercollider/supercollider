@@ -69,7 +69,7 @@ code::
 SynthDef(\diskIn2, { | bufnum, out, gate = 1, sustain, amp = 1, ar = 0, dr = 0.01 |
 	Out.ar(out, DiskIn.ar(2, bufnum)
 	* Linen.kr(gate, ar, 1, dr, 2)
-	* EnvGen.kr(Env.linen(0, sustain - ar - dr max: 0 ,dr),1, doneAction: 2) * amp)
+	* EnvGen.kr(Env.linen(0, sustain - ar - dr max: 0 ,dr),1, doneAction: Done.freeSelf) * amp)
 });
 ::
 The control strong::sustain:: determines playback duration based on the firstFrame and lastFrame. The control strong::gate:: allows early termination of the playback
@@ -173,7 +173,7 @@ argument::chunkSize
 how many samples to read at once (default is 4194304, or 16 MB).
 
 argument::threaded
-if true, the normalization runs in a routine so that SC can respond (intermittently) while processing. Prevents OSX beachballing.
+if true, the normalization runs in a routine so that SC can respond (intermittently) while processing. Prevents macOS beachballing.
 
 subsection::Instance Variables
 
@@ -208,7 +208,7 @@ table::
 ## "CAF" || Core Audio File format
 ::
 ::
-Additionally, a huge number of other formats are supported read only. Please note that WAV file support is limited to 4GB. For output of multiple channels or very long recordings we suggest to use W64 (or CAF on OSX).
+Additionally, a huge number of other formats are supported read only. Please note that WAV file support is limited to 4GB. For output of multiple channels or very long recordings we suggest to use W64 (or CAF on macOS).
 
 method::sampleFormat
 A link::Classes/String:: indicating the format of the sample data which was read by link::#-openRead:: and will be written by link::#-openWrite::. libsndfile determines which header formats support which sample formats. This information is detailed at http://www.mega-nerd.com/libsndfile . The possible header formats are:

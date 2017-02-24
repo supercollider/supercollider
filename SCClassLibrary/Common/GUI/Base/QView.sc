@@ -441,6 +441,10 @@ View : QObject {
 		this.setDragEventsEnabled( true );
 	}
 
+	defaultGetDrag { ^thisMethod.notYetImplemented }
+	defaultCanReceiveDrag { ^thisMethod.notYetImplemented }
+	defaultReceiveDrag { ^thisMethod.notYetImplemented }
+
 	toFrontAction_ { arg aFunction;
 		toFrontAction = aFunction;
 		this.setEventHandler( QObject.windowActivateEvent,

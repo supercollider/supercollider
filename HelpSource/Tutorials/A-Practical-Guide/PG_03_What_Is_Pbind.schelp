@@ -152,7 +152,7 @@ The SynthDef to play is named by the code::'instrument':: key. To play a pattern
 code::
 SynthDef(\harpsi, { |outbus = 0, freq = 440, amp = 0.1, gate = 1|
 	var out;
-	out = EnvGen.ar(Env.adsr, gate, doneAction: 2) * amp *
+	out = EnvGen.ar(Env.adsr, gate, doneAction: Done.freeSelf) * amp *
 		Pulse.ar(freq, 0.25, 0.75);
 	Out.ar(outbus, out ! 2);
 }).add;	// see below for more on .add
@@ -237,7 +237,7 @@ subsection::Synths should release themselves
 The default event prototype relies on the synth to remove itself from the server when it's finished. This can be done in several ways:
 
 list::
-## (Most typical) A gated envelope with a releasing code::doneAction:: ( >= 2) in the envelope generator (see link::Reference/UGen-doneActions:: for a complete list). The code::\harpsi:: SynthDef above uses this technique. A gated envelope specifies a release node or uses one of the predefined sustaining envelope types: code::Env.asr::, code::Env.adsr::, code::Env.dadsr::. The link::Classes/Env:: help file offers more detail on gated envelopes.
+## (Most typical) A gated envelope with a releasing code::doneAction:: ( >= 2) in the envelope generator (see link::Classes/Done:: for a complete list). The code::\harpsi:: SynthDef above uses this technique. A gated envelope specifies a release node or uses one of the predefined sustaining envelope types: code::Env.asr::, code::Env.adsr::, code::Env.dadsr::. The link::Classes/Env:: help file offers more detail on gated envelopes.
 ## code::Linen.kr::, which is a shortcut for code::EnvGen.kr(Env([0, susLevel, 0], [attackTime, releaseTime], \lin, releaseNode: 1), gate, doneAction: [2 or higher]) ::. The default SynthDef uses this. The code::doneAction:: should be at least 2 to release the node.
 note::
 If the release is controlled by a gate, the gate must be represented by the synth argument code::gate::; standard event prototypes expect to be able to control the synth's release using this argument. Also, make sure the gate's default value is greater than 0. Otherwise, the envelope will never start and you will both hear nothing and watch synths pile up on the server.
@@ -254,7 +254,7 @@ code::
 SynthDef(\trig_demo, { |freq, gate = 1, t_trig = 1|	// t_trig here
 	var	env = Decay2.kr(t_trig, 0.01, 0.1),
 		sig = SinOsc.ar(freq, 0, env)
-			* Linen.kr(gate, 0.01, 0.1, 0.1, doneAction: 2);
+			* Linen.kr(gate, 0.01, 0.1, 0.1, doneAction: Done.freeSelf);
 	Out.ar(0, sig ! 2)
 }).add;
 )

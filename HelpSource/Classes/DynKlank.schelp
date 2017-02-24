@@ -13,6 +13,10 @@ the time for the mode to decay by 60 dB.
 
 Unlike  link::Classes/Klank::, all parameters in DynKlank can be changed in real-time after it has been started.
 
+Note::
+The amplitude of the resulting signal depends on the server's sample rate. See link::Classes/Ringz#Interaction with sample rate#Ringz: Interaction with sample rate:: for details.
+::
+
 
 classmethods::
 

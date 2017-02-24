@@ -25,12 +25,15 @@ Frequently used classes:
 
 
 
+note::
+For some recent changes, see: link::Other/JITLibChanges3.7::
+::
+
 For additional functionality, see also strong::JITLib extensions Quark::. To install it, run the following:
 code::
 "JITLib extensions".include;
 ::
 
-For some recent changes, see: link::Other/JITLibChanges3.7::
 
 section::Tutorial: Interactive Programming with SuperCollider and jitlib
 
@@ -40,7 +43,7 @@ such as server messaging and pattern proxies which are not covered in tutorial f
 definitionList::
 ## content: ||
 definitionList::
-## placeholders in sc || link::Tutorials/JITLib/jitlib_basic_concepts_01::
+## placeholders in SuperCollider || link::Tutorials/JITLib/jitlib_basic_concepts_01::
 ## referencing and environments || link::Tutorials/JITLib/jitlib_basic_concepts_02::
 ## internal structure of node proxy || link::Tutorials/JITLib/jitlib_basic_concepts_03::
 ## timing in node proxy || link::Tutorials/JITLib/jitlib_basic_concepts_04::
@@ -102,6 +105,7 @@ definitionList::
 ## link::Tutorials/JITLib/jitlib_asCompileString:: || (how to reproduce source code from objects)
 ## link::Tutorials/JITLib/jitlib_networking:: || (how to collaborative live code with JITLib)
 ## link::Tutorials/JITLib/basic_live_coding_techniques:: || (live coding without jitlib)
+## link::Reference/NodeProxy_roles:: || (adverbial syntax for NodeProxy sources)
 ::
 
 section::Networking
@@ -116,7 +120,7 @@ list::
 	::
 ::
 
-section::Internal classes / abstract classes
+section::See also these related useful classes:
 
 definitionList::
 ## link::Classes/BusPlug:: || (listener on a bus)
@@ -124,7 +128,6 @@ definitionList::
 ## link::Classes/LazyEnvir:: || (and environment that returns proxies)
 ## link::Classes/EnvironmentRedirect:: || (abstract superclass for redirecting environments)
 ## link::Classes/EnvGate:: || (singleton fade envelope)
-## link::Reference/NodeProxy_roles:: || (adverbial syntax for NodeProxy sources)
 ::
 
 

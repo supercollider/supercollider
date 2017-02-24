@@ -153,11 +153,18 @@ SCDocHTMLRenderer {
 		};
 
 		stream << "<h1>";
-		if((folder=="") and: {doc.title=="Help"}) {
+		if((doc.title=="Help") and: {((thisProcess.platform.name===\windows) and: (folder=="Help")) or: {folder==""}}) {
 			stream << "SuperCollider " << Main.version;
 			stream << "<span class='headerimage'><img src='" << baseDir << "/images/SC_icon.png'/></span>";
 		} {
 			stream << doc.title;
+		};
+		if(doc.isExtension) {
+			stream
+			<< "<div class='extension-indicator-ctr' title='This help file originates from a third-party quark or plugin for SuperCollider.'>"
+			<< "<img class='extension-indicator-icon' alt='Extension' src='" << baseDir << "/images/plugin.png'>"
+			<< "<span class='extension-indicator-text'>Extension</span>"
+			<< "</div>";
 		};
 		stream
 		<< "</h1>\n"
@@ -333,7 +340,7 @@ SCDocHTMLRenderer {
 
 		if(methArgsMismatch) {
 			"SCDoc: In %\n"
-			"  Grouped methods % does not have the same argument signature."
+			"  Grouped methods % do not have the same argument signature."
 			.format(currDoc.fullPath, names).warn;
 		};
 
