@@ -22,10 +22,10 @@ TestLexerBrutal : UnitTest {
 	classvar directory = "brutal_lexer_results/";
 
 	*new {
-		super.new.init;
+		^super.new.initAlphabets;
 	}
 
-	init {
+	initAlphabets {
 		// init alphabets
 		fullAlphabet = (-128..-1) ++ (1..127);
 		halfAlphabet = (1..126); // 127 is `DEL`
@@ -91,30 +91,30 @@ TestLexerBrutal : UnitTest {
 	}
 
 	test_basic {
-		this.runLexerTests("", "", thisMethod.name[5..]);
+		this.runLexerTests("", "", thisMethod.name.asString[5..]);
 	}
 
 	test_lineCommentPrefix {
-		this.runLexerTests("//", "", thisMethod.name[5..]);
+		this.runLexerTests("//", "", thisMethod.name.asString[5..]);
 	}
 
 	test_blockCommentPrefix {
-		this.runLexerTests("/*", "", thisMethod.name[5..]);
+		this.runLexerTests("/*", "", thisMethod.name.asString[5..]);
 	}
 
 	test_blockCommentSuffix {
-		this.runLexerTests("", "*/", thisMethod.name[5..]);
+		this.runLexerTests("", "*/", thisMethod.name.asString[5..]);
 	}
 
 	test_blockCommentEnclose {
-		this.runLexerTests("/*", "*/", thisMethod.name[5..]);
+		this.runLexerTests("/*", "*/", thisMethod.name.asString[5..]);
 	}
 
 	test_semanticPrefix {
-		this.runLexerTests("\\unique;", "", thisMethod.name[5..]);
+		this.runLexerTests("\\unique;", "", thisMethod.name.asString[5..]);
 	}
 
 	test_semanticSuffix {
-		this.runLexerTests("", "\\unique;", thisMethod.name[5..]);
+		this.runLexerTests("", "\\unique;", thisMethod.name.asString[5..]);
 	}
 }
