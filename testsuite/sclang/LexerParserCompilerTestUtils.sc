@@ -369,6 +369,49 @@ LexerParserCompilerTestUtils {
 		^diffs;
 	}
 
+	*printDiffs {
+		arg diffs;
+
+		var missingFromFile1 = [];
+		var missingFromFile2 = [];
+		var realDiffs = [];
+
+		diffs.do {
+			arg diff;
+			case(
+				{ diff[1] == nil }, {
+					missingFromFile1 = missingFromFile1.add(diff);
+				},
+				{ diff[2] == nil }, {
+					missingFromFile2 = missingFromFile2.add(diff);
+				}, {
+					realDiffs = realDiffs.add(diff);
+				}
+			)
+		};
+
+		"% entries were missing from file 1".format(missingFromFile1.size).underlined.postln;
+
+		missingFromFile1.do {
+			arg diff;
+			this.explainDiff(diff).postln;
+		};
+
+		"% entries were missing from file 2".format(missingFromFile2.size).underlined.postln;
+
+		missingFromFile2.do {
+			arg diff;
+			this.explainDiff(diff).postln;
+		};
+
+		"% entries were different between files".format(realDiffs.size).underlined.postln;
+
+		realDiffs.do {
+			arg diff;
+			this.explainDiff(diff).postln;
+		};
+	}
+
 	/////////////////////////////////////
 	///// SMALL CONVENIENCE METHODS /////
 	/////////////////////////////////////
