@@ -27,24 +27,26 @@ LexerParserCompilerTestUtils {
 		len, // String length
 		prefix = "", suffix = "",
 		testID = "", // unique filename ID
-		technique = \compile, // best
-		createValidationFile = false, // change to true to generate a validation file
-		                              // (doesn't validate or delete)
+		technique = \compile,
+		// change to true to generate a validation file
+		// (doesn't validate or delete)
+		createValidationFile = false,
 		compressRepeatResults = true;
 
 		var alphabetSize = alphabet.size;
 		var filename, file;
-		var header;
 		// intro content to be written to the file
-		var diffs;
+		var header;
 		// holds a list (empty under sucessful execution) of
 		// differences between expected and actual output
-		var testString;
+		var diffs = [];
 		// holds the string that will be tested with testOneString
-		var prevResult, repeatedResultCount = 0;
+		var testString;
 		// hold the previous result for compressing repeat results
+		var prevResult, repeatedResultCount = 0;
+		// a counter [0, 0, ..., 0] which is used to index into the alphabet
+		// for string generation
 		var counter = 0!len;
-		// [0, 0, ..., 0] which controls indexing into the alphabet to generate a string
 		var dataLine;
 		// will hold the result stored to the file
 		var isPrefixEmpty = prefix.isEmpty;
