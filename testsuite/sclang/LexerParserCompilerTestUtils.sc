@@ -123,7 +123,7 @@ LexerParserCompilerTestUtils {
 
 		if(createValidationFile.not) {
 			protect {
-				postln("testAllPossibleStrings: Validating against standard output");
+				postln("testAllPossibleStrings: Validating against expected output");
 				diffs = this.validate(filename);
 			} {
 				postln("testAllPossibleStrings: Deleting test file");
