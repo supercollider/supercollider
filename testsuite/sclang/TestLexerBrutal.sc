@@ -55,6 +55,8 @@ TestLexerBrutal : UnitTest {
 
 		var filenameFormat = directory++"lexer_%_%_"++filenameSuffix;
 
+		"TestLexerBrutal: running test mode %\n".postf(filenameSuffix);
+
 		(0..fullAlphabetStringSizeLimit).do {
 			arg len;
 
