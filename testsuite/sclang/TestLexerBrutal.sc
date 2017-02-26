@@ -45,6 +45,8 @@ TestLexerBrutal : UnitTest {
 		if(diffs.isEmpty.not) {
 			LexerParserCompilerTestUtils.printDiffs(diffs);
 			this.failed(thisMethod, "Diffs were found between test and validation files");
+		} {
+			postln("TestLexerBrutal: no diffs found.");
 		}
 	}
 
