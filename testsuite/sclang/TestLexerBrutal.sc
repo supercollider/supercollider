@@ -19,7 +19,7 @@ TestLexerBrutal : UnitTest {
 	classvar fullAlphabetStringSizeLimit = 2;
 	classvar halfAlphabetStringSizeLimit = 3;
 
-	classvar directory = "results/";
+	classvar directory = "brutal_lexer_results/";
 
 	*new {
 		super.new.init;
