@@ -131,7 +131,7 @@ LexerParserCompilerTestUtils {
 			}
 		};
 
-		postln("testAllPossibleStrings: Success!");
+		// postln("testAllPossibleStrings: Success!");
 
 		^diffs;
 	}
@@ -280,7 +280,7 @@ LexerParserCompilerTestUtils {
 
 			areAlphabetsEqual = aheader[\alphabet] == eheader[\alphabet];
 
-			"validate: comparing data".postln;
+			// "validate: comparing data".postln;
 			diffs = this.compareData(afile, efile, aheader[\alphabet], eheader[\alphabet], aheader[\stringLength]);
 		} {
 			afile.close;
