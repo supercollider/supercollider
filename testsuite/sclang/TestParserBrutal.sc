@@ -23,5 +23,73 @@ TestParserBrutal : UnitTest {
 	initAlphabets {
 		// init alphabets
 
+		fullAlphabet = [
+			// brackets
+			"(",
+			")",
+			"{",
+			"}",
+			"[",
+			"]",
+
+			// keywords
+			" var",
+			" arg",
+			" while",
+			" true",
+			" false",
+			" nil",
+			// " inf", // not actually interpreted by the parser
+
+			// important punctuation
+			" ;",
+			" ,",
+			" .",
+			" `",
+			" #",
+			" !",
+			" ..",
+			" ...",
+			" _",
+			" <>",
+			" <",
+			" >",
+			" -",
+			" *",
+			" +",
+			" |",
+			" <-",
+			" ^",
+
+			// these ones not preceded by a space
+			// for grammatical reasons
+
+			// `2 pow : 2` isn't legal
+			":",
+			// allows for `==`, `!=`
+			"=",
+
+			// identifiers
+			" Object",
+			" abc",
+			" def",
+			" ~abc",
+			" ~def",
+			" var abc",
+			" var def",
+
+			// method call
+			".size", // size can be called on anything (defined on Object)
+
+			// literals
+			" $a",
+			" \"str\"",
+			" \\sym",
+			" 'sym2'",
+			"0",
+			"1",
+			" pi"
+		];
+
 	}
 }
