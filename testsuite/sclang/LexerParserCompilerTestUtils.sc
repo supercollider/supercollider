@@ -72,7 +72,7 @@ LexerParserCompilerTestUtils {
 		};
 
 		protect {
-			postln("testAllPossibleStrings: Writing header");
+			// postln("testAllPossibleStrings: Writing header");
 			this.writeHeader(
 				file, alphabet, len, prefix, suffix, technique,
 				alphabetSize ** len /* string count */
