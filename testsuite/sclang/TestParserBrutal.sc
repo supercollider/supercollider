@@ -137,5 +137,19 @@ TestParserBrutal : UnitTest {
 			"1",
 		];
 
+		miniAlphabet = [
+			" ;",
+			" ,",
+			" ...",
+			" |",
+
+			"=",
+
+			" var",
+			" arg",
+
+			" abc",
+			" def",
+		];
 	}
 }
