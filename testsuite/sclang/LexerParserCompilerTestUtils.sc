@@ -315,6 +315,9 @@ LexerParserCompilerTestUtils {
 		var hasNext = true;
 		var diffs = [];
 
+		// we can make some time-saving assumptions if alphabets are equal
+		var areAlphabetsEqual = alph1 == alph2;
+
 		// inputs.postln;
 		// alphM.postln;
 
@@ -363,6 +366,23 @@ LexerParserCompilerTestUtils {
 						*outputs
 					)
 				);
+			} {
+				// if the outputs matched
+				if(areAlphabetsEqual) {
+					// and if the alphabets are equal
+					while { (reps[0] > 0) && (reps[1] > 0) } {
+						// while both reps are greater than 0, we know that the
+						// next outputs are going to be equal
+
+						// decrease the reps
+						reps = reps - 1;
+
+						// increment the alphabet counters
+						this.incrementAlphabetCount(ctrs[0], strlen, alphSizes[0]);
+						this.incrementAlphabetCount(ctrs[1], strlen, alphSizes[1]);
+						this.incrementAlphabetCount(ctrM, strlen, alphSizeM);
+					}
+				}
 			};
 
 			hasNext = this.incrementAlphabetCount(ctrM, strlen, alphSizeM);
