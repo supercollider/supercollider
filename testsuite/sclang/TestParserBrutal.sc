@@ -193,7 +193,7 @@ TestParserBrutal : UnitTest {
 	runParserTests {
 		arg prefix, suffix, filenameSuffix;
 
-		var filenameFormat = directory++"parser_%_%_"++filenameSuffix;
+		var filenameFormat = directory++"%_%_"++filenameSuffix;
 
 		"".postln;
 		"TestParserBrutal: running test mode %".format(filenameSuffix).underlined.postln;
