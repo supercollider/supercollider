@@ -152,4 +152,60 @@ TestParserBrutal : UnitTest {
 			" def",
 		];
 	}
+
+	checkDiffs {
+		arg diffs;
+
+		if(diffs.isEmpty.not) {
+			LexerParserCompilerTestUtils.printDiffs(diffs);
+			this.failed(thisMethod, "Diffs were found between test and validation files");
+		} {
+			postln("TestParserBrutal: no diffs found.");
+		}
+	}
+
+	runLexerTests {
+		arg prefix, suffix, filenameSuffix;
+
+		var diffs;
+
+		var filenameFormat = directory++"lexer_%_%_"++filenameSuffix;
+
+		"".postln;
+		"TestParserBrutal: running test mode %".format(filenameSuffix).underlined.postln;
+
+		(0..fullAlphabetStringSizeLimit).do {
+			arg len;
+
+			diffs = LexerParserCompilerTestUtils.testAllPossibleStrings(
+				fullAlphabet,
+				len,
+				prefix,
+				suffix,
+				filenameFormat.format("full", len),
+				\bytecode,
+				makingValidationFiles,
+				true
+			);
+
+			this.checkDiffs(diffs);
+		};
+
+		(fullAlphabetStringSizeLimit+1..halfAlphabetStringSizeLimit).do {
+			arg len;
+
+			diffs = diffs ++ LexerParserCompilerTestUtils.testAllPossibleStrings(
+				halfAlphabet,
+				len,
+				prefix,
+				suffix,
+				filenameFormat.format("half", len),
+				\bytecode,
+				makingValidationFiles,
+				true
+			);
+
+			this.checkDiffs(diffs);
+		};
+	}
 }
