@@ -60,7 +60,7 @@ LexerParserCompilerTestUtils {
 			filename = filename ++ validatedOutputFilenameSuffix;
 		};
 
-		postln("testAllPossibleStrings: Creating file: %".format(filename));
+		postln("testAllPossibleStrings: Creating file: %".format(PathName(filename).fileName));
 		if(File.exists(filename)) {
 			Error("testAllPossibleStrings: File % already exists: "
 				"please delete before continuing".format(filename.quote)).throw;
