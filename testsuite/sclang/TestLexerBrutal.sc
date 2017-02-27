@@ -11,13 +11,15 @@ TestLexerBrutal : UnitTest {
 
 	// alphabets used in testing
 	classvar fullAlphabet; // -128..127
-	classvar halfAlphabet; // 1..126
+	classvar smallAlphabet; // 1..126
+	classvar miniAlphabet; // all punctuation, [019AZaz]
 
-	// maximum string size for testing full and half alphabets
-	// the half alphabet is only tested on strings of length
-	// (fullLimit+1) to (halfLimit)
+	// maximum string size for testing full and small alphabets
+	// the small alphabet is only tested on strings of length
+	// (fullLimit+1) to (smallLimit)
 	classvar fullAlphabetStringSizeLimit = 2;
-	classvar halfAlphabetStringSizeLimit = 3;
+	classvar smallAlphabetStringSizeLimit = 3;
+	classvar miniAlphabetStringSizeLimit = 5;
 
 	classvar directory = "brutal_lexer_results/";
 
@@ -27,16 +29,24 @@ TestLexerBrutal : UnitTest {
 
 	initAlphabets {
 		// init alphabets
-		fullAlphabet = (-128..-1) ++ (1..127);
-		halfAlphabet = (1..126); // 127 is `DEL`
+		var alphabets = [
+			fullAlphabet = (-128..-1) ++ (1..127),
+			smallAlphabet = (1..126), // 127 is `DEL`
+			// all punctuation, plus [019AZaz]
+			miniAlphabet = (32..49) ++ (57..65) ++ (90..97) ++ (122..126)
+		];
 
 		if(ignoreCaret) {
-			fullAlphabet = fullAlphabet.reject(_==caretAscii);
-			halfAlphabet = halfAlphabet.reject(_==caretAscii);
+			alphabets.do {
+				arg alphabet;
+				alphabet = alphabet.reject(_==caretAscii);
+			}
 		};
 
-		fullAlphabet = fullAlphabet.collect(_.asAscii).collect(_.asString);
-		halfAlphabet = halfAlphabet.collect(_.asAscii).collect(_.asString);
+		alphabets.do {
+			arg alphabet;
+			alphabet = alphabet.collect(_.asAscii).collect(_.asString);
+		};
 	}
 
 	checkDiffs {
@@ -90,8 +100,8 @@ TestLexerBrutal : UnitTest {
 
 		// test on small alphabet
 		this.runLexerTestsOnAlphabet(
-			fullAlphabetStringSizeLimit+1, halfAlphabetStringSizeLimit,
-			halfAlphabet, prefix, suffix, filenameFormat, "half"
+			fullAlphabetStringSizeLimit+1, smallAlphabetStringSizeLimit,
+			smallAlphabet, prefix, suffix, filenameFormat, "small"
 		);
 	}
 
