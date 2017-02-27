@@ -164,7 +164,7 @@ TestParserBrutal : UnitTest {
 		}
 	}
 
-	runLexerTests {
+	runParserTests {
 		arg prefix, suffix, filenameSuffix;
 
 		var diffs;
@@ -191,15 +191,32 @@ TestParserBrutal : UnitTest {
 			this.checkDiffs(diffs);
 		};
 
-		(fullAlphabetStringSizeLimit+1..halfAlphabetStringSizeLimit).do {
+		(fullAlphabetStringSizeLimit+1..smallAlphabetStringSizeLimit).do {
 			arg len;
 
 			diffs = diffs ++ LexerParserCompilerTestUtils.testAllPossibleStrings(
-				halfAlphabet,
+				smallAlphabet,
 				len,
 				prefix,
 				suffix,
-				filenameFormat.format("half", len),
+				filenameFormat.format("small", len),
+				\bytecode,
+				makingValidationFiles,
+				true
+			);
+
+			this.checkDiffs(diffs);
+		};
+
+		(smallAlphabetStringSizeLimit+1..miniAlphabetStringSizeLimit).do {
+			arg len;
+
+			diffs = diffs ++ LexerParserCompilerTestUtils.testAllPossibleStrings(
+				miniAlphabet,
+				len,
+				prefix,
+				suffix,
+				filenameFormat.format("mini", len),
 				\bytecode,
 				makingValidationFiles,
 				true
