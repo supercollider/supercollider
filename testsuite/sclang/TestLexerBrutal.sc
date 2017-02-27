@@ -86,7 +86,6 @@ TestLexerBrutal : UnitTest {
 	runLexerTests {
 		arg prefix, suffix, filenameSuffix;
 
-
 		var filenameFormat = directory++"lexer_%_%_"++filenameSuffix;
 
 		"".postln;
