@@ -166,6 +166,27 @@ TestParserBrutal : UnitTest {
 		}
 	}
 
+	runParserTestsOnAlphabet {
+		arg min, max, alphabet, prefix, suffix, filenameFormat, alphabetName;
+
+		(min..max).do {
+			arg len;
+
+			diffs = LexerParserCompilerTestUtils.testAllPossibleStrings(
+				alphabet,
+				len,
+				prefix,
+				suffix,
+				filenameFormat.format(alphabetName, len),
+				\bytecode,
+				makingValidationFiles,
+				true
+			);
+
+			this.checkDiffs(diffs);
+		};
+	}
+
 	runParserTests {
 		arg prefix, suffix, filenameSuffix;
 
@@ -177,58 +198,22 @@ TestParserBrutal : UnitTest {
 		"TestParserBrutal: running test mode %".format(filenameSuffix).underlined.postln;
 
 		// test on full alphabet
-		(0..fullAlphabetStringSizeLimit).do {
-			arg len;
-
-			diffs = LexerParserCompilerTestUtils.testAllPossibleStrings(
-				fullAlphabet,
-				len,
-				prefix,
-				suffix,
-				filenameFormat.format("full", len),
-				\bytecode,
-				makingValidationFiles,
-				true
-			);
-
-			this.checkDiffs(diffs);
-		};
+		this.runParserTestsOnAlphabet(
+			0, fullAlphabetStringSizeLimit,
+			fullAlphabet, prefix, suffix, filenameFormat, "full"
+		);
 
 		// test on small alphabet
-		(fullAlphabetStringSizeLimit+1..smallAlphabetStringSizeLimit).do {
-			arg len;
-
-			diffs = diffs ++ LexerParserCompilerTestUtils.testAllPossibleStrings(
-				smallAlphabet,
-				len,
-				prefix,
-				suffix,
-				filenameFormat.format("small", len),
-				\bytecode,
-				makingValidationFiles,
-				true
-			);
-
-			this.checkDiffs(diffs);
-		};
+		this.runParserTestsOnAlphabet(
+			fullAlphabetStringSizeLimit+1, smallAlphabetStringSizeLimit,
+			smallAlphabet, prefix, suffix, filenameFormat, "small"
+		);
 
 		// test on mini alphabet
-		(smallAlphabetStringSizeLimit+1..miniAlphabetStringSizeLimit).do {
-			arg len;
-
-			diffs = diffs ++ LexerParserCompilerTestUtils.testAllPossibleStrings(
-				miniAlphabet,
-				len,
-				prefix,
-				suffix,
-				filenameFormat.format("mini", len),
-				\bytecode,
-				makingValidationFiles,
-				true
-			);
-
-			this.checkDiffs(diffs);
-		};
+		this.runParserTestsOnAlphabet(
+			smallAlphabetStringSizeLimit+1, miniAlphabetStringSizeLimit,
+			miniAlphabet, prefix, suffix, filenameFormat, "mini"
+		);
 	}
 
 
