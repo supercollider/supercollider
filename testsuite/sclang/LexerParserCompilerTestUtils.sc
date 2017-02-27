@@ -115,8 +115,10 @@ LexerParserCompilerTestUtils {
 
 			if(compressRepeatResults && (repeatedResultCount > 0)) {
 				// "flush the buffer"
-				file.write("\t" ++ repeatedResultCount.asString ++ "\n");
+				file.write("\t" ++ repeatedResultCount.asString);
 			};
+
+			file.putChar($\n);
 		} {
 			file.close;
 		};
