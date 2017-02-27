@@ -3,7 +3,7 @@
 
 TestParserBrutal : UnitTest {
 	// set to TRUE if you need `_expected` files
-	classvar makingValidationFiles = false;
+	classvar makingValidationFiles = true;
 
 	// alphabets used in testing
 	classvar fullAlphabet;

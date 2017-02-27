@@ -3,7 +3,7 @@
 
 TestLexerBrutal : UnitTest {
 	// set to TRUE if you need `_expected` files
-	classvar makingValidationFiles = false;
+	classvar makingValidationFiles = true;
 
 	// whether or not to include `^` in any alphabets. can't do it right now.
 	classvar ignoreCaret = true;
