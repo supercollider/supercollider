@@ -50,6 +50,27 @@ TestLexerBrutal : UnitTest {
 		}
 	}
 
+	runLexerTestsOnAlphabet {
+		arg min, max, alphabet, prefix, suffix, filenameFormat, alphabetName;
+
+		(min..max).do {
+			arg len;
+
+			diffs = LexerParserCompilerTestUtils.testAllPossibleStrings(
+				alphabet,
+				len,
+				prefix,
+				suffix,
+				filenameFormat.format(alphabetName, len),
+				\compile,
+				makingValidationFiles,
+				true
+			);
+
+			this.checkDiffs(diffs);
+		};
+	}
+
 	runLexerTests {
 		arg prefix, suffix, filenameSuffix;
 
@@ -60,39 +81,17 @@ TestLexerBrutal : UnitTest {
 		"".postln;
 		"TestLexerBrutal: running test mode %".format(filenameSuffix).underlined.postln;
 
-		(0..fullAlphabetStringSizeLimit).do {
-			arg len;
+		// test on full alphabet
+		this.runParserTestsOnAlphabet(
+			0, fullAlphabetStringSizeLimit,
+			fullAlphabet, prefix, suffix, filenameFormat, "full"
+		);
 
-			diffs = LexerParserCompilerTestUtils.testAllPossibleStrings(
-				fullAlphabet,
-				len,
-				prefix,
-				suffix,
-				filenameFormat.format("full", len),
-				\compile,
-				makingValidationFiles,
-				true
-			);
-
-			this.checkDiffs(diffs);
-		};
-
-		(fullAlphabetStringSizeLimit+1..halfAlphabetStringSizeLimit).do {
-			arg len;
-
-			diffs = diffs ++ LexerParserCompilerTestUtils.testAllPossibleStrings(
-				halfAlphabet,
-				len,
-				prefix,
-				suffix,
-				filenameFormat.format("half", len),
-				\compile,
-				makingValidationFiles,
-				true
-			);
-
-			this.checkDiffs(diffs);
-		};
+		// test on small alphabet
+		this.runParserTestsOnAlphabet(
+			fullAlphabetStringSizeLimit+1, halfAlphabetStringSizeLimit,
+			halfAlphabet, prefix, suffix, filenameFormat, "half"
+		);
 	}
 
 	test_basic {
