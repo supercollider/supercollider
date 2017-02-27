@@ -83,13 +83,13 @@ TestLexerBrutal : UnitTest {
 		"TestLexerBrutal: running test mode %".format(filenameSuffix).underlined.postln;
 
 		// test on full alphabet
-		this.runParserTestsOnAlphabet(
+		this.runLexerTestsOnAlphabet(
 			0, fullAlphabetStringSizeLimit,
 			fullAlphabet, prefix, suffix, filenameFormat, "full"
 		);
 
 		// test on small alphabet
-		this.runParserTestsOnAlphabet(
+		this.runLexerTestsOnAlphabet(
 			fullAlphabetStringSizeLimit+1, halfAlphabetStringSizeLimit,
 			halfAlphabet, prefix, suffix, filenameFormat, "half"
 		);

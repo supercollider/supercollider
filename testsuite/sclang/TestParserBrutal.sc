@@ -192,7 +192,7 @@ TestParserBrutal : UnitTest {
 	runParserTests {
 		arg prefix, suffix, filenameSuffix;
 
-		var filenameFormat = directory++"lexer_%_%_"++filenameSuffix;
+		var filenameFormat = directory++"parser_%_%_"++filenameSuffix;
 
 		"".postln;
 		"TestParserBrutal: running test mode %".format(filenameSuffix).underlined.postln;
@@ -217,10 +217,10 @@ TestParserBrutal : UnitTest {
 	}
 
 	test_basic {
-		this.runLexerTests("", "", thisMethod.name.asString[5..]);
+		this.runParserTests("", "", thisMethod.name.asString[5..]);
 	}
 
 	test_curlyBraceEnclose {
-		this.runLexerTests("{", "}", thisMethod.name.asString[5..]);
+		this.runParserTests("{", "}", thisMethod.name.asString[5..]);
 	}
 }
