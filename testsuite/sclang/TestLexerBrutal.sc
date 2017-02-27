@@ -86,7 +86,7 @@ TestLexerBrutal : UnitTest {
 	runLexerTests {
 		arg prefix, suffix, filenameSuffix;
 
-		var filenameFormat = directory++"lexer_%_%_"++filenameSuffix;
+		var filenameFormat = directory++"%_%_"++filenameSuffix;
 
 		"".postln;
 		"TestLexerBrutal: running test mode %".format(filenameSuffix).underlined.postln;
