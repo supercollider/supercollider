@@ -91,5 +91,51 @@ TestParserBrutal : UnitTest {
 			" pi"
 		];
 
+		smallAlphabet = [
+			// keywords
+			" var",
+			" arg",
+			" nil",
+
+			// important punctuation
+			" ;",
+			" ,",
+			// " .",
+			// " `",
+			// " #",
+			// " !",
+			// " ..",
+			" ...",
+			" _",
+			// " <>",
+			// " <",
+			// " >",
+			// " -",
+			// " *",
+			// " +",
+			" |",
+			// " <-",
+			// " ^",
+
+			// these ones not preceded by a space
+			// for grammatical reasons
+
+			// `2 pow : 2` isn't legal
+			":",
+			// allows for `==`, `!=`
+			"=",
+
+			// identifiers
+			" Object",
+			" abc",
+			" def",
+			" var abc",
+			" var def",
+
+			// literals
+			"0",
+			"1",
+		];
+
 	}
 }
