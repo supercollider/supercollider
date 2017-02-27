@@ -53,6 +53,8 @@ TestLexerBrutal : UnitTest {
 	runLexerTestsOnAlphabet {
 		arg min, max, alphabet, prefix, suffix, filenameFormat, alphabetName;
 
+		var diffs;
+
 		(min..max).do {
 			arg len;
 
@@ -74,7 +76,6 @@ TestLexerBrutal : UnitTest {
 	runLexerTests {
 		arg prefix, suffix, filenameSuffix;
 
-		var diffs;
 
 		var filenameFormat = directory++"lexer_%_%_"++filenameSuffix;
 

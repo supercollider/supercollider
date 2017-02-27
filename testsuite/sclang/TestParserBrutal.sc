@@ -169,6 +169,8 @@ TestParserBrutal : UnitTest {
 	runParserTestsOnAlphabet {
 		arg min, max, alphabet, prefix, suffix, filenameFormat, alphabetName;
 
+		var diffs;
+
 		(min..max).do {
 			arg len;
 
@@ -189,8 +191,6 @@ TestParserBrutal : UnitTest {
 
 	runParserTests {
 		arg prefix, suffix, filenameSuffix;
-
-		var diffs;
 
 		var filenameFormat = directory++"lexer_%_%_"++filenameSuffix;
 
