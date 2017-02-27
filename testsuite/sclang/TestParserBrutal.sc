@@ -35,7 +35,8 @@ TestParserBrutal : UnitTest {
 			// keywords
 			" var",
 			" arg",
-			" while",
+			// " while", // technically a keyword, but it doesn't really get
+			             // treated any differently
 			" true",
 			" false",
 			" nil",
@@ -51,7 +52,7 @@ TestParserBrutal : UnitTest {
 			" ..",
 			" ...",
 			" _",
-			" <>",
+			// " <>", // only legal in class files
 			" <",
 			" >",
 			" -",
@@ -80,14 +81,16 @@ TestParserBrutal : UnitTest {
 
 			// method call
 			".size", // size can be called on anything (defined on Object)
+			" abc:",
 
 			// literals
 			" $a",
 			" \"str\"",
-			" \\sym",
-			" 'sym2'",
+			// " \\sym", // this is a parser test, and in the context of the parser
+			             // the different symbol notations are equivalent
+			" 'sym'",
 			"0",
-			"1",
+			"1.1",
 			" pi"
 		];
 
