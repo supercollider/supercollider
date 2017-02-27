@@ -216,5 +216,11 @@ TestParserBrutal : UnitTest {
 		);
 	}
 
+	test_basic {
+		this.runLexerTests("", "", thisMethod.name.asString[5..]);
+	}
 
+	test_curlyBraceEnclose {
+		this.runLexerTests("{", "}", thisMethod.name.asString[5..]);
+	}
 }
