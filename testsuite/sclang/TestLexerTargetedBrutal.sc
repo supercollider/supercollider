@@ -121,4 +121,33 @@ TestLexerTargetedBrutal : UnitTest {
 		);
 	}
 
+	test_alnum_basic {
+		this.runAlphanumLexerTests("", "", "basic");
+	}
+
+	test_alnum_hexPrefixes {
+		this.runAlphanumLexerTests("0x", "", "hex");
+		this.runAlphanumLexerTests("-0x", "", "hexNeg");
+	}
+
+	test_alnum_radixPrefixes {
+		this.runAlphanumLexerTests("1r", "", "radix1");
+		this.runAlphanumLexerTests("10r", "", "radix10");
+		this.runAlphanumLexerTests("12r", "", "radix12");
+		this.runAlphanumLexerTests("36r", "", "radix36");
+		this.runAlphanumLexerTests("37r", "", "radix37");
+		this.runAlphanumLexerTests("-10r", "", "radix10neg");
+		this.runAlphanumLexerTests("-12r", "", "radix12neg");
+	}
+
+	test_num_basic {
+		this.runNumericalLexerTests("", "", "basic");
+		this.runNumericalLexerTests("-", "", "basicNeg");
+	}
+
+	test_acc_basic {
+		this.runAccidentalLexerTests("", "", "basic");
+		this.runAccidentalLexerTests("-", "", "basicNeg");
+	}
+
 }
