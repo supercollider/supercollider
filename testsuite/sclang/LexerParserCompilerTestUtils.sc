@@ -421,6 +421,7 @@ LexerParserCompilerTestUtils {
 			this.explainDiff(diff).postln;
 		};
 
+		"".postln;
 		"% entries were missing from file 2".format(missingFromFile2.size).underlined.postln;
 
 		missingFromFile2.do {
@@ -428,6 +429,7 @@ LexerParserCompilerTestUtils {
 			this.explainDiff(diff).postln;
 		};
 
+		"".postln;
 		"% entries were different between files".format(realDiffs.size).underlined.postln;
 
 		realDiffs.do {
