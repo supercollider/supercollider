@@ -145,8 +145,6 @@ TestParserBrutal : UnitTest {
 			" ...",
 			" |",
 
-			"=",
-
 			" var",
 			" arg",
 
