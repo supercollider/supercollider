@@ -91,6 +91,7 @@ TestParserBrutal : UnitTest {
 			" pi"
 		];
 
+		// a more targeted alphabet for block grammar
 		smallAlphabet = [
 			// keywords
 			" var",
@@ -137,6 +138,7 @@ TestParserBrutal : UnitTest {
 			"1",
 		];
 
+		// minimal alphabet for function/block grammar
 		miniAlphabet = [
 			" ;",
 			" ,",
@@ -174,6 +176,7 @@ TestParserBrutal : UnitTest {
 		"".postln;
 		"TestParserBrutal: running test mode %".format(filenameSuffix).underlined.postln;
 
+		// test on full alphabet
 		(0..fullAlphabetStringSizeLimit).do {
 			arg len;
 
@@ -191,6 +194,7 @@ TestParserBrutal : UnitTest {
 			this.checkDiffs(diffs);
 		};
 
+		// test on small alphabet
 		(fullAlphabetStringSizeLimit+1..smallAlphabetStringSizeLimit).do {
 			arg len;
 
@@ -208,6 +212,7 @@ TestParserBrutal : UnitTest {
 			this.checkDiffs(diffs);
 		};
 
+		// test on mini alphabet
 		(smallAlphabetStringSizeLimit+1..miniAlphabetStringSizeLimit).do {
 			arg len;
 
@@ -225,4 +230,6 @@ TestParserBrutal : UnitTest {
 			this.checkDiffs(diffs);
 		};
 	}
+
+
 }
