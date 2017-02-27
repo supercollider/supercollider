@@ -103,6 +103,12 @@ TestLexerBrutal : UnitTest {
 			fullAlphabetStringSizeLimit+1, smallAlphabetStringSizeLimit,
 			smallAlphabet, prefix, suffix, filenameFormat, "small"
 		);
+
+		// test on mini alphabet
+		this.runLexerTestsOnAlphabet(
+			fullAlphabetStringSizeLimit+1, smallAlphabetStringSizeLimit,
+			smallAlphabet, prefix, suffix, filenameFormat, "mini"
+		);
 	}
 
 	test_basic {
