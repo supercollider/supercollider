@@ -120,6 +120,6 @@ TestLexerBrutal : UnitTest {
 	}
 
 	test_semanticSuffix {
-		this.runLexerTests("", "\\unique;", thisMethod.name.asString[5..]);
+		this.runLexerTests("", ";\\unique", thisMethod.name.asString[5..]);
 	}
 }
