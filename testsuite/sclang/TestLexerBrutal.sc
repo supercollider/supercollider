@@ -1,10 +1,7 @@
 // TestLexerBrutal.sc
 // Brian Heim, 2017-02-26
 
-TestLexerBrutal : UnitTest {
-	// set to TRUE if you need `_expected` files
-	classvar makingValidationFiles = true;
-
+TestLexerBrutal : AbstractBrutalTest {
 	// whether or not to include `^` in any alphabets. can't do it right now.
 	classvar ignoreCaret = true;
 	const caretAscii = 94;
@@ -23,9 +20,8 @@ TestLexerBrutal : UnitTest {
 
 	classvar directory = "brutal_lexer_results/";
 
-	*new {
-		^super.new.initAlphabets;
-	}
+	// set to TRUE if you need `_expected` files
+	makingValidationFiles { ^true; }
 
 	initAlphabets {
 		// init alphabets
@@ -53,40 +49,6 @@ TestLexerBrutal : UnitTest {
 		miniAlphabet = alphabets[2];
 	}
 
-	checkDiffs {
-		arg diffs;
-
-		if(diffs.isEmpty.not) {
-			LexerParserCompilerTestUtils.printDiffs(diffs);
-			this.failed(thisMethod, "Diffs were found between test and validation files");
-		} {
-			postln("TestLexerBrutal: no diffs found.");
-		}
-	}
-
-	runLexerTestsOnAlphabet {
-		arg min, max, alphabet, prefix, suffix, filenameFormat, alphabetName;
-
-		var diffs;
-
-		(min..max).do {
-			arg len;
-
-			diffs = LexerParserCompilerTestUtils.testAllPossibleStrings(
-				alphabet,
-				len,
-				prefix,
-				suffix,
-				filenameFormat.format(alphabetName, len),
-				\compile,
-				makingValidationFiles,
-				true
-			);
-
-			this.checkDiffs(diffs);
-		};
-	}
-
 	runLexerTests {
 		arg prefix, suffix, filenameSuffix;
 
@@ -96,21 +58,21 @@ TestLexerBrutal : UnitTest {
 		"TestLexerBrutal: running test mode %".format(filenameSuffix).underlined.postln;
 
 		// test on full alphabet
-		this.runLexerTestsOnAlphabet(
+		this.runTestsOnAlphabet(
 			0, fullAlphabetStringSizeLimit,
-			fullAlphabet, prefix, suffix, filenameFormat, "full"
+			fullAlphabet, prefix, suffix, filenameFormat, "full", \compile
 		);
 
 		// test on small alphabet
-		this.runLexerTestsOnAlphabet(
+		this.runTestsOnAlphabet(
 			fullAlphabetStringSizeLimit+1, smallAlphabetStringSizeLimit,
-			smallAlphabet, prefix, suffix, filenameFormat, "small"
+			smallAlphabet, prefix, suffix, filenameFormat, "small", \compile
 		);
 
 		// test on mini alphabet
-		this.runLexerTestsOnAlphabet(
+		this.runTestsOnAlphabet(
 			smallAlphabetStringSizeLimit+1, miniAlphabetStringSizeLimit,
-			miniAlphabet, prefix, suffix, filenameFormat, "mini"
+			miniAlphabet, prefix, suffix, filenameFormat, "mini", \compile
 		);
 	}
 

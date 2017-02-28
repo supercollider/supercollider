@@ -1,10 +1,7 @@
 // TestParserBrutal.sc
 // Brian Heim, 2017-2-26
 
-TestParserBrutal : UnitTest {
-	// set to TRUE if you need `_expected` files
-	classvar makingValidationFiles = true;
-
+TestParserBrutal : AbstractBrutalTest {
 	// alphabets used in testing
 	classvar fullAlphabet;
 	classvar smallAlphabet;
@@ -16,9 +13,8 @@ TestParserBrutal : UnitTest {
 
 	classvar directory = "brutal_parser_results/";
 
-	*new {
-		^super.new.initAlphabets;
-	}
+	// set to TRUE if you need `_expected` files
+	makingValidationFiles { ^true; }
 
 	initAlphabets {
 		// init alphabets
@@ -156,40 +152,6 @@ TestParserBrutal : UnitTest {
 		];
 	}
 
-	checkDiffs {
-		arg diffs;
-
-		if(diffs.isEmpty.not) {
-			LexerParserCompilerTestUtils.printDiffs(diffs);
-			this.failed(thisMethod, "Diffs were found between test and validation files");
-		} {
-			postln("TestParserBrutal: no diffs found.");
-		}
-	}
-
-	runParserTestsOnAlphabet {
-		arg min, max, alphabet, prefix, suffix, filenameFormat, alphabetName;
-
-		var diffs;
-
-		(min..max).do {
-			arg len;
-
-			diffs = LexerParserCompilerTestUtils.testAllPossibleStrings(
-				alphabet,
-				len,
-				prefix,
-				suffix,
-				filenameFormat.format(alphabetName, len),
-				\bytecode,
-				makingValidationFiles,
-				true
-			);
-
-			this.checkDiffs(diffs);
-		};
-	}
-
 	runParserTests {
 		arg prefix, suffix, filenameSuffix;
 
@@ -199,21 +161,21 @@ TestParserBrutal : UnitTest {
 		"TestParserBrutal: running test mode %".format(filenameSuffix).underlined.postln;
 
 		// test on full alphabet
-		this.runParserTestsOnAlphabet(
+		this.runTestsOnAlphabet(
 			0, fullAlphabetStringSizeLimit,
-			fullAlphabet, prefix, suffix, filenameFormat, "full"
+			fullAlphabet, prefix, suffix, filenameFormat, "full", \bytecode
 		);
 
 		// test on small alphabet
-		this.runParserTestsOnAlphabet(
+		this.runTestsOnAlphabet(
 			fullAlphabetStringSizeLimit+1, smallAlphabetStringSizeLimit,
-			smallAlphabet, prefix, suffix, filenameFormat, "small"
+			smallAlphabet, prefix, suffix, filenameFormat, "small", \bytecode
 		);
 
 		// test on mini alphabet
-		this.runParserTestsOnAlphabet(
+		this.runTestsOnAlphabet(
 			smallAlphabetStringSizeLimit+1, miniAlphabetStringSizeLimit,
-			miniAlphabet, prefix, suffix, filenameFormat, "mini"
+			miniAlphabet, prefix, suffix, filenameFormat, "mini", \bytecode
 		);
 	}
 

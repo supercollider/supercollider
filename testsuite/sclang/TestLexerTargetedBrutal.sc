@@ -1,10 +1,7 @@
 // TestLexerTargetedBrutal.sc
 // Brian Heim, 2017-02-27
 
-TestLexerTargetedBrutal : UnitTest {
-	// set to TRUE if you need `_expected` files
-	classvar makingValidationFiles = true;
-
+TestLexerTargetedBrutal : AbstractBrutalTest {
 	// alphabets used in testing
 	classvar alphanumAlphabet; // alphanum + [.+-(pi)]
 	classvar numericalAlphabet; // num + [eE.+-(pi)]
@@ -20,9 +17,8 @@ TestLexerTargetedBrutal : UnitTest {
 
 	classvar directory = "brutal_lexer_targeted_results/";
 
-	*new {
-		^super.new.initAlphabets;
-	}
+	// set to TRUE if you need `_expected` files
+	makingValidationFiles { ^true; }
 
 	initAlphabets {
 		// init alphabets
@@ -44,40 +40,6 @@ TestLexerTargetedBrutal : UnitTest {
 		accidentalAlphabet = ["0", "1", "9", "s", "b"];
 	}
 
-	checkDiffs {
-		arg diffs;
-
-		if(diffs.isEmpty.not) {
-			LexerParserCompilerTestUtils.printDiffs(diffs);
-			this.failed(thisMethod, "Diffs were found between test and validation files");
-		} {
-			postln("TestLexerTargetedBrutal: no diffs found.");
-		}
-	}
-
-	runLexerTestsOnAlphabet {
-		arg min, max, alphabet, prefix, suffix, filenameFormat, alphabetName;
-
-		var diffs;
-
-		(min..max).do {
-			arg len;
-
-			diffs = LexerParserCompilerTestUtils.testAllPossibleStrings(
-				alphabet,
-				len,
-				prefix,
-				suffix,
-				filenameFormat.format(alphabetName, len),
-				\compile,
-				makingValidationFiles,
-				true
-			);
-
-			this.checkDiffs(diffs);
-		};
-	}
-
 	// TODO: refactor these as one method with a symbol switch
 	runAlphanumLexerTests {
 		arg prefix, suffix, filenameSuffix;
@@ -87,7 +49,7 @@ TestLexerTargetedBrutal : UnitTest {
 		"".postln;
 		"TestLexerTargetedBrutal: running test mode %".format(filenameSuffix).underlined.postln;
 
-		this.runLexerTestsOnAlphabet(
+		this.runTestsOnAlphabet(
 			0, alphanumAlphabetStringSizeLimit,
 			alphanumAlphabet, prefix, suffix, filenameFormat, "alnum"
 		);
@@ -101,7 +63,7 @@ TestLexerTargetedBrutal : UnitTest {
 		"".postln;
 		"TestLexerTargetedBrutal: running test mode %".format(filenameSuffix).underlined.postln;
 
-		this.runLexerTestsOnAlphabet(
+		this.runTestsOnAlphabet(
 			0, numericalAlphabetStringSizeLimit,
 			numericalAlphabet, prefix, suffix, filenameFormat, "num"
 		);
@@ -115,7 +77,7 @@ TestLexerTargetedBrutal : UnitTest {
 		"".postln;
 		"TestLexerTargetedBrutal: running test mode %".format(filenameSuffix).underlined.postln;
 
-		this.runLexerTestsOnAlphabet(
+		this.runTestsOnAlphabet(
 			0, accidentalAlphabetStringSizeLimit,
 			accidentalAlphabet, prefix, suffix, filenameFormat, "acc"
 		);
