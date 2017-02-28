@@ -47,14 +47,9 @@ TestLexerBrutal : AbstractBrutalTest {
 	runLexerTests {
 		arg prefix, suffix, testMode;
 
-		var filenameFormat = this.outputDir++"%_%_"++filenameSuffix;
-
-		"".postln;
-		"TestLexerBrutal: running test mode %".format(filenameSuffix).underlined.postln;
-
 		alphabets.keysDo {
 			arg key;
-			this.runTestsOnAlphabet(prefix, suffix, filenameFormat, key, \compile);
+			this.runTestsOnAlphabet(prefix, suffix, testMode, key, \compile);
 		}
 	}
 

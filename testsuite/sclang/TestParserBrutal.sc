@@ -154,16 +154,11 @@ TestParserBrutal : AbstractBrutalTest {
 	}
 
 	runParserTests {
-		arg prefix, suffix, filenameSuffix;
-
-		var filenameFormat = this.outputDir++"%_%_"++filenameSuffix;
-
-		"".postln;
-		"TestParserBrutal: running test mode %".format(filenameSuffix).underlined.postln;
+		arg prefix, suffix, testMode;
 
 		alphabets.keysDo {
 			arg key;
-			this.runTestsOnAlphabet(prefix, suffix, filenameFormat, key, \bytecode);
+			this.runTestsOnAlphabet(prefix, suffix, testMode, key, \bytecode);
 		}
 	}
 

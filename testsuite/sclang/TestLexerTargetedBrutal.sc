@@ -34,15 +34,10 @@ TestLexerTargetedBrutal : AbstractBrutalTest {
 
 	// TODO: refactor these as one method with a symbol switch
 	runTargetedLexerTests {
-		arg prefix, suffix, filenameSuffix, alphName;
-
-		var filenameFormat = this.outputDir++"%_%_"++filenameSuffix;
-
-		"".postln;
-		"TestLexerTargetedBrutal: running test mode %".format(filenameSuffix).underlined.postln;
+		arg prefix, suffix, testMode, alphName;
 
 		this.runTestsOnAlphabet(
-			prefix, suffix, filenameFormat, alphName, \compile
+			prefix, suffix, testMode, alphName, \compile
 		);
 	}
 
