@@ -101,7 +101,7 @@ Bus {
 				// We want "value," which is at index 2.
 				action.value(message[2]);
 			}, \c_set, server.addr, argTemplate: [index]).oneShot;
-			server.listSendMsg(["/c_get", index]);
+			server.listSendMsg([\c_get, index]);
 		} {
 			this.getn(numChannels, action)
 		};
@@ -118,11 +118,11 @@ Bus {
 	}
 
 	getMsg {
-		^["/c_get", index];
+		^[\c_get, index];
 	}
 
 	getnMsg { arg count;
-		^["/c_getn", index, count ? numChannels];
+		^[\c_getn, index, count ? numChannels];
 	}
 
 	getSynchronous {

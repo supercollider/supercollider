@@ -372,11 +372,11 @@ Buffer {
 	}
 
 	set { arg index, float ... morePairs;
-		server.listSendMsg(["/b_set", bufnum, index, float] ++ morePairs)
+		server.listSendMsg([\b_set, bufnum, index, float] ++ morePairs)
 	}
 
 	setMsg { arg index, float ... morePairs;
-		^["/b_set", bufnum, index, float] ++ morePairs
+		^[\b_set, bufnum, index, float] ++ morePairs
 	}
 
 	setn { arg ... args;
@@ -406,11 +406,11 @@ Buffer {
 			// We want "value," which is at index 3.
 			action.value(message[3]);
 		}, \b_set, server.addr, argTemplate: [bufnum, index]).oneShot;
-		server.listSendMsg(["/b_get", bufnum, index]);
+		server.listSendMsg(this.getMsg(index));
 	}
 
 	getMsg { arg index;
-		^["/b_get", bufnum, index]
+		^[\b_get, bufnum, index]
 	}
 
 	getn { arg index, count, action;
@@ -420,11 +420,11 @@ Buffer {
 			// We want the sample values, which start at index 4.
 			action.value(message[4..]);
 		}, \b_setn, server.addr, argTemplate: [bufnum, index]).oneShot;
-		server.listSendMsg(["/b_getn", bufnum, index, count]);
+		server.listSendMsg(this.getnMsg(index, count));
 	}
 
 	getnMsg { arg index, count;
-		^["/b_getn", bufnum, index, count]
+		^[\b_getn, bufnum, index, count]
 	}
 
 	fill { arg startAt, numFrames, value ... more;
