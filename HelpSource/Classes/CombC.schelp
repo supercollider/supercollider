@@ -66,16 +66,21 @@ code::
 s.options.memSize= 8192*2;
 s.reboot;
 )
-({
-	var in, del1, del2, del3, del4;
-	in = SoundIn.ar(0);
-	del1 = CombC.ar(in, 8, LFNoise2.kr(0.01).range(1, 8), 1);
-	del2 = CombC.ar(del1, 8, LFNoise2.kr(0.01).range(1, 8), 1);
-	del3 = CombC.ar(del2, 8, LFNoise2.kr(0.01).range(1, 8), 1);
-	del4 = CombC.ar(del3, 8, LFNoise2.kr(0.01).range(1, 8), 1);
-	(del1 + del2 + del3 + del4)!2;
+(
+s.options.memSize= 8192*20;
+s.reboot;
+)
+
+(
+{
+    var snd;
+    snd = Compander.ar(SoundIn.ar(0), SoundIn.ar(0), thresh: 0.01, slopeBelow: 10, slopeAbove: 1, clampTime: 0.1, relaxTime: 0.1);
+    [3, 1, 2, 1, 3, 1, 2, 1].collect { |delay|
+        snd = Pan2.ar(CombC.ar(snd, delay, delay, 1), LFDNoise0.kr(rrand(0.01, 0.5)));
+        snd;
+    }.sum ! 2;
 }.play;
-);
+)
 
 ::
 
