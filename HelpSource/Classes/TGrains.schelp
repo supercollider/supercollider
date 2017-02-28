@@ -198,10 +198,7 @@ b.free
 //////////////////////////
 //////////////////////////
 
-(
-s.options.memSize= 8192*20;
-s.reboot;
-)
+s.options.memSize= 8192*20; s.reboot;
 
 ~myBuffer=Buffer.alloc(s, s.sampleRate * 4);
 {RecordBuf.ar(SoundIn.ar(0), ~myBuffer)}.scope
