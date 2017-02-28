@@ -13,7 +13,7 @@
 LexerParserCompilerTestUtils {
 	const <compileErrorString = "!cErr";
 	const <runtimeErrorString = "!rErr";
-	const <validatedOutputFilenameSuffix = "_expected";
+	const <validatedOutputFilenameSuffix = "_correct";
 
 	const <maxline = 1024;
 	// may need to update this, some strings like `0!99` can produce very long output
