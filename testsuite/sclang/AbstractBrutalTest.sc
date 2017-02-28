@@ -50,7 +50,7 @@ AbstractBrutalTest : UnitTest {
 				len,
 				prefix,
 				suffix,
-				filenameFormat.format(alphabetName, len),
+				"%_%_%".format(alphabetName, len, testMode),
 				technique,
 				this.makingValidationFiles,
 				true
