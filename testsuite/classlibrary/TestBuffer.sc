@@ -62,22 +62,17 @@ TestBuffer : UnitTest {
 	// Test basen on JP's test code, for the bug which DS introduced in svn rev 9362, and JP fixed in svn rev 9371
 	// Note that the "expected values" used in this test depend precisely on the samples in a11wlk01.wav, so will need updating if that changes.
 	test_allocAndQuery {
-		var o,p, expectq, expectg, s=this.s, sfpath, sf, b;
+		var expectq, expectg, s=this.s, sfpath, sf, b;
 		this.bootServer;
 		Buffer.freeAll;
 
-		o = OSCresponderNode(s.addr, '/b_info', {arg time, resp, msg;
-			msg.postln;
-			this.assertEquals(msg, expectq, "/b_info data returned from a /b_query message should be as expected");
-		});
+		OSCFunc({ |message|
+			this.assertEquals(message, expectq, "/b_info data returned from a /b_query message should be as expected");
+		}, \b_info, s.addr).oneShot;
 
-		p = OSCresponderNode(s.addr, '/b_set', {arg time, resp, msg;
-			msg.postln;
-			this.assertEquals(msg, expectg, "/b_set data returned from a /b_get message should be as expected");
-		});
-
-		o.add;
-		p.add;
+		OSCFunc({ |message|
+			this.assertEquals(message, expectg, "/b_set data returned from a /b_get message should be as expected");
+		}, \b_set, s.addr).oneShot;
 
 		// Hmm, seems not all systems have the standard soundfile available
 		// s.sendMsg(\b_allocRead, 1, "sounds/a11wlk01.wav");
@@ -117,9 +112,6 @@ TestBuffer : UnitTest {
 
 		0.4.wait;
 		s.sync;
-
-		o.remove;
-		p.remove;
 
 
 	}
