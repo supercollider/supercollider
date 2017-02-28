@@ -45,7 +45,7 @@ TestLexerBrutal : AbstractBrutalTest {
 	}
 
 	runLexerTests {
-		arg prefix, suffix, filenameSuffix;
+		arg prefix, suffix, testMode;
 
 		var filenameFormat = this.outputDir++"%_%_"++filenameSuffix;
 

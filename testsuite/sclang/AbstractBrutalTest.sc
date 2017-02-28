@@ -32,19 +32,20 @@ AbstractBrutalTest : UnitTest {
 			LexerParserCompilerTestUtils.printDiffs(diffs);
 			this.failed(thisMethod, "Diffs were found between test and validation files");
 		} {
-			postf("%: no diffs found.\n".format(this.class.name));
+			postf("%: No diffs found.\n".format(this.class.name));
 		}
 	}
 
 	runTestsOnAlphabet {
-		arg prefix, suffix, filenameFormat, alphabetName, technique;
+		arg prefix, suffix, testMode, alphabetName, technique;
 
-		var diffs;
+		this.printTestMode(testMode);
+		this.createOutputDir();
 
 		alphabetStringLengths[alphabetName].do {
 			arg len;
 
-			diffs = LexerParserCompilerTestUtils.testAllPossibleStrings(
+			var diffs = LexerParserCompilerTestUtils.testAllPossibleStrings(
 				alphabets[alphabetName],
 				len,
 				prefix,
@@ -57,6 +58,26 @@ AbstractBrutalTest : UnitTest {
 
 			this.checkDiffs(diffs);
 		};
+	}
+
+	printTestMode {
+		arg mode;
+
+		"".postln;
+		"%: running test mode %".format(this.class, mode).underlined.postln;
+	}
+
+	createOutputDir {
+		var dirname = this.outputDir.resolveRelative;
+
+		if(File.exists(dirname).not) {
+			"%: Creating directory %".format(this.class, dirname.quote).postln;
+			try {
+				File.mkdir(dirname);
+			} {
+				Error("%: Could not create directory %".format(this.class, this.outputDir.quote)).throw;
+			}
+		}
 	}
 
 }
