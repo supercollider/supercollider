@@ -2,21 +2,10 @@
 // Brian Heim, 2017-02-26
 
 TestLexerBrutal : AbstractBrutalTest {
-	// whether or not to include `^` in any alphabets. can't do it right now.
-	classvar ignoreCaret = true;
+	// whether or not to include `^` in any alphabets. Can't do it right now,
+	// because ^ will cause unwanted early termination when interpreted.
+	classvar ignoringCaret = true;
 	const caretAscii = 94;
-
-	// alphabets used in testing
-	classvar fullAlphabet; // -128..127
-	classvar smallAlphabet; // 1..126
-	classvar miniAlphabet; // all punctuation, [019AZaz]
-
-	// maximum string size for testing full and small alphabets
-	// the small alphabet is only tested on strings of length
-	// (fullLimit+1) to (smallLimit)
-	classvar fullAlphabetStringSizeLimit = 2;
-	classvar smallAlphabetStringSizeLimit = 3;
-	classvar miniAlphabetStringSizeLimit = 4;
 
 	classvar directory = "brutal_lexer_results/";
 
@@ -24,29 +13,35 @@ TestLexerBrutal : AbstractBrutalTest {
 	makingValidationFiles { ^true; }
 
 	initAlphabets {
-		// init alphabets
-		var alphabets = [
-			(-128..-1) ++ (1..127),
-			(1..126), // 127 is `DEL`
-			// all punctuation, plus [019AZaz]
-			(32..49) ++ (57..65) ++ (90..97) ++ (122..126)
+
+		alphabets = Dictionary[
+			// all 8-bit values except 0 `NUL`
+			\full -> (-128..-1) ++ (1..127),
+
+			// all ASCII values except 0 `NUL` and 7F `DEL`
+			\half -> (1..126),
+
+			// all punctuation, plus [09AZaz]
+			\mini -> (32..48) ++ (57..65) ++ (90..97) ++ (122..126)
 		];
 
-		if(ignoreCaret) {
-			alphabets = alphabets.collect {
-				arg alphabet;
+		// convert each alphabet to correct string representation,
+		// and also remove `^` if necessary.
+		alphabets.keysValuesChange {
+			arg name, alphabet;
+
+			if(ignoringCaret) {
 				alphabet = alphabet.reject(_==caretAscii);
-			}
+			};
+
+			alphabet.collect(_.asAscii).collect(_.asString);
 		};
 
-		alphabets = alphabets.collect {
-			arg alphabet;
-			alphabet = alphabet.collect(_.asAscii).collect(_.asString);
-		};
-
-		fullAlphabet = alphabets[0];
-		smallAlphabet = alphabets[1];
-		miniAlphabet = alphabets[2];
+		alphabetStringLengths = Dictionary[
+			\full -> [0,1,2],
+			\half -> [3],
+			\mini -> [4]
+		];
 	}
 
 	runLexerTests {
@@ -59,20 +54,17 @@ TestLexerBrutal : AbstractBrutalTest {
 
 		// test on full alphabet
 		this.runTestsOnAlphabet(
-			0, fullAlphabetStringSizeLimit,
-			fullAlphabet, prefix, suffix, filenameFormat, "full", \compile
+			prefix, suffix, filenameFormat, \full, \compile
 		);
 
 		// test on small alphabet
 		this.runTestsOnAlphabet(
-			fullAlphabetStringSizeLimit+1, smallAlphabetStringSizeLimit,
-			smallAlphabet, prefix, suffix, filenameFormat, "small", \compile
+			prefix, suffix, filenameFormat, \half, \compile
 		);
 
 		// test on mini alphabet
 		this.runTestsOnAlphabet(
-			smallAlphabetStringSizeLimit+1, miniAlphabetStringSizeLimit,
-			miniAlphabet, prefix, suffix, filenameFormat, "mini", \compile
+			prefix, suffix, filenameFormat, \mini, \compile
 		);
 	}
 

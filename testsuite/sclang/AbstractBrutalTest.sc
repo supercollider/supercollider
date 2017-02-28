@@ -2,12 +2,24 @@
 // Brian Heim, 2017-02-28
 
 AbstractBrutalTest : UnitTest {
+	// alphabets and associated data used in testing
+
+	// Dictionary of alphabets (type Dictionary<Symbol, [String]>)
+	var <>alphabets;
+
+	// Dictionary of string lengths to test per alphabet
+	// (type Dictionary<Symbol, [Integer]>)
+	var <>alphabetStringLengths;
+
 	*new {
 		^super.new.initAlphabets;
 	}
 
+	// this method fills `alphabets` and `maxLengths`
 	initAlphabets { ^this.subclassResponsibility(thisMethod) }
 
+	// should return `true` if you want to generate validation files,
+	// and return `false` for ordinary testing
 	makingValidationFiles { ^this.subclassResponsibility(thisMethod) }
 
 	checkDiffs {
@@ -22,15 +34,15 @@ AbstractBrutalTest : UnitTest {
 	}
 
 	runTestsOnAlphabet {
-		arg min, max, alphabet, prefix, suffix, filenameFormat, alphabetName, technique;
+		arg prefix, suffix, filenameFormat, alphabetName, technique;
 
 		var diffs;
 
-		(min..max).do {
+		alphabetStringLengths[alphabetName].do {
 			arg len;
 
 			diffs = LexerParserCompilerTestUtils.testAllPossibleStrings(
-				alphabet,
+				alphabets[alphabetName],
 				len,
 				prefix,
 				suffix,

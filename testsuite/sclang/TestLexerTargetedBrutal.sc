@@ -2,19 +2,6 @@
 // Brian Heim, 2017-02-27
 
 TestLexerTargetedBrutal : AbstractBrutalTest {
-	// alphabets used in testing
-	classvar alphanumAlphabet; // alphanum + [.+-(pi)]
-	classvar numericalAlphabet; // num + [eE.+-(pi)]
-	classvar accidentalAlphabet; // num + [sb+-]
-
-	// maximum string size - we start from strlen=0 for each.
-	// There will be lots of duplication, but since
-	// these alphabets are small, it's not a big deal.
-	// Besides, it allows us to decouple them if desired.
-	classvar alphanumAlphabetStringSizeLimit = 3;
-	classvar numericalAlphabetStringSizeLimit = 5;
-	classvar accidentalAlphabetStringSizeLimit = 6;
-
 	classvar directory = "brutal_lexer_targeted_results/";
 
 	// set to TRUE if you need `_expected` files
@@ -22,22 +9,26 @@ TestLexerTargetedBrutal : AbstractBrutalTest {
 
 	initAlphabets {
 		// init alphabets
-		alphanumAlphabet = (1..127).collect(_.asAscii).select(_.isAlphaNum);
+		var alphanumAlphabet = (1..127).collect(_.asAscii).select(_.isAlphaNum);
 		alphanumAlphabet = alphanumAlphabet.collect(_.asString);
 		alphanumAlphabet = alphanumAlphabet ++ ["pi", "+", "-", "."];
 
-		// numericalAlphabet = (1..127).collect(_.asAscii).select(_.isDecDigit);
-		// numericalAlphabet = numericalAlphabet.collect(_.asString);
-		// numericalAlphabet = numericalAlphabet ++ ["pi", "+", "-", ".", "e", "E"];
-		// don't use all digits—this is really just testing the limits of
-		// integer and floating-point lexing
-		numericalAlphabet = ["0", "1", "9", "pi", "+", "-", ".", "e"];
+		alphabets = [
+			// alphanumeric characters plus [(pi)+-.]
+			\alnum -> alphanumAlphabet,
 
-		// accidentalAlphabet = (1..127).collect(_.asAscii).select(_.isDecDigit);
-		// accidentalAlphabet = accidentalAlphabet.collect(_.asString);
-		// accidentalAlphabet = accidentalAlphabet ++ ["s", "b"];
-		// again, don't need a complete set for this
-		accidentalAlphabet = ["0", "1", "9", "s", "b"];
+			// for integer and floating-point parsing
+			\num -> ["0", "1", "9", "pi", "+", "-", ".", "e"],
+
+			// for accidental notation parsing (e.g., 1sss, 1s30)
+			\acc -> ["0", "1", "9", "s", "b"]
+		];
+
+		alphabetStringLengths = [
+			\alnum -> [1,2,3], // 0 and all prefixes covered by lexer tests
+			\num -> [4,5], // 0..3 covered by alnum
+			\acc -> [4,5,6] // 0..3 covered by alnum
+		];
 	}
 
 	// TODO: refactor these as one method with a symbol switch
@@ -50,8 +41,7 @@ TestLexerTargetedBrutal : AbstractBrutalTest {
 		"TestLexerTargetedBrutal: running test mode %".format(filenameSuffix).underlined.postln;
 
 		this.runTestsOnAlphabet(
-			0, alphanumAlphabetStringSizeLimit,
-			alphanumAlphabet, prefix, suffix, filenameFormat, "alnum"
+			prefix, suffix, filenameFormat, \alnum, \compile
 		);
 	}
 
@@ -64,8 +54,7 @@ TestLexerTargetedBrutal : AbstractBrutalTest {
 		"TestLexerTargetedBrutal: running test mode %".format(filenameSuffix).underlined.postln;
 
 		this.runTestsOnAlphabet(
-			0, numericalAlphabetStringSizeLimit,
-			numericalAlphabet, prefix, suffix, filenameFormat, "num"
+			prefix, suffix, filenameFormat, \num, \compile
 		);
 	}
 
@@ -78,8 +67,7 @@ TestLexerTargetedBrutal : AbstractBrutalTest {
 		"TestLexerTargetedBrutal: running test mode %".format(filenameSuffix).underlined.postln;
 
 		this.runTestsOnAlphabet(
-			0, accidentalAlphabetStringSizeLimit,
-			accidentalAlphabet, prefix, suffix, filenameFormat, "acc"
+			prefix, suffix, filenameFormat, \acc, \compile
 		);
 	}
 
