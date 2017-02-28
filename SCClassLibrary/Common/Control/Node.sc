@@ -547,7 +547,7 @@ Synth : Node {
 		OSCFunc({ |message|
 			// The server replies with a message of the form
 			// [/n_setn, node ID, index, count, ...values].
-			// We want "valuse," which are at indexes 4 and above.
+			// We want "values," which are at indexes 4 and above.
 			action.value(message[4..]);
 		}, \n_setn, server.addr, argTemplate: [nodeID, index]).oneShot;
 		server.sendMsg(45, nodeID, index, count) //"/s_getn"
