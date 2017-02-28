@@ -7,7 +7,7 @@ TestLexerBrutal : AbstractBrutalTest {
 	classvar ignoringCaret = true;
 	const caretAscii = 94;
 
-	outputDir { ^"brutal_lexer_results/"; }
+	outputDir { ^"valid_lexer/"; }
 
 	// set to TRUE if you need `_expected` files
 	makingValidationFiles { ^true; }
@@ -54,30 +54,30 @@ TestLexerBrutal : AbstractBrutalTest {
 	}
 
 	test_basic {
-		this.runLexerTests("", "", thisMethod.name.asString[5..]);
+		this.runLexerTests("", "", "basic");
 	}
 
 	test_lineCommentPrefix {
-		this.runLexerTests("//", "", thisMethod.name.asString[5..]);
+		this.runLexerTests("//", "", "lineCommentPrefix");
 	}
 
 	test_blockCommentPrefix {
-		this.runLexerTests("/*", "", thisMethod.name.asString[5..]);
+		this.runLexerTests("/*", "", "blockCommentPrefix");
 	}
 
 	test_blockCommentSuffix {
-		this.runLexerTests("", "*/", thisMethod.name.asString[5..]);
+		this.runLexerTests("", "*/", "blockCommentSuffix");
 	}
 
 	test_blockCommentEnclose {
-		this.runLexerTests("/*", "*/", thisMethod.name.asString[5..]);
+		this.runLexerTests("/*", "*/", "blockCommentEnclose");
 	}
 
 	test_semanticPrefix {
-		this.runLexerTests("\\unique;", "", thisMethod.name.asString[5..]);
+		this.runLexerTests("\\unique;", "", "semanticPrefix");
 	}
 
 	test_semanticSuffix {
-		this.runLexerTests("", ";\\unique", thisMethod.name.asString[5..]);
+		this.runLexerTests("", ";\\unique", "semanticSuffix");
 	}
 }

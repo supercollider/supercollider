@@ -3,7 +3,7 @@
 
 TestLexerTargetedBrutal : AbstractBrutalTest {
 
-	outputDir { ^"brutal_lexer_targeted_results/"; }
+	outputDir { ^"valid_lexer_targeted/"; }
 
 	// set to TRUE if you need `_expected` files
 	makingValidationFiles { ^true; }
@@ -32,7 +32,6 @@ TestLexerTargetedBrutal : AbstractBrutalTest {
 		];
 	}
 
-	// TODO: refactor these as one method with a symbol switch
 	runTargetedLexerTests {
 		arg prefix, suffix, testMode, alphName;
 
@@ -42,32 +41,32 @@ TestLexerTargetedBrutal : AbstractBrutalTest {
 	}
 
 	test_alnum_basic {
-		this.runAlphanumLexerTests("", "", "basic", \alnum);
+		this.runTargetedLexerTests("", "", "basic", \alnum);
 	}
 
 	test_alnum_hexPrefixes {
-		this.runAlphanumLexerTests("0x", "", "hex", \alnum);
-		this.runAlphanumLexerTests("-0x", "", "hexNeg", \alnum);
+		this.runTargetedLexerTests("0x", "", "hex", \alnum);
+		this.runTargetedLexerTests("-0x", "", "hexNeg", \alnum);
 	}
 
 	test_alnum_radixPrefixes {
-		this.runAlphanumLexerTests("1r", "", "radix1", \alnum);
-		this.runAlphanumLexerTests("10r", "", "radix10", \alnum);
-		this.runAlphanumLexerTests("12r", "", "radix12", \alnum);
-		this.runAlphanumLexerTests("36r", "", "radix36", \alnum);
-		this.runAlphanumLexerTests("37r", "", "radix37", \alnum);
-		this.runAlphanumLexerTests("-10r", "", "radix10neg", \alnum);
-		this.runAlphanumLexerTests("-12r", "", "radix12neg", \alnum);
+		this.runTargetedLexerTests("1r", "", "radix1", \alnum);
+		this.runTargetedLexerTests("10r", "", "radix10", \alnum);
+		this.runTargetedLexerTests("12r", "", "radix12", \alnum);
+		this.runTargetedLexerTests("36r", "", "radix36", \alnum);
+		this.runTargetedLexerTests("37r", "", "radix37", \alnum);
+		this.runTargetedLexerTests("-10r", "", "radix10neg", \alnum);
+		this.runTargetedLexerTests("-12r", "", "radix12neg", \alnum);
 	}
 
 	test_num_basic {
-		this.runNumericalLexerTests("", "", "basic", \num);
-		this.runNumericalLexerTests("-", "", "basicNeg", \num);
+		this.runTargetedLexerTests("", "", "basic", \num);
+		this.runTargetedLexerTests("-", "", "basicNeg", \num);
 	}
 
 	test_acc_basic {
-		this.runAccidentalLexerTests("", "", "basic", \acc);
-		this.runAccidentalLexerTests("-", "", "basicNeg", \acc);
+		this.runTargetedLexerTests("", "", "basic", \acc);
+		this.runTargetedLexerTests("-", "", "basicNeg", \acc);
 	}
 
 }

@@ -3,7 +3,7 @@
 
 TestParserBrutal : AbstractBrutalTest {
 
-	outputDir { ^"brutal_parser_results/"; }
+	outputDir { ^"valid_parser/"; }
 
 	// set to TRUE if you need `_expected` files
 	makingValidationFiles { ^true; }
@@ -163,10 +163,10 @@ TestParserBrutal : AbstractBrutalTest {
 	}
 
 	test_basic {
-		this.runParserTests("", "", thisMethod.name.asString[5..]);
+		this.runParserTests("", "", "basic");
 	}
 
 	test_curlyBraceEnclose {
-		this.runParserTests("{", "}", thisMethod.name.asString[5..]);
+		this.runParserTests("{", "}", "curlyEnclose");
 	}
 }
