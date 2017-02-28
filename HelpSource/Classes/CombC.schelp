@@ -63,12 +63,17 @@ code::
 
 // large delay lines
 s.options.memSize= 8192*12; s.reboot;
+
 (
 {
     var snd;
-    snd = Compander.ar(SoundIn.ar(0), SoundIn.ar(0), thresh: 0.01, slopeBelow: 10, slopeAbove: 1, clampTime: 0.1, relaxTime: 0.1, mul: 0.006);
+    snd = Compander.ar(SoundIn.ar(0), SoundIn.ar(0), 
+	thresh: 0.01, slopeBelow: 10, slopeAbove: 1, 
+	clampTime: 0.1, relaxTime: 0.1, mul: 0.006);
     [3, 1, 2, 1, 3, 1, 2, 1].collect { |delay|
-		snd = Pan2.ar(CombC.ar(snd, delay, LFDNoise0.kr(0.01).range(1, 8), 1), LFDNoise0.kr(rrand(0.01, 0.5)));
+		snd = Pan2.ar(CombC.ar(in: snd, maxdelaytime: delay,  
+		delaytime: LFDNoise0.kr(0.01).range(1, 8), decaytime: 1), 
+		pos: LFDNoise0.kr(rrand(0.01, 0.5)));
         snd;
     }.sum;
 }.play;
