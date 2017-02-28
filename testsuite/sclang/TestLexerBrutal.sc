@@ -19,7 +19,7 @@ TestLexerBrutal : UnitTest {
 	// (fullLimit+1) to (smallLimit)
 	classvar fullAlphabetStringSizeLimit = 2;
 	classvar smallAlphabetStringSizeLimit = 3;
-	classvar miniAlphabetStringSizeLimit = 5;
+	classvar miniAlphabetStringSizeLimit = 4;
 
 	classvar directory = "brutal_lexer_results/";
 
@@ -30,23 +30,27 @@ TestLexerBrutal : UnitTest {
 	initAlphabets {
 		// init alphabets
 		var alphabets = [
-			fullAlphabet = (-128..-1) ++ (1..127),
-			smallAlphabet = (1..126), // 127 is `DEL`
+			(-128..-1) ++ (1..127),
+			(1..126), // 127 is `DEL`
 			// all punctuation, plus [019AZaz]
-			miniAlphabet = (32..49) ++ (57..65) ++ (90..97) ++ (122..126)
+			(32..49) ++ (57..65) ++ (90..97) ++ (122..126)
 		];
 
 		if(ignoreCaret) {
-			alphabets.do {
+			alphabets = alphabets.collect {
 				arg alphabet;
 				alphabet = alphabet.reject(_==caretAscii);
 			}
 		};
 
-		alphabets.do {
+		alphabets = alphabets.collect {
 			arg alphabet;
 			alphabet = alphabet.collect(_.asAscii).collect(_.asString);
 		};
+
+		fullAlphabet = alphabets[0];
+		smallAlphabet = alphabets[1];
+		miniAlphabet = alphabets[2];
 	}
 
 	checkDiffs {
@@ -105,8 +109,8 @@ TestLexerBrutal : UnitTest {
 
 		// test on mini alphabet
 		this.runLexerTestsOnAlphabet(
-			fullAlphabetStringSizeLimit+1, smallAlphabetStringSizeLimit,
-			smallAlphabet, prefix, suffix, filenameFormat, "mini"
+			smallAlphabetStringSizeLimit+1, miniAlphabetStringSizeLimit,
+			miniAlphabet, prefix, suffix, filenameFormat, "mini"
 		);
 	}
 
