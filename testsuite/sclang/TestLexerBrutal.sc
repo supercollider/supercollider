@@ -52,20 +52,10 @@ TestLexerBrutal : AbstractBrutalTest {
 		"".postln;
 		"TestLexerBrutal: running test mode %".format(filenameSuffix).underlined.postln;
 
-		// test on full alphabet
-		this.runTestsOnAlphabet(
-			prefix, suffix, filenameFormat, \full, \compile
-		);
-
-		// test on small alphabet
-		this.runTestsOnAlphabet(
-			prefix, suffix, filenameFormat, \half, \compile
-		);
-
-		// test on mini alphabet
-		this.runTestsOnAlphabet(
-			prefix, suffix, filenameFormat, \mini, \compile
-		);
+		alphabets.keysDo {
+			arg key;
+			this.runTestsOnAlphabet(prefix, suffix, filenameFormat, key, \compile);
+		}
 	}
 
 	test_basic {

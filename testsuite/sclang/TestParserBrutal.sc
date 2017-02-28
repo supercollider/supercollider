@@ -160,20 +160,10 @@ TestParserBrutal : AbstractBrutalTest {
 		"".postln;
 		"TestParserBrutal: running test mode %".format(filenameSuffix).underlined.postln;
 
-		// test on full alphabet
-		this.runTestsOnAlphabet(
-			prefix, suffix, filenameFormat, \full, \bytecode
-		);
-
-		// test on small alphabet
-		this.runTestsOnAlphabet(
-			prefix, suffix, filenameFormat, \small, \bytecode
-		);
-
-		// test on mini alphabet
-		this.runTestsOnAlphabet(
-			prefix, suffix, filenameFormat, \mini, \bytecode
-		);
+		alphabets.keysDo {
+			arg key;
+			this.runTestsOnAlphabet(prefix, suffix, filenameFormat, key, \bytecode);
+		}
 	}
 
 	test_basic {
