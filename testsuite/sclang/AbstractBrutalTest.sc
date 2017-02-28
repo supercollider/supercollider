@@ -11,31 +11,21 @@ AbstractBrutalTest : UnitTest {
 	// (type Dictionary<Symbol, [Integer]>)
 	var <>alphabetStringLengths;
 
-	*new {
-		^super.new.initAlphabets;
-	}
+	*new { ^super.new.initAlphabets; }
 
-	// this method fills `alphabets` and `maxLengths`
+	// Inits `alphabets` and `maxLengths`.
 	initAlphabets { ^this.subclassResponsibility(thisMethod) }
 
-	// used to determine the output location
+	// Used to determine the output location.
 	outputDir { ^this.subclassResponsibility(thisMethod) }
 
-	// should return `true` if you want to generate validation files,
-	// and return `false` for ordinary testing
+	// Should return `true` if you want to generate validation files,
+	// and return `false` for ordinary testing.
 	makingValidationFiles { ^this.subclassResponsibility(thisMethod) }
 
-	checkDiffs {
-		arg diffs;
-
-		if(diffs.isEmpty.not) {
-			LexerParserCompilerTestUtils.printDiffs(diffs);
-			this.failed(thisMethod, "Diffs were found between test and validation files");
-		} {
-			postf("%: No diffs found.\n".format(this.class.name));
-		}
-	}
-
+	// For a given alphabet, technique, test name, prefix, and suffix,
+	// run all the tests on that alphabet for its requested string lengths.
+	// This method also constructs uniform filenames.
 	runTestsOnAlphabet {
 		arg prefix, suffix, testMode, alphabetName, technique;
 
@@ -56,8 +46,23 @@ AbstractBrutalTest : UnitTest {
 				true
 			);
 
-			this.checkDiffs(diffs);
+			if(this.makingValidationFiles) {
+				this.checkDiffs(diffs);
+			}
 		};
+	}
+
+	// Respond to the diffs. If there are any, fail now and print a message.
+	// Otherwise, note that no diffs were found.
+	checkDiffs {
+		arg diffs;
+
+		if(diffs.isEmpty.not) {
+			LexerParserCompilerTestUtils.printDiffs(diffs);
+			this.failed(thisMethod, "Diffs were found between test and validation files");
+		} {
+			postf("%: No diffs found.\n".format(this.class.name));
+		}
 	}
 
 	printTestMode {

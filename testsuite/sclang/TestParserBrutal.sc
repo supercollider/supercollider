@@ -25,11 +25,10 @@ TestParserBrutal : AbstractBrutalTest {
 				" var",
 				" arg",
 				// " while", // technically a keyword, but it doesn't really get
-				// treated any differently
+				             // treated any differently
 				" true",
 				" false",
 				" nil",
-				// " inf", // not actually interpreted by the parser
 
 				// important punctuation
 				" ;",
@@ -41,7 +40,6 @@ TestParserBrutal : AbstractBrutalTest {
 				" ..",
 				" ...",
 				" _",
-				// " <>", // only legal in class files
 				" <",
 				" >",
 				" -",
@@ -70,13 +68,11 @@ TestParserBrutal : AbstractBrutalTest {
 
 				// method call
 				".size", // size can be called on anything (defined on Object)
-				" abc:",
+				" size:",
 
 				// literals
 				" $a",
 				" \"str\"",
-				// " \\sym", // this is a parser test, and in the context of the parser
-				// the different symbol notations are equivalent
 				" 'sym'",
 				"0",
 				"1.1",
@@ -93,29 +89,12 @@ TestParserBrutal : AbstractBrutalTest {
 				// important punctuation
 				" ;",
 				" ,",
-				// " .",
-				// " `",
-				// " #",
-				// " !",
-				// " ..",
 				" ...",
 				" _",
-				// " <>",
-				// " <",
-				// " >",
-				// " -",
-				// " *",
-				// " +",
 				" |",
-				// " <-",
-				// " ^",
 
-				// these ones not preceded by a space
-				// for grammatical reasons
-
-				// `2 pow : 2` isn't legal
+				// see above for explanations on omitting spaces here
 				":",
-				// allows for `==`, `!=`
 				"=",
 
 				// identifiers

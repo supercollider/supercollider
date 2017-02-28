@@ -37,6 +37,8 @@ TestLexerBrutal : AbstractBrutalTest {
 			alphabet.collect(_.asAscii).collect(_.asString);
 		};
 
+		// define string lengths. Since each smaller alphabet is a subset
+		// of the larger ones, it would be redundant to retest
 		alphabetStringLengths = Dictionary[
 			\full -> [0,1,2],
 			\half -> [3],

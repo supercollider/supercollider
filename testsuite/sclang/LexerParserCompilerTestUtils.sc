@@ -15,10 +15,10 @@ LexerParserCompilerTestUtils {
 	const <runtimeErrorString = "!rErr";
 	const <validatedOutputFilenameSuffix = "_correct";
 
+	// May need to update this, some strings like `0!99` can produce very long output
 	const <maxline = 1024;
-	// may need to update this, some strings like `0!99` can produce very long output
 
-	// tests all possible combinations-with-replacement of members of a given alphabet,
+	// Tests all possible combinations-with-replacement of members of a given alphabet,
 	// writes the results to a file, and checks it against validated results.
 	// The client may also specify an optional prefix and/or suffix to be added to each
 	// string before testing. Only strings of length `len` are tested.
@@ -26,10 +26,10 @@ LexerParserCompilerTestUtils {
 		arg alphabet, // Array of strings to test
 		len, // String length
 		prefix = "", suffix = "",
-		testID = "", // unique filename ID
+		testID = "",
 		technique = \compile,
-		// change to true to generate a validation file
-		// (doesn't validate or delete)
+		// if true, don't validate or delete the file, and give it
+		// a validation filename suffix
 		createValidationFile = false,
 		compressRepeatResults = true;
 

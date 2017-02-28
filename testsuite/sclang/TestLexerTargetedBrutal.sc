@@ -35,9 +35,7 @@ TestLexerTargetedBrutal : AbstractBrutalTest {
 	runTargetedLexerTests {
 		arg prefix, suffix, testMode, alphName;
 
-		this.runTestsOnAlphabet(
-			prefix, suffix, testMode, alphName, \compile
-		);
+		this.runTestsOnAlphabet(prefix, suffix, testMode, alphName, \compile);
 	}
 
 	test_alnum_basic {
