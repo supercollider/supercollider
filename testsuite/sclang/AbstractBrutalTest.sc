@@ -18,6 +18,9 @@ AbstractBrutalTest : UnitTest {
 	// this method fills `alphabets` and `maxLengths`
 	initAlphabets { ^this.subclassResponsibility(thisMethod) }
 
+	// used to determine the output location
+	outputDir { ^this.subclassResponsibility(thisMethod) }
+
 	// should return `true` if you want to generate validation files,
 	// and return `false` for ordinary testing
 	makingValidationFiles { ^this.subclassResponsibility(thisMethod) }

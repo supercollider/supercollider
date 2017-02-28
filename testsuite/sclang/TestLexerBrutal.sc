@@ -7,7 +7,7 @@ TestLexerBrutal : AbstractBrutalTest {
 	classvar ignoringCaret = true;
 	const caretAscii = 94;
 
-	classvar directory = "brutal_lexer_results/";
+	outputDir { ^"brutal_lexer_results/"; }
 
 	// set to TRUE if you need `_expected` files
 	makingValidationFiles { ^true; }
@@ -47,7 +47,7 @@ TestLexerBrutal : AbstractBrutalTest {
 	runLexerTests {
 		arg prefix, suffix, filenameSuffix;
 
-		var filenameFormat = directory++"%_%_"++filenameSuffix;
+		var filenameFormat = this.outputDir++"%_%_"++filenameSuffix;
 
 		"".postln;
 		"TestLexerBrutal: running test mode %".format(filenameSuffix).underlined.postln;

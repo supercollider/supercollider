@@ -2,7 +2,8 @@
 // Brian Heim, 2017-2-26
 
 TestParserBrutal : AbstractBrutalTest {
-	classvar directory = "brutal_parser_results/";
+
+	outputDir { ^"brutal_parser_results/"; }
 
 	// set to TRUE if you need `_expected` files
 	makingValidationFiles { ^true; }
@@ -155,7 +156,7 @@ TestParserBrutal : AbstractBrutalTest {
 	runParserTests {
 		arg prefix, suffix, filenameSuffix;
 
-		var filenameFormat = directory++"%_%_"++filenameSuffix;
+		var filenameFormat = this.outputDir++"%_%_"++filenameSuffix;
 
 		"".postln;
 		"TestParserBrutal: running test mode %".format(filenameSuffix).underlined.postln;

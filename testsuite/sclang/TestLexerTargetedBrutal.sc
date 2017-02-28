@@ -2,7 +2,8 @@
 // Brian Heim, 2017-02-27
 
 TestLexerTargetedBrutal : AbstractBrutalTest {
-	classvar directory = "brutal_lexer_targeted_results/";
+
+	outputDir { ^"brutal_lexer_targeted_results/"; }
 
 	// set to TRUE if you need `_expected` files
 	makingValidationFiles { ^true; }
@@ -35,7 +36,7 @@ TestLexerTargetedBrutal : AbstractBrutalTest {
 	runTargetedLexerTests {
 		arg prefix, suffix, filenameSuffix, alphName;
 
-		var filenameFormat = directory++"%_%_"++filenameSuffix;
+		var filenameFormat = this.outputDir++"%_%_"++filenameSuffix;
 
 		"".postln;
 		"TestLexerTargetedBrutal: running test mode %".format(filenameSuffix).underlined.postln;
