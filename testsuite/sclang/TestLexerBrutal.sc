@@ -16,13 +16,13 @@ TestLexerBrutal : AbstractBrutalTest {
 
 		alphabets = Dictionary[
 			// all 8-bit values except 0 `NUL`
-			\full -> (-128..-1) ++ (1..127),
+			\full -> ((-128..-1) ++ (1..127)),
 
 			// all ASCII values except 0 `NUL` and 7F `DEL`
 			\half -> (1..126),
 
 			// all punctuation, plus [09AZaz]
-			\mini -> (32..48) ++ (57..65) ++ (90..97) ++ (122..126)
+			\mini -> ((32..48) ++ (57..65) ++ (90..97) ++ (122..126))
 		];
 
 		// convert each alphabet to correct string representation,
