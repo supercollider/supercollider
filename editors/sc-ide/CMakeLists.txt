@@ -365,8 +365,8 @@ elseif(WIN32)
 
     if(MSYS)
       add_custom_command(TARGET SuperCollider
-        PRE_BUILD
-        COMMAND "${CMAKE_SOURCE_DIR}/platform/windows/symlinks.sh" "create" "${CMAKE_SOURCE_DIR}" "$<TARGET_FILE_DIR:SuperCollider>"
+        POST_BUILD
+        COMMAND "${CMAKE_SOURCE_DIR}/platform/windows/junctions.sh" "create" "${CMAKE_SOURCE_DIR}" "$<TARGET_FILE_DIR:SuperCollider>"
         COMMENT "Creating links to SCClassLibrary, HelpSource, examples and sounds"
       )
     else()
