@@ -30,10 +30,10 @@ mkDataDiff
 mkTestString
 mkOutputFileSafe
 getEncodingString
-incrementAlphabetCount
 parseTestResult
 doOutputsMatch
 mkFilename
+incrementAlphabetCount
 
 ----data conversion methods----
 
