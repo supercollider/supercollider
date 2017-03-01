@@ -10,6 +10,57 @@
 * reader, are welcome to find faster methods if you desire.
 */
 
+/****** LAYOUT OF THIS FILE ******/
+/*
+----main methods----
+
+testAllPossibleStrings
+testOneString
+validate
+compareData
+
+----diff helper methods----
+
+printDiffs
+explainDiff
+mkDataDiff
+
+----misc helper methods----
+
+mkTestString
+mkOutputFileSafe
+getEncodingString
+incrementAlphabetCount
+parseTestResult
+doOutputsMatch
+mkFilename
+
+----data conversion methods----
+
+bytecodeToHexString
+bytecodeFromHexString
+stringToHexString
+stringFromHexString
+
+----header I/O methods----
+
+writeHeader
+readHeader
+
+----header parsing helper methods----
+
+verifyFieldName
+parseBlockName
+parseAlphabetSize
+parseAlphabet
+parseStringLength
+parsePrefix
+parseSuffix
+parseTechnique
+parseEncoding
+parseStringCount
+*/
+
 LexerParserCompilerTestUtils {
 	const <compileErrorString = "!cErr";
 	const <runtimeErrorString = "!rErr";
@@ -113,70 +164,6 @@ LexerParserCompilerTestUtils {
 		} {
 			^[];
 		}
-	}
-
-	*mkTestString {
-		arg alphabet, counter;
-		// Since reduce on an empty array returns nil, `?""` is a safeguard.
-		^alphabet[counter].reduce('++')?"";
-	}
-
-	*mkOutputFileSafe {
-		arg filename;
-
-		var file;
-
-		postln("%: Creating file: %".format(this, PathName(filename).fileName));
-		if(File.exists(filename)) {
-			Error("%: File % already exists\n"
-				"\tPlease delete before continuing".format(this, filename.quote)).throw;
-		};
-
-		try {
-			file = File.new(filename, "w");
-		} {
-			Error("%: Failed to open file: %.".format(this, filename.quote)).throw;
-		};
-
-		if(file.isOpen.not) {
-			Error("%: Failed to open file: %".format(this, filename.quote)).throw;
-		};
-
-		^file;
-	}
-
-	*getEncodingString {
-		arg technique;
-
-		^switch(technique,
-			\compile,
-			"<hex-format input string><tab>"
-			"<\"!cErr\" (compile error) | \"!rErr\" (runtime error) | hex-format output string>"
-			"<opt `:` & class name of output>"
-			"<opt tab & count of consecutive repeats of this result (no number means no repetitions)>",
-			\bytecode,
-			"<hex-format input string><tab>"
-			"<\"!cErr\" (compile error) | \"!rErr\" (runtime error) | hex-format output string>"
-			"<opt tab & count of consecutive repeats of this result (no number means no repetitions)>",
-			{Error("getEncodingString: unrecognized technique: %".format(technique.quote))}
-		);
-	}
-
-	// Returns `false` if there is an overflow. Modifies the array in-place!
-	*incrementAlphabetCount {
-		arg ctr, len, n; // the counter array, string length, and alphabet size (n)
-
-		// I benchmarked this pretty hard, but there might be a better way! - Brian
-		while {len > 0} {
-			len = len-1;
-			ctr[len] = ctr[len] + 1;
-			/*if(len == 0) {
-			"incrementAlphabetCount: at %\n".postf(ctr);
-			};*/
-			if(ctr[len] != n) {^true} {ctr[len] = 0};
-		};
-
-		^false;
 	}
 
 	*testOneString {
@@ -376,6 +363,13 @@ LexerParserCompilerTestUtils {
 		^diffs;
 	}
 
+	///////////////////////////////
+	///// DIFF HELPER METHODS /////
+	///////////////////////////////
+
+	// Given a full list of diffs, arranges and prints them by what is missing
+	// from the first and/or second files, and then prints what was different
+	// in existing entries.
 	*printDiffs {
 		arg diffs;
 
@@ -424,10 +418,6 @@ LexerParserCompilerTestUtils {
 		};
 	}
 
-	/////////////////////////////////////
-	///// SMALL CONVENIENCE METHODS /////
-	/////////////////////////////////////
-
 	// For a given diff, returns a short human-readable description
 	// of how the two sides compare.
 	*explainDiff {
@@ -459,6 +449,72 @@ LexerParserCompilerTestUtils {
 		);
 	}
 
+	// Formats input and results data into a 3-tuple of input and outputs
+	*mkDataDiff {
+		arg input, data1, data2;
+
+		data1 = data1!?_[\out];
+		data2 = data2!?_[\out];
+
+		^[input, data1, data2];
+	}
+
+	////////////////////////////////////////
+	///// MISCELLANEOUS HELPER METHODS /////
+	////////////////////////////////////////
+
+	// Given an alphabet and indexing counter, return a string to test.
+	// ex.: ["A", "B", "C"] -> [2,0,1] => "CAB"
+	*mkTestString {
+		arg alphabet, counter;
+		// Since reduce on an empty array returns nil, `?""` is a safeguard.
+		^alphabet[counter].reduce('++')?"";
+	}
+
+	// Creates an output file, throwing errors if there are failures at any point.
+	*mkOutputFileSafe {
+		arg filename;
+
+		var file;
+
+		postln("%: Creating file: %".format(this, PathName(filename).fileName));
+		if(File.exists(filename)) {
+			Error("%: File % already exists\n"
+				"\tPlease delete before continuing".format(this, filename.quote)).throw;
+		};
+
+		try {
+			file = File.new(filename, "w");
+		} {
+			Error("%: Failed to open file: %.".format(this, filename.quote)).throw;
+		};
+
+		if(file.isOpen.not) {
+			Error("%: Failed to open file: %".format(this, filename.quote)).throw;
+		};
+
+		^file;
+	}
+
+	// Verbose descriptions of encoding per technique.
+	*getEncodingString {
+		arg technique;
+
+		^switch(technique,
+			\compile,
+			"<hex-format input string><tab>"
+			"<\"!cErr\" (compile error) | \"!rErr\" (runtime error) | hex-format output string>"
+			"<opt `:` & class name of output>"
+			"<opt tab & count of consecutive repeats of this result (no number means no repetitions)>",
+			\bytecode,
+			"<hex-format input string><tab>"
+			"<\"!cErr\" (compile error) | \"!rErr\" (runtime error) | hex-format output string>"
+			"<opt tab & count of consecutive repeats of this result (no number means no repetitions)>",
+			{Error("getEncodingString: unrecognized technique: %".format(technique.quote))}
+		);
+	}
+
+	// Breaks a line into input, output, and (optional) number of repetitions
 	*parseTestResult {
 		arg line;
 
@@ -471,20 +527,13 @@ LexerParserCompilerTestUtils {
 		];
 	}
 
-	*mkDataDiff {
-		arg input, data1, data2;
-
-		data1 = data1!?_[\out];
-		data2 = data2!?_[\out];
-
-		^[input, data1, data2];
-	}
-
+	// Returns true IFF the two results are equal in their result outputs.
 	*doOutputsMatch {
 		arg a, b;
 		^((a!?_[\out]) == (b!?_[\out]));
 	}
 
+	// Adds the `_correct` suffix IFF generating validation files.
 	*mkFilename {
 		arg testID, doValidate;
 
@@ -494,6 +543,27 @@ LexerParserCompilerTestUtils {
 			testID;
 		}).resolveRelative;
 	}
+
+	// Returns `false` if there is an overflow. Modifies the array in-place!
+	*incrementAlphabetCount {
+		arg ctr, len, n; // the counter array, string length, and alphabet size (n)
+
+		// I benchmarked this pretty hard, but there might be a better way! - Brian
+		while {len > 0} {
+			len = len-1;
+			ctr[len] = ctr[len] + 1;
+			/*if(len == 0) {
+			"incrementAlphabetCount: at %\n".postf(ctr);
+			};*/
+			if(ctr[len] != n) {^true} {ctr[len] = 0};
+		};
+
+		^false;
+	}
+
+	///////////////////////////////////
+	///// DATA CONVERSION METHODS /////
+	///////////////////////////////////
 
 	// Converts an input 8-bit value to an ASCII string representing its hex value.
 	*bytecodeToHexString {
@@ -542,7 +612,7 @@ LexerParserCompilerTestUtils {
 		^hexString;
 	}
 
-	// inverse of stringToHexString
+	// Inverse of stringToHexString
 	*stringFromHexString {
 		arg hexString;
 
@@ -556,9 +626,9 @@ LexerParserCompilerTestUtils {
 		^string;
 	}
 
-	///////////////////////////////////
-	///// FILE FORMATTING METHODS /////
-	///////////////////////////////////
+	///////////////////////////////////////
+	///// HEADER INPUT/OUTPUT METHODS /////
+	///////////////////////////////////////
 
 	// given proper input, creates a header for the test file format used in these tests
 	*writeHeader {
@@ -619,9 +689,8 @@ LexerParserCompilerTestUtils {
 		);
 	}
 
-	// does pretty hefty validation on the header format
-	// validation is performed in the parsing subroutines
-	// returns results in a Dictionary
+	// Does pretty hefty validation on the header format. Validation is performed
+	// in the parsing subroutines. Returns results in a Dictionary.
 	*readHeader {
 		arg file;
 
@@ -647,9 +716,9 @@ LexerParserCompilerTestUtils {
 		^result;
 	}
 
-	////////////////////////////////////////////
-	/// HEADER READING HELPER METHODS: BEGIN ///
-	////////////////////////////////////////////
+	/////////////////////////////////////
+	/// HEADER READING HELPER METHODS ///
+	/////////////////////////////////////
 
 	*verifyFieldName {
 		arg str, expected;
