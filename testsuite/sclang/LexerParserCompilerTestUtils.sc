@@ -64,14 +64,14 @@ LexerParserCompilerTestUtils {
 			postln("testAllPossibleStrings: Writing data");
 
 			// Write the first result.
-			// Reduce on an empty array returns nil.
+			// Reduce on an empty array returns nil, thus `?""`.
 			toTest = alphabet[counter].reduce('++')?"";
 			dataLine = this.testOneString(prefix++toTest++suffix, technique);
-			file.write(this.stringToHexString(toTest) ++ "\t" ++ dataLine);
+			file.write(this.stringToHexString(toTest)++"\t"++dataLine);
 
 			prevResult = dataLine;
 
-			while {this.incrementAlphabetCount(counter, len, alphabetSize)} {
+			while { this.incrementAlphabetCount(counter, len, alphabetSize) } {
 
 				// we couldn't get here if we had an empty array, so no need to use `?""`
 				toTest = alphabet[counter].reduce('++');
@@ -85,17 +85,17 @@ LexerParserCompilerTestUtils {
 
 						if(repeatCount > 0) {
 							// give a count if it's more than 0. 0 is the assumed default
-							file.write("\t" ++ repeatCount.asString);
+							file.write("\t"++repeatCount.asString);
 							repeatCount = 0;
 						};
 
-						file.write("\n" ++ this.stringToHexString(toTest) ++ "\t" ++ dataLine);
+						file.write("\n"++this.stringToHexString(toTest)++"\t"++dataLine);
 						// only update if it changed
 						prevResult = dataLine;
 					}
 				} {
 					// just write the line normally
-					file.write("\n" ++ this.stringToHexString(toTest) ++ "\t" ++ dataLine);
+					file.write("\n"++this.stringToHexString(toTest)++"\t"++dataLine);
 				}
 
 			}; // end while
