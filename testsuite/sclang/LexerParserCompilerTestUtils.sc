@@ -423,8 +423,14 @@ LexerParserCompilerTestUtils {
 	*explainDiff {
 		arg diff;
 
+		// The `entry` is one of:
+		// - compile error string
+		// - runtime error string
+		// - bytecode string
+		// - string followed by class name
 		var explain = {
 			arg entry;
+
 			if(entry.isNil) {
 				"(no entry)";
 			} {
@@ -432,6 +438,8 @@ LexerParserCompilerTestUtils {
 					this.compileErrorString, "compile-error",
 					this.runtimeErrorString, "runtime-error",
 					{
+						// If there are two elements, reconstruct the first element to
+						// get the output as a string. `entry[1]` is the output class.
 						if(entry.size == 2) {
 							this.stringFromHexString(entry[0])++":"++entry[1]
 						} {
@@ -544,6 +552,7 @@ LexerParserCompilerTestUtils {
 		}).resolveRelative;
 	}
 
+	// Given an alphabet counter (array of indexing integers), increment by 1.
 	// Returns `false` if there is an overflow. Modifies the array in-place!
 	*incrementAlphabetCount {
 		arg ctr, len, n; // the counter array, string length, and alphabet size (n)
