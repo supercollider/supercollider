@@ -969,7 +969,47 @@ void MainWindow::switchSession( Session *session )
 
     updateWindowTitle();
 
-    currentMultiEditor()->switchSession(session);
+    Q_EMIT(closeSubWindows());
+    if( mEditorList.count() ) {
+        foreach( MultiEditor *ceditor, mEditorList ) {
+            if( !(ceditor == mEditors) ) {
+                mEditorList.removeOne(ceditor);
+            }
+        }
+    }
+    setCurrentEditor(mEditors);
+    Q_EMIT(mEditors->currentBox());
+
+    if( !session ) {
+        mEditors->switchSession(session, 0);
+        setCurrentEditor(mEditors);    
+    }
+    else if( session->contains("editors") ) {
+        QVariant editorData = session->value("editors");
+        QVariant * splitterData = &editorData;
+        mEditors->switchSession(session, splitterData);
+        setCurrentEditor(mEditors);
+    }
+    else if( session->contains("windows") ) {
+        QVariantList editors = session->value("windows").value<QVariantList>();
+        QVariant * splitterData;
+        foreach( QVariant editorData, editors ) {
+            QString warning = QStringLiteral("windowSession\n");
+                Main::scProcess()->post(warning);
+            splitterData = &editorData;
+            if ( editorData.toMap() == editors.first() ) {
+                mEditors->switchSession(session, splitterData);
+                setCurrentEditor(mEditors);
+            }
+            else {
+                    newWindow();
+//                SubWindow * newWindow = new SubWindow(/*splitterData*/);
+//                setCurrentEditor(newWindow->editor());
+                //newWindow->editor()->currentBox()->setDocument(newWindow->editor()->currentBox()->currentDocument());
+            }
+        }
+    }
+    setCurrentEditor(mEditors);
 }
 
 void MainWindow::saveSession( Session *session )

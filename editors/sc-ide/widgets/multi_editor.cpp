@@ -970,7 +970,7 @@ void MultiEditor::loadSplitterState( MultiSplitter *splitter,
         qWarning("MultiEditor: could not restore splitter state!");
 }
 
-void MultiEditor::switchSession( Session *session )
+void MultiEditor::switchSession( Session *session, QVariant * splitterData = 0 )
 {
     ///// Going offline...
 
@@ -1012,9 +1012,8 @@ void MultiEditor::switchSession( Session *session )
             addTab(doc);
 
         // restore editors
-        if (session->contains("editors")) {
-            QVariantMap splitterData = session->value("editors").value<QVariantMap>();
-            loadSplitterState( mSplitter, splitterData, documentList );
+        if (session->contains("editors") || session->contains("windows")) {
+            loadSplitterState( mSplitter, splitterData->toMap(), documentList );
 
             if (mSplitter->count()) {
                 firstBox = mSplitter->findChild<CodeEditorBox>();

@@ -155,7 +155,7 @@ public:
         { return mActions[role]; }
 
     QVariantMap saveSession( Session * );
-    void switchSession( Session * );
+    void switchSession( Session *, QVariant * );
 
     QTabBar * tabBar() { return mTabs; };
 

@@ -181,6 +181,7 @@ signals:
     void tabsOrderChanged(int, int);
     void documentDockletUndocked();
     void currentEditorChanged( Document * );
+    void closeSubWindows();
 
 public Q_SLOTS:
     void showStatusMessage( QString const & string );
@@ -355,7 +356,9 @@ public:
         //        this, &QWidget::close);
 
         this->setAttribute(Qt::WA_DeleteOnClose);
-        connect(sEditors, SIGNAL(closeWindow()), this, SLOT(closeWindow()));
+        connect(sEditors, SIGNAL(closeWindow()), this, SLOT(close()));
+        connect(this, SIGNAL(destroyed()), this, SLOT(closeWindow()));
+        connect(main, SIGNAL(closeSubWindows()), this, SLOT(close()));
 
     }
 
@@ -391,7 +394,6 @@ public Q_SLOTS:
     void closeWindow()
     {        
         main->closeWindow(sEditors);
-        close();
     }
 
 private:
