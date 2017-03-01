@@ -22,36 +22,29 @@ LexerParserCompilerTestUtils {
 	// writes the results to a file, and checks it against validated results.
 	// The client may also specify an optional prefix and/or suffix to be added to each
 	// string before testing. Only strings of length `len` are tested.
+	// Note that the given alphabet will be sorted before beginning.
 	*testAllPossibleStrings {
-
 		// Basic arguments
 		arg alphabet, len, prefix, suffix, testID, technique,
 
-		// If true, don't validate or delete the file, and
-		// give it a validation filename suffix.
+		// If true, don't validate or delete the file, but give it the validation suffix
 		doValidate = false,
 
-		// If true, note repeated results with a number instead of actually printing out
-		// consecutive lines with the same output.
+		// If true, record consecutive identical results with a count, saving space
 		compress = true;
 
-		var alphabetSize, filename, file;
-		// holds the string that will be tested with testOneString
-		var toTest;
-		// hold the previous result for compressing repeat results
-		var prevResult;
-		var repeatCount = 0;
-		// An array counter which is used to index into the alphabet for string
-		// generation
+		var alphabetSize = alphabet.size;
+		var file, filename, toTest, testResult;
+		// For use with compressed output.
+		var prevResult, repeatCount = 0;
+		// An array counter used to generate all possible strings deterministically.
+		// Has to be this way because a 32-bit int might overflow.
 		var counter = 0!len;
-		// will hold the line to be stored to the file
-		var dataLine;
-		var isPrefixEmpty = prefix.isEmpty;
-		var isSuffixEmpty = suffix.isEmpty;
 
+		// Sorting the alphabet beforehand provides uniformity
 		alphabet = alphabet.sort;
-		alphabetSize = alphabet.size;
 
+		filename = this.mkFilename(testID, doValidate);
 		file = this.mkOutputFileSafe(testID, doValidate);
 
 		protect {
@@ -65,34 +58,34 @@ LexerParserCompilerTestUtils {
 			// Write the first result. We have to save `\n` because of the possibility
 			// for repeats. Also, reduce on an empty array returns nil, thus `?""`.
 			toTest = this.mkTestString(alphabet, counter);
-			dataLine = this.testOneString(prefix++toTest++suffix, technique);
-			file.write(this.stringToHexString(toTest)++"\t"++dataLine);
+			testResult = this.testOneString(prefix++toTest++suffix, technique);
+			file.write(this.stringToHexString(toTest)++"\t"++testResult);
 
-			prevResult = dataLine;
+			prevResult = testResult;
 
 			while { this.incrementAlphabetCount(counter, len, alphabetSize) } {
 				// no way to get here if we had an empty array, so we can discard `?""`
 				toTest = this.mkTestString(alphabet, counter);
-				dataLine = this.testOneString(prefix++toTest++suffix, technique);
+				testResult = this.testOneString(prefix++toTest++suffix, technique);
 
 				// Only do fancy compression techniques if asked. Otherwise just print
 				// a normal line.
 				if(compress) {
 					// If this is a new result, write out the previous repeat count (if
 					// there was one). Otherwise, just increment the repeat counter.
-					if(dataLine != prevResult) {
+					if(testResult != prevResult) {
 						if(repeatCount > 0) {
 							file.write("\t"++repeatCount);
 							repeatCount = 0;
 						};
 
-						file.write("\n"++this.stringToHexString(toTest)++"\t"++dataLine);
-						prevResult = dataLine;
+						file.write("\n"++this.stringToHexString(toTest)++"\t"++testResult);
+						prevResult = testResult;
 					} {
 						repeatCount = repeatCount + 1;
 					};
 				} {
-					file.write("\n"++this.stringToHexString(toTest)++"\t"++dataLine);
+					file.write("\n"++this.stringToHexString(toTest)++"\t"++testResult);
 				};
 			}; // end while
 
@@ -113,10 +106,10 @@ LexerParserCompilerTestUtils {
 
 			protect {
 				postln("testAllPossibleStrings: Validating against expected output");
-				diffs = this.validate(filename);
+				diffs = this.validate(file);
 			} {
 				postln("testAllPossibleStrings: Deleting test file");
-				File.delete(filename);
+				File.delete(file.pathName);
 			}
 		} {
 			^[];
@@ -130,15 +123,9 @@ LexerParserCompilerTestUtils {
 	}
 
 	*mkOutputFileSafe {
-		arg testID, doValidate;
+		arg filename;
 
-		var filename, file;
-
-		filename = this.mkFilename(testID);
-
-		if(doValidate) {
-			filename = filename ++ validatedOutputFilenameSuffix;
-		};
+    var file;
 
 		postln("%: Creating file: %".format(this.class, PathName(filename).fileName));
 		if(File.exists(filename)) {
@@ -348,7 +335,7 @@ LexerParserCompilerTestUtils {
 							  .format(files[i], line).warn;
 						};
 
-						data = this.parseDataLine(line);
+						data = this.parseTestResult(line);
 						reps[i] = data[\reps];
 						prevs[i] = data;
 					};
@@ -370,17 +357,13 @@ LexerParserCompilerTestUtils {
 					)
 				);
 			} {
-				// if the outputs matched
+				// if the outputs matched and alphabets are equal
 				if(areAlphabetsEqual) {
-					// and if the alphabets are equal
 					while { (reps[0] > 0) && (reps[1] > 0) } {
-						// while both reps are greater than 0, we know that the
-						// next outputs are going to be equal
-
-						// decrease the reps
+						// While both reps are greater than 0, we know that the
+						// next outputs are going to be equal. Decrease the reps
+						// and increment the counters.
 						reps = reps - 1;
-
-						// increment the alphabet counters
 						this.incrementAlphabetCount(ctrs[0], strlen, alphSizes[0]);
 						this.incrementAlphabetCount(ctrs[1], strlen, alphSizes[1]);
 						this.incrementAlphabetCount(ctrM, strlen, alphSizeM);
@@ -477,19 +460,16 @@ LexerParserCompilerTestUtils {
 		);
 	}
 
-	*parseDataLine {
+	*parseTestResult {
 		arg line;
-
-		var result = Dictionary[];
 
 		line = line.split($\t);
 
-		result[\in] = line[0];
-		result[\out] = line[1].split($:);
-		result[\hadError] = this.isErrorString(result[\out][0]);
-		result[\reps] = line[2]!?_.asInteger?0;
-
-		^result;
+		^Dictionary[
+			\in -> line[0],
+			\out -> line[1].split($:),
+			\reps -> (line[2]!?_.asInteger?0)
+		];
 	}
 
 	*mkDataDiff {
@@ -506,14 +486,14 @@ LexerParserCompilerTestUtils {
 		^((a!?_[\out]) == (b!?_[\out]));
 	}
 
-	*isErrorString {
-		arg str;
-		^(str == compileErrorString) || (str == runtimeErrorString);
-	}
-
 	*mkFilename {
-		arg testID;
-		^testID.resolveRelative;
+		arg testID, doValidate;
+
+		^if(doValidate, {
+			testID ++ validatedOutputFilenameSuffix
+		}, {
+			testID;
+		}).resolveRelative;
 	}
 
 	// Converts an input 8-bit value to an ASCII string representing its hex value.
