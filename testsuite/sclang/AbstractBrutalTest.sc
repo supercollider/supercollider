@@ -40,7 +40,7 @@ AbstractBrutalTest : UnitTest {
 				       len: len,
 				    prefix: prefix,
 				    suffix: suffix,
-				    testID: "%_%_%".format(alphabetName, len, testMode),
+				    testID: "%%_%_%".format(this.outputDir, alphabetName, len, testMode),
 				 technique: technique,
 				doValidate: this.makingValidationFiles,
 				  compress: true
