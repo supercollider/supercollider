@@ -126,16 +126,16 @@ LexerParserCompilerTestUtils {
 
 		var file;
 
-		postln("%: Creating file: %".format(this.class, PathName(filename).fileName));
+		postln("%: Creating file: %".format(this, PathName(filename).fileName));
 		if(File.exists(filename)) {
 			Error("%: File % already exists\n"
-				"\tPlease delete before continuing".format(this.class, filename.quote)).throw;
+				"\tPlease delete before continuing".format(this, filename.quote)).throw;
 		};
 
 		try {
 			file = File.new(filename, "w");
 		} {
-			Error("%: Failed to open file.".format(this.class)).throw;
+			Error("%: Failed to open file.".format(this)).throw;
 		};
 
 		if(file.isOpen.not) {
