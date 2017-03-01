@@ -41,7 +41,7 @@ LexerParserCompilerTestUtils {
 		// hold the previous result for compressing repeat results
 		var prevResult;
 		var repeatCount = 0;
-		// a counter [0, 0, ..., 0] which is used to index into the alphabet for string
+		// An array counter which is used to index into the alphabet for string
 		// generation
 		var counter = 0!len;
 		// will hold the line to be stored to the file
@@ -57,8 +57,7 @@ LexerParserCompilerTestUtils {
 		protect {
 			// postln("testAllPossibleStrings: Writing header");
 			this.writeHeader(
-				file, alphabet, len, prefix, suffix, technique,
-				alphabetSize ** len /* string count */
+				file, alphabet, len, prefix, suffix, technique,	alphabetSize ** len
 			);
 
 			postln("testAllPossibleStrings: Writing data");
