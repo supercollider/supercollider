@@ -44,7 +44,7 @@ LexerParserCompilerTestUtils {
 		alphabet = alphabet.sort;
 
 		filename = this.mkFilename(testID, doValidate);
-		file = this.mkOutputFileSafe(testID, doValidate);
+		file = this.mkOutputFileSafe(filename, doValidate);
 
 		protect {
 			// postln("testAllPossibleStrings: Writing header");
