@@ -66,24 +66,16 @@ LexerParserCompilerTestUtils {
 			// Write the first result.
 			// Reduce on an empty array returns nil.
 			toTest = alphabet[counter].reduce('++')?"";
-			dataLine = this.testOneString(
-				this.mkTestString(
-					prefix, toTest, suffix, isPrefixEmpty, isSuffixEmpty
-				), technique
-			);
+			dataLine = this.testOneString(prefix++toTest++suffix, technique);
 			file.write(this.stringToHexString(toTest) ++ "\t" ++ dataLine);
 
 			prevResult = dataLine;
 
 			while {this.incrementAlphabetCount(counter, len, alphabetSize)} {
 
-				// we couldn't get here if we had an empty array
+				// we couldn't get here if we had an empty array, so no need to use `?""`
 				toTest = alphabet[counter].reduce('++');
-				dataLine = this.testOneString(
-					this.mkTestString(
-						prefix,toTest,suffix,isPrefixEmpty,isSuffixEmpty
-					), technique
-				);
+				dataLine = this.testOneString(prefix++toTest++suffix, technique);
 
 				if(compress) {
 					// if we just saw this result, don't print it, but keep track of it
@@ -163,24 +155,6 @@ LexerParserCompilerTestUtils {
 		};
 
 		^file;
-	}
-
-	*mkTestString {
-		arg prefix, string, suffix, isPrefixEmpty, isSuffixEmpty;
-
-		if(isPrefixEmpty) {
-			if(isSuffixEmpty) {
-				^string
-			} {
-				^string++suffix
-			}
-		} {
-			if(isSuffixEmpty) {
-				^prefix++string
-			} {
-				^prefix++string++suffix
-			}
-		}
 	}
 
 	*getEncodingString {
