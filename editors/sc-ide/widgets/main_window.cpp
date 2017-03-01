@@ -1909,13 +1909,12 @@ void MainWindow::newWindow()
     newWindow->editor()->currentBox()->setDocument(cDoc);
 }
 
-void MainWindow::closeWindow()
+void MainWindow::closeWindow( MultiEditor * ceditor )
 {        
-    if( mEditorList.count() > 1 ) {
-        MultiEditor * prevEditor = mEditorList.at(1);
-        MultiEditor * curEditor = mEditorList.first();
-        setCurrentEditor(prevEditor);
-        mEditorList.removeOne(curEditor);
+    if( mEditorList.contains(ceditor) ) {
+        if( ceditor == mEditorList.first() )
+            setCurrentEditor(mEditorList.at(1));
+        mEditorList.removeOne(ceditor);
     }
 }
 

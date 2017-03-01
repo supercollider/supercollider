@@ -185,7 +185,7 @@ signals:
 public Q_SLOTS:
     void showStatusMessage( QString const & string );
     void newWindow();
-    void closeWindow();
+    void closeWindow( MultiEditor * );
     void setCurrentEditor( MultiEditor * );
     void switchEditor();
 
@@ -355,8 +355,8 @@ public:
         //        this, &QWidget::close);
 
         this->setAttribute(Qt::WA_DeleteOnClose);
-        connect(sEditors, SIGNAL(closeWindow()), this, SLOT(close()));
-        connect(this, SIGNAL(destroyed()), main, SLOT(closeWindow()));
+        connect(sEditors, SIGNAL(closeWindow()), this, SLOT(closeWindow()));
+
     }
 
     MultiEditor * editor() { return sEditors; }
@@ -386,6 +386,12 @@ public Q_SLOTS:
         } else {
             sDocumentsDocklet->setVisible(main->docDocklet()->isVisible());
         }
+    }
+
+    void closeWindow()
+    {        
+        main->closeWindow(sEditors);
+        close();
     }
 
 private:
