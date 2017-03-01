@@ -376,6 +376,11 @@ LexerParserCompilerTestUtils {
 		var missingFromFile1 = [];
 		var missingFromFile2 = [];
 		var realDiffs = [];
+		var headers = [
+			"% entries were missing from file 1",
+			"% entries were missing from file 2",
+			"% entries were different between files"
+		];
 
 		diffs.do {
 			arg diff;
@@ -391,30 +396,16 @@ LexerParserCompilerTestUtils {
 			)
 		};
 
-		"% entries were missing from file 1"
-		  .format(missingFromFile1.size).underlined.postln;
+		[missingFromFile1, missingFromFile2, realDiffs].do {
+			arg diffType, i;
 
-		missingFromFile1.do {
-			arg diff;
-			this.explainDiff(diff).postln;
-		};
+			"".postln;
+			headers[i].format(diffType.size).underlined.postln;
 
-		"".postln;
-		"% entries were missing from file 2"
-		  .format(missingFromFile2.size).underlined.postln;
-
-		missingFromFile2.do {
-			arg diff;
-			this.explainDiff(diff).postln;
-		};
-
-		"".postln;
-		"% entries were different between files"
-		  .format(realDiffs.size).underlined.postln;
-
-		realDiffs.do {
-			arg diff;
-			this.explainDiff(diff).postln;
+			diffType.do {
+				arg diff;
+				this.explainDiff(diff).postln;
+			}
 		};
 	}
 
