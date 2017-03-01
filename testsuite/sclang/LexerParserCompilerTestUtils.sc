@@ -114,6 +114,8 @@ LexerParserCompilerTestUtils {
 			prevResult = testResult;
 
 			while { this.incrementAlphabetCount(counter, len, alphabetSize) } {
+				// counter.postln;
+
 				// no way to get here if we had an empty array, so we can discard `?""`
 				toTest = this.mkTestString(alphabet, counter);
 				testResult = this.testOneString(prefix++toTest++suffix, technique);
@@ -182,7 +184,8 @@ LexerParserCompilerTestUtils {
 				} {
 					// interpret using .value
 					try {
-						this.stringToHexString(r.value.asString)++":"++r.class;
+						r = r.value;
+						this.stringToHexString(r.asString)++":"++r.class;
 					} {
 						// catch any runtime error and make note of it
 						runtimeErrorString;
