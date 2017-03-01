@@ -360,7 +360,6 @@ public:
 
         this->setAttribute(Qt::WA_DeleteOnClose);
         connect(sEditors, SIGNAL(closeWindow()), this, SLOT(close()));
-        connect(this, SIGNAL(destroyed()), this, SLOT(closeWindow()));
         connect(main, SIGNAL(closeSubWindows()), this, SLOT(close()));
     }
 
@@ -393,9 +392,12 @@ public Q_SLOTS:
         }
     }
 
-    void closeWindow()
-    {        
+protected:
+
+    virtual void closeEvent(QCloseEvent* event)
+    {
         main->closeWindow(sEditors);
+        event->accept();
     }
 
 private:
