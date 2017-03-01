@@ -193,43 +193,38 @@ LexerParserCompilerTestUtils {
 
 	*testOneString {
 		arg string, technique;
-		var r, rclass;
+		var r;
 
 		// clear all variables (a-z)
 		thisProcess.interpreter.clearAll;
 
-		switch(technique,
+		^switch(technique,
 			\compile, {
 				r = string.compile;
 				if(r.isNil) {
 					// compile error
-					r = compileErrorString;
+					compileErrorString;
 				} {
 					// interpret using .value
 					try {
-						r = r.value;
-						rclass = r.class;
-						r = this.stringToHexString(r.asString)++":"++rclass;
+						this.stringToHexString(r.value.asString)++":"++r.class;
 					} {
 						// catch any runtime error and make note of it
-						r = runtimeErrorString;
+						runtimeErrorString;
 					}
 				}
 			},
 			\bytecode, {
 				r = string.compile;
 				if(r.isNil) {
-					// compile error
-					r = compileErrorString;
+					compileErrorString;
 				} {
-					r = this.bytecodeToHexString(r.def.code);
+					this.bytecodeToHexString(r.def.code);
 				}
 			}, {
 				Error("testOneString: invalid technique option: %".format(technique)).throw;
 			}
 		);
-
-		^r;
 	}
 
 	*validate {
