@@ -135,11 +135,11 @@ LexerParserCompilerTestUtils {
 		try {
 			file = File.new(filename, "w");
 		} {
-			Error("%: Failed to open file.".format(this)).throw;
+			Error("%: Failed to open file: %.".format(this, filename.quote)).throw;
 		};
 
 		if(file.isOpen.not) {
-			Error("testAllPossibleStrings: Failed to open file").throw;
+			Error("%: Failed to open file: %".format(this, filename.quote)).throw;
 		};
 
 		^file;
