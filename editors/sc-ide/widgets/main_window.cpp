@@ -976,7 +976,29 @@ void MainWindow::saveSession( Session *session )
 {
     saveWindowState(session);
 
-    currentMultiEditor()->saveSession(session);
+    QVariantList windowList;
+
+    // This condition is to assure complete compatibility with older releases (if only the main editor has been used)
+    if ( mEditorList.count() == 1 ) {
+        if( session->contains("windows") )
+            session->remove( "windows" );
+        session->setValue( "editors", mEditors->saveSession(session) );
+        return;
+    }
+    else if (mEditorList.count() > 1 ) {
+        if( session->contains("editors") )
+            session->remove( "editors" );
+        foreach( MultiEditor *editor, mEditorList ) {
+            QVariantMap windowSession = editor->saveSession(session);
+            if( editor == mEditors ) {
+                windowList.prepend(windowSession);
+            }
+            else {
+                windowList.append(windowSession);
+            }
+        }
+        session->setValue( "windows", QVariant::fromValue(windowList) );
+    }
 }
 
 void MainWindow::openSessionsDialog()

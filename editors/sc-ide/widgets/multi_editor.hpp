@@ -154,7 +154,7 @@ public:
     QAction * action( ActionRole role )
         { return mActions[role]; }
 
-    void saveSession( Session * );
+    QVariantMap saveSession( Session * );
     void switchSession( Session * );
 
     QTabBar * tabBar() { return mTabs; };

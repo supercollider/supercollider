@@ -911,7 +911,7 @@ static QVariantMap saveSplitterState( QSplitter *splitter, const QList<Document*
     return splitterData;
 }
 
-void MultiEditor::saveSession( Session *session )
+QVariantMap MultiEditor::saveSession( Session *session )
 {
     QList<Document*> documentList;
 
@@ -928,7 +928,7 @@ void MultiEditor::saveSession( Session *session )
     session->setValue( "documents", QVariant::fromValue(tabsData) );
 
     session->remove( "editors" );
-    session->setValue( "editors", saveSplitterState(mSplitter, documentList) );
+    return saveSplitterState(mSplitter, documentList);
 }
 
 void MultiEditor::loadBoxState( CodeEditorBox *box,
