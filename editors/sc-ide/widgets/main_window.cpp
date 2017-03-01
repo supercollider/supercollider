@@ -1012,9 +1012,8 @@ void MainWindow::switchSession( Session *session )
                 setCurrentEditor(mEditors);
             }
             else {
-                    newWindow();
-//                SubWindow * newWindow = new SubWindow(/*splitterData*/);
-//                setCurrentEditor(newWindow->editor());
+                SubWindow * newWindow = new SubWindow(splitterData);
+                setCurrentEditor(newWindow->editor());
                 //newWindow->editor()->currentBox()->setDocument(newWindow->editor()->currentBox()->currentDocument());
             }
         }

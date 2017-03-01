@@ -156,6 +156,7 @@ public:
 
     QVariantMap saveSession( Session * );
     void switchSession( Session *, QVariant * );
+    void restoreSubWindow( QVariant * );
 
     QTabBar * tabBar() { return mTabs; };
 

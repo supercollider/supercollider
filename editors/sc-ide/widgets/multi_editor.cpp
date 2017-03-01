@@ -1054,6 +1054,67 @@ void MultiEditor::switchSession( Session *session, QVariant * splitterData = 0 )
         emit splitViewDeactivated();
 }
 
+void MultiEditor::restoreSubWindow( QVariant * splitterData )
+{
+    QList<Document*> documentList = Main::documentManager()->documents();
+
+    delete mTabs;
+    delete mSplitter;
+    delete multiEditorLayout;
+
+    mTabs = new EditorTabBar;
+
+    foreach ( Document * doc, documentList )
+        addTab(doc);
+
+    mSplitter = new MultiSplitter(this);
+    CodeEditorBox *firstBox = 0;
+
+    loadSplitterState( mSplitter, splitterData->toMap(), documentList );
+
+    if (mSplitter->count()) {
+        firstBox = mSplitter->findChild<CodeEditorBox>();
+        if (!firstBox) {
+            qWarning("Session seems to contain invalid editor split data!");
+            delete mSplitter;
+            mSplitter = new MultiSplitter(this);
+        }
+    }
+
+    if (!firstBox) {
+        // Restoring the session didn't result in any editor box, so create one:
+        firstBox = newBox(mSplitter);
+    }
+
+    mSplitter->addWidget(firstBox);
+
+    multiEditorLayout = new QVBoxLayout;
+    multiEditorLayout->setContentsMargins(0,0,0,0);
+    multiEditorLayout->setSpacing(0);
+    multiEditorLayout->addWidget(mTabs);
+    multiEditorLayout->addWidget(mSplitter);
+    multiEditorLayout->addWidget(mToolBox);
+    setLayout(multiEditorLayout);
+
+    makeSignalConnections();
+
+    connect( MainWindow::instance(), SIGNAL(reloadDocumentLists(QList<Document*>)),
+                this, SLOT(updateTabsOrder(QList<Document*>)));
+
+    createActions();
+
+    mCurrentEditorBox = 0;
+    setCurrentBox( firstBox ); // will updateActions();
+
+    applySettings( Main::instance()->settings() );
+
+    setMainComboBoxOption();
+    if (mSplitter->count()>1)
+        activateComboBoxWhenSplitting();
+    else
+        emit splitViewDeactivated();
+}
+
 int MultiEditor::addTab( Document * doc )
 {
     if (!doc)

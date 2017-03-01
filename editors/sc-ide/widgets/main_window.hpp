@@ -293,7 +293,7 @@ class SubWindow : public QWidget
     Q_OBJECT
 
 public:
-    explicit SubWindow( QWidget * parent = 0 ):
+    explicit SubWindow( QVariant * splitterData = 0, QWidget * parent = 0 ):
     QWidget(parent)
     {
         this->resize(640, 480);
@@ -305,6 +305,8 @@ public:
         main = MainWindow::instance();
 
         sEditors = new MultiEditor(Main::instance(), this);
+        if(splitterData)
+            sEditors->restoreSubWindow(splitterData);
 
         QVBoxLayout *windowLayout = new QVBoxLayout;
         windowLayout->setContentsMargins(0,0,0,0);
@@ -341,26 +343,25 @@ public:
         windowLayout->addWidget(editors_layout);
         this->setLayout(windowLayout);
 
+        // loadDocuments
+        sDocumentListWidget->populateList(main->docDocklet()->list()->listDocuments());
+        sEditors->updateTabsOrder(sDocumentListWidget->listDocuments());
+
+        if( splitterData )
+           sDocumentListWidget->setCurrent(sEditors->currentBox()->currentDocument());
+
         createDocumentConnections();
 
         connect(main->docDocklet(), SIGNAL(dockletDetached(bool)),
                 this, SLOT(onDocumentDockletUndocked(bool)));
 
-        // loadDocuments
-        sDocumentListWidget->populateList(main->docDocklet()->list()->listDocuments());
-        sEditors->updateTabsOrder(sDocumentListWidget->listDocuments());
-
         setDocDockletVisibility();
         onDocumentDockletUndocked( main->docDocklet()->isDetached() );
-
-        //connect(sEditors, &MultiEditor::closeWindow,
-        //        this, &QWidget::close);
 
         this->setAttribute(Qt::WA_DeleteOnClose);
         connect(sEditors, SIGNAL(closeWindow()), this, SLOT(close()));
         connect(this, SIGNAL(destroyed()), this, SLOT(closeWindow()));
         connect(main, SIGNAL(closeSubWindows()), this, SLOT(close()));
-
     }
 
     MultiEditor * editor() { return sEditors; }
