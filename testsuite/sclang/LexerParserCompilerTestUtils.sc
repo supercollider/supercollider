@@ -200,8 +200,7 @@ LexerParserCompilerTestUtils {
 		);
 	}
 
-	// returns `false` if there is an overflow
-	// modifies the array in-place!
+	// Returns `false` if there is an overflow. Modifies the array in-place!
 	*incrementAlphabetCount {
 		arg ctr, len, n; // the counter array, string length, and alphabet size (n)
 
@@ -268,31 +267,34 @@ LexerParserCompilerTestUtils {
 		var diffs; // array of pairs of lines that are not identical
 
 		File.exists(validated).not.if {
-			Error("validate: couldn't find file for validation: %".format(validated.quote)).throw;
+			Error("validate: couldn't find file for validation: %"
+				.format(validated.quote)).throw;
 		};
 		File.exists(filename).not.if {
-			Error("validate: couldn't find file for validation: %".format(filename.quote)).throw;
+			Error("validate: couldn't find file for validation: %"
+				.format(filename.quote)).throw;
 		};
 
 		efile = File(validated, "r");
 		afile = File(filename, "r");
 
 		if(efile.isOpen.not) {
-			Error("validate: failed to open validation file: %".format(validated.quote)).throw;
+			Error("validate: failed to open validation file: %"
+				.format(validated.quote)).throw;
 		};
 		if(afile.isOpen.not) {
-			Error("validate: failed to open validation file: %".format(filename.quote)).throw;
+			Error("validate: failed to open validation file: %"
+				.format(filename.quote)).throw;
 		};
 
 		protect {
-			var eheader, aheader, keySet, areAlphabetsEqual;
+			var eheader, aheader;
 
 			eheader = this.readHeader(efile);
 			aheader = this.readHeader(afile);
 
 			// compare the headers, warn if there are issues
-			keySet = union(aheader.keys, eheader.keys);
-			keySet.do {
+			union(aheader.keys, eheader.keys).do {
 				arg key;
 				if(aheader[key] != eheader[key]) {
 					"validate: headers differ on key %\n"
@@ -303,15 +305,17 @@ LexerParserCompilerTestUtils {
 				}
 			};
 
-			if(aheader[\stringLength] != eheader[\stringLength]) {
-				Error("validate: string lengths are not equal: % != %".format(aheader[\stringLength], eheader[\stringLength]));
+			if(aheader[\strlen] != eheader[\strlen]) {
+				Error("validate: string lengths are not equal: % != %"
+					.format(aheader[\strlen], eheader[\strlen]));
 			};
 
-			areAlphabetsEqual = aheader[\alphabet] == eheader[\alphabet];
-
 			// "validate: comparing data".postln;
-			diffs = this.compareData(afile, efile, aheader[\alphabet], eheader[\alphabet], aheader[\stringLength]);
+			diffs = this.compareData(
+				afile, efile, aheader[\alph], eheader[\alph], aheader[\strlen]
+			);
 		} {
+			// if anything fails, close the files
 			afile.close;
 			efile.close;
 		};
@@ -319,7 +323,7 @@ LexerParserCompilerTestUtils {
 		^diffs;
 	}
 
-	// finds differences between data files with no knowledge of
+	// Finds differences between data files with no knowledge of
 	// 'correct' or 'experimental'.
 	*compareData {
 		arg file1, file2, alph1, alph2, strlen;
@@ -335,7 +339,8 @@ LexerParserCompilerTestUtils {
 		var inputs = alphs.collect({ |alph, i| alph[ctrs[i]] });
 
 		// master state variables
-		var alphM = alphs.flatten(1).collect(_.asSymbol).asSet.asArray.collect(_.asString).sort;
+		var alphM = alphs.flatten(1).collect(_.asSymbol).asSet.asArray
+		              .collect(_.asString).sort;
 		var alphSizeM = alphM.size;
 		var ctrM = 0!strlen;
 		var inputM;
@@ -359,7 +364,6 @@ LexerParserCompilerTestUtils {
 
 				// postf("here: % %\n", input, inputM);
 				if(inputM == input) {
-					// postf("in inner if: %\n", i);
 					this.incrementAlphabetCount(ctrs[i], strlen, alphSizes[i]);
 
 					if(reps[i] > 0) {
@@ -369,7 +373,8 @@ LexerParserCompilerTestUtils {
 
 						line = files[i].getLine(this.maxline);
 						if(line.size >= (this.maxline-1)) {
-							"compareData: maxline characters read from file %: %".format(files[i], line).warn;
+							"compareData: maxline characters read from file %: %"
+							  .format(files[i], line).warn;
 						};
 
 						data = this.parseDataLine(line);
@@ -378,7 +383,6 @@ LexerParserCompilerTestUtils {
 					};
 
 					inputs[i] = alphs[i][ctrs[i]];
-
 					result = prevs[i];
 				};
 
@@ -388,7 +392,6 @@ LexerParserCompilerTestUtils {
 			// outputs.postln;
 
 			if(this.doOutputsMatch(*outputs).not) {
-				// "got here 1".postln;
 				diffs = diffs.add(
 					this.mkDataDiff(
 						this.stringToHexString(inputM.reduce('++')),
@@ -441,7 +444,8 @@ LexerParserCompilerTestUtils {
 			)
 		};
 
-		"% entries were missing from file 1".format(missingFromFile1.size).underlined.postln;
+		"% entries were missing from file 1"
+		  .format(missingFromFile1.size).underlined.postln;
 
 		missingFromFile1.do {
 			arg diff;
@@ -449,7 +453,8 @@ LexerParserCompilerTestUtils {
 		};
 
 		"".postln;
-		"% entries were missing from file 2".format(missingFromFile2.size).underlined.postln;
+		"% entries were missing from file 2"
+		  .format(missingFromFile2.size).underlined.postln;
 
 		missingFromFile2.do {
 			arg diff;
@@ -457,7 +462,8 @@ LexerParserCompilerTestUtils {
 		};
 
 		"".postln;
-		"% entries were different between files".format(realDiffs.size).underlined.postln;
+		"% entries were different between files"
+		  .format(realDiffs.size).underlined.postln;
 
 		realDiffs.do {
 			arg diff;
@@ -469,6 +475,8 @@ LexerParserCompilerTestUtils {
 	///// SMALL CONVENIENCE METHODS /////
 	/////////////////////////////////////
 
+	// For a given diff, returns a short human-readable description
+	// of how the two sides compare.
 	*explainDiff {
 		arg diff;
 
@@ -524,13 +532,11 @@ LexerParserCompilerTestUtils {
 
 	*doOutputsMatch {
 		arg a, b;
-
 		^((a!?_[\out]) == (b!?_[\out]));
 	}
 
 	*isErrorString {
 		arg str;
-
 		^(str == compileErrorString) || (str == runtimeErrorString);
 	}
 
@@ -539,6 +545,7 @@ LexerParserCompilerTestUtils {
 		^testID.resolveRelative;
 	}
 
+	// Converts an input 8-bit value to an ASCII string representing its hex value.
 	*bytecodeToHexString {
 		arg bytes;
 
@@ -553,6 +560,7 @@ LexerParserCompilerTestUtils {
 		^hexString;
 	}
 
+	// Inverse of bytecodeToHexString
 	*bytecodeFromHexString {
 		arg hexString;
 
@@ -566,12 +574,11 @@ LexerParserCompilerTestUtils {
 		^bytes;
 	}
 
-	// converts an input String to a String representing its hex ASCII values.
+	// Converts an input String to a String representing its hex ASCII values.
 	// The output string is twice the length of the input.
 	*stringToHexString {
 		arg string;
 
-		// var hexString = "";
 		var hexString = String.newClear(string.size*2);
 
 		// I was originally using .asHexString; this is much faster (250+%) - Brian
@@ -676,16 +683,16 @@ LexerParserCompilerTestUtils {
 
 		// parse blocks and fields
 		this.parseBlockName(file.getLine(this.maxline), "HEAD");
-		result[\alphabetSize] = this.parseAlphabetSize(file.getLine(this.maxline));
-		result[\alphabet] = this.parseAlphabet(file.getLine(this.maxline));
-		result[\stringLength] = this.parseStringLength(file.getLine(this.maxline));
+		result[\alphSize] = this.parseAlphabetSize(file.getLine(this.maxline));
+		result[\alph] = this.parseAlphabet(file.getLine(this.maxline));
+		result[\strlen] = this.parseStringLength(file.getLine(this.maxline));
 		result[\prefix] = this.parsePrefix(file.getLine(this.maxline));
 		result[\suffix] = this.parseSuffix(file.getLine(this.maxline));
 		result[\technique] = this.parseTechnique(file.getLine(this.maxline));
 		result[\encoding] = this.parseEncoding(file.getLine(this.maxline));
 
 		this.parseBlockName(file.getLine(this.maxline), "DATA");
-		result[\stringCount] = this.parseStringCount(file.getLine(this.maxline));
+		result[\strcnt] = this.parseStringCount(file.getLine(this.maxline));
 
 		^result;
 	}
@@ -700,11 +707,13 @@ LexerParserCompilerTestUtils {
 		var len = expected.size;
 
 		if(str.isNil) {
-			Error("parseHeader: unexpectedly reached end of document while parsing %".format(expected.quote)).throw;
+			Error("parseHeader: unexpectedly reached end of document while"
+				"parsing %".format(expected.quote)).throw;
 		};
 
 		if(str[..len-1] != expected) {
-			Error("parseHeader: expected %: got %".format(expected.quote, str[..len-1].quote)).throw;
+			Error("parseHeader: expected %: got %"
+				.format(expected.quote, str[..len-1].quote)).throw;
 		};
 
 		^str[len..];
@@ -714,7 +723,8 @@ LexerParserCompilerTestUtils {
 		arg line, blockName;
 
 		if(line != blockName) {
-			Error("readHeader: expected % block, got %".format(blockName.quote, line.quote)).throw;
+			Error("readHeader: expected % block, got %"
+				.format(blockName.quote, line.quote)).throw;
 		};
 	}
 
@@ -726,7 +736,8 @@ LexerParserCompilerTestUtils {
 		size = str.asInteger;
 
 		if(size <= 0) {
-			Error("parseHeader: alphabet size must be > 0: got %".format(size.quote)).throw;
+			Error("parseHeader: alphabet size must be > 0: got %"
+				.format(size.quote)).throw;
 		};
 
 		^size;
@@ -740,14 +751,16 @@ LexerParserCompilerTestUtils {
 		alphabet = str.split($,);
 
 		if(alphabet.isEmpty) {
-			Error("parseHeader: alphabet is empty: got %".format(str.quote)).throw;
+			Error("parseHeader: alphabet is empty: got %"
+				.format(str.quote)).throw;
 		};
 
 		try {
 			^alphabet.collect(this.stringFromHexString(_));
 		} {
 			arg e;
-			Error("parseHeader: error while decoding alphabet %: %".format(alphabet, e.errorString)).throw;
+			Error("parseHeader: error while decoding alphabet %: %"
+				.format(alphabet, e.errorString)).throw;
 		};
 	}
 
@@ -759,7 +772,8 @@ LexerParserCompilerTestUtils {
 		len = str.asInteger;
 
 		if(len < 0) {
-			Error("parseHeader: string length must be nonnegative: got %".format(len)).throw;
+			Error("parseHeader: string length must be nonnegative: got %"
+				.format(len)).throw;
 		};
 
 		^len;
@@ -774,7 +788,8 @@ LexerParserCompilerTestUtils {
 			^this.stringFromHexString(str);
 		} {
 			arg e;
-			Error("parseHeader: error while decoding prefix: %".format(e.errorString)).throw;
+			Error("parseHeader: error while decoding prefix: %"
+				.format(e.errorString)).throw;
 		};
 	}
 
@@ -787,7 +802,8 @@ LexerParserCompilerTestUtils {
 			^this.stringFromHexString(str);
 		} {
 			arg e;
-			Error("parseHeader: error while decoding suffix: %".format(e.errorString)).throw;
+			Error("parseHeader: error while decoding suffix: %"
+				.format(e.errorString)).throw;
 		};
 	}
 
@@ -805,23 +821,17 @@ LexerParserCompilerTestUtils {
 
 	*parseEncoding {
 		arg str;
-
-		str = this.verifyFieldName(str, "encoding:");
-
-		^str;
+	  ^this.verifyFieldName(str, "encoding:");
 	}
 
 	*parseStringCount {
 		arg str;
 		var cnt = str.asInteger;
+
 		if(cnt <= 0) {
 			Error("parseHeader: string count must be > 0: got %".format(cnt)).throw;
 		};
+
 		^cnt;
 	}
-
-	//////////////////////////////////////////
-	/// HEADER READING HELPER METHODS: END ///
-	//////////////////////////////////////////
-
 }
