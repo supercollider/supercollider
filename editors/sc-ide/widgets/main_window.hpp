@@ -245,6 +245,7 @@ private:
     QString documentOpenPath();
     QString documentSavePath( Document * ) const;
     void createDocumentConnections();
+    void clearEditorList();
 
     Main *mMain;
 

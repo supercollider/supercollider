@@ -962,6 +962,17 @@ void MainWindow::onOpenSessionAction( QAction * action )
     openSession(action->text());
 }
 
+void MainWindow::clearEditorList()
+{
+    if( mEditorList.count() ) {
+        foreach( MultiEditor *ceditor, mEditorList ) {
+            if( !(ceditor == mEditors) ) {
+                mEditorList.removeOne(ceditor);
+            }
+        }
+    }
+}
+
 void MainWindow::switchSession( Session *session )
 {
     if (session)
@@ -970,35 +981,34 @@ void MainWindow::switchSession( Session *session )
     updateWindowTitle();
 
     Q_EMIT(closeSubWindows());
-    if( mEditorList.count() ) {
-        foreach( MultiEditor *ceditor, mEditorList ) {
-            if( !(ceditor == mEditors) ) {
-                mEditorList.removeOne(ceditor);
-            }
-        }
-    }
-    setCurrentEditor(mEditors);
-    Q_EMIT(mEditors->currentBox());
 
     if( !session ) {
+        QString warning_newSession = QStringLiteral("New Session ");
+                Main::scProcess()->post(warning_newSession);
         mEditors->switchSession(session, 0);
+        // When the signal currentChanged(editor) in the CodeEditorBox is emitted, somehow it add a new editor to the eEditorList
+        clearEditorList();
         setCurrentEditor(mEditors);    
     }
     else if( session->contains("editors") ) {
+        QString warning_newSession = QStringLiteral("Open Session ");
+                Main::scProcess()->post(warning_newSession);
         QVariant editorData = session->value("editors");
         QVariant * splitterData = &editorData;
         mEditors->switchSession(session, splitterData);
+        clearEditorList();
         setCurrentEditor(mEditors);
     }
     else if( session->contains("windows") ) {
+        QString warning_newSession = QStringLiteral("Open Session ");
+                Main::scProcess()->post(warning_newSession);
         QVariantList editors = session->value("windows").value<QVariantList>();
         QVariant * splitterData;
         foreach( QVariant editorData, editors ) {
-            QString warning = QStringLiteral("windowSession\n");
-                Main::scProcess()->post(warning);
             splitterData = &editorData;
             if ( editorData.toMap() == editors.first() ) {
                 mEditors->switchSession(session, splitterData);
+                clearEditorList();
                 setCurrentEditor(mEditors);
             }
             else {
@@ -1009,7 +1019,9 @@ void MainWindow::switchSession( Session *session )
             }
         }
     }
-    setCurrentEditor(mEditors);
+
+    QString warning_numWindows = QStringLiteral("(number of windows: ") + QString::number(mEditorList.count()) + QStringLiteral(").\n");
+            Main::scProcess()->post(warning_numWindows);
 }
 
 void MainWindow::saveSession( Session *session )
@@ -1063,6 +1075,7 @@ void MainWindow::setCurrentEditor(MultiEditor * ceditor)
     currentMultiEditor()->currentBox()->raise();
     currentMultiEditor()->currentBox()->show();
     currentMultiEditor()->currentBox()->activateWindow();
+    currentMultiEditor()->currentBox()->setActive();
 
     Q_EMIT( currentEditorChanged( currentMultiEditor()->currentBox()->currentDocument() ) );
 }
