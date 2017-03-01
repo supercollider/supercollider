@@ -124,7 +124,7 @@ TestParserBrutal : AbstractBrutalTest {
 			]
 		];
 
-		alphabetStringLengths = [
+		alphabetStringLengths = Dictionary[
 			// don't test on empty string - this is covered by compiler tests
 			\full -> [1,2,3,4],
 			\small -> [5,6],

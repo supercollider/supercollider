@@ -46,7 +46,7 @@ AbstractBrutalTest : UnitTest {
 				  compress: true
 			);
 
-			if(this.makingValidationFiles) {
+			if(this.makingValidationFiles.not) {
 				this.checkDiffs(diffs);
 			}
 		};

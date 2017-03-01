@@ -25,7 +25,7 @@ TestLexerTargetedBrutal : AbstractBrutalTest {
 			\acc -> ["0", "1", "9", "s", "b"]
 		];
 
-		alphabetStringLengths = [
+		alphabetStringLengths = Dictionary[
 			\alnum -> [1,2,3], // 0 and all prefixes covered by lexer tests
 			\num -> [4,5], // 0..3 covered by alnum
 			\acc -> [4,5,6] // 0..3 covered by alnum
