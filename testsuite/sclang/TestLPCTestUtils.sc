@@ -344,23 +344,23 @@ TestLPCTestUtils : UnitTest {
 		var header = Dictionary[];
 		var readHeader;
 
-		header[\alphabetSize] = 2;
-		header[\alphabet] = ["AB", "CD"];
-		header[\stringLength] = 4;
+		header[\alphSize] = 2;
+		header[\alph] = ["AB", "CD"];
+		header[\strlen] = 4;
 		header[\prefix] = "testPre";
 		header[\suffix] = "testSuf";
 		header[\technique] = \compile;
 		header[\encoding] = LexerParserCompilerTestUtils.getEncodingString(\compile);
-		header[\stringCount] = 4;
+		header[\strcnt] = 4;
 
 		this.setUpParserFile;
 		LexerParserCompilerTestUtils.writeHeader(afile,
-			header[\alphabet],
-			header[\stringLength],
+			header[\alph],
+			header[\strlen],
 			header[\prefix],
 			header[\suffix],
 			header[\technique],
-			header[\stringCount]
+			header[\strcnt]
 		);
 
 		afile.seek(0);
