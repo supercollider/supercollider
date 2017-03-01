@@ -376,8 +376,6 @@ TestLPCTestUtils : UnitTest {
 		this.tearDownParserFile;
 	}
 
-	// TODO: (possible) write code to check for errors thrown by readHeader
-
 	//////////////////////////////
 	/// TESTING HELPER METHODS ///
 	//////////////////////////////
@@ -394,12 +392,6 @@ TestLPCTestUtils : UnitTest {
 		var hexString = LexerParserCompilerTestUtils.bytecodeToHexString(input);
 		var output = LexerParserCompilerTestUtils.bytecodeFromHexString(hexString);
 		this.assertEquals(input, output, "stringToHexString and stringFromHexString should be perfect inverses.");
-	}
-
-	test_isErrorString {
-		this.assert(LexerParserCompilerTestUtils.isErrorString(LexerParserCompilerTestUtils.compileErrorString));
-		this.assert(LexerParserCompilerTestUtils.isErrorString(LexerParserCompilerTestUtils.runtimeErrorString));
-		this.assert(LexerParserCompilerTestUtils.isErrorString("!dErr").not);
 	}
 
 	test_incrementAlphabetCount_1x1 {
