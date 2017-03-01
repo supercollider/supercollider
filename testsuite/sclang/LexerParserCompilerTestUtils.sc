@@ -64,7 +64,7 @@ LexerParserCompilerTestUtils {
 
 			// Write the first result. We have to save `\n` because of the possibility
 			// for repeats. Also, reduce on an empty array returns nil, thus `?""`.
-			toTest = alphabet[counter].reduce('++')?"";
+			toTest = this.mkTestString(alphabet, counter);
 			dataLine = this.testOneString(prefix++toTest++suffix, technique);
 			file.write(this.stringToHexString(toTest)++"\t"++dataLine);
 
@@ -72,7 +72,7 @@ LexerParserCompilerTestUtils {
 
 			while { this.incrementAlphabetCount(counter, len, alphabetSize) } {
 				// no way to get here if we had an empty array, so we can discard `?""`
-				toTest = alphabet[counter].reduce('++');
+				toTest = this.mkTestString(alphabet, counter);
 				dataLine = this.testOneString(prefix++toTest++suffix, technique);
 
 				// Only do fancy compression techniques if asked. Otherwise just print
@@ -121,6 +121,12 @@ LexerParserCompilerTestUtils {
 		} {
 			^[];
 		}
+	}
+
+	*mkTestString {
+		arg alphabet, counter;
+		// Since reduce on an empty array returns nil, `?""` is a safeguard.
+		^alphabet[counter].reduce('++')?"";
 	}
 
 	*mkOutputFileSafe {
