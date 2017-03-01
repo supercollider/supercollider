@@ -24,7 +24,6 @@ LexerParserCompilerTestUtils {
 	// string before testing. Only strings of length `len` are tested.
 	// Note that the given alphabet will be sorted before beginning.
 	*testAllPossibleStrings {
-		// Basic arguments
 		arg alphabet, len, prefix, suffix, testID, technique,
 
 		// If true, don't validate or delete the file, but give it the validation suffix
@@ -125,7 +124,7 @@ LexerParserCompilerTestUtils {
 	*mkOutputFileSafe {
 		arg filename;
 
-    var file;
+		var file;
 
 		postln("%: Creating file: %".format(this.class, PathName(filename).fileName));
 		if(File.exists(filename)) {
