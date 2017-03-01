@@ -1968,11 +1968,6 @@ void MainWindow::closeWindow( MultiEditor * ceditor )
             setCurrentEditor(mEditorList.at(1));
         mEditorList.removeOne(ceditor);
     }
-
-    foreach(MultiEditor * dem, mEditorList) {
-        QString warning_newSession = QStringLiteral("Open Session ");
-                Main::scProcess()->post(warning_newSession);
-    }
 }
 
 void MainWindow::reloadAllLists( QList<Document*> newlist ) {
