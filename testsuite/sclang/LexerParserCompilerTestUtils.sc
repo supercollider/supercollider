@@ -23,53 +23,36 @@ LexerParserCompilerTestUtils {
 	// The client may also specify an optional prefix and/or suffix to be added to each
 	// string before testing. Only strings of length `len` are tested.
 	*testAllPossibleStrings {
-		arg alphabet, // Array of strings to test
-		len, // String length
-		prefix = "", suffix = "",
-		testID = "",
-		technique = \compile,
-		// if true, don't validate or delete the file, and give it
-		// a validation filename suffix
-		createValidationFile = false,
-		compressRepeatResults = true;
 
-		var alphabetSize = alphabet.size;
-		var filename, file;
-		// intro content to be written to the file
-		var header;
-		// holds a list (empty under sucessful execution) of
-		// differences between expected and actual output
-		var diffs = [];
+		// Basic arguments
+		arg alphabet, len, prefix, suffix, testID, technique,
+
+		// If true, don't validate or delete the file, and
+		// give it a validation filename suffix.
+		doValidate = false,
+
+		// If true, note repeated results with a number instead of actually printing out
+		// consecutive lines with the same output.
+		compress = true;
+
+		var alphabetSize, filename, file;
 		// holds the string that will be tested with testOneString
-		var testString;
+		var toTest;
 		// hold the previous result for compressing repeat results
-		var prevResult, repeatedResultCount = 0;
-		// a counter [0, 0, ..., 0] which is used to index into the alphabet
-		// for string generation
+		var prevResult;
+		var repeatCount = 0;
+		// a counter [0, 0, ..., 0] which is used to index into the alphabet for string
+		// generation
 		var counter = 0!len;
+		// will hold the line to be stored to the file
 		var dataLine;
-		// will hold the result stored to the file
 		var isPrefixEmpty = prefix.isEmpty;
 		var isSuffixEmpty = suffix.isEmpty;
 
-		// sort the alphabet to start
 		alphabet = alphabet.sort;
+		alphabetSize = alphabet.size;
 
-		filename = this.mkFilename(testID);
-		if(createValidationFile) {
-			filename = filename ++ validatedOutputFilenameSuffix;
-		};
-
-		postln("testAllPossibleStrings: Creating file: %".format(PathName(filename).fileName));
-		if(File.exists(filename)) {
-			Error("testAllPossibleStrings: File % already exists: "
-				"please delete before continuing".format(filename.quote)).throw;
-		};
-
-		file = File.new(filename, "w");
-		if(file.isOpen.not) {
-			Error("testAllPossibleStrings: Failed to open file").throw;
-		};
+		file = this.mkOutputFileSafe(testID, doValidate);
 
 		protect {
 			// postln("testAllPossibleStrings: Writing header");
@@ -80,42 +63,54 @@ LexerParserCompilerTestUtils {
 
 			postln("testAllPossibleStrings: Writing data");
 
-			// write the first result
-			testString = alphabet[counter].reduce('++')?""; // reduce on an empty array returns nil
-			dataLine = this.testOneString(this.mkTestString(prefix,testString,suffix,isPrefixEmpty,isSuffixEmpty), technique);
-			file.write(this.stringToHexString(testString) ++ "\t" ++ dataLine);
+			// Write the first result.
+			// Reduce on an empty array returns nil.
+			toTest = alphabet[counter].reduce('++')?"";
+			dataLine = this.testOneString(
+				this.mkTestString(
+					prefix, toTest, suffix, isPrefixEmpty, isSuffixEmpty
+				), technique
+			);
+			file.write(this.stringToHexString(toTest) ++ "\t" ++ dataLine);
 
 			prevResult = dataLine;
 
 			while {this.incrementAlphabetCount(counter, len, alphabetSize)} {
 
-				testString = alphabet[counter].reduce('++'); // we couldn't get here if we had an empty array
-				dataLine = this.testOneString(this.mkTestString(prefix,testString,suffix,isPrefixEmpty,isSuffixEmpty), technique);
+				// we couldn't get here if we had an empty array
+				toTest = alphabet[counter].reduce('++');
+				dataLine = this.testOneString(
+					this.mkTestString(
+						prefix,toTest,suffix,isPrefixEmpty,isSuffixEmpty
+					), technique
+				);
 
-				if(compressRepeatResults) {
+				if(compress) {
+					// if we just saw this result, don't print it, but keep track of it
 					if(dataLine == prevResult) {
-						// if we just saw this result, don't print it, but keep track of it
-						repeatedResultCount = repeatedResultCount + 1;
+						repeatCount = repeatCount + 1;
 					} {
-						if(repeatedResultCount > 0) {
+
+						if(repeatCount > 0) {
 							// give a count if it's more than 0. 0 is the assumed default
-							file.write("\t" ++ repeatedResultCount.asString);
-							repeatedResultCount = 0;
+							file.write("\t" ++ repeatCount.asString);
+							repeatCount = 0;
 						};
 
-						file.write("\n" ++ this.stringToHexString(testString) ++ "\t" ++ dataLine);
-						prevResult = dataLine; // only update if it changed
+						file.write("\n" ++ this.stringToHexString(toTest) ++ "\t" ++ dataLine);
+						// only update if it changed
+						prevResult = dataLine;
 					}
 				} {
 					// just write the line normally
-					file.write("\n" ++ this.stringToHexString(testString) ++ "\t" ++ dataLine);
+					file.write("\n" ++ this.stringToHexString(toTest) ++ "\t" ++ dataLine);
 				}
 
-			};
+			}; // end while
 
-			if(compressRepeatResults && (repeatedResultCount > 0)) {
-				// "flush the buffer"
-				file.write("\t" ++ repeatedResultCount.asString);
+			if(compress && (repeatCount > 0)) {
+				// flush the buffer
+				file.write("\t" ++ repeatCount);
 			};
 
 			file.putChar($\n);
@@ -123,7 +118,10 @@ LexerParserCompilerTestUtils {
 			file.close;
 		};
 
-		if(createValidationFile.not) {
+		if(doValidate.not) {
+			// if validating, record the diffs and delete the file
+			var diffs;
+
 			protect {
 				postln("testAllPossibleStrings: Validating against expected output");
 				diffs = this.validate(filename);
@@ -131,11 +129,40 @@ LexerParserCompilerTestUtils {
 				postln("testAllPossibleStrings: Deleting test file");
 				File.delete(filename);
 			}
+		} {
+			// if making validation file, return empty diffs
+			^[];
+		}
+	}
+
+	*mkOutputFileSafe {
+		arg testID, doValidate;
+
+		var filename, file;
+
+		filename = this.mkFilename(testID);
+
+		if(doValidate) {
+			filename = filename ++ validatedOutputFilenameSuffix;
 		};
 
-		// postln("testAllPossibleStrings: Success!");
+		postln("%: Creating file: %".format(this.class, PathName(filename).fileName));
+		if(File.exists(filename)) {
+			Error("%: File % already exists\n"
+				"\tPlease delete before continuing".format(this.class, filename.quote)).throw;
+		};
 
-		^diffs;
+		try {
+			file = File.new(filename, "w");
+		} {
+			Error("%: Failed to open file.".format(this.class)).throw;
+		};
+
+		if(file.isOpen.not) {
+			Error("testAllPossibleStrings: Failed to open file").throw;
+		};
+
+		^file;
 	}
 
 	*mkTestString {
@@ -183,7 +210,7 @@ LexerParserCompilerTestUtils {
 			len = len-1;
 			ctr[len] = ctr[len] + 1;
 			/*if(len == 0) {
-				"incrementAlphabetCount: at %\n".postf(ctr);
+			"incrementAlphabetCount: at %\n".postf(ctr);
 			};*/
 			if(ctr[len] != n) {^true} {ctr[len] = 0};
 		};

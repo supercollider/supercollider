@@ -36,14 +36,14 @@ AbstractBrutalTest : UnitTest {
 			arg len;
 
 			var diffs = LexerParserCompilerTestUtils.testAllPossibleStrings(
-				alphabets[alphabetName],
-				len,
-				prefix,
-				suffix,
-				"%_%_%".format(alphabetName, len, testMode),
-				technique,
-				this.makingValidationFiles,
-				true
+				  alphabet: alphabets[alphabetName],
+				       len: len,
+				    prefix: prefix,
+				    suffix: suffix,
+				    testID: "%_%_%".format(alphabetName, len, testMode),
+				 technique: technique,
+				doValidate: this.makingValidationFiles,
+				  compress: true
 			);
 
 			if(this.makingValidationFiles) {
@@ -65,13 +65,15 @@ AbstractBrutalTest : UnitTest {
 		}
 	}
 
+	// Give a nicely formatting string to inform the user what test mode we started.
 	printTestMode {
 		arg mode;
 
 		"".postln;
-		"%: running test mode %".format(this.class, mode).underlined.postln;
+		"%: running test mode %".format(this.class, mode.quote).underlined.postln;
 	}
 
+	// Force creation of this test's output directory
 	createOutputDir {
 		var dirname = this.outputDir.resolveRelative;
 
