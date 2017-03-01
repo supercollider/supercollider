@@ -63,8 +63,8 @@ LexerParserCompilerTestUtils {
 
 			postln("testAllPossibleStrings: Writing data");
 
-			// Write the first result.
-			// Reduce on an empty array returns nil, thus `?""`.
+			// Write the first result. We have to save `\n` because of the possibility
+			// for repeats. Also, reduce on an empty array returns nil, thus `?""`.
 			toTest = alphabet[counter].reduce('++')?"";
 			dataLine = this.testOneString(prefix++toTest++suffix, technique);
 			file.write(this.stringToHexString(toTest)++"\t"++dataLine);
@@ -72,46 +72,44 @@ LexerParserCompilerTestUtils {
 			prevResult = dataLine;
 
 			while { this.incrementAlphabetCount(counter, len, alphabetSize) } {
-
-				// we couldn't get here if we had an empty array, so no need to use `?""`
+				// no way to get here if we had an empty array, so we can discard `?""`
 				toTest = alphabet[counter].reduce('++');
 				dataLine = this.testOneString(prefix++toTest++suffix, technique);
 
+				// Only do fancy compression techniques if asked. Otherwise just print
+				// a normal line.
 				if(compress) {
-					// if we just saw this result, don't print it, but keep track of it
-					if(dataLine == prevResult) {
-						repeatCount = repeatCount + 1;
-					} {
-
+					// If this is a new result, write out the previous repeat count (if
+					// there was one). Otherwise, just increment the repeat counter.
+					if(dataLine != prevResult) {
 						if(repeatCount > 0) {
-							// give a count if it's more than 0. 0 is the assumed default
-							file.write("\t"++repeatCount.asString);
+							file.write("\t"++repeatCount);
 							repeatCount = 0;
 						};
 
 						file.write("\n"++this.stringToHexString(toTest)++"\t"++dataLine);
-						// only update if it changed
 						prevResult = dataLine;
-					}
+					} {
+						repeatCount = repeatCount + 1;
+					};
 				} {
-					// just write the line normally
 					file.write("\n"++this.stringToHexString(toTest)++"\t"++dataLine);
-				}
-
+				};
 			}; // end while
 
+			// Flush any leftover count.
 			if(compress && (repeatCount > 0)) {
-				// flush the buffer
-				file.write("\t" ++ repeatCount);
+				file.write("\t"++repeatCount);
 			};
 
 			file.putChar($\n);
 		} {
+			// If anything bad happened while writing, protect by closing the file
 			file.close;
 		};
 
+		// If validating, record the diffs and delete the file.
 		if(doValidate.not) {
-			// if validating, record the diffs and delete the file
 			var diffs;
 
 			protect {
@@ -122,7 +120,6 @@ LexerParserCompilerTestUtils {
 				File.delete(filename);
 			}
 		} {
-			// if making validation file, return empty diffs
 			^[];
 		}
 	}
