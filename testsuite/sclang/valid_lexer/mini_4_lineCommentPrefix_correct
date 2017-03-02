@@ -1,0 +1,11 @@
+HEAD
+alphabet size:38
+alphabet:20,21,22,23,24,25,26,27,28,29,2A,2B,2C,2D,2E,2F,30,39,3A,3B,3C,3D,3E,3F,40,41,5A,5B,5C,5D,5F,60,61,7A,7B,7C,7D,7E
+string length:4
+prefix:2F2F
+suffix:
+technique:compile
+encoding:<hex-format input string><tab><"!cErr" (compile error) | "!rErr" (runtime error) | hex-format output string><opt `:` & class name of output><opt tab & count of consecutive repeats of this result (no number means no repetitions)>
+DATA
+2085136
+20202020	6E696C:Nil	2085135
