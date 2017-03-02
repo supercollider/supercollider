@@ -376,10 +376,10 @@ Server {
 		audioBusOffset = options.firstPrivateBus + (numAudio * offset) + options.reservedNumAudioBusChannels;
 
 		controlBusAllocator =
-		ContiguousBlockAllocator.new(numControl, controlBusOffset);
+		ContiguousBlockAllocator.new(numControl + controlBusOffset, controlBusOffset);
 
 		audioBusAllocator =
-		ContiguousBlockAllocator.new(numAudio, audioBusOffset);
+		ContiguousBlockAllocator.new(numAudio + audioBusOffset, audioBusOffset);
 	}
 
 
