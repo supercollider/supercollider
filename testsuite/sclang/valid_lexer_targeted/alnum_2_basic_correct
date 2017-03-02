@@ -1,0 +1,234 @@
+HEAD
+alphabet size:66
+alphabet:2B,2D,2E,30,31,32,33,34,35,36,37,38,39,41,42,43,44,45,46,47,48,49,4A,4B,4C,4D,4E,4F,50,51,52,53,54,55,56,57,58,59,5A,61,62,63,64,65,66,67,68,69,6A,6B,6C,6D,6E,6F,70,7069,71,72,73,74,75,76,77,78,79,7A
+string length:2
+prefix:
+suffix:
+technique:compile
+encoding:<hex-format input string><tab><"!cErr" (compile error) | "!rErr" (runtime error) | hex-format output string><opt `:` & class name of output><opt tab & count of consecutive repeats of this result (no number means no repetitions)>
+DATA
+4356
+2B2B	!cErr	68
+2D30	30:Integer
+2D31	2D31:Integer
+2D32	2D32:Integer
+2D33	2D33:Integer
+2D34	2D34:Integer
+2D35	2D35:Integer
+2D36	2D36:Integer
+2D37	2D37:Integer
+2D38	2D38:Integer
+2D39	2D39:Integer
+2D41	!cErr	41
+2D7069	2D332E31343135393236353335383938:Float
+2D71	!cErr	78
+3030	30:Integer
+3031	31:Integer
+3032	32:Integer
+3033	33:Integer
+3034	34:Integer
+3035	35:Integer
+3036	36:Integer
+3037	37:Integer
+3038	38:Integer
+3039	39:Integer
+3041	!cErr	26
+3062	2D302E31:Float
+3063	!cErr	13
+307069	30:Float
+3071	!cErr
+3072	30:Integer
+3073	302E31:Float
+3074	!cErr	3
+3078	30:Integer
+3079	!cErr	4
+3130	3130:Integer
+3131	3131:Integer
+3132	3132:Integer
+3133	3133:Integer
+3134	3134:Integer
+3135	3135:Integer
+3136	3136:Integer
+3137	3137:Integer
+3138	3138:Integer
+3139	3139:Integer
+3141	!cErr	26
+3162	302E39:Float
+3163	!cErr	13
+317069	332E31343135393236353335383938:Float
+3171	!cErr
+3172	30:Integer
+3173	312E31:Float
+3174	!cErr	3
+3178	30:Integer
+3179	!cErr	4
+3230	3230:Integer
+3231	3231:Integer
+3232	3232:Integer
+3233	3233:Integer
+3234	3234:Integer
+3235	3235:Integer
+3236	3236:Integer
+3237	3237:Integer
+3238	3238:Integer
+3239	3239:Integer
+3241	!cErr	26
+3262	312E39:Float
+3263	!cErr	13
+327069	362E32383331383533303731373936:Float
+3271	!cErr
+3272	30:Integer
+3273	322E31:Float
+3274	!cErr	3
+3278	30:Integer
+3279	!cErr	4
+3330	3330:Integer
+3331	3331:Integer
+3332	3332:Integer
+3333	3333:Integer
+3334	3334:Integer
+3335	3335:Integer
+3336	3336:Integer
+3337	3337:Integer
+3338	3338:Integer
+3339	3339:Integer
+3341	!cErr	26
+3362	322E39:Float
+3363	!cErr	13
+337069	392E34323437373739363037363934:Float
+3371	!cErr
+3372	30:Integer
+3373	332E31:Float
+3374	!cErr	3
+3378	30:Integer
+3379	!cErr	4
+3430	3430:Integer
+3431	3431:Integer
+3432	3432:Integer
+3433	3433:Integer
+3434	3434:Integer
+3435	3435:Integer
+3436	3436:Integer
+3437	3437:Integer
+3438	3438:Integer
+3439	3439:Integer
+3441	!cErr	26
+3462	332E39:Float
+3463	!cErr	13
+347069	31322E353636333730363134333539:Float
+3471	!cErr
+3472	30:Integer
+3473	342E31:Float
+3474	!cErr	3
+3478	30:Integer
+3479	!cErr	4
+3530	3530:Integer
+3531	3531:Integer
+3532	3532:Integer
+3533	3533:Integer
+3534	3534:Integer
+3535	3535:Integer
+3536	3536:Integer
+3537	3537:Integer
+3538	3538:Integer
+3539	3539:Integer
+3541	!cErr	26
+3562	342E39:Float
+3563	!cErr	13
+357069	31352E373037393633323637393439:Float
+3571	!cErr
+3572	30:Integer
+3573	352E31:Float
+3574	!cErr	3
+3578	30:Integer
+3579	!cErr	4
+3630	3630:Integer
+3631	3631:Integer
+3632	3632:Integer
+3633	3633:Integer
+3634	3634:Integer
+3635	3635:Integer
+3636	3636:Integer
+3637	3637:Integer
+3638	3638:Integer
+3639	3639:Integer
+3641	!cErr	26
+3662	352E39:Float
+3663	!cErr	13
+367069	31382E383439353535393231353339:Float
+3671	!cErr
+3672	30:Integer
+3673	362E31:Float
+3674	!cErr	3
+3678	30:Integer
+3679	!cErr	4
+3730	3730:Integer
+3731	3731:Integer
+3732	3732:Integer
+3733	3733:Integer
+3734	3734:Integer
+3735	3735:Integer
+3736	3736:Integer
+3737	3737:Integer
+3738	3738:Integer
+3739	3739:Integer
+3741	!cErr	26
+3762	362E39:Float
+3763	!cErr	13
+377069	32312E393931313438353735313239:Float
+3771	!cErr
+3772	30:Integer
+3773	372E31:Float
+3774	!cErr	3
+3778	30:Integer
+3779	!cErr	4
+3830	3830:Integer
+3831	3831:Integer
+3832	3832:Integer
+3833	3833:Integer
+3834	3834:Integer
+3835	3835:Integer
+3836	3836:Integer
+3837	3837:Integer
+3838	3838:Integer
+3839	3839:Integer
+3841	!cErr	26
+3862	372E39:Float
+3863	!cErr	13
+387069	32352E313332373431323238373138:Float
+3871	!cErr
+3872	30:Integer
+3873	382E31:Float
+3874	!cErr	3
+3878	30:Integer
+3879	!cErr	4
+3930	3930:Integer
+3931	3931:Integer
+3932	3932:Integer
+3933	3933:Integer
+3934	3934:Integer
+3935	3935:Integer
+3936	3936:Integer
+3937	3937:Integer
+3938	3938:Integer
+3939	3939:Integer
+3941	!cErr	26
+3962	382E39:Float
+3963	!cErr	13
+397069	32382E323734333333383832333038:Float
+3971	!cErr
+3972	30:Integer
+3973	392E31:Float
+3974	!cErr	3
+3978	30:Integer
+3979	!cErr	214
+4443	4443:Meta_DC
+4444	!cErr	365
+496E	496E:Meta_In
+496F	!cErr	460
+506E	506E:Meta_Pn
+506F	!cErr	1580
+6E6C	0A:String
+6E6D	!cErr	127
+7069	332E31343135393236353335383938:Float
+706A	!cErr	743

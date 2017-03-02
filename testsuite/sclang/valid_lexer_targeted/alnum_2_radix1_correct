@@ -1,0 +1,52 @@
+HEAD
+alphabet size:66
+alphabet:2B,2D,2E,30,31,32,33,34,35,36,37,38,39,41,42,43,44,45,46,47,48,49,4A,4B,4C,4D,4E,4F,50,51,52,53,54,55,56,57,58,59,5A,61,62,63,64,65,66,67,68,69,6A,6B,6C,6D,6E,6F,70,7069,71,72,73,74,75,76,77,78,79,7A
+string length:2
+prefix:3172
+suffix:
+technique:compile
+encoding:<hex-format input string><tab><"!cErr" (compile error) | "!rErr" (runtime error) | hex-format output string><opt `:` & class name of output><opt tab & count of consecutive repeats of this result (no number means no repetitions)>
+DATA
+4356
+2B2B	!cErr	2
+2B30	30:Integer
+2B31	31:Integer
+2B32	32:Integer
+2B33	33:Integer
+2B34	34:Integer
+2B35	35:Integer
+2B36	36:Integer
+2B37	37:Integer
+2B38	38:Integer
+2B39	39:Integer
+2B41	!cErr	25
+2B61	!rErr	15
+2B7069	332E31343135393236353335383938:Float
+2B71	!rErr	9
+2D2B	!cErr	2
+2D30	30:Integer
+2D31	2D31:Integer
+2D32	2D32:Integer
+2D33	2D33:Integer
+2D34	2D34:Integer
+2D35	2D35:Integer
+2D36	2D36:Integer
+2D37	2D37:Integer
+2D38	2D38:Integer
+2D39	2D39:Integer
+2D41	!cErr	25
+2D61	!rErr	15
+2D7069	2D332E31343135393236353335383938:Float
+2D71	!rErr	9
+2E2B	!cErr	2
+2E30	30:Float
+2E31	!cErr	50
+2E7069	30:Float
+2E71	!cErr	11
+302E	30:Float
+3030	30:Integer
+3031	!cErr	50
+307069	30:Float
+3071	!cErr	3356
+7069	30:Float
+706A	!cErr	743
