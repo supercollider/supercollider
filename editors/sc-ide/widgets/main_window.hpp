@@ -72,6 +72,7 @@ public:
         Quit = 0,
         DocNew,
         DocOpen,
+        DocOpenRecent,
         DocOpenStartup,
         DocOpenSupportDir,
         DocSave,
@@ -189,6 +190,7 @@ public Q_SLOTS:
     void closeWindow( MultiEditor * );
     void setCurrentEditor( MultiEditor * );
     void switchEditor();
+    void updateRecentDocsMenu();
 
 private Q_SLOTS:
     void openStartupFile();
@@ -201,7 +203,6 @@ private Q_SLOTS:
     void onCurrentDocumentChanged( Document * );
     void onDocumentChangedExternally( Document * );
     void onDocDialogFinished();
-    void updateRecentDocsMenu();
     void onOpenRecentDocument( QAction * );
     void onOpenSessionAction( QAction * );
     void updateWindowTitle();
@@ -361,6 +362,11 @@ public:
         this->setAttribute(Qt::WA_DeleteOnClose);
         connect(sEditors, SIGNAL(closeWindow()), this, SLOT(close()));
         connect(main, SIGNAL(closeSubWindows()), this, SLOT(close()));
+
+        connect(Main::documentManager(), SIGNAL(recentsChanged()),
+            main, SLOT(updateRecentDocsMenu()));
+
+        main->updateRecentDocsMenu();
     }
 
     MultiEditor * editor() { return sEditors; }

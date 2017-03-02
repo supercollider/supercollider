@@ -1189,8 +1189,10 @@ void MultiEditor::onOpen( Document *doc, int initialCursorPosition, int selectio
 {
     addTab(doc);
 
-    currentBox()->setDocument(doc, initialCursorPosition, selectionLength);
-    currentBox()->setFocus(Qt::OtherFocusReason);
+    if( MainWindow::instance()->currentMultiEditor() == this ) {
+        currentBox()->setDocument(doc, initialCursorPosition, selectionLength);
+        currentBox()->setFocus(Qt::OtherFocusReason);
+    }
 }
 
 void MultiEditor::onClose( Document *doc )

@@ -206,8 +206,10 @@ private:
         foreach(MultiEditor *editor, history)
             displayEditors << editor;
 
+        QStandardItem * item = new QStandardItem(QStringLiteral("Empty"));
         foreach (MultiEditor * editor, displayEditors) {
-            QStandardItem * item = new QStandardItem(editor->currentBox()->currentDocument()->title());
+            if(editor->currentBox()->currentDocument())
+                item = new QStandardItem(editor->currentBox()->currentDocument()->title());
             item->setData(QVariant::fromValue(editor));
             mModel->appendRow(item);
         }
@@ -1082,6 +1084,8 @@ MultiEditor *MainWindow::currentMultiEditor()
 {
     if(mEditorList.count())
         return mEditorList.first();
+    else
+        return mEditors;
 }
 
 QAction *MainWindow::action( ActionRole role )
