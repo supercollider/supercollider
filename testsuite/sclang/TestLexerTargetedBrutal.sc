@@ -14,7 +14,7 @@ TestLexerTargetedBrutal : AbstractBrutalTest {
 		alphanumAlphabet = alphanumAlphabet.collect(_.asString);
 		alphanumAlphabet = alphanumAlphabet ++ ["pi", "+", "-", "."];
 
-		alphabets = [
+		alphabets = Dictionary[
 			// alphanumeric characters plus [(pi)+-.]
 			\alnum -> alphanumAlphabet,
 
