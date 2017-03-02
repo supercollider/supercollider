@@ -404,7 +404,6 @@ void MultiEditor::createActions()
 
     QAction * action;
     const QString editorCategory(tr("Text Editor"));
-    const QString ideCategory("IDE");
 
     // Edit
 
@@ -692,7 +691,7 @@ void MultiEditor::createActions()
     action->setStatusTip(tr("Shows the editorList popup"));
     action->setShortcut( tr("Ctrl+Alt+E", "Switch Editor"));
     connect(action, SIGNAL(triggered()), MainWindow::instance(), SLOT(switchEditor()));
-    settings->addAction( action, "editor-switch", ideCategory);
+    settings->addAction( action, "editor-switch", editorCategory);
 
     mActions[SplitHorizontally] = action = new QAction(tr("Split To Right"), this);
     //action->setShortcut( tr("Ctrl+P, 3", "Split To Right"));
@@ -746,8 +745,7 @@ void MultiEditor::createActions()
     // at least to this widget, in order for the shortcuts to always respond:
     addAction(mActions[TriggerAutoCompletion]);
     addAction(mActions[TriggerMethodCallAid]);
-    addAction(mActions[SwitchDocument]);
-    addAction(mActions[SwitchEditor]);
+//    addAction(mActions[SwitchDocument]);    // This prevents the shortcut to work on restored SubWindows
 
     // These actions have to be added because to the widget because they have
     // Qt::WidgetWithChildrenShortcut context:

@@ -144,13 +144,12 @@ private:
     {
         switch (ke->key()) {
         case Qt::Key_Down:
-        case Qt::Key_Tab:
+        case Qt::Key_E:
             cycleDown();
             ke->accept();
             return;
 
         case Qt::Key_Up:
-        case Qt::Key_Backtab:
             cycleUp();
             ke->accept();
             return;
