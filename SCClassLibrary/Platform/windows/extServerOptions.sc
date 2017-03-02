@@ -10,7 +10,7 @@
 			opt = opt.drop(1).asSymbol;
 			if (opt == \t) { protocol = \tcp; };
 			if (opt == \u) { protocol = \udp; };
-			if (opt == \a) { numPrivateAudioBusChannels = val.asInteger };
+			if (opt == \a) { this.numPrivateAudioBusChannels = val.asInteger };
 			if (opt == \c) { numControlBusChannels = val.asInteger };
 			if (opt == \i) { numInputBusChannels = val.asInteger };
 			if (opt == \o) { numOutputBusChannels = val.asInteger };

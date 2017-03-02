@@ -1,9 +1,11 @@
 ServerOptions {
+
 	// order of variables is important here. Only add new instance variables to the end.
-	var <numAudioBusChannels=1024;
+
+	var <>numAudioBusChannels=1024;
 	var <>numControlBusChannels=16384;
-	var <numInputBusChannels=2;
-	var <numOutputBusChannels=2;
+	var <>numInputBusChannels=2;
+	var <>numOutputBusChannels=2;
 	var <>numBuffers=1026;
 
 	var <>maxNodes=1024;
@@ -38,8 +40,6 @@ ServerOptions {
 	var <>threads = nil; // for supernova
 	var <>useSystemClock = false;  // for supernova
 
-	var <numPrivateAudioBusChannels=112;
-
 	var <>reservedNumAudioBusChannels = 0;
 	var <>reservedNumControlBusChannels = 0;
 	var <>reservedNumBuffers = 0;
@@ -71,7 +71,7 @@ ServerOptions {
 		o = if(protocol == \tcp, " -t ", " -u ");
 		o = o ++ port;
 
-		o = o ++ " -a " ++ (numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels) ;
+		o = o ++ " -a " ++ numAudioBusChannels;
 
 		if (numControlBusChannels != 16384, {
 			o = o ++ " -c " ++ numControlBusChannels;
@@ -170,28 +170,12 @@ ServerOptions {
 		^this.primitiveFailed
 	}
 
+	numPrivateAudioBusChannels {
+		^numAudioBusChannels - numInputBusChannels - numOutputBusChannels
+	}
+
 	numPrivateAudioBusChannels_ { |numChannels|
-		numPrivateAudioBusChannels = numChannels;
-		this.recalcChannels;
-	}
-
-	numAudioBusChannels_ { |numChannels|
-		numAudioBusChannels = numChannels;
-		numPrivateAudioBusChannels = numAudioBusChannels - numInputBusChannels - numOutputBusChannels;
-	}
-
-	numInputBusChannels_ { |numChannels|
-		numInputBusChannels = numChannels;
-		this.recalcChannels;
-	}
-
-	numOutputBusChannels_ { |numChannels|
-		numOutputBusChannels = numChannels;
-		this.recalcChannels;
-	}
-
-	recalcChannels {
-		numAudioBusChannels = numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels;
+		numAudioBusChannels = numChannels + numInputBusChannels + numOutputBusChannels
 	}
 
 	*prListDevices {
