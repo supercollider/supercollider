@@ -38,11 +38,19 @@
 # include <io.h>
 # include <windows.h>
 # include <ioapiset.h>
-#include <future>
+# ifdef USE_LINENOISE
+#  include <future>
+# endif
 #endif
 
 #ifdef __APPLE__
 #include "../../common/SC_Apple.hpp"
+#endif
+
+#ifdef HAVE_READLINE
+# include <readline/readline.h>
+# include <readline/history.h>
+# include <signal.h>
 #endif
 
 #include "GC.h"
@@ -55,18 +63,26 @@
 #include "SC_LanguageConfig.hpp"
 #include "SC_Version.hpp"
 
-
-#include "linenoise.h"
+#ifdef USE_LINENOISE
+# include "linenoise.h"
+#endif
 
 static FILE* gPostDest = stdout;
+
+#ifdef USE_LINENOISE
 bool SC_TerminalClient::mWantsToExit = false;
+#endif
 
 SC_TerminalClient::SC_TerminalClient(const char* name)
 	: SC_LanguageClient(name),
-	  mReturnCode(0),
-	  mUseLinenoise(false),
-	  mWork(mIoService),
-	  mTimer(mIoService),
+		mReturnCode(0),
+#ifdef USE_LINENOISE
+		mUseLinenoise(false),
+#else
+		mUseReadline(false),
+#endif
+		mWork(mIoService),
+		mTimer(mIoService),
 #ifndef _WIN32
 	  mStdIn(mInputService, STDIN_FILENO)
 #else
@@ -346,7 +362,12 @@ void SC_TerminalClient::interpretInput()
 		i = 0;
 	}
 	mInputBuf.reset();
-	startInputRead();
+#ifdef HAVE_READLINE
+			if (mUseReadline)
+				mReadlineSem.post();
+			else
+#endif
+			startInputRead();
 }
 
 void SC_TerminalClient::onLibraryStartup()
@@ -421,6 +442,97 @@ void SC_TerminalClient::daemonLoop()
 	commandLoop();
 }
 
+// HAVE_READLINE
+#ifdef HAVE_READLINE
+
+static void sc_rl_cleanlf(void)
+{
+	rl_reset_line_state();
+	rl_crlf();
+	rl_redisplay();
+}
+
+static void sc_rl_signalhandler(int sig)
+{
+	// ensure ctrl-C clears line rather than quitting (ctrl-D will quit nicely)
+	rl_replace_line("", 0);
+	sc_rl_cleanlf();
+}
+
+static int sc_rl_mainstop(int i1, int i2)
+{
+	static_cast<SC_TerminalClient*>(SC_LanguageClient::instance())
+		->sendSignal( SC_TerminalClient::sig_stop );
+	sc_rl_cleanlf(); // We also push a newline so that there's some UI feedback
+	return 0;
+}
+
+/*
+// Completion from sclang dictionary TODO
+char ** sc_rl_completion (const char *text, int start, int end);
+char ** sc_rl_completion (const char *text, int start, int end){
+	char **matches = (char **)NULL;
+	printf("sc_rl_completion(%s, %i, %i)\n", text, start, end);
+	return matches;
+}
+*/
+
+int SC_TerminalClient::readlineRecompile(int i1, int i2)
+{
+	static_cast<SC_TerminalClient*>(SC_LanguageClient::instance())->sendSignal(sig_recompile);
+	sc_rl_cleanlf();
+	return 0;
+}
+
+void SC_TerminalClient::readlineCmdLine( char *cmdLine )
+{
+	SC_TerminalClient *client = static_cast<SC_TerminalClient*>(instance());
+
+	if( cmdLine == NULL ) {
+		postfl("\nExiting sclang (ctrl-D)\n");
+		client->onQuit(0);
+		return;
+	}
+
+	if( *cmdLine != 0 ) {
+		// If line wasn't empty, store it so that uparrow retrieves it
+		add_history(cmdLine);
+		int len = strlen(cmdLine);
+
+		client->mInputBuf.append(cmdLine, len);
+		client->mInputBuf.append(kInterpretPrintCmdLine);
+		client->sendSignal(sig_input);
+		client->mReadlineSem.wait();
+	}
+}
+
+void SC_TerminalClient::readlineInit()
+{
+	// Setup readline
+	rl_readline_name = "sclang";
+	rl_basic_word_break_characters = " \t\n\"\\'`@><=;|&{}().";
+	//rl_attempted_completion_function = sc_rl_completion;
+	rl_bind_key(CTRL('t'), &sc_rl_mainstop);
+	rl_bind_key(CTRL('x'), &readlineRecompile);
+	rl_callback_handler_install( "sc3> ", &readlineCmdLine );
+
+	// FIXME: Implement the code below on Windows
+#ifndef _WIN32
+	// Set our handler for SIGINT that will clear the line instead of terminating.
+	// NOTE: We prevent readline from setting its own signal handlers,
+	// to not override ours.
+	rl_catch_signals = 0;
+	struct sigaction sact;
+	memset( &sact, 0, sizeof(struct sigaction) );
+	sact.sa_handler = &sc_rl_signalhandler;
+	sigaction( SIGINT, &sact, 0 );
+#endif
+}
+
+#endif // HAVE_READLINE
+
+// USE_LINENOISE
+#ifdef USE_LINENOISE
 
 void SC_TerminalClient::linenoiseRecompile()
 {
@@ -446,7 +558,6 @@ void SC_TerminalClient::linenoiseInit()
 	linenoiseBindkeyAdd('X' - 0x40, &linenoiseRecompile);
 	linenoiseBindkeyAdd('D' - 0x40, &linenoiseQuit);
 }
-
 
 void SC_TerminalClient::startInputRead()
 {
@@ -496,6 +607,37 @@ void SC_TerminalClient::startInputRead_()
 	}
 }
 
+#else // USE_LINENOISE, and even if HAVE_READLINE undefined
+
+void SC_TerminalClient::startInputRead()
+{
+#ifndef _WIN32
+	if (mUseReadline)
+		mStdIn.async_read_some(boost::asio::null_buffers(), boost::bind(&SC_TerminalClient::onInputRead, this, _1, _2));
+	else
+		mStdIn.async_read_some(boost::asio::buffer(inputBuffer), boost::bind(&SC_TerminalClient::onInputRead, this, _1, _2));
+#else
+	mStdIn.async_wait( [&] (const boost::system::error_code & error) {
+		if(error)
+			onInputRead(error, 0);
+		else {
+			DWORD bytes_transferred;
+
+			::ReadFile(GetStdHandle(STD_INPUT_HANDLE),
+					   inputBuffer.data(),
+					   inputBuffer.size(),
+					   &bytes_transferred,
+					   nullptr);
+
+			onInputRead(error, bytes_transferred);
+		}
+	});
+#endif
+}
+
+#endif // USE_LINENOISE
+
+
 void SC_TerminalClient::onInputRead(const boost::system::error_code &error, std::size_t bytes_transferred)
 {
 	if (error == boost::asio::error::operation_aborted) {
@@ -516,21 +658,39 @@ void SC_TerminalClient::onInputRead(const boost::system::error_code &error, std:
 	}
 
 	if (!error) {
+		#if HAVE_READLINE
+				if (mUseReadline) {
+					rl_callback_read_char();
+					startInputRead();
+					return;
+				}
+		#endif
 		pushCmdLine( inputBuffer.data(), bytes_transferred );
 	}
 }
 
 void SC_TerminalClient::inputThreadFn()
 {
-	if (mUseLinenoise)
-		linenoiseInit();
+	#if HAVE_READLINE
+		if (mUseReadline)
+			readlineInit();
+	#endif
+	#if USE_LINENOISE
+		if (mUseLinenoise)
+			linenoiseInit();
+	#endif
 
 	startInputRead();
 
-	if (!mUseLinenoise){
+	#ifdef USE_LINENOISE
+		if (!mUseLinenoise){
+			boost::asio::io_service::work work(mInputService);
+			mInputService.run();
+		}
+	#else
 		boost::asio::io_service::work work(mInputService);
 		mInputService.run();
-	}
+	#endif
 }
 
 
@@ -563,10 +723,18 @@ void SC_TerminalClient::pushCmdLine( const char *newData, size_t size)
 
 void SC_TerminalClient::initInput()
 {
+#ifdef HAVE_READLINE
+	if (strcmp(gIdeName, "none") == 0) {
+		// Other clients (emacs, vim, ...) won't want to interact through rl
+		mUseReadline = true;
+		return;
+	}
+#elif USE_LINENOISE
 	if (strcmp(gIdeName, "none") == 0) {
 		mUseLinenoise = true;
 		return;
 	}
+#endif
 }
 
 
@@ -580,8 +748,10 @@ void SC_TerminalClient::endInput()
 {
 	mInputService.stop();
 	mStdIn.cancel();
+#ifdef USE_LINENOISE
 	if (mUseLinenoise)
 	  linenoiseWantToExit();
+#endif
 
 #ifdef _WIN32
 	// Note this breaks Windows XP compatibility, since this function is only defined in Vista and later
@@ -590,14 +760,18 @@ void SC_TerminalClient::endInput()
 	postfl("main: waiting for input thread to join...\n");
 	mInputThread.join();
 	postfl("main: quitting...\n");
+#ifdef USE_LINENOISE
     if (m_future.valid()){
         m_future.get();
     }
-
+#endif
 }
 
 void SC_TerminalClient::cleanupInput()
 {
+#ifdef HAVE_READLINE
+	if( mUseReadline ) rl_callback_handler_remove();
+#endif
 }
 
 int SC_TerminalClient::prArgv(struct VMGlobals* g, int)
