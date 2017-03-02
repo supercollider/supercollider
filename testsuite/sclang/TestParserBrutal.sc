@@ -133,19 +133,32 @@ TestParserBrutal : AbstractBrutalTest {
 	}
 
 	runParserTests {
-		arg prefix, suffix, testMode;
+		arg prefix, suffix, testMode, tcoMode;
+
+		var tco = Process.tailCallOptimize;
+		Process.tailCallOptimize_(tcoMode);
 
 		alphabets.keysDo {
 			arg key;
 			this.runTestsOnAlphabet(prefix, suffix, testMode, key, \bytecode);
-		}
+		};
+
+		Process.tailCallOptimize_(tco);
 	}
 
-	test_basic {
-		this.runParserTests("", "", "basic");
+	test_basicTCO {
+		this.runParserTests("", "", "basicTCO", true);
 	}
 
-	test_curlyBraceEnclose {
-		this.runParserTests("{", "}", "curlyEnclose");
+	test_curlyBraceEncloseTCO {
+		this.runParserTests("{", "}", "curlyEncloseTCO", true);
+	}
+
+	test_basicNoTCO {
+		this.runParserTests("", "", "basicNoTCO", false);
+	}
+
+	test_curlyBraceEncloseNoTCO {
+		this.runParserTests("{", "}", "curlyEncloseTCO", false);
 	}
 }
