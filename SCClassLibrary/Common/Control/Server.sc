@@ -170,22 +170,22 @@ ServerOptions {
 		^this.primitiveFailed
 	}
 
-	numPrivateAudioBusChannels_ { |numChannels = 112|
+	numPrivateAudioBusChannels_ { |numChannels|
 		numPrivateAudioBusChannels = numChannels;
 		this.recalcChannels;
 	}
 
-	numAudioBusChannels_ { |numChannels=1024|
+	numAudioBusChannels_ { |numChannels|
 		numAudioBusChannels = numChannels;
 		numPrivateAudioBusChannels = numAudioBusChannels - numInputBusChannels - numOutputBusChannels;
 	}
 
-	numInputBusChannels_ { |numChannels=8|
+	numInputBusChannels_ { |numChannels|
 		numInputBusChannels = numChannels;
 		this.recalcChannels;
 	}
 
-	numOutputBusChannels_ { |numChannels=8|
+	numOutputBusChannels_ { |numChannels|
 		numOutputBusChannels = numChannels;
 		this.recalcChannels;
 	}
