@@ -159,6 +159,6 @@ TestParserBrutal : AbstractBrutalTest {
 	}
 
 	test_curlyBraceEncloseNoTCO {
-		this.runParserTests("{", "}", "curlyEncloseTCO", false);
+		this.runParserTests("{", "}", "curlyEncloseNoTCO", false);
 	}
 }
