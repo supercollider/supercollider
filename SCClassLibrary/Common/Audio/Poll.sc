@@ -27,19 +27,3 @@ Poll : UGen {
 		inputs = theInputs;
 	}
 }
-
-/*
-s.boot;
-
-{Poll.ar(Impulse.ar(5), Line.ar(0, 1, 1), \test2)}.play(s);
-{SinOsc.ar(220, 0, 1).poll(Impulse.ar(15), "test")}.play(s);
-
-o = OSCresponderNode(s.addr, '/tr', {arg time, resp, msg;
-	msg.postln;
-	}).add
-
-{Poll.ar(Impulse.ar(5), Line.ar(0, 1, 1), \test2, 1234)}.play(s);
-
-o.remove;
-s.quit;
-*/
