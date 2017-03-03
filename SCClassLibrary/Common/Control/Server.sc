@@ -390,7 +390,7 @@ Server {
 		var numBuffers = options.numBuffers div: n;
 		bufferOffset = numBuffers * offset + options.reservedNumBuffers;
 		bufferAllocator =
-		ContiguousBlockAllocator.new(numBuffers, bufferOffset);
+		ContiguousBlockAllocator.new(numBuffers + bufferOffset, bufferOffset);
 	}
 
 	calcOffset {
