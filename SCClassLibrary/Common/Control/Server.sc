@@ -6,7 +6,7 @@ ServerOptions {
 	var <numControlBusChannels=16384;
 	var <numInputBusChannels=2;
 	var <numOutputBusChannels=2;
-	var <>numBuffers=1026;
+	var <numBuffers=1026;
 
 	var <>maxNodes=1024;
 	var <>maxSynthDefs=1024;
@@ -42,7 +42,7 @@ ServerOptions {
 
 	var <reservedNumAudioBusChannels = 0;
 	var <reservedNumControlBusChannels = 0;
-	var <>reservedNumBuffers = 0;
+	var <reservedNumBuffers = 0;
 	var <>pingsBeforeConsideredDead = 5;
 
 
@@ -217,6 +217,30 @@ ServerOptions {
 		};
 		numControlBusChannels = numChannels
 	}
+
+	reservedNumAudioBusChannels_ { |numChannels|
+		if(numAudioBusChannels < numChannels) {
+			numAudioBusChannels = numChannels;
+			"adjusting numControlBusChannels to %\n".postf(numAudioBusChannels);
+		};
+		reservedNumAudioBusChannels = numChannels
+	}
+
+	reservedNumBuffers_ { |n|
+		if(numBuffers < n) {
+			numBuffers = n;
+			"adjusting numControlBusChannels to %\n".postf(numBuffers);
+		};
+		reservedNumBuffers = n
+	}
+
+	numBuffers_ { |n|
+		if(reservedNumBuffers > n) {
+			Error("numBuffers can't be smaller than reservedNumBuffers").throw
+		};
+		numBuffers = n
+	}
+
 
 
 	*prListDevices {
