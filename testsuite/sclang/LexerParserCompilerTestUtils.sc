@@ -159,7 +159,7 @@ LexerParserCompilerTestUtils {
 
 			protect {
 				postln("testAllPossibleStrings: Validating against expected output");
-				diffs = this.validate(file);
+				diffs = this.validate(filename);
 			} {
 				postln("testAllPossibleStrings: Deleting test file");
 				File.delete(filename);
