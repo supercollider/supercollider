@@ -1,6 +1,6 @@
 ServerOptions {
 
-	// order of variables is important here. Only add new instance variables to the end.
+	// order of variables is important here. You may add new instance variables after outDevice.
 
 	var <numAudioBusChannels=1024;
 	var <numControlBusChannels=16384;
