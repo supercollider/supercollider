@@ -171,7 +171,7 @@ ServerOptions {
 	}
 
 	numAudioBusChannels_ { |numChannels|
-		if(numInputBusChannels + numOutputBusChannels > numChannels) {
+		if(numInputBusChannels + numOutputBusChannels + reservedNumAudioBusChannels > numChannels) {
 			Error("numAudioBusChannels can't be smaller than the hardware out and in channels").throw
 		} {
 			numAudioBusChannels = numChannels
@@ -179,28 +179,29 @@ ServerOptions {
 	}
 
 	numInputBusChannels_ { |numChannels|
-		if(numChannels + numOutputBusChannels > numAudioBusChannels) {
-			numAudioBusChannels = numChannels + numOutputBusChannels;
+		if(numChannels + numOutputBusChannels + reservedNumAudioBusChannels > numAudioBusChannels) {
+			numAudioBusChannels = numChannels + numOutputBusChannels + reservedNumAudioBusChannels;
 			"adjusting numAudioBusChannels to %\n".postf(numAudioBusChannels);
 		};
 		numInputBusChannels = numChannels
 	}
 
 	numOutputBusChannels_ { |numChannels|
-		if(numInputBusChannels + numChannels > numAudioBusChannels) {
-			numAudioBusChannels = numInputBusChannels + numChannels;
+		if(numInputBusChannels + numChannels + reservedNumAudioBusChannels > numAudioBusChannels) {
+			numAudioBusChannels = numInputBusChannels + numChannels + reservedNumAudioBusChannels;
 			"adjusting numAudioBusChannels to %\n".postf(numAudioBusChannels)
 		};
 		numOutputBusChannels = numChannels
 	}
 
 	numPrivateAudioBusChannels {
-		^numAudioBusChannels - numInputBusChannels - numOutputBusChannels
+		^numAudioBusChannels - numInputBusChannels - numOutputBusChannels - reservedNumAudioBusChannels
 	}
 
 	numPrivateAudioBusChannels_ { |numChannels|
-		numAudioBusChannels = numChannels + numInputBusChannels + numOutputBusChannels
+		numAudioBusChannels = numChannels + numInputBusChannels + numOutputBusChannels + reservedNumAudioBusChannels
 	}
+
 
 	*prListDevices {
 		arg in, out;
