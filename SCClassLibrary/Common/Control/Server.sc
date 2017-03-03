@@ -3,7 +3,7 @@ ServerOptions {
 	// order of variables is important here. Only add new instance variables to the end.
 
 	var <numAudioBusChannels=1024;
-	var <>numControlBusChannels=16384;
+	var <numControlBusChannels=16384;
 	var <numInputBusChannels=2;
 	var <numOutputBusChannels=2;
 	var <>numBuffers=1026;
@@ -40,8 +40,8 @@ ServerOptions {
 	var <>threads = nil; // for supernova
 	var <>useSystemClock = false;  // for supernova
 
-	var <>reservedNumAudioBusChannels = 0;
-	var <>reservedNumControlBusChannels = 0;
+	var <reservedNumAudioBusChannels = 0;
+	var <reservedNumControlBusChannels = 0;
 	var <>reservedNumBuffers = 0;
 	var <>pingsBeforeConsideredDead = 5;
 
@@ -170,12 +170,13 @@ ServerOptions {
 		^this.primitiveFailed
 	}
 
+	/* the setters below keep the settings mutually consistent */
+
 	numAudioBusChannels_ { |numChannels|
 		if(numInputBusChannels + numOutputBusChannels + reservedNumAudioBusChannels > numChannels) {
-			Error("numAudioBusChannels can't be smaller than the hardware out and in channels").throw
-		} {
-			numAudioBusChannels = numChannels
-		}
+			Error("numAudioBusChannels can't be smaller than the minimum number of audio channels").throw
+		};
+		numAudioBusChannels = numChannels
 	}
 
 	numInputBusChannels_ { |numChannels|
@@ -189,7 +190,7 @@ ServerOptions {
 	numOutputBusChannels_ { |numChannels|
 		if(numInputBusChannels + numChannels + reservedNumAudioBusChannels > numAudioBusChannels) {
 			numAudioBusChannels = numInputBusChannels + numChannels + reservedNumAudioBusChannels;
-			"adjusting numAudioBusChannels to %\n".postf(numAudioBusChannels)
+			"adjusting numAudioBusChannels to %\n".postf(numAudioBusChannels);
 		};
 		numOutputBusChannels = numChannels
 	}
@@ -200,6 +201,21 @@ ServerOptions {
 
 	numPrivateAudioBusChannels_ { |numChannels|
 		numAudioBusChannels = numChannels + numInputBusChannels + numOutputBusChannels + reservedNumAudioBusChannels
+	}
+
+	numControlBusChannels_ { |numChannels|
+		if(reservedNumControlBusChannels > numChannels) {
+			Error("numControlBusChannels can't be smaller than the minimum number of control channels").throw
+		};
+		numControlBusChannels = numChannels
+	}
+
+	reservedNumControlBusChannels_ { |numChannels|
+		if(numControlBusChannels < numChannels) {
+			numControlBusChannels = numChannels;
+			"adjusting numControlBusChannels to %\n".postf(numControlBusChannels);
+		};
+		numControlBusChannels = numChannels
 	}
 
 
