@@ -40,10 +40,6 @@
 #include <QDesktopWidget>
 #include <QProxyStyle>
 
-#ifdef Q_WS_X11
-# include <QGtkStyle>
-#endif
-
 namespace ScIDE {
 
 static bool tokenMaybeName( Token::Type type )
@@ -72,24 +68,17 @@ public:
         mLabel->setTextFormat( Qt::RichText );
         mLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-#if defined(Q_WS_X11) && !defined(__NetBSD__)
-        QStyle *style = this->style();
-        if (QProxyStyle *proxyStyle = qobject_cast<QProxyStyle*>(style))
-            style = proxyStyle->baseStyle();
-        if ( qobject_cast<QGtkStyle*>(style) ) {
-            QPalette p;
-            p.setColor( QPalette::Window, QColor(255, 255, 220) );
-            p.setColor( QPalette::WindowText, Qt::black );
-            setPalette(p);
-        }
-        else
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MAC) && !defined(__NetBSD__)
+        QPalette p;
+        p.setColor( QPalette::Window, QColor(255, 255, 220) );
+        p.setColor( QPalette::WindowText, Qt::black );
+        setPalette(p);
+#else
+        QPalette p( palette() );
+        p.setColor( QPalette::Window, p.color(QPalette::ToolTipBase) );
+        setPalette(p);
+        mLabel->setForegroundRole(QPalette::ToolTipText);
 #endif
-        {
-            QPalette p( palette() );
-            p.setColor( QPalette::Window, p.color(QPalette::ToolTipBase) );
-            setPalette(p);
-            mLabel->setForegroundRole(QPalette::ToolTipText);
-        }
     }
 
     void showMethod( const AutoCompleter::MethodCall & methodCall,
