@@ -2,10 +2,10 @@ ServerOptions {
 
 	// order of variables is important here. Only add new instance variables to the end.
 
-	var <>numAudioBusChannels=1024;
+	var <numAudioBusChannels=1024;
 	var <>numControlBusChannels=16384;
-	var <>numInputBusChannels=2;
-	var <>numOutputBusChannels=2;
+	var <numInputBusChannels=2;
+	var <numOutputBusChannels=2;
 	var <>numBuffers=1026;
 
 	var <>maxNodes=1024;
@@ -168,6 +168,30 @@ ServerOptions {
 	bootInProcess {
 		_BootInProcessServer
 		^this.primitiveFailed
+	}
+
+	numAudioBusChannels_ { |numChannels|
+		if(numInputBusChannels + numOutputBusChannels > numChannels) {
+			Error("numAudioBusChannels can't be smaller than the hardware out and in channels").throw
+		} {
+			numAudioBusChannels = numChannels
+		}
+	}
+
+	numInputBusChannels_ { |numChannels|
+		if(numChannels + numOutputBusChannels > numAudioBusChannels) {
+			numAudioBusChannels = numChannels + numOutputBusChannels;
+			"adjusting numAudioBusChannels to %\n".postf(numAudioBusChannels);
+		};
+		numInputBusChannels = numChannels
+	}
+
+	numOutputBusChannels_ { |numChannels|
+		if(numInputBusChannels + numChannels > numAudioBusChannels) {
+			numAudioBusChannels = numInputBusChannels + numChannels;
+			"adjusting numAudioBusChannels to %\n".postf(numAudioBusChannels)
+		};
+		numOutputBusChannels = numChannels
 	}
 
 	numPrivateAudioBusChannels {
