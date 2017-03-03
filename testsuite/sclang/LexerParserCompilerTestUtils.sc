@@ -162,7 +162,7 @@ LexerParserCompilerTestUtils {
 				diffs = this.validate(file);
 			} {
 				postln("testAllPossibleStrings: Deleting test file");
-				File.delete(file.pathName);
+				File.delete(filename);
 			}
 		} {
 			^[];
