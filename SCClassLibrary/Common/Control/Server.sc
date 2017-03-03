@@ -221,7 +221,7 @@ ServerOptions {
 	reservedNumAudioBusChannels_ { |numChannels|
 		if(numAudioBusChannels < numChannels) {
 			numAudioBusChannels = numChannels;
-			"adjusting numControlBusChannels to %\n".postf(numAudioBusChannels);
+			"adjusting numAudioBusChannels to %\n".postf(numAudioBusChannels);
 		};
 		reservedNumAudioBusChannels = numChannels
 	}
@@ -229,7 +229,7 @@ ServerOptions {
 	reservedNumBuffers_ { |n|
 		if(numBuffers < n) {
 			numBuffers = n;
-			"adjusting numControlBusChannels to %\n".postf(numBuffers);
+			"adjusting numBuffers to %\n".postf(numBuffers);
 		};
 		reservedNumBuffers = n
 	}
