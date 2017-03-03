@@ -45,8 +45,10 @@ PowerOfTwoBlock {
 	}
 }
 
+
+
 PowerOfTwoAllocator {
-	// THIS IS THE RECOMMENDED ALLOCATOR FOR BUSES AND BUFFERS
+	// allocator for buses and buffers
 	var size, array, freeLists, pos=0;
 
 	*new { arg size, pos=0;
@@ -153,8 +155,6 @@ RingNumberAllocator {
 }
 
 
-// by hjh: for better handling of dynamic allocation
-
 ContiguousBlock {
 
 	var     <start, <size, <>used = false;  // assume free; owner must say otherwise
@@ -194,7 +194,9 @@ ContiguousBlock {
 }
 
 
+
 ContiguousBlockAllocator {
+	// allocator for buses and buffers, for better handling of dynamic allocation
 	var	size, array, freed, pos, top;
 
 	*new { |size, pos = 0|
