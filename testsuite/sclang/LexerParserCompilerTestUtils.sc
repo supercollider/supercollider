@@ -21,7 +21,7 @@ compareData
 
 ----diff helper methods----
 
-printDiffs
+writeDiffs
 explainDiff
 mkDataDiff
 
@@ -65,6 +65,7 @@ LexerParserCompilerTestUtils {
 	const <compileErrorString = "!cErr";
 	const <runtimeErrorString = "!rErr";
 	const <validatedOutputFilenameSuffix = "_correct";
+	const <diffOutputFilenameSuffix = "_diff";
 
 	// May need to update this, some strings like `0!99` can produce very long output
 	const <maxline = 1024;
@@ -370,12 +371,13 @@ LexerParserCompilerTestUtils {
 	///// DIFF HELPER METHODS /////
 	///////////////////////////////
 
-	// Given a full list of diffs, arranges and prints them by what is missing
-	// from the first and/or second files, and then prints what was different
+	// Given a full list of diffs, arranges and writes them by what is missing
+	// from the first and/or second files, and then writes what was different
 	// in existing entries.
-	*printDiffs {
-		arg diffs;
+	*writeDiffs {
+		arg diffs, filename;
 
+		var file = this.mkOutputFileSafe(filename);
 		var missingFromFile1 = [];
 		var missingFromFile2 = [];
 		var realDiffs = [];
@@ -402,14 +404,15 @@ LexerParserCompilerTestUtils {
 		[missingFromFile1, missingFromFile2, realDiffs].do {
 			arg diffType, i;
 
-			"".postln;
-			headers[i].format(diffType.size).underlined.postln;
+			file.write("\n"++headers[i].format(diffType.size).underlined++"\n");
 
 			diffType.do {
 				arg diff;
-				this.explainDiff(diff).postln;
+				file.write(this.explainDiff(diff)++"\n");
 			}
 		};
+
+		file.close;
 	}
 
 	// For a given diff, returns a short human-readable description

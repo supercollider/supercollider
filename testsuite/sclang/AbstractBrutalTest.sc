@@ -35,19 +35,21 @@ AbstractBrutalTest : UnitTest {
 		alphabetStringLengths[alphabetName].do {
 			arg len;
 
+			var filename = "%%_%_%".format(this.outputDir, alphabetName, len, testMode);
+
 			var diffs = LexerParserCompilerTestUtils.testAllPossibleStrings(
 				  alphabet: alphabets[alphabetName],
 				       len: len,
 				    prefix: prefix,
 				    suffix: suffix,
-				    testID: "%%_%_%".format(this.outputDir, alphabetName, len, testMode),
+				    testID: filename,
 				 technique: technique,
 				doValidate: this.makingValidationFiles,
 				  compress: true
 			);
 
 			if(this.makingValidationFiles.not) {
-				this.checkDiffs(diffs);
+				this.checkDiffs(diffs, filename);
 			}
 		};
 	}
@@ -55,10 +57,14 @@ AbstractBrutalTest : UnitTest {
 	// Respond to the diffs. If there are any, fail now and print a message.
 	// Otherwise, note that no diffs were found.
 	checkDiffs {
-		arg diffs;
+		arg diffs, filenameBase;
 
 		if(diffs.isEmpty.not) {
-			LexerParserCompilerTestUtils.printDiffs(diffs);
+			LexerParserCompilerTestUtils.writeDiffs(
+				diffs,
+				filenameBase ++ LexerParserCompilerTestUtils.diffOutputFilenameSuffix
+			);
+
 			this.failed(thisMethod, "Diffs were found between test and validation files");
 		} {
 			postf("%: No diffs found.\n".format(this.class.name));
