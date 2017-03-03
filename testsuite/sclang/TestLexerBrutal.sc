@@ -82,4 +82,8 @@ TestLexerBrutal : AbstractBrutalTest {
 	test_semanticSuffix {
 		this.runLexerTests("", ";\\unique", "semanticSuffix");
 	}
+
+	test_blockCommentEncloseSemanticSuffix {
+		this.runLexerTests("/*", "*/\\unique", "blockCommentEncloseSemanticSuffix");
+	}
 }
