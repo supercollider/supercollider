@@ -286,9 +286,12 @@ LexerParserCompilerTestUtils {
 		var prevs = nil!2;
 		var reps = 0!2;
 		var outputs = nil!2;
-		var inputs = alphs.collect({ |alph, i| alph[ctrs[i]] });
+		var inputs;
 
 		// master state variables
+
+		// alphM is the "master alphabet" - a sorted array of the unique
+		// strings from the alphabet.
 		var alphM = alphs.flatten(1).collect(_.asSymbol).asSet.asArray
 		              .collect(_.asString).sort;
 		var alphSizeM = alphM.size;
@@ -306,16 +309,29 @@ LexerParserCompilerTestUtils {
 		// alphM.postln;
 
 		while { hasNext } {
+			// Load in the input strings for all three alphabets.
+			inputs = alphs.collect({ |alph, i| alph[ctrs[i]] });
 			inputM = alphM[ctrM];
 
+			// Determine what each file has for its output for the current
+			// master alphabet state. The master alphabet will always take
+			// at least as many cycles to get to one file's state as that
+			// file itself will, so if they don't match right now, we just
+			// have to wait for it to catch up. This is guaranteed by
+			// sorting the alphabets.
 			outputs = inputs.collect({
 				arg input, i;
-				var result = nil;
 
 				// postf("here: % %\n", input, inputM);
+				// If this is an input for which this file has a recorded,
+				// gather it, else return nil.
 				if(inputM == input) {
+					// "inFirstIf".postln;
 					this.incrementAlphabetCount(ctrs[i], strlen, alphSizes[i]);
 
+					// If we're repeating an input, just decrease the counter
+					// and return the last result. If not, get the next line
+					// and parse it.
 					if(reps[i] > 0) {
 						reps[i] = reps[i]-1;
 					} {
@@ -332,16 +348,18 @@ LexerParserCompilerTestUtils {
 						prevs[i] = data;
 					};
 
-					inputs[i] = alphs[i][ctrs[i]];
-					result = prevs[i];
-				};
-
-				result;
+					prevs[i];
+				} {
+					nil;
+				}
 			});
 
 			// outputs.postln;
 
+			// If the outputs don't match (either the values are wrong or
+			// one input is missing from the other file) then record it.
 			if(this.doOutputsMatch(*outputs).not) {
+				// "no match".postln;
 				diffs = diffs.add(
 					this.mkDataDiff(
 						this.stringToHexString(inputM.reduce('++')),
@@ -349,8 +367,10 @@ LexerParserCompilerTestUtils {
 					)
 				);
 			} {
+				// "match".postln;
 				// if the outputs matched and alphabets are equal
 				if(areAlphabetsEqual) {
+					// "inAlphabetsAreEqual".postln;
 					while { (reps[0] > 0) && (reps[1] > 0) } {
 						// While both reps are greater than 0, we know that the
 						// next outputs are going to be equal. Decrease the reps
@@ -359,10 +379,12 @@ LexerParserCompilerTestUtils {
 						this.incrementAlphabetCount(ctrs[0], strlen, alphSizes[0]);
 						this.incrementAlphabetCount(ctrs[1], strlen, alphSizes[1]);
 						this.incrementAlphabetCount(ctrM, strlen, alphSizeM);
-					}
+					};
+					// "endOfIf".postln;
 				}
 			};
 
+			// Stop when the master alphabet has been exhausted.
 			hasNext = this.incrementAlphabetCount(ctrM, strlen, alphSizeM);
 		};
 
@@ -537,6 +559,7 @@ LexerParserCompilerTestUtils {
 	// Returns true IFF the two results are equal in their result outputs.
 	*doOutputsMatch {
 		arg a, b;
+
 		^((a!?_[\out]) == (b!?_[\out]));
 	}
 
