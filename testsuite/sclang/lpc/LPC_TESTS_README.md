@@ -1,6 +1,6 @@
 # How to use these tests
 
-1. Unzip test_output.zip
+1. Unzip test_output.zip, and place its four folders in this directory.
 2. Add all the files in the /lpc directory to your SuperCollider class path
 (make sure you also have the UnitTest classes).
 3. Run the code in test_script.scd
