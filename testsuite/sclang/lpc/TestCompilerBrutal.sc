@@ -9,14 +9,8 @@ TestCompilerBrutal : AbstractLPCBrutalTest {
 	makingValidationFiles { ^true; }
 
 	initAlphabets {
-
-		// TODO
-		// Alphabets ought to make use of every possible opcode the interpreter
-		// is capable of emitting while parsing cmd line.
-
-		// Note: these lists are based on information in PyrParseNode::initSpecialSelectors()
-		// and Opcodes.h. A useful tool I found is
-		// this preprocessor function:
+		// Note: these lists are based on information in PyrParseNode::initSpecialSelectors() and
+		// Opcodes.h. This preprocessor function is a useful tool here. Modify it for your needs:
 		//   thisProcess.interpreter.preProcessor = {|str| str.quote++".compile.def.dumpopcodes"}
 		// -Brian
 		var wordOps = [
@@ -215,7 +209,6 @@ TestCompilerBrutal : AbstractLPCBrutalTest {
 			"0",
 			"1",
 			"2",
-
 			"-1.0",
 			"0.0",
 			"0.5",
@@ -239,8 +232,8 @@ TestCompilerBrutal : AbstractLPCBrutalTest {
 			"thisThread"
 		];
 
+		// special classes — see again PyrParseNode.cpp and Opcodes.h
 		var classNames = [
-			// special classes — see again PyrParseNode.cpp and Opcodes.h
 			"Object",
 			"Symbol",
 			"Nil",
@@ -292,6 +285,9 @@ TestCompilerBrutal : AbstractLPCBrutalTest {
 			"Rect"
 		];
 
+		// These are all control structure words; some of them may not
+		// actually call on the compiler for special treatment, but by
+		// including them here we are being thorough.
 		var controlOps = [
 			"if",
 			"while",
@@ -302,6 +298,8 @@ TestCompilerBrutal : AbstractLPCBrutalTest {
 			"forBy"
 		];
 
+		// Some unique statements that cover additional opcodes emitted
+		// by the compiler. Feel free to expand this list.
 		var uniqueStatements = [
 			// return true, false, nil, true
 			"^",
