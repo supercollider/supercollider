@@ -353,17 +353,61 @@ TestCompilerBrutal : AbstractBrutalTest {
 			\keywords -> [1],
 			\classes -> [1],
 			\control -> [1],
+			\unique -> [1],
 
 			\allChars -> [1,2,3]
 		];
 	}
 
 	runCompilerTests {
-		// TODO
+		arg prefix, suffix, testMode, alphName;
+
+		var tco = Process.tailCallOptimize;
+		Process.tailCallOptimize_(true);
+		this.runTestsOnAlphabet(prefix, suffix, testMode++"TCO", alphName, \compile);
+		Process.tailCallOptimize_(false);
+		this.runTestsOnAlphabet(prefix, suffix, testMode++"NoTCO", alphName, \compile);
+		Process.tailCallOptimize_(tco);
 	}
 
-	test_basic {
-		// TODO
+	// tests for infix alphabet
+	test_infix_basic { this.runCompilerTests("a ", " b", "basic", \infix); }
+	test_infix_vars { this.runCompilerTests("var lh, rh; lh ", " rh", "vardefs", \infix); }
+
+	// tests for wordOps alphabet
+	test_wordOps_oneArg { this.runCompilerTests("a.", "(b)", "oneArg", \wordOps); }
+	test_wordOps_twoArgs { this.runCompilerTests("a.", "(b, c)", "twoArgs", \wordOps); }
+
+	// tests for symbolOps alphabet
+	test_symbolOps_adverbs { this.runCompilerTests("a ", ".t b", "adverbs", \symbolOps); }
+
+	// tests for literals alphabet
+	test_literals_basic { this.runCompilerTests("", "", "basic", \literals); }
+
+	// tests for keywords alphabet
+	test_keywords_basic { this.runCompilerTests("", "", "basic", \keywords); }
+
+	// tests for classes alphabet
+	test_classes_basic { this.runCompilerTests("", "", "basic", \classes); }
+
+	// tests for control alphabet
+	test_control_oneArg { this.runCompilerTests("", "(a)", "oneArg", \control); }
+	test_control_twoArgs { this.runCompilerTests("", "(a, b)", "twoArgs", \control); }
+	test_control_threeArgs { this.runCompilerTests("", "(a, b, c)", "threeArgs", \control); }
+
+	test_control_twoFuncArgs {
+		this.runCompilerTests("", "({a.post}, {b.post})", "twoFuncArgs", \control);
 	}
+
+	test_control_threeFuncArgs {
+		this.runCompilerTests("", "({a.post}, {b.post}, {c.post})", "threeFuncArgs", \control);
+	}
+
+	// tests for unique statements
+	test_unique_basic { this.runCompilerTests("", "", "basic", \unique); }
+
+	// tests for allChars alphabet
+	test_allChars_basic { this.runCompilerTests("", "", "basic", \allChars); }
+	test_allChars_infix { this.runCompilerTests("a ", " b", "infix", \allChars); }
 
 }
