@@ -1,7 +1,7 @@
 // TestCompilerBrutal.sc
 // Brian Heim, 2017-02-28
 
-TestCompilerBrutal : AbstractBrutalTest {
+TestCompilerBrutal : AbstractLPCBrutalTest {
 
 	outputDir { ^"valid_compiler/"; }
 

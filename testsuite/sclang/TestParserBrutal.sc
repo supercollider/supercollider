@@ -1,7 +1,7 @@
 // TestParserBrutal.sc
 // Brian Heim, 2017-2-26
 
-TestParserBrutal : AbstractBrutalTest {
+TestParserBrutal : AbstractLPCBrutalTest {
 
 	outputDir { ^"valid_parser/"; }
 

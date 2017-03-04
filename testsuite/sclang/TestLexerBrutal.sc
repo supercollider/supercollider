@@ -1,7 +1,7 @@
 // TestLexerBrutal.sc
 // Brian Heim, 2017-02-26
 
-TestLexerBrutal : AbstractBrutalTest {
+TestLexerBrutal : AbstractLPCBrutalTest {
 	// whether or not to include `^` in any alphabets. Can't do it right now,
 	// because ^ will cause unwanted early termination when interpreted.
 	classvar ignoringCaret = true;

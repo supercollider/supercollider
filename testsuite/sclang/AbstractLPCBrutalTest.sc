@@ -1,7 +1,7 @@
-// AbstractBrutalTest.sc
+// AbstractLPCBrutalTest.sc (formerly AbstractBrutalTest.sc)
 // Brian Heim, 2017-02-28
 
-AbstractBrutalTest : UnitTest {
+AbstractLPCBrutalTest : UnitTest {
 	// alphabets and associated data used in testing
 
 	// Dictionary of alphabets (type Dictionary<Symbol, [String]>)

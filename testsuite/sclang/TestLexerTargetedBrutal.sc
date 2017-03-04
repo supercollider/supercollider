@@ -1,7 +1,7 @@
 // TestLexerTargetedBrutal.sc
 // Brian Heim, 2017-02-27
 
-TestLexerTargetedBrutal : AbstractBrutalTest {
+TestLexerTargetedBrutal : AbstractLPCBrutalTest {
 
 	outputDir { ^"valid_lexer_targeted/"; }
 
