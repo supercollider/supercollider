@@ -6,7 +6,7 @@ TestCompilerBrutal : AbstractLPCBrutalTest {
 	outputDir { ^"compiler/"; }
 
 	// set to TRUE if you need `_expected` files
-	makingValidationFiles { ^true; }
+	makingValidationFiles { ^false; }
 
 	initAlphabets {
 		// Note: these lists are based on information in PyrParseNode::initSpecialSelectors() and

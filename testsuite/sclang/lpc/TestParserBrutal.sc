@@ -6,7 +6,7 @@ TestParserBrutal : AbstractLPCBrutalTest {
 	outputDir { ^"parser/"; }
 
 	// set to TRUE if you need `_expected` files
-	makingValidationFiles { ^true; }
+	makingValidationFiles { ^false; }
 
 	initAlphabets {
 		// init alphabets
