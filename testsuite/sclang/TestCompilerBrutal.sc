@@ -323,7 +323,20 @@ TestCompilerBrutal : AbstractBrutalTest {
 			\allChars -> (1..126).collect({ arg c; c.asAscii.asString })
 		];
 
-		// alphabetStringLenghts = Dictionary[];
+		// allChars should be tested at lengths up to 3.
+		// All others use string length one, essentially simulating
+		// string formatting.
+		alphabetStringLengths = Dictionary[
+			\infix -> [1],
+			\wordOps -> [1],
+			\symbolOps -> [1],
+			\literals -> [1],
+			\keywords -> [1],
+			\classes -> [1],
+			\control -> [1],
+
+			\allChars -> [1,2,3]
+		];
 	}
 
 	runCompilerTests {
