@@ -11,6 +11,9 @@ AbstractBrutalTest : UnitTest {
 	// (type Dictionary<Symbol, [Integer]>)
 	var <>alphabetStringLengths;
 
+	// List of diff filenames to be printed when done running.
+	classvar <>diffFilenames;
+
 	*new { ^super.new.initAlphabets; }
 
 	// Inits `alphabets` and `maxLengths`.
@@ -60,12 +63,11 @@ AbstractBrutalTest : UnitTest {
 		arg diffs, filenameBase;
 
 		if(diffs.isEmpty.not) {
-			LexerParserCompilerTestUtils.writeDiffs(
-				diffs,
-				filenameBase ++ LexerParserCompilerTestUtils.diffOutputFilenameSuffix
-			);
+			var diffFilename = filenameBase ++ LexerParserCompilerTestUtils.diffOutputFilenameSuffix;
 
-			this.failed(thisMethod, "Diffs were found between test and validation files");
+			LexerParserCompilerTestUtils.writeDiffs(diffs, diffFilename);
+
+			this.noteFailure(thisMethod, "Diffs were found between test and validation files", diffFilename);
 		} {
 			postf("%: No diffs found.\n".format(this.class.name));
 		}
@@ -89,6 +91,31 @@ AbstractBrutalTest : UnitTest {
 				File.mkdir(dirname);
 			} {
 				Error("%: Could not create directory %".format(this.class, this.outputDir.quote)).throw;
+			}
+		}
+	}
+
+	// Note failures so that diff filenames can be printed at the end of the run.
+	noteFailure {
+		arg method, message, filename;
+
+		this.failed(method, message);
+
+		diffFilenames = diffFilenames !? _.add(filename) ? [filename];
+	}
+
+	// Override .run to print a list of filenames when done
+	*run {
+		arg ... args;
+
+		super.run(*args);
+
+		if(diffFilenames.isEmpty.not) {
+			"Some validation tests did not pass. The following output files were generated:\n".postln;
+
+			diffFilenames.do {
+				arg filename;
+				"\t%\n".postf(filename);
 			}
 		}
 	}

@@ -401,7 +401,7 @@ LexerParserCompilerTestUtils {
 	*writeDiffs {
 		arg diffs, filename;
 
-		var file = this.mkOutputFileSafe(filename);
+		var file = this.mkOutputFileSafe(this.mkFilename(filename, false));
 		var missingFromFile1 = [];
 		var missingFromFile2 = [];
 		var realDiffs = [];
