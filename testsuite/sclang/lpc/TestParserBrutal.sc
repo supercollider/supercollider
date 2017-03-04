@@ -3,7 +3,7 @@
 
 TestParserBrutal : AbstractLPCBrutalTest {
 
-	outputDir { ^"valid_parser/"; }
+	outputDir { ^"parser/"; }
 
 	// set to TRUE if you need `_expected` files
 	makingValidationFiles { ^true; }

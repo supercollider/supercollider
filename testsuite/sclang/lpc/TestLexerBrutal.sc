@@ -7,7 +7,7 @@ TestLexerBrutal : AbstractLPCBrutalTest {
 	classvar ignoringCaret = true;
 	const caretAscii = 94;
 
-	outputDir { ^"valid_lexer/"; }
+	outputDir { ^"lexer/"; }
 
 	// set to TRUE if you need `_expected` files
 	makingValidationFiles { ^true; }

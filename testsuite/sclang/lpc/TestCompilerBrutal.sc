@@ -3,7 +3,7 @@
 
 TestCompilerBrutal : AbstractLPCBrutalTest {
 
-	outputDir { ^"valid_compiler/"; }
+	outputDir { ^"compiler/"; }
 
 	// set to TRUE if you need `_expected` files
 	makingValidationFiles { ^true; }

@@ -3,7 +3,7 @@
 
 TestLexerTargetedBrutal : AbstractLPCBrutalTest {
 
-	outputDir { ^"valid_lexer_targeted/"; }
+	outputDir { ^"lexer_targeted/"; }
 
 	// set to TRUE if you need `_expected` files
 	makingValidationFiles { ^true; }
