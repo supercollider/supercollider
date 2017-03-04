@@ -302,6 +302,23 @@ TestCompilerBrutal : AbstractBrutalTest {
 			"forBy"
 		];
 
+		var uniqueStatements = [
+			// return true, false, nil, true
+			"^",
+			"^nil",
+			"^false",
+			"^true",
+
+			// add 1, subtract 1
+			"1+1",
+			"1-1",
+
+			// other random statements
+			"a=3",
+			"var def; def=3;",
+			"super.a"
+		];
+
 		alphabets = Dictionary[
 			// All operators put into infix form. Word operators
 			// need to be postfixed with `:` to become method selectors.
@@ -318,6 +335,8 @@ TestCompilerBrutal : AbstractBrutalTest {
 			\classes -> classNames,
 
 			\control -> controlOps,
+
+			\unique -> uniqueStatements,
 
 			// all ASCII values except 0 `NUL` and 7F `DEL`
 			\allChars -> (1..126).collect({ arg c; c.asAscii.asString })
