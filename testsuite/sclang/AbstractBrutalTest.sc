@@ -104,14 +104,14 @@ AbstractBrutalTest : UnitTest {
 		diffFilenames = diffFilenames !? _.add(filename) ? [filename];
 	}
 
-	// Override .run to print a list of filenames when done
-	*run {
+	// Wrap .report to print a list of filenames when done
+	*report {
 		arg ... args;
 
-		super.run(*args);
+		super.report(*args);
 
-		if(diffFilenames.isEmpty.not) {
-			"Some validation tests did not pass. The following output files were generated:\n".postln;
+		if(diffFilenames.notNil) {
+			"\nSome validation tests did not pass.\nThe following output files were generated:\n".postln;
 
 			diffFilenames.do {
 				arg filename;
