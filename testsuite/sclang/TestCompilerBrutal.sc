@@ -364,9 +364,9 @@ TestCompilerBrutal : AbstractBrutalTest {
 
 		var tco = Process.tailCallOptimize;
 		Process.tailCallOptimize_(true);
-		this.runTestsOnAlphabet(prefix, suffix, testMode++"TCO", alphName, \compile);
+		this.runTestsOnAlphabet(prefix, suffix, testMode++"TCO", alphName, \bytecode);
 		Process.tailCallOptimize_(false);
-		this.runTestsOnAlphabet(prefix, suffix, testMode++"NoTCO", alphName, \compile);
+		this.runTestsOnAlphabet(prefix, suffix, testMode++"NoTCO", alphName, \bytecode);
 		Process.tailCallOptimize_(tco);
 	}
 
