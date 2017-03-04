@@ -1,0 +1,21 @@
+HEAD
+alphabet size:12
+alphabet:2273747222,2463,2D31,2D312E30,30,302E30,302E35,31,312E30,32,322E30,5C73796D
+string length:1
+prefix:
+suffix:
+technique:bytecode
+encoding:<hex-format input string><tab><"!cErr" (compile error) | "!rErr" (runtime error) | hex-format output string><opt tab & count of consecutive repeats of this result (no number means no repetitions)>
+DATA
+12
+2273747222	40F2	1
+2D31	62F2
+2D312E30	67F2
+30	63F2
+302E30	68F2
+302E35	66F2
+31	64F2
+312E30	69F2
+32	65F2
+322E30	6AF2
+5C73796D	40F2

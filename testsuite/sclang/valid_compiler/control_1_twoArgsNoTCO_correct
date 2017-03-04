@@ -1,0 +1,17 @@
+HEAD
+alphabet size:7
+alphabet:63617365,646F,666F72,666F724279,6966,737769746368,7768696C65
+string length:1
+prefix:
+suffix:28612C206229
+technique:bytecode
+encoding:<hex-format input string><tab><"!cErr" (compile error) | "!rErr" (runtime error) | hex-format output string><opt tab & count of consecutive repeats of this result (no number means no repetitions)>
+DATA
+7
+63617365	1213C210F2
+646F	1213C21DF2
+666F72	1213C20DF2
+666F724279	1213C23FF2
+6966	1213C20BF2
+737769746368	!cErr
+7768696C65	1213C20CF2
