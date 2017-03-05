@@ -301,7 +301,7 @@ elseif(APPLE)
 
 else()
 	install(TARGETS ${plugins} ${supernova_plugins}
-			DESTINATION "lib/SuperCollider/plugins"
+			DESTINATION "lib${LIB_SUFFIX}/SuperCollider/plugins"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endif()
 
