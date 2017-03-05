@@ -191,7 +191,9 @@ unit_test_main( init_unit_test_func init_func, int argc, char* argv[] )
         if( runtime_config::get<bool>( runtime_config::WAIT_FOR_DEBUGGER ) ) {
             results_reporter::get_stream() << "Press any key to continue..." << std::endl;
 
-            std::getchar();
+            // getchar is defined as a macro in uClibc. Use parenthesis to fix
+            // gcc bug 58952 for gcc <= 4.8.2.
+            (std::getchar)();
             results_reporter::get_stream() << "Continuing..." << std::endl;
         }
 

@@ -290,7 +290,17 @@ namespace gregorian {
      * names as a default. */
     catch(std::bad_cast&){
       charT a = '\0';
+      
+#if defined(BOOST_NO_CXX11_SMART_PTR)
+      
       std::auto_ptr< const facet_def > f(create_facet_def(a));
+      
+#else
+
+      std::unique_ptr< const facet_def > f(create_facet_def(a));
+      
+#endif
+      
       num = date_time::find_match(f->get_short_month_names(), 
                                   f->get_long_month_names(), 
                                   (greg_month::max)(), s); // greg_month spans 1..12, so max returns the array size,
@@ -332,7 +342,17 @@ namespace gregorian {
      * names as a default. */
     catch(std::bad_cast&){
       charT a = '\0';
+      
+#if defined(BOOST_NO_CXX11_SMART_PTR)
+
       std::auto_ptr< const facet_def > f(create_facet_def(a));
+      
+#else 
+
+      std::unique_ptr< const facet_def > f(create_facet_def(a));
+      
+#endif
+      
       num = date_time::find_match(f->get_short_weekday_names(), 
                                   f->get_long_weekday_names(), 
                                   (greg_weekday::max)() + 1, s); // greg_weekday spans 0..6, so increment is needed

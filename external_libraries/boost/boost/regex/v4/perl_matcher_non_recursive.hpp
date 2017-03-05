@@ -138,6 +138,12 @@ struct saved_recursion : public saved_state
    Results results;
 };
 
+struct saved_change_case : public saved_state
+{
+   bool icase;
+   saved_change_case(bool c) : saved_state(18), icase(c) {}
+};
+
 template <class BidiIterator, class Allocator, class traits>
 bool perl_matcher<BidiIterator, Allocator, traits>::match_all_states()
 {
@@ -239,6 +245,22 @@ inline void perl_matcher<BidiIterator, Allocator, traits>::push_matched_paren(in
       --pmp;
    }
    (void) new (pmp)saved_matched_paren<BidiIterator>(index, sub);
+   m_backup_state = pmp;
+}
+
+template <class BidiIterator, class Allocator, class traits>
+inline void perl_matcher<BidiIterator, Allocator, traits>::push_case_change(bool c)
+{
+   //BOOST_ASSERT(index);
+   saved_change_case* pmp = static_cast<saved_change_case*>(m_backup_state);
+   --pmp;
+   if(pmp < m_stack_base)
+   {
+      extend_stack();
+      pmp = static_cast<saved_change_case*>(m_backup_state);
+      --pmp;
+   }
+   (void) new (pmp)saved_change_case(c);
    m_backup_state = pmp;
 }
 
@@ -345,6 +367,16 @@ inline void perl_matcher<BidiIterator, Allocator, traits>::push_recursion(int id
    }
    (void) new (pmp)saved_recursion<results_type>(idx, p, presults);
    m_backup_state = pmp;
+}
+
+template <class BidiIterator, class Allocator, class traits>
+bool perl_matcher<BidiIterator, Allocator, traits>::match_toggle_case()
+{
+   // change our case sensitivity:
+   push_case_change(this->icase);
+   this->icase = static_cast<const re_case*>(pstate)->icase;
+   pstate = pstate->next.p;
+   return true;
 }
 
 template <class BidiIterator, class Allocator, class traits>
@@ -1142,6 +1174,7 @@ bool perl_matcher<BidiIterator, Allocator, traits>::unwind(bool have_match)
       &perl_matcher<BidiIterator, Allocator, traits>::unwind_recursion_pop,
       &perl_matcher<BidiIterator, Allocator, traits>::unwind_commit,
       &perl_matcher<BidiIterator, Allocator, traits>::unwind_then,
+      &perl_matcher<BidiIterator, Allocator, traits>::unwind_case,
    };
 
    m_recursive_result = have_match;
@@ -1168,6 +1201,16 @@ bool perl_matcher<BidiIterator, Allocator, traits>::unwind_end(bool)
 {
    pstate = 0;   // nothing left to search
    return false; // end of stack nothing more to search
+}
+
+template <class BidiIterator, class Allocator, class traits>
+bool perl_matcher<BidiIterator, Allocator, traits>::unwind_case(bool)
+{
+   saved_change_case* pmp = static_cast<saved_change_case*>(m_backup_state);
+   icase = pmp->icase;
+   boost::BOOST_REGEX_DETAIL_NS::inplace_destroy(pmp++);
+   m_backup_state = pmp;
+   return true;
 }
 
 template <class BidiIterator, class Allocator, class traits>

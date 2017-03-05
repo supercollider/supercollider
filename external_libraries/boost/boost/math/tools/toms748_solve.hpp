@@ -199,7 +199,7 @@ T quadratic_interpolate(const T& a, const T& b, T const& d,
    // Point d must lie outside of the interval [a,b], it is the third
    // best approximation to the root, after a and b.
    //
-   // Note: this does not guarentee to find a root
+   // Note: this does not guarantee to find a root
    // inside [a, b], so we fall back to a secant step should
    // the result be out of range.
    //
@@ -254,7 +254,7 @@ T cubic_interpolate(const T& a, const T& b, const T& d,
    // and are the third and forth best approximations
    // to the root that we have found so far.
    //
-   // Note: this does not guarentee to find a root
+   // Note: this does not guarantee to find a root
    // inside [a, b], so we fall back to quadratic
    // interpolation in case of an erroneous result.
    //

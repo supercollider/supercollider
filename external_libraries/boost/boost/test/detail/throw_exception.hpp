@@ -57,7 +57,6 @@ throw_exception(E const& e) { throw e; }
 //____________________________________________________________________________//
 
 #define BOOST_TEST_I_THROW( E ) unit_test::ut_detail::throw_exception( E )
-#define BOOST_TEST_I_THROW( E ) unit_test::ut_detail::throw_exception( E )
 #define BOOST_TEST_I_ASSRT( cond, ex ) if( cond ) {} else BOOST_TEST_I_THROW( ex )
 
 

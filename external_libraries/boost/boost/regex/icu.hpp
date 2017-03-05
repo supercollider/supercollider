@@ -152,7 +152,7 @@ public:
    char_class_type lookup_classname(const char_type* p1, const char_type* p2) const;
    string_type lookup_collatename(const char_type* p1, const char_type* p2) const;
    bool isctype(char_type c, char_class_type f) const;
-   int toi(const char_type*& p1, const char_type* p2, int radix)const
+   boost::intmax_t toi(const char_type*& p1, const char_type* p2, int radix)const
    {
       return BOOST_REGEX_DETAIL_NS::global_toi(p1, p2, radix, *this);
    }
@@ -403,6 +403,22 @@ void copy_results(MR1& out, MR2 const& in)
          out.set_second(in[i].second.base(), i, in[i].matched);
       }
    }
+#ifdef BOOST_REGEX_MATCH_EXTRA
+   // Copy full capture info as well:
+   for(int i = 0; i < (int)in.size(); ++i)
+   {
+      if(in[i].captures().size())
+      {
+         out[i].get_captures().assign(in[i].captures().size(), typename MR1::value_type());
+         for(int j = 0; j < out[i].captures().size(); ++j)
+         {
+            out[i].get_captures()[j].first = in[i].captures()[j].first.base();
+            out[i].get_captures()[j].second = in[i].captures()[j].second.base();
+            out[i].get_captures()[j].matched = in[i].captures()[j].matched;
+         }
+      }
+   }
+#endif
 }
 
 template <class BidiIterator, class Allocator>

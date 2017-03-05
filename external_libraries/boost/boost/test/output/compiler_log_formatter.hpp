@@ -5,11 +5,8 @@
 
 //  See http://www.boost.org/libs/test for the library home page.
 //
-//  File        : $RCSfile$
-//
-//  Version     : $Revision$
-//
-//  Description : contains compiler like Log formatter definition
+/// @file
+/// @brief Contains the formatter for the Human Readable Format (HRF)
 // ***************************************************************************
 
 #ifndef BOOST_TEST_COMPILER_LOG_FORMATTER_HPP_020105GER
@@ -31,6 +28,7 @@ namespace output {
 // **************             compiler_log_formatter           ************** //
 // ************************************************************************** //
 
+//!@brief Log formatter for the Human Readable Format (HRF) log format
 class BOOST_TEST_DECL compiler_log_formatter : public unit_test_log_formatter {
 public:
     compiler_log_formatter() : m_color_output( false ) {}

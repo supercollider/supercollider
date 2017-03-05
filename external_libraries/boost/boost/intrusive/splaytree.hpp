@@ -183,6 +183,15 @@ class splaytree_impl
    //! @copydoc ::boost::intrusive::bstree::crend()const
    const_reverse_iterator crend() const;
 
+   //! @copydoc ::boost::intrusive::bstree::root()
+   iterator root();
+
+   //! @copydoc ::boost::intrusive::bstree::root()const
+   const_iterator root() const;
+
+   //! @copydoc ::boost::intrusive::bstree::croot()const
+   const_iterator croot() const;
+
    //! @copydoc ::boost::intrusive::bstree::container_from_end_iterator(iterator)
    static splaytree_impl &container_from_end_iterator(iterator end_iterator);
 
@@ -453,6 +462,14 @@ class splaytree_impl
 
    //! @copydoc ::boost::intrusive::bstree::remove_node
    void remove_node(reference value);
+
+   //! @copydoc ::boost::intrusive::bstree::merge_unique(bstree<T, Options2...>&)
+   template<class T, class ...Options2>
+   void merge_unique(splaytree<T, Options2...> &);
+
+   //! @copydoc ::boost::intrusive::bstree::merge_equal(bstree<T, Options2...>&)
+   template<class T, class ...Options2>
+   void merge_equal(splaytree<T, Options2...> &);
 
    #endif   //#ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
 

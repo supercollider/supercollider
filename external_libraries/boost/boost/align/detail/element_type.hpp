@@ -22,14 +22,9 @@ namespace alignment {
 namespace detail {
 
 #if !defined(BOOST_NO_CXX11_HDR_TYPE_TRAITS)
-template<class T>
-struct element_type {
-    typedef typename
-        std::remove_cv<typename
-        std::remove_all_extents<typename
-        std::remove_reference<T>::
-        type>::type>::type type;
-};
+using std::remove_reference;
+using std::remove_all_extents;
+using std::remove_cv;
 #else
 template<class T>
 struct remove_reference {
@@ -54,14 +49,12 @@ struct remove_all_extents {
 };
 
 template<class T>
-struct remove_all_extents<T[]> {
-    typedef typename remove_all_extents<T>::type type;
-};
+struct remove_all_extents<T[]>
+    : remove_all_extents<T> { };
 
 template<class T, std::size_t N>
-struct remove_all_extents<T[N]> {
-    typedef typename remove_all_extents<T>::type type;
-};
+struct remove_all_extents<T[N]>
+    : remove_all_extents<T> { };
 
 template<class T>
 struct remove_const {
@@ -84,20 +77,14 @@ struct remove_volatile<volatile T> {
 };
 
 template<class T>
-struct remove_cv {
-    typedef typename remove_volatile<typename
-        remove_const<T>::type>::type type;
-};
+struct remove_cv
+    : remove_volatile<typename remove_const<T>::type> { };
+#endif
 
 template<class T>
-struct element_type {
-    typedef typename
-        remove_cv<typename
-        remove_all_extents<typename
-        remove_reference<T>::
-        type>::type>::type type;
-};
-#endif
+struct element_type
+    : remove_cv<typename remove_all_extents<typename
+        remove_reference<T>::type>::type> { };
 
 } /* .detail */
 } /* .alignment */

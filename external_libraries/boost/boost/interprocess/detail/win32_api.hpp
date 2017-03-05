@@ -26,7 +26,6 @@
 #include <cstring>
 #include <cstdlib>
 #include <cstdio>
-#include <ctime>
 
 #include <boost/assert.hpp>
 #include <string>
@@ -65,9 +64,17 @@
 //////////////////////////////////////////////////////////////////////////////
 
 //Ignore -pedantic errors here (anonymous structs, etc.)
-#if defined(BOOST_GCC) && (BOOST_GCC >= 40600)
-#  pragma GCC diagnostic push
-#  pragma GCC diagnostic ignored "-pedantic"
+#if defined(BOOST_GCC)
+#  if (BOOST_GCC >= 40600)
+#     pragma GCC diagnostic push
+#     if (BOOST_GCC >= 60000)
+#        pragma GCC diagnostic ignored "-Wpedantic"
+#     else
+#        pragma GCC diagnostic ignored "-pedantic"
+#     endif
+#  else
+#     pragma GCC system_header
+#  endif
 #endif
 
 namespace boost  {
@@ -852,7 +859,6 @@ extern "C" __declspec(dllimport) int __stdcall GetProcessTimes
    , interprocess_filetime *lpUserTime );
 extern "C" __declspec(dllimport) void __stdcall Sleep(unsigned long);
 extern "C" __declspec(dllimport) unsigned long __stdcall GetTickCount(void);
-extern "C" __declspec(dllimport) unsigned long long __stdcall GetTickCount64(void);
 extern "C" __declspec(dllimport) int __stdcall SwitchToThread();
 extern "C" __declspec(dllimport) unsigned long __stdcall GetLastError();
 extern "C" __declspec(dllimport) void __stdcall SetLastError(unsigned long);
@@ -2210,7 +2216,6 @@ inline bool get_last_bootup_time(std::string &stamp)
    unsigned long dwBytesToRead = 0;
    unsigned long dwBytesRead = 0;
    unsigned long dwMinimumBytesToRead = 0;
-   char stamp_str[sizeof(unsigned long long) * 3 + 1];
 
    // The source name (provider) must exist as a subkey of Application.
    void *hEventLog = OpenEventLogA(0, source_name);
@@ -2242,28 +2247,27 @@ inline bool get_last_bootup_time(std::string &stamp)
                   dwBytesToRead = dwMinimumBytesToRead;
                   heap_deleter.realloc_mem(dwMinimumBytesToRead);
                   if (!heap_deleter.get()){
-                     break;
+                     return false;
                   }
                }
                else{  //Not found or EOF
-                  break;
+                  return false;
                }
             }
             else
             {
                interprocess_eventlogrecord *pTypedRecord;
                // Print the contents of each record in the buffer.
-               if(find_record_in_buffer(heap_deleter.get(), dwBytesRead, provider_name, event_id, pTypedRecord)){                  
+               if(find_record_in_buffer(heap_deleter.get(), dwBytesRead, provider_name, event_id, pTypedRecord)){
+                  char stamp_str[sizeof(unsigned long)*3+1];
                   std::sprintf(&stamp_str[0], "%u", ((unsigned int)pTypedRecord->TimeGenerated));
                   stamp = stamp_str;
-                  return true;
+                  break;
                }
             }
          }
       }
    }
-   std::sprintf(&stamp_str[0], "%llu", std::time(nullptr) - GetTickCount64() / 1000); // Seconds since 1-1-1970
-   stamp = stamp_str;
    return true;
 }
 

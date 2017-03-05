@@ -75,8 +75,9 @@ namespace boost
       BOOST_THREAD_NO_COPYABLE(condition_variable)
         condition_variable()
         {
+            int res;
 #if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
-            int res=pthread_mutex_init(&internal_mutex,NULL);
+            res=pthread_mutex_init(&internal_mutex,NULL);
             if(res)
             {
                 boost::throw_exception(thread_resource_error(res, "boost::condition_variable::condition_variable() constructor failed in pthread_mutex_init"));

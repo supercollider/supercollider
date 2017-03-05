@@ -230,7 +230,14 @@ class basic_string_base
 
    protected:
    bool is_short() const
-   {  return static_cast<bool>(this->members_.m_repr.s.h.is_short != 0);  }
+   {
+      //Access and copy (to avoid UB) the first byte of the union to know if the
+      //active representation is short or long
+      short_header hdr;
+      BOOST_STATIC_ASSERT((sizeof(short_header) == 1));
+      *(unsigned char*)&hdr = *(unsigned char*)&this->members_.m_repr;
+      return hdr.is_short != 0;
+   }
 
    void is_short(bool yes)
    {
@@ -584,7 +591,7 @@ class basic_string
    //! <b>Effects</b>: Default constructs a basic_string.
    //!
    //! <b>Throws</b>: If allocator_type's default constructor throws.
-   basic_string()
+   basic_string() BOOST_NOEXCEPT_IF(container_detail::is_nothrow_default_constructible<Allocator>::value)
       : base_t()
    { this->priv_terminate_string(); }
 

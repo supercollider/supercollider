@@ -137,12 +137,7 @@ namespace executors
         for (unsigned i = 0; i < thread_count; ++i)
         {
 #if 1
-#ifndef __MINGW32__
           thread th (&basic_thread_pool::worker_thread, this);
-#else
-          auto worker = [=](){this->worker_thread();};
-          thread th (worker);
-#endif
           threads.push_back(thread_t(boost::move(th)));
 #else
           threads.push_back(thread_t(&basic_thread_pool::worker_thread, this)); // do not compile

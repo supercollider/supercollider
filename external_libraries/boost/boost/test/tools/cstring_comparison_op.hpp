@@ -30,8 +30,6 @@ namespace test_tools {
 namespace assertion {
 namespace op {
 
-
-
 // ************************************************************************** //
 // **************               string_compare                 ************** //
 // ************************************************************************** //
@@ -39,18 +37,16 @@ namespace op {
 #define DEFINE_CSTRING_COMPARISON( oper, name, rev )                \
 template<typename Lhs,typename Rhs>                                 \
 struct name<Lhs,Rhs,typename boost::enable_if_c<                    \
-    unit_test::is_cstring<Lhs>::value &&                            \
-    unit_test::is_cstring<Rhs>::value>::type> {                     \
-    typedef typename boost::add_const<                              \
-                typename remove_pointer<                            \
-                    typename decay<Lhs>::type>::type>::type         \
-        lhs_char_type;                                              \
-    typedef typename boost::add_const<                              \
-                typename remove_pointer<                            \
-                    typename decay<Rhs>::type>::type>::type         \
-        rhs_char_type;                                              \
+    (   unit_test::is_cstring<Lhs>::value                           \
+     && unit_test::is_cstring<Rhs>::value)                          \
+    >::type >                                                       \
+{                                                                   \
+    typedef typename unit_test::deduce_cstring<Lhs>::type lhs_char_type; \
+    typedef typename unit_test::deduce_cstring<Rhs>::type rhs_char_type; \
 public:                                                             \
     typedef assertion_result result_type;                           \
+                                                                    \
+    typedef name<lhs_char_type, rhs_char_type> elem_op;             \
                                                                     \
     static bool                                                     \
     eval( Lhs const& lhs, Rhs const& rhs)                           \

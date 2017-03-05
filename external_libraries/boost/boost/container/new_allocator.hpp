@@ -176,4 +176,4 @@ class new_allocator
 
 #include <boost/container/detail/config_end.hpp>
 
-#endif   //BOOST_CONTAINER_ALLOCATOR_HPP
+#endif   //BOOST_CONTAINER_NEW_ALLOCATOR_HPP

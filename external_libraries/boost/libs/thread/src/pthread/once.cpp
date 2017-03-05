@@ -53,7 +53,7 @@ namespace boost
                 {
                     if(memcmp(&epoch_tss_key_flag, &pthread_once_init_value, sizeof(pthread_once_t)))
                     {
-                        void* data = (void*)pthread_getspecific(epoch_tss_key);
+                        void* data = pthread_getspecific(epoch_tss_key);
                         if (data)
                             delete_epoch_tss_data(data);
                         pthread_key_delete(epoch_tss_key);
