@@ -23,7 +23,7 @@
 
 namespace boost { namespace chrono {
 
-    thread_clock::time_point thread_clock::now( ) BOOST_NOEXCEPT
+    inline thread_clock::time_point thread_clock::now( ) BOOST_NOEXCEPT
     {
       struct timespec ts;
 #if defined CLOCK_THREAD_CPUTIME_ID
@@ -49,7 +49,7 @@ namespace boost { namespace chrono {
     }
 
 #if !defined BOOST_CHRONO_DONT_PROVIDE_HYBRID_ERROR_HANDLING
-    thread_clock::time_point thread_clock::now( system::error_code & ec )
+    inline thread_clock::time_point thread_clock::now( system::error_code & ec )
     {
       struct timespec ts;
 #if defined CLOCK_THREAD_CPUTIME_ID
