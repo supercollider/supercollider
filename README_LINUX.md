@@ -147,6 +147,15 @@ builds in a specific build directory:
    $> cmake -DCMAKE_BUILD_TYPE=Release ..
    ```
 
+   In some situations it is preferable to install libraries and plugins
+   not in the `lib` directory but in a suffixed one, e.g. `lib64`.
+   In such a case you can set the cmake variable `LIB_SUFFIX`.
+   For example if you whish to install into `lib64`:
+
+   ```
+   $> cmake -DLIB_SUFFIX=64 ..
+   ```
+
  - to install the whole program, run:
 
    ```
