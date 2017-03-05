@@ -1,6 +1,6 @@
 ServerOptions {
 
-	// order of variables is important here. Only add new instance variables to the end.
+	// order of variables is important here. You may add new instance variables after outDevice.
 
 	var <>numAudioBusChannels=1024;
 	var <>numControlBusChannels=16384;
@@ -171,12 +171,28 @@ ServerOptions {
 	}
 
 	numPrivateAudioBusChannels {
-		^numAudioBusChannels - numInputBusChannels - numOutputBusChannels
+		^numAudioBusChannels - numInputBusChannels - numOutputBusChannels - reservedNumAudioBusChannels
 	}
 
 	numPrivateAudioBusChannels_ { |numChannels|
-		numAudioBusChannels = numChannels + numInputBusChannels + numOutputBusChannels
+		numAudioBusChannels = numChannels + numInputBusChannels + numOutputBusChannels + reservedNumAudioBusChannels
 	}
+
+	checkConsistency {
+		if(numInputBusChannels + numOutputBusChannels + reservedNumAudioBusChannels > numAudioBusChannels) {
+			Error("numAudioBusChannels can't be smaller than the minimum number of required audio channels. "
+				"Please adjust numAudioBusChannels and reboot the server").throw
+		};
+		if(reservedNumControlBusChannels > numControlBusChannels) {
+			Error("reservedNumControlBusChannels can't be greater than numControlBusChannels. "
+				"Please adjust numControlBusChannels and reboot the server").throw
+		};
+		if(reservedNumBuffers > numBuffers) {
+			Error("reservedNumControlBuffers can't be greater than numBuffers. "
+				"Please adjust numBuffers and reboot the server").throw
+		};
+	}
+
 
 	*prListDevices {
 		arg in, out;
@@ -369,6 +385,8 @@ Server {
 		var offset = this.calcOffset;
 		var n = options.maxLogins ? 1;
 
+		options.checkConsistency;
+
 		numControl = options.numControlBusChannels div: n;
 		numAudio = options.numPrivateAudioBusChannels div: n;
 
@@ -388,6 +406,9 @@ Server {
 		var offset = this.calcOffset;
 		var n = options.maxLogins ? 1;
 		var numBuffers = options.numBuffers div: n;
+
+		options.checkConsistency;
+
 		bufferOffset = numBuffers * offset + options.reservedNumBuffers;
 		bufferAllocator =
 		ContiguousBlockAllocator.new(numBuffers, bufferOffset);
