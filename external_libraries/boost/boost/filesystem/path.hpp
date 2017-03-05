@@ -62,10 +62,14 @@ namespace filesystem
 
 # ifdef BOOST_WINDOWS_API
     typedef wchar_t                        value_type;
+    BOOST_STATIC_CONSTEXPR value_type      separator = L'/';
     BOOST_STATIC_CONSTEXPR value_type      preferred_separator = L'\\';
+    BOOST_STATIC_CONSTEXPR value_type      dot = L'.';
 # else 
     typedef char                           value_type;
+    BOOST_STATIC_CONSTEXPR value_type      separator = '/';
     BOOST_STATIC_CONSTEXPR value_type      preferred_separator = '/';
+    BOOST_STATIC_CONSTEXPR value_type      dot = '.';
 # endif
     typedef std::basic_string<value_type>  string_type;  
     typedef std::codecvt<wchar_t, char,
@@ -455,7 +459,7 @@ namespace filesystem
     //  Experimental generic function returning generic formatted path (i.e. separators
     //  are forward slashes). Motivation: simpler than a family of generic_*string
     //  functions.
-    path generic() const
+    path generic_path() const
     {
 #   ifdef BOOST_WINDOWS_API
       path tmp;
@@ -509,6 +513,8 @@ namespace filesystem
     //  -----  query  -----
 
     bool empty() const BOOST_NOEXCEPT{ return m_pathname.empty(); }
+    bool filename_is_dot() const;
+    bool filename_is_dot_dot() const;
     bool has_root_path() const       { return has_root_directory() || has_root_name(); }
     bool has_root_name() const       { return !root_name().empty(); }
     bool has_root_directory() const  { return !root_directory().empty(); }
@@ -570,6 +576,7 @@ namespace filesystem
     path&  remove_leaf()            { return remove_filename(); }
     path   leaf() const             { return filename(); }
     path   branch_path() const      { return parent_path(); }
+    path   generic() const          { return generic_path(); }
     bool   has_leaf() const         { return !m_pathname.empty(); }
     bool   has_branch_path() const  { return !parent_path().empty(); }
     bool   is_complete() const      { return is_absolute(); }
@@ -737,10 +744,6 @@ namespace filesystem
 
   }; // path::reverse_iterator
 
-  inline path::reverse_iterator path::rbegin() const { return reverse_iterator(end()); }
-  inline path::reverse_iterator path::rend() const   { return reverse_iterator(begin()); }
-
-
   //------------------------------------------------------------------------------------//
   //                                                                                    //
   //                              non-member functions                                  //
@@ -809,7 +812,7 @@ namespace filesystem
     p = str;
     return is;
   }
-  
+ 
   //  name_checks
 
   //  These functions are holdovers from version 1. It isn't clear they have much
@@ -821,6 +824,54 @@ namespace filesystem
   BOOST_FILESYSTEM_DECL bool portable_directory_name(const std::string & name);
   BOOST_FILESYSTEM_DECL bool portable_file_name(const std::string & name);
   BOOST_FILESYSTEM_DECL bool native(const std::string & name);
+
+  namespace detail
+  {
+    //  For POSIX, is_directory_separator() and is_element_separator() are identical since
+    //  a forward slash is the only valid directory separator and also the only valid
+    //  element separator. For Windows, forward slash and back slash are the possible
+    //  directory separators, but colon (example: "c:foo") is also an element separator.
+
+    inline bool is_directory_separator(path::value_type c) BOOST_NOEXCEPT
+    {
+      return c == path::separator
+#     ifdef BOOST_WINDOWS_API
+        || c == path::preferred_separator
+#     endif
+      ;
+    }
+    inline bool is_element_separator(path::value_type c) BOOST_NOEXCEPT
+    {
+      return c == path::separator
+#     ifdef BOOST_WINDOWS_API
+        || c == path::preferred_separator || c == L':'
+#     endif
+      ;
+    }
+  }  // namespace detail
+
+  //------------------------------------------------------------------------------------//
+  //                  class path miscellaneous function implementations                 //
+  //------------------------------------------------------------------------------------//
+
+  inline path::reverse_iterator path::rbegin() const { return reverse_iterator(end()); }
+  inline path::reverse_iterator path::rend() const   { return reverse_iterator(begin()); }
+
+  inline bool path::filename_is_dot() const
+  {
+    // implicit dot is tricky, so actually call filename(); see path::filename() example
+    // in reference.html 
+    path p(filename());
+    return p.size() == 1 && *p.c_str() == dot;
+  }
+
+  inline bool path::filename_is_dot_dot() const
+  {
+    return size() >= 2 && m_pathname[size()-1] == dot && m_pathname[size()-2] == dot
+      && (m_pathname.size() == 2 || detail::is_element_separator(m_pathname[size()-3]));
+      // use detail::is_element_separator() rather than detail::is_directory_separator
+      // to deal with "c:.." edge case on Windows when ':' acts as a separator
+  }
  
 //--------------------------------------------------------------------------------------//
 //                     class path member template implementation                        //
