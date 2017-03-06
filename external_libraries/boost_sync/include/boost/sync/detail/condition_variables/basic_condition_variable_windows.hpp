@@ -20,7 +20,10 @@
 #include <limits.h>
 #include <cstddef>
 #include <boost/assert.hpp>
-#include <boost/detail/winapi/synchronization.hpp>
+#include <boost/detail/winapi/get_last_error.hpp>
+#include <boost/detail/winapi/semaphore.hpp>
+#include <boost/detail/winapi/wait.hpp>
+#include <boost/detail/winapi/waitable_timer.hpp>
 #include <boost/sync/detail/config.hpp>
 #include <boost/sync/exceptions/wait_error.hpp>
 #include <boost/sync/exceptions/resource_error.hpp>
