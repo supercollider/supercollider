@@ -115,7 +115,7 @@ method:: sampleRate
 The preferred sample rate. If non-nil the server app will attempt to set the sample rate of the hardware. The hardware has to support the sample rate that you choose.
 
 method:: verbosity
-Controls the verbosity of server messages. A value of 0 is normal behaviour, -1 suppresses informational messages, and -2 suppresses informational and many error messages. The default is 0.
+Controls the verbosity of server messages. A value of 0 is normal behaviour. -1 suppresses informational messages. -2 suppresses informational and many error messages, as well as messages from Poll. The default is 0.
 
 method:: zeroConf
 A Boolean indication whether or not the server should publish its port using zero configuration networking, to facilitate network interaction. This is true by default; if you find unacceptable delays (beachballing) upon server boot, you can try setting this to false.

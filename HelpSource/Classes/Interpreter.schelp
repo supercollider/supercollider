@@ -122,7 +122,12 @@ codeDump = nil; // reset to nil.
 
 method::preProcessor
 
-can be used to modify code before it is interpreted. Given appropriate delimiters, this can be used to implement little languages.
+If this is set to a function, all interactively executed code is piped through it before parsing and
+interpreting. This is mostly used for developing domain-specific live coding languages that piggyback
+off the SuperCollider editing environment.
+
+This function is called by link::Classes/Interpreter#-interpretPrintCmdLine:: with two arguments:
+the code string and the interpreter itself.
 
 code::
 // silly but simple: understand a Saw for every SinOsc
