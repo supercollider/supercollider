@@ -68,6 +68,22 @@ public:
         mLabel->setTextFormat( Qt::RichText );
         mLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
+// Qt 4 had a class called "QGtkStyle" which allowed Qt to access the
+// native style of the window manager in Linux and other *nix systems.
+// It was removed in Qt 5, so we don't have that option anymore. We have
+// to hardcode the colors now. In the future, this should be configurable
+// by the user.
+
+// This #if used to be "#if defined(Q_WS_X11)", and then NetBSD was
+// excluded (commit c3017f5) because QGtkStyle was not defined on that
+// system. Qt 5 got rid of the Q_WS_ macros, so we changed Q_WS_X11 to
+// Q_OS_UNIX && !Q_OS_MAC as a best guess. The NetBSD check is probably
+// vestigial, but we REALLY needed to get this fix through since Linux
+// users have had unreadable autocomplete widgets for almost 18 months
+// now. We figured it was best to leave it alone.
+
+// See: https://github.com/supercollider/supercollider/pull/2762
+
 #if defined(Q_OS_UNIX) && !defined(Q_OS_MAC) && !defined(__NetBSD__)
         QPalette p;
         p.setColor( QPalette::Window, QColor(255, 255, 220) );
