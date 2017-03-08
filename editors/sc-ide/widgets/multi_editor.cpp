@@ -988,6 +988,7 @@ void MultiEditor::switchSession( Session *session, QVariant * splitterData = 0 )
 
     // remove all editors
     delete mSplitter;
+    layout()->removeWidget(mToolBox);
 
     documentList.clear();
 
@@ -1031,6 +1032,7 @@ void MultiEditor::switchSession( Session *session, QVariant * splitterData = 0 )
     }
 
     layout()->addWidget(mSplitter);
+    layout()->addWidget(mToolBox);
 
     makeSignalConnections();
 

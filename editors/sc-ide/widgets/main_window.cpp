@@ -476,7 +476,7 @@ void MainWindow::createActions()
     mActions[ClearRecentDocs] = action = new QAction(tr("Clear", "Clear recent documents"), this);
     action->setStatusTip(tr("Clear list of recent documents"));
     connect(action, SIGNAL(triggered()),
-            Main::instance()->documentManager(), SLOT(clearRecents()));
+            Main::documentManager(), SLOT(clearRecents()));
     settings->addAction( action, "ide-clear-recent-documents", ideCategory);
 
     // Sessions
@@ -1099,7 +1099,7 @@ bool MainWindow::quit()
     if (!promptSaveDocs())
         return false;
 
-    Main::instance()->documentManager()->deleteRestore();
+    Main::documentManager()->deleteRestore();
 
     saveWindowState();
 
@@ -1206,7 +1206,7 @@ bool MainWindow::close( Document *doc )
         }
     }
 
-    Main::instance()->documentManager()->close(doc);
+    Main::documentManager()->close(doc);
     return true;
 }
 
@@ -1230,7 +1230,7 @@ bool MainWindow::reload( Document *doc )
             return false;
     }
 
-    return Main::instance()->documentManager()->reload(doc);
+    return Main::documentManager()->reload(doc);
 }
 
 QString MainWindow::documentSavePath( Document *document ) const
@@ -1256,7 +1256,7 @@ bool MainWindow::save( Document *doc, bool forceChoose, bool saveInExtensionFold
     if (!forceChoose && !(doc->isModified()) && documentHasPath)
         return true;
 
-    DocumentManager *documentManager = Main::instance()->documentManager();
+    DocumentManager *documentManager = Main::documentManager();
 
     bool fileIsWritable = true;
     if ((!forceChoose) && documentHasPath) {
@@ -1422,7 +1422,7 @@ void MainWindow::openDocument()
 
 void MainWindow::restoreDocuments()
 {
-    DocumentManager *docMng = Main::instance()->documentManager();
+    DocumentManager *docMng = Main::documentManager();
 
     if (docMng->needRestore()) {
         QString msg = tr("Supercollider didn't quit properly last time\n"

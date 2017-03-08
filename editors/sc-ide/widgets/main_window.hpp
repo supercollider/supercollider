@@ -411,7 +411,7 @@ private:
     void documentsDocklet()
     {
         DockletToolBar * documentsToolBar = new DockletToolBar("Documents");
-        sDocumentListWidget = new DocumentListWidget(Main::instance()->documentManager(), this);
+        sDocumentListWidget = new DocumentListWidget(Main::documentManager(), this);
 
         QVBoxLayout * documentsDocklet_layout = new QVBoxLayout;
         documentsDocklet_layout->setContentsMargins(0,0,0,0);
