@@ -1379,6 +1379,7 @@ void MultiEditor::removeCurrentSplit()
 
     CodeEditorBox *box = currentBox();
     mSplitter->removeWidget(box);
+    mCurrentEditorBox = 0;
 
     // switch current box to first box found:
     box = mSplitter->findChild<CodeEditorBox>();
