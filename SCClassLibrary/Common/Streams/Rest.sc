@@ -49,6 +49,9 @@ Rest {
 	}
 }
 
++ Event {
+	processRest { ^this }
+}
 
 + SimpleNumber {
 	// Some patterns call .delta on the eventstream's yield value
