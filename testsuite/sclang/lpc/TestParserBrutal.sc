@@ -132,33 +132,39 @@ TestParserBrutal : AbstractLPCBrutalTest {
 		]
 	}
 
-	runParserTests {
-		arg prefix, suffix, testMode, tcoMode;
-
-		var tco = Process.tailCallOptimize;
-		Process.tailCallOptimize_(tcoMode);
+	// Runs the tests for all alphabets according to the string lengths
+	// given in alphabetStringLengths
+	runParserTestsForAlphabets {
+		arg prefix, suffix, testMode;
 
 		alphabets.keysDo {
 			arg key;
 			this.runTestsOnAlphabet(prefix, suffix, testMode, key, \bytecode);
 		};
 
+	}
+
+	// Wraps runParserTestsForAlphabets in a test scheme that tests behavior
+	// when tail-call optimization is both on and off.
+	runParserTestsTogglingTCO {
+		arg prefix, suffix, testMode;
+
+		var tco = Process.tailCallOptimize;
+
+		Process.tailCallOptimize_(true);
+		this.runParserTestsForAlphabets(prefix, suffix, testMode++"TCO");
+
+		Process.tailCallOptimize_(false);
+		this.runParserTestsForAlphabets(prefix, suffix, testMode++"NoTCO");
+
 		Process.tailCallOptimize_(tco);
 	}
 
-	test_basicTCO {
-		this.runParserTests("", "", "basicTCO", true);
+	test_basic {
+		this.runParserTestsTogglingTCO("", "", "basic", true);
 	}
 
-	test_curlyBraceEncloseTCO {
-		this.runParserTests("{", "}", "curlyEncloseTCO", true);
-	}
-
-	test_basicNoTCO {
-		this.runParserTests("", "", "basicNoTCO", false);
-	}
-
-	test_curlyBraceEncloseNoTCO {
-		this.runParserTests("{", "}", "curlyEncloseNoTCO", false);
+	test_curlyBraceEnclose {
+		this.runParserTestsTogglingTCO("{", "}", "curlyEnclose", true);
 	}
 }
