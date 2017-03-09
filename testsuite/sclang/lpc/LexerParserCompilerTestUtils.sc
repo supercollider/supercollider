@@ -163,9 +163,9 @@ LexerParserCompilerTestUtils {
 			} {
 				postln("testAllPossibleStrings: Deleting test file");
 				File.delete(filename);
+			};
 
-				^diffs
-			}
+			^diffs ? []
 		}
 
 		^[]
