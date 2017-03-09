@@ -8,9 +8,9 @@ description::
 This is an strong::abstract superclass:: for singletons like link::Classes/ServerQuit::, which provides a place for registering functions and objects for events that should happen when something happens in the server.
 No direct call to AbstractServerAction is required.
 
-note:: not fully working on linux and windows.
+note:: not fully working on Linux and windows.
 Setting the computer to sleep on these systems causes the actions to be called.
-As to date in linux, JACK does not survive a sleep, it nevertheless behaves correctly for the time being.
+As to date in Linux, JACK does not survive a sleep, it nevertheless behaves correctly for the time being.
 ::
 
 ClassMethods::

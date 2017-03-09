@@ -14,8 +14,8 @@ table::
 ## = || compare plot channels
 ## n || toggle normalize display (0..1) / (-1..1), or fit range
 ## s || toggle superposition (see: superpose)
-## m || switch plot mode (see: link::Classes/Plotter#plotMode::)
-## e || toggle editing (see: link::Classes/Plotter#editMode::)
+## m || switch plot mode (see: link::Classes/Plotter#-plotMode::)
+## e || toggle editing (see: link::Classes/Plotter#-editMode::)
 ## g || toggle horizontal (domain) grid
 ## G || toggle vertical (codomain) grid
 ## p || print curve

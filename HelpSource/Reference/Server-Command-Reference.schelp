@@ -115,6 +115,24 @@ However, even if this is not done, the next bundle or message received will begi
 
 Temporary error suppression may not affect asynchronous commands in every case.
 
+subsection:: /version
+
+Query the SuperCollider version. Replies to sender with the following message:
+definitionlist::
+## /version.reply || table::
+## string || Program name. May be "scsynth" or "supernova".
+## int || Major version number. Equivalent to sclang's code::Main.scVersionMajor::.
+## int || Minor version number. Equivalent to sclang's code::Main.scVersionMinor::.
+## string || Patch version name. Equivalent to sclang's code::Main.scVersionPostfix::.
+## string || Git branch name.
+## string || First seven hex digits of the commit hash.
+::
+::
+
+The standard human-readable version string can be constructed by concatenating code:: major_version ++ "." ++ minor_version ++ patch_version ::. Since version information is easily accessible to sclang users via the methods described above, this command is mostly useful for alternate clients.
+
+The git branch name and commit hash could be anything if the user has forked SC, so they should only be used for display and user interface purposes.
+
 section:: Synth Definition Commands
 
 subsection:: /d_recv
@@ -314,7 +332,7 @@ Causes a synth to print out the values of the inputs and outputs of its unit gen
 subsection:: /n_order
 Move and order a list of nodes.
 table::
-## strong::int:: || add action (0,1,2, 3 or 4 see below)
+## strong::int:: || add action (0,1,2 or 3 see below)
 ## strong::int:: || add target ID
 ## N * strong::int:: || node IDs
 ::
@@ -709,7 +727,9 @@ table::
 ## strong::string:: || command name
 ## strong::...:: || command arguments
 ::
-Plug-ins can define commands that operate on buffers. The arguments after the command name are defined by the command. The currently defined buffer fill commands are listed below in a separate section.
+Plug-ins can define commands that operate on buffers. The arguments after the command name are defined by the command. The currently defined link::Reference/Server-Command-Reference#Buffer Fill Commands#buffer fill commands:: are listed below in a separate section.
+
+code::/b_gen:: does not accept a completion message as the final argument.
 definitionlist::
 ## Asynchronous. || Replies to sender with strong::/done /b_gen bufNum:: when complete.
 ::
@@ -719,6 +739,7 @@ subsection:: /b_close
 Close soundfile.
 table::
 ## strong::int:: || buffer number
+## strong::bytes:: || an OSC message to execute upon completion. (optional)
 ::
 After using a buffer with link::Classes/DiskOut::, close the soundfile and write header information.
 definitionlist::
@@ -931,6 +952,15 @@ table::
 ## 4 || clear - if set then the buffer is cleared before new partials are written into it. Otherwise the new partials are summed with the existing contents of the buffer.
 ::
 
+These flags can be added together to create a unique single integer flag that describes the true/false combinations for these three options:
+
+table::
+## 3 || 1 + 2 || normalize + wavetable
+## 5 || 1 + 4 || normalize + clear
+## 6 || 2 + 4 || wavetable + clear
+## 7 || 1 + 2 + 4 || normalize + wavetable + clear
+::
+
 definitionlist::
 ## sine1 ||
 table::
@@ -1083,7 +1113,11 @@ enum {
     cmd_n_mapan = 61,
     cmd_n_order = 62,
 
-    NUMBER_OF_COMMANDS = 63
+    cmd_p_new = 63,
+
+    cmd_version = 64,
+
+    NUMBER_OF_COMMANDS = 65
 };
 ::
 

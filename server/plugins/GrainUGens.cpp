@@ -395,15 +395,20 @@ static inline bool getGrainWin(Unit * unit, float wintype, SndBuf *& window, con
 	float panangle, pan1, pan2;											\
 	float *out1, *out2;													\
 	if (numOutputs > 1) {												\
-		if (numOutputs == 2) pan = pan * 0.5f;							\
-		pan = sc_wrap(pan * 0.5f, 0.f, 1.f);							\
-		float cpan = numOutputs * pan + 0.5f;							\
-		float ipan = floor(cpan);										\
-		float panfrac = cpan - ipan;									\
-		panangle = panfrac * pi2_f;										\
-		grain->chan = (int)ipan;										\
-		if (grain->chan >= (int)numOutputs)								\
-			grain->chan -= numOutputs;									\
+		if (numOutputs > 2) {											\
+			pan = sc_wrap(pan * 0.5f, 0.f, 1.f);						\
+			float cpan = numOutputs * pan + 0.5f;						\
+			float ipan = floor(cpan);									\
+			float panfrac = cpan - ipan;								\
+			panangle = panfrac * pi2_f;									\
+			grain->chan = (int)ipan;									\
+			if (grain->chan >= (int)numOutputs)							\
+				grain->chan -= numOutputs;								\
+		} else {														\
+			grain->chan = 0;											\
+			pan = sc_clip(pan * 0.5f + 0.5f, 0.f, 1.f);					\
+			panangle = pan * pi2_f;										\
+		}																\
 		pan1 = grain->pan1 = cos(panangle);								\
 		pan2 = grain->pan2 = sin(panangle);								\
 	} else {															\

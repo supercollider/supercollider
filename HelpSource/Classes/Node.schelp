@@ -183,7 +183,7 @@ if not nil, it will override the envelope's decay or release time.
 discussion::
 If this Node is a Group this will release all Nodes within the Group.
 code::
-x = { arg gate=1; BrownNoise.ar(0.5) * EnvGen.kr(Env.cutoff(1), gate, doneAction:2) }.play;
+x = { arg gate=1; BrownNoise.ar(0.5) * EnvGen.kr(Env.cutoff(1), gate, doneAction: Done.freeSelf) }.play;
 x.release(5); // override the Env's specified 1 second release time
 ::
 
@@ -274,7 +274,7 @@ method:: onFree
 Evaluate function when this Node is freed.
 discussion::
 code::
-{PinkNoise.ar(1) * Line.kr(1,0,2,doneAction:2)}.play.onFree {"done".postln};
+{PinkNoise.ar(1) * Line.kr(1,0,2,doneAction: Done.freeSelf)}.play.onFree {"done".postln};
 ::
 
 method:: waitForFree
@@ -283,8 +283,8 @@ discussion::
 code::
 (
 fork {
-    {SinOsc.ar(440!2) * Line.kr(0,1,5,doneAction:2)}.play.waitForFree;
-    {PinkNoise.ar(1) * Line.kr(1,0,2,doneAction:2)}.play.onFree {"done".postln};
+    {SinOsc.ar(440!2) * Line.kr(0,1,5,doneAction: Done.freeSelf)}.play.waitForFree;
+    {PinkNoise.ar(1) * Line.kr(1,0,2,doneAction: Done.freeSelf)}.play.onFree {"done".postln};
 }
 )
 ::

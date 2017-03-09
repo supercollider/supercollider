@@ -394,7 +394,7 @@ SynthDef("funk",{ arg freq = 700, amp = 0.2, gate = 1, cutoff = 20000, rez = 1, 
 		]),
 		EnvGen.kr(env,gate)*filterfreq,
 		rez);
-	Out.ar([0,1],x * EnvGen.kr(e, gate, doneAction: 2))
+	Out.ar([0,1],x * EnvGen.kr(e, gate, doneAction: Done.freeSelf))
 }).add;
 
 SynthDef("strings",{ arg freq = 700, amp = 0.2, gate = 1;
@@ -405,7 +405,7 @@ SynthDef("strings",{ arg freq = 700, amp = 0.2, gate = 1;
 			Mix.arFill(2, {Saw.ar(freq *0.5 + 2.rand2,0.6)})
 		]),
 		6000,1);
-	Out.ar([0,1],x * EnvGen.kr(enve, gate, doneAction: 2))
+	Out.ar([0,1],x * EnvGen.kr(enve, gate, doneAction: Done.freeSelf))
 }).add;
 )
 

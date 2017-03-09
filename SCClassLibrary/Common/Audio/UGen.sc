@@ -259,6 +259,10 @@ UGen : AbstractFunction {
 		^ModDif.multiNew(this.rate, this, that, mod)
 	}
 
+	sanitize {
+		^Sanitize.perform(this.methodSelectorForRate, this);
+	}
+
 	signalRange { ^\bipolar }
 	@ { arg y; ^Point.new(this, y) } // dynamic geometry support
 
@@ -299,7 +303,7 @@ UGen : AbstractFunction {
 					^("input " ++ i ++ " is not audio rate: " + inputs.at(i) + inputs.at(0).rate);
 				};
 			};
-		 };
+		};
 		^this.checkValidInputs
 	}
 

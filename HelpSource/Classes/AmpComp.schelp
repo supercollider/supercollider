@@ -113,10 +113,10 @@ SynthDef("pgrain",
 			Pan2.ar(
 				SinOsc.ar(freq),
 				pan
-			) * EnvGen.ar(window, doneAction:2)
+			) * EnvGen.ar(window, doneAction: Done.freeSelf)
 		)
 	}
-).send(s);
+).add;
 )
 
 // send grains
@@ -144,10 +144,10 @@ SynthDef("pgrain",
 			Pan2.ar(
 				SinOsc.ar(freq),
 				pan
-			) * EnvGen.ar(window, doneAction:2)
+			) * EnvGen.ar(window, doneAction: Done.freeSelf)
 		)
 	}
-).send(s);
+).add;
 )
 
 // with AmpCompA
@@ -160,10 +160,10 @@ SynthDef("pgrain",
 			Pan2.ar(
 				SinOsc.ar(freq),
 				pan
-			) * EnvGen.ar(window, doneAction:2)
+			) * EnvGen.ar(window, doneAction: Done.freeSelf)
 		)
 	}
-).send(s);
+).add;
 )
 ::
 

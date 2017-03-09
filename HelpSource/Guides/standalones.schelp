@@ -1,13 +1,13 @@
 TITLE:: Creating Standalone Applications
 SUMMARY:: A guide to creating SuperCollider-based applications
-CATEGORIES:: Platform>OSX, Tutorials
+CATEGORIES:: Platform>macOS (OS X), Tutorials
 KEYWORD:: standalones, stand-alones
 
-NOTE:: The concept of standalone applications is only relevant on Mac OS X. There is no such concept on other platforms. ::
+NOTE:: The concept of standalone applications is only relevant on macOS. There is no such concept on other platforms. ::
 
 Standalone applications are applications that run SuperCollider code in an opaque way, in the sense that the user does not need to install SuperCollider, manually run SuperCollider code, or even know that SuperCollider is involved. This is useful for distributing applications to the general public, or for creating special-purpose applications for your own use. There is one important restriction: the entire application must be open-source and comply with the GNU General Public License.
 
-On Mac OS X, applications are special directories with an ".app" extension, known as emphasis::bundles::. SuperCollider emphasis::standalone applications:: are bundles that contain your SuperCollider code, as well as a copy of SuperCollider itself to run your code.
+On macOS, applications are special directories with an ".app" extension, known as emphasis::bundles::. SuperCollider emphasis::standalone applications:: are bundles that contain your SuperCollider code, as well as a copy of SuperCollider itself to run your code.
 
 There are two ways of making standalone applications:
 

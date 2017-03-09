@@ -296,13 +296,13 @@ void TextFindReplacePanel::replaceAll()
 
 void TextFindReplacePanel::reportFoundOccurrencies( int count )
 {
-    QString message = tr("%n occurrencies found.", "Find text in document...", count);
+    QString message = tr("%n matches found.", "Find text in document...", count);
     MainWindow::instance()->showStatusMessage( message );
 }
 
 void TextFindReplacePanel::reportReplacedOccurrencies( int count )
 {
-    QString message = tr("%n occurrencies replaced.", "Find/replace text in document...", count);
+    QString message = tr("%n matches replaced.", "Find/replace text in document...", count);
     MainWindow::instance()->showStatusMessage( message );
 }
 

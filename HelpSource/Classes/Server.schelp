@@ -1,76 +1,32 @@
 class:: Server
-summary:: Object representing an sc-server application
+summary:: Object representing a server application
 categories:: Server>Abstractions
 related:: Classes/ServerOptions, Reference/Server-Architecture, Reference/Server-Command-Reference
 
 description::
 
-A Server object is the client-side representation of a server app and is used to control the app from the SuperCollider language application. (See link::Guides/ClientVsServer:: for more details on the distinction.)
-It forwards OSC messages and has a number of allocators that keep track of IDs for nodes, buses and buffers.
+A Server object is a representation of a server application. It is used to control scsynth (or supernova) from the SuperCollider language. (See link::Guides/Server-Guide::, as well as link::Guides/ClientVsServer:: for more details on the distinction.) It forwards OSC messages and has a number of allocators that keep track of IDs for nodes, buses and buffers.
 
-The server application is a commandline program, so all commands apart from OSC messages are unix commands.
-
-The server application represented by a Server object might be running on the same machine as the client (in the same address space as the language application or separately; see below), or it may be running on a remote machine.
+The server application represented by a Server object might be running on the same machine as the sclang, or it may be running on a remote machine.
 
 Most of a Server's options are controlled through its instance of ServerOptions. See the link::Classes/ServerOptions:: helpfile for more detail.
 
-subsection:: Paths
+A server also holds an instance of a link::Classes/Recorder:: (for recording output into a file) and a link::Classes/Volume:: (master level).
 
-Server apps running on the local machine have two unix environment variables: code::SC_SYNTHDEF_PATH:: and code::SC_PLUGIN_PATH::. These indicate directories of synthdefs and ugen plugins that will be loaded at startup. These are in addition to the default synthdef/ and plugin/ directories which are hard-coded.
-
-These can be set within SC using the getenv and setenv methods of class link::Classes/String::.
-code::
-// all defs in this directory will be loaded when a local server boots
-"SC_SYNTHDEF_PATH".setenv("~/scwork/".standardizePath);
-"echo $SC_SYNTHDEF_PATH".unixCmd;
+note::
+By default, there is always one default server, which is stored in the interpreter variable 's'. E.g. you can boot the defult server by calling code::s.boot::
 ::
-
-subsection:: The default group
-
-When a Server is booted there is a top level group with an ID of 0 that defines the root of the node tree. (This is represented by a subclass of link::Classes/Group:: : link::Classes/RootNode::.)
-If the server app was booted from within SCLang (as opposed to from the command line) the method code::initTree:: will be called automatically after booting.
-This will also create a link::Reference/default_group:: with an ID of 1, which is the default group for all link::Classes/Node::s when using object style.
-This provides a predictable basic node tree so that methods such as Server-scope, Server-record, etc. can function without running into order of execution problems.
-
-The default group is persistent, i.e. it is recreated after a reboot, pressing cmd-., etc. See link::Classes/RootNode:: and link::Reference/default_group:: for more information.
-Note::
-If a Server has been booted from the command line you must call code::initTree:: manually in order to initialize the default group, if you want it. See code::initTree:: below.
-::
-
-subsection:: Local vs. Internal
-
-In general, when working with a single machine one will probably be using one of two Server objects which are created at startup and stored in the class variables link::#*local:: and link::#*internal::. In SuperCollider.app (OSX), two GUI windows are created to control these. Use link::#-makeGui:: to create a GUI window manually.
-
-The difference between the two is that the local server runs as a separate application with its own address space, and the internal server runs within the same space as the language/client app.
-
-Both local and internal server supports link::#-scope#scoping:: and link::Classes/Bus#Synchronous control bus methods#synchronous bus access::.
-
-The local server, and any other server apps running on your local machine, have the advantage that if the language app crashes, it (and thus possibly your piece) will continue to run. It is thus an inherently more robust arrangement. But note that even if the synths on the server continue to run, any language-side sequencing and control will terminate if the language app crashes.
-
-At the current time, there is generally no benefit in using the internal server, but it remains for the purposes of backwards compatibility.
-
-subsection:: The default Server
-
-There is always a default Server, which is stored in the class variable code::default::. Any link::Classes/Synth::s or link::Classes/Group::s created without a target will be created on the default server. At startup this is set to be the local server (see above), but can be set to be any Server.
-
-subsection:: Local vs. Remote Servers, Multi-client Configurations
-
-Most of the time users work with a server app running on the same machine as the SC language client. It is possible to use a server running on a different machine via a network, providing you know the IP address and port of that server. The link::#*remote:: method provides a convenient way to do this.
-
-One common variant of this approach is multiple clients using the same server. If you wish to do this you will need to set the server's link::Classes/ServerOptions#-maxLogins:: to at least the number of clients you wish to allow.  When a client registers for link::#-notify#notifications:: the server will supply a client ID. This also configures the allocators to avoid conflicts when allocating link::Classes/Node##Nodes::, link::Classes/Buffer##Buffers::, or link::Classes/Bus##Busses::.
-
-In order to use a remote server with tcp one should first boot the remote server using the code::-t:: option and then run the following code:
 
 code::
-(
-s.options.protocol_(\tcp);
-s.addr.connect;
-s.startAliveThread( 0 );
-s.doWhenBooted({ "remote tcp server started".postln; s.notify; s.initTree });
-)
+s.boot;
+{ SinOsc.ar * 0.1 }.play(s); // play a synth on the server
 ::
 
+The server application may be in three different states: running, not running, or unresponsive (for example while loading large files from disk).
 
+code::
+s.serverRunning // returns true if it is true
+::
 
 
 ClassMethods::
@@ -113,21 +69,41 @@ get/set the local server, stored in classvar code::local:: (created already on i
 
 method:: internal
 get/set the internal server, stored in classvar code::internal:: (created already on initClass)
+See: link::Guides/Server-Guide::
 
 method:: default
 Get or set the default server. By default this is the local server (see above).
 discussion::
 Setting this will also assign it to the link::Classes/Interpreter:: variable 's'.
 code::
-Server.default = Server.internal; // set the internal Server to be the default Server
+// set the internal Server to be the default Server
+Server.default = Server.internal;
 s.postln; // internal
 ::
 
+subsection::Accessing all servers
+
 method:: all
-get/set the set of all servers.
+get a link::Classes/Set:: of all servers
+
+code::
+Server.all
+::
 
 method:: allRunningServers
 returns:: the set of all running servers.
+
+code::
+Server.allRunningServers
+::
+
+method:: named
+get an link::Classes/IdentityDictionary:: of all servers listed by their name
+
+code::
+Server.named.at(\default)
+::
+
 
 method:: quitAll
 quit all registered servers
@@ -137,6 +113,18 @@ query the system for any sc-server apps and hard quit them
 
 method:: freeAll
 free all nodes in all registered servers
+
+method:: hardFreeAll
+try to free all nodes in all registered servers, even if the server seems not to be running
+
+method::sync_s
+If kept true (default), when the default server is changed, also the interpreter variable s is changed.
+code::
+Server.default = Server(\alice, NetAddr("127.0.0.1", 57130));
+s.postln; // see: it is alice.
+::
+
+subsection::Switching the server application
 
 method:: supernova
 
@@ -232,14 +220,30 @@ argument:: recover
 If true, create a new node ID allocator for the server, but use the old buffer and bus allocators. This is useful if the server process did not actually stop. In normal use, the default value "false" should be used.
 argument:: onFailure
 In this method, the onFailure argument is for internal use only. If you wish to take specific actions when the server boots or fails to boot, it is recommended to use link::#-waitForBoot:: or link::#-doWhenBooted::.
+
 discussion::
-N.B. You cannot boot a server app on a remote machine.
+You cannot boot a server app on a remote machine, but you can initialise the allocators by calling this message.
 
 method:: quit
 quit the server application
 
+argument::onComplete
+A function that is called when quit has completed.
+
+argument::onFailure
+A function that is called when quit has failed.
+
+argument::watchShutDown
+a boolean to tell the server whether to watch status during shutdown.
+
 method:: reboot
 quit and restart the server application
+
+argument::func
+a function that is called between quit and (re-)boot.
+
+argument::onFailure
+A function that is called when quit has failed.
 
 method:: freeAll
 free all nodes in this server
@@ -314,6 +318,15 @@ s.quit;
 method:: peakCPU, avgCPU
 Get peak and average CPU usage.
 
+method:: latency
+The current latency of the server. See link::Guides/ServerTiming:: for details.
+
+method:: sampleRate
+An integer representing the nominal sample rate of the server; in other words, the sample rate that was requested of the server when it was booted.
+
+method:: actualSampleRate
+A floating-point number representing the current hardware sample rate, which may drift.
+
 method:: numSynths
 Get number of running link::Classes/Synth::s.
 
@@ -329,12 +342,29 @@ Get number of loaded link::Classes/SynthDef::initions.
 method:: pid
 Get process ID of running server (if not internal).
 
+method:: addr
+The network address of the server as a link::Classes/NetAddr::.
+
 method:: hasShmInterface
 Returns true if a link::Classes/ServerShmInterface:: is available. See also link::Classes/Bus#Synchronous control bus methods::.
-discussion::
 The shared memory interface is initialized after first server boot.
 
-subsection:: Automatic Message Bundling
+method:: serverBooting
+code::true:: if the server is booting, code::false:: otherwise.
+
+method:: serverRunning
+code::true:: if the server is running, code::false:: otherwise.
+
+method:: unresponsive
+code::true:: if the server is unresponsive (specifically, if it has failed to respond after link::Classes/ServerOptions#-pingsBeforeConsideredDead:: ping attempts); code::false:: otherwise.
+
+method:: isLocal
+code::true:: if the server is running on the same machine as sclang, code::false:: otherwise.
+
+method:: remoteControlled
+code::true:: if the server is not being controlled by the machine on which it is running, code::false:: otherwise. This value is the same as code::isLocal:: unless explicitly set.
+
+subsection:: Message Bundling
 
 Server provides support for automatically bundling messages. This is quite convenient in object style, and ensures synchronous execution. See also link::Guides/Bundled-Messages::
 
@@ -472,6 +502,9 @@ table::
 ## teletype::0:: || Reset volume to 0 db.
 ::
 
+method:: makeWindow
+On most platforms, this is equivalent to code::makeGui::.
+If you are running SuperCollider on Emacs, it makes a server view composed of Emacs widgets.
 
 method:: scope
 Open a scope window showing the output of the Server.
@@ -547,10 +580,6 @@ SynthDef("bubbles", {
 	zout = CombN.ar(SinOsc.ar(f, 0, 0.04), 0.2, 0.2, 4); // echoing sine wave
 	Out.ar(0, zout);
 }).add;
-SynthDef("tpulse", { arg out=0,freq=700,sawFreq=440.0;
-	Out.ar(out, SyncSaw.ar(freq,  sawFreq,0.1) )
-}).add;
-
 )
 
 x = Synth.new("bubbles");
@@ -570,10 +599,15 @@ x.free; // stop the synths
 // look in your recordings folder and you'll find a file named for this date and time
 ::
 
+Recording is done via an of link::Classes/Recorder:: - a server holds one instance implicitly.
+
 method:: prepareForRecord
 Allocates the necessary buffer, etc. for recording the server's output. (See code::record:: below.)
 argument:: path
 a link::Classes/String:: representing the path and name of the output file.
+argument:: numChannels
+a link::Classes/String:: the number of output channels to record.
+
 discussion::
 If you do not specify a path than a file will be created in your recordings folder (see the note above on this) called SC_thisDateAndTime. Changes to the header or sample format, or to the number of channels must be made strong::before:: calling this.
 
@@ -581,6 +615,15 @@ method:: record
 Starts or resumes recording the output.
 argument:: path
 this is optional, and is passed to code::prepareForRecord:: (above).
+argument:: bus
+the bus to record - defaults to 0
+argument:: numChannels
+the number of channels to record - defaults to server numChannels
+argument:: node
+the node to record - defaults to server rootnode
+argument:: duration
+duration to record - defaults to inf
+
 discussion::
 If you have not called prepareForRecord first (see above) then it will be invoked for you (but that adds a slight delay before recording starts for real).
 
@@ -592,8 +635,6 @@ Stops recording, closes the file, and frees the associated resources.
 discussion::
 You must call this when finished recording or the output file will be unusable. Cmd-. while recording has the same effect.
 
-method:: recordNode
-Returns:: the current recording synth so that it can be used as a target. This should only be necessary for nodes which are not created in the default group.
 
 method:: recChannels
 Get/set the number of channels (int) to record. Is automatically set to the value of link::Classes/ServerOptions#-numOutputBusChannels:: when booting the server. Must be called strong::before:: prepareForRecord.

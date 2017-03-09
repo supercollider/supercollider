@@ -79,7 +79,7 @@ SynthDef( "conv-test", { arg kernel, trig=0;
 
 	//must have power of two framesize
 	Out.ar(0,Convolution2.ar(input,kernel,trig,2048, 0.5));
-}).send(s)
+}).add
 
 )
 
@@ -110,7 +110,7 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 (
 	{ var input, kernel;
 
-	input=AudioIn.ar(1);
+	input=SoundIn.ar(0);
 
 	//must have power of two framesize
 	Out.ar(0,Convolution2.ar(input,b.bufnum,0,512, 0.5));
@@ -140,7 +140,7 @@ g.set(0,1.0);
 	{
 	var input,inputAmp,threshhold,gate;
 
-input = AudioIn.ar(1);
+input = SoundIn.ar(0);
 inputAmp = Amplitude.kr(input);
 threshhold = 0.02;	// noise gating threshold
 gate = Lag.kr(inputAmp > threshhold, 0.01);
@@ -159,7 +159,7 @@ b.sine1(1.0/[1,2,3,4,5,6], true, true, true);
 (
 	{ var input, kernel;
 
-	input=AudioIn.ar(1);
+	input=SoundIn.ar(0);
 
 	//must have power of two framesize
 	Out.ar(0,Convolution2.ar(input,b.bufnum,0, 512, 0.5));

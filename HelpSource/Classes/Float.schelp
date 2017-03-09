@@ -3,7 +3,10 @@ summary:: Floating point number
 categories:: Math
 
 description::
-A 64 bit double precision floating point number. Float inherits most of its behaviour from its superclass.
+A 64-bit double precision floating point number. Float inherits most of its behaviour from its superclass.
+
+Note that despite its name, link::Classes/FloatArray:: only holds 32-bit (single precision) floats.
+For a raw array of 64-bit floats, use link::Classes/DoubleArray::.
 
 ClassMethods::
 
@@ -62,4 +65,3 @@ pi.asStringPrec(6)
 7.4.asStringPrec(5)
 7.4.asStringPrec(50)
 ::
-

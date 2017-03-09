@@ -423,7 +423,7 @@ Event : Environment {
 
 					parentType !? { currentEnvironment.parent = parentType };
 
-					~finish.value;
+					~finish.value(currentEnvironment);
 
 					server = ~server ?? { Server.default };
 
@@ -432,6 +432,8 @@ Event : Environment {
 						thisThread.clock.tempo = tempo;
 					};
 					if(currentEnvironment.isRest.not) { eventType.value(server) };
+
+					~callback.value(currentEnvironment);
 				},
 
 				// synth / node interface
@@ -641,7 +643,6 @@ Event : Environment {
 
 						~server = server;
 						~id = ids;
-						~callback.value(currentEnvironment)
 					},
 
 					set: #{|server|
@@ -717,7 +718,12 @@ Event : Environment {
 							).throw;
 						};
 						if (~id.isNil) { ~id = server.nextNodeID };
-						instrument = "system_setbus_%_%".format(~rate.value ? \control, numChannels);
+						// the instrumentType can be system_setbus or system_setbus_hold
+						instrument = format(
+							if(~hold != true) { "system_setbus_%_%" } { "system_setbus_hold_%_%" },
+							~rate.value ? \control,
+							numChannels
+						);
 						// addToTail, so that old bus value can be overridden:
 						bundle = [9, instrument, ~id, 1, ~group.asControlInput,
 							"values", array,
@@ -855,6 +861,7 @@ Event : Environment {
 							ids = ids.add(id);
 							b[2] = id;
 						};
+						~id = ids;
 
 						if ((addAction == 0) || (addAction == 3)) {
 							bndl = bndl.reverse;

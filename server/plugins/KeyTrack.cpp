@@ -102,6 +102,8 @@ void KeyTrack_Ctor(KeyTrack* unit)
 
 	//unit->m_frame=0;
 
+	OUT0(0) = 0.f;
+
 	unit->mCalcFunc = (UnitCalcFunc)&KeyTrack_next;
 }
 
@@ -140,10 +142,10 @@ void KeyTrack_next(KeyTrack *unit, int wrongNumSamples)
 void KeyTrack_calculatekey(KeyTrack *unit, uint32 ibufnum)
 {
 	World *world = unit->mWorld;
-	
-    SndBuf *buf;
-    
-    if (ibufnum >= world->mNumSndBufs) { 
+
+	SndBuf *buf;
+
+	if (ibufnum >= world->mNumSndBufs) {
 		int localBufNum = ibufnum - world->mNumSndBufs; 
 		Graph *parent = unit->mParent; 
 		if(localBufNum <= parent->localBufNum) { 
@@ -155,7 +157,7 @@ void KeyTrack_calculatekey(KeyTrack *unit, uint32 ibufnum)
 	} else { 
 		buf = world->mSndBufs + ibufnum; 
 	} 
-    
+
 	LOCK_SNDBUF(buf);
 
 	//assumed in this representation

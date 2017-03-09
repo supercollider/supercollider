@@ -1,11 +1,11 @@
 class:: GUI
 summary:: Factory abstraction for all GUI related core classes
 categories:: GUI>Kits
-related:: Overviews/GUI-Classes, Guides/GUI-Introduction, Classes/ViewRedirect
+related:: Overviews/GUI-Classes, Guides/GUI-Introduction
 
 
 description::
-SuperCollider currently supports three operating system platforms: Macintosh OSX, UNIX (Linux and FreeBSD) and Windows (with some limitations).
+SuperCollider currently supports three operating system platforms: macOS, UNIX (Linux and FreeBSD) and Windows (with some limitations).
 
 warning::The redirect system has been deprecated, please use the view classes directly.::
 
@@ -13,14 +13,14 @@ Graphical User Interface (GUI) code, for the most part, does not need to worry a
 
 table::
 ## strong::GUI kit:: || strong::Code to activate:: || strong::Supported platform(s):: || strong::Framework:: || strong::Prefix::
-## Cocoa || code::GUI.cocoa:: || Mac OSX only || Cocoa || SC-
+## Cocoa || code::GUI.cocoa:: || macOS only || Cocoa || SC-
 ## SwingOSC || code::GUI.swing:: || All || Java + Swing || JSC-
 ## Qt || code::GUI.qt:: || All || Qt || Q-
 ::
 
 In general, users should not concern themselves with the prefixes. Instead, work with the emphasis::redirect:: classes, which have no prefix: Window, Button, Slider, etc. The redirect class will ask the currently-selected kit which emphasis::implementation class:: should be used.
 
-The GUI kit (CocoaGUI, QtGUI, SwingGUI) maps the generic view names to the implementing classes: code::Window --> SCWindow, QWindow or JSCWindow::. These schemes are in turn used by link::Classes/ViewRedirect:: to provide a simple cross-platform gui syntax. The GUI class provides utilities for switching kits and other cross platform tasks.
+The GUI kit (CocoaGUI, QtGUI, SwingGUI) maps the generic view names to the implementing classes: code::Window --> SCWindow, QWindow or JSCWindow::. The GUI class provides utilities for switching kits and other cross platform tasks.
 
 You can get your available schemes (depending on what you installed) with:
 code::
@@ -31,7 +31,7 @@ For a complete list of gui classes and redirects, see link::Overviews/GUI-Classe
 
 subsection:: Switching and Referring to GUI Kits
 
-As of this writing, three GUI kits are available through the GUI class: link::Classes/QtGUI:: (Qt framework), link::Classes/CocoaGUI:: (Mac OS X native) and link::Classes/SwingGUI:: (Java). Note that link::Classes/SwingOSC:: is not part of every SuperCollider distribution, so you may have to install it separately.
+As of this writing, three GUI kits are available through the GUI class: link::Classes/QtGUI:: (Qt framework), link::Classes/CocoaGUI:: (macOS native) and link::Classes/SwingGUI:: (Java). Note that link::Classes/SwingOSC:: is not part of every SuperCollider distribution, so you may have to install it separately.
 
 You can switch the GUI kit by calling one of the following class methods:
 code::
@@ -48,7 +48,7 @@ code::
 GUI.current;	// returns the current GUI kit implementation
 ::
 
-If you want to make a GUI kit specific switch (e.g. in a class), then you should use the following instead, as on non-OSX systems the class CocoaGUI is not in the class library path, and you cannot check for an undefined class:
+If you want to make a GUI kit specific switch (e.g. in a class), then you should use the following instead, as on non-macOS systems the class CocoaGUI is not in the class library path, and you cannot check for an undefined class:
 code::
 GUI.id;	// returns the current GUI kit implementation id; this is currently either \cocoa or \swing
 ::
@@ -134,7 +134,7 @@ buttonHeight: 16
 ::
 
 method:: cocoa
-Makes Cocoa (Mac OS X GUI) the current scheme and returns it. Subsequent GUI object calls to GUI are delegated to cocoa. Returns the current (cocoa) scheme.
+Makes Cocoa (macOS GUI) the current scheme and returns it. Subsequent GUI object calls to GUI are delegated to cocoa. Returns the current (cocoa) scheme.
 
 method:: swing
 Makes Swing (Java GUI) the current scheme and returns it. Subsequent GUI object calls to GUI are delegated to swing. Returns the current (swing) scheme.

@@ -206,7 +206,7 @@ Dictionary : Set {
 		if(func.notNil) {
 			old = this.at(key);
 			if(old.notNil) {
-				 val = func.value(val, old)
+				val = func.value(val, old)
 			}
 		};
 		this.put(key, val)
@@ -447,6 +447,32 @@ IdentityDictionary : Dictionary {
 	}
 	scanFor { arg argKey;
 		^array.atIdentityHashInPairs(argKey)
+	}
+
+	collect { arg function;
+		var res = this.class.new(this.size, proto, parent, know);
+		this.keysValuesDo { arg key, elem;
+			res.put(key, function.value(elem, key));
+		};
+		^res;
+	}
+	select { arg function;
+		var res = this.class.new(this.size, proto, parent, know);
+		this.keysValuesDo { arg key, elem;
+			if(function.value(elem, key)) {
+				res.put(key, elem);
+			};
+		};
+		^res;
+	}
+	reject { arg function;
+		var res = this.class.new(this.size, proto, parent, know);
+		this.keysValuesDo { arg key, elem;
+			if(function.value(elem, key).not) {
+				res.put(key, elem);
+			};
+		};
+		^res;
 	}
 
 	freezeAsParent {

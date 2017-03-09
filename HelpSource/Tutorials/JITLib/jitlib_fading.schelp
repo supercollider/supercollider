@@ -77,7 +77,7 @@ code::
 // when a gate arg is provided, and the env can free the synth, this envelope
 // is supposed to be the fade envelope for the synth: no extra fade env is created.
 (
-~out = { arg gate=1; EnvGen.kr(Env.asr, gate, doneAction:2) * 0.2 * SinOsc.ar([1,1]*Rand(440,550)) };
+~out = { arg gate=1; EnvGen.kr(Env.asr, gate, doneAction: Done.freeSelf) * 0.2 * SinOsc.ar([1,1]*Rand(440,550)) };
 )
 ::
 
@@ -93,7 +93,7 @@ code::
 // this is the minimal requirement arguments for such a use (similar to Pbind)
 (
 SynthDef("test", { arg gate=1, out;
-	Out.ar(out, Formant.ar(300, 200, 10) * EnvGen.kr(Env.asr, gate, doneAction:2))
+	Out.ar(out, Formant.ar(300, 200, 10) * EnvGen.kr(Env.asr, gate, doneAction: Done.freeSelf))
 }).send(s);
 )
 
@@ -102,7 +102,7 @@ SynthDef("test", { arg gate=1, out;
 SynthDef("test", { arg gate=1, out, fadeTime=1;
 	Out.ar(out,
 		Formant.ar(Rand(20,40), 600, 10, 0.2)
-		* EnvGen.kr(Env.asr(fadeTime,1,fadeTime), gate, doneAction:2)
+		* EnvGen.kr(Env.asr(fadeTime,1,fadeTime), gate, doneAction: Done.freeSelf)
 	)
 }).send(s);
 )
@@ -122,7 +122,7 @@ code::
 SynthDef("test", { arg gate=1, out;
 	Out.ar(out,
 		Formant.ar(Rand(20,40), 600, 10, 0.6)
-		* EnvGen.kr(Env.perc, gate, doneAction:2)
+		* EnvGen.kr(Env.perc, gate, doneAction: Done.freeSelf)
 	)
 }).send(s);
 )
@@ -135,7 +135,7 @@ section::e) own free responsibility
 code::
 //inner envelope that can free the synth, no extra fade env is created:
 (
-~out = { arg t_trig; EnvGen.kr(Env.asr, t_trig, doneAction:2) * PinkNoise.ar([1,1]) };
+~out = { arg t_trig; EnvGen.kr(Env.asr, t_trig, doneAction: Done.freeSelf) * PinkNoise.ar([1,1]) };
 )
 ~out.group.set(\t_trig, 1); //end it
 

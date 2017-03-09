@@ -14,13 +14,13 @@
 		bundle.send(server,this,timeOfRequest);
 	}
 }
-/**
-  * 1 : bar
-  * 2 : half-note
-  * 4 : quarter note
-  * 8 : 8th note
-  * 16 : 16th note
-  */
+
+// 1 : bar
+// 2 : half-note
+// 4 : quarter note
+// 8 : 8th note
+// 16 : 16th note
+
 + Integer { // at the next N beat
 	schedBundle { arg bundle,server,timeOfRequest;
 

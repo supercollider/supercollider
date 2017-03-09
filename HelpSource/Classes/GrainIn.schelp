@@ -62,10 +62,10 @@ SynthDef(\in_grain_test, {arg gate = 1, amp = 1, envbuf;
 		Env([0, 1, 0], [1, 1], \sin, 1),
 		gate,
 		levelScale: amp,
-		doneAction: 2);
+		doneAction: Done.freeSelf);
 	Out.ar(0,
 		GrainIn.ar(2, Impulse.kr(32), 1, PinkNoise.ar * 0.05, pan, envbuf) * env)
-	}).send(s);
+	}).add;
 
 )
 

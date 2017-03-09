@@ -475,7 +475,7 @@ Use of this synth in Patterns will not detect argument names automatically becau
 		size = stream.getInt8;
 		n = String.newClear(size);
 		^Array.fill(size, {
-		  stream.getChar.asAscii
+			stream.getChar.asAscii
 		}).as(String)
 	}
 

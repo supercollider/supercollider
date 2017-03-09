@@ -45,7 +45,22 @@ InstanceMethods::
 private::prConnect, prDisconnect, prConnectionClosed, recover
 
 method::sendMsg
-send a message without timestamp to the addr.
+Convert the argument list to an OSC message and send it to the NetAddr without a timestamp. The first argument is the OSC address, and the remaining arguments are the arguments in the OSC message. If you leave off the initial "/" in the OSC address, one will be prepended. The technical details of how sclang objects are converted to OSC messages is given in the link::Guides/OSC_communication:: helpfile.
+
+code::
+n = NetAddr("localhost", 12345);
+n = s.addr;
+
+// Example sending symbols, integers, and a float
+n.sendMsg('/s_new', \default, 2000, 0, s.defaultGroup.nodeID, \freq, 60.midicps);
+
+// The initial forward slash can be omitted
+n.sendMsg(\n_set, 2000, \gate, 0);
+
+// Using the performList syntax, you can use an array to store an OSC message
+~msg = [\n_set, 2000, \gate, 0];
+n.sendMsg(*~msg);
+::
 
 method::sendBundle
 send a bundle with timestamp to the addr.

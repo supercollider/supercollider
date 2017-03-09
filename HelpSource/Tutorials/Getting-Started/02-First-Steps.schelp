@@ -4,7 +4,7 @@ categories:: Tutorials>Getting-Started
 related:: Tutorials/Getting-Started/00-Getting-Started-With-SC
 
 note::
-This document is written so that it can be used on all supported systems, though having first of all OS X in mind using the application SuperCollider.app (SCapp). Some features, e.g. menu commands, are platform specific, but the principles extend to all platforms. See the helpfile link::Reference/KeyboardShortcuts:: for key commands when using other tools such as SC enhanced editors, e.g. on Linux platforms.
+This document is written so that it can be used on all supported systems, though having first of all macOS in mind using the application SuperCollider.app (SCapp). Some features, e.g. menu commands, are platform specific, but the principles extend to all platforms. See the helpfile link::Reference/KeyboardShortcuts:: for key commands when using other tools such as SC enhanced editors, e.g. on Linux platforms.
 ::
 
 section::Hello World, I'm SuperCollider

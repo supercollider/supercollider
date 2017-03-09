@@ -831,7 +831,7 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 
 #define CHECK_BUF \
 	if (!bufData) { \
-                unit->mDone = true; \
+		unit->mDone = true; \
 		ClearUnitOutputs(unit, inNumSamples); \
 		return; \
 	}
@@ -6057,7 +6057,7 @@ inline double sc_gloop(double in, double hi)
 		float d = table3[0]; \
 		float outval = amp * cubicinterp(fracphase, a, b, c, d); \
 		ZXP(out1) += outval * pan1; \
-		ZXP(out2) += outval * pan2; \
+		if (numOutputs > 1) { ZXP(out2) += outval * pan2; } \
 		double y0 = b1 * y1 - y2; \
 		y2 = y1; \
 		y1 = y0; \
@@ -6077,7 +6077,7 @@ inline double sc_gloop(double in, double hi)
 		float c = table2[0]; \
 		float outval = amp * (b + fracphase * (c - b)); \
 		ZXP(out1) += outval * pan1; \
-		ZXP(out2) += outval * pan2; \
+		if (numOutputs > 1) { ZXP(out2) += outval * pan2; } \
 		double y0 = b1 * y1 - y2; \
 		y2 = y1; \
 		y1 = y0; \
@@ -6200,21 +6200,29 @@ void TGrains_next(TGrains *unit, int inNumSamples)
 			grain->interp = (int)IN_AT(unit, 7, i);
 
 			float panangle;
-			if (numOutputs > 2) {
-				pan = sc_wrap(pan * 0.5f, 0.f, 1.f);
-				float cpan = numOutputs * pan + 0.5;
-				float ipan = floor(cpan);
-				float panfrac = cpan - ipan;
-				panangle = panfrac * pi2_f;
-				grain->chan = (int)ipan;
-				if (grain->chan >= (int)numOutputs) grain->chan -= numOutputs;
+			float pan1, pan2;
+			if (numOutputs > 1) {
+				if (numOutputs > 2) {
+					pan = sc_wrap(pan * 0.5f, 0.f, 1.f);
+					float cpan = numOutputs * pan + 0.5f;
+					float ipan = floor(cpan);
+					float panfrac = cpan - ipan;
+					panangle = panfrac * pi2_f;
+					grain->chan = (int)ipan;
+					if (grain->chan >= (int)numOutputs)
+						grain->chan -= numOutputs;
+				} else {
+					grain->chan = 0;
+					pan = sc_clip(pan * 0.5f + 0.5f, 0.f, 1.f);
+					panangle = pan * pi2_f;
+				}
+				pan1 = grain->pan1 = cos(panangle);
+				pan2 = grain->pan2 = sin(panangle);
 			} else {
 				grain->chan = 0;
-				pan = sc_wrap(pan * 0.5f + 0.5f, 0.f, 1.f);
-				panangle = pan * pi2_f;
+				pan1 = grain->pan1 = 1.;
+				pan2 = grain->pan2 = 0.;
 			}
-			float pan1 = grain->pan1 = amp * cos(panangle);
-			float pan2 = grain->pan2 = amp * sin(panangle);
 			double w = pi / counter;
 			double b1 = grain->b1 = 2. * cos(w);
 			double y1 = sin(w);

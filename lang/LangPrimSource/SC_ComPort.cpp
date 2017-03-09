@@ -228,7 +228,7 @@ void SC_TcpConnection::handleMsgReceived(const boost::system::error_code &error,
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-SC_TcpClientPort::SC_TcpClientPort(long inAddress, int inPort, ClientNotifyFunc notifyFunc, void *clientData):
+SC_TcpClientPort::SC_TcpClientPort(unsigned long inAddress, int inPort, ClientNotifyFunc notifyFunc, void *clientData):
 	socket(ioService),
 	endpoint(boost::asio::ip::address_v4(inAddress), inPort),
 	mClientNotifyFunc(notifyFunc),

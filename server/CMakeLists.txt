@@ -18,7 +18,7 @@ endif()
 if (APPLE)
 	add_definitions("-DSC_FFT_VDSP")
 else()
-    find_package(FFTW3f 3.3)
+	find_package(FFTW3f 3.3)
 
 	if (NOT FFTW3F_FOUND OR FFT_GREEN)
 		message(STATUS "Using green fft")

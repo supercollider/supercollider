@@ -40,7 +40,7 @@
 // setlinebuf is equivalent to the setvbuf call below.
 inline int setlinebuf(FILE *stream)
 {
-    return setvbuf( stream, (char*)0, _IONBF, 0 );
+	return setvbuf( stream, (char*)0, _IONBF, 0 );
 }
 
 #endif
@@ -87,9 +87,11 @@ void Usage()
 #endif
 		"   -H <hardware-device-name>\n"
 		"   -V <verbosity>\n"
-		"          0 is normal behaviour\n"
-		"          -1 suppresses informational messages\n"
-		"          -2 suppresses informational and many error messages\n"
+		"          0 is normal behaviour.\n"
+		"          -1 suppresses informational messages.\n"
+		"          -2 suppresses informational and many error messages, as well as\n"
+		"             messages from Poll.\n"
+		"          The default is 0.\n"
 		"   -U <ugen-plugins-path>    a colon-separated list of paths\n"
 		"          if -U is specified, the standard paths are NOT searched for plugins.\n"
 		"   -P <restricted-path>    \n"
@@ -286,7 +288,7 @@ int main(int argc, char* argv[])
 				options.mVerbosity = atoi(argv[j+1]);
 				break;
 			case 'v' :
-				scprintf("scsynth %s\n", SC_VersionString().c_str());
+				scprintf("scsynth %s (%s)\n", SC_VersionString().c_str(), SC_BuildString().c_str());
 				exit(0);
 				break;
 			case 'R' :

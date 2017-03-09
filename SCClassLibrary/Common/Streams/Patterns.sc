@@ -85,67 +85,48 @@ Pattern : AbstractFunction {
 	differentiate { ^Pdiff(this) }
 	integrate { ^Plazy { var sum = 0; this.collect { |x| sum = sum + x } } }
 
-	//////////////////////
 
 	// realtime recording
 	// for NRT see Pattern:asScore
 
 	// path: if nil, auto-generate path
-	// dur: if nil, record until pattern stops (infinite pattern = problem)
+	// dur: if nil, record until pattern stops or is stopped externally
 	// fadeTime: allow extra time after last Event for nodes to become silent
-	record { |path, headerFormat = "AIFF", sampleFormat = "float", numChannels = 2, dur = nil, fadeTime = 0.2, clock(TempoClock.default), protoEvent(Event.default), server(Server.default), out = 0|
-		var	buf, bus, recsynth, pattern, defname, cond, startTime;
-		if(dur.notNil) { pattern = Pfindur(dur, this) } { pattern = this };
-		path ?? {
-			if(thisProcess.platform.name == \windows) {
-				path = thisProcess.platform.recordingsDir +/+ "SC_" ++ Main.elapsedTime.round(0.01) ++ "." ++ headerFormat;
-			} {
-				path = thisProcess.platform.recordingsDir +/+ "SC_" ++ Date.localtime.stamp ++ "." ++ headerFormat;
-			};
-		};
-		fork {
-			cond = Condition.new;
-			buf = Buffer.alloc(server, 65536, numChannels);
-			SynthDef(defname = ("patrec"++numChannels).asSymbol, { |bufnum, bus, out|
-				var	sig = In.ar(bus, numChannels);
-				DiskOut.ar(bufnum, sig);
-				Out.ar(out, sig);
-			}).add;
+
+	record { |path, headerFormat = "AIFF", sampleFormat = "float", numChannels = 2, dur = nil, fadeTime = 0.2, clock(TempoClock.default), protoEvent(Event.default), server(Server.default), out = 0, outNumChannels|
+
+		var recorder = Recorder(server);
+		var pattern = if(dur.notNil) { Pfindur(dur, this) } { this };
+
+		server.waitForBoot {
+			var group, bus, startTime, free, monitor;
+
+			recorder.prepareForRecord(path, numChannels);
+			fadeTime = (fadeTime ? 0).roundUp(recorder.numFrames / server.sampleRate);
+
 			bus = Bus.audio(server, numChannels);
-			server.sync(cond);
-			buf.write(path, headerFormat, sampleFormat, numFrames: 0, startFrame: 0, leaveOpen: true);
-			server.sync(cond);
-			"Recording pattern into % at %\n".postf(path, thisThread.beats);
-			recsynth = server.nextNodeID;
+			group = Group(server);
+			Monitor.new.play(bus.index, bus.numChannels, out, outNumChannels ? numChannels, group);
+			server.sync;
+
+			free = { recorder.stopRecording; bus.free; group.free };
+
 			Pprotect(
-				// Pfset has a cleanupFunc, which executes even if pattern is stopped by cmd-.
 				Pfset(nil,
 					Pseq([
-						Pfuncn { startTime = thisThread.beats; (type: \rest, delta: 0) },
-						(type: \on, instrument: defname, bufnum: buf, bus: bus, out: out, id: recsynth,
-							delta: 0),
+						Pfuncn {
+							startTime = thisThread.beats;
+							(type: \rest, delta: 0)
+						},
+						(play: { recorder.record(path, bus, numChannels, group) }, delta: 0),
 						pattern <> (out: bus),
-						Plazy {
-							Pn((type: \rest, delta: (fadeTime ? 0)
-								.roundUp(buf.numFrames / server.sampleRate)),
-								1)
-						}
+						(type: \rest, delta: fadeTime)
 					], 1),
-					{ (type: \kill, id: recsynth).play }
+					free
 				),
-				// on error, killing the recsynth triggers rest of cleanup below
-				{ (type: \kill, id: recsynth).play }
+				free // on error
 			).play(clock, protoEvent, quant: 0);
-				// clean up after recording synth stops
-			OSCpathResponder(server.addr, ['/n_end', recsynth], { |time, resp, msg|
-				resp.remove;
-				cond.unhang;
-			}).add;
-			cond.hang;
-			buf.close.free;
-			bus.free;
-			server.sendMsg(\d_free, defname);
-			"Finished recording % at %\n".postf(path, thisThread.beats);
+
 		}
 	}
 }
@@ -246,7 +227,7 @@ Pnaryop : Pattern {
 	embedInStream { arg inval;
 		var streamA, streamlist, vala, values, isNumeric;
 		streamA = a.asStream;
-			 // optimization
+			// optimization
 		isNumeric = arglist.every { arg item;
 			item.isNumber or: {item.class === Symbol}
 		};
@@ -331,7 +312,7 @@ Pevent : Pattern {
 			outval = stream.next(event);
 			if (outval.isNil) { ^inval };
 			inval = outval.yield
-		 }
+		}
 	}
 }
 

@@ -138,7 +138,7 @@ SimpleNumber : Number {
 	raddeg { ^this*180/pi }
 
 	performBinaryOpOnSimpleNumber { arg aSelector, aNumber, adverb;
-		 BinaryOpFailureError(this, aSelector, [aNumber, adverb]).throw;
+		BinaryOpFailureError(this, aSelector, [aNumber, adverb]).throw;
 	}
 	performBinaryOpOnComplex { arg aSelector, aComplex, adverb; ^aComplex.perform(aSelector, this.asComplex, adverb) }
 	performBinaryOpOnSignal { arg aSelector, aSignal, adverb;

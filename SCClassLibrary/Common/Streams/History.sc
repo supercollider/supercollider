@@ -206,7 +206,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		path = path ?? { saveFolder ++ "history_" ++ this.class.timeStamp ++ ".scd" };
 		file = File(path.standardizePath, "w");
 		file.write(lines2write.asCompileString);
-		inform("History written to:" + path);
+		postln("History written to:" + path);
 		file.close;
 	}
 
@@ -397,7 +397,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		if (logFile.isOpen) {
 			logFile.write(format("// History, as it was on %.\n\n",
 				timeString) ++ "[\n" /*]*/ );
-			"// History.logFile opened.".inform;
+			"// History.logFile opened.".postln;
 		} {
 			"// History: could not open logFile!".warn;
 		};
@@ -419,7 +419,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 	*endLog {
 		// close file
 		try { logFile.write( /*[*/ "];") };
-		try { logFile.close; "// History.logFile closed.".inform; };
+		try { logFile.close; "// History.logFile closed.".postln; };
 	}
 
 	*showLogFile { Document.open(this.logPath) }

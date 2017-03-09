@@ -132,7 +132,7 @@ SynthDef(\stepper, {
 
 	Out.ar(0, out);
 
-}).send(s);
+}).add;
 )
 
 s.sendMsg(\s_new, \stepper, 1000, 0, 0);

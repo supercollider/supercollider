@@ -66,17 +66,17 @@ Bag : Collection {
 	do { arg function;
 		var j = 0;
 		contents.associationsDo({ arg assn;
-			 assn.value.do({
-			 	function.value(assn.key, j);
-			 	j = j + 1;
-			 })
+			assn.value.do({
+				function.value(assn.key, j);
+				j = j + 1;
+			})
 		});
 	}
 	countsDo { arg function;
 		var j = 0;
 		contents.associationsDo({ arg assn;
 			function.value(assn.key,assn.value,j);
-			 j = j + 1;
+			j = j + 1;
 		});
 	}
 	itemCount { arg item;

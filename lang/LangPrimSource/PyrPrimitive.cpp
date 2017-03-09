@@ -89,8 +89,6 @@ typedef struct {
 
 extern PrimitiveTable gPrimitiveTable;
 
-extern PyrSlot o_nullframe;
-
 
 int getPrimitiveNumArgs(int index)
 {
@@ -1470,16 +1468,20 @@ int objectPerform(struct VMGlobals *g, int numArgsPushed)
 
 	recvrSlot = g->sp - numArgsPushed + 1;
 	selSlot = recvrSlot + 1;
+
 	if (IsSym(selSlot)) {
 		selector = slotRawSymbol(selSlot);
+
 		// move args down one to fill selector's position
 		pslot = selSlot - 1;
 		qslot = selSlot;
-		for (m=0; m<numArgsPushed - 2; ++m) slotCopy(++pslot, ++qslot);
-		g->sp -- ;
-		numArgsPushed -- ;
+		for (m = 0; m < numArgsPushed - 2; ++m)
+            slotCopy(++pslot, ++qslot);
+		g->sp--;
+		numArgsPushed--;
 		// now the stack looks just like it would for a normal message send
 	} else if (IsObj(selSlot)) {
+        // if a List was passed, cast it to an Array, else throw an error
 		listSlot = selSlot;
 		if (slotRawObject(listSlot)->classptr == class_list) {
 			listSlot = slotRawObject(listSlot)->slots;
@@ -1487,23 +1489,36 @@ int objectPerform(struct VMGlobals *g, int numArgsPushed)
 		if (NotObj(listSlot) || slotRawObject(listSlot)->classptr != class_array) {
 			goto badselector;
 		}
+
 		PyrObject *array = slotRawObject(listSlot);
+
 		if (array->size < 1) {
 			error("Array must have a selector.\n");
 			return errFailed;
 		}
+
 		selSlot = array->slots;
+
+        // check the first slot to see if it's a symbol
+        if (NotSym(selSlot)) {
+            error("First element of array must be a Symbol selector.\n");
+            dumpObjectSlot(selSlot);
+            return errWrongType;
+        }
+
 		selector = slotRawSymbol(selSlot);
 
-		if (numArgsPushed>2) {
+		if (numArgsPushed > 2) {
 			qslot = recvrSlot + numArgsPushed;
 			pslot = recvrSlot + numArgsPushed + array->size - 2;
-			for (m=0; m<numArgsPushed - 2; ++m) slotCopy(--pslot, --qslot);
+			for (m = 0; m < numArgsPushed - 2; ++m)
+                slotCopy(--pslot, --qslot);
 		}
 
 		pslot = recvrSlot;
 		qslot = selSlot;
-		for (m=0,mmax=array->size-1; m<mmax; ++m) slotCopy(++pslot, ++qslot);
+		for (m = 0, mmax = array->size-1; m < mmax; ++m)
+            slotCopy(++pslot, ++qslot);
 
 		g->sp += array->size - 2;
 		numArgsPushed += array->size - 2;
@@ -3359,7 +3374,6 @@ int prRoutineStop(struct VMGlobals *g, int numArgsPushed)
 
 
 	if (state == tSuspended || state == tInit) {
-		slotCopy(&g->process->nowExecutingPath, &thread->oldExecutingPath);
 		SetNil(&g->thread->terminalValue);
 		SetRaw(&thread->state, tDone);
 		slotRawObject(&thread->stack)->size = 0;
@@ -3544,7 +3558,7 @@ static int prLanguageConfig_getCurrentConfigPath(struct VMGlobals * g, int numAr
     } else {
         SetObject(a, str);
     }
-    
+
 	return errNone;
 }
 
@@ -4235,17 +4249,16 @@ void initRendezvousPrimitives();
 
 void initCocoaFilePrimitives();
 	initCocoaFilePrimitives();
-
-void initCocoaBridgePrimitives();
-	initCocoaBridgePrimitives();
 #endif
 
 void initSchedPrimitives();
 	initSchedPrimitives();
 
+#ifdef SC_HIDAPI
 void initHIDAPIPrimitives();
 	initHIDAPIPrimitives();
-	
+#endif
+
 #if defined(__APPLE__) || defined(HAVE_ALSA) || defined(HAVE_PORTMIDI)
 void initMIDIPrimitives();
 	initMIDIPrimitives();
@@ -4265,7 +4278,7 @@ void initSerialPrimitives();
 void initWiiPrimitives();
 	initWiiPrimitives();
 #endif
-	
+
 #endif
 #ifdef __APPLE__
 void initCoreAudioPrimitives();
@@ -4299,9 +4312,10 @@ void initOpenGLPrimitives();
 
 void deinitPrimitives()
 {
+#ifdef SC_HIDAPI
 	void deinitHIDAPIPrimitives();
 	deinitHIDAPIPrimitives();
-
+#endif
 #if defined(HAVE_PORTMIDI) || defined(HAVE_ALSA)
 void deinitMIDIPrimitives();
 	deinitMIDIPrimitives();
@@ -4316,5 +4330,3 @@ void initThreads()
 	s_prrunnextthread = getsym("prRunNextThread");
 	s_prready = getsym("prReady");
 }
-
-

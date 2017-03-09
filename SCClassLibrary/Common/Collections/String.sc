@@ -254,7 +254,7 @@ String[char] : RawArray {
 		}
 		^indices
 	}
-	replace { arg find, replace;
+	replace { arg find, replace = "";
 		var index, out = "", array = this, findSize = max(find.size, 1);
 		while {
 			(index = array.find(find)).notNil
@@ -506,13 +506,6 @@ String[char] : RawArray {
 			time = time + (num * scaling[i]);
 		};
 		^time * sign;
-	}
-
-	speak { arg channel = 0, force = false;
-		// FIXME: this should better be handled by Platform than GUI
-		var speech = GUI.current.speech;
-		if( speech.initialized.not, { speech.init });
-		speech.channels[ channel ].speak( this, force );
 	}
 
 	toLower {

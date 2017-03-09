@@ -8,12 +8,12 @@ external structure of the node proxy, referencing in proxyspace and environments
 This document covers:
 
 list::
-## link::#a)_normal_environment_lookup#a) normal environment lookup::
-## link::#b)_a_proxyspace_as_an_environment#b) a proxyspace as an environment::
-## link::#c)_using_the_proxyspace_to_change_processes_on_the_fly#c) using the proxyspace to change processes on the fly::
-## link::#d)_when_are_the_node_proxies_initialized?#d) when are the node proxies initialized?::
-## link::#e)_moving_out_of_the_proxy_space#e) moving out of the proxy space::
-## link::#f)_using_ProxySpace_together_with_other_Environments#f) using ProxySpace together with other Environments::
+## link::#a) normal environment lookup#a) normal environment lookup::
+## link::#b) a proxyspace as an environment#b) a proxyspace as an environment::
+## link::#c) using the proxyspace to change processes on the fly#c) using the proxyspace to change processes on the fly::
+## link::#d) when are the node proxies initialized?#d) when are the node proxies initialized?::
+## link::#e) moving out of the proxy space#e) moving out of the proxy space::
+## link::#f) using ProxySpace together with other Environments#f) using ProxySpace together with other Environments::
 ::
 
 section::a) normal environment lookup
