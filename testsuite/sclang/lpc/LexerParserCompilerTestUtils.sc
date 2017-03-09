@@ -257,7 +257,7 @@ LexerParserCompilerTestUtils {
 
 			if(aheader[\strlen] != eheader[\strlen]) {
 				Error("validate: string lengths are not equal: % != %"
-					.format(aheader[\strlen], eheader[\strlen]));
+					.format(aheader[\strlen], eheader[\strlen])).throw;
 			};
 
 			// "validate: comparing data".postln;
