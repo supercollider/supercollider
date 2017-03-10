@@ -8,7 +8,7 @@ TestLexerTargetedBrutal : AbstractLPCBrutalTest {
 	// set to TRUE if you need `_expected` files
 	makingValidationFiles { ^false; }
 
-	evaluationTechnique { ^\compile }
+	evaluationTechnique { ^\interpret }
 
 	getAlphabets {
 		var alphanumAlphabet = (1..127).collect(_.asAscii).select(_.isAlphaNum);

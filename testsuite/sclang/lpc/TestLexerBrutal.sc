@@ -12,7 +12,7 @@ TestLexerBrutal : AbstractLPCBrutalTest {
 	// set to TRUE if you need `_expected` files
 	makingValidationFiles { ^false; }
 
-	evaluationTechnique { ^\compile }
+	evaluationTechnique { ^\interpret }
 
 	getAlphabets {
 

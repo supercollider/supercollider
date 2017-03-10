@@ -177,7 +177,7 @@ LPCTestUtils {
 		thisProcess.interpreter.clearAll;
 
 		^switch(technique,
-			\compile, {
+			\interpret, {
 				r = string.compile;
 				if(r.isNil) {
 					// compile error

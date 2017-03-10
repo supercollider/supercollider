@@ -292,7 +292,7 @@ TestLPCTestUtils : UnitTest {
 
 	test_writeHeader_success {
 		this.setUpParserFile;
-		LPCTestUtils.writeHeader(afile, ["AB","CD"], 3, "pre", "suf", \compile, 4);
+		LPCTestUtils.writeHeader(afile, ["AB","CD"], 3, "pre", "suf", \interpret, 4);
 		this.tearDownParserFile;
 	}
 
@@ -300,27 +300,27 @@ TestLPCTestUtils : UnitTest {
 		this.setUpParserFile;
 		protect {
 			try {
-				LPCTestUtils.writeHeader(afile, "ABCD", 1, "pre", "suf", \compile, 100);
+				LPCTestUtils.writeHeader(afile, "ABCD", 1, "pre", "suf", \interpret, 100);
 				this.failed(thisMethod, "Should not accept non-array alphabet");
 			} {};
 			try {
-				LPCTestUtils.writeHeader(afile, [], 2, "pre", "suf", \compile, 100);
+				LPCTestUtils.writeHeader(afile, [], 2, "pre", "suf", \interpret, 100);
 				this.failed(thisMethod, "Should not accept empty alphabet");
 			} {};
 			try {
-				LPCTestUtils.writeHeader(afile, [\sym, \bol], 2, "pre", "suf", \compile, 100);
+				LPCTestUtils.writeHeader(afile, [\sym, \bol], 2, "pre", "suf", \interpret, 100);
 				this.failed(thisMethod, "Should not accept non-string array alphabet");
 			} {};
 			try {
-				LPCTestUtils.writeHeader(afile, ["AB","CD"], -1, "pre", "suf", \compile, 100);
+				LPCTestUtils.writeHeader(afile, ["AB","CD"], -1, "pre", "suf", \interpret, 100);
 				this.failed(thisMethod, "Should not accept negative string length");
 			} {};
 			try {
-				LPCTestUtils.writeHeader(afile, ["AB", "CD"], 2, 3, "suf", \compile, 100);
+				LPCTestUtils.writeHeader(afile, ["AB", "CD"], 2, 3, "suf", \interpret, 100);
 				this.failed(thisMethod, "Should not accept non-string prefix");
 			} {};
 			try {
-				LPCTestUtils.writeHeader(afile, ["AB", "CD"], 2, "pre", 3, \compile, 100);
+				LPCTestUtils.writeHeader(afile, ["AB", "CD"], 2, "pre", 3, \interpret, 100);
 				this.failed(thisMethod, "Should not accept non-string suffix");
 			} {};
 			try {
@@ -328,11 +328,11 @@ TestLPCTestUtils : UnitTest {
 				this.failed(thisMethod, "Should not accept bad technique");
 			} {};
 			try {
-				LPCTestUtils.writeHeader(afile, ["AB", "CD"], 2, "pre", "suf", \compile, 0);
+				LPCTestUtils.writeHeader(afile, ["AB", "CD"], 2, "pre", "suf", \interpret, 0);
 				this.failed(thisMethod, "Should not accept zero stringCount");
 			} {};
 			try {
-				LPCTestUtils.writeHeader(afile, ["AB", "CD"], 2, "pre", "suf", \compile, -1);
+				LPCTestUtils.writeHeader(afile, ["AB", "CD"], 2, "pre", "suf", \interpret, -1);
 				this.failed(thisMethod, "Should not accept negative stringCount");
 			} {};
 		} {
@@ -349,7 +349,7 @@ TestLPCTestUtils : UnitTest {
 		header[\strlen] = 4;
 		header[\prefix] = "testPre";
 		header[\suffix] = "testSuf";
-		header[\technique] = \compile;
+		header[\technique] = \interpret;
 		header[\strcnt] = 4;
 
 		this.setUpParserFile;
