@@ -8,6 +8,8 @@ TestParserBrutal : AbstractLPCBrutalTest {
 	// set to TRUE if you need `_expected` files
 	makingValidationFiles { ^false; }
 
+	evaluationTechnique { ^\bytecode }
+
 	getAlphabets {
 		^Dictionary[
 			\full -> [
@@ -139,7 +141,7 @@ TestParserBrutal : AbstractLPCBrutalTest {
 
 		alphabets.keysDo {
 			arg key;
-			this.runTestsOnAlphabet(prefix, suffix, testMode, key, \bytecode);
+			this.runTestsOnAlphabet(prefix, suffix, testMode, key);
 		};
 
 	}

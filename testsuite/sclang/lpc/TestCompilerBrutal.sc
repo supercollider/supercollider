@@ -8,6 +8,8 @@ TestCompilerBrutal : AbstractLPCBrutalTest {
 	// set to TRUE if you need `_expected` files
 	makingValidationFiles { ^false; }
 
+	evaluationTechnique { ^\bytecode }
+
 	getAlphabets {
 		// Note: these lists are based on information in PyrParseNode::initSpecialSelectors() and
 		// Opcodes.h. This preprocessor function is a useful tool here. Modify it for your needs:
@@ -364,9 +366,9 @@ TestCompilerBrutal : AbstractLPCBrutalTest {
 
 		var tco = Process.tailCallOptimize;
 		Process.tailCallOptimize_(true);
-		this.runTestsOnAlphabet(prefix, suffix, testMode++"TCO", alphName, \bytecode);
+		this.runTestsOnAlphabet(prefix, suffix, testMode++"TCO", alphName);
 		Process.tailCallOptimize_(false);
-		this.runTestsOnAlphabet(prefix, suffix, testMode++"NoTCO", alphName, \bytecode);
+		this.runTestsOnAlphabet(prefix, suffix, testMode++"NoTCO", alphName);
 		Process.tailCallOptimize_(tco);
 	}
 

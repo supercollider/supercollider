@@ -8,6 +8,8 @@ TestLexerTargetedBrutal : AbstractLPCBrutalTest {
 	// set to TRUE if you need `_expected` files
 	makingValidationFiles { ^false; }
 
+	evaluationTechnique { ^\compile }
+
 	getAlphabets {
 		var alphanumAlphabet = (1..127).collect(_.asAscii).select(_.isAlphaNum);
 		alphanumAlphabet = alphanumAlphabet.collect(_.asString);
@@ -36,7 +38,7 @@ TestLexerTargetedBrutal : AbstractLPCBrutalTest {
 	runTargetedLexerTests {
 		arg prefix, suffix, testMode, alphName;
 
-		this.runTestsOnAlphabet(prefix, suffix, testMode, alphName, \compile);
+		this.runTestsOnAlphabet(prefix, suffix, testMode, alphName);
 	}
 
 	test_alnum_basic {

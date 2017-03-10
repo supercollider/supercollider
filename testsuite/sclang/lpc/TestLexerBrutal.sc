@@ -12,6 +12,8 @@ TestLexerBrutal : AbstractLPCBrutalTest {
 	// set to TRUE if you need `_expected` files
 	makingValidationFiles { ^false; }
 
+	evaluationTechnique { ^\compile }
+
 	getAlphabets {
 
 		var tmp = Dictionary[
@@ -51,7 +53,7 @@ TestLexerBrutal : AbstractLPCBrutalTest {
 
 		alphabets.keysDo {
 			arg key;
-			this.runTestsOnAlphabet(prefix, suffix, testMode, key, \compile);
+			this.runTestsOnAlphabet(prefix, suffix, testMode, key);
 		}
 	}
 

@@ -25,6 +25,8 @@ AbstractLPCBrutalTest : UnitTest {
 
 	getStringLengthsPerAlphabet { ^this.subclassResponsibility(thisMethod) }
 
+	evaluationTechnique { ^this.subclassResponsibility(thisMethod) }
+
 	// Output directory relative to working path. Will be created if
 	// it doesn't already exist.
 	outputDir { ^this.subclassResponsibility(thisMethod) }
@@ -33,11 +35,10 @@ AbstractLPCBrutalTest : UnitTest {
 	// and return `false` for ordinary testing.
 	makingValidationFiles { ^this.subclassResponsibility(thisMethod) }
 
-	// For a given alphabet, technique, test name, prefix, and suffix,
-	// run all the tests on that alphabet for its requested string lengths.
-	// This method also constructs uniform filenames.
+	// For a given alphabet, test name, prefix, and suffix, run all the tests on that
+	// alphabet for its requested string lengths. This method also constructs uniform filenames.
 	runTestsOnAlphabet {
-		arg prefix, suffix, testMode, alphabetName, technique;
+		arg prefix, suffix, testMode, alphabetName;
 
 		this.printTestMode(testMode);
 		this.createOutputDir();
@@ -53,7 +54,7 @@ AbstractLPCBrutalTest : UnitTest {
 				    prefix: prefix,
 				    suffix: suffix,
 				    testID: filename,
-				 technique: technique,
+				 technique: this.evaluationTechnique,
 				doValidate: this.makingValidationFiles,
 				  compress: true
 			);
