@@ -379,6 +379,16 @@ TestLPCTestUtils : UnitTest {
 	/// TESTING HELPER METHODS ///
 	//////////////////////////////
 
+	test_evaluateString_error {
+		var string = "a string";
+		var technique = \badTechnique;
+
+		try {
+			LPCTestUtils.evaluateString(string, technique);
+			this.failed(thisMethod, "passing a bad technique to evaluateString should throw an error");
+		} {};
+	}
+
 	test_stringToFromHexString {
 		var input = (-256..256).collect(_.asAscii).reduce('++');
 		var hexString = LPCTestUtils.stringToHexString(input);
