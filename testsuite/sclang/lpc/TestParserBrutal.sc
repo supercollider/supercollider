@@ -128,9 +128,9 @@ TestParserBrutal : AbstractLPCBrutalTest {
 	getStringLengthsPerAlphabet {
 		^stringLengthsPerAlphabet ? Dictionary[
 			// don't test on empty string - this is covered by compiler tests
-			\full -> [1,2,3,4],
-			\small -> [5,6],
-			\mini -> [7,8]
+			\full -> [1,2,3],
+			\small -> [4,5],
+			\mini -> [6,7]
 		];
 	}
 
