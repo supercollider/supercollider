@@ -350,7 +350,6 @@ TestLPCTestUtils : UnitTest {
 		header[\prefix] = "testPre";
 		header[\suffix] = "testSuf";
 		header[\technique] = \compile;
-		header[\encoding] = LPCTestUtils.getEncodingString(\compile);
 		header[\strcnt] = 4;
 
 		this.setUpParserFile;

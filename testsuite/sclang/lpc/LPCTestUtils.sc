@@ -29,7 +29,6 @@ mkDataDiff
 
 mkTestString
 mkOutputFileSafe
-getEncodingString
 parseTestResult
 doOutputsMatch
 mkFilename
@@ -57,7 +56,6 @@ parseStringLength
 parsePrefix
 parseSuffix
 parseTechnique
-parseEncoding
 parseStringCount
 */
 
@@ -525,24 +523,6 @@ LPCTestUtils {
 		^file;
 	}
 
-	// Verbose descriptions of encoding per technique.
-	*getEncodingString {
-		arg technique;
-
-		^switch(technique,
-			\compile,
-			"<hex-format input string><tab>"
-			"<\"!cErr\" (compile error) | \"!rErr\" (runtime error) | hex-format output string>"
-			"<opt `:` & class name of output>"
-			"<opt tab & count of consecutive repeats of this result (no number means no repetitions)>",
-			\bytecode,
-			"<hex-format input string><tab>"
-			"<\"!cErr\" (compile error) | \"!rErr\" (runtime error) | hex-format output string>"
-			"<opt tab & count of consecutive repeats of this result (no number means no repetitions)>",
-			{Error("getEncodingString: unrecognized technique: %".format(technique.quote))}
-		);
-	}
-
 	// Breaks a line into input, output, and (optional) number of repetitions
 	*parseTestResult {
 		arg line;
@@ -665,10 +645,9 @@ LPCTestUtils {
 	*writeHeader {
 		arg file, alphabet, stringLength, prefix, suffix, technique, stringCount;
 
-		var alphabetString = "", encoding;
+		var alphabetString = "";
 
 		alphabetString = alphabet.collect(this.stringToHexString(_)).join(",");
-		encoding = this.getEncodingString(technique);
 
 		// data validation: BEGIN
 		if(alphabet.isKindOf(Array).not) {
@@ -705,7 +684,6 @@ LPCTestUtils {
 			"prefix:%\n"
 			"suffix:%\n"
 			"technique:%\n"
-			"encoding:%\n"
 			"DATA\n"
 			"%\n".format(
 				alphabet.size,
@@ -714,7 +692,6 @@ LPCTestUtils {
 				this.stringToHexString(prefix),
 				this.stringToHexString(suffix),
 				technique,
-				encoding,
 				stringCount
 			)
 		);
@@ -739,7 +716,6 @@ LPCTestUtils {
 		result[\prefix] = this.parsePrefix(file.getLine(this.maxline));
 		result[\suffix] = this.parseSuffix(file.getLine(this.maxline));
 		result[\technique] = this.parseTechnique(file.getLine(this.maxline));
-		result[\encoding] = this.parseEncoding(file.getLine(this.maxline));
 
 		this.parseBlockName(file.getLine(this.maxline), "DATA");
 		result[\strcnt] = this.parseStringCount(file.getLine(this.maxline));
@@ -867,11 +843,6 @@ LPCTestUtils {
 		}
 
 		^str.asSymbol;
-	}
-
-	*parseEncoding {
-		arg str;
-	  ^this.verifyFieldName(str, "encoding:");
 	}
 
 	*parseStringCount {
