@@ -324,7 +324,7 @@ TestLPCTestUtils : UnitTest {
 				this.failed(thisMethod, "Should not accept non-string suffix");
 			} {};
 			try {
-				LPCTestUtils.writeHeader(afile, ["AB", "CD"], 2, "pre", "suf", \notcompile, 100);
+				LPCTestUtils.writeHeader(afile, ["AB", "CD"], 2, "pre", "suf", "compile", 100);
 				this.failed(thisMethod, "Should not accept bad technique");
 			} {};
 			try {
