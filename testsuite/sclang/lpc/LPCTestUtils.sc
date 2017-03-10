@@ -14,8 +14,8 @@
 /*
 ----main methods----
 
-testAllPossibleStrings
-testOneString
+evaluateAllStrings
+evaluateString
 validate
 compareData
 
@@ -73,7 +73,7 @@ LPCTestUtils {
 	// The client may also specify an optional prefix and/or suffix to be added to each
 	// string before testing. Only strings of length `len` are tested.
 	// Note that the given alphabet will be sorted before beginning.
-	*testAllPossibleStrings {
+	*evaluateAllStrings {
 		arg alphabet, len, prefix, suffix, testID, technique,
 
 		// If true, don't validate or delete the file, but give it the validation suffix
@@ -97,17 +97,17 @@ LPCTestUtils {
 		file = this.mkOutputFileSafe(filename, doValidate);
 
 		protect {
-			// postln("testAllPossibleStrings: Writing header");
+			// postln("evaluateAllStrings: Writing header");
 			this.writeHeader(
 				file, alphabet, len, prefix, suffix, technique,	alphabetSize ** len
 			);
 
-			postln("testAllPossibleStrings: Writing data");
+			postln("evaluateAllStrings: Writing data");
 
 			// Write the first result. We have to save `\n` because of the possibility
 			// for repeats. Also, reduce on an empty array returns nil, thus `?""`.
 			toTest = this.mkTestString(alphabet, counter);
-			testResult = this.testOneString(prefix++toTest++suffix, technique);
+			testResult = this.evaluateString(prefix++toTest++suffix, technique);
 			file.write(this.stringToHexString(toTest)++"\t"++testResult);
 
 			prevResult = testResult;
@@ -117,7 +117,7 @@ LPCTestUtils {
 
 				// no way to get here if we had an empty array, so we can discard `?""`
 				toTest = this.mkTestString(alphabet, counter);
-				testResult = this.testOneString(prefix++toTest++suffix, technique);
+				testResult = this.evaluateString(prefix++toTest++suffix, technique);
 
 				// Only do fancy compression techniques if asked. Otherwise just print
 				// a normal line.
@@ -156,10 +156,10 @@ LPCTestUtils {
 			var diffs;
 
 			protect {
-				postln("testAllPossibleStrings: Validating against expected output");
+				postln("evaluateAllStrings: Validating against expected output");
 				diffs = this.validate(filename);
 			} {
-				postln("testAllPossibleStrings: Deleting test file");
+				postln("evaluateAllStrings: Deleting test file");
 				File.delete(filename);
 			};
 
@@ -169,7 +169,7 @@ LPCTestUtils {
 		^[]
 	}
 
-	*testOneString {
+	*evaluateString {
 		arg string, technique;
 		var r;
 
@@ -201,7 +201,7 @@ LPCTestUtils {
 					this.bytecodeToHexString(r.def.code);
 				}
 			}, {
-				Error("testOneString: invalid technique option: %".format(technique)).throw;
+				Error("evaluateString: invalid technique option: %".format(technique)).throw;
 			}
 		);
 	}

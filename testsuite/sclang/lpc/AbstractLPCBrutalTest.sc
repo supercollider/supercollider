@@ -43,7 +43,7 @@ AbstractLPCBrutalTest : UnitTest {
 
 			var filename = "%%_%_%".format(this.outputDir, alphabetName, len, testMode);
 
-			var diffs = LPCTestUtils.testAllPossibleStrings(
+			var diffs = LPCTestUtils.evaluateAllStrings(
 				  alphabet: alphabets[alphabetName],
 				       len: len,
 				    prefix: prefix,
@@ -54,7 +54,7 @@ AbstractLPCBrutalTest : UnitTest {
 				  compress: true
 			);
 
-			// redundant under the current implementation of testAllPossibleStrings
+			// redundant under the current implementation of evaluateAllStrings
 			/*if(diffs.isNil) {
 				Error("%:%: diffs should not be nil".format(this.class, thisMethod)).throw;
 			};*/
