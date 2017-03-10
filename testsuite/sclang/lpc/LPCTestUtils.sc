@@ -28,7 +28,7 @@ mkDataDiff
 ----misc helper methods----
 
 mkTestString
-mkOutputFileSafe
+safeOpenFile
 parseTestResult
 doOutputsMatch
 mkFilename
@@ -94,7 +94,7 @@ LPCTestUtils {
 		alphabet = alphabet.sort;
 
 		filename = this.mkFilename(testID, doValidate);
-		file = this.mkOutputFileSafe(filename, doValidate);
+		file = this.safeOpenFile(filename, "w");
 
 		protect {
 			// postf("%: Writing header\n", thisMethod);
@@ -214,26 +214,8 @@ LPCTestUtils {
 		var efile, afile; // expected file, actual file
 		var diffs; // array of pairs of lines that are not identical
 
-		File.exists(validated).not.if {
-			Error("%: couldn't find file for validation: %"
-				.format(thisMethod, validated.quote)).throw;
-		};
-		File.exists(filename).not.if {
-			Error("%: couldn't find file for validation: %"
-				.format(thisMethod, filename.quote)).throw;
-		};
-
-		efile = File(validated, "r");
-		afile = File(filename, "r");
-
-		if(efile.isOpen.not) {
-			Error("%: failed to open validation file: %"
-				.format(thisMethod, validated.quote)).throw;
-		};
-		if(afile.isOpen.not) {
-			Error("%: failed to open validation file: %"
-				.format(thisMethod, filename.quote)).throw;
-		};
+		afile = this.safeOpenFile(filename, "r");
+		efile = this.safeOpenFile(filename, "r");
 
 		protect {
 			var eheader, aheader;
@@ -399,7 +381,7 @@ LPCTestUtils {
 	*writeDiffs {
 		arg diffs, filename;
 
-		var file = this.mkOutputFileSafe(this.mkFilename(filename, false));
+		var file = this.safeOpenFile(this.mkFilename(filename, false), "w");
 		var missingFromFile1 = [];
 		var missingFromFile2 = [];
 		var realDiffs = [];
@@ -498,22 +480,27 @@ LPCTestUtils {
 		^alphabet[counter].reduce('++')?"";
 	}
 
-	// Creates an output file, throwing errors if there are failures at any point.
-	*mkOutputFileSafe {
-		arg filename;
+	// Opens a file, throwing errors if there are failures at any point.
+	*safeOpenFile {
+		arg filename, mode;
 
 		var file;
 
 		postln("%: Creating file: %".format(thisMethod, PathName(filename).fileName));
-		if(File.exists(filename)) {
+
+		if((mode == "w") && File.exists(filename)) {
 			Error("%: File % already exists\n"
-				"\tPlease delete before continuing".format(this, filename.quote)).throw;
+				"\tPlease delete before continuing".format(thisMethod, filename.quote)).throw;
+		} {
+			if(mode.isNil) {
+				Error("%: No mode given".format(thisMethod)).throw;
+			}
 		};
 
 		try {
-			file = File.new(filename, "w");
+			file = File.new(filename, mode);
 		} {
-			Error("%: Failed to open file: %.".format(thisMethod, filename.quote)).throw;
+			Error("%: Failed while opening file: %.".format(thisMethod, filename.quote)).throw;
 		};
 
 		if(file.isOpen.not) {
