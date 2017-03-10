@@ -40,7 +40,7 @@ AbstractLPCBrutalTest : UnitTest {
 
 			var filename = "%%_%_%".format(this.outputDir, alphabetName, len, testMode);
 
-			var diffs = LexerParserCompilerTestUtils.testAllPossibleStrings(
+			var diffs = LPCTestUtils.testAllPossibleStrings(
 				  alphabet: alphabets[alphabetName],
 				       len: len,
 				    prefix: prefix,
@@ -68,9 +68,9 @@ AbstractLPCBrutalTest : UnitTest {
 		arg diffs, filenameBase;
 
 		if(diffs.isEmpty.not) {
-			var diffFilename = filenameBase ++ LexerParserCompilerTestUtils.diffOutputFilenameSuffix;
+			var diffFilename = filenameBase ++ LPCTestUtils.diffOutputFilenameSuffix;
 
-			LexerParserCompilerTestUtils.writeDiffs(diffs, diffFilename);
+			LPCTestUtils.writeDiffs(diffs, diffFilename);
 
 			this.noteFailure(thisMethod, "Diffs were found between test and validation files", diffFilename);
 		} {

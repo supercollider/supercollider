@@ -45,7 +45,7 @@ TestLPCTestUtils : UnitTest {
 		var diffs;
 
 		this.setUpComparisonFiles(entries1, entries2);
-		diffs = LexerParserCompilerTestUtils.compareData(afile, efile, alph, alph, strlen);
+		diffs = LPCTestUtils.compareData(afile, efile, alph, alph, strlen);
 		this.assert(diffs.isEmpty, "There should be no reported diffs: %".format(diffs));
 		this.tearDownComparisonFiles();
 	}
@@ -55,7 +55,7 @@ TestLPCTestUtils : UnitTest {
 		var diffs;
 
 		this.setUpComparisonFiles(entries1, entries2);
-		diffs = LexerParserCompilerTestUtils.compareData(afile, efile, alph1, alph2, strlen);
+		diffs = LPCTestUtils.compareData(afile, efile, alph1, alph2, strlen);
 		this.assertEquals(diffs, expDiffs, "Should find diffs: %".format(expDiffs));
 		this.tearDownComparisonFiles();
 	}
@@ -65,19 +65,19 @@ TestLPCTestUtils : UnitTest {
 	test_compareData_noDiff_oneEntry {
 		// equality tests for a single entry
 		var input = "6567";
-		var alph = [LexerParserCompilerTestUtils.stringFromHexString(input).postln];
+		var alph = [LPCTestUtils.stringFromHexString(input).postln];
 		var strlen = 1;
 		var singleEntryList = [
 			"6567\t0123:Symbol",
-			"6567\t"++LexerParserCompilerTestUtils.compileErrorString,
-			"6567\t"+LexerParserCompilerTestUtils.runtimeErrorString,
+			"6567\t"++LPCTestUtils.compileErrorString,
+			"6567\t"+LPCTestUtils.runtimeErrorString,
 			"6567\t:String",
 			// these are okay even though they don't make sense right now
 			"6567\t0123:Symbol\t0",
 			"6567\t0123:Symbol\t1",
 			"6567\t0123:Symbol\t1000",
-			"6567\t"++LexerParserCompilerTestUtils.compileErrorString++"\t300",
-			"6567\t"+LexerParserCompilerTestUtils.runtimeErrorString++"\t300"
+			"6567\t"++LPCTestUtils.compileErrorString++"\t300",
+			"6567\t"+LPCTestUtils.runtimeErrorString++"\t300"
 		];
 
 		singleEntryList.do {
@@ -88,7 +88,7 @@ TestLPCTestUtils : UnitTest {
 
 	test_compareData_noDiff_fourEntries {
 		var alph = ["A", "B"];
-		var trAlph = alph.collect(LexerParserCompilerTestUtils.stringToHexString(_));
+		var trAlph = alph.collect(LPCTestUtils.stringToHexString(_));
 		var strlen = 2;
 
 		var entries = [
@@ -103,7 +103,7 @@ TestLPCTestUtils : UnitTest {
 
 	test_compareData_noDiff_fourEntries_rolled {
 		var alph = ["A", "B"];
-		var trAlph = alph.collect(LexerParserCompilerTestUtils.stringToHexString(_));
+		var trAlph = alph.collect(LPCTestUtils.stringToHexString(_));
 		var strlen = 2;
 		var output = "\t01:Sassafrass";
 
@@ -123,7 +123,7 @@ TestLPCTestUtils : UnitTest {
 
 	test_compareData_diff_oneEntry {
 		var alph = ["A"];
-		var trAlph = alph.collect(LexerParserCompilerTestUtils.stringToHexString(_));
+		var trAlph = alph.collect(LPCTestUtils.stringToHexString(_));
 		var strlen = 1;
 
 		var entry1 = [trAlph[0]++"\t01:Integer"];
@@ -138,10 +138,10 @@ TestLPCTestUtils : UnitTest {
 
 	test_compareData_diff_fourEntries {
 		var alph = ["q", "x"];
-		var trAlph = alph.collect(LexerParserCompilerTestUtils.stringToHexString(_));
+		var trAlph = alph.collect(LPCTestUtils.stringToHexString(_));
 		var strlen = 2;
 		var output1 = "\t01:Sassafrass";
-		var output2 = "\t" ++ LexerParserCompilerTestUtils.compileErrorString;
+		var output2 = "\t" ++ LPCTestUtils.compileErrorString;
 
 		var inputs = [
 			trAlph[0]++trAlph[0],
@@ -164,17 +164,17 @@ TestLPCTestUtils : UnitTest {
 
 		var diffs, expDiffs;
 
-		expDiffs = [[trAlph[1]++trAlph[0], ["01", "Sassafrass"], [LexerParserCompilerTestUtils.compileErrorString]]];
+		expDiffs = [[trAlph[1]++trAlph[0], ["01", "Sassafrass"], [LPCTestUtils.compileErrorString]]];
 
 		this.doCompareDataDiffTest(entries1, entries2, alph, alph, strlen, expDiffs);
 	}
 
 		test_compareData_diff_fourEntries_multiCharAlphabet {
 		var alph = ["qrazy", "xclusive"];
-		var trAlph = alph.collect(LexerParserCompilerTestUtils.stringToHexString(_));
+		var trAlph = alph.collect(LPCTestUtils.stringToHexString(_));
 		var strlen = 2;
 		var output1 = "\t01:Sassafrass";
-		var output2 = "\t" ++ LexerParserCompilerTestUtils.compileErrorString;
+		var output2 = "\t" ++ LPCTestUtils.compileErrorString;
 
 		var inputs = [
 			trAlph[0]++trAlph[0],
@@ -197,17 +197,17 @@ TestLPCTestUtils : UnitTest {
 
 		var diffs, expDiffs;
 
-		expDiffs = [[trAlph[1]++trAlph[0], ["01", "Sassafrass"], [LexerParserCompilerTestUtils.compileErrorString]]];
+		expDiffs = [[trAlph[1]++trAlph[0], ["01", "Sassafrass"], [LPCTestUtils.compileErrorString]]];
 
 		this.doCompareDataDiffTest(entries1, entries2, alph, alph, strlen, expDiffs);
 	}
 
 	test_compareData_diff_fourEntries_rolled {
 		var alph = ["q", "x"];
-		var trAlph = alph.collect(LexerParserCompilerTestUtils.stringToHexString(_));
+		var trAlph = alph.collect(LPCTestUtils.stringToHexString(_));
 		var strlen = 2;
 		var output1 = "\t01:Sassafrass";
-		var output2 = "\t" ++ LexerParserCompilerTestUtils.compileErrorString;
+		var output2 = "\t" ++ LPCTestUtils.compileErrorString;
 		var output3 = "\t05:Jigglypuff";
 		var output4 = "\t04:Sassafrass";
 
@@ -237,11 +237,11 @@ TestLPCTestUtils : UnitTest {
 		var alph1 = ["var", "{}"];
 		var alph2 = ["while", "{}"];
 
-		var trAlph1 = alph1.collect(LexerParserCompilerTestUtils.stringToHexString(_));
-		var trAlph2 = alph2.collect(LexerParserCompilerTestUtils.stringToHexString(_));
+		var trAlph1 = alph1.collect(LPCTestUtils.stringToHexString(_));
+		var trAlph2 = alph2.collect(LPCTestUtils.stringToHexString(_));
 		var strlen = 2;
 		var output1 = "01:Sassafrass";
-		var output2 = LexerParserCompilerTestUtils.compileErrorString;
+		var output2 = LPCTestUtils.compileErrorString;
 		var output3 = "05:Jigglypuff";
 
 		var entries1 = [
@@ -292,7 +292,7 @@ TestLPCTestUtils : UnitTest {
 
 	test_writeHeader_success {
 		this.setUpParserFile;
-		LexerParserCompilerTestUtils.writeHeader(afile, ["AB","CD"], 3, "pre", "suf", \compile, 4);
+		LPCTestUtils.writeHeader(afile, ["AB","CD"], 3, "pre", "suf", \compile, 4);
 		this.tearDownParserFile;
 	}
 
@@ -300,39 +300,39 @@ TestLPCTestUtils : UnitTest {
 		this.setUpParserFile;
 		protect {
 			try {
-				LexerParserCompilerTestUtils.writeHeader(afile, "ABCD", 1, "pre", "suf", \compile, 100);
+				LPCTestUtils.writeHeader(afile, "ABCD", 1, "pre", "suf", \compile, 100);
 				this.failed(thisMethod, "Should not accept non-array alphabet");
 			} {};
 			try {
-				LexerParserCompilerTestUtils.writeHeader(afile, [], 2, "pre", "suf", \compile, 100);
+				LPCTestUtils.writeHeader(afile, [], 2, "pre", "suf", \compile, 100);
 				this.failed(thisMethod, "Should not accept empty alphabet");
 			} {};
 			try {
-				LexerParserCompilerTestUtils.writeHeader(afile, [\sym, \bol], 2, "pre", "suf", \compile, 100);
+				LPCTestUtils.writeHeader(afile, [\sym, \bol], 2, "pre", "suf", \compile, 100);
 				this.failed(thisMethod, "Should not accept non-string array alphabet");
 			} {};
 			try {
-				LexerParserCompilerTestUtils.writeHeader(afile, ["AB","CD"], -1, "pre", "suf", \compile, 100);
+				LPCTestUtils.writeHeader(afile, ["AB","CD"], -1, "pre", "suf", \compile, 100);
 				this.failed(thisMethod, "Should not accept negative string length");
 			} {};
 			try {
-				LexerParserCompilerTestUtils.writeHeader(afile, ["AB", "CD"], 2, 3, "suf", \compile, 100);
+				LPCTestUtils.writeHeader(afile, ["AB", "CD"], 2, 3, "suf", \compile, 100);
 				this.failed(thisMethod, "Should not accept non-string prefix");
 			} {};
 			try {
-				LexerParserCompilerTestUtils.writeHeader(afile, ["AB", "CD"], 2, "pre", 3, \compile, 100);
+				LPCTestUtils.writeHeader(afile, ["AB", "CD"], 2, "pre", 3, \compile, 100);
 				this.failed(thisMethod, "Should not accept non-string suffix");
 			} {};
 			try {
-				LexerParserCompilerTestUtils.writeHeader(afile, ["AB", "CD"], 2, "pre", "suf", \notcompile, 100);
+				LPCTestUtils.writeHeader(afile, ["AB", "CD"], 2, "pre", "suf", \notcompile, 100);
 				this.failed(thisMethod, "Should not accept bad technique");
 			} {};
 			try {
-				LexerParserCompilerTestUtils.writeHeader(afile, ["AB", "CD"], 2, "pre", "suf", \compile, 0);
+				LPCTestUtils.writeHeader(afile, ["AB", "CD"], 2, "pre", "suf", \compile, 0);
 				this.failed(thisMethod, "Should not accept zero stringCount");
 			} {};
 			try {
-				LexerParserCompilerTestUtils.writeHeader(afile, ["AB", "CD"], 2, "pre", "suf", \compile, -1);
+				LPCTestUtils.writeHeader(afile, ["AB", "CD"], 2, "pre", "suf", \compile, -1);
 				this.failed(thisMethod, "Should not accept negative stringCount");
 			} {};
 		} {
@@ -350,11 +350,11 @@ TestLPCTestUtils : UnitTest {
 		header[\prefix] = "testPre";
 		header[\suffix] = "testSuf";
 		header[\technique] = \compile;
-		header[\encoding] = LexerParserCompilerTestUtils.getEncodingString(\compile);
+		header[\encoding] = LPCTestUtils.getEncodingString(\compile);
 		header[\strcnt] = 4;
 
 		this.setUpParserFile;
-		LexerParserCompilerTestUtils.writeHeader(afile,
+		LPCTestUtils.writeHeader(afile,
 			header[\alph],
 			header[\strlen],
 			header[\prefix],
@@ -365,7 +365,7 @@ TestLPCTestUtils : UnitTest {
 
 		afile.seek(0);
 
-		readHeader = LexerParserCompilerTestUtils.readHeader(afile);
+		readHeader = LPCTestUtils.readHeader(afile);
 
 		header.keys.do {
 			arg key;
@@ -382,15 +382,15 @@ TestLPCTestUtils : UnitTest {
 
 	test_stringToFromHexString {
 		var input = (-256..256).collect(_.asAscii).reduce('++');
-		var hexString = LexerParserCompilerTestUtils.stringToHexString(input);
-		var output = LexerParserCompilerTestUtils.stringFromHexString(hexString);
+		var hexString = LPCTestUtils.stringToHexString(input);
+		var output = LPCTestUtils.stringFromHexString(hexString);
 		this.assertEquals(input, output, "stringToHexString and stringFromHexString should be perfect inverses.");
 	}
 
 	test_bytecodeToFromHexString {
 		var input = Int8Array.newFrom((-256..256));
-		var hexString = LexerParserCompilerTestUtils.bytecodeToHexString(input);
-		var output = LexerParserCompilerTestUtils.bytecodeFromHexString(hexString);
+		var hexString = LPCTestUtils.bytecodeToHexString(input);
+		var output = LPCTestUtils.bytecodeFromHexString(hexString);
 		this.assertEquals(input, output, "stringToHexString and stringFromHexString should be perfect inverses.");
 	}
 
@@ -399,7 +399,7 @@ TestLPCTestUtils : UnitTest {
 		var len = 1;
 		var n = 1;
 
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n).not);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n).not);
 		this.assertEquals(ctr, [0]);
 	}
 
@@ -410,11 +410,11 @@ TestLPCTestUtils : UnitTest {
 
 		98.do {
 			arg i;
-			this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+			this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
 			this.assertEquals(ctr, [i+1], report:false);
 		};
 
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n).not);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n).not);
 		this.assertEquals(ctr, [0]);
 	}
 
@@ -423,14 +423,14 @@ TestLPCTestUtils : UnitTest {
 		var len = 2;
 		var n = 2;
 
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
 		this.assertEquals(ctr, [0,1], report:false);
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
 		this.assertEquals(ctr, [1,0], report:false);
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
 		this.assertEquals(ctr, [1,1], report:false);
 
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n).not);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n).not);
 		this.assertEquals(ctr, [0,0]);
 	}
 
@@ -439,60 +439,60 @@ TestLPCTestUtils : UnitTest {
 		var len = 3;
 		var n = 3;
 
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
 		this.assertEquals(ctr, [0,0,1], report:false);
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
 		this.assertEquals(ctr, [0,0,2], report:false);
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
 		this.assertEquals(ctr, [0,1,0], report:false);
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
 		this.assertEquals(ctr, [0,1,1], report:false);
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
 		this.assertEquals(ctr, [0,1,2], report:false);
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
 		this.assertEquals(ctr, [0,2,0], report:false);
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
 		this.assertEquals(ctr, [0,2,1], report:false);
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
 		this.assertEquals(ctr, [0,2,2], report:false);
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
 		this.assertEquals(ctr, [1,0,0], report:false);
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
 		this.assertEquals(ctr, [1,0,1], report:false);
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
 		this.assertEquals(ctr, [1,0,2], report:false);
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
 		this.assertEquals(ctr, [1,1,0], report:false);
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
 		this.assertEquals(ctr, [1,1,1], report:false);
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
 		this.assertEquals(ctr, [1,1,2], report:false);
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
 		this.assertEquals(ctr, [1,2,0], report:false);
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
 		this.assertEquals(ctr, [1,2,1], report:false);
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
 		this.assertEquals(ctr, [1,2,2], report:false);
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
 		this.assertEquals(ctr, [2,0,0], report:false);
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
 		this.assertEquals(ctr, [2,0,1], report:false);
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
 		this.assertEquals(ctr, [2,0,2], report:false);
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
 		this.assertEquals(ctr, [2,1,0], report:false);
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
 		this.assertEquals(ctr, [2,1,1], report:false);
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
 		this.assertEquals(ctr, [2,1,2], report:false);
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
 		this.assertEquals(ctr, [2,2,0], report:false);
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
 		this.assertEquals(ctr, [2,2,1], report:false);
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
 		this.assertEquals(ctr, [2,2,2], report:false);
 
-		this.assert(LexerParserCompilerTestUtils.incrementAlphabetCount(ctr, len, n).not);
+		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n).not);
 		this.assertEquals(ctr, [0,0,0]);
 	}
 }

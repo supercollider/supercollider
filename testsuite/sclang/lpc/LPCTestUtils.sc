@@ -1,4 +1,4 @@
-/* LexerParserCompilerTestUtils.sc
+/* LPCTestUtils.sc
 *
 * Utilities for testing the SuperCollider 3 lexer, parser, compiler
 * Original author: Brian Heim 2017-02-19
@@ -61,7 +61,7 @@ parseEncoding
 parseStringCount
 */
 
-LexerParserCompilerTestUtils {
+LPCTestUtils {
 	const <compileErrorString = "!cErr";
 	const <runtimeErrorString = "!rErr";
 	const <validatedOutputFilenameSuffix = "_correct";
