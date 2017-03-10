@@ -31,7 +31,6 @@ mkTestString
 safeOpenFile
 parseTestResult
 doOutputsMatch
-mkFilename
 incrementAlphabetCount
 
 ----data conversion methods----
@@ -69,21 +68,17 @@ LPCTestUtils {
 	const <maxline = 1024;
 
 	// Tests all possible combinations-with-replacement of members of a given alphabet,
-	// writes the results to a file, and checks it against validated results.
+	// writes the results to a file.
 	// The client may also specify an optional prefix and/or suffix to be added to each
-	// string before testing. Only strings of length `len` are tested.
+	// string before testing. Only strings of length `len` are evaluated.
 	// Note that the given alphabet will be sorted before beginning.
 	*evaluateAllStrings {
-		arg alphabet, len, prefix, suffix, testID, technique,
-
-		// If true, don't validate or delete the file, but give it the validation suffix
-		doValidate = false,
-
+		arg alphabet, len, prefix, suffix, filename, technique,
 		// If true, record consecutive identical results with a count, saving space
 		compress = true;
 
 		var alphabetSize = alphabet.size;
-		var file, filename, toTest, testResult;
+		var file, toTest, testResult;
 		// For use with compressed output.
 		var prevResult, repeatCount = 0;
 		// An array counter used to generate all possible strings deterministically.
@@ -93,7 +88,6 @@ LPCTestUtils {
 		// Sorting the alphabet beforehand provides uniformity
 		alphabet = alphabet.sort;
 
-		filename = this.mkFilename(testID, doValidate);
 		file = this.safeOpenFile(filename, "w");
 
 		protect {
@@ -137,8 +131,9 @@ LPCTestUtils {
 					};
 				} {
 					file.write("\n"++this.stringToHexString(toTest)++"\t"++testResult);
-				};
-			}; // end while
+				}; // if(compress)
+
+			}; // while
 
 			// Flush any leftover count.
 			if(compress && (repeatCount > 0)) {
@@ -150,23 +145,6 @@ LPCTestUtils {
 			// If anything bad happened while writing, protect by closing the file
 			file.close;
 		};
-
-		// If validating, record the diffs and delete the file.
-		if(doValidate.not) {
-			var diffs;
-
-			protect {
-				postf("%: Validating against expected output\n", thisMethod);
-				diffs = this.validate(filename);
-			} {
-				postf("%: Deleting test file\n", thisMethod);
-				File.delete(filename);
-			};
-
-			^diffs ? []
-		}
-
-		^[]
 	}
 
 	*evaluateString {
@@ -215,7 +193,7 @@ LPCTestUtils {
 		var diffs; // array of pairs of lines that are not identical
 
 		afile = this.safeOpenFile(filename, "r");
-		efile = this.safeOpenFile(filename, "r");
+		efile = this.safeOpenFile(validated, "r");
 
 		protect {
 			var eheader, aheader;
@@ -381,7 +359,7 @@ LPCTestUtils {
 	*writeDiffs {
 		arg diffs, filename;
 
-		var file = this.safeOpenFile(this.mkFilename(filename, false), "w");
+		var file = this.safeOpenFile(filename, "w");
 		var missingFromFile1 = [];
 		var missingFromFile2 = [];
 		var realDiffs = [];
@@ -486,7 +464,11 @@ LPCTestUtils {
 
 		var file;
 
-		postln("%: Creating file: %".format(thisMethod, PathName(filename).fileName));
+		postln("%: % file: %".format(
+			thisMethod,
+			if(mode == "w", "Writing to", "Reading from"),
+			PathName(filename).fileName)
+		);
 
 		if((mode == "w") && File.exists(filename)) {
 			Error("%: File % already exists\n"
@@ -528,17 +510,6 @@ LPCTestUtils {
 		arg a, b;
 
 		^((a!?_[\out]) == (b!?_[\out]));
-	}
-
-	// Adds the `_correct` suffix IFF generating validation files.
-	*mkFilename {
-		arg testID, doValidate;
-
-		^if(doValidate, {
-			testID ++ validatedOutputFilenameSuffix
-		}, {
-			testID;
-		}).resolveRelative;
 	}
 
 	// Given an alphabet counter (array of indexing integers), increment by 1.

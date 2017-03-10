@@ -46,16 +46,15 @@ AbstractLPCBrutalTest : UnitTest {
 		stringLengthsPerAlphabet[alphabetName].do {
 			arg len;
 
-			var filename = "%%_%_%".format(this.outputDir, alphabetName, len, testMode);
+			var filename = "%%_%_%".format(this.outputDir.resolveRelative, alphabetName, len, testMode);
 
-			var diffs = LPCTestUtils.evaluateAllStrings(
+			LPCTestUtils.evaluateAllStrings(
 				  alphabet: alphabets[alphabetName],
 				       len: len,
 				    prefix: prefix,
 				    suffix: suffix,
-				    testID: filename,
+				  filename: filename,
 				 technique: this.evaluationTechnique,
-				doValidate: this.makingValidationFiles,
 				  compress: true
 			);
 
@@ -65,6 +64,8 @@ AbstractLPCBrutalTest : UnitTest {
 			};*/
 
 			if(this.makingValidationFiles.not) {
+				var diffs = LPCTestUtils.validate(filename);
+				File.delete(filename);
 				this.checkDiffs(diffs, filename);
 			}
 		};
