@@ -5,24 +5,28 @@ AbstractLPCBrutalTest : UnitTest {
 	// alphabets and associated data used in testing
 
 	// Dictionary of alphabets (type Dictionary<Symbol, [String]>)
-	var <>alphabets;
+	classvar <>alphabets;
 
 	// Dictionary of string lengths to test per alphabet
 	// (type Dictionary<Symbol, [Integer]>)
-	var <>stringLengthsPerAlphabet;
+	classvar <>stringLengthsPerAlphabet;
 
 	// List of files that contain diffs to be printed when cleaning up.
 	classvar <>diffFilenames;
 
-	*new { ^super.new.initAlphabets.initStringLengthsPerAlphabet; }
+	*new { ^super.new.initTestConditions; }
 
-	// Inits `alphabets`.
-	initAlphabets { ^this.subclassResponsibility(thisMethod) }
+	initTestConditions {
+		alphabets = this.getAlphabets();
+		stringLengthsPerAlphabet = this.getStringLengthsPerAlphabet();
+	}
 
-	// Inits `stringLengthsPerAlphabet`
-	initStringLengthsPerAlphabet { ^this.subclassResponsibility(thisMethod) }
+	getAlphabets { ^this.subclassResponsibility(thisMethod) }
 
-	// Used to determine the output location.
+	getStringLengthsPerAlphabet { ^this.subclassResponsibility(thisMethod) }
+
+	// Output directory relative to working path. Will be created if
+	// it doesn't already exist.
 	outputDir { ^this.subclassResponsibility(thisMethod) }
 
 	// Should return `true` if you want to generate validation files,
@@ -77,7 +81,7 @@ AbstractLPCBrutalTest : UnitTest {
 
 			this.noteFailure(thisMethod, "Diffs were found between test and validation files", diffFilename);
 		} {
-			postf("%: No diffs found.\n".format(thisMethod));
+			postf("No diffs found.\n");
 		}
 	}
 
@@ -86,7 +90,7 @@ AbstractLPCBrutalTest : UnitTest {
 		arg mode;
 
 		"".postln;
-		"%: running test mode %".format(thisMethod, mode.quote).underlined.postln;
+		"Running test mode %".format(mode.quote).underlined.postln;
 	}
 
 	// Force creation of this test's output directory
@@ -110,6 +114,15 @@ AbstractLPCBrutalTest : UnitTest {
 		this.failed(method, message);
 
 		diffFilenames = diffFilenames !? _.add(filename) ? [filename];
+	}
+
+	// Wrap .run to allow overriding of alphabet string lengths
+	*run {
+		arg reset = true, report = true, strlensPerAlphabet = nil;
+
+		this.stringLengthsPerAlphabet_(strlensPerAlphabet);
+
+		super.run(reset, report);
 	}
 
 	// Wrap .report to print a list of filenames when done

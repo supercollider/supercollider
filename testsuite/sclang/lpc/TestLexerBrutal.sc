@@ -12,9 +12,9 @@ TestLexerBrutal : AbstractLPCBrutalTest {
 	// set to TRUE if you need `_expected` files
 	makingValidationFiles { ^false; }
 
-	initAlphabets {
+	getAlphabets {
 
-		alphabets = Dictionary[
+		var tmp = Dictionary[
 			// all 8-bit values except 0 `NUL`
 			\full -> ((-128..-1) ++ (1..127)),
 
@@ -27,7 +27,7 @@ TestLexerBrutal : AbstractLPCBrutalTest {
 
 		// convert each alphabet to correct string representation,
 		// and also remove `^` if necessary.
-		alphabets.keysValuesChange {
+		^tmp.keysValuesChange {
 			arg name, alphabet;
 
 			if(ignoringCaret) {
@@ -38,8 +38,8 @@ TestLexerBrutal : AbstractLPCBrutalTest {
 		};
 	}
 
-	initStringLengthsPerAlphabet {
-		stringLengthsPerAlphabet = stringLengthsPerAlphabet ? Dictionary[
+	getStringLengthsPerAlphabet {
+		^stringLengthsPerAlphabet ? Dictionary[
 			\full -> [0,1,2],
 			\half -> [3],
 			\mini -> [4]

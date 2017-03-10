@@ -8,13 +8,12 @@ TestLexerTargetedBrutal : AbstractLPCBrutalTest {
 	// set to TRUE if you need `_expected` files
 	makingValidationFiles { ^false; }
 
-	initAlphabets {
-		// init alphabets
+	getAlphabets {
 		var alphanumAlphabet = (1..127).collect(_.asAscii).select(_.isAlphaNum);
 		alphanumAlphabet = alphanumAlphabet.collect(_.asString);
 		alphanumAlphabet = alphanumAlphabet ++ ["pi", "+", "-", "."];
 
-		alphabets = Dictionary[
+		^Dictionary[
 			// alphanumeric characters plus [(pi)+-.]
 			\alnum -> alphanumAlphabet,
 
@@ -26,8 +25,8 @@ TestLexerTargetedBrutal : AbstractLPCBrutalTest {
 		];
 	}
 
-	initStringLengthsPerAlphabet {
-		stringLengthsPerAlphabet = stringLengthsPerAlphabet ? Dictionary[
+	getStringLengthsPerAlphabet {
+		^stringLengthsPerAlphabet ? Dictionary[
 			\alnum -> [1,2,3], // 0 and all prefixes covered by lexer tests
 			\num -> [4,5], // 0..3 covered by alnum
 			\acc -> [4,5,6] // 0..3 covered by alnum

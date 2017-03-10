@@ -8,10 +8,8 @@ TestParserBrutal : AbstractLPCBrutalTest {
 	// set to TRUE if you need `_expected` files
 	makingValidationFiles { ^false; }
 
-	initAlphabets {
-		// init alphabets
-
-		alphabets = Dictionary[
+	getAlphabets {
+		^Dictionary[
 			\full -> [
 				// brackets
 				"(",
@@ -125,8 +123,8 @@ TestParserBrutal : AbstractLPCBrutalTest {
 		];
 	}
 
-	initStringLengthsPerAlphabet {
-		stringLengthsPerAlphabet = stringLengthsPerAlphabet ? Dictionary[
+	getStringLengthsPerAlphabet {
+		^stringLengthsPerAlphabet ? Dictionary[
 			// don't test on empty string - this is covered by compiler tests
 			\full -> [1,2,3,4],
 			\small -> [5,6],

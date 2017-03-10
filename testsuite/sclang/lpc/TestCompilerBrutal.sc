@@ -8,7 +8,7 @@ TestCompilerBrutal : AbstractLPCBrutalTest {
 	// set to TRUE if you need `_expected` files
 	makingValidationFiles { ^false; }
 
-	initAlphabets {
+	getAlphabets {
 		// Note: these lists are based on information in PyrParseNode::initSpecialSelectors() and
 		// Opcodes.h. This preprocessor function is a useful tool here. Modify it for your needs:
 		//   thisProcess.interpreter.preProcessor = {|str| str.quote++".compile.def.dumpopcodes"}
@@ -317,7 +317,7 @@ TestCompilerBrutal : AbstractLPCBrutalTest {
 			"super.a"
 		];
 
-		alphabets = Dictionary[
+		^Dictionary[
 			// All operators put into infix form. Word operators
 			// need to be postfixed with `:` to become method selectors.
 			\infix -> (wordOps.collect(_++":") ++ symbolOps),
@@ -341,11 +341,11 @@ TestCompilerBrutal : AbstractLPCBrutalTest {
 		];
 	}
 
-	initStringLengthsPerAlphabet {
+	getStringLengthsPerAlphabet {
 		// allChars should be tested at lengths up to 3.
 		// All others use string length one, essentially simulating
 		// string formatting.
-		stringLengthsPerAlphabet = stringLengthsPerAlphabet ? Dictionary[
+		^stringLengthsPerAlphabet ? Dictionary[
 			\infix -> [1],
 			\wordOps -> [1],
 			\symbolOps -> [1],
