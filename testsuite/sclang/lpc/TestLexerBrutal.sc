@@ -36,10 +36,10 @@ TestLexerBrutal : AbstractLPCBrutalTest {
 
 			alphabet.collect(_.asAscii).collect(_.asString);
 		};
+	}
 
-		// define string lengths. Since each smaller alphabet is a subset
-		// of the larger ones, it would be redundant to retest
-		alphabetStringLengths = Dictionary[
+	initStringLengthsPerAlphabet {
+		stringLengthsPerAlphabet = stringLengthsPerAlphabet ? Dictionary[
 			\full -> [0,1,2],
 			\half -> [3],
 			\mini -> [4]

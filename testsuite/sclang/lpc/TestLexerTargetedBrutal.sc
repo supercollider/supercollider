@@ -24,8 +24,10 @@ TestLexerTargetedBrutal : AbstractLPCBrutalTest {
 			// for accidental notation parsing (e.g., 1sss, 1s30)
 			\acc -> ["0", "1", "9", "s", "b"]
 		];
+	}
 
-		alphabetStringLengths = Dictionary[
+	initStringLengthsPerAlphabet {
+		stringLengthsPerAlphabet = stringLengthsPerAlphabet ? Dictionary[
 			\alnum -> [1,2,3], // 0 and all prefixes covered by lexer tests
 			\num -> [4,5], // 0..3 covered by alnum
 			\acc -> [4,5,6] // 0..3 covered by alnum

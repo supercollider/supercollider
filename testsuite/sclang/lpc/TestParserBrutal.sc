@@ -123,17 +123,19 @@ TestParserBrutal : AbstractLPCBrutalTest {
 				" def",
 			]
 		];
+	}
 
-		alphabetStringLengths = Dictionary[
+	initStringLengthsPerAlphabet {
+		stringLengthsPerAlphabet = stringLengthsPerAlphabet ? Dictionary[
 			// don't test on empty string - this is covered by compiler tests
 			\full -> [1,2,3,4],
 			\small -> [5,6],
 			\mini -> [7,8]
-		]
+		];
 	}
 
 	// Runs the tests for all alphabets according to the string lengths
-	// given in alphabetStringLengths
+	// given in stringLengthsPerAlphabet
 	runParserTestsForAlphabets {
 		arg prefix, suffix, testMode;
 

@@ -339,11 +339,13 @@ TestCompilerBrutal : AbstractLPCBrutalTest {
 			// all ASCII values except 0 `NUL` and 7F `DEL`
 			\allChars -> (1..126).collect({ arg c; c.asAscii.asString })
 		];
+	}
 
+	initStringLengthsPerAlphabet {
 		// allChars should be tested at lengths up to 3.
 		// All others use string length one, essentially simulating
 		// string formatting.
-		alphabetStringLengths = Dictionary[
+		stringLengthsPerAlphabet = stringLengthsPerAlphabet ? Dictionary[
 			\infix -> [1],
 			\wordOps -> [1],
 			\symbolOps -> [1],

@@ -9,15 +9,18 @@ AbstractLPCBrutalTest : UnitTest {
 
 	// Dictionary of string lengths to test per alphabet
 	// (type Dictionary<Symbol, [Integer]>)
-	var <>alphabetStringLengths;
+	var <>stringLengthsPerAlphabet;
 
-	// List of diff filenames to be printed when done running.
+	// List of files that contain diffs to be printed when cleaning up.
 	classvar <>diffFilenames;
 
-	*new { ^super.new.initAlphabets; }
+	*new { ^super.new.initAlphabets.initStringLengthsPerAlphabet; }
 
-	// Inits `alphabets` and `maxLengths`.
+	// Inits `alphabets`.
 	initAlphabets { ^this.subclassResponsibility(thisMethod) }
+
+	// Inits `stringLengthsPerAlphabet`
+	initStringLengthsPerAlphabet { ^this.subclassResponsibility(thisMethod) }
 
 	// Used to determine the output location.
 	outputDir { ^this.subclassResponsibility(thisMethod) }
@@ -35,7 +38,7 @@ AbstractLPCBrutalTest : UnitTest {
 		this.printTestMode(testMode);
 		this.createOutputDir();
 
-		alphabetStringLengths[alphabetName].do {
+		stringLengthsPerAlphabet[alphabetName].do {
 			arg len;
 
 			var filename = "%%_%_%".format(this.outputDir, alphabetName, len, testMode);
