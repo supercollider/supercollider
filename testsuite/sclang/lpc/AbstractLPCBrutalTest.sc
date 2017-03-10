@@ -51,9 +51,10 @@ AbstractLPCBrutalTest : UnitTest {
 				  compress: true
 			);
 
-			if(diffs.isNil) {
+			// redundant under the current implementation of testAllPossibleStrings
+			/*if(diffs.isNil) {
 				Error("%:%: diffs should not be nil".format(this.class, thisMethod)).throw;
-			};
+			};*/
 
 			if(this.makingValidationFiles.not) {
 				this.checkDiffs(diffs, filename);
