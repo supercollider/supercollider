@@ -450,12 +450,12 @@ TestLPCTestUtils : UnitTest {
 		var len = 2;
 		var n = 2;
 
-		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
-		this.assertEquals(ctr, [0,1], report:false);
-		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
-		this.assertEquals(ctr, [1,0], report:false);
-		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
-		this.assertEquals(ctr, [1,1], report:false);
+		[[0,1], [1,0], [1,1]].do {
+			arg tuple;
+
+			this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+			this.assertEquals(ctr, tuple, report:false);
+		};
 
 		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n).not);
 		this.assertEquals(ctr, [0,0]);
@@ -466,58 +466,16 @@ TestLPCTestUtils : UnitTest {
 		var len = 3;
 		var n = 3;
 
-		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
-		this.assertEquals(ctr, [0,0,1], report:false);
-		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
-		this.assertEquals(ctr, [0,0,2], report:false);
-		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
-		this.assertEquals(ctr, [0,1,0], report:false);
-		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
-		this.assertEquals(ctr, [0,1,1], report:false);
-		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
-		this.assertEquals(ctr, [0,1,2], report:false);
-		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
-		this.assertEquals(ctr, [0,2,0], report:false);
-		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
-		this.assertEquals(ctr, [0,2,1], report:false);
-		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
-		this.assertEquals(ctr, [0,2,2], report:false);
-		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
-		this.assertEquals(ctr, [1,0,0], report:false);
-		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
-		this.assertEquals(ctr, [1,0,1], report:false);
-		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
-		this.assertEquals(ctr, [1,0,2], report:false);
-		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
-		this.assertEquals(ctr, [1,1,0], report:false);
-		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
-		this.assertEquals(ctr, [1,1,1], report:false);
-		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
-		this.assertEquals(ctr, [1,1,2], report:false);
-		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
-		this.assertEquals(ctr, [1,2,0], report:false);
-		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
-		this.assertEquals(ctr, [1,2,1], report:false);
-		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
-		this.assertEquals(ctr, [1,2,2], report:false);
-		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
-		this.assertEquals(ctr, [2,0,0], report:false);
-		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
-		this.assertEquals(ctr, [2,0,1], report:false);
-		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
-		this.assertEquals(ctr, [2,0,2], report:false);
-		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
-		this.assertEquals(ctr, [2,1,0], report:false);
-		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
-		this.assertEquals(ctr, [2,1,1], report:false);
-		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
-		this.assertEquals(ctr, [2,1,2], report:false);
-		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
-		this.assertEquals(ctr, [2,2,0], report:false);
-		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
-		this.assertEquals(ctr, [2,2,1], report:false);
-		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
-		this.assertEquals(ctr, [2,2,2], report:false);
+		var tuples = ([0,1,2]!3).allTuples;
+
+		tuples = tuples[1..]; // ignoring [0,0,0]
+
+		tuples.do {
+			arg tuple;
+
+			this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n), report:false);
+			this.assertEquals(ctr, tuple, report:false);
+		};
 
 		this.assert(LPCTestUtils.incrementAlphabetCount(ctr, len, n).not);
 		this.assertEquals(ctr, [0,0,0]);
