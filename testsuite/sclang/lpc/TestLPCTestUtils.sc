@@ -1,6 +1,9 @@
-TestLPCTestUtils : UnitTest {
-	const <testDir = "/Users/brianheim/Desktop/";
+// TestLPCTestUtils.sc
+// Brian Heim
+//
+// Tests for the LPCTestUtils class.
 
+TestLPCTestUtils : UnitTest {
 	var afile, efile;
 
 	///////////////////////////
@@ -9,35 +12,30 @@ TestLPCTestUtils : UnitTest {
 
 	/**** HELPERS ****/
 
-	setUpComparisonFiles {
-		arg entries1, entries2;
-
-		afile = File(testDir +/+ "afile", "w");
-		efile = File(testDir +/+ "efile", "w");
-
-		entries1.do({
-			arg entry;
-			afile.write(entry);
-			afile.putChar($\n);
-		});
-		entries2.do({
-			arg entry;
-			efile.write(entry);
-			efile.putChar($\n);
-		});
-
-		afile.close;
-		efile.close;
-
-		afile = File(testDir +/+ "afile", "r");
-		efile = File(testDir +/+ "efile", "r");
+	openComparisonFiles {
+		arg mode;
+		afile = File("afile".resolveRelative, mode);
+		efile = File("efile".resolveRelative, mode);
 	}
 
-		tearDownComparisonFiles {
+	closeComparisonFiles {
 		afile.close;
 		efile.close;
-		File.delete(testDir +/+ "afile");
-		File.delete(testDir +/+ "efile");
+	}
+
+	deleteComparisonFiles {
+		File.delete("afile".resolveRelative);
+		File.delete("efile".resolveRelative);
+	}
+
+	writeEntriesToFile {
+		arg file, entries;
+
+		entries.do {
+			arg entry;
+			file.write(entry);
+			file.putChar($\n);
+		}
 	}
 
 	doCompareDataEqualityTest {
@@ -58,6 +56,26 @@ TestLPCTestUtils : UnitTest {
 		diffs = LPCTestUtils.compareData(afile, efile, alph1, alph2, strlen);
 		this.assertEquals(diffs, expDiffs, "Should find diffs: %".format(expDiffs));
 		this.tearDownComparisonFiles();
+	}
+
+	/**** SETUP & TEARDOWN ****/
+
+	setUpComparisonFiles {
+		arg entries1, entries2;
+
+		this.openComparisonFiles("w");
+
+		this.writeEntriesToFile(afile, entries1);
+		this.writeEntriesToFile(efile, entries2);
+
+		this.closeComparisonFiles();
+
+		this.openComparisonFiles("r");
+	}
+
+	tearDownComparisonFiles {
+		this.closeComparisonFiles();
+		this.deleteComparisonFiles();
 	}
 
 	/**** NO-DIFF ****/
@@ -282,12 +300,12 @@ TestLPCTestUtils : UnitTest {
 	//////////////////////////////
 
 	setUpParserFile {
-		afile = File(testDir +/+ "afile", "w+");
+		afile = File("afile".resolveRelative, "w+");
 	}
 
 	tearDownParserFile {
 		afile.close;
-		File.delete(testDir +/+ "afile");
+		File.delete("afile".resolveRelative);
 	}
 
 	test_writeHeader_success {
