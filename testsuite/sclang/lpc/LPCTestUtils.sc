@@ -97,12 +97,12 @@ LPCTestUtils {
 		file = this.mkOutputFileSafe(filename, doValidate);
 
 		protect {
-			// postln("evaluateAllStrings: Writing header");
+			// postf("%: Writing header\n", thisMethod);
 			this.writeHeader(
 				file, alphabet, len, prefix, suffix, technique,	alphabetSize ** len
 			);
 
-			postln("evaluateAllStrings: Writing data");
+			postf("%: Writing data\n", thisMethod);
 
 			// Write the first result. We have to save `\n` because of the possibility
 			// for repeats. Also, reduce on an empty array returns nil, thus `?""`.
@@ -156,10 +156,10 @@ LPCTestUtils {
 			var diffs;
 
 			protect {
-				postln("evaluateAllStrings: Validating against expected output");
+				postf("%: Validating against expected output\n", thisMethod);
 				diffs = this.validate(filename);
 			} {
-				postln("evaluateAllStrings: Deleting test file");
+				postf("%: Deleting test file\n", thisMethod);
 				File.delete(filename);
 			};
 
@@ -201,7 +201,7 @@ LPCTestUtils {
 					this.bytecodeToHexString(r.def.code);
 				}
 			}, {
-				Error("evaluateString: invalid technique option: %".format(technique)).throw;
+				Error("%: invalid technique option: %".format(thisMethod, technique)).throw;
 			}
 		);
 	}
@@ -215,24 +215,24 @@ LPCTestUtils {
 		var diffs; // array of pairs of lines that are not identical
 
 		File.exists(validated).not.if {
-			Error("validate: couldn't find file for validation: %"
-				.format(validated.quote)).throw;
+			Error("%: couldn't find file for validation: %"
+				.format(thisMethod, validated.quote)).throw;
 		};
 		File.exists(filename).not.if {
-			Error("validate: couldn't find file for validation: %"
-				.format(filename.quote)).throw;
+			Error("%: couldn't find file for validation: %"
+				.format(thisMethod, filename.quote)).throw;
 		};
 
 		efile = File(validated, "r");
 		afile = File(filename, "r");
 
 		if(efile.isOpen.not) {
-			Error("validate: failed to open validation file: %"
-				.format(validated.quote)).throw;
+			Error("%: failed to open validation file: %"
+				.format(thisMethod, validated.quote)).throw;
 		};
 		if(afile.isOpen.not) {
-			Error("validate: failed to open validation file: %"
-				.format(filename.quote)).throw;
+			Error("%: failed to open validation file: %"
+				.format(thisMethod, filename.quote)).throw;
 		};
 
 		protect {
@@ -245,20 +245,20 @@ LPCTestUtils {
 			union(aheader.keys, eheader.keys).do {
 				arg key;
 				if(aheader[key] != eheader[key]) {
-					"validate: headers differ on key %\n"
+					"%: headers differ on key %\n"
 					"\texpected header has: %\n"
 					"\tactual header has: %".format(
-						key, aheader[key], eheader[key]
+						thisMethod, key, aheader[key], eheader[key]
 					).warn;
 				}
 			};
 
 			if(aheader[\strlen] != eheader[\strlen]) {
-				Error("validate: string lengths are not equal: % != %"
-					.format(aheader[\strlen], eheader[\strlen])).throw;
+				Error("%: string lengths are not equal: % != %"
+					.format(thisMethod, aheader[\strlen], eheader[\strlen])).throw;
 			};
 
-			// "validate: comparing data".postln;
+			// "%: comparing data\n".postf(thisMethod);
 			diffs = this.compareData(
 				afile, efile, aheader[\alph], eheader[\alph], aheader[\strlen]
 			);
@@ -504,7 +504,7 @@ LPCTestUtils {
 
 		var file;
 
-		postln("%: Creating file: %".format(this, PathName(filename).fileName));
+		postln("%: Creating file: %".format(thisMethod, PathName(filename).fileName));
 		if(File.exists(filename)) {
 			Error("%: File % already exists\n"
 				"\tPlease delete before continuing".format(this, filename.quote)).throw;
@@ -513,11 +513,11 @@ LPCTestUtils {
 		try {
 			file = File.new(filename, "w");
 		} {
-			Error("%: Failed to open file: %.".format(this, filename.quote)).throw;
+			Error("%: Failed to open file: %.".format(thisMethod, filename.quote)).throw;
 		};
 
 		if(file.isOpen.not) {
-			Error("%: Failed to open file: %".format(this, filename.quote)).throw;
+			Error("%: Failed to open file: %".format(thisMethod, filename.quote)).throw;
 		};
 
 		^file;
@@ -651,28 +651,28 @@ LPCTestUtils {
 
 		// data validation: BEGIN
 		if(alphabet.isKindOf(Array).not) {
-			Error("formatHeader: alphabet should be an array").throw;
+			Error("%: alphabet should be an array".format(thisMethod)).throw;
 		};
 		if(alphabet.isEmpty) {
-			Error("formatHeader: alphabet should be non-empty").throw;
+			Error("%: alphabet should be non-empty".format(thisMethod)).throw;
 		};
 		if(alphabet.every(_.isKindOf(String)).not) {
-			Error("formatHeader: alphabet should be composed of strings").throw;
+			Error("%: alphabet should be composed of strings".format(thisMethod)).throw;
 		};
 		if(stringLength < 0) {
-			Error("formatHeader: string length must be at least 0").throw;
+			Error("%: string length must be at least 0".format(thisMethod)).throw;
 		};
 		if(prefix.isKindOf(String).not) {
-			Error("formatHeader: prefix should be a string").throw;
+			Error("%: prefix should be a string".format(thisMethod)).throw;
 		};
 		if(suffix.isKindOf(String).not) {
-			Error("formatHeader: suffix should be a string").throw;
+			Error("%: suffix should be a string".format(thisMethod)).throw;
 		};
 		if(technique.isKindOf(Symbol).not) {
-			Error("formatHeader: technique should be a symbol").throw;
+			Error("%: technique should be a symbol".format(thisMethod)).throw;
 		};
 		if(stringCount <= 0) {
-			Error("formatHeader: stringCount must be a positive number").throw;
+			Error("%: stringCount must be a positive number".format(thisMethod)).throw;
 		};
 		// data validation: END
 
@@ -705,7 +705,7 @@ LPCTestUtils {
 		var result = Dictionary[];
 
 		if(file.isOpen.not) {
-			Error("readHeader: given file is not open: %".format(file.path)).throw;
+			Error("%: given file is not open: %".format(thisMethod, file.path)).throw;
 		};
 
 		// parse blocks and fields
@@ -733,13 +733,13 @@ LPCTestUtils {
 		var len = expected.size;
 
 		if(str.isNil) {
-			Error("parseHeader: unexpectedly reached end of document while"
-				"parsing %".format(expected.quote)).throw;
+			Error("%: unexpectedly reached end of document while"
+				"parsing %".format(thisMethod, expected.quote)).throw;
 		};
 
 		if(str[..len-1] != expected) {
-			Error("parseHeader: expected %: got %"
-				.format(expected.quote, str[..len-1].quote)).throw;
+			Error("%: expected %: got %"
+				.format(thisMethod, expected.quote, str[..len-1].quote)).throw;
 		};
 
 		^str[len..];
@@ -749,8 +749,8 @@ LPCTestUtils {
 		arg line, blockName;
 
 		if(line != blockName) {
-			Error("readHeader: expected % block, got %"
-				.format(blockName.quote, line.quote)).throw;
+			Error("%: expected % block, got %"
+				.format(thisMethod, blockName.quote, line.quote)).throw;
 		};
 	}
 
@@ -762,8 +762,8 @@ LPCTestUtils {
 		size = str.asInteger;
 
 		if(size <= 0) {
-			Error("parseHeader: alphabet size must be > 0: got %"
-				.format(size.quote)).throw;
+			Error("%: alphabet size must be > 0: got %"
+				.format(thisMethod, size.quote)).throw;
 		};
 
 		^size;
@@ -777,16 +777,16 @@ LPCTestUtils {
 		alphabet = str.split($,);
 
 		if(alphabet.isEmpty) {
-			Error("parseHeader: alphabet is empty: got %"
-				.format(str.quote)).throw;
+			Error("%: alphabet is empty: got %"
+				.format(thisMethod, str.quote)).throw;
 		};
 
 		try {
 			^alphabet.collect(this.stringFromHexString(_));
 		} {
 			arg e;
-			Error("parseHeader: error while decoding alphabet %: %"
-				.format(alphabet, e.errorString)).throw;
+			Error("%: error while decoding alphabet %: %"
+				.format(thisMethod, alphabet, e.errorString)).throw;
 		};
 	}
 
@@ -798,8 +798,8 @@ LPCTestUtils {
 		len = str.asInteger;
 
 		if(len < 0) {
-			Error("parseHeader: string length must be nonnegative: got %"
-				.format(len)).throw;
+			Error("%: string length must be nonnegative: got %"
+				.format(thisMethod, len)).throw;
 		};
 
 		^len;
@@ -814,8 +814,8 @@ LPCTestUtils {
 			^this.stringFromHexString(str);
 		} {
 			arg e;
-			Error("parseHeader: error while decoding prefix: %"
-				.format(e.errorString)).throw;
+			Error("%: error while decoding prefix: %"
+				.format(thisMethod, e.errorString)).throw;
 		};
 	}
 
@@ -828,8 +828,8 @@ LPCTestUtils {
 			^this.stringFromHexString(str);
 		} {
 			arg e;
-			Error("parseHeader: error while decoding suffix: %"
-				.format(e.errorString)).throw;
+			Error("%: error while decoding suffix: %"
+				.format(thisMethod, e.errorString)).throw;
 		};
 	}
 
@@ -839,7 +839,7 @@ LPCTestUtils {
 		str = this.verifyFieldName(str, "technique:");
 
 		if(str.isEmpty) {
-			Error("parseHeader: must provide a technique name").throw;
+			Error("%: must provide a technique name".format(thisMethod)).throw;
 		}
 
 		^str.asSymbol;
@@ -850,7 +850,7 @@ LPCTestUtils {
 		var cnt = str.asInteger;
 
 		if(cnt <= 0) {
-			Error("parseHeader: string count must be > 0: got %".format(cnt)).throw;
+			Error("%: string count must be > 0: got %".format(thisMethod, cnt)).throw;
 		};
 
 		^cnt;

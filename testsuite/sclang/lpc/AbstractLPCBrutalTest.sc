@@ -56,7 +56,7 @@ AbstractLPCBrutalTest : UnitTest {
 
 			// redundant under the current implementation of evaluateAllStrings
 			/*if(diffs.isNil) {
-				Error("%:%: diffs should not be nil".format(this.class, thisMethod)).throw;
+				Error("%: diffs should not be nil".format(thisMethod)).throw;
 			};*/
 
 			if(this.makingValidationFiles.not) {
@@ -77,7 +77,7 @@ AbstractLPCBrutalTest : UnitTest {
 
 			this.noteFailure(thisMethod, "Diffs were found between test and validation files", diffFilename);
 		} {
-			postf("%: No diffs found.\n".format(this.class.name));
+			postf("%: No diffs found.\n".format(thisMethod));
 		}
 	}
 
@@ -86,7 +86,7 @@ AbstractLPCBrutalTest : UnitTest {
 		arg mode;
 
 		"".postln;
-		"%: running test mode %".format(this.class, mode.quote).underlined.postln;
+		"%: running test mode %".format(thisMethod, mode.quote).underlined.postln;
 	}
 
 	// Force creation of this test's output directory
@@ -94,11 +94,11 @@ AbstractLPCBrutalTest : UnitTest {
 		var dirname = this.outputDir.resolveRelative;
 
 		if(File.exists(dirname).not) {
-			"%: Creating directory %".format(this.class, dirname.quote).postln;
+			"%: Creating directory %".format(thisMethod, dirname.quote).postln;
 			try {
 				File.mkdir(dirname);
 			} {
-				Error("%: Could not create directory %".format(this.class, this.outputDir.quote)).throw;
+				Error("%: Could not create directory %".format(thisMethod, this.outputDir.quote)).throw;
 			}
 		}
 	}
