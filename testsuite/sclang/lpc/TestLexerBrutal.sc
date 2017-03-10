@@ -51,7 +51,7 @@ TestLexerBrutal : AbstractLPCBrutalTest {
 	runLexerTests {
 		arg prefix, suffix, testMode;
 
-		alphabets.keysDo {
+		stringLengthsPerAlphabet.keysDo {
 			arg key;
 			this.runTestsOnAlphabet(prefix, suffix, testMode, key);
 		}
