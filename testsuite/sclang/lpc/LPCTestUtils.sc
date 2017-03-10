@@ -366,7 +366,7 @@ LPCTestUtils {
 		var headers = [
 			"% entries were missing from file 1",
 			"% entries were missing from file 2",
-			"% entries were different between files"
+			"% entries were inconsistent"
 		];
 
 		diffs.do {
