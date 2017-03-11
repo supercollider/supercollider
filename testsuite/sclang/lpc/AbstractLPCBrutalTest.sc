@@ -70,7 +70,7 @@ AbstractLPCBrutalTest : UnitTest {
 			};*/
 
 			if(this.makingValidationFiles.not) {
-				var diffs = LPCTestUtils.validate(filename);
+				var diffs = LPCTestUtils.compareFiles(filename);
 				File.delete(filename);
 				this.checkDiffs(diffs, filename);
 			}

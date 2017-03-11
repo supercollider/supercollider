@@ -16,7 +16,8 @@
 
 evaluateAllStrings
 evaluateString
-validate
+compareFiles
+compareHeaders
 compareData
 
 ----diff helper methods----
@@ -184,55 +185,52 @@ LPCTestUtils {
 		);
 	}
 
-	*validate {
-		arg filename;
+	*compareFiles {
+		arg filename1, filename2;
 
-		var validated = filename ++ validatedOutputFilenameSuffix;
+		var file1, file2; // expected file, actual file
+		var diffs;
 
-		var efile, afile; // expected file, actual file
-		var diffs; // array of pairs of lines that are not identical
-
-		afile = this.safeOpenFile(filename, "r");
-		efile = this.safeOpenFile(validated, "r");
+		file1 = this.safeOpenFile(filename1, "r");
+		file2 = this.safeOpenFile(filename2, "r");
 
 		protect {
-			var eheader, aheader;
+			var header1, header2;
 
-			eheader = this.readHeader(efile);
-			aheader = this.readHeader(afile);
+			header1 = this.readHeader(file1);
+			header2 = this.readHeader(file2);
 
-			// compare the headers, warn if there are issues
-			union(aheader.keys, eheader.keys).do {
-				arg key;
-				if(aheader[key] != eheader[key]) {
-					"%: headers differ on key %\n"
-					"\texpected header has: %\n"
-					"\tactual header has: %".format(
-						thisMethod, key, aheader[key], eheader[key]
-					).warn;
-				}
-			};
+			this.compareHeaders(header1, header2);
 
-			if(aheader[\strlen] != eheader[\strlen]) {
-				Error("%: string lengths are not equal: % != %"
-					.format(thisMethod, aheader[\strlen], eheader[\strlen])).throw;
-			};
-
-			// "%: comparing data\n".postf(thisMethod);
-			diffs = this.compareData(
-				afile, efile, aheader[\alph], eheader[\alph], aheader[\strlen]
-			);
+			// "%: Comparing data\n".postf(thisMethod);
+			diffs = this.compareData(file1, file2, header1[\alph], header2[\alph], header1[\strlen]);
 		} {
-			// if anything fails, close the files
-			afile.close;
-			efile.close;
+			file1.close;
+			file2.close;
 		};
 
 		^diffs;
 	}
 
-	// Finds differences between data files with no knowledge of
-	// 'correct' or 'experimental'.
+	*compareHeaders {
+		arg header1, header2;
+
+		union(header1.keys, header2.keys).do {
+			arg key;
+
+			if(header1[key] != header2[key]) {
+				"%: headers differ on key %\n"
+				"\tfirst header has: %\n"
+				"\tsecond header has: %".format(thisMethod, key, header1[key], header2[key]).warn;
+			}
+		};
+
+		if(header1[\strlen] != header2[\strlen]) {
+			Error("%: string lengths are not equal: %, %"
+				.format(thisMethod, header1[\strlen], header2[\strlen])).throw;
+		};
+	}
+
 	*compareData {
 		arg file1, file2, alph1, alph2, strlen;
 
