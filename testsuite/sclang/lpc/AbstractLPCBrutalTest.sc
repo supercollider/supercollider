@@ -40,13 +40,19 @@ AbstractLPCBrutalTest : UnitTest {
 	runTestsOnAlphabet {
 		arg prefix, suffix, testMode, alphabetName;
 
+		var fullOutputDir = this.outputDir.resolveRelative;
+
 		this.printTestMode(testMode);
 		this.createOutputDir();
 
 		stringLengthsPerAlphabet[alphabetName].do {
 			arg len;
 
-			var filename = "%%_%_%".format(this.outputDir.resolveRelative, alphabetName, len, testMode);
+			var filename = "%%_%_%".format(fullOutputDir, alphabetName, len, testMode);
+
+			if(this.makingValidationFiles) {
+				filename = filename ++ LPCTestUtils.validatedOutputFilenameSuffix;
+			};
 
 			LPCTestUtils.evaluateAllStrings(
 				  alphabet: alphabets[alphabetName],
