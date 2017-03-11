@@ -345,14 +345,6 @@ TestLPCTestUtils : UnitTest {
 				LPCTestUtils.writeHeader(afile, ["AB", "CD"], 2, "pre", "suf", "compile", 100);
 				this.failed(thisMethod, "Should not accept bad technique");
 			} {};
-			try {
-				LPCTestUtils.writeHeader(afile, ["AB", "CD"], 2, "pre", "suf", \interpret, 0);
-				this.failed(thisMethod, "Should not accept zero stringCount");
-			} {};
-			try {
-				LPCTestUtils.writeHeader(afile, ["AB", "CD"], 2, "pre", "suf", \interpret, -1);
-				this.failed(thisMethod, "Should not accept negative stringCount");
-			} {};
 		} {
 			this.tearDownParserFile;
 		}
@@ -368,7 +360,6 @@ TestLPCTestUtils : UnitTest {
 		header[\prefix] = "testPre";
 		header[\suffix] = "testSuf";
 		header[\technique] = \interpret;
-		header[\strcnt] = 4;
 
 		this.setUpParserFile;
 		LPCTestUtils.writeHeader(afile,
@@ -376,8 +367,7 @@ TestLPCTestUtils : UnitTest {
 			header[\strlen],
 			header[\prefix],
 			header[\suffix],
-			header[\technique],
-			header[\strcnt]
+			header[\technique]
 		);
 
 		afile.seek(0);

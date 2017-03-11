@@ -56,7 +56,6 @@ parseStringLength
 parsePrefix
 parseSuffix
 parseTechnique
-parseStringCount
 */
 
 LPCTestUtils {
@@ -92,7 +91,7 @@ LPCTestUtils {
 		protect {
 			// postf("%: Writing header\n", thisMethod);
 			this.writeHeader(
-				file, alphabet, len, prefix, suffix, technique,	alphabetSize ** len
+				file, alphabet, len, prefix, suffix, technique
 			);
 
 			postf("%: Writing data\n", thisMethod);
@@ -638,9 +637,6 @@ LPCTestUtils {
 		if(technique.isKindOf(Symbol).not) {
 			Error("%: technique should be a symbol".format(thisMethod)).throw;
 		};
-		if(stringCount <= 0) {
-			Error("%: stringCount must be a positive number".format(thisMethod)).throw;
-		};
 		// data validation: END
 
 		file.write(
@@ -651,15 +647,13 @@ LPCTestUtils {
 			"prefix:%\n"
 			"suffix:%\n"
 			"technique:%\n"
-			"DATA\n"
-			"%\n".format(
+			"DATA\n".format(
 				alphabet.size,
 				alphabetString,
 				stringLength,
 				this.stringToHexString(prefix),
 				this.stringToHexString(suffix),
-				technique,
-				stringCount
+				technique
 			)
 		);
 	}
@@ -685,7 +679,6 @@ LPCTestUtils {
 		result[\technique] = this.parseTechnique(file.getLine(this.maxline));
 
 		this.parseBlockName(file.getLine(this.maxline), "DATA");
-		result[\strcnt] = this.parseStringCount(file.getLine(this.maxline));
 
 		^result;
 	}
@@ -812,14 +805,4 @@ LPCTestUtils {
 		^str.asSymbol;
 	}
 
-	*parseStringCount {
-		arg str;
-		var cnt = str.asInteger;
-
-		if(cnt <= 0) {
-			Error("%: string count must be > 0: got %".format(thisMethod, cnt)).throw;
-		};
-
-		^cnt;
-	}
 }
