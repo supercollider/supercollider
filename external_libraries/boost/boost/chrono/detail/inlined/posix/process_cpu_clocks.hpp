@@ -41,7 +41,7 @@ namespace chrono_detail
   }
 }
 
-process_real_cpu_clock::time_point process_real_cpu_clock::now() BOOST_NOEXCEPT
+inline process_real_cpu_clock::time_point process_real_cpu_clock::now() BOOST_NOEXCEPT
 {
     tms tm;
     clock_t c = ::times( &tm );
@@ -65,7 +65,7 @@ process_real_cpu_clock::time_point process_real_cpu_clock::now() BOOST_NOEXCEPT
 }
 
 #if !defined BOOST_CHRONO_DONT_PROVIDE_HYBRID_ERROR_HANDLING
-process_real_cpu_clock::time_point process_real_cpu_clock::now(
+inline process_real_cpu_clock::time_point process_real_cpu_clock::now(
         system::error_code & ec)
 {
 
@@ -118,7 +118,7 @@ process_real_cpu_clock::time_point process_real_cpu_clock::now(
 }
 #endif
 
-process_user_cpu_clock::time_point process_user_cpu_clock::now() BOOST_NOEXCEPT
+inline process_user_cpu_clock::time_point process_user_cpu_clock::now() BOOST_NOEXCEPT
 {
     tms tm;
     clock_t c = ::times( &tm );
@@ -142,7 +142,7 @@ process_user_cpu_clock::time_point process_user_cpu_clock::now() BOOST_NOEXCEPT
 }
 
 #if !defined BOOST_CHRONO_DONT_PROVIDE_HYBRID_ERROR_HANDLING
-process_user_cpu_clock::time_point process_user_cpu_clock::now(
+inline process_user_cpu_clock::time_point process_user_cpu_clock::now(
         system::error_code & ec)
 {
     tms tm;
@@ -194,7 +194,7 @@ process_user_cpu_clock::time_point process_user_cpu_clock::now(
 }
 #endif
 
-process_system_cpu_clock::time_point process_system_cpu_clock::now() BOOST_NOEXCEPT
+inline process_system_cpu_clock::time_point process_system_cpu_clock::now() BOOST_NOEXCEPT
 {
     tms tm;
     clock_t c = ::times( &tm );
@@ -219,7 +219,7 @@ process_system_cpu_clock::time_point process_system_cpu_clock::now() BOOST_NOEXC
 }
 
 #if !defined BOOST_CHRONO_DONT_PROVIDE_HYBRID_ERROR_HANDLING
-process_system_cpu_clock::time_point process_system_cpu_clock::now(
+inline process_system_cpu_clock::time_point process_system_cpu_clock::now(
         system::error_code & ec)
 {
     tms tm;
@@ -271,7 +271,7 @@ process_system_cpu_clock::time_point process_system_cpu_clock::now(
 }
 #endif
 
-process_cpu_clock::time_point process_cpu_clock::now() BOOST_NOEXCEPT
+inline process_cpu_clock::time_point process_cpu_clock::now() BOOST_NOEXCEPT
 {
     tms tm;
     clock_t c = ::times( &tm );
@@ -299,7 +299,7 @@ process_cpu_clock::time_point process_cpu_clock::now() BOOST_NOEXCEPT
 }
 
 #if !defined BOOST_CHRONO_DONT_PROVIDE_HYBRID_ERROR_HANDLING
-process_cpu_clock::time_point process_cpu_clock::now(
+inline process_cpu_clock::time_point process_cpu_clock::now(
         system::error_code & ec )
 {
     tms tm;

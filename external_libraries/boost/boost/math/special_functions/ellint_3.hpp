@@ -58,19 +58,19 @@ T ellint_pi_imp(T v, T phi, T k, T vc, const Policy& pol)
    T sphi = sin(fabs(phi));
    T result = 0;
 
-   if(v > 1 / (sphi * sphi))
-   {
-      // Complex result is a domain error:
-      return policies::raise_domain_error<T>(function,
-         "Got v = %1%, but result is complex for v > 1 / sin^2(phi)", v, pol);
-   }
-
    // Special cases first:
    if(v == 0)
    {
       // A&S 17.7.18 & 19
       return (k == 0) ? phi : ellint_f_imp(phi, k, pol);
    }
+   if((v > 0) && (1 / v < (sphi * sphi)))
+   {
+      // Complex result is a domain error:
+      return policies::raise_domain_error<T>(function,
+         "Got v = %1%, but result is complex for v > 1 / sin^2(phi)", v, pol);
+   }
+
    if(v == 1)
    {
       // http://functions.wolfram.com/08.06.03.0008.01

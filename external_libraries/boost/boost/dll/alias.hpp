@@ -36,7 +36,7 @@ namespace boost { namespace dll {
 #define BOOST_DLL_FORCE_NO_WEAK_EXPORTS
 #endif
 
-#if BOOST_COMP_MSVC
+#if BOOST_COMP_MSVC || (BOOST_COMP_INTEL && BOOST_OS_WINDOWS)
 
 #define BOOST_DLL_SELECTANY __declspec(selectany)
 

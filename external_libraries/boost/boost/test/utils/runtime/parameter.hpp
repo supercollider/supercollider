@@ -220,7 +220,7 @@ protected:
 
 private:
     /// interface for usage/help customization
-    virtual void            cla_name_help( std::ostream& ostr, cstring cla_tag, cstring negation_prefix_ ) const
+    virtual void            cla_name_help( std::ostream& ostr, cstring cla_tag, cstring /* negation_prefix_ */) const
     {
         ostr << cla_tag;
     }

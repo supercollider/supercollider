@@ -13,7 +13,7 @@
 //  HP aCC C++ compiler setup:
 
 #if defined(__EDG__)
-#include "boost/config/compiler/common_edg.hpp"
+#include <boost/config/compiler/common_edg.hpp>
 #endif
 
 #if (__HP_aCC <= 33100)
@@ -123,6 +123,7 @@
 #define BOOST_NO_CXX11_TRAILING_RESULT_TYPES
 #define BOOST_NO_CXX11_INLINE_NAMESPACES
 #define BOOST_NO_CXX11_REF_QUALIFIERS
+#define BOOST_NO_CXX11_THREAD_LOCAL
 
 /*
   See https://forums13.itrc.hp.com/service/forums/questionanswer.do?threadId=1443331 and

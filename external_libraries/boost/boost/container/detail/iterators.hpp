@@ -26,6 +26,7 @@
 #include <boost/container/detail/workaround.hpp>
 #include <boost/container/allocator_traits.hpp>
 #include <boost/container/detail/type_traits.hpp>
+#include <boost/container/detail/value_init.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/move/utility_core.hpp>
 #include <boost/intrusive/detail/reverse_iterator.hpp>
@@ -560,16 +561,22 @@ class emplace_iterator
    BOOST_CONTAINER_FORCEINLINE this_type operator-(difference_type off) const
    {  return *this + (-off);  }
 
+   private:
    //This pseudo-iterator's dereference operations have no sense since value is not
    //constructed until ::boost::container::construct_in_place is called.
    //So comment them to catch bad uses
-   //const T& operator*() const;
-   //const T& operator[](difference_type) const;
-   //const T* operator->() const;
+   const T& operator*() const;
+   const T& operator[](difference_type) const;
+   const T* operator->() const;
 
+   public:
    template<class Allocator>
    void construct_in_place(Allocator &a, T* ptr)
    {  (*m_pe)(a, ptr);  }
+
+   template<class DestIt>
+   void assign_in_place(DestIt dest)
+   {  (*m_pe)(dest);  }
 
    private:
    difference_type m_num;
@@ -612,20 +619,43 @@ struct emplace_functor
    {}
 
    template<class Allocator, class T>
-   void operator()(Allocator &a, T *ptr)
+   BOOST_CONTAINER_FORCEINLINE void operator()(Allocator &a, T *ptr)
    {  emplace_functor::inplace_impl(a, ptr, index_tuple_t());  }
 
-   template<class Allocator, class T, int ...IdxPack>
+   template<class DestIt>
+   BOOST_CONTAINER_FORCEINLINE void operator()(DestIt dest)
+   {  emplace_functor::inplace_impl(dest, index_tuple_t());  }
+
+   private:
+   template<class Allocator, class T, std::size_t ...IdxPack>
    BOOST_CONTAINER_FORCEINLINE void inplace_impl(Allocator &a, T* ptr, const container_detail::index_tuple<IdxPack...>&)
    {
       allocator_traits<Allocator>::construct
          (a, ptr, ::boost::forward<Args>(container_detail::get<IdxPack>(args_))...);
    }
 
+   template<class DestIt, std::size_t ...IdxPack>
+   BOOST_CONTAINER_FORCEINLINE void inplace_impl(DestIt dest, const container_detail::index_tuple<IdxPack...>&)
+   {
+      typedef typename boost::container::iterator_traits<DestIt>::value_type value_type;
+      value_type && tmp= value_type(::boost::forward<Args>(container_detail::get<IdxPack>(args_))...);
+      *dest = ::boost::move(tmp);
+   }
+
    container_detail::tuple<Args&...> args_;
 };
 
+template<class ...Args>
+struct emplace_functor_type
+{
+   typedef emplace_functor<Args...> type;
+};
+
 #else // !defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)
+
+//Partial specializations cannot match argument list for primary template, so add an extra argument
+template <BOOST_MOVE_CLASSDFLT9, class Dummy = void>
+struct emplace_functor_type;
 
 #define BOOST_MOVE_ITERATOR_EMPLACE_FUNCTOR_CODE(N) \
 BOOST_MOVE_TMPL_LT##N BOOST_MOVE_CLASS##N BOOST_MOVE_GT##N \
@@ -638,10 +668,26 @@ struct emplace_functor##N\
    void operator()(Allocator &a, T *ptr)\
    {  allocator_traits<Allocator>::construct(a, ptr BOOST_MOVE_I##N BOOST_MOVE_MFWD##N);  }\
    \
+   template<class DestIt>\
+   void operator()(DestIt dest)\
+   {\
+      typedef typename boost::container::iterator_traits<DestIt>::value_type value_type;\
+      BOOST_MOVE_IF(N, value_type tmp(BOOST_MOVE_MFWD##N), container_detail::value_init<value_type> tmp) ;\
+      *dest = ::boost::move(const_cast<value_type &>(BOOST_MOVE_IF(N, tmp, tmp.get())));\
+   }\
+   \
    BOOST_MOVE_MREF##N\
 };\
+\
+template <BOOST_MOVE_CLASS##N>\
+struct emplace_functor_type<BOOST_MOVE_TARG##N>\
+{\
+   typedef emplace_functor##N BOOST_MOVE_LT##N BOOST_MOVE_TARG##N BOOST_MOVE_GT##N type;\
+};\
 //
+
 BOOST_MOVE_ITERATE_0TO9(BOOST_MOVE_ITERATOR_EMPLACE_FUNCTOR_CODE)
+
 #undef BOOST_MOVE_ITERATOR_EMPLACE_FUNCTOR_CODE
 
 #endif
@@ -763,6 +809,7 @@ class iterator_from_iiterator
    typedef typename types_t::value_type          value_type;
 
    BOOST_CONTAINER_FORCEINLINE iterator_from_iiterator()
+      : m_iit()
    {}
 
    BOOST_CONTAINER_FORCEINLINE explicit iterator_from_iiterator(IIterator iit) BOOST_NOEXCEPT_OR_NOTHROW

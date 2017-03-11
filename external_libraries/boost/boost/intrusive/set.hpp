@@ -28,6 +28,11 @@
 namespace boost {
 namespace intrusive {
 
+#if !defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
+template<class ValueTraits, class VoidOrKeyOfValue, class Compare, class SizeType, bool ConstantTimeSize, typename HeaderHolder>
+class multiset_impl;
+#endif
+
 //! The class template set is an intrusive container, that mimics most of
 //! the interface of std::set as described in the C++ standard.
 //!
@@ -149,6 +154,15 @@ class set_impl
 
    //! @copydoc ::boost::intrusive::rbtree::crend()const
    const_reverse_iterator crend() const;
+
+   //! @copydoc ::boost::intrusive::rbtree::root()
+   iterator root();
+
+   //! @copydoc ::boost::intrusive::rbtree::root()const
+   const_iterator root() const;
+
+   //! @copydoc ::boost::intrusive::rbtree::croot()const
+   const_iterator croot() const;
 
    //! @copydoc ::boost::intrusive::rbtree::container_from_end_iterator(iterator)
    static set_impl &container_from_end_iterator(iterator end_iterator);
@@ -399,6 +413,26 @@ class set_impl
 
    //! @copydoc ::boost::intrusive::rbtree::remove_node
    void remove_node(reference value);
+
+   //! @copydoc ::boost::intrusive::rbtree::merge_unique
+   template<class ...Options2>
+   void merge(set<T, Options2...> &source);
+
+   //! @copydoc ::boost::intrusive::rbtree::merge_unique
+   template<class ...Options2>
+   void merge(multiset<T, Options2...> &source);
+
+   #else
+
+   template<class Compare2>
+   void merge(set_impl<ValueTraits, VoidOrKeyOfValue, Compare2, SizeType, ConstantTimeSize, HeaderHolder> &source)
+   {  return tree_type::merge_unique(source);  }
+
+
+   template<class Compare2>
+   void merge(multiset_impl<ValueTraits, VoidOrKeyOfValue, Compare2, SizeType, ConstantTimeSize, HeaderHolder> &source)
+   {  return tree_type::merge_unique(source);  }
+
    #endif   //#ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
 };
 
@@ -658,6 +692,15 @@ class multiset_impl
    //! @copydoc ::boost::intrusive::rbtree::crend()const
    const_reverse_iterator crend() const;
 
+   //! @copydoc ::boost::intrusive::rbtree::root()
+   iterator root();
+
+   //! @copydoc ::boost::intrusive::rbtree::root()const
+   const_iterator root() const;
+
+   //! @copydoc ::boost::intrusive::rbtree::croot()const
+   const_iterator croot() const;
+
    //! @copydoc ::boost::intrusive::rbtree::container_from_end_iterator(iterator)
    static multiset_impl &container_from_end_iterator(iterator end_iterator);
 
@@ -865,6 +908,25 @@ class multiset_impl
 
    //! @copydoc ::boost::intrusive::rbtree::remove_node
    void remove_node(reference value);
+
+   //! @copydoc ::boost::intrusive::rbtree::merge_equal
+   template<class ...Options2>
+   void merge(multiset<T, Options2...> &source);
+
+   //! @copydoc ::boost::intrusive::rbtree::merge_equal
+   template<class ...Options2>
+   void merge(set<T, Options2...> &source);
+
+   #else
+
+   template<class Compare2>
+   void merge(multiset_impl<ValueTraits, VoidOrKeyOfValue, Compare2, SizeType, ConstantTimeSize, HeaderHolder> &source)
+   {  return tree_type::merge_equal(source);  }
+
+   template<class Compare2>
+   void merge(set_impl<ValueTraits, VoidOrKeyOfValue, Compare2, SizeType, ConstantTimeSize, HeaderHolder> &source)
+   {  return tree_type::merge_equal(source);  }
+
    #endif   //#ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
 };
 

@@ -1,5 +1,5 @@
 /*
-(c) 2014 Glen Joseph Fernandes
+(c) 2014-2016 Glen Joseph Fernandes
 <glenjofe -at- gmail.com>
 
 Distributed under the Boost Software
@@ -20,12 +20,12 @@ inline void* align(std::size_t alignment, std::size_t size,
 {
     BOOST_ASSERT(detail::is_alignment(alignment));
     if (size <= space) {
-        char* p = reinterpret_cast<char*>((reinterpret_cast<std::
-            size_t>(ptr) + alignment - 1) & ~(alignment - 1));
-        std::ptrdiff_t n = p - static_cast<char*>(ptr);
-        if (size <= space - n) {
+        char* p = (char*)(((std::size_t)ptr + alignment - 1) &
+            ~(alignment - 1));
+        std::size_t n = space - (p - static_cast<char*>(ptr));
+        if (size <= n) {
             ptr = p;
-            space -= n;
+            space = n;
             return p;
         }
     }

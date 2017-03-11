@@ -42,6 +42,8 @@ namespace detail {
 
 struct gcc_x86_operations_base
 {
+    static BOOST_CONSTEXPR_OR_CONST bool is_always_lock_free = true;
+
     static BOOST_FORCEINLINE void fence_before(memory_order order) BOOST_NOEXCEPT
     {
         if ((order & memory_order_release) != 0)
@@ -485,7 +487,7 @@ BOOST_FORCEINLINE void thread_fence(memory_order order) BOOST_NOEXCEPT
     {
         __asm__ __volatile__
         (
-#if defined(__x86_64__) || defined(__SSE2__)
+#if defined(BOOST_ATOMIC_DETAIL_X86_HAS_MFENCE)
             "mfence\n"
 #else
             "lock; addl $0, (%%esp)\n"

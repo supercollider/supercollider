@@ -178,16 +178,22 @@ public:                                                                 \
     eval( Lhs const& lhs, Rhs const& rhs )                              \
     {                                                                   \
         if( lhs == 0 )                                                  \
+        {                                                               \
             return compare_fpv_near_zero( rhs, (OP*)0 );                \
+        }                                                               \
                                                                         \
         if( rhs == 0 )                                                  \
+        {                                                               \
             return compare_fpv_near_zero( lhs, (OP*)0 );                \
+        }                                                               \
                                                                         \
         bool direct_res = eval_direct( lhs, rhs );                      \
                                                                         \
         if( (direct_res && fpctraits<OP>::cmp_direct) ||                \
             fpc_tolerance<FPT>() == FPT(0) )                            \
+        {                                                               \
             return direct_res;                                          \
+        }                                                               \
                                                                         \
         return compare_fpv<FPT>( lhs, rhs, (OP*)0 );                    \
     }                                                                   \

@@ -156,6 +156,9 @@ struct alpha_holder
    multiply_by_alpha_t get_multiply_by_alpha_t() const
    {  return multiply_by_alpha_t(alpha_);  }
 
+   SizeType &get_max_tree_size()
+   {  return max_tree_size_;  }
+
    protected:
    float alpha_;
    float inv_minus_logalpha_;
@@ -189,6 +192,10 @@ struct alpha_holder<false, SizeType>
    multiply_by_alpha_t get_multiply_by_alpha_t() const
    {  return multiply_by_alpha_t();  }
 
+   SizeType &get_max_tree_size()
+   {  return max_tree_size_;  }
+
+   protected:
    SizeType max_tree_size_;
 };
 
@@ -374,6 +381,15 @@ class sgtree_impl
 
    //! @copydoc ::boost::intrusive::bstree::crend()const
    const_reverse_iterator crend() const;
+
+   //! @copydoc ::boost::intrusive::bstree::root()
+   iterator root();
+
+   //! @copydoc ::boost::intrusive::bstree::root()const
+   const_iterator root() const;
+
+   //! @copydoc ::boost::intrusive::bstree::croot()const
+   const_iterator croot() const;
 
    //! @copydoc ::boost::intrusive::bstree::container_from_end_iterator(iterator)
    static sgtree_impl &container_from_end_iterator(iterator end_iterator);
@@ -694,6 +710,66 @@ class sgtree_impl
    {
       tree_type::clear_and_dispose(disposer);
       this->max_tree_size_ = 0;
+   }
+
+   #if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
+   //! @copydoc ::boost::intrusive::bstree::merge_unique
+   template<class T, class ...Options2> void merge_unique(sgtree<T, Options2...> &);
+   #else
+   template<class Compare2>
+   void merge_unique(sgtree_impl
+      <ValueTraits, VoidOrKeyOfValue, Compare2, SizeType, FloatingPoint, HeaderHolder> &source)
+   #endif
+   {
+      node_ptr it   (node_algorithms::begin_node(source.header_ptr()))
+             , itend(node_algorithms::end_node  (source.header_ptr()));
+
+      while(it != itend){
+         node_ptr const p(it);
+         BOOST_INTRUSIVE_SAFE_HOOK_DEFAULT_ASSERT(!safemode_or_autounlink || !node_algorithms::unique(p));
+         it = node_algorithms::next_node(it);
+
+         std::size_t max_tree1_size = this->max_tree_size_;
+         std::size_t max_tree2_size = source.get_max_tree_size();
+         if( node_algorithms::transfer_unique
+               ( this->header_ptr(), this->key_node_comp(this->key_comp()), this->size(), max_tree1_size
+               , source.header_ptr(), p, source.size(), max_tree2_size
+               , this->get_h_alpha_func(), this->get_alpha_by_max_size_func()) ){
+            this->max_tree_size_  = (size_type)max_tree1_size;
+            this->sz_traits().increment();
+            source.get_max_tree_size() = (size_type)max_tree2_size;
+            source.sz_traits().decrement();
+         }
+      }
+   }
+
+   #if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
+   //! @copydoc ::boost::intrusive::bstree::merge_equal
+   template<class T, class ...Options2> void merge_equal(sgtree<T, Options2...> &);
+   #else
+   template<class Compare2>
+   void merge_equal(sgtree_impl
+      <ValueTraits, VoidOrKeyOfValue, Compare2, SizeType, FloatingPoint, HeaderHolder> &source)
+   #endif
+   {
+      node_ptr it   (node_algorithms::begin_node(source.header_ptr()))
+             , itend(node_algorithms::end_node  (source.header_ptr()));
+
+      while(it != itend){
+         node_ptr const p(it);
+         BOOST_INTRUSIVE_SAFE_HOOK_DEFAULT_ASSERT(!safemode_or_autounlink || !node_algorithms::unique(p));
+         it = node_algorithms::next_node(it);
+         std::size_t max_tree1_size = this->max_tree_size_;
+         std::size_t max_tree2_size = source.get_max_tree_size();
+         node_algorithms::transfer_equal
+            ( this->header_ptr(), this->key_node_comp(this->key_comp()), this->size(), max_tree1_size
+            , source.header_ptr(), p, source.size(), max_tree2_size
+            , this->get_h_alpha_func(), this->get_alpha_by_max_size_func());
+         this->max_tree_size_  = (size_type)max_tree1_size;
+         this->sz_traits().increment();
+         source.get_max_tree_size() = (size_type)max_tree2_size;
+         source.sz_traits().decrement();
+      }
    }
 
    #ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
