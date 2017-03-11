@@ -62,8 +62,6 @@ parseStringCount
 LPCTestUtils {
 	const <compileErrorString = "!cErr";
 	const <runtimeErrorString = "!rErr";
-	const <validatedOutputFilenameSuffix = "_correct";
-	const <diffOutputFilenameSuffix = "_diff";
 
 	// May need to update this, some strings like `0!99` can produce very long output
 	const <maxline = 1024;

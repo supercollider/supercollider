@@ -2,6 +2,9 @@
 // Brian Heim, 2017-02-28
 
 AbstractLPCBrutalTest : UnitTest {
+	const <correctSuffix = "_correct";
+	const <diffSuffix = "_diff";
+
 	// alphabets and associated data used in testing
 
 	// Dictionary of alphabets (type Dictionary<Symbol, [String]>)
@@ -51,7 +54,7 @@ AbstractLPCBrutalTest : UnitTest {
 			var filename = "%%_%_%".format(fullOutputDir, alphabetName, len, testMode);
 
 			if(this.makingValidationFiles) {
-				filename = filename ++ LPCTestUtils.validatedOutputFilenameSuffix;
+				filename = filename ++ correctSuffix;
 			};
 
 			LPCTestUtils.evaluateAllStrings(
@@ -64,13 +67,8 @@ AbstractLPCBrutalTest : UnitTest {
 				  compress: true
 			);
 
-			// redundant under the current implementation of evaluateAllStrings
-			/*if(diffs.isNil) {
-				Error("%: diffs should not be nil".format(thisMethod)).throw;
-			};*/
-
 			if(this.makingValidationFiles.not) {
-				var diffs = LPCTestUtils.compareFiles(filename);
+				var diffs = LPCTestUtils.compareFiles(filename, filename ++ correctSuffix);
 				File.delete(filename);
 				this.checkDiffs(diffs, filename);
 			}
@@ -83,7 +81,7 @@ AbstractLPCBrutalTest : UnitTest {
 		arg diffs, filenameBase;
 
 		if(diffs.isEmpty.not) {
-			var diffFilename = filenameBase ++ LPCTestUtils.diffOutputFilenameSuffix;
+			var diffFilename = filenameBase ++ diffSuffix;
 
 			LPCTestUtils.writeDiffs(diffs, diffFilename);
 
@@ -93,7 +91,7 @@ AbstractLPCBrutalTest : UnitTest {
 		}
 	}
 
-	// Give a nicely formatting string to inform the user what test mode we started.
+	// Give a nicely formatted string to inform the user what test mode we started.
 	printTestMode {
 		arg mode;
 
