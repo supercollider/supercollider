@@ -397,6 +397,8 @@ TestLPCTestUtils : UnitTest {
 	/// TESTING HELPER METHODS ///
 	//////////////////////////////
 
+	/**** evaluateString ****/
+
 	test_evaluateString_error {
 		var string = "a string";
 		var technique = \badTechnique;
@@ -406,6 +408,8 @@ TestLPCTestUtils : UnitTest {
 			this.failed(thisMethod, "passing a bad technique to evaluateString should throw an error");
 		} {};
 	}
+
+	/**** DATA CONVERSION ****/
 
 	test_stringToFromHexString {
 		var input = (-256..256).collect(_.asAscii).reduce('++');
@@ -420,6 +424,88 @@ TestLPCTestUtils : UnitTest {
 		var output = LPCTestUtils.bytecodeFromHexString(hexString);
 		this.assertEquals(input, output, "stringToHexString and stringFromHexString should be perfect inverses.");
 	}
+
+	/**** doOutputsMatch ****/
+
+	test_doOutputsMatch_nil {
+		var a = nil;
+		var b = nil;
+
+		this.assert(LPCTestUtils.doOutputsMatch(a, b), "doOutputsMatch: nil should match nil");
+	}
+
+	test_doOutputsMatch_nilAndNilOutput {
+		var a = nil;
+		var b = Dictionary[\in -> "in", \out -> nil, \reps -> 0];
+
+		this.assert(LPCTestUtils.doOutputsMatch(a, b), "doOutputsMatch: nil output should match nil");
+	}
+
+	test_doOutputsMatch_nilOutputs {
+		var a = Dictionary[\in -> "in", \out -> nil, \reps -> 0];
+		var b = Dictionary[\in -> "in", \out -> nil, \reps -> 0];
+
+		this.assert(LPCTestUtils.doOutputsMatch(a, b), "doOutputsMatch: nil output should match nil output");
+	}
+
+	test_doOutputsMatch_oneElementSame {
+		var a = Dictionary[\in -> "in", \out -> ["0123"], \reps -> 0];
+		var b = Dictionary[\in -> "in", \out -> ["0123"], \reps -> 0];
+
+		this.assert(LPCTestUtils.doOutputsMatch(a, b), "doOutputsMatch: equivalent outputs should match (one element)");
+	}
+
+	test_doOutputsMatch_twoElementSame {
+		var a = Dictionary[\in -> "in", \out -> ["0123", "Nil"], \reps -> 0];
+		var b = Dictionary[\in -> "in", \out -> ["0123", "Nil"], \reps -> 0];
+
+		this.assert(LPCTestUtils.doOutputsMatch(a, b), "doOutputsMatch: equivalent outputs should match (two elements)");
+	}
+
+	test_doOutputsMatch_oneElementDifferent {
+		var a = Dictionary[\in -> "in", \out -> ["0123"], \reps -> 0];
+		var b = Dictionary[\in -> "in", \out -> ["4567"], \reps -> 0];
+
+		this.assert(LPCTestUtils.doOutputsMatch(a, b).not, "doOutputsMatch: different outputs should not match (one element)");
+	}
+
+	test_doOutputsMatch_twoElementDifferent {
+		var a = Dictionary[\in -> "in", \out -> ["0123", "Nil"], \reps -> 0];
+		var b = Dictionary[\in -> "in", \out -> ["0123", "Object"], \reps -> 0];
+
+		this.assert(LPCTestUtils.doOutputsMatch(a, b).not, "doOutputsMatch: different outputs should not match (two elements)");
+	}
+
+	// whatever the output of the other is, if one returns LID or Meta_LID, doOutputsMatch should return true
+	test_doOutputsMatch_LID {
+		var a = Dictionary[\in -> "in", \out -> ["4567", "LID"], \reps -> 0];
+		var b = Dictionary[\in -> "in", \out -> ["0123", "Nil"], \reps -> 0];
+
+		this.assert(LPCTestUtils.doOutputsMatch(a, b), "doOutputsMatch: output with class LID should be ignored");
+	}
+
+	test_doOutputsMatch_MetaLID {
+		var a = Dictionary[\in -> "in", \out -> ["4567", "Meta_LID"], \reps -> 0];
+		var b = Dictionary[\in -> "in", \out -> ["0123", "Nil"], \reps -> 0];
+
+		this.assert(LPCTestUtils.doOutputsMatch(a, b), "doOutputsMatch: output with class Meta_LID should be ignored");
+	}
+
+	test_doOutputsMatch_NaN {
+		var a = Dictionary[\in -> "in", \out -> [LPCTestUtils.stringToHexString("-nan"), "Float"], \reps -> 0];
+		var b = Dictionary[\in -> "in", \out -> [LPCTestUtils.stringToHexString("nan"), "Float"], \reps -> 0];
+
+		this.assert(LPCTestUtils.doOutputsMatch(a, b), "doOutputsMatch: -nan and nan should be treated as equivalent");
+	}
+
+	test_doOutputsMatch_NaNInteger {
+		var a = Dictionary[\in -> "in", \out -> [LPCTestUtils.stringToHexString("-nan"), "Integer"], \reps -> 0];
+		var b = Dictionary[\in -> "in", \out -> [LPCTestUtils.stringToHexString("nan"), "Integer"], \reps -> 0];
+
+		this.assert(LPCTestUtils.doOutputsMatch(a, b).not, "doOutputsMatch: -nan and nan should be treated as equivalent only with Floats");
+	}
+
+	/**** incrementAlphabetCount ****/
 
 	test_incrementAlphabetCount_1x1 {
 		var ctr = [0];

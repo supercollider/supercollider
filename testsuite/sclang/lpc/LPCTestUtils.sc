@@ -509,7 +509,20 @@ LPCTestUtils {
 	*doOutputsMatch {
 		arg a, b;
 
-		^((a!?_[\out]) == (b!?_[\out]));
+		a = (a!?_[\out]);
+		b = (b!?_[\out]);
+
+		if((a.size == 2) and: (b.size == 2)) {
+			if((a[1] == "Float") and: (a[1] == b[1])) {
+				var nanString = "6E616E"; // hex string for "nan"
+				if(a[0].contains(nanString) && b[0].contains(nanString)) { ^true }
+			} {
+				// this class is defined on Linux; ignore it and its meta class for test purposes
+				if([a[1], b[1]].any("(Meta_)?LID".matchRegexp(_))) { ^true }
+			}
+		};
+
+		^a == b;
 	}
 
 	// Given an alphabet counter (array of indexing integers), increment by 1.
