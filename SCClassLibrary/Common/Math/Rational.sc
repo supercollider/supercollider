@@ -128,7 +128,7 @@ Rational : Number {
 			if((this.numerator == 0).not) {
 				^this.reciprocal.pow(aNumber.abs)
 			} {
-				"Numerator can't be 0".warn;
+				"Numerator can't be 0".error;
 			};
 		};
 	}
@@ -165,14 +165,6 @@ Rational : Number {
 		^(this * (-1))
 	}
 	
-	mod {
-		if (this.isNegative) {
-			^this.neg
-		} {
-			^this
-		};
-	}
-	
 	max { arg aNumber;
 		var rationalArray, floatArray;
 		rationalArray = [this, aNumber];
@@ -188,7 +180,10 @@ Rational : Number {
 	}
 	
 	sqrt { ^this.pow(this.species.new(1,2)) }
+
 	squared { ^this.pow(this.species.new(2,1)) }
-	cubed { ^this.pow(this.species.new(3,1)) }	
-	abs { ^this.species.new(this.numerator.abs.asInteger, this.denominator.abs.asInteger) }
+
+	cubed { ^this.pow(this.species.new(3,1)) }
+
+	abs { ^this.species.new(this.numerator.abs.asInteger, this.denominator) }
 }
