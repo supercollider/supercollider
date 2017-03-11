@@ -529,4 +529,7 @@ String[char] : RawArray {
 		^this.primitiveFailed
 	}
 
+	asRational {
+		^Rational(this.split[0].asInteger, this.split[1].asInteger)
+	}
 }

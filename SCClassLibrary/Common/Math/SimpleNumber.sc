@@ -498,6 +498,20 @@ SimpleNumber : Number {
 		// if fasterBetter is true it may find a much closer approximation and do it faster.
 		^this.primitiveFailed
 	}
+
+	asRational { arg maxDenominator=100;
+		var fraction = this.asFraction(maxDenominator);
+		^Rational(fraction[0], fraction[1])
+	}
+
+	isRational { ^false }
+
+	%/ { arg aNumber; ^Rational(this, aNumber) }
+
+	performBinaryOpOnRational { arg aSelector, rational, adverb;
+		^rational.perform(aSelector, this.asRational, adverb)
+	}
+
 	prSimpleNumberSeries { arg second, last;
 		_SimpleNumberSeries
 		^this.primitiveFailed

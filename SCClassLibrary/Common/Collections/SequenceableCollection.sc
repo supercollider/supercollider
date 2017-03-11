@@ -1301,6 +1301,15 @@ SequenceableCollection : Collection {
 	// we break up the array so that missing elements are set to nil in the Quant
 	asQuant { ^Quant(*this) }
 
+	// Rational support
+	asRational { arg maxDenominator = 100;
+		if (this.size == 2 and: this[0].isKindOf(Integer) and: this[1].isKindOf(Integer)) {
+			^Rational(this[0], this[1])
+		} {
+			^this.collect { |i| i.asRational(maxDenominator) }
+		};
+	}
+
 //	asUGenInput { ^this.asArray.asUGenInput }
 
 	schedBundleArrayOnClock { |clock, bundleArray, lag = 0, server, latency|

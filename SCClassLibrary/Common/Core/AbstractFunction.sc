@@ -25,6 +25,9 @@ AbstractFunction {
 	performBinaryOpOnComplex { arg aSelector, aComplex, adverb;
 		^this.reverseComposeBinaryOp(aSelector, aComplex, adverb)
 	}
+	performBinaryOpOnRational { arg aSelector, aRational, adverb;
+		^this.reverseComposeBinaryOp(aSelector, aRational, adverb)
+	}
 	performBinaryOpOnSeqColl { arg aSelector, aSeqColl, adverb;
 		^this.reverseComposeBinaryOp(aSelector, aSeqColl, adverb)
 	}
