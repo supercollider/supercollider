@@ -3,10 +3,10 @@
 
 TestCompilerBrutal : AbstractLPCBrutalTest {
 
-	outputDir { ^"compiler/"; }
+	outputDir { ^"compiler/" }
 
 	// set to TRUE if you need `_expected` files
-	makingValidationFiles { ^false; }
+	makingValidationFiles { ^false }
 
 	evaluationTechnique { ^\bytecode }
 
@@ -345,8 +345,7 @@ TestCompilerBrutal : AbstractLPCBrutalTest {
 
 	getStringLengthsPerAlphabet {
 		// allChars should be tested at lengths up to 3.
-		// All others use string length one, essentially simulating
-		// string formatting.
+		// All others use string length one, essentially simulating .format
 		^stringLengthsPerAlphabet ? Dictionary[
 			\infix -> [1],
 			\wordOps -> [1],
@@ -361,44 +360,29 @@ TestCompilerBrutal : AbstractLPCBrutalTest {
 		];
 	}
 
-	// tests for infix alphabet
-	test_infix_basic { this.runTestsTogglingTCO("a ", " b", "basic", \infix); }
-	test_infix_vars { this.runTestsTogglingTCO("var lh, rh; lh ", " rh", "vardefs", \infix); }
+	test_infix_basic           { this.runTestsTogglingTCO("a ",            " b",                     "basic",         \infix) }
+	test_infix_vars            { this.runTestsTogglingTCO("var lh,rh;lh ", " rh",                    "vardefs",       \infix) }
 
-	// tests for wordOps alphabet
-	test_wordOps_oneArg { this.runTestsTogglingTCO("a.", "(b)", "oneArg", \wordOps); }
-	test_wordOps_twoArgs { this.runTestsTogglingTCO("a.", "(b, c)", "twoArgs", \wordOps); }
+	test_wordOps_oneArg        { this.runTestsTogglingTCO("a.",            "(b)",                    "oneArg",        \wordOps) }
+	test_wordOps_twoArgs       { this.runTestsTogglingTCO("a.",            "(b, c)",                 "twoArgs",       \wordOps) }
 
-	// tests for symbolOps alphabet
-	test_symbolOps_adverbs { this.runTestsTogglingTCO("a ", ".t b", "adverbs", \symbolOps); }
+	test_symbolOps_adverbs     { this.runTestsTogglingTCO("a ",            ".t b",                   "adverbs",       \symbolOps) }
 
-	// tests for literals alphabet
-	test_literals_basic { this.runTestsTogglingTCO("", "", "basic", \literals); }
+	test_literals_basic        { this.runTestsTogglingTCO("",              "",                       "basic",         \literals) }
 
-	// tests for keywords alphabet
-	test_keywords_basic { this.runTestsTogglingTCO("", "", "basic", \keywords); }
+	test_keywords_basic        { this.runTestsTogglingTCO("",              "",                       "basic",         \keywords) }
 
-	// tests for classes alphabet
-	test_classes_basic { this.runTestsTogglingTCO("", "", "basic", \classes); }
+	test_classes_basic         { this.runTestsTogglingTCO("",              "",                       "basic",         \classes) }
 
-	// tests for control alphabet
-	test_control_oneArg { this.runTestsTogglingTCO("", "(a)", "oneArg", \control); }
-	test_control_twoArgs { this.runTestsTogglingTCO("", "(a, b)", "twoArgs", \control); }
-	test_control_threeArgs { this.runTestsTogglingTCO("", "(a, b, c)", "threeArgs", \control); }
+	test_control_oneArg        { this.runTestsTogglingTCO("",              "(a)",                    "oneArg",        \control) }
+	test_control_twoArgs       { this.runTestsTogglingTCO("",              "(a, b)",                 "twoArgs",       \control) }
+	test_control_threeArgs     { this.runTestsTogglingTCO("",              "(a, b, c)",              "threeArgs",     \control) }
+	test_control_twoFuncArgs   { this.runTestsTogglingTCO("",              "({a.cs},{b.cs})",        "twoFuncArgs",   \control) }
+	test_control_threeFuncArgs { this.runTestsTogglingTCO("",              "({a.cs},{b.cs},{c.cs})", "threeFuncArgs", \control) }
 
-	test_control_twoFuncArgs {
-		this.runTestsTogglingTCO("", "({a.post}, {b.post})", "twoFuncArgs", \control);
-	}
+	test_unique_basic          { this.runTestsTogglingTCO("",              "",                       "basic",         \unique) }
 
-	test_control_threeFuncArgs {
-		this.runTestsTogglingTCO("", "({a.post}, {b.post}, {c.post})", "threeFuncArgs", \control);
-	}
-
-	// tests for unique statements
-	test_unique_basic { this.runTestsTogglingTCO("", "", "basic", \unique); }
-
-	// tests for allChars alphabet
-	test_allChars_basic { this.runTestsTogglingTCO("", "", "basic", \allChars); }
-	test_allChars_infix { this.runTestsTogglingTCO("a ", " b", "infix", \allChars); }
+	test_allChars_basic        { this.runTestsTogglingTCO("",              "",                       "basic",         \allChars) }
+	test_allChars_infix        { this.runTestsTogglingTCO("a ",            " b",                     "infix",         \allChars) }
 
 }

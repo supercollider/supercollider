@@ -7,10 +7,10 @@ TestLexerBrutal : AbstractLPCBrutalTest {
 	classvar ignoringCaret = true;
 	const caretAscii = 94;
 
-	outputDir { ^"lexer/"; }
+	outputDir { ^"lexer/" }
 
 	// set to TRUE if you need `_expected` files
-	makingValidationFiles { ^false; }
+	makingValidationFiles { ^false }
 
 	evaluationTechnique { ^\interpret }
 
@@ -48,17 +48,19 @@ TestLexerBrutal : AbstractLPCBrutalTest {
 		];
 	}
 
-	runLexerTests {
-		arg prefix, suffix, testMode;
-		stringLengthsPerAlphabet.keysDo( this.runTestsOnAlphabet(prefix, suffix, testMode, _ ) );
-	}
+	// full tests: just basic. the others are covered for all practical purposes by half/mini
+	test_full_basic              { this.runTestsOnAlphabet("",          "",          "basic",              \full) }
 
-	test_basic { this.runLexerTests("", "", "basic") }
+	// half alphabet tests
+	test_half_basic              { this.runTestsOnAlphabet("",          "",          "basic",              \half) }
+	test_half_blockCommentPrefix { this.runTestsOnAlphabet("/*",        "",          "blockCommentPrefix", \half) }
+	test_half_semanticPrefix     { this.runTestsOnAlphabet("\\unique;", "",          "semanticPrefix",     \half) }
+	test_half_semanticSuffix     { this.runTestsOnAlphabet("",          ";\\unique", "semanticSuffix",     \half) }
 
-	test_blockCommentPrefix {	this.runLexerTests("/*", "", "blockCommentPrefix") }
-
-	test_semanticPrefix { this.runLexerTests("\\unique;", "", "semanticPrefix") }
-
-	test_semanticSuffix { this.runLexerTests("", ";\\unique", "semanticSuffix") }
+	// mini alphabet tests
+	test_mini_basic              { this.runTestsOnAlphabet("",          "",          "basic",              \mini) }
+	test_mini_blockCommentPrefix { this.runTestsOnAlphabet("/*",        "",          "blockCommentPrefix", \mini) }
+	test_mini_semanticPrefix     { this.runTestsOnAlphabet("\\unique;", "",          "semanticPrefix",     \mini) }
+	test_mini_semanticSuffix     { this.runTestsOnAlphabet("",          ";\\unique", "semanticSuffix",     \mini) }
 
 }
