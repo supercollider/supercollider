@@ -75,7 +75,8 @@ struct nothrow_holder
 };
 
 template <int Dummy>
-std::nothrow_t *nothrow_holder<Dummy>::pnothrow;
+std::nothrow_t *nothrow_holder<Dummy>::pnothrow = 
+   reinterpret_cast<std::nothrow_t *>(0x1234);  //Avoid reference to null errors in sanitizers
 
 }  //namespace move_upmu {
 }  //namespace boost{

@@ -146,7 +146,7 @@ compiler_log_formatter::log_exception_start( std::ostream& output, log_checkpoin
     print_prefix( output, loc.m_file_name, loc.m_line_num );
 
     {
-        BOOST_TEST_SCOPE_SETCOLOR( m_color_output, output, term_attr::BLINK, term_color::RED );
+        BOOST_TEST_SCOPE_SETCOLOR( m_color_output, output, term_attr::UNDERLINE, term_color::RED );
 
         output << "fatal error: in \"" << (loc.m_function.is_empty() ? test_phase_identifier() : loc.m_function ) << "\": "
                << ex.what();
@@ -205,7 +205,7 @@ compiler_log_formatter::log_entry_start( std::ostream& output, log_entry_data co
         case BOOST_UTL_ET_FATAL_ERROR:
             print_prefix( output, entry_data.m_file_name, entry_data.m_line_num );
             if( m_color_output )
-                output << setcolor( term_attr::BLINK, term_color::RED );
+                output << setcolor( term_attr::UNDERLINE, term_color::RED );
             output << "fatal error: in \"" << test_phase_identifier() << "\": ";
             break;
     }

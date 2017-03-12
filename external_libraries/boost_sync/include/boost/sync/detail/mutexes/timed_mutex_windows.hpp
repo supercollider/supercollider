@@ -21,7 +21,8 @@
 #include <boost/cstdint.hpp>
 #include <boost/assert.hpp>
 #include <boost/utility/enable_if.hpp>
-#include <boost/detail/winapi/synchronization.hpp>
+#include <boost/detail/winapi/wait.hpp>
+#include <boost/detail/winapi/waitable_timer.hpp>
 #include <boost/sync/exceptions/lock_error.hpp>
 #include <boost/sync/detail/config.hpp>
 #include <boost/sync/detail/throw_exception.hpp>

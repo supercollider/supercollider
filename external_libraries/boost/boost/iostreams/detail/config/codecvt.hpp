@@ -13,7 +13,7 @@
 #include <boost/iostreams/detail/config/wide_streams.hpp>
 #include <cstddef>
 
-#if defined(_MSC_VER) && (_MSC_VER >= 1020)
+#if defined(_MSC_VER)
 # pragma once
 #endif       
 
