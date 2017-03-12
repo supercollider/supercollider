@@ -424,73 +424,59 @@ TestLPCTestUtils : UnitTest {
 		this.assert(LPCTestUtils.doOutputsMatch(a, b), "doOutputsMatch: nil should match nil");
 	}
 
-	test_doOutputsMatch_nilAndNilOutput {
-		var a = nil;
-		var b = Dictionary[\in -> "in", \out -> nil, \reps -> 0];
-
-		this.assert(LPCTestUtils.doOutputsMatch(a, b), "doOutputsMatch: nil output should match nil");
-	}
-
-	test_doOutputsMatch_nilOutputs {
-		var a = Dictionary[\in -> "in", \out -> nil, \reps -> 0];
-		var b = Dictionary[\in -> "in", \out -> nil, \reps -> 0];
-
-		this.assert(LPCTestUtils.doOutputsMatch(a, b), "doOutputsMatch: nil output should match nil output");
-	}
-
 	test_doOutputsMatch_oneElementSame {
-		var a = Dictionary[\in -> "in", \out -> ["0123"], \reps -> 0];
-		var b = Dictionary[\in -> "in", \out -> ["0123"], \reps -> 0];
+		var a = "0123";
+		var b = "0123";
 
 		this.assert(LPCTestUtils.doOutputsMatch(a, b), "doOutputsMatch: equivalent outputs should match (one element)");
 	}
 
 	test_doOutputsMatch_twoElementSame {
-		var a = Dictionary[\in -> "in", \out -> ["0123", "Nil"], \reps -> 0];
-		var b = Dictionary[\in -> "in", \out -> ["0123", "Nil"], \reps -> 0];
+		var a, b;
+		a = b = "0123:Nil";
 
 		this.assert(LPCTestUtils.doOutputsMatch(a, b), "doOutputsMatch: equivalent outputs should match (two elements)");
 	}
 
 	test_doOutputsMatch_oneElementDifferent {
-		var a = Dictionary[\in -> "in", \out -> ["0123"], \reps -> 0];
-		var b = Dictionary[\in -> "in", \out -> ["4567"], \reps -> 0];
+		var a = "1234";
+		var b = "5678";
 
 		this.assert(LPCTestUtils.doOutputsMatch(a, b).not, "doOutputsMatch: different outputs should not match (one element)");
 	}
 
 	test_doOutputsMatch_twoElementDifferent {
-		var a = Dictionary[\in -> "in", \out -> ["0123", "Nil"], \reps -> 0];
-		var b = Dictionary[\in -> "in", \out -> ["0123", "Object"], \reps -> 0];
+		var a = "0123:Nil";
+		var b = "0123:Object";
 
 		this.assert(LPCTestUtils.doOutputsMatch(a, b).not, "doOutputsMatch: different outputs should not match (two elements)");
 	}
 
 	// whatever the output of the other is, if one returns LID or Meta_LID, doOutputsMatch should return true
 	test_doOutputsMatch_LID {
-		var a = Dictionary[\in -> "in", \out -> ["4567", "LID"], \reps -> 0];
-		var b = Dictionary[\in -> "in", \out -> ["0123", "Nil"], \reps -> 0];
+		var a = "4567:Nil";
+		var b = "4568:LID";
 
 		this.assert(LPCTestUtils.doOutputsMatch(a, b), "doOutputsMatch: output with class LID should be ignored");
 	}
 
 	test_doOutputsMatch_MetaLID {
-		var a = Dictionary[\in -> "in", \out -> ["4567", "Meta_LID"], \reps -> 0];
-		var b = Dictionary[\in -> "in", \out -> ["0123", "Nil"], \reps -> 0];
+		var a = "4567:Nil";
+		var b = "4568:Meta_LID";
 
 		this.assert(LPCTestUtils.doOutputsMatch(a, b), "doOutputsMatch: output with class Meta_LID should be ignored");
 	}
 
 	test_doOutputsMatch_NaN {
-		var a = Dictionary[\in -> "in", \out -> [LPCTestUtils.stringToHexString("-nan"), "Float"], \reps -> 0];
-		var b = Dictionary[\in -> "in", \out -> [LPCTestUtils.stringToHexString("nan"), "Float"], \reps -> 0];
+		var a = LPCTestUtils.stringToHexString("-nan") ++ ":Float";
+		var b = LPCTestUtils.stringToHexString("nan") ++ ":Float";
 
 		this.assert(LPCTestUtils.doOutputsMatch(a, b), "doOutputsMatch: -nan and nan should be treated as equivalent");
 	}
 
 	test_doOutputsMatch_NaNInteger {
-		var a = Dictionary[\in -> "in", \out -> [LPCTestUtils.stringToHexString("-nan"), "Integer"], \reps -> 0];
-		var b = Dictionary[\in -> "in", \out -> [LPCTestUtils.stringToHexString("nan"), "Integer"], \reps -> 0];
+		var a = LPCTestUtils.stringToHexString("-nan") ++ ":Integer";
+		var b = LPCTestUtils.stringToHexString("nan") ++ ":Integer";
 
 		this.assert(LPCTestUtils.doOutputsMatch(a, b).not, "doOutputsMatch: -nan and nan should be treated as equivalent only with Floats");
 	}

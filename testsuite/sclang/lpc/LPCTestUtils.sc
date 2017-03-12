@@ -276,10 +276,10 @@ LPCTestUtils {
 						};
 
 						prevOutputs[i] = this.parseTestResult(line);
-						reps[i] = prevOutputs[i][\reps];
+						reps[i] = prevOutputs[i][1];
 					};
 
-					outputs[i] = prevOutputs[i];
+					outputs[i] = prevOutputs[i][0];
 				} {
 					outputs[i] = nil;
 				}
@@ -289,15 +289,14 @@ LPCTestUtils {
 
 			if(this.doOutputsMatch(*outputs).not) {
 				// "no match".postln;
-				diffs = diffs.add(
-					this.makeDiff(this.stringToHexString(inputM.reduce('++')), *outputs)
-				);
+				diffs = diffs.add(this.makeDiff(inputM, *outputs));
 			} {
 				// "match".postln;
 				if(areAlphabetsEqual) {
 					// Eat up extra repetitions when possible.
-					while { (reps[0] > 0) && (reps[1] > 0) } {
-						reps = reps - 1;
+					var min = reps.minItem;
+					reps = reps - min;
+					min.do {
 						this.incrementAlphabetCount(ctrs[0], strlen, alphSizes[0]);
 						this.incrementAlphabetCount(ctrs[1], strlen, alphSizes[1]);
 						this.incrementAlphabetCount(ctrM, strlen, alphSizeM);
@@ -401,8 +400,9 @@ LPCTestUtils {
 	*makeDiff {
 		arg input, data1, data2;
 
-		data1 = data1!?_[\out];
-		data2 = data2!?_[\out];
+		input = this.stringToHexString(input.reduce('++'));
+		data1 = data1!?_.split($:);
+		data2 = data2!?_.split($:);
 
 		^[input, data1, data2];
 	}
@@ -459,18 +459,18 @@ LPCTestUtils {
 
 		line = line.split($\t);
 
-		^Dictionary[
-			\in -> line[0],
-			\out -> line[1].split($:),
-			\reps -> (line[2]!?_.asInteger?0)
-		];
+		if(line.size == 3) {
+			^[line[1], line[2].asInteger];
+		} {
+			^[line[1], 0];
+		}
 	}
 
 	*doOutputsMatch {
 		arg a, b;
 
-		a = (a!?_[\out]);
-		b = (b!?_[\out]);
+		a = a!?_.split($:);
+		b = b!?_.split($:);
 
 		if((a.size == 2) and: (b.size == 2)) {
 			if((a[1] == "Float") and: (a[1] == b[1])) {
