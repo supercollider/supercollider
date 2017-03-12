@@ -4,118 +4,109 @@
 * Original author: Brian Heim 2017-02-19
 * This code is licensed under the GPLv3
 *
-* Note: performance really matters for some of these things. I
-* did a lot of intense benchmarking and came up with low-level
-* functions and loops that are blazingly fast for SC. You, the
-* reader, are welcome to find faster methods if you desire.
+* Note: throughout this file the terms `alphabet` and `string` are used in their
+* formal-language senses. An `alphabet` is a set of abstract symbols (in this case,
+* SC Strings) and a `string` is a sequence of those symbols.
+*
+* Note: performance really matters for some of these things. I did a lot of
+* benchmarking and came up with low-level functions and loops that are blazingly
+* fast for SC. You are welcome to find faster methods.
 */
 
-/****** LAYOUT OF THIS FILE ******/
-/*
-----main methods----
+/****** LAYOUT OF THIS FILE *******
 
-evaluateAllStrings
-evaluateString
-compareFiles
-compareHeaders
-compareData
+----major methods----
+
+evaluateAllStrings                 // main method: take an alphabet, evaluate all
+                                   //   strings in its language, and write to a file.
+evaluateString                     // evaluate a string; called by evaluateAllStrings
+compareFiles                       // compare two files (typically test/validation)
+compareHeaders                     // compare the headers; called by compareFiles
+compareData                        // compare the data; called by compareFiles
 
 ----diff helper methods----
 
-writeDiffs
-explainDiff
-mkDataDiff
+writeDiffs                         // write an array of diffs to a file
+explainDiff                        // convert a diff to easily readable format
+makeDiff                           // construct a diff from two dictionaries
 
 ----misc helper methods----
 
-mkTestString
-safeOpenFile
-parseTestResult
-doOutputsMatch
-incrementAlphabetCount
+makeTestString                     // make a test string given an alphabet and counter
+safeOpenFile                       // open a file, throwing errors immediately on fail
+parseTestResult                    // turn a line read from a file into structured data
+doOutputsMatch                     // return true iff two test results are considered
+                                   //   matching. see implementation for special cases.
+incrementAlphabetCount             // increment an alphabet counter in-place
 
 ----data conversion methods----
 
-bytecodeToHexString
-bytecodeFromHexString
-stringToHexString
-stringFromHexString
+bytecodeToHexString                // Int8Array -> String of hex characters
+bytecodeFromHexString              // inverse of `bytecodeToHexString`
+stringToHexString                  // String of chars -> String of hex chars
+stringFromHexString                // inverse of `stringToHexString`
 
 ----header I/O methods----
 
-writeHeader
-readHeader
+writeHeader                        // write a header with test parameter info
+parseHeader                        // recover test data from a file's header
 
 ----header parsing helper methods----
 
-verifyFieldName
-parseBlockName
+verifyFieldName                    // these methods all perform specialized minor data
+parseBlockName                     //   validation. see implementations for details.
 parseAlphabetSize
 parseAlphabet
 parseStringLength
 parsePrefix
 parseSuffix
 parseTechnique
-*/
+
+************************************/
 
 LPCTestUtils {
 	const <compileErrorString = "!cErr";
 	const <runtimeErrorString = "!rErr";
 
-	// May need to update this, some strings like `0!99` can produce very long output
 	const <maxline = 1024;
 
-	// Tests all possible combinations-with-replacement of members of a given alphabet,
-	// writes the results to a file.
-	// The client may also specify an optional prefix and/or suffix to be added to each
-	// string before testing. Only strings of length `len` are evaluated.
-	// Note that the given alphabet will be sorted before beginning.
+	// Evaluates all strings in the language L = S^n, where S is the alphabet and
+  // n is the given string length `len`. For x in L, the string evaluated is
+	// {prefix}{x}{suffix}. Writes the results to a file. Note that the alphabet
+	// is sorted before beginning to ensure lexicographical order.
 	*evaluateAllStrings {
-		arg alphabet, len, prefix, suffix, filename, technique,
-		// If true, record consecutive identical results with a count, saving space
-		compress = true;
+		// If compress=true, record consecutive identical results with a count, saving space
+		arg alphabet, len, prefix, suffix, filename, technique, compress = true;
 
-		var alphabetSize = alphabet.size;
+		var alphabetSize = alphabet.size; // for optimization
 		var file, toTest, testResult;
-		// For use with compressed output.
-		var prevResult, repeatCount = 0;
-		// An array counter used to generate all possible strings deterministically.
-		// Has to be this way because a 32-bit int might overflow.
-		var counter = 0!len;
+		var prevResult, repeatCount = 0; // For use with compressed output.
+		var counter = 0!len; // Used to traverse the language in lexicographical order
 
-		// Sorting the alphabet beforehand provides uniformity
 		alphabet = alphabet.sort;
-
 		file = this.safeOpenFile(filename, "w");
 
 		protect {
 			// postf("%: Writing header\n", thisMethod);
-			this.writeHeader(
-				file, alphabet, len, prefix, suffix, technique
-			);
+			this.writeHeader(file, alphabet, len, prefix, suffix, technique);
 
 			postf("%: Writing data\n", thisMethod);
 
-			// Write the first result. We have to save `\n` because of the possibility
-			// for repeats. Also, reduce on an empty array returns nil, thus `?""`.
-			toTest = this.mkTestString(alphabet, counter);
+			// Written-out do-while.
+			toTest = this.makeTestString(alphabet, counter);
 			testResult = this.evaluateString(prefix++toTest++suffix, technique);
 			file.write(this.stringToHexString(toTest)++"\t"++testResult);
-
 			prevResult = testResult;
 
 			while { this.incrementAlphabetCount(counter, len, alphabetSize) } {
 				// counter.postln;
 
-				// no way to get here if we had an empty array, so we can discard `?""`
-				toTest = this.mkTestString(alphabet, counter);
+				toTest = this.makeTestString(alphabet, counter);
 				testResult = this.evaluateString(prefix++toTest++suffix, technique);
 
-				// Only do fancy compression techniques if asked. Otherwise just print
-				// a normal line.
 				if(compress) {
 					// If this is a new result, write out the previous repeat count (if
-					// there was one). Otherwise, just increment the repeat counter.
+					// there was one). Otherwise, increment the repeat counter.
 					if(testResult != prevResult) {
 						if(repeatCount > 0) {
 							file.write("\t"++repeatCount);
@@ -125,7 +116,7 @@ LPCTestUtils {
 						file.write("\n"++this.stringToHexString(toTest)++"\t"++testResult);
 						prevResult = testResult;
 					} {
-						repeatCount = repeatCount + 1;
+						repeatCount = repeatCount+1;
 					};
 				} {
 					file.write("\n"++this.stringToHexString(toTest)++"\t"++testResult);
@@ -133,14 +124,13 @@ LPCTestUtils {
 
 			}; // while
 
-			// Flush any leftover count.
+			// Flush leftover count.
 			if(compress && (repeatCount > 0)) {
 				file.write("\t"++repeatCount);
 			};
 
 			file.putChar($\n);
 		} {
-			// If anything bad happened while writing, protect by closing the file
 			file.close;
 		};
 	}
@@ -149,22 +139,23 @@ LPCTestUtils {
 		arg string, technique;
 		var r;
 
-		// clear all variables (a-z)
+		// clear all interpreter variables (a-z)
 		thisProcess.interpreter.clearAll;
 
 		^switch(technique,
 			\interpret, {
 				r = string.compile;
 				if(r.isNil) {
-					// compile error
+					// .compile returns nil if there was a compile error
 					compileErrorString;
 				} {
-					// interpret using .value
 					try {
 						r = r.value;
+						// if successful, record as string + class of produced object. This
+						// has drawbacks (see `doOutputsMatch`) but gives us enough resolution.
 						this.stringToHexString(r.asString)++":"++r.class;
 					} {
-						// catch any runtime error and make note of it
+						// .value may produce a runtime error
 						runtimeErrorString;
 					}
 				}
@@ -182,10 +173,11 @@ LPCTestUtils {
 		);
 	}
 
+	// Compare the contents of two files, and return a list of what was different.
 	*compareFiles {
 		arg filename1, filename2;
 
-		var file1, file2; // expected file, actual file
+		var file1, file2;
 		var diffs;
 
 		file1 = this.safeOpenFile(filename1, "r");
@@ -194,8 +186,8 @@ LPCTestUtils {
 		protect {
 			var header1, header2;
 
-			header1 = this.readHeader(file1);
-			header2 = this.readHeader(file2);
+			header1 = this.parseHeader(file1);
+			header2 = this.parseHeader(file2);
 
 			this.compareHeaders(header1, header2);
 
@@ -209,6 +201,7 @@ LPCTestUtils {
 		^diffs;
 	}
 
+	// Warn if any fields differ; fail if strlens are not equal.
 	*compareHeaders {
 		arg header1, header2;
 
@@ -231,113 +224,87 @@ LPCTestUtils {
 	*compareData {
 		arg file1, file2, alph1, alph2, strlen;
 
-		// individual file states
+		// Component states
 		var files = [file1, file2];
 		var alphs = [alph1, alph2];
 		var alphSizes = alphs.collect(_.size);
-		var ctrs = (0!strlen)!2;
-		var prevs = nil!2;
-		var reps = 0!2;
+		var ctrs = (0!strlen)!2; // string production counters
 		var outputs = nil!2;
-		var inputs;
+		var prevOutputs = nil!2;
+		var reps = 0!2; // repetition counters
 
-		// master state variables
-
-		// alphM is the "master alphabet" - a sorted array of the unique
-		// strings from the alphabet.
+		// Master state (suffix `M` = `master`)
+		// Necessary for the case when alphabets differ in size.
 		var alphM = alphs.flatten(1).collect(_.asSymbol).asSet.asArray
 		              .collect(_.asString).sort;
 		var alphSizeM = alphM.size;
 		var ctrM = 0!strlen;
-		var inputM;
 
-		// overall control
+		// Overall control
 		var hasNext = true;
 		var diffs = [];
+		var areAlphabetsEqual = alph1 == alph2; // Can optimize if equal
 
-		// we can make some time-saving assumptions if alphabets are equal
-		var areAlphabetsEqual = alph1 == alph2;
-
-		// inputs.postln;
 		// alphM.postln;
 
+		// Stop when the master alphabet has been exhausted.
 		while { hasNext } {
-			// Load in the input strings for all three alphabets.
-			inputs = alphs.collect({ |alph, i| alph[ctrs[i]] });
-			inputM = alphM[ctrM];
+			var inputs = alphs.collect({ |alph, i| alph[ctrs[i]] });
+			var inputM = alphM[ctrM];
 
-			// Determine what each file has for its output for the current
-			// master alphabet state. The master alphabet will always take
-			// at least as many cycles to get to one file's state as that
-			// file itself will, so if they don't match right now, we just
-			// have to wait for it to catch up. This is guaranteed by
-			// sorting the alphabets.
-			outputs = inputs.collect({
+			// Get each file's output for the current master input. If a file's alphabet doesn't
+			// include the string, use `nil`. Since alphabets are sorted in lexicographical order,
+			// component alphabets can only skip ahead of the master alphabet's order.
+			inputs.do({
 				arg input, i;
 
 				// postf("here: % %\n", input, inputM);
-				// If this is an input for which this file has a recorded,
-				// gather it, else return nil.
 				if(inputM == input) {
 					// "inFirstIf".postln;
 					this.incrementAlphabetCount(ctrs[i], strlen, alphSizes[i]);
 
-					// If we're repeating an input, just decrease the counter
-					// and return the last result. If not, get the next line
-					// and parse it.
+					// If we're repeating an input, just decrease the repetition counter and return
+					// the last result. If not, parse the next line.
 					if(reps[i] > 0) {
 						reps[i] = reps[i]-1;
 					} {
-						var line, data;
+						var line = files[i].getLine(this.maxline);
 
-						line = files[i].getLine(this.maxline);
 						if(line.size >= (this.maxline-1)) {
-							"compareData: maxline characters read from file %: %"
-							  .format(files[i], line).warn;
+							"compareData: maxline characters read; increase maxline in LPCTestUtils.\n"
+							"File, line: %, %".format(files[i], line).warn;
 						};
 
-						data = this.parseTestResult(line);
-						reps[i] = data[\reps];
-						prevs[i] = data;
+						prevOutputs[i] = this.parseTestResult(line);
+						reps[i] = prevOutputs[i][\reps];
 					};
 
-					prevs[i];
+					outputs[i] = prevOutputs[i];
 				} {
-					nil;
+					outputs[i] = nil;
 				}
 			});
 
 			// outputs.postln;
 
-			// If the outputs don't match (either the values are wrong or
-			// one input is missing from the other file) then record it.
 			if(this.doOutputsMatch(*outputs).not) {
 				// "no match".postln;
 				diffs = diffs.add(
-					this.mkDataDiff(
-						this.stringToHexString(inputM.reduce('++')),
-						*outputs
-					)
+					this.makeDiff(this.stringToHexString(inputM.reduce('++')), *outputs)
 				);
 			} {
 				// "match".postln;
-				// if the outputs matched and alphabets are equal
 				if(areAlphabetsEqual) {
-					// "inAlphabetsAreEqual".postln;
+					// Eat up extra repetitions when possible.
 					while { (reps[0] > 0) && (reps[1] > 0) } {
-						// While both reps are greater than 0, we know that the
-						// next outputs are going to be equal. Decrease the reps
-						// and increment the counters.
 						reps = reps - 1;
 						this.incrementAlphabetCount(ctrs[0], strlen, alphSizes[0]);
 						this.incrementAlphabetCount(ctrs[1], strlen, alphSizes[1]);
 						this.incrementAlphabetCount(ctrM, strlen, alphSizeM);
 					};
-					// "endOfIf".postln;
 				}
 			};
 
-			// Stop when the master alphabet has been exhausted.
 			hasNext = this.incrementAlphabetCount(ctrM, strlen, alphSizeM);
 		};
 
@@ -431,8 +398,7 @@ LPCTestUtils {
 		);
 	}
 
-	// Formats input and results data into a 3-tuple of input and outputs
-	*mkDataDiff {
+	*makeDiff {
 		arg input, data1, data2;
 
 		data1 = data1!?_[\out];
@@ -445,9 +411,8 @@ LPCTestUtils {
 	///// MISCELLANEOUS HELPER METHODS /////
 	////////////////////////////////////////
 
-	// Given an alphabet and indexing counter, return a string to test.
 	// ex.: ["A", "B", "C"] -> [2,0,1] => "CAB"
-	*mkTestString {
+	*makeTestString {
 		arg alphabet, counter;
 		// Since reduce on an empty array returns nil, `?""` is a safeguard.
 		^alphabet[counter].reduce('++')?"";
@@ -477,7 +442,9 @@ LPCTestUtils {
 		try {
 			file = File.new(filename, mode);
 		} {
-			Error("%: Failed while opening file: %.".format(thisMethod, filename.quote)).throw;
+			arg e;
+			"ERROR: %: Failed while opening file: %\n".postf(thisMethod, filename.quote);
+			e.throw;
 		};
 
 		if(file.isOpen.not) {
@@ -487,7 +454,6 @@ LPCTestUtils {
 		^file;
 	}
 
-	// Breaks a line into input, output, and (optional) number of repetitions
 	*parseTestResult {
 		arg line;
 
@@ -500,7 +466,6 @@ LPCTestUtils {
 		];
 	}
 
-	// Returns true IFF the two results are equal in their result outputs.
 	*doOutputsMatch {
 		arg a, b;
 
@@ -520,17 +485,16 @@ LPCTestUtils {
 		^a == b;
 	}
 
-	// Given an alphabet counter (array of indexing integers), increment by 1.
 	// Returns `false` if there is an overflow. Modifies the array in-place!
 	*incrementAlphabetCount {
-		arg ctr, len, n; // the counter array, string length, and alphabet size (n)
+		arg ctr, len, n;
 
 		// I benchmarked this pretty hard, but there might be a better way! - Brian
 		while {len > 0} {
 			len = len-1;
 			ctr[len] = ctr[len] + 1;
 			/*if(len == 0) {
-			"incrementAlphabetCount: at %\n".postf(ctr);
+			"incrementAlphabetCount: at %\n".postf(ctr); // progress updates
 			};*/
 			if(ctr[len] != n) {^true} {ctr[len] = 0};
 		};
@@ -542,7 +506,6 @@ LPCTestUtils {
 	///// DATA CONVERSION METHODS /////
 	///////////////////////////////////
 
-	// Converts an input 8-bit value to an ASCII string representing its hex value.
 	*bytecodeToHexString {
 		arg bytes;
 
@@ -557,7 +520,6 @@ LPCTestUtils {
 		^hexString;
 	}
 
-	// Inverse of bytecodeToHexString
 	*bytecodeFromHexString {
 		arg hexString;
 
@@ -571,8 +533,6 @@ LPCTestUtils {
 		^bytes;
 	}
 
-	// Converts an input String to a String representing its hex ASCII values.
-	// The output string is twice the length of the input.
 	*stringToHexString {
 		arg string;
 
@@ -589,7 +549,6 @@ LPCTestUtils {
 		^hexString;
 	}
 
-	// Inverse of stringToHexString
 	*stringFromHexString {
 		arg hexString;
 
@@ -607,7 +566,6 @@ LPCTestUtils {
 	///// HEADER INPUT/OUTPUT METHODS /////
 	///////////////////////////////////////
 
-	// given proper input, creates a header for the test file format used in these tests
 	*writeHeader {
 		arg file, alphabet, stringLength, prefix, suffix, technique, stringCount;
 
@@ -615,7 +573,7 @@ LPCTestUtils {
 
 		alphabetString = alphabet.collect(this.stringToHexString(_)).join(",");
 
-		// data validation: BEGIN
+		// data validation
 		if(alphabet.isKindOf(Array).not) {
 			Error("%: alphabet should be an array".format(thisMethod)).throw;
 		};
@@ -637,7 +595,6 @@ LPCTestUtils {
 		if(technique.isKindOf(Symbol).not) {
 			Error("%: technique should be a symbol".format(thisMethod)).throw;
 		};
-		// data validation: END
 
 		file.write(
 			"HEAD\n"
@@ -658,9 +615,8 @@ LPCTestUtils {
 		);
 	}
 
-	// Does pretty hefty validation on the header format. Validation is performed
-	// in the parsing subroutines. Returns results in a Dictionary.
-	*readHeader {
+	// Returns results in a Dictionary.
+	*parseHeader {
 		arg file;
 
 		var result = Dictionary[];

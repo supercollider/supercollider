@@ -1,7 +1,7 @@
 // TestLPCTestUtils.sc
 // Brian Heim
 //
-// Tests for the LPCTestUtils class.
+// Tests for the LPCTestUtils class. Does not have full coverage yet.
 
 TestLPCTestUtils : UnitTest {
 	var afile, efile;
@@ -83,7 +83,7 @@ TestLPCTestUtils : UnitTest {
 	test_compareData_noDiff_oneEntry {
 		// equality tests for a single entry
 		var input = "6567";
-		var alph = [LPCTestUtils.stringFromHexString(input).postln];
+		var alph = [LPCTestUtils.stringFromHexString(input)];
 		var strlen = 1;
 		var singleEntryList = [
 			"6567\t0123:Symbol",
@@ -350,9 +350,9 @@ TestLPCTestUtils : UnitTest {
 		}
 	}
 
-	test_readHeader_success {
+	test_parseHeader_success {
 		var header = Dictionary[];
-		var readHeader;
+		var parsedHeader;
 
 		header[\alphSize] = 2;
 		header[\alph] = ["AB", "CD"];
@@ -372,14 +372,14 @@ TestLPCTestUtils : UnitTest {
 
 		afile.seek(0);
 
-		readHeader = LPCTestUtils.readHeader(afile);
+		parsedHeader = LPCTestUtils.parseHeader(afile);
 
 		header.keys.do {
 			arg key;
-			this.assertEquals(header[key], readHeader[key], "Written and read header should match for each key");
-			readHeader.removeAt(key);
+			this.assertEquals(header[key], parsedHeader[key], "Written and read header should match for each key");
+			parsedHeader.removeAt(key);
 		};
-		this.assertEquals(readHeader.keys, Set[], "Header read from file should have no remaining keys");
+		this.assertEquals(parsedHeader.keys, Set[], "Header read from file should have no remaining keys");
 		this.tearDownParserFile;
 	}
 

@@ -5,8 +5,6 @@ AbstractLPCBrutalTest : UnitTest {
 	const <correctSuffix = "_correct";
 	const <diffSuffix = "_diff";
 
-	// alphabets and associated data used in testing
-
 	// Dictionary of alphabets (type Dictionary<Symbol, [String]>)
 	classvar <>alphabets;
 
@@ -14,8 +12,24 @@ AbstractLPCBrutalTest : UnitTest {
 	// (type Dictionary<Symbol, [Integer]>)
 	classvar <>stringLengthsPerAlphabet;
 
-	// List of files that contain diffs to be printed when cleaning up.
+	// Filenames to be printed in final report.
 	classvar <>diffFilenames;
+
+	/**** ABSTRACT METHODS ****/
+
+	getAlphabets { ^this.subclassResponsibility(thisMethod) }
+
+	getStringLengthsPerAlphabet { ^this.subclassResponsibility(thisMethod) }
+
+	evaluationTechnique { ^this.subclassResponsibility(thisMethod) }
+
+	// Relative to working path. Created if missing.
+	outputDir { ^this.subclassResponsibility(thisMethod) }
+
+	// Should return `false` for testing.
+	makingValidationFiles { ^this.subclassResponsibility(thisMethod) }
+
+	/**** IMPLEMENTED METHODS ****/
 
 	*new { ^super.new.initTestConditions; }
 
@@ -24,22 +38,8 @@ AbstractLPCBrutalTest : UnitTest {
 		stringLengthsPerAlphabet = this.getStringLengthsPerAlphabet();
 	}
 
-	getAlphabets { ^this.subclassResponsibility(thisMethod) }
-
-	getStringLengthsPerAlphabet { ^this.subclassResponsibility(thisMethod) }
-
-	evaluationTechnique { ^this.subclassResponsibility(thisMethod) }
-
-	// Output directory relative to working path. Will be created if
-	// it doesn't already exist.
-	outputDir { ^this.subclassResponsibility(thisMethod) }
-
-	// Should return `true` if you want to generate validation files,
-	// and return `false` for ordinary testing.
-	makingValidationFiles { ^this.subclassResponsibility(thisMethod) }
-
 	// For a given alphabet, test name, prefix, and suffix, run all the tests on that
-	// alphabet for its requested string lengths. This method also constructs uniform filenames.
+	// alphabet for its requested string lengths.
 	runTestsOnAlphabet {
 		arg prefix, suffix, testMode, alphabetName;
 
@@ -50,12 +50,9 @@ AbstractLPCBrutalTest : UnitTest {
 
 		stringLengthsPerAlphabet[alphabetName].do {
 			arg len;
-
 			var filename = "%%_%_%".format(fullOutputDir, alphabetName, len, testMode);
 
-			if(this.makingValidationFiles) {
-				filename = filename ++ correctSuffix;
-			};
+			if(this.makingValidationFiles) { filename = filename++correctSuffix };
 
 			LPCTestUtils.evaluateAllStrings(
 				  alphabet: alphabets[alphabetName],
@@ -68,15 +65,15 @@ AbstractLPCBrutalTest : UnitTest {
 			);
 
 			if(this.makingValidationFiles.not) {
-				var diffs = LPCTestUtils.compareFiles(filename, filename ++ correctSuffix);
-				File.delete(filename);
+				var diffs = LPCTestUtils.compareFiles(filename, filename++correctSuffix);
+
 				this.checkDiffs(diffs, filename);
+				File.delete(filename);
 			}
-		};
+		}
 	}
 
-	// Respond to the diffs. If there are any, fail now and print a message.
-	// Otherwise, note that no diffs were found.
+	// If there were diffs, fail now and print a message.
 	checkDiffs {
 		arg diffs, filenameBase;
 
@@ -84,17 +81,14 @@ AbstractLPCBrutalTest : UnitTest {
 			var diffFilename = filenameBase ++ diffSuffix;
 
 			LPCTestUtils.writeDiffs(diffs, diffFilename);
-
 			this.noteFailure(thisMethod, "Diffs were found between test and validation files", diffFilename);
 		} {
 			postf("No diffs found.\n");
 		}
 	}
 
-	// Give a nicely formatted string to inform the user what test mode we started.
 	printTestMode {
 		arg mode;
-
 		"".postln;
 		"Running test mode %".format(mode.quote).underlined.postln;
 	}
@@ -116,11 +110,11 @@ AbstractLPCBrutalTest : UnitTest {
 	// Note failures so that diff filenames can be printed at the end of the run.
 	noteFailure {
 		arg method, message, filename;
-
 		this.failed(method, message);
-
 		diffFilenames = diffFilenames !? _.add(filename) ? [filename];
 	}
+
+	/**** Overloaded methods from UnitTest ****/
 
 	// Wrap .run to allow overriding of alphabet string lengths
 	*run {
@@ -139,11 +133,7 @@ AbstractLPCBrutalTest : UnitTest {
 
 		if(diffFilenames.notNil) {
 			"\nSome validation tests did not pass.\nThe following output files were generated:\n".postln;
-
-			diffFilenames.do {
-				arg filename;
-				"\t%\n".postf(filename);
-			}
+			diffFilenames.do("\t%\n".postf(_));
 		}
 	}
 
