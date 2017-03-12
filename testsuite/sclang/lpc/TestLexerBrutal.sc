@@ -59,8 +59,5 @@ TestLexerBrutal : AbstractLPCBrutalTest {
 
 	// mini alphabet tests
 	test_mini_basic              { this.runTestsOnAlphabet("",          "",          "basic",              \mini) }
-	test_mini_blockCommentPrefix { this.runTestsOnAlphabet("/*",        "",          "blockCommentPrefix", \mini) }
-	test_mini_semanticPrefix     { this.runTestsOnAlphabet("\\unique;", "",          "semanticPrefix",     \mini) }
-	test_mini_semanticSuffix     { this.runTestsOnAlphabet("",          ";\\unique", "semanticSuffix",     \mini) }
 
 }
