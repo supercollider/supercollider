@@ -138,12 +138,7 @@ TestParserBrutal : AbstractLPCBrutalTest {
 	// given in stringLengthsPerAlphabet
 	runParserTestsForAlphabets {
 		arg prefix, suffix, testMode;
-
-		stringLengthsPerAlphabet.keysDo {
-			arg key;
-			this.runTestsOnAlphabet(prefix, suffix, testMode, key);
-		};
-
+		stringLengthsPerAlphabet.keysDo( this.runTestsOnAlphabet(prefix, suffix, testMode, _ ) );
 	}
 
 	// Wraps runParserTestsForAlphabets in a test scheme that tests behavior
@@ -162,11 +157,7 @@ TestParserBrutal : AbstractLPCBrutalTest {
 		Process.tailCallOptimize_(tco);
 	}
 
-	test_basic {
-		this.runParserTestsTogglingTCO("", "", "basic", true);
-	}
+	test_basic { this.runParserTestsTogglingTCO("", "", "basic", true) }
 
-	test_curlyBraceEnclose {
-		this.runParserTestsTogglingTCO("{", "}", "curlyEnclose", true);
-	}
+	test_curlyBraceEnclose { this.runParserTestsTogglingTCO("{", "}", "curlyEnclose", true) }
 }

@@ -23,7 +23,10 @@ TestLexerTargetedBrutal : AbstractLPCBrutalTest {
 			\num -> ["0", "1", "9", "pi", "+", "-", ".", "e"],
 
 			// for accidental notation parsing (e.g., 1sss, 1s30)
-			\acc -> ["0", "1", "9", "s", "b"]
+			\acc -> ["0", "1", "9", "s", "b"],
+
+			// for comments (line and block)
+			\comment -> ["/", "*", "\n", "A"]
 		];
 	}
 
@@ -31,43 +34,42 @@ TestLexerTargetedBrutal : AbstractLPCBrutalTest {
 		^stringLengthsPerAlphabet ? Dictionary[
 			\alnum -> [1,2,3], // 0 and all prefixes covered by lexer tests
 			\num -> [4,5], // 0..3 covered by alnum
-			\acc -> [4,5,6] // 0..3 covered by alnum
+			\acc -> [4,5,6], // 0..3 covered by alnum
+			\comment -> [5,6,7] // 0..4 covered by lexer tests
 		];
 	}
 
-	runTargetedLexerTests {
-		arg prefix, suffix, testMode, alphName;
-
-		this.runTestsOnAlphabet(prefix, suffix, testMode, alphName);
-	}
-
 	test_alnum_basic {
-		this.runTargetedLexerTests("", "", "basic", \alnum);
+		this.runTestsOnAlphabet("", "", "basic", \alnum);
 	}
 
 	test_alnum_hexPrefixes {
-		this.runTargetedLexerTests("0x", "", "hex", \alnum);
-		this.runTargetedLexerTests("-0x", "", "hexNeg", \alnum);
+		this.runTestsOnAlphabet("0x", "", "hex", \alnum);
+		this.runTestsOnAlphabet("-0x", "", "hexNeg", \alnum);
 	}
 
 	test_alnum_radixPrefixes {
-		this.runTargetedLexerTests("1r", "", "radix1", \alnum);
-		this.runTargetedLexerTests("10r", "", "radix10", \alnum);
-		this.runTargetedLexerTests("12r", "", "radix12", \alnum);
-		this.runTargetedLexerTests("36r", "", "radix36", \alnum);
-		this.runTargetedLexerTests("37r", "", "radix37", \alnum);
-		this.runTargetedLexerTests("-10r", "", "radix10neg", \alnum);
-		this.runTargetedLexerTests("-12r", "", "radix12neg", \alnum);
+		this.runTestsOnAlphabet("1r", "", "radix1", \alnum);
+		this.runTestsOnAlphabet("10r", "", "radix10", \alnum);
+		this.runTestsOnAlphabet("12r", "", "radix12", \alnum);
+		this.runTestsOnAlphabet("36r", "", "radix36", \alnum);
+		this.runTestsOnAlphabet("37r", "", "radix37", \alnum);
+		this.runTestsOnAlphabet("-10r", "", "radix10neg", \alnum);
+		this.runTestsOnAlphabet("-12r", "", "radix12neg", \alnum);
 	}
 
 	test_num_basic {
-		this.runTargetedLexerTests("", "", "basic", \num);
-		this.runTargetedLexerTests("-", "", "basicNeg", \num);
+		this.runTestsOnAlphabet("", "", "basic", \num);
+		this.runTestsOnAlphabet("-", "", "basicNeg", \num);
 	}
 
 	test_acc_basic {
-		this.runTargetedLexerTests("", "", "basic", \acc);
-		this.runTargetedLexerTests("-", "", "basicNeg", \acc);
+		this.runTestsOnAlphabet("", "", "basic", \acc);
+		this.runTestsOnAlphabet("-", "", "basicNeg", \acc);
+	}
+
+	test_comment_basic {
+		this.runTestsOnAlphabet("", "", "basic", \comment);
 	}
 
 }

@@ -50,42 +50,15 @@ TestLexerBrutal : AbstractLPCBrutalTest {
 
 	runLexerTests {
 		arg prefix, suffix, testMode;
-
-		stringLengthsPerAlphabet.keysDo {
-			arg key;
-			this.runTestsOnAlphabet(prefix, suffix, testMode, key);
-		}
+		stringLengthsPerAlphabet.keysDo( this.runTestsOnAlphabet(prefix, suffix, testMode, _ ) );
 	}
 
-	test_basic {
-		this.runLexerTests("", "", "basic");
-	}
+	test_basic { this.runLexerTests("", "", "basic") }
 
-	test_lineCommentPrefix {
-		this.runLexerTests("//", "", "lineCommentPrefix");
-	}
+	test_blockCommentPrefix {	this.runLexerTests("/*", "", "blockCommentPrefix") }
 
-	test_blockCommentPrefix {
-		this.runLexerTests("/*", "", "blockCommentPrefix");
-	}
+	test_semanticPrefix { this.runLexerTests("\\unique;", "", "semanticPrefix") }
 
-	test_blockCommentSuffix {
-		this.runLexerTests("", "*/", "blockCommentSuffix");
-	}
+	test_semanticSuffix { this.runLexerTests("", ";\\unique", "semanticSuffix") }
 
-	test_blockCommentEnclose {
-		this.runLexerTests("/*", "*/", "blockCommentEnclose");
-	}
-
-	test_semanticPrefix {
-		this.runLexerTests("\\unique;", "", "semanticPrefix");
-	}
-
-	test_semanticSuffix {
-		this.runLexerTests("", ";\\unique", "semanticSuffix");
-	}
-
-	test_blockCommentEncloseSemanticSuffix {
-		this.runLexerTests("/*", "*/\\unique", "blockCommentEncloseSemanticSuffix");
-	}
 }
