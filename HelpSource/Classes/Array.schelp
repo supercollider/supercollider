@@ -90,7 +90,7 @@ copymethod:: ArrayedCollection -wrapAt
 
 copymethod:: ArrayedCollection -foldAt
 
-copymethod:: ArrayedCollection -slice
+copymethod:: ArrayedCollection -clipPut
 
 method:: clipPut
 Put item at index, replacing what is there.
