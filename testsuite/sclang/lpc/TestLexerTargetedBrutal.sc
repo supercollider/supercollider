@@ -26,7 +26,7 @@ TestLexerTargetedBrutal : AbstractLPCBrutalTest {
 			\acc -> ["0", "1", "9", "s", "b"],
 
 			// for comments (line and block)
-			\comment -> ["/", "*", "\n", "A"]
+			\comment -> ["/", "*", "\n", "A", " "]
 		];
 	}
 
@@ -35,7 +35,7 @@ TestLexerTargetedBrutal : AbstractLPCBrutalTest {
 			\alnum -> [1,2,3], // 0 and all prefixes covered by lexer tests
 			\num -> [4,5], // 0..3 covered by alnum
 			\acc -> [4,5,6], // 0..3 covered by alnum
-			\comment -> [5,6,7] // 0..4 covered by lexer tests
+			\comment -> [5,6,7,8,9] // 0..4 covered by lexer tests
 		];
 	}
 
