@@ -6,11 +6,11 @@ AbstractLPCBrutalTest : UnitTest {
 	const <diffSuffix = "_diff";
 
 	// Dictionary of alphabets (type Dictionary<Symbol, [String]>)
-	classvar <>alphabets;
+	var <>alphabets;
 
 	// Dictionary of string lengths to test per alphabet
 	// (type Dictionary<Symbol, [Integer]>)
-	classvar <>stringLengthsPerAlphabet;
+	var <>stringLengthsPerAlphabet;
 
 	// Filenames to be printed in final report.
 	classvar <>diffFilenames;
@@ -129,15 +129,6 @@ AbstractLPCBrutalTest : UnitTest {
 	}
 
 	/**** Overloaded methods from UnitTest ****/
-
-	// Wrap .run to allow overriding of alphabet string lengths
-	*run {
-		arg reset = true, report = true, strlensPerAlphabet = nil;
-
-		this.stringLengthsPerAlphabet_(strlensPerAlphabet);
-
-		super.run(reset, report);
-	}
 
 	// Wrap .report to print a list of filenames when done
 	*report {
