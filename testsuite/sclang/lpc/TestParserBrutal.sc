@@ -134,30 +134,11 @@ TestParserBrutal : AbstractLPCBrutalTest {
 		];
 	}
 
-	// Runs the tests for all alphabets according to the string lengths
-	// given in stringLengthsPerAlphabet
-	runParserTestsForAlphabets {
-		arg prefix, suffix, testMode;
-		stringLengthsPerAlphabet.keysDo( this.runTestsOnAlphabet(prefix, suffix, testMode, _ ) );
-	}
+	test_full_basic { this.runTestsTogglingTCO("", "", "basic", \full) }
+	test_small_basic { this.runTestsTogglingTCO("", "", "basic", \small) }
+	test_mini_basic { this.runTestsTogglingTCO("", "", "basic", \mini) }
 
-	// Wraps runParserTestsForAlphabets in a test scheme that tests behavior
-	// when tail-call optimization is both on and off.
-	runParserTestsTogglingTCO {
-		arg prefix, suffix, testMode;
-
-		var tco = Process.tailCallOptimize;
-
-		Process.tailCallOptimize_(true);
-		this.runParserTestsForAlphabets(prefix, suffix, testMode++"TCO");
-
-		Process.tailCallOptimize_(false);
-		this.runParserTestsForAlphabets(prefix, suffix, testMode++"NoTCO");
-
-		Process.tailCallOptimize_(tco);
-	}
-
-	test_basic { this.runParserTestsTogglingTCO("", "", "basic", true) }
-
-	test_curlyBraceEnclose { this.runParserTestsTogglingTCO("{", "}", "curlyEnclose", true) }
+	test_full_curlyBraceEnclose { this.runTestsTogglingTCO("{", "}", "curlyEnclose", \full) }
+	test_small_curlyBraceEnclose { this.runTestsTogglingTCO("{", "}", "curlyEnclose", \small) }
+	test_mini_curlyBraceEnclose { this.runTestsTogglingTCO("{", "}", "curlyEnclose", \mini) }
 }
