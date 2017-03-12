@@ -79,10 +79,10 @@ AbstractLPCBrutalTest : UnitTest {
 		var tco = Process.tailCallOptimize;
 
 		Process.tailCallOptimize_(true);
-		this.runTestsOnAlphabet(prefix, suffix, testMode++"TCO");
+		this.runTestsOnAlphabet(prefix, suffix, testMode++"TCO", alphabetName);
 
 		Process.tailCallOptimize_(false);
-		this.runTestsOnAlphabet(prefix, suffix, testMode++"NoTCO");
+		this.runTestsOnAlphabet(prefix, suffix, testMode++"NoTCO", alphabetName);
 
 		Process.tailCallOptimize_(tco);
 	}
