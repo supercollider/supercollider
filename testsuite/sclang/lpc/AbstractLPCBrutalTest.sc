@@ -73,6 +73,20 @@ AbstractLPCBrutalTest : UnitTest {
 		}
 	}
 
+	runTestsTogglingTCO {
+		arg prefix, suffix, testMode, alphabetName;
+
+		var tco = Process.tailCallOptimize;
+
+		Process.tailCallOptimize_(true);
+		this.runTestsOnAlphabet(prefix, suffix, testMode++"TCO");
+
+		Process.tailCallOptimize_(false);
+		this.runTestsOnAlphabet(prefix, suffix, testMode++"NoTCO");
+
+		Process.tailCallOptimize_(tco);
+	}
+
 	// If there were diffs, fail now and print a message.
 	checkDiffs {
 		arg diffs, filenameBase;

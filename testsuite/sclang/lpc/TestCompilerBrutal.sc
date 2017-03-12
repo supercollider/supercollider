@@ -361,55 +361,44 @@ TestCompilerBrutal : AbstractLPCBrutalTest {
 		];
 	}
 
-	runCompilerTests {
-		arg prefix, suffix, testMode, alphName;
-
-		var tco = Process.tailCallOptimize;
-		Process.tailCallOptimize_(true);
-		this.runTestsOnAlphabet(prefix, suffix, testMode++"TCO", alphName);
-		Process.tailCallOptimize_(false);
-		this.runTestsOnAlphabet(prefix, suffix, testMode++"NoTCO", alphName);
-		Process.tailCallOptimize_(tco);
-	}
-
 	// tests for infix alphabet
-	test_infix_basic { this.runCompilerTests("a ", " b", "basic", \infix); }
-	test_infix_vars { this.runCompilerTests("var lh, rh; lh ", " rh", "vardefs", \infix); }
+	test_infix_basic { this.runTestsTogglingTCO("a ", " b", "basic", \infix); }
+	test_infix_vars { this.runTestsTogglingTCO("var lh, rh; lh ", " rh", "vardefs", \infix); }
 
 	// tests for wordOps alphabet
-	test_wordOps_oneArg { this.runCompilerTests("a.", "(b)", "oneArg", \wordOps); }
-	test_wordOps_twoArgs { this.runCompilerTests("a.", "(b, c)", "twoArgs", \wordOps); }
+	test_wordOps_oneArg { this.runTestsTogglingTCO("a.", "(b)", "oneArg", \wordOps); }
+	test_wordOps_twoArgs { this.runTestsTogglingTCO("a.", "(b, c)", "twoArgs", \wordOps); }
 
 	// tests for symbolOps alphabet
-	test_symbolOps_adverbs { this.runCompilerTests("a ", ".t b", "adverbs", \symbolOps); }
+	test_symbolOps_adverbs { this.runTestsTogglingTCO("a ", ".t b", "adverbs", \symbolOps); }
 
 	// tests for literals alphabet
-	test_literals_basic { this.runCompilerTests("", "", "basic", \literals); }
+	test_literals_basic { this.runTestsTogglingTCO("", "", "basic", \literals); }
 
 	// tests for keywords alphabet
-	test_keywords_basic { this.runCompilerTests("", "", "basic", \keywords); }
+	test_keywords_basic { this.runTestsTogglingTCO("", "", "basic", \keywords); }
 
 	// tests for classes alphabet
-	test_classes_basic { this.runCompilerTests("", "", "basic", \classes); }
+	test_classes_basic { this.runTestsTogglingTCO("", "", "basic", \classes); }
 
 	// tests for control alphabet
-	test_control_oneArg { this.runCompilerTests("", "(a)", "oneArg", \control); }
-	test_control_twoArgs { this.runCompilerTests("", "(a, b)", "twoArgs", \control); }
-	test_control_threeArgs { this.runCompilerTests("", "(a, b, c)", "threeArgs", \control); }
+	test_control_oneArg { this.runTestsTogglingTCO("", "(a)", "oneArg", \control); }
+	test_control_twoArgs { this.runTestsTogglingTCO("", "(a, b)", "twoArgs", \control); }
+	test_control_threeArgs { this.runTestsTogglingTCO("", "(a, b, c)", "threeArgs", \control); }
 
 	test_control_twoFuncArgs {
-		this.runCompilerTests("", "({a.post}, {b.post})", "twoFuncArgs", \control);
+		this.runTestsTogglingTCO("", "({a.post}, {b.post})", "twoFuncArgs", \control);
 	}
 
 	test_control_threeFuncArgs {
-		this.runCompilerTests("", "({a.post}, {b.post}, {c.post})", "threeFuncArgs", \control);
+		this.runTestsTogglingTCO("", "({a.post}, {b.post}, {c.post})", "threeFuncArgs", \control);
 	}
 
 	// tests for unique statements
-	test_unique_basic { this.runCompilerTests("", "", "basic", \unique); }
+	test_unique_basic { this.runTestsTogglingTCO("", "", "basic", \unique); }
 
 	// tests for allChars alphabet
-	test_allChars_basic { this.runCompilerTests("", "", "basic", \allChars); }
-	test_allChars_infix { this.runCompilerTests("a ", " b", "infix", \allChars); }
+	test_allChars_basic { this.runTestsTogglingTCO("", "", "basic", \allChars); }
+	test_allChars_infix { this.runTestsTogglingTCO("a ", " b", "infix", \allChars); }
 
 }
