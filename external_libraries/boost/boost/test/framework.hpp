@@ -236,6 +236,7 @@ BOOST_TEST_DECL void                test_unit_aborted( test_unit const& );
 namespace impl {
 // exclusively for self test
 BOOST_TEST_DECL void                setup_for_execution( test_unit const& );
+BOOST_TEST_DECL void                setup_loggers( );
 } // namespace impl
 
 // ************************************************************************** //

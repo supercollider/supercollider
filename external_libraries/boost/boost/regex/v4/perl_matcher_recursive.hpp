@@ -289,11 +289,13 @@ bool perl_matcher<BidiIterator, Allocator, traits>::match_alt()
          BidiIterator oldposition(position);
          const re_syntax_base* old_pstate = jmp->alt.p;
          pstate = pstate->next.p;
+         bool oldcase = icase;
          m_have_then = false;
          if(!match_all_states())
          {
             pstate = old_pstate;
             position = oldposition;
+            icase = oldcase;
             if(m_have_then)
             {
                m_can_backtrack = true;
@@ -1035,6 +1037,20 @@ bool perl_matcher<BidiIterator, Allocator, traits>::match_then()
    m_have_then = true;
    return false;
 }
+
+template <class BidiIterator, class Allocator, class traits>
+bool perl_matcher<BidiIterator, Allocator, traits>::match_toggle_case()
+{
+   // change our case sensitivity:
+   bool oldcase = this->icase;
+   this->icase = static_cast<const re_case*>(pstate)->icase;
+   pstate = pstate->next.p;
+   bool result = match_all_states();
+   this->icase = oldcase;
+   return result;
+}
+
+
 
 template <class BidiIterator, class Allocator, class traits>
 bool perl_matcher<BidiIterator, Allocator, traits>::skip_until_paren(int index, bool have_match)

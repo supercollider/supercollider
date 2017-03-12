@@ -320,8 +320,10 @@ public:
                     section_end_addr = section_begin_addr + image_section_header.SizeOfRawData;
                 }
             }
-            BOOST_ASSERT(section_begin_addr);
-            BOOST_ASSERT(section_end_addr);
+            
+            // returning empty result if section was not found
+            if(section_begin_addr == 0 || section_end_addr == 0)
+                return ret;
         }
 
         const exports_t exprt = exports(h);

@@ -442,8 +442,16 @@ namespace boost{ namespace math{
 
 #endif
 
-#endif // BOOST_MATH_TOOLS_CONFIG_HPP
+//
+// Thread local storage:
+//
+#if !defined(BOOST_NO_CXX11_THREAD_LOCAL) && !defined(BOOST_INTEL)
+#  define BOOST_MATH_THREAD_LOCAL thread_local
+#else
+#  define BOOST_MATH_THREAD_LOCAL
+#endif
 
+#endif // BOOST_MATH_TOOLS_CONFIG_HPP
 
 
 
