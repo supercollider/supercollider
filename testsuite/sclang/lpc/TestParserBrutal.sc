@@ -143,8 +143,6 @@ TestParserBrutal : AbstractLPCBrutalTest {
 	test_small_block          { this.runTestsTogglingTCO("{",     "}", "block",           \small) }
 
 	// mini alphabet tests
-	test_mini_basic           { this.runTestsTogglingTCO("",      "",  "basic",           \mini) }
-	test_mini_block           { this.runTestsTogglingTCO("{",     "}", "block",           \mini) }
 	test_mini_varPrefix       { this.runTestsTogglingTCO("var ",  "",  "varPrefix",       \mini) }
 	test_mini_blockVarPrefix  { this.runTestsTogglingTCO("{var ", "}", "blockVarPrefix",  \mini) }
 	test_mini_blockArgPrefix  { this.runTestsTogglingTCO("{arg ", "}", "blockArgPrefix",  \mini) }
