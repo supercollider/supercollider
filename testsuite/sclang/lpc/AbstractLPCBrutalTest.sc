@@ -45,7 +45,7 @@ AbstractLPCBrutalTest : UnitTest {
 
 		var fullOutputDir = this.outputDir.resolveRelative;
 
-		this.printTestMode(testMode);
+		this.printTestMode(testMode, alphabetName);
 		this.createOutputDir();
 
 		stringLengthsPerAlphabet[alphabetName].do {
@@ -102,9 +102,9 @@ AbstractLPCBrutalTest : UnitTest {
 	}
 
 	printTestMode {
-		arg mode;
+		arg mode, alphName;
 		"".postln;
-		"Running test mode %".format(mode.quote).underlined.postln;
+		"Running test mode % on alphabet %".format(mode.quote, alphName.asString.quote).underlined.postln;
 	}
 
 	// Force creation of this test's output directory
