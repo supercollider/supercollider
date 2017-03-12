@@ -11,10 +11,7 @@ Rest : Operand  {
 	isRest { ^true }
 
 	prescribeRest { |event|
-		event.put(\isRest, true);
-		if(value.notNil) {
-			event.put(\dur, value.(event))
-		}
+		event.put(\isRest, true)
 	}
 
 
