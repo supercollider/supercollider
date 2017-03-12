@@ -9,10 +9,3 @@ TestLexerTargetedBrutal.run;
 TestParserBrutal.run;
 TestCompilerBrutal.run;
 )
-
-(
-// The interpreter sometimes crashes during these tests for me.
-// Here is the code to run them:
-TestLexerBrutal.new.test_semanticSuffix;
-TestLexerBrutal.new.test_blockCommentEncloseSemanticSuffix;
-)

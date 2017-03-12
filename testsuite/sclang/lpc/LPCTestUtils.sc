@@ -325,9 +325,9 @@ LPCTestUtils {
 		var missingFromFile2 = [];
 		var realDiffs = [];
 		var headers = [
-			"% entries were missing from file 1",
-			"% entries were missing from file 2",
-			"% entries were inconsistent"
+			"% entries were missing from the test file",
+			"% entries were missing from the validation file",
+			"% entries were different (test vs validation)"
 		];
 
 		diffs.do {
@@ -371,9 +371,9 @@ LPCTestUtils {
 		var explain = {
 			arg entry;
 
-			if(entry.isNil) {
+			if(entry.isNil, {
 				"(no entry)";
-			} {
+			}, {
 				switch(entry[0],
 					this.compileErrorString, "compile-error",
 					this.runtimeErrorString, "runtime-error",
@@ -387,7 +387,7 @@ LPCTestUtils {
 						}
 					}
 				);
-			};
+			}).quote;
 		};
 
 		^"%: % vs %".format(
