@@ -14,11 +14,14 @@ find_package(Qt5Qml)
 find_package(Qt5Quick)
 find_package(Qt5Sensors)
 find_package(Qt5Sql)
-find_package(Qt5WebKitWidgets)
+find_package(Qt5WebEngine)
+find_package(Qt5WebEngineWidgets)
 find_package(Qt5Widgets)
 
+find_program(QtWebEngineProcess NAMES QtWebEngineProcess PATHS "${QT_INSTALL_DIR}/bin/" "${QT_INSTALL_DIR}/libexec/" "${QT_INSTALL_DIR}/lib/QtWebEngineCore.framework/Helpers" NO_DEFAULT_PATH)
+
 set(QT_IDE_LIBRARIES
-    Qt5::Core Qt5::Concurrent Qt5::WebKitWidgets Qt5::OpenGL Qt5::PrintSupport Qt5::Sensors Qt5::Quick Qt5::Qml Qt5::Sql Qt5::Positioning)
+    Qt5::Core Qt5::Concurrent Qt5::WebEngineWidgets Qt5::OpenGL Qt5::PrintSupport Qt5::Sensors Qt5::Quick Qt5::Qml Qt5::Sql Qt5::Positioning)
 
 if(${CMAKE_COMPILER_IS_GNUCXX})
     add_definitions(-Wreorder)
@@ -329,6 +332,10 @@ if(APPLE)
     install(TARGETS SuperCollider
         DESTINATION ${scappbundlename}
         )
+
+    set(webengine_dir ${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Frameworks/QtWebEngineCore.framework/Helpers)
+    install(PROGRAMS ${QtWebEngineProcess} 
+        DESTINATION ${webengine_dir})
 
     # for processing into the plist:
     set_property(TARGET SuperCollider

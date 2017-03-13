@@ -29,10 +29,10 @@ namespace QtCollider {
 void WebPage::triggerAction ( WebAction action, bool checked )
 {
   switch ( action ) {
-    case QWebPage::Reload:
+    case QWebEnginePage::Reload:
       if( _delegateReload ) return;
       break;
-    case QWebPage::Copy:
+    case QWebEnginePage::Copy:
       // ignore text formatting, copy only plain text:
       QApplication::clipboard()->setText( selectedText() );
       return;
@@ -40,7 +40,7 @@ void WebPage::triggerAction ( WebAction action, bool checked )
       break;
   }
 
-  QWebPage::triggerAction( action, checked );
+  QWebEnginePage::triggerAction( action, checked );
 }
 
 void WebPage::javaScriptConsoleMessage ( const QString & msg, int line, const QString & src )

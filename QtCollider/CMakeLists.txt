@@ -5,8 +5,8 @@ set(required_qt_version 5.2)
 find_package(Qt5Core)
 find_package(Qt5Widgets)
 find_package(Qt5Network)
-find_package(Qt5WebKit)
-find_package(Qt5WebKitWidgets)
+find_package(Qt5WebEngine)
+find_package(Qt5WebEngineWidgets)
 find_package(Qt5PrintSupport)
 find_package(Qt5OpenGL)
 find_package(Qt5Sensors)
@@ -14,10 +14,12 @@ find_package(Qt5Quick)
 find_package(Qt5Qml)
 find_package(Qt5Sql)
 find_package(Qt5Positioning)
-mark_as_advanced(Qt5Concurrent_DIR Qt5Core_DIR Qt5Gui_DIR Qt5LinguistTools_DIR Qt5Location_DIR Qt5Network_DIR Qt5OpenGL_DIR Qt5Positioning_DIR Qt5PrintSupport_DIR Qt5Qml_DIR Qt5Quick_DIR Qt5Sensors_DIR Qt5Sql_DIR Qt5WebKitWidgets_DIR Qt5WebKit_DIR Qt5Widgets_DIR Qt5X11Extras_DIR)
+mark_as_advanced(Qt5Concurrent_DIR Qt5Core_DIR Qt5Gui_DIR Qt5LinguistTools_DIR Qt5Location_DIR Qt5Network_DIR Qt5OpenGL_DIR Qt5Positioning_DIR Qt5PrintSupport_DIR Qt5Qml_DIR Qt5Quick_DIR Qt5Sensors_DIR Qt5Sql_DIR Qt5WebEngineWidgets_DIR Qt5WebKit_DIR Qt5Widgets_DIR Qt5X11Extras_DIR)
+
+find_program(QtWebEngineProcess NAMES QtWebEngineProcess PATHS "${QT_INSTALL_DIR}/bin/" "${QT_INSTALL_DIR}/libexec/" "${QT_INSTALL_DIR}/lib/QtWebEngineCore.framework/Helpers" NO_DEFAULT_PATH)
 
 set (QT_COLLIDER_LIBS
-  Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::WebKit Qt5::WebKitWidgets Qt5::PrintSupport
+  Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network  Qt5::WebEngineWidgets Qt5::PrintSupport
   Qt5::OpenGL Qt5::Sensors Qt5::Quick Qt5::Qml Qt5::Sql Qt5::Positioning
   ${MATH_LIBRARY})
 
@@ -131,7 +133,7 @@ if(QT_COLLIDER_LANG_CLIENT)
 endif()
 
 
-set( QT_USE_QTWEBKIT TRUE )
+set( QT_USE_QTWEBENGINE TRUE )
 
 qt5_wrap_cpp( QT_COLLIDER_MOC_SRCS ${QT_COLLIDER_HDRS} )
 qt5_add_resources( QT_COLLIDER_RCC ${QT_COLLIDER_DIR}/resources.qrc )

@@ -48,7 +48,7 @@ using namespace ScIDE;
 int main( int argc, char *argv[] )
 {
     QApplication app(argc, argv);
-
+  
     QStringList arguments (QApplication::arguments());
     arguments.pop_front(); // application path
 

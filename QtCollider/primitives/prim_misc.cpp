@@ -39,7 +39,7 @@
 #include <QFontMetrics>
 #include <QDesktopWidget>
 #include <QStyleFactory>
-#include <QWebSettings>
+#include <QWebEngineSettings>
 #include <QCursor>
 
 namespace QtCollider {
@@ -235,7 +235,8 @@ QC_LANG_PRIMITIVE( QWebView_ClearMemoryCaches, 0, PyrSlot *r, PyrSlot *a, VMGlob
 {
   if( !QcApplication::compareThread() ) return QtCollider::wrongThreadError();
 
-  QWebSettings::clearMemoryCaches();
+  // @TODO WebEngine: New cache method?
+  // QWebEngineSettings::clearMemoryCaches();
 
   return errNone;
 }

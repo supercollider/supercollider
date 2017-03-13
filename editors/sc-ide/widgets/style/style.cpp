@@ -29,7 +29,7 @@
 #include <QToolButton>
 #include <QLayout>
 #include <QDebug>
-#include <QWebView>
+#include <QWebEngineView>
 
 namespace ScIDE {
 
@@ -80,7 +80,7 @@ void Style::drawComplexControl
     // FIXME: this is a workaround for the WebKit bug #104116 (or a variation on it).
     case QStyle::CC_ScrollBar:
     {
-        if (qobject_cast<const QWebView*>(widget) != 0 && option->type == QStyleOption::SO_Slider)
+        if (qobject_cast<const QWebEngineView*>(widget) != 0 && option->type == QStyleOption::SO_Slider)
         {
             // WebKit tries to hide scrollbars, but mistakenly hides QWebView - NULL-ify styleObject to prevent.
             const QStyleOptionSlider *optSlider = static_cast<const QStyleOptionSlider*>(option);
