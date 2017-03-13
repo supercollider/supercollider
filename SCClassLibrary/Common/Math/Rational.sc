@@ -1,28 +1,29 @@
 Rational : Number {
 	var <numerator, <denominator;
 
-	*new {  arg numerator, denominator;
+	*new {  arg numerator=1, denominator=1;
 		^super.newCopyArgs(numerator, denominator).reduce
 	}
 
-	*newFrom { arg that; ^that.asRational }
-
-	numerator_ { arg newNum; numerator = newNum; this.reduce }
-
-	denominator_ { arg newDen; denominator = newDen; this.reduce }
-
 	reduce {
 		var d;
-		if (denominator == 0) {"Rational has zero denominator".error; ^inf};
-		d = this.factor;
-		numerator   = (this.numerator/d).abs * d.sign;
-		denominator = (this.denominator/d).abs;
-	}
-
-	reduceNestedRationals {
-		^if(numerator.isRational or: denominator.isRational) {
-			(numerator.asRational / denominator.asRational)
-		};
+		if (this.numerator.isKindOf(Number)) {
+			if (this.numerator.isKindOf(Rational) || this.denominator.isKindOf(Rational)){
+				^(numerator.asRational / denominator.asRational)
+			};
+			if (this.numerator.frac == 0 && this.denominator.frac == 0) {
+				d = this.factor;
+				numerator   = ((this.numerator/d).abs * d.sign).round;
+				denominator = (this.denominator/d).abs.round;
+				if (denominator == 0) {"Rational has zero denominator".error};
+			} {
+				^(this.numerator / this.denominator).asRational
+			}
+		} {
+			if (this.numerator.isKindOf(String)) {
+				^this.numerator.asRational
+			}
+		}
 	}
 
 	factor {
@@ -31,6 +32,18 @@ Rational : Number {
 		if (numerator   < 0) { d = d.neg };
 		^d
 	}
+
+	reduceNestedRationals {
+		^if(numerator.isRational or: {denominator.isRational}) {
+			(numerator.asRational / denominator.asRational)
+		};
+	}
+
+	*newFrom { arg that; ^that.asRational }
+
+	numerator_ { arg newNum; numerator = newNum; this.reduce }
+
+	denominator_ { arg newDen; denominator = newDen; this.reduce }
 
 	performBinaryOpOnSimpleNumber { arg aSelector, aNumber, adverb;
 		^aNumber.asRational.perform(aSelector, this, adverb)
@@ -94,7 +107,7 @@ Rational : Number {
 
 	pow { arg n;
 
-        if (n.isInteger.not) {"Exponent is not Integer".error};
+		if (n.isInteger.not) {"Exponent is not Integer".error};
 
 		^case
 		{ n == 0 } { Rational(1,1) }
@@ -117,6 +130,8 @@ Rational : Number {
 		}
 	}
 
+
+
 	simplify { arg maxDenominator=20;
 		^this.asFloat.asRational(maxDenominator)
 	}
@@ -137,13 +152,17 @@ Rational : Number {
 		^(this.numerator * aNumber.denominator) >= (this.denominator * aNumber.numerator)
 	}
 
-	isNegative { ^this.numerator.isNegative }
+	isNegative {
+		^this.numerator.isNegative
+	}
 
-	isPositive { ^this.numerator.isPositive }
+	isPositive {
+		^this.numerator.isPositive
+	}
 
-	neg { ^this.class.new(numerator.neg,denominator)}
-
-	// sqrt { ^this.pow(this.class.new(1,2)) }
+	neg {
+		^(this * (-1))
+	}
 
 	squared { ^this.pow(2) }
 
@@ -151,5 +170,54 @@ Rational : Number {
 
 	abs { ^this.class.new(numerator.abs, denominator) }
 
+
 }
 
+
++ SimpleNumber {
+	asRational { arg maxDenominator=100;
+		var fraction = this.asFraction(maxDenominator);
+		^Rational(fraction[0], fraction[1])
+	}
+	isRational { ^false }
+	%/ { arg aNumber; ^Rational(this, aNumber) }
+	performBinaryOpOnRational { arg aSelector, rational, adverb;
+		^rational.perform(aSelector, this.asRational, adverb)
+	}
+}
+
++ Integer {
+	asRational { ^Rational(this, 1) }
+	as { arg aSimilarClass; ^aSimilarClass.new(this.numerator, 1 ) }
+}
+
++ Number {
+	numerator { ^this}
+	denominator { ^1}
+	rational { arg denominator=1; ^Rational(this, denominator) }
+}
+
++ SequenceableCollection {
+	asRational { arg maxDenominator = 100;
+		^this.collect { |i| i.asRational(maxDenominator) }
+	}
+}
+
++ String {
+	asRational {
+		var stringArray = this.split($/ );
+		^Rational(stringArray[0].asInteger, stringArray[1].asInteger)
+	}
+}
+
++ AbstractFunction {
+	performBinaryOpOnRational { arg aSelector, aRational, adverb;
+		^this.reverseComposeBinaryOp(aSelector, aRational, adverb)
+	}
+}
+
++ Object {
+	performBinaryOpOnRational { arg aSelector, thing, adverb;
+		^this.performBinaryOpOnSomething(aSelector, thing, adverb)
+	}
+}

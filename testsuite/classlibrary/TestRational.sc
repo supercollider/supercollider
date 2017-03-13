@@ -71,7 +71,7 @@ TestRational : UnitTest {
     test_Additive_Inverse_NonZeroIntInput {
         numTests.do {
             var x = rrand(minIntVal,maxIntVal);
-            var y = 1 + maxIntVal.rand * [-1,1].choose;
+            var y = 1 + maxIntVal.rand * [1,1.neg].choose;
             var rat=Rational(x,y);
 
             this.assertEquals(
@@ -82,11 +82,28 @@ TestRational : UnitTest {
             this.assertEquals(
                 (-1) * rat,
                 Rational(x * (-1), y),
-                format( "Additive Inverse test 2 with % passed.", rat));
+                format( "Additive Inverse test 2 with % passed.", rat)
+            );
             this.assertEquals(
                 (-1) * rat,
                 Rational(x, y * (-1)),
-                format( "Additive Inverse test 3 with % passed.", rat));
+                format( "Additive Inverse test 3 with % passed.", rat)
+            )
+        }
+    }
+
+    test_Multiplicative_Inverse_NonZeroIntInput {
+        numTests.do {
+            var x    = 1 + maxIntVal.rand * [-1,1].choose;
+            var y    = 1 + maxIntVal.rand * [-1,1].choose;
+            var rat1 = Rational(x,y);
+            var rat2 = Rational(y,x);
+
+            this.assertEquals(
+                rat1.pow(-1),
+                rat2,
+                format( "Multiplicative Inverse test with % passed.", rat1)
+            );
         }
     }
 
@@ -181,5 +198,27 @@ TestRational : UnitTest {
         }
     }
 
+    test_Mul_Inverse_DifferentExponents_NonZeroIntInput {
+        numTests.do {
+            var maxVal = 100;
+            var x1 = 1 + maxVal.rand * [-1,1].choose;
+            var y1 = 1 + maxVal.rand * [-1,1].choose;
+            var rat = Rational(x1,y1);
+            var maxExponent = 6;
+
+            maxExponent.do({arg i;
+                this.assertEquals(
+                rat.pow(i * (-1)),
+                rat.pow(i).reciprocal,
+                format( "Multiplicative inverse with different exponents test with exp: % and rat: % passed.", i, rat));
+
+            })
+
+            }
+    }
 }
 
+/*
+TestRational.run
+UnitTest.gui
+*/
