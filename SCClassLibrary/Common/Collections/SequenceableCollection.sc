@@ -1303,11 +1303,7 @@ SequenceableCollection : Collection {
 
 	// Rational support
 	asRational { arg maxDenominator = 100;
-		if (this.size == 2 and: this[0].isKindOf(Integer) and: this[1].isKindOf(Integer)) {
-			^Rational(this[0], this[1])
-		} {
-			^this.collect { |i| i.asRational(maxDenominator) }
-		};
+		^this.collect { |i| i.asRational(maxDenominator) }
 	}
 
 //	asUGenInput { ^this.asArray.asUGenInput }
