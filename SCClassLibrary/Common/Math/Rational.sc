@@ -141,13 +141,13 @@ Rational : Number {
 
 	isPositive { ^this.numerator.isPositive }
 
-	neg { ^(this * (-1)) }
+	neg { ^this.class.new(numerator.neg,denominator)}
 
 	// sqrt { ^this.pow(this.class.new(1,2)) }
 
-	squared { ^this.pow(this.class.new(2,1)) }
+	squared { ^this.pow(2) }
 
-	cubed { ^this.pow(this.class.new(3,1)) }
+	cubed { ^this.pow(3) }
 
 	abs { ^this.class.new(numerator.abs, denominator) }
 
