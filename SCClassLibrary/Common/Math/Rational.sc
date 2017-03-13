@@ -13,7 +13,7 @@ Rational : Number {
 
 	reduce {
 		var d;
-		if (denominator == 0) {"Rational has zero denominator".error};
+		if (denominator == 0) {"Rational has zero denominator".error; ^inf};
 		d = this.factor;
 		numerator   = (this.numerator/d).abs * d.sign;
 		denominator = (this.denominator/d).abs;
@@ -92,19 +92,25 @@ Rational : Number {
 		^((this.numerator * aNumber.denominator) != (this.denominator * aNumber.numerator))
 	}
 
-	pow { arg aNumber;
+	pow { arg n;
+
+        if (n.isInteger.not) {"Exponent is not Integer".error};
+
 		^case
-		{ aNumber == 0 }
-		{ (1.as(this.species)) }
+		{ n == 0 } { Rational(1,1) }
 
-
-		{ aNumber > 0  }
-		{ (this.species.new(this.numerator.pow(aNumber.asFloat), this.denominator.pow(aNumber.asFloat))) }
-
-		{ aNumber < 0  }
-		{
+		// if n is a for non-negative integer
+		{ n > 0 } {
+			this.class.new(
+				this.numerator.pow(n),
+				this.denominator.pow(n)
+			)
+		}
+		// if n is negative integer
+		{ n < 0  } {
+			// if numerator ≠ 0
 			if((this.numerator == 0).not) {
-				this.reciprocal.pow(aNumber.abs)
+				this.reciprocal.pow(n.abs)
 			} {
 				"Rational has zero denominator".error;
 			}
@@ -132,11 +138,18 @@ Rational : Number {
 	}
 
 	isNegative { ^this.numerator.isNegative }
+
 	isPositive { ^this.numerator.isPositive }
+
 	neg { ^(this * (-1)) }
-	sqrt { ^this.pow(this.class.new(1,2)) }
+
+	// sqrt { ^this.pow(this.class.new(1,2)) }
+
 	squared { ^this.pow(this.class.new(2,1)) }
+
 	cubed { ^this.pow(this.class.new(3,1)) }
+
 	abs { ^this.class.new(numerator.abs, denominator) }
+
 }
 
