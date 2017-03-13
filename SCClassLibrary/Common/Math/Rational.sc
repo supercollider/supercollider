@@ -149,7 +149,7 @@ Rational : Number {
 
 	cubed { ^this.pow(this.species.new(3,1)) }
 
-	abs { ^this.species.new(this.numerator.abs.asInteger, this.denominator.abs.asInteger) }
+	abs { ^this.class.new(numerator.abs, denominator) }
 
 }
 										
