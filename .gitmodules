@@ -16,5 +16,4 @@
 	branch = supercollider
 [submodule "external_libraries/yaml-cpp"]
 	path = external_libraries/yaml-cpp
-	url = https://github.com/jbeder/yaml-cpp.git
-
+	url = https://github.com/supercollider/yaml-cpp.git
