@@ -30,7 +30,7 @@
 #include "../core/sc_process.hpp"
 #include "../core/session_manager.hpp"
 
-#include "yaml-cpp/node.h"
+#include <yaml-cpp/node/node.h>
 #include "yaml-cpp/parser.h"
 
 #include <QApplication>

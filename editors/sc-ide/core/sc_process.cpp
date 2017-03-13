@@ -37,7 +37,7 @@
 
 #include "../widgets/help_browser.hpp"
 
-#include "yaml-cpp/node.h"
+#include "yaml-cpp/node/node.h"
 #include "yaml-cpp/parser.h"
 
 namespace ScIDE {
