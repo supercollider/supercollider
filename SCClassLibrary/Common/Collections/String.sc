@@ -530,6 +530,7 @@ String[char] : RawArray {
 	}
 
 	asRational {
-		^Rational(this.split[0].asInteger, this.split[1].asInteger)
+		var stringArray = this.split($/ );
+		^Rational(stringArray[0].asInteger, stringArray[1].asInteger)
 	}
 }
