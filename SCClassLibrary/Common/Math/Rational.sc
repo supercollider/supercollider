@@ -13,7 +13,7 @@ Rational : Number {
 
 	reduce {
 		var d;
-		if (denominator == 0) {"Rational has zero denominator".error; ^inf};
+		if (denominator == 0) {"Rational has zero denominator".error};
 		d = this.factor;
 		numerator   = (this.numerator/d).abs * d.sign;
 		denominator = (this.denominator/d).abs;
@@ -106,7 +106,7 @@ Rational : Number {
 			if((this.numerator == 0).not) {
 				this.reciprocal.pow(aNumber.abs)
 			} {
-				"Rational has zero denominator".error; inf
+				"Rational has zero denominator".error;
 			}
 		}
 	}
@@ -131,25 +131,12 @@ Rational : Number {
 		^(this.numerator * aNumber.denominator) >= (this.denominator * aNumber.numerator)
 	}
 
-	isNegative {
-		^this.numerator.isNegative
-	}
-
-	isPositive {
-		^this.numerator.isPositive
-	}
-
-	neg {
-		^(this * (-1))
-	}
-
-	sqrt { ^this.pow(this.species.new(1,2)) }
-
-	squared { ^this.pow(this.species.new(2,1)) }
-
-	cubed { ^this.pow(this.species.new(3,1)) }
-
+	isNegative { ^this.numerator.isNegative }
+	isPositive { ^this.numerator.isPositive }
+	neg { ^(this * (-1)) }
+	sqrt { ^this.pow(this.class.new(1,2)) }
+	squared { ^this.pow(this.class.new(2,1)) }
+	cubed { ^this.pow(this.class.new(3,1)) }
 	abs { ^this.class.new(numerator.abs, denominator) }
-
 }
-										
+
