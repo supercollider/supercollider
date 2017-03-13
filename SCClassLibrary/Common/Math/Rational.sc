@@ -26,7 +26,7 @@ Rational : Number {
 	}
 
 	factor {
-		var d = gcd(this.numerator.asInteger, this.denominator.asInteger);
+		var d = gcd(this.numerator.asInteger, this.denominator.asInteger).abs;
 		if (denominator < 0) { d = d.neg };
 		if (numerator   < 0) { d = d.neg };
 		^d
