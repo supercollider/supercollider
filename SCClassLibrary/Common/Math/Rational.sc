@@ -169,55 +169,5 @@ Rational : Number {
 	cubed { ^this.pow(3) }
 
 	abs { ^this.class.new(numerator.abs, denominator) }
-
-
 }
 
-
-+ SimpleNumber {
-	asRational { arg maxDenominator=100;
-		var fraction = this.asFraction(maxDenominator);
-		^Rational(fraction[0], fraction[1])
-	}
-	isRational { ^false }
-	%/ { arg aNumber; ^Rational(this, aNumber) }
-	performBinaryOpOnRational { arg aSelector, rational, adverb;
-		^rational.perform(aSelector, this.asRational, adverb)
-	}
-}
-
-+ Integer {
-	asRational { ^Rational(this, 1) }
-	as { arg aSimilarClass; ^aSimilarClass.new(this.numerator, 1 ) }
-}
-
-+ Number {
-	numerator { ^this}
-	denominator { ^1}
-	rational { arg denominator=1; ^Rational(this, denominator) }
-}
-
-+ SequenceableCollection {
-	asRational { arg maxDenominator = 100;
-		^this.collect { |i| i.asRational(maxDenominator) }
-	}
-}
-
-+ String {
-	asRational {
-		var stringArray = this.split($/ );
-		^Rational(stringArray[0].asInteger, stringArray[1].asInteger)
-	}
-}
-
-+ AbstractFunction {
-	performBinaryOpOnRational { arg aSelector, aRational, adverb;
-		^this.reverseComposeBinaryOp(aSelector, aRational, adverb)
-	}
-}
-
-+ Object {
-	performBinaryOpOnRational { arg aSelector, thing, adverb;
-		^this.performBinaryOpOnSomething(aSelector, thing, adverb)
-	}
-}
