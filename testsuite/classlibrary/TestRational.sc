@@ -268,6 +268,7 @@ TestRational : UnitTest {
         }
     }
 
+    // associative property
     test_AssociativeAdd_NonZeroIntInput {
         numTests.do {
             var x1 = rrand(minIntVal,maxIntVal);
@@ -306,6 +307,29 @@ TestRational : UnitTest {
         }
     }
 
+     // distributive property
+    //(a + b) * c = (a * c) + (b * c)
+    test_Distributive_1_PositiveIntInput {
+        numTests.do {
+            var minVal = 1;
+            var maxVal = 20;
+            var x1 = rrand(minVal,maxVal);
+            var y1 = 1 + maxVal.rand ;
+            var x2 = rrand(minVal,maxVal);
+            var y2 = 1 + maxVal.rand ;
+            var x3 = rrand(minVal,maxVal);
+            var y3 = 1 + maxVal.rand ;
+            var a = Rational(x1,y1);
+            var b = Rational(x2,y2);
+            var c = Rational(x3,y3);
+
+            this.assertEquals(
+                (a + b) * c,
+                (a * c) + (b * c),
+                format( "Associative property 2 test with %, % and % passed.", a, b, c)
+            );
+        }
+    }
 }
 
 
