@@ -35,11 +35,15 @@ template<> struct arithmetic_type<2>
     typedef char (&result_type) [2];
 };
 
+#ifndef BOOST_NO_INTRINSIC_WCHAR_T
+
 template<> struct arithmetic_type<3>
 {
     typedef wchar_t type;
     typedef char (&result_type) [3];
 };
+
+#endif
 
 // There are five standard signed integer types:
 // “signed char”, “short int”, “int”, “long int”, and “long long int”.
@@ -170,7 +174,9 @@ private:
 
     static arithmetic_type<1>::result_type select( arithmetic_type<1>::type );
     static arithmetic_type<2>::result_type select( arithmetic_type<2>::type );
+#ifndef BOOST_NO_INTRINSIC_WCHAR_T
     static arithmetic_type<3>::result_type select( arithmetic_type<3>::type );
+#endif
     static arithmetic_type<4>::result_type select( arithmetic_type<4>::type );
     static arithmetic_type<5>::result_type select( arithmetic_type<5>::type );
     static arithmetic_type<6>::result_type select( arithmetic_type<6>::type );

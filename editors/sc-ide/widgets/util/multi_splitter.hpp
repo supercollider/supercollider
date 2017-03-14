@@ -22,17 +22,22 @@
 #define SCIDE_WIDGETS_UTIL_MULTI_SPLITTER_HPP_INCLUDED
 
 #include <QSplitter>
+#include "../multi_editor.hpp"
 
 namespace ScIDE {
+
+class MultiEditor;
 
 class MultiSplitter : public QSplitter
 {
 public:
-    explicit MultiSplitter(QWidget *parent = 0):
-        QSplitter(parent)
+    explicit MultiSplitter(MultiEditor *editor, QWidget *parent = 0):
+        QSplitter(parent), mEditor(editor)
     {
         setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     }
+
+    MultiEditor *editor() { return mEditor; }
 
     void insertWidget( QWidget *widget, QWidget *neighbour, Qt::Orientation direction )
     {
@@ -168,6 +173,8 @@ private:
         }
         return false;
     }
+
+    MultiEditor *mEditor;
 };
 
 } // namespace ScIDE

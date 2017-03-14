@@ -6,8 +6,7 @@ DESCRIPTION::
 
 A view that allows setting two numerical values between 0 and 1, represented by the two ends of a movable and extendable handle. It can have horizontal or vertical orientation, meaning the direction in which the handle moves and extends.
 
-Clicking and moving the mouse pointer within the view will define the two ends of the range. Doing the same while holding down the Ctrl key will move the whole range without changing its size.
-
+Dragging the mouse pointer on either end of the range moves the end by itself. Dragging in the middle of the range moves the whole range without changing its size.
 
 
 CLASSMETHODS::

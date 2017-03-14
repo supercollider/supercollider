@@ -215,6 +215,12 @@ void EditorTabBar::mousePressEvent(QMouseEvent *event)
         event->accept();
         return;
     }
+    else if (event->button() == Qt::MiddleButton){
+        mTabUnderCursor = tabAt(event->pos());
+        onCloseTab();
+        event->accept();
+        return;
+    }
 
     QTabBar::mousePressEvent(event);
 }
@@ -238,10 +244,15 @@ void EditorTabBar::showContextMenu(QMouseEvent * event)
     mTabUnderCursor = tabAt(event->pos());
 
     QMenu * menu = new QMenu(this);
-
-    menu->addAction(tr("Close"),                   this, SLOT(onCloseTab())           );
-    menu->addAction(tr("Close Other Tabs"),        this, SLOT(onCloseOtherTabs())     );
-    menu->addAction(tr("Close Tabs to the Right"), this, SLOT(onCloseTabsToTheRight()));
+    // Cannot have a close tab action if we are not over a tab
+    if (mTabUnderCursor == -1){
+        menu->addAction(tr("Close All Tabs"), this, SLOT(onCloseOtherTabs()));
+    }
+    else{
+        menu->addAction(tr("Close"), this, SLOT(onCloseTab()));
+        menu->addAction(tr("Close Other Tabs"), this, SLOT(onCloseOtherTabs()));
+        menu->addAction(tr("Close Tabs to the Right"), this, SLOT(onCloseTabsToTheRight()));
+    }
 
     menu->popup(event->pos());
 }
@@ -291,17 +302,17 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
 {
     mTabs = new EditorTabBar;
 
-    CodeEditorBox *defaultBox = newBox();
+    mSplitter = new MultiSplitter(this);
+    CodeEditorBox *defaultBox = newBox(mSplitter);
 
-    mSplitter = new MultiSplitter();
     mSplitter->addWidget(defaultBox);
 
-    QVBoxLayout *l = new QVBoxLayout;
-    l->setContentsMargins(0,0,0,0);
-    l->setSpacing(0);
-    l->addWidget(mTabs);
-    l->addWidget(mSplitter);
-    setLayout(l);
+    multiEditorLayout = new QVBoxLayout;
+    multiEditorLayout->setContentsMargins(0,0,0,0);
+    multiEditorLayout->setSpacing(0);
+    multiEditorLayout->addWidget(mTabs);
+    multiEditorLayout->addWidget(mSplitter);
+    setLayout(multiEditorLayout);
 
     makeSignalConnections();
 
@@ -336,10 +347,17 @@ void MultiEditor::makeSignalConnections()
             this, SLOT(onCurrentTabChanged(int)));
     connect(mTabs, SIGNAL(tabCloseRequested(int)),
             this, SLOT(onCloseRequest(int)));
+    connect(mTabs, SIGNAL(tabMoved(int, int)),
+            this, SLOT(updateDocOrder(int, int)));
 
     mBoxSigMux->connect(SIGNAL(currentChanged(GenericCodeEditor*)),
             this, SLOT(onCurrentEditorChanged(GenericCodeEditor*)));
     
+}
+
+void MultiEditor::updateDocOrder(int from, int to)
+{
+    Q_EMIT( updateDockletOrder(from, to) );
 }
 
 void MultiEditor::breakSignalConnections()
@@ -762,6 +780,35 @@ void MultiEditor::applySettings( Settings::Manager * settings )
     mActions[ShowWhitespace]->setChecked( show_whitespace );
     mActions[ShowLinenumber]->setChecked( show_linenumber );
     mActions[ShowAutocompleteHelp]->setChecked(show_autocompletehelp);
+
+    setMainComboBoxOption();
+
+    int boxCount = mSplitter->findChildren<CodeEditorBox*>().count();
+    if (boxCount > 1) {
+        activateComboBoxWhenSplitting();  
+    }
+}
+
+void MultiEditor::activateComboBoxWhenSplitting() {
+    emit splitViewActivated();
+    bool comboBoxInUse = Main::settings()->value("IDE/editor/useComboBox").toBool();
+    if (!comboBoxInUse) {
+        bool comboBoxWhenSplitting = Main::settings()->value("IDE/editor/useComboBoxWhenSplitting").toBool();
+        showEditorTabs(comboBoxWhenSplitting);
+    }
+}
+
+void MultiEditor::setMainComboBoxOption() {
+    bool comboBoxInUse = Main::settings()->value("IDE/editor/useComboBox").toBool();
+    showEditorTabs( comboBoxInUse );
+}
+
+void MultiEditor::showEditorTabs( bool condition ) 
+{
+    if (condition)
+        mTabs->hide();
+    else
+        mTabs->show();
 }
 
 static QVariantList saveBoxState( CodeEditorBox *box, const QList<Document*> & documentList )
@@ -848,7 +895,7 @@ void MultiEditor::loadBoxState( CodeEditorBox *box,
     }
 }
 
-void MultiEditor::loadSplitterState( QSplitter *splitter,
+void MultiEditor::loadSplitterState( MultiSplitter *splitter,
                                      const QVariantMap & data, const QList<Document*> & documentList )
 {
     QByteArray state = QByteArray::fromBase64( data.value("state").value<QByteArray>() );
@@ -856,13 +903,13 @@ void MultiEditor::loadSplitterState( QSplitter *splitter,
     QVariantList childrenData = data.value("elements").value<QVariantList>();
     foreach (const QVariant & childVar, childrenData) {
         if (childVar.type() == QVariant::List) {
-            CodeEditorBox *childBox = newBox();
+            CodeEditorBox *childBox = newBox(splitter);
             splitter->addWidget(childBox);
             QVariantList childBoxData = childVar.value<QVariantList>();
             loadBoxState( childBox, childBoxData, documentList );
         }
         else if (childVar.type() == QVariant::Map) {
-            QSplitter *childSplitter = new QSplitter;
+            MultiSplitter *childSplitter = new MultiSplitter(this);
             splitter->addWidget(childSplitter);
             QVariantMap childSplitterData = childVar.value<QVariantMap>();
             loadSplitterState( childSplitter, childSplitterData, documentList );
@@ -896,7 +943,7 @@ void MultiEditor::switchSession( Session *session )
 
     documentList.clear();
 
-    mSplitter = new MultiSplitter();
+    mSplitter = new MultiSplitter(this);
 
     CodeEditorBox *firstBox = 0;
 
@@ -924,7 +971,7 @@ void MultiEditor::switchSession( Session *session )
                 if (!firstBox) {
                     qWarning("Session seems to contain invalid editor split data!");
                     delete mSplitter;
-                    mSplitter = new MultiSplitter();
+                    mSplitter = new MultiSplitter(this);
                 }
             }
         }
@@ -932,7 +979,7 @@ void MultiEditor::switchSession( Session *session )
 
     if (!firstBox) {
         // Restoring the session didn't result in any editor box, so create one:
-        firstBox = newBox();
+        firstBox = newBox(mSplitter);
         mSplitter->addWidget( firstBox );
     }
 
@@ -950,6 +997,12 @@ void MultiEditor::switchSession( Session *session )
         docManager->create();
 
     firstBox->setFocus(Qt::OtherFocusReason); // ensure focus
+
+    setMainComboBoxOption();
+    if (mSplitter->count()>1)
+        activateComboBoxWhenSplitting();
+    else
+        emit splitViewDeactivated();
 }
 
 int MultiEditor::addTab( Document * doc )
@@ -981,6 +1034,18 @@ void MultiEditor::setCurrent( Document *doc )
     int tabIdx = tabForDocument(doc);
     if (tabIdx != -1)
         mTabs->setCurrentIndex(tabIdx);
+}
+
+void MultiEditor::updateTabsOrder( QList<Document*> docOrder ) {
+    mTabs->blockSignals(true);
+    for ( int idx = 0; idx < docOrder.count(); idx++ ) {
+        if ( docOrder.at(idx) != documentForTab(idx) ) {
+            Document *doc = docOrder.at(idx);
+            int tabIdx = tabForDocument(doc);
+            mTabs->moveTab(tabIdx, idx);
+        }
+    }
+    mTabs->blockSignals(false);
 }
 
 void MultiEditor::showNextDocument()
@@ -1115,9 +1180,9 @@ int MultiEditor::tabForDocument( Document * doc )
     return -1;
 }
 
-CodeEditorBox *MultiEditor::newBox()
+CodeEditorBox *MultiEditor::newBox( MultiSplitter * currSplitter )
 {
-    CodeEditorBox *box = new CodeEditorBox();
+    CodeEditorBox *box = new CodeEditorBox( currSplitter );
 
     connect(box, SIGNAL(activated(CodeEditorBox*)),
             this, SLOT(onBoxActivated(CodeEditorBox*)));
@@ -1160,7 +1225,7 @@ GenericCodeEditor *MultiEditor::currentEditor()
 
 void MultiEditor::split( Qt::Orientation splitDirection )
 {
-    CodeEditorBox *box = newBox();
+    CodeEditorBox *box = newBox(mSplitter);
     CodeEditorBox *curBox = currentBox();
     GenericCodeEditor *curEditor = curBox->currentEditor();
 
@@ -1169,14 +1234,17 @@ void MultiEditor::split( Qt::Orientation splitDirection )
 
     mSplitter->insertWidget(box, curBox, splitDirection);
     box->setFocus( Qt::OtherFocusReason );
+
+    activateComboBoxWhenSplitting();
 }
 
 void MultiEditor::removeCurrentSplit()
 {
     int boxCount = mSplitter->findChildren<CodeEditorBox*>().count();
-    if (boxCount < 2)
+    if (boxCount < 2) {
         // Do not allow removing the one and only box.
         return;
+    }
 
     CodeEditorBox *box = currentBox();
     mSplitter->removeWidget(box);
@@ -1186,6 +1254,14 @@ void MultiEditor::removeCurrentSplit()
     Q_ASSERT(box);
     setCurrentBox(box);
     box->setFocus( Qt::OtherFocusReason );
+
+    if (boxCount == 2) {
+        emit splitViewDeactivated();
+        setMainComboBoxOption();
+    }
+    else if (boxCount > 2) {
+        activateComboBoxWhenSplitting();
+    }
 }
 
 void MultiEditor::removeAllSplits()
@@ -1197,14 +1273,30 @@ void MultiEditor::removeAllSplits()
         // Nothing to do.
         return;
 
-    MultiSplitter *newSplitter = new MultiSplitter;
-    newSplitter->addWidget(box);
+    breakSignalConnections();
+
+    MultiSplitter *newSplitter = new MultiSplitter(this);
+
+    CodeEditorBox *nBox = newBox(newSplitter);
+    newSplitter->addWidget(nBox);
+
+    GenericCodeEditor *curEditor = box->currentEditor();
+    if (curEditor)
+        nBox->setDocument(curEditor->document(), curEditor->textCursor().position());
 
     delete mSplitter;
     mSplitter = newSplitter;
-    layout()->addWidget(newSplitter);
+    layout()->addWidget(mSplitter);
 
-    box->setFocus( Qt::OtherFocusReason );
+    emit splitViewDeactivated();
+    setMainComboBoxOption();
+
+    mCurrentEditorBox = 0; // ensure complete update
+    setCurrentBox(nBox);   
+
+    makeSignalConnections(); // ensure signal connections
+
+    nBox->setFocus( Qt::OtherFocusReason );
 }
 
 void MultiEditor::setShowWhitespace(bool showWhitespace)

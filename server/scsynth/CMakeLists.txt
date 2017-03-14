@@ -20,7 +20,7 @@ if(AUDIOAPI STREQUAL jack)
   if(NOT JACK_FOUND)
     message(FATAL_ERROR "Jack selected as audio API, but development files not found")
   endif()
-elseif(AUDIOAPI STREQUAL portaudio AND NOT MINGW AND NOT MSVC) # MSYS like Apple
+elseif(AUDIOAPI STREQUAL portaudio AND ((NOT WIN32) OR MSYS)) # MSYS like Apple
     find_package(Portaudio)
     if(NOT PORTAUDIO_FOUND)
       message(FATAL_ERROR "Portaudio selected as audio API, but development files not found")
@@ -150,7 +150,7 @@ elseif(NOT NO_LIBSNDFILE)
 endif(SNDFILE_FOUND)
 
 if(UNIX AND NOT APPLE)
-	target_compile_definitions(libscsynth PUBLIC "SC_PLUGIN_DIR=\"${CMAKE_INSTALL_PREFIX}/lib/SuperCollider/plugins\"")
+	target_compile_definitions(libscsynth PUBLIC "SC_PLUGIN_DIR=\"${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/SuperCollider/plugins\"")
 endif()
 
 
@@ -284,6 +284,10 @@ elseif(WIN32)
 else()
 	install(TARGETS ${INSTALL_TARGETS}
 			RUNTIME DESTINATION "bin"
-			LIBRARY DESTINATION "lib"
+			LIBRARY DESTINATION "lib${LIB_SUFFIX}"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+endif()
+
+if(${JACK_USE_METADATA_API})
+	target_compile_definitions(libscsynth PUBLIC "-DSC_JACK_USE_METADATA_API")
 endif()

@@ -544,6 +544,9 @@ code::
 
 method:: equalWithPrecision
 
+argument::that
+the number to compare with within precision
+
 argument::precision
 The absolute precision, independent of the value compared
 
@@ -923,4 +926,3 @@ subsection:: misc
 
 method:: isValidUGenInput
 returns:: false if receiver cannot be used in UGen.
-

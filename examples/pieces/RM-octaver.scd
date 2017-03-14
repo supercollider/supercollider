@@ -25,7 +25,7 @@ s = Server.local.waitForBoot({
 		in = SoundIn.ar(0) ;
 		# freq, hasFreq = Pitch.kr(in) ;
 		Out.ar(out, SinOsc.ar(freq: freq*0.5)*in+in);
-	}).send(s) ;
+	}).add ;
 })
 )
 

@@ -22,6 +22,7 @@
 #  pragma once
 #endif
 
+#include <boost/intrusive/detail/workaround.hpp>
 #include <boost/move/utility_core.hpp>
 
 namespace boost {
@@ -165,57 +166,57 @@ class ebo_functor_holder
    public:
    typedef T functor_type;
 
-   ebo_functor_holder()
+   BOOST_INTRUSIVE_FORCEINLINE ebo_functor_holder()
       : t_()
    {}
 
-   explicit ebo_functor_holder(const T &t)
+   BOOST_INTRUSIVE_FORCEINLINE explicit ebo_functor_holder(const T &t)
       : t_(t)
    {}
 
-   explicit ebo_functor_holder(BOOST_RV_REF(T) t)
+   BOOST_INTRUSIVE_FORCEINLINE explicit ebo_functor_holder(BOOST_RV_REF(T) t)
       : t_(::boost::move(t))
    {}
 
    template<class Arg1, class Arg2>
-   ebo_functor_holder(BOOST_FWD_REF(Arg1) arg1, BOOST_FWD_REF(Arg2) arg2)
+   BOOST_INTRUSIVE_FORCEINLINE ebo_functor_holder(BOOST_FWD_REF(Arg1) arg1, BOOST_FWD_REF(Arg2) arg2)
       : t_(::boost::forward<Arg1>(arg1), ::boost::forward<Arg2>(arg2))
    {}
 
-   ebo_functor_holder(const ebo_functor_holder &x)
+   BOOST_INTRUSIVE_FORCEINLINE ebo_functor_holder(const ebo_functor_holder &x)
       : t_(x.t_)
    {}
 
-   ebo_functor_holder(BOOST_RV_REF(ebo_functor_holder) x)
+   BOOST_INTRUSIVE_FORCEINLINE ebo_functor_holder(BOOST_RV_REF(ebo_functor_holder) x)
       : t_(x.t_)
    {}
 
-   ebo_functor_holder& operator=(BOOST_COPY_ASSIGN_REF(ebo_functor_holder) x)
+   BOOST_INTRUSIVE_FORCEINLINE ebo_functor_holder& operator=(BOOST_COPY_ASSIGN_REF(ebo_functor_holder) x)
    {
       this->get() = x.get();
       return *this;
    }
 
-   ebo_functor_holder& operator=(BOOST_RV_REF(ebo_functor_holder) x)
+   BOOST_INTRUSIVE_FORCEINLINE ebo_functor_holder& operator=(BOOST_RV_REF(ebo_functor_holder) x)
    {
       this->get() = ::boost::move(x.get());
       return *this;
    }
 
-   ebo_functor_holder& operator=(const T &x)
+   BOOST_INTRUSIVE_FORCEINLINE ebo_functor_holder& operator=(const T &x)
    {
       this->get() = x;
       return *this;
    }
 
-   ebo_functor_holder& operator=(BOOST_RV_REF(T) x)
+   BOOST_INTRUSIVE_FORCEINLINE ebo_functor_holder& operator=(BOOST_RV_REF(T) x)
    {
       this->get() = ::boost::move(x);
       return *this;
    }
 
-   T&       get(){return t_;}
-   const T& get()const{return t_;}
+   BOOST_INTRUSIVE_FORCEINLINE T&       get(){return t_;}
+   BOOST_INTRUSIVE_FORCEINLINE const T& get()const{return t_;}
 
    private:
    T t_;
@@ -230,58 +231,58 @@ class ebo_functor_holder<T, false>
    public:
    typedef T functor_type;
 
-   ebo_functor_holder()
+   BOOST_INTRUSIVE_FORCEINLINE ebo_functor_holder()
       : T()
    {}
 
-   explicit ebo_functor_holder(const T &t)
+   BOOST_INTRUSIVE_FORCEINLINE explicit ebo_functor_holder(const T &t)
       : T(t)
    {}
 
-   explicit ebo_functor_holder(BOOST_RV_REF(T) t)
+   BOOST_INTRUSIVE_FORCEINLINE explicit ebo_functor_holder(BOOST_RV_REF(T) t)
       : T(::boost::move(t))
    {}
 
    template<class Arg1, class Arg2>
-   ebo_functor_holder(BOOST_FWD_REF(Arg1) arg1, BOOST_FWD_REF(Arg2) arg2)
+   BOOST_INTRUSIVE_FORCEINLINE ebo_functor_holder(BOOST_FWD_REF(Arg1) arg1, BOOST_FWD_REF(Arg2) arg2)
       : T(::boost::forward<Arg1>(arg1), ::boost::forward<Arg2>(arg2))
    {}
 
-   ebo_functor_holder(const ebo_functor_holder &x)
+   BOOST_INTRUSIVE_FORCEINLINE ebo_functor_holder(const ebo_functor_holder &x)
       : T(static_cast<const T&>(x))
    {}
 
-   ebo_functor_holder(BOOST_RV_REF(ebo_functor_holder) x)
+   BOOST_INTRUSIVE_FORCEINLINE ebo_functor_holder(BOOST_RV_REF(ebo_functor_holder) x)
       : T(BOOST_MOVE_BASE(T, x))
    {}
 
-   ebo_functor_holder& operator=(BOOST_COPY_ASSIGN_REF(ebo_functor_holder) x)
+   BOOST_INTRUSIVE_FORCEINLINE ebo_functor_holder& operator=(BOOST_COPY_ASSIGN_REF(ebo_functor_holder) x)
    {
       const ebo_functor_holder&r = x;
-      this->get() = x.get();
+      this->get() = r;
       return *this;
    }
 
-   ebo_functor_holder& operator=(BOOST_RV_REF(ebo_functor_holder) x)
+   BOOST_INTRUSIVE_FORCEINLINE ebo_functor_holder& operator=(BOOST_RV_REF(ebo_functor_holder) x)
    {
       this->get() = ::boost::move(x.get());
       return *this;
    }
 
-   ebo_functor_holder& operator=(const T &x)
+   BOOST_INTRUSIVE_FORCEINLINE ebo_functor_holder& operator=(const T &x)
    {
       this->get() = x;
       return *this;
    }
 
-   ebo_functor_holder& operator=(BOOST_RV_REF(T) x)
+   BOOST_INTRUSIVE_FORCEINLINE ebo_functor_holder& operator=(BOOST_RV_REF(T) x)
    {
       this->get() = ::boost::move(x);
       return *this;
    }
 
-   T&       get(){return *this;}
-   const T& get()const{return *this;}
+   BOOST_INTRUSIVE_FORCEINLINE T&       get(){return *this;}
+   BOOST_INTRUSIVE_FORCEINLINE const T& get()const{return *this;}
 };
 
 }  //namespace detail {

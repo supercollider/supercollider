@@ -31,7 +31,7 @@ ARGUMENT:: func
 A link::Classes/Function:: or similar object which will respond to the incoming message. It will be passed...
 
 ARGUMENT:: elUsageName
-The name of the usage to look for. This can be one usage name, or an array of usage names.
+The name of the usage to look for. This can be one usage name, or an array of usage names. If nil, it will match any usage.
 
 ARGUMENT:: devUsageName
 The name of the device usage to look for, e.g. code::\GamePad:: or code::\Mouse::. If left blank, the code::HIDFunc:: will match any device.
@@ -85,7 +85,7 @@ ARGUMENT:: func
 A link::Classes/Function:: or similar object which will respond to the incoming message. It will be passed...usage
 
 ARGUMENT:: elUsageID
-The id (an link::Classes/Integer::) of the usage to look for. This can be one usage id, or an array of usage ids.
+The id (an link::Classes/Integer::) of the usage to look for. This can be one usage id, or an array of usage ids. If nil, it will match any usage id.
 
 ARGUMENT:: elPageID
 The id (an link::Classes/Integer::) of the page of the usage to look for. This can be one page id, or an array of page ids.
@@ -134,7 +134,7 @@ returns:: A new instance of HIDFunc which responds to a specific prototype eleme
 
 
 METHOD:: element
-A convenience method to filter an incoming HID value based on the index of its element. If the device is using something non-standard, or you want to access keyboard elements directly, then this method can be used to look for it. Note that the element index is not necessarily the same across different operating systems (i.e. it may vary between Linux and OSX and Windows).
+A convenience method to filter an incoming HID value based on the index of its element. If the device is using something non-standard, or you want to access keyboard elements directly, then this method can be used to look for it. Note that the element index is not necessarily the same across different operating systems (i.e. it may vary between Linux and macOS and Windows).
 
 ARGUMENT:: func
 A link::Classes/Function:: or similar object which will respond to the incoming message. It will be passed...

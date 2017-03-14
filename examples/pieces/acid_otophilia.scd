@@ -33,7 +33,7 @@ Routine.run {var c; c = Condition.new; s.freeAll; TempoClock.all.do{|x|x.clear};
 		out = out.clip2(1);
 
 		Out.ar(outBus, out.dup);
-	}).send(s);
+	}).add;
 
 	SynthDef("snare", {
 		arg outBus=0, amp=0.8;
@@ -57,7 +57,7 @@ Routine.run {var c; c = Condition.new; s.freeAll; TempoClock.all.do{|x|x.clear};
 		out = out.clip2(1) * amp;
 
 		Out.ar(outBus, out.dup);
-	}).send(s);
+	}).add;
 
 	SynthDef("clap", {
 		arg outBus=0, amp = 0.5;
@@ -79,7 +79,7 @@ Routine.run {var c; c = Condition.new; s.freeAll; TempoClock.all.do{|x|x.clear};
 		out = out.softclip * amp;
 
 		Out.ar(outBus, out.dup);
-	}).send(s);
+	}).add;
 
 	SynthDef("hat", {
 		arg outBus=0, amp=0.3;
@@ -116,7 +116,7 @@ Routine.run {var c; c = Condition.new; s.freeAll; TempoClock.all.do{|x|x.clear};
 		out = out * amp;
 
 		Out.ar(outBus, out.dup);
-	}).send(s);
+	}).add;
 
 	SynthDef("acid", {
 		arg outBus=0, gate=1, pitch=50, amp=0.1;
@@ -130,7 +130,7 @@ Routine.run {var c; c = Condition.new; s.freeAll; TempoClock.all.do{|x|x.clear};
 		out = out * env1;
 
 		Out.ar(outBus, out.dup);
-	}).send(s);
+	}).add;
 
 	SynthDef("fx", {
 		arg outBus=0, gate=0;
@@ -142,7 +142,7 @@ Routine.run {var c; c = Condition.new; s.freeAll; TempoClock.all.do{|x|x.clear};
 		out = Limiter.ar(out, 1.0, 0.02);
 
 		ReplaceOut.ar(outBus, out);
-	}).send(s);
+	}).add;
 );
 
 s.sync(c);

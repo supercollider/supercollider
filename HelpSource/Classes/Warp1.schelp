@@ -63,10 +63,10 @@ SynthDef(\warp, {arg buffer = 0, envbuf = -1;
 	pointer = Line.kr(0, 1, 15);
 	// control pitch with MouseX
 	pitch = MouseX.kr(0.5, 2);
-	env = EnvGen.kr(Env([0.001, 1, 1, 0.001], [0.1, 14, 0.9], 'exp'), doneAction: 2);
+	env = EnvGen.kr(Env([0.001, 1, 1, 0.001], [0.1, 14, 0.9], 'exp'), doneAction: Done.freeSelf);
 	out = Warp1.ar(1, buffer, pointer, pitch, 0.1, envbuf, 8, 0.1, 2);
 	Out.ar(0, out * env);
-}).send(s);
+}).add;
 
 )
 

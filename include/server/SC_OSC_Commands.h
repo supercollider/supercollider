@@ -109,7 +109,10 @@ enum {
 	cmd_n_order = 62,
 
 	cmd_p_new = 63,
-	NUMBER_OF_COMMANDS = 64
+
+	cmd_version = 64,
+
+	NUMBER_OF_COMMANDS = 65
 };
 
 #endif /* _SC_OSC_Commands_ */

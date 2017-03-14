@@ -11,7 +11,7 @@
 #ifndef _BOOST_POLYGAMMA_DETAIL_2013_07_30_HPP_
   #define _BOOST_POLYGAMMA_DETAIL_2013_07_30_HPP_
 
-  #include <cmath>
+#include <cmath>
   #include <limits>
   #include <boost/cstdint.hpp>
   #include <boost/math/policies/policy.hpp>
@@ -27,7 +27,13 @@
   #include <boost/static_assert.hpp>
   #include <boost/type_traits/is_convertible.hpp>
 
-  namespace boost { namespace math { namespace detail{
+#ifdef _MSC_VER
+#pragma once
+#pragma warning(push)
+#pragma warning(disable:4702) // Unreachable code (release mode only warning)
+#endif
+
+namespace boost { namespace math { namespace detail{
 
   template<class T, class Policy>
   T polygamma_atinfinityplus(const int n, const T& x, const Policy& pol, const char* function) // for large values of x such as for x> 400
@@ -239,7 +245,7 @@
      if(boost::math::tools::max_value<T>() / scale < sum)
         return boost::math::policies::raise_overflow_error<T>(function, 0, pol);
      sum *= scale;
-     return n & 1 ? sum : -sum;
+     return n & 1 ? sum : T(-sum);
   }
 
   //
@@ -402,7 +408,17 @@
      static boost::detail::lightweight_mutex m;
      boost::detail::lightweight_mutex::scoped_lock l(m);
 #endif
+     static int digits = tools::digits<T>();
      static std::vector<std::vector<T> > table(1, std::vector<T>(1, T(-1)));
+
+     int current_digits = tools::digits<T>();
+
+     if(digits != current_digits)
+     {
+        // Oh my... our precision has changed!
+        table = std::vector<std::vector<T> >(1, std::vector<T>(1, T(-1)));
+        digits = current_digits;
+     }
 
      int index = n - 1;
 
@@ -533,6 +549,10 @@
   }
 
 } } } // namespace boost::math::detail
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif // _BOOST_POLYGAMMA_DETAIL_2013_07_30_HPP_
 

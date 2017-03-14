@@ -649,7 +649,7 @@ Collection {
 		};
 
 		if (outliers > 0) {
-			("histogram :" + outliers + "out of (histogram) range values in collection.").inform;
+			("histogram :" + outliers + "out of (histogram) range values in collection.").postln;
 		};
 
 		^freqs;

@@ -76,7 +76,7 @@ SequenceableCollection : Collection {
 	}
 
 	// fill with interpolation of values between start and end
-	 *interpolation { arg size, start=0.0, end=1.0;
+	*interpolation { arg size, start=0.0, end=1.0;
 		var obj = this.new(size), step;
 		if(size == 1) { ^obj.add(start) };
 		step = (end - start) / (size - 1);
@@ -406,13 +406,14 @@ SequenceableCollection : Collection {
 	curdle { arg probability;
 		^this.separate({ probability.coin });
 	}
+
 	flatten { arg numLevels=1;
 		var list;
 
 		if (numLevels <= 0, { ^this });
 		numLevels = numLevels - 1;
 
-		list = this.species.new;
+		list = this.species.new(this.size);
 		this.do({ arg item;
 			if (item.respondsTo('flatten'), {
 				list = list.addAll(item.flatten(numLevels));
@@ -421,6 +422,26 @@ SequenceableCollection : Collection {
 			});
 		});
 		^list
+	}
+
+	flatBelow { |level = 1|
+
+		if (level <=0) { ^this.flat };
+		level = level - 1;
+		^this.collect { |item|
+			if (item.respondsTo(\flatBelow)) {
+				item.flatBelow(level)
+			} {
+				item
+			}
+		}
+	}
+
+	// bidirectional flattening
+	flatten2 { arg numLevels=1;
+		if (numLevels == 0) { ^this };
+		if (numLevels > 0) { ^this.flatten(numLevels) };
+		^this.flatBelow(this.maxDepth - 1 + numLevels);
 	}
 
 	flat {
@@ -914,8 +935,8 @@ SequenceableCollection : Collection {
 
 	rate {
 		var rate, rates;
-		if(this.size == 1, { ^this.first.rate });
-		^this.collect({ arg item; item.rate }).minItem;
+		if(this.size == 1) { ^this.first.rate };
+		^this.collect({ arg item; item.rate ? 'scalar' }).minItem
 		// 'scalar' > 'control' > 'audio'
 	}
 
@@ -1027,9 +1048,9 @@ SequenceableCollection : Collection {
 		dj = this.at(j);
 		if (function.value(di, dj).not, { // i.e., should di precede dj?
 			this.swap(i,j);
-				 tt = di;
-				 di = dj;
-				 dj = tt;
+				tt = di;
+				di = dj;
+				dj = tt;
 		});
 		if ( n > 2, { // More than two elements.
 			ij = (i + j) div: 2;  // ij is the midpoint of i and j.
@@ -1049,15 +1070,15 @@ SequenceableCollection : Collection {
 				k = i;
 				l = j;
 				while ({
-				 	while ({
-				 		l = l - 1;
-				 		k <= l and: { function.value(dij, this.at(l)) }
-				 	}); // i.e. while dl succeeds dij
-				 	while ({
-				 		k = k + 1;
-				 		k <= l and: { function.value(this.at(k), dij) };
-				 	}); // i.e. while dij succeeds dk
-				 	k <= l
+					while ({
+						l = l - 1;
+						k <= l and: { function.value(dij, this.at(l)) }
+					}); // i.e. while dl succeeds dij
+					while ({
+						k = k + 1;
+						k <= l and: { function.value(this.at(k), dij) };
+					}); // i.e. while dij succeeds dk
+					k <= l
 				},{
 					this.swap(k, l);
 				});
@@ -1153,7 +1174,7 @@ SequenceableCollection : Collection {
 		if(this.isEmpty) { ^nil };
 		^if(this.size.even, {
 			[this.hoareFind(this.size/ 2 - 1, function),
-			 this.hoareFind(this.size/ 2,     function)].mean;
+			this.hoareFind(this.size/ 2,     function)].mean;
 		}, {
 			this.hoareFind(this.size - 1 / 2, function);
 		});
@@ -1317,5 +1338,9 @@ SequenceableCollection : Collection {
 	prUnixCmd { arg postOutput = true;
 		_ArrayPOpen
 		^this.primitiveFailed
+	}
+
+	sanitize { arg ... args;
+		^this.multiChannelPerform(\sanitize, *args);
 	}
 }

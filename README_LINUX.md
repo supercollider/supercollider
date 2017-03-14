@@ -4,7 +4,7 @@ Supercollider 3 for linux
 Intro
 -----
 
-SuperCollider is a synthesis engine (scsynth) and programming language (sclang), originally Mac-based but now very widely used and actively developed on Linux.
+SuperCollider is a synthesis engine (scsynth or supernova) and programming language (sclang), originally Mac-based but now very widely used and actively developed on Linux.
 
 Stefan Kersten first ported the code to Linux in 2003.
 
@@ -28,6 +28,7 @@ Build requirements
  * cmake >= 2.8.11
    * http://www.cmake.org
    * cross-platform build system
+   * cmake >= 3.1 is required for supernova (an alternate server with parallel processing capabilities). supernova is built by default if cmake is new enough.
 
  * fftw >= 3.0
    * http://www.fftw.org
@@ -45,6 +46,7 @@ Build requirements (optional features)
    * http://qt-project.org
    * cross-platform graphical user interface library, for Qt IDE and sclang's Qt GUI kit
    * Qt >= 5.0 should work, but build-test is done against 5.3
+   * As of this writing, there are known issues with building on Qt >= 5.6.
 
  * alsa
    * http://www.alsa-project.org
@@ -97,7 +99,14 @@ for building supercollider:
  - pkg-config
  - git (used by the Quarks package management system)
  - cmake (on some platforms, cmake >= 2.9 may require manual build)
- - qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5webkit5-dev qtpositioning5-dev libqt5sensors5-dev
+ - qt5-default qt5-qmake qttools5-dev qttools5-dev-tools qtdeclarative5-dev libqt5webkit5-dev qtpositioning5-dev libqt5sensors5-dev libqt5opengl5-dev
+
+More details for building on embedded linux platforms (Raspberry Pi, 
+Beaglebone Black) can be found here:
+
+    http://supercollider.github.io/development/building
+
+The recommended version of gcc is 4.8
 
 
 Building
@@ -111,6 +120,13 @@ builds in a specific build directory:
    $> cd build
    $> cmake -DCMAKE_PREFIX_PATH=/path/to/qt5 ..
    ```
+
+   The `..` at the end is easy to miss. Don't forget it!
+
+   The location of `/path/to/qt5` will depend on how you installed Qt:
+
+   - If you used your Linux distribution's repositories, it will be `/usr/lib/i386-linux-gnu/` (32-bit) or `/usr/lib/x86_64-linux-gnu/` (64-bit).
+   - If you downloaded Qt from the Qt website, the path is two directories down from the top-level unpacked Qt directory: `Qt5.x.x/5.x/gcc/` (32-bit) or `Qt5.x.x/5.x/gcc_64/` (64-bit).
 
    You can see the available build options with ```cmake -LH```.
 
@@ -129,6 +145,15 @@ builds in a specific build directory:
 
    ```
    $> cmake -DCMAKE_BUILD_TYPE=Release ..
+   ```
+
+   In some situations it is preferable to install libraries and plugins
+   not in the `lib` directory but in a suffixed one, e.g. `lib64`.
+   In such a case you can set the cmake variable `LIB_SUFFIX`.
+   For example if you whish to install into `lib64`:
+
+   ```
+   $> cmake -DLIB_SUFFIX=64 ..
    ```
 
  - to install the whole program, run:
@@ -162,6 +187,17 @@ If you want to build without it configure cmake like this:
 $> cmake -DSC_QT=OFF ..
 ```
 
+Note: running headless SC in a X-less environment requires
+jackd without D-bus support. On Raspbian Jessie this requires
+compiling jackd rather than using the packaged version.
+Also note that you will get errors on sclang startup from
+classes requiring Qt. A workaround and more details are 
+described in:
+
+    http://supercollider.github.io/development/building-raspberrypi 
+
+
+
 ### Speeding up repeated builds
 
 If you build SuperCollider repeatedly, we recommend installing `ccache`
@@ -183,11 +219,11 @@ Debian Multimedia team. Repository (with debian/ folder):
 http://anonscm.debian.org/gitweb/?p=pkg-multimedia/supercollider.git;a=summary
 
 
-Running scsynth (standalone)
+Running scsynth or supernova (standalone)
 ----------------------------
 
-Run `scsynth` without options to get an option summary. Don't forget to
-start jackd before trying to use scsynth. If you want to add
+Run `scsynth --help`  or `supernova --help` to get an option summary. Don't forget to
+start jackd before starting the server. If you want to add
 directories to supercollider's search path or assign default jack
 ports, set up your environment as described below.
 
@@ -239,7 +275,7 @@ Environment
 The jack audio driver interface is configured based on various
 environment variables:
 
- * SC_JACK_DEFAULT_INPUTS comma separated list of jack ports that scsynth's inputs should connect to by default
+ * SC_JACK_DEFAULT_INPUTS comma separated list of jack ports that the server's inputs should connect to by default
 
    ```
    $> export SC_JACK_DEFAULT_INPUTS="system:capture_1,system:capture_2"
@@ -251,7 +287,7 @@ environment variables:
    $> export SC_JACK_DEFAULT_INPUTS="system"
    ```
 
- * SC_JACK_DEFAULT_OUTPUTS comma separated list of jack ports that scsynth's outputs should be connected to by default.
+ * SC_JACK_DEFAULT_OUTPUTS comma separated list of jack ports that the server's outputs should be connected to by default.
 
    ```
    $> export SC_JACK_DEFAULT_OUTPUTS="system:playback_1,system:playback_2"

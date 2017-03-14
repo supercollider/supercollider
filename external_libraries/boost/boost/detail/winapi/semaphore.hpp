@@ -92,14 +92,21 @@ using ::ReleaseSemaphore;
 #if defined( BOOST_USE_WINDOWS_H )
 
 const DWORD_ SEMAPHORE_ALL_ACCESS_ = SEMAPHORE_ALL_ACCESS;
+const DWORD_ SEMAPHORE_MODIFY_STATE_ = SEMAPHORE_MODIFY_STATE;
 
 #else // defined( BOOST_USE_WINDOWS_H )
 
-const DWORD_ SEMAPHORE_ALL_ACCESS_ = 0x1F0003;
+const DWORD_ SEMAPHORE_ALL_ACCESS_ = 0x001F0003;
+const DWORD_ SEMAPHORE_MODIFY_STATE_ = 0x00000002;
 
 #endif // defined( BOOST_USE_WINDOWS_H )
 
+// Undocumented and not present in Windows SDK. Enables NtQuerySemaphore.
+// http://undocumented.ntinternals.net/index.html?page=UserMode%2FUndocumented%20Functions%2FNT%20Objects%2FEvent%2FNtQueryEvent.html
+const DWORD_ SEMAPHORE_QUERY_STATE_ = 0x00000001;
+
 const DWORD_ semaphore_all_access = SEMAPHORE_ALL_ACCESS_;
+const DWORD_ semaphore_modify_state = SEMAPHORE_MODIFY_STATE_;
 
 
 #if !defined( BOOST_NO_ANSI_APIS )

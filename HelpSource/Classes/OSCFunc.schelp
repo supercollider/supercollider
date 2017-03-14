@@ -71,6 +71,8 @@ A convenience method which dumps all incoming OSC messages.
 argument:: bool
 A link::Classes/Boolean:: indicating whether dumping is on or off.
 
+argument:: hideStatusMsg
+A link::Classes/Boolean:: indicating whether server status messages are excluded from the dump or not.
 
 INSTANCEMETHODS::
 

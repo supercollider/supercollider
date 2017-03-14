@@ -58,14 +58,12 @@ public:
 #if !defined(BOOST_NO_CXX11_DEFAULTED_FUNCTIONS)
     aligned_allocator() = default;
 #else
-    aligned_allocator() BOOST_NOEXCEPT {
-    }
+    aligned_allocator() BOOST_NOEXCEPT { }
 #endif
 
     template<class U>
     aligned_allocator(const aligned_allocator<U, Alignment>&)
-        BOOST_NOEXCEPT {
-    }
+        BOOST_NOEXCEPT { }
 
     pointer address(reference value) const BOOST_NOEXCEPT {
         return detail::addressof(value);
@@ -80,14 +78,14 @@ public:
         if (size > 0) {
             p = aligned_alloc(min_align, sizeof(T) * size);
             if (!p) {
-                ::boost::throw_exception(std::bad_alloc());
+                boost::throw_exception(std::bad_alloc());
             }
         }
         return static_cast<T*>(p);
     }
 
     void deallocate(pointer ptr, size_type) {
-        ::boost::alignment::aligned_free(ptr);
+        boost::alignment::aligned_free(ptr);
     }
 
     BOOST_CONSTEXPR size_type max_size() const BOOST_NOEXCEPT {
@@ -98,24 +96,24 @@ public:
 #if !defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)
     template<class U, class... Args>
     void construct(U* ptr, Args&&... args) {
-        ::new(static_cast<void*>(ptr)) U(std::forward<Args>(args)...);
+        ::new((void*)ptr) U(std::forward<Args>(args)...);
     }
 #else
     template<class U, class V>
     void construct(U* ptr, V&& value) {
-        ::new(static_cast<void*>(ptr)) U(std::forward<V>(value));
+        ::new((void*)ptr) U(std::forward<V>(value));
     }
 #endif
 #else
     template<class U, class V>
     void construct(U* ptr, const V& value) {
-        ::new(static_cast<void*>(ptr)) U(value);
+        ::new((void*)ptr) U(value);
     }
 #endif
 
     template<class U>
     void construct(U* ptr) {
-        ::new(static_cast<void*>(ptr)) U();
+        ::new((void*)ptr) U();
     }
 
     template<class U>

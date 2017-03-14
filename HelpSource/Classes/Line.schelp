@@ -42,7 +42,7 @@ argument::doneAction
 
 A doneAction to be evaluated when the Line is completed. See
 
-link::Reference/UGen-doneActions::  for more detail.
+link::Classes/Done::  for more detail.
 
 
 Examples::

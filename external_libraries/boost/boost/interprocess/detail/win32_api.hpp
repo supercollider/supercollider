@@ -35,11 +35,11 @@
 #include <windows.h>
 
 #  if defined(BOOST_INTERPROCESS_BOOTSTAMP_IS_LASTBOOTUPTIME)
-#  include <Wbemidl.h>
-#  include <Objbase.h>
+#  include <wbemidl.h>
+#  include <objbase.h>
 #  endif
 
-#include <Shlobj.h>
+#include <shlobj.h>
 #endif
 
 #if defined(_MSC_VER)
@@ -64,9 +64,17 @@
 //////////////////////////////////////////////////////////////////////////////
 
 //Ignore -pedantic errors here (anonymous structs, etc.)
-#if defined(BOOST_GCC) && (BOOST_GCC >= 40600)
-#  pragma GCC diagnostic push
-#  pragma GCC diagnostic ignored "-pedantic"
+#if defined(BOOST_GCC)
+#  if (BOOST_GCC >= 40600)
+#     pragma GCC diagnostic push
+#     if (BOOST_GCC >= 60000)
+#        pragma GCC diagnostic ignored "-Wpedantic"
+#     else
+#        pragma GCC diagnostic ignored "-pedantic"
+#     endif
+#  else
+#     pragma GCC system_header
+#  endif
 #endif
 
 namespace boost  {

@@ -34,7 +34,7 @@ code::
 				0.2 // sine amplitude
 			)
 		);
-	}).send(s);
+	}).add;
 )
 
 x = Synth.new( \lag2ud_help ); // create the synth

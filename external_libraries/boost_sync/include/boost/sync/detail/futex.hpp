@@ -31,6 +31,13 @@
 #pragma once
 #endif
 
+// Some Android NDKs (Google NDK and older Crystax.NET NDK versions) don't define SYS_futex
+#if defined(SYS_futex)
+#define BOOST_SYNC_DETAIL_SYS_FUTEX SYS_futex
+#else
+#define BOOST_SYNC_DETAIL_SYS_FUTEX __NR_futex
+#endif
+
 namespace boost {
 
 namespace sync {
@@ -42,7 +49,7 @@ namespace linux_ {
 //! Invokes an operation on the futex
 BOOST_FORCEINLINE int futex_invoke(int* addr1, int op, int val1, const struct ::timespec* timeout = NULL, int* addr2 = NULL, int val3 = 0) BOOST_NOEXCEPT
 {
-    return ::syscall(SYS_futex, addr1, op, val1, timeout, addr2, val3);
+    return ::syscall(BOOST_SYNC_DETAIL_SYS_FUTEX, addr1, op, val1, timeout, addr2, val3);
 }
 
 //! Checks that the value \c pval is \c expected and blocks

@@ -11,8 +11,11 @@ the resonant modes of an object. Each mode is given a ring time, which is
 the time for the mode to decay by 60 dB.
 
 
-Unlike  link::Classes/Klank:: , the frequencies in DynKlank can be
-changed after it has been started.
+Unlike  link::Classes/Klank::, all parameters in DynKlank can be changed in real-time after it has been started.
+
+Note::
+The amplitude of the resulting signal depends on the server's sample rate. See link::Classes/Ringz#Interaction with sample rate#Ringz: Interaction with sample rate:: for details.
+::
 
 
 classmethods::
@@ -43,8 +46,9 @@ A scale factor multiplied by all ring times at initialization time.
 
 Examples::
 
+Four resonators each at maximum amplitude of 1.0 and ring times of 1 second, different exciters and no scaling:
+Note:: Watch the ` before the opening bracket of the parameter array! Also see link::Guides/Multichannel-Expansion::::
 code::
-s.boot;
 
 { DynKlank.ar(`[[800, 1071, 1153, 1723], nil, [1, 1, 1, 1]], Impulse.ar(2, 0, 0.1)) }.play;
 
@@ -54,7 +58,10 @@ s.boot;
 
 { DynKlank.ar(`[[200, 671, 1153, 1723], nil, [1, 1, 1, 1]], PinkNoise.ar([0.007,0.007])) }.play;
 
+::
 
+Changing parameters in realtime:
+code::
 (
 // change freqs and ringtimes with mouse
 {	var freqs, ringtimes;
@@ -99,4 +106,5 @@ a.setn(\amps, Array.exprand(4, 0.01, 1));
 { Out.kr(102, MouseX.kr(1, 2) * Array.rand(4, 500, 2000)) }.play;
 a.mapn(\freqs, 102, 4);
 ::
+
 

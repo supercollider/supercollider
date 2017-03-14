@@ -48,6 +48,7 @@ ARGUMENT:: path
 In addition to the default downloaded-quarks
 add folders that contain quarks to offer on the menu for installation.
 These may be private quarks, cloned working copies or folders where you have manually downloaded quarks.
+NOTE:: The argument should be a path to a directory emphasis::containing quark directories::. It should emphasis::not:: be an isolated quark directory by itself. Users are discouraged from scattering quark directories in isolated locations. ::
 returns:: this
 
 METHOD:: all
@@ -77,6 +78,9 @@ Unix style tildas (~/supercollider/quarks/my-quark) resolve to the user's home d
 By convention the file is called quarks.txt
 ARGUMENT:: path
 path of file to load. May contain ~ or relative paths (root is current working directory)
+ARGUMENT:: done
+function to be evaluated when loading is done
+
 returns:: this
 
 METHOD:: update
@@ -158,11 +162,8 @@ private. gets or creates a Quark by name, storing it in a central cache.
 ARGUMENT:: name
 returns:: Quark
 
-METHOD:: prReadDirectoryFile
-private
-ARGUMENT:: fetch
-ARGUMENT:: dirCachePath
-returns:: this
+PRIVATE:: prReadDirectoryFile
+
 
 
 INSTANCEMETHODS::

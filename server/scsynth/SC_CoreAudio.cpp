@@ -81,11 +81,11 @@ static void syncOSCOffsetWithTimeOfDay()
 	// Then if this machine is synced via NTP, we are synced with the world.
 	// more accurate way to do this??
 
-    using namespace std::chrono;
+	using namespace std::chrono;
 	struct timeval tv;
 
-    nanoseconds systemTimeBefore, systemTimeAfter;
-    int64 diff, minDiff = 0x7fffFFFFffffFFFFLL;
+	nanoseconds systemTimeBefore, systemTimeAfter;
+	int64 diff, minDiff = 0x7fffFFFFffffFFFFLL;
 
 	// take best of several tries
 	const int numberOfTries = 5;
@@ -98,9 +98,9 @@ static void syncOSCOffsetWithTimeOfDay()
 		diff = (systemTimeAfter - systemTimeBefore).count();
 		if (diff < minDiff) {
 			minDiff = diff;
-            // assume that gettimeofday happens halfway between high_resolution_clock::now() calls
-            int64 systemTimeBetween = systemTimeBefore.count() + diff/2;
-            int64 systemTimeInOSCunits = (int64)((double)systemTimeBetween * kNanosToOSCunits);
+			// assume that gettimeofday happens halfway between high_resolution_clock::now() calls
+			int64 systemTimeBetween = systemTimeBefore.count() + diff/2;
+			int64 systemTimeInOSCunits = (int64)((double)systemTimeBetween * kNanosToOSCunits);
 			int64 timeOfDayInOSCunits  = ((int64)(tv.tv_sec + kSECONDS_FROM_1900_to_1970) << 32)
 								    + (int64)(tv.tv_usec * kMicrosToOSCunits);
 			newOffset = timeOfDayInOSCunits - systemTimeInOSCunits;
@@ -336,10 +336,10 @@ void FreeOSCPacket(FifoMsg *inMsg)
 		inMsg->mData = 0;
 #if _MSC_VER == 1310
 #pragma message("$$$todo fixme hack for the 'uninitialized packet->mData ptr when using MSVC 7.1 debug")
-    if (packet->mData != reinterpret_cast<char*>(0xcdcdcdcd))
-  		free(packet->mData);
+	if (packet->mData != reinterpret_cast<char*>(0xcdcdcdcd))
+		free(packet->mData);
 #else //#ifdef _MSC_VER
-    free(packet->mData);
+		free(packet->mData);
 #endif //#ifdef _MSC_VER
 		free(packet);
 	}
@@ -509,7 +509,7 @@ bool SC_AudioDriver::Stop()
 
 SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)
 {
-    return new SC_CoreAudioDriver(inWorld);
+	return new SC_CoreAudioDriver(inWorld);
 }
 
 #endif
@@ -541,22 +541,22 @@ std::vector<AudioValueRange> GetAvailableNominalSampleRates(const AudioDeviceID&
 	UInt32							size;
 	UInt32							count;
 	std::auto_ptr<AudioValueRange>	validSampleRateRanges;
-	
+
 	AudioObjectPropertyAddress addr = {
 		kAudioDevicePropertyAvailableNominalSampleRates,
 		kAudioObjectPropertyScopeGlobal,
 		kAudioObjectPropertyElementMaster
 	};
-	
+
 	err = AudioObjectGetPropertyDataSize(device, &addr, 0, NULL, &size);
-	
+
 	if (err != kAudioHardwareNoError) {
 		scprintf("get kAudioDevicePropertyAvailableNominalSampleRates data size error %4.4s\n", (char*)&err);
 	} else {
 		if (size > 0) {
 			count = size / sizeof(AudioValueRange);
 			validSampleRateRanges.reset(new AudioValueRange[count]);
-			
+
 			err = AudioObjectGetPropertyData(device, &addr, 0, NULL, &size, validSampleRateRanges.get());
 			if (err != kAudioHardwareNoError) {
 				scprintf("get kAudioDevicePropertyAvailableNominalSampleRates error %4.4s\n", (char*)&err);
@@ -567,7 +567,7 @@ std::vector<AudioValueRange> GetAvailableNominalSampleRates(const AudioDeviceID&
 			}
 		}
 	}
-	
+
 	return result;
 }
 
@@ -785,7 +785,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 
 		bool sampleRateSupported = false;
 		auto availableSampleRates = GetAvailableNominalSampleRates(mOutputDevice);
-		
+
 		// If we've got two devices, we need to use a sample rate list from both
 		//  This won't account for cases where there are overlapping ranges, but
 		//  that seems sufficiently edge-case to ignore for now.
@@ -801,25 +801,25 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 					return (lhs.mMaximum != rhs.mMaximum) ? (lhs.mMaximum < rhs.mMaximum) : (lhs.mMinimum < rhs.mMinimum);
 				}
 			);
-			
+
 			availableSampleRatesInputOutput.resize(rateListIter - availableSampleRatesInputOutput.begin());
 			availableSampleRates = availableSampleRatesInputOutput;
 		}
-		
+
 		for (const AudioValueRange& range : availableSampleRates) {
 			if (mPreferredSampleRate >= range.mMinimum && mPreferredSampleRate <= range.mMaximum) {
 				sampleRateSupported = true;
 				break;
 			}
 		}
-		
+
 		if (!sampleRateSupported) {
 			#define SR_MAX_VALUE  9999999
 			#define SR_MIN_VALUE -9999999
-			
+
 			Float64 nextHighestMatch = SR_MAX_VALUE;
 			Float64 nextLowestMatch = SR_MIN_VALUE;
-			
+
 			for (const AudioValueRange& range : availableSampleRates) {
 				if (range.mMinimum > mPreferredSampleRate && range.mMinimum < nextHighestMatch) {
 					nextHighestMatch = range.mMinimum;
@@ -828,7 +828,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 					nextLowestMatch = range.mMaximum;
 				}
 			}
-			
+
 			if (nextHighestMatch != SR_MAX_VALUE) {
 				sampleRate = nextHighestMatch;
 				sampleRateSupported = true;
@@ -838,7 +838,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 			} else {
 				sampleRateSupported = false;
 			}
-			
+
 			if (sampleRateSupported) {
 				scprintf("Requested sample rate %f was not available - attempting to use sample rate of %f\n", (double)mPreferredSampleRate, (double)sampleRate);
 			} else {
@@ -853,12 +853,12 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 				}
 			}
 		}
-		
+
 		// Requested sample rate is available - we're going to set and, if we don't hit an error,
 		// assume that our set was successful.
 		if (sampleRateSupported) {
 			bool sampleRateSetSuccess = true;
-			
+
 			propertyAddress.mSelector = kAudioDevicePropertyNominalSampleRate;
 			propertyAddress.mScope = kAudioDevicePropertyScopeOutput;
 
@@ -868,7 +868,7 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 				sampleRateSetSuccess = false;
 				scprintf("set kAudioDevicePropertyNominalSampleRate error %4.4s\n", (char*)&err);
 			}
-			
+
 			if (UseSeparateIO())
 			{
 				count = sizeof(Float64);
@@ -877,13 +877,13 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 				propertyAddress.mScope = kAudioDevicePropertyScopeInput;
 
 				err = AudioObjectSetPropertyData(mInputDevice, &propertyAddress, 0, NULL, count, &sampleRate);
-				
+
 				if (err != kAudioHardwareNoError) {
 					sampleRateSetSuccess = false;
 					scprintf("set kAudioDevicePropertyNominalSampleRate error %4.4s\n", (char*)&err);
 				}
 			}
-			
+
 			if (sampleRateSetSuccess) {
 				mExplicitSampleRate = sampleRate;
 			} else {
@@ -933,8 +933,21 @@ bool SC_CoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* outS
 			return false;
 		}
 
-		if (!mExplicitSampleRate && inputStreamDesc.mSampleRate != outputStreamDesc.mSampleRate) {
-			scprintf("input and output sample rates do not match. %g != %g\n", inputStreamDesc.mSampleRate, outputStreamDesc.mSampleRate);
+		if (
+			// We do not support mismatched input and output sample rates, but there's no harm in skipping
+			// this check if numInputBusChannels == 0. This allows the user to disable input entirely as
+			// a workaround for a sample rate mismatch.
+			mWorld->mNumInputs > 0 &&
+			!mExplicitSampleRate &&
+			inputStreamDesc.mSampleRate != outputStreamDesc.mSampleRate
+		) {
+			scprintf(
+				"ERROR: Input sample rate is %g, but output is %g. "
+				"Mismatched sample rates are not supported. "
+				"To disable input, set the number of input channels to 0.\n",
+				inputStreamDesc.mSampleRate,
+				outputStreamDesc.mSampleRate
+			);
 			return false;
 		}
 	}
@@ -1464,11 +1477,11 @@ void SC_CoreAudioDriver::Run(const AudioBufferList* inInputData,
 OSStatus	hardwareListenerProc (	AudioHardwarePropertyID	inPropertyID,
 								  void*					inClientData)
 {
-    OSStatus			err = noErr;
-    char				cStr[255];
-    UInt32				outSize;
-    Boolean				outWritable;
-    AudioDeviceID		deviceID;
+	OSStatus			err = noErr;
+	char				cStr[255];
+	UInt32				outSize;
+	Boolean				outWritable;
+	AudioDeviceID		deviceID;
 
 	AudioObjectPropertyAddress  propertyAddress;
 
@@ -1476,10 +1489,10 @@ OSStatus	hardwareListenerProc (	AudioHardwarePropertyID	inPropertyID,
 	propertyAddress.mScope = kAudioObjectPropertyScopeGlobal;
 	propertyAddress.mElement = kAudioObjectPropertyElementMaster;
 
-    switch(inPropertyID)
-    {
-        case kAudioHardwarePropertyDefaultOutputDevice:
-            scprintf("%s\n", "***** HARDWARE NOTIFICATION - kAudioHardwarePropertyDefaultOutputDevice\r");
+	switch(inPropertyID)
+	{
+		case kAudioHardwarePropertyDefaultOutputDevice:
+			scprintf("%s\n", "***** HARDWARE NOTIFICATION - kAudioHardwarePropertyDefaultOutputDevice\r");
 
 			//err =  AudioHardwareGetPropertyInfo(kAudioHardwarePropertyDefaultOutputDevice,  &outSize, &outWritable);
 
@@ -1518,10 +1531,10 @@ OSStatus	hardwareListenerProc (	AudioHardwarePropertyID	inPropertyID,
 
 			// do something
 
-            break;
+			break;
 
-        case kAudioHardwarePropertyDefaultInputDevice:
-            scprintf("%s\n", "***** HARDWARE NOTIFICATION - kAudioHardwarePropertyDefaultInputDevice\r");
+		case kAudioHardwarePropertyDefaultInputDevice:
+			scprintf("%s\n", "***** HARDWARE NOTIFICATION - kAudioHardwarePropertyDefaultInputDevice\r");
 			// err =  AudioHardwareGetPropertyInfo(kAudioHardwarePropertyDefaultInputDevice,  &outSize, &outWritable);
 
 			propertyAddress.mSelector = kAudioHardwarePropertyDefaultInputDevice;
@@ -1562,11 +1575,11 @@ OSStatus	hardwareListenerProc (	AudioHardwarePropertyID	inPropertyID,
 
 			// do something
 
-            break;
+			break;
 
-        case kAudioHardwarePropertyDefaultSystemOutputDevice:
-            scprintf("%s\n", "***** HARDWARE NOTIFICATION - kAudioHardwarePropertyDefaultSystemOutputDevice\r");
-            //err =  AudioHardwareGetPropertyInfo(kAudioHardwarePropertyDefaultSystemOutputDevice,  &outSize, &outWritable);
+		case kAudioHardwarePropertyDefaultSystemOutputDevice:
+			scprintf("%s\n", "***** HARDWARE NOTIFICATION - kAudioHardwarePropertyDefaultSystemOutputDevice\r");
+			//err =  AudioHardwareGetPropertyInfo(kAudioHardwarePropertyDefaultSystemOutputDevice,  &outSize, &outWritable);
 
 			propertyAddress.mSelector = kAudioHardwarePropertyDefaultSystemOutputDevice;
 
@@ -1604,21 +1617,21 @@ OSStatus	hardwareListenerProc (	AudioHardwarePropertyID	inPropertyID,
 
 			// do something
 
-            break;
+			break;
 
-        case kAudioHardwarePropertyDevices:
-        {
-            scprintf("%s\n", "***** HARDWARE NOTIFICATION - kAudioHardwarePropertyDevices\r");
-        }
-            break;
-		default:
-			scprintf("%s\n", "***** HARDWARE NOTIFICATION - %4.4s\r", &inPropertyID);
-	}
+		case kAudioHardwarePropertyDevices:
+		{
+			scprintf("%s\n", "***** HARDWARE NOTIFICATION - kAudioHardwarePropertyDevices\r");
+		}
+			break;
+			default:
+				scprintf("%s\n", "***** HARDWARE NOTIFICATION - %4.4s\r", &inPropertyID);
+		}
 
-    fflush(stdout);
-    return (noErr);
+		fflush(stdout);
+		return (noErr);
 }
- 
+
 OSStatus AddDeviceListeners(AudioDeviceID inDevice, void *inClientData);
 
 bool SC_CoreAudioDriver::DriverStart()
@@ -1862,38 +1875,38 @@ OSStatus deviceListenerProc (AudioObjectID inObjectID,
                              const AudioObjectPropertyAddress inAddresses[],
                              void* inClientData)
 {
-    OSStatus err = noErr;
+	OSStatus err = noErr;
 
 	SC_CoreAudioDriver* coredriver = (SC_CoreAudioDriver*) inClientData;
 
-    for (int i=0; i<inNumberAddresses; i++)
-    {
-        AudioObjectPropertyAddress propAddress = inAddresses[i];
-        if (inObjectID == kAudioObjectSystemObject &&
-            propAddress.mSelector == kAudioHardwarePropertyDefaultOutputDevice)
-        {
-            coredriver->StopStart();
-        }
-    }
+	for (int i=0; i<inNumberAddresses; i++)
+	{
+		AudioObjectPropertyAddress propAddress = inAddresses[i];
+		if (inObjectID == kAudioObjectSystemObject &&
+			propAddress.mSelector == kAudioHardwarePropertyDefaultOutputDevice)
+		{
+			coredriver->StopStart();
+		}
+	}
 
-    return (err);
+	return (err);
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 OSStatus AddDeviceListeners(AudioDeviceID inDevice, void *inClientData)
 {
-    OSStatus err = noErr;
-    AudioObjectPropertyAddress propertyAddress;
-    
-    // ONLY REACTING TO HEADPHONE SWAPS FOR NOW - see version control history for removed dead code
-    propertyAddress.mSelector = kAudioHardwarePropertyDevices;
-    propertyAddress.mScope = kAudioObjectPropertyScopeGlobal;
-    propertyAddress.mElement = kAudioObjectPropertyElementMaster;
+	OSStatus err = noErr;
+	AudioObjectPropertyAddress propertyAddress;
 
-    err = AudioObjectAddPropertyListener(inDevice, &propertyAddress, deviceListenerProc, inClientData);
-    if (err) return err;
+	// ONLY REACTING TO HEADPHONE SWAPS FOR NOW - see version control history for removed dead code
+	propertyAddress.mSelector = kAudioHardwarePropertyDevices;
+	propertyAddress.mScope = kAudioObjectPropertyScopeGlobal;
+	propertyAddress.mElement = kAudioObjectPropertyElementMaster;
 
-    return (err);
+	err = AudioObjectAddPropertyListener(inDevice, &propertyAddress, deviceListenerProc, inClientData);
+	if (err) return err;
+
+	return (err);
 }
 
 #endif // SC_AUDIO_API_COREAUDIO
@@ -2348,10 +2361,10 @@ bool SC_iCoreAudioDriver::DriverSetup(int* outNumSamplesPerCallback, double* out
 	AudioStreamBasicDescription streamFormat;
 	streamFormat.mFormatID         = kAudioFormatLinearPCM;
 	streamFormat.mFormatFlags      =
-                  kAudioFormatFlagIsSignedInteger
-                | kAudioFormatFlagsNativeEndian
-                | kLinearPCMFormatFlagIsNonInterleaved
-                | (24 << kLinearPCMFormatFlagsSampleFractionShift);
+		  kAudioFormatFlagIsSignedInteger
+		| kAudioFormatFlagsNativeEndian
+		| kLinearPCMFormatFlagIsNonInterleaved
+		| (24 << kLinearPCMFormatFlagsSampleFractionShift);
 	streamFormat.mSampleRate       = 44100;
 	streamFormat.mBitsPerChannel   = 32;
 	streamFormat.mChannelsPerFrame = 2;

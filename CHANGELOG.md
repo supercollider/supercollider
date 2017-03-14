@@ -1,8 +1,612 @@
 # Change Log
 
+## [3.8.0](https://github.com/supercollider/supercollider/tree/3.8.0) (2016-09-23)
+[Full Changelog](https://github.com/supercollider/supercollider/compare/3.7.2...3.8.0)
+
+##  API change
+
+- Increase the default number of audio buses from 128 to 1024
+  [#2239](https://github.com/supercollider/supercollider/pull/2239) by [vivid-synth](https://github.com/vivid-synth)
+- server plugins: Unify panning behavior of granular ugens
+  [#2136](https://github.com/supercollider/supercollider/pull/2136) by [snappizz](https://github.com/snappizz)
+- scsynth: commandline option  (-B) to bind to specific address
+  [#2095](https://github.com/supercollider/supercollider/pull/2095) by [llloret](https://github.com/llloret)
+- PathName has potentially superfluous methods
+  [#1909](https://github.com/supercollider/supercollider/issues/1909) by [telephon](https://github.com/telephon)
+- class library: sound file view - rename argument startframe -> startFrame to match convention
+  [#1684](https://github.com/supercollider/supercollider/pull/1684) by [telephon](https://github.com/telephon)
+
+##  comp: scsynth
+
+- Add commit to version info
+  [#2243](https://github.com/supercollider/supercollider/pull/2243) by [vivid-synth](https://github.com/vivid-synth)
+- fftlib: remove duplicate defines
+  [#2089](https://github.com/supercollider/supercollider/pull/2089) by [sonoro1234](https://github.com/sonoro1234)
+- SC_fftlib: allow ensurewindow to be called
+  [#2008](https://github.com/supercollider/supercollider/pull/2008) by [sonoro1234](https://github.com/sonoro1234)
+- jack: add metadata support
+  [#1951](https://github.com/supercollider/supercollider/pull/1951) by [ventosus](https://github.com/ventosus)
+- reboot of the internal server crashes interpreter
+  [#1526](https://github.com/supercollider/supercollider/issues/1526) by [ceremona](https://github.com/ceremona)
+
+##  comp: server plugins
+
+- server plugins: Gendy*: fix initialization bug
+  [#2331](https://github.com/supercollider/supercollider/pull/2331) by [snappizz](https://github.com/snappizz)
+- Bug 1355 demand env overshoot
+  [#2164](https://github.com/supercollider/supercollider/pull/2164) by [baconpaul](https://github.com/baconpaul)
+- Allow audio-rate phasein argument to VOsc
+  [#2140](https://github.com/supercollider/supercollider/pull/2140) by [snappizz](https://github.com/snappizz)
+- PartConv avoid using first ir section twice
+  [#2015](https://github.com/supercollider/supercollider/pull/2015) by [sonoro1234](https://github.com/sonoro1234)
+- plugins: do not advance stages before env start
+  [#1424](https://github.com/supercollider/supercollider/pull/1424) by [scztt](https://github.com/scztt)
+
+##  comp: supernova
+
+- Add supernova to some scsynth-specific docs
+  [#2256](https://github.com/supercollider/supercollider/pull/2256) by [vivid-synth](https://github.com/vivid-synth)
+- build: don't auto-enable supernova if old cmake
+  [#2170](https://github.com/supercollider/supercollider/pull/2170) by [danstowell](https://github.com/danstowell)
+- supernova: use c++14 move captures and proper move semantics
+  [#2141](https://github.com/supercollider/supercollider/pull/2141) by [timblechmann](https://github.com/timblechmann)
+- supernova: relax handling of malformed c_set messages
+  [#2113](https://github.com/supercollider/supercollider/pull/2113) by [timblechmann](https://github.com/timblechmann)
+- supernova: portaudio_backend changed #elif for #else
+  [#1947](https://github.com/supercollider/supercollider/pull/1947) by [sonoro1234](https://github.com/sonoro1234)
+- supernova: minor improvements
+  [#1908](https://github.com/supercollider/supercollider/pull/1908) by [timblechmann](https://github.com/timblechmann)
+
+##  comp: sclang
+
+- remove references to CocoaBridge
+  [#2351](https://github.com/supercollider/supercollider/pull/2351) by [snappizz](https://github.com/snappizz)
+- lang: Remove debug message
+  [#2250](https://github.com/supercollider/supercollider/pull/2250) by [gusano](https://github.com/gusano)
+- sclang: Ensure git object is defined for checkout
+  [#2216](https://github.com/supercollider/supercollider/pull/2216) by [scztt](https://github.com/scztt)
+- asStringPerc SCLang Crash
+  [#2168](https://github.com/supercollider/supercollider/pull/2168) by [baconpaul](https://github.com/baconpaul)
+- Classname as Selector crashes
+  [#2166](https://github.com/supercollider/supercollider/pull/2166) by [baconpaul](https://github.com/baconpaul)
+- Reimplement match lang ip
+  [#1972](https://github.com/supercollider/supercollider/pull/1972) by [muellmusik](https://github.com/muellmusik)
+- sclang resolves relative paths in the language configuration file relative to the current working directory
+  [#1927](https://github.com/supercollider/supercollider/issues/1927) by [miguel-negrao](https://github.com/miguel-negrao)
+- class library: plot does not specify min and max, so add 'plotAudio' method with -1 .. 1 range
+  [#1846](https://github.com/supercollider/supercollider/pull/1846) by [telephon](https://github.com/telephon)
+- Fix presumed bug in d0f475d (min should be max). Fixes #1842
+  [#1843](https://github.com/supercollider/supercollider/pull/1843) by [danstowell](https://github.com/danstowell)
+- parser doesn't catch backward variable definitions
+  [#1514](https://github.com/supercollider/supercollider/issues/1514) by [telephon](https://github.com/telephon)
+- sclang crashes on 0.exit
+  [#1438](https://github.com/supercollider/supercollider/issues/1438) by [jamshark70](https://github.com/jamshark70)
+- Crash when using a class name in binop method call syntax
+  [#669](https://github.com/supercollider/supercollider/issues/669) by [jamshark70](https://github.com/jamshark70)
+
+##  comp: class library
+
+- Fix printing filepath at end of recording
+  [#2435](https://github.com/supercollider/supercollider/pull/2435) by [bagong](https://github.com/bagong)
+- Add default value to second argument in string replace
+  [#2433](https://github.com/supercollider/supercollider/pull/2433) by [bagong](https://github.com/bagong)
+- server: don't set client id on failure
+  [#2405](https://github.com/supercollider/supercollider/pull/2405) by [telephon](https://github.com/telephon)
+- class library: add missing proxy init in Ndef
+  [#2387](https://github.com/supercollider/supercollider/pull/2387) by [telephon](https://github.com/telephon)
+- EnvirGui calls `this.widgets` but has none
+  [#2371](https://github.com/supercollider/supercollider/issues/2371) by [telephon](https://github.com/telephon)
+- Topic/deprecating
+  [#2370](https://github.com/supercollider/supercollider/pull/2370) by [crucialfelix](https://github.com/crucialfelix)
+- Make sure Spec is inited before ControlSpec
+  [#2346](https://github.com/supercollider/supercollider/pull/2346) by [antonhornquist](https://github.com/antonhornquist)
+- Handle spaces in SCDoc internal links
+  [#2336](https://github.com/supercollider/supercollider/pull/2336) by [crucialfelix](https://github.com/crucialfelix)
+- Usage of Class.initClassTree(ControlSpec) can remove common mappings
+  [#2318](https://github.com/supercollider/supercollider/issues/2318) by [antonhornquist](https://github.com/antonhornquist)
+- SoundFileView.schelp wrong argument names
+  [#2311](https://github.com/supercollider/supercollider/issues/2311) by [jamshark70](https://github.com/jamshark70)
+- Add linting and fix classlib indention
+  [#2298](https://github.com/supercollider/supercollider/pull/2298) by [gusano](https://github.com/gusano)
+- class library: TreeView: add alias methods addChild, insertChild, childAt
+  [#2260](https://github.com/supercollider/supercollider/pull/2260) by [snappizz](https://github.com/snappizz)
+- Classlib: Quarks: Fix typo in incompatibility message (SC: camel case…
+  [#2245](https://github.com/supercollider/supercollider/pull/2245) by [jamshark70](https://github.com/jamshark70)
+- Classlib: GUI: asLayoutElement interface for non-Views that work in layouts
+  [#2234](https://github.com/supercollider/supercollider/pull/2234) by [jamshark70](https://github.com/jamshark70)
+- ServerStatus - watcher notifies the server
+  [#2226](https://github.com/supercollider/supercollider/pull/2226) by [gusano](https://github.com/gusano)
+- class library: server gui updates better
+  [#2215](https://github.com/supercollider/supercollider/pull/2215) by [telephon](https://github.com/telephon)
+- class library: update link when server failed to start
+  [#2209](https://github.com/supercollider/supercollider/pull/2209) by [snappizz](https://github.com/snappizz)
+- s.makeGui server window broken in master
+  [#2202](https://github.com/supercollider/supercollider/issues/2202) by [jamshark70](https://github.com/jamshark70)
+- Classlib: GUI: Support "has-a" GUI objects by calling asView within Layouts
+  [#2188](https://github.com/supercollider/supercollider/pull/2188) by [jamshark70](https://github.com/jamshark70)
+- Move Spec/Warp etc. out of GUI back into Control
+  [#2182](https://github.com/supercollider/supercollider/pull/2182) by [crucialfelix](https://github.com/crucialfelix)
+- asOSCArgArray : do not expand a string into an array
+  [#2133](https://github.com/supercollider/supercollider/pull/2133) by [telephon](https://github.com/telephon)
+- class library: implement audio rate lag control
+  [#2127](https://github.com/supercollider/supercollider/pull/2127) by [telephon](https://github.com/telephon)
+- cmake needs to install HUT directory on OSX
+  [#2116](https://github.com/supercollider/supercollider/issues/2116) by [sensestage](https://github.com/sensestage)
+- class library: streamArg correctly yields
+  [#2110](https://github.com/supercollider/supercollider/pull/2110) by [telephon](https://github.com/telephon)
+- class library: move asOSCArgArray out of backwards_compatibility
+  [#2108](https://github.com/supercollider/supercollider/pull/2108) by [telephon](https://github.com/telephon)
+- class library: fix compatibility of asOSCArgArray
+  [#2097](https://github.com/supercollider/supercollider/pull/2097) by [telephon](https://github.com/telephon)
+- List can't be used in Synth arg list
+  [#2096](https://github.com/supercollider/supercollider/issues/2096) by [jamshark70](https://github.com/jamshark70)
+- deprecated-3.7: remove it in master?
+  [#2038](https://github.com/supercollider/supercollider/issues/2038) by [danstowell](https://github.com/danstowell)
+- Topic/server unresponsive
+  [#1935](https://github.com/supercollider/supercollider/pull/1935) by [crucialfelix](https://github.com/crucialfelix)
+- clean up PathName code
+  [#1912](https://github.com/supercollider/supercollider/pull/1912) by [telephon](https://github.com/telephon)
+- returning nil as UGen graph returns uninformative error
+  [#1771](https://github.com/supercollider/supercollider/issues/1771) by [telephon](https://github.com/telephon)
+- Improve error handling in Server:prepareForRecord
+  [#1580](https://github.com/supercollider/supercollider/issues/1580) by [bagong](https://github.com/bagong)
+- Fix range in Function:plot
+  [#1454](https://github.com/supercollider/supercollider/pull/1454) by [thormagnusson](https://github.com/thormagnusson)
+- Move Spec back into Control
+  [#2181](https://github.com/supercollider/supercollider/issues/2181) by [multivac61](https://github.com/multivac61)
+
+##  comp: help
+
+- add News in 3.8
+  [#2365](https://github.com/supercollider/supercollider/pull/2365) by [snappizz](https://github.com/snappizz)
+- help: History: remove use of .speak in examples
+  [#2352](https://github.com/supercollider/supercollider/pull/2352) by [snappizz](https://github.com/snappizz)
+- help: SoundFileView: fix argument names
+  [#2350](https://github.com/supercollider/supercollider/pull/2350) by [snappizz](https://github.com/snappizz)
+- Add example to LatoocarfianL
+  [#2335](https://github.com/supercollider/supercollider/pull/2335) by [crucialfelix](https://github.com/crucialfelix)
+- Update Pitch.schelp
+  [#2334](https://github.com/supercollider/supercollider/pull/2334) by [crucialfelix](https://github.com/crucialfelix)
+- Revert "Update Ndef.schelp"
+  [#2323](https://github.com/supercollider/supercollider/pull/2323) by [nuss](https://github.com/nuss)
+- move SVG logo from HelpSource/images to icons
+  [#2312](https://github.com/supercollider/supercollider/pull/2312) by [snappizz](https://github.com/snappizz)
+- Signal.schelp: small typo fix in play:loop desc
+  [#2308](https://github.com/supercollider/supercollider/pull/2308) by [jaschanarveson](https://github.com/jaschanarveson)
+- Fix some anchor links in help
+  [#2293](https://github.com/supercollider/supercollider/pull/2293) by [vivid-synth](https://github.com/vivid-synth)
+- Reference: Server-Command: clarify Wave Fill flags
+  [#2288](https://github.com/supercollider/supercollider/pull/2288) by [jaschanarveson](https://github.com/jaschanarveson)
+- help: SC3 vs SC2: add historical note
+  [#2287](https://github.com/supercollider/supercollider/pull/2287) by [snappizz](https://github.com/snappizz)
+- help: create help file for ScIDE
+  [#2285](https://github.com/supercollider/supercollider/pull/2285) by [snappizz](https://github.com/snappizz)
+- help: VLayout: change QLineLayout to LineLayout
+  [#2283](https://github.com/supercollider/supercollider/pull/2283) by [snappizz](https://github.com/snappizz)
+- help: Dialog: expand explanation of openPanel and savePanel
+  [#2282](https://github.com/supercollider/supercollider/pull/2282) by [snappizz](https://github.com/snappizz)
+- Add "(NRT)" to the NRT help file title (searchability)
+  [#2281](https://github.com/supercollider/supercollider/pull/2281) by [vivid-synth](https://github.com/vivid-synth)
+- Update Ndef.schelp
+  [#2273](https://github.com/supercollider/supercollider/pull/2273) by [tiagmoraismorgado](https://github.com/tiagmoraismorgado)
+- Update MouseX.schelp
+  [#2272](https://github.com/supercollider/supercollider/pull/2272) by [tiagmoraismorgado](https://github.com/tiagmoraismorgado)
+- Update MouseButton.schelp
+  [#2271](https://github.com/supercollider/supercollider/pull/2271) by [tiagmoraismorgado](https://github.com/tiagmoraismorgado)
+- help: Remove some outdated GUI info
+  [#2248](https://github.com/supercollider/supercollider/pull/2248) by [snappizz](https://github.com/snappizz)
+- Add supernova to the list of components
+  [#2244](https://github.com/supercollider/supercollider/pull/2244) by [vivid-synth](https://github.com/vivid-synth)
+- help: add SVG logo to images dir
+  [#2235](https://github.com/supercollider/supercollider/pull/2235) by [snappizz](https://github.com/snappizz)
+- Replace use of .send(s) with .add in class examples.
+  [#2223](https://github.com/supercollider/supercollider/pull/2223) by [kisielk](https://github.com/kisielk)
+- help: update Document.schelp to match current API
+  [#2219](https://github.com/supercollider/supercollider/pull/2219) by [snappizz](https://github.com/snappizz)
+- help: RangeSlider: correct dragging instructions
+  [#2210](https://github.com/supercollider/supercollider/pull/2210) by [snappizz](https://github.com/snappizz)
+- examples: replace .send(s) with .add
+  [#2208](https://github.com/supercollider/supercollider/pull/2208) by [snappizz](https://github.com/snappizz)
+- PulseDivider.schelp: Fix typo and clarify div
+  [#2199](https://github.com/supercollider/supercollider/pull/2199) by [kisielk](https://github.com/kisielk)
+- Pmono.schelp: fix duplicate "the"
+  [#2187](https://github.com/supercollider/supercollider/pull/2187) by [kisielk](https://github.com/kisielk)
+- Fix a typo in SynthDef.schelp
+  [#2186](https://github.com/supercollider/supercollider/pull/2186) by [kisielk](https://github.com/kisielk)
+- fixing Henon help
+  [#2150](https://github.com/supercollider/supercollider/pull/2150) by [tiagmoraismorgado](https://github.com/tiagmoraismorgado)
+- document DelTapWr/DelTapRd/MultiTap delay time caveats
+  [#2132](https://github.com/supercollider/supercollider/pull/2132) by [snappizz](https://github.com/snappizz)
+- help: document range better for LFGauss UGen
+  [#2121](https://github.com/supercollider/supercollider/pull/2121) by [telephon](https://github.com/telephon)
+- help: hidfunc, clarify nil on usage and usageID
+  [#2104](https://github.com/supercollider/supercollider/pull/2104) by [llloret](https://github.com/llloret)
+- help fixes  for OSCfunc & Env
+  [#2087](https://github.com/supercollider/supercollider/pull/2087) by [miczac](https://github.com/miczac)
+- RecordBuf.schelp: corrected Synthnames for proper playback, lower volume for overdub
+  [#2071](https://github.com/supercollider/supercollider/pull/2071) by [miczac](https://github.com/miczac)
+- AudioIn.schelp: tamed feedback in example, removed "patching" example
+  [#2070](https://github.com/supercollider/supercollider/pull/2070) by [miczac](https://github.com/miczac)
+- Pulse.schelp: added missing .kr method, beautified examples
+  [#2069](https://github.com/supercollider/supercollider/pull/2069) by [miczac](https://github.com/miczac)
+- Helpfile fixing
+  [#2061](https://github.com/supercollider/supercollider/pull/2061) by [LFSaw](https://github.com/LFSaw)
+- Helpfile fixing
+  [#2057](https://github.com/supercollider/supercollider/pull/2057) by [jreus](https://github.com/jreus)
+- Revert "LFSaw.schelp: Note and example for special initial-phase behaviour"
+  [#2056](https://github.com/supercollider/supercollider/pull/2056) by [miczac](https://github.com/miczac)
+- Klank & DynKlank - better structure for examples
+  [#2055](https://github.com/supercollider/supercollider/pull/2055) by [miczac](https://github.com/miczac)
+- RLPF.schelp: adjust example to avoid exploding filter due to frequency folding when modulated.
+  [#2053](https://github.com/supercollider/supercollider/pull/2053) by [miczac](https://github.com/miczac)
+- Helpfile fixing
+  [#2042](https://github.com/supercollider/supercollider/pull/2042) by [adcxyz](https://github.com/adcxyz)
+- Added closeWhenDone to .cue
+  [#2039](https://github.com/supercollider/supercollider/pull/2039) by [tapage](https://github.com/tapage)
+- help: minor spell fixes in tutorials area
+  [#2004](https://github.com/supercollider/supercollider/pull/2004) by [llloret](https://github.com/llloret)
+- help: and some more help typos and spell fixes
+  [#2003](https://github.com/supercollider/supercollider/pull/2003) by [llloret](https://github.com/llloret)
+- help: fixed some more typos and spelling
+  [#2002](https://github.com/supercollider/supercollider/pull/2002) by [llloret](https://github.com/llloret)
+- help: Help updates for the Classes directory
+  [#1999](https://github.com/supercollider/supercollider/pull/1999) by [llloret](https://github.com/llloret)
+- Improve "Writing UGens" documentation
+  [#1997](https://github.com/supercollider/supercollider/pull/1997) by [snappizz](https://github.com/snappizz)
+- More help documentation updates
+  [#1989](https://github.com/supercollider/supercollider/pull/1989) by [llloret](https://github.com/llloret)
+- help: fixed some typos and spelling
+  [#1988](https://github.com/supercollider/supercollider/pull/1988) by [llloret](https://github.com/llloret)
+- link was wrong
+  [#1980](https://github.com/supercollider/supercollider/pull/1980) by [grirgz](https://github.com/grirgz)
+- Document ServerOptions.*devices as OS X only
+  [#1949](https://github.com/supercollider/supercollider/pull/1949) by [snappizz](https://github.com/snappizz)
+- Clarified nil argument behavior in OSCdef help
+  [#1940](https://github.com/supercollider/supercollider/pull/1940) by [antonhornquist](https://github.com/antonhornquist)
+- Change title of main help file from "Help" to "SuperCollider [version]"
+  [#1928](https://github.com/supercollider/supercollider/pull/1928) by [snappizz](https://github.com/snappizz)
+- MultiTap and DelTapRd/Wr could use a Note in help doc
+  [#1883](https://github.com/supercollider/supercollider/issues/1883) by [mtmccrea](https://github.com/mtmccrea)
+- CocoaBridge seems dead, but examples and doc are still there
+  [#1629](https://github.com/supercollider/supercollider/issues/1629) by [muellmusik](https://github.com/muellmusik)
+
+##  comp: HID
+
+- Update pointer to submodule hidapi
+  [#2420](https://github.com/supercollider/supercollider/pull/2420) by [bagong](https://github.com/bagong)
+- Adjust pointer to hidapi to fix cmp0048 bug breaking build for cmake …
+  [#2342](https://github.com/supercollider/supercollider/pull/2342) by [bagong](https://github.com/bagong)
+- Update pointer to hidapi submodule
+  [#2330](https://github.com/supercollider/supercollider/pull/2330) by [bagong](https://github.com/bagong)
+- HID: various small additions to adjust to developments in hid submodule
+  [#2123](https://github.com/supercollider/supercollider/pull/2123) by [bagong](https://github.com/bagong)
+- Switch to hidapi subomodule in sc org repo
+  [#2111](https://github.com/supercollider/supercollider/pull/2111) by [bagong](https://github.com/bagong)
+
+##  comp: Qt GUI
+
+- Move Qt primitives out of "common" to fix non-Qt builds
+  [#2299](https://github.com/supercollider/supercollider/pull/2299) by [vivid-synth](https://github.com/vivid-synth)
+- build: fix qt configuration for case-sensitive OS X
+  [#2262](https://github.com/supercollider/supercollider/pull/2262) by [snappizz](https://github.com/snappizz)
+- Document Qt >= 5.6 not working in Linux
+  [#2206](https://github.com/supercollider/supercollider/pull/2206) by [snappizz](https://github.com/snappizz)
+- QPen - add RenderHints to StringInRect
+  [#2019](https://github.com/supercollider/supercollider/pull/2019) by [gusano](https://github.com/gusano)
+
+##  comp: SCDoc
+
+- Adjust Help title for Windows return value of folder
+  [#2392](https://github.com/supercollider/supercollider/pull/2392) by [bagong](https://github.com/bagong)
+- fix link to class file source in scdoc header
+  [#2131](https://github.com/supercollider/supercollider/pull/2131) by [snappizz](https://github.com/snappizz)
+- Change "source" to "helpfile source" in scdoc footer
+  [#2130](https://github.com/supercollider/supercollider/pull/2130) by [snappizz](https://github.com/snappizz)
+- SCDoc HTML renderer includes literal spaces in links with anchors
+  [#1650](https://github.com/supercollider/supercollider/issues/1650) by [jamshark70](https://github.com/jamshark70)
+- SCDoc shows getters where there are only setters
+  [#837](https://github.com/supercollider/supercollider/issues/837) by [muellmusik](https://github.com/muellmusik)
+
+##  comp: build
+
+- Document cmake dependency for supernova
+  [#2207](https://github.com/supercollider/supercollider/pull/2207) by [snappizz](https://github.com/snappizz)
+- Explain /path/to/qt5 in Linux README
+  [#2205](https://github.com/supercollider/supercollider/pull/2205) by [snappizz](https://github.com/snappizz)
+- move jackey include dir from server to scsynth
+  [#2179](https://github.com/supercollider/supercollider/pull/2179) by [flv0](https://github.com/flv0)
+- Fix oscpack build fail on various architectures
+  [#2174](https://github.com/supercollider/supercollider/pull/2174) by [danstowell](https://github.com/danstowell)
+- Simplify MS Compiler detection to avoid cmake warning
+  [#2120](https://github.com/supercollider/supercollider/pull/2120) by [bagong](https://github.com/bagong)
+- Travis: Update OSX build system and correct omissions
+  [#2092](https://github.com/supercollider/supercollider/pull/2092) by [bagong](https://github.com/bagong)
+- sclang: changed some boost code to std
+  [#2091](https://github.com/supercollider/supercollider/pull/2091) by [llloret](https://github.com/llloret)
+- Switch to portaudio repo in supercollider org
+  [#2088](https://github.com/supercollider/supercollider/pull/2088) by [bagong](https://github.com/bagong)
+- travis: move git key to env, aws fixes
+  [#1987](https://github.com/supercollider/supercollider/pull/1987) by [scztt](https://github.com/scztt)
+- Set correct hash for portaudio submodule
+  [#1971](https://github.com/supercollider/supercollider/pull/1971) by [bagong](https://github.com/bagong)
+- cmake: library locations, hide them from the default listing of user cmake variables
+  [#1968](https://github.com/supercollider/supercollider/pull/1968) by [danstowell](https://github.com/danstowell)
+- Add cmake options list to READMEs
+  [#1965](https://github.com/supercollider/supercollider/pull/1965) by [vivid-synth](https://github.com/vivid-synth)
+- Update linux travis recipe
+  [#1932](https://github.com/supercollider/supercollider/pull/1932) by [patrickdupuis](https://github.com/patrickdupuis)
+- build: bump GCC version requirement up from 4.7 to 4.8
+  [#1839](https://github.com/supercollider/supercollider/pull/1839) by [danstowell](https://github.com/danstowell)
+- Building master with gcc 4.7 fails due to 'is_trivially_destructible' in SC_PlugIn.hpp
+  [#1820](https://github.com/supercollider/supercollider/issues/1820) by [danstowell](https://github.com/danstowell)
+
+##  env: Qt IDE
+
+- IDE: Server status bar should send properly formatted /status message (not 'status')
+  [#2450](https://github.com/supercollider/supercollider/pull/2450) by [jamshark70](https://github.com/jamshark70)
+- Fix Document path sync problems
+  [#2222](https://github.com/supercollider/supercollider/pull/2222) by [jamshark70](https://github.com/jamshark70)
+- fix #1985
+  [#2102](https://github.com/supercollider/supercollider/pull/2102) by [miguel-negrao](https://github.com/miguel-negrao)
+- scide: update document path also if nil
+  [#2098](https://github.com/supercollider/supercollider/pull/2098) by [telephon](https://github.com/telephon)
+- sc-ide: fix behaviour of right context button when out of tab
+  [#2085](https://github.com/supercollider/supercollider/pull/2085) by [llloret](https://github.com/llloret)
+- sc-ide: middle mouse button closes tab
+  [#2083](https://github.com/supercollider/supercollider/pull/2083) by [llloret](https://github.com/llloret)
+- ide: menu option "Show Quarks"
+  [#1867](https://github.com/supercollider/supercollider/pull/1867) by [miguel-negrao](https://github.com/miguel-negrao)
+
+##  env: scel
+
+- bug with scide_scel
+  [#2036](https://github.com/supercollider/supercollider/pull/2036) by [simdax](https://github.com/simdax)
+
+##  env: scvim
+
+- Replace built-in scvim with submodule scvim
+  [#1991](https://github.com/supercollider/supercollider/pull/1991) by [danstowell](https://github.com/danstowell)
+- Makes Vim support more reliable by sending larger buffers
+  [#1930](https://github.com/supercollider/supercollider/pull/1930) by [mzyzik](https://github.com/mzyzik)
+- scvim as submodules repo
+  [#1921](https://github.com/supercollider/supercollider/issues/1921) by [blacksound](https://github.com/blacksound)
+
+##  os: Linux
+
+- Do not allocate all channels reported by Pa_GetDeviceInfo / use memcpy instead of for-loop
+  [#1943](https://github.com/supercollider/supercollider/pull/1943) by [hzulla](https://github.com/hzulla)
+- Fixes/alsa midi fixes
+  [#1760](https://github.com/supercollider/supercollider/pull/1760) by [timblechmann](https://github.com/timblechmann)
+- HID final cleanup, and LID adaption to use similar API
+  [#1573](https://github.com/supercollider/supercollider/pull/1573) by [sensestage](https://github.com/sensestage)
+
+##  os: Windows
+
+- Fix problem with boost interprocess module on Win
+  [#2457](https://github.com/supercollider/supercollider/pull/2457) by [llloret](https://github.com/llloret)
+- Update Windows Readme
+  [#2419](https://github.com/supercollider/supercollider/pull/2419) by [bagong](https://github.com/bagong)
+- Exception in World_New: boost::interprocess::intermodule_singleton initialization failed
+  [#2409](https://github.com/supercollider/supercollider/issues/2409) by [brachna](https://github.com/brachna)
+- Fix QLocalSocket problem under Windows
+  [#2197](https://github.com/supercollider/supercollider/pull/2197) by [llloret](https://github.com/llloret)
+- Windows exit nicely master
+  [#2107](https://github.com/supercollider/supercollider/pull/2107) by [llloret](https://github.com/llloret)
+- Make MIDI work on Windows (PR for master)
+  [#2106](https://github.com/supercollider/supercollider/pull/2106) by [llloret](https://github.com/llloret)
+- nsis windows for master branch
+  [#2103](https://github.com/supercollider/supercollider/pull/2103) by [llloret](https://github.com/llloret)
+- Make Vista the minimum required Windows version
+  [#2017](https://github.com/supercollider/supercollider/pull/2017) by [llloret](https://github.com/llloret)
+- Make the required version Windows Vista
+  [#2016](https://github.com/supercollider/supercollider/pull/2016) by [llloret](https://github.com/llloret)
+- sclang: Fix to get Object: render to work on Windows
+  [#1899](https://github.com/supercollider/supercollider/pull/1899) by [antonhornquist](https://github.com/antonhornquist)
+- Windows: sclang crashes on executing menu-item "Quit interpreter"/freezes on evaluating 0.exit
+  [#1578](https://github.com/supercollider/supercollider/issues/1578) by [bagong](https://github.com/bagong)
+- Server not shut down on IDE-close
+  [#1449](https://github.com/supercollider/supercollider/issues/1449) by [bagong](https://github.com/bagong)
+- MIDI sysex is not implemented for Windows (SC_PortMIDI.cpp)
+  [#1200](https://github.com/supercollider/supercollider/issues/1200) by [sensestage](https://github.com/sensestage)
+
+##  qt5
+
+- WIP: ide/qtcollider: prototype port to qwebengine
+  [#1936](https://github.com/supercollider/supercollider/pull/1936) by [timblechmann](https://github.com/timblechmann)
+
+##  quarks
+
+- quarks: sort list by name
+  [#2214](https://github.com/supercollider/supercollider/pull/2214) by [gusano](https://github.com/gusano)
+- quarks: throw an error when updating without name
+  [#2183](https://github.com/supercollider/supercollider/pull/2183) by [gusano](https://github.com/gusano)
+
+##  architecture: arm
+
+- Provide compiler flags for armv6l and armv7l and add a few hints for building on RPi and headless
+  [#2065](https://github.com/supercollider/supercollider/pull/2065) by [bagong](https://github.com/bagong)
+
+##  bug
+
+- ServerStatus failOSCFunc shouldn't set clientID
+  [#2328](https://github.com/supercollider/supercollider/issues/2328) by [crucialfelix](https://github.com/crucialfelix)
+- class library: server notify dependants correctly
+  [#2093](https://github.com/supercollider/supercollider/pull/2093) by [telephon](https://github.com/telephon)
+- Topic fix server notify
+  [#2066](https://github.com/supercollider/supercollider/pull/2066) by [telephon](https://github.com/telephon)
+- OSC/Trigger functionality broken in master
+  [#2058](https://github.com/supercollider/supercollider/issues/2058) by [miczac](https://github.com/miczac)
+- Problem with matchLangIP primitive: boost seems to give wrong hostname
+  [#1950](https://github.com/supercollider/supercollider/issues/1950) by [muellmusik](https://github.com/muellmusik)
+- crash on exit, 3.7b
+  [#1422](https://github.com/supercollider/supercollider/issues/1422) by [chriskiefer](https://github.com/chriskiefer)
+- DemandEnvGen overshooting at high curve
+  [#1355](https://github.com/supercollider/supercollider/issues/1355) by [eleses](https://github.com/eleses)
+- scsynth OSC packet size in NRT mode
+  [#61](https://github.com/supercollider/supercollider/issues/61) by [jleben](https://github.com/jleben)
+
+##  enhancement
+
+- Novacollider/alignment cleanups
+  [#1906](https://github.com/supercollider/supercollider/pull/1906) by [timblechmann](https://github.com/timblechmann)
+- ide: introspection - use qt's concurrency functionality
+  [#1905](https://github.com/supercollider/supercollider/pull/1905) by [timblechmann](https://github.com/timblechmann)
+- Novacollider/dll
+  [#1904](https://github.com/supercollider/supercollider/pull/1904) by [timblechmann](https://github.com/timblechmann)
+- Tab does not work in IDE (on OSX)
+  [#1453](https://github.com/supercollider/supercollider/issues/1453) by [thormagnusson](https://github.com/thormagnusson)
+- Use reader/writer thread for all disk IO (DiskIn / DiskOut ugens, others if applicable)
+  [#1381](https://github.com/supercollider/supercollider/issues/1381) by [scztt](https://github.com/scztt)
+
+##  Miscellaneous
+
+- Add missing proxy init 3.8
+  [#2407](https://github.com/supercollider/supercollider/pull/2407) by [telephon](https://github.com/telephon)
+- Merge 3.7.2 to master
+  [#2177](https://github.com/supercollider/supercollider/pull/2177) by [crucialfelix](https://github.com/crucialfelix)
+- Update CombC.schelp
+  [#2157](https://github.com/supercollider/supercollider/pull/2157) by [tiagmoraismorgado](https://github.com/tiagmoraismorgado)
+- Array2D.schelp: Fix put example
+  [#2154](https://github.com/supercollider/supercollider/pull/2154) by [kisielk](https://github.com/kisielk)
+- jitlib: better warnings when Server is not available
+  [#2119](https://github.com/supercollider/supercollider/pull/2119) by [telephon](https://github.com/telephon)
+- Topic/boost 1.61
+  [#2086](https://github.com/supercollider/supercollider/pull/2086) by [timblechmann](https://github.com/timblechmann)
+- lang: correctly join resync thread
+  [#2079](https://github.com/supercollider/supercollider/pull/2079) by [timblechmann](https://github.com/timblechmann)
+- Helpfile-fixing branch, final merge
+  [#2076](https://github.com/supercollider/supercollider/pull/2076) by [LFSaw](https://github.com/LFSaw)
+- ide: mark scide as able to handle multiple files
+  [#2062](https://github.com/supercollider/supercollider/pull/2062) by [fsateler](https://github.com/fsateler)
+- removed method::preferencesAction
+  [#2046](https://github.com/supercollider/supercollider/pull/2046) by [tapage](https://github.com/tapage)
+- fixed naming startframe & aSoundFile
+  [#2045](https://github.com/supercollider/supercollider/pull/2045) by [tapage](https://github.com/tapage)
+- prReadDirectoryFile private, added done as arg
+  [#2044](https://github.com/supercollider/supercollider/pull/2044) by [tapage](https://github.com/tapage)
+- added Pmul arguments name & pattern
+  [#2043](https://github.com/supercollider/supercollider/pull/2043) by [tapage](https://github.com/tapage)
+- LFSaw.schelp: Note and example for special initial-phase behaviour
+  [#2041](https://github.com/supercollider/supercollider/pull/2041) by [miczac](https://github.com/miczac)
+- Emacs and extBuffer.sc
+  [#2035](https://github.com/supercollider/supercollider/issues/2035) by [simdax](https://github.com/simdax)
+- Help: Removed double PlayBuf in doneAction help file
+  [#2026](https://github.com/supercollider/supercollider/pull/2026) by [cappelnord](https://github.com/cappelnord)
+- Classlib: Add NodeProxy:trace
+  [#2020](https://github.com/supercollider/supercollider/pull/2020) by [jamshark70](https://github.com/jamshark70)
+- PartConv not working (duplicate impulses)
+  [#2014](https://github.com/supercollider/supercollider/issues/2014) by [sonoro1234](https://github.com/sonoro1234)
+- Server crash when calling play on a not-yet ready Buffer
+  [#2005](https://github.com/supercollider/supercollider/issues/2005) by [patrickdupuis](https://github.com/patrickdupuis)
+- Make sure NodeProxy generates unique name.
+  [#1994](https://github.com/supercollider/supercollider/pull/1994) by [blacksound](https://github.com/blacksound)
+- class library: node proxy, improve documentation
+  [#1986](https://github.com/supercollider/supercollider/pull/1986) by [telephon](https://github.com/telephon)
+- Osc.sc: fix audio rate TChoose
+  [#1979](https://github.com/supercollider/supercollider/pull/1979) by [miczac](https://github.com/miczac)
+- Osc.sc: fix audio rate TChoose
+  [#1974](https://github.com/supercollider/supercollider/pull/1974) by [miczac](https://github.com/miczac)
+- Readd wrongly removed part of system-boost fix
+  [#1970](https://github.com/supercollider/supercollider/pull/1970) by [bagong](https://github.com/bagong)
+- Merge 3.7 into master
+  [#1969](https://github.com/supercollider/supercollider/pull/1969) by [bagong](https://github.com/bagong)
+- Add CommonTests and CommonTestsGUI to travis
+  [#1967](https://github.com/supercollider/supercollider/pull/1967) by [scztt](https://github.com/scztt)
+- Fix lines and functions with mixed tabs and spaces
+  [#1963](https://github.com/supercollider/supercollider/pull/1963) by [vivid-synth](https://github.com/vivid-synth)
+- Remove unused variable
+  [#1960](https://github.com/supercollider/supercollider/pull/1960) by [patrickdupuis](https://github.com/patrickdupuis)
+- error message: wrong path in unsaved file
+  [#1953](https://github.com/supercollider/supercollider/issues/1953) by [telephon](https://github.com/telephon)
+- class library: don't declare variables in an if statement, please.
+  [#1925](https://github.com/supercollider/supercollider/pull/1925) by [telephon](https://github.com/telephon)
+- Add custom.css to help files that don't include it
+  [#1920](https://github.com/supercollider/supercollider/pull/1920) by [snappizz](https://github.com/snappizz)
+- Document SynthDef.writeOnce as a legacy method
+  [#1918](https://github.com/supercollider/supercollider/pull/1918) by [snappizz](https://github.com/snappizz)
+- Move internal css to scdoc.css
+  [#1917](https://github.com/supercollider/supercollider/pull/1917) by [rygen](https://github.com/rygen)
+- Fix Scope Window Error
+  [#1915](https://github.com/supercollider/supercollider/pull/1915) by [patrickdupuis](https://github.com/patrickdupuis)
+- Quarks: fix save method
+  [#1897](https://github.com/supercollider/supercollider/pull/1897) by [jpburstrom](https://github.com/jpburstrom)
+- ide: Add standalone option in settings.
+  [#1863](https://github.com/supercollider/supercollider/pull/1863) by [miguel-negrao](https://github.com/miguel-negrao)
+- sclang: introduce unixCmd for array of arguments
+  [#1856](https://github.com/supercollider/supercollider/pull/1856) by [miguel-negrao](https://github.com/miguel-negrao)
+- uiugens: correctly terminate input threads
+  [#1855](https://github.com/supercollider/supercollider/pull/1855) by [timblechmann](https://github.com/timblechmann)
+- supernova: don't delete shared memory data
+  [#1854](https://github.com/supercollider/supercollider/pull/1854) by [timblechmann](https://github.com/timblechmann)
+- Novacollider/mac
+  [#1853](https://github.com/supercollider/supercollider/pull/1853) by [timblechmann](https://github.com/timblechmann)
+- class library: HIDMatchers: Add missing if statement
+  [#1851](https://github.com/supercollider/supercollider/pull/1851) by [davidgranstrom](https://github.com/davidgranstrom)
+- class library: protect MultiOutUGen from void numChannels
+  [#1847](https://github.com/supercollider/supercollider/pull/1847) by [telephon](https://github.com/telephon)
+- Fixes/for master
+  [#1844](https://github.com/supercollider/supercollider/pull/1844) by [timblechmann](https://github.com/timblechmann)
+- Topic/rate fallthrough
+  [#1835](https://github.com/supercollider/supercollider/pull/1835) by [telephon](https://github.com/telephon)
+- Novacollider/cmake modernisation
+  [#1822](https://github.com/supercollider/supercollider/pull/1822) by [timblechmann](https://github.com/timblechmann)
+- LinXFade2 - fix pos slope
+  [#1798](https://github.com/supercollider/supercollider/pull/1798) by [timblechmann](https://github.com/timblechmann)
+- ide cleanup
+  [#1715](https://github.com/supercollider/supercollider/pull/1715) by [timblechmann](https://github.com/timblechmann)
+- MultiOutUGen with numchannels less than 1 return an empty array
+  [#1686](https://github.com/supercollider/supercollider/issues/1686) by [telephon](https://github.com/telephon)
+- use c++17-style executors to compile class library
+  [#1677](https://github.com/supercollider/supercollider/pull/1677) by [timblechmann](https://github.com/timblechmann)
+- scide: improve dark color scheme
+  [#1609](https://github.com/supercollider/supercollider/pull/1609) by [timblechmann](https://github.com/timblechmann)
+- scide: add qt-creator style shortcut sequence to visualise whitespaces
+  [#1607](https://github.com/supercollider/supercollider/pull/1607) by [timblechmann](https://github.com/timblechmann)
+- Topic/refactor server status
+  [#1547](https://github.com/supercollider/supercollider/pull/1547) by [telephon](https://github.com/telephon)
+- Enabling multi-touch on Qt widgets (for multi-touch screens)
+  [#1533](https://github.com/supercollider/supercollider/pull/1533) by [scazan](https://github.com/scazan)
+- import boost-1.58
+  [#1528](https://github.com/supercollider/supercollider/pull/1528) by [timblechmann](https://github.com/timblechmann)
+- Scide/line number fix
+  [#1330](https://github.com/supercollider/supercollider/pull/1330) by [vdonnefort](https://github.com/vdonnefort)
+- Scide/theme mgmt fix
+  [#1297](https://github.com/supercollider/supercollider/pull/1297) by [vdonnefort](https://github.com/vdonnefort)
+- Made performKeyToDegree much closer to inverse of performDegreeToKey
+  [#1164](https://github.com/supercollider/supercollider/pull/1164) by [triss](https://github.com/triss)
+
+
+## [3.7.2](https://github.com/supercollider/supercollider/tree/3.7.2) (2016-06-03)
+[Full Changelog](https://github.com/supercollider/supercollider/compare/Version-3.7.1...Version-3.7.2)
+
+This patch release fixes the Windows including MIDI. HID is still not quite working on Windows. Many thanks to: @bagong and @llloret
+
+SC VIM is now a git submodule. This affects mainly developers. VIM support can be installed as per the documentation - nothing has changed in how you use it.  We changed this in 3.7.2 as well as on master (3.8 development) so that switching back and forth between branches wouldn't be super annoying.
+
+**Fixes:**
+
+- Midi not working on Windows [\#1922](https://github.com/supercollider/supercollider/issues/1922)
+- Windows: opening SC via system registered document types faulty [\#2022](https://github.com/supercollider/supercollider/issues/2022)
+- HIDdef.element forwards arguments incorrectly [\#2090](https://github.com/supercollider/supercollider/issues/2090)
+
+**Closed Pull Requests**
+
+- midi: make midi work in Windows [\#2009](https://github.com/supercollider/supercollider/pull/2009) ([llloret](https://github.com/llloret))
+- Classlib: Fix HIDdef.element arg list passed to super.element [\#2105](https://github.com/supercollider/supercollider/pull/2105) ([jamshark70](https://github.com/jamshark70))
+- Fix build on debian, add -fPIC to TLSF target [\#2031](https://github.com/supercollider/supercollider/pull/2031) ([danstowell](https://github.com/danstowell))
+- Update linux readme, add missing dependency [\#2030](https://github.com/supercollider/supercollider/pull/2030) ([danstowell](https://github.com/danstowell))
+- editor: windows: fix double click when app already open [\#2029](https://github.com/supercollider/supercollider/pull/2029) ([llloret](https://github.com/llloret))
+- nsis: windows: add path information [\#2028](https://github.com/supercollider/supercollider/pull/2028) ([llloret](https://github.com/llloret))
+- Convert scvim to submodule, on 3.7 branch [\#2025](https://github.com/supercollider/supercollider/pull/2025) ([danstowell](https://github.com/danstowell))
+- lang: Not wait for keystroke when exiting [\#2012](https://github.com/supercollider/supercollider/pull/2012) ([llloret](https://github.com/llloret))
+- Windows Readme: tiny enhancements [\#2006](https://github.com/supercollider/supercollider/pull/2006) ([bagong](https://github.com/bagong))
+- Make sure NodeProxy generates unique name. [\#1998](https://github.com/supercollider/supercollider/pull/1998) ([blacksound](https://github.com/blacksound))
+- Cherry pick telefon's nodeproxy documentation enhancements [\#1996](https://github.com/supercollider/supercollider/pull/1996) ([bagong](https://github.com/bagong))
+
+
 
 ## [3.7.1](https://github.com/supercollider/supercollider/tree/3.7.1) (2016-04-10)
-[Full Changelog](https://github.com/supercollider/supercollider/compare/Version-3.7.0...3.7.1)
+[Full Changelog](https://github.com/supercollider/supercollider/compare/Version-3.7.0...Version-3.7.1)
 
 **Enhancements**
 
@@ -27,7 +631,7 @@
 
 
 ## [3.7.0](https://github.com/supercollider/supercollider/tree/3.7.0) (2016-03-13)
-[Full Changelog](https://github.com/supercollider/supercollider/compare/Version-3.6.6...3.7.0)
+[Full Changelog](https://github.com/supercollider/supercollider/compare/Version-3.6.6...Version-3.7.0)
 
 **Enhancements**
 
@@ -1426,1136 +2030,3 @@
 - Refer to TChoose from the TIRand help file [\#355](https://github.com/supercollider/supercollider/pull/355) ([rukano](https://github.com/rukano))
 - Typo in PparGroup's help file example [\#351](https://github.com/supercollider/supercollider/pull/351) ([rukano](https://github.com/rukano))
 - corrected pathname for sound file in LevelIndicator.schelp [\#347](https://github.com/supercollider/supercollider/pull/347) ([miczac](https://github.com/miczac))
-
-
-SuperCollider v3.6.5, released 2013-04
-======================================
-
-Jakob Leben (10):
-- sc class library: fix regression in Server:-scope
-- scide: add "reset font size" action to post window and help browser
-- scide: autocompletion: order methods by class hierarchy when class is known
-- documentation: improve info on logical time, clocks and threads
-- documentation: more info on threads, clocks and time
-- sclang: PyrThread: ensure slot type safety
-- documentation: clarify the functioning of Thread and Routine
-- streamline README.txt
-- documentation: improve thisFunction and thisFunctionDef
-
-Julian Rohrhuber (3):
-- sc class library: replacing the source of a node proxy led to hanging patterns
-- sc class library: NodeProxy:cleanNodeMapnow works even if no settings are present
-- fix typo /  removing the implication that ansi-C isn't appropriate
-
-Michael Zacherl (5):
-- In.schelp: replaced AudioIn w/ SoundIn in reference, added loudness in example section
-- Knob.schelp: repositioned text in mouseOverAction example
-- Klang.schelp: changed 'filter' to 'oscillator' in methods section
-- DynKlang.schelp: changed 'filter' to 'oscillator' in methods section
-- README.txt: reworked and simplified with focus on SC IDE and version 3.6
-
-vividsnow (2):
-- scdoc: Pseg: duration pattern in beats not seconds
-- scdoc: add thisFunctionDef/thisFunction
-
-
-SuperCollider v3.6.4, released 2013-04
-======================================
-
-Dan Stowell (1):
-- SinOsc and Osc: note phase issue beyond +-8pi. Fixes #815
-
-Jakob Leben (34):
-- sclang: fix Char:-isUpper/isLower
-- qtcollider: add QListView:-selectionAction
-- qtcollider: add QListView:-selection setter
-- scide: remove credits for kiberpipa
-- help: GUI - improve documentation of alignment options
-- help: add guide on creating standalone applications
-- sc ide: show impl/ref lookup dialogs even when no text under cursor
-- sc class library: ClassBrowser: fix search with empty query string
-- sc ide: interpreter: post notification on quit or crash
-- qtcollider: pass exit code up to SC_TerminalClient
-- sc ide: fix and improve region detection
-- sc ide: sc editor: add action to select pair of brackets enclosing cursor
-- sc ide: sc editor: update bracket match highlight after applying settings
-- qtcollider: QTextView: increase 'selectedString' compatibility, fix docs
-- qtcollider: envelope view: fix drawing of quadratic and cubic curves
-- sc ide: help browser: delegate docklet focus to webpage view
-- sc ide: docklet: when focusing, also activate window
-- sc ide: fix auto-indenting closing brackets on certain locales
-- sc ide: ensure dock widgets within screen bounds when first undocked
-- qtcollider: QTextView: set 'enterInterpretsSelection' to true by default
-- scide: config dialog: preserve font when toggling "show only monospaced"
-- scide: select line in code on triple click
-- scide: ensure last active window activated after open/save file dialog
-- scide: on startup, remove invalid file paths from "recent documents" list
-- scide: improve default paths in open/save dialogs
-- scide: save document dialog: always allow saving with any extension
-- scide: editor: highlight unmatched brackets just like mismatched ones
-- qtcollider: StackLayout: fix crash when removing contained widget
-- qtcollider: do not allow reparenting layouts, to avoid crashing
-- scide: fix closing tool panels on Escape
-- scide: impl/ref lookup: close dialog when opening documentation for class
-- Revert "Revert "scide: on Mac, make one global menu to share by all windows""
-- scide: prevent erroneous overriding of shortcuts on Mac OS
-
-James Harkins (2):
-- Library: Bugfix for PmonoArtic inside other patterns w/cleanup
-- Library: Fix Pfset passing child cleanups up to its parent(s)
-
-Tim Blechmann (10):
-- Help: fix rlpf help file
-- plugins: DemandEnv - fix shape polling
-- plugins: GrainBuf - catch both inf and NaN phase arguments
-- scsynth: prevent possible buffer overflow
-- cmake build system: fix x11 include paths
-- class library: Bus - fix get method for multi-channel busses
-- class library: Server.scope - remove limitation to 16 channels
-- plugins: LocalOut - don't crash server if LocalIn is missing
-- sclang: prevent buffer overflow
-- scide: link with librt
-
-Victor Bombi (1):
-- supernova: CMakeLists.txt must set include dirs for fftw3f
-
-attejensen (1):
-- Update MIDI.schelp
-
-
-SuperCollider v3.6.3, released 2013-02
-======================================
-
-Dan Stowell (2):
-- Add cmake option NO_GPL3 to simplify building of GPL2 binaries
-- SCDoc: generalise licensing from GPL3+ to GPL2+
-
-Graeme Urquhart (2):
-- Issue #702 fix: sendSelection receives NSString
-- String:Help of split method matches implementation
-
-Jakob Leben (24):
-- qtcollider: relicense to GPL version 2
-- sclang: terminal client - fix and simplify request handling
-- qtcollider: support String:-speak when Speech class is available
-- cmake: set LIBSCSYNTH=ON by default on Windows
-- qtcollider: QView - do not block beginDrag if currentDrag is already set
-- qtcollider: QKnob - let 'background' affect knob color
-- sc ide: improve server boot/quit actions
-- sc ide: improve interpreter start/stop actions
-- sc ide: improve default server booting shortcuts
-- qtcollider: sf view: fix loading non-power-of-two floating point files
-- sc ide: disable zooming by mouse wheel (scrolling)
-- sc ide: editor - set Qt::WA_MacNoClickThrough on viewport
-- help: improve the SC IDE guide
-- qtcollider: implement QtGUI:*cursorPosition
-- class library: Platform - redirect getMouseCoords to GUI
-- sc ide: post window - disable click-through on Mac OS X
-- sc ide: add Help menu action to open the SuperCollider IDE guide
-- help: SC IDE guide - show scaled screenshot, with a link to unscaled one
-- sc ide: docklets - fix geometry after undocking
-- sc ide: change default shortcuts for Go To Next/Previous Region
-- sc ide: make cmd-period silent
-- sc ide: improve status box context menu interaction
-- sc ide: add context menu to interpreter status box
-
-James Harkins (4):
-- Fix title:: tags in the practical guide: user-friendly titles vs. filenames
-- Add Practical Guide Cookbook entry on swing rhythms
-- PG_Cookbook_08: Fix an omitted copy/paste
-- Fix typo in analysis example: BufWr.ar on a kr signal is bad
-
-Tim Blechmann (22):
-- supernova: fix crash on /quit with portaudio
-- class library: PlusFreqScope - survive server actions
-- scide: remove ctrl-b shortcut
-- class library: FreqScope - fix for starting scope after booting
-- common: introduce new autogenerated SC_Version.hpp header
-- class library: fix Array-unlace
-- supernova: plugin interface - guard access to rt-pool
-- plugins: IOUgens - prevent buffer overflow
-- Help: BrownNoise - use a convention of -20db
-- supernova: sized array - assert boundaries
-- supernova: sndfile backend - correctly use correct blocksize for temp buffer
-- supernova: jack backend - avoid uninitialized value
-- supernova: nrt engine - nicer formatting of message log
-- plugins: ui ugens - initialize libx11 for threading
-- supernova: start dsp threads from run methods
-- sclang: library config - correcty handle library config command line argument
-- server plugins: RecordBuf - fix multichannel corruption and buffer overrun
-- fftlib: for now we avoid intptr_t
-- server plugins: fix div_ka
-- plugins: osc ugens - fix GET_TABLE macro
-- plugins: OscUGens - ensure buffer initialization
-- scide: add menu item to open the user application support directory
-
-Victor Bombi (2):
-- common: win32 - avoid integer truncation
-- supernova: correctly print synthdef path
-
-
-SuperCollider v3.6.2, released 2012-12
-======================================
-
-BS Collist (1):
-- qtcollider: QEnvelopeView - add method to return all selected indexes
-
-Jakob Leben (32):
-- common (windows): unify access to known folder paths
-- sclang (windows): add primitive to access "My Documents" dir
-- cmake: expand the search for libsndfile and libfftw3f
-- cmake (Windows): use CMAKE_LIBRARY_PATH for fixup_bundle() search dirs
-- scide: let cmd-period have an application-wide shortcut context
-- scide: DocumentManager - refresh cached file info before storing save time
-- scide: help browser - support doc/impl/ref lookup for selected text
-- scide: search widget hierarchy upwards for first handler of lookup actions
-- scide: GenericLookupDialog - no need for subclassing QTreeView anymore
-- scide: make doc/impl/ref lookup shortcuts work on detached docklets
-- scide: always pop up lookup dialogs with the active window as the parent
-- scide: update translation sources, add italian
-- qtcollider: start drag within mouse event handler
-- qtcollider: QStethoscope2 - reverse operation of horizontal zoom slider
-- scide: GenericCodeEditor - set Qt::WA_MacNoClickThrough widget attribute
-- scide: SyntaxHighlighter - swap QChar::toAscii() for toLatin1()
-- scide: Document - swap QString::toAscii() for QString::toLatin1()
-- scide: MainWindow - substitute deprecated QFileDialog::setFilter(QString)
-- scide: MainWindow - include QMimeData
-- scide: PostWindow - include QMimeData
-- scide: GenericCodeEditor - include QMimeData
-- qtcollider: QWidgetProxy - include QDrag
-- sclang: SCIpcClient - fix includes
-- cmake: sclang - fix building when SC_IDE=ON and SC_QT=OFF
-- cmake: scide - add QtNetwork to required Qt modules
-- qtcollider: QStethoscope2 - refactor for robustness
-- qtcollider: QListView - add 'selection' method to get all selected indexes
-- help: document new 'selection' methods of EnvelopeView and ListView
-- help: View - improve documentation, fix links
-- help: fix a large amount of broken links due to changes in SCDoc
-- cmake: FindPortmidi - actually implement auto-finding portmidi
-
-James Harkins (1):
-- Fix bug introduced by 7f29d322: Don't free the same alloc'ed index twice
-
-Tim Blechmann (18):
-- scide: DocumentManager - read files via QTextStream to decode characters
-- supernova: osc handler - fix completion message and done message for /b_close
-- supernova: asynchronous log - fix string splitting
-- supernova: compile fix
-- supernova: send /fail messages on /notify commands
-- supernova: send /fail on buffer commands
-- supernova: fix sndfile error handling
-- win32: ensure stack alignment
-- plugins: fix GrainBuf cleanup
-- Help: SymbolicNotations - replace SCSlider with Slider
-- supernova: plugin interface - protect against multiple done actions
-- Help: remove memStore
-- class library: Buffer - freeMsg should clear all cached information
-- supernova: osc interface - fix bug with node reordering
-- supernova: buffer_read - don't check samplerate when queueing soundfiles
-- class library: fix Function.plot
-- plugins: RecordBuf - fix recordbuf overrun & fix done action handling
-- Help: RecordBuf - RecordBuf is recording, not playing
-
-
-SuperCollider v3.6.1, released 2012-11
-======================================
-
-Dan Stowell (1):
-- SpecFlatness: prevent NaN output for silence (thanks nick collins)
-
-Glen Fraser (1):
-- scide: code editor / post window - copy using plain text
-
-Jakob Leben (13):
-- update README_WINDOWS.txt for changed application data locations
-- fix compilation with MinGW (broken static initialization)
-- scide: find/replace - use Qt translation system to handle singular/plural
-- cmake: scide - improve handling translations
-- scide: load translations from app resource directory
-- scide: update translation source files
-- scide: change english translation file name to serve as fallback
-- sclang: (Windows) change app support dir from roaming to local
-- scide: load fallback translation in addition to locale translation
-- sclang: add primitive to allow Platform to access user home directory
-- class library: WindowsPlatform - set a user-friendly default recordingsDir
-- readme (windows): add instructions on moving application data
-
-Tim Blechmann (1):
-- class library: SynthDef - writeDefFile should use default SynthDef path
-
-
-SuperCollider v3.6.0, released 2012-11
-======================================
-
-Major release with many new features - please see the help doc
-"News in 3.6" for more information.
-http://doc.sccode.org/Guides/News-3_6.html
-
-
-SuperCollider v3.5.7, released 2012-11
-======================================
-
-Jakob Leben (6):
-- sclang: (Windows) fix String:-getenv to return variables set with -setenv
-- class library: ServerMeter - fix closing window when server has never run
-- sclang: fix 'gcd' and 'lcm' methods
-- qtcollider: QStethoscope2 - fix width of number boxes
-- qtcollider: fix SoundFileView:-selectAll and -selectNone
-- qtcollider: fix QPen:*matrix setter - combine instead of replace matrix
-
-Julian Rohrhuber (1):
-- class library: jitlib - Avoiding sync problems with free/play
-
-Tim Blechmann (9):
-- plugins: filters - fix initialization of filter parameters
-- external libraries: nova-simd update
-- external libraries: move nova-simd submodule to github
-- plugins: DelayN - fix initialization code
-- Revert "plugins: DelayN - fix initialization code"
-- common: fftlib - increase size limit for ffts
-- sclang: server shm interface - fix setting of multiple values
-- plugin interface: provide wrapper class for c++-style unit generators
-
-
-SuperCollider v3.5.6, released 2012-10
-======================================
-
-Dan Stowell (2):
-- Improve error messages when cmake can't find optional things
-- Compile fix for Qt widget on arm.     Upstreamed from debian-multimedia (thanks Felipe Sateler)
-
-James Harkins (1):
-- Fix Spawner bug: cleanup.update is mandatory, including rest events
-
-Jonatan Liljedahl (7):
-- Quarks: fix typo and also open old-style helpfiles ending with .htm
-- Include old non-converted helpfiles in SCDoc document index
-- HelpBrowser: also open RTF files with whatever is available
-- Even more support for old help files
-- scdoc: use JS hasOwnProperty instead of testing the property directly
-- HelpBrowser: post javascript errors
-- SCDoc: properly escape keys in generated docmap.js
-
-Joshua Parmenter (1):
-- Fix ServerOptions instance var ordering, etc., to make internal server booting use correct number of audio bus channels.
-
-Tim Blechmann (4):
-- cmake: provide explicit option to use system-installed boost libraries
-- external libraries - revert submodule updates
-- lang: SerialPort - fix invocation of done action
-
-
-SuperCollider v3.5.5, released 2012-09
-======================================
-
-Dan Stowell (1):
-- Fix bug in Complex:exp
-
-James Harkins (1):
-- Convert misleading and confusing OSC-style example into object-style
-
-Joshua Parmenter (2):
-- fix IEnvGen kr UGen
-- fix cocoa window alpha setting
-
-Tim Blechmann (12):
-- sclang: fix Array:extendWrap for negative size argument
-- sclang: array primitivies - protect all array extend primitives against negative sizes
-- scdoc: fix string comparison in parser
-- supernova: sized_array - don't allocate memory for zero-sized array
-- plugins: GrainBuf - fix crash when using nan as position control
-- scsynth: ensure alignment of wire buffers
-- supernova: catch exceptions when reading synthdefs
-- supernova: free_aligned - fix fallback implementation for null pointers
-- cmake build system: dont compile shared library with -fwhole-program
-- plugins: GrainBuf - allocate grain after reading window
-- plugins: GrainBuf - fix access to default hann window
-
-Victor Bombi (1):
-- cpu usage for portaudio_backend.hpp
-
-
-SuperCollider v3.5.4, released 2012-08
-======================================
-
-Dan Stowell (5):
-- Fix typo that causes build fail on big-endian archs, thanks Felipe Sateler
-- fix build on ARM (where qreal==float); thanks Felipe Sateler
-- Strip gremlin characters from JITLib wrapForNodeProxy.sc
-- choose clipping rather than wraparound for writing integer-format audio     files (libsndfile setting)
-- arm build fix: another double->qreal in QcMultiSlider
-
-James Harkins (1):
-- Improve documentation of GUI kits and kit switching
-
-Jonatan Liljedahl (2):
-- SCDoc: Use proper static string constants instead of comparing string literals.
-- Revert "reinstate Mix.arFill and Mix.krFill for backward compatibility reasons"
-
-Julian Rohrhuber (2):
-- reinstate Mix.arFill and Mix.krFill for backward compatibility reasons
-- improve string helpfile
-
-Tim Blechmann (10):
-- plugins: GrainUGens - handle unallocated window buffers
-- plugins: GrainBuf - reject multi-channel buffers
-- plugins: grain ugens - treat empty window buffers correctly
-- server: provide memory alignment wrappers for msvc
-- server: scsynth - ensure correct deallocation of SndBuffer memory
-- server/language/supernova: automatically clip integer audio files
-- scsynth: correctly free aligned buffers
-- Help: fix OSC function in SendPeakRMS help file
-- package: use alternative implementation of git-archive-all
-
-Victor Bombi (1):
-- MSVC fix
-
-
-SuperCollider v3.5.3, released 2012-06
-======================================
-
-Dan Stowell (6):
-- LocalIn helpfile fix, thanks Bruno Ruviaro
-- Fix scvim regsitry file for updated filename (thanks Carlo Capocasa)
-- version number to 3.5.3
-- Server helpfile: see-also reference docs
-- SCVim.sc should not be executable
-- cmake build system: use system boost libraries if available
-
-Jakob Leben (1):
-- cmake: fix Boost Thread linking on Windows
-
-James Harkins (10):
-- EnvGen_next_ak_nova: Hardcoded blocksize=64, change to
-- inNumSamples
-- Per Scott W., initSiblings is not needed
-- Reinstate Mix.ar and Mix.kr, with rate checks
-- Fix crossplatform fail: Scale.directory shouldn’t always depend
-- on Document
-- ListPatterns: offset.value omitted (inval) as an argument
-- Fix PbindProxy:storeArgs - should NOT call “source” on keys in
-- the array!
-- Scale:degreeToRatio should handle degrees outside of one
-- octave’s range
-- More meaningful error message for too many selectors
-- Explain the limitation on the number of selectors in one
-- FunctionDef
-- Correct spelling error
-
-Jonatan Liljedahl (3):
-- Methods.html: auto-redirect to Search if method not found
-- SCDoc: fix detection of old format class docs
-- Mix.ar was un-deprecated, so remove the deprecated method
-
-Joshua Parmenter (2):
-- fix scroll view problem for OS X 10.7.4
-- update SC_DirUtils to look at the name of the app bundle on osx
-
-Julian Rohrhuber (14):
-- fix bugs due to wrong usage of partial application
-- PV_BinShift helpfile improved
-- PV_Diffuser helpfile improved
-- reformat statement for readability (no change of functionality)
-- helpfile improvements
-- improve array helpfile
-- add note to the loop argument of DiskIn (thanks Stefan).
-- improve helpfile
-- some helpfile improvements
-- improve helpfile
-- improve helpfile
-- improve and simplify FFT overview helpfile: fix some errors in
-- examples.
-- improve and simplify IFFT helpfile.
-- improve and simplify FFT helpfile, mention that hopsize must be
-- larger than 0.0
-
-Tim Blechmann (11):
-- external libraries: update nova-tt (gcc 4.7 fix)
-- supernova: correctly implement replace semantics for /s_new
-- Help: Function.scope is not limited to OSX anymore
-- cmake build system: locate server plugins on freebsd
-- server: add support for RF64
-- cmake build system: ensure boost include path for scsynth
-- cmake build system: set boost library path
-- cmake build system: link scapp with correct version of
-- libboost_thread
-- cmake build system: minor cleanup
-- supernova: fix asynchronous commands for empty reply address
-- common: fix non-apple builds
-
-
-SuperCollider v3.5.2, released 201
-======================================
-
-Dan Stowell (3):
-- Remove outdated Japanese menus
-- Cannot use indentation for CMAKE example - on mac it is rendered as     &nbsp; which then breaks cmake compilation
-- Fix bug in FFT library if winsize != audiosize
-
-Jakob Leben (21):
-- qtcollider: fix QTextView:-background and QSoundFileView:-background
-- cmake: improve message if Qt4 or one of its components not found
-- qtcollider: QKnob: fix mouse response when mouseOverAction is set
-- qtcollider: implement missing QPopUpMenu:-background
-- qtcollider: QTextView fixes and improvements
-- help: add missing GUI examples
-- qtcollider: support use of UTF-8 encoded strings
-- qtcollider: QTextView: improve -enterInterpretsSelection
-- qtcollider: QTextField: never propagate Enter to parent
-- qtcollider: QEnvelopeView: improve node selection API and UI
-- help: update EnvelopeView documentation
-- help: fix incorrect info in EnvelopeView documentation
-- qtcollider: QObject:-getProperty: turn an error into a debug warning
-- qtcollider: implement drag-and-drop for data outside SC
-- qtcollider: improve key propagation in QListView and QTreeView
-- qtcollider: optimize view instantiation (take 2)
-- qtcollider: fix mouse wheel event being forwarded to SC for no reason
-- qtcollider: fix potential null pointer dereference
-- qtcollider: optimization - partially revert event handling changes
-- qtcollider: optimization - avoid a signal connection at QObject construction
-- qtcollider: optimization - avoid connecting signals with unnormalized signatures
-
-James Harkins (2):
-- Fix Pcollect/select/reject:embedInStream to pass inval to the function
-- setTheme: Inherit colors from parent theme if the user didn't specify
-
-Jonatan Liljedahl (41):
-- scdoc: MathJax: don't use fonts installed on users computer
-- New SCDoc parser and renderer. Faster, more stable, less buggy.
-- fix some helpfiles for new scdoc
-- scdoc.css update
-- scdoc: scapp compile fix
-- scdoc: defer indexAllDocuments until first use
-- HelpBrowser tweaks
-- scdoc: warn on additions for non-existent help doc
-- scdoc: fill in argument names for argument:: with no name given
-- SCDocRenderer: warn on broken links
-- scdoc: fix classtree:: rendering bug
-- scdoc: only warn on grouped methods argnames mismatch if argument:: tag is used
-- scdoc: avoid GC error in primitive
-- scdoc: collect metadata also from *.ext.schelp (doc additions)
-- scdoc: warn if argument:: name does not match real method arg
-- scdoc: updated SCDoc related docs
-- scdoc: warn if classdoc title and filename mismatch
-- scdoc: fix varargs name match warning
-- scdoc: render getter/setter combinations as two different methods
-- scdoc: warn if setter methods (trailing underscore) is documented explicitly
-- scdoc: more helpfile fixes
-- scdoc: fix some bugs, handle class docs with missing classes
-- scdoc Search.html: match also on filename for 'title'
-- schelp: fix some broken links
-- scdoc: add clearCache arg to indexAllDocuments, and don't render undocumented classes more than once per session
-- scdoc: updated SCDoc related helpfiles
-- schelp: more doc error fixes
-- scdoc: improve argument:: auto-fill and checks
-- String-warn and -error: don't print newline after WARNING: and ERROR:
-- scdoc: tweak warnings
-- scdoc: fix escaping of :: in metadata parsing and block verbatim
-- schelp: add keywords for scdoc tags in SCDocSyntax.schelp
-- scdoc: allow end-of-file as newline terminator, and improve error messages
-- scdoc: use setter_() syntax if more than one argument
-- scdoc: render method arg defaults as "foo: val" instead of "foo = val"
-- mention new scdoc implementation in News-3_5.schelp
-- scdoc parser: allow empty lines before headertags
-- SCDoc: fix escaping of & < and >
-- SCDoc: fix inf loop at missing :: end-tag in code blocks
-- SCDoc: allow EOF as terminator for private:: and similar tags
-- SCDoc: don't warn on missing trailing mul & add args
-
-Miguel Negrão (1):
-- [Class Libray] Quarks GUI - sort quarks by name
-
-Tim Blechmann (10):
-- plugins: fix Clip.kr
-- class library: archive TempoClock as compile string
-- cmake build system: restrict win32-specific cflags to win32
-- external libraries: nova-simd update
-- external libraries: nova-simd compile fix
-- plugins: fix StereoConvolution2L constructor
-- scsynth: use aligned memory allocation functions from supernova
-- external libraries: nova-simd update
-- scsynth: provide zalloc as symbol
-
-redFrik (1):
-- scdoc: fixed a bunch of helpfile errors
-
-
-SuperCollider v3.5.1, released 2012-04
-======================================
-
-Jakob Leben (13):
-- windows: properly pass the SC version to NSIS
-- qtcollider: QPopUpMenu: fix action triggering
-- qtcollider: get rid of "X is not implemented" message
-- class library: make Server:-plotTree resilient to GUI kit switching
-- help: improve Stethoscope documentation
-- class library: QStethoscope2: add missing class methods
-- class library: fix UGen scoping on out-of-process servers
-- class library: PlusFreqScope: simplify server checking
-- class library: fix and improve various 'scope' and 'freqscope' methods
-- help: fix Stethoscope:*isValidServer documentation
-- class library: ServerMeter: fix synth startup and cleanup
-- update README_WINDOWS.txt
-- windows: improve building and installation
-
-Jonatan Liljedahl (6):
-- lang11d: Fix parse tree generation of expr.(key:value, ...)
-- SC.app: allow saving plain text .schelp files
-- SCDoc: copymethod:: also search *.ext.schelp files
-- Update News for 3.5 doc
-- Fix typo in News-3_5.schelp and improve StartupFile.schelp
-- Update WritingPrimitives.schelp regarding GC safety
-
-Joshua Parmenter (1):
-- prevent HID crashes on OS X. Devices still aren't added to the queue though (longs for the locID aren't correctly set up)
-
-Scott Wilson (1):
-- Make Unpack1FFT a subclass of UGen, rather than of PV_ChainUGen
-
-Tim Blechmann (4):
-- class library: SynthDef - fix uploading of large synthdefs
-- sclang: block evaluation typesafety
-- sclang: signal primitives - fix Signal-fft
-
-
-SuperCollider v3.5.0, released 2012-03
-======================================
-
-Major release with many new features - please see the help doc
-"News in 3.5" for more information.
-http://doc.sccode.org/Guides/News-3_5.html
-
-
-SuperCollider v3.4.5, released 2012-01
-======================================
-
-Tim Blechmann (7):
-- class library: FreqScope fix
-- sclang: fix crash of scpacket overflow by using exception handling
-- sclang: pad PyrMethodRaw struct
-- sclang: force size of PyrSlot to 16 byte and fix PyrMethodRaw size
-- server plugins: fix div_ai_nova
-- plugins: Resonz - fix initialization
-- plugins: disable simd-optimization for tanh
-
-James Harkins (3):
-- Explicitly show the command to uninstall (for scons idiots like me).
-- (3.4) PathName now sets tmp directory using Platform
-- SimpleController:update would throw error if no actions had been 'put' in
-
-Dan Stowell (1):
-- Remove waf file from 3.4.x - was never used, and contains binary code,     causing linux packaging problems.     See ubuntu bug #529154 for details, and debian bug #529154 for     sc-specific
-
-Mathieu Trudel-Lapierre (1):
-- Fixup environment variables used for linking against readline, libicu, curl, cwiid.
-
-Nick Collins (1):
-- Fix bug in MFCC ugen
-
-Noe Rubinstein (1):
-- Fix PMOsc doc: index -> pmindex
-
-dmotd (1):
-- Include altivec.h on linux powerpc, fixing FTBFS
-
-
-SuperCollider v3.4.4, released 2011-06
-======================================
-
-Dan Stowell (4):
-- Improve format of copyright/GPL notices (issue raised in debian pkging)
-- Clarify Fontana copyright in MoogFF (and don't use keyword 'copyright'     in files where he doesn't have copyright)
-- Update AUTHORS file
-- Remove unneeded PDF (debian raised query over copyright)
-
-Nick Collins (1):
-- Initial fix for headphones problem where plugging in or out headphones while using Built-in Output leads to loss of audio on OS X. Aggregate Devices not tackled at this point
-
-Tim Blechmann (15):
-- sclang: mathematical operators - clip2 fix
-- plugins: LPF - fix control-rate initialization
-- sclang: wii - don't use address of temporary
-- SCClassLibrary: ScoreStreamPlayer - do not add instances to server list
-- scsynth: apple - set denormal handling flags, if __SSE__ is defined
-- sclang: slotString - crash fix
-- plugins: XLine - correct handling of done actions
-- sclang: gc - introduce LazyCollect to avoid leak of frames and argument lists
-- plugins: Pitch.ar - fix crash for high execution period
-- changelog: fix version number
-- update changelog
-- sclang: parser - support message send syntax for unary operators
-- plugins: delay ugens - rt memory allocation may fail
-- sclang: compile fix
-
-
-SuperCollider v3.4.3
-======================================
-
-Dan Stowell (2):
-- SC 3.4 set correct SOVERSION 1.0.0 for libs, and install more properly.     (Changes ported from downstream debian packaging.)
-- lib SOVERSIONs back from 1.0.0 to 1, following debian-multimedia advice
-
-James Harkins (8):
-- Fix nowExecutingPath bug in scel (never backported?)
-- fix two bugs in NotificationCenter registerOneShot:
-- fix corner case in ClassBrowser
-- Fix asPseg bug for short curves array (which should wrap, not kill the stream)
-- Clear dataptr when closing a file (so that isClosed answers correctly)
-- Incorrectly used dataptr instead of fileptr in previous commit on this file
-- replace old, unsafe Dictionary test with a safer (but less OOPy) test
-- rats... I missed two others of the same
-
-Joshua Parmenter (1):
-- update version number
-
-Tim Blechmann (3):
-- scsynth: set ftz flag on osx
-- two commits: (1) simplify access to the superclass tree in Class. (2) when looking for a code file (openCodeFile) or cmd-J, it is now enough to select a full line, instead of havin
-- scons build system: libsclang build fix
-
-
-SuperCollider v3.4.2, released 2011-03
-======================================
-
-Bugfixes:
----------
-
-- 2010-06-05 fix Latch first sample output bug: if trigger > 0 initially, latch should not output 0 - jh
-- 2010-09-04 fix firstArg behavior in BinaryOpUGen by a list-approved hack - jh
-- 2010-10-01 fix SConstruct so that libscsynth and libsclang get SONAME entries - ds
-- 2010-11-13 grainBuf: audio-rate trigger fix - tb
-- 2010-11-15 generate libsclang and libscsynth with .so.1 extension (and soname) on linux - ds
-- 2010-11-15 scons create symlinks from libX.so to libX.so.1 on linux, and install them - ds
-- 2010-11-16 added .htm files to SConstruct as approved help file extension - mb
-- 2010-11-28 compile fix for curl support - tb
-- 2010-11-28 prevent asBus from breaking when called with no numChannels - jh
-- 2010-12-03 grain ugens: demand ugen input fix - tb
-- 2010-12-05 SystemClock and TempoClock sched and schedAbs with inf time doesn't schedule the task in the first place. backported from master - tb
-- 2010-12-08 prString_FindRegexp fix: match char array was too short to hold null termination - jli
-- 2010-12-11 fix classbrowser colors bugs. backported from master - tb
-- 2010-12-12 fixes the bug where installed quark help files would not be detected - tb/ar
-- 2010-12-13 mark inherited methods in class browser by background colour. backported from master - tb
-- 2010-12-30 Pipe does not remove closed pipes from openFiles - jh
-- 2010-12-30 fix String:rotate - pb
-- 2011-01-02 unit generators: LagControl - fix initialization order - jh
-- 2011-01-02 unit generators: LagControl - dynamically allocate buffer for filter states - tb
-- 2011-01-07 fixed iOS compilation and backported changes from master branch - ab
-- 2011-01-06 array primitives: fix allTuples and unlace - pb
-- 2011-01-07 sclang: makeIntrinsicClass - correct bounds for memcpy - tb
-- 2011-01-08 sclang: prString_FindRegexp - fill array after allocating objects - tb
-- 2011-01-14 sclang: prString_FindRegexp ensure correct size of results array during gc calls - tb
-- 2011-02-27 sclang: ensure minimum stack size - tb
-- 2011-03-09 SCVim: avoid generating scvim help cache if not currently in scvim - ds
-- 2011-03-11 fix the Event type 'note' (fixes rendering patterns to audio files) - rk
-
-
-SuperCollider v3.4.1, released 2010-11
-======================================
-
-- 2010-07-12 remove accidental debug messages from SCView (on mac, posted a lot of info to Console, could affect performance) - ds
-- 2010-07-11 Collections should behave as reasonably as possible when empty - some fixes to better this - jr
-- 2010-07-11 SynthDef:add now sends to all running servers if no libname is given. SynthDescs are still added to the global SynthDescLib. If you want to handle multiple SynthDesc libs, you have to add the servers to each of them explicitly - jr
-- 2010-07-12 PanAz: added support for audio-rate pos arg - lfsaw
-- 2010-07-18 improved the sclang syntax highlighting parses - Patrick Borgeat
-- 2010-07-30 Dreset UGen allows to reset the child UGens on its input - jr
-- 2010-08-05 storeOn / asCompileString now simplifies its output. Default arguments that are given in the *new method anyhow are omitted - jr
-- 2010-08-06 Dictionary merge and blend methods - jr
-- 2010-08-09 method overwrite messages not posted by default, rather a message inviting people to run Main:overwriteMsg for the info - ds
-- 2010-08-13 MethodOverride class to encapsule information on overridden messages, inviting people to run MethodOverride.printAll  - jr
-- 2010-08-13 add size arg to Signal:zeroPad - jr and jh
-- 2010-08-18 Pevent now uses default event if no event is passed in - jr
-- 2010-08-18 added a shortcut to the rather tedious .asCompileString method. In analogy to object.postcs, object.cs returns the compile string - jr
-- 2010-08-20 audio driver for scsynth running on Android (through JNI) - ds
-- 2010-08-24 un-deprecate scsynth's ability to use internal "green" FFT lib, for embedded devices etc - ds
-- 2010-08-28 no 'record' button for remote server GUIs, since path not generally known - ds
-- 2010-09-02 token threading for sclang interpreter - tb
-- 2010-09-07 when looking for a code file (openCodeFile) or cmd-J, it is now enough to select a full line, instead of having to select both words around the colon - jr
-- 2010-09-07 added methods for better navigation in the class tree (findOverriddenMethod) - jr
-- 2010-09-10 add method: Complex:abs to fit common usage - jr
-- 2010-09-12 added Dwrand UGen - jr
-- 2010-09-15 SystemClock and TempoClock sched and schedAbs with inf time doesn't schedule the task in the first place - jr
-- 2010-10-07 change the mac HID error-handler code to output errors to sc post window rather than to mac log; removes a pascal-string issue - ds
-- 2010-10-19 Ndef now releses its bus when server was quit or just booted - jr
-- 2010-10-20 retain the path to the file in which an error has occurred and post it - jr
-
-
-Bugfixes:
----------
-- 2010-07-10 protecting the server against malformatted SynthDef names - jr
-- 2010-06-28 syntaxColorize fix for double-backslashes, thanks Patrick Borgeat for the patch - ds
-- 2010-07-24 catch crash in the case that one tries to define a unique method using a return value directly - jr
-- 2010-09-07 UGen:clip, :wrap, :fold now apply correctly to scalar-rate signals; also methodSelectorForRate tweak for which class is asked - ds
-- 2010-09-09 fix a bug for trigger signals in Demand.kr that hold longer than one control period - jr
-- 2010-09-11 bug in audio rate mapping fixed, when new source object was inserted in a mapped node proxy - jr
-- 2010-09-12 fix bug: 2994009. LFPar and LFCub audio rate modulation frequency argument work now - jr
-- 2010-09-19 fix to JITGui, when numItems is not supplied - jr
-- 2010-10-10 remove more crufty NSLog debug messages - ds
-- 2010-10-13 fix SCUserView:receiveDrag to receive mouse co-ordinates; thanks Daniel van den Eijkel - ds
-- 2010-10-19 debian-style scvim-check-if-plugin-is-active, brought upstream - ds
-- 2010-10-19 bug in audio rate mapping fixed, when new source object was inserted in a mapped node proxy - jr
-- 2010-10-19 partial fix for bugs item #2994009 - seems to fix LFPar but not LFCub. More work needed - ds
-- 2010-10-19 DC: fix multichannel expansion - tb
-- 2010-10-19 fix to demand rate unary op ugens, thanks james harkins - tb
-- 2010-10-19 Ugens: LinLin/LinExp fixes - tb
-- 2010-10-19 only /clearSched if RT - to fix tracker item #3033454 - tb
-- 2010-10-19 UGens: binary operators - fix scalar/signal division - tb
-- 2010-10-19 fix bug 2988525: SynthDef:writeDefFile appends path correctly - tb
-- 2010-10-19 ProcessOSCPacket: fix possible deadlock - tb
-- 2010-10-19 fix network address handling - albert graef
-- 2010-11-05 fix memory issues in regular expressions: correct memory management in prString_FindRegexp - tb
-- 2010-11-07 sclang: correct symlink handling - tb, ar
-
-SuperCollider v3.4, released 2010-07
-====================================
-
-Headlines:
-----------
-
-- 2009-09-03 add support for Mac OS 10.5 and greater 64-bit builds of plugins and scsynth
-- 2009-07-xx iphone support by Axel Balley added - ab
-- 2009-07-21 EnvirGui added, a gui for livecoding/editing environments - adc
-- 2009-07-24 Server.plotTree method for visualising the groups and synths on the server - sw
-- 2009-07-31 mac osx text-completion feature now includes sclang objects - ds
-- 2009-08-01 sclang now has a flag (Platform.ideName) for which IDE is in use (scapp, scvim, scel, sced, jsceclipse...) so that the same class-library can be used with different IDEs, enabling IDE-specific code as necessary - ds
-- 2009-08-16 add emergency escape route: if sclang is caught in an infinite loop, send it a USR1 signal to break out of it - ds
-- 2009-09-12 String:findRegexp and other regular expressions now available on linux as well as mac - mb,ds
-- 2009-09-18 n_order and Server:reorder allow one to specify chains of nodes - sw
-- 2009-09-20 simplify the Server recording interface. prepareForRecord is now optional (will be automatically invoked if you don't), and the server gui button is now just two-state "record" "stop" - ds
-- 2009-10-04 support multichannel indices for Env:at - jr
-- 2009-10-29 improve OSC message correctness: for convenience, sclang allows command names as symbols with no leading slash e.g. \g_new. To improve compliance with the OSC standard, the leading slash is now added to those symbols before dispatch - ds
-- 2009-11-07 use nova-simd framework for performance improvements of unit generators - tb
-- 2009-11-21 Event type \note supports polyphonic sustain, lag and timingOffset, and responds correctly to free and release. Add \grain event type. - jr
-- 2009-11-28 windows: system "application support path", previously hardcoded as C:\SuperCollider, now settable by environment variable SC_SYSAPPSUP_PATH. Default setting for that env var (when using official wix bundle) will be [SC3INSTALLLOCATION] - ds
-- 2009-12-15 sclang: 64-bit safety - tb
-- 2009-12-15 sclang: performance improvement of math ops - tb
-- 2010-01-02 scsynth: use osc-compilant address patterns for server/lang communication - tb
-- 2010-01-24 add readline interface to sclang command-line. This is used by default when invoking "sclang" (to use the non-readline interface set the "-i" option to something other than "none") - ds
-- 2010-01-24 enable GPL3 code by default - this 'upgrades' the overall binary license from GPL2+ to GPL3+, and allows supercollider to benefit from GPL3+ libraries such as libsimdmath and gnu readline  - ds
-- 2010-02-04 Improvements to SC.app editor: Split pane documents, AutoInOutdent - sw
-- 2010-02-18 scvim: now compatible with gnu screen, opens post window using screen, making it compatible with a pure-CLI environment - ds
-- 2010-02-xx add the Deployment32-64 build style for building on OS X (10.5 and greater) - jp
-- 2010-03-10 SynthDef:memStore deprecated in favour of the more coherent and typeable SynthDef:add - jr
-- 2010-04-11 Moved some more experimental JITLib classes to "JITLib extensions" Quark - jr
-
-
-Bugfixes:
----------
-
-- 2009-06-12 fix for level indicator: critical and warning now display based on peak if it is shown rather than on value - sw
-- 2009-06-18 fix for mouse coordinates bug - sw
-- 2009-06-22 fix for negative bounds issue in SCUserView - sw
-- 2009-06-23 avoid memory corruption when unknown OSC type tags are received. Instead forward them to sclang - jr
-- 2009-06-23 Fix server crash with negative buffer numbers. - jr
-- 2009-07-20 factors(): no prime factors exist below the first prime - jr
-- 2009-07-21 Loudness ugen now supports LocalBuf - nc
-- 2009-07-23 Fix very nasty bug in Pbindf: if a key is an array, new values were written into the incoming event, instead of the outgoing event - jh
-- 2009-07-28 catch unintialised value in sc_GetUserHomeDirectory(), fixing potential memory corruption if HOME not set - ds
-- 2009-08-01 SpecCentroid, fix its reaction to silence (output zero instead of NaN) - ds
-- 2009-08-01 NamedControl: single default value now returns instance, not array, default values are obtained in a consistent way - jr
-- 2009-08-04 fix the CPU-usage issue when calling plain "./sclang" from the terminal on OSX (seems it was caused by a bug in how OSX handles poll() calls) - ds
-- 2009-08-15 LinPan2: fix initialisation issue - panning was not correctly applied during the first calc block - ds
-- 2009-09-28 Workaround for faded colours in HTML docs - sw
-- 2009-09-13 fix PV_MagShift argument handling, so that the defaults mean no-change, matching the behaviour of PV_BinShift - ds
-- 2009-09-20 warn about weirdness of Float:switch - ds
-- 2009-09-30 prevent NaN output from SpecFlatness when input is silence - ds
-- 2009-10-16 fix cropping issue in printing SuperCollider.app documents - cq
-- 2009-10-17 many phase-vocoder (PV_) ugens previously didn't handle the DC/nyquist bins as expected. fixed most of these (PV_MagAbove, PV_MagBelow, PV_MagClip, PV_LocalMax, PV_BrickWall, PV_MagSquared, PV_BinWipe, PV_CopyPhase, PV_Max, PV_RandComb) - ds
-- 2009-11-01 fix audio rate arg problem in PlayBuf - jp
-- 2009-11-02 fix amplitude-convergence issue in Pan2, Balance2, LinPan2, XFade2, which could sometimes result in sound despite zero amp, as discovered by jh - ds
-- 2009-11-03 fix unsafe implementation of methods that allow sending collections to buffers - jr
-- 2009-11-04 fix signalRange for MouseX, MouseY and KeyState, so that the range message works now - jr
-- 2009-11-19 Fix for PV chains and LocalBuf - sw
-- 2009-12-14 fix uninitialised variable in Pulse (could sometimes cause small glitch on init), thanks to rhian lloyd - ds
-- 2010-01-10 Demand ugens can now handle more than 32 channels, thanks Patrick Borgeat for the patch - ds
-- 2010-02-05 scsynth now respects the -D commandline option when running in NRT mode - ds
-- 2010-02-11 Fix for nowExecutingPath with Routines - sw
-- 2010-02-23 Performance fixes for SCUserView - sw
-- 2010-02-25 Fix interpolation / indexing problem in VDiskIn that caused slight pitch fluctuations - jp
-- 2010-03-11 SequenceableCollection:reduce no longer returns nil if the collection has only 1 element - ds
-- 2010-03-28 fix memory leak of empty command line, for interactive sclang mode - tb
-- 2010-03-29 main menu for Mac lang editor app: correction to key for evaluate selection, used to be return, now return+shift - nc
-- 2010-04-19 fix missing font issue in Plotter -jr
-
-Other additions/improvements:
------------------------------
-
-- 2009-06-11 Evaluate Selection menu command - sw
-- 2009-06-23 allow remote apps to send type chars - jr
-- 2009-06-27 build 32bit sclang on x86_64 - tb
-- 2009-07-xx efficiency improvements on some UGens - tb
-- 2009-07-xx improve Quarks use of svn for smoother user experience - ds
-- 2009-07-22 catch the case when a user tries to compile into a synthdef, a unary/binary operator that the server can't apply - jh
-- 2009-08-29 String:toUpper and String:toLower - ds
-- 2009-09-06 Boolean:while now throws an informative error, since Boolean:while has no particular use but is often used in error by beginners in code where Function:while is intended - ds
-- 2009-09-12 method FunctionDef:makeEnvirFromArgs allows to create template events from a function - jr
-- 2009-09-30 Error is now posted if maxSynthDefs exceeded -sw
-- 2009-11-03 TwoWayIdentityDictionary has a removeAt method now - jr
-- 2009-11-04 update of deferredTaskInterval from 0.038 to 0.01667 - fo
-- 2009-11-07 improved PyrSlot typesafety - tb
-- 2009-11-23 menu system improvements in Windows IDE - mv
-- 2009-12-13 tidyups for "sclang when on osx but not in sc.app" - ds
-- 2009-12-13 added lincurve and curvelin methods for numbers and UGens - jr
-- 2010-01-01 OSCresponder and OSCresponderNode respond equally to messages with or without preceding slash - jr
-- 2010-01-04 sclang: deprecated Proutine - switch back to the original Prout
-- 2010-01-06 UnitTest Quark improved, added script support - jr
-- 2010-01-23 Improved NodeProxy and ProxySpace helpfiles. Added proxy composition syntax to NodeProxy - jr
-- 2010-01-30 Make multichannel plotting easier. If no numChannels is given, find out automatically  - jr
-- 2010-01-31 add new LOOP1 macro - tb
-- 2010-01-31 use c99 log2 functions for sc_log2 - tb
-- 2010-02-09 rearrangement of supercollider source code tree - ds
-- 2010-02-11 Server:default_ now assigns to s by default. Settable with flag - sw
-- 2010-02-27 removed SCAnimationView and added SCUserView:animate_ - fo
-- 2010-03-10 SCPen:setSmoothing changed to SCPen:smoothing_, harmonised change with swingosc - ds
-- 2010-03-23 exponentiation for Complex numbers - jr
-- 2010-xx-xx many helpfiles improved - various authors
-- 2010-03-30 Image class added, a redirect for SCImage or JSCImage - hr
-- 2010-03-30 Pitch ugen ability to output clarity measure (by default not activated, for backwards compat) - ds
-
-SuperCollider v3.3.1, released 2009-06-19
-=========================================
-
-Headlines:
-----------
-
-- 2009-05-11 SCWindow additions for visible, visible_, unminimize - cq
-- 2009-05-17 server guis (on osx) now indicate which one is currently default - adc
-- 2009-05-18 enabled control rate versions of Ball, TBall and Spring - mb
-- 2009-05-18 LID support for setting "MSC" state as well as "LED" on devices - ds
-- 2009-06-19 patched for compatibility with Safari 4, fixing a lockup issue when opening help docs - ar
-
-Bugfixes:
----------
-
-- 2009-05-11 fix keyword addressing for the order: argument - jmc
-- 2009-05-15 update libsndfile to 1.0.20 to fix security issues (overflow vulnerabilities) in libsndfile - ds
-- 2009-05-20 fix bug #2790649, "very large SimpleNumber:series can crash sclang" - ds
-- 2009-05-25 mac icons for document types .quark .scd .rtfd were omitted from the app bundle, now fixed - ds
-- 2009-06-02 EnvGen: fix off by one block latency in envelope attacks and releases - jr
-- 2009-06-12 bug fix for level indicator: critical and warning now display based on peak if it is shown rather than on value - sw
-- 2009-06-12 mouse coordinates fix, deprecate SCUserView:mousePosition - sw
-- 2009-06-17 some issues fixed in SCUserView - cq
-- 2009-06-20 fix redirect for Stethoscope - adc
-
-Other additions/improvements:
------------------------------
-
-- 2009-05-05 fixes/improvements to cocoabridge primitives - cq
-- 2009-05-06 SCImage various minor improvements - cq
-- 2009-05-16 optimisation for scrollview drawing, remove VIEWHACK - sw
-- 2009-05-xx various documentation updates - various
-- 2009-05-xx various improvements to ubuntu-debian packaging scripts - ds, am
-- 2009-05-20 SynthDef:writeOnce now available as an instance method as well as a class method - ds
-- 2009-06-11 sc.app gets a menu command for "Evaluate selection" - sw
-- 2009-06-17 adjusted SCKnob to use relative mouse coordinates - jm
-- 2009-06-17 small fix to SConstruct to allow for new Debian X11 location when compiling on linux - mb
-- 2009-06-19 Blip ugen: prevent sound blowup by never letting numharm be less than 1 - fo
-- 2009-06-20 SCPen: fillStroke changed default from draw(4) to draw(3) - fo
-- 2009-06-21 Fold, Clip and Wrap can now modulate the low and high inputs.
-
-SuperCollider v3.3, released 2009-04-30
-=======================================
-
-Headlines:
-----------
-- 2008-04-08 scvim is now part of the distro - ds
-- 2008-04-20 improvements to MIDI sysex handling - added sysex parsing directly in source - thanks to charles picasso
-- 2008-07-12 scsynth on Mac can now use separate devices for audio input vs audio output. Thanks to Axel Balley for much of the work on this, also a bit by ds.
-- 2008-07-12 PlayBuf, RecordBuf, BufWr, BufRd, ScopeOut - used to be limited to 16-channel audio maximum. Now can handle massively multichannel audio - ds
-- 2008-07-19 Buffer:normalize method added - ds
-- 2008-07-23 FFT and IFFT added option for zero-padding, by optional "framesize" argument - ds
-- 2008-09-03 new VDiskIn ugen - jp
-- 2008-10-08 SCImage for manipulating bitmap image objects (mac only) - ch
-- 2008-10-09 LocalBuf system to allow synths to manage their own purely-local buffers - jr
-- 2008-10-17 Added "-P" option to scsynth (accessible as s.options.restrictedPath) to allow restricting which paths scsynth is allowed to read/write - ds
-- 2008-10-18 new PartConv ugen, performs efficient frequency-domain convolution - nc
-- 2008-10-26 support on mac for "modal windows/sheets" (for user dialogs etc) - sw
-- 2008-xx-xx various behind-the-scenes efficiency improvements, for a sleeker audio server that can do more on a given machine - various contributors
-- 2008-11-01 add BEQSuite filter UGens (blackrain, jp)
-- 2008-11-11 add Pfxb pattern - jr
-- 2008-11-25 new EZPopUpMenu - jm
-- 2008-11-29 Pitch ugen can now also track the pitch of control-rate signals - mb
-- 2008-11-30 Drag and drop paths from Finder to Documents and SCViews - sw
-- 2008-12-03 added PV_Div ugen for complex division - ds
-- 2008-12-07 added PV_Conj ugen for complex conjugate - ds
-- 2008-12-15 new ViewRedirect for easier cross-platform gui syntax. e.g. Window now redirects to SCWindow or JWindow. ds & jm
-- 2008-12-15 revised and updated all SC Gui documentation. New gui introduction. New SCUserView subclassing tutorial. - jm
-- 2008-12-15 the /done message for Buffer allocation/free/etc now also includes the buffer index - jt
-- 2008-12-15 added methods to SCFreqScope for "special" SynthDef, and for visualising frequency responses - ds
-- 2008-12-18 the main windows version of sc is now called "SuperCollider" rather than "PsyCollider" (although psycollider is the name of the code editor). SuperCollider on windows now has a different (better? who knows) installer, uses the main sc3 icon, and has some other tweaks that make it different from version 3.2 - ds
-- 2008-12-19 new EZListView - jm
-- 2009-01-02 sced (the gedit sc plugin) is now part of the distro - mb/artem
-- 2009-01-06 SendReply UGen - jr
-- 2009-01-06 VDiskIn sends file position to client - jr
-- 2009-01-12 map audio to SynthDef controls. new OSC messages n_mapa and n_mapan. - jp, jr, rk
-- 2009-01-13 relativeOrigin=true. SC's coordinate system in container views and user views are now by default relative.
-- 2009-01-15 SCLevelIndicator view added - sw
-- 2009-01-16 Scale and Tuning classes added - tw
-- 2009-01-17 SuperColliderAU (scsynth as a Mac OSX "Audio Unit") added to main distribution - gr
-- 2009-02-03 EZKnob revised and now part of distro - br, jm
-- 2009-02-23 SystemActions refactored - jr
-- 2009-02-23 SCMenuItem, SCMenuGroup, and SCMenuSeparator for user customisable menus - sw
-- 2009-02-23 LFGauss UGen added - jr
-- 2009-03-14 Added GeneralHID based patterns PhidKey and PhidSlot - mb
-
-Bugfixes:
----------
-- 2008-05-20 fix for the special case when 0.2.asFraction beachballs the lang (bug id 1856972) - jr
-- 2008-05-20 fix slight mistake in the defaults printed by scsynth on command-line (bug id 1953392) - ds
-- 2008-07-24 Routine / AppClock fix setting the clock of the thread (bug id 2023852) - jr
-- 2008-09-16 stability fixes to FFT and IFFT - ds
-- 2008-09-27 fix TExpRand.ar - ds
-- 2008-11-11 SystemSynthDefs.numChannels can now be set from the startup file - jr
-- 2008-11-24 avoid FFT failure when buffer not allocated - jr
-- 2008-11-29 resolved inconsistency in Server:waitForBoot - function is always executed in a Routine, whether or not the server is booted - ds
-- 2008-12-07 FlowView setting inital margin and gap fixed (bug id 1986059) - jh
-- 2008-12-07 OSCpathResponder fixed (bug id 2021481) - jh
-- 2009-01-08 b_readChannel fixed (bug id 1938480) - mb
-- 2009-01-08 MIDIIn.connect on Linux fixed (bug id 1986850) - mb
-- 2009-01-09 Tabbing in SCTextView - sw
-- 2008-08-23 fix for sclang crashing sometimes when compiling erroneous code (bug id 2022297) - rb
-- 2009-01-18 SCScrollView relativeOrigin glitch fixed (bug id 2508451) - jr, sw
-- 2009-01-28 Fixed QuartzComposer view bounds bug - sw
-- 2009-02-21 NodeProxy handles groups more consistently - jr
-- 2009-04-16 asFraction fix by JMcC - jr
-
-Other additions/improvements:
------------------------------
-- 2008-03-22 added open Method and link handling to SCTextView - sw
-- 2008-04-04 SoundFile:toCSV - ds
-- 2008-04-29 buffer UGens now post a warning (rather than failing silently) if buffer channels doesn't match num ins/outs - ds
-- 2008-07-14 Deprecated rendezvous in favour of zeroConf - sw
-- 2008-09-xx various code improvements, including compiling for 64-bit linux - tb
-- 2008-10-03 improvements to standalone build - jp
-- 2008-10-03 SCEnvelopeView remembers drawing order. - sw
-- 2008-10-05 Maintain initial offset when dragging on an Envelope View node. This avoids nodes jumping to a new position on mouse down. - sw
-- 2008-10-05 Enabled gridOn, gridResolution, gridColor, timeCursorOn, timeCursorPosition, and timeCursorColor for SCSoundFileViews. - sw
-- 2008-10-31 thisProcess.pid - sclang now can know what its process id is - ds
-- 2008-11-21 support for LocalBuf in FFT UGens - jr
-- 2008-11-27 SC3 will ignore ugens/class-files in folders named "ignore". Previously the name has been "test" - ignoring folders named "test" is now deprecated and will be removed - ds
-- 2008-12-06 Added Main:recompile to allow recompiling from code (SC.app only so far) - sw
-- 2008-12-08 Added custom drag label for SCView - sw
-- 2008-12-15 Buffer's done osc reply now includes the bufnum - jt
-- 2008-12-20 Help tree in help menu (OSX) - sw
-- 2008-12-24 EZSLider and EZNumber now have an enclosing containers, as well labelPosition =\left, \right, or \stack modes - jm
-- 2009-01-03 Help browser text is editable/executable (CocoaGUI) - sw
-- 2009-01-04 Escape exits modal and fullscreen states (OSX) - sw
-- 2009-01-08 interface change to ProxySpace.stop (now stops all proxies, just like free/end/clear) - jr
-- 2009-01-08 improved Ndef implementation, stores values in an internal ProxySpace, Ndef takes server names for multiple servers. - jr
-- 2009-01-08 improved ProxyMixer implementation, added NdefMixer. - adc
-- 2009-01-11 Added class browser to help menu (OSX) - sw
-- 2009-01-20 New Cocoa based SCTextField - sw
-- 2009-01-28 More helpful error string for operation cannot be called from this Process - sw
-- 2009-02-23 CocoaDialog takes allowsMultiple arg rather than maxItems - sw
-
-
-SuperCollider v3.2, released 2008-02-21
-=======================================
-
-Headlines:
-----------
-- 2007-11-xx new suite of machine listening ugens - Loudness, BeatTrack, Onsets, KeyTrack, SpecCentroid, SpecPcile, SpecFlatness - nc, ds
-- 2008-01-06 FreeBSD compatibility - hb
-- 2008-01-10 Quarks updating on OSX should now be easier for first-time users; commands are run in a separate terminal window - ds
-- 2008-01-15 "Advanced find" in Mac interface - jt
-- 2008-01-20 Buffer.copy changed to match other .copy methods - now copies language-side object rather than server buffer. Buffer.copyData can be used to copy data from one server buffer to another - jh
-- 2008-01-20 - add volume controls to the Server and Server guis - jp
-- 2008-01-xx Pattern library implementation changes, Pfx, Pbus, Pgroup etc. - rk, jr, jh
-- 2008-01-26 TDuty outputs trigger first, not level. for backwards compatibility TDuty_old - jr
-- 2008-02-03 moved the search location for "startup.rtf" on Mac - now searches in system, then user, "Application Support/SuperCollider" folders - ds
-
-Bugfixes:
----------
-- 2007-11-16 bug fixes for MIDIIn in connect/disconnect methods. split MIDIOut.sysex into user method and primitive (breaks with previous implementation). default value for uid arg in MIDIOut.new. - mb
-- 2007-11-18 fixed a bug in prTry / protect - jr
-- 2007-11-27 lock avoided in nextTimeOnGrid
-- 2007-12-12 Node-setn fixed when using integers as control indices - jr
-- 2008-01-16 fixed Pen: bug with fillRect, fillOval and fillColor (bugtracker id 1837775) - jt
-- 2008-01-20 CheckBadValues rate-checking was too restrictive - ds
-- 2008-01-20 fix for Saw and Pulse's offset noise on first instantiation, thanks to hisao takagi - ds
-- 2008-01-26 TDuty / Duty does not drift anymore - jr
-- 2008-02-07 Fixed hang and incorrect background drawing in Cocoa scrollviews - sw
-
-Other additions/improvements:
------------------------------
-- 2007-11-16 MIDIOut.connect and disconnect - mb
-- 2007-11-18 added T2A UGen - jr
-- 2007-11-18 Refactoring of Document class, including new CocoaDocument class to handle the Cocoa-specific (SuperCollider.app) document management - ds
-- 2007-11-18 More macros available in the plugin API for UGen programmers: GET_BUF, SIMPLE_GET_BUF, FULLRATE, RGET, RPUT - ds
-- 2007-11-20 UnixPlatform:arch method - jp
-- 2007-11-20 FFTTrigger UGen - a ugen to create "fake" (empty) FFT chains - jp
-- 2007-11-21 StartUp protects its added functions from each other - if one fails this no longer prevents others from running - ds
-- 2007-11-25 added Pclutch and moved StreamClutch to common - jr
-- 2007-11-27 Function:inEnvir added - jh
-- 2007-12-12 added Collection.flatIf - jr
-- 2007-12-15 added control rate functionality to NumRunningSynths - jr
-- 2008-01-08 martin rumori's DiskIn bugfix and loop enhancement - jp
-- 2008-01-10 String:runInTerminal method - ds
-- 2008-01-11 poll now works for scalar ugens - jr
-- 2008-01-15 Collection:maxIndex and Collection:minIndex - nc
-- 2008-01-24 Server.options.rendezvous to (de)activate Rendezvous if desired - ds
-- 2008-01-24 demand ugens accept audio rate inputs correctly - jr
-- 2008-01-26 added Dbufwr ugen, for writing to buffers from a demand ugen chain  - jr
-- 2008-01-27 Main:version and associated methods for programmatically determining which version SC is - ds
-- 2008-02-03 Server:defaultRecDir class variable, to allow user to specify default rec location - ds
-- 2008-02-07 SCScrollView and SCScrollTopView no longer fire their action when scrolled programatically - sw
-
-
-SuperCollider v3.1.1, released 2007-11-16
-=========================================
-Bugfixes:
----------
-- 2007-11-09 re-organized the main help file - rb
-- 2007-11-14 fix for .asStringPrec, to avoid crashes on intel systems for large precision values - jt
-
-Other additions/improvements:
------------------------------
-- 2007-11-14 added a preprocessor to the interpreter - jr
-- 2007-11-14 added a startup message specifying how to get help - rk
-
-
-SuperCollider v3.1, released 2007-10-31
-=======================================
-(changes below are since 2007-09-22, for first ever point release)
-
-Headlines:
-----------
-- 2007-09-27 SparseArray class added - jr
-- 2007-09-28 Help.gui added - ds
-- 2007-10-01 FFT and IFFT rewrite - now using more efficient libs, also allows user to vary the overlap and the window type, also large-sized FFTs are possible - ds
-- 2007-10-02 UnpackFFT and PackFFT added - these allow for flexible frequency-domain manipulations inside synths - ds
-- 2007-10-04 Pkey and Pif added - hjh
-- 2007-10-05 reformed Patterns - all patterns accept patterns as arguments - jr
-- 2007-10-08 change to UGen plugin loading fixes the audio dropout issue that various users have experienced - rb
-- 2007-10-08 GeneralHID crossplatform HID wrapper - mb
-- 2007-xx-xx many improvements to Quarks package-management system. gui improvements, dependency-handling improvements, etc - various
-- 2007-10-20 added a Glossary file - sw
-- 2007-10-xx various new help files added, and many help files improved - various
-- 2007-10-26 changed Cmd-? to Cmd-D in lieu of the default help menu shortcut in Leopard. Also changed Cmd-Shift-K (clear post window) to Cmd-Shift-C to avoid accidental recompiles. - rb
-
-Other additions/improvements:
----------------------------
-- 2007-09-22 change log added, much rejoicing
-- 2007-09-25 added packagesource.sh script to produce source code bundles - ds
-- 2007-09-28 IdentityDictionary:doesNotUnderstand now warns if adding a pseudo-method which overrides a real method - jr
-- 2007-09-28 String:openHTMLFile added - ds
-- 2007-10-04 Integer:collect and Integer:collectAs methods added - ds/jr
-- 2007-10-05 Dwhite:new and Dbrown:new have default values for lo and hi - jr
-- 2007-10-10 SC no longer automatically writes data (synthdefs, archive.scxtar) to the application folder - instead writes to "app support". This fixes problems with running SC using an unprivileged user account - ds
-- 2007-10-16 SequenceableCollection:median speed improvement, approx ten times faster in many cases - ds
-- 2007-10-20 Object:deprecated and DeprecatedError added to allow for method deprecation - sw
-- 2007-10-21 Amplitude : attackTime and releaseTime can be modulated now - jr
-- 2007-10-25 Collection : histo method improved and moved from mathLib to common - jr
-- 2007-10-30 improvements to cocoa Gui, including SCUserView improved to support layering and own draw hook - jt, sciss
-- 2007-10-31 refactored Pbrown, added Pgbrown - jr
-
-Bugfixes:
----------
-- 2007-09-29 takekos bug fixed (obscure issue with garbage collection in arrays) - jm
-- 2007-10-01 fixed off by one bug in Dswitch and Dswitch1 that caused a server crash - jr
-- 2007-10-09 fixed deadlock and other problems in NSAttributedStringAdditions.m - rb
-- 2007-10-11 fixed inaccurate automatic determination of whether SC is running as standalone - ds
-- 2007-10-14 .quark files now saved correctly as plain-text, not RTF - ds
-- 2007-10-24 fixed a bug in Pbeta - jp
-
-
-\* *This Change Log was automatically generated by [github_changelog_generator](https://github.com/skywinder/Github-Changelog-Generator)*

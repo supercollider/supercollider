@@ -28,6 +28,8 @@
 #include <boost/lockfree/detail/parameter.hpp>
 #include <boost/lockfree/detail/prefix.hpp>
 
+#include <boost/lockfree/lockfree_forward.hpp>
+
 #ifdef BOOST_HAS_PRAGMA_ONCE
 #pragma once
 #endif
@@ -601,35 +603,43 @@ public:
     template <typename ConstIterator>
     ConstIterator push(ConstIterator begin, ConstIterator end)
     {
-        return ringbuffer_base<T>::push(begin, end, array_, max_elements_);
+        return ringbuffer_base<T>::push(begin, end, &*array_, max_elements_);
     }
 
     size_type pop(T * ret, size_type size)
     {
-        return ringbuffer_base<T>::pop(ret, size, array_, max_elements_);
+        return ringbuffer_base<T>::pop(ret, size, &*array_, max_elements_);
     }
 
     template <typename OutputIterator>
     size_type pop_to_output_iterator(OutputIterator it)
     {
-        return ringbuffer_base<T>::pop_to_output_iterator(it, array_, max_elements_);
+        return ringbuffer_base<T>::pop_to_output_iterator(it, &*array_, max_elements_);
     }
 
     const T& front(void) const
     {
-        return ringbuffer_base<T>::front(array_);
+        return ringbuffer_base<T>::front(&*array_);
     }
 
     T& front(void)
     {
-        return ringbuffer_base<T>::front(array_);
+        return ringbuffer_base<T>::front(&*array_);
     }
 };
 
+#ifdef BOOST_NO_CXX11_VARIADIC_TEMPLATES
 template <typename T, typename A0, typename A1>
+#else
+template <typename T, typename ...Options>
+#endif
 struct make_ringbuffer
 {
+#ifdef BOOST_NO_CXX11_VARIADIC_TEMPLATES
     typedef typename ringbuffer_signature::bind<A0, A1>::type bound_args;
+#else
+    typedef typename ringbuffer_signature::bind<Options...>::type bound_args;
+#endif
 
     typedef extract_capacity<bound_args> extract_capacity_t;
 
@@ -669,22 +679,32 @@ struct make_ringbuffer
  *  - T must have a default constructor
  *  - T must be copyable
  * */
-#ifndef BOOST_DOXYGEN_INVOKED
-template <typename T,
-          class A0 = boost::parameter::void_,
-          class A1 = boost::parameter::void_>
+#ifdef BOOST_NO_CXX11_VARIADIC_TEMPLATES
+template <typename T, class A0, class A1>
 #else
-template <typename T, ...Options>
+template <typename T, typename ...Options>
 #endif
 class spsc_queue:
+#ifdef BOOST_NO_CXX11_VARIADIC_TEMPLATES
     public detail::make_ringbuffer<T, A0, A1>::ringbuffer_type
+#else
+    public detail::make_ringbuffer<T, Options...>::ringbuffer_type
+#endif
 {
 private:
 
 #ifndef BOOST_DOXYGEN_INVOKED
+
+#ifdef BOOST_NO_CXX11_VARIADIC_TEMPLATES
     typedef typename detail::make_ringbuffer<T, A0, A1>::ringbuffer_type base_type;
     static const bool runtime_sized = detail::make_ringbuffer<T, A0, A1>::runtime_sized;
     typedef typename detail::make_ringbuffer<T, A0, A1>::allocator allocator_arg;
+#else
+    typedef typename detail::make_ringbuffer<T, Options...>::ringbuffer_type base_type;
+    static const bool runtime_sized = detail::make_ringbuffer<T, Options...>::runtime_sized;
+    typedef typename detail::make_ringbuffer<T, Options...>::allocator allocator_arg;
+#endif
+
 
     struct implementation_defined
     {

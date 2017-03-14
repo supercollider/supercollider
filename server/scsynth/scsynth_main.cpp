@@ -40,7 +40,7 @@
 // setlinebuf is equivalent to the setvbuf call below.
 inline int setlinebuf(FILE *stream)
 {
-    return setvbuf( stream, (char*)0, _IONBF, 0 );
+	return setvbuf( stream, (char*)0, _IONBF, 0 );
 }
 
 #endif
@@ -54,6 +54,7 @@ void Usage()
 		"   -v print the supercollider version and exit\n"
 		"   -u <udp-port-number>    a port number 0-65535\n"
 		"   -t <tcp-port-number>    a port number 0-65535\n"
+		"   -B <bind-to-address>    an IP address\n"
 		"   -c <number-of-control-bus-channels> (default %d)\n"
 		"   -a <number-of-audio-bus-channels>   (default %d)\n"
 		"   -i <number-of-input-bus-channels>   (default %d)\n"
@@ -86,9 +87,11 @@ void Usage()
 #endif
 		"   -H <hardware-device-name>\n"
 		"   -V <verbosity>\n"
-		"          0 is normal behaviour\n"
-		"          -1 suppresses informational messages\n"
-		"          -2 suppresses informational and many error messages\n"
+		"          0 is normal behaviour.\n"
+		"          -1 suppresses informational messages.\n"
+		"          -2 suppresses informational and many error messages, as well as\n"
+		"             messages from Poll.\n"
+		"          The default is 0.\n"
 		"   -U <ugen-plugins-path>    a colon-separated list of paths\n"
 		"          if -U is specified, the standard paths are NOT searched for plugins.\n"
 		"   -P <restricted-path>    \n"
@@ -141,11 +144,12 @@ int main(int argc, char* argv[])
 
 	int udpPortNum = -1;
 	int tcpPortNum = -1;
+	std::string bindTo("0.0.0.0");
 
 	WorldOptions options = kDefaultWorldOptions;
 
 	for (int i=1; i<argc;) {
-		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utaioczblndpmwZrCNSDIOMHvVRUhPL", argv[i][1]) == 0) {
+		if (argv[i][0] != '-' || argv[i][1] == 0 || strchr("utBaioczblndpmwZrCNSDIOMHvVRUhPL", argv[i][1]) == 0) {
 			scprintf("ERROR: Invalid option %s\n", argv[i]);
 			Usage();
 		}
@@ -158,6 +162,10 @@ int main(int argc, char* argv[])
 			case 't' :
 				checkNumArgs(2);
 				tcpPortNum = atoi(argv[j+1]);
+				break;
+			case 'B':
+				checkNumArgs(2);
+				bindTo = argv[j+1];
 				break;
 			case 'a' :
 				checkNumArgs(2);
@@ -280,7 +288,7 @@ int main(int argc, char* argv[])
 				options.mVerbosity = atoi(argv[j+1]);
 				break;
 			case 'v' :
-				scprintf("scsynth %s\n", SC_VersionString().c_str());
+				scprintf("scsynth %s (%s)\n", SC_VersionString().c_str(), SC_BuildString().c_str());
 				exit(0);
 				break;
 			case 'R' :
@@ -339,13 +347,13 @@ int main(int argc, char* argv[])
 	}
 
 	if (udpPortNum >= 0) {
-		if (!World_OpenUDP(world, udpPortNum)) {
+		if (!World_OpenUDP(world, bindTo.c_str(), udpPortNum)) {
 			World_Cleanup(world,true);
 			return 1;
 		}
 	}
 	if (tcpPortNum >= 0) {
-		if (!World_OpenTCP(world, tcpPortNum, options.mMaxLogins, 8)) {
+		if (!World_OpenTCP(world, bindTo.c_str(), tcpPortNum, options.mMaxLogins, 8)) {
 			World_Cleanup(world,true);
 			return 1;
 		}

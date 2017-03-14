@@ -70,11 +70,11 @@ SynthDef(\fm_grain_test, {arg gate = 1, amp = 1, envbuf;
 		Env([0, 1, 0], [1, 1], \sin, 1),
 		gate,
 		levelScale: amp,
-		doneAction: 2);
+		doneAction: Done.freeSelf);
 	Out.ar(0,
 		GrainFM.ar(2, Impulse.kr(10), 0.1, 440 + freqdev, 200, LFNoise1.kr.range(1, 10),
 			pan, envbuf) * env)
-	}).send(s);
+	}).add;
 
 )
 

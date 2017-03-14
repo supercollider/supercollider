@@ -300,7 +300,7 @@ StreamClutch : Stream {
 		reset = true
 	}
 	step { arg inval;
-		value = stream.next(inval ? Event.default)
+		value = stream.next(inval ?? { Event.default })
 	}
 
 }
@@ -435,7 +435,7 @@ EventStreamPlayer : PauseStream {
 	var <>event, <>muteCount = 0, <>cleanup, <>routine;
 
 	*new { arg stream, event;
-		^super.new(stream).event_(event ? Event.default).init;
+		^super.new(stream).event_(event ?? { Event.default }).init;
 	}
 
 	init {
@@ -454,7 +454,7 @@ EventStreamPlayer : PauseStream {
 	prStop {
 		stream = nextBeat = nil;
 		isWaiting = false;
-	 }
+	}
 
 	stop {
 		cleanup.terminate;

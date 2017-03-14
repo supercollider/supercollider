@@ -32,6 +32,11 @@
 #include "SC_Time.hpp"
 
 #include <jack/jack.h>
+#ifdef SC_JACK_USE_METADATA_API
+#	include <jack/metadata.h>
+#	include <jack/uuid.h>
+#	include <jackey.h>
+#endif
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -77,7 +82,7 @@ struct SC_JackPortList
 	jack_port_t**		mPorts;
 	sc_jack_sample_t**	mBuffers;
 
-	SC_JackPortList(jack_client_t *client, int numPorts, int type);
+	SC_JackPortList(jack_client_t *client, int orderOffset, int numPorts, int type);
 	~SC_JackPortList();
 };
 
@@ -116,9 +121,9 @@ private:
 	{
 		int err = jack_connect(mClient, src, dst);
 		scprintf("%s: %s %s to %s\n",
-				 kJackDriverIdent,
-				 err ? "couldn't connect " : "connected ",
-				 src, dst);
+		         kJackDriverIdent,
+		         err ? "couldn't connect " : "connected ",
+		         src, dst);
 	}
 
 	void ConnectClientInputs(const char * pattern);
@@ -133,22 +138,38 @@ SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)
 // =====================================================================
 // SC_JackPortList
 
-SC_JackPortList::SC_JackPortList(jack_client_t *client, int numPorts, int type)
+SC_JackPortList::SC_JackPortList(jack_client_t *client, int orderOffset, int numPorts, int type)
 	: mSize(numPorts), mPorts(0), mBuffers(0)
 {
 	const char *fmt = (type == JackPortIsInput ? "in_%d" : "out_%d");
-	char portname[32];
+#ifdef SC_JACK_USE_METADATA_API
+	const char *prettyFmt= (type == JackPortIsInput ? "Input %d" : "Output %d");
+#endif
+	char tempStr[32];
 
 	mPorts = new jack_port_t*[mSize];
 	mBuffers = new float*[mSize];
 
 	for (int i = 0; i < mSize; i++) {
-		snprintf(portname, 32, fmt, i+1);
+		snprintf(tempStr, 32, fmt, i+1);
 		mPorts[i] = jack_port_register(
-					client, portname,
+					client, tempStr,
 					JACK_DEFAULT_AUDIO_TYPE,
 					type, 0);
 		mBuffers[i] = 0;
+
+#ifdef SC_JACK_USE_METADATA_API
+		jack_uuid_t uuid = jack_port_uuid(mPorts[i]);
+		if(!jack_uuid_empty(uuid)) {
+			snprintf(tempStr, 32, prettyFmt, i+1);
+			jack_set_property(client, uuid, JACK_METADATA_PRETTY_NAME,
+				tempStr, "text/plain");
+
+			snprintf(tempStr, 32, "%d", orderOffset + i);
+			jack_set_property(client, uuid, JACKEY_ORDER,
+				tempStr, "http://www.w3.org/2001/XMLSchema#integer");
+		}
+#endif
 	}
 }
 
@@ -254,8 +275,8 @@ bool SC_JackDriver::DriverSetup(int* outNumSamples, double* outSampleRate)
 	scprintf("%s: client name is '%s'\n", kJackDriverIdent, jack_get_client_name(mClient));
 
 	// create jack I/O ports
-	mInputList = new SC_JackPortList(mClient, mWorld->mNumInputs, JackPortIsInput);
-	mOutputList = new SC_JackPortList(mClient, mWorld->mNumOutputs, JackPortIsOutput);
+	mInputList = new SC_JackPortList(mClient, 0, mWorld->mNumInputs, JackPortIsInput);
+	mOutputList = new SC_JackPortList(mClient, mWorld->mNumInputs, mWorld->mNumOutputs, JackPortIsOutput);
 
 	// register callbacks
 	jack_set_process_callback(mClient, sc_jack_process_cb, this);
@@ -390,8 +411,8 @@ void SC_JackDriver::Run()
 	if (++tick >= 10) {
 		tick = 0;
 		scprintf("DLL: t %.6f p %.9f sr %.6f e %.9f avg(e) %.9f inc %.9f\n",
-				 mDLL.PeriodTime(), mDLL.Period(), mDLL.SampleRate(),
-				 mDLL.Error(), mDLL.AvgError(), mOSCincrement * kOSCtoSecs);
+		         mDLL.PeriodTime(), mDLL.Period(), mDLL.SampleRate(),
+		         mDLL.Error(), mDLL.AvgError(), mOSCincrement * kOSCtoSecs);
 	}
 #endif
 #else

@@ -81,7 +81,12 @@ is used.
 #include <float.h>
 #endif
 #ifdef BOOST_MATH_USE_FLOAT128
+#ifdef __has_include
+#if  __has_include("quadmath.h")
 #include "quadmath.h"
+#define BOOST_MATH_HAS_QUADMATH_H
+#endif
+#endif
 #endif
 
 #ifdef BOOST_NO_STDC_NAMESPACE
@@ -124,9 +129,18 @@ inline bool is_nan_helper(T, const boost::false_type&)
 {
    return false;
 }
-#ifdef BOOST_MATH_USE_FLOAT128
+#if defined(BOOST_MATH_USE_FLOAT128) 
+#if defined(BOOST_MATH_HAS_QUADMATH_H)
 inline bool is_nan_helper(__float128 f, const boost::true_type&) { return ::isnanq(f); }
 inline bool is_nan_helper(__float128 f, const boost::false_type&) { return ::isnanq(f); }
+#elif defined(BOOST_GNU_STDLIB) && BOOST_GNU_STDLIB && \
+      _GLIBCXX_USE_C99_MATH && !_GLIBCXX_USE_C99_FP_MACROS_DYNAMIC
+inline bool is_nan_helper(__float128 f, const boost::true_type&) { return std::isnan(static_cast<double>(f)); }
+inline bool is_nan_helper(__float128 f, const boost::false_type&) { return std::isnan(static_cast<double>(f)); }
+#else
+inline bool is_nan_helper(__float128 f, const boost::true_type&) { return ::isnan(static_cast<double>(f)); }
+inline bool is_nan_helper(__float128 f, const boost::false_type&) { return ::isnan(static_cast<double>(f)); }
+#endif
 #endif
 }
 
@@ -519,7 +533,7 @@ inline bool (isinf)(long double x)
    return detail::isinf_impl(static_cast<value_type>(x), method());
 }
 #endif
-#ifdef BOOST_MATH_USE_FLOAT128
+#if defined(BOOST_MATH_USE_FLOAT128) && defined(BOOST_MATH_HAS_QUADMATH_H)
 template<>
 inline bool (isinf)(__float128 x)
 {
@@ -611,7 +625,7 @@ inline bool (isnan)(long double x)
    return detail::isnan_impl(x, method());
 }
 #endif
-#ifdef BOOST_MATH_USE_FLOAT128
+#if defined(BOOST_MATH_USE_FLOAT128) && defined(BOOST_MATH_HAS_QUADMATH_H)
 template<>
 inline bool (isnan)(__float128 x)
 {

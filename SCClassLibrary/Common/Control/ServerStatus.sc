@@ -2,7 +2,7 @@ ServerStatusWatcher {
 
 	var server;
 
-	var <>notified = false, <notify = false;
+	var <>notified = false, <notify = true;
 	var alive = false, <aliveThread, <>aliveThreadPeriod = 0.7, statusWatcher;
 
 	var <serverRunning = false, <>serverBooting = false, <unresponsive = false;
@@ -11,43 +11,34 @@ ServerStatusWatcher {
 	var <avgCPU, <peakCPU;
 	var <sampleRate, <actualSampleRate;
 
-	var reallyDeadCount = 0;
-	var <>bootNotifyFirst;
-
+	var reallyDeadCount = 0, bootNotifyFirst = true;
 
 	*new { |server|
 		^super.newCopyArgs(server)
 	}
 
-	quit { |watchShutDown = true|
+	quit { |onComplete, onFailure, watchShutDown = true|
 		if(watchShutDown) {
-			this.watchQuit
+			this.watchQuit(onComplete, onFailure)
 		} {
-			this.stopStatusWatcher
+			this.stopStatusWatcher;
+			onComplete.value;
 		};
 		this.stopAliveThread;
 		notified = false;
 		serverBooting = false;
 		this.serverRunning = false;
+		bootNotifyFirst = true;
 	}
 
 	notify_ { |flag = true|
 		notify = flag;
-		if(flag){
-			if(serverRunning){
-				this.sendNotifyRequest(true);
-				notified = true;
-				"Receiving notification messages from server %\n".postf(server.name);
-			}
-		}{
-			this.sendNotifyRequest(false);
-			notified = false;
-			"Switched off notification messages from server %\n".postf(server.name);
-		}
+		this.sendNotifyRequest(flag);
 	}
 
-	sendNotifyRequest { | flag=true |
+	sendNotifyRequest { |flag = true|
 		var doneOSCFunc, failOSCFunc;
+		if(serverRunning.not) { ^this };
 		notified = flag;
 		if(server.userSpecifiedClientID.not) {
 			doneOSCFunc = OSCFunc({|msg|
@@ -56,69 +47,83 @@ ServerStatusWatcher {
 			}, '/done', server.addr, argTemplate:['/notify', nil]).oneShot;
 
 			failOSCFunc = OSCFunc({|msg|
-				server.clientID = msg[2];
 				doneOSCFunc.free;
+				Error(
+					"Failed to register with server '%' for notifications: %\n"
+					"To recover, please reboot the server.".format(server.name, msg)).throw;
 			}, '/fail', server.addr, argTemplate:['/notify', nil, nil]).oneShot;
 
 		};
 
+		if(flag){
+			"Receiving notification messages from server '%'\n".postf(server.name)
+		} {
+			"Switched off notification messages from server '%'\n".postf(server.name);
+		};
 		server.sendMsg("/notify", flag.binaryValue);
 	}
 
-	doWhenBooted { arg onComplete, limit=100, onFailure;
+	doWhenBooted { |onComplete, limit = 100, onFailure|
 		var mBootNotifyFirst = bootNotifyFirst, postError = true;
 		bootNotifyFirst = false;
 
 		^Routine {
 			while {
-				((serverRunning.not
-					or: (serverBooting and: mBootNotifyFirst.not))
-				and: { (limit = limit - 1) > 0 })
-				and: { server.pid.tryPerform(\pidRunning) == true }
+				serverRunning.not
+				/*
+				// this is not yet implemented.
+				or: { serverBooting and: mBootNotifyFirst.not }
+				and: { (limit = limit - 1) > 0 }
+				and: { server.applicationRunning.not }
+				*/
+
 			} {
 				0.2.wait;
 			};
-
 			if(serverRunning.not, {
 				if(onFailure.notNil) {
-					postError = (onFailure.value == false);
+					postError = (onFailure.value(server) == false);
 				};
 				if(postError) {
-					"server failed to start".error;
-					"For advice: [http://supercollider.sf.net/wiki/index.php/ERROR:_server_failed_to_start]".postln;
+					"Server '%' on failed to start. You may need to kill all servers".format(server.name).error;
 				};
 				serverBooting = false;
 				server.changed(\serverRunning);
 			}, onComplete);
-		}.play(AppClock);
+
+		}.play(AppClock)
 	}
 
 
-	watchQuit {
+	watchQuit { |onComplete, onFailure|
 		var	serverReallyQuitWatcher, serverReallyQuit = false;
 		statusWatcher !? {
 			statusWatcher.disable;
 			if(notified) {
 				serverReallyQuitWatcher = OSCFunc({ |msg|
 					if(msg[1] == '/quit') {
-						if (statusWatcher.notNil) {
-							statusWatcher.enable;
-						};
+						statusWatcher !? { statusWatcher.enable };
 						serverReallyQuit = true;
 						serverReallyQuitWatcher.free;
-					};
+						onComplete.value;
+					}
 				}, '/done', server.addr);
 
 				AppClock.sched(3.0, {
 					if(serverReallyQuit.not) {
-						"Server % failed to quit after 3.0 seconds.".format(server.name).warn;
+						if(unresponsive) {
+							"Server '%' remained unresponsive during quit."
+						} {
+							"Server '%' failed to quit after 3.0 seconds."
+						}.format(server.name).warn;
 						// don't accumulate quit-watchers if /done doesn't come back
 						serverReallyQuitWatcher.free;
-						statusWatcher.disable;
-					};
-				});
-			};
-		};
+						statusWatcher !? { statusWatcher.disable };
+						onFailure.value(server)
+					}
+				})
+			}
+		}
 	}
 
 
@@ -127,19 +132,13 @@ ServerStatusWatcher {
 			statusWatcher =
 			OSCFunc({ arg msg;
 				var cmd, one;
-				if(notify){
-					if(notified.not){
-						this.sendNotifyRequest;
-						"Receiving notification messages from server %\n".postf(server.name);
-					}
-				};
+				if(notify and: { notified.not }) { this.sendNotifyRequest };
 				alive = true;
 				#cmd, one, numUGens, numSynths, numGroups, numSynthDefs,
 						avgCPU, peakCPU, sampleRate, actualSampleRate = msg;
 				{
 					this.updateRunningState(true);
-					this.changed(\counts);
-					nil // no resched
+					server.changed(\counts);
 				}.defer;
 			}, '/status.reply', server.addr).fix;
 		} {
@@ -148,20 +147,20 @@ ServerStatusWatcher {
 	}
 
 	stopStatusWatcher {
-		statusWatcher.disable;
+		statusWatcher !? { statusWatcher.disable }
 	}
 
-	startAliveThread { | delay=0.0 |
+	startAliveThread { | delay = 0.0 |
 		this.addStatusWatcher;
 		^aliveThread ?? {
 			aliveThread = Routine {
 				// this thread polls the server to see if it is alive
 				delay.wait;
 				loop {
-					server.status;
+					alive = false;
+					server.sendStatusMsg;
 					aliveThreadPeriod.wait;
 					this.updateRunningState(alive);
-					alive = false;
 				};
 			}.play(AppClock);
 			aliveThread
@@ -185,12 +184,11 @@ ServerStatusWatcher {
 		}
 	}
 
+	serverRunning_ { | running |
 
-	serverRunning_ { | val |
-
-		if(val != serverRunning) {
-			serverRunning = val;
-			unresponsive = false;
+		if(running != serverRunning) {
+			serverRunning = running;
+			this.unresponsive = false;
 
 			if (server.serverRunning) {
 				ServerBoot.run(server);
@@ -200,7 +198,8 @@ ServerStatusWatcher {
 				server.disconnectSharedMemory;
 				if(server.isRecording) { server.stopRecording };
 
-				NotificationCenter.notify(server, \didQuit);
+				{ server.changed(\didQuit) }.defer;
+				NotificationCenter.notify(server, \didQuit); // why here "NotificationCenter" and below "changed"?
 
 				if(server.isLocal.not) {
 					notified = false;
@@ -211,23 +210,23 @@ ServerStatusWatcher {
 
 	}
 
-	updateRunningState { | val |
+	updateRunningState { | running |
 		if(server.addr.hasBundle) {
 			{ server.changed(\bundling) }.defer;
 		} {
-			if(val) {
+			if(running) {
 				this.serverRunning = true;
-				unresponsive = false;
+				this.unresponsive = false;
 				reallyDeadCount = server.options.pingsBeforeConsideredDead;
 			} {
+				// parrot
 				reallyDeadCount = reallyDeadCount - 1;
 				this.unresponsive = (reallyDeadCount <= 0);
 			}
 		}
 	}
 
-
-	unresponsive_ { arg val;
+	unresponsive_ { | val |
 		if (val != unresponsive) {
 			unresponsive = val;
 			{ server.changed(\serverRunning) }.defer;

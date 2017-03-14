@@ -10,25 +10,16 @@
 #ifndef BOOST_DETAIL_WINAPI_GETCURRENTPROCESS_HPP
 #define BOOST_DETAIL_WINAPI_GETCURRENTPROCESS_HPP
 
-#include <boost/detail/winapi/basic_types.hpp>
+#include <boost/detail/winapi/get_current_process.hpp>
 
 #ifdef BOOST_HAS_PRAGMA_ONCE
 #pragma once
 #endif
 
-// Windows CE define GetCurrentProcess as an inline function in kfuncs.h
-#if !defined( BOOST_USE_WINDOWS_H ) && !defined( UNDER_CE )
-extern "C" {
-BOOST_SYMBOL_IMPORT boost::detail::winapi::HANDLE_ WINAPI GetCurrentProcess(BOOST_DETAIL_WINAPI_VOID);
-}
+#if defined(__GNUC__) && (((__GNUC__*100)+__GNUC_MINOR__) > 403)
+#pragma message "This header is deprecated, use boost/detail/winapi/get_current_process.hpp instead."
+#elif defined(_MSC_VER)
+#pragma message("This header is deprecated, use boost/detail/winapi/get_current_process.hpp instead.")
 #endif
-
-namespace boost {
-namespace detail {
-namespace winapi {
-using ::GetCurrentProcess;
-}
-}
-}
 
 #endif // BOOST_DETAIL_WINAPI_GETCURRENTPROCESS_HPP

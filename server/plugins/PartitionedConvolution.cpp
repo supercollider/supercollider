@@ -144,6 +144,8 @@ void PartConv_Ctor( PartConv* unit )
 	unit->m_sr = unit->mWorld->mSampleRate;
 	//if(unit->m_sr!=44100) printf("TPV complains: sample rate not 44100, you have %d\n", unit->m_sr);
 
+	OUT0(0) = 0.f;
+
 	if(unit->m_nover2 % unit->m_blocksize !=0) {
 		printf("PartConv Error: block size doesn't divide partition size\n");
 		SETCALC(*ClearUnitOutputs);

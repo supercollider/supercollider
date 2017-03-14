@@ -4,7 +4,11 @@ summary:: Tap a delay line from a DelTapWr UGen
 related:: Classes/DelTapWr
 
 description::
-Tap a delay line from a link::Classes/DelTapWr:: UGen
+Tap a delay line from a link::Classes/DelTapWr:: UGen.
+
+note:: If you run a code::DelTapRd.ar:: and a code::DelTapWr.ar:: in tandem, keep in mind that they read and write in blocks
+equal to the server's block size. If the delay time is greater than the buffer size minus a block, the write and read
+heads might interfere in unintended ways. Use a slightly larger buffer if this happens. ::
 
 classmethods::
 private:: categories

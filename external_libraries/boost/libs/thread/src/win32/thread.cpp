@@ -5,15 +5,9 @@
 // (C) Copyright 2007 David Deakins
 // (C) Copyright 2011-2013 Vicente J. Botet Escriba
 
-#ifndef _WIN32_WINNT
-#define _WIN32_WINNT 0x400
-#endif
-
-#ifndef WINVER
-#define WINVER 0x400
-#endif
 //#define BOOST_THREAD_VERSION 3
 
+#include <boost/detail/winapi/config.hpp>
 #include <boost/thread/thread_only.hpp>
 #include <boost/thread/once.hpp>
 #include <boost/thread/tss.hpp>
@@ -24,6 +18,7 @@
 #include <boost/cstdint.hpp>
 #if defined BOOST_THREAD_USES_DATETIME
 #include <boost/date_time/posix_time/conversion.hpp>
+#include <boost/thread/thread_time.hpp>
 #endif
 #include <boost/thread/csbl/memory/unique_ptr.hpp>
 #include <memory>
@@ -467,7 +462,7 @@ namespace boost
 #if defined BOOST_THREAD_USES_DATETIME
     bool thread::timed_join(boost::system_time const& wait_until)
     {
-      return do_try_join_until(get_milliseconds_until(wait_until));
+      return do_try_join_until(boost::detail::get_milliseconds_until(wait_until));
     }
 #endif
     bool thread::do_try_join_until_noexcept(uintmax_t milli, bool& res)

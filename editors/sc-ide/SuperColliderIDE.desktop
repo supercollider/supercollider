@@ -1,10 +1,9 @@
 [Desktop Entry]
 Name=SuperCollider IDE
 GenericName=SuperCollider IDE
-Exec=scide %f
+Exec=scide %F
 Icon=sc_ide
 Type=Application
 Terminal=false
-Patterns=*.scd;*.sc;*.schelp
-Categories=Application;Multimedia;Audio;AudioVideo
+Categories=AudioVideo;Audio;AudioVideoEditing;
 MimeType=text/x-sc;

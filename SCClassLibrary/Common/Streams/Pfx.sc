@@ -112,7 +112,7 @@ PAbstractGroup : FilterPattern {
 
 	*embedLoop { arg inevent, stream, groupID, ingroup, cleanup;
 		var event, lag;
-		 loop {
+		loop {
 			event = stream.next(inevent) ?? { ^cleanup.exit(inevent) };
 			lag = event[\dur];
 			inevent = event.yield;

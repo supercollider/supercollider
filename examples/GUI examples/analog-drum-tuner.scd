@@ -34,7 +34,7 @@ s.waitForBoot({
 
 		SynthDef(\ringz, { |ffreq = 20, decay = 0.01, in, out, amp = 0|
 			Out.ar(out, Ringz.ar(In.ar(in, 1), ffreq, decay, amp))
-		}).send(s);
+		}).add;
 
 		nodes = Array.new(10);
 		ffreqs = [];
@@ -235,7 +235,7 @@ s.waitForBoot({
 				envCtl = Control.names(\env).kr(0 ! 100);	// allow 25 env nodes maximum
 				sig = SynthDef.wrap(func, nil, [trig]) * EnvGen.ar(envCtl, trig);
 				Out.ar(outbus, sig)
-			}).send(s);
+			}).add;
 			{	src.free;
 				src = Synth(\source, [\trigbus, trigbus, \outbus, percBus], percGroup,
 					addAction: \addToTail);

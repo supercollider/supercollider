@@ -1,5 +1,5 @@
 /*
-(c) 2014-2015 Glen Joseph Fernandes
+(c) 2014-2016 Glen Joseph Fernandes
 <glenjofe -at- gmail.com>
 
 Distributed under the Boost Software
@@ -27,11 +27,15 @@ struct integral_constant {
     typedef T value_type;
     typedef integral_constant type;
 
-    BOOST_CONSTEXPR operator value_type() const {
+    BOOST_CONSTEXPR operator value_type() const BOOST_NOEXCEPT {
         return Value;
     }
 
-    static BOOST_CONSTEXPR_OR_CONST T value = Value;
+    BOOST_CONSTEXPR value_type operator()() const BOOST_NOEXCEPT {
+        return Value;
+    }
+
+    BOOST_STATIC_CONSTEXPR T value = Value;
 };
 #endif
 

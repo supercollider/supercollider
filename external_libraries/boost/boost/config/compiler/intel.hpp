@@ -35,6 +35,10 @@
 
 #endif
 
+#if (__INTEL_COMPILER <= 1600) && !defined(BOOST_NO_CXX14_VARIABLE_TEMPLATES)
+#  define BOOST_NO_CXX14_VARIABLE_TEMPLATES
+#endif
+
 #else
 
 #include <boost/config/compiler/gcc.hpp>
@@ -90,7 +94,7 @@
 
 #else
 
-#include "boost/config/compiler/common_edg.hpp"
+#include <boost/config/compiler/common_edg.hpp>
 
 #if defined(__INTEL_COMPILER)
 #if __INTEL_COMPILER == 9999
@@ -496,6 +500,11 @@ template<> struct assert_intrinsic_wchar_t<unsigned short> {};
 #  define BOOST_NO_CXX11_HDR_TUPLE
 #endif
 
+// Broken in all versions up to 17:
+#if !defined(BOOST_NO_CXX14_CONSTEXPR)
+#define BOOST_NO_CXX14_CONSTEXPR
+#endif
+
 #if (BOOST_INTEL_CXX_VERSION < 1200)
 //
 // fenv.h appears not to work with Intel prior to 12.0:
@@ -514,7 +523,15 @@ template<> struct assert_intrinsic_wchar_t<unsigned short> {};
 #  define BOOST_HAS_STDINT_H
 #endif
 
-#if defined(__LP64__) && defined(__GNUC__) && (BOOST_INTEL_CXX_VERSION >= 1310) && !defined(__CUDACC__)
+#if defined(__CUDACC__)
+#  if defined(BOOST_GCC_CXX11)
+#    define BOOST_NVCC_CXX11
+#  else
+#    define BOOST_NVCC_CXX03
+#  endif
+#endif
+
+#if defined(__LP64__) && defined(__GNUC__) && (BOOST_INTEL_CXX_VERSION >= 1310) && !defined(BOOST_NVCC_CXX03)
 #  define BOOST_HAS_INT128
 #endif
 

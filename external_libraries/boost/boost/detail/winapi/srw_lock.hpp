@@ -16,6 +16,13 @@
 #pragma once
 #endif
 
+#if BOOST_USE_WINAPI_VERSION < BOOST_WINAPI_VERSION_WIN6 \
+    || (defined(_MSC_VER) && _MSC_VER < 1600)
+// Windows SDK 6.0A, which is used by MSVC 9, does not have TryAcquireSRWLock* neither in headers nor in .lib files,
+// although the functions are present in later SDKs since Windows API version 6.
+#define BOOST_WINAPI_NO_TRY_ACQUIRE_SRWLOCK
+#endif
+
 #if BOOST_USE_WINAPI_VERSION >= BOOST_WINAPI_VERSION_WIN6
 
 #include <boost/detail/winapi/basic_types.hpp>
@@ -39,11 +46,13 @@ AcquireSRWLockExclusive(::_RTL_SRWLOCK* SRWLock);
 BOOST_SYMBOL_IMPORT boost::detail::winapi::VOID_ WINAPI
 AcquireSRWLockShared(::_RTL_SRWLOCK* SRWLock);
 
+#if !defined( BOOST_WINAPI_NO_TRY_ACQUIRE_SRWLOCK )
 BOOST_SYMBOL_IMPORT boost::detail::winapi::BOOLEAN_ WINAPI
 TryAcquireSRWLockExclusive(::_RTL_SRWLOCK* SRWLock);
 
 BOOST_SYMBOL_IMPORT boost::detail::winapi::BOOLEAN_ WINAPI
 TryAcquireSRWLockShared(::_RTL_SRWLOCK* SRWLock);
+#endif
 }
 #endif
 
@@ -86,6 +95,7 @@ BOOST_FORCEINLINE VOID_ AcquireSRWLockShared(PSRWLOCK_ SRWLock)
     ::AcquireSRWLockShared(reinterpret_cast< ::_RTL_SRWLOCK* >(SRWLock));
 }
 
+#if !defined( BOOST_WINAPI_NO_TRY_ACQUIRE_SRWLOCK )
 BOOST_FORCEINLINE BOOLEAN_ TryAcquireSRWLockExclusive(PSRWLOCK_ SRWLock)
 {
     return ::TryAcquireSRWLockExclusive(reinterpret_cast< ::_RTL_SRWLOCK* >(SRWLock));
@@ -95,6 +105,7 @@ BOOST_FORCEINLINE BOOLEAN_ TryAcquireSRWLockShared(PSRWLOCK_ SRWLock)
 {
     return ::TryAcquireSRWLockShared(reinterpret_cast< ::_RTL_SRWLOCK* >(SRWLock));
 }
+#endif
 
 }
 }

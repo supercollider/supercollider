@@ -82,7 +82,7 @@ struct WorldOptions
 
 const struct WorldOptions kDefaultWorldOptions =
 {
-	0,1024,64,1024,1024,64,128,8,8,4096,64,8192, 0,0, 1, 0, 0,0,0,0,0
+	0,1024,64,1024,1024,64,1024,8,8,16384,64,8192, 0,0, 1, 0, 0,0,0,0,0
 #if defined(_WIN32)
 	,44100
 #else
@@ -104,8 +104,8 @@ SCSYNTH_DLLEXPORT_C void SetPrintFunc(PrintFunc func);
 SCSYNTH_DLLEXPORT_C struct World* World_New(struct WorldOptions *inOptions);
 SCSYNTH_DLLEXPORT_C void World_Cleanup(struct World *inWorld, bool unload_plugins = false);
 SCSYNTH_DLLEXPORT_C void World_NonRealTimeSynthesis(struct World *inWorld, struct WorldOptions *inOptions);
-SCSYNTH_DLLEXPORT_C int World_OpenUDP(struct World *inWorld, int inPort);
-SCSYNTH_DLLEXPORT_C int World_OpenTCP(struct World *inWorld, int inPort, int inMaxConnections, int inBacklog);
+SCSYNTH_DLLEXPORT_C int World_OpenUDP(struct World *inWorld, const char *bindTo, int inPort);
+SCSYNTH_DLLEXPORT_C int World_OpenTCP(struct World *inWorld, const char *bindTo, int inPort, int inMaxConnections, int inBacklog);
 SCSYNTH_DLLEXPORT_C void World_WaitForQuit(struct World *inWorld, bool unload_plugins = false);
 SCSYNTH_DLLEXPORT_C bool World_SendPacket(struct World *inWorld, int inSize, char *inData, ReplyFunc inFunc);
 SCSYNTH_DLLEXPORT_C bool World_SendPacketWithContext(struct World *inWorld, int inSize, char *inData, ReplyFunc inFunc, void *inContext);

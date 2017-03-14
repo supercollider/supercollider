@@ -33,6 +33,8 @@ Rest {
 			}
 		})
 	}
+	*isRest { ^true }
+	isRest { ^true }
 	value { ^dur }
 	storeOn { |stream| stream << "Rest(" << dur << ")" }
 }
@@ -43,10 +45,13 @@ Rest {
 
 + Collection {
 	processRest { |inval|
-		this.do(_.processRest(inval))
+		^this.collect(_.processRest(inval))
 	}
 }
 
++ Event {
+	processRest { ^this }
+}
 
 + SimpleNumber {
 	// Some patterns call .delta on the eventstream's yield value

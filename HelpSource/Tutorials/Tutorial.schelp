@@ -26,9 +26,9 @@ code::
 i = Server.internal;
 ::
 
-strong::VERY IMPORTANT:: : This line must be executed for the variable 'i' to be set. The mechanics are different depending on your platform. The MacOSX standard is to place the cursor anywhere on this line and press the "Enter" key on the numeric keypad. Pressing the main return key does not execute code! This allows you to write code fragments of multiple lines. To execute a multi-line block of code, select the block and press "Enter." For convenience, a code block can be enclosed in parentheses, and the entire block selected by double-clicking just inside either parenthesis. (For instructions in other editors (e.g. on Linux or Windows), consult the documentation specific to that platform. See also the helpfile link::Reference/KeyboardShortcuts:: for key commands in other editors.) If you don't have an enter key, then you can use ctrl-Return, Ctrl-c, fn-Return (on Some Macs), or Shift-Return.
+strong::VERY IMPORTANT:: : This line must be executed for the variable 'i' to be set. The mechanics are different depending on your platform. The macOS standard is to place the cursor anywhere on this line and press the "Enter" key on the numeric keypad. Pressing the main return key does not execute code! This allows you to write code fragments of multiple lines. To execute a multi-line block of code, select the block and press "Enter." For convenience, a code block can be enclosed in parentheses, and the entire block selected by double-clicking just inside either parenthesis. For instructions in other editors (e.g. on Linux or Windows), consult the documentation specific to that platform. See also the helpfile link::Reference/KeyboardShortcuts:: for key commands in other editors. If you don't have an enter key, then you can use Ctrl-Return, Ctrl-C, Fn-Return (on some Macs), or Shift-Return.
 
-The local server runs on the same machine as the SuperCollider application, but is a separate program, 'scsynth'.
+The local server runs on the same machine as the SuperCollider application, but is a separate program, 'scsynth' (or 'supernova').
 Note:: By default the interpreter variable code::s:: is set to the local server at startup. For further information see the link::Classes/Server:: helpfile.
 ::
 
@@ -280,7 +280,7 @@ code::
 (
 // define a control
 SynthDef("line", { arg i_bus=10, i_start=1000, i_end=500, i_time=1;
-	ReplaceOut.kr(i_bus, Line.kr(i_start, i_end, i_time, doneAction: 2));
+	ReplaceOut.kr(i_bus, Line.kr(i_start, i_end, i_time, doneAction: Done.freeSelf));
 }).add
 )
 ::
@@ -336,7 +336,7 @@ SynthDef("saw", { arg out=100, pan=0, trig=0.0, freq=500, amp=1, cutoff=10000, r
 
 SynthDef("envsaw",{ arg out=100, pan=0, sustain=0.5, freq=500, amp=1, cutoff=10000, rezz=1;
 	var env;
-	env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction:0, gate:amp);
+	env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction: Done.none, gate:amp);
 	Out.ar(out,Pan2.ar(RLPF.ar(Saw.ar(Lag.kr(freq,0.1),env),cutoff,rezz)*amp,
 		pan));
 }).add;
@@ -349,7 +349,7 @@ SynthDef("delay", { arg out=0, delay = 0.4, decay = 14;
 
 SynthDef("sampler",{ arg sample, trig=1,rate=1.0,out=0,bufnum=0,pan=0,amp=1, sustain=0.25;
 	var env;
-	env = EnvGen.kr(Env.perc(0.001, sustain, 0.001), doneAction:2);
+	env = EnvGen.kr(Env.perc(0.001, sustain, 0.001), doneAction: Done.freeSelf);
 	Out.ar(out,
 		Pan2.ar(
 		PlayBuf.ar(1,bufnum,rate,InTrig.kr(trig),0,0)*amp,
@@ -416,7 +416,7 @@ SynthDef("pattern_Ex", { arg out, freq = 1000, gate = 1, pan = 0, cut = 4000, re
 			RLPF.ar(
 				Pulse.ar(freq,0.05),
 			cut, rez),
-		pan) * EnvGen.kr(Env.linen(0.01, 1, 0.3), gate, amp, doneAction:2);
+		pan) * EnvGen.kr(Env.linen(0.01, 1, 0.3), gate, amp, doneAction: Done.freeSelf);
 	)
 	}).add;
 
@@ -426,7 +426,7 @@ SynthDef("bass_Ex", { arg out, freq = 1000, gate = 1, pan = 0, cut = 4000, rez =
 			RLPF.ar(
 				SinOsc.ar(freq,0.05),
 			cut, rez),
-		pan) * EnvGen.kr(Env.linen(0.01, 1, 0.3), gate, amp, doneAction:2);
+		pan) * EnvGen.kr(Env.linen(0.01, 1, 0.3), gate, amp, doneAction: Done.freeSelf);
 	)
 	}).add;
 

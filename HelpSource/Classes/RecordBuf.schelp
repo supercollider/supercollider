@@ -43,7 +43,7 @@ occurs when a signal changes from negative value to positive
 value.
 
 argument:: doneAction
-an integer representing an action to be executed when the buffer is finished recording. This can be used to free the enclosing synth, etc. See link::Reference/UGen-doneActions:: for more detail. code::doneAction:: is only evaluated if loop is 0.
+an integer representing an action to be executed when the buffer is finished recording. This can be used to free the enclosing synth, etc. See link::Classes/Done:: for more detail. code::doneAction:: is only evaluated if loop is 0.
 
 Examples::
 
@@ -60,13 +60,13 @@ b = Buffer.alloc(s, 44100 * 4.0, 1); // a four second 1 channel Buffer
 SynthDef(\help_RecordBuf, { arg out = 0, bufnum = 0;
 	var formant;
 	formant = Formant.ar(XLine.kr(400,1000, 4), 2000, 800, 0.125);
-	RecordBuf.ar(formant, bufnum, doneAction: 2, loop: 0);
+	RecordBuf.ar(formant, bufnum, doneAction: Done.freeSelf, loop: 0);
 }).play(s,[\out, 0, \bufnum, b]);
 )
 
 // play it back
 (
-SynthDef(\help_RecordBuf_overdub, { arg out = 0, bufnum = 0;
+SynthDef(\help_RecordBuf_playback, { arg out = 0, bufnum = 0;
 	var playbuf;
 	playbuf = PlayBuf.ar(1,bufnum);
 	FreeSelfWhenDone.kr(playbuf); // frees the synth when the PlayBuf is finished
@@ -80,12 +80,12 @@ SynthDef(\help_RecordBuf_overdub, { arg out=0, bufnum=0;
 	var formant;
 	formant = Formant.ar(XLine.kr(200, 1000, 4), 2000, 800, 0.125);
 	// mixes equally with existing data
-	RecordBuf.ar(formant, bufnum, 0, 0.5, 0.5, doneAction: 2, loop: 0);
+	RecordBuf.ar(formant, bufnum, 0, 0.3, 0.5, doneAction: Done.freeSelf, loop: 0);
 }).play(s, [\out, 0, \bufnum, b]);
 )
 
 // play back the overdubbed version
-Synth.new(\help_RecordBuf_overdub, [\out, 0, \bufnum, b], s);
+Synth.new(\help_RecordBuf_playback, [\out, 0, \bufnum, b], s);
 
 // write the contents of the buffer to a file (see Buffer for more options)
 (

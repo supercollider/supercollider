@@ -8,9 +8,9 @@ description::
 This is an strong::abstract superclass:: for singletons like link::Classes/ServerQuit::, which provides a place for registering functions and objects for events that should happen when something happens in the server.
 No direct call to AbstractServerAction is required.
 
-note:: not fully working on linux and windows.
+note:: not fully working on Linux and windows.
 Setting the computer to sleep on these systems causes the actions to be called.
-As to date in linux, JACK does not survive a sleep, it nevertheless behaves correctly for the time being.
+As to date in Linux, JACK does not survive a sleep, it nevertheless behaves correctly for the time being.
 ::
 
 ClassMethods::
@@ -38,10 +38,10 @@ argument::object
 Can either be a link::Classes/Function:: to be evaluated (as first arg the server is passed in), or an link::Classes/Object:: that implements the message returned by link::#-functionSelector::. strong::One object is only registered once::, so that multiple additions don't cause multiple calls.
 
 argument::server
-Server for which to register. If the symbol strong::\default:: is passed in, the action is called for the current default server. If the symbol strong::\all:: is passed in, the action is called for all current servers. If server is nil, it is added to \default.
+Server for which to register. If the symbol strong::\default:: is passed in, the action is called for the current default server. If the symbol strong::\all:: is passed in, the action is called for all current servers. If server is nil, it is added to \all.
 
 method::remove
-Remove an item or object from registry. If server is nil, remove from strong::default:: key.
+Remove an item or object from registry. If server is nil, remove from strong::all:: key.
 
 method::removeServer
 Remove all items that are registered for a given server.

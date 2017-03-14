@@ -24,7 +24,22 @@ argument:: loop
 if loop is > 0, UGen oscillates. Otherwise it calls doneAction after one cycle (default: 1)
 argument:: doneAction
 doneAction, which is evaluated after cycle completes (2 frees the synth, default: 0).
-See link::Reference/UGen-doneActions:: for more detail.
+See link::Classes/Done:: for more detail.
+
+
+instancemethods::
+method::minval
+
+Returns the lowest value for the given parameters, which is code::exp(1.0 / (-2.0 * squared(width)))::
+
+method::range
+
+Scales the output to the given range. This can be convenient when using LFGauss as an envelope (see example below).
+
+code::
+{ LFGauss.ar(0.01, 0.6).range }.plot;
+{ LFGauss.ar(0.01, 0.6) }.plot; // starts at about 0.25
+::
 
 examples::
 
@@ -80,18 +95,18 @@ sqrt(-1 / ( 2 * log(-60.dbamp))) // 0.269
 // rescale the function to the range 0..1
 (
 {
-var width = XLine.kr(0.04, 1.0, 1);
-var min = (exp(1.0 / (-2.0 * squared(width))));
-var gauss = LFGauss.ar(0.1, width, loop: 1);
-gauss.linlin(min, 1, 0, 1);
+	var width = XLine.kr(0.04, 1.0, 1);
+	var min = (exp(1.0 / (-2.0 * squared(width))));
+	var gauss = LFGauss.ar(0.1, width, loop: 1);
+	gauss.linlin(min, 1, 0, 1);
 }.plot(1)
 );
 
 // range does the same implicitly
 (
 {
-var width = XLine.kr(0.04, 1.0, 1);
-LFGauss.ar(0.1, width, loop: 1).range(0, 1);
+	var width = XLine.kr(0.04, 1.0, 1);
+	LFGauss.ar(0.1, width, loop: 1).range(0, 1);
 }.plot(1)
 );
 ::
@@ -145,6 +160,13 @@ code::
 ::
 
 subsection:: Gabor Grain
+
+note::
+The gaussian function doesn't start with 0 – it asymptotically approaches it at code::-inf:: and code::inf::. When using it as an envelope, it has to start at some smaller value, and it has an offset for this value. You can remove this offset by explicitly setting the strong::range::, e.g. to code::0..1:: (this is the default).
+::
+
+
+
 code::
 (
 var freq = 1000;
@@ -153,7 +175,7 @@ var width = 0.25;
 var dur = ncycles / freq;
 {
 
-	var env = LFGauss.ar(dur, width, loop: 0, doneAction: 2);
+	var env = LFGauss.ar(dur, width, loop: 0, doneAction: Done.freeSelf).range;
 	var son = FSinOsc.ar(freq, 0.5pi, env);
 	son
 }.plot(dur);
@@ -162,7 +184,7 @@ var dur = ncycles / freq;
 
 (
 SynthDef(\gabor, { |out, i_freq = 440, i_sustain = 1, i_pan = 1, i_amp = 0.1, i_width = 0.25 |
-	var env = LFGauss.ar(i_sustain, i_width, loop: 0, doneAction: 2);
+	var env = LFGauss.ar(i_sustain, i_width, loop: 0, doneAction: Done.freeSelf).range;
 	var son = FSinOsc.ar(i_freq, 0.5pi, env);
 	OffsetOut.ar(out, Pan2.ar(son, i_pan, i_amp));
 
@@ -198,7 +220,7 @@ Pdef(\x,
 // compare with sine grain.
 (
 SynthDef(\gabor, { |out, i_freq = 440, i_sustain = 1, i_pan = 1, i_amp = 0.1, i_width=0.25 |
-	var env = EnvGen.ar(Env.sine(i_sustain * i_width), doneAction: 2);
+	var env = EnvGen.ar(Env.sine(i_sustain * i_width), doneAction: Done.freeSelf);
 	var son = FSinOsc.ar(i_freq, 0.5pi, env);
 	OffsetOut.ar(out, Pan2.ar(son, i_pan, i_amp));
 

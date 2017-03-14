@@ -237,7 +237,7 @@ Object  {
 		^if(embed) {
 			Routine { arg inval; this.embedInStream(inval) }
 		} {
-			Routine { loop { this.yield } }
+			Routine { arg inval; loop { inval = this.next(inval).yield } }
 		}
 	}
 
@@ -894,12 +894,6 @@ Object  {
 		_AsArchive
 		^this.primitiveFailed;
 	}
-	// support for Gen
-	genNext { ^nil }
-	genCurrent { ^this }
-
-	// support for ViewRedirect
-	*classRedirect { ^this }
 
 	help {
 		this.class.asString.help

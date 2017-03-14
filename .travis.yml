@@ -1,65 +1,48 @@
 compiler:
  - gcc
 
-os:
- - linux
- - osx
-
-sudo: required
-dist: trusty
+matrix:
+  fast_finish: true
+  include:
+    - os: linux
+      sudo: required
+      dist: trusty
+      env: QT=true
+    - os: linux
+      sudo: required
+      dist: trusty
+      env: QT=false
+    - os: osx
+      osx_image: xcode7.3
+      env: QT=true
 
 cache:
  - apt
  - bundler
 
 before_install:
- - ifmac () { if [[ $TRAVIS_OS_NAME == osx ]]; then eval $@; fi; }
- - iflin () { if [[ $TRAVIS_OS_NAME == linux ]]; then eval $@; fi; }
- - ifmac brew update
- - ifmac brew tap homebrew/versions
- - ifmac brew install cmake qt55 || true
- - ifmac brew link qt55 --force
- - iflin sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
- - iflin sudo add-apt-repository --yes ppa:beineri/opt-qt551-trusty
- - iflin sudo apt-get update
- - iflin sudo apt-get install --yes build-essential gcc-4.9 g++-4.9 cmake pkg-config qt55base qt55location qt55declarative qt55sensors qt55tools qt55webengine qt55webchannel qt55webkit qt55xmlpatterns  libjack-jackd2-dev libsndfile1-dev libasound2-dev libavahi-client-dev libreadline6-dev libfftw3-dev libicu-dev libxt-dev libudev-dev
- - iflin sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.9
- - iflin sudo update-alternatives --auto gcc
+ - $TRAVIS_BUILD_DIR/.travis/before-install-$TRAVIS_OS_NAME.sh --qt=$QT
 
 before_script:
- - iflin source /opt/qt55/bin/qt55-env.sh
- - mkdir BUILD
- - cd BUILD
+ - mkdir BUILD && cd BUILD
+ - if [[ $QT == true ]]; then export QT_PREFIX=$HOME/qt/gcc_64; fi
+ - if [[ $QT == true ]]; then export QT_PLUGIN_PATH=$QT_PREFIX/plugins; fi
 
- - export QT_PREFIX=$HOME/qt/gcc_64
- - export QT_PLUGIN_PATH=$QT_PREFIX/plugins
- - export COMMIT_NAME=$TRAVIS_COMMIT
- - ifmac cmake -DCMAKE_PREFIX_PATH=`brew --prefix qt55` -DSC_QT=1 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 .. --debug-output
- - iflin cmake -DSC_EL=no -DCMAKE_INSTALL_PREFIX:PATH=$PWD/Install -DCMAKE_BUILD_TYPE=Release .. --debug-output
-# some paths
- - ifmac export SCLANG=$TRAVIS_BUILD_DIR/BUILD/Install/SuperCollider/SuperCollider.app/Contents/MacOS/sclang
- - iflin export SCLANG=$TRAVIS_BUILD_DIR/BUILD/Install/bin/sclang
-# prep for testing 
- - sudo pip install git+https://github.com/scztt/qpm.git@qpm-unit
- - qpm quark checkout CommonTests CommonTestsGUI --location $HOME/Quarks
- - cp ../travis_test_run_proto.json ./travis_test_run.json
+ - $TRAVIS_BUILD_DIR/.travis/before-script-$TRAVIS_OS_NAME.sh --qt=$QT
+# prep for testing
+ - if [[ $QT == true ]]; then $TRAVIS_BUILD_DIR/.travis/qpm-prep.sh; fi
 
 script:
-# build
- - sudo make install
-# test
- - $TRAVIS_BUILD_DIR/testsuite/sclang/launch_test.py $SCLANG
- - qpm test.run -l ./travis_test_run.json --path $SCLANG --include $HOME/Quarks
-# package
- - ifmac mkdir -p $HOME/artifacts
- - (ifmac cd Install; ifmac zip -q -r $HOME/artifacts/SC-$COMMIT_NAME.zip SuperCollider)
+ - $TRAVIS_BUILD_DIR/.travis/script-$TRAVIS_OS_NAME.sh
+ - $TRAVIS_BUILD_DIR/.travis/test.sh
+ - if [[ $TRAVIS_OS_NAME == osx ]]; then $TRAVIS_BUILD_DIR/.travis/package-osx.sh; fi
 
 before_deploy:
  # required for github releases
  - git fetch --tags
  - export BUILD_PREFIX=$TRAVIS_REPO_SLUG/$TRAVIS_OS_NAME
  - export S3_BUILDS_LOCATION=builds/$BUILD_PREFIX
- - export S3_URL=https://supercollider.s3.amazonaws.com/$S3_BUILDS_LOCATION/SC-$COMMIT_NAME.zip
+ - export S3_URL=https://supercollider.s3.amazonaws.com/$S3_BUILDS_LOCATION/SC-$TRAVIS_COMMIT.zip
  - export FWD_HTML='<html><head><meta http-equiv="refresh" content="0; url='$S3_URL'" /></head></html>'
  # put everything to be archived in artifacts/
  - mkdir -p "$HOME/artifacts/${TRAVIS_BRANCH%/*}"
@@ -85,7 +68,7 @@ deploy:
  # github releases - only tags
  - provider: releases
    api_key: $GITHUB_KEY
-   file: $HOME/artifacts/SC-$COMMIT_NAME.zip
+   file: $HOME/artifacts/SC-$TRAVIS_COMMIT.zip
    prerelease: true
    skip_cleanup: true
    on:

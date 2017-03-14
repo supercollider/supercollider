@@ -141,7 +141,11 @@ Quarks {
 		// by quark name or by supplying a local path
 		// resolving / ~/ ./
 		// is it a git
-		var quark, localPath = this.quarkNameAsLocalPath(name);
+		var quark, localPath;
+		if(name.isNil, {
+			("Missing required argument: quark name").throw;
+		});
+		localPath = this.quarkNameAsLocalPath(name);
 		if(Git.isGit(localPath), {
 			Quark.fromLocalPath(localPath).update();
 		}, {
@@ -179,9 +183,9 @@ Quarks {
 			deps,
 			incompatible = { arg name;
 				(quark.name
-					+ "reports an incompatibility with this Super Collider version"
+					+ "reports an incompatibility with this SuperCollider version"
 					+ "or with other already installed quarks."
-				).inform;
+				).postln;
 				false
 			},
 			prev = this.installed.detect({ |q| q.name == quark.name });
@@ -191,7 +195,7 @@ Quarks {
 			^false
 		});
 
-		"Installing %".format(quark.name).inform;
+		"Installing %".format(quark.name).postln;
 
 		quark.checkout();
 		if(quark.isCompatible().not, {
@@ -205,7 +209,7 @@ Quarks {
 			});
 		};
 		this.link(quark.localPath);
-		(quark.name + "installed").inform;
+		(quark.name + "installed").postln;
 		this.clearCache();
 		^true
 	}
@@ -303,7 +307,7 @@ Quarks {
 			(folder +/+ "*").pathMatch.do(f);
 		});
 		LanguageConfig.includePaths.do(f);
-		^all.values
+		^all.atAll(all.order)
 	}
 	*fetchDirectory { |force=true|
 		// will only pull every 15 minutes unless force is true
@@ -320,7 +324,7 @@ Quarks {
 			("Failed to read quarks directory listing: % %".format(if(fetch, directoryUrl, dirTxtPath), err)).error;
 			if(fetch, {
 				// if fetch failed, try read from cache
-				 if(File.exists(dirTxtPath), {
+				if(File.exists(dirTxtPath), {
 					this.prReadDirectoryFile(dirTxtPath);
 				});
 			}, {

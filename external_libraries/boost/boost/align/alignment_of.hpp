@@ -1,5 +1,5 @@
 /*
-(c) 2014-2015 Glen Joseph Fernandes
+(c) 2014-2016 Glen Joseph Fernandes
 <glenjofe -at- gmail.com>
 
 Distributed under the Boost Software
@@ -39,9 +39,7 @@ namespace alignment {
 
 template<class T>
 struct alignment_of
-    : detail::alignment_of<typename
-        detail::element_type<T>::type>::type {
-};
+    : detail::alignment_of<typename detail::element_type<T>::type> { };
 
 #if !defined(BOOST_NO_CXX14_VARIABLE_TEMPLATES)
 template<class T>

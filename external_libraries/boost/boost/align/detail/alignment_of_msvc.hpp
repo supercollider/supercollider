@@ -25,8 +25,7 @@ struct alignof_helper {
 template<class T>
 struct alignment_of
     : min_size<sizeof(T),
-        sizeof(alignof_helper<T>) - (sizeof(T) << 1)>::type {
-};
+        sizeof(alignof_helper<T>) - (sizeof(T) << 1)> { };
 
 } /* .detail */
 } /* .alignment */

@@ -74,59 +74,59 @@ class specific_param_error : public Base {
 protected:
     explicit    specific_param_error( cstring param_name ) : Base( param_name ) {}
     ~specific_param_error() BOOST_NOEXCEPT_OR_NOTHROW {}
-};
+
+public:
 
 //____________________________________________________________________________//
 
-#ifndef BOOST_NO_CXX11_RVALUE_REFERENCES
+#if !defined(BOOST_NO_CXX11_RVALUE_REFERENCES) && \
+    !defined(BOOST_NO_CXX11_REF_QUALIFIERS)
 
-template<typename Derived, typename Base>
-inline Derived
-operator<<(specific_param_error<Derived, Base>&& ex, char const* val)
-{
-    ex.msg.append( val );
+    Derived operator<<(char const* val) &&
+    {
+        this->msg.append( val );
 
-    return reinterpret_cast<Derived&&>(ex);
-}
+        return reinterpret_cast<Derived&&>(*this);
+    }
 
-//____________________________________________________________________________//
+    //____________________________________________________________________________//
 
-template<typename Derived, typename Base, typename T>
-inline Derived
-operator<<(specific_param_error<Derived, Base>&& ex, T const& val)
-{
-    ex.msg.append( unit_test::utils::string_cast( val ) );
+    template<typename T>
+    Derived operator<<(T const& val) &&
+    {
+        this->msg.append( unit_test::utils::string_cast( val ) );
 
-    return reinterpret_cast<Derived&&>(ex);
-}
+        return reinterpret_cast<Derived&&>(*this);
+    }
 
-//____________________________________________________________________________//
+    //____________________________________________________________________________//
 
 #else
 
-template<typename Derived, typename Base>
-inline Derived
-operator<<(specific_param_error<Derived, Base> const& ex, char const* val)
-{
-    const_cast<specific_param_error<Derived, Base>&>(ex).msg.append( val );
+    Derived const& operator<<(char const* val) const
+    {
+        const_cast<specific_param_error<Derived, Base>&>(*this).msg.append( val );
 
-    return static_cast<Derived const&>(ex);
-}
+        return static_cast<Derived const&>(*this);
+    }
 
-//____________________________________________________________________________//
+    //____________________________________________________________________________//
 
-template<typename Derived, typename Base, typename T>
-inline Derived
-operator<<(specific_param_error<Derived, Base> const& ex, T const& val)
-{
-    const_cast<specific_param_error<Derived, Base>&>(ex).msg.append( unit_test::utils::string_cast( val ) );
+    template<typename T>
+    Derived const& operator<<(T const& val) const
+    {
+        const_cast<specific_param_error<Derived, Base>&>(*this).msg.append( unit_test::utils::string_cast( val ) );
 
-    return static_cast<Derived const&>(ex);
-}
+        return static_cast<Derived const&>(*this);
+    }
 
-//____________________________________________________________________________//
+    //____________________________________________________________________________//
 
 #endif
+
+};
+
+
 
 // ************************************************************************** //
 // **************           specific exception types           ************** //

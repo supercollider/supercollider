@@ -45,6 +45,7 @@ class SingleInstanceGuard:
     Q_OBJECT
 
 public:
+    SingleInstanceGuard() : mReadSize(0){};
     bool tryConnect(QStringList const & arguments);
 
 public Q_SLOTS:
@@ -60,6 +61,8 @@ public Q_SLOTS:
 private:
     QLocalServer * mIpcServer;
     QLocalSocket * mIpcSocket;
+    int mReadSize;
+    QByteArray mIpcData;
 };
 
 class Main:

@@ -55,7 +55,7 @@ METHOD:: readFile
 
    The 'block' argument has no effect; the display resolution is infinite.
 
-    argument:: soundfile
+    argument:: aSoundFile
         An open instance of SoundFile.
 
     argument:: startFrame
@@ -101,7 +101,7 @@ METHOD:: readFileWithTask
         The 'block' argument has no effect; the display resolution is infinite.
         The 'showProgress' argument has no effect; the view always displays reading progress within itself.
 
-    argument:: soundfile
+    argument:: soundFile
         An open instance of SoundFile.
 
     argument:: startFrame
@@ -141,7 +141,7 @@ METHOD:: setData
     argument:: block
 The block size - visual resolution of the display. An Integer of the form 2**n. (since the port to QT, the 'block' argument has no effect; the display resolution is infinite).
 
-    argument:: startframe
+    argument:: startFrame
         An integer.
 
     argument:: channels

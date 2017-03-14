@@ -16,7 +16,7 @@ source= Impulse.ar(freq);
 filter= BPF.ar(source*env*amp*10,freq,bandwidth/freq);
 
 Out.ar(0,PanAz.ar(numChannels,filter,pan))
-}).send(s);
+}).add;
 
 
 SynthDef(\sinarpegg1, {arg freq=440, amp=0.1,attack=0.01, sustain=0.1, decay=0.01,pan=0.0;
@@ -29,7 +29,7 @@ filter= CombN.ar(source*EnvGen.kr(Env([1,1,0],[attack,0.01])),0.025,0.025,5);
 env= EnvGen.kr(Env([0,0,1,1,0],[attack, 0.01,sustain, decay]), doneAction:2);
 
 Out.ar(0,PanAz.ar(numChannels,filter*env*0.5*amp,pan))
-}).send(s);
+}).add;
 
 
 SynthDef(\pitchednoise, {arg freq=440, amp=0.1,attack=0.01, sustain=0.1, decay=0.01,pan=0.0, bandwidth=100;
@@ -42,7 +42,7 @@ source= WhiteNoise.ar;
 filter= BPF.ar(source*env*2*amp,freq,bandwidth/freq);
 
 Out.ar(0,PanAz.ar(numChannels,filter,pan))
-}).send(s);
+}).add;
 
 
 //preferred version if you have the FreeVerb UGen, commented out by default
@@ -57,7 +57,7 @@ Out.ar(0,PanAz.ar(numChannels,filter,pan))
 //
 //ReplaceOut.ar(0,FreeVerb.ar(((shift*shifted)+((1.0-shift)*input)),0.33,1.5))
 //
-//}).send(s);
+//}).add;
 
 
 SynthDef(\stockyfx, {arg shift=0.0, rate=1.0;
@@ -85,7 +85,7 @@ a.do({ y = AllpassN.ar(y, 0.051, [rrand(0.01, 0.05),rrand(0.01, 0.05)], 1) });
 
 ReplaceOut.ar(0,(0.33*y) + input);
 
-}).send(s);
+}).add;
 
 )
 

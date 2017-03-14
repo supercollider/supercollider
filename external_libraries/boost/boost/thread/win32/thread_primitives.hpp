@@ -16,6 +16,7 @@
 #include <boost/assert.hpp>
 #include <boost/thread/exceptions.hpp>
 #include <boost/detail/interlocked.hpp>
+#include <boost/detail/winapi/config.hpp>
 //#include <boost/detail/winapi/synchronization.hpp>
 #include <algorithm>
 
