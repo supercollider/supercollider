@@ -22,9 +22,10 @@ you could use:
 
 code::
 {WhiteNoise.ar(
-    Array.fill(2, {LFDNoise3.kr(rrand(1, 30)
-	)}
-	))}.scope
+    Array.fill(2, 
+	     {LFDNoise3.kr(rrand(1, 30)
+	     )}
+	     ))}.scope
 ::
 
 classmethods::
