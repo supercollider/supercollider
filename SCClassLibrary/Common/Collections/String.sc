@@ -531,6 +531,6 @@ String[char] : RawArray {
 
 	asRational {
 		var stringArray = this.split($/ );
-		^Rational(stringArray[0].asInteger, stringArray[1].asInteger)
+		^Rational(stringArray[0].asFloat, stringArray[1].asFloat)
 	}
 }
