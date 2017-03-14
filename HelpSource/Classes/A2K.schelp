@@ -12,13 +12,20 @@ in some cases it's just preferrable to use another UGen.
 So, instead of using something like:
 
 code::
-{WhiteNoise.ar(A2K.kr(HenonC.ar(rrand(1, 30))) ! 2)}.scope
+{WhiteNoise.ar(
+    Array.fill(2, 
+	    {A2K.kr(HenonC.ar(rrand(1, 30)
+		))}
+		))}.scope
 ::
 
-you could use something like:
+you could end up using something like:
 
 code::
-{WhiteNoise.ar(LFDNoise3.kr(rrand(1, 30)) ! 2)}.scope
+{WhiteNoise.ar(
+    Array.fill(2, {LFDNoise3.kr(rrand(1, 30)
+	)}
+	))}.scope
 ::
 
 classmethods::
