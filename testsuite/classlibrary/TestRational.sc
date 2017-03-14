@@ -36,7 +36,6 @@ TestRational : UnitTest {
         );
     }
 
-
     test_reciprocal {
         var report = true;
 
@@ -56,23 +55,48 @@ TestRational : UnitTest {
     }
 
     test_newFromString {
-
         this.setRandSeed;
 
-        numTests.do {
+        numTests.do({
             var x = rrand(minIntVal,maxIntVal);
             var y = 1 + maxIntVal.rand * [-1,1].choose;
             var xStr = x.asString;
             var yStr = y.asString;
             var rat1 = Rational(x,y);
             var rat2 = Rational.newFrom(xStr ++ "/"++ yStr);
+
             this.assertEquals(
                 rat1,
                 rat2,
                 format( "String entry test with % passed.", rat1)
             );
-        }
+        });
     }
+
+    test_strangeStringInput {
+
+        var strangeStrings = [
+            "3 %/ 2  ",
+            "3  /  2 ",
+            "3    /   2 ",
+            "   3    / 2    ",
+            "    3     / 2      ",
+            "    3   %    /   2   ",
+            "    3    /    2 ",
+            "        3       %      /         2 "
+        ];
+
+
+        strangeStrings.do({ arg i, j;
+            this.assertEquals(
+                Rational(i),
+                Rational(3,2),
+                format( "String entry # % test with Rational(%) passed.", j, i)
+            );
+
+        });
+    }
+
 
     test_commutativeAdd {
 
@@ -404,7 +428,7 @@ TestRational : UnitTest {
             this.assertEquals(
                 (a + b) * c,
                 (a * c) + (b * c),
-                format( "Distributive property 1 test with %, % and % passed.", a, b, c)
+                format( "Associative property 1 test with %, % and % passed.", a, b, c)
             );
         }
     }
