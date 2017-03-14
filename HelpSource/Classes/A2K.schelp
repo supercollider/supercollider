@@ -6,10 +6,9 @@ categories::  UGens>Conversion
 
 Description::
 
-Audio to control rate converter. Only needed in specific cases.
-Use this if strictly necessary, as this turns out to consume some CPU.
-in some cases it's just preferrable to use another UGen.
-So, instead of using something like:
+Audio to control rate converter. Only needed in some cases.
+In some cases it's just preferrable to use another UGen, due to CPU overload.
+Instead of using:
 
 code::
 {WhiteNoise.ar(
@@ -19,7 +18,7 @@ code::
 		))}.scope
 ::
 
-you could end up using something like:
+you could use:
 
 code::
 {WhiteNoise.ar(
