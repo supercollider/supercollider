@@ -404,7 +404,7 @@ TestRational : UnitTest {
             this.assertEquals(
                 (a + b) * c,
                 (a * c) + (b * c),
-                format( "Associative property 1 test with %, % and % passed.", a, b, c)
+                format( "Distributive property 1 test with %, % and % passed.", a, b, c)
             );
         }
     }
