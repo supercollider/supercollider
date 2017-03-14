@@ -15,9 +15,18 @@ Rational : Number {
 
             if (this.numerator.frac == 0 && this.denominator.frac == 0) {
                 d = this.factor;
-                if (denominator == 0) {"Rational has zero denominator".error;^inf};
+
+                if (denominator == 0) {
+                    if (numerator == 0) {
+                        "Rational has zero numerator and denominator".error;^0/0
+                    }{
+                        "Rational has zero denominator".error;^inf
+					}
+				};
+
                 numerator   = ((this.numerator/d).abs * d.sign).round;
                 denominator = (this.denominator/d).abs.round;
+
             } {
                 ^(this.numerator / this.denominator).asRational
             }
