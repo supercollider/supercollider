@@ -7,23 +7,25 @@ Rational : Number {
 
 	reduce {
 		var d;
-		if (this.numerator.isKindOf(Number)) {
-			if (this.numerator.isKindOf(Rational) || this.denominator.isKindOf(Rational)){
-				^(numerator.asRational / denominator.asRational)
-			};
-			if (this.numerator.frac == 0 && this.denominator.frac == 0) {
-				d = this.factor;
-				numerator   = ((this.numerator/d).abs * d.sign).round;
-				denominator = (this.denominator/d).abs.round;
-				if (denominator == 0) {"Rational has zero denominator".error};
-			} {
-				^(this.numerator / this.denominator).asRational
-			}
-		} {
-			if (this.numerator.isKindOf(String)) {
-				^this.numerator.asRational
-			}
-		}
+        if (this.numerator.isKindOf(Number)) {
+
+            if (this.numerator.isKindOf(Rational) || this.denominator.isKindOf(Rational)){
+                ^(numerator.asRational / denominator.asRational)
+            };
+
+            if (this.numerator.frac == 0 && this.denominator.frac == 0) {
+                d = this.factor;
+                if (denominator == 0) {"Rational has zero denominator".error;^inf};
+                numerator   = ((this.numerator/d).abs * d.sign).round;
+                denominator = (this.denominator/d).abs.round;
+            } {
+                ^(this.numerator / this.denominator).asRational
+            }
+        } {
+            if (this.numerator.isKindOf(String)) {
+                ^this.numerator.asRational
+            }
+        }
 	}
 
 	factor {
@@ -34,7 +36,7 @@ Rational : Number {
 	}
 
 	reduceNestedRationals {
-		^if(numerator.isRational or: {denominator.isRational}) {
+        ^if(numerator.isRational or: {denominator.isRational}) {
 			(numerator.asRational / denominator.asRational)
 		};
 	}
@@ -55,7 +57,7 @@ Rational : Number {
 
 	asRational { ^this }
 
-	asFloat { ^this.numerator / this.denominator }
+    asFloat { ^(this.numerator / this.denominator).asFloat }
 
 	asInteger { ^(this.numerator / this.denominator).asInteger }
 
@@ -64,7 +66,7 @@ Rational : Number {
 	reciprocal { ^Rational(this.denominator, this.numerator) }
 
 	// printOn { arg stream;
-	//	stream << "Rational( " << numerator << ", " << denominator << " )";
+	// 	stream << "Rational( " << numerator << ", " << denominator << " )";
 	// }
 
 	printOn { arg stream;
@@ -107,7 +109,7 @@ Rational : Number {
 
 	pow { arg n;
 
-		if (n.isInteger.not) {"Exponent is not Integer".error};
+        /*if (n.isInteger.not) {"Exponent is not Integer".error};*/
 
 		^case
 		{ n == 0 } { Rational(1,1) }
@@ -132,8 +134,8 @@ Rational : Number {
 
 
 
-	simplify { arg maxDenominator=20;
-		^this.asFloat.asRational(maxDenominator)
+	simplify { arg maxDenominator=20, fasterBetter=false;
+		^this.asFloat.asRational(maxDenominator,fasterBetter)
 	}
 
 	< { arg aNumber;
@@ -152,22 +154,16 @@ Rational : Number {
 		^(this.numerator * aNumber.denominator) >= (this.denominator * aNumber.numerator)
 	}
 
-	isNegative {
-		^this.numerator.isNegative
-	}
+	isNegative { ^this.numerator.isNegative}
 
-	isPositive {
-		^this.numerator.isPositive
-	}
+	isPositive { ^this.numerator.isPositive }
 
-	neg {
-		^(this * (-1))
-	}
+	neg { ^(this * (-1)) }
 
 	squared { ^this.pow(2) }
 
 	cubed { ^this.pow(3) }
 
-	abs { ^this.class.new(numerator.abs, denominator) }
-}
+    abs { ^this.class.new(numerator.abs, denominator) }
 
+}
