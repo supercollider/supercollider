@@ -11,22 +11,21 @@ TestRational : UnitTest {
 
 	setRandSeed { arg seed=123; thisThread.randSeed = seed }
 
-	test_ZeroDenominator {
+	test_Zero {
 		var array;
 
-		this.assertEquals(
-			Rational(0,0),
-			inf, // or nan?
-			format( "Zero Denominator with Rational(0,0)==inf test passed.")
+		this.assert(
+			Rational(0,0).isNaN,
+			format( "Zero Denominator with Rational(0,0).isNaN test passed.")
 		);
 		this.assertEquals(
 			Rational(1,0),
-			inf, // or nan?
+			inf, 
 			format( "Zero Denominator test with Rational(1,0)==inf passed.")
 		);
 		this.assertEquals(
 			Rational(9999,0),
-			inf, // or nan?
+			inf, 
 			format( "Zero Denominator test with Rational(9999,0)==inf passed.")
 		);
 		this.assertEquals(
