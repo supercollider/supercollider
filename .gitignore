@@ -21,3 +21,5 @@ common/Packager/SuperCollider*.dmg
 
 *~
 *.orig
+
+external_libraries/portaudio/
