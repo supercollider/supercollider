@@ -44,7 +44,7 @@ Rational(3,7) + Rational(9,5) // -> 78 %/ 35
 (3 %/ 7) + (9 %/ 5) // -> 78 %/ 35
 ::
 
-method:: -
+method:: /
 Division
 code::
 Rational(5,3) / Rational(7,5) // -> 25 %/ 21
