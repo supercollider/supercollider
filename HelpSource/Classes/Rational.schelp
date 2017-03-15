@@ -7,7 +7,10 @@ DESCRIPTION::
 A rational number. Alternative syntax: code::x %/ y::
 
 note::
-Operations with link::Classes/Rational:: can be one order of magnitude slower than link::Classes/Float::. Rational internally represents numerator and denominator as 64-bit link::Classes/Float::s
+LIST::
+## Operations with code::Rational:: can be one order of magnitude slower compared to link::Classes/Float::.
+## code::Rational:: internally represents numerator and denominator as 64-bit link::Classes/Float::s. If you want to initialize it with a term outside the range code::-2147483648:: to code::2147483647:: you will need to force the number to be a Float by adding a decimal zero, e.g. code::-2147483649.0:: and code::2147483648.0::.
+::
 ::
 
 CLASSMETHODS::
@@ -126,7 +129,6 @@ Recursive function to calculate finite continued fractions:
 code::
 f = { |x| if(x == 0) { 1 } {  1 + Rational(1, f.(x-1))} };
 a = 20.collect({|i| f.(i)});
-a.asFloat;
 a.plot;
 ::
 
