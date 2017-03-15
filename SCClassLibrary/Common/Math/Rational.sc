@@ -18,7 +18,7 @@ Rational : Number {
 
                 if (denominator == 0) {
                     if (numerator == 0) {
-                        "Rational has zero numerator and denominator".error;^0/0
+                        "Rational has zero denominator".error;^0/0
                     }{
                         "Rational has zero denominator".error;^inf
 					}
@@ -26,6 +26,7 @@ Rational : Number {
 
                 numerator   = ((this.numerator/d).abs * d.sign).round;
                 denominator = (this.denominator/d).abs.round;
+				^Rational.fromReducedInts(numerator,denominator);
 
             } {
                 ^(this.numerator / this.denominator).asRational
@@ -35,6 +36,10 @@ Rational : Number {
                 ^this.numerator.asRational
             }
         }
+	}
+
+	*fromReducedInts { arg numerator=1, denominator=1;
+        ^super.newCopyArgs(numerator, denominator);
 	}
 
 	factor {
