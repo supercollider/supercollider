@@ -7,13 +7,19 @@ DESCRIPTION::
 A rational number. Alternative syntax: code::x %/ y::
 
 note::
-Rational internally represents the numerator and the denominator as 64-bit link::Classes/Float::.
+Operations with link::Classes/Rational:: can be one order of magnitude slower then link::Classes/Float::. Rational internally represents numerator and denominator as 64-bit link::Classes::
 ::
 
 CLASSMETHODS::
 
 method:: new
-allocates a new Rational number.
+Allocates a new Rational number. Rational also accepts Floats and Strings. It will reduce to its lower terms.
+
+code::
+Rational(6,4) // -> 3 %/ 2
+Rational("8/4") // -> 2 %/ 1
+Rational(0.33333) // -> 1 %/ 3
+::
 
 INSTANCEMETHODS::
 
