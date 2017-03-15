@@ -90,7 +90,7 @@ basic operations:
 code::
 a = Rational(3, 2); // a rational number
 b = 4%/5;  // // another rational number
-c = (3%/(2%/5)); // continuous rational number
+c = 1 %/ (1 + (1 %/ (1 + (1 %/ 2)))); // -> 3 %/ 5
 
 a + b; // -> 23 %/ 10
 a - b; // -> 7 %/ 10
