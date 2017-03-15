@@ -112,15 +112,12 @@ d.sort;
 // sort Array with Floats and Rationals:
 e = [1, 1.5, 3 %/ 5, 8 %/ 5, 1.342];
 e.sort;
-
 ::
 
-Also possible to convert Strings and other Numbers:
+Recursive function to calculate finite continued fractions:
 
 code::
-"3/2".asRational; // -> 3 %/ 2
-
-1.5.asRational; // -> 3 %/ 2
-
-"3/2".asRational == 1.5.asRational; // true
+f = { |x| if(x == 0) { 2 } {  1 + Rational(1, 1 + f.(x-1))} };
+a = 10.collect({|i| f.(i)});
+a.asFloat;
 ::
