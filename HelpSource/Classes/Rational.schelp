@@ -104,9 +104,11 @@ b.max(2.32); // -> 2.32
 
 // force denominator to be less than 20:
 (4342%/3424).simplify(20); // -> 19 %/ 15
+::
 
 SUBSECTION:: Sorting
 
+code::
 // sort Array of Rationals:
 d = [ 0 %/ 1, 3 %/ 5, -3 %/ 4, -1 %/ 5, 3 %/ 4, -2 %/ 3, 7 %/ 8, 1 %/ 1, -3 %/ 1, 1 %/ 6, 1 %/ 6, 7 %/ 8, -10 %/ 7, 0 %/ 1, 0 %/ 1, 5 %/ 3, 10 %/ 1, 3 %/ 5, 0 %/ 1, -2 %/ 7 ];
 
@@ -128,9 +130,9 @@ a.asFloat;
 ::
 
 
-SUBSECTION:: Conversions between Rational and Float
+SUBSECTION:: Conversion between Rational and Float
 
-Conversion between link::Classes/Float:: and Rational can have different degrees of precisions:
+Conversion between link::Classes/Float:: and Rational can have different degrees of precision:
 
 code::
 pi; // 3.1415926535898
