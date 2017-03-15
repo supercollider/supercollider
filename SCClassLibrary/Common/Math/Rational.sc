@@ -1,7 +1,7 @@
 Rational : Number {
 	var <numerator, <denominator;
 
-	*new {  arg numerator=1, denominator=1;
+	*new {  arg numerator=1.0, denominator=1.0;
 		^super.newCopyArgs(numerator, denominator).reduce
 	}
 
@@ -14,20 +14,19 @@ Rational : Number {
             };
 
             if (this.numerator.frac == 0 && this.denominator.frac == 0) {
-                d = this.factor;
 
                 if (denominator == 0) {
                     if (numerator == 0) {
                         "Rational has zero denominator".error;^0/0
                     }{
                         "Rational has zero denominator".error;^inf
-					}
-				};
+                    }
+                };
 
-                numerator   = ((this.numerator/d).abs * d.sign).round;
+                d = this.factor;
+                numerator = ((this.numerator/d).abs * d.sign).round;
                 denominator = (this.denominator/d).abs.round;
-				^Rational.fromReducedInts(numerator,denominator);
-
+                ^Rational.fromReducedInts(numerator,denominator);
             } {
                 ^(this.numerator / this.denominator).asRational
             }
@@ -38,15 +37,15 @@ Rational : Number {
         }
 	}
 
-	*fromReducedInts { arg numerator=1, denominator=1;
+    *fromReducedInts { arg numerator=1.0, denominator=1.0;
         ^super.newCopyArgs(numerator, denominator);
-	}
+    }
 
 	factor {
 		var d = gcd(this.numerator.asInteger, this.denominator.asInteger).abs;
 		if (denominator < 0) { d = d.neg };
 		if (numerator   < 0) { d = d.neg };
-		^d
+		^d.asFloat
 	}
 
 	reduceNestedRationals {
@@ -57,9 +56,9 @@ Rational : Number {
 
 	*newFrom { arg that; ^that.asRational }
 
-	numerator_ { arg newNum; numerator = newNum; this.reduce }
+	numerator_ { arg newNum=1.0; numerator = newNum; this.reduce }
 
-	denominator_ { arg newDen; denominator = newDen; this.reduce }
+	denominator_ { arg newDen=1.0; denominator = newDen; this.reduce }
 
 	performBinaryOpOnSimpleNumber { arg aSelector, aNumber, adverb;
 		^aNumber.asRational.perform(aSelector, this, adverb)
@@ -180,4 +179,56 @@ Rational : Number {
 
     abs { ^this.class.new(numerator.abs, denominator) }
 
+}
+
+
++ SimpleNumber {
+	asRational { arg maxDenominator=100,fasterBetter=false;
+		var fraction = this.asFraction(maxDenominator,fasterBetter);
+		^Rational(fraction[0], fraction[1])
+	}
+
+	isRational { ^false }
+
+	%/ { arg aNumber; ^Rational(this, aNumber) }
+
+	performBinaryOpOnRational { arg aSelector, rational, adverb;
+		^rational.perform(aSelector, this.asRational, adverb)
+	}
+}
+
++ Integer {
+	asRational { ^Rational(this, 1) }
+	as { arg aSimilarClass; ^aSimilarClass.new(this.numerator, 1 ) }
+}
+
++ Number {
+	numerator { ^this}
+	denominator { ^1}
+	rational { arg denominator=1; ^Rational(this, denominator) }
+}
+
++ SequenceableCollection {
+	asRational { arg maxDenominator = 100;
+		^this.collect { |i| i.asRational(maxDenominator) }
+	}
+}
+
++ String {
+	asRational {
+		var stringArray = this.split($/ );
+		^Rational(stringArray[0].asFloat, stringArray[1].asFloat)
+	}
+}
+
++ AbstractFunction {
+	performBinaryOpOnRational { arg aSelector, aRational, adverb;
+		^this.reverseComposeBinaryOp(aSelector, aRational, adverb)
+	}
+}
+
++ Object {
+	performBinaryOpOnRational { arg aSelector, thing, adverb;
+		^this.performBinaryOpOnSomething(aSelector, thing, adverb)
+	}
 }
