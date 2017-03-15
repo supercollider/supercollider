@@ -1,44 +1,102 @@
 /*
-TestRational.run
 UnitTest.gui
+TestRational.run
+TestRational().numTests_(100).seed_(999.rand).isVerbose_(true).run;
 */
 
 TestRational : UnitTest {
 
-	var minIntVal= -1000, maxIntVal=1000;
-	var minFloatVal= -1000.1, maxFloatVal=1000.1;
-	var numTests = 1000;
+	var <>minIntVal= -1000, <>maxIntVal=1000;
+	var <>minFloatVal= -1000.1, <>maxFloatVal=1000.1;
+	var <>numTests = 100;
+	var <>seed = 123;
+	var <>isVerbose = false;
 
-	setRandSeed { arg seed=123; thisThread.randSeed = seed }
+	setUp { thisThread.randSeed = seed }
 
-	test_Zero {
+	test_Zeros {
 		var array;
 
 		this.assert(
 			Rational(0,0).isNaN,
-			format( "Zero Denominator with Rational(0,0).isNaN test passed.")
+			format( "Zeros with Rational(0,0).isNaN test passed.")
+		);
+		this.assert(
+			Rational(rrand(1,10),rrand(1,10)) != Rational(1,0),
+			format( "Zeros with Rational(rrand(1,10),rrand(1,10))!=Rational(1,0) test passed.")
+		);
+		this.assert(
+			Rational(rrand(1,10),rrand(1,10)) != Rational(0,0),
+			format( "Zeros with Rational(rrand(1,10),rrand(1,10))!=Rational(0,0) test passed.")
 		);
 		this.assertEquals(
 			Rational(1,0),
-			inf, 
-			format( "Zero Denominator test with Rational(1,0)==inf passed.")
+			inf,
+			format( "Zeros test with Rational(1,0)==inf passed.")
 		);
 		this.assertEquals(
 			Rational(9999,0),
-			inf, 
-			format( "Zero Denominator test with Rational(9999,0)==inf passed.")
+			inf,
+			format( "Zeros test with Rational(9999,0)==inf passed.")
 		);
+		100.do {
+			this.assertEquals(
+				Rational(9999.rand,0),
+				Rational(9999.rand,0),
+				format( "Zeros test with Rational(9999.rand,0)==Rational(9999.rand,0) passed."),
+				isVerbose
+			)
+		};
 		this.assertEquals(
 			Rational(0,1),
 			Rational(0,9999),
-			format( "Zero Denominator test with Rational(0,1)==Rational(0,9999) passed.")
+			format( "Zeros test with Rational(0,1)==Rational(0,9999) passed.")
 		);
 	}
 
-	test_reciprocal {
-		var report = true;
+	test_BigNumbers {
 
-		this.setRandSeed;
+		this.assert(
+			(2147483646 %/ 1) + 1 == (2147483647 %/ 1),
+			format( "Big_Numbers `(2147483646 %/ 1) + 1` test passed."));
+
+		this.assert(
+			(2147483647.0 %/ 1) + 1 ==  (2147483648.0 %/ 1),
+			format( "Big_Numbers with `(2147483647.0 %/ 1) + 1` test passed."));
+
+		this.assert(
+			Rational(2147483647.0, 1) * 2 == ( 4294967294.0 %/ 1),
+			format( "Big_Numbers with ` Rational(2147483647.0, 1) * 2` test passed."));
+
+		this.assert(
+			(-2147483646 %/ 1) - 1 == (-2147483647 %/ 1),
+			format( "Big_Numbers with `(-2147483646 %/ 1) - 1` test passed."));
+
+	}
+
+	test_Pi_Precision {
+		var a = pi.asRational(99999);
+		var b = pi.asRational(999);
+		var c = pi.asRational(99);
+
+		this.assert(
+			pi.equalWithPrecision(a.asFloat, 0.000000001),
+			format( "Pi_Precision with `pi.asRational(99999)` test passed.")
+		);
+
+		this.assert(
+			pi.equalWithPrecision(b.asFloat, 0.00001),
+			format( "Pi_Precision with `pi.asRational(999)` test passed.")
+		);
+
+		this.assert(
+			pi.equalWithPrecision(c.asFloat, 0.01),
+			format( "Pi_Precision with `pi.asRational(99)` test passed.")
+		);
+
+	}
+
+	test_Reciprocals {
 
 		numTests.do {
 			var x = rrand(minIntVal,maxIntVal);
@@ -47,14 +105,27 @@ TestRational : UnitTest {
 			this.assertEquals(
 				z,
 				z.reciprocal.reciprocal,
-				format( "Reciprocal test with % passed.", z),
-				report: report
+				format( "Reciprocal test 1 with % passed.", z),
+				isVerbose
+			);
+			};
+
+		numTests.do {
+			var x = rrand(1,999);
+			var y = rrand(1,999);
+			var z = Rational(x,y);
+			this.assertEquals(
+				z * z.reciprocal,
+				Rational(1,1),
+				format( "Reciprocal test 2 with % passed.", z),
+				isVerbose
 			);
 			}
+
 	}
 
+
 	test_newFromString {
-		this.setRandSeed;
 
 		numTests.do({
 			var x = rrand(minIntVal,maxIntVal);
@@ -67,7 +138,8 @@ TestRational : UnitTest {
 			this.assertEquals(
 				rat1,
 				rat2,
-				format( "String entry test with % passed.", rat1)
+				format( "String entry test with % passed.", rat1),
+				isVerbose
 			);
 		});
 	}
@@ -85,12 +157,12 @@ TestRational : UnitTest {
 			"        3       %      /         2 "
 		];
 
-
 		strangeStrings.do({ arg i, j;
 			this.assertEquals(
 				Rational(i),
 				Rational(3,2),
-				format( "String entry # % test with Rational(%) passed.", j, i)
+				format( "String entry # % test with Rational(%) passed.", j, i),
+				isVerbose
 			);
 
 		});
@@ -106,8 +178,6 @@ TestRational : UnitTest {
 
 	test_commutativeAdd {
 
-		this.setRandSeed;
-
 		numTests.do {
 			var x1 = rrand(minIntVal,maxIntVal);
 			var y1 = 1 + maxIntVal.rand * [-1,1].choose;
@@ -118,14 +188,13 @@ TestRational : UnitTest {
 			this.assertEquals(
 				z1 + z2,
 				z2 + z1,
-				format( "Commutative Add test with % and % passed.", z1, z2)
+				format( "Commutative Add test with % and % passed.", z1, z2),
+				isVerbose
 			);
 			}
 	}
 
 	test_commutativeMul {
-
-		this.setRandSeed;
 
 		numTests.do {
 			var x1 = rrand(minIntVal,maxIntVal);
@@ -137,13 +206,14 @@ TestRational : UnitTest {
 			this.assertEquals(
 				z1 * z2,
 				z2 * z1,
-				format( "Commutative Add test with % and % passed.", z1, z2));
+				format( "Commutative Add test with % and % passed.", z1, z2),
+				isVerbose
+			);
 			}
 	}
 
 	test_Additive_Inverse {
 
-		this.setRandSeed;
 
 		numTests.do {
 			var x = rrand(minIntVal,maxIntVal);
@@ -153,24 +223,25 @@ TestRational : UnitTest {
 			this.assertEquals(
 				Rational(x * (-1), y),
 				Rational(x, y * (-1)),
-				format( "Additive Inverse test 1 with % passed.", rat)
+				format( "Additive Inverse test 1 with % passed.", rat),
+				isVerbose
 			);
 			this.assertEquals(
 				(-1) * rat,
 				Rational(x * (-1), y),
-				format( "Additive Inverse test 2 with % passed.", rat)
+				format( "Additive Inverse test 2 with % passed.", rat),
+				isVerbose
 			);
 			this.assertEquals(
 				(-1) * rat,
 				Rational(x, y * (-1)),
-				format( "Additive Inverse test 3 with % passed.", rat)
+				format( "Additive Inverse test 3 with % passed.", rat),
+				isVerbose
 			)
 		}
 	}
 
 	test_Multiplicative_Inverse {
-
-		this.setRandSeed;
 
 		numTests.do {
 			var x    = 1 + maxIntVal.rand * [-1,1].choose;
@@ -181,7 +252,8 @@ TestRational : UnitTest {
 			this.assertEquals(
 				rat1.pow(-1),
 				rat2,
-				format( "Multiplicative Inverse test with % passed.", rat1)
+				format( "Multiplicative Inverse test with % passed.", rat1),
+				isVerbose
 			);
 		}
 	}
@@ -198,13 +270,13 @@ TestRational : UnitTest {
 			this.assertEquals(
 				z1 / z2,
 				z1 * z2.reciprocal,
-				format( "Division is equivalent to multiplying by the reciprocal test with % and %", z1, z2));
+				format( "Division is equivalent to multiplying by the reciprocal test with % and %", z1, z2),
+				isVerbose
+			);
 			}
 	}
 
 	test_Neg_Subtraction {
-
-		this.setRandSeed;
 
 		numTests.do {
 			var x1 = rrand(minIntVal,maxIntVal);
@@ -216,13 +288,13 @@ TestRational : UnitTest {
 			this.assertEquals(
 				z1 - z2,
 				z2.neg - z1.neg,
-				format( "Subtraction and Inverse test with % and % passed.", z1, z2));
+				format( "Subtraction and Inverse test with % and % passed.", z1, z2),
+				isVerbose
+			);
 			}
 	}
 
 	test_reciprocal_Div {
-
-		this.setRandSeed;
 
 		numTests.do {
 			var x1 = 1 + maxIntVal.rand * [-1,1].choose;
@@ -234,17 +306,16 @@ TestRational : UnitTest {
 			this.assertEquals(
 				z1 / z2,
 				(z2 / z1).reciprocal,
-				format( "Div + reciprocal test with % and % passed.", z1, z2));
+				format( "Div + reciprocal test with % and % passed.", z1, z2),
+				isVerbose
+			);
 			}
 	}
 
 	test_Sort_and_Scramble  {
-		var listSize = 1000;
+		var listSize = 100;
 
-		this.setRandSeed;
-
-		//numTests.do {
-		10.do {
+		numTests.do {
 			var ratList;
 			ratList = Array.fill(
 				listSize,
@@ -257,18 +328,16 @@ TestRational : UnitTest {
 			this.assertEquals(
 				ratList.sort,
 				ratList.scramble.sort,
-				format( "Sort and Scramble test passed.")
+				format( "Sort and Scramble test passed."),
+				isVerbose
 			);
 		}
 	}
 
 	test_Sort_and_asFloat  {
-		var listSize = 1000;
+		var listSize = 100;
 
-		this.setRandSeed;
-
-		//numTests.do {
-		10.do {
+		numTests.do {
 			var ratList;
 
 			ratList = Array.fill(
@@ -283,14 +352,13 @@ TestRational : UnitTest {
 			this.assertEquals(
 				ratList.scramble.sort.asFloat,
 				ratList.scramble.asFloat.sort,
-				format( "Sort and asFloat test passed.")
+				format( "Sort and asFloat test passed."),
+				isVerbose
 			);
 		}
 	}
 
 	test_Mul_Inverse_DifferentExponents_NonZeroIntInput {
-
-		this.setRandSeed;
 
 		numTests.do {
 			var maxVal = 100;
@@ -303,7 +371,9 @@ TestRational : UnitTest {
 				this.assertEquals(
 					rat.pow(i * (-1)),
 					rat.pow(i).reciprocal,
-					format( "Multiplicative inverse with different exponents test with exp: % and rat: % passed.", i, rat));
+					format( "Multiplicative inverse with different exponents test with exp: % and rat: % passed.", i, rat),
+					isVerbose
+				);
 
 			})
 
@@ -311,8 +381,6 @@ TestRational : UnitTest {
 	}
 
 	test_Float_Rat_Float {
-
-		this.setRandSeed;
 
 		numTests.do {
 			var maxVal = 1000.01;
@@ -326,14 +394,13 @@ TestRational : UnitTest {
 				b: float.asRational.asFloat,
 				message: format(
 					"Float/Rational conversion with  rat: % and float: % passed.", rat, float),
-				within: 0.000001
+				within: 0.000001,
+				report: isVerbose
 			);
 		}
 	}
 
 	test_Rat_Float_Rat {
-
-		this.setRandSeed;
 
 		numTests.do {
 			var maxVal = 100;
@@ -346,15 +413,14 @@ TestRational : UnitTest {
 				a: rat,
 				b: float.asRational.asFloat.asRational,
 				message: format(
-					"Float/Rational conversion with rat: % and float: % passed.", rat, float)
+					"Float/Rational conversion with rat: % and float: % passed.", rat, float),
+				report: isVerbose
 			);
 		}
 	}
 
 
 	test_Exponentiation {
-
-		this.setRandSeed;
 
 	   numTests.do {
 			var maxVal = 9;
@@ -366,13 +432,15 @@ TestRational : UnitTest {
 				r,
 				r.pow(e).pow(e.reciprocal),
 				format(
-					"Exponentiation rational: % and exponent: % passed.", r, e));
+					"Exponentiation rational: % and exponent: % passed.", r, e),
+				report: isVerbose
+			);
 		}
 	}
 
 	// associative property
 	test_AssociativeAdd {
-		this.setRandSeed;
+
 		numTests.do {
 			var x1 = rrand(minIntVal,maxIntVal);
 			var y1 = 1 + maxIntVal.rand * [-1,1].choose;
@@ -386,13 +454,13 @@ TestRational : UnitTest {
 			this.assertEquals(
 				(z1 + z2) + z3,
 				z1 + (z2 + z3),
-				format( "Associative Sum test with %, % and %passed.", z1, z2, z3))
+				format( "Associative Sum test with %, % and %passed.", z1, z2, z3),
+				report: isVerbose
+			)
 		}
 	}
 
 	test_AssociativeMul {
-
-		this.setRandSeed;
 
 		numTests.do {
 			var x1 = rrand(minIntVal,maxIntVal);
@@ -408,15 +476,16 @@ TestRational : UnitTest {
 			this.assertEquals(
 				(z1 * z2) * z3,
 				z1 * (z2 * z3),
-				format( "Associative Mul test with %, % and %passed.", z1, z2, z3));
+				format( "Associative Mul test with %, % and %passed.", z1, z2, z3),
+				report: isVerbose
+			);
 		}
 	}
 
-	// distributive property
+	//Distributive property of multiplication over itself
 	// (a + b) * c = (a * c) + (b * c)
-	test_Distributive_1_PositiveIntInput {
 
-		this.setRandSeed;
+	test_Distributive_1_PositiveIntInput {
 
 		numTests.do {
 			var minVal = 1;
@@ -434,14 +503,14 @@ TestRational : UnitTest {
 			this.assertEquals(
 				(a + b) * c,
 				(a * c) + (b * c),
-				format( "Associative property 1 test with %, % and % passed.", a, b, c)
+				format( "Associative property 1 test with %, % and % passed.", a, b, c),
+				report: isVerbose
 			);
 		}
 	}
 
-	test_commutativeAdd_Array {
 
-		this.setRandSeed;
+	test_commutativeAdd_Array {
 
 		numTests.do {
 			var n = 20;
@@ -456,13 +525,15 @@ TestRational : UnitTest {
 			this.assertEquals(
 				rats.scramble.sum,
 				rats.scramble.sum,
-				format( "Commutative with Array summation test with %", rats));
+				format( "Commutative with Array summation test with %", rats),
+				report: isVerbose
+			);
 		}
 	}
 }
 
-
 /*
-TestRational.run
 UnitTest.gui
+TestRational.run
+TestRational().numTests_(100).seed_(999.rand).isVerbose_(true).run;
 */
