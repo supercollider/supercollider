@@ -501,7 +501,6 @@ SimpleNumber : Number {
 
 	asRational { arg maxDenominator=100,fasterBetter=false;
 		var fraction = this.asFraction(maxDenominator,fasterBetter);
-		if (this.isNaN) {^inf};
 		^Rational(fraction[0], fraction[1])
 	}
 
