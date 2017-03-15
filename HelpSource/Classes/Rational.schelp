@@ -26,6 +26,12 @@ Rational(0.33333) // -> 1 %/ 3
 
 INSTANCEMETHODS::
 
+method:: %/
+Alternative syntax for code::Rational(x,y)::
+code::
+5 %/ 7 == Rational(5,7) // -> true
+::
+
 method:: +
 Addition
 code::
@@ -109,15 +115,25 @@ b.max(2.32); // -> 2.32
 (4342%/3424).simplify(20); // -> 19 %/ 15
 ::
 
+
+SUBSECTION:: Comparisons
+
+code::
+(7 %/ 3) >  (2 %/ 1) // -> true
+(6 %/ 4) <  (3 %/ 2) // -> false
+(5 %/ 5) == (4 %/ 3) // -> false
+(4 %/ 6) <= (5 %/ 4) // -> true
+(3 %/ 7) >= (6 %/ 5) // -> false
+::
+
 SUBSECTION:: Sorting
 
 code::
-// sort Array of Rationals:
 d = [ 0 %/ 1, 3 %/ 5, -3 %/ 4, -1 %/ 5, 3 %/ 4, -2 %/ 3, 7 %/ 8, 1 %/ 1, -3 %/ 1, 1 %/ 6, 1 %/ 6, 7 %/ 8, -10 %/ 7, 0 %/ 1, 0 %/ 1, 5 %/ 3, 10 %/ 1, 3 %/ 5, 0 %/ 1, -2 %/ 7 ];
 
 d.sort;
 
-// sort Array with Floats and Rationals:
+// sort an Array with Floats and Rationals:
 e = [1, 1.5, 3 %/ 5, 8 %/ 5, 1.342];
 e.sort;
 ::
@@ -149,3 +165,4 @@ pi.equalWithPrecision(a.asFloat, 0.000000001); // true
 pi.equalWithPrecision(b.asFloat, 0.00001);     // true
 pi.equalWithPrecision(c.asFloat, 0.01);        // true
 ::
+
