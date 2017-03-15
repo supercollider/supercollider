@@ -743,6 +743,7 @@ Plotter {
 				elem
 			}
 		};
+		if (elem.isKindOf(Rational)) { elem.asFloat } { elem };
 		plotter.setValue(
 			array,
 			findSpecs: true,

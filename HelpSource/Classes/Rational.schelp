@@ -124,9 +124,10 @@ SUBSECTION:: Continued fractions
 Recursive function to calculate finite continued fractions:
 
 code::
-f = { |x| if(x == 0) { 2 } {  1 + Rational(1, 1 + f.(x-1))} };
-a = 10.collect({|i| f.(i)});
+f = { |x| if(x == 0) { 1 } {  1 + Rational(1, f.(x-1))} };
+a = 20.collect({|i| f.(i)});
 a.asFloat;
+a.plot;
 ::
 
 
