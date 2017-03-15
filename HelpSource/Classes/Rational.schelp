@@ -1,0 +1,120 @@
+CLASS:: Rational
+summary:: Rational number
+categories:: Math
+related:: Classes/SimpleNumber, Classes/Float, Classes/Integer
+
+DESCRIPTION::
+A rational number. Alternative syntax: code::x %/ y::
+
+note::
+Rational internally represents the numerator and the denominator as 64-bit link::Classes/Float::.
+::
+
+CLASSMETHODS::
+
+method:: new
+allocates a new Rational number.
+
+INSTANCEMETHODS::
+
+method:: +
+Addition
+code::
+Rational(3,2) + Rational(3,2) // -> 3 %/ 1
+(3 %/ 2) + (3 %/ 2) // -> 3 %/ 1
+::
+
+method:: -
+Subtraction
+code::
+Rational(6,5) - Rational(1,3) // -> 13 %/ 15
+(6 %/ 5) - (1 %/ 3) // -> 13 %/ 15
+::
+
+method:: *
+Multiplication
+code::
+Rational(3,7) + Rational(9,5) // -> 78 %/ 35
+(3 %/ 7) + (9 %/ 5) // -> 78 %/ 35
+::
+
+method:: -
+Division
+code::
+Rational(5,3) / Rational(7,5) // -> 25 %/ 21
+(5 %/ 3) + (7 %/ 5) // -> 25 %/ 21
+::
+
+method:: abs
+Absolute value.
+code::
+Rational(-5,4).abs // -> 5 %/ 4
+::
+
+method:: asFloat
+As link::Classes/Float::
+code::
+Rational(5,7).asFloat // -> 0.71428571428571
+::
+
+method:: pow
+code::
+Rational(1,2).pow(2)
+// same as:
+(1 %/ 2) ** 2 // -> 1 %/ 4
+
+Rational(4,5).pow(-4) // -> 625 %/ 256
+::
+
+method:: reciprocal
+Reciprocal
+code::
+Rational(5,7).reciprocal // -> 7 %/ 5
+::
+
+method:: squared
+Power of two
+code::
+Rational(5,7).squared // -> 25 %/ 49
+::
+
+EXAMPLES::
+
+basic operations:
+code::
+a = Rational(3, 2); // a rational number
+b = 4%/5;  // // another rational number
+c = (3%/(2%/5)); // continuous rational number
+
+a + b; // -> 23 %/ 10
+a - b; // -> 7 %/ 10
+a / b; // -> 15 %/ 8
+a * b; // -> 6 %/ 5
+a.pow(2); // -> 9 %/ 4
+
+a.min(b); // -> 4 %/ 5
+b.max(2.32); // -> 2.32
+
+// force denominator to be less than 20:
+(4342%/3424).simplify(20); // -> 19 %/ 15
+
+// sort Array of Rationals:
+d = [ 0 %/ 1, 3 %/ 5, -3 %/ 4, -1 %/ 5, 3 %/ 4, -2 %/ 3, 7 %/ 8, 1 %/ 1, -3 %/ 1, 1 %/ 6, 1 %/ 6, 7 %/ 8, -10 %/ 7, 0 %/ 1, 0 %/ 1, 5 %/ 3, 10 %/ 1, 3 %/ 5, 0 %/ 1, -2 %/ 7 ];
+
+d.sort;
+
+// sort Array with Floats and Rationals:
+e = [1, 1.5, 3 %/ 5, 8 %/ 5, 1.342];
+e.sort;
+
+::
+
+Also possible to convert Strings and other Numbers:
+
+code::
+"3/2".asRational; // -> 3 %/ 2
+
+1.5.asRational; // -> 3 %/ 2
+
+"3/2".asRational == 1.5.asRational; // true
+::
