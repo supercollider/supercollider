@@ -168,7 +168,7 @@ void ScServer::createActions(Settings::Manager * settings)
     mActions[PauseRecord] = action = new QAction(tr("Pause Recording"), this);
     action->setCheckable(true);
     connect( action, SIGNAL(triggered(bool)), this, SLOT(pauseRecording(bool)) );
-    connect( action, SIGNAL(toggled(bool)), this, SLOT(pauseChanged(bool)) );
+    connect( action, SIGNAL(toggled(bool)), this, SIGNAL(pauseChanged(bool)) );
     settings->addAction( action, "synth-server-pause-recording", synthServerCategory);
 
 
