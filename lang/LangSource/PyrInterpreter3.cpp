@@ -1758,6 +1758,18 @@ HOT void Interpret(VMGlobals *g)
 					PyrSlot * vars = g->frame->vars;
 					int m = slotRawInt(&vars[3]);
 					PyrObject * obj = slotRawObject(&vars[1]);
+					
+					if (IsNil(&vars[1])) {
+						error("primitive failed: keysValuesArrayDo first argument should be an array.\n");
+						
+						slotCopy(++sp, &g->receiver);
+						numArgsPushed = 1;
+						selector = gSpecialSelectors[opmPrimitiveFailed];
+						slot = sp;
+						
+						goto class_lookup;
+					}
+					
 					if ( m < obj->size ) {
 						slot = obj->slots + m;	// key
 						while (IsNil(slot)) {
