@@ -362,7 +362,6 @@ Pbind : Pattern {
 				var stream = streampairs[i+1];
 				var streamout = stream.next(event);
 				if (streamout.isNil) { ^inevent };
-				streamout.prescribeRest(event);
 
 				if (name.isSequenceableCollection) {
 					if (name.size > streamout.size) {
@@ -370,10 +369,13 @@ Pbind : Pattern {
 						^inevent
 					};
 					name.do { arg key, i;
-						event.put(key, streamout[i]);
+						var out = streamout[i];
+						event.put(key, out);
+						out.prescribeRest(event);
 					};
 				}{
 					event.put(name, streamout);
+					streamout.prescribeRest(event);
 				};
 
 			};

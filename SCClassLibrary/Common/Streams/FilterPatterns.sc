@@ -566,7 +566,6 @@ Pbindf : FilterPattern {
 				var streamout = stream.next(outevent);
 
 				if (streamout.isNil) { ^cleanup.exit(event) };
-				streamout.prescribeRest(event);
 
 				if (name.isSequenceableCollection) {
 					if (name.size > streamout.size) {
@@ -574,10 +573,13 @@ Pbindf : FilterPattern {
 						^outevent
 					};
 					name.do { arg key, i;
-						outevent.put(key, streamout[i]);
+						var out = streamout[i];
+						outevent.put(key, out);
+						out.prescribeRest(outevent);
 					};
 				}{
 					outevent.put(name, streamout);
+					streamout.prescribeRest(outevent);
 				};
 
 			};
