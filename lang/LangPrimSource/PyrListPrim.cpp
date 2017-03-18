@@ -492,6 +492,8 @@ int prEvent_Delta(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, key, dur, stretch, delta;
 	double fdur, fstretch;
 	int err;
+	PyrClass *restClass = s_rest->u.classobj;
+	PyrSlot *slot;
 
 	a = g->sp;  // dict
 
@@ -503,12 +505,20 @@ int prEvent_Delta(struct VMGlobals *g, int numArgsPushed)
 	} else {
 		SetSymbol(&key, s_dur);
 		identDict_lookup(slotRawObject(a), &key, calcHash(&key), &dur);
-
 		err = slotDoubleVal(&dur, &fdur);
 		if (err) {
-			if (NotNil(&dur)) return err;
-			SetNil(a);
-			return errNone;
+			if (NotNil(&dur)) {
+				if (isKindOfSlot(&dur, restClass)) {
+					slot = slotRawObject(&dur)->slots;
+					err = slotDoubleVal(slot, &fdur);
+					if (err) return err;
+				} else {
+					return errWrongType;
+				}
+			} else {
+				SetNil(g->sp);
+				return errNone;
+			}
 		}
 
 		SetSymbol(&key, s_stretch);
@@ -516,15 +526,51 @@ int prEvent_Delta(struct VMGlobals *g, int numArgsPushed)
 
 		err = slotDoubleVal(&stretch, &fstretch);
 		if (err) {
-			if (NotNil(&stretch)) return err;
-			SetFloat(a, fdur);
-			return errNone;
+			if (NotNil(&stretch)) {
+				if (isKindOfSlot(&stretch, restClass)) {
+					slot = slotRawObject(&stretch)->slots;
+					err = slotDoubleVal(slot, &fstretch);
+					if (err) return err;
+				} else {
+					return errWrongType;
+				}
+			} else {
+				SetFloat(g->sp, fdur);
+				return errNone;
+			}
 		}
 
-		SetFloat(a, fdur * fstretch );
+		SetFloat(g->sp, fdur * fstretch);
 	}
 
 	return errNone;
+}
+
+int prEvent_IsRest(struct VMGlobals *g, int numArgsPushed);
+int prEvent_IsRest(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *dictslots = slotRawObject(g->sp)->slots;
+	PyrSlot *arraySlot = dictslots + ivxIdentDict_array;
+
+	if (isKindOfSlot(arraySlot, class_array)) {
+		// array format is [key, value, key, value] with some nil, nil pairs
+		// we can scan only the odd items
+		PyrClass *restClass = s_rest->u.classobj;
+		PyrObject *array = slotRawObject(arraySlot);
+		int32 size = array->size;
+		int32 i;
+
+		for (i = 1; i < size; i += 2) {
+			if (isKindOfSlot(array->slots + i, restClass)) {
+				SetBool(g->sp, 1);
+				return errNone;
+			}
+		}
+	} else {
+		return errWrongType;
+	}
+
+	return errException;  // fallback in SC method definition
 }
 
 void PriorityQueueAdd(struct VMGlobals *g, PyrObject* queueobj, PyrSlot* item, double time);
@@ -735,6 +781,7 @@ void initListPrimitives()
 	definePrimitive(base, index++, "_PriorityQueuePostpone", prPriorityQueuePostpone, 2, 0);
 
 	definePrimitive(base, index++, "_Event_Delta", prEvent_Delta, 1, 0);
+	definePrimitive(base, index++, "_Event_IsRest", prEvent_IsRest, 1, 0);
 }
 
 void initPatterns();
