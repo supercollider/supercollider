@@ -110,7 +110,7 @@ PyrSymbol *s_identitydictionary;
 PyrSymbol *s_linkedlist;
 PyrSymbol *s_sortedlist;
 PyrSymbol *s_array;
-PyrSymbol *s_list, *s_method, *s_fundef, *s_frame, *s_class;
+PyrSymbol *s_list, *s_rest, *s_method, *s_fundef, *s_frame, *s_class;
 PyrSymbol *s_symbol, *s_nil;
 PyrSymbol *s_boolean, *s_true, *s_false;
 PyrSymbol *s_int, *s_char, *s_color, *s_float, *s_complex;
@@ -195,6 +195,7 @@ void initSymbols()
 	s_sortedlist = getsym("SortedList");
 	s_array = getsym("Array");
 	s_list = getsym("List");
+	s_rest = getsym("Rest");
 	s_method = getsym("Method");
 	s_fundef = getsym("FunctionDef");
 	s_frame = getsym("Frame");
