@@ -47,7 +47,7 @@ code::
 // the ip number has to be valid and the server, wherever it is, has to be running
 // servers cannot be booted remotely, eg, a program on one machine can't boot a server on another
 // this example assumes the server on the remote machine was booted from within
-// supercollider and not from the terminal
+// SuperCollider and not from the terminal
 s = Server("aServer", NetAddr("... an ip number ...", 56789));
 
 // define a synthesis engine ... exactly as in the previous example

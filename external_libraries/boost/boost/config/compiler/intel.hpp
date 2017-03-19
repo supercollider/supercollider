@@ -35,6 +35,10 @@
 
 #endif
 
+#if (__INTEL_COMPILER <= 1600) && !defined(BOOST_NO_CXX14_VARIABLE_TEMPLATES)
+#  define BOOST_NO_CXX14_VARIABLE_TEMPLATES
+#endif
+
 #else
 
 #include <boost/config/compiler/gcc.hpp>
@@ -90,7 +94,7 @@
 
 #else
 
-#include "boost/config/compiler/common_edg.hpp"
+#include <boost/config/compiler/common_edg.hpp>
 
 #if defined(__INTEL_COMPILER)
 #if __INTEL_COMPILER == 9999
@@ -494,6 +498,11 @@ template<> struct assert_intrinsic_wchar_t<unsigned short> {};
 // A regression in Intel's compiler means that <tuple> seems to be broken in this release as well as <future> :
 #  define BOOST_NO_CXX11_HDR_FUTURE
 #  define BOOST_NO_CXX11_HDR_TUPLE
+#endif
+
+// Broken in all versions up to 17:
+#if !defined(BOOST_NO_CXX14_CONSTEXPR)
+#define BOOST_NO_CXX14_CONSTEXPR
 #endif
 
 #if (BOOST_INTEL_CXX_VERSION < 1200)

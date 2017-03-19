@@ -142,7 +142,7 @@ NodeProxy : BusPlug {
 			if(server.serverRunning) { container.loadToBundle(bundle, server) } { loaded = false; };
 			this.prepareOtherObjects(bundle, index, oldBus.notNil and: { oldBus !== bus });
 		} {
-			format("failed to add % to node proxy: %", obj, this).inform;
+			format("failed to add % to node proxy: %", obj, this).postln;
 			^this
 		};
 
@@ -255,15 +255,6 @@ NodeProxy : BusPlug {
 		this.linkNodeMap;
 	}
 
-	server_ { | inServer |
-		this.deprecated(thisMethod);
-		if(this.isNeutral.not) {
-			this.end;
-			loaded = false;
-		};
-		server = inServer;
-	}
-
 	group_ { | inGroup |
 		var bundle;
 		if(inGroup.server !== server) { Error("cannot move to another server").throw };
@@ -321,11 +312,6 @@ NodeProxy : BusPlug {
 		this.set(*args)
 	}
 
-	mapn { | ... args |
-		"NodeProxy: mapn is deprecated, please use map instead".postln;
-		this.map(*args)
-	}
-
 	xset { | ... args |
 		this.xFadePerform(\set, args)
 	}
@@ -334,10 +320,6 @@ NodeProxy : BusPlug {
 	}
 	xsetn { | ... args |
 		this.xFadePerform(\set, args)
-	}
-	xmapn { | ... args |
-		"NodeProxy: xmapn is decrepated, please use xmap instead".postln;
-		this.xFadePerform(\map, args)
 	}
 	xunset { | ... args |
 		this.xFadePerform(\unset, args)
@@ -1023,6 +1005,7 @@ Ndef : NodeProxy {
 		res = dict.envir.at(key);
 		if(res.isNil) {
 			res = super.new(server).key_(key);
+			dict.initProxy(res);
 			dict.envir.put(key, res)
 		};
 

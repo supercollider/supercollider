@@ -48,7 +48,8 @@ EnvirGui : JITGui {
 
 		paramViews = {
 			ParamView(zone, Rect(0, 0, bounds.width - 20, height))
-			.background_(skin.background);
+			.background_(skin.background)
+			.useRanger_({ this.useRanger });
 		}.dup(numItems);
 		paramViews.do { |pv| pv.zone.visible_(false); };
 
@@ -325,7 +326,7 @@ EnvirGui : JITGui {
 	// precedence: global specs first, then cached local,
 	// else guess an initial spec and remember it.
 	getSpec { |key, value|
-		var spec = specs[key];
+		var spec = specs[key] ?? { key.asSpec };
 		if (spec.isNil) {
 			spec = Spec.guess(key, value);
 			specs.put(key, spec);

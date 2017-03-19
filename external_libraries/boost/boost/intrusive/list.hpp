@@ -542,11 +542,7 @@ class list_impl
    void swap(list_impl& other)
    {
       node_algorithms::swap_nodes(this->get_root_node(), other.get_root_node());
-      if(constant_time_size){
-         size_type backup = this->priv_size_traits().get_size();
-         this->priv_size_traits().set_size(other.priv_size_traits().get_size());
-         other.priv_size_traits().set_size(backup);
-      }
+      this->priv_size_traits().swap(other.priv_size_traits());
    }
 
    //! <b>Effects</b>: Moves backwards all the elements, so that the first

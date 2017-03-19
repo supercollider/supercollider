@@ -1,5 +1,4 @@
 
-
 Rest : Operand  {
 
 	dur_ { |dt| value = dt }
@@ -9,7 +8,6 @@ Rest : Operand  {
 	asControlInput { ^value ? 1 }
 	playAndDelta { ^value ? 1 }
 	isRest { ^true }
-
 
 }
 

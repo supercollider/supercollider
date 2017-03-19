@@ -179,6 +179,9 @@ Which server to play and record. Server.default if not otherwise specified.
 argument::out
 Output bus to hear the pattern while recording, default = 0.
 
+argument::outNumChannels
+the number of out channels to play to the recorder. If larger than numChannels, outNumChannels will wrap .
+
 Examples::
 
 Below are brief examples for most of the classes derived from Pattern. These examples all rely on the patterns assigned to the Interpreter variable p, q, and r in the first block of code.
@@ -191,7 +194,7 @@ SynthDef(\cfstring1, { arg i_out, freq = 360, gate = 1, pan, amp=0.1;
 	var out, eg, fc, osc, a, b, w;
 	fc = LinExp.kr(LFNoise1.kr(Rand(0.25, 0.4)), -1, 1, 500, 2000);
 	osc = Mix.fill(8, {LFSaw.ar(freq * [Rand(0.99, 1.01), Rand(0.99, 1.01)], 0, amp) }).distort * 0.2;
-	eg = EnvGen.kr(Env.asr(1, 1, 1), gate, doneAction:2);
+	eg = EnvGen.kr(Env.asr(1, 1, 1), gate, doneAction: Done.freeSelf);
 	out = eg * RLPF.ar(osc, fc, 0.1);
 	#a, b = out;
 	Out.ar(i_out, Mix.ar(PanAz.ar(4, [a, b], [pan, pan+0.3])));
@@ -200,7 +203,7 @@ SynthDef(\cfstring1, { arg i_out, freq = 360, gate = 1, pan, amp=0.1;
 SynthDef("sinegrain2",
 	{ arg out=0, freq=440, sustain=0.05, pan;
 		var env;
-		env = EnvGen.kr(Env.perc(0.01, sustain, 0.3), doneAction:2);
+		env = EnvGen.kr(Env.perc(0.01, sustain, 0.3), doneAction: Done.freeSelf);
 		Out.ar(out, Pan2.ar(SinOsc.ar(freq, 0, env), pan))
 	}).add;
 

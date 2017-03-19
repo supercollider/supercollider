@@ -160,6 +160,10 @@ Node {
 		NodeWatcher.register(this, assumePlaying)
 	}
 
+	unregister {
+		NodeWatcher.unregister(this)
+	}
+
 	onFree { arg func;
 		var f = {|n, m|
 			if(m == \n_end) {
@@ -526,8 +530,12 @@ Synth : Node {
 	}
 
 	get { arg index, action;
-		OSCpathResponder(server.addr, ['/n_set', nodeID, index], { arg time, r, msg;
-			action.value(msg.at(3)); r.remove }).add;
+		OSCFunc({ |message|
+			// The server replies with a message of the form
+			// [/n_set, node ID, index, value].
+			// We want "value," which is at index 3.
+			action.value(message[3]);
+		}, \n_set, server.addr, argTemplate: [nodeID, index]).oneShot;
 		server.sendMsg(44, nodeID, index)	//"/s_get"
 	}
 
@@ -536,8 +544,12 @@ Synth : Node {
 	}
 
 	getn { arg index, count, action;
-		OSCpathResponder(server.addr, ['/n_setn', nodeID, index], {arg time, r, msg;
-			action.value(msg.copyToEnd(4)); r.remove } ).add;
+		OSCFunc({ |message|
+			// The server replies with a message of the form
+			// [/n_setn, node ID, index, count, ...values].
+			// We want "values," which are at indexes 4 and above.
+			action.value(message[4..]);
+		}, \n_setn, server.addr, argTemplate: [nodeID, index]).oneShot;
 		server.sendMsg(45, nodeID, index, count) //"/s_getn"
 	}
 

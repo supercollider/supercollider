@@ -28,7 +28,9 @@
 # else // BOOST_WINDOWS_API
 #   include <windows.h>
 #   include <wincrypt.h>
-#   pragma comment(lib, "Advapi32.lib")
+#   ifdef _MSC_VER
+#      pragma comment(lib, "Advapi32.lib")
+#   endif
 # endif
 
 namespace {

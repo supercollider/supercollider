@@ -245,6 +245,7 @@ void set_plugin_paths(server_arguments const & args, nova::sc_ugen_factory * fac
         const path home = resolve_home();
         std::vector<path> folders = { "/usr/local/lib/SuperCollider/plugins",
                                       "/usr/lib/SuperCollider/plugins",
+                                      "/usr/lib64/SuperCollider/plugins",
                                       home / "/.local/share/SuperCollider/Extensions",
                                       home / "share/SuperCollider/plugins" };
 

@@ -27,6 +27,8 @@ argument:: scopeColor
 An instance of link::Classes/Color::. The drawing color of the scope.
 argument:: bgColor
 An instance of link::Classes/Color::. The background color of the scope.
+argument:: server
+the server whose buses to show on scope.
 discussion::
 Example:
 code::

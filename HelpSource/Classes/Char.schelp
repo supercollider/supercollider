@@ -1,28 +1,50 @@
 class::Char
-summary::ascii character
+summary::ASCII character
+related::Classes/String
 categories:: Core
 
 description::
-Chars may be written as literals using the $ sign. For example $a, $b, $c.
-See link::Reference/Literals::
+An ASCII character represented as a signed 8-bit integer (-128 to 127).
+Valid ASCII values are in the range 0-127.
+Chars may be written as literals using the $ sign. For example: $a, $b, $c.
+Some special characters can be expressed as literals using escape sequences (for example, code::$\n:: for newline).
+See link::Reference/Literals#Characters:: for more information.
 
-Chars may be created from link::Classes/Integer::s using the methods link::Classes/Integer#-asAscii:: and link::Classes/Integer#-asDigit::.
+Chars may be created from link::Classes/Integer##Integers:: using the methods link::Classes/Integer#-asAscii:: and link::Classes/Integer#-asDigit::.
+
+Note that, while Char does not support encodings aside from ASCII—such as
+multi-byte encodings like UTF-8 and UTF-16, or the full Latin-1 (ISO 8859-1)
+character set—Chars with negative values are perfectly legal, and may be strung
+together in strings that use these encodings.
+
+The SuperCollider IDE uses UTF-8 to decode and display strings.
+See link::Classes/String:: for more information.
 
 classmethods::
 
 method::nl
-Returns code::($\n)::
-method::ff
-Returns code::($\f)::
+Newline code::($\n)::.
+
+method::ret
+Carriage return code::($\r)::.
+
 method::tab
-Returns code::($\t)::
+Horizontal tab code::($\t)::.
+
+method::ff
+Form feed code::($\f)::.
+
+method::vtab
+Vertical tab code::($\v)::.
+
 method::space
-Returns code::($ )::
+Single space code::($ )::.
+
 method::comma
-Returns code::($\,)::
+Comma code::($,)::.
+
 method::bullet
-Returns a bullet character (•) in SuperCollider.app on OSX, but a simple asterisk (*) on other frontends.
-This method is not recommended, since it's actually not cross-platform.
+Asterisk code::($*)::.
 
 instancemethods::
 private:: archiveAsCompileString
@@ -31,7 +53,7 @@ subsection::conversion
 
 method::ascii
 
-returns:: the integer ascii value of a Char.
+returns:: the integer ASCII value of a Char.
 
 method::digit
 
@@ -62,11 +84,11 @@ returns:: whether the char is printable.
 
 method::isPunct
 
-returns:: whether the char is a punctuation character
+returns:: whether the char is a punctuation character.
 
 method::isSpace
 
-returns:: true if the char is white space.
+returns:: true if the char is white space: any of code::[$ , $\f, $\n, $\r, $\t, $\v]::.
 
 method::isDecDigit
 
@@ -74,8 +96,8 @@ returns:: true if the char is a decimal digit $0 to $9.
 
 method::isFileSafe
 
-returns:: true if the char is safe for use as in a filename.
-excludes the path separators / and :
+returns:: true if the char is safe for use in a filename.
+Excludes the path separators / and :
 discussion::
 code::
  for(0,255,{ arg i;

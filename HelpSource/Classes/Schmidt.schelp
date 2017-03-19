@@ -6,18 +6,21 @@ categories::  UGens>Maths
 
 Description::
 
-When  code::in::  crosses to greater than
-code::hi:: , output 1, then when signal crosses lower
-than  code::lo::  output 0. Uses the formula:
+If code::in > hi::, output 1. If code::in < lo::, output 0. Otherwise, repeat the
+last sample of output, assumed to be 0 at initialization. In sclang-flavored
+pseudocode:
 
 code::
-
-if (out == 1, { if (in < lo, { out = 0.0 }) }, { if (in > hi, { out = 1.0 }) }).
-
+out[i] = if(in[i] < lo[i]) {
+    0
+} {
+    if(in[i] > hi[i]) {
+        1
+    } {
+        out[i-1]
+    }
+};
 ::
-
-Output is initially zero.
-
 
 classmethods::
 

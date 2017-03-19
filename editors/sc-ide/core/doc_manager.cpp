@@ -273,6 +273,7 @@ void Document::removeTmpFile()
 DocumentManager::DocumentManager( Main *main, Settings::Manager * settings ):
 QObject(main), mTextMirrorEnabled(true), mCurrentDocument(NULL), mGlobalKeyDownEnabled(false), mGlobalKeyUpEnabled(false)
 {
+    mDocumentModel = new QStandardItemModel(this);
     connect(&mFsWatcher, SIGNAL(fileChanged(QString)), this, SLOT(onFileChanged(QString)));
 
     connect(main, SIGNAL(storeSettingsRequest(Settings::Manager*)),
@@ -286,6 +287,13 @@ Document * DocumentManager::createDocument(bool isPlainText, const QByteArray & 
 {
     Document *doc = new Document( isPlainText, id, title, text );
     mDocHash.insert( doc->id(), doc );
+
+    QStandardItem * item = new QStandardItem(doc->title());
+    doc->mModelItem = item;
+    item->setData(QVariant::fromValue(doc));
+    mDocumentModel->appendRow(item);
+    QTextDocument *tdoc = doc->textDocument();
+    connect(tdoc, SIGNAL(modificationChanged(bool)), doc, SLOT(onModificationChanged(bool)));
     return doc;
 }
 
@@ -353,7 +361,8 @@ Document *DocumentManager::open( const QString & path, int initialCursorPosition
     doc->mDoc->setPlainText( decodeDocument(bytes) );
     doc->mDoc->setModified(false);
     doc->mFilePath = filePath;
-    doc->mTitle = info.fileName();
+    QString fileTitle = info.fileName();
+    doc->setTitle(fileTitle);
     doc->mSaveTime = info.lastModified();
     doc->setInitialSelection(initialCursorPosition, selectionLength);
     connect(doc->textDocument(), SIGNAL(contentsChanged()), doc, SLOT(storeTmpFile()));
@@ -469,6 +478,8 @@ void DocumentManager::close( Document *doc )
         return;
     }
 
+    mDocumentModel->removeRow(mDocumentModel->indexFromItem(doc->mModelItem).row());
+
     if (!doc->mFilePath.isEmpty())
         mFsWatcher.removePath(doc->mFilePath);
 
@@ -544,7 +555,8 @@ bool DocumentManager::doSaveAs( Document *doc, const QString & path )
     }
 
     doc->mFilePath = cpath;
-    doc->mTitle = info.fileName();
+    QString fileTitle = info.fileName();
+    doc->setTitle(fileTitle);
     doc->mDoc->setModified(false);
     doc->setPlainText(fileIsPlainText);
     doc->removeTmpFile();
@@ -1100,7 +1112,8 @@ void DocumentManager::handleSetDocTitleScRequest( const QString & data )
         Document *document = documentForId(id.c_str());
         if(document)
         {
-            document->mTitle = QString::fromUtf8(title.c_str());
+            QString newTitle = QString::fromUtf8(title.c_str());
+            document->setTitle(newTitle);
             Q_EMIT(titleChanged(document));
         }
 

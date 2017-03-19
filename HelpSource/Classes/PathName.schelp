@@ -19,7 +19,7 @@ PathName.new("MyDisk/SC 2.2.8 f/Sounds/FunkyChicken");
 ::
 
 method::tmp
-Get or set the global temp directory as a link::Classes/String::. This is used by link::Classes/Buffer::, etc. By default this is "/tmp/" for Linux and OSX, and "/WINDOWS/TEMP/" for Windows.
+Get or set the global temp directory as a link::Classes/String::. This is used by link::Classes/Buffer::, etc. By default this is "/tmp/" for Linux and macOS, and "/WINDOWS/TEMP/" for Windows.
 
 InstanceMethods::
 

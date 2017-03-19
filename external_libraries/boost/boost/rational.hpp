@@ -630,26 +630,25 @@ std::istream& operator>> (std::istream& is, rational<IntType>& r)
 template <typename IntType>
 std::ostream& operator<< (std::ostream& os, const rational<IntType>& r)
 {
-    using namespace std;
-
     // The slash directly precedes the denominator, which has no prefixes.
-    ostringstream  ss;
+    std::ostringstream  ss;
 
     ss.copyfmt( os );
     ss.tie( NULL );
-    ss.exceptions( ios::goodbit );
+    ss.exceptions( std::ios::goodbit );
     ss.width( 0 );
-    ss << noshowpos << noshowbase << '/' << r.denominator();
+    ss << std::noshowpos << std::noshowbase << '/' << r.denominator();
 
     // The numerator holds the showpos, internal, and showbase flags.
-    string const   tail = ss.str();
-    streamsize const  w = os.width() - static_cast<streamsize>( tail.size() );
+    std::string const   tail = ss.str();
+    std::streamsize const  w =
+        os.width() - static_cast<std::streamsize>( tail.size() );
 
     ss.clear();
     ss.str( "" );
     ss.flags( os.flags() );
-    ss << setw( w < 0 || (os.flags() & ios::adjustfield) != ios::internal ? 0 :
-     w ) << r.numerator();
+    ss << std::setw( w < 0 || (os.flags() & std::ios::adjustfield) !=
+                     std::ios::internal ? 0 : w ) << r.numerator();
     return os << ss.str() + tail;
 }
 #endif  // BOOST_NO_IOSTREAM
@@ -706,4 +705,3 @@ struct lcm_evaluator< rational<IntType> >
 } // namespace boost
 
 #endif  // BOOST_RATIONAL_HPP
-

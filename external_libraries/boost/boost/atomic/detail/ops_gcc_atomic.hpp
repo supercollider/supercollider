@@ -85,6 +85,11 @@ struct gcc_atomic_operations
 {
     typedef T storage_type;
 
+    // Note: In the current implementation, gcc_atomic_operations are used onlu when the particularly sized __atomic
+    // intrinsics are always lock-free (i.e. the corresponding LOCK_FREE macro is 2). Therefore it is safe to
+    // always set is_always_lock_free to true here.
+    static BOOST_CONSTEXPR_OR_CONST bool is_always_lock_free = true;
+
     static BOOST_FORCEINLINE void store(storage_type volatile& storage, storage_type v, memory_order order) BOOST_NOEXCEPT
     {
         __atomic_store_n(&storage, v, atomics::detail::convert_memory_order_to_gcc(order));

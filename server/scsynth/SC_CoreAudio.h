@@ -158,7 +158,7 @@ PacketStatus PerformCompletionMsg(World *world, const OSC_Packet& packet);
 class SC_AudioDriver
 {
 protected:
-    int64 mOSCincrement;
+	int64 mOSCincrement;
 	struct World *mWorld;
 	double mOSCtoSamples;
 	int mSampleTime;
@@ -277,7 +277,7 @@ class SC_CoreAudioDriver : public SC_AudioDriver
 									void* defptr);
 
 protected:
-    // Driver interface methods
+	// Driver interface methods
 	virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
 	virtual bool DriverStart();
 	virtual bool DriverStop();
@@ -288,12 +288,12 @@ protected:
 public:
 	int builtinoutputflag_; 
 	
-    SC_CoreAudioDriver(struct World *inWorld);
+	SC_CoreAudioDriver(struct World *inWorld);
 	virtual ~SC_CoreAudioDriver();
 
 	bool StopStart(); 
 	
-    void Run(const AudioBufferList* inInputData, AudioBufferList* outOutputData, int64 oscTime);
+	void Run(const AudioBufferList* inInputData, AudioBufferList* outOutputData, int64 oscTime);
 
 	bool UseInput() { return mInputDevice != kAudioDeviceUnknown; }
 	bool UseSeparateIO() { return UseInput() && mInputDevice != mOutputDevice; }
@@ -315,18 +315,18 @@ class SC_iCoreAudioDriver : public SC_AudioDriver
 	AudioStreamBasicDescription	outputStreamDesc;	// info about the default device
 
 protected:
-    // Driver interface methods
+	// Driver interface methods
 	virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
 	virtual bool DriverStart();
 	virtual bool DriverStop();
 
 public:
-    SC_iCoreAudioDriver(struct World *inWorld);
+	SC_iCoreAudioDriver(struct World *inWorld);
 	virtual ~SC_iCoreAudioDriver();
 
-    void Run(const AudioBufferList* inInputData, AudioBufferList* outOutputData, int64 oscTime);
+	void Run(const AudioBufferList* inInputData, AudioBufferList* outOutputData, int64 oscTime);
 
-    AudioBufferList * buflist;
+	AudioBufferList * buflist;
 	AudioBufferList * floatInputList;
 	AudioBufferList * floatOutputList;
 	AudioConverterRef converter_in_to_F32;
@@ -354,22 +354,22 @@ class SC_AndroidJNIAudioDriver : public SC_AudioDriver
 
 protected:
 
-    // Driver interface methods
-        virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
-        virtual bool DriverStart();
-        virtual bool DriverStop();
-        
-public:
-    SC_AndroidJNIAudioDriver(struct World *inWorld);
-        virtual ~SC_AndroidJNIAudioDriver();
+	// Driver interface methods
+	virtual bool DriverSetup(int* outNumSamplesPerCallback, double* outSampleRate);
+	virtual bool DriverStart();
+	virtual bool DriverStop();
 
-        void genaudio(short* arri, int numSamples);
+public:
+	SC_AndroidJNIAudioDriver(struct World *inWorld);
+	virtual ~SC_AndroidJNIAudioDriver();
+
+	void genaudio(short* arri, int numSamples);
 
 };
 
 inline SC_AudioDriver* SC_NewAudioDriver(struct World *inWorld)
 {
-    return new SC_AndroidJNIAudioDriver(inWorld);
+	return new SC_AndroidJNIAudioDriver(inWorld);
 }
 
 #endif // SC_AUDIO_API == SC_AUDIO_API_ANDROIDJNI

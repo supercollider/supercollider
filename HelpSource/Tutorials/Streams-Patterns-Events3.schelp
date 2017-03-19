@@ -18,7 +18,7 @@ SynthDef( \help_SPE3_SimpleSine, {
 	arg freq, sustain=1.0;
 	var osc;
 	osc = SinOsc.ar( [freq,freq+0.05.rand] ) * EnvGen.ar(
-		Env.perc, doneAction: 2, levelScale: 0.3, timeScale: sustain
+		Env.perc, doneAction: Done.freeSelf, levelScale: 0.3, timeScale: sustain
 	);
 	Out.ar(0,osc);
 }).add;
@@ -269,7 +269,7 @@ code::
 SynthDef( \help_SPE3_Allpass6, { arg freq;
 	var out, env;
 	out = RLPF.ar(
-		LFSaw.ar( freq, mul: EnvGen.kr( Env.perc, levelScale: 0.3, doneAction: 2 ) ),
+		LFSaw.ar( freq, mul: EnvGen.kr( Env.perc, levelScale: 0.3, doneAction: Done.freeSelf ) ),
 		LFNoise1.kr(1, 36, 110).midicps,
 		0.1
 	);
@@ -314,7 +314,7 @@ SynthDef( \help_SPE3_Mridangam, { arg t_amp;
 	).distort * 0.4;
 
 	Out.ar( 0, out );
-	DetectSilence.ar( out, doneAction: 2 );
+	DetectSilence.ar( out, doneAction: Done.freeSelf );
 }).add;
 
 SynthDef( \help_SPE3_Drone, {

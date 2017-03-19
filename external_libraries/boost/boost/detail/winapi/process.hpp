@@ -11,6 +11,7 @@
 
 #include <boost/detail/winapi/config.hpp>
 #include <boost/detail/winapi/basic_types.hpp>
+#include <boost/detail/winapi/access_rights.hpp>
 #include <boost/detail/winapi/get_current_process.hpp>
 #include <boost/detail/winapi/get_current_process_id.hpp>
 #include <boost/predef/platform.h>
@@ -75,6 +76,11 @@ BOOST_SYMBOL_IMPORT boost::detail::winapi::BOOL_ WINAPI CreateProcessW(
     ::_STARTUPINFOW* lpStartupInfo,
     ::_PROCESS_INFORMATION* lpProcessInformation);
 
+BOOST_SYMBOL_IMPORT boost::detail::winapi::HANDLE_ WINAPI OpenProcess(
+    boost::detail::winapi::DWORD_ dwDesiredAccess,
+    boost::detail::winapi::BOOL_ bInheritHandle,
+    boost::detail::winapi::DWORD_ dwProcessId);
+
 } // extern "C"
 #endif //defined BOOST_WINDOWS_H
 
@@ -134,6 +140,20 @@ const DWORD_ STARTF_TITLEISAPPID_     = STARTF_TITLEISAPPID;
 const DWORD_ STARTF_PREVENTPINNING_   = STARTF_PREVENTPINNING;
 #endif
 
+const DWORD_ PROCESS_TERMINATE_ = PROCESS_TERMINATE;
+const DWORD_ PROCESS_CREATE_THREAD_ = PROCESS_CREATE_THREAD;
+const DWORD_ PROCESS_SET_SESSIONID_ = PROCESS_SET_SESSIONID;
+const DWORD_ PROCESS_VM_OPERATION_ = PROCESS_VM_OPERATION;
+const DWORD_ PROCESS_VM_READ_ = PROCESS_VM_READ;
+const DWORD_ PROCESS_VM_WRITE_ = PROCESS_VM_WRITE;
+const DWORD_ PROCESS_DUP_HANDLE_ = PROCESS_DUP_HANDLE;
+const DWORD_ PROCESS_CREATE_PROCESS_ = PROCESS_CREATE_PROCESS;
+const DWORD_ PROCESS_SET_QUOTA_ = PROCESS_SET_QUOTA;
+const DWORD_ PROCESS_SET_INFORMATION_ = PROCESS_SET_INFORMATION;
+const DWORD_ PROCESS_QUERY_INFORMATION_ = PROCESS_QUERY_INFORMATION;
+const DWORD_ PROCESS_SUSPEND_RESUME_ = PROCESS_SUSPEND_RESUME;
+const DWORD_ PROCESS_ALL_ACCESS_ = PROCESS_ALL_ACCESS;
+
 #else // defined( BOOST_USE_WINDOWS_H )
 
 const DWORD_ DEBUG_PROCESS_                    = 0x1;
@@ -185,6 +205,20 @@ const DWORD_ STARTF_TITLEISLINKNAME_  = 0x00000800;
 const DWORD_ STARTF_TITLEISAPPID_     = 0x00001000;
 const DWORD_ STARTF_PREVENTPINNING_   = 0x00002000;
 #endif
+
+const DWORD_ PROCESS_TERMINATE_ = 0x0001;
+const DWORD_ PROCESS_CREATE_THREAD_ = 0x0002;
+const DWORD_ PROCESS_SET_SESSIONID_ = 0x0004;
+const DWORD_ PROCESS_VM_OPERATION_ = 0x0008;
+const DWORD_ PROCESS_VM_READ_ = 0x0010;
+const DWORD_ PROCESS_VM_WRITE_ = 0x0020;
+const DWORD_ PROCESS_DUP_HANDLE_ = 0x0040;
+const DWORD_ PROCESS_CREATE_PROCESS_ = 0x0080;
+const DWORD_ PROCESS_SET_QUOTA_ = 0x0100;
+const DWORD_ PROCESS_SET_INFORMATION_ = 0x0200;
+const DWORD_ PROCESS_QUERY_INFORMATION_ = 0x0400;
+const DWORD_ PROCESS_SUSPEND_RESUME_ = 0x0800;
+const DWORD_ PROCESS_ALL_ACCESS_ = (STANDARD_RIGHTS_REQUIRED_ | SYNCHRONIZE_ | 0xFFF);
 
 #endif // defined( BOOST_USE_WINDOWS_H )
 
@@ -274,6 +308,7 @@ typedef struct BOOST_DETAIL_WINAPI_MAY_ALIAS _STARTUPINFOEXW {
 using ::GetExitCodeProcess;
 using ::ExitProcess;
 using ::TerminateProcess;
+using ::OpenProcess;
 
 #if !defined( BOOST_NO_ANSI_APIS )
 BOOST_FORCEINLINE BOOL_ CreateProcessA(

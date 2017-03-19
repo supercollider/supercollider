@@ -34,7 +34,7 @@ struct Vibrato : public Unit
 	double mPhase, m_attackSlope, m_attackLevel;
 	float mFreqMul, m_scaleA, m_scaleB, mFreq;
 	int m_delay, m_attack;
-    float trig;
+	float trig;
 };
 
 struct LFPulse : public Unit
@@ -325,13 +325,13 @@ void Vibrato_next(Vibrato *unit, int inNumSamples)
 {
 	float *out = ZOUT(0);
 	float *in = ZIN(0);
-	
+
 	float curtrig = ZIN0(8);
 	if (unit->trig <= 0.f && curtrig > 0.f){
-	
+
 		unit->mFreqMul = 4.0 * SAMPLEDUR;
 		unit->mPhase = 4.0 * sc_wrap(ZIN0(7), 0.f, 1.f) - 1.0;
-	
+
 		RGen& rgen = *unit->mParent->mRGen;
 		float rate = ZIN0(1) * unit->mFreqMul;
 		float depth = ZIN0(2);
@@ -345,7 +345,7 @@ void Vibrato_next(Vibrato *unit, int inNumSamples)
 		unit->m_attackSlope = 1. / (double)(1 + unit->m_attack);
 		unit->m_attackLevel = unit->m_attackSlope;
 	}
-	
+
 	unit->trig = curtrig;
 
 	double ffreq = unit->mFreq;
@@ -897,7 +897,9 @@ void LFGauss_Ctor(LFGauss* unit)
 	}
 	unit->mPhase = -1.0;
 
-	//LFGauss_next_k(unit, 1);
+	LFGauss_next_k(unit, 1);
+	// reset phase
+	unit->mPhase = -1.0;
 }
 
 
@@ -2815,7 +2817,7 @@ static inline bool check_gate_ar(EnvGen * unit, int i, float & prevGate, float *
 
 static inline bool EnvGen_nextSegment(EnvGen * unit, int & counter, double & level)
 {
-    //if (unit->m_stage == ENVGEN_NOT_STARTED) { return true; } // this fixes doneAction 14, but breaks with EnvGen_next_aa
+	//if (unit->m_stage == ENVGEN_NOT_STARTED) { return true; } // this fixes doneAction 14, but breaks with EnvGen_next_aa
 
 	//Print("stage %d rel %d\n", unit->m_stage, (int)ZIN0(kEnvGen_releaseNode));
 	int numstages = (int)ZIN0(kEnvGen_numStages);
@@ -3035,7 +3037,7 @@ static inline void EnvGen_perform(EnvGen * unit, float *& out, double & level, i
 				break;
 			ZXP(out) = level;
 			y1 += grow;
-            y1 = sc_max(y1,0);
+			y1 = sc_max(y1,0);
 			level = y1*y1*y1;
 		}
 		unit->m_y1 = y1;

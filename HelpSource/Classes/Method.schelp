@@ -6,6 +6,35 @@ related:: Classes/Class
 description::
 A Method is code that is a part of the set of operations upon instances of a link::Classes/Class::.
 
+subsection:: Related Keywords
+
+method:: thisMethod
+
+The global pseudo-variable code::thisMethod:: always evaluates to the enclosing Method in a class definition, much like code::thisFunction::.
+When executed outside that context, it returns link::Classes/Interpreter#-functionCompileContext::, the method within which all interpreted code executes.
+
+code::
+// if the following code were compiled as part of the class library:
+SomeClass {
+	methodThatPostsItself {
+		thisMethod.postln;
+	}
+}
+
+// then running this would post
+// "SomeClass:methodThatPostsItself"
+a = SomeClass.new;
+a.methodThatPostsItself;
+::
+
+code::thisMethod:: is frequently used to pass information to error-throwing methods. For example, the implementation of code::Nil.new:: is:
+
+code::
+*new { ^this.shouldNotImplement(thisMethod) }
+::
+
+See also: link::Classes/Function#.thisFunction#thisFunction::.
+
 instanceMethods::
 
 method::ownerClass
