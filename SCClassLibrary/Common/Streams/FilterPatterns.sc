@@ -207,7 +207,6 @@ Pset : FilterPattern {
 			if (inEvent.isNil) { ^cleanup.exit(event) };
 			val = valStream.next(inEvent);
 			if (val.isNil) { ^cleanup.exit(event) };
-			val.prescribeRest(event);
 
 			this.filterEvent(inEvent, val);
 			cleanup.update(inEvent);
@@ -575,11 +574,9 @@ Pbindf : FilterPattern {
 					name.do { arg key, i;
 						var out = streamout[i];
 						outevent.put(key, out);
-						out.prescribeRest(outevent);
 					};
 				}{
 					outevent.put(name, streamout);
-					streamout.prescribeRest(outevent);
 				};
 
 			};

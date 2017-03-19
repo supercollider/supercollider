@@ -371,11 +371,9 @@ Pbind : Pattern {
 					name.do { arg key, i;
 						var out = streamout[i];
 						event.put(key, out);
-						out.prescribeRest(event);
 					};
 				}{
 					event.put(name, streamout);
-					streamout.prescribeRest(event);
 				};
 
 			};
