@@ -331,6 +331,7 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		var next, time;
 
 		seconds = seconds.max(0.03);	// saftey and lower jitter limit
+		resolution = resolution.max(0.001);
 		next = this.timeToNextBeat(1);
 		time = seconds - (next / this.tempo);
 
@@ -339,6 +340,7 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 			this.tempo_(next / seconds);
 			this.sched(next, { this.tempo_(tempo); nil });
 		} {
+
 			// else interpolate, starting at next beat
 			this.sched(next, {
 
@@ -349,7 +351,7 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 				durNew = tempo.reciprocal;
 				durDif = durNew - durCur;
 				durAvg = durCur + durNew / 2;		// average duration for number of steps
-				stepsPerBeat = resolution.max(0.001).reciprocal.round;
+				stepsPerBeat = resolution.reciprocal.round;
 				steps = (time / durAvg).round * stepsPerBeat;
 				delta = stepsPerBeat.reciprocal;	// quantized resolution
 				stepSize = durDif / steps;
