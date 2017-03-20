@@ -347,6 +347,8 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 				var durCur, durNew, durDif, durAvg, stepsPerBeat,
 				delta, factor, steps, stepSize, sum, lastDur;
 
+				var index = 0;
+
 				durCur = this.tempo.reciprocal;
 				durNew = tempo.reciprocal;
 				durDif = durNew - durCur;
@@ -360,7 +362,6 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 				factor = time / sum;
 
 				this.sched(0, {
-					var index = 0;
 					if(index < steps) {
 						durCur = durCur + stepSize;
 						this.tempo_((durCur * factor).reciprocal);
