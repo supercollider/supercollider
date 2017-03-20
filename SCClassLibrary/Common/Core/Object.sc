@@ -389,6 +389,7 @@ Object  {
 	dereference { ^this } // see Ref::dereference
 	reference { ^Ref.new(this) }
 	asRef { ^Ref.new(this) }
+	dereferenceOperand { ^this }
 	// asArray { ^Array.with(this) }
 	asArray { ^this.asCollection.asArray }
 	asSequenceableCollection { ^this.asArray }

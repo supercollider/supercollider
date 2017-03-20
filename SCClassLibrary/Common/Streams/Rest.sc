@@ -2,11 +2,11 @@
 Rest : Operand  {
 
 	dur_ { |dt| value = dt }
-	dur { ^value }
+	dur { ^value.value }
 
 	// EVENT SUPPORT
-	asControlInput { ^value ? 1 }
-	playAndDelta { ^value ? 1 }
+	asControlInput { ^value.asControlInput ? 1 }
+	playAndDelta { ^value.value ? 1 }
 	isRest { ^true }
 
 }

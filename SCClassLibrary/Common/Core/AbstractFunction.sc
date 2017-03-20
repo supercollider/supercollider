@@ -365,7 +365,11 @@ Operand : AbstractFunction {
 	var <>value;
 
 	*new { |value|
-		^super.newCopyArgs(value)
+		^super.newCopyArgs(value.dereferenceOperand)
+	}
+
+	dereferenceOperand {
+		^value
 	}
 
 	// MATH SUPPORT
@@ -382,6 +386,15 @@ Operand : AbstractFunction {
 		^this.class.new(value.perform(aSelector, *anArgList))
 	}
 
+	// double dispatch for mixed operations
+	performBinaryOpOnSimpleNumber { arg aSelector, aNumber, adverb;
+		^this.class.new(aNumber.perform(aSelector, value, adverb))
+	}
+
+	performBinaryOpOnSignal { arg aSelector, aSignal, adverb;
+		^this.class.new(aSignal.perform(aSelector, value, adverb))
+	}
+
 	performBinaryOpOnComplex { arg aSelector, aComplex, adverb;
 		^this.class.new(aComplex.perform(aSelector, value, adverb))
 	}
@@ -390,8 +403,12 @@ Operand : AbstractFunction {
 		^this.class.new(aSeqColl.perform(aSelector, value, adverb))
 	}
 
-	performBinaryOpOnSignal { arg aSelector, aSignal, adverb;
-		^this.class.new(aSignal.perform(aSelector, value, adverb))
+	hash { arg obj;
+		^this.instVarHash([\value])
+	}
+
+	== { arg obj;
+		^this.compareObject(obj, [\value])
 	}
 
 	printOn { |stream|
@@ -400,4 +417,14 @@ Operand : AbstractFunction {
 		stream << ")"
 	}
 
+	storeOn { |stream|
+		stream << this.class.name << "(";
+		value !? { stream <<< value };
+		stream << ")"
+	}
+
 }
+
+
+
+
