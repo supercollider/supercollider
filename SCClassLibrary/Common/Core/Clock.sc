@@ -327,7 +327,7 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		^this.beats - this.bars2beats(this.bar)
 	}
 
-	fadeTempo { arg tempo, seconds = 4, resolution = 1;
+	fadeTempo { arg tempo, seconds = 4, resolution = 0.01;
 		var next, time;
 
 		seconds = seconds.max(0.03);	// saftey and lower jitter limit
