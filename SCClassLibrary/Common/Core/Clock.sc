@@ -339,6 +339,7 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 			// jump directly by fast forwarding
 			this.tempo_(next / seconds);
 			this.sched(next, { this.tempo_(tempo); nil });
+
 		} {
 
 			// else interpolate, starting at next beat
@@ -366,10 +367,10 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 						durCur = durCur + stepSize;
 						this.tempo_((durCur * factor).reciprocal);
 						index = index + 1;
-						delta;
+						delta
 					} {
 						this.tempo_(tempo);
-						nil;
+						nil
 					}
 				});
 
