@@ -332,7 +332,7 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 
 		seconds = seconds.max(0.03);	// saftey and lower jitter limit
 		next = this.timeToNextBeat(1);
-		time = seconds - (this.tempo.reciprocal * next);
+		time = seconds - (next / this.tempo);
 
 		if(time < next) {
 			// jump directly by fast forwarding
@@ -354,7 +354,7 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 				delta = stepsPerBeat.reciprocal;	// quantized resolution
 				stepSize = durDif / steps;
 				lastDur = (steps - 1 * stepSize) + durCur;
-				sum = durCur + lastDur / 2 * steps / stepsPerBeat; // sum of an arithmetic progression
+				sum = (durCur + lastDur) * steps / (2 * stepsPerBeat); // sum of an arithmetic progression
 				factor = time / sum;
 
 				this.sched(0, {
