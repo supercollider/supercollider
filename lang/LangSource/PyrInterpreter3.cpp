@@ -1761,7 +1761,7 @@ HOT void Interpret(VMGlobals *g)
 						error("Dictionary-keysValuesArrayDo: first argument should not be nil.\n");
 						
 						slotCopy(++sp, &g->receiver);
-						numArgsPushed = 1;
+						numArgsPushed = 0;
 						selector = gSpecialSelectors[opmPrimitiveFailed];
 						slot = sp;
 						
