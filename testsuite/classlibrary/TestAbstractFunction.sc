@@ -28,7 +28,14 @@ TestAbstractFunction : UnitTest {
 			"rest passes through event calculations"
 		);
 
+		this.assert(
+			(degree: Rest(7), octave: Rest(4), parent: Event.default.parent).delta == 1,
+			"delta is not touched by venet calculations"
+		);
+
 		this.assert((dur: 1).delta == 1, "delta matches dur");
+
+		this.assert((dur: Rest(1), degree: Rest(7)).delta == 1, "delta matches dur with rest if other keys are rest, too");
 
 		this.assert((dur: 1, stretch: 2).delta == 2, "delta matches dur when stretched");
 
