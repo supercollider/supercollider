@@ -6216,8 +6216,8 @@ void TGrains_next(TGrains *unit, int inNumSamples)
 					pan = sc_clip(pan * 0.5f + 0.5f, 0.f, 1.f);
 					panangle = pan * pi2_f;
 				}
-				pan1 = grain->pan1 = cos(panangle);
-				pan2 = grain->pan2 = sin(panangle);
+				pan1 = grain->pan1 = amp * cos(panangle);
+				pan2 = grain->pan2 = amp * sin(panangle);
 			} else {
 				grain->chan = 0;
 				pan1 = grain->pan1 = 1.;
