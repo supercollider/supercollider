@@ -32,14 +32,14 @@
 // openTextFile is actually the same as openDocument
 + String {
 	openTextFile { arg selectionStart=0, selectionLength=0;
-		this.deprecated(thisMethod);
+		this.deprecated(thisMethod, String.findMethod(\openDocument));
 		this.openDocument(selectionStart, selectionLength)
 	}
 }
 
 + Symbol {
 	openTextFile { arg selectionStart=0, selectionLength=0;
-		this.deprecated(thisMethod);
+		this.deprecated(thisMethod, Symbol.findMethod(\openDocument));
 		^this.openDocument(selectionStart, selectionLength)
 	}
 }
