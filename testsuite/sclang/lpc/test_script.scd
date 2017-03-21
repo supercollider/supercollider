@@ -9,3 +9,9 @@ TestLexerTargetedBrutal.run;
 TestParserBrutal.run;
 TestCompilerBrutal.run;
 )
+
+(
+// other options
+LPCTestUtils.strictOutputChecking = true; // default is false
+LPCTestUtils.doDebug = false;             // default is true
+)

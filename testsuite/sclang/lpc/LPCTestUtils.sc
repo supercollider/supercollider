@@ -103,7 +103,7 @@ LPCTestUtils {
 			// postf("%: Writing header\n", thisMethod);
 			this.writeHeader(file, alphabet, len, prefix, suffix, technique);
 
-			this.debug("%: Writing data\n".format(thisMethod.name));
+			this.debug("%: Writing data".format(thisMethod.name));
 
 			// Written-out do-while.
 			toTest = this.makeTestString(alphabet, counter);
