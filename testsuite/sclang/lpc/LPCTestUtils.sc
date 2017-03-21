@@ -38,6 +38,7 @@ parseTestResult                    // turn a line read from a file into structur
 doOutputsMatch                     // return true iff two test results are considered
                                    //   matching. see implementation for special cases.
 incrementAlphabetCount             // increment an alphabet counter in-place
+debug                              // ordinary debugging method
 
 ----data conversion methods----
 
@@ -67,8 +68,13 @@ parseTechnique
 LPCTestUtils {
 	const <compileErrorString = "!cErr";
 	const <runtimeErrorString = "!rErr";
+
+	// Values used in `doOutputsMatch`
 	const <nanString = "6E616E"; // hex string for "nan"
 	const <lidString = "4C4944"; // hex string for "LID"
+	const <floatEqualityPrecision = 1e-13;
+
+	classvar <>doDebug = true;
 
 	// Set to `true` to turn off the more lenient checking done in `doOutputsMatch`
 	classvar <>strictOutputChecking = false;
@@ -97,7 +103,7 @@ LPCTestUtils {
 			// postf("%: Writing header\n", thisMethod);
 			this.writeHeader(file, alphabet, len, prefix, suffix, technique);
 
-			postf("%: Writing data\n", thisMethod);
+			this.debug("%: Writing data\n", thisMethod.name);
 
 			// Written-out do-while.
 			toTest = this.makeTestString(alphabet, counter);
@@ -278,8 +284,8 @@ LPCTestUtils {
 						var line = files[i].getLine(this.maxline);
 
 						if(line.size >= (this.maxline-1)) {
-							"compareData: maxline characters read; increase maxline in LPCTestUtils.\n"
-							"File, line: %, %".format(files[i], line).warn;
+							this.debug("compareData: maxline characters read; increase maxline in LPCTestUtils.\n"
+								"File, line: %, %".format(files[i], line));
 						};
 
 						prevOutputs[i] = this.parseTestResult(line);
@@ -294,7 +300,7 @@ LPCTestUtils {
 
 			// outputs.postln;
 
-			if(this.doOutputsMatch(*outputs).not) {
+			if(this.doOutputsMatch(inputM, *outputs).not) {
 				// "no match".postln;
 				diffs = diffs.add(this.makeDiff(inputM, *outputs));
 			} {
@@ -431,8 +437,7 @@ LPCTestUtils {
 
 		var file;
 
-		postln("%: % file: %".format(
-			thisMethod,
+		this.debug("% file: %".format(
 			if(mode == "w", "Writing to", "Reading from"),
 			PathName(filename).fileName)
 		);
@@ -474,19 +479,61 @@ LPCTestUtils {
 	}
 
 	*doOutputsMatch {
-		arg a, b;
+		arg input, a, b;
 
 		a = a!?_.split($:);
 		b = b!?_.split($:);
 
-		if( a.notNil && b.notNil && { (a[1] == "Float") and: (a[1] == b[1]) } ) {
-			if(a[0].contains(nanString) && b[0].contains(nanString))
-			{ ^true }
+		// strict checking: pure equality test
+		if(this.strictOutputChecking) {
+			^a == b;
 		};
 
-		// this class is defined on Linux; ignore it and its meta class for test purposes
-		if( a.size == 2 && { "(Meta_)?LID".matchRegexp(a[1]) } ) { ^true };
-		if( b.size == 2 && { "(Meta_)?LID".matchRegexp(b[1]) } ) { ^true };
+		// The class `LID` is defined on Linux only; ignore it.
+		if( input.join.contains(lidString) ) {
+			this.debug(
+				"Ignoring a result because of LID class."
+				"\n\tInput: " ++ input ++
+				"\n\tOutput 1: " ++ a ++
+				"\n\tOutput 2: " ++ b
+			);
+
+			^true;
+		};
+
+		// Special floating point quirks
+		if( a.notNil && b.notNil && { (a[1] == "Float") && (a[1] == b[1]) } ) {
+			// If both nan of some sort, return true. Otherwise check for equality
+			// with very small tolerance.
+			if(a[0].contains(nanString) && b[0].contains(nanString)) {
+				this.debug(
+					"Ignoring a result because of nan."
+					"\n\tInput: " ++ input ++
+					"\n\tOutput 1: " ++ a ++
+					"\n\tOutput 2: " ++ b
+				);
+
+				^true;
+			} {
+				var a_f = this.stringFromHexString(a[0]).asFloat;
+				var b_f = this.stringFromHexString(b[0]).asFloat;
+
+				// Note: `equalWithPrecision` returns false when comparing infinities. Use
+				// relative precision because we're only trying to catch rounding errors.
+				// If this fails, fall through to simple equality test which will succeed
+				// on inf==inf or -inf==-inf.
+				if ( equalWithPrecision(a_f, b_f, 0, floatEqualityPrecision) ) {
+					this.debug(
+						"Ignoring a result because of float precision."
+						"\n\tInput: " ++ input ++
+						"\n\tOutput 1: " ++ a ++
+						"\n\tOutput 2: " ++ b
+					);
+
+					^true;
+				}
+			}
+		};
 
 		^a == b;
 	}
@@ -506,6 +553,12 @@ LPCTestUtils {
 		};
 
 		^false;
+	}
+
+	*debug {
+		arg str;
+
+		if(this.doDebug) { ("[debug] LPCTestUtils:" + str).postln };
 	}
 
 	///////////////////////////////////
@@ -653,6 +706,10 @@ LPCTestUtils {
 		arg str, expected;
 
 		var len = expected.size;
+
+		if(str.size >= (this.maxline-1)) {
+			this.debug("maxline characters read while parsing header; increase maxline.");
+		};
 
 		if(str.isNil) {
 			Error("%: unexpectedly reached end of document while"

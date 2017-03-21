@@ -6,6 +6,12 @@
 TestLPCTestUtils : UnitTest {
 	var afile, efile;
 
+	setUp {
+		// never use strict output checking, always turn on debugging
+		LPCTestUtils.strictOutputChecking = false;
+		LPCTestUtils.doDebug = true;
+	}
+
 	///////////////////////////
 	/// TESTING CompareData ///
 	///////////////////////////
@@ -418,81 +424,118 @@ TestLPCTestUtils : UnitTest {
 	/**** doOutputsMatch ****/
 
 	test_doOutputsMatch_nil {
+		var in = "";
 		var a = nil;
 		var b = nil;
 
-		this.assert(LPCTestUtils.doOutputsMatch(a, b), "doOutputsMatch: nil should match nil");
+		this.assert(LPCTestUtils.doOutputsMatch(in, a, b), "doOutputsMatch: nil should match nil");
 	}
 
 	test_doOutputsMatch_oneElementSame {
+		var in = "";
 		var a = "0123";
 		var b = "0123";
 
-		this.assert(LPCTestUtils.doOutputsMatch(a, b), "doOutputsMatch: equivalent outputs should match (one element)");
+		this.assert(LPCTestUtils.doOutputsMatch(in, a, b), "doOutputsMatch: equivalent outputs should match (one element)");
 	}
 
 	test_doOutputsMatch_twoElementSame {
-		var a, b;
+		var in, a, b;
+		in = "";
 		a = b = "0123:Nil";
 
-		this.assert(LPCTestUtils.doOutputsMatch(a, b), "doOutputsMatch: equivalent outputs should match (two elements)");
+		this.assert(LPCTestUtils.doOutputsMatch(in, a, b), "doOutputsMatch: equivalent outputs should match (two elements)");
 	}
 
 	test_doOutputsMatch_oneElementDifferent {
+		var in = "";
 		var a = "1234";
 		var b = "5678";
 
-		this.assert(LPCTestUtils.doOutputsMatch(a, b).not, "doOutputsMatch: different outputs should not match (one element)");
+		this.assert(LPCTestUtils.doOutputsMatch(in, a, b).not, "doOutputsMatch: different outputs should not match (one element)");
 	}
 
 	test_doOutputsMatch_twoElementDifferent {
+		var in = "";
 		var a = "0123:Nil";
 		var b = "0123:Object";
 
-		this.assert(LPCTestUtils.doOutputsMatch(a, b).not, "doOutputsMatch: different outputs should not match (two elements)");
+		this.assert(LPCTestUtils.doOutputsMatch(in, a, b).not, "doOutputsMatch: different outputs should not match (two elements)");
 	}
 
 	// whatever the output of the other is, if one returns LID or Meta_LID, doOutputsMatch should return true
 	test_doOutputsMatch_LID {
+		var in = LPCTestUtils.stringToHexString("LID");
 		var a = "4567:Nil";
-		var b = "4568:LID";
+		var b = "4568:Object";
 
-		this.assert(LPCTestUtils.doOutputsMatch(a, b), "doOutputsMatch: output with class LID should be ignored");
+		this.assert(LPCTestUtils.doOutputsMatch(in, a, b), "doOutputsMatch: output with class LID should be ignored");
 	}
 
 	test_doOutputsMatch_MetaLID {
+		var in = LPCTestUtils.stringToHexString("LID");
 		var a = "4567:Nil";
 		var b = "4568:Meta_LID";
 
-		this.assert(LPCTestUtils.doOutputsMatch(a, b), "doOutputsMatch: output with class Meta_LID should be ignored");
+		this.assert(LPCTestUtils.doOutputsMatch(in, a, b), "doOutputsMatch: output with class Meta_LID should be ignored");
 	}
 
 	test_doOutputsMatch_LID_compileError {
+		var in = LPCTestUtils.stringToHexString("LID").postln;
 		var a = "!cErr";
 		var b = "4568:LID";
 
-		this.assert(LPCTestUtils.doOutputsMatch(a, b), "doOutputsMatch: output with class LID should be ignored");
+		this.assert(LPCTestUtils.doOutputsMatch(in, a, b), "doOutputsMatch: output with class LID should be ignored");
 	}
 
 	test_doOutputsMatch_MetaLID_compileError {
+		var in = LPCTestUtils.stringToHexString("LID");
 		var a = "!cErr";
 		var b = "4568:Meta_LID";
 
-		this.assert(LPCTestUtils.doOutputsMatch(a, b), "doOutputsMatch: output with class Meta_LID should be ignored");
+		this.assert(LPCTestUtils.doOutputsMatch(in, a, b), "doOutputsMatch: output with class Meta_LID should be ignored");
 	}
 
 	test_doOutputsMatch_NaN {
+		var in = "0/0";
 		var a = LPCTestUtils.stringToHexString("-nan") ++ ":Float";
 		var b = LPCTestUtils.stringToHexString("nan") ++ ":Float";
 
-		this.assert(LPCTestUtils.doOutputsMatch(a, b), "doOutputsMatch: -nan and nan should be treated as equivalent");
+		this.assert(LPCTestUtils.doOutputsMatch(in, a, b), "doOutputsMatch: -nan and nan should be treated as equivalent");
 	}
 
 	test_doOutputsMatch_NaNInteger {
+		var in = "0 div: 0";
 		var a = LPCTestUtils.stringToHexString("-nan") ++ ":Integer";
 		var b = LPCTestUtils.stringToHexString("nan") ++ ":Integer";
 
-		this.assert(LPCTestUtils.doOutputsMatch(a, b).not, "doOutputsMatch: -nan and nan should be treated as equivalent only with Floats");
+		this.assert(LPCTestUtils.doOutputsMatch(in, a, b).not, "doOutputsMatch: -nan and nan should be treated as equivalent only with Floats");
+	}
+
+	// Thanks to Nathan Ho
+	test_doOutputsMatch_floatPrecision_match {
+		var in = ".Q8";
+		var a = LPCTestUtils.stringToHexString("0.72839506172839") ++ ":Float";
+		var b = LPCTestUtils.stringToHexString("0.7283950617284") ++ ":Float";
+
+		this.assert(LPCTestUtils.doOutputsMatch(in, a, b), "doOutputsMatch: very close floats should be treated as equivalent");
+	}
+
+	// Test just on the other side of the precision limit
+	test_doOutputsMatch_floatPrecision_noMatch {
+		var in = "not .Q8";
+		var a = LPCTestUtils.stringToHexString("0.7283950617239") ++ ":Float";
+		var b = LPCTestUtils.stringToHexString("0.728395061724") ++ ":Float";
+
+		this.assert(LPCTestUtils.doOutputsMatch(in, a, b).not, "doOutputsMatch: not-so-close floats (distance > %) should not be treated as equivalent".format(LPCTestUtils.floatEqualityPrecision));
+	}
+
+	test_doOutputsMatch_floatPrecision_noMatch_distant {
+		var in = "not .Q8";
+		var a = LPCTestUtils.stringToHexString("0.9") ++ ":Float";
+		var b = LPCTestUtils.stringToHexString("0.2") ++ ":Float";
+
+		this.assert(LPCTestUtils.doOutputsMatch(in, a, b).not, "doOutputsMatch: not-so-close floats (0.2, 0.9) should not be treated as equivalent");
 	}
 
 	/**** incrementAlphabetCount ****/
