@@ -467,6 +467,20 @@ TestLPCTestUtils : UnitTest {
 		this.assert(LPCTestUtils.doOutputsMatch(a, b), "doOutputsMatch: output with class Meta_LID should be ignored");
 	}
 
+	test_doOutputsMatch_LID_compileError {
+		var a = "!cErr";
+		var b = "4568:LID";
+
+		this.assert(LPCTestUtils.doOutputsMatch(a, b), "doOutputsMatch: output with class LID should be ignored");
+	}
+
+	test_doOutputsMatch_MetaLID_compileError {
+		var a = "!cErr";
+		var b = "4568:Meta_LID";
+
+		this.assert(LPCTestUtils.doOutputsMatch(a, b), "doOutputsMatch: output with class Meta_LID should be ignored");
+	}
+
 	test_doOutputsMatch_NaN {
 		var a = LPCTestUtils.stringToHexString("-nan") ++ ":Float";
 		var b = LPCTestUtils.stringToHexString("nan") ++ ":Float";

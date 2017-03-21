@@ -67,6 +67,7 @@ parseTechnique
 LPCTestUtils {
 	const <compileErrorString = "!cErr";
 	const <runtimeErrorString = "!rErr";
+	const <nanString = "6E616E"; // hex string for "nan"
 
 	const <maxline = 1024;
 
@@ -472,15 +473,14 @@ LPCTestUtils {
 		a = a!?_.split($:);
 		b = b!?_.split($:);
 
-		if((a.size == 2) and: (b.size == 2)) {
-			if((a[1] == "Float") and: (a[1] == b[1])) {
-				var nanString = "6E616E"; // hex string for "nan"
-				if(a[0].contains(nanString) && b[0].contains(nanString)) { ^true }
-			} {
-				// this class is defined on Linux; ignore it and its meta class for test purposes
-				if([a[1], b[1]].any("(Meta_)?LID".matchRegexp(_))) { ^true }
-			}
+		if( a.notNil && b.notNil && { (a[1] == "Float") and: (a[1] == b[1]) } ) {
+			if(a[0].contains(nanString) && b[0].contains(nanString))
+			{ ^true }
 		};
+
+		// this class is defined on Linux; ignore it and its meta class for test purposes
+		if( a.size == 2 && { "(Meta_)?LID".matchRegexp(a[1]) } ) { ^true };
+		if( b.size == 2 && { "(Meta_)?LID".matchRegexp(b[1]) } ) { ^true };
 
 		^a == b;
 	}
