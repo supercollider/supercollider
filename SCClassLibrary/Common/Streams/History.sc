@@ -566,6 +566,6 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 			file2.write("\n\n\n// when: % - who: % \n\n(\n%\n)\n".format(time, tag, code));
 		};
 		file2.close;
-		if (open) { repath.openTextFile };
+		if (open) { repath.openDocument };
 	}
 }
