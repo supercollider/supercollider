@@ -463,17 +463,17 @@ TestLPCTestUtils : UnitTest {
 		this.assert(LPCTestUtils.doOutputsMatch(in, a, b).not, "doOutputsMatch: different outputs should not match (two elements)");
 	}
 
-	// whatever the output of the other is, if one returns LID or Meta_LID, doOutputsMatch should return true
+	// whatever the output of the other is, if input is LID, doOutputsMatch should return true
 	test_doOutputsMatch_LID {
-		var in = LPCTestUtils.stringToHexString("LID");
+		var in = LPCTestUtils.stringToHexString("LID").clump(2);
 		var a = "4567:Nil";
 		var b = "4568:Object";
 
-		this.assert(LPCTestUtils.doOutputsMatch(in, a, b), "doOutputsMatch: output with class LID should be ignored");
+		this.assert(LPCTestUtils.doOutputsMatch(in, a, b), "doOutputsMatch: input with class LID should be ignored");
 	}
 
 	test_doOutputsMatch_MetaLID {
-		var in = LPCTestUtils.stringToHexString("LID");
+		var in = LPCTestUtils.stringToHexString("LID").clump(2);
 		var a = "4567:Nil";
 		var b = "4568:Meta_LID";
 
@@ -481,7 +481,7 @@ TestLPCTestUtils : UnitTest {
 	}
 
 	test_doOutputsMatch_LID_compileError {
-		var in = LPCTestUtils.stringToHexString("LID").postln;
+		var in = LPCTestUtils.stringToHexString("LID").clump(2);
 		var a = "!cErr";
 		var b = "4568:LID";
 
@@ -489,7 +489,7 @@ TestLPCTestUtils : UnitTest {
 	}
 
 	test_doOutputsMatch_MetaLID_compileError {
-		var in = LPCTestUtils.stringToHexString("LID");
+		var in = LPCTestUtils.stringToHexString("LID").clump(2);
 		var a = "!cErr";
 		var b = "4568:Meta_LID";
 

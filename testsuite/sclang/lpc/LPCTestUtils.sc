@@ -103,7 +103,7 @@ LPCTestUtils {
 			// postf("%: Writing header\n", thisMethod);
 			this.writeHeader(file, alphabet, len, prefix, suffix, technique);
 
-			this.debug("%: Writing data\n", thisMethod.name);
+			this.debug("%: Writing data\n".format(thisMethod.name));
 
 			// Written-out do-while.
 			toTest = this.makeTestString(alphabet, counter);
@@ -493,9 +493,9 @@ LPCTestUtils {
 		if( input.join.contains(lidString) ) {
 			this.debug(
 				"Ignoring a result because of LID class."
-				"\n\tInput: " ++ input ++
-				"\n\tOutput 1: " ++ a ++
-				"\n\tOutput 2: " ++ b
+				"\tInput: " ++ input ++
+				"\tOutput 1: " ++ a ++
+				"\tOutput 2: " ++ b
 			);
 
 			^true;
@@ -508,9 +508,9 @@ LPCTestUtils {
 			if(a[0].contains(nanString) && b[0].contains(nanString)) {
 				this.debug(
 					"Ignoring a result because of nan."
-					"\n\tInput: " ++ input ++
-					"\n\tOutput 1: " ++ a ++
-					"\n\tOutput 2: " ++ b
+					"\tInput: " ++ input ++
+					"\tOutput 1: " ++ a ++
+					"\tOutput 2: " ++ b
 				);
 
 				^true;
@@ -523,12 +523,14 @@ LPCTestUtils {
 				// If this fails, fall through to simple equality test which will succeed
 				// on inf==inf or -inf==-inf.
 				if ( equalWithPrecision(a_f, b_f, 0, floatEqualityPrecision) ) {
-					this.debug(
-						"Ignoring a result because of float precision."
-						"\n\tInput: " ++ input ++
-						"\n\tOutput 1: " ++ a ++
-						"\n\tOutput 2: " ++ b
-					);
+					if( a_f != b_f ) {
+						this.debug(
+							"Ignoring a result because of float precision."
+							"\tInput: %\tOutput 1: % (%) \tOutput 2: % (%)".format(
+								input, a, a_f, b, b_f // might as well post floats since we have them
+							);
+						);
+					};
 
 					^true;
 				}
