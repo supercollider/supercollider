@@ -2,8 +2,9 @@
 // Brian Heim, 2017-02-28
 
 AbstractLPCBrutalTest : UnitTest {
-	const <correctSuffix = "_correct";
-	const <diffSuffix = "_diff";
+	const <expectedDir = "expected";
+	const <actualDir   = "actual";
+	const <diffDir     = "diff";
 
 	// Dictionary of alphabets (type Dictionary<Symbol, [String]>)
 	var <>alphabets;
@@ -14,6 +15,9 @@ AbstractLPCBrutalTest : UnitTest {
 
 	// Filenames to be printed in final report.
 	classvar <>diffFilenames;
+
+	// Delete files once done.
+	classvar <>deleteOnFinish = false;
 
 	/**** ABSTRACT METHODS ****/
 
@@ -26,8 +30,8 @@ AbstractLPCBrutalTest : UnitTest {
 	// Relative to working path. Created if missing.
 	outputDir { ^this.subclassResponsibility(thisMethod) }
 
-	// Should return `false` for testing.
-	makingValidationFiles { ^this.subclassResponsibility(thisMethod) }
+	// Should return `true` for testing.
+	performingValidation { ^this.subclassResponsibility(thisMethod) }
 
 	/**** IMPLEMENTED METHODS ****/
 
@@ -37,6 +41,10 @@ AbstractLPCBrutalTest : UnitTest {
 		alphabets = this.getAlphabets();
 		stringLengthsPerAlphabet = this.getStringLengthsPerAlphabet();
 	}
+
+	getExpectedDir { ^expectedDir.resolveRelative +/+ this.outputDir +/+ "" }
+	getActualDir   { ^actualDir.resolveRelative   +/+ this.outputDir +/+ "" }
+	getDiffDir     { ^diffDir.resolveRelative     +/+ this.ouptutDir +/+ "" }
 
 	runTestsTogglingTCO {
 		arg prefix, suffix, testMode, alphabetName;
@@ -60,42 +68,45 @@ AbstractLPCBrutalTest : UnitTest {
 		var fullOutputDir = this.outputDir.resolveRelative;
 
 		this.printTestMode(testMode, alphabetName);
-		this.createOutputDir();
+		LPCTestUtils.safeMkdir(this.getActualDir);
 
 		stringLengthsPerAlphabet[alphabetName].do {
 			arg len;
-			var filename = "%%_%_%".format(fullOutputDir, alphabetName, len, testMode);
-
-			if(this.makingValidationFiles) { filename = filename++correctSuffix };
+			var filename = "%_%_%".format(fullOutputDir, alphabetName, len, testMode);
 
 			LPCTestUtils.evaluateAllStrings(
 				  alphabet: alphabets[alphabetName],
 				       len: len,
 				    prefix: prefix,
 				    suffix: suffix,
-				  filename: filename,
+				  filename: this.getActualDir +/+ filename,
 				 technique: this.evaluationTechnique,
 				  compress: true
 			);
 
-			if(this.makingValidationFiles.not) {
-				var diffs = LPCTestUtils.compareFiles(filename, filename++correctSuffix);
+			if(this.performingValidation) {
+				var diffs = LPCTestUtils.compareFiles(
+					this.getActualDir +/+ filename,
+					this.getExpectedDir +/+ filename
+				);
 
 				this.handleDiffs(diffs, filename);
-				File.delete(filename);
+			};
+
+			if(deleteOnFinish) {
+				File.delete(this.getActualDir +/+ filename);
 			}
 		}
 	}
 
 	// If there were diffs, fail now and print a message.
 	handleDiffs {
-		arg diffs, filenameBase;
+		arg diffs, filename;
 
 		if(diffs.isEmpty.not) {
-			var diffFilename = filenameBase ++ diffSuffix;
-
-			LPCTestUtils.writeDiffs(diffs, diffFilename);
-			this.noteFailure(thisMethod, "Diffs were found between test and validation files", diffFilename);
+			LPCTestUtils.safeMkdir(this.getDiffDir);
+			LPCTestUtils.writeDiffs(diffs, filename);
+			this.noteFailure(thisMethod, "Diffs were found between test and validation files", filename);
 		} {
 			postf("No diffs found.\n");
 		}
@@ -105,20 +116,6 @@ AbstractLPCBrutalTest : UnitTest {
 		arg mode, alphName;
 		"".postln;
 		"Running test mode % on alphabet %".format(mode.quote, alphName.asString.quote).underlined.postln;
-	}
-
-	// Force creation of this test's output directory
-	createOutputDir {
-		var dirname = this.outputDir.resolveRelative;
-
-		if(File.exists(dirname).not) {
-			"%: Creating directory %".format(thisMethod, dirname.quote).postln;
-			try {
-				File.mkdir(dirname);
-			} {
-				Error("%: Could not create directory %".format(thisMethod, this.outputDir.quote)).throw;
-			}
-		}
 	}
 
 	// Note failures so that diff filenames can be printed at the end of the run.

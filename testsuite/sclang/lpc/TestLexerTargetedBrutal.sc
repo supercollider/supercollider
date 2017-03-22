@@ -3,10 +3,10 @@
 
 TestLexerTargetedBrutal : AbstractLPCBrutalTest {
 
-	outputDir { ^"lexer_targeted/" }
+	outputDir { ^"lexer_targeted" }
 
-	// set to TRUE if you need `_expected` files
-	makingValidationFiles { ^false }
+	// set to `false` if you just want to generate output
+	performingValidation { ^true }
 
 	evaluationTechnique { ^\interpret }
 
@@ -32,9 +32,9 @@ TestLexerTargetedBrutal : AbstractLPCBrutalTest {
 
 	getStringLengthsPerAlphabet {
 		^stringLengthsPerAlphabet ? Dictionary[
-			\alnum -> [1,2,3], // 0 and all prefixes covered by lexer tests
-			\num -> [4,5], // 0..3 covered by alnum
-			\acc -> [4,5,6], // 0..3 covered by alnum
+			\alnum ->   [1,2,3],    // 0 and all prefixes covered by lexer tests
+			\num ->     [4,5],      // 0..3 covered by alnum
+			\acc ->     [4,5,6],    // 0..3 covered by alnum
 			\comment -> [5,6,7,8,9] // 0..4 covered by lexer tests
 		];
 	}

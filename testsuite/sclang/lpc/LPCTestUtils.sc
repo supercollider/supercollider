@@ -34,6 +34,7 @@ makeDiff                           // construct a diff from two dictionaries
 
 makeTestString                     // make a test string given an alphabet and counter
 safeOpenFile                       // open a file, throwing errors immediately on fail
+safeMkdir                          // mkdir if no dir exists, throw error on fail
 parseTestResult                    // turn a line read from a file into structured data
 doOutputsMatch                     // return true iff two test results are considered
                                    //   matching. see implementation for special cases.
@@ -75,6 +76,9 @@ LPCTestUtils {
 	const <floatEqualityPrecision = 1e-13;
 
 	classvar <>doDebug = true;
+
+	// Defaults to false to avoid accidentally overwriting diffs/output
+	classvar <>overwriteFiles = false;
 
 	// Set to `true` to turn off the more lenient checking done in `doOutputsMatch`
 	classvar <>strictOutputChecking = false;
@@ -464,6 +468,19 @@ LPCTestUtils {
 		};
 
 		^file;
+	}
+
+	*safeMkdir {
+		arg dirname;
+
+		if(File.exists(dirname).not) {
+			"%: Creating directory %".format(thisMethod, dirname.quote).postln;
+			try {
+				File.mkdir(dirname);
+			} {
+				Error("%: Could not create directory %".format(thisMethod, this.outputDir.quote)).throw;
+			}
+		}
 	}
 
 	*parseTestResult {

@@ -3,10 +3,10 @@
 
 TestParserBrutal : AbstractLPCBrutalTest {
 
-	outputDir { ^"parser/" }
+	outputDir { ^"parser" }
 
-	// set to TRUE if you need `_expected` files
-	makingValidationFiles { ^false }
+	// set to `false` if you just want to generate output
+	performingValidation { ^true }
 
 	evaluationTechnique { ^\bytecode }
 
@@ -128,9 +128,9 @@ TestParserBrutal : AbstractLPCBrutalTest {
 	getStringLengthsPerAlphabet {
 		^stringLengthsPerAlphabet ? Dictionary[
 			// don't test on empty string - this is covered by compiler tests
-			\full -> [1,2,3,4],
+			\full ->  [1,2,3,4],
 			\small -> [5],
-			\mini -> [6,7]
+			\mini ->  [6,7]
 		];
 	}
 

@@ -3,10 +3,10 @@
 
 TestCompilerBrutal : AbstractLPCBrutalTest {
 
-	outputDir { ^"compiler/" }
+	outputDir { ^"compiler" }
 
-	// set to TRUE if you need `_expected` files
-	makingValidationFiles { ^false }
+	// set to `false` if you just want to generate output
+	performingValidation { ^true }
 
 	evaluationTechnique { ^\bytecode }
 
@@ -322,24 +322,24 @@ TestCompilerBrutal : AbstractLPCBrutalTest {
 		^Dictionary[
 			// All operators put into infix form. Word operators
 			// need to be postfixed with `:` to become method selectors.
-			\infix -> (wordOps.collect(_++":") ++ symbolOps),
+			\infix ->     (wordOps.collect(_++":") ++ symbolOps),
 
-			\wordOps -> wordOps,
+			\wordOps ->   wordOps,
 
 			\symbolOps -> symbolOps,
 
-			\literals -> literals,
+			\literals ->  literals,
 
-			\keywords -> keywords,
+			\keywords ->  keywords,
 
-			\classes -> classNames,
+			\classes ->   classNames,
 
-			\control -> controlOps,
+			\control ->   controlOps,
 
-			\unique -> uniqueStatements,
+			\unique ->    uniqueStatements,
 
 			// all ASCII values except 0 `NUL` and 7F `DEL`
-			\allChars -> (1..126).collect({ arg c; c.asAscii.asString })
+			\allChars ->  (1..126).collect({ arg c; c.asAscii.asString })
 		];
 	}
 
@@ -347,16 +347,16 @@ TestCompilerBrutal : AbstractLPCBrutalTest {
 		// allChars should be tested at lengths up to 3.
 		// All others use string length one, essentially simulating .format
 		^stringLengthsPerAlphabet ? Dictionary[
-			\infix -> [1],
-			\wordOps -> [1],
+			\infix ->     [1],
+			\wordOps ->   [1],
 			\symbolOps -> [1],
-			\literals -> [1],
-			\keywords -> [1],
-			\classes -> [1],
-			\control -> [1],
-			\unique -> [1],
+			\literals ->  [1],
+			\keywords ->  [1],
+			\classes ->   [1],
+			\control ->   [1],
+			\unique ->    [1],
 
-			\allChars -> [1,2,3]
+			\allChars ->  [1,2,3]
 		];
 	}
 
