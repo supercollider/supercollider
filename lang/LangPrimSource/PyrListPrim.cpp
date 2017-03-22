@@ -564,15 +564,15 @@ int prEvent_IsRest(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *arraySlot = dictslots + ivxIdentDict_array;
 
 	if (isKindOfSlot(arraySlot, class_array)) {
-		// array format is [key, value, key, value] with some nil, nil pairs
-		// we can scan only the odd items
 		PyrClass *restClass = s_rest->u.classobj;
+		PyrClass *restMetaClass = getsym("Meta_Rest")->u.classobj;
 		PyrObject *array = slotRawObject(arraySlot);
+		PyrSlot *slot = array->slots + 1;  // scan only the odd items
 		int32 size = array->size;
 		int32 i;
 
-		for (i = 1; i < size; i += 2) {
-			if (isKindOfSlot(array->slots + i, restClass)) {
+		for (i = 1; i < size; i += 2, slot += 2) {
+			if (isKindOfSlot(slot, restClass) || isKindOfSlot(slot, restMetaClass)) {
 				SetBool(g->sp, 1);
 				return errNone;
 			}
