@@ -179,7 +179,7 @@ extern PyrSymbol *s_identitydictionary;
 extern PyrSymbol *s_linkedlist;
 extern PyrSymbol *s_sortedlist;
 extern PyrSymbol *s_array;
-extern PyrSymbol *s_list, *s_rest, *s_method, *s_fundef, *s_frame, *s_class;
+extern PyrSymbol *s_list, *s_method, *s_fundef, *s_frame, *s_class;
 extern PyrSymbol *s_symbol, *s_nil;
 extern PyrSymbol *s_boolean, *s_true, *s_false;
 extern PyrSymbol *s_int, *s_char, *s_color, *s_float, *s_complex;

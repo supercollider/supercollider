@@ -492,7 +492,7 @@ int prEvent_Delta(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, key, dur, stretch, delta;
 	double fdur, fstretch;
 	int err;
-	PyrClass *restClass = s_rest->u.classobj;
+	PyrClass *restClass = getsym("Rest")->u.classobj;
 	PyrSlot *slot;
 
 	a = g->sp;  // dict
@@ -564,7 +564,7 @@ int prEvent_IsRest(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *arraySlot = dictslots + ivxIdentDict_array;
 
 	if (isKindOfSlot(arraySlot, class_array)) {
-		PyrClass *restClass = s_rest->u.classobj;
+		PyrClass *restClass = getsym("Rest")->u.classobj;
 		PyrClass *restMetaClass = getsym("Meta_Rest")->u.classobj;
 		PyrObject *array = slotRawObject(arraySlot);
 		PyrSlot *slot = array->slots + 1;  // scan only the odd items
