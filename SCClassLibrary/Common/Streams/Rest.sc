@@ -1,12 +1,16 @@
 
 Rest : Operand  {
 
+	*new { |value = 1|
+		^super.newCopyArgs(value.dereferenceOperand)
+	}
+
 	dur_ { |dt| value = dt }
 	dur { ^value.value }
 
 	// EVENT SUPPORT
-	asControlInput { ^value.asControlInput ? 1 }
-	playAndDelta { ^value.value ? 1 }
+	asControlInput { ^value.asControlInput }
+	playAndDelta { ^value.value }
 	isRest { ^true }
 
 }
