@@ -6220,7 +6220,7 @@ void TGrains_next(TGrains *unit, int inNumSamples)
 				pan2 = grain->pan2 = amp * sin(panangle);
 			} else {
 				grain->chan = 0;
-				pan1 = grain->pan1 = 1.;
+				pan1 = grain->pan1 = amp;
 				pan2 = grain->pan2 = 0.;
 			}
 			double w = pi / counter;
