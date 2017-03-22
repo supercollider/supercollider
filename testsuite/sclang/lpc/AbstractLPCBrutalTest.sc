@@ -38,6 +38,20 @@ AbstractLPCBrutalTest : UnitTest {
 		stringLengthsPerAlphabet = this.getStringLengthsPerAlphabet();
 	}
 
+	runTestsTogglingTCO {
+		arg prefix, suffix, testMode, alphabetName;
+
+		var tco = Process.tailCallOptimize;
+
+		Process.tailCallOptimize_(true);
+		this.runTestsOnAlphabet(prefix, suffix, testMode++"TCO", alphabetName);
+
+		Process.tailCallOptimize_(false);
+		this.runTestsOnAlphabet(prefix, suffix, testMode++"NoTCO", alphabetName);
+
+		Process.tailCallOptimize_(tco);
+	}
+
 	// For a given alphabet, test name, prefix, and suffix, run all the tests on that
 	// alphabet for its requested string lengths.
 	runTestsOnAlphabet {
@@ -67,28 +81,14 @@ AbstractLPCBrutalTest : UnitTest {
 			if(this.makingValidationFiles.not) {
 				var diffs = LPCTestUtils.compareFiles(filename, filename++correctSuffix);
 
-				this.checkDiffs(diffs, filename);
+				this.handleDiffs(diffs, filename);
 				File.delete(filename);
 			}
 		}
 	}
 
-	runTestsTogglingTCO {
-		arg prefix, suffix, testMode, alphabetName;
-
-		var tco = Process.tailCallOptimize;
-
-		Process.tailCallOptimize_(true);
-		this.runTestsOnAlphabet(prefix, suffix, testMode++"TCO", alphabetName);
-
-		Process.tailCallOptimize_(false);
-		this.runTestsOnAlphabet(prefix, suffix, testMode++"NoTCO", alphabetName);
-
-		Process.tailCallOptimize_(tco);
-	}
-
 	// If there were diffs, fail now and print a message.
-	checkDiffs {
+	handleDiffs {
 		arg diffs, filenameBase;
 
 		if(diffs.isEmpty.not) {
