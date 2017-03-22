@@ -331,8 +331,8 @@ see the instructions below.
         If you're not using MSYS2, use the official archived download, and
         choose from the following packages:
             - msvc2013_64, for a 64-bit Visual Studio build
-            - msvc2013_32, for a 32-bit Visual Studio build
-            - mingw492_32, for a native MinGW build
+            - msvc2013, for a 32-bit Visual Studio build
+            - mingw492 (32-bit), for a MinGW build
 
     - **[libsndfile][libsndfile]** >= 1.0.25
     - The **[Windows SDK][Windows 10 SDK]** for your edition of Windows
