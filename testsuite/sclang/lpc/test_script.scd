@@ -12,8 +12,8 @@ TestCompilerBrutal.run;
 
 (
 // other options
-LPCTestUtils.strictOutputChecking = true;     // default: false
-LPCTestUtils.doDebug = false;                 // default: true
-LPCTestUtils.overwriteFiles = true;           // default: false
-AbstractLPCBrutalTest.deleteOnFinish = false; // default: true
+LPCTestUtils.strictOutputChecking = true;                // default: false
+LPCTestUtils.doDebug = false;                            // default: true
+LPCTestUtils.overwriteFiles = true;                      // default: false
+AbstractLPCBrutalTest.deleteActualFilesOnFinish = false; // default: true
 )

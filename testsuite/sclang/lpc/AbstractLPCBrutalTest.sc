@@ -16,8 +16,7 @@ AbstractLPCBrutalTest : UnitTest {
 	// Filenames to be printed in final report.
 	classvar <>diffFilenames;
 
-	// Delete files once done.
-	classvar <>deleteOnFinish = false;
+	classvar <>deleteActualFilesOnFinish = false;
 
 	/**** ABSTRACT METHODS ****/
 
@@ -93,7 +92,7 @@ AbstractLPCBrutalTest : UnitTest {
 				this.handleDiffs(diffs, filename);
 			};
 
-			if(deleteOnFinish) {
+			if(deleteActualFilesOnFinish) {
 				File.delete(this.getActualDir +/+ filename);
 			}
 		}
