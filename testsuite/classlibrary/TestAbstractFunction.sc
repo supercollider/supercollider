@@ -2,7 +2,7 @@ TestAbstractFunction : UnitTest {
 
 	test_rest_binop {
 
-		var args = [[2, Rest(2)], [Rest(2), 2], [Rest(2), Rest(2)]];
+		var args = [[1, Rest(1)], [Rest(1), 1], [Rest(1), Rest(1)], [1, Rest()], [Rest(), Rest()]];
 		var funcs = [
 			{ |a, b| a * b },
 			{ |a, b| a + b },
@@ -17,11 +17,13 @@ TestAbstractFunction : UnitTest {
 		this.assert(
 			(all.as(Set).size == 1)
 			&& (all.flat.every(_.isKindOf(Rest))),
-			"All binary math operations on Rest should return Rest, and should have equal value for equivalent instance values"
+			"All binary math operations on Rest should return Rest, and should have equal value for equivalent instance values. Default value should be 1"
 		)
 	}
 
 	test_rest_event {
+
+		this.assert(Rest() == Rest(1), "Rest default value should be 1");
 
 		this.assert(
 			(degree: Rest(0), parent: Event.default.parent).use { ~freq.value } == Rest(60.midicps),
@@ -35,7 +37,10 @@ TestAbstractFunction : UnitTest {
 
 		this.assert((dur: 1).delta == 1, "delta matches dur");
 
+		this.assert((dur: Rest(1)).delta == 1, "delta matches dur with rest");
+
 		this.assert((dur: Rest(1), degree: Rest(7)).delta == 1, "delta matches dur with rest if other keys are rest, too");
+
 
 		this.assert((dur: 1, stretch: 2).delta == 2, "delta matches dur when stretched");
 
