@@ -465,7 +465,7 @@ TestLPCTestUtils : UnitTest {
 
 	// whatever the output of the other is, if input is LID, doOutputsMatch should return true
 	test_doOutputsMatch_LID {
-		var in = LPCTestUtils.stringToHexString("LID").clump(2);
+		var in = ["L", "I", "D"];
 		var a = "4567:Nil";
 		var b = "4568:Object";
 
@@ -473,7 +473,7 @@ TestLPCTestUtils : UnitTest {
 	}
 
 	test_doOutputsMatch_MetaLID {
-		var in = LPCTestUtils.stringToHexString("LID").clump(2);
+		var in = ["LID"];
 		var a = "4567:Nil";
 		var b = "4568:Meta_LID";
 
@@ -481,7 +481,7 @@ TestLPCTestUtils : UnitTest {
 	}
 
 	test_doOutputsMatch_LID_compileError {
-		var in = LPCTestUtils.stringToHexString("LID").clump(2);
+		var in = ["L", "I", "D"];
 		var a = "!cErr";
 		var b = "4568:LID";
 
@@ -489,7 +489,7 @@ TestLPCTestUtils : UnitTest {
 	}
 
 	test_doOutputsMatch_MetaLID_compileError {
-		var in = LPCTestUtils.stringToHexString("LID").clump(2);
+		var in = ["L", "I", "D"];
 		var a = "!cErr";
 		var b = "4568:Meta_LID";
 

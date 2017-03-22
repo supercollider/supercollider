@@ -71,7 +71,7 @@ LPCTestUtils {
 
 	// Values used in `doOutputsMatch`
 	const <nanString = "6E616E"; // hex string for "nan"
-	const <lidString = "4C4944"; // hex string for "LID"
+	const <lidString = "LID";    // string for "LID"
 	const <floatEqualityPrecision = 1e-13;
 
 	classvar <>doDebug = true;
