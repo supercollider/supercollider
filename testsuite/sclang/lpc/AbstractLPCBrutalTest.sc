@@ -43,7 +43,7 @@ AbstractLPCBrutalTest : UnitTest {
 
 	getExpectedDir { ^expectedDir.resolveRelative +/+ this.outputDir +/+ "" }
 	getActualDir   { ^actualDir.resolveRelative   +/+ this.outputDir +/+ "" }
-	getDiffDir     { ^diffDir.resolveRelative     +/+ this.ouptutDir +/+ "" }
+	getDiffDir     { ^diffDir.resolveRelative     +/+ this.outputDir +/+ "" }
 
 	runTestsTogglingTCO {
 		arg prefix, suffix, testMode, alphabetName;
@@ -71,7 +71,7 @@ AbstractLPCBrutalTest : UnitTest {
 
 		stringLengthsPerAlphabet[alphabetName].do {
 			arg len;
-			var filename = "%_%_%".format(fullOutputDir, alphabetName, len, testMode);
+			var filename = "%_%_%".format(alphabetName, len, testMode);
 
 			LPCTestUtils.evaluateAllStrings(
 				  alphabet: alphabets[alphabetName],
@@ -104,7 +104,7 @@ AbstractLPCBrutalTest : UnitTest {
 
 		if(diffs.isEmpty.not) {
 			LPCTestUtils.safeMkdir(this.getDiffDir);
-			LPCTestUtils.writeDiffs(diffs, filename);
+			LPCTestUtils.writeDiffs(diffs, this.getDiffDir +/+ filename);
 			this.noteFailure(thisMethod, "Diffs were found between test and validation files", filename);
 		} {
 			postf("No diffs found.\n");

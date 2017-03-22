@@ -446,7 +446,7 @@ LPCTestUtils {
 			PathName(filename).fileName)
 		);
 
-		if((mode == "w") && File.exists(filename)) {
+		if((mode == "w") && File.exists(filename) && overwriteFiles.not) {
 			Error("%: File % already exists\n"
 				"\tPlease delete before continuing".format(thisMethod, filename.quote)).throw;
 		} {
