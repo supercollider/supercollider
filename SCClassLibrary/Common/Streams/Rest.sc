@@ -2,11 +2,16 @@
 Rest : Operand  {
 
 	*new { |value = 1|
-		^super.newCopyArgs(value.dereferenceOperand)
+		^super.newCopyArgs(value.dereferenceOperand).unwrapBoolean
 	}
 
 	dur_ { |dt| value = dt }
 	dur { ^value.value }
+
+	// COMPARISONS JUST WORK
+	unwrapBoolean {
+		^if(value.isKindOf(Boolean)) { value } { this }
+	}
 
 	// EVENT SUPPORT
 	asControlInput { ^value.asControlInput }
