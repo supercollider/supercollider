@@ -38,6 +38,9 @@
 # include <io.h>
 # include <windows.h>
 # include <ioapiset.h>
+# ifdef USE_LINENOISE
+#  include <future>
+# endif
 #endif
 
 #ifdef __APPLE__
@@ -60,14 +63,26 @@
 #include "SC_LanguageConfig.hpp"
 #include "SC_Version.hpp"
 
+#ifdef USE_LINENOISE
+# include "linenoise.h"
+#endif
+
 static FILE* gPostDest = stdout;
+
+#ifdef USE_LINENOISE
+bool SC_TerminalClient::mWantsToExit = false;
+#endif
 
 SC_TerminalClient::SC_TerminalClient(const char* name)
 	: SC_LanguageClient(name),
-	  mReturnCode(0),
-	  mUseReadline(false),
-      mWork(mIoService),
-	  mTimer(mIoService),
+		mReturnCode(0),
+#ifdef USE_LINENOISE
+		mUseLinenoise(false),
+#else
+		mUseReadline(false),
+#endif
+		mWork(mIoService),
+		mTimer(mIoService),
 #ifndef _WIN32
 	  mStdIn(mInputService, STDIN_FILENO)
 #else
@@ -287,7 +302,7 @@ int SC_TerminalClient::run(int argc, char** argv)
 
 void SC_TerminalClient::recompileLibrary()
 {
-    SC_LanguageClient::recompileLibrary(mOptions.mStandalone);
+	SC_LanguageClient::recompileLibrary(mOptions.mStandalone);
 }
 
 void SC_TerminalClient::quit(int code)
@@ -347,11 +362,12 @@ void SC_TerminalClient::interpretInput()
 		i = 0;
 	}
 	mInputBuf.reset();
-
-	if (mUseReadline)
-		mReadlineSem.post();
-	else
-		startInputRead();
+#ifdef HAVE_READLINE
+			if (mUseReadline)
+				mReadlineSem.post();
+			else
+#endif
+			startInputRead();
 }
 
 void SC_TerminalClient::onLibraryStartup()
@@ -426,6 +442,7 @@ void SC_TerminalClient::daemonLoop()
 	commandLoop();
 }
 
+// HAVE_READLINE
 #ifdef HAVE_READLINE
 
 static void sc_rl_cleanlf(void)
@@ -514,6 +531,84 @@ void SC_TerminalClient::readlineInit()
 
 #endif // HAVE_READLINE
 
+// USE_LINENOISE
+#ifdef USE_LINENOISE
+
+void SC_TerminalClient::linenoiseRecompile()
+{
+	static_cast<SC_TerminalClient*>(SC_LanguageClient::instance())->sendSignal(sig_recompile);
+}
+
+void SC_TerminalClient::linenoiseQuit()
+{
+	SC_TerminalClient *client = static_cast<SC_TerminalClient*>(instance());
+	mWantsToExit = true;
+	client->onQuit(0);
+}
+
+static void linenoise_mainstop()
+{
+	static_cast<SC_TerminalClient*>(SC_LanguageClient::instance())
+		->sendSignal(SC_TerminalClient::sig_stop);
+}
+
+void SC_TerminalClient::linenoiseInit()
+{
+	linenoiseBindkeyAdd('T' - 0x40, &linenoise_mainstop);
+	linenoiseBindkeyAdd('X' - 0x40, &linenoiseRecompile);
+	linenoiseBindkeyAdd('D' - 0x40, &linenoiseQuit);
+}
+
+void SC_TerminalClient::startInputRead()
+{
+	if (m_future.valid()){
+		m_future.get();
+	}
+	m_future = std::async(std::launch::async, &SC_TerminalClient::startInputRead_, this);
+
+}
+
+void SC_TerminalClient::startInputRead_()
+{
+	char* result;
+	if (mUseLinenoise){
+		do {
+			result = linenoise("sc3>");
+			if (result){
+				linenoiseHistoryAdd(result);
+				strncpy(inputBuffer.data(), result, inputBuffer.size());
+				inputBuffer[strlen(result)] = kInterpretPrintCmdLine;
+				inputBuffer[strlen(result) + 1] = 0;
+				unsigned long bytes_transferred = strlen(result) + 1;
+				onInputRead(boost::system::error_code(), bytes_transferred);
+			}
+		} while (!result && !mWantsToExit);
+	}
+	else{
+#ifndef _WIN32
+		mStdIn.async_read_some(boost::asio::buffer(inputBuffer), boost::bind(&SC_TerminalClient::onInputRead, this, _1, _2));
+#else
+		mStdIn.async_wait( [&] (const boost::system::error_code & error) {
+			if(error)
+				onInputRead(error, 0);
+			else {
+				unsigned long bytes_transferred;
+
+				::ReadFile(GetStdHandle(STD_INPUT_HANDLE),
+						   inputBuffer.data(),
+						   inputBuffer.size(),
+						   &bytes_transferred,
+						   nullptr);
+
+				onInputRead(error, bytes_transferred);
+			}
+		});
+#endif
+	}
+}
+
+#else // USE_LINENOISE, and even if HAVE_READLINE undefined
+
 void SC_TerminalClient::startInputRead()
 {
 #ifndef _WIN32
@@ -540,6 +635,9 @@ void SC_TerminalClient::startInputRead()
 #endif
 }
 
+#endif // USE_LINENOISE
+
+
 void SC_TerminalClient::onInputRead(const boost::system::error_code &error, std::size_t bytes_transferred)
 {
 	if (error == boost::asio::error::operation_aborted) {
@@ -560,28 +658,39 @@ void SC_TerminalClient::onInputRead(const boost::system::error_code &error, std:
 	}
 
 	if (!error) {
-#if HAVE_READLINE
-		if (mUseReadline) {
-			rl_callback_read_char();
-			startInputRead();
-			return;
-		}
-#endif
+		#if HAVE_READLINE
+				if (mUseReadline) {
+					rl_callback_read_char();
+					startInputRead();
+					return;
+				}
+		#endif
 		pushCmdLine( inputBuffer.data(), bytes_transferred );
 	}
 }
 
 void SC_TerminalClient::inputThreadFn()
 {
-#if HAVE_READLINE
-	if (mUseReadline)
-		readlineInit();
-#endif
+	#if HAVE_READLINE
+		if (mUseReadline)
+			readlineInit();
+	#endif
+	#if USE_LINENOISE
+		if (mUseLinenoise)
+			linenoiseInit();
+	#endif
 
 	startInputRead();
 
-	boost::asio::io_service::work work(mInputService);
-	mInputService.run();
+	#ifdef USE_LINENOISE
+		if (!mUseLinenoise){
+			boost::asio::io_service::work work(mInputService);
+			mInputService.run();
+		}
+	#else
+		boost::asio::io_service::work work(mInputService);
+		mInputService.run();
+	#endif
 }
 
 
@@ -620,6 +729,11 @@ void SC_TerminalClient::initInput()
 		mUseReadline = true;
 		return;
 	}
+#elif USE_LINENOISE
+	if (strcmp(gIdeName, "none") == 0) {
+		mUseLinenoise = true;
+		return;
+	}
 #endif
 }
 
@@ -634,13 +748,23 @@ void SC_TerminalClient::endInput()
 {
 	mInputService.stop();
 	mStdIn.cancel();
+#ifdef USE_LINENOISE
+	if (mUseLinenoise)
+	  linenoiseWantToExit();
+#endif
+
 #ifdef _WIN32
-	// Note this breaks Windows XP compatibility, since this function is only defined in Vista and later 
+	// Note this breaks Windows XP compatibility, since this function is only defined in Vista and later
 	::CancelIoEx(GetStdHandle(STD_INPUT_HANDLE), nullptr);
 #endif
 	postfl("main: waiting for input thread to join...\n");
 	mInputThread.join();
 	postfl("main: quitting...\n");
+#ifdef USE_LINENOISE
+    if (m_future.valid()){
+        m_future.get();
+    }
+#endif
 }
 
 void SC_TerminalClient::cleanupInput()

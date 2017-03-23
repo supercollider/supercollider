@@ -31,6 +31,10 @@
 #include "SC_StringBuffer.h"
 #include "SC_Lock.h"
 
+#ifdef USE_LINENOISE
+#include <future>
+#endif
+
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
 #include <boost/sync/semaphore.hpp>
@@ -145,7 +149,13 @@ private:
 	static void readlineFunc(SC_TerminalClient *);
 	static int readlineRecompile(int, int);
 	static void readlineCmdLine(char *cmdLine);
+#elif USE_LINENOISE
+	static void linenoiseInit();
+	static void linenoiseRecompile();
+	static void linenoiseQuit();
+	void startInputRead_();
 #endif
+
 	static void *pipeFunc( void * );
 	void pushCmdLine( const char *newData, size_t size );
 
@@ -181,9 +191,16 @@ private:
 	void startInputRead();
 	void onInputRead(const boost::system::error_code& error, std::size_t bytes_transferred);
 
+#ifdef USE_LINENOISE
+	std::future<void> m_future;
+
 	// command input
+	bool mUseLinenoise;
+	static bool mWantsToExit;
+#else
 	bool mUseReadline;
 	boost::sync::semaphore mReadlineSem;
+#endif
 };
 
 #endif // SC_TERMINALCLIENT_H_INCLUDED

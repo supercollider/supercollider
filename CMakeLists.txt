@@ -117,7 +117,6 @@ endif()
 
 add_definitions(-DBOOST_CHRONO_HEADER_ONLY -DBOOST_NO_AUTO_PTR)
 
-
 #############################################
 # Detect CCache
 
@@ -216,6 +215,12 @@ else()
     option(SC_HIDAPI "Build with HID support" ON)
 endif()
 
+if(WIN32)
+    option(SC_LINENOISE "Use linenoise instead of readline" ON)
+else(WIN32)
+    option(SC_LINENOISE "Use linenoise instead of readline" OFF)
+endif(WIN32)
+
 #############################################
 # some default libraries
 
@@ -244,6 +249,11 @@ if(SYSTEM_YAMLCPP)
 else()
   set(YAMLCPP_FOUND OFF)
 endif()
+
+if(SC_LINENOISE)
+	add_definitions(-DUSE_LINENOISE)
+	message(STATUS "Using library linenoise-ng for command line mode")
+endif(SC_LINENOISE)
 
 #############################################
 # some preprocessor flags

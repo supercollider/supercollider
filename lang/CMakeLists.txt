@@ -21,12 +21,17 @@ include_directories(${CMAKE_SOURCE_DIR}/include/common
                     LangSource/Bison
 )
 
+if(SC_LINENOISE)
+	include_directories(
+		${CMAKE_SOURCE_DIR}/external_libraries/linenoise-ng/include
+	)
+else()
+	find_package(Readline)
+endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 	find_package(ALSA)
 endif()
-
-find_package(Readline 5.0)
 
 find_package(Sndfile)
 
@@ -87,7 +92,17 @@ set(sclang_sources
 	${LOCALSOCK_UTIL_FILE}
 
 	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
+
 )
+
+if(SC_LINENOISE)
+	set(sclang_sources
+		${sclang_sources}
+		${CMAKE_SOURCE_DIR}/external_libraries/linenoise-ng/src/ConvertUTF.cpp
+		${CMAKE_SOURCE_DIR}/external_libraries/linenoise-ng/src/linenoise.cpp
+		${CMAKE_SOURCE_DIR}/external_libraries/linenoise-ng/src/wcwidth.cpp
+	)
+endif(SC_LINENOISE)
 
 if(APPLE)
 	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
@@ -266,6 +281,8 @@ if (NOT WIN32)
 endif()
 
 ## external libraries
+
+# find_package readline is only triggered if linenoise is off
 if(READLINE_FOUND)
 	message(STATUS "Compiling with Readline support")
 	target_compile_definitions(libsclang PUBLIC HAVE_READLINE)
