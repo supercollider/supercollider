@@ -99,12 +99,17 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL 
     set(CMAKE_COMPILER_IS_CLANG 1)
 endif()
 
-if(APPLE)
+if(APPLE AND NOT MACOS_FHS)
+	# keeping the default install prefix would install the application bundle
+	# into the Unix filesystem (FHS).
 	if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 		set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install" CACHE STRING "Cmake install path")
 	endif()
-elseif(UNIX)
+elseif(UNIX OR MACOS_FHS)
 	add_definitions(-DSC_DATA_DIR="${CMAKE_INSTALL_PREFIX}/share/SuperCollider")
+	if(APPLE)
+		add_definitions(-DMACOS_FHS)
+	endif(APPLE)
 endif()
 
 if(WIN32)
@@ -161,15 +166,35 @@ option(INSTALL_HELP "Install help docs and examples along with the software" ON)
 option(SC_DOC_RENDER "Pre-render SCDoc documentation. (For putting online, etc)" OFF)
 option(SC_QT "Build SuperCollider with Qt GUI features" ON)
 option(SC_IDE "Build Qt IDE." ON)
+option(SC_SCLANG "Build SuperCollider language interpreter (sclang)." ON)
+option(MACOS_FHS "Use unix style install (FHS), by default to /usr/local on MacOS" OFF)
+
+# syncronize option SC_IDE with add_subdirectory below
+if(NOT SC_SCLANG)
+	message(STATUS "SC_SCLANG was set to OFF. Setting SC_IDE and SC_QT OFF too.")
+	set(SC_IDE OFF)
+	set(SC_QT OFF)
+endif()
+
+if(APPLE AND NOT SC_IDE)
+	message(STATUS "Not compiling IDE so using FHS install (default: /usr/local)")
+	set(MACOS_FHS ON)
+endif()
+
 if (SC_QT)
   message( STATUS "Compiling with Qt GUI" )
 else()
   if (SC_IDE)
-	  message( STATUS "Not compiling SC IDE, because it requires Qt but SC_QT is False" )
+    message( STATUS "Not compiling SC IDE, because it requires Qt but SC_QT is False" )
     set(SC_IDE False)
+    set(MACOS_FHS ON)
   endif()
 endif (SC_QT)
 
+if(SC_DOC_RENDER AND NOT SC_SCLANG)
+	message( STATUS "SC_SCLANG is disabled, so automatically disabling SC_DOC_RENDER" )
+	set(SC_DOC_RENDER False)
+endif()
 
 option(ENABLE_TESTSUITE "Compile testsuite." ON)
 
@@ -359,7 +384,6 @@ if(NOT YAMLCPP_FOUND)
   set(YAMLCPP_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include)
 endif()
 
-
 configure_file(common/SC_Version.hpp.in common/SC_Version.hpp)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/common)
 
@@ -369,7 +393,9 @@ file(GLOB_RECURSE Sounds       sounds/*)
 file(GLOB_RECURSE Examples     examples/*)
 
 
-if(APPLE)
+if(APPLE AND MACOS_FHS)
+  set(scappbundlename "SuperCollider")
+elseif(APPLE)
   include(cmake_modules/MacAppFolder.cmake)
   set(ide_name ${scappbundlename})
 else()
@@ -377,14 +403,16 @@ else()
 endif()
 
 add_subdirectory(server)
-add_subdirectory(lang)
 add_subdirectory(platform)
-add_subdirectory(editors)
+if(SC_SCLANG)
+  add_subdirectory(lang)
+  add_subdirectory(editors)
+endif()
 
-if(UNIX AND NOT APPLE)
+if(UNIX AND NOT (APPLE AND NOT MACOS_FHS))
     install(DIRECTORY include/common include/plugin_interface include/server include/lang
         DESTINATION ${CMAKE_INSTALL_PREFIX}/include/SuperCollider
-	FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
+        FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
     )
     install(FILES SCVersion.txt
         DESTINATION ${CMAKE_INSTALL_PREFIX}/include/SuperCollider
@@ -393,10 +421,10 @@ endif()
 
 if (WIN32)
   set(auxresourcesdir "${SC_WIN_BUNDLE_NAME}" CACHE STRING "Resources directory")
-elseif(APPLE)
-	set(auxresourcesdir ${scappbundlename} CACHE STRING "Resources directory")
+elseif(APPLE AND NOT MACOS_FHS)
+  set(auxresourcesdir ${scappbundlename} CACHE STRING "Resources directory")
 else()
-	set(auxresourcesdir "share/SuperCollider" CACHE STRING "Resources directory")
+  set(auxresourcesdir "share/SuperCollider" CACHE STRING "Resources directory")
 endif()
 
 set(SCCLASSLIB_EXCLUDE_REGEX "IGNOREME")
@@ -409,40 +437,42 @@ if(WIN32)
 	set(SCCLASSLIB_EXCLUDE_REGEX "${SCCLASSLIB_EXCLUDE_REGEX}")
 endif()
 
-if(APPLE)
-	if(SC_SYMLINK_CLASSLIB)
-		#if there are folders inside SCCLassLibrary abort cmake.
-		file(GLOB classlibraryfolders "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary/[^.]*")
-		foreach(onedirectory ${classlibraryfolders})
-			message( "${onedirectory}" )
-			if(NOT IS_SYMLINK "${onedirectory}")
-				message(FATAL_ERROR "Symlinking will fail ! SCClassLibrary folder already exists and has directories inside, please delete it first." )
-			endif()
-		endforeach(onedirectory)
+if(SC_SCLANG)
+	if(APPLE AND NOT MACOS_FHS)
+		if(SC_SYMLINK_CLASSLIB)
+			#if there are folders inside SCClassLibrary abort cmake.
+			file(GLOB classlibraryfolders "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary/[^.]*")
+			foreach(onedirectory ${classlibraryfolders})
+				message( "${onedirectory}" )
+				if(NOT IS_SYMLINK "${onedirectory}")
+					message(FATAL_ERROR "Symlinking will fail ! SCClassLibrary folder already exists and has directories inside, please delete it first." )
+				endif()
+			endforeach(onedirectory)
 
-		message(STATUS "Will create symlink of SCClassLibrary to ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary" )
-		if(NOT EXISTS "{CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary")
-			install( CODE "EXECUTE_PROCESS(COMMAND mkdir ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary)" )
-		endif()
-		#symlink the folders inside SCCLassLibrary. Check if QtCollider folder should be symlinked or not.
-		file(GLOB classlibraryfolders RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary" "SCClassLibrary/[^.]*")
-		foreach(onedirectory ${classlibraryfolders})
-			if(NOT "${onedirectory}" MATCHES "${SCCLASSLIB_EXCLUDE_REGEX}")
-				install( CODE
-					"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/${onedirectory} ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary/${onedirectory} )" )
+			message(STATUS "Will create symlink of SCClassLibrary to ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary" )
+			if(NOT EXISTS "{CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary")
+				install( CODE "EXECUTE_PROCESS(COMMAND mkdir ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary)" )
 			endif()
-		endforeach(onedirectory)
+			#symlink the folders inside SCCLassLibrary. Check if QtCollider folder should be symlinked or not.
+			file(GLOB classlibraryfolders RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary" "SCClassLibrary/[^.]*")
+			foreach(onedirectory ${classlibraryfolders})
+				if(NOT "${onedirectory}" MATCHES "${SCCLASSLIB_EXCLUDE_REGEX}")
+					install( CODE
+						"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/SCClassLibrary/${onedirectory} ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/SCClassLibrary/${onedirectory} )" )
+				endif()
+			endforeach(onedirectory)
+		endif()
+	else()
+		install(DIRECTORY SCClassLibrary
+			DESTINATION ${auxresourcesdir}
+			REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
+			PATTERN "*~" EXCLUDE
+			PATTERN "*#" EXCLUDE
+		)
 	endif()
-else()
-	install(DIRECTORY SCClassLibrary
-		DESTINATION ${auxresourcesdir}
-		REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
-		PATTERN "*~" EXCLUDE
-		PATTERN "*#" EXCLUDE
-	)
 endif()
 
-if(NOT APPLE)
+if(NOT (APPLE AND NOT MACOS_FHS))
 	install(DIRECTORY sounds   DESTINATION ${auxresourcesdir})
 	install(DIRECTORY examples DESTINATION ${auxresourcesdir})
 elseif(APPLE)
@@ -485,7 +515,7 @@ if(INSTALL_HELP)
 		endif()
 		install( CODE
 					"EXECUTE_PROCESS(COMMAND ln -shF ${CMAKE_CURRENT_SOURCE_DIR}/HelpSource ${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HelpSource )" )
-	elseif(NOT APPLE)
+	elseif(NOT (APPLE AND NOT MACOS_FHS))
 		install(DIRECTORY HelpSource
 			DESTINATION ${auxresourcesdir}
 			REGEX ${SCCLASSLIB_EXCLUDE_REGEX} EXCLUDE
@@ -514,7 +544,9 @@ foreach(arg ${BUILD_CLASSLIBRARIES})
 	set(BUILD_CLASSLIBRARYPATH "${BUILD_CLASSLIBRARYPATH}+${arg}\n")
 endforeach()
 
-configure_file(build_sclang.cfg.in ${CMAKE_CURRENT_BINARY_DIR}/build_sclang.cfg)
+if(SC_SCLANG)
+	configure_file(build_sclang.cfg.in ${CMAKE_CURRENT_BINARY_DIR}/build_sclang.cfg)
+endif()
 
 if(SC_DOC_RENDER)
 	file(GLOB_RECURSE SCDocSources RELATIVE HelpSource .*[^~])
@@ -532,6 +564,20 @@ endif()
 set_directory_properties(
 	PROPERTIES
 	ADDITIONAL_MAKE_CLEAN_FILES "RenderedHelp")
+
+if(SC_HIDAPI AND SC_SCLANG)
+  if(APPLE AND NOT MACOS_FHS)
+    set(HID_HUT_PATH "${CMAKE_INSTALL_PREFIX}/${scappbundlename}/${scappbundlename}.app/Contents/Resources/HID_Support")
+  else()
+    set(HID_HUT_PATH "${CMAKE_INSTALL_PREFIX}/${auxresourcesdir}/HID_Support")
+  endif()
+  # FIXME: won't appear in MacOS SC-IDE build-folder (just in install)
+  install(DIRECTORY external_libraries/hidapi/hut
+  DESTINATION ${HID_HUT_PATH}
+  FILES_MATCHING PATTERN "*.yaml"
+  )
+endif()
+
 
 #############################################
 #
@@ -573,4 +619,5 @@ mark_as_advanced(JACK JACK_INCLUDE_DIR JACK_LIBRARY)
 mark_as_advanced(MATH_LIBRARY)
 mark_as_advanced(QT_QMAKE_EXECUTABLE)
 mark_as_advanced(SNDFILE SNDFILE_LIBRARY_DIR)
+mark_as_advanced(MACOS_FHS)
 mark_as_advanced(SC_HIDAPI)

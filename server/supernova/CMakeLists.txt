@@ -187,9 +187,16 @@ if(WIN32)
     add_custom_command(TARGET supernova
       POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:supernova> $<TARGET_FILE_DIR:scsynth>
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:supernova> $<TARGET_FILE_DIR:sclang>
-      COMMENT "Copying supernova to targets scsynth and sclang"
+      COMMENT "Copying supernova to target scsynth"
     )
+
+    if(SC_SCLANG)
+      add_custom_command(TARGET supernova
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:supernova> $<TARGET_FILE_DIR:sclang>
+        COMMENT "Copying supernova to target sclang"
+      )
+    endif(SC_SCLANG)
 
     if(SC_IDE)
       add_custom_command(TARGET supernova
@@ -204,7 +211,31 @@ if(WIN32)
         DESTINATION ${SC_WIN_BUNDLE_NAME}
     )
 
-elseif(APPLE)
+    if(NOT SC_SCLANG AND NOT SC_IDE)
+        set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}")
+        include(InstallRequiredSystemLibraries)
+
+        set(SC_WIN_DLL_DIRS)
+        if(SNDFILE_LIBRARY_DIR)
+            list(APPEND SC_WIN_DLL_DIRS "${SNDFILE_LIBRARY_DIR}")
+        endif(SNDFILE_LIBRARY_DIR)
+        if(FFTW3F_LIBRARY_DIR)
+            list(APPEND SC_WIN_DLL_DIRS "${FFTW3F_LIBRARY_DIR}")
+        endif(FFTW3F_LIBRARY_DIR)
+
+        install(CODE "
+            include(BundleUtilities)
+            fixup_bundle(
+                \"${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}/supernova.exe\"
+                \"\"
+                \"${SC_WIN_DLL_DIRS}\" )
+            "
+            COMMENT "Looking for libraries..."
+            VERBATIM
+        )
+    endif(NOT SC_SCLANG AND NOT SC_IDE)
+
+elseif(APPLE AND NOT MACOS_FHS)
     add_custom_command(TARGET supernova POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../Resources/
         COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:supernova> $<TARGET_FILE_DIR:SuperCollider>/../Resources)

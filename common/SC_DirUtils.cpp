@@ -26,6 +26,10 @@
 
 #ifdef __APPLE__
 #import <Foundation/Foundation.h>
+// required for _NSGetExecutablePath() MACOS_FHS:
+#include <mach-o/dyld.h>
+// required for dirname() MACOS_FHS:
+#include <libgen.h>
 #endif
 
 #ifdef _WIN32
@@ -225,7 +229,7 @@ int sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int len
 
 // Support for Bundles
 
-#if defined(__APPLE__) && !defined(SC_IPHONE)	// running on OS X
+#if defined(__APPLE__) && !defined(SC_IPHONE) && !defined(MACOS_FHS) // running on MACOS
 
 // Support for stand-alone applications
 
@@ -239,6 +243,47 @@ void sc_GetResourceDirectory(char* pathBuf, int length)
 	SC_StandAloneInfo::GetResourceDir(pathBuf, length);
 }
 
+
+void sc_AppendBundleName(char *str, int size)
+{
+	CFBundleRef mainBundle;
+	mainBundle = CFBundleGetMainBundle();
+	if(mainBundle){
+		CFDictionaryRef dictRef = CFBundleGetInfoDictionary(mainBundle);
+		CFStringRef strRef;
+		strRef = (CFStringRef)CFDictionaryGetValue(dictRef, CFSTR("CFBundleName"));
+		if(strRef){
+			const char *bundleName = CFStringGetCStringPtr(strRef, CFStringGetSystemEncoding());
+			if(bundleName) {
+				sc_AppendToPath(str, size, bundleName);
+				return;
+			}
+		}
+	}
+	sc_AppendToPath(str, size, "SuperCollider");
+}
+
+#elif defined(MACOS_FHS)
+
+bool sc_IsStandAlone()
+{
+	return false;
+}
+
+void sc_GetResourceDirectory(char* pathBuf, int length)
+{
+	char path[1024];
+	uint32_t size = sizeof(path);
+	if (_NSGetExecutablePath(path, &size) != 0)
+		throw std::runtime_error("cannot get current working directory. (path too long?)");
+	char * exeDir = dirname(path);
+	char * sufix = "/../share/SuperCollider";
+	char fullPath[1088];
+	strcpy(fullPath, exeDir);
+	strcat(fullPath, sufix);
+
+	strncpy(pathBuf, fullPath, length);
+}
 
 void sc_AppendBundleName(char *str, int size)
 {
@@ -365,8 +410,8 @@ void sc_GetSystemAppSupportDirectory(char *str, int size)
 #endif
 			size);
 
-#if defined(__APPLE__)
-	// Get the main bundle name for the app from the enclosed Info.plist 
+#if defined(__APPLE__) && !defined(MACOS_FHS)
+	// Get the main bundle name for the app from the enclosed Info.plist
 	sc_AppendBundleName(str, size);
 #endif
 

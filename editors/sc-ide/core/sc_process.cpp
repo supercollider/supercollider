@@ -95,7 +95,7 @@ void ScProcess::prepareActions(Settings::Manager * settings)
     action->setShortcutContext(Qt::ApplicationShortcut);
     connect(action, SIGNAL(triggered()), this, SLOT(stopMain()));
     settings->addAction( action, "interpreter-main-stop", interpreterCategory);
-    
+
     mActions[ShowQuarks] = action = new QAction(tr("Quarks"), this);
     connect(action, SIGNAL(triggered()), this, SLOT(showQuarks()));
     settings->addAction( action, "interpreter-show-quarks-gui", interpreterCategory);
@@ -144,7 +144,11 @@ void ScProcess::startLanguage (void)
 
     QString sclangCommand;
 #ifdef Q_OS_MAC
+  #ifdef MACOS_FHS
+    sclangCommand = standardDirectory(ScResourceDir) + "/../../bin/sclang";
+  #else
     sclangCommand = standardDirectory(ScResourceDir) + "/../MacOS/sclang";
+  #endif
 #else
     sclangCommand = "sclang";
 #endif
@@ -183,7 +187,7 @@ void ScProcess::stopLanguage (void)
         return;
     }
 
-    evaluateCode("0.exit", true);    
+    evaluateCode("0.exit", true);
     mCompiled = false;
     mTerminationRequested   = true;
     mTerminationRequestTime = QDateTime::currentDateTimeUtc();
@@ -318,7 +322,7 @@ void ScProcess::postQuitNotification()
 void ScProcess::onIpcData()
 {
     mIpcData.append(mIpcSocket->readAll());
-    // After we have put the data in the buffer, process it    
+    // After we have put the data in the buffer, process it
     int avail = mIpcData.length();
     do {
         if (mReadSize == 0 && avail > 4){
@@ -393,7 +397,7 @@ void ScProcess::onStart()
     Main::documentManager()->sendActiveDocument();
 }
 
-    
+
 void ScProcess::updateTextMirrorForDocument ( Document * doc, int position, int charsRemoved, int charsAdded )
 {
     if (!mIpcSocket)
@@ -418,7 +422,7 @@ void ScProcess::updateTextMirrorForDocument ( Document * doc, int position, int 
         scPost(QStringLiteral("Exception during ScIDE_Send: %1\n").arg(e.what()));
     }
 }
-    
+
 void ScProcess::updateSelectionMirrorForDocument ( Document * doc, int start, int range )
 {
     if (!mIpcSocket)
@@ -431,7 +435,6 @@ void ScProcess::updateSelectionMirrorForDocument ( Document * doc, int start, in
     argList.append(QVariant(doc->id()));
     argList.append(QVariant(start));
     argList.append(QVariant(range));
-
 
     try {
         sendSelectorAndData(mIpcSocket, QStringLiteral("updateDocSelection"), argList);

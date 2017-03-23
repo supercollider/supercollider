@@ -92,7 +92,7 @@ if(NOT YAMLCPP_FOUND)
   aux_source_directory(${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/src yaml_src)
   CREATE_FINAL_FILE(${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp ${yaml_src})
 
-  add_library(yaml STATIC ${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp)
+  add_library(yaml STATIC EXCLUDE_FROM_ALL ${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp)
   target_include_directories(yaml PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include)
   set_property( TARGET yaml PROPERTY FOLDER 3rdparty )
 
@@ -102,34 +102,35 @@ if(NOT YAMLCPP_FOUND)
 
 endif()
 
-
 set_property( TARGET oscpack tlsf PROPERTY FOLDER 3rdparty )
 
 
 ##### HID_API #######
 
-if (HID_LIBUSB)
-  set( LIBUSB ON )
-  set( HIDRAW OFF )
-endif()
-if (HID_HIDRAW)
-  set( HIDRAW ON )
-  set( LIBUSB OFF )
-endif()
-set( EXAMPLE_TEST OFF )
-set( EXAMPLE_OSC OFF )
+if(SC_SCLANG)
+  if (HID_LIBUSB)
+    set( LIBUSB ON )
+    set( HIDRAW OFF )
+  endif()
+  if (HID_HIDRAW)
+    set( HIDRAW ON )
+    set( LIBUSB OFF )
+  endif()
+  set( EXAMPLE_TEST OFF )
+  set( EXAMPLE_OSC OFF )
 
-if(SC_HIDAPI)
-    add_subdirectory(hidapi)
-    message(STATUS "Building with HID support")
-elseif(MINGW AND (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 5.3.0))
-    message(WARNING "SC is by default built without HID-support if a MinGW/gcc-version below 5.3 is used. Please consult the Readme on how to enable it (easy).")
-else()
-    message(STATUS "HID support disabled")
-endif()
+  if(SC_HIDAPI)
+      add_subdirectory(hidapi)
+      message(STATUS "Building with HID support")
+  elseif(MINGW AND (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 5.3.0))
+      message(WARNING "SC is by default built without HID-support if a MinGW/gcc-version below 5.3 is used. Please consult the Readme on how to enable it (easy).")
+  else()
+      message(STATUS "HID support disabled")
+  endif(SC_HIDAPI)
+endif(SC_SCLANG)
 
 if(WIN32)
-  add_library(portmidi portmidi/pm_common/pminternal.h
+  add_library(portmidi EXCLUDE_FROM_ALL portmidi/pm_common/pminternal.h
                        portmidi/pm_common/pmutil.c
                        portmidi/pm_common/pmutil.h
                        portmidi/pm_common/portmidi.c

@@ -226,18 +226,33 @@ MainWindow::MainWindow(Main * main) :
     // Initialize recent documents menu
     updateRecentDocsMenu();
 
+    // This variation of the original code allows a MacOS doc icon to be
+    // displayed properly independently of the bundle definition
     QIcon icon;
-    icon.addFile(":/icons/sc-ide-svg");
-    icon.addFile(":/icons/sc-ide-16");
-    icon.addFile(":/icons/sc-ide-24");
-    icon.addFile(":/icons/sc-ide-32");
-    icon.addFile(":/icons/sc-ide-48");
-    icon.addFile(":/icons/sc-ide-64");
-    icon.addFile(":/icons/sc-ide-128");
-    icon.addFile(":/icons/sc-ide-256");
-    icon.addFile(":/icons/sc-ide-512");
     icon.addFile(":/icons/sc-ide-1024");
+    icon.addFile(":/icons/sc-ide-512");
+    icon.addFile(":/icons/sc-ide-256");
+    icon.addFile(":/icons/sc-ide-128");
+    icon.addFile(":/icons/sc-ide-64");
+    icon.addFile(":/icons/sc-ide-48");
+    icon.addFile(":/icons/sc-ide-32");
+    icon.addFile(":/icons/sc-ide-24");
+    icon.addFile(":/icons/sc-ide-16");
     QApplication::setWindowIcon(icon);
+
+    // Original code: might be required for Linux or Windows
+    // QIcon icon;
+    // icon.addFile(":/icons/sc-ide-svg");
+    // icon.addFile(":/icons/sc-ide-16");
+    // icon.addFile(":/icons/sc-ide-24");
+    // icon.addFile(":/icons/sc-ide-32");
+    // icon.addFile(":/icons/sc-ide-48");
+    // icon.addFile(":/icons/sc-ide-64");
+    // icon.addFile(":/icons/sc-ide-128");
+    // icon.addFile(":/icons/sc-ide-256");
+    // icon.addFile(":/icons/sc-ide-512");
+    // icon.addFile(":/icons/sc-ide-1024");
+    // QApplication::setWindowIcon(icon);
 
     updateWindowTitle();
 
@@ -465,7 +480,7 @@ void MainWindow::createActions()
         new QAction(QIcon::fromTheme("system-help"), tr("Report a bug..."), this);
     action->setStatusTip(tr("Report a bug"));
     connect(action, SIGNAL(triggered()), this, SLOT(doBugReport()));
-    
+
     mActions[LookupDocumentationForCursor] = action =
             new QAction(tr("Look Up Documentation for Cursor"), this);
     action->setShortcut(tr("Ctrl+D", "Look Up Documentation for Cursor"));
@@ -1609,18 +1624,18 @@ void MainWindow::openHelpAboutIDE()
     mHelpBrowserDocklet->browser()->gotoHelpFor("Guides/SCIde");
     mHelpBrowserDocklet->focus();
 }
-    
+
 void MainWindow::doBugReport()
 {
     Settings::Manager *settings = mMain->settings();
     bool useGitHubBugReport = false;
-    
+
     if (settings->contains("IDE/useGitHubBugReport")) {
-        
+
         useGitHubBugReport = settings->value("IDE/useGitHubBugReport").toBool();
-        
+
     } else {
-        
+
         QMessageBox* dialog = new QMessageBox();
         dialog->setText("Do you want to submit bugs using <a href=\"https://www.github.com\">GitHub</a>?");
         dialog->setInformativeText("This requires a GitHub account.");
@@ -1629,7 +1644,7 @@ void MainWindow::doBugReport()
         dialog->addButton("Cancel", QMessageBox::RejectRole);
         dialog->exec();
         QMessageBox::ButtonRole clicked = dialog->buttonRole(dialog->clickedButton());
-        
+
         if (clicked == QMessageBox::YesRole || clicked == QMessageBox::NoRole) {
             useGitHubBugReport = (clicked == QMessageBox::YesRole);
             settings->setValue("IDE/useGitHubBugReport", useGitHubBugReport);
@@ -1638,7 +1653,7 @@ void MainWindow::doBugReport()
             return;
         }
     }
-    
+
     if (useGitHubBugReport) {
         QString url("https://github.com/supercollider/supercollider/issues/new");
         QString formData("?labels=bug&body=Bug%20description%3A%0A%0ASteps%20to%20reproduce%3A%0A1.%0A2.%0A3.%0A%0AActual%20result%3A%0A%0AExpected%20result%3A%0A");

@@ -264,10 +264,18 @@ if (WIN32)
 			POST_BUILD
 			COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:scsynth>/plugins
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${plugin}> $<TARGET_FILE_DIR:scsynth>/plugins
-			COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:sclang>/plugins
-			COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${plugin}> $<TARGET_FILE_DIR:sclang>/plugins
 		)
 	endforeach()
+
+	if(SC_SCLANG)
+		foreach(plugin ${plugins} ${supernova_plugins})
+			add_custom_command(TARGET ${plugin}
+				POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:sclang>/plugins
+				COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${plugin}> $<TARGET_FILE_DIR:sclang>/plugins
+			)
+		endforeach()
+	endif(SC_SCLANG)
 
 	if(SC_IDE)
 		foreach(plugin ${plugins} ${supernova_plugins})
@@ -294,7 +302,7 @@ if (WIN32)
 		DESTINATION "${SC_WIN_BUNDLE_NAME}/plugins"
 	)
 
-elseif(APPLE)
+elseif(APPLE AND NOT MACOS_FHS)
 	foreach(plugin ${plugins} ${supernova_plugins})
 		add_custom_command(TARGET ${plugin} POST_BUILD
 			COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../Resources/plugins/

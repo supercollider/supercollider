@@ -24,14 +24,14 @@ if(${CMAKE_COMPILER_IS_GNUCXX})
     add_definitions(-Wreorder)
 endif()
 
-if (APPLE)
+if (APPLE AND NOT MACOS_FHS)
   include (${CMAKE_SOURCE_DIR}/cmake_modules/MacAppFolder.cmake)
   set(ide_name ${scappbundlename})
 else()
   set(ide_name scide)
 endif()
 
-if(APPLE)
+if(APPLE AND NOT MACOS_FHS)
     if(NOT SC_SYMLINK_CLASSLIB)
         foreach(file ${ClassLibrary} ${HelpSource})
             string(REPLACE ${CMAKE_SOURCE_DIR} "" PathInBundle ${file} )
@@ -241,7 +241,7 @@ set(ide_sources ${ide_src} ${all_hdr} )
 
 set(ide_rc_sources ${ide_moc_src} ${ide_forms_src} ${ide_rcc} ${translations})
 
-if(APPLE)
+if(APPLE AND NOT MACOS_FHS)
     foreach(file ${translations})
         set_source_files_properties(${file} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/translations)
     endforeach()
@@ -257,15 +257,26 @@ if(WIN32)
 endif(WIN32)
 
 
-# final builds of the IDE seem to be broken atm
+# FIXME Build breaks with FINAL_BUILD enabled
 if(0 AND FINAL_BUILD)
+  OPTION(ENABLE_FINAL "Enable final build all-in-one compilation.")
   CREATE_FINAL_FILE(scide_final.cpp ${ide_sources})
-  add_executable( SuperCollider MACOSX_BUNDLE scide_final.cpp ${ide_rc_sources} ${RES_FILES} ${AdditionalBundleSources})
+    if(MACOS_FHS)
+      add_executable( SuperCollider scide_final.cpp ${ide_rc_sources} ${RES_FILES} ${AdditionalBundleSources})
+    elseif(WIN32)
+      add_executable( SuperCollider WIN32 scide_final.cpp ${ide_rc_sources} ${RES_FILES} ${AdditionalBundleSources})
+    else()
+      add_executable( SuperCollider MACOSX_BUNDLE scide_final.cpp ${ide_rc_sources} ${RES_FILES} ${AdditionalBundleSources})
+    endif()
+elseif(MACOS_FHS)
+  add_executable( SuperCollider ${ide_sources} ${ide_rc_sources} ${RES_FILES} ${AdditionalBundleSources})
+elseif(WIN32)
+  add_executable( SuperCollider WIN32 ${ide_sources} ${ide_rc_sources} ${RES_FILES} ${AdditionalBundleSources})
 else()
   add_executable( SuperCollider MACOSX_BUNDLE ${ide_sources} ${ide_rc_sources} ${RES_FILES} ${AdditionalBundleSources})
 endif()
 
-if(APPLE)
+if(APPLE AND NOT MACOS_FHS)
     set_target_properties(SuperCollider PROPERTIES OUTPUT_NAME "${ide_name}")
 else()
     set_target_properties(SuperCollider PROPERTIES OUTPUT_NAME "scide")
@@ -284,7 +295,10 @@ else()
     target_link_libraries( SuperCollider boost_system )
 endif()
 
-if(APPLE)
+if(APPLE AND MACOS_FHS)
+    target_link_libraries( SuperCollider "-framework CoreServices -framework Foundation")
+    target_link_libraries( SuperCollider "-framework Cocoa" )
+elseif(APPLE)
     target_link_libraries( ${ide_name} "-framework CoreServices -framework Foundation")
     target_link_libraries( ${ide_name} "-framework Cocoa" )
 elseif(WIN32)
@@ -318,7 +332,7 @@ endif()
 
 # Installation
 
-if(APPLE)
+if(APPLE AND NOT MACOS_FHS)
     if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
         set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/Install" CACHE PATH "Install path prefix" FORCE)
     endif()
@@ -407,6 +421,9 @@ elseif(WIN32)
       list(APPEND SC_WIN_DLL_DIRS "${QT_BIN_PATH}")
     endif(QT_BIN_PATH)
 
+    SET(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}")
+    include(InstallRequiredSystemLibraries)
+
     include(DeployQt5)
     install_qt5_executable(
       "${SC_WIN_BUNDLE_NAME}/sclang.exe"
@@ -418,6 +435,8 @@ elseif(WIN32)
 else()
   install(TARGETS SuperCollider
       RUNTIME DESTINATION "bin"
+      # avoid build break if scide is installed as bundle
+      BUNDLE DESTINATION "bin"
       PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
   install(FILES ${translations}
       DESTINATION "share/SuperCollider/translations")

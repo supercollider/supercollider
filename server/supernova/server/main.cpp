@@ -256,6 +256,9 @@ void set_plugin_paths(server_arguments const & args, nova::sc_ugen_factory * fac
         sc_GetResourceDirectory(plugin_dir, MAXPATHLEN);
         factory->load_plugin_folder(path(plugin_dir) / "plugins");
 
+        sc_GetResourceDirectory(plugin_dir, MAXPATHLEN);
+        factory->load_plugin_folder(path(plugin_dir) / "/../../lib/SuperCollider/plugins");
+
         char extension_dir[MAXPATHLEN];
         sc_GetSystemExtensionDirectory(extension_dir, MAXPATHLEN);
         factory->load_plugin_folder(path(extension_dir) / "plugins");

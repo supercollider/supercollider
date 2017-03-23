@@ -50,7 +50,9 @@ Prerequisites:
 
   *Note*: As of this writing the latest stable Qt is version 5.8. SC depends on Qt5WebKit, which was dropped from the binary distributions of Qt since version 5.6 (functionally replaced by Qt5WebEngine). Therefore you cannot simply install the latest Qt5 via homebrew and rely on the defaults. You can either install qt55 (accessed at /usr/local/opt/qt@55) and replace `brew --prefix qt5` by `brew --prefix qt55` in
   the build instructions below, or install the current Qt version with the option `--with-qtwebkit`. As this is a non-standard install, brew will build qt5 locally (go drink a coffee).
+
   If you already had Qt5, and and your build broke after an update, or if you need several Qt5 installs, you can set the version to be used by default with `brew switch`. (for example `brew switch qt5 5.5.1_2`, you can also "freeze" the Qt5 version with `brew pin`).
+
 
 Obtaining the source code
 -------------------------
@@ -97,12 +99,9 @@ To install, you may move this to /Applications or use it in place from the build
 
 (The `..` at the end is easy to miss. Don't forget it!)
 
-This specifies to cmake that we will be using Xcode to build. It also specifies the location of qt so that the complier/linker can find it
-(note that you might have to set `qt55` instead of `qt5`, depending on how you installed you qt5 version (see above, "Prerequisites")).
-`brew --prefix qt5` will be expanded to the path to current Qt5 when the command is run.
+This specifies to cmake that we will be using Xcode to build. It also specifies the location of qt so that the complier/linker can find it (note that you might have to set `qt55` instead of `qt5`, depending on how you installed you qt5 version (see above, "Prerequisites")). `brew --prefix qt5` will be expanded to the path to current Qt5 when the command is run.
 
-If you are not using the Homebrew install then you should substitute the path to the parent folder of the bin/include/lib folders in that
-Qt tree.
+If you are not using the Homebrew install then you should substitute the path to the parent folder of the bin/include/lib folders in that Qt tree.
 
 ##### Build
 
@@ -277,27 +276,86 @@ Qt Creator has very good `cmake` integration and can build `cmake` projects with
     brew linkapps qt5
 
 
-Building without Qt or the IDE
-------------------------------
+Building without Qt, the IDE, or server-only
+---------------------------------------------
 
 The Qt framework is used for the SC-IDE, and to provide a graphical toolkit for the sclang language interpreter for users to build their own GUIs.
 
-The 3.8 release does not currently support building on macOS without also building the IDE.
-It is also not currently possible to build sclang without Qt.
+Also SuperCollider's sound server(s), scsynth, and it's sibling, supernova do not depend on sclang or the IDE, and there are many projects that make use of scsynth without the other SuperCollider components.
 
-This should be fixed at some point (its a build tool configuration issue). Until then these build flags do not work on macOS:
+The build system supports building parts of the whole application by adding arguments to the cmake build configuration. These are:
 
-`-DSC_IDE=OFF`
+    Build without IDE:     `-DSC_IDE=OFF`
 
-`-DSC_QT=OFF`
+    Build without QT:      `-DSC_QT=OFF`
 
-They do however work on Linux and Windows.
+    Build without sclang:  `-DSC_SCLANG=OFF`
+
+This uses a "top-down" logic, so in order to build server only, you need to "switch" the IDE and sclang off:
+
+    $> cmake -G Xcode -D SC_IDE=OFF -D SC_SCLANG=OFF ..
+
+In this case Qt will be removed as build requirement automatically. Note that for server only, you still require libsndfile, but libreadline and Qt are not required any more. If you build supernova, portaudio also is required.
+
+Setting `SC_IDE=OFF` will not only prevent building SC-IDE, but also switch to a different install mode. As neither sclang (right now) nor the servers provide a graphical interface, it makes no sense to install them into a MacOS application bundle (like SC-IDE). Therefore the install switches into FHS mode and places sclang and the server(s) within the default systempath at /usr/local/bin. In this case the other supercollider components are places like in Linux builds, the resources folder, containing the class library, HelpSource and other folders will be located at /usr/local/share/SuperCollider, the plugins at /usr/local/lib/SuperCollider/plugins. Note that you can set the switch between install modes by setting:
+
+    -D MACOS_FHS=ON/OFF
+
+Note though, that not all feature combinations are supported, partially because they are not implemented, partially because they seem to have no practical relevance. Tested are:
+
+Sclang with Qt in command line mode:
+
+    -D SC_IDE=OFF
+
+Server only:
+
+    -D SC_IDE=OFF -D SC_SCLANG=OFF
+
+Experimentally supported is the full set including the IDE, installed to the FHS-system (no application bundle):
+
+    -D MACOS_FHS=ON
+
+You cannot switch building the server scsynth off. Supernova can be added to all variants.
+
+NOTE: the build system tries to handle these arguments cleverly. For example it will not build
+SC-IDE if you set SC_SCLANG off. BUT: this only works automatically if you haven't set
+the dependant value manually before. Manually set arguments are written to a cache, the values
+in which override automatically generated values. Any argument that has been set manually, must therefore be changed explicitly if required by the build logic. For example:
+
+You start a fresh *server-only* build:
+
+    cmake -G Xcode -D SC_SCLANG=OFF ..
+
+Later, using the same build folder you decide to add the IDE (and implicitly sclang). In that
+case it is not enough to set SC-IDE=ON, you also need to set SC_SCLANG explicitly:
+
+    cmake -D CMAKE_PREFIX_PATH=`brew --prefix qt5` -D SC_IDE=ON -D SC_SCLANG=ON ..
+
+NOTE: as SC_QT was not specified manually at any point it was switched off automatically
+for the server-only build and switched on for the build including the IDE. However once
+the IDE is added, specifying the CMAKE_PREFIX_PATH explicitly cannot be avoided.
+
+The interplay between arguments provided on the command line, values generated automatically
+by cmake, values stored in the cache, and also the visiblity of such values in different
+parts of the build system, is a bit more involved than described here. Therefore a good
+rule of thumbs is: if you change any of a set of interrelated values, set all of the values
+in that set explicitly. Or: if you get build configuration errors, try to find out if another
+value could be stored in the cache that conflicts with the value you set. If everything
+fails, deleting the cache (CMakeCache.txt) should help if the arguments you set manually
+are supported by the build system.
+
+
+### Qt-less build
+
+Choosing a `SC_QT=OFF` build for a slim sclang will by necessity turn the SC-IDE build off. Qt-less sclang is required on X-less linux systems, preferred on low resources systems, and sometimes preferred by people who use other graphic toolkits than Qt. Note that the class-library contains classes that depend on the availability of the graphical toolkit, therefore you will get errors at sclang startup until these classes are removed. See the link below for a recipe for Linux installs, they should be easily adaptable (see point 5):
+
+    http://supercollider.github.io/development/building-raspberrypi
 
 
 sclang and scynth executables
 -----------------------------
 
-The executables `sclang`, `scsynth` and (if available) `supernova` are inside the application bundle:
+In the default install, which uses a MacOs application bundle, executables `sclang`, `scsynth` and (if available) `supernova` are located here:
 
 `SuperCollider.app/Contents/MacOS/sclang`
 `SuperCollider.app/Contents/Resources/scsynth`
@@ -305,7 +363,7 @@ The executables `sclang`, `scsynth` and (if available) `supernova` are inside th
 
 The SuperCollider class library and help files are in:
 
-`SuperCollider.app/Contents/Resources`
+`SuperCollider.app/Contents/Resources/SCClassLibrary`
 
 In previous versions of SuperCollider these resources lived in the top folder next to SuperCollider.app. To make a standard self-contained app bundle with correct library linking, these have now been moved into the app bundle.
 
@@ -319,9 +377,10 @@ or
 
     cd /path/to/SuperCollider.app/Contents/MacOS
 
+
 ##### Adding scsynth and sclang to your path
 
-To have `sclang` and `scsynth` available system-wide, you can create shell scripts and put them somewhere that is in your PATH (eg. `/usr/local/bin` or `~/bin`)
+If sclang and scsynth are contained in an application bundle, you need somehow to add them to the path, in order for them to be easily accessible from any folder. However this can leed to difficulties, as some required libraries - namely Qt - are not found from the directory you are calling sclang from. One way to tackle this is to create a shell script that cd's into the path where the binaries are stored, and then starts them as required:
 
 For `sclang`:
 
@@ -336,6 +395,7 @@ And for `scsynth`:
     export SC_PLUGIN_PATH="/full/path/to/SuperCollider.app/Resources/plugins/";
     exec ./scsynth $*
 
+
 ###### Why not just symlink them ?
 
 - If you have Qt installed system-wide, sclang will load those as well as the Qt frameworks included in the application bundle. It will then fail with an error message like:
@@ -345,3 +405,5 @@ This application failed to start because it could not find or load the Qt platfo
 
 - scsynth will not find the included "plugins", unless given explicitly
   with the -U commandline flag or using the SC_PLUGIN_PATH environment variable as shown above.
+
+NOTE: Making an FHS install of SC will circumvent these problems because the libraries required will be installed as a prerequisite of the build. Sclang and scsynth do not see the libraries contained in the SuperCollider application bundle. But: if the libraries used in the FHS-build subsequently get replaced by updated versions, incompatibilities may arise. In that case you should repeat the FHS build with the updated libraries.

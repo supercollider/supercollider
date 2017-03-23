@@ -192,9 +192,13 @@ void initialize_library(const char *uGensPluginPath)
 			PlugIn_LoadDir(SC_PLUGIN_DIR, true);
 		}
 #endif
-		// load default plugin directory
+
+// load default plugin directory
 		char pluginDir[MAXPATHLEN];
 		sc_GetResourceDirectory(pluginDir, MAXPATHLEN);
+#ifdef MACOS_FHS
+		sc_AppendToPath(pluginDir, MAXPATHLEN, "/../../lib/SuperCollider");
+#endif
 		sc_AppendToPath(pluginDir, MAXPATHLEN, SC_PLUGIN_DIR_NAME);
 
 		if (sc_DirectoryExists(pluginDir)) {

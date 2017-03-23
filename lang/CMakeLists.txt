@@ -330,7 +330,7 @@ if(LTO)
         APPEND PROPERTY LINK_FLAGS "-flto -flto-report -fwhole-program")
 endif()
 
-if(APPLE)
+if(APPLE AND NOT MACOS_FHS)
     add_custom_command(TARGET sclang POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:SuperCollider>/../MacOS/
         COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:sclang> $<TARGET_FILE_DIR:SuperCollider>/../MacOS)
@@ -383,9 +383,10 @@ elseif(WIN32)
         DESTINATION "${SC_WIN_BUNDLE_NAME}"
     )
 
+    SET(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}")
+    include(InstallRequiredSystemLibraries)
+
     if(SC_QT)
-        SET(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${CMAKE_INSTALL_PREFIX}/${SC_WIN_BUNDLE_NAME}")
-        include(InstallRequiredSystemLibraries)
         if(MSYS)
             SET(QT_PLUGINS_DIR "${QT_BIN_PATH}/../share/qt5/plugins" CACHE PATH "Location of qt plugins for windows as provided by MSYS2")
         else()
