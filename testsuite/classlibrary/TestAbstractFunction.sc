@@ -1,7 +1,7 @@
 TestAbstractFunction : UnitTest {
 
 	test_rest_binop {
-
+		var func;
 		var args = [[1, Rest(1)], [Rest(1), 1], [Rest(1), Rest(1)], [1, Rest()], [Rest(), Rest()]];
 		var funcs = [
 			{ |a, b| a * b },
@@ -18,7 +18,18 @@ TestAbstractFunction : UnitTest {
 			(all.as(Set).size == 1)
 			&& (all.flat.every(_.isKindOf(Rest))),
 			"All binary math operations on Rest should return Rest, and should have equal value for equivalent instance values. Default value should be 1"
-		)
+		);
+
+		func = { |op, a, b| a.perform(op, b) == a.value.perform(op, b.value) };
+		all = [(0..2), (0..2).collect(Rest(_))].allTuples;
+		all = all ++ all.collect(_.reverse);
+		all.postln;
+		this.assert(
+			['<', '>', '<=', '>='].every { |op| all.every { |args| func.(op, *args) } },
+			"Instances of Rest should return a boolean for ordering operators"
+		);
+
+
 	}
 
 	test_rest_event {
