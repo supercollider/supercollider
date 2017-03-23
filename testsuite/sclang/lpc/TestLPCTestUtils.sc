@@ -512,6 +512,59 @@ TestLPCTestUtils : UnitTest {
 		this.assert(LPCTestUtils.doOutputsMatch(in, a, b).not, "doOutputsMatch: -nan and nan should be treated as equivalent only with Floats");
 	}
 
+	// Windows tests
+	test_doOutputsMatch_windows_NaN {
+		var in = "0/0";
+		var nanStrings = ["nan", "-nan", "1.#IND", "-1.#IND"];
+
+		nanStrings = nanStrings.dup.allTuples;
+
+		nanStrings.do {
+			arg pair;
+			var testPair = pair.collect { |x| LPCTestUtils.stringToHexString(x) ++ ":Float" };
+			this.assert(LPCTestUtils.doOutputsMatch(in, *testPair), "doOutputsMatch: nan (\"%\") and nan (\"%\") should be treated as equivalent".format(*pair));
+		}
+	}
+
+	test_doOutputsMatch_windows_inf {
+		var in = "0/0";
+		var infStrings = ["inf", "1.#INF"];
+
+		infStrings = infStrings.dup.allTuples;
+
+		infStrings.do {
+			arg pair;
+			var testPair = pair.collect { |x| LPCTestUtils.stringToHexString(x) ++ ":Float" };
+			this.assert(LPCTestUtils.doOutputsMatch(in, *testPair), "doOutputsMatch: inf (\"%\") and inf (\"%\") should be treated as equivalent".format(*pair));
+		}
+	}
+
+	test_doOutputsMatch_windows_inf_neg {
+		var in = "0/0";
+		var infStrings = ["-inf", "-1.#INF"];
+
+		infStrings = infStrings.dup.allTuples;
+
+		infStrings.do {
+			arg pair;
+			var testPair = pair.collect { |x| LPCTestUtils.stringToHexString(x) ++ ":Float" };
+			this.assert(LPCTestUtils.doOutputsMatch(in, *testPair), "doOutputsMatch: -inf (\"%\") and -inf (\"%\") should be treated as equivalent".format(*pair));
+		}
+	}
+
+	test_doOutputsMatch_windows_inf_noMatch {
+		var in = "0/0";
+		var infStrings = [["-inf", "-1.#INF"], ["inf", "1.#INF"]];
+
+		infStrings = infStrings.allTuples;
+
+		infStrings.do {
+			arg pair;
+			var testPair = pair.collect { |x| LPCTestUtils.stringToHexString(x) ++ ":Float" };
+			this.assert(LPCTestUtils.doOutputsMatch(in, *testPair).not, "doOutputsMatch: -inf (\"%\") and -inf (\"%\") should be treated as equivalent".format(*pair));
+		}
+	}
+
 	// Thanks to Nathan Ho
 	test_doOutputsMatch_floatPrecision_match {
 		var in = ".Q8";
@@ -527,7 +580,7 @@ TestLPCTestUtils : UnitTest {
 		var a = LPCTestUtils.stringToHexString("0.7283950617239") ++ ":Float";
 		var b = LPCTestUtils.stringToHexString("0.728395061724") ++ ":Float";
 
-		this.assert(LPCTestUtils.doOutputsMatch(in, a, b).not, "doOutputsMatch: not-so-close floats (distance > %) should not be treated as equivalent".format(LPCTestUtils.floatEqualityPrecision));
+		this.assert(LPCTestUtils.doOutputsMatch(in, a, b).not, "doOutputsMatch: not-so-close floats (distance > %) should not be treated as equivalent".format(LPCTestUtils.floatEqualityPrec));
 	}
 
 	test_doOutputsMatch_floatPrecision_noMatch_distant {

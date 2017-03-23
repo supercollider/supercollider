@@ -38,6 +38,8 @@ safeMkdir                          // mkdir if no dir exists, throw error on fai
 parseTestResult                    // turn a line read from a file into structured data
 doOutputsMatch                     // return true iff two test results are considered
                                    //   matching. see implementation for special cases.
+doFloatOutputsMatch                // return true if floats match for a more accepting
+                                   //   cross-platform interpretation
 incrementAlphabetCount             // increment an alphabet counter in-place
 debug                              // ordinary debugging method
 
@@ -71,9 +73,14 @@ LPCTestUtils {
 	const <runtimeErrorString = "!rErr";
 
 	// Values used in `doOutputsMatch`
-	const <nanString = "6E616E"; // hex string for "nan"
-	const <lidString = "LID";    // string for "LID"
-	const <floatEqualityPrecision = 1e-13;
+	const <floatEqualityPrec = 1e-13;
+	const <nanString_win =     "312E23494E44";   // hex string for "1.#IND", NaN on windows
+	const <nanString =         "6E616E";         // hex string for "nan"
+	const <infString_pos =     "696E66";         // hex string for "inf"
+	const <infString_neg =     "2D696E66";       // hex string for "-inf"
+	const <infString_pos_win = "312E23494E46";   // hex string for "1.#INF", +inf on windows
+	const <infString_neg_win = "2D312E23494E46"; // hex string for "-1.#INF", -inf on windows
+	const <lidString =         "LID";            // string for "LID"
 
 	classvar <>doDebug = true;
 
@@ -520,37 +527,72 @@ LPCTestUtils {
 
 		// Special floating point quirks
 		if( a.notNil && b.notNil && { (a[1] == "Float") && (a[1] == b[1]) } ) {
-			// If both nan of some sort, return true. Otherwise check for equality
-			// with very small tolerance.
-			if(a[0].contains(nanString) && b[0].contains(nanString)) {
-				this.debug(
-					"Ignoring a result because of nan."
-					"\tInput: " ++ input ++
-					"\tOutput 1: " ++ a ++
-					"\tOutput 2: " ++ b
-				);
+			^this.doFloatOutputsMatch(input, a[0], b[0]);
+		};
+
+		^a == b;
+	}
+
+	*doFloatOutputsMatch {
+		arg input, a, b; // assumed: a and b are hex strings of floats
+
+		// If both nan of some sort, return true. `endsWith` because some systems
+		// may print NaN as `-nan`.
+		if( (a.endsWith(nanString) || a.endsWith(nanString_win)) &&
+			  (b.endsWith(nanString) || b.endsWith(nanString_win)) ) {
+			this.debug(
+				"Ignoring a result because of nan."
+				"\tInput: " ++ input ++
+				"\tOutput 1: " ++ a ++
+				"\tOutput 2: " ++ b
+			);
+
+			^true;
+		};
+
+		// If both +inf, return true.
+		if( ((a == infString_pos) || (a == infString_pos_win)) &&
+			  ((b == infString_pos) || (b == infString_pos_win)) ) {
+			this.debug(
+				"Strings matched under cross-platform representations of +inf."
+				"\tInput: " ++ input ++
+				"\tOutput 1: " ++ a ++
+				"\tOutput 2: " ++ b
+			);
+
+			^true;
+		};
+
+		// If both -inf, return true.
+		if( ((a == infString_neg) || (a == infString_neg_win)) &&
+			  ((b == infString_neg) || (b == infString_neg_win)) ) {
+			this.debug(
+				"Strings matched under cross-platform representations of -inf."
+				"\tInput: " ++ input ++
+				"\tOutput 1: " ++ a ++
+				"\tOutput 2: " ++ b
+			);
+
+			^true;
+		} {
+			var a_f = this.stringFromHexString(a).asFloat;
+			var b_f = this.stringFromHexString(b).asFloat;
+
+			// Note: `equalWithPrecision` returns false when comparing infinities. Use
+			// relative precision because we're only trying to catch rounding errors.
+			// If this fails, fall through to simple equality test which will succeed
+			// on inf==inf or -inf==-inf.
+			if ( equalWithPrecision(a_f, b_f, 0, floatEqualityPrec) ) {
+				if( a_f != b_f ) {
+					this.debug(
+						"Ignoring a result because of float precision."
+						"\tInput: %\tOutput 1: % (%) \tOutput 2: % (%)".format(
+							input, a, a_f, b, b_f // might as well post floats since we have them
+						);
+					);
+				};
 
 				^true;
-			} {
-				var a_f = this.stringFromHexString(a[0]).asFloat;
-				var b_f = this.stringFromHexString(b[0]).asFloat;
-
-				// Note: `equalWithPrecision` returns false when comparing infinities. Use
-				// relative precision because we're only trying to catch rounding errors.
-				// If this fails, fall through to simple equality test which will succeed
-				// on inf==inf or -inf==-inf.
-				if ( equalWithPrecision(a_f, b_f, 0, floatEqualityPrecision) ) {
-					if( a_f != b_f ) {
-						this.debug(
-							"Ignoring a result because of float precision."
-							"\tInput: %\tOutput 1: % (%) \tOutput 2: % (%)".format(
-								input, a, a_f, b, b_f // might as well post floats since we have them
-							);
-						);
-					};
-
-					^true;
-				}
 			}
 		};
 
