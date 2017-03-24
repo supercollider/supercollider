@@ -200,7 +200,7 @@ void Style::drawControl
 
     switch(element) {
     case QStyle::CE_TabBarTab: {
-        const QStyleOptionTabV3 *tabOption = static_cast<const QStyleOptionTabV3*>(option);
+        const QStyleOptionTab *tabOption = static_cast<const QStyleOptionTab*>(option);
 
         painter->save();
 
@@ -338,7 +338,7 @@ QRect Style::subElementRect
         return r;
     }
     case QStyle::SE_TabBarTabText: {
-        const QStyleOptionTabV3 *tabOption = static_cast<const QStyleOptionTabV3*>(option);
+        const QStyleOptionTab *tabOption = static_cast<const QStyleOptionTab*>(option);
 
         int lMargin = 5;
         if (tabOption->leftButtonSize.width() > 0)
