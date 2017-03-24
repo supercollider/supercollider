@@ -5,15 +5,15 @@ related:: Classes/AbstractFunction, Classes/Maybe, Classes/Ref, Classes/Rest
 
 DESCRIPTION::
 If you need to ensure that math operations always return the result wrapped in a specific object, you can use Operand or subclass from it.
-For some practical examples, see its subclass link::Classes/Rest::.
+For some practical examples, see its subclass link::Classes/Rest::. If you need to keep nested operations, use link::Classes/Maybe::.
 
 
 Its creation is idempotent, that is code::Operand(Operand(x)) == Operand(x)::.
 
 
 code::
-// An Operand is and Operand is an Operand
-Operand(Operand(Operand(1))) - 1
+// An Operand is an Operand is an Operand
+Operand(Operand(Operand(1))) - 1 == 0
 ::
 
 code::
@@ -29,6 +29,13 @@ CLASSMETHODS::
 METHOD:: new
 argument:: value
 Return a new instance of Operand, using an arbitrary object as value.
+
+code::
+a = Operand(1) + 7; // returns Operand(8)
+
+// the *new method is idempotent:
+Operand(Operand(Operand(1))) == Operator(1)
+::
 
 
 INSTANCEMETHODS::
