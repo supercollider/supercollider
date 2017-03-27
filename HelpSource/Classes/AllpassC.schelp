@@ -1,12 +1,25 @@
 class:: AllpassC
-summary:: All pass delay line with cubic interpolation.
+summary:: Schroeder allpass delay line with cubic interpolation.
 related:: Classes/AllpassL, Classes/AllpassN, Classes/BufAllpassC
 categories::  UGens>Delays
 
 
 Description::
 
-All pass delay line with cubic interpolation. See also
+A Schroeder allpass filter is given by the difference equations
+
+code::
+s(t) = x(t) + k * s(t - D)
+y(t) = -k * s(t) + s(t - D)
+::
+
+where code::x(t):: is the input signal, code::y(t):: is the output signal,
+code::D:: is the delay time, and code::k:: is the allpass coefficient.
+
+In this UGen, code::k:: is computed as
+code::k == 0.001 ** (delay / decay.abs) * decay.sign:: (0.001 is -60 dBFS).
+
+See also
 link::Classes/AllpassN::  which uses no interpolation, and
 link::Classes/AllpassL::  which uses linear interpolation.
 Cubic interpolation is more computationally expensive than linear,
