@@ -171,7 +171,7 @@ bool SC_LanguageConfig::readLibraryConfigYAML(const char* fileName, bool standal
 		Node doc = YAML::Load( fin );
 		if (doc) {
 			const Node & includePaths = doc[ "includePaths" ];
-			if (includePaths && includePaths.Type() == NodeType::Sequence) {
+			if (includePaths && includePaths.IsSequence()) {
 				for (auto const & pathNode : includePaths ) {
 					string path = pathNode.as<string>( emptyString );
 					if( !path.empty() )
@@ -180,7 +180,7 @@ bool SC_LanguageConfig::readLibraryConfigYAML(const char* fileName, bool standal
 			}
 
 			const Node & excludePaths = doc[ "excludePaths" ];
-			if (excludePaths && excludePaths.Type() == NodeType::Sequence) {
+			if (excludePaths && excludePaths.IsSequence()) {
 				for (auto const & pathNode : excludePaths ) {
 					string path = pathNode.as<string>( emptyString );
 					if( !path.empty() )
