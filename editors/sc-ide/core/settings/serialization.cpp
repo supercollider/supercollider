@@ -77,19 +77,20 @@ static QVariant parseTextFormat( const YAML::Node & node )
             fm.setBackground(color);
     }
 
-    n = node["bold"];
+    n = node[ "bold" ];
     if(n && n.IsScalar()) {
         bool bold = n.as<bool>();
-        if(bold) fm.setFontWeight(QFont::Bold);
+        if(bold)
+          fm.setFontWeight(QFont::Bold);
     }
 
-    n = node["italic"];
+    n = node[ "italic" ];
     if(n && n.IsScalar()) {
         bool italic = n.as<bool>();
         fm.setFontItalic(italic);
     }
 
-    n = node["underline"];
+    n = node[ "underline" ];
     if(n && n.IsScalar()) {
         bool underline = n.as<bool>();
         fm.setFontUnderline(underline);

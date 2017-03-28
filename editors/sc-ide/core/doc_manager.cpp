@@ -765,7 +765,8 @@ void DocumentManager::handleNewDocScRequest( const QString & data )
             std::string text  = doc[1].as<std::string>();
             std::string id    = doc[2].as<std::string>();
 
-            Document *document = createDocument( false, id.c_str(),
+            Document *document = createDocument( false,
+                                                 id.c_str(),
                                                  QString::fromUtf8(title.c_str()),
                                                  QString::fromUtf8(text.c_str()) );
             syncLangDocument(document);
@@ -811,7 +812,7 @@ void DocumentManager::handleGetDocTextScRequest( const QString & data )
             int range          = doc[3].as<int>();
 
             Document *document = documentForId(id.c_str());
-            if(document){
+            if(document) {
                 QString docText = document->textAsSCArrayOfCharCodes(start, range);
 
                 QString command = QStringLiteral("Document.executeAsyncResponse(\'%1\', %2.asAscii)").arg(funcID.c_str(), docText);
@@ -838,15 +839,15 @@ void DocumentManager::handleSetDocTextScRequest( const QString & data )
             int range          = doc[4].as<int>();
 
             Document *document = documentForId(id.c_str());
-            if(document){
+            if(document) {
                 // avoid a loop
-                if(document == mCurrentDocument){
+                if(document == mCurrentDocument) {
                     disconnect(document->textDocument(), SIGNAL(contentsChange(int, int, int)), this, SLOT(updateCurrentDocContents(int, int, int)));
                 }
 
                 document->setTextInRange(QString::fromUtf8(text.c_str()), start, range);
 
-                if(document == mCurrentDocument){
+                if(document == mCurrentDocument) {
                     connect(document->textDocument(), SIGNAL(contentsChange(int, int, int)), this, SLOT(updateCurrentDocContents(int, int, int)));
                 }
 
@@ -872,8 +873,8 @@ void DocumentManager::handleSetDocSelectionScRequest( const QString & data )
             int range          = doc[2].as<int>();
 
             Document *document = documentForId(id.c_str());
-            if(document){
-                if(document->lastActiveEditor()){
+            if(document) {
+                if(document->lastActiveEditor()) {
                     document->lastActiveEditor()->showPosition(start, range);
                 }
             }
@@ -897,7 +898,7 @@ void DocumentManager::handleSetDocEditableScRequest( const QString & data )
             Document *document = documentForId(id.c_str());
             if(document){
                 document->setEditable(editable);
-                if(document->lastActiveEditor()){
+                if(document->lastActiveEditor()) {
                     document->lastActiveEditor()->setReadOnly(!editable);
                 }
             }
@@ -919,7 +920,7 @@ void DocumentManager::handleSetDocPromptsToSaveScRequest( const QString & data )
             bool promptsToSave = doc[1].as<bool>();
 
             Document *document = documentForId(id.c_str());
-            if(document){
+            if(document) {
                 document->setPromptsToSave(promptsToSave);
             }
         }
@@ -1027,7 +1028,7 @@ bool DocumentManager::parseActionEnabledRequest( const QString & data, std::stri
         }
     } catch(...) {
     }
-	return false;
+    return false;
 }
 
 void DocumentManager::handleEnableKeyDownScRequest( const QString & data )
