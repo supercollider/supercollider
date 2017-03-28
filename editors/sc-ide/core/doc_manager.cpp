@@ -758,7 +758,7 @@ void DocumentManager::handleNewDocScRequest( const QString & data )
     try {
         YAML::Node doc = YAML::Load( data.toStdString() );
         if ( doc ) {
-            if (doc.Type() != YAML::NodeType::Sequence)
+            if ( !doc.IsSequence() )
                 return;
 
             std::string title = doc[0].as<std::string>();
@@ -781,7 +781,7 @@ void DocumentManager::handleOpenFileScRequest( const QString & data )
     try {
         YAML::Node doc = YAML::Load( data.toStdString() );
         if ( doc ) {
-            if (doc.Type() != YAML::NodeType::Sequence)
+            if ( !doc.IsSequence() )
                 return;
 
             std::string path    = doc[0].as<std::string>();
@@ -802,7 +802,7 @@ void DocumentManager::handleGetDocTextScRequest( const QString & data )
     try {
         YAML::Node doc = YAML::Load( data.toStdString() );
         if ( doc ) {
-            if (doc.Type() != YAML::NodeType::Sequence)
+            if ( !doc.IsSequence() )
                 return;
 
             std::string id     = doc[0].as<std::string>();
@@ -828,7 +828,7 @@ void DocumentManager::handleSetDocTextScRequest( const QString & data )
     try {
         YAML::Node doc = YAML::Load( data.toStdString() );
         if ( doc ) {
-            if (doc.Type() != YAML::NodeType::Sequence)
+            if ( !doc.IsSequence() )
                 return;
 
             std::string id     = doc[0].as<std::string>();
@@ -864,7 +864,7 @@ void DocumentManager::handleSetDocSelectionScRequest( const QString & data )
     try {
         YAML::Node doc = YAML::Load( data.toStdString() );
         if ( doc ) {
-            if (doc.Type() != YAML::NodeType::Sequence)
+            if ( !doc.IsSequence() )
                 return;
 
             std::string id     = doc[0].as<std::string>();
@@ -888,7 +888,7 @@ void DocumentManager::handleSetDocEditableScRequest( const QString & data )
     try {
         YAML::Node doc = YAML::Load( data.toStdString() );
         if ( doc ) {
-            if (doc.Type() != YAML::NodeType::Sequence)
+            if ( !doc.IsSequence() )
                 return;
 
             std::string id     = doc[0].as<std::string>();
@@ -912,7 +912,7 @@ void DocumentManager::handleSetDocPromptsToSaveScRequest( const QString & data )
     try {
         YAML::Node doc = YAML::Load( data.toStdString() );
         if ( doc ) {
-            if (doc.Type() != YAML::NodeType::Sequence)
+            if ( !doc.IsSequence() )
                 return;
 
             std::string id     = doc[0].as<std::string>();
@@ -933,7 +933,7 @@ void DocumentManager::handleSetCurrentDocScRequest( const QString & data )
     try {
         YAML::Node doc = YAML::Load( data.toStdString() );
         if ( doc ) {
-            if (doc.Type() != YAML::NodeType::Sequence)
+            if ( !doc.IsSequence() )
                 return;
 
             std::string id     = doc[0].as<std::string>();
@@ -952,7 +952,7 @@ void DocumentManager::handleRemoveDocUndoScRequest( const QString & data )
     try {
         YAML::Node doc = YAML::Load( data.toStdString() );
         if ( doc ) {
-            if (doc.Type() != YAML::NodeType::Sequence)
+            if ( !doc.IsSequence() )
                 return;
 
             std::string id     = doc[0].as<std::string>();
@@ -974,7 +974,7 @@ void DocumentManager::handleCloseDocScRequest( const QString & data )
     try {
         YAML::Node doc = YAML::Load( data.toStdString() );
         if ( doc ) {
-            if (doc.Type() != YAML::NodeType::Sequence)
+            if ( !doc.IsSequence() )
                 return;
 
             std::string id     = doc[0].as<std::string>();
@@ -993,7 +993,7 @@ void DocumentManager::handleSetDocTitleScRequest( const QString & data )
     try {
         YAML::Node doc = YAML::Load( data.toStdString() );
         if ( doc ) {
-            if (doc.Type() != YAML::NodeType::Sequence)
+            if ( !doc.IsSequence() )
                 return;
 
             std::string id     = doc[0].as<std::string>();
@@ -1014,7 +1014,7 @@ bool DocumentManager::parseActionEnabledRequest( const QString & data, std::stri
     try {
         YAML::Node doc = YAML::Load( data.toStdString() );
         if ( doc ) {
-            if (doc.Type() != YAML::NodeType::Sequence)
+            if ( !doc.IsSequence() )
                 return false;
 
             std::string id     = doc[0].as<std::string>();
@@ -1062,7 +1062,7 @@ void DocumentManager::handleEnableGlobalKeyDownScRequest( const QString & data )
     try {
         YAML::Node doc = YAML::Load( data.toStdString() );
         if ( doc ) {
-            if (doc.Type() != YAML::NodeType::Sequence)
+            if ( !doc.IsSequence() )
                 return;
 
             bool enabled = doc[0].as<bool>(enabled);
@@ -1077,7 +1077,7 @@ void DocumentManager::handleEnableGlobalKeyUpScRequest( const QString & data )
     try {
         YAML::Node doc = YAML::Load( data.toStdString() );
         if ( doc ) {
-            if (doc.Type() != YAML::NodeType::Sequence)
+            if ( !doc.IsSequence() )
                 return;
 
             bool enabled = doc[0].as<bool>();
@@ -1138,7 +1138,7 @@ void DocumentManager::handleEnableTextMirrorScRequest( const QString & data )
     try {
         YAML::Node doc = YAML::Load( data.toStdString() );
         if ( doc ) {
-            if (doc.Type() != YAML::NodeType::Sequence)
+            if ( !doc.IsSequence() )
                 return;
 
             bool enabled = doc[0].as<bool>();

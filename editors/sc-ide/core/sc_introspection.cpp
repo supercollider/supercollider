@@ -74,10 +74,10 @@ bool Introspection::parse(const QString & yamlString )
         return false;
     }
 
-    assert (doc.Type() == YAML::NodeType::Sequence);
+    assert(doc.IsSequence());
     for( auto const & element : doc )
     {
-        assert(element.Type() == YAML::NodeType::Sequence);
+        assert(element.IsSequence());
         QString name = element[0].as<std::string>().c_str();
         Class *klass = new Class;
         klass->name = name;

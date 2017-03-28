@@ -485,7 +485,7 @@ void ScServer::handleRuningStateChangedMsg( const QString & data )
     try {
         const YAML::Node doc = YAML::Load( data.toStdString() );
         if( doc ) {
-            assert(doc.Type() == YAML::NodeType::Sequence);
+            assert(doc.IsSequence());
 
             serverRunningState = doc[0].as<bool>();
             hostName           = doc[1].as<std::string>();
