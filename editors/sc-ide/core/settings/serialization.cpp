@@ -63,36 +63,36 @@ static QVariant parseTextFormat( const YAML::Node & node )
     std::string val;
     QTextCharFormat fm;
 
-    Node n = node[ "color" ];
-    if(n && n.IsScalar()) {
-        val = n.as<std::string>();
+    const Node ncolor = node[ "color" ];
+    if(ncolor && ncolor.IsScalar()) {
+        val = ncolor.as<std::string>();
         fm.setForeground(QColor(val.c_str()));
     }
 
-    n = node[ "background" ];
-    if(n && n.IsScalar()) {
-        val = n.as<std::string>();
+    const Node nbg = node[ "background" ];
+    if(nbg && nbg.IsScalar()) {
+        val = nbg.as<std::string>();
         QColor color(val.c_str());
         if(color.isValid())
             fm.setBackground(color);
     }
 
-    n = node[ "bold" ];
-    if(n && n.IsScalar()) {
-        bool bold = n.as<bool>();
+    const Node nbold = node[ "bold" ];
+    if(nbold && nbold.IsScalar()) {
+        bool bold = nbold.as<bool>();
         if(bold)
           fm.setFontWeight(QFont::Bold);
     }
 
-    n = node[ "italic" ];
-    if(n && n.IsScalar()) {
-        bool italic = n.as<bool>();
+    const Node nitalic = node[ "italic" ];
+    if(nitalic && nitalic.IsScalar()) {
+        bool italic = nitalic.as<bool>();
         fm.setFontItalic(italic);
     }
 
-    n = node[ "underline" ];
-    if(n && n.IsScalar()) {
-        bool underline = n.as<bool>();
+    const Node nunder = node[ "underline" ];
+    if(nunder && nunder.IsScalar()) {
+        bool underline = nunder.as<bool>();
         fm.setFontUnderline(underline);
     }
 
