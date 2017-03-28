@@ -44,7 +44,7 @@ Primitives for String.
 #include <boost/intrusive/unordered_set.hpp>
 
 #include <fstream>
-#include "yaml-cpp/yaml.h"
+#include <yaml-cpp/yaml.h>
 
 #include <string>
 #include <vector>

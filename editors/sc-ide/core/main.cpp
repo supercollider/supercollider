@@ -31,7 +31,7 @@
 #include "../primitives/localsocket_utils.hpp"
 
 #include <yaml-cpp/node/node.h>
-#include "yaml-cpp/parser.h"
+#include <yaml-cpp/parser.h>
 
 #include <QAction>
 #include <QApplication>

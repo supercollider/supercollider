@@ -30,7 +30,7 @@
 #include "../../core/settings/manager.hpp"
 #include "../../core/util/standard_dirs.hpp"
 
-#include "yaml-cpp/yaml.h"
+#include <yaml-cpp/yaml.h>
 
 
 namespace ScIDE { namespace Settings {

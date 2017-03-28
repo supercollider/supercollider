@@ -42,7 +42,7 @@
 #include <fstream>
 
 #include <boost/filesystem.hpp>
-#include "yaml-cpp/yaml.h"
+#include <yaml-cpp/yaml.h>
 
 using namespace std;
 

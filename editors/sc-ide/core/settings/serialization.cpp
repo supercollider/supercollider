@@ -20,7 +20,7 @@
 
 #include "serialization.hpp"
 
-#include "yaml-cpp/yaml.h"
+#include <yaml-cpp/yaml.h>
 
 #include <QDebug>
 #include <QStringList>

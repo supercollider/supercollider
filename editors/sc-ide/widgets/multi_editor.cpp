@@ -31,7 +31,7 @@
 #include "../core/session_manager.hpp"
 
 #include <yaml-cpp/node/node.h>
-#include "yaml-cpp/parser.h"
+#include <yaml-cpp/parser.h>
 
 #include <QApplication>
 #include <QDebug>
