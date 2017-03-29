@@ -51,7 +51,9 @@ NodeProxy : BusPlug {
 		var oldGroup = group;
 		if(this.isPlaying) {
 			bundle = MixedBundle.new;
-			if(fadeTime.notNil) { bundle.add([15, group.nodeID, "fadeTime", fadeTime]) };
+			if(fadeTime.notNil) { 
+				bundle.add([15, group.nodeID, "fadeTime", fadeTime]) // n_set
+			};
 			this.stopAllToBundle(bundle, fadeTime);
 			if(freeGroup) {
 				oldGroup = group;
