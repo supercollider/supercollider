@@ -170,7 +170,11 @@ CollStream : IOStream {
 	putString { arg aString;
 		aString.do({ arg char; this.putChar(char); });
 	}
+
 	putPascalString { arg aString;
+		if(aString.size >= 256) {
+			Error("putPascalString: input string must be shorter than 256 chars.").throw;
+		};
 		this.putInt8(aString.size);
 		this.putString(aString);
 	}

@@ -450,16 +450,22 @@ UGen : AbstractFunction {
 		^this.class.name.asString;
 	}
 	writeDef { arg file;
-		file.putPascalString(this.name);
-		file.putInt8(this.rateNumber);
-		file.putInt32(this.numInputs);
-		file.putInt32(this.numOutputs);
-		file.putInt16(this.specialIndex);
-		// write wire spec indices.
-		inputs.do({ arg input;
-			input.writeInputSpec(file, synthDef);
-		});
-		this.writeOutputSpecs(file);
+		try {
+			file.putPascalString(this.name);
+			file.putInt8(this.rateNumber);
+			file.putInt32(this.numInputs);
+			file.putInt32(this.numOutputs);
+			file.putInt16(this.specialIndex);
+			// write wire spec indices.
+			inputs.do({ arg input;
+				input.writeInputSpec(file, synthDef);
+			});
+			this.writeOutputSpecs(file);
+		} {
+			arg e;
+			file.close();
+			Error("UGen: could not write def: %".format(e.what())).throw;
+		}
 	}
 
 	initTopoSort {
