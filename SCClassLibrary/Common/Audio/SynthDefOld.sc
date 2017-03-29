@@ -90,7 +90,9 @@ SynthDefOld : SynthDef {
 			}
 		} { // catch
 			arg e;
-			file.close;
+			if (file.respondsTo(\close)) {
+				file.close;
+			};
 			Error("SynthDefOld: could not write def: %".format(e.what())).throw;
 		}
 	}
@@ -148,7 +150,9 @@ SynthDefOld : SynthDef {
 			//[this.class.name, file.length].postln;
 		} { // catch
 			arg e;
-			file.close;
+			if (file.respondsTo(\close)) {
+				file.close;
+			};
 			Error("UGen: could not write def: %".format(e.what())).throw;
 		}
 	}
