@@ -56,7 +56,7 @@ NodeProxy : BusPlug {
 			if(freeGroup) {
 				oldGroup = group;
 				group = nil;
-				bundle.sched((fadeTime ? this.fadeTime) + (server.latency ? 0), { oldGroup.free });
+				server.sendBundle((fadeTime ? this.fadeTime) + (server.latency ? 0), [11, oldGroup.nodeID]);
 			};
 			bundle.send(server);
 			this.changed(\free, [fadeTime, freeGroup]);
