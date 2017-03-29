@@ -390,9 +390,6 @@ SynthDef {
 			};
 		} { // catch
 			arg e;
-			if (file.respondsTo(\close)) {
-				file.close;
-			};
 			Error("SynthDef: could not write def: %".format(e.what())).throw;
 		}
 	}

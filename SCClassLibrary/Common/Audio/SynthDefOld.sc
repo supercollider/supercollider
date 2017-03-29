@@ -150,9 +150,6 @@ SynthDefOld : SynthDef {
 			//[this.class.name, file.length].postln;
 		} { // catch
 			arg e;
-			if (file.respondsTo(\close)) {
-				file.close;
-			};
 			Error("UGen: could not write def: %".format(e.what())).throw;
 		}
 	}

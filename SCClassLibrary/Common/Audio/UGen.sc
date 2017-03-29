@@ -463,9 +463,6 @@ UGen : AbstractFunction {
 			this.writeOutputSpecs(file);
 		} {
 			arg e;
-			if (file.respondsTo(\close)) {
-				file.close;
-			};
 			Error("UGen: could not write def: %".format(e.what())).throw;
 		}
 	}
