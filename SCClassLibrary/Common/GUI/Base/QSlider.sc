@@ -8,6 +8,11 @@ Slider : QAbstractStepValue {
 		^super.new( parent, bounds ).initSlider( bounds );
 	}
 
+	bounds_ { arg bounds;
+		this.initSlider( bounds );
+		^super.bounds_( bounds );
+	}
+
 	value {
 		^this.getProperty( \value );
 	}
