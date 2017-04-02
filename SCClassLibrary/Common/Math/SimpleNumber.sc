@@ -153,7 +153,7 @@ SimpleNumber : Number {
 	quantize { arg quantum = 1.0, tolerance = 0.05, strength = 1.0;
 		var round = round(this, quantum);
 		var diff = round - this;
-		if (abs(diff) < tolerance) {
+		if (abs(diff) > tolerance) {
 			^this + (strength * diff)
 		}{
 			^this
