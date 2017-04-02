@@ -53,7 +53,11 @@ Slider : QAbstractStepValue {
 
 	orientation_ { arg aSymbol;
 		orientation = aSymbol;
-		this.setProperty( \orientation, QOrientation(aSymbol) );
+		switch( orientation,
+			\h, { orientation = \horizontal },
+			\v, { orientation = \vertical },
+		);
+		this.setProperty( \orientation, QOrientation(orientation) );
 	}
 
 	defaultKeyDownAction {  arg char, modifiers, unicode, keycode, key;

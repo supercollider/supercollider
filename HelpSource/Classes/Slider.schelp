@@ -57,7 +57,7 @@ METHOD:: orientation
 	The orientation of the Slider - the direction in which the handle moves. The default value depends on the size of the view when created.
 
 	argument::
-		One of the two Symbols: \horizontal or \vertical.
+		One of the following Symbols: \horizontal (also \h) or \vertical (also \v).
 
 METHOD:: thumbSize
 	The size of the handle - its width or height, depending on link::#-orientation::.
