@@ -31,7 +31,7 @@ Primitives for String.
 #include <stdlib.h>
 #include <ctype.h>
 #include "PyrLexer.h"
-#include "SC_DirUtils.h"
+//#include "SC_DirUtils.h"
 #ifdef _WIN32
 # include <direct.h>
 # include "SC_Win32Utils.h"

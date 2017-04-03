@@ -27,7 +27,7 @@
 #include <ctype.h>
 #include <cerrno>
 #include <limits>
-#include <set>
+#include <unordered_set>
 
 #ifdef _WIN32
 # include <direct.h>
@@ -36,7 +36,7 @@
 #endif
 
 #include <boost/filesystem/path.hpp>
-
+#include <boost/filesystem/operations.hpp>
 
 #include "PyrParseNode.h"
 #include "Bison/lang11d_tab.h"
@@ -66,7 +66,7 @@
 
 #include "SC_LanguageConfig.hpp"
 
-#include "SC_DirUtils.h"
+//#include "SC_DirUtils.h"
 #include "SC_TextUtils.hpp"
 
 int yyparse();
@@ -83,7 +83,7 @@ thisProcess.interpreter.executeFile("Macintosh HD:score").size.postln;
 
 PyrSymbol *gCompilingFileSym = 0;
 VMGlobals *gCompilingVMGlobals = 0;
-static char gCompileDir[MAXPATHLEN];
+static boost::filesystem::path gCompileDir;
 
 //#define DEBUGLEX 1
 bool gDebugLexer = false;
@@ -96,7 +96,7 @@ int lastClosedFuncCharNo = 0;
 
 const char *binopchars = "!@%&*-+=|<>?/";
 char yytext[MAXYYLEN];
-char curfilename[PATH_MAX];
+boost::filesystem::path currfilename;
 
 int yylen;
 int lexCmdLine = 0;
@@ -115,7 +115,7 @@ int textpos;
 int errLineOffset, errCharPosOffset;
 int parseFailed = 0;
 bool compiledOK = false;
-std::set<std::string> compiledDirectories;
+std::unordered_set<boost::filesystem::path> compiledDirectories;
 
 /* so the text editor's dumb paren matching will work */
 #define OPENPAREN '('
@@ -160,19 +160,14 @@ double sc_strtof(const char *str, int n, int base)
 static void sc_InitCompileDirectory(void)
 {
 	// main class library folder: only used for relative path resolution
-	sc_GetResourceDirectory(gCompileDir, MAXPATHLEN-32);
-	sc_AppendToPath(gCompileDir, MAXPATHLEN, "SCClassLibrary");
+	gCompileDir = sc_GetResourceDirectory();
+	gCompileDir /= "SCClassLibrary";
 }
 
-extern void asRelativePath(char *inPath, char *outPath)
+boost::filesystem::path asRelativePath(boost::filesystem::path& p)
 {
-	uint32 len = strlen(gCompileDir);
-	if (strlen(inPath) < len || memcmp(inPath, gCompileDir, len) != 0) {
-		// gCompileDir is not the prefix.
-		strcpy(outPath, inPath);
-		return;
-	}
-	strcpy(outPath, inPath +  len);
+	boost::filesystem::path inPath(p);
+	return inPath.lexically_relative(gCompileDir);
 }
 
 
@@ -258,7 +253,7 @@ bool startLexer(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset)
 	zzval = 0;
 	parseFailed = 0;
 	lexCmdLine = 0;
-	strcpy(curfilename, filename);
+	strcpy(currfilename, filename);
 	maxlinestarts = 1000;
 	linestarts = (int*)pyr_pool_compile->Alloc(maxlinestarts * sizeof(int*));
 	linestarts[0] = 0;
@@ -293,7 +288,7 @@ void startLexerCmdLine(char *textbuf, int textbuflen)
 	zzval = 0;
 	parseFailed = 0;
 	lexCmdLine = 1;
-	strcpy(curfilename, "selected text");
+	strcpy(currfilename, "selected text");
 	maxlinestarts = 1000;
 	linestarts = (int*)pyr_pool_compile->Alloc(maxlinestarts * sizeof(int*));
 	linestarts[0] = 0;
@@ -396,7 +391,7 @@ int yylex()
 	int r, c, c2;
 	intptr_t d;
 	int radix;
-    char extPath[MAXPATHLEN]; // for error reporting
+	boost::filesystem::path extPath; // for error reporting
 
 	yylen = 0;
 	// finite state machine to parse input stream into tokens
@@ -759,9 +754,9 @@ symbol3 : {
 		for (;yylen<MAXYYLEN;) {
 			c = input();
 			if (c == '\n' || c == '\r') {
-				asRelativePath(curfilename,extPath);
+				extPath = asRelativePath(currfilename);
 				post("Symbol open at end of line on line %d in file '%s'\n",
-					startline+errLineOffset, extPath);
+					startline+errLineOffset, extPath.c_str());
 				yylen = 0;
 				r = 0;
 				goto leave;
@@ -773,9 +768,9 @@ symbol3 : {
 			if (c == 0) break;
 		}
 		if (c == 0) {
-			asRelativePath(curfilename,extPath);
+			extPath = asRelativePath(currfilename);
 			post("Open ended symbol started on line %d in file '%s'\n",
-				startline+errLineOffset, extPath);
+				startline+errLineOffset, extPath.c_str());
 			yylen = 0;
 			r = 0;
 			goto leave;
@@ -808,9 +803,9 @@ string1 : {
 			if (c == 0) break;
 		}
 		if (c == 0) {
-			asRelativePath(curfilename, extPath);
+			extPath = asRelativePath(currfilename);
 			post("Open ended string started on line %d in file '%s'\n",
-				startline + errLineOffset, extPath);
+				startline + errLineOffset, extPath.c_str());
 			yylen = 0;
 			r = 0;
 			goto leave;
@@ -856,10 +851,10 @@ comment2 : {
 			prevc = c;
 		} while (c != 0);
 		yylen = 0;
-		if (c == 0) {
-			asRelativePath(curfilename, extPath);
+	if (c == 0) {
+		extPath = asRelativePath(currfilename);
 			post("Open ended comment started on line %d in file '%s'\n",
-				startline + errLineOffset, extPath);
+				startline + errLineOffset, extPath.c_str());
 			r = 0;
 			goto leave;
 		}
@@ -871,16 +866,16 @@ error1:
 
 	yytext[yylen] = 0;
 
-	asRelativePath(curfilename, extPath);
+	extPath = asRelativePath(currfilename);
 	post("illegal input string '%s' \n   at '%s' line %d char %d\n",
-		yytext, extPath, lineno+errLineOffset, charno);
+		yytext, extPath.c_str(), lineno+errLineOffset, charno);
 	post("code %d\n", c);
 	//postfl(" '%c' '%s'\n", c, binopchars);
 	//postfl("%d\n", strchr(binopchars, c));
 
 error2:
-	asRelativePath(curfilename, extPath);
-	post("  in file '%s' line %d char %d\n", extPath, lineno+errLineOffset, charno);
+	extPath = asRelativePath(currfilename);
+	post("  in file '%s' line %d char %d\n", extPath.c_str(), lineno+errLineOffset, charno);
 	r = BADTOKEN;
 	goto leave;
 
@@ -924,7 +919,7 @@ int processkeywordbinop(char *token)
 	PyrSlot slot;
 	PyrSlotNode *node;
 
-	//post("'%s'  file '%s'\n", token, curfilename);
+	//post("'%s'  file '%s'\n", token, currfilename);
 
 #if DEBUGLEX
 	if (gDebugLexer) postfl("processkeywordbinop: '%s'\n",token);
@@ -1286,9 +1281,8 @@ void postErrorLine(int linenum, int start, int charpos)
 
 	//post("start %d\n", start);
 	//parseFailed = true;
-    char extPath[MAXPATHLEN];
-    asRelativePath(curfilename, extPath);
-	post("  in file '%s'\n", extPath);
+	boost::filesystem::path extPath = asRelativePath(currfilename);
+	post("  in file '%s'\n", extPath.c_str());
 	post("  line %d char %d:\n\n", linenum+errLineOffset, charpos);
 	// nice: postfl previous line for context
 
@@ -1372,6 +1366,7 @@ bool scanForClosingBracket()
 	int r, c, startLevel;
 	intptr_t d;
 	bool res = true;
+	boost::filesystem::path extPath;
 	// finite state machine to parse input stream into tokens
 
 #if DEBUGLEX
@@ -1472,10 +1467,9 @@ symbol3 : {
 			}
 		} while (c != endchar && c != 0);
 		if (c == 0) {
-			char extPath[MAXPATHLEN];
-			asRelativePath(curfilename, extPath);
+			extPath = asRelativePath(currfilename);
 			post("Open ended symbol started on line %d in file '%s'\n",
-				 startline, extPath);
+				 startline, extPath.c_str());
 			goto error2;
 		}
 		goto start;
@@ -1493,10 +1487,9 @@ string1 : {
 			}
 		} while (c != endchar && c != 0);
 		if (c == 0) {
-			char extPath[MAXPATHLEN];
-			asRelativePath(curfilename, extPath);
+			extPath = asRelativePath(currfilename);
 			post("Open ended string started on line %d in file '%s'\n",
-				 startline, extPath);
+				 startline, extPath.c_str());
 			goto error2;
 		}
 		goto start;
@@ -1527,19 +1520,17 @@ comment2 : {
 			prevc = c;
 		} while (c != 0);
 		if (c == 0) {
-			char extPath[MAXPATHLEN];
-			asRelativePath(curfilename, extPath);
+			extPath = asRelativePath(currfilename);
 			post("Open ended comment started on line %d in file '%s'\n",
-				 startline, extPath);
+				 startline, extPath.c_str());
 			goto error2;
 		}
 		goto start;
 	}
 
 error1:
-	char extPath[MAXPATHLEN];
-	asRelativePath(curfilename, extPath);
-	post("  in file '%s' line %d char %d\n", extPath, lineno, charno);
+ extPath = asRelativePath(currfilename);
+	post("  in file '%s' line %d char %d\n", extPath.c_str(), lineno, charno);
 	res = false;
 	goto leave;
 
@@ -1708,9 +1699,8 @@ void compileClass(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset)
 			//postfl("done compiling\n");fflush(stdout);
 		} else {
 			compileErrors++;
-				 char extPath[MAXPATHLEN];
-				 asRelativePath(fileSym->name, extPath);
-			error("file '%s' parse failed\n", extPath);
+			boost::filesystem::path pathname(fileSym->name);
+			error("file '%s' parse failed\n", asRelativePath(pathname).c_str());
 			postfl("error parsing\n");
 		}
 		finiLexer();
@@ -1930,23 +1920,25 @@ void finiPassOne()
 	//postfl("<-finiPassOne\n");
 }
 
-static bool passOne_ProcessDir(const char *dirname, int level)
+static bool passOne_ProcessDir(boost::filesystem::path dir, int level)
 {
-	if (!sc_DirectoryExists(dirname))
+	if (!boost::filesystem::is_directory(dir))
 		return true;
 
-	if (compiledDirectories.find(std::string(dirname)) != compiledDirectories.end())
+	if (compiledDirectories.find(dir) != compiledDirectories.end())
 		// already compiled
 		return true;
 
 	bool success = true;
 
-	if (gLanguageConfig && gLanguageConfig->pathIsExcluded(dirname)) {
-		post("\texcluding dir: '%s'\n", dirname);
+	if (gLanguageConfig && gLanguageConfig->pathIsExcluded(dir)) {
+		post("\texcluding dir: '%s'\n", dir.c_str());
 		return success;
 	}
 
-	if (level == 0) post("\tcompiling dir: '%s'\n", dirname);
+	if (level == 0) post("\tcompiling dir: '%s'\n", dir.c_str());
+
+	boost::filesystem::recursive_directory_iterator rditer(dir);
 
 	SC_DirHandle *dir = sc_OpenDir(dirname);
 	if (!dir) {

@@ -31,7 +31,7 @@ Primitives for File i/o.
 #include "PyrFilePrim.h"
 #include "ReadWriteMacros.h"
 #include "SCBase.h"
-#include "SC_DirUtils.h"
+//#include "SC_DirUtils.h"
 #include "sc_popen.h"
 
 #include <stdlib.h>
@@ -121,29 +121,33 @@ int prFileRealPath(struct VMGlobals* g, int numArgsPushed )
 	int err;
 
 	err = slotStrVal(b, ipath, PATH_MAX);
-	if (err) return err;
+	if (err)
+		return err;
 
-	bool isAlias = false;
-	if(sc_ResolveIfAlias(ipath, opath, isAlias, PATH_MAX)!=0) {
+	bool ok = false;
+	boost::filesystem::path p = SC_DirUtils::resolveIfAlias(ipath, ok);
+	if (!ok)
 		return errFailed;
-	}
 
 	boost::system::error_code error_code;
-	boost::filesystem::path p = boost::filesystem::canonical(opath,error_code);
+	p = boost::filesystem::canonical(p, error_code);
 	if(error_code) {
 		SetNil(a);
 		return errNone;
 	}
-	strcpy(opath,p.string().c_str());
 
-#if __APPLE__
+	strncpy(opath, p.c_str(), PATH_MAX-1);
+	opath[PATH_MAX-1] = '\0';
+
+#ifdef __APPLE__
 	CFStringRef cfstring =
 		CFStringCreateWithCString(NULL,
 								  opath,
 								  kCFStringEncodingUTF8);
 	err = !CFStringGetFileSystemRepresentation(cfstring, opath, PATH_MAX);
 	CFRelease(cfstring);
-	if (err) return errFailed;
+	if (err)
+		return errFailed;
 #endif // __APPLE__
 
 	PyrString* pyrString = newPyrString(g->gc, opath, 0, true);

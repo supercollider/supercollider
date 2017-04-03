@@ -22,7 +22,7 @@
 #include "PyrPrimitive.h"
 #include "PyrSymbol.h"
 #include "SCBase.h"
-#include "SC_DirUtils.h"
+//#include "SC_DirUtils.h" // TODO_BRIAN: no longer needed, delete this
 
 #include <stdlib.h>
 #include <string.h>

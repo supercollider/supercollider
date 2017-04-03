@@ -34,7 +34,7 @@ Primitives for Unix.
 #include "VMGlobals.h"
 #include "GC.h"
 #include "SC_RGen.h"
-#include "SC_DirUtils.h"
+//#include "SC_DirUtils.h" // TODO_BRIAN: delete this include
 #include "sc_popen.h"
 #include "SCBase.h"
 
@@ -49,7 +49,7 @@ Primitives for Unix.
 #include <libgen.h>
 #endif
 
-using namespace boost::filesystem;
+using namespace boost::filesystem; // TODO_BRIAN: change this namespace decl
 
 extern bool compiledOK;
 PyrSymbol* s_unixCmdAction;

@@ -23,7 +23,7 @@ Primitives for platform dependent directories, constants etc.
 
 */
 
-#include "SC_DirUtils.h"
+//#include "SC_DirUtils.h"
 #include "PyrPrimitive.h"
 #include "PyrKernel.h"
 #ifdef _WIN32
@@ -33,8 +33,8 @@ Primitives for platform dependent directories, constants etc.
 
 #define PATH_CONSTANT_PRIM_BODY(func) \
 	PyrSlot *a = g->sp; \
-	char path[PATH_MAX]; \
-	func(path, PATH_MAX); \
+	char path[MAXPATHLEN]; \
+	func(path, MAXPATHLEN); \
 	PyrString* string = newPyrString(g->gc, path, 0, true); \
 	SetObject(a, string); \
 	return errNone

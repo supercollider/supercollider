@@ -28,7 +28,7 @@
 #include "SC_WorldOptions.h"
 #include "SC_StringParser.h"
 #include "SC_InterfaceTable.h"
-#include "SC_DirUtils.h"
+//#include "SC_DirUtils.h"
 #include <stdexcept>
 #ifndef _MSC_VER
 #include <dirent.h>

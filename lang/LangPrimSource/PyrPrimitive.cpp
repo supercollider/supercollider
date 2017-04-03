@@ -45,8 +45,8 @@
 #include "PyrDeepFreezer.h"
 //#include "Wacom.h"
 #include "InitAlloc.h"
-#include "../LangSource/SC_LanguageConfig.hpp"
-#include "SC_DirUtils.h"
+#include "SC_LanguageConfig.hpp"
+//#include "SC_DirUtils.h"
 #include "SC_Version.hpp"
 #include <map>
 
@@ -3602,22 +3602,21 @@ static int prLanguageConfig_writeConfigFile(struct VMGlobals * g, int numArgsPus
 	return errNone;
 }
 
-extern bool gPostInlineWarnings;
 static int prLanguageConfig_getPostInlineWarnings(struct VMGlobals * g, int numArgsPushed)
 {
 	PyrSlot *result = g->sp;
-	SetBool(result, gPostInlineWarnings);
+	SetBool(result, SC_LanguageConfig::getPostInlineWarnings());
 	return errNone;
 }
 
 static int prLanguageConfig_setPostInlineWarnings(struct VMGlobals * g, int numArgsPushed)
 {
-	PyrSlot *arg    = g->sp;
+	PyrSlot *arg = g->sp;
 
 	if (IsTrue(arg))
-		gPostInlineWarnings = true;
+		SC_LanguageConfig::setPostInlineWarnings(true);
 	else if (IsFalse(arg))
-		gPostInlineWarnings = false;
+		SC_LanguageConfig::setPostInlineWarnings(false);
 	else
 		return errWrongType;
 

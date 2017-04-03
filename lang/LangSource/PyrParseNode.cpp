@@ -38,6 +38,7 @@
 #include "SimpleStack.h"
 #include "PyrPrimitive.h"
 #include "SC_Win32Utils.h"
+#include "SC_LanguageConfig.hpp"
 
 AdvancingAllocPool gParseNodePool;
 
@@ -78,8 +79,6 @@ std::string overwriteMsg;
 
 extern bool compilingCmdLine;
 extern int errLineOffset, errCharPosOffset;
-
-bool gPostInlineWarnings = false;
 
 const char* nodename[] = {
 	"ClassNode",
@@ -341,7 +340,7 @@ void PyrClassExtNode::compile(PyrSlot *result)
 	PyrClass *classobj = slotRawSymbol(&mClassName->mSlot)->u.classobj;
 	if (!classobj) {
 		char extPath[1024];
-		asRelativePath(gCompilingFileSym->name, extPath);
+		asRelativePath(gCompilingFileSym->name, extPath); // TODO_BRIAN: think this was in SC_DirUtils?
 		error("Class extension for nonexistent class '%s'\n     In file:'%s'\n",
 			slotRawSymbol(&mClassName->mSlot)->name,
 			extPath
@@ -2254,7 +2253,7 @@ bool isAnInlineableBlock(PyrParseNode *node)
 		if (IsPtr(&anode->mSlot)
 				&& (bnode = (PyrBlockNode*)(slotRawPtr(&anode->mSlot)))->mClassno == pn_BlockNode) {
 			if (bnode->mArglist || bnode->mVarlist) {
-				if (gPostInlineWarnings) {
+				if (SC_LanguageConfig::getPostInlineWarnings()) {
 					post("WARNING: FunctionDef contains variable declarations and so"
 					" will not be inlined.\n");
 					if (bnode->mArglist)
@@ -2279,7 +2278,7 @@ bool isAnInlineableAtomicLiteralBlock(PyrParseNode *node)
 		if (IsPtr(&anode->mSlot)
 				&& (bnode = (PyrBlockNode*)(slotRawPtr(&anode->mSlot)))->mClassno == pn_BlockNode) {
 			if (bnode->mArglist || bnode->mVarlist) {
-				if (gPostInlineWarnings) {
+				if (SC_LanguageConfig::getPostInlineWarnings()) {
 					post("WARNING: FunctionDef contains variable declarations and so"
 					" will not be inlined.\n");
 					if (bnode->mArglist)

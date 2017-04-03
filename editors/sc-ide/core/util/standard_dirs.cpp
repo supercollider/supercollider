@@ -20,7 +20,8 @@
 
 #include "standard_dirs.hpp"
 
-#include <SC_DirUtils.h>
+//#include <SC_DirUtils.h>
+// TODO_BRIAN: move this into SC_DirUtils
 
 namespace ScIDE {
 

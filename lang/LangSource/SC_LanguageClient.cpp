@@ -47,7 +47,7 @@
 #include "PyrSched.h"
 #include "GC.h"
 #include "VMGlobals.h"
-#include "SC_DirUtils.h"
+//#include "SC_DirUtils.h"
 #include "SCBase.h"
 #include "SC_StringBuffer.h"
 
@@ -108,7 +108,7 @@ void SC_LanguageClient::initRuntime(const Options& opt)
 {
 	// start virtual machine
 	if (!mHiddenClient->mRunning) {
-#ifdef __linux__
+#ifdef __linux__ // TODO_BRIAN: rewrite using path
 		char deprecatedSupportDirectory[PATH_MAX];
 		sc_GetUserHomeDirectory(deprecatedSupportDirectory, PATH_MAX);
 		sc_AppendToPath(deprecatedSupportDirectory, PATH_MAX, "share/SuperCollider");

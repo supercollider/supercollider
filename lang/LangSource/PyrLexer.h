@@ -26,6 +26,7 @@
 #include "PyrSymbol.h"
 #include "SC_Export.h"
 #include "SCBase.h"
+#include <boost/filesystem/path.hpp>
 
 extern int charno, lineno, linepos;
 extern int *linestarts;
@@ -81,7 +82,7 @@ void fatal() ;
 bool isValidSourceFileName(char *filename);
 bool passOne_ProcessOneFile(const char *filename, int level);
 
-extern void asRelativePath(char *inPath,char *outPath);
+extern boost::filesystem::path asRelativePath(boost::filesystem::path&);
 
 void initLexer();
 void init_SuperCollider();
