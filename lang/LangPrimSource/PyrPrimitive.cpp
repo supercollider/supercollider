@@ -3574,7 +3574,7 @@ static int prLanguageConfig_removeExcludePath(struct VMGlobals * g, int numArgsP
 static int prLanguageConfig_getCurrentConfigPath(struct VMGlobals * g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	PyrString* str = newPyrString(g->gc, gLanguageConfig->getCurrentConfigPath(), 0, false);
+	PyrString* str = newPyrString(g->gc, gLanguageConfig->getConfigPath().c_str(), 0, false);
     if(str->size == 0) {
         SetNil(a);
     } else {
@@ -3588,17 +3588,17 @@ static int prLanguageConfig_writeConfigFile(struct VMGlobals * g, int numArgsPus
 {
 	PyrSlot *fileString = g->sp;
 
-	char path[MAXPATHLEN];
 	if (NotNil(fileString)) {
+		char path[MAXPATHLEN];
 		bool error = slotStrVal(fileString, path, MAXPATHLEN);
 		if (error)
 			return errWrongType;
+		gLanguageConfig->writeLibraryConfigYAML(path);
 	} else {
-		sc_GetUserConfigDirectory(path, PATH_MAX);
-		sc_AppendToPath(path, MAXPATHLEN, "sclang_conf.yaml");
+		const SC_Filesystem::Path& fspath = SC_Filesystem::getDirectory(SC_DirectoryName::UserConfig) / "sclang_conf.yaml";
+		gLanguageConfig->writeLibraryConfigYAML(fspath);
 	}
 
-	gLanguageConfig->writeLibraryConfigYAML(path);
 	return errNone;
 }
 
