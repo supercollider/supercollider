@@ -6,3 +6,4 @@ brew outdated cmake || brew upgrade cmake
 brew install libsndfile python || true
 brew install qt5 || true
 brew link qt5 --force
+gem install xcpretty xcpretty-travis-formatter
