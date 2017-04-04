@@ -129,7 +129,7 @@ void SC_TerminalClient::printUsage()
 			memGrowBuf,
 			memSpaceBuf,
 			opt.mPort,
-			gIdeName
+			SC_LanguageConfig::getIdeName().c_str()
 		);
 }
 
@@ -190,7 +190,7 @@ bool SC_TerminalClient::parseOptions(int& argc, char**& argv, Options& opt)
 				goto optArgExpected;
 				break;
 			case 'i':
-				gIdeName = optarg;
+				SC_LanguageConfig::setIdeName(optarg);
 				break;
 			case 'a':
 				opt.mStandalone = true;
@@ -250,7 +250,7 @@ int SC_TerminalClient::run(int argc, char** argv)
 
 	// read library configuration file
 	if (opt.mLibraryConfigFile)
-		SC_LanguageConfig::setConfigFile(opt.mLibraryConfigFile);
+		SC_LanguageConfig::setConfigPath(opt.mLibraryConfigFile);
 	SC_LanguageConfig::readLibraryConfig(opt.mStandalone);
 
 	// initialize runtime
@@ -615,7 +615,7 @@ void SC_TerminalClient::pushCmdLine( const char *newData, size_t size)
 void SC_TerminalClient::initInput()
 {
 #ifdef HAVE_READLINE
-	if (strcmp(gIdeName, "none") == 0) {
+	if (!SC_LanguageConfig::usingIde()) {
 		// Other clients (emacs, vim, ...) won't want to interact through rl
 		mUseReadline = true;
 		return;
