@@ -30,6 +30,10 @@
 #include <boost/filesystem/path.hpp> // path
 #include <map>                       // std::map
 
+#if defined(__APPLE__) && !defined(SC_IPHONE)
+#  include "SC_StandAloneInfo_Darwin.h"
+#endif
+
 enum class SC_DirectoryName;
 class SC_Filesystem;
 
@@ -68,6 +72,15 @@ public:
 	// If it is an alias, the second argument is set to `true`.
 	static Path resolveIfAlias(const Path&, bool&);
 
+	// Returns `true` if this is a standalone (only on macOS)
+#if defined(__APPLE__) && !defined(SC_IPHONE)
+	static const char* getBundleName();
+
+	static inline bool isStandalone() { 	return SC_StandAloneInfo::IsStandAlone();	}
+#else
+	static inline bool isStandalone() { return false; }
+#endif // defined(__APPLE__) && !defined(SC_IPHONE)
+
 private:
 	// singleton; @TODO: better to make this a namespace
 	SC_Filesystem() = delete;
@@ -77,7 +90,6 @@ private:
 
 	// Map between directory names and paths
 	static std::map<SC_DirectoryName, Path> gDirectoryMap;
-
 };
 
 #endif // SC_FILESYSTEM_HPP_INCLUDED
