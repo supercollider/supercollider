@@ -20,7 +20,7 @@
 ************************************************************************/
 
 #include "QcWebView.h"
-#include "web_page.hpp"
+#include "../widgets/web_page.hpp"
 #include "../QcWidgetFactory.h"
 #include <QWebEnginePage>
 #include <QWebEngineSettings>
@@ -31,8 +31,10 @@
 #include <QKeyEvent>
 #include <QApplication>
 #include <QStyle>
+#include <QWebEngineCallback>
 
 QC_DECLARE_QWIDGET_FACTORY(WebView);
+QC_DECLARE_QOBJECT_FACTORY(QcCallback);
 
 namespace QtCollider {
 
@@ -44,6 +46,7 @@ WebView::WebView( QWidget *parent ) :
   QtCollider::WebPage *page = new WebPage(this);
   page->setDelegateReload(true);
   setPage( page );
+  connectPage( page );
 
   // Set the style's standard palette to avoid system's palette incoherencies
   // get in the way of rendering web pages
@@ -53,19 +56,57 @@ WebView::WebView( QWidget *parent ) :
 
   page->action( QWebEnginePage::Copy )->setShortcut( QKeySequence::Copy );
   page->action( QWebEnginePage::Paste )->setShortcut( QKeySequence::Paste );
-
-  connect( this, SIGNAL(linkClicked(QUrl)), this, SLOT(onLinkClicked(QUrl)) );
-  connect( page->action(QWebEnginePage::Reload), SIGNAL(triggered(bool)),
-           this, SLOT(onPageReload()) );
+  page->action( QWebEnginePage::Reload )->setShortcut( QKeySequence::Refresh );
 
   connect( this, SIGNAL(interpret(QString)),
            qApp, SLOT(interpret(QString)),
            Qt::QueuedConnection );
-
-  connect( page, SIGNAL(jsConsoleMsg(const QString&, int, const QString&)),
-           this, SIGNAL(jsConsoleMsg(const QString&, int, const QString&)) );
-    
+  
   connect( this, SIGNAL(loadFinished(bool)), this, SLOT(updateEditable(bool)) );
+}
+  
+void WebView::connectPage(QWebEnginePage* page)
+{
+  connect (page, SIGNAL(jsConsoleMsg(const QString&, int, const QString&)),
+          this, SIGNAL(jsConsoleMsg(const QString&, int, const QString&)));
+
+  connect (page, SIGNAL(linkHovered(const QString &url)),
+           this, SIGNAL(linkHovered(const QString &url)));
+
+  connect (page, SIGNAL(geometryChangeRequested(const QRect&)),
+           this, SIGNAL(geometryChangeRequested(const QRect&)));
+  
+  connect (page, SIGNAL(windowCloseRequested()),
+           this, SIGNAL(windowCloseRequested()));
+  
+  connect (page, SIGNAL(scrollPositionChanged(const QPointF&)),
+           this, SIGNAL(scrollPositionChanged(const QPointF&)));
+
+  connect (page, SIGNAL(contentsSizeChanged(const QSizeF&)),
+           this, SIGNAL(contentsSizeChanged(const QSizeF&)));
+
+  connect (page, SIGNAL(audioMutedChanged(bool)),
+           this, SIGNAL(audioMutedChanged(bool)));
+
+  connect (page, SIGNAL(recentlyAudibleChanged(bool)),
+           this, SIGNAL(recentlyAudibleChanged(bool)));
+  
+  connect (page->action(QWebEnginePage::Reload), SIGNAL(triggered(bool)),
+          this, SLOT(onPageReload()) );
+
+  connect (page, SIGNAL(renderProcessTerminated(RenderProcessTerminationStatus, int)),
+          this, SLOT(onRenderProcessTerminated(RenderProcessTerminationStatus, int)) );
+  
+}
+  
+void WebView::onRenderProcessTerminated(QWebEnginePage::RenderProcessTerminationStatus status, int code)
+{
+  Q_EMIT(renderProcessTerminated((int)status, code));
+}
+  
+void WebView::triggerPageAction( int action, bool checked )
+{
+  QWebEngineView::triggerPageAction((QWebEnginePage::WebAction)action, checked);
 }
 
 QString WebView::url() const
@@ -76,26 +117,6 @@ QString WebView::url() const
 void WebView::setUrl( const QString & str )
 {
   load( urlFromString(str) );
-}
-
-QString WebView::html () const
-{
-  // @TODO WebEngine: Require async callback
-  // return page()->toHtml();
-  return QString();
-}
-
-void WebView::setHtml ( const QString &html, const QString &baseUrl )
-{
-  QUrl url( baseUrl.isEmpty() ? QUrl() : urlFromString(baseUrl) );
-  QWebEngineView::setHtml( html, url );
-}
-
-QString WebView::plainText () const
-{
-  // @TODO WebEngine: Require async callback
-  //  return page()->mainFrame()->toPlainText();
-  return QString();
 }
 
 bool WebView::delegateReload() const
@@ -116,19 +137,101 @@ void WebView::setFontFamily( int generic, const QString & specific )
 {
   settings()->setFontFamily( (QWebEngineSettings::FontFamily) generic, specific );
 }
-
-void WebView::evaluateJavaScript ( const QString &script )
+  
+QAction* WebView::pageAction( QWebEnginePage::WebAction action) const
 {
-  if( script.isEmpty() ) return;
-  page()->runJavaScript( script );
+  return QWebEngineView::pageAction(action);
+}
+  
+void WebView::setHtml(const QString& html, const QString& baseUrl)
+{
+  if (page()) {
+    page()->setHtml(html, baseUrl);
+  }
+}
+  
+void WebView::setContent(const QVector<int>& data, const QString& mimeType, const QString& baseUrl)
+{
+  if (page()) {
+    QByteArray byteData;
+    size_t i = 0;
+    for (int val : data) {
+      byteData.push_back((char)val);
+    }
+    page()->setContent(byteData, mimeType, baseUrl);
+  }
+}
+  
+void WebView::toHtml(QcCallback* cb) const
+{
+  if (page()) {
+    if (cb) {
+      page()->toHtml(cb->asFunctor());
+    } else {
+      page()->toHtml([](const QString&){});
+    }
+  } else {
+    cb->asFunctor()(QString());
+  }
+}
+  
+void WebView::toPlainText(QcCallback* cb) const
+{
+  if (page()) {
+    if (cb) {
+      page()->toPlainText(cb->asFunctor());
+    } else {
+      page()->toPlainText([](const QString&){});
+    }
+  } else {
+    cb->asFunctor()(QString());
+  }
+}
+  
+void WebView::runJavaScript(const QString& script, QcCallback* cb)
+{
+  if (page()) {
+    if (cb) {
+      page()->runJavaScript(script, cb->asFunctor());
+    } else {
+      page()->runJavaScript(script, [](const QVariant&){});
+    }
+  } else {
+    cb->asFunctor()(QString());
+  }
+}
+  
+void WebView::setWebAttribute(int attr, bool on)
+{
+  if (page()) {
+    page()->settings()->setAttribute((QWebEngineSettings::WebAttribute)attr, on);
+  }
 }
 
-void WebView::findText( const QString &searchText, bool reversed )
+bool WebView::testWebAttribute(int attr)
 {
-  // @TODO WebEngine: Should have callback?
+  return page() ?
+    page()->settings()->testAttribute((QWebEngineSettings::WebAttribute)attr)
+    : false;
+}
+  
+void WebView::resetWebAttribute(int attr)
+{
+  if (page()) {
+    page()->settings()->resetAttribute((QWebEngineSettings::WebAttribute)attr);
+  }
+}
+
+void WebView::findText( const QString &searchText, bool reversed, QcCallback* cb )
+{
   QWebEnginePage::FindFlags flags;
   if( reversed ) flags |= QWebEnginePage::FindBackward;
-  QWebEngineView::findText( searchText, flags );
+
+  if (!cb) {
+    QWebEngineView::findText(searchText, flags);
+  } else {
+    QWebEngineView::findText(searchText, flags, cb->asFunctor());
+  }
 }
 
 void WebView::onLinkClicked( const QUrl &url )
@@ -168,21 +271,31 @@ void WebView::contextMenuEvent ( QContextMenuEvent * event )
 
 void WebView::keyPressEvent( QKeyEvent *e )
 {
-    int key = e->key();
-    int mods = e->modifiers();
-
-    if( _interpretSelection &&
-            ( key == Qt::Key_Enter ||
-              ( key == Qt::Key_Return && mods & (Qt::ControlModifier|Qt::ShiftModifier) ) ) )
-    {
-        QString selection = selectedText();
-        if( !selection.isEmpty() ) {
-            Q_EMIT( interpret( selection ) );
-            return;
-        }
+  int key = e->key();
+  int mods = e->modifiers();
+  
+  if( _interpretSelection &&
+     ( key == Qt::Key_Enter ||
+      ( key == Qt::Key_Return && mods & (Qt::ControlModifier|Qt::ShiftModifier) ) ) )
+  {
+    QString selection = selectedText();
+    if( !selection.isEmpty() ) {
+      Q_EMIT( interpret( selection ) );
+      return;
     }
-
-    QWebEngineView::keyPressEvent( e );
+  }
+  
+  QWebEngineView::keyPressEvent( e );
+}
+  
+void WebView::updateEditable(bool ok) {
+  if (ok) {
+    if (_editable) {
+      page()->runJavaScript("document.documentElement.contentEditable = true");
+    } else {
+      page()->runJavaScript("document.documentElement.contentEditable = false");
+    }
+  }
 }
 
 } // namespace QtCollider

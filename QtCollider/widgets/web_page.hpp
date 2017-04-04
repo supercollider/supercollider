@@ -33,8 +33,11 @@ class WebPage : public QWebEnginePage
 public:
 
   WebPage( QObject *parent ) : QWebEnginePage( parent ), _delegateReload(false) {}
-  virtual void triggerAction ( WebAction action, bool checked = false );
-  virtual void javaScriptConsoleMessage ( const QString &, int, const QString & );
+  
+  virtual void triggerAction ( WebAction action, bool checked = false ) override;
+  
+  virtual void javaScriptConsoleMessage(JavaScriptConsoleMessageLevel level, const QString& message, int lineNumber, const QString& sourceID) override;
+  
   bool delegateReload() const { return _delegateReload; }
   void setDelegateReload( bool flag ) { _delegateReload = flag; }
 

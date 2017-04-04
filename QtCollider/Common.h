@@ -92,10 +92,13 @@ namespace QtCollider {
   QC_DO_SYMBOL(prRelease); \
   QC_DO_SYMBOL(Rect); \
   QC_DO_SYMBOL(Point); \
+  QC_DO_SYMBOL(Int8Array); \
   QC_DO_SYMBOL(Color); \
   QC_DO_SYMBOL(Size); \
   QC_DO_SYMBOL(QPalette); \
   QC_DO_SYMBOL(Font); \
+  QC_DO_SYMBOL(QCallback); \
+  QC_DO_SYMBOL(WebPage); \
   QC_DO_SYMBOL(QObject); \
   QC_DO_SYMBOL(Layout); \
   QC_DO_SYMBOL(TreeViewItem); \

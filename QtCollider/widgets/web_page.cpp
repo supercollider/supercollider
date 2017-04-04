@@ -43,9 +43,10 @@ void WebPage::triggerAction ( WebAction action, bool checked )
   QWebEnginePage::triggerAction( action, checked );
 }
 
-void WebPage::javaScriptConsoleMessage ( const QString & msg, int line, const QString & src )
+
+void WebPage::javaScriptConsoleMessage(JavaScriptConsoleMessageLevel level, const QString& message, int lineNumber, const QString& sourceID)
 {
-  Q_EMIT( jsConsoleMsg(msg,line,src) );
+  Q_EMIT( jsConsoleMsg(message, lineNumber, sourceID) );
 }
 
 } // namespace QtCollider
