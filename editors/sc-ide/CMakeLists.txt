@@ -18,8 +18,6 @@ find_package(Qt5WebEngine)
 find_package(Qt5WebEngineWidgets)
 find_package(Qt5Widgets)
 
-find_program(QtWebEngineProcess NAMES QtWebEngineProcess PATHS "${QT_INSTALL_DIR}/bin/" "${QT_INSTALL_DIR}/libexec/" "${QT_INSTALL_DIR}/lib/QtWebEngineCore.framework/Helpers" NO_DEFAULT_PATH)
-
 set(QT_IDE_LIBRARIES
     Qt5::Core Qt5::Concurrent Qt5::WebEngineWidgets Qt5::OpenGL Qt5::PrintSupport Qt5::Sensors Qt5::Quick Qt5::Qml Qt5::Sql Qt5::Positioning)
 
@@ -333,9 +331,10 @@ if(APPLE)
         DESTINATION ${scappbundlename}
         )
 
-    set(webengine_dir ${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Frameworks/QtWebEngineCore.framework/Helpers)
-    install(PROGRAMS ${QtWebEngineProcess} 
-        DESTINATION ${webengine_dir})
+    set(QtWebEngineProcess
+        "${QT_INSTALL_DIR}/lib/QtWebEngineCore.framework/Helpers/QtWebEngineProcess.app" CACHE PATH "Path to the QtWebEngineProcess")
+    set(QtWebEngineProcessTarget
+        "${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Frameworks/QtWebEngineCore.framework/Helpers/")
 
     # for processing into the plist:
     set_property(TARGET SuperCollider
@@ -345,24 +344,50 @@ if(APPLE)
 
     include(InstallRequiredSystemLibraries)
 
-    include(DeployQt5)
-    install_qt5_executable("${scappbundlename}/${scappbundlename}.app" "" "" "${CMAKE_BINARY_DIR}/lang/sclang;${CMAKE_BINARY_DIR}/server/scsynth;${CMAKE_BINARY_DIR}/external_libraries")
-
-    # install Qt plugins (adapted from kvirc)
     set(plugin_dest_dir ${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Plugins)
     set(QT_PLUGINS_DIR "${Qt5Widgets_DIR}/../../../plugins")
-    install(DIRECTORY "${QT_PLUGINS_DIR}/" DESTINATION ${plugin_dest_dir} COMPONENT Runtime
-                       FILES_MATCHING REGEX "(platforms)/[^_]*\\.dylib")
 
-    install(CODE "
-           file(GLOB_RECURSE QTPLUGINS
-                  \"${plugin_dest_dir}/*.dylib\")
-           file(GLOB_RECURSE SCPLUGINS
-                  \"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/plugins/*.scx\")
-                include(BundleUtilities)
-                fixup_bundle(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\" \"\${QTPLUGINS};\${SCPLUGINS}\" \"${QT_LIBRARY_DIR}\")
-                #fixup_qt5_executable(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\")
-                " COMPONENT Runtime)
+    include(DeployQt5)
+    file(GLOB_RECURSE QTPLUGINS
+           "${plugin_dest_dir}/*.dylib")
+
+    # install Qt plugins (adapted from kvirc)
+    install(DIRECTORY "${QT_PLUGINS_DIR}/"
+            DESTINATION ${plugin_dest_dir}
+            COMPONENT Runtime
+            FILES_MATCHING REGEX "(platforms|imageformats|iconengines|printsupport)/[^_]*\\.dylib")
+
+    set(QtWebEngineCoreDir
+        "${CMAKE_PREFIX_PATH}/lib/QtWebEngineCore.framework/Versions/5" CACHE PATH "Path to the QtWebEngineProcess")
+    set(QtWebEngineProcessTarget
+        "${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Frameworks/QtWebEngineCore.framework/Helpers")
+
+    install(
+        DIRECTORY "${QtWebEngineCoreDir}/Helpers/QtWebEngineProcess.app"
+        DESTINATION ${QtWebEngineProcessTarget}
+        USE_SOURCE_PERMISSIONS)
+
+    install(
+        DIRECTORY "${QtWebEngineCoreDir}/Resources/"
+        DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/"
+        COMPONENT Runtime
+        FILES_MATCHING PATTERN "*.*")
+
+    install(CODE
+        "
+            file(GLOB_RECURSE QTPLUGINS
+                \"${plugin_dest_dir}/*.dylib\")
+            file(GLOB_RECURSE SCPLUGINS
+                \"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/plugins/*.scx\")
+            include(BundleUtilities)
+            set(BU_CHMOD_BUNDLE_ITEMS ON)
+            fixup_bundle(\"${QtWebEngineProcessTarget}/QtWebEngineProcess.app\"
+                \"${QtWebEngineProcessTarget}/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess\" \"\")
+            fixup_bundle(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\"
+                \"\${QTPLUGINS};\${SCPLUGINS}\" \"${QT_LIBRARY_DIR}\"
+                IGNORE_ITEM \"QtWebEngineProcess\")
+        "
+        COMPONENT Runtime)
 
 elseif(WIN32)
 
