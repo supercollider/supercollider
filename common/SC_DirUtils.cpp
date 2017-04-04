@@ -69,7 +69,6 @@ const char* DOT_LOCAL = ".local";
 
 // Add a component to a path.
 
-#if 0
 void sc_AppendToPath(char *path, size_t max_size, const char *component)
 {
 	size_t currentLength = strlen(path);
@@ -84,9 +83,7 @@ void sc_AppendToPath(char *path, size_t max_size, const char *component)
 
 	strncat(tail, component, remain);
 }
-#endif
 
-#if 0
 char *sc_StandardizePath(const char *path, char *newpath2)
 {
 	char newpath1[MAXPATHLEN];
@@ -128,31 +125,8 @@ char *sc_StandardizePath(const char *path, char *newpath2)
 
 	return newpath2;
 }
-#endif
-
-SC_DirUtils::Path SC_DirUtils::standardizePath(const Path& p)
-{
-	Path ret;
-	Path::const_iterator piter = p.begin();
-
-	if (piter != p.end() && *piter == "~") {
-		ret = getUserHomeDirectory();
-		while (++piter != p.end())
-			ret /= *piter;
-	}
-
-#if defined(__APPLE__) && !defined(SC_IPHONE)
-	bool ok;
-	Path resolved = resolveIfAlias(ret, ok);
-	if (ok)
-		return resolved;
-#endif
-
-	return ret;
-}
 
 
-#if 0
 // Returns TRUE iff dirname is an existing directory.
 
 bool sc_DirectoryExists(const char *dirname)
@@ -180,7 +154,6 @@ bool sc_IsSymlink(const char* path)
 			S_ISLNK(buf.st_mode));
 #endif
 }
-#endif // 0
 
 bool sc_IsNonHostPlatformDir(const char *name)
 {
@@ -221,7 +194,6 @@ bool sc_SkipDirectory(const char *name)
 			sc_IsNonHostPlatformDir(name));
 }
 
-#if 0
 int sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int length)
 {
 	isAlias = false;
@@ -260,46 +232,6 @@ int sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int len
 	strcpy(returnPath, path);
 	return 0;
 }
-#endif
-
-#if defined(__APPLE__) && !defined(SC_IPHONE)
-SC_DirUtils::Path SC_DirUtils::resolveIfAlias(const SC_DirUtils::Path& p, bool& ok)
-{
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	NSString *nsstringPath = [NSString stringWithCString: p.c_str() encoding: NSUTF8StringEncoding];
-	BOOL isDirectory;
-	// does the file exist? If not just copy and bail
-	if([[NSFileManager defaultManager] fileExistsAtPath: nsstringPath isDirectory: &isDirectory]) {
-		NSError *error;
-
-		NSData *bookmark = [NSURL bookmarkDataWithContentsOfURL: [NSURL fileURLWithPath:nsstringPath isDirectory: isDirectory] error: &error];
-
-		// is it an alias? If not just copy and bail
-		if(bookmark) {
-			NSError *resolvedURLError;
-			BOOL isStale;
-			NSURL *resolvedURL = [NSURL URLByResolvingBookmarkData: bookmark options: NSURLBookmarkResolutionWithoutUI relativeToURL: nil bookmarkDataIsStale: &isStale error: &resolvedURLError];
-			// does it actually lead to something?
-			if(isStale || (resolvedURL == nullptr) ) {
-				printf("Error: Target missing for alias at %s\n", p.c_str());
-				ok = false;
-				return Path();
-			}
-
-			NSString *resolvedString = [resolvedURL path];
-
-			const char *resolvedPath = [resolvedString cStringUsingEncoding: NSUTF8StringEncoding];
-			ok = true;
-			return Path(resolvedPath);
-		}
-	}
-
-	[pool release];
-
-	return p;
-}
-
-#endif
 
 // Support for Bundles
 
@@ -319,7 +251,6 @@ boost::filesystem::path sc_GetResourceDirectory()
 	return boost::filesystem::path(pathBuf);
 }
 
-#if 0
 void sc_AppendBundleName(char *str, int size)
 {
 	CFBundleRef mainBundle;
@@ -337,25 +268,6 @@ void sc_AppendBundleName(char *str, int size)
 		}
 	}
 	sc_AppendToPath(str, size, "SuperCollider");
-}
-#endif
-
-const char* SC_DirUtils::getBundleName()
-{
-	CFBundleRef mainBundle;
-	mainBundle = CFBundleGetMainBundle();
-	if (mainBundle) {
-		CFDictionaryRef dictRef = CFBundleGetInfoDictionary(mainBundle);
-		CFStringRef strRef;
-		strRef = (CFStringRef)CFDictionaryGetValue(dictRef, CFSTR("CFBundleName"));
-		if (strRef) {
-			const char *bundleName = CFStringGetCStringPtr(strRef, CFStringGetSystemEncoding());
-			if (bundleName) {
-				return bundleName;
-			}
-		}
-	}
-	return SUPERCOLLIDER_DIR_NAME;
 }
 
 #elif defined(SC_IPHONE)
@@ -401,7 +313,7 @@ void sc_GetResourceDirectory(char* dest, int length)
 	strcpy(dest, path);
 }
 
-#else
+#else // not unix, _WIN32, SC_IPHONE, or __APPLE__
 
 bool sc_IsStandAlone()
 {
