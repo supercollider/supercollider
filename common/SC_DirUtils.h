@@ -59,8 +59,6 @@ static inline bool stringCaseCompare(const char * a, const char * b)
 #endif // _POSIX_VERSION >= 200112L
 
 namespace SC_DirUtils {
-	typedef boost::filesystem::path Path;
-
 	// General path utilities
 
 	// Add 'component' to 'path' using the platform path separator.
@@ -68,7 +66,6 @@ namespace SC_DirUtils {
 
 	// Returns the expanded path with users home directory (also in newpath2)
 	char *sc_StandardizePath(const char *path, char *newpath2);
-	Path standardizePath(const Path&);
 
 	// Return TRUE iff 'path' is a symbolic link.
 	bool sc_IsSymlink(const char *path);
@@ -83,14 +80,12 @@ namespace SC_DirUtils {
 	bool sc_SkipDirectory(const char *name);
 
 	int sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int length);
-	Path resolveIfAlias(const Path&, bool &);
 
 	extern const char * gIdeName; // string used for conditional compilation according to which IDE is in use this session.
 	// for example, if the value is "scapp" then folders "scide_scapp" will be included, all other "scide_*" excluded.
 
 
 	void sc_GetResourceDirectory(char* pathBuf, int length);
-	const Path& getResourceDirectory();
 	bool sc_IsStandAlone();
 
 	// Support for Bundles
@@ -102,7 +97,6 @@ namespace SC_DirUtils {
 
 	// Get the user home directory.
 	void sc_GetUserHomeDirectory(char *str, int size);
-	const Path getUserHomeDirectory();
 
 	// Get the System level data directory.
 	void sc_GetSystemAppSupportDirectory(char *str, int size);
@@ -119,7 +113,6 @@ namespace SC_DirUtils {
 
 	// Get the directory for the configuration files.
 	void sc_GetUserConfigDirectory(char *str, int size);
-	const Path getUserConfigDirectory();
 
 	// Directory access
 
