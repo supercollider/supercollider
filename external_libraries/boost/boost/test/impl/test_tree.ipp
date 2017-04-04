@@ -381,7 +381,8 @@ normalize_test_case_name( const_string name )
     if( name[0] == '&' )
         norm_name = norm_name.substr( 1 );
         
-    std::replace(norm_name.begin(), norm_name.end(), ' ', '_'); 
+    std::replace(norm_name.begin(), norm_name.end(), ' ', '_');
+    std::replace(norm_name.begin(), norm_name.end(), ':', '_'); 
 
     return norm_name;
 }

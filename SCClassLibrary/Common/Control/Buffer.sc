@@ -372,11 +372,11 @@ Buffer {
 	}
 
 	set { arg index, float ... morePairs;
-		server.listSendMsg(["/b_set", bufnum, index, float] ++ morePairs)
+		server.listSendMsg([\b_set, bufnum, index, float] ++ morePairs)
 	}
 
 	setMsg { arg index, float ... morePairs;
-		^["/b_set", bufnum, index, float] ++ morePairs
+		^[\b_set, bufnum, index, float] ++ morePairs
 	}
 
 	setn { arg ... args;
@@ -401,23 +401,30 @@ Buffer {
 	}
 
 	get { arg index, action;
-		OSCpathResponder(server.addr, ['/b_set', bufnum, index], { arg time, r, msg;
-			action.value(msg.at(3)); r.remove }).add;
-		server.listSendMsg(["/b_get", bufnum, index])
+		OSCFunc({ |message|
+			// The server replies with a message of the form [/b_set, bufnum, index, value].
+			// We want "value," which is at index 3.
+			action.value(message[3]);
+		}, \b_set, server.addr, argTemplate: [bufnum, index]).oneShot;
+		server.listSendMsg(this.getMsg(index));
 	}
 
 	getMsg { arg index;
-		^["/b_get", bufnum, index]
+		^[\b_get, bufnum, index]
 	}
 
 	getn { arg index, count, action;
-		OSCpathResponder(server.addr, ['/b_setn', bufnum, index], {arg time, r, msg;
-			action.value(msg.copyToEnd(4)); r.remove } ).add;
-		server.listSendMsg(["/b_getn", bufnum, index, count]);
+		OSCFunc({ |message|
+			// The server replies with a message of the form
+			// [/b_setn, bufnum, starting index, length, ...sample values].
+			// We want the sample values, which start at index 4.
+			action.value(message[4..]);
+		}, \b_setn, server.addr, argTemplate: [bufnum, index]).oneShot;
+		server.listSendMsg(this.getnMsg(index, count));
 	}
 
 	getnMsg { arg index, count;
-		^["/b_getn", bufnum, index, count]
+		^[\b_getn, bufnum, index, count]
 	}
 
 	fill { arg startAt, numFrames, value ... more;

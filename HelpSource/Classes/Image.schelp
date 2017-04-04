@@ -274,7 +274,7 @@ write the Image to a file.
 code::
 i = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
 i.dump
-i.write("~/Desktop/my_image.png");
+i.write("~/Desktop/my_image.png".standardizePath);
 i.free;
 
 //	storeOn / asCompileString

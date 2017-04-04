@@ -187,8 +187,8 @@ MethodOverride {
 		var path2 = if(overriddenPath.beginsWith("/Common")) {
 			Platform.classLibraryDir +/+ overriddenPath
 			} { overriddenPath };
-		activePath.openTextFile;
-		path2.openTextFile;
+		activePath.openDocument;
+		path2.openDocument;
 	}
 
 

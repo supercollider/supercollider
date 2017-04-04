@@ -11,7 +11,7 @@
 
 #include <boost/config.hpp>
 #include <boost/detail/workaround.hpp>
-#include <cstddef>
+#include <cstddef> // size_t
 
 namespace boost {
 

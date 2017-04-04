@@ -60,14 +60,15 @@
 #define BOOST_ATOMIC_DETAIL_ASM_CLOBBER_CC_COMMA
 #endif
 
-#if (defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__)) && (defined(__GNUC__) && (__GNUC__ * 100 + __GNUC_MINOR__) < 403)
+#if ((defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__)) && (defined(__GNUC__) && (__GNUC__ * 100 + __GNUC_MINOR__) < 403)) ||\
+    defined(__SUNPRO_CC)
 // This macro indicates we're using older binutils that don't support implied zero displacements for memory opereands,
 // making code like this invalid:
 //   movl 4+(%%edx), %%eax
 #define BOOST_ATOMIC_DETAIL_NO_ASM_IMPLIED_ZERO_DISPLACEMENTS
 #endif
 
-#if defined(__clang__) || (defined(BOOST_GCC) && (BOOST_GCC+0) < 40500)
+#if defined(__clang__) || (defined(BOOST_GCC) && (BOOST_GCC+0) < 40500) || defined(__SUNPRO_CC)
 // This macro indicates that the compiler does not support allocating rax:rdx register pairs ("A") in asm blocks
 #define BOOST_ATOMIC_DETAIL_NO_ASM_RAX_RDX_PAIRS
 #endif
