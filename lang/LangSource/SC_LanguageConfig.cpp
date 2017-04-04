@@ -36,30 +36,20 @@ static const char* POST_INLINE_WARNINGS = "postInlineWarnings";
 static const char* CLASS_LIB_DIR_NAME = "SCClassLibrary";
 static const char* SCLANG_YAML_CONFIG_FILENAME = "sclang_conf.yaml";
 
-SC_LanguageConfig *gLanguageConfig = 0;
-
 SC_LanguageConfig::SC_LanguageConfig(bool optStandalone)
 {
 	if( !optStandalone ) {
-		const Path& classLibraryDir = SC_DirUtils::getResourceDirectory() / CLASS_LIB_DIR_NAME;
-		if (!findPath(mDefaultClassLibraryDirectories, classLibraryDir))
-			addPath(mDefaultClassLibraryDirectories, classLibraryDir);
+		const Path& classLibraryDir = SC_Filesystem::getDirectory(SC_DirectoryName::Resource) / CLASS_LIB_DIR_NAME;
+		addPath(mDefaultClassLibraryDirectories, classLibraryDir);
 	}
 
-	if ( !( sc_IsStandAlone() || optStandalone ) ) {
-		const Path& systemExtensionDir = sc_GetSystemExtensionDirectory();
-		if (!findPath(mDefaultClassLibraryDirectories, systemExtensionDir))
-			addPath(mDefaultClassLibraryDirectories, classLibraryDir);
+	if ( !( SC_Filesystem::isStandalone() || optStandalone ) ) {
+		const Path& systemExtensionDir = SC_Filesystem::getDirectory(SC_DirectoryName::SystemExtension);
+		addPath(mDefaultClassLibraryDirectories, systemExtensionDir);
 
-		const Path& userExtensionDir = sc_GetUserExtensionDirectory();
-		if (!findPath(mDefaultClassLibraryDirectories, userExtensionDir))
-			addPath(mDefaultClassLibraryDirectories, classLibraryDir);
+		const Path& userExtensionDir = SC_Filesystem::getDirectory(SC_DirectoryName::UserExtension);
+		addPath(mDefaultClassLibraryDirectories, userExtensionDir);
 	}
-}
-
-inline const void SC_LanguageConfig::setPostInlineWarnings(bool b)
-{
-	gPostInlineWarnings = b;
 }
 
 inline void SC_LanguageConfig::postExcludedDirectories(void) const
@@ -69,7 +59,7 @@ inline void SC_LanguageConfig::postExcludedDirectories(void) const
 	}
 }
 
-bool SC_LanguageConfig::forEachIncludedDirectory(bool (*func)(const Path&, int))
+bool SC_LanguageConfig::forEachIncludedDirectory(bool (*func)(const Path&, int)) const
 {
 	for (const auto& it : mDefaultClassLibraryDirectories) {
 		if (!pathIsExcluded(it)) {
@@ -209,7 +199,7 @@ bool SC_LanguageConfig::readLibraryConfig(bool standalone)
 		configured = readLibraryConfigYAML(gConfigFile, standalone);
 
 	if( !configured && !standalone ) {
-		const Path userYamlConfigFile = SC_DirUtils::getUserConfigDirectory() / SCLANG_YAML_CONFIG_FILENAME;
+		const Path userYamlConfigFile = SC_Filesystem::getDirectory(SC_DirectoryName::UserConfig) / SCLANG_YAML_CONFIG_FILENAME;
 
 		if (boost::filesystem::exists(userYamlConfigFile))
 			configured = readLibraryConfigYAML(userYamlConfigFile, standalone);
@@ -236,18 +226,18 @@ void SC_LanguageConfig::freeLibraryConfig()
 	}
 }
 
-inline bool SC_LanguageConfig::findPath(const DirVector& vec, const Path& path)
+inline const bool SC_LanguageConfig::findPath(const DirVector& vec, const Path& path)
 {
-	const Path standardPath = boost::filesystem::canonical(path);
-
+	// @TODO decide whether or not to keep this.
+//	const Path standardPath = boost::filesystem::canonical(path);
 	for ( const auto& it : vec )
-		if (standardPath == it)
+		if (path == it)
 			return true;
 
 	return false;
 }
 
-inline bool SC_LanguageConfig::addPath(DirVector& vec, const Path& path)
+inline const bool SC_LanguageConfig::addPath(DirVector& vec, const Path& path)
 {
 	if (!findPath(vec, path)) {
 		vec.push_back(path);
@@ -257,9 +247,8 @@ inline bool SC_LanguageConfig::addPath(DirVector& vec, const Path& path)
 	}
 }
 
-inline bool SC_LanguageConfig::removePath(DirVector& vec, const Path& path)
+inline const bool SC_LanguageConfig::removePath(DirVector& vec, const Path& path)
 {
-	SC_LanguageConfig::Path stdPath = sc_StandardizePath(path);
 	SC_LanguageConfig::DirVector::iterator end = std::remove(vec.begin(), vec.end(), path);
 	bool removed = end != vec.end();
 	vec.erase(end, vec.end());

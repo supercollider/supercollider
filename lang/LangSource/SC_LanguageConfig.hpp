@@ -35,7 +35,7 @@ class SC_LanguageConfig
 {
 public:
 	typedef boost::filesystem::path Path;
-	typedef std::vector<Path>				DirVector;
+	typedef std::vector<const Path>	DirVector;
 
 	SC_LanguageConfig(bool standalone);
 
@@ -52,7 +52,7 @@ public:
 	bool removeIncludedDirectory(const Path&); // false iff there was nothing to remove
 	bool removeExcludedDirectory(const Path&);
 
-	bool forEachIncludedDirectory(bool (*)(const Path&, int));
+	bool forEachIncludedDirectory(bool (*)(const Path&, int)) const;
 
 	static bool readLibraryConfigYAML (const Path&, bool standalone);
 	static bool writeLibraryConfigYAML(const Path&);
@@ -61,19 +61,24 @@ public:
 	static bool readLibraryConfig     (bool standalone);
 
 	static const bool getPostInlineWarnings() { return gPostInlineWarnings; }
-	static const Path& getCurrentConfigPath() { return gConfigFile; }
+	static const void setPostInlineWarnings(bool b) { gPostInlineWarnings = b; }
+	static const Path& getConfigPath() { return gConfigFile; }
+	static const void setConfigPath(const Path& p) { gConfigFile = p; }
 
-	static const void setPostInlineWarnings(bool);
+	static const std::string& getIdeName() { return gIdeName; }
+	static const void setIdeName(const std::string& s) { gIdeName = s; }
+	static const bool usingIde() { return !gIdeName.empty(); }
 
 private:
-	static const bool findPath(const DirVector& vec, const Path&);
-	static const bool addPath(DirVector& vec, const Path&);
+	static const bool findPath(const DirVector&, const Path&);
+	static const bool addPath(DirVector&, const Path&);
 	static const bool removePath(DirVector&, const Path&);
 
 	DirVector mIncludedDirectories;
 	DirVector mExcludedDirectories;
 	DirVector mDefaultClassLibraryDirectories;
 	static Path gConfigFile;
+	static std::string gIdeName;
 	static bool gPostInlineWarnings;
 };
 
