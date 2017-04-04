@@ -47,7 +47,7 @@
 #include "PyrSched.h"
 #include "GC.h"
 #include "VMGlobals.h"
-//#include "SC_DirUtils.h"
+#include "SC_Filesystem.hpp"
 #include "SCBase.h"
 #include "SC_StringBuffer.h"
 

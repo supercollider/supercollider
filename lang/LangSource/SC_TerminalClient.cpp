@@ -56,7 +56,7 @@
 #include "PyrLexer.h"
 #include "PyrSlot.h"
 #include "VMGlobals.h"
-//#include "SC_DirUtils.h"   // for gIdeName
+#include "SC_Filesystem.hpp"
 #include "SC_LanguageConfig.hpp"
 #include "SC_Version.hpp"
 

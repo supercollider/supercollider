@@ -31,7 +31,7 @@ Primitives for File i/o.
 #include "PyrFilePrim.h"
 #include "ReadWriteMacros.h"
 #include "SCBase.h"
-//#include "SC_DirUtils.h"
+#include "SC_Filesystem.hpp"
 #include "sc_popen.h"
 
 #include <stdlib.h>

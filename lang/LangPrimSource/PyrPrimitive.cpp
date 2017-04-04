@@ -46,7 +46,7 @@
 //#include "Wacom.h"
 #include "InitAlloc.h"
 #include "SC_LanguageConfig.hpp"
-//#include "SC_DirUtils.h"
+#include "SC_Filesystem.hpp"
 #include "SC_Version.hpp"
 #include <map>
 

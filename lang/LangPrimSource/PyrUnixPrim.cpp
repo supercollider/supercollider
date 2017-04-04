@@ -34,7 +34,7 @@ Primitives for Unix.
 #include "VMGlobals.h"
 #include "GC.h"
 #include "SC_RGen.h"
-//#include "SC_DirUtils.h" // TODO_BRIAN: delete this include
+#include "SC_Filesystem.hpp"
 #include "sc_popen.h"
 #include "SCBase.h"
 

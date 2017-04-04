@@ -23,6 +23,8 @@
 
 #include <QString>
 
+// @TODO: change to SC_Filesystem instead
+
 namespace ScIDE {
 
 enum StandardDirectory {

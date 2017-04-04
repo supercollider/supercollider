@@ -22,27 +22,13 @@
  */
 
 #include "SC_LanguageConfig.hpp"
-#include "SCBase.h"
-#include "SC_DirUtils.h"
+#include "SC_Filesystem.hpp"               // getDirectory
 
-#include <assert.h>
-#include <ctype.h>
-#include <string.h>
-#include <stdlib.h>
-#include <string.h>
-#include <limits.h>
-#ifdef _WIN32
-# include "SC_Win32Utils.h"
-#else
-# include <sys/param.h>
-# include <unistd.h>
-# include <libgen.h>
-#endif
+#include "SCBase.h"                        // postfl
 
-#include <fstream>
-
-#include <boost/filesystem.hpp>
-#include <yaml-cpp/yaml.h>
+#include <boost/filesystem/operations.hpp> // exists (, canonical?)
+#include <boost/filesystem/fstream.hpp>    // ofstream
+#include <yaml-cpp/yaml.h>                 // YAML
 
 static const char* INCLUDE_PATHS = "includePaths";
 static const char* EXCLUDE_PATHS = "excludePaths";

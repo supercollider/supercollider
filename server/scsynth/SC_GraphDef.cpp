@@ -35,7 +35,7 @@
 #include "ReadWriteMacros.h"
 #include "SC_Prototypes.h"
 #include "SC_CoreAudio.h"
-//#include "SC_DirUtils.h"
+#include "SC_Filesystem.hpp"
 
 
 #include <stdio.h>

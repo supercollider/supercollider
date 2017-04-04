@@ -41,7 +41,7 @@
 #include "SC_Errors.h"
 #include <stdio.h>
 #include "SC_Prototypes.h"
-//#include "SC_DirUtils.h"
+#include "SC_Filesystem.hpp"
 #include "SC_Lock.h"
 #include "SC_Lib_Cintf.h"
 #include "../../common/SC_SndFileHelpers.hpp"

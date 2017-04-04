@@ -23,7 +23,7 @@ Primitives for platform dependent directories, constants etc.
 
 */
 
-//#include "SC_DirUtils.h"
+#include "SC_Filesystem.hpp"
 #include "PyrPrimitive.h"
 #include "PyrKernel.h"
 #ifdef _WIN32
