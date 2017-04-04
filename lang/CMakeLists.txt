@@ -208,7 +208,7 @@ if(SC_IDE OR SC_QT)
 	find_package(Qt5Core)
 	get_target_property(QtCore_location Qt5::Core LOCATION)
 	message(STATUS "Found Qt: " ${QtCore_location} )
-  get_filename_component(QT_BIN_PATH ${QtCore_location} DIRECTORY CACHE)
+    get_filename_component(QT_BIN_PATH ${QtCore_location} DIRECTORY CACHE)
 
 	target_link_libraries(libsclang ${QT_COLLIDER_LIBS})
 endif()
