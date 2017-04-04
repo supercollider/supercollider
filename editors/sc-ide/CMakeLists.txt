@@ -328,8 +328,7 @@ if(APPLE)
     SET(MACOSX_BUNDLE_ICON_FILE ../../icons/SCcube.icns)
 
     install(TARGETS SuperCollider
-        DESTINATION ${scappbundlename}
-        )
+          DESTINATION ${scappbundlename})
 
     set(QtWebEngineProcess
         "${QT_INSTALL_DIR}/lib/QtWebEngineCore.framework/Helpers/QtWebEngineProcess.app" CACHE PATH "Path to the QtWebEngineProcess")
