@@ -27,7 +27,7 @@
 #include <ctype.h>
 #include <cerrno>
 #include <limits>
-#include <unordered_set>
+#include <set>
 
 #ifdef _WIN32
 # include <direct.h>
@@ -115,7 +115,7 @@ int textpos;
 int errLineOffset, errCharPosOffset;
 int parseFailed = 0;
 bool compiledOK = false;
-std::unordered_set<boost::filesystem::path> compiledDirectories;
+std::set<boost::filesystem::path> compiledDirectories;
 
 /* so the text editor's dumb paren matching will work */
 #define OPENPAREN '('
@@ -160,8 +160,7 @@ double sc_strtof(const char *str, int n, int base)
 static void sc_InitCompileDirectory(void)
 {
 	// main class library folder: only used for relative path resolution
-	gCompileDir = sc_GetResourceDirectory();
-	gCompileDir /= "SCClassLibrary";
+	gCompileDir = SC_Filesystem::getDirectory(SC_DirectoryName::Resource) / "SCClassLibrary";
 }
 
 boost::filesystem::path asRelativePath(boost::filesystem::path& p)
@@ -171,7 +170,7 @@ boost::filesystem::path asRelativePath(boost::filesystem::path& p)
 }
 
 
-static bool getFileText(char* filename, char **text, int *length)
+static bool getFileText(const char* filename, char **text, int *length)
 {
 	FILE *file;
 	char *ltext;
@@ -215,7 +214,7 @@ int bugctr = 0;
 
 bool startLexer(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset)
 {
-	char *filename = fileSym->name;
+	const char *filename = fileSym->name;
 
 	textlen = -1;
 
@@ -253,7 +252,7 @@ bool startLexer(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset)
 	zzval = 0;
 	parseFailed = 0;
 	lexCmdLine = 0;
-	strcpy(currfilename, filename);
+	currfilename = boost::filesystem::path(filename);
 	maxlinestarts = 1000;
 	linestarts = (int*)pyr_pool_compile->Alloc(maxlinestarts * sizeof(int*));
 	linestarts[0] = 0;
@@ -288,7 +287,7 @@ void startLexerCmdLine(char *textbuf, int textbuflen)
 	zzval = 0;
 	parseFailed = 0;
 	lexCmdLine = 1;
-	strcpy(currfilename, "selected text");
+	currfilename = boost::filesystem::path("selected text");
 	maxlinestarts = 1000;
 	linestarts = (int*)pyr_pool_compile->Alloc(maxlinestarts * sizeof(int*));
 	linestarts[0] = 0;
@@ -1971,13 +1970,15 @@ bool passOne()
 {
 	initPassOne();
 
-	if (sc_IsStandAlone()) {
+	if (SC_Filesystem::isStandalone()) {
 		/// FIXME: this should be moved to the LibraryConfig file
 		if (!passOne_ProcessDir(gCompileDir, 0))
 			return false;
-	} else
-		if (!gLanguageConfig->forEachIncludedDirectory(passOne_ProcessDir))
+	} else {
+		if (!gLanguageConfig->forEachIncludedDirectory(passOne_ProcessDir)) {
 			return false;
+		}
+	}
 
 	finiPassOne();
 	return true;
