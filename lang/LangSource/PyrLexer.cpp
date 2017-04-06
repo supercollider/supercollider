@@ -2049,7 +2049,7 @@ bool passOne()
 }
 
 // true if filename ends in ".sc"
-bool isValidSourceFileName(char *filename)
+bool isValidSourceFileName(const char *filename)
 {
 	int len = strlen(filename);
 	bool validExtension = (len>3 && strncmp(filename+len-3, ".sc", 3) == 0)
@@ -2066,19 +2066,21 @@ bool isValidSourceFileName(char *filename)
 }
 
 // sekhar's replacement
-bool passOne_ProcessOneFile(const char * filenamearg, int level)
+bool passOne_ProcessOneFile(const char * /*filenamearg*/ filename, int level)
 {
 	bool success = true;
 
-	bool isAlias = false;
+//	bool isAlias = false;
 
-	char filename[MAXPATHLEN];
-	int status = sc_ResolveIfAlias(filenamearg, filename, isAlias, MAXPATHLEN);
+//	char filename[MAXPATHLEN];
+
+	// disallowing alias resolution for now
+	/*int status = sc_ResolveIfAlias(filenamearg, filename, isAlias, MAXPATHLEN);
 
 	if (status<0) {
 		printf("WARNING: skipping invalid symbolic link: %s\n", filenamearg);
 		return success;
-	}
+	}*/
 
 	if (gLanguageConfig && gLanguageConfig->pathIsExcluded(filename)) {
 	  post("\texcluding file: '%s'\n", filename);
@@ -2097,7 +2099,7 @@ bool passOne_ProcessOneFile(const char * filenamearg, int level)
 			success = false;
 		}
 	} else {
-		if (sc_DirectoryExists(filename))
+		if (boost::filesystem::is_directory(filename))
 			success = passOne_ProcessDir(filename, level);
 	}
 	return success;
