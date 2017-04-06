@@ -70,7 +70,7 @@ extern struct InterfaceTable gInterfaceTable;
 SC_LibCmd* gCmdArray[NUMBER_OF_COMMANDS];
 
 void initMiscCommands();
-static bool PlugIn_LoadDir(const char *dirname, bool reportError);
+static bool PlugIn_LoadDir(SC_Filesystem::Path dir, bool reportError);
 std::vector<void*> open_handles;
 #ifdef __APPLE__
 void read_section(const struct mach_header *mhp, unsigned long slide, const char *segname, const char *sectname)
@@ -164,12 +164,12 @@ void initialize_library(const char *uGensPluginPath)
 	Test_Load(&gInterfaceTable);
 	Demand_Load(&gInterfaceTable);
 	DynNoise_Load(&gInterfaceTable);
-#if defined(SC_IPHONE) && !TARGET_IPHONE_SIMULATOR
+#  if defined(SC_IPHONE) && !TARGET_IPHONE_SIMULATOR
 	iPhone_Load(&gInterfaceTable);
-#endif
+#  endif
 	FFT_UGens_Load(&gInterfaceTable);
 	return;
-#endif
+#endif // STATIC_PLUGINS
 
 	// If uGensPluginPath is supplied, it is exclusive.
 	bool loadUGensExtDirs = true;
@@ -182,37 +182,35 @@ void initialize_library(const char *uGensPluginPath)
 	}
 
 	if(loadUGensExtDirs) {
+		// @TODO: probably a better way to do this than through macro
 #ifdef SC_PLUGIN_DIR
 		// load globally installed plugins
-		if (sc_DirectoryExists(SC_PLUGIN_DIR)) {
+		if (boost::filesystem::is_directory(SC_PLUGIN_DIR)) {
 			PlugIn_LoadDir(SC_PLUGIN_DIR, true);
 		}
-#endif
+#endif // SC_PLUGIN_DIR
 		// load default plugin directory
-		char pluginDir[MAXPATHLEN];
-		sc_GetResourceDirectory(pluginDir, MAXPATHLEN);
-		sc_AppendToPath(pluginDir, MAXPATHLEN, SC_PLUGIN_DIR_NAME);
+		const SC_Filesystem::Path pluginDir = SC_Filesystem::getDirectory(SC_DirectoryName::Resource) / SC_PLUGIN_DIR_NAME;
 
-		if (sc_DirectoryExists(pluginDir)) {
+		if (boost::filesystem::is_directory(pluginDir)) {
 			PlugIn_LoadDir(pluginDir, true);
 		}
 	}
 
 	// get extension directories
-	char extensionDir[MAXPATHLEN];
-	if (!sc_IsStandAlone() && loadUGensExtDirs) {
+	if (!SC_Filesystem::isStandalone() && loadUGensExtDirs) {
 		// load system extension plugins
-		sc_GetSystemExtensionDirectory(extensionDir, MAXPATHLEN);
-		PlugIn_LoadDir(extensionDir, false);
+		const SC_Filesystem::Path sysExtDir = SC_Filesystem::getDirectory(SC_DirectoryName::SystemExtension);
+		PlugIn_LoadDir(sysExtDir, false);
 
 		// load user extension plugins
-		sc_GetUserExtensionDirectory(extensionDir, MAXPATHLEN);
-		PlugIn_LoadDir(extensionDir, false);
+		const SC_Filesystem::Path userExtDir = SC_Filesystem::getDirectory(SC_DirectoryName::UserExtension);
+		PlugIn_LoadDir(userExtDir, false);
 
 		// load user plugin directories
 		SC_StringParser sp(getenv("SC_PLUGIN_PATH"), SC_STRPARSE_PATHDELIMITER);
 		while (!sp.AtEnd()) {
-			PlugIn_LoadDir(const_cast<char *>(sp.NextToken()), true);
+			PlugIn_LoadDir(sp.NextToken(), true);
 		}
 	}
 #ifdef __APPLE__
@@ -220,7 +218,7 @@ void initialize_library(const char *uGensPluginPath)
 		glitches when UGens have to be paged-in. to work around this we preload all the plugins by
 		iterating through their memory space. */
 
-#ifndef __x86_64__
+#  ifndef __x86_64__
 	/* seems to cause a stack corruption on llvm-gcc-4.2, sdk 10.5 on 10.6 */
 
 	unsigned long images = _dyld_image_count();
@@ -254,9 +252,9 @@ void initialize_library(const char *uGensPluginPath)
 			read_section(hdr, slide, "__IMPORT", "__pointers");
 		}
 	}
-#endif
+#  endif // __x86_64__
 
-#endif
+#endif // ifdef __APPLE__
 }
 
 typedef int (*InfoFunction)();
@@ -282,29 +280,29 @@ bool checkServerVersion(void * f, const char * filename)
 	return true;
 }
 
-static bool PlugIn_Load(const char *filename)
+static bool PlugIn_Load(const SC_Filesystem::Path& filename)
 {
 #ifdef _WIN32
 
-	HINSTANCE hinstance = LoadLibrary( filename );
+	HINSTANCE hinstance = LoadLibrary( filename.c_str() );
 	if (!hinstance) {
 		char *s;
 		DWORD lastErr = GetLastError();
 		FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
 			NULL, lastErr , MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&s, 0, NULL );
-		scprintf("*** ERROR: LoadLibrary '%s' err '%s'\n", filename, s);
+		scprintf("*** ERROR: LoadLibrary '%s' err '%s'\n", filename.c_str(), s);
 		LocalFree( s );
 		return false;
 	}
 
 	void *apiVersionPtr = (void *)GetProcAddress( hinstance, "api_version" );
-	if (!checkAPIVersion(apiVersionPtr, filename)) {
+	if (!checkAPIVersion(apiVersionPtr, filename.c_str())) {
 		FreeLibrary(hinstance);
 		return false;
 	}
 
 	void *serverCheckPtr = (void *)GetProcAddress( hinstance, "server_type" );
-	if (!checkServerVersion(serverCheckPtr , filename)) {
+	if (!checkServerVersion(serverCheckPtr , filename.c_str())) {
 		FreeLibrary(hinstance);
 		return false;
 	}
@@ -328,24 +326,24 @@ static bool PlugIn_Load(const char *filename)
 	open_handles.push_back(hinstance);
 	return true;
 
-#else
+#else // (ifndef _WIN32)
 
-	void* handle = dlopen(filename, RTLD_NOW);
+	void* handle = dlopen(filename.c_str(), RTLD_NOW);
 
 	if (!handle) {
-		scprintf("*** ERROR: dlopen '%s' err '%s'\n", filename, dlerror());
+		scprintf("*** ERROR: dlopen '%s' err '%s'\n", filename.c_str(), dlerror());
 		dlclose(handle);
 		return false;
 	}
 
 	void *apiVersionPtr = (void *)dlsym( handle, "api_version" );
-	if (!checkAPIVersion(apiVersionPtr, filename)) {
+	if (!checkAPIVersion(apiVersionPtr, filename.c_str())) {
 		dlclose(handle);
 		return false;
 	}
 
 	void *serverCheckPtr = (void *)dlsym( handle, "server_type" );
-	if (!checkServerVersion(serverCheckPtr , filename)) {
+	if (!checkServerVersion(serverCheckPtr , filename.c_str())) {
 		dlclose(handle);
 		return false;
 	}
@@ -363,44 +361,76 @@ static bool PlugIn_Load(const char *filename)
 	open_handles.push_back(handle);
 	return true;
 
-#endif
+#endif // _WIN32
 }
 
-static bool PlugIn_LoadDir(const char *dirname, bool reportError)
+// @TODO: make this similar to pyrlexer's directory iteration
+static bool PlugIn_LoadDir(const SC_Filesystem::Path& dir, bool reportError)
 {
-	bool success = true;
+#ifdef DEBUG_SCFS
+	postfl("PlugIn_LoadDir: begin: '%s'.\n", path.c_str());
+#endif
+	boost::system::error_code ec;
+	boost::filesystem::recursive_directory_iterator rditer(dir, boost::filesystem::symlink_option::recurse, ec);
 
-	SC_DirHandle *dir = sc_OpenDir(dirname);
-	if (!dir) {
+	if (ec) {
 		if (reportError) {
-			scprintf("*** ERROR: open directory failed '%s'\n", dirname); fflush(stdout);
+			scprintf("*** ERROR: open directory failed '%s': %s\n", dir.c_str(), ec.message().c_str());
+			fflush(stdout);
 		}
 		return false;
-	}
-
-	int firstCharOffset = strlen(dirname)+1;
-
-	for (;;) {
-		char diritem[MAXPATHLEN];
-		bool skipItem = true;
-		bool validItem = sc_ReadDir(dir, dirname, diritem, skipItem);
-		if (!validItem) break;
-		if (skipItem || (*(diritem+firstCharOffset) == '.')) continue;  // skip files+folders whose first char is a dot
-
-	if (sc_DirectoryExists(diritem)) {
-			success = PlugIn_LoadDir(diritem, reportError);
 	} else {
-			int dnamelen = strlen(diritem);
-			int extlen = strlen(SC_PLUGIN_EXT);
-			char *extptr = diritem+dnamelen-extlen;
-			if (strncmp(extptr, SC_PLUGIN_EXT, extlen) == 0) {
-				success = PlugIn_Load(diritem);
+#ifdef DEBUG_SCFS
+		scprintf("\tCurrent directory '%s'\n", dir.c_str());
+#endif
+	}
+
+	// @TODO: try this with try{} instead of error codes
+	while (rditer != boost::filesystem::end(rditer)) {
+		const boost::filesystem::path& path = *rditer;
+#ifdef DEBUG_SCFS
+		scprintf("At: %s\n");
+#endif
+
+		const boost::filesystem::path& filename = path.filename();
+		// skip directory or file starting with '.'
+		if (filename.c_str()[0] != '.') {
+			if (boost::filesystem::is_directory(path)) {
+#ifdef DEBUG_SCFS
+				scprintf("Is a directory\n");
+#endif
+				if (SC_Filesystem::shouldNotCompileDirectory(path)) {
+#ifdef DEBUG_SCFS
+					scprintf("Skipping directory (SC_FS reason)\n");
+#endif
+					rditer.no_push();
+				} else {
+#ifdef DEBUG_SCFS
+					scprintf("Using directory\n");
+#endif
+				}
+
+			} else { // ordinary file
+				if (filename.extension() == SC_PLUGIN_EXT && !PlugIn_Load(path)) {
+#ifdef DEBUG_SCFS
+					scprintf("ERROR: Could not process '%s'\n", path.c_str());
+#endif
+					return false;
+				}
 			}
-	}
+		}
 
-		if (!success) continue;
+#ifdef DEBUG_SCFS
+		scprintf("Incrementing.\n");
+#endif
+		rditer.increment(ec);
+		if (ec) {
+			scprintf("ERROR: Could not iterate on directory '%s': %s\n", path.c_str(), ec.message().c_str());
+			return false;
+		}
 	}
-
-	sc_CloseDir(dir);
-	return success;
+#ifdef DEBUG_SCFS
+	postfl("PlugIn_LoadDir: end.\n");
+#endif
+	return true;
 }
