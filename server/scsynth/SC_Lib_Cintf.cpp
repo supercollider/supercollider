@@ -30,40 +30,36 @@
 #include "SC_InterfaceTable.h"
 #include "SC_Filesystem.hpp"
 #include <stdexcept>
-#ifndef _MSC_VER
-#include <dirent.h>
-#endif //_MSC_VER
 
-#ifndef _WIN32
-#include <dlfcn.h>
-#endif
+#ifndef _MSC_VER
+#  include <dirent.h>
+#endif // _MSC_VER
 
 #ifdef _WIN32
-#include "SC_Win32Utils.h"
+#  include "SC_Win32Utils.h"
 #else
-#include <libgen.h>
-#endif
+#  include <dlfcn.h>
+#  include <libgen.h>
+# include <sys/param.h>
+#endif // _WIN32
 
 // Plugin directory in resource directory
-# define SC_PLUGIN_DIR_NAME "plugins"
+#define SC_PLUGIN_DIR_NAME "plugins"
 
 // Extension for binary plugins
 #ifndef SC_PLUGIN_EXT
-# define SC_PLUGIN_EXT ".scx"
+#  define SC_PLUGIN_EXT ".scx"
 #endif
 
-
-#ifndef _WIN32
-# include <sys/param.h>
-#endif
+#include <boost/filesystem/operations.hpp> // is_directory
 
 #ifdef __APPLE__
 extern "C" {
-#include <mach-o/dyld.h>
-#include <mach-o/getsect.h>
+#  include <mach-o/dyld.h>
+#  include <mach-o/getsect.h>
 }
 char gTempVal;
-#endif
+#endif // __APPLE__
 
 Malloc gMalloc;
 HashTable<SC_LibCmd, Malloc> *gCmdLib;
