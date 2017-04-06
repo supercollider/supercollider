@@ -55,7 +55,7 @@
 #endif
 
 #include <boost/filesystem/path.hpp>
-
+/*
 // TODO_BRIAN: create an enum for this
 const char* gIdeName = "none";
 const char* DOT_CONFIG = ".config";
@@ -701,3 +701,4 @@ const char* sc_GlobNext(SC_GlobHandle* glob)
 	return glob->mHandle.gl_pathv[glob->mEntry++];
 #endif
 }
+ */
