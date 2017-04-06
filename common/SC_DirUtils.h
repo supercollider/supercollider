@@ -103,7 +103,6 @@ namespace SC_DirUtils {
 
 	// Get the User level data directory.
 	void sc_GetUserAppSupportDirectory(char *str, int size);
-	const Path getUserAppSupportDirectory();
 
 	// Get the System level 'Extensions' directory.
 	void sc_GetSystemExtensionDirectory(char *str, int size);
