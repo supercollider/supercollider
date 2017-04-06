@@ -364,7 +364,6 @@ static bool PlugIn_Load(const SC_Filesystem::Path& filename)
 #endif // _WIN32
 }
 
-// @TODO: make this similar to pyrlexer's directory iteration
 static bool PlugIn_LoadDir(const SC_Filesystem::Path& dir, bool reportError)
 {
 #ifdef DEBUG_SCFS
