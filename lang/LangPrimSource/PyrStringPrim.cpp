@@ -922,33 +922,24 @@ int prString_FindBackwards(struct VMGlobals *g, int numArgsPushed)
 # include <CoreFoundation/CoreFoundation.h>
 #endif // __APPLE__
 
+// Expand `~` to home directory and resolve aliases
 int prString_StandardizePath(struct VMGlobals* g, int numArgsPushed);
 int prString_StandardizePath(struct VMGlobals* g, int /* numArgsPushed */)
 {
 	PyrSlot* arg = g->sp;
 	char ipath[PATH_MAX];
-	char opathbuf[PATH_MAX];
-	char* opath = opathbuf;
 	int err;
 
 	err = slotStrVal(arg, ipath, PATH_MAX);
 	if (err) return err;
 
-	if (!sc_StandardizePath(ipath, opath)) {
-		opath = ipath;
-	}
+	bool ok;
+	boost::filesystem::path p(ipath);
+	p = SC_Filesystem::expandTilde(p);
+	p = SC_Filesystem::resolveIfAlias(p, ok);
+	// original method didn't throw an error if alias resolution failed.
 
-#if __APPLE__
-	CFStringRef cfstring =
-		CFStringCreateWithCString(NULL,
-								  opath,
-								  kCFStringEncodingUTF8);
-	err = !CFStringGetFileSystemRepresentation(cfstring, opath, PATH_MAX);
-	CFRelease(cfstring);
-	if (err) return errFailed;
-#endif // __APPLE__
-
-	PyrString* pyrString = newPyrString(g->gc, opath, 0, true);
+	PyrString* pyrString = newPyrString(g->gc, p.c_str(), 0, true);
 	SetObject(arg, pyrString);
 
 	return errNone;
