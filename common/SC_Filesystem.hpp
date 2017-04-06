@@ -72,10 +72,10 @@ public:
 	// If it is an alias, the second argument is set to `true`.
 	static Path resolveIfAlias(const Path&, bool&);
 
-	// Returns `true` if this is a standalone (only on macOS)
 #if defined(__APPLE__) && !defined(SC_IPHONE)
 	static const char* getBundleName();
 
+	// Returns `true` if this is a standalone (only on macOS)
 	static inline bool isStandalone() { 	return SC_StandAloneInfo::IsStandAlone();	}
 #else
 	static inline bool isStandalone() { return false; }

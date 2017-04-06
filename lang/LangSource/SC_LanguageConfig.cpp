@@ -26,6 +26,8 @@
 
 #include "SCBase.h"                        // postfl
 
+#include <algorithm>                       // std::find
+
 #include <boost/filesystem/operations.hpp> // exists (, canonical?)
 #include <boost/filesystem/fstream.hpp>    // ofstream
 #include <yaml-cpp/yaml.h>                 // YAML
@@ -230,11 +232,7 @@ inline const bool SC_LanguageConfig::findPath(const DirVector& vec, const Path& 
 {
 	// @TODO decide whether or not to keep this.
 //	const Path standardPath = boost::filesystem::canonical(path);
-	for ( const auto& it : vec )
-		if (path == it)
-			return true;
-
-	return false;
+	return std::find(vec.begin(), vec.end(), path) != vec.end();
 }
 
 inline const bool SC_LanguageConfig::addPath(DirVector& vec, const Path& path)
@@ -249,7 +247,7 @@ inline const bool SC_LanguageConfig::addPath(DirVector& vec, const Path& path)
 
 inline const bool SC_LanguageConfig::removePath(DirVector& vec, const Path& path)
 {
-	SC_LanguageConfig::DirVector::iterator end = std::remove(vec.begin(), vec.end(), path);
+	const DirVector::const_iterator& end = std::remove(vec.begin(), vec.end(), path);
 	bool removed = end != vec.end();
 	vec.erase(end, vec.end());
 	return removed;
