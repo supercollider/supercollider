@@ -1919,50 +1919,89 @@ void finiPassOne()
 	//postfl("<-finiPassOne\n");
 }
 
-static bool passOne_ProcessDir(boost::filesystem::path dir, int level)
+static bool passOne_ShouldSkipDirectory(const boost::filesystem::path& dir, std::string& reason)
 {
-	if (!boost::filesystem::is_directory(dir))
-		return true;
+	static const std::string reason_excluded = "Directory excluded";
+	static const std::string reason_already_compiled = "Already compiled directory";
+	static const std::string reason_filesystem_exclude = "";
 
-	if (compiledDirectories.find(dir) != compiledDirectories.end())
-		// already compiled
+	if (compiledDirectories.find(dir) != compiledDirectories.end()) {
+		reason = reason_already_compiled;
 		return true;
+	} else if (gLanguageConfig && gLanguageConfig->pathIsExcluded(dir)) {
+		reason = reason_excluded;
+		return true;
+	} else if (SC_Filesystem::shouldNotCompileDirectory(dir)) {
+		reason = reason_filesystem_exclude;
+		return true;
+	}
+
+	return false;
+}
+
+static bool passOne_ProcessDir(const boost::filesystem::path& dir, int level)
+{
+	// opens directory
+	// should use symlink version
+	// handles error
+
+	// recursing:
+	//   should skip the directory/file if:
+	//			- it's in the set of compiledDirectories
+	//			- it's in the list of excluded directories
+	//			-	sc_ReadDir would return false == SC_Filesystem::shouldNotCompileDirectory would return true
+
+	//	should return false immediately if:
+	//		  - any directory open failed
+	//			- any file processing failed
+
+	// reads directory, checks if it's a valid item or if it should skip
+	// if is directory, process
+	// recurse into symlinks (new behavior)
+	boost::system::error_code ec;
+	boost::filesystem::recursive_directory_iterator rditer(dir, boost::filesystem::symlink_option::recurse, ec);
+	std::string skipReason;
+
+	if (ec) {
+		error("Could not open directory '%s'\n", dir.c_str());
+		return false;
+	} else if (passOne_ShouldSkipDirectory(dir, skipReason)) {
+		if (!skipReason.empty())
+			post("\t%s: '%s'\n", skipReason.c_str(), dir.c_str());
+		return true;
+	} else {
+		post("\tCompiling directory '%s'\n", dir.c_str());
+	}
+
+	compiledDirectories.insert(dir);
 
 	bool success = true;
+	// try this with try{} instead of error codes
+	while (rditer != boost::filesystem::end(rditer)) {
+		if (boost::filesystem::is_directory(*rditer)) {
 
-	if (gLanguageConfig && gLanguageConfig->pathIsExcluded(dir)) {
-		post("\texcluding dir: '%s'\n", dir.c_str());
-		return success;
-	}
+			if (passOne_ShouldSkipDirectory(dir, skipReason)) {
+				if (!skipReason.empty())
+					post("\t%s: '%s'\n", skipReason.c_str(), dir.c_str());
+				rditer.no_push();
+			} else {
+				compiledDirectories.insert(dir);
+			}
 
-	if (level == 0) post("\tcompiling dir: '%s'\n", dir.c_str());
+		} else { // ordinary file
 
-	boost::filesystem::recursive_directory_iterator rditer(dir);
+			if (!passOne_ProcessOneFile(((boost::filesystem::path) *rditer).c_str(), rditer.level()))
+				return false;
 
-	SC_DirHandle *dir = sc_OpenDir(dirname);
-	if (!dir) {
-		error("open directory failed '%s'\n", dirname); fflush(stdout);
-		return false;
-	}
-
-	for (;;) {
-		char diritem[MAXPATHLEN];
-		bool skipItem = true;
-		bool validItem = sc_ReadDir(dir, dirname, diritem, skipItem);
-		if (!validItem) break;
-		if (skipItem) continue;
-
-		if (sc_DirectoryExists(diritem)) {
-			success = passOne_ProcessDir(diritem, level + 1);
-		} else {
-			success = passOne_ProcessOneFile(diritem, level + 1);
 		}
 
-		if (!success) break;
+		rditer.increment(ec);
+		if (ec) {
+			error("Could not open directory '%s'\n", dir.c_str());
+			return false;
+		}
 	}
 
-	compiledDirectories.insert(std::string(dirname));
-	sc_CloseDir(dir);
 	return success;
 }
 
