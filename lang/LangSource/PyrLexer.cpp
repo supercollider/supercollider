@@ -1983,8 +1983,7 @@ static bool passOne_ProcessDir(const boost::filesystem::path& dir, int level)
 
 	compiledDirectories.insert(dir);
 
-	bool success = true;
-	// try this with try{} instead of error codes
+	// @TODO: try this with try{} instead of error codes
 	while (rditer != boost::filesystem::end(rditer)) {
 		const boost::filesystem::path& path = *rditer;
 #ifdef DEBUG_SCFS
@@ -1993,11 +1992,11 @@ static bool passOne_ProcessDir(const boost::filesystem::path& dir, int level)
 
 		if (boost::filesystem::is_directory(path)) {
 #ifdef DEBUG_SCFS
-			postln("Is a directory\n");
+			postfl("Is a directory\n");
 #endif
 			if (passOne_ShouldSkipDirectory(path, skipReason)) {
 #ifdef DEBUG_SCFS
-				postln("Skipping directory\n");
+				postfl("Skipping directory\n");
 #endif
 				if (!skipReason.empty())
 					post("\t%s: '%s'\n", skipReason.c_str(), path.c_str());
@@ -2027,7 +2026,7 @@ static bool passOne_ProcessDir(const boost::filesystem::path& dir, int level)
 #ifdef DEBUG_SCFS
 	postfl("passOne_ProcessDir: end.\n");
 #endif
-	return success;
+	return true;
 }
 
 bool passOne()

@@ -90,7 +90,7 @@ void SC_Filesystem::setDirectory(const SC_DirectoryName& dn, const Path& p)
 	gDirectoryMap[dn] = p;
 }
 
-Path expandTilde(const Path& p)
+Path SC_Filesystem::expandTilde(const Path& p)
 {
 	Path::const_iterator piter = p.begin();
 
