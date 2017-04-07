@@ -163,10 +163,9 @@ static void sc_InitCompileDirectory(void)
 	gCompileDir = SC_Filesystem::getDirectory(SC_DirectoryName::Resource) / "SCClassLibrary";
 }
 
-boost::filesystem::path asRelativePath(boost::filesystem::path& p)
+boost::filesystem::path asRelativePath(const boost::filesystem::path& p)
 {
-	boost::filesystem::path inPath(p);
-	return inPath.lexically_relative(gCompileDir);
+	return boost::filesystem::relative(p, gCompileDir);
 }
 
 

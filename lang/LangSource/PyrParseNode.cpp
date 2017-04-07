@@ -339,11 +339,10 @@ void PyrClassExtNode::compile(PyrSlot *result)
 {
 	PyrClass *classobj = slotRawSymbol(&mClassName->mSlot)->u.classobj;
 	if (!classobj) {
-		char extPath[1024];
-		asRelativePath(gCompilingFileSym->name, extPath); // TODO_BRIAN: think this was in SC_DirUtils?
+		const boost::filesystem::path relpath = asRelativePath(boost::filesystem::path(gCompilingFileSym->name));
 		error("Class extension for nonexistent class '%s'\n     In file:'%s'\n",
 			slotRawSymbol(&mClassName->mSlot)->name,
-			extPath
+			relpath.c_str()
 		);
 		return;
 	}

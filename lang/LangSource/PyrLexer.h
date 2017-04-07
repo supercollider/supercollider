@@ -82,7 +82,7 @@ void fatal() ;
 bool isValidSourceFileName(char *filename);
 bool passOne_ProcessOneFile(const char *filename, int level);
 
-extern boost::filesystem::path asRelativePath(boost::filesystem::path&);
+boost::filesystem::path asRelativePath(const boost::filesystem::path&);
 
 void initLexer();
 void init_SuperCollider();
