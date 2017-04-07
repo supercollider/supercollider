@@ -14,8 +14,8 @@
 
 #include "SC_StandAloneInfo_Darwin.h"
 
-//bool SC_StandAloneInfo::haveCheckedBundleStatus;
-//char SC_StandAloneInfo::dirPath[PATH_MAX];
+bool SC_StandAloneInfo::haveCheckedBundleStatus;
+char SC_StandAloneInfo::dirPath[PATH_MAX];
 
 void SC_StandAloneInfo::SC_StandAloneInfoInit() {
 	char relDir[PATH_MAX];
