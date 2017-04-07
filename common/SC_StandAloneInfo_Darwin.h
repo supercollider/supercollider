@@ -9,7 +9,6 @@ class SC_StandAloneInfo;
 class SC_StandAloneInfo
 {
 private:
-	static bool sIsStandAlone;
 	static bool haveCheckedBundleStatus;
 	static char dirPath[PATH_MAX];
 
