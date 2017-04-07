@@ -300,6 +300,39 @@ static bool getResourceDirectory(Path& p)
 	return true;
 }
 
-// @TODO: implement remainder of functions
+struct SC_Filesystem::Glob
+{
+	glob_t mHandle;
+	size_t mEntry;
+};
+
+SC_Filesystem::Glob* makeGlob(const char* pattern)
+{
+	Glob ret = new SC_GlobHandle::Glob;
+
+	int flags = GLOB_MARK | GLOB_TILDE | GLOB_QUOTE;
+
+	int err = ::glob(pattern, flags, NULL, mGlob->mHandle);
+	if (err < 0) {
+		delete glob;
+		return 0;
+	}
+
+	glob->mEntry = 0;
+
+	return glob;
+}
+
+void SC_Filesystem::freeGlob(Glob*)
+{
+	globfree(&glob->mHandle);
+}
+
+SC_Filesystem::Path globNext(Glob* glob)
+{
+	if (glob->mEntry >= glob->mHandle.gl_pathc)
+		return Path();
+	return Path(glob->mHandle.gl_pathv[glob->mEntry++]);
+}
 
 #endif // defined(__APPLE__) && !defined(SC_IPHONE)

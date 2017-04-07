@@ -53,6 +53,7 @@ enum class SC_DirectoryName {
 class SC_Filesystem {
 public:
 	typedef boost::filesystem::path Path;
+	struct Glob;
 
 	// Gets the path associated with the directory name.
 	// The path is initialized if it is not already set.
@@ -81,14 +82,23 @@ public:
 	static inline bool isStandalone() { return false; }
 #endif // defined(__APPLE__) && !defined(SC_IPHONE)
 
+	static Glob* makeGlob(const char*);
+
+	// Returns empty path if end of stream is reached
+	static Path globNext(Glob*);
+
+	static void freeGlob(Glob*);
+
 private:
 	// singleton; @TODO: better to make this a namespace
 	SC_Filesystem() = delete;
 	~SC_Filesystem() = delete;
 	SC_Filesystem(const SC_Filesystem&) = delete;
+	SC_Filesystem(SC_Filesystem&&) = delete;
 	SC_Filesystem& operator=(const SC_Filesystem&) = delete;
 
 	// Map between directory names and paths
+	// Should be internal to cpp
 	static std::map<SC_DirectoryName, Path> gDirectoryMap;
 };
 
