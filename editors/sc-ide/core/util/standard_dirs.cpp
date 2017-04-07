@@ -26,39 +26,39 @@ namespace ScIDE {
 
 QString standardDirectory( StandardDirectory type )
 {
-    char path[PATH_MAX];
+    SC_DirectoryName dn;
 
     switch(type)
     {
-    case ScResourceDir:
-        sc_GetResourceDirectory(path, PATH_MAX);
-        break;
+        case ScResourceDir:
+            dn = SC_DirectoryName::Resource;
+            break;
 
-    case ScAppDataSystemDir:
-        sc_GetSystemAppSupportDirectory(path, PATH_MAX);
-        break;
+        case ScAppDataSystemDir:
+            dn = SC_DirectoryName::SystemAppSupport;
+            break;
 
-    case ScAppDataUserDir:
-        sc_GetUserAppSupportDirectory(path, PATH_MAX);
-        break;
+        case ScAppDataUserDir:
+            dn = SC_DirectoryName::UserAppSupport;
+            break;
 
-    case ScExtensionSystemDir:
-        sc_GetSystemExtensionDirectory(path, PATH_MAX);
-        break;
+        case ScExtensionSystemDir:
+            dn = SC_DirectoryName::SystemExtension;
+            break;
 
-    case ScExtensionUserDir:
-        sc_GetUserExtensionDirectory(path, PATH_MAX);
-        break;
+        case ScExtensionUserDir:
+            dn = SC_DirectoryName::UserExtension;
+            break;
 
-    case ScConfigUserDir:
-        sc_GetUserConfigDirectory(path, PATH_MAX);
-        break;
+        case ScConfigUserDir:
+            dn = SC_DirectoryName::UserConfig;
+            break;
 
-    default:
-        return QString();
+        default:
+            return QString();
     }
 
-    return QString(path);
+    return QString(SC_Filesystem::getDirectory(dn).c_str());
 }
 
-}
+} // ScIDE
