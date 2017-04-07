@@ -180,9 +180,9 @@ list(APPEND ide_src
     ${CMAKE_SOURCE_DIR}/QtCollider/layouts/stack_layout.cpp
 )
 
-list(APPEND ide_src ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp)
+list(APPEND ide_src ${CMAKE_SOURCE_DIR}/common/SC_Filesystem.cpp)
 if(APPLE)
-	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
+	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_Filesystem.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
 endif()
 
 if(APPLE)

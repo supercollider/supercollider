@@ -78,7 +78,7 @@ set(sclang_sources
 	${CMAKE_SOURCE_DIR}/common/fftlib.c
 	${CMAKE_SOURCE_DIR}/common/Samp.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_AllocPool.cpp
-	${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_Filesystem.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_Reply.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StringBuffer.cpp
@@ -90,7 +90,7 @@ set(sclang_sources
 )
 
 if(APPLE)
-	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
+	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_Filesystem.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
 
 	list(APPEND sclang_sources ${CMAKE_SOURCE_DIR}/common/SC_Apple.mm)
 	set_source_files_properties(${CMAKE_SOURCE_DIR}/common/SC_Apple.mm PROPERTIES COMPILE_FLAGS "-x objective-c++ -fobjc-exceptions")
