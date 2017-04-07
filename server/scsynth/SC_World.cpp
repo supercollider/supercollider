@@ -280,15 +280,16 @@ void World_LoadGraphDefs(World* world)
 			GraphDef_Define(world, list);
 		}
 	}else{
-		char resourceDir[MAXPATHLEN];
-		if(sc_IsStandAlone())
-			sc_GetResourceDirectory(resourceDir, MAXPATHLEN);
+		SC_Filesystem::Path path;
+		if(SC_Filesystem::isStandalone())
+			path = SC_Filesystem::getDirectory(SC_DirectoryName::Resource);
 		else
-			sc_GetUserAppSupportDirectory(resourceDir, MAXPATHLEN);
-		sc_AppendToPath(resourceDir, MAXPATHLEN, "synthdefs");
+			path = SC_Filesystem::getDirectory(SC_DirectoryName::UserAppSupport);
+
+		path /= "synthdefs";
 		if(world->mVerbosity > 0)
-			scprintf("Loading synthdefs from default path: %s\n", resourceDir);
-		list = GraphDef_LoadDir(world, resourceDir, list);
+			scprintf("Loading synthdefs from default path: %s\n", path.c_str());
+		list = GraphDef_LoadDir(world, path.c_str(), list);
 		GraphDef_Define(world, list);
 	}
 
