@@ -70,7 +70,7 @@ extern struct InterfaceTable gInterfaceTable;
 SC_LibCmd* gCmdArray[NUMBER_OF_COMMANDS];
 
 void initMiscCommands();
-static bool PlugIn_LoadDir(SC_Filesystem::Path dir, bool reportError);
+static bool PlugIn_LoadDir(const SC_Filesystem::Path& dir, bool reportError);
 std::vector<void*> open_handles;
 #ifdef __APPLE__
 void read_section(const struct mach_header *mhp, unsigned long slide, const char *segname, const char *sectname)
