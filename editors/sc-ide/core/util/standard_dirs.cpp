@@ -30,32 +30,32 @@ QString standardDirectory( StandardDirectory type )
 
     switch(type)
     {
-        case ScResourceDir:
-            dn = SC_DirectoryName::Resource;
-            break;
+    case ScResourceDir:
+        dn = SC_DirectoryName::Resource;
+        break;
 
-        case ScAppDataSystemDir:
-            dn = SC_DirectoryName::SystemAppSupport;
-            break;
+    case ScAppDataSystemDir:
+        dn = SC_DirectoryName::SystemAppSupport;
+        break;
 
-        case ScAppDataUserDir:
-            dn = SC_DirectoryName::UserAppSupport;
-            break;
+    case ScAppDataUserDir:
+        dn = SC_DirectoryName::UserAppSupport;
+        break;
 
-        case ScExtensionSystemDir:
-            dn = SC_DirectoryName::SystemExtension;
-            break;
+    case ScExtensionSystemDir:
+        dn = SC_DirectoryName::SystemExtension;
+        break;
 
-        case ScExtensionUserDir:
-            dn = SC_DirectoryName::UserExtension;
-            break;
+    case ScExtensionUserDir:
+        dn = SC_DirectoryName::UserExtension;
+        break;
 
-        case ScConfigUserDir:
-            dn = SC_DirectoryName::UserConfig;
-            break;
+    case ScConfigUserDir:
+        dn = SC_DirectoryName::UserConfig;
+        break;
 
-        default:
-            return QString();
+    default:
+        return QString();
     }
 
     const SC_Filesystem::Path path = SC_Filesystem::getDirectory(dn);
