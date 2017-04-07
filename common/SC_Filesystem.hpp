@@ -28,7 +28,6 @@
 #define SC_FILESYSTEM_HPP_INCLUDED
 
 #include <boost/filesystem/path.hpp> // path
-#include <map>                       // std::map
 
 #if defined(__APPLE__) && !defined(SC_IPHONE)
 #  include "SC_StandAloneInfo_Darwin.h"
@@ -57,10 +56,10 @@ public:
 
 	// Gets the path associated with the directory name.
 	// The path is initialized if it is not already set.
-	static Path getDirectory(const SC_DirectoryName);
+	static Path getDirectory(const SC_DirectoryName&);
 
 	// Sets the path associated with the directory name
-	static void setDirectory(const SC_DirectoryName, const Path&);
+	static void setDirectory(const SC_DirectoryName&, const Path&);
 
 	// Expands a path starting with `~` to use the user's home directory.
 	// Works cross-platform.
@@ -97,9 +96,7 @@ private:
 	SC_Filesystem(SC_Filesystem&&) = delete;
 	SC_Filesystem& operator=(const SC_Filesystem&) = delete;
 
-	// Map between directory names and paths
-	// Should be internal to cpp
-	static std::map<SC_DirectoryName, Path> gDirectoryMap;
+	static bool initDirectory(const SC_DirectoryName&);
 };
 
 #endif // SC_FILESYSTEM_HPP_INCLUDED

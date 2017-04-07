@@ -26,7 +26,8 @@
 #include "SC_Filesystem.hpp"
 
 // stdlib
-#include <string>
+#include <string> // std::string
+#include <map>    // std::map
 
 // boost
 #include <boost/algorithm/string/predicate.hpp> // iequals
@@ -36,10 +37,13 @@
 #include <CoreFoundation/CFString.h>   // CFString
 #include <CoreFoundation/CFBundle.h>   // CFBundle
 #include <CoreServices/CoreServices.h> // @TODO: ???
+#include <glob.h>                      // ::glob, glob_t
 
 // @TODO: add debugging
-using SC_Filesystem::Path;
+typedef SC_Filesystem::Path Path;
 using std::map;
+
+static std::map<SC_DirectoryName, Path> gDirectoryMap;
 
 //============ DIRECTORY NAMES =============//
 const char* gIdeName = "none"; // @TODO: move out
@@ -52,13 +56,12 @@ const char* LIBRARY_DIR_NAME = "Library";
 const char* APPLICATION_SUPPORT_DIR_NAME = "Application Support";
 const char* SHARE_DIR_NAME = "share";
 const char* DOT_LOCAL = ".local";
-const Path* ROOT_PATH = Path("/");
+const Path ROOT_PATH = Path("/");
 
 //============= FORWARD DECLS ==============//
 
 // All functions return true for success, false for failure
 // @TODO: Decide whose job it is to print error messages
-static bool initDirectory(const SC_DirectoryName&);
 static bool getSystemAppSupportDirectory(Path&);
 static bool getSystemExtensionDirectory(Path&);
 static bool getUserHomeDirectory(Path&);
@@ -68,7 +71,7 @@ static bool getUserConfigDirectory(Path&);
 static bool getResourceDirectory(Path&);
 
 // Returns `true` if the directory corresponds to another platform.
-static bool isNonHostPlatformDirectory(const Path&);
+static bool isNonHostPlatformDirectory(const std::string&);
 
 //============ CLASS FUNCTIONS =============//
 
@@ -76,13 +79,13 @@ Path SC_Filesystem::getDirectory(const SC_DirectoryName& dn)
 {
 	map<SC_DirectoryName, Path>::const_iterator it = gDirectoryMap.find(dn);
 	if (it != gDirectoryMap.end())
-		return *it;
+		return it->second;
 	else
 		if ( ! initDirectory(dn) )
 			// failed, return empty directory
-			return Path p;
+			return Path();
 		else
-			return gDirectoryMap.find(dn);
+			return it->second;
 }
 
 void SC_Filesystem::setDirectory(const SC_DirectoryName& dn, const Path& p)
@@ -95,7 +98,7 @@ Path SC_Filesystem::expandTilde(const Path& p)
 	Path::const_iterator piter = p.begin();
 
 	if (piter != p.end() && *piter == "~") {
-		Path& ret = getUserHomeDirectory();
+		Path ret = getDirectory(SC_DirectoryName::UserHome);
 		while (++piter != p.end())
 			ret /= *piter;
 		return ret;
@@ -170,50 +173,38 @@ const char* SC_Filesystem::getBundleName()
 	return SUPERCOLLIDER_DIR_NAME;
 }
 
-//============= DETAIL FUNCTIONS =============//
-
-// @TODO: determine if this functionality is still needed.
-// better avoid if possible; may cause issues in the future.
-// we can always exclude using lang config.
-
-// Returns `true` if the directory corresponds to another platform.
-static bool isNonHostPlatformDirectory(const std::string& s)
-{
-	return s == "linux" || s == "windows" || s == "iphone";
-}
-
 // Returns false if initialization failed
-static bool initDirectory(const SC_DirectoryName& dn)
+bool SC_Filesystem::initDirectory(const SC_DirectoryName& dn)
 {
-	Path& p;
+	Path p;
 	bool ok;
 
 	switch (dn) {
-		case SystemAppSupport:
+		case SC_DirectoryName::SystemAppSupport:
 			ok = getSystemAppSupportDirectory(p);
 			break;
 
-		case SystemExtension:
+		case SC_DirectoryName::SystemExtension:
 			ok = getSystemExtensionDirectory(p);
 			break;
 
-		case UserHome:
+		case SC_DirectoryName::UserHome:
 			ok = getUserHomeDirectory(p);
 			break;
 
-		case UserAppSupport:
+		case SC_DirectoryName::UserAppSupport:
 			ok = getUserAppSupportDirectory(p);
 			break;
 
-		case UserExtension:
-			ok = getUserExtensionSupportDirectory(p);
+		case SC_DirectoryName::UserExtension:
+			ok = getUserExtensionDirectory(p);
 			break;
 
-		case UserConfig:
+		case SC_DirectoryName::UserConfig:
 			ok = getUserConfigDirectory(p);
 			break;
 
-		case Resource:
+		case SC_DirectoryName::Resource:
 			ok = getResourceDirectory(p);
 			break;
 
@@ -229,6 +220,18 @@ static bool initDirectory(const SC_DirectoryName& dn)
 
 	gDirectoryMap[dn] = p;
 	return true;
+}
+
+//============= DETAIL FUNCTIONS =============//
+
+// @TODO: determine if this functionality is still needed.
+// better avoid if possible; may cause issues in the future.
+// we can always exclude using lang config.
+
+// Returns `true` if the directory corresponds to another platform.
+static bool isNonHostPlatformDirectory(const std::string& s)
+{
+	return s == "linux" || s == "windows" || s == "iphone";
 }
 
 static bool getSystemAppSupportDirectory(Path& p)
@@ -306,13 +309,13 @@ struct SC_Filesystem::Glob
 	size_t mEntry;
 };
 
-SC_Filesystem::Glob* makeGlob(const char* pattern)
+SC_Filesystem::Glob* SC_Filesystem::makeGlob(const char* pattern)
 {
-	Glob ret = new SC_GlobHandle::Glob;
+	Glob* glob = new Glob;
 
 	int flags = GLOB_MARK | GLOB_TILDE | GLOB_QUOTE;
 
-	int err = ::glob(pattern, flags, nullptr, mGlob->mHandle);
+	int err = ::glob(pattern, flags, nullptr, &glob->mHandle);
 	if (err < 0) {
 		delete glob;
 		return nullptr;
@@ -329,7 +332,7 @@ void SC_Filesystem::freeGlob(Glob* glob)
 	delete glob;
 }
 
-SC_Filesystem::Path globNext(Glob* glob)
+Path SC_Filesystem::globNext(Glob* glob)
 {
 	if (glob->mEntry >= glob->mHandle.gl_pathc)
 		return Path();

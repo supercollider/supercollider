@@ -58,7 +58,8 @@ QString standardDirectory( StandardDirectory type )
             return QString();
     }
 
-    return QString(SC_Filesystem::getDirectory(dn).c_str());
+    const SC_Filesystem::Path path = SC_Filesystem::getDirectory(dn);
+    return QString(path.c_str());
 }
 
 } // ScIDE
