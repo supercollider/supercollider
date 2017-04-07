@@ -32,6 +32,12 @@
 #include <boost/filesystem/fstream.hpp>    // ofstream
 #include <yaml-cpp/yaml.h>                 // YAML
 
+SC_LanguageConfig::Path SC_LanguageConfig::gConfigFile;
+std::string SC_LanguageConfig::gIdeName = "none";
+bool SC_LanguageConfig::gPostInlineWarnings = false;
+
+SC_LanguageConfig* gLanguageConfig;
+
 static const char* INCLUDE_PATHS = "includePaths";
 static const char* EXCLUDE_PATHS = "excludePaths";
 static const char* POST_INLINE_WARNINGS = "postInlineWarnings";
@@ -54,7 +60,7 @@ SC_LanguageConfig::SC_LanguageConfig(bool optStandalone)
 	}
 }
 
-inline void SC_LanguageConfig::postExcludedDirectories(void) const
+void SC_LanguageConfig::postExcludedDirectories(void) const
 {
 	for (auto it : mExcludedDirectories) {
 		post("\texcluding dir: '%s'\n", it.c_str());
@@ -80,27 +86,27 @@ bool SC_LanguageConfig::forEachIncludedDirectory(bool (*func)(const Path&, int))
 	return true;
 }
 
-inline bool SC_LanguageConfig::pathIsExcluded(const Path& path) const
+bool SC_LanguageConfig::pathIsExcluded(const Path& path) const
 {
 	return findPath(mExcludedDirectories, path);
 }
 
-inline bool SC_LanguageConfig::addIncludedDirectory(const Path& path)
+bool SC_LanguageConfig::addIncludedDirectory(const Path& path)
 {
 	return addPath(mIncludedDirectories, path);
 }
 
-inline bool SC_LanguageConfig::addExcludedDirectory(const Path& path)
+bool SC_LanguageConfig::addExcludedDirectory(const Path& path)
 {
 	return addPath(mExcludedDirectories, path);
 }
 
-inline bool SC_LanguageConfig::removeIncludedDirectory(const Path& path)
+bool SC_LanguageConfig::removeIncludedDirectory(const Path& path)
 {
 	return removePath(mIncludedDirectories, path);
 }
 
-inline bool SC_LanguageConfig::removeExcludedDirectory(const Path& path)
+bool SC_LanguageConfig::removeExcludedDirectory(const Path& path)
 {
 	return removePath(mExcludedDirectories, path);
 }
