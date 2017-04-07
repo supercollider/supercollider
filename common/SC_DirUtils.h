@@ -22,130 +22,124 @@
 #ifndef SC_DIR_UTILS_H_INCLUDED
 #define SC_DIR_UTILS_H_INCLUDED
 
-#include <limits.h> // PATH_MAX
-#include <boost/filesystem/path.hpp> // path
+#include <limits.h>
+#include <stdio.h>
 
 #ifdef _WIN32
-#  include <string.h>
-#  define snprintf _snprintf
-#  ifndef PATH_MAX
-#    define PATH_MAX _MAX_PATH
-#  endif
+# include <stdio.h>
+# ifndef PATH_MAX
+#  define PATH_MAX _MAX_PATH
+# endif
+# include <string.h>
+# define snprintf _snprintf
 #endif
 
-#ifndef MAXPATHLEN
-#  define MAXPATHLEN PATH_MAX
-#endif
+#include <boost/algorithm/string.hpp>
 
-#if 0 // don't use, we have boost filesystem for this now
-#ifdef _WIN32
-#  define SC_PATH_DELIMITER "\\"
-#else
-#  define SC_PATH_DELIMITER "/"
-#endif
-#endif
-
+static inline bool stringCaseCompare(const char * a, const char * b)
+{
 #if _POSIX_VERSION >= 200112L
-static inline bool stringCaseCompare(const char * a, const char * b)
-{
 	return strcasecmp(a, b) == 0;
-}
 #else
-#include <boost/algorithm/string/predicate.hpp>
-static inline bool stringCaseCompare(const char * a, const char * b)
-{
 	return boost::iequals(a, b);
-}
-#endif // _POSIX_VERSION >= 200112L
-
-namespace SC_DirUtils {
-	// General path utilities
-
-	// Add 'component' to 'path' using the platform path separator.
-	void sc_AppendToPath(char *path, size_t max_size, const char *component);
-
-	// Returns the expanded path with users home directory (also in newpath2)
-	char *sc_StandardizePath(const char *path, char *newpath2);
-
-	// Return TRUE iff 'path' is a symbolic link.
-	bool sc_IsSymlink(const char *path);
-
-	// Return TRUE iff 'dirname' is an existing directory.
-	bool sc_DirectoryExists(const char *dirname);
-
-	// Returns TRUE iff 'name' is a directory pertaining to another platform.
-	bool sc_IsNonHostPlatformDir(const char *name);
-
-	// Returns TRUE iff 'name' is to be ignored during compilation.
-	bool sc_SkipDirectory(const char *name);
-
-	int sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int length);
-
-	extern const char * gIdeName; // string used for conditional compilation according to which IDE is in use this session.
-	// for example, if the value is "scapp" then folders "scide_scapp" will be included, all other "scide_*" excluded.
-
-
-	void sc_GetResourceDirectory(char* pathBuf, int length);
-	bool sc_IsStandAlone();
-
-	// Support for Bundles
-#if defined(__APPLE__) && !defined(SC_IPHONE)
-	void sc_AppendBundleName(char *str, int size);
-	const char* getBundleName();
 #endif
-	// Support for Extensions
-
-	// Get the user home directory.
-	void sc_GetUserHomeDirectory(char *str, int size);
-
-	// Get the System level data directory.
-	void sc_GetSystemAppSupportDirectory(char *str, int size);
-
-	// Get the User level data directory.
-	void sc_GetUserAppSupportDirectory(char *str, int size);
-
-	// Get the System level 'Extensions' directory.
-	void sc_GetSystemExtensionDirectory(char *str, int size);
-
-	// Get the User level 'Extensions' directory.
-	void sc_GetUserExtensionDirectory(char *str, int size);
-
-	// Get the directory for the configuration files.
-	void sc_GetUserConfigDirectory(char *str, int size);
-
-	// Directory access
-
-	// Abstract directory handle
-	struct SC_DirHandle;
-
-	// Open directory dirname. Return NULL on failure.
-	SC_DirHandle* sc_OpenDir(const char *dirname);
-
-	// Close directory dir.
-	void sc_CloseDir(SC_DirHandle *dir);
-
-	// Get next entry from directory 'dir' with name 'dirname' and put it into 'path'.
-	// Skip compilation directories iff 'skipEntry' is TRUE.
-	// Return TRUE iff pointing to a valid dir entry.
-	// Return TRUE in 'skipEntry' iff entry should be skipped.
-	bool sc_ReadDir(SC_DirHandle *dir, const char *dirname, char *path, bool &skipEntry);
+}
 
 
-	// Globbing
+# ifndef MAXPATHLEN
+#  define MAXPATHLEN PATH_MAX
+# endif
 
-	// Abstract glob handle
-	struct SC_GlobHandle;
+#ifdef _WIN32
+#define SC_PATH_DELIMITER "\\"
+#else
+#define SC_PATH_DELIMITER "/"
+#endif
 
-	// Create glob iterator from 'pattern'. Return NULL on failure.
-	SC_GlobHandle* sc_Glob(const char* pattern);
+// General path utilities
 
-	// Free glob handle.
-	void sc_GlobFree(SC_GlobHandle* glob);
+// Add 'component' to 'path' using the platform path separator.
+void sc_AppendToPath(char *path, size_t max_size, const char *component);
 
-	// Return next path from glob iterator.
-	// Return NULL at end of stream.
-	const char* sc_GlobNext(SC_GlobHandle* glob);
+// Returns the expanded path with users home directory (also in newpath2)
+char *sc_StandardizePath(const char *path, char *newpath2);
 
-} // namespace SC_DirUtils
+// Return TRUE iff 'path' is a symbolic link.
+bool sc_IsSymlink(const char *path);
+
+// Return TRUE iff 'dirname' is an existing directory.
+bool sc_DirectoryExists(const char *dirname);
+
+// Returns TRUE iff 'name' is a directory pertaining to another platform.
+bool sc_IsNonHostPlatformDir(const char *name);
+
+// Returns TRUE iff 'name' is to be ignored during compilation.
+bool sc_SkipDirectory(const char *name);
+
+int sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int length);
+
+extern const char * gIdeName; // string used for conditional compilation according to which IDE is in use this session.
+// for example, if the value is "scapp" then folders "scide_scapp" will be included, all other "scide_*" excluded.
+
+// Support for Bundles
+
+void sc_GetResourceDirectory(char* pathBuf, int length);
+bool sc_IsStandAlone();
+
+#if defined(__APPLE__) && !defined(SC_IPHONE)	// running on OS X
+void sc_AppendBundleName(char *str, int size);
+#endif
+// Support for Extensions
+
+// Get the user home directory.
+void sc_GetUserHomeDirectory(char *str, int size);
+
+// Get the System level data directory.
+void sc_GetSystemAppSupportDirectory(char *str, int size);
+
+// Get the User level data directory.
+void sc_GetUserAppSupportDirectory(char *str, int size);
+
+// Get the System level 'Extensions' directory.
+void sc_GetSystemExtensionDirectory(char *str, int size);
+
+// Get the User level 'Extensions' directory.
+void sc_GetUserExtensionDirectory(char *str, int size);
+
+// Get the directory for the configuration files.
+void sc_GetUserConfigDirectory(char *str, int size);
+
+// Directory access
+
+// Abstract directory handle
+struct SC_DirHandle;
+
+// Open directory dirname. Return NULL on failure.
+SC_DirHandle* sc_OpenDir(const char *dirname);
+
+// Close directory dir.
+void sc_CloseDir(SC_DirHandle *dir);
+
+// Get next entry from directory 'dir' with name 'dirname' and put it into 'path'.
+// Skip compilation directories iff 'skipEntry' is TRUE.
+// Return TRUE iff pointing to a valid dir entry.
+// Return TRUE in 'skipEntry' iff entry should be skipped.
+bool sc_ReadDir(SC_DirHandle *dir, const char *dirname, char *path, bool &skipEntry);
+
+
+// Globbing
+
+// Abstract glob handle
+struct SC_GlobHandle;
+
+// Create glob iterator from 'pattern'. Return NULL on failure.
+SC_GlobHandle* sc_Glob(const char* pattern);
+
+// Free glob handle.
+void sc_GlobFree(SC_GlobHandle* glob);
+
+// Return next path from glob iterator.
+// Return NULL at end of stream.
+const char* sc_GlobNext(SC_GlobHandle* glob);
 
 #endif // SC_DIR_UTILS_H_INCLUDED

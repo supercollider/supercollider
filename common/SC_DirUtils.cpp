@@ -54,18 +54,7 @@
 #endif
 #endif
 
-#include <boost/filesystem/path.hpp>
-/*
-// TODO_BRIAN: create an enum for this
-const char* gIdeName = "none";
-const char* DOT_CONFIG = ".config";
-const char* CWD = "./";
-const char* SUPERCOLLIDER_DIR_NAME = "SuperCollider";
-const char* DOCUMENTS_DIR_NAME = "Documents";
-const char* LIBRARY_DIR_NAME = "Library";
-const char* APPLICATION_SUPPORT_DIR_NAME = "Application Support";
-const char* SHARE_DIR_NAME = "share";
-const char* DOT_LOCAL = ".local";
+const char * gIdeName = "none";
 
 // Add a component to a path.
 
@@ -84,6 +73,7 @@ void sc_AppendToPath(char *path, size_t max_size, const char *component)
 	strncat(tail, component, remain);
 }
 
+
 char *sc_StandardizePath(const char *path, char *newpath2)
 {
 	char newpath1[MAXPATHLEN];
@@ -93,7 +83,6 @@ char *sc_StandardizePath(const char *path, char *newpath2)
 
 	size_t pathLen = strlen(path);
 
-	// expand tilde
 	if ((pathLen >= 2) && (path[0] == '~') && ((path[1] == '/') || (path[1] == '\\'))) {
 		char home[PATH_MAX];
 		sc_GetUserHomeDirectory(home, PATH_MAX);
@@ -194,6 +183,7 @@ bool sc_SkipDirectory(const char *name)
 			sc_IsNonHostPlatformDir(name));
 }
 
+
 int sc_ResolveIfAlias(const char *path, char *returnPath, bool &isAlias, int length)
 {
 	isAlias = false;
@@ -244,12 +234,11 @@ bool sc_IsStandAlone()
 	return SC_StandAloneInfo::IsStandAlone();
 }
 
-boost::filesystem::path sc_GetResourceDirectory()
+void sc_GetResourceDirectory(char* pathBuf, int length)
 {
-	char pathBuf[PATH_MAX];
-	SC_StandAloneInfo::GetResourceDir(pathBuf, PATH_MAX);
-	return boost::filesystem::path(pathBuf);
+	SC_StandAloneInfo::GetResourceDir(pathBuf, length);
 }
+
 
 void sc_AppendBundleName(char *str, int size)
 {
@@ -313,7 +302,7 @@ void sc_GetResourceDirectory(char* dest, int length)
 	strcpy(dest, path);
 }
 
-#else // not unix, _WIN32, SC_IPHONE, or __APPLE__
+#else
 
 bool sc_IsStandAlone()
 {
@@ -339,7 +328,6 @@ void sc_GetResourceDirectory(char* pathBuf, int length)
 
 // Get the user home directory.
 
-// TODO_BRIAN: move this into separate implementation files
 void sc_GetUserHomeDirectory(char *str, int size)
 {
 #ifndef _WIN32
@@ -353,20 +341,6 @@ void sc_GetUserHomeDirectory(char *str, int size)
 #else
 	win32_GetKnownFolderPath(CSIDL_PROFILE, str, size);
 #endif
-}
-
-const SC_DirUtils::Path SC_DirUtils::getUserHomeDirectory()
-{
-#ifdef _WIN32
-	char *str;
-	return SC_DirUtils::Path(win32_GetKnownFolderPath(CSIDL_PROFILE, str, PATH_MAX));
-#else
-	const char *home = getenv("HOME");
-	if (home)
-		return SC_DirUtils::Path(home);
-	else // should throw an error here
-		return SC_DirUtils::Path(CWD);
-#endif // _WIN32
 }
 
 
@@ -392,7 +366,7 @@ void sc_GetSystemAppSupportDirectory(char *str, int size)
 			size);
 
 #if defined(__APPLE__)
-	// Get the main bundle name for the app from the enclosed Info.plist 
+	// Get the main bundle name for the app from the enclosed Info.plist
 	sc_AppendBundleName(str, size);
 #endif
 
@@ -432,29 +406,6 @@ void sc_GetUserAppSupportDirectory(char *str, int size)
 #endif
 }
 
-// TODO_BRIAN: move this out :(
-const SC_DirUtils::Path SC_DirUtils::getUserAppSupportDirectory()
-{
-	// TODO_BRIAN: XDG isn't really a thing on windows... is it?
-	const char *xdgDataHome = getenv("XDG_DATA_HOME");
-	if (xdgDataHome)
-		return Path(xdgDataHome) / SUPERCOLLIDER_DIR_NAME;
-
-#ifdef _WIN32
-	char *str;
-	win32_GetKnownFolderPath(CSIDL_LOCAL_APPDATA, str, MAX_PATH);
-	return SC_DirUtils::Path(str) / SUPERCOLLIDER_DIR_NAME;
-#else
-#  ifdef SC_IPHONE
-	return getUserHomeDirectory() / DOCUMENTS_DIR_NAME;
-#  elif defined(__APPLE__)
-	return getUserHomeDirectory() / LIBRARY_DIR_NAME / APPLICATION_SUPPORT_DIR_NAME / getBundleName();
-#  else
-	return getUserHomeDirectory() / DOT_LOCAL / SHARE_DIR_NAME / SUPERCOLLIDER_DIR_NAME;
-#  endif // SC_IPHONE / __APPLE__
-#endif // _WIN32
-}
-
 
 // Get the System level 'Extensions' directory.
 
@@ -490,19 +441,6 @@ void sc_GetUserConfigDirectory(char *str, int size)
 #else
 	sc_GetUserAppSupportDirectory(str, size);
 #endif
-}
-
-const SC_DirUtils::Path SC_DirUtils::getUserConfigDirectory()
-{
-	const char * xdgConfigHome = getenv("XDG_CONFIG_HOME");
-	if (xdgConfigHome) {
-		return Path(xdgConfigHome) / SUPERCOLLIDER_DIR_NAME;
-	}
-#if defined(__linux__) || defined(__freebsd__)
-	return getUserHomeDirectory() / DOT_CONFIG / SUPERCOLLIDER_DIR_NAME;
-#else
-	return getUserAppSupportDirectory();
-#endif // __linux__ || __freebsd__
 }
 
 
@@ -701,4 +639,3 @@ const char* sc_GlobNext(SC_GlobHandle* glob)
 	return glob->mHandle.gl_pathv[glob->mEntry++];
 #endif
 }
- */
