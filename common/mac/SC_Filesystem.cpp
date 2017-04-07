@@ -312,10 +312,10 @@ SC_Filesystem::Glob* makeGlob(const char* pattern)
 
 	int flags = GLOB_MARK | GLOB_TILDE | GLOB_QUOTE;
 
-	int err = ::glob(pattern, flags, NULL, mGlob->mHandle);
+	int err = ::glob(pattern, flags, nullptr, mGlob->mHandle);
 	if (err < 0) {
 		delete glob;
-		return 0;
+		return nullptr;
 	}
 
 	glob->mEntry = 0;
@@ -323,9 +323,10 @@ SC_Filesystem::Glob* makeGlob(const char* pattern)
 	return glob;
 }
 
-void SC_Filesystem::freeGlob(Glob*)
+void SC_Filesystem::freeGlob(Glob* glob)
 {
 	globfree(&glob->mHandle);
+	delete glob;
 }
 
 SC_Filesystem::Path globNext(Glob* glob)
