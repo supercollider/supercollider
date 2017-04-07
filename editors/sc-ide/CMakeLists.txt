@@ -277,10 +277,10 @@ target_link_libraries( SuperCollider
 )
 
 if(Boost_FOUND)
-    target_link_libraries( SuperCollider ${Boost_SYSTEM_LIBRARY} )
+    target_link_libraries( SuperCollider ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} )
 else()
     # in-house-built boost system
-    target_link_libraries( SuperCollider boost_system )
+    target_link_libraries( SuperCollider boost_system boost_filesystem )
 endif()
 
 if(APPLE)
