@@ -37,12 +37,13 @@
 #include "SC_CoreAudio.h"
 #include "SC_Filesystem.hpp"
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <sstream>
 #include <stdexcept>
 #include <string>
+
+#include <boost/filesystem/operations.hpp> // recursive_directory_iterator
 
 extern Malloc gMalloc;
 
@@ -692,30 +693,51 @@ GraphDef* GraphDef_Load(World *inWorld, const char *filename, GraphDef *inList)
 
 GraphDef* GraphDef_LoadDir(World *inWorld, char *dirname, GraphDef *inList)
 {
-	SC_DirHandle *dir = sc_OpenDir(dirname);
-	if (!dir) {
+#ifdef DEBUG_SCFS
+	scprintf("GraphDef_LoadDir: begin: '%s'.\n", dirname.c_str());
+#endif
+	boost::system::error_code ec;
+	boost::filesystem::recursive_directory_iterator rditer(dirname, boost::filesystem::symlink_option::recurse, ec);
+
+	if (ec) {
 		scprintf("*** ERROR: open directory failed '%s'\n", dirname);
 		return inList;
 	}
 
-	for (;;) {
-		char diritem[MAXPATHLEN];
-		bool skipItem = false;
-		bool validItem = sc_ReadDir(dir, dirname, diritem, skipItem);
-		if (!validItem) break;
-		if (skipItem) continue;
-
-		if (sc_DirectoryExists(diritem)) {
-			inList = GraphDef_LoadDir(inWorld, diritem, inList);
-		} else {
-			int dnamelen = strlen(diritem);
-			if (strncmp(diritem+dnamelen-9, ".scsyndef", 9) == 0) {
-				inList = GraphDef_Load(inWorld, diritem, inList);
+	while (rditer != boost::filesystem::end(rditer)) {
+		const boost::filesystem::path& path = *rditer;
+#ifdef DEBUG_SCFS
+		scprintf("At: %s\n");
+#endif
+		if (boost::filesystem::is_directory(path)) {
+#ifdef DEBUG_SCFS
+			scprintf("Is a directory\n");
+#endif
+			if (SC_Filesystem::shouldNotCompileDirectory(path)) {
+#ifdef DEBUG_SCFS
+				scprintf("Skipping directory\n");
+#endif
+				rditer.no_push();
+			} else {
+#ifdef DEBUG_SCFS
+				scprintf("Working with directory\n");
+#endif
+			}
+		} else { // ordinary file
+			if (path.extension() == ".scsyndef") {
+#ifdef DEBUG_SCFS
+				scprintf("Processing\n");
+#endif
+				inList = GraphDef_Load(inWorld, path.c_str(), inList);
+				return inList;
+			} else {
+#ifdef DEBUG_SCFS
+				scprintf("File was not .scsyndef\n");
+#endif
 			}
 		}
 	}
 
-	sc_CloseDir(dir);
 	return inList;
 }
 
