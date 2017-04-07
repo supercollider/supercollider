@@ -35,7 +35,7 @@ class SC_LanguageConfig
 {
 public:
 	typedef boost::filesystem::path Path;
-	typedef std::vector<const Path>	DirVector;
+	typedef std::vector<Path>	DirVector;
 
 	SC_LanguageConfig(bool standalone);
 
