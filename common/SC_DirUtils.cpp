@@ -1,3 +1,4 @@
+#if 0
 /*
  *  Copyright (c) 2005 Tim Walters. All rights reserved.
  *  Created by Tim Walters on 10/19/05.
@@ -639,3 +640,4 @@ const char* sc_GlobNext(SC_GlobHandle* glob)
 	return glob->mHandle.gl_pathv[glob->mEntry++];
 #endif
 }
+#endif
