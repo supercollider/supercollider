@@ -691,7 +691,7 @@ GraphDef* GraphDef_Load(World *inWorld, const char *filename, GraphDef *inList)
 	return inList;
 }
 
-GraphDef* GraphDef_LoadDir(World *inWorld, char *dirname, GraphDef *inList)
+GraphDef* GraphDef_LoadDir(World *inWorld, const char *dirname, GraphDef *inList)
 {
 #ifdef DEBUG_SCFS
 	scprintf("GraphDef_LoadDir: begin: '%s'.\n", dirname.c_str());
