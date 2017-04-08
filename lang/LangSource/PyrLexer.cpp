@@ -69,11 +69,12 @@
 #include "SC_Filesystem.hpp"
 #include "SC_TextUtils.hpp"
 
-//#ifdef DEBUG_SCFS
+//#define DEBUG_SCFS
+#ifdef DEBUG_SCFS
 #include <iostream> // cout, endl
 using std::cout;
 using std::endl;
-//#endif
+#endif
 
 int yyparse();
 int processaccidental1(char *s);
@@ -1928,11 +1929,11 @@ static bool passOne_ShouldSkipDirectory(const boost::filesystem::path& dir, std:
 {
 	static const std::string reason_excluded = "Directory excluded";
 	static const std::string reason_already_compiled = "Already compiled directory";
-//#ifdef DEBUG_SCFS
+#ifdef DEBUG_SCFS
 	static const std::string reason_filesystem_exclude = "(debug) SC_FS reason";
-//#else
-//	static const std::string reason_filesystem_exclude = ""; // hide filesystem exclusion reasons (for now)
-//#endif // DEBUG_SCFS
+#else
+	static const std::string reason_filesystem_exclude = ""; // hide filesystem exclusion reasons (for now)
+#endif // DEBUG_SCFS
 
 	if (compiledDirectories.find(dir) != compiledDirectories.end()) {
 		reason = reason_already_compiled;
@@ -1968,9 +1969,9 @@ static bool passOne_ProcessDir(const boost::filesystem::path& dir, int level)
 	// reads directory, checks if it's a valid item or if it should skip
 	// if is directory, process
 	// recurse into symlinks (new behavior)
-//#ifdef DEBUG_SCFS
-//	cout << "passOne_ProcessDir: begin: '" << dir << "'." << endl;
-//#endif
+#ifdef DEBUG_SCFS
+	cout << "passOne_ProcessDir: begin: '" << dir << "'." << endl;
+#endif
 	boost::system::error_code ec;
 	boost::filesystem::recursive_directory_iterator rditer(dir, boost::filesystem::symlink_option::recurse, ec);
 	std::string skipReason;
@@ -1995,18 +1996,18 @@ static bool passOne_ProcessDir(const boost::filesystem::path& dir, int level)
 	// @TODO: try this with try{} instead of error codes
 	while (rditer != boost::filesystem::end(rditer)) {
 		const boost::filesystem::path& path = *rditer;
-//#ifdef DEBUG_SCFS
+#ifdef DEBUG_SCFS
 		cout << "At: " << path << endl;
-//#endif
+#endif
 
 		if (boost::filesystem::is_directory(path)) {
-//#ifdef DEBUG_SCFS
-//			cout << "Is a directory" << endl;
-//#endif
+#ifdef DEBUG_SCFS
+			cout << "Is a directory" << endl;
+#endif
 			if (passOne_ShouldSkipDirectory(path, skipReason)) {
-//#ifdef DEBUG_SCFS
-//				cout << "Skipping directory" << endl;
-//#endif
+#ifdef DEBUG_SCFS
+				cout << "Skipping directory" << endl;
+#endif
 				if (!skipReason.empty())
 					post("\t%s: '%s'\n", skipReason.c_str(), path.c_str());
 				rditer.no_push();
@@ -2015,34 +2016,35 @@ static bool passOne_ProcessDir(const boost::filesystem::path& dir, int level)
 			}
 
 		} else { // ordinary file
-//#ifdef DEBUG_SCFS
-//			cout << "Processing" << endl;
-//#endif
-			bool isAlias = false;
-			boost::filesystem::path respath = SC_Filesystem::resolveIfAlias(path, isAlias);
-			if (isAlias)
-				cout << "Alias: " << path << endl;
+#ifdef DEBUG_SCFS
+			cout << "Processing" << endl;
+#endif
+//			bool isAlias = false;
+//			boost::filesystem::path respath = SC_Filesystem::resolveIfAlias(path, isAlias);
+//			if (isAlias)
+//				cout << "Alias: " << path << endl;
 
-			if (!passOne_ProcessOneFile(respath.c_str(), rditer.level())) {
-//#ifdef DEBUG_SCFS
-//				cout << "Could not process " << path << endl;
-//#endif
+//			if (!passOne_ProcessOneFile(respath.c_str(), rditer.level())) {
+			if (!passOne_ProcessOneFile(path.c_str(), rditer.level())) {
+#ifdef DEBUG_SCFS
+				cout << "Could not process " << path << endl;
+#endif
 				return false;
 			}
 		}
 
-//#ifdef DEBUG_SCFS
-//		cout << "Incrementing" << endl;
-//#endif
+#ifdef DEBUG_SCFS
+		cout << "Incrementing" << endl;
+#endif
 		rditer.increment(ec);
 		if (ec) {
 			error("Could not iterate on directory '%s': %s\n", path.c_str(), ec.message().c_str());
 			return false;
 		}
 	}
-//#ifdef DEBUG_SCFS
-//	cout << "passOne_ProcessDir: end." << endl;
-//#endif
+#ifdef DEBUG_SCFS
+	cout << "passOne_ProcessDir: end." << endl;
+#endif
 	return true;
 }
 

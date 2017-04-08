@@ -43,11 +43,12 @@
 #include <stdexcept>
 #include <string>
 
-//#ifdef DEBUG_SCFS
+//#define DEBUG_SCFS
+#ifdef DEBUG_SCFS
 #include <iostream>
 using std::cout;
 using std::endl;
-//#endif
+#endif
 
 #include <boost/filesystem/operations.hpp> // recursive_directory_iterator
 

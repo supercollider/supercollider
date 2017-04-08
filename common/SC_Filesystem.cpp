@@ -28,7 +28,13 @@
 // stdlib
 #include <string>   // std::string
 #include <map>      // std::map
+
+//#define DEBUG_SCFS
+#ifdef DEBUG_SCFS
 #include <iostream>
+using std::cout;
+using std::endl;
+#endif
 
 // boost
 #include <boost/algorithm/string/predicate.hpp> // iequals
@@ -73,9 +79,6 @@ static bool getResourceDirectory(Path&);
 
 // Returns `true` if the directory corresponds to another platform.
 static bool isNonHostPlatformDirectory(const std::string&);
-
-using std::cout;
-using std::endl;
 
 //============ CLASS FUNCTIONS =============//
 
