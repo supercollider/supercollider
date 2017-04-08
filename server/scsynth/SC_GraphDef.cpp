@@ -43,6 +43,12 @@
 #include <stdexcept>
 #include <string>
 
+//#ifdef DEBUG_SCFS
+#include <iostream>
+using std::cout;
+using std::endl;
+//#endif
+
 #include <boost/filesystem/operations.hpp> // recursive_directory_iterator
 
 extern Malloc gMalloc;
@@ -694,7 +700,7 @@ GraphDef* GraphDef_Load(World *inWorld, const char *filename, GraphDef *inList)
 GraphDef* GraphDef_LoadDir(World *inWorld, const char *dirname, GraphDef *inList)
 {
 #ifdef DEBUG_SCFS
-	scprintf("GraphDef_LoadDir: begin: '%s'.\n", dirname.c_str());
+	cout << "GraphDef_LoadDir: begin: " << dirname << endl;
 #endif
 	boost::system::error_code ec;
 	boost::filesystem::recursive_directory_iterator rditer(dirname, boost::filesystem::symlink_option::recurse, ec);
@@ -707,37 +713,39 @@ GraphDef* GraphDef_LoadDir(World *inWorld, const char *dirname, GraphDef *inList
 	while (rditer != boost::filesystem::end(rditer)) {
 		const boost::filesystem::path& path = *rditer;
 #ifdef DEBUG_SCFS
-		scprintf("At: %s\n");
+		cout << "At: " << path << endl;
 #endif
 		if (boost::filesystem::is_directory(path)) {
 #ifdef DEBUG_SCFS
-			scprintf("Is a directory\n");
+			cout << "Is a directory" << endl;
 #endif
 			if (SC_Filesystem::shouldNotCompileDirectory(path)) {
 #ifdef DEBUG_SCFS
-				scprintf("Skipping directory\n");
+				cout << "Skipping directory" << endl;
 #endif
 				rditer.no_push();
 			} else {
 #ifdef DEBUG_SCFS
-				scprintf("Working with directory\n");
+				cout << "Working with directory" << endl;
 #endif
 			}
 		} else { // ordinary file
 			if (path.extension() == ".scsyndef") {
 #ifdef DEBUG_SCFS
-				scprintf("Processing\n");
+				cout << "Processing" << endl;
 #endif
 				inList = GraphDef_Load(inWorld, path.c_str(), inList);
 				return inList;
 			} else {
 #ifdef DEBUG_SCFS
-				scprintf("File was not .scsyndef\n");
+				cout << "File was not .scsyndef" << endl;
 #endif
 			}
 		}
 	}
-
+#ifdef DEBUG_SCFS
+	cout << "GraphDef_LoadDir: end" << endl;
+#endif
 	return inList;
 }
 

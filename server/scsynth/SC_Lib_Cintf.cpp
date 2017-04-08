@@ -61,6 +61,13 @@ extern "C" {
 char gTempVal;
 #endif // __APPLE__
 
+//#define DEBUG_SCFS
+#ifdef DEBUG_SCFS
+#include <iostream>
+using std::cout;
+using std::endl;
+#endif
+
 Malloc gMalloc;
 HashTable<SC_LibCmd, Malloc> *gCmdLib;
 HashTable<struct UnitDef, Malloc> *gUnitDefLib = 0;
@@ -367,7 +374,7 @@ static bool PlugIn_Load(const SC_Filesystem::Path& filename)
 static bool PlugIn_LoadDir(const SC_Filesystem::Path& dir, bool reportError)
 {
 #ifdef DEBUG_SCFS
-	postfl("PlugIn_LoadDir: begin: '%s'.\n", path.c_str());
+	cout << "PlugIn_LoadDir: begin: " << dir << endl;
 #endif
 	boost::system::error_code ec;
 	boost::filesystem::recursive_directory_iterator rditer(dir, boost::filesystem::symlink_option::recurse, ec);
@@ -380,7 +387,7 @@ static bool PlugIn_LoadDir(const SC_Filesystem::Path& dir, bool reportError)
 		return false;
 	} else {
 #ifdef DEBUG_SCFS
-		scprintf("\tCurrent directory '%s'\n", dir.c_str());
+		cout << "\tCurrent directory: " << dir << endl;
 #endif
 	}
 
@@ -388,7 +395,7 @@ static bool PlugIn_LoadDir(const SC_Filesystem::Path& dir, bool reportError)
 	while (rditer != boost::filesystem::end(rditer)) {
 		const boost::filesystem::path& path = *rditer;
 #ifdef DEBUG_SCFS
-		scprintf("At: %s\n");
+		cout << "At: " << path << endl;
 #endif
 
 		const boost::filesystem::path& filename = path.filename();
@@ -396,32 +403,29 @@ static bool PlugIn_LoadDir(const SC_Filesystem::Path& dir, bool reportError)
 		if (filename.c_str()[0] != '.') {
 			if (boost::filesystem::is_directory(path)) {
 #ifdef DEBUG_SCFS
-				scprintf("Is a directory\n");
+				cout << "Is a directory" << endl;
 #endif
 				if (SC_Filesystem::shouldNotCompileDirectory(path)) {
 #ifdef DEBUG_SCFS
-					scprintf("Skipping directory (SC_FS reason)\n");
+					cout << "Skipping directory (SC_FS reason)" << endl;
 #endif
 					rditer.no_push();
 				} else {
 #ifdef DEBUG_SCFS
-					scprintf("Using directory\n");
+					cout << "Using directory" << endl;
 #endif
 				}
 
 			} else { // ordinary file
 				if (filename.extension() == SC_PLUGIN_EXT && !PlugIn_Load(path)) {
 #ifdef DEBUG_SCFS
-					scprintf("ERROR: Could not process '%s'\n", path.c_str());
+					cout << "ERROR: Could not process " << path << endl;
 #endif
 					return false;
 				}
 			}
 		}
 
-#ifdef DEBUG_SCFS
-		scprintf("Incrementing.\n");
-#endif
 		rditer.increment(ec);
 		if (ec) {
 			scprintf("ERROR: Could not iterate on directory '%s': %s\n", path.c_str(), ec.message().c_str());
@@ -429,7 +433,7 @@ static bool PlugIn_LoadDir(const SC_Filesystem::Path& dir, bool reportError)
 		}
 	}
 #ifdef DEBUG_SCFS
-	postfl("PlugIn_LoadDir: end.\n");
+	cout << "PlugIn_LoadDir: end" << endl;
 #endif
 	return true;
 }
