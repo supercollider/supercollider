@@ -37,6 +37,7 @@
 
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
+#include <boost/filesystem/string_file.hpp>
 
 #include "PyrParseNode.h"
 #include "Bison/lang11d_tab.h"
@@ -175,7 +176,8 @@ boost::filesystem::path asRelativePath(const boost::filesystem::path& p)
 	return boost::filesystem::relative(p, gCompileDir);
 }
 
-
+// No longer needed; using load_string_file
+#if 0
 static bool getFileText(const char* filename, char **text, int *length)
 {
 	FILE *file;
@@ -213,7 +215,7 @@ static bool getFileText(const char* filename, char **text, int *length)
 	*text = ltext;
 	return true;
 }
-
+#endif // 0
 
 int bugctr = 0;
 
@@ -225,7 +227,14 @@ bool startLexer(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset)
 	textlen = -1;
 
 	if(!fileSym->u.source) {
-		if (!getFileText(filename, &text, &textlen)) return false;
+		const boost::filesystem::path path{filename};
+		std::string filetext;
+		// @TODO: error handling
+		boost::filesystem::load_string_file(path, filetext);
+		textlen = filetext.size();
+		text = (char*)pyr_pool_compile->Alloc((textlen+1) * sizeof(char));
+		strcpy(text, filetext.c_str());
+//		if (!getFileText(filename, &text, &textlen)) return false;
 		fileSym->u.source = text;
 		rtf2txt(text);
 	}
