@@ -100,8 +100,6 @@ set ( ide_moc_hdr
     widgets/util/volume_widget.hpp
 
     ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.hpp
-    ${CMAKE_SOURCE_DIR}/editors/sc-ide/primitives/localsocket_utils.cpp
-    ${CMAKE_SOURCE_DIR}/editors/sc-ide/primitives/localsocket_utils.hpp
 )
 
 file (GLOB_RECURSE all_hdr *hpp)
