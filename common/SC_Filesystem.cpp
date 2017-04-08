@@ -26,8 +26,9 @@
 #include "SC_Filesystem.hpp"
 
 // stdlib
-#include <string> // std::string
-#include <map>    // std::map
+#include <string>   // std::string
+#include <map>      // std::map
+#include <iostream>
 
 // boost
 #include <boost/algorithm/string/predicate.hpp> // iequals
@@ -73,19 +74,34 @@ static bool getResourceDirectory(Path&);
 // Returns `true` if the directory corresponds to another platform.
 static bool isNonHostPlatformDirectory(const std::string&);
 
+using std::cout;
+using std::endl;
+
 //============ CLASS FUNCTIONS =============//
 
 Path SC_Filesystem::getDirectory(const SC_DirectoryName& dn)
 {
+#ifdef DEBUG_SCFS
+	cout << "SCFS::getDirectory: enter" << endl;
+#endif
 	map<SC_DirectoryName, Path>::const_iterator it = gDirectoryMap.find(dn);
-	if (it != gDirectoryMap.end())
-		return it->second;
-	else
-		if ( ! initDirectory(dn) )
+	Path p;
+	if (it != gDirectoryMap.end()) {
+		p = it->second;
+	} else {
+		if ( ! initDirectory(dn) ) {
 			// failed, return empty directory
-			return Path();
-		else
-			return it->second;
+			p = Path();
+		} else {
+			it = gDirectoryMap.find(dn);
+			p = it->second;
+		}
+	}
+#ifdef DEBUG_SCFS
+	cout << "\tgot " << p << endl;
+	cout << "SCFS::getDirectory: exit" << endl;
+#endif
+	return p;
 }
 
 void SC_Filesystem::setDirectory(const SC_DirectoryName& dn, const Path& p)
@@ -152,6 +168,7 @@ Path SC_Filesystem::resolveIfAlias(const Path& p, bool& ok)
 	}
 
 	[pool release];
+	ok = true;
 	return p;
 }
 
@@ -176,6 +193,10 @@ const char* SC_Filesystem::getBundleName()
 // Returns false if initialization failed
 bool SC_Filesystem::initDirectory(const SC_DirectoryName& dn)
 {
+#ifdef DEBUG_SCFS
+	cout << "SCFS::initDirectory: enter" << endl;
+	cout << "\tdn: " << (int)dn << endl;
+#endif
 	Path p;
 	bool ok;
 
@@ -209,24 +230,32 @@ bool SC_Filesystem::initDirectory(const SC_DirectoryName& dn)
 			break;
 
 		default:
-			// @TODO: print error
-			return false;
+#ifdef DEBUG_SCFS
+            cout << "\tdefault case" << endl;
+#endif
+			ok = false;
 	}
 
-	if (!ok) {
-		// @TODO: print error
-		return false;
+    if (ok) {
+#ifdef DEBUG_SCFS
+        cout << "\tsuccess: " << p << endl;
+#endif
+        gDirectoryMap[dn] = p;
+    } else {
+#ifdef DEBUG_SCFS
+        cout << "\tinit failed" << endl;
+#endif
 	}
 
-	gDirectoryMap[dn] = p;
-	return true;
+#ifdef DEBUG_SCFS
+    cout << "SCFS::initDirectory: exit" << endl;
+#endif
+    return ok;
 }
 
 //============= DETAIL FUNCTIONS =============//
 
-// @TODO: determine if this functionality is still needed.
-// better avoid if possible; may cause issues in the future.
-// we can always exclude using lang config.
+// @TODO: rename functions to "default", and re-implement so as to not rely on any other directory setting
 
 // Returns `true` if the directory corresponds to another platform.
 static bool isNonHostPlatformDirectory(const std::string& s)
@@ -252,7 +281,8 @@ static bool getUserHomeDirectory(Path& p)
 	if (home) {
 		p = Path(home);
 		return true;
-	} {
+	} else {
+		p = Path();
 		// @TODO: error message
 		return false;
 	}
