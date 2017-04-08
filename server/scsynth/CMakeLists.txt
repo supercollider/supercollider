@@ -30,6 +30,7 @@ message(STATUS "Audio API: ${AUDIOAPI}")
 
 if (NOT Boost_FOUND)
 	file(GLOB boost_system_sources ../../external_libraries/boost/libs/system/src/*cpp)
+	file(GLOB boost_filesystem_sources ../../external_libraries/boost/libs/filesystem/src/*cpp)
 endif()
 
 set(scsynth_sources
@@ -65,6 +66,7 @@ set(scsynth_sources
 	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
 
 	${boost_system_sources}
+	${boost_filesystem_sources}
 )
 
 if(APPLE)
@@ -181,9 +183,9 @@ elseif(AUDIOAPI STREQUAL coreaudio)
 endif()
 
 if (Boost_FOUND)
-	target_link_libraries(libscsynth ${Boost_SYSTEM_LIBRARY})
+	target_link_libraries(libscsynth ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} )
 else()
-	target_link_libraries(libscsynth boost_system)
+	target_link_libraries(libscsynth boost_system boost_filesystem)
 endif()
 
 if (WIN32)
