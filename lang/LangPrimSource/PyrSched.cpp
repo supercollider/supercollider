@@ -608,7 +608,7 @@ static void SC_LinuxSetRealtimePriority(pthread_t thread, int priority)
 
 SCLANG_DLLEXPORT_C void schedRun()
 {
-	thread thread(schedRunFunc);
+	SC_Thread thread(schedRunFunc);
 	gSchedThread = std::move(thread);
 
 #ifdef __APPLE__
@@ -712,7 +712,7 @@ public:
 	double mBaseSeconds;
 	double mBaseBeats;
 	bool mRun;
-	thread mThread;
+	SC_Thread mThread;
 	condition_variable_any mCondition;
 	TempoClock *mPrev, *mNext;
 
@@ -749,7 +749,7 @@ TempoClock::TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
 	mQueue->size = 1;
 	SetInt(&mQueue->count, 0);
 
-	thread thread(std::bind(&TempoClock::Run, this));
+	SC_Thread thread(std::bind(&TempoClock::Run, this));
 	mThread = std::move(thread);
 
 #ifdef __APPLE__
@@ -777,7 +777,7 @@ TempoClock::TempoClock(VMGlobals *inVMGlobals, PyrObject* inTempoClockObj,
 void TempoClock::StopReq()
 {
 	//printf("->TempoClock::StopReq\n");
-	thread stopThread(std::bind(&TempoClock::StopAndDelete, this));
+	SC_Thread stopThread(std::bind(&TempoClock::StopAndDelete, this));
 	stopThread.detach();
 
 	//printf("<-TempoClock::StopReq\n");

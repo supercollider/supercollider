@@ -131,7 +131,7 @@ void initializeScheduler()
 {
 	syncOSCOffsetWithTimeOfDay();
 
-	thread resyncThread(resyncThreadFunc);
+	SC_Thread resyncThread(resyncThreadFunc);
 	resyncThread.detach();
 }
 #endif // SC_AUDIO_API_COREAUDIO
@@ -449,7 +449,7 @@ void SC_ScheduledEvent::Perform()
 bool SC_AudioDriver::Setup()
 {
 	mRunThreadFlag = true;
-	thread thread(std::bind(&SC_AudioDriver::RunThread, this));
+	SC_Thread thread(std::bind(&SC_AudioDriver::RunThread, this));
 	mThread = std::move(thread);
 
 	int numSamples;

@@ -1090,7 +1090,7 @@ int prQuitInProcessServer(VMGlobals *g, int numArgsPushed)
 		World *world = gInternalSynthServer.mWorld;
 		gInternalSynthServer.mWorld = 0;
 
-		thread thread(std::bind(World_WaitForQuit, world, false));
+		SC_Thread thread(std::bind(World_WaitForQuit, world, false));
 
 		thread.detach();
 	}
