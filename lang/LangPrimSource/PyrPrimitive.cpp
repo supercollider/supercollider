@@ -4264,7 +4264,7 @@ void initMIDIPrimitives();
 	initMIDIPrimitives();
 #endif
 
-#if !defined(_WIN32) && !defined(SC_IPHONE) && !defined(__OpenBSD__) && !defined(__NetBSD__) && !defined(__APPLE__)
+#if defined __linux__
 void initLIDPrimitives();
 	initLIDPrimitives();
 #endif
