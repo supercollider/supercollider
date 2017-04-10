@@ -18,8 +18,8 @@ Pn : FilterPattern {
 			repeats.value(event).do { event = pattern.embedInStream(event) };
 		} {
 			repeats.value(event).do {
-				event = pattern.embedInStream(event);
 				event[key] = true;
+				event = pattern.embedInStream(event);
 			};
 			event[key] = false;
 		};
@@ -36,9 +36,9 @@ Pgate  : Pn {
 		var stream, output;
 		repeats.do {
 			stream = pattern.asStream;
-			output = stream.next(event);
+			output = nil;  // force new value for every repeat
 			while {
-				if (event[key] == true) { output = stream.next(event) };
+				if (event[key] == true or: { output.isNil }) { output = stream.next(event) };
 				output.notNil;
 			} {
 				event = output.copy.embedInStream(event)
