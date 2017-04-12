@@ -929,11 +929,12 @@ int prString_StandardizePath(struct VMGlobals* g, int /* numArgsPushed */)
 	err = slotStrVal(arg, ipath, PATH_MAX);
 	if (err) return err;
 
-	bool ok;
+	bool isAlias;
 	boost::filesystem::path p(ipath);
 	p = SC_Filesystem::instance().expandTilde(p);
-	p = SC_Filesystem::resolveIfAlias(p, ok);
+	p = SC_Filesystem::resolveIfAlias(p, isAlias);
 	// original method didn't throw an error if alias resolution failed.
+	// @TODO: determine correct behavior
 
 	PyrString* pyrString = newPyrString(g->gc, p.c_str(), 0, true);
 	SetObject(arg, pyrString);

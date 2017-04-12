@@ -124,9 +124,9 @@ int prFileRealPath(struct VMGlobals* g, int numArgsPushed )
 	if (err)
 		return err;
 
-	bool ok = false;
-	boost::filesystem::path p = SC_Filesystem::resolveIfAlias(ipath, ok);
-	if (!ok)
+	bool isAlias = false;
+	boost::filesystem::path p = SC_Filesystem::resolveIfAlias(ipath, isAlias);
+	if (p.empty())
 		return errFailed;
 
 	boost::system::error_code error_code;
@@ -139,6 +139,7 @@ int prFileRealPath(struct VMGlobals* g, int numArgsPushed )
 	strncpy(opath, p.c_str(), PATH_MAX-1);
 	opath[PATH_MAX-1] = '\0';
 
+	// @TODO: is this necessary?
 #ifdef __APPLE__
 	CFStringRef cfstring =
 		CFStringCreateWithCString(NULL,

@@ -83,8 +83,12 @@ public:
 	// Returns `true` if this is a standalone (only on macOS)
 	static inline bool isStandalone() { return SC_StandAloneInfo::IsStandAlone(); }
 
-	// Resolves a path if it is an alias (only on macOS)
-	// If it is an alias, the second argument is set to `true`.
+	// postconditions: isAlias is true if path is an alias, and false otherwise
+	// returns: the resolved path if resolution occurred
+	//          the original path if no resolution occurred
+	//          Path() if resolution failed
+	// Could possibly be split into `isAlias` and `resolveAlias` to avoid
+	// unnecessary duplication
 	static Path resolveIfAlias(const Path&, bool&);
 #else
 	static inline bool isStandalone() { return false; }

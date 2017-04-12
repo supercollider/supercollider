@@ -123,7 +123,7 @@ bool SC_Filesystem::shouldNotCompileDirectory(const Path& p) const
 					isNonHostPlatformDirectory(dirname));
 }
 
-Path SC_Filesystem::resolveIfAlias(const Path& p, bool& ok)
+Path SC_Filesystem::resolveIfAlias(const Path& p, bool& isAlias)
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSString *nsstringPath = [NSString stringWithCString: p.c_str() encoding: NSUTF8StringEncoding];
@@ -136,6 +136,7 @@ Path SC_Filesystem::resolveIfAlias(const Path& p, bool& ok)
 
 		// is it an alias?
 		if (bookmark) {
+			isAlias = true;
 			NSError *resolvedURLError;
 			BOOL isStale;
 			NSURL *resolvedURL = [NSURL URLByResolvingBookmarkData: bookmark options: NSURLBookmarkResolutionWithoutUI relativeToURL: nil bookmarkDataIsStale: &isStale error: &resolvedURLError];
@@ -143,19 +144,17 @@ Path SC_Filesystem::resolveIfAlias(const Path& p, bool& ok)
 			if (isStale || resolvedURL == nullptr) {
 				// Return original path.
 				printf("Error: Target missing for alias at %s\n", p.c_str());
-				ok = false;
-				return p;
+				return Path();
 			}
 
 			NSString *resolvedString = [resolvedURL path];
 			const char *resolvedPath = [resolvedString cStringUsingEncoding: NSUTF8StringEncoding];
-			ok = true;
 			return Path(resolvedPath);
 		}
 	}
 
 	[pool release];
-	ok = true;
+	isAlias = false;
 	return p;
 }
 
