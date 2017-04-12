@@ -30,6 +30,7 @@ Primitives for String.
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <vector>
 #include "PyrLexer.h"
 #include "SC_Filesystem.hpp"
 #ifdef _WIN32
@@ -44,10 +45,9 @@ Primitives for String.
 #include <boost/intrusive/unordered_set.hpp>
 
 #include <fstream>
-#include <yaml-cpp/yaml.h>
-
-#include <string>
-#include <vector>
+#include <yaml-cpp/node/node.h>
+#include <yaml-cpp/node/iterator.h>
+#include <yaml-cpp/node/parse.h>
 
 using namespace std;
 
@@ -917,10 +917,6 @@ int prString_FindBackwards(struct VMGlobals *g, int numArgsPushed)
 		return errNone;
 	} else return errWrongType;
 }
-
-#if __APPLE__
-# include <CoreFoundation/CoreFoundation.h>
-#endif // __APPLE__
 
 // Expand `~` to home directory and resolve aliases
 int prString_StandardizePath(struct VMGlobals* g, int numArgsPushed);
