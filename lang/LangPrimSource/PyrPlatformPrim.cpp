@@ -32,10 +32,12 @@ Primitives for platform dependent directories, constants etc.
 # include "Shlobj.h"
 #endif
 
-static inline int prPlatform_getDirectory(const struct VMGlobals *g, const SC_DirectoryName dirname)
+using DirName = SC_Filesystem::DirName;
+
+static inline int prPlatform_getDirectory(const struct VMGlobals *g, const DirName dirname)
 {
 	PyrSlot *a = g->sp;
-	const SC_Filesystem::Path& p = SC_Filesystem::getDirectory(dirname);
+	const SC_Filesystem::Path& p = SC_Filesystem::instance().getDirectory(dirname);
 	PyrString* string = newPyrString(g->gc, p.c_str(), 0, true);
 	SetObject(a, string);
 	return errNone;
@@ -43,37 +45,37 @@ static inline int prPlatform_getDirectory(const struct VMGlobals *g, const SC_Di
 
 static int prPlatform_userHomeDir(struct VMGlobals *g, int numArgsPushed)
 {
-	return prPlatform_getDirectory(g, SC_DirectoryName::UserHome);
+	return prPlatform_getDirectory(g, DirName::UserHome);
 }
 
 static int prPlatform_systemAppSupportDir(struct VMGlobals *g, int numArgsPushed)
 {
-	return prPlatform_getDirectory(g, SC_DirectoryName::SystemAppSupport);
+	return prPlatform_getDirectory(g, DirName::SystemAppSupport);
 }
 
 static int prPlatform_userAppSupportDir(struct VMGlobals *g, int numArgsPushed)
 {
-	return prPlatform_getDirectory(g, SC_DirectoryName::UserAppSupport);
+	return prPlatform_getDirectory(g, DirName::UserAppSupport);
 }
 
 static int prPlatform_systemExtensionDir(struct VMGlobals *g, int numArgsPushed)
 {
-	return prPlatform_getDirectory(g, SC_DirectoryName::SystemExtension);
+	return prPlatform_getDirectory(g, DirName::SystemExtension);
 }
 
 static int prPlatform_userExtensionDir(struct VMGlobals *g, int numArgsPushed)
 {
-	return prPlatform_getDirectory(g, SC_DirectoryName::UserExtension);
+	return prPlatform_getDirectory(g, DirName::UserExtension);
 }
 
 static int prPlatform_userConfigDir(struct VMGlobals *g, int numArgsPushed)
 {
-	return prPlatform_getDirectory(g, SC_DirectoryName::UserConfig);
+	return prPlatform_getDirectory(g, DirName::UserConfig);
 }
 
 static int prPlatform_resourceDir(struct VMGlobals *g, int numArgsPushed)
 {
-	return prPlatform_getDirectory(g, SC_DirectoryName::Resource);
+	return prPlatform_getDirectory(g, DirName::Resource);
 }
 
 // @TODO: handle this... :(

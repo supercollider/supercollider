@@ -268,6 +268,7 @@ static void World_LoadGraphDefs(World* world);
 void World_LoadGraphDefs(World* world)
 {
 	GraphDef *list = 0;
+	using DirName = SC_Filesystem::DirName;
 
 	if(getenv("SC_SYNTHDEF_PATH")){
 		if(world->mVerbosity > 0)
@@ -282,9 +283,9 @@ void World_LoadGraphDefs(World* world)
 	}else{
 		SC_Filesystem::Path path;
 		if(SC_Filesystem::isStandalone())
-			path = SC_Filesystem::getDirectory(SC_DirectoryName::Resource);
+			path = SC_Filesystem::instance().getDirectory(DirName::Resource);
 		else
-			path = SC_Filesystem::getDirectory(SC_DirectoryName::UserAppSupport);
+			path = SC_Filesystem::instance().getDirectory(DirName::UserAppSupport);
 
 		path /= "synthdefs";
 		if(world->mVerbosity > 0)

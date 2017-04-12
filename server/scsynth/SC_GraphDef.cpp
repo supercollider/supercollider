@@ -720,7 +720,7 @@ GraphDef* GraphDef_LoadDir(World *inWorld, const char *dirname, GraphDef *inList
 #ifdef DEBUG_SCFS
 			cout << "Is a directory" << endl;
 #endif
-			if (SC_Filesystem::shouldNotCompileDirectory(path)) {
+			if (SC_Filesystem::instance().shouldNotCompileDirectory(path)) {
 #ifdef DEBUG_SCFS
 				cout << "Skipping directory" << endl;
 #endif

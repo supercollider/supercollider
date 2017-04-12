@@ -125,7 +125,7 @@ int prFileRealPath(struct VMGlobals* g, int numArgsPushed )
 		return err;
 
 	bool ok = false;
-	boost::filesystem::path p = SC_Filesystem::resolveIfAlias(ipath, ok);
+	boost::filesystem::path p = SC_Filesystem::instance().resolveIfAlias(ipath, ok);
 	if (!ok)
 		return errFailed;
 

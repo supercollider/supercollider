@@ -20,6 +20,8 @@
 
 /*
  *  Filesystem utilities and properties for SuperCollider.
+ *  Singleton class that loads default directories if they
+ *  are requested before being set.
  *  Uses boost::filesystem::path as its main interface for
  *  cross-platform compatibility and ease of notation.
  */
@@ -27,54 +29,63 @@
 #ifndef SC_FILESYSTEM_HPP_INCLUDED
 #define SC_FILESYSTEM_HPP_INCLUDED
 
+#include <map> // map
 #include <boost/filesystem/path.hpp> // path
 
 #if defined(__APPLE__) && !defined(SC_IPHONE)
 #  include "SC_StandAloneInfo_Darwin.h"
 #endif
 
-enum class SC_DirectoryName;
-class SC_Filesystem;
-
-// Enumerated standard directory names used by SuperCollider
-enum class SC_DirectoryName {
-	SystemAppSupport,
-	SystemExtension,
-	UserHome,
-	UserAppSupport,
-	UserExtension,
-	UserConfig,
-	Resource
-};
-
-// @TODO: should probably make this a namespace instead?
-// @TODO: determine whether more functions need to be added (read_dir, etc)
 class SC_Filesystem {
 public:
 	typedef boost::filesystem::path Path;
 	struct Glob;
 
+	// Enumerated standard directory names used by SuperCollider
+	enum class DirName {
+		SystemAppSupport,
+		SystemExtension,
+		UserHome,
+		UserAppSupport,
+		UserExtension,
+		UserConfig,
+		Resource
+	};
+
+	// singleton
+	static SC_Filesystem& instance()
+	{
+		static SC_Filesystem instance;
+		return instance;
+	}
+
+	SC_Filesystem(SC_Filesystem const&) = delete;
+	void operator=(SC_Filesystem const&) = delete;
+
 	// Gets the path associated with the directory name.
 	// The path is initialized if it is not already set.
-	static Path getDirectory(const SC_DirectoryName&);
+	Path getDirectory(const DirName&);
 
 	// Sets the path associated with the directory name
-	static void setDirectory(const SC_DirectoryName&, const Path&);
+	inline void setDirectory(const DirName& dn, const Path& p)
+	{
+		mDirectoryMap[dn] = p;
+	}
 
 	// Expands a path starting with `~` to use the user's home directory.
 	// Works cross-platform.
-	static Path expandTilde(const Path&);
+	Path expandTilde(const Path&);
 
 	// Returns `true` if the directory is to be ignored during compilation.
-	static bool shouldNotCompileDirectory(const Path&);
+	bool shouldNotCompileDirectory(const Path&) const;
 
 	// Resolves a path if it is an alias (only affects macOS)
 	// If it is an alias, the second argument is set to `true`.
-	static Path resolveIfAlias(const Path&, bool&);
+	Path resolveIfAlias(const Path&, bool&) const;
 
 #if defined(__APPLE__) && !defined(SC_IPHONE)
 	// Returns `true` if this is a standalone (only on macOS)
-	static inline bool isStandalone() { 	return SC_StandAloneInfo::IsStandAlone();	}
+	static inline bool isStandalone() { 	return SC_StandAloneInfo::IsStandAlone(); }
 #else
 	static inline bool isStandalone() { return false; }
 #endif // defined(__APPLE__) && !defined(SC_IPHONE)
@@ -87,14 +98,23 @@ public:
 	static void freeGlob(Glob*);
 
 private:
-	// singleton; @TODO: better to make this a namespace
-	SC_Filesystem() = delete;
-	~SC_Filesystem() = delete;
-	SC_Filesystem(const SC_Filesystem&) = delete;
-	SC_Filesystem(SC_Filesystem&&) = delete;
-	SC_Filesystem& operator=(const SC_Filesystem&) = delete;
+	SC_Filesystem() {};
 
-	static bool initDirectory(const SC_DirectoryName&);
+	static bool isNonHostPlatformDirectory(const std::string&);
+
+	bool initDirectory(const DirName&);
+
+	// Get default directories based on the OS's filesystem.
+	// Returns an empty path to indicate failure.
+	static Path defaultSystemAppSupportDirectory();
+	static Path defaultSystemExtensionDirectory();
+	static Path defaultUserHomeDirectory();
+	static Path defaultUserAppSupportDirectory();
+	static Path defaultUserExtensionDirectory();
+	static Path defaultUserConfigDirectory();
+	static Path defaultResourceDirectory();
+
+	std::map<DirName, Path> mDirectoryMap;
 };
 
 #endif // SC_FILESYSTEM_HPP_INCLUDED

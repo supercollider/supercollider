@@ -44,18 +44,20 @@ static const char* POST_INLINE_WARNINGS = "postInlineWarnings";
 static const char* CLASS_LIB_DIR_NAME = "SCClassLibrary";
 static const char* SCLANG_YAML_CONFIG_FILENAME = "sclang_conf.yaml";
 
+using DirName = SC_Filesystem::DirName;
+
 SC_LanguageConfig::SC_LanguageConfig(bool optStandalone)
 {
 	if( !optStandalone ) {
-		const Path& classLibraryDir = SC_Filesystem::getDirectory(SC_DirectoryName::Resource) / CLASS_LIB_DIR_NAME;
+		const Path& classLibraryDir = SC_Filesystem::instance().getDirectory(DirName::Resource) / CLASS_LIB_DIR_NAME;
 		addPath(mDefaultClassLibraryDirectories, classLibraryDir);
 	}
 
 	if ( !( SC_Filesystem::isStandalone() || optStandalone ) ) {
-		const Path& systemExtensionDir = SC_Filesystem::getDirectory(SC_DirectoryName::SystemExtension);
+		const Path& systemExtensionDir = SC_Filesystem::instance().getDirectory(DirName::SystemExtension);
 		addPath(mDefaultClassLibraryDirectories, systemExtensionDir);
 
-		const Path& userExtensionDir = SC_Filesystem::getDirectory(SC_DirectoryName::UserExtension);
+		const Path& userExtensionDir = SC_Filesystem::instance().getDirectory(DirName::UserExtension);
 		addPath(mDefaultClassLibraryDirectories, userExtensionDir);
 	}
 }
@@ -207,7 +209,7 @@ bool SC_LanguageConfig::readLibraryConfig(bool standalone)
 		configured = readLibraryConfigYAML(gConfigFile, standalone);
 
 	if( !configured && !standalone ) {
-		const Path userYamlConfigFile = SC_Filesystem::getDirectory(SC_DirectoryName::UserConfig) / SCLANG_YAML_CONFIG_FILENAME;
+		const Path userYamlConfigFile = SC_Filesystem::instance().getDirectory(DirName::UserConfig) / SCLANG_YAML_CONFIG_FILENAME;
 
 		if (boost::filesystem::exists(userYamlConfigFile))
 			configured = readLibraryConfigYAML(userYamlConfigFile, standalone);

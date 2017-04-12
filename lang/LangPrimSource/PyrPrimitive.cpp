@@ -3595,7 +3595,9 @@ static int prLanguageConfig_writeConfigFile(struct VMGlobals * g, int numArgsPus
 			return errWrongType;
 		gLanguageConfig->writeLibraryConfigYAML(path);
 	} else {
-		const SC_Filesystem::Path& fspath = SC_Filesystem::getDirectory(SC_DirectoryName::UserConfig) / "sclang_conf.yaml";
+		const SC_Filesystem::Path& fspath =
+			SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::UserConfig)
+			/ "sclang_conf.yaml";
 		gLanguageConfig->writeLibraryConfigYAML(fspath);
 	}
 

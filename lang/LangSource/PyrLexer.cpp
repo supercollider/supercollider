@@ -168,7 +168,7 @@ double sc_strtof(const char *str, int n, int base)
 static void sc_InitCompileDirectory(void)
 {
 	// main class library folder: only used for relative path resolution
-	gCompileDir = SC_Filesystem::getDirectory(SC_DirectoryName::Resource) / "SCClassLibrary";
+	gCompileDir = SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::Resource) / "SCClassLibrary";
 }
 
 boost::filesystem::path asRelativePath(const boost::filesystem::path& p)
@@ -1950,7 +1950,7 @@ static bool passOne_ShouldSkipDirectory(const boost::filesystem::path& dir, std:
 	} else if (gLanguageConfig && gLanguageConfig->pathIsExcluded(dir)) {
 		reason = reason_excluded;
 		return true;
-	} else if (SC_Filesystem::shouldNotCompileDirectory(dir)) {
+	} else if (SC_Filesystem::instance().shouldNotCompileDirectory(dir)) {
 		reason = reason_filesystem_exclude;
 		return true;
 	}

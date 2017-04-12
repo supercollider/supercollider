@@ -188,6 +188,9 @@ void initialize_library(const char *uGensPluginPath)
 		}
 	}
 
+	using Path = SC_Filesystem::Path;
+	using DirName = SC_Filesystem::DirName;
+
 	if(loadUGensExtDirs) {
 		// @TODO: probably a better way to do this than through macro
 #ifdef SC_PLUGIN_DIR
@@ -197,7 +200,7 @@ void initialize_library(const char *uGensPluginPath)
 		}
 #endif // SC_PLUGIN_DIR
 		// load default plugin directory
-		const SC_Filesystem::Path pluginDir = SC_Filesystem::getDirectory(SC_DirectoryName::Resource) / SC_PLUGIN_DIR_NAME;
+		const Path pluginDir = SC_Filesystem::instance().getDirectory(DirName::Resource) / SC_PLUGIN_DIR_NAME;
 
 		if (boost::filesystem::is_directory(pluginDir)) {
 			PlugIn_LoadDir(pluginDir, true);
@@ -207,11 +210,11 @@ void initialize_library(const char *uGensPluginPath)
 	// get extension directories
 	if (!SC_Filesystem::isStandalone() && loadUGensExtDirs) {
 		// load system extension plugins
-		const SC_Filesystem::Path sysExtDir = SC_Filesystem::getDirectory(SC_DirectoryName::SystemExtension);
+		const Path sysExtDir = SC_Filesystem::instance().getDirectory(DirName::SystemExtension);
 		PlugIn_LoadDir(sysExtDir, false);
 
 		// load user extension plugins
-		const SC_Filesystem::Path userExtDir = SC_Filesystem::getDirectory(SC_DirectoryName::UserExtension);
+		const Path userExtDir = SC_Filesystem::instance().getDirectory(DirName::UserExtension);
 		PlugIn_LoadDir(userExtDir, false);
 
 		// load user plugin directories
@@ -405,7 +408,7 @@ static bool PlugIn_LoadDir(const SC_Filesystem::Path& dir, bool reportError)
 #ifdef DEBUG_SCFS
 				cout << "Is a directory" << endl;
 #endif
-				if (SC_Filesystem::shouldNotCompileDirectory(path)) {
+				if (SC_Filesystem::instance().shouldNotCompileDirectory(path)) {
 #ifdef DEBUG_SCFS
 					cout << "Skipping directory (SC_FS reason)" << endl;
 #endif

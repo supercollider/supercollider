@@ -19,7 +19,7 @@
  */
 
 /*
- * SC_Filesystem implementation for Apple.
+ * SC_Filesystem implementation for macOS.
  */
 #if defined(__APPLE__) && !defined(SC_IPHONE)
 
@@ -40,17 +40,12 @@ using std::endl;
 #include <boost/algorithm/string/predicate.hpp> // iequals
 
 // system includes
-#import <Foundation/Foundation.h>      // @TODO: ???
-#include <CoreFoundation/CFString.h>   // CFString
-#include <CoreFoundation/CFBundle.h>   // CFBundle
-#include <CoreServices/CoreServices.h> // @TODO: ???
+#import <Foundation/Foundation.h>      // for resolveIfAlias, getBundleName
 #include <glob.h>                      // ::glob, glob_t
 
-// @TODO: add debugging
 using Path = SC_Filesystem::Path;
+using DirName = SC_Filesystem::DirName;
 using std::map;
-
-static std::map<SC_DirectoryName, Path> gDirectoryMap;
 
 //============ DIRECTORY NAMES =============//
 const char* gIdeName = "none"; // @TODO: move out
@@ -65,39 +60,28 @@ const char* SHARE_DIR_NAME = "share";
 const char* DOT_LOCAL = ".local";
 const Path ROOT_PATH = Path("/");
 
-//============= FORWARD DECLS ==============//
+//====== STATIC FUNC FORWARD DECLS =======//
 
-// All functions return true for success, false for failure
-// @TODO: Decide whose job it is to print error messages
-static bool getSystemAppSupportDirectory(Path&);
-static bool getSystemExtensionDirectory(Path&);
-static bool getUserHomeDirectory(Path&);
-static bool getUserAppSupportDirectory(Path&);
-static bool getUserExtensionDirectory(Path&);
-static bool getUserConfigDirectory(Path&);
-static bool getResourceDirectory(Path&);
+// Get the bundle name
 static const char* getBundleName();
 
-// Returns `true` if the directory corresponds to another platform.
-static bool isNonHostPlatformDirectory(const std::string&);
+//============ PATH UTILITIES =============//
 
-//============ CLASS FUNCTIONS =============//
-
-Path SC_Filesystem::getDirectory(const SC_DirectoryName& dn)
+Path SC_Filesystem::getDirectory(const DirName& dn)
 {
 #ifdef DEBUG_SCFS
 	cout << "SCFS::getDirectory: enter" << endl;
 #endif
-	map<SC_DirectoryName, Path>::const_iterator it = gDirectoryMap.find(dn);
+	map<DirName, Path>::const_iterator it = mDirectoryMap.find(dn);
 	Path p;
-	if (it != gDirectoryMap.end()) {
+	if (it != mDirectoryMap.end()) {
 		p = it->second;
 	} else {
 		if ( ! initDirectory(dn) ) {
 			// failed, return empty directory
 			p = Path();
 		} else {
-			it = gDirectoryMap.find(dn);
+			it = mDirectoryMap.find(dn);
 			p = it->second;
 		}
 	}
@@ -108,17 +92,12 @@ Path SC_Filesystem::getDirectory(const SC_DirectoryName& dn)
 	return p;
 }
 
-void SC_Filesystem::setDirectory(const SC_DirectoryName& dn, const Path& p)
-{
-	gDirectoryMap[dn] = p;
-}
-
 Path SC_Filesystem::expandTilde(const Path& p)
 {
 	Path::const_iterator piter = p.begin();
 
 	if (piter != p.end() && *piter == "~") {
-		Path ret = getDirectory(SC_DirectoryName::UserHome);
+		Path ret = getDirectory(DirName::UserHome);
 		while (++piter != p.end())
 			ret /= *piter;
 		return ret;
@@ -127,10 +106,10 @@ Path SC_Filesystem::expandTilde(const Path& p)
 	}
 }
 
-bool SC_Filesystem::shouldNotCompileDirectory(const Path& p)
+bool SC_Filesystem::shouldNotCompileDirectory(const Path& p) const
 {
 	const std::string& dirname = p.filename().string();
-	static const std::string& idePath = std::string("scide_") + gIdeName;
+	const std::string& idePath = std::string("scide_") + gIdeName;
 	return (boost::iequals(dirname, "help") ||
 					boost::iequals(dirname, "ignore") ||
 					dirname == ".svn" ||
@@ -140,7 +119,7 @@ bool SC_Filesystem::shouldNotCompileDirectory(const Path& p)
 					isNonHostPlatformDirectory(dirname));
 }
 
-Path SC_Filesystem::resolveIfAlias(const Path& p, bool& ok)
+Path SC_Filesystem::resolveIfAlias(const Path& p, bool& ok) const
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSString *nsstringPath = [NSString stringWithCString: p.c_str() encoding: NSUTF8StringEncoding];
@@ -176,57 +155,58 @@ Path SC_Filesystem::resolveIfAlias(const Path& p, bool& ok)
 	return p;
 }
 
+//============ GLOB UTILITIES =============//
+
 // Returns false if initialization failed
-bool SC_Filesystem::initDirectory(const SC_DirectoryName& dn)
+bool SC_Filesystem::initDirectory(const DirName& dn)
 {
 #ifdef DEBUG_SCFS
 	cout << "SCFS::initDirectory: enter" << endl;
 	cout << "\tdn: " << (int)dn << endl;
 #endif
 	Path p;
-	bool ok;
 
 	switch (dn) {
-		case SC_DirectoryName::SystemAppSupport:
-			ok = getSystemAppSupportDirectory(p);
+		case DirName::SystemAppSupport:
+			p = defaultSystemAppSupportDirectory();
 			break;
 
-		case SC_DirectoryName::SystemExtension:
-			ok = getSystemExtensionDirectory(p);
+		case DirName::SystemExtension:
+			p = defaultSystemExtensionDirectory();
 			break;
 
-		case SC_DirectoryName::UserHome:
-			ok = getUserHomeDirectory(p);
+		case DirName::UserHome:
+			p = defaultUserHomeDirectory();
 			break;
 
-		case SC_DirectoryName::UserAppSupport:
-			ok = getUserAppSupportDirectory(p);
+		case DirName::UserAppSupport:
+			p = defaultUserAppSupportDirectory();
 			break;
 
-		case SC_DirectoryName::UserExtension:
-			ok = getUserExtensionDirectory(p);
+		case DirName::UserExtension:
+			p = defaultUserExtensionDirectory();
 			break;
 
-		case SC_DirectoryName::UserConfig:
-			ok = getUserConfigDirectory(p);
+		case DirName::UserConfig:
+			p = defaultUserConfigDirectory();
 			break;
 
-		case SC_DirectoryName::Resource:
-			ok = getResourceDirectory(p);
+		case DirName::Resource:
+			p = defaultResourceDirectory();
 			break;
 
 		default:
 #ifdef DEBUG_SCFS
             cout << "\tdefault case" << endl;
 #endif
-			ok = false;
+			break;
 	}
 
-    if (ok) {
+    if (!p.empty()) {
 #ifdef DEBUG_SCFS
         cout << "\tsuccess: " << p << endl;
 #endif
-        gDirectoryMap[dn] = p;
+        mDirectoryMap[dn] = p;
     } else {
 #ifdef DEBUG_SCFS
         cout << "\tinit failed" << endl;
@@ -236,104 +216,7 @@ bool SC_Filesystem::initDirectory(const SC_DirectoryName& dn)
 #ifdef DEBUG_SCFS
     cout << "SCFS::initDirectory: exit" << endl;
 #endif
-    return ok;
-}
-
-//============= DETAIL FUNCTIONS =============//
-
-// @TODO: rename functions to "default", and re-implement so as to not rely on any other directory setting
-const char* getBundleName()
-{
-	CFBundleRef mainBundle;
-	mainBundle = CFBundleGetMainBundle();
-	if (mainBundle) {
-		CFDictionaryRef dictRef = CFBundleGetInfoDictionary(mainBundle);
-		CFStringRef strRef;
-		strRef = (CFStringRef)CFDictionaryGetValue(dictRef, CFSTR("CFBundleName"));
-		if (strRef) {
-			const char *bundleName = CFStringGetCStringPtr(strRef, CFStringGetSystemEncoding());
-			if (bundleName) {
-				return bundleName;
-			}
-		}
-	}
-	return SUPERCOLLIDER_DIR_NAME;
-}
-
-// Returns `true` if the directory corresponds to another platform.
-static bool isNonHostPlatformDirectory(const std::string& s)
-{
-	return s == "linux" || s == "windows" || s == "iphone";
-}
-
-static bool getSystemAppSupportDirectory(Path& p)
-{
-	p = ROOT_PATH / LIBRARY_DIR_NAME / APPLICATION_SUPPORT_DIR_NAME / SC_Filesystem::getBundleName();
-	return true;
-}
-
-static bool getSystemExtensionDirectory(Path& p)
-{
-	p = SC_Filesystem::getDirectory(SC_DirectoryName::SystemAppSupport) / EXTENSIONS_DIR_NAME;
-	return true;
-}
-
-static bool getUserHomeDirectory(Path& p)
-{
-	const char *home = getenv("HOME");
-	if (home) {
-		p = Path(home);
-		return true;
-	} else {
-		p = Path();
-		// @TODO: error message
-		return false;
-	}
-}
-
-static bool getUserAppSupportDirectory(Path& p)
-{
-	// XDG support
-	// see http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
-	const char* xdgDataHome = getenv("XDG_DATA_HOME");
-	if (xdgDataHome) {
-		p = Path(xdgDataHome) / SUPERCOLLIDER_DIR_NAME;
-		return true;
-	} else {
-		p = SC_Filesystem::getDirectory(SC_DirectoryName::UserHome)
-				/ LIBRARY_DIR_NAME
-				/ APPLICATION_SUPPORT_DIR_NAME
-				/ SC_Filesystem::getBundleName();
-		return true;
-	}
-}
-
-static bool getUserExtensionDirectory(Path& p)
-{
-	p = SC_Filesystem::getDirectory(SC_DirectoryName::UserAppSupport) / EXTENSIONS_DIR_NAME;
-	return true;
-}
-
-static bool getUserConfigDirectory(Path& p)
-{
-	// XDG support
-	// see http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
-	const char* xdgConfigHome = getenv("XDG_CONFIG_HOME");
-	if (xdgConfigHome) {
-		p = Path(xdgConfigHome) / SUPERCOLLIDER_DIR_NAME;
-		return true;
-	}
-
-	p = SC_Filesystem::getDirectory(SC_DirectoryName::UserAppSupport);
-	return true;
-}
-
-static bool getResourceDirectory(Path& p)
-{
-	char pathBuf[PATH_MAX];
-	SC_StandAloneInfo::GetResourceDir(pathBuf, PATH_MAX);
-	p = Path(pathBuf);
-	return true;
+    return !p.empty();
 }
 
 struct SC_Filesystem::Glob
@@ -370,6 +253,93 @@ Path SC_Filesystem::globNext(Glob* glob)
 	if (glob->mEntry >= glob->mHandle.gl_pathc)
 		return Path();
 	return Path(glob->mHandle.gl_pathv[glob->mEntry++]);
+}
+
+//============= PRIVATE METHODS ==============//
+
+bool SC_Filesystem::isNonHostPlatformDirectory(const std::string& s)
+{
+	return s == "linux" || s == "windows" || s == "iphone";
+}
+
+Path SC_Filesystem::defaultSystemAppSupportDirectory()
+{
+	// "/Library/Application Support/[SuperCollider]"
+	return ROOT_PATH / LIBRARY_DIR_NAME / APPLICATION_SUPPORT_DIR_NAME / getBundleName();
+}
+
+Path SC_Filesystem::defaultSystemExtensionDirectory()
+{
+	// "/Library/Application Support/[SuperCollider]/Extensions"
+	const Path p = defaultSystemAppSupportDirectory();
+	return p.empty() ? p : (p / EXTENSIONS_DIR_NAME);
+}
+
+Path SC_Filesystem::defaultUserHomeDirectory()
+{
+	// "/Users/[username]"
+	const char *home = getenv("HOME");
+	return Path(home ? home : "");
+}
+
+Path SC_Filesystem::defaultUserAppSupportDirectory()
+{
+	// XDG support
+	// see http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
+	const char* home = getenv("XDG_DATA_HOME");
+	if (home)
+		return Path(home) / SUPERCOLLIDER_DIR_NAME;
+
+	home = getenv("HOME");
+	// "/Users/[username]/Library/Application Support/[SuperCollider]"
+	if (home)
+		return Path(home) / LIBRARY_DIR_NAME / APPLICATION_SUPPORT_DIR_NAME / getBundleName();
+}
+
+Path SC_Filesystem::defaultUserExtensionDirectory()
+{
+	// "/Users/[username]/Library/Application Support/[SuperCollider]/Extensions"
+	const Path p = defaultUserAppSupportDirectory();
+	return p.empty() ? p : p / EXTENSIONS_DIR_NAME;
+}
+
+Path SC_Filesystem::defaultUserConfigDirectory()
+{
+	// XDG support
+	// see http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
+	const char* xdgConfigHome = getenv("XDG_CONFIG_HOME");
+
+	if (xdgConfigHome)
+		return Path(xdgConfigHome) / SUPERCOLLIDER_DIR_NAME;
+	else
+		return defaultUserAppSupportDirectory();
+}
+
+Path SC_Filesystem::defaultResourceDirectory()
+{
+	char pathBuf[PATH_MAX];
+	SC_StandAloneInfo::GetResourceDir(pathBuf, PATH_MAX);
+	return Path(pathBuf);
+}
+
+//============= STATIC FUNCTIONS =============//
+
+const char* getBundleName()
+{
+	CFBundleRef mainBundle;
+	mainBundle = CFBundleGetMainBundle();
+	if (mainBundle) {
+		CFDictionaryRef dictRef = CFBundleGetInfoDictionary(mainBundle);
+		CFStringRef strRef;
+		strRef = (CFStringRef)CFDictionaryGetValue(dictRef, CFSTR("CFBundleName"));
+		if (strRef) {
+			const char *bundleName = CFStringGetCStringPtr(strRef, CFStringGetSystemEncoding());
+			if (bundleName) {
+				return bundleName;
+			}
+		}
+	}
+	return SUPERCOLLIDER_DIR_NAME;
 }
 
 #endif // defined(__APPLE__) && !defined(SC_IPHONE)
