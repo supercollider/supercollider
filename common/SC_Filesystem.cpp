@@ -40,8 +40,12 @@ using std::endl;
 #include <boost/algorithm/string/predicate.hpp> // iequals
 
 // system includes
-#import <Foundation/Foundation.h>      // for resolveIfAlias, getBundleName
-#include <glob.h>                      // ::glob, glob_t
+#include <Foundation/NSAutoreleasePool.h>
+#include <Foundation/NSFileManager.h>
+#include <CoreFoundation/CFBundle.h>
+#include <CoreFoundation/CFString.h>
+
+#include <glob.h> // ::glob, glob_t
 
 using Path = SC_Filesystem::Path;
 using DirName = SC_Filesystem::DirName;
