@@ -123,7 +123,7 @@ bool SC_Filesystem::shouldNotCompileDirectory(const Path& p) const
 					isNonHostPlatformDirectory(dirname));
 }
 
-Path SC_Filesystem::resolveIfAlias(const Path& p, bool& ok) const
+Path SC_Filesystem::resolveIfAlias(const Path& p, bool& ok)
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	NSString *nsstringPath = [NSString stringWithCString: p.c_str() encoding: NSUTF8StringEncoding];

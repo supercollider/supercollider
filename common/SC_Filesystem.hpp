@@ -79,15 +79,21 @@ public:
 	// Returns `true` if the directory is to be ignored during compilation.
 	bool shouldNotCompileDirectory(const Path&) const;
 
-	// Resolves a path if it is an alias (only affects macOS)
-	// If it is an alias, the second argument is set to `true`.
-	Path resolveIfAlias(const Path&, bool&) const;
-
 #if defined(__APPLE__) && !defined(SC_IPHONE)
 	// Returns `true` if this is a standalone (only on macOS)
-	static inline bool isStandalone() { 	return SC_StandAloneInfo::IsStandAlone(); }
+	static inline bool isStandalone() { return SC_StandAloneInfo::IsStandAlone(); }
+
+	// Resolves a path if it is an alias (only on macOS)
+	// If it is an alias, the second argument is set to `true`.
+	static Path resolveIfAlias(const Path&, bool&);
 #else
 	static inline bool isStandalone() { return false; }
+
+	static Path resolveIfAlias(const Path& p, bool& isAlias)
+	{
+		isAlias = false;
+		return p;
+	}
 #endif // defined(__APPLE__) && !defined(SC_IPHONE)
 
 	static Glob* makeGlob(const char*);
