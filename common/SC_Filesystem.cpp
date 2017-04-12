@@ -47,7 +47,7 @@ using std::endl;
 #include <glob.h>                      // ::glob, glob_t
 
 // @TODO: add debugging
-typedef SC_Filesystem::Path Path;
+using Path = SC_Filesystem::Path;
 using std::map;
 
 static std::map<SC_DirectoryName, Path> gDirectoryMap;
@@ -76,6 +76,7 @@ static bool getUserAppSupportDirectory(Path&);
 static bool getUserExtensionDirectory(Path&);
 static bool getUserConfigDirectory(Path&);
 static bool getResourceDirectory(Path&);
+static const char* getBundleName();
 
 // Returns `true` if the directory corresponds to another platform.
 static bool isNonHostPlatformDirectory(const std::string&);
@@ -175,24 +176,6 @@ Path SC_Filesystem::resolveIfAlias(const Path& p, bool& ok)
 	return p;
 }
 
-const char* SC_Filesystem::getBundleName()
-{
-	CFBundleRef mainBundle;
-	mainBundle = CFBundleGetMainBundle();
-	if (mainBundle) {
-		CFDictionaryRef dictRef = CFBundleGetInfoDictionary(mainBundle);
-		CFStringRef strRef;
-		strRef = (CFStringRef)CFDictionaryGetValue(dictRef, CFSTR("CFBundleName"));
-		if (strRef) {
-			const char *bundleName = CFStringGetCStringPtr(strRef, CFStringGetSystemEncoding());
-			if (bundleName) {
-				return bundleName;
-			}
-		}
-	}
-	return SUPERCOLLIDER_DIR_NAME;
-}
-
 // Returns false if initialization failed
 bool SC_Filesystem::initDirectory(const SC_DirectoryName& dn)
 {
@@ -259,6 +242,23 @@ bool SC_Filesystem::initDirectory(const SC_DirectoryName& dn)
 //============= DETAIL FUNCTIONS =============//
 
 // @TODO: rename functions to "default", and re-implement so as to not rely on any other directory setting
+const char* getBundleName()
+{
+	CFBundleRef mainBundle;
+	mainBundle = CFBundleGetMainBundle();
+	if (mainBundle) {
+		CFDictionaryRef dictRef = CFBundleGetInfoDictionary(mainBundle);
+		CFStringRef strRef;
+		strRef = (CFStringRef)CFDictionaryGetValue(dictRef, CFSTR("CFBundleName"));
+		if (strRef) {
+			const char *bundleName = CFStringGetCStringPtr(strRef, CFStringGetSystemEncoding());
+			if (bundleName) {
+				return bundleName;
+			}
+		}
+	}
+	return SUPERCOLLIDER_DIR_NAME;
+}
 
 // Returns `true` if the directory corresponds to another platform.
 static bool isNonHostPlatformDirectory(const std::string& s)

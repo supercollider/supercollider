@@ -73,8 +73,6 @@ public:
 	static Path resolveIfAlias(const Path&, bool&);
 
 #if defined(__APPLE__) && !defined(SC_IPHONE)
-	static const char* getBundleName();
-
 	// Returns `true` if this is a standalone (only on macOS)
 	static inline bool isStandalone() { 	return SC_StandAloneInfo::IsStandAlone();	}
 #else
