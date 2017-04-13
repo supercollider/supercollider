@@ -297,6 +297,8 @@ Path SC_Filesystem::defaultUserAppSupportDirectory()
 	// "/Users/[username]/Library/Application Support/[SuperCollider]"
 	if (home)
 		return Path(home) / LIBRARY_DIR_NAME / APPLICATION_SUPPORT_DIR_NAME / getBundleName();
+	else
+		return Path();
 }
 
 Path SC_Filesystem::defaultUserExtensionDirectory()
