@@ -15,9 +15,13 @@ TestAbstractFunction : UnitTest {
 		all.postln;
 
 		this.assert(
-			(all.as(Set).size == 1)
-			&& (all.flat.every(_.isKindOf(Rest))),
-			"All binary math operations on Rest should return Rest, and should have equal value for equivalent instance values. Default value should be 1"
+			all.flat.every(_.isKindOf(Rest)),
+			"All binary math operations on Rest should return Rest.\n"
+		);
+
+		this.assert(
+			all.as(Set).postln.size == 1,
+			"All binary math operations on Rest should have equal value for equivalent instance values. Default value should be 1\n"
 		);
 
 		func = { |op, a, b| a.perform(op, b) == a.value.perform(op, b.value) };
