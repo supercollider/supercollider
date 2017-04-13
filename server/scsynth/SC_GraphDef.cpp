@@ -743,6 +743,15 @@ GraphDef* GraphDef_LoadDir(World *inWorld, const char *dirname, GraphDef *inList
 #endif
 			}
 		}
+
+#ifdef DEBUG_SCFS
+		cout << "Incrementing" << endl;
+#endif
+		rditer.increment(ec);
+		if (ec) {
+			scprintf("Could not iterate on '%s': %s\n", path.c_str(), ec.message().c_str());
+			return inList;
+		}
 	}
 #ifdef DEBUG_SCFS
 	cout << "GraphDef_LoadDir: end" << endl;
