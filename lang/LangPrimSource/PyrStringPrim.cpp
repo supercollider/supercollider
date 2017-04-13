@@ -45,9 +45,8 @@ Primitives for String.
 #include <boost/intrusive/unordered_set.hpp>
 
 #include <fstream>
-#include <yaml-cpp/node/node.h>
-#include <yaml-cpp/node/iterator.h>
-#include <yaml-cpp/node/parse.h>
+
+#include <yaml-cpp/yaml.h>
 
 using namespace std;
 
