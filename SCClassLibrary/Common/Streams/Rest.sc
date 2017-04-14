@@ -2,19 +2,15 @@
 Rest : Operand  {
 
 	*new { |value = 1|
-		^super.newCopyArgs(value.dereferenceOperand).unwrapValue
+		^super.newCopyArgs(value.dereferenceOperand).unwrapBoolean
 	}
 
 	dur_ { |dt| value = dt }
 	dur { ^value.value }
 
-	// COMPARISONS AND ARRAYS JUST WORK
-	unwrapValue {
-		^if(value.canMultiChannelExpand) {
-			value.collect { |item| this.class.new(item) }
-		} {
-			if(value.isKindOf(Boolean)) { value } { this }
-		}
+	// COMPARISONS JUST WORK
+	unwrapBoolean {
+		^if(value.isKindOf(Boolean)) { value } { this }
 	}
 
 	// EVENT SUPPORT
