@@ -692,7 +692,6 @@ SequenceableCollection : Collection {
 	}
 
 	isSequenceableCollection { ^true }
-	canMultiChannelExpand { ^true }
 	containsSeqColl { ^this.any(_.isSequenceableCollection) }
 	isAssociationArray { ^this.at(0).isKindOf(Association) }
 

@@ -112,7 +112,6 @@ String[char] : RawArray {
 	asString { ^this }
 	asCompileString { _String_AsCompileString; }
 	species { ^String }
-	canMultiChannelExpand { ^false }
 
 	postln { _PostLine }
 	post { _PostString }

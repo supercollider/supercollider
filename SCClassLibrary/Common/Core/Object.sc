@@ -266,7 +266,6 @@ Object  {
 	isCollection { ^false }
 	isArray { ^false }
 	isString { ^false }
-	canMultiChannelExpand { ^false }
 	containsSeqColl { ^false }
 	isValidUGenInput { ^false }
 	isException { ^false }
