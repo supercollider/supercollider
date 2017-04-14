@@ -2066,7 +2066,8 @@ int sc_arrayMaxDepth(PyrSlot *a, int depth)
 			if (isKindOf(slotRawObject(slot), class_collection)) {
 				if (isKindOf(slotRawObject(slot), class_arrayed_collection)) {
 					newdepth = sc_arrayMaxDepth(slot, depth + 1);
-					if(newdepth < 0) return -1;
+					if(newdepth < 0)
+						return -1;
 					newdepth = sc_max(depth, newdepth);
 				} else {
 					return -1;  // bail out
@@ -2111,7 +2112,8 @@ int sc_arrayMaxSizeAtDepth(PyrSlot *a, int rank)
 			if (isKindOf(slotRawObject(slot), class_collection)) {
 				if (isKindOf(slotRawObject(slot), class_arrayed_collection)) {
 					newsize = sc_arrayMaxSizeAtDepth(slot, rank - 1);
-					if(newsize < 0) return -1;
+					if(newsize < 0)
+						return -1;
 					newsize = sc_max(newsize, size);
 				} else {
 					return -1; // error
@@ -2134,7 +2136,8 @@ int prArrayMaxSizeAtDepth(struct VMGlobals *g, int numArgsPushed)
 	int err = slotIntVal(b, &rank);
 	if (err) return err;
 	rank = sc_arrayMaxSizeAtDepth(a, rank);
-	if(rank < 0) return errFailed;
+	if(rank < 0) return
+		errFailed;
 	SetInt(a, rank);
 	return errNone;
 }
