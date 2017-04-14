@@ -28,47 +28,8 @@ Primitives for Arrays.
 #include "PyrPrimitive.h"
 #include "SC_InlineBinaryOp.h"
 #include "SC_Constants.h"
+#include "PyrArrayPrimitives.h"
 #include <string.h>
-
-int basicSize(VMGlobals *g, int numArgsPushed);
-int basicMaxSize(VMGlobals *g, int numArgsPushed);
-
-int basicSwap(struct VMGlobals *g, int numArgsPushed);
-int basicAt(VMGlobals *g, int numArgsPushed);
-int basicRemoveAt(VMGlobals *g, int numArgsPushed);
-int basicClipAt(VMGlobals *g, int numArgsPushed);
-int basicWrapAt(VMGlobals *g, int numArgsPushed);
-int basicFoldAt(VMGlobals *g, int numArgsPushed);
-int basicPut(VMGlobals *g, int numArgsPushed);
-int basicClipPut(VMGlobals *g, int numArgsPushed);
-int basicWrapPut(VMGlobals *g, int numArgsPushed);
-int basicFoldPut(VMGlobals *g, int numArgsPushed);
-
-int prArrayAdd(VMGlobals *g, int numArgsPushed);
-int prArrayFill(VMGlobals *g, int numArgsPushed);
-int prArrayPop(VMGlobals *g, int numArgsPushed);
-int prArrayGrow(VMGlobals *g, int numArgsPushed);
-int prArrayCat(VMGlobals *g, int numArgsPushed);
-
-int prArrayReverse(VMGlobals *g, int numArgsPushed);
-int prArrayScramble(VMGlobals *g, int numArgsPushed);
-int prArrayRotate(VMGlobals *g, int numArgsPushed);
-int prArrayStutter(VMGlobals *g, int numArgsPushed);
-int prArrayMirror(VMGlobals *g, int numArgsPushed);
-int prArrayMirror1(VMGlobals *g, int numArgsPushed);
-int prArrayMirror2(VMGlobals *g, int numArgsPushed);
-int prArrayExtendWrap(VMGlobals *g, int numArgsPushed);
-int prArrayExtendFold(VMGlobals *g, int numArgsPushed);
-int prArrayPermute(VMGlobals *g, int numArgsPushed);
-int prArrayPyramid(VMGlobals *g, int numArgsPushed);
-int prArraySlide(VMGlobals *g, int numArgsPushed);
-int prArrayLace(VMGlobals *g, int numArgsPushed);
-int prArrayContainsSeqColl(VMGlobals *g, int numArgsPushed);
-int prArrayMaxDepth(VMGlobals *g, int numArgsPushed);
-int prArrayMaxSizeAtDepth(VMGlobals *g, int numArgsPushed);
-int prArrayWIndex(VMGlobals *g, int numArgsPushed);
-int prArrayNormalizeSum(VMGlobals *g, int numArgsPushed);
-int prArrayIndexOfGreaterThan(VMGlobals *g, int numArgsPushed);
 
 
 int basicSize(struct VMGlobals *g, int numArgsPushed)
