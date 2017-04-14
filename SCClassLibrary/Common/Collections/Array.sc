@@ -103,38 +103,47 @@ Array[slot] : ArrayedCollection {
 		_ArrayLace
 		^this.primitiveFailed
 	}
+
 	permute { arg nthPermutation;
 		_ArrayPermute
 		^this.primitiveFailed
 	}
+
 	allTuples { arg maxTuples = 16384;
 		_ArrayAllTuples
 		^this.primitiveFailed
 	}
+
 	wrapExtend { arg length;
 		_ArrayExtendWrap
 		^this.primitiveFailed
 	}
+
 	foldExtend { arg length;
 		_ArrayExtendFold
 		^this.primitiveFailed
 	}
+
 	clipExtend { arg length;
 		_ArrayExtendLast
 		^this.primitiveFailed
 	}
+
 	slide { arg windowLength=3, stepSize=1;
 		_ArraySlide
 		^this.primitiveFailed
 	}
+
 	containsSeqColl {
 		_ArrayContainsSeqColl
 		^this.primitiveFailed
 	}
+
 	maxDepth { arg max = 1;
 		_ArrayMaxDepth
 		^super.maxDepth(max)
 	}
+
 	maxSizeAtDepth { arg rank;
 		_ArrayMaxSizeAtDepth
 		^super.maxSizeAtDepth(rank)
