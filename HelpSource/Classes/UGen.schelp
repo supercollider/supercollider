@@ -204,6 +204,12 @@ Wraps the receiver in a link::Classes/Slew:: UGen, limiting the slope of its out
 
 method:: degreeToKey
 
+argument::bufnum
+Index of the buffer which contains the steps for each scale degree.
+
+argument::stepsPerOctave
+The number of steps per octave in the scale.
+
 Wraps the receiver in a link::Classes/DegreeToKey:: UGen.
 
 method:: minNyquist
