@@ -82,13 +82,7 @@ Path SC_Filesystem::getDirectory(const DirName& dn)
 	if (it != mDirectoryMap.end()) {
 		p = it->second;
 	} else {
-		if ( ! initDirectory(dn) ) {
-			// failed, return empty directory
-			p = Path();
-		} else {
-			it = mDirectoryMap.find(dn);
-			p = it->second;
-		}
+		p = initDirectory(dn) ? mDirectoryMap.find(dn)->second : Path();
 	}
 #ifdef DEBUG_SCFS
 	cout << "\tgot " << p << endl;
