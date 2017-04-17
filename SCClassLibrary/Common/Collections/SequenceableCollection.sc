@@ -64,6 +64,16 @@ SequenceableCollection : Collection {
 		});
 		^obj
 	}
+	*recursiveFormula { arg size, a=0.0;
+		var i=0, divisor = 3, divisorDec = 0.9;
+		var obj = this.new(size);
+		while { i < size }{
+			obj.multiply((a/divisor));
+			divisorDec -= 0.1;
+			divisor *= divisorDec;
+		};
+		^obj
+	}
 	*linrand { arg size, minVal, maxVal;
 		var i=0;
 		var range = maxVal - minVal;
