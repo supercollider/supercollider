@@ -35,87 +35,117 @@ Inside that application's folder (`SuperCollider.app/Contents/MacOS/`) are the t
 Prerequisites:
 -------------
 
-- **Xcode** can be installed free from the Apple App Store or downloaded from: http://developer.apple.com
+- **Xcode** can be installed free from the Apple App Store or downloaded from:
+  http://developer.apple.com
 
   - Xcode 5 may work
   - Xcode 6 is known to work - it requires a Mac running macOS version 10.9.4 or later or 10.10
   - Later versions should definitely work
 
 - **Xcode command line tools** must be installed - after installing Xcode, this can be done from the Xcode preferences or from the command line:
-  `xcode-select --install`
-- **homebrew** is recommended to install required libraries
-  See http://brew.sh for installation instructions.
-- **git, cmake, libsndfile, readline, and qt5.5**, installed via homebrew:
-  `brew install git cmake readline qt55`
 
-  *Note*: As of this writing the latest stable Qt is version 5.8. SC depends on Qt5WebKit, which was dropped from the binary distributions of Qt since version 5.6 (functionally replaced by Qt5WebEngine). Therefore you cannot simply install the latest Qt5 via homebrew and rely on the defaults. You can either install qt55 (accessed at /usr/local/opt/qt@55) and replace `brew --prefix qt5` by `brew --prefix qt55` in
-  the build instructions below, or install the current Qt version with the option `--with-qtwebkit`. As this is a non-standard install, brew will build qt5 locally (go drink a coffee).
-  If you already had Qt5, and and your build broke after an update, or if you need several Qt5 installs, you can set the version to be used by default with `brew switch`. (for example `brew switch qt5 5.5.1_2`, you can also "freeze" the Qt5 version with `brew pin`).
+      $> xcode-select --install
+
+- **homebrew** is recommended to install required libraries. See http://brew.sh for installation instructions.
+
+- **git, cmake, libsndfile, readline, and qt (version 5.5)**, installed via
+  Homebrew:
+
+      $> brew install git cmake readline
+
+  The qt-version required is outdated. To install it, the version needs to be
+  made explicit and "--forced":
+
+      $> brew install qt@5.5 --force
+
+*Note*: Recent versions of Qt do not ship with Qt5WebKit any more. It was dropped from the binary distribution since version 5.6 (functionally replaced by Qt5WebEngine). Therefore you cannot simply install the latest Qt via homebrew and rely on the defaults. You can either install qt@5.5 (accessed at /usr/local/opt/qt@5.5) and use `brew --prefix qt@5.5` in the build configuration (as shown below and recommended), or install the current Qt version with the option `--with-qtwebkit`. As this is a non-standard install, brew will build Qt locally (go drink a coffee). If you need to handle multiple Qt versions on your system, check `brew switch`. To avoid automatic update of Qt, check `brew pin`.
+
 
 Obtaining the source code
 -------------------------
 
-**Note** Please do not use non-ASCII characters (above code point 127) in your
-SuperCollider program path (i.e. the names of the folders containing SuperCollider).
-Doing so will break options to open class or method files.
+**Note** Please do not use non-ASCII characters (above code point 127) in your SuperCollider program path (i.e. the names of the folders containing SuperCollider). Doing so will break options to open class or method files.
 
 SC is on Github: https://github.com/SuperCollider/SuperCollider
 
 Get a copy of the source code:
 
-    git clone --recursive https://github.com/SuperCollider/SuperCollider.git
+    $> git clone --recursive https://github.com/SuperCollider/SuperCollider.git
 
-`--recursive` specifies that it should also clone the git submodules.
+With `--recursive` all submodules are initialized and downloaded right away.
+
+**Note** The supercollider source embedds multiple dependencies as "submodule". Submodules are downloaded from a separate URL and need to be kept in sync with the current supercollider source checkout. Unfortunatelly this occasionally requires manual adjustments, as different SC revisions may require different sets and revisions of submodules (check `git submodule` documentation for a complete list of options).
+
+- initialize newly added submodules (this does not happen automatically):
+
+      $> git submodule init
+
+- get the currently required revision of a submodule that has already been initialized:
+
+      $> git submodule update
+
+- refresh the remote URL of initialized submodules (only rarely needed):
+
+      $> git submodule sync
+
+A command that combines initializing missing submodules and checking out the required revision:
+
+      $> git submodule update --init
+
 
 Build instructions
 ------------------
 
-    cd SuperCollider
-    mkdir -p build
-    cd build
-    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt5`  ..
-    cmake --build . --target install --config RelWithDebInfo
+    $> cd supercollider
+    $> mkdir build
+    $> cd build
+    $> cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt@5.5` ..
+    $> cmake --build . --target install --config RelWithDebInfo
 
-If successful this will build the application into `build/Install/SuperCollider/`
+Additional build options can be seen with `cmake -LH`.
 
-You can see the available build options with ```cmake -LH```.
-
-To install, you may move this to /Applications or use it in place from the build directory.
+If successful, this will install the application to the folder `build/Install/SuperCollider/`.  If you want to move it to /Applications, move the folder `SuperCollider` rather than just the application bundle.
 
 **Note**: You can also open the produced SuperCollider.xcodeproj in Xcode, and build the "Install" scheme in place of the last step. Do make sure you run the previous configuration steps.
+
 
 #### Step by step explanation of the Build instructions:
 
 ##### Create a `build` folder if one doesn't already exist:
 
-    mkdir -p build
-    cd build
+    $> mkdir build
+    $> cd build
 
-##### Prepare for building by making a configuration file:
+It is customary but not required to build SC in a subfolder `build` of the SC source. It has a few advantages:
 
-    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt5`  ..
+- `git` can be used to control the source while building
+- pointing to the source in the cmake configuration step just requires `..`
 
-(The `..` at the end is easy to miss. Don't forget it!)
+*Note:* SC source subfolders starting with `build` are ignored by git.
 
-This specifies to cmake that we will be using Xcode to build. It also specifies the location of qt so that the complier/linker can find it
-(note that you might have to set `qt55` instead of `qt5`, depending on how you installed you qt5 version (see above, "Prerequisites")).
-`brew --prefix qt5` will be expanded to the path to current Qt5 when the command is run.
 
-If you are not using the Homebrew install then you should substitute the path to the parent folder of the bin/include/lib folders in that
-Qt tree.
+##### Configure the build and generate build files:
 
-##### Build
+    $> cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt@5.5` ..
 
-    cmake --build . --target install --config RelWithDebInfo
+(The `..` at the end is easy to miss. The dots tell cmake that the parent folder is the root of the supercollider source tree. Don't forget it!)
 
-Cmake will build the application looking up configuration information in the file `CMakeCache.txt` in the specified directory
-(the current directory: `.` ). By specifying '--target install' you build all targets and trigger the creation of a portable
-bundle containing all files contained in the SC distribution. The default install location is `./Install`.
+The argument `-G Xcode` selects the generator for an Xcode project file and generates build files for the Xcode build tool `xcodebuild`. If this argument is omitted, `Unix makefiles` are generated. They can be built with `make`/ `make install`, but subtle differences exist. Using the Xcode generator also allows to build using the Xcode IDE by opening supercollider.xcodeproj in the IDE.
 
-The flag `--config RelWithDebInfo` will build an optimized binary but will still include some useful debug information.
+The argument `-D CMAKE_PREFIX_PATH=brew --prefix qt@5.5` allows cmake to locate the correct Qt version. `brew --prefix qt@5.5` will be expanded to the correct path.
 
-By default Xcode builds the application in debug mode which runs much slower and has a larger application size. It is intended for use with
-the XCode debugger. For normal usage you will want an optimized release version.
+If you are not using the Homebrew install then you should substitute the path to the parent folder of the bin/include/lib folders in the downloaded Qt tree.
+
+
+##### Build and optionally install
+
+    $> cmake --build . --target install --config RelWithDebInfo
+
+This is a build tool agnostic cross platform command to build using cmake, which allows to use the same command syntax in all environments. You can also use the build tools directly (`make` or `xcodebuild` depending on the generator used). Cmake will build the application looking up configuration information in the file `CMakeCache.txt` in the directory specified after `--build`. (the current directory: `.` ). By specifying `--target install` you build all targets and trigger the creation of a portable bundle containing all files contained in the SC distribution. The default install location is `./Install`.
+
+The flag `--config RelWithDebInfo` will build an optimized binary that still provides some useful debug information.
+
+By default - i.e. when omitting the `--config` argument - Xcode builds the application in debug mode, which runs much slower and has a larger application size. This is intended for development work using the XCode debugger only. For normal usage you will want an optimized release version.
 
 The four possible build configs are:
 
@@ -123,7 +153,6 @@ The four possible build configs are:
 - RelWithDebInfo
 - Release
 - MinSizeRel
-
 
 
 Diagnosing Build Problems
@@ -179,26 +208,19 @@ Simply posting "the latest checkout is broken" won't help. We need the exact com
 Frequently used cmake settings
 ------------------------------
 
-There are more settings in the build configuration you may want to adjust. In order to
-see a useful list of your options, you can run:
+There are more settings in the build configuration you may want to adjust. In order to see a useful list of build options, you can run:
 
     cmake -L ..
 
-This configures the build using default settings or settings stored in the file
-build/CMakeCache.txt, prints explanatory return statements and produces a list of
-variables the value of which you might want to change.
+This configures the build using default settings or settings stored in the file build/CMakeCache.txt, prints explanatory return statements and produces a list of variables the value of which you might want to change.
 
 In order to see all the command line options `cmake` offers, type:
 
     cmake --help
 
-It is not necessary to pass in all required arguments each time you run cmake,
-as cmake caches previously set arguments in the file CMakeCache.txt. This is
-helpful, but also something to keep in mind if unexpected things happen.
+It is not necessary to pass in all required arguments each time you run cmake, as cmake caches previously set arguments in the file CMakeCache.txt. This is helpful, but also something to keep in mind if unexpected things happen.
 
-If you feel uncomfortable with the command line, you might want to try cmake
-frontends like  `ccmake` or `cmake-gui`. You can also configure your build by
-manually editing build/CMakeCache.txt.
+If you feel uncomfortable with the command line, you might want to try cmake frontends like  `ccmake` or `cmake-gui`. You can also configure your build by manually editing build/CMakeCache.txt.
 
 
 Common arguments to control the build configuration are:
@@ -206,18 +228,17 @@ Common arguments to control the build configuration are:
   * Control the location where SC gets installed. The following line moves it to the Applications folder
     (which means you need to use `sudo`):
 
-    `-DCMAKE_INSTALL_PREFIX=/Applications`
+      -DCMAKE_INSTALL_PREFIX=/Applications
 
   * Enable compiler optimizations for your local system
 
-    `-DNATIVE=ON`
+      -DNATIVE=ON
 
   * Build the *supernova* server:
 
-    `-DSUPERNOVA=ON`
+      -DSUPERNOVA=ON
 
-    Using supernova requires the `portaudio` audio backend, so you need to install it
-    (Homebrew and MacPorts both provide packages).
+    Using supernova requires the `portaudio` audio backend, so you need to install it (Homebrew provides packages).
 
     *Note*: When you build with supernova, an alternative server executable and a supernova
     version of each plugin is built. If you also use the sc3-plugins package, make sure to
@@ -225,33 +246,33 @@ Common arguments to control the build configuration are:
 
     Within SC you will be able to switch between scsynth and supernova by evaluating one of:
 
-    `Server.supernova`
-    `Server.scsynth`
+      Server.supernova
+      Server.scsynth
 
     Check sc help for `ParGroup` to see how to make use of multi-core hardware.
 
   * Build a 32-bit version (sc 3.6 only):
 
-    `-DCMAKE_OSX_ARCHITECTURES='i386'`
+      -DCMAKE_OSX_ARCHITECTURES='i386'
 
     or combine a 32- and 64-bit version into a bundle (i.e. build a universal binary).
     This is only possible up until macOS 10.6 and requires the dependencies (Qtlibs &
     readline) to be universal builds too:
 
-    `-DCMAKE_OSX_ARCHITECTURES='i386;x86_64'`
+      -DCMAKE_OSX_ARCHITECTURES='i386;x86_64'
 
   * Homebrew installations of libsndfile should be detected automatically. To link to a
     version of libsndfile that is not installed in /usr/local/include|lib, you can use:
 
-    `-DSNDFILE_INCLUDE_DIR='/path/to/libsndfile/include'`
-    `-DSNDFILE_LIBRARY='/path/to/libsndfile/lib/libreadline.dylib'`
+      -DSNDFILE_INCLUDE_DIR='/path/to/libsndfile/include'
+      -DSNDFILE_LIBRARY='/path/to/libsndfile/lib/libreadline.dylib'
 
   * Normally, homebrew installations of readline are detected automatically, and building with
     readline is only required if you plan to use SuperCollider from the terminal. To link to a
     non-standard version of readline, you can use:
 
-    `-DREADLINE_INCLUDE_DIR='/path/to/readline/include'`
-    `-DREADLINE_LIBRARY='/path/to/readline/lib/libreadline.dylib'`
+      -DREADLINE_INCLUDE_DIR='/path/to/readline/include'
+      -DREADLINE_LIBRARY='/path/to/readline/lib/libreadline.dylib'
 
 
 Using cmake with Xcode or QtCreator
@@ -261,20 +282,17 @@ Xcode projects are generated by appending: `-G Xcode`. The build instructions ab
 
 You may also want to make the expected SDK-Version and location explicit, using:
 
-`-DCMAKE_OSX_SYSROOT=`
+    -DCMAKE_OSX_SYSROOT=
 
 This is often useful to point to an older SDK even with a newer Xcode installed. These are generally located in the
 
-`/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs`
+    /Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs
 
 of an Xcode.app package.
 
-You can build without using XCode using `make`, by omitting the `-G Xcode` - in this case, your build command
-is `make` rather than `xcodebuild`
+Qt Creator has very good `cmake` integration and allows to run it from within the IDE. Qt Creator comes with Qt but may need to be activated by a command like:
 
-Qt Creator has very good `cmake` integration and can build `cmake` projects without requiring a `cmake` generated project file. If you have Qt5 via homebrew installed, you can install Qt Creator by running:
-
-    brew linkapps qt5
+    brew linkapps qt
 
 
 Building without Qt or the IDE
@@ -318,6 +336,7 @@ To access them in the Terminal:
 or
 
     cd /path/to/SuperCollider.app/Contents/MacOS
+
 
 ##### Adding scsynth and sclang to your path
 
