@@ -67,7 +67,7 @@ public:
 
 	static const std::string& getIdeName() { return gIdeName; }
 	static const void setIdeName(const std::string& s) { gIdeName = s; }
-	static const bool usingIde() { return !gIdeName.empty(); }
+	static const bool usingIde() { return !gIdeName.empty() && gIdeName != "none"; }
 
 private:
 	static const bool findPath(const DirVector&, const Path&);
