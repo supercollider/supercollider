@@ -32,10 +32,6 @@
 #include <map> // map
 #include <boost/filesystem/path.hpp> // path
 
-#if defined(__APPLE__) && !defined(SC_IPHONE)
-#  include "SC_StandAloneInfo_Darwin.h"
-#endif
-
 class SC_Filesystem {
 public:
 	enum class DirName;
@@ -80,28 +76,16 @@ public:
 	// Returns `true` if the directory is to be ignored during compilation.
 	bool shouldNotCompileDirectory(const Path&) const;
 
-#if defined(__APPLE__) && !defined(SC_IPHONE)
-	// Returns `true` if this is a standalone (only on macOS)
-	static inline bool isStandalone() { return SC_StandAloneInfo::IsStandAlone(); }
+	bool        shouldNotCompileDirectory(const Path& p) const;
+	static bool isStandalone();
 
 	// postconditions: isAlias is true if path is an alias, and false otherwise
 	// returns: the resolved path if resolution occurred
 	//          the original path if no resolution occurred
 	//          Path() if resolution failed
-	// Could possibly be split into `isAlias` and `resolveAlias` to avoid
-	// unnecessary duplication
-	static Path resolveIfAlias(const Path&, bool&);
-#else
-	static inline bool isStandalone() { return false; }
-
-	static Path resolveIfAlias(const Path& p, bool& isAlias)
-	{
-		isAlias = false;
-		return p;
-	}
-#endif // defined(__APPLE__) && !defined(SC_IPHONE)
-
-	static Glob* makeGlob(const char*);
+	// @TODO: Could possibly be split into `isAlias` and `resolveAlias` to avoid
+	// unnecessary copying
+	static Path resolveIfAlias(const Path& p, bool& isAlias);
 
 	// Returns empty path if end of stream is reached
 	static Path globNext(Glob*);

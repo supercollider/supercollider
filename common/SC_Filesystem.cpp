@@ -24,6 +24,7 @@
 #if defined(__APPLE__) && !defined(SC_IPHONE)
 
 #include "SC_Filesystem.hpp"
+#include "SC_StandAloneInfo_Darwin.h"
 
 // stdlib
 #include <string>   // std::string
@@ -121,6 +122,11 @@ bool SC_Filesystem::shouldNotCompileDirectory(const Path& p) const
 					dirname == "_darcs" ||
 					dirname == idePath ||
 					isNonHostPlatformDirectory(dirname));
+}
+
+bool SC_Filesystem::isStandalone()
+{
+	return SC_StandAloneInfo::IsStandAlone();
 }
 
 Path SC_Filesystem::resolveIfAlias(const Path& p, bool& isAlias)
