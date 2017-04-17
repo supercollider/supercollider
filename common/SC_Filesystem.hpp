@@ -50,31 +50,21 @@ public:
 	};
 
 	// singleton
+	SC_Filesystem(SC_Filesystem const&) = delete;
+	void operator=(SC_Filesystem const&) = delete;
 	static SC_Filesystem& instance()
 	{
 		static SC_Filesystem instance;
 		return instance;
 	}
 
-	SC_Filesystem(SC_Filesystem const&) = delete;
-	void operator=(SC_Filesystem const&) = delete;
-
-	// Gets the path associated with the directory name.
-	// The path is initialized if it is not already set.
-	Path getDirectory(const DirName&);
-
-	// Sets the path associated with the directory name
-	inline void setDirectory(const DirName& dn, const Path& p)
-	{
-		mDirectoryMap[dn] = p;
-	}
+	// Get and set the path associated with a directory name.
+	// The path is initialized first if necessary.
+	Path        getDirectory(const DirName& dn);
+	inline void setDirectory(const DirName& dn, const Path& p) { mDirectoryMap[dn] = p; }
 
 	// Expands a path starting with `~` to use the user's home directory.
-	// Works cross-platform.
-	Path expandTilde(const Path&);
-
-	// Returns `true` if the directory is to be ignored during compilation.
-	bool shouldNotCompileDirectory(const Path&) const;
+	Path        expandTilde(const Path& p);
 
 	bool        shouldNotCompileDirectory(const Path& p) const;
 	static bool isStandalone();
@@ -87,20 +77,17 @@ public:
 	// unnecessary copying
 	static Path resolveIfAlias(const Path& p, bool& isAlias);
 
-	// Returns empty path if end of stream is reached
-	static Path globNext(Glob*);
-
-	static void freeGlob(Glob*);
+	static Glob* makeGlob(const char* pattern);
+	static Path globNext(Glob* g); // Returns empty path for end-of-stream
+	static void freeGlob(Glob* g);
 
 private:
 	SC_Filesystem() {};
 
-	static bool isNonHostPlatformDirectory(const std::string&);
+	static bool isNonHostPlatformDirectory(const std::string& p);
 
-	bool initDirectory(const DirName&);
-
-	// Get default directories based on the OS's filesystem.
-	// Returns an empty path to indicate failure.
+	// Loads in the default directories (OS-specific)
+	bool initDirectory(const DirName& dn);
 	static Path defaultSystemAppSupportDirectory();
 	static Path defaultSystemExtensionDirectory();
 	static Path defaultUserHomeDirectory();
