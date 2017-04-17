@@ -402,8 +402,9 @@ static bool PlugIn_LoadDir(const SC_Filesystem::Path& dir, bool reportError)
 #endif
 
 		const boost::filesystem::path& filename = path.filename();
-		// skip directory or file starting with '.'
-		if (filename.c_str()[0] != '.') {
+		// @TODO: maybe don't do it this way.. or at least only switch on directory names with .
+//		 skip directory or file starting with '.'
+//		if (filename.c_str()[0] != '.') {
 			if (boost::filesystem::is_directory(path)) {
 #ifdef DEBUG_SCFS
 				cout << "Is a directory" << endl;
@@ -427,7 +428,7 @@ static bool PlugIn_LoadDir(const SC_Filesystem::Path& dir, bool reportError)
 					return false;
 				}
 			}
-		}
+//		}
 
 		rditer.increment(ec);
 		if (ec) {
