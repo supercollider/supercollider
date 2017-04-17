@@ -291,12 +291,9 @@ Path SC_Filesystem::defaultUserAppSupportDirectory()
 	if (home)
 		return Path(home) / SUPERCOLLIDER_DIR_NAME;
 
-	home = getenv("HOME");
+	const Path& p = defaultUserHomeDirectory();
 	// "/Users/[username]/Library/Application Support/[SuperCollider]"
-	if (home)
-		return Path(home) / LIBRARY_DIR_NAME / APPLICATION_SUPPORT_DIR_NAME / getBundleName();
-	else
-		return Path();
+	return p.empty() ? p : p / LIBRARY_DIR_NAME / APPLICATION_SUPPORT_DIR_NAME / getBundleName();
 }
 
 Path SC_Filesystem::defaultUserExtensionDirectory()
