@@ -2003,6 +2003,9 @@ static bool passOne_ProcessDir(const boost::filesystem::path& dir, int level)
 	compiledDirectories.insert(dir);
 
 	// @TODO: try this with try{} instead of error codes
+	// @TODO: alias resolution. If not a directory, try resolving.
+	// if resolving succeeds, call the appropriate function on that
+	// file. if not, treat it as a normal source file.
 	while (rditer != boost::filesystem::end(rditer)) {
 		const boost::filesystem::path& path = *rditer;
 #ifdef DEBUG_SCFS
@@ -2028,15 +2031,22 @@ static bool passOne_ProcessDir(const boost::filesystem::path& dir, int level)
 #ifdef DEBUG_SCFS
 			cout << "Processing" << endl;
 #endif
-//			bool isAlias = false;
-//			boost::filesystem::path respath = SC_Filesystem::resolveIfAlias(path, isAlias);
-//			if (isAlias)
-//				cout << "Alias: " << path << endl;
-
-//			if (!passOne_ProcessOneFile(respath.c_str(), rditer.level())) {
-			if (!passOne_ProcessOneFile(path.c_str(), rditer.level())) {
+			bool isAlias = false;
+			const boost::filesystem::path& respath = SC_Filesystem::resolveIfAlias(path, isAlias);
+			if (isAlias && boost::filesystem::is_directory(respath)) {
+				if (!passOne_ProcessDir(respath, rditer.level())) {
 #ifdef DEBUG_SCFS
-				cout << "Could not process " << path << endl;
+					cout << "Could not process " << respath << endl;
+#endif
+					return false;
+				}
+			} else if (respath.empty()) {
+#ifdef DEBUG_SCFS
+				cout << "Symlink resolution failed: " << respath << endl;
+#endif
+			} else if (!passOne_ProcessOneFile(respath.c_str(), rditer.level())) {
+#ifdef DEBUG_SCFS
+				cout << "Could not process " << respath << endl;
 #endif
 				return false;
 			}
@@ -2047,7 +2057,7 @@ static bool passOne_ProcessDir(const boost::filesystem::path& dir, int level)
 #endif
 		rditer.increment(ec);
 		if (ec) {
-			error("Could not iterate on directory '%s': %s\n", path.c_str(), ec.message().c_str());
+			error("Could not iterate on '%s': %s\n", path.c_str(), ec.message().c_str());
 			return false;
 		}
 	}
@@ -2102,6 +2112,7 @@ bool passOne_ProcessOneFile(const char * /*filenamearg*/ filename, int level)
 //	char filename[MAXPATHLEN];
 
 	// disallowing alias resolution for now
+	// @TODO: do alias resolution in processDir.
 	/*int status = sc_ResolveIfAlias(filenamearg, filename, isAlias, MAXPATHLEN);
 
 	if (status<0) {
@@ -2126,8 +2137,7 @@ bool passOne_ProcessOneFile(const char * /*filenamearg*/ filename, int level)
 			success = false;
 		}
 	} else {
-		if (boost::filesystem::is_directory(filename))
-			success = passOne_ProcessDir(filename, level);
+		// wasn't a valid source file; ignore
 	}
 	return success;
 }
