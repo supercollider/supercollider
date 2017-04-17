@@ -162,8 +162,6 @@ Path SC_Filesystem::resolveIfAlias(const Path& p, bool& isAlias)
 	return p;
 }
 
-//============ GLOB UTILITIES =============//
-
 // Returns false if initialization failed
 bool SC_Filesystem::initDirectory(const DirName& dn)
 {
@@ -225,6 +223,8 @@ bool SC_Filesystem::initDirectory(const DirName& dn)
 #endif
     return !p.empty();
 }
+
+//============ GLOB UTILITIES =============//
 
 struct SC_Filesystem::Glob
 {
