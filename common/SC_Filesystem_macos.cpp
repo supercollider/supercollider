@@ -58,15 +58,10 @@ using DirMap = SC_Filesystem::DirMap;
 
 //============ DIRECTORY NAMES =============//
 const char* gIdeName = "none"; // @TODO: move out
-const char* DOT_CONFIG = ".config";
-const char* CWD = "./";
 const char* SUPERCOLLIDER_DIR_NAME = "SuperCollider";
-const char* DOCUMENTS_DIR_NAME = "Documents";
 const char* EXTENSIONS_DIR_NAME = "Extensions";
 const char* LIBRARY_DIR_NAME = "Library";
 const char* APPLICATION_SUPPORT_DIR_NAME = "Application Support";
-const char* SHARE_DIR_NAME = "share";
-const char* DOT_LOCAL = ".local";
 const Path ROOT_PATH = Path("/");
 
 //====== STATIC FUNC FORWARD DECLS =======//
@@ -95,6 +90,7 @@ Path SC_Filesystem::getDirectory(const DirName& dn)
 	return p;
 }
 
+// @TODO: easier way?
 Path SC_Filesystem::expandTilde(const Path& p)
 {
 	Path::const_iterator piter = p.begin();
