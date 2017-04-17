@@ -61,7 +61,7 @@ extern "C" {
 char gTempVal;
 #endif // __APPLE__
 
-//#define DEBUG_SCFS
+#define DEBUG_SCFS
 #ifdef DEBUG_SCFS
 #include <iostream>
 using std::cout;
