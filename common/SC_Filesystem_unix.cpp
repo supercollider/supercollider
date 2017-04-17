@@ -25,6 +25,6 @@
 /*
  * SC_Filesystem implementation for Linux/FreeBSD.
  */
-#if !defined(__APPLE__) && !defined(SC_IPHONE) && !defined(_WIN32)
+#if defined(__linux__) || defined(__FreeBSD__)
 
-#endif // !defined(__APPLE__) && !defined(SC_IPHONE) && !defined(_WIN32)
+#endif // defined(__linux__) || defined(__FreeBSD__)
