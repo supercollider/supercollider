@@ -91,6 +91,7 @@ private:
 	static bool isNonHostPlatformDirectory(const std::string& p);
 
 	// Loads in the default directories (OS-specific)
+	// @TODO: inline initDirectory, systemExtDir, userExtDir
 	bool initDirectory(const DirName& dn);
 	static Path defaultSystemAppSupportDirectory();
 	static Path defaultSystemExtensionDirectory();
