@@ -1,6 +1,10 @@
 /*
- *  Copyright (c) 2017 Tim Walters. All rights reserved.
- *  Created by Brian Heim 2017-04-03.
+ *  Copyright (c) 2005 Tim Walters. All rights reserved.
+ *  Copyright (c) 2017 Brian Heim. All rights reserved.
+ *  Created by Tim Walters on 2005-10-19.
+ *
+ *	Revision history:
+ *	  Changed from SC_DirUtils to SC_Filesystem (Brian Heim, 2017-04-03)
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License as
