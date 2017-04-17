@@ -270,7 +270,7 @@ HelpBrowser {
 
 		webView.enterInterpretsSelection = true;
 		webView.keyDownAction = { arg view, char, mods;
-			if( (char.ascii == 13) && (mods.isCtrl || mods.isCmd || mods.isShift) ) {
+			if( (char.notNil and:{char.ascii == 13}) && (mods.isCtrl || mods.isCmd || mods.isShift) ) {
 				view.tryPerform(\evaluateJavaScript,"selectLine()");
 			};
 		};
@@ -278,7 +278,7 @@ HelpBrowser {
 			if( ((key == 70) && mods.isCtrl) || (char == $f && mods.isCmd) ) {
 				toggleFind.value;
 			};
-			if(char.ascii==27) {
+			if(char.notNil and:{char.ascii == 27}) {
 				if(findView.visible) {toggleFind.value};
 			}
 		};
