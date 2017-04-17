@@ -232,16 +232,14 @@ SC_Filesystem::Glob* SC_Filesystem::makeGlob(const char* pattern)
 {
 	Glob* glob = new Glob;
 
-	int flags = GLOB_MARK | GLOB_TILDE | GLOB_QUOTE;
-
-	int err = ::glob(pattern, flags, nullptr, &glob->mHandle);
+	const int flags = GLOB_MARK | GLOB_TILDE | GLOB_QUOTE;
+	const int err = ::glob(pattern, flags, nullptr, &glob->mHandle);
 	if (err < 0) {
 		delete glob;
 		return nullptr;
 	}
 
 	glob->mEntry = 0;
-
 	return glob;
 }
 
