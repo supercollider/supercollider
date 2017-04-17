@@ -49,7 +49,7 @@ using std::endl;
 
 using Path = SC_Filesystem::Path;
 using DirName = SC_Filesystem::DirName;
-using std::map;
+using DirMap = SC_Filesystem::DirMap;
 
 //============ DIRECTORY NAMES =============//
 const char* gIdeName = "none"; // @TODO: move out
@@ -76,7 +76,7 @@ Path SC_Filesystem::getDirectory(const DirName& dn)
 #ifdef DEBUG_SCFS
 	cout << "SCFS::getDirectory: enter" << endl;
 #endif
-	map<DirName, Path>::const_iterator it = mDirectoryMap.find(dn);
+	const DirMap::const_iterator& it = mDirectoryMap.find(dn);
 	Path p;
 	if (it != mDirectoryMap.end()) {
 		p = it->second;

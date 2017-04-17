@@ -38,10 +38,11 @@
 
 class SC_Filesystem {
 public:
+	enum class DirName;
 	typedef boost::filesystem::path Path;
+	typedef std::map<DirName, Path> DirMap;
 	struct Glob;
 
-	// Enumerated standard directory names used by SuperCollider
 	enum class DirName {
 		SystemAppSupport,
 		SystemExtension,
@@ -124,7 +125,7 @@ private:
 	static Path defaultUserConfigDirectory();
 	static Path defaultResourceDirectory();
 
-	std::map<DirName, Path> mDirectoryMap;
+	DirMap mDirectoryMap;
 };
 
 #endif // SC_FILESYSTEM_HPP_INCLUDED
