@@ -56,7 +56,7 @@ set(scsynth_sources
 
 	${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_Filesystem_win.cpp
-	${CMAKE_SOURCE_DIR}/common/SC_Filesystem_linux.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_Filesystem_unix.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_Filesystem_iphone.cpp
 
 	${CMAKE_SOURCE_DIR}/common/SC_fftlib.cpp
