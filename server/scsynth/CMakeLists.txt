@@ -54,9 +54,13 @@ set(scsynth_sources
 	SC_World.cpp
 	Rendezvous.cpp
 
+	${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_Filesystem_win.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_Filesystem_linux.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_Filesystem_iphone.cpp
+
 	${CMAKE_SOURCE_DIR}/common/SC_fftlib.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_AllocPool.cpp
-	${CMAKE_SOURCE_DIR}/common/SC_Filesystem.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_Errors.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_Reply.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp
@@ -70,7 +74,7 @@ set(scsynth_sources
 )
 
 if(APPLE)
-	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_Filesystem.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
+	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
 
 	list(APPEND scsynth_sources
 		${CMAKE_SOURCE_DIR}/common/SC_Apple.mm
