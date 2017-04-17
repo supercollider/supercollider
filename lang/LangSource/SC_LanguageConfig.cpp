@@ -255,7 +255,7 @@ inline const bool SC_LanguageConfig::addPath(DirVector& vec, const Path& path)
 
 inline const bool SC_LanguageConfig::removePath(DirVector& vec, const Path& path)
 {
-	const DirVector::iterator end = std::remove(vec.begin(), vec.end(), path);
+	const DirVector::iterator& end = std::remove(vec.begin(), vec.end(), path);
 	const bool removed = end != vec.end();
 	vec.erase(end, vec.end());
 	return removed;
