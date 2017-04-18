@@ -736,7 +736,6 @@ GraphDef* GraphDef_LoadDir(World *inWorld, const char *dirname, GraphDef *inList
 				cout << "Processing" << endl;
 #endif
 				inList = GraphDef_Load(inWorld, path.c_str(), inList);
-				return inList;
 			} else {
 #ifdef DEBUG_SCFS
 				cout << "File was not .scsyndef" << endl;
