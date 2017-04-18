@@ -21,6 +21,7 @@
 // ********** this version for mac. for windows and linux see UIUGens.cpp
 
 #include <SC_Lock.h>
+#include <atomic>
 
 #import <AppKit/AppKit.h>
 #include <unistd.h>

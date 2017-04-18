@@ -21,6 +21,7 @@
 // ********** this version for windows and linux. for mac see UIUGens.mm
 
 #include <SC_Lock.h>
+#include <atomic>
 
 #include <atomic>
 
