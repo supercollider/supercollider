@@ -36,6 +36,8 @@ static void doLoadFactories ()
   QC_ADD_FACTORY( QcCheckBox );
   QC_ADD_FACTORY( QcListWidget );
   QC_ADD_FACTORY( QcPopUpMenu );
+  QC_ADD_FACTORY( QcWMenu );
+  QC_ADD_FACTORY( QcWMenuBar );
   QC_ADD_FACTORY( QcButton );
   QC_ADD_FACTORY( QcCustomPainted );
   QC_ADD_FACTORY( QcFileDialog );

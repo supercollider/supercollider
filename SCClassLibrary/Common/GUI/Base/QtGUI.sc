@@ -45,6 +45,8 @@ QtGUI {
 	*listView { ^QListView }
 	*treeView { ^QTreeView }
 	*popUpMenu { ^QPopUpMenu }
+	*wMenu { ^QWMenu }
+	*wMenuBar { ^QWMenuBar }
 	*textView { ^QTextView; }
 
 	*freqScope     { ^PlusFreqScopeWindow }
