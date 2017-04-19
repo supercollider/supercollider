@@ -379,7 +379,7 @@ code::
 subsection:: Searching strings
 
 method::find
-Returns the index of the string in the receiver, or nil if not found. If strong::ignoreCase:: is true, find makes no difference between uppercase and lowercase letters. The strong::offset:: is the point in the string where the search begins. string may be a String or a link::Classes/Char::.
+Returns the index of the string in the receiver, or nil if not found. If strong::ignoreCase:: is true, find makes no difference between uppercase and lowercase letters. The strong::offset:: is the point in the string where the search begins.
 code::
 "These are several words".find("are").postln;
 "These are several words".find("fish").postln;
@@ -446,7 +446,7 @@ code::
 
 
 method::replace
-Like link::#-tr::, but with Strings as well as Chars as arguments.
+Like link::#-tr::, but with strings as arguments.
 code::
 "Here are several words which are fish".replace("are", "were");
 ::
@@ -599,6 +599,7 @@ Example:
 code::
 "ls Help".unixCmd;
 "echo one; sleep 1; echo two; sleep 1".unixCmd { |res, pid| [\done, res, pid].postln };
+("ditto -f $(mdfind -onlyin /Volumes/ *.scd) $(mkdir ~/Desktop/SupercolliderFilesInMySystemBackup)").unixCmd
 ::
 
 method::unixCmdGetStdOut
@@ -622,6 +623,7 @@ note:: On macOS, the string is incorporated into a temporary script file and exe
 Example:
 code::
 "echo ---------Hello delightful SuperCollider user----------".runInTerminal;
+("ditto -f $(mdfind -onlyin /Volumes/ *.scd) $(mkdir ~/Desktop/SupercolliderFilesInMySystemBackup)").runInTerminal
 ::
 
 method::setenv
