@@ -32,4 +32,5 @@ code::
 
 // scope input; silent output
 { Amplitude.kr(SoundIn.ar(0)); }.scope;
+
 ::
