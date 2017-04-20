@@ -568,6 +568,9 @@ int prEvent_IsRest(struct VMGlobals *g, int numArgsPushed)
 		PyrClass *restMetaClass = getsym("Meta_Rest")->u.classobj;
 		PyrObject *array = slotRawObject(arraySlot);
 		PyrSlot *slot = array->slots + 1;  // scan only the odd items
+		PyrSymbol *emptySym = getsym("");
+		PyrSymbol *rSym = getsym("r");
+		PyrSymbol *slotSym;
 		int32 size = array->size;
 		int32 i;
 
@@ -575,6 +578,15 @@ int prEvent_IsRest(struct VMGlobals *g, int numArgsPushed)
 			if (isKindOfSlot(slot, restClass) || isKindOfSlot(slot, restMetaClass)) {
 				SetBool(g->sp, 1);
 				return errNone;
+			} else {
+				// slotSymbolVal nonzero return = not a symbol;
+				// non-symbols don't indicate rests, so, ignore them.
+				if(!slotSymbolVal(slot, &slotSym)) {
+					if(slotSym == emptySym || slotSym == rSym) {
+						SetBool(g->sp, 1);
+						return errNone;
+					}
+				}
 			}
 		}
 	} else {

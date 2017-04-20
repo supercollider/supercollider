@@ -49,12 +49,7 @@ Event : Environment {
 
 	isRest {
 		_Event_IsRest
-		^this[\type] == \rest or: {
-			this.use {
-				parent ?? { parent = defaultParentEvent };
-				~detunedFreq.value.isRest
-			}
-		}
+		^this[\type] == \rest
 	}
 
 	// node watcher interface
