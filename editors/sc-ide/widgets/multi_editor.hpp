@@ -90,6 +90,8 @@ public:
 
         CopyLineUp,
         CopyLineDown,
+        CopyLine,
+        KillLine,
         MoveLineUp,
         MoveLineDown,
 	DeleteWord,

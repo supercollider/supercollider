@@ -472,6 +472,20 @@ void MultiEditor::createActions()
     mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(copyLineDown()));
     settings->addAction( action, "editor-copy-line-down", editorCategory);
 
+    mActions[CopyLine] = action = new QAction(
+        QIcon::fromTheme("edit-copyline"), tr("Copy current line to clipboard"), this);
+    action->setShortcut(tr("Ctrl+Y", "Copy Line"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(copyLine()));
+    settings->addAction(action, "editor-copy-line", editorCategory);
+
+    mActions[KillLine] = action = new QAction(
+        QIcon::fromTheme("edit-killline"), tr("Remove the current line"), this);
+    action->setShortcut(tr("Ctrl+K", "Remove Line"));
+    action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
+    mEditorSigMux->connect(action, SIGNAL(triggered()), SLOT(killLine()));
+    settings->addAction(action, "editor-kill-line", editorCategory);
+
     mActions[MoveLineUp] = action = new QAction(
         QIcon::fromTheme("edit-movelineup"), tr("Move Line Up"), this);
     action->setShortcut(tr("Ctrl+Shift+Up", "Move Line Up"));
@@ -717,6 +731,9 @@ void MultiEditor::createActions()
     addAction(mActions[ToggleOverwriteMode]);
     addAction(mActions[CopyLineUp]);
     addAction(mActions[CopyLineDown]);
+    addAction(mActions[CopyLine]);
+    addAction(mActions[KillLine]);
+    addAction(mActions[CopyLineDown]);
     addAction(mActions[MoveLineUp]);
     addAction(mActions[MoveLineDown]);
     addAction(mActions[DeleteWord]);
@@ -744,6 +761,8 @@ void MultiEditor::updateActions()
     mActions[ToggleOverwriteMode]->setEnabled( editor );
     mActions[CopyLineUp]->setEnabled( editor );
     mActions[CopyLineDown]->setEnabled( editor );
+    mActions[CopyLine]->setEnabled( editor );
+    mActions[KillLine]->setEnabled( editor );
     mActions[MoveLineUp]->setEnabled( editor );
     mActions[MoveLineDown]->setEnabled( editor );
     mActions[DeleteWord]->setEnabled( editor );

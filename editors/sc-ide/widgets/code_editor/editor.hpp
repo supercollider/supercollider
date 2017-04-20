@@ -84,6 +84,8 @@ public slots:
     void toggleOverwriteMode();
     void copyLineUp();
     void copyLineDown();
+    void copyLine();
+    void killLine();
     void moveLineUp();
     void moveLineDown();
     void deleteWord();
@@ -109,6 +111,7 @@ protected:
     void zoomFont(int steps);
 
     void copyUpDown(bool up);
+    void copyKillLine(bool);
     void moveLineUpDown(bool up);
     void gotoEmptyLineUpDown(bool up);
 
