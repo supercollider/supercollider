@@ -79,7 +79,7 @@ Pattern : AbstractFunction {
 	drop { arg n; ^Pdrop(n, this) }
 	stutter { arg n; ^Pstutter(n, this) }
 	finDur { arg dur, tolerance = 0.001; ^Pfindur(dur, this, tolerance) }
-	fin { arg n; ^Pfin(n, this) }
+	fin { arg n = 1; ^Pfin(n, this) }
 
 	trace { arg key, printStream, prefix=""; ^Ptrace(this, key, printStream, prefix) }
 	differentiate { ^Pdiff(this) }
