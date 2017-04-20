@@ -276,24 +276,6 @@ FuncStream : Stream {
 	storeArgs { ^[nextFunc, resetFunc] }
 }
 
-FuncStream1 : FuncStream {
-	var <>repeats = 1, count = 0;
-	*new { |nextFunc, resetFunc, repeats = 1|
-		^super.new(nextFunc, resetFunc).repeats_(repeats)
-	}
-	next { arg inval;
-		count = count + 1;
-		^if(count <= repeats) {
-			envir.use({ nextFunc.value(inval).processRest(inval) })
-		}
-	}
-	reset {
-		count = 0;
-		^envir.use({ resetFunc.value })
-	}
-	storeArgs { ^[nextFunc, resetFunc, repeats] }
-}
-
 StreamClutch : Stream {
 	var <>stream, <>connected, value, >reset=true;
 
