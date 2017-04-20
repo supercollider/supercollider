@@ -657,19 +657,18 @@ Pprotect : FilterPattern {
 // access a key from the input event
 Pkey : Pattern {
 	var	<>key, <>repeats;
+
 	*new { |key, repeats|
 		^super.newCopyArgs(key, repeats)
 	}
-	storeArgs { ^[key] }
-		// avoid creating a routine
+
+	storeArgs { ^[key, repeats] }
+
 	asStream {
 		var	keystream = key.asStream;
-		var func = { |inevent| inevent !? { inevent[keystream.next(inevent)] } };
-		^if(repeats.isNil) {
-			FuncStream(func)
-		} {
-			FuncStream1(func, nil, repeats)
-		}
+		// avoid creating a routine
+		var stream = FuncStream({ |inevent| inevent !? { inevent[keystream.next(inevent)] } });
+		^if(repeats.isNil) { stream } { stream.fin(repeats) }
 	}
 }
 
