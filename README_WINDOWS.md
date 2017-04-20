@@ -3,30 +3,27 @@ Welcome to Supercollider 3.8 for Windows!
 
 **IMPORTANT NOTE**:
 
-This Readme has two blocks: "Installing SuperCollider", and "Building
-SuperCollider for Windows". The first block provides basic information to get
-going, and also tries to introduce to SC speak on the way. The second block
-is divided into two blocks again, "Quick Steps" and "Walkthroughs". The Quick Steps
-contain the essentials for a successful build, the "Walkthroughs" are more
-tutorial-like and have unexperienced developers in mind. They are not required
+This Readme has two sections: "Installing SuperCollider", and "Building
+SuperCollider for Windows". The first section provides basic information to get
+going, and also introduces some common SuperCollider terminology. The second section
+is subdivided into two sections, "Quick Steps" and "Walkthroughs". Quick Steps
+contains the essentials for a successful build, the "Walkthroughs" are more
+tutorial-like and written for less experienced developers. They are not required
 reading to build the Windows version of SC. Furthermore the individual chapters
-in "Walkthroughs" are not expected to be read consecutively, they might appear
+in "Walkthroughs" are not expected to be read consecutively; they might appear
 quite repetitive if done so.
-
-February 2017
-
 
 Table of contents
 -----------------
 
 - Introduction
-- *Installing SuperCollider*
+- **Installing SuperCollider**
   - System requirements
   - Using the SuperCollider IDE
   - Using SuperCollider in command line mode
   - Configuration- and support files
   - Extensions and Quarks
-- *Building SuperCollider for Windows*
+- **Building SuperCollider for Windows**
   - Build Basics
   - Quick Steps
     - Required software
@@ -169,7 +166,7 @@ Using SuperCollider in command line mode
 
 *Note*: this is currently broken (Nov 2016, SC3.8). If you are using the 32-bit
 version, you can get output in emergency situations: either keep your finger on
-the key for about halph a second or type each keystroke twice for it to
+the key for about half a second or type each keystroke twice for it to
 register. You can also send text files to sclang by passing the filename as
 argument to `sclang`.
 
@@ -272,7 +269,7 @@ Building SuperCollider for Windows
 Build Basics
 ------------
 
-If you can't be bothered and have to get building _immediately_ (sigh...),
+If you can't be bothered and have to get building immediately,
 then the quickest path through this material is:
 
 1. Pick a build tool: VS 2013, native MinGW, or MSYS2
@@ -318,45 +315,45 @@ install these packages manually. When you are given the option, make sure to
 choose the 32-bit or 64-bit version of each library as appropriate. For MSYS2,
 see the instructions below.
 
-- *[Git][Git]* for Windows
-- *[CMake][cmake]*: 3.5.2 with native minGW; otherwise, latest version
+- **[Git][Git]** for Windows
+- **[CMake][cmake]**: 3.5.2 with native minGW; otherwise, latest version
 - The SuperCollider source code
 - Build tools: one of
-    - MinGW as bundled with *[Qt 5.5.1][Qt55]* (distribution 'mingw492')
-    - *[MSYS2+MinGW][MSYS2]*
-    - *[Visual Studio 12 2013][VS2013]*: note that you will need to join Visual
+    - MinGW as bundled with **[Qt 5.5.1][Qt55]** (distribution 'mingw492')
+    - **[MSYS2+MinGW][MSYS2]**
+    - **[Visual Studio 12 2013][VS2013]**: note that you will need to join Visual
         Studio Team Services (for free) in order to download this older version
 - Required Libraries
-    - *[Qt][Qt]* >= 5.5.1. The current version, 5.8, works with MSYS2. For
+    - **[Qt][Qt]** >= 5.5.1. The current version, 5.8, works with MSYS2. For
         Visual Studio and native MinGW, you must use 5.5.1 as the WebKit
         component of Qt, which SuperCollider's IDE requires, was dropped in 5.6.
 
         If you're not using MSYS2, use the official archived download, and
         choose from the following packages:
             - msvc2013_64, for a 64-bit Visual Studio build
-            - msvc2013_32, for a 32-bit Visual Studio build
-            - mingw492_32, for a native MinGW build
+            - msvc2013, for a 32-bit Visual Studio build
+            - mingw492 (32-bit), for a MinGW build
 
-    - *[libsndfile][libsndfile]* >= 1.0.25
-    - The *[Windows SDK][Windows 10 SDK]* for your edition of Windows
+    - **[libsndfile][libsndfile]** >= 1.0.25
+    - The **[Windows SDK][Windows 10 SDK]** for your edition of Windows
 - Recommended Libraries
-    - *[fftw][fftw]* >= 3.3.4. See the instructions below on arranging the
+    - **[fftw][fftw]** >= 3.3.4. See the instructions below on arranging the
         libraries if you are making a Visual Studio or native MinGW build.
-    - *[Asio SDK][asiosdk]* >= 2.3, for Asio support in PortAudio
+    - **[Asio SDK][asiosdk]** >= 2.3, for Asio support in PortAudio
 - Optional Libraries
-    - *[readline][readline]* = 5.0.1. More recent versions found in MinGW
+    - **[readline][readline]** = 5.0.1. More recent versions found in MinGW
         distributions do *not* currently work in *native* MinGW builds. In MSYS
         builds more recent (and 64-bit) versions cann be used, see however the
         restrictions mentioned in the introductory note of "Using SC on the
         command line". Readline cannot be used at all in Visual Studio builds.
-    - *DirectX SDK* [v.9][dx9sdk] for VS build. (Direct Sound support in Portaudio)
-    - *[NSIS][nsis]*, if you want to create a binary SC installer (add the
+    - **DirectX SDK** [v.9][dx9sdk] for VS build. (Direct Sound support in Portaudio)
+    - **[NSIS][nsis]**, if you want to create a binary SC installer (add the
         binary `makensis` to PATH)
 - Convenience
-    - a Unix line-ending friendly text editor like *[Atom][atomeditor]* or
-        *[Notepad++][notepad++]*. There are SuperCollider packages available
+    - a Unix line-ending friendly text editor like **[Atom][atomeditor]** or
+        **[Notepad++][notepad++]**. There are SuperCollider packages available
         for Atom; we recommend using that.
-    - *[7-zip][7-zip]* to extract .tar and .gz format archives
+    - **[7-zip][7-zip]** to extract .tar and .gz format archives
 
 #### Getting packages with MSYS2
 
@@ -1573,7 +1570,7 @@ software publicly and freely available.
 [cmake]: http://www.cmake.org/download/
 [conemu]: https://conemu.github.io/ (free console emulator)
 [dependency walker]: http://www.dependencywalker.com/ (inspect missing library errors)
-[dx9sdk]: http://www.microsoft.com/en-us/download/details.aspx?id=6812 (MS DirectX 9 SDK (June 2010) for VS build)
+[dx9sdk]: http://www.microsoft.com/en-us/download/details.aspx?id=6812 (MS DirectX 9 SDK (June 2010\) for VS build)
 [fftw]: http://www.fftw.org/install/windows.html
 [Git]: http://git-scm.com/download/win (Git for Windows)
 [libsndfile]: http://www.mega-nerd.com/libsndfile/

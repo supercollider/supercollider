@@ -21,10 +21,17 @@ ProxySynthDef : SynthDef {
 			if(output.isKindOf(UGen) and: { output.synthDef != UGen.buildSynthDef }) {
 				Error("Cannot share UGens between NodeProxies:" + output).throw
 			};
-			// protect from accidentally wrong array shapes
+
+			// protect from accidentally returning wrong array shapes
 			if(output.containsSeqColl) {
-				"Synth output should be a flat array.\n%\nFlattened to: %\nSee NodeProxy helpfile:routing\n\n".format(output, output.flat).warn;
-				output = output.flat;
+				// try first unbubble singletons, these are ok
+				output = output.collect { |each| each.unbubble };
+				// otherwise flatten, but warn
+				if(output.containsSeqColl) {
+					"Synth output should be a flat array.\n%\nFlattened to: %\n"
+					"See NodeProxy helpfile:routing\n\n".format(output, output.flat).warn;
+					output = output.flat;
+				};
 			};
 
 			output = output ? 0.0;
