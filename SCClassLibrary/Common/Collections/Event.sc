@@ -11,10 +11,13 @@ Event : Environment {
 		^Event.new(8, nil, defaultParentEvent, true);
 	}
 	*silent { |dur(1.0), inEvent|
+		var delta;
 		if(inEvent.isNil) { inEvent = Event.new }
 		{ inEvent = inEvent.copy };
-		inEvent.put(\isRest, true).put(\dur, dur).put(\parent, defaultParentEvent)
-		.put(\delta, dur * (inEvent[\stretch] ? 1));
+		delta = dur * (inEvent[\stretch] ? 1);
+		if(dur.isRest.not) { dur = Rest(dur) };
+		inEvent.put(\dur, dur).put(\parent, defaultParentEvent)
+		.put(\delta, delta);
 		^inEvent
 	}
 	*addEventType { arg type, func;
@@ -44,15 +47,12 @@ Event : Environment {
 		//		^this.delta
 	}
 
-	// this[\isRest] may be nil
 	isRest {
-		^this[\isRest] == true
-		or: { this[\type] == \rest
-			or: {
-				this.use {
-					parent ?? { parent = defaultParentEvent };
-					~detunedFreq.value.isRest
-				}
+		_Event_IsRest
+		^this[\type] == \rest or: {
+			this.use {
+				parent ?? { parent = defaultParentEvent };
+				~detunedFreq.value.isRest
 			}
 		}
 	}

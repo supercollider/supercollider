@@ -268,7 +268,7 @@ FuncStream : Stream {
 		^super.new.nextFunc_(nextFunc).resetFunc_(resetFunc).envir_(currentEnvironment)
 	}
 	next { arg inval;
-		^envir.use({ nextFunc.value(inval).processRest(inval) })
+		^envir.use({ nextFunc.value(inval) })
 	}
 	reset {
 		^envir.use({ resetFunc.value })
