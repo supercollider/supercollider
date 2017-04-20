@@ -49,7 +49,7 @@ Event : Environment {
 
 	isRest {
 		_Event_IsRest
-		^this[\type] == \rest
+		^false
 	}
 
 	// node watcher interface

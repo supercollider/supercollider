@@ -44,6 +44,8 @@ int class_identdict_index, class_identdict_maxsubclassindex;
 PyrClass *class_identdict;
 PyrSymbol *s_proto, *s_parent;
 PyrSymbol *s_delta, *s_dur, *s_stretch;
+PyrSymbol *s_type, *s_rest, *s_empty, *s_r;
+PyrClass *class_rest, *class_metarest;
 
 #define HASHSYMBOL(sym) (sym >> 5)
 
@@ -564,27 +566,40 @@ int prEvent_IsRest(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *arraySlot = dictslots + ivxIdentDict_array;
 
 	if (isKindOfSlot(arraySlot, class_array)) {
-		PyrClass *restClass = getsym("Rest")->u.classobj;
-		PyrClass *restMetaClass = getsym("Meta_Rest")->u.classobj;
-		PyrObject *array = slotRawObject(arraySlot);
-		PyrSlot *slot = array->slots + 1;  // scan only the odd items
-		PyrSymbol *emptySym = getsym("");
-		PyrSymbol *rSym = getsym("r");
-		PyrSymbol *slotSym;
-		int32 size = array->size;
-		int32 i;
+		PyrSlot key, typeSlot;
+		PyrSymbol *typeSym;
+		// test 'this[\type] == \rest' first
+		SetSymbol(&key, s_type);
+		identDict_lookup(slotRawObject(g->sp), &key, calcHash(&key), &typeSlot);
+		if(!slotSymbolVal(&typeSlot, &typeSym) && typeSym == s_rest) {
+			SetBool(g->sp, 1);
+			return errNone;
+		} else {
+			PyrObject *array = slotRawObject(arraySlot);
+			PyrSymbol *slotSym;
+			PyrSlot *slot;
+			int32 size = array->size;
+			int32 i;
 
-		for (i = 1; i < size; i += 2, slot += 2) {
-			if (isKindOfSlot(slot, restClass) || isKindOfSlot(slot, restMetaClass)) {
-				SetBool(g->sp, 1);
-				return errNone;
-			} else {
-				// slotSymbolVal nonzero return = not a symbol;
-				// non-symbols don't indicate rests, so, ignore them.
-				if(!slotSymbolVal(slot, &slotSym)) {
-					if(slotSym == emptySym || slotSym == rSym) {
-						SetBool(g->sp, 1);
-						return errNone;
+			slot = array->slots + 1;  // scan only the odd items
+
+			for (i = 1; i < size; i += 2, slot += 2) {
+				if (isKindOfSlot(slot, class_rest)
+				    || isKindOfSlot(slot, class_metarest)
+				) {
+					SetBool(g->sp, 1);
+					return errNone;
+				} else {
+					// slotSymbolVal nonzero return = not a symbol;
+					// non-symbols don't indicate rests, so, ignore them.
+					if(!slotSymbolVal(slot, &slotSym)) {
+						if(slotSym == s_empty
+							|| slotSym == s_r
+							|| slotSym == s_rest
+						) {
+							SetBool(g->sp, 1);
+							return errNone;
+						}
 					}
 				}
 			}
@@ -832,4 +847,10 @@ void initPatterns()
 	s_dur = getsym("dur");
 	s_stretch = getsym("stretch");
 
+	s_type = getsym("type");
+	s_rest = getsym("rest");
+	s_empty = getsym("");
+	s_r = getsym("r");
+	class_rest = getsym("Rest")->u.classobj;
+	class_metarest = getsym("Meta_Rest")->u.classobj;
 }
