@@ -160,6 +160,7 @@ public slots:
 
     void showNextDocument();
     void showPreviousDocument();
+    void showLastDocument();
     void switchDocument();
 
     void splitHorizontally() { split(Qt::Horizontal); }
