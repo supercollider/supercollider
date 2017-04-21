@@ -670,6 +670,16 @@ Pkey : Pattern {
 		var stream = FuncStream({ |inevent| inevent !? { inevent[keystream.next(inevent)] } });
 		^if(repeats.isNil) { stream } { stream.fin(repeats) }
 	}
+
+	embedInStream { |inval|
+		var outval, keystream = key.asStream;
+		repeats.value(inval).do {
+			outval = inval[keystream.next(inval)];
+			if(outval.isNil) { ^inval };
+			inval = outval.yield;
+		};
+		^inval
+	}
 }
 
 Pif : Pattern {
