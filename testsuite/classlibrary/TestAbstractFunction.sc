@@ -111,6 +111,12 @@ TestAbstractFunction : UnitTest {
 
 		this.assert((degree: \).isRest == true, "event with an empty symbol as dur should return true for isRest");
 
+		this.assert((x: \).isRest == true, "event with an empty symbol in arbitrary key should return true for isRest");
+
+		this.assert((x: \r).isRest == true, "event with an 'r' symbol in arbitrary key should return true for isRest");
+
+		this.assert((x: \rest).isRest == true, "event with an 'rest' symbol in arbitrary key should return true for isRest");
+
 		// this.assert((degree: Rest).isRest)  // currently NOT working
 
 	}
