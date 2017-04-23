@@ -832,11 +832,11 @@ void DocumentManager::handleSetDocTextScRequest( const QString & data )
             if ( !doc.IsSequence() )
                 return;
 
-            std::string id     = doc[0].as<std::string>();
-            std::string funcID = doc[1].as<std::string>();
-            std::string text   = doc[2].as<std::string>();
-            int start          = doc[3].as<int>();
-            int range          = doc[4].as<int>();
+            // Parse funcID (doc[1]) later, if it was not null.
+            std::string id   = doc[0].as<std::string>();
+            std::string text = doc[2].as<std::string>();
+            int start        = doc[3].as<int>();
+            int range        = doc[4].as<int>();
 
             Document *document = documentForId(id.c_str());
             if(document) {
@@ -851,8 +851,12 @@ void DocumentManager::handleSetDocTextScRequest( const QString & data )
                     connect(document->textDocument(), SIGNAL(contentsChange(int, int, int)), this, SLOT(updateCurrentDocContents(int, int, int)));
                 }
 
-                QString command = QStringLiteral("Document.executeAsyncResponse(\'%1\')").arg(funcID.c_str());
-                Main::evaluateCode ( command, true );
+                // Only execute a call if a function name was passed.
+                if (!doc[1].IsNull()) {
+                    std::string funcID = doc[1].as<std::string>("");
+                    QString command = QStringLiteral("Document.executeAsyncResponse(\'%1\')").arg(funcID.c_str());
+                    Main::evaluateCode ( command, true );
+                }
             }
         }
     } catch(...) {
