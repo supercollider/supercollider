@@ -40,8 +40,17 @@ Operand(Operand(Operand(1))) == Operator(1)
 
 INSTANCEMETHODS::
 
+PRIVATE:: composeBinaryOp, composeNAryOp, composeUnaryOp, performBinaryOpOnComplex, performBinaryOpOnSeqColl, performBinaryOpOnSignal, performBinaryOpOnSimpleNumber, reverseComposeBinaryOp
+
 METHOD:: value
 Set or return the current value.
+
+code::
+a = Operand(2) ** 8;
+a.value; // 256
+a.value = 78;
+a.value; // 78
+::
 
 METHOD:: ==
 argument:: obj
@@ -51,9 +60,16 @@ Operand(1) == Operand(1);
 Operand(1) + 2 == Operand(3);
 ::
 
+METHOD:: hash
+Two instances with the same value return the same hash value.
+code::
+Set[Operand(1), Operand(1)] == Set[Operand(1)] // true
+::
+
 METHOD:: dereferenceOperand
 This method is called to avoid nesting. You may override it in subclasses to perform actions on resulting values.
 code::Operand(Operand(1)) // Operand(1)::.
+
 
 
 EXAMPLES::
