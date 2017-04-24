@@ -60,7 +60,7 @@ method::getDouble
 read eight bytes and return as a link::Classes/Float::.
 
 method::getPascalString
-Reads the next byte as an unsigned integer N, then reads the following N bytes and returns them as a link::Classes/String:.
+Reads the next byte as an unsigned integer N, then reads the following N bytes and returns them as a link::Classes/String::.
 
 method::putChar
 write a link::Classes/Char:: as one byte.
