@@ -95,7 +95,7 @@ LPCTestUtils {
 	const <maxline = 4096;
 
 	// Evaluates all strings in the language L = S^n, where S is the alphabet and
-  // n is the given string length `len`. For x in L, the string evaluated is
+	// n is the given string length `len`. For x in L, the string evaluated is
 	// {prefix}{x}{suffix}. Writes the results to a file. Note that the alphabet
 	// is sorted before beginning to ensure lexicographical order.
 	*evaluateAllStrings {
