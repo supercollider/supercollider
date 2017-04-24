@@ -118,15 +118,17 @@ TestAbstractFunction : UnitTest {
 		this.assert((x: \rest).isRest == true, "event with an 'rest' symbol in arbitrary key should return true for isRest");
 
 		#[\dur, \degree, \paraplui, \type].do { |key|
-			var a, b, c;
+			var a, b, c, f;
 
 			a = Pbind(key, Pseries());
 			b = Pcollect({ |e| e[key] = Rest(e[key]) }, a);
 			c = Pbindf(b, key, Pfunc { |e| e[key].value });
 
-			this.assert(Pevent(b).asStream.nextN(8).every(_.isRest), "a rest in key % should be a rest".format(key));
-			this.assertEquals(Pevent(a).asStream.nextN(8), Pevent(c).asStream.nextN(8),
-				"")
+			f = { |p| Pevent(Pmul(key, 2, p)) };
+
+			this.assert(Pevent(b).asStream.nextN(8).every(_.isRest), "a rest in key '%' should be a rest".format(key));
+			this.assertEquals(f.(a).asStream.nextN(8), f.(c).asStream.nextN(8),
+				"rest values remain intact for key '%' after binary op".format(key));
 		};
 
 	}
