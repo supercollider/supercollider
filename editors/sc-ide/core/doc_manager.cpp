@@ -36,12 +36,6 @@
 
 #include <yaml-cpp/yaml.h>
 
-#ifdef SC_DEBUG_DOC_MANAGER
-#   include <iostream>
-    using std::cerr;
-    using std::endl;
-#endif
-
 using namespace ScIDE;
 
 Document::Document(bool isPlainText, const QByteArray & id,
@@ -778,10 +772,8 @@ void DocumentManager::handleNewDocScRequest( const QString & data )
             syncLangDocument(document);
             Q_EMIT( opened(document, 0, 0) );
         }
-    } catch(std::exception const& e) {
-#ifdef SC_DEBUG_DOC_MANAGER
-        cerr <<  "DocumentManager::" << __func__ << ": could not handle request: " << e.what() << endl;
-#endif
+    } catch (std::exception const& e) {
+        qWarning() << "DocumentManager::" << __func__ << ": could not handle request:" << e.what();
         return;
     }
 }
@@ -802,10 +794,8 @@ void DocumentManager::handleOpenFileScRequest( const QString & data )
             // we don't need to sync with lang in this case
             open(QString(path.c_str()), position, selectionLength, true, id.c_str(), false);
         }
-    } catch(std::exception const& e) {
-#ifdef SC_DEBUG_DOC_MANAGER
-        cerr <<  "DocumentManager::" << __func__ << ": could not handle request: " << e.what() << endl;
-#endif
+    } catch (std::exception const& e) {
+        qWarning() << "DocumentManager::" << __func__ << ": could not handle request:" << e.what() << endl;
         return;
     }
 }
@@ -831,10 +821,8 @@ void DocumentManager::handleGetDocTextScRequest( const QString & data )
                 Main::evaluateCode ( command, true );
             }
         }
-    } catch(std::exception const& e) {
-#ifdef SC_DEBUG_DOC_MANAGER
-        cerr <<  "DocumentManager::" << __func__ << ": could not handle request: " << e.what() << endl;
-#endif
+    } catch (std::exception const& e) {
+        qWarning() << "DocumentManager::" << __func__ << ": could not handle request:" << e.what() << endl;
         return;
     }
 }
@@ -874,10 +862,8 @@ void DocumentManager::handleSetDocTextScRequest( const QString & data )
                 }
             }
         }
-    } catch(std::exception const& e) {
-#ifdef SC_DEBUG_DOC_MANAGER
-        cerr <<  "DocumentManager::" << __func__ << ": could not handle request: " << e.what() << endl;
-#endif
+    } catch (std::exception const& e) {
+        qWarning() << "DocumentManager::" << __func__ << ": could not handle request:" << e.what();
         return;
     }
 }
@@ -901,10 +887,8 @@ void DocumentManager::handleSetDocSelectionScRequest( const QString & data )
                 }
             }
         }
-    } catch(std::exception const& e) {
-#ifdef SC_DEBUG_DOC_MANAGER
-        cerr <<  "DocumentManager::" << __func__ << ": could not handle request: " << e.what() << endl;
-#endif
+    } catch (std::exception const& e) {
+        qWarning() << "DocumentManager::" << __func__ << ": could not handle request:" << e.what();
         return;
     }
 }
@@ -928,10 +912,8 @@ void DocumentManager::handleSetDocEditableScRequest( const QString & data )
                 }
             }
         }
-    } catch(std::exception const& e) {
-#ifdef SC_DEBUG_DOC_MANAGER
-        cerr <<  "DocumentManager::" << __func__ << ": could not handle request: " << e.what() << endl;
-#endif
+    } catch (std::exception const& e) {
+        qWarning() << "DocumentManager::" << __func__ << ": could not handle request:" << e.what();
         return;
     }
 }
@@ -952,10 +934,8 @@ void DocumentManager::handleSetDocPromptsToSaveScRequest( const QString & data )
                 document->setPromptsToSave(promptsToSave);
             }
         }
-    } catch(std::exception const& e) {
-#ifdef SC_DEBUG_DOC_MANAGER
-        cerr <<  "DocumentManager::" << __func__ << ": could not handle request: " << e.what() << endl;
-#endif
+    } catch (std::exception const& e) {
+        qWarning() << "DocumentManager::" << __func__ << ": could not handle request:" << e.what();
         return;
     }
 }
@@ -974,10 +954,8 @@ void DocumentManager::handleSetCurrentDocScRequest( const QString & data )
             if(document)
                 Q_EMIT( showRequest(document) );
         }
-    } catch(std::exception const& e) {
-#ifdef SC_DEBUG_DOC_MANAGER
-        cerr <<  "DocumentManager::" << __func__ << ": could not handle request: " << e.what() << endl;
-#endif
+    } catch (std::exception const& e) {
+        qWarning() << "DocumentManager::" << __func__ << ": could not handle request:" << e.what();
         return;
     }
 }
@@ -999,10 +977,8 @@ void DocumentManager::handleRemoveDocUndoScRequest( const QString & data )
                 textDoc->setModified(false);
             }
         }
-    } catch(std::exception const& e) {
-#ifdef SC_DEBUG_DOC_MANAGER
-        cerr <<  "DocumentManager::" << __func__ << ": could not handle request: " << e.what() << endl;
-#endif
+    } catch (std::exception const& e) {
+        qWarning() << "DocumentManager::" << __func__ << ": could not handle request:" << e.what();
         return;
     }
 }
@@ -1021,10 +997,8 @@ void DocumentManager::handleCloseDocScRequest( const QString & data )
                 close(document);
             }
         }
-    } catch(std::exception const& e) {
-#ifdef SC_DEBUG_DOC_MANAGER
-        cerr <<  "DocumentManager::" << __func__ << ": could not handle request: " << e.what() << endl;
-#endif
+    } catch (std::exception const& e) {
+        qWarning() << "DocumentManager::" << __func__ << ": could not handle request:" << e.what();
         return;
     }
 }
@@ -1045,10 +1019,8 @@ void DocumentManager::handleSetDocTitleScRequest( const QString & data )
                 Q_EMIT(titleChanged(document));
             }
         }
-    } catch(std::exception const& e) {
-#ifdef SC_DEBUG_DOC_MANAGER
-        cerr <<  "DocumentManager::" << __func__ << ": could not handle request: " << e.what() << endl;
-#endif
+    } catch (std::exception const& e) {
+        qWarning() << "DocumentManager::" << __func__ << ": could not handle request:" << e.what();
         return;
     }
 }
@@ -1069,10 +1041,8 @@ bool DocumentManager::parseActionEnabledRequest( const QString & data, std::stri
 
             return true;
         }
-    } catch(std::exception const& e) {
-#ifdef SC_DEBUG_DOC_MANAGER
-        cerr <<  "DocumentManager::" << __func__ << ": could not handle request: " << e.what() << endl;
-#endif
+    } catch (std::exception const& e) {
+        qWarning() << "DocumentManager::" << __func__ << ": could not handle request:" << e.what();
     }
     return false;
 }
@@ -1115,10 +1085,8 @@ void DocumentManager::handleEnableGlobalKeyDownScRequest( const QString & data )
             bool enabled = doc[0].as<bool>(enabled);
             mGlobalKeyDownEnabled = enabled;
         }
-    } catch(std::exception const& e) {
-#ifdef SC_DEBUG_DOC_MANAGER
-        cerr <<  "DocumentManager::" << __func__ << ": could not handle request: " << e.what() << endl;
-#endif
+    } catch (std::exception const& e) {
+        qWarning() << "DocumentManager::" << __func__ << ": could not handle request:" << e.what();
     }
 }
 
@@ -1134,10 +1102,8 @@ void DocumentManager::handleEnableGlobalKeyUpScRequest( const QString & data )
 
             mGlobalKeyUpEnabled = enabled;
         }
-    } catch(std::exception const& e) {
-#ifdef SC_DEBUG_DOC_MANAGER
-        cerr <<  "DocumentManager::" << __func__ << ": could not handle request: " << e.what() << endl;
-#endif
+    } catch (std::exception const& e) {
+        qWarning() << "DocumentManager::" << __func__ << ": could not handle request:" << e.what();
     }
 }
 
@@ -1216,10 +1182,8 @@ void DocumentManager::handleEnableTextMirrorScRequest( const QString & data )
                 Main::scProcess()->post(warning);
             }
         }
-    } catch(std::exception const& e) {
-#ifdef SC_DEBUG_DOC_MANAGER
-        cerr <<  "DocumentManager::" << __func__ << ": could not handle request: " << e.what() << endl;
-#endif
+    } catch (std::exception const& e) {
+        qWarning() << "DocumentManager::" << __func__ << ": could not handle request:" << e.what();
     }
 }
 
