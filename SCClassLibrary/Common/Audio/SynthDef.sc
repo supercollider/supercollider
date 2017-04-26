@@ -585,6 +585,7 @@ SynthDef {
 	}
 
 	doSend { |server, completionMsg|
+		var filename, options, command;
 		var bytes = this.asBytes;
 		if (bytes.size < (65535 div: 4)) {
 			server.sendMsg("/d_recv", bytes, completionMsg)
@@ -594,7 +595,22 @@ SynthDef {
 				this.writeDefFile(synthDefDir);
 				server.sendMsg("/d_load", synthDefDir ++ name ++ ".scsyndef", completionMsg)
 			} {
-				"SynthDef % too big for sending.".format(name).warn;
+				options = server.options;
+				if( options.sshSynthDefs and: { options.sshRemoteSynthDefDir.notNil }
+					and: { options.sshUser.notNil } ) {
+					"SynthDef % too big for sending. Retrying by scp-ing synthdef file".format(name).warn;
+					this.writeDefFile(synthDefDir);
+					filename = name ++ ".scsyndef";
+					command = "scp % %@%:%".format(synthDefDir ++ filename, options.sshUser,
+						server.addr.ip, options.sshRemoteSynthDefDir.shellQuote);
+					if( command.systemCmd == 0 ) {
+						server.sendMsg("/d_load", (options.sshRemoteSynthDefDir++filename).shellQuote, completionMsg)
+					} {
+						"scp command failed:\n%".format(command).postln
+					}
+				} {
+					"SynthDef % too big for sending.".format(name).warn;
+				}
 			}
 		}
 	}

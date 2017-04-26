@@ -27,6 +27,9 @@ ServerOptions {
 
 	var <>verbosity = 0;
 	var <>zeroConf = false; // Whether server publishes port to Bonjour, etc.
+	var <>sshSynthDefs = false;
+	var <>sshRemoteSynthDefDir;
+	var <>sshUser;
 
 	var <>restrictedPath = nil;
 	var <>ugenPluginsPath = nil;
