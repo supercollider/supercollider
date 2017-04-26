@@ -268,7 +268,12 @@ UGen : AbstractFunction {
 
 	addToSynth {
 		synthDef = buildSynthDef;
-		if (synthDef.notNil, { synthDef.addUGen(this) });
+		if (synthDef.notNil, {
+			synthDef.addUGen(this);
+		}, {
+			"WARNING: UGen constructed outside of a SynthDef :".post;
+			this.class.name.postln;
+		});
 	}
 
 	collectConstants {
