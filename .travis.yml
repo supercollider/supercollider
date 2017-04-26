@@ -7,20 +7,30 @@ matrix:
     - os: linux
       sudo: required
       dist: trusty
-      env: QT=true
+      env: QT=true CACHE_DIR="linux1"
     - os: linux
       sudo: required
       dist: trusty
-      env: QT=false
+      env: QT=false CACHE_DIR="linux2"
     - os: osx
       osx_image: xcode7.3
-      env: QT=true
+      env: QT=true CACHE_DIR="osx"
 
 cache:
  - apt
  - bundler
 
 before_install:
+ - |
+    echo "$CACHE_DIR"
+    if git diff --name-only $TRAVIS_COMMIT_RANGE | grep -qE '(^(common|external_libraries|include|lang|platform|QtCollider|server))/'
+    then
+      echo "BUILDING!"
+      exit
+    else
+      echo "Only docs were updated, stopping build process."
+      exit
+    fi
  - $TRAVIS_BUILD_DIR/.travis/before-install-$TRAVIS_OS_NAME.sh --qt=$QT
 
 before_script:
