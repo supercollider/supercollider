@@ -589,19 +589,17 @@ int prEvent_IsRest(struct VMGlobals *g, int numArgsPushed)
 				) {
 					SetBool(g->sp, 1);
 					return errNone;
-				} else {
-					// slotSymbolVal nonzero return = not a symbol;
-					// non-symbols don't indicate rests, so, ignore them.
-					if(!slotSymbolVal(slot, &slotSym)) {
-						if(slotSym == s_empty
-							|| slotSym == s_r
-							|| slotSym == s_rest
-						) {
-							SetBool(g->sp, 1);
-							return errNone;
-						}
+				} else if(!slotSymbolVal(slot, &slotSym)) {
+					if(slotSym == s_empty
+						|| slotSym == s_r
+						|| slotSym == s_rest
+					) {
+						SetBool(g->sp, 1);
+						return errNone;
 					}
-				}
+				}  // why no 'else'?
+				// slotSymbolVal nonzero return = not a symbol;
+				// non-symbols don't indicate rests, so, ignore them.
 			}
 		}
 	} else {
