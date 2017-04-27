@@ -512,7 +512,7 @@ int prEvent_Delta(struct VMGlobals *g, int numArgsPushed)
 		if (err) {
 			return err;
 		} else {
-			SetFloat(g->sp, fdur);
+			SetFloat(a, fdur);
 			return errNone;
 		}
 	} else {
@@ -529,7 +529,7 @@ int prEvent_Delta(struct VMGlobals *g, int numArgsPushed)
 					return errWrongType;
 				}
 			} else {
-				SetNil(g->sp);
+				SetNil(a);
 				return errNone;
 			}
 		}
@@ -548,12 +548,12 @@ int prEvent_Delta(struct VMGlobals *g, int numArgsPushed)
 					return errWrongType;
 				}
 			} else {
-				SetFloat(g->sp, fdur);
+				SetFloat(a, fdur);
 				return errNone;
 			}
 		}
 
-		SetFloat(g->sp, fdur * fstretch);
+		SetFloat(a, fdur * fstretch);
 	}
 
 	return errNone;
