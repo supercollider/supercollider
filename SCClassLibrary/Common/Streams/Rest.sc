@@ -18,6 +18,17 @@ Rest : Operand  {
 	playAndDelta { ^value.value }
 	isRest { ^true }
 
+	// DEPRECATION
+	*embedInStream { |inval|
+		"Please use \"Rest()\" instances instead of the \"Rest\" class".warn;
+		^this.new.embedInStream(inval);
+	}
+
+	*asStream {
+		"Please use \"Rest()\" instances instead of the \"Rest\" class".warn;
+		^this.new
+	}
+
 }
 
 + SimpleNumber {
