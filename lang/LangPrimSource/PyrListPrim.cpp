@@ -44,8 +44,6 @@ int class_identdict_index, class_identdict_maxsubclassindex;
 PyrClass *class_identdict;
 PyrSymbol *s_proto, *s_parent;
 PyrSymbol *s_delta, *s_dur, *s_stretch;
-PyrSymbol *s_type, *s_rest, *s_empty, *s_r;
-PyrClass *class_rest, *class_metarest;
 
 #define HASHSYMBOL(sym) (sym >> 5)
 
@@ -512,7 +510,7 @@ int prEvent_Delta(struct VMGlobals *g, int numArgsPushed)
 		if (err) {
 			return err;
 		} else {
-			SetFloat(g->sp, fdur);
+			SetFloat(a, fdur);
 			return errNone;
 		}
 	} else {
@@ -529,7 +527,7 @@ int prEvent_Delta(struct VMGlobals *g, int numArgsPushed)
 					return errWrongType;
 				}
 			} else {
-				SetNil(g->sp);
+				SetNil(a);
 				return errNone;
 			}
 		}
@@ -548,12 +546,12 @@ int prEvent_Delta(struct VMGlobals *g, int numArgsPushed)
 					return errWrongType;
 				}
 			} else {
-				SetFloat(g->sp, fdur);
+				SetFloat(a, fdur);
 				return errNone;
 			}
 		}
 
-		SetFloat(g->sp, fdur * fstretch);
+		SetFloat(a, fdur * fstretch);
 	}
 
 	return errNone;
@@ -567,6 +565,8 @@ int prEvent_IsRest(struct VMGlobals *g, int numArgsPushed)
 
 	if (isKindOfSlot(arraySlot, class_array)) {
 		PyrSlot key, typeSlot;
+		static PyrSymbol *s_type = getsym("type");
+		static PyrSymbol *s_rest = getsym("rest");
 		PyrSymbol *typeSym;
 		// test 'this[\type] == \rest' first
 		SetSymbol(&key, s_type);
@@ -577,6 +577,10 @@ int prEvent_IsRest(struct VMGlobals *g, int numArgsPushed)
 		} else {
 			PyrObject *array = slotRawObject(arraySlot);
 			PyrSymbol *slotSym;
+			static PyrSymbol *s_empty = getsym("");
+			static PyrSymbol *s_r = getsym("r");
+			static PyrClass *class_rest = getsym("Rest")->u.classobj;
+			static PyrClass *class_metarest = getsym("Meta_Rest")->u.classobj;
 			PyrSlot *slot;
 			int32 size = array->size;
 			int32 i;
@@ -589,26 +593,25 @@ int prEvent_IsRest(struct VMGlobals *g, int numArgsPushed)
 				) {
 					SetBool(g->sp, 1);
 					return errNone;
-				} else {
-					// slotSymbolVal nonzero return = not a symbol;
-					// non-symbols don't indicate rests, so, ignore them.
-					if(!slotSymbolVal(slot, &slotSym)) {
-						if(slotSym == s_empty
-							|| slotSym == s_r
-							|| slotSym == s_rest
-						) {
-							SetBool(g->sp, 1);
-							return errNone;
-						}
+				} else if(!slotSymbolVal(slot, &slotSym)) {
+					if(slotSym == s_empty
+						|| slotSym == s_r
+						|| slotSym == s_rest
+					) {
+						SetBool(g->sp, 1);
+						return errNone;
 					}
-				}
+				}  // why no 'else'?
+				// slotSymbolVal nonzero return = not a symbol;
+				// non-symbols don't indicate rests, so, ignore them.
 			}
 		}
 	} else {
 		return errWrongType;
 	}
 
-	return errException;  // fallback in SC method definition
+	SetBool(g->sp, 0);
+	return errNone;
 }
 
 void PriorityQueueAdd(struct VMGlobals *g, PyrObject* queueobj, PyrSlot* item, double time);
@@ -846,11 +849,4 @@ void initPatterns()
 	s_delta = getsym("delta");
 	s_dur = getsym("dur");
 	s_stretch = getsym("stretch");
-
-	s_type = getsym("type");
-	s_rest = getsym("rest");
-	s_empty = getsym("");
-	s_r = getsym("r");
-	class_rest = getsym("Rest")->u.classobj;
-	class_metarest = getsym("Meta_Rest")->u.classobj;
 }

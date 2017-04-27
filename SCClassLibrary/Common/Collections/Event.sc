@@ -49,7 +49,8 @@ Event : Environment {
 
 	isRest {
 		_Event_IsRest
-		^false
+		// In theory, we should never get here unless the Event object is corrupted.
+		^this.primitiveFailed;
 	}
 
 	// node watcher interface
