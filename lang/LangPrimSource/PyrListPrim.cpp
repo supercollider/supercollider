@@ -606,7 +606,8 @@ int prEvent_IsRest(struct VMGlobals *g, int numArgsPushed)
 		return errWrongType;
 	}
 
-	return errException;  // fallback in SC method definition
+	SetBool(g->sp, 0);
+	return errNone;
 }
 
 void PriorityQueueAdd(struct VMGlobals *g, PyrObject* queueobj, PyrSlot* item, double time);
