@@ -856,7 +856,7 @@ prints this on the given stream
 subsection:: random
 
 method:: coin
-Answers a Boolean which is the result of a random test whose probability of success in a range from zero to one is this.
+Let emphasis::x:: be the receiver clipped to the range [0, 1]. With probability emphasis::x::, return true. With probability 1 - emphasis::x::, return false.
 
 method:: rand
 returns:: Random number from zero up to the receiver, exclusive.
