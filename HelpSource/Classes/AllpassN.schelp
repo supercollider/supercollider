@@ -20,7 +20,7 @@ In this UGen, code::k:: is computed as
 code::k == 0.001 ** (delay / decay.abs) * decay.sign:: (0.001 is -60 dBFS).
 
 This UGen quantizes the delay time to the nearest sample period, and will
-also produce aliasing artifacts if the delay time is modulated. If these
+produce aliasing artifacts if the delay time is modulated. If these
 are undesirable properties, the more CPU-expensive alternatives are
 link::Classes/AllpassL:: which uses linear interpolation, and
 link::Classes/AllpassC:: which uses cubic interpolation.
@@ -39,7 +39,7 @@ argument::delaytime
 Delay time in seconds.
 
 argument::decaytime
-Time for the echoes to decay by 60 decibels. If this time is negative then the feedback coefficient will be negative, thus emphasizing only odd harmonics at an octave lower.
+Time for the echoes to decay by 60 decibels. If this time is negative, then the feedback coefficient will be negative, thus emphasizing only odd harmonics at an octave lower.
 
 argument::mul
 Output will be multiplied by this value.
