@@ -33,7 +33,6 @@
 #include <string>
 #include <map>
 
-#define DEBUG_SCFS
 #ifdef DEBUG_SCFS
 #include <iostream>
 using std::cout;

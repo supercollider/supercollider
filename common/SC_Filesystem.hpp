@@ -33,6 +33,8 @@
 #ifndef SC_FILESYSTEM_HPP_INCLUDED
 #define SC_FILESYSTEM_HPP_INCLUDED
 
+#define DEBUG_SCFS
+
 #include <map> // map
 #include <codecvt> // codecvt_utf8
 #include <boost/filesystem/path.hpp> // path

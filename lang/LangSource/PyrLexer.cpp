@@ -70,7 +70,6 @@
 #include "SC_Filesystem.hpp"
 #include "SC_TextUtils.hpp"
 
-#define DEBUG_SCFS
 #ifdef DEBUG_SCFS
 #include <iostream> // cout, endl
 using std::cout;

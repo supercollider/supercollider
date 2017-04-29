@@ -32,7 +32,6 @@
 // stdlib
 #include <string>
 
-#define DEBUG_SCFS
 #ifdef DEBUG_SCFS
 #include <iostream>
 using std::cout;
