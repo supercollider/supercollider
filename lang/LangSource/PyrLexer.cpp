@@ -164,61 +164,6 @@ double sc_strtof(const char *str, int n, int base)
 	return z;
 }
 
-static void sc_InitCompileDirectory(void)
-{
-	// main class library folder: only used for relative path resolution
-	gCompileDir = SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::Resource) / "SCClassLibrary";
-}
-
-boost::filesystem::path asRelativePath(const boost::filesystem::path& p)
-{
-	return boost::filesystem::relative(p, gCompileDir);
-}
-
-// No longer needed; using load_string_file
-#if 0
-static bool getFileText(const char* filename, char **text, int *length)
-{
-	FILE *file;
-	char *ltext;
-	int llength;
-
-#ifdef _WIN32
-	file = fopen(filename, "rb");
-#else
-	file = fopen(filename, "r");
-#endif
-	if (!file) return false;
-
-	fseek(file, 0L, SEEK_END);
-	llength = ftell(file);
-	fseek(file, 0L, SEEK_SET);
-	ltext = (char*)pyr_pool_compile->Alloc((llength+1) * sizeof(char));
-#ifdef _WIN32
-	// win32 isprint( ) doesn't like the 0xcd after the end of file when
-	// there is a mismatch in lengths due to line endings....
-	memset(ltext,0,(llength+1) * sizeof(char));
-#endif //_WIN32
-	MEMFAIL(ltext);
-
-	size_t size = fread(ltext, 1, llength, file);
-	if (size != llength) {
-		error("error when reading file");
-		fclose(file);
-		return false;
-	}
-	ltext[llength] = 0;
-	//ltext[llength] = 0;
-	*length = llength;
-	fclose(file);
-	*text = ltext;
-	return true;
-}
-#endif // 0
-
-int bugctr = 0;
-
-
 bool startLexer(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset)
 {
 	const char *filename = fileSym->name;
@@ -1878,22 +1823,9 @@ bool parseOneClass(PyrSymbol *fileSym)
 	return res;
 }
 
-//void ClearLibMenu();
-
-void aboutToFreeRuntime();
-void aboutToFreeRuntime()
-{
-	//ClearLibMenu();
-}
-
-//void init_graph_compile();
-//void tellPlugInsAboutToCompile();
-void pyrmath_init_globs();
-
 void initPassOne()
 {
 	post("initPassOne started\n");
-	aboutToFreeRuntime();
 
 	//dump_pool_histo(pyr_pool_runtime);
 	pyr_pool_runtime->FreeAllInternal();
@@ -1904,25 +1836,24 @@ void initPassOne()
 	void *ptr = pyr_pool_runtime->Alloc(sizeof(SymbolTable));
 	gMainVMGlobals->symbolTable  = new (ptr) SymbolTable(pyr_pool_runtime, 65536);
 
-	//gFileSymbolTable = newSymbolTable(512);
-
-	pyrmath_init_globs();
-
 	initSymbols(); // initialize symbol globals
-	//init_graph_compile();
 	initSpecialSelectors();
 	initSpecialClasses();
 	initClasses();
 	initParserPool();
 	initParseNodes();
 	initPrimitives();
-	//tellPlugInsAboutToCompile();
+
 	initLexer();
+
 	compileErrors = 0;
 	numClassDeps = 0;
 	compiledOK = false;
 	compiledDirectories.clear();
-	sc_InitCompileDirectory();
+
+	// main class library folder: only used for relative path resolution
+	gCompileDir = SC_Filesystem::instance().getDirectory(DirName::Resource) / "SCClassLibrary";
+
 	post("initPassOne done\n");
 }
 
