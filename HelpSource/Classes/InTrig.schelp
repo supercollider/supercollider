@@ -35,7 +35,7 @@ SynthDef("help-InTrig",{arg out=0,busnum=0;
 	var inTrig;
 	inTrig = InTrig.kr( busnum );
 	Out.ar(out,
-		EnvGen.kr(Env.perc,gate: inTrig,levelScale: inTrig ) * SinOsc.ar
+		Env.perc.kr(gate: inTrig) * Latch.kr(inTrig, inTrig) * SinOsc.ar
 	)
 }).play(s,[\out, 0, \busnum, b.index]);
 
