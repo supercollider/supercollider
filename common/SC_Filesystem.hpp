@@ -73,7 +73,19 @@ public:
 	inline void setDirectory(const DirName& dn, const Path& p) { mDirectoryMap[dn] = p; }
 
 	// Expands a path starting with `~` to use the user's home directory.
-	Path        expandTilde(const Path& p);
+	Path        expandTilde(const Path& p)
+	{
+		static const Path tilde("~");
+		Path::const_iterator piter = p.begin();
+		if (piter != p.end() && *piter == tilde) {
+			Path expanded = getDirectory(DirName::UserHome);
+			while (++piter != p.end())
+				expanded /= *piter; // lexically_relative would expand "~" to "$HOME/." when we just want "$HOME"
+			return expanded;
+		} else {
+			return p;
+		}
+	}
 
 	bool        shouldNotCompileDirectory(const Path& p) const;
 	static bool isStandalone();

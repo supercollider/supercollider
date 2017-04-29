@@ -80,21 +80,6 @@ Path SC_Filesystem::getDirectory(const DirName& dn)
 	return p;
 }
 
-// @TODO: easier way?
-Path SC_Filesystem::expandTilde(const Path& p)
-{
-	Path::const_iterator piter = p.begin();
-
-	if (piter != p.end() && *piter == "~") {
-		Path ret = getDirectory(DirName::UserHome);
-		while (++piter != p.end())
-			ret /= *piter;
-		return ret;
-	} else {
-		return p;
-	}
-}
-
 bool SC_Filesystem::shouldNotCompileDirectory(const Path& p) const
 {
 	const std::string& dirname = p.filename().string(Codecvt());
