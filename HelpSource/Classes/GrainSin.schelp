@@ -62,11 +62,7 @@ SynthDef(\sin_grain_test, {arg gate = 1, amp = 1, envbuf;
 	pan = MouseX.kr(-1, 1);
 	// use WhiteNoise and mouse y to control deviation from center pitch
 	freqdev = WhiteNoise.kr(MouseY.kr(0, 400));
-	env = EnvGen.kr(
-		Env([0, 1, 0], [1, 1], \sin, 1),
-		gate,
-		levelScale: amp,
-		doneAction: Done.freeSelf);
+	env = Env([0, 1, 0], [1, 1], \sin, 1).kr(Done.freeSelf, gate) * amp;
 	Out.ar(0,
 		GrainSin.ar(2, Impulse.kr(10), 0.1, 440 + freqdev, pan, envbuf) * env)
 	}).add;
