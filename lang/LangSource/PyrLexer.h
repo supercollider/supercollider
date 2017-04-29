@@ -82,10 +82,9 @@ void fatal() ;
 bool isValidSourceFileName(char *filename);
 bool passOne_ProcessOneFile(const char *filename, int level);
 
-boost::filesystem::path asRelativePath(const boost::filesystem::path&);
+boost::filesystem::path relativeToCompileDir(const boost::filesystem::path&);
 
 void initLexer();
-void init_SuperCollider();
 
 int processbinop(char *token);
 int processident(char *token);

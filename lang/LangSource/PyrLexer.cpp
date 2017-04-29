@@ -88,9 +88,12 @@ int gNumCompiledFiles;
 thisProcess.interpreter.executeFile("Macintosh HD:score").size.postln;
 */
 
+namespace bfs = boost::filesystem;
+using DirName = SC_Filesystem::DirName;
+
 PyrSymbol *gCompilingFileSym = 0;
 VMGlobals *gCompilingVMGlobals = 0;
-static boost::filesystem::path gCompileDir;
+static bfs::path gCompileDir;
 
 //#define DEBUGLEX 1
 bool gDebugLexer = false;
@@ -103,7 +106,8 @@ int lastClosedFuncCharNo = 0;
 
 const char *binopchars = "!@%&*-+=|<>?/";
 char yytext[MAXYYLEN];
-boost::filesystem::path currfilename;
+bfs::path currfilename;
+const char *printingCurrfilename; // for error reporting
 
 int yylen;
 int lexCmdLine = 0;
@@ -122,7 +126,7 @@ int textpos;
 int errLineOffset, errCharPosOffset;
 int parseFailed = 0;
 bool compiledOK = false;
-std::set<boost::filesystem::path> compiledDirectories;
+std::set<bfs::path> compiledDirectories;
 
 /* so the text editor's dumb paren matching will work */
 #define OPENPAREN '('
@@ -171,10 +175,10 @@ bool startLexer(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset)
 	textlen = -1;
 
 	if(!fileSym->u.source) {
-		const boost::filesystem::path path{filename};
+		const bfs::path path{filename};
 		std::string filetext;
 		// @TODO: error handling
-		boost::filesystem::load_string_file(path, filetext);
+		bfs::load_string_file(path, filetext);
 		textlen = filetext.size();
 		text = (char*)pyr_pool_compile->Alloc((textlen+1) * sizeof(char));
 		strcpy(text, filetext.c_str());
@@ -211,7 +215,8 @@ bool startLexer(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset)
 	zzval = 0;
 	parseFailed = 0;
 	lexCmdLine = 0;
-	currfilename = boost::filesystem::path(filename);
+	currfilename = bfs::path(filename);
+	printingCurrfilename = relativeToCompileDir(currfilename).string(SC_Filesystem::Codecvt()).c_str();
 	maxlinestarts = 1000;
 	linestarts = (int*)pyr_pool_compile->Alloc(maxlinestarts * sizeof(int*));
 	linestarts[0] = 0;
@@ -246,7 +251,8 @@ void startLexerCmdLine(char *textbuf, int textbuflen)
 	zzval = 0;
 	parseFailed = 0;
 	lexCmdLine = 1;
-	currfilename = boost::filesystem::path("selected text");
+	currfilename = bfs::path("selected text");
+	printingCurrfilename = currfilename.c_str();
 	maxlinestarts = 1000;
 	linestarts = (int*)pyr_pool_compile->Alloc(maxlinestarts * sizeof(int*));
 	linestarts[0] = 0;
@@ -349,7 +355,6 @@ int yylex()
 	int r, c, c2;
 	intptr_t d;
 	int radix;
-	boost::filesystem::path extPath; // for error reporting
 
 	yylen = 0;
 	// finite state machine to parse input stream into tokens
@@ -712,9 +717,8 @@ symbol3 : {
 		for (;yylen<MAXYYLEN;) {
 			c = input();
 			if (c == '\n' || c == '\r') {
-				extPath = asRelativePath(currfilename);
 				post("Symbol open at end of line on line %d in file '%s'\n",
-					startline+errLineOffset, extPath.c_str());
+					 startline+errLineOffset, printingCurrfilename);
 				yylen = 0;
 				r = 0;
 				goto leave;
@@ -726,9 +730,8 @@ symbol3 : {
 			if (c == 0) break;
 		}
 		if (c == 0) {
-			extPath = asRelativePath(currfilename);
 			post("Open ended symbol started on line %d in file '%s'\n",
-				startline+errLineOffset, extPath.c_str());
+				startline+errLineOffset, printingCurrfilename);
 			yylen = 0;
 			r = 0;
 			goto leave;
@@ -761,9 +764,8 @@ string1 : {
 			if (c == 0) break;
 		}
 		if (c == 0) {
-			extPath = asRelativePath(currfilename);
 			post("Open ended string started on line %d in file '%s'\n",
-				startline + errLineOffset, extPath.c_str());
+				startline + errLineOffset, printingCurrfilename);
 			yylen = 0;
 			r = 0;
 			goto leave;
@@ -810,9 +812,8 @@ comment2 : {
 		} while (c != 0);
 		yylen = 0;
 	if (c == 0) {
-		extPath = asRelativePath(currfilename);
 			post("Open ended comment started on line %d in file '%s'\n",
-				startline + errLineOffset, extPath.c_str());
+				startline + errLineOffset, printingCurrfilename);
 			r = 0;
 			goto leave;
 		}
@@ -824,16 +825,14 @@ error1:
 
 	yytext[yylen] = 0;
 
-	extPath = asRelativePath(currfilename);
 	post("illegal input string '%s' \n   at '%s' line %d char %d\n",
-		yytext, extPath.c_str(), lineno+errLineOffset, charno);
+		yytext, printingCurrfilename, lineno+errLineOffset, charno);
 	post("code %d\n", c);
 	//postfl(" '%c' '%s'\n", c, binopchars);
 	//postfl("%d\n", strchr(binopchars, c));
 
 error2:
-	extPath = asRelativePath(currfilename);
-	post("  in file '%s' line %d char %d\n", extPath.c_str(), lineno+errLineOffset, charno);
+	post("  in file '%s' line %d char %d\n", printingCurrfilename, lineno+errLineOffset, charno);
 	r = BADTOKEN;
 	goto leave;
 
@@ -1239,8 +1238,7 @@ void postErrorLine(int linenum, int start, int charpos)
 
 	//post("start %d\n", start);
 	//parseFailed = true;
-	boost::filesystem::path extPath = asRelativePath(currfilename);
-	post("  in file '%s'\n", extPath.c_str());
+	post("  in file '%s'\n", printingCurrfilename);
 	post("  line %d char %d:\n\n", linenum+errLineOffset, charpos);
 	// nice: postfl previous line for context
 
@@ -1324,7 +1322,6 @@ bool scanForClosingBracket()
 	int r, c, startLevel;
 	intptr_t d;
 	bool res = true;
-	boost::filesystem::path extPath;
 	// finite state machine to parse input stream into tokens
 
 #if DEBUGLEX
@@ -1425,9 +1422,8 @@ symbol3 : {
 			}
 		} while (c != endchar && c != 0);
 		if (c == 0) {
-			extPath = asRelativePath(currfilename);
 			post("Open ended symbol started on line %d in file '%s'\n",
-				 startline, extPath.c_str());
+				 startline, printingCurrfilename);
 			goto error2;
 		}
 		goto start;
@@ -1445,9 +1441,8 @@ string1 : {
 			}
 		} while (c != endchar && c != 0);
 		if (c == 0) {
-			extPath = asRelativePath(currfilename);
 			post("Open ended string started on line %d in file '%s'\n",
-				 startline, extPath.c_str());
+				 startline, printingCurrfilename);
 			goto error2;
 		}
 		goto start;
@@ -1478,17 +1473,15 @@ comment2 : {
 			prevc = c;
 		} while (c != 0);
 		if (c == 0) {
-			extPath = asRelativePath(currfilename);
 			post("Open ended comment started on line %d in file '%s'\n",
-				 startline, extPath.c_str());
+				 startline, printingCurrfilename);
 			goto error2;
 		}
 		goto start;
 	}
 
 error1:
- extPath = asRelativePath(currfilename);
-	post("  in file '%s' line %d char %d\n", extPath.c_str(), lineno, charno);
+	post("  in file '%s' line %d char %d\n", printingCurrfilename, lineno, charno);
 	res = false;
 	goto leave;
 
@@ -1657,8 +1650,8 @@ void compileClass(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset)
 			//postfl("done compiling\n");fflush(stdout);
 		} else {
 			compileErrors++;
-			boost::filesystem::path pathname(fileSym->name);
-			error("file '%s' parse failed\n", asRelativePath(pathname).c_str());
+			bfs::path pathname(fileSym->name);
+			error("file '%s' parse failed\n", bfs::relative(pathname, gCompileDir).string(SC_Filesystem::Codecvt()).c_str());
 			postfl("error parsing\n");
 		}
 		finiLexer();
@@ -1864,7 +1857,12 @@ void finiPassOne()
 	//postfl("<-finiPassOne\n");
 }
 
-static bool passOne_ShouldSkipDirectory(const boost::filesystem::path& dir, std::string& reason)
+bfs::path relativeToCompileDir(const bfs::path& p)
+{
+	return bfs::relative(p, gCompileDir);
+}
+
+static bool passOne_ShouldSkipDirectory(const bfs::path& dir, std::string& reason)
 {
 	static const std::string reason_excluded = "Directory excluded";
 	static const std::string reason_already_compiled = "Already compiled directory";
@@ -1888,7 +1886,7 @@ static bool passOne_ShouldSkipDirectory(const boost::filesystem::path& dir, std:
 	return false;
 }
 
-static bool passOne_ProcessDir(const boost::filesystem::path& dir, int level)
+static bool passOne_ProcessDir(const bfs::path& dir, int level)
 {
 	// @TODO: this doesn't do anything with aliases. good or bad?
 	// opens directory
@@ -1912,7 +1910,7 @@ static bool passOne_ProcessDir(const boost::filesystem::path& dir, int level)
 	cout << "passOne_ProcessDir: begin: '" << dir << "'." << endl;
 #endif
 	boost::system::error_code ec;
-	boost::filesystem::recursive_directory_iterator rditer(dir, boost::filesystem::symlink_option::recurse, ec);
+	bfs::recursive_directory_iterator rditer(dir, bfs::symlink_option::recurse, ec);
 	std::string skipReason;
 
 	if (ec) {
@@ -1936,13 +1934,13 @@ static bool passOne_ProcessDir(const boost::filesystem::path& dir, int level)
 	// @TODO: alias resolution. If not a directory, try resolving.
 	// if resolving succeeds, call the appropriate function on that
 	// file. if not, treat it as a normal source file.
-	while (rditer != boost::filesystem::end(rditer)) {
-		const boost::filesystem::path& path = *rditer;
+	while (rditer != bfs::end(rditer)) {
+		const bfs::path& path = *rditer;
 #ifdef DEBUG_SCFS
 		cout << "At: " << path << endl;
 #endif
 
-		if (boost::filesystem::is_directory(path)) {
+		if (bfs::is_directory(path)) {
 #ifdef DEBUG_SCFS
 			cout << "Is a directory" << endl;
 #endif
@@ -1962,8 +1960,8 @@ static bool passOne_ProcessDir(const boost::filesystem::path& dir, int level)
 			cout << "Processing" << endl;
 #endif
 			bool isAlias = false;
-			const boost::filesystem::path& respath = SC_Filesystem::resolveIfAlias(path, isAlias);
-			if (isAlias && boost::filesystem::is_directory(respath)) {
+			const bfs::path& respath = SC_Filesystem::resolveIfAlias(path, isAlias);
+			if (isAlias && bfs::is_directory(respath)) {
 				if (!passOne_ProcessDir(respath, rditer.level())) {
 #ifdef DEBUG_SCFS
 					cout << "Could not process " << respath << endl;
@@ -2015,6 +2013,7 @@ bool passOne()
 	return true;
 }
 
+// @TODO: move to SC_Filesystem (maybe)
 // true if filename ends in ".sc"
 bool isValidSourceFileName(const char *filename)
 {
@@ -2024,7 +2023,7 @@ bool isValidSourceFileName(const char *filename)
 	if (!validExtension)
 		return false;
 
-	boost::filesystem::path pathname(filename);
+	bfs::path pathname(filename);
 
 	if (pathname.filename().c_str()[0] == '.') // hidden filename
 		return false;

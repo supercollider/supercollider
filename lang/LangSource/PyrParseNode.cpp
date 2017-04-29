@@ -325,7 +325,6 @@ void PyrSlotNode::compile(PyrSlot *result)
 	}
 }
 
-
 PyrClassExtNode* newPyrClassExtNode(PyrSlotNode* className, PyrMethodNode* methods)
 {
 	PyrClassExtNode* node = ALLOCNODE(PyrClassExtNode);
@@ -339,7 +338,7 @@ void PyrClassExtNode::compile(PyrSlot *result)
 {
 	PyrClass *classobj = slotRawSymbol(&mClassName->mSlot)->u.classobj;
 	if (!classobj) {
-		const boost::filesystem::path relpath = asRelativePath(boost::filesystem::path(gCompilingFileSym->name));
+		const boost::filesystem::path relpath = relativeToCompileDir(boost::filesystem::path(gCompilingFileSym->name));
 		error("Class extension for nonexistent class '%s'\n     In file:'%s'\n",
 			slotRawSymbol(&mClassName->mSlot)->name,
 			relpath.c_str()
