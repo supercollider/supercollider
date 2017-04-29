@@ -46,7 +46,6 @@ public:
 
 	typedef boost::filesystem::path    Path;
 	typedef std::map<DirName, Path>    DirMap;
-	typedef std::codecvt_utf8<wchar_t> Codecvt;
 
 	enum class DirName {
 		SystemAppSupport,
@@ -89,6 +88,7 @@ public:
 
 	bool        shouldNotCompileDirectory(const Path& p) const;
 	static bool isStandalone();
+	static std::string pathAsUTF8String(const Path&);
 
 	// postconditions: isAlias is true if path is an alias, and false otherwise
 	// returns: the resolved path if resolution occurred

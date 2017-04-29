@@ -107,7 +107,7 @@ int lastClosedFuncCharNo = 0;
 const char *binopchars = "!@%&*-+=|<>?/";
 char yytext[MAXYYLEN];
 bfs::path currfilename;
-const char *printingCurrfilename; // for error reporting
+std::string printingCurrfilename; // for error reporting
 
 int yylen;
 int lexCmdLine = 0;
@@ -216,7 +216,7 @@ bool startLexer(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset)
 	parseFailed = 0;
 	lexCmdLine = 0;
 	currfilename = bfs::path(filename);
-	printingCurrfilename = relativeToCompileDir(currfilename).string(SC_Filesystem::Codecvt()).c_str();
+	printingCurrfilename = SC_Filesystem::pathAsUTF8String(currfilename);
 	maxlinestarts = 1000;
 	linestarts = (int*)pyr_pool_compile->Alloc(maxlinestarts * sizeof(int*));
 	linestarts[0] = 0;
@@ -718,7 +718,7 @@ symbol3 : {
 			c = input();
 			if (c == '\n' || c == '\r') {
 				post("Symbol open at end of line on line %d in file '%s'\n",
-					 startline+errLineOffset, printingCurrfilename);
+					 startline+errLineOffset, printingCurrfilename.c_str());
 				yylen = 0;
 				r = 0;
 				goto leave;
@@ -731,7 +731,7 @@ symbol3 : {
 		}
 		if (c == 0) {
 			post("Open ended symbol started on line %d in file '%s'\n",
-				startline+errLineOffset, printingCurrfilename);
+				startline+errLineOffset, printingCurrfilename.c_str());
 			yylen = 0;
 			r = 0;
 			goto leave;
@@ -765,7 +765,7 @@ string1 : {
 		}
 		if (c == 0) {
 			post("Open ended string started on line %d in file '%s'\n",
-				startline + errLineOffset, printingCurrfilename);
+				startline + errLineOffset, printingCurrfilename.c_str());
 			yylen = 0;
 			r = 0;
 			goto leave;
@@ -813,7 +813,7 @@ comment2 : {
 		yylen = 0;
 	if (c == 0) {
 			post("Open ended comment started on line %d in file '%s'\n",
-				startline + errLineOffset, printingCurrfilename);
+				startline + errLineOffset, printingCurrfilename.c_str());
 			r = 0;
 			goto leave;
 		}
@@ -826,13 +826,13 @@ error1:
 	yytext[yylen] = 0;
 
 	post("illegal input string '%s' \n   at '%s' line %d char %d\n",
-		yytext, printingCurrfilename, lineno+errLineOffset, charno);
+		yytext, printingCurrfilename.c_str(), lineno+errLineOffset, charno);
 	post("code %d\n", c);
 	//postfl(" '%c' '%s'\n", c, binopchars);
 	//postfl("%d\n", strchr(binopchars, c));
 
 error2:
-	post("  in file '%s' line %d char %d\n", printingCurrfilename, lineno+errLineOffset, charno);
+	post("  in file '%s' line %d char %d\n", printingCurrfilename.c_str(), lineno+errLineOffset, charno);
 	r = BADTOKEN;
 	goto leave;
 
@@ -1238,7 +1238,7 @@ void postErrorLine(int linenum, int start, int charpos)
 
 	//post("start %d\n", start);
 	//parseFailed = true;
-	post("  in file '%s'\n", printingCurrfilename);
+	post("  in file '%s'\n", printingCurrfilename.c_str());
 	post("  line %d char %d:\n\n", linenum+errLineOffset, charpos);
 	// nice: postfl previous line for context
 
@@ -1423,7 +1423,7 @@ symbol3 : {
 		} while (c != endchar && c != 0);
 		if (c == 0) {
 			post("Open ended symbol started on line %d in file '%s'\n",
-				 startline, printingCurrfilename);
+				 startline, printingCurrfilename.c_str());
 			goto error2;
 		}
 		goto start;
@@ -1442,7 +1442,7 @@ string1 : {
 		} while (c != endchar && c != 0);
 		if (c == 0) {
 			post("Open ended string started on line %d in file '%s'\n",
-				 startline, printingCurrfilename);
+				 startline, printingCurrfilename.c_str());
 			goto error2;
 		}
 		goto start;
@@ -1474,14 +1474,14 @@ comment2 : {
 		} while (c != 0);
 		if (c == 0) {
 			post("Open ended comment started on line %d in file '%s'\n",
-				 startline, printingCurrfilename);
+				 startline, printingCurrfilename.c_str());
 			goto error2;
 		}
 		goto start;
 	}
 
 error1:
-	post("  in file '%s' line %d char %d\n", printingCurrfilename, lineno, charno);
+	post("  in file '%s' line %d char %d\n", printingCurrfilename.c_str(), lineno, charno);
 	res = false;
 	goto leave;
 
@@ -1651,7 +1651,7 @@ void compileClass(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset)
 		} else {
 			compileErrors++;
 			bfs::path pathname(fileSym->name);
-			error("file '%s' parse failed\n", bfs::relative(pathname, gCompileDir).string(SC_Filesystem::Codecvt()).c_str());
+			error("file '%s' parse failed\n", SC_Filesystem::pathAsUTF8String(pathname).c_str());
 			postfl("error parsing\n");
 		}
 		finiLexer();

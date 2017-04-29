@@ -91,7 +91,7 @@ Path SC_Filesystem::getDirectory(const DirName& dn)
 
 bool SC_Filesystem::shouldNotCompileDirectory(const Path& p) const
 {
-	const std::string& dirname = p.filename().string(Codecvt());
+	const std::string& dirname = p.filename().string();
 	const std::string& idePath = std::string("scide_") + gIdeName;
 	return (boost::iequals(dirname, "help") ||
 					boost::iequals(dirname, "ignore") ||
@@ -106,6 +106,8 @@ bool SC_Filesystem::isStandalone()
 {
 	return SC_StandAloneInfo::IsStandAlone();
 }
+
+std::string SC_Filesystem::pathAsUTF8String(const Path& p) { return p.string(); }
 
 Path SC_Filesystem::resolveIfAlias(const Path& p, bool& isAlias)
 {

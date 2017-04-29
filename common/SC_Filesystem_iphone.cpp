@@ -95,6 +95,8 @@ bool SC_Filesystem::shouldNotCompileDirectory(const Path& p) const
 
 bool SC_Filesystem::isStandalone() { return false; }
 
+std::string SC_Filesystem::pathAsUTF8String(const Path& p) { return p.string(); }
+
 Path SC_Filesystem::resolveIfAlias(const Path& p, bool& isAlias) { isAlias = false; return p; }
 
 // Returns false if initialization failed
