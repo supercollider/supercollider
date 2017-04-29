@@ -433,7 +433,7 @@ Returns the number of channels in the corresponding server-side buffer.
 method:: sampleRate
 Returns the sample rate of the corresponding server-side buffer.
 
-Changing this value only changes what the buffer thinks its sample rate is. It does not resample the buffer.
+Changing this value only changes what the buffer thinks its sample rate is. It does not resample the buffer's content.
 
 method:: path
 Returns a string containing the path of a soundfile that has been loaded into the corresponding server-side buffer.
