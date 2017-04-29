@@ -34,14 +34,17 @@
 #define SC_FILESYSTEM_HPP_INCLUDED
 
 #include <map> // map
+#include <codecvt> // codecvt_utf8
 #include <boost/filesystem/path.hpp> // path
 
 class SC_Filesystem {
 public:
 	enum class DirName;
-	typedef boost::filesystem::path Path;
-	typedef std::map<DirName, Path> DirMap;
-	struct Glob;
+	struct     Glob;
+
+	typedef boost::filesystem::path    Path;
+	typedef std::map<DirName, Path>    DirMap;
+	typedef std::codecvt_utf8<wchar_t> Codecvt;
 
 	enum class DirName {
 		SystemAppSupport,

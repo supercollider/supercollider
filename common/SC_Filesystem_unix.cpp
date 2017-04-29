@@ -98,7 +98,7 @@ Path SC_Filesystem::expandTilde(const Path& p)
 
 bool SC_Filesystem::shouldNotCompileDirectory(const Path& p) const
 {
-	const std::string& dirname = p.filename().string();
+	const std::string& dirname = p.filename().string(Codecvt());
 	const std::string& idePath = std::string("scide_") + gIdeName;
 	return (boost::iequals(dirname, "help") ||
 			boost::iequals(dirname, "ignore") ||
