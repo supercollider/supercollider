@@ -4,7 +4,11 @@ categories:: Server>Abstractions
 
 description::
 
-A buffer is most often used to hold sampled audio, such as a soundfile loaded into memory, but can be used to hold other types of data as well. It is a globally available array of floating-point numbers on the server. The Buffer class encapsulates a number of common tasks, OSC messages, and capabilities related to server-side buffers – see the examples lower down this document for many examples of using Buffers for sound playback and recording.
+A Buffer object is a client-side abstraction for a server-side buffer. (SuperCollider's server-client architecture is a common source of confusion when working with Buffer objects, so please see link::Guides/ClientVsServer::.)
+
+A buffer is most often used to hold sampled audio, such as a soundfile loaded into memory, but can be used to hold other types of data as well. Technically speaking, a buffer on the server is a globally available, multichannel array of 32-bit floating-point numbers. It also has an associated sample rate, represented in Hertz as a 64-bit float.
+
+The Buffer class encapsulates a number of common tasks, OSC messages, and capabilities related to server-side buffers – see the examples lower down this document for many examples of using Buffers for sound playback and recording.
 
 Buffers are commonly used with link::Classes/PlayBuf::, link::Classes/RecordBuf::, link::Classes/DiskIn::, link::Classes/DiskOut::, link::Classes/BufWr::, link::Classes/BufRd::, and other UGens. (See their individual help files for more examples.) Buffers can be freed or altered even while being accessed. See link::Reference/Server-Architecture:: for some technical details.
 
@@ -428,6 +432,8 @@ Returns the number of channels in the corresponding server-side buffer.
 
 method:: sampleRate
 Returns the sample rate of the corresponding server-side buffer.
+
+Changing this value only changes what the buffer thinks its sample rate is. It does not resample the buffer's content.
 
 method:: path
 Returns a string containing the path of a soundfile that has been loaded into the corresponding server-side buffer.
