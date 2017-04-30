@@ -62,7 +62,7 @@ int vpost(const char *fmt, va_list ap)
 	
 	NSError *error; 
 	char supportpath[256];
-	strncpy(supportpath, SC_Filesystem::getDirectory(SC_Filesystem::DirName::UserAppSupport).c_str(), 256);
+	strncpy(supportpath, SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::UserAppSupport).c_str(), 256);
 	NSString *support = [NSString stringWithCString:supportpath encoding:NSASCIIStringEncoding];
 	NSString *dir = [support stringByAppendingString:@"/synthdefs"];
 	if (![manager fileExistsAtPath:dir])

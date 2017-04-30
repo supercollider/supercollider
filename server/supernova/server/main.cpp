@@ -253,9 +253,9 @@ void set_plugin_paths(server_arguments const & args, nova::sc_ugen_factory * fac
         for (path const & folder : folders)
             factory->load_plugin_folder(folder);
 #else
-        factory->load_plugin_folder(getDirectory(DirName::Resource) / "plugins");
-        factory->load_plugin_folder(getDirectory(DirName::SystemExtension) / "plugins");
-        factory->load_plugin_folder(getDirectory(DirName::UserExtension) / "plugins");
+        factory->load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::Resource) / "plugins");
+        factory->load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::SystemExtension) / "plugins");
+        factory->load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::UserExtension) / "plugins");
 #endif
     }
 
@@ -286,7 +286,12 @@ void load_synthdefs(nova_server & server, server_arguments const & args)
         if (env_synthdef_path) {
             boost::split(directories, env_synthdef_path, boost::is_any_of(pathSeparator));
         } else {
-            path synthdef_path = getDirectory(isStandalone() ? DirName::Resource : DirName::UserAppSupport);
+            path synthdef_path;
+            if (SC_Filesystem::isStandalone())
+                synthdef_path = SC_Filesystem::instance().getDirectory(DirName::Resource);
+            else
+                synthdef_path = SC_Filesystem::instance().getDirectory(DirName::UserAppSupport);
+
             directories.push_back(synthdef_path / "synthdefs");
         }
 
