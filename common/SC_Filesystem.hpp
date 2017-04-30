@@ -77,6 +77,12 @@
  */
 class SC_Filesystem {
 public:
+	//--------------------------------------------------------------------------------------//
+	//------------------------------ PUBLIC CLASS MEMBERS ----------------------------------//
+	//--------------------------------------------------------------------------------------//
+
+	//---------------------------------- PUBLIC TYPES --------------------------------------//
+
 	enum class DirName;
 	struct     Glob;
 
@@ -94,12 +100,16 @@ public:
 		Resource
 	};
 
+	//------------------------------- SINGLETON INSTANCE -----------------------------------//
+
 	/// Singleton instance.
 	static SC_Filesystem& instance()
 	{
 		static SC_Filesystem instance;
 		return instance;
 	}
+
+	//--------------------------- COMMON DIRECTORY MANAGEMENT ------------------------------//
 
 	/// Get path associated with a common directory; the path is initialized if necessary.
 	Path getDirectory(const DirName& dn)
@@ -114,22 +124,8 @@ public:
 	/// Set path associated with a common directory.
 	inline void setDirectory(const DirName& dn, const Path& p) { mDirectoryMap[dn] = p; }
 
-	/// Expands a path starting with `~` to use the user's home directory.
-	Path expandTilde(const Path& p)
-	{
-		static const Path tilde("~");
-		Path::const_iterator piter = p.begin();
-		if (piter != p.end() && *piter == tilde) {
-			Path expanded = getDirectory(DirName::UserHome);
-			while (++piter != p.end())
-				expanded /= *piter; // lexically_relative would expand "~" to "$HOME/." when we just want "$HOME"
-			return expanded;
-		} else {
-			return p;
-		}
-	}
+	//-------------------------------- GENERAL UTILITIES -----------------------------------//
 
-	// @TODO: refactor w/ lang config
 	/** \brief Checks whether a directory should be compiled.
 	  * \param p a directory path
 	  * \return True if the directory should not be traversed during compilation.
@@ -150,6 +146,38 @@ public:
 		       isNonHostPlatformDirectoryName(dirname);
 	}
 
+	/// Expands a path starting with `~` to use the user's home directory.
+	Path expandTilde(const Path& p)
+	{
+		static const Path tilde("~");
+		Path::const_iterator piter = p.begin();
+		if (piter != p.end() && *piter == tilde) {
+			Path expanded = getDirectory(DirName::UserHome);
+			while (++piter != p.end())
+				expanded /= *piter; // lexically_relative would expand "~" to "$HOME/." when we just want "$HOME"
+			return expanded;
+		} else {
+			return p;
+		}
+	}
+
+	//---------------------------------- IDE UTILITIES -------------------------------------//
+
+	/// Get the IDE name. "none" is the default.
+	const std::string& getIdeName() const { return mIdeName; }
+
+	/// Set the IDE name.
+	const void setIdeName(const std::string& s) { mIdeName = s; }
+
+	/// Returns true if the IDE name is "none" (the default)
+	const bool usingIde() const { return mIdeName != SC_DEFAULT_IDE_NAME; }
+
+	//--------------------------------------------------------------------------------------//
+	//------------------------------ PUBLIC STATIC MEMBERS ---------------------------------//
+	//--------------------------------------------------------------------------------------//
+
+	//-------------------------------- GENERAL UTILITIES -----------------------------------//
+
 	/// Returns true if, on macOS, SuperCollider is operating as a standalone application.
 	static bool isStandalone();
 
@@ -169,14 +197,7 @@ public:
 	// unnecessary copying
 	static Path resolveIfAlias(const Path& p, bool& isAlias);
 
-	/// Get the IDE name. "none" is the default.
-	const std::string& getIdeName() const { return mIdeName; }
-
-	/// Set the IDE name.
-	const void setIdeName(const std::string& s) { mIdeName = s; }
-
-	/// Returns true if the IDE name is "none" (the default)
-	const bool usingIde() const { return mIdeName != SC_DEFAULT_IDE_NAME; }
+	//--------------------------------- GLOB UTILITIES -------------------------------------//
 
 	/** \brief Makes a glob.
 	  *
@@ -191,6 +212,12 @@ public:
 	static void freeGlob(Glob* g);
 
 private:
+	//--------------------------------------------------------------------------------------//
+	//--------------------------------- PRIVATE MEMBERS ------------------------------------//
+	//--------------------------------------------------------------------------------------//
+
+	//---------------------------- CONSTRUCTORS & ASSIGNMENT -------------------------------//
+
 	SC_Filesystem(SC_Filesystem const&) = delete;
 	void operator=(SC_Filesystem const&) = delete;
 
@@ -199,16 +226,20 @@ private:
 		mIdeName(SC_DEFAULT_IDE_NAME)
 	{};
 
-	/** Of the four strings "windows", "osx", "linux", "iphone", returns true if `p` is one of the
-	 * three that doesn't correspond to this platform. */
-	static bool isNonHostPlatformDirectoryName(const std::string& p);
+	//----------------------------------- IDE UTILITIES ------------------------------------//
 
 	bool isUnusedIdeDirectoryName(const std::string& s) const
 	{
 		return s.size() > 6 && s.substr(0, 6) == "scide_" && s.substr(6) != getIdeName();
 	}
 
-	Path defaultDirectory(const DirName& dn)
+	//------------------------------ PRIVATE STATIC MEMBERS --------------------------------//
+
+	/** Of the four strings "windows", "osx", "linux", "iphone", returns true if `p` is one of the
+	 * three that doesn't correspond to this platform. */
+	static bool isNonHostPlatformDirectoryName(const std::string& p);
+
+	static Path defaultDirectory(const DirName& dn)
 	{
 		switch (dn) {
 			case DirName::SystemAppSupport:
@@ -229,7 +260,7 @@ private:
 				return Path();
 		}
 	}
-	
+
 	static Path defaultSystemAppSupportDirectory();
 	static Path defaultUserHomeDirectory();
 	static Path defaultUserAppSupportDirectory();
@@ -247,6 +278,8 @@ private:
 		const Path& p = defaultUserAppSupportDirectory();
 		return p.empty() ? p : p / SC_FOLDERNAME_EXTENSIONS;
 	}
+
+	//------------------------------- PRIVATE DATA MEMBERS ---------------------------------//
 
 	DirMap mDirectoryMap;
 	std::string mIdeName;
