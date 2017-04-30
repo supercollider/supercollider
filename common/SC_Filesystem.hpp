@@ -27,6 +27,9 @@
  *  Original revision by Tim Walters, 2005-10-19.
  */
 /*
+ *  Copyright (C) Tim Walters, 2005. All rights reserved.
+ *  Copyright (C) Brian Heim, 2017. All rights reserved.
+ *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License as
  *  published by the Free Software Foundation; either version 2 of the
