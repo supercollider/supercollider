@@ -216,7 +216,7 @@ bool startLexer(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset)
 	parseFailed = 0;
 	lexCmdLine = 0;
 	currfilename = bfs::path(filename);
-	printingCurrfilename = SC_Filesystem::pathAsUTF8String(currfilename);
+	printingCurrfilename = "file '" + SC_Filesystem::pathAsUTF8String(currfilename) + "'";
 	maxlinestarts = 1000;
 	linestarts = (int*)pyr_pool_compile->Alloc(maxlinestarts * sizeof(int*));
 	linestarts[0] = 0;
@@ -251,8 +251,8 @@ void startLexerCmdLine(char *textbuf, int textbuflen)
 	zzval = 0;
 	parseFailed = 0;
 	lexCmdLine = 1;
-	currfilename = bfs::path("selected text");
-	printingCurrfilename = currfilename.c_str();
+	currfilename = bfs::path("interpreted text");
+	printingCurrfilename = currfilename.string();
 	maxlinestarts = 1000;
 	linestarts = (int*)pyr_pool_compile->Alloc(maxlinestarts * sizeof(int*));
 	linestarts[0] = 0;
@@ -717,7 +717,7 @@ symbol3 : {
 		for (;yylen<MAXYYLEN;) {
 			c = input();
 			if (c == '\n' || c == '\r') {
-				post("Symbol open at end of line on line %d in file '%s'\n",
+				post("Symbol open at end of line on line %d of %s\n",
 					 startline+errLineOffset, printingCurrfilename.c_str());
 				yylen = 0;
 				r = 0;
@@ -730,7 +730,7 @@ symbol3 : {
 			if (c == 0) break;
 		}
 		if (c == 0) {
-			post("Open ended symbol started on line %d in file '%s'\n",
+			post("Open ended symbol started on line %d of %s\n",
 				startline+errLineOffset, printingCurrfilename.c_str());
 			yylen = 0;
 			r = 0;
@@ -764,7 +764,7 @@ string1 : {
 			if (c == 0) break;
 		}
 		if (c == 0) {
-			post("Open ended string started on line %d in file '%s'\n",
+			post("Open ended string started on line %d of %s\n",
 				startline + errLineOffset, printingCurrfilename.c_str());
 			yylen = 0;
 			r = 0;
@@ -812,7 +812,7 @@ comment2 : {
 		} while (c != 0);
 		yylen = 0;
 	if (c == 0) {
-			post("Open ended comment started on line %d in file '%s'\n",
+			post("Open ended comment started on line %d of %s\n",
 				startline + errLineOffset, printingCurrfilename.c_str());
 			r = 0;
 			goto leave;
@@ -825,14 +825,14 @@ error1:
 
 	yytext[yylen] = 0;
 
-	post("illegal input string '%s' \n   at '%s' line %d char %d\n",
+	post("illegal input string '%s' \n   in %s line %d char %d\n",
 		yytext, printingCurrfilename.c_str(), lineno+errLineOffset, charno);
 	post("code %d\n", c);
 	//postfl(" '%c' '%s'\n", c, binopchars);
 	//postfl("%d\n", strchr(binopchars, c));
 
 error2:
-	post("  in file '%s' line %d char %d\n", printingCurrfilename.c_str(), lineno+errLineOffset, charno);
+	post("  in %s line %d char %d\n", printingCurrfilename.c_str(), lineno+errLineOffset, charno);
 	r = BADTOKEN;
 	goto leave;
 
@@ -1238,7 +1238,7 @@ void postErrorLine(int linenum, int start, int charpos)
 
 	//post("start %d\n", start);
 	//parseFailed = true;
-	post("  in file '%s'\n", printingCurrfilename.c_str());
+	post("  in %s\n", printingCurrfilename.c_str());
 	post("  line %d char %d:\n\n", linenum+errLineOffset, charpos);
 	// nice: postfl previous line for context
 
@@ -1422,7 +1422,7 @@ symbol3 : {
 			}
 		} while (c != endchar && c != 0);
 		if (c == 0) {
-			post("Open ended symbol started on line %d in file '%s'\n",
+			post("Open ended symbol started on line %d of %s\n",
 				 startline, printingCurrfilename.c_str());
 			goto error2;
 		}
@@ -1441,7 +1441,7 @@ string1 : {
 			}
 		} while (c != endchar && c != 0);
 		if (c == 0) {
-			post("Open ended string started on line %d in file '%s'\n",
+			post("Open ended string started on line %d of %s\n",
 				 startline, printingCurrfilename.c_str());
 			goto error2;
 		}
@@ -1473,7 +1473,7 @@ comment2 : {
 			prevc = c;
 		} while (c != 0);
 		if (c == 0) {
-			post("Open ended comment started on line %d in file '%s'\n",
+			post("Open ended comment started on line %d of %s\n",
 				 startline, printingCurrfilename.c_str());
 			goto error2;
 		}
@@ -1481,7 +1481,7 @@ comment2 : {
 	}
 
 error1:
-	post("  in file '%s' line %d char %d\n", printingCurrfilename.c_str(), lineno, charno);
+	post("  in %s line %d char %d\n", printingCurrfilename.c_str(), lineno, charno);
 	res = false;
 	goto leave;
 
