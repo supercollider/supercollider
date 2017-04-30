@@ -35,6 +35,8 @@
 
 #define DEBUG_SCFS
 
+#define SC_FOLDERNAME_EXTENSIONS "Extensions"
+
 #include <map> // map
 #include <codecvt> // codecvt_utf8
 #include <boost/filesystem/path.hpp> // path
@@ -68,7 +70,15 @@ public:
 
 	// Get and set the path associated with a directory name.
 	// The path is initialized first if necessary.
-	Path        getDirectory(const DirName& dn);
+	Path getDirectory(const DirName& dn)
+	{
+		const DirMap::const_iterator& it = mDirectoryMap.find(dn);
+		if (it != mDirectoryMap.end()) {
+			return it->second;
+		}
+		return mDirectoryMap[dn] = defaultDirectory(dn);
+	}
+
 	inline void setDirectory(const DirName& dn, const Path& p) { mDirectoryMap[dn] = p; }
 
 	// Expands a path starting with `~` to use the user's home directory.
@@ -105,18 +115,48 @@ public:
 private:
 	SC_Filesystem() {};
 
+	//
 	static bool isNonHostPlatformDirectory(const std::string& p);
 
-	// Loads in the default directories (OS-specific)
-	// @TODO: inline initDirectory, systemExtDir, userExtDir
-	bool initDirectory(const DirName& dn);
+	Path defaultDirectory(const DirName& dn)
+	{
+		switch (dn) {
+			case DirName::SystemAppSupport:
+				return defaultSystemAppSupportDirectory();
+			case DirName::SystemExtension:
+				return defaultSystemExtensionDirectory();
+			case DirName::UserHome:
+				return defaultUserHomeDirectory();
+			case DirName::UserAppSupport:
+				return defaultUserAppSupportDirectory();
+			case DirName::UserExtension:
+				return defaultUserExtensionDirectory();
+			case DirName::UserConfig:
+				return defaultUserConfigDirectory();
+			case DirName::Resource:
+				return defaultResourceDirectory();
+			default:
+				return Path();
+		}
+	}
+	
 	static Path defaultSystemAppSupportDirectory();
-	static Path defaultSystemExtensionDirectory();
 	static Path defaultUserHomeDirectory();
 	static Path defaultUserAppSupportDirectory();
-	static Path defaultUserExtensionDirectory();
 	static Path defaultUserConfigDirectory();
 	static Path defaultResourceDirectory();
+
+	static Path defaultSystemExtensionDirectory()
+	{
+		const Path& p = defaultUserAppSupportDirectory();
+		return p.empty() ? p : p / SC_FOLDERNAME_EXTENSIONS;
+	}
+
+	static Path defaultUserExtensionDirectory()
+	{
+		const Path& p = defaultUserAppSupportDirectory();
+		return p.empty() ? p : p / SC_FOLDERNAME_EXTENSIONS;
+	}
 
 	DirMap mDirectoryMap;
 };

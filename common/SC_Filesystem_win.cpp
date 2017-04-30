@@ -51,28 +51,8 @@ using DirMap = SC_Filesystem::DirMap;
 //============ DIRECTORY NAMES =============//
 const char* gIdeName = "none"; // @TODO: move out
 const char* SUPERCOLLIDER_DIR_NAME = "SuperCollider";
-const char* EXTENSIONS_DIR_NAME = "Extensions";
 
 //============ PATH UTILITIES =============//
-
-Path SC_Filesystem::getDirectory(const DirName& dn)
-{
-#ifdef DEBUG_SCFS
-	cout << "SCFS::getDirectory: enter" << endl;
-#endif
-	const DirMap::const_iterator& it = mDirectoryMap.find(dn);
-	Path p;
-	if (it != mDirectoryMap.end()) {
-		p = it->second;
-	} else {
-		p = initDirectory(dn) ? mDirectoryMap.find(dn)->second : Path();
-	}
-#ifdef DEBUG_SCFS
-	cout << "\tgot " << p << endl;
-	cout << "SCFS::getDirectory: exit" << endl;
-#endif
-	return p;
-}
 
 bool SC_Filesystem::shouldNotCompileDirectory(const Path& p) const
 {
@@ -92,68 +72,6 @@ bool SC_Filesystem::isStandalone() { return false; }
 std::string SC_Filesystem::pathAsUTF8String(const Path& p) { return p.string(std::codecvt_utf8<wchar_t>()); }
 
 Path SC_Filesystem::resolveIfAlias(const Path& p, bool& isAlias) { isAlias = true; return p; }
-
-// Returns false if initialization failed
-bool SC_Filesystem::initDirectory(const DirName& dn)
-{
-#ifdef DEBUG_SCFS
-	cout << "SCFS::initDirectory: enter" << endl;
-	cout << "\tdn: " << (int)dn << endl;
-#endif
-	Path p;
-
-	switch (dn) {
-		case DirName::SystemAppSupport:
-			p = defaultSystemAppSupportDirectory();
-			break;
-
-		case DirName::SystemExtension:
-			p = defaultSystemExtensionDirectory();
-			break;
-
-		case DirName::UserHome:
-			p = defaultUserHomeDirectory();
-			break;
-
-		case DirName::UserAppSupport:
-			p = defaultUserAppSupportDirectory();
-			break;
-
-		case DirName::UserExtension:
-			p = defaultUserExtensionDirectory();
-			break;
-
-		case DirName::UserConfig:
-			p = defaultUserConfigDirectory();
-			break;
-
-		case DirName::Resource:
-			p = defaultResourceDirectory();
-			break;
-
-		default:
-#ifdef DEBUG_SCFS
-			cout << "\tdefault case" << endl;
-#endif
-			break;
-	}
-
-	if (!p.empty()) {
-#ifdef DEBUG_SCFS
-		cout << "\tsuccess: " << p << endl;
-#endif
-		mDirectoryMap[dn] = p;
-	} else {
-#ifdef DEBUG_SCFS
-		cout << "\tinit failed" << endl;
-#endif
-	}
-
-#ifdef DEBUG_SCFS
-	cout << "SCFS::initDirectory: exit" << endl;
-#endif
-	return !p.empty();
-}
 
 //============ GLOB UTILITIES =============//
 
@@ -221,12 +139,6 @@ Path SC_Filesystem::defaultSystemAppSupportDirectory()
 	return FAILED(hr) ? Path() : Path(wptr) / SUPERCOLLIDER_DIR_NAME;
 }
 
-Path SC_Filesystem::defaultSystemExtensionDirectory()
-{
-	const Path& p = defaultSystemAppSupportDirectory();
-	return p.empty() ? p : p / EXTENSIONS_DIR_NAME;
-}
-
 Path SC_Filesystem::defaultUserHomeDirectory()
 {
 	wchar_t* wptr;
@@ -239,12 +151,6 @@ Path SC_Filesystem::defaultUserAppSupportDirectory()
 	wchar_t* wptr;
 	const HRESULT hr = SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, nullptr, wptr);
 	return FAILED(hr) ? Path() : Path(wptr) / SUPERCOLLIDER_DIR_NAME;
-}
-
-Path SC_Filesystem::defaultUserExtensionDirectory()
-{
-	const Path& p = defaultUserAppSupportDirectory();
-	return p.empty() ? p : p / EXTENSIONS_DIR_NAME;
 }
 
 Path SC_Filesystem::defaultUserConfigDirectory()
