@@ -71,7 +71,7 @@ static const char* getBundleName();
 
 bool SC_Filesystem::shouldNotCompileDirectory(const Path& p) const
 {
-	const std::string& dirname = p.filename().string();
+	const std::string& dirname = pathAsUTF8String(p.filename());;
 	const std::string& idePath = std::string("scide_") + gIdeName;
 	return (boost::iequals(dirname, "help") ||
 					boost::iequals(dirname, "ignore") ||
