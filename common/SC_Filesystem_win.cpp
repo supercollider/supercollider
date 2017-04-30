@@ -29,19 +29,13 @@
 
 #include "SC_Filesystem.hpp"
 
-// stdlib
-#include <string>
-
 #ifdef DEBUG_SCFS
 #include <iostream>
 using std::cout;
 using std::endl;
 #endif
 
-// boost
-#include <boost/algorithm/string/predicate.hpp> // iequals
-
-// system includes
+// system
 #include <Shlobj.h> // SHGetKnownFolderPath
 
 using Path = SC_Filesystem::Path;
@@ -49,19 +43,6 @@ using DirName = SC_Filesystem::DirName;
 using DirMap = SC_Filesystem::DirMap;
 
 //============ PATH UTILITIES =============//
-
-bool SC_Filesystem::shouldNotCompileDirectory(const Path& p) const
-{
-	const std::string& dirname = pathAsUTF8String(p.filename());
-	const std::string& idePath = std::string("scide_") + gIdeName;
-	return (boost::iequals(dirname, "help") ||
-			boost::iequals(dirname, "ignore") ||
-			dirname == ".svn" ||
-			dirname == ".git" ||
-			dirname == "_darcs" ||
-			dirname == idePath ||
-			isNonHostPlatformDirectory(dirname));
-}
 
 bool SC_Filesystem::isStandalone() { return false; }
 
@@ -126,7 +107,7 @@ Path SC_Filesystem::globNext(Glob* glob)
 
 //============= PRIVATE METHODS ==============//
 
-bool SC_Filesystem::isNonHostPlatformDirectory(const std::string& s)
+bool SC_Filesystem::isNonHostPlatformDirectoryName(const std::string& s)
 {
 	return s == "linux" || s == "osx" || s == "iphone";
 }

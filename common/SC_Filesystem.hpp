@@ -134,13 +134,21 @@ public:
 	  * \param p a directory path
 	  * \return True if the directory should not be traversed during compilation.
 	  *
-	  * Specifically, returns true if the directory name is:
+	  * Specifically, returns true if the directory name, ignoreing case, is equal to:
 	  * - one of ".svn", ".git", or "_darcs"
-	  * - one of "help" or "ignore", ignoring case
-	  * - the string composed of "scide_" and a string representing the current IDE name
+	  * - one of "help" or "ignore"
+	  * - a string starting with "scide_" but not ending with the current IDE name
 	  * - one of "windows", "osx", "iphone", or "linux", but that is not the name of the current platform.
 	  */
-	bool shouldNotCompileDirectory(const Path& p) const;
+	bool shouldNotCompileDirectory(const Path& p) const
+	{
+		std::string dirname = pathAsUTF8String(p.filename());
+		std::transform(dirname.begin(), dirname.end(), dirname.begin(), ::tolower);
+		return dirname == "help" || dirname == "ignore" || dirname == ".svn" ||
+		       dirname == ".git" || dirname == "_darcs" ||
+		       isUnusedIdeDirectoryName(dirname) ||
+		       isNonHostPlatformDirectoryName(dirname);
+	}
 
 	/// Returns true if, on macOS, SuperCollider is operating as a standalone application.
 	static bool isStandalone();
@@ -193,7 +201,12 @@ private:
 
 	/** Of the four strings "windows", "osx", "linux", "iphone", returns true if `p` is one of the
 	 * three that doesn't correspond to this platform. */
-	static bool isNonHostPlatformDirectory(const std::string& p);
+	static bool isNonHostPlatformDirectoryName(const std::string& p);
+
+	bool isUnusedIdeDirectoryName(const std::string& s) const
+	{
+		return s.size() > 6 && s.substr(0, 6) == "scide_" && s.substr(6) != getIdeName();
+	}
 
 	Path defaultDirectory(const DirName& dn)
 	{

@@ -30,18 +30,11 @@
 #include "SC_Filesystem.hpp"
 #include "SC_StandAloneInfo_Darwin.h"
 
-// stdlib
-#include <string>   // std::string
-#include <map>      // std::map
-
 #ifdef DEBUG_SCFS
 #include <iostream>
 using std::cout;
 using std::endl;
 #endif
-
-// boost
-#include <boost/algorithm/string/predicate.hpp> // iequals
 
 // system includes
 #include <Foundation/NSAutoreleasePool.h>
@@ -66,19 +59,6 @@ const Path ROOT_PATH = Path("/");
 static const char* getBundleName();
 
 //============ PATH UTILITIES =============//
-
-bool SC_Filesystem::shouldNotCompileDirectory(const Path& p) const
-{
-	const std::string& dirname = pathAsUTF8String(p.filename());;
-	const std::string& idePath = std::string("scide_") + gIdeName;
-	return (boost::iequals(dirname, "help") ||
-					boost::iequals(dirname, "ignore") ||
-					dirname == ".svn" ||
-					dirname == ".git" ||
-					dirname == "_darcs" ||
-					dirname == idePath ||
-					isNonHostPlatformDirectory(dirname));
-}
 
 bool SC_Filesystem::isStandalone()
 {
@@ -160,7 +140,7 @@ Path SC_Filesystem::globNext(Glob* glob)
 
 //============= PRIVATE METHODS ==============//
 
-bool SC_Filesystem::isNonHostPlatformDirectory(const std::string& s)
+bool SC_Filesystem::isNonHostPlatformDirectoryName(const std::string& s)
 {
 	return s == "linux" || s == "windows" || s == "iphone";
 }
