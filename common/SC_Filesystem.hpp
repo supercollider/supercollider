@@ -1,11 +1,32 @@
+/**
+ *  \file SC_Filesystem.hpp
+ *
+ *  \brief Filesystem utilities for SuperCollider.
+ *
+ *  This header provides a singleton class, SC_Filesystem, which handles many
+ *  important filesystem functions:
+ *  - Getting and setting application directories (such as config, resource, and extension)
+ *  - Expanding ~ to the home directory
+ *  - Alias resolution
+ *  - Globbing
+ *  - Conversion between Path and UTF-8 encoded string
+ *
+ *  \note This header replaced an older implementation by Tim Walters, SC_DirUtils.hpp. Most of the globbing and
+ *        directory calculation code is his.
+ *
+ *  $Authors: Brian Heim, Tim Walters $
+ *
+ *  \version Latest revision by Brian Heim, 2017
+ *
+ *  $Date: 2017-04-30 $
+ *
+ *  $Contact: brianlheim@gmail.com $
+ *
+ *  Created on: 2017-04-03
+ *
+ *  Original revision by Tim Walters, 2005-10-19.
+ */
 /*
- *  Copyright (c) 2005 Tim Walters. All rights reserved.
- *  Copyright (c) 2017 Brian Heim. All rights reserved.
- *  Created by Tim Walters on 2005-10-19.
- *
- *	Revision history:
- *	  Changed from SC_DirUtils to SC_Filesystem (Brian Heim, 2017-04-03)
- *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License as
  *  published by the Free Software Foundation; either version 2 of the
@@ -22,33 +43,36 @@
  *  02110-1301 USA
  */
 
-/*
- *  Filesystem utilities and properties for SuperCollider.
- *  Singleton class that loads default directories if they
- *  are requested before being set.
- *  Uses boost::filesystem::path as its main interface for
- *  cross-platform compatibility and ease of notation.
- */
-
 #ifndef SC_FILESYSTEM_HPP_INCLUDED
 #define SC_FILESYSTEM_HPP_INCLUDED
 
 #define DEBUG_SCFS
 
+/// Name of the folder used for system and user extensions.
 #define SC_FOLDERNAME_EXTENSIONS "Extensions"
 
 #include <map> // map
-#include <codecvt> // codecvt_utf8
 #include <boost/filesystem/path.hpp> // path
 
+/** \class SC_Filesystem
+ *
+ *  \brief A singleton class providing SuperCollider filesystem utilities.
+ *
+ *  - Getting and setting application directories (such as config, resource, and extension)
+ *  - Expanding ~ to the home directory
+ *  - Alias resolution
+ *  - Globbing
+ *  - Conversion between Path and UTF-8 encoded string
+ */
 class SC_Filesystem {
 public:
 	enum class DirName;
 	struct     Glob;
 
-	typedef boost::filesystem::path    Path;
-	typedef std::map<DirName, Path>    DirMap;
+	typedef boost::filesystem::path Path;   ///< Path type.
+	typedef std::map<DirName, Path> DirMap; ///< Type of directory name-to-path map.
 
+	/// SuperCollider common directory names.
 	enum class DirName {
 		SystemAppSupport,
 		SystemExtension,
@@ -59,17 +83,14 @@ public:
 		Resource
 	};
 
-	// singleton
-	SC_Filesystem(SC_Filesystem const&) = delete;
-	void operator=(SC_Filesystem const&) = delete;
+	/// Singleton instance.
 	static SC_Filesystem& instance()
 	{
 		static SC_Filesystem instance;
 		return instance;
 	}
 
-	// Get and set the path associated with a directory name.
-	// The path is initialized first if necessary.
+	/// Get path associated with a common directory; the path is initialized if necessary.
 	Path getDirectory(const DirName& dn)
 	{
 		const DirMap::const_iterator& it = mDirectoryMap.find(dn);
@@ -79,10 +100,11 @@ public:
 		return mDirectoryMap[dn] = defaultDirectory(dn);
 	}
 
+	/// Set path associated with a common directory.
 	inline void setDirectory(const DirName& dn, const Path& p) { mDirectoryMap[dn] = p; }
 
-	// Expands a path starting with `~` to use the user's home directory.
-	Path        expandTilde(const Path& p)
+	/// Expands a path starting with `~` to use the user's home directory.
+	Path expandTilde(const Path& p)
 	{
 		static const Path tilde("~");
 		Path::const_iterator piter = p.begin();
@@ -96,26 +118,57 @@ public:
 		}
 	}
 
-	bool        shouldNotCompileDirectory(const Path& p) const;
+	// @TODO: refactor w/ lang config
+	/** \brief Checks whether a directory should be compiled.
+	  * \param p a directory path
+	  * \return True if the directory should not be traversed during compilation.
+	  *
+	  * Specifically, returns true if the directory name is:
+	  * - one of ".svn", ".git", or "_darcs"
+	  * - one of "help" or "ignore", ignoring case
+	  * - the string composed of "scide_" and a string representing the current IDE name
+	  * - one of "windows", "osx", "iphone", or "linux", but that is not the name of the current platform.
+	  */
+	bool shouldNotCompileDirectory(const Path& p) const;
+
+	/// Returns true if, on macOS, SuperCollider is operating as a standalone application.
 	static bool isStandalone();
+
+	/** \brief Converts a Path to a UTF-8 encoded string.
+	  * 
+	  * On Windows, conversion is done using the std::codecvt_utf8<wchar_t> facet.
+	  * On all other platforms, this just calls .string(). */
 	static std::string pathAsUTF8String(const Path&);
 
-	// postconditions: isAlias is true if path is an alias, and false otherwise
-	// returns: the resolved path if resolution occurred
-	//          the original path if no resolution occurred
-	//          Path() if resolution failed
+	/** \brief Resolves an alias on macOS.
+	  * \param p a path to resolve
+	  * \param isAlias set to true if p is an alias
+	  * \return An empty path if resolution failed; otherwise, the resolved path.
+	  * 
+	  * If the path was not an alias, a copy is returned. */
 	// @TODO: Could possibly be split into `isAlias` and `resolveAlias` to avoid
 	// unnecessary copying
 	static Path resolveIfAlias(const Path& p, bool& isAlias);
 
+	/** \brief Makes a glob.
+	  *
+	  * Constructs a Glob from a given pattern. Call globNext to get the next
+	  * Path in the glob. Client is responsible for calling freeGlob. */
 	static Glob* makeGlob(const char* pattern);
-	static Path globNext(Glob* g); // Returns empty path for end-of-stream
+
+	/// Next available Path in the glob. Returns empty path to indicate end.
+	static Path globNext(Glob* g);
+
+	/// Frees a Glob.
 	static void freeGlob(Glob* g);
 
 private:
+	SC_Filesystem(SC_Filesystem const&) = delete;
+	void operator=(SC_Filesystem const&) = delete;
 	SC_Filesystem() {};
 
-	//
+	/** Of the four strings "windows", "osx", "linux", "iphone", returns true if `p` is one of the
+	 * three that doesn't correspond to this platform. */
 	static bool isNonHostPlatformDirectory(const std::string& p);
 
 	Path defaultDirectory(const DirName& dn)
