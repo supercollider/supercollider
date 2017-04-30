@@ -50,8 +50,6 @@ using DirName = SC_Filesystem::DirName;
 using DirMap = SC_Filesystem::DirMap;
 
 //============ DIRECTORY NAMES =============//
-const char* gIdeName = "none"; // @TODO: move out
-const char* SUPERCOLLIDER_DIR_NAME = "SuperCollider";
 const char* LIBRARY_DIR_NAME = "Library";
 const char* DOCUMENTS_DIR_NAME = "Documents";
 const char* APPLICATION_SUPPORT_DIR_NAME = "Application Support";

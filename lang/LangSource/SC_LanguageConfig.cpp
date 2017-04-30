@@ -33,7 +33,6 @@
 #include <yaml-cpp/yaml.h>                 // YAML
 
 SC_LanguageConfig::Path SC_LanguageConfig::gConfigFile;
-std::string SC_LanguageConfig::gIdeName = "none";
 bool SC_LanguageConfig::gPostInlineWarnings = false;
 
 SC_LanguageConfig* gLanguageConfig;

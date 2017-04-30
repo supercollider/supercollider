@@ -54,7 +54,15 @@
 /// Name of the folder used for system and user extensions.
 #define SC_FOLDERNAME_EXTENSIONS "Extensions"
 
+/// Name of "SuperCollider" folder. Could probably pop this up another level of importance.
+#define SC_FOLDERNAME_APPLICATION_NAME "SuperCollider"
+
+/// Default IDE name.
+#define SC_DEFAULT_IDE_NAME "none"
+
 #include <map> // map
+#include <algorithm> // std::transform
+#include <string> // std::string
 #include <boost/filesystem/path.hpp> // path
 
 /** \class SC_Filesystem
@@ -153,6 +161,15 @@ public:
 	// unnecessary copying
 	static Path resolveIfAlias(const Path& p, bool& isAlias);
 
+	/// Get the IDE name. "none" is the default.
+	const std::string& getIdeName() const { return mIdeName; }
+
+	/// Set the IDE name.
+	const void setIdeName(const std::string& s) { mIdeName = s; }
+
+	/// Returns true if the IDE name is "none" (the default)
+	const bool usingIde() const { return mIdeName != SC_DEFAULT_IDE_NAME; }
+
 	/** \brief Makes a glob.
 	  *
 	  * Constructs a Glob from a given pattern. Call globNext to get the next
@@ -168,7 +185,11 @@ public:
 private:
 	SC_Filesystem(SC_Filesystem const&) = delete;
 	void operator=(SC_Filesystem const&) = delete;
-	SC_Filesystem() {};
+
+	SC_Filesystem() :
+		mDirectoryMap(),
+		mIdeName(SC_DEFAULT_IDE_NAME)
+	{};
 
 	/** Of the four strings "windows", "osx", "linux", "iphone", returns true if `p` is one of the
 	 * three that doesn't correspond to this platform. */
@@ -215,6 +236,7 @@ private:
 	}
 
 	DirMap mDirectoryMap;
+	std::string mIdeName;
 };
 
 #endif // SC_FILESYSTEM_HPP_INCLUDED

@@ -56,8 +56,6 @@ using DirName = SC_Filesystem::DirName;
 using DirMap = SC_Filesystem::DirMap;
 
 //============ DIRECTORY NAMES =============//
-const char* gIdeName = "none"; // @TODO: move out
-const char* SUPERCOLLIDER_DIR_NAME = "SuperCollider";
 const char* LIBRARY_DIR_NAME = "Library";
 const char* APPLICATION_SUPPORT_DIR_NAME = "Application Support";
 const Path ROOT_PATH = Path("/");
@@ -186,7 +184,7 @@ Path SC_Filesystem::defaultUserAppSupportDirectory()
 	// see http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
 	const char* home = getenv("XDG_DATA_HOME");
 	if (home)
-		return Path(home) / SUPERCOLLIDER_DIR_NAME;
+		return Path(home) / SC_FOLDERNAME_APPLICATION_NAME;
 
 	const Path& p = defaultUserHomeDirectory();
 	// "/Users/[username]/Library/Application Support/[SuperCollider]"
@@ -200,7 +198,7 @@ Path SC_Filesystem::defaultUserConfigDirectory()
 	const char* xdgConfigHome = getenv("XDG_CONFIG_HOME");
 
 	if (xdgConfigHome)
-		return Path(xdgConfigHome) / SUPERCOLLIDER_DIR_NAME;
+		return Path(xdgConfigHome) / SC_FOLDERNAME_APPLICATION_NAME;
 	else
 		return defaultUserAppSupportDirectory();
 }
@@ -229,7 +227,7 @@ const char* getBundleName()
 			}
 		}
 	}
-	return SUPERCOLLIDER_DIR_NAME;
+	return SC_FOLDERNAME_APPLICATION_NAME;
 }
 
 #endif // defined(__APPLE__) && !defined(SC_IPHONE)

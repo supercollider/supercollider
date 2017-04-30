@@ -65,10 +65,6 @@ public:
 	static const Path& getConfigPath() { return gConfigFile; }
 	static const void setConfigPath(const Path& p) { gConfigFile = p; }
 
-	static const std::string& getIdeName() { return gIdeName; }
-	static const void setIdeName(const std::string& s) { gIdeName = s; }
-	static const bool usingIde() { return !gIdeName.empty() && gIdeName != "none"; }
-
 private:
 	static const bool findPath(const DirVector&, const Path&);
 	static const bool addPath(DirVector&, const Path&);
@@ -78,7 +74,6 @@ private:
 	DirVector mExcludedDirectories;
 	DirVector mDefaultClassLibraryDirectories;
 	static Path gConfigFile;
-	static std::string gIdeName;
 	static bool gPostInlineWarnings;
 };
 

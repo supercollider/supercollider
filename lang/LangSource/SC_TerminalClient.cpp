@@ -129,7 +129,7 @@ void SC_TerminalClient::printUsage()
 			memGrowBuf,
 			memSpaceBuf,
 			opt.mPort,
-			SC_LanguageConfig::getIdeName().c_str()
+			SC_Filesystem::instance().getIdeName().c_str()
 		);
 }
 
@@ -190,7 +190,7 @@ bool SC_TerminalClient::parseOptions(int& argc, char**& argv, Options& opt)
 				goto optArgExpected;
 				break;
 			case 'i':
-				SC_LanguageConfig::setIdeName(optarg);
+				SC_Filesystem::instance().setIdeName(optarg);
 				break;
 			case 'a':
 				opt.mStandalone = true;
@@ -615,7 +615,7 @@ void SC_TerminalClient::pushCmdLine( const char *newData, size_t size)
 void SC_TerminalClient::initInput()
 {
 #ifdef HAVE_READLINE
-	if (!SC_LanguageConfig::usingIde()) {
+	if (!SC_Filesystem::instance().usingIde()) {
 		// Other clients (emacs, vim, ...) won't want to interact through rl
 		mUseReadline = true;
 		return;

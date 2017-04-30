@@ -48,10 +48,6 @@ using Path = SC_Filesystem::Path;
 using DirName = SC_Filesystem::DirName;
 using DirMap = SC_Filesystem::DirMap;
 
-//============ DIRECTORY NAMES =============//
-const char* gIdeName = "none"; // @TODO: move out
-const char* SUPERCOLLIDER_DIR_NAME = "SuperCollider";
-
 //============ PATH UTILITIES =============//
 
 bool SC_Filesystem::shouldNotCompileDirectory(const Path& p) const
@@ -139,7 +135,7 @@ Path SC_Filesystem::defaultSystemAppSupportDirectory()
 {
 	wchar_t* wptr;
 	const HRESULT hr = SHGetKnownFolderPath(FOLDERID_RoamingAppData, 0, nullptr, wptr);
-	return FAILED(hr) ? Path() : Path(wptr) / SUPERCOLLIDER_DIR_NAME;
+	return FAILED(hr) ? Path() : Path(wptr) / SC_FOLDERNAME_APPLICATION_NAME;
 }
 
 Path SC_Filesystem::defaultUserHomeDirectory()
@@ -153,7 +149,7 @@ Path SC_Filesystem::defaultUserAppSupportDirectory()
 {
 	wchar_t* wptr;
 	const HRESULT hr = SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, nullptr, wptr);
-	return FAILED(hr) ? Path() : Path(wptr) / SUPERCOLLIDER_DIR_NAME;
+	return FAILED(hr) ? Path() : Path(wptr) / SC_FOLDERNAME_APPLICATION_NAME;
 }
 
 Path SC_Filesystem::defaultUserConfigDirectory()

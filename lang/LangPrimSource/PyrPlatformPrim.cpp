@@ -94,7 +94,7 @@ static int prWinPlatform_myDocumentsDir(struct VMGlobals *g, int numArgsPushed)
 static int prPlatform_ideName(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	PyrString* string = newPyrString(g->gc, SC_LanguageConfig::getIdeName().c_str(), 0, true);
+	PyrString* string = newPyrString(g->gc, SC_Filesystem::instance().getIdeName().c_str(), 0, true);
 	SetObject(a, string);
 	return errNone;
 }

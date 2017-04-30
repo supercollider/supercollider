@@ -50,8 +50,6 @@ using DirName = SC_Filesystem::DirName;
 using DirMap = SC_Filesystem::DirMap;
 
 //============ DIRECTORY NAMES =============//
-const char* gIdeName = "none"; // @TODO: move out
-const char* SUPERCOLLIDER_DIR_NAME = "SuperCollider";
 const char* SHARE_DIR_NAME = "share";
 const char* USER_DIR_NAME = "usr";
 const char* LOCAL_DIR_NAME = "local";
@@ -127,7 +125,7 @@ Path SC_Filesystem::defaultSystemAppSupportDirectory()
 #ifdef SC_DATA_DIR
 	return Path(SC_DATA_DIR);
 #else
-	return ROOT_PATH / LOCAL_DIR_NAME / SHARE_DIR_NAME / SUPERCOLLIDER_DIR_NAME;
+	return ROOT_PATH / LOCAL_DIR_NAME / SHARE_DIR_NAME / SC_FOLDERNAME_APPLICATION_NAME;
 #endif
 }
 
@@ -141,20 +139,20 @@ Path SC_Filesystem::defaultUserAppSupportDirectory()
 {
 	const char *xdg_data_home = getenv("XDG_DATA_HOME");
 	if (xdg_data_home)
-		return Path(xdg_data_home) / SUPERCOLLIDER_DIR_NAME;
+		return Path(xdg_data_home) / SC_FOLDERNAME_APPLICATION_NAME;
 
 	const Path& p = defaultUserHomeDirectory();
-	return p.empty() ? p : p / DOT_LOCAL / SHARE_DIR_NAME / SUPERCOLLIDER_DIR_NAME;
+	return p.empty() ? p : p / DOT_LOCAL / SHARE_DIR_NAME / SC_FOLDERNAME_APPLICATION_NAME;
 }
 
 Path SC_Filesystem::defaultUserConfigDirectory()
 {
 	const char *xdg_config_home = getenv("XDG_CONFIG_HOME");
 	if (xdg_config_home)
-		return Path(xdg_config_home) / SUPERCOLLIDER_DIR_NAME;
+		return Path(xdg_config_home) / SC_FOLDERNAME_APPLICATION_NAME;
 
 	const Path& p = defaultUserHomeDirectory();
-	return p.empty() ? p : p / DOT_CONFIG / SUPERCOLLIDER_DIR_NAME;
+	return p.empty() ? p : p / DOT_CONFIG / SC_FOLDERNAME_APPLICATION_NAME;
 }
 
 Path SC_Filesystem::defaultResourceDirectory()
@@ -162,7 +160,7 @@ Path SC_Filesystem::defaultResourceDirectory()
 #ifdef SC_DATA_DIR // @TODO: determine use of SC_DATA_DIR
 	return Path(SC_DATA_DIR);
 #else
-	return ROOT_PATH / USER_DIR_NAME / SHARE_DIR_NAME / SUPERCOLLIDER_DIR_NAME;
+	return ROOT_PATH / USER_DIR_NAME / SHARE_DIR_NAME / SC_FOLDERNAME_APPLICATION_NAME;
 #endif
 }
 
