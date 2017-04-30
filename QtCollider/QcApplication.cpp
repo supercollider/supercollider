@@ -88,7 +88,7 @@ QcApplication::QcApplication( int & argc, char ** argv )
   SC::Apple::disableAppNap();
 #endif
   
-	_handleCmdPeriod = SC_Filesystem::instance().getIdeName() != "scapp";
+  _handleCmdPeriod = SC_Filesystem::instance().getIdeName() != "scapp";
 }
 
 QcApplication::~QcApplication()
