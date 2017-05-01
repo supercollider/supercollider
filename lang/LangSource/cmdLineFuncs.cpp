@@ -19,13 +19,18 @@
 */
 
 #include "SC_LanguageClient.h"
+#include <windows.h>
 
 int main(int argc, char** argv)
 {
+	UINT oldCodePage = GetConsoleOutputCP();
+	if (!SetConsoleOutputCP(65001)) // UTF-8 codepage
+		return 2;
 	SC_LanguageClient * client = createLanguageClient("sclang");
 	if (!client)
 		return 1;
 	int returnCode = client->run(argc, argv);
 	destroyLanguageClient(client);
+	SetConsoleOutputCP(oldCodePage);
 	return returnCode;
 }

@@ -35,6 +35,9 @@ using std::cout;
 using std::endl;
 #endif
 
+// stdlib
+#include <codecvt>
+
 // system
 #include <Shlobj.h> // SHGetKnownFolderPath
 
@@ -59,9 +62,9 @@ Path SC_Filesystem::resolveIfAlias(const Path& p, bool& isAlias) { isAlias = tru
 struct SC_Filesystem::Glob
 {
 	HANDLE mHandle;
-	char mFolder[MAX_PATH];
+	Path mFolder;
 	WIN32_FIND_DATA mEntry;
-	char mEntryPath[MAX_PATH];
+	Path mEntryPath;
 	bool mAtEnd;
 };
 
@@ -73,9 +76,9 @@ SC_Filesystem::Glob* SC_Filesystem::makeGlob(const char* pattern)
 
 	strncpy(patternWin, pattern, 1024);
 	patternWin[1023] = 0;
-	win32_ReplaceCharInString(patternWin, 1024, '/', '\\'); // TODO: replace
+	// win32_ReplaceCharInString(patternWin, 1024, '/', '\\'); // TODO: replace
 
-	win32_ExtractContainingFolder(glob->mFolder, patternWin, PATH_MAX); // TODO: replace
+	// win32_ExtractContainingFolder(glob->mFolder, patternWin, PATH_MAX); // TODO: fix
 
 	glob->mHandle = ::FindFirstFile(patternWin, &glob->mEntry);
 	if (glob->mHandle == INVALID_HANDLE_VALUE) {
@@ -98,7 +101,9 @@ Path SC_Filesystem::globNext(Glob* glob)
 {
 	if (glob->mAtEnd)
 		return Path();
-	strncpy(glob->mEntryPath, glob->mFolder, PATH_MAX);
+	// @TODO: totally broken
+	char patternWin[1024];
+	strncpy(patternWin, glob->mFolder.string().c_str(), PATH_MAX);
 	glob->mEntryPath = (Path(glob->mEntryPath) / glob->mEntry.cFileName).c_str();
 	if (!::FindNextFile(glob->mHandle, &glob->mEntry))
 		glob->mAtEnd = true;
@@ -114,22 +119,22 @@ bool SC_Filesystem::isNonHostPlatformDirectoryName(const std::string& s)
 
 Path SC_Filesystem::defaultSystemAppSupportDirectory()
 {
-	wchar_t* wptr;
-	const HRESULT hr = SHGetKnownFolderPath(FOLDERID_RoamingAppData, 0, nullptr, wptr);
+	PWSTR wptr = nullptr;
+	const HRESULT hr = SHGetKnownFolderPath(FOLDERID_RoamingAppData, 0, nullptr, &wptr);
 	return FAILED(hr) ? Path() : Path(wptr) / SC_FOLDERNAME_APPLICATION_NAME;
 }
 
 Path SC_Filesystem::defaultUserHomeDirectory()
 {
-	wchar_t* wptr;
-	const HRESULT hr = SHGetKnownFolderPath(FOLDERID_Profile, 0, nullptr, wptr);
+	PWSTR wptr = nullptr;
+	const HRESULT hr = SHGetKnownFolderPath(FOLDERID_Profile, 0, nullptr, &wptr);
 	return FAILED(hr) ? Path() : Path(wptr);
 }
 
 Path SC_Filesystem::defaultUserAppSupportDirectory()
 {
-	wchar_t* wptr;
-	const HRESULT hr = SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, nullptr, wptr);
+	PWSTR wptr = nullptr;
+	const HRESULT hr = SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, nullptr, &wptr);
 	return FAILED(hr) ? Path() : Path(wptr) / SC_FOLDERNAME_APPLICATION_NAME;
 }
 
@@ -140,9 +145,9 @@ Path SC_Filesystem::defaultUserConfigDirectory()
 
 Path SC_Filesystem::defaultResourceDirectory()
 {
-	wchar_t buf[MAX_PATH];
+	WCHAR buf[MAX_PATH];
 	// @TODO: error check? (none in original)
-	GetModuleFileName(nullptr, buf, MAX_PATH);
+	GetModuleFileNameW(nullptr, buf, MAX_PATH);
 	return Path(buf).parent_path();
 }
 

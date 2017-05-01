@@ -3501,7 +3501,7 @@ static int prLanguageConfig_getLibraryPaths(struct VMGlobals * g, int numArgsPus
 	SetObject(result, resultArray);
 
 	for (size_t i = 0; i != numberOfPaths; ++i) {
-		PyrString * pyrString = newPyrString(g->gc, dirVector[i].c_str(), 0, true);
+		PyrString * pyrString = newPyrString(g->gc, dirVector[i].string().c_str(), 0, true);
 		SetObject(resultArray->slots + i, pyrString);
 		g->gc->GCWriteNew( resultArray,  pyrString ); // we know pyrString is white so we can use GCWriteNew
 		resultArray->size++;
@@ -3574,7 +3574,7 @@ static int prLanguageConfig_removeExcludePath(struct VMGlobals * g, int numArgsP
 static int prLanguageConfig_getCurrentConfigPath(struct VMGlobals * g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	PyrString* str = newPyrString(g->gc, gLanguageConfig->getConfigPath().c_str(), 0, false);
+	PyrString* str = newPyrString(g->gc, gLanguageConfig->getConfigPath().string().c_str(), 0, false);
     if(str->size == 0) {
         SetNil(a);
     } else {

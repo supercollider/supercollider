@@ -38,7 +38,7 @@ static inline int prPlatform_getDirectory(const struct VMGlobals *g, const DirNa
 {
 	PyrSlot *a = g->sp;
 	const SC_Filesystem::Path& p = SC_Filesystem::instance().getDirectory(dirname);
-	PyrString* string = newPyrString(g->gc, p.c_str(), 0, true);
+	PyrString* string = newPyrString(g->gc, p.string().c_str(), 0, true);
 	SetObject(a, string);
 	return errNone;
 }

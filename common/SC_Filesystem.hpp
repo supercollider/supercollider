@@ -51,6 +51,14 @@
 
 #define DEBUG_SCFS
 
+#ifndef PATH_MAX
+#define PATH_MAX MAX_PATH
+#endif
+
+#ifndef MAXPATHLEN
+#define MAXPATHLEN PATH_MAX
+#endif
+
 /// Name of the folder used for system and user extensions.
 #define SC_FOLDERNAME_EXTENSIONS "Extensions"
 
@@ -64,6 +72,10 @@
 #include <algorithm> // std::transform
 #include <string> // std::string
 #include <boost/filesystem/path.hpp> // path
+
+#include <iostream>
+using std::cout;
+using std::endl;
 
 /** \class SC_Filesystem
  *
@@ -114,11 +126,15 @@ public:
 	/// Get path associated with a common directory; the path is initialized if necessary.
 	Path getDirectory(const DirName& dn)
 	{
+		//cout << "getDirectory: entry" << endl;
 		const DirMap::const_iterator& it = mDirectoryMap.find(dn);
 		if (it != mDirectoryMap.end()) {
+			//cout << it->second << endl;
 			return it->second;
 		}
-		return mDirectoryMap[dn] = defaultDirectory(dn);
+		mDirectoryMap[dn] = defaultDirectory(dn);
+		//cout << mDirectoryMap[dn] << endl;
+		return mDirectoryMap[dn];
 	}
 
 	/// Set path associated with a common directory.

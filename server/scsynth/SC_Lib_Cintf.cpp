@@ -293,7 +293,7 @@ static bool PlugIn_Load(const SC_Filesystem::Path& filename)
 {
 #ifdef _WIN32
 
-	HINSTANCE hinstance = LoadLibrary( filename.c_str() );
+	HINSTANCE hinstance = LoadLibrary( filename.string().c_str() );
 	if (!hinstance) {
 		char *s;
 		DWORD lastErr = GetLastError();
@@ -305,13 +305,13 @@ static bool PlugIn_Load(const SC_Filesystem::Path& filename)
 	}
 
 	void *apiVersionPtr = (void *)GetProcAddress( hinstance, "api_version" );
-	if (!checkAPIVersion(apiVersionPtr, filename.c_str())) {
+	if (!checkAPIVersion(apiVersionPtr, filename.string().c_str())) {
 		FreeLibrary(hinstance);
 		return false;
 	}
 
 	void *serverCheckPtr = (void *)GetProcAddress( hinstance, "server_type" );
-	if (!checkServerVersion(serverCheckPtr , filename.c_str())) {
+	if (!checkServerVersion(serverCheckPtr , filename.string().c_str())) {
 		FreeLibrary(hinstance);
 		return false;
 	}

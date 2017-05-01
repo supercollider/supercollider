@@ -644,10 +644,10 @@ GraphDef* GraphDef_LoadGlob(World *inWorld, const char *pattern, GraphDef *inLis
 	SC_Filesystem::Path path;
 	while (!(path = SC_Filesystem::globNext(glob)).empty()) {
 		if (path.extension() == ".scsyndef") {
-			inList = GraphDef_Load(inWorld, path.c_str(), inList);
+			inList = GraphDef_Load(inWorld, path.string().c_str(), inList);
 		}
 		// why? <sk>
-		GraphDef_Load(inWorld, path.c_str(), inList);
+		GraphDef_Load(inWorld, path.string().c_str(), inList);
 	}
 
 	SC_Filesystem::freeGlob(glob);
@@ -734,7 +734,7 @@ GraphDef* GraphDef_LoadDir(World *inWorld, const char *dirname, GraphDef *inList
 #ifdef DEBUG_SCFS
 				cout << "Processing" << endl;
 #endif
-				inList = GraphDef_Load(inWorld, path.c_str(), inList);
+				inList = GraphDef_Load(inWorld, path.string().c_str(), inList);
 			} else {
 #ifdef DEBUG_SCFS
 				cout << "File was not .scsyndef" << endl;

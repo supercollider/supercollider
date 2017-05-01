@@ -60,7 +60,7 @@ QString standardDirectory( StandardDirectory type )
     }
 
     const SC_Filesystem::Path path = SC_Filesystem::instance().getDirectory(dn);
-    return QString(path.c_str());
+    return QString(SC_Filesystem::pathAsUTF8String(path).c_str());
 }
 
 } // ScIDE

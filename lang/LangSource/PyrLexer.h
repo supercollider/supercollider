@@ -79,8 +79,8 @@ void startLexerCmdLine(char *textbuf, int textbuflen);
 int yylex() ;
 void yyerror(const char *s) ;
 void fatal() ;
-bool isValidSourceFileName(char *filename);
-bool passOne_ProcessOneFile(const char *filename, int level);
+bool isValidSourceFileName(const boost::filesystem::path& path);
+bool passOne_ProcessOneFile(const boost::filesystem::path& path, int level);
 
 boost::filesystem::path relativeToCompileDir(const boost::filesystem::path&);
 

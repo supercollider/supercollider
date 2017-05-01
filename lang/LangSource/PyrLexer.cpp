@@ -168,17 +168,17 @@ double sc_strtof(const char *str, int n, int base)
 	return z;
 }
 
-bool startLexer(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset)
+bool startLexer(PyrSymbol *fileSym, const boost::filesystem::path& p, int startPos, int endPos, int lineOffset);
+bool startLexer(PyrSymbol *fileSym, const boost::filesystem::path& p, int startPos, int endPos, int lineOffset)
 {
 	const char *filename = fileSym->name;
 
 	textlen = -1;
 
 	if(!fileSym->u.source) {
-		const bfs::path path{filename};
 		std::string filetext;
 		// @TODO: error handling
-		bfs::load_string_file(path, filetext);
+		bfs::load_string_file(p, filetext);
 		textlen = filetext.size();
 		text = (char*)pyr_pool_compile->Alloc((textlen+1) * sizeof(char));
 		strcpy(text, filetext.c_str());
@@ -1638,7 +1638,7 @@ void compileClass(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset)
 	gCompilingVMGlobals = 0;
 	gRootParseNode = NULL;
 	initParserPool();
-	if (startLexer(fileSym, startPos, endPos, lineOffset)) {
+	if (startLexer(fileSym, SC_Filesystem::Path(), startPos, endPos, lineOffset)) {
 		//postfl("->Parsing %s\n", fileSym->name); fflush(stdout);
 		parseFailed = yyparse();
 		//postfl("<-Parsing %s %d\n", fileSym->name, parseFailed); fflush(stdout);
@@ -1914,18 +1914,19 @@ static bool passOne_ProcessDir(const bfs::path& dir, int level)
 	std::string skipReason;
 
 	if (ec) {
-		error("Could not open directory '%s': (%d) %s\n", dir.c_str(), ec.value(), ec.message().c_str());
+		error("Could not open directory '%s': (%d) %s\n", dir.string().c_str(), ec.value(), ec.message().c_str());
 		// @TODO: is this the same as the old behavior?
-		if (ec.value() == boost::system::errc::no_such_file_or_directory)
+
+		if (ec.default_error_condition().value() == boost::system::errc::no_such_file_or_directory)
 			return true;
 		else
 			return false;
 	} else if (passOne_ShouldSkipDirectory(dir, skipReason)) {
 		if (!skipReason.empty())
-			post("\t%s: '%s'\n", skipReason.c_str(), dir.c_str());
+			post("\t%s: '%s'\n", skipReason.c_str(), dir.string().c_str());
 		return true;
 	} else {
-		post("\tCompiling directory '%s'\n", dir.c_str());
+		post("\tCompiling directory '%s'\n", dir.string().c_str());
 	}
 
 	compiledDirectories.insert(dir);
@@ -1937,7 +1938,7 @@ static bool passOne_ProcessDir(const bfs::path& dir, int level)
 	while (rditer != bfs::end(rditer)) {
 		const bfs::path& path = *rditer;
 #ifdef DEBUG_SCFS
-		cout << "At: " << path << endl;
+		cout << "At: " << SC_Filesystem::pathAsUTF8String(path) << endl;
 #endif
 
 		if (bfs::is_directory(path)) {
@@ -1949,7 +1950,7 @@ static bool passOne_ProcessDir(const bfs::path& dir, int level)
 				cout << "Skipping directory" << endl;
 #endif
 				if (!skipReason.empty())
-					post("\t%s: '%s'\n", skipReason.c_str(), path.c_str());
+					post("\t%s: '%s'\n", skipReason.c_str(), path.string().c_str());
 				rditer.no_push();
 			} else {
 				compiledDirectories.insert(path);
@@ -1957,7 +1958,7 @@ static bool passOne_ProcessDir(const bfs::path& dir, int level)
 
 		} else { // ordinary file
 #ifdef DEBUG_SCFS
-			cout << "Processing" << endl;
+			//cout << "Processing" << endl;
 #endif
 			bool isAlias = false;
 			const bfs::path& respath = SC_Filesystem::resolveIfAlias(path, isAlias);
@@ -1972,7 +1973,7 @@ static bool passOne_ProcessDir(const bfs::path& dir, int level)
 #ifdef DEBUG_SCFS
 				cout << "Symlink resolution failed: " << respath << endl;
 #endif
-			} else if (!passOne_ProcessOneFile(respath.c_str(), rditer.level())) {
+			} else if (!passOne_ProcessOneFile(respath, rditer.level())) {
 #ifdef DEBUG_SCFS
 				cout << "Could not process " << respath << endl;
 #endif
@@ -1981,7 +1982,7 @@ static bool passOne_ProcessDir(const bfs::path& dir, int level)
 		}
 
 #ifdef DEBUG_SCFS
-		cout << "Incrementing" << endl;
+		//cout << "Incrementing" << endl;
 #endif
 		rditer.increment(ec);
 		if (ec) {
@@ -2015,24 +2016,15 @@ bool passOne()
 
 // @TODO: move to SC_Filesystem (maybe)
 // true if filename ends in ".sc"
-bool isValidSourceFileName(const char *filename)
+bool isValidSourceFileName(const boost::filesystem::path& path)
 {
-	int len = strlen(filename);
-	bool validExtension = (len>3 && strncmp(filename+len-3, ".sc", 3) == 0)
-						  || (len>7 && strncmp(filename+len-7, ".sc.rtf", 7) == 0);
-	if (!validExtension)
-		return false;
-
-	bfs::path pathname(filename);
-
-	if (pathname.filename().c_str()[0] == '.') // hidden filename
-		return false;
-
-	return true;
+	if (path.filename().c_str()[0] == '.')
+		return false; // hidden filename
+	return (path.extension() == ".sc") || (path.extension() == ".rtf" && path.stem().extension() == ".sc");
 }
 
 // sekhar's replacement
-bool passOne_ProcessOneFile(const char * /*filenamearg*/ filename, int level)
+bool passOne_ProcessOneFile(const boost::filesystem::path& path, int level)
 {
 	bool success = true;
 
@@ -2049,20 +2041,22 @@ bool passOne_ProcessOneFile(const char * /*filenamearg*/ filename, int level)
 		return success;
 	}*/
 
-	if (gLanguageConfig && gLanguageConfig->pathIsExcluded(filename)) {
-	  post("\texcluding file: '%s'\n", filename);
+	const std::string path_str = SC_Filesystem::pathAsUTF8String(path);
+	const char* path_c_str = path_str.c_str();
+	if (gLanguageConfig && gLanguageConfig->pathIsExcluded(path)) {
+	  post("\texcluding file: '%s'\n", path_c_str);
 	  return success;
 	}
 
-	if (isValidSourceFileName(filename)) {
+	if (isValidSourceFileName(path)) {
 		gNumCompiledFiles++;
-		PyrSymbol * fileSym = getsym(filename);
+		PyrSymbol * fileSym = getsym(path_c_str);
 		fileSym->u.source = NULL;
-		if (startLexer(fileSym, -1, -1, -1)) {
+		if (startLexer(fileSym, path, -1, -1, -1)) {
 			while (parseOneClass(fileSym)) { };
 			finiLexer();
 		} else {
-			error("file '%s' open failed\n", filename);
+			error("file '%s' open failed\n", path_c_str);
 			success = false;
 		}
 	} else {
