@@ -203,6 +203,12 @@ public:
 	  * On all other platforms, this just calls .string(). */
 	static std::string pathAsUTF8String(const Path&);
 
+	/** \brief Converts a UTF-8 encoded std::string to a Path.
+	  *
+	  * On Windows, conversion is done using the std::codecvt_utf8_utf16<wchar_t> facet.
+	  * On all other platforms this just calls Path(str) */
+	static Path UTF8StringAsPath(const std::string&);
+
 	/** \brief Resolves an alias on macOS.
 	  * \param p a path to resolve
 	  * \param isAlias set to true if p is an alias

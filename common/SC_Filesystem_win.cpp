@@ -51,7 +51,12 @@ bool SC_Filesystem::isStandalone() { return false; }
 
 std::string SC_Filesystem::pathAsUTF8String(const Path& p)
 {
-	return p.string(std::codecvt_utf8<wchar_t>());
+	return p.string(std::codecvt_utf8_utf16<wchar_t>());
+}
+
+Path SC_Filesystem::UTF8StringAsPath(const std::string& s)
+{
+	return Path(s, std::codecvt_utf8_utf16<wchar_t>());
 }
 
 Path SC_Filesystem::resolveIfAlias(const Path& p, bool& isAlias) { isAlias = true; return p; }
