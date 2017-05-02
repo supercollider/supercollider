@@ -46,7 +46,7 @@ char *strmerge(char *a, char *b) {
 
 static char *striptrailingws(char *s) {
     char *s2 = strchr(s,0);
-    while(--s2 > s && isspace(*s2)) {
+    while(--s2 > s && (*s2 == ' ' || *s2 == '\t' || *s2 == '\n' || *s2 == '\v' || *s2 == '\f' || *s2 == '\r')) {
         *s2 = 0;
     }
     return s;
