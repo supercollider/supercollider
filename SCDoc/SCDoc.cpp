@@ -20,7 +20,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
 #include "SCDoc.h"
 
 DocNode * scdoc_parse_run(int partial);
@@ -46,6 +45,7 @@ char *strmerge(char *a, char *b) {
 
 static char *striptrailingws(char *s) {
     char *s2 = strchr(s,0);
+	// don't use isspace -- triggers assert with VS
     while(--s2 > s && (*s2 == ' ' || *s2 == '\t' || *s2 == '\n' || *s2 == '\v' || *s2 == '\f' || *s2 == '\r')) {
         *s2 = 0;
     }
