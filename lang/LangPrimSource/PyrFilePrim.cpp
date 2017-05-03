@@ -74,8 +74,9 @@ int prFileDelete(struct VMGlobals *g, int numArgsPushed)
 	if (error != errNone)
 		return error;
 
+	const boost::filesystem::path& p = SC_Filesystem::UTF8StringAsPath(filename);
 	boost::system::error_code error_code;
-	boost::filesystem::remove(filename, error_code);
+	boost::filesystem::remove(p, error_code);
 
 	if (error_code)
 		SetFalse(a);
@@ -94,7 +95,8 @@ int prFileMTime(struct VMGlobals * g, int numArgsPushed)
 	if (error != errNone)
 		return error;
 
-	time_t mtime = boost::filesystem::last_write_time(filename);
+	const boost::filesystem::path& p = SC_Filesystem::UTF8StringAsPath(filename);
+	time_t mtime = boost::filesystem::last_write_time(p);
 	SetInt(a, mtime);
 	return errNone;
 }
@@ -108,7 +110,8 @@ int prFileExists(struct VMGlobals * g, int numArgsPushed)
 	if (error != errNone)
 		return error;
 
-	bool res = boost::filesystem::exists(filename);
+	const boost::filesystem::path& p = SC_Filesystem::UTF8StringAsPath(filename);
+	bool res = boost::filesystem::exists(p);
 	SetBool(a, res);
 	return errNone;
 }
@@ -125,7 +128,8 @@ int prFileRealPath(struct VMGlobals* g, int numArgsPushed )
 		return err;
 
 	bool isAlias = false;
-	boost::filesystem::path p = SC_Filesystem::resolveIfAlias(ipath, isAlias);
+	boost::filesystem::path p = SC_Filesystem::UTF8StringAsPath(ipath);
+	p = SC_Filesystem::resolveIfAlias(p, isAlias);
 	if (p.empty())
 		return errFailed;
 
@@ -136,7 +140,7 @@ int prFileRealPath(struct VMGlobals* g, int numArgsPushed )
 		return errNone;
 	}
 
-	strncpy(opath, p.string().c_str(), PATH_MAX-1);
+	strncpy(opath, SC_Filesystem::pathAsUTF8String(p).c_str(), PATH_MAX-1);
 	opath[PATH_MAX-1] = '\0';
 
 	// @TODO: is this necessary?
@@ -167,9 +171,10 @@ int prFileMkDir(struct VMGlobals * g, int numArgsPushed)
 		return error;
 
 	boost::system::error_code error_code;
-	boost::filesystem::create_directories(filename, error_code);
+	const boost::filesystem::path& p = SC_Filesystem::UTF8StringAsPath(filename);
+	boost::filesystem::create_directories(p, error_code);
 	if (error_code)
-		postfl("Warning: %s (\"%s\")\n", error_code.message().c_str(), filename);
+		postfl("Warning: %s (\"%s\")\n", error_code.message().c_str(), p.c_str());
 
 	return errNone;
 }
@@ -187,7 +192,9 @@ int prFileCopy(struct VMGlobals * g, int numArgsPushed)
 	if (error != errNone)
 		return error;
 
-	boost::filesystem::copy(filename1, filename2);
+	const boost::filesystem::path& p1 = SC_Filesystem::UTF8StringAsPath(filename1);
+	const boost::filesystem::path& p2 = SC_Filesystem::UTF8StringAsPath(filename2);
+	boost::filesystem::copy(p1, p2);
 	return errNone;
 }
 
@@ -200,7 +207,8 @@ int prFileType(struct VMGlobals * g, int numArgsPushed)
 	if (error != errNone)
 		return error;
 
-	boost::filesystem::file_status s(boost::filesystem::symlink_status(filename));
+	const boost::filesystem::path& p = SC_Filesystem::UTF8StringAsPath(filename);
+	boost::filesystem::file_status s(boost::filesystem::symlink_status(p));
 	SetInt(a, s.type());
 	return errNone;
 }
@@ -214,7 +222,8 @@ int prFileSize(struct VMGlobals * g, int numArgsPushed)
 	if (error != errNone)
 		return error;
 
-	uintmax_t sz = boost::filesystem::file_size(filename);
+	const boost::filesystem::path& p = SC_Filesystem::UTF8StringAsPath(filename);
+	uintmax_t sz = boost::filesystem::file_size(p);
 	SetInt(a, sz);
 	return errNone;
 }
@@ -223,7 +232,7 @@ int prFileSize(struct VMGlobals * g, int numArgsPushed)
 int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *c;
-	char filename[PATH_MAX];
+	//char filename[PATH_MAX]; // use bfs::path instead
 	char mode[12];
 	PyrFile *pfile;
 	FILE *file;
@@ -238,21 +247,19 @@ int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 	if (slotRawObject(c)->size > 11) return errFailed;
 	pfile = (PyrFile*)slotRawObject(a);
 
-	memcpy(filename, slotRawString(b)->s, slotRawObject(b)->size);
-	filename[slotRawString(b)->size] = 0;
+	const boost::filesystem::path& p = SC_Filesystem::UTF8StringAsPath(slotRawString(b)->s);
 
 	memcpy(mode, slotRawString(c)->s, slotRawObject(c)->size);
 	mode[slotRawString(c)->size] = 0;
 
 #ifdef _WIN32
-	win32_ReplaceCharInString(filename,PATH_MAX,'/','\\');
 	if(strcmp(mode,"w") == 0)
 	strcpy(mode,"wb");
 	if(strcmp(mode,"r") == 0)
 	strcpy(mode,"rb");
 #endif
 	//_WIN32
-	file = fopen(filename, mode);
+	file = fopen(p.string().c_str(), mode);
 	if (file) {
 		SetPtr(&pfile->fileptr, file);
 		SetTrue(a);
@@ -261,25 +268,25 @@ int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 		// check if directory exisits
 		// create a temporary file (somewhere) for a handle
 		// the file is deleted automatically when closed
-		if (boost::filesystem::exists(filename)) {
+		if (boost::filesystem::exists(p)) {
 			int err;
-#ifdef _MSC_VER
+#    ifdef _MSC_VER
 			err = tmpfile_s(&file);
 			if (!err) {
 				SetPtr(&pfile->fileptr, file);
 				SetTrue(a);
 				return errNone;
 			}
-#elif defined(__MINGW32__)
+#    elif defined(__MINGW32__)
 			file = tmpfile();
 			if (file) {
 				SetPtr(&pfile->fileptr, file);
 				SetTrue(a);
 				return errNone;
 			}
-#else
-#error compiler unsupported
-#endif
+#    else
+#        error compiler unsupported
+#    endif
 		}
 #endif
 		SetNil(a);
