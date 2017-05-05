@@ -232,7 +232,7 @@ int prFileSize(struct VMGlobals * g, int numArgsPushed)
 int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *c;
-	//char filename[PATH_MAX]; // use bfs::path instead
+	char filename[PATH_MAX];
 	char mode[12];
 	PyrFile *pfile;
 	FILE *file;
@@ -243,11 +243,15 @@ int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 	if (NotObj(c) || !isKindOf(slotRawObject(c), class_string)
 		|| NotObj(b) || !isKindOf(slotRawObject(b), class_string))
 		return errWrongType;
-	if (slotRawObject(b)->size > PATH_MAX - 1) return errFailed;
-	if (slotRawObject(c)->size > 11) return errFailed;
+	if (slotRawObject(b)->size > PATH_MAX - 1)
+		return errFailed;
+	if (slotRawObject(c)->size > 11)
+		return errFailed;
 	pfile = (PyrFile*)slotRawObject(a);
 
-	const boost::filesystem::path& p = SC_Filesystem::UTF8StringAsPath(slotRawString(b)->s);
+	memcpy(filename, slotRawString(b)->s, slotRawObject(b)->size);
+	filename[slotRawString(b)->size] = 0;
+	const boost::filesystem::path& p = SC_Filesystem::UTF8StringAsPath(filename);
 
 	memcpy(mode, slotRawString(c)->s, slotRawObject(c)->size);
 	mode[slotRawString(c)->size] = 0;
