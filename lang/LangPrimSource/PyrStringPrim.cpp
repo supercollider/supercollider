@@ -537,6 +537,51 @@ int prStringHash(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prString_PathMatch(struct VMGlobals *g, int numArgsPushed);
+int prString_PathMatch(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+	char pattern[PATH_MAX];
+	int err = slotStrVal(a, pattern, PATH_MAX-1);
+	if (err)
+		return err;
+
+	SC_Filesystem::Glob* glob = SC_Filesystem::makeGlob(pattern);
+
+	// exit early with empty array if no matches found
+	if (!glob) {
+		// @TODO: make globNext return "" if arg is null? impl fail here
+		SetObject(a, newPyrArray(g->gc, 0, 0, true));
+		cout << "Nothing matched glob" << endl; // @TODO: debug code, remove
+		return errNone;
+	}
+
+	// read all paths into a vector
+	std::vector<SC_Filesystem::Path> paths;
+	SC_Filesystem::Path matched_path;
+	while ( ! (path_str = SC_Filesystem::globNext(glob)).empty() )
+		paths.push_back(path_str);
+
+	// @TODO: debug code, remove
+	cout << "Globbing found " << paths.size() << " files." << endl;
+
+	// create array with appropriate reserved size
+	PyrObject* array = newPyrArray(g->gc, paths.size(), 0, true);
+	SetObject(a, array);
+
+	// convert paths and copy into sclang array.
+	for (int i = 0; i < paths.size(); ++i) {
+		const std::string& matched_path_utf8 = SC_Filesystem::pathAsUTF8String(paths[i]);
+		PyrObject* string = (PyrObject*) newPyrString(g->gc, matched_path_utf8, 0, true);
+		SetObject(array->slots + i, string);
+		g->gc->GCWriteNew(array, string); // we know string is white so we can use GCWriteNew
+		array->size++;
+	}
+
+	SC_Filesystem::freeGlob(glob);
+	return errNone;
+}
+
 #ifndef _WIN32
 #include <glob.h>
 
@@ -1082,7 +1127,7 @@ void initStringPrimitives()
 
 	definePrimitive(base, index++, "_StringCompare", prStringCompare, 3, 0);
 	definePrimitive(base, index++, "_StringHash", prStringHash, 1, 0);
-	definePrimitive(base, index++, "_StringPathMatch", prStringPathMatch, 1, 0);
+	definePrimitive(base, index++, "_StringPathMatch", prString_PathMatch, 1, 0);
 	definePrimitive(base, index++, "_StringAsSymbol", prStringAsSymbol, 1, 0);
 	definePrimitive(base, index++, "_String_AsInteger", prString_AsInteger, 1, 0);
 	definePrimitive(base, index++, "_String_AsFloat", prString_AsFloat, 1, 0);
