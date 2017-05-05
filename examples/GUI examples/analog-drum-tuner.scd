@@ -58,10 +58,10 @@ s.waitForBoot({
 		rightview = FlowView(window, 280@490);
 
 		// left-hand side: filters
-		GUI.staticText.new(leftview, 150@20).string_("frequencies");
-		GUI.staticText.new(leftview, 150@20).string_("resonances");
-		GUI.staticText.new(leftview, 150@20).string_("amplitudes");
-		ffreqview = GUI.multiSliderView.new(leftview, 150@200)
+		StaticText.new(leftview, 150@20).string_("frequencies");
+		StaticText.new(leftview, 150@20).string_("resonances");
+		StaticText.new(leftview, 150@20).string_("amplitudes");
+		ffreqview = MultiSliderView.new(leftview, 150@200)
 		.value_(freqspec.unmap(ffreqs))
 		.thumbSize_(14)
 		.action_({ |v|
@@ -71,7 +71,7 @@ s.waitForBoot({
 				n.set(\ffreq, ffreqs[i], \decay, decays[i])
 			})
 		});
-		rqview = GUI.multiSliderView.new(leftview, 150@200)
+		rqview = MultiSliderView.new(leftview, 150@200)
 		.value_(rqspec.unmap(rqs))
 		.thumbSize_(14)
 		.action_({ |v|
@@ -81,7 +81,7 @@ s.waitForBoot({
 				n.set(\decay, decays[i]);
 			})
 		});
-		ampview = GUI.multiSliderView.new(leftview, 150@200)
+		ampview = MultiSliderView.new(leftview, 150@200)
 		.value_(ampspec.unmap(amps))
 		.thumbSize_(14)
 		.action_({ |v|
@@ -152,7 +152,7 @@ s.waitForBoot({
 		Button(leftview, 80@20)
 		.states_([["save"]])
 		.action_({
-			GUI.dialog.savePanel({ |path|
+			Dialog.savePanel({ |path|
 				[ffreqview.value, rqview.value, ampview.value,
 					noiseString, envString, nodes.size]
 				.writeTextArchive(path)
@@ -192,7 +192,7 @@ s.waitForBoot({
 
 
 		// dynamic synthdef construction based on user input
-		GUI.staticText.new(rightview, 100@20).string_("Noise function:");
+		StaticText.new(rightview, 100@20).string_("Noise function:");
 		Button(rightview, 80@20)
 		.states_([["evaluate"]])
 		.action_({ |view|
@@ -200,11 +200,11 @@ s.waitForBoot({
 			buildSynthDef.value;
 		});
 		rightview.startRow;
-		funcedit = GUI.textView.new(rightview, 275@200)
+		funcedit = TextView.new(rightview, 275@200)
 		.string_(noiseString);
 
 		rightview.startRow;
-		GUI.staticText.new(rightview, 100@20).string_("Envelope:");
+		StaticText.new(rightview, 100@20).string_("Envelope:");
 		Button(rightview, 80@20)
 		.states_([["evaluate"]])
 		.action_({ |view|
@@ -212,7 +212,7 @@ s.waitForBoot({
 			src.setn(\env, envString.interpret.asArray);
 		});
 		rightview.startRow;
-		envedit = GUI.textView.new(rightview, 275@200)
+		envedit = TextView.new(rightview, 275@200)
 		.string_("Env.perc(0.01, 0.2)");
 
 		trigbus = Bus.control(s, 1);
@@ -243,9 +243,9 @@ s.waitForBoot({
 			}.defer(0.1);
 		};
 
-		helpview = GUI.textView.new(leftview, 458@161);
-		if(GUI.scheme.name == 'CocoaGUI') {
-			helpview.font = GUI.font.new("Helvetica", 12);
+		helpview = TextView.new(leftview, 458@161);
+		if(thisProcess.platform.name == \osx) {
+			helpview.font = Font.new("Helvetica", 12);
 		};
 		helpview.string = "Analog percussion tuner by James Harkins
 
