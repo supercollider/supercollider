@@ -38,7 +38,7 @@ static inline int prPlatform_getDirectory(const struct VMGlobals *g, const DirNa
 {
 	PyrSlot *a = g->sp;
 	const SC_Filesystem::Path& p = SC_Filesystem::instance().getDirectory(dirname);
-	PyrString* string = newPyrString(g->gc, p.string().c_str(), 0, true);
+	PyrString* string = newPyrString(g->gc, SC_Filesystem::pathAsUTF8String(p).c_str(), 0, true);
 	SetObject(a, string);
 	return errNone;
 }
@@ -78,14 +78,15 @@ static int prPlatform_resourceDir(struct VMGlobals *g, int numArgsPushed)
 	return prPlatform_getDirectory(g, DirName::Resource);
 }
 
-// @TODO: handle this... :(
+// @TODO: fix this... :(
 #ifdef _WIN32
 static int prWinPlatform_myDocumentsDir(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
 	char path[PATH_MAX];
 	win32_GetKnownFolderPath(CSIDL_PERSONAL, path, PATH_MAX);
-	PyrString* string = newPyrString(g->gc, path, 0, true);
+	const std::string& path_str = SC_Filesystem::pathAsUTF8String(SC_Filesystem::Path(path)); // @TODO don't convert twice
+	PyrString* string = newPyrString(g->gc, path_str.c_str(), 0, true);
 	SetObject(a, string);
 	return errNone;
 }
