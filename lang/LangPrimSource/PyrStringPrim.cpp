@@ -537,6 +537,8 @@ int prStringHash(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+// @TODO: this function doesn't work correctly on windows
+// globNext should always return the folder as well as the filename
 int prString_PathMatch(struct VMGlobals *g, int numArgsPushed);
 int prString_PathMatch(struct VMGlobals *g, int numArgsPushed)
 {
