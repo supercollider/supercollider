@@ -3,7 +3,6 @@ summary::Implements a function
 categories::Core>Kernel
 related::Classes/FunctionDef
 
-
 description::
 A Function is a reference to a FunctionDef and its defining context Frame. When a FunctionDef is encountered in your code it is pushed on the stack as a Function. A Function can be evaluated by using the 'value' method. See the Functions help file for a basic introduction.
 
@@ -445,7 +444,8 @@ argument::minval
 the minimum value in the plot. Defaults to -1.0.
 argument::maxval
 the maximum value in the plot. Defaults to 1.0.
-argument::parent
+argument:: separately
+For multi channel signals, set whether to use separate value display ranges or not.
 a window to place the plot in. If nil, one will be created for you.
 
 subsection::Conversion

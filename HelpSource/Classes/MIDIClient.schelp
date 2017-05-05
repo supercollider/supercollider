@@ -73,7 +73,8 @@ The number of output ports that SuperCollider created. This is mainly useful to 
 
 METHOD:: getClientID
 Linux only. This gets the client ID by which the MIDIClient is defined in the ALSA subsystem. It can be used to identify whether a port is belonging to this client or another one.
-On non-linux systems, this posts a warning and reutrns nil.
+
+On non-linux systems, it posts a warning and returns nil.
 
 EXAMPLES::
 
