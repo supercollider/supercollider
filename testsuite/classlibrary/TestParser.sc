@@ -7,11 +7,11 @@ TestParser : UnitTest {
 		var testCs, testCsValue;
 
 		/* A test compile string, and its interpreted value.
-		 * Will be added to the end of a test comment to make sure it
-		 * does/doesn't get interpreted as expected. Will also be
-		 * added to the start of an error-causing string to make sure
-		 * it causes an error.
-		 */
+		* Will be added to the end of a test comment to make sure it
+		* does/doesn't get interpreted as expected. Will also be
+		* added to the start of an error-causing string to make sure
+		* it causes an error.
+		*/
 		testCs = " 3\n";
 		testCsValue = 3;
 
@@ -49,9 +49,9 @@ TestParser : UnitTest {
 		];
 
 		/* These should throw an error when interpreted.
-		 * Since the errors from .interpret cannot be caught, this just tests
-		 * that it returns nil no matter where the test string is added.
-		 */
+		* Since the errors from .interpret cannot be caught, this just tests
+		* that it returns nil no matter where the test string is added.
+		*/
 		errorTests = [
 			"*/",
 			"*/*",
@@ -95,5 +95,75 @@ TestParser : UnitTest {
 
 			courtesyMessage.postln;
 		}
+	}
+
+	test_symbolLiterals {
+		// if something is broken, these will fail just by virtue of being declared.
+		var testString = "12ab_";
+		var symbolStrings = Array.fill(testString.size, testString.rotate(_));
+		var messageProto = "'%' should be a legal symbol literal when";
+
+		var testCs = ";3";
+		var testCsValue = 3;
+
+		symbolStrings.do {
+			|symbolString|
+			var message = messageProto.format(symbolString) + "preceded by backslash";
+			var interpretString = "\\" ++ symbolString ++ testCs;
+
+			this.assertEquals(interpretString.interpret, testCsValue, message);
+
+			message = messageProto.format(symbolString) + "enclosed in single quotes";
+			interpretString = "'" ++ symbolString ++ "'" ++ testCs;
+
+			this.assertEquals(interpretString.interpret, testCsValue, message);
+		};
+
+		// symbols containing spaces are valid with single quotes, but not with backslash
+		testString = "12 ab _";
+		symbolStrings = Array.fill(testString.size, testString.rotate(_));
+		messageProto = "'%' should be % symbol when";
+
+		symbolStrings.do {
+			|symbolString|
+			var courtesyMessage = "NOTE: The parsing error thrown above is intentional — currently testing bizarre symbols with .interpret";
+			var message = messageProto.format(symbolString, "an illegal") + "preceded by backslash";
+			var interpretString = "\\" ++ symbolString ++ testCs;
+
+			this.assertEquals(interpretString.interpret, nil, message);
+			courtesyMessage.postln;
+
+			message = messageProto.format(symbolString, "a legal") + "enclosed in single quotes";
+			interpretString = "'" ++ symbolString ++ "'" ++ testCs;
+
+			this.assertEquals(interpretString.interpret, testCsValue, message);
+		};
+
+		// escape sequences just give the escaped character with single quotes, but are illegal with backslash
+		// test every char from space (32) to ~ (126) -- 127 is non-printing
+		symbolStrings = (32..126).collect({
+			|x|
+			"\\" ++ x.asAscii;
+		});
+
+		messageProto = "'%' should be % symbol when";
+
+		symbolStrings.do {
+			|symbolString|
+			var courtesyMessage = "NOTE: The parsing error thrown above is intentional — currently testing bizarre symbols with .interpret";
+			var message;
+			var interpretString;
+
+			// test backslash as error-producing
+			interpretString = "\\" ++ symbolString ++ testCs;
+			message = "'%' should be an illegal symbol when preceded by backslash".format(symbolString);
+			this.assertEquals(interpretString.interpret, nil, message);
+			courtesyMessage.postln;
+
+			// test single quotes as successful
+			interpretString = "\'" ++ symbolString ++ "\'";
+			message = "'%' should be the same as '%' when enclosed in single quotes".format(symbolString, symbolString[1]);
+			this.assertEquals(interpretString.interpret, symbolString[1].asSymbol, message);
+		};
 	}
 }

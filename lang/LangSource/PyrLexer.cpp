@@ -563,38 +563,14 @@ ident:
 symbol1:
 	c = input();
 
-	if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_') goto symbol2;
-	else if (c >= '0' && c <= '9') goto symbol4;
-	else {
-		unput(c);
-		yytext[yylen] = 0;
-		r = processsymbol(yytext) ;
-		goto leave;
-	}
-
-symbol2:
-	c = input();
-
 	if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')
-		|| c == '_' || (c >= '0' && c <= '9')) goto symbol2;
+		|| c == '_' || (c >= '0' && c <= '9')) goto symbol1;
 	else {
 		unput(c);
 		yytext[yylen] = 0;
 		r = processsymbol(yytext) ;
 		goto leave;
 	}
-
-symbol4:
-	c = input();
-	if (c >= '0' && c <= '9') goto symbol4;
-	else {
-		unput(c);
-		yytext[yylen] = 0;
-		r = processsymbol(yytext) ;
-		goto leave;
-	}
-
-
 
 binop:
 
