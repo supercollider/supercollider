@@ -1107,11 +1107,15 @@ int prString_ParseYAMLFile(struct VMGlobals* g, int numArgsPushed)
 {
 	PyrSlot* arg = g->sp;
 
-	if (!isKindOfSlot(arg, class_string)) return errWrongType;
+	if (!isKindOfSlot(arg, class_string))
+		return errWrongType;
 
 	string str((const char*)slotRawString(arg)->s,slotRawString(arg)->size);
 
-	std::ifstream fin(str.c_str());
+	// convert to path from
+	const SC_Filesystem::Path& path = SC_Filesystem::UTF8StringAsPath(str);
+
+	std::ifstream fin(path.string().c_str());
 	YAML::Node doc = YAML::Load(fin);
 	yaml_traverse(g, doc, NULL, arg);
 
