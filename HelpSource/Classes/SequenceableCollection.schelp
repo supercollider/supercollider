@@ -599,15 +599,29 @@ code::
 ::
 
 method::reduce
-Applies the method named by operator to the first and second elements of the collection - then applies the method to the result and to the third element of the collection - then applies the method to the result and to the fourth element of the collection - and so on, until the end of the array.
+Applies the method named by operator to the first and second elements of the collection, and then applies the method to the result and to the third element of the collection, then applies the method to the result and to the fourth element of the collection, and so on, until the end of the array.
+
+argument::operator
+May be a link::Classes/Function:: (taking two or three arguments) or a link::Classes/Symbol:: (method selector).
+
+
 code::
 [3, 4, 5, 6].reduce('*'); // this is the same as [3, 4, 5, 6].product
 [3, 4, 5, 6].reduce(\lcm); // Lowest common multiple of the whole set of numbers
 ["d", "e", (0..9), "h"].reduce('++'); // concatenation
 [3, 4, 5, 6].reduce({ |a, b| sin(a) * sin(b) }); // product of sines
 ::
-argument::operator
-may be a link::Classes/Function:: or a link::Classes/Symbol::.
+
+
+argument::adverb
+An optional adverb to be used together with the operator (see link::Reference/Adverbs::). If the operator is a functions, the adverb is passed as a third argument.
+
+code::
+// compare:
+[1, 2] *.x [10, 20, 30]
+[[1, 2], [10, 20, 30]].reduce('*', 'x')
+[[1, 2], [10, 20, 30], [1000, 2000]].reduce('+', 'x') // but you can combine more
+::
 
 method::convertDigits
 Returns an integer resulting from interpreting the elements as digits to a given base (default 10). See also asDigits in link::Classes/Integer#asDigits:: for the complementary method.
