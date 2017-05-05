@@ -601,6 +601,8 @@ code::
 method::reduce
 Applies the method named by operator to the first and second elements of the collection, and then applies the method to the result and to the third element of the collection, then applies the method to the result and to the fourth element of the collection, and so on, until the end of the array.
 
+If the collection contains only one element, it is returned as the result. If the collection is empty, returns code::nil::.
+
 argument::operator
 May be a link::Classes/Function:: (taking two or three arguments) or a link::Classes/Symbol:: (method selector).
 
