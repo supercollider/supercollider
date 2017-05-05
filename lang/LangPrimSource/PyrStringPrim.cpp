@@ -559,8 +559,8 @@ int prString_PathMatch(struct VMGlobals *g, int numArgsPushed)
 	// read all paths into a vector
 	std::vector<SC_Filesystem::Path> paths;
 	SC_Filesystem::Path matched_path;
-	while ( ! (path_str = SC_Filesystem::globNext(glob)).empty() )
-		paths.push_back(path_str);
+	while ( ! (matched_path = SC_Filesystem::globNext(glob)).empty() )
+		paths.push_back(matched_path);
 
 	// @TODO: debug code, remove
 	cout << "Globbing found " << paths.size() << " files." << endl;
@@ -572,7 +572,7 @@ int prString_PathMatch(struct VMGlobals *g, int numArgsPushed)
 	// convert paths and copy into sclang array.
 	for (int i = 0; i < paths.size(); ++i) {
 		const std::string& matched_path_utf8 = SC_Filesystem::pathAsUTF8String(paths[i]);
-		PyrObject* string = (PyrObject*) newPyrString(g->gc, matched_path_utf8, 0, true);
+		PyrObject* string = (PyrObject*) newPyrString(g->gc, matched_path_utf8.c_str(), 0, true);
 		SetObject(array->slots + i, string);
 		g->gc->GCWriteNew(array, string); // we know string is white so we can use GCWriteNew
 		array->size++;
