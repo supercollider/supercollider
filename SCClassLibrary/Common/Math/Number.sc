@@ -26,6 +26,11 @@ Number : Magnitude {
 	real { ^this }
 	imag { ^0.0 }
 
+	//rational
+	numerator { ^this}
+	denominator { ^1}
+	rational { arg denominator=1; ^Rational(this, denominator) }
+	
 	// conversion
 	@ { arg aNumber; ^Point.new(this, aNumber) }
 	complex { arg imaginaryPart; ^Complex.new(this, imaginaryPart) }

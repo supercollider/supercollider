@@ -638,6 +638,9 @@ Object  {
 	performBinaryOpOnUGen { arg aSelector, thing, adverb;
 		^this.performBinaryOpOnSomething(aSelector, thing, adverb)
 	}
+	performBinaryOpOnRational { arg aSelector, thing, adverb;
+		^this.performBinaryOpOnSomething(aSelector, thing, adverb)
+    }
 
 	writeDefFile { arg name, dir, overwrite = (true);
 

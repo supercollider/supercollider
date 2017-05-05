@@ -529,4 +529,8 @@ String[char] : RawArray {
 		^this.primitiveFailed
 	}
 
+	asRational {
+		var stringArray = this.split($/ );
+		^Rational(stringArray[0].asFloat, stringArray[1].asFloat)
+	}
 }
