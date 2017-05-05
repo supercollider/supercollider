@@ -327,13 +327,15 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		^this.beats - this.bars2beats(this.bar)
 	}
 
-	fadeTempo { arg tempo, seconds = 1.0, resolution = 0.01, quant = 1.0;
+	syncToBeat { arg seconds = 4.0, tempo, resolution = 0.01, quant = 1.0;
+		// incrementally adjust the clock so it has a specified tempo and phase after a given number of seconds
 		var next, time;
 
 		seconds = max(seconds, 0.03);	// saftey and lower jitter limit
 		resolution = max(resolution, 0.001);
 		next = this.timeToNextBeat(quant);
 		time = seconds - (next / this.tempo);
+		tempo = tempo ? this.tempo;
 
 		if(time < next) {
 			// jump directly by fast forwarding
