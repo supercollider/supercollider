@@ -183,7 +183,7 @@ if not nil, it will override the envelope's decay or release time.
 discussion::
 If this Node is a Group this will release all Nodes within the Group.
 code::
-x = { arg gate=1; BrownNoise.ar(0.5) * EnvGen.kr(Env.cutoff(1), gate, doneAction: Done.freeSelf) }.play;
+x = { arg gate=1; BrownNoise.ar(0.5) * Env.cutoff(1).kr(Done.freeSelf, gate) }.play;
 x.release(5); // override the Env's specified 1 second release time
 ::
 
