@@ -327,11 +327,11 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		^this.beats - this.bars2beats(this.bar)
 	}
 
-	fadeTempo { arg tempo, seconds = 4, resolution = 0.01, quant = 1;
+	fadeTempo { arg tempo, seconds = 1.0, resolution = 0.01, quant = 1.0;
 		var next, time;
 
-		seconds = seconds.max(0.03);	// saftey and lower jitter limit
-		resolution = resolution.max(0.001);
+		seconds = max(seconds, 0.03);	// saftey and lower jitter limit
+		resolution = max(resolution, 0.001);
 		next = this.timeToNextBeat(quant);
 		time = seconds - (next / this.tempo);
 
@@ -341,31 +341,25 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 			this.sched(next, { this.tempo_(tempo); nil });
 
 		} {
-
 			// else interpolate, starting at next beat
 			this.sched(next, {
 
-				var durCur, durNew, durDif, durAvg, stepsPerBeat,
-				delta, factor, steps, stepSize, sum, lastDur;
-
 				var index = 0;
 
-				durCur = this.tempo.reciprocal;
-				durNew = tempo.reciprocal;
-				durDif = durNew - durCur;
-				durAvg = durCur + durNew / 2;		// average duration for number of steps
-				stepsPerBeat = resolution.reciprocal.round;
-				steps = (time / durAvg).round * stepsPerBeat;
-				delta = stepsPerBeat.reciprocal;	// quantized resolution
-				stepSize = durDif / steps;
-				lastDur = (steps - 1 * stepSize) + durCur;
-				sum = (durCur + lastDur) * steps / (2 * stepsPerBeat); // sum of an arithmetic progression
-				factor = time / sum;
+				var durOld = this.tempo.reciprocal;
+				var durNew = tempo.reciprocal;
+				var stepsPerBeat = resolution.reciprocal.round;
+				var steps = (2.0 * time / (durOld + durNew)).round * stepsPerBeat; // number of steps
+				var delta = stepsPerBeat.reciprocal;	// quantized resolution
+				var stepSize = (durNew - durOld) / steps;
+				var lastDur = (steps - 1 * stepSize) + durOld;
+				var sum = (durOld + lastDur) * delta * steps * 0.5; // sum of an arithmetic progression
+				var factor = time / sum;
 
 				this.sched(0, {
 					if(index < steps) {
-						durCur = durCur + stepSize;
-						this.tempo_((durCur * factor).reciprocal);
+						durOld = durOld + stepSize;
+						this.tempo_((durOld * factor).reciprocal);
 						index = index + 1;
 						delta
 					} {
