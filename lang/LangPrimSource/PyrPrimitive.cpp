@@ -324,7 +324,7 @@ int prPrimitiveErrorString(struct VMGlobals *g, int numArgsPushed)
 				try {
 					std::rethrow_exception(lastPrimitiveException);
 				} catch(const std::exception& e) {
-					
+
 					const char *errorString = e.what();
 					str = std::string("caught exception \'") + errorString + "\' in primitive in method " + lastPrimitiveExceptionClass + ":" + lastPrimitiveExceptionMethod;
 					break;
