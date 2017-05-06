@@ -16,8 +16,9 @@ common/Packager/LinuxExclusions.txt
 common/Packager/SuperCollider*.tar.gz
 common/Packager/SuperCollider*.dmg
 
-#build directories
+# build directories
 /build*
 
 *~
 *.orig
+scratch*
