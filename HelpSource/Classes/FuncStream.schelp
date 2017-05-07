@@ -17,7 +17,7 @@ It uses link::Classes/Function#-inEnvir:: to statically bind the function call t
 code::
 a = Environment.use { ~x = 100; FuncStream({ ~x + 8 }) };
 ~x = 0;
-a.next; // returns 108, not 1.
+a.next; // returns 108, not 8.
 ::
 
 
@@ -25,10 +25,6 @@ CLASSMETHODS::
 
 METHOD:: new
 Return a new stream object.
-argument:: nextFunc
-The function that is called on each next
-argument:: resetFunc
-The function that is called on reset
 
 code::
 (
@@ -45,6 +41,12 @@ a.next; // starts again.
 
 ::
 
+argument:: nextFunc
+The function that is called on each next
+argument:: resetFunc
+The function that is called on reset
+
+
 INSTANCEMETHODS::
 
 PRIVATE::storeArgs
@@ -52,7 +54,8 @@ PRIVATE::storeArgs
 METHOD:: next
 argument:: inval
 
-Return the next value by calling the function with code::inval:: as an argument
+Return the next value by calling the function. code::inval:: is passed
+as an argument to the function.
 
 METHOD:: reset
 
@@ -60,15 +63,15 @@ Call the reset function, if defined.
 
 METHOD:: envir
 
-Return the environment which the function has been bound to
+Get or set the environment to which the function has been bound.
 
 METHOD:: nextFunc
 
-Return the function which is called on link::#-next::.
+Get or set the function which is called on link::#-next::.
 
 METHOD:: resetFunc
 
-Return the function which is called on link::#-reset::.
+Get or set the function which is called on link::#-reset::.
 
 EXAMPLES::
 
@@ -78,7 +81,15 @@ code::
 a = {
 	var diff = [2, 4, 5].choose * [1, -1].choose;
 	var val = 0;
-	var stream = FuncStream({ val = val + diff; if(abs(val) > 30) { stream.reset }; val }, { val = 0 });
+	var stream = FuncStream({
+		// next function
+		val = val + diff;
+		if(abs(val) > 30) { stream.reset };
+		val
+	}, {
+		// reset function
+		val = 0
+	});
 	stream
 }.dup(16);
 
@@ -90,7 +101,8 @@ fork {
 			sustain: 0.1
 		).play;
 
-		a.choose.reset; // reset a random one
+		// reset a randomly chosen FuncStream
+		a.choose.reset;
 		0.16.wait;
 	}
 }
