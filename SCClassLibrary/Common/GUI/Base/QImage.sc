@@ -5,12 +5,6 @@ TODO:
 - accelerated (control over QImage/QPixmap conversion; necessary?)
 */
 
-// class stubs to be connected later
-ImageFilter { }
-
-ImageKernel { }
-
-
 Image {
 	classvar <compositingOperations, <allPlotWindows, <resizeModes;
 	var dataptr, finalizer;
