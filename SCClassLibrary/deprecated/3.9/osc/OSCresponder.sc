@@ -4,6 +4,7 @@ OSCresponder {
 	var <cmdNameWithoutSlash;
 
 	*new { arg addr, cmdName, action;
+		this.deprecated(thisMethod, OSCFunc.class.findMethod(\new));
 		^super.new.init(addr, cmdName, action);
 	}
 

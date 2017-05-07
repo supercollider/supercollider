@@ -1,13 +1,10 @@
 CLASS:: OSCFunc
 summary:: Fast Responder for incoming Open Sound Control Messages
 categories:: External Control>OSC
-related:: Guides/OSC_communication, Classes/OSCdef, Classes/OSCresponderNode, Classes/NetAddr
+related:: Guides/OSC_communication, Classes/OSCdef, Classes/NetAddr
 
 DESCRIPTION::
 OSCFunc (and its subclass link::Classes/OSCdef::) registers one or more functions to respond to an incoming OSC message which matches a specified OSC Address. Many of its methods are inherited from its superclass link::Classes/AbstractResponderFunc::. OSCFunc supports pattern matching of wildcards etc. in incoming messages. For efficiency reasons you must specify that an OSCFunc will employ pattern matching by creating it with the link::#*newMatching:: method, or by passing a matching dispatcher to link::#*new::. For details on the Open Sound Control protocol, see http://opensoundcontrol.org/spec-1_0
-
-note:: Use of the older classes OSCresponder, OSCresponderNode, and OSCpathResponder can be unsafe, since responders in user and class code can override each other unintentionally. OSCFunc and link::Classes/OSCdef:: are faster, safer, have more logical argument order, and support pattern matching and custom listening ports. Thus they are the recommended way of registering for incoming OSC messages as of SC 3.5. (See below for an example demonstrating OSCpathResponder-type arg matching.)::
-
 
 CLASSMETHODS::
 private:: initClass, cmdPeriod

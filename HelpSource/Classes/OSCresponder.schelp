@@ -3,8 +3,9 @@ summary:: client side network responder
 related:: Classes/OSCFunc, Classes/OSCdef, Guides/OSC_communication, Classes/OSCresponderNode, Classes/NetAddr
 categories:: External Control>OSC
 
-description::
-note:: As of SC 3.5 link::Classes/OSCFunc:: and link::Classes/OSCdef:: are the recommended way of registering for incoming OSC messages. They are faster, safer, and have more logical argument order than the old responder classes, and they support pattern matching and custom listening ports. Use of the older classes OSCresponder, OSCresponderNode, and OSCpathResponder can be unsafe, since responders in user and class code can override each other unintentionally. They are maintained for legacy code only.::
+note::
+This class is deprecated and will be removed in a future version of SC. Use link::Classes/OSCFunc:: and link::Classes/OSCdef:: instead. They are faster, safer, and have more logical argument order than the old responder classes, and they support pattern matching and custom listening ports. Use of the older classes OSCresponder, OSCresponderNode, and OSCpathResponder can be unsafe, since responders in user and class code can override each other unintentionally.
+::
 
 Register a function to be called upon receiving a specific command from a specific OSC address.
 
