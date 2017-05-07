@@ -368,18 +368,7 @@ Image {
 		^this.primitiveFailed
 	}
 
-	// method stubs to be linked to prLockFocus etc
-	lockFocus { }
-	unlockFocus { }
-	applyFilters { }
-	filters { }
-	filteredWith { }
-	addFilter { }
-	removeFilter { }
-	flatten { }
-	invert { }
-	crop { }
-	applyKernel { }
+
 
 	// private primitives
 	prNewPath { arg path;
