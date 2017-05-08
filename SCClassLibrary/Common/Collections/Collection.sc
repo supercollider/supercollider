@@ -574,9 +574,9 @@ Collection {
 		^res
 	}
 
-	asDict { |mergeFunc|
-		var res = IdentityDictionary.new; // another dispute: Dictionary would default to a very inefficient lookup.
-		if(mergeFunc.notNil) { ^this.asDictWith(mergeFunc) };
+	asDict { |mergeFunc, class|
+		var res = (class ? IdentityDictionary).new;
+		if(mergeFunc.notNil) { ^this.asDictWith(mergeFunc, class) };
 		if(this.isAssociationArray) {
 			this.do { |assoc|
 				res.put(assoc.key, assoc.value)
@@ -589,8 +589,8 @@ Collection {
 		^res
 	}
 
-	asDictWith { |mergeFunc|
-		var res = IdentityDictionary.new;
+	asDictWith { |mergeFunc, class|
+		var res = (class ? IdentityDictionary).new;
 		if(this.isAssociationArray) {
 			this.do { |assoc|
 				res.mergeItem(assoc.key, assoc.value, mergeFunc)
