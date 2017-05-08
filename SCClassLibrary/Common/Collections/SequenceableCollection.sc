@@ -929,6 +929,7 @@ SequenceableCollection : Collection {
 
 	asPoint { ^Point(this[0] ? 0, this[1] ? 0) }
 	asRect { ^Rect(this[0] ? 0, this[1] ? 0, this[2] ? 0, this[3] ? 0) }
+	asEvent { |mergeFunc| ^this.asDict(mergeFunc, Event) }
 	ascii { ^this.collect { arg item; item.ascii } }
 
 
