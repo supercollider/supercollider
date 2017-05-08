@@ -56,18 +56,25 @@ Convolution3 : UGen {
 
 
 //jensen andersen inspired FFT feature detector
+
+JensenAndersen : PV_JensenAndersen {}
+HainsworthFoote : PV_HainsworthFoote {}
+
+
+// backwards compatibility
 PV_JensenAndersen : PV_ChainUGen {
 	*ar { arg buffer, propsc=0.25, prophfe=0.25, prophfc=0.25, propsf=0.25, threshold=1.0, waittime=0.04;
 		^this.multiNew('audio', buffer, propsc, prophfe, prophfc, propsf,  threshold, waittime);
 	}
 }
 
-
 PV_HainsworthFoote : PV_ChainUGen {
 	*ar { arg buffer, proph=0.0, propf=0.0, threshold=1.0, waittime=0.04;
 		^this.multiNew('audio', buffer, proph, propf, threshold, waittime);
 	}
 }
+
+
 
 //not FFT but useful for time domain onset detection
 RunningSum : UGen {
