@@ -503,26 +503,6 @@ void QcWaveform::paintEvent( QPaintEvent *ev )
     dirty = false;
   }
 
-  // draw selections
-
-  p.save();
-
-  p.scale( (double) width() / _dur, 1.0 );
-  p.translate( _beg * -1.0, 0.0 );
-  p.setPen( Qt::NoPen );
-
-  int i;
-  for( i = 0; i < 64; ++i ) {
-    const Selection &s = _selections[i];
-    if( s.size > 0 ) {
-      QRectF r ( s.start, 0, s.size, height() );
-      p.setBrush( s.color );
-      p.drawRect( r );
-    }
-  }
-
-  p.restore();
-
   // draw time grid
 
   if( _showGrid && sfInfo.samplerate > 0 && _gridResolution > 0.f ) {
@@ -552,6 +532,26 @@ void QcWaveform::paintEvent( QPaintEvent *ev )
 
     p.restore();
   }
+
+  // draw selections
+
+  p.save();
+
+  p.scale( (double) width() / _dur, 1.0 );
+  p.translate( _beg * -1.0, 0.0 );
+  p.setPen( Qt::NoPen );
+
+  int i;
+  for( i = 0; i < 64; ++i ) {
+    const Selection &s = _selections[i];
+    if( s.size > 0 ) {
+      QRectF r ( s.start, 0, s.size, height() );
+      p.setBrush( s.color );
+      p.drawRect( r );
+    }
+  }
+
+  p.restore();
 
   // paste the waveform pixmap on screen
 
