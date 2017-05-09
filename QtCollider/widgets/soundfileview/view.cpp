@@ -528,17 +528,26 @@ void QcWaveform::paintEvent( QPaintEvent *ev )
   if( _showGrid && sfInfo.samplerate > 0 && _gridResolution > 0.f ) {
     p.save();
 
-    double durSecs = (double) _dur / sfInfo.samplerate;
-    double begSecs = (double) _beg / sfInfo.samplerate;
+    // Since _gridResolution and _gridOffset are in seconds, scale using
+    // duration in seconds.
+    double dur_in_secs = _dur / sfInfo.samplerate;
 
-    p.scale( width() / durSecs, 1.0 );
-    p.setPen( _gridColor );
+    p.setPen( Qt::NoPen );
+    p.setBrush( _gridColor );
+    p.scale( (double) width() / dur_in_secs, 1.0 );
 
-    double offset = _gridOffset - begSecs;
-    offset -= ( floor( offset / _gridResolution ) * _gridResolution );
-    while( offset <  durSecs ) {
-      p.drawLine( QLineF( offset, 0.0, offset, height() ) );
-      offset += _gridResolution;
+    // Wrap the offset to [0%, 100%) of the grid resolution.
+    double offset = std::fmod(_gridOffset, _gridResolution * 2);
+
+    // Catch the case where the grid is [50% - 100%) offset from the start
+    // in order to draw the portion off the left side of the view.
+    if (offset > _gridResolution)
+      offset -= _gridResolution * 2;
+
+    while( offset < dur_in_secs ) {
+      QRectF r( offset, 0, _gridResolution, height() );
+      p.drawRect( r );
+      offset += _gridResolution * 2;
     }
 
     p.restore();
