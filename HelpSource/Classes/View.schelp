@@ -255,7 +255,7 @@ METHOD:: resizeToBounds
 
 METHOD:: resizeToHint
 
-	Calls link::#-sizeHint and then resizes view to those bounds.		
+	Calls link::#-sizeHint:: and then resizes view to those bounds.		
 
 METHOD:: resize
 	Determines what happens with the view's position and size when its parent is resized. See link::Guides/GUI-Introduction#view:: for further explanation.
