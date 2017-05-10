@@ -516,8 +516,10 @@ void QcWaveform::paintEvent( QPaintEvent *ev )
     p.setBrush( _gridColor );
     p.scale( (double) width() / dur_in_secs, 1.0 );
 
-    // Wrap the offset to [0%, 100%) of the grid resolution.
-    double offset = std::fmod(_gridOffset, _gridResolution * 2);
+    // Wrap the offset to (-100%, 100%) of the grid resolution. Subtract by
+    // beg_in_secs to account for zoom+timeshift.
+    double beg_in_secs = _beg / sfInfo.samplerate;
+    double offset = std::fmod(_gridOffset - beg_in_secs, _gridResolution * 2);
 
     // Catch the case where the grid is [50% - 100%) offset from the start
     // in order to draw the portion off the left side of the view.
