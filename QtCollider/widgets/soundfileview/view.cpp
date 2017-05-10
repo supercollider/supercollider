@@ -49,8 +49,8 @@ QcWaveform::QcWaveform( QWidget * parent ) : QWidget( parent ),
   _curSel(0),
 
   _showCursor(false),
-  _cursorEditable(true),
   _cursorPos(0),
+  _cursorEditable(true),
 
   _showGrid(true),
   _gridResolution(1.0),
@@ -62,10 +62,10 @@ QcWaveform::QcWaveform( QWidget * parent ) : QWidget( parent ),
 
   pixmap(0),
   _bkgColor( QColor(0,0,0) ),
-  _cursorColor( QColor(255,0,0) ),
-  _gridColor( QColor(100,100,200) ),
   _peakColor( QColor(242,178,0) ),
   _rmsColor( QColor(255,255,0) ),
+  _cursorColor( QColor(255,0,0) ),
+  _gridColor( QColor(100,100,200) ),
   dirty(false),
   _drawWaveform(true)
 {
