@@ -18,7 +18,7 @@ common/Packager/SuperCollider*.dmg
 
 # CLion files
 .idea
-cmake-build-debug
+cmake-build-*
 
 #build directories
 /build*
