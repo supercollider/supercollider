@@ -148,6 +148,7 @@ public:
     void restoreDocuments();
     MultiEditor * currentMultiEditor();
     QMenuBar *createMenus();
+    void updateMenuBar( QMenuBar * );
 
     DocumentsDocklet *docDocklet() { return mDocumentsDocklet; }    
     int docDockletWidth() { return mDocumentsDocklet->list()->width(); }
@@ -313,10 +314,12 @@ public:
         windowLayout->setContentsMargins(0,0,0,0);
         windowLayout->setSpacing(0);
 
-#ifndef Q_OS_MAC
         QMenuBar *newMenu = main->createMenus();
+#ifndef Q_OS_MAC
         newMenu->setSizePolicy(QSizePolicy ::Expanding , QSizePolicy ::Fixed );
         windowLayout->addWidget(newMenu);
+#else
+        main->updateMenuBar(newMenu);
 #endif
 
         QVBoxLayout *center_box = new QVBoxLayout;

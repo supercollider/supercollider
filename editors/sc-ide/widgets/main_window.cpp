@@ -846,6 +846,12 @@ QMenuBar * MainWindow::createMenus()
     return menuBar;
 }
 
+void MainWindow::updateMenuBar( QMenuBar * menu ) {
+#ifdef Q_OS_MAC
+    this->setMenuBar(menu);
+#endif
+}
+
 static void saveDetachedState( Docklet *docklet,  QVariantMap & data )
 {
     data.insert( docklet->objectName(), docklet->saveDetachedState().toBase64() );
@@ -1077,6 +1083,9 @@ void MainWindow::setCurrentEditor(MultiEditor * ceditor)
     currentMultiEditor()->currentBox()->activateWindow();
     currentMultiEditor()->currentBox()->setActive();
 
+#ifdef Q_OS_MAC
+    updateMenuBar(createMenus());
+#endif
     Q_EMIT( currentEditorChanged( currentMultiEditor()->currentBox()->currentDocument() ) );
 }
 
