@@ -260,7 +260,6 @@ private:
 
     // Status bar
     QStatusBar  *mStatusBar;
-    QMenuBar *mMenu;
     StatusBox *mLangStatus;
     StatusBox *mServerStatus;
     ClockStatusBox *mClockLabel;
@@ -314,13 +313,11 @@ public:
         windowLayout->setContentsMargins(0,0,0,0);
         windowLayout->setSpacing(0);
 
+//#ifndef Q_OS_MAC
         QMenuBar *newMenu = main->createMenus();
-#ifndef Q_OS_MAC
         newMenu->setSizePolicy(QSizePolicy ::Expanding , QSizePolicy ::Fixed );
         windowLayout->addWidget(newMenu);
-#else
-        main->updateMenuBar(newMenu);
-#endif
+//#endif
 
         QVBoxLayout *center_box = new QVBoxLayout;
         center_box->setContentsMargins(0,0,0,0);

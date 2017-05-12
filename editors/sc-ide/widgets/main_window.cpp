@@ -266,10 +266,6 @@ MainWindow::MainWindow(Main * main) :
     mStatusBar->addPermanentWidget( new QLabel(tr("Server:")) );
     mStatusBar->addPermanentWidget( mServerStatus );
 
-    // Code editor
-    mEditors = new MultiEditor(main);
-    setCurrentEditor(mEditors);
-
     // Docks
     mDocumentsDocklet = new DocumentsDocklet(main->documentManager(), this);
     mDocumentsDocklet->setObjectName("documents-dock");
@@ -285,6 +281,9 @@ MainWindow::MainWindow(Main * main) :
     mPostDocklet->setObjectName("post-dock");
     addDockWidget(Qt::RightDockWidgetArea, mPostDocklet->dockWidget());
 
+    // Code editor
+    mEditors = new MultiEditor(main);
+    
     // Layout
     QVBoxLayout *center_box = new QVBoxLayout;
     center_box->setContentsMargins(0,0,0,0);
@@ -339,9 +338,11 @@ MainWindow::MainWindow(Main * main) :
     connect(mDocumentsDocklet, SIGNAL(dockletDetached(bool)),
             this, SLOT(onDocumentDockletUndocked(bool)));
 
+//#ifndef Q_OS_MAC
+    // As in MAC a new menu has to be created whenever changing the multiEditor, the constructor for it is moved directly to the function setCurrentEditor
     createActions();
-    mMenu = createMenus();
-    this->setMenuBar(mMenu);
+    this->setMenuBar(createMenus());
+//#endif
 
     // Must be called after createAtions(), because it accesses an action:
     toggleInterpreterActions(false);
@@ -1084,6 +1085,7 @@ void MainWindow::setCurrentEditor(MultiEditor * ceditor)
     currentMultiEditor()->currentBox()->setActive();
 
 #ifdef Q_OS_MAC
+    createActions();
     updateMenuBar(createMenus());
 #endif
     Q_EMIT( currentEditorChanged( currentMultiEditor()->currentBox()->currentDocument() ) );
