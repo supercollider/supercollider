@@ -62,6 +62,10 @@
 
 static FILE* gPostDest = stdout;
 
+#ifdef _WIN32
+static UINT gOldCodePage; // for remembering the old codepage when we switch to UTF-8
+#endif
+
 SC_TerminalClient::SC_TerminalClient(const char* name)
 	: SC_LanguageClient(name),
 	  mReturnCode(0),
@@ -703,6 +707,13 @@ SCLANG_DLLEXPORT SC_LanguageClient * createLanguageClient(const char * name)
 	SC::Apple::disableAppNap();
 #endif
 
+#ifdef _WIN32
+	// set codepage to UTF-8
+	gOldCodePage = GetConsoleOutputCP();
+	if (!SetConsoleOutputCP(65001))
+		std::cerr << "WARNING: could not set codepage to UTF-8" << std::endl;
+#endif
+
 #ifdef SC_QT
 	return new QtCollider::LangClient(name);
 #else
@@ -712,5 +723,9 @@ SCLANG_DLLEXPORT SC_LanguageClient * createLanguageClient(const char * name)
 
 SCLANG_DLLEXPORT void destroyLanguageClient(class SC_LanguageClient * languageClient)
 {
+#ifdef _WIN32
+	// reset codepage from UTF-8
+	SetConsoleOutputCP(gOldCodePage);
+#endif
 	delete languageClient;
 }
