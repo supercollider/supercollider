@@ -50,7 +50,7 @@ Platform {
 	resourceDir { _Platform_resourceDir }
 	*resourceDir { ^thisProcess.platform.resourceDir }
 
-	recordingsDir { ^thisProcess.platform.recordingsDir }
+	*recordingsDir { ^thisProcess.platform.recordingsDir }
 
 	defaultTempDir { ^this.subclassResponsibility() }
 	*defaultTempDir { ^thisProcess.platform.defaultTempDir }
