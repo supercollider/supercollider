@@ -23,7 +23,8 @@ Primitives for platform dependent directories, constants etc.
 
 */
 
-#include "SC_Filesystem.hpp"
+#include "SC_Filesystem.hpp" // getDirectory
+#include "SC_Filesystem.hpp" // path_to_utf8_str
 #include "SC_LanguageConfig.hpp" // getIdeName
 #include "PyrPrimitive.h"
 #include "PyrKernel.h"
@@ -38,7 +39,7 @@ static inline int prPlatform_getDirectory(const struct VMGlobals *g, const DirNa
 {
 	PyrSlot *a = g->sp;
 	const SC_Filesystem::Path& p = SC_Filesystem::instance().getDirectory(dirname);
-	PyrString* string = newPyrString(g->gc, SC_Filesystem::pathAsUTF8String(p).c_str(), 0, true);
+	PyrString* string = newPyrString(g->gc, SC_Codecvt::path_to_utf8_str(p).c_str(), 0, true);
 	SetObject(a, string);
 	return errNone;
 }
@@ -85,7 +86,7 @@ static int prWinPlatform_myDocumentsDir(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a = g->sp;
 	char path[PATH_MAX];
 	win32_GetKnownFolderPath(CSIDL_PERSONAL, path, PATH_MAX);
-	const std::string& path_str = SC_Filesystem::pathAsUTF8String(SC_Filesystem::Path(path)); // @TODO don't convert twice
+	const std::string& path_str = SC_Codecvt::path_to_utf8_str(SC_Filesystem::Path(path)); // @TODO don't convert twice
 	PyrString* string = newPyrString(g->gc, path_str.c_str(), 0, true);
 	SetObject(a, string);
 	return errNone;

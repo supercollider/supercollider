@@ -49,48 +49,33 @@ using DirMap = SC_Filesystem::DirMap;
 
 bool SC_Filesystem::isStandalone() { return false; }
 
-std::string SC_Filesystem::pathAsUTF8String(const Path& p)
-{
-	return p.string(std::codecvt_utf8_utf16<wchar_t>());
-}
-
-Path SC_Filesystem::UTF8StringAsPath(const std::string& s)
-{
-	return Path(s, std::codecvt_utf8_utf16<wchar_t>());
-}
-
 Path SC_Filesystem::resolveIfAlias(const Path& p, bool& isAlias) { isAlias = true; return p; }
 
 //============ GLOB UTILITIES =============//
 
-// @TODO: replace chars w paths
+// Keep a buffer of one filename to return on the next call to nextGlob.
+// This is because FindFirstFile already loads one filename.
 struct SC_Filesystem::Glob
 {
-	HANDLE mHandle;
-	Path mFolder;
-	WIN32_FIND_DATA mEntry;
-	Path mEntryPath;
-	bool mAtEnd;
+	HANDLE mHandle; // find handle
+	Path mFolder; // parent folder of the search path
+	WIN32_FIND_DATAW mEntry;
+	bool mAtEnd; // true if the NEXT call to nextGlob should fail
+	Path mFilename; // filename to return on the next call to nextGlob
 };
 
-// @TODO: fix up
 SC_Filesystem::Glob* SC_Filesystem::makeGlob(const char* pattern)
 {
 	Glob* glob = new Glob;
-	char patternWin[1024];
+	boost::filesystem::path path = SC_Codecvt::utf8_str_to_path(pattern);
 
-	strncpy(patternWin, pattern, 1024);
-	patternWin[1023] = 0;
-	// win32_ReplaceCharInString(patternWin, 1024, '/', '\\'); // TODO: replace
-
-	// win32_ExtractContainingFolder(glob->mFolder, patternWin, PATH_MAX); // TODO: fix
-
-	glob->mHandle = ::FindFirstFile(patternWin, &glob->mEntry);
+	glob->mHandle = ::FindFirstFileW(path.wstring().c_str(), &glob->mEntry);
 	if (glob->mHandle == INVALID_HANDLE_VALUE) {
 		delete glob;
-		return 0;
+		return nullptr;
 	}
 
+	glob->mFolder = path.parent_path();
 	glob->mAtEnd = false;
 	return glob;
 }
@@ -101,18 +86,18 @@ void SC_Filesystem::freeGlob(Glob* glob)
 	delete glob;
 }
 
-// @TODO: fix up
 Path SC_Filesystem::globNext(Glob* glob)
 {
-	if (glob->mAtEnd)
-		return Path();
-	// @TODO: totally broken
-	char patternWin[1024];
-	strncpy(patternWin, glob->mFolder.string().c_str(), PATH_MAX);
-	glob->mEntryPath = (Path(glob->mEntryPath) / glob->mEntry.cFileName).c_str();
-	if (!::FindNextFile(glob->mHandle, &glob->mEntry))
-		glob->mAtEnd = true;
-	return Path(glob->mEntryPath);
+	// loop to ignore . and .. results
+	do {
+		if (glob->mAtEnd)
+			return Path();
+		glob->mFilename = glob->mFolder / glob->mEntry.cFileName;
+		if (!::FindNextFileW(glob->mHandle, &glob->mEntry))
+			glob->mAtEnd = true;
+	} while (glob->mFilename.filename_is_dot() || glob->mFilename.filename_is_dot_dot());
+
+	return glob->mFilename;
 }
 
 //============= PRIVATE METHODS ==============//

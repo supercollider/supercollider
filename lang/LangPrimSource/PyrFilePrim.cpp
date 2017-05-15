@@ -31,15 +31,15 @@ Primitives for File i/o.
 #include "PyrFilePrim.h"
 #include "ReadWriteMacros.h"
 #include "SCBase.h"
-#include "SC_Filesystem.hpp"
+#include "SC_Filesystem.hpp" // resolveIfAlias
+#include "SC_Codecvt.hpp" // utf8_str_to_path, path_to_utf8_str
 #include "sc_popen.h"
+#include "SC_SndFileHelpers.hpp"
 
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
 #include <cerrno>
-
-#include "../../common/SC_SndFileHelpers.hpp"
 
 #ifndef _WIN32
 # include <unistd.h>
@@ -74,7 +74,7 @@ int prFileDelete(struct VMGlobals *g, int numArgsPushed)
 	if (error != errNone)
 		return error;
 
-	const boost::filesystem::path& p = SC_Filesystem::UTF8StringAsPath(filename);
+	const boost::filesystem::path& p = SC_Codecvt::utf8_str_to_path(filename);
 	boost::system::error_code error_code;
 	boost::filesystem::remove(p, error_code);
 
@@ -95,7 +95,7 @@ int prFileMTime(struct VMGlobals * g, int numArgsPushed)
 	if (error != errNone)
 		return error;
 
-	const boost::filesystem::path& p = SC_Filesystem::UTF8StringAsPath(filename);
+	const boost::filesystem::path& p = SC_Codecvt::utf8_str_to_path(filename);
 	time_t mtime = boost::filesystem::last_write_time(p);
 	SetInt(a, mtime);
 	return errNone;
@@ -110,7 +110,7 @@ int prFileExists(struct VMGlobals * g, int numArgsPushed)
 	if (error != errNone)
 		return error;
 
-	const boost::filesystem::path& p = SC_Filesystem::UTF8StringAsPath(filename);
+	const boost::filesystem::path& p = SC_Codecvt::utf8_str_to_path(filename);
 	bool res = boost::filesystem::exists(p);
 	SetBool(a, res);
 	return errNone;
@@ -128,7 +128,7 @@ int prFileRealPath(struct VMGlobals* g, int numArgsPushed )
 		return err;
 
 	bool isAlias = false;
-	boost::filesystem::path p = SC_Filesystem::UTF8StringAsPath(ipath);
+	boost::filesystem::path p = SC_Codecvt::utf8_str_to_path(ipath);
 	p = SC_Filesystem::resolveIfAlias(p, isAlias);
 	if (p.empty())
 		return errFailed;
@@ -140,7 +140,7 @@ int prFileRealPath(struct VMGlobals* g, int numArgsPushed )
 		return errNone;
 	}
 
-	strncpy(opath, SC_Filesystem::pathAsUTF8String(p).c_str(), PATH_MAX-1);
+	strncpy(opath, SC_Codecvt::path_to_utf8_str(p).c_str(), PATH_MAX - 1);
 	opath[PATH_MAX-1] = '\0';
 
 	// @TODO: is this necessary?
@@ -171,7 +171,7 @@ int prFileMkDir(struct VMGlobals * g, int numArgsPushed)
 		return error;
 
 	boost::system::error_code error_code;
-	const boost::filesystem::path& p = SC_Filesystem::UTF8StringAsPath(filename);
+	const boost::filesystem::path& p = SC_Codecvt::utf8_str_to_path(filename);
 	boost::filesystem::create_directories(p, error_code);
 	if (error_code)
 		postfl("Warning: %s (\"%s\")\n", error_code.message().c_str(), p.c_str());
@@ -192,8 +192,8 @@ int prFileCopy(struct VMGlobals * g, int numArgsPushed)
 	if (error != errNone)
 		return error;
 
-	const boost::filesystem::path& p1 = SC_Filesystem::UTF8StringAsPath(filename1);
-	const boost::filesystem::path& p2 = SC_Filesystem::UTF8StringAsPath(filename2);
+	const boost::filesystem::path& p1 = SC_Codecvt::utf8_str_to_path(filename1);
+	const boost::filesystem::path& p2 = SC_Codecvt::utf8_str_to_path(filename2);
 	boost::filesystem::copy(p1, p2);
 	return errNone;
 }
@@ -207,7 +207,7 @@ int prFileType(struct VMGlobals * g, int numArgsPushed)
 	if (error != errNone)
 		return error;
 
-	const boost::filesystem::path& p = SC_Filesystem::UTF8StringAsPath(filename);
+	const boost::filesystem::path& p = SC_Codecvt::utf8_str_to_path(filename);
 	boost::filesystem::file_status s(boost::filesystem::symlink_status(p));
 	SetInt(a, s.type());
 	return errNone;
@@ -222,7 +222,7 @@ int prFileSize(struct VMGlobals * g, int numArgsPushed)
 	if (error != errNone)
 		return error;
 
-	const boost::filesystem::path& p = SC_Filesystem::UTF8StringAsPath(filename);
+	const boost::filesystem::path& p = SC_Codecvt::utf8_str_to_path(filename);
 	uintmax_t sz = boost::filesystem::file_size(p);
 	SetInt(a, sz);
 	return errNone;
@@ -251,7 +251,7 @@ int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 
 	memcpy(filename, slotRawString(b)->s, slotRawObject(b)->size);
 	filename[slotRawString(b)->size] = 0;
-	const boost::filesystem::path& p = SC_Filesystem::UTF8StringAsPath(filename);
+	const boost::filesystem::path& p = SC_Codecvt::utf8_str_to_path(filename);
 
 	memcpy(mode, slotRawString(c)->s, slotRawObject(c)->size);
 	mode[slotRawString(c)->size] = 0;

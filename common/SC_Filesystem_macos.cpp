@@ -65,10 +65,6 @@ bool SC_Filesystem::isStandalone()
 	return SC_StandAloneInfo::IsStandAlone();
 }
 
-std::string SC_Filesystem::pathAsUTF8String(const Path& p) { return p.string(); }
-
-Path SC_Filesystem::UTF8StringAsPath(const std::string& s) { return Path(s); }
-
 Path SC_Filesystem::resolveIfAlias(const Path& p, bool& isAlias)
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];

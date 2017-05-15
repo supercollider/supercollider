@@ -73,6 +73,8 @@
 #include <string> // std::string
 #include <boost/filesystem/path.hpp> // path
 
+#include "SC_Codecvt.hpp" // path_to_utf8_str
+
 #include <iostream>
 using std::cout;
 using std::endl;
@@ -154,7 +156,7 @@ public:
 	  */
 	bool shouldNotCompileDirectory(const Path& p) const
 	{
-		std::string dirname = pathAsUTF8String(p.filename());
+		std::string dirname = SC_Codecvt::path_to_utf8_str(p.filename());
 		std::transform(dirname.begin(), dirname.end(), dirname.begin(), ::tolower);
 		return dirname == "help" || dirname == "ignore" || dirname == ".svn" ||
 		       dirname == ".git" || dirname == "_darcs" ||
@@ -197,18 +199,6 @@ public:
 	/// Returns true if, on macOS, SuperCollider is operating as a standalone application.
 	static bool isStandalone();
 
-	/** \brief Converts a Path to a UTF-8 encoded string.
-	  * 
-	  * On Windows, conversion is done using the std::codecvt_utf8<wchar_t> facet.
-	  * On all other platforms, this just calls .string(). */
-	static std::string pathAsUTF8String(const Path&);
-
-	/** \brief Converts a UTF-8 encoded std::string to a Path.
-	  *
-	  * On Windows, conversion is done using the std::codecvt_utf8_utf16<wchar_t> facet.
-	  * On all other platforms this just calls Path(str) */
-	static Path UTF8StringAsPath(const std::string&);
-
 	/** \brief Resolves an alias on macOS.
 	  * \param p a path to resolve
 	  * \param isAlias set to true if p is an alias
@@ -222,6 +212,7 @@ public:
 	//--------------------------------- GLOB UTILITIES -------------------------------------//
 
 	/** \brief Makes a glob.
+	  * \param pattern a UTF-8 encoded string
 	  *
 	  * Constructs a Glob from a given pattern. Call globNext to get the next
 	  * Path in the glob. Client is responsible for calling freeGlob. */

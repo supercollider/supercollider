@@ -33,6 +33,7 @@ Primitives for String.
 #include <vector>
 #include "PyrLexer.h"
 #include "SC_Filesystem.hpp"
+#include "SC_Codecvt.hpp" // path_to_utf8_str
 #ifdef _WIN32
 # include <direct.h>
 # include "SC_Win32Utils.h"
@@ -43,8 +44,8 @@ Primitives for String.
 #include <boost/regex.hpp>
 #include <boost/intrusive/list.hpp>
 #include <boost/intrusive/unordered_set.hpp>
-
-#include <fstream>
+#include <boost/filesystem/fstream.hpp> // ifstream
+#include <boost/filesystem/path.hpp> // path
 
 #include <yaml-cpp/yaml.h>
 
@@ -549,6 +550,7 @@ int prString_PathMatch(struct VMGlobals *g, int numArgsPushed)
 		return err;
 
 	SC_Filesystem::Glob* glob = SC_Filesystem::makeGlob(pattern);
+	cout << "Globbing for: " << pattern << endl; // @TODO: debug code, remove
 
 	// exit early with empty array if no matches found
 	if (!glob) {
@@ -559,10 +561,14 @@ int prString_PathMatch(struct VMGlobals *g, int numArgsPushed)
 	}
 
 	// read all paths into a vector
-	std::vector<SC_Filesystem::Path> paths;
-	SC_Filesystem::Path matched_path;
-	while ( ! (matched_path = SC_Filesystem::globNext(glob)).empty() )
-		paths.push_back(matched_path);
+	std::vector<const SC_Filesystem::Path> paths;
+	while (true) {
+		const SC_Filesystem::Path& matched_path = SC_Filesystem::globNext(glob);
+		if (matched_path.empty())
+			break;
+		else
+			paths.push_back(matched_path);
+	};
 
 	// @TODO: debug code, remove
 	cout << "Globbing found " << paths.size() << " files." << endl;
@@ -573,7 +579,7 @@ int prString_PathMatch(struct VMGlobals *g, int numArgsPushed)
 
 	// convert paths and copy into sclang array.
 	for (int i = 0; i < paths.size(); ++i) {
-		const std::string& matched_path_utf8 = SC_Filesystem::pathAsUTF8String(paths[i]);
+		const std::string& matched_path_utf8 = SC_Codecvt::path_to_utf8_str(paths[i]);
 		PyrObject* string = (PyrObject*) newPyrString(g->gc, matched_path_utf8.c_str(), 0, true);
 		SetObject(array->slots + i, string);
 		g->gc->GCWriteNew(array, string); // we know string is white so we can use GCWriteNew
@@ -1112,12 +1118,10 @@ int prString_ParseYAMLFile(struct VMGlobals* g, int numArgsPushed)
 	if (!isKindOfSlot(arg, class_string))
 		return errWrongType;
 
-	string str((const char*)slotRawString(arg)->s,slotRawString(arg)->size);
+	string str((const char*)slotRawString(arg)->s, slotRawString(arg)->size);
 
-	// convert to path from
-	const SC_Filesystem::Path& path = SC_Filesystem::UTF8StringAsPath(str);
-
-	std::ifstream fin(path.string().c_str());
+	const boost::filesystem::path& path = SC_Codecvt::utf8_str_to_path(str);
+	boost::filesystem::ifstream fin(path);
 	YAML::Node doc = YAML::Load(fin);
 	yaml_traverse(g, doc, NULL, arg);
 

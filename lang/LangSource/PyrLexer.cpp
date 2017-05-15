@@ -67,7 +67,8 @@
 
 #include "SC_LanguageConfig.hpp"
 
-#include "SC_Filesystem.hpp"
+#include "SC_Filesystem.hpp" // getDirectory, resolveIfAlias, isStandalone
+#include "SC_Codecvt.hpp" // path_to_utf8_str
 #include "SC_TextUtils.hpp"
 
 #ifdef DEBUG_SCFS
@@ -216,7 +217,7 @@ bool startLexer(PyrSymbol *fileSym, const boost::filesystem::path& p, int startP
 	parseFailed = 0;
 	lexCmdLine = 0;
 	currfilename = bfs::path(filename);
-	printingCurrfilename = "file '" + SC_Filesystem::pathAsUTF8String(currfilename) + "'";
+	printingCurrfilename = "file '" + SC_Codecvt::path_to_utf8_str(currfilename) + "'";
 	maxlinestarts = 1000;
 	linestarts = (int*)pyr_pool_compile->Alloc(maxlinestarts * sizeof(int*));
 	linestarts[0] = 0;
@@ -1651,7 +1652,7 @@ void compileClass(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset)
 		} else {
 			compileErrors++;
 			bfs::path pathname(fileSym->name);
-			error("file '%s' parse failed\n", SC_Filesystem::pathAsUTF8String(pathname).c_str());
+			error("file '%s' parse failed\n", SC_Codecvt::path_to_utf8_str(pathname).c_str());
 			postfl("error parsing\n");
 		}
 		finiLexer();
@@ -1938,7 +1939,7 @@ static bool passOne_ProcessDir(const bfs::path& dir, int level)
 	while (rditer != bfs::end(rditer)) {
 		const bfs::path& path = *rditer;
 #ifdef DEBUG_SCFS
-		cout << "At: " << SC_Filesystem::pathAsUTF8String(path) << endl;
+		cout << "At: " << SC_Codecvt::path_to_utf8_str(path) << endl;
 #endif
 
 		if (bfs::is_directory(path)) {
@@ -2041,7 +2042,7 @@ bool passOne_ProcessOneFile(const boost::filesystem::path& path, int level)
 		return success;
 	}*/
 
-	const std::string path_str = SC_Filesystem::pathAsUTF8String(path);
+	const std::string path_str = SC_Codecvt::path_to_utf8_str(path);
 	const char* path_c_str = path_str.c_str();
 	if (gLanguageConfig && gLanguageConfig->pathIsExcluded(path)) {
 	  post("\texcluding file: '%s'\n", path_c_str);

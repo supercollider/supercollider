@@ -20,7 +20,8 @@
 
 #include "standard_dirs.hpp"
 
-#include "SC_Filesystem.hpp"
+#include "SC_Filesystem.hpp" // getDirectory
+#include "SC_Codecvt.hpp" // path_to_utf8_str
 
 namespace ScIDE {
 
@@ -60,7 +61,7 @@ QString standardDirectory( StandardDirectory type )
     }
 
     const SC_Filesystem::Path path = SC_Filesystem::instance().getDirectory(dn);
-    return QString(SC_Filesystem::pathAsUTF8String(path).c_str());
+    return QString(SC_Codecvt::path_to_utf8_str(path).c_str());
 }
 
 } // ScIDE
