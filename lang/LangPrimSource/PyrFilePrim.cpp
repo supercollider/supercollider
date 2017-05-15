@@ -53,14 +53,11 @@ Primitives for File i/o.
 #include <boost/filesystem.hpp>
 
 #if defined(__APPLE__) || defined(SC_IPHONE)
-#ifndef _SC_StandAloneInfo_
-# include "SC_StandAloneInfo_Darwin.h"
-#endif
 # include <CoreFoundation/CFString.h>
 # include <CoreFoundation/CFBundle.h>
-#ifndef SC_IPHONE
-# include <CoreServices/CoreServices.h>
-#endif
+# ifndef SC_IPHONE
+#  include <CoreServices/CoreServices.h>
+# endif
 #endif
 
 #define DELIMITOR ':'

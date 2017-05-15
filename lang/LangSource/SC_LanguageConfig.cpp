@@ -50,9 +50,7 @@ SC_LanguageConfig::SC_LanguageConfig(bool optStandalone)
 	if( !optStandalone ) {
 		const Path& classLibraryDir = SC_Filesystem::instance().getDirectory(DirName::Resource) / CLASS_LIB_DIR_NAME;
 		addPath(mDefaultClassLibraryDirectories, classLibraryDir);
-	}
 
-	if ( !( SC_Filesystem::isStandalone() || optStandalone ) ) {
 		const Path& systemExtensionDir = SC_Filesystem::instance().getDirectory(DirName::SystemExtension);
 		addPath(mDefaultClassLibraryDirectories, systemExtensionDir);
 

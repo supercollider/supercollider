@@ -52,8 +52,6 @@ const Path ROOT_PATH = Path("/");
 
 //============ PATH UTILITIES =============//
 
-bool SC_Filesystem::isStandalone() { return false; }
-
 Path SC_Filesystem::resolveIfAlias(const Path& p, bool& isAlias) { isAlias = false; return p; }
 
 //============ GLOB UTILITIES =============//

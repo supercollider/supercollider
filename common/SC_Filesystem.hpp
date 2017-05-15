@@ -196,9 +196,6 @@ public:
 
 	//-------------------------------- GENERAL UTILITIES -----------------------------------//
 
-	/// Returns true if, on macOS, SuperCollider is operating as a standalone application.
-	static bool isStandalone();
-
 	/** \brief Resolves an alias on macOS.
 	  * \param p a path to resolve
 	  * \param isAlias set to true if p is an alias
@@ -206,7 +203,7 @@ public:
 	  * 
 	  * If the path was not an alias, a copy is returned. */
 	// @TODO: Could possibly be split into `isAlias` and `resolveAlias` to avoid
-	// unnecessary copying
+	// unnecessary copying @TODO do this
 	static Path resolveIfAlias(const Path& p, bool& isAlias);
 
 	//--------------------------------- GLOB UTILITIES -------------------------------------//

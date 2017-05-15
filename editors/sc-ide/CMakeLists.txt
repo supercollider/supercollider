@@ -189,7 +189,6 @@ endif()
 
 if(APPLE)
 	list(APPEND ide_src
-        ${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp
         ${CMAKE_SOURCE_DIR}/QtCollider/hacks/hacks_mac.mm
     )
 elseif(WIN32)

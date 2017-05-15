@@ -28,13 +28,16 @@
 #if defined(__APPLE__) && !defined(SC_IPHONE)
 
 #include "SC_Filesystem.hpp"
-#include "SC_StandAloneInfo_Darwin.h"
 
 #ifdef DEBUG_SCFS
 #include <iostream>
 using std::cout;
 using std::endl;
 #endif
+
+// boost
+#include <boost/filesystem/path.hpp> // path, parent_path()
+#include <boost/filesystem/operations.hpp> // canonical, current_path()
 
 // system includes
 #include <Foundation/NSAutoreleasePool.h>
@@ -43,6 +46,7 @@ using std::endl;
 #include <CoreFoundation/CFString.h>
 
 #include <glob.h> // ::glob, glob_t
+#include <mach-o/dyld.h> // _NSGetExecutablePath
 
 using Path = SC_Filesystem::Path;
 using DirName = SC_Filesystem::DirName;
@@ -59,11 +63,6 @@ const Path ROOT_PATH = Path("/");
 static const char* getBundleName();
 
 //============ PATH UTILITIES =============//
-
-bool SC_Filesystem::isStandalone()
-{
-	return SC_StandAloneInfo::IsStandAlone();
-}
 
 Path SC_Filesystem::resolveIfAlias(const Path& p, bool& isAlias)
 {
@@ -183,9 +182,78 @@ Path SC_Filesystem::defaultUserConfigDirectory()
 
 Path SC_Filesystem::defaultResourceDirectory()
 {
-	char pathBuf[PATH_MAX];
-	SC_StandAloneInfo::GetResourceDir(pathBuf, PATH_MAX);
-	return Path(pathBuf);
+	Path ret;
+	CFStringEncoding encoding = kCFStringEncodingUTF8;
+
+#ifdef DEBUG_SCFS
+	cout << __func__ << ": searching for SCClassLibrary first." << endl;
+#endif
+	CFURLRef enablerURL = CFBundleCopyResourceURL (CFBundleGetMainBundle(),
+												   CFSTR("SCClassLibrary"),
+												   NULL,
+												   NULL
+												   );
+	if( !enablerURL ) {
+#ifdef DEBUG_SCFS
+		cout << __func__ << ": previous search failed, searching for sclang.app." << endl;
+#endif
+		enablerURL = CFBundleCopyResourceURL (CFBundleGetMainBundle(),
+											  CFSTR("sclang.app"),
+											  NULL,
+											  NULL
+											  );
+	}
+	if ( enablerURL ) {
+#ifdef DEBUG_SCFS
+		cout << __func__ << ": search succeeded, making relative path." << endl;
+#endif
+		// If sclang or SuperCollider binary is run within the .app bundle,
+		// this is how we find the Resources path.
+		char relDir[PATH_MAX];
+		CFStringRef rawUrlPath = CFURLCopyFileSystemPath(enablerURL, kCFURLPOSIXPathStyle);
+		CFStringRef rawPath = CFStringCreateWithFormat(NULL, NULL, CFSTR("%@/.."), rawUrlPath);
+		CFStringGetCString(rawPath, relDir, PATH_MAX, encoding);
+		CFRelease( rawUrlPath );
+		CFRelease( rawPath );
+		CFRelease( enablerURL );
+		ret = Path(relDir);
+#ifdef DEBUG_SCFS
+		cout << __func__ << ": relative path is " << ret << endl;
+#endif
+	} else {
+		// when sclang is run from a symlink, the resource URL above will not be found,
+		// so we need to find the path of the executable.
+#ifdef DEBUG_SCFS
+		cout << __func__ << ": search failed, looking for executable path." << endl;
+#endif
+		uint32_t bufsize = PATH_MAX;
+		char relDir[PATH_MAX];
+		if(_NSGetExecutablePath(relDir, &bufsize)==0) {
+#ifdef DEBUG_SCFS
+			cout << __func__ << ": search succeeded, resolving symlink: " << relDir << endl;
+#endif
+			ret = boost::filesystem::canonical(relDir); // resolve symlink
+			ret = ret.parent_path();
+#ifdef DEBUG_SCFS
+			cout << __func__ << ": resolved parent path: " << ret << endl;
+#endif
+		} else {
+#ifdef DEBUG_SCFS
+			cout << __func__ << ": search failed, getting cwd" << endl;
+#endif
+			// in case it failed, fall back to current directory
+			ret = boost::filesystem::current_path();
+
+		}
+	}
+#ifdef DEBUG_SCFS
+	cout << __func__ << ": final path before resolving is: " << ret << endl;
+#endif
+	ret = boost::filesystem::canonical(ret); // resolve lingering symlink
+#ifdef DEBUG_SCFS
+	cout << __func__ << ": final path after resolving is: " << ret << endl;
+#endif
+	return ret;
 }
 
 //============= STATIC FUNCTIONS =============//

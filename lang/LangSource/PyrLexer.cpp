@@ -2001,14 +2001,9 @@ bool passOne()
 {
 	initPassOne();
 
-	if (SC_Filesystem::isStandalone()) {
-		/// FIXME: this should be moved to the LibraryConfig file
-		if (!passOne_ProcessDir(gCompileDir, 0))
-			return false;
-	} else {
-		if (!gLanguageConfig->forEachIncludedDirectory(passOne_ProcessDir)) {
-			return false;
-		}
+	if (!gLanguageConfig->forEachIncludedDirectory(passOne_ProcessDir)) {
+		// @TODO: should also finiPassOne here too, right? - bh
+		return false;
 	}
 
 	finiPassOne();
