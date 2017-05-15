@@ -44,14 +44,17 @@ location of the bundled help files
 method:: systemAppSupportDir
 system application support directory
 
+method:: systemExtensionDir
+system extension directory (see link::Guides/UsingExtensions::)
+
+method:: userHomeDir
+user home directory
+
 method:: userAppSupportDir
 user application support directory
 
 method:: userConfigDir
 directory for configuration files
-
-method:: systemExtensionDir
-system extension directory (see link::Guides/UsingExtensions::)
 
 method:: userExtensionDir
 user extension directory (see link::Guides/UsingExtensions::)
