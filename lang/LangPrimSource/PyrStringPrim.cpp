@@ -561,7 +561,7 @@ int prString_PathMatch(struct VMGlobals *g, int numArgsPushed)
 	}
 
 	// read all paths into a vector
-	std::vector<const SC_Filesystem::Path> paths;
+	std::vector<SC_Filesystem::Path> paths;
 	while (true) {
 		const SC_Filesystem::Path& matched_path = SC_Filesystem::globNext(glob);
 		if (matched_path.empty())
