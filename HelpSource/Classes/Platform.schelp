@@ -44,14 +44,17 @@ location of the bundled help files
 method:: systemAppSupportDir
 system application support directory
 
+method:: systemExtensionDir
+system extension directory (see link::Guides/UsingExtensions::)
+
+method:: userHomeDir
+user home directory
+
 method:: userAppSupportDir
 user application support directory
 
 method:: userConfigDir
 directory for configuration files
-
-method:: systemExtensionDir
-system extension directory (see link::Guides/UsingExtensions::)
 
 method:: userExtensionDir
 user extension directory (see link::Guides/UsingExtensions::)
@@ -64,6 +67,9 @@ platform specific path separator
 
 method:: resourceDir
 platform specific resource directory
+
+method:: recordingsDir 
+platform recordings directory
 
 method:: defaultTempDir
 default directory for temporary files
@@ -88,6 +94,7 @@ recompile class library
 
 
 subsection:: Directories and filesystem stuff
+
 method:: classLibraryDir
 location of the bundled class library
 
@@ -97,14 +104,17 @@ location of the bundled help files
 method:: systemAppSupportDir
 system application support directory
 
+method:: systemExtensionDir
+system extension directory (see link::Guides/UsingExtensions::)
+
+method:: userHomeDir
+user home directory
+
 method:: userAppSupportDir
 user application support directory
 
 method:: userConfigDir
 directory for configuration files
-
-method:: systemExtensionDir
-system extension directory (see link::Guides/UsingExtensions::)
 
 method:: userExtensionDir
 user extension directory (see link::Guides/UsingExtensions::)
@@ -115,11 +125,11 @@ platform specific directory for class files (see link::Guides/UsingExtensions::)
 method:: pathSeparator
 platform specific path separator
 
+method:: recordingsDir
+platform recordings directory
+
 method:: resourceDir
 platform specific resource directory
-
-method:: recordingsDir
-recording directory
 
 method:: defaultTempDir
 default directory for temporary files
