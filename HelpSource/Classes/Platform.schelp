@@ -71,6 +71,9 @@ platform specific resource directory
 method:: recordingsDir 
 platform recordings directory
 
+method:: defaultTempDir
+default directory for temporary files
+
 subsection:: Features
 
 method:: when
