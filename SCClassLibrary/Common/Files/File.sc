@@ -18,9 +18,24 @@ File : UnixFILE {
 		file = this.new(pathName, mode);
 		^{ function.value(file) }.protect({ file.close });
 	}
-	*read { arg pathName, mode = "r", selector = \readAllString;
+	*readAllString { arg pathName;
 		var res;
-		this.use(pathName, mode, { |file| res = file.perform(selector) });
+		this.use(pathName, "r", { |file| res = file.readAllString });
+		^res
+	}
+	*readAllSignal { arg pathName;
+		var res;
+		this.use(pathName, "r", { |file| res = file.readAllSignal });
+		^res
+	}
+	*readAllStringHTML { arg pathName;
+		var res;
+		this.use(pathName, "r", { |file| res = file.readAllStringHTML });
+		^res
+	}
+	*readAllStringRTF { arg pathName;
+		var res;
+		this.use(pathName, "r", { |file| res = file.readAllStringRTF });
 		^res
 	}
 	*delete { arg pathName;
