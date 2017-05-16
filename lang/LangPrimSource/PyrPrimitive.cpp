@@ -297,7 +297,7 @@ int prPrimitiveErrorString(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
 	PyrString *string;
-	const char *str;
+	std::string str;
 	std::exception_ptr lastPrimitiveException;
 	char *lastPrimitiveExceptionClass, *lastPrimitiveExceptionMethod;
 
@@ -326,21 +326,18 @@ int prPrimitiveErrorString(struct VMGlobals *g, int numArgsPushed)
 				} catch(const std::exception& e) {
 					
 					const char *errorString = e.what();
-					std::string result = std::string("caught exception \'") + errorString + "\' in primitive in method " + lastPrimitiveExceptionClass + ":" + lastPrimitiveExceptionMethod;
-					string = newPyrString(g->gc, result.c_str(), 0, true);
-					SetObject(a, string);
-					return errNone;
+					str = std::string("caught exception \'") + errorString + "\' in primitive in method " + lastPrimitiveExceptionClass + ":" + lastPrimitiveExceptionMethod;
+					break;
 				}
 			} else {
-				std::string result = std::string("caught unknown exception in primitive in method ") + lastPrimitiveExceptionClass + ":" + lastPrimitiveExceptionMethod;
-				str = result.c_str();
+				str = std::string("caught unknown exception in primitive in method ") + lastPrimitiveExceptionClass + ":" + lastPrimitiveExceptionMethod;
 				break;
 			}
 			break;
 		}
 		default : str = "Failed.";
 	}
-	string = newPyrString(g->gc, str, 0, true);
+	string = newPyrString(g->gc, str.c_str(), 0, true);
 	SetObject(a, string);
 	return errNone;
 }
