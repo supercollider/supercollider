@@ -19,24 +19,24 @@ File : UnixFILE {
 		^{ function.value(file) }.protect({ file.close });
 	}
 	*readAllString { arg pathName;
-		var res;
-		this.use(pathName, "r", { |file| res = file.readAllString });
-		^res
+		var string;
+		this.use(pathName, "r", { |file| string = file.readAllString });
+		^string
 	}
 	*readAllSignal { arg pathName;
-		var res;
-		this.use(pathName, "r", { |file| res = file.readAllSignal });
-		^res
+		var string;
+		this.use(pathName, "r", { |file| string = file.readAllSignal });
+		^string
 	}
 	*readAllStringHTML { arg pathName;
-		var res;
-		this.use(pathName, "r", { |file| res = file.readAllStringHTML });
-		^res
+		var string;
+		this.use(pathName, "r", { |file| string = file.readAllStringHTML });
+		^string
 	}
 	*readAllStringRTF { arg pathName;
-		var res;
-		this.use(pathName, "r", { |file| res = file.readAllStringRTF });
-		^res
+		var string;
+		this.use(pathName, "r", { |file| string = file.readAllStringRTF });
+		^string
 	}
 	*delete { arg pathName;
 		_FileDelete
