@@ -3829,7 +3829,7 @@ void doPrimitive(VMGlobals* g, PyrMethod* meth, int numArgsPushed)
 		g->lastExceptions[g->thread] = std::make_pair(std::current_exception(), meth);
 		err = errException;
 	} catch (...) {
-		g->lastExceptions[g->thread] = std::make_pair(std::make_exception_ptr(nullptr), meth);
+		g->lastExceptions[g->thread] = std::make_pair(nullptr, meth);
 		err = errException;
 	}
 	if (err <= errNone) g->sp -= g->numpop;
@@ -3870,7 +3870,7 @@ void doPrimitiveWithKeys(VMGlobals* g, PyrMethod* meth, int allArgsPushed, int n
 			g->lastExceptions[g->thread] = std::make_pair(std::current_exception(), meth);
 			err = errException;
 		} catch (...) {
-			g->lastExceptions[g->thread] = std::make_pair(std::make_exception_ptr(nullptr), meth);
+			g->lastExceptions[g->thread] = std::make_pair(nullptr, meth);
 			err = errException;
 		}
 		if (err <= errNone) g->sp -= g->numpop;
@@ -3938,7 +3938,7 @@ void doPrimitiveWithKeys(VMGlobals* g, PyrMethod* meth, int allArgsPushed, int n
 			g->lastExceptions[g->thread] = std::make_pair(std::current_exception(), meth);
 			err = errException;
 		} catch (...) {
-			g->lastExceptions[g->thread] = std::make_pair(std::make_exception_ptr(nullptr), meth);
+			g->lastExceptions[g->thread] = std::make_pair(nullptr, meth);
 			err = errException;
 		}
 		if (err <= errNone) g->sp -= g->numpop;
