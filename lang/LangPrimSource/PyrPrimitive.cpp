@@ -48,6 +48,7 @@
 #include "../LangSource/SC_LanguageConfig.hpp"
 #include "SC_DirUtils.h"
 #include "SC_Version.hpp"
+#include <map>
 
 #ifdef _WIN32
 # include <direct.h>
@@ -296,7 +297,9 @@ int prPrimitiveErrorString(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a;
 	PyrString *string;
-	const char *str;
+	std::string str;
+	std::exception_ptr lastPrimitiveException;
+	char *lastPrimitiveExceptionClass, *lastPrimitiveExceptionMethod;
 
 	a = g->sp;
 	switch (slotRawInt(&g->thread->primitiveError)) {
@@ -312,10 +315,29 @@ int prPrimitiveErrorString(struct VMGlobals *g, int numArgsPushed)
 		case errStackOverflow : str = "Stack overflow."; break;
 		case errOutOfMemory : str = "Out of memory."; break;
 		case errCantCallOS : str = "Operation cannot be called from this Process. Try using AppClock instead of SystemClock."; break;
-
+		case errException : {
+			lastPrimitiveException = g->lastExceptions[g->thread].first;
+			PyrMethod *meth = g->lastExceptions[g->thread].second;
+			lastPrimitiveExceptionClass = slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name;
+			lastPrimitiveExceptionMethod = slotRawSymbol(&meth->name)->name;
+			if (lastPrimitiveException) {
+				try {
+					std::rethrow_exception(lastPrimitiveException);
+				} catch(const std::exception& e) {
+					
+					const char *errorString = e.what();
+					str = std::string("caught exception \'") + errorString + "\' in primitive in method " + lastPrimitiveExceptionClass + ":" + lastPrimitiveExceptionMethod;
+					break;
+				}
+			} else {
+				str = std::string("caught unknown exception in primitive in method ") + lastPrimitiveExceptionClass + ":" + lastPrimitiveExceptionMethod;
+				break;
+			}
+			break;
+		}
 		default : str = "Failed.";
 	}
-	string = newPyrString(g->gc, str, 0, true);
+	string = newPyrString(g->gc, str.c_str(), 0, true);
 	SetObject(a, string);
 	return errNone;
 }
@@ -3804,11 +3826,10 @@ void doPrimitive(VMGlobals* g, PyrMethod* meth, int numArgsPushed)
 	g->gc->SanityCheck();
 #endif
 	} catch (std::exception& ex) {
-		post("caught exception in primitive %s:%s\n", slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name);
-		error(ex.what());
+		g->lastExceptions[g->thread] = std::make_pair(std::current_exception(), meth);
 		err = errException;
 	} catch (...) {
-		post("caught exception in primitive %s:%s\n", slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name);
+		g->lastExceptions[g->thread] = std::make_pair(nullptr, meth);
 		err = errException;
 	}
 	if (err <= errNone) g->sp -= g->numpop;
@@ -3846,11 +3867,10 @@ void doPrimitiveWithKeys(VMGlobals* g, PyrMethod* meth, int allArgsPushed, int n
 		try {
 			err = ((PrimitiveWithKeysHandler)def[1].func)(g, allArgsPushed, numKeyArgsPushed);
 		} catch (std::exception& ex) {
-			post("caught exception in primitive %s:%s\n", slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name);
-			error(ex.what());
+			g->lastExceptions[g->thread] = std::make_pair(std::current_exception(), meth);
 			err = errException;
 		} catch (...) {
-			post("caught exception in primitive %s:%s\n", slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name);
+			g->lastExceptions[g->thread] = std::make_pair(nullptr, meth);
 			err = errException;
 		}
 		if (err <= errNone) g->sp -= g->numpop;
@@ -3915,11 +3935,10 @@ void doPrimitiveWithKeys(VMGlobals* g, PyrMethod* meth, int allArgsPushed, int n
 		try {
 			err = (*def->func)(g, numArgsNeeded);
 		} catch (std::exception& ex) {
-			post("caught exception in primitive %s:%s\n", slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name);
-			error(ex.what());
+			g->lastExceptions[g->thread] = std::make_pair(std::current_exception(), meth);
 			err = errException;
 		} catch (...) {
-			post("caught exception in primitive %s:%s\n", slotRawSymbol(&slotRawClass(&meth->ownerclass)->name)->name, slotRawSymbol(&meth->name)->name);
+			g->lastExceptions[g->thread] = std::make_pair(nullptr, meth);
 			err = errException;
 		}
 		if (err <= errNone) g->sp -= g->numpop;
