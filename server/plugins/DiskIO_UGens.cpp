@@ -168,7 +168,7 @@ struct DiskIOThread
 #endif
 
 	std::atomic<bool> mRunning;
-	thread mThread;
+	SC_Thread mThread;
 
 	DiskIOThread():
 		mRunning(false)
