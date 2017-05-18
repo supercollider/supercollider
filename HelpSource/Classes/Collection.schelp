@@ -392,6 +392,18 @@ code::
 List[2, 1, 4, 3].asSortedList;
 ::
 
+method::asDict
+Answer a corresponding dictionary. This is part of an interface, see: link::Reference/Key-Value-Pairs::.
+argument::mergeFunc
+Use this function to decide what to do with duplicate keys.
+
+argument::class
+Specify what dictionary class is retuned. By default, this is an link::Classes/IdentityDictionary::.
+
+method::asDictWith
+used internally by code::asDict::.
+
+
 method::powerset
 Returns all possible combinations of the collection's elements.
 code::
