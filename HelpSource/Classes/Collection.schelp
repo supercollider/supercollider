@@ -393,9 +393,13 @@ List[2, 1, 4, 3].asSortedList;
 ::
 
 method::asDict
-Answer a corresponding dictionary. This is part of an interface, see: link::Reference/Key-Value-Pairs::.
+Answer a corresponding dictionary. This is part of the link::Reference/Key-Value-Pairs:: interface.
 argument::mergeFunc
 Use this function to decide what to do with duplicate keys.
+
+method::asAssociations
+Answer an array of link::Classes/Association::s. If the first item of the list is already an associiation, return itself.  This is part of the link::Reference/Key-Value-Pairs:: interface.
+
 
 argument::class
 Specify what dictionary class is retuned. By default, this is an link::Classes/IdentityDictionary::.

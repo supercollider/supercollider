@@ -285,19 +285,21 @@ d.asSortedArray;
 ::
 
 method::asDict
-If no arguments are passed, return itself. See: link::Reference/Key-Value-Pairs::
+If no arguments are passed, return itself.  This is part of the link::Reference/Key-Value-Pairs:: interface.
 argument::mergeFunc
 This argument is not used, but exists to make the method compatible.
 argument::class
 A dictionary class to convert to, if given (conversion is done via code::newFrom::).
 
-
-method::asKeyValuePairs
-Return the values in an array of alternating key value pairs.
+method::asPairs
+Return the values in an array of alternating key value pairs.  This is part of the link::Reference/Key-Value-Pairs:: interface.
 code::
 d = (a: 5, b: 7, c: 1, d: 0);
-d.asKeyValuePairs;
+d.asPairs;
 ::
+
+method::asKeyValuePairs
+See asPairs.
 
 method::embedInStream
 
