@@ -300,8 +300,9 @@ Dictionary : Set {
 		^this.getPairs
 	}
 
-	asDict {
-		^this
+	asDict { arg mergeFunc, class;
+		// the mergeFunc is ignored, because dictionary keys must differ
+		^if(class.notNil and: { class == this.class }) { this } { this.as(class) }
 	}
 
 
