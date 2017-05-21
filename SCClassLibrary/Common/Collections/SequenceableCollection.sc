@@ -634,10 +634,25 @@ SequenceableCollection : Collection {
 		^if(accidental == 0) { baseKey } { baseKey + (accidental * (stepsPerOctave / 12.0)) }
 	}
 
-	performKeyToDegree { | degree, stepsPerOctave = 12 |
-		var n = degree div: stepsPerOctave * this.size;
-		var key = degree % stepsPerOctave;
-		^this.indexInBetween(key) + n
+	performKeyToDegree { |key stepsPerOctave = 12|
+        var nearestDegree, closestScale, sharpening, octave;
+
+        // store away octave and wrap key inside a single one
+        octave = (key / stepsPerOctave).floor;
+		key = key % stepsPerOctave;
+
+        // find the closest degree in scale for all keys in octave
+        closestScale = Array.fill(stepsPerOctave, { |k| 
+            this.indexInBetween(k).floor 
+        });
+
+        // find the closest degree in the scale for the key
+		nearestDegree = this.indexInBetween(key).floor;
+
+        // calculate how much to sharpen our degree by
+        sharpening = closestScale.indexOf(nearestDegree) - key / -10;
+
+        ^nearestDegree + sharpening + (octave * this.size);
 	}
 
 	performNearestInList { | degree |
