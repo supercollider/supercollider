@@ -11,15 +11,18 @@ Uses a wavetable lookup oscillator with linear interpolation.
 Frequency and phase modulation are provided for audio-rate modulation.
 Technically, code::SinOsc:: uses the same implementation as  link::Classes/Osc::  except that its table is fixed to be a sine wave made of code::8192:: samples.
 
-subsection:: Other sinewaves oscillators
+This is the same as  link::Classes/Osc::  except that the table is
+a sine table of 8192 entries.
 
-LIST::
-## link::Classes/FSinOsc:: – fast sinewave oscillator
-## link::Classes/SinOscFB:: – sinewave with phase feedback
-## link::Classes/PMOsc:: – phase modulation sine oscillator
-## link::Classes/Klang:: – bank of sinewave oscillators
-## link::Classes/DynKlang:: – modulable bank of sinewave oscillators
-::
+From Osc Supercollider Documentation Description:
+
+Linear interpolating wavetable lookup oscillator with frequency and phase modulation inputs.
+
+This oscillator requires a buffer to be filled with a wavetable format signal. This preprocesses the Signal into a form which can be used efficiently by the Oscillator. The buffer size must be a power of 2.
+
+This can be acheived by creating a Buffer object and sending it one of the "b_gen" messages ( Buffer: -sine1, Buffer: -sine2, Buffer: -sine3 ) with the wavetable flag set to true.
+
+This can also be achieved by creating a Signal object and sending it the 'asWavetable' message, thereby creating a Wavetable object in the required format. Then, the wavetable data may be transmitted to the server using the Buffer: *sendCollection or Buffer: *loadCollection methods.
 
 
 classmethods::
@@ -31,16 +34,14 @@ Frequency in Hertz.
 Sampled at audio-rate.
 
 argument::phase
-Phase in radians.
-Sampled at audio-rate.
-note::phase values should be within the range +-8pi. If your phase values are larger then simply use code::.mod(2pi):: to wrap them.::
+phase offset or modulator in radians
+(Note: phase values should be within the range +-8pi. If your phase values are larger then simply use code::.mod(2pi):: to wrap them.)
 
 argument::mul
 Output will be multiplied by this value.
 
 argument::add
 This value will be added to the output.
-
 
 Examples::
 
@@ -58,6 +59,308 @@ code::
 
 // phase modulation (see also PMOsc)
 { SinOsc.ar(800, SinOsc.ar(XLine.kr(1, 1000, 9), 0, 2pi), 0.25) }.play;
+
+// using arrays to determine pitch of oscillators
+
+(
+~fibbonacciinvocation={Mix.new(SinOsc.ar(Array.fib(rrand(5, 10), [1, 2, 4, 8, 16, 32, 64, 128].choose, [1, 2, 4, 8, 16, 32, 64, 128].choose), mul: SinOsc.kr([0.02, 0.0202], mul: 0.005)))!2};
+)
+(
+~fibonacciinstancing={200.do({~fibbonacciinvocation.scope;})}.scope;
+)
+
+// random pitches and layer of different synths
+
+(
+
+~exampleSound1 = { (SinOsc.ar(200+rrand(-1,1), 0, 0.5) !2) * 0.03};
+
+// modulate freq
+~exampleSound2 = { (SinOsc.ar(XLine.kr(2000, 200)+rrand(-1,1), 0, 0.5) !2) * 0.03};
+
+// modulate freq
+~exampleSound3 = { (SinOsc.ar(SinOsc.ar(XLine.kr(1, 1000, 9)+rrand(-1,1), 0, 200, 800), 0, 0.25) !2) * 0.03};
+
+// modulate phase
+~exampleSound4 = { (SinOsc.ar(800, SinOsc.ar(XLine.kr(1, 1000, 9)+rrand(-1,1), 0, 2pi), 0.25) !2) * 0.03};
+
+)
+
+(
+
+~exampleSound1.play;
+~exampleSound2.play;
+~exampleSound3.play;
+~exampleSound4.play;
+
+)
+
+// multi-channel expansion
+
+~expansion = {rrand(50, 500).do({[~exampleSound1, ~exampleSound2, ~exampleSound3, ~exampleSound4].choose.play;})};
+
+~expansion.play
+
+// creating a simple gui using ndefs
+
+Ndef( \simpleSines, { SinOsc.ar( \freq.kr( 500 ) * \fmmod.kr( [ 1, 1.5, 2 ] ), 0, 0.1 ).sum } );
+
+Ndef( \simpleSines ).play;
+
+NdefMixer.new(s);
+
+Ndef( \simpleSines ).stop;
+
+Ndef( \simpleSines, { SinOsc.ar( \freq.kr( 500 ) * \fmmod.kr( [ 1, 1.5, 2 ] ), 0, 0.1 * \amp.kr( [1,1,1] ) ).sum } );
+
+Ndef( \simpleSines ).play;
+
+Ndef( \simpleSines, { SinOsc.ar( \freq.kr( 500 ) * \fmmod.kr( [ 1, 1.5, 2 ] ).lag( \lag.kr(0.1) ), 0, 0.1 * \amp.kr( [1,1,1] ).lag( \lag.kr(0.1) ) ).sum } );
+
+Ndef( \simpleSines ).stop;
+
+// mouse button synthdef
+
+(
+SynthDef( \mousexyb, { |out=0|
+	var mousex, mousey, mousebutton;
+	mousex = MouseX.kr( 500, 1000 ); // this will determine the frequency of the sound (minimum value, maximum value, warp, lag)
+	mousey = MouseY.kr( 0, 0.3 ); // this will determine the amplitude of the sound
+	mousebutton = MouseButton.kr( 0, 1, 2 ); // this will turn the sound on or off (minimum value, maximum value, lag)
+	Out.ar( out, SinOsc.ar( mousex, 0, mousey ) * mousebutton );
+}).add
+)
+
+s.meter;
+x = Synth.new( \mousexyb );
+x.free;
+
+// mousepoll synthdef
+
+(
+SynthDef( \mousepoll, { |out=0|
+	var mousex;
+	mousex = MouseX.kr( 500, 10000, \exponential ).poll; // .poll will print the current value
+	Out.ar( out, SinOsc.ar( mousex, 0, 0.1 ) );
+}).add
+)
+
+y = Synth.new( \mousepoll );
+y.free;
+
+// HID with keyboard
+
+(
+{ Mix.new( SinOsc.ar(
+	Array.geom(13, 1, 1.2)*500, 0,
+	KeyState.kr(
+		[ 39, 30, 33, 26, 27, 54, 32, 46, 46, 31, 40, 26, 27 ], 0, 0.1)
+) ) }.play
+)
+
+// sequencing music in stockhausen style using patterns and streams
+
+/**
+ * Two Auditory Scene Analysis (ASA) experiences
+ * as proposed by Albert Bregman, Auditory Scene Analysis, MIT Press, 1990
+ *
+ * 1. Streaming: if rate of presentation and
+ * frequency gap between the two series of sinusoidal tones are varied,
+ * one or two stream(s) appear(s).
+ *
+ * 2. Miniature ASA Problem:
+ * Three short sinusoidal segments.
+ * Varying frequency distance of A and C with respect to B, and attack time of C, two groupings are possible:
+ * (A-B)/C: a two note melody with a low tone (parallel)
+ * A-(B+C): a simple tone and a complex tone (sequence)
+ *
+ * (andrea valle)
+ */
+
+
+// start server
+s.boot;
+
+(
+// Streaming
+var r;
+var rateSlide, deltaSlide, volumeSlide;
+var pauseButton1, pauseButton2, recButton;
+var volume1 = 1.0, volume2 = 1.0;
+var base = 500;
+var durVar1 = [0.05, 0.3, 0.15, 0.5], durVar2 = [0.5, 0.05, 0.3, 0.15];
+var levels1 = [0, 1, 1, 0, 0], levels2 = [0, 0, 1, 1, 0];
+var synth1, synth2;
+var ezFunc = { |ez| ez.() };
+var rateSpec = ControlSpec(0.05, 2.0, \exp, 1e-3, 0.01);
+var deltaSpec = ControlSpec(0, 1000, \lin, 1, 1);
+var volumeSpec = ControlSpec(0.0, 1.0, \lin, 0.1, 0.1);
+
+
+// a SynthDef
+SynthDef(\asaSine1, { |out=0, freq=440, dur=1.0, levels=#[0, 1, 1, 0, 0], durVar=#[1, 1, 1, 1], mul=0.5|
+	var env, snd;
+
+	env = Env.new(levels, dur * durVar, 'welch');
+	snd = SinOsc.ar(freq, mul: mul);
+
+	Out.ar(out, snd * EnvGen.kr(env));
+}).add;
+
+
+// a Routine
+r = Routine {
+	inf.do { |i|
+		var k;
+		var arr1 = [0, 0, 1, 0, 2],
+		arr2 = [1, 0, 3, 1, 2];
+
+		// 1st Synth
+		synth1 = Synth.new(\asaSine1, [\levels, levels1, \durVar, durVar1]);
+		k = arr1[i.mod(5)] * 100 + base;
+		synth1.set(\freq, k);
+		synth1.set(\dur, rateSlide.value);
+		synth1.set(\mul, volumeSlide.value * volume1);
+
+		// 2nd Synth
+		synth2 = Synth(\asaSine1, [\levels, levels2, \durVar, durVar2]);
+		k = arr2[i.mod(5)] * 100 + base + deltaSlide.value;
+		synth2.set(\freq, k);
+		synth2.set(\dur, rateSlide.value);
+		synth2.set(\mul, volumeSlide.value * volume2);
+
+		// wait and free the Synths
+		rateSlide.value.wait;
+		[synth1, synth2].do(_.free);
+	}
+};
+
+
+// GUI stuff
+w = Window("ASA: Streaming", Rect(20, 400, 440, 150)).front;
+w.view.decorator = FlowLayout(w.view.bounds);
+
+rateSlide = EZSlider(w, 400@20, "DurEach", rateSpec, ezFunc, 0.1);
+deltaSlide = EZSlider(w, 400@20, "Delta", deltaSpec, ezFunc, 500);
+volumeSlide = EZSlider(w, 400@20, "Volume", volumeSpec, ezFunc, 0.5);
+
+w.view.decorator.nextLine.shift(50, 20);
+
+pauseButton1 = Button(w, 110@30);
+pauseButton1.states = [
+	["1 now is active", Color.black, Color.red],
+	["1 now is muted", Color.white, Color.black],
+];
+pauseButton1.action = { |state|
+	switch(state.value,
+		1, { volume1 = 0; "muted 1".postln },
+		0, { volume1 = 1; "activated 1".postln }
+	)
+};
+
+w.view.decorator.shift(10, 0);
+
+pauseButton2 = Button(w, 110@30);
+pauseButton2.states = [
+	["2 now is active", Color.black, Color.red],
+	["2 now is muted", Color.white, Color.black],
+];
+pauseButton2.action = { |state|
+	switch(state.value,
+		1, { volume2 = 0; "muted 2".postln },
+		0, { volume2 = 1; "activated 2".postln }
+	)
+};
+
+
+w.onClose_({ r.stop; [synth1, synth2].do(_.free); });
+
+SystemClock.play(r);
+)
+
+// SinOsc as Sound input modulator source
+
+/*
+
+RM octaver
+
+inSignal is RingModulated by a sinusoidal tone with half frequency.
+The resulting spectrum is given by all the components of inSignal with
+half freqs.
+This means that the new spectrum is a one 8ve below version of the input signal's one,
+with only odd partials.
+As a consequence, if inSignal is added again, even partials are
+recovered.
+
+See:
+Miller Puckette, The Theory and Technique of Electronic Music, p. 126
+http://crca.ucsd.edu/~msp/techniques/latest/book.pdf
+http://crca.ucsd.edu/~msp/techniques/latest/book-html/node77.html#sect5.ringmod
+
+andreavalle
+
+*/
+
+s = Server.local.waitForBoot({
+	SynthDef.new(\RmOctaver, { var in, out = 0, freq, hasFreq ;
+		in = SoundIn.ar(0) ;
+		# freq, hasFreq = Pitch.kr(in) ;
+		Out.ar(out, SinOsc.ar(freq: freq*0.5)*in+in);
+	}).send(s) ;
+})
+)
+
+Synth.new(\RmOctaver) ;
+
+// midi mapping to some simple stuff using sinosc
+
+// mapping sine-waves to MIDI input
+
+(
+~testNote = MIDIFunc.noteOn( { arg ...args;
+	if(args[1] == 60, {~midiSinB.value; args.postln;});
+	if(args[1] == 61, {~midiSinB.value; ~midiSinC1.value; args.postln;});
+	if(args[1] == 62, {~midiSinB.value; ~midiSinC2.value; args.postln;});
+	if(args[1] == 63, {~midiSinB.value; ~midiSinC3.value; args.postln;});
+	if(args[1] == 64, {~midiSinB.value; ~midiSinC4.value; args.postln;});
+	if(args[1] == 65, {~midiSinB.value; ~midiSinC5.value; args.postln;});
+	if(args[1] == 66, {~midiSinB.value; ~midiSinC6.value; args.postln;});
+	if(args[1] == 67, {~midiSinB.value; ~midiSinC7.value; args.postln;});
+	if(args[1] == 68, {~midiSinB.value; ~midiSinC8.value; args.postln;});
+	if(args[1] == 69, {~midiSinB.value; ~midiSinC9.value; args.postln;});
+}
+)
+)
+MIDIIn.connectAll;
+
+~midiSinB={~midiSinA1_2.free; ~midiSinA2_2.free; ~midiSinA3_2.free; ~midiSinA4_2.free; ~midiSinA5_2.free; ~midiSinA6_2.free; ~midiSinA7_2.free; ~midiSinA8_2.free; ~midiSinA9_2.free;}
+
+~midiSinA1={~midiSinA1_2={SinOsc.ar([30, 31])}.play;};
+~midiSinC1={~midiSinB.value;~midiSinA1.value};
+
+~midiSinA2={~midiSinA2_2={SinOsc.ar([30, 31]*2)}.play;};
+~midiSinC2={~midiSinB.value;~midiSinA2.value};
+
+~midiSinA3={~midiSinA3_2={SinOsc.ar([30, 31]*3)}.play;};
+~midiSinC3={~midiSinB.value;~midiSinA3.value};
+
+~midiSinA4={~midiSinA4_2={SinOsc.ar([30, 31]*4)}.play;};
+~midiSinC4={~midiSinB.value;~midiSinA4.value};
+
+~midiSinA5={~midiSinA5_2={SinOsc.ar([30, 31]*5)}.play;};
+~midiSinC5={~midiSinB.value;~midiSinA5.value};
+
+~midiSinA6={~midiSinA6_2={SinOsc.ar([30, 31]*6)}.play;};
+~midiSinC6={~midiSinB.value;~midiSinA6.value};
+
+~midiSinA7={~midiSinA7_2={SinOsc.ar([30, 31]*7)}.play;};
+~midiSinC7={~midiSinB.value;~midiSinA7.value};
+
+~midiSinA8={~midiSinA8_2={SinOsc.ar([30, 31]*8)}.play;};
+~midiSinC8={~midiSinB.value;~midiSinA8.value};
+
+~midiSinA9={~midiSinA1_2={SinOsc.ar([30, 31]*9)}.play;};
+~midiSinC9={~midiSinB.value;~midiSinA9.value};
 
 ::
 
