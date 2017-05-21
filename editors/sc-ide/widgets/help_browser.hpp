@@ -23,7 +23,7 @@
 
 #include "util/docklet.hpp"
 
-#include <QWebView>
+#include <QWebEngineView>
 #include <QLabel>
 #include <QLineEdit>
 #include <QBasicTimer>
@@ -100,7 +100,7 @@ public:
     void gotoHelpForMethod( const QString & className, const QString & methodName );
     QWidget *loadProgressIndicator() { return mLoadProgressIndicator; }
 
-    QUrl url() const { return mWebView->url(); }
+    QUrl url() const { return mWebEngineView->url(); }
 
 public slots:
     void applySettings( Settings::Manager * );
@@ -134,7 +134,7 @@ private:
     void sendRequest( const QString &code );
     QString symbolUnderCursor();
 
-    QWebView *mWebView;
+    QWebEngineView *mWebEngineView;
     LoadProgressIndicator *mLoadProgressIndicator;
 
     QSize mSizeHint;

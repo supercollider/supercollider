@@ -3,7 +3,7 @@
 #include "../QcApplication.h"
 
 #include <QtGlobal>
-#include <QWebView>
+#include <QWebEngineView>
 #include <QStyleOptionSlider>
 #include <QPainter>
 
@@ -33,10 +33,10 @@ void ProxyStyle::drawComplexControl ( ComplexControl ctrl, const QStyleOptionCom
 {
   // FIXME: this is a workaround for the WebKit bug #104116 (or a variation on it).
   if( ctrl == QStyle::CC_ScrollBar
-      && qobject_cast<const QWebView*>(w) != 0
+      && qobject_cast<const QWebEngineView*>(w) != 0
       && opt->type == QStyleOption::SO_Slider )
   {
-    // WebKit tries to hide scrollbars, but mistakenly hides QWebView - NULL-ify styleObject to prevent.
+    // WebKit tries to hide scrollbars, but mistakenly hides QWebEngineView - NULL-ify styleObject to prevent.
     const QStyleOptionSlider *optSlider = static_cast<const QStyleOptionSlider*>(opt);
     QStyleOptionSlider opt2( *optSlider );
     opt2.styleObject = NULL;
