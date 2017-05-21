@@ -1396,7 +1396,7 @@ force_inline void Osc_ikk_perform(OscType *unit, const float * table0, const flo
 
 void SinOsc_next_ikk(SinOsc *unit, int inNumSamples)
 {
-	float *table0 = ft->mSineWavetable;
+	float * __restrict__ table0 = ft->mSineWavetable;
 	float *table1 = table0 + 1;
 
 	Osc_ikk_perform<SinOsc, 0>(unit, table0, table1, inNumSamples);
@@ -1415,17 +1415,45 @@ force_inline void Osc_ika_perform(OscType *unit, const float * table0, const flo
 
 	int32 freq = (int32)(unit->m_cpstoinc * freqin);
 	float radtoinc = unit->m_radtoinc;
-	LOOP1(inNumSamples,
+
+	int unrolled4 = inNumSamples / 4;
+	int remain4   = inNumSamples - unrolled4 * 4;
+
+	LOOP(unrolled4,
+		int32 phaseoffset = phase + (int32)(radtoinc * ZXP(phasein));
+		float out0 = lookupi1(table0, table1, phaseoffset, lomask);
+		phase += freq;
+
+		phaseoffset = phase + (int32)(radtoinc * ZXP(phasein));
+		float out1 = lookupi1(table0, table1, phaseoffset, lomask);
+		phase += freq;
+
+		phaseoffset = phase + (int32)(radtoinc * ZXP(phasein));
+		float out2 = lookupi1(table0, table1, phaseoffset, lomask);
+		phase += freq;
+
+		phaseoffset = phase + (int32)(radtoinc * ZXP(phasein));
+		float out3 = lookupi1(table0, table1, phaseoffset, lomask);
+		phase += freq;
+
+		ZXP(out) = out0;
+		ZXP(out) = out1;
+		ZXP(out) = out2;
+		ZXP(out) = out3;
+	);
+
+	LOOP(remain4,
 		int32 phaseoffset = phase + (int32)(radtoinc * ZXP(phasein));
 		ZXP(out) = lookupi1(table0, table1, phaseoffset, lomask);
 		phase += freq;
 	);
+
 	unit->m_phase = phase;
 }
 
 void SinOsc_next_ika(SinOsc *unit, int inNumSamples)
 {
-	const float *table0 = ft->mSineWavetable;
+	const float * __restrict__ table0 = ft->mSineWavetable;
 	const float *table1 = table0 + 1;
 	Osc_ika_perform<SinOsc, 0>(unit, table0, table1, inNumSamples);
 }
@@ -1456,7 +1484,7 @@ force_inline void Osc_iaa_perform(OscType * unit, const float * table0, const fl
 
 void SinOsc_next_iaa(SinOsc *unit, int inNumSamples)
 {
-	const float *table0 = ft->mSineWavetable;
+	const float * __restrict__ table0 = ft->mSineWavetable;
 	const float *table1 = table0 + 1;
 
 	Osc_iaa_perform<SinOsc, 0>(unit, table0, table1, inNumSamples);
@@ -1501,7 +1529,7 @@ force_inline void Osc_iak_perform(OscType *unit, const float * table0, const flo
 
 void SinOsc_next_iak(SinOsc *unit, int inNumSamples)
 {
-	float *table0 = ft->mSineWavetable;
+	float * __restrict__ table0 = ft->mSineWavetable;
 	float *table1 = table0 + 1;
 
 	Osc_iak_perform<SinOsc, 0>(unit, table0, table1, inNumSamples);
@@ -1532,7 +1560,7 @@ force_inline void Osc_iai_perform(OscType *unit, const float * table0, const flo
 
 void SinOsc_next_iai(SinOsc *unit, int inNumSamples)
 {
-	float *table0 = ft->mSineWavetable;
+	float * __restrict__ table0 = ft->mSineWavetable;
 	float *table1 = table0 + 1;
 	Osc_iai_perform<SinOsc, 0>(unit, table0, table1, inNumSamples);
 }
@@ -1584,7 +1612,7 @@ void SinOscFB_next_kk(SinOscFB *unit, int inNumSamples)
 	float feedback = unit->m_feedback;
 	float nextFeedback = ZIN0(1) * unit->m_radtoinc;
 
-	float *table0 = ft->mSineWavetable;
+	float * __restrict__ table0 = ft->mSineWavetable;
 	float *table1 = table0 + 1;
 
 	int32 phase = unit->m_phase;
