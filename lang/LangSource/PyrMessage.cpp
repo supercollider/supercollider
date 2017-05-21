@@ -1277,6 +1277,7 @@ HOT void returnFromMethod(VMGlobals *g)
 				PyrFrame *nextFrame = slotRawFrame(&tempFrame->caller);
 				if (!methraw->needsHeapContext) {
 					SetInt(&tempFrame->caller, 0);
+					g->gc->Free(tempFrame);
 				} else {
 					if (tempFrame != homeContext)
 						SetInt(&tempFrame->caller, 0);
