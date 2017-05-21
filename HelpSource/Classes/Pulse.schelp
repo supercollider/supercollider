@@ -8,10 +8,12 @@ Description::
 
 Band limited pulse wave generator with pulse width modulation.
 
+one thing you can try to do with supercollider pulse ugen: is
+creating several duplicate copies at a really low frequency, having a macro variable, to interpolate and detune a slickly little bit these frequencies, and fool around with pulse with modulation. when you apply these kinds of things, another really really cool thing you can do is layering several similar ugens with random variables, and different properties, in the exact same way you would do with  additive synthesis, or additive side chaining in the context of a sound mix.
 
 classmethods::
 
-method::ar, kr
+method::ar
 
 argument::freq
 
@@ -38,13 +40,23 @@ Examples::
 code::
 
 // modulate frequency
-{ Pulse.ar(XLine.kr(40, 4000, 6), 0.1, 0.2) }.play;
+~freqMod= { Pulse.ar(XLine.kr(40,4000,6),0.1, 0.2) !2};
 
 // modulate pulse width
-{ Pulse.ar(200, SinOsc.kr(0.2).range(0.01, 0.99), 0.2) }.play;
+~pulseWMod={ Pulse.ar(200, Line.kr(0.01,0.99,8), 0.2) !2};
 
 // two band limited square waves thru a resonant low pass filter
-{ RLPF.ar(Pulse.ar([100, 250], 0.5, 0.1), XLine.kr(8000, 400, 5), 0.05) }.play;
+~complex = { RLPF.ar(Pulse.ar([100,250],0.5,0.1), XLine.kr(8000,400,5), 0.05) };
+
+(
+~try=
+~trythis.free; ~trythis2.free;
+~trythis = {[~freqMod, ~pulseWMod, ~complex].choose}.scope;
+~trythis2 = {[~freqMod, ~pulseWMod, ~complex].choose}.scope
+)
+
+~trythis.free;
+~trythis2.free;
 
 ::
 
