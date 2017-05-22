@@ -248,7 +248,7 @@ int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 
 	memcpy(filename, slotRawString(b)->s, slotRawObject(b)->size);
 	filename[slotRawString(b)->size] = 0;
-	const boost::filesystem::path& p = SC_Codecvt::utf8_str_to_path(filename);
+	const std::string& path = SC_Codecvt::utf8_to_native_str(filename);
 
 	memcpy(mode, slotRawString(c)->s, slotRawObject(c)->size);
 	mode[slotRawString(c)->size] = 0;
@@ -258,9 +258,8 @@ int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 	strcpy(mode,"wb");
 	if(strcmp(mode,"r") == 0)
 	strcpy(mode,"rb");
-#endif
-	//_WIN32
-	file = fopen(p.string().c_str(), mode);
+#endif //_WIN32
+	file = fopen(path.c_str(), mode);
 	if (file) {
 		SetPtr(&pfile->fileptr, file);
 		SetTrue(a);
