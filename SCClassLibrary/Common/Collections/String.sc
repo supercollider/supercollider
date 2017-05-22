@@ -186,7 +186,10 @@ String[char] : RawArray {
 	split { arg separator = $/;
 		var word = "";
 		var array = [];
-		if(separator.isNil) { ^array.addAll(this) };
+		if(separator.isNil) {
+			this.do { |char| array = array.add(char.asString) };
+			^array
+		};
 		separator = separator.ascii;
 
 		this.do { arg letter, i;
