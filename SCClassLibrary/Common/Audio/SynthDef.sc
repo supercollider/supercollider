@@ -19,6 +19,7 @@ SynthDef {
 	var <>desc, <>metadata;
 
 	classvar <synthDefDir;
+	classvar <buildSpecs;
 
 	*synthDefDir_ { arg dir;
 		if (dir.last.isPathSeparator.not )
@@ -35,6 +36,10 @@ SynthDef {
 	*new { arg name, ugenGraphFunc, rates, prependArgs, variants, metadata;
 		^super.newCopyArgs(name.asSymbol).variants_(variants).metadata_(metadata).children_(Array.new(64))
 			.build(ugenGraphFunc, rates, prependArgs)
+	}
+
+	*addBuildSpec { |key, spec|
+		buildSpecs[key] = spec.asSpec;
 	}
 
 	storeArgs { ^[name, func] }
@@ -73,6 +78,7 @@ SynthDef {
 		controls = nil;
 		controlIndex = 0;
 		maxLocalBufs = nil;
+		buildSpecs = Dictionary.new;
 	}
 	buildUgenGraph { arg func, rates, prependArgs;
 		var result;
