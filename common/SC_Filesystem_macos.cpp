@@ -42,6 +42,7 @@ using std::endl;
 // system includes
 #include <Foundation/NSAutoreleasePool.h>
 #include <Foundation/NSFileManager.h>
+#include <Foundation/NSURL.h>
 #include <CoreFoundation/CFBundle.h>
 #include <CoreFoundation/CFString.h>
 
