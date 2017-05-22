@@ -1,7 +1,7 @@
 
 TestBus : UnitTest {
 
-	test_free {
+	ignore_test_free {
 		var s,busses,numBusses;
 		s = Server.default;
 		s.newAllocators;
