@@ -429,6 +429,20 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 	inGraphDef->mRefCount ++ ;
 }
 
+// Calls the unit's Ctor func.
+inline void InitializeUnit(Unit* unit)
+{
+	try {
+		(*unit->mUnitDef->mUnitCtorFunc)(unit);
+	} catch (std::exception& exc) {
+		// Permanently clear the outputs of the unit
+		Unit_ZeroOutputs(unit, 1);
+		unit->mCalcFunc = (UnitCalcFunc)&Unit_ZeroOutputs;
+		char* unitName = (char*)unit->mUnitDef->mUnitDefName;
+		printf("ERROR: could not initialize UGen %s: %s\n", unitName, exc.what());
+	}
+}
+
 void Graph_FirstCalc(Graph *inGraph)
 {
 	//scprintf("->Graph_FirstCalc\n");
@@ -436,8 +450,7 @@ void Graph_FirstCalc(Graph *inGraph)
 	Unit **units = inGraph->mUnits;
 	for (uint32 i=0; i<numUnits; ++i) {
 		Unit *unit = units[i];
-		// call constructor
-		(*unit->mUnitDef->mUnitCtorFunc)(unit);
+		InitializeUnit(unit);
 	}
 	//scprintf("<-Graph_FirstCalc\n");
 
@@ -455,8 +468,7 @@ void Graph_NullFirstCalc(Graph *inGraph)
 	Unit **units = inGraph->mUnits;
 	for (uint32 i=0; i<numUnits; ++i) {
 		Unit *unit = units[i];
-		// call constructor
-		(*unit->mUnitDef->mUnitCtorFunc)(unit);
+		InitializeUnit(unit);
 	}
 	//scprintf("<-Graph_FirstCalc\n");
 
