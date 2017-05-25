@@ -129,6 +129,14 @@ code::
 Complex(2, 9).neg
 ::
 
+method:: reciprocal
+the reciprocal of a complex number
+discussion::
+code::
+Complex(3, 4).reciprocal
+1 / Complex(3, 4) // same, but less efficient
+::
+
 method:: abs
 the absolute value of a complex number is its magnitude.
 discussion::

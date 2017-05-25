@@ -84,6 +84,10 @@ Complex : Number {
 	squared { ^this * this }
 	cubed { ^this * this * this }
 	exp { ^exp(real) * Complex.new(cos(imag), sin(imag)) }
+	reciprocal {
+		var z = reciprocal(real.squared + imag.squared);
+		^Complex(real * z, imag.neg * z)
+	}
 
 	pow { arg aNumber; // return(this ** aNumber)
 
