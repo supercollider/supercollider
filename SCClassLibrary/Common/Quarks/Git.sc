@@ -10,12 +10,21 @@ Git {
 		^super.new.localPath_(localPath)
 	}
 	clone { |url|
-		this.git([
-			"clone",
-			url,
-			localPath.escapeChar($ )
-		], false);
-		this.url = url;
+		if(thisProcess.platform.name === 'windows', {
+			this.git([
+				"clone",
+				url,
+				localPath.quote
+			], false);
+			this.url = url;
+		}, {
+			this.git([
+				"clone",
+				url,
+				localPath.escapeChar($ )
+			], false);
+			this.url = url;
+		});
 	}
 	pull {
 		this.git(["pull", "origin", "master"])
@@ -99,7 +108,11 @@ Git {
 		var cmd, result="";
 
 		if(cd, {
-			cmd = ["cd", localPath.escapeChar($ ), "&&", "git"];
+			if(thisProcess.platform.name === 'windows', {
+				cmd = ["cd", localPath.quote, "&&", "git"];
+			}, {
+				cmd = ["cd", localPath.escapeChar($ ), "&&", "git"];
+			});
 		},{
 			cmd = ["git"];
 		});
