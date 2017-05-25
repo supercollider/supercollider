@@ -16,7 +16,7 @@ subsection:: Creation / Class Methods
 
 method:: new
 
-argument:: parent
+argument:: parentView
 The parent view or window. If the parent is nil, then EZListView will create its own link::Classes/Window::, and place it conveniently on the screen if the bounds are a link::Classes/Point::. If the bounds are a link::Classes/Rect::, then the link::Classes/Rect:: determines the window bounds.
 
 argument:: bounds

@@ -349,11 +349,4 @@ Monitor {
 		or: { outs.asArray.isSeries(1).not }
 		or: { ins.asArray.isSeries(1).not }
 	}
-
-	*warnPlayN {
-		this.deprecated(thisMethod);
-	}
-	*warnPlayN_ { |flag|
-		this.deprecated(thisMethod);
-	}
 }

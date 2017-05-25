@@ -217,12 +217,13 @@ subsection::Arrayed Arguments
 It is possible to assign an array to one of a link::Classes/SynthDef::'s control names. For example:
 code::
 (
-SynthDef(\test, { | out = 0, amp = 0.01, freq = #[300,400,400], pan, gate = 1 |
+SynthDef(\test, {
+	| out = 0, amp = 0.01, freq = #[300,400,400], pan, gate = 1 |
 	var audio, env;
 	audio = Mix.ar(Pulse.ar(freq, 0.5));	// this is a mixture of three oscillators
-	env = Linen.kr(gate, susLevel: amp , doneAction: 2);	// envelope deletes the synt when done
+	env = Linen.kr(gate, susLevel: amp , doneAction: Done.freeSelf);
 	audio = audio * env;
-	OffsetOut.ar(0, audio );
+	OffsetOut.ar(0, audio);
 }).add;
 )
 ::

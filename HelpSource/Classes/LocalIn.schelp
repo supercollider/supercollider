@@ -93,7 +93,7 @@ code::
 {
 	var local, in, amp;
 
-	in = AudioIn.ar([1,2]);
+	in = SoundIn.ar([0, 1]);
 
 	amp = Amplitude.kr(Mix.ar(in));
 	in = in * (amp > 0.02); // noise gate

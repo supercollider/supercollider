@@ -196,8 +196,8 @@ NdefGui : JITGui {
 		}
 	}
 
-	makeNameView { |nameWid, height|
-			nameView = DragBoth(zone, Rect(0,0, nameWid, height))
+	makeNameView { |width, height|
+			nameView = DragBoth(zone, Rect(0,0, width, height))
 			.font_(font).align_(\center)
 			.background_(skin.background)
 			.stringColor_(skin.fontColor);

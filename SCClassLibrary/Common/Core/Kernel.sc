@@ -141,7 +141,7 @@ Class {
 	//traceAnyPathToAllInstancesOf { _TraceAnyPathToAllInstancesOf }
 
 	openCodeFile {
-		this.filenameSymbol.asString.openTextFile(this.charPos, -1);
+		this.filenameSymbol.asString.openDocument(this.charPos, -1);
 	}
 	classVars {
 		var start, end;
@@ -191,7 +191,7 @@ Process {
 		Class.initClassTree(AppClock); // AppClock first in case of error
 		time = this.class.elapsedTime;
 		Class.initClassTree(Object);
-		("Class tree inited in" + (this.class.elapsedTime - time).round(0.01) + "seconds").inform;
+		("Class tree inited in" + (this.class.elapsedTime - time).round(0.01) + "seconds").postln;
 		Class.classesInited = nil;
 
 		topEnvironment = Environment.new;
@@ -246,14 +246,14 @@ Process {
 			if (class.notNil, {
 				method = class.findMethod(words.at(1).asSymbol);
 				if (method.notNil, {
-					method.filenameSymbol.asString.openTextFile(method.charPos, -1);
+					method.filenameSymbol.asString.openDocument(method.charPos, -1);
 				});
 			});
 		},{
 			class = string.asSymbol.asClass;
 			if (class.notNil, {
 				class = class.classRedirect;
-				class.filenameSymbol.asString.openTextFile(class.charPos, -1);
+				class.filenameSymbol.asString.openDocument(class.charPos, -1);
 			});
 		});
 	}
@@ -474,7 +474,7 @@ Method : FunctionDef {
 	var <filenameSymbol, <charPos;
 
 	openCodeFile {
-		this.filenameSymbol.asString.openTextFile(this.charPos, -1);
+		this.filenameSymbol.asString.openDocument(this.charPos, -1);
 	}
 	hasHelpFile {
 		//should cache this in Library or classvar

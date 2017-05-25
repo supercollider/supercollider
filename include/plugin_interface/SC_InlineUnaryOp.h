@@ -285,6 +285,13 @@ inline float32 sc_frac(float32 x)
 }
 
 
+////////////////////////////////
+
+inline float32 sc_bitNot(float32 x)
+{
+	return (float32) ~ (int)x;
+}
+
 inline float32 sc_lg3interp(float32 x1, float32 a, float32 b, float32 c, float32 d)
 {
 	// cubic lagrange interpolator

@@ -41,11 +41,20 @@ e.dispatch = { |key, val| [key, val].postln };
 e.put(\x, 9);
 ::
 
+method::add
+add an association
+
 subsection:: replacing Environment instance methods
 
 EnvironmentRedirect implements some of the interface of link::Classes/Environment::, which it can replace where needed.
 
-method::push, pop, make, use, do, clear, keysValuesDo, keysValuesArrayDo, findKeyForValue, sortedKeysValuesDo, choose, know, doesNotUnderstand
+method:: push, pop, clear, choose
+method:: make, use
+method:: do, keysValuesDo, sortedKeysValuesDo
+method:: keysValuesArrayDo
+method:: findKeyForValue
+method:: know
+method:: doesNotUnderstand
 
 
 section::Networking

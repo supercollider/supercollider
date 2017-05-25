@@ -21,7 +21,7 @@
 #  error "Unsupported Cray compiler, please try running the configure script."
 #endif
 
-#include "boost/config/compiler/common_edg.hpp"
+#include <boost/config/compiler/common_edg.hpp>
 
 
 //
@@ -60,6 +60,7 @@
 #define BOOST_NO_CXX11_CHAR16_T
 #define BOOST_NO_CXX11_REF_QUALIFIERS
 #define BOOST_NO_CXX11_FINAL
+#define BOOST_NO_CXX11_THREAD_LOCAL
 
 
 //#define BOOST_BCB_PARTIAL_SPECIALIZATION_BUG

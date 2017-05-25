@@ -179,7 +179,7 @@ int prString_POpen(struct VMGlobals *g, int numArgsPushed)
 		return errFailed;
 	}
 
-	thread thread(std::bind(string_popen_thread_func, process));
+	SC_Thread thread(std::bind(string_popen_thread_func, process));
 	thread.detach();
 
 	SetInt(a, pid);
@@ -249,7 +249,7 @@ int prArrayPOpen(struct VMGlobals *g, int numArgsPushed)
 		return errFailed;
 	}
 
-	thread thread(std::bind(string_popen_thread_func, process));
+	SC_Thread thread(std::bind(string_popen_thread_func, process));
 	thread.detach();
 
 	for (int i=1; i<obj->size; ++i) {

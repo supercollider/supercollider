@@ -70,7 +70,7 @@ subsection:: Filesystem utilities
 method::exists
 Answers if a file exists at that path.
 note::
-Some filesystems, like the one used by OSX, are case insensitive.
+Some filesystems, like the one used by macOS, are case insensitive.
 On such systems, this method will return true for "fOo" even if the file is actually named "Foo".
 For a workaround, see link::#*existsCaseSensitive:: below.
 ::
@@ -93,7 +93,8 @@ method::delete
 Deletes the file at that path. Use only for good, never for evil.
 
 method::realpath
-Follow symbolic links (and aliases on OSX) and any parent directory references (like "..") and return the true absolute path.
+Follow symbolic links (and aliases on macOS) and any parent directory references (like "..") and return the true absolute path.
+
 returns:: a link::Classes/String:: or code::nil:: if path did not exist.
 
 method::copy

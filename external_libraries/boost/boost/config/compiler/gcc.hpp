@@ -252,6 +252,7 @@
 //
 #if (BOOST_GCC_VERSION < 40800) || !defined(BOOST_GCC_CXX11)
 #  define BOOST_NO_CXX11_ALIGNAS
+#  define BOOST_NO_CXX11_THREAD_LOCAL
 #endif
 
 // C++0x features in 4.8.1 and later

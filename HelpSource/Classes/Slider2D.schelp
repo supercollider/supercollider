@@ -1,7 +1,6 @@
 class:: Slider2D
 summary:: A view with a handle movable in two dimensions.
 categories:: GUI>Views
-related:: Classes/TabletSlider2D, Classes/TabletView
 
 DESCRIPTION::
 

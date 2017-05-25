@@ -31,7 +31,7 @@ Main : Process {
 			}
 		};
 		if(didWarnOverwrite) {
-			inform("Intentional overwrites must be put in a 'SystemOverwrites' subfolder.")
+			postln("Intentional overwrites must be put in a 'SystemOverwrites' subfolder.")
 		};
 
 		("\n\n*** Welcome to SuperCollider %. ***".format(Main.version)
@@ -187,8 +187,8 @@ MethodOverride {
 		var path2 = if(overriddenPath.beginsWith("/Common")) {
 			Platform.classLibraryDir +/+ overriddenPath
 			} { overriddenPath };
-		activePath.openTextFile;
-		path2.openTextFile;
+		activePath.openDocument;
+		path2.openDocument;
 	}
 
 

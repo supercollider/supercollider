@@ -40,14 +40,14 @@ METHOD:: string
 		A String.
 
 METHOD:: setString
-	Inserts the code::string:: at code::rangeStart:: position, replacing code::rangeSize:: amount of following characters. If code::rangeSize:: is 0, the text will be inserted without any characters being removed.
+	Inserts the code::string:: at code::start:: position, replacing code::size:: amount of following characters. If code::size:: is 0, the text will be inserted without any characters being removed.
 
 	argument:: string
 		A String - the text to insert.
-	argument:: rangeStart
+	argument:: start
 		An Integer position within the text, in characters.
-	argument:: rangeSize
-		An Integer amount of characters.
+	argument:: size
+		An Integer amount of characters to be replaced.
 
 METHOD:: currentLine
 	The plain text of the line at text cursor.
@@ -81,23 +81,23 @@ fork {
 
 
 METHOD:: setFont
-	Applies the code::font:: to code::rangeSize:: amount of characters following the code::rangeStart:: position.
+	Applies the code::font:: to code::size:: amount of characters following the code::start:: position.
 
 	argument:: font
 		A Font to apply to the desired range of text.
-	argument:: rangeStart
+	argument:: start
 		An Integer position within the text, in characters.
-	argument:: rangeSize
+	argument:: size
 		An Integer amount of characters.
 
 METHOD:: setStringColor
-	Applies the code::color:: to code::rangeSize:: amount of characters following the code::rangeStart:: position.
+	Applies the code::color:: to code::size:: amount of characters following the code::start:: position.
 
 	argument:: color
 		A Color to apply to the desired range of text.
-	argument:: rangeStart
+	argument:: start
 		An Integer position within the text, in characters.
-	argument:: rangeSize
+	argument:: size
 		An Integer amount of characters.
 
 

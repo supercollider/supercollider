@@ -91,7 +91,8 @@ code::
 cubed(Complex(2, 1))
 ::
 
-method:: **, pow
+method:: **
+method:: pow
 Complex exponentiation
 discussion::
 not implemented for all combinations - some are mathematically ambiguous.

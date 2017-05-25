@@ -96,9 +96,12 @@ Bus {
 	get { arg action;
 		if(numChannels == 1) {
 			action = action ? { |vals| "Bus % index: % value: %.\n".postf(rate, index, vals); };
-			OSCpathResponder(server.addr, ['/c_set', index], { arg time, r, msg;
-				action.value(msg.at(2)); r.remove }).add;
-			server.listSendMsg(["/c_get", index]);
+			OSCFunc({ |message|
+				// The response is of the form [/c_set, index, value].
+				// We want "value," which is at index 2.
+				action.value(message[2]);
+			}, \c_set, server.addr, argTemplate: [index]).oneShot;
+			server.listSendMsg([\c_get, index]);
 		} {
 			this.getn(numChannels, action)
 		};
@@ -106,17 +109,20 @@ Bus {
 
 	getn { arg count, action;
 		action = action ? { |vals| "Bus % index: % values: %.\n".postf(rate, index, vals) };
-		OSCpathResponder(server.addr, ['/c_setn', index], { arg time, r, msg;
-			action.value(msg.copyToEnd(3)); r.remove }).add;
+		OSCFunc({ |message|
+			// The response is of the form [/c_set, index, count, ...values].
+			// We want the values, which are at indexes 3 and above.
+			action.value(message[3..]);
+		}, \c_setn, server.addr, argTemplate: [index]).oneShot;
 		server.listSendMsg(this.getnMsg(count));
 	}
 
 	getMsg {
-		^["/c_get", index];
+		^[\c_get, index];
 	}
 
 	getnMsg { arg count;
-		^["/c_getn", index, count ? numChannels];
+		^[\c_getn, index, count ? numChannels];
 	}
 
 	getSynchronous {
@@ -235,7 +241,6 @@ Bus {
 		if(rate == \audio, {
 			^In.ar(index + offset, numChannels)
 		}, {
-			//"Bus converting control to audio rate".inform;
 			^K2A.ar( In.kr(index + offset, numChannels) )
 		})
 	}

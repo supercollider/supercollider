@@ -44,7 +44,7 @@ void ProcessOSCPacket(OSC_Packet *inPacket, int inPortNum, double time);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-thread gAsioThread;
+SC_Thread gAsioThread;
 boost::asio::io_service ioService;
 
 
@@ -56,7 +56,7 @@ static void asioFunction()
 
 void startAsioThread()
 {
-	thread asioThread (&asioFunction);
+	SC_Thread asioThread (&asioFunction);
 	gAsioThread = std::move(asioThread);
 }
 

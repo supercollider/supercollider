@@ -8,6 +8,23 @@ A Maybe object can contain either nil or some other object, and allows to constr
 
 The name strong::Maybe:: stems from the programming language Haskell, where it represents a somewhat similar entity. See also: link::Classes/Fdef::
 
+note::
+A Maybe object lazily constructs an operation as an object instead of
+performing it immediately. Its implementation remains incomplete
+necessarily, in the current form: it is limited to the arithmetic operations that AbstractFunction implements and the following collection methods: code::put, addAll, add, putAll, atAll::.
+
+You can extend Maybe as you need for your purpose, by the following schema:
+
+code::
+// replaye "myMethod" with your method name
++ Maybe {
+	myMethod { |...args|
+		^this.composeNAryOp(\myMethod, args)
+	}
+}
+::
+::
+
 ClassMethods::
 
 method::new

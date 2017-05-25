@@ -6,7 +6,7 @@ categories:: External Control>MIDI
 keyword::MIDI
 section::Introduction
 
-SuperCollider's out of the box MIDI support is fairly thorough (although not as complete as you'll find in commercial sequencers). All MIDI devices accessible to your operating system (CoreMIDI on OSX, ALSA on Linux, PortMIDI on Windows) are accessible to SuperCollider.
+SuperCollider's out of the box MIDI support is fairly thorough (although not as complete as you'll find in commercial sequencers). All MIDI devices accessible to your operating system (CoreMIDI on macOS, ALSA on Linux, PortMIDI on Windows) are accessible to SuperCollider.
 
 The main MIDI classes are:
 

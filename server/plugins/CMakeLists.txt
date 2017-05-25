@@ -74,6 +74,7 @@ if (APPLE)
 	add_library(UIUGens MODULE UIUGens.mm)
 else()
 	add_library(UIUGens MODULE UIUGens.cpp)
+	target_link_libraries(UIUGens ${PTHREADS_LIBRARY})
 endif()
 
 set(uiugens UIUGens)
@@ -127,7 +128,7 @@ if(NOT NO_LIBSNDFILE)
 
 	if(SNDFILE_FOUND)
 		target_include_directories(DiskIO_UGens PUBLIC ${SNDFILE_INCLUDE_DIR})
-		target_link_libraries(DiskIO_UGens ${SNDFILE_LIBRARIES})
+		target_link_libraries(DiskIO_UGens ${PTHREADS_LIBRARY} ${SNDFILE_LIBRARIES})
 		list(APPEND plugins DiskIO_UGens)
 	else()
 		message(SEND_ERROR "Cannot find libsndfile")
@@ -184,6 +185,7 @@ if (SUPERNOVA)
 		add_library(UIUGens_supernova MODULE UIUGens.mm)
 	else()
 		add_library(UIUGens_supernova MODULE UIUGens.cpp)
+		target_link_libraries(UIUGens_supernova ${PTHREADS_LIBRARY})
 	endif()
 	list(APPEND uiugens UIUGens_supernova)
 
@@ -192,7 +194,7 @@ if (SUPERNOVA)
 
 		if(SNDFILE_FOUND)
 			target_include_directories(DiskIO_UGens_supernova PUBLIC ${SNDFILE_INCLUDE_DIR})
-				target_link_libraries(DiskIO_UGens_supernova ${SNDFILE_LIBRARIES} ${MATH_LIBRARY} ${Boost_THREAD_LIBRARY})
+			target_link_libraries(DiskIO_UGens_supernova ${SNDFILE_LIBRARIES} ${PTHREADS_LIBRARY} ${MATH_LIBRARY} ${Boost_THREAD_LIBRARY})
 			list(APPEND supernova_plugins DiskIO_UGens_supernova)
 		else()
 			message(SEND_ERROR "Cannot find libsndfile")
@@ -201,7 +203,7 @@ if (SUPERNOVA)
 endif(SUPERNOVA)
 
 foreach(ugen ${fft_ugens})
-	target_link_libraries(${ugen} ${MATH_LIBRARY})
+	target_link_libraries(${ugen} ${PTHREADS_LIBRARY} ${MATH_LIBRARY})
 
 	if(APPLE)
 		target_link_libraries(${ugen} "-framework Accelerate")
@@ -234,7 +236,7 @@ foreach(plugin ${supernova_plugins})
 	endif()
 endforeach()
 
-if (CMAKE_SYSTEM_NAME MATCHES "Linux")
+if (CMAKE_SYSTEM_NAME MATCHES "Linux" OR CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
 	find_package(X11 REQUIRED)
 
 	if (NOT X11_Xt_FOUND)
@@ -301,7 +303,7 @@ elseif(APPLE)
 
 else()
 	install(TARGETS ${plugins} ${supernova_plugins}
-			DESTINATION "lib/SuperCollider/plugins"
+			DESTINATION "lib${LIB_SUFFIX}/SuperCollider/plugins"
 			PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 endif()
 

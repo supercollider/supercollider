@@ -6,9 +6,15 @@ categories::  UGens>Generators>Stochastic
 
 Description::
 
-Generates noise whose spectrum falls off in power by 3 dB per octave.
-This gives equal power over the span of each octave.
-This version gives 8 octaves of pink noise.
+Generates noise whose spectrum falls off in power by 3 dB per octave, which gives equal power over the span of each octave.
+This version is band-limited to 8 octaves.
+
+Internally, this UGen calculates its output by means of the Voss-McCartney algorithm.
+link::http://www.firstpr.com.au/dsp/pink-noise/allan-2/spectrum2.html::
+
+note::
+The values produced by this UGen were observed to lie with very high probability between approximately -0.65 and +0.81 (before being multiplied by mul). The signal's RMS is approximately -16 dB.
+::
 
 
 classmethods::

@@ -48,7 +48,7 @@ b = Buffer.alloc(s, s.sampleRate * 0.15, 3);
 m = SynthDef ("help-lfsawphase", {|rate = 20|
 	var l;
 	l = LFSaw.ar(rate, [0, 1, 2]); // three channels, three phases
-	RecordBuf.ar(l, b, doneAction: 2, loop: 0);
+	RecordBuf.ar(l, b, doneAction: Done.freeSelf, loop: 0);
 	Out.ar(0, l * -20.dbamp);
 }).play(s);
 )

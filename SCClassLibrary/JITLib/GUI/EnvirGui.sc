@@ -80,8 +80,8 @@ EnvirGui : JITGui {
 		options.do { |key| extraFuncs[key].value; };
 	}
 
-	makeNameView { |nameWid, height|
-		nameView = StaticText(zone, Rect(0,0, nameWid, height))
+	makeNameView { |width, height|
+		nameView = StaticText(zone, Rect(0,0, width, height))
 			.font_(font).align_(0);
 	}
 

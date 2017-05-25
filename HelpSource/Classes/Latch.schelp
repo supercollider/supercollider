@@ -4,7 +4,7 @@ related:: Classes/Gate
 categories::  UGens>Triggers
 
 Description::
-Holds input signal value when triggered.
+Holds input signal value when triggered. Latch will output 0 until it receives its first trigger.
 
 
 classmethods::

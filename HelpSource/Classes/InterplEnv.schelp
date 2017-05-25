@@ -3,74 +3,19 @@ summary:: envelope specification
 related:: Classes/IEnvGen, Classes/Env
 categories:: Control, Envelopes
 
+note::Env fully supports all functionality of InterplEnv, InterplXYC, InterplPairs and InterplChord. These are now deprecated and  will be removed in the future.::
+
 description::
 An InterplEnv is a specification for a segmented envelope. InterplEnvs can be used both server-side, by an link::Classes/IEnvGen:: within a SynthDef, and clientside, with methods such as at. An InterplEnv can have any number of segments. An InterplEnv can have several shapes for its segments.
 
-note::InterplEnv is now replaced by Env, and  will be removed in the future. Env supports all functionality of InterplEnv::
 
 subsection::Differences between InterplEnv and Env
 InterplEnvs do not have release or loop nodes.  They are of a fixed duration. Mostly, it is meant to be used with IEnvGen, where 'times' are actually an strong::index into the envelope:: shape.
 
 ClassMethods::
 
-private::initClass
-
-method::new
-Create a new envelope specification.
-
-argument::levels
-an array of levels. The first level is the initial value of the envelope.
-
-argument::times
-an array of durations of segments in seconds. There should be one fewer duration than there are levels.
-
-argument::curve
-a link::Classes/Symbol::, link::Classes/Float::, or an link::Classes/Array:: of those. Determines the shape of the envelope segments.
-
-The possible values are:
-table::
-## code::\step:: || || flat segments
-## code::\linear:: || code::\lin:: || linear segments, the default
-## code::\exponential:: || code::\exp:: || natural exponential growth and decay. In this case, the levels must all be nonzero and the have the same sign.
-## code::\sine:: || code::\sin:: || sinusoidal S shaped segments.
-## code::\welch:: || code::\wel:: || sinusoidal segments shaped like the sides of a Welch window.
-## code::\squared::  || code::\sqr:: || squared segment
-## code::\cubed:: || code::\cub:: || cubed segment
-## a link::Classes/Float:: || || a curvature value for all segments. 0 means linear, positive and negative numbers curve the segment up and down.
-## an link::Classes/Array:: of symbols or floats || || curvature values for each segment.
-::
-
-argument::offset
-used to offset an envelope into negative starttimes.
-
-copymethod:: Env *newClear
+private::initClass, new
 
 InstanceMethods::
 
 private::prAsArray
-
-method::plot
-Plot this envelope's shape in a window.
-
-argument::size
-The size of the plot.
-
-argument::bounds
-The window bounds (a link::Classes/Rect::).
-
-argument::minval
-
-argument::maxval
-
-argument::parent
-
-method::asArray
-Converts the InterplEnv to an Array in a specially ordered format. This allows for InterplEnv parameters to be settable arguments in a link::Classes/SynthDef::.
-
-subsection::Client-side Access and Stream Support
-
-method::at
-Returns the value of the InterplEnv at time.
-code::
-InterplEnv([0, 1, 0.707], [0.2, 1.3], [\lin, \sin]).at(0.5);
-::

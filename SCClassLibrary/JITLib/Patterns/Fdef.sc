@@ -44,6 +44,32 @@ Maybe : Ref {
 		^o (this, that)
 	}
 
+	// override some collection methods
+
+	at { arg ... args;
+		^this.composeNAryOp(\at, args)
+	}
+
+	atAll { arg ... args;
+		^this.composeNAryOp(\atAll, args)
+	}
+
+	put { arg ... args;
+		^this.composeNAryOp(\put, args)
+	}
+
+	putAll { arg ... args;
+		^this.composeNAryOp(\putAll, args)
+	}
+
+	add { arg ... args;
+		^this.composeNAryOp(\add, args)
+	}
+
+	addAll { arg ... args;
+		^this.composeNAryOp(\addAll, args)
+	}
+
 	// use in list comprehension
 	all {
 		^this.source.all

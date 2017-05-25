@@ -87,7 +87,7 @@ s.boot;
 
 d = SynthDef(\mdDemo, { |out, freq, cutoff, volume, gate = 1|
 	var	sig = LPF.ar(Saw.ar(freq, volume), cutoff),
-		env = EnvGen.kr(Env.adsr, gate, doneAction: 2);
+		env = EnvGen.kr(Env.adsr, gate, doneAction: Done.freeSelf);
 	Out.ar(out, (sig * env) ! 2)
 }).add;
 
@@ -103,7 +103,7 @@ SynthDescLib.global[\mdDemo].makeWindow;
 
 d = SynthDef(\mdDemo, { |out, freq, cutoff, volume, gate = 1|
 	var	sig = LPF.ar(Saw.ar(freq, volume), cutoff),
-		env = EnvGen.kr(Env.adsr, gate, doneAction: 2);
+		env = EnvGen.kr(Env.adsr, gate, doneAction: Done.freeSelf);
 	Out.ar(out, (sig * env) ! 2)
 }, metadata: (specs: (cutoff: \freq, volume: \amp))).add;
 
