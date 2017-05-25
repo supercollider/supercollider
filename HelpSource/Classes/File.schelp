@@ -42,28 +42,25 @@ File.getcwd;
 method::use
 Open the file, evaluate the function with the file as argument, and close it again. If the process fails, close the file and throw an error.
 
-method::read
-Given a path for an existing file, read and return the contents. By default, it calls link::#-readAllString::. If the process fails, close the file and throw an error.
-
-argument::pathName
-The path (link::Classes/String::) that points to the file
-
-argument::mode
-The file mode to use, valid modes are code::"r":: (read) and code::"rb":: (read binary).
-
-argument::selector
-The method to be called on the file once it is open. Possible selectors are: code::\readAllString:: (or just code::\contents::),
-code::\readAllStringRTF::, code::\readAllStringHTML::, code::\readAllSignal::.
-
+method::readAllString
+Open the file at the given path, call link::#-readAllString::, and return the string. Whether the process succeeds or fails, the file will always be closed.
 
 code::
 // write a file
 File.use("~/test.txt".standardizePath, "w", { |f| f.write("The green fox fell into the blue lake") });
 
 // read it again
-File.read("~/test.txt".standardizePath);
+File.readAllString("~/test.txt".standardizePath);
 ::
 
+method::readAllSignal
+Open the file at the given path, call link::#-readAllSignal::, and return the signal. Whether the process succeeds or fails, the file will always be closed.
+
+method::readAllStringHTML
+Open the file at the given path, call link::#-readAllStringHTML::, and return the string. Whether the process succeeds or fails, the file will always be closed.
+
+method::readAllStringRTF
+Open the file at the given path, call link::#-readAllStringRTF::, and return the string. Whether the process succeeds or fails, the file will always be closed.
 
 subsection:: Filesystem utilities
 
@@ -131,8 +128,14 @@ Close the file.
 method::readAllString
 Reads the entire file as a link::Classes/String::.
 
+method::readAllStringHTML
+Reads the entire file as a link::Classes/String::, stripping HTML tags.
+
 method::readAllStringRTF
 Reads the entire file as a link::Classes/String::, stripping RTF formatting.
+
+method::readAllSignal
+Reads the entire file as a link::Classes/Signal::, where every chunk of four bytes is interpreted as a 32-bit floating point sample.
 
 method::seek
 Moves the read/write pointer to a given location in the file, where offset is location given in bytes, and origin is the reference of the offset:
