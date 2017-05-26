@@ -60,7 +60,7 @@ play({
 {
 	var gain;
 	gain = MouseX.kr(1,100,'exponential');	// mouse x controls gain into distortion
-	AudioIn.ar([1,2], gain).distort * 0.4
+	SoundIn.ar([0,1], gain).distort * 0.4
 }.play))
 
 //////////////////////////////////////////////////////////////////////////
@@ -72,7 +72,7 @@ play({
 // ring modulate input
 {
 	var input, modulator;
-	input = AudioIn.ar([1,2]);
+	input = SoundIn.ar([0,1]);
 	modulator = SinOsc.ar(
 				MouseX.kr(10,4000,'exponential'),	// mouse x controls ring mod freq
 				[0,0.5pi]						// offset phase ofone osc by 90 degrees
@@ -90,7 +90,7 @@ play({
 // ring modulate input using ring1
 {
 	var input, modulator;
-	input = AudioIn.ar([1,2], 0.5);
+	input = SoundIn.ar([0,1], 0.5);
 	modulator = SinOsc.ar(
 				MouseX.kr(10,4000,'exponential'),	// mouse x controls ring mod freq
 				[0,0.5pi]						// offset phase ofone osc by 90 degrees
@@ -110,7 +110,7 @@ play({
 	var rQ;
 	rQ = MouseY.kr(0.01, 1, 'exponential'); // bandwidth ratio = 1/Q
 	RLPF.ar(
-		AudioIn.ar([1,2], 0.4 * rQ.sqrt),		// attenuate to offset resonance
+		SoundIn.ar([0,1], 0.4 * rQ.sqrt),		// attenuate to offset resonance
 		MouseX.kr(100, 12000, 'exponential'), 	// mouse x controls cutoff freq
 		rQ
 	)
@@ -125,7 +125,7 @@ play({
 // input limiter
 {
 	CompanderD.ar(
-		AudioIn.ar([1,2]),
+		SoundIn.ar([0,1]),
 		MouseX.kr(0.01, 0.5), 		// threshold
 		1, 		// below threshold slope
 		0.1		// above threshold slope
@@ -140,7 +140,7 @@ play({
 // input noise gate
 {
 	var input;
-	input = AudioIn.ar([1,2]);
+	input = SoundIn.ar([0,1]);
 	Compander.ar(
 		input, input,
 		MouseX.kr(0.01, 0.5), 		// threshold
@@ -159,7 +159,7 @@ play({
 // echo input
 {
 	var in;
-	in = AudioIn.ar([1,2], 0.1);
+	in = SoundIn.ar([0,1], 0.1);
 	CombL.ar(
 		in,
 		0.5, 				// max delay time
@@ -180,7 +180,7 @@ play({
 // ring modulate & echo input
 {
 	var in;
-	in = AudioIn.ar([1,2], 0.4) * SinOsc.ar(MouseX.kr(10,2000,'exponential'), [0,0.5pi]);
+	in = SoundIn.ar([0,1], 0.4) * SinOsc.ar(MouseX.kr(10,2000,'exponential'), [0,0.5pi]);
 	CombL.ar(
 		in,
 		0.5,
@@ -199,7 +199,7 @@ play({
 // ring modulated and resonant filtered input
 {
 	var input, modulator;
-	input = AudioIn.ar([1,2],0.2);
+	input = SoundIn.ar([0,1],0.2);
 	modulator = SinOsc.ar(
 				MouseX.kr(10,4000,'exponential'),	// mouse x controls ring mod freq
 				[0,0.5pi]						// offset phase ofone osc by 90 degrees
@@ -218,7 +218,7 @@ play({
 // distort, ring modulate & echo input - a real noise fest
 {
 	var in;
-	in = AudioIn.ar([1,2], 20).distort.ring1(
+	in = SoundIn.ar([0,1], 20).distort.ring1(
 			SinOsc.ar(MouseX.kr(10,2000,'exponential'), [0,0.5pi])
 		) * 0.02;
 	CombL.ar(
@@ -241,7 +241,7 @@ play({
 {
 	var s, z, y;
 
-	s = AudioIn.ar([1,2], 0.01) ;
+	s = SoundIn.ar([0,1], 0.01) ;
 
 		// reverb predelay time :
 	z = DelayN.ar(Mix.ar(s), 0.048);
@@ -269,7 +269,7 @@ play({
 	decayTime = MouseX.kr(0,16);
 	delayScale = MouseY.kr(0.01, 1);
 
-	s = AudioIn.ar([1,2], 0.005) ;
+	s = SoundIn.ar([0,1], 0.005) ;
 
 		// reverb predelay time :
 	z = DelayN.ar(Mix.ar(s), 0.048);

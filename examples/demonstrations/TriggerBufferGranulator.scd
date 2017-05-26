@@ -1,11 +1,11 @@
 //Sam Pluta - 2006
-//this Synth uses the AudioIn as a trigger to step through and granulate the loaded buffer
+//this Synth uses the SoundIn as a trigger to step through and granulate the loaded buffer
 
 s.boot;
 b = Buffer.read(s, "sounds/a11wlk01.wav");  //use your own buffer here - mine is probably not on your computer
 
 (
-SynthDef("TriggerBufferGranular", {arg out=0, bufnum=0, in=1, thresh = 0.004, ampScaler = 1, duration =
+SynthDef("TriggerBufferGranular", {arg out=0, bufnum=0, in=0, thresh = 0.004, ampScaler = 1, duration =
 0.2, pan=0,centerPosition=0.1, interp=1, incrementBy = 200;
 
 	var trig, amp, gatedAmp, triggerBool, outamp, bufferFrames, bufRateScale;
@@ -14,8 +14,8 @@ SynthDef("TriggerBufferGranular", {arg out=0, bufnum=0, in=1, thresh = 0.004, am
 	grNum = 4; // the number of granulators in the synthdef
 	bufferFrames = BufFrames.kr(bufnum);
 	bufRateScale = BufRateScale.kr(bufnum);
-	amp = Amplitude.kr (AudioIn.ar(in));
-	triggerBool = (AudioIn.ar(in) >= thresh);
+	amp = Amplitude.kr (SoundIn.ar(in));
+	triggerBool = (SoundIn.ar(in) >= thresh);
 	gatedAmp = Latch.kr(amp, triggerBool);
 	outamp = (gatedAmp * ampScaler);
 
