@@ -10,16 +10,10 @@ note:: The keyboard shortcuts mentioned here only applies to the standard supeco
 section:: Class Definitions, Implementations, and References
 
 subsection::cmd-i
-Selecting the name of any Class (e.g. Object) and typing strong::cmd-i:: will open its class definition file.
-
+Selecting the name of any method (e.g. play) and typing strong::cmd-i:: will open a window showing all implementations of that method and their arguments. Selecting one of those classes and methods (e.g. Sample:play) and typing enter will open the class definition at that method. (Note that cmd-y only shows implementations, and does not indicate inheritance). Using teletype::cmd-shift-i::, a dialog opens for typing directly.
 
 subsection::cmd-u
-Selecting the name of any method (e.g. play) and typing strong::cmd-u:: will open a window showing all implementations of that method and their arguments. Selecting one of those classes and methods (e.g. Sample:play) and typing cmd-j will open the class definition at that method. (Note that cmd-y only shows implementations, and does not indicate inheritance).
-
-subsection::cmd-shift-u
-Selecting any text (e.g. Window or asStream) and typing strong::cmd-shift-u:: will open a window showing all references to the selected text, i.e. each place it is used within the class library. (This will not find methods calls compiled with special byte codes like 'value'.)
-
-note:: Any keypresses that open files identify the files using SuperCollider strings, which may contain only ASCII characters up to code point 127. If any part of the path to your SuperCollider installation contains character codes greater than 127 (such as the old Mac convention of identifying program folders with option-F), automatic file opening will fail. ::
+Selecting any text (e.g. Window or asStream) and typing strong::cmd-u:: will open a window showing all references to the selected text, i.e. each place it is used within the class library (This will not find methods calls compiled with special byte codes like 'value'). Using teletype::cmd-shift-u::, a dialog opens for typing directly.
 
 subsection::Graphical Class browser
 SC has a graphical Class browser which will show all methods, arguments, subclasses, instance variables and class variables. Using the browser's buttons you can easily navigate to the class' superclass, subclasses, class source, method source, helpfile (if there is one), check references or implementation of methods.
