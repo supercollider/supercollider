@@ -11,7 +11,7 @@ b = Buffer.alloc(s, 44100 * 6.0, 2);
 (
 SynthDef(\LMFAP, {|combdecay=1, allpassdecay=0.5, wet=0.1, bufnum, rate=1, end=264600|
 	var in, signal;
-	in = AudioIn.ar([1,2]);
+	in = SoundIn.ar([0,1]);
 	z = DelayN.ar(in, 0.1, 0.51);
 	y = Mix.ar(Array.fill(3,{ CombL.ar(z, 0.05, rrand(0.03, 0.05), combdecay) }));
 	6.do({ y = AllpassN.ar(y, 0.030, rrand(0.01, 0.03), allpassdecay) });
