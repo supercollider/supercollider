@@ -68,7 +68,7 @@ code::
 // 0 - define name and location of new app + helper functions
 (
 // define the name for the new app and its location:
-~newAppName = "MyKewlSC3.9";
+~newAppName = "Utopia_GenComp_39d";
 ~newAppLocation = "~/Desktop".standardizePath;
 
 // some helper functions
@@ -120,7 +120,7 @@ if (File.exists(~pathToNewApp).not) {
 "renaming macos binary to: ".post;
 // fixups in the new app - 2. rename the binary inside the app folder
 unixCmd("mv" + quote(~pathToNewApp +/+ "Contents/MacOS/" +/+ ~thisAppName)
-	+ quote(~pathToNewApp +/+ "Contents/MacOS/" ++ ~newAppName).postcs);
+	+ quote(~pathToNewApp +/+ "Contents/MacOS/" ++ ~newAppName).postln);
 );
 
 
@@ -181,18 +181,23 @@ File.mkdir(~projDir);
 
 ~loadfilepath = ~projDir +/+ "00_loadMe.scd";
 ~writeText.value(~loadfilepath,
-"// load file for project % loading.
-// put your loading sequence here...'.
+	"
+\"*** startup file for % loading.\".postln;
+\"*** My Platform.userAppSupportDir is: \".postln;
+Platform.userAppSupportDir.postcs;
 thisProcess.nowExecutingPath.openOS;
 
 s.waitForBoot {
-	\"booted server, could load files next...\".postln;
+	\"*** server booted, plays ping.\".postln;
 	Env.perc.test;
 
+	\"*** loading files next ...\".postln;
+	// put your loading sequence here:
 	// \"loadX.scd\".loadRelative;
  	1.wait;
  	// \"loadY.scd\".loadRelative;
-}; ".format(~newAppName)
+};"
+.format(~newAppName)
 );
 ~loadfilepath.openOS;
 )
@@ -201,7 +206,7 @@ s.waitForBoot {
 // 6. write a startupFile that points to the load file:
 ~startupCode =
 "// example startup file for osx standalone.
-// running loadfile in project folder:
+// running loadfile in this project folder:
 %.loadRelative;
 ".format((~projDirName +/+ ~loadfilepath.basename).cs);
 
@@ -224,23 +229,45 @@ unixCmd("open" + ~pathToNewApp);
 
 // so we do quick and dirty - just put them in SCClassLibrary.
 // this works for classes are found directly, not for help files;
-~newAppQuarksDir = ~newAppResDir +/+ "SCClassLibrary/Z_AddedQuarks";
+// ~newAppQuarksDir = ~newAppResDir +/+ "SCClassLibrary/Z_AddedQuarks";
 
 // copy all folders in my current quarks includePaths
 // to Resources/SCClassLibrary to freeze them:
 File.mkdir(~newAppQuarksDir);
+
+~quarkPaths = LanguageConfig.includePaths.reject { |path|
+	["SCClassLibrary", "HelpSource"].includesEqual(path.basename)
+};
+
+~quarkPaths.collect(_.basename).sort.printcsAll;
+
 if (~newAppQuarksDir.pathMatch.notEmpty) {
 	"/*** copying Quarks : ***/".postln;
-	LanguageConfig.includePaths.do { |path|
-		unixCmd("cd" + quote(~newAppQuarksDir) ++ ";" "cp -r" + quote(path).postln + ".");
+	~quarkPaths.do { |path|
+		unixCmd(
+			"cd" + quote(~newAppQuarksDir) ++ ";"
+			" cp -r" + quote(path).postln + ".");
 	};
 };
+"";
 )
 // open it to check
 ~newAppQuarksDir.openOS;
 
+
+// add the ~quarks paths
+
+
 // and now the new app should have all classes in quarks:
 unixCmd("open" + ~pathToNewApp);
+
+// IN THE NEW APP, run this:
+LanguageConfig.addIncludePath(String.scDir +/+ "Z_AddedQuarks");
+LanguageConfig.store;
+// see if file is stored OK:
+LanguageConfig.includePaths.last.pathMatch.postln;
+// IN THE NEW APP, REBOOT THE INTERPRETER NOW!
+// - the added quarks should now be present.
 
 
 // 8. put your project files in the project folder,
