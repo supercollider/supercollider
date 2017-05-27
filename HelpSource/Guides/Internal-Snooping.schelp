@@ -1,11 +1,11 @@
 title:: Internal Snooping
 summary:: Snooping around SuperCollider
-categories:: Debugging
+categories:: Debugging, Internals
 
 You can inspect much of the internal structure of the class library and other data structures.
-This can often be useful for research and debugging purposes.
+This can be useful for research and debugging purposes.
 
-note:: The keyboard shortcuts mentioned here only applies to the standard supecollider IDE.::
+note:: The keyboard shortcuts mentioned here only apply to the standard supecollider IDE.::
 
 section:: Class Definitions, Implementations, and References
 
@@ -30,33 +30,46 @@ The link::Classes/Class:: help file documents some of these snooping methods.
 Even though you may access these data structures, if you store things into them, you may break something.
 
 code::
-Collection.dumpInterface;       // print all instance methods defined for this class
+// print all instance methods defined for this class
+Collection.dumpInterface;
 
-Collection.class.dumpInterface; // print all class methods defined for this class
+// print all class methods defined for this class
+Collection.class.dumpInterface;
 
 
-// The following three include inherited methods
 
-Collection.methods.collect(_.name); // print all instance methods that instances of this class respond to
+// print all instance methods that instances of this class respond to
+Collection.methods.collect(_.name);
 
-Collection.class.methods.collect(_.name); // print all class methods that this class responds to
+// print all class methods that this class responds to
+// includes inherited methods
+Collection.class.methods.collect(_.name);
 
-Collection.dumpFullInterface; // print all instance and class methods that this class responds to
+// print all instance and class methods that this class responds to
+// includes inherited methods
+Collection.dumpFullInterface;
 
-Collection.dumpMethodList; // print instance methods of this class and superclasses, in alpha order
-                           // also shows from which class the method is inherited
-                           // does not include Object or Class methods
-                           // for class methods, do Meta_Collection.dumpMethodList
+// print instance methods of this class and superclasses, in alpha order
+// also shows from which class the method is inherited
+// does not include Object or Class methods
+// for class methods, do Meta_Collection.dumpMethodList
+Collection.dumpMethodList;
 
-Collection.dumpClassSubtree;    // dump all subclasses of this class
+// dump all subclasses of this class
+Collection.dumpClassSubtree;
 
-Collection.dumpSubclassList;    // dump all subclasses, in alphabetical order
+// dump all subclasses, in alphabetical order
+Collection.dumpSubclassList;
 
-Server.instVarNames.dump;     // dump all instance variable names of this class
+// dump all instance variable names of this class
+Server.instVarNames.dump;
 
-Server.classVarNames.dump;    // dump all class variable names of this class
+// dump all class variable names of this class
+Server.classVarNames.dump;
 
-Server.filenameSymbol.postln; // the path to the file that defined this class
+// the path to the file that defines this class
+// !! there might be extensions to this class in other files
+Server.filenameSymbol.postln;
 
 (
 // print all classes whose names start with 'F'
@@ -96,31 +109,42 @@ subsection:: Snooping in Methods
 Same thing goes here, if you store things into Methods, you may break something.
 
 code::
-Collection.findMethod('select'); // does it have this method?
+// does the class implement this method?
+Collection.findMethod('select');
+// -> Collection:select
 
-Array.findMethod('select'); // this class doesn't
+// this class doesn't
+Array.findMethod('select');
+// -> nil
 
-Array.findRespondingMethodFor('select'); // climb the class tree to find the method
+// but a superclass might implement it, so
+// climb the class tree to check
+Array.findRespondingMethodFor('select');
+// -> Collection:select
 
-Collection.findMethod('select').dump; // find a method object
 
-Collection.findMethod('select').argNames.dump; // dump its argument names
+// find a method object and dump its argument names and
+// its local variable names
+Collection.findMethod('select').dump;
+Collection.findMethod('select').argNames.dump;
+Collection.findMethod('select').varNames.dump;
+// -> nil // doesn't have any varNames
 
-Collection.findMethod('select').varNames.dump; // dump its local variable names
 
 // dump its code. mostly for debugging the compiler.
 Collection.findMethod('select').dumpByteCodes;
 
-Collection.dumpByteCodes('select');	// a shorter version of the above
+// a shorter version of the above
+Collection.dumpByteCodes('select');
 
-{ 1 + 2 }.dump; // this is a Function
 
-{ 1 + 2 }.def.dump;	// get its FunctionDef
-
-{ 1 + 2 }.def.dumpByteCodes;	// dump its code.
+{ 1 + 2 }.dump;              // this is a Function
+{ 1 + 2 }.def.dump;	         // dump its FunctionDef
+{ 1 + 2 }.asCompileString;	 // show its implementation
+{ 1 + 2 }.def.dumpByteCodes; // dump its code.
 ::
 
-subsection:: Snooping in Windows
+subsection:: Snooping in GUI Windows
 
 code::
 (
@@ -147,38 +171,72 @@ Window.allWindows.do { | window |
 }
 )
 
-Window.closeAll; // close all the windows (This will close the server windows)
+Window.closeAll; // close all the windows
 ::
 
 subsection:: Snooping in SynthDefs
 code::
-// First execute this:
+// a synthdef to snoop in
 (
 f = SynthDef(\snoop, { | out=0 |
 		Out.ar(out, PinkNoise.ar(0.1))
 });
 )
 
-f.dumpUGens;	// get the ugens, listed in order of execution, with rate, index and
-				// inputs
+// get the ugens, listed in order of execution, with rate,
+// index and inputs
+f.dumpUGens;
 ::
+
+subsection:: Snooping on the Server
+
+Lots of information on server-related snooping can be found in the link::Classes/Server:: helpfile under "Information and debugging".
+
+Some examples code::
+s.boot;
+
+f = { PinkNoise.ar(0.1) * SinOsc.ar }; // a function
+x = f.play;
+
+// look at all the nodes on the server
+s.queryAllNodes;
+
+// parsed contents
+s.dumpOSC(1);
+x.free;
+x = f.play;
+
+// contents in hexadecimal
+// status messages are not filtered
+s.dumpOSC(2);
+x.free;
+x = f.play;
+
+// turn off
+s.dumpOSC(0);
+::
+
 
 subsection:: Snooping in the Interpreter
 
 When evaluating text in the interpreter, the variable 'this' always refers to the interpreter.
 code::
-this.dump;	// display the values of all the interpreter variables a-z
+// display the values of all the interpreter variables a-z
+this.dump;
 
-this.clearAll;	// set all variables a-z to nil
+// set all variables a-z to nil
+this.clearAll;
 
-g = this.compile("(1 + 2).postln");	// compile some text into a Function
 
-g.postln;		// see, g is a Function
+// compile some text into a Function
+g = this.compile("(1 + 2).postln");
+g.postln;   // g is a Function
+g.value;    // evaluate g
 
-g.value;	// evaluate g
+// interpret some text
+this.interpret("(1 + 2).postln");
 
-this.interpret("(1 + 2).postln");	// interpret some text
-
-this.interpretPrint("1 + 2");	// interpret some text and print the result
+// interpret some text and print the result
+this.interpretPrint("1 + 2");
 ::
 
