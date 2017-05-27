@@ -57,7 +57,7 @@
 #include <parallel/algorithm>
 #endif
 
-
+extern int gVerbosity;
 
 PyrClass *gClassList = NULL;
 int gNumSelectors = 0;
@@ -1208,14 +1208,17 @@ void buildBigMethodMatrix()
 
 #ifndef _MSC_VER
 	pool.try_executing_one();
-#endif	
+#endif
 	filledClassIndices.wait();
 #ifdef _MSC_VER
 	size_t numentries = fillClassRows(class_object, bigTable);
 #else
 	size_t numentries = fillClassRows(class_object, bigTable, pool);
 #endif
-	post("\tnumentries = %lu / %d = %.2g\n", numentries, bigTableSize, (double)numentries/(double)bigTableSize);
+	if (gVerbosity >= 1) {
+		post("\tMethod lookup table has %lu entries out of a maximum of %d (%.2g%% full).\n",
+			numentries, bigTableSize, (double)numentries/(double)bigTableSize * 100);
+	}
 
 
 	ColumnDescriptor * filledSelectors = filledSelectorsFuture.get();
@@ -1349,9 +1352,11 @@ void buildBigMethodMatrix()
 			100. * (double)numFilled/(rowTableSize/sizeof(PyrMethod*)));
 	}
 #endif
-	post("\t%d method selectors, %d classes\n", numSelectors, numClasses);
-	post("\tmethod table size %d bytes, ", rowTableSize);
-	post("big table size %d\n", numSelectors * numClasses * sizeof(PyrMethod*));
+	post("\tFound %d classes and %d method names.\n", numClasses, numSelectors);
+	if (gVerbosity >= 1) {
+		post("\tMethod lookup table is %d bytes, ", rowTableSize);
+		post("out of a maximum of %d bytes.\n", numSelectors * numClasses * sizeof(PyrMethod*));
+	}
 	//postfl("%p %p %p\n", classes, bigTable, sels);
 /*
 	// not necessary since the entire pool will be freed..

@@ -2447,6 +2447,16 @@ int prSetTailCallOptimize(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+extern int gVerbosity;
+
+int prGetVerbosity(struct VMGlobals *g, int numArgsPushed);
+int prGetVerbosity(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *result = g->sp;
+	SetInt(result, gVerbosity);
+	return errNone;
+}
+
 
 int prTraceOn(struct VMGlobals *g, int numArgsPushed);
 int prTraceOn(struct VMGlobals *g, int numArgsPushed)
@@ -4144,6 +4154,7 @@ void initPrimitives()
 	definePrimitive(base, index++, "_KeywordError", prKeywordError, 1, 0);
 	definePrimitive(base, index++, "_GetTailCallOptimize", prGetTailCallOptimize, 1, 0);
 	definePrimitive(base, index++, "_SetTailCallOptimize", prSetTailCallOptimize, 2, 0);
+	definePrimitive(base, index++, "_GetVerbosity", prGetVerbosity, 1, 0);
 
 
 	definePrimitive(base, index++, "_PrimitiveError", prPrimitiveError, 1, 0);
@@ -4326,7 +4337,9 @@ void initOpenGLPrimitives();
 	initSCDocPrimitives();
 
 	s_recvmsg = getsym("receiveMsg");
-	post("\tNumPrimitives = %d\n", nextPrimitiveIndex());
+	if (gVerbosity >= 1) {
+		post("\tFound %d primitives.\n", nextPrimitiveIndex());
+	}
 }
 
 void deinitPrimitives()

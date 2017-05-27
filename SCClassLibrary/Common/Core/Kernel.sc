@@ -191,7 +191,7 @@ Process {
 		Class.initClassTree(AppClock); // AppClock first in case of error
 		time = this.class.elapsedTime;
 		Class.initClassTree(Object);
-		("Class tree inited in" + (this.class.elapsedTime - time).round(0.01) + "seconds").postln;
+		("Class tree initialized in" + (this.class.elapsedTime - time).round(0.01) + "seconds.").postln;
 		Class.classesInited = nil;
 
 		topEnvironment = Environment.new;
@@ -391,6 +391,8 @@ Process {
 	archiveAsCompileString { ^true }
 
 	prSchedulerQueue { ^schedulerQueue }
+
+	verbosity { _GetVerbosity }
 }
 
 
