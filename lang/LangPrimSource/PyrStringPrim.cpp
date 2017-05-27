@@ -550,13 +550,13 @@ int prString_PathMatch(struct VMGlobals *g, int numArgsPushed)
 		return err;
 
 	SC_Filesystem::Glob* glob = SC_Filesystem::makeGlob(pattern);
-	cout << "Globbing for: " << pattern << endl; // @TODO: debug code, remove
+	//cout << "Globbing for: " << pattern << endl; // @TODO: debug code, remove
 
 	// exit early with empty array if no matches found
 	if (!glob) {
 		// @TODO: make globNext return "" if arg is null? impl fail here
 		SetObject(a, newPyrArray(g->gc, 0, 0, true));
-		cout << "Nothing matched glob" << endl; // @TODO: debug code, remove
+		//cout << "Nothing matched glob" << endl; // @TODO: debug code, remove
 		return errNone;
 	}
 
@@ -571,7 +571,7 @@ int prString_PathMatch(struct VMGlobals *g, int numArgsPushed)
 	};
 
 	// @TODO: debug code, remove
-	cout << "Globbing found " << paths.size() << " files." << endl;
+	//cout << "Globbing found " << paths.size() << " files." << endl;
 
 	// create array with appropriate reserved size
 	PyrObject* array = newPyrArray(g->gc, paths.size(), 0, true);
