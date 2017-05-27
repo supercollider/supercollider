@@ -32,6 +32,8 @@
 #include <QApplication>
 #include <QStyle>
 
+#include <iostream>
+
 QC_DECLARE_QWIDGET_FACTORY(WebView);
 
 namespace QtCollider {
@@ -75,6 +77,7 @@ QString WebView::url() const
 
 void WebView::setUrl( const QString & str )
 {
+  // @TODO: convert here!
   load( urlFromString(str) );
 }
 
