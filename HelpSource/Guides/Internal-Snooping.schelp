@@ -61,8 +61,10 @@ Server.filenameSymbol.postln; // the path to the file that defined this class
 (
 // print all classes whose names start with 'F'
 Class.allClasses.do { | class |
-	if (class.name.asString.at(0) == $F) { class.name.postln }
-}; "";
+	if (class.name.asString.beginsWith("F")) {
+		class.name.postln
+	}
+}
 )
 
 (
@@ -71,10 +73,10 @@ Class.allClasses.do { | class |
 	if (class.classVarNames.notNil) {
 		// classVarNames is an Array of Symbols
         class.classVarNames.do { | varname |
-            (class.name.asString ++ " " ++ varname.asString).postln;
+            (class.name.asString ++ " " ++ varname.asString).postln
         }
     }
-};"";
+}
 )
 
 (
@@ -82,10 +84,10 @@ Class.allClasses.do { | class |
 Class.allClasses.do { | class |
    	class.methods.do { | sel |
    			if(sel.name.asString.find("ascii").notNil) {
-            		(class.name.asString + "-" + sel.name).postln;
+            		(class.name.asString + "-" + sel.name).postln
             }
-	};
-}; "";
+	}
+}
 )
 ::
 
