@@ -225,11 +225,12 @@ unixCmd("open" + ~pathToNewApp);
 (
 // more polite and flexible, but needs configuration later:
 // (add this folder as includePath, etc etc )
-~newAppQuarksDir = ~newAppResDir +/+ "Z_AddedQuarks";
+~newAppQuarksDir = ~newAppResDir +/+ "InternalExtensions";
 
-// so we do quick and dirty - just put them in SCClassLibrary.
-// this works for classes are found directly, not for help files;
-// ~newAppQuarksDir = ~newAppResDir +/+ "SCClassLibrary/Z_AddedQuarks";
+// quick and dirty option - just put them in SCClassLibrary.
+// this works for classes are found directly, not for help files:
+// ~newAppQuarksDir = ~newAppResDir +/+ "SCClassLibrary/" +/+ ~newAppQuarksDir;
+// -> would require a script to extract the help files from these quarks to HelpSource ...
 
 // copy all folders in my current quarks includePaths
 // to Resources/SCClassLibrary to freeze them:
@@ -262,16 +263,24 @@ if (~newAppQuarksDir.pathMatch.notEmpty) {
 unixCmd("open" + ~pathToNewApp);
 
 // IN THE NEW APP, run this:
-LanguageConfig.addIncludePath(String.scDir +/+ "Z_AddedQuarks");
+(
+LanguageConfig.addIncludePath(String.scDir +/+ ~newAppQuarksDir);
+LanguageConfig.addExcludePath(Platform.userAppSupportDir);
+LanguageConfig.addExcludePath(Platform.systemAppSupportDir);
 LanguageConfig.store;
+)
 // see if file is stored OK:
 LanguageConfig.includePaths.last.pathMatch.postln;
 // IN THE NEW APP, REBOOT THE INTERPRETER NOW!
 // - the added quarks should now be present.
+::
 
+Note:: To make sure your standalone app remains closed, and continues to ignore anything in its
+userExtensionDir or systemExtensionDir, you can put the Standalone.sc class file
+(from the Standalone quark, to be committed) into the SCClassLibrary.
+This class checks and resets the includes and excludes on every startup.
+::
 
 // 8. put your project files in the project folder,
 // adapt the loading sequence,
 // test test test etc etc etc
-
-::
