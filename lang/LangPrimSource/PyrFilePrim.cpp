@@ -268,7 +268,7 @@ int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 		// check if directory exisits
 		// create a temporary file (somewhere) for a handle
 		// the file is deleted automatically when closed
-		if (boost::filesystem::exists(p)) {
+		if (boost::filesystem::exists(path)) {
 			int err;
 #    ifdef _MSC_VER
 			err = tmpfile_s(&file);
