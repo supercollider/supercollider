@@ -28,8 +28,6 @@
 #include "QtCollider/widgets/web_page.hpp"
 #include "QtCollider/hacks/hacks_qt.hpp"
 
-#include "SC_Codecvt.hpp"
-
 #include <QVBoxLayout>
 #include <QToolBar>
 #include <QWebSettings>
@@ -314,13 +312,9 @@ void HelpBrowser::onScResponse( const QString & command, const QString & data )
 
     mLoadProgressIndicator->stop();
 
-    // @TODO: convert here
     QString urlString = data;
-    //std::cout << "before: " << data.toStdString() << std::endl;
-    //QString urlString = QString::fromStdString(SC_Codecvt::utf8_to_native_str(data.toStdString()));
     // undress YAML string:
     urlString.remove(0,1).chop(1);
-    //std::cout << "after: " << urlString.toStdString() << std::endl;
 
     mWebView->load( urlString );
   
