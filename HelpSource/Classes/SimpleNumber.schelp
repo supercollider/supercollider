@@ -899,19 +899,6 @@ code::
 (0..1000).collect { |num| gauss(0.0, num) }.plot;
 ::
 
-method:: partition
-randomly partition a number into parts of at least min size.
-argument:: parts
-number of parts
-argument:: min
-the minimum size
-
-discussion::
-code::
-75.partition(8, 3);
-75.partition(75, 1);
-::
-
 
 subsection:: UGen Compatibility Methods
 

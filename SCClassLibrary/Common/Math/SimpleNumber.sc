@@ -457,12 +457,6 @@ SimpleNumber : Number {
 		^scale.performNearestInScale(this, stepsPerOctave);
 	}
 
-	partition { arg parts=2, min=1;
-		// randomly partition a number into parts of at least min size :
-		var n = this - (min - 1 * parts);
-		^(1..n-1).scramble.keep(parts-1).sort.add(n).differentiate + (min - 1)
-	}
-
 	nextTimeOnGrid { arg clock;
 		^clock.nextTimeOnGrid(this, 0);
 	}

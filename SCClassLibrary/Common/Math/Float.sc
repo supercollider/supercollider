@@ -80,4 +80,13 @@ Float : SimpleNumber {
 		"Float:switch is unsafe, rounding via Float:asInteger:switch".warn;
 		^this.asInteger.switch(*cases)
 	}
+	
+	partition { arg parts=2, min=1;
+		// randomly partition a number into parts of at least min size :
+		var n = this.abs - (min * parts);
+		if(n < 0) {
+			Error("Float-partition min (%) is too high to partition % into % parts.".format(min, this, parts)).throw;
+		};
+		^Array.rand(parts-1,0,n).sort.add(n).differentiate + min * this.sign;
+	}
 }

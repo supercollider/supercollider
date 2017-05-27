@@ -77,6 +77,21 @@ argument:: exclude
 an link::Classes/Integer::.
 returns:: a random value from this.neg to this, excluding the value exclude.
 
+method:: partition
+randomly partition a number into parts of at least min size.
+argument:: parts
+number of parts
+argument:: min
+the minimum size
+
+discussion::
+code::
+75.partition(8, 3);
+75.partition(75, 1);
+-75.partition(9, 3);
+10.partition(2, 6); // throws an error
+::
+
 subsection:: Conversion
 
 method:: asAscii
