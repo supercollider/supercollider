@@ -40,8 +40,9 @@ Primitives for File i/o.
 #include <string.h>
 #include <stdarg.h>
 #include <cerrno>
-#include <locale> // wstring_convert
-#include <codecvt> // codecvt_utf8_utf16
+
+// Note: codecvt_utf8_utf16 should be in <codecvt>, but many vendors place it in <locale>
+#include <locale> // wstring_convert, codecvt_utf8_utf16
 
 #ifndef _WIN32
 # include <unistd.h>
