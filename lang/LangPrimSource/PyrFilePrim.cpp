@@ -40,6 +40,8 @@ Primitives for File i/o.
 #include <string.h>
 #include <stdarg.h>
 #include <cerrno>
+#include <locale> // wstring_convert
+#include <codecvt> // codecvt_utf8_utf16
 
 #ifndef _WIN32
 # include <unistd.h>
@@ -1257,11 +1259,27 @@ int prFileGetcwd(struct VMGlobals *g, int numArgsPushed)
 
 	if (!isKindOfSlot(string, class_string))  return errWrongType;
 
-	char * cwd = getcwd(slotRawString(string)->s,255);
+#ifdef _WIN32
+	// use wide version, then convert to utf8
+	// @TODO: abstract this
+	wchar_t buf[PATH_MAX];
+	wchar_t *wcwd = _wgetcwd(buf, PATH_MAX);
+	if (wcwd == nullptr) {
+		error(strerror(errno));
+		return errFailed;
+	}
+	const std::string cwd_str = std::wstring_convert<std::codecvt_utf8_utf16<wchar_t> >().to_bytes(wcwd);
+	const char *cwd = cwd_str.c_str();
+#else
+	char buf[PATH_MAX];
+	const char *cwd = getcwd(buf, PATH_MAX);
 	if (cwd == NULL) {
 		error(strerror(errno));
 		return errFailed;
 	}
+#endif
+
+	strcpy(slotRawString(string)->s, cwd);
 	slotRawString(string)->size = strlen(slotRawString(string)->s);
 
 	return errNone;
