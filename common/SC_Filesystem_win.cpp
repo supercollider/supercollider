@@ -38,6 +38,9 @@ using std::endl;
 // stdlib
 #include <codecvt>
 
+// boost
+#include <boost/filesystem/operations.hpp> // is_directory
+
 // system
 #include <Shlobj.h> // SHGetKnownFolderPath
 
@@ -67,6 +70,11 @@ SC_Filesystem::Glob* SC_Filesystem::makeGlob(const char* pattern)
 	Glob* glob = new Glob;
 	boost::filesystem::path path = SC_Codecvt::utf8_str_to_path(pattern);
 
+	// remove a trailing backslash. Even if searching with 'foo/.', this will
+	// change to 'foo' harmlessly.
+	if (path.filename_is_dot())
+		path = path.parent_path();
+
 	glob->mHandle = ::FindFirstFileW(path.wstring().c_str(), &glob->mEntry);
 	if (glob->mHandle == INVALID_HANDLE_VALUE) {
 		delete glob;
@@ -95,6 +103,9 @@ Path SC_Filesystem::globNext(Glob* glob)
 			glob->mAtEnd = true;
 	} while (glob->mFilename.filename_is_dot() || glob->mFilename.filename_is_dot_dot());
 
+	// add preferred separator (L'\\') on Windows, to match behavior with POSIX globbing.
+	if (boost::filesystem::is_directory(glob->mFilename))
+		glob->mFilename += boost::filesystem::path::preferred_separator;
 	return glob->mFilename;
 }
 
