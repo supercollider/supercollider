@@ -1,4 +1,4 @@
-title:: Internal Snooping
+title:: Internal Snooping (Introspection)
 summary:: Snooping around SuperCollider
 categories:: Debugging
 
@@ -9,11 +9,16 @@ note:: The keyboard shortcuts mentioned here only applies to the standard supeco
 
 section:: Class Definitions, Implementations, and References
 
-subsection::cmd-i
-Selecting the name of any method (e.g. play) and typing strong::cmd-i:: will open a window showing all implementations of that method and their arguments. Selecting one of those classes and methods (e.g. Sample:play) and typing enter will open the class definition at that method. (Note that cmd-y only shows implementations, and does not indicate inheritance). Using teletype::cmd-shift-i::, a dialog opens for typing directly.
+subsection::Look up Implementation
+Selecting the name of any method (e.g. play) and select teletype::Language>Look up Implementation:: will open a window showing all implementations of that method and their arguments. Selecting one of those classes and methods (e.g. Sample:play) and typing enter will open the class definition at that method. (Note that cmd-y only shows implementations, and does not indicate inheritance).
 
-subsection::cmd-u
-Selecting any text (e.g. Window or asStream) and typing strong::cmd-u:: will open a window showing all references to the selected text, i.e. each place it is used within the class library (This will not find methods calls compiled with special byte codes like 'value'). Using teletype::cmd-shift-u::, a dialog opens for typing directly.
+(see link::Reference/KeyboardShortcuts::)
+
+
+subsection::Look up References
+Selecting any text (e.g. Window or asStream) and typing teletype::Language>Look up References:: will open a window showing all references to the selected text, i.e. each place it is used within the class library (This will not find methods calls compiled with special byte codes like 'value').
+
+(see link::Reference/KeyboardShortcuts::)
 
 subsection::Graphical Class browser
 SC has a graphical Class browser which will show all methods, arguments, subclasses, instance variables and class variables. Using the browser's buttons you can easily navigate to the class' superclass, subclasses, class source, method source, helpfile (if there is one), check references or implementation of methods.
@@ -25,9 +30,6 @@ SequenceableCollection.browse;
 
 
 subsection:: Snooping in Classes
-
-The link::Classes/Class:: help file documents some of these snooping methods.
-Even though you may access these data structures, if you store things into them, you may break something.
 
 code::
 Collection.dumpInterface;       // print all instance methods defined for this class
@@ -92,8 +94,6 @@ Class.allClasses.do { | class |
 ::
 
 subsection:: Snooping in Methods
-
-Same thing goes here, if you store things into Methods, you may break something.
 
 code::
 Collection.findMethod('select'); // does it have this method?
