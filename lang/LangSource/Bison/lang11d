@@ -38,21 +38,16 @@ extern LongStack generatorStack;
 
 root	: classes
 			{ gRootParseNode = (PyrParseNode*)$1; gParserResult = 1; }
-		| classextensions
-			{ gRootParseNode = (PyrParseNode*)$1; gParserResult = 1; }
 		| INTERPRET cmdlinecode
 			{ gRootParseNode = (PyrParseNode*)$2; gParserResult = 2; }
 		;
 
 classes : { $$ = 0; }
+		|	classes classextension
+			{ $$ = (intptr_t)linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$2); }
 		|	classes classdef
 			{ $$ = (intptr_t)linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$2); }
 		;
-
-classextensions : classextension
-				| classextensions classextension
-				{ $$ = (intptr_t)linkNextNode((PyrParseNode*)$1, (PyrParseNode*)$2); }
-				;
 
 classdef	: classname superclass '{' classvardecls methods '}'
 				{ $$ = (intptr_t)newPyrClassNode((PyrSlotNode*)$1, (PyrSlotNode*)$2,
