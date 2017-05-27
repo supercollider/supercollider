@@ -277,8 +277,7 @@ int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 	if(strcmp(mode,"r") == 0)
 		strcpy(mode,"rb");
 
-	// use _wfopen on Windows because for some reason fopen wasn't working well with strings
-	// encoded in narrow UTF-16.
+	// use _wfopen on Windows for full Unicode compatibility
 	wchar_t wmode[12];
 	size_t wmode_size = 0;
 	mbstowcs_s(&wmode_size, wmode, mode, 12);
@@ -1520,8 +1519,12 @@ int prSFOpenRead(struct VMGlobals *g, int numArgsPushed)
 	filename[slotRawString(b)->size] = 0;
 
 	info.format = 0;
+#ifdef _WIN32
+	const std::wstring filename_w = std::wstring_convert<std::codecvt_utf8_utf16<wchar_t> >().from_bytes(filename);
+	file = sf_wchar_open(filename_w.c_str(), SFM_READ, &info);
+#else
 	file = sf_open(filename, SFM_READ, &info);
-
+#endif // _WIN32
 
 	if (file) {
 		SetPtr(obj1->slots + 0, file);
@@ -1603,7 +1606,13 @@ int prSFOpenWrite(struct VMGlobals *g, int numArgsPushed)
 	slotIntVal(slotRawObject(a)->slots + 4, &info.channels);
 	slotIntVal(slotRawObject(a)->slots + 5, &info.samplerate);
 
+#ifdef _WIN32
+	const std::wstring filename_w = std::wstring_convert<std::codecvt_utf8_utf16<wchar_t> >().from_bytes(filename);
+	file = sf_wchar_open(filename_w.c_str(), SFM_WRITE, &info);
+#else
 	file = sf_open(filename, SFM_WRITE, &info);
+#endif // _WIN32
+
 	sf_command(file, SFC_SET_CLIPPING, NULL, SF_TRUE);
 
 	if (file) {
