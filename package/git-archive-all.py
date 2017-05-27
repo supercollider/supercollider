@@ -69,7 +69,7 @@ class GitArchiver(object):
         for name in self.extra:
             if self.verbose: 
                 toPath = '=> %s%s' % (self.prefix, name) if self.prefix else ""
-                print 'Compressing %s %s ...' % (name, toPath)
+                print('Compressing %s %s ...' % (name, toPath))
             add(name, name)
         
         self._excludes = []
@@ -77,7 +77,7 @@ class GitArchiver(object):
         for name, arcname in self.listFiles(path.abspath('')):
             if self.verbose: 
                 toPath = '=> %s%s' % (self.prefix, arcname) if self.prefix else ""
-                print 'Compressing %s %s ...' % (arcname, toPath)
+                print('Compressing %s %s ...' % (arcname, toPath))
             add(name, arcname)
       
         output_archive.close()
@@ -117,7 +117,7 @@ class GitArchiver(object):
                 ignore = False
                 for pattern in self._excludes:
                     if fnmatch(fullpath, pattern) or fnmatch(filename, pattern):
-                        if self.verbose: print 'Exclude pattern matched (%s): %s' % (pattern, fullpath)
+                        if self.verbose: print('Exclude pattern matched (%s): %s' % (pattern, fullpath))
                         ignore = True
                         break
                 if ignore:
@@ -184,7 +184,7 @@ if __name__ == "__main__":
     
     try:
         archiver.create(outFile)
-    except Exception, e:
+    except Exception as e:
         parser.exit(2, "%s\n" % e)
     
     sys.exit(0)
