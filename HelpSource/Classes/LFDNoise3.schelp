@@ -41,28 +41,553 @@ This value will be added to the output.
 Examples::
 
 code::
+
 // try wiggling mouse quickly:
 // LFNoise2 overshoots when going from high to low freqs, LFDNoise changes smoothly.
-
 {  SinOsc.ar(LFNoise2.ar(MouseX.kr(0.1, 1000, 1), 200, 500), 0, 0.2)  }.play
-
 {  SinOsc.ar(LFDNoise3.ar(MouseX.kr(0.1, 1000, 1), 200, 500), 0, 0.2)  }.play
 
-
 // LFNoise quantizes time steps at high freqs, LFDNoise does not:
-
 { LFNoise2.ar(XLine.kr(2000, 20000, 8), 0.1) }.scope;
-
 { LFDNoise3.ar(XLine.kr(2000, 20000, 8), 0.1) }.scope;
 
 // use as frequency control
+({SinOsc.ar(LFDNoise3.ar(4, 400, 450), 0, 0.2)}.play;)
+
+/* example from wouter snoei canto ostinato classes*/
+
+// lfdnoise used for means of controlling circular multi-channel panning
+
 (
-{
-		SinOsc.ar(
-			LFDNoise3.ar(4, 400, 450),
-			0, 0.2
+SynthDef( "canto_revDelay", { |in = 0, private = 0, amp = 0.1,
+	preDelay = 0.05, delay = 0, lowCut = 200, gate = 1|
+
+	var trig;
+	var bufs;
+	var input;
+	var out;
+	var env;
+
+	trig = In.kr(1) > 0;
+	bufs = 5.collect({ LocalBuf(16384, 1).clear });
+	trig = PulseDivider.kr( trig, 5, (4..0) );
+	input = In.ar( in + (private * (NumOutputBuses.ir + NumInputBuses.ir) ) );
+	input = BLowCut.ar( input, lowCut.lag(0.25).clip(20,20000) );
+	input = DelayN.ar( input, preDelay );
+	out = trig.collect({ |tr, i|
+		var end, run, pos;
+		end = trig.wrapAt(i+1);
+		run = SetResetFF.kr( tr, end ).varlag(0.05);
+		end = TDelay.kr( end, delay );
+		RecordBuf.ar( input, bufs[i], 0, run, 0, 1, 0, tr );
+		pos = Timer.kr( tr + end ) * SampleRate.ir;
+		(1-run) * PlayBuf.ar( 1, bufs[i], -1, end, pos, 0 );
+		//SinOsc.ar(440,0,0.01) * run
+	});
+
+	out = out.collect({ |sig, i|
+		Pan4.ar(sig, trig * 0.25, LFDNoise3.kr(modSpeed) * pan, trig * 0.25, LFDNoise1.kr(modSpeed) * pan)});
+		
+	out = RemoveBadValues.ar( out );
+
+	Out.ar(0, Env.cutoff(0.1).kr(2,gate) * out * 2 * amp );
+}).load(s);
+
+/* example from wouter snoei canto ostinato classes*/
+
+// lfdnoise used for means of controlling circular multi-channel panning
+
+SynthDef( "canto_revDelay_quadIn", { |in = 0, private = 0, amp = 0.1,
+	preDelay = 0.05, delay = 0, lowCut = 200, gate = 1|
+
+	var trig;
+	var bufs;
+	var input;
+	var out;
+	var env;
+
+	trig = In.kr(1) > 0;
+	bufs = 5.collect({ LocalBuf(16384, 1).clear });
+	trig = PulseDivider.kr( trig, 5, (4..0) );
+	input = In.ar( in + [1,3] + (private * (NumOutputBuses.ir + NumInputBuses.ir) ) ).sum;
+	input = BLowCut.ar( input, lowCut.lag(0.25).clip(20,20000) );
+	input = DelayN.ar( input, preDelay );
+	out = trig.collect({ |tr, i|
+		var end, run, pos;
+		end = trig.wrapAt(i+1);
+		run = SetResetFF.kr( tr, end ).varlag(0.05);
+		end = TDelay.kr( end, delay );
+		RecordBuf.ar( input, bufs[i], 0, run, 0, 1, 0, tr );
+		pos = Timer.kr( tr + end ) * SampleRate.ir;
+		(1-run) * PlayBuf.ar( 1, bufs[i], -1, end, pos, 0 );
+		//SinOsc.ar(440,0,0.01) * run
+	});
+
+	out = out.collect({ |sig, i|
+	Pan4.ar(sig, trig * 0.25, LFDNoise3.kr(modSpeed) * pan, trig * 0.25, LFDNoise1.kr(modSpeed) * pan);
+	}).sum;
+
+	out = RemoveBadValues.ar( out );
+
+	Out.ar(0, Env.cutoff(0.1).kr(2,gate) * out * amp * 2);
+}).load(s);
+
+/* example from wouter snoei canto ostinato classes*/
+// lfdnoise used for means of controlling envelope parameters
+// TR-909 style kick
+
+(
+SynthDef( "bassdrum", { |amp = 0.25, freq = 42, pulse = 0.1, attackFreq = 100, decay = 0.075,
+		sustain = 3, pan = 0|
+	var sig;
+	sig = BLowPass.ar( Impulse.ar(0,0,pulse), 8000 );
+	sig = sig + LFPar.ar(
+		Env.perc(0,decay).ar.linexp(0,1,freq, attackFreq) *
+			LFDNoise3.kr(0.1).exprange(-0.1.midiratio, 0.1.midiratio),
+		-1);
+	sig = sig * Env([1,0], [sustain], -4).kr(2);
+	sig = Pan4.ar(sig, trig * 0.25, LFDNoise3.kr(modSpeed) * pan, trig * 0.25, LFDNoise1.kr(modSpeed) * pan);
+	//CheckBadValues.ar( sig, 100, 2 );
+	sig = RemoveBadValues.ar( sig );
+	OffsetOut.ar(0, sig )
+}).load(s);
+
+/* example from wouter snoei canto ostinato classes*/
+// lfdnoise using for controlling frequency modulation parameters
+
+(
+SynthDef( "canto_note", { |amp = 0.1, sustain = 1, damp = 16, freq = 440, sharpness = 2, pan = 0,
+	dev = 0.3, mod = 0.25, hpf = 20|
+	var sig, envs, env, n=5;
+	var amps, freqs, modfreq;
+	dev = (dev / 2).midiratio - 1;
+	envs = n.collect({ |i|
+		Env.perc(ExpRand(
+			sharpness.linlin(16,32,0.025,0.005).clip(0.005,0.025,),
+		0.04),1,0.99,(i+1).neg * damp).ar + 0.01;
+	});
+	amps = \amps.kr( 1.dup(n) );
+	//amps = ExpRand(0.005.dup(n),1);
+	amps = (1/((1..n) ** sharpness.fold(1,16.5))) * amps;
+	amps = (amps * n * envs) / (amps.sum);
+
+	freqs = freq * (1..n) * ExpRand((1-dev).dup(n),1/(1-dev));
+
+	sig = SinOsc.ar( freqs,
+			//Rand(0.dup(n),2pi),
+		0,
+		amps
+		);
+
+	//sig = BLowPass.ar( sig, freq * XLine.kr(3,1,sustain), 0.33 );
+
+	sig = sig.sum / n.sqrt;
+	sig = sig * AmpComp.kr( freq * 2);
+	sig = sig + LPF.ar( Impulse.ar(0, 0.5), 1200 );
+	modfreq = LFDNoise3.kr(0.1 + (mod * 2)).exprange(100,1000);
+	sig = CombC.ar( sig, 1/100, 1/modfreq,
+		0.01 + (mod * 0.04) );
+	sig = BPeakEQ.ar( sig, 1000, 1, mod * -3 );
+	sig = BLowCut.ar( sig, hpf, 2 );
+	sig = Pan4.ar(sig, trig * 0.25, LFDNoise3.kr(modSpeed) * pan, trig * 0.25, LFDNoise1.kr(modSpeed) * pan);
+	env = Env([1,1,0], [sustain * sharpness.linlin(16,32,1,0.01).clip(0.01,1), 0.1]).ar(2);
+	sig = RemoveBadValues.ar(sig);
+	OffsetOut.ar( 0, sig * env * amp );
+}).load(s);
+);
+
+/* example from wouter snoei canto ostinato classes*/
+( // new bass
+SynthDef( "canto_bass", { |amp = 0.1, sustain = 1, damp = 16, freq = 440, dev = 0.0075, sharpness = 2, pan = 0, mfreq = 1, mamt = 0, mod = 0.25, hpf = 20|
+	var sig, envs, env, n=5;
+	var amps, cutenv;
+	var inclick;
+	inclick = In.kr(1);
+	mod = mod * 0.25;
+	sig = Pulse.ar( (freq * 0.5) + ([-0.5,0.5] +(mod * [-1,1])),
+		LFDNoise1.kr(0.25.dup(4)).range(0.01,0.99)
+	);
+	sig = sig + BrownNoise.ar(0.15);
+
+	cutenv = Slew.kr(
+		Select.kr( Latch.kr( inclick, inclick ) * 5, \amps.kr( 1.dup(n) ) )
+			.clip(-80.dbamp,1)
+			.lincurve( -80.dbamp, 1,
+				sharpness.linlin(18,32,1,2), sharpness.linlin(18,32,1,36), -4
+			),
+		400,
+		400
+	);
+
+	sig = BLowPass.ar( sig, (
+		freq.blend(
+			LFDNoise3.kr(0.1).exprange( 40,100 ), 0.1)
+				* sharpness.linlin(1,15,32,1)
+				* cutenv
 		)
-}.play;
-)
+		.clip(20,20000), 0.125 );
+
+	sig = BLowCut.ar( sig, hpf, 2 );
+	sig = sig.sineclip2(mod.linlin(0,0.25,10,0.8) );
+	sig = Splay.ar( sig, levelComp: false );
+	env = Env([0,1,1,0], [0.01, sustain * 1.2, 0.1]).kr(2);
+	//Poll.kr( Impulse.kr(10), sharpness );
+	sig = RemoveBadValues.ar(sig);
+	OffsetOut.ar( 0, sig * env * amp * 0.25 );
+}).load(s);
+);
+
+/* example from wouter snoei canto ostinato classes*/
+// lfdnoise used for controlling frequency modulation parameters
+
+(
+SynthDef( "canto_noteNoise", { |amp = 0.1, sustain = 1, damp = 16, freq = 440, sharpness = 2, pan = 0,
+	dev = 0.3, mod = 0.25, hpf = 20|
+	var sig, envs, env, n=5;
+	var amps, freqs, modfreq;
+	var moddev;
+	dev = (dev / 2).midiratio - 1;
+	envs = n.collect({ |i|
+		Env.perc(ExpRand(
+			sharpness.linlin(16,32,0.02,0.0025).clip(0.0025,0.02,),
+		0.02),1,0.99,(i+1).neg * damp).ar + 0.01;
+	});
+	amps = \amps.kr( 1.dup(n) );
+	//amps = ExpRand(0.005.dup(n),1);
+	amps = (1/((1..n) ** sharpness.fold(1,16.5))) * amps;
+	amps = (amps * n * envs) / (amps.sum);
+
+	freqs = freq * (1..n) * ExpRand((1-dev).dup(n),1/(1-dev));
+
+	/*
+	sig = SinOsc.ar( freqs,
+			//Rand(0.dup(n),2pi),
+		0,
+		amps
+		);
+	*/
+
+	//sig = BBandPass.ar( GrayNoise.ar(1.dup(freqs.size)), freqs, 0.01, amps * 100 );
+
+	/*
+	sig = freqs.collect({ |fr,i|
+		var sg;
+		sg = GrayNoise.ar(10);
+		sg = BLowCut.ar( sg, fr, 5 );
+		sg = BHiCut.ar( sg, fr, 5 );
+		sg
+	}) * amps;
+	*/
+	moddev = 1.01 + (mod * 0.5);
+
+	sig = freqs.collect({ |fr,i|
+		var sg;
+		sg = SinOsc.ar( (WhiteNoise.ar(0.5) + PinkNoise.ar(0.5)).exprange( fr/moddev, fr*moddev ) );
+		sg
+	}) * amps;
+
+
+	//sig = BLowPass.ar( sig, freq * XLine.kr(3,1,sustain), 0.33 );
+
+	sig = sig.sum / n.sqrt;
+	//sig = BLowCut.ar( sig, freq );
+	sig = sig * AmpComp.kr( freq * 2);
+	sig = sig + LPF.ar( Impulse.ar(0, 0.5), 1200 );
+	modfreq = LFDNoise3.kr(0.1 + (mod * 2)).exprange(100,1000);
+
+	sig = CombC.ar( sig, 1/100, 1/modfreq,
+		0.01 );
+
+	sig = BPeakEQ.ar( sig, 1000, 1, mod * -3 );
+	sig = BLowCut.ar( sig, hpf, 2 );
+	sig = Pan4.ar(sig, trig * 0.25, LFDNoise3.kr(modSpeed) * pan, trig * 0.25, LFDNoise1.kr(modSpeed) * pan);
+	env = Env([1,1,0], [sustain * sharpness.linlin(16,32,1,0.01).clip(0.01,1), 0.1]).ar(2);
+	sig = RemoveBadValues.ar(sig);
+	OffsetOut.ar( 0, sig * env * amp );
+}).load(s);
+);
+
+(
+SynthDef( "canto_noteFormant", { |amp = 0.1, sustain = 1, damp = 16, freq = 440, sharpness = 2, pan = 0,
+	dev = 0.3, mod = 0.25, hpf = 20|
+	var sig, envs, env, n=5;
+	var amps, freqs, modfreq;
+	var formants;
+	var moddev;
+	//dev = ((dev * mod.linlin(0,1,1,0.5))/ 2).midiratio - 1;
+	dev = (dev / 2).midiratio - 1;
+	envs = n.collect({ |i|
+		Env.perc(
+		/*
+		ExpRand(
+			sharpness.linlin(16,32,0.025,0.005).clip(0.005,0.025,),
+		0.04)
+		*/
+		0.002
+		,1,1.0,(i+1).neg * damp).ar + 0.01;
+	});
+	amps = \amps.kr( 1.dup(n) );
+	//amps = ExpRand(0.005.dup(n),1);
+	//amps = (1/((1..n) ** sharpness.fold(1,16.5))) * amps;
+	//amps = (amps * n) / (amps.sum);
+
+	formants = amps.linexp( 0, 1, freq, freq * sharpness.fold(1,16.5).lincurve(1,16.5,12,1,4) );
+
+	freqs = freq * ExpRand((1-dev).dup(n),1/(1-dev));
+
+	/*
+	sig = SinOsc.ar( freqs,
+			//Rand(0.dup(n),2pi),
+		0,
+		amps
+		);
+	*/
+
+	//sig = BBandPass.ar( GrayNoise.ar(1.dup(freqs.size)), freqs, 0.01, amps * 100 );
+
+	/*
+	sig = freqs.collect({ |fr,i|
+		var sg;
+		sg = GrayNoise.ar(10);
+		sg = BLowCut.ar( sg, fr, 5 );
+		sg = BHiCut.ar( sg, fr, 5 );
+		sg
+	}) * amps;
+	*/
+	moddev = 1.01 + (mod * 0.25);
+
+	sig = (freqs.collect({ |fr,i|
+		var sg;
+		sg = Formant.ar( fr, formants[i], fr * mod.linlin(0,1,1,4) );
+		sg
+	}) / n) * envs;
+
+	//sig = DelayN.ar( sig, 0.2, Rand(0.dup(sig.size),0.2) );
+
+	//sig = BLowPass.ar( sig, freq * XLine.kr(3,1,sustain), 0.33 );
+
+	sig = sig.sum / n.sqrt;
+	//sig = BLowCut.ar( sig, freq );
+	//sig = sig * AmpComp.kr( freq * 2);
+	sig = sig + LPF.ar( Impulse.ar(0, 0.5), 1200 );
+	modfreq = LFDNoise3.kr(0.1 + (mod * 2)).exprange(100,1000);
+
+	sig = CombC.ar( sig, 1/100, 1/modfreq,
+		0.01 );
+
+	sig = BPeakEQ.ar( sig, 1000, 1, mod * -3 );
+	sig = BLowCut.ar( sig, hpf, 2 );
+	sig = Pan4.ar(sig, trig * 0.25, LFDNoise3.kr(modSpeed) * pan, trig * 0.25, LFDNoise1.kr(modSpeed) * pan);
+	env = Env([1,1,0], [sustain * sharpness.linlin(16,32,1,0.01).clip(0.01,1), 0.1]).ar(2);
+	sig = RemoveBadValues.ar(sig);
+	OffsetOut.ar( 0, sig * env * amp * 2 );
+}).load(s);
+);
+
+/* example from wouter snoei canto ostinato classes*/
+
+( // new bass
+SynthDef( "canto_bass", { |amp = 0.1, sustain = 1, damp = 16, freq = 440, dev = 0.0075, sharpness = 2, pan = 0, mfreq = 1, mamt = 0, mod = 0.25, hpf = 20|
+	var sig, envs, env, n=5;
+	var amps, cutenv;
+	var inclick;
+	inclick = In.kr(1);
+	mod = mod * 0.25;
+	sig = Pulse.ar( (freq * 0.5) + ([-0.5,0.5] +(mod * [-1,1])),
+		LFDNoise1.kr(0.25.dup(4)).range(0.01,0.99)
+	);
+	sig = sig + BrownNoise.ar(0.15);
+
+	cutenv = Slew.kr(
+		Select.kr( Latch.kr( inclick, inclick ) * 5, \amps.kr( 1.dup(n) ) )
+			.clip(-80.dbamp,1)
+			.lincurve( -80.dbamp, 1,
+				sharpness.linlin(18,32,1,2), sharpness.linlin(18,32,1,36), -4
+			),
+		400,
+		400
+	);
+
+	sig = BLowPass.ar( sig, (
+		freq.blend(
+			LFDNoise3.kr(0.1).exprange( 40,100 ), 0.1)
+				* sharpness.linlin(1,15,32,1)
+				* cutenv
+		)
+		.clip(20,20000), 0.125 );
+
+	sig = BLowCut.ar( sig, hpf, 2 );
+	sig = sig.sineclip2(mod.linlin(0,0.25,10,0.8) );
+	sig = Splay.ar( sig, levelComp: false );
+	env = Env([0,1,1,0], [0.01, sustain * 1.2, 0.1]).kr(2);
+	//Poll.kr( Impulse.kr(10), sharpness );
+	sig = RemoveBadValues.ar(sig);
+	OffsetOut.ar( 0, sig * env * amp * 0.25 );
+}).load(s);
+);
+
+/* example from wouter snoei canto ostinato classes*/
+
+( // new bass
+SynthDef( "canto_bass", { |amp = 0.1, sustain = 1, damp = 16, freq = 440, dev = 0.0075, sharpness = 2, pan = 0, mfreq = 1, mamt = 0, mod = 0.25, hpf = 20|
+	var sig, envs, env, n=5;
+	var amps, cutenv;
+	var inclick;
+	inclick = In.kr(1);
+	mod = mod * 0.25;
+	sig = Pulse.ar( (freq * 0.5) + ([-0.5,0.5] +(mod * [-1,1])),
+		LFDNoise1.kr(0.25.dup(4)).range(0.01,0.99)
+	);
+	sig = sig + BrownNoise.ar(0.15);
+
+	cutenv = Slew.kr(
+		Select.kr( Latch.kr( inclick, inclick ) * 5, \amps.kr( 1.dup(n) ) )
+			.clip(-80.dbamp,1)
+			.lincurve( -80.dbamp, 1,
+				sharpness.linlin(18,32,1,2), sharpness.linlin(18,32,1,36), -4
+			),
+		400,
+		400
+	);
+
+	sig = BLowPass.ar( sig, (
+		freq.blend(
+			LFDNoise3.kr(0.1).exprange( 40,100 ), 0.1)
+				* sharpness.linlin(1,15,32,1)
+				* cutenv
+		)
+		.clip(20,20000), 0.125 );
+
+	sig = BLowCut.ar( sig, hpf, 2 );
+	sig = sig.sineclip2(mod.linlin(0,0.25,10,0.8) );
+	sig = Splay.ar( sig, levelComp: false );
+	env = Env([0,1,1,0], [0.01, sustain * 1.2, 0.1]).kr(2);
+	//Poll.kr( Impulse.kr(10), sharpness );
+	sig = RemoveBadValues.ar(sig);
+	OffsetOut.ar( 0, sig * env * amp * 0.25 );
+}).load(s);
+);
+
+/* example from wouter snoei canto ostinato classes*/
+// lfdnoise used for controlling panning parameters
+
+(
+SynthDef( "canto_fastFreeze", { |amp = 0.1, active = 1, spd = 5, modrange = 0, gate = 1,
+		lpf = 20000, hpf = 250, t_clear = 0, leak = 0,
+		rlpf = #[20000,20000,20000,20000,20000],
+		rhpf = #[20,20,20,20,20],
+		res = #[1.414,1.414,1.414,1.414,1.414],
+		lag = 0.05,
+		pan = 1
+	|
+	var fft, sig, buf1, buf2;
+	var bufsig, lasbufsig, phasor;
+	var modsig, msig, freqs;
+	var env, fb;
+	var trig;
+	modrange = modrange.lag(5).clip(0,1);
+	spd = spd.lag(5);
+	sig = PrivateIn.ar(1) * active;
+
+	trig = Trig.kr(In.kr(1), 0.01);
+	rlpf = Demand.kr( trig, trig > 0.9, Dseq(rlpf,inf) ).lag(lag)
+		.blend( 20000, Line.kr(1,0,1) ).clip(20,20000);
+	rhpf = Demand.kr( trig, trig > 0.9, Dseq(rhpf,inf) ).lag(lag)
+		.blend( 20, Line.kr(1,0,1) ).clip(20,20000);
+	res = Demand.kr( trig, trig > 0.9, Dseq(res,inf) ).lag(lag)
+		.blend( 1.414, Line.kr(1,0,1) ).clip(0.01,10);
+
+	modsig = PinkNoise.ar(1.dup);
+	modsig = (modsig * (1-(modrange.sqrt))) + ( Splay.ar(
+			SinOsc.ar( Rand(0.5.dup(6),1.5) * spd.lag(2), Rand(0.dup(6), 2pi )).max(0) ** 4
+		) * modsig * modrange * 2);
+	modsig = BHiCut.ar( modsig, lpf.clip(20,20000).lag(4), 3 );
+	modsig = BLowCut.ar( modsig, hpf.clip(20,20000).lag(4), 3 );
+
+	buf1 = LocalBuf(1024).clear;
+	buf2 = LocalBuf(1024).clear;
+	fft = FFT( buf1, sig );
+	phasor = Phasor.ar(0,2,0,1024, 512);
+	bufsig = BufRd.ar( 1, buf1, phasor, 1, 1 );
+	lasbufsig = (BufRd.ar( 1, buf2, phasor, 1, 1 ) * 1).max( bufsig  ).clip(-100,100);
+	fb = (1-leak) * (1-Trig.kr(t_clear, 1024 / SampleRate.ir));
+	BufWr.ar( (bufsig + lasbufsig) * fb, buf2, phasor, 1 );
+
+	sig = modsig.collect({ |ms|
+		var modfft;
+		modfft = FFT( LocalBuf(1024), ms );
+		modfft = PV_MagMul( modfft, buf2 );
+		IFFT( modfft ) * 0.2;
+	});
+
+	sig = BHiPass.ar( sig * Line.kr(-1,1,2048/SampleRate.ir).max(0), rhpf, res );
+	sig = BLowPass.ar( sig, rlpf, res );
+	pan = LFDNoise3.kr(0.05).range(pan.neg, pan);
+
+	sig = sig.collect({ |sig, i|
+		Pan4.ar(sig, trig * 0.25, LFDNoise3.kr(modSpeed) * pan, trig * 0.25, LFDNoise1.kr(modSpeed) * pan)});
+
+	//sig = (sig ++ sig) * PanAz.kr( 4, 1, pan );
+
+	sig = RemoveBadValues.ar(sig);
+
+	Out.ar(0,sig * amp.lag(1) * Env.cutoff(2).kr(2,gate) );
+}).load(s);
+);
+
+/* example from wouter snoei canto ostinato classes*/
+
+(
+~canto.clicks.n = 4;
+
+SynthDef( "canto_clicks", { |modSpeed = 0.1, pan = 0.25, gate = 1, amp = 0.1,
+		freq = #[20, 4000], filter = #[ 50, 20000 ], res = 0.05, div = 1|
+	var spds, trg, env;
+	var sig;
+	var notes;
+
+	notes = \notes.kr( { 64.rand }!8 ).midicps;
+
+
+	trg = T2A.ar( In.kr(1) > 0.9 );
+	spds = \spds.kr( 285 ! ~canto.clicks.n );
+	spds = spds.varlag(5,2);
+	filter = filter.lag(0.5);
+
+	sig = spds.collect({ |spd|
+		var trig, env;
+		var note, noteMul, frx;
+		trig = TDuty.ar( 60/spd, trg ) - 0.001;
+		trig = PulseDivider.ar( trig, div );
+		note = Demand.ar( trig, 0, Drand( notes, inf ) );
+		noteMul = Demand.ar( trig, 0,
+			Dwhite( 0.1,1, inf)
+		);
+		frx =  Latch.ar( freq, trig );
+		noteMul = noteMul.explin( 0.1, 1, (frx[0] / note).ceil, (frx[1] / note).floor )
+			.round(1).max(1);
+
+		note = (note * noteMul).clip(20,20000);
+		//note.poll( trig );
+		trig = Trig.ar( trig, LFDNoise3.kr(modSpeed).exprange(1/10000,1/200) ) * GrayNoise.ar(1);
+		trig = CombC.ar( Delay2.ar(trig), 1/20, 1/note, res );
+
+		trig = BLowCut.ar( trig,
+			LFDNoise3.kr(modSpeed).exprange(filter[0],0.75.linexp( 0,1, *filter)).clip(20,20000),
+			4
+		);
+		trig = BHiCut.ar( trig,
+			LFDNoise3.kr(modSpeed).exprange(0.25.linexp( 0,1, *filter), filter[1]).clip(20,20000),
+			4
+		);
+
+		Pan4.ar(sig, trig * 0.25, LFDNoise3.kr(modSpeed) * pan, trig * 0.25, LFDNoise1.kr(modSpeed) * pan);
+	}).sum;
+
+	env = Env.asr(0.1,1,0.1).kr(2,gate);
+	Out.ar( 0, sig * env * amp.lag(0.1) );
+}).add;
+);
+
 ::
 
