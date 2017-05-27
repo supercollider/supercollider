@@ -1756,8 +1756,23 @@ HOT void Interpret(VMGlobals *g)
 				// Dictionary-keysValuesArrayDo
 				case 13 : {
 					PyrSlot * vars = g->frame->vars;
+					
+					if (IsNil(&vars[1])) {
+						error("Dictionary-keysValuesArrayDo: first argument should not be nil.\n");
+						
+						slotCopy(++sp, &g->receiver);
+						numArgsPushed = 0;
+						selector = gSpecialSelectors[opmPrimitiveFailed];
+						slot = sp;
+						
+						goto class_lookup;
+					}
+
 					int m = slotRawInt(&vars[3]);
 					PyrObject * obj = slotRawObject(&vars[1]);
+					
+					
+					
 					if ( m < obj->size ) {
 						slot = obj->slots + m;	// key
 						while (IsNil(slot)) {
