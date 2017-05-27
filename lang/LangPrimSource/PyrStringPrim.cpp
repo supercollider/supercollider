@@ -538,8 +538,6 @@ int prStringHash(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-// @TODO: this function doesn't work correctly on windows
-// globNext should always return the folder as well as the filename
 int prString_PathMatch(struct VMGlobals *g, int numArgsPushed);
 int prString_PathMatch(struct VMGlobals *g, int numArgsPushed)
 {
@@ -550,13 +548,10 @@ int prString_PathMatch(struct VMGlobals *g, int numArgsPushed)
 		return err;
 
 	SC_Filesystem::Glob* glob = SC_Filesystem::makeGlob(pattern);
-	//cout << "Globbing for: " << pattern << endl; // @TODO: debug code, remove
 
 	// exit early with empty array if no matches found
 	if (!glob) {
-		// @TODO: make globNext return "" if arg is null? impl fail here
 		SetObject(a, newPyrArray(g->gc, 0, 0, true));
-		//cout << "Nothing matched glob" << endl; // @TODO: debug code, remove
 		return errNone;
 	}
 
@@ -569,9 +564,6 @@ int prString_PathMatch(struct VMGlobals *g, int numArgsPushed)
 		else
 			paths.push_back(matched_path);
 	};
-
-	// @TODO: debug code, remove
-	//cout << "Globbing found " << paths.size() << " files." << endl;
 
 	// create array with appropriate reserved size
 	PyrObject* array = newPyrArray(g->gc, paths.size(), 0, true);
@@ -589,123 +581,6 @@ int prString_PathMatch(struct VMGlobals *g, int numArgsPushed)
 	SC_Filesystem::freeGlob(glob);
 	return errNone;
 }
-
-#ifndef _WIN32
-#include <glob.h>
-
-int prStringPathMatch(struct VMGlobals *g, int numArgsPushed);
-int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
-{
-	PyrSlot *a = g->sp;
-
-	char pattern[1024];
-	int err = slotStrVal(a, pattern, 1023);
-	if (err) return err;
-
-	glob_t pglob;
-
-	int gflags = GLOB_MARK | GLOB_TILDE;
-#ifdef __APPLE__
-	gflags |= GLOB_QUOTE;
-#endif
-
-	int gerr = glob(pattern, gflags, NULL, &pglob);
-	if (gerr) {
-		pglob.gl_pathc = 0;
-	}
-	PyrObject* array = newPyrArray(g->gc, pglob.gl_pathc, 0, true);
-	SetObject(a, array);
-	if (gerr) return errNone;
-
-	for (unsigned int i=0; i<pglob.gl_pathc; ++i) {
-		PyrObject *string = (PyrObject*)newPyrString(g->gc, pglob.gl_pathv[i], 0, true);
-		SetObject(array->slots+i, string);
-		g->gc->GCWriteNew(array, string); // we know string is white so we can use GCWriteNew
-		array->size++;
-	}
-
-	globfree(&pglob);
-
-	return errNone;
-}
-#else //#ifndef _WIN32
-int prStringPathMatch(struct VMGlobals *g, int numArgsPushed);
-
-int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
-{
-  PyrSlot *a = g->sp;
-
-  char pattern[1024];
-  int err = slotStrVal(a, pattern, 1023);
-  if (err) return err;
-
-  win32_ReplaceCharInString(pattern,1024,'/','\\');
-  // Remove trailing slash if found, to allow folders to be matched
-  if(pattern[strlen(pattern)-1]=='\\'){
-    pattern[strlen(pattern)-1] = 0;
-  }
-  // extract the containing folder, including backslash
-  char folder[1024];
-  win32_ExtractContainingFolder(folder,pattern,1024);
-
-  ///////// PASS 1
-
-  WIN32_FIND_DATA findData;
-  HANDLE hFind;
-  int nbPaths = 0;
-
-  hFind = ::FindFirstFile(pattern, &findData);
-  if (hFind == INVALID_HANDLE_VALUE) {
-	nbPaths = 0;
-  }
-
-  if (hFind == INVALID_HANDLE_VALUE) {
-	// This is what happens when no matches. So we create an empty array to return.
-	PyrObject* array = newPyrArray(g->gc, 0, 0, true);
-	SetObject(a, array);
-	return errNone;
-  }
-
-  do {
-    if(strcmp(findData.cFileName, "..")!=0 && strcmp(findData.cFileName, "..")!=0){
-      nbPaths++;
-    }
-  } while( ::FindNextFile(hFind, &findData));
-  ::FindClose(hFind);
-
-  // PASS 2
-
-  hFind = ::FindFirstFile(pattern, &findData);
-  if (hFind == INVALID_HANDLE_VALUE) {
-    nbPaths = 0;
-  }
-
-  PyrObject* array = newPyrArray(g->gc, nbPaths , 0, true);
-  SetObject(a, array);
-  if (hFind == INVALID_HANDLE_VALUE) {
-    return errNone;
-  }
-
-  int i = 0;
-  do {
-    if(strcmp(findData.cFileName, "..")!=0 && strcmp(findData.cFileName, ".")!=0){
-      std::string strPath(folder);
-      strPath += std::string(findData.cFileName);
-      if(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY){
-        strPath += std::string("\\"); // Append trailing slash, to match behaviour on unix (used by sclang to detect folderness)
-      }
-      const char* fullPath = strPath.c_str();
-      PyrObject *string = (PyrObject*)newPyrString(g->gc, fullPath, 0, true);
-      SetObject(array->slots+i, string);
-      g->gc->GCWriteNew(array, string); // we know string is white so we can use GCWriteNew
-      array->size++;
-      i++;
-    }
-  } while( ::FindNextFile(hFind, &findData));
-  ::FindClose(hFind);
-  return errNone;
-}
-#endif //#ifndef _WIN32
 
 int prString_Getenv(struct VMGlobals* g, int numArgsPushed);
 int prString_Getenv(struct VMGlobals* g, int /* numArgsPushed */)
