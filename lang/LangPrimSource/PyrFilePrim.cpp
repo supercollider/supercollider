@@ -248,18 +248,26 @@ int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 
 	memcpy(filename, slotRawString(b)->s, slotRawObject(b)->size);
 	filename[slotRawString(b)->size] = 0;
-	const std::string& path = SC_Codecvt::utf8_to_native_str(filename);
+	const boost::filesystem::path& path = SC_Codecvt::utf8_str_to_path(filename);
 
 	memcpy(mode, slotRawString(c)->s, slotRawObject(c)->size);
 	mode[slotRawString(c)->size] = 0;
 
 #ifdef _WIN32
 	if(strcmp(mode,"w") == 0)
-	strcpy(mode,"wb");
+		strcpy(mode,"wb");
 	if(strcmp(mode,"r") == 0)
-	strcpy(mode,"rb");
-#endif //_WIN32
+		strcpy(mode,"rb");
+
+	// use _wfopen on Windows because for some reason fopen wasn't working well with strings
+	// encoded in narrow UTF-16.
+	wchar_t wmode[12];
+	size_t wmode_size = 0;
+	mbstowcs_s(&wmode_size, wmode, mode, 12);
+	file = _wfopen(path.wstring().c_str(), wmode);
+#else
 	file = fopen(path.c_str(), mode);
+#endif //_WIN32
 	if (file) {
 		SetPtr(&pfile->fileptr, file);
 		SetTrue(a);
@@ -268,7 +276,7 @@ int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 		// check if directory exisits
 		// create a temporary file (somewhere) for a handle
 		// the file is deleted automatically when closed
-		if (boost::filesystem::exists(path)) {
+		if (boost::filesystem::is_directory(path)) {
 			int err;
 #    ifdef _MSC_VER
 			err = tmpfile_s(&file);
