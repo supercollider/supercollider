@@ -23,7 +23,7 @@ Primitives for File i/o.
 
 */
 
-
+/* SuperCollider headers */
 #include "GC.h"
 #include "PyrKernel.h"
 #include "PyrPrimitive.h"
@@ -31,29 +31,44 @@ Primitives for File i/o.
 #include "PyrFilePrim.h"
 #include "ReadWriteMacros.h"
 #include "SCBase.h"
+#include "sc_popen.h"
+
+// on Windows, enable Windows libsndfile prototypes in order to access sf_wchar_open.
+// See sndfile.h, lines 739-752. Note that order matters: this has to be the first include of sndfile.h
+#ifndef NO_LIBSNDFILE
+#  ifdef _WIN32
+#    include <windows.h>
+#    define ENABLE_SNDFILE_WINDOWS_PROTOTYPES 1
+#  endif // _WIN32
+#  include <sndfile.h>
+#endif // NO_LIBSNDFILE
+
+/* SuperCollider newer headers*/
+#include "SC_SndFileHelpers.hpp"
 #include "SC_Filesystem.hpp" // resolveIfAlias
 #include "SC_Codecvt.hpp" // utf8_str_to_path, path_to_utf8_str
-#include "sc_popen.h"
-#include "SC_SndFileHelpers.hpp"
 
+/* C stdlib headers */
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
 #include <cerrno>
+#include <fcntl.h>
+#include <math.h>
 
+/* C++ stdlib headers */
 // Note: codecvt_utf8_utf16 should be in <codecvt>, but many vendors place it in <locale>
 #include <locale> // wstring_convert, codecvt_utf8_utf16
 
+/* boost headers */
+#include <boost/filesystem.hpp>
+
+/* system headers */
 #ifndef _WIN32
 # include <unistd.h>
 #else
 # include <direct.h>
 #endif
-
-#include <fcntl.h>
-#include <math.h>
-
-#include <boost/filesystem.hpp>
 
 #if defined(__APPLE__) || defined(SC_IPHONE)
 # include <CoreFoundation/CFString.h>
@@ -1347,11 +1362,11 @@ int prPipeClose(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-////////
+//----------------------------------------------------------------------------//
+// SoundFile primitives
+//----------------------------------------------------------------------------//
 
 #ifndef NO_LIBSNDFILE
-#include <sndfile.h>
-
 
 int sampleFormatToString(struct SF_INFO *info, const char **string);
 int sampleFormatToString(struct SF_INFO *info, const char **string)
