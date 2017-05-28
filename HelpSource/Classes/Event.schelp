@@ -91,7 +91,7 @@ Pbind(\type, \happyEvent, \degree, Pseq([0, 1, 2, 3, 4, 4, 5, 5, 5, 5, 4, 2, 3, 
 
 ::
 
-The event types and parent events are stored in a dictionary of the Event class:
+The event types and parent events are stored in a dictionary of the Event class, namely in code::partialEvents.playerEvent:::
 
 code::
 // eventTypes
