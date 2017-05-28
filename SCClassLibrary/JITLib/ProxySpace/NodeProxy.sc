@@ -47,16 +47,19 @@ NodeProxy : BusPlug {
 	isPlaying { ^group.isPlaying }
 
 	free { | fadeTime, freeGroup = true |
-		var bundle;
+		var bundle, freetime;
 		var oldGroup = group;
 		if(this.isPlaying) {
 			bundle = MixedBundle.new;
-			if(fadeTime.notNil) { bundle.add([15, group.nodeID, "fadeTime", fadeTime]) };
+			if(fadeTime.notNil) {
+				bundle.add([15, group.nodeID, "fadeTime", fadeTime]) // n_set
+			};
 			this.stopAllToBundle(bundle, fadeTime);
 			if(freeGroup) {
 				oldGroup = group;
 				group = nil;
-				bundle.sched((fadeTime ? this.fadeTime) + (server.latency ? 0), { oldGroup.free });
+				freetime = (fadeTime ? this.fadeTime) + (server.latency ? 0) + 1e-9; // delay a tiny little
+				server.sendBundle(freetime, [11, oldGroup.nodeID]); // n_free
 			};
 			bundle.send(server);
 			this.changed(\free, [fadeTime, freeGroup]);
