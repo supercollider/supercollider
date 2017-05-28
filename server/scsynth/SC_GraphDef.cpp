@@ -700,7 +700,7 @@ GraphDef* GraphDef_Load(World *inWorld, const char *filename, GraphDef *inList)
 GraphDef* GraphDef_LoadDir(World *inWorld, const char *dirname, GraphDef *inList)
 {
 #ifdef DEBUG_SCFS
-	cout << "GraphDef_LoadDir: begin: " << dirname << endl;
+	cout << "[SC_FS] GraphDef_LoadDir: begin: " << dirname << endl;
 #endif
 	boost::system::error_code ec;
 	boost::filesystem::recursive_directory_iterator rditer(dirname, boost::filesystem::symlink_option::recurse, ec);
@@ -712,39 +712,34 @@ GraphDef* GraphDef_LoadDir(World *inWorld, const char *dirname, GraphDef *inList
 
 	while (rditer != boost::filesystem::end(rditer)) {
 		const boost::filesystem::path& path = *rditer;
-#ifdef DEBUG_SCFS
-		cout << "At: " << path << endl;
-#endif
+
 		if (boost::filesystem::is_directory(path)) {
 #ifdef DEBUG_SCFS
-			cout << "Is a directory" << endl;
+			cout << "[SC_FS] Is a directory: " << path << endl;
 #endif
 			if (SC_Filesystem::instance().shouldNotCompileDirectory(path)) {
 #ifdef DEBUG_SCFS
-				cout << "Skipping directory" << endl;
+				cout << "[SC_FS] Skipping directory" << endl;
 #endif
 				rditer.no_push();
 			} else {
 #ifdef DEBUG_SCFS
-				cout << "Working with directory" << endl;
+				cout << "[SC_FS] Working with directory" << endl;
 #endif
 			}
 		} else { // ordinary file
 			if (path.extension() == ".scsyndef") {
 #ifdef DEBUG_SCFS
-				cout << "Processing" << endl;
+				cout << "[SC_FS] Processing" << endl;
 #endif
 				inList = GraphDef_Load(inWorld, path.string().c_str(), inList);
 			} else {
 #ifdef DEBUG_SCFS
-				cout << "File was not .scsyndef" << endl;
+				cout << "[SC_FS] File was not .scsyndef" << endl;
 #endif
 			}
 		}
 
-#ifdef DEBUG_SCFS
-		cout << "Incrementing" << endl;
-#endif
 		rditer.increment(ec);
 		if (ec) {
 			scprintf("Could not iterate on '%s': %s\n", path.c_str(), ec.message().c_str());
@@ -752,7 +747,7 @@ GraphDef* GraphDef_LoadDir(World *inWorld, const char *dirname, GraphDef *inList
 		}
 	}
 #ifdef DEBUG_SCFS
-	cout << "GraphDef_LoadDir: end" << endl;
+	cout << "[SC_FS] GraphDef_LoadDir: end" << endl;
 #endif
 	return inList;
 }

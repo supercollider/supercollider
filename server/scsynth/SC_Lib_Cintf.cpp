@@ -377,7 +377,7 @@ static bool PlugIn_Load(const SC_Filesystem::Path& filename)
 static bool PlugIn_LoadDir(const SC_Filesystem::Path& dir, bool reportError)
 {
 #ifdef DEBUG_SCFS
-	cout << "PlugIn_LoadDir: begin: " << dir << endl;
+	cout << "[SC_FS] PlugIn_LoadDir: begin: " << dir << endl;
 #endif
 	boost::system::error_code ec;
 	boost::filesystem::recursive_directory_iterator rditer(dir, boost::filesystem::symlink_option::recurse, ec);
@@ -390,16 +390,13 @@ static bool PlugIn_LoadDir(const SC_Filesystem::Path& dir, bool reportError)
 		return false;
 	} else {
 #ifdef DEBUG_SCFS
-		cout << "\tCurrent directory: " << dir << endl;
+		cout << "[SC_FS] Current directory: " << dir << endl;
 #endif
 	}
 
 	// @TODO: try this with try{} instead of error codes
 	while (rditer != boost::filesystem::end(rditer)) {
 		const boost::filesystem::path& path = *rditer;
-#ifdef DEBUG_SCFS
-		cout << "At: " << path << endl;
-#endif
 
 		const boost::filesystem::path& filename = path.filename();
 		// @TODO: maybe don't do it this way.. or at least only switch on directory names with .
@@ -407,23 +404,23 @@ static bool PlugIn_LoadDir(const SC_Filesystem::Path& dir, bool reportError)
 //		if (filename.c_str()[0] != '.') {
 			if (boost::filesystem::is_directory(path)) {
 #ifdef DEBUG_SCFS
-				cout << "Is a directory" << endl;
+				cout << "[SC_FS] Is a directory" << endl;
 #endif
 				if (SC_Filesystem::instance().shouldNotCompileDirectory(path)) {
 #ifdef DEBUG_SCFS
-					cout << "Skipping directory (SC_FS reason)" << endl;
+					cout << "[SC_FS] Skipping directory (SC_FS reason)" << endl;
 #endif
 					rditer.no_push();
 				} else {
 #ifdef DEBUG_SCFS
-					cout << "Using directory" << endl;
+					cout << "[SC_FS] Using directory" << endl;
 #endif
 				}
 
 			} else { // ordinary file
 				if (filename.extension() == SC_PLUGIN_EXT && !PlugIn_Load(path)) {
 #ifdef DEBUG_SCFS
-					cout << "ERROR: Could not process " << path << endl;
+					cout << "[SC_FS] ERROR: Could not process " << path << endl;
 #endif
 					return false;
 				}
@@ -437,7 +434,7 @@ static bool PlugIn_LoadDir(const SC_Filesystem::Path& dir, bool reportError)
 		}
 	}
 #ifdef DEBUG_SCFS
-	cout << "PlugIn_LoadDir: end" << endl;
+	cout << "[SC_FS] PlugIn_LoadDir: end" << endl;
 #endif
 	return true;
 }

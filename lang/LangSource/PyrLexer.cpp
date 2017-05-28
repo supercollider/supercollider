@@ -1908,7 +1908,7 @@ static bool passOne_ProcessDir(const bfs::path& dir, int level)
 	// if is directory, process
 	// recurse into symlinks (new behavior)
 #ifdef DEBUG_SCFS
-	cout << "passOne_ProcessDir: begin: '" << dir << "'." << endl;
+	cout << "[SC_FS] passOne_ProcessDir: begin: '" << dir << "'." << endl;
 #endif
 	boost::system::error_code ec;
 	bfs::recursive_directory_iterator rditer(dir, bfs::symlink_option::recurse, ec);
@@ -1938,17 +1938,14 @@ static bool passOne_ProcessDir(const bfs::path& dir, int level)
 	// file. if not, treat it as a normal source file.
 	while (rditer != bfs::end(rditer)) {
 		const bfs::path& path = *rditer;
-#ifdef DEBUG_SCFS
-		cout << "At: " << SC_Codecvt::path_to_utf8_str(path) << endl;
-#endif
 
 		if (bfs::is_directory(path)) {
 #ifdef DEBUG_SCFS
-			cout << "Is a directory" << endl;
+			cout << "[SC_FS] Is a directory: " << path << endl;
 #endif
 			if (passOne_ShouldSkipDirectory(path, skipReason)) {
 #ifdef DEBUG_SCFS
-				cout << "Skipping directory" << endl;
+				cout << "[SC_FS] Skipping directory" << endl;
 #endif
 				if (!skipReason.empty())
 					post("\t%s: '%s'\n", skipReason.c_str(), path.string().c_str());
@@ -1966,25 +1963,22 @@ static bool passOne_ProcessDir(const bfs::path& dir, int level)
 			if (isAlias && bfs::is_directory(respath)) {
 				if (!passOne_ProcessDir(respath, rditer.level())) {
 #ifdef DEBUG_SCFS
-					cout << "Could not process " << respath << endl;
+					cout << "[SC_FS] Could not process " << respath << endl;
 #endif
 					return false;
 				}
 			} else if (respath.empty()) {
 #ifdef DEBUG_SCFS
-				cout << "Symlink resolution failed: " << respath << endl;
+				cout << "[SC_FS] Symlink resolution failed: " << respath << endl;
 #endif
 			} else if (!passOne_ProcessOneFile(respath, rditer.level())) {
 #ifdef DEBUG_SCFS
-				cout << "Could not process " << respath << endl;
+				cout << "[SC_FS] Could not process " << respath << endl;
 #endif
 				return false;
 			}
 		}
 
-#ifdef DEBUG_SCFS
-		//cout << "Incrementing" << endl;
-#endif
 		rditer.increment(ec);
 		if (ec) {
 			error("Could not iterate on '%s': %s\n", path.c_str(), ec.message().c_str());
@@ -1992,7 +1986,7 @@ static bool passOne_ProcessDir(const bfs::path& dir, int level)
 		}
 	}
 #ifdef DEBUG_SCFS
-	cout << "passOne_ProcessDir: end." << endl;
+	cout << "[SC_FS] passOne_ProcessDir: end." << endl;
 #endif
 	return true;
 }
