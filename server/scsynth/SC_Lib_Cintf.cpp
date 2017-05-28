@@ -129,6 +129,7 @@ void deinitialize_library()
 			(*unloadFunc)();
 		}
 	}
+	// should this be uncommented? - BH
 	//FreeLibrary dlclose(handle);
 #else
 	for(void * handle : open_handles){
@@ -339,8 +340,6 @@ static bool PlugIn_Load(const SC_Filesystem::Path& filename)
 	return true;
 
 #else // (ifndef _WIN32)
-
-	// @TODO: double check this
 	void* handle = dlopen(filename.c_str(), RTLD_NOW);
 
 	if (!handle) {
