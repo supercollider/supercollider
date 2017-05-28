@@ -6,8 +6,8 @@ categories::  UGens>InOut
 
 Description::
 link::Classes/Out::  adds it's output to a given bus, making it
-available to all nodes later in the node tree (See Synth and
-Order-of-execution for more information). ReplaceOut overwrites those
+available to all nodes later in the node tree (See link::Classes/Synth:: and
+link::Guides/Order-of-execution:: for more information). ReplaceOut overwrites those
 contents. This can make it useful for processing.
 
 
