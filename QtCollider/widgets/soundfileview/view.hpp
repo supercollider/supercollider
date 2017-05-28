@@ -94,7 +94,13 @@ public:
 public:
 
   struct Selection {
-    Selection() : start(0), size(0), editable(true), color(QColor(0,0,150)) {}
+    Selection() :
+      start(0),
+      size(0),
+      editable(true),
+      color(QColor(128, 128, 128, 192))
+    { }
+
     sf_count_t start;
     sf_count_t size;
     bool editable;
