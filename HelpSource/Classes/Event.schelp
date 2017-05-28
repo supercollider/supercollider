@@ -36,19 +36,48 @@ Returns an empty event with link::#.defaultParentEvent:: as parent.
 method::silent
 Returns an event that describes a pause of strong::dur:: duration.
 
+
+
 method::addEventType
 Event types define alternate play functions that are selected by the value of strong::~type::.
+
+
 argument::type
 A name (usually a symbol) for the event type, which can be used to select it
 
 argument::func
 A function which optionally takes the server as a first argument
 
+argument::parentEvent
+An event with default values. If this event has no parent, then link::#.defaultParentEvent:: is used its parent in turn.
+
+discussion::
 code::
-Event.addEventType(\happyEvent, { ("I am so happy to be silent sometimes, says" + ~who).postln; });
+Event.addEventType(\happyEvent, { "I am so happy to be silent sometimes, says %.\n".postf(~who) });
+(type: \happyEvent, who: "Alice").play;
+
+// using protoEvent
+(
+Event.addEventType(\happyEvent, {
+	"I am so happy to be silent sometimes, says %.\n".postf(~who)
+}, (who: "Alice"));
+)
+
+(type: \happyEvent).play; // use default
+(type: \happyEvent, who: "Eve").play; // overrride default
+
+// in a Pbind:
 Pbind(\type, \happyEvent, \who, Prand(["Alice", "Bob", "Eve"], inf), \dur, Pwhite(0.1, 1.0, inf)).play;
 
-// To a certain degree, it is possible to reuse some of another event type's functionality:
+// protoEvent for indirect calls:
+Event.addEventType(\test, { ("x was" + ~x.value).postln }, (x: { ~y + 1 }, y: 0));
+
+(type: \test).play; // use defaults
+(type: \test, \y: 7).play; // set the value that x refers to
+(type: \test, \x: 10).play; // override x by a different one
+
+
+// It is possible to reuse some of another event type's functionality:
 (
 Event.addEventType(\happyEvent, { |server|
 	~octave = [5, 6, 7]; // always play three octaves
@@ -56,9 +85,19 @@ Event.addEventType(\happyEvent, { |server|
 	~type = \note; // now set type to a different one
 	currentEnvironment.play;
 });
+
 Pbind(\type, \happyEvent, \degree, Pseq([0, 1, 2, 3, 4, 4, 5, 5, 5, 5, 4, 2, 3, 2, 3, 1], inf), \dur, Pwhite(0.1, 1.0, inf)).play;
 );
 
+::
+
+The event types and parent events are stored in a dictionary of the Event class:
+
+code::
+// eventTypes
+Event.partialEvents.playerEvent.eventTypes
+// parentTypes
+Event.partialEvents.playerEvent.parentTypes
 ::
 
 
