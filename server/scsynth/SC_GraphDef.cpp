@@ -656,6 +656,7 @@ GraphDef* GraphDef_LoadGlob(World *inWorld, const char *pattern, GraphDef *inLis
 
 GraphDef* GraphDef_Load(World *inWorld, const char *filename, GraphDef *inList)
 {
+	// @TODO: fix this to take a path object & use wfopen on windows
 	FILE *file = fopen(filename, "rb");
 
 	if (!file) {
@@ -732,6 +733,7 @@ GraphDef* GraphDef_LoadDir(World *inWorld, const char *dirname, GraphDef *inList
 #ifdef DEBUG_SCFS
 				cout << "[SC_FS] Processing" << endl;
 #endif
+				// @TODO: this won't work yet, need to use SC_Codecvt
 				inList = GraphDef_Load(inWorld, path.string().c_str(), inList);
 			} else {
 #ifdef DEBUG_SCFS
@@ -742,6 +744,7 @@ GraphDef* GraphDef_LoadDir(World *inWorld, const char *dirname, GraphDef *inList
 
 		rditer.increment(ec);
 		if (ec) {
+			// @TODO: use SC_Codecvt
 			scprintf("Could not iterate on '%s': %s\n", path.c_str(), ec.message().c_str());
 			return inList;
 		}

@@ -294,6 +294,7 @@ static bool PlugIn_Load(const SC_Filesystem::Path& filename)
 {
 #ifdef _WIN32
 
+	// @TODO: use W version
 	HINSTANCE hinstance = LoadLibrary( filename.string().c_str() );
 	if (!hinstance) {
 		char *s;
@@ -338,6 +339,7 @@ static bool PlugIn_Load(const SC_Filesystem::Path& filename)
 
 #else // (ifndef _WIN32)
 
+	// @TODO: double check this
 	void* handle = dlopen(filename.c_str(), RTLD_NOW);
 
 	if (!handle) {
