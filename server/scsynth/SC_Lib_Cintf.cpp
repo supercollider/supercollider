@@ -293,27 +293,28 @@ bool checkServerVersion(void * f, const char * filename)
 static bool PlugIn_Load(const SC_Filesystem::Path& filename)
 {
 #ifdef _WIN32
-
-	// @TODO: use W version
-	HINSTANCE hinstance = LoadLibrary( filename.string().c_str() );
+	HINSTANCE hinstance = LoadLibraryW( filename.wstring().c_str() );
+	// here, we have to use a utf-8 version of the string for printing
+	// because the native encoding on Windows is utf-16.
+	const std::string filename_utf8_str = SC_Codecvt::path_to_utf8_str(filename);
 	if (!hinstance) {
 		char *s;
 		DWORD lastErr = GetLastError();
 		FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
 			NULL, lastErr , MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (char*)&s, 0, NULL );
-		scprintf("*** ERROR: LoadLibrary '%s' err '%s'\n", filename.c_str(), s);
+		scprintf("*** ERROR: LoadLibrary '%s' err '%s'\n", filename_utf8_str.c_str(), s);
 		LocalFree( s );
 		return false;
 	}
 
 	void *apiVersionPtr = (void *)GetProcAddress( hinstance, "api_version" );
-	if (!checkAPIVersion(apiVersionPtr, filename.string().c_str())) {
+	if (!checkAPIVersion(apiVersionPtr, filename_utf8_str.c_str())) {
 		FreeLibrary(hinstance);
 		return false;
 	}
 
 	void *serverCheckPtr = (void *)GetProcAddress( hinstance, "server_type" );
-	if (!checkServerVersion(serverCheckPtr , filename.string().c_str())) {
+	if (!checkServerVersion(serverCheckPtr , filename_utf8_str.c_str())) {
 		FreeLibrary(hinstance);
 		return false;
 	}
