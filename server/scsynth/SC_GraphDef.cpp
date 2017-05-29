@@ -35,6 +35,8 @@
 #include "ReadWriteMacros.h"
 #include "SC_Prototypes.h"
 #include "SC_CoreAudio.h"
+#include "SC_SequencedCommand.h"
+#include "SC_Errors.h"
 #include "SC_Filesystem.hpp"
 
 #include <stdio.h>
@@ -567,8 +569,6 @@ void GraphDef_Define(World *inWorld, GraphDef *inList)
 	}
 }
 
-#include "SC_SequencedCommand.h"
-#include "SC_Errors.h"
 SCErr GraphDef_Remove(World *inWorld, int32 *inName)
 {
 	GraphDef* graphDef = World_GetGraphDef(inWorld, inName);
