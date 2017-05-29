@@ -25,9 +25,24 @@ DocNode * doc_node_add_child(DocNode *n, DocNode *child);
 DocNode * doc_node_create(const char *id);
 void doc_node_free_tree(DocNode *n);
 
-DocNode * scdoc_parse_file(const char *fn, int mode);
-void doc_node_dump(DocNode *n);
+/**
+ * \brief Parses a .schelp file and generates a help file parse tree
+ *
+ * \arg fn A UTF-8 string, the filename to be parsed
+ * \arg mode The mode to parse, should be one of SCDOC_PARSE_FULL, PARTIAL, or METADATA
+ * \returns A parse tree pointer, or nullptr if the file count not be opened or parsed.
+ */
+DocNode * scdoc_parse_file(const std::string& fn, int mode);
 
-extern const char * scdoc_current_file;
+/**
+ * \brief Returns the current file being parsed as a char buffer.
+ *
+ * Used by the Bison parser
+ *
+ * \returns A char buffer, UTF-8 encoded, with the name of the file currently being parsed.
+ */
+const char * scdoc_current_file();
+
+void doc_node_dump(DocNode *n);
 
 #endif

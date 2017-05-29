@@ -225,7 +225,7 @@ methodname: METHODNAME
     {
         char *p = $1+strlen($1)-1;
         if(*p=='_') {
-            post("WARNING: SCDoc: In %s\n  Property setter %s should be documented without underscore.\n", scdoc_current_file, $1);
+            post("WARNING: SCDoc: In %s\n  Property setter %s should be documented without underscore.\n", scdoc_current_file(), $1);
             *p = '\0';
         };
         $$ = $1;
@@ -431,7 +431,7 @@ DocNode * scdoc_parse_run(int mode) {
 
 void scdocerror(const char *str)
 {
-    error("In %s:\n  At line %d: %s\n\n",scdoc_current_file,scdoclineno,str);
+    error("In %s:\n  At line %d: %s\n\n",scdoc_current_file(),scdoclineno,str);
 
 /*  FIXME: this does not work well, since the reported linenumber is often *after* the actual error line
     fseek(scdocin, 0, SEEK_SET);

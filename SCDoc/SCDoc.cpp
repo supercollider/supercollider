@@ -33,12 +33,16 @@ DocNode * scdoc_parse_run(int partial);
 void scdocrestart (FILE *input_file);
 int scdoclex_destroy(void);
 
-const char * scdoc_current_file = NULL;
+static std::string scdoc_current_filename;
 
 const char * NODE_TEXT = "TEXT";
 const char * NODE_NL = "NL";
 
 static int doc_node_dump_level_done[32] = {0,};
+
+const char *scdoc_current_file() {
+    return scdoc_current_filename.c_str();
+}
 
 // merge a+b and free b
 char *strmerge(char *a, char *b) {
@@ -183,27 +187,33 @@ static void _doc_node_dump(DocNode *n, int level, int last) {
     if(n->text) printf(" \"%s\"",n->text);
     printf("\n");
     for(i = 0; i < n->n_childs; i++) {
-        _doc_node_dump(n->children[i], level+1, i==n->n_childs-1);
+        doc_node_dump_recursive(n->children[i], level+1, i==n->n_childs-1);
     }
     doc_node_dump_level_done[level] = 0;
 }
 
 void doc_node_dump(DocNode *n) {
-    _doc_node_dump(n,0,1);
+    doc_node_dump_recursive(n,0,1);
 }
 
 
-// @TODO: use bfs::path and _wfopen on Windows
-DocNode * scdoc_parse_file(const char *fn, int mode) {
+DocNode * scdoc_parse_file(const std::string& fn, int mode) {
     FILE *fp;
     DocNode *n;
 
-    fp = fopen(fn,"r");
-    if(!fp) {
-        error("scdoc_parse_file: could not open '%s'\n",fn);
-        return NULL;
+    // incoming fn is from QString.toStdString(), so it's UTF-8.
+#ifdef _WIN32
+    const std::wstring fn_w = std::wstring_convert<std::codecvt_utf8_utf16<wchar_t> >().from_bytes(fn);
+    fp = _wfopen(fn_w.c_str(), "rb");
+#else
+    fp = fopen(fn.c_str(), "r");
+#endif // _WIN32
+
+    if (!fp) {
+        error("scdoc_parse_file: could not open '%s'\n", fn.c_str());
+        return nullptr;
     }
-    scdoc_current_file = fn;
+    scdoc_current_filename = fn;
     scdocrestart(fp);
     n = scdoc_parse_run(mode);
     if(n) {
@@ -211,7 +221,7 @@ DocNode * scdoc_parse_file(const char *fn, int mode) {
     }
     fclose(fp);
     scdoclex_destroy();
-    scdoc_current_file = NULL;
+    scdoc_current_filename.clear();
     return n;
 }
 
