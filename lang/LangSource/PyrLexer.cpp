@@ -1996,15 +1996,14 @@ bool passOne()
 	initPassOne();
 
 	if (!gLanguageConfig->forEachIncludedDirectory(passOne_ProcessDir)) {
-		// @TODO: should also finiPassOne here too, right? - bh
+		finiPassOne();
 		return false;
+	} else {
+		finiPassOne();
+		return true;
 	}
-
-	finiPassOne();
-	return true;
 }
 
-// @TODO: move to SC_Filesystem (maybe)
 // true if filename ends in ".sc"
 bool isValidSourceFileName(const boost::filesystem::path& path)
 {

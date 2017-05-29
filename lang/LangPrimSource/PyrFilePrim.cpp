@@ -154,18 +154,6 @@ int prFileRealPath(struct VMGlobals* g, int numArgsPushed )
 	strncpy(opath, SC_Codecvt::path_to_utf8_str(p).c_str(), PATH_MAX - 1);
 	opath[PATH_MAX-1] = '\0';
 
-	// @TODO: is this necessary?
-#ifdef __APPLE__
-	CFStringRef cfstring =
-		CFStringCreateWithCString(NULL,
-								  opath,
-								  kCFStringEncodingUTF8);
-	err = !CFStringGetFileSystemRepresentation(cfstring, opath, PATH_MAX);
-	CFRelease(cfstring);
-	if (err)
-		return errFailed;
-#endif // __APPLE__
-
 	PyrString* pyrString = newPyrString(g->gc, opath, 0, true);
 	SetObject(a, pyrString);
 
@@ -1295,7 +1283,9 @@ int prFileGetcwd(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-////////
+//----------------------------------------------------------------------------//
+// Pipe primitives
+//----------------------------------------------------------------------------//
 
 int prPipeOpen(struct VMGlobals *g, int numArgsPushed)
 {

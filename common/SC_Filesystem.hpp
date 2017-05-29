@@ -202,8 +202,8 @@ public:
 	  * \return An empty path if resolution failed; otherwise, the resolved path.
 	  * 
 	  * If the path was not an alias, a copy is returned. */
-	// @TODO: Could possibly be split into `isAlias` and `resolveAlias` to avoid
-	// unnecessary copying @TODO do this
+	// Could possibly be split into `isAlias` and `resolveAlias` to avoid
+	// unnecessary copying - bh
 	static Path resolveIfAlias(const Path& p, bool& isAlias);
 
 	//--------------------------------- GLOB UTILITIES -------------------------------------//

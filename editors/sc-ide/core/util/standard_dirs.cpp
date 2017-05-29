@@ -27,8 +27,8 @@ namespace ScIDE {
 
 QString standardDirectory( StandardDirectory type )
 {
-	using DirName = SC_Filesystem::DirName;
-	DirName dn;
+    using DirName = SC_Filesystem::DirName;
+    DirName dn;
 
     switch(type)
     {
