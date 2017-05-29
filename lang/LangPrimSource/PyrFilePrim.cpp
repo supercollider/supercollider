@@ -149,7 +149,7 @@ int prFileRealPath(struct VMGlobals* g, int numArgsPushed )
 		return errFailed;
 
 	boost::system::error_code error_code;
-	p = boost::filesystem::canonical(p, error_code);
+	p = boost::filesystem::canonical(p, error_code).make_preferred();
 	if(error_code) {
 		SetNil(a);
 		return errNone;
