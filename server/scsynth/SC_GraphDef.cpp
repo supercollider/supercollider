@@ -52,6 +52,7 @@ using std::endl;
 #endif
 
 #include <boost/filesystem/operations.hpp> // recursive_directory_iterator
+#include <boost/filesystem/string_file.hpp> // load_string_file
 
 extern Malloc gMalloc;
 
@@ -654,46 +655,21 @@ GraphDef* GraphDef_LoadGlob(World *inWorld, const char *pattern, GraphDef *inLis
 	return inList;
 }
 
-GraphDef* GraphDef_Load(World *inWorld, const char *filename, GraphDef *inList)
+GraphDef* GraphDef_Load(World *inWorld, const SC_Filesystem::Path& path, GraphDef *inList)
 {
-	// @TODO: fix this to take a path object & use wfopen on windows
-	FILE *file = fopen(filename, "rb");
-
-	if (!file) {
-		scprintf("*** ERROR: can't fopen '%s'\n", filename);
-		return inList;
-	}
-
-	fseek(file, 0, SEEK_END);
-	int size = ftell(file);
-	char *buffer = (char*)malloc(size);
-	if (!buffer) {
-		scprintf("*** ERROR: can't malloc buffer size %d\n", size);
-		fclose(file);
-		return inList;
-	}
-	fseek(file, 0, SEEK_SET);
-
-	size_t readSize = fread(buffer, 1, size, file);
-	fclose(file);
-
-	if (readSize!= size) {
-		scprintf("*** ERROR: invalid fread\n", size);
-		free(buffer);
-		return inList;
-	}
-
 	try {
-		inList = GraphDefLib_Read(inWorld, buffer, inList);
-	} catch (std::exception& exc) {
-		scprintf("exception in GrafDef_Load: %s\n", exc.what());
-		scprintf("while reading file '%s'\n", filename);
+		std::string file_contents;
+		boost::filesystem::load_string_file(path, file_contents);
+		inList = GraphDefLib_Read(inWorld, &file_contents[0], inList);
+	} catch (const std::exception& e) {
+		scprintf("exception in GraphDef_Load: %s\n", e.what());
+		const std::string path_utf8_str = SC_Codecvt::path_to_utf8_str(path);
+		scprintf("while reading file: '%s'", path_utf8_str.c_str());
 	} catch (...) {
 		scprintf("unknown exception in GrafDef_Load\n");
-		scprintf("while reading file '%s'\n", filename);
+		const std::string path_utf8_str = SC_Codecvt::path_to_utf8_str(path);
+		scprintf("while reading file '%s'\n", path_utf8_str.c_str());
 	}
-
-	free(buffer);
 
 	return inList;
 }
