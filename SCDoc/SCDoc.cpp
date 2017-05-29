@@ -18,9 +18,9 @@
 ************************************************************************/
 
 #include "SCDoc.h"
-#include <cstdlib>
-#include <cstdio>
-#include <string>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 #ifdef _WIN32
 #    include <locale> // codecvt_utf8_utf16
