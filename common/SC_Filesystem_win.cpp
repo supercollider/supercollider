@@ -28,15 +28,13 @@
 #ifdef _WIN32
 
 #include "SC_Filesystem.hpp"
+#include "SC_Codecvt.hpp"
 
 #ifdef DEBUG_SCFS
 #include <iostream>
 using std::cout;
 using std::endl;
 #endif
-
-// stdlib
-#include <codecvt>
 
 // boost
 #include <boost/filesystem/operations.hpp> // is_directory

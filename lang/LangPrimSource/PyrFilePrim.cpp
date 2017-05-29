@@ -56,10 +56,6 @@ Primitives for File i/o.
 #include <fcntl.h>
 #include <math.h>
 
-/* C++ stdlib headers */
-// Note: codecvt_utf8_utf16 should be in <codecvt>, but many vendors place it in <locale>
-#include <locale> // wstring_convert, codecvt_utf8_utf16
-
 /* boost headers */
 #include <boost/filesystem.hpp>
 
@@ -1276,14 +1272,13 @@ int prFileGetcwd(struct VMGlobals *g, int numArgsPushed)
 
 #ifdef _WIN32
 	// use wide version, then convert to utf8
-	// @TODO: abstract this
 	wchar_t buf[PATH_MAX];
 	wchar_t *wcwd = _wgetcwd(buf, PATH_MAX);
 	if (wcwd == nullptr) {
 		error(strerror(errno));
 		return errFailed;
 	}
-	const std::string cwd_str = std::wstring_convert<std::codecvt_utf8_utf16<wchar_t> >().to_bytes(wcwd);
+	const std::string cwd_str = SC_Codecvt::utf16_wcstr_to_utf8_string(wcwd);
 	const char *cwd = cwd_str.c_str();
 #else
 	char buf[PATH_MAX];
@@ -1520,7 +1515,7 @@ int prSFOpenRead(struct VMGlobals *g, int numArgsPushed)
 
 	info.format = 0;
 #ifdef _WIN32
-	const std::wstring filename_w = std::wstring_convert<std::codecvt_utf8_utf16<wchar_t> >().from_bytes(filename);
+	const std::wstring filename_w = SC_Codecvt::utf8_cstr_to_utf16_wstring(filename);
 	file = sf_wchar_open(filename_w.c_str(), SFM_READ, &info);
 #else
 	file = sf_open(filename, SFM_READ, &info);
@@ -1607,7 +1602,7 @@ int prSFOpenWrite(struct VMGlobals *g, int numArgsPushed)
 	slotIntVal(slotRawObject(a)->slots + 5, &info.samplerate);
 
 #ifdef _WIN32
-	const std::wstring filename_w = std::wstring_convert<std::codecvt_utf8_utf16<wchar_t> >().from_bytes(filename);
+	const std::wstring filename_w = SC_Codecvt::utf8_cstr_to_utf16_wstring(filename);
 	file = sf_wchar_open(filename_w.c_str(), SFM_WRITE, &info);
 #else
 	file = sf_open(filename, SFM_WRITE, &info);

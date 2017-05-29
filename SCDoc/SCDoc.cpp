@@ -23,8 +23,7 @@
 #include <string.h>
 
 #ifdef _WIN32
-#    include <locale> // codecvt_utf8_utf16
-#    include <codecvt> // wstring_convert
+#    include "SC_Codecvt.hpp" // utf8_cstr_to_utf16_wstring
 #endif // _WIN32
 
 extern void error(const char *fmt, ...); // for scdoc_parse_file
@@ -191,7 +190,7 @@ DocNode * scdoc_parse_file(const std::string& fn, int mode) {
 
     // incoming fn is from QString.toStdString(), so it's UTF-8.
 #ifdef _WIN32
-    const std::wstring fn_w = std::wstring_convert<std::codecvt_utf8_utf16<wchar_t> >().from_bytes(fn);
+    const std::wstring fn_w = SC_Codecvt::utf8_cstr_to_utf16_wstring(fn);
     fp = _wfopen(fn_w.c_str(), "rb");
 #else
     fp = fopen(fn.c_str(), "r");

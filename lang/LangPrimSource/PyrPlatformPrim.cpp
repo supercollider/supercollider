@@ -84,9 +84,9 @@ static int prPlatform_resourceDir(struct VMGlobals *g, int numArgsPushed)
 static int prWinPlatform_myDocumentsDir(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	char path[PATH_MAX];
-	win32_GetKnownFolderPath(CSIDL_PERSONAL, path, PATH_MAX);
-	const std::string& path_str = SC_Codecvt::path_to_utf8_str(SC_Filesystem::Path(path)); // @TODO don't convert twice
+	wchar_t path_w[PATH_MAX];
+	win32_GetKnownFolderPathW(CSIDL_PERSONAL, path_w, PATH_MAX);
+	std::string path_str = SC_Codecvt::utf16_wcstr_to_utf8_string(path_w);
 	PyrString* string = newPyrString(g->gc, path_str.c_str(), 0, true);
 	SetObject(a, string);
 	return errNone;
