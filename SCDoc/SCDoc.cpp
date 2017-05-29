@@ -17,10 +17,17 @@
 *
 ************************************************************************/
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include "SCDoc.h"
+#include <cstdlib>
+#include <cstdio>
+#include <string>
+
+#ifdef _WIN32
+#    include <locale> // codecvt_utf8_utf16
+#    include <codecvt> // wstring_convert
+#endif // _WIN32
+
+extern void error(const char *fmt, ...); // for scdoc_parse_file
 
 DocNode * scdoc_parse_run(int partial);
 void scdocrestart (FILE *input_file);
@@ -185,8 +192,8 @@ void doc_node_dump(DocNode *n) {
     _doc_node_dump(n,0,1);
 }
 
-extern void error(const char *fmt, ...);
 
+// @TODO: use bfs::path and _wfopen on Windows
 DocNode * scdoc_parse_file(const char *fn, int mode) {
     FILE *fp;
     DocNode *n;
