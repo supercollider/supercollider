@@ -129,7 +129,7 @@ void deinitialize_library()
 			(*unloadFunc)();
 		}
 	}
-	// should this be uncommented? - BH
+	// @TODO: should this be uncommented? - BH
 	//FreeLibrary dlclose(handle);
 #else
 	for(void * handle : open_handles){
