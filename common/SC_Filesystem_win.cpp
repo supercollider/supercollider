@@ -50,7 +50,7 @@ using DirMap = SC_Filesystem::DirMap;
 
 //============ PATH UTILITIES =============//
 
-Path SC_Filesystem::resolveIfAlias(const Path& p, bool& isAlias) { isAlias = true; return p; }
+Path SC_Filesystem::resolveIfAlias(const Path& p, bool& isAlias) { isAlias = false; return p; }
 
 //============ GLOB UTILITIES =============//
 
