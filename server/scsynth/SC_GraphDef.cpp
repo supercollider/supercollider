@@ -645,10 +645,10 @@ GraphDef* GraphDef_LoadGlob(World *inWorld, const char *pattern, GraphDef *inLis
 	SC_Filesystem::Path path;
 	while (!(path = SC_Filesystem::globNext(glob)).empty()) {
 		if (path.extension() == ".scsyndef") {
-			inList = GraphDef_Load(inWorld, path.string().c_str(), inList);
+			inList = GraphDef_Load(inWorld, path, inList);
 		}
 		// why? <sk>
-		GraphDef_Load(inWorld, path.string().c_str(), inList);
+		GraphDef_Load(inWorld, path, inList);
 	}
 
 	SC_Filesystem::freeGlob(glob);
@@ -674,7 +674,7 @@ GraphDef* GraphDef_Load(World *inWorld, const SC_Filesystem::Path& path, GraphDe
 	return inList;
 }
 
-GraphDef* GraphDef_LoadDir(World *inWorld, const char *dirname, GraphDef *inList)
+GraphDef* GraphDef_LoadDir(World *inWorld, const SC_Filesystem::Path& dirname, GraphDef *inList)
 {
 #ifdef DEBUG_SCFS
 	cout << "[SC_FS] GraphDef_LoadDir: begin: " << dirname << endl;
@@ -683,7 +683,7 @@ GraphDef* GraphDef_LoadDir(World *inWorld, const char *dirname, GraphDef *inList
 	boost::filesystem::recursive_directory_iterator rditer(dirname, boost::filesystem::symlink_option::recurse, ec);
 
 	if (ec) {
-		scprintf("*** ERROR: open directory failed '%s'\n", dirname);
+		scprintf("*** ERROR: open directory failed '%s'\n", SC_Codecvt::path_to_utf8_str(dirname).c_str());
 		return inList;
 	}
 
@@ -709,8 +709,7 @@ GraphDef* GraphDef_LoadDir(World *inWorld, const char *dirname, GraphDef *inList
 #ifdef DEBUG_SCFS
 				cout << "[SC_FS] Processing" << endl;
 #endif
-				// @TODO: this won't work yet, need to use SC_Codecvt
-				inList = GraphDef_Load(inWorld, path.string().c_str(), inList);
+				inList = GraphDef_Load(inWorld, path, inList);
 			} else {
 #ifdef DEBUG_SCFS
 				cout << "[SC_FS] File was not .scsyndef" << endl;
@@ -720,8 +719,7 @@ GraphDef* GraphDef_LoadDir(World *inWorld, const char *dirname, GraphDef *inList
 
 		rditer.increment(ec);
 		if (ec) {
-			// @TODO: use SC_Codecvt
-			scprintf("Could not iterate on '%s': %s\n", path.c_str(), ec.message().c_str());
+			scprintf("Could not iterate on '%s': %s\n", SC_Codecvt::path_to_utf8_str(dirname).c_str(), ec.message().c_str());
 			return inList;
 		}
 	}

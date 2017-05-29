@@ -24,6 +24,7 @@
 
 #include "SC_SynthDef.h"
 #include "HashTable.h"
+#include "SC_Filesystem.hpp"
 
 struct ParamSpec
 {
@@ -71,8 +72,8 @@ struct GraphDef
 typedef struct GraphDef GraphDef;
 
 GraphDef* GraphDef_Recv(World *inWorld, char *buffer, GraphDef *inList);
-GraphDef* GraphDef_Load(struct World *inWorld, const char *filename, GraphDef* inList);
-GraphDef* GraphDef_LoadDir(struct World *inWorld, const char *dirname, GraphDef* inList);
+GraphDef* GraphDef_Load(struct World *inWorld, const SC_Filesystem::Path& path, GraphDef* inList);
+GraphDef* GraphDef_LoadDir(struct World *inWorld, const SC_Filesystem::Path& path, GraphDef* inList);
 GraphDef* GraphDef_LoadGlob(World *inWorld, const char *pattern, GraphDef *inList);
 SCErr GraphDef_Remove(World *inWorld, int32 *inName);
 SCErr GraphDef_DeleteMsg(struct World *inWorld, GraphDef *inDef);

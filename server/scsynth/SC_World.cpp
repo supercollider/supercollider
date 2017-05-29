@@ -289,7 +289,7 @@ void World_LoadGraphDefs(World* world)
         path = SC_Filesystem::instance().getDirectory(DirName::UserAppSupport) / "synthdefs";
 		if(world->mVerbosity > 0)
 			scprintf("Loading synthdefs from default path: %s\n", path.c_str());
-		list = GraphDef_LoadDir(world, path.string().c_str(), list);
+		list = GraphDef_LoadDir(world, path, list);
 		GraphDef_Define(world, list);
 	}
 
