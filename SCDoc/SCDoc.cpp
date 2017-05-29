@@ -56,7 +56,7 @@ char *strmerge(char *a, char *b) {
 
 static char *striptrailingws(char *s) {
     char *s2 = strchr(s,0);
-	// don't use isspace -- triggers assert with VS
+    // don't use isspace -- triggers assert with VS
     while(--s2 > s && (*s2 == ' ' || *s2 == '\t' || *s2 == '\n' || *s2 == '\v' || *s2 == '\f' || *s2 == '\r')) {
         *s2 = 0;
     }
@@ -81,18 +81,6 @@ DocNode * doc_node_add_child(DocNode *n, DocNode *child) {
     }
     return n;
 }
-
-// takes ownership of text
-/*DocNode * doc_node_add_text(DocNode *n, char *text) {
-    if(n->text) {
-        char *str = strmergefree(n->text,text);
-        n->text = str;
-        printf("NODE: Adding text '%s'\n",text);
-    } else {
-        n->text = text;
-    }
-    return n;
-}*/
 
 // moves the childs from src doc_node to n
 void doc_node_move_children(DocNode *n, DocNode *src) {
@@ -162,14 +150,14 @@ void doc_node_fixup_tree(DocNode *n) {
         int j = 0;
         for(i = 0; i < n->n_childs; i++) {
             if(n->children[i]) {
-               n->children[j++] = n->children[i];
+                n->children[j++] = n->children[i];
             }
         }
         n->n_childs = j;
     }
 }
 
-static void _doc_node_dump(DocNode *n, int level, int last) {
+static void doc_node_dump_recursive(DocNode *n, int level, int last) {
     int i;
     for(i=0;i<level;i++) {
         if(doc_node_dump_level_done[i])

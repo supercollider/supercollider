@@ -1,7 +1,8 @@
 #ifndef SCDOC_H
 #define SCDOC_H
 
-#include <stdint.h>
+#include <cstdint>
+#include <string>
 
 #define SCDOC_PARSE_FULL 0
 #define SCDOC_PARSE_PARTIAL 1
