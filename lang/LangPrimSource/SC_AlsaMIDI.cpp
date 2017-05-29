@@ -99,7 +99,7 @@ struct SC_AlsaMidiPacket
 // MIDI client state
 struct SC_AlsaMidiClient
 {
-	snd_seq_t*			mHandle;
+	snd_seq_t*			mHandle = nullptr;
 	int					mQueue;
 	int					mNumInPorts;
 	int					mInPorts[kMaxMidiPorts];
