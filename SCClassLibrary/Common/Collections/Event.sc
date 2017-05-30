@@ -18,10 +18,9 @@ Event : Environment {
 		.put(\delta, dur * (inEvent[\stretch] ? 1));
 		^inEvent
 	}
-	*addEventType { arg type, func, parentEvent;
-		if(parentEvent.notNil and: { parentEvent.parent.isNil }) { parentEvent.parent = defaultParentEvent };
+	*addEventType { arg type, func, protoEvent;
 		partialEvents.playerEvent.eventTypes.put(type, func);
-		partialEvents.playerEvent.parentTypes.put(type, parentEvent);
+		partialEvents.playerEvent.protoEventTypes.put(type, protoEvent);
 	}
 
 	next { arg inval; ^composeEvents(inval, this) }
@@ -416,12 +415,12 @@ Event : Environment {
 				type: \note,
 
 				play: #{
-					var tempo, server, eventType, parentType;
+					var tempo, server, eventType, protoEventType;
 
 					eventType = ~eventTypes[~type];
-					parentType = ~parentTypes[~type];
+					protoEventType = ~protoEventTypes[~type];
 
-					parentType !? { currentEnvironment.parent = parentType };
+					protoEventType !? { currentEnvironment.proto = protoEventType };
 
 					~finish.value(currentEnvironment);
 
@@ -472,7 +471,7 @@ Event : Environment {
 
 				// the event types
 
-				parentTypes: (),
+				protoEventTypes: (),
 
 				eventTypes: (
 
