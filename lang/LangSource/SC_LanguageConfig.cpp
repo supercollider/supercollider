@@ -235,8 +235,6 @@ void SC_LanguageConfig::freeLibraryConfig()
 
 inline const bool SC_LanguageConfig::findPath(const DirVector& vec, const Path& path)
 {
-	// @TODO decide whether or not to keep this.
-//	const Path standardPath = boost::filesystem::canonical(path);
 	return std::find(vec.begin(), vec.end(), path) != vec.end();
 }
 
