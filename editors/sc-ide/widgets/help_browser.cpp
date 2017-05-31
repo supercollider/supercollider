@@ -412,6 +412,7 @@ bool HelpBrowserFindBox::event( QEvent * event )
             event->accept();
             return true;
         }
+        break;
     }
     case QEvent::KeyPress:
     {
