@@ -296,8 +296,12 @@ Dictionary : Set {
 
 	isAssociationArray { ^false }
 
-	asPairs {
-		^this.getPairs
+	asPairs { |class|
+		var res = (class ? Array).new(this.size * 2);
+		this.pairsDo { |key, val|
+			res.add(key).add(val);
+		};
+		^res
 	}
 
 	asDict { arg mergeFunc, class;

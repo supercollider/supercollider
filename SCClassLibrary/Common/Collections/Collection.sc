@@ -558,18 +558,18 @@ Collection {
 	asSet { ^Set.new(this.size).addAll(this) }
 	asSortedList { | function | ^SortedList.new(this.size, function).addAll(this) }
 
-	asAssociations {
+	asAssociations { |class|
 		var res;
 		if(this.isAssociationArray) { ^this };
-		res = Array.new(this.size div: 2);
+		res = (class ? Array).new(this.size div: 2);
 		this.pairsDo { |key, val| res.add(key -> val) }
 		^res
 	}
 
-	asPairs {
+	asPairs { |class|
 		var res;
 		if(this.isAssociationArray.not) { ^this };
-		res = Array.new(this.size div: 2);
+		res = (class ? Array).new(this.size div: 2);
 		this.do { |assoc| res.add(assoc.key).add(assoc.value) }
 		^res
 	}
