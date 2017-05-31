@@ -91,8 +91,10 @@ Recorder {
 
 	stopRecording {
 		if(synthDef.notNil) {
-			this.prStopRecord;
-			this.changedServer(\recording, false);
+			server.makeBundle(nil, {
+				this.prStopRecord;
+				this.changedServer(\recording, false);
+			})
 		} {
 			"Not Recording".warn
 		}
@@ -162,6 +164,7 @@ Recorder {
 		paused = false;
 		duration = 0;
 		this.changedServer(\recordingDuration, 0);
+
 	}
 
 	makePath {
