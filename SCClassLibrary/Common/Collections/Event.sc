@@ -415,22 +415,22 @@ Event : Environment {
 				type: \note,
 
 				play: #{
-					var tempo, server, eventType, protoEventType;
+					var tempo, server, protoEventType, eventTypes;
 
-					eventType = ~eventTypes[~type];
 					protoEventType = ~protoEventTypes[~type];
-
 					protoEventType !? { currentEnvironment.proto = protoEventType };
 
 					~finish.value(currentEnvironment);
 
-					server = ~server ?? { Server.default };
+					server = ~server ? Server.default;
 
 					tempo = ~tempo;
-					if (tempo.notNil) {
-						thisThread.clock.tempo = tempo;
+					tempo !? { thisThread.clock.tempo = tempo };
+
+					if(currentEnvironment.isRest.not) {
+						eventTypes = ~eventTypes;
+						(eventTypes[~type] ?? { eventTypes[\note] }).value(server)
 					};
-					if(currentEnvironment.isRest.not) { eventType.value(server) };
 
 					~callback.value(currentEnvironment);
 				},
