@@ -635,6 +635,20 @@ Stops recording, closes the file, and frees the associated resources.
 discussion::
 You must call this when finished recording or the output file will be unusable. Cmd-. while recording has the same effect.
 
+method:: unresponsive
+Returns:: true/false depending if server is unresponsive
+
+method:: sampleRate
+Returns:: a variable with the current sample rate (integer)
+
+code::
+// returns a variable containing the sample rate (integer precision) of the specified server
+
+method:: actualSampleRate
+Returns:: a variable with the current sample rate (floating point precision) of the specified server
+
+method:: remoteControlled
+Returns:: true/false stating if server is unresponsive
 
 method:: recChannels
 Get/set the number of channels (int) to record. Is automatically set to the value of link::Classes/ServerOptions#-numOutputBusChannels:: when booting the server. Must be called strong::before:: prepareForRecord.
