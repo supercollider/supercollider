@@ -86,7 +86,7 @@ b.free;
 b= Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff");
 SynthDef(\warp2, {|buffer|
 	var pointer = Phasor.ar(0, SampleDur.ir/BufDur.ir(buffer)*XLine.kr(1, 0.25, 20));
-	var out = Warp1.ar(1, buffer, pointer, 1, 0.3, -1, 16, Line.kr(0, 1, 40), 4);
+	var out = Warp1.ar(1, buffer, pointer, 1, 0.3, -1, 16, Line.kr(0, 1, 40, doneAction: 2), 4);
 	Out.ar(0, Pan2.ar(out, pointer*2-1, 0.25));
 }).add;
 )
