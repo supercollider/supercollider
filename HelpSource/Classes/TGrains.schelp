@@ -195,4 +195,25 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 b.free
 
+//////////////////////////
+//////////////////////////
+
+s.options.memSize= 8192*20; s.reboot;
+
+~myBuffer=Buffer.alloc(s, s.sampleRate * 4);
+{RecordBuf.ar(SoundIn.ar(0), ~myBuffer)}.scope
+
+(
+{
+Mix.new(Array.fill(32, {
+    var trate, dur, snd;
+			trate = rrand(0.10, 20);
+			dur = rrand(0.0001, 0.5);
+			snd=TGrains.ar(2, Impulse.ar(trate), ~myBuffer, [0.125, 0.25, 0.5, 1, 2, 4, 8].choose ** WhiteNoise.kr([0.125, 0.25, 0.5, 1, 2, 4, 8].choose).round(1), [LFDNoise0, LFDNoise1, LFDNoise3].choose.kr(rrand(0.01, 0.5), mul: BufDur.kr(~myBuffer)), dur, WhiteNoise.kr(2), 1, [1, 2, 4].choose);
+			Mix.new([snd, CombC.ar(snd, [3, 6].choose, [3, 6].choose)]);
+    }))
+}.scope(zoom: 4);
+)
+
+
 ::
