@@ -664,6 +664,12 @@ an optional instance of link::Classes/Condition:: used for evaluating this.
 argument:: ... args
 one or more valid OSC messages.
 
+method:: latency
+Returns a Value with the specified server latency. 
+Supercollider server latency may affect supercollider behaviour in several ways. 
+The main way, is the delay within pinging messages to a server and producing an output result.
+This applies to wide variety of scenarios (evaluating code, network communication, including osc and midi, etc.)
+
 method:: sync
 Send a code::/sync:: message to the server, which will replie with the message code::/synced:: when all pending asynchronous commands have been completed.
 argument:: condition
