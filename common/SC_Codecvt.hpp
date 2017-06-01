@@ -104,7 +104,7 @@ inline std::string utf8_to_native_str(const std::string& s)
 {
 #ifdef _WIN32
     // first to wide string (native format)
-    std::wstring ws = to_utf16_wstr(s);
+    std::wstring ws = utf8_cstr_to_utf16_wstring(s.c_str());
     // then to string (still native)
     std::wstring_convert<std::codecvt_utf16<wchar_t> > conv_16to16;
     std::string ret = conv_16to16.to_bytes(ws);
@@ -124,7 +124,7 @@ inline std::string native_to_utf8_str(const std::string& s)
     std::wstring_convert<std::codecvt_utf16<wchar_t> > conv_16to16;
     std::wstring ws = conv_16to16.from_bytes(s);
     // then to string (utf8)
-    std::string ret = from_utf16_wstr(ws);
+    std::string ret = utf16_wcstr_to_utf8_string(ws.c_str());
     return ret;
 #else // not _WIN32
     return s;
