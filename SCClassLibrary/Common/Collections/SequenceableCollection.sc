@@ -46,6 +46,16 @@ SequenceableCollection : Collection {
 		});
 		^obj
 	}
+	*recursiveFormula { arg a, size;
+		var i=0, divisor = 3, divisorDec = 0.9;
+		var obj = this.new(size);
+		while { i < size }{
+			obj.multiply((a/divisor));
+			divisorDec = divisorDec - 0.1;
+			divisor = divisor / divisorDec;
+		};
+		^obj
+	}
 	*exprand { arg size, minVal, maxVal;
 		var i=0;
 		var obj = this.new(size);
