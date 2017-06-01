@@ -106,50 +106,50 @@ Integer : SimpleNumber {
 	nextPowerOfTwo {
 		_NextPowerOfTwo
 		^this.primitiveFailed
-	}  
-	isPowerOfTwo { 
-		_IsPowerOfTwo 
+	}
+	isPowerOfTwo {
+		_IsPowerOfTwo
 		^this.primitiveFailed
 	}
 	leadingZeroes {
-		_CLZ 	 
+		_CLZ
 		^this.primitiveFailed
 	}
-	trailingZeroes { 
-		_CTZ 
+	trailingZeroes {
+		_CTZ
 		^this.primitiveFailed
 	}
-	numBits { 
-		_NumBits 
+	numBits {
+		_NumBits
 		^this.primitiveFailed
 	}
 	log2Ceil {
-		_Log2Ceil 
+		_Log2Ceil
 		^this.primitiveFailed
 	}
 	grayCode {
 		_BinaryGrayCode
 		^this.primitiveFailed
 	}
-	setBit { 
-		arg bitNumber, bool = true; 
-		_SetBit 
+	setBit {
+		arg bitNumber, bool = true;
+		_SetBit
 		^this.primitiveFailed
 	}
 	nthPrime {
 		_NthPrime
 		^this.primitiveFailed
 	}
-	prevPrime { 
+	prevPrime {
 		_PrevPrime
 		^this.primitiveFailed
 	}
-	nextPrime { 
-		_NextPrime 
+	nextPrime {
+		_NextPrime
 		^this.primitiveFailed
 	}
-	indexOfPrime { 
-		_IndexOfPrime 
+	indexOfPrime {
+		_IndexOfPrime
 		^this.primitiveFailed
 	}
 	isPrime {
@@ -172,8 +172,8 @@ Integer : SimpleNumber {
 	}
 
 	// exit the program and return the result code to unix shell
-	exit { 
-		_Exit 
+	exit {
+		_Exit
 		^this.primitiveFailed
 	}
 	asStringToBase { | base=10, width=8 |

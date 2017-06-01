@@ -21,8 +21,8 @@ Object  {
 	}
 
 	// debugging and diagnostics
-	dump { 
-		_ObjectDump 
+	dump {
+		_ObjectDump
 		^this.primitiveFailed
 	}
 	post { this.asString.post }
@@ -30,32 +30,32 @@ Object  {
 	postc { this.asString.postc }
 	postcln { this.asString.postcln; }
 	postcs { this.asCompileString.postln }
-	totalFree { 
+	totalFree {
 		_TotalFree
 		^this.primitiveFailed
 	}
-	largestFreeBlock { 
+	largestFreeBlock {
 		_LargestFreeBlock
 		^this.primitiveFailed
 	}
-	gcDumpGrey { 
+	gcDumpGrey {
 		_GCDumpGrey
 		^this.primitiveFailed
 	}
-	gcDumpSet { 
-		arg set; 
+	gcDumpSet {
+		arg set;
 		_GCDumpSet
 		^this.primitiveFailed
 	}
-	gcInfo { 
+	gcInfo {
 		_GCInfo
 		^this.primitiveFailed
 	}
-	gcSanity { 
+	gcSanity {
 		_GCSanity
 		^this.primitiveFailed
 	}
-	canCallOS { 
+	canCallOS {
 		_CanCallOS
 		^this.primitiveFailed
 	}
@@ -311,7 +311,7 @@ Object  {
 		OnError.run;
 		this.prHalt
 	}
-	prHalt { 
+	prHalt {
 		_Halt
 		^this.primitiveFailed
 	}
@@ -346,8 +346,8 @@ Object  {
 	mustBeBoolean { MustBeBooleanError(nil, this).throw; }
 	notYetImplemented { NotYetImplementedError(nil, this).throw; }
 
-	dumpBackTrace { 
-		_DumpBackTrace 
+	dumpBackTrace {
+		_DumpBackTrace
 		^this.primitiveFailed
 	}
 	getBackTrace {
@@ -576,21 +576,21 @@ Object  {
 
 
 	// virtual machine debugging...
-	crash { 
+	crash {
 		// for serious problems..
-		_HostDebugger 
+		_HostDebugger
 		^this.primitiveFailed
 	}
-	stackDepth { 
-		_StackDepth 
+	stackDepth {
+		_StackDepth
 		^this.primitiveFailed
 	}
-	dumpStack { 
-		_DumpStack 
+	dumpStack {
+		_DumpStack
 		^this.primitiveFailed
 	}
-	dumpDetailedBackTrace { 
-		_DumpDetailedBackTrace 
+	dumpDetailedBackTrace {
+		_DumpDetailedBackTrace
 		^this.primitiveFailed
 	}
 

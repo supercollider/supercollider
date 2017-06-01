@@ -48,8 +48,8 @@ Class {
 		});
 	}
 
-	*allClasses { 
-		_AllClasses 
+	*allClasses {
+		_AllClasses
 		^this.primitiveFailed
 	}
 	findMethod { arg methodName;
@@ -89,7 +89,7 @@ Class {
 	dumpClassSubtree {
 		 _DumpClassSubtree
 		^this.primitiveFailed
-	} 
+	}
 	dumpInterface {
 		// show all methods and their arguments defined for this class
 		// does not include methods defined in superclasses
@@ -229,14 +229,14 @@ Process {
 		^AppClock.tick;
 	}
 
-	*tailCallOptimize { 
-		_GetTailCallOptimize 
+	*tailCallOptimize {
+		_GetTailCallOptimize
 		^this.primitiveFailed
 	}
-	*tailCallOptimize_ { 
-		arg bool; 
-		_SetTailCallOptimize 
-		^this.primitiveFailed 
+	*tailCallOptimize_ {
+		arg bool;
+		_SetTailCallOptimize
+		^this.primitiveFailed
 	}
 
 	getCurrentSelection {
@@ -393,13 +393,13 @@ Process {
 
 	shallowCopy { ^this }
 
-	*elapsedTime { 
-		_ElapsedTime 
+	*elapsedTime {
+		_ElapsedTime
 		^this.primitiveFailed
 	}
 
-	*monotonicClockTime { 
-		_monotonicClockTime 
+	*monotonicClockTime {
+		_monotonicClockTime
 		^this.primitiveFailed
 	}
 
@@ -420,24 +420,24 @@ FunctionDef {
 	// When you use a FunctionDef in your code it gets pushed on the stack
 	// as an instance of Function
 
-	dumpByteCodes { 
-		_DumpByteCodes 
+	dumpByteCodes {
+		_DumpByteCodes
 		^this.primitiveFailed
 	}
 
-	numArgs { 
-		// return number of arguments to the function 
-		_FunDef_NumArgs 
+	numArgs {
+		// return number of arguments to the function
+		_FunDef_NumArgs
 		^this.primitiveFailed
-	}		
-	numVars { 
+	}
+	numVars {
 		// return number of variables in the function
 		_FunDef_NumVars
 		^this.primitiveFailed
-	} 
-	varArgs { 
+	}
+	varArgs {
 		// return boolean whether function has ellipsis argument
-		_FunDef_VarArgs 
+		_FunDef_VarArgs
 		^this.primitiveFailed
 	}
 	shallowCopy { ^this }

@@ -63,8 +63,8 @@ Thread : Stream {
 		_Thread_GetRandData
 		^this.primitiveFailed
 	}
-	failedPrimitiveName { 
-		_PrimName 
+	failedPrimitiveName {
+		_PrimName
 		^this.primitiveFailed
 	}
 	handleError { arg error;
@@ -76,11 +76,11 @@ Thread : Stream {
 	value { ^this }
 	valueArray { ^this }
 
-	*primitiveError { 
-		_PrimitiveError 
+	*primitiveError {
+		_PrimitiveError
 		^this.primitiveFailed
 	}
-	*primitiveErrorString { 
+	*primitiveErrorString {
 		_PrimitiveErrorString
 		^this.primitiveFailed
 	}

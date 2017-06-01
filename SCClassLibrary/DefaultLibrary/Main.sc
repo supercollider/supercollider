@@ -128,15 +128,15 @@ Main : Process {
 
 	*version {^[this.scVersionMajor, ".", this.scVersionMinor, this.scVersionPostfix].join}
 
-	*scVersionMajor   { 
-		_SC_VersionMajor 
+	*scVersionMajor   {
+		_SC_VersionMajor
 		^this.primitiveFailed
 	}
-	*scVersionMinor   { 
-		_SC_VersionMinor 
+	*scVersionMinor   {
+		_SC_VersionMinor
 		^this.primitiveFailed
 	}
-	*scVersionPostfix { 
+	*scVersionPostfix {
 		_SC_VersionPatch
 		^this.primitiveFailed
 	}

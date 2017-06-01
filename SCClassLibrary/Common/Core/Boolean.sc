@@ -22,7 +22,7 @@ Boolean {
 	}
 	trace {
 		// this is only available in a special debugging version of the app
-		_Trace 
+		_Trace
 		^this.primitiveFailed
 	}
 	printOn { arg stream;

@@ -118,7 +118,7 @@ Pen {
 		^this.primitiveFailed;
 	}
 
-	*matrix { 
+	*matrix {
 		_QPen_Transform
 		^this.primitiveFailed
 	}

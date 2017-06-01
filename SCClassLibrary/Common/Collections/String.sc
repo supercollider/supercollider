@@ -112,17 +112,17 @@ String[char] : RawArray {
 
 	isString { ^true }
 	asString { ^this }
-	asCompileString { 
+	asCompileString {
 		_String_AsCompileString
 		^this.primitiveFailed
 	}
 	species { ^String }
 
-	postln { 
-		_PostLine 
+	postln {
+		_PostLine
 		^this.primitiveFailed
 	}
-	post { 
+	post {
 		_PostString
 		^this.primitiveFailed
 	}
