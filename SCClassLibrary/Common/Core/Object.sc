@@ -350,7 +350,10 @@ Object  {
 		_DumpBackTrace 
 		^this.primitiveFailed
 	}
-	getBackTrace { _GetBackTrace }
+	getBackTrace {
+		_GetBackTrace
+		^this.primitiveFailed
+	}
 	throw {
 		if (Error.handling) {
 			error("throw during error handling!\n");
