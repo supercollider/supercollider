@@ -95,8 +95,8 @@ String[char] : RawArray {
 		if(aString.isString.not) { ^true }
 		^this.compare(aString, false) != 0
 	}
-	hash { 
-		_StringHash 
+	hash {
+		_StringHash
 		^this.primitiveFailed
 	}
 	// no sense doing collect as per superclass collection

@@ -11,13 +11,13 @@ ArrayedCollection : SequenceableCollection {
 	// ArrayedCollections are vectors which have a
 	// fixed maximum capacity.
 
-	indexedSize { 
-		_BasicSize 
+	indexedSize {
+		_BasicSize
 		^this.primitiveFailed
 	}
-	size { 
-		_BasicSize 
-		^this.primitiveFailed 
+	size {
+		_BasicSize
+		^this.primitiveFailed
 	}
 	maxSize {
 		_BasicMaxSize
