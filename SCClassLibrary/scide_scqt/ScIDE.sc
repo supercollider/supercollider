@@ -90,6 +90,7 @@ ScIDE {
 
 	*connected {
 		_ScIDE_Connected
+		^this.primitiveFailed
 	}
 
 

@@ -23,6 +23,7 @@ Date {
 	*seed {
 		// return a value suitable for seeding a random number generator.
 		_TimeSeed
+		^this.primitiveFailed
 	}
 
 	// strings for time stamping things like filenames.
