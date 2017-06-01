@@ -664,6 +664,9 @@ an optional instance of link::Classes/Condition:: used for evaluating this.
 argument:: ... args
 one or more valid OSC messages.
 
+method:: isRecording
+Returns true if server output audio is being recorded within supercollider
+
 method:: sync
 Send a code::/sync:: message to the server, which will replie with the message code::/synced:: when all pending asynchronous commands have been completed.
 argument:: condition
