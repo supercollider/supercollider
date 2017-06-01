@@ -111,7 +111,8 @@ public:
 		UserAppSupport,
 		UserExtension,
 		UserConfig,
-		Resource
+		Resource,
+		MyDocuments // only on Windows, used for Platform.myDocumentsDir in sclang
 	};
 
 	//------------------------------- SINGLETON INSTANCE -----------------------------------//
@@ -266,6 +267,10 @@ private:
 				return defaultUserConfigDirectory();
 			case DirName::Resource:
 				return defaultResourceDirectory();
+#ifdef _WIN32
+			case DirName::MyDocuments:
+				return defaultMyDocumentsDirectory();
+#endif
 			default:
 				return Path();
 		}
@@ -276,6 +281,11 @@ private:
 	static Path defaultUserAppSupportDirectory();
 	static Path defaultUserConfigDirectory();
 	static Path defaultResourceDirectory();
+
+#ifdef _WIN32
+	// this function has no analogue on other OSs, yet.
+	static Path defaultMyDocumentsDirectory();
+#endif
 
 	static Path defaultSystemExtensionDirectory()
 	{

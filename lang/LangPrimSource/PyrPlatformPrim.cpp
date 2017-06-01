@@ -79,17 +79,10 @@ static int prPlatform_resourceDir(struct VMGlobals *g, int numArgsPushed)
 	return prPlatform_getDirectory(g, DirName::Resource);
 }
 
-// @TODO: fix this... :(
 #ifdef _WIN32
 static int prWinPlatform_myDocumentsDir(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a = g->sp;
-	wchar_t path_w[PATH_MAX];
-	win32_GetKnownFolderPathW(CSIDL_PERSONAL, path_w, PATH_MAX);
-	std::string path_str = SC_Codecvt::utf16_wcstr_to_utf8_string(path_w);
-	PyrString* string = newPyrString(g->gc, path_str.c_str(), 0, true);
-	SetObject(a, string);
-	return errNone;
+	return prPlatform_getDirectory(g, DirName::MyDocuments);
 }
 #endif
 

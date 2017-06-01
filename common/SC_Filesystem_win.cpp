@@ -140,6 +140,13 @@ Path SC_Filesystem::defaultUserConfigDirectory()
 	return defaultUserAppSupportDirectory();
 }
 
+Path SC_Filesystem::defaultMyDocumentsDirectory()
+{
+	PWSTR wptr = nullptr;
+	const HRESULT hr = SHGetKnownFolderPath(FOLDERID_Documents, 0, nullptr, &wptr);
+	return FAILED(hr) ? Path() : Path(wptr) / SC_FOLDERNAME_APPLICATION_NAME;
+}
+
 Path SC_Filesystem::defaultResourceDirectory()
 {
 	WCHAR buf[MAX_PATH];
