@@ -140,9 +140,9 @@
 	<key>CFBundleSignature</key>
 	<string>SCjm</string>
 	<key>CFBundleVersion</key>
-	<string>${PROJECT_VERSION_PATCH}</string>
+	<string>${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}${PROJECT_VERSION_PATCH}</string>
 	<key>CFBundleShortVersionString</key>
-	<string>${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}</string>
+	<string>${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}${PROJECT_VERSION_PATCH}</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>(C) 2001-2012 James McCartney et al.</string>
 	<key>NSMainNibFile</key>
