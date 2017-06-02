@@ -233,8 +233,7 @@ Process {
 		_GetTailCallOptimize
 		^this.primitiveFailed
 	}
-	*tailCallOptimize_ {
-		arg bool;
+	*tailCallOptimize_ { arg bool;
 		_SetTailCallOptimize
 		^this.primitiveFailed
 	}

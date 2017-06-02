@@ -57,7 +57,7 @@ Thread : Stream {
 	randData_ {
 		arg data;
 		_Thread_SetRandData
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 	randData {
 		_Thread_GetRandData
