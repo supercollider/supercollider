@@ -146,9 +146,20 @@ SCDocHTMLRenderer {
 		doc.categories !? {
 			stream
 			<< "<div id='categories'>"
-			<< (doc.categories.collect {|r|
-				"<a href='"++baseDir +/+ "Browse.html#"++r++"'>"++r++"</a>"
+
+			<< (doc.categories.collect { | path |
+				// get all the components of a category path ("UGens>Generators>Deterministic")
+				// we link each crumb of the breadcrumbs separately.
+				var pathElems = path.split($>);
+
+				// the href for "UGens" will be "UGens", for "Generators" "UGens>Generators", etc.
+				pathElems.collect { | elem, i |
+					var atag = "<a href='" ++ baseDir +/+ "Browse.html#";
+					atag ++ pathElems[0..i].join(">") ++ "'>"++ elem ++"</a>"
+				}.join(">");
+
 			}.join(", "))
+
 			<< "</div>\n";
 		};
 
