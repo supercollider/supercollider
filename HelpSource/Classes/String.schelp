@@ -1,9 +1,10 @@
 CLASS::String
-summary::array of characters
+summary::array of Chars
+related::Classes/Char
 categories:: Collections>Ordered
 
 DESCRIPTION::
-String represents an array of characters.
+String represents an array of link::Classes/Char##Chars::.
 
 Strings can be written literally using double quotes:
 code::
@@ -17,7 +18,26 @@ y = "this is a\n"
     "string";
 ::
 
-A backslash is the escape character. See link::Reference/Literals#Escape character::.
+Backslash is the escape character. See link::Reference/Literals#Characters::.
+
+subsection:: Character encodings
+
+Note that, while Char does not support encodings aside from ASCII—such as
+multi-byte encodings like UTF-8 and UTF-16, or the full Latin-1 (ISO 8859-1)
+character set—Chars with negative values are perfectly legal, and may be strung
+together in strings that use these encodings.
+
+The SuperCollider IDE uses UTF-8 (a superset of ASCII) to decode and display
+strings, which means that the string code::"🎹🙄🎻😂🎚️🎛️🎤😍":: can be written in
+the editor, posted in the post window, and treated for the most part like any
+other string.
+However, because non-ASCII UTF-8 characters consist of two or more bytes,
+and a SuperCollider String's members are one-bit Chars, concepts of size and
+indexing may not behave intuitively.
+For instance, the "code::size::" of the string above is 38, not 8, and the value
+of its first index is code::-16::, which is not a valid ASCII value at all but
+rather the signed 8-bit representation of the first byte of the UTF-8 value of
+the piano keyboard emoji (🎹), code::0xF09F8EB9::.
 
 CLASSMETHODS::
 
@@ -48,9 +68,28 @@ code::
 ::
 
 method::ascii
-Returns an Array of ascii numbers of the Strings's characters.
+Returns an Array of ASCII values of the Strings's characters.
 code::
-"wertvoll".ascii
+"wertvoll".ascii // [ 119, 101, 114, 116, 118, 111, 108, 108 ]
+::
+
+Note that if a string contains multi-byte UTF-8 characters, this array will not
+be of the same length as the number of visible characters, nor will it
+necessarily be an array of valid 7-bit ASCII values.
+
+code::
+// "face with tears of joy" is Unicode codepoint U+1F602, which is encoded in UTF-8 as hex value 0xF09F9882
+a = "😂";
+
+// although this is one UTF-8 character, it must be stored as 4 Chars because Chars can only hold 1 byte each
+a.size // 4 (!)
+a.ascii // [ -16, -97, -104, -126 ]
+
+// "wrap(0, 255)" converts these numbers to their unsigned 8-bit values
+b = a.ascii.wrap(0, 255) // [ 240, 159, 152, 130 ]
+
+// if we represent these values in hexidecmial, it's the same as the UTF-8 above: 0xF09F9882
+b.collect(_.asHexString(2)) // [ F0, 9F, 98, 82 ]
 ::
 
 subsection:: Comparing strings
@@ -147,10 +186,7 @@ code::
 ::
 
 method::inform
-Posts the string.
-code::
-"Do not press this button again".inform;
-::
+Legacy method (although due to widespread use, it will not be removed). This is identical to code::postln::.
 
 subsection:: Interpreting strings as code
 
@@ -272,8 +308,20 @@ code::
 
 subsection:: Regular expressions
 
+Note the inversion of the arguments:
+
+List::
+## Code::regexp.matchRegexp(stringToSearch)::
+## Code::stringToSearch.findRegexp(regexp):: (and similar for code::findAllRegexp:: and code::findRegexpAt::).
+::
+
+Code::findRegexp:: follows the pattern established by link::Classes/String#-find::, where the receiver is the string to be searched. Code::matchRegexp:: follows the pattern of link::Reference/matchItem::, where the receiver is the pattern to match and the first argument is the object to be tested. This is a common source of confusion, but it is based on this precedent.
+
 method::matchRegexp
 POSIX regular expression matching. Returns true if the receiver (a regular expression pattern) matches the string passed to it. The strong::start:: is an offset where to start searching in the string (default: 0), strong::end:: where to stop.
+
+note::This is code::regexp.matchRegexp(stringToSearch):: and not the other way around! See above: link::Classes/String#Regular expressions::.::
+
 code::
 "c".matchRegexp("abcdefg", 2, 5); // true: substring exists
 "c".matchRegexp("abcdefg", 4, 5); // false: substring doesn't exist
@@ -539,7 +587,7 @@ Despite the fact that the method is called 'unixCmd', strong::it does work in Wi
 ::
 
 method::unixCmd
-Execute a unix command strong::asynchronously:: using the standard shell (sh).
+Execute a UNIX command strong::asynchronously:: using the standard shell (sh).
 argument:: action
 A link::Classes/Function:: that is called when the process has exited. It is passed two arguments: the exit code and pid of the exited process.
 argument:: postOutput
@@ -561,16 +609,16 @@ code::
 ::
 
 method::systemCmd
-Executes a unix command strong::synchronously:: using the standard shell (sh).
+Executes a UNIX command strong::synchronously:: using the standard shell (sh).
 
-returns:: Error code of the unix command
+returns:: Error code of the UNIX command
 
 method::runInTerminal
 Execute the String in a new terminal window (strong::asynchronously::).
 argument::shell
 The shell used to execute the string.
 discussion::
-note:: On OSX, the string is incorporated into a temporary script file and executed using the shell. ::
+note:: On macOS, the string is incorporated into a temporary script file and executed using the shell. ::
 Example:
 code::
 "echo ---------Hello delightful SuperCollider user----------".runInTerminal;
@@ -644,14 +692,14 @@ method::resolveRelative
 Convert the receiver from a relative path to an absolute path, relative to the current document or text file. Requires that the current text file has been saved. Absolute paths are left untransformed.
 
 method::standardizePath
-Expand ~ to your home directory, and resolve aliases on OSX. See link::Classes/PathName:: for more complex needs. See link::Classes/File#*realpath:: if you want to resolve symlinks.
+Expand ~ to your home directory, and resolve aliases on macOS. See link::Classes/PathName:: for more complex needs. See link::Classes/File#*realpath:: if you want to resolve symlinks.
 code::
 "~/".standardizePath; //This will print your home directory
 ::
 
 
 method::openOS
-Open file, directory or URL via the operating system. On OSX this is implemented via teletype::open::, on Linux via
+Open file, directory or URL via the operating system. On macOS this is implemented via teletype::open::, on Linux via
 teletype::xdg-open:: and on Windows via teletype::start::.
 code::
 Platform.userConfigDir.openOS;
@@ -752,7 +800,7 @@ code::
 subsection::Misc methods
 
 method::speak
-Sends string to the speech synthesiser of the OS. (OS X only.) see: link::Classes/Speech::
+Deprecated. See link::Classes/Speech:: for the full reason and possible replacements. Sends string to the macOS speech synthesizer.
 code::
 "hi i'm talking with the default voice now, i guess".speak;
 ::

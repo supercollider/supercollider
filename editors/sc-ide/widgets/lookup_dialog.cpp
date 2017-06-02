@@ -31,8 +31,7 @@
 #include <QPainter>
 #include <QFileInfo>
 
-#include "yaml-cpp/node.h"
-#include "yaml-cpp/parser.h"
+#include <yaml-cpp/yaml.h>
 
 namespace ScIDE {
 
@@ -542,31 +541,26 @@ QStandardItemModel * ReferencesDialog::parse(const QString &responseData)
         return NULL;
     }
 
-    std::stringstream stream;
-    stream << responseData.toStdString();
-    YAML::Parser parser(stream);
-
-    YAML::Node doc;
-    if(!parser.GetNextDocument(doc)) {
+    YAML::Node doc = YAML::Load( responseData.toStdString() );
+    if( !doc ) {
         qWarning("no YAML document");
         return NULL;
     }
 
     assert (doc.Type() == YAML::NodeType::Sequence);
 
-    QString symbol = doc[0].to<std::string>().c_str();
+    QString symbol = doc[0].as<std::string>().c_str();
 
     QStandardItemModel * model = new QStandardItemModel(this);
     QStandardItem *parentItem = model->invisibleRootItem();
 
     YAML::Node const & references = doc[1];
 
-    for (YAML::Iterator refIt = references.begin(); refIt != references.end(); ++refIt ) {
-        YAML::Node const & reference = *refIt;
-        QString className  = reference[0].to<std::string>().c_str();
-        QString methodName = reference[1].to<std::string>().c_str();
-        QString path       = reference[2].to<std::string>().c_str();
-        int charPos        = reference[3].to<int>();
+    for( YAML::Node const & reference : references ) {
+        QString className  = reference[0].as<std::string>().c_str();
+        QString methodName = reference[1].as<std::string>().c_str();
+        QString path       = reference[2].as<std::string>().c_str();
+        int charPos        = reference[3].as<int>();
 
         QString displayPath = introspection.compactLibraryPath(path);
         QString fullName = ScLanguage::makeFullMethodName(className, methodName);

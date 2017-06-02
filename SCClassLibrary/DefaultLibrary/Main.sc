@@ -31,7 +31,7 @@ Main : Process {
 			}
 		};
 		if(didWarnOverwrite) {
-			inform("Intentional overwrites must be put in a 'SystemOverwrites' subfolder.")
+			postln("Intentional overwrites must be put in a 'SystemOverwrites' subfolder.")
 		};
 
 		("\n\n*** Welcome to SuperCollider %. ***".format(Main.version)
@@ -128,10 +128,18 @@ Main : Process {
 
 	*version {^[this.scVersionMajor, ".", this.scVersionMinor, this.scVersionPostfix].join}
 
-	*scVersionMajor   { _SC_VersionMajor }
-	*scVersionMinor   { _SC_VersionMinor }
-	*scVersionPostfix { _SC_VersionPatch }
-
+	*scVersionMajor   {
+		_SC_VersionMajor
+		^this.primitiveFailed
+	}
+	*scVersionMinor   {
+		_SC_VersionMinor
+		^this.primitiveFailed
+	}
+	*scVersionPostfix {
+		_SC_VersionPatch
+		^this.primitiveFailed
+	}
 	*versionAtLeast { |maj, min|
 		^if((maj==this.scVersionMajor) and:{min.notNil}){
 			this.scVersionMinor >= min
@@ -187,8 +195,8 @@ MethodOverride {
 		var path2 = if(overriddenPath.beginsWith("/Common")) {
 			Platform.classLibraryDir +/+ overriddenPath
 			} { overriddenPath };
-		activePath.openTextFile;
-		path2.openTextFile;
+		activePath.openDocument;
+		path2.openDocument;
 	}
 
 

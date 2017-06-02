@@ -44,7 +44,7 @@ code::
 // a SynthDef
 SynthDef(\test, { | out, freq = 440, amp = 0.1, nharms = 10, pan = 0, gate = 1 |
 	var audio = Blip.ar(freq, nharms, amp);
-	var env = Linen.kr(gate, doneAction: 2);
+	var env = Linen.kr(gate, doneAction: Done.freeSelf);
 	OffsetOut.ar(out, Pan2.ar(audio, pan, env) );
 }).add;
 )
@@ -64,7 +64,8 @@ Pbind(
 				     	    Pseq([1/10, 0.5, 1, 2], inf)
 				        ])
 ).play;
-)::
+)
+::
 
 It is possible to specify a Pbind with an link::Classes/Array:: preceded by *. Arrays treat identifiers ending with a colon as link::Classes/Symbol::s, making the syntax of the Pbind specification a bit more concise:
 
@@ -92,7 +93,7 @@ A link::Classes/SynthDef:: assigns a name to an interconnection of unit generato
 code::
 SynthDef(\test, { | out, freq = 440, amp = 0.1, nharms = 10, pan = 0, gate = 1 |
 	var audio = Blip.ar(freq, nharms, amp);
-	var env = Linen.kr(gate, doneAction: 2);
+	var env = Linen.kr(gate, doneAction: Done.freeSelf);
 	OffsetOut.ar(out, Pan2.ar(audio, pan, env) );
 }).add;
 ::
@@ -172,7 +173,7 @@ code::
 // the SynthDef
 SynthDef(\test, { | out, freq = 440, amp = 0.1, nharms = 10, pan = 0, gate = 1 |
 	var audio = Blip.ar(freq, nharms, amp);
-	var env = Linen.kr(gate, doneAction: 2);
+	var env = Linen.kr(gate, doneAction: Done.freeSelf);
 	OffsetOut.ar(out, Pan2.ar(audio, pan, env) );
 }).add;
 
@@ -207,7 +208,7 @@ SynthDef(\cfstring1, { arg i_out, freq = 360, gate = 1, pan, amp=0.1;
 	var out, eg, fc, osc, a, b, w;
 	fc = LinExp.kr(LFNoise1.kr(Rand(0.25, 0.4)), -1, 1, 500, 2000);
 	osc = Mix.fill(8, {LFSaw.ar(freq * [Rand(0.99, 1.01), Rand(0.99, 1.01)], 0, amp) }).distort * 0.2;
-	eg = EnvGen.kr(Env.asr(1, 1, 1), gate, doneAction:2);
+	eg = EnvGen.kr(Env.asr(1, 1, 1), gate, doneAction: Done.freeSelf);
 	out = eg * RLPF.ar(osc, fc, 0.1);
 	#a, b = out;
 	Out.ar(i_out, Mix.ar(PanAz.ar(4, [a, b], [pan, pan+0.3])));
@@ -290,7 +291,7 @@ SynthDef(\acid, { arg out, freq = 1000, gate = 1, pan = 1, cut = 4000, rez = 0.8
 			RLPF.ar(
 				Pulse.ar(freq, 0.05),
 			cut, rez),
-		pan) * EnvGen.kr(Env.linen(0.01, 1, 0.3), gate, amp, doneAction:2);
+		pan) * EnvGen.kr(Env.linen(0.01, 1, 0.3), gate, amp, doneAction: Done.freeSelf);
 	)
 }).add;
 )
@@ -463,7 +464,7 @@ SynthDef(\acid, { arg out, freq = 1000, gate = 1, pan = 0, cut = 4000, rez = 0.8
 			RLPF.ar(
 				Pulse.ar(freq, 0.05),
 			cut, rez),
-		pan) * EnvGen.kr(Env.linen(0.02, 1, 0.3), gate, amp, doneAction:2);
+		pan) * EnvGen.kr(Env.linen(0.02, 1, 0.3), gate, amp, doneAction: Done.freeSelf);
 	)
 }).add;
 )
@@ -488,7 +489,7 @@ SynthDef(\berlinb, { arg out=0, freq = 80, amp = 0.01, pan=0, gate=1;
 		0.07
 	);
 	#a, b = synth*env;
-	DetectSilence.ar(a, 0.1, doneAction: 2);
+	DetectSilence.ar(a, 0.1, doneAction: Done.freeSelf);
 	Out.ar(out, amp * Mix.ar(PanAz.ar(4, [a, b], [pan, pan+1])));
 }).add;
 )

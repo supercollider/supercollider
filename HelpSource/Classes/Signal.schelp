@@ -139,10 +139,7 @@ code::
 Signal.sineFill(512, [1]).plot;
 Signal.sineFill(512, [1]).plot("Signal 1", Rect(50, 50, 150, 450));
 ::
-argument::name
-a String, the name of the window.
-argument::bounds
-a Rect giving the bounds of the window.
+For details, see link::Reference/plot::
 
 method::play
 Loads the signal into a buffer on the server and plays it. Returns the buffer so you can free it again.
@@ -395,5 +392,16 @@ y = Signal.fill(512, { |i| (i * pi / 64).sin });
 	.plot(numChannels: 6);
 )
 ::
-method::+, -, *, /, div, %, **, min, max, ring1, ring2, ring3, ring4, difsqr, sumsqr, sqrdif, absdif, amclip, scaleneg, clip2, excess, <!
+method::+, -, *, /, div, pow, mod, min, max, ring1, ring2, ring3, ring4, difsqr, sumsqr, sqrdif, absdif, amclip, scaleneg, clip2, wrap2, excess
+method:: %, **
+method:: <!
 
+code::
+// these fail for Signal but work for FloatArray:
+Signal[0, 0.5, 1] pow: 2;
+Signal[0, 0.5, 1] ** 2;
+Signal[0, 0.5, 1] mod: 0.15;
+Signal[0, 0.5, 1] % 0.15;
+
+FloatArray[0, 0.5, 1] % 0.15;
+::

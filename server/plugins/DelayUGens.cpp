@@ -831,7 +831,7 @@ inline double sc_loop(Unit *unit, double in, double hi, int loop)
 
 #define CHECK_BUF \
 	if (!bufData) { \
-                unit->mDone = true; \
+		unit->mDone = true; \
 		ClearUnitOutputs(unit, inNumSamples); \
 		return; \
 	}
@@ -6216,11 +6216,11 @@ void TGrains_next(TGrains *unit, int inNumSamples)
 					pan = sc_clip(pan * 0.5f + 0.5f, 0.f, 1.f);
 					panangle = pan * pi2_f;
 				}
-				pan1 = grain->pan1 = cos(panangle);
-				pan2 = grain->pan2 = sin(panangle);
+				pan1 = grain->pan1 = amp * cos(panangle);
+				pan2 = grain->pan2 = amp * sin(panangle);
 			} else {
 				grain->chan = 0;
-				pan1 = grain->pan1 = 1.;
+				pan1 = grain->pan1 = amp;
 				pan2 = grain->pan2 = 0.;
 			}
 			double w = pi / counter;

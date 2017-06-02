@@ -51,7 +51,7 @@ definitionlist::
 || a port number 0-65535
 
 ## -v verbosity
-|| Controls the verbosity of server messages. A value of 0 is normal behaviour, -1 suppresses informational messages, and -2 suppresses informational and many error messages.
+|| Controls the verbosity of server messages. A value of 0 is normal behaviour. -1 suppresses informational messages. -2 suppresses informational and many error messages, as well as messages from Poll. The default is 0.
 
 ## -a num-audio-bus-channels
 || number of audio bus channels (default = 1024). The space allocated for audio buses is: (numchannels * (blocksize + 1) * 4)

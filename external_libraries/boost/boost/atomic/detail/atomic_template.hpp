@@ -78,9 +78,9 @@ class base_atomic< T, int >
 private:
     typedef T value_type;
     typedef T difference_type;
-    typedef atomics::detail::operations< storage_size_of< value_type >::value, boost::is_signed< T >::value > operations;
 
 protected:
+    typedef atomics::detail::operations< storage_size_of< value_type >::value, boost::is_signed< T >::value > operations;
     typedef value_type value_arg_type;
 
 public:
@@ -234,9 +234,9 @@ class base_atomic< bool, int >
 {
 private:
     typedef bool value_type;
-    typedef atomics::detail::operations< 1u, false > operations;
 
 protected:
+    typedef atomics::detail::operations< 1u, false > operations;
     typedef value_type value_arg_type;
 
 public:
@@ -321,9 +321,9 @@ class base_atomic< T, void >
 {
 private:
     typedef T value_type;
-    typedef atomics::detail::operations< storage_size_of< value_type >::value, false > operations;
 
 protected:
+    typedef atomics::detail::operations< storage_size_of< value_type >::value, false > operations;
     typedef value_type const& value_arg_type;
 
 public:
@@ -410,9 +410,9 @@ class base_atomic< T*, void* >
 private:
     typedef T* value_type;
     typedef std::ptrdiff_t difference_type;
-    typedef atomics::detail::operations< storage_size_of< value_type >::value, false > operations;
 
 protected:
+    typedef atomics::detail::operations< storage_size_of< value_type >::value, false > operations;
     typedef value_type value_arg_type;
 
 public:
@@ -540,9 +540,9 @@ class base_atomic< void*, void* >
 private:
     typedef void* value_type;
     typedef std::ptrdiff_t difference_type;
-    typedef atomics::detail::operations< storage_size_of< value_type >::value, false > operations;
 
 protected:
+    typedef atomics::detail::operations< storage_size_of< value_type >::value, false > operations;
     typedef value_type value_arg_type;
 
 public:
@@ -677,6 +677,9 @@ public:
     typedef typename base_type::storage_type storage_type;
 
 public:
+    static BOOST_CONSTEXPR_OR_CONST bool is_always_lock_free = base_type::operations::is_always_lock_free;
+
+public:
     BOOST_DEFAULTED_FUNCTION(atomic(), BOOST_NOEXCEPT {})
 
     // NOTE: The constructor is made explicit because gcc 4.7 complains that
@@ -705,6 +708,9 @@ public:
     BOOST_DELETED_FUNCTION(atomic& operator= (atomic const&))
     BOOST_DELETED_FUNCTION(atomic& operator= (atomic const&) volatile)
 };
+
+template< typename T >
+BOOST_CONSTEXPR_OR_CONST bool atomic< T >::is_always_lock_free;
 
 typedef atomic< char > atomic_char;
 typedef atomic< unsigned char > atomic_uchar;

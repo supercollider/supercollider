@@ -13,41 +13,40 @@ CLASSMETHODS::
 PRIVATE::initClass, prFromWindowRect, prFreeAll
 
 METHOD::new
-Creates a new Image instance. multiple stands here for multiple arguments.
+Creates a new Image instance. "multiple" here stands for multiple arguments.
 
 ARGUMENT::multiple
-May be a...
+Any of the following:
 list::
 ## link::Classes/Number:: to create an strong::empty:: image of size multiple as width and height
 code::
-i = Image.new(400);		// Create a 400x400 pixels Image.
+i = Image.new(400);		// Create a 400x400 pixel Image.
 i.dump;
 i.free;
 
-i = Image.new(400, 200);	// Create a 400x200 pixels Image.
+i = Image.new(400, 200);	// Create a 400x200 pixel Image.
 i.dump;
 i.free;
 ::
 ## link::Classes/Point:: to create an strong::empty:: image of size multiple.x as width and multiple.y as height
 code::
-i = Image.new(400@200);	// Create a 400x200 pixels Image.
+i = Image.new(400@200);	// Create a 400x200 pixel Image.
 i.dump;
 i.free;
 ::
-## link::Classes/String:: to create an image from a strong::local file:: or from an strong::URL:: (http://, ftp://, file:///)
+## link::Classes/String:: to create an image from a strong::local file::
 code::
 //	Path string
 i = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png"); // add a path to your image
 [i.width, i.height].postln;
 i.plot;
 i.free;
-//	URL string - NOT IMPLEMENTE YET
-i = Image.new("http://www.google.com/intl/en_ALL/images/logo.gif");
-i.plot;
-i.url;
-i.free;
 ::
 ::
+
+ARGUMENT::height
+If strong::multiple:: is a number, then this argument indicates the height of the new image.
+
 
 METHOD::color
 Creates a new Image instance filled with the specified color.
@@ -56,8 +55,8 @@ i = Image.color(400, 200, Color.blue(0.9,0.1));
 i.plot(freeOnClose:true);
 ::
 
-ARGUMENT::args
-multiple arguments. the last argument should be a valid link::Classes/Color::
+ARGUMENT::... args
+Multiple arguments. the last argument should be a valid link::Classes/Color::
 
 METHOD::open
 Creates a new Image instance from the local file at strong::path::.
@@ -225,12 +224,6 @@ i.plot;
 i.free;
 ::
 
-METHOD::accelerated
-if true, the receiver currently use the CoreImage model, possibly caching its data on GPU, if not the bitmap model. Set it to switch representation.
-WARNING::
-this method should never be used directly unless you know perfectly what you are doing. Since the Image will switch internally and manage itself the syncronization between representations.
-::
-
 METHOD::interpolation
 get or set the level of interpolation used when rendering the image - it has not effect when the Image is accelerated. see link::#*interpolations:: for a valid range of values.
 code::
@@ -281,7 +274,7 @@ write the Image to a file.
 code::
 i = Image.new(SCDoc.helpSourceDir +/+ "images/Swamp.png");
 i.dump
-i.write("~/Desktop/my_image.png");
+i.write("~/Desktop/my_image.png".standardizePath);
 i.free;
 
 //	storeOn / asCompileString
@@ -305,6 +298,9 @@ the location where to save it
 
 ARGUMENT::format
 (optional) format to use. see Image.formats for supported formats. If nil, it will get the format depending on the path extension.
+
+ARGUMENT::quality
+The quality factor must be in the range 0 to 100 or -1. Specify 0 to obtain small compressed files, 100 for large uncompressed files, and -1 (the default) to use the default settings.
 
 SUBSECTION::rendering
 
@@ -572,6 +568,10 @@ i.free;
 
 ARGUMENT::rgbaInteger
 an 32 bit link::Classes/Integer:: containing color information packed as 8bit RGBA
+ARGUMENT::x
+the x position of the pixel in the image
+ARGUMENT::y
+the y position of the pixel in the image
 
 METHOD::getPixel
 retrieve the pixel value at x @ y as a RGBA integer
@@ -771,7 +771,7 @@ the crop region to finally use. This may be required for extending bounds since 
 
 ARGUMENT::region
 NOTE::
-supported only in Mac OS 10.5 and later.
+supported only in macOS 10.5 and later.
 ::
 option to constrain the filter to a specific region IN the Image.
 

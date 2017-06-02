@@ -41,7 +41,6 @@ QtGUI {
 	*multiSliderView { ^QMultiSliderView }
 	*rangeSlider { ^QRangeSlider }
 	*slider2D { ^QSlider2D }
-	*tabletSlider2D { ^this.notImplemented( "TabletSlider2D"); }
 	*knob { ^QKnob; }
 	*listView { ^QListView }
 	*treeView { ^QTreeView }
@@ -55,8 +54,6 @@ QtGUI {
 	*stethoscope { ^QStethoscope2 }
 	*soundFileView { ^QSoundFileView }
 	*envelopeView { ^QEnvelopeView }
-	*tabletView { ^this.notImplemented( "TabletView"); }
-	*movieView { ^this.notImplemented( "MovieView"); }
 	*levelIndicator { ^QLevelIndicator }
 	*webView { ^QWebView }
 
@@ -85,8 +82,6 @@ QtGUI {
 	*font { ^QFont }
 	*image { ^QImage }
 
-	*speech { ^'Speech'.asClass }
-
 	*qcView {^QQuartzComposerView }
 
 	*notImplemented { arg class;
@@ -96,7 +91,10 @@ QtGUI {
 
 	//////////////////////////////////////////////////////////////////////
 
-	*cursorPosition { _Qt_CursorPosition }
+	*cursorPosition {
+		_Qt_CursorPosition
+		^this.primitiveFailed
+	}
 
 	*availableStyles {
 		_Qt_AvailableStyles

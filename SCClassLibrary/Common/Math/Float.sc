@@ -16,12 +16,21 @@ Float : SimpleNumber {
 
 	// returns an Integer which is the bit pattern of this as a
 	// 32bit single precision float
-	as32Bits { _As32Bits }
+	as32Bits {
+		_As32Bits
+		^this.primitiveFailed
+	}
 
 	// returns an Integer which is the bit pattern of high
 	// 32 bits of the 64 bit double precision floating point value
-	high32Bits { _High32Bits }
-	low32Bits { _Low32Bits }
+	high32Bits {
+		_High32Bits
+		^this.primitiveFailed
+	}
+	low32Bits {
+		_Low32Bits
+		^this.primitiveFailed
+	}
 
 	*from32Bits { arg word;
 		_From32Bits

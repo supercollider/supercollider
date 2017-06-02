@@ -530,7 +530,7 @@ bool BufAllocReadCmd::Stage2()
 {
 #ifdef NO_LIBSNDFILE
 	SendFailure(&mReplyAddress, "/b_allocRead", "scsynth compiled without libsndfile\n");
- 	scprintf("scsynth compiled without libsndfile\n");
+	scprintf("scsynth compiled without libsndfile\n");
 	return false;
 #else
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
@@ -627,10 +627,11 @@ bool BufReadCmd::Stage2()
 {
 #ifdef NO_LIBSNDFILE
 	SendFailure(&mReplyAddress, "/b_read", "scsynth compiled without libsndfile\n");
- 	scprintf("scsynth compiled without libsndfile\n");
+	scprintf("scsynth compiled without libsndfile\n");
 	return false;
 #else
 	SF_INFO fileinfo;
+	memset(&fileinfo, 0, sizeof(fileinfo));
 
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
 	int framesToEnd = buf->frames - mBufOffset;
@@ -792,7 +793,7 @@ bool BufAllocReadChannelCmd::Stage2()
 {
 #ifdef NO_LIBSNDFILE
 	SendFailure(&mReplyAddress, "/b_allocReadChannel", "scsynth compiled without libsndfile\n");
- 	scprintf("scsynth compiled without libsndfile\n");
+	scprintf("scsynth compiled without libsndfile\n");
 	return false;
 #else
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
@@ -916,10 +917,11 @@ bool BufReadChannelCmd::Stage2()
 {
 #ifdef NO_LIBSNDFILE
 	SendFailure(&mReplyAddress, "/b_readChannel", "scsynth compiled without libsndfile\n");
- 	scprintf("scsynth compiled without libsndfile\n");
+	scprintf("scsynth compiled without libsndfile\n");
 	return false;
 #else
 	SF_INFO fileinfo;
+	memset(&fileinfo, 0, sizeof(fileinfo));
 
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);
 	int framesToEnd = buf->frames - mBufOffset;
@@ -1025,7 +1027,7 @@ int BufWriteCmd::Init(char *inData, int inSize)
 {
 #ifdef NO_LIBSNDFILE
 	SendFailure(&mReplyAddress, "/b_write", "scsynth compiled without libsndfile\n");
- 	scprintf("scsynth compiled without libsndfile\n");
+	scprintf("scsynth compiled without libsndfile\n");
 	return false;
 #else
 	sc_msg_iter msg(inSize, inData);
@@ -1146,7 +1148,7 @@ bool BufCloseCmd::Stage2()
 {
 #ifdef NO_LIBSNDFILE
 	SendFailure(&mReplyAddress, "/b_close", "scsynth compiled without libsndfile\n");
- 	scprintf("scsynth compiled without libsndfile\n");
+	scprintf("scsynth compiled without libsndfile\n");
 	return false;
 #else
 	SndBuf *buf = World_GetNRTBuf(mWorld, mBufIndex);

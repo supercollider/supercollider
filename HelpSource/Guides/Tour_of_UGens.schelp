@@ -1025,14 +1025,14 @@ code::
 ## link::Classes/EnvGen:: - envelope generator
 || envelope is specified using an instance of the link::Classes/Env:: class.
 code::
-{ EnvGen.kr(Env.perc, doneAction:2) * SinOsc.ar(880,0,0.2) }.play;
-{ EnvGen.kr(Env.perc(1,0.005,1,4), doneAction:2) * SinOsc.ar(880,0,0.2) }.play;
+{ EnvGen.kr(Env.perc, doneAction: Done.freeSelf) * SinOsc.ar(880,0,0.2) }.play;
+{ EnvGen.kr(Env.perc(1,0.005,1,4), doneAction: Done.freeSelf) * SinOsc.ar(880,0,0.2) }.play;
 
 { EnvGen.kr(Env.perc, Impulse.kr(2)) * SinOsc.ar(880,0,0.2) }.play;
 { EnvGen.kr(Env.perc, Dust.kr(3)) * SinOsc.ar(880,0,0.2) }.play;
 
 // for sustain envelopes a gate is required
-z = { arg gate=1; EnvGen.kr(Env.adsr, gate, doneAction:2) * SinOsc.ar(880,0,0.2) }.play;
+z = { arg gate=1; EnvGen.kr(Env.adsr, gate, doneAction: Done.freeSelf) * SinOsc.ar(880,0,0.2) }.play;
 z.release;
 
 (
@@ -1043,7 +1043,7 @@ z = { arg gate=1;
 				[0]++{1.0.rand.squared}.dup(n-1) ++ [0],
 				{rrand(0.005,0.2)}.dup(n),
 				\lin, n-8, 8 );
-	EnvGen.kr(env, gate, doneAction: 2) * LFTri.ar(220,0,0.4)
+	EnvGen.kr(env, gate, doneAction: Done.freeSelf) * LFTri.ar(220,0,0.4)
 }.scope(1, zoom:4);
 )
 z.release;

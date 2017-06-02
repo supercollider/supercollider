@@ -250,7 +250,7 @@ s.waitForBoot({
 			x = RLPF.ar(x, fc, rq).softclip;
 			x = RLPF.ar(x, fc, rq, amp).softclip;
 			x = Balance2.ar(x[0], x[1], bal);
-			x = x * EnvGen.kr(Env.cutoff, gate, doneAction: 2);
+			x = x * EnvGen.kr(Env.cutoff, gate, doneAction: Done.freeSelf);
 			Out.ar(0, x);
 		}, [0.1, 0.1, 0.1, 0.1, 0.1, 0]
 	).add;

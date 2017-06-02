@@ -41,5 +41,8 @@ WindowsPlatform : Platform {
 		^if(File.exists(tmp)) { tmp }
 	}
 
-	myDocumentsDir { _WinPlatform_myDocumentsDir }
+	myDocumentsDir {
+		_WinPlatform_myDocumentsDir
+		^this.primitiveFailed
+	}
 }

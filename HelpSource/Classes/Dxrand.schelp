@@ -5,8 +5,8 @@ categories:: UGens>Demand
 
 Description::
 
-Dxrand never plays the same value twice, whereas  link::Classes/Drand::
-chooses any value in the list.
+Dxrand never plays the same value twice, whereas link::Classes/Drand:: chooses
+any value in the list.
 
 
 See link::Classes/Pxrand:: for structurally related equivalent.

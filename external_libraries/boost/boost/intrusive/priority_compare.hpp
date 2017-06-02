@@ -26,7 +26,14 @@
 namespace boost {
 namespace intrusive {
 
-template <class T>
+/// @cond
+
+template<class U>
+void priority_order();
+
+/// @endcond
+
+template <class T = void>
 struct priority_compare
 {
    //Compatibility with std::binary_function
@@ -37,6 +44,16 @@ struct priority_compare
    BOOST_INTRUSIVE_FORCEINLINE bool operator()(const T &val, const T &val2) const
    {
       return priority_order(val, val2);
+   }
+};
+
+template <>
+struct priority_compare<void>
+{
+   template<class T, class U>
+   BOOST_INTRUSIVE_FORCEINLINE bool operator()(const T &t, const U &u) const
+   {
+      return priority_order(t, u);
    }
 };
 

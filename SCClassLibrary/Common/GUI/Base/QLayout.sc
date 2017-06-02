@@ -6,7 +6,7 @@ Layout : QObject {
 	margins_ { arg margins;
 		this.setProperty( \margins, margins + [0,0,0,0] );
 	}
-	asView { ^this }
+	asLayoutElement { ^this }
 }
 
 // LINE LAYOUTS ///////////////////////////////////////////////////
@@ -22,7 +22,7 @@ LineLayout : Layout {
 		var key;
 		var i;
 		if( in.isKindOf(Array) ) {
-			out[0] = in[0].asView;
+			out[0] = in[0].asLayoutElement;
 			i = 1;
 			while { i + 1 < in.size } {
 				key = in[i];
@@ -33,25 +33,25 @@ LineLayout : Layout {
 				i = i + 2;
 			};
 		}{
-			out[0] = in.asView;
+			out[0] = in.asLayoutElement;
 		};
 		^out;
 	}
 
 	add { arg item, stretch = 0, align;
-		this.invokeMethod( \addItem, [[item.asView, stretch, QAlignment(align)]], true );
+		this.invokeMethod( \addItem, [[item.asLayoutElement, stretch, QAlignment(align)]], true );
 	}
 
 	insert { arg item, index=0, stretch = 0, align;
-		this.invokeMethod( \insertItem, [[item.asView, index, stretch, QAlignment(align)]], true );
+		this.invokeMethod( \insertItem, [[item.asLayoutElement, index, stretch, QAlignment(align)]], true );
 	}
 
 	setStretch { arg item, stretch;
-		this.invokeMethod( \setStretch, [item.asView, stretch], true );
+		this.invokeMethod( \setStretch, [item.asLayoutElement, stretch], true );
 	}
 
 	setAlignment { arg item, align;
-		this.invokeMethod( \setAlignment, [item.asView, QAlignment(align)], true );
+		this.invokeMethod( \setAlignment, [item.asLayoutElement, QAlignment(align)], true );
 	}
 }
 
@@ -79,7 +79,7 @@ GridLayout : Layout {
 		var key;
 		var i;
 		if( in.isKindOf(Array) ) {
-			out[0] = in[0].asView;
+			out[0] = in[0].asLayoutElement;
 			i = 1;
 			while { i + 1 < in.size } {
 				key = in[i];
@@ -91,7 +91,7 @@ GridLayout : Layout {
 				i = i + 2;
 			};
 		}{
-			out[0] = in.asView;
+			out[0] = in.asLayoutElement;
 		};
 		^out;
 	}
@@ -144,11 +144,11 @@ GridLayout : Layout {
 	}
 
 	add { arg item, row, column, align;
-		this.invokeMethod( \addItem, [[item.asView, row, column, 1, 1, QAlignment(align)]], true );
+		this.invokeMethod( \addItem, [[item.asLayoutElement, row, column, 1, 1, QAlignment(align)]], true );
 	}
 
 	addSpanning { arg item, row, column, rowSpan=1, columnSpan=1, align;
-		this.invokeMethod( \addItem, [[item.asView, row, column,
+		this.invokeMethod( \addItem, [[item.asLayoutElement, row, column,
 			rowSpan, columnSpan,
 			QAlignment(align)
 		]], true );
@@ -195,11 +195,11 @@ StackLayout : Layout {
 
 	*qtClass { ^'QcStackLayout' }
 
-	*new { arg ...views; ^super.new([views.collect(_.asView)]) }
+	*new { arg ...views; ^super.new([views.collect(_.asLayoutElement)]) }
 
-	add { arg view; this.insert(view.asView, -1) }
+	add { arg view; this.insert(view.asLayoutElement, -1) }
 
-	insert { arg view, index = 0; this.invokeMethod( \insertWidget, [index, view.asView] ) }
+	insert { arg view, index = 0; this.invokeMethod( \insertWidget, [index, view.asLayoutElement] ) }
 
 	index { ^this.getProperty(\currentIndex) }
 	index_ { arg value; this.setProperty(\currentIndex, value) }

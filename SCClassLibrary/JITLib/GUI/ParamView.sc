@@ -3,6 +3,7 @@ ParamView {
 	var <value, <label, <>action, <spec;
 	var <zone, <zones, <slider, <ranger, <textview;
 	var <ezviews, <currview, <viewType;
+	var <>useRanger = true;
 
 	*new { |parent, bounds, label, spec, action, initVal, initAction = false|
 		^super.new.init(parent, bounds, label, spec, action, initVal, initAction);
@@ -34,7 +35,7 @@ ParamView {
 		zones.do(_.resize_(2));
 
 		label = argLabel ? "-";
-		spec = argSpec.asSpec;
+		spec = argSpec !? { argSpec.asSpec };
 		action = argAction;
 
 		slider = EZSlider(zones[0], rect2, label, spec);
@@ -53,6 +54,9 @@ ParamView {
 
 	// types: 0 = slider, 1 = ranger, 2 = text
 	viewType_ { |newType = 0, force = false|
+		if (spec.isNil or: { useRanger.value != true }) {
+			newType = newType.roundUp(2);
+		};
 		if (force or: { newType != viewType }) {
 			if (newType.inclusivelyBetween(0, 2)) {
 				zones.do { |z, i| z.visible_(newType == i) };
@@ -74,9 +78,7 @@ ParamView {
 	}
 
 	value_ { |val|
-		if (val != value) {
-			this.viewType_(this.valueType(val));
-		};
+		this.viewType_(this.valueType(val));
 		value = val;
 		currview.value_(value);
 	}
@@ -85,7 +87,7 @@ ParamView {
 	valueAction_ { |val| this.value_(val).doAction }
 
 	spec_ { |newspec|
-		spec = newspec.asSpec;
+		spec = newspec !? { newspec.asSpec };
 		slider.controlSpec_(spec);
 		ranger.controlSpec_(spec);
 	}

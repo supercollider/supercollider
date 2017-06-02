@@ -118,7 +118,10 @@ Pen {
 		^this.primitiveFailed;
 	}
 
-	*matrix { _QPen_Transform }
+	*matrix {
+		_QPen_Transform
+		^this.primitiveFailed
+	}
 
 	*matrix_ { arg matrixArray;
 		_QPen_SetTransform
@@ -157,7 +160,7 @@ Pen {
 	}
 
 	*quadCurveTo { arg endPoint, cPoint;
-		_QPen_CubicTo
+		_QPen_QuadTo
 		^this.primitiveFailed;
 	}
 

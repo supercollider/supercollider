@@ -99,7 +99,7 @@ struct BeatTrack : Unit {
 	float m_outputphase, m_outputtempo, m_outputphaseperblock;
 
 	int halftrig;
-    int q1trig;
+	int q1trig;
 	int q2trig;
 
 	//amortization - more complex structure to support different rates of work

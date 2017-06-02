@@ -57,17 +57,17 @@ copymethod:: ArrayedCollection *series
 
 copymethod:: ArrayedCollection *iota
 
-copymethod:: Collection *interpolation
+copymethod:: SequenceableCollection *interpolation
 
-copymethod:: Collection *rand
+copymethod:: SequenceableCollection *rand
 
-copymethod:: Collection *rand2
+copymethod:: SequenceableCollection *rand2
 
-copymethod:: Collection *linrand
+copymethod:: SequenceableCollection *linrand
 
-copymethod:: Collection *exprand
+copymethod:: SequenceableCollection *exprand
 
-copymethod:: Collection *fib
+copymethod:: SequenceableCollection *fib
 
 
 
@@ -81,15 +81,11 @@ copymethod:: ArrayedCollection -put
 
 copymethod:: ArrayedCollection -insert
 
-copymethod:: ArrayedCollection -overWrite
-
 copymethod:: ArrayedCollection -clipAt
 
 copymethod:: ArrayedCollection -wrapAt
 
 copymethod:: ArrayedCollection -foldAt
-
-copymethod:: ArrayedCollection -slice
 
 copymethod:: ArrayedCollection -clipPut
 
@@ -120,10 +116,6 @@ copymethod:: ArrayedCollection -reverseDo
 copymethod:: ArrayedCollection -deepCollect
 
 copymethod:: ArrayedCollection -reshape
-
-copymethod:: ArrayedCollection -bubble
-
-copymethod:: ArrayedCollection -unbubble
 
 copymethod:: ArrayedCollection -windex
 

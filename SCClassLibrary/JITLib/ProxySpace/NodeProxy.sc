@@ -47,16 +47,19 @@ NodeProxy : BusPlug {
 	isPlaying { ^group.isPlaying }
 
 	free { | fadeTime, freeGroup = true |
-		var bundle;
+		var bundle, freetime;
 		var oldGroup = group;
 		if(this.isPlaying) {
 			bundle = MixedBundle.new;
-			if(fadeTime.notNil) { bundle.add([15, group.nodeID, "fadeTime", fadeTime]) };
+			if(fadeTime.notNil) {
+				bundle.add([15, group.nodeID, "fadeTime", fadeTime]) // n_set
+			};
 			this.stopAllToBundle(bundle, fadeTime);
 			if(freeGroup) {
 				oldGroup = group;
 				group = nil;
-				bundle.sched((fadeTime ? this.fadeTime) + (server.latency ? 0), { oldGroup.free });
+				freetime = (fadeTime ? this.fadeTime) + (server.latency ? 0) + 1e-9; // delay a tiny little
+				server.sendBundle(freetime, [11, oldGroup.nodeID]); // n_free
 			};
 			bundle.send(server);
 			this.changed(\free, [fadeTime, freeGroup]);
@@ -142,7 +145,7 @@ NodeProxy : BusPlug {
 			if(server.serverRunning) { container.loadToBundle(bundle, server) } { loaded = false; };
 			this.prepareOtherObjects(bundle, index, oldBus.notNil and: { oldBus !== bus });
 		} {
-			format("failed to add % to node proxy: %", obj, this).inform;
+			format("failed to add % to node proxy: %", obj, this).postln;
 			^this
 		};
 
@@ -255,15 +258,6 @@ NodeProxy : BusPlug {
 		this.linkNodeMap;
 	}
 
-	server_ { | inServer |
-		this.deprecated(thisMethod);
-		if(this.isNeutral.not) {
-			this.end;
-			loaded = false;
-		};
-		server = inServer;
-	}
-
 	group_ { | inGroup |
 		var bundle;
 		if(inGroup.server !== server) { Error("cannot move to another server").throw };
@@ -321,11 +315,6 @@ NodeProxy : BusPlug {
 		this.set(*args)
 	}
 
-	mapn { | ... args |
-		"NodeProxy: mapn is deprecated, please use map instead".postln;
-		this.map(*args)
-	}
-
 	xset { | ... args |
 		this.xFadePerform(\set, args)
 	}
@@ -334,10 +323,6 @@ NodeProxy : BusPlug {
 	}
 	xsetn { | ... args |
 		this.xFadePerform(\set, args)
-	}
-	xmapn { | ... args |
-		"NodeProxy: xmapn is decrepated, please use xmap instead".postln;
-		this.xFadePerform(\map, args)
 	}
 	xunset { | ... args |
 		this.xFadePerform(\unset, args)
@@ -1023,6 +1008,7 @@ Ndef : NodeProxy {
 		res = dict.envir.at(key);
 		if(res.isNil) {
 			res = super.new(server).key_(key);
+			dict.initProxy(res);
 			dict.envir.put(key, res)
 		};
 

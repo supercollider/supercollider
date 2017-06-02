@@ -8,9 +8,12 @@ Description::
 
 Comb delay line with no interpolation. See also  link::Classes/CombL::
 which uses linear interpolation, and  link::Classes/CombC::  which uses
-cubic interpolation. Cubic interpolation is more computationally
-expensive than linear, but more accurate.
+cubic interpolation. Cubic and linear interpolation are more computationally
+expensive, but more accurate.
 
+This UGen will create aliasing artifacts if you modulate the delay time, which is also quantized to the nearest sample period. If these are undesirable properties, use CombL or CombC. But if your delay time is fixed and sub-sample accuracy is not needed, this is the most CPU-efficient choice with no loss in quality.
+
+The feedback coefficient is given by the equation code:: fb == 0.001 ** (delay / decay.abs) * decay.sign :: where 0.001 is -60 dBFS.
 
 classmethods::
 
@@ -26,7 +29,11 @@ argument::delaytime
 Delay time in seconds.
 
 argument::decaytime
-Time for the echoes to decay by 60 decibels. If this time is negative then the feedback coefficient will be negative, thus emphasizing only odd harmonics at an octave lower.
+Time for the echoes to decay by 60 decibels. If this time is negative, then the feedback coefficient will be negative, thus emphasizing only odd harmonics at an octave lower.
+
+Large decay times are sensitive to DC bias, so use a link::Classes/LeakDC:: if this is an issue.
+
+Infinite decay times are permitted. A decay time of code::inf:: leads to a feedback coefficient of 1, and a decay time of code::-inf:: leads to a feedback coefficient of -1.
 
 argument::mul
 Output will be multiplied by this value.

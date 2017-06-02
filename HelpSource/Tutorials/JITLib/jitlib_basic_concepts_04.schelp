@@ -98,7 +98,7 @@ ProxySynthDef.sampleAccurate = false;
 ~x.play;
 
 // the grain frees itself
-~x = { SinOsc.ar(800) * EnvGen.ar(Env.perc(0.001, 0.03, 0.4), doneAction:2) };
+~x = { SinOsc.ar(800) * EnvGen.ar(Env.perc(0.001, 0.03, 0.4), doneAction: Done.freeSelf) };
 
 
 // jittery tone.

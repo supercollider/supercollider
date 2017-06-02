@@ -1,7 +1,7 @@
 class::Interpreter
 summary:: The interpreter defines a context in which interactive commands are compiled and executed.
 categories:: Core>Kernel
-related::How-to-Use-the-Interpreter
+related::Guides/How-to-Use-the-Interpreter
 
 description::
 The interpreter is an object that handles the translation and execution of code at runtime. It is that what runs any program code and defines a context for it.
@@ -122,7 +122,12 @@ codeDump = nil; // reset to nil.
 
 method::preProcessor
 
-can be used to modify code before it is interpreted. Given appropriate delimiters, this can be used to implement little languages.
+If this is set to a function, all interactively executed code is piped through it before parsing and
+interpreting. This is mostly used for developing domain-specific live coding languages that piggyback
+off the SuperCollider editing environment.
+
+This function is called by link::Classes/Interpreter#-interpretPrintCmdLine:: with two arguments:
+the code string and the interpreter itself.
 
 code::
 // silly but simple: understand a Saw for every SinOsc
@@ -136,3 +141,7 @@ preProcessor = nil; // reset to nil.
 method::a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z
 
 Global variables ("interpreter variables") for interactive programming (see link::#Accessing::).
+
+method::functionCompileContext
+
+The compiler uses this method as a virtual context in which to compile code.

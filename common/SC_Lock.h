@@ -28,13 +28,13 @@
 #include <thread>
 
 typedef std::mutex SC_Lock;
+typedef std::thread SC_Thread;
 using std::mutex;
 using std::timed_mutex;
 using std::lock_guard;
 using std::unique_lock;
 using std::cv_status;
 typedef std::condition_variable_any condition_variable_any;
-using std::thread;
 
 typedef SC_Lock mutex;
 

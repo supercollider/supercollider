@@ -206,7 +206,7 @@ bool perl_matcher<BidiIterator, Allocator, traits>::match_imp()
    search_base = base;
    state_count = 0;
    m_match_flags |= regex_constants::match_all;
-   m_presult->set_size((m_match_flags & match_nosubs) ? 1 : 1 + re.mark_count(), search_base, last);
+   m_presult->set_size((m_match_flags & match_nosubs) ? 1u : static_cast<typename results_type::size_type>(1u + re.mark_count()), search_base, last);
    m_presult->set_base(base);
    m_presult->set_named_subs(this->re.get_named_subs());
    if(m_match_flags & match_posix)
@@ -268,7 +268,7 @@ bool perl_matcher<BidiIterator, Allocator, traits>::find_imp()
       // reset our state machine:
       search_base = position = base;
       pstate = re.get_first_state();
-      m_presult->set_size((m_match_flags & match_nosubs) ? 1 : 1 + re.mark_count(), base, last);
+      m_presult->set_size((m_match_flags & match_nosubs) ? 1u : static_cast<typename results_type::size_type>(1u + re.mark_count()), base, last);
       m_presult->set_base(base);
       m_presult->set_named_subs(this->re.get_named_subs());
       m_match_flags |= regex_constants::match_init;
@@ -287,13 +287,13 @@ bool perl_matcher<BidiIterator, Allocator, traits>::find_imp()
             ++position;
       }
       // reset $` start:
-      m_presult->set_size((m_match_flags & match_nosubs) ? 1 : 1 + re.mark_count(), search_base, last);
+      m_presult->set_size((m_match_flags & match_nosubs) ? 1u : static_cast<typename results_type::size_type>(1u + re.mark_count()), search_base, last);
       //if((base != search_base) && (base == backstop))
       //   m_match_flags |= match_prev_avail;
    }
    if(m_match_flags & match_posix)
    {
-      m_result.set_size(1 + re.mark_count(), base, last);
+      m_result.set_size(static_cast<typename results_type::size_type>(1u + re.mark_count()), base, last);
       m_result.set_base(base);
    }
 
@@ -791,15 +791,6 @@ inline bool perl_matcher<BidiIterator, Allocator, traits>::match_assert_backref(
       pstate = pstate->next.p;
    }
    return result;
-}
-
-template <class BidiIterator, class Allocator, class traits>
-bool perl_matcher<BidiIterator, Allocator, traits>::match_toggle_case()
-{
-   // change our case sensitivity:
-   this->icase = static_cast<const re_case*>(pstate)->icase;
-   pstate = pstate->next.p;
-   return true;
 }
 
 template <class BidiIterator, class Allocator, class traits>

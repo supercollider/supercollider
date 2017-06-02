@@ -153,7 +153,7 @@ Task({
 			});
 			out = CombC.ar(out, 0.2, 0.2, 3, 1, out);
 			out = out * EnvGen.kr(
-				Env.sine, doneAction: 2, timeScale: 1.0 + 6.0.rand, levelScale: 0.3
+				Env.sine, doneAction: Done.freeSelf, timeScale: 1.0 + 6.0.rand, levelScale: 0.3
 			);
 			Out.ar( 0, out );
 		}).send(s);

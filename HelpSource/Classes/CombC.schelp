@@ -11,11 +11,7 @@ which uses no interpolation, and  link::Classes/CombL::  which uses linear
 interpolation. Cubic interpolation is more computationally expensive
 than linear, but more accurate.
 
-A very good tip for anyone who is interested in delay lines, 
-and is willing to get a simple way of processing a live source 
-in a pretty effective way, is setting up a larger memory pool in the server,
-and basically setting up pretty large delay lines, randomizing all their parameters
-
+The feedback coefficient is given by the equation code:: fb == 0.001 ** (delay / decay.abs) * decay.sign :: where 0.001 is -60 dBFS.
 
 classmethods::
 
@@ -32,6 +28,10 @@ Delay time in seconds.
 
 argument::decaytime
 Time for the echoes to decay by 60 decibels. If this time is negative then the feedback coefficient will be negative, thus emphasizing only odd harmonics at an octave lower.
+
+Large decay times are sensitive to DC bias, so use a link::Classes/LeakDC:: if this is an issue.
+
+Infinite decay times are permitted. A decay time of code::inf:: leads to a feedback coefficient of 1, and a decay time of code::-inf:: leads to a feedback coefficient of -1.
 
 argument::mul
 Output will be multiplied by this value.
@@ -70,7 +70,7 @@ s.reboot;
 )
 ({
 	var in, del1, del2, del3, del4;
-	in = SoundIn.ar(0); 
+	in = SoundIn.ar(0);
 	del1 = CombC.ar(in, 8, LFNoise2.kr(0.01).range(1, 8), 1);
 	del2 = CombC.ar(del1, 8, LFNoise2.kr(0.01).range(1, 8), 1);
 	del3 = CombC.ar(del2, 8, LFNoise2.kr(0.01).range(1, 8), 1);

@@ -22,6 +22,52 @@ The contents of a Dictionary are strong::unordered::. You must not depend on the
 
 IdentityDictionary is often used to assign names to instances of a particular class. For example, the proxy classes ( link::Classes/Pdef::, link::Classes/Pdefn::, link::Classes/Tdef::, link::Classes/Ndef:: ), and link::Classes/NodeWatcher:: all have class variables named all implemented as IdentityDictionaries.
 
+Subsection:: 'parent' and 'proto' variables
+
+IdentityDictionary has three levels of content: the dictionary itself, a code::proto::, and a code::parent::. code::proto:: and code::parent:: exist primarily for IdentityDictionary's subclass link::Classes/Event::, which uses the code::parent:: to store action functions that will be used when an event is played. Users may put additional default values into the code::proto::.
+
+Looking up a key within a dictionary first checks the dictionary itself. If the key is not found at this level, it looks in the code::proto::, and if still not found, it looks in the parent.
+
+These extra levels are meant for common, default values that should be the same across many dictionary instances.
+
+list::
+## code::proto:: and code::parent:: values are not shown when posting the dictionary.
+## Copying an IdentityDictionary transfers a reference to the parent and proto into the copy. It is a reference, not a copy: changing the copy's parent also affects the parent of the original. This is for efficiency.
+## Iteration operations (link::Classes/Dictionary#-do::, link::Classes/Dictionary#-keysValuesDo::) only touch the main-level values.
+## link::Classes/Dictionary#-collect::, link::Classes/Dictionary#-select::, and link::Classes/Dictionary#-reject:: return new dictionaries. The parent and proto will be preserved emphasis::as is:: in the new result, but -- as with code::do:: -- they will not be processed in the iteration, and as with code::copy::, they are identical references.
+::
+
+code::
+// 'b' is not posted
+e = IdentityDictionary(8,
+	parent: IdentityDictionary[\b -> 10]
+).put(\a, 5);
+-> IdentityDictionary[ (a -> 5) ]
+
+// But 'b' is still there
+e[\a] + e[\b]
+-> 15
+
+// Iteration touches 'a' only
+e.keysValuesDo { |key, value| [key, value].postln };
+-> [ a, 5 ]
+
+// 'collect' is also an iteration, and doesn't touch the parent
+g = e.collect { |x| x * 5 };
+-> IdentityDictionary[ (a -> 25) ]
+g[\b]
+-> 10
+
+// The parent goes into a copy as well
+g = e.copy;
+g[\b]
+
+// But it's by reference: 'e' and 'g' have the same parent
+g.parent[\b] = 20;
+e[\b]
+-> 20
+::
+
 
 CLASSMETHODS::
 
@@ -37,7 +83,7 @@ a.foo(-10.01);
 
 
 warning::
-Only keys that are not already instance methods of IdentityDictionary (or its superclasses) can be used in such a way. E.g. the key "free" will not work, because it is implemented in Object. This means that class extensions (see: link::Guides/Writing Classes::) can break code. It is advisable to use underscores in method names to make this improbable.
+Only keys that are not already instance methods of IdentityDictionary (or its superclasses) can be used in such a way. E.g. the key "free" will not work, because it is implemented in Object. This means that class extensions (see: link::Guides/WritingClasses::) can break code. It is advisable to use underscores in method names to make this improbable.
 ::
 
 In the subclass link::Classes/Event::, "know" is true by default, so that it can be instantly used for prototype objects. The first argument passed to the functions is in such cases always the dictionary/event itself (here denoted by "self").
@@ -135,7 +181,7 @@ code::
 SynthDef(\help_sinegrain,
     { arg out=0, freq=440, sustain=0.05;
         var env;
-        env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction:2);
+        env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction: Done.freeSelf);
         Out.ar(out, SinOsc.ar(freq, 0.5pi, env))
     }).add;
 

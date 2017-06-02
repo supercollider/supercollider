@@ -139,7 +139,7 @@ x.stop;
 x.play;
 ::
 
-argument::fadeTime
+argument::argFadeTime
 The time for fading out all routing synths.
 
 method::clear
