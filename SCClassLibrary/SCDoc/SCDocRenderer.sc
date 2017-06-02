@@ -158,7 +158,7 @@ SCDocHTMLRenderer {
 					atag ++ pathElems[0..i].join(">") ++ "'>"++ elem ++"</a>"
 				}.join(">");
 
-			}.join(", "))
+			}.join(" | "))
 
 			<< "</div>\n";
 		};
