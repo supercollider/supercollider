@@ -95,8 +95,10 @@ String[char] : RawArray {
 		if(aString.isString.not) { ^true }
 		^this.compare(aString, false) != 0
 	}
-	hash { _StringHash }
-
+	hash {
+		_StringHash
+		^this.primitiveFailed
+	}
 	// no sense doing collect as per superclass collection
 	performBinaryOpOnSimpleNumber { arg aSelector, aNumber;
 		^aNumber.asString.perform(aSelector, this);
@@ -110,11 +112,20 @@ String[char] : RawArray {
 
 	isString { ^true }
 	asString { ^this }
-	asCompileString { _String_AsCompileString; }
+	asCompileString {
+		_String_AsCompileString
+		^this.primitiveFailed
+	}
 	species { ^String }
 
-	postln { _PostLine }
-	post { _PostString }
+	postln {
+		_PostLine
+		^this.primitiveFailed
+	}
+	post {
+		_PostString
+		^this.primitiveFailed
+	}
 	postcln { "// ".post; this.postln; }
 	postc { "// ".post; this.post; }
 

@@ -65,6 +65,7 @@ AppClock : Clock {
 	*prSchedNotify {
 		// notify clients that something has been scheduled
 		_AppClock_SchedNotify
+		^this.primitiveFailed
 	}
 }
 
