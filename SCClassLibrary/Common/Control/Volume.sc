@@ -85,6 +85,10 @@ Volume {
 		}
 	}
 
+	free {
+		ampSynth.free;
+	}
+
 	// sets volume back to 1 - removes the synth
 	reset {
 		isMuted = false;
