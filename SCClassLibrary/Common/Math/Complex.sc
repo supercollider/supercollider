@@ -85,8 +85,12 @@ Complex : Number {
 	cubed { ^this * this * this }
 	exp { ^exp(real) * Complex.new(cos(imag), sin(imag)) }
 	reciprocal {
-		var z = reciprocal(real.squared + imag.squared);
-		^Complex(real * z, imag.neg * z)
+		var denom;
+		// in pathological cases, use the definition of division
+		if((real * 0).isNaN or: { (imag * 0).isNaN }) { ^1.0 / this };
+		// otherwise use the standard definition
+		denom = reciprocal(real.squared + imag.squared);
+		^Complex(real * denom, imag.neg * denom)
 	}
 
 	pow { arg aNumber; // return(this ** aNumber)
