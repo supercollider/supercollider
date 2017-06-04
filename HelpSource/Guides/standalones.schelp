@@ -76,9 +76,16 @@ and a working startup file. (can be a very simple test setup)
 ## when you get to the wakeup kiss, share and enjoy!
 ::
 
-subsection:: Renaming, copying, and fixing up the new app
+subsection:: Naming, copying, and fixing up the new app
+
+// TO PREPARE, CHECK YOUR CURRENT config in Preferences->Interpreter:
+// you should be using the internal SCClassLibrary and HelpSource,
+// not an external git repository!
+// To test exporting extensions, it is best to have some quarks
+// or other extensions installed, as seen in the includePaths.
 
 code::
+
 // 0 - define name and location of new app + helper functions
 (
 // define the name for the new app and its location:
