@@ -102,7 +102,7 @@ code::
 ~thisAppName = ~pathToThisApp.basename.splitext.first;
 ~pathToNewApp = ~newAppLocation +/+ ~newAppName ++ ".app";
 ~newAppResDir = ~pathToNewApp +/+ "Contents/Resources";
-~newAppSupportDir = Platform.userConfigDir.replace(~thisAppName, ~newAppName);
+~newAppSupportDir = Platform.userConfigDir.dirname +/+ ~newAppName;
 );
 
 
@@ -114,7 +114,7 @@ code::
 if (File.exists(~pathToNewApp).not) {
 	~copyFolder.(~pathToThisApp, ~pathToNewApp);
 	File.mkdir(~newAppSupportDir);
-} { warn("% already exists.".format(~pathToNewApp)) };
+} { warn("supportDir % already exists.".format(~pathToNewApp)) };
 );
 
 (
@@ -123,35 +123,46 @@ if (File.exists(~pathToNewApp).not) {
 ~infoPlistPath = ~pathToNewApp +/+ "Contents/Info.plist";
 // get its string, replace the SC names, write again
 ~infoString = ~readText.(~infoPlistPath);
+~executableIndex = ~infoString.find("<key>CFBundleExecutable</key>");
+~nameToReplace = ~infoString.copyRange(
+	~infoString.find("<string>", offset: ~executableIndex) + 8,
+	~infoString.find("</string>", offset: ~executableIndex) - 1
+);
 
-"replacing app name in plist file at these locations: ".post;
-~infoString.findAll(~thisAppName).postln;
+"replacing bundleName % in plist file at these locations: "
+.postf(~nameToReplace.cs);
+~foundNameLocs = ~infoString.findAll(~nameToReplace).postln;
 
-~newInfoString = ~infoString.replace(~thisAppName,  ~newAppName );
+~newInfoString = ~infoString.replace(~nameToReplace, ~newAppName );
 ~writeText.(~infoPlistPath, ~newInfoString);
 // ~readText.(~infoPlistPath);
 
 // b. rename the binary file:
 "renaming macos binary to: ".post;
 // fixups in the new app - 2. rename the binary inside the app folder
-unixCmd("mv" + quote(~pathToNewApp +/+ "Contents/MacOS/" +/+ ~thisAppName)
-	+ quote(~pathToNewApp +/+ "Contents/MacOS/" ++ ~newAppName).postln);
+unixCmd("mv"
+	+ quote(~pathToNewApp +/+ "Contents/MacOS/" +/+ ~nameToReplace)
+	+ quote(~pathToNewApp +/+ "Contents/MacOS/" ++ ~newAppName).postln
+);
 );
 
 
 // 3. *** time for the first wakeup kiss *** //
 unixCmd("open" + ~pathToNewApp);
 
-// ... and independence test!
-// in the new app, run this code:
+// ... and independence test:
+// IN THE NEW APP, run this code:
 Platform.userAppSupportDir.postcs;
 ::
 
-NOTE:: IF THIS HAS the orignial ~thisAppName (the one you started from, e.g. ~/././SuperCollider) and NOT the ~newAppName: delete it again, and start over using a different starting version of SC3 (see recommended list on top)!
+NOTE:: THIS SHOULD END WITH ~newAppName! If it has the original ~thisAppName (the one you started from, e.g. ~/././SuperCollider), the new app will not be interfere with SuperCollider! So, delete it again, and start over using a recommended version of SC3 (see tested list on top)!
 
 code::
 /*
+// if it failed, delete the app
 unixCmd("rm -r" + quote(~pathToNewApp));
+// and delete its correct support dir (if needed)
+unixCmd("rm -r" + quote("~/Library/Application Support/" +/+ ~newAppName));
 */
 ::
 ::
@@ -193,6 +204,9 @@ File.mkdir(~overDir);
 // 5. write a basic startupFile:
 ~startupCode =
 "// basic example startup file for osx standalone.
+// avoid clash with default SC server
+s.addr.port = 57105;
+
 // boots server and plays a little sound
 s.waitForBoot {
 	{
@@ -205,6 +219,11 @@ s.waitForBoot {
 ~writeText.(~newAppResDir +/+ "startup.scd", ~startupCode);
 (~newAppResDir +/+ "startup.scd").openOS;
 )
+
+// *** time for a second wakeup kiss *** //
+// should run the startup file and play a sound:
+unixCmd("open" + ~pathToNewApp);
+
 
 // 6. For larger projects:
 //    make an example project folder with a loadfile in it,
@@ -256,33 +275,30 @@ s.waitForBoot {
 (~newAppResDir +/+ "startup.scd").openOS;
 )
 
-// . *** time for the second wakeup kiss *** //
+// *** time for the third wakeup kiss *** //
 unixCmd("open" + ~pathToNewApp);
 
 // this should open the new app, and its loadfile!
 
 
-// 7. create an internal quarks folder inside the new app,
-// and copy all the current includePaths there:
-
+// 7. create an internal extensions folder inside the new app,
+// and copy all the currently active includePaths there:
 (
-// more polite and flexible, but needs configuration later:
-// (add this folder as includePath, etc etc )
 ~newAppQuarksDir = ~newAppResDir +/+ "InternalExtensions";
 
 // copy all folders in my current quarks includePaths
 // to Resources/SCClassLibrary to freeze them:
 File.mkdir(~newAppQuarksDir);
 
-~quarkPaths = LanguageConfig.includePaths.reject { |path|
+~pathsToCopy = LanguageConfig.includePaths.reject { |path|
 	["SCClassLibrary", "HelpSource"].includesEqual(path.basename)
 };
 
-~quarkPaths.collect(_.basename).sort.printcsAll;
+~pathsToCopy.collect(_.basename).sort.printcsAll;
 
 if (~newAppQuarksDir.pathMatch.notEmpty) {
 	"/*** copying Quarks : ***/".postln;
-	~quarkPaths.do { |path|
+	~pathsToCopy.do { |path|
 		unixCmd(
 			"cd" + quote(~newAppQuarksDir) ++ ";"
 			" cp -r" + quote(path).postln + ".");
@@ -290,13 +306,13 @@ if (~newAppQuarksDir.pathMatch.notEmpty) {
 };
 "";
 )
-// open it to check
+// and now the new app folder contains all quarks:
 ~newAppQuarksDir.openOS;
 
-// and now the new app folder contains all quarks:
+// open the new app:
 unixCmd("open" + ~pathToNewApp);
 
-// IN THE NEW APP, run this to create a self-contained startup config file:
+// AND IN THE NEW APP, run this to create a self-contained startup config file:
 (
 // use the internal extensions - repeat this when you move the app!
 LanguageConfig.addIncludePath(String.scDir +/+ "InternalExtensions");
@@ -304,21 +320,22 @@ LanguageConfig.addIncludePath(String.scDir +/+ "InternalExtensions");
 LanguageConfig.addExcludePath(Platform.userExtensionDir);
 LanguageConfig.addExcludePath(Platform.systemExtensionDir);
 LanguageConfig.store;
-)
 
 // see if the internal path was stored OK:
 LanguageConfig.includePaths.last;
+// this should not be empty:
 LanguageConfig.includePaths.last.pathMatch.postln;
+)
 
-// IN THE NEW APP, REBOOT THE INTERPRETER NOW!
+// STILL IN THE NEW APP, REBOOT THE INTERPRETER NOW!
 // - the added quarks should now be present.
 ::
 
 Note:: You can use the Standalone quark to make sure your app remains closed, keeps using its to its InternalExtensions dir, and continues to ignore anything in its userExtensionDir or systemExtensionDir.
 ::
 code::
-// In MyApp.app:
-Quarks.install("Standalone");
+// IN THE NEW APP, DO:
+Quarks.install("https://github.com/adcxyz/Standalone");
 // reboot interpreter, then do
 Standalone.activate;
 // reboot interpreter again, and done.
