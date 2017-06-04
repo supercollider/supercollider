@@ -560,16 +560,22 @@ Collection {
 
 	asAssociations { |class|
 		var res;
-		if(this.isAssociationArray) { ^this };
-		res = (class ? Array).new(this.size div: 2);
+		class = class ? Array;
+		if(this.isAssociationArray) {
+			^if(class == this.class) { this } { this.as(class) }
+		};
+		res = class.new(this.size div: 2);
 		this.pairsDo { |key, val| res.add(key -> val) }
 		^res
 	}
 
 	asPairs { |class|
 		var res;
-		if(this.isAssociationArray.not) { ^this };
-		res = (class ? Array).new(this.size div: 2);
+		class = class ? Array;
+		if(this.isAssociationArray.not) {
+			^if(class == this.class) { this } { this.as(class) }
+		};
+		res = class.new(this.size div: 2);
 		this.do { |assoc| res.add(assoc.key).add(assoc.value) }
 		^res
 	}

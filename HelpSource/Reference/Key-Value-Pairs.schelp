@@ -72,3 +72,11 @@ CODE::
 [\freq, 100, \amp, 0.1].asEvent // ( 'amp': 0.1, 'freq': 100 )
 ::
 
+The methods code::asAssociations:: and code::asPairs:: optionally take a code::class:: argument.
+CODE::
+// SortedList[ (a -> 1871), (b -> 1848), (c -> 1789) ]
+(c:1789, b:1848, a:1871).asAssociations(SortedList);
+
+// LinkedList[ a, 1871, c, 1789, b, 1848 ]
+(c:1789, b:1848, a:1871).asPairs(LinkedList);
+::
