@@ -87,7 +87,9 @@ Complex : Number {
 	reciprocal {
 		var denom;
 		// undefined cases (no extended exponential numbers defined yet)
-		if(this.isInfinite) { ^Complex(0/0, 0/0) };
+		if(real == inf or: { imag == inf } or: { real == -inf } or: { imag == -inf }) {
+			^Complex(0/0, 0/0)
+		};
 		// otherwise use the standard definition
 		denom = reciprocal(real.squared + imag.squared);
 		^Complex(real * denom, imag.neg * denom)
@@ -136,9 +138,6 @@ Complex : Number {
 	coerce { arg aNumber; ^aNumber.asComplex }
 	round { arg aNumber = 1.0;
 		^Complex(real.round(aNumber), imag.round(aNumber))
-	}
-	isInfinite {
-		^real == inf or: { imag == inf } or: { real == -inf } or: { imag == -inf }
 	}
 
 	asInteger { ^real.asInteger }
