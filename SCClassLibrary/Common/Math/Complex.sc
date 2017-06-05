@@ -86,8 +86,8 @@ Complex : Number {
 	exp { ^exp(real) * Complex.new(cos(imag), sin(imag)) }
 	reciprocal {
 		var denom;
-		// in pathological cases, use the definition of division
-		if((real * 0).isNaN or: { (imag * 0).isNaN }) { ^1.0 / this };
+		// undefined cases (no extended exponential numbers defined yet)
+		if(this.isInfinite) { ^Complex(0/0, 0/0) };
 		// otherwise use the standard definition
 		denom = reciprocal(real.squared + imag.squared);
 		^Complex(real * denom, imag.neg * denom)
@@ -136,6 +136,9 @@ Complex : Number {
 	coerce { arg aNumber; ^aNumber.asComplex }
 	round { arg aNumber = 1.0;
 		^Complex(real.round(aNumber), imag.round(aNumber))
+	}
+	isInfinite {
+		^real == inf or: { imag == inf } or: { real == -inf } or: { imag == -inf }
 	}
 
 	asInteger { ^real.asInteger }
