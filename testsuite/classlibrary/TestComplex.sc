@@ -3,7 +3,7 @@ TestComplex : UnitTest {
 
 	test_reciprocal {
 
-		var a, c, x, y, test;
+		var a, c, x, y, test, failed, message;
 
 		test = { |a, b|
 			a == b or: {
@@ -17,10 +17,10 @@ TestComplex : UnitTest {
 		x = c.collect(1/_);
 		y = c.collect(_.reciprocal);
 
-		this.assert(
-			(0..x.lastIndex).every { |i| test.value(x[i], y[i]) },
-			"1/x should be the same as x.reciprocal for all complex numbers"
-		);
+		failed = (0..x.lastIndex).reject { |i| test.value(x[i], y[i]) };
+		message = "1/x should be the same as x.reciprocal for all complex numbers.";
+		failed.do { |i| message = message ++ "\nfailed:" ++ c[i] };
+		this.assert(failed.isEmpty, message);
 
 	}
 
