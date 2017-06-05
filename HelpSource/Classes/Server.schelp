@@ -672,6 +672,12 @@ argument:: bundles
 one or more OSC messages which will be bundled before the sync message (thus ensuring that they will arrive before the /sync message). argument:: latency
 allows for the message to be evaluated at a specific point in the future.
 
+method:: name
+Returns specified server name
+
+method:: isRecording
+Returns wether server is recording
+
 discussion::
 This may be slightly less safe then sendMsgSync under UDP on a wide area network, as packets may arrive out of order, but on a local network should be okay. Under TCP this should always be safe.
 code::
