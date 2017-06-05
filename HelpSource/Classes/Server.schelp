@@ -681,6 +681,9 @@ Returns wether server is recording
 method:: aliveThreadIsRunning
 Returns wether alive thread is running
 
+method:: aliveThreadPeriod
+Returns a value with predeceasing alive thread period
+
 discussion::
 This may be slightly less safe then sendMsgSync under UDP on a wide area network, as packets may arrive out of order, but on a local network should be okay. Under TCP this should always be safe.
 code::
