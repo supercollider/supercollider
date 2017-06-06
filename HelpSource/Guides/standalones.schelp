@@ -99,7 +99,7 @@ code::
 };
 ~writeText = { |path, string| File(path, "w").write(string).close; };
 ~copyFolder = { |orig, dest|
-	var str = "cp -r" + quote(orig) + quote(dest);
+	var str = "cp -ir" + quote(orig) + quote(dest);
 	str.postcs;
 	unixCmd(str);
 };
@@ -147,7 +147,7 @@ if (File.exists(~pathToNewApp).not) {
 // b. rename the binary file:
 "renaming macos binary to: ".post;
 // fixups in the new app - 2. rename the binary inside the app folder
-unixCmd("mv"
+unixCmd("mv -i"
 	+ quote(~pathToNewApp +/+ "Contents/MacOS/" +/+ ~nameToReplace)
 	+ quote(~pathToNewApp +/+ "Contents/MacOS/" ++ ~newAppName).postln
 );
@@ -162,16 +162,9 @@ unixCmd("open" + ~pathToNewApp);
 Platform.userAppSupportDir.postcs;
 ::
 
-NOTE:: THIS SHOULD END WITH ~newAppName! If it has the original ~thisAppName (the one you started from, e.g. ~/././SuperCollider), the new app will not be interfere with SuperCollider! So, delete it again, and start over using a recommended version of SC3 (see tested list on top)!
+NOTE:: THIS SHOULD END WITH ~newAppName! If it has the original ~thisAppName (the one you started from, e.g. ~/././SuperCollider), the new app will not be interfere with SuperCollider!
+So, delete the app again, and start over using a recommended version of SC3 (see tested list on top)!
 
-code::
-/*
-// if it failed, delete the app
-unixCmd("rm -r" + quote(~pathToNewApp));
-// and delete its correct support dir (if needed)
-unixCmd("rm -r" + quote("~/Library/Application Support/" +/+ ~newAppName));
-*/
-::
 ::
 
 subsection:: Adaptation to the project
@@ -308,7 +301,7 @@ if (~newAppQuarksDir.pathMatch.notEmpty) {
 	~pathsToCopy.do { |path|
 		unixCmd(
 			"cd" + quote(~newAppQuarksDir) ++ ";"
-			" cp -r" + quote(path).postln + ".");
+			" cp -ir" + quote(path).postln + ".");
 	};
 };
 "";
