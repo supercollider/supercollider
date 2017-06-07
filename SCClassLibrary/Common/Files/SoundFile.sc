@@ -48,13 +48,14 @@ SoundFile {
 		if(file.openRead(pathName)) { ^file } { ^nil }
 	}
 
-	*openWrite { arg pathName, headerFormat, sampleFormat, numChannels;
+	*openWrite { arg pathName, headerFormat, sampleFormat, numChannels, sampleRate;
 		var file;
 		file = SoundFile(pathName);
 		// if nil, use corresponding default value from instance vars above
 		if(headerFormat.notNil) { file.headerFormat = headerFormat };
 		if(sampleFormat.notNil) { file.sampleFormat = sampleFormat };
-		if(numChannels.isNil) { file.numChannels = numChannels };
+		if(numChannels.notNil) { file.numChannels = numChannels };
+		if(sampleRate.notNil) { file.sampleRate = sampleRate };
 		if(file.openWrite(pathName)) { ^file } { ^nil }
 	}
 
