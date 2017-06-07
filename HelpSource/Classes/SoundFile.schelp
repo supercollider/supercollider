@@ -35,7 +35,7 @@ Full path to the sound file. Use link::Classes/String#-standardizePath:: to reso
 returns:: A new SoundFile instance if successful, or code::nil:: if file open failed. User code should check for code::nil:: before doing anything with the SoundFile object.
 
 method:: openWrite
-Try to create an audio file at the given path.
+Try to create an audio file at the given path. Note that there is no code::numFrames:: argument: the number of frames is counted after writing data into the file.
 
 argument:: pathName
 Full path to the sound file. Use link::Classes/String#-standardizePath:: to resolve home-folder shortcuts such as teletype::~::.
@@ -262,3 +262,56 @@ The number of channels in the file.
 
 method::sampleRate
 The sample rate of the file.
+
+examples::
+code::
+// Writing a sound file, long form:
+// Set the format variables before calling 'openWrite'
+// The Boolean answer from 'openWrite' tells you if it's safe to proceed
+(
+f = SoundFile(PathName.tmp +/+ "sf-help.wav");
+f.headerFormat = "WAV";
+f.sampleFormat = "int16";
+if(f.openWrite) {
+	f.writeData(Signal.sineFill(1024, [1]));
+	f.close;
+} {
+	"Failed to open %".format(f.path).warn;
+};
+)
+
+// Or, short form: Class method 'openWrite'
+// f is nil if the file couldn't be opened
+(
+var p = PathName.tmp +/+ "sf-help.wav";
+f = SoundFile.openWrite(p, "WAV", "int16");
+if(f.notNil) {
+	f.writeData(Signal.sineFill(1024, [1]));
+	f.close;
+} {
+	"Failed to open %".format(p).warn;
+};
+)
+
+// Reading the file
+f = SoundFile.openRead(PathName.tmp +/+ "sf-help.wav");
+f.sampleFormat;
+
+// To get data, create a FloatArray or Signal first
+d = FloatArray.newClear(f.numFrames);
+f.readData(d);
+d.plot;
+f.close;
+
+s.boot;
+
+// It's a proper audio file -- server can load it
+b = Buffer.read(s, PathName.tmp +/+ "sf-help.wav");
+
+// It's a sinewave...
+a = { (PlayBuf.ar(1, b, rate: 440 * 1024/44100, loop: 1) * 0.1).dup }.play;
+a.free;
+
+b.free;
+File.delete(PathName.tmp +/+ "sf-help.wav");
+::
