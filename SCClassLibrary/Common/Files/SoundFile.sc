@@ -26,7 +26,7 @@ SoundFile {
 	var <numFrames = 0;		// number of frames
 	var <>numChannels = 1;	// number of channels
 	var <>sampleRate = 44100.0;
-	var <> path;
+	var <>path;
 
 
 	*closeAll {
@@ -42,16 +42,19 @@ SoundFile {
 		^super.new.path_(pathName);
 	}
 
-	*openRead{ arg pathName;
+	*openRead { arg pathName;
 		var file;
 		file = SoundFile(pathName);
-		if(file.openRead(pathName)){^file}{^nil}
+		if(file.openRead(pathName)) { ^file } { ^nil }
 	}
 
-	*openWrite{ arg pathName;
+	*openWrite { arg pathName, headerFormat, sampleFormat;
 		var file;
 		file = SoundFile(pathName);
-		if(file.openWrite(pathName)){ ^file}{^nil}
+		// if nil, use corresponding default value from instance vars above
+		if(headerFormat.notNil) { file.headerFormat = headerFormat };
+		if(sampleFormat.notNil) { file.sampleFormat = sampleFormat };
+		if(file.openWrite(pathName)) { ^file } { ^nil }
 	}
 
 	*use { arg path, function;

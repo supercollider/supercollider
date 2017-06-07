@@ -17,10 +17,39 @@ f.close;
 )
 ::
 
+When reading a sound file, the headerFormat, sampleFormat, numChannels and numFrames variables will be set according to the file on disk.
+
+When creating a new SoundFile, the format will be monophonic, AIFF, floating-point by default. Users may override the defaults by passing the desired format strings to link::Classes/SoundFile#*openWrite::, or by using link::Classes/SoundFile#-numChannels:: , link::Classes/SoundFile#-headerFormat:: and link::Classes/SoundFile#-sampleFormat:: emphasis::before:: calling link::Classes/SoundFile#-openWrite::.
+
 ClassMethods::
 
 method::new
 Creates a new SoundFile instance.
+
+method:: openRead
+Try to open the audio file at the given path.
+
+argument:: pathName
+Full path to the sound file. Use link::Classes/String#-standardizePath:: to resolve home-folder shortcuts such as teletype::~::.
+
+returns:: A new SoundFile instance if successful, or code::nil:: if file open failed. User code should check for code::nil:: before doing anything with the SoundFile object.
+
+method:: openWrite
+Try to create an audio file at the given path.
+
+argument:: pathName
+Full path to the sound file. Use link::Classes/String#-standardizePath:: to resolve home-folder shortcuts such as teletype::~::.
+
+argument:: headerFormat
+A string for the sound file format. Valid strings are listed at link::Classes/SoundFile#-headerFormat::. If not given, the default code::"AIFF":: is used.
+
+argument:: sampleFormat
+A string for the sample format. Valid strings are listed at link::Classes/SoundFile#-sampleFormat::. If not given, the default code::"float":: is used.
+
+argument:: numChannels
+An integer number of channels (1 by default).
+
+returns:: A new SoundFile instance if successful, or code::nil:: if file open failed. User code should check for code::nil:: before doing anything with the SoundFile object.
 
 method::collect
 Returns an link::Classes/Array:: of SoundFile objects whose paths match the pattern. (The associated files are closed. These objects can be used to cue playback buffers)
