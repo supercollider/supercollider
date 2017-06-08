@@ -177,7 +177,8 @@ Integer : SimpleNumber {
 		^this.primitiveFailed
 	}
 	asStringToBase { | base=10, width=8 |
-		var rest = this, string, mask;
+		var rest = this, string, mask, isNeg;
+		rest = rest.abs;
 		if (base.inclusivelyBetween(2, 36).not) {
 			base = clip(base, 2, 36);
 			warn(thisMethod + ": base not between 2 and 36");
@@ -196,6 +197,7 @@ Integer : SimpleNumber {
 				rest = rest div: base;
 			};
 		};
+		if(this.isNegative) {string = "-" ++ string};
 		^string
 	}
 
