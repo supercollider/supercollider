@@ -37,8 +37,8 @@ Maybe : Ref {
 		^this.reduceFuncProxy(args, false)
 	}
 	// function composition
-	o { arg ... args;
-		^NAryValueProxy(this, args)
+	o { arg ... argList;
+		^{ |args| this.reduceFuncProxy(argList.collect(_.reduceFuncProxy(args))) }
 	}
 	<> { arg that;
 		^o (this, that)
@@ -78,6 +78,10 @@ Maybe : Ref {
 		this.source.do(function) // problem: on the fly change is not picked up in this case.
 	}
 
+	dup { arg ... args;
+		^this.composeNAryOp(\dup, args)
+	}
+
 	doesNotUnderstand { arg selector ... args;
 		^this.composeNAryOp(selector, args)
 	}
@@ -100,16 +104,16 @@ Maybe : Ref {
 
 	// math
 	composeUnaryOp { arg aSelector;
-		^UnaryOpFunctionProxy.new(aSelector, this)
+		^this.class.new({ |args| this.reduceFuncProxy(args).perform(aSelector) })
 	}
 	composeBinaryOp { arg aSelector, something, adverb;
-		^BinaryOpFunctionProxy.new(aSelector, this, something, adverb);
+		^this.class.new({ |args| this.reduceFuncProxy(args).perform(aSelector, something.reduceFuncProxy, adverb.reduceFuncProxy) })
 	}
 	reverseComposeBinaryOp { arg aSelector, something, adverb;
-		^BinaryOpFunctionProxy.new(aSelector, something, this, adverb);
+		^this.class.new({ |args| something.reduceFuncProxy.perform(aSelector, this.reduceFuncProxy(args), adverb.reduceFuncProxy) })
 	}
 	composeNAryOp { arg aSelector, anArgList;
-		^NAryOpFunctionProxy.new(aSelector, this, anArgList)
+		^this.class.new({ |args| this.reduceFuncProxy(args).performList(aSelector, anArgList.collect(_.reduceFuncProxy)) })
 	}
 
 
