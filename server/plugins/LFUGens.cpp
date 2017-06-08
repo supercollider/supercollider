@@ -1029,12 +1029,15 @@ void Impulse_Ctor(Impulse* unit)
 		}
 	}
 
-
 	unit->mPhaseOffset = 0.f;
 	unit->mFreqMul = unit->mRate->mSampleDur;
+
 	if (unit->mPhase == 0.f) unit->mPhase = 1.f;
 
-	ZOUT0(0) = 0.f;
+	if (unit->mPhase == 1.f)
+		ZOUT0(0) = 1.f;
+	else
+		ZOUT0(0) = 0.f;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
