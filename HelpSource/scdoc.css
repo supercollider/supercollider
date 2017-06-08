@@ -1,8 +1,8 @@
 body {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif;    
     font-size: 10pt;
     color: black;
-    background: white;
+    background: white   ;
 /*    max-width: 60em;*/
 /*    margin-left: 20em;*/
     padding: 0;
@@ -29,7 +29,7 @@ table {
     margin-left: 2em;
 }
 table td {
-    border: 1px solid #ddd;
+    border: 1px solid white;
     padding: 0.3em;
 }
 
@@ -44,7 +44,7 @@ p {
 
 a:link, a:visited, a:hover {
     text-decoration: none;
-    color: #449;
+    color: white;
     /* add padding to work around "text-decoration: underline" not
      * having effect when hovered if font size less then 11pt */
     padding-bottom: 1px;
@@ -60,12 +60,12 @@ a:hover {
 
 .inheritedmets_class {
     font-weight: bold;
-    color: #555;
+    color: white;
     margin-top: 0.5em;
     margin-bottom: 0.25em;
 }
 .inheritedmets_class a {
-    color: #333;
+    color: white;
 }
 ul.inheritedmets {
     list-style: none;
@@ -75,34 +75,34 @@ ul.inheritedmets {
     margin-top: 0.25em;
 }
 ul.inheritedmets li {
-    font-family: monospace;
+    font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif;    
 }
 a.inheritedmets_toggle {
     font-size: 9pt;
-    color: #558;
+    color: white;
     font-weight: normal;
 /*    margin-left: 2em;*/
 }
 
 a.inheritedmets_toggle:hover {
     text-decoration: none;
-    color: #000;
+    color: black;
 }
 
 a.subclass_toggle {
-    color: #555;
+    color: white;
     font-weight: normal;
 }
 
 a.subclass_toggle:hover {
     text-decoration: none;
-    color: #000;
+    color: white;
 }
 
 
 #menubar {
-    font-family: Arial, Helvetica, sans-serif;
-    width: 100%;
+    font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif;    
+
     position: fixed;
 /*    background: #555;*/
     background: #eee;
@@ -129,7 +129,7 @@ a.subclass_toggle:hover {
 
 .menuitem a {
 /*    color: #ddd;*/
-    color: #666;
+    color: white;
 }
 .menuitem a:hover {
     text-decoration: none;
@@ -140,7 +140,7 @@ a.subclass_toggle:hover {
 /*    font-weight: bold;*/
     font-style: italic;
 /*    color: #fff;*/
-    color: #444;
+    color: white;
     cursor: pointer;
 }
 
@@ -164,23 +164,23 @@ a.subclass_toggle:hover {
 		white-space: nowrap;
 		text-align: left;
 /*		text-decoration: none;*/
-		color: #447;
+		color: white;
 		font-weight: bold;
 }
 
 .toc_search {
     margin-left: 10px;
-    color: #999;
+    color: white;
     font-size: 9pt;
 }
 
 .top_search input {
-    border: 1px solid #ddd;
+    border: 1px solid black;
 }
 
 a.navlink {
 /*    color: #fff;*/
-    color: #447;
+    color: white;
     font-weight: bold;
 }
 
@@ -190,7 +190,7 @@ a.navlink {
 }
 #label, #label a {
     font-weight: bold;
-    color: #999;
+    color: white;
     border-bottom: 1px solid #bbb;
 }
 #summary {
@@ -198,7 +198,7 @@ a.navlink {
     font-size: 1.1em;
 }
 #categories {
-    color: #888;
+    color: white;
     font-size: 9pt;
 }
 #related {
@@ -218,7 +218,7 @@ a.navlink {
     float: right;
     font-size: 12pt;
     padding: 0.4em 0.4em 0.2em 0.4em;
-    background-color: #601c8b;
+    background-color: white;
     color: white;
     border-radius: 3px;
     border-bottom: 2px solid #39174F;
@@ -236,13 +236,13 @@ a.navlink {
 .subheader {
     text-align: right;
     font-size: 9pt;
-    color: #444;
+    color: black;
 }
 
 .jump {
     text-align: right;
     font-size: 9pt;
-    color: #555;
+    color: white;
 }
 .jump a {
     font-weight: bold;
@@ -267,7 +267,7 @@ div.footnote {
 }
 
 .soft {
-    color: #777;
+    color: white;
 }
 
 h1 {
@@ -308,7 +308,7 @@ dd {
 }
 
 code, pre {
-    font-family: monospace;
+font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif;    
     font-size: 9pt;
 }
 
@@ -342,7 +342,7 @@ pre.code {
 }
 
 .methodname, .imethodname, .cmethodname {
-    font-family: monospace;
+font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif;    
     font-size: 1em;
     font-weight: normal;
     margin-bottom: 0em;
@@ -520,7 +520,7 @@ ul.toc li a:hover {
     color: #444;
 }
 .toc3 {
-    font-family: monospace;
+font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif;    
     font-weight: normal;
 /*    font-size: 9.5pt;*/
 }
@@ -628,8 +628,8 @@ div#search_box {
 }
 
 #search_input {
-    border: 1px solid #aaa;
-    background: #eee;
+    border: 1px solid black;
+    background: white;
     margin-left: 0.5em;
 }
 div#search_count {
@@ -668,8 +668,8 @@ div.met_subclasses a.seemore {
     padding-top: 0.25em;
     padding-bottom: 0.25em;
     font-size: 9pt;
-    color: #555;
-    background: #eee;
+    color: white;
+    background: black;
 }
 #search_checks0 {
     font-size: 9pt;
@@ -697,7 +697,7 @@ table#search_settings {
     font-size: 9pt;
 }
 #js_error {
-    font-family: Andale Mono, monospace;
+    font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif;    
     font-size: 9pt;
     color: red;
 }
@@ -728,7 +728,7 @@ div.met_subclasses a.seemore {
 }
 
 .method_name {
-    font-family: Andale Mono, monospace;
+    font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif;    
     font-size: 9.5pt;
 }
 #method_note {
