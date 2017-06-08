@@ -7,8 +7,6 @@ Pre-compiled releases are available for download at:
 
 https://github.com/SuperCollider/SuperCollider/releases
 
-
-
 Table of contents
 -----------------
 
@@ -30,7 +28,6 @@ Inside that application's folder (`SuperCollider.app/Contents/MacOS/`) are the t
 
 `sclang` - the language interpreter including Qt gui
 `scsynth` - the audio engine
-
 
 Prerequisites:
 -------------
@@ -124,8 +121,6 @@ The four possible build configs are:
 - Release
 - MinSizeRel
 
-
-
 Diagnosing Build Problems
 -------------------------
 
@@ -141,7 +136,6 @@ information. A build using v5.6 and above will fail at the time of this writing 
 `brew upgrade ____` will update the dependency to a newer version (avoid this for Qt5 or handle different Qt5 versions with `brew switch`).
 
 Other common homebrew problems can be fixed using `brew doctor`.
-
 
 ### Dirty build states
 
@@ -175,7 +169,6 @@ Post to the user list stating what git hash you have checked out and all xcode v
 
 Simply posting "the latest checkout is broken" won't help. We need the exact compile error message.
 
-
 Frequently used cmake settings
 ------------------------------
 
@@ -199,7 +192,6 @@ helpful, but also something to keep in mind if unexpected things happen.
 If you feel uncomfortable with the command line, you might want to try cmake
 frontends like  `ccmake` or `cmake-gui`. You can also configure your build by
 manually editing build/CMakeCache.txt.
-
 
 Common arguments to control the build configuration are:
 
@@ -253,7 +245,6 @@ Common arguments to control the build configuration are:
     `-DREADLINE_INCLUDE_DIR='/path/to/readline/include'`
     `-DREADLINE_LIBRARY='/path/to/readline/lib/libreadline.dylib'`
 
-
 Using cmake with Xcode or QtCreator
 -----------------------------------
 
@@ -276,7 +267,6 @@ Qt Creator has very good `cmake` integration and can build `cmake` projects with
 
     brew linkapps qt5
 
-
 Building without Qt or the IDE
 ------------------------------
 
@@ -292,7 +282,6 @@ This should be fixed at some point (its a build tool configuration issue). Until
 `-DSC_QT=OFF`
 
 They do however work on Linux and Windows.
-
 
 sclang and scynth executables
 -----------------------------

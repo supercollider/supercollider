@@ -8,7 +8,6 @@ SuperCollider is a synthesis engine (scsynth or supernova) and programming langu
 
 Stefan Kersten first ported the code to Linux in 2003.
 
-
 Build requirements
 ------------------
 
@@ -78,7 +77,6 @@ Build requirements (optional features)
 
  * for `scvim`: the **vim** interface see [editors/scvim/README.md](editors/scvim/README.md)
 
-
 Build requirements (debian users)
 ---------------------------------
 
@@ -107,7 +105,6 @@ Beaglebone Black) can be found here:
     http://supercollider.github.io/development/building
 
 The recommended version of gcc is 4.8
-
 
 Building
 --------
@@ -196,8 +193,6 @@ described in:
 
     http://supercollider.github.io/development/building-raspberrypi 
 
-
-
 ### Speeding up repeated builds
 
 If you build SuperCollider repeatedly, we recommend installing `ccache`
@@ -209,7 +204,6 @@ $> cmake -DCMAKE_CXX_COMPILER=/usr/lib/ccache/g++ -DCMAKE_C_COMPILER=/usr/lib/cc
 
 This assumes your ccache executables are installed into `/usr/lib/ccache` - you may need to change the path to reflect your installation.
 
-
 Building a Debian package
 -------------------------
 
@@ -217,7 +211,6 @@ The most up-to-date debian packaging rules are maintained by the
 Debian Multimedia team. Repository (with debian/ folder):
 
 http://anonscm.debian.org/gitweb/?p=pkg-multimedia/supercollider.git;a=summary
-
 
 Running scsynth or supernova (standalone)
 ----------------------------
@@ -240,7 +233,6 @@ or just
 `<CLIENT-NAME>`
 
 when connecting to the default server.
-
 
 Running sclang
 --------------
@@ -267,7 +259,6 @@ to put Extensions to the class library, in a folder called Extensions.
 
 The runtime directory is either the current working directory or the
 path specified with the `-d` option.
-
 
 Environment
 -----------
@@ -308,7 +299,6 @@ names are separated by ':' as in the unix PATH variable:
    ```
    $> export SC_SYNTHDEF_PATH="./synthdefs:/home/sk/SuperCollider/synthdefs"
    ```
-
 
 Contributors to this document
 -----------------------------

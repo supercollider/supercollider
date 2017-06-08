@@ -19,7 +19,6 @@ This README is a first help for anyone new to SuperCollider. There are many
 good resources available for learning SuperCollider, with up to date links from
 the site listed above, including links to forums and mailing lists.
 
-
 Usage
 -----
 
@@ -62,14 +61,12 @@ http://www.birmingham.ac.uk/facilities/ea-studios/research/supercollider/mailing
 
 We hope you enjoy SuperCollider; please get involved in the active community!
 
-
 Reporting bugs
 --------------
 
 Please report bugs to the github issue tracker or discuss on the sc-users mailing list.
 
 https://github.com/supercollider/supercollider/issues
-
 
 Building the Source Code
 ------------------------
@@ -81,7 +78,6 @@ Platform specific build and install instructions can be found in the following f
  - [README_WINDOWS.md](README_WINDOWS.md)
  - [README_IPHONE.md](README_IPHONE.md)
  - [README_JAILBROKEN_IPHONE.md](README_JAILBROKEN_IPHONE.md)
-
 
 License
 -------
