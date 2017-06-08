@@ -464,7 +464,11 @@ SimpleNumber : Number {
 	}
 
 	nextTimeOnGrid { arg clock;
-		^clock.nextTimeOnGrid(this, 0);
+		^clock.getNextTimeOnGrid(this, 0);
+	}
+
+	getNextTimeOnGrid {
+		Error("nextTimeOnGrid needs to be called with a clock-like object as argument").throw;
 	}
 
 	playAndDelta {}

@@ -1296,7 +1296,7 @@ SequenceableCollection : Collection {
 
 	// TempoClock play quantization
 	nextTimeOnGrid { arg clock;
-		^clock.nextTimeOnGrid(*this);
+		^clock.getNextTimeOnGrid(*this);
 	}
 
 	// we break up the array so that missing elements are set to nil in the Quant

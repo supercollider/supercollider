@@ -530,7 +530,7 @@ IdentityDictionary : Dictionary {
 		if(this[\nextTimeOnGrid].notNil) {
 			^this[\nextTimeOnGrid].value(this, clock)
 		} {
-			^clock.nextTimeOnGrid(this[\quant] ? 1, (this[\phase] ? 0) - (this[\offset] ? 0))
+			^clock.getNextTimeOnGrid(this[\quant] ? 1, (this[\phase] ? 0) - (this[\offset] ? 0))
 		}
 	}
 	asQuant { ^this.copy }
