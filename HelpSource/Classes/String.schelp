@@ -529,12 +529,19 @@ g.close;
 ::
 
 method::split
-Returns an Array of Strings split at the separator. The separator is a link::Classes/Char::, and is strong::not:: included in the output array.
+Returns an Array of Strings split at the separator.
+
+argument::separator
+The separator is a link::Classes/Char::, and is strong::not:: included in the output array.
+
 code::
 "These are several words".split($ );
 
 // The default separator $/ is handy for Unix paths.
 "This/could/be/a/Unix/path".split;
+
+// if no separator is given, split into letters
+"never stop on a green light".split(nil)
 ::
 
 subsection:: Stream support

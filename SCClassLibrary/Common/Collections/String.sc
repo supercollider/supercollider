@@ -194,20 +194,24 @@ String[char] : RawArray {
 		});
 		^string
 	}
-	split { arg separator=$/;
-		var word="";
-		var array=[];
-		separator=separator.ascii;
+	split { arg separator = $/;
+		var word = "";
+		var array = [];
+		if(separator.isNil) {
+			this.do { |char| array = array.add(char.asString) };
+			^array
+		};
+		separator = separator.ascii;
 
-		this.do({arg let,i;
-			if(let.ascii != separator ,{
-				word=word++let;
-			},{
-				array=array.add(word);
-				word="";
-			});
-		});
-		^array.add(word);
+		this.do { arg letter, i;
+			if(letter.ascii != separator) {
+				word = word ++ letter;
+			} {
+				array = array.add(word);
+				word = "";
+			}
+		};
+		^array.add(word)
 	}
 
 	containsStringAt { arg index, string;
