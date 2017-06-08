@@ -239,6 +239,21 @@ Symbol {
 		^NamedControl.ar(this, val, lag)
 	}
 
+	krSpec{ |default, spec, lag, fixedLag = false|
+		SynthDef.addBuildSpec(this, spec);
+		^this.kr(default, lag, fixedLag)
+	}
+
+	irSpec { |default, spec, lag, fixedLag = false|
+		SynthDef.addBuildSpec(this, spec);
+		^this.ir(default, lag, fixedLag)
+	}
+
+	arSpec{ |default, spec, lag|
+		SynthDef.addBuildSpec(this, spec);
+		^this.ar(default, lag)
+	}
+
 	matchOSCAddressPattern { arg addressPattern;
 		_Symbol_matchOSCPattern
 		^this.primitiveFailed
