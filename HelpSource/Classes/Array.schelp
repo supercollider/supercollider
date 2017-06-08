@@ -69,17 +69,20 @@ copymethod:: SequenceableCollection *exprand
 
 copymethod:: SequenceableCollection *fib
 
-
-
-
-
 InstanceMethods::
 
 copymethod:: ArrayedCollection -at
 
-copymethod:: ArrayedCollection -put
+method:: put
+Put item at index, replacing what is there.
+code::
+x=[1, 2,3 , 4, 5]
+x.put(rrand(0, 4), 8)
+::
 
 copymethod:: ArrayedCollection -insert
+
+copymethod:: ArrayedCollection -overWrite
 
 copymethod:: ArrayedCollection -clipAt
 
@@ -88,6 +91,13 @@ copymethod:: ArrayedCollection -wrapAt
 copymethod:: ArrayedCollection -foldAt
 
 copymethod:: ArrayedCollection -clipPut
+
+method:: clipPut
+Put item at index, replacing what is there.
+code::
+x=[1, 2,3 , 4, 5]
+x.clipPut(3, 8)
+::
 
 copymethod:: ArrayedCollection -wrapPut
 
@@ -116,6 +126,10 @@ copymethod:: ArrayedCollection -reverseDo
 copymethod:: ArrayedCollection -deepCollect
 
 copymethod:: ArrayedCollection -reshape
+
+copymethod:: ArrayedCollection -bubble
+
+copymethod:: ArrayedCollection -unbubble
 
 copymethod:: ArrayedCollection -windex
 
@@ -402,4 +416,5 @@ Returns the OSC message as an Int8Array. Receiver must be a bundle.
 code::
 [0.1, [\s_new, \default, -1, 1, 1, \freq, 1961]].asRawOSC;
 ::
+
 

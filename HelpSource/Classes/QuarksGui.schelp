@@ -1,0 +1,23 @@
+CLASS:: QuarksGui
+SUMMARY:: A frontend/user interface to manage Quarks extension packages
+RELATED:: Classes/Quarks
+
+DESCRIPTION::
+
+Quarks are packages of SuperCollider code containing classes, extension methods, documentation and server UGen plugins. The QuarksGui class acts as a frontend to Quarks, being instanted in the Quarks Class, to call its UI/Frontend, just as you can see if you open the its respective *.sc  file. The created UI/Fronted window allows to manage downloading these packages and installing or uninstalling them.
+
+CLASSMETHODS::
+
+METHOD:: new
+Creates a new window, allowing to instsll and updating new quarks, ina similar way to Quarks.gui
+
+CODE::
+QuarksGui.new
+::
+
+METHOD:: update
+Updates Quarks List
+
+CODE::
+QuarksGui.update
+::
