@@ -1,9 +1,11 @@
 ServerOptions {
-	// order of variables is important here. Only add new instance variables to the end.
-	var <numAudioBusChannels=1024;
+
+	// order of variables is important here. You may add new instance variables after outDevice.
+
+	var <>numAudioBusChannels=1024;
 	var <>numControlBusChannels=16384;
-	var <numInputBusChannels=2;
-	var <numOutputBusChannels=2;
+	var <>numInputBusChannels=2;
+	var <>numOutputBusChannels=2;
 	var <>numBuffers=1026;
 
 	var <>maxNodes=1024;
@@ -38,8 +40,6 @@ ServerOptions {
 	var <>threads = nil; // for supernova
 	var <>useSystemClock = false;  // for supernova
 
-	var <numPrivateAudioBusChannels=112;
-
 	var <>reservedNumAudioBusChannels = 0;
 	var <>reservedNumControlBusChannels = 0;
 	var <>reservedNumBuffers = 0;
@@ -71,7 +71,7 @@ ServerOptions {
 		o = if(protocol == \tcp, " -t ", " -u ");
 		o = o ++ port;
 
-		o = o ++ " -a " ++ (numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels) ;
+		o = o ++ " -a " ++ numAudioBusChannels;
 
 		if (numControlBusChannels != 16384, {
 			o = o ++ " -c " ++ numControlBusChannels;
@@ -170,29 +170,29 @@ ServerOptions {
 		^this.primitiveFailed
 	}
 
-	numPrivateAudioBusChannels_ { |numChannels = 112|
-		numPrivateAudioBusChannels = numChannels;
-		this.recalcChannels;
+	numPrivateAudioBusChannels {
+		^numAudioBusChannels - numInputBusChannels - numOutputBusChannels - reservedNumAudioBusChannels
 	}
 
-	numAudioBusChannels_ { |numChannels=1024|
-		numAudioBusChannels = numChannels;
-		numPrivateAudioBusChannels = numAudioBusChannels - numInputBusChannels - numOutputBusChannels;
+	numPrivateAudioBusChannels_ { |numChannels|
+		numAudioBusChannels = numChannels + numInputBusChannels + numOutputBusChannels + reservedNumAudioBusChannels
 	}
 
-	numInputBusChannels_ { |numChannels=8|
-		numInputBusChannels = numChannels;
-		this.recalcChannels;
+	checkConsistency {
+		if(numInputBusChannels + numOutputBusChannels + reservedNumAudioBusChannels > numAudioBusChannels) {
+			Error("numAudioBusChannels can't be smaller than the minimum number of required audio channels. "
+				"Please adjust numAudioBusChannels and reboot the server").throw
+		};
+		if(reservedNumControlBusChannels > numControlBusChannels) {
+			Error("reservedNumControlBusChannels can't be greater than numControlBusChannels. "
+				"Please adjust numControlBusChannels and reboot the server").throw
+		};
+		if(reservedNumBuffers > numBuffers) {
+			Error("reservedNumControlBuffers can't be greater than numBuffers. "
+				"Please adjust numBuffers and reboot the server").throw
+		};
 	}
 
-	numOutputBusChannels_ { |numChannels=8|
-		numOutputBusChannels = numChannels;
-		this.recalcChannels;
-	}
-
-	recalcChannels {
-		numAudioBusChannels = numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels;
-	}
 
 	*prListDevices {
 		arg in, out;
@@ -385,6 +385,8 @@ Server {
 		var offset = this.calcOffset;
 		var n = options.maxLogins ? 1;
 
+		options.checkConsistency;
+
 		numControl = options.numControlBusChannels div: n;
 		numAudio = options.numPrivateAudioBusChannels div: n;
 
@@ -404,6 +406,9 @@ Server {
 		var offset = this.calcOffset;
 		var n = options.maxLogins ? 1;
 		var numBuffers = options.numBuffers div: n;
+
+		options.checkConsistency;
+
 		bufferOffset = numBuffers * offset + options.reservedNumBuffers;
 		bufferAllocator =
 		ContiguousBlockAllocator.new(numBuffers, bufferOffset);
