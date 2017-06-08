@@ -28,45 +28,8 @@ Primitives for Arrays.
 #include "PyrPrimitive.h"
 #include "SC_InlineBinaryOp.h"
 #include "SC_Constants.h"
+#include "PyrArrayPrimitives.h"
 #include <string.h>
-
-int basicSize(VMGlobals *g, int numArgsPushed);
-int basicMaxSize(VMGlobals *g, int numArgsPushed);
-
-int basicSwap(struct VMGlobals *g, int numArgsPushed);
-int basicAt(VMGlobals *g, int numArgsPushed);
-int basicRemoveAt(VMGlobals *g, int numArgsPushed);
-int basicClipAt(VMGlobals *g, int numArgsPushed);
-int basicWrapAt(VMGlobals *g, int numArgsPushed);
-int basicFoldAt(VMGlobals *g, int numArgsPushed);
-int basicPut(VMGlobals *g, int numArgsPushed);
-int basicClipPut(VMGlobals *g, int numArgsPushed);
-int basicWrapPut(VMGlobals *g, int numArgsPushed);
-int basicFoldPut(VMGlobals *g, int numArgsPushed);
-
-int prArrayAdd(VMGlobals *g, int numArgsPushed);
-int prArrayFill(VMGlobals *g, int numArgsPushed);
-int prArrayPop(VMGlobals *g, int numArgsPushed);
-int prArrayGrow(VMGlobals *g, int numArgsPushed);
-int prArrayCat(VMGlobals *g, int numArgsPushed);
-
-int prArrayReverse(VMGlobals *g, int numArgsPushed);
-int prArrayScramble(VMGlobals *g, int numArgsPushed);
-int prArrayRotate(VMGlobals *g, int numArgsPushed);
-int prArrayStutter(VMGlobals *g, int numArgsPushed);
-int prArrayMirror(VMGlobals *g, int numArgsPushed);
-int prArrayMirror1(VMGlobals *g, int numArgsPushed);
-int prArrayMirror2(VMGlobals *g, int numArgsPushed);
-int prArrayExtendWrap(VMGlobals *g, int numArgsPushed);
-int prArrayExtendFold(VMGlobals *g, int numArgsPushed);
-int prArrayPermute(VMGlobals *g, int numArgsPushed);
-int prArrayPyramid(VMGlobals *g, int numArgsPushed);
-int prArraySlide(VMGlobals *g, int numArgsPushed);
-int prArrayLace(VMGlobals *g, int numArgsPushed);
-int prArrayContainsSeqColl(VMGlobals *g, int numArgsPushed);
-int prArrayWIndex(VMGlobals *g, int numArgsPushed);
-int prArrayNormalizeSum(VMGlobals *g, int numArgsPushed);
-int prArrayIndexOfGreaterThan(VMGlobals *g, int numArgsPushed);
 
 
 int basicSize(struct VMGlobals *g, int numArgsPushed)
@@ -2087,6 +2050,99 @@ int prArrayContainsSeqColl(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int sc_arrayMaxDepth(PyrSlot *a, int depth)
+{
+	PyrSlot *slot, *endptr;
+	PyrObject *obj;
+	int size, newdepth;
+	newdepth = depth;
+	obj = slotRawObject(a);
+	size = obj->size;
+	slot = obj->slots - 1;
+	endptr = slot + size;
+	while (slot < endptr) {
+		++slot;
+		if (IsObj(slot)) {
+			if (isKindOf(slotRawObject(slot), class_collection)) {
+				if (isKindOf(slotRawObject(slot), class_arrayed_collection)) {
+					newdepth = sc_arrayMaxDepth(slot, depth + 1);
+					if(newdepth < 0)
+						return -1;
+					newdepth = sc_max(depth, newdepth);
+				} else {
+					return -1;  // bail out
+				}
+			}
+		}
+	}
+	return newdepth;
+
+}
+
+int prArrayMaxDepth(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a, *b;
+
+	a = g->sp - 1;
+	b = g->sp;
+	
+	int maxdepth;
+	int err = slotIntVal(b, &maxdepth);
+	if (err) return err;
+	maxdepth = sc_arrayMaxDepth(a, maxdepth);
+	if(maxdepth < 0) return errFailed;
+	SetInt(a, maxdepth);
+	return errNone;
+}
+
+int sc_arrayMaxSizeAtDepth(PyrSlot *a, int rank)
+{
+	PyrSlot *slot, *endptr;
+	PyrObject *obj;
+	int size, newsize;
+	newsize = 0;
+	obj = slotRawObject(a);
+	size = obj->size;
+	slot = obj->slots - 1;
+	endptr = slot + size;
+	if(rank <= 0) return size;
+	while (slot < endptr) {
+		++slot;
+		if (IsObj(slot)) {
+			if (isKindOf(slotRawObject(slot), class_collection)) {
+				if (isKindOf(slotRawObject(slot), class_arrayed_collection)) {
+					newsize = sc_arrayMaxSizeAtDepth(slot, rank - 1);
+					if(newsize < 0)
+						return -1;
+					newsize = sc_max(newsize, size);
+				} else {
+					return -1; // error
+				}
+			}
+		}
+	}
+	return newsize;
+	
+}
+
+int prArrayMaxSizeAtDepth(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a, *b;
+	
+	a = g->sp - 1;
+	b = g->sp;
+	
+	int rank;
+	int err = slotIntVal(b, &rank);
+	if (err) return err;
+	rank = sc_arrayMaxSizeAtDepth(a, rank);
+	if(rank < 0) return
+		errFailed;
+	SetInt(a, rank);
+	return errNone;
+}
+
+
 int prArrayNormalizeSum(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *slots2;
@@ -2424,6 +2480,8 @@ void initArrayPrimitives()
 	definePrimitive(base, index++, "_ArrayStutter", prArrayStutter, 2, 0);
 	definePrimitive(base, index++, "_ArraySlide", prArraySlide, 3, 0);
 	definePrimitive(base, index++, "_ArrayContainsSeqColl", prArrayContainsSeqColl, 1, 0);
+	definePrimitive(base, index++, "_ArrayMaxDepth", prArrayMaxDepth, 2, 0);
+	definePrimitive(base, index++, "_ArrayMaxSizeAtDepth", prArrayMaxSizeAtDepth, 2, 0);
 
 	definePrimitive(base, index++, "_ArrayEnvAt", prArrayEnvAt, 2, 0);
 	definePrimitive(base, index++, "_ArrayIndexOfGreaterThan", prArrayIndexOfGreaterThan, 2, 0);
