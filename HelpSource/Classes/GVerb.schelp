@@ -19,7 +19,7 @@ method:: ar
 argument:: in
 mono input.
 argument:: roomsize
-in squared meters.
+1 to maxroomsize - 1, in squared meters.
 argument:: revtime
 in seconds.
 argument:: damping
@@ -35,7 +35,7 @@ amount of early reflection level.
 argument:: taillevel
 amount of tail level.
 argument:: maxroomsize
-to set the size of the delay lines. Defaults to roomsize + 1.
+>= 2, in square meters, to set the size of the delay lines. Defaults to roomsize + 1.
 argument:: mul
 argument:: add
 

@@ -1204,7 +1204,12 @@ void GVerb_Ctor(GVerb *unit)
     unit->earlylevel = 0.; // IN0(7);
     unit->taillevel = 0.; //IN0(8);
 
-    float maxroomsize = unit->maxroomsize = IN0(9);
+    float maxroomsize = unit->maxroomsize = (IN0(9) < 2.0)? 2.0 : IN0(9);
+
+    if (roomsize >= maxroomsize)
+	    roomsize = unit->roomsize = maxroomsize - 1;
+    if (roomsize < 1.0)
+	    roomsize = unit->roomsize = 1.0;
 
     float maxdelay = unit->maxdelay = SAMPLERATE*maxroomsize/340.f;
     float largestdelay = unit->largestdelay = SAMPLERATE*roomsize/340.f;
