@@ -88,6 +88,7 @@ public:
         CloseToolBox,
         ShowFullScreen,
         FocusPostWindow,
+        ClearPostWindow,
 
         // Settings
         ShowSettings,

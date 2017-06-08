@@ -39,7 +39,6 @@ class PostWindow:
 public:
     enum ActionRole {
         Copy,
-        Clear,
         DocClose,
         ZoomIn,
         ZoomOut,
