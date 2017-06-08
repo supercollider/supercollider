@@ -6,8 +6,27 @@ categories::  UGens>Conversion
 
 Description::
 
-Audio to control rate converter. Only needed in specific cases.
+Audio to control rate converter. Only needed in some cases.
+In some cases it's just preferrable to use another UGen, due to CPU overload.
+Instead of using:
 
+code::
+{WhiteNoise.ar(
+    Array.fill(2, 
+	    {A2K.kr(HenonC.ar(rrand(1, 30)
+		))}
+    ))}.scope
+::
+
+you could use:
+
+code::
+{WhiteNoise.ar(
+    Array.fill(2, 
+	     {LFDNoise3.kr(rrand(1, 30)
+	     )}
+	))}.scope
+::
 
 classmethods::
 
