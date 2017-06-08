@@ -329,6 +329,55 @@ elapsed time is whatever the system clock says it is right now. elapsed time is 
 		^this.beats - this.bars2beats(this.bar)
 	}
 
+	syncToBeat { arg seconds = 4.0, tempo, resolution = 0.01, quant = 1.0;
+		// incrementally adjust the clock so it has a specified tempo and phase after a given number of seconds
+		var next, time;
+
+		seconds = max(seconds, 0.03);	// saftey and lower jitter limit
+		resolution = max(resolution, 0.001);
+		next = this.timeToNextBeat(quant);
+		time = seconds - (next / this.tempo);
+		tempo = tempo ? this.tempo;
+
+		if(time < next) {
+			// jump directly by fast forwarding
+			this.tempo_(next / seconds);
+			this.sched(next, { this.tempo_(tempo); nil });
+
+		} {
+			// else interpolate, starting at next beat
+			this.sched(next, {
+
+				var index = 0;
+
+				var durOld = this.tempo.reciprocal;
+				var durNew = tempo.reciprocal;
+				var stepsPerBeat = resolution.reciprocal.round;
+				var steps = (2.0 * time / (durOld + durNew)).round * stepsPerBeat; // number of steps
+				var delta = stepsPerBeat.reciprocal;	// quantized resolution
+				var stepSize = (durNew - durOld) / steps;
+				var lastDur = (steps - 1 * stepSize) + durOld;
+				var sum = (durOld + lastDur) * delta * steps * 0.5; // sum of an arithmetic progression
+				var factor = time / sum;
+
+				this.sched(0, {
+					if(index < steps) {
+						durOld = durOld + stepSize;
+						this.tempo_((durOld * factor).reciprocal);
+						index = index + 1;
+						delta
+					} {
+						this.tempo_(tempo);
+						nil
+					}
+				});
+
+				nil
+			})
+		}
+	}
+
+
 	// PRIVATE
 	prStart { arg tempo, beats, seconds;
 		_TempoClock_New
