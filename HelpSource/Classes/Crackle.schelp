@@ -32,5 +32,7 @@ code::
 
 // modulate chaos parameter
 { Crackle.ar(Line.kr(1.0, 2.0, 3), 0.5, 0.5) }.play;
+
+{ Crackle.ar([LFDNoise0, LFDNoise1, LFDNoise3, LFDClipNoise].choose.kr([rrand(0.1,10), rrand(0.1,10)], mul: 0.7, add: 0.3), 0.5, 0.5) }.play;
 ::
 
