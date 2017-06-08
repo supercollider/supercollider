@@ -1,10 +1,12 @@
 ServerOptions {
-	// order of variables is important here. Only add new instance variables to the end.
+
+	// order of variables is important here. You may add new instance variables after outDevice.
+
 	var <numAudioBusChannels=1024;
-	var <>numControlBusChannels=16384;
+	var <numControlBusChannels=16384;
 	var <numInputBusChannels=2;
 	var <numOutputBusChannels=2;
-	var <>numBuffers=1026;
+	var <numBuffers=1026;
 
 	var <>maxNodes=1024;
 	var <>maxSynthDefs=1024;
@@ -38,11 +40,9 @@ ServerOptions {
 	var <>threads = nil; // for supernova
 	var <>useSystemClock = false;  // for supernova
 
-	var <numPrivateAudioBusChannels=112;
-
-	var <>reservedNumAudioBusChannels = 0;
-	var <>reservedNumControlBusChannels = 0;
-	var <>reservedNumBuffers = 0;
+	var <reservedNumAudioBusChannels = 0;
+	var <reservedNumControlBusChannels = 0;
+	var <reservedNumBuffers = 0;
 	var <>pingsBeforeConsideredDead = 5;
 
 
@@ -71,7 +71,7 @@ ServerOptions {
 		o = if(protocol == \tcp, " -t ", " -u ");
 		o = o ++ port;
 
-		o = o ++ " -a " ++ (numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels) ;
+		o = o ++ " -a " ++ numAudioBusChannels;
 
 		if (numControlBusChannels != 16384, {
 			o = o ++ " -c " ++ numControlBusChannels;
@@ -170,29 +170,78 @@ ServerOptions {
 		^this.primitiveFailed
 	}
 
-	numPrivateAudioBusChannels_ { |numChannels = 112|
-		numPrivateAudioBusChannels = numChannels;
-		this.recalcChannels;
+	/* the setters below keep the settings mutually consistent */
+
+	numAudioBusChannels_ { |numChannels|
+		if(numInputBusChannels + numOutputBusChannels + reservedNumAudioBusChannels > numChannels) {
+			Error("numAudioBusChannels can't be smaller than the minimum number of audio channels").throw
+		};
+		numAudioBusChannels = numChannels
 	}
 
-	numAudioBusChannels_ { |numChannels=1024|
-		numAudioBusChannels = numChannels;
-		numPrivateAudioBusChannels = numAudioBusChannels - numInputBusChannels - numOutputBusChannels;
+	numInputBusChannels_ { |numChannels|
+		if(numChannels + numOutputBusChannels + reservedNumAudioBusChannels > numAudioBusChannels) {
+			numAudioBusChannels = numChannels + numOutputBusChannels + reservedNumAudioBusChannels;
+			"adjusting numAudioBusChannels to %\n".postf(numAudioBusChannels);
+		};
+		numInputBusChannels = numChannels
 	}
 
-	numInputBusChannels_ { |numChannels=8|
-		numInputBusChannels = numChannels;
-		this.recalcChannels;
+	numOutputBusChannels_ { |numChannels|
+		if(numInputBusChannels + numChannels + reservedNumAudioBusChannels > numAudioBusChannels) {
+			numAudioBusChannels = numInputBusChannels + numChannels + reservedNumAudioBusChannels;
+			"adjusting numAudioBusChannels to %\n".postf(numAudioBusChannels);
+		};
+		numOutputBusChannels = numChannels
 	}
 
-	numOutputBusChannels_ { |numChannels=8|
-		numOutputBusChannels = numChannels;
-		this.recalcChannels;
+	numPrivateAudioBusChannels {
+		^numAudioBusChannels - numInputBusChannels - numOutputBusChannels - reservedNumAudioBusChannels
 	}
 
-	recalcChannels {
-		numAudioBusChannels = numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels;
+	numPrivateAudioBusChannels_ { |numChannels|
+		numAudioBusChannels = numChannels + numInputBusChannels + numOutputBusChannels + reservedNumAudioBusChannels
 	}
+
+	numControlBusChannels_ { |numChannels|
+		if(reservedNumControlBusChannels > numChannels) {
+			Error("numControlBusChannels can't be smaller than the minimum number of control channels").throw
+		};
+		numControlBusChannels = numChannels
+	}
+
+	reservedNumControlBusChannels_ { |numChannels|
+		if(numControlBusChannels < numChannels) {
+			numControlBusChannels = numChannels;
+			"adjusting numControlBusChannels to %\n".postf(numControlBusChannels);
+		};
+		numControlBusChannels = numChannels
+	}
+
+	reservedNumAudioBusChannels_ { |numChannels|
+		if(numAudioBusChannels < numChannels) {
+			numAudioBusChannels = numChannels;
+			"adjusting numAudioBusChannels to %\n".postf(numAudioBusChannels);
+		};
+		reservedNumAudioBusChannels = numChannels
+	}
+
+	reservedNumBuffers_ { |n|
+		if(numBuffers < n) {
+			numBuffers = n;
+			"adjusting numBuffers to %\n".postf(numBuffers);
+		};
+		reservedNumBuffers = n
+	}
+
+	numBuffers_ { |n|
+		if(reservedNumBuffers > n) {
+			Error("numBuffers can't be smaller than reservedNumBuffers").throw
+		};
+		numBuffers = n
+	}
+
+
 
 	*prListDevices {
 		arg in, out;
