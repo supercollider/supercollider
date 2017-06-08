@@ -1,9 +1,11 @@
 ServerOptions {
+
 	// order of variables is important here. Only add new instance variables to the end.
-	var <numAudioBusChannels=1024;
+
+	var <>numAudioBusChannels=1024;
 	var <>numControlBusChannels=16384;
-	var <numInputBusChannels=2;
-	var <numOutputBusChannels=2;
+	var <>numInputBusChannels=2;
+	var <>numOutputBusChannels=2;
 	var <>numBuffers=1026;
 
 	var <>maxNodes=1024;
@@ -38,8 +40,6 @@ ServerOptions {
 	var <>threads = nil; // for supernova
 	var <>useSystemClock = false;  // for supernova
 
-	var <numPrivateAudioBusChannels=112;
-
 	var <>reservedNumAudioBusChannels = 0;
 	var <>reservedNumControlBusChannels = 0;
 	var <>reservedNumBuffers = 0;
@@ -71,7 +71,7 @@ ServerOptions {
 		o = if(protocol == \tcp, " -t ", " -u ");
 		o = o ++ port;
 
-		o = o ++ " -a " ++ (numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels) ;
+		o = o ++ " -a " ++ numAudioBusChannels;
 
 		if (numControlBusChannels != 16384, {
 			o = o ++ " -c " ++ numControlBusChannels;
@@ -170,28 +170,12 @@ ServerOptions {
 		^this.primitiveFailed
 	}
 
-	numPrivateAudioBusChannels_ { |numChannels = 112|
-		numPrivateAudioBusChannels = numChannels;
-		this.recalcChannels;
+	numPrivateAudioBusChannels {
+		^numAudioBusChannels - numInputBusChannels - numOutputBusChannels
 	}
 
-	numAudioBusChannels_ { |numChannels=1024|
-		numAudioBusChannels = numChannels;
-		numPrivateAudioBusChannels = numAudioBusChannels - numInputBusChannels - numOutputBusChannels;
-	}
-
-	numInputBusChannels_ { |numChannels=8|
-		numInputBusChannels = numChannels;
-		this.recalcChannels;
-	}
-
-	numOutputBusChannels_ { |numChannels=8|
-		numOutputBusChannels = numChannels;
-		this.recalcChannels;
-	}
-
-	recalcChannels {
-		numAudioBusChannels = numPrivateAudioBusChannels + numInputBusChannels + numOutputBusChannels;
+	numPrivateAudioBusChannels_ { |numChannels|
+		numAudioBusChannels = numChannels + numInputBusChannels + numOutputBusChannels
 	}
 
 	*prListDevices {
@@ -392,10 +376,10 @@ Server {
 		audioBusOffset = options.firstPrivateBus + (numAudio * offset) + options.reservedNumAudioBusChannels;
 
 		controlBusAllocator =
-		ContiguousBlockAllocator.new(numControl, controlBusOffset);
+		ContiguousBlockAllocator.new(numControl + controlBusOffset, controlBusOffset);
 
 		audioBusAllocator =
-		ContiguousBlockAllocator.new(numAudio, audioBusOffset);
+		ContiguousBlockAllocator.new(numAudio + audioBusOffset, audioBusOffset);
 	}
 
 
@@ -406,7 +390,7 @@ Server {
 		var numBuffers = options.numBuffers div: n;
 		bufferOffset = numBuffers * offset + options.reservedNumBuffers;
 		bufferAllocator =
-		ContiguousBlockAllocator.new(numBuffers, bufferOffset);
+		ContiguousBlockAllocator.new(numBuffers + bufferOffset, bufferOffset);
 	}
 
 	calcOffset {
