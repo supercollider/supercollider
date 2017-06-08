@@ -34,6 +34,12 @@ WebView : View {
 
 	forward { this.invokeMethod( 'forward' ); }
 
+	zoomIn { this.invokeMethod( 'zoomIn' ); }
+
+	zoomOut { this.invokeMethod( 'zoomOut' ); }
+
+	resetZoom { this.invokeMethod( 'resetZoom' ); }
+
 	findText { arg string, reverse = false;
 		this.invokeMethod( \findText, [string, reverse] );
 	}

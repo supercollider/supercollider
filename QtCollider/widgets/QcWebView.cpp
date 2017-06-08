@@ -137,6 +137,25 @@ void WebView::findText( const QString &searchText, bool reversed )
   QWebView::findText( searchText, flags );
 }
 
+void WebView::zoomIn()
+{
+    qreal zoomFactor = QWebView::zoomFactor();
+    zoomFactor = qMin( zoomFactor + 0.1, 2.0 );
+    QWebView::setZoomFactor(zoomFactor);
+}
+
+void WebView::zoomOut()
+{
+    qreal zoomFactor = QWebView::zoomFactor();
+    zoomFactor = qMax( zoomFactor - 0.1, 0.1 );
+    QWebView::setZoomFactor(zoomFactor);
+}
+
+void WebView::resetZoom()
+{
+    QWebView::setZoomFactor(1.0);
+}
+
 void WebView::onLinkClicked( const QUrl &url )
 {
   Q_EMIT( linkActivated( url.toString() ) );

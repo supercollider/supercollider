@@ -116,6 +116,12 @@ HelpBrowser {
 
 	goForward { webView.forward; }
 
+	zoomIn { webView.zoomIn; }
+
+	zoomOut { webView.zoomOut; }
+
+	resetZoom { webView.resetZoom; }
+
 /* ------------------------------ private ------------------------------ */
 
 	init { arg aHomeUrl, aNewWin;
@@ -146,7 +152,7 @@ HelpBrowser {
 
 		h = strh + vPad;
 		x = marg; y = marg;
-		[[\Back,"<"], [\Forward,">"], [\Reload, "Reload"]].do { |item|
+		[[\Back,"<"], [\Forward,">"], [\Reload, "Reload"], [\ZoomIn, "Zoom In"], [\ZoomOut, "Zoom Out",], [\ResetZoom, "Reset zoom"]].do { |item|
 			var str = item[1];
 			var w = str.bounds.width + hPad;
 			toolbar[item[0]] = Button( window, Rect(x,y,w,h) ).states_([[str]]);
@@ -286,6 +292,9 @@ HelpBrowser {
 		toolbar[\Back].action = { this.goBack };
 		toolbar[\Forward].action = { this.goForward };
 		toolbar[\Reload].action = { this.goTo( webView.url ) };
+		toolbar[\ZoomIn].action = { this.zoomIn };
+		toolbar[\ZoomOut].action = { this.zoomOut };
+		toolbar[\ResetZoom].action = { this.resetZoom };
 		txtFind.action = { |x| webView.findText( x.string ) };
 	}
 
