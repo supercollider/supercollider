@@ -630,8 +630,14 @@ SequenceableCollection : Collection {
 	}
 
 	performDegreeToKey { arg scaleDegree, stepsPerOctave = 12, accidental = 0;
-		var baseKey = (stepsPerOctave * (scaleDegree div: this.size)) + this.wrapAt(scaleDegree);
-		^if(accidental == 0) { baseKey } { baseKey + (accidental * (stepsPerOctave / 12.0)) }
+		var stepAdj, centAdj, baseKey;
+		stepAdj = accidental.abs.floor.asInteger * accidental.sign;
+		centAdj = accidental - stepAdj;
+		baseKey = (stepsPerOctave * (scaleDegree div: this.size)) + this.wrapAt(scaleDegree);
+		^baseKey + stepAdj + centAdj;
+
+		// var baseKey = (stepsPerOctave * (scaleDegree div: this.size)) + this.wrapAt(scaleDegree);
+		// ^if(accidental == 0) { baseKey } { baseKey + (accidental * (stepsPerOctave / 12.0)) }
 	}
 
 	performKeyToDegree { | degree, stepsPerOctave = 12 |
