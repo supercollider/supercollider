@@ -256,7 +256,23 @@ void PerformOSCBundle(World *inWorld, OSC_Packet *inPacket)
 		int32 msgSize = sc_ntohl(*(int32*)data);
 		data += sizeof(int32);
 		//scprintf("msgSize %d\n", msgSize);
-		PerformOSCMessage(inWorld, msgSize, data, &inPacket->mReplyAddr);
+
+		if (gIsBundle.checkIsBundle((int32*)data)) {
+			// handle nested bundle
+			OSC_Packet* bndl = (OSC_Packet*)malloc(sizeof(OSC_Packet));
+			bndl->mData = (char *)malloc(msgSize * sizeof(char));
+			memcpy(bndl->mData, data, msgSize);
+			bndl->mSize = msgSize;
+			bndl->mIsBundle = true;
+			bndl->mReplyAddr = inPacket->mReplyAddr;
+			PacketStatus status = PerformOSCPacket(inWorld, bndl, SC_ScheduledEvent::FreeInNRT);
+			if (status == PacketPerformed) {
+				SC_ScheduledEvent::FreeInNRT(inWorld, bndl);
+			}
+		} else {
+			// handle nested message
+			PerformOSCMessage(inWorld, msgSize, data, &inPacket->mReplyAddr);
+		}
 		data += msgSize;
 	}
 
