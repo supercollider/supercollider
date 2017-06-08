@@ -109,6 +109,8 @@ String[char] : RawArray {
 	multiChannelPerform { arg selector ... args;
 		Error("String:multiChannelPerform. Cannot expand strings.").throw;
 	}
+	canHaveDepth { ^false }
+	canHaveIndexableDepth { ^false }
 
 	isString { ^true }
 	asString { ^this }

@@ -106,6 +106,7 @@ Collection {
 	asCollection { ^this }
 	isCollection { ^true }
 	isAssociationArray { ^this.subclassResponsibility(thisMethod) }
+	canHaveDepth { ^true }
 
 	add { ^this.subclassResponsibility(thisMethod) }
 	addAll { | aCollection | aCollection.asCollection.do { | item | this.add(item) } }
