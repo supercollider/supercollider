@@ -533,6 +533,13 @@ Plot the node/group tree. As link::#-queryAllNodes:: but graphical.
 argument:: interval
 Polling interval.
 
+
+method:: serverBooting
+Returns:: true/false depending if specified server is booting or not
+
+method:: serverRunning
+Returns:: true/false depending if specified server is running or not
+
 method:: plotTreeView
 Plot the node/group tree graphically on a given view.
 
