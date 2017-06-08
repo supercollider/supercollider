@@ -1,25 +1,51 @@
 class:: Psym
 summary:: use a pattern of symbols to embed Pdefs
 categories:: Libraries>JITLib>Patterns, Live Coding
-related:: Classes/Pdef
+related:: Classes/Pdef, Classes/Pdict, Classes/Pnsym, Classes/Psym1
 
 description::
-for non-event patterns see link::Classes/Pnsym::. Overview: link::Overviews/JITLib::.
+Similar to link::Classes/Pswitch::, this pattern chooses from given musical material and embeds it into a stream.
+For non-event patterns see link::Classes/Pnsym::.
+
+
+Overview: link::Overviews/JITLib::.
 
 ClassMethods::
 
 method::new
 
 argument::pattern
-a pattern that returns symbols or characters. Arrays are converted to parallel patterns ( link::Classes/Ppar:: ).
+a pattern that returns symbols or characters. The values are converted to symbols by calling code::.asSymbol:: (see link::Classes/Pdict:: for a general dictionary version). Arrays are converted to parallel patterns using a link::Classes/Ppar::, so that parallel streams run until the last substream has ended.
 
 argument::dict
-the dictionary to be used for lookup. By default, this is code::Pdef.all::, so one can embed Pdefs by name.
+the dictionary to be used for lookup. This can contain even patterns or events. By default, this is code::Pdef.all::, so one can embed Pdefs by name.
+
+discussion::
+code::
+(
+p = Psym(
+	Pn(Pshuf([[\x, \y], \x, \y, \z], 4)),
+    (
+		x: Pbind(\note, Pseq([3, 0], 8), \dur, 0.08),
+		y: Pbind(\note, Pseq([0, 7, 9], 2) + 7, \dur, 0.2, \legato, Pseq([0.1, 1])),
+		z: Pbind(\note, Pseq([4, 5, 7, 11]), \dur, 0.2, \legato, 2),
+    )
+);
+p.trace.play;
+)
+
+::
 
 InstanceMethods::
 
 method::dict
-set the dictionary to be used.
+set the dictionary to be used. You can switch the dictionary at runtime.
+
+private::getPattern
+
+private::lookUp
+
+private::lookupClass
 
 Examples::
 
