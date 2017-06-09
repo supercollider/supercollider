@@ -609,6 +609,9 @@ Collection {
 		^res
 	}
 
+	asEvent { |mergeFunc| ^this.asDict(mergeFunc, Event) }
+
+
 	powerset {
 		var species = this.species;
 		var result = this.asArray.powerset;
