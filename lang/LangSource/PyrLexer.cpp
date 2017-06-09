@@ -1908,14 +1908,18 @@ static bool passOne_ProcessDir(const bfs::path& dir, int level)
 	// if is directory, process
 	// recurse into symlinks (new behavior)
 #ifdef DEBUG_SCFS
-	cout << "[SC_FS] passOne_ProcessDir: begin: '" << dir << "'." << endl;
+	cout << "[SC_FS] passOne_ProcessDir: begin: '" << SC_Codecvt::path_to_utf8_str(dir) << "'." << endl;
 #endif
 	boost::system::error_code ec;
 	bfs::recursive_directory_iterator rditer(dir, bfs::symlink_option::recurse, ec);
 	std::string skipReason;
 
 	if (ec) {
-		error("Could not open directory '%s': (%d) %s\n", dir.string().c_str(), ec.value(), ec.message().c_str());
+		error("Could not open directory '%s': (%d) %s\n",
+			SC_Codecvt::path_to_utf8_str(dir).c_str(),
+			ec.value(),
+			ec.message().c_str()
+		);
 		// @TODO: is this the same as the old behavior?
 
 		if (ec.default_error_condition().value() == boost::system::errc::no_such_file_or_directory)
@@ -1924,10 +1928,10 @@ static bool passOne_ProcessDir(const bfs::path& dir, int level)
 			return false;
 	} else if (passOne_ShouldSkipDirectory(dir, skipReason)) {
 		if (!skipReason.empty())
-			post("\t%s: '%s'\n", skipReason.c_str(), dir.string().c_str());
+			post("\t%s: '%s'\n", skipReason.c_str(), SC_Codecvt::path_to_utf8_str(dir).c_str());
 		return true;
 	} else {
-		post("\tCompiling directory '%s'\n", dir.string().c_str());
+		post("\tCompiling directory '%s'\n", SC_Codecvt::path_to_utf8_str(dir).c_str());
 	}
 
 	compiledDirectories.insert(dir);
@@ -1941,14 +1945,14 @@ static bool passOne_ProcessDir(const bfs::path& dir, int level)
 
 		if (bfs::is_directory(path)) {
 #ifdef DEBUG_SCFS
-			cout << "[SC_FS] Is a directory: " << path << endl;
+			cout << "[SC_FS] Is a directory: " << SC_Codecvt::path_to_utf8_str(path) << endl;
 #endif
 			if (passOne_ShouldSkipDirectory(path, skipReason)) {
 #ifdef DEBUG_SCFS
 				cout << "[SC_FS] Skipping directory" << endl;
 #endif
 				if (!skipReason.empty())
-					post("\t%s: '%s'\n", skipReason.c_str(), path.string().c_str());
+					post("\t%s: '%s'\n", skipReason.c_str(), SC_Codecvt::path_to_utf8_str(path).c_str());
 				rditer.no_push();
 			} else {
 				compiledDirectories.insert(path);
@@ -1963,17 +1967,17 @@ static bool passOne_ProcessDir(const bfs::path& dir, int level)
 			if (isAlias && bfs::is_directory(respath)) {
 				if (!passOne_ProcessDir(respath, rditer.level())) {
 #ifdef DEBUG_SCFS
-					cout << "[SC_FS] Could not process " << respath << endl;
+					cout << "[SC_FS] Could not process " << SC_Codecvt::path_to_utf8_str(respath) << endl;
 #endif
 					return false;
 				}
 			} else if (respath.empty()) {
 #ifdef DEBUG_SCFS
-				cout << "[SC_FS] Symlink resolution failed: " << respath << endl;
+				cout << "[SC_FS] Symlink resolution failed: " << SC_Codecvt::path_to_utf8_str(respath) << endl;
 #endif
 			} else if (!passOne_ProcessOneFile(respath, rditer.level())) {
 #ifdef DEBUG_SCFS
-				cout << "[SC_FS] Could not process " << respath << endl;
+				cout << "[SC_FS] Could not process " << SC_Codecvt::path_to_utf8_str(respath) << endl;
 #endif
 				return false;
 			}
@@ -1981,7 +1985,7 @@ static bool passOne_ProcessDir(const bfs::path& dir, int level)
 
 		rditer.increment(ec);
 		if (ec) {
-			error("Could not iterate on '%s': %s\n", path.c_str(), ec.message().c_str());
+			error("Could not iterate on '%s': %s\n", SC_Codecvt::path_to_utf8_str(path).c_str(), ec.message().c_str());
 			return false;
 		}
 	}
