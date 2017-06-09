@@ -863,7 +863,8 @@ int prString_StandardizePath(struct VMGlobals* g, int /* numArgsPushed */)
 	// original method didn't throw an error if alias resolution failed.
 	// @TODO: determine correct behavior
 
-	PyrString* pyrString = newPyrString(g->gc, p.string().c_str(), 0, true);
+	const std::string& utf8_str = SC_Codecvt::path_to_utf8_str(p);
+	PyrString* pyrString = newPyrString(g->gc, utf8_str.c_str(), 0, true);
 	SetObject(arg, pyrString);
 
 	return errNone;
