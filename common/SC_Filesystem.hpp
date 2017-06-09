@@ -289,7 +289,7 @@ private:
 
 	static Path defaultSystemExtensionDirectory()
 	{
-		const Path& p = defaultUserAppSupportDirectory();
+		const Path& p = defaultSystemAppSupportDirectory();
 		return p.empty() ? p : p / SC_FOLDERNAME_EXTENSIONS;
 	}
 
