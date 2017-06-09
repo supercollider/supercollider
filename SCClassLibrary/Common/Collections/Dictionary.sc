@@ -306,6 +306,7 @@ Dictionary : Set {
 
 	asDict { arg mergeFunc, class;
 		// the mergeFunc is ignored, because dictionary keys must differ
+		class = class ? IdentityDictionary;
 		^if(class.notNil and: { class == this.class }) { this } { this.as(class) }
 	}
 
