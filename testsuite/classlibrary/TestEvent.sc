@@ -63,7 +63,7 @@ TestEvent : UnitTest {
 			{ |x| var class = x.class; x.asAssociations.asDict.asAssociations(class: class) },
 			{ |x| var class = x.class; x.asAssociations.asPairs.asAssociations(class: class) },
 			{ |x| var class = x.class; x.asDict.asPairs.asAssociations(class: class) },
-			{ |x| var class = x.class; x.asPairs.drop(2).asDict.asAssociations(class: class) },
+			{ |x| var class = x.class; x.asPairs.asDict.asAssociations(class: class) },
 			{ |x| var class = x.class; x.asPairs.asAssociations(class: class) },
 			{ |x| var class = x.class; x.asDict.asAssociations(class: class) },
 		];
