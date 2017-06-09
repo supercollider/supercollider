@@ -857,7 +857,7 @@ int prString_StandardizePath(struct VMGlobals* g, int /* numArgsPushed */)
 	if (err) return err;
 
 	bool isAlias;
-	boost::filesystem::path p(ipath);
+	boost::filesystem::path p = SC_Codecvt::utf8_str_to_path(ipath);
 	p = SC_Filesystem::instance().expandTilde(p);
 	p = SC_Filesystem::resolveIfAlias(p, isAlias);
 	// original method didn't throw an error if alias resolution failed.
