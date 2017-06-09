@@ -3593,6 +3593,7 @@ static int prLanguageConfig_writeConfigFile(struct VMGlobals * g, int numArgsPus
 		bool error = slotStrVal(fileString, path, MAXPATHLEN);
 		if (error)
 			return errWrongType;
+		// @TODO: do explicit conversion here.
 		gLanguageConfig->writeLibraryConfigYAML(path);
 	} else {
 		const SC_Filesystem::Path& fspath =

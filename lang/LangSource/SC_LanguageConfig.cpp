@@ -171,12 +171,14 @@ bool SC_LanguageConfig::writeLibraryConfigYAML(const Path& fileName)
 	out << Key << INCLUDE_PATHS;
 	out << Value << BeginSeq;
 	for (const auto& it : gLanguageConfig->mIncludedDirectories)
+		// @TODO convert instead of .c_str
 		out << it.c_str();
 	out << EndSeq;
 
 	out << Key << EXCLUDE_PATHS;
 	out << Value << BeginSeq;
 	for (const auto& it : gLanguageConfig->mExcludedDirectories)
+		// @TODO convert instead of .c_str
 		out << it.c_str();
 	out << EndSeq;
 
