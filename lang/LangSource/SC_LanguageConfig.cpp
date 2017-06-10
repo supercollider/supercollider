@@ -125,18 +125,22 @@ bool SC_LanguageConfig::readLibraryConfigYAML(const Path& fileName, bool standal
 			const Node & includePaths = doc[ INCLUDE_PATHS ];
 			if (includePaths && includePaths.IsSequence()) {
 				for (auto const & pathNode : includePaths ) {
-					std::string path = pathNode.as<std::string>( emptyString );
-					if ( !path.empty() )
-						gLanguageConfig->addIncludedDirectory( path.c_str() );
+					const std::string& path = pathNode.as<std::string>(emptyString);
+					if ( !path.empty() ) {
+						const Path& native_path = SC_Codecvt::utf8_str_to_path(path);
+						gLanguageConfig->addIncludedDirectory(native_path);
+					}
 				}
 			}
 
 			const Node & excludePaths = doc[ EXCLUDE_PATHS ];
 			if (excludePaths && excludePaths.IsSequence()) {
 				for (auto const & pathNode : excludePaths ) {
-					std::string path = pathNode.as<std::string>( emptyString );
-					if ( !path.empty() )
-						gLanguageConfig->addExcludedDirectory( path.c_str() );
+					const std::string& path = pathNode.as<std::string>(emptyString);
+					if ( !path.empty() ) {
+						const Path& native_path = SC_Codecvt::utf8_str_to_path(path);
+						gLanguageConfig->addExcludedDirectory(native_path);
+					}
 				}
 			}
 
@@ -170,16 +174,14 @@ bool SC_LanguageConfig::writeLibraryConfigYAML(const Path& fileName)
 
 	out << Key << INCLUDE_PATHS;
 	out << Value << BeginSeq;
-	for (const auto& it : gLanguageConfig->mIncludedDirectories)
-		// @TODO convert instead of .c_str
-		out << it.c_str();
+	for (const boost::filesystem::path& it : gLanguageConfig->mIncludedDirectories)
+		out << SC_Codecvt::path_to_utf8_str(it);
 	out << EndSeq;
 
 	out << Key << EXCLUDE_PATHS;
 	out << Value << BeginSeq;
-	for (const auto& it : gLanguageConfig->mExcludedDirectories)
-		// @TODO convert instead of .c_str
-		out << it.c_str();
+	for (const boost::filesystem::path& it : gLanguageConfig->mExcludedDirectories)
+		out << SC_Codecvt::path_to_utf8_str(it);
 	out << EndSeq;
 
 	out << Key << POST_INLINE_WARNINGS;
