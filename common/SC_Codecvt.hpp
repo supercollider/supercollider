@@ -10,7 +10,7 @@
  *
  *  $Author: Brian Heim $
  *
- *  \version 1.0
+ *  \version 1.1
  *
  *  $Date: 2017-05-14 $
  *
