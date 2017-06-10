@@ -30,7 +30,7 @@ TestConversions : UnitTest {
 
 		object = (a: 3, b: 4);
 		functions.do { |test|
-			this.assertEquals(object, test.value(object), "asDict should be compatible with key value pairs interface")
+			this.assertEquals(object, test.value(object), "asDict should be compatible with key value pairs interface: " ++ test.asCompileString)
 		};
 
 		// asPairs
@@ -42,7 +42,7 @@ TestConversions : UnitTest {
 
 		object = [\a, 3, \b, 4];
 		functions.do { |test|
-			this.assertEquals(object, test.value(object), "asPairs should be compatible with key value pairs interface")
+			this.assertEquals(object, test.value(object), "asPairs should be compatible with key value pairs interface: " ++ test.asCompileString)
 		};
 
 		// asAssociations
@@ -54,7 +54,7 @@ TestConversions : UnitTest {
 
 		object = [\a -> 3, \b -> 4];
 		functions.do { |test|
-			this.assertEquals(object, test.value(object), "asAssociations should be compatible with key value pairs interface")
+			this.assertEquals(object, test.value(object), "asAssociations should be compatible with key value pairs interface: " ++ test.asCompileString)
 		};
 	}
 
