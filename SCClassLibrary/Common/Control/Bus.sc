@@ -47,6 +47,7 @@ Bus {
 	}
 
 	set { arg ... values; // shouldn't be larger than this.numChannels
+		if(index.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		if(this.isSettable, {
 			server.sendBundle(nil, (["/c_set"]
 				++ values.collect({ arg v, i; [index + i , v] }).flat));
@@ -61,6 +62,7 @@ Bus {
 	}
 
 	setn { arg values;
+		if(index.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		// could throw an error if values.size > numChannels
 		if(this.isSettable, {
 			server.sendBundle(nil,
@@ -73,6 +75,7 @@ Bus {
 		}, { error("Cannot set an audio rate bus"); ^nil });
 	}
 	setAt { |offset ... values|
+		if(index.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		// shouldn't be larger than this.numChannels - offset
 		if(this.isSettable, {
 			server.sendBundle(nil, (["/c_set"]
@@ -80,6 +83,7 @@ Bus {
 		}, { error("Cannot set an audio rate bus") });
 	}
 	setnAt { |offset, values|
+		if(index.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		// could throw an error if values.size > numChannels
 		if(this.isSettable, {
 			server.sendBundle(nil,
@@ -87,6 +91,7 @@ Bus {
 		}, { error("Cannot set an audio rate bus")});
 	}
 	setPairs { | ... pairs|
+		if(index.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		if(this.isSettable, {
 			server.sendBundle(nil, (["/c_set"]
 				++ pairs.clump(2).collect({ arg pair; [pair[0] + index, pair[1]] }).flat));
@@ -94,6 +99,7 @@ Bus {
 	}
 
 	get { arg action;
+		if(index.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		if(numChannels == 1) {
 			action = action ? { |vals| "Bus % index: % value: %.\n".postf(rate, index, vals); };
 			OSCFunc({ |message|
@@ -108,6 +114,7 @@ Bus {
 	}
 
 	getn { arg count, action;
+		if(index.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		action = action ? { |vals| "Bus % index: % values: %.\n".postf(rate, index, vals) };
 		OSCFunc({ |message|
 			// The response is of the form [/c_set, index, count, ...values].
@@ -126,6 +133,7 @@ Bus {
 	}
 
 	getSynchronous {
+		if(index.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		if (not(this.isSettable)) {
 			Error("Bus-getSynchronous only works for control-rate busses").throw;
 		} {
@@ -134,6 +142,7 @@ Bus {
 	}
 
 	getnSynchronous { |count|
+		if(index.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		if (not(this.isSettable)) {
 			Error("Bus-getnSynchronous only works for control-rate busses").throw;
 		} {
@@ -142,6 +151,7 @@ Bus {
 	}
 
 	setSynchronous { |... values|
+		if(index.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		if (not(this.isSettable)) {
 			Error("Bus-setSynchronous only works for control-rate busses").throw;
 		} {
@@ -154,6 +164,7 @@ Bus {
 	}
 
 	setnSynchronous { |values|
+		if(index.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		if (not(this.isSettable)) {
 			Error("Bus-setnSynchronous only works for control-rate busses").throw;
 		} {
@@ -162,6 +173,7 @@ Bus {
 	}
 
 	fill { arg value, numChans;
+		if(index.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		// could throw an error if numChans > numChannels
 		server.sendBundle(nil,
 			["/c_fill", index, numChans, value]);
@@ -173,7 +185,7 @@ Bus {
 
 
 	free { arg clear = false;
-		if(index.isNil, { (this.asString + " has already been freed").warn; ^this });
+		if(index.isNil) { (this.class.name + " has already been freed").warn; ^this };
 		if(rate == \audio, {
 			server.audioBusAllocator.free(index);
 		}, {
@@ -208,10 +220,12 @@ Bus {
 
 	// alternate syntaxes
 	setAll { arg value;
+		if(index.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		this.fill(value, numChannels);
 	}
 
 	value_ { arg value;
+		if(index.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		this.fill(value, numChannels);
 	}
 
@@ -254,6 +268,7 @@ Bus {
 	}
 
 	play { arg target=0, outbus, fadeTime, addAction=\addToTail;
+		if(index.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		if(this.isAudioOut.not, { // returns a Synth
 			^{ this.ar }.play(target, outbus, fadeTime, addAction)
 		})

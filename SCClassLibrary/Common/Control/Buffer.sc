@@ -330,6 +330,7 @@ Buffer {
 
 	write { arg path, headerFormat = "aiff", sampleFormat = "int24", numFrames = -1,
 						startFrame = 0, leaveOpen = false, completionMessage;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		path = path ?? { thisProcess.platform.recordingsDir +/+ "SC_" ++ Date.localtime.stamp ++ "." ++ headerFormat };
 		server.listSendMsg(
 			this.writeMsg(path, headerFormat, sampleFormat, numFrames, startFrame,
@@ -348,7 +349,9 @@ Buffer {
 	free { arg completionMessage;
 		if(bufnum.notNil) {
 			server.listSendMsg( this.freeMsg(completionMessage) )
-		};
+		} {
+			(this.class.name + " has already been freed").warn
+		}
 	}
 
 	freeMsg { arg completionMessage;
@@ -359,8 +362,6 @@ Buffer {
 			msg = ["/b_free", bufnum, completionMessage.value(this)];
 			bufnum = numFrames = numChannels = sampleRate = path = startFrame = nil;
 			^msg
-		} {
-			^nil
 		}
 	}
 
@@ -370,6 +371,7 @@ Buffer {
 	}
 
 	zero { arg completionMessage;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		server.listSendMsg(this.zeroMsg(completionMessage))
 	}
 
@@ -378,6 +380,7 @@ Buffer {
 	}
 
 	set { arg index, float ... morePairs;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		server.listSendMsg([\b_set, bufnum, index, float] ++ morePairs)
 	}
 
@@ -386,6 +389,7 @@ Buffer {
 	}
 
 	setn { arg ... args;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		server.sendMsg(*this.setnMsg(*args));
 	}
 
@@ -407,6 +411,7 @@ Buffer {
 	}
 
 	get { arg index, action;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		OSCFunc({ |message|
 			// The server replies with a message of the form [/b_set, bufnum, index, value].
 			// We want "value," which is at index 3.
@@ -420,6 +425,7 @@ Buffer {
 	}
 
 	getn { arg index, count, action;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		OSCFunc({ |message|
 			// The server replies with a message of the form
 			// [/b_setn, bufnum, starting index, length, ...sample values].
@@ -434,6 +440,7 @@ Buffer {
 	}
 
 	fill { arg startAt, numFrames, value ... more;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		server.listSendMsg(["/b_fill", bufnum, startAt, numFrames.asInt, value] ++ more)
 	}
 
@@ -442,6 +449,7 @@ Buffer {
 	}
 
 	normalize { arg newmax=1, asWavetable=false;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		server.listSendMsg(["/b_gen", bufnum, if(asWavetable, "wnormalize", "normalize"), newmax])
 	}
 
@@ -450,6 +458,7 @@ Buffer {
 	}
 
 	gen { arg genCommand, genArgs, normalize=true, asWavetable=true, clearFirst=true;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		server.listSendMsg(["/b_gen", bufnum, genCommand,
 			normalize.binaryValue
 			+ (asWavetable.binaryValue * 2)
@@ -466,6 +475,7 @@ Buffer {
 	}
 
 	sine1 { arg amps, normalize=true, asWavetable=true, clearFirst=true;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		server.listSendMsg(["/b_gen", bufnum, "sine1",
 			normalize.binaryValue
 			+ (asWavetable.binaryValue * 2)
@@ -474,6 +484,7 @@ Buffer {
 	}
 
 	sine2 { arg freqs, amps, normalize=true, asWavetable=true, clearFirst=true;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		server.listSendMsg(["/b_gen", bufnum, "sine2",
 			normalize.binaryValue
 			+ (asWavetable.binaryValue * 2)
@@ -482,6 +493,7 @@ Buffer {
 	}
 
 	sine3 { arg freqs, amps, phases, normalize=true, asWavetable=true, clearFirst=true;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		server.listSendMsg(["/b_gen", bufnum, "sine3",
 			normalize.binaryValue
 			+ (asWavetable.binaryValue * 2)
@@ -490,6 +502,7 @@ Buffer {
 	}
 
 	cheby { arg amplitudes, normalize=true, asWavetable=true, clearFirst=true;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		server.listSendMsg(["/b_gen", bufnum, "cheby",
 			normalize.binaryValue
 			+ (asWavetable.binaryValue * 2)
@@ -530,6 +543,7 @@ Buffer {
 	}
 
 	copyData { arg buf, dstStartAt = 0, srcStartAt = 0, numSamples = -1;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		server.listSendMsg(
 			this.copyMsg(buf, dstStartAt, srcStartAt, numSamples)
 		)
@@ -541,6 +555,7 @@ Buffer {
 
 	// close a file, write header, after DiskOut usage
 	close { arg completionMessage;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		server.listSendMsg( this.closeMsg(completionMessage) )
 	}
 
@@ -648,6 +663,7 @@ Buffer {
 	}
 
 	play { arg loop = false, mul = 1;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		^{ var player;
 			player = PlayBuf.ar(numChannels, bufnum, BufRateScale.kr(bufnum),
 				loop: loop.binaryValue);
