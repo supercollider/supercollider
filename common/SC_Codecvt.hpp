@@ -5,7 +5,8 @@
  *
  *  This header provides convenience functions to convert strings and paths between UTF-8 and the OS's
  *  filesystem API encoding. On POSIX systems, this does nothing. On Windows, this converts between
- *  UTF-8 and UTF-16.
+ *  UTF-8 and UTF-16. On Windows, additional functions are provided to convert between UTF-8 std::string
+ *  and UTF-16 std::wstring.
  *
  *  $Author: Brian Heim $
  *
