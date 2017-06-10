@@ -56,7 +56,7 @@ namespace SC_Codecvt {
 #ifdef _WIN32
 /** \brief Converts a UTF-8 char str to UTF-16 std::wstring
  *
- * This function is only defined on Windows. */
+ * This function is only defined on Windows, to avoid unnecessary header includes. */
 inline std::wstring utf8_cstr_to_utf16_wstring(const char *s)
 {
 	return std::wstring_convert<std::codecvt_utf8_utf16<wchar_t> >().from_bytes(s);
@@ -64,7 +64,7 @@ inline std::wstring utf8_cstr_to_utf16_wstring(const char *s)
 
 /** \brief Converts a UTF-16 wchar_t str to UTF-8 std::string
  *
- * This function is only defined on Windows. */
+ * This function is only defined on Windows, to avoid unnecessary header includes. */
 inline std::string utf16_wcstr_to_utf8_string(const wchar_t *s)
 {
 	return std::wstring_convert<std::codecvt_utf8_utf16<wchar_t> >().to_bytes(s);
