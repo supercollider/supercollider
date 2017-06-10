@@ -54,6 +54,7 @@ namespace SC_Codecvt {
 // Windows helper functions. Only defined on Windows to avoid having
 // to unnecessarily include <codecvt> and <locale>
 #ifdef _WIN32
+
 /** \brief Converts a UTF-8 char str to UTF-16 std::wstring
  *
  * This function is only defined on Windows, to avoid unnecessary header includes. */
@@ -69,7 +70,8 @@ inline std::string utf16_wcstr_to_utf8_string(const wchar_t *s)
 {
 	return std::wstring_convert<std::codecvt_utf8_utf16<wchar_t> >().to_bytes(s);
 }
-#endif
+
+#endif // _WIN32
 
 /** \brief Converts a path to a UTF-8 encoded string.
  *
@@ -79,9 +81,9 @@ inline std::string path_to_utf8_str(const boost::filesystem::path& p)
 {
 #ifdef _WIN32
     return p.string(std::codecvt_utf8_utf16<wchar_t>());
-#else // not _WIN32
+#else
     return p.string();
-#endif
+#endif // _WIN32
 }
 
 /** \brief Converts a UTF-8 encoded string to a path.
@@ -92,9 +94,9 @@ inline boost::filesystem::path utf8_str_to_path(const std::string& s)
 {
 #ifdef _WIN32
     return boost::filesystem::path(s, std::codecvt_utf8_utf16<wchar_t>());
-#else // not _WIN32
+#else
     return boost::filesystem::path(s);
-#endif
+#endif // _WIN32
 }
 
 /** \brief Converts a native filesystem-encoded string to a UTF-8 string. 
@@ -105,13 +107,14 @@ inline std::string utf8_to_native_str(const std::string& s)
 #ifdef _WIN32
     // first to wide string (native format)
     std::wstring ws = utf8_cstr_to_utf16_wstring(s.c_str());
+
     // then to string (still native)
     std::wstring_convert<std::codecvt_utf16<wchar_t> > conv_16to16;
     std::string ret = conv_16to16.to_bytes(ws);
     return ret;
-#else // not _WIN32
+#else
     return s;
-#endif
+#endif // _WIN32
 }
 
 /** \brief Converts a UTF-8 string to a native filesystem-encoded string.
@@ -123,12 +126,13 @@ inline std::string native_to_utf8_str(const std::string& s)
     // first to wide string (still native format)
     std::wstring_convert<std::codecvt_utf16<wchar_t> > conv_16to16;
     std::wstring ws = conv_16to16.from_bytes(s);
+
     // then to string (utf8)
     std::string ret = utf16_wcstr_to_utf8_string(ws.c_str());
     return ret;
-#else // not _WIN32
+#else
     return s;
-#endif
+#endif // _WIN32
 }
 
 } // SC_Codecvt
