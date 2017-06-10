@@ -34,44 +34,6 @@ TestEvent : UnitTest {
 
 	}
 
-	test_keyValuePairs {
-		var functions, object;
-		functions = [
-			{ |x| var class = x.class; x.asDict.asAssociations.asPairs.asDict(class: class) },
-			{ |x| var class = x.class; x.asDict.asPairs.asAssociations.asDict(class: class) },
-			{ |x| var class = x.class; x.asAssociations.asDict.asPairs.asDict(class: class) },
-			{ |x| var class = x.class; x.asAssociations.asPairs.asDict(class: class) },
-			{ |x| var class = x.class; x.asPairs.asDict(class: class) },
-			{ |x| var class = x.class; x.asAssociations.asDict(class: class) },
-		];
-
-		object = (a: 3, b: 4);
-		this.assertEvery(functions, { |func| object == func.value(object) }, "asDict should be compatible with key value pairs interface");
-
-		functions = [
-			{ |x| var class = x.class; x.asPairs.asDict.asAssociations.asPairs(class: class) },
-			{ |x| var class = x.class; x.asPairs.asAssociations.asDict.asPairs(class: class) },
-			{ |x| var class = x.class; x.asDict.asPairs(class: class) },
-			{ |x| var class = x.class; x.asAssociations.asDict.asPairs(class: class) },
-			{ |x| var class = x.class; x.asAssociations.asPairs(class: class) },
-		];
-
-		object = [\a, 3, \b, 4];
-		this.assertEvery(functions, { |func| object == func.value(object) }, "asPairs should be compatible with key value pairs interface");
-
-		functions = [
-			{ |x| var class = x.class; x.asAssociations.asDict.asAssociations(class: class) },
-			{ |x| var class = x.class; x.asAssociations.asPairs.asAssociations(class: class) },
-			{ |x| var class = x.class; x.asDict.asPairs.asAssociations(class: class) },
-			{ |x| var class = x.class; x.asPairs.asDict.asAssociations(class: class) },
-			{ |x| var class = x.class; x.asPairs.asAssociations(class: class) },
-			{ |x| var class = x.class; x.asDict.asAssociations(class: class) },
-		];
-
-		object = [\a -> 3, \b -> 4];
-		this.assertEvery(functions, { |func| object == func.value(object) }, "asAssociations should be compatible with key value pairs interface");
-	}
-
 	test_server_messages {
 		// type note
 		var event = (
