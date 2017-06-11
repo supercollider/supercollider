@@ -263,6 +263,7 @@ Server {
 
 	classvar <>local, <>internal, <default;
 	classvar <>named, <>all, <>program, <>sync_s = true;
+	classvar <>nodeAllocClass, <>bufferAllocClass, <>busAllocClass;
 
 	var <name, <addr, <clientID, <userSpecifiedClientID = false;
 	var <isLocal, <inProcess, <>sendQuit, <>remoteControlled;
@@ -277,15 +278,27 @@ Server {
 	var <window, <>scopeWindow, <emacsbuf;
 	var <volume, <recorder, <statusWatcher;
 	var <pid, serverInterface;
+	var <numUsers;
 
 
 	*initClass {
+		// // orig	would be:
+		// nodeAllocClass = NodeIDAllocator;
+		// bufferAllocClass = ContiguousBlockAllocator;
+		// busAllocClass = ContiguousBlockAllocator;
+
+		// proposal:
+		nodeAllocClass = ReadableNodeIDAllocator;
+		bufferAllocClass = ContiguousBlockAllocatorWithOffset;
+		busAllocClass = ContiguousBlockAllocatorWithOffset;
+
 		Class.initClassTree(ServerOptions);
 		Class.initClassTree(NotificationCenter);
 		named = IdentityDictionary.new;
 		all = Set.new;
 		default = local = Server.new(\localhost, NetAddr("127.0.0.1", 57110));
 		internal = Server.new(\internal, NetAddr.new);
+
 	}
 
 	*fromName { |name|
@@ -316,6 +329,7 @@ Server {
 		options = argOptions ? ServerOptions.new;
 		clientID = argClientID ? 0;
 		if(argClientID.notNil) { userSpecifiedClientID = true };
+		numUsers = options.maxLogins;
 
 		this.newAllocators;
 
@@ -357,11 +371,22 @@ Server {
 	/* id allocators */
 
 	clientID_ { |val|
+		var failstr = "Server % couldn't set client id to: % - %.";
 		if(val.isInteger.not) {
-			"Server % couldn't set client id to: %".format(name, val.asCompileString).warn;
+			failstr.format(name, val.cs, "not an Integer").warn;
 			^this
 		};
+		if (clientID < 0) {
+			failstr.format(name, val.cs, "less than minimum 0").warn;
+		};
+		if (clientID >= numUsers) {
+			failstr.format(name, val.cs,
+				"greater than numUsers % allows".format(numUsers)
+			).warn;
+		};
+
 		if(clientID != val) {
+			"% : setting clientID to %.\n".postf(this, val);
 			clientID = val;
 			this.newAllocators;
 		}
@@ -369,8 +394,8 @@ Server {
 
 	newAllocators {
 		this.newNodeAllocators;
-		this.newBusAllocators;
-		this.newBufferAllocators;
+		// this.newBusAllocators;
+		// this.newBufferAllocators;
 		this.newScopeBufferAllocators;
 		NotificationCenter.notify(this, \newAllocators);
 	}
@@ -380,41 +405,43 @@ Server {
 	}
 
 	newBusAllocators {
-		var numControl, numAudio;
-		var controlBusOffset, audioBusOffset;
-		var offset = this.calcOffset;
-		var n = options.maxLogins ? 1;
+		var numControlPerUser, numAudioPerUser;
+		var controlReservedOffset, controlBusClientOffset;
+		var audioReservedOffset, audioBusClientOffset;
 
-		numControl = options.numControlBusChannels div: n;
-		numAudio = options.numPrivateAudioBusChannels div: n;
+		numControlPerUser = options.numControlBusChannels div: numUsers;
+		numAudioPerUser = options.numPrivateAudioBusChannels div: numUsers;
 
-		controlBusOffset = numControl * offset + options.reservedNumControlBusChannels;
-		audioBusOffset = options.firstPrivateBus + (numAudio * offset) + options.reservedNumAudioBusChannels;
+		controlReservedOffset = options.reservedNumControlBusChannels;
+		controlBusClientOffset = numControlPerUser * clientID;
 
-		controlBusAllocator =
-		ContiguousBlockAllocator.new(numControl, controlBusOffset);
+		audioReservedOffset = options.firstPrivateBus +
+			options.reservedNumAudioBusChannels;
+		audioBusClientOffset = numAudioPerUser * clientID;
 
-		audioBusAllocator =
-		ContiguousBlockAllocator.new(numAudio, audioBusOffset);
+		controlBusAllocator = busAllocClass.new(
+			numControlPerUser,
+			controlReservedOffset,
+			controlBusClientOffset
+		);
+		audioBusAllocator = busAllocClass.new(
+			numAudioPerUser,
+			audioReservedOffset,
+			controlBusAllocator
+		);
 	}
 
 
 	newBufferAllocators {
-		var bufferOffset;
-		var offset = this.calcOffset;
-		var n = options.maxLogins ? 1;
-		var numBuffers = options.numBuffers div: n;
-		bufferOffset = numBuffers * offset + options.reservedNumBuffers;
-		bufferAllocator =
-		ContiguousBlockAllocator.new(numBuffers, bufferOffset);
-	}
-
-	calcOffset {
-		if(options.maxLogins.isNil) { ^0 };
-		if(clientID > (options.maxLogins - 1)) {
-			"Client ID exceeds maxLogins. Some buses and buffers may overlap for remote server: %".format(this).warn;
-		};
-		^clientID % options.maxLogins
+		var numClients = options.maxLogins ? 1;
+		var clientOffset = this.clientID;
+		var numBuffers = options.numBuffers div: numClients;
+		var bufferOffset = (numBuffers * clientOffset);
+		bufferAllocator = bufferAllocClass.new(
+			numBuffers,
+			options.reservedNumBuffers,
+			bufferOffset
+		);
 	}
 
 	newScopeBufferAllocators {
