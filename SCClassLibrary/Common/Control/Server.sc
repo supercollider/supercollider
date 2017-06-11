@@ -265,7 +265,7 @@ Server {
 	classvar <>named, <>all, <>program, <>sync_s = true;
 	classvar <>nodeAllocClass, <>bufferAllocClass, <>busAllocClass;
 
-	var <name, <addr, <clientID, <userSpecifiedClientID = false;
+	var <name, <addr, <clientID, <>userSpecifiedClientID = false;
 	var <isLocal, <inProcess, <>sendQuit, <>remoteControlled;
 
 	var <>options, <>latency = 0.2, <dumpMode = 0;
@@ -278,8 +278,6 @@ Server {
 	var <window, <>scopeWindow, <emacsbuf;
 	var <volume, <recorder, <statusWatcher;
 	var <pid, serverInterface;
-	var <numUsers;
-
 
 	*initClass {
 		// // orig	would be:
@@ -329,7 +327,6 @@ Server {
 		options = argOptions ? ServerOptions.new;
 		clientID = argClientID ? 0;
 		if(argClientID.notNil) { userSpecifiedClientID = true };
-		numUsers = options.maxLogins;
 
 		this.newAllocators;
 
@@ -344,6 +341,8 @@ Server {
 		Server.changed(\serverAdded, this);
 
 	}
+
+	numUsers { ^options.maxLogins }
 
 	addr_ { |netAddr|
 		addr = netAddr ?? { NetAddr("127.0.0.1", 57110) };
@@ -362,34 +361,45 @@ Server {
 	}
 
 	initTree {
-		nodeAllocator = NodeIDAllocator(clientID, options.initialNodeID);
-		this.sendMsg("/g_new", 1, 0, 0);
+		this.newNodeAllocators;
+		this.sendMsg("/g_new", this.defaultGroupID, 0, 0);
 		tree.value(this);
 		ServerTree.run(this);
 	}
 
 	/* id allocators */
 
-	clientID_ { |val|
+	// hm - disallow automatic setting when user
+	clientID_ { |val, force = false|
 		var failstr = "Server % couldn't set client id to: % - %.";
+		if(val == clientID) {
+			// no need to change
+			^this
+		};
+		if (userSpecifiedClientID and: force.not) {
+			failstr.format(name, val.cs, "clientID is user-specified, so clientID_ will not change it without force = true").warn;
+			^this
+		};
 		if(val.isInteger.not) {
 			failstr.format(name, val.cs, "not an Integer").warn;
 			^this
 		};
-		if (clientID < 0) {
+		if (val < 0) {
 			failstr.format(name, val.cs, "less than minimum 0").warn;
+			^this
 		};
-		if (clientID >= numUsers) {
+		if (val >= this.numUsers) {
 			failstr.format(name, val.cs,
-				"greater than numUsers % allows".format(numUsers)
+				"greater than server.numUsers % - 1 allows".format(this.numUsers)
 			).warn;
+			^this
 		};
 
-		if(clientID != val) {
-			"% : setting clientID to %.\n".postf(this, val);
-			clientID = val;
-			this.newAllocators;
-		}
+		// ok, really do it
+		"% : setting clientID to %.\n".postf(this, val);
+		clientID = val;
+		this.newAllocators;
+		if (force) { userSpecifiedClientID = true };
 	}
 
 	newAllocators {
@@ -401,7 +411,8 @@ Server {
 	}
 
 	newNodeAllocators {
-		nodeAllocator = NodeIDAllocator(clientID, options.initialNodeID)
+		nodeAllocator = nodeAllocClass.new(clientID,
+			options.initialNodeID, this.numUsers)
 	}
 
 	newBusAllocators {
@@ -409,8 +420,8 @@ Server {
 		var controlReservedOffset, controlBusClientOffset;
 		var audioReservedOffset, audioBusClientOffset;
 
-		numControlPerUser = options.numControlBusChannels div: numUsers;
-		numAudioPerUser = options.numPrivateAudioBusChannels div: numUsers;
+		numControlPerUser = options.numControlBusChannels div: this.numUsers;
+		numAudioPerUser = options.numPrivateAudioBusChannels div: this.numUsers;
 
 		controlReservedOffset = options.reservedNumControlBusChannels;
 		controlBusClientOffset = numControlPerUser * clientID;
@@ -433,7 +444,7 @@ Server {
 
 
 	newBufferAllocators {
-		var numBuffersPerUser = options.numBuffers div: numUsers;
+		var numBuffersPerUser = options.numBuffers div: this.numUsers;
 		var numReservedBuffers = options.reservedNumBuffers;
 		var bufferClientOffset = numBuffersPerUser * clientID;
 
@@ -699,8 +710,10 @@ Server {
 		^Buffer.cachedBufferAt(this, bufnum)
 	}
 
+	defaultGroupID { ^nodeAllocator.idOffset + 1 }
+
 	defaultGroup {
-		^Group.basicNew(this, 1)
+		^Group.basicNew(this, nodeAllocator.idOffset + 1)
 	}
 
 	inputBus {
