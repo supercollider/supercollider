@@ -394,8 +394,8 @@ Server {
 
 	newAllocators {
 		this.newNodeAllocators;
-		// this.newBusAllocators;
-		// this.newBufferAllocators;
+		this.newBusAllocators;
+		this.newBufferAllocators;
 		this.newScopeBufferAllocators;
 		NotificationCenter.notify(this, \newAllocators);
 	}
@@ -427,20 +427,20 @@ Server {
 		audioBusAllocator = busAllocClass.new(
 			numAudioPerUser,
 			audioReservedOffset,
-			controlBusAllocator
+			audioBusClientOffset
 		);
 	}
 
 
 	newBufferAllocators {
-		var numClients = options.maxLogins ? 1;
-		var clientOffset = this.clientID;
-		var numBuffers = options.numBuffers div: numClients;
-		var bufferOffset = (numBuffers * clientOffset);
+		var numBuffersPerUser = options.numBuffers div: numUsers;
+		var numReservedBuffers = options.reservedNumBuffers;
+		var bufferClientOffset = numBuffersPerUser * clientID;
+
 		bufferAllocator = bufferAllocClass.new(
-			numBuffers,
-			options.reservedNumBuffers,
-			bufferOffset
+			numBuffersPerUser,
+			numReservedBuffers,
+			bufferClientOffset
 		);
 	}
 
