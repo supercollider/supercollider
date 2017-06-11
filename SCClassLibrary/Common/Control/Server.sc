@@ -391,30 +391,29 @@ Server {
 		controlBusOffset = numControl * offset + options.reservedNumControlBusChannels;
 		audioBusOffset = options.firstPrivateBus + (numAudio * offset) + options.reservedNumAudioBusChannels;
 
-		controlBusAllocator =
-		ContiguousBlockAllocator.new(numControl, controlBusOffset);
-
-		audioBusAllocator =
-		ContiguousBlockAllocator.new(numAudio, audioBusOffset);
+		controlBusAllocator = busAllocClass.new(
+			numControlPerUser,
+			controlReservedOffset,
+			controlBusClientOffset
+		);
+		audioBusAllocator = busAllocClass.new(
+			numAudioPerUser,
+			audioReservedOffset,
+			audioBusClientOffset
+		);
 	}
 
 
 	newBufferAllocators {
-		var bufferOffset;
-		var offset = this.calcOffset;
-		var n = options.maxLogins ? 1;
-		var numBuffers = options.numBuffers div: n;
-		bufferOffset = numBuffers * offset + options.reservedNumBuffers;
-		bufferAllocator =
-		ContiguousBlockAllocator.new(numBuffers, bufferOffset);
-	}
+		var numBuffersPerUser = options.numBuffers div: numUsers;
+		var numReservedBuffers = options.reservedNumBuffers;
+		var bufferClientOffset = numBuffersPerUser * clientID;
 
-	calcOffset {
-		if(options.maxLogins.isNil) { ^0 };
-		if(clientID > (options.maxLogins - 1)) {
-			"Client ID exceeds maxLogins. Some buses and buffers may overlap for remote server: %".format(this).warn;
-		};
-		^clientID % options.maxLogins
+		bufferAllocator = bufferAllocClass.new(
+			numBuffersPerUser,
+			numReservedBuffers,
+			bufferClientOffset
+		);
 	}
 
 	newScopeBufferAllocators {
