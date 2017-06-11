@@ -14,7 +14,7 @@ or s.queryAllNodes posts much easier to understand.
 ReadableNodeIDAllocator {
 
 	var <userID, <lowestTempID, <numUsers;
-	var <numIDs, <idOffset, <maxID, <numPerm, <maxPermID;
+	var <numIDs, <idOffset, <maxPermID;
 	var tempCount = -1, permCount = 1, permFreed;
 
 	*new { arg userID = 0, lowestTempID = 1000, numUsers = 32;
