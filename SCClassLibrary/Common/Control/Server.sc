@@ -38,7 +38,7 @@ ServerOptions {
 	var <>threads = nil; // for supernova
 	var <>useSystemClock = false;  // for supernova
 
-	var <numPrivateAudioBusChannels=112;
+	var <numPrivateAudioBusChannels=1020;
 
 	var <>reservedNumAudioBusChannels = 0;
 	var <>reservedNumControlBusChannels = 0;
