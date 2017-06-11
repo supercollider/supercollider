@@ -1,0 +1,218 @@
+TITLE:: MultiClient_Setups
+SUMMARY:: How clientIDs and id allocation works in multi-client server setups
+CATEGORIES:: Guides
+related:: Classes/ServerOptions, Classes/Server
+KEYWORD:: server, multi-client
+
+Note::
+For now, this file discusses the topic branch server-fix-multiclient,
+with demonstrations and tests. When the branch is merged, it can become
+a regular guide for MultiClient_Setups.
+::
+
+section:: Multi client-server setups - discussion and tests
+
+OSC communication between SC and its sound server offers many options for network music: Multiple computers can run both supercollider and associated sound servers.
+Basic SC support for simple, symmetrical connection between these is currently buggy,
+and this topic branch proposes bug fixes and obvious little improvements.
+
+For clarity, the "server program" refers a running scsynth or supernova process.
+The "server object" AKA "client" is the server's representation in sclang, such as Server.local, s, Server(\elsewhere, NetAddr("123.234.34.56")).
+
+subsection:: How things work in current master, Jun 11 2017:
+
+list::
+## the server program gets a limit of maxLogins as booting parameters.
+## the server object may get a hardcoded clientID on creation
+## if not, the server prog sends back a free clientID when a new
+	local or remote server object/client logs in.
+::
+This is very handy for dynamic situations, when a fixed list of
+clientIDs is impractical.
+
+When more than one user plays on a given server,
+some resources need to be shared:
+list::
+## permanent and temp nodeIDs (handled by s.nodeAllocator),
+## internal control and audio bus channels (handled by s.audioBusAllocator, s.controlBusAllocator)
+## buffer numbers (handled by s.bufferAllocator).
+::
+
+This is currently inconsistent and partially broken:
+
+A. NodeIDAllocator works, but could be improved:
+list::
+## the limit to 32 users is arbitrary and could be removed
+## the nodeID ranges use a binary mask which works fine,
+  but makes it hard to identify which client a nodeID belongs to.
+This could be made humanly readable (proposal below).
+::
+
+
+B. ContiguousBlockAllocator only works for clientID 0.
+For other ids, the bus and buffer allocators fail with an error.
+
+subsection:: Code examples and tests
+
+code::
+// The topic branch allows switching to the previous
+// allocator classes for comparison and extended tests:
+/*
+// previous
+Server.nodeAllocClass = NodeIDAllocator;
+Server.busAllocClass = ContiguousBlockAllocator;
+Server.bufferAllocClass = ContiguousBlockAllocator;
+
+// proposed
+Server.nodeAllocClass = ReadableNodeIDAllocator;
+Server.busAllocClass = ContiguousBlockAllocatorWithOffset;
+Server.bufferAllocClass = ContiguousBlockAllocatorWithOffset;
+*/
+
+// Show BUG in current master (or 3.7.2, 3.8.0, ...)
+s.options.maxLogins = 8;
+s.clientID = 2; // -> Error in Server:newBusAllocators
+
+// same error when giving clientID on creation:
+Server(\test, s.addr, s.options, clientID: 3);
+::
+
+subsection:: clientID and node allocation
+
+A. Test the new ReadableNodeIDAllocator class,
+as proposed in branch topic-server-fix:
+
+code::
+
+s.options.maxLogins = 16;
+// these work and post info
+s.clientID_(1);
+s.clientID_(2);
+s.clientID_(15);
+// guards against bad input - warns and keeps clientID
+s.clientID_(nil);
+s.clientID_("abc");
+s.clientID_(16);
+s.clientID_(-234);
+
+::
+
+subsection:: CLEANUP userSpecifiedClientID
+userSpecifiedClientID is flag used to distinguish whether a fixed clientID is user-intended, or only a default that the server program response may change.
+For this to work flexibly, userSpecifiedClientID should be user-settable.
+
+code::
+s.addr.port = 57105;
+s.options.maxLogins = 16;
+// set it in clientID_ method with force flag:
+s.userSpecifiedClientID; // false by default
+s.clientID_(2, true);
+s.userSpecifiedClientID; // true now
+// flag can also be set explicitly
+s.userSpecifiedClientID_(true)
+s.userSpecifiedClientID;
+
+// if clientID was user-specified ...
+s.userSpecifiedClientID;
+// you can't set it without force (as server response func would):
+s.clientID_(4);
+ // but with force you can.
+s.clientID_(4, true);
+
+
+// after changing the clientID, one needs to create new allocators
+// based on new clientID. This frees old nodes and calls s.initTree,
+// which calls newAllocators
+s.freeAll;
+
+subsection:: Separate defaultGroups and easy-to trace nodeIDs
+
+In this branch, every client registering with a server should also have its own defaultGroup. Then all nodes belonging to a client are in its defaultGroup and can be specifically addressed, e.g. freeAll can release only one's own nodes, and not those of other clients on this server. In current master, all nodes are in a single shared  defaultGroup, and separate freeAll calls are impossible.
+
+code::
+// ReadableNodeIDAllocator uses a decimal prefix:
+s.clientID_(2, true);
+s.defaultGroupID // 2000... for clientID 2
+s.defaultGroup;
+
+// s.defaultGroup is assumed to be 1 in many places in SC classes,
+// so here are some tests whether synth creation works everywhere:
+s.defaultGroup;
+s.defaultGroupID;
+s.asGroup;
+s.asTarget;
+
+// temp nodeIDs readably belong to clientID 2, starting with 2...1000
+5.do { s.nextNodeID.postln };
+
+
+// test 4 ways of making sounds:
+s.boot;
+s.plotTree;
+
+// Synth
+x = Synth(\default);
+x.free;
+
+x = { Dust.ar(10!2).lag(0.002) }.play;
+x.release(2)
+
+(dur: 4).play;
+
+// JITLib nodeproxies
+Ndef(\x, { Dust.ar(10 ! 2) });
+Ndef(\x).play;
+Ndef(\x).filter(10, { |in| Ringz.ar(in, [600, 800], 0.03) }).play;
+Ndef(\x).end(3);
+
+// other nodeID tests here?
+
+::
+
+subsection:: Bus channels and buffers have fully independent number ranges.
+
+The proposed new class ContiguousBlockAllocatorWithOffset adds an offset for the overall range of numbers, which fixes the limitation to clientID 0 only. It is quite close to ContiguousBlockAllocator and I would vote for merging it into that class, maybe keeping the previous implementation as ContiguousBlockAllocatorPrev if desired.
+
+code::
+// default clientID 0 behavior is identical:
+// maybe recompile for clean state?
+s.clientID;   // should be 0
+s.clientID_(0, true);
+s.options.maxLogins; // default 1
+s.options.maxLogins_(1);
+s.options.numAudioBusChannels;
+s.newBusAllocators;
+s.audioBusAllocator.size; // 1020 buses to allocate
+s.options.maxLogins_(12);
+s.newBusAllocators;
+// 85 = 1020 / 12 buses to allocate.
+s.audioBusAllocator.size;
+3.collect { Bus.audio(s, 2) };
+// 1365 control buses to allocate, starting at 0
+s.controlBusAllocator.size;
+3.collect { Bus.control(s, 2) };
+
+// switch clientID, and see new ranges
+s.clientID_(2, true);
+// audio bus range starts at 174 -> 4 + (85 * 2)
+3.collect { Bus.audio(s, 2) };
+// control bus range starts at 1365 * 2 = 2730
+3.collect { Bus.control(s, 2) };
+
+// add more bus alloc tests here
+
+
+// tests for bufferAllocator is very similar
+s.options.maxLogins_(1); // set to default
+s.clientID_(0, true);
+s.bufferAllocator.size;
+3.collect { Buffer(s) }; // starts at 0
+
+s.options.maxLogins_(12);
+s.clientID_(2, true);
+3.collect { Buffer(s) }; // starts at 170
+
+
+// add more buffer alloc tests here
+
+::
