@@ -78,13 +78,12 @@ and a working startup file. (can be a very simple test setup)
 
 subsection:: Naming, copying, and fixing up the new app
 
+code::
 // TO PREPARE, CHECK YOUR CURRENT config in Preferences->Interpreter:
 // you should be using the internal SCClassLibrary and HelpSource,
 // not an external git repository!
 // To test exporting extensions, it is best to have some quarks
 // or other extensions installed, as seen in the includePaths.
-
-code::
 
 // 0 - define name and location of new app + helper functions
 (
@@ -300,7 +299,7 @@ if (~newAppQuarksDir.pathMatch.notEmpty) {
 	"/*** copying Quarks : ***/".postln;
 	~pathsToCopy.do { |path|
 		unixCmd(
-			"cd" + quote(~newAppQuarksDir) ++ ";"
+			"cd" + quote(~newAppQuarksDir) ++ ";" ++
 			" cp -ir" + quote(path).postln + ".");
 	};
 };
