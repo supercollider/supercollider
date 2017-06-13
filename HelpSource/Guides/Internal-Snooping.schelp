@@ -5,18 +5,18 @@ categories:: Debugging, Internals
 You can inspect much of the internal structure of the class library and other data structures.
 This can be useful for research and debugging purposes.
 
-note:: The keyboard shortcuts mentioned here only apply to the standard supecollider IDE.::
+note:: The keyboard shortcuts mentioned here only apply to the standard SuperCollider IDE.::
 
 section:: Class Definitions, Implementations, and References
 
 subsection::Look up Implementation
-Selecting the name of any method (e.g. play) and select teletype::Language>Look up Implementation:: will open a window showing all implementations of that method and their arguments. Selecting one of those classes and methods (e.g. Sample:play) and typing enter will open the class definition at that method. (Note that cmd-y only shows implementations, and does not indicate inheritance).
+Selecting the name of any method (e.g. play) and then the menu item teletype::Language>Look up Implementation:: will open a window showing all implementations of that method and their arguments. Selecting one of those classes and methods (e.g. Sample:play) and typing enter will open the class definition at that method. Note that this only shows implementations, and does not indicate inheritance.
 
 (see link::Reference/KeyboardShortcuts::)
 
 
 subsection::Look up References
-Selecting any text (e.g. Window or asStream) and typing teletype::Language>Look up References:: will open a window showing all references to the selected text, i.e. each place it is used within the class library (This will not find methods calls compiled with special byte codes like 'value').
+Selecting any text (e.g. Window or asStream) and then the menu item teletype::Language>Look up References:: will open a window showing all references to the selected text, i.e. each place it is used within the class library. Note that this will not find methods calls compiled with special byte codes like 'value'.
 
 (see link::Reference/KeyboardShortcuts::)
 
@@ -70,7 +70,7 @@ Server.instVarNames.dump;
 Server.classVarNames.dump;
 
 // the path to the file that defines this class
-// !! there might be extensions to this class in other files
+// Note that there might be extensions to this class in other files
 Server.filenameSymbol.postln;
 
 (
@@ -139,8 +139,8 @@ Collection.dumpByteCodes('select');
 
 
 { 1 + 2 }.dump;              // this is a Function
-{ 1 + 2 }.def.dump;	         // dump its FunctionDef
-{ 1 + 2 }.asCompileString;	 // show its implementation
+{ 1 + 2 }.def.dump;          // dump its FunctionDef
+{ 1 + 2 }.asCompileString;   // show its implementation
 { 1 + 2 }.def.dumpByteCodes; // dump its code.
 ::
 
