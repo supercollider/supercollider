@@ -1,176 +1,242 @@
-title:: Internal Snooping
+title:: Internal Snooping (Introspection)
 summary:: Snooping around SuperCollider
-categories:: Debugging
+categories:: Debugging, Internals
 
 You can inspect much of the internal structure of the class library and other data structures.
-This can often be useful for research and debugging purposes.
+This can be useful for research and debugging purposes.
 
-warning:: The keyboard shortcuts mentioned here only applies to the Mac SC.app. This document should probably be updated. ::
+note:: The keyboard shortcuts mentioned here only apply to the standard SuperCollider IDE.::
 
 section:: Class Definitions, Implementations, and References
 
-Selecting the name of any Class (e.g. Object) and typing cmd-j will open its class definition file.
+subsection::Look up Implementation
+Selecting the name of any method (e.g. play) and then the menu item teletype::Language>Look up Implementation:: will open a window showing all implementations of that method and their arguments. Selecting one of those classes and methods (e.g. Sample:play) and typing enter will open the class definition at that method. Note that this only shows implementations, and does not indicate inheritance.
 
-note:: Any keypresses that open files identify the files using SuperCollider strings, which may contain only ASCII characters up to code point 127. If any part of the path to your SuperCollider installation contains character codes greater than 127 (such as the old Mac convention of identifying program folders with option-F), automatic file opening will fail. ::
+(see link::Reference/KeyboardShortcuts::)
 
-Selecting the name of any method (e.g. play) and typing cmd-y will open a window showing all implementations of that method and their arguments. Selecting one of those classes and methods (e.g. Sample:play) and typing cmd-j will open the class definition at that method. (Note that cmd-y only shows implementations, and does not indicate inheritance).
 
-Selecting any text (e.g. Window or asStream) and typing shift-cmd-y will open a window showing all references to the selected text, i.e. each place it is used within the class library. (This will not find methods calls compiled with special byte codes like 'value'.)
+subsection::Look up References
+Selecting any text (e.g. Window or asStream) and then the menu item teletype::Language>Look up References:: will open a window showing all references to the selected text, i.e. each place it is used within the class library. Note that this will not find methods calls compiled with special byte codes like 'value'.
 
+(see link::Reference/KeyboardShortcuts::)
+
+subsection::Graphical Class browser
 SC has a graphical Class browser which will show all methods, arguments, subclasses, instance variables and class variables. Using the browser's buttons you can easily navigate to the class' superclass, subclasses, class source, method source, helpfile (if there is one), check references or implementation of methods.
+
 code::
 SequenceableCollection.browse;
 ::
 
+
+
 subsection:: Snooping in Classes
 
-The link::Classes/Class:: help file documents some of these snooping methods.
-Even though you may access these data structures, if you store things into them, you may break something.
 code::
-Collection.dumpInterface;       // print all instance methods defined for this class
+// print all instance methods defined for this class
+Collection.dumpInterface;
 
-Collection.class.dumpInterface; // print all class methods defined for this class
+// print all class methods defined for this class
+Collection.class.dumpInterface;
 
 
-// The following three include inherited methods
 
-Collection.methods.collect(_.name); // print all instance methods that instances of this class respond to
+// print all instance methods that instances of this class respond to
+Collection.methods.collect(_.name);
 
-Collection.class.methods.collect(_.name); // print all class methods that this class responds to
+// print all class methods that this class responds to
+// includes inherited methods
+Collection.class.methods.collect(_.name);
 
-Collection.dumpFullInterface; // print all instance and class methods that this class responds to
+// print all instance and class methods that this class responds to
+// includes inherited methods
+Collection.dumpFullInterface;
 
-Collection.dumpMethodList; // print instance methods of this class and superclasses, in alpha order
-                           // also shows from which class the method is inherited
-                           // does not include Object or Class methods
-                           // for class methods, do Meta_Collection.dumpMethodList
+// print instance methods of this class and superclasses, in alpha order
+// also shows from which class the method is inherited
+// does not include Object or Class methods
+// for class methods, do Meta_Collection.dumpMethodList
+Collection.dumpMethodList;
 
-Collection.dumpClassSubtree;    // dump all subclasses of this class
+// dump all subclasses of this class
+Collection.dumpClassSubtree;
 
-Collection.dumpSubclassList;    // dump all subclasses, in alphabetical order
+// dump all subclasses, in alphabetical order
+Collection.dumpSubclassList;
 
-Server.instVarNames.dump;     // dump all instance variable names of this class
+// dump all instance variable names of this class
+Server.instVarNames.dump;
 
-Server.classVarNames.dump;    // dump all class variable names of this class
+// dump all class variable names of this class
+Server.classVarNames.dump;
 
-Server.filenameSymbol.postln; // the path to the file that defined this class
+// the path to the file that defines this class
+// Note that there might be extensions to this class in other files
+Server.filenameSymbol.postln;
 
 (
 // print all classes whose names start with 'F'
-Class.allClasses.do({ arg class;
-	if (class.name.asString.at(0) == $F, { class.name.postln; });
-})
+Class.allClasses.do { | class |
+	if (class.name.asString.beginsWith("F")) {
+		class.name.postln
+	}
+}
 )
 
 (
 // find and print all class variable names defined in the system
-Class.allClasses.do({ arg class;
-    if (class.classVarNames.notNil, {
+Class.allClasses.do { | class |
+	if (class.classVarNames.notNil) {
 		// classVarNames is an Array of Symbols
-        class.classVarNames.do({ arg varname;
-            (class.name.asString ++ " " ++ varname.asString).postln;
-        })
-    });
-});
+        class.classVarNames.do { | varname |
+            (class.name.asString ++ " " ++ varname.asString).postln
+        }
+    }
+}
 )
 
 (
 // find and print all methods that contain "ascii"
-Class.allClasses.do({ arg class;
-   	class.methods.do({ arg sel;
+Class.allClasses.do { | class |
+   	class.methods.do { | sel |
    			if(sel.name.asString.find("ascii").notNil) {
-            		(class.name.asString + "-" + sel.name).postln;
+            		(class.name.asString + "-" + sel.name).postln
             }
-      });
-}); ""
+	}
+}
 )
 ::
 
 subsection:: Snooping in Methods
 
-Same thing goes here, if you store things into Methods, you may break something.
 code::
-Collection.findMethod('select'); // does it have this method?
+// does the class implement this method?
+Collection.findMethod('select');
+// -> Collection:select
 
-Array.findMethod('select'); // this class doesn't
+// this class doesn't
+Array.findMethod('select');
+// -> nil
 
-Array.findRespondingMethodFor('select'); // climb the class tree to find the method
+// but a superclass might implement it, so
+// climb the class tree to check
+Array.findRespondingMethodFor('select');
+// -> Collection:select
 
-Collection.findMethod('select').dump; // find a method object
 
-Collection.findMethod('select').argNames.dump; // dump its argument names
+// find a method object and dump its argument names and
+// its local variable names
+Collection.findMethod('select').dump;
+Collection.findMethod('select').argNames.dump;
+Collection.findMethod('select').varNames.dump;
+// -> nil // doesn't have any varNames
 
-Collection.findMethod('select').varNames.dump; // dump its local variable names
 
 // dump its code. mostly for debugging the compiler.
 Collection.findMethod('select').dumpByteCodes;
 
-Collection.dumpByteCodes('select');	// a shorter version of the above
+// a shorter version of the above
+Collection.dumpByteCodes('select');
 
-{ 1 + 2 }.dump; // this is a Function
 
-{ 1 + 2 }.def.dump;	// get its FunctionDef
-
-{ 1 + 2 }.def.dumpByteCodes;	// dump its code.
+{ 1 + 2 }.dump;              // this is a Function
+{ 1 + 2 }.def.dump;          // dump its FunctionDef
+{ 1 + 2 }.asCompileString;   // show its implementation
+{ 1 + 2 }.def.dumpByteCodes; // dump its code.
 ::
 
-subsection:: Snooping in Windows
+subsection:: Snooping in GUI Windows
+
 code::
 (
 // create some windows to snoop in
-5.do({ arg i;
+5.do { | i |
 	var w, b;
 	w = Window.new("snoop " ++ i.asString,
 		Rect.new( 200 + 400.rand, 69 + 300.rand, 172, 90 ));
 	w.front;
 	b = Button.new( w, Rect.new( 23, 28, 127, 25 ));
 	b.states = [["BLAM-O", Color.red]];
-}))
+}
+)
 
 Window.allWindows.dump;	// dump a list of all open SCWindows
 
 // a little more helpful, dump their names
-Window.allWindows.collect({ arg w; w.name }).postln;
+Window.allWindows.collect { | w | w.name }.postln;
 
 (
 // change background colors of all open windows
-Window.allWindows.do({ arg window;
+Window.allWindows.do { | window |
 	window.view.background = Color.new(0.5 + 0.5.rand, 0.5 + 0.5.rand, 0.5 + 0.5.rand);
-}))
+}
+)
 
-Window.closeAll; // close all the windows (This will close the server windows)
+Window.closeAll; // close all the windows
 ::
 
 subsection:: Snooping in SynthDefs
 code::
-// First execute this:
+// a synthdef to snoop in
 (
-f = SynthDef("Help-SnoopSynthDef",
-	{ arg out=0;
+f = SynthDef(\snoop, { | out=0 |
 		Out.ar(out, PinkNoise.ar(0.1))
-	});
+});
 )
 
-f.dumpUGens;	// get the ugens, listed in order of execution, with rate, index and
-				// inputs
+// get the ugens, listed in order of execution, with rate,
+// index and inputs
+f.dumpUGens;
 ::
+
+subsection:: Snooping on the Server
+
+Lots of information on server-related snooping can be found in the link::Classes/Server:: helpfile under "Information and debugging".
+
+Some examples code::
+s.boot;
+
+f = { PinkNoise.ar(0.1) * SinOsc.ar }; // a function
+x = f.play;
+
+// look at all the nodes on the server
+s.queryAllNodes;
+
+// parsed contents
+s.dumpOSC(1);
+x.free;
+x = f.play;
+
+// contents in hexadecimal
+// status messages are not filtered
+s.dumpOSC(2);
+x.free;
+x = f.play;
+
+// turn off
+s.dumpOSC(0);
+::
+
 
 subsection:: Snooping in the Interpreter
 
 When evaluating text in the interpreter, the variable 'this' always refers to the interpreter.
 code::
-this.dump;	// display the values of all the interpreter variables a-z
+// display the values of all the interpreter variables a-z
+this.dump;
 
-this.clearAll;	// set all variables a-z to nil
+// set all variables a-z to nil
+this.clearAll;
 
-g = this.compile("(1 + 2).postln");	// compile some text into a Function
 
-g.postln;		// see, g is a Function
+// compile some text into a Function
+g = this.compile("(1 + 2).postln");
+g.postln;   // g is a Function
+g.value;    // evaluate g
 
-g.value;	// evaluate g
+// interpret some text
+this.interpret("(1 + 2).postln");
 
-this.interpret("(1 + 2).postln");	// interpret some text
-
-this.interpretPrint("1 + 2");	// interpret some text and print the result
+// interpret some text and print the result
+this.interpretPrint("1 + 2");
 ::
 
