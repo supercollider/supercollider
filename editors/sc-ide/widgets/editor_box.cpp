@@ -147,7 +147,7 @@ void CodeEditorBox::setDocument(Document *doc, int pos, int selectionLength)
         int modelIndex = doc->modelItem()->index().row();
         if (mDocComboBox) {
             mDocComboBox->blockSignals(true);
-            QModelIndex mIndex = mProxyModel->index(modelIndex, 0);
+            QModelIndex mIndex = Main::documentManager()->docModel()->index(modelIndex, 0, QModelIndex());
             QModelIndex proxyRow = mProxyModel->mapFromSource(mIndex);
             int proxyIndex = proxyRow.row();
             mDocComboBox->setCurrentIndex(proxyIndex);
