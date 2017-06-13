@@ -42,7 +42,7 @@ ServerStatusWatcher {
 		notified = flag;
 		if(server.userSpecifiedClientID.not) {
 			doneOSCFunc = OSCFunc({|msg|
-				if(flag) { server.clientID = msg[2] };
+				if(flag) { server.prSetClientID( msg[2] ) };
 				failOSCFunc.free;
 			}, '/done', server.addr, argTemplate:['/notify', nil]).oneShot;
 

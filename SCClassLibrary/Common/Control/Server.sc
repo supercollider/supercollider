@@ -265,7 +265,7 @@ Server {
 	classvar <>named, <>all, <>program, <>sync_s = true;
 	classvar <>nodeAllocClass, <>bufferAllocClass, <>busAllocClass;
 
-	var <name, <addr, <clientID, <>userSpecifiedClientID = false;
+	var <name, <addr, <clientID, <userSpecifiedClientID = false;
 	var <isLocal, <inProcess, <>sendQuit, <>remoteControlled;
 
 	var <>options, <>latency = 0.2, <dumpMode = 0;
@@ -368,38 +368,44 @@ Server {
 	}
 
 	/* id allocators */
+	clientID_ { |val|
+		var currID = clientID;
+		this.prSetClientID(val);
+		if (clientID == val) {
+			userSpecifiedClientID = true;
+		} {
+			"Please try with a clientID within [0, %].\n"
+			.postf(this.numUsers)
+		}
+	}
 
-	// hm - disallow automatic setting when user
-	clientID_ { |val, force = false|
-		var failstr = "Server % couldn't set client id to: % - %.";
+	// private, called from server notify response with free clientID
+	prSetClientID { |val|
+		var failstr = "Server % couldn't set client id to: % - %.
+clientID is still %.";
+
 		if(val == clientID) {
 			// no need to change
 			^this
 		};
-		if (userSpecifiedClientID and: force.not) {
-			failstr.format(name, val.cs, "clientID is user-specified, so clientID_ will not change it without force = true").warn;
-			^this
-		};
 		if(val.isInteger.not) {
-			failstr.format(name, val.cs, "not an Integer").warn;
+			failstr.format(name, val.cs, "not an Integer", clientID).warn;
 			^this
 		};
 		if (val < 0) {
-			failstr.format(name, val.cs, "less than minimum 0").warn;
+			failstr.format(name, val.cs, "less than minimum 0", clientID).warn;
 			^this
 		};
 		if (val >= this.numUsers) {
 			failstr.format(name, val.cs,
-				"greater than server.numUsers % - 1 allows".format(this.numUsers)
+				"greater than server.numUsers % - 1 allows".format(this.numUsers), clientID
 			).warn;
 			^this
 		};
 
-		// ok, really do it
 		"% : setting clientID to %.\n".postf(this, val);
 		clientID = val;
 		this.newAllocators;
-		if (force) { userSpecifiedClientID = true };
 	}
 
 	newAllocators {
