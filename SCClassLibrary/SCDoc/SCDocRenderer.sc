@@ -137,15 +137,17 @@ SCDocHTMLRenderer {
 		<< "<body onload='fixTOC();prettyPrint()'>\n"
 		<< "<div class='contents'>\n"
 		<< "<div class='header'>\n"
-		<< "<div id='label'>SuperCollider " << folder.asString.toUpper;
+		<< "<div id='label'>\n"
+		<< "<span id='folder'>SuperCollider " << Main.version << " " << folder.asString;
 		if(doc.isExtension) {
 			stream << " (extension)";
 		};
-		stream << "</div>\n";
+		stream << "</span>\n";
 
 		doc.categories !? {
 			stream
-			<< "<div id='categories'>"
+			<< " | "
+			<< "<span id='categories'>"
 
 			<< (doc.categories.collect { | path |
 				// get all the components of a category path ("UGens>Generators>Deterministic")
@@ -156,12 +158,14 @@ SCDocHTMLRenderer {
 				pathElems.collect { | elem, i |
 					var atag = "<a href='" ++ baseDir +/+ "Browse.html#";
 					atag ++ pathElems[0..i].join(">") ++ "'>"++ elem ++"</a>"
-				}.join(">");
+				}.join("&#8201;&gt;&#8201;"); // &#8201; is a thin space
 
 			}.join(" | "))
 
-			<< "</div>\n";
+			<< "</span>\n";
 		};
+
+		stream << "</div>";
 
 		stream << "<h1>";
 		if((doc.title=="Help") and: {((thisProcess.platform.name===\windows) and: (folder=="Help")) or: {folder==""}}) {
@@ -799,7 +803,7 @@ SCDocHTMLRenderer {
 			<< doc.fullPath << "</a><br>"
 		};
 		stream << "link::" << doc.path << "::<br>"
-		<< "sc version: " << Main.version << "</div>"
+		<< "</div>"
 		<< "</div></body></html>";
 	}
 
