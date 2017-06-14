@@ -42,7 +42,7 @@ ServerStatusWatcher {
 		notified = flag;
 		if(server.userSpecifiedClientID.not) {
 			doneOSCFunc = OSCFunc({|msg|
-				if(flag) { server.clientID = msg[2] };
+				if(flag) { server.options.maxLogins = msg[3]; server.clientID = msg[2] }; // will trigger new allocators
 				failOSCFunc.free;
 			}, '/done', server.addr, argTemplate:['/notify', nil]).oneShot;
 
