@@ -243,13 +243,30 @@ SCDocHTMLRenderer {
 		node.children.do {|child| this.renderSubTree(stream, child) };
 	}
 
-	*renderMethod {|stream, node, cls, icls, css, pfx|
+	*renderMethod {|stream, node, methodType, cls, icls|
+		var methodTypeIndicator;
+		var methodCodePrefix;
 		var args = node.text ?? ""; // only outside class/instance methods
 		var names = node.children[0].children.collect(_.text);
 		var mstat, sym, m, m2, mname2;
 		var lastargs, args2;
 		var x, maxargs = -1;
 		var methArgsMismatch = false;
+
+		methodTypeIndicator = switch(
+			methodType,
+			\classMethod, { "*" },
+			\instanceMethod, { "-" },
+			\genericMethod, { "" }
+		);
+
+		methodCodePrefix = switch(
+			methodType,
+			\classMethod, { if(cls.notNil) { cls.name.asString[5..] } { "" } ++ "." },
+			\instanceMethod, { "." },
+			\genericMethod, { "." }
+		);
+
 		minArgs = inf;
 		currentMethod = nil;
 		names.do {|mname|
@@ -297,26 +314,28 @@ SCDocHTMLRenderer {
 				};
 
 				x = {
-					stream << "<h3 class='" << css << "'>"
-					<< "<span class='methprefix'>" << (pfx??"&nbsp;") << "</span>"
-					<< "<a name='" << (pfx??".") << mname << "' href='"
+					stream << "<h3 class='method-code'>"
+					<< "<span class='method-prefix'>" << methodCodePrefix << "</span>"
+					<< "<a class='method-name' name='" << methodTypeIndicator << mname << "' href='"
 					<< baseDir << "/Overviews/Methods.html#"
 					<< mname2 << "'>" << mname2 << "</a>"
 				};
 
 				switch (mstat,
 					// getter only
-					1, { x.value; stream << " " << args << "</h3>\n"; },
+					1, { x.value; stream << args; },
 					// getter and setter
-					3, { x.value; stream << "</h3>\n"; },
+					3, { x.value; },
 					// method not found
 					0, {
 						"SCDoc: In %\n"
-						"  Method %% not found.".format(currDoc.fullPath,pfx,mname2).warn;
+						"  Method %% not found.".format(currDoc.fullPath, methodTypeIndicator, mname2).warn;
 						x.value;
-						stream << ": METHOD NOT FOUND!</h3>\n";
+						stream << ": METHOD NOT FOUND!";
 					}
 				);
+
+				stream << "</h3>\n";
 
 				// has setter
 				if(mstat & 2 > 0) {
@@ -324,7 +343,7 @@ SCDocHTMLRenderer {
 					if(args2.size<2) {
 						stream << " = " << args << "</h3>\n";
 					} {
-						stream << "_ (" << args << ")</h3>\n";
+						stream << "_(" << args << ")</h3>\n";
 					}
 				};
 
@@ -524,26 +543,26 @@ SCDocHTMLRenderer {
 			},
 // Methods
 			\CMETHOD, {
-				this.renderMethod (
+				this.renderMethod(
 					stream, node,
+					\classMethod,
 					currentClass !? {currentClass.class},
-					currentImplClass !? {currentImplClass.class},
-					"cmethodname", "*"
+					currentImplClass !? {currentImplClass.class}
 				);
 			},
 			\IMETHOD, {
-				this.renderMethod (
+				this.renderMethod(
 					stream, node,
+					\instanceMethod,
 					currentClass,
-					currentImplClass,
-					"imethodname", "-"
+					currentImplClass
 				);
 			},
 			\METHOD, {
-				this.renderMethod (
+				this.renderMethod(
 					stream, node,
-					nil, nil,
-					"imethodname", nil
+					\genericMethod,
+					nil, nil
 				);
 			},
 			\CPRIVATE, {},

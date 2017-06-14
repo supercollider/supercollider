@@ -296,7 +296,6 @@ h4 {
     margin-bottom: 0em;
     margin-left: 0em;
     color: #777;
-    border-bottom: 1px solid #ddd;
 }
 
 dt {
@@ -341,18 +340,17 @@ pre.code {
     margin-left: -1em;
 }
 
-.methodname, .imethodname, .cmethodname {
+.method-code {
     font-family: monospace;
-    font-size: 1em;
     font-weight: normal;
+    font-size: 105%;
     margin-bottom: 0em;
     margin-top: 0.75em;
     padding: 0.25em;
     border: none;
-    background: #e7ebe7;
 }
 
-.methodname a, .imethodname a, .cmethodname a {
+a.method-name {
     color: black;
     font-weight: bold;
 }
