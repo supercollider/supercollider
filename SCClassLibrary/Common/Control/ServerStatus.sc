@@ -60,7 +60,7 @@ ServerStatusWatcher {
 		} {
 			"Switched off notification messages from server '%'\n".postf(server.name);
 		};
-		server.sendMsg("/notify", flag.binaryValue);
+		server.sendMsg("/notify", flag.binaryValue, if(server.userSpecifiedClientID, { server.clientID }, {-1}));
 	}
 
 	doWhenBooted { |onComplete, limit = 100, onFailure|
