@@ -192,8 +192,10 @@ void Unit_ZeroOutputs(struct Unit *inUnit, int inNumSamples);
 
 void SendDone(struct ReplyAddress *inReply, const char *inCommandName);
 void SendDoneWithIntValue(struct ReplyAddress *inReply, const char *inCommandName, int value);
+void SendDoneWithVarArgs(struct ReplyAddress *inReply, const char *inCommandName, const char *oscFormat, ...);
 void SendFailure(struct ReplyAddress *inReply, const char *inCommandName, const char *errString);
 void SendFailureWithIntValue(struct ReplyAddress *inReply, const char *inCommandName, const char *errString, uint32 index);
+void SendFailureWithVarArgs(struct ReplyAddress *inReply, const char *inCommandName, const char *errString, const char *oscFormat, ...);
 void ReportLateness(struct ReplyAddress *inReply, float32 seconds);
 int32 Hash(struct ReplyAddress *inReplyAddress);
 
