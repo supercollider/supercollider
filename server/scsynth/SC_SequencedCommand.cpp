@@ -1302,7 +1302,7 @@ bool NotifyCmd::Stage2()
 		hw->mClientIDdict->insert(std::pair<ReplyAddress, uint32>(mReplyAddress,clientID));
 		hw->mUsers[hw->mNumUsers++] = mReplyAddress;
 
-		SendDoneWithIntValue("/notify", clientID);
+		SendDoneWithVarArgs(&mReplyAddress, "/notify", "ii", clientID, (int)hw->mMaxUsers);
 	} else {
 		for (uint32 i=0; i<hw->mNumUsers; ++i) {
 			if (mReplyAddress == hw->mUsers[i]) {
