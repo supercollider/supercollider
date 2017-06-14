@@ -2,6 +2,7 @@
 HTML renderer
 */
 SCDocHTMLRenderer {
+	classvar <binaryOperatorCharacters = "!@%&*-+=|<>?/";
 	classvar currentClass, currentImplClass, currentMethod, currArg;
 	classvar currentNArgs;
 	classvar footNotes;
@@ -260,16 +261,20 @@ SCDocHTMLRenderer {
 			\genericMethod, { "" }
 		);
 
-		methodCodePrefix = switch(
-			methodType,
-			\classMethod, { if(cls.notNil) { cls.name.asString[5..] } { "" } ++ "." },
-			\instanceMethod, { "." },
-			\genericMethod, { "." }
-		);
-
 		minArgs = inf;
 		currentMethod = nil;
 		names.do {|mname|
+			methodCodePrefix = switch(
+				methodType,
+				\classMethod, { if(cls.notNil) { cls.name.asString[5..] } { "" } ++ "." },
+				\instanceMethod, {
+					// If the method name contains any valid binary operator character, remove the
+					// "." to reduce confusion.
+					if(mname.asString.any(this.binaryOperatorCharacters.contains(_)), { "" }, { "." })
+				},
+				\genericMethod, { "" }
+			);
+
 			mname2 = this.escapeSpecialChars(mname);
 			if(cls.notNil) {
 				mstat = 0;
