@@ -120,8 +120,10 @@ SCDocHTMLRenderer {
 			baseDir = baseDir ++ "/..";
 		};
 
-		thisIsTheMainHelpFile = (doc.title=="Help") and:
-			{((thisProcess.platform.name===\windows) and: (folder=="Help")) or: {folder==""}};
+		thisIsTheMainHelpFile = (doc.title == "Help") and: {
+			(folder == "") or:
+			{ (thisProcess.platform.name === \windows) and: { folder == "Help" } }
+		};
 
 		stream
 		<< "<!doctype html>"
