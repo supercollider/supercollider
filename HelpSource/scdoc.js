@@ -83,7 +83,7 @@ function resize_handler() {
 
 function addInheritedMethods() {
     if(! /\/Classes\/[^\/]+/.test(window.location.pathname)) return; // skip this if not a class doc
-    var doc = docmap["Classes/"+document.title];
+    var doc = docmap["Classes/" + scdoc_title];
     if(!doc) return;
     if(doc.implementor) {
         var sups = docmap["Classes/"+doc.implementor].superclasses;
@@ -540,7 +540,7 @@ function fixTOC() {
     li.className = "menuitem";
     var x = document.createElement("span");
     x.id = "topdoctitle";
-    x.appendChild(document.createTextNode(document.title));
+    x.appendChild(document.createTextNode(scdoc_title));
     x.onclick = function() {
         scroll(0,0);
         return false;

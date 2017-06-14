@@ -109,6 +109,7 @@ SCDocHTMLRenderer {
 
 	*renderHeader {|stream, doc|
 		var x, cats, m, z;
+		var thisIsTheMainHelpFile;
 		var folder = doc.path.dirname;
 		var undocumented = false;
 		if(folder==".",{folder=""});
@@ -119,17 +120,34 @@ SCDocHTMLRenderer {
 			baseDir = baseDir ++ "/..";
 		};
 
+		thisIsTheMainHelpFile = (doc.title=="Help") and:
+			{((thisProcess.platform.name===\windows) and: (folder=="Help")) or: {folder==""}};
+
 		stream
-		<< "<html><head><title>" << doc.title << "</title>\n"
+		<< "<!doctype html>"
+		<< "<html lang='en'>"
+		<< "<head><title>";
+
+		if(thisIsTheMainHelpFile) {
+			stream << "SuperCollider " << Main.version << " Help";
+		} {
+			stream << doc.title << " | SuperCollider " << Main.version << " Help";
+		};
+
+		stream
+		<< "</title>\n"
 		<< "<link rel='stylesheet' href='" << baseDir << "/scdoc.css' type='text/css' />\n"
 		<< "<link rel='stylesheet' href='" << baseDir << "/frontend.css' type='text/css' />\n"
 		<< "<link rel='stylesheet' href='" << baseDir << "/custom.css' type='text/css' />\n"
 		<< "<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />\n"
+		<< "<script>\n"
+		<< "var helpRoot = '" << baseDir << "';\n"
+		<< "var scdoc_title = '" << doc.title << "';\n"
+		<< "</script>\n"
 		<< "<script src='" << baseDir << "/scdoc.js' type='text/javascript'></script>\n"
 		<< "<script src='" << baseDir << "/docmap.js' type='text/javascript'></script>\n" // FIXME: remove?
 		<< "<script src='" << baseDir << "/prettify.js' type='text/javascript'></script>\n"
 		<< "<script src='" << baseDir << "/lang-sc.js' type='text/javascript'></script>\n"
-		<< "<script type='text/javascript'>var helpRoot='" << baseDir << "';</script>\n"
 		<< "</head>\n";
 
 		stream
@@ -153,7 +171,7 @@ SCDocHTMLRenderer {
 		};
 
 		stream << "<h1>";
-		if((doc.title=="Help") and: {((thisProcess.platform.name===\windows) and: (folder=="Help")) or: {folder==""}}) {
+		if(thisIsTheMainHelpFile) {
 			stream << "SuperCollider " << Main.version;
 			stream << "<span class='headerimage'><img src='" << baseDir << "/images/SC_icon.png'/></span>";
 		} {
