@@ -348,6 +348,8 @@ pre.code {
     margin-top: 0.75em;
     padding: 0.25em;
     border: none;
+    padding-left: 4em;
+    text-indent: -4em;
 }
 
 a.method-name {
