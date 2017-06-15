@@ -1,12 +1,13 @@
-TITLE:: MultiClient_Setups
-SUMMARY:: How to handle clientIDs and id allocation in multi-client/server setups
+TITLE:: MultiClient_SetupsTEMP
+SUMMARY:: Discussion of proposed differences in topic branch
 CATEGORIES:: Guides
 related:: Classes/ServerOptions, Classes/Server
 KEYWORD:: server, multi-client
 
 Note::
-This describes the state after merging the topic branch server-fix-multiclient.
-Discussion and comparisons now moved to MultiClient_SetupsTEMP.scd!
+For now, this file discusses the topic branch server-fix-multiclient,
+with demonstrations and tests. When the branch is merged, it will be removed,
+and MultiClient_Setups remains as a guide.
 ::
 
 section:: Multi client-server setups - discussion and tests
@@ -18,7 +19,16 @@ and this topic branch proposes bug fixes and obvious little improvements.
 For clarity, the "server program" refers a running scsynth or supernova process.
 The "server object" AKA "client" is the server's representation in sclang, such as Server.local, s, Server(\elsewhere, NetAddr("123.234.34.56")).
 
-subsection:: What are clientIDs for, and how do servers get them?
+subsection:: How things work in current master, Jun 11 2017:
+
+list::
+## the server program gets a limit of maxLogins as boot parameters.
+## by default, the server program sends back a free clientID when a new
+	local or remote server object/client logs in.
+## if the server object was given a clientID on creation,
+	it keeps that clientID, to allow fixed clientID distribution.
+	(This variant may be deprecated in the future.)
+::
 
 When more than one user plays on a given server,
 some resources need to be shared:
@@ -28,22 +38,50 @@ list::
 ## buffer numbers (handled by s.bufferAllocator).
 ::
 
-In the simple default case, there is only a single user/client, who always gets clientID 0, and all the available resources (i.e. the full ranges of allocator numbers).
+This is currently inconsistent and partially broken:
 
-When multiple clients login in, this is what happens:
+A. NodeIDAllocator works, but could be improved:
 list::
-## On startup, scsynth (the server program) gets a ficxed limit of maxLogins.
-## When a new local or remote server object/client registers on this scsynth process,
-scsynth sends back the next free clientID.
-## Exception: If the server object was given a clientID on creation, it keeps that clientID, to allow fixed clientID distribution. (This variant may become deprecated in the future.)
+## the limit to 32 users is arbitrary and could be removed
+## the nodeID ranges use a binary mask which works fine,
+  but makes it hard to identify which client a nodeID belongs to.
+This could be made humanly readable (proposal below).
 ::
+
+
+B. ContiguousBlockAllocator only works for clientID 0.
+For other ids, the bus and buffer allocators fail with an error.
 
 subsection:: Code examples and tests
 
+code::
+// This topic branch allows switching to the previous
+// allocator classes for comparison and extended tests:
+/*
+// previous
+Server.nodeAllocClass = NodeIDAllocator;
+Server.busAllocClass = ContiguousBlockAllocator;
+Server.bufferAllocClass = ContiguousBlockAllocator;
+
+// proposed
+Server.nodeAllocClass = ReadableNodeIDAllocator;
+Server.busAllocClass = ContiguousBlockAllocatorWithOffset;
+Server.bufferAllocClass = ContiguousBlockAllocatorWithOffset;
+*/
+
+// Show BUG in current master (was working on 3.8.0)
+s.options.maxLogins = 8;
+s.clientID = 2; // -> Error in Server:newBusAllocators
+
+// same error when giving clientID on creation:
+Server(\test, s.addr, s.options, clientID: 3);
+::
+
+subsection:: clientID and node allocation
+
 A. Test the clientID method by hand
 
-Note:: Setting clientID_ by hand is not recommended, as it can be confusing.
-Here it is only done for testing the method!::
+Note:: Setting clientID_ by hand is not recommended, as it can be confusing. Here it is only done for testing the method!
 
 code::
 
@@ -59,7 +97,7 @@ s.clientID_(16);
 s.clientID_(-234);
 
 
-// Recommended usage for fixed clientID - set clientID on creation.
+// Recommended usage for fixed clientID:
 
 s.options.maxLogins = 12;
 z = Server(
@@ -79,21 +117,21 @@ z.userSpecifiedClientID;
 
 subsection:: Separate defaultGroups and easy-to trace nodeIDs
 
-Every client registering with a server has its own defaultGroup. All nodes belonging to one client are in its defaultGroup and can be specifically addressed, so e.g. freeAll can release only one's own nodes, and not those of other clients on this server.
-For details, see the ReadableNodeIDAllocator class.
+In this branch, every client registering with a server should also have its own defaultGroup. Then all nodes belonging to a client are in its defaultGroup and can be specifically addressed, e.g. freeAll can release only one's own nodes, and not those of other clients on this server. In current master, all nodes are in a single shared  defaultGroup, and separate freeAll calls are impossible.
+This is done in the ReadableNodeIDAllocator class.
 
 code::
 
 // ReadableNodeIDAllocator uses a decimal prefix:
-// for clientID 0, nothing changes:
+// for cleintID 0, nothing changes:
 s.clientID;
+s.defaultGroupID; // for
 s.defaultGroup;
-s.defaultGroupID;
 // for server z:
 z.clientID; 		// 4
 z.defaultGroupID; 	// 400000001
 z.defaultGroup;		// Group(400000001)
-z.options.maxLogins	// 12
+z.options.maxLogins	// 16
 
 // s.defaultGroup is assumed to be 1 in many places in SC classes,
 // so here are some tests whether synth creation works everywhere:
@@ -110,11 +148,10 @@ z.asTarget;
 // test 4 ways of making sounds:
 z.boot;
 z.plotTree;
-
 Server.default = z;
 
 // Synth
-x = Synth(\default, nil);
+x = Synth(\default, nil, z);
 x.release;
 
 x = { Dust.ar(10!2).lag(0.002) }.play(z);
@@ -128,18 +165,18 @@ Ndef(\x).play;
 Ndef(\x).filter(10, { |in| Ringz.ar(in, [600, 800], 0.03) }).play;
 Ndef(\x).end(3);
 
-// add more nodeID tests here...
+// other nodeID tests here?
 
 ::
 
 subsection:: Bus channels and buffers have fully independent number ranges.
 
-
-The class ContiguousBlockAllocatorWithOffset adds an offset for the overall range of numbers, which fixes the limitation to clientID 0 only. It is quite close to ContiguousBlockAllocator and I would vote for merging it into that class, maybe keeping the previous implementation as ContiguousBlockAllocatorPrev if desired.
+The proposed new class ContiguousBlockAllocatorWithOffset adds an offset for the overall range of numbers, which fixes the limitation to clientID 0 only. It is quite close to ContiguousBlockAllocator and I would vote for merging it into that class, maybe keeping the previous implementation as ContiguousBlockAllocatorPrev if desired.
 
 code::
-// default clientID 0 behavior is identical:
 Server.default = Server.local;
+// default clientID 0 behavior is identical:
+// maybe recompile for clean state?
 s.clientID;   // should be 0
 s.options.maxLogins; // default 1
 
@@ -167,16 +204,14 @@ Server.default = z;
 // control bus range starts at 5460: 1365 * 4
 3.collect { Bus.control(s, 2) };
 
-// add more bus alloc tests here...
+// add more bus alloc tests here
 
-
-Server.default = Server.local;
-s.bufferAllocator.size;
+Server.local.bufferAllocator.size;
 3.collect { Buffer(Server.local) }; // starts at 0
 
 z.bufferAllocator.size;
 3.collect { Buffer(z) }; // starts at 340
 
-// add more buffer alloc tests here...
+// add more buffer alloc tests here
 
 ::
