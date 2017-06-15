@@ -179,6 +179,46 @@ int prSymbolIsMetaClassName(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+const char *binary_op_characters = "!@%&*-+=|<>?/";
+
+int prSymbolIsBinaryOp(struct VMGlobals *g, int numArgsPushed);
+int prSymbolIsBinaryOp(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+	const char* str = slotRawSymbol(a)->name;
+
+	if (str[0] == '\0') {
+		// An empty symbol is not a valid binary operator.
+		SetFalse(a);
+	} else if (str[1] == '\0') {
+		// A symbol of length 1 should be any binary operator character except '='.
+		if (str[0] == '=') {
+			SetFalse(a);
+		} else {
+			bool character_is_binary_operator = strchr(binary_op_characters, str[0]);
+			SetBool(a, character_is_binary_operator);
+		}
+	} else {
+		// A symbol of length 2+ must contain only binary operator characters, and must not start
+		// with '//' or '/*'.
+		if (str[0] == '/' && (str[1] == '/' || str[1] == '*')) {
+			SetFalse(a);
+		} else {
+			const int length = strlen(str);
+			SetTrue(a);
+			for (int i = 0; i < length; i++) {
+				bool character_is_binary_operator = strchr(binary_op_characters, str[i]);
+				if (!character_is_binary_operator) {
+					SetFalse(a);
+					break;
+				}
+			}
+		}
+	}
+
+	return errNone;
+}
+
 int prSymbol_AsInteger(struct VMGlobals *g, int numArgsPushed);
 int prSymbol_AsInteger(struct VMGlobals *g, int numArgsPushed)
 {
@@ -477,7 +517,7 @@ int prSymbol_matchOSCPattern(struct VMGlobals *g, int numArgsPushed);
 int prSymbol_matchOSCPattern(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b;
-	
+
 	a = g->sp - 1;
 	b = g->sp;
 	if (!IsSym(a) || !IsSym(b)) return errWrongType;
@@ -520,6 +560,7 @@ void initSymbolPrimitives()
 	definePrimitive(base, index++, "_SymbolClass", prSymbolClass, 1, 0);
 	definePrimitive(base, index++, "_SymbolIsClassName", prSymbolIsClassName, 1, 0);
 	definePrimitive(base, index++, "_SymbolIsMetaClassName", prSymbolIsMetaClassName, 1, 0);
+	definePrimitive(base, index++, "_Symbol_IsBinaryOp", prSymbolIsBinaryOp, 1, 0);
 	definePrimitive(base, index++, "_SymbolIsSetter", prSymbolIsSetter, 1, 0);
 	definePrimitive(base, index++, "_SymbolAsSetter", prSymbolAsSetter, 1, 0);
 	definePrimitive(base, index++, "_SymbolAsGetter", prSymbolAsGetter, 1, 0);
