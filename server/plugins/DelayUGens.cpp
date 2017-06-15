@@ -1786,7 +1786,7 @@ void Pitch_Ctor(Pitch *unit)
 	int maxbins = (int)ZIN0(kPitchMaxBins);
 	unit->m_maxlog2bins = LOG2CEIL(maxbins);
 
-	unit->m_medianSize = sc_clip((int)ZIN0(0), 0, kMAXMEDIANSIZE);  // (int)ZIN0(kPitchMedian);
+	unit->m_medianSize = sc_clip((int)ZIN0(kPitchMedian), 0, kMAXMEDIANSIZE);
 	unit->m_ampthresh = ZIN0(kPitchAmpThreshold);
 	unit->m_peakthresh = ZIN0(kPitchPeakThreshold);
 
