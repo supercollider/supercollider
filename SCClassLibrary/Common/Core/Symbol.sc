@@ -70,30 +70,6 @@ Symbol {
 		_Symbol_IsBinaryOp
 		^this.primitiveFailed;
 	}
-	isBinaryOpLang {
-		var string, length, firstCharacter, secondCharacter;
-		string = this.asString;
-		length = string.size;
-		switch(length,
-			// An empty string isn't a valid binary op.
-			0, { ^false },
-			// A string of length 1 is valid if it's not "=", and it's in Char.binaryOpCharacters.
-			1, {
-				firstCharacter = string[0];
-				^(firstCharacter != $=) and: { Char.binaryOpCharacters.includes(firstCharacter) }
-			},
-			// A string of length 2+ can't start with "/*" or "//", and all its characters must be
-			// in Char.binaryOpCharacters.
-			{
-				firstCharacter = string[0];
-				secondCharacter = string[1];
-				if(firstCharacter == $/ and: { (secondCharacter == $/) or: { secondCharacter == $* } }) {
-					^false;
-				};
-				^string.every { |character| Char.binaryOpCharacters.includes(character) };
-			}
-		);
-	}
 
 	// Environment support
 	// The compiler translates use of an Environment variable like ~myvar
