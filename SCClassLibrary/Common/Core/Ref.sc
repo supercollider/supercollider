@@ -8,34 +8,45 @@
 //
 // A special syntax shortcut for Ref.new( expr ) is to use a backquote: `expr
 
+
 Ref : AbstractFunction {
 	var <>value;
-	*new { arg thing; ^super.new.value_(thing) }
-	set { arg thing; value = thing }
+
+	*new { |thing|
+		^super.new.value_(thing)
+	}
+
+	set { |thing| value = thing }
+
 	get { ^value }
+
 	dereference { ^value }
+
 	asRef { ^this }
+
 	valueArray { ^value }
+
 	valueEnvir { ^value }
+
 	valueArrayEnvir { ^value }
 
 	// behave like a stream
 	next { ^value }
-//	embedInStream { arg inval;
-//		^this.value.embedInStream(inval)
-//	}
+
 	// prevent multichannel expansion in ugens
 	asUGenInput { ^this }
 
-	printOn { arg stream;
-		stream << "`(" << value << ")";
+	// array interface
+	at { |key| ^value.at(key) }
+
+	put  { |key, val|
+		value.put(key, val)
 	}
-	storeOn { arg stream;
-		stream << "`(" <<< value << ")";
+
+	seq { |pat|
+		value = pat.embedInStream(this)
 	}
-	at { | key | ^value.at(key) }
-	put  { | key, val | value.put(key, val) }
-	seq { | pat | value = pat.embedInStream(this) }
+
 	asControlInput { ^value.asControlInput }
 
 	// Some UGens take Buffer data which
@@ -53,6 +64,15 @@ Ref : AbstractFunction {
 		refarray = array.flopDeep(rank).collect { |item| this.class.new(item) };
 		^refarray.unbubble
 	}
+
+	printOn { |stream|
+		stream << "`(" << value << ")";
+	}
+
+	storeOn { |stream|
+		stream << "`(" <<< value << ")";
+	}
+
 }
 
 RefCopy : Ref {
