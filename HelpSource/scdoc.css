@@ -288,7 +288,7 @@ h3 {
     margin-top: 2.0em;
     margin-bottom: 1px;
     text-align: left;
-    font-size: 1.2em;
+    font-size: 1.4em;
 }
 
 h4 {
@@ -343,7 +343,7 @@ pre.code {
 .method-code {
     font-family: monospace;
     font-weight: normal;
-    font-size: 105%;
+    font-size: 1.05em !important;
     margin-bottom: 0em;
     margin-top: 0.75em;
     padding: 0.25em;
