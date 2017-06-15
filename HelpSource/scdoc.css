@@ -1,5 +1,5 @@
 body {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
     font-size: 10pt;
     color: black;
     background: white;
@@ -75,7 +75,7 @@ ul.inheritedmets {
     margin-top: 0.25em;
 }
 ul.inheritedmets li {
-    font-family: monospace;
+    font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
 }
 a.inheritedmets_toggle {
     font-size: 9pt;
@@ -101,7 +101,7 @@ a.subclass_toggle:hover {
 
 
 #menubar {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
     width: 100%;
     position: fixed;
 /*    background: #555;*/
@@ -305,7 +305,7 @@ dd {
 }
 
 code, pre {
-    font-family: monospace;
+    font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
     font-size: 9pt;
 }
 
@@ -339,7 +339,7 @@ pre.code {
 }
 
 .methodname, .imethodname, .cmethodname {
-    font-family: monospace;
+    font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
     font-size: 1em;
     font-weight: normal;
     margin-bottom: 0em;
@@ -517,7 +517,7 @@ ul.toc li a:hover {
     color: #444;
 }
 .toc3 {
-    font-family: monospace;
+    font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
     font-weight: normal;
 /*    font-size: 9.5pt;*/
 }
@@ -694,7 +694,7 @@ table#search_settings {
     font-size: 9pt;
 }
 #js_error {
-    font-family: Andale Mono, monospace;
+    font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serifspace;
     font-size: 9pt;
     color: red;
 }
@@ -725,7 +725,7 @@ div.met_subclasses a.seemore {
 }
 
 .method_name {
-    font-family: Andale Mono, monospace;
+    font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
     font-size: 9.5pt;
 }
 #method_note {
