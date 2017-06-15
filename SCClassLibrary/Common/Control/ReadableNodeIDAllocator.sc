@@ -22,7 +22,7 @@ ReadableNodeIDAllocator {
 	}
 
 	reset {
-		var maxNumPerUser = (2 ** 31 / numUsers).trunc.postln;
+		var maxNumPerUser = (2 ** 31 / numUsers).trunc;
 		// go to next lower power of 10:
 		numIDs = (10 ** maxNumPerUser.log10.trunc).asInteger;
 

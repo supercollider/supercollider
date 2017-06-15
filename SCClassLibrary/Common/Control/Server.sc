@@ -325,10 +325,18 @@ Server {
 	init { |argName, argAddr, argOptions, argClientID|
 		this.addr = argAddr;
 		options = argOptions ? ServerOptions.new;
-		clientID = argClientID ? 0;
-		if(argClientID.notNil) { userSpecifiedClientID = true };
 
-		this.newAllocators;
+		if(argClientID.notNil) {
+			userSpecifiedClientID = true;
+			if (argClientID >= options.maxLogins) {
+				warn("% : user-specified clientID % is greater than maxLogins!"
+					"\Adjust clientID or options.maxLogins."
+				);
+				^this
+			};
+		};
+		// go thru setter to test validity
+		this.clientID = argClientID ? 0;
 
 		statusWatcher = ServerStatusWatcher(server: this);
 		volume = Volume(server: this, persist: true);
@@ -368,19 +376,9 @@ Server {
 	}
 
 	/* id allocators */
-	clientID_ { |val|
-		var currID = clientID;
-		this.prSetClientID(val);
-		if (clientID == val) {
-			userSpecifiedClientID = true;
-		} {
-			"Please try with a clientID within [0, %].\n"
-			.postf(this.numUsers)
-		}
-	}
 
-	// private, called from server notify response with free clientID
-	prSetClientID { |val|
+	// private, called from server notify response with next free clientID
+	clientID_ { |val|
 		var failstr = "Server % couldn't set client id to: % - %.
 clientID is still %.";
 

@@ -9,7 +9,7 @@
 }
 + Server {
 	asGroup {
-		^Server.default.defaultGroup
+		^this.defaultGroup
 	}
 }
 + Synth {
