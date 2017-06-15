@@ -369,7 +369,6 @@ a.method-name {
 .extmethod {
     font-size: 9pt;
     color: #444;
-    background: #fee;
     padding-left: 0.2em;
     text-align: right;
 }
@@ -377,7 +376,6 @@ a.method-name {
 .supmethod {
     font-size: 9pt;
     color: #444;
-    background: #ffe;
     padding-left: 0.2em;
     text-align: right;
 }
