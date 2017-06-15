@@ -219,6 +219,42 @@ int prSymbolIsBinaryOp(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+int prSymbolIsIdentifier(struct VMGlobals *g, int numArgsPushed);
+int prSymbolIsIdentifier(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+	const char* str = slotRawSymbol(a)->name;
+
+	// An empty symbol is not a valid identifier.
+	if (str[0] == '\0') {
+		SetFalse(a);
+
+	// The first character must be a lowercase letter.
+	} else if ('a' <= str[0] && str[0] <= 'z') {
+		int length = strlen(str);
+		SetTrue(a);
+		// All other characters must be alphanumeric or '_'.
+		for (int i = 1; i < length; i++) {
+			char the_character = str[i];
+			if (
+				!(
+					(the_character == '_')
+					|| ('a' <= the_character && the_character <= 'z')
+					|| ('A' <= the_character && the_character <= 'Z')
+					|| ('0' <= the_character && the_character <= '9')
+				)
+			) {
+				SetFalse(a);
+				break;
+			}
+		}
+	} else {
+		SetFalse(a);
+	}
+
+	return errNone;
+}
+
 int prSymbol_AsInteger(struct VMGlobals *g, int numArgsPushed);
 int prSymbol_AsInteger(struct VMGlobals *g, int numArgsPushed)
 {
@@ -560,6 +596,7 @@ void initSymbolPrimitives()
 	definePrimitive(base, index++, "_SymbolClass", prSymbolClass, 1, 0);
 	definePrimitive(base, index++, "_SymbolIsClassName", prSymbolIsClassName, 1, 0);
 	definePrimitive(base, index++, "_SymbolIsMetaClassName", prSymbolIsMetaClassName, 1, 0);
+	definePrimitive(base, index++, "_Symbol_IsIdentifier", prSymbolIsIdentifier, 1, 0);
 	definePrimitive(base, index++, "_Symbol_IsBinaryOp", prSymbolIsBinaryOp, 1, 0);
 	definePrimitive(base, index++, "_SymbolIsSetter", prSymbolIsSetter, 1, 0);
 	definePrimitive(base, index++, "_SymbolAsSetter", prSymbolAsSetter, 1, 0);

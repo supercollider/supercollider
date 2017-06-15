@@ -66,6 +66,10 @@ Symbol {
 		^this.primitiveFailed
 	}
 	isRest { ^this.isMap.not }
+	isIdentifier {
+		_Symbol_IsIdentifier
+		^this.primitiveFailed;
+	}
 	isBinaryOp {
 		_Symbol_IsBinaryOp
 		^this.primitiveFailed;
