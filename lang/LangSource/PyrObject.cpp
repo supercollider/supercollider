@@ -2258,7 +2258,7 @@ void DumpFrame(PyrFrame *frame)
 	meth = slotRawMethod(&frame->method);
 	methraw = METHRAW(meth);
 	if (methraw->numtemps) {
-		post("\t%s   %p\n", str, frame);
+		post("\t%s\n", str);
 		numargs = methraw->numargs + methraw->varargs;
 		for (i=0; i<methraw->numtemps; ++i) {
 			slotOneWord(frame->vars + i, str);
