@@ -310,67 +310,66 @@ SCDocHTMLRenderer {
 					}
 					{args2.size<minArgs} {
 						minArgs = args2.size;
-					}
-				;
-				} {
-					m = nil;
-					m2 = nil;
-					mstat = 1;
-				};
-
-				x = {
-					stream << "<h3 class='method-code'>"
-					<< "<span class='method-prefix'>" << methodCodePrefix << "</span>"
-					<< "<a class='method-name' name='" << methodTypeIndicator << mname << "' href='"
-					<< baseDir << "/Overviews/Methods.html#"
-					<< mname2 << "'>" << mname2 << "</a>"
-				};
-
-				switch (mstat,
-					// getter only
-					1, { x.value; stream << args; },
-					// getter and setter
-					3, { x.value; },
-					// method not found
-					0, {
-						"SCDoc: In %\n"
-						"  Method %% not found.".format(currDoc.fullPath, methodTypeIndicator, mname2).warn;
-						x.value;
-						stream << ": METHOD NOT FOUND!";
-					}
-				);
-
-				stream << "</h3>\n";
-
-				// has setter
-				if(mstat & 2 > 0) {
-					x.value;
-					if(args2.size<2) {
-						stream << " = " << args << "</h3>\n";
-					} {
-						stream << "_(" << args << ")</h3>\n";
-					}
-				};
-
-				m = m ?? m2;
-				m !? {
-					if(m.isExtensionOf(cls) and: {icls.isNil or: {m.isExtensionOf(icls)}}) {
-						stream << "<div class='extmethod'>From extension in <a href='"
-						<< URI.fromLocalPath(m.filenameSymbol.asString).asString << "'>"
-						<< m.filenameSymbol << "</a></div>\n";
-					} {
-						if(m.ownerClass == icls) {
-							stream << "<div class='supmethod'>From implementing class</div>\n";
-						} {
-							if(m.ownerClass != cls) {
-								m = m.ownerClass.name;
-								m = if(m.isMetaClassName) {m.asString.drop(5)} {m};
-								stream << "<div class='supmethod'>From superclass: <a href='"
-								<< baseDir << "/Classes/" << m << ".html'>" << m << "</a></div>\n";
-							}
-						}
 					};
+			} {
+				m = nil;
+				m2 = nil;
+				mstat = 1;
+			};
+
+			x = {
+				stream << "<h3 class='method-code'>"
+				<< "<span class='method-prefix'>" << methodCodePrefix << "</span>"
+				<< "<a class='method-name' name='" << methodTypeIndicator << mname << "' href='"
+				<< baseDir << "/Overviews/Methods.html#"
+				<< mname2 << "'>" << mname2 << "</a>"
+			};
+
+			switch (mstat,
+				// getter only
+				1, { x.value; stream << args; },
+				// getter and setter
+				3, { x.value; },
+				// method not found
+				0, {
+					"SCDoc: In %\n"
+					"  Method %% not found.".format(currDoc.fullPath, methodTypeIndicator, mname2).warn;
+					x.value;
+					stream << ": METHOD NOT FOUND!";
+				}
+			);
+
+			stream << "</h3>\n";
+
+			// has setter
+			if(mstat & 2 > 0) {
+				x.value;
+				if(args2.size<2) {
+					stream << " = " << args << "</h3>\n";
+				} {
+					stream << "_(" << args << ")</h3>\n";
+				}
+			};
+
+			m = m ?? m2;
+			m !? {
+				if(m.isExtensionOf(cls) and: {icls.isNil or: {m.isExtensionOf(icls)}}) {
+					stream << "<div class='extmethod'>From extension in <a href='"
+					<< URI.fromLocalPath(m.filenameSymbol.asString).asString << "'>"
+					<< m.filenameSymbol << "</a></div>\n";
+				} {
+					if(m.ownerClass == icls) {
+						stream << "<div class='supmethod'>From implementing class</div>\n";
+					} {
+						if(m.ownerClass != cls) {
+							m = m.ownerClass.name;
+							m = if(m.isMetaClassName) {m.asString.drop(5)} {m};
+							stream << "<div class='supmethod'>From superclass: <a href='"
+							<< baseDir << "/Classes/" << m << ".html'>" << m << "</a></div>\n";
+						}
+					}
 				};
+			};
 		};
 
 		if(methArgsMismatch) {
