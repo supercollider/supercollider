@@ -8,6 +8,7 @@ Char : Magnitude {
 	const <space = $  ;
 	const <comma = $, ;
 	const <bullet = $* ;
+	const <binaryOpCharacters = "!@%&*-+=|<>?/";
 
 	*new { ^this.shouldNotImplement(thisMethod) }
 	// to create a Char use the Integer methods asAscii or asDigit
