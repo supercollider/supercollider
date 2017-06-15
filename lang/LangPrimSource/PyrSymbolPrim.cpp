@@ -179,11 +179,11 @@ int prSymbolIsMetaClassName(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-const char *binary_op_characters = "!@%&*-+=|<>?/";
 
 int prSymbol_IsBinaryOp(struct VMGlobals *g, int numArgsPushed);
 int prSymbol_IsBinaryOp(struct VMGlobals *g, int numArgsPushed)
 {
+	static const char *binary_op_characters = "!@%&*-+=|<>?/";
 	PyrSlot *a = g->sp;
 	const char* str = slotRawSymbol(a)->name;
 
@@ -235,13 +235,13 @@ int prSymbol_IsIdentifier(struct VMGlobals *g, int numArgsPushed)
 		SetTrue(a);
 		// All other characters must be alphanumeric or '_'.
 		for (int i = 1; i < length; i++) {
-			char the_character = str[i];
+			char c = str[i];
 			if (
 				!(
-					(the_character == '_')
-					|| ('a' <= the_character && the_character <= 'z')
-					|| ('A' <= the_character && the_character <= 'Z')
-					|| ('0' <= the_character && the_character <= '9')
+					(c == '_')
+					|| ('a' <= c && c <= 'z')
+					|| ('A' <= c && c <= 'Z')
+					|| ('0' <= c && c <= '9')
 				)
 			) {
 				SetFalse(a);
