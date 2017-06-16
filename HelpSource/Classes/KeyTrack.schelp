@@ -12,11 +12,6 @@ method:: kr
 
 argument:: chain
 [fft] Audio input to track. This must have been pre-analysed by a 4096 size FFT. No other FFT sizes are valid except as noted below.
-code::
-// With standard hop of half FFT size = 2048 samples
-b = Buffer.alloc(s,4096,1); // for sampling rates 44100 and 48000
-//b = Buffer.alloc(s,8192,1); // for sampling rates 88200 and 96000
-::
 
 argument:: keydecay
 [sk] Number of seconds for the influence of a window on the final key decision to decay by 40dB (to 0.01 its original value).
@@ -38,24 +33,25 @@ d = Buffer.read(s,"/Volumes/data/stevebeattrack/samples/115.wav");
 // 57 = b minor
 // 78 e minor
 // 08 Bb major
-d = Buffer.read(s, "/Users/nickcollins/Desktop/ML/training_wav/78.wav")
 
-b = Buffer.alloc(s, 4096, 1); // for sampling rates 44100 and 48000
+d = Buffer.read(s, "/Users/nickcollins/Desktop/ML/training_wav/78.wav")
 
 (
 {
-var in, fft, resample;
-var key, transientdetection;
+	var in, fft, resample;
+	var key, transientdetection;
 
-in = PlayBuf.ar(1, d, BufRateScale.kr(d), 1, 0, 1);
+	in = PlayBuf.ar(1, d, BufRateScale.kr(d), 1, 0, 1);
 
-fft = FFT(b, in);
+	// With standard hop of half FFT size = 2048 samples
+	fft = FFT(LocalBuf(1, 4096), in);  // for sampling rates 44100 and 48000
+	fft = FFT(LocalBuf(1, 8192), in);   // for sampling rates 88200 and 96000
 
-key=KeyTrack.kr(fft, 2.0, 0.5);
+	key = KeyTrack.kr(fft, 2.0, 0.5);
 
-key.poll;
+	key.poll;
 
-Out.ar(0,Pan2.ar(in));
+	Pan2.ar(in)
 }.play
 )
 ::
@@ -66,21 +62,21 @@ code::
 // alternating major and minor chords as a test
 (
 {
-var in, fft, resample;
-var key, transientdetection;
+	var in, fft, resample;
+	var key, transientdetection;
 
-in = Mix(SinOsc.ar((60 + [0, MouseX.kr(3, 4).round(1), 7]).midicps, 0, 0.1));
+	in = Mix(SinOsc.ar((60 + [0, MouseX.kr(3, 4).round(1), 7]).midicps, 0, 0.1));
 
-// major dom 7 and minor 7; major keys preferred here
-//in = Mix(SinOsc.ar((60 + (MouseY.kr(0, 11).round(1.0)) + [0, MouseX.kr(3, 4).round(1), 7, 10]).midicps, 0, 0.1));
+	// major dom 7 and minor 7; major keys preferred here
+	//in = Mix(SinOsc.ar((60 + (MouseY.kr(0, 11).round(1.0)) + [0, MouseX.kr(3, 4).round(1), 7, 10]).midicps, 0, 0.1));
 
-fft = FFT(b, in);
+	fft = FFT(LocalBuf(1, 4096), in);  // for sampling rates 44100 and 48000
 
-key = KeyTrack.kr(fft);
+	key = KeyTrack.kr(fft);
 
-key.poll;
+	key.poll;
 
-Out.ar(0,Pan2.ar(in));
+	Pan2.ar(in)
 }.play
 )
 ::
@@ -91,27 +87,26 @@ code::
 // Nice to hear what KeyTrack thinks:
 
 d = Buffer.read(s, "/Users/nickcollins/Desktop/ML/training_wav/78.wav")
-b = Buffer.alloc(s, 4096, 1); // for sampling rates 44100 and 48000
 
 (
 {
-var in, fft, resample, chord, rootnote, sympath;
-var key, transientdetection;
+	var in, fft, resample, chord, rootnote, sympath;
+	var key, transientdetection;
 
-in = PlayBuf.ar(1, d, BufRateScale.kr(d), 1, 0, 1);
+	in = PlayBuf.ar(1, d, BufRateScale.kr(d), 1, 0, 1);
 
-fft = FFT(b, in);
+	fft = FFT(LocalBuf(1, 4096), in);  // for sampling rates 44100 and 48000
 
-key = KeyTrack.kr(fft, 2.0, 0.5);
-key.poll;
-key = Median.kr(101, key); // Remove outlier wibbles
+	key = KeyTrack.kr(fft, 2.0, 0.5);
+	key.poll;
+	key = Median.kr(101, key); // Remove outlier wibbles
 
-chord = if(key<12, #[0, 4, 7], #[0, 3, 7]);
-rootnote = if(key<12, key, key-12) + 60;
+	chord = if(key < 12, #[0, 4, 7], #[0, 3, 7]);
+	rootnote = if(key < 12, key, key-12) + 60;
 
-sympath = SinOsc.ar((rootnote + chord).midicps, 0, 0.4).mean;
+	sympath = SinOsc.ar((rootnote + chord).midicps, 0, 0.4).mean;
 
-Out.ar(0,Pan2.ar(in, -0.5) + Pan2.ar(sympath, 0.5));
+	Pan2.ar(in, -0.5) + Pan2.ar(sympath, 0.5)
 }.play
 )
 ::
@@ -119,16 +114,20 @@ Out.ar(0,Pan2.ar(in, -0.5) + Pan2.ar(sympath, 0.5));
 
 
 code::
-// Research Notes:
-// See the MIREX2006 audio key tracking competition and Emilia Gomez's PhD thesis, Tonal Description of Music Audio Signals
 
-// The following code was used to create the datasets for the UGen, and would be the basis of extensions
+/*
+Research Notes:
+See the MIREX2006 audio key tracking competition and Emilia Gomez's PhD thesis, Tonal Description of Music Audio Signals
 
-// Need one set of bin data for 44100 and one for 48000
+The following code was used to create the datasets for the UGen, and would be the basis of extensions
 
-// KeyTrack calculations, need to make arrays of FFT bins and weights for each chromatic tone.
-// greater resolution, 4096 FFT, avoid lower octaves, too messy there
-// 60*6*2 output arrays
+Need one set of bin data for 44100 and one for 48000
+
+KeyTrack calculations, need to make arrays of FFT bins and weights for each chromatic tone.
+greater resolution, 4096 FFT, avoid lower octaves, too messy there
+
+60*6*2 output arrays
+*/
 
 (
 var fftN, fftBins, binsize;

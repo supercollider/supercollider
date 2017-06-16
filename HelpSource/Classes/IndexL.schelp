@@ -46,15 +46,14 @@ code::
 
 (
 // indexing into a changeable table
-s = Server.local;
 t = [ 200, 300, 400, 500, 600, 800 ];
 b = Buffer(s, t.size, 1);
 
 // alloc and set the values
 s.listSendMsg( b.allocMsg( b.setnMsg(0, t) ).postln );
 
-SynthDef(\help_index, { arg out = 0, i_bufnum = 0;
-	Out.ar(0,
+SynthDef(\help_index, { |out = 0, i_bufnum = 0|
+	Out.ar(out,
 		SinOsc.ar(
 			IndexL.kr(
 				i_bufnum,
@@ -71,8 +70,8 @@ b.setn(*[ 200, 300, 400, 500, 600, 800 ].scramble.postln - 30);
 
 
 (
-SynthDef(\help_index, { arg out = 0, i_bufnum = 0;
-	Out.ar(0,
+SynthDef(\help_index, { |out = 0, i_bufnum = 0|
+	Out.ar(out,
 		SinOsc.ar(
 			IndexL.kr(
 				i_bufnum,
