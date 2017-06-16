@@ -8,6 +8,9 @@ Generates a set of MFCCs; these are obtained from a band-based frequency represe
 
 Output values are somewhat normalised for the range 0.0 to 1.0, but there are no guarantees on exact conformance to this. Commonly, the first coefficient will be the highest value.
 
+
+note::Drafts of an MFCC UGen were prepared by both Dan Stowell and Nick Collins; their various ideas are combined here in a cross platform compatible UGen. Mel scale spacing with triangular crossfade overlap is used by default for the bands, approximately tracking the human critical band spacing and bandwidth. Variants such as BFCC (Bark) and EFCC (ERB) given similar results in practice; the Mel scale as used here is the standard as adapted from the speech recognition literature and now applied in music information retrieval.::
+
 classmethods::
 method:: kr
 
@@ -24,29 +27,27 @@ code::
 
 
 // assumes hop of half fftsize, fine
-b = Buffer.alloc(s, 1024, 1); // for sampling rates 44100 and 48000
-//b = Buffer.alloc(s, 2048, 1); // for sampling rates 88200 and 96000
 
 d = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 
 (
 x = {
-var in, fft, array;
+	var in, fft, array;
 
-//in = PlayBuf.ar(1, d, BufRateScale.kr(d), 1, 0, 1);
+	//in = PlayBuf.ar(1, d, BufRateScale.kr(d), 1, 0, 1);
 
-in = SoundIn.ar(0);
+	in = SoundIn.ar(0);
+	fft = FFT(LocalBuf(1, 1024), in);  // for sampling rates 44100 and 48000
+	//fft = FFT(LocalBuf(1, 2048), in);  // for sampling rates 88200 and 96000
 
-fft = FFT(b, in);
+	array = MFCC.kr(fft);
 
-array = MFCC.kr(fft);
+	array.size.postln;
 
-array.size.postln;
+	Out.kr(0, array); // control bus out
 
-Out.kr(0, array);
-
-Out.ar(0,Pan2.ar(in));
+	Out.ar(0, Pan2.ar(in)); // audio bus out
 }.play
 )
 
@@ -75,12 +76,12 @@ w.front;
 
 r = {
 
-inf.do{
+	inf.do{
 
-c.getn(13, { arg val; { ms.value_(val * 0.9) }.defer });
+		c.getn(13, { arg val; { ms.value_(val * 0.9) }.defer });
 
-0.04.wait; // 25 frames per second
-};
+		0.04.wait; // 25 frames per second
+	};
 
 }.fork;
 
@@ -97,7 +98,7 @@ w.close;
 )
 ::
 
-Research notes: Drafts of an MFCC UGen were prepared by both Dan Stowell and Nick Collins; their various ideas are combined here in a cross platform compatible UGen. Mel scale spacing with triangular crossfade overlap is used by default for the bands, approximately tracking the human critical band spacing and bandwidth. Variants such as BFCC (Bark) and EFCC (ERB) given similar results in practice; the Mel scale as used here is the standard as adapted from the speech recognition literature and now applied in music information retrieval.
+
 
 code::
 // Calculating Mel Scale Bands; allow up to 42 coefficients, so up to 42 bands
@@ -129,10 +130,10 @@ freq_bands = 42;
 //};
 
 lintoscale = {arg freq;
-1127 * log(1 + (freq / 700))
+	1127 * log(1 + (freq / 700))
 };
 scaletolin = {arg scalepos;
-700 * (exp(scalepos / 1127.0) -1);
+	700 * (exp(scalepos / 1127.0) -1);
 };
 
 mel_freq_max = lintoscale.value(freq_max); // 1127 * log(1 + (freq_max / 700));
@@ -153,9 +154,9 @@ fft_peak[0] = (lin_peak[0] / freqperbin).asInteger;
 
 for(1, freq_bands + 1,{|n|
 
- mel_peak[n] = mel_peak[n - 1] + freq_bw_mel;
- lin_peak[n] = scaletolin.value(mel_peak[n]); // 700 * (exp(mel_peak[n] / 1127.0) -1);
- fft_peak[n] = ((lin_peak[n] / freqperbin).asInteger).min(halffftsize); // fft size //rounds down here
+	mel_peak[n] = mel_peak[n - 1] + freq_bw_mel;
+	lin_peak[n] = scaletolin.value(mel_peak[n]); // 700 * (exp(mel_peak[n] / 1127.0) -1);
+	fft_peak[n] = ((lin_peak[n] / freqperbin).asInteger).min(halffftsize); // fft size //rounds down here
 
 });
 
@@ -178,11 +179,11 @@ freq_bands.do {|i|
 	var startbin, endbin, numbins, averager;
 
 	if(i == 0,{
-	startbin = 0;
-	endbin = fft_peak[i + 1] - 1;
+		startbin = 0;
+		endbin = fft_peak[i + 1] - 1;
 	},{
-	startbin = fft_peak[i - 1] + 1;
-	endbin = fft_peak[i + 1] - 1;
+		startbin = fft_peak[i - 1] + 1;
+		endbin = fft_peak[i + 1] - 1;
 	});
 
 	numbins = endbin - startbin + 1;
