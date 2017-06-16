@@ -1268,6 +1268,7 @@ int NotifyCmd::Init(char *inData, int inSize)
 {
 	sc_msg_iter msg(inSize, inData);
 	mOnOff = msg.geti();
+	mID = msg.geti(-1);
 
 	return kSCErr_None;
 }
@@ -1282,8 +1283,10 @@ bool NotifyCmd::Stage2()
 	HiddenWorld *hw = mWorld->hw;
 
 	if (mOnOff) {
-		for (uint32 i=0; i<hw->mNumUsers; ++i) {
-			if (mReplyAddress == hw->mUsers[i]) {
+		Clients::iterator it;
+		for (it = mWorld->hw->mUsers->begin(); it != mWorld->hw->mUsers->end(); ++it){
+			ReplyAddress addr = *it;
+			if (mReplyAddress == addr) {
 				// already in table - don't fail though..
 				SendFailureWithIntValue(&mReplyAddress, "/notify", "notify: already registered\n", hw->mClientIDdict->at(mReplyAddress));
 				scprintf("/notify : already registered\n");
@@ -1291,25 +1294,42 @@ bool NotifyCmd::Stage2()
 			}
 		}
 
-		// add reply address to user table
-		if (hw->mNumUsers >= hw->mMaxUsers) {
+		if (hw->mUsers->size() >= hw->mMaxUsers) {
 			SendFailure(&mReplyAddress, "/notify", "too many users\n");
 			scprintf("too many users\n");
 			return false;
 		}
-
-		uint32 clientID = hw->mClientIDs[hw->mClientIDTop++]; // pop an ID
+		
+		int clientID;
+		
+		if(mID == -1) { // no requested clientID
+			clientID = hw->mAvailableClientIDs->front(); // pop an ID
+			hw->mAvailableClientIDs->pop_front();
+		} else { // user ID requested
+			ClientIDs::iterator it = std::find(hw->mAvailableClientIDs->begin(), hw->mAvailableClientIDs->end(), mID);
+			if (it != hw->mAvailableClientIDs->end()) { // return the requested ID if available
+				clientID = mID;
+				hw->mAvailableClientIDs->erase(it);
+			} else { // otherwise return the first free one
+				clientID = hw->mAvailableClientIDs->front();
+				hw->mAvailableClientIDs->pop_front();
+			}
+		}
+		
 		hw->mClientIDdict->insert(std::pair<ReplyAddress, uint32>(mReplyAddress,clientID));
-		hw->mUsers[hw->mNumUsers++] = mReplyAddress;
-
-		SendDoneWithIntValue("/notify", clientID);
+		hw->mUsers->insert(mReplyAddress);
+		SendDoneWithVarArgs(&mReplyAddress, "/notify", "ii", clientID, (int)hw->mMaxUsers);
+		
+		
 	} else {
-		for (uint32 i=0; i<hw->mNumUsers; ++i) {
-			if (mReplyAddress == hw->mUsers[i]) {
+		Clients::iterator it;
+		for (it = mWorld->hw->mUsers->begin(); it != mWorld->hw->mUsers->end(); ++it){
+			ReplyAddress addr = *it;
+			if (mReplyAddress == addr) {
 				// remove from list
-				hw->mClientIDs[--hw->mClientIDTop] = hw->mClientIDdict->at(mReplyAddress); // push the freed ID
+				hw->mAvailableClientIDs->push_back(hw->mClientIDdict->at(mReplyAddress)); // push the freed ID
 				hw->mClientIDdict->erase(mReplyAddress);
-				hw->mUsers[i] = hw->mUsers[--hw->mNumUsers];
+				hw->mUsers->erase(it);
 				SendDone("/notify");
 				return false;
 			}
