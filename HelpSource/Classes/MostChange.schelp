@@ -27,31 +27,33 @@ Examples::
 
 code::
 
-//doesn't work yet.
-
-d = SynthDef("help-MostChange", { arg amp=1.0;
-	var out, in1, in2;
+(
+d = SynthDef("help-MostChange", { |out, amp = 1.0|
+	var sound, in1, in2;
 	in1 = LFNoise1.ar(800, amp);
 	in2 = SinOsc.ar(800);
-	out = MostChange.ar(in1, in2) * 0.1;
-	Out.ar(0, out)
+	sound = MostChange.ar(in1, in2) * 0.1;
+	Out.ar(out, sound)
 }).play;
+)
 
 d.set(\amp, 0.1);
 d.set(\amp, 0);
 d.set(\amp, 3);
 d.free;
 
-the control that changed most is used for output:
+// the control that changed most is used for output:
 
-d = SynthDef("help-MostChange", { arg freq=440;
-	var out, internalFreq;
+(
+d = SynthDef("help-MostChange", { |out, freq = 440|
+	var sound, internalFreq;
 	internalFreq = LFNoise0.ar(0.3, 300, 800);
-	out = SinOsc.ar(
+	sound = SinOsc.ar(
 			MostChange.kr(freq, internalFreq)
 	);
-	Out.ar(0, out * 0.1)
+	Out.ar(out, sound * 0.1)
 }).play;
+)
 
 d.set(\freq, 800);
 d.set(\freq, 800); //nothing changed
