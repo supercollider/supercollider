@@ -188,18 +188,15 @@ a.navlink {
 .header {
   border-bottom: 2.5px solid #000; padding-bottom:0.18em;
 }
-#label, #label a {
-    font-weight: bold;
-    color: #999;
-    border-bottom: 1px solid #bbb;
+
+#label {
+    color: #666;
+    font-size: 0.9em;
 }
+
 #summary {
     font-weight: normal;
     font-size: 1.1em;
-}
-#categories {
-    color: #888;
-    font-size: 9pt;
 }
 #related {
     text-align: right;
@@ -277,7 +274,7 @@ h1 {
 }
 
 h2 {
-    border-bottom: 2px solid #ccc;
+    border-bottom: 1px solid #ddd;
     margin-top: 1.0em;
     text-align: left;
     margin-bottom: 2px;
