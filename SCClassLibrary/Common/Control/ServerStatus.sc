@@ -37,26 +37,58 @@ ServerStatusWatcher {
 	}
 
 	sendNotifyRequest { |flag = true|
-		var doneOSCFunc, failOSCFunc;
+		var doneOSCFunc, failOSCFunc, newClientID, newMaxLogins;
 		if(serverRunning.not) { ^this };
 		notified = flag;
-		if(server.userSpecifiedClientID.not) {
-			doneOSCFunc = OSCFunc({|msg|
-				if(flag) { server.options.maxLogins = msg[3]; server.clientID = msg[2] }; // will trigger new allocators
-				failOSCFunc.free;
-			}, '/done', server.addr, argTemplate:['/notify', nil]).oneShot;
+		// always request maxLogins and free clientID from scsynth
+		doneOSCFunc = OSCFunc({|msg|
+			// will trigger new allocators
+			if(flag) {
+				newMaxLogins =  msg[3];
+				if (newMaxLogins != server.options.maxLogins) {
+					"%: scsynth has maxLogins % - adjusting my options accordingly.\n"
+					.postf(server, newMaxLogins);
+					server.options.maxLogins = newMaxLogins;
+				} {
+					"%: scsynth maxLogins % match with my options.\n".postf(server, newMaxLogins);
+				};
 
-			failOSCFunc = OSCFunc({|msg|
-				doneOSCFunc.free;
+				newClientID = msg[2];
+				if (newClientID == server.clientID) {
+					"%: keeping clientID % confirmed from scsynth.\n".postf(server, newClientID);
+					server.clientID = msg[2];
+				} {
+					if (server.userSpecifiedClientID.not) {
+						"%: setting clientID to %, as obtained from scsynth.\n"
+						.postf(server, newClientID);
+					} {
+						"% - userSpecifiedClientID % is not free - switching to free clientID "
+						"from scsynth: %. If that is problematic, please reboot scsynth.".
+						format(server, newClientID).warn;
+						server.clientID = msg[2];
+					};
+				}
+			};
+			failOSCFunc.free;
+		}, '/done', server.addr, argTemplate:['/notify', nil]).oneShot;
+
+		failOSCFunc = OSCFunc({|msg|
+			doneOSCFunc.free;
+
+			if (msg[2].asString.contains("already registered")) {
+				"% - already registered with clientID %.\n".postf(server, msg[3]);
+			} {
+				// todo: try to recover from other simple errors as well
+				// "too many users", "not registered"
 				Error(
 					"Failed to register with server '%' for notifications: %\n"
 					"To recover, please reboot the server.".format(server.name, msg)).throw;
-			}, '/fail', server.addr, argTemplate:['/notify', nil, nil]).oneShot;
+			};
+		}, '/fail', server.addr, argTemplate:['/notify', nil, nil]).oneShot;
 
-		};
 
 		if(flag){
-			"Receiving notification messages from server '%'\n".postf(server.name)
+			"Requested notification messages from server '%'\n".postf(server.name)
 		} {
 			"Switched off notification messages from server '%'\n".postf(server.name);
 		};
