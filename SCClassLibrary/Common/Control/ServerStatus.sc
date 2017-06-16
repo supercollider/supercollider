@@ -46,17 +46,22 @@ ServerStatusWatcher {
 			// will trigger new allocators
 			if(flag) {
 				newMaxLogins =  msg[3];
-				if (newMaxLogins != server.options.maxLogins) {
-					"%: scsynth has maxLogins % - adjusting my options accordingly.\n"
-					.postf(server, newMaxLogins);
-					server.options.maxLogins = newMaxLogins;
-				} {
+				if (newMaxLogins.notNil) {
+					if (newMaxLogins != server.options.maxLogins) {
+						"%: scsynth has maxLogins % - adjusting my options accordingly.\n"
+						.postf(server, newMaxLogins);
+						server.options.maxLogins = newMaxLogins;
+					} {
 					"%: scsynth maxLogins % match with my options.\n".postf(server, newMaxLogins);
+					};
+				} {
+					"%: no maxLogins info from scsynth.\n".postf(server, newMaxLogins);
 				};
 
 				newClientID = msg[2];
 				if (newClientID == server.clientID) {
-					"%: keeping clientID % confirmed from scsynth.\n".postf(server, newClientID);
+					"%: keeping clientID % as confirmed from scsynth.\n"
+					.postf(server, newClientID);
 					server.clientID = msg[2];
 				} {
 					if (server.userSpecifiedClientID.not) {
@@ -64,7 +69,7 @@ ServerStatusWatcher {
 						.postf(server, newClientID);
 					} {
 						"% - userSpecifiedClientID % is not free - switching to free clientID "
-						"from scsynth: %. If that is problematic, please reboot scsynth.".
+						"from scsynth: %. If that is problematic, please reboot server.".
 						format(server, newClientID).warn;
 						server.clientID = msg[2];
 					};
@@ -76,12 +81,16 @@ ServerStatusWatcher {
 		failOSCFunc = OSCFunc({|msg|
 			doneOSCFunc.free;
 
-			if (msg[2].asString.contains("already registered")) {
-				"% - already registered with clientID %.\n".postf(server, msg[3]);
+			case
+			{ msg[2].asString.contains("already registered") } {
+				"% - already registered with clientID %.\n".postf(server, msg[3])
+			} { msg[2].asString.contains("not registered") } {
+				// unregister when already not registered:
+				"% - not registered.\n".postf(server)
+			} { msg[2].asString.contains("too many users") } {
+				"% - could not register, too many users.\n".postf(server)
 			} {
-				// todo: try to recover from other simple errors as well
-				// "too many users", "not registered"
-
+				// etc
 				Error(
 					"Failed to register with server '%' for notifications: %\n"
 					"To recover, please reboot the server.".format(server.name, msg)).throw;
