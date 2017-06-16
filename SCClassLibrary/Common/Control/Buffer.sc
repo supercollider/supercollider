@@ -376,7 +376,7 @@ Buffer {
 	}
 
 	zeroMsg { arg completionMessage;
-		^["/b_zero", bufnum ,  completionMessage.value(this) ]
+		^["/b_zero", bufnum, completionMessage.value(this)]
 	}
 
 	set { arg index, float ... morePairs;
