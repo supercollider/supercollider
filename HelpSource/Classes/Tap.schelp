@@ -26,21 +26,21 @@ Tap delay; cannot be modulated
 examples::
 code::
 // Create a buffer.
-b=Buffer.alloc(s, s.sampleRate, 1); //enough space for one second of mono audio
+b = Buffer.alloc(s, s.sampleRate, 1); // enough space for one second of mono audio
 
 // Write to the Buffer with BufWr, read using two Taps, one for each ear!
 (
-SynthDef(\helpTap, {|bufnum|
+SynthDef(\helpTap, { |out, bufnum|
 	var source, capture;
 
-	source= SoundIn.ar(0); //use headphones to avoid feedback
+	source= SoundIn.ar(0); // use headphones to avoid feedback
 	capture= BufWr.ar(source, bufnum, Phasor.ar(0,1, 0, BufFrames.ir(bufnum),1));
 
-	Out.ar(0, Tap.ar(bufnum, 1, [0.1,0.9])); //multichannel expansion, so one tap each ear
+	Out.ar(out, Tap.ar(bufnum, 1, [0.1,0.9])); // multichannel expansion, so one tap each ear
 }).add;
 )
 
-x=Synth(\helpTap,[\bufnum, b]);
+x = Synth(\helpTap, [\bufnum, b]);
 
 x.free;
 ::

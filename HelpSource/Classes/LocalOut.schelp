@@ -45,22 +45,20 @@ code::
 	var source, local;
 
 	source = Decay.ar(Impulse.ar(0.3), 0.1) * WhiteNoise.ar(0.2);
-
 	local = LocalIn.ar(2) + [source, 0]; // read feedback, add to source
-
 	local = DelayN.ar(local, 0.2, 0.2); // delay sound
 
 	// reverse channels to give ping pong effect, apply decay factor
 	LocalOut.ar(local.reverse * 0.8);
 
-	Out.ar(0, local);
+	local
 }.play;
 )
 
 
 
 (
-z = SynthDef("tank", {
+z = SynthDef("tank", { |out|
 	var local, in;
 
 	in = Mix.fill(12, {
@@ -87,14 +85,14 @@ z = SynthDef("tank", {
 
 	LocalOut.ar(local);
 
-	Out.ar(0, local);
+	Out.ar(out, local);
 }).play;
 )
 
 
 
 (
-z = SynthDef("tape", {
+z = SynthDef("tape", { |out|
 	var local, in, amp;
 
 	in = SoundIn.ar([0, 1]);
@@ -115,25 +113,26 @@ z = SynthDef("tape", {
 
 	LocalOut.ar(local);
 
-	Out.ar(0, local * 0.1);
+	Out.ar(out, local * 0.1);
 }).play;
 )
 
 // Resonator, must subtract blockSize for correct tuning
 (
-var play, imp, initial;
-SynthDef("testRes", {
 
-play = LocalIn.ar(1);
-imp = Impulse.ar(1);
+{
+	var imp, local;
+	local = LocalIn.ar(1);
+	imp = Impulse.ar(1);
 
-LocalOut.ar(DelayC.ar(imp + (play * 0.995), 1, 440.reciprocal - ControlRate.ir.reciprocal)); // for feedback
+	// for feedback
+	LocalOut.ar(DelayC.ar(imp + (local * 0.995), 1, 440.reciprocal - ControlRate.ir.reciprocal));
 
-OffsetOut.ar(0, play);
+	local
 
-}).play(s);
+}.play;
 
-{SinOsc.ar(440, 0, 0.2) }.play(s, 1); // compare pitch
+{ SinOsc.ar(440, 0, 0.2) }.play; // compare pitch
 )
 
 ::

@@ -129,8 +129,9 @@ code::
 s.boot;
 (
 x = SynthDef("help-node-setn", {
-	arg freq1 = 440, freq2 = 440, freq3 = 440, amp1 = 0.05, amp2 = 0.05, amp3 = 0.05;
-	Out.ar(0, Mix(SinOsc.ar([freq1, freq2, freq3], 0, [amp1, amp2, amp3])));}).play(s);
+	arg out, freq1 = 440, freq2 = 440, freq3 = 440, amp1 = 0.05, amp2 = 0.05, amp3 = 0.05;
+	Out.ar(out, Mix(SinOsc.ar([freq1, freq2, freq3], 0, [amp1, amp2, amp3])))
+}).play(s);
 )
 // set 3 controls starting from \freq1, and 3 controls starting from \amp1
 x.setn(\freq1, [440, 880, 441], \amp1, [0.3, 0.1, 0.3]);
@@ -155,17 +156,18 @@ s.boot;
 (
 b = Bus.control(s, 1); b.set(880);
 c = Bus.control(s, 1);	c.set(884);
-x = SynthDef("help-Node-map", { arg freq1 = 440, freq2 = 440;
-	Out.ar(0, SinOsc.ar([freq1, freq2], 0, 0.1));
-}).play(s);)
+x = SynthDef("help-Node-map", { arg out, freq1 = 440, freq2 = 440;
+	Out.ar(out, SinOsc.ar([freq1, freq2], 0, 0.1));
+}).play(s)
+)
 x.map(\freq1, b, \freq2, c);
 x.free; b.free; c.free;
 
 // same as above with a multichannel Bus and Control
 (
 b = Bus.control(s, 2); b.set(880, 884);
-x = SynthDef("help-Node-map2", { arg freqs = #[440, 440];
-	Out.ar(0, SinOsc.ar(freqs, 0, 0.1));
+x = SynthDef("help-Node-map2", { arg out, freqs = #[440, 440];
+	Out.ar(out, SinOsc.ar(freqs, 0, 0.1));
 }).play(s);)
 x.map(\freqs, b);
 x.free; b.free;
@@ -291,10 +293,10 @@ fork {
 
 code::
 (
-SynthDef(\help, {
+SynthDef(\help, { |out|
 	var mod = LFNoise2.kr(Rand(1, 6)) * 0.2;
 	var snd = mod * Blip.ar(Rand(200, 800) * (mod + 1));
-	Out.ar(0, snd);
+	Out.ar(out, snd);
 	FreeSelf.kr(mod < 0);
 }).add;
 )
