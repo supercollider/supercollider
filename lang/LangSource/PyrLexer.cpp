@@ -177,15 +177,21 @@ bool startLexer(PyrSymbol *fileSym, const bfs::path& p, int startPos, int endPos
 	textlen = -1;
 
 	if(!fileSym->u.source) {
-		std::string filetext;
-		// @TODO: error handling
-		bfs::load_string_file(p, filetext);
-		textlen = filetext.size();
-		text = (char*)pyr_pool_compile->Alloc((textlen+1) * sizeof(char));
-		strcpy(text, filetext.c_str());
-//		if (!getFileText(filename, &text, &textlen)) return false;
-		fileSym->u.source = text;
-		rtf2txt(text);
+		try {
+			bfs::ifstream file;
+			file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+			file.open(p, std::ios_base::binary);
+			size_t sz = bfs::file_size(p);
+
+			text = (char*)pyr_pool_compile->Alloc((sz + 1) * sizeof(char));
+			file.read(text, sz);
+			text[sz] = '\0';
+			fileSym->u.source = text;
+			rtf2txt(text);
+		} catch (const std::exception& ex) {
+			error("Could not read %s: %s.\n", SC_Codecvt::path_to_utf8_str(p));
+			return false;
+		}
 	}
 	else
 		text = fileSym->u.source;
