@@ -426,7 +426,6 @@ static bool PlugIn_LoadDir(const bfs::path& dir, bool reportError)
 #ifdef DEBUG_SCFS
 					cout << "[SC_FS] ERROR: Could not process " << path << endl;
 #endif
-					return false;
 				}
 			}
 //		}
