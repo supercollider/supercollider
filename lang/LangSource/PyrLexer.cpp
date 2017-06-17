@@ -169,8 +169,8 @@ double sc_strtof(const char *str, int n, int base)
 	return z;
 }
 
-bool startLexer(PyrSymbol *fileSym, const boost::filesystem::path& p, int startPos, int endPos, int lineOffset);
-bool startLexer(PyrSymbol *fileSym, const boost::filesystem::path& p, int startPos, int endPos, int lineOffset)
+bool startLexer(PyrSymbol *fileSym, const bfs::path& p, int startPos, int endPos, int lineOffset);
+bool startLexer(PyrSymbol *fileSym, const bfs::path& p, int startPos, int endPos, int lineOffset)
 {
 	const char *filename = fileSym->name;
 
@@ -1639,7 +1639,7 @@ void compileClass(PyrSymbol *fileSym, int startPos, int endPos, int lineOffset)
 	gCompilingVMGlobals = 0;
 	gRootParseNode = NULL;
 	initParserPool();
-	if (startLexer(fileSym, SC_Filesystem::Path(), startPos, endPos, lineOffset)) {
+	if (startLexer(fileSym, bfs::path(), startPos, endPos, lineOffset)) {
 		//postfl("->Parsing %s\n", fileSym->name); fflush(stdout);
 		parseFailed = yyparse();
 		//postfl("<-Parsing %s %d\n", fileSym->name, parseFailed); fflush(stdout);
@@ -2009,7 +2009,7 @@ bool passOne()
 }
 
 // true if filename ends in ".sc"
-bool isValidSourceFileName(const boost::filesystem::path& path)
+bool isValidSourceFileName(const bfs::path& path)
 {
 	if (path.filename().c_str()[0] == '.')
 		return false; // hidden filename
@@ -2017,7 +2017,7 @@ bool isValidSourceFileName(const boost::filesystem::path& path)
 }
 
 // sekhar's replacement
-bool passOne_ProcessOneFile(const boost::filesystem::path& path, int level)
+bool passOne_ProcessOneFile(const bfs::path& path, int level)
 {
 	bool success = true;
 
