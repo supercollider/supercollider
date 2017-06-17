@@ -213,7 +213,7 @@ code::
 ( // select the slider, type something and watch the post window
 w = Window.new;
 c = Slider(w, Rect(0,0,100,30));
-c.keyDownAction = { arg view, char, modifiers, unicode, keycode;
+c.keyDownAction = { |view, char, modifiers, unicode, keycode|
 [char, modifiers, unicode, keycode].postln;
 };
 w.front;
@@ -248,7 +248,7 @@ code::
 
 	(
 		s.waitForBoot({
-			SynthDef(\pluck,{ |out, freq=55|
+			SynthDef(\pluck, { |out, freq=55|
 				Out.ar(out,
 					Pluck.ar(WhiteNoise.ar(0.06),
 						EnvGen.kr(Env.perc(0,4), 1.0, doneAction: Done.freeSelf),
