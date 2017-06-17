@@ -122,7 +122,7 @@ a= SynthDef(\help_beattrack2_1, { |out, vol=1.0, beepvol=1.0, lock=0, bufnum|
 	#trackb, trackh, trackq, tempo, phase, period, groove = BeatTrack2.kr(0, 2, 3.0, 0.02, lock, -2.5);
 
 
-	beep = SinOsc.ar(1000,0.0,Decay.kr(trackb,0.1));
+	beep = SinOsc.ar(1000, 0.0, Decay.kr(trackb, 0.1));
 	beep = Pan2.ar((vol * in) + (beepvol * beep), 0.0);
 	Out.ar(out, beep);
 }).add;
