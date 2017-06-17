@@ -33,12 +33,15 @@ Primitives for platform dependent directories, constants etc.
 # include "Shlobj.h"
 #endif
 
+#include <boost/filesystem/path.hpp> // path
+
+namespace bfs = boost::filesystem;
 using DirName = SC_Filesystem::DirName;
 
 static inline int prPlatform_getDirectory(const struct VMGlobals *g, const DirName dirname)
 {
 	PyrSlot *a = g->sp;
-	const SC_Filesystem::Path& p = SC_Filesystem::instance().getDirectory(dirname);
+	const bfs::path& p = SC_Filesystem::instance().getDirectory(dirname);
 	PyrString* string = newPyrString(g->gc, SC_Codecvt::path_to_utf8_str(p).c_str(), 0, true);
 	SetObject(a, string);
 	return errNone;

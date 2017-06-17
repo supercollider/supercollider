@@ -76,6 +76,8 @@ Primitives for File i/o.
 
 #define DELIMITOR ':'
 
+namespace bfs = boost::filesystem;
+
 int prFileDelete(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp - 1, *b = g->sp;
@@ -85,9 +87,9 @@ int prFileDelete(struct VMGlobals *g, int numArgsPushed)
 	if (error != errNone)
 		return error;
 
-	const boost::filesystem::path& p = SC_Codecvt::utf8_str_to_path(filename);
+	const bfs::path& p = SC_Codecvt::utf8_str_to_path(filename);
 	boost::system::error_code error_code;
-	boost::filesystem::remove(p, error_code);
+	bfs::remove(p, error_code);
 
 	if (error_code)
 		SetFalse(a);
@@ -106,8 +108,8 @@ int prFileMTime(struct VMGlobals * g, int numArgsPushed)
 	if (error != errNone)
 		return error;
 
-	const boost::filesystem::path& p = SC_Codecvt::utf8_str_to_path(filename);
-	time_t mtime = boost::filesystem::last_write_time(p);
+	const bfs::path& p = SC_Codecvt::utf8_str_to_path(filename);
+	time_t mtime = bfs::last_write_time(p);
 	SetInt(a, mtime);
 	return errNone;
 }
@@ -121,8 +123,8 @@ int prFileExists(struct VMGlobals * g, int numArgsPushed)
 	if (error != errNone)
 		return error;
 
-	const boost::filesystem::path& p = SC_Codecvt::utf8_str_to_path(filename);
-	bool res = boost::filesystem::exists(p);
+	const bfs::path& p = SC_Codecvt::utf8_str_to_path(filename);
+	bool res = bfs::exists(p);
 	SetBool(a, res);
 	return errNone;
 }
@@ -139,13 +141,13 @@ int prFileRealPath(struct VMGlobals* g, int numArgsPushed )
 		return err;
 
 	bool isAlias = false;
-	boost::filesystem::path p = SC_Codecvt::utf8_str_to_path(ipath);
+	bfs::path p = SC_Codecvt::utf8_str_to_path(ipath);
 	p = SC_Filesystem::resolveIfAlias(p, isAlias);
 	if (p.empty())
 		return errFailed;
 
 	boost::system::error_code error_code;
-	p = boost::filesystem::canonical(p, error_code).make_preferred();
+	p = bfs::canonical(p, error_code).make_preferred();
 	if(error_code) {
 		SetNil(a);
 		return errNone;
@@ -170,8 +172,8 @@ int prFileMkDir(struct VMGlobals * g, int numArgsPushed)
 		return error;
 
 	boost::system::error_code error_code;
-	const boost::filesystem::path& p = SC_Codecvt::utf8_str_to_path(filename);
-	boost::filesystem::create_directories(p, error_code);
+	const bfs::path& p = SC_Codecvt::utf8_str_to_path(filename);
+	bfs::create_directories(p, error_code);
 	if (error_code)
 		postfl("Warning: %s (\"%s\")\n", error_code.message().c_str(), p.c_str());
 
@@ -191,9 +193,9 @@ int prFileCopy(struct VMGlobals * g, int numArgsPushed)
 	if (error != errNone)
 		return error;
 
-	const boost::filesystem::path& p1 = SC_Codecvt::utf8_str_to_path(filename1);
-	const boost::filesystem::path& p2 = SC_Codecvt::utf8_str_to_path(filename2);
-	boost::filesystem::copy(p1, p2);
+	const bfs::path& p1 = SC_Codecvt::utf8_str_to_path(filename1);
+	const bfs::path& p2 = SC_Codecvt::utf8_str_to_path(filename2);
+	bfs::copy(p1, p2);
 	return errNone;
 }
 
@@ -206,8 +208,8 @@ int prFileType(struct VMGlobals * g, int numArgsPushed)
 	if (error != errNone)
 		return error;
 
-	const boost::filesystem::path& p = SC_Codecvt::utf8_str_to_path(filename);
-	boost::filesystem::file_status s(boost::filesystem::symlink_status(p));
+	const bfs::path& p = SC_Codecvt::utf8_str_to_path(filename);
+	bfs::file_status s(bfs::symlink_status(p));
 	SetInt(a, s.type());
 	return errNone;
 }
@@ -221,8 +223,8 @@ int prFileSize(struct VMGlobals * g, int numArgsPushed)
 	if (error != errNone)
 		return error;
 
-	const boost::filesystem::path& p = SC_Codecvt::utf8_str_to_path(filename);
-	uintmax_t sz = boost::filesystem::file_size(p);
+	const bfs::path& p = SC_Codecvt::utf8_str_to_path(filename);
+	uintmax_t sz = bfs::file_size(p);
 	SetInt(a, sz);
 	return errNone;
 }
@@ -251,7 +253,7 @@ int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 
 	memcpy(filename, slotRawString(b)->s, slotRawObject(b)->size);
 	filename[slotRawString(b)->size] = 0;
-	const boost::filesystem::path& path = SC_Codecvt::utf8_str_to_path(filename);
+	const bfs::path& path = SC_Codecvt::utf8_str_to_path(filename);
 
 	memcpy(mode, slotRawString(c)->s, slotRawObject(c)->size);
 	mode[slotRawString(c)->size] = 0;
@@ -278,7 +280,7 @@ int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 		// check if directory exisits
 		// create a temporary file (somewhere) for a handle
 		// the file is deleted automatically when closed
-		if (boost::filesystem::is_directory(path)) {
+		if (bfs::is_directory(path)) {
 			int err;
 #    ifdef _MSC_VER
 			err = tmpfile_s(&file);

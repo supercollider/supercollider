@@ -50,6 +50,7 @@ Primitives for String.
 #include <yaml-cpp/yaml.h>
 
 using namespace std;
+namespace bfs = boost::filesystem;
 
 int prStringAsSymbol(struct VMGlobals *g, int numArgsPushed);
 int prStringAsSymbol(struct VMGlobals *g, int numArgsPushed)
@@ -556,9 +557,9 @@ int prString_PathMatch(struct VMGlobals *g, int numArgsPushed)
 	}
 
 	// read all paths into a vector
-	std::vector<SC_Filesystem::Path> paths;
+	std::vector<bfs::path> paths;
 	while (true) {
-		const SC_Filesystem::Path& matched_path = SC_Filesystem::globNext(glob);
+		const bfs::path& matched_path = SC_Filesystem::globNext(glob);
 		if (matched_path.empty())
 			break;
 		else
@@ -857,7 +858,7 @@ int prString_StandardizePath(struct VMGlobals* g, int /* numArgsPushed */)
 	if (err) return err;
 
 	bool isAlias;
-	boost::filesystem::path p = SC_Codecvt::utf8_str_to_path(ipath);
+	bfs::path p = SC_Codecvt::utf8_str_to_path(ipath);
 	p = SC_Filesystem::instance().expandTilde(p);
 	p = SC_Filesystem::resolveIfAlias(p, isAlias);
 	// original method didn't throw an error if alias resolution failed.
@@ -996,8 +997,8 @@ int prString_ParseYAMLFile(struct VMGlobals* g, int numArgsPushed)
 
 	string str((const char*)slotRawString(arg)->s, slotRawString(arg)->size);
 
-	const boost::filesystem::path& path = SC_Codecvt::utf8_str_to_path(str);
-	boost::filesystem::ifstream fin(path);
+	const bfs::path& path = SC_Codecvt::utf8_str_to_path(str);
+	bfs::ifstream fin(path);
 	YAML::Node doc = YAML::Load(fin);
 	yaml_traverse(g, doc, NULL, arg);
 

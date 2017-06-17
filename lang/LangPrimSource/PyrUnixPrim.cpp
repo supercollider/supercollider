@@ -49,7 +49,7 @@ Primitives for Unix.
 #include <libgen.h>
 #endif
 
-using namespace boost::filesystem; // TODO_BRIAN: change this namespace decl
+namespace bfs = boost::filesystem;
 
 extern bool compiledOK;
 PyrSymbol* s_unixCmdAction;
@@ -215,7 +215,7 @@ int prArrayPOpen(struct VMGlobals *g, int numArgsPushed)
 	
 	std::vector<char *> argv (obj->size + 1);
 	
-	path p;
+	bfs::path p;
 	p /= filename;
 	std::string filenameOnly = p.filename().string();
 	std::vector<char> vfilenameOnly(filenameOnly.begin(), filenameOnly.end());

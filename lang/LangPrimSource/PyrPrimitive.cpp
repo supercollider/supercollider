@@ -62,10 +62,13 @@
 
 #include "SCDocPrim.h"
 
+#include <boost/filesystem/path.hpp> // path
 
 #ifdef __clang__
 #pragma clang diagnostic ignored "-Warray-bounds"
 #endif
+
+namespace bfs = boost::filesystem;
 
 int yyparse();
 
@@ -3529,7 +3532,7 @@ static int prLanguageConfig_addLibraryPath(struct VMGlobals * g, int numArgsPush
 	if (error)
 		return errWrongType;
 
-	const SC_LanguageConfig::Path& native_path = SC_Codecvt::utf8_str_to_path(path);
+	const bfs::path& native_path = SC_Codecvt::utf8_str_to_path(path);
 	if (pathType == includePaths)
 		gLanguageConfig->addIncludedDirectory(native_path);
 	else
@@ -3556,7 +3559,7 @@ static int prLanguageConfig_removeLibraryPath(struct VMGlobals * g, int numArgsP
 	if (error)
 		return errWrongType;
 
-	const SC_LanguageConfig::Path& native_path = SC_Codecvt::utf8_str_to_path(path);
+	const bfs::path& native_path = SC_Codecvt::utf8_str_to_path(path);
 	if (pathType == includePaths)
 		gLanguageConfig->removeIncludedDirectory(native_path);
 	else
@@ -3598,10 +3601,10 @@ static int prLanguageConfig_writeConfigFile(struct VMGlobals * g, int numArgsPus
 		if (error)
 			return errWrongType;
 
-		const SC_LanguageConfig::Path& config_path = SC_Codecvt::utf8_str_to_path(path);
+		const bfs::path& config_path = SC_Codecvt::utf8_str_to_path(path);
 		gLanguageConfig->writeLibraryConfigYAML(config_path);
 	} else {
-		const SC_LanguageConfig::Path& config_path =
+		const bfs::path& config_path =
 			SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::UserConfig)
 			/ "sclang_conf.yaml";
 		gLanguageConfig->writeLibraryConfigYAML(config_path);

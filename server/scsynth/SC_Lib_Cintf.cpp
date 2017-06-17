@@ -51,6 +51,7 @@
 #  define SC_PLUGIN_EXT ".scx"
 #endif
 
+#include <boost/filesystem/path.hpp> // path
 #include <boost/filesystem/operations.hpp> // is_directory
 
 #ifdef __APPLE__
@@ -67,6 +68,8 @@ using std::cout;
 using std::endl;
 #endif
 
+namespace bfs = boost::filesystem;
+
 Malloc gMalloc;
 HashTable<SC_LibCmd, Malloc> *gCmdLib;
 HashTable<struct UnitDef, Malloc> *gUnitDefLib = 0;
@@ -76,7 +79,7 @@ extern struct InterfaceTable gInterfaceTable;
 SC_LibCmd* gCmdArray[NUMBER_OF_COMMANDS];
 
 void initMiscCommands();
-static bool PlugIn_LoadDir(const SC_Filesystem::Path& dir, bool reportError);
+static bool PlugIn_LoadDir(const bfs::path& dir, bool reportError);
 std::vector<void*> open_handles;
 #ifdef __APPLE__
 void read_section(const struct mach_header *mhp, unsigned long slide, const char *segname, const char *sectname)
@@ -188,21 +191,20 @@ void initialize_library(const char *uGensPluginPath)
 		}
 	}
 
-	using Path = SC_Filesystem::Path;
 	using DirName = SC_Filesystem::DirName;
 
 	if(loadUGensExtDirs) {
 		// @TODO: probably a better way to do this than through macro
 #ifdef SC_PLUGIN_DIR
 		// load globally installed plugins
-		if (boost::filesystem::is_directory(SC_PLUGIN_DIR)) {
+		if (bfs::is_directory(SC_PLUGIN_DIR)) {
 			PlugIn_LoadDir(SC_PLUGIN_DIR, true);
 		}
 #endif // SC_PLUGIN_DIR
 		// load default plugin directory
-		const Path pluginDir = SC_Filesystem::instance().getDirectory(DirName::Resource) / SC_PLUGIN_DIR_NAME;
+		const bfs::path pluginDir = SC_Filesystem::instance().getDirectory(DirName::Resource) / SC_PLUGIN_DIR_NAME;
 
-		if (boost::filesystem::is_directory(pluginDir)) {
+		if (bfs::is_directory(pluginDir)) {
 			PlugIn_LoadDir(pluginDir, true);
 		}
 	}
@@ -211,11 +213,11 @@ void initialize_library(const char *uGensPluginPath)
     // @TODO: standalone logic goes here
 	if (loadUGensExtDirs) {
 		// load system extension plugins
-		const Path sysExtDir = SC_Filesystem::instance().getDirectory(DirName::SystemExtension);
+		const bfs::path sysExtDir = SC_Filesystem::instance().getDirectory(DirName::SystemExtension);
 		PlugIn_LoadDir(sysExtDir, false);
 
 		// load user extension plugins
-		const Path userExtDir = SC_Filesystem::instance().getDirectory(DirName::UserExtension);
+		const bfs::path userExtDir = SC_Filesystem::instance().getDirectory(DirName::UserExtension);
 		PlugIn_LoadDir(userExtDir, false);
 
 		// load user plugin directories
@@ -291,7 +293,7 @@ bool checkServerVersion(void * f, const char * filename)
 	return true;
 }
 
-static bool PlugIn_Load(const SC_Filesystem::Path& filename)
+static bool PlugIn_Load(const bfs::path& filename)
 {
 #ifdef _WIN32
 	HINSTANCE hinstance = LoadLibraryW( filename.wstring().c_str() );
@@ -376,13 +378,13 @@ static bool PlugIn_Load(const SC_Filesystem::Path& filename)
 #endif // _WIN32
 }
 
-static bool PlugIn_LoadDir(const SC_Filesystem::Path& dir, bool reportError)
+static bool PlugIn_LoadDir(const bfs::path& dir, bool reportError)
 {
 #ifdef DEBUG_SCFS
 	cout << "[SC_FS] PlugIn_LoadDir: begin: " << dir << endl;
 #endif
 	boost::system::error_code ec;
-	boost::filesystem::recursive_directory_iterator rditer(dir, boost::filesystem::symlink_option::recurse, ec);
+	bfs::recursive_directory_iterator rditer(dir, bfs::symlink_option::recurse, ec);
 
 	if (ec) {
 		if (reportError) {
@@ -397,14 +399,14 @@ static bool PlugIn_LoadDir(const SC_Filesystem::Path& dir, bool reportError)
 	}
 
 	// @TODO: try this with try{} instead of error codes
-	while (rditer != boost::filesystem::end(rditer)) {
-		const boost::filesystem::path& path = *rditer;
+	while (rditer != bfs::end(rditer)) {
+		const bfs::path& path = *rditer;
 
-		const boost::filesystem::path& filename = path.filename();
+		const bfs::path& filename = path.filename();
 		// @TODO: maybe don't do it this way.. or at least only switch on directory names with .
 //		 skip directory or file starting with '.'
 //		if (filename.c_str()[0] != '.') {
-			if (boost::filesystem::is_directory(path)) {
+			if (bfs::is_directory(path)) {
 #ifdef DEBUG_SCFS
 				cout << "[SC_FS] Is a directory" << endl;
 #endif

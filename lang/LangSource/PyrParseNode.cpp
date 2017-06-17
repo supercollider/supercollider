@@ -40,6 +40,8 @@
 #include "SC_Win32Utils.h"
 #include "SC_LanguageConfig.hpp"
 
+namespace bfs = boost::filesystem;
+
 AdvancingAllocPool gParseNodePool;
 
 PyrSymbol *gSpecialUnarySelectors[opNumUnarySelectors];
@@ -338,7 +340,7 @@ void PyrClassExtNode::compile(PyrSlot *result)
 {
 	PyrClass *classobj = slotRawSymbol(&mClassName->mSlot)->u.classobj;
 	if (!classobj) {
-		const boost::filesystem::path relpath = relativeToCompileDir(boost::filesystem::path(gCompilingFileSym->name));
+		const bfs::path relpath = relativeToCompileDir(bfs::path(gCompilingFileSym->name));
 		error("Class extension for nonexistent class '%s'\n     In file:'%s'\n",
 			slotRawSymbol(&mClassName->mSlot)->name,
 			relpath.c_str()

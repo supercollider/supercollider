@@ -68,6 +68,9 @@
 
 #include "server_shm.hpp"
 
+#include <boost/filesystem/path.hpp> // path
+
+namespace bfs = boost::filesystem;
 
 InterfaceTable gInterfaceTable;
 PrintFunc gPrint = 0;
@@ -281,7 +284,7 @@ void World_LoadGraphDefs(World* world)
 			GraphDef_Define(world, list);
 		}
 	}else{
-		SC_Filesystem::Path path;
+		bfs::path path;
         // TODO: standalone logic goes here
 //		if(SC_Filesystem::isStandalone())
 //			path = SC_Filesystem::instance().getDirectory(DirName::Resource);

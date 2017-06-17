@@ -44,6 +44,7 @@ static const char* CLASS_LIB_DIR_NAME = "SCClassLibrary";
 static const char* SCLANG_YAML_CONFIG_FILENAME = "sclang_conf.yaml";
 
 using DirName = SC_Filesystem::DirName;
+namespace bfs = boost::filesystem;
 
 SC_LanguageConfig::SC_LanguageConfig(bool optStandalone)
 {
@@ -119,7 +120,7 @@ bool SC_LanguageConfig::readLibraryConfigYAML(const Path& fileName, bool standal
 
 	using namespace YAML;
 	try {
-		boost::filesystem::ifstream fin(fileName);
+		bfs::ifstream fin(fileName);
 		Node doc = Load( fin );
 		if (doc) {
 			const Node & includePaths = doc[ INCLUDE_PATHS ];
@@ -174,13 +175,13 @@ bool SC_LanguageConfig::writeLibraryConfigYAML(const Path& fileName)
 
 	out << Key << INCLUDE_PATHS;
 	out << Value << BeginSeq;
-	for (const boost::filesystem::path& it : gLanguageConfig->mIncludedDirectories)
+	for (const bfs::path& it : gLanguageConfig->mIncludedDirectories)
 		out << SC_Codecvt::path_to_utf8_str(it);
 	out << EndSeq;
 
 	out << Key << EXCLUDE_PATHS;
 	out << Value << BeginSeq;
-	for (const boost::filesystem::path& it : gLanguageConfig->mExcludedDirectories)
+	for (const bfs::path& it : gLanguageConfig->mExcludedDirectories)
 		out << SC_Codecvt::path_to_utf8_str(it);
 	out << EndSeq;
 
@@ -189,7 +190,7 @@ bool SC_LanguageConfig::writeLibraryConfigYAML(const Path& fileName)
 
 	out << EndMap;
 
-	boost::filesystem::ofstream fout(fileName);
+	bfs::ofstream fout(fileName);
 	fout << out.c_str();
 	return true;
 }
@@ -206,19 +207,19 @@ bool SC_LanguageConfig::readLibraryConfig(bool standalone)
 {
 	bool configured = false;
 
-	if (boost::filesystem::exists(gConfigFile))
+	if (bfs::exists(gConfigFile))
 		configured = readLibraryConfigYAML(gConfigFile, standalone);
 
 	if( !configured && !standalone ) {
 		const Path userYamlConfigFile = SC_Filesystem::instance().getDirectory(DirName::UserConfig) / SCLANG_YAML_CONFIG_FILENAME;
 
-		if (boost::filesystem::exists(userYamlConfigFile))
+		if (bfs::exists(userYamlConfigFile))
 			configured = readLibraryConfigYAML(userYamlConfigFile, standalone);
 
 		if (!configured) {
 			const Path globalYamlConfigFile = Path("/etc") / SCLANG_YAML_CONFIG_FILENAME;
 
-			if (boost::filesystem::exists(globalYamlConfigFile))
+			if (bfs::exists(globalYamlConfigFile))
 				configured = readLibraryConfigYAML(globalYamlConfigFile, standalone);
 		}
 	}

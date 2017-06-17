@@ -54,6 +54,8 @@ using std::endl;
 #include <boost/filesystem/operations.hpp> // recursive_directory_iterator
 #include <boost/filesystem/string_file.hpp> // load_string_file
 
+namespace bfs = boost::filesystem;
+
 extern Malloc gMalloc;
 
 int32 GetHash(ParamSpec* inParamSpec)
@@ -642,7 +644,7 @@ GraphDef* GraphDef_LoadGlob(World *inWorld, const char *pattern, GraphDef *inLis
 	if (!glob)
 		return inList;
 
-	SC_Filesystem::Path path;
+	bfs::path path;
 	while (!(path = SC_Filesystem::globNext(glob)).empty()) {
 		if (path.extension() == ".scsyndef") {
 			inList = GraphDef_Load(inWorld, path, inList);
@@ -655,11 +657,11 @@ GraphDef* GraphDef_LoadGlob(World *inWorld, const char *pattern, GraphDef *inLis
 	return inList;
 }
 
-GraphDef* GraphDef_Load(World *inWorld, const SC_Filesystem::Path& path, GraphDef *inList)
+GraphDef* GraphDef_Load(World *inWorld, const bfs::path& path, GraphDef *inList)
 {
 	try {
 		std::string file_contents;
-		boost::filesystem::load_string_file(path, file_contents);
+		bfs::load_string_file(path, file_contents);
 		inList = GraphDefLib_Read(inWorld, &file_contents[0], inList);
 	} catch (const std::exception& e) {
 		scprintf("exception in GraphDef_Load: %s\n", e.what());
@@ -674,23 +676,23 @@ GraphDef* GraphDef_Load(World *inWorld, const SC_Filesystem::Path& path, GraphDe
 	return inList;
 }
 
-GraphDef* GraphDef_LoadDir(World *inWorld, const SC_Filesystem::Path& dirname, GraphDef *inList)
+GraphDef* GraphDef_LoadDir(World *inWorld, const bfs::path& dirname, GraphDef *inList)
 {
 #ifdef DEBUG_SCFS
 	cout << "[SC_FS] GraphDef_LoadDir: begin: " << dirname << endl;
 #endif
 	boost::system::error_code ec;
-	boost::filesystem::recursive_directory_iterator rditer(dirname, boost::filesystem::symlink_option::recurse, ec);
+	bfs::recursive_directory_iterator rditer(dirname, bfs::symlink_option::recurse, ec);
 
 	if (ec) {
 		scprintf("*** ERROR: open directory failed '%s'\n", SC_Codecvt::path_to_utf8_str(dirname).c_str());
 		return inList;
 	}
 
-	while (rditer != boost::filesystem::end(rditer)) {
-		const boost::filesystem::path& path = *rditer;
+	while (rditer != bfs::end(rditer)) {
+		const bfs::path& path = *rditer;
 
-		if (boost::filesystem::is_directory(path)) {
+		if (bfs::is_directory(path)) {
 #ifdef DEBUG_SCFS
 			cout << "[SC_FS] Is a directory: " << path << endl;
 #endif
