@@ -56,7 +56,7 @@ code::
 
 { DynKlank.ar(`[[800, 1071, 1353, 1723], nil, [1, 1, 1, 1]], PinkNoise.ar(0.007)) }.play;
 
-{ DynKlank.ar(`[[200, 671, 1153, 1723], nil, [1, 1, 1, 1]], PinkNoise.ar([0.007,0.007])) }.play;
+{ DynKlank.ar(`[[200, 671, 1153, 1723], nil, [1, 1, 1, 1]], PinkNoise.ar([0.007, 0.007])) }.play;
 
 ::
 
@@ -90,7 +90,7 @@ a.setn(\ringtimes, Array.rand(4, 0.02, 0.4) );
 
 // create multichannel controls directly with literal arrays:
 (
-SynthDef('help-dynKlank', {| out,
+SynthDef('help-dynKlank', { |out,
 	freqs (#[100, 200, 300, 400]),
 	amps (#[1, 0.3, 0.2, 0.05]),
 	rings (#[1, 1, 1, 2])|
