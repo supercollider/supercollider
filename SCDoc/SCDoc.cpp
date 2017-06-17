@@ -32,16 +32,12 @@ DocNode * scdoc_parse_run(int partial);
 void scdocrestart (FILE *input_file);
 int scdoclex_destroy(void);
 
-static std::string scdoc_current_filename;
+const char * scdoc_current_file = NULL;
 
 const char * NODE_TEXT = "TEXT";
 const char * NODE_NL = "NL";
 
 static int doc_node_dump_level_done[32] = {0,};
-
-const char *scdoc_current_file() {
-    return scdoc_current_filename.c_str();
-}
 
 // merge a+b and free b
 char *strmerge(char *a, char *b) {
@@ -180,9 +176,8 @@ static void doc_node_dump_recursive(DocNode *n, int level, int last) {
 }
 
 void doc_node_dump(DocNode *n) {
-    doc_node_dump_recursive(n,0,1);
+    doc_node_dump_recursive(n, 0, 1);
 }
-
 
 DocNode * scdoc_parse_file(const std::string& fn, int mode) {
     FILE *fp;
@@ -200,7 +195,7 @@ DocNode * scdoc_parse_file(const std::string& fn, int mode) {
         error("scdoc_parse_file: could not open '%s'\n", fn.c_str());
         return nullptr;
     }
-    scdoc_current_filename = fn;
+    scdoc_current_file = fn.c_str();
     scdocrestart(fp);
     n = scdoc_parse_run(mode);
     if(n) {
@@ -208,7 +203,7 @@ DocNode * scdoc_parse_file(const std::string& fn, int mode) {
     }
     fclose(fp);
     scdoclex_destroy();
-    scdoc_current_filename.clear();
+    scdoc_current_file = NULL;
     return n;
 }
 

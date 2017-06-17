@@ -36,15 +36,8 @@ void doc_node_free_tree(DocNode *n);
  */
 DocNode * scdoc_parse_file(const std::string& fn, int mode);
 
-/**
- * \brief Returns the current file being parsed as a char buffer.
- *
- * Used by the Bison parser
- *
- * \returns A char buffer, UTF-8 encoded, with the name of the file currently being parsed.
- */
-const char * scdoc_current_file();
-
 void doc_node_dump(DocNode *n);
+
+extern const char * scdoc_current_file;
 
 #endif
