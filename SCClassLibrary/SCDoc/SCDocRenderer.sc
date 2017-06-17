@@ -2,6 +2,7 @@
 HTML renderer
 */
 SCDocHTMLRenderer {
+	classvar <binaryOperatorCharacters = "!@%&*-+=|<>?/";
 	classvar currentClass, currentImplClass, currentMethod, currArg;
 	classvar currentNArgs;
 	classvar footNotes;
@@ -267,16 +268,37 @@ SCDocHTMLRenderer {
 		node.children.do {|child| this.renderSubTree(stream, child) };
 	}
 
-	*renderMethod {|stream, node, cls, icls, css, pfx|
+	*renderMethod {|stream, node, methodType, cls, icls|
+		var methodTypeIndicator;
+		var methodCodePrefix;
 		var args = node.text ?? ""; // only outside class/instance methods
 		var names = node.children[0].children.collect(_.text);
 		var mstat, sym, m, m2, mname2;
 		var lastargs, args2;
 		var x, maxargs = -1;
 		var methArgsMismatch = false;
+
+		methodTypeIndicator = switch(
+			methodType,
+			\classMethod, { "*" },
+			\instanceMethod, { "-" },
+			\genericMethod, { "" }
+		);
+
 		minArgs = inf;
 		currentMethod = nil;
 		names.do {|mname|
+			methodCodePrefix = switch(
+				methodType,
+				\classMethod, { if(cls.notNil) { cls.name.asString[5..] } { "" } ++ "." },
+				\instanceMethod, {
+					// If the method name contains any valid binary operator character, remove the
+					// "." to reduce confusion.
+					if(mname.asString.any(this.binaryOperatorCharacters.contains(_)), { "" }, { "." })
+				},
+				\genericMethod, { "" }
+			);
+
 			mname2 = this.escapeSpecialChars(mname);
 			if(cls.notNil) {
 				mstat = 0;
@@ -312,65 +334,66 @@ SCDocHTMLRenderer {
 					}
 					{args2.size<minArgs} {
 						minArgs = args2.size;
-					}
-				;
-				} {
-					m = nil;
-					m2 = nil;
-					mstat = 1;
-				};
-
-				x = {
-					stream << "<h3 class='" << css << "'>"
-					<< "<span class='methprefix'>" << (pfx??"&nbsp;") << "</span>"
-					<< "<a name='" << (pfx??".") << mname << "' href='"
-					<< baseDir << "/Overviews/Methods.html#"
-					<< mname2 << "'>" << mname2 << "</a>"
-				};
-
-				switch (mstat,
-					// getter only
-					1, { x.value; stream << " " << args << "</h3>\n"; },
-					// getter and setter
-					3, { x.value; stream << "</h3>\n"; },
-					// method not found
-					0, {
-						"SCDoc: In %\n"
-						"  Method %% not found.".format(currDoc.fullPath,pfx,mname2).warn;
-						x.value;
-						stream << ": METHOD NOT FOUND!</h3>\n";
-					}
-				);
-
-				// has setter
-				if(mstat & 2 > 0) {
-					x.value;
-					if(args2.size<2) {
-						stream << " = " << args << "</h3>\n";
-					} {
-						stream << "_ (" << args << ")</h3>\n";
-					}
-				};
-
-				m = m ?? m2;
-				m !? {
-					if(m.isExtensionOf(cls) and: {icls.isNil or: {m.isExtensionOf(icls)}}) {
-						stream << "<div class='extmethod'>From extension in <a href='"
-						<< URI.fromLocalPath(m.filenameSymbol.asString).asString << "'>"
-						<< m.filenameSymbol << "</a></div>\n";
-					} {
-						if(m.ownerClass == icls) {
-							stream << "<div class='supmethod'>From implementing class</div>\n";
-						} {
-							if(m.ownerClass != cls) {
-								m = m.ownerClass.name;
-								m = if(m.isMetaClassName) {m.asString.drop(5)} {m};
-								stream << "<div class='supmethod'>From superclass: <a href='"
-								<< baseDir << "/Classes/" << m << ".html'>" << m << "</a></div>\n";
-							}
-						}
 					};
+			} {
+				m = nil;
+				m2 = nil;
+				mstat = 1;
+			};
+
+			x = {
+				stream << "<h3 class='method-code'>"
+				<< "<span class='method-prefix'>" << methodCodePrefix << "</span>"
+				<< "<a class='method-name' name='" << methodTypeIndicator << mname << "' href='"
+				<< baseDir << "/Overviews/Methods.html#"
+				<< mname2 << "'>" << mname2 << "</a>"
+			};
+
+			switch (mstat,
+				// getter only
+				1, { x.value; stream << args; },
+				// getter and setter
+				3, { x.value; },
+				// method not found
+				0, {
+					"SCDoc: In %\n"
+					"  Method %% not found.".format(currDoc.fullPath, methodTypeIndicator, mname2).warn;
+					x.value;
+					stream << ": METHOD NOT FOUND!";
+				}
+			);
+
+			stream << "</h3>\n";
+
+			// has setter
+			if(mstat & 2 > 0) {
+				x.value;
+				if(args2.size<2) {
+					stream << " = " << args << "</h3>\n";
+				} {
+					stream << "_(" << args << ")</h3>\n";
+				}
+			};
+
+			m = m ?? m2;
+			m !? {
+				if(m.isExtensionOf(cls) and: {icls.isNil or: {m.isExtensionOf(icls)}}) {
+					stream << "<div class='extmethod'>From extension in <a href='"
+					<< URI.fromLocalPath(m.filenameSymbol.asString).asString << "'>"
+					<< m.filenameSymbol << "</a></div>\n";
+				} {
+					if(m.ownerClass == icls) {
+						stream << "<div class='supmethod'>From implementing class</div>\n";
+					} {
+						if(m.ownerClass != cls) {
+							m = m.ownerClass.name;
+							m = if(m.isMetaClassName) {m.asString.drop(5)} {m};
+							stream << "<div class='supmethod'>From superclass: <a href='"
+							<< baseDir << "/Classes/" << m << ".html'>" << m << "</a></div>\n";
+						}
+					}
 				};
+			};
 		};
 
 		if(methArgsMismatch) {
@@ -548,26 +571,26 @@ SCDocHTMLRenderer {
 			},
 // Methods
 			\CMETHOD, {
-				this.renderMethod (
+				this.renderMethod(
 					stream, node,
+					\classMethod,
 					currentClass !? {currentClass.class},
-					currentImplClass !? {currentImplClass.class},
-					"cmethodname", "*"
+					currentImplClass !? {currentImplClass.class}
 				);
 			},
 			\IMETHOD, {
-				this.renderMethod (
+				this.renderMethod(
 					stream, node,
+					\instanceMethod,
 					currentClass,
-					currentImplClass,
-					"imethodname", "-"
+					currentImplClass
 				);
 			},
 			\METHOD, {
-				this.renderMethod (
+				this.renderMethod(
 					stream, node,
-					nil, nil,
-					"imethodname", nil
+					\genericMethod,
+					nil, nil
 				);
 			},
 			\CPRIVATE, {},

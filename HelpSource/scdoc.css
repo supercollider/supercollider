@@ -285,7 +285,7 @@ h3 {
     margin-top: 2.0em;
     margin-bottom: 1px;
     text-align: left;
-    font-size: 1.2em;
+    font-size: 1.4em;
 }
 
 h4 {
@@ -293,7 +293,6 @@ h4 {
     margin-bottom: 0em;
     margin-left: 0em;
     color: #777;
-    border-bottom: 1px solid #ddd;
 }
 
 dt {
@@ -338,18 +337,19 @@ pre.code {
     margin-left: -1em;
 }
 
-.methodname, .imethodname, .cmethodname {
+.method-code {
     font-family: monospace;
-    font-size: 1em;
     font-weight: normal;
+    font-size: 1.05em !important;
     margin-bottom: 0em;
     margin-top: 0.75em;
     padding: 0.25em;
     border: none;
-    background: #e7ebe7;
+    padding-left: 4em;
+    text-indent: -4em;
 }
 
-.methodname a, .imethodname a, .cmethodname a {
+a.method-name {
     color: black;
     font-weight: bold;
 }
@@ -366,7 +366,6 @@ pre.code {
 .extmethod {
     font-size: 9pt;
     color: #444;
-    background: #fee;
     padding-left: 0.2em;
     text-align: right;
 }
@@ -374,7 +373,6 @@ pre.code {
 .supmethod {
     font-size: 9pt;
     color: #444;
-    background: #ffe;
     padding-left: 0.2em;
     text-align: right;
 }
