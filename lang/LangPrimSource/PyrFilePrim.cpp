@@ -232,7 +232,8 @@ int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *c;
 	char filename[PATH_MAX];
-	char mode[12];
+	const size_t buf_size = 12;
+	char mode[buf_size];
 	PyrFile *pfile;
 	FILE *file;
 
@@ -244,7 +245,7 @@ int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 		return errWrongType;
 	if (slotRawObject(b)->size > PATH_MAX - 1)
 		return errFailed;
-	if (slotRawObject(c)->size > 11)
+	if (slotRawObject(c)->size > buf_size - 1)
 		return errFailed;
 	pfile = (PyrFile*)slotRawObject(a);
 
@@ -262,9 +263,9 @@ int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 		strcpy(mode,"rb");
 
 	// use _wfopen on Windows for full Unicode compatibility
-	wchar_t wmode[12];
+	wchar_t wmode[buf_size];
 	size_t wmode_size = 0;
-	mbstowcs_s(&wmode_size, wmode, mode, 12);
+	mbstowcs_s(&wmode_size, wmode, buf_size, mode, buf_size-1);
 	file = _wfopen(path.wstring().c_str(), wmode);
 #else
 	file = fopen(path.c_str(), mode);
