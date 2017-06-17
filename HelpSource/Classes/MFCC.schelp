@@ -120,11 +120,11 @@ freq_bands = 42;
 
 //whichbandscale = 0; // 0 = mel; 1 = bark (CB) 2 = ERB
 //
-//lintoscale = {arg freq;
-//switch(whichbandscale,0,{1127 * log(1 + (freq / 700))}, 1, {}, 2, {}).value
+//lintoscale = { |freq|
+//switch(whichbandscale, 0, { 1127 * log(1 + (freq / 700))}, 1, { }, 2, { }).value
 //};
-//scaletolin = {arg scalepos;
-//switch(whichbandscale, 0, {700 * (exp(scalepos / 1127.0) -1);}, 1, {}, 2, {}).value
+//scaletolin = { |scalepos|
+//switch(whichbandscale, 0, {700 * (exp(scalepos / 1127.0) -1) }, 1, { }, 2, { }).value
 //};
 
 lintoscale = { |freq|
@@ -140,9 +140,9 @@ freq_bw_mel = (mel_freq_max - mel_freq_min) / freq_bands;
 
 [mel_freq_max, mel_freq_min, freq_bw_mel].postln;
 
-mel_peak = Array.fill(freq_bands + 2, {0.0});
-lin_peak = Array.fill(freq_bands + 2, {0.0});
-fft_peak = Array.fill(freq_bands + 2, {0.0});
+mel_peak = Array.fill(freq_bands + 2, { 0.0 });
+lin_peak = Array.fill(freq_bands + 2, { 0.0 });
+fft_peak = Array.fill(freq_bands + 2, { 0.0 });
 
 freqperbin = sr / fftsize; // SR/N
 
