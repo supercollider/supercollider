@@ -34,10 +34,9 @@ code::
 { LinPan2.ar(SinOsc.ar(440), Line.kr(-1, 1, 5)) }.play;
 
 // ... whereas Pan2 is more smooth
-{ Pan2.ar(SinOsc.ar(440), Line.kr(-1,1,5)) }.play;
+{ Pan2.ar(SinOsc.ar(440), Line.kr(-1, 1, 5)) }.play;
 
 // other examples
-
 { LinPan2.ar(PinkNoise.ar(0.4), FSinOsc.kr(2)) }.play;
 
 { LinPan2.ar(FSinOsc.ar(800, 0, 0.1), FSinOsc.kr(3)) }.play;
