@@ -189,7 +189,7 @@ bool startLexer(PyrSymbol *fileSym, const bfs::path& p, int startPos, int endPos
 			fileSym->u.source = text;
 			rtf2txt(text);
 		} catch (const std::exception& ex) {
-			error("Could not read %s: %s.\n", SC_Codecvt::path_to_utf8_str(p));
+			error("Could not read %s: %s.\n", SC_Codecvt::path_to_utf8_str(p).c_str(), ex.what());
 			return false;
 		}
 	}
