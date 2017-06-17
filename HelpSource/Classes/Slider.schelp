@@ -165,7 +165,7 @@ c = NumberBox(w, Rect(20, 20, 150, 20));
 a = Slider(w, Rect(200, 60, 20, 150))
 	.action_({
 		c.value_(a.value)
-		});
+	});
 a.action.value;
 )
 ::
@@ -185,7 +185,6 @@ a = Slider(w, Rect(20, 50, 150, 20))
 		// round the float so it will fit in the NumberBox
 		});
 a.action.value;
-
 )
 ::
 
@@ -202,7 +201,7 @@ d = PopUpMenu(w, Rect(20, 60, 100, 20))
 	.items_(a)
 	.action_({
 		b.step_((a.at(d.value)).asFloat);
-		});
+	});
 StaticText(w, Rect(130, 60, 100, 20)).string_("change step");
 c = NumberBox(w, Rect(20, 20, 100, 20));
 )
@@ -214,7 +213,7 @@ code::
 w = Window.new;
 c = Slider(w, Rect(0,0,100,30));
 c.keyDownAction = { |view, char, modifiers, unicode, keycode|
-[char, modifiers, unicode, keycode].postln;
+	[char, modifiers, unicode, keycode].postln
 };
 w.front;
 )
@@ -248,6 +247,7 @@ code::
 
 	(
 		s.waitForBoot({
+			
 			SynthDef(\pluck, { |out, freq=55|
 				Out.ar(out,
 					Pluck.ar(WhiteNoise.ar(0.06),
@@ -261,14 +261,11 @@ code::
 
 
 			w = Window.new("Hold arrow keys to trigger sound",
-				Rect(300,Window.screenBounds.height-300,400,100)).front;
-			a = Slider(w, Rect(50, 20, 300, 40))
-			.value_(0.5)
-			.step_(0.05)
-			.focus
+				Rect(300, Window.screenBounds.height - 300, 400, 100)).front;
+			a = Slider(w, Rect(50, 20, 300, 40)).value_(0.5).step_(0.05).focus
 			.action_({
 				// trigger a synth with varying frequencies
-				Synth(\pluck, [\freq,55+(1100*a.value)]);
+				Synth(\pluck, [\freq, 55 + (1100 * a.value)]);
 				w.view.background_(Gradient(Color.rand,Color.rand));
 			})
 		});
