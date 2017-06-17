@@ -1206,32 +1206,6 @@ void fatal()
 	//Debugger();
 }
 
-#if 0
-void postErrorLine()
-{
-	int i, j, start, end;
-	char str[256];
-
-	parseFailed = true;
-	for (i=textpos-1; i>=0; --i) {
-		if (text[i] == '\r' || text[i] == '\n') break;
-	}
-	start = i+1;
-	for (i=textpos; i < textlen; ++i) {
-		if (text[i] == '\r' || text[i] == '\n') break;
-	}
-	end=i;
-	for (i=start, j=0; i<end; ++i) {
-		if (i == textpos) str[j++] = '¶';
-		str[j++] = text[i];
-	}
-	if (textpos == end) str[j++] = '¶';
-	str[j] = 0;
-
-	postfl("%s\n", str);
-}
-#endif
-
 void postErrorLine(int linenum, int start, int charpos)
 {
 	int i, j, end, pos;
@@ -1272,25 +1246,6 @@ void postErrorLine(int linenum, int start, int charpos)
 	}
 	post("-----------------------------------\n", str);
 }
-
-/*
-void c2pstrcpy(unsigned char* dst, const char *src);
-void c2pstrcpy(unsigned char* dst, const char *src)
-{
-	int c;
-	unsigned char *dstp = &dst[1];
-	while ((c = *src++) != 0) *dstp++ = c;
-	dst[0] = dstp - dst - 1;
-}
-
-void p2cstrcpy(char *dst, const unsigned char* src);
-void p2cstrcpy(char *dst, const unsigned char* src)
-{
-	int n = *src++;
-	for (int i=0; i<n; ++i) *dst++ = *src++;
-	*dst++ = 0;
-}
-*/
 
 void pstrncpy(unsigned char *s1, unsigned char *s2, int n);
 void pstrncpy(unsigned char *s1, unsigned char *s2, int n)
