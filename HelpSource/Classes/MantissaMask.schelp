@@ -36,7 +36,7 @@ code::
 { MantissaMask.ar(SinOsc.ar(SinOsc.kr(0.2, 0, 400, 500), 0, 0.4), 3) }.play
 
 // the original
-{ SinOsc.ar(SinOsc.kr(0.2,0,400,500), 0, 0.4) }.play
+{ SinOsc.ar(SinOsc.kr(0.2, 0, 400, 500), 0, 0.4) }.play
 
 // the difference.
 (
@@ -59,7 +59,7 @@ code::
 (
 {
 	var in;
-	in = SinOsc.ar(SinOsc.kr(0.2,0,400,500), 0, 0.4);
+	in = SinOsc.ar(SinOsc.kr(0.2, 0, 400, 500), 0, 0.4);
 	in - MantissaMask.ar(in, 7)
 }.play
 )
