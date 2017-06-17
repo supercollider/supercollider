@@ -46,16 +46,15 @@ x = {
 	array.size.postln;
 
 	Out.kr(0, array); // control bus out
-
 	Out.ar(0, Pan2.ar(in)); // audio bus out
 }.play
 )
 
 
-c = Bus.new('control', 0, 13);
+c = Bus(\control, 0, 13);
 
 // poll coefficients
-c.getn(13, { arg val; { val.plot; }.defer });
+c.getn(13, { |val| { val.plot }.defer });
 
 
 // Continuous graphical display of MFCC values; free routine before closing window
@@ -76,14 +75,13 @@ w.front;
 
 r = {
 
-	inf.do{
+	inf.do {
 
-		c.getn(13, { arg val; { ms.value_(val * 0.9) }.defer });
-
+		c.getn(13, { |val| { ms.value_(val * 0.9) }.defer });
 		0.04.wait; // 25 frames per second
-	};
+	}
 
-}.fork;
+}.fork
 
 )
 
@@ -129,11 +127,11 @@ freq_bands = 42;
 //switch(whichbandscale, 0, {700 * (exp(scalepos / 1127.0) -1);}, 1, {}, 2, {}).value
 //};
 
-lintoscale = {arg freq;
+lintoscale = { |freq|
 	1127 * log(1 + (freq / 700))
 };
-scaletolin = {arg scalepos;
-	700 * (exp(scalepos / 1127.0) -1);
+scaletolin = { |scalepos|
+	700 * (exp(scalepos / 1127.0) -1)
 };
 
 mel_freq_max = lintoscale.value(freq_max); // 1127 * log(1 + (freq_max / 700));
@@ -152,7 +150,7 @@ mel_peak[0] = mel_freq_min;
 lin_peak[0] = freq_min; // === 700 * (exp(mel_peak[0] / 1127) - 1);
 fft_peak[0] = (lin_peak[0] / freqperbin).asInteger;
 
-for(1, freq_bands + 1,{|n|
+for(1, freq_bands + 1, { |n|
 
 	mel_peak[n] = mel_peak[n - 1] + freq_bw_mel;
 	lin_peak[n] = scaletolin.value(mel_peak[n]); // 700 * (exp(mel_peak[n] / 1127.0) -1);
@@ -166,25 +164,25 @@ for(1, freq_bands + 1,{|n|
 
 //  [2 / (lin_peak[freq_bands + 1] - lin_peak[freq_bands-1]), 1.0 / (2 / (lin_peak[2] - lin_peak[0]))].postln;
 
-fftbinstart = Array.fill(freq_bands, {0});
-fftbinend = Array.fill(freq_bands, {0});
-fftbincumul = Array.fill(freq_bands+1, {0});
+fftbinstart = Array.fill(freq_bands, { 0 });
+fftbinend = Array.fill(freq_bands, { 0 });
+fftbincumul = Array.fill(freq_bands + 1, { 0 });
 fftbinmult = [];
 
 pos = 0;
 
 freq_bands.do {|i|
 
-	//var normmult=1.0; // preserve power, don't modify band power by area
+	//var normmult = 1.0; // preserve power, don't modify band power by area
 	var startbin, endbin, numbins, averager;
 
-	if(i == 0,{
+	if(i == 0) {
 		startbin = 0;
 		endbin = fft_peak[i + 1] - 1;
-	},{
+	} {
 		startbin = fft_peak[i - 1] + 1;
 		endbin = fft_peak[i + 1] - 1;
-	});
+	};
 
 	numbins = endbin - startbin + 1;
 	averager = 1.0 / numbins;
@@ -198,7 +196,7 @@ freq_bands.do {|i|
 
 	fftbinmult = fftbinmult ++ (Array.series(tmp + 1, 1.0 / (tmp + 1), 1.0 / (tmp + 1)));
 
-	tmp= endbin- (fft_peak[i]);
+	tmp = endbin - fft_peak[i];
 
 	fftbinmult = fftbinmult ++ (Array.series(tmp, 1.0 + ((-1.0) / (tmp + 1)), (-1.0) / (tmp + 1)));
 
@@ -226,11 +224,16 @@ a = (26.81 / (1 + (1960 / ((100, 200..22000))))) - 0.53;
 a.plot;
 
 // ERBs (rough calculation, only really valid under 6000Hz, real scale goes up to 42 rather than 37 in 22000 Hz)
-a = Array.fill(220,{|i| var f; f = i * 100; 11.17 * log((f + 312) / (f + 14675)) + 43.0});
+(
+a = Array.fill(220, {|i| 
+	var f = i * 100; 
+	11.17 * log((f + 312) / (f + 14675)) + 43.0 
+})
+)
 a.plot
 
 // generating DCT coefficients
 // don't generate i=0 coefficient since it
-a = Array.fill(42, {|i| cos(pi / 42.0 * ((0..41) + 0.5) * (i + 1))});
+a = Array.fill(42, {|i| cos(pi / 42.0 * ((0..41) + 0.5) * (i + 1)) });
 Post << a.flatten << nl;
 ::
