@@ -186,7 +186,7 @@ a.navlink {
 
 
 .header {
-  border-bottom: 2.5px solid #000; padding-bottom:0.18em;
+  padding-bottom: 0.18em;
 }
 
 #label {
@@ -197,6 +197,8 @@ a.navlink {
 #summary {
     font-weight: normal;
     font-size: 1.1em;
+    font-style: italic;
+    color: #444;
 }
 #related {
     text-align: right;
