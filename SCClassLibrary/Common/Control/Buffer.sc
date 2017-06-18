@@ -330,6 +330,7 @@ Buffer {
 
 	write { arg path, headerFormat = "aiff", sampleFormat = "int24", numFrames = -1,
 						startFrame = 0, leaveOpen = false, completionMessage;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		path = path ?? { thisProcess.platform.recordingsDir +/+ "SC_" ++ Date.localtime.stamp ++ "." ++ headerFormat };
 		server.listSendMsg(
 			[\b_write, bufnum, path,
@@ -370,6 +371,7 @@ Buffer {
 	}
 
 	zero { arg completionMessage;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		server.listSendMsg([\b_zero, bufnum, completionMessage.value(this)])
 	}
 
@@ -379,6 +381,7 @@ Buffer {
 	}
 
 	set { arg index, float ... morePairs;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		server.listSendMsg([\b_set, bufnum, index, float] ++ morePairs)
 	}
 
@@ -388,6 +391,7 @@ Buffer {
 	}
 
 	setn { arg ... args;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		server.listSendMsg([\b_setn, bufnum] ++ this.setnMsgArgs(*args))
 	}
 
@@ -410,6 +414,7 @@ Buffer {
 	}
 
 	get { arg index, action;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		OSCFunc({ |message|
 			// The server replies with a message of the form [/b_set, bufnum, index, value].
 			// We want "value," which is at index 3.
@@ -424,6 +429,7 @@ Buffer {
 	}
 
 	getn { arg index, count, action;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		OSCFunc({ |message|
 			// The server replies with a message of the form
 			// [/b_setn, bufnum, starting index, length, ...sample values].
@@ -439,6 +445,7 @@ Buffer {
 	}
 
 	fill { arg startAt, numFrames, value ... more;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		server.listSendMsg([\b_fill, bufnum, startAt, numFrames.asInt, value] ++ more)
 	}
 
@@ -448,6 +455,7 @@ Buffer {
 	}
 
 	normalize { arg newmax=1, asWavetable=false;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		server.listSendMsg([\b_gen, bufnum, if(asWavetable, "wnormalize", "normalize"), newmax])
 	}
 
@@ -457,6 +465,7 @@ Buffer {
 	}
 
 	gen { arg genCommand, genArgs, normalize=true, asWavetable=true, clearFirst=true;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		server.listSendMsg(
 			[\b_gen, bufnum, genCommand,
 				normalize.binaryValue
@@ -476,6 +485,7 @@ Buffer {
 	}
 
 	sine1 { arg amps, normalize=true, asWavetable=true, clearFirst=true;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		server.listSendMsg(
 			[\b_gen, bufnum, "sine1",
 				normalize.binaryValue
@@ -486,6 +496,7 @@ Buffer {
 	}
 
 	sine2 { arg freqs, amps, normalize=true, asWavetable=true, clearFirst=true;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		server.listSendMsg(
 			[\b_gen, bufnum, "sine2",
 				normalize.binaryValue
@@ -496,6 +507,7 @@ Buffer {
 	}
 
 	sine3 { arg freqs, amps, phases, normalize=true, asWavetable=true, clearFirst=true;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		server.listSendMsg(
 			[\b_gen, bufnum, "sine3",
 				normalize.binaryValue
@@ -506,6 +518,7 @@ Buffer {
 	}
 
 	cheby { arg amps, normalize=true, asWavetable=true, clearFirst=true;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		server.listSendMsg(
 			[\b_gen, bufnum, "cheby",
 				normalize.binaryValue
@@ -552,6 +565,7 @@ Buffer {
 	}
 
 	copyData { arg buf, dstStartAt = 0, srcStartAt = 0, numSamples = -1;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		server.listSendMsg([\b_gen, buf.bufnum, "copy", dstStartAt, bufnum, srcStartAt, numSamples])
 	}
 
@@ -562,6 +576,7 @@ Buffer {
 
 	// close a file, write header, after DiskOut usage
 	close { arg completionMessage;
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		server.listSendMsg( [\b_close, bufnum, completionMessage.value(this)] )
 	}
 
@@ -571,6 +586,7 @@ Buffer {
 	}
 
 	query {
+		if(bufnum.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		OSCFunc({ arg msg;
 			Post << "bufnum   : " << msg[1] << Char.nl
 				<< "numFrames  : " << msg[2] << Char.nl
