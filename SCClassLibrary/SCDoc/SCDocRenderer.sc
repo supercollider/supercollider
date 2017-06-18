@@ -175,9 +175,9 @@ SCDocHTMLRenderer {
 		<< "</head>\n";
 
 		stream
-		<< "<ul id='menubar'></ul>\n"
 		<< "<body onload='fixTOC();prettyPrint()'>\n"
 		<< "<div class='contents'>\n"
+		<< "<div id='menubar'></div>\n"
 		<< "<div class='header'>\n"
 		<< "<div id='label'>\n"
 		<< "<span id='folder'>" << folder.asString;
