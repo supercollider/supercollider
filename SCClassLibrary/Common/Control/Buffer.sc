@@ -409,31 +409,31 @@ Buffer {
 	}
 
 	get { arg index, action;
-		server.listSendMsg(this.getMsg(index, action));
-	}
-
-	getMsg { arg index, action;
-		if(bufnum.isNil) { Error("Cannot construct a % for a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		OSCFunc({ |message|
 			// The server replies with a message of the form [/b_set, bufnum, index, value].
 			// We want "value," which is at index 3.
 			action.value(message[3]);
 		}, \b_set, server.addr, argTemplate: [bufnum, index]).oneShot;
+		server.listSendMsg(this.getMsg(index, action));
+	}
+
+	getMsg { arg index, action;
+		if(bufnum.isNil) { Error("Cannot construct a % for a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		^[\b_get, bufnum, index]
 	}
 
 	getn { arg index, count, action;
-		server.listSendMsg(this.getnMsg(index, count, action));
-	}
-
-	getnMsg { arg index, count, action;
-		if(bufnum.isNil) { Error("Cannot construct a % for a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		OSCFunc({ |message|
 			// The server replies with a message of the form
 			// [/b_setn, bufnum, starting index, length, ...sample values].
 			// We want the sample values, which start at index 4.
 			action.value(message[4..]);
 		}, \b_setn, server.addr, argTemplate: [bufnum, index]).oneShot;
+		server.listSendMsg(this.getnMsg(index, count, action));
+	}
+
+	getnMsg { arg index, count, action;
+		if(bufnum.isNil) { Error("Cannot construct a % for a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		^[\b_getn, bufnum, index, count]
 	}
 
@@ -540,17 +540,17 @@ Buffer {
 	}
 
 	query {
-		server.listSendMsg(this.queryMsg)
-	}
-
-	queryMsg {
-		if(bufnum.isNil) { Error("Cannot construct a % for a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		OSCFunc({ arg msg;
 			Post << "bufnum   : " << msg[1] << Char.nl
 				<< "numFrames  : " << msg[2] << Char.nl
 				<< "numChannels : " << msg[3] << Char.nl
 				<< "sampleRate : " << msg[4] << Char.nl << Char.nl;
 		}, \b_info, server.addr).oneShot;
+		server.listSendMsg(this.queryMsg)
+	}
+
+	queryMsg {
+		if(bufnum.isNil) { Error("Cannot construct a % for a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		^[\b_query, bufnum]
 	}
 
