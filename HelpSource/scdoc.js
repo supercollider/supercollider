@@ -500,7 +500,7 @@ function fixTOC() {
 // make header menu
     var bar = document.getElementById("menubar");
     menubar = bar;
-    var nav = ["Home","Browse","Search"];
+    var nav = ["SuperCollider " + scdoc_sc_version, "Browse", "Search"];
     var url = ["Help.html","Browse.html","Search.html"];
     for(var i=0;i<nav.length;i++) {
         var li = document.createElement("li");
