@@ -332,8 +332,9 @@ Buffer {
 						startFrame = 0, leaveOpen = false, completionMessage;
 		path = path ?? { thisProcess.platform.recordingsDir +/+ "SC_" ++ Date.localtime.stamp ++ "." ++ headerFormat };
 		server.listSendMsg(
-			this.writeMsg(path, headerFormat, sampleFormat, numFrames, startFrame,
-				leaveOpen, completionMessage)
+			[\b_write, bufnum, path,
+				headerFormat, sampleFormat, numFrames, startFrame,
+				leaveOpen.binaryValue, completionMessage.value(this)]
 			)
 	}
 
@@ -369,7 +370,7 @@ Buffer {
 	}
 
 	zero { arg completionMessage;
-		server.listSendMsg(this.zeroMsg(completionMessage))
+		server.listSendMsg([\b_zero, bufnum, completionMessage.value(this)])
 	}
 
 	zeroMsg { arg completionMessage;
@@ -378,7 +379,7 @@ Buffer {
 	}
 
 	set { arg index, float ... morePairs;
-		server.listSendMsg(this.setMsg(index, float, *morePairs))
+		server.listSendMsg([\b_set, bufnum, index, float] ++ morePairs)
 	}
 
 	setMsg { arg index, float ... morePairs;
@@ -387,7 +388,7 @@ Buffer {
 	}
 
 	setn { arg ... args;
-		server.listSendMsg(this.setnMsg(*args));
+		server.listSendMsg([\b_setn, bufnum] ++ this.setnMsgArgs(*args))
 	}
 
 	setnMsgArgs{ arg ... args;
@@ -414,7 +415,7 @@ Buffer {
 			// We want "value," which is at index 3.
 			action.value(message[3]);
 		}, \b_set, server.addr, argTemplate: [bufnum, index]).oneShot;
-		server.listSendMsg(this.getMsg(index, action));
+		server.listSendMsg([\b_get, bufnum, index])
 	}
 
 	getMsg { arg index, action;
@@ -429,7 +430,7 @@ Buffer {
 			// We want the sample values, which start at index 4.
 			action.value(message[4..]);
 		}, \b_setn, server.addr, argTemplate: [bufnum, index]).oneShot;
-		server.listSendMsg(this.getnMsg(index, count, action));
+		server.listSendMsg([\b_getn, bufnum, index, count])
 	}
 
 	getnMsg { arg index, count, action;
@@ -438,7 +439,7 @@ Buffer {
 	}
 
 	fill { arg startAt, numFrames, value ... more;
-		server.listSendMsg(this.fillMsg(startAt, numFrames, value, *more))
+		server.listSendMsg([\b_fill, bufnum, startAt, numFrames.asInt, value] ++ more)
 	}
 
 	fillMsg { arg startAt, numFrames, value ... more;
@@ -447,7 +448,7 @@ Buffer {
 	}
 
 	normalize { arg newmax=1, asWavetable=false;
-		server.listSendMsg(this.normalizeMsg(newmax, asWavetable))
+		server.listSendMsg([\b_gen, bufnum, if(asWavetable, "wnormalize", "normalize"), newmax])
 	}
 
 	normalizeMsg { arg newmax=1, asWavetable=false;
@@ -456,7 +457,13 @@ Buffer {
 	}
 
 	gen { arg genCommand, genArgs, normalize=true, asWavetable=true, clearFirst=true;
-		server.listSendMsg(this.genMsg(genCommand, genArgs, normalize, asWavetable, clearFirst))
+		server.listSendMsg(
+			[\b_gen, bufnum, genCommand,
+				normalize.binaryValue
+				+ (asWavetable.binaryValue * 2)
+				+ (clearFirst.binaryValue * 4)]
+				++ genArgs
+			)
 	}
 
 	genMsg { arg genCommand, genArgs, normalize=true, asWavetable=true, clearFirst=true;
@@ -469,19 +476,43 @@ Buffer {
 	}
 
 	sine1 { arg amps, normalize=true, asWavetable=true, clearFirst=true;
-		server.listSendMsg(this.sine1Msg(amps, normalize, asWavetable, clearFirst))
+		server.listSendMsg(
+			[\b_gen, bufnum, "sine1",
+				normalize.binaryValue
+				+ (asWavetable.binaryValue * 2)
+				+ (clearFirst.binaryValue * 4)]
+				++ amps
+			)
 	}
 
 	sine2 { arg freqs, amps, normalize=true, asWavetable=true, clearFirst=true;
-		server.listSendMsg(this.sine2Msg(freqs, amps, normalize, asWavetable, clearFirst))
+		server.listSendMsg(
+			[\b_gen, bufnum, "sine2",
+				normalize.binaryValue
+				+ (asWavetable.binaryValue * 2)
+				+ (clearFirst.binaryValue * 4)]
+				++ [freqs, amps].lace(freqs.size * 2)
+			)
 	}
 
 	sine3 { arg freqs, amps, phases, normalize=true, asWavetable=true, clearFirst=true;
-		server.listSendMsg(this.sine3Msg(freqs, amps, phases, normalize, asWavetable, clearFirst))
+		server.listSendMsg(
+			[\b_gen, bufnum, "sine3",
+				normalize.binaryValue
+				+ (asWavetable.binaryValue * 2)
+				+ (clearFirst.binaryValue * 4)]
+				++ [freqs, amps, phases].lace(freqs.size * 3)
+			)
 	}
 
 	cheby { arg amps, normalize=true, asWavetable=true, clearFirst=true;
-		server.listSendMsg(this.chebyMsg(amps, normalize, asWavetable, clearFirst))
+		server.listSendMsg(
+			[\b_gen, bufnum, "cheby",
+				normalize.binaryValue
+				+ (asWavetable.binaryValue * 2)
+				+ (clearFirst.binaryValue * 4)]
+				++ amps
+			)
 	}
 
 	sine1Msg { arg amps, normalize=true, asWavetable=true, clearFirst=true;
@@ -521,7 +552,7 @@ Buffer {
 	}
 
 	copyData { arg buf, dstStartAt = 0, srcStartAt = 0, numSamples = -1;
-		server.listSendMsg(this.copyMsg(buf, dstStartAt, srcStartAt, numSamples))
+		server.listSendMsg([\b_gen, buf.bufnum, "copy", dstStartAt, bufnum, srcStartAt, numSamples])
 	}
 
 	copyMsg { arg buf, dstStartAt = 0, srcStartAt = 0, numSamples = -1;
@@ -531,7 +562,7 @@ Buffer {
 
 	// close a file, write header, after DiskOut usage
 	close { arg completionMessage;
-		server.listSendMsg( this.closeMsg(completionMessage) )
+		server.listSendMsg( [\b_close, bufnum, completionMessage.value(this)] )
 	}
 
 	closeMsg { arg completionMessage;
@@ -546,7 +577,7 @@ Buffer {
 				<< "numChannels : " << msg[3] << Char.nl
 				<< "sampleRate : " << msg[4] << Char.nl << Char.nl;
 		}, \b_info, server.addr).oneShot;
-		server.listSendMsg(this.queryMsg)
+		server.listSendMsg([\b_query, bufnum])
 	}
 
 	queryMsg {
@@ -559,7 +590,7 @@ Buffer {
 		// has been freed
 		this.cache;
 		doOnInfo = action;
-		server.listSendMsg(this.queryMsg)
+		server.listSendMsg([\b_query, bufnum])
 	}
 
 	// cache Buffers for easy info updating
