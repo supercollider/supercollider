@@ -15,9 +15,10 @@ html {
 }
 
 div.contents {
+    margin: 1em;
     padding-left: 0.3em;
     padding-right: 0.3em;
-    padding-top: 1.5em;
+    padding-top: 1.4em;
     padding-bottom: 0.5em;
 }
 
