@@ -178,39 +178,44 @@ SCDocHTMLRenderer {
 		<< "<body onload='fixTOC();prettyPrint()'>\n"
 		<< "<div class='contents'>\n"
 		<< "<div id='menubar'></div>\n"
-		<< "<div class='header'>\n"
-		<< "<div id='label'>\n"
-		<< "<span id='folder'>" << folder.asString;
-		if(doc.isExtension) {
-			stream << " (extension)";
-		};
-		stream << "</span>\n";
+		<< "<div class='header'>\n";
 
-		doc.categories !? {
-			// Prevent the label from starting with "|".
-			if(folder.asString.size > 0) {
-				stream << " | "
+
+		if(thisIsTheMainHelpFile.not) {
+			stream
+			<< "<div id='label'>\n"
+			<< "<span id='folder'>" << folder.asString;
+			if(doc.isExtension) {
+				stream << " (extension)";
+			};
+			stream << "</span>\n";
+
+			doc.categories !? {
+				// Prevent the label from starting with "|".
+				if(folder.asString.size > 0) {
+					stream << " | "
+				};
+
+				stream << "<span id='categories'>"
+
+				<< (doc.categories.collect { | path |
+					// get all the components of a category path ("UGens>Generators>Deterministic")
+					// we link each crumb of the breadcrumbs separately.
+					var pathElems = path.split($>);
+
+					// the href for "UGens" will be "UGens", for "Generators" "UGens>Generators", etc.
+					pathElems.collect { | elem, i |
+						var atag = "<a href='" ++ baseDir +/+ "Browse.html#";
+						atag ++ pathElems[0..i].join(">") ++ "'>"++ elem ++"</a>"
+					}.join("&#8201;&gt;&#8201;"); // &#8201; is a thin space
+
+				}.join(" | "))
+
+				<< "</span>\n";
 			};
 
-			stream << "<span id='categories'>"
-
-			<< (doc.categories.collect { | path |
-				// get all the components of a category path ("UGens>Generators>Deterministic")
-				// we link each crumb of the breadcrumbs separately.
-				var pathElems = path.split($>);
-
-				// the href for "UGens" will be "UGens", for "Generators" "UGens>Generators", etc.
-				pathElems.collect { | elem, i |
-					var atag = "<a href='" ++ baseDir +/+ "Browse.html#";
-					atag ++ pathElems[0..i].join(">") ++ "'>"++ elem ++"</a>"
-				}.join("&#8201;&gt;&#8201;"); // &#8201; is a thin space
-
-			}.join(" | "))
-
-			<< "</span>\n";
+			stream << "</div>";
 		};
-
-		stream << "</div>";
 
 		stream << "<h1>";
 		if(thisIsTheMainHelpFile) {
