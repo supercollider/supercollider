@@ -293,8 +293,8 @@ SynthDef(\env, { arg i_outbus=0;
 )
 
 (
-SynthDef(\sine, { |freq = 0|
-	Out.ar(0, SinOsc.ar(freq, 0, 0.2));
+SynthDef(\sine, { |out, freq = 440|
+	Out.ar(out, SinOsc.ar(freq, 0, 0.2));
 }).add;
 )
 

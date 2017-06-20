@@ -37,10 +37,10 @@ var midi, dur;
 midi = Pseq([60, 72, 71, 67, 69, 71, 72, 60, 69, 67], 1).asStream;
 dur = Pseq([2, 2, 1, 0.5, 0.5, 1, 1, 2, 2, 3], 1).asStream;
 
-SynthDef(\smooth, { |freq = 440, sustain = 1, amp = 0.5|
+SynthDef(\smooth, { |out, freq = 440, sustain = 1, amp = 0.5|
 	var sig;
 	sig = SinOsc.ar(freq, 0, amp) * EnvGen.kr(Env.linen(0.05, sustain, 0.1), doneAction: Done.freeSelf);
-	Out.ar(0, sig ! 2)
+	Out.ar(out, sig ! 2)
 }).add;
 
 r = Task({
@@ -110,10 +110,10 @@ Not only can patterns produce data for notes, but they can also play the notes t
 
 code::
 (
-SynthDef(\smooth, { |freq = 440, sustain = 1, amp = 0.5|
+SynthDef(\smooth, { |out, freq = 440, sustain = 1, amp = 0.5|
 	var sig;
 	sig = SinOsc.ar(freq, 0, amp) * EnvGen.kr(Env.linen(0.05, sustain, 0.1), doneAction: Done.freeSelf);
-	Out.ar(0, sig ! 2)
+	Out.ar(out, sig ! 2)
 }).add;
 )
 
@@ -151,7 +151,7 @@ Don't be intimidated by the bassline pattern. At a higher level, it reduces to s
 
 code::
 (
-SynthDef(\bass, { |freq = 440, gate = 1, amp = 0.5, slideTime = 0.17, ffreq = 1100, width = 0.15,
+SynthDef(\bass, { |out, freq = 440, gate = 1, amp = 0.5, slideTime = 0.17, ffreq = 1100, width = 0.15,
 		detune = 1.005, preamp = 4|
 	var	sig,
 		env = Env.adsr(0.01, 0.3, 0.4, 0.1);
@@ -159,7 +159,7 @@ SynthDef(\bass, { |freq = 440, gate = 1, amp = 0.5, slideTime = 0.17, ffreq = 11
 	sig = Mix(VarSaw.ar([freq, freq * detune], 0, width, preamp)).distort * amp
 		* EnvGen.kr(env, gate, doneAction: Done.freeSelf);
 	sig = LPF.ar(sig, ffreq);
-	Out.ar(0, sig ! 2)
+	Out.ar(out, sig ! 2)
 }).add;
 
 TempoClock.default.tempo = 132/60;
@@ -192,11 +192,11 @@ p = Pxrand([
 
 // totally cheesy, but who could resist?
 (
-SynthDef(\kik, { |preamp = 1, amp = 1|
+SynthDef(\kik, { |out, preamp = 1, amp = 1|
 	var	freq = EnvGen.kr(Env([400, 66], [0.08], -3)),
 		sig = SinOsc.ar(freq, 0.5pi, preamp).distort * amp
 			* EnvGen.kr(Env([0, 1, 0.8, 0], [0.01, 0.1, 0.2]), doneAction: Done.freeSelf);
-	Out.ar(0, sig ! 2);
+	Out.ar(out, sig ! 2);
 }).add;
 
 // before you play:

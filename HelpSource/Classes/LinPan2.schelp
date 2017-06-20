@@ -5,7 +5,7 @@ categories::  UGens>Multichannel>Panners
 
 
 Description::
-Two channel linear panner. The signal is lowered as it pans from left (or right) to center using a straight line from 1 (left or right) to 0.5 (center) for a 6dB reduction in the middle. A problem inherent to linear panning is that the perceived volume of the signal drops in the middle. Pan2 solves this by taking the square root of the linear scaling factor going from 1 (left or right) to 0.5.sqrt (~=0.707) in the center, which is about 3dB reduction. This is equal power panning. 
+Two channel linear panner. The signal is lowered as it pans from left (or right) to center using a straight line from 1 (left or right) to 0.5 (center) for a 6dB reduction in the middle. A problem inherent to linear panning is that the perceived volume of the signal drops in the middle. Pan2 solves this by taking the square root of the linear scaling factor going from 1 (left or right) to 0.5.sqrt (~=0.707) in the center, which is about 3dB reduction. This is equal power panning.
 LinPan2 sounds more like the Rhodes tremolo than Pan2.
 
 classmethods::
@@ -31,13 +31,14 @@ Examples::
 
 code::
 // hear the difference, LinPan having a slight drop in the middle (yeah, it's subtle)...
-{LinPan2.ar(SinOsc.ar(440), Line.kr(-1,1,5))}.play
+{ LinPan2.ar(SinOsc.ar(440), Line.kr(-1, 1, 5)) }.play;
 
 // ... whereas Pan2 is more smooth
-{Pan2.ar(SinOsc.ar(440), Line.kr(-1,1,5))}.play
+{ Pan2.ar(SinOsc.ar(440), Line.kr(-1, 1, 5)) }.play;
 
 // other examples
-play({ LinPan2.ar(PinkNoise.ar(0.4), FSinOsc.kr(2)) });
-SynthDef("help-LinPan2", {  Out.ar(0, LinPan2.ar(FSinOsc.ar(800, 0, 0.1), FSinOsc.kr(3))) }).play;
+{ LinPan2.ar(PinkNoise.ar(0.4), FSinOsc.kr(2)) }.play;
+
+{ LinPan2.ar(FSinOsc.ar(800, 0, 0.1), FSinOsc.kr(3)) }.play;
 ::
 

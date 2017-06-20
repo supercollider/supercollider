@@ -69,15 +69,6 @@ list::
 
 examples::
 code::
-(
-s.waitForBoot({
-	// Prepare the buffers
-	b = Buffer.alloc(s, 512);
-	// Feel free to load a more interesting clip!
-	// a11wlk01 is not an ideal example of musical onsets.
-	d = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
-});
-)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // Move the mouse to vary the threshold
@@ -90,13 +81,13 @@ x = {
 	// or, uncomment this line if you want to play the buffer in
 	//sig = PlayBuf.ar(1, d, BufRateScale.kr(d), loop: 1);
 
-	chain = FFT(b, sig);
+	chain = FFT(LocalBuf(1, 512), sig);
 
 	onsets = Onsets.kr(chain, MouseX.kr(0,1), \rcomplex);
 
 	// You'll hear percussive "ticks" whenever an onset is detected
 	pips = WhiteNoise.ar(EnvGen.kr(Env.perc(0.001, 0.1, 0.2), onsets));
-	Out.ar(0, Pan2.ar(sig, -0.75, 0.2) + Pan2.ar(pips, 0.75, 1));
+	Pan2.ar(sig, -0.75, 0.2) + Pan2.ar(pips, 0.75, 1)
 }.play;
 )
 x.free; // Free the synth
@@ -118,13 +109,13 @@ x = {
 	// or, uncomment this line if you want to play the buffer in
 	//sig = PlayBuf.ar(1, d, BufRateScale.kr(d), loop: 1);
 
-	chain = FFT(b, sig);
+	chain = FFT(LocalBuf(1, 512), sig);
 
 	onsets = Onsets.kr(chain, threshes, \rcomplex);
 
 	// Generate pips at a variety of pitches
 	pips = SinOsc.ar((threshes).linexp(0, 1, 440, 3520), 0, EnvGen.kr(Env.perc(0.001, 0.1, 0.5), onsets)).mean;
-	Out.ar(0, Pan2.ar(sig, -0.75, 0.2) + Pan2.ar(pips, 0.75, 1));
+	Pan2.ar(sig, -0.75, 0.2) + Pan2.ar(pips, 0.75, 1)
 }.play;
 )
 

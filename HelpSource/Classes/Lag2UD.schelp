@@ -18,28 +18,26 @@ argument:: lagTimeD
 
 examples::
 code::
-(
 // used to lag pitch
-       SynthDef( \lag2ud_help,
-
-	{ arg freq=300,lagup=1, lagdown=5;
-		Out.ar( 0,
-			SinOsc.ar( // sine wave
-				Lag2UD.kr( // lag the frequency
-					freq,
-					lagup,
-					lagdown
-				),
-				0, // phase
-				0.2 // sine amplitude
-			)
-		);
-	}).add;
+(
+SynthDef( \lag2ud_help, { |out, freq=300, lagup=1, lagdown=5|
+	Out.ar(out,
+		SinOsc.ar( // sine wave
+			Lag2UD.kr( // lag the frequency
+				freq,
+				lagup,
+				lagdown
+			),
+			0, // phase
+			0.2 // sine amplitude
+		)
+	);
+}).add;
 )
 
-x = Synth.new( \lag2ud_help ); // create the synth
+x = Synth(\lag2ud_help); // create the synth
 
-x.set( \freq, 500 ); // set the frequency to a higher value (takes 1 second)
-x.set( \freq, 100 ); // set the frequency to a lower value (takes 5 seconds)
+x.set(\freq, 500); // set the frequency to a higher value (takes 1 second)
+x.set(\freq, 100); // set the frequency to a lower value (takes 5 seconds)
 x.free;
 ::

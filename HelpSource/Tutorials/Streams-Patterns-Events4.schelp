@@ -139,8 +139,8 @@ c = { arg pan, freq, amp;
 
 Task({
 	n.do({ arg i;
-		SynthDef("Help-SPE4-EnvirDef-" ++ i.asString, {
-			var out;
+		SynthDef("Help-SPE4-EnvirDef-" ++ i.asString, { |out|
+			var sound;
 			Environment.use({
 					// set values in the environment
 				~freq = exprand(80, 600);
@@ -149,13 +149,13 @@ Task({
 
 					// call a randomly chosen instrument function
 					// with values from the environment
-				out = [a,b,c].choose.valueEnvir;
+				sound = [a,b,c].choose.valueEnvir;
 			});
-			out = CombC.ar(out, 0.2, 0.2, 3, 1, out);
-			out = out * EnvGen.kr(
+			sound = CombC.ar(sound, 0.2, 0.2, 3, 1, out);
+			sound = sound * EnvGen.kr(
 				Env.sine, doneAction: Done.freeSelf, timeScale: 1.0 + 6.0.rand, levelScale: 0.3
 			);
-			Out.ar( 0, out );
+			Out.ar(out, sound);
 		}).send(s);
 		0.02.wait;
 	});

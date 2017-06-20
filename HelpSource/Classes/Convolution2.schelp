@@ -72,13 +72,13 @@ d.zero;
 
 
 (
-SynthDef( "conv-test", { arg kernel, trig=0;
+SynthDef("conv-test", { |out, kernel, trig = 0|
 	var input;
 
-	input=Impulse.ar(1);
+	input = Impulse.ar(1);
 
 	//must have power of two framesize
-	Out.ar(0,Convolution2.ar(input,kernel,trig,2048, 0.5));
+	Out.ar(out, Convolution2.ar(input, kernel, trig, 2048, 0.5));
 }).add
 
 )
@@ -131,22 +131,22 @@ g = Buffer.alloc(s,a,1);
 
 (
 g.set(0,1.0);
-100.do({arg i; g.set(a.rand, (i+1).reciprocal)});
+100.do({ arg i; g.set(a.rand, (i+1).reciprocal)});
 )
 
 (
 // random impulse response
 
-	{
+{
 	var input,inputAmp,threshhold,gate;
 
-input = SoundIn.ar(0);
-inputAmp = Amplitude.kr(input);
-threshhold = 0.02;	// noise gating threshold
-gate = Lag.kr(inputAmp > threshhold, 0.01);
+	input = SoundIn.ar(0);
+	inputAmp = Amplitude.kr(input);
+	threshhold = 0.02;	// noise gating threshold
+	gate = Lag.kr(inputAmp > threshhold, 0.01);
 
-	Out.ar(0,Convolution2.ar(input*gate,g.bufnum,0, a, 0.5));
-	 }.play;
+	Convolution2.ar(input*gate,g.bufnum,0, a, 0.5)
+}.play;
 
 )
 
@@ -157,13 +157,14 @@ b.sine1(1.0/[1,2,3,4,5,6], true, true, true);
 )
 
 (
-	{ var input, kernel;
+{
+	var input, kernel;
 
-	input=SoundIn.ar(0);
+	input = SoundIn.ar(0);
 
 	//must have power of two framesize
-	Out.ar(0,Convolution2.ar(input,b.bufnum,0, 512, 0.5));
-	 }.play;
+	Convolution2.ar(input,b.bufnum,0, 512, 0.5)
+}.play;
 
 )
 ::

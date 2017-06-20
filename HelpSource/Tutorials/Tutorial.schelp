@@ -63,7 +63,7 @@ m.quit; // quit the server
 It is not possible to boot a server on a remote machine, but if you have one running already or you know of one running, you can send messages to it. You create the server object using the IP address of the machine running the server and the port it is using.
 
 code::
-// create a server object for talking to the server running on a 
+// create a server object for talking to the server running on a
 // remote machine having IP address 192.168.0.47 using port #57110
 r = Server(\myServer, NetAddr("192.168.0.47", 57110));
 ::
@@ -373,7 +373,7 @@ timer.sched(0,{
 		freq = Pseq([30,40,42,40],inf).asStream;
 		cutoff = Pfunc({500.rand2+1000}).asStream;
 		rezz = 0.5;
-		inf.do({ 
+		inf.do({
 			saw.set("freq", freq.next.midicps, "cutoff", cutoff.next, "rezz", rezz, "amp", 0.1, "out", 0);
 			(wait.next*offset).wait
 		});

@@ -27,9 +27,9 @@ Use LPF, a low-pass filter to subtract high-frequency content from an input sour
 
 code::
 (
-SynthDef("subtractive", {
+SynthDef("subtractive", { arg out;
 	Out.ar(
-		0,
+		out,
 		LPF.ar(
 			Pulse.ar(440, 0.5, 0.1),	// the source to be filtered
 			Line.kr(8000, 660, 6)		// control the filter frequency with a line
@@ -47,9 +47,9 @@ RLPF, a resonant low-pass filter, removes high-frequency content and emphasizes 
 
 code::
 (
-SynthDef("passLowFreqs2", {
+SynthDef("passLowFreqs2", { arg out;
 	Out.ar(
-		0,
+		out,
 		RLPF.ar(
 			Saw.ar([220, 221] + LFNoise0.kr(1, 100, 200), 0.2),
 			[LFNoise0.kr(4, 600, 2400), LFNoise0.kr(3, 600, 2400)],

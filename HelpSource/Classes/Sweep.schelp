@@ -74,13 +74,13 @@ b.free
 Sweep can be used as a resettable link::Classes/Phasor:: or link::Classes/Line:: - one that can start, pause, resume and stop. To get a resettable link::Classes/XLine:: behavior change the code::linlin:: to code::linexp:: in the SynthDef below.
 code::
 (
-SynthDef(\lineReset, {|start= 0, end= 1, dur= 1, t_trig= 1, run= 1|
-	var phasor= (Sweep.ar(t_trig, 1/dur*run)).linlin(0, 1, start, end, \minmax);
+SynthDef(\lineReset, { |out, start= 0, end= 1, dur= 1, t_trig= 1, run= 1|
+	var phasor = Sweep.ar(t_trig, run / dur).linlin(0, 1, start, end, \minmax);
 	phasor.poll;
-	Out.ar(0, SinOsc.ar(phasor, 0, 0.2));
+	Out.ar(out, SinOsc.ar(phasor, 0, 0.2));
 }).add;
 )
-a= Synth(\lineReset, [\start, 400, \end, 800, \dur, 2])
+a = Synth(\lineReset, [\start, 400, \end, 800, \dur, 2])
 a.set(\t_trig, 1)
 a.set(\run, 0)
 a.set(\run, 1)

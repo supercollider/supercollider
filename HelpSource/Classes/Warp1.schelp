@@ -57,21 +57,21 @@ winenv = Env([0, 1, 0], [0.5, 0.5], [8, -8]);
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff");
 z = Buffer.sendCollection(s, winenv.discretize, 1);
 
-SynthDef(\warp, {arg buffer = 0, envbuf = -1;
-	var out, pointer, filelength, pitch, env, dir;
+SynthDef(\warp, { |out, bufnum = 0, envbuf = -1|
+	var sound, pointer, filelength, pitch, env, dir;
 	// pointer - move from beginning to end of soundfile over 15 seconds
 	pointer = Line.kr(0, 1, 15);
 	// control pitch with MouseX
 	pitch = MouseX.kr(0.5, 2);
 	env = EnvGen.kr(Env([0.001, 1, 1, 0.001], [0.1, 14, 0.9], 'exp'), doneAction: Done.freeSelf);
-	out = Warp1.ar(1, buffer, pointer, pitch, 0.1, envbuf, 8, 0.1, 2);
-	Out.ar(0, out * env);
+	sound = Warp1.ar(1, bufnum, pointer, pitch, 0.1, envbuf, 8, 0.1, 2);
+	Out.ar(out, sound * env);
 }).add;
 
 )
 
 // use built-in env
-x = Synth(\warp, [\buffer, b, \envbuf, -1])
+x = Synth(\warp, [\bufnum, b, \envbuf, -1])
 
 // switch to the custom env
 x.set(\envbuf, z)
@@ -84,13 +84,13 @@ code::
 (
 b.free;
 b= Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01-44_1.aiff");
-SynthDef(\warp2, {|buffer|
-	var pointer = Phasor.ar(0, SampleDur.ir/BufDur.ir(buffer)*XLine.kr(1, 0.25, 20));
-	var out = Warp1.ar(1, buffer, pointer, 1, 0.3, -1, 16, Line.kr(0, 1, 40), 4);
-	Out.ar(0, Pan2.ar(out, pointer*2-1, 0.25));
+SynthDef(\warp2, { |out, bufnum|
+	var pointer = Phasor.ar(0, SampleDur.ir / BufDur.ir(bufnum) * XLine.kr(1, 0.25, 20));
+	var sound = Warp1.ar(1, bufnum, pointer, 1, 0.3, -1, 16, Line.kr(0, 1, 40), 4);
+	Out.ar(out, Pan2.ar(sound, pointer * 2 - 1, 0.25));
 }).add;
 )
-x = Synth(\warp2, [\buffer, b])
+x = Synth(\warp2, [\bufnum, b])
 x.free
 b.free
 ::
