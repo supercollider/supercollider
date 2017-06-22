@@ -6,6 +6,8 @@ related:: Classes/QPenPrinter
 description::
 A class which allows you to draw custom graphics on a UserView or Window.
 
+if you are looking for more information on pen object, and how to draw graphics with supercollider, take a look at link::"https://books.google.pt/books?id=XeotAgAAQBAJ&pg=PT117&dq=supercollider+graphics&hl=en&sa=X&redir_esc=y#v=onepage&q=supercollider graphics&f=false"::further readings::
+
 The following methods must be called within a link::Classes/Window#-drawFunc:: or a link::Classes/UserView#-drawFunc:: function, and will only be visible once the window or the view is refreshed. Each call to link::Classes/Window#-refresh:: or link::Classes/UserView#-refresh:: will 'overwrite' all previous drawing by executing the currently defined function, unless link::Classes/UserView#-clearOnRefresh:: is set to code::false::
 
 classmethods::
