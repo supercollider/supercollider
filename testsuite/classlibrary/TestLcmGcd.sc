@@ -83,6 +83,32 @@ TestLcmGcd : UnitTest {
 		)
 	}
 
+	// see E.E. McDonnell, A Notation for the GCD and LCM Functions
+	// http://www.jsoftware.com/papers/eem/gcd.htm
+
+	callTest_booleanLattic_lcm_and { |a, b|
+		var a_bool = booleanValue(a);
+		var b_bool = booleanValue(b);
+		var a_num = binaryValue(a);
+		var b_num = binaryValue(b);
+		var x = and(a_bool, b_bool);
+		var y = lcm(a_num, b_num);
+		this.assertEquals(x, booleanValue(y), "lcm(%, %) should be equivalent to and(%, %)".format(
+			a_num, b_num, a_bool, b_bool
+		));
+	}
+
+	callTest_booleanLattic_gcd_or { |a, b|
+		var a_bool = booleanValue(a);
+		var b_bool = booleanValue(b);
+		var a_num = binaryValue(a);
+		var b_num = binaryValue(b);
+		var x = or(a_bool, b_bool);
+		var y = gcd(a_num, b_num);
+		this.assertEquals(x, booleanValue(y), "gcd(%, %) should be equivalent to or(%, %)".format(
+			a_num, b_num, a_bool, b_bool
+		));
+	}
 
 
 	// tests
@@ -154,5 +180,9 @@ TestLcmGcd : UnitTest {
 		operands.do { |triple| this.callTest_selfDuality(*triple) };
 	}
 
+	test_booleanLattice {
+		var operands = [true, false].dup(2).allTuples;
+		operands.do { |pair| this.callTest_booleanLattic_lcm_and(*pair) };
+	}
 
 }
