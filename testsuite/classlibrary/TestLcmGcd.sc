@@ -125,6 +125,12 @@ TestLcmGcd : UnitTest {
 		operands.do { |triple| this.callTest_associative_lcm(*triple) };
 	}
 
+	test_idempotency {
+		var operands = (-4..4);
+		operands.do { |x| this.callTest_idempotency_lcm(x) };
+		operands.do { |x| this.callTest_idempotency_gcd(x) };
+	}
+
 
 	// the following tests exclude zero, until a consistent implementation for zero is found
 
@@ -139,19 +145,6 @@ TestLcmGcd : UnitTest {
 		var operands = (0..4).dup(2).allTuples;
 		operands.do { |pair| this.callTest_absorption_lcm(*pair) };
 		operands.do { |pair| this.callTest_absorption_gcd(*pair) };
-	}
-
-	test_idempotency {
-		//var operands = (-4..4);
-		var operands = (-4..4).removing(0);
-		operands.do { |x| this.callTest_idempotency_lcm(x) };
-		operands.do { |x| this.callTest_idempotency_gcd(x) };
-	}
-
-	test_idempotencyNonNegative {
-		var operands = (0..4);
-		operands.do { |x| this.callTest_idempotency_lcm(x) };
-		operands.do { |x| this.callTest_idempotency_gcd(x) };
 	}
 
 	test_distributive {
