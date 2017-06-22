@@ -44,13 +44,13 @@ TestLcmGcd : UnitTest {
 			.format(a, a, b))
 	}
 
-	callTest_idempotency_lcm { |a|
+	callTest_idempotence_lcm { |a|
 		var x = lcm(a, a);
 		this.assertEquals(a, x, "% = lcm(%, %) should be valid"
 			.format(a, a, a))
 	}
 
-	callTest_idempotency_gcd { |a|
+	callTest_idempotence_gcd { |a|
 		var x = gcd(a, a);
 		this.assertEquals(a, x, "% = gcd(%, %) should be valid"
 			.format(a, a, a))
@@ -125,10 +125,10 @@ TestLcmGcd : UnitTest {
 		operands.do { |triple| this.callTest_associative_lcm(*triple) };
 	}
 
-	test_idempotency {
+	test_idempotence {
 		var operands = (-4..4);
-		operands.do { |x| this.callTest_idempotency_lcm(x) };
-		operands.do { |x| this.callTest_idempotency_gcd(x) };
+		operands.do { |x| this.callTest_idempotence_lcm(x) };
+		operands.do { |x| this.callTest_idempotence_gcd(x) };
 	}
 
 
