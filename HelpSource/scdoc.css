@@ -3,8 +3,8 @@ body {
     font-size: 10pt;
     color: black;
     background: white;
-/*    max-width: 60em;*/
-/*    margin-left: 20em;*/
+    /*    max-width: 60em;*/
+    /*    margin-left: 20em;*/
     padding: 0;
     margin: 0;
 }
@@ -46,7 +46,7 @@ a:link, a:visited, a:hover {
     text-decoration: none;
     color: #449;
     /* add padding to work around "text-decoration: underline" not
-     * having effect when hovered if font size less then 11pt */
+    * having effect when hovered if font size less then 11pt */
     padding-bottom: 1px;
 }
 
@@ -81,7 +81,7 @@ a.inheritedmets_toggle {
     font-size: 9pt;
     color: #558;
     font-weight: normal;
-/*    margin-left: 2em;*/
+    /*    margin-left: 2em;*/
 }
 
 a.inheritedmets_toggle:hover {
@@ -104,13 +104,13 @@ a.subclass_toggle:hover {
     font-family: Arial, Helvetica, sans-serif;
     width: 100%;
     position: fixed;
-/*    background: #555;*/
+    /*    background: #555;*/
     background: #eee;
     top: 0px;
     padding: 2px;
     margin: 0px;
     border-bottom: 1px solid #bbb;
-/*    border-bottom: 2px solid #999;*/
+    /*    border-bottom: 2px solid #999;*/
     z-index: 30;
 }
 
@@ -121,14 +121,14 @@ a.subclass_toggle:hover {
     padding:0px;
     padding-left: 0.75em;
     padding-right: 0.75em;
-/*    border-right: 1px solid #999;*/
+    /*    border-right: 1px solid #999;*/
     border-right: 1px solid #ddd;
     font-size: 10pt;
     display: block;
 }
 
 .menuitem a {
-/*    color: #ddd;*/
+    /*    color: #ddd;*/
     color: #666;
 }
 .menuitem a:hover {
@@ -137,9 +137,9 @@ a.subclass_toggle:hover {
 }
 
 #topdoctitle {
-/*    font-weight: bold;*/
+    /*    font-weight: bold;*/
     font-style: italic;
-/*    color: #fff;*/
+    /*    color: #fff;*/
     color: #444;
     cursor: pointer;
 }
@@ -155,17 +155,17 @@ a.subclass_toggle:hover {
 }
 
 .submenu a {
-        position: relative;
-		display: block;
-		margin: 0;
-/*		padding: 5px 10px;*/
-        padding: 0.2em;
-		width: auto;
-		white-space: nowrap;
-		text-align: left;
-/*		text-decoration: none;*/
-		color: #447;
-		font-weight: bold;
+    position: relative;
+    display: block;
+    margin: 0;
+    /*      padding: 5px 10px;*/
+    padding: 0.2em;
+    width: auto;
+    white-space: nowrap;
+    text-align: left;
+    /*      text-decoration: none;*/
+    color: #447;
+    font-weight: bold;
 }
 
 .toc_search {
@@ -179,7 +179,7 @@ a.subclass_toggle:hover {
 }
 
 a.navlink {
-/*    color: #fff;*/
+    /*    color: #fff;*/
     color: #447;
     font-weight: bold;
 }
@@ -404,7 +404,7 @@ td p {
 }
 
 .note, .warning {
-/*    border-left: 4px solid #eea;*/
+    /*    border-left: 4px solid #eea;*/
     background: #f7f7d7;
     padding: 0.5em;
     margin-top: 1em;
@@ -423,137 +423,137 @@ td p {
     color: #999;
     text-align: right;
     margin-top: 2em;
-}*/
+    }*/
 
-.doclink {
-    font-size: 9pt;
-    color: #888;
-    text-align: right;
-    margin-top: 2em;
-    margin-bottom: 2em;
-    border-top: 1px solid #ddd;
-}
-.doclink a {
-    color: #444;
-}
+    .doclink {
+        font-size: 9pt;
+        color: #888;
+        text-align: right;
+        margin-top: 2em;
+        margin-bottom: 2em;
+        border-top: 1px solid #ddd;
+    }
+    .doclink a {
+        color: #444;
+    }
 
-#sidetoc {
-    position: fixed;
-    display: block;
-    width: 18em;
-    left: 0px;
-    margin: 0;
-    padding: 10px;
-    height: 100%;
-    overflow: auto;
-/*    background: #eee;*/
-    background: #fff;
-    border-right: 1px solid #bbb;
-}
+    #sidetoc {
+        position: fixed;
+        display: block;
+        width: 18em;
+        left: 0px;
+        margin: 0;
+        padding: 10px;
+        height: 100%;
+        overflow: auto;
+        /*    background: #eee;*/
+        background: #fff;
+        border-right: 1px solid #bbb;
+    }
 
-#sidetoc a:hover {
-    text-decoration: none;
-    color: black;
-}
+    #sidetoc a:hover {
+        text-decoration: none;
+        color: black;
+    }
 
-#toc {
-    margin: 0;
-    padding: 10px 2px 10px 2px;
-    min-width: 20em;
-    line-height: 130%;
-    display: none;
-    overflow: auto;
-    background: #fff;
-    position: absolute;
-    border: 1px solid #aaa;
-    margin-top: 2px;
-    border-radius: 4px;
-}
-#toctitle {
-    border-bottom: 1px solid #aaa;
-    margin-bottom: 0.5em;
-    font-weight: normal;
-    color: #777;
-}
+    #toc {
+        margin: 0;
+        padding: 10px 2px 10px 2px;
+        min-width: 20em;
+        line-height: 130%;
+        display: none;
+        overflow: auto;
+        background: #fff;
+        position: absolute;
+        border: 1px solid #aaa;
+        margin-top: 2px;
+        border-radius: 4px;
+    }
+    #toctitle {
+        border-bottom: 1px solid #aaa;
+        margin-bottom: 0.5em;
+        font-weight: normal;
+        color: #777;
+    }
 
-li {
-    padding-bottom: 0.5em;
-}
+    li {
+        padding-bottom: 0.5em;
+    }
 
-ul.toc {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-}
-ul.toc ul {
-    margin-left: 1em;
-}
-ul.toc li {
-    margin: 0;
-    padding: 0;
-}
+    ul.toc {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+    }
+    ul.toc ul {
+        margin-left: 1em;
+    }
+    ul.toc li {
+        margin: 0;
+        padding: 0;
+    }
 
-ul.toc li a {
-    display: block;
-    padding: 0 8px 0 8px;
-}
+    ul.toc li a {
+        display: block;
+        padding: 0 8px 0 8px;
+    }
 
-ul.toc li a:hover {
-    background: #eee;
-}
+    ul.toc li a:hover {
+        background: #eee;
+    }
 
-.toc1 {
-    font-weight: bold;
-}
-.toc1 a {
-    color: #444;
-}
-.toc2 {
-    font-weight: normal;
-}
-.toc2 a {
-    color: #444;
-}
-.toc3 {
-    font-family: monospace;
-    font-weight: normal;
-/*    font-size: 9.5pt;*/
-}
-.toc3 a {
-    color: #555;
-}
+    .toc1 {
+        font-weight: bold;
+    }
+    .toc1 a {
+        color: #444;
+    }
+    .toc2 {
+        font-weight: normal;
+    }
+    .toc2 a {
+        color: #444;
+    }
+    .toc3 {
+        font-family: monospace;
+        font-weight: normal;
+        /*    font-size: 9.5pt;*/
+    }
+    .toc3 a {
+        color: #555;
+    }
 
-a.popoutlink {
-    float: right;
-    font-size: 9pt;
-    color: #558;
-    padding-right: 8px;
-    display: inline-block;
-}
+    a.popoutlink {
+        float: right;
+        font-size: 9pt;
+        color: #558;
+        padding-right: 8px;
+        display: inline-block;
+    }
 
-ul.tree, ul.tree ul {
- list-style-type: none;
- background: url(images/vline.png) repeat-y;
- margin: 0;
- padding: 0;
- margin-left: 1em;
-}
+    ul.tree, ul.tree ul {
+       list-style-type: none;
+       background: url(images/vline.png) repeat-y;
+       margin: 0;
+       padding: 0;
+       margin-left: 1em;
+   }
 
-ul.tree ul {
- margin-left: 15px;
-}
+   ul.tree ul {
+       margin-left: 15px;
+   }
 
-ul.tree li {
- margin: 0;
- padding: 0 12px;
- line-height: 20px;
- background: url(images/node.png) no-repeat;
+   ul.tree li {
+       margin: 0;
+       padding: 0 12px;
+       line-height: 20px;
+       background: url(images/node.png) no-repeat;
 /* color: #369;
- font-weight: bold;*/
+font-weight: bold;*/
 }
 
 ul.tree li:last-child {
- background: #fff url(images/lastnode.png) no-repeat;
+   background: #fff url(images/lastnode.png) no-repeat;
 }
 
 :target {
@@ -637,13 +637,13 @@ div.result_category {
     margin-top: 1em;
     margin-bottom: 0.5em;
 /*    font-size: 9.5pt;
-    border-bottom: 1px solid #ccc;*/
-    font-weight: bold;
+border-bottom: 1px solid #ccc;*/
+font-weight: bold;
 /*    font-size: 11pt;*/
 }
 div.met_docs {
     margin-bottom: 0.2em;
-/*    margin-left: 2em;*/
+    /*    margin-left: 2em;*/
 }
 div.met_subclasses {
     font-size: 9pt;
