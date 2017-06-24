@@ -3,8 +3,8 @@ body {
     font-size: 10pt;
     color: black;
     background: white;
-    /*    max-width: 60em;*/
-    /*    margin-left: 20em;*/
+    /*max-width: 60em;*/
+    /*margin-left: 20em;*/
     padding: 0;
     margin: 0;
 }
@@ -45,8 +45,8 @@ p {
 a:link, a:visited, a:hover {
     text-decoration: none;
     color: #449;
-    /* add padding to work around "text-decoration: underline" not
-    * having effect when hovered if font size less then 11pt */
+    /*add padding to work around "text-decoration: underline" not
+    having effect when hovered if font size less then 11pt*/
     padding-bottom: 1px;
 }
 
@@ -104,13 +104,13 @@ a.subclass_toggle:hover {
     font-family: Arial, Helvetica, sans-serif;
     width: 100%;
     position: fixed;
-    /*    background: #555;*/
+    /*background: #555;*/
     background: #eee;
     top: 0px;
     padding: 2px;
     margin: 0px;
     border-bottom: 1px solid #bbb;
-    /*    border-bottom: 2px solid #999;*/
+    /*border-bottom: 2px solid #999;*/
     z-index: 30;
 }
 
@@ -121,14 +121,14 @@ a.subclass_toggle:hover {
     padding:0px;
     padding-left: 0.75em;
     padding-right: 0.75em;
-    /*    border-right: 1px solid #999;*/
+    /*border-right: 1px solid #999;*/
     border-right: 1px solid #ddd;
     font-size: 10pt;
     display: block;
 }
 
 .menuitem a {
-    /*    color: #ddd;*/
+    /*color: #ddd;*/
     color: #666;
 }
 .menuitem a:hover {
@@ -137,9 +137,9 @@ a.subclass_toggle:hover {
 }
 
 #topdoctitle {
-    /*    font-weight: bold;*/
+    /*font-weight: bold;*/
     font-style: italic;
-    /*    color: #fff;*/
+    /*color: #fff;*/
     color: #444;
     cursor: pointer;
 }
@@ -158,12 +158,12 @@ a.subclass_toggle:hover {
     position: relative;
     display: block;
     margin: 0;
-    /*      padding: 5px 10px;*/
+    /*padding: 5px 10px;*/
     padding: 0.2em;
     width: auto;
     white-space: nowrap;
     text-align: left;
-    /*      text-decoration: none;*/
+    /*text-decoration: none;*/
     color: #447;
     font-weight: bold;
 }
@@ -179,7 +179,7 @@ a.subclass_toggle:hover {
 }
 
 a.navlink {
-    /*    color: #fff;*/
+    /*color: #fff;*/
     color: #447;
     font-weight: bold;
 }
@@ -548,8 +548,8 @@ td p {
        padding: 0 12px;
        line-height: 20px;
        background: url(images/node.png) no-repeat;
-/* color: #369;
-font-weight: bold;*/
+        /*color: #369;
+        font-weight: bold;*/
 }
 
 ul.tree li:last-child {
