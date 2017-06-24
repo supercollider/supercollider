@@ -41,16 +41,16 @@ void QtCollider::runLang (
     if( !QtCollider::set( g->sp, var ) ) {
       qcErrorMsg("Failed to write a slot when trying to run interpreter!");
       SetNil( g->sp );
-    }
   }
-  runInterpreter(g, method, args.size() + 1);
-  g->canCallOS = false;
-  if (result) slotCopy(result, &g->result);
+}
+runInterpreter(g, method, args.size() + 1);
+g->canCallOS = false;
+if (result) slotCopy(result, &g->result);
 }
 
 int QtCollider::wrongThreadError ()
 {
   qcErrorMsg( "You can not use this Qt functionality in the current thread. "
-              "Try scheduling on AppClock instead." );
+      "Try scheduling on AppClock instead." );
   return errFailed;
 }
