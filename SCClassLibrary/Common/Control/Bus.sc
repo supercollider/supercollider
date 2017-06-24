@@ -55,6 +55,7 @@ Bus {
 	}
 
 	setMsg { arg ... values;
+		if(index.isNil) { Error("Cannot construct a % for a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		if(this.isSettable, {
 			^["/c_set"]
 				++ values.collect({ arg v, i; [index + i , v] }).flat
@@ -69,11 +70,14 @@ Bus {
 				["/c_setn", index, values.size] ++ values);
 		}, { error("Cannot set an audio rate bus") });
 	}
+
 	setnMsg { arg values;
+		if(index.isNil) { Error("Cannot construct a % for a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		if(this.isSettable, {
 			^["/c_setn", index, values.size] ++ values;
 		}, { error("Cannot set an audio rate bus"); ^nil });
 	}
+
 	setAt { |offset ... values|
 		if(index.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		// shouldn't be larger than this.numChannels - offset
@@ -82,6 +86,7 @@ Bus {
 				++ values.collect({ arg v, i; [index + offset + i , v] }).flat));
 		}, { error("Cannot set an audio rate bus") });
 	}
+
 	setnAt { |offset, values|
 		if(index.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		// could throw an error if values.size > numChannels
@@ -90,6 +95,7 @@ Bus {
 				["/c_setn", index + offset, values.size] ++ values);
 		}, { error("Cannot set an audio rate bus")});
 	}
+	
 	setPairs { | ... pairs|
 		if(index.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		if(this.isSettable, {
@@ -121,14 +127,16 @@ Bus {
 			// We want the values, which are at indexes 3 and above.
 			action.value(message[3..]);
 		}, \c_setn, server.addr, argTemplate: [index]).oneShot;
-		server.listSendMsg(this.getnMsg(count));
+		server.listSendMsg([\c_getn, index, count ? numChannels]);
 	}
 
 	getMsg {
+		if(index.isNil) { Error("Cannot construct a % for a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		^[\c_get, index];
 	}
 
 	getnMsg { arg count;
+		if(index.isNil) { Error("Cannot construct a % for a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		^[\c_getn, index, count ? numChannels];
 	}
 
@@ -180,12 +188,12 @@ Bus {
 	}
 
 	fillMsg { arg value;
+		if(index.isNil) { Error("Cannot construct a % for a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		^["/c_fill", index, numChannels, value]
 	}
 
-
 	free { arg clear = false;
-		if(index.isNil) { (this.class.name + " has already been freed").warn; ^this };
+		if(index.isNil) { (this.class.name ++ " has already been freed").warn; ^this };
 		if(rate == \audio, {
 			server.audioBusAllocator.free(index);
 		}, {
@@ -215,6 +223,8 @@ Bus {
 			this.free;
 			rate = r; numChannels = n;
 			this.alloc;
+		}, {
+			Error("Cannot % a % that has been freed".format(thisMethod.name, this.class.name)).throw	
 		})
 	}
 
