@@ -65,10 +65,9 @@ DocNode * doc_node_create(const char *id) {
 DocNode * doc_node_add_child(DocNode *n, DocNode *child) {
     if(child) {
         n->children = (DocNode **)realloc(n->children, (n->n_childs+1) * sizeof(DocNode*));
-        n->children[n->n_childs] = child;
-        n->n_childs++;
-    }
-    return n;
+        n->children[n->n_childs] = child; n->n_childs++;
+}
+return n;
 }
 
 // takes ownership of text
@@ -89,8 +88,8 @@ void doc_node_move_children(DocNode *n, DocNode *src) {
         free(n->children);
         n->children = src->children;
         n->n_childs = src->n_childs;
-//        src->children = NULL;
-//        src->n_childs = 0;
+        // src->children = NULL;
+        // src->n_childs = 0;
         free(src->text);
         free(src);
     }
@@ -151,11 +150,11 @@ void doc_node_fixup_tree(DocNode *n) {
         int j = 0;
         for(i = 0; i < n->n_childs; i++) {
             if(n->children[i]) {
-               n->children[j++] = n->children[i];
-            }
-        }
-        n->n_childs = j;
-    }
+             n->children[j++] = n->children[i];
+         }
+     }
+     n->n_childs = j;
+ }
 }
 
 static void _doc_node_dump(DocNode *n, int level, int last) {
