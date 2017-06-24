@@ -54,54 +54,54 @@ namespace QtCollider {
     Event_Proxy_SetFocus,
     Event_Proxy_SetAlwaysOnTop,
     Event_Proxy_Release
-  };
+};
 
-  enum Synchronicity {
+enum Synchronicity {
     Synchronous,
     Asynchronous
-  };
+};
 
-  inline void lockLang()
-  {
+inline void lockLang()
+{
     qcDebugMsg(2,"locking lang!");
     gLangMutex.lock();
     qcDebugMsg(2,"locked");
-  }
+}
 
-  inline void unlockLang()
-  {
+inline void unlockLang()
+{
     gLangMutex.unlock();
     qcDebugMsg(2,"unlocked");
-  }
+}
 
-  void runLang (
+void runLang (
     PyrObjectHdr *receiver,
     PyrSymbol *method,
     const QList<QVariant> & args = QList<QVariant>(),
     PyrSlot *result = 0 );
 
-  int wrongThreadError ();
+int wrongThreadError ();
 
-  QPalette systemPalette();
+QPalette systemPalette();
 
 #define QC_DO_SYMBOLS \
-  QC_DO_SYMBOL(interpretCmdLine); \
-  QC_DO_SYMBOL(interpretPrintCmdLine); \
-  QC_DO_SYMBOL(doFunction); \
-  QC_DO_SYMBOL(doDrawFunc); \
-  QC_DO_SYMBOL(prRelease); \
-  QC_DO_SYMBOL(Rect); \
-  QC_DO_SYMBOL(Point); \
-  QC_DO_SYMBOL(Color); \
-  QC_DO_SYMBOL(Size); \
-  QC_DO_SYMBOL(QPalette); \
-  QC_DO_SYMBOL(Font); \
-  QC_DO_SYMBOL(QObject); \
-  QC_DO_SYMBOL(Layout); \
-  QC_DO_SYMBOL(TreeViewItem); \
-  QC_DO_SYMBOL(Gradient); \
-  QC_DO_SYMBOL(HiliteGradient); \
-  QC_DO_SYMBOL(Image);
+QC_DO_SYMBOL(interpretCmdLine); \
+QC_DO_SYMBOL(interpretPrintCmdLine); \
+QC_DO_SYMBOL(doFunction); \
+QC_DO_SYMBOL(doDrawFunc); \
+QC_DO_SYMBOL(prRelease); \
+QC_DO_SYMBOL(Rect); \
+QC_DO_SYMBOL(Point); \
+QC_DO_SYMBOL(Color); \
+QC_DO_SYMBOL(Size); \
+QC_DO_SYMBOL(QPalette); \
+QC_DO_SYMBOL(Font); \
+QC_DO_SYMBOL(QObject); \
+QC_DO_SYMBOL(Layout); \
+QC_DO_SYMBOL(TreeViewItem); \
+QC_DO_SYMBOL(Gradient); \
+QC_DO_SYMBOL(HiliteGradient); \
+QC_DO_SYMBOL(Image);
 
 #define QC_DO_SYMBOL(SYM) extern PyrSymbol * sym_##SYM
 QC_DO_SYMBOLS
