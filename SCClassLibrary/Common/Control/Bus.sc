@@ -72,7 +72,7 @@ Bus {
 			server.sendBundle(nil,
 				["/c_setn", index, values.size] ++ values)
 		} {
-			error("Cannot set an audio rate bus") 
+			error("Cannot set an audio rate bus")
 		}
 	}
 
@@ -92,7 +92,7 @@ Bus {
 			server.sendBundle(nil, (["/c_set"]
 				++ values.collect({ arg v, i; [index + offset + i , v] }).flat))
 		} {
-			error("Cannot set an audio rate bus") 
+			error("Cannot set an audio rate bus")
 		}
 	}
 
@@ -106,14 +106,14 @@ Bus {
 			error("Cannot set an audio rate bus")
 		}
 	}
-	
+
 	setPairs { | ... pairs|
 		if(index.isNil) { Error("Cannot call % on a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		if(this.isSettable) {
 			server.sendBundle(nil, (["/c_set"]
 				++ pairs.clump(2).collect({ arg pair; [pair[0] + index, pair[1]] }).flat))
 		} {
-			error("Cannot set an audio rate bus") 
+			error("Cannot set an audio rate bus")
 		}
 	}
 
@@ -238,7 +238,7 @@ Bus {
 			numChannels = n;
 			this.alloc;
 		} {
-			Error("Cannot % a % that has been freed".format(thisMethod.name, this.class.name)).throw	
+			Error("Cannot % a % that has been freed".format(thisMethod.name, this.class.name)).throw
 		}
 	}
 
