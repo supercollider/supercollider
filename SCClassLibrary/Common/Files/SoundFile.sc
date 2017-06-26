@@ -407,10 +407,10 @@ SoundFile {
 
 	cue { | ev, playNow = false, closeWhenDone = false |
 		var server, packet, defname = "diskIn" ++ numChannels, condition, onClose;
-		ev = ev ? ();
+		ev = ev !? `_ ? `();
 		if (this.numFrames == 0) { this.info };
 		fork {
-			ev.use {
+			ev.value.use {
 				server = ~server ?? { Server.default};
 				if(~instrument.isNil) {
 					SynthDef(defname, { | out, amp = 1, bufnum, sustain, ar = 0, dr = 0.01 gate = 1 |
@@ -422,7 +422,7 @@ SoundFile {
 					condition = Condition.new;
 					server.sync(condition);
 				};
-				ev.synth;	// set up as a synth event (see Event)
+				ev.value.synth;	// set up as a synth event (see Event)
 				~bufnum =  server.bufferAllocator.alloc(1);
 				~bufferSize = 0x10000;
 				~firstFrame = ~firstFrame ? 0;
@@ -440,7 +440,7 @@ SoundFile {
 					}, "/n_end", server.addr, nil, ev[\id][0]).oneShot;
 				};
 				if (playNow) {
-					packet = server.makeBundle(false, {ev.play})[0];
+					packet = server.makeBundle(false, {ev.value.play})[0];
 						// makeBundle creates an array of messages
 						// need one message, take the first
 				} {
@@ -451,6 +451,7 @@ SoundFile {
 						]);
 			};
 		};
+		ev = ev.value;
 		if (closeWhenDone) {
 			onClose = SimpleController(ev).put(\n_end, {
 				ev.close;
