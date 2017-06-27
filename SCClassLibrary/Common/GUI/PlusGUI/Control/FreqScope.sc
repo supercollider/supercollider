@@ -25,10 +25,11 @@ FreqScopeView {
 			var phase = 1 - (rate * fftBufSize.reciprocal);
 			var signal, chain, result, phasor, numSamples, mul, add;
 			var fftbufnum = LocalBuf(fftBufSize, 1);
+			var hopSize = SampleRate.ir / (fftBufSize * 30);
 			mul = 0.00285;
 			numSamples = (BufSamples.ir(fftbufnum) - 2) * 0.5; // 1023 (bufsize=2048)
 			signal = In.ar(in);
-			chain = FFT(fftbufnum, signal, hop: 0.75, wintype:1);
+			chain = FFT(fftbufnum, signal, hop: hopSize, wintype:1);
 			chain = PV_MagSmear(chain, 1);
 			// -1023 to 1023, 0 to 2046, 2 to 2048 (skip first 2 elements DC and Nyquist)
 			phasor = LFSaw.ar(rate/BufDur.ir(fftbufnum), phase, numSamples, numSamples + 2);
@@ -39,10 +40,11 @@ FreqScopeView {
 			var phase = 1 - (rate * fftBufSize.reciprocal);
 			var signal, chain, result, phasor, numSamples, mul, add;
 			var fftbufnum = LocalBuf(fftBufSize, 1);
+			var hopSize = SampleRate.ir / (fftBufSize * 30);
 			mul = 0.00285;
 			numSamples = (BufSamples.ir(fftbufnum) - 2) * 0.5; // 1023 (bufsize=2048)
 			signal = In.ar(in);
-			chain = FFT(fftbufnum, signal, hop: 0.75, wintype:1);
+			chain = FFT(fftbufnum, signal, hop: hopSize, wintype:1);
 			chain = PV_MagSmear(chain, 1);
 			// -1023 to 1023, 0 to 2046, 2 to 2048 (skip first 2 elements DC and Nyquist)
 			phasor = LFSaw.ar(rate/BufDur.ir(fftbufnum), phase, numSamples, numSamples + 2);
@@ -55,10 +57,11 @@ FreqScopeView {
 			var phase = 1 - (rate * fftBufSize.reciprocal);
 			var signal, chain, result, phasor, halfSamples, mul, add;
 			var fftbufnum = LocalBuf(fftBufSize, 1);
+			var hopSize = SampleRate.ir / (fftBufSize * 30);
 			mul = 0.00285;
 			halfSamples = BufSamples.ir(fftbufnum) * 0.5;
 			signal = In.ar(in);
-			chain = FFT(fftbufnum, signal, hop: 0.75, wintype:1);
+			chain = FFT(fftbufnum, signal, hop: hopSize, wintype:1);
 			chain = PV_MagSmear(chain, 1);
 			phasor = halfSamples.pow(LFSaw.ar(rate/BufDur.ir(fftbufnum), phase, 0.5, 0.5)) * 2; // 2 to bufsize
 			phasor = phasor.round(2); // the evens are magnitude
@@ -69,10 +72,11 @@ FreqScopeView {
 			var phase = 1 - (rate * fftBufSize.reciprocal);
 			var signal, chain, result, phasor, halfSamples, mul, add;
 			var fftbufnum = LocalBuf(fftBufSize, 1);
+			var hopSize = SampleRate.ir / (fftBufSize * 30);
 			mul = 0.00285;
 			halfSamples = BufSamples.ir(fftbufnum) * 0.5;
 			signal = In.ar(in);
-			chain = FFT(fftbufnum, signal, hop: 0.75, wintype:1);
+			chain = FFT(fftbufnum, signal, hop: hopSize, wintype:1);
 			chain = PV_MagSmear(chain, 1);
 			phasor = halfSamples.pow(LFSaw.ar(rate/BufDur.ir(fftbufnum), phase, 0.5, 0.5)) * 2; // 2 to bufsize
 			phasor = phasor.round(2); // the evens are magnitude
@@ -86,13 +90,14 @@ FreqScopeView {
 			var signal, chain, result, phasor, numSamples, mul, add;
 			var signal2, chain2, divisionbuf;
 			var fftbufnum = LocalBuf(fftBufSize, 1);
+			var hopSize = SampleRate.ir / (fftBufSize * 30);
 			mul = 0.00285;
 			numSamples = (BufSamples.ir(fftbufnum) - 2) * 0.5; // 1023 (bufsize=2048)
 			signal = In.ar(in);
 			signal2 = In.ar(in2);
-			chain = FFT(fftbufnum, signal, hop: 0.75, wintype:1);
+			chain = FFT(fftbufnum, signal, hop: hopSize, wintype:1);
 			divisionbuf = LocalBuf(BufFrames.ir(fftbufnum));
-			chain2 = FFT(divisionbuf, signal2, hop: 0.75, wintype:1);
+			chain2 = FFT(divisionbuf, signal2, hop: hopSize, wintype:1);
 			// Here we perform complex division to estimate the freq response
 			chain = PV_Div(chain2, chain);
 			chain = PV_MagSmear(chain, 1);
@@ -107,13 +112,14 @@ FreqScopeView {
 			var signal, chain, result, phasor, numSamples, mul, add;
 			var signal2, chain2, divisionbuf;
 			var fftbufnum = LocalBuf(fftBufSize, 1);
+			var hopSize = SampleRate.ir / (fftBufSize * 30);
 			mul = 0.00285;
 			numSamples = (BufSamples.ir(fftbufnum) - 2) * 0.5; // 1023 (bufsize=2048)
 			signal = In.ar(in);
 			signal2 = In.ar(in2);
-			chain = FFT(fftbufnum, signal, hop: 0.75, wintype:1);
+			chain = FFT(fftbufnum, signal, hop: hopSize, wintype:1);
 			divisionbuf = LocalBuf(BufFrames.ir(fftbufnum));
-			chain2 = FFT(divisionbuf, signal2, hop: 0.75, wintype:1);
+			chain2 = FFT(divisionbuf, signal2, hop: hopSize, wintype:1);
 			// Here we perform complex division to estimate the freq response
 			chain = PV_Div(chain2, chain);
 			chain = PV_MagSmear(chain, 1);
@@ -128,13 +134,14 @@ FreqScopeView {
 			var signal, chain, result, phasor, halfSamples, mul, add;
 			var signal2, chain2, divisionbuf;
 			var fftbufnum = LocalBuf(fftBufSize, 1);
+			var hopSize = SampleRate.ir / (fftBufSize * 30);
 			mul = 0.00285;
 			halfSamples = BufSamples.ir(fftbufnum) * 0.5;
 			signal = In.ar(in);
 			signal2 = In.ar(in2);
-			chain = FFT(fftbufnum, signal, hop: 0.75, wintype:1);
+			chain = FFT(fftbufnum, signal, hop: hopSize, wintype:1);
 			divisionbuf = LocalBuf(BufFrames.ir(fftbufnum));
-			chain2 = FFT(divisionbuf, signal2, hop: 0.75, wintype:1);
+			chain2 = FFT(divisionbuf, signal2, hop: hopSize, wintype:1);
 			// Here we perform complex division to estimate the freq response
 			chain = PV_Div(chain2, chain);
 			chain = PV_MagSmear(chain, 1);
@@ -148,13 +155,14 @@ FreqScopeView {
 			var signal, chain, result, phasor, halfSamples, mul, add;
 			var signal2, chain2, divisionbuf;
 			var fftbufnum = LocalBuf(fftBufSize, 1);
+			var hopSize = SampleRate.ir / (fftBufSize * 30);
 			mul = 0.00285;
 			halfSamples = BufSamples.ir(fftbufnum) * 0.5;
 			signal = In.ar(in);
 			signal2 = In.ar(in2);
-			chain = FFT(fftbufnum, signal, hop: 0.75, wintype:1);
+			chain = FFT(fftbufnum, signal, hop: hopSize, wintype:1);
 			divisionbuf = LocalBuf(BufFrames.ir(fftbufnum));
-			chain2 = FFT(divisionbuf, signal2, hop: 0.75, wintype:1);
+			chain2 = FFT(divisionbuf, signal2, hop: hopSize, wintype:1);
 			// Here we perform complex division to estimate the freq response
 			chain = PV_Div(chain2, chain);
 			chain = PV_MagSmear(chain, 1);
