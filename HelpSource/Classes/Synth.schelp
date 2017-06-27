@@ -187,8 +187,8 @@ discussion::
 code::
 s.boot;
 (
-SynthDef("help-Synth-get", { arg freq = 440;
-	Out.ar(0, SinOsc.ar(freq, 0, 0.1));
+SynthDef("help-Synth-get", { | out, freq = 440|
+	Out.ar(out, SinOsc.ar(freq, 0, 0.1));
 }).add;
 )
 x = Synth("help-Synth-get");
@@ -233,8 +233,8 @@ Example:
 code::
 (
 s.waitForBoot({
-    SynthDef(\helpSeti, { |freqs = #[100,150,200,250]|
-        Out.ar(0, SinOsc.ar(freqs.poll,0,0.1).sum ! 2)
+    SynthDef(\helpSeti, { |out, freqs = #[100,150,200,250]|
+        Out.ar(out, SinOsc.ar(freqs.poll,0,0.1).sum ! 2)
     }).add;
     s.sync;
     x = Synth(\helpSeti);

@@ -98,7 +98,7 @@ a = ({rrand(0,15)}.dup(16).degreeToKey(m) + 36).midicps;
 s.performList(\sendMsg, \b_setn, 10, 0, a.size, a);
 
 (
-SynthDef(\stepper, {
+SynthDef(\stepper, { |out|
 	var rate, clock, index, freq, ffreq, env, out, rev, lfo;
 
 	rate = MouseX.kr(1,5,1);
@@ -118,7 +118,7 @@ SynthDef(\stepper, {
 
 	// reverb
 	rev = out;
-	5.do { rev = AllpassN.ar(rev, 0.05, {0.05.rand}.dup, rrand(1.5,2.0)) };
+	5.do { rev = AllpassN.ar(rev, 0.05, { 0.05.rand }.dup, rrand(1.5,2.0)) };
 	out = out + (0.3 * rev);
 
 	out = LeakDC.ar(out);
@@ -130,7 +130,7 @@ SynthDef(\stepper, {
 	// slight bass emphasis
 	out = OnePole.ar(out, 0.9);
 
-	Out.ar(0, out);
+	Out.ar(out, out);
 
 }).add;
 )

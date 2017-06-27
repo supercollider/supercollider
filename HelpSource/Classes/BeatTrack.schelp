@@ -38,30 +38,29 @@ private:: init
 examples::
 
 code::
-b = Buffer.alloc(s,1024,1); //for sampling rates 44100 and 48000
-//b = Buffer.alloc(s,2048,1); //for sampling rates 88200 and 96000
 
 //this is a one minute pop song; you should load something equivalent for testing
-d=Buffer.read(s,"/Volumes/data/stevebeattrack/samples/100.wav");
+d = Buffer.read(s, "/Volumes/data/stevebeattrack/samples/100.wav");
 
 
 //you can also test at 48000 and it should work
 (
-a= SynthDef(\help_beattrack,{arg vol=1.0, beepvol=1.0, lock=0;
-var in, fft, resample;
-var trackb,trackh,trackq,tempo;
-var bsound,hsound,qsound, beep;
+a = SynthDef(\help_beattrack, { |out, vol=1.0, beepvol=1.0, lock=0|
+	var in, fft, resample;
+	var trackb, trackh, trackq, tempo;
+	var bsound, hsound, qsound, beep;
 
-in= PlayBuf.ar(1,d,BufRateScale.kr(d),1,0,1);
-//in = SoundIn.ar(0);
+	in = PlayBuf.ar(1,d, BufRateScale.kr(d),1,0,1);
+	//in = SoundIn.ar(0);
 
-fft = FFT(b, in);
+	fft = FFT(LocalBuf(1, 1024), in); // for sampling rates 44100 and 48000
 
-#trackb,trackh,trackq,tempo=BeatTrack.kr(fft, lock);
+	#trackb, trackh, trackq, tempo = BeatTrack.kr(fft, lock);
 
-beep= SinOsc.ar(1000,0.0,Decay.kr(trackb,0.1));
+	beep = SinOsc.ar(1000, 0.0, Decay.kr(trackb, 0.1));
 
-Out.ar(0,Pan2.ar((vol*in)+(beepvol*beep),0.0));
+	Out.ar(out, Pan2.ar((vol * in) + (beepvol * beep), 0.0))
+
 }).play
 )
 
@@ -76,24 +75,25 @@ a.set(\lock,0); //unfix, back to tracking
 ::
 
 track audio in (try clapping a beat or beatboxing, but allow up to 6 seconds for tracking to begin) and spawning stuff at quarters, eighths and sixteenths:
+
 code::
 (
-SynthDef(\help_beattrack2,{
-var trackb,trackh,trackq,tempo;
-var source;
-var bsound,hsound,qsound;
+SynthDef(\help_beattrack2, { |out|
+	var trackb, trackh, trackq, tempo;
+	var source;
+	var bsound, hsound, qsound;
 
-source= SoundIn.ar(0);
+	source = SoundIn.ar(0);
 
-#trackb,trackh,trackq,tempo=BeatTrack.kr(FFT(b, source));
+	#trackb, trackh, trackq, tempo = BeatTrack.kr(FFT(LocalBuf(1, 1024, source)));
 
-bsound= Pan2.ar(LPF.ar(WhiteNoise.ar*(Decay.kr(trackb,0.05)),1000),0.0);
+	bsound = Pan2.ar(LPF.ar(WhiteNoise.ar * Decay.kr(trackb, 0.05), 1000), 0.0);
 
-hsound= Pan2.ar(BPF.ar(WhiteNoise.ar*(Decay.kr(trackh,0.05)),3000,0.66),-0.5);
+	hsound = Pan2.ar(BPF.ar(WhiteNoise.ar * Decay.kr(trackh, 0.05), 3000, 0.66), -0.5);
 
-qsound= Pan2.ar(HPF.ar(WhiteNoise.ar*(Decay.kr(trackq,0.05)),5000),0.5);
+	qsound = Pan2.ar(HPF.ar(WhiteNoise.ar * Decay.kr(trackq, 0.05),5000), 0.5);
 
-Out.ar(0, bsound+hsound+qsound);
+	Out.ar(out, bsound + hsound + qsound);
 }).play;
 )
 ::

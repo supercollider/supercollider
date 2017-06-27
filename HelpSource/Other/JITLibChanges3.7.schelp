@@ -1082,7 +1082,7 @@ Ndef(\x, { |freq = 100| SinOsc.ar(freq) * 0.1 }).play;
 Ndef(\x).send([\freq, b.asMap]);
 
 // proxies as arguments of synths
-SynthDef(\x, { |z=440| Out.ar(0, Blip.ar(z) * 0.1) }).add;
+SynthDef(\x, { |z=440, out| Out.ar(out, Blip.ar(z) * 0.1) }).add;
 Ndef(\f, { MouseX.kr(400, 700) });
 (instrument: \x, z: Ndef(\f)).play;
 

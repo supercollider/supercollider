@@ -50,4 +50,28 @@ o = OSCFunc({ |msg| msg.postln }, '/the_answer');
 )
 
 o.free;
+
+// Sending audio feature extraction data over a network via OSC
+(
+SynthDef(\amplitudeAnalysis, {|in=0, rate=60| 
+	var input = SoundIn.ar(in); 
+	var amp = Amplitude.kr(input);
+	var freq = Pitch.kr(input);
+	var trig = Impulse.kr(rate); 
+	SendReply.kr(trig, '/amp', [amp, freq]); 
+}).add;
+)
+
+~mySynth = Synth(\amplitudeAnalysis); 
+~testNetAddr = NetAddr("127.0.0.1", 5000);
+
+(
+OSCdef(\listener, {|msg|
+	var amp = msg[3];
+	msg.postln;
+	~testNetAddr.sendMsg("data", amp);
+}, '/amp');
+)
+
+~mySynth.set(\rate, 10); // slow it down...
 ::

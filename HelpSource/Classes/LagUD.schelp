@@ -20,10 +20,10 @@ argument:: add
 
 examples::
 code::
-( // used to lag pitch
-SynthDef( \lagud_help,
-{	arg freq=300,lagup=1, lagdown=5;
-	Out.ar( 0,
+// used to lag pitch
+(
+SynthDef(\lagud_help, { |out, freq=300, lagup=1, lagdown=5|
+	Out.ar(out,
 		SinOsc.ar( // sine wave
 			LagUD.kr( // lag the frequency
 				freq,
@@ -36,8 +36,9 @@ SynthDef( \lagud_help,
 	);
 }).add;
 )
-x = Synth.new( \lagud_help ); // create the synth
-x.set( \freq, 500 ); // set the frequency to a higher value (takes 1 second)
-x.set( \freq, 100 ); // set the frequency to a lower value (takes 5 seconds)
+
+x = Synth(\lagud_help); // create the synth
+x.set(\freq, 500); // set the frequency to a higher value (takes 1 second)
+x.set(\freq, 100); // set the frequency to a lower value (takes 5 seconds)
 x.free;
 ::
