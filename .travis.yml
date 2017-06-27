@@ -81,11 +81,11 @@ after-deploy:
  - "echo S3 Build Location: $S3_URL"
 
 
-notifications:
-  on_success: change
-  on_failure: change
-  webhooks:
-    urls:
-      - https://webhooks.gitter.im/e/51b9b53ca50a7bfca97d
-    on_success: change
-    on_failure: always
+# notifications:
+# on_success: change
+# on_failure: change
+# webhooks:
+# urls:
+# - https://webhooks.gitter.im/e/51b9b53ca50a7bfca97d
+# on_success: change
+# on_failure: always
