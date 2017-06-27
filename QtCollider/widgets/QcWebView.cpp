@@ -94,14 +94,14 @@ QString WebView::plainText () const
   return page()->mainFrame()->toPlainText();
 }
 
-QWebPage::LinkDelegationPolicy WebView::linkDelegationPolicy () const
+int WebView::linkDelegationPolicy () const
 {
-  return page()->linkDelegationPolicy();
+  return (int)page()->linkDelegationPolicy();
 }
 
-void WebView::setLinkDelegationPolicy ( QWebPage::LinkDelegationPolicy p )
+void WebView::setLinkDelegationPolicy ( int p )
 {
-  page()->setLinkDelegationPolicy( p );
+  page()->setLinkDelegationPolicy( (QWebPage::LinkDelegationPolicy)p );
 }
 
 bool WebView::delegateReload() const
