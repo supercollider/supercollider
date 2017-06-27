@@ -8,6 +8,7 @@ matrix:
       sudo: required
       dist: trusty
       env: QT=true
+      env: DEPLOY_DOCS=true
       group: edge
     - os: linux
       sudo: required
@@ -38,6 +39,7 @@ script:
  - $TRAVIS_BUILD_DIR/.travis/script-$TRAVIS_OS_NAME.sh
  - $TRAVIS_BUILD_DIR/.travis/test.sh
  - if [[ $TRAVIS_OS_NAME == osx ]]; then $TRAVIS_BUILD_DIR/.travis/package-osx.sh; fi
+ - if [[ $DEPLOY_DOCS == true ]]; then $TRAVIS_BUILD_DIR/.travis/generate_cpp_docs.sh; fi
 
 before_deploy:
  # required for github releases
