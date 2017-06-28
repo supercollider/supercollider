@@ -4,6 +4,10 @@ categories::Help
 
 SuperCollider is an audio server, programming language, and IDE for sound synthesis and algorithmic composition.
 
+Supercollider features a whole series of tutorials, that allow you to get started with it. however, we do vividly recommend you 
+to take a look at link::http://supercolliderbook.net/code/code.zip::Supercollider Book Examples:: as it is one of 
+the most extensive help documents you will find in order to learn supercollider.
+
 NOTE:: link::Guides/News-3_8##News in SuperCollider version 3.8:: ::
 
 SECTION::Search and browse
