@@ -468,7 +468,7 @@ MIDIMessageDispatcherNV : MIDIMessageDispatcher {
 // for \sysex
 MIDISysexDispatcher : MIDIMessageDispatcher {
 
-	getKeysForFuncProxy {|funcProxy| ^(funcProxy.srcID ? \all)}
+	getKeysForFuncProxy { |funcProxy| ^(funcProxy.srcID ? \all).asArray }
 
 	value {|srcID, data|
 		active[srcID].value(data, srcID);
@@ -532,7 +532,7 @@ MIDISysDataDispatcher : MIDIMessageDispatcher {
 }
 
 MIDISysDataDropIndDispatcher : MIDISysDataDispatcher {
-	
+
 	value {|srcID, index, data|
 		active[index].value(data, srcID);
 	}
