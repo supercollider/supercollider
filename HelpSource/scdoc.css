@@ -1,11 +1,11 @@
+
 body {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: Helvetica, Arial, sans-serif;
     font-size: 10pt;
     color: black;
     background: white;
 /*    max-width: 60em;*/
 /*    margin-left: 20em;*/
-    padding: 0;
     margin: 0;
 }
 
@@ -18,7 +18,7 @@ div.contents {
     margin: 1em;
     padding-left: 0.3em;
     padding-right: 0.3em;
-    padding-top: 1.5em;
+    padding-top: 1.4em;
     padding-bottom: 0.5em;
 }
 
@@ -55,7 +55,7 @@ a:hover {
 }
 
 #inheritedclassmets, #inheritedinstmets {
-    margin-top: 1em;
+
 }
 
 .inheritedmets_class {
@@ -285,7 +285,8 @@ h3 {
     margin-top: 2.0em;
     margin-bottom: 1px;
     text-align: left;
-    font-size: 1.4em;
+    font-size: 1.0em;
+    font-weight: 600;
 }
 
 h4 {
@@ -356,7 +357,7 @@ a.method-name {
 
 .method {
     margin-left: 2em;
-    margin-bottom: 2em;
+    margin-bottom: 3.5em;
 }
 
 .argstr {
@@ -367,14 +368,13 @@ a.method-name {
     font-size: 9pt;
     color: #444;
     padding-left: 0.2em;
-    text-align: right;
+    text-align: left;
 }
 
 .supmethod {
     font-size: 9pt;
-    color: #444;
+    color: #777;
     padding-left: 0.2em;
-    text-align: right;
 }
 
 table.arguments {
