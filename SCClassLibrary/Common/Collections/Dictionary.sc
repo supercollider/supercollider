@@ -296,12 +296,18 @@ Dictionary : Set {
 
 	isAssociationArray { ^false }
 
-	asPairs {
-		^this.getPairs
+	asPairs { |class|
+		var res = (class ? Array).new(this.size * 2);
+		this.pairsDo { |key, val|
+			res.add(key).add(val);
+		};
+		^res
 	}
 
-	asDict {
-		^this
+	asDict { arg mergeFunc, class;
+		// the mergeFunc is ignored, because dictionary keys must differ
+		class = class ? IdentityDictionary;
+		^if(class.notNil and: { class == this.class }) { this } { this.as(class) }
 	}
 
 
