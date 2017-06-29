@@ -500,21 +500,22 @@ function fixTOC() {
 // make header menu
     var bar = document.getElementById("menubar");
     menubar = bar;
-    var nav = ["Home","Browse","Search"];
+    var nav = ["SuperCollider " + scdoc_sc_version, "Browse", "Search"];
     var url = ["Help.html","Browse.html","Search.html"];
+    var nav_item;
     for(var i=0;i<nav.length;i++) {
-        var li = document.createElement("li");
-        li.className = "menuitem";
+        nav_item = document.createElement("div");
+        nav_item.className = "menuitem";
         var a = document.createElement("a");
         a.innerHTML = nav[i];
         a.setAttribute("href",helpRoot+"/"+url[i]);
         a.className = "navLink";
-        li.appendChild(a);
-        bar.appendChild(li);
+        nav_item.appendChild(a);
+        bar.appendChild(nav_item);
     }
 
-    var li = document.createElement("li");
-    li.className = "menuitem";
+    nav_item = document.createElement("div");
+    nav_item.className = "menuitem";
     var a = document.createElement("a");
     a.innerHTML = "Indexes &#9660;";
     a.setAttribute("href","#");
@@ -532,12 +533,12 @@ function fixTOC() {
         b.innerHTML = nav[i];
         m1.appendChild(b);
     }
-    li.appendChild(a);
-    li.appendChild(m1);
-    bar.appendChild(li);
+    nav_item.appendChild(a);
+    nav_item.appendChild(m1);
+    bar.appendChild(nav_item);
 
-    var li = document.createElement("li");
-    li.className = "menuitem";
+    nav_item = document.createElement("div");
+    nav_item.className = "menuitem";
     var x = document.createElement("span");
     x.id = "topdoctitle";
     x.appendChild(document.createTextNode(scdoc_title));
@@ -545,8 +546,8 @@ function fixTOC() {
         scroll(0,0);
         return false;
     }
-    li.appendChild(x)
-    bar.appendChild(li);
+    nav_item.appendChild(x)
+    bar.appendChild(nav_item);
 
     var t = document.getElementById("toc");
     toc = t;
@@ -570,13 +571,13 @@ function fixTOC() {
         var a = document.createElement("a");
         a.setAttribute("href","#");
         a.innerHTML = "Table of contents &#9660;";
-        li.appendChild(a);
+        nav_item.appendChild(a);
         a.onclick = function() {
             ts.focus();
             toggleMenu(t);
             return false;
         };
-        li.appendChild(t.parentNode.removeChild(t));
+        nav_item.appendChild(t.parentNode.removeChild(t));
         var p = document.createElement("a");
         p.setAttribute("href","#");
         p.className = "popoutlink";

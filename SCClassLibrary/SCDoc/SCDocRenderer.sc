@@ -166,6 +166,7 @@ SCDocHTMLRenderer {
 		<< "<script>\n"
 		<< "var helpRoot = '" << baseDir << "';\n"
 		<< "var scdoc_title = '" << doc.title << "';\n"
+		<< "var scdoc_sc_version = '" << Main.version << "';\n"
 		<< "</script>\n"
 		<< "<script src='" << baseDir << "/scdoc.js' type='text/javascript'></script>\n"
 		<< "<script src='" << baseDir << "/docmap.js' type='text/javascript'></script>\n" // FIXME: remove?
@@ -174,39 +175,47 @@ SCDocHTMLRenderer {
 		<< "</head>\n";
 
 		stream
-		<< "<ul id='menubar'></ul>\n"
 		<< "<body onload='fixTOC();prettyPrint()'>\n"
 		<< "<div class='contents'>\n"
-		<< "<div class='header'>\n"
-		<< "<div id='label'>\n"
-		<< "<span id='folder'>SuperCollider " << Main.version << " " << folder.asString;
-		if(doc.isExtension) {
-			stream << " (extension)";
-		};
-		stream << "</span>\n";
+		<< "<div id='menubar'></div>\n"
+		<< "<div class='header'>\n";
 
-		doc.categories !? {
+
+		if(thisIsTheMainHelpFile.not) {
 			stream
-			<< " | "
-			<< "<span id='categories'>"
+			<< "<div id='label'>\n"
+			<< "<span id='folder'>" << folder.asString;
+			if(doc.isExtension) {
+				stream << " (extension)";
+			};
+			stream << "</span>\n";
 
-			<< (doc.categories.collect { | path |
-				// get all the components of a category path ("UGens>Generators>Deterministic")
-				// we link each crumb of the breadcrumbs separately.
-				var pathElems = path.split($>);
+			doc.categories !? {
+				// Prevent the label from starting with "|".
+				if(folder.asString.size > 0) {
+					stream << " | "
+				};
 
-				// the href for "UGens" will be "UGens", for "Generators" "UGens>Generators", etc.
-				pathElems.collect { | elem, i |
-					var atag = "<a href='" ++ baseDir +/+ "Browse.html#";
-					atag ++ pathElems[0..i].join(">") ++ "'>"++ elem ++"</a>"
-				}.join("&#8201;&gt;&#8201;"); // &#8201; is a thin space
+				stream << "<span id='categories'>"
 
-			}.join(" | "))
+				<< (doc.categories.collect { | path |
+					// get all the components of a category path ("UGens>Generators>Deterministic")
+					// we link each crumb of the breadcrumbs separately.
+					var pathElems = path.split($>);
 
-			<< "</span>\n";
+					// the href for "UGens" will be "UGens", for "Generators" "UGens>Generators", etc.
+					pathElems.collect { | elem, i |
+						var atag = "<a href='" ++ baseDir +/+ "Browse.html#";
+						atag ++ pathElems[0..i].join(">") ++ "'>"++ elem ++"</a>"
+					}.join("&#8201;&gt;&#8201;"); // &#8201; is a thin space
+
+				}.join(" | "))
+
+				<< "</span>\n";
+			};
+
+			stream << "</div>";
 		};
-
-		stream << "</div>";
 
 		stream << "<h1>";
 		if(thisIsTheMainHelpFile) {
