@@ -224,6 +224,14 @@ SCDocHTMLRenderer {
 		} {
 			stream << doc.title;
 		};
+		if(doc.isClassDoc and: { currentClass.notNil } and: { currentClass != Object }) {
+			stream << "<span id='superclasses'>"
+			<< " : "
+			<< (currentClass.superclasses.collect {|c|
+				"<a href=\"../Classes/"++c.name++".html\">"++c.name++"</a>"
+			}.join(" : "))
+			<< "</span>\n";
+		};
 		if(doc.isExtension) {
 			stream
 			<< "<div class='extension-indicator-ctr' title='This help file originates from a third-party quark or plugin for SuperCollider.'>"
@@ -241,22 +249,14 @@ SCDocHTMLRenderer {
 			if(currentClass.notNil) {
 				m = currentClass.filenameSymbol.asString;
 				stream << "<div id='filename'>Source: "
-				<< "<a href='" << URI.fromLocalPath(m).asString << "'>"
-				<< m.dirname << "/" << m.basename << "</a></div>";
-				if(currentClass != Object) {
-					stream << "<div id='superclasses'>"
-					<< "Inherits from: "
-					<< (currentClass.superclasses.collect {|c|
-						"<a href=\"../Classes/"++c.name++".html\">"++c.name++"</a>"
-					}.join(" : "))
-					<< "</div>\n";
-				};
+				<< "<a href='%' title='%'>".format(URI.fromLocalPath(m).asString, m)
+				<< m.basename << "</a></div>";
 				if(currentClass.subclasses.notNil) {
 					z = false;
 					stream << "<div id='subclasses'>"
 					<< "Subclasses: "
 					<< (currentClass.subclasses.collect(_.name).sort.collect {|c,i|
-						if(i==12,{z=true;"<span id='hiddensubclasses' style='display:none;'>"},{""})
+						if(i==4,{z=true;"<span id='hiddensubclasses' style='display:none;'>"},{""})
 						++"<a href=\"../Classes/"++c++".html\">"++c++"</a>"
 					}.join(", "));
 					if(z) {

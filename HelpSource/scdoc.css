@@ -201,7 +201,6 @@ a.navlink {
     color: #444;
 }
 #related {
-    text-align: right;
     font-weight: bold;
     margin-top: 0.5em;
 }
@@ -211,6 +210,12 @@ a.navlink {
 .headerimage {
     float: right;
     margin-right: 1ex;
+}
+
+#superclasses {
+    font-size: 9pt;
+    color: #444;
+    font-weight: normal;
 }
 
 .extension-indicator-ctr {
@@ -233,9 +238,9 @@ a.navlink {
 }
 
 .subheader {
-    text-align: right;
     font-size: 9pt;
     color: #444;
+    margin-top: 1em;
 }
 
 .jump {
