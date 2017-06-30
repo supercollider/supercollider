@@ -418,7 +418,7 @@ Event : Environment {
 					var tempo, server, protoEventType, eventTypes;
 
 					protoEventType = ~protoEventTypes[~type];
-					protoEventType !? { currentEnvironment.proto = protoEventType };
+					protoEventType !? { currentEnvironment.setProtoProto(protoEventType) };
 
 					~finish.value(currentEnvironment);
 

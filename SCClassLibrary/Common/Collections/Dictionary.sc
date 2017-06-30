@@ -487,6 +487,14 @@ IdentityDictionary : Dictionary {
 		parent = newParent;
 	}
 
+	setProtoProto { arg dict;
+		if(proto.isNil) {
+			proto = dict
+		} {
+			proto.setProtoProto(dict)
+		}
+	}
+
 	storeItemsOn { arg stream, itemsPerLine = 5;
 		super.storeItemsOn(stream, itemsPerLine);
 		if(proto.notNil) { stream << "\n.proto_(" <<< proto << ")" };
