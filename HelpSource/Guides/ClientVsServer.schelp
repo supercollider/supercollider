@@ -83,7 +83,7 @@ definitionList::
 There are two notable drawbacks:
 definitionlist::
 ## latency || The messaging process introduces a small amount of latency. This should not be confused with audio latency which can be quite low. It only means that there is a small, usually insignificant delay between the one side sending a message and the other receiving it and acting upon it. (This can be minimized by using the 'internal' server. See link::Classes/Server:: for more detail.)
-## asynchronous execution || In some cases the client might need to know that a task on the server (for instance processing a large sound file) has been completed before continuing with another task. Since some tasks take an arbitrary length of time to complete, a reply mechanism is necessary. This can add some complexity to your code, but is in principle not an issue. (See link::Classes/OSCresponder:: and link::Classes/OSCresponderNode::.) Some server abstraction objects such as link::Classes/Buffer:: provide for this automatically through 'action' functions which wait for completion before executing.
+## asynchronous execution || In some cases the client might need to know that a task on the server (for instance processing a large sound file) has been completed before continuing with another task. Since some tasks take an arbitrary length of time to complete, a reply mechanism is necessary. This can add some complexity to your code, but is in principle not an issue. (See link::Classes/OSCFunc:: and link::Classes/OSCdef::.) Some server abstraction objects such as link::Classes/Buffer:: provide for this automatically through 'action' functions which wait for completion before executing.
 ::
 
 section:: A final remark for the advanced reader

@@ -14,6 +14,7 @@ OSCpathDispatcher : OSCMultiResponder {
 	var <>maxPathSize = 0;
 
 	*new {  arg addr, cmdName, action, pathSize;
+		this.deprecated(thisMethod, OSCFunc.class.findMethod(\new));
 		^super.new(addr, cmdName, action).initPathSize(pathSize);
 	}
 	initPathSize { arg pathSize;
@@ -63,6 +64,7 @@ OSCpathResponder : OSCresponder {
 
 	*new { arg addr, cmdPath, action;
 		var cmdName, path;
+		this.deprecated(thisMethod, OSCFunc.class.findMethod(\new));
 		#cmdName ...path = cmdPath;
 		^super.new(addr, cmdName, action).path_(path);
 	}

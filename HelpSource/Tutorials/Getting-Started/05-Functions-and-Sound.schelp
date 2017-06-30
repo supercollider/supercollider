@@ -31,7 +31,7 @@ code::
 SinOsc.ar(440, 0, 0.2)
 ::
 
-This tells the class SinOsc to make an instance of itself. All SinOscs are an example of what are called unit generators, or UGens. These are objects which produce audio or control signals. SinOsc is a sine wave oscillator. This means that it will produce a signal consisting of a single frequency. A graph of it's waveform would look like this:
+This tells the class SinOsc to make an instance of itself. All SinOscs are an example of what are called unit generators, or UGens. These are objects which produce audio or control signals. SinOsc is a sine wave oscillator. This means that it will produce a signal consisting of a single frequency. A graph of its waveform would look like this:
 
 image::Functions-and-Sound-00.png#(don't worry about the 'index' and 'value' stuff; it's not important just now)::
 

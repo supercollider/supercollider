@@ -1,12 +1,10 @@
 CLASS:: OSCdef
 summary:: OSC response reference definition
 categories:: External Control>OSC>Dispatchers
-related:: Guides/OSC_communication, Classes/OSCFunc, Classes/OSCresponderNode, Classes/NetAddr
+related:: Guides/OSC_communication, Classes/OSCFunc, Classes/NetAddr
 
 DESCRIPTION::
 OSCdef provides a global reference to the functionality of its superclass link::Classes/OSCFunc::. Essentially it stores itself at a key within a global dictionary, allowing replacement at any time. Most methods are inherited from its superclass.
-
-note:: Use of the older classes OSCresponder, OSCresponderNode, and OSCpathResponder can be unsafe, since responders in user and class code can override each other unintentionally. link::Classes/OSCFunc:: and OSCdef are faster, safer, have more logical argument order, and support pattern matching. Thus they are the recommended way of registering for incoming OSC messages as of SC 3.5. (See below for an example demonstrating OSCpathResponder-type arg matching.)::
 
 
 CLASSMETHODS::

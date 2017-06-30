@@ -1,9 +1,34 @@
+//////////////////////////////////////////////////////////////////////////////
+//  _____________________________________
+// / HEY YOU! When you're removing this  \
+// | class, also make sure to remove the |
+// | "OSCresponder.respond" line from    |
+// \ Main:recvOSCmessage. Thanks!        /
+//  -------------------------------------
+// \                             .       .
+//  \                           / `.   .' "
+//   \                  .---.  <    > <    >  .---.
+//    \                 |    \  \ - ~ ~ - /  /    |
+//          _____          ..-~             ~-..-~
+//         |     |   \~~~\.'                    `./~~~/
+//        ---------   \__/                        \__/
+//       .'  O    \     /               /       \  "
+//      (_____,    `._.'               |         }  \/~~~/
+//       `----.          /       }     |        /    \__/
+//             `-.      |       /      |       /      `. ,~~|
+//                 ~-.__|      /_ - ~ ^|      /- _      `..-'
+//                      |     /        |     /     ~-.     `-. _  _  _
+//                      |_____|        |_____|         ~ - . _ _ _ _ _>
+//
+//////////////////////////////////////////////////////////////////////////////
+
 OSCresponder {
 	classvar <>all;
 	var <>addr, <cmdName, <>action;
 	var <cmdNameWithoutSlash;
 
 	*new { arg addr, cmdName, action;
+		this.deprecated(thisMethod, OSCFunc.class.findMethod(\new));
 		^super.new.init(addr, cmdName, action);
 	}
 

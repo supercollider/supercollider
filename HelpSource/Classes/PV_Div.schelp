@@ -34,23 +34,24 @@ x = {
 	// As with most PV_ ugens, the result is *actually* stored in the first fft buf
 	var result = PV_Div(fft2, fft1);
 
-	Out.ar(0, out.dup * 0.1);
+	out.dup * 0.1
 }.play;
 )
 
 // Now we can grab the FFT buffer and peek at the magnitudes
 (
-w = Window.new.front;
-t = Task{loop{
-	0.1.wait;
-	b.loadToFloatArray(action: {|data| {
-		w.view.children.do(_.remove);
-		w.refresh;
-		data[2..].clump(2)
-		.collect {|a| (a[0].squared + a[1].squared)}
-		.collect {|a| if(a.isNaN){ 0.post }{ a } }
-		.plot(parent: w)
-	}.defer});
+p = Plotter.new;
+t = Task {
+	loop {
+		0.1.wait;
+		b.loadToFloatArray(action: {|data|
+			{
+			p.value = data[2..]
+				.clump(2)
+				.collect {|a| a[0].squared + a[1].squared }
+				.collect {|a| if(a.isNaN) { 0.post } { a } }
+		}.defer
+		})
 }}.play;
 )
 ::

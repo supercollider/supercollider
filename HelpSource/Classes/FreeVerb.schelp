@@ -29,8 +29,8 @@ s.boot;
 
 // FreeVerb - 1x1 ugen
 (
-z = SynthDef(\src, {|mix = 0.25, room = 0.15, damp = 0.5|
-	Out.ar(0,
+z = SynthDef(\src, { |out, mix = 0.25, room = 0.15, damp = 0.5|
+	Out.ar(out,
 		FreeVerb.ar(
 			Decay.ar(Impulse.ar(1), 0.25, LFCub.ar(1200, 0, 0.1)), // mono src
 			mix, // mix 0-1
@@ -48,8 +48,8 @@ z.free
 
 // it expands as any ugen does
 (
-z = SynthDef(\src, {|mix = 0.25, room = 0.15, damp = 0.5|
-	Out.ar(0,
+z = SynthDef(\src, {|out, mix = 0.25, room = 0.15, damp = 0.5|
+	Out.ar(out,
 		FreeVerb.ar(
 			Pan2.ar(
 				Decay.ar(Impulse.ar(1), 0.25, LFCub.ar(1200, 0, 0.1)),

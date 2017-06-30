@@ -66,6 +66,14 @@ Symbol {
 		^this.primitiveFailed
 	}
 	isRest { ^this.isMap.not }
+	isIdentifier {
+		_Symbol_IsIdentifier
+		^this.primitiveFailed;
+	}
+	isBinaryOp {
+		_Symbol_IsBinaryOp
+		^this.primitiveFailed;
+	}
 
 	// Environment support
 	// The compiler translates use of an Environment variable like ~myvar

@@ -46,6 +46,9 @@ Comma code::($,)::.
 method::bullet
 Asterisk code::($*)::.
 
+method::binaryOpCharacters
+A string containing all characters allowed in a binary operator: code::"!@%&*-+=|<>?/"::.
+
 instancemethods::
 private:: archiveAsCompileString
 

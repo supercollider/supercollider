@@ -50,4 +50,31 @@ o = OSCFunc({ |msg| msg.postln }, '/the_answer');
 )
 
 o.free;
+
+// Sending audio parameters over a network via OSC
+// Since SendReply can only respond to the host, this shows how
+// to send data to a separate target through sclang.
+(
+SynthDef(\amplitudeAnalysis, {|in=0, rate=60| 
+	var input = SoundIn.ar(in); 
+	var amp = Amplitude.kr(input);
+	var freq = Pitch.kr(input);
+	var trig = Impulse.kr(rate); 
+	SendReply.kr(trig, '/analysis', [amp, freq[0], freq[1]]); 
+}).add;
+)
+
+// example target address - insert your target host & port here
+~testNetAddr = NetAddr("127.0.0.1", 5000); 
+~mySynth = Synth(\amplitudeAnalysis);
+
+(
+OSCdef(\listener, {|msg|
+	var data = msg[3..];
+	data.postln;
+	~testNetAddr.sendMsg("data", data);
+}, '/analysis');
+)
+
+~mySynth.set(\rate, 10); // slow it down...
 ::

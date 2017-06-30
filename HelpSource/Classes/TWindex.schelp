@@ -33,21 +33,16 @@ code::
 
 //assuming normalized values
 (
-
-a = SynthDef("help-TWindex",{ arg w1=0.0, w2=0.5, w3=0.5;
-
-	var trig, index;
-	trig = Impulse.kr(6);
-	index = TWindex.kr(trig, [w1, w2, w3]);
-
-	Out.ar(0,
+a = SynthDef("help-TWindex", { |out, w1=0.0, w2=0.5, w3=0.5|
+	var trig = Impulse.kr(6);
+	var index = TWindex.kr(trig, [w1, w2, w3]);
+	Out.ar(out,
 		SinOsc.ar(
 			Select.kr(index,[400, 500, 600]),
 			0, 0.2
 		)
 	)
 }).play;
-
 )
 
 a.setn(0, [0,0,1].normalizeSum);
@@ -58,17 +53,15 @@ a.setn(0, [1,0,1].normalizeSum);
 //modulating probability values
 (
 
-a = SynthDef("help-TWindex",{ arg w1=0.0, w2=0.5;
+a = SynthDef("help-TWindex", { |out, w1=0.0, w2=0.5|
+	var trig = Impulse.kr(6);
+	var index = TWindex.kr(
+		trig,
+		[w1, w2, SinOsc.kr(0.3, 0, 0.5, 0.5)],//modulate probability
+		1 //do normalisation
+	);
 
-	var trig, index;
-	trig = Impulse.kr(6);
-	index = TWindex.kr(
-					trig,
-					[w1, w2, SinOsc.kr(0.3, 0, 0.5, 0.5)],//modulate probability
-					1 //do normalisation
-		);
-
-	Out.ar(0,
+	Out.ar(out,
 		SinOsc.ar(
 			Select.kr(index,[400, 500, 600]),
 			0, 0.2

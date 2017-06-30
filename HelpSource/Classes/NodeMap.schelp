@@ -69,23 +69,23 @@ s.boot;
 
 (
 SynthDef("modsine",
-	{ arg freq=320, amp=0.2;
-		Out.ar(0, SinOsc.ar(freq, 0, amp));
+	{ | out, freq=320, amp=0.2 |
+		Out.ar(out, SinOsc.ar(freq, 0, amp));
 	}).add;
 SynthDef("lfo",
-	{ arg rate=2, busNum=0;
-		Out.kr(busNum, LFPulse.kr(rate, 0, 0.1, 0.2))
+	{ | out, rate=2 |
+		Out.kr(out, LFPulse.kr(rate, 0, 0.1, 0.2))
 	}).add;
 )
 
-//start nodes
+// start nodes
 (
 b = Bus.control(s,1);
 x = Synth("modsine");
-y = Synth.before(x, "lfo", [\busNum, b]);
+y = Synth.before(x, "lfo", [\out, b]);
 )
 
-//create some node maps
+// create some node maps
 (
 h = NodeMap.new;
 h.set(\freq, 800);
@@ -98,15 +98,15 @@ k.unmap(\amp);
 
 //apply the maps
 
-h.sendToNode(x); //the first time a new bundle is made
+h.sendToNode(x); // the first time a new bundle is made
 k.sendToNode(x);
 
-h.sendToNode(x); //the second time the cache is used
+h.sendToNode(x); // the second time the cache is used
 k.sendToNode(x);
 
 h.set(\freq, 600);
 
-h.sendToNode(x); //when a value was changed, a new bundle is made
+h.sendToNode(x); // when a value was changed, a new bundle is made
 
 //free all
 x.free; b.free; y.free;
