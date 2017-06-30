@@ -171,79 +171,79 @@ TestLcmGcd : UnitTest {
 
 	test_commutative {
 
-		var operands = (-4..4).dup(2).allTuples;
+		var operands = (-1..1).dup(2).allTuples;
 		this.assert(
 			operands.every { |pair| this.callTest_commutative_lcm(*pair) },
-			this.assertion_commutative_lcm("x", "y") + "is valid in the range (-4..4)"
+			this.assertion_commutative_lcm("x", "y") + "is valid in the range (-1..1)"
 		);
 		this.assert(
 			operands.every { |pair| this.callTest_commutative_gcd(*pair) },
-			this.assertion_commutative_gcd("x", "y") + "is valid in the range (-4..4)"
+			this.assertion_commutative_gcd("x", "y") + "is valid in the range (-1..1)"
 		);
 
 	}
 
 	test_associative {
 
-		var operands = (-4..4).dup(3).allTuples;
+		var operands = (-1..1).dup(3).allTuples;
 		this.assert(
 			operands.every { |triple| this.callTest_associative_lcm(*triple) },
-			this.assertion_associative_lcm("x", "y", "z") + "is valid in the range (-4..4)"
+			this.assertion_associative_lcm("x", "y", "z") + "is valid in the range (-1..1)"
 		);
 		this.assert(
 			operands.every { |triple| this.callTest_associative_gcd(*triple) },
-			this.assertion_associative_gcd("x", "y", "z") + "is valid in the range (-4..4)"
+			this.assertion_associative_gcd("x", "y", "z") + "is valid in the range (-1..1)"
 		);
 
 	}
 
 	test_idempotence {
 
-		var operands = (-4..4);
+		var operands = (-1..1);
 		this.assert(
 			operands.every { |item| this.callTest_idempotence_lcm(item) },
-			this.assertion_idempotence_lcm("x") + "is valid in the range (-4..4)"
+			this.assertion_idempotence_lcm("x") + "is valid in the range (-1..1)"
 		);
 		this.assert(
 			operands.every { |item| this.callTest_idempotence_gcd(item) },
-			this.assertion_idempotence_gcd("x") + "is valid in the range (-4..4)"
+			this.assertion_idempotence_gcd("x") + "is valid in the range (-1..1)"
 		);
 	}
 
 	test_absorption_lcm {
 
-		var operands = (-4..4).dup(2).allTuples;
+		var operands = (-1..1).dup(2).allTuples;
 		this.assert(
 			operands.every { |pair| this.callTest_absorption_lcm(*pair) },
-			this.assertion_absorption_lcm("x", "y") + "is valid in the range (-4..4)"
+			this.assertion_absorption_lcm("x", "y") + "is valid in the range (-1..1)"
 		);
 		this.assert(
 			operands.every { |pair| this.callTest_absorption_gcd(*pair) },
-			this.assertion_absorption_gcd("x", "y") + "is valid in the range (-4..4)"
+			this.assertion_absorption_gcd("x", "y") + "is valid in the range (-1..1)"
 		);
 
 	}
 
 	test_distributive {
 
-		var operands = (-4..4).dup(3).allTuples;
+		var operands = (-1..1).dup(3).allTuples;
 		this.assert(
 			operands.every { |triple| this.callTest_distributive_lcm(*triple) },
-			this.assertion_distributive_lcm("x", "y", "z") + "is valid in the range (-4..4)"
+			this.assertion_distributive_lcm("x", "y", "z") + "is valid in the range (-1..1)"
 		);
 		this.assert(
 			operands.every { |triple| this.callTest_distributive_gcd(*triple) },
-			this.assertion_distributive_gcd("x", "y", "z") + "is valid in the range (-4..4)"
+			this.assertion_distributive_gcd("x", "y", "z") + "is valid in the range (-1..1)"
 		);
 
 	}
 
 	test_selfDuality {
 
-		var operands = (-4..4).dup(3).allTuples;
+		var operands = (-1..1).dup(3).allTuples;
 		this.assert(
 			operands.every { |triple| this.callTest_selfDuality(*triple) },
-			this.assertion_selfDuality("x", "y", "z") + "is valid in the range (-4..4)"
+			this.assertion_selfDuality("x", "y", "z") + "is valid in the range (-1..1)"
 		);
 
 	}
