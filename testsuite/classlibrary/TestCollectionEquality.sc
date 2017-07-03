@@ -14,6 +14,22 @@ TestCollectionEquality : UnitTest {
 		this.assert(a != b, "different events should be unequal");
 	}
 
+	test_unequal_event_parent {
+		var a, b;
+		a = (x: 9, y: 10);
+		b = (x: 9, y: 10);
+		b.parent = (x: 4);
+		this.assert(a != b, "different events should be unequal");
+	}
+
+	test_unequal_event_proto {
+		var a, b;
+		a = (x: 9, y: 10);
+		b = (x: 9, y: 10);
+		b.parent = (x: 4);
+		this.assert(a != b, "different events should be unequal");
+	}
+
 	test_equal_dictionary {
 		var a, b;
 		a = Dictionary[\x -> 9, \y -> 10];
@@ -27,6 +43,54 @@ TestCollectionEquality : UnitTest {
 		b = Dictionary[\x -> 9, \y -> 10];
 		this.assert(a != b, "different dictionaries should be unequal");
 	}
+
+
+	// hash
+
+	test_hash_event {
+		var a, b;
+		a = (x: 9, y: 10);
+		b = (x: 9, y: 10);
+		this.assert(a.hash == b.hash, "same events should have the same hash value");
+	}
+
+	test_unhash_event {
+		var a, b;
+		a = (x: 9, y: 10);
+		b = (x: 10, y: 9);
+		this.assert(a.hash != b.hash, "different events should have a different hash value");
+	}
+
+	test_unhash_event_parent {
+		var a, b;
+		a = (x: 9, y: 10);
+		b = (x: 9, y: 10);
+		b.parent = (x: 4);
+		this.assert(a.hash != b.hash, "different events should have a different hash value");
+	}
+
+	test_unhash_event_proto {
+		var a, b;
+		a = (x: 9, y: 10);
+		b = (x: 9, y: 10);
+		b.parent = (x: 4);
+		this.assert(a.hash != b.hash, "different events should have a different hash value");
+	}
+
+	test_hash_dictionary {
+		var a, b;
+		a = Dictionary[\x -> 9, \y -> 10];
+		b = Dictionary[\x -> 9, \y -> 10];
+		this.assert(a.hash == b.hash, "same dictionaries should have the same hash value");
+	}
+
+	test_unhash_dictionary {
+		var a, b;
+		a = Dictionary[\x -> 10, \y -> 9];
+		b = Dictionary[\x -> 9, \y -> 10];
+		this.assert(a.hash != b.hash, "different dictionaries should have a different hash value");
+	}
+
 
 }
 
