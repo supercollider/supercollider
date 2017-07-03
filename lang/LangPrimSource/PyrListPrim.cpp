@@ -506,7 +506,7 @@ int prEvent_Delta(struct VMGlobals *g, int numArgsPushed)
 			err = slotDoubleVal(slot, &fdur);
 		} else {
 			err = slotDoubleVal(&delta, &fdur);
-		};
+		}
 		if (err) {
 			return err;
 		} else {
