@@ -518,20 +518,18 @@ int prEvent_Delta(struct VMGlobals *g, int numArgsPushed)
 		identDict_lookup(slotRawObject(a), &key, calcHash(&key), &dur);
 		err = slotDoubleVal(&dur, &fdur);
 		if (err) {
-			if (NotNil(&dur)) {
-				if (isKindOfSlot(&dur, restClass)) {
-					slot = slotRawObject(&dur)->slots;
-					err = slotDoubleVal(slot, &fdur);
-					if (err) return err;
-				} else {
-					return errWrongType;
-				}
-			} else {
-				SetNil(a);
+			if (IsNil(&dur)) {
+				SetNil(g->sp);
 				return errNone;
+			} else if (isKindOfSlot(&dur, restClass)) {
+				slot = slotRawObject(&dur)->slots;
+				err = slotDoubleVal(slot, &fdur);
+				if (err)
+					return err;
+			} else {
+				return errWrongType;
 			}
 		}
-
 		SetSymbol(&key, s_stretch);
 		identDict_lookup(slotRawObject(a), &key, calcHash(&key), &stretch);
 
