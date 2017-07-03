@@ -24,13 +24,14 @@
 #include <boost/version.hpp>
 #include <boost/detail/winapi/dll.hpp>
 #include <boost/detail/winapi/tls.hpp>
-#include <boost/detail/winapi/process.hpp>
 #include <boost/detail/winapi/handles.hpp>
 #include <boost/detail/winapi/thread.hpp>
 #include <boost/detail/winapi/thread_pool.hpp>
+#include <boost/detail/winapi/get_current_process.hpp>
+#include <boost/detail/winapi/get_current_process_id.hpp>
 #include <boost/detail/winapi/waitable_timer.hpp>
-#include <boost/detail/winapi/synchronization.hpp>
-#include <boost/detail/winapi/GetLastError.hpp>
+#include <boost/detail/winapi/semaphore.hpp>
+#include <boost/detail/winapi/get_last_error.hpp>
 #include <boost/sync/detail/config.hpp>
 #include <boost/sync/detail/interlocked.hpp>
 #include <boost/sync/detail/weak_linkage.hpp>
@@ -138,13 +139,9 @@ struct waitable_timer_state
         }
 
         // Compose a process-specific semaphore name
-#ifndef BOOST_NO_ANSI_APIS
-        char sem_name[24] =
-#else
         wchar_t sem_name[24] =
-#endif
         {
-            'b', 'o', 'o', 's', 't', '_', 's', 'y', 'n', 'c', '_', 't', 'l', 's', '_'
+            L'b', L'o', L'o', L's', L't', L'_', L's', L'y', L'n', L'c', L'_', L't', L'l', L's', L'_'
         };
         boost::detail::winapi::DWORD_ process_id = boost::detail::winapi::GetCurrentProcessId();
         for (unsigned int i = 0; i < 4; ++i)
@@ -152,26 +149,22 @@ struct waitable_timer_state
             uint8_t b = static_cast< uint8_t >(process_id >> ((3u - i) * 8u));
             uint8_t half = b >> 4;
             if (half < 10)
-                sem_name[15 + i * 2] = '0' + half;
+                sem_name[15 + i * 2] = L'0' + half;
             else
-                sem_name[15 + i * 2] = 'a' - 10 + half;
+                sem_name[15 + i * 2] = L'a' - 10 + half;
 
             half = b & 0x0f;
             if (half < 10)
-                sem_name[16 + i * 2] = '0' + half;
+                sem_name[16 + i * 2] = L'0' + half;
             else
-                sem_name[16 + i * 2] = 'a' - 10 + half;
+                sem_name[16 + i * 2] = L'a' - 10 + half;
         }
-        sem_name[23] = '\0';
+        sem_name[23] = L'\0';
 
         // First try if the semaphore has already been created
-#ifndef BOOST_NO_ANSI_APIS
-        tls_key_holder = boost::detail::winapi::OpenSemaphoreA
-#else
         tls_key_holder = boost::detail::winapi::OpenSemaphoreW
-#endif
         (
-            0x001F0003, // SEMAPHORE_ALL_ACCESS
+            boost::detail::winapi::semaphore_all_access,
             false,
             sem_name
         );
@@ -187,11 +180,7 @@ struct waitable_timer_state
                 BOOST_SYNC_DETAIL_THROW(resource_error, (err)("Boost.Sync: unable to allocate a TLS slot"));
             }
 
-#ifndef BOOST_NO_ANSI_APIS
-            tls_key_holder = boost::detail::winapi::CreateSemaphoreA
-#else
             tls_key_holder = boost::detail::winapi::CreateSemaphoreW
-#endif
             (
                 NULL, key, LONG_MAX, sem_name
             );
@@ -225,13 +214,8 @@ struct waitable_timer_state
         typedef NTSTATUS_ (__stdcall *NtQuerySemaphore_t)(boost::detail::winapi::HANDLE_ h, unsigned int info_class, semaphore_basic_information* pinfo, boost::detail::winapi::ULONG_ info_size, boost::detail::winapi::ULONG_* ret_len);
 
         // Retrieve the TLS key from the semaphore
-        const boost::detail::winapi::HMODULE_ ntdll =
-#ifndef BOOST_NO_ANSI_APIS
-            boost::detail::winapi::GetModuleHandleA("ntdll.dll");
-#else
-            boost::detail::winapi::GetModuleHandleW(L"ntdll.dll");
-#endif
-        NtQuerySemaphore_t nt_query_semaphore = (NtQuerySemaphore_t)boost::detail::winapi::GetProcAddress(ntdll, "NtQuerySemaphore");
+        const boost::detail::winapi::HMODULE_ ntdll = boost::detail::winapi::GetModuleHandleW(L"ntdll.dll");
+        NtQuerySemaphore_t nt_query_semaphore = (NtQuerySemaphore_t)boost::detail::winapi::get_proc_address(ntdll, "NtQuerySemaphore");
         if (nt_query_semaphore)
         {
             semaphore_basic_information info = {};

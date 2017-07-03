@@ -626,7 +626,7 @@ void SC_TerminalClient::initInput()
 
 void SC_TerminalClient::startInput()
 {
-	thread thread(std::bind(&SC_TerminalClient::inputThreadFn, this));
+	SC_Thread thread(std::bind(&SC_TerminalClient::inputThreadFn, this));
 	mInputThread = std::move(thread);
 }
 

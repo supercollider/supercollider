@@ -127,7 +127,7 @@ void BeatTrack_Ctor(BeatTrack* unit)
 	unit->m_outputphaseperblock= unit->m_phaseperblock;
 
 	unit->halftrig=0;
-    unit->q1trig=0;
+	unit->q1trig=0;
 	unit->q2trig=0;
 
 	//amortisation and states

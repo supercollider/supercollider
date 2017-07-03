@@ -80,7 +80,7 @@ SynthDef(\fftgrain, { |out, sustain = 1, rate = 0.2|
 	chain = PV_BrickWall(chain,
 		SinOsc.kr(rate * XLine.kr(1, 15 * [1, 1.6], sustain), Rand(0, pi))
 	);
-	Out.ar(out, IFFT(chain) * XLine.kr(1, 0.001, sustain, doneAction: 2)) // inverse FFT
+	Out.ar(out, IFFT(chain) * XLine.kr(1, 0.001, sustain, doneAction: Done.freeSelf)) // inverse FFT
 }).add;
 )
 

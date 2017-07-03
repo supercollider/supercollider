@@ -5,12 +5,12 @@ related:: Classes/SCImageFilter, Classes/SCImageKernel
 
 DESCRIPTION::
 
-SCImage is an image component for the Mac OS X supercollider client. SCImage is currently a wrapper around different models : you can use it for bitmap operations, image embedding for custom UI and for more advanced image processing as applying filters and kernels, both provided with the CoreImage framework.
+SCImage is an image component for the macOS SuperCollider client. SCImage is currently a wrapper around different models : you can use it for bitmap operations, image embedding for custom UI and for more advanced image processing as applying filters and kernels, both provided with the CoreImage framework.
 
 SCImage currently supports most formats including tiff, bmp, gif, jpeg, png, tga...ect.. for reading. But for for writing it supports only those in code::SCImage.formats::.
 
 NOTE::
-link::Classes/GUI:: Issue : since it is OS X only, be sure to call code::GUI.cocoa:: before any SCImage.call
+link::Classes/GUI:: Issue : since it is macOS only, be sure to call code::GUI.cocoa:: before any SCImage.call
 ::
 
 CLASSMETHODS::
@@ -775,7 +775,7 @@ the crop region to finally use. This may be required for extending bounds since 
 
 ARGUMENT::region
 NOTE::
-supported only in Mac OS 10.5 and later.
+supported only in macOS 10.5 and later.
 ::
 option to constrain the filter to a specific region IN the SCImage.
 

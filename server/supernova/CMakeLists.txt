@@ -98,7 +98,7 @@ if(DL)
     target_link_libraries(libsupernova ${DL})
 endif()
 
-if(APPLE)
+if(APPLE OR MSYS)
     find_package(Portaudio)
     if(NOT PORTAUDIO_FOUND)
         message(FATAL_ERROR "Portaudio missing")

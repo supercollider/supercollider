@@ -1,7 +1,7 @@
 class:: Pfuncn
 summary:: Function pattern of given length
 categories:: Streams-Patterns-Events>Patterns>Function
-related:: Classes/Pfunc
+related:: Classes/Pfunc, Classes/FuncStream
 
 description::
 Returns a stream that returns values from the code::func::.
@@ -32,7 +32,7 @@ code::
 SynthDef(\help_sinegrain,
 	{ arg out = 0, freq = 440, sustain = 0.05;
 		var env;
-		env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction:2);
+		env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction: Done.freeSelf);
 		Out.ar(out, SinOsc.ar(freq, 0, env))
 	}).add;
 )

@@ -1,6 +1,6 @@
 class:: WiiMote
 summary:: use the Nintendo (tm) Wii Remote
-related:: Classes/GeneralHID
+related:: Classes/HID
 categories:: External Control
 
 description::
@@ -178,7 +178,7 @@ w.rumble( 0 ); // rumble the device
 w.setAction( \bA, { |v| v.postln; } ); // post the value when button A changes.
 w.removeAction( \bA );
 
-// (MacOSX) if you do not see any changes in the motion sensors, then the connection is bad.
+// (macOS) if you do not see any changes in the motion sensors, then the connection is bad.
 // push the red button inside the battery compartment, or the buttons 1 and 2 on the WiiMote and start over again to discover...
 
 WiiMote.discover; // discover a new device

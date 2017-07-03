@@ -77,7 +77,7 @@ SynthDef("pseudorandom", { arg out, sustain=1, seed=1967, id=0;
 	Out.ar(out,
 		Resonz.ar(noise * 5, filterfreq, 0.5) + (noise * 0.5)
 		*
-		Line.kr(1, 0, sustain, doneAction:2)
+		Line.kr(1, 0, sustain, doneAction: Done.freeSelf)
 	)
 
 }).add;

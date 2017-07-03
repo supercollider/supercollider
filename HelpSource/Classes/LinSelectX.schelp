@@ -11,6 +11,7 @@ method:: ar, kr
 
 argument:: which
 argument:: array
+argument:: wrap
 
 examples::
 code::

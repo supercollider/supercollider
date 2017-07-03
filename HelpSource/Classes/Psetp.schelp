@@ -11,8 +11,12 @@ ClassMethods::
 
 method::new
 
+argument::name
+
 argument::value
 can be a pattern, a stream or an array. The resulting stream ends when that incoming stream ends.
+
+argument::pattern
 
 Examples::
 
@@ -40,7 +44,7 @@ x = a.asStream;
 SynthDef(\sinegrain,
 	{ arg out=0, freq=440, sustain=0.02;
 		var env;
-		env = EnvGen.kr(Env.perc(0.001, sustain), 1, doneAction:2);
+		env = EnvGen.kr(Env.perc(0.001, sustain), 1, doneAction: Done.freeSelf);
 		Out.ar(out, SinOsc.ar(freq, 0, env * 0.1))
 	}).add;
 )

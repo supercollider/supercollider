@@ -300,8 +300,12 @@ public:
         this->init();
     }
 
-    template<typename Src, typename Modifier>
-    basic_string_token_iterator( Src src, Modifier const& m )
+    // warning: making the constructor accept anything else than a cstring should
+    // ensure that no temporary object is created during string creation (previous
+    // definition was "template<typename Src, typename Modifier> basic_string_token_iterator( Src src ..."
+    // which may create a temporary string copy when called with an std::string.
+    template<typename Modifier>
+    basic_string_token_iterator( cstring src, Modifier const& m )
     : m_src( src )
     {
         this->apply_modifier( m );

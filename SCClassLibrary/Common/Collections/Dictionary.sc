@@ -296,12 +296,18 @@ Dictionary : Set {
 
 	isAssociationArray { ^false }
 
-	asPairs {
-		^this.getPairs
+	asPairs { |class|
+		var res = (class ? Array).new(this.size * 2);
+		this.pairsDo { |key, val|
+			res.add(key).add(val);
+		};
+		^res
 	}
 
-	asDict {
-		^this
+	asDict { arg mergeFunc, class;
+		// the mergeFunc is ignored, because dictionary keys must differ
+		class = class ? IdentityDictionary;
+		^if(class.notNil and: { class == this.class }) { this } { this.as(class) }
 	}
 
 
@@ -447,6 +453,32 @@ IdentityDictionary : Dictionary {
 	}
 	scanFor { arg argKey;
 		^array.atIdentityHashInPairs(argKey)
+	}
+
+	collect { arg function;
+		var res = this.class.new(this.size, proto, parent, know);
+		this.keysValuesDo { arg key, elem;
+			res.put(key, function.value(elem, key));
+		};
+		^res;
+	}
+	select { arg function;
+		var res = this.class.new(this.size, proto, parent, know);
+		this.keysValuesDo { arg key, elem;
+			if(function.value(elem, key)) {
+				res.put(key, elem);
+			};
+		};
+		^res;
+	}
+	reject { arg function;
+		var res = this.class.new(this.size, proto, parent, know);
+		this.keysValuesDo { arg key, elem;
+			if(function.value(elem, key).not) {
+				res.put(key, elem);
+			};
+		};
+		^res;
 	}
 
 	freezeAsParent {

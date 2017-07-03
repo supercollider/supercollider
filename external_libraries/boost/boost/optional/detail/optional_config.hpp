@@ -96,4 +96,21 @@
 
 #endif // defined(__GNUC__)
 
+#if !defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES) && !defined(BOOST_NO_CXX11_DECLTYPE) && !BOOST_WORKAROUND(BOOST_MSVC, < 1800) && !BOOST_WORKAROUND(BOOST_GCC_VERSION, < 40500) && !defined(__SUNPRO_CC)
+  // this condition is a copy paste from is_constructible.hpp
+  // I also disable SUNPRO, as it seems not to support type_traits correctly
+#else
+# define BOOST_OPTIONAL_DETAIL_NO_IS_CONSTRUCTIBLE_TRAIT
+#endif
+
+#if defined __SUNPRO_CC
+# define BOOST_OPTIONAL_DETAIL_NO_SFINAE_FRIENDLY_CONSTRUCTORS
+#elif (defined _MSC_FULL_VER) && (_MSC_FULL_VER < 190023026)
+# define BOOST_OPTIONAL_DETAIL_NO_SFINAE_FRIENDLY_CONSTRUCTORS
+#elif defined BOOST_GCC && !defined BOOST_GCC_CXX11
+# define BOOST_OPTIONAL_DETAIL_NO_SFINAE_FRIENDLY_CONSTRUCTORS
+#elif defined BOOST_GCC_VERSION && BOOST_GCC_VERSION < 40800
+# define BOOST_OPTIONAL_DETAIL_NO_SFINAE_FRIENDLY_CONSTRUCTORS
+#endif
+
 #endif // header guard

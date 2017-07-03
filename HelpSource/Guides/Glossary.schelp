@@ -13,7 +13,7 @@ keyword:: class
 
 ## client
 keyword:: client
-|| SC is divided into two separate applications: The client and the server. The client is where the supercollider language is implemented and where one executes code. The server actually synthesizes the audio, contains the node tree of synths and groups and responds to Open Sound Control messages from the client. See link::Guides/ClientVsServer:: for more information.
+|| SC is divided into two separate applications: The client and the server. The client is where the SuperCollider language is implemented and where one executes code. The server actually synthesizes the audio, contains the node tree of synths and groups and responds to Open Sound Control messages from the client. See link::Guides/ClientVsServer:: for more information.
 
 ## group
 keyword:: group
@@ -72,7 +72,7 @@ keyword:: receiver
 
 ## server
 keyword:: server
-|| SC is divided into two separate applications: The client and the server. The client is where the supercollider language is implemented and where one executes code. The server actually synthesizes the audio, contains the node tree of synths and groups and responds to Open Sound Control messages from the client. See See link::Guides/ClientVsServer:: for more information.
+|| SC is divided into two separate applications: The client and the server. The client is where the SuperCollider language is implemented and where one executes code. The server actually synthesizes the audio, contains the node tree of synths and groups and responds to Open Sound Control messages from the client. See See link::Guides/ClientVsServer:: for more information.
 
 ## synth
 keyword:: synth

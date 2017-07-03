@@ -9,11 +9,16 @@ platform/mac/build
 # Windows related files
 *Thumbs.db
 CMakeLists.txt.user
+external_libraries/asio*
 
 # working files made by packager script
 common/Packager/LinuxExclusions.txt
 common/Packager/SuperCollider*.tar.gz
 common/Packager/SuperCollider*.dmg
+
+# CLion files
+.idea
+cmake-build-*
 
 #build directories
 /build*

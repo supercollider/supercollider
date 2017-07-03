@@ -878,11 +878,19 @@ T zeta_imp_odd_integer(int s, const T&, const Policy&, const mpl::true_&)
 template <class T, class Policy>
 T zeta_imp_odd_integer(int s, const T& sc, const Policy& pol, const mpl::false_&)
 {
-   static bool is_init = false;
-   static T results[50] = {};
+   static BOOST_MATH_THREAD_LOCAL bool is_init = false;
+   static BOOST_MATH_THREAD_LOCAL T results[50] = {};
+   static BOOST_MATH_THREAD_LOCAL int digits = tools::digits<T>();
+   int current_digits = tools::digits<T>();
+   if(digits != current_digits)
+   {
+      // Oh my precision has changed...
+      is_init = false;
+   }
    if(!is_init)
    {
       is_init = true;
+      digits = current_digits;
       for(unsigned k = 0; k < sizeof(results) / sizeof(results[0]); ++k)
       {
          T arg = k * 2 + 3;

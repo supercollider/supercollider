@@ -25,11 +25,20 @@
 #include <QWidget>
 #include <QStackedLayout>
 #include <QPointer>
+#include <QComboBox>
+#include <QBoxLayout>
+#include <QStandardItemModel>
+#include <QSortFilterProxyModel>
+
+#include "../core/doc_manager.hpp"
+#include "../core/main.hpp"
+#include "util/multi_splitter.hpp"
 
 namespace ScIDE {
 
 class Document;
 class GenericCodeEditor;
+class MultiSplitter;
 
 /*
 A CodeEditorBox represents an IDE document split view: it contains a stack
@@ -56,7 +65,7 @@ class CodeEditorBox : public QWidget
 public:
     typedef QList< GenericCodeEditor * > History;
 
-    CodeEditorBox(QWidget *parent = 0);
+    CodeEditorBox(MultiSplitter *splitter, QWidget *parent = 0);
 
     void setDocument(Document *, int pos = -1, int selectionLength = 0);
 
@@ -88,14 +97,22 @@ public:
     QSize minimumSizeHint() const { return QSize(100, 100); }
     QSize sizeHint() const { return QSize(100, 100); }
 
+    void showComboBox( bool );
+
 signals:
     void currentChanged(GenericCodeEditor*);
     void activated( CodeEditorBox *me );
     void activeChanged(bool active);
 
+public slots:
+    void applySettings( Settings::Manager * );
+    void comboBoxWhenSplitting();
+    void tabsWhenRemovingSplits();
+
 private slots:
     void onDocumentClosed(Document*);
     void onDocumentSaved(Document*);
+    void onComboSelectionChanged(int index);
 
 private:
     int historyIndexOf(Document*);
@@ -107,6 +124,10 @@ private:
     QStackedLayout *mLayout;
     History mHistory;
     static QPointer<CodeEditorBox> gActiveBox;
+    QBoxLayout *mTopLayout;
+    QComboBox *mDocComboBox;
+    MultiSplitter *mSplitter;
+    QSortFilterProxyModel *mProxyModel;
 };
 
 } // namespace ScIDE

@@ -1,10 +1,10 @@
 class:: Pipe
-summary:: pipe stdin to, or stdout from, a unix shell command
+summary:: pipe stdin to, or stdout from, a UNIX shell command
 related:: Classes/UnixFILE
 categories:: Files
 
 description::
-Pipe stdin to, or stdout from, a unix shell command. Pipe treats the shell command as if it were a UnixFILE, and returns nil when done. See link::Classes/UnixFILE:: for details of the access methods. Pipe must be explicitly closed. Do not rely on the garbage collector to do this for you!
+Pipe stdin to, or stdout from, a UNIX shell command. Pipe treats the shell command as if it were a UnixFILE, and returns nil when done. See link::Classes/UnixFILE:: for details of the access methods. Pipe must be explicitly closed. Do not rely on the garbage collector to do this for you!
 
 ClassMethods::
 
@@ -37,7 +37,8 @@ returns:: The exit status of the command (an Integer).
 Examples::
 
 note::
-For anyone still using OS X 10.3, unix commands like pipe do not work when the server is booted; quit the server, otherwise sc crashes. More recent OS X is not affected.
+For anyone still using macOS 10.3, UNIX commands like pipe do not work when the server is booted; quit the server, otherwise SuperCollider crashes. More recent macOS is not affected.
+
 ::
 
 code::

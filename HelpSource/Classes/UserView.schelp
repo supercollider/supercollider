@@ -59,7 +59,7 @@ METHOD:: clearOnRefresh
 
 	The default value is code::true::.
 
-	note:: On OSX this functionality is only available for the version >= 10.4. ::
+	note:: On macOS this functionality is only available for the version >= 10.4. ::
 
 	argument::
 		A Boolean.
@@ -112,8 +112,6 @@ SUBSECTION:: Actions
 EXAMPLES::
 
 'Introduction to GUI' contains an link::Guides/GUI-Introduction#Custom views#example:: with elaborate explanation on how to use UserView. Below are further examples.
-
-For a tutorial on how to write a emphasis::subclass:: of UserView to make your own custom view classes, see the link::Guides/UserView-Subclassing:: guide.
 
 SUBSECTION:: Basic Usage
 
@@ -444,7 +442,7 @@ w.close;
 
 An animation that makes a good use of the link::#-clearOnRefresh:: option to keep the old contents when redrawing.
 
-note:: In strong::Cocoa GUI:: this functionality is only available on Mac OS X version >= 10.4. ::
+note:: In strong::Cocoa GUI:: this functionality is only available on macOS version >= 10.4. ::
 
 code::
 (

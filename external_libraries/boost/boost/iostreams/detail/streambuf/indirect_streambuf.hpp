@@ -73,9 +73,7 @@ public:
     // Declared in linked_streambuf.
     T* component() { return &*obj(); }
 protected:
-#if !BOOST_WORKAROUND(__GNUC__, == 2)
     BOOST_IOSTREAMS_USING_PROTECTED_STREAMBUF_MEMBERS(base_type)
-#endif
 
     //----------virtual functions---------------------------------------------//
 

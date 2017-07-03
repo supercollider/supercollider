@@ -123,7 +123,7 @@
 					if(this.isLocal or: { this.inProcess }) {
 						if(dumping, stopDump, startDump)
 					} {
-						"cannot dump a remote server's messages".inform
+						"cannot dump a remote server's messages".postln
 					}
 				}
 				{char === $m } { if(this.volume.isMuted) { this.unmute } { this.mute } }

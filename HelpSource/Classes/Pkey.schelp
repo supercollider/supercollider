@@ -14,6 +14,9 @@ method::new
 argument::key
 The name of the event variable to read from.
 
+argument::repeats
+The number of items returned before finishing. Using code::nil::, the default value, makes the stream infinite.
+
 Examples::
 
 code::

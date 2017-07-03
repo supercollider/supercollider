@@ -70,17 +70,32 @@ local doxygen_params =
 
 local top_level_includes =
     [ glob
-        ../../../boost/sync/*.hpp
+        ../include/boost/sync/*.hpp
+    ] ;
+
+local condition_variables_includes =
+    [ glob
+        ../include/boost/sync/condition_variables/*.hpp
+    ] ;
+
+local event_includes =
+    [ glob
+        ../include/boost/sync/events/*.hpp
     ] ;
 
 local locks_includes =
     [ glob
-        ../../../boost/sync/locks/*.hpp
+        ../include/boost/sync/locks/*.hpp
+    ] ;
+
+local mutex_includes =
+    [ glob
+        ../include/boost/sync/mutexes/*.hpp
     ] ;
 
 local support_includes =
     [ glob
-        ../../../boost/sync/support/*.hpp
+        ../include/boost/sync/support/*.hpp
     ] ;
 
 
@@ -110,6 +125,7 @@ doxygen top_level_reference
 
 notfile top_level_refs : @gen-references : top_level_reference.xml ;
 
+
 doxygen locks_reference
     :
         $(locks_includes)
@@ -119,6 +135,39 @@ doxygen locks_reference
     ;
 
 notfile locks_refs : @gen-references : locks_reference.xml ;
+
+
+doxygen mutex_reference
+    :
+        $(mutex_includes)
+    :
+        $(doxygen_params)
+        <xsl:param>"boost.doxygen.reftitle=Mutexes"
+    ;
+
+notfile mutex_refs : @gen-references : mutex_reference.xml ;
+
+
+doxygen event_reference
+    :
+        $(event_includes)
+    :
+        $(doxygen_params)
+        <xsl:param>"boost.doxygen.reftitle=Events"
+    ;
+
+notfile event_refs : @gen-references : event_reference.xml ;
+
+doxygen condition_variables_reference
+    :
+        $(condition_variables_includes)
+    :
+        $(doxygen_params)
+        <xsl:param>"boost.doxygen.reftitle=Condition Variables"
+    ;
+
+notfile condition_variables_refs : @gen-references : condition_variables_reference.xml ;
+
 
 doxygen support_reference
     :
@@ -136,7 +185,10 @@ xml sync_doc
         sync.qbk
     :
         <dependency>top_level_refs
+        <dependency>condition_variables_refs
         <dependency>locks_refs
+        <dependency>mutex_refs
+        <dependency>event_refs
         <dependency>support_refs
     ;
 
@@ -154,3 +206,16 @@ boostbook sync
         <format>pdf:<xsl:param>boost.url.prefix=http://www.boost.org/doc/libs/release/libs/sync/doc/html
         <format>pdf:<xsl:param>img.src.path=$(images_location)/
     ;
+
+alias boostdoc : sync
+    : : : <implicit-dependency>sync ;
+
+###############################################################################
+alias boostdoc
+    : sync
+    :
+    :
+    : ;
+explicit boostdoc ;
+alias boostrelease ;
+explicit boostrelease ;

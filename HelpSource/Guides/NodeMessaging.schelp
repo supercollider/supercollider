@@ -70,7 +70,7 @@ In certain cases, such as for granular synthesis it is recommended to use messag
 code::
 (
 SynthDef("grain", {
-	Out.ar(0, Line.kr(0.1, 0, 0.01, doneAction:2) * FSinOsc.ar(12000))
+	Out.ar(0, Line.kr(0.1, 0, 0.01, doneAction: Done.freeSelf) * FSinOsc.ar(12000))
 }).send(s);
 )
 
@@ -109,15 +109,15 @@ n = Synth(\default, [\freq, 850]);
 Argument lists generally appear as alternating pairs, with the control identifier preceding the value. Usually the control identifier is a name, as above, but it could also be an integer index. (Using integers is slightly faster for the server, but it makes the code harder to read and can introduce bugs if the SynthDef structure changes.)
 One way to find out control indices is to .add the SynthDef into a link::Classes/SynthDescLib::, then get the list of all controls out of the link::Classes/SynthDesc::.
 code::
-(
-SynthDef(\controlList, { |freq = 440, amp = 0.1, detune = #[0.999, 1.001], gate = 1, out = 0|
-	var	sig = Mix(Saw.ar(freq * (detune ++ [1]), amp)),
-		env = EnvGen.kr(Env.adsr, gate, doneAction: 2);
-	Out.ar(0, (sig * env) ! 2);
-}).add;
+	(
+		SynthDef(\controlList, { |out = 0, freq = 440, amp = 0.1, detune = #[0.999, 1.001], gate = 1|
+			var	sig = Mix(Saw.ar(freq * (detune ++ [1]), amp)),
+			env = EnvGen.kr(Env.adsr, gate, doneAction: Done.freeSelf);
+			Out.ar(out, (sig * env) ! 2);
+		}).add;
 
-SynthDescLib.global[\controlList]
-)
+		SynthDescLib.global[\controlList]
+	)
 ::
 Prints:
 code::

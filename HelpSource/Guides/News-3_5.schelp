@@ -32,7 +32,7 @@ Old platform-specific startup file locations have been deprecated. The new start
 
 subsection:: Language configuration files
 
-The linux-only library configuration file has been deprecated. It is replaced by a cross-platform language configuration
+The Linux-only library configuration file has been deprecated. It is replaced by a cross-platform language configuration
 file, which is located at code::Platform.userConfigDir +/+ "sclang_conf.yaml" :: . It can be configured via the
 link::Classes/LanguageConfig:: class.
 
@@ -174,9 +174,9 @@ since no external FFT libraries are required.
 
 subsection:: Supernova
 
-A new multi-processor implementation of scsynth. Parallelism of the synthesis graph is exposed to the user via the
-link::Classes/ParGroup:: class. Supernova is currently linux-only. It is not provided in the OSX/Windows binaries. In
-order to play patterns inside a ParGroup, the link::Classes/PparGroup:: can be used. Scsynth emulates parallel groups
+A new multi-processor implementation of scsynth. Parallelism of the synthesis graph is exposed to the user via the 
+link::Classes/ParGroup:: class. Supernova is currently Linux-only. It is not provided in the macOS/Windows binaries.
+In order to play patterns inside a ParGroup, the link::Classes/PparGroup:: can be used. Scsynth emulates parallel groups
 with groups.
 
 Plugins have to be adapted by acquiring spinlocks when accessing busses or buffers. See link::Guides/WritingUGens:: for

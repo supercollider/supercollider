@@ -116,8 +116,11 @@ fork {
 Similarly, link::Classes/Function#flop#Function:flop:: returns an unevaluated function that will expand to its arguments when evaluated:
 code::
 (
-SynthDef("blip", { |freq| Out.ar(0, Line.ar(0.1, 0, 0.05, 1, 0, 2)
-	* Pulse.ar(freq * [1, 1.02])) }).send(s);
+SynthDef("blip", { |out, freq|
+	Out.ar(out,
+		Line.ar(0.1, 0, 0.05, 1, 0, 2) * Pulse.ar(freq * [1, 1.02])
+	)
+}).add;
 
 a = { |dur=1, x=1, n=10, freq=400|
 	fork { n.do {

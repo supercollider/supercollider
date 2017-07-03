@@ -1,4 +1,4 @@
-//  Copyright (C) 2011-2013 Tim Blechmann
+//  Copyright (C) 2011-2013, 2016 Tim Blechmann
 //
 //  Distributed under the Boost Software License, Version 1.0. (See
 //  accompanying file LICENSE_1_0.txt or copy at
@@ -51,7 +51,7 @@
 #endif // BOOST_LOCKFREE_FORCE_STD_ATOMIC
 
 
-#if defined(BOOST_LOCKFREE_NO_HDR_ATOMIC)
+#if defined(BOOST_LOCKFREE_NO_HDR_ATOMIC) || defined(BOOST_LOCKFREE_FORCE_BOOST_ATOMIC)
 #include <boost/atomic.hpp>
 #else
 #include <atomic>
@@ -61,7 +61,7 @@ namespace boost {
 namespace lockfree {
 namespace detail {
 
-#if defined(BOOST_LOCKFREE_NO_HDR_ATOMIC)
+#if defined(BOOST_LOCKFREE_NO_HDR_ATOMIC) || defined(BOOST_LOCKFREE_FORCE_BOOST_ATOMIC)
 using boost::atomic;
 using boost::memory_order_acquire;
 using boost::memory_order_consume;

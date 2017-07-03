@@ -227,53 +227,70 @@ section:: Inline optimization
 
 code::if::, code::while::, code::switch:: and code::case:: expressions are optimized (i.e. inlined) by the compiler if they do not contain variable declarations in the functions. The optimization plucks the code from the functions and uses a more efficient jump statement:
 code::
+(
 {
-	if( 6 == 9,{
+	if(6 == 9, {
 		"hello".postln;
 	},{
-		"hello".postln;
+		"world".postln;
 	})
 }.def.dumpByteCodes
+)
 
-BYTECODES: (18)
-  0   FE 06    PushPosInt 6
-  2   FE 09    PushPosInt 9
+BYTECODES: (20)
+  0   2C 06    PushInt 6
+  2   2C 09    PushInt 9
   4   E6       SendSpecialBinaryArithMsg '=='
-  5   F8 00 06 JumpIfFalse 6  (14)
-  8   42       PushLiteral "hello"
-  9   A1 00    SendMsg 'postln'
- 11   FC 00 03 JumpFwd 3  (17)
- 14   41       PushLiteral "hello"
- 15   A1 00    SendMsg 'postln'
- 17   F2       BlockReturn
-a FunctionDef in closed FunctionDef
+  5   F8 00 07 JumpIfFalse 7  (15)
+  8   41       PushLiteral "hello"
+  9   B0       TailCallReturnFromFunction
+ 10   C1 3A    SendSpecialMsg 'postln'
+ 12   FC 00 04 JumpFwd 4  (19)
+ 15   40       PushLiteral "world"
+ 16   B0       TailCallReturnFromFunction
+ 17   C1 3A    SendSpecialMsg 'postln'
+ 19   F2       BlockReturn
+-> < closed FunctionDef >
 ::
 
 Failure to inline due to variable declarations:
 code::
+(
 {
-	if( 6 == 9,{
+	if(6 == 9, {
 		var notHere;
 		"hello".postln;
 	},{
-		"hello".postln;
+		"world".postln;
 	})
 }.def.dumpByteCodes
+)
 
 WARNING: FunctionDef contains variable declarations and so will not be inlined.
-   in file 'selected text'
-   line 4 char 14 :
-  		var notHere;•
+  in file 'selected text'
+  line 4 char 14:
+
+  		var notHere;
+
   		"hello".postln;
 -----------------------------------
-BYTECODES: (12)
-  0   FE 06    PushPosInt 6
-  2   FE 09    PushPosInt 9
+BYTECODES: (13)
+  0   2C 06    PushInt 6
+  2   2C 09    PushInt 9
   4   E6       SendSpecialBinaryArithMsg '=='
-  5   04 00    PushLiteralX instance of FunctionDef in closed FunctionDef
-  7   04 01    PushLiteralX instance of FunctionDef in closed FunctionDef
-  9   C3 0B    SendSpecialMsg 'if'
- 11   F2       BlockReturn
-a FunctionDef in closed FunctionDef
+  5   04 00    PushLiteralX instance of FunctionDef - closed
+  7   04 01    PushLiteralX instance of FunctionDef - closed
+  9   B0       TailCallReturnFromFunction
+ 10   C3 0B    SendSpecialMsg 'if'
+ 12   F2       BlockReturn
+-> < closed FunctionDef >
 ::
+
+You can switch on and off the above warning (see: link::Classes/LanguageConfig#*postInlineWarnings::)
+
+code::
+LanguageConfig.postInlineWarnings_(true) // warn
+LanguageConfig.postInlineWarnings_(false) // ignore it.
+::
+
 

@@ -35,6 +35,8 @@ struct emulated_operations
 {
     typedef T storage_type;
 
+    static BOOST_CONSTEXPR_OR_CONST bool is_always_lock_free = false;
+
     static BOOST_FORCEINLINE void store(storage_type volatile& storage, storage_type v, memory_order) BOOST_NOEXCEPT
     {
         lockpool::scoped_lock lock(&storage);

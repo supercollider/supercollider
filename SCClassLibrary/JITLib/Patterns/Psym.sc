@@ -114,7 +114,10 @@ Psym1 : Psym {
 			which = str.next(inval);
 			which.notNil
 		} {
-			pat = this.getPattern(which);
+			if(which.isSequenceableCollection) {
+				Error("Psym1 cannot embed arrayed keys: %\n".format(which)).throw;
+			};
+			pat = this.lookUp(which);
 			currentStream = streams.at(pat);
 			if(currentStream.isNil) {
 				currentStream = pat.asStream;

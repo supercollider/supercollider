@@ -90,7 +90,7 @@ b.string = "hello button";
 
 method:: font
 Sets the Font of the button. Default value is the default font: Font.default .
-argument:: f
+argument:: font
 An instance of link::Classes/Font::.
 
 
@@ -111,7 +111,7 @@ table::
 ## " " || value + 1 || space
 ## \r || value + 1
 ## \n || value + 1
-## 3.asAscii || value + 1 || enter key or cmd-C on Mac OSX
+## 3.asAscii || value + 1 || enter key or cmd-C on macOS
 ::
 To change these use code::defaultKeyDownAction_::, see link::Classes/View::.
 
@@ -168,7 +168,7 @@ s.waitForBoot({
 	b = Button(w, Rect(20, 20, 80, 26))
 			.states_([["play", Color.black, Color.rand]])
 			.mouseDownAction_({
-				a = {EnvGen.kr(Env.adsr, doneAction:2) * SinOsc.ar(440, 0, 0.4)}.play;
+				a = {EnvGen.kr(Env.adsr, doneAction: Done.freeSelf) * SinOsc.ar(440, 0, 0.4)}.play;
 			})
 			.action_({ arg butt, mod;
 				a.release(0.3);

@@ -17,6 +17,7 @@
 // Boost.Test
 #include <boost/test/detail/global_typedef.hpp>
 #include <boost/test/utils/runtime/argument.hpp>
+#include <boost/make_shared.hpp>
 
 // STL
 #include <iostream>
@@ -34,7 +35,7 @@ namespace runtime_config {
 // **************                 runtime_config               ************** //
 // ************************************************************************** //
 
-// UTF parameters 
+// UTF parameters
 BOOST_TEST_DECL extern std::string AUTO_START_DBG;
 BOOST_TEST_DECL extern std::string BREAK_EXEC_PATH;
 BOOST_TEST_DECL extern std::string BUILD_INFO;
@@ -44,6 +45,7 @@ BOOST_TEST_DECL extern std::string DETECT_FP_EXCEPT;
 BOOST_TEST_DECL extern std::string DETECT_MEM_LEAKS;
 BOOST_TEST_DECL extern std::string LIST_CONTENT;
 BOOST_TEST_DECL extern std::string LIST_LABELS;
+BOOST_TEST_DECL extern std::string COMBINED_LOGGER;
 BOOST_TEST_DECL extern std::string LOG_FORMAT;
 BOOST_TEST_DECL extern std::string LOG_LEVEL;
 BOOST_TEST_DECL extern std::string LOG_SINK;
@@ -76,6 +78,11 @@ get( runtime::cstring parameter_name )
     return argument_store().get<T>( parameter_name );
 }
 
+inline bool has( runtime::cstring parameter_name )
+{
+    return argument_store().has( parameter_name );
+}
+
 /// For public access
 BOOST_TEST_DECL bool save_pattern();
 
@@ -86,35 +93,34 @@ BOOST_TEST_DECL bool save_pattern();
 class stream_holder {
 public:
     // Constructor
-    explicit        stream_holder( std::ostream& default_stream )
+    explicit        stream_holder( std::ostream& default_stream = std::cout)
     : m_stream( &default_stream )
     {
     }
 
-    void            setup( runtime::cstring param_name )
+    void            setup( const const_string& stream_name )
     {
-        if( !runtime_config::argument_store().has( param_name ) )
+        if(stream_name.empty())
             return;
 
-        std::string const& file_name = runtime_config::get<std::string>( param_name );
-
-        if( file_name == "stderr" )
+        if( stream_name == "stderr" )
             m_stream = &std::cerr;
-        else if( file_name == "stdout" )
+        else if( stream_name == "stdout" )
             m_stream = &std::cout;
         else {
-            m_file.open( file_name.c_str() );
-            m_stream = &m_file;
+            m_file = boost::make_shared<std::ofstream>();
+            m_file->open( std::string(stream_name.begin(), stream_name.end()).c_str() );
+            m_stream = m_file.get();
         }
     }
 
     // Access methods
-    std::ostream&   ref() const { return *m_stream; }  
+    std::ostream&   ref() const { return *m_stream; }
 
 private:
     // Data members
-    std::ofstream   m_file;
-    std::ostream*   m_stream;  
+    boost::shared_ptr<std::ofstream>   m_file;
+    std::ostream*   m_stream;
 };
 
 } // namespace runtime_config

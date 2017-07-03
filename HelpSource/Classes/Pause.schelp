@@ -29,9 +29,9 @@ code::
 
 s.boot;
 
-SynthDef("a", { Out.ar(0, SinOsc.ar(800, 0, 0.2)) }).add;
+SynthDef(\a, { Out.ar(0, SinOsc.ar(800, 0, 0.2)) }).add;
 
-SynthDef("b", { arg gate=1; Out.ar(1, PinkNoise.ar(0.3)); Pause.kr(gate, 1001); }).add;
+SynthDef(\b, { |gate = 1| Out.ar(1, PinkNoise.ar(0.3)); Pause.kr(gate, 1001) }).add;
 
 s.sendMsg(\s_new, \a, 1001, 0, 0);
 

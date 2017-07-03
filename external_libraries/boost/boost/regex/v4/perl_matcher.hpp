@@ -537,6 +537,7 @@ private:
    bool unwind_recursion_pop(bool);
    bool unwind_commit(bool);
    bool unwind_then(bool);
+   bool unwind_case(bool);
    void destroy_single_repeat();
    void push_matched_paren(int index, const sub_match<BidiIterator>& sub);
    void push_recursion_stopper();
@@ -547,6 +548,7 @@ private:
    void push_non_greedy_repeat(const re_syntax_base* ps);
    void push_recursion(int idx, const re_syntax_base* p, results_type* presults);
    void push_recursion_pop();
+   void push_case_change(bool);
 
    // pointer to base of stack:
    saved_state* m_stack_base;

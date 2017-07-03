@@ -3,7 +3,10 @@ summary:: Floating point number
 categories:: Math
 
 description::
-A 64 bit double precision floating point number. Float inherits most of its behaviour from its superclass.
+A 64-bit double precision floating point number. Float inherits most of its behaviour from its superclass.
+
+Note that despite its name, link::Classes/FloatArray:: only holds 32-bit (single precision) floats.
+For a raw array of 64-bit floats, use link::Classes/DoubleArray::.
 
 ClassMethods::
 
@@ -26,8 +29,8 @@ argument:: function
 The function to iterate.
 
 method:: coin
-Perform a random test whose probability of success in a range from
-zero to one is this and return the result.
+Let emphasis::x:: be the receiver clipped to the range [0, 1]. With probability emphasis::x::, return true. With probability 1 - emphasis::x::, return false.
+
 returns:: a link::Classes/Boolean::
 discussion::
 code::
@@ -62,4 +65,3 @@ pi.asStringPrec(6)
 7.4.asStringPrec(5)
 7.4.asStringPrec(50)
 ::
-

@@ -243,6 +243,10 @@ Hasher : UGen {
 	*kr { arg in = 0.0, mul = 1.0, add = 0.0;
 		^this.multiNew('control', in).madd(mul, add)
 	}
+	checkInputs {
+    if(rate == \audio) { ^this.checkSameRateAsFirstInput; };
+    ^this.checkValidInputs;
+	}
 }
 
 MantissaMask : UGen {

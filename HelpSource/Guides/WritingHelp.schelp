@@ -325,7 +325,7 @@ section:: Contributing with the documentation
 
 The easiest way to contribute to the documentation is:
 
-    1. Fork the supercollider repository https://github.com/supercollider/supercollider
+    1. Fork the SuperCollider repository https://github.com/supercollider/supercollider
     2. Clone your repository
     code::
     git clone --recursive git://github.com/{your_username}/supercollider.git
@@ -338,4 +338,4 @@ The easiest way to contribute to the documentation is:
     code::
     git push origin -u doc_updates
     ::
-    5. Submit your pull request through github, from your branch doc_updates to supercollider master
+    5. Submit your pull request through github, from your branch doc_updates to SuperCollider master

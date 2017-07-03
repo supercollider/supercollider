@@ -420,7 +420,7 @@ METHOD:: gridOffset
     Sets the grid offset.
 
     argument::
-        An integer.
+        Grid blocks are offset by this value (in seconds).
 
 METHOD:: gridColor
 

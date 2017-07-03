@@ -237,7 +237,7 @@ If a key or mouse event is not handled by the view on which it occurs, it may st
 
 subsection:: Drag and drop actions
 
-When a mouse button is pressed on a view together with Cmd(Mac OS) or Ctrl(Other OS) key and the mouse pointer is moved while holding the button, a strong::drag-and-drop:: operation is initiated - in case the view supports it. Most views have a default object that they export when a drag is attempted. For a Slider it is its value, for a List it is the numeric index of the currently selected item, etc. It is said that the exported object is being strong::dragged::. When the dragging gesture ends on another view by releasing the mouse button on top of it, it is said that the dragged object was strong::dropped:: on another view. A view may respond to various objects dropped on it in different ways.
+When a mouse button is pressed on a view together with Cmd(macOS) or Ctrl(Other OS) key and the mouse pointer is moved while holding the button, a strong::drag-and-drop:: operation is initiated - in case the view supports it. Most views have a default object that they export when a drag is attempted. For a Slider it is its value, for a List it is the numeric index of the currently selected item, etc. It is said that the exported object is being strong::dragged::. When the dragging gesture ends on another view by releasing the mouse button on top of it, it is said that the dragged object was strong::dropped:: on another view. A view may respond to various objects dropped on it in different ways.
 
 It is possible to customize what object a view exports when dragged from and how a view reacts to objects dropped by assigning custom drag and drop actions.
 

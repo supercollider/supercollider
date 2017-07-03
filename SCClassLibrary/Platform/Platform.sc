@@ -20,7 +20,10 @@ Platform {
 
 	name { ^this.subclassResponsibility }
 
-	recompile { _Recompile }
+	recompile {
+		_Recompile
+		^this.primitiveFailed
+	}
 	*case { | ... cases |
 		^thisProcess.platform.name.switch(*cases)
 	}
@@ -29,33 +32,59 @@ Platform {
 	*classLibraryDir { ^thisProcess.platform.classLibraryDir }
 	*helpDir { ^thisProcess.platform.helpDir }
 
-	userHomeDir { _Platform_userHomeDir }
+	userHomeDir {
+		_Platform_userHomeDir
+		^this.primitiveFailed
+	}
 	*userHomeDir { ^thisProcess.platform.userHomeDir }
 
-	systemAppSupportDir { _Platform_systemAppSupportDir }
+	systemAppSupportDir {
+		_Platform_systemAppSupportDir
+		^this.primitiveFailed
+	}
 	*systemAppSupportDir { ^thisProcess.platform.systemAppSupportDir }
 
-	userAppSupportDir { _Platform_userAppSupportDir }
+	userAppSupportDir {
+		_Platform_userAppSupportDir
+		^this.primitiveFailed
+	}
 	*userAppSupportDir { ^thisProcess.platform.userAppSupportDir }
 
-	systemExtensionDir { _Platform_systemExtensionDir }
+	systemExtensionDir {
+		_Platform_systemExtensionDir
+		^this.primitiveFailed
+	}
 	*systemExtensionDir { ^thisProcess.platform.systemExtensionDir }
 
-	userExtensionDir { _Platform_userExtensionDir }
+	userExtensionDir {
+		_Platform_userExtensionDir
+		^this.primitiveFailed
+	}
 	*userExtensionDir { ^thisProcess.platform.userExtensionDir }
 
-	userConfigDir { _Platform_userConfigDir }
+	userConfigDir {
+		_Platform_userConfigDir
+		^this.primitiveFailed
+	}
 	*userConfigDir { ^thisProcess.platform.userConfigDir }
 
-	resourceDir { _Platform_resourceDir }
+	resourceDir {
+		_Platform_resourceDir
+		^this.primitiveFailed
+	}
 	*resourceDir { ^thisProcess.platform.resourceDir }
+
+	*recordingsDir { ^thisProcess.platform.recordingsDir }
 
 	defaultTempDir { ^this.subclassResponsibility() }
 	*defaultTempDir { ^thisProcess.platform.defaultTempDir }
 
 	// The "ideName" is for ide-dependent compilation.
 	// From SC.app, the value is "scapp" meaning "scide_scapp" folders will be compiled and other "scide_*" ignored.
-	ideName { _Platform_ideName }
+	ideName {
+		_Platform_ideName
+		^this.primitiveFailed
+	}
 	*ideName { ^thisProcess.platform.ideName }
 
 	platformDir { ^this.name.asString }

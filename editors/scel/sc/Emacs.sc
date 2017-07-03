@@ -235,7 +235,6 @@ Emacs {
 		Class.initClassTree(EmacsInterface);
 		Class.initClassTree(EmacsDocument);
 		Class.initClassTree(AbstractResponderFunc);
-		Class.initClassTree(OSCresponder);
 		Class.initClassTree(Server);
 
 		Platform.makeServerWindowAction = {|aServer, aWindow| aServer.makeEmacsWindow };

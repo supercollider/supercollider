@@ -52,7 +52,7 @@ SynthDef(\help_playbuf, { | out=0, bufnum = 0, rate = 1, startPos = 0, amp = 0.1
 	startPos = startPos * BufFrames.kr(bufnum);
 
 	audio = BufRd.ar(1, bufnum, Phasor.ar(0, rate, startPos, BufFrames.ir(bufnum)), 1, 1);
-	audio = EnvGen.ar(Env.sine, 1, timeScale: sustain, doneAction: 2) * audio;
+	audio = EnvGen.ar(Env.sine, 1, timeScale: sustain, doneAction: Done.freeSelf) * audio;
 	audio = Pan2.ar(audio, pan, amp);
 	OffsetOut.ar(out, audio);
 }).add;
@@ -86,7 +86,7 @@ code::
 SynthDef(\osc,{ arg out=0, bufnum=0, numbufs = 8, sustain = 1, freq = 500, amp = 0.1, pan = 0;
 	var audio;
 	audio = Osc.ar(bufnum, freq);
-	audio = EnvGen.ar(Env.linen(0.01, 0.90,0.9), 1, timeScale: sustain, doneAction: 2) * audio;
+	audio = EnvGen.ar(Env.linen(0.01, 0.90,0.9), 1, timeScale: sustain, doneAction: Done.freeSelf) * audio;
 	audio = Pan2.ar(audio, pan, amp);
 	OffsetOut.ar(out, audio);
 }).add;
@@ -127,7 +127,7 @@ code::
 SynthDef(\shaper,{ arg out=0, bufnum=0, numbufs = 8, sustain = 1, freq = 500, amp = 0.1, pan = 0;
 	var audio;
 	audio = SinOsc.ar(freq);
-	audio = EnvGen.ar(Env.linen(0.4, 0.50,0.9), 1, timeScale: sustain, doneAction: 2) * audio;
+	audio = EnvGen.ar(Env.linen(0.4, 0.50,0.9), 1, timeScale: sustain, doneAction: Done.freeSelf) * audio;
 	audio = Shaper.ar(bufnum, audio);
 	audio = Pan2.ar(audio, pan, amp);
 	OffsetOut.ar(out, LeakDC.ar(audio));

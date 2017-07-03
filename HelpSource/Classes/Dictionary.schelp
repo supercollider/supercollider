@@ -284,12 +284,27 @@ d = (a: 5, b: 7, c: 1, d: 0);
 d.asSortedArray;
 ::
 
-method::asKeyValuePairs
-Return the values in an array of alternating key value pairs.
+method::asDict
+If no arguments are passed, return itself.  This is part of the link::Reference/Key-Value-Pairs:: interface.
+argument::mergeFunc
+This argument is not used, but exists to make the method compatible with link::Classes/Collection#-asDict::.
+argument::class
+A dictionary class to convert to, if given (conversion is done via code::newFrom::).
+
+method::asPairs
+Return the values in an array of alternating key value pairs, like code::[\freq, 1848, \amp, 0.2]::.  This is part of the link::Reference/Key-Value-Pairs:: interface.
+argument::class
+The class of the collection to be returned. By default this is an link::Classes/Array::.
+
+discussion::
 code::
 d = (a: 5, b: 7, c: 1, d: 0);
-d.asKeyValuePairs;
+d.asPairs;
 ::
+
+method::asKeyValuePairs
+See link::#-asPairs::.
+
 
 method::embedInStream
 

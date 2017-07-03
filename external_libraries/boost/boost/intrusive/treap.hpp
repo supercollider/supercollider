@@ -274,6 +274,16 @@ class treap_impl
 
    //! @copydoc ::boost::intrusive::bstree::crend()const
    const_reverse_iterator crend() const;
+
+   //! @copydoc ::boost::intrusive::bstree::root()
+   iterator root();
+
+   //! @copydoc ::boost::intrusive::bstree::root()const
+   const_iterator root() const;
+
+   //! @copydoc ::boost::intrusive::bstree::croot()const
+   const_iterator croot() const;
+
    #endif
 
    //! <b>Effects</b>: Returns a reverse_iterator pointing to the highest priority object of the
@@ -995,6 +1005,56 @@ class treap_impl
          , detail::node_disposer<Disposer, value_traits, TreapAlgorithms>(disposer, &this->get_value_traits()));
       node_algorithms::init_header(this->tree_type::header_ptr());
       this->tree_type::sz_traits().set_size(0);
+   }
+
+   #if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
+   //! @copydoc ::boost::intrusive::bstree::merge_unique
+   template<class T, class ...Options2> void merge_unique(sgtree<T, Options2...> &);
+   #else
+   template<class Compare2>
+   void merge_unique(treap_impl
+      <ValueTraits, VoidOrKeyOfValue, Compare2, VoidOrPrioComp, SizeType, ConstantTimeSize, HeaderHolder> &source)
+   #endif
+   {
+      node_ptr it   (node_algorithms::begin_node(source.header_ptr()))
+             , itend(node_algorithms::end_node  (source.header_ptr()));
+
+      while(it != itend){
+         node_ptr const p(it);
+         BOOST_INTRUSIVE_SAFE_HOOK_DEFAULT_ASSERT(!safemode_or_autounlink || !node_algorithms::unique(p));
+         it = node_algorithms::next_node(it);
+
+         if( node_algorithms::transfer_unique
+               ( this->header_ptr(), this->key_node_comp(this->key_comp())
+               , this->key_node_prio_comp(this->priv_pcomp()), source.header_ptr(), p) ){
+            this->sz_traits().increment();
+            source.sz_traits().decrement();
+         }
+      }
+   }
+
+   #if defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
+   //! @copydoc ::boost::intrusive::bstree::merge_equal(bstree<T, Options2...>&)
+   template<class T, class ...Options2> void merge_equal(sgtree<T, Options2...> &);
+   #else
+   template<class Compare2>
+   void merge_equal(treap_impl
+      <ValueTraits, VoidOrKeyOfValue, Compare2, VoidOrPrioComp, SizeType, ConstantTimeSize, HeaderHolder> &source)
+   #endif
+   {
+      node_ptr it   (node_algorithms::begin_node(source.header_ptr()))
+             , itend(node_algorithms::end_node  (source.header_ptr()));
+
+      while(it != itend){
+         node_ptr const p(it);
+         BOOST_INTRUSIVE_SAFE_HOOK_DEFAULT_ASSERT(!safemode_or_autounlink || !node_algorithms::unique(p));
+         it = node_algorithms::next_node(it);
+         node_algorithms::transfer_equal
+            ( this->header_ptr(), this->key_node_comp(this->key_comp())
+            , this->key_node_prio_comp(this->priv_pcomp()), source.header_ptr(), p);
+         this->sz_traits().increment();
+         source.sz_traits().decrement();
+      }
    }
 
    //! @copydoc ::boost::intrusive::bstree::check(ExtraChecker)const

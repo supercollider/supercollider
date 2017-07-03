@@ -186,91 +186,91 @@ void Control_Ctor(Unit* unit)
 
 void AudioControl_next_k(AudioControl *unit, int inNumSamples)
 {
-    uint32 numChannels = unit->mNumOutputs;
-    float *prevVal = unit->prevVal;
-    float **mapin = unit->mParent->mMapControls + unit->mSpecialIndex;
-    for(uint32 i = 0; i < numChannels; ++i, mapin++){
-	float *out = OUT(i);
-	int *mapRatep;
-	int mapRate;
-	float nextVal, curVal, valSlope;
-	mapRatep = unit->mParent->mControlRates + unit->mSpecialIndex;
-	mapRate = mapRatep[i];
-	switch (mapRate) {
-	    case 0 : {
-		for(int j = 0; j < inNumSamples; j++){
-		    out[j] = *mapin[0];
+	uint32 numChannels = unit->mNumOutputs;
+	float *prevVal = unit->prevVal;
+	float **mapin = unit->mParent->mMapControls + unit->mSpecialIndex;
+	for(uint32 i = 0; i < numChannels; ++i, mapin++){
+		float *out = OUT(i);
+		int *mapRatep;
+		int mapRate;
+		float nextVal, curVal, valSlope;
+		mapRatep = unit->mParent->mControlRates + unit->mSpecialIndex;
+		mapRate = mapRatep[i];
+		switch (mapRate) {
+			case 0 : {
+				for(int j = 0; j < inNumSamples; j++){
+					out[j] = *mapin[0];
+				}
+			} break;
+			case 1 : {
+				nextVal = *mapin[0];
+				curVal = prevVal[i];
+				valSlope = CALCSLOPE(nextVal, curVal);
+				for(int j = 0; j < inNumSamples; j++){
+					out[j] = curVal; // should be prevVal
+					curVal += valSlope;
+				}
+				unit->prevVal[i] = curVal;
+			} break;
+			case 2 : Copy(inNumSamples, out, *mapin);
+			break;
 		}
-	    } break;
-	    case 1 : {
-		nextVal = *mapin[0];
-		curVal = prevVal[i];
-		valSlope = CALCSLOPE(nextVal, curVal);
-		for(int j = 0; j < inNumSamples; j++){
-		    out[j] = curVal; // should be prevVal
-		    curVal += valSlope;
-		}
-		unit->prevVal[i] = curVal;
-	    } break;
-	    case 2 : Copy(inNumSamples, out, *mapin);
-	    break;
 	}
-    }
 }
 
 void AudioControl_next_1(AudioControl *unit, int inNumSamples)
 {
-    float **mapin = unit->mParent->mMapControls + unit->mSpecialIndex;
-    float *out = OUT(0);
-    int *mapRatep;
-    int mapRate;
-    float nextVal, curVal, valSlope;
-    float* prevVal;
-    prevVal = unit->prevVal;
-    curVal = prevVal[0];
-    mapRatep = unit->mParent->mControlRates + unit->mSpecialIndex;
-    mapRate = mapRatep[0];
+	float **mapin = unit->mParent->mMapControls + unit->mSpecialIndex;
+	float *out = OUT(0);
+	int *mapRatep;
+	int mapRate;
+	float nextVal, curVal, valSlope;
+	float* prevVal;
+	prevVal = unit->prevVal;
+	curVal = prevVal[0];
+	mapRatep = unit->mParent->mControlRates + unit->mSpecialIndex;
+	mapRate = mapRatep[0];
 
-    switch (mapRate) {
-	case 0 : {
-	    for(int i = 0; i < inNumSamples; i++){
-		out[i] = *mapin[0];
-		}
-	} break;
-	case 1 : {
-	    nextVal = *mapin[0];
-	    valSlope = CALCSLOPE(nextVal, curVal);
-	    for(int i = 0; i < inNumSamples; i++){
-		out[i] = curVal;
-		curVal += valSlope;
-		}
-	    unit->prevVal[0] = curVal;
-	} break;
-	case 2 :
-	    Copy(inNumSamples, out, *mapin);
-	break;
-    }
+	switch (mapRate) {
+		case 0 : {
+			for(int i = 0; i < inNumSamples; i++){
+				out[i] = *mapin[0];
+			}
+		} break;
+		case 1 : {
+			nextVal = *mapin[0];
+			valSlope = CALCSLOPE(nextVal, curVal);
+			for(int i = 0; i < inNumSamples; i++){
+				out[i] = curVal;
+				curVal += valSlope;
+				}
+			unit->prevVal[0] = curVal;
+		} break;
+		case 2 :
+		    Copy(inNumSamples, out, *mapin);
+		break;
+	}
 
 }
 
 void AudioControl_Ctor(AudioControl* unit)
 {
-    unit->prevVal = (float*)RTAlloc(unit->mWorld, unit->mNumOutputs * sizeof(float));
-    for(int i = 0; i < unit->mNumOutputs; i++){
-	unit->prevVal[i] = 0.0;
-    }
-    if (unit->mNumOutputs == 1) {
-	SETCALC(AudioControl_next_1);
-	AudioControl_next_1(unit, 1);
-    } else {
-	SETCALC(AudioControl_next_k);
-	AudioControl_next_k(unit, 1);
-    }
+	unit->prevVal = (float*)RTAlloc(unit->mWorld, unit->mNumOutputs * sizeof(float));
+	for(int i = 0; i < unit->mNumOutputs; i++){
+		unit->prevVal[i] = 0.0;
+	}
+	if (unit->mNumOutputs == 1) {
+		SETCALC(AudioControl_next_1);
+		AudioControl_next_1(unit, 1);
+	} else {
+		SETCALC(AudioControl_next_k);
+		AudioControl_next_k(unit, 1);
+	}
 }
 
 void AudioControl_Dtor(AudioControl* unit)
 {
-    RTFree(unit->mWorld, unit->prevVal);
+	RTFree(unit->mWorld, unit->prevVal);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////

@@ -6,23 +6,19 @@ x = { |phi, a, b| a * phi - (b * sin(phi)) };
 y = { |phi, a, b| a - (b * sin(phi + 0.5pi)) };
 )
 
-GUI.cocoa;	// use CocoaGUI (Mac OS X native)
-GUI.swing;	// use SwingGUI (Java based GUI)
-
 (
-		var pen = GUI.pen;
 		w = GUI.window.new("Trochoid", Rect(128, 64, 800, 400)).front;
 		w.view.background_(Color.white);
 		w.drawFunc = {
-			pen.strokeColor = Color.black;
-			pen.moveTo(0 @ 150);
+			Pen.strokeColor = Color.black;
+			Pen.moveTo(0 @ 150);
 			((0..900) / 50).do { |phi|
 				var x0 = x.(phi, a, b);
 				var y0 = y.(phi, a, b);
-				pen.lineTo((50 * x0) @ (50 * y0 + 150));
+				Pen.lineTo((50 * x0) @ (50 * y0 + 150));
 			};
 
-			pen.stroke
+			Pen.stroke
 		};
 		w.refresh;
 );

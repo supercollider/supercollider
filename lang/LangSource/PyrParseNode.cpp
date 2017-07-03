@@ -1076,11 +1076,6 @@ int checkPushAllButFirstTwoArgs(PyrParseNode *actualArg, int numArgs)
 				return push_Normal;
 			}
 			nameNode = (PyrPushNameNode*)actualArg;
-			/*if (slotRawSymbol(&gCompilingClass->name) == s_ugen) {
-				post("check meth %s  %d  '%s' '%s'\n", slotRawSymbol(&gCompilingMethod->name)->name, i,
-					slotRawSymbol(&nameNode->mSlot)->name,
-					block->argNames.uosym->symbols[i]->name);
-			}*/
 			if (slotRawSymbol(&nameNode->mSlot) != slotRawSymbolArray(&block->argNames)->symbols[i]) {
 				return push_Normal;
 			}
@@ -1451,7 +1446,7 @@ void PyrMethodNode::compile(PyrSlot *result)
 				numArgs, getPrimitiveNumArgs(methraw->specialIndex));
 		}
 		*/
-	} else if (slotRawSymbol(&gCompilingMethod->name) == s_nocomprendo) {
+	} else if (slotRawSymbol(&gCompilingMethod->name) == s_doesNotUnderstand) {
 		methType = methNormal;
 	} else {
 		int bodyType = mBody->mClassno;

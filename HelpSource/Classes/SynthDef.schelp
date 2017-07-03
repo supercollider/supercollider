@@ -46,9 +46,9 @@ note:: code::if:: is implemented as a linear signal crossfade when the receiver 
 There are other ways of achieving similar results, however, often using UGens such as Rand. For example, the following def will have a single randomly generated frequency, which will be the same for every Synth based on it:
 code::
 (
-SynthDef(\help_notRand, {
-	Out.ar(0,
-		SinOsc.ar(rrand(400, 800), 0, 0.2) * Line.kr(1, 0, 1, doneAction: 2)
+SynthDef(\help_notRand, { |out|
+	Out.ar(out,
+		SinOsc.ar(rrand(400, 800), 0, 0.2) * Line.kr(1, 0, 1, doneAction: Done.freeSelf)
 	)
 }).add;
 )
@@ -58,9 +58,9 @@ b = Synth(\help_notRand); // the same freq as a
 This one on the other hand will have a different random freq for each Synth created:
 code::
 (
-SynthDef(\help_isRand, {
-	Out.ar(0,
-		SinOsc.ar(Rand(400, 800), 0, 0.2) * Line.kr(1, 0, 1, doneAction: 2)
+SynthDef(\help_isRand, { |out|
+	Out.ar(out,
+		SinOsc.ar(Rand(400, 800), 0, 0.2) * Line.kr(1, 0, 1, doneAction: Done.freeSelf)
 	)
 }).add;
 )
@@ -149,7 +149,7 @@ code::
 (
 SynthDef(\help_synth, { |out, freq = 800, sustain = 1, amp = 0.1|
 	Out.ar(out,
-		SinOsc.ar(freq, 0, 0.2) * Line.kr(amp, 0, sustain, doneAction: 2)
+		SinOsc.ar(freq, 0, 0.2) * Line.kr(amp, 0, sustain, doneAction: Done.freeSelf)
 	)
 }).add;
 )
@@ -205,10 +205,10 @@ code::
 // make a simple def and send it to the server
 
 s.boot;
-SynthDef(\SimpleSine, {|freq = 440| Out.ar(0, SinOsc.ar(freq, 0, 0.2)) }).add;
+SynthDef(\SimpleSine, {|freq = 440, out| Out.ar(out, SinOsc.ar(freq, 0, 0.2)) }).add;
 
 // the above is essentially the same as the following:
-d = SynthDef.new(\SimpleSine, {|freq = 440| Out.ar(0, SinOsc.ar(freq, 0, 0.2)) });
+d = SynthDef(\SimpleSine, {|freq = 440, out| Out.ar(out, SinOsc.ar(freq, 0, 0.2)) });
 d.add;
 
 // now make a synth from it, using the default value for freq, then another with a different value
@@ -221,7 +221,7 @@ x.set(\freq, 880);
 x.free; y.free;
 
 // using the play convenience method
-x = SynthDef(\SimpleSine, {|freq = 440| Out.ar(0, SinOsc.ar(freq, 0, 0.2)) }).play
+x = SynthDef(\SimpleSine, {|freq = 440, out| Out.ar(out, SinOsc.ar(freq, 0, 0.2)) }).play
 x.free;
 ::
 
@@ -229,24 +229,24 @@ subsection:: Argument Rates
 code::
 // the following two defs are equivalent. The first uses a 't_' arg:
 (
-SynthDef(\trigTest, {|t_trig=0, freq=440| // t_trig creates a TrigControl
-	Out.ar(0, SinOsc.ar(freq+[0,1], 0, Decay2.kr(t_trig, 0.005, 1.0)));
+SynthDef(\trigTest, { |out, t_trig=0, freq=440| // t_trig creates a TrigControl
+	Out.ar(out, SinOsc.ar(freq+[0,1], 0, Decay2.kr(t_trig, 0.005, 1.0)));
 }, [0, 4]		// lag the freq by 4 seconds (the second arg), but not t_trig (won't work anyway)
 );
 )
 
 // This second version makes trig a \tr arg by specifying it in the rates array.
 (
-SynthDef(\trigTest2, {|trig=0, freq=440|
-	Out.ar(0, SinOsc.ar(freq+[0,1], 0, Decay2.kr(trig, 0.005, 1.0)));
+SynthDef(\trigTest2, { |out, trig=0, freq=440|
+	Out.ar(out, SinOsc.ar(freq+[0,1], 0, Decay2.kr(trig, 0.005, 1.0)));
 	}, [\tr, 4]		// lag the freq (lagtime: 4s), \tr creates a TrigControl for trig
 ).add;
 )
 
 // Different way of writing the same thing
 (
-SynthDef(\trigTest2, {
-	Out.ar(0, SinOsc.ar(\freq.kr(440, 4) + [0,1], 0, Decay2.kr(\trig.tr, 0.005, 1.0)));
+SynthDef(\trigTest2, { |out|
+	Out.ar(out, SinOsc.ar(\freq.kr(440, 4) + [0,1], 0, Decay2.kr(\trig.tr, 0.005, 1.0)));
 }).add;
 )
 
@@ -266,9 +266,9 @@ subsection:: Variants
 code::
 // create a def with some variants
 (
-SynthDef(\vartest, {|out=0, freq=440, amp=0.2, a = 0.01, r = 1|
-	// the EnvGen with doneAction: 2 frees the synth automatically when done
-	Out.ar(out, SinOsc.ar(freq, 0, EnvGen.kr(Env.perc(a, r, amp), doneAction: 2)));
+SynthDef(\vartest, { |out, freq = 440, amp = 0.2, a = 0.01, r = 1|
+	// the EnvGen with doneAction: Done.freeSelf frees the synth automatically when done
+	Out.ar(out, SinOsc.ar(freq, 0, EnvGen.kr(Env.perc(a, r, amp), doneAction: Done.freeSelf)));
 }, variants: (alpha: [a: 0.5, r: 0.5], beta: [a: 3, r: 0.01], gamma: [a: 0.01, r: 4])
 ).add;
 )
@@ -289,11 +289,11 @@ subsection:: Literal Array Arguments
 code::
 // freqs has a literal array of defaults. This makes a multichannel Control of the same size.
 (
-SynthDef(\arrayarg, { | amp = 0.1, freqs = #[300, 400, 500, 600], gate = 1 |
+SynthDef(\arrayarg, { |out, amp = 0.1, freqs = #[300, 400, 500, 600], gate = 1|
 	var env, sines;
 	env = Linen.kr(gate, 0.1, 1, 1, 2) * amp;
 	sines = SinOsc.ar(freqs +.t [0,0.5]).cubed.sum; // A mix of 4 oscillators
-	Out.ar(0, sines * env);
+	Out.ar(out, sines * env);
 }, [0, 0.1, 0]).add;
 )
 
@@ -337,19 +337,19 @@ code::
 // lets you reuse the common code.
 (
 // the basic wrapper
-~makeEffect = {| name, func, lags, numChannels = 2 |
+~makeEffect = { |name, func, lags, numChannels = 2|
 
-	SynthDef(name, {| i_bus = 0, gate = 1, wet = 1|
-		var in, out, env, lfo;
+	SynthDef(name, { | i_bus = 0, gate = 1, wet = 1|
+		var in, sound, env, lfo;
 		in = In.ar(i_bus, numChannels);
 		env = Linen.kr(gate, 2, 1, 2, 2); // fade in the effect
 
 		// call the wrapped function. The in and env arguments are passed to the function
 		// as the first two arguments (prependArgs).
 		// Any other arguments of the wrapped function will be Controls.
-		out = SynthDef.wrap(func, lags, [in, env]);
+		sound = SynthDef.wrap(func, lags, [in, env]);
 
-		XOut.ar(i_bus, wet * env, out);
+		XOut.ar(i_bus, wet * env, sound);
 	}, [0, 0, 0.1] ).add;
 
 };
@@ -357,13 +357,14 @@ code::
 
 // now make a wah
 (
-~makeEffect.value(\wah, {|in, env, rate = 0.7, ffreq = 1200, depth = 0.8, rq = 0.1|
+~makeEffect.value(\wah, { |in, env, rate = 0.7, ffreq = 1200, depth = 0.8, rq = 0.1|
 	// in and env come from the wrapper. The rest are controls
  	var lfo;
 	lfo = LFNoise1.kr(rate, depth * ffreq, ffreq);
-	RLPF.ar(in, lfo, rq, 10).distort * 0.15; },
-	[0.1, 0.1, 0.1, 0.1],  // lags for rate ffreq, depth and rq
-	2	// numChannels
+	RLPF.ar(in, lfo, rq, 10).distort * 0.15;
+},
+[0.1, 0.1, 0.1, 0.1],  // lags for rate ffreq, depth and rq
+2	// numChannels
 );
 )
 
@@ -374,14 +375,15 @@ code::
 	var input;
 	input = in;
 	16.do({ input = AllpassC.ar(input, 0.04, Rand(0.001,0.04), 3)});
-	input; },
-	nil,  // no lags
-	2	// numChannels
+	input
+},
+nil,  // no lags
+2	// numChannels
 );
 )
 
 // something to process
-x = { {Decay2.ar(Dust2.ar(3), mul: PinkNoise.ar(0.2))} ! 2}.play;
+x = { { Decay2.ar(Dust2.ar(3), mul: PinkNoise.ar(0.2)) } ! 2}.play;
 
 y = Synth.tail(s, \wah);
 z = Synth.tail(s, \reverb, [\wet, 0.5]);
@@ -403,8 +405,8 @@ code::
 // method.
 (
 SynthDef(\synthDefTest, {|out, gate=1, freq=440|
-	// doneAction: 2 frees the synth when EnvGen is done
-	Out.ar(out, SinOsc.ar(freq) * EnvGen.kr(Env.asr(0.1, 0.3, 1.3), gate, doneAction:2));
+	// doneAction: Done.freeSelf frees the synth when EnvGen is done
+	Out.ar(out, SinOsc.ar(freq) * EnvGen.kr(Env.asr(0.1, 0.3, 1.3), gate, doneAction: Done.freeSelf));
 }).store; // use store for compatibility with pattern example below
 )
 

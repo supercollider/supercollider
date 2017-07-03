@@ -12,6 +12,8 @@ link::Classes/DelayL::  which uses linear interpolation. Cubic
 interpolation is more computationally expensive than linear,
 but more accurate.
 
+The term "delay" is often used in electronic music to refer to a delay line with feedback. If you are looking for that, try CombC.
+
 
 classmethods::
 

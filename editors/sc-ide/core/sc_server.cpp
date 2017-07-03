@@ -26,8 +26,7 @@
 #include "main.hpp"
 #include "../widgets/util/volume_widget.hpp"
 
-#include "yaml-cpp/node.h"
-#include "yaml-cpp/parser.h"
+#include <yaml-cpp/yaml.h>
 
 #include <sstream>
 #include <iomanip>
@@ -168,7 +167,7 @@ void ScServer::createActions(Settings::Manager * settings)
     mActions[PauseRecord] = action = new QAction(tr("Pause Recording"), this);
     action->setCheckable(true);
     connect( action, SIGNAL(triggered(bool)), this, SLOT(pauseRecording(bool)) );
-    connect( action, SIGNAL(toggled(bool)), this, SLOT(pauseChanged(bool)) );
+    connect( action, SIGNAL(toggled(bool)), this, SIGNAL(pauseChanged(bool)) );
     settings->addAction( action, "synth-server-pause-recording", synthServerCategory);
 
 
@@ -478,31 +477,23 @@ void ScServer::onScLangReponse( const QString & selector, const QString & data )
 
 void ScServer::handleRuningStateChangedMsg( const QString & data )
 {
-    std::stringstream stream;
-    stream << data.toStdString();
-    YAML::Parser parser(stream);
-
-    bool serverRunningState, serverUnresponsive;
-
+    bool serverRunningState = false;
+    bool serverUnresponsive = false;
     std::string hostName;
-    int port;
+    int port = -1;
 
+    try {
+        const YAML::Node doc = YAML::Load( data.toStdString() );
+        if( doc ) {
+            assert(doc.IsSequence());
 
-    YAML::Node doc;
-    while(parser.GetNextDocument(doc)) {
-        assert(doc.Type() == YAML::NodeType::Sequence);
-
-        bool success = doc[0].Read(serverRunningState);
-        if (!success) return; // LATER: report error?
-
-        success = doc[1].Read(hostName);
-        if (!success) return; // LATER: report error?
-
-        success = doc[2].Read(port);
-        if (!success) return; // LATER: report error?
-
-        success = doc[3].Read(serverUnresponsive);
-        if (!success) return; // LATER: report error?
+            serverRunningState = doc[0].as<bool>();
+            hostName           = doc[1].as<std::string>();
+            port               = doc[2].as<int>();
+            serverUnresponsive = doc[3].as<bool>();
+        }
+    } catch(...) {
+        return; // LATER: report error?
     }
 
     QString qstrHostName( hostName.c_str() );

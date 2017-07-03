@@ -42,7 +42,7 @@ Pbindf(a, \freq, Prand([1, 1.2, 2, 2.5, 3, 4], inf) * 200).play;
 // a SynthDef
 SynthDef(\test, { | out, freq = 440, amp = 0.1, nharms = 10, pan = 0, gate = 1 |
 	var audio = Blip.ar(freq, nharms, amp);
-	var env = Linen.kr(gate, doneAction: 2);
+	var env = Linen.kr(gate, doneAction: Done.freeSelf);
 	OffsetOut.ar(out, Pan2.ar(audio, pan, env) );
 }).add;
 )

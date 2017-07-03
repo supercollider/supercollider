@@ -156,7 +156,7 @@ SynthDef(\pgrain,
 		window = Env.sine(sustain, amp);
 		Out.ar(out,
 			Pan2.ar(
-				SinOsc.ar(freq) * EnvGen.ar(window, doneAction:2),
+				SinOsc.ar(freq) * EnvGen.ar(window, doneAction: Done.freeSelf),
 				pan
 			)
 		)

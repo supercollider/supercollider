@@ -8,7 +8,8 @@ An onset detector for musical audio signals - detects the beginning of notes/dru
 
 For more details of all the processes involved, the different onset detection functions, and their evaluation, see:
 
-D. Stowell and M. D. Plumbley. Adaptive whitening for improved real-time audio onset detection. emphasis::Proceedings of the International Computer Music Conference (ICMC'07)::, Copenhagen, Denmark, August 2007. [http://www.elec.qmul.ac.uk/digitalmusic/papers/2007/StowellPlumbley07-icmc.pdf]
+D. Stowell and M. D. Plumbley. Adaptive whitening for improved real-time audio onset detection. emphasis::Proceedings of the International Computer Music Conference (ICMC2007)::, Copenhagen, Denmark, August 2007. See
+http://www.elec.qmul.ac.uk/digitalmusic/papers/2007/StowellPlumbley07-icmc.pdf.
 
 classmethods::
 private:: categories
@@ -20,7 +21,20 @@ an FFT chain.
 argument:: threshold
 the detection threshold, typically between 0 and 1, although in rare cases you may find values outside this range useful.
 argument:: odftype
-chooses which emphasis::onset detection function:: is used. In many cases the default will be fine. The following choices are available:
+chooses which emphasis::onset detection function:: is used. In many cases the default will be fine. More choices are listed below.
+
+The remaining args are all tweak factors, explained below in section Advanced features:
+
+argument:: relaxtime
+argument:: floor
+argument:: mingap
+argument:: medianspan
+argument:: whtype
+argument:: rawodf
+
+Discussion::
+
+	The following choices are available for code::odftype:: :
 
 definitionlist::
 ## code::\power:: || generally OK, good for percussive input, and also very efficient
@@ -32,7 +46,7 @@ definitionlist::
 ## code::\mkl:: || generally very good, medium efficiency, pretty different from the other methods
 ::
 
-discussion::
+
 For the FFT chain, you should typically use a frame size of 512 or 1024 (at 44.1 kHz sampling rate) and 50% hop size (which is the default setting in SC). For different sampling rates choose an FFT size to cover a similar time-span (around 10 to 20 ms).
 
 The onset detection should work well for a general range of monophonic and polyphonic audio signals. The onset detection is purely based on signal analysis and does not make use of any "top-down" inferences such as tempo.
@@ -55,15 +69,6 @@ list::
 
 examples::
 code::
-(
-s.waitForBoot({
-	// Prepare the buffers
-	b = Buffer.alloc(s, 512);
-	// Feel free to load a more interesting clip!
-	// a11wlk01 is not an ideal example of musical onsets.
-	d = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
-});
-)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // Move the mouse to vary the threshold
@@ -76,13 +81,13 @@ x = {
 	// or, uncomment this line if you want to play the buffer in
 	//sig = PlayBuf.ar(1, d, BufRateScale.kr(d), loop: 1);
 
-	chain = FFT(b, sig);
+	chain = FFT(LocalBuf(1, 512), sig);
 
 	onsets = Onsets.kr(chain, MouseX.kr(0,1), \rcomplex);
 
 	// You'll hear percussive "ticks" whenever an onset is detected
 	pips = WhiteNoise.ar(EnvGen.kr(Env.perc(0.001, 0.1, 0.2), onsets));
-	Out.ar(0, Pan2.ar(sig, -0.75, 0.2) + Pan2.ar(pips, 0.75, 1));
+	Pan2.ar(sig, -0.75, 0.2) + Pan2.ar(pips, 0.75, 1)
 }.play;
 )
 x.free; // Free the synth
@@ -104,13 +109,13 @@ x = {
 	// or, uncomment this line if you want to play the buffer in
 	//sig = PlayBuf.ar(1, d, BufRateScale.kr(d), loop: 1);
 
-	chain = FFT(b, sig);
+	chain = FFT(LocalBuf(1, 512), sig);
 
 	onsets = Onsets.kr(chain, threshes, \rcomplex);
 
 	// Generate pips at a variety of pitches
 	pips = SinOsc.ar((threshes).linexp(0, 1, 440, 3520), 0, EnvGen.kr(Env.perc(0.001, 0.1, 0.5), onsets)).mean;
-	Out.ar(0, Pan2.ar(sig, -0.75, 0.2) + Pan2.ar(pips, 0.75, 1));
+	Pan2.ar(sig, -0.75, 0.2) + Pan2.ar(pips, 0.75, 1)
 }.play;
 )
 

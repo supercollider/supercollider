@@ -27,7 +27,7 @@ code::
 b = Buffer.alloc(s, s.sampleRate * 1, 1);
 
 // write a signal into a delay, tap it at multiple times
-SynthDef(\test, {arg buffer;
+SynthDef(\test, { |out, buffer|
 	var src, tapPhase, tap1, tap2, tap3;
 	src = WhiteNoise.ar(0.2) * Decay.kr(Dust.kr(3), 0.2);
 	tapPhase = DelTapWr.ar(buffer, src);
@@ -35,9 +35,9 @@ SynthDef(\test, {arg buffer;
 		[0.2, 0.27, 0.303],  	// tap times
 		1,  					// no interp
 		[1.0, 0.4, 0.2] 		// muls for each tap
-		);
-	Out.ar(0, [src + tap2, tap1 + tap3])
-	}).add;
+	);
+	Out.ar(out, [src + tap2, tap1 + tap3])
+}).add;
 
 x = Synth(\test, [\buffer, b]);
 x.free;
@@ -49,20 +49,20 @@ code::
 b = Buffer.alloc(s, 44100, 1);
 
 // write a signal into a delay, tap it at multiple times
-SynthDef(\write, {arg buffer, cout;
+SynthDef(\write, { |buffer, cout|
 	var src, tapPhase, tap1, tap2, tap3;
 	src = WhiteNoise.ar(0.2) * Decay.kr(Dust.kr(3), 0.7);
 	tapPhase = DelTapWr.ar(buffer, src);
 	Out.kr(cout, tapPhase);
 	}).add;
 
-SynthDef(\readFilt, {arg buffer, cin;
+SynthDef(\readFilt, { |out, buffer, cin|
 	var phase, src, filt;
 	phase = In.kr(cin);
 	src = DelTapRd.ar(buffer, phase, [0.01, 0.2]);
 	filt = BPF.ar(src, 880, 0.01) * 10;
-	Out.ar(0, filt);
-	}).add;
+	Out.ar(out, filt);
+}).add;
 
 c = Bus.control;
 

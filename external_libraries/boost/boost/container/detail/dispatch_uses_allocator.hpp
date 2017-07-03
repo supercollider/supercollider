@@ -222,7 +222,7 @@ template < typename ConstructAlloc
 BOOST_CONTAINER_DOC1ST(void, typename container_detail::enable_if<container_detail::is_pair<Pair> >::type)
    dispatch_uses_allocator
    ( ConstructAlloc & construct_alloc
-   , ArgAlloc & arg_alloc
+   , BOOST_FWD_REF(ArgAlloc) arg_alloc
    , Pair* p)
 {
    (dispatch_uses_allocator)(construct_alloc, arg_alloc, container_detail::addressof(p->first));
@@ -243,7 +243,7 @@ template < typename ConstructAlloc
 BOOST_CONTAINER_DOC1ST(void, typename container_detail::enable_if<container_detail::is_pair<Pair> >::type)
    dispatch_uses_allocator
    ( ConstructAlloc & construct_alloc
-   , ArgAlloc & arg_alloc
+   , BOOST_FWD_REF(ArgAlloc) arg_alloc
    , Pair* p, BOOST_FWD_REF(U) x, BOOST_FWD_REF(V) y)
 {
    (dispatch_uses_allocator)(construct_alloc, arg_alloc, container_detail::addressof(p->first), ::boost::forward<U>(x));
@@ -263,7 +263,7 @@ template < typename ConstructAlloc
 BOOST_CONTAINER_DOC1ST(void, typename container_detail::enable_if< container_detail::is_pair<Pair> >::type)
    dispatch_uses_allocator
    (ConstructAlloc & construct_alloc
-   , ArgAlloc & arg_alloc
+   , BOOST_FWD_REF(ArgAlloc) arg_alloc
    , Pair* p, Pair2& x)
 {  (dispatch_uses_allocator)(construct_alloc, arg_alloc, p, x.first, x.second);  }
 
@@ -276,13 +276,135 @@ typename container_detail::enable_if_and
    , container_detail::not_<boost::move_detail::is_reference<Pair2> > >::type //This is needed for MSVC10 and ambiguous overloads
    dispatch_uses_allocator
    (ConstructAlloc & construct_alloc
-      , ArgAlloc & arg_alloc
+      , BOOST_FWD_REF(ArgAlloc) arg_alloc
       , Pair* p, BOOST_RV_REF_BEG Pair2 BOOST_RV_REF_END x)
 {  (dispatch_uses_allocator)(construct_alloc, arg_alloc, p, ::boost::move(x.first), ::boost::move(x.second));  }
 
-//template <typename ConstructAlloc, typename ArgAlloc, class Pair, class Pair2>
-//void dispatch_uses_allocator( ConstructAlloc & construct_alloc, ArgAlloc & arg_alloc
-//                            , pair<T1, T2>* p, piecewise_construct_t, tuple<Args1...> x, tuple<Args2...> y);
+
+//piecewise construction from boost::tuple
+#define BOOST_DISPATCH_USES_ALLOCATOR_PIECEWISE_CONSTRUCT_BOOST_TUPLE_CODE(N,M)\
+template< typename ConstructAlloc, typename ArgAlloc, class Pair \
+        , template<class, class, class, class, class, class, class, class, class, class> class BoostTuple \
+         BOOST_MOVE_I_IF(BOOST_MOVE_OR(N,M)) BOOST_MOVE_CLASS##N BOOST_MOVE_I_IF(BOOST_MOVE_AND(N,M)) BOOST_MOVE_CLASSQ##M > \
+typename container_detail::enable_if< container_detail::is_pair<Pair> >::type\
+   dispatch_uses_allocator( ConstructAlloc & construct_alloc, ArgAlloc & arg_alloc, Pair* pair, piecewise_construct_t\
+      , BoostTuple<BOOST_MOVE_TARG##N  BOOST_MOVE_I##N BOOST_MOVE_REPEAT(BOOST_MOVE_SUB(10,N),::boost::tuples::null_type)> p\
+      , BoostTuple<BOOST_MOVE_TARGQ##M BOOST_MOVE_I##M BOOST_MOVE_REPEAT(BOOST_MOVE_SUB(10,M),::boost::tuples::null_type)> q)\
+{\
+   (void)p; (void)q;\
+   (dispatch_uses_allocator)\
+      (construct_alloc, arg_alloc, container_detail::addressof(pair->first) BOOST_MOVE_I_IF(N) BOOST_MOVE_TMPL_GET##N);\
+   BOOST_TRY{\
+      (dispatch_uses_allocator)\
+         (construct_alloc, arg_alloc, container_detail::addressof(pair->second) BOOST_MOVE_I_IF(M) BOOST_MOVE_TMPL_GETQ##M);\
+   }\
+   BOOST_CATCH(...) {\
+      allocator_traits<ConstructAlloc>::destroy(construct_alloc, container_detail::addressof(pair->first));\
+      BOOST_RETHROW\
+   }\
+   BOOST_CATCH_END\
+}\
+//
+BOOST_MOVE_ITER2D_0TOMAX(9, BOOST_DISPATCH_USES_ALLOCATOR_PIECEWISE_CONSTRUCT_BOOST_TUPLE_CODE)
+#undef BOOST_DISPATCH_USES_ALLOCATOR_PIECEWISE_CONSTRUCT_BOOST_TUPLE_CODE
+
+//piecewise construction from Std Tuple
+#if !defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)
+
+   template< typename ConstructAlloc, typename ArgAlloc, class Pair
+           , template<class ...> class Tuple, class... Args1, class... Args2, size_t... Indexes1, size_t... Indexes2>
+   void dispatch_uses_allocator_index( ConstructAlloc & construct_alloc, ArgAlloc & arg_alloc, Pair* pair
+                                    , Tuple<Args1...>& t1, Tuple<Args2...>& t2, index_tuple<Indexes1...>, index_tuple<Indexes2...>)
+   {
+      (void)t1; (void)t2;
+      (dispatch_uses_allocator)(construct_alloc, arg_alloc, container_detail::addressof(pair->first), ::boost::forward<Args1>(get<Indexes1>(t1))...);
+      BOOST_TRY{
+         (dispatch_uses_allocator)(construct_alloc, arg_alloc, container_detail::addressof(pair->second), ::boost::forward<Args2>(get<Indexes2>(t2))...);
+      }
+      BOOST_CATCH(...){
+         allocator_traits<ConstructAlloc>::destroy(construct_alloc, container_detail::addressof(pair->first));
+         BOOST_RETHROW
+      }
+      BOOST_CATCH_END
+   }
+
+   template< typename ConstructAlloc, typename ArgAlloc, class Pair
+           , template<class ...> class Tuple, class... Args1, class... Args2>
+   typename container_detail::enable_if< container_detail::is_pair<Pair> >::type
+      dispatch_uses_allocator( ConstructAlloc & construct_alloc, ArgAlloc & arg_alloc, Pair* pair, piecewise_construct_t
+                             , Tuple<Args1...> t1, Tuple<Args2...> t2)
+   {
+      (dispatch_uses_allocator_index)( construct_alloc, arg_alloc, pair, t1, t2
+                                     , typename build_number_seq<sizeof...(Args1)>::type()
+                                     , typename build_number_seq<sizeof...(Args2)>::type());
+   }
+
+#elif defined(BOOST_MSVC) && (_CPPLIB_VER == 520)
+
+   //MSVC 2010 tuple implementation
+   #define BOOST_DISPATCH_USES_ALLOCATOR_PIECEWISE_CONSTRUCT_MSVC2010_TUPLE_CODE(N,M)\
+   template< typename ConstructAlloc, typename ArgAlloc, class Pair\
+           , template<class, class, class, class, class, class, class, class, class, class> class StdTuple\
+            BOOST_MOVE_I_IF(BOOST_MOVE_OR(N,M)) BOOST_MOVE_CLASS##N BOOST_MOVE_I_IF(BOOST_MOVE_AND(N,M)) BOOST_MOVE_CLASSQ##M > \
+   typename container_detail::enable_if< container_detail::is_pair<Pair> >::type\
+      dispatch_uses_allocator(ConstructAlloc & construct_alloc, ArgAlloc & arg_alloc, Pair* pair, piecewise_construct_t\
+                           , StdTuple<BOOST_MOVE_TARG##N  BOOST_MOVE_I##N BOOST_MOVE_REPEAT(BOOST_MOVE_SUB(10,N),::std::tr1::_Nil)> p\
+                           , StdTuple<BOOST_MOVE_TARGQ##M BOOST_MOVE_I##M BOOST_MOVE_REPEAT(BOOST_MOVE_SUB(10,M),::std::tr1::_Nil)> q)\
+   {\
+      (void)p; (void)q;\
+      (dispatch_uses_allocator)\
+         (construct_alloc, arg_alloc, container_detail::addressof(pair->first) BOOST_MOVE_I_IF(N) BOOST_MOVE_GET_IDX##N);\
+      BOOST_TRY{\
+         (dispatch_uses_allocator)\
+            (construct_alloc, arg_alloc, container_detail::addressof(pair->second) BOOST_MOVE_I_IF(M) BOOST_MOVE_GET_IDXQ##M);\
+      }\
+      BOOST_CATCH(...) {\
+         allocator_traits<ConstructAlloc>::destroy(construct_alloc, container_detail::addressof(pair->first));\
+         BOOST_RETHROW\
+      }\
+      BOOST_CATCH_END\
+   }\
+   //
+   BOOST_MOVE_ITER2D_0TOMAX(9, BOOST_DISPATCH_USES_ALLOCATOR_PIECEWISE_CONSTRUCT_MSVC2010_TUPLE_CODE)
+   #undef BOOST_DISPATCH_USES_ALLOCATOR_PIECEWISE_CONSTRUCT_MSVC2010_TUPLE_CODE
+
+#elif defined(BOOST_MSVC) && (_CPPLIB_VER == 540)
+   #if _VARIADIC_MAX >= 9
+   #define BOOST_DISPATCH_USES_ALLOCATOR_PIECEWISE_CONSTRUCT_MSVC2012_TUPLE_MAX_IT 9
+   #else
+   #define BOOST_DISPATCH_USES_ALLOCATOR_PIECEWISE_CONSTRUCT_MSVC2012_TUPLE_MAX_IT BOOST_MOVE_ADD(_VARIADIC_MAX, 1)
+   #endif
+
+   //MSVC 2012 tuple implementation
+   #define BOOST_DISPATCH_USES_ALLOCATOR_PIECEWISE_CONSTRUCT_MSVC2012_TUPLE_CODE(N,M)\
+   template< typename ConstructAlloc, typename ArgAlloc, class Pair\
+            , template<BOOST_MOVE_REPEAT(_VARIADIC_MAX, class), class, class, class> class StdTuple \
+            BOOST_MOVE_I_IF(BOOST_MOVE_OR(N,M)) BOOST_MOVE_CLASS##N BOOST_MOVE_I_IF(BOOST_MOVE_AND(N,M)) BOOST_MOVE_CLASSQ##M > \
+   typename container_detail::enable_if< container_detail::is_pair<Pair> >::type\
+      dispatch_uses_allocator\
+         ( ConstructAlloc & construct_alloc, ArgAlloc & arg_alloc, Pair* pair, piecewise_construct_t\
+         , StdTuple<BOOST_MOVE_TARG##N  BOOST_MOVE_I##N BOOST_MOVE_REPEAT(BOOST_MOVE_SUB(BOOST_MOVE_ADD(_VARIADIC_MAX, 3),N),::std::_Nil) > p\
+         , StdTuple<BOOST_MOVE_TARGQ##M BOOST_MOVE_I##M BOOST_MOVE_REPEAT(BOOST_MOVE_SUB(BOOST_MOVE_ADD(_VARIADIC_MAX, 3),M),::std::_Nil) > q)\
+   {\
+      (void)p; (void)q;\
+      (dispatch_uses_allocator)\
+         (construct_alloc, arg_alloc, container_detail::addressof(pair->first) BOOST_MOVE_I_IF(N) BOOST_MOVE_GET_IDX##N);\
+      BOOST_TRY{\
+         (dispatch_uses_allocator)\
+            (construct_alloc, arg_alloc, container_detail::addressof(pair->second) BOOST_MOVE_I_IF(M) BOOST_MOVE_GET_IDXQ##M);\
+      }\
+      BOOST_CATCH(...) {\
+         allocator_traits<ConstructAlloc>::destroy(construct_alloc, container_detail::addressof(pair->first));\
+         BOOST_RETHROW\
+      }\
+      BOOST_CATCH_END\
+   }\
+   //
+   BOOST_MOVE_ITER2D_0TOMAX(BOOST_DISPATCH_USES_ALLOCATOR_PIECEWISE_CONSTRUCT_MSVC2012_TUPLE_MAX_IT, BOOST_DISPATCH_USES_ALLOCATOR_PIECEWISE_CONSTRUCT_MSVC2012_TUPLE_CODE)
+   #undef BOOST_DISPATCH_USES_ALLOCATOR_PIECEWISE_CONSTRUCT_MSVC2010_TUPLE_CODE
+   #undef BOOST_DISPATCH_USES_ALLOCATOR_PIECEWISE_CONSTRUCT_MSVC2012_TUPLE_MAX_IT
+
+#endif   //!defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES)
 
 }  //namespace container_detail
 

@@ -73,14 +73,12 @@ namespace boost
 #else
             pthread_mutex_t* the_mutex = m.mutex()->native_handle();
 #endif
-            do {
-              res = pthread_cond_wait(&cond,the_mutex);
-            } while (res == EINTR);
+            res = pthread_cond_wait(&cond,the_mutex);
         }
 #if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
         this_thread::interruption_point();
 #endif
-        if(res)
+        if(res && res != EINTR)
         {
             boost::throw_exception(condition_error(res, "boost::condition_variable::wait failed in pthread_cond_wait"));
         }

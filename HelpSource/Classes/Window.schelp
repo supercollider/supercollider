@@ -78,8 +78,7 @@ METHOD:: asView
 METHOD:: currentSheet
 	note:: Only in Cocoa GUI ::
 	returns:
-		The current modal sheet attached to this window, if it exists. See link::Classes/SCModalSheet::.
-
+The current modal sheet attached to this window, if it exists. See code:: "SCModalSheet".help ::.
 
 
 

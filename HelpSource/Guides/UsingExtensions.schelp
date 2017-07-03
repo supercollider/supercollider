@@ -17,13 +17,13 @@ code::Platform.userExtensionDir:: and code::Platform.systemExtensionDir::.
 
 Typical user-specific extensions directories:
 table::
-## OSX     || ~/Library/Application Support/SuperCollider/Extensions/
+## macOS     || ~/Library/Application Support/SuperCollider/Extensions/
 ## Linux   || ~/.local/share/SuperCollider/Extensions/
 ::
 
 Typical system-wide extension directories:
 table::
-## OSX     || /Library/Application Support/SuperCollider/Extensions/
+## macOS     || /Library/Application Support/SuperCollider/Extensions/
 ## Linux   || /usr/share/SuperCollider/Extensions/
 ::
 

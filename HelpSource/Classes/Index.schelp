@@ -32,13 +32,13 @@ code::
 (
 {
 	SinOsc.ar(
-			Index.kr(
-				LocalBuf.newFrom([ 200, 300, 400, 500, 600, 800 ]),
-				LFSaw.kr(2.0).range(0, 7)
-			),
-			0,
-			0.5
-		)
+		Index.kr(
+			LocalBuf.newFrom([ 200, 300, 400, 500, 600, 800 ]),
+			LFSaw.kr(2.0).range(0, 7)
+		),
+		0,
+		0.5
+	)
 }.play;
 )
 
@@ -46,13 +46,13 @@ code::
 (
 {
 	SinOsc.ar(
-			Index.kr(
-				LocalBuf.newFrom([ 200, 300, 400, 500, 600, 800 ]),
-				MouseX.kr(0, 7)
-			),
-			0,
-			0.5
-		)
+		Index.kr(
+			LocalBuf.newFrom([ 200, 300, 400, 500, 600, 800 ]),
+			MouseX.kr(0, 7)
+		),
+		0,
+		0.5
+	)
 }.play;
 )
 
@@ -65,36 +65,36 @@ b = Buffer(s, t.size, 1);
 // alloc and set the values
 s.listSendMsg( b.allocMsg( b.setnMsg(0, t) ).postln );
 
-SynthDef(\help_Index, { arg out = 0, i_bufnum = 0;
-	Out.ar(0,
+SynthDef(\help_Index, { |out = 0, bufnum = 0|
+	Out.ar(out,
 		SinOsc.ar(
 			Index.kr(
-				i_bufnum,
+				bufnum,
 				LFSaw.kr(2).range(0, 7)
 			),
 			0,
 			0.5
 		)
 	)
-}).play(s, [\i_bufnum, b]);
+}).play(s, [\bufnum, b]);
 )
 
-b.setn(*[ 200, 300, 400, 500, 600, 800 ].scramble.postln - 30);
+b.setn(*[200, 300, 400, 500, 600, 800].scramble.postln - 30);
 
 
 (
-SynthDef(\help_Index, { arg out=0,i_bufnum=0;
-	Out.ar(0,
+SynthDef(\help_Index, { |out=0, bufnum=0|
+	Out.ar(out,
 		SinOsc.ar(
 			Index.kr(
-				i_bufnum,
+				bufnum,
 				MouseX.kr(0, BufFrames.ir(i_bufnum))
 			),
 			0,
 			0.5
 		)
 	)
-}).play(s, [\i_bufnum, b]);
+}).play(s, [\bufnum, b]);
 )
 
 b.free;

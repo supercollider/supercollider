@@ -134,7 +134,7 @@ returns:: A new instance of HIDFunc which responds to a specific prototype eleme
 
 
 METHOD:: element
-A convenience method to filter an incoming HID value based on the index of its element. If the device is using something non-standard, or you want to access keyboard elements directly, then this method can be used to look for it. Note that the element index is not necessarily the same across different operating systems (i.e. it may vary between Linux and OSX and Windows).
+A convenience method to filter an incoming HID value based on the index of its element. If the device is using something non-standard, or you want to access keyboard elements directly, then this method can be used to look for it. Note that the element index is not necessarily the same across different operating systems (i.e. it may vary between Linux and macOS and Windows).
 
 ARGUMENT:: func
 A link::Classes/Function:: or similar object which will respond to the incoming message. It will be passed...

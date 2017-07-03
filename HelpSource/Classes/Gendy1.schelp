@@ -129,33 +129,33 @@ if you have lots of CPs and you have fast frequencies, the CPU cost goes up a lo
 ::
 
 code::
-//defaults
+// defaults
 {Pan2.ar(Gendy1.ar)}.play
 
-//wandering bass/ powerline
-{Pan2.ar(Gendy1.ar(1,1,1.0,1.0,30,100,0.3,0.05,5))}.play
+// wandering bass/ powerline
+{ Pan2.ar(Gendy1.ar(1, 1, 1.0, 1.0, 30, 100, 0.3, 0.05, 5)) }.play
 
-//play me
-{Pan2.ar(RLPF.ar(Gendy1.ar(2,3,minfreq:20,maxfreq:MouseX.kr(100,1000),durscale:0.0,initCPs:40),500,0.3,0.2),0.0)}.play
+// play me
+{ Pan2.ar(RLPF.ar(Gendy1.ar(2, 3, minfreq:20, maxfreq:MouseX.kr(100,1000), durscale:0.0, initCPs:40), 500, 0.3, 0.2), 0.0)}.play
 
-//scream! - careful with your ears for this one!
+// scream! - careful with your ears for this one!
 (
 {
     var mx, my;
 
-    mx= MouseX.kr(220,440);
-    my= MouseY.kr(0.0,1.0);
+    mx = MouseX.kr(220, 440);
+    my = MouseY.kr(0.0, 1.0);
 
     Pan2.ar(Gendy1.ar(2,3,1,1,minfreq:mx, maxfreq:8*mx, ampscale:my, durscale:my, initCPs:7, mul:0.3), 0.0)
 }.play
 )
 
 
-//1 CP = random noise effect
-{Pan2.ar(Gendy1.ar(initCPs:1))}.play
+// 1 CP = random noise effect
+{ Pan2.ar(Gendy1.ar(initCPs:1)) }.play
 
-//2 CPs = suudenly an oscillator (though a fast modulating one here)
-{Pan2.ar(Gendy1.ar(initCPs:2))}.play
+// 2 CPs = suudenly an oscillator (though a fast modulating one here)
+{ Pan2.ar(Gendy1.ar(initCPs:2)) }.play
 
 
 //used as an LFO
@@ -164,129 +164,141 @@ code::
     Pan2.ar(
         SinOsc.ar(
             Gendy1.kr(2, 4,
-                SinOsc.kr(0.1,0,0.49,0.51),
-                SinOsc.kr(0.13,0,0.49,0.51),
+                SinOsc.kr(0.1, 0, 0.49, 0.51),
+                SinOsc.kr(0.13, 0, 0.49, 0.51),
                 3.4, 3.5,
-                SinOsc.kr(0.17,0,0.49,0.51),
-                SinOsc.kr(0.19,0,0.49,0.51),
-                10,10,50, 350),
+                SinOsc.kr(0.17, 0, 0.49, 0.51),
+                SinOsc.kr(0.19, 0, 0.49, 0.51),
+                10, 10, 50, 350),
         0, 0.3),
     0.0)
 }.play
 )
 
-//wasp
-{Pan2.ar(Gendy1.ar(0, 0, SinOsc.kr(0.1, 0, 0.1, 0.9),1.0, 50,1000, 1,0.005, 12, 12, 0.2), 0.0)}.play
+// wasp
+{ Pan2.ar(Gendy1.ar(0, 0, SinOsc.kr(0.1, 0, 0.1, 0.9), 1.0, 50, 1000, 1, 0.005, 12, 12, 0.2), 0.0)}.play
 
 
-//modulate distributions
-//change of pitch as distributions change the duration structure and spectrum
-{Pan2.ar(Gendy1.ar(MouseX.kr(0,7),MouseY.kr(0,7),mul:0.2), 0.0)}.play
+// modulate distributions
+// change of pitch as distributions change the duration structure and spectrum
+{ Pan2.ar(Gendy1.ar(MouseX.kr(0, 7), MouseY.kr(0, 7), mul:0.2), 0.0) }.play
 
 
-//modulate num of CPs
-{Pan2.ar(Gendy1.ar(knum:MouseX.kr(1,13),mul:0.2), 0.0)}.play
+// modulate num of CPs
+{ Pan2.ar(Gendy1.ar(knum:MouseX.kr(1, 13), mul:0.2), 0.0) }.play
 
+// Gendy into Gendy ... with cartoon side effects
+	(
+		{
+			Pan2.ar(Gendy1.ar(
+				maxfreq:Gendy1.kr(5, 4, 0.3, 0.7, 0.1, MouseY.kr(0.1, 10), 1.0, 1.0, 5, 5, 500, 600),
+				knum:MouseX.kr(1, 13), mul:0.2), 0.0)
+		}.play
+	)
 
-(//Gendy into Gendy...with cartoon side effects
-{Pan2.ar(Gendy1.ar(
-    maxfreq:Gendy1.kr(5,4,0.3, 0.7, 0.1, MouseY.kr(0.1,10), 1.0, 1.0, 5,5, 500, 600),
-    knum:MouseX.kr(1,13),mul:0.2), 0.0)
-}.play
-)
-
-//use SINUS to track any oscillator and take CP positions from it, use adparam and ddparam as the inputs to sample
-{Pan2.ar(Gendy1.ar(6,6,LFPulse.kr(100, 0, 0.4, 1.0), SinOsc.kr(30, 0, 0.5),mul:0.2), 0.0)}.play
+// use SINUS to track any oscillator and take CP positions from it, use adparam and ddparam as the inputs to sample
+{ Pan2.ar(Gendy1.ar(6, 6, LFPulse.kr(100, 0, 0.4, 1.0), SinOsc.kr(30, 0, 0.5), mul:0.2), 0.0) }.play
 
 
 //try out near the corners especially
-(
-{Pan2.ar(Gendy1.ar(6,6,LFPulse.kr(MouseX.kr(0,200), 0, 0.4, 1.0),
-    SinOsc.kr(MouseY.kr(0,200), 0, 0.5),mul:0.2), 0.0)}.play
-)
+	(
+		{ 
+			Pan2.ar(Gendy1.ar(6,6,LFPulse.kr(MouseX.kr(0,200), 0, 0.4, 1.0),
+			SinOsc.kr(MouseY.kr(0,200), 0, 0.5),mul:0.2), 0.0)
+		}.play
+	)
 
-//texture
-(
-{
-Mix.fill(10,{
-var freq;
+// texture
+	(
+		{
+			Mix.fill(10, {
+				var freq = rrand(130,160.3);
+				Pan2.ar(SinOsc.ar(Gendy1.ar(6.rand, 6.rand, SinOsc.kr(0.1, 0, 0.49, 0.51),
+					SinOsc.kr(0.13, 0, 0.49, 0.51), freq, freq, SinOsc.kr(0.17, 0, 0.49, 0.51),
+					SinOsc.kr(0.19, 0, 0.49, 0.51), 12, 12, 200, 400), 0, 0.1), 1.0.rand2)
+			})
+		}.play
+	)
 
-freq= rrand(130,160.3);
-Pan2.ar(SinOsc.ar(Gendy1.ar(6.rand,6.rand,SinOsc.kr(0.1,0,0.49,0.51),
-    SinOsc.kr(0.13,0,0.49,0.51),freq ,freq, SinOsc.kr(0.17,0,0.49,0.51),
-    SinOsc.kr(0.19,0,0.49,0.51), 12, 12, 200, 400), 0, 0.1), 1.0.rand2)
-});
-}.play
-)
+// wahhhhhhhh- try durscale 10.0 and 0.0 too
+	(
+		{
+			Pan2.ar(
+				CombN.ar(
+					Resonz.ar(
+						Gendy1.ar(2, 3, minfreq:1, maxfreq: MouseX.kr(10, 700), durscale:0.1, initCPs:10),
+						MouseY.kr(50, 1000), 0.1),
+					0.1, 0.1, 5, 0.6
+				),
+				0.0)
+		}.play
+	)
 
-//wahhhhhhhh- try durscale 10.0 and 0.0 too
-(
-{Pan2.ar(
-CombN.ar(
-Resonz.ar(
-Gendy1.ar(2,3,minfreq:1, maxfreq:MouseX.kr(10,700), durscale:0.1, initCPs:10),
-MouseY.kr(50,1000), 0.1)
-,0.1,0.1,5, 0.6
-)
-, 0.0)}.play
-)
+// overkill
+	(
+		{
+			var n = 10;
+			Mix.fill(n, {
+				var freq, numcps;
 
-//overkill
-(
-{
-var n;
-n=10;
+				freq = rrand(130, 160.3);
+				numcps = rrand(2, 20);
+				Pan2.ar(
+					Gendy1.ar(
+						6.rand, 6.rand, 1.0.rand, 1.0.rand, freq, freq, 1.0.rand, 1.0.rand, numcps,
+						SinOsc.kr(exprand(0.02, 0.2), 0, numcps/2, numcps/2), 0.5 / (n.sqrt)
+					),
+					1.0.rand2
+				)
+			})
+		}.play
+	)
 
-Mix.fill(n,{
-var freq, numcps;
+// another traffic moment
+	(
+		{
+			var n;
+			n =10;
 
-freq= rrand(130,160.3);
-numcps= rrand(2,20);
-Pan2.ar(Gendy1.ar(6.rand,6.rand,1.0.rand,1.0.rand,freq ,freq, 1.0.rand, 1.0.rand, numcps,
-    SinOsc.kr(exprand(0.02,0.2), 0, numcps/2, numcps/2), 0.5/(n.sqrt)), 1.0.rand2)
-});
-}.play
-)
+			Resonz.ar(
+				Mix.fill(n, {
+					var freq, numcps;
 
-//another traffic moment
-(
-{
-    var n;
-    n=10;
+					freq = rrand(50,560.3);
+					numcps = rrand(2,20);
+					Pan2.ar(Gendy1.ar(6.rand, 6.rand, 1.0.rand, 1.0.rand, freq, freq, 1.0.rand, 1.0.rand, numcps,
+						SinOsc.kr(exprand(0.02, 0.2), 0, numcps/2, numcps/2), 0.5/(n.sqrt)), 1.0.rand2)
+				}),
+				MouseX.kr(100,2000),
+				MouseY.kr(0.01,1.0)
+			)
+		}.play
+	)
 
-    Resonz.ar(
-    Mix.fill(n,{
-    var freq, numcps;
+	(
+		{
+			var n = 15;
 
-    freq= rrand(50,560.3);
-    numcps= rrand(2,20);
-    Pan2.ar(Gendy1.ar(6.rand,6.rand,1.0.rand,1.0.rand,freq ,freq, 1.0.rand, 1.0.rand, numcps,
-        SinOsc.kr(exprand(0.02,0.2), 0, numcps/2, numcps/2), 0.5/(n.sqrt)), 1.0.rand2)
-    })
-    ,MouseX.kr(100,2000), MouseY.kr(0.01,1.0))
-    ;
-}.play
-)
 
-(
-{
-var n;
-n=15;
+			Resonz.ar(
+				Mix.fill(n,{
+					var freq, numcps;
 
-Out.ar(0,
-Resonz.ar(
-Mix.fill(n,{
-var freq, numcps;
+					freq = rrand(330, 460.3);
+					numcps = rrand(2, 20);
+					Pan2.ar(
+						Gendy1.ar(
+							6.rand, 6.rand, 1.0.rand, 1.0.rand, freq,
+							MouseX.kr(freq, 2*freq), 1.0.rand, 1.0.rand, numcps,
+							SinOsc.kr(exprand(0.02, 0.2), 0, numcps/2, numcps/2), 0.5/(n.sqrt)
+						),
+						1.0.rand2
+					)
+				}),
+				MouseX.kr(100, 2000), MouseY.kr(0.01, 1.0)
+			)
 
-freq= rrand(330,460.3);
-numcps= rrand(2,20);
-Pan2.ar(Gendy1.ar(6.rand,6.rand,1.0.rand,1.0.rand,freq,MouseX.kr(freq,2*freq), 1.0.rand, 1.0.rand, numcps,
-    SinOsc.kr(exprand(0.02,0.2), 0, numcps/2, numcps/2), 0.5/(n.sqrt)), 1.0.rand2)
-})
-,MouseX.kr(100,2000), MouseY.kr(0.01,1.0))
-)
-
-}.play;
-)
+		}.play;
+	)
 ::
 

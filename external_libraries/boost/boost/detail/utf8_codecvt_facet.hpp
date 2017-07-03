@@ -113,9 +113,7 @@ struct BOOST_SYMBOL_VISIBLE utf8_codecvt_facet :
     public std::codecvt<wchar_t, char, std::mbstate_t>  
 {
 public:
-    BOOST_UTF8_DECL explicit utf8_codecvt_facet(std::size_t no_locale_manage=0)
-        : std::codecvt<wchar_t, char, std::mbstate_t>(no_locale_manage) 
-    {}
+    BOOST_UTF8_DECL explicit utf8_codecvt_facet(std::size_t no_locale_manage=0);
     virtual  ~utf8_codecvt_facet(){}
 protected:
     BOOST_UTF8_DECL virtual std::codecvt_base::result do_in(

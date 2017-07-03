@@ -95,8 +95,13 @@ method:: title
 get the proxymixer window title.
 
 
-method:: getNameLeftBorder, setNameLeftBorder, shiftNameLeftBorder
-trade nameView size and volume slider size:
+method:: getNameLeftBorder
+gets current left border of nameView
+method:: setNameLeftBorder
+sets current left border of nameView, trading size with volume slider
+method:: shiftNameLeftBorder
+shifts current left border of nameView
+
 code::
 m.getNameLeftBorder; // get its current left border position
 m.setNameLeftBorder(250); // default

@@ -117,7 +117,7 @@ inline unsigned utf8_trailing_byte_count(boost::uint8_t c)
 #pragma warning(push)
 #pragma warning(disable:4100)
 #endif
-inline void invalid_utf32_code_point(::boost::uint32_t val)
+BOOST_NORETURN inline void invalid_utf32_code_point(::boost::uint32_t val)
 {
 #ifndef BOOST_NO_STD_LOCALE
    std::stringstream ss;

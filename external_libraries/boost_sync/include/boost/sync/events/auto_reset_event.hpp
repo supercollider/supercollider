@@ -144,7 +144,7 @@ public:
 #else
 // Check to see that there's support for native semaphores
 #include <boost/sync/detail/semaphore_config.hpp>
-#if defined(BOOST_SYNC_DETAIL_USE_POSIX_SEMAPHORES)
+#if defined(BOOST_SYNC_DETAIL_USE_POSIX_SEMAPHORES) || defined(BOOST_SYNC_DETAIL_USE_DISPATCH_SEMAPHORES)
 #include <boost/sync/detail/events/auto_reset_event_semaphore.hpp>
 #else
 #include <boost/sync/detail/events/auto_reset_event_emulation.hpp>

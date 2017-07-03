@@ -16,7 +16,7 @@
 #pragma once
 #endif
 
-#if defined(__GNUC__)
+#if defined(__GNUC__) && (((__GNUC__*100)+__GNUC_MINOR__) > 403)
 #pragma message "This header is deprecated, use boost/detail/winapi/get_current_process.hpp instead."
 #elif defined(_MSC_VER)
 #pragma message("This header is deprecated, use boost/detail/winapi/get_current_process.hpp instead.")

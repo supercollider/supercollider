@@ -28,6 +28,11 @@ start the recording synth.
 argument::paused
 if paused is false start recording immediately.
 
+argument::clock
+optional - the clock to use for scheduling recording ...
+argument::quant
+... if a non-nil quant is given.
+
 method::close
 stop recording, close file
 

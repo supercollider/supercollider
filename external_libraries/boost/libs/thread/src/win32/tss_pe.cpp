@@ -7,6 +7,7 @@
 // Boost Software License, Version 1.0. (See accompanying file
 // LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#include <boost/detail/winapi/config.hpp>
 #include <boost/thread/detail/config.hpp>
 
 #if defined(BOOST_HAS_WINTHREADS) && defined(BOOST_THREAD_BUILD_LIB) 
@@ -77,7 +78,6 @@ extern "C" const IMAGE_TLS_DIRECTORY32 _tls_used __attribute__ ((section(".rdata
 
     #include <stdlib.h>
 
-    #define WIN32_LEAN_AND_MEAN
     #include <windows.h>
 
 
@@ -112,7 +112,7 @@ extern BOOL (WINAPI * const _pDefaultRawDllMainOrig)(HANDLE, DWORD, LPVOID) = NU
 
     //Definitions required by implementation
 
-    #if (_MSC_VER < 1300) // 1300 == VC++ 7.0
+    #if (_MSC_VER < 1300) || (_MSC_VER > 1900) // 1300 == VC++ 7.0, 1900 == VC++ 14.0
         typedef void (__cdecl *_PVFV)();
         #define INIRETSUCCESS
         #define PVAPI void __cdecl

@@ -6,8 +6,8 @@ related:: Reference/Classes
 For a basic tutorial on how standard object-orientated classes are composed, look elsewhere
 link::http://www.google.com/search?q=oop+class+tutorial::
 
-note:: Class definitions are statically compiled when you launch supercollider or "recompile the library." This means
-that class definitions must be saved into a file with the extension .sc, in a disk location where supercollider looks
+note:: Class definitions are statically compiled when you launch SuperCollider or "recompile the library." This means
+that class definitions must be saved into a file with the extension .sc, in a disk location where SuperCollider looks
 for classes. Saving into the main class library (SCClassLibrary) is generally not recommended. It's preferable to use
 either the user or system extension directories.
 

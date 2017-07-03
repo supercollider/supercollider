@@ -30,6 +30,7 @@ Each virtual machine has a copy of VMGlobals, which contains the state of the vi
 #include "SC_AllocPool.h"
 #include "SC_RGen.h"
 #include <setjmp.h>
+#include <map>
 
 #define TAILCALLOPTIMIZE 1
 
@@ -77,6 +78,9 @@ struct VMGlobals {
 
 	// scratch context
 	long execMethod;
+	
+	// primitive exceptions
+	std::map<PyrThread*, std::pair<std::exception_ptr, PyrMethod*>> lastExceptions;
 } ;
 
 inline void FifoMsg::Perform(struct VMGlobals* g)

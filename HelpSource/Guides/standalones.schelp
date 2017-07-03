@@ -1,212 +1,348 @@
-TITLE:: Creating Standalone Applications
-SUMMARY:: A guide to creating SuperCollider-based applications
-CATEGORIES:: Platform>OSX, Tutorials
+TITLE:: Making Standalone Applications
+SUMMARY:: A guide to making SuperCollider-based applications by 'exporting' existing SuperCollider app configurations and projects.
+CATEGORIES:: Platform>macOS, Tutorials
 KEYWORD:: standalones, stand-alones
 
-NOTE:: The concept of standalone applications is only relevant on Mac OS X. There is no such concept on other platforms. ::
+NOTE:: The concept of standalone applications is mainly relevant on macOS. On linux, Miguel Negrão and Fredrik Olofsson have created similar ways of packing versions of SC3 into independent setups. ::
 
-Standalone applications are applications that run SuperCollider code in an opaque way, in the sense that the user does not need to install SuperCollider, manually run SuperCollider code, or even know that SuperCollider is involved. This is useful for distributing applications to the general public, or for creating special-purpose applications for your own use. There is one important restriction: the entire application must be open-source and comply with the GNU General Public License.
+section:: Introduction
 
-On Mac OS X, applications are special directories with an ".app" extension, known as emphasis::bundles::. SuperCollider emphasis::standalone applications:: are bundles that contain your SuperCollider code, as well as a copy of SuperCollider itself to run your code.
+SuperCollider 3.6 and earlier versions supported macOS Cocoa interfaces, and a special XCode project that allowed very flexible interface design, including removing and adding Menus. Since 3.7, SuperCollider uses Qt only, and the (now obsolete) standalone XCode project has been removed for 3.9. While the current Qt implementation is less flexible ATM, useful standalone applications can still be created with it using the scripts provided here (or similar ones).
 
-There are two ways of making standalone applications:
+One can package performance setups, installation pieces, software synthesis instruments, complex sound generators and other projects, into fully independent copies of the  SuperCollider.app including the IDE, and the Help system if desired. Custom interfaces can make such apps easily accessible to audiences that need not know how to install SuperCollider, run SuperCollider code, or even know that SuperCollider is involved.
+This is useful for distributing applications to the general public, or for creating special-purpose applications for your own use. There is one important restriction: the entire application must be open-source and comply with the GNU General Public License.
+
+On macOS, applications are special directories with an ".app" extension, known as emphasis::bundles::. SuperCollider emphasis::standalone applications:: are bundles that contain your SuperCollider code, as well as a renamed copy of SuperCollider itself that  runs your code.
+
+section:: Practical Guide
+
+(written by Alberto de Campo, 2017)
+
+This Guide is for exporting copies of an existing SC3 setup,
+for at least two scenarios:
 
 LIST::
-## Modifying an existing Standalone Template.app by editing the contents in its folder, which does not require XCode or any other development environment.
+## Freezing an SC-based setup for non-expert users,
+say an installation for a piece that runs in a museum,
+which is as easily movable and selfcontained as possible.
 
-## Creating a standalone application from scratch.
+## Copying a setup for a piece or performance setup,as backup
+or safety copy, keeping much flexibility for skilled users.
 ::
 
-SECTION:: Modifying the Template
+Creating more complex user-oriented applications with SC was possible in versions pre 3.6, and a number of people work on additions to SC that will allow similar flexibility again.
 
-If you do not have or use Apple Developer tools, the easiest way to create a standalone application is to modify an existing one. Here are instructions how to modify the basic template compiled from the SuperCollider source code:
-
-NUMBEREDLIST::
-
-## strong::Obtain the Template::
-
-	Obtain the compiled 'Standalone Template.app' for the desired version of SuperCollider, and make a copy of it for modification.
-
-## strong::Name Your Application::
-
-	LIST::
-	## In the Finder, rename the copy of 'Standalone Template.app' to e.g. YourApp.app
-	## Alt-click on YourApp.app, and select 'Show package contents'; this opens the folder inside the app.
-	## Open the file Contents/Info.plist (with PropertyListEditor if you have it, or any text editor).
-	## warning:: For safety, keep  a copy of the file Info.plist. around. ::
-	## In the section:
-teletype::
-...
-<key>CFBundleName</key>
-<string>Standalone Template</string>
-...
+Note::
+Known working versions for making standalones:
+strong::SC3.8.0, SC3.9dev from branch [2a105f1]::
+code::
+"https://supercollider.github.io/download".openOS;
 ::
-	replace 'Standalone Template' with YourApp
-	::
-
-## strong::Credits::
-
-	In Resources/English.lproj/Credits.rtf, add credits for all contributors to YourApp.
-
-## strong::Customize Help::
-
-	Edit Resources/HelpSource/Help.schelp to inform users about YourApp.
-
-## strong:: Add Resources, Extensions, etc.::
-
-	LIST::
-	## Put any soundfiles you intend to use in /Contents/Resources/sounds
-	## Put any extra UGen plugin libraries your app requires in (e.g. Kloink.scx) in Resources/plugins
-	## Put any classes for YourApp in Resources/SCClassLibrary
-	::
-
-## strong::Startup File::
-
-	In Resources/SCClassLibrary/, modify the file modifyStartup.sc to do anything your app needs at startup, such as boot the server, instantiate classes and run code... See the section link::#Custom Startup:: below.
-
-## strong::Test Your Application::
-
-	Start YourApp and test that it works. You can recompile, edit scripts, add classes, as in SuperCollider itself.
-
-## When your app works as desired - strong::Share and Enjoy!::
-
+Self-built SC versions may assume their code:: Platform.userAppSupportDir :: is called code::.../SuperCollider/ :: and not the name of the newly made app.
 ::
 
-section:: Creating from Scratch
+subsection:: How this guide works
 
-subsection:: Basic Setup and Building
+This guide is a set of scripts for creating a SuperCollider-based Standalone app in a few basic steps:
 
-NUMBEREDLIST::
+numberedlist::
+## copy the open SuperCollider.app or SC3-derived standalone.
 
-## strong::Obtain SuperCollider Source Code::
+## fix the copy's info files so it uses its own userAppSupportDir
 
-	The easiest way to do so is to download the latest source release from SourceForge:
-	http://supercollider.sourceforge.net/downloads/
+## test that Platform.userAppSupportDir is independent in the new app!
 
-## strong::Open XCode Project::
+... Then the adaptation to the specific project begins: ...
 
-	Open the XCode project located at strong::platform/mac/Language.xcodeproj:: within the SuperCollider sources.
+## transfer active quarks and extensions to the new app
 
-## strong::Name Your Application::
+## copy the project folder used to the new app
 
-	Rename the "Standalone Template" target by control-clicking it and choosing "Rename". This target name is used for both the .app name and for the name presented in the menu bar.
+## make an internal startupFile for it
 
-image::standalones_rename.png::
-
-## strong::Add Resources::
-
-	Customize the "Standalone Resources" directory, which is located at the root of the SuperCollider source directory. Any files you put in this directory will override the files originating from the SuperCollider source at the same destination.
-
-	For example:
-	LIST::
-	## If you wanted to create your own version of Array.sc you would need to create the following path (creating folders where necessary):
-
-	teletype::Standalone Resources/SCClassLibrary/Common/Collections/Array.sc::
-
-	Your version of Array.sc will now overide the default.
-
-	## teletype::Standalone Resources/SCcube.icns:: can be overridden to provide a custom icon.
-
-	## teletype::Standalone Resources/English.lproj/MainMenu.nib:: can be overridden to provide a custom menu bar
-
-	## teletype::Standalone Resources/English.lproj/Credits.rtf:: can be overridden to provide a new about box.
-	::
-
-	The template "Standalone Resources" directory implements an application that shows a window with a button that generates a tone when clicked.
-
-## strong::Build Application::
-
-	Build the standalone application by control-clicking on the target and choosing "Build [target name]". This will place your standalone app in the build directory.
-
-image::standalones_build.png::
-
+## test and adapt until it does what you want
 ::
 
-NOTE:: It is recommended that you develop your entire SuperCollider code in a normal SuperCollider environment before creating a standalone application.::
+subsection:: What to prepare
 
-subsection:: Custom Startup
+list::
+## have your system ready with all desired quarks installed,
+and a working startup file. (can be a very simple test setup)
 
-You've now created an application that behaves exactly like SuperCollider. To run your own code on launch and simulate an ordinary application, you'll need to modify the startup-related methods, which are overwritten in (Standalone Resources)/SCClassLibrary/modifyStartup.sc.
+## read each section, then try evaluating it at once;
+ in case of problems, evaluate line by line,
+ and tell me where which problems happen
 
-Here's an example (the same code used by the SC_StandAlone target):
+## when you get to the wakeup kiss, share and enjoy!
+::
+
+subsection:: Naming, copying, and fixing up the new app
 
 code::
-+ OSXPlatform {
+// TO PREPARE, CHECK YOUR CURRENT config in Preferences->Interpreter:
+// you should be using the internal SCClassLibrary and HelpSource,
+// not an external git repository!
+// To test exporting extensions, it is best to have some quarks
+// or other extensions installed, as seen in the includePaths.
 
+// 0 - define name and location of new app + helper functions
+(
+// define the name for the new app and its location:
+~newAppName = "StehAllein";
+~newAppLocation = "~/Desktop".standardizePath;
+
+// --- nothing to be changed below this line --- \\
+// some helper functions
+~readText = { |path|
+	var f = File(path, "r"); var t = f.readAllString; f.close; t;
+};
+~writeText = { |path, string| File(path, "w").write(string).close; };
+~copyFolder = { |orig, dest|
+	var str = "cp -ir" + quote(orig) + quote(dest);
+	str.postcs;
+	unixCmd(str);
+};
+
+// make some needed paths and folders
+~pathToThisApp = String.scDir.dirname.dirname;
+~thisAppName = ~pathToThisApp.basename.splitext.first;
+~pathToNewApp = ~newAppLocation +/+ ~newAppName ++ ".app";
+~newAppResDir = ~pathToNewApp +/+ "Contents/Resources";
+~newAppSupportDir = Platform.userConfigDir.dirname +/+ ~newAppName;
+);
+
+
+(
+// 1. make a copy of thisApp with the newAppName:
+// can take a while on slow harddisks.
+// wait for RESULT = 0 to show!
+
+if (File.exists(~pathToNewApp).not) {
+	~copyFolder.(~pathToThisApp, ~pathToNewApp);
+	File.mkdir(~newAppSupportDir);
+} { warn("supportDir % already exists.".format(~pathToNewApp)) };
+);
+
+(
+// 2. fixups in the new app:
+// a. fix the Info.plist file by replacing the name:
+~infoPlistPath = ~pathToNewApp +/+ "Contents/Info.plist";
+// get its string, replace the SC names, write again
+~infoString = ~readText.(~infoPlistPath);
+~executableIndex = ~infoString.find("<key>CFBundleExecutable</key>");
+~nameToReplace = ~infoString.copyRange(
+	~infoString.find("<string>", offset: ~executableIndex) + 8,
+	~infoString.find("</string>", offset: ~executableIndex) - 1
+);
+
+"replacing bundleName % in plist file at these locations: "
+.postf(~nameToReplace.cs);
+~foundNameLocs = ~infoString.findAll(~nameToReplace).postln;
+
+~newInfoString = ~infoString.replace(~nameToReplace, ~newAppName );
+~writeText.(~infoPlistPath, ~newInfoString);
+// ~readText.(~infoPlistPath);
+
+// b. rename the binary file:
+"renaming macos binary to: ".post;
+// fixups in the new app - 2. rename the binary inside the app folder
+unixCmd("mv -i"
+	+ quote(~pathToNewApp +/+ "Contents/MacOS/" +/+ ~nameToReplace)
+	+ quote(~pathToNewApp +/+ "Contents/MacOS/" ++ ~newAppName).postln
+);
+);
+
+
+// 3. *** time for the first wakeup kiss *** //
+unixCmd("open" + ~pathToNewApp);
+
+// ... and independence test:
+// IN THE NEW APP, run this code:
+Platform.userAppSupportDir.postcs;
+::
+
+NOTE:: THIS SHOULD END WITH ~newAppName! If it has the original ~thisAppName (the one you started from, e.g. ~/././SuperCollider), the new app will not be interfere with SuperCollider!
+So, delete the app again, and start over using a recommended version of SC3 (see tested list on top)!
+
+::
+
+subsection:: Adaptation to the project
+
+Quit the new standalone and go back to the starting app to do:
+list::
+
+##4. overwrite .startupFiles to look inside the app folder
+
+##5. make a demo project folder and loadfile for the new app
+
+##6.create a startup file that loads the project loadfile
+
+##7. transfer active quarks and extensions to the new app
+
+##8. replace/fill the project folder with your files, scripts etc
+::
+
+code::
+(
+// 4. write a class extension file to look for the startupFile
+// in the app, in String.scDir for self-containment.
+~overDir = ~newAppResDir +/+ "SCClassLibrary/SystemOverwrites";
+File.mkdir(~overDir);
+~writeText.value(~overDir +/+ "extModStartupFile.sc",
+	"+ OSXPlatform {
 	startupFiles {
-//		var filename = "startup.rtf";
-//		^[this.systemAppSupportDir +/+ filename, this.userAppSupportDir +/+ filename];
-			// look for startup files inside the app Contents directory
-		var filename = "startup.*";
-		^(String.scDir +/+ filename).pathMatch;
-	}
-
-	startup {
-		Document.implementationClass.startup;
-		// make a server window for the internal if you like
-		Server.internal.makeWindow;
-//		Server.local.makeWindow;
-		// uncomment if you use a startup file
-//		this.loadStartupFiles;
-		// uncomment if you have multiple help files
-//		Help.addToMenu;
+		^[String.scDir +/+ \"startup.scd\"];
 	}
 }
+"
+);
+~overDir.openOS;
+)
 
-+ Main {
-	startup {
-		platform = this.platformClass.new;
-		platform.initPlatform;
+(
+// 5. write a basic startupFile:
+~startupCode =
+"// basic example startup file for osx standalone.
+// avoid clash with default SC server
+s.addr.port = 57105;
 
-		super.startup;
+// boots server and plays a little sound
+s.waitForBoot {
+	{
+		Line.kr(1, 0, 10, doneAction: 2) * SinOsc.ar(1000)
+		* EnvGen.ar(Env.perc(0.01, 0.25), Impulse.kr(2, [0, 0.5]), 0.1)
 
-		GUI.fromID( this.platform.defaultGUIScheme );
-		GeneralHID.fromID( this.platform.defaultHIDScheme );
+	}.play;
+};
+";
+~writeText.(~newAppResDir +/+ "startup.scd", ~startupCode);
+(~newAppResDir +/+ "startup.scd").openOS;
+)
 
-		// Set Server.default and the 's' interpreter variable to the internal server.
-		// You should use the internal server for standalone applications --
-		// otherwise, if your application has a problem, the user will
-		// be stuck with a process, possibly making sound, that he won't know
-		// how to kill.
-		Server.default = Server.internal;
-		interpreter.s = Server.default;
+// *** time for a second wakeup kiss *** //
+// should run the startup file and play a sound:
+unixCmd("open" + ~pathToNewApp);
 
-			// some folder paths that should point inside the app's Contents folder
-		SynthDef.synthDefDir = String.scDir +/+ "synthdefs/";
-		Archive.archiveDir = String.scDir;
 
-		this.platform.startup;
+// 6. For larger projects:
+//    make an example project folder with a loadfile in it,
+//    and a startup file that points to the loadfile.
+(
+~projDirName = ~newAppName ++ "_files";
+~projDir = ~newAppResDir +/+ ~projDirName;
+File.mkdir(~projDir);
+~projDir.openOS;
 
-		// from here on, you should customize what should happen...
+~loadFileCode =
+"\"*** startup file for % loading.\".postln;
+\"*** My Platform.userAppSupportDir is: \".postln;
+Platform.userAppSupportDir.postcs;
+thisProcess.nowExecutingPath.openOS;
 
-		StartUp.run;
+// configure server options here if needed:
+s.options.memSize = 8192 * 16;
+// move server port away from default (57110)
+// to avoid interference/clashes with SuperCollider itself:
+s.addr.port = 57105;
 
-		// One can boot the server, then use .load to evaluate a file
-		// OR - put things into a class... like the SCSA_Demo
+s.waitForBoot {
+	\"*** server booted, plays ping.\".postln;
+	Env.perc.test;
 
-		"Welcome to Standalone Demo made with SuperCollider, type cmd-d for help.".postln;
+	\"*** loading files next ? \".postln;
+	// put your loading sequence here:
+	// \"loadX.scd\".loadRelative;
+	// s.sync; // e.g. when loading buffers
+ 	// 1.wait;
+ 	// \"loadY.scd\".loadRelative;
+};"
+.format(~newAppName);
 
-		Server.default.boot;
+~loadfilepath = ~projDir +/+ "00_loadMe.scd";
+~writeText.value(~loadfilepath, ~loadFileCode);
+~loadfilepath.openOS;
 
-		Server.default.waitForBoot({
-			SCSA_Demo.new("The Cheese Stands Alone", Rect(400, 400, 300, 200), interpreter.s).front;
-//			(String.scDir.dirname ++ "/MFBSD.rtf").load;
-		});
-		// close post window if user should not have it
-//		Document.listener.close
-	}
 
-}
+// write a startupFile that points to the load file:
+~startupCode =
+"// example startup file for osx standalone.
+// running loadfile in this project folder:
+%.loadRelative;
+".format((~projDirName +/+ ~loadfilepath.basename).cs);
+
+~writeText.(~newAppResDir +/+ "startup.scd", ~startupCode);
+(~newAppResDir +/+ "startup.scd").openOS;
+)
+
+// *** time for the third wakeup kiss *** //
+unixCmd("open" + ~pathToNewApp);
+
+// this should open the new app, and its loadfile!
+
+
+// 7. create an internal extensions folder inside the new app,
+// and copy all the currently active includePaths there:
+(
+~newAppQuarksDir = ~newAppResDir +/+ "InternalExtensions";
+
+// copy all folders in my current quarks includePaths
+// to Resources/SCClassLibrary to freeze them:
+File.mkdir(~newAppQuarksDir);
+
+~pathsToCopy = LanguageConfig.includePaths.reject { |path|
+	["SCClassLibrary", "HelpSource"].includesEqual(path.basename)
+};
+
+~pathsToCopy.collect(_.basename).sort.printcsAll;
+
+if (~newAppQuarksDir.pathMatch.notEmpty) {
+	"/*** copying Quarks : ***/".postln;
+	~pathsToCopy.do { |path|
+		unixCmd(
+			"cd" + quote(~newAppQuarksDir) ++ ";" ++
+			" cp -ir" + quote(path).postln + ".");
+	};
+};
+"";
+)
+// and now the new app folder contains all quarks:
+~newAppQuarksDir.openOS;
+
+// open the new app:
+unixCmd("open" + ~pathToNewApp);
+
+// AND IN THE NEW APP, run this to create a self-contained startup config file:
+(
+// use the internal extensions - repeat this when you move the app!
+LanguageConfig.addIncludePath(String.scDir +/+ "InternalExtensions");
+// exclude the default
+LanguageConfig.addExcludePath(Platform.userExtensionDir);
+LanguageConfig.addExcludePath(Platform.systemExtensionDir);
+LanguageConfig.store;
+
+// see if the internal path was stored OK:
+LanguageConfig.includePaths.last;
+// this should not be empty:
+LanguageConfig.includePaths.last.pathMatch.postln;
+)
+
+// STILL IN THE NEW APP, REBOOT THE INTERPRETER NOW!
+// - the added quarks should now be present.
 ::
 
-The class SCSA_Demo in the code above is supposed to contain the entire application, including the main window. This is the tidiest way to work, and requires the least modification to SuperCollider. If you don't want to write a class, you can execute an .scd file instead:
+Note:: You can use the Standalone quark to make sure your app remains closed, keeps using its to its InternalExtensions dir, and continues to ignore anything in its userExtensionDir or systemExtensionDir.
+::
 code::
-load(Platform.resourceDir ++ "/myapp.scd");
+// IN THE NEW APP, DO:
+Quarks.install("https://github.com/adcxyz/Standalone");
+// reboot interpreter, then do
+Standalone.activate;
+// reboot interpreter again, and done.
+
+
+// 8. Now, put your project files in the project folder,
+// adapt the loading sequence,
+// and test until everything works to perfection...
+
+// Share and Enjoy your special standalone app!
 ::
-However, any sizable application will benefit from encapsulation in classes.
-
-Note that the example uses the internal server. This is part and parcel of keeping the application stand-alone; it shouldn't call extraneous processes behind the user's back that will persist if the application fails. If you need to use the local server for some reason, make sure scsynth is in your resources folder.
-
-subsection:: Managing Multiple Standalone Applications
-
-To manage several standalone applications simply create several targets in the XCode project, and several resources directories. The resources directories should be named according to "[target name] Resources". If a resources directory is found when building that matches the target name, that directory will be used instead of the default "Standalone Resources" directory.

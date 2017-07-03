@@ -1,7 +1,28 @@
 /*
-HTML renderer
+ ________________________________________
+/ HEY! If you make changes to SCDoc,     \
+| remember to increment SCDoc.version in |
+| SCDoc.sc so you force the docs to      |
+\ regenerate.                            /
+ ----------------------------------------
+    \                                  ___-------___
+     \                             _-~~             ~~-_
+      \                         _-~                    /~-_
+             /^\__/^\         /~  \                   /    \
+           /|  O|| O|        /      \_______________/        \
+          | |___||__|      /       /                \          \
+          |          \    /      /                    \          \
+          |   (_______) /______/                        \_________ \
+          |         / /         \                      /            \
+           \         \^\\         \                  /               \     /
+             \         ||           \______________/      _-_       //\__//
+               \       ||------_-~~-_ ------------- \ --/~   ~\    || __/
+                 ~-----||====/~     |==================|       |/~~~~~
+                  (_(__/  ./     /                    \_\      \.
+                         (_(___/                         \_____)_)
 */
 SCDocHTMLRenderer {
+	classvar <binaryOperatorCharacters = "!@%&*-+=|<>?/";
 	classvar currentClass, currentImplClass, currentMethod, currArg;
 	classvar currentNArgs;
 	classvar footNotes;
@@ -109,6 +130,7 @@ SCDocHTMLRenderer {
 
 	*renderHeader {|stream, doc|
 		var x, cats, m, z;
+		var thisIsTheMainHelpFile;
 		var folder = doc.path.dirname;
 		var undocumented = false;
 		if(folder==".",{folder=""});
@@ -119,45 +141,96 @@ SCDocHTMLRenderer {
 			baseDir = baseDir ++ "/..";
 		};
 
+		thisIsTheMainHelpFile = (doc.title == "Help") and: {
+			(folder == "") or:
+			{ (thisProcess.platform.name === \windows) and: { folder == "Help" } }
+		};
+
 		stream
-		<< "<html><head><title>" << doc.title << "</title>\n"
+		<< "<!doctype html>"
+		<< "<html lang='en'>"
+		<< "<head><title>";
+
+		if(thisIsTheMainHelpFile) {
+			stream << "SuperCollider " << Main.version << " Help";
+		} {
+			stream << doc.title << " | SuperCollider " << Main.version << " Help";
+		};
+
+		stream
+		<< "</title>\n"
 		<< "<link rel='stylesheet' href='" << baseDir << "/scdoc.css' type='text/css' />\n"
 		<< "<link rel='stylesheet' href='" << baseDir << "/frontend.css' type='text/css' />\n"
 		<< "<link rel='stylesheet' href='" << baseDir << "/custom.css' type='text/css' />\n"
 		<< "<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />\n"
+		<< "<script>\n"
+		<< "var helpRoot = '" << baseDir << "';\n"
+		<< "var scdoc_title = '" << doc.title << "';\n"
+		<< "var scdoc_sc_version = '" << Main.version << "';\n"
+		<< "</script>\n"
 		<< "<script src='" << baseDir << "/scdoc.js' type='text/javascript'></script>\n"
 		<< "<script src='" << baseDir << "/docmap.js' type='text/javascript'></script>\n" // FIXME: remove?
 		<< "<script src='" << baseDir << "/prettify.js' type='text/javascript'></script>\n"
 		<< "<script src='" << baseDir << "/lang-sc.js' type='text/javascript'></script>\n"
-		<< "<script type='text/javascript'>var helpRoot='" << baseDir << "';</script>\n"
 		<< "</head>\n";
 
 		stream
-		<< "<ul id='menubar'></ul>\n"
 		<< "<body onload='fixTOC();prettyPrint()'>\n"
 		<< "<div class='contents'>\n"
-		<< "<div class='header'>\n"
-		<< "<div id='label'>SuperCollider " << folder.asString.toUpper;
-		if(doc.isExtension) {
-			stream << " (extension)";
-		};
-		stream << "</div>\n";
+		<< "<div id='menubar'></div>\n"
+		<< "<div class='header'>\n";
 
-		doc.categories !? {
+
+		if(thisIsTheMainHelpFile.not) {
 			stream
-			<< "<div id='categories'>"
-			<< (doc.categories.collect {|r|
-				"<a href='"++baseDir +/+ "Browse.html#"++r++"'>"++r++"</a>"
-			}.join(", "))
-			<< "</div>\n";
+			<< "<div id='label'>\n"
+			<< "<span id='folder'>" << folder.asString;
+			if(doc.isExtension) {
+				stream << " (extension)";
+			};
+			stream << "</span>\n";
+
+			doc.categories !? {
+				// Prevent the label from starting with "|".
+				if(folder.asString.size > 0) {
+					stream << " | "
+				};
+
+				stream << "<span id='categories'>"
+
+				<< (doc.categories.collect { | path |
+					// get all the components of a category path ("UGens>Generators>Deterministic")
+					// we link each crumb of the breadcrumbs separately.
+					var pathElems = path.split($>);
+
+					// the href for "UGens" will be "UGens", for "Generators" "UGens>Generators", etc.
+					pathElems.collect { | elem, i |
+						var atag = "<a href='" ++ baseDir +/+ "Browse.html#";
+						atag ++ pathElems[0..i].join(">") ++ "'>"++ elem ++"</a>"
+					}.join("&#8201;&gt;&#8201;"); // &#8201; is a thin space
+
+				}.join(" | "))
+
+				<< "</span>\n";
+			};
+
+			stream << "</div>";
 		};
 
 		stream << "<h1>";
-		if((doc.title=="Help") and: {((thisProcess.platform.name===\windows) and: (folder=="Help")) or: {folder==""}}) {
+		if(thisIsTheMainHelpFile) {
 			stream << "SuperCollider " << Main.version;
 			stream << "<span class='headerimage'><img src='" << baseDir << "/images/SC_icon.png'/></span>";
 		} {
 			stream << doc.title;
+		};
+		if(doc.isClassDoc and: { currentClass.notNil } and: { currentClass != Object }) {
+			stream << "<span id='superclasses'>"
+			<< " : "
+			<< (currentClass.superclasses.collect {|c|
+				"<a href=\"../Classes/"++c.name++".html\">"++c.name++"</a>"
+			}.join(" : "))
+			<< "</span>\n";
 		};
 		if(doc.isExtension) {
 			stream
@@ -176,22 +249,14 @@ SCDocHTMLRenderer {
 			if(currentClass.notNil) {
 				m = currentClass.filenameSymbol.asString;
 				stream << "<div id='filename'>Source: "
-				<< "<a href='" << URI.fromLocalPath(m).asString << "'>"
-				<< m.dirname << "/" << m.basename << "</a></div>";
-				if(currentClass != Object) {
-					stream << "<div id='superclasses'>"
-					<< "Inherits from: "
-					<< (currentClass.superclasses.collect {|c|
-						"<a href=\"../Classes/"++c.name++".html\">"++c.name++"</a>"
-					}.join(" : "))
-					<< "</div>\n";
-				};
+				<< "<a href='%' title='%'>".format(URI.fromLocalPath(m).asString, m)
+				<< m.basename << "</a></div>";
 				if(currentClass.subclasses.notNil) {
 					z = false;
 					stream << "<div id='subclasses'>"
 					<< "Subclasses: "
 					<< (currentClass.subclasses.collect(_.name).sort.collect {|c,i|
-						if(i==12,{z=true;"<span id='hiddensubclasses' style='display:none;'>"},{""})
+						if(i==4,{z=true;"<span id='hiddensubclasses' style='display:none;'>"},{""})
 						++"<a href=\"../Classes/"++c++".html\">"++c++"</a>"
 					}.join(", "));
 					if(z) {
@@ -232,16 +297,37 @@ SCDocHTMLRenderer {
 		node.children.do {|child| this.renderSubTree(stream, child) };
 	}
 
-	*renderMethod {|stream, node, cls, icls, css, pfx|
+	*renderMethod {|stream, node, methodType, cls, icls|
+		var methodTypeIndicator;
+		var methodCodePrefix;
 		var args = node.text ?? ""; // only outside class/instance methods
 		var names = node.children[0].children.collect(_.text);
 		var mstat, sym, m, m2, mname2;
 		var lastargs, args2;
 		var x, maxargs = -1;
 		var methArgsMismatch = false;
+
+		methodTypeIndicator = switch(
+			methodType,
+			\classMethod, { "*" },
+			\instanceMethod, { "-" },
+			\genericMethod, { "" }
+		);
+
 		minArgs = inf;
 		currentMethod = nil;
 		names.do {|mname|
+			methodCodePrefix = switch(
+				methodType,
+				\classMethod, { if(cls.notNil) { cls.name.asString[5..] } { "" } ++ "." },
+				\instanceMethod, {
+					// If the method name contains any valid binary operator character, remove the
+					// "." to reduce confusion.
+					if(mname.asString.any(this.binaryOperatorCharacters.contains(_)), { "" }, { "." })
+				},
+				\genericMethod, { "" }
+			);
+
 			mname2 = this.escapeSpecialChars(mname);
 			if(cls.notNil) {
 				mstat = 0;
@@ -277,70 +363,71 @@ SCDocHTMLRenderer {
 					}
 					{args2.size<minArgs} {
 						minArgs = args2.size;
-					}
-				;
-				} {
-					m = nil;
-					m2 = nil;
-					mstat = 1;
-				};
-
-				x = {
-					stream << "<h3 class='" << css << "'>"
-					<< "<span class='methprefix'>" << (pfx??"&nbsp;") << "</span>"
-					<< "<a name='" << (pfx??".") << mname << "' href='"
-					<< baseDir << "/Overviews/Methods.html#"
-					<< mname2 << "'>" << mname2 << "</a>"
-				};
-
-				switch (mstat,
-					// getter only
-					1, { x.value; stream << " " << args << "</h3>\n"; },
-					// getter and setter
-					3, { x.value; stream << "</h3>\n"; },
-					// method not found
-					0, {
-						"SCDoc: In %\n"
-						"  Method %% not found.".format(currDoc.fullPath,pfx,mname2).warn;
-						x.value;
-						stream << ": METHOD NOT FOUND!</h3>\n";
-					}
-				);
-
-				// has setter
-				if(mstat & 2 > 0) {
-					x.value;
-					if(args2.size<2) {
-						stream << " = " << args << "</h3>\n";
-					} {
-						stream << "_ (" << args << ")</h3>\n";
-					}
-				};
-
-				m = m ?? m2;
-				m !? {
-					if(m.isExtensionOf(cls) and: {icls.isNil or: {m.isExtensionOf(icls)}}) {
-						stream << "<div class='extmethod'>From extension in <a href='"
-						<< URI.fromLocalPath(m.filenameSymbol.asString).asString << "'>"
-						<< m.filenameSymbol << "</a></div>\n";
-					} {
-						if(m.ownerClass == icls) {
-							stream << "<div class='supmethod'>From implementing class</div>\n";
-						} {
-							if(m.ownerClass != cls) {
-								m = m.ownerClass.name;
-								m = if(m.isMetaClassName) {m.asString.drop(5)} {m};
-								stream << "<div class='supmethod'>From superclass: <a href='"
-								<< baseDir << "/Classes/" << m << ".html'>" << m << "</a></div>\n";
-							}
-						}
 					};
+			} {
+				m = nil;
+				m2 = nil;
+				mstat = 1;
+			};
+
+			x = {
+				stream << "<h3 class='method-code'>"
+				<< "<span class='method-prefix'>" << methodCodePrefix << "</span>"
+				<< "<a class='method-name' name='" << methodTypeIndicator << mname << "' href='"
+				<< baseDir << "/Overviews/Methods.html#"
+				<< mname2 << "'>" << mname2 << "</a>"
+			};
+
+			switch (mstat,
+				// getter only
+				1, { x.value; stream << args; },
+				// getter and setter
+				3, { x.value; },
+				// method not found
+				0, {
+					"SCDoc: In %\n"
+					"  Method %% not found.".format(currDoc.fullPath, methodTypeIndicator, mname2).warn;
+					x.value;
+					stream << ": METHOD NOT FOUND!";
+				}
+			);
+
+			stream << "</h3>\n";
+
+			// has setter
+			if(mstat & 2 > 0) {
+				x.value;
+				if(args2.size<2) {
+					stream << " = " << args << "</h3>\n";
+				} {
+					stream << "_(" << args << ")</h3>\n";
+				}
+			};
+
+			m = m ?? m2;
+			m !? {
+				if(m.isExtensionOf(cls) and: {icls.isNil or: {m.isExtensionOf(icls)}}) {
+					stream << "<div class='extmethod'>From extension in <a href='"
+					<< URI.fromLocalPath(m.filenameSymbol.asString).asString << "'>"
+					<< m.filenameSymbol << "</a></div>\n";
+				} {
+					if(m.ownerClass == icls) {
+						stream << "<div class='supmethod'>From implementing class</div>\n";
+					} {
+						if(m.ownerClass != cls) {
+							m = m.ownerClass.name;
+							m = if(m.isMetaClassName) {m.asString.drop(5)} {m};
+							stream << "<div class='supmethod'>From superclass: <a href='"
+							<< baseDir << "/Classes/" << m << ".html'>" << m << "</a></div>\n";
+						}
+					}
 				};
+			};
 		};
 
 		if(methArgsMismatch) {
 			"SCDoc: In %\n"
-			"  Grouped methods % does not have the same argument signature."
+			"  Grouped methods % do not have the same argument signature."
 			.format(currDoc.fullPath, names).warn;
 		};
 
@@ -513,26 +600,26 @@ SCDocHTMLRenderer {
 			},
 // Methods
 			\CMETHOD, {
-				this.renderMethod (
+				this.renderMethod(
 					stream, node,
+					\classMethod,
 					currentClass !? {currentClass.class},
-					currentImplClass !? {currentImplClass.class},
-					"cmethodname", "*"
+					currentImplClass !? {currentImplClass.class}
 				);
 			},
 			\IMETHOD, {
-				this.renderMethod (
+				this.renderMethod(
 					stream, node,
+					\instanceMethod,
 					currentClass,
-					currentImplClass,
-					"imethodname", "-"
+					currentImplClass
 				);
 			},
 			\METHOD, {
-				this.renderMethod (
+				this.renderMethod(
 					stream, node,
-					nil, nil,
-					"imethodname", nil
+					\genericMethod,
+					nil, nil
 				);
 			},
 			\CPRIVATE, {},
@@ -788,7 +875,7 @@ SCDocHTMLRenderer {
 			<< doc.fullPath << "</a><br>"
 		};
 		stream << "link::" << doc.path << "::<br>"
-		<< "sc version: " << Main.version << "</div>"
+		<< "</div>"
 		<< "</div></body></html>";
 	}
 

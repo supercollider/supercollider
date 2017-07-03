@@ -3,7 +3,7 @@ summary:: How to find more help
 categories:: Help
 related:: Search, Browse, Help
 
-note:: This help file uses the key commands for OS X; on other systems, please substitute the Shortcuts as necessary ::
+note:: This help file uses the key commands for macOS; on other systems, please substitute the Shortcuts as necessary ::
 
 Listed below are a few techniques for tracking down documentation and functionality. Note: If some of the terms used below (e.g. class, method, inheritance, etc.) are unclear to you, you may wish to read the link::Guides/Glossary:: and link::Browse#Language:: helpfiles for detail on some of these concepts. Reading a general tutorial on Object Oriented Programming at some point could also be useful, as could reading a FAQ, etc. about Smalltalk. Smalltalk is the general purpose OOP language upon which the the design of the SuperCollider language is based. Its syntax is different than SC's, but conceptually it has much in common.
 

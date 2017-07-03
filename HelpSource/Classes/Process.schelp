@@ -24,7 +24,7 @@ Returns the full path to the file containing the code that is currently executin
 
 teletype::nowExecutingPath:: is valid only for interactive code, i.e., code files with a teletype::.scd:: extension. It does not apply to class definitions (teletype::.sc::). For that, use code::thisMethod.filenameSymbol:: or code::this.class.filenameSymbol::.
 
-This method is supported in the SuperCollider IDE, the Macintosh-only SuperCollider.app, and the scel (SuperCollider-Emacs-Lisp) environment. In other editor environments, it will return code::nil::.
+This method is supported in the SuperCollider IDE, the macOS-only SuperCollider.app, and the scel (SuperCollider-Emacs-Lisp) environment. In other editor environments, it will return code::nil::.
 
 WARNING:: teletype::nowExecutingPath:: has a corresponding setter method, teletype::nowExecutingPath_::, for internal use only by the interpreter. Do not call the setter method!::
 

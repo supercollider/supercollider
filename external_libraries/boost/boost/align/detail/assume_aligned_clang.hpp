@@ -11,7 +11,7 @@ http://boost.org/LICENSE_1_0.txt
 
 #if __has_builtin(__builtin_assume_aligned)
 #define BOOST_ALIGN_ASSUME_ALIGNED(p, n) \
-(p) = static_cast<__typeof__(p)>(__builtin_assume_aligned((p), (n)))
+(p) = (__typeof__(p))(__builtin_assume_aligned((p), (n)))
 #else
 #define BOOST_ALIGN_ASSUME_ALIGNED(p, n)
 #endif

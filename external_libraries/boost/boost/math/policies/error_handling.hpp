@@ -11,6 +11,8 @@
 #include <stdexcept>
 #include <iomanip>
 #include <string>
+#include <cstring>
+#include <typeinfo>
 #include <cerrno>
 #include <boost/config/no_tr1/complex.hpp>
 #include <boost/config/no_tr1/cmath.hpp>
@@ -18,17 +20,19 @@
 #include <boost/math/tools/config.hpp>
 #include <boost/math/policies/policy.hpp>
 #include <boost/math/tools/precision.hpp>
+#include <boost/throw_exception.hpp>
 #include <boost/cstdint.hpp>
 #ifdef BOOST_MSVC
 #  pragma warning(push) // Quiet warnings in boost/format.hpp
 #  pragma warning(disable: 4996) // _SCL_SECURE_NO_DEPRECATE
 #  pragma warning(disable: 4512) // assignment operator could not be generated.
+#  pragma warning(disable: 4127) // conditional expression is constant
 // And warnings in error handling:
 #  pragma warning(disable: 4702) // unreachable code.
 // Note that this only occurs when the compiler can deduce code is unreachable,
 // for example when policy macros are used to ignore errors rather than throw.
 #endif
-#include <boost/format.hpp>
+#include <sstream>
 
 namespace boost{ namespace math{
 
@@ -68,14 +72,31 @@ T user_indeterminate_result_error(const char* function, const char* message, con
 
 namespace detail
 {
-//
-// Helper function to avoid binding rvalue to non-const-reference,
-// in other words a warning suppression mechanism:
-//
-template <class Formatter, class Group>
-inline std::string do_format(Formatter f, const Group& g)
+
+template <class T>
+std::string prec_format(const T& val)
 {
-   return (f % g).str();
+   typedef typename boost::math::policies::precision<T, boost::math::policies::policy<> >::type prec_type;
+   std::stringstream ss;
+   if(prec_type::value)
+   {
+      int prec = 2 + (prec_type::value * 30103UL) / 100000UL;
+      ss << std::setprecision(prec);
+   }
+   ss << val;
+   return ss.str();
+}
+
+inline void replace_all_in_string(std::string& result, const char* what, const char* with)
+{
+   std::string::size_type pos = 0;
+   std::string::size_type slen = std::strlen(what);
+   std::string::size_type rlen = std::strlen(with);
+   while((pos = result.find(what, pos)) != std::string::npos)
+   {
+      result.replace(pos, slen, with);
+      pos += rlen;
+   }
 }
 
 template <class T>
@@ -100,19 +121,21 @@ inline const char* name_of<BOOST_MATH_FLOAT128_TYPE>()
 #endif
 
 template <class E, class T>
-void raise_error(const char* function, const char* message)
+void raise_error(const char* pfunction, const char* message)
 {
-  if(function == 0)
-       function = "Unknown function operating on type %1%";
+  if(pfunction == 0)
+     pfunction = "Unknown function operating on type %1%";
   if(message == 0)
-       message = "Cause unknown";
+     message = "Cause unknown";
 
+  std::string function(pfunction);
   std::string msg("Error in function ");
 #ifndef BOOST_NO_RTTI
-  msg += (boost::format(function) % boost::math::policies::detail::name_of<T>()).str();
+  replace_all_in_string(function, "%1%", boost::math::policies::detail::name_of<T>());
 #else
-  msg += function;
+  replace_all_in_string(function, "%1%", "Unknown");
 #endif
+  msg += function;
   msg += ": ";
   msg += message;
 
@@ -121,24 +144,27 @@ void raise_error(const char* function, const char* message)
 }
 
 template <class E, class T>
-void raise_error(const char* function, const char* message, const T& val)
+void raise_error(const char* pfunction, const char* pmessage, const T& val)
 {
-  if(function == 0)
-     function = "Unknown function operating on type %1%";
-  if(message == 0)
-     message = "Cause unknown: error caused by bad argument with value %1%";
+  if(pfunction == 0)
+     pfunction = "Unknown function operating on type %1%";
+  if(pmessage == 0)
+     pmessage = "Cause unknown: error caused by bad argument with value %1%";
 
+  std::string function(pfunction);
+  std::string message(pmessage);
   std::string msg("Error in function ");
 #ifndef BOOST_NO_RTTI
-  msg += (boost::format(function) % boost::math::policies::detail::name_of<T>()).str();
+  replace_all_in_string(function, "%1%", boost::math::policies::detail::name_of<T>());
 #else
-  msg += function;
+  replace_all_in_string(function, "%1%", "Unknown");
 #endif
+  msg += function;
   msg += ": ";
-  msg += message;
 
-  int prec = 2 + (boost::math::policies::digits<T, boost::math::policies::policy<> >() * 30103UL) / 100000UL;
-  msg = do_format(boost::format(msg), boost::io::group(std::setprecision(prec), val));
+  std::string sval = prec_format(val);
+  replace_all_in_string(message, "%1%", sval.c_str());
+  msg += message;
 
   E e(msg);
   boost::throw_exception(e);
@@ -319,15 +345,11 @@ inline T raise_overflow_error(
            const T& val,
            const  ::boost::math::policies::overflow_error< ::boost::math::policies::user_error>&)
 {
-   std::string fmsg("Error in function ");
-#ifndef BOOST_NO_RTTI
-   fmsg += (boost::format(function) % boost::math::policies::detail::name_of<T>()).str();
-#else
-   fmsg += function;
-#endif
-   int prec = 2 + (boost::math::policies::digits<T, boost::math::policies::policy<> >() * 30103UL) / 100000UL;
-   std::string msg = do_format(boost::format(message), boost::io::group(std::setprecision(prec), val));
-   return user_overflow_error(fmsg.c_str(), msg.c_str(), std::numeric_limits<T>::infinity());
+   std::string m(message ? message : "");
+   std::string sval = prec_format(val);
+   replace_all_in_string(m, "%1%", sval.c_str());
+
+   return user_overflow_error(function, m.c_str(), std::numeric_limits<T>::infinity());
 }
 
 template <class T>

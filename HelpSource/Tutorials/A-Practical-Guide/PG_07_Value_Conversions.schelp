@@ -24,7 +24,7 @@ definitionList::
 ::
 
 definitionList::
-## sustain || How many beats to hold this note. After code::\sustain:: beats, a release message will be sent to the synth node setting its code::gate:: control to code::0::. Your SynthDef should use code::gate:: in an link::Classes/EnvGen:: based on a sustaining envelope (see link::Classes/Env::), and the EnvGen should have a code::doneAction:: ( link::Reference/UGen-doneActions:: ) that releases the synth at the end. You can give the sustain pattern directly, or the default event prototype can calculate it for you based on:
+## sustain || How many beats to hold this note. After code::\sustain:: beats, a release message will be sent to the synth node setting its code::gate:: control to code::0::. Your SynthDef should use code::gate:: in an link::Classes/EnvGen:: based on a sustaining envelope (see link::Classes/Env::), and the EnvGen should have a code::doneAction:: ( link::Classes/Done:: ) that releases the synth at the end. You can give the sustain pattern directly, or the default event prototype can calculate it for you based on:
 definitionList::
 ## legato || A fraction of the event's duration for which the synth should sustain. code::1.0:: means this synth will release exactly at the onset of the next; code::0.5:: means the last half of the duration will be a rest. Values greater than code::1.0:: produce overlapping notes. code::sustain = dur * legato * stretch::.
 ::

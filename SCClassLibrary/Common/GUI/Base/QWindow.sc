@@ -176,6 +176,7 @@ Window {
 
 	sizeHint { ^view.sizeHint }
 	minSizeHint { ^view.minSizeHint }
+	resizeToHint { ^view.resizeToHint }
 	alpha_ { arg value; view.alpha_(value); }
 	addFlowLayout { arg margin, gap; ^view.addFlowLayout( margin, gap ); }
 	close { view.close; }

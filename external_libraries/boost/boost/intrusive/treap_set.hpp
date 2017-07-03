@@ -26,6 +26,11 @@
 namespace boost {
 namespace intrusive {
 
+#if !defined(BOOST_INTRUSIVE_DOXYGEN_INVOKED)
+template<class ValueTraits, class VoidOrKeyOfValue, class VoidOrKeyComp, class VoidOrPrioComp, class SizeType, bool ConstantTimeSize, typename HeaderHolder>
+class treap_multiset_impl;
+#endif
+
 //! The class template treap_set is an intrusive container, that mimics most of
 //! the interface of std::set as described in the C++ standard.
 //!
@@ -155,6 +160,15 @@ class treap_set_impl
    //! @copydoc ::boost::intrusive::treap::crend()const
    const_reverse_iterator crend() const;
 
+   //! @copydoc ::boost::intrusive::treap::root()
+   iterator root();
+
+   //! @copydoc ::boost::intrusive::treap::root()const
+   const_iterator root() const;
+
+   //! @copydoc ::boost::intrusive::treap::croot()const
+   const_iterator croot() const;
+
    //! @copydoc ::boost::intrusive::treap::container_from_end_iterator(iterator)
    static treap_set_impl &container_from_end_iterator(iterator end_iterator);
 
@@ -229,7 +243,7 @@ class treap_set_impl
    iterator insert(const_iterator hint, reference value)
    {  return tree_type::insert_unique(hint, value);  }
 
-   //! @copydoc ::boost::intrusive::treap::insert_unique_check(const key_type,insert_commit_data&)
+   //! @copydoc ::boost::intrusive::treap::insert_unique_check(const key_type&,insert_commit_data&)
    std::pair<iterator, bool> insert_check( const key_type &key, insert_commit_data &commit_data)
    {  return tree_type::insert_unique_check(key, commit_data); }
 
@@ -428,6 +442,25 @@ class treap_set_impl
 
    //! @copydoc ::boost::intrusive::treap::remove_node
    void remove_node(reference value);
+
+
+   //! @copydoc ::boost::intrusive::treap::merge_unique
+   template<class ...Options2>
+   void merge(treap_set<T, Options2...> &source);
+
+   //! @copydoc ::boost::intrusive::treap::merge_unique
+   template<class ...Options2>
+   void merge(treap_multiset<T, Options2...> &source);
+
+   #else
+
+   template<class Compare2>
+   void merge(treap_set_impl<ValueTraits, VoidOrKeyOfValue, Compare2, VoidOrPrioComp, SizeType, ConstantTimeSize, HeaderHolder> &source)
+   {  return tree_type::merge_unique(source);  }
+
+   template<class Compare2>
+   void merge(treap_multiset_impl<ValueTraits, VoidOrKeyOfValue, Compare2, VoidOrPrioComp, SizeType, ConstantTimeSize, HeaderHolder> &source)
+   {  return tree_type::merge_unique(source);  }
 
    #endif   //#ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
 };
@@ -682,6 +715,15 @@ class treap_multiset_impl
    //! @copydoc ::boost::intrusive::treap::crend()const
    const_reverse_iterator crend() const;
 
+   //! @copydoc ::boost::intrusive::treap::root()
+   iterator root();
+
+   //! @copydoc ::boost::intrusive::treap::root()const
+   const_iterator root() const;
+
+   //! @copydoc ::boost::intrusive::treap::croot()const
+   const_iterator croot() const;
+
    //! @copydoc ::boost::intrusive::treap::container_from_end_iterator(iterator)
    static treap_multiset_impl &container_from_end_iterator(iterator end_iterator);
 
@@ -913,6 +955,24 @@ class treap_multiset_impl
 
    //! @copydoc ::boost::intrusive::treap::remove_node
    void remove_node(reference value);
+
+   //! @copydoc ::boost::intrusive::treap::merge_unique
+   template<class ...Options2>
+   void merge(treap_multiset<T, Options2...> &source);
+
+   //! @copydoc ::boost::intrusive::treap::merge_unique
+   template<class ...Options2>
+   void merge(treap_set<T, Options2...> &source);
+
+   #else
+
+   template<class Compare2>
+   void merge(treap_multiset_impl<ValueTraits, VoidOrKeyOfValue, Compare2, VoidOrPrioComp, SizeType, ConstantTimeSize, HeaderHolder> &source)
+   {  return tree_type::merge_equal(source);  }
+
+   template<class Compare2>
+   void merge(treap_set_impl<ValueTraits, VoidOrKeyOfValue, Compare2, VoidOrPrioComp, SizeType, ConstantTimeSize, HeaderHolder> &source)
+   {  return tree_type::merge_equal(source);  }
 
    #endif   //#ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
 };

@@ -33,34 +33,34 @@ Examples::
 code::
 
 // preserve only 3 bits of mantissa.
-{ MantissaMask.ar(SinOsc.ar(SinOsc.kr(0.2,0,400,500), 0, 0.4), 3) }.play
+{ MantissaMask.ar(SinOsc.ar(SinOsc.kr(0.2, 0, 400, 500), 0, 0.4), 3) }.play
 
 // the original
-{ SinOsc.ar(SinOsc.kr(0.2,0,400,500), 0, 0.4) }.play
+{ SinOsc.ar(SinOsc.kr(0.2, 0, 400, 500), 0, 0.4) }.play
 
 // the difference.
 (
 {
 	var in;
-	in = SinOsc.ar(SinOsc.kr(0.2,0,400,500), 0, 0.4);
-	Out.ar(0, in - MantissaMask.ar(in, 3));
+	in = SinOsc.ar(SinOsc.kr(0.2, 0, 400, 500), 0, 0.4);
+	in - MantissaMask.ar(in, 3)
 }.play
 )
 
 
 // preserve 7 bits of mantissa.
 // This makes the lower 16 bits of the floating point number become zero.
-{ MantissaMask.ar(SinOsc.ar(SinOsc.kr(0.2,0,400,500), 0, 0.4), 7) }.play
+{ MantissaMask.ar(SinOsc.ar(SinOsc.kr(0.2, 0, 400, 500), 0, 0.4), 7) }.play
 
 // the original
-{ SinOsc.ar(SinOsc.kr(0.2,0,400,500), 0, 0.4) }.play
+{ SinOsc.ar(SinOsc.kr(0.2, 0, 400, 500), 0, 0.4) }.play
 
 // the difference.
 (
 {
 	var in;
-	in = SinOsc.ar(SinOsc.kr(0.2,0,400,500), 0, 0.4);
-	Out.ar(0, in - MantissaMask.ar(in, 7));
+	in = SinOsc.ar(SinOsc.kr(0.2, 0, 400, 500), 0, 0.4);
+	in - MantissaMask.ar(in, 7)
 }.play
 )
 

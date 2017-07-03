@@ -60,7 +60,7 @@ struct World
 	// vector of samples for all control busses
 	float *mControlBus;
 
-	// these tell if a buss has been written to during a control period
+	// these tell if a bus has been written to during a control period
 	// if the value is equal to mBufCounter then the buss has been touched
 	// this control period.
 	int32 *mAudioBusTouched;

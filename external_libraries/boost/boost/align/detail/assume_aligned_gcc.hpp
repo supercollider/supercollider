@@ -13,6 +13,6 @@ http://boost.org/LICENSE_1_0.txt
 #define BOOST_ALIGN_DETAIL_ASSUME_ALIGNED_GCC_HPP
 
 #define BOOST_ALIGN_ASSUME_ALIGNED(p, n) \
-(p) = static_cast<__typeof__(p)>(__builtin_assume_aligned((p), (n)))
+(p) = (__typeof__(p))(__builtin_assume_aligned((p), (n)))
 
 #endif

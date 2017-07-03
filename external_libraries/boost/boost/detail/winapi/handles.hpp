@@ -31,6 +31,14 @@ DuplicateHandle(
     boost::detail::winapi::BOOL_ bInheritHandle,
     boost::detail::winapi::DWORD_ dwOptions);
 }
+
+#if BOOST_USE_WINAPI_VERSION >= BOOST_WINAPI_VERSION_WIN10
+BOOST_SYMBOL_IMPORT boost::detail::winapi::BOOL_ WINAPI
+CompareObjectHandles(
+    boost::detail::winapi::HANDLE_ hFirstObjectHandle,
+    boost::detail::winapi::HANDLE_ hSecondObjectHandle);
+#endif
+
 #endif
 
 namespace boost {
@@ -39,6 +47,10 @@ namespace winapi {
 
 using ::CloseHandle;
 using ::DuplicateHandle;
+
+#if BOOST_USE_WINAPI_VERSION >= BOOST_WINAPI_VERSION_WIN10
+using ::CompareObjectHandles;
+#endif
 
 #if defined( BOOST_USE_WINDOWS_H )
 const DWORD_ DUPLICATE_CLOSE_SOURCE_ = DUPLICATE_CLOSE_SOURCE;

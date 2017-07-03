@@ -22,7 +22,7 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 // one loop segment
 SynthDef(\oneLoop, { |out, bufnum, start, time, amp|
 	var	sig = PlayBuf.ar(1, bufnum, startPos: start, loop: 0),
-		env = EnvGen.kr(Env.linen(0.01, time, 0.05, level: amp), doneAction: 2);
+		env = EnvGen.kr(Env.linen(0.01, time, 0.05, level: amp), doneAction: Done.freeSelf);
 	Out.ar(out, (sig * env) ! 2)
 }).add;
 
@@ -34,7 +34,7 @@ SynthDef(\bell, { |out, accent = 0, amp = 0.1, decayScale = 1|
 			1 ! 4,
 			{ ExpRand(0.1, 0.4) } ! 4
 		], exc, freqscale: accent + 1, decayscale: decayScale);
-	DetectSilence.ar(sig, doneAction: 2);
+	DetectSilence.ar(sig, doneAction: Done.freeSelf);
 	Out.ar(out, sig ! 2)
 }).add;
 )
@@ -135,7 +135,7 @@ fork {
 		var	initPulse = Impulse.kr(0),
 			mod = SinOsc.ar(freq) * Decay2.kr(initPulse, 0.01, 3) * 5,
 			car = SinOsc.ar(freq + (mod*freq)) * Decay2.kr(initPulse, 0.01, 2.0);
-		RecordBuf.ar(car, b, loop: 0, doneAction: 2);
+		RecordBuf.ar(car, b, loop: 0, doneAction: Done.freeSelf);
 		car ! 2
 	}.play;
 	o = OSCFunc({ |msg|
@@ -146,7 +146,7 @@ fork {
 	}, '/n_end', s.addr);
 };
 SynthDef(\sampler, { |out, bufnum, freq = 1, amp = 1|
-	var	sig = PlayBuf.ar(1, bufnum, rate: freq, doneAction: 2) * amp;
+	var	sig = PlayBuf.ar(1, bufnum, rate: freq, doneAction: Done.freeSelf) * amp;
 	Out.ar(out, sig ! 2)
 }).add;
 )
@@ -209,7 +209,7 @@ fork {
 		var	initPulse = Impulse.kr(0),
 			mod = SinOsc.ar(freq) * Decay2.kr(initPulse, 0.01, 3) * 5,
 			car = SinOsc.ar(freq + (mod*freq)) * Decay2.kr(initPulse, 0.01, 2.0);
-		RecordBuf.ar(car, bufnum, loop: 0, doneAction: 2);
+		RecordBuf.ar(car, bufnum, loop: 0, doneAction: Done.freeSelf);
 	}).send(s);
 	s.sync;
 		// record all 8 buffers concurrently
@@ -230,7 +230,7 @@ SynthDef(\multiSampler, { |out, bufnum, bufBase, baseFreqBuf, freq = 440, amp = 
 		buf2 = buf1 + 1,
 		xfade = (bufnum - buf1).madd(2, -1),
 		basefreqs = Index.kr(baseFreqBuf, [buf1, buf2]),
-		playbufs = PlayBuf.ar(1, bufBase + [buf1, buf2], freq / basefreqs, loop: 0, doneAction: 2),
+		playbufs = PlayBuf.ar(1, bufBase + [buf1, buf2], freq / basefreqs, loop: 0, doneAction: Done.freeSelf),
 		sig = XFade2.ar(playbufs[0], playbufs[1], xfade, amp);
 	Out.ar(out, sig ! 2)
 }).add;

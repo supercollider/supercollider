@@ -48,7 +48,7 @@ SerialPort.listDevices;
 method::devicePattern
 change device selection
 code::
-SerialPort.devicePattern = "/dev/ttyUSB*"; // linux usb serial
+SerialPort.devicePattern = "/dev/ttyUSB*"; // Linux usb serial
 SerialPort.devices;
 
 SerialPort.devicePattern = nil;

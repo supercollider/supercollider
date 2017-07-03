@@ -3,28 +3,28 @@ Buffer.test
 UnitTest.gui
 */
 TestBuffer : UnitTest {
-	
+
 	test_freeAll {
 		var n;
-		
+
 		this.bootServer;
-		
+
 		Buffer.freeAll;
 		n = Buffer(Server.default,44100,2);
 		this.assertEquals( Server.default.bufferAllocator.blocks.size , 1 , " allocated one buffer");
 		Buffer.freeAll;
 		this.assertEquals( Server.default.bufferAllocator.blocks.size , 0 , "freeAll : no buffers allocated");
-		
+
 	}
-	
+
 	test_serverlang_dataexchange {
 		var d, b;
-		
+
 		this.bootServer;
-		
+
 		// Random data for test
 		d = {1.0.rand}.dup(Server.default.sampleRate);
-		
+
 		// send then load
 		b = Buffer.sendCollection(Server.default, d);
 		0.2.wait;
@@ -41,7 +41,7 @@ TestBuffer : UnitTest {
 		b = Buffer.loadCollection(Server.default, d);
 		0.2.wait;
 		Server.default.sync;
-		b.loadToFloatArray(0, -1, action:{|data| 
+		b.loadToFloatArray(0, -1, action:{|data|
 			this.assert(data.size==d.size,       "test_serverlang_dataexchange loadCollection->loadToFloatArray received full-length data (%==%)".format(data.size, d.size));
 			this.assertArrayFloatEquals(data, d, "test_serverlang_dataexchange loadCollection->loadToFloatArray", report: true)
 		});
@@ -50,35 +50,30 @@ TestBuffer : UnitTest {
 		// zero the Buffer and check that it worked
 		b.zero;
 		Server.default.sync;
-		b.loadToFloatArray(0, -1, action:{|data| 
+		b.loadToFloatArray(0, -1, action:{|data|
 			this.assertArrayFloatEquals(data, 0, "Buffer:zero should give a buffer containing zeroes", report: true)
 		});
 		Server.default.sync;
 		b.free;
 		Server.default.sync;
 	}
-	
-	
+
+
 	// Test basen on JP's test code, for the bug which DS introduced in svn rev 9362, and JP fixed in svn rev 9371
 	// Note that the "expected values" used in this test depend precisely on the samples in a11wlk01.wav, so will need updating if that changes.
 	test_allocAndQuery {
-		var o,p, expectq, expectg, s=this.s, sfpath, sf, b;
+		var expectq, expectg, s=this.s, sfpath, sf, b;
 		this.bootServer;
 		Buffer.freeAll;
-		
-		o = OSCresponderNode(s.addr, '/b_info', {arg time, resp, msg;
-			msg.postln;
-			this.assertEquals(msg, expectq, "/b_info data returned from a /b_query message should be as expected");
-		});
-			
-		p = OSCresponderNode(s.addr, '/b_set', {arg time, resp, msg;
-			msg.postln;
-			this.assertEquals(msg, expectg, "/b_set data returned from a /b_get message should be as expected");
-		});
-			
-		o.add;
-		p.add;
-		
+
+		OSCFunc({ |message|
+			this.assertEquals(message, expectq, "/b_info data returned from a /b_query message should be as expected");
+		}, \b_info, s.addr).oneShot;
+
+		OSCFunc({ |message|
+			this.assertEquals(message, expectg, "/b_set data returned from a /b_get message should be as expected");
+		}, \b_set, s.addr).oneShot;
+
 		// Hmm, seems not all systems have the standard soundfile available
 		// s.sendMsg(\b_allocRead, 1, "sounds/a11wlk01.wav");
 		// So instead we use this from the SoundFile helpfile:
@@ -95,33 +90,30 @@ TestBuffer : UnitTest {
 
 		0.4.wait;
 		s.sync;
-		
+
 		expectq = [ '/b_info', 1, 44100, 1, 44100 ];
 		expectg = [ '/b_set', 1, 1000, 0.43011474609375 ];
 		s.sendMsg(\b_query, 1);
 		s.sendMsg(\b_get, 1, 1000);
-		
+
 		0.4.wait;
 		s.sync;
-		
+
 		s.sendMsg(\b_alloc, 3, 30000);
 		s.sendMsg(\b_read, 3, sfpath, 0, 30000);
-		
+
 		0.4.wait;
 		s.sync;
-		
+
 		expectq = [ '/b_info', 3, 30000, 1, 44100 ];
 		expectg = [ '/b_set', 3, 1000, 0.43011474609375 ];
 		s.sendMsg(\b_query, 3);
 		s.sendMsg(\b_get, 3, 1000);
-		
+
 		0.4.wait;
 		s.sync;
-		
-		o.remove;
-		p.remove;
-		
-		
+
+
 	}
 
 	test_cheby {
@@ -174,6 +166,51 @@ TestBuffer : UnitTest {
 		^sig[sig.size >> 1]
 	}
 
+	test_get {
+		var s, buffer, collection;
+		var get_value;
+		s = this.s;
+		this.bootServer;
+
+		collection = [88.88, 8, 888.8, 8.88];
+		buffer = Buffer.sendCollection(s, collection);
+		s.sync;
+
+		get_value = 0;
+		buffer.get(2, { |value|
+			get_value = value;
+		});
+
+		0.1.wait;
+
+		// Some precision is lost when converting to 32-bit float, hence the use of
+		// assertFloatEquals.
+		this.assertFloatEquals(get_value, collection[2], "Buffer:get works", 0.001);
+
+		buffer.free;
+	}
+
+	test_getn {
+		var s, buffer, collection;
+		var getn_values;
+		s = this.s;
+		this.bootServer;
+
+		collection = [88.88, 8, 888.8, 8.88];
+		buffer = Buffer.sendCollection(s, collection);
+		s.sync;
+
+		getn_values = [0, 0];
+		buffer.getn(2, 2, { |values|
+			getn_values = values;
+		});
+
+		0.1.wait;
+
+		// See comments in test_get.
+		this.assertArrayFloatEquals(getn_values, collection[2..3], "Buffer:getn works", 0.001);
+
+		buffer.free;
+	}
+
 }
-
-

@@ -914,11 +914,9 @@ struct series_factor_calc<T, Digits, mpl::true_, mpl::true_>
 template <class T, class Digits>
 struct series_factor_calc<T, Digits, mpl::true_, mpl::false_>
 {
-   BOOST_STATIC_CONSTANT(boost::uintmax_t, v = static_cast<boost::uintmax_t>(1u) << (Digits::value - 1));
-
    static BOOST_MATH_CONSTEXPR T get() BOOST_MATH_NOEXCEPT(T)
    {
-      return 1 / static_cast<T>(v);
+      return 1 / static_cast<T>(static_cast<boost::uintmax_t>(1u) << (Digits::value - 1));
    }
 };
 template <class T, class Digits>

@@ -77,6 +77,11 @@ struct is_forward_iterable< std::map<K, V, C, A> > : public mpl::true_ {};
 template<typename K, typename C, typename A>
 struct is_forward_iterable< std::set<K, C, A> > : public mpl::true_ {};
 
+// string is also forward iterable, even if sometimes we want to treat the
+// assertions differently.
+template<>
+struct is_forward_iterable< std::string > : public mpl::true_ {};
+
 #else
 
 namespace ut_detail {

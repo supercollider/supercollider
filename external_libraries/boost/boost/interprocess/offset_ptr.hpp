@@ -22,6 +22,8 @@
 #include <boost/interprocess/detail/config_begin.hpp>
 #include <boost/interprocess/detail/workaround.hpp>
 
+#include <boost/type_traits/is_convertible.hpp>
+
 #include <boost/interprocess/interprocess_fwd.hpp>
 #include <boost/interprocess/detail/utilities.hpp>
 #include <boost/interprocess/detail/cast_tags.hpp>
@@ -180,14 +182,14 @@ namespace ipcdetail {
 
    template<class From, class To, class Ret = void>
    struct enable_if_convertible_equal_address
-      : enable_if_c< is_convertible<From*, To*>::value
+      : enable_if_c< ::boost::is_convertible<From*, To*>::value
                      && offset_ptr_maintains_address<From, To>::value
                   , Ret>
    {};
 
    template<class From, class To, class Ret = void>
    struct enable_if_convertible_unequal_address
-      : enable_if_c< is_convertible<From*, To*>::value
+      : enable_if_c< ::boost::is_convertible<From*, To*>::value
                      && !offset_ptr_maintains_address<From, To>::value
                    , Ret>
    {};
@@ -256,7 +258,7 @@ class offset_ptr
    //!Never throws.
    template <class T>
    BOOST_INTERPROCESS_FORCEINLINE offset_ptr( T *ptr
-             , typename ipcdetail::enable_if< ipcdetail::is_convertible<T*, PointedType*> >::type * = 0) BOOST_NOEXCEPT
+             , typename ipcdetail::enable_if< ::boost::is_convertible<T*, PointedType*> >::type * = 0) BOOST_NOEXCEPT
       : internal(static_cast<OffsetType>
          (ipcdetail::offset_ptr_to_offset(static_cast<PointedType*>(ptr), this)))
    {}
@@ -375,7 +377,7 @@ class offset_ptr
    template<class T2> BOOST_INTERPROCESS_FORCEINLINE 
    #ifndef BOOST_INTERPROCESS_DOXYGEN_INVOKED
    typename ipcdetail::enable_if_c
-      < ipcdetail::is_convertible<T2*, PointedType*>::value, offset_ptr&>::type
+      < ::boost::is_convertible<T2*, PointedType*>::value, offset_ptr&>::type
    #else
    offset_ptr&
    #endif

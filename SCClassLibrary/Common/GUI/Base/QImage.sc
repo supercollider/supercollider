@@ -368,6 +368,8 @@ Image {
 		^this.primitiveFailed
 	}
 
+
+
 	// private primitives
 	prNewPath { arg path;
 		_QImage_NewPath

@@ -166,7 +166,7 @@ private:
 
 	// input io service
 	boost::asio::io_service mInputService;
-	thread mInputThread;
+	SC_Thread mInputThread;
 	void inputThreadFn();
 
 	static const size_t inputBufferSize = 256;

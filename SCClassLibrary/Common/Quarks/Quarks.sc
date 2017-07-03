@@ -185,7 +185,7 @@ Quarks {
 				(quark.name
 					+ "reports an incompatibility with this SuperCollider version"
 					+ "or with other already installed quarks."
-				).inform;
+				).postln;
 				false
 			},
 			prev = this.installed.detect({ |q| q.name == quark.name });
@@ -195,7 +195,7 @@ Quarks {
 			^false
 		});
 
-		"Installing %".format(quark.name).inform;
+		"Installing %".format(quark.name).postln;
 
 		quark.checkout();
 		if(quark.isCompatible().not, {
@@ -209,7 +209,7 @@ Quarks {
 			});
 		};
 		this.link(quark.localPath);
-		(quark.name + "installed").inform;
+		(quark.name + "installed").postln;
 		this.clearCache();
 		^true
 	}

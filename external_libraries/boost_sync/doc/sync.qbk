@@ -77,6 +77,9 @@ Boost.Sync should be compatible with all hardware architectures supported by Boo
 
 [xinclude top_level_reference.xml]
 [xinclude locks_reference.xml]
+[xinclude mutex_reference.xml]
+[xinclude condition_variables_reference.xml]
+[xinclude event_reference.xml]
 [/ [xinclude support_reference.xml] /]
 
 [endsect]

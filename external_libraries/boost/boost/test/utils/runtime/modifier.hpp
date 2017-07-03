@@ -23,6 +23,15 @@
 
 #include <boost/test/detail/suppress_warnings.hpp>
 
+
+// New CLA API available only for some C++11 compilers
+#if    !defined(BOOST_NO_CXX11_AUTO_DECLARATIONS) \
+    && !defined(BOOST_NO_CXX11_TEMPLATE_ALIASES) \
+    && !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST) \
+    && !defined(BOOST_NO_CXX11_UNIFIED_INITIALIZATION_SYNTAX)
+#define BOOST_TEST_CLA_NEW_API
+#endif
+
 namespace boost {
 namespace runtime {
 
@@ -31,10 +40,6 @@ namespace runtime {
 // ************************************************************************** //
 
 namespace {
-
-#if !defined(BOOST_NO_CXX11_AUTO_DECLARATIONS) && !defined(BOOST_NO_CXX11_TEMPLATE_ALIASES)
-#define BOOST_TEST_CLA_NEW_API
-#endif
 
 #ifdef BOOST_TEST_CLA_NEW_API
 auto const& description     = unit_test::static_constant<nfp::typed_keyword<cstring,struct description_t>>::value;
