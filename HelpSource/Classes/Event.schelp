@@ -39,7 +39,7 @@ Returns an event that describes a pause of strong::dur:: duration.
 
 
 method::addEventType
-Event types define alternate play functions that are selected by the value of strong::~type::.
+Event types define alternate play functions and proto events that are selected by the value of strong::~type::.
 
 
 argument::type
@@ -49,7 +49,7 @@ argument::func
 A function which optionally takes the server as a first argument
 
 argument::protoEvent
-An event with default values which is used to override keys in the parent event.
+An event with default values which is used to override keys in the parent event. If the event already has a proto event, we use the proto's proto event, and so on.
 
 discussion::
 code::
