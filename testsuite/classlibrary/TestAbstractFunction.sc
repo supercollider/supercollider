@@ -1,6 +1,6 @@
 TestAbstractFunction : UnitTest {
 
-	test_rest_binop {
+	test_rest_binop_return {
 		var args = [[1, Rest(1)], [Rest(1), 1], [Rest(1), Rest(1)], [1, Rest()], [Rest(), Rest()]];
 		var funcs = [
 			{ |a, b| a * b },
@@ -10,32 +10,56 @@ TestAbstractFunction : UnitTest {
 		];
 
 		funcs.do { |func|
-			var all = args.collect { |pair| func.valueArray(pair) };
-
-			this.assert(
-				all.flat.every(_.isKindOf(Rest)),
-				"Calling the following function on Rest should return Rest:\n%\n".format(func.cs)
-			);
-
-			this.assert(
-				all.as(Set).postln.size == 1,
-				"And it should have equal value for equivalent instance values. Default value should be 1\n"
-			);
-		};
-
-
-		{
-			var func = { |op, a, b| a.perform(op, b) == a.value.perform(op, b.value) };
-			var all = [(0..2), (0..2).collect(Rest(_))].allTuples;
-			all = all ++ all.collect(_.reverse);
-			['<', '>', '<=', '>='].do { |op|
-				all.do { |args|
-					this.assert(func.(op, *args), "% should return a boolean for %".format(args, op));
-				}
+			var passed = args.every { |pair|
+				var res = func.valueArray(pair);
+				var ok = res.isKindOf(Rest);
+				if(ok.not) {
+					this.failed(thisMethod, "Calling % on % should return a Rest instance".format(func, pair));
+				};
+				ok
 			};
-		}.value;
+
+			this.assert(passed, "Rest should combine to Rest with objects and other Rest instances under binary ops");
+		}
+
+	}
 
 
+	test_rest_binop_values {
+		var args = [[2, Rest(3)], [Rest(2), 3], [Rest(2), Rest(3)]];
+		var funcs = [
+			{ |a, b| a * b },
+			{ |a, b| a + b },
+			{ |a, b| a - b },
+			{ |a, b| a / b }
+		];
+
+		funcs.do { |func|
+			var passed = args.every { |pair|
+				var res = func.valueArray(pair);
+				var res2 = func.valueArray(pair.collect(_.value));
+				var ok = res.value == res2;
+				if(ok.not) {
+					this.failed(thisMethod, "Calling % on % should have the same result as its values wold have".format(func, pair));
+				};
+				ok
+			};
+
+			this.assert(passed, "Rest should combine under binary ops to the same values as the values would");
+		}
+
+	}
+
+	test_rest_comparisons {
+
+		var func = { |op, a, b| a.perform(op, b) == a.value.perform(op, b.value) };
+		var all = [(0..2), (0..2).collect(Rest(_))].allTuples;
+		all = all ++ all.collect(_.reverse);
+		['<', '>', '<=', '>='].do { |op|
+			all.do { |args|
+				this.assert(func.(op, *args), "% should return a boolean for %".format(args, op));
+			}
+		}
 	}
 
 	test_rest_event_delta {
