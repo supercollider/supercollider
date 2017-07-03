@@ -379,6 +379,16 @@ Dictionary : Set {
 		^true
 	}
 
+	hash {
+		var hash = this.class.hash;
+		this.keysValuesDo { arg key, item;
+			hash = hash bitXor: item.hash;
+			hash = hash bitXor: key.hash << 1;
+		};
+		^hash
+	}
+
+
 	storeItemsOn { arg stream, itemsPerLine = 5;
 		var itemsPerLinem1 = itemsPerLine - 1;
 		var last = this.size - 1;
@@ -507,6 +517,14 @@ IdentityDictionary : Dictionary {
 		and: { parent == that.parent }
 		and: { proto == that.proto }
 		and: { know == that.know }
+	}
+
+	hash {
+		var hash = super.hash;
+		hash = hash bitXor: know.hash;
+		hash = hash bitXor: parent.hash << 1;
+		hash = hash bitXor: proto.hash << 1;
+		^hash
 	}
 
 	storeItemsOn { arg stream, itemsPerLine = 5;
