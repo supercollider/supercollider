@@ -726,23 +726,22 @@ PbindProxy : Pattern {
 	set { arg ... args; // key, val ...
 		var changedPairs = false, quant;
 		quant = this.quant;
-		args.pairsDo { |key, val|
+		args.pairsDo { |key, val, j|
 			var i, remove;
 			i = this.find(key);
-			if(i.notNil)
-			{
+			if(i.notNil) {
 				if(val.isNil) {
 					pairs.removeAt(i);
 					pairs.removeAt(i);
 					changedPairs = true;
-				}{
+				} {
 					pairs[i+1].quant_(quant).setSource(val)
-				};
-			}{
-				pairs = pairs ++ [key, PatternProxy.new.quant_(quant).setSource(val)];
+				}
+			} {
+				pairs = pairs.insert(j, key);
+				pairs = pairs.insert(j+1, PatternProxy.new.quant_(quant).setSource(val));
 				changedPairs = true;
-			};
-
+			}
 		};
 		if(changedPairs) { source.source =  Pbind(*pairs) };
 
