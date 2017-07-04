@@ -235,7 +235,7 @@ private:
 	SC_Filesystem() :
 		mDirectoryMap(),
 		mIdeName(SC_DEFAULT_IDE_NAME)
-	{};
+	{ }
 
 	//----------------------------------- IDE UTILITIES ------------------------------------//
 
