@@ -58,7 +58,7 @@ TestCollectionEquality : UnitTest {
 		var a, b;
 		a = (x: 9, y: 10);
 		b = (x: 10, y: 9);
-		this.assert(a.hash != b.hash, "different events should have a different hash value");
+		this.assert(a.hash != b.hash, "similar but unequal events should have unequal hash values");
 	}
 
 	test_unhash_event_parent {
@@ -66,7 +66,7 @@ TestCollectionEquality : UnitTest {
 		a = (x: 9, y: 10);
 		b = (x: 9, y: 10);
 		b.parent = (x: 4);
-		this.assert(a.hash != b.hash, "different events should have a different hash value");
+		this.assert(a.hash != b.hash, "similar but unequal events should have unequal hash values");
 	}
 
 	test_unhash_event_proto {
@@ -74,7 +74,7 @@ TestCollectionEquality : UnitTest {
 		a = (x: 9, y: 10);
 		b = (x: 9, y: 10);
 		b.parent = (x: 4);
-		this.assert(a.hash != b.hash, "different events should have a different hash value");
+		this.assert(a.hash != b.hash, "similar but unequal events should have unequal hash values");
 	}
 
 	test_hash_dictionary {
