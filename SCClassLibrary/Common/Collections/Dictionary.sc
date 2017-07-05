@@ -383,7 +383,7 @@ Dictionary : Set {
 		var hash = this.class.hash;
 		this.keysValuesDo { arg key, item;
 			hash = hash bitXor: item.hash;
-			hash = hash bitXor: key.hash << 1;
+			hash = (hash << 1) bitXor: key.hash
 		};
 		^hash
 	}
@@ -520,10 +520,10 @@ IdentityDictionary : Dictionary {
 	}
 
 	hash {
-		var hash = super.hash;
-		hash = hash bitXor: know.hash;
-		hash = hash bitXor: parent.hash << 1;
-		hash = hash bitXor: proto.hash << 1;
+		var hash = hash bitXor: know.hash;
+		hash = (hash << 1) bitXor: parent.hash;
+		hash = (hash << 1) bitXor: proto.hash;
+		hash = (hash << 1) bitXor: super.hash;
 		^hash
 	}
 
