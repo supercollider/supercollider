@@ -11,6 +11,7 @@ Event : Environment {
 	*default {
 		^Event.new(8, nil, defaultParentEvent, true);
 	}
+
 	*silent { |dur(1.0), inEvent|
 		if(inEvent.isNil) { inEvent = Event.new }
 		{ inEvent = inEvent.copy };
@@ -18,10 +19,15 @@ Event : Environment {
 		.put(\delta, dur * (inEvent[\stretch] ? 1));
 		^inEvent
 	}
-	*addEventType { arg type, func, protoEvent;
-		if(protoEvent.notNil and: { protoEvent.parent.isNil }) { protoEvent.parent = defaultParentEvent };
+
+	*addEventType { arg type, func, parentEvent;
 		partialEvents.playerEvent.eventTypes.put(type, func);
-		partialEvents.playerEvent.parentTypes.put(type, protoEvent);
+		this.addParentType(parentEvent)
+	}
+
+	*addParentType { arg type, parentEvent;
+		if(parentEvent.notNil and: { parentEvent.parent.isNil }) { parentEvent.parent = defaultParentEvent };
+		partialEvents.playerEvent.parentTypes.put(type, parentEvent)
 	}
 
 	next { arg inval; ^composeEvents(inval, this) }
