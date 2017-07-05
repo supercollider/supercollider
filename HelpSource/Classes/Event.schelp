@@ -101,6 +101,27 @@ Event.partialEvents.playerEvent.parentTypes
 ::
 
 
+method::addParentType
+Define an alternative parent that is chosen on the basis of strong::~type::. It allows you to change the defaults of an existing event type function.
+
+argument::type
+A name (usually a symbol) for the event type, which can be used to select it
+
+argument::parentEvent
+An event with default values which is used to override the parent event. If code::parentEvent:: in turn has no parent, its default parent event is set.
+
+discussion::
+code::
+Pbind(\type, \note, \degree, Pseq([0, 1, 2, 3, 4, 4, 5, 5, 5, 5, 4, 2, 3, 2, 3, 1], inf), \dur, 0.08).play;
+Event.addParentType(\note, (mtranspose: 2, root:5)); // set different defaults
+
+// note is the default type, this will also pick up the information:
+Pbind(\degree, Pseq([0, 1, 2, 3, 4, 4, 5, 5, 5, 5, 4, 2, 3, 2, 3, 1], inf), \dur, 0.08).play;
+
+::
+
+
+
 method::makeDefaultSynthDef
 This method is called in order to build the default SynthDef, which is stored under the key strong::\default::
 code::
