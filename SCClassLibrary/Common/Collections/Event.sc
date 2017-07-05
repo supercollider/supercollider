@@ -416,25 +416,29 @@ Event : Environment {
 				type: \note,
 
 				play: #{
-					var tempo, server, eventType, parentType;
+					var tempo, server, eventTypes, parentType;
 
-					eventType = ~eventTypes[~type];
 					parentType = ~parentTypes[~type];
-
 					parentType !? { currentEnvironment.parent = parentType };
 
 					~finish.value(currentEnvironment);
 
-					server = ~server ?? { Server.default };
+					server = ~server ? Server.default;
 
 					tempo = ~tempo;
-					if (tempo.notNil) {
-						thisThread.clock.tempo = tempo;
+					if(tempo.notNil) {
+						thisThread.clock.tempo = tempo
 					};
-					if(currentEnvironment.isRest.not) { eventType.value(server) };
+
+					if(currentEnvironment.isRest.not) {
+						eventTypes = ~eventTypes;
+						(eventTypes[~type] ?? { eventTypes[\note] }).value(server)
+					};
 
 					~callback.value(currentEnvironment);
 				},
+
+
 
 				// synth / node interface
 				// this may be better moved into the cleanup events, but for now
