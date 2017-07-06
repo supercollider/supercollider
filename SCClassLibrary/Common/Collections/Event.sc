@@ -1,4 +1,5 @@
 Event : Environment {
+
 	classvar defaultParentEvent;
 	classvar <parentEvents;
 	classvar <partialEvents;
@@ -20,9 +21,9 @@ Event : Environment {
 		.put(\delta, delta);
 		^inEvent
 	}
-	*addEventType { arg type, func;
-		var types = partialEvents.playerEvent.eventTypes;
-		types.put(type, func)
+	*addEventType { arg type, func, protoEvent;
+		partialEvents.playerEvent.eventTypes.put(type, func);
+		partialEvents.playerEvent.protoEventTypes.put(type, protoEvent);
 	}
 
 	next { arg inval; ^composeEvents(inval, this) }
@@ -410,17 +411,22 @@ Event : Environment {
 				type: \note,
 
 				play: #{
-					var tempo, server;
+					var tempo, server, protoEventType, eventTypes;
+
+					protoEventType = ~protoEventTypes[~type];
+					protoEventType !? { currentEnvironment.setProtoProto(protoEventType) };
 
 					~finish.value(currentEnvironment);
 
-					server = ~server ?? { Server.default };
+					server = ~server ? Server.default;
 
 					tempo = ~tempo;
-					if (tempo.notNil) {
-						thisThread.clock.tempo = tempo;
+					tempo !? { thisThread.clock.tempo = tempo };
+
+					if(currentEnvironment.isRest.not) {
+						eventTypes = ~eventTypes;
+						(eventTypes[~type] ?? { eventTypes[\note] }).value(server)
 					};
-					if(currentEnvironment.isRest.not) { ~eventTypes[~type].value(server) };
 
 					~callback.value(currentEnvironment);
 				},
@@ -460,6 +466,8 @@ Event : Environment {
 
 
 				// the event types
+
+				protoEventTypes: (),
 
 				eventTypes: (
 
