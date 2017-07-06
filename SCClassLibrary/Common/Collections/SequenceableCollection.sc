@@ -320,6 +320,38 @@ SequenceableCollection : Collection {
 	}
 
 
+	stitchPairs { |newPairs|
+		var toDo = [], tryInsert = false;
+		this.pairsDo { |key, item, j|
+			var remove;
+			var i = newPairs.indexOf(key);
+			if(i.isNil) {
+				toDo = toDo.add(key).add(item);
+			} {
+				if(item.isNil) {
+					newPairs.removeAt(i);
+					newPairs.removeAt(i);
+				} {
+					if(tryInsert) {
+						if(toDo.notEmpty) {
+							newPairs = newPairs.insertAll(i, toDo);
+							toDo = [];
+						};
+						tryInsert = false;
+					} {
+						newPairs[i+1] = item;
+						tryInsert = true;
+					}
+				}
+			}
+		};
+		if(toDo.notEmpty) {
+			newPairs = newPairs ++ toDo;
+		};
+		// todo: what to do with the rest of this?
+		^newPairs
+	}
+
 	// compatibility with isolated objects
 
 	obtain { arg index, default; ^this[index] ? default }
@@ -378,6 +410,7 @@ SequenceableCollection : Collection {
 		list = list.add(sublist);
 		^list
 	}
+
 	clump { arg groupSize;
 		var list = Array.new((this.size / groupSize).roundUp.asInteger);
 		var sublist = this.species.new(groupSize);

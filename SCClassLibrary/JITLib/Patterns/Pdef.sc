@@ -723,44 +723,16 @@ PbindProxy : Pattern {
 
 	at { arg key; var i; i = this.find(key); ^if(i.notNil) { pairs[i+1] } { nil } }
 
-	// stitch the new pairs into the old ones, keeping the order
 	set { arg ... args; // key, val ...
 		var quant = this.quant;
-		var toDo = [], tryInsert = false, changedPairs = false;
 		var newPairs = args.collect { |x, i| if(i.even) { x } { PatternProxy.new.setSource(x) } };
-
-		pairs.pairsDo { |key, proxy, j|
-			var remove;
-			var i = args.indexOf(key);
-			if(i.isNil) {
-				toDo = toDo.add(key).add(proxy);
-			} {
-				if(proxy.isNil) {
-					newPairs.removeAt(i);
-					newPairs.removeAt(i);
-					changedPairs = true;
-				} {
-					if(tryInsert) {
-						if(toDo.notEmpty) {
-							newPairs = newPairs.insertAll(i, toDo);
-							toDo = [];
-						};
-						tryInsert = false;
-						changedPairs = true;
-					} {
-						newPairs[i+1] = proxy;
-						tryInsert = true;
-					}
-				}
-			}
-		};
-
-		if(changedPairs) {
+		var changedPairs = false;
+		newPairs = pairs.stitchPairs(newPairs, { changedPairs = true });
+		if(newPairs !== pairs) {
 			pairs = newPairs;
 			pairs.pairsDo { |key, x| x.quant = quant };
 			source.source = Pbind(*pairs)
 		};
-
 	}
 
 	storeArgs {
