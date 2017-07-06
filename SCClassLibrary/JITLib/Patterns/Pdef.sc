@@ -723,27 +723,43 @@ PbindProxy : Pattern {
 
 	at { arg key; var i; i = this.find(key); ^if(i.notNil) { pairs[i+1] } { nil } }
 
+	// stitch the new pairs into the old ones, keeping the order
 	set { arg ... args; // key, val ...
-		var changedPairs = false, quant;
-		quant = this.quant;
-		args.pairsDo { |key, val, j|
-			var i, remove;
-			i = this.find(key);
-			if(i.notNil) {
-				if(val.isNil) {
-					pairs.removeAt(i);
-					pairs.removeAt(i);
+		var quant = this.quant;
+		var toDo = [], tryInsert = false, changedPairs = false;
+		var newPairs = args.collect { |x, i| if(i.even) { x } { PatternProxy.new.setSource(x) } };
+
+		pairs.pairsDo { |key, proxy, j|
+			var remove;
+			var i = args.indexOf(key);
+			if(i.isNil) {
+				toDo = toDo.add(key).add(proxy);
+			} {
+				if(proxy.isNil) {
+					newPairs.removeAt(i);
+					newPairs.removeAt(i);
 					changedPairs = true;
 				} {
-					pairs[i+1].quant_(quant).setSource(val)
+					if(tryInsert) {
+						if(toDo.notEmpty) {
+							newPairs = newPairs.insertAll(i, toDo);
+							toDo = [];
+						};
+						tryInsert = false;
+						changedPairs = true;
+					} {
+						newPairs[i+1] = proxy;
+						tryInsert = true;
+					}
 				}
-			} {
-				pairs = pairs.insert(j, key);
-				pairs = pairs.insert(j+1, PatternProxy.new.quant_(quant).setSource(val));
-				changedPairs = true;
 			}
 		};
-		if(changedPairs) { source.source =  Pbind(*pairs) };
+
+		if(changedPairs) {
+			pairs = newPairs;
+			pairs.pairsDo { |key, x| x.quant = quant };
+			source.source = Pbind(*pairs)
+		};
 
 	}
 

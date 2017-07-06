@@ -314,6 +314,10 @@ SequenceableCollection : Collection {
 	top { ^this.last }
 	putFirst { arg obj; if (this.size > 0, { ^this.put(0, obj) }) }
 	putLast { arg obj; if (this.size > 0, { ^this.put(this.size - 1, obj) }) }
+	insertAll { arg index, list;
+		var i = (index - 1).clip(0, list.size - 1);
+		^this[0..i] ++ list ++ this[i+1..]
+	}
 
 
 	// compatibility with isolated objects
