@@ -367,18 +367,37 @@ TestPatternProxy : UnitTest {
 
 	}
 
-	test_pbindef_arg_order {
+	test_pbindef_arg_order_new {
 		var pairs;
 
 		Pbindef(\test).clear;
 		Pbindef(\test, \a, 1, \b, 2, \c, 3);
 
 		pairs = Pbindef(\test).source.pairs;
-		this.assertEquals(pairs[0,2..], [\a, \b, \c], "Pbindef key order should correspond to code");
+		this.assertEquals(pairs[0,2..], [\a, \b, \c], "Pbindef key order should correspond to argument order");
 
+	}
+
+	test_pbindef_arg_order_insert {
+		var pairs;
+
+		Pbindef(\test).clear;
+		Pbindef(\test, \a, 1, \b, 2, \c, 3);
 		Pbindef(\test, \y, 5, \a, 1, \x, 0, \b, 2, \c, 3, \z, 9);
+
 		pairs = Pbindef(\test).source.pairs;
-		this.assertEquals(pairs[0,2..], [\y, \a, \x, \b, \c, \z], "Pbindef key order should correspond to code");
+		this.assertEquals(pairs[0,2..], [\y, \a, \x, \b, \c, \z], "Pbindef key order should correspond to argument order after insertion of new key-value pairs");
+	}
+
+	test_pbindef_arg_order_fromPbind {
+		var pairs;
+
+		Pdef(\test).clear;
+		Pdef(\test, Pbind(\a, 1, \c, 3));
+		Pbindef(\test, \a, 1, \b, 2, \c, 3);
+
+		pairs = Pbindef(\test).source.pairs;
+		this.assertEquals(pairs[0,2..], [\a, \b, \c], "Pbindef key order should correspond to argument order when converting from Pdef of a Pbind to a Pbindef");
 
 	}
 }
