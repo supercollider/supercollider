@@ -763,7 +763,7 @@ Pbindef : Pdef {
 		pat = super.new(key);
 		src = pat.source;
 		if(pairs.isEmpty.not) {
-			if(src.class === PbindProxy) {
+			if(src.isKindOf(PbindProxy)) {
 				src.set(*pairs);
 				pat.wakeUp;
 			} {
