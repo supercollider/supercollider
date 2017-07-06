@@ -727,8 +727,8 @@ PbindProxy : Pattern {
 		var quant = this.quant;
 		var newPairs = args.collect { |x, i| if(i.even) { x } { PatternProxy.new.setSource(x) } };
 		var changedPairs = false;
-		newPairs = pairs.stitchPairs(newPairs, { changedPairs = true });
-		if(newPairs !== pairs) {
+		newPairs = pairs.stitchPairs(newPairs);
+		if(newPairs != pairs) {
 			pairs = newPairs;
 			pairs.pairsDo { |key, x| x.quant = quant };
 			source.source = Pbind(*pairs)
