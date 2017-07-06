@@ -374,7 +374,31 @@ TestPatternProxy : UnitTest {
 		Pbindef(\test, \a, 1, \b, 2, \c, 3);
 
 		pairs = Pbindef(\test).source.pairs;
-		this.assertEquals(pairs[0,2..], [\a, \b, \c], "Pbindef key order should correspond to argument order");
+		this.assertEquals(pairs[0,2..], [\a, \b, \c], "Pbindef key order should correspond to fresh argument order");
+
+	}
+
+	test_pbindef_arg_order_reverse {
+		var pairs;
+
+		Pbindef(\test).clear;
+		Pbindef(\test, \a, 1, \b, 2, \c, 3);
+		Pbindef(\test, \c, 3, \b, 2, \a, 1);
+
+		pairs = Pbindef(\test).source.pairs;
+		this.assertEquals(pairs[0,2..], [\c, \b, \a], "Pbindef key order should correspond to reversed argument order");
+
+	}
+
+	test_pbindef_arg_order_insert_other {
+		var pairs;
+
+		Pbindef(\test).clear;
+		Pbindef(\test, \a, 1);
+		Pbindef(\test, \b, 2);
+
+		pairs = Pbindef(\test).source.pairs;
+		this.assertEquals(pairs[0,2..], [\b, \a], "Pbindef key order should correspond to added argument order");
 
 	}
 
@@ -386,7 +410,7 @@ TestPatternProxy : UnitTest {
 		Pbindef(\test, \y, 5, \a, 1, \x, 0, \b, 2, \c, 3, \z, 9);
 
 		pairs = Pbindef(\test).source.pairs;
-		this.assertEquals(pairs[0,2..], [\y, \a, \x, \b, \c, \z], "Pbindef key order should correspond to argument order after insertion of new key-value pairs");
+		this.assertEquals(pairs[0,2..], [\y, \a, \x, \b, \c, \z], "Pbindef key order should correspond to interleaved argument order after insertion of new key-value pairs");
 	}
 
 	test_pbindef_arg_order_fromPbind {
