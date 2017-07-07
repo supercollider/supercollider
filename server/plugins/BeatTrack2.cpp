@@ -342,7 +342,7 @@ void calculatetemplate(BeatTrack2 *unit, int which, int j)
 //a consistency check could also run to look at change from last time to this
 void finaldecision(BeatTrack2 *unit)
 {
-	int foundgood = 0;
+	// int foundgood = 0;
 	int bestcandidate = 0;
 	int bestpreviousmatchsum = 0; //(-1);  //should be 0, but allowing different for now
 	float excess; //, consistency;
