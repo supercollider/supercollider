@@ -380,7 +380,7 @@ void finaldecision(BeatTrack2 *unit)
 		if ((matchsum > bestpreviousmatchsum)) {
 			bestcandidate = i;
 			bestpreviousmatchsum = matchsum;
-			foundgood = 1;
+			// foundgood = 1;
 		}
 
 	}
