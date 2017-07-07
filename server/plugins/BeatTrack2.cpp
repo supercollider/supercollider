@@ -377,7 +377,11 @@ void finaldecision(BeatTrack2 *unit)
 		if(secondbest!= 0) matchsum += (int)excess;
 
 		//so must have at least one match //&& (excess>1.03)
-		if ((matchsum>bestpreviousmatchsum)) {bestcandidate = i; bestpreviousmatchsum= matchsum; foundgood=1;}
+		if ((matchsum > bestpreviousmatchsum)) {
+			bestcandidate = i;
+			bestpreviousmatchsum = matchsum;
+			foundgood = 1;
+		}
 
 	}
 
