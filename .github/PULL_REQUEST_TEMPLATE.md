@@ -1,11 +1,8 @@
 <!--- Provide a general summary of your changes in the title above -->
 
-## Purpose
+## Purpose and Motivation
 
-<!--- Please describe the purpose of the pull request. -->
-
-## Motivation and Context
-
+<!--- Please describe the purpose and motivation of the pull request. -->
 <!--- Why is this change required? What problem does it solve? -->
 <!--- If it fixes an open issue, please link to the issue here. -->
 
