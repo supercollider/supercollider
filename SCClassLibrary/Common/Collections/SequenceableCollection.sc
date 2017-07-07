@@ -348,7 +348,6 @@ SequenceableCollection : Collection {
 		if(toDo.notEmpty) {
 			newPairs = newPairs ++ toDo;
 		};
-		// todo: what to do with the rest of this?
 		^newPairs
 	}
 
