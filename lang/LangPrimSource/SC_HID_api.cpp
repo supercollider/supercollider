@@ -489,8 +489,6 @@ int prHID_API_BuildDeviceList(VMGlobals* g, int numArgsPushed){
 	PyrSlot *self = args + 0;
 	// no arguments
 
-	int err;
-
 	const char emptyString[] = "";
 
 	// iterate over available devices and return info to language to populate the list there
@@ -876,7 +874,6 @@ int prHID_API_GetElementInfo( VMGlobals* g, int numArgsPushed ){
 
 int prHID_API_SetElementOutput( VMGlobals* g, int numArgsPushed ){
 	PyrSlot *args = g->sp - numArgsPushed + 1;
-	PyrSlot* self = args + 0;
 	PyrSlot* arg1  = args + 1;
 	PyrSlot* arg2  = args + 2;
 	PyrSlot* arg3  = args + 3;
@@ -919,7 +916,6 @@ int prHID_API_SetElementOutput( VMGlobals* g, int numArgsPushed ){
 
 int prHID_API_SetElementRepeat( VMGlobals* g, int numArgsPushed ){
 	PyrSlot *args = g->sp - numArgsPushed + 1;
-	PyrSlot* self = args + 0;
 	PyrSlot* arg1  = args + 1;
 	PyrSlot* arg2  = args + 2;
 	PyrSlot* arg3  = args + 3;
