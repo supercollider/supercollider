@@ -30,7 +30,3 @@
 // Please paste any error messages here.
 // Link to a Gist (https://gist.github.com) if the message is long.
 ```
-
-## Context
-<!--- How has this issue affected you? What are you trying to accomplish? -->
-<!--- Providing context helps us come up with a solution that is most useful in the real world -->
