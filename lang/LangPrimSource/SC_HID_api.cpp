@@ -348,16 +348,12 @@ SC_HID_APIManager::~SC_HID_APIManager()
 
 int SC_HID_APIManager::init()
 {
-	int result;
 	number_of_hids = 0;
 	mShouldBeRunning = true;
-	if ( !m_running ){
-		result = initialize_hidapi();
-	}
-	if ( !m_running ){
-		return errFailed;
-	}
-	return result;
+	if ( !m_running )
+		initialize_hidapi();
+
+	return m_running ? errNone : errFailed;
 }
 
 int SC_HID_APIManager::closeAll()
