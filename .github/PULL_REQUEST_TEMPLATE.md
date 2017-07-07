@@ -19,6 +19,10 @@
 - [ ] All tests are passing
 - [ ] New tests were created to address changes in PR (and tests are passing)
 - [ ] Updated README and/or documentation, if necessary
+- [ ] This PR is ready for review
+
+<!--- If any work remains to be done, please give a brief description here. -->
+<!--- Consider providing a todo-list so we can easily track completion progress. -->
 
 <!--- Thanks for contributing! -->
 
