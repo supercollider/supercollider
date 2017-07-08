@@ -35,8 +35,6 @@ static InterfaceTable *ft;
 
 const int kMaxGrains = 64;
 
-const int kMaxSynthGrains = 512;
-
 struct GrainInG
 {
 	double b1, y1, y2, curamp, winPos, winInc; // envelope
