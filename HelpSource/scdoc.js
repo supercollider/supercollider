@@ -480,10 +480,11 @@ function fixTOC() {
     var nav = ["SuperCollider " + scdoc_sc_version, "Browse", "Search"];
     var url = ["Help.html","Browse.html","Search.html"];
     var nav_item;
+    var a;
     for(var i=0;i<nav.length;i++) {
         nav_item = document.createElement("div");
         nav_item.className = "menuitem";
-        var a = document.createElement("a");
+        a = document.createElement("a");
         a.innerHTML = nav[i];
         a.setAttribute("href",helpRoot+"/"+url[i]);
         a.className = "navlink";
