@@ -424,4 +424,26 @@ TestPatternProxy : UnitTest {
 		this.assertEquals(pairs[0,2..], [\a, \b, \c], "Pbindef key order should correspond to argument order when converting from Pdef of a Pbind to a Pbindef");
 
 	}
+
+	test_pbindef_continuity {
+		var pairs1, pairs2;
+
+		Pdef(\test).clear;
+
+		Pbindef(\test, \a, 1, \b, 2, \c, 3);
+		pairs1 = Pbindef(\test).source.pairs;
+
+		Pbindef(\test, \a, 2, \b, 3, \c, 4, \d, 5);
+		pairs2 = Pbindef(\test).source.pairs.keep(6);
+
+
+
+		this.assert(
+			pairs2.every { |patternproxy, i| patternproxy ===  pairs1[i] },
+			"Pbindef should add new values to existing pattern proxy where possible"
+		);
+
+	}
+
+
 }
