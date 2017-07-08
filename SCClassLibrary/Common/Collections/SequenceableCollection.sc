@@ -314,9 +314,8 @@ SequenceableCollection : Collection {
 	top { ^this.last }
 	putFirst { arg obj; if (this.size > 0, { ^this.put(0, obj) }) }
 	putLast { arg obj; if (this.size > 0, { ^this.put(this.size - 1, obj) }) }
-	insertAll { arg index, list;
-		if(index == 0) { ^list ++ this };
-		^this[..index-1] ++ list ++ this[index..]
+	insertAll { arg index, obj;
+		^this[..index-1] ++ obj ++ this[index..]
 	}
 
 
