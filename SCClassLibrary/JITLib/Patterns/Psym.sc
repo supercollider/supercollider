@@ -133,3 +133,25 @@ Psym1 : Psym {
 		^cleanup.exit(inval);
 	}
 }
+
+
+
+// general purpose lookup stream
+
+Pdict : Pattern {
+	var <>dict, <>which, <>repeats, <>default;
+	*new { arg dict, which, repeats=inf, default;
+		^super.newCopyArgs(dict, which, repeats, default);
+	}
+	storeArgs { ^[dict,which,repeats,default ] }
+	embedInStream { arg inval;
+		var keyStream, key;
+		keyStream = which.asStream;
+		repeats.value(inval).do({
+			key = keyStream.next(inval);
+			if(key.isNil) { ^inval };
+			inval = (dict.at(key) ? default).embedInStream(inval);
+		});
+		^inval
+	}
+}
