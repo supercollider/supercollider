@@ -314,7 +314,42 @@ SequenceableCollection : Collection {
 	top { ^this.last }
 	putFirst { arg obj; if (this.size > 0, { ^this.put(0, obj) }) }
 	putLast { arg obj; if (this.size > 0, { ^this.put(this.size - 1, obj) }) }
+	insertAll { arg index, list;
+		var i = (index - 1).clip(0, list.size - 1);
+		^this[0..i] ++ list ++ this[i+1..]
+	}
 
+
+	stitchIntoPairs { |pairs|
+		var toDo = [], tryInsert = false;
+		this.pairsDo { |key, item, j|
+			var remove;
+			var i = pairs.indexOf(key);
+			if(i.isNil) {
+				toDo = toDo.add(key).add(item);
+			} {
+				if(item.isNil) {
+					pairs.removeAt(i);
+					pairs.removeAt(i);
+				} {
+					if(tryInsert) {
+						if(toDo.notEmpty) {
+							pairs = pairs.insertAll(i, toDo);
+							toDo = [];
+						};
+						tryInsert = false;
+					} {
+						pairs[i+1] = item;
+						tryInsert = true;
+					}
+				}
+			}
+		};
+		if(toDo.notEmpty) {
+			pairs = pairs ++ toDo;
+		};
+		^pairs
+	}
 
 	// compatibility with isolated objects
 
@@ -374,6 +409,7 @@ SequenceableCollection : Collection {
 		list = list.add(sublist);
 		^list
 	}
+
 	clump { arg groupSize;
 		var list = Array.new((this.size / groupSize).roundUp.asInteger);
 		var sublist = this.species.new(groupSize);
