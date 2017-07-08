@@ -1,51 +1,67 @@
 
 PbindProxy : Pattern {
+
 	var <>pairs, <source;
 
-	*new { arg ... pairs;
+	*new { | ... pairs |
 		^super.newCopyArgs(pairs).init
 	}
+
 	init {
-		forBy(0, pairs.size-1, 2) { arg i;
+		forBy(0, pairs.size-1, 2) { |i|
 			var proxy = PatternProxy.new;
 			proxy.setSource(pairs[i+1]);
 			pairs[i+1] = proxy
 		};
-		source = EventPatternProxy(Pbind(*pairs));
-
+		source = EventPatternProxy(Pbind(*pairs))
 	}
+
 	clear {
 		pairs = [];
 		source.clear;
 	}
-	embedInStream { arg inval;
+
+	embedInStream { |inval|
 		^source.embedInStream(inval)
 	}
 
-	quant_ { arg val;
-		pairs.pairsDo { arg key, item; item.quant = val }; // maybe use ref later
+	quant_ { |val|
+		pairs.pairsDo { |key, item| item.quant = val }; // maybe use ref later
 		source.quant = val;
 	}
+
 	quant { ^source.quant }
+
 	envir { ^source.envir }
-	envir_ { arg envir; source.envir_(envir) }
 
-	find { arg key;
-		pairs.pairsDo { |u,x,i| if(u == key) { ^i } }; ^nil
+	envir_ { |envir|
+		source.envir_(envir)
 	}
-	at { arg key; var i; i = this.find(key); ^if(i.notNil) { pairs[i+1] } { nil } }
 
-	set { arg ... args; // key, val ...
+	find { |key|
+		pairs.pairsDo { |u, x, i|
+			if(u == key) { ^i }
+		};
+		^nil
+	}
+
+	at { |key|
+		var i = this.find(key);
+		^if(i.notNil) { pairs[i+1] } { nil }
+	}
+
+	set { | ... args | // key, val ...
 		this.setPatternPairs(args)
 	}
 
-	setPatternPairs { arg newPairs, stitch = true;
+	setPatternPairs { | newPairs, stitch = true |
 		// newPairs are modified in place. If necessary, copy before passing it here.
 		var toRemove, toRemoveInArgs, changed = false;
 		var quant = this.quant;
 
 
 		forBy(0, newPairs.lastIndex, 2, { |i|
+
 			var val = newPairs[i + 1];
 			var key = newPairs[i];
 			var j = this.find(key);
@@ -61,6 +77,7 @@ PbindProxy : Pattern {
 				toRemoveInArgs = toRemoveInArgs.add(i).add(i + 1);
 				if(j.notNil) { toRemove = toRemove.add(j).add(j + 1) };
 			}
+
 		});
 
 		// now remove all those which were nil
@@ -89,10 +106,11 @@ PbindProxy : Pattern {
 
 Pbindef : Pdef {
 
-	*new { arg key ... pairs;
-		var pat, src;
-		pat = super.new(key);
-		src = pat.source;
+	*new { | key ... pairs |
+
+		var pat = super.new(key);
+		var src = pat.source;
+
 		if(pairs.isEmpty.not) {
 			if(src.isKindOf(PbindProxy)) {
 				src.setPatternPairs(pairs, this.stitch);
@@ -119,14 +137,21 @@ Pbindef : Pdef {
 
 	*stitch { ^true }
 
-	storeArgs { ^[key]++pattern.storeArgs }
+	storeArgs { ^[key] ++ pattern.storeArgs }
+
 	repositoryArgs { ^this.storeArgs }
-	quant_ { arg val; super.quant = val; source.quant = val }
+
+	quant_ { |val|
+		super.quant = val;
+		source.quant = val
+	}
 
 	*hasGlobalDictionary { ^true }
 
 }
 
 PbindefCut : Pbindef {
+
 	*stitch { ^false }
+
 }
