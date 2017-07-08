@@ -1,5 +1,5 @@
 /*
- *  JoshUGens.cpp
+ *  GrainUGens.cpp
  *  xSC3plugins
  *
  *  Created by Josh Parmenter on 2/4/05.
