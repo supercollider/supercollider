@@ -520,7 +520,7 @@ IdentityDictionary : Dictionary {
 	}
 
 	hash {
-		var hash = hash bitXor: know.hash;
+		var hash = know.hash;
 		hash = (hash << 1) bitXor: parent.hash;
 		hash = (hash << 1) bitXor: proto.hash;
 		hash = (hash << 1) bitXor: super.hash;
