@@ -710,9 +710,7 @@ PbindProxy : Pattern {
 	embedInStream { arg inval;
 		^source.embedInStream(inval)
 	}
-	find { arg key;
-		pairs.pairsDo { |u,x,i| if(u == key) { ^i } }; ^nil
-	}
+
 	quant_ { arg val;
 		pairs.pairsDo { arg key, item; item.quant = val }; // maybe use ref later
 		source.quant = val;
@@ -721,31 +719,51 @@ PbindProxy : Pattern {
 	envir { ^source.envir }
 	envir_ { arg envir; source.envir_(envir) }
 
+	find { arg key;
+		pairs.pairsDo { |u,x,i| if(u == key) { ^i } }; ^nil
+	}
 	at { arg key; var i; i = this.find(key); ^if(i.notNil) { pairs[i+1] } { nil } }
 
 	set { arg ... args; // key, val ...
-		var changedPairs = false, quant;
-		quant = this.quant;
-		args.pairsDo { |key, val|
-			var i, remove;
-			i = this.find(key);
-			if(i.notNil)
-			{
-				if(val.isNil) {
-					pairs.removeAt(i);
-					pairs.removeAt(i);
-					changedPairs = true;
-				}{
-					pairs[i+1].quant_(quant).setSource(val)
-				};
-			}{
-				pairs = pairs ++ [key, PatternProxy.new.quant_(quant).setSource(val)];
-				changedPairs = true;
-			};
+		this.setPatternPairs(args)
+	}
 
-		};
-		if(changedPairs) { source.source =  Pbind(*pairs) };
+	setPatternPairs { arg newPairs, stitch = true;
+		// newPairs are modified in place. If necessary, copy before passing it here.
+		var toRemove, toRemoveInArgs, changed = false;
+		var quant = this.quant;
 
+
+		forBy(0, newPairs.lastIndex, 2, { |i|
+			var val = newPairs[i + 1];
+			var key = newPairs[i];
+			var j = this.find(key);
+			var proxy;
+
+			if(val.notNil) {
+				// find existing or make a new one
+				proxy = if(j.notNil) { pairs[j + 1] } { PatternProxy.new };
+				proxy.setSource(val);
+				newPairs[i + 1] = proxy; // replace argument value by proxy
+			} {
+				// add index of key and value to remove-list
+				toRemoveInArgs = toRemoveInArgs.add(i).add(i + 1);
+				if(j.notNil) { toRemove = toRemove.add(j).add(j + 1) };
+			}
+		});
+
+		// now remove all those which were nil
+		toRemove !? { changed = true; pairs = pairs.reject { |x, i| toRemove.includes(i) } };
+		toRemoveInArgs !? { newPairs = newPairs.reject { |x, i| toRemoveInArgs.includes(i) } };
+
+		// stitch old pairs into new pairs
+		if(stitch) { newPairs = pairs.stitchIntoPairs(newPairs) };
+
+		if(changed or: { newPairs != pairs }) {
+			pairs = newPairs;
+			pairs.pairsDo { |key, x| x.quant = quant };
+			source.source = Pbind(*pairs)
+		}
 	}
 
 	storeArgs {
@@ -759,13 +777,14 @@ PbindProxy : Pattern {
 
 
 Pbindef : Pdef {
+	var <>stitch = true;
 	*new { arg key ... pairs;
 		var pat, src;
 		pat = super.new(key);
 		src = pat.source;
 		if(pairs.isEmpty.not) {
-			if(src.class === PbindProxy) {
-				src.set(*pairs);
+			if(src.isKindOf(PbindProxy)) {
+				src.setPatternPairs(pairs, pat.stitch);
 				pat.wakeUp;
 			} {
 				if(src.isKindOf(Pbind))
