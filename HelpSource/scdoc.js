@@ -486,7 +486,7 @@ function fixTOC() {
         var a = document.createElement("a");
         a.innerHTML = nav[i];
         a.setAttribute("href",helpRoot+"/"+url[i]);
-        a.className = "navLink";
+        a.className = "navlink";
         nav_item.appendChild(a);
         bar.appendChild(nav_item);
     }
