@@ -320,35 +320,35 @@ SequenceableCollection : Collection {
 	}
 
 
-	stitchPairs { |newPairs|
+	stitchIntoPairs { |pairs|
 		var toDo = [], tryInsert = false;
 		this.pairsDo { |key, item, j|
 			var remove;
-			var i = newPairs.indexOf(key);
+			var i = pairs.indexOf(key);
 			if(i.isNil) {
 				toDo = toDo.add(key).add(item);
 			} {
 				if(item.isNil) {
-					newPairs.removeAt(i);
-					newPairs.removeAt(i);
+					pairs.removeAt(i);
+					pairs.removeAt(i);
 				} {
 					if(tryInsert) {
 						if(toDo.notEmpty) {
-							newPairs = newPairs.insertAll(i, toDo);
+							pairs = pairs.insertAll(i, toDo);
 							toDo = [];
 						};
 						tryInsert = false;
 					} {
-						newPairs[i+1] = item;
+						pairs[i+1] = item;
 						tryInsert = true;
 					}
 				}
 			}
 		};
 		if(toDo.notEmpty) {
-			newPairs = newPairs ++ toDo;
+			pairs = pairs ++ toDo;
 		};
-		^newPairs
+		^pairs
 	}
 
 	// compatibility with isolated objects

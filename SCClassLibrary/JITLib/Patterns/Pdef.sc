@@ -729,9 +729,10 @@ PbindProxy : Pattern {
 	}
 
 	setPatternPairs { arg newPairs, stitch = true;
-
+		// newPairs are modified in place. If necessary, copy before passing it here.
 		var toRemove, toRemoveInArgs, changed = false;
 		var quant = this.quant;
+
 
 		forBy(0, newPairs.lastIndex, 2, { |i|
 			var val = newPairs[i + 1];
@@ -756,7 +757,7 @@ PbindProxy : Pattern {
 		toRemoveInArgs !? { newPairs = newPairs.reject { |x, i| toRemoveInArgs.includes(i) } };
 
 		// stitch old pairs into new pairs
-		if(stitch) { newPairs = pairs.stitchPairs(newPairs) };
+		if(stitch) { newPairs = pairs.stitchIntoPairs(newPairs) };
 
 		if(changed or: { newPairs != pairs }) {
 			pairs = newPairs;
