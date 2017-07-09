@@ -398,7 +398,7 @@ TestPatternProxy : UnitTest {
 		Pbindef(\test, \b, 2);
 
 		pairs = Pbindef(\test).source.pairs;
-		this.assertEquals(pairs[0,2..], [\b, \a], "Pbindef key order should correspond to added argument order");
+		this.assertEquals(pairs[0,2..], [\a, \b], "Pbindef key order should correspond to added argument order");
 
 	}
 

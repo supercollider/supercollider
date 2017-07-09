@@ -344,9 +344,7 @@ SequenceableCollection : Collection {
 				}
 			}
 		};
-		if(toDo.notEmpty) {
-			pairs = pairs ++ toDo;
-		};
+		if(toDo.notEmpty) { pairs = toDo ++ pairs };
 		^pairs
 	}
 
