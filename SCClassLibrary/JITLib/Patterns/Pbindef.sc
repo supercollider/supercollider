@@ -54,7 +54,7 @@ PbindProxy : Pattern {
 		this.setPatternPairs(args)
 	}
 
-	setPatternPairs { | newPairs, stitch = true |
+	setPatternPairs { | newPairs, merge = true |
 		// newPairs are modified in place. If necessary, copy before passing it here.
 		var toRemove, toRemoveInArgs, changed = false;
 		var quant = this.quant;
@@ -84,8 +84,8 @@ PbindProxy : Pattern {
 		toRemove !? { changed = true; pairs = pairs.reject { |x, i| toRemove.includes(i) } };
 		toRemoveInArgs !? { newPairs = newPairs.reject { |x, i| toRemoveInArgs.includes(i) } };
 
-		// stitch old pairs into new pairs
-		if(stitch) { newPairs = pairs.stitchIntoPairs(newPairs) };
+		// merge old pairs into new pairs
+		if(merge) { newPairs = newPairs.mergePairs(pairs) };
 
 		if(changed or: { newPairs != pairs }) {
 			pairs = newPairs;
@@ -113,7 +113,7 @@ Pbindef : Pdef {
 
 		if(pairs.isEmpty.not) {
 			if(src.isKindOf(PbindProxy)) {
-				src.setPatternPairs(pairs, this.stitch);
+				src.setPatternPairs(pairs, this.mergeNewPairs);
 				pat.wakeUp;
 			} {
 				if(src.isKindOf(Pbind))
@@ -135,7 +135,7 @@ Pbindef : Pdef {
 
 	}
 
-	*stitch { ^true }
+	*mergeNewPairs { ^true }
 
 	storeArgs { ^[key] ++ pattern.storeArgs }
 
@@ -152,6 +152,6 @@ Pbindef : Pdef {
 
 PbindefCut : Pbindef {
 
-	*stitch { ^false }
+	*mergeNewPairs { ^false }
 
 }

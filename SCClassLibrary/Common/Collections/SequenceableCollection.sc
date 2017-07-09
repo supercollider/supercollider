@@ -319,33 +319,34 @@ SequenceableCollection : Collection {
 	}
 
 
-	stitchIntoPairs { |pairs|
+	mergePairs { |pairs|
 		var toDo = [], tryInsert = false;
-		this.pairsDo { |key, item, j|
+		var res = this.copy;
+		pairs.pairsDo { |key, item, j|
 			var remove;
-			var i = pairs.indexOf(key);
+			var i = res.indexOf(key);
 			if(i.isNil) {
 				toDo = toDo.add(key).add(item);
 			} {
 				if(item.isNil) {
-					pairs.removeAt(i);
-					pairs.removeAt(i);
+					res.removeAt(i);
+					res.removeAt(i);
 				} {
 					if(tryInsert) {
 						if(toDo.notEmpty) {
-							pairs = pairs.insertAll(i, toDo);
+							res = res.insertAll(i, toDo);
 							toDo = [];
 						};
 						tryInsert = false;
 					} {
-						pairs[i+1] = item;
+						res[i+1] = item;
 						tryInsert = true;
 					}
 				}
 			}
 		};
-		if(toDo.notEmpty) { pairs = toDo ++ pairs };
-		^pairs
+		if(toDo.notEmpty) { res = toDo ++ res };
+		^res
 	}
 
 	// compatibility with isolated objects
