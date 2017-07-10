@@ -36,8 +36,10 @@
 #include <PyrKernel.h>
 #include <VMGlobals.h>
 
-#ifdef _WIN32
+#if defined _WIN32
 # include "SC_Win32Utils.h"
+#elif defined __FreeBSD__
+# include <stdlib.h>
 #else
 # include <alloca.h>
 #endif

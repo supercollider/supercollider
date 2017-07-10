@@ -25,6 +25,9 @@ Return a new instance.
 ARGUMENT:: source
 The demand ugen that is to be reused in several others.
 
+ARGUMENT:: maxBufferSize
+Maximum size for the value buffer when protected is false. Values will loop after maxBufferSize has been exceeded.
+
 ARGUMENT:: protected
 There are limitations to this ugen: If one copy is called much faster than the slowest, the buffer can overrun. Trying to protect from such a buffer overrun, one has to rely on counting up to infinity. Using 32bit float, only 16777216 events can be correctly played back. When protected is true, these two limitations are caught by ending the series (default: true). Set this parameter to false (or zero) in order to ignore this (e.g. by adjusting buffer size appropriately).
 code::

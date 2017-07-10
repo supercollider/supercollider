@@ -30,8 +30,8 @@
 #include "../main_window.hpp"
 #include "../help_browser.hpp"
 
-#include "yaml-cpp/node.h"
-#include "yaml-cpp/parser.h"
+#include <yaml-cpp/node/node.h>
+#include <yaml-cpp/parser.h>
 
 #include <QDebug>
 #include <QLabel>

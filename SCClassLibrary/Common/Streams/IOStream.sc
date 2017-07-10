@@ -59,6 +59,9 @@ CollStream : IOStream {
 	pos_ { arg toPos;
 		pos = toPos.clip(0, collection.size);
 	}
+	rewind { |n = 1|
+		pos = max(0, pos - n);
+	}
 	peek {
 		^collection.at(pos)
 	}
@@ -170,7 +173,11 @@ CollStream : IOStream {
 	putString { arg aString;
 		aString.do({ arg char; this.putChar(char); });
 	}
+
 	putPascalString { arg aString;
+		if(aString.size >= 256) {
+			Error("putPascalString: input string must be shorter than 256 chars: \"%\"".format(aString)).throw;
+		};
 		this.putInt8(aString.size);
 		this.putString(aString);
 	}

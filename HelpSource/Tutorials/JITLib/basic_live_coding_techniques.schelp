@@ -15,11 +15,11 @@ d.push; // push it to current
 // this synthdef can be changed on the fly, but the synth will
 // not change from this. use expression [1] for replacing a given synth
 (
-SynthDef(\x, { |freq=440|
-	Out.ar(0,
+SynthDef(\x, { |out, freq = 440|
+	Out.ar(out,
 		Ringz.ar(Dust.ar(40), freq, 0.1)
 	)
-}).send(s);
+}).send(s)
 )
 
 // send a first synth:

@@ -57,47 +57,47 @@ Examples::
 
 code::
 
-//just Hainsworth metric with low threshold
+// just Hainsworth metric with low threshold
 (
-SynthDef(\fftod, {
+SynthDef(\fftod, { |out|
 	var source1, detect;
-	source1= AudioIn.ar(1);
-	detect= PV_HainsworthFoote.ar(FFT(LocalBuf(2048),source1), 1.0, 0.0);
-	Out.ar(0,SinOsc.ar([440,445],0,Decay.ar(0.1*detect,0.1)));
+	source1 = SoundIn.ar(0);
+	detect = PV_HainsworthFoote.ar(FFT(LocalBuf(2048),source1), 1.0, 0.0);
+	Out.ar(out, SinOsc.ar([440, 445], 0, Decay.ar(0.1 * detect, 0.1)));
 }).play(s);
 )
 
 
-//spot note transitions
+// spot note transitions
 (
-SynthDef(\fftod, {
+SynthDef(\fftod, { |out|
 	var source1, detect;
-	source1= LFSaw.ar(LFNoise0.kr(1,90,400),0,0.5);
-	detect= PV_HainsworthFoote.ar(FFT(LocalBuf(2048),source1), 1.0, 0.0, 0.9, 0.5);
-	Out.ar(0,Pan2.ar(source1,-1.0)+ Pan2.ar(SinOsc.ar(440,0,Decay.ar(0.1*detect,0.1)),1.0));
+	source1= LFSaw.ar(LFNoise0.kr(1, 90, 400), 0, 0.5);
+	detect= PV_HainsworthFoote.ar(FFT(LocalBuf(2048), source1), 1.0, 0.0, 0.9, 0.5);
+	Out.ar(out, Pan2.ar(source1, -1.0) + Pan2.ar(SinOsc.ar(440, 0, Decay.ar(0.1 * detect, 0.1)), 1.0));
 }).play(s);
 )
 
 
 
-//Foote solo- never triggers with threshold over 1.0, threshold under mouse control
+// Foote solo - never triggers with threshold over 1.0, threshold under mouse control
 (
-SynthDef(\fftod, {
+SynthDef(\fftod, { |out|
 	var source1, detect;
-	source1= AudioIn.ar(1);
-	detect= PV_HainsworthFoote.ar(FFT(LocalBuf(2048),source1), 0.0, 1.0, MouseX.kr(0.0,1.1), 0.02);
-	Out.ar(0,Pan2.ar(source1,-1.0)+ Pan2.ar(SinOsc.ar(440,0,Decay.ar(0.1*detect,0.1)),1.0));
+	source1= SoundIn.ar(0);
+	detect= PV_HainsworthFoote.ar(FFT(LocalBuf(2048), source1), 0.0, 1.0, MouseX.kr(0.0,1.1), 0.02);
+	Out.ar(out, Pan2.ar(source1, -1.0) + Pan2.ar(SinOsc.ar(440, 0, Decay.ar(0.1 * detect, 0.1)), 1.0));
 }).play(s);
 )
 
 
-//compare to Amplitude UGen
+// compare to Amplitude UGen
 (
-SynthDef(\fftod, {
+SynthDef(\fftod, { |out|
 		var source1, detect;
-		source1= AudioIn.ar(1);
-		detect= (Amplitude.ar(source1)) > (MouseX.kr(0.0,1.1));
-		Out.ar(0,Pan2.ar(source1,-1.0)+ Pan2.ar(SinOsc.ar(440,0,Decay.ar(0.1*detect,0.1)),1.0));
+		source1 = SoundIn.ar(0);
+		detect= Amplitude.ar(source1) > MouseX.kr(0.0, 1.1);
+		Out.ar(out, Pan2.ar(source1, -1.0) + Pan2.ar(SinOsc.ar(440, 0, Decay.ar(0.1 * detect, 0.1)), 1.0));
 	}).play(s);
 )
 

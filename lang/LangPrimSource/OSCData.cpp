@@ -409,7 +409,7 @@ static int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
 
 static int prNetAddr_Disconnect(VMGlobals *g, int numArgsPushed)
 {
-	int err;
+	int err = errNone;
 
 	PyrSlot* netAddrSlot = g->sp;
 	PyrObject* netAddrObj = slotRawObject(netAddrSlot);
@@ -1090,7 +1090,7 @@ int prQuitInProcessServer(VMGlobals *g, int numArgsPushed)
 		World *world = gInternalSynthServer.mWorld;
 		gInternalSynthServer.mWorld = 0;
 
-		thread thread(std::bind(World_WaitForQuit, world, false));
+		SC_Thread thread(std::bind(World_WaitForQuit, world, false));
 
 		thread.detach();
 	}

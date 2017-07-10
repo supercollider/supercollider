@@ -144,7 +144,6 @@ struct ImagePainter
         bool tileVertically = verticalMode == TileVertically;
         bool tileHorizontally = horizontalMode == TileHorizontally;
 
-        qreal x_origin = rect.left();
         qreal y_origin = rect.top();
         do {
             do {

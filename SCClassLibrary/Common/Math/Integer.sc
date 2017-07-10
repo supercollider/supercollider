@@ -103,22 +103,59 @@ Integer : SimpleNumber {
 		^array
 	}
 
-	nextPowerOfTwo { _NextPowerOfTwo }
-	isPowerOfTwo { _IsPowerOfTwo }
-	leadingZeroes { _CLZ }
-	trailingZeroes { _CTZ }
-	numBits { _NumBits }
-	log2Ceil { _Log2Ceil }
-	grayCode { _BinaryGrayCode }
-	setBit { arg bitNumber, bool = true; _SetBit ^this.primitiveFailed }
-
-	nthPrime { _NthPrime }
-	prevPrime { _PrevPrime }
-	nextPrime { _NextPrime }
-	indexOfPrime { _IndexOfPrime }
-
+	nextPowerOfTwo {
+		_NextPowerOfTwo
+		^this.primitiveFailed
+	}
+	isPowerOfTwo {
+		_IsPowerOfTwo
+		^this.primitiveFailed
+	}
+	leadingZeroes {
+		_CLZ
+		^this.primitiveFailed
+	}
+	trailingZeroes {
+		_CTZ
+		^this.primitiveFailed
+	}
+	numBits {
+		_NumBits
+		^this.primitiveFailed
+	}
+	log2Ceil {
+		_Log2Ceil
+		^this.primitiveFailed
+	}
+	grayCode {
+		_BinaryGrayCode
+		^this.primitiveFailed
+	}
+	setBit {
+		arg bitNumber, bool = true;
+		_SetBit
+		^this.primitiveFailed
+	}
+	nthPrime {
+		_NthPrime
+		^this.primitiveFailed
+	}
+	prevPrime {
+		_PrevPrime
+		^this.primitiveFailed
+	}
+	nextPrime {
+		_NextPrime
+		^this.primitiveFailed
+	}
+	indexOfPrime {
+		_IndexOfPrime
+		^this.primitiveFailed
+	}
 	isPrime {
 		_IsPrime
+		^this.primitiveFailed
+
 		/*
 		var sqrtThis;
 		if ( this <= 2, {
@@ -135,8 +172,10 @@ Integer : SimpleNumber {
 	}
 
 	// exit the program and return the result code to unix shell
-	exit { _Exit }
-
+	exit {
+		_Exit
+		^this.primitiveFailed
+	}
 	asStringToBase { | base=10, width=8 |
 		var rest = this, string, mask;
 		if (base.inclusivelyBetween(2, 36).not) {

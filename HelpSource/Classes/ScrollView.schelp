@@ -36,77 +36,69 @@ SUBSECTION:: Geometry
 
 METHOD:: canvas
 
-    Returns the current canvas that carries the child views, or replaces it with another.
+Returns the current canvas that carries the child views, or replaces it with another.
 
-    By default, the canvas is a subclass of QObject, and hence does not allow the type of manipulations that views do. However, it can only be replaced with a subclass of View, which greatly extends the possibilities, including the use of layouts on the canvas.
+By default, the canvas is a subclass of QObject, and hence does not allow the type of manipulations that views do. However, it can only be replaced with a subclass of View, which greatly extends the possibilities, including the use of layouts on the canvas.
 
-    The new canvas will always resize with the ScrollView, as far its size constraints allow. A plain link::Classes/View:: which completely disregards its children will be freely resizable, and hence the scrolling will never be possible, since the scrollbars are activated according to the size of the canvas. To prevent this, you can either place explicit size constraints on it using link::Classes/View#-minSize:: and similar, or you can install a layout on it, which will forward to it the size constraints of the children.
+The new canvas will always resize with the ScrollView, as far its size constraints allow. A plain link::Classes/View:: which completely disregards its children will be freely resizable, and hence the scrolling will never be possible, since the scrollbars are activated according to the size of the canvas. To prevent this, you can either place explicit size constraints on it using link::Classes/View#-minSize:: and similar, or you can install a layout on it, which will forward to it the size constraints of the children.
 
-    See the link::#examples#example:: below.
+See the link::#examples#example:: below.
 
-    Once the canvas is replaced, new views constructed with the ScrollView as the parent will end up as children of the canvas view, equivalent to constructing them with the canvas as the parent, or inserting them into the layout installed on the canvas.
+Once the canvas is replaced, new views constructed with the ScrollView as the parent will end up as children of the canvas view, equivalent to constructing them with the canvas as the parent, or inserting them into the layout installed on the canvas.
 
-    warning:: Replacing the canvas will remove and destroy all the views placed on the previous one! ::
+warning:: Replacing the canvas will remove and destroy all the views placed on the previous one! ::
 
 METHOD:: innerBounds
 
-    Returns either the rectangle corresponding to the size of the canvas, or the visible area of the ScrollView's background, whichever is larger. The position of the rectangle is always 0@0.
+Returns either the rectangle corresponding to the size of the canvas, or the visible area of the ScrollView's background, whichever is larger. The position of the rectangle is always 0@0.
 
-    See the link::#description#discussion:: above regarding the size of the canvas.
+See the link::#description#discussion:: above regarding the size of the canvas.
 
-    Returns:: A Rect.
+Returns:: A Rect.
 
 METHOD:: visibleOrigin
 
-    Gets the position on the canvas corresponding to its upper-left-most visible point, or moves the canvas so as to leave the given point on it at the top-left corner of the visible bounds, if possible.
+Gets the position on the canvas corresponding to its upper-left-most visible point, or moves the canvas so as to leave the given point on it at the top-left corner of the visible bounds, if possible.
 
-    Argument::
-        A Point.
+Argument::
+A Point.
 
 
 SUBSECTION:: Behavior
 
 METHOD:: autohidesScrollers
 
-    Sets or gets whether the view hides one or another scrollbar if the contents do not exceed the view's bounds in the scrollbar's direction.
+Sets or gets whether the view hides one or another scrollbar if the contents do not exceed the view's bounds in the scrollbar's direction.
 
-    If link::#-hasHorizontalScroller:: or link::#-hasVerticalScroller:: is set to code::false::, the respective scrollbar will always be hidden, regardless of this policy.
+If link::#-hasHorizontalScroller:: or link::#-hasVerticalScroller:: is set to code::false::, the respective scrollbar will always be hidden, regardless of this policy.
 
-    Defaults to strong::true::.
+Defaults to strong::true::.
 
 METHOD:: hasHorizontalScroller
 
-    Sets or gets whether the view has the horizontal scrollbar. If this is code::true::, the scrollbar may still be hidden if link::#-autohidesScrollers:: allows so; however, if this is code::false:: the scrollbar will never be shown.
+Sets or gets whether the view has the horizontal scrollbar. If this is code::true::, the scrollbar may still be hidden if link::#-autohidesScrollers:: allows so; however, if this is code::false:: the scrollbar will never be shown.
 
-    Defaults to strong::true::.
+Defaults to strong::true::.
 
 METHOD:: hasVerticalScroller
 
-    Sets or gets whether the view has the vertical scrollbar. If this is code::true::, the scrollbar may still be hidden if link::#-autohidesScrollers:: allows so; however, if this it code::false:: the scrollbar will never be shown.
+Sets or gets whether the view has the vertical scrollbar. If this is code::true::, the scrollbar may still be hidden if link::#-autohidesScrollers:: allows so; however, if this it code::false:: the scrollbar will never be shown.
 
-    Defaults to strong::true::.
-
-METHOD:: autoScrolls
-
-
-    Sets or gets whether the view scrolls automatically when you drag on a child view past the edge of visible bounds.
-
-    Defaults to strong::true::.
-
+Defaults to strong::true::.
 
 SUBSECTION:: Appearance
 
 METHOD:: hasBorder
 
-    Sets or gets whether the view draws its border.
+Sets or gets whether the view draws its border.
 
-    Defaults to strong::true::.
+Defaults to strong::true::.
 
 SUBSECTION:: Actions
 
 METHOD:: action
 
-    Sets or gets the object to be evaluated when the user moves the scrollbars, or when link::#-visibleOrigin:: is set.
+Sets or gets the object to be evaluated when the user moves the scrollbars, or when link::#-visibleOrigin:: is set.
 
 EXAMPLES::
 
@@ -123,22 +115,22 @@ var layout;
 var i = 0;
 
 var makeEntry = {
-    var view = View().background_(Color.rand).layout_(
-        HLayout(
-            TextField().string_( ("This is entry number " + i.asString) ),
-            Button().states_([["Delete"]]).action_({view.remove; i = i - 1;})
-        )
-    );
-    i = i + 1;
-    view;
+	var view = View().background_(Color.rand).layout_(
+		HLayout(
+			TextField().string_( ("This is entry number " + i.asString) ),
+			Button().states_([["Delete"]]).action_({view.remove; i = i - 1;})
+		)
+	);
+	i = i + 1;
+	view;
 };
 
 layout = VLayout();
 layout.add ( View().background_(Color.black).layout_(
-    HLayout(
-        Button().states_([["Add"]]).action_({ layout.insert(makeEntry.(), i) }),
-        nil // stretch remaining empty space
-    )
+	HLayout(
+		Button().states_([["Add"]]).action_({ layout.insert(makeEntry.(), i) }),
+		nil // stretch remaining empty space
+	)
 ));
 
 canvas.layout = layout;
@@ -187,36 +179,38 @@ e = UserView(b, Rect(0, 0, 40, 630));
 f = UserView(c, Rect(0, 0, 630, 40));
 
 a.action = { var origin;
-    origin = a.visibleOrigin;
-    b.visibleOrigin = 0@(origin.y);
-    c.visibleOrigin = (origin.x)@0;
+	origin = a.visibleOrigin;
+	b.visibleOrigin = 0@(origin.y);
+	c.visibleOrigin = (origin.x)@0;
 };
 
 drawFunc = {
-    30.do({arg i;
-        (i+1).asString.drawAtPoint((i+1 * 20)@0, Font("Courier", 9), Color.black);
-    });
+	30.do({arg i;
+		(i+1).asString.drawAtPoint((i+1 * 20)@0, Font("Courier", 9), Color.black);
+	});
 };
 
 d.drawFunc = {
-    Pen.use({
-        Pen.translate(0, 5);
-        drawFunc.value;
-    });
-    Pen.translate(15, 0).rotate(0.5pi);
-    drawFunc.value;
+	Pen.use({
+		Pen.translate(0, 5);
+		drawFunc.value;
+	});
+	Pen.translate(15, 0).rotate(0.5pi);
+	drawFunc.value;
 };
 
 e.drawFunc = {
-    Pen.translate(40, 0).rotate(0.5pi);
-    drawFunc.value;
+	Pen.translate(40, 0).rotate(0.5pi);
+	drawFunc.value;
 };
 
 f.drawFunc = {
-    Pen.translate(0, 25);
-    drawFunc.value;
+	Pen.translate(0, 25);
+	drawFunc.value;
 };
 
 w.front;
 )
+::
+Note:: Apparently a method 'autoScrolls' was planned but not implemented yet; its doc said that it sets or gets whether the view scrolls automatically when you drag on a child view past the edge of visible bounds.
 ::

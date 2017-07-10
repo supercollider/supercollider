@@ -36,6 +36,7 @@
 #include <termios.h>
 #include <unistd.h>
 #include <boost/atomic.hpp>
+#include <functional>
 
 #include <stdexcept>
 #include <sstream>
@@ -145,7 +146,7 @@ private:
 
 	// rx thread
 	std::atomic<bool>	m_running;
-	thread				m_thread;
+	SC_Thread				m_thread;
 };
 
 PyrSymbol* SerialPort::s_dataAvailable = 0;
@@ -340,7 +341,7 @@ SerialPort::SerialPort(PyrObject* obj, const char* serialport, const Options& op
 	m_rxErrors[0] = m_rxErrors[1] = 0;
 
 	try {
-		thread thread(std::bind(&SerialPort::threadLoop, this));
+		SC_Thread thread(std::bind(&SerialPort::threadLoop, this));
 		m_thread = std::move(thread);
 	} catch(std::exception & e) {
 		close(m_fd);

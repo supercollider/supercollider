@@ -47,54 +47,50 @@ private:: init
 examples::
 
 code::
-//required for MFCCs used below
-b = Buffer.alloc(s,1024,1); //for sampling rates 44100 and 48000
-//b = Buffer.alloc(s,2048,1); //for sampling rates 88200 and 96000
 
-//this is a one minute pop song; you should load something equivalent for testing
-d=Buffer.read(s,"/Volumes/data/stevebeattrack/samples/100.wav");
-d=Buffer.read(s,"/Volumes/data/stevebeattrack/samples/019.wav");
-
+// you should load something useful for testing, like a one minute pop song
+b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 //very feature dependent
 (
-a= SynthDef(\help_beattrack2_1,{arg vol=1.0, beepvol=1.0, lock=0;
-var in, kbus;
-var trackb,trackh,trackq,tempo, phase, period, groove;
-var bsound,hsound,qsound, beep;
-var fft;
-var feature1, feature2, feature3;
+SynthDef(\help_beattrack2_1, { |out, vol=1.0, beepvol=1.0, lock=0, bufnum|
+	var in, kbus;
+	var trackb, trackh, trackq, tempo, phase, period, groove;
+	var bsound, hsound, qsound, beep;
+	var fft;
+	var feature1, feature2, feature3;
 
-in= PlayBuf.ar(1,d.bufnum,BufRateScale.kr(d.bufnum),1,0,1);
-//in = SoundIn.ar(0);
+	in = PlayBuf.ar(1, bufnum, BufRateScale.kr(bufnum), 1, 0, 1);
+	//in = SoundIn.ar(0);
 
-//Create some features
-fft = FFT(b.bufnum, in);
+	//Create some features
+	fft = FFT(LocalBuf(1, 1024), in); //for sampling rates 44100 and 48000
+	//fft = FFT(LocalBuf(1, 2048), in); //for sampling rates 88200 and 96000
 
-feature1= RunningSum.rms(in,64);
-feature2= MFCC.kr(fft,2); //two coefficients
-feature3= A2K.kr(LPF.ar(in,1000));
+	feature1 = RunningSum.rms(in, 64);
+	feature2 = MFCC.kr(fft,2); //two coefficients
+	feature3 = A2K.kr(LPF.ar(in,1000));
 
-kbus= Out.kr(0, [feature1, feature3]++feature2);
+	kbus = Out.kr(0, [feature1, feature3] ++ feature2);
 
-//Look at four features
-#trackb,trackh,trackq,tempo, phase, period, groove=BeatTrack2.kr(0,4,2.0, 0.02, lock, -2.5);
+	//Look at four features
+	#trackb, trackh, trackq, tempo, phase, period, groove = BeatTrack2.kr(0, 4, 2.0, 0.02, lock, -2.5);
 
-beep= SinOsc.ar(1000,0.0,Decay.kr(trackb,0.1));
-
-Out.ar(0,Pan2.ar((vol*in)+(beepvol*beep),0.0));
-}).play
+	beep= SinOsc.ar(1000, 0.0, Decay.kr(trackb, 0.1));
+	beep = Pan2.ar((vol * in) + (beepvol * beep), 0.0);
+	Out.ar(out, beep);
+}).add;
 )
 
+a = Synth(\help_beattrack2_1, [\bufnum, b]);
+a.set(\vol, 0.0);
+a.set(\vol, 1.0);
 
-a.set(\vol,0.0);
-a.set(\vol,1.0);
+a.set(\beepvol, 1.0);
+a.set(\beepvol, 0.0);
 
-a.set(\beepvol,1.0);
-a.set(\beepvol,0.0);
-
-a.set(\lock,1); //fix it rigidly from current phase/period solution
-a.set(\lock,0); //unfix, back to tracking
+a.set(\lock, 1); //fix it rigidly from current phase/period solution
+a.set(\lock, 0); //unfix, back to tracking
 
 a.free;
 ::
@@ -102,82 +98,86 @@ a.free;
 code::
 //same thing, trying with Onsets UGen raw output
 (
-a= SynthDef(\help_beattrack2_1,{arg vol=1.0, beepvol=1.0, lock=0;
-var in, kbus;
-var trackb,trackh,trackq,tempo, phase, period, groove;
-var bsound,hsound,qsound, beep;
-var fft;
-var feature1, feature2, feature3;
+a= SynthDef(\help_beattrack2_1, { |out, vol=1.0, beepvol=1.0, lock=0, bufnum|
+	var in, kbus;
+	var trackb, trackh, trackq, tempo, phase, period, groove;
+	var bsound, hsound, qsound, beep;
+	var fft;
+	var feature1, feature2, feature3;
 
-in= PlayBuf.ar(1,d.bufnum,BufRateScale.kr(d.bufnum),1,0,1);
-//in = SoundIn.ar(0);
+	in = PlayBuf.ar(1, bufnum, BufRateScale.kr(bufnum),1,0,1);
+	//in = SoundIn.ar(0);
 
-//Create some features
-fft = FFT(b.bufnum, in);
+	//Create some features
+	fft = FFT(LocalBuf(1, 1024), in); // for sampling rates 44100 and 48000
+	//fft = FFT(LocalBuf(1, 2048), in); // for sampling rates 88200 and 96000
 
-feature1= Onsets.kr(fft,odftype:\mkl, rawodf:1);
+	feature1 = Onsets.kr(fft, odftype:\mkl, rawodf:1);
 
-feature2= Onsets.kr(fft,odftype:\complex, rawodf:1);//two coefficients
+	feature2 = Onsets.kr(fft, odftype:\complex, rawodf:1);//two coefficients
 
-kbus= Out.kr(0, [feature1,feature2]);
+	kbus= Out.kr(0, [feature1,feature2]);
 
-//Look at four features
-#trackb,trackh,trackq,tempo, phase, period, groove=BeatTrack2.kr(0,2,3.0, 0.02, lock, -2.5);
+	//Look at four features
+	#trackb, trackh, trackq, tempo, phase, period, groove = BeatTrack2.kr(0, 2, 3.0, 0.02, lock, -2.5);
 
-beep= SinOsc.ar(1000,0.0,Decay.kr(trackb,0.1));
 
-Out.ar(0,Pan2.ar((vol*in)+(beepvol*beep),0.0));
-}).play
+	beep = SinOsc.ar(1000, 0.0, Decay.kr(trackb, 0.1));
+	beep = Pan2.ar((vol * in) + (beepvol * beep), 0.0);
+	Out.ar(out, beep);
+}).add;
 )
+
+a = Synth(\help_beattrack2_1, [\bufnum, b]);
+
 ::
 
 code::
 //favour higher tempi in own weighting scheme
 (
-c=Array.fill(120,{arg i; 0.5+(0.5*(i/120))});
-e=Buffer.sendCollection(s, c, 1);
+c = Array.fill(120, { |i| 0.5 + (0.5 * (i / 120)) });
+e = Buffer.sendCollection(s, c, 1);
 )
 ::
 
-track audio in (try clapping a beat or beatboxing, but allow up to 6 seconds for tracking to begin) and spawning stuff at quarters, eighths and sixteenths
+
 code::
+// track audio in (try clapping a beat or beatboxing, but allow up to 6 seconds for tracking to begin) and spawning stuff at quarters, eighths and sixteenths
 (
-SynthDef(\help_beattrack2_2,{
-var trackb,trackh,trackq,tempo;
-var source, kbus;
-var bsound,hsound,qsound;
+SynthDef(\help_beattrack2_2, { |out|
+	var trackb, trackh, trackq, tempo;
+	var source, kbus;
+	var bsound, hsound, qsound;
 
-source= SoundIn.ar(0); //PlayBuf.ar(1,d.bufnum,BufRateScale.kr(d.bufnum),1,0,1);
+	source = SoundIn.ar(0);
 
-//downsampling automatic via kr from ar
-kbus= Out.kr(0, LPF.ar(source,1000)); //([feature1, feature3]++feature2);
+	//downsampling automatic via kr from ar
+	kbus = Out.kr(0, LPF.ar(source, 1000)); //([feature1, feature3]++feature2);
 
-#trackb,trackh,trackq,tempo=BeatTrack2.kr(0,1,weightingscheme:e.bufnum);
+	#trackb, trackh, trackq, tempo = BeatTrack2.kr(0,1,weightingscheme: e.bufnum);
 
-bsound= Pan2.ar(LPF.ar(WhiteNoise.ar*(Decay.kr(trackb,0.05)),1000),0.0);
+	bsound = Pan2.ar(LPF.ar(WhiteNoise.ar * (Decay.kr(trackb, 0.05)), 1000), 0.0);
+	hsound = Pan2.ar(BPF.ar(WhiteNoise.ar * (Decay.kr(trackh, 0.05)), 3000, 0.66),-0.5);
+	qsound = Pan2.ar(HPF.ar(WhiteNoise.ar * (Decay.kr(trackq, 0.05)), 5000), 0.5);
 
-hsound= Pan2.ar(BPF.ar(WhiteNoise.ar*(Decay.kr(trackh,0.05)),3000,0.66),-0.5);
-
-qsound= Pan2.ar(HPF.ar(WhiteNoise.ar*(Decay.kr(trackq,0.05)),5000),0.5);
-
-Out.ar(0, source + bsound+hsound+qsound);
+	Out.ar(out, source + bsound + hsound + qsound);
 }).play;
 )
 ::
 
-geometric tempo placement very similar to linear, and linear easier to deal with looking up related tempi at double and half speed
+
 code::
+// geometric tempo placement very similar to linear, and linear easier to deal with looking up related tempi at double and half speed
 (
-var startbps= 1, endbps=3;
-var numtempi=100;
-var ratio;
-var tempi, periods;
+var startbps = 1, endbps = 3;
+var numtempi = 100;
+var ratio, tempi, periods;
 
-ratio= (endbps/startbps)**((numtempi-1).reciprocal);
+ratio = (endbps / startbps) ** (numtempi-1).reciprocal;
 
-tempi= Array.geom(numtempi, startbps, ratio);
+tempi = Array.geom(numtempi, startbps, ratio);
 
-periods= tempi.reciprocal;
+periods = tempi.reciprocal;
 
 Post << (tempi*60) << nl;
 Post << periods << nl;

@@ -248,6 +248,15 @@ METHOD:: resizeTo
 	argument:: height
 		An Int: the new vertical size of the view.
 
+METHOD:: resizeToBounds
+
+	argument:: rect
+		A Rect: the bounds to which the view will be resized.
+
+METHOD:: resizeToHint
+
+	Resizes view to the bounds returned by link::#sizeHint::.		
+
 METHOD:: resize
 	Determines what happens with the view's position and size when its parent is resized. See link::Guides/GUI-Introduction#view:: for further explanation.
 

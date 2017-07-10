@@ -31,6 +31,8 @@ Delay time in seconds.
 argument::decaytime
 Time for the echoes to decay by 60 decibels. If this time is negative, then the feedback coefficient will be negative, thus emphasizing only odd harmonics at an octave lower.
 
+Large decay times are sensitive to DC bias, so use a link::Classes/LeakDC:: if this is an issue.
+
 Infinite decay times are permitted. A decay time of code::inf:: leads to a feedback coefficient of 1, and a decay time of code::-inf:: leads to a feedback coefficient of -1.
 
 argument::mul

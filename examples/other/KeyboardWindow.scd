@@ -11,9 +11,6 @@ If the Function returns another Function, the new Function will replace the acti
 
 */
 
-GUI.cocoa;	// use CocoaGUI (Mac OS X native)
-GUI.swing;	// use SwingGUI (Java based GUI)
-
 (
 var w; // window object
 var courier; // font object

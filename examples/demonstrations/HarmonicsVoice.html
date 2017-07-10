@@ -35,7 +35,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">(</p>
 <p class="p5">x = {</p>
 <p class="p5"><span class="s2"><span class="Apple-tab-span">	</span>var</span> son, freq, hasFreq, amp, out, harm;</p>
-<p class="p4"><span class="s3"><span class="Apple-tab-span">	</span>son = </span><span class="s2">AudioIn</span><span class="s3">.ar(1); </span>// get first channel of sound input</p>
+<p class="p4"><span class="s3"><span class="Apple-tab-span">	</span>son = </span><span class="s2">SoundIn</span><span class="s3">.ar(0); </span>// get first channel of sound input</p>
 <p class="p5"><span class="Apple-tab-span">	</span># freq, hasFreq = <span class="s2">Pitch</span>.kr(son); <span class="s4">// Pitch of input signal</span></p>
 <p class="p4"><span class="s3"><span class="Apple-tab-span">	</span>amp = </span><span class="s2">Amplitude</span><span class="s3">.ar(son); </span>// Amplitude of input signal</p>
 <p class="p6"><span class="Apple-tab-span">	</span></p>
@@ -59,7 +59,7 @@ span.Apple-tab-span {white-space:pre}
 <p class="p5">(</p>
 <p class="p7">SynthDef<span class="s3">(</span><span class="s5">\oscPlayer</span><span class="s3">, {</span>|bufnum,balance=0.5,smooth=0.1|</p>
 <p class="p5"><span class="s2"><span class="Apple-tab-span">	</span>var</span> input,freq,hasFreq,amp,mix,wet;<span class="Apple-tab-span">	</span></p>
-<p class="p4"><span class="s3"><span class="Apple-tab-span">	</span>input = </span><span class="s2">AudioIn</span><span class="s3">.ar(1); </span>// get first channel of sound input</p>
+<p class="p4"><span class="s3"><span class="Apple-tab-span">	</span>input = </span><span class="s2">SoundIn</span><span class="s3">.ar(0); </span>// get first channel of sound input</p>
 <p class="p5"><span class="Apple-tab-span">	</span>#freq,hasFreq = <span class="s2">Pitch</span>.kr(input); <span class="s4">// pitch of input signal</span></p>
 <p class="p4"><span class="s3"><span class="Apple-tab-span">	</span>amp = </span><span class="s2">Amplitude</span><span class="s3">.ar(input); </span>// amplitude of input signal</p>
 <p class="p5"><span class="Apple-tab-span">	</span>wet = <span class="s2">Osc</span>.ar(bufnum,<span class="s2">Lag</span>.kr(freq,smooth), 0, amp);</p>

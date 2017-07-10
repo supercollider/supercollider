@@ -1,7 +1,7 @@
 class:: Pfuncn
 summary:: Function pattern of given length
 categories:: Streams-Patterns-Events>Patterns>Function
-related:: Classes/Pfunc
+related:: Classes/Pfunc, Classes/FuncStream
 
 description::
 Returns a stream that returns values from the code::func::.

@@ -169,6 +169,15 @@ View : QObject {
 		this.bounds_( this.bounds.resizeTo( width, height ) );
 	}
 
+	resizeToBounds { arg rect;
+		this.bounds_( this.bounds.resizeTo( rect.width, rect.height ) );
+	}
+
+	resizeToHint {
+		var size = this.sizeHint;
+		this.bounds_( this.bounds.resizeTo( size.width, size.height ) );
+	}
+
 	visible {
 		^this.getProperty(\visible)
 	}
@@ -441,9 +450,9 @@ View : QObject {
 		this.setDragEventsEnabled( true );
 	}
 
-	defaultGetDrag { ^thisMethod.notYetImplemented }
-	defaultCanReceiveDrag { ^thisMethod.notYetImplemented }
-	defaultReceiveDrag { ^thisMethod.notYetImplemented }
+	defaultGetDrag { ^nil }
+	defaultCanReceiveDrag { ^false }
+	defaultReceiveDrag {}
 
 	toFrontAction_ { arg aFunction;
 		toFrontAction = aFunction;

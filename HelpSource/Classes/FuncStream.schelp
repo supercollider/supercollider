@@ -1,0 +1,111 @@
+TITLE:: FuncStream
+summary:: Stream of a function
+categories:: Streams
+related:: Classes/Pfunc
+
+DESCRIPTION::
+FuncStream is one of the most basic ways to describe a stream: it has a function that is called for each next stream value.
+
+code::
+// make a stream that returns a random number
+a = FuncStream({ 1.0.rand });
+a.next;
+::
+
+It uses link::Classes/Function#-inEnvir:: to statically bind the function call to the environment in which the code::FuncStream:: was created.
+
+code::
+a = Environment.use { ~x = 100; FuncStream({ ~x + 8 }) };
+~x = 0;
+a.next; // returns 108, not 8.
+::
+
+
+CLASSMETHODS::
+
+METHOD:: new
+Return a new stream object.
+
+code::
+(
+var func, reset, count = 0;
+func = { count = count + 2.rand };
+reset = { count = 0 };
+a = FuncStream(func, reset);
+)
+
+a.next;
+a.nextN(80).plot;
+a.reset;
+a.next; // starts again.
+
+::
+
+argument:: nextFunc
+The function that is called on each next
+argument:: resetFunc
+The function that is called on reset
+
+
+INSTANCEMETHODS::
+
+PRIVATE::storeArgs
+
+METHOD:: next
+argument:: inval
+
+Return the next value by calling the function. code::inval:: is passed
+as an argument to the function.
+
+METHOD:: reset
+
+Call the reset function, if defined.
+
+METHOD:: envir
+
+Get or set the environment to which the function has been bound.
+
+METHOD:: nextFunc
+
+Get or set the function which is called on link::#-next::.
+
+METHOD:: resetFunc
+
+Get or set the function which is called on link::#-reset::.
+
+EXAMPLES::
+
+code::
+(
+// create 16 different series
+a = {
+	var diff = [2, 4, 5].choose * [1, -1].choose;
+	var val = 0;
+	var stream = FuncStream({
+		// next function
+		val = val + diff;
+		if(abs(val) > 30) { stream.reset };
+		val
+	}, {
+		// reset function
+		val = 0
+	});
+	stream
+}.dup(16);
+
+// play them as parallel notes
+fork {
+	loop {
+		(
+			note: a.collect { |f| f.next.postln },
+			sustain: 0.1
+		).play;
+
+		// reset a randomly chosen FuncStream
+		a.choose.reset;
+		0.16.wait;
+	}
+}
+)
+::
+

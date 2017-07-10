@@ -343,7 +343,7 @@ void cmdDemoFunc(World *inWorld, void* inUserData, struct sc_msg_iter *args, voi
  */
 
 
-thread uiListenThread;
+SC_Thread uiListenThread;
 
 PluginLoad(UIUGens)
 {

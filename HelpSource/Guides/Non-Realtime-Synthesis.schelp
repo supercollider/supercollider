@@ -1,4 +1,4 @@
-title:: Non-Realtime Synthesis (NRT)
+ title:: Non-Realtime Synthesis (NRT)
 summary:: Non-realtime synthesis with binary files of OSC commands
 categories:: Server>NRT, External Control>OSC
 related:: Classes/Score
@@ -31,8 +31,8 @@ f.close;
 
 // the 'NRTsine' SynthDef
 (
-SynthDef("NRTsine",{ arg freq = 440;
-	Out.ar(0,
+SynthDef("NRTsine", { |out, freq = 440|
+	Out.ar(out,
 		 SinOsc.ar(freq, 0, 0.2)
 	)
 }).writeDefFile;

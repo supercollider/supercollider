@@ -91,7 +91,10 @@ QtGUI {
 
 	//////////////////////////////////////////////////////////////////////
 
-	*cursorPosition { _Qt_CursorPosition }
+	*cursorPosition {
+		_Qt_CursorPosition
+		^this.primitiveFailed
+	}
 
 	*availableStyles {
 		_Qt_AvailableStyles

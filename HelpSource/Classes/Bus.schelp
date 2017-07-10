@@ -89,8 +89,8 @@ a = Bus.control(s, 1).set(440);
 b = Bus.control(s, 1).set(0.01);
 )
 (
-SynthDef(\rlpf, { |ffreq, rq|
-	Out.ar(0, RLPF.ar(WhiteNoise.ar(0.2), ffreq, rq))
+SynthDef(\rlpf, { |out, ffreq, rq|
+	Out.ar(out, RLPF.ar(WhiteNoise.ar(0.2), ffreq, rq))
 }).play(s, [\ffreq, a.asMap, \rq, b.asMap]);
 )
 ::
@@ -260,9 +260,9 @@ x.free;
 	// buses can also be used with kr or ar like UGens:
 (
 
-SynthDef(\help_Bus, {
+SynthDef(\help_Bus, { |out|
 	var ffreq = b.kr;
-	Out.ar(0,
+	Out.ar(out,
 		RLPF.ar(
 			LFPulse.ar(SinOsc.kr(0.2, 0, 10, 21), [0,0.1], 0.1),
 			ffreq, 0.1
@@ -279,9 +279,9 @@ b.free; // release it so it may be reallocated!
 (
 b = Bus.control(s, 4);
 
-x = SynthDef(\helpBusMulti, {
+x = SynthDef(\helpBusMulti, { |out|
 	var freqs = b.kr;
-	Out.ar(0, Splay.ar(SinOsc.ar(freqs) * Decay2.ar(Dust.ar(10 ! 4), 0.001, 0.1)) * 0.5);
+	Out.ar(out, Splay.ar(SinOsc.ar(freqs) * Decay2.ar(Dust.ar(10 ! 4), 0.001, 0.1)) * 0.5);
 }).play;
 )
 
@@ -308,16 +308,16 @@ b.getn;
 b.set(300, 500, 700, 900);
 
 (	// just get the first 2 channels
-x = SynthDef(\helpBusMulti, {
-	Out.ar(0, SinOsc.ar(b.kr(2)) * 0.2);
+x = SynthDef(\helpBusMulti, { |out|
+	Out.ar(out, SinOsc.ar(b.kr(2)) * 0.2)
 }).play;
 )
 b.set(300, 303);
 x.free;
 
 (	// just channels[[2, 3]];
-y = SynthDef(\helpBusMulti, {
-	Out.ar(0, LFNoise2.ar(b.kr(2, 2)) * 0.2);
+y = SynthDef(\helpBusMulti, { |out|
+	Out.ar(out, LFNoise2.ar(b.kr(2, 2)) * 0.2);
 }).play;
 )
 b.setAt(2, 1200);

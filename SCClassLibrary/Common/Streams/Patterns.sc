@@ -79,7 +79,7 @@ Pattern : AbstractFunction {
 	drop { arg n; ^Pdrop(n, this) }
 	stutter { arg n; ^Pstutter(n, this) }
 	finDur { arg dur, tolerance = 0.001; ^Pfindur(dur, this, tolerance) }
-	fin { arg n; ^Pfin(n, this) }
+	fin { arg n = 1; ^Pfin(n, this) }
 
 	trace { arg key, printStream, prefix=""; ^Ptrace(this, key, printStream, prefix) }
 	differentiate { ^Pdiff(this) }
@@ -163,7 +163,7 @@ Pfuncn : Pattern {
 	storeArgs { ^[func,repeats] }
 	embedInStream {  arg inval;
 		repeats.value(inval).do({
-			inval = func.value(inval).processRest(inval).yield;
+			inval = func.value(inval).yield;
 		});
 		^inval
 	}
@@ -350,7 +350,7 @@ Pbind : Pattern {
 						^inevent
 					};
 					name.do { arg key, i;
-						event.put(key, streamout[i].processRest(event));
+						event.put(key, streamout[i]);
 					};
 				}{
 					event.put(name, streamout);
@@ -657,16 +657,28 @@ Pprotect : FilterPattern {
 // access a key from the input event
 Pkey : Pattern {
 	var	<>key, <>repeats;
-	*new { |key|
-		^super.newCopyArgs(key)
+
+	*new { |key, repeats|
+		^super.newCopyArgs(key, repeats)
 	}
-	storeArgs { ^[key] }
-		// avoid creating a routine
+
+	storeArgs { ^[key, repeats] }
+
 	asStream {
 		var	keystream = key.asStream;
-		^FuncStream({ |inevent|
-			inevent !? { inevent[keystream.next(inevent)] }
-		});
+		// avoid creating a routine
+		var stream = FuncStream({ |inevent| inevent !? { inevent[keystream.next(inevent)] } });
+		^if(repeats.isNil) { stream } { stream.fin(repeats) }
+	}
+
+	embedInStream { |inval|
+		var outval, keystream = key.asStream;
+		repeats.value(inval).do {
+			outval = inval[keystream.next(inval)];
+			if(outval.isNil) { ^inval };
+			inval = outval.yield;
+		};
+		^inval
 	}
 }
 

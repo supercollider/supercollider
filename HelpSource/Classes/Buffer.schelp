@@ -4,7 +4,11 @@ categories:: Server>Abstractions
 
 description::
 
-A buffer is most often used to hold sampled audio, such as a soundfile loaded into memory, but can be used to hold other types of data as well. It is a globally available array of floating-point numbers on the server. The Buffer class encapsulates a number of common tasks, OSC messages, and capabilities related to server-side buffers – see the examples lower down this document for many examples of using Buffers for sound playback and recording.
+A Buffer object is a client-side abstraction for a server-side buffer. (SuperCollider's server-client architecture is a common source of confusion when working with Buffer objects, so please see link::Guides/ClientVsServer::.)
+
+A buffer is most often used to hold sampled audio, such as a soundfile loaded into memory, but can be used to hold other types of data as well. Technically speaking, a buffer on the server is a globally available, multichannel array of 32-bit floating-point numbers. It also has an associated sample rate, represented in Hertz as a 64-bit float.
+
+The Buffer class encapsulates a number of common tasks, OSC messages, and capabilities related to server-side buffers – see the examples lower down this document for many examples of using Buffers for sound playback and recording.
 
 Buffers are commonly used with link::Classes/PlayBuf::, link::Classes/RecordBuf::, link::Classes/DiskIn::, link::Classes/DiskOut::, link::Classes/BufWr::, link::Classes/BufRd::, and other UGens. (See their individual help files for more examples.) Buffers can be freed or altered even while being accessed. See link::Reference/Server-Architecture:: for some technical details.
 
@@ -429,6 +433,8 @@ Returns the number of channels in the corresponding server-side buffer.
 method:: sampleRate
 Returns the sample rate of the corresponding server-side buffer.
 
+Changing this value only changes what the buffer thinks its sample rate is. It does not resample the buffer's content.
+
 method:: path
 Returns a string containing the path of a soundfile that has been loaded into the corresponding server-side buffer.
 
@@ -493,7 +499,7 @@ x.free; b.free;
 
 subsection:: Other methods
 
-method:: read, readMsg
+method:: read
 Read a soundfile into an already allocated buffer.
 argument:: argpath
 A String representing the path of the soundfile to be read.
@@ -510,11 +516,14 @@ argument:: action
 A Function to be evaluated once the file has been read and this Buffer's instance variables have been updated. The function will be passed this Buffer as an argument.
 argument:: completionMessage
 A valid OSC message or a Function which will return one. A Function will be passed this Buffer as an argument when evaluated.
+method:: readMsg
+	construct the message for a read command. args are like those for read,
+	except that last arg is completionMessage.
 
 discussion::
 Note that if the number of frames in the file is greater than the number of frames in the buffer, it will be truncated. Note that readMsg will not auto-update instance variables. Call updateInfo in order to do this.
 
-method:: readChannel, readChannelMsg
+method:: readChannel
 As link::#-read:: above, but allows you to specify which channels to read.
 argument:: argpath
 A String representing the path of the soundfile to be read.
@@ -533,6 +542,9 @@ argument:: action
 A Function to be evaluated once the file has been read and this Buffer's instance variables have been updated. The function will be passed this Buffer as an argument.
 argument:: completionMessage
 A valid OSC message or a Function which will return one. A Function will be passed this Buffer as an argument when evaluated.
+
+method:: readChannelMsg
+	as above for single channel, with last arg being completionMessage.
 
 method:: cueSoundFile, cueSoundFileMsg
 A convenience method to cue a soundfile into the buffer for use with a link::Classes/DiskIn::. The buffer must have been allocated with a multiple of (2 * the server's block size) frames.  A common size is 32768 frames.
@@ -795,8 +807,8 @@ argument:: minval
 the minimum value in the plot
 argument:: maxval
 the maximum value in the plot
-argument:: parent
-a window to place the plot in. If nil, one will be created for you
+argument:: separately
+a boolean whether to use separate display ranges or a single shared range.
 discussion::
 code::
 s.boot;

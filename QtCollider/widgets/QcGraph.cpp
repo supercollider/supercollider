@@ -61,6 +61,7 @@ void QcGraphModel::removeAt( int i ) {
 QcGraph::QcGraph() :
   QtCollider::Style::Client(this),
   _defaultThumbSize( QSize(18,18) ),
+  _gridOn( false ),
   _style(DotElements),
   _drawLines( true ),
   _drawRects( true ),
@@ -68,7 +69,6 @@ QcGraph::QcGraph() :
   _step( 0.01 ),
   _selectionForm( ElasticSelection ),
   _xOrder( NoOrder ),
-  _gridOn( false ),
   _geometryDirty( false ),
   _lastIndex(-1)
 {

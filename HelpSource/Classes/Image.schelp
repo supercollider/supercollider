@@ -568,6 +568,10 @@ i.free;
 
 ARGUMENT::rgbaInteger
 an 32 bit link::Classes/Integer:: containing color information packed as 8bit RGBA
+ARGUMENT::x
+the x position of the pixel in the image
+ARGUMENT::y
+the y position of the pixel in the image
 
 METHOD::getPixel
 retrieve the pixel value at x @ y as a RGBA integer

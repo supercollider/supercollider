@@ -356,7 +356,6 @@ add_subdirectory(external_libraries)
 
 if(NOT YAMLCPP_FOUND)
   set(YAMLCPP_LIBRARY yaml)
-  set(YAMLCPP_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include)
 endif()
 
 

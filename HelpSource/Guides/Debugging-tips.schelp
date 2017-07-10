@@ -104,7 +104,7 @@ code::
 ~synth={ arg t_trig; [LFNoise1.kr, LFNoise1.kr].poll(t_trig); }.play;
 
 // the t_ in t_trig is shorthand to cause ~synth.set(\t_trig, 1) to trigger instead of set permanently
-~synth.set(\t_trig, 1); // run this line a couple of times 
+~synth.set(\t_trig, 1); // run this line a couple of times
 ::
 
 All the examples above work the same for audio rate UGens.
@@ -153,11 +153,11 @@ It takes some practice to read a synthdef trace, but it's the ultimate source of
 For a concrete example, let's look at a synthdef that doesn't work. The intent is to generate a detuned sawtooth wave and run it through a set of parallel resonant filters whose cut-off frequencies are modulating randomly.
 We run the synth and generate the trace (reproduced below).
 code::
-SynthDef(\resonz, { |freq = 440|
+SynthDef(\resonz, { |out, freq = 440|
 	var	sig, ffreq;
 	sig = Saw.ar([freq, freq+1], 0.2);
 	ffreq = LFNoise1.kr(2, 1, 0.5);
-	Out.ar(0, Resonz.ar(sig, (800, 1000..1800) * ffreq, 0.1))
+	Out.ar(out, Resonz.ar(sig, (800, 1000..1800) * ffreq, 0.1))
 }).send(s);
 
 a = Synth(\resonz);
@@ -238,11 +238,11 @@ The resonance frequency derives from multiplying an array by a LFNoise1. Tracing
 
 If you look very carefully at the trace, you will see another problem relating to multichannel expansion. The two components of the detuned sawtooth go into alternate Resonz'es, where we expected both to go, combined, into every Resonz. To fix it, the sawtooths need to be mixed as well.
 code::
-SynthDef(\resonz, { |freq = 440|
+SynthDef(\resonz, { |out, freq = 440|
 	var	sig, ffreq;
 	sig = Mix.ar(Saw.ar([freq, freq+1], 0.2));
 	ffreq = LFNoise1.kr(2, 0.5, 1);
-	Out.ar(0, Mix.ar(Resonz.ar(sig, (800, 1000..1800) * ffreq, 0.1)))
+	Out.ar(out, Mix.ar(Resonz.ar(sig, (800, 1000..1800) * ffreq, 0.1)))
 }).send(s);
 
 a = Synth(\resonz);

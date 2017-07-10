@@ -18,10 +18,10 @@ To make it easy to translate between these purposes and representations, there i
 TABLE::
 ##code::asPairs:: || returns an array of key value pairs
 ##code::asAssociations:: || returns an array of associations
-##code::asDict:: || returns an IdentityDictionary
+##code::asDict:: || returns an IdentityDictionary.
 ::
 
-EXAMPLES::
+SECTION::Examples
 
 CODE::
 
@@ -44,7 +44,39 @@ CODE::
 [\freq -> 452, \amp -> 0.2].asDict
 (freq: 452, amp: 0.2).asDict
 
-
 ::
 
 
+
+
+SECTION::Mapping Parameters
+
+The method code::asDict:: optionally takes a code::mergeFunc:: and a code::class:: argument.
+
+CODE::
+ // IdentityDictionary[ (a -> 1), (c -> 3), (b -> 2) ]
+[\a, 1, \a, 3, \b, 2, \c, 3, \c, 7].asDict;
+
+//  IdentityDictionary[ (a -> 4), (c -> 10), (b -> 2) ]
+[\a, 1, \a, 3, \b, 2, \c, 3, \c, 7].asDict({ |new, old| new + old })
+
+// Dictionary[ (what -> was), (how -> wie), (and -> und), (this -> das) ]
+["this", "das", "and", "und", "what", "was", "how", "wie"].asDict(class: Dictionary)
+
+// Environment[ (a -> 1), (b -> 2) ]
+[\a, 1, \b, 2].asDict(class: Environment)
+::
+
+The method code::asEvent:: is a shortcut:
+CODE::
+[\freq, 100, \amp, 0.1].asEvent // ( 'amp': 0.1, 'freq': 100 )
+::
+
+The methods code::asAssociations:: and code::asPairs:: optionally take a code::class:: argument.
+CODE::
+// SortedList[ (a -> 1871), (b -> 1848), (c -> 1789) ]
+(c:1789, b:1848, a:1871).asAssociations(SortedList);
+
+// LinkedList[ a, 1871, c, 1789, b, 1848 ]
+(c:1789, b:1848, a:1871).asPairs(LinkedList);
+::

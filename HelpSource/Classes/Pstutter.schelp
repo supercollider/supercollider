@@ -1,53 +1,91 @@
 class:: Pstutter
 summary:: repeat input stream values
-related:: Classes/Pn
+related:: Classes/Pn, Classes/Pattern#-stutter
 categories:: Streams-Patterns-Events>Patterns>Repetition
 
 description::
 
 repeat each element n times.
 
+code::
+(
+var a, b;
+a = Pstutter(2, Pwhite(-1.0, 1.0));
+x = a.asStream;
+8.do { x.next.postln };
+)
+::
+
+This is also a response to link::Classes/Pattern#-stutter::
+
+
 ClassMethods::
 
 method::new
 
 argument::n
-may be a pattern, so the number of times can vary each iteration.
+The number of repeats for each new element. n may be a pattern, so the number of times can vary each iteration.
 
 argument::pattern
-the pattern
+the pattern to repeat.
 
 Examples::
 
+
 code::
+// the first argument can be a pattern, too:
 (
 var a, b;
-a = Pstutter(2, Pseq([1, 2, 3],inf));
+a = Pstutter(Prand([1, 2, 5], inf), Pwhite(-1.0, 1.0)); // repeat either once, twice, or five times
 x = a.asStream;
-13.do({ x.next.postln; });
+20.do { x.next.postln };
 )
 
-
-//Pstutter used as a sequence of pitches
-
+// using event patterns:
 (
 SynthDef(\help_sinegrain,
-	{ arg out=0, freq=440, sustain=0.05;
+	{ | out=0, freq=440, sustain=0.05 |
 		var env;
-		env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction: Done.freeSelf);
-		Out.ar(out, SinOsc.ar(freq, 0, env))
+        env = Env.perc(0.01, sustain, 0.2).kr(doneAction: Done.freeSelf);
+		Out.ar(out, SinOsc.ar(freq, 0.5pi, env))
 	}).add;
 )
 
+(
+a = Pbind(
+	\instrument, \help_sinegrain,
+	\note, Pxrand([0, 5, 7, 9], inf),
+	\dur, 0.05,
+	\sustain, 0.1
+);
+Pstutter(Pseq([1, 2, 3, 4], inf), a).trace.play;
+)
+
+
+// Pstutter used as a sequence of pitches
 
 (
-c = Pstutter(3, Prand([1, 2, 3],inf)*4+65);
+c = Pstutter(3, Pxrand([1, 2, 3], inf) * 4 + 65);
 x = c.asStream;
-Routine({
-	loop({
+Routine {
+	loop {
 		Synth(\help_sinegrain, [\freq, x.next.midicps]);
 		0.12.wait;
-	})
-}).play;
+	}
+}.play;
 )
+
+
+// Voss algorithm for pink noise
+// note that pattern.stutter(n) is a synonym for Pstutter(n, pattern)
+a = Pwhite();
+c = (2 ** (0..10)).sum { |n| a.stutter(n) };
+c.asStream.nextN(1000).plot
+
+
+// Voss-McCartney algorithm: balance calculation for realtime use
+a = Pwhite();
+c = (2 ** (0..10)).sum { |n| a.stutter(n.div(2).fin(1)) ++ a.stutter(n) };
+c.asStream.nextN(1000).plot
+
 ::

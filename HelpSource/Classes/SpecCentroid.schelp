@@ -20,23 +20,20 @@ A link::Classes/Blip:: oscillator is ideal for demonstrating this because the nu
 
 code::
 s.boot;
-b = Buffer.alloc(s,2048,1);
+b = Buffer.alloc(s, 2048, 1);
 (
 x = {
-var in, chain, freq, rq, centroid;
+	var in, chain, freq, rq, centroid;
 
-//freq = LFPar.kr(0.3).exprange(100, 1000);
-freq = MouseY.kr(1000, 100, 1);
+	//freq = LFPar.kr(0.3).exprange(100, 1000);
+	freq = MouseY.kr(1000, 100, 1);
+	in = Blip.ar(freq, MouseX.kr(1, 100, 1));
+	chain = FFT(LocalBuf(2048), in);
+	centroid = SpecCentroid.kr(chain);
+	centroid.poll(10);
+	in.dup * 0.1
 
-in = Blip.ar(freq, MouseX.kr(1, 100, 1));
-
-chain = FFT(b, in);
-
-centroid = SpecCentroid.kr(chain);
-
-Out.ar(0, in.dup * 0.1);
-centroid.poll(10);
-}.play(s);
+}.play
 )
 
 x.free;

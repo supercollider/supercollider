@@ -13,14 +13,13 @@ code::
 //////////////////////////////////////////////////////////////
 // Note: This SynthDef used throughout this document
 (
-s = Server.local;
-SynthDef( \help_SPE3_SimpleSine, {
-	arg freq, sustain=1.0;
+SynthDef(\help_SPE3_SimpleSine, { |out, freq=440, sustain=1.0|
 	var osc;
-	osc = SinOsc.ar( [freq,freq+0.05.rand] ) * EnvGen.ar(
+	osc = SinOsc.ar( [freq, freq+0.05.rand], 0.5pi )
+	* EnvGen.ar(
 		Env.perc, doneAction: Done.freeSelf, levelScale: 0.3, timeScale: sustain
 	);
-	Out.ar(0,osc);
+	Out.ar(out, osc);
 }).add;
 )
 //////////////////////////////////////////////////////////////
@@ -169,7 +168,7 @@ var a, b;
 a = Pshuf(#[60, 61, 65, 67], inf).midicps.asStream;
 Task({
 	12.do({
-		Synth(\help_SPE3_SimpleSine,[\freq, a.next]);
+		Synth(\help_SPE3_SimpleSine, [\freq, a.next]);
 		0.5.wait;
 	});
 }).play;
@@ -253,7 +252,7 @@ a = Pseq(#[60, 62, 63, 65, 67, 63], inf) + Pseq(#[0, 0, 0, 0, -12], inf);
 a = a.asStream.midicps;
 Task({
 	25.do({
-		Synth(\help_SPE3_SimpleSine,[\freq, a.next]);
+		Synth(\help_SPE3_SimpleSine, [\freq, a.next]);
 		0.3.wait;
 	});
 }).play;
@@ -303,30 +302,30 @@ Here is an example that uses a Pattern to create a rhythmic solo. The values in 
 
 code::
 (
-SynthDef( \help_SPE3_Mridangam, { arg t_amp;
-	var out;
+SynthDef( \help_SPE3_Mridangam, { |out, t_amp|
+	var sound;
 
-	out = Resonz.ar(
+	sound = Resonz.ar(
 		WhiteNoise.ar(70) * Decay2.kr( t_amp, 0.002, 0.1 ),
 		60.midicps,
 		0.02,
 		4
 	).distort * 0.4;
 
-	Out.ar( 0, out );
-	DetectSilence.ar( out, doneAction: Done.freeSelf );
+	Out.ar(out, sound);
+	DetectSilence.ar(sound, doneAction: Done.freeSelf);
 }).add;
 
-SynthDef( \help_SPE3_Drone, {
-	var out;
-	out = LPF.ar(
+SynthDef( \help_SPE3_Drone, { |out|
+	var sound;
+	sound = LPF.ar(
 		Saw.ar([60, 60.04].midicps)
 		+
 		Saw.ar([67, 67.04].midicps),
 		108.midicps,
 		0.007
 	);
-	Out.ar( 0, out );
+	Out.ar(out, sound);
 }).add;
 )
 

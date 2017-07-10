@@ -21,6 +21,7 @@ Font {
 
 	*availableFonts {
 		_Qt_AvailableFonts
+		^this.primitiveFailed
 	}
 
 	*antiAliasing_ { arg flag;

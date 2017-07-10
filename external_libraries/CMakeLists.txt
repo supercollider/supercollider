@@ -66,7 +66,7 @@ if(NOT Boost_FOUND) # we compile boost ourselves
 endif()
 
 # tlsf
-add_library(tlsf STATIC "TLSF-2.4.6/src/tlsf.c")
+add_library(tlsf STATIC EXCLUDE_FROM_ALL "TLSF-2.4.6/src/tlsf.c")
 target_compile_definitions( tlsf PRIVATE TLSF_STATISTIC=1 )
 target_include_directories( tlsf INTERFACE TLSF-2.4.6/src )
 set_property(TARGET tlsf PROPERTY POSITION_INDEPENDENT_CODE TRUE)
@@ -89,11 +89,11 @@ if(NOT YAMLCPP_FOUND)
   message(STATUS "using bundled libyaml-cpp")
 
   # yaml-cpp
-  aux_source_directory(${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/src yaml_src)
+  aux_source_directory(${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/src yaml_src)
   CREATE_FINAL_FILE(${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp ${yaml_src})
 
-  add_library(yaml STATIC ${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp)
-  target_include_directories(yaml PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include)
+  add_library(yaml STATIC EXCLUDE_FROM_ALL ${CMAKE_CURRENT_BINARY_DIR}/libyamlcpp.cpp)
+  target_include_directories(yaml PUBLIC ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp/include boost)
   set_property( TARGET yaml PROPERTY FOLDER 3rdparty )
 
   if(CMAKE_COMPILER_IS_GNUCXX)

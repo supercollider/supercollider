@@ -31,25 +31,28 @@ s.boot;
 
 // FreeVerb2 - demo synthdef
 (
-SynthDef(\FreeVerb2x2, {|outbus, mix = 0.25, room = 0.15, damp = 0.5, amp = 1.0|
+SynthDef(\FreeVerb2x2, { |out, mix = 0.25, room = 0.15, damp = 0.5, amp = 1.0|
 	var signal;
 
-	signal = In.ar(outbus, 2);
+	signal = In.ar(out, 2);
 
-	ReplaceOut.ar(outbus,
+	ReplaceOut.ar(out,
 		FreeVerb2.ar( // FreeVerb2 - true stereo UGen
 			signal[0], // Left channel
 			signal[1], // Right Channel
-			mix, room, damp, amp)); // same params as FreeVerb 1 chn version
+			mix, room, damp, amp
+		)
+	); // same params as FreeVerb 1 chn version
 
 }).add;
 )
 
 // 2ch source
 (
-a = SynthDef(\src2x2, {
-	Out.ar(0,
-		Decay.ar(Impulse.ar(1), 0.25, LFCub.ar(1200, 0, 0.1)) ! 2 +
+a = SynthDef(\src2x2, { |out|
+	Out.ar(out,
+		Decay.ar(Impulse.ar(1), 0.25, LFCub.ar(1200, 0, 0.1)) ! 2
+		+
 		Pan2.ar(
 			Decay.ar(Impulse.ar(1, pi), 0.1, WhiteNoise.ar(0.1)),
 			LFNoise1.kr(0.5).range(-1, 1)
@@ -68,22 +71,4 @@ z.set(\damp, 0.9)
 // silence
 [a, z].do(_.free)
 
-// crucial lib example
-(
-Patch({|mix =0.33, room = 0.25, damp = 0.7, amp = 0.1|
-	var signal;
-
-	signal = Decay.ar(Impulse.ar(1), 0.25, LFCub.ar(1200)) ! 2 +
-		Pan2.ar(
-			Decay.ar(Impulse.ar(1, pi), 0.1, WhiteNoise.ar),
-			LFNoise1.kr(0.5).range(-1, 1)
-		);
-
-	FreeVerb2.ar(
-		signal[0], // Left channel
-		signal[1], // Right Channel
-		mix, room, damp, amp)
-
-}).gui
-)
 ::

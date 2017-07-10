@@ -1,14 +1,125 @@
 CLASS:: Rest
 summary:: Represents a rest in event patterns
 categories:: Streams-Patterns-Events
-related:: Classes/Pbind, Classes/Event
+related:: Classes/Pbind, Classes/Event, Classes/AbstractFunction
 
 DESCRIPTION::
-Rest may be used in event patterns to indicate that the resulting event should be a rest (i.e., silent). It should be used in one of the child patterns belonging to a Pbind, for instance.
+A Rest may be used in event patterns to indicate that the resulting event should be a rest (i.e., silent). It should be used in one of the child patterns belonging to a Pbind, for instance.
+
+code::
+// do nothing for 2 seconds
+(note:Rest(), dur:2).play;
+
+// intersperse pauses in pattern
+Pbind(\note, Pseq([0, 4, 7, 11], inf), \dur, Pseq([2, 1, Rest(1)], inf) / 5).play;
+::
 
 subsection:: Expressing rests in event patterns
 
-In addition to the Rest class, rests can be specified in two other ways (legacy usages).
+The Rest class allows rests to be indicated in any stream, not only frequency or event type. Also, using the duration argument (see the link::#*new:: method below), rests may be embedded into a duration stream. That is, rests may be treated as part of the rhythmic specification, rather than the pitch specification.
+
+
+note::
+As of SuperCollider 3.9, code::Rest::'s behavior has changed to be more intuitive. Note that you have to now use code::Rest():: - the shortcut of code::Rest:: as class directly is strong::not supported:: anymore.
+::
+
+
+subsection:: Usage
+
+list::
+## link::Classes/Event#-isRest:: checks every item in the event to see if it meets the condition to be a rest: it may be a code::Rest:: instance, the code::Rest:: class, or either of the symbols code:: \ :: or code::\r::. If any item meets the condition, the event will be considered a rest and it will not take action when played.
+
+## If a Pbind child pattern yields a Rest object, the Rest is placed directly into the event. This is a change of behavior from 3.8.
+
+## If a Rest object has a value, it will respond to math operations: code::Rest(1) * 2 == Rest(2)::.
+::
+
+
+CLASSMETHODS::
+All methods of Rest except *new are private, and should not be used directly.
+
+private:: processRest
+private:: embedInStream
+private:: asStream
+
+METHOD:: new
+Create an instance of Rest, with a value to be used in the resulting rest event.
+
+argument:: value
+The Rest instance's numeric value, to be used in math operations. Note that a Rest's value is ignored for most Event keys (assuming the Event does nothing in response to code::.play::). If a Rest appears in a rhythm key (code::dur:: or code::delta::), then the number is the time until the next event. Consequently, numeric Rests are often used for duration -- but there is no requirement that a Rest's value must be a duration.
+
+discussion::
+code::
+a = Rest(6);
+b = a * 2; // returns Rest(12)
+b = 2 * a; // the same
+b.value; // returns 12
+::
+
+The rest of a rest is always a rest. This idempotence is implemented by Rest's superclass link::Classes/Operand::.
+code::
+Rest(Rest(1)) // returns Rest(1)
+::
+
+
+INSTANCEMETHODS::
+private:: dur
+private:: embedInStream
+private:: asStream
+private:: asControlInput
+private:: playAndDelta
+
+METHOD:: isRest
+returns true
+
+METHOD::unwrapBoolean
+returns the value.
+discussion::
+This method implements the following behavior.
+code::
+Rest(6) + 1 // Rest(7)
+Rest(true) // true
+::
+This makes comparisons work:
+code::
+Rest(6) < 7 // true, and not Rest(true)
+a = Pseq([1, 2, 1, 3, Rest(1), 2, Rest(3)], inf); // e.g. as a duration pattern
+b = a.collect { |x| if(x > 2) { x / 2 } { x } };
+b.asStream.nextN(8)
+::
+
+EXAMPLES::
+
+
+Using Rest instances in a pitch stream
+
+code::
+(
+Pbind(
+	\degree, Pif(
+		0.1.loop.coin,
+		Pseq([Rest(), 7], inf), // every second is a Rest
+		Pseries(0, 1, inf).fold(-7, 7)
+	),
+	\dur, 0.125
+).play
+)
+::
+
+Using a Rest instance in a duration stream
+code::
+(
+Pbind(
+	\degree, Pseries(0, 1, inf).fold(-7, 7),
+	\dur, Pseq([Pn(0.125, { rrand(3, 6) }), Rest(0.25)], inf)
+).play
+)
+::
+
+
+subsection:: Alternatives to Rest
+
+In addition to Rest, in events, rests can be specified in two other ways (legacy usages).
 
 list::
 ## A link::Classes/Symbol:: may be specified in any frequency stream (under the keys degree, note, midinote or freq). The exception to this rule is control bus mapping symbols, beginning with 'c' followed by a number. Typical symbols that have been used include strong::\rest::, strong::\r:: and the empty symbol strong:: \ ::.
@@ -34,78 +145,4 @@ p = Pbind(
 
 p.stop;
 ::
-::
-
-The Rest class allows rests to be indicated in any stream, not only frequency or event type. Also, using the duration argument (see the *new method below), rests may be embedded into a duration stream. That is, rests may be treated as part of the rhythmic specification, rather than the pitch specification.
-
-subsection:: Usage
-
-list::
-## The class Rest may be embedded directly in a child pattern. This sets the isRest flag and puts the number 1 into the event.
-## Or, a Rest instance may be embedded. Rest.new's argument specifies the value that will be placed into the event. This allows rests to be given in a duration stream -- the argument is the rest's rhythmic value.
-::
-
-section:: How it works
-
-When a Pbind child pattern returns a Rest, the Rest object sets a flag 'isRest' in the resulting event to be true. The child pattern's value in the event is a number. This is to prevent math errors if Rest is used in a pitch or duration stream (degree, note, midiNote, freq, dur, delta, stretch).
-
-When a Rest is returned from a child stream, the rest object itself will not appear in the event. You can tell that the event is a rest by the presence of code::'isRest': true::.
-
-code::
-p = Pbind(\degree, Pseq([4, Rest], 1)).asStream;
-
-p.next(());
-// prints: ( 'degree': 4 )
-
-p.next(());
-// prints: ( 'isRest': true, 'degree': 1 )
-::
-
-That is, the importance of the Rest object is not that it appears in the event. The importance is the side effect that this object has on the resulting event.
-
-CLASSMETHODS::
-All methods of Rest except *new are private, and should not be used directly.
-
-private:: processRest
-private:: embedInStream
-private:: asStream
-
-METHOD:: new
-Create an instance of Rest, with a value to be used in the resulting rest event.
-
-argument:: dur
-Typically, Rest instances will be used in duration streams, so the argument should be the rest's rhythmic value, or duration. Rest instances may also be used in any other stream, but the value will be ignored (since the event will do nothing except take time).
-
-
-INSTANCEMETHODS::
-private:: dur
-private:: processRest
-private:: embedInStream
-private:: asStream
-
-EXAMPLES::
-
-Using the Rest class in a pitch stream
-
-code::
-p = Pbind(
-	\degree, Pif(
-		0.1.loop.coin,
-		Rest,
-		Pseries(0, 1, inf).fold(-7, 7)
-	),
-	\dur, 0.125
-).play;
-
-p.stop;
-::
-
-Using a Rest instance in a duration stream
-code::
-p = Pbind(
-	\degree, Pseries(0, 1, inf).fold(-7, 7),
-	\dur, Pseq([Pn(0.125, { rrand(3, 6) }), Rest(0.25)], inf)
-).play;
-
-p.stop;
 ::

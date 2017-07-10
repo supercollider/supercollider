@@ -59,6 +59,9 @@ read four bytes and return as a link::Classes/Float::.
 method::getDouble
 read eight bytes and return as a link::Classes/Float::.
 
+method::getPascalString
+Reads the next byte as an unsigned integer N, then reads the following N bytes and returns them as a link::Classes/String::.
+
 method::putChar
 write a link::Classes/Char:: as one byte.
 
@@ -79,3 +82,10 @@ write a link::Classes/Float:: as eight bytes.
 
 method::putString
 write a null terminated link::Classes/String::.
+
+method::putPascalString
+Writes code::aString:: preceded by its length represented as a single byte.
+Throws an error if code::aString:: is longer than 255 characters.
+
+method::putString0
+Writes code::aString:: followed by a zero byte, like a null-terminated C string.

@@ -43,18 +43,21 @@ If strong::gate:: < 0, force release with time code:: -1.0 - gate ::. See link::
 
 argument::levelScale
 
-Scales the levels of the breakpoints.
-
+The levels of the breakpoints are multiplied by this value. This
+value can be modulated, but is only sampled at the start of a new
+envelope segment.
 
 argument::levelBias
 
-Offsets the levels of the breakpoints.
-
+This value is added as an offset to the levels of the breakpoints.
+This value can be modulated, but is only sampled at the start of a
+new envelope segment.
 
 argument::timeScale
 
-Scales the durations of the segments.
-
+The durations of the segments are multiplied by this value. This
+value can be modulated, but is only sampled at the start of a new
+envelope segment.
 
 argument::doneAction
 
@@ -290,8 +293,8 @@ SynthDef(\env, { arg i_outbus=0;
 )
 
 (
-SynthDef(\sine, { |freq = 0|
-	Out.ar(0, SinOsc.ar(freq, 0, 0.2));
+SynthDef(\sine, { |out, freq = 440|
+	Out.ar(out, SinOsc.ar(freq, 0, 0.2));
 }).add;
 )
 

@@ -17,10 +17,42 @@ f.close;
 )
 ::
 
+When reading a sound file, the headerFormat, sampleFormat, numChannels and numFrames variables will be set according to the file on disk.
+
+When creating a new SoundFile, the format will be monophonic, 44.1 kHz, AIFF, floating-point by default. Users may override the defaults by passing the desired format strings to link::Classes/SoundFile#*openWrite::, or by using link::Classes/SoundFile#-headerFormat::, link::Classes/SoundFile#-sampleFormat::, link::Classes/SoundFile#-numChannels:: and link::Classes/SoundFile#-sampleRate:: emphasis::before:: calling link::Classes/SoundFile#-openWrite::.
+
 ClassMethods::
 
 method::new
 Creates a new SoundFile instance.
+
+method:: openRead
+Try to open the audio file at the given path.
+
+argument:: pathName
+Full path to the sound file. Use link::Classes/String#-standardizePath:: to resolve home-folder shortcuts such as teletype::~::.
+
+returns:: A new SoundFile instance if successful, or code::nil:: if file open failed. User code should check for code::nil:: before doing anything with the SoundFile object.
+
+method:: openWrite
+Try to create an audio file at the given path. Note that there is no code::numFrames:: argument: the number of frames is counted after writing data into the file.
+
+argument:: pathName
+Full path to the sound file. Use link::Classes/String#-standardizePath:: to resolve home-folder shortcuts such as teletype::~::.
+
+argument:: headerFormat
+A string for the sound file format. Valid strings are listed at link::Classes/SoundFile#-headerFormat::. If not given, the default code::"AIFF":: is used.
+
+argument:: sampleFormat
+A string for the sample format. Valid strings are listed at link::Classes/SoundFile#-sampleFormat::. If not given, the default code::"float":: is used.
+
+argument:: numChannels
+An integer number of channels (1 by default).
+
+argument:: sampleRate
+An integer sample rate (44100 by default).
+
+returns:: A new SoundFile instance if successful, or code::nil:: if file open failed. User code should check for code::nil:: before doing anything with the SoundFile object.
 
 method::collect
 Returns an link::Classes/Array:: of SoundFile objects whose paths match the pattern. (The associated files are closed. These objects can be used to cue playback buffers)
@@ -230,3 +262,56 @@ The number of channels in the file.
 
 method::sampleRate
 The sample rate of the file.
+
+examples::
+code::
+// Writing a sound file, long form:
+// Set the format variables before calling 'openWrite'
+// The Boolean answer from 'openWrite' tells you if it's safe to proceed
+(
+f = SoundFile(PathName.tmp +/+ "sf-help.wav");
+f.headerFormat = "WAV";
+f.sampleFormat = "int16";
+if(f.openWrite) {
+	f.writeData(Signal.sineFill(1024, [1]));
+	f.close;
+} {
+	"Failed to open %".format(f.path).warn;
+};
+)
+
+// Or, short form: Class method 'openWrite'
+// f is nil if the file couldn't be opened
+(
+var p = PathName.tmp +/+ "sf-help.wav";
+f = SoundFile.openWrite(p, "WAV", "int16");
+if(f.notNil) {
+	f.writeData(Signal.sineFill(1024, [1]));
+	f.close;
+} {
+	"Failed to open %".format(p).warn;
+};
+)
+
+// Reading the file
+f = SoundFile.openRead(PathName.tmp +/+ "sf-help.wav");
+f.sampleFormat;
+
+// To get data, create a FloatArray or Signal first
+d = FloatArray.newClear(f.numFrames);
+f.readData(d);
+d.plot;
+f.close;
+
+s.boot;
+
+// It's a proper audio file -- server can load it
+b = Buffer.read(s, PathName.tmp +/+ "sf-help.wav");
+
+// It's a sinewave...
+a = { (PlayBuf.ar(1, b, rate: 440 * 1024/44100, loop: 1) * 0.1).dup }.play;
+a.free;
+
+b.free;
+File.delete(PathName.tmp +/+ "sf-help.wav");
+::

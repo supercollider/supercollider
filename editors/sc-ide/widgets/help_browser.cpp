@@ -42,6 +42,10 @@
 #include <QDebug>
 #include <QKeyEvent>
 
+#ifdef Q_OS_MAC
+#  include <QStyleFactory> // QStyleFactory::create, see below
+#endif
+
 namespace ScIDE {
 
 HelpBrowser::HelpBrowser( QWidget * parent ):
@@ -62,6 +66,12 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
     // Set the style's standard palette to avoid system's palette incoherencies
     // get in the way of rendering web pages
     mWebView->setPalette( style()->standardPalette() );
+
+#ifdef Q_OS_MAC
+    // On macOS, checkboxes unwantedly appear in the top left-hand corner.
+    // See QTBUG-43366, 43070, and 42948. The workaround is to set style to fusion.
+    mWebView->setStyle( QStyleFactory::create("Fusion") );
+#endif
 
     mWebView->installEventFilter(this);
 
@@ -412,6 +422,7 @@ bool HelpBrowserFindBox::event( QEvent * event )
             event->accept();
             return true;
         }
+        break;
     }
     case QEvent::KeyPress:
     {

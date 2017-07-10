@@ -36,7 +36,7 @@ class WebView : public QWebView
   Q_PROPERTY( QString url READ url WRITE setUrl );
   Q_PROPERTY( QString html READ html )
   Q_PROPERTY( QString plainText READ plainText )
-  Q_PROPERTY( QWebPage::LinkDelegationPolicy linkDelegationPolicy
+  Q_PROPERTY( int linkDelegationPolicy
               READ linkDelegationPolicy WRITE setLinkDelegationPolicy )
   Q_PROPERTY( bool delegateReload READ delegateReload WRITE setDelegateReload );
   Q_PROPERTY( bool enterInterpretsSelection
@@ -67,8 +67,8 @@ public:
   QString html () const;
   QString plainText () const;
 
-  QWebPage::LinkDelegationPolicy linkDelegationPolicy () const;
-  void setLinkDelegationPolicy ( QWebPage::LinkDelegationPolicy );
+  int linkDelegationPolicy () const;
+  void setLinkDelegationPolicy ( int );
   bool delegateReload() const;
   void setDelegateReload( bool );
   bool interpretSelection() const { return _interpretSelection; }

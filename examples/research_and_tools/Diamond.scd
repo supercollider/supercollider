@@ -188,7 +188,7 @@ series = (series ++ 16);
 w = Window("diamond", Rect(50,200,980,370), resizable: false);
 w.view.decorator = FlowLayout(w.view.bounds);
 
-buttonFont = Font("Helvetica", if( GUI.id === \cocoa, 11, 7 )).boldVariant;
+buttonFont = Font("Helvetica", 11).boldVariant;
 
 series.reverse.do {|denom|
 	series2.do {|numer|

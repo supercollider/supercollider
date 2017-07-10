@@ -48,8 +48,10 @@ Class {
 		});
 	}
 
-	*allClasses { _AllClasses }
-
+	*allClasses {
+		_AllClasses
+		^this.primitiveFailed
+	}
 	findMethod { arg methodName;
 		if ( methods.notNil, {
 			^methods.detect({ arg method; method.name == methodName });
@@ -84,7 +86,10 @@ Class {
 		if (meth.notNil, { meth.dumpByteCodes },{ Post << methodName << " not found.\n"; });
 	}
 
-	dumpClassSubtree { _DumpClassSubtree }
+	dumpClassSubtree {
+		 _DumpClassSubtree
+		^this.primitiveFailed
+	}
 	dumpInterface {
 		// show all methods and their arguments defined for this class
 		// does not include methods defined in superclasses
@@ -141,7 +146,7 @@ Class {
 	//traceAnyPathToAllInstancesOf { _TraceAnyPathToAllInstancesOf }
 
 	openCodeFile {
-		this.filenameSymbol.asString.openTextFile(this.charPos, -1);
+		this.filenameSymbol.asString.openDocument(this.charPos, -1);
 	}
 	classVars {
 		var start, end;
@@ -224,8 +229,14 @@ Process {
 		^AppClock.tick;
 	}
 
-	*tailCallOptimize { _GetTailCallOptimize }
-	*tailCallOptimize_ { arg bool; _SetTailCallOptimize ^this.primitiveFailed }
+	*tailCallOptimize {
+		_GetTailCallOptimize
+		^this.primitiveFailed
+	}
+	*tailCallOptimize_ { arg bool;
+		_SetTailCallOptimize
+		^this.primitiveFailed
+	}
 
 	getCurrentSelection {
 		var qt = \QtGUI.asClass;
@@ -246,14 +257,14 @@ Process {
 			if (class.notNil, {
 				method = class.findMethod(words.at(1).asSymbol);
 				if (method.notNil, {
-					method.filenameSymbol.asString.openTextFile(method.charPos, -1);
+					method.filenameSymbol.asString.openDocument(method.charPos, -1);
 				});
 			});
 		},{
 			class = string.asSymbol.asClass;
 			if (class.notNil, {
 				class = class.classRedirect;
-				class.filenameSymbol.asString.openTextFile(class.charPos, -1);
+				class.filenameSymbol.asString.openDocument(class.charPos, -1);
 			});
 		});
 	}
@@ -381,9 +392,15 @@ Process {
 
 	shallowCopy { ^this }
 
-	*elapsedTime { _ElapsedTime }
+	*elapsedTime {
+		_ElapsedTime
+		^this.primitiveFailed
+	}
 
-	*monotonicClockTime { _monotonicClockTime }
+	*monotonicClockTime {
+		_monotonicClockTime
+		^this.primitiveFailed
+	}
 
 	storeOn { arg stream;
 		stream << "thisProcess";
@@ -402,12 +419,26 @@ FunctionDef {
 	// When you use a FunctionDef in your code it gets pushed on the stack
 	// as an instance of Function
 
-	dumpByteCodes { _DumpByteCodes }
+	dumpByteCodes {
+		_DumpByteCodes
+		^this.primitiveFailed
+	}
 
-	numArgs { _FunDef_NumArgs }		// return number of arguments to the function
-	numVars { _FunDef_NumVars }		// return number of variables in the function
-	varArgs { _FunDef_VarArgs }		// return boolean whether function has ellipsis argument
-
+	numArgs {
+		// return number of arguments to the function
+		_FunDef_NumArgs
+		^this.primitiveFailed
+	}
+	numVars {
+		// return number of variables in the function
+		_FunDef_NumVars
+		^this.primitiveFailed
+	}
+	varArgs {
+		// return boolean whether function has ellipsis argument
+		_FunDef_VarArgs
+		^this.primitiveFailed
+	}
 	shallowCopy { ^this }
 
 	asFunction {
@@ -418,6 +449,7 @@ FunctionDef {
 
 	dumpContexts {
 		_FunctionDefDumpContexts
+		^this.primitiveFailed
 	}
 	inspectorClass { ^FunctionDefInspector }
 
@@ -474,7 +506,7 @@ Method : FunctionDef {
 	var <filenameSymbol, <charPos;
 
 	openCodeFile {
-		this.filenameSymbol.asString.openTextFile(this.charPos, -1);
+		this.filenameSymbol.asString.openDocument(this.charPos, -1);
 	}
 	hasHelpFile {
 		//should cache this in Library or classvar

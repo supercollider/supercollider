@@ -56,28 +56,26 @@ d.zero;
 
 
 (
-SynthDef(\conv_test, { arg kernel1, kernel2, t_trig = 0;
-	var input;
-
+SynthDef(\conv_test, { |out, kernel1, kernel2, t_trig = 0|
+	var input, result, framesize;
+	framesize = 2048; // must be a power of two
 	input = Impulse.ar(1);
-
-	// must have power of two framesize
-	Out.ar(0, StereoConvolution2L.ar(input, kernel1, kernel2, t_trig, 2048, 1, 0.5));
+	result = StereoConvolution2L.ar(input, kernel1, kernel2, t_trig, framesize, 1, 0.5);
+	Out.ar(out, result);
 }).add
-
 )
 
 
 x = Synth(\conv_test, [\kernel1, b, \kernel2, c]);
 
 // changing the buffer number:
-x.set(\kernel1,d);
-x.set(\t_trig,1); // after this trigger, the change will take effect.
-x.set(\kernel2,d);
-x.set(\t_trig,1); // after this trigger, the change will take effect.
+x.set(\kernel1, d);
+x.set(\t_trig, 1); // after this trigger, the change will take effect.
+x.set(\kernel2, d);
+x.set(\t_trig, 1); // after this trigger, the change will take effect.
 
 d.zero;
-40.do({ |it| d.set(20 * it + 10, 1); });// changing the buffers' contents
+40.do({ |it| d.set(20 * it + 10, 1); }); // changing the buffers' contents
 x.set(\t_trig, 1); // after this trigger, the change will take effect.
 
 x.set(\kernel1, b);

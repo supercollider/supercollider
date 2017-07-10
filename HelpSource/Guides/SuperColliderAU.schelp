@@ -22,7 +22,7 @@ u = Server(\scau, NetAddr("127.0.0.1", 9989)); // Change the port from 9989 to t
 u.serverRunning = true;
 u.ping(10); // Gives about 0.02 for me - confirms that communication is working
 // Now let's create a quick ring-modulator effect:
-z = { AudioIn.ar([1,2]) * SinOsc.ar(MouseX.kr(100, 1000)) }.play(u);
+z = { SoundIn.ar([0,1]) * SinOsc.ar(MouseX.kr(100, 1000)) }.play(u);
 ::
 
 section::Inside the bundle
