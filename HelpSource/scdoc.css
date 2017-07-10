@@ -117,10 +117,33 @@ a.subclass_toggle:hover {
     border-right: 1px solid #ddd;
     font-size: 10pt;
     display: inline-block;
+
+    /* This ensures that the logo isn't cut off. */
+    min-height: 1.5em;
+    /* This gets the text to vertically center. Discovered by accident. */
+    line-height: 1.5em;
 }
 
 #menubar .menuitem:first-child {
     padding-left: 0;
+
+    /* It is better to make the logo a background image instead of an <img> because it is purely
+    decorative. */
+    background-image: url("images/SC_icon.png");
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: 1.5em;
+}
+
+#menubar .menuitem:first-child a {
+    /* The cube logo is actually *under* the <a>, but it shows through so that it looks like it
+    is part of the link. */
+    padding-left: 2em;
+}
+
+#menubar .menuitem:first-child a:hover {
+    /* Lighten the background image by adding a translucent white layer over it. */
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
 #menubar .menuitem:last-child {
@@ -128,12 +151,11 @@ a.subclass_toggle:hover {
 }
 
 .menuitem a {
-/*    color: #ddd;*/
     color: #666;
 }
 .menuitem a:hover {
     text-decoration: none;
-    color: black;
+    color: #999;
 }
 
 #topdoctitle {
@@ -176,12 +198,6 @@ a.subclass_toggle:hover {
 
 .top_search input {
     border: 1px solid #ddd;
-}
-
-a.navlink {
-/*    color: #fff;*/
-    color: #447;
-    font-weight: bold;
 }
 
 
