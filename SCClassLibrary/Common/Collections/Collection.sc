@@ -196,6 +196,13 @@ Collection {
 		this.do {|elem, i| if (function.value(elem, i)) { ^i } }
 		^nil;
 	}
+	detectIndexInBoth { | aCollection, func |
+		this.do { |item, i|
+			var j = aCollection.detectIndex({ |elem, j| func.(item, elem, i, j) });
+			if(j.notNil) { ^[i, j] }
+		};
+		^nil
+	}
 	doMsg { | selector ... args |
 		this.do {| item | item.performList(selector, args) }
 	}

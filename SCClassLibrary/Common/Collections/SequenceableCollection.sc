@@ -318,35 +318,23 @@ SequenceableCollection : Collection {
 		^this[..index-1] ++ obj ++ this[index..]
 	}
 
+	merge { |aCollection| // can be parametrized in the future
+		var i, j, coll, rest;
+		var indices = detectIndexInBoth(aCollection, this, { |a, b| a == b });
+
+		^if(indices.isNil) {
+			aCollection ++ this
+		} {
+			#i, j = indices;
+			rest = aCollection.drop(i + 1);
+			coll = this.keep(j + 1);
+			rest.removeAllSuchThat({ |x| coll.includesEqual(x) });
+			aCollection.keep(i) ++ coll ++ rest.merge(this.drop(j + 1))
+		}
+	}
 
 	mergePairs { |pairs|
-		var toDo = [], tryInsert = false;
-		var res = this.copy;
-		pairs.pairsDo { |key, item, j|
-			var remove;
-			var i = res.indexOf(key);
-			if(i.isNil) {
-				toDo = toDo.add(key).add(item);
-			} {
-				if(item.isNil) {
-					res.removeAt(i);
-					res.removeAt(i);
-				} {
-					if(tryInsert) {
-						if(toDo.notEmpty) {
-							res = res.insertAll(i, toDo);
-							toDo = [];
-						};
-						tryInsert = false;
-					} {
-						res[i+1] = item;
-						tryInsert = true;
-					}
-				}
-			}
-		};
-		if(toDo.notEmpty) { res = toDo ++ res };
-		^res
+		^this.asAssociations.merge(pairs.asAssociations).asPairs
 	}
 
 	// compatibility with isolated objects
