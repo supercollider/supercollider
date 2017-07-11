@@ -1,10 +1,10 @@
 CLASS::Event
 summary::an environment that represents an action
-related::Classes/Pattern
+related::Classes/Pattern, Classes/Environment, Classes/Dictionary
 categories::Collections>Unordered, Streams-Patterns-Events>Events
 
 DESCRIPTION::
-An Event is an Environment that specifies an action to be taken in response to a link::#-play:: message. The key/value pairs within the Event specify the parameters of that action. Most methods, Event inherits from its superclasses, especially from link::Classes/Dictionary::.
+An Event specifies an action to be taken in response to a link::#-play:: message. Its key/value pairs specify the parameters of that action. Event inherits most of its methods from its superclasses, especially from link::Classes/Dictionary::. For the usage and meaning of the code::parent:: and code::proto:: events, see link::Classes/IdentityDictionary::.
 
 CLASSMETHODS::
 
@@ -39,7 +39,7 @@ Returns an event that describes a pause of strong::dur:: duration.
 
 
 method::addEventType
-Event types define alternate play functions and parent events that are selected by the value of strong::~type::.
+Event types define alternate play functions and parent events that are selected by the value of strong::~type::. Practically, this allows to augment the default parent event with key value pairs for this type only.
 
 
 argument::type
@@ -53,14 +53,18 @@ An event with default values which is used to override the parent event. If code
 
 discussion::
 code::
-Event.addEventType(\happyEvent, { "I am so happy to be silent sometimes, says %.\n".postf(~who) });
+(
+Event.addEventType(\happyEvent, {
+	"I am so happy to be silent sometimes, says %.\n".postf(~who)
+})
+)
 (type: \happyEvent, who: "Alice").play;
 
 // using protoEvent
 (
 Event.addEventType(\happyEvent, {
 	"I am so happy to be silent sometimes, says %.\n".postf(~who)
-}, (who: "Alice"));
+}, (who: "Alice"))
 )
 
 (type: \happyEvent).play; // use default
@@ -69,7 +73,7 @@ Event.addEventType(\happyEvent, {
 // in a Pbind:
 Pbind(\type, \happyEvent, \who, Prand(["Alice", "Bob", "Eve"], inf), \dur, Pwhite(0.1, 1.0, inf)).play;
 
-// protoEvent for indirect calls:
+// parent event type for indirect calls:
 Event.addEventType(\test, { ("x was" + ~x.value).postln }, (x: { ~y + 1 }, y: 0));
 
 (type: \test).play; // use defaults
