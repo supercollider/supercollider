@@ -66,7 +66,9 @@ SCDocHTMLRenderer {
 	*htmlForLink { |link, escape = true|
 		var linkBase, linkAnchor, linkText, linkTarget, doc;
 		// FIXME: how slow is this? can we optimize
-		#linkBase, linkAnchor, linkText = link.split($#); // link, anchor, label
+
+		// Get the link base, anchor, and text from the original string
+		#linkBase, linkAnchor, linkText = link.split($#);
 
 		if(linkAnchor.size > 0) {
 			linkAnchor = this.escapeSpacesInAnchor(linkAnchor);
@@ -89,11 +91,11 @@ SCDocHTMLRenderer {
 			// If the link base is non-empty, it is a link to something in another document
 			if(linkBase.size>0) {
 
-			    // Compose the target as being relative to the help system base directory
-				linkTarget = baseDir +/+ linkBase;
-
 				// Find the document referred to by this link
 				doc = SCDoc.documents[linkBase];
+
+				// Compose the target as being relative to the help system base directory
+				linkTarget = baseDir +/+ linkBase;
 
 				// If this is an existing document, just add .html to get the target
 				if(doc.notNil) {
