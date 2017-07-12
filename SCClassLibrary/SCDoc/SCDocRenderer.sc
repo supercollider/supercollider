@@ -68,9 +68,13 @@ SCDocHTMLRenderer {
 		// FIXME: how slow is this? can we optimize
 
 		// Get the link base, anchor, and text from the original string
+		// Replace them with empty strings if any are nil
 		#linkBase, linkAnchor, linkText = link.split($#);
+		linkBase = linkBase ? "";
+		linkAnchor = linkAnchor ? "";
+		linkText = linkText ? "";
 
-		if(linkAnchor.size > 0) {
+		if(linkAnchor.empty.not) {
 			linkAnchor = this.escapeSpacesInAnchor(linkAnchor);
 		};
 
@@ -81,10 +85,10 @@ SCDocHTMLRenderer {
 			// Process a link that goes to a URL outside the help system
 
 			// If there was no link text, set it to be the same as the original link
-			if(linkText.size < 1) {linkText = link};
+			if(linkText.isEmpty) {linkText = link};
 
 			// Set the link target to be the link base plus its anchor, if there was one
-			linkTarget = if(linkAnchor.size > 0) {linkBase ++ "#" ++ linkAnchor} {linkBase};
+			linkTarget = if(linkAnchor.isEmpty.not) {linkBase ++ "#" ++ linkAnchor} {linkBase};
 		} {
 		    // Process a link that goes to a URL within the help system
 
@@ -92,7 +96,7 @@ SCDocHTMLRenderer {
 			var doc = nil;
 
 			// If the link base is non-empty, it is a link to something in another document
-			if(linkBase.size>0) {
+			if(linkBase.isEmpty.not) {
 
 				// Compose the target as being relative to the help system base directory
 				linkTarget = baseDir +/+ linkBase;
@@ -126,21 +130,21 @@ SCDocHTMLRenderer {
 			};
 
 			// If there was an anchor, add it to the link target
-			if(linkAnchor.size > 0) { linkTarget = linkTarget ++ "#" ++ linkAnchor };
+			if(linkAnchor.isEmpty.not) { linkTarget = linkTarget ++ "#" ++ linkAnchor };
 
 			// If there was no label, generate one from the base and/or anchor.
 			// FIXME: the anchor's spaces have already been escaped here, which causes issue #2337.
-			if(linkText.size < 1) {
+			if(linkText.isEmpty) {
 
 				// If the base was non-empty, generate it by combining the filename and the anchor.
 				// Otherwise, if there was an anchor, use that. Otherwise, use "(empty link)"
-				if(linkBase.size > 0) {
+				if(linkBase.isEmpty.not) {
 					linkText = if(doc.notNil) {doc.title} {linkBase.basename};
-					if(linkAnchor.size > 0) {
+					if(linkAnchor.isEmpty.not) {
 						linkText = linkText ++ ": " ++ linkAnchor;
 					}
 				} {
-					linkText = if(linkAnchor.size > 0) {linkAnchor} {"(empty link)"};
+					linkText = if(linkAnchor.isEmpty.not) {linkAnchor} {"(empty link)"};
 				};
 			};
 		};
