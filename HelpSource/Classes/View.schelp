@@ -497,7 +497,7 @@ SUBSECTION:: Mouse actions
 Use the methods below to set or get the view's actions in response to mouse interaction with the view. A view must be enabled for the mouse actions to work.
 
 note::
-Mouse actions are subject to emphasis::event propagation::. See link::#Key and mouse event processing:: for details.
+Mouse actions are subject to emphasis::event propagation::. See link::#Key and mouse event processing#Key and mouse event processing:: for details.
 ::
 
 When the mouse action object is evaluated, it is passed one or more arguments from the following list (in that order):
@@ -514,54 +514,54 @@ list::
 METHOD:: mouseDownAction
     The object to be evaluated when a mouse button is pressed on the view.
 
-    The following arguments are passed at evaluation: strong::view, x, y, modifiers, buttonNumber, clickCount::. See link::#Mouse actions:: for explanation of arguments.
+    The following arguments are passed at evaluation: strong::view, x, y, modifiers, buttonNumber, clickCount::. See link::#Mouse actions#Mouse actions:: for explanation of arguments.
 
-    The return value of evaluation controls the event propagation to parent view. See link::#Key and mouse event processing:: for details.
+    The return value of evaluation controls the event propagation to parent view. See link::#Key and mouse event processing#Key and mouse event processing:: for details.
 
 METHOD:: mouseUpAction
     The object to be evaluated when a mouse button is released after it was pressed on the view.
 
-    The following arguments are passed at evaluation: strong::view, x, y, modifiers::. See link::#Mouse actions:: for explanation of arguments.
+    The following arguments are passed at evaluation: strong::view, x, y, modifiers::. See link::#Mouse actions#Mouse actions:: for explanation of arguments.
 
-    The return value of evaluation controls the event propagation to parent view. See link::#Key and mouse event processing:: for details.
+    The return value of evaluation controls the event propagation to parent view. See link::#Key and mouse event processing#Key and mouse event processing:: for details.
 
 METHOD:: mouseMoveAction
     The object to be evaluated whenever the mouse pointer moves after a mouse button was pressed on the view.
 
-    The following arguments are passed at evaluation: strong::view, x, y, modifiers::. See link::#Mouse actions:: for explanation of arguments.
+    The following arguments are passed at evaluation: strong::view, x, y, modifiers::. See link::#Mouse actions#Mouse actions:: for explanation of arguments.
 
-    The return value of evaluation controls the event propagation to parent view. See link::#Key and mouse event processing:: for details.
+    The return value of evaluation controls the event propagation to parent view. See link::#Key and mouse event processing#Key and mouse event processing:: for details.
 
 METHOD:: mouseOverAction
     The object to be evaluated when the mouse pointer moves over the view with no mouse buttons pressed.
 
-    The following arguments are passed at evaluation: strong::view, x, y::. See link::#Mouse actions:: for explanation of arguments.
+    The following arguments are passed at evaluation: strong::view, x, y::. See link::#Mouse actions#Mouse actions:: for explanation of arguments.
 
     The object is evaluated only when link::Classes/Window#-acceptsMouseOver:: of the containing Window (or link::#-acceptsMouseOver:: of the top View) is code::true::.
 
-    The return value of evaluation controls the event propagation to parent view. See link::#Key and mouse event processing:: for details.
+    The return value of evaluation controls the event propagation to parent view. See link::#Key and mouse event processing#Key and mouse event processing:: for details.
 
 METHOD:: mouseWheelAction
 
     The object to be evaluated when the mouse wheel is used while the mouse is pointing onto the view.
 
-    The following arguments are passed at evaluation: strong::view, x, y, modifiers, xDelta, yDelta::. See link::#Mouse actions:: for explanation of arguments.
+    The following arguments are passed at evaluation: strong::view, x, y, modifiers, xDelta, yDelta::. See link::#Mouse actions#Mouse actions:: for explanation of arguments.
 
     The xDelta and yDelta arguments express rotation in horizontal and vertical direction, respectively. The value is in degrees (typically, an event occurs every 15 degrees), and can be positive or negative, depending on the direction of rotation.
 
-    The return value of evaluation controls the event propagation to parent view. See link::#Key and mouse event processing:: for details.
+    The return value of evaluation controls the event propagation to parent view. See link::#Key and mouse event processing#Key and mouse event processing:: for details.
 
 METHOD:: mouseEnterAction
 
     The object to be evaluated when the mouse pointer enters the view.
 
-    The following arguments are passed at evaluation: strong::view, x, y::. See link::#Mouse actions:: for explanation of arguments.
+    The following arguments are passed at evaluation: strong::view, x, y::. See link::#Mouse actions#Mouse actions:: for explanation of arguments.
 
 METHOD:: mouseLeaveAction
 
     The object to be evaluated when the mouse pointer leaves the view.
 
-    The following arguments are passed at evaluation: strong::view, x, y::. See link::#Mouse actions:: for explanation of arguments.
+    The following arguments are passed at evaluation: strong::view, x, y::. See link::#Mouse actions#Mouse actions:: for explanation of arguments.
 
 
 SUBSECTION:: Key actions
@@ -569,7 +569,7 @@ SUBSECTION:: Key actions
 Use the methods below to set or get the view's actions in response to keyboard interaction when the view has the keyboard focus.
 
 note::
-Key actions are subject to emphasis::event propagation::. See link::#Key and mouse event processing:: for details.
+Key actions are subject to emphasis::event propagation::. See link::#Key and mouse event processing#Key and mouse event processing:: for details.
 ::
 
 When the key action object is evaluated, it is passed one or more arguments from the following list (in that order):
@@ -592,9 +592,9 @@ note:: Only characters with an ASCII code are passed. Non-ASCII keys (Ctrl/Alt/C
 METHOD:: keyDownAction
     The object to be evaluated when a key is pressed.
 
-    The following arguments are passed at evaluation: strong::view, char, modifiers, unicode, keycode, key::. See link::#Key actions:: for explanation of arguments.
+    The following arguments are passed at evaluation: strong::view, char, modifiers, unicode, keycode, key::. See link::#Key actions#Key actions:: for explanation of arguments.
 
-    The return value of evaluation controls the event propagation to parent view. See link::#Key and mouse event processing:: for details.
+    The return value of evaluation controls the event propagation to parent view. See link::#Key and mouse event processing#Key and mouse event processing:: for details.
 
     If no code::keyDownAction:: is set, link::#-defaultKeyDownAction:: is called instead, and its return value controls the event propagation.
 
@@ -610,9 +610,9 @@ Document("test arguments").keyDownAction = { |doc, char, mod, unicode, keycode, 
 METHOD:: keyUpAction
     The object to be evaluated when a key is released.
 
-    The following arguments are passed at evaluation: strong::view, char, modifiers, unicode, keycode, key::. See link::#Key actions:: for explanation of arguments.
+    The following arguments are passed at evaluation: strong::view, char, modifiers, unicode, keycode, key::. See link::#Key actions#Key actions:: for explanation of arguments.
 
-    The return value of evaluation controls the event propagation to parent view. See link::#Key and mouse event processing:: for details.
+    The return value of evaluation controls the event propagation to parent view. See link::#Key and mouse event processing#Key and mouse event processing:: for details.
 
     If no code::keyUpAction:: is set, link::#-defaultKeyUpAction:: is called instead, and its return value controls the event propagation.
 
@@ -705,27 +705,27 @@ METHOD:: defaultKeyDownAction
 
 	The method called when a key is pressed and link::#-keyDownAction:: is nil. Subclass it to define your own functionality on key presses.
 
-	See link::#Key actions:: for explanation of arguments.
+	See link::#Key actions#Key actions:: for explanation of arguments.
 
-    The return value controls the event propagation to parent view. See link::#Key and mouse event processing:: for details.
+    The return value controls the event propagation to parent view. See link::#Key and mouse event processing#Key and mouse event processing:: for details.
 
 METHOD:: defaultKeyUpAction
 
 	The method called when a key is released and link::#-keyUpAction:: is nil.  Subclass it to define your own functionality on key-release.
 
-	See link::#Key actions:: for explanation of arguments.
+	See link::#Key actions#Key actions:: for explanation of arguments.
 
-	The return value controls the event propagation to parent view. See link::#Key and mouse event processing:: for details.
+	The return value controls the event propagation to parent view. See link::#Key and mouse event processing#Key and mouse event processing:: for details.
 
 
 METHOD:: keyDown
 	Handles response to a key press event. First evaluates link::#*globalKeyDownAction::.
 
 	note::
-	This method directly triggers the action and returns, forwarding the action's return value. See link::#Key actions:: for detailed explanation.
+	This method directly triggers the action and returns, forwarding the action's return value. See link::#Key actions#Key actions:: for detailed explanation.
 	::
 
-	See link::#Key actions:: for explanation of arguments.
+	See link::#Key actions#Key actions:: for explanation of arguments.
 
 	returns:: A Boolean, stating whether the event was handled or not (and will not or will propagate to the parent view, respectively), or the view, in which case it lets the Qt view implementation handle the event.
 
@@ -734,10 +734,10 @@ METHOD:: keyUp
 	Handles response to a key release event. Sets link::#-keyTyped:: to 'char', evaluates link::#*globalKeyUpAction::, and then calls link::#-handleKeyUpBubbling::.
 
 	note::
-	This method directly triggers the action and returns, forwarding the action's return value. See link::#Key actions:: for detailed explanation.
+	This method directly triggers the action and returns, forwarding the action's return value. See link::#Key actions#Key actions:: for detailed explanation.
 	::
 
-	See link::#Key actions:: for explanation of arguments.
+	See link::#Key actions#Key actions:: for explanation of arguments.
 
 	returns:: A Boolean, stating whether the event was handled or not (and will not or will propagate to the parent view, respectively), or the view, in which case it lets the Qt view implementation handle the event.
 
@@ -748,7 +748,7 @@ METHOD:: keyModifiersChanged
 	Instead of calling link::#-handleKeyModifiersChangedBubbling::, a modifier key press or release event also produces a normal key press or release event, and it is the handling of those events that will determine propagation to the parent.
 	::
 
-	See link::#Key actions:: for explanation of arguments.
+	See link::#Key actions#Key actions:: for explanation of arguments.
 
 METHOD:: keyTyped
 
@@ -759,24 +759,24 @@ METHOD:: keyTyped
 METHOD:: mouseDown
 	Handles response to a mouse button press event. Evaluates link::#-mouseDownAction::.
 
-	See link::#Mouse actions:: for explanation of arguments.
+	See link::#Mouse actions#Mouse actions:: for explanation of arguments.
 
 METHOD:: mouseUp
 	Handles response to a mouse button release event. Evaluates link::#-mouseDownAction::.
 
-	See link::#Mouse actions:: for explanation of arguments.
+	See link::#Mouse actions#Mouse actions:: for explanation of arguments.
 
 METHOD:: mouseMove
 	Handles response to mouse pointer moving after a mouse button has been pressed on the view. Evaluates link::#-mouseMoveAction::.
 
-	See link::#Mouse actions:: for explanation of arguments.
+	See link::#Mouse actions#Mouse actions:: for explanation of arguments.
 
 METHOD:: mouseOver
 	Handles response to mouse pointer moving over the view with no mouse buttons pressed. Evaluates link::#-mouseOverAction::.
 
 	This method is called only if link::Classes/Window#-acceptsMouseOver:: of the containing Window (or, link::#-acceptsMouseOver:: of the top View) is code::true::.
 
-	See link::#Mouse actions:: for explanation of arguments.
+	See link::#Mouse actions#Mouse actions:: for explanation of arguments.
 
 METHOD:: mouseEnter
 
