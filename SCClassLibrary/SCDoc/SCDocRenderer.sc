@@ -86,7 +86,7 @@ SCDocHTMLRenderer {
 			if(linkText.isEmpty) {linkText = link};
 
 			// Set the link target to be the link base plus its anchor, if there was one
-			linkTarget = if(spaceEscapedAnchor.isEmpty.not) {linkBase ++ "#" ++ spaceEscapedAnchor} {linkBase};
+			linkTarget = if(spaceEscapedAnchor.isEmpty) {linkBase} {linkBase ++ "#" ++ spaceEscapedAnchor};
 		} {
 		    // Process a link that goes to a URL within the help system
 
@@ -141,7 +141,7 @@ SCDocHTMLRenderer {
 						linkText = linkText ++ ": " ++ linkAnchor;
 					}
 				} {
-					linkText = if(linkAnchor.isEmpty.not) {linkAnchor} {"(empty link)"};
+					linkText = if(linkAnchor.isEmpty) {"(empty link)"} {linkAnchor};
 				};
 			};
 		};
