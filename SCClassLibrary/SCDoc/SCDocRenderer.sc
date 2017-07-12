@@ -109,7 +109,7 @@ SCDocHTMLRenderer {
 					if(File.exists(SCDoc.helpTargetDir +/+ linkBase ++ ".html")) {
 						linkTarget = linkTarget ++ ".html";
 					} {
-					    // If the link target doesn't exist as an HTML file, check to see if the
+						// If the link target doesn't exist as an HTML file, check to see if the
 						// raw filepath exists. If it does, do nothing with it -- we're done. If
 						// it doesn't, then consider this a broken link.
 						if(File.exists(SCDoc.helpTargetDir +/+ linkBase).not) {
