@@ -65,9 +65,6 @@ SCDocHTMLRenderer {
 		^if("^[a-zA-Z]+://.+".matchRegexp(link) or: (link.first == $/)) {
 			if(linkText.size < 1) {linkText = link};
 			linkTarget = if(linkAnchor.size > 0) {linkBase ++ "#" ++ linkAnchor} {linkBase};
-			if(escape) { linkText = this.escapeSpecialChars(linkText) };
-
-			"<a href=\"" ++ linkTarget ++ "\">" ++ linkText ++ "</a>";
 		} {
 			if(linkBase.size>0) {
 				linkTarget = baseDir +/+ linkBase;
@@ -104,9 +101,10 @@ SCDocHTMLRenderer {
 					linkText = if(linkAnchor.size > 0) {linkAnchor} {"(empty link)"};
 				};
 			};
-			if(escape) { linkText = this.escapeSpecialChars(linkText) };
-			"<a href=\"" ++ linkTarget ++ "\">" ++ linkText ++ "</a>";
 		};
+
+		if(escape) { linkText = this.escapeSpecialChars(linkText) };
+		^"<a href=\"" ++ linkTarget ++ "\">" ++ linkText ++ "</a>";
 	}
 
 	*makeArgString {|m, par=true|
