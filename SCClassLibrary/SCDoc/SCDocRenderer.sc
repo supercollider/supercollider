@@ -64,7 +64,7 @@ SCDocHTMLRenderer {
 	//   "#Key actions"
 	//   "http://qt-project.org/doc/qt-4.8/qt.html#Key-enum"
 	*htmlForLink { |link, escape = true|
-		var linkBase, linkAnchor, linkText, linkTarget;
+		var linkBase, spaceEscapedAnchor, linkAnchor, linkText, linkTarget;
 		// FIXME: how slow is this? can we optimize
 
 		// Get the link base, anchor, and text from the original string
@@ -74,9 +74,7 @@ SCDocHTMLRenderer {
 		linkAnchor = linkAnchor ? "";
 		linkText = linkText ? "";
 
-		if(linkAnchor.empty.not) {
-			linkAnchor = this.escapeSpacesInAnchor(linkAnchor);
-		};
+		spaceEscapedAnchor = this.escapeSpacesInAnchor(linkAnchor);
 
 		// Check whether the link is a URL or a relative path (starts with a `/`),
 		// NOTE: the second condition is not triggered by anything in the core library's
@@ -88,7 +86,7 @@ SCDocHTMLRenderer {
 			if(linkText.isEmpty) {linkText = link};
 
 			// Set the link target to be the link base plus its anchor, if there was one
-			linkTarget = if(linkAnchor.isEmpty.not) {linkBase ++ "#" ++ linkAnchor} {linkBase};
+			linkTarget = if(spaceEscapedAnchor.isEmpty.not) {linkBase ++ "#" ++ spaceEscapedAnchor} {linkBase};
 		} {
 		    // Process a link that goes to a URL within the help system
 
@@ -130,10 +128,9 @@ SCDocHTMLRenderer {
 			};
 
 			// If there was an anchor, add it to the link target
-			if(linkAnchor.isEmpty.not) { linkTarget = linkTarget ++ "#" ++ linkAnchor };
+			if(spaceEscapedAnchor.isEmpty.not) { linkTarget = linkTarget ++ "#" ++ spaceEscapedAnchor };
 
-			// If there was no label, generate one from the base and/or anchor.
-			// FIXME: the anchor's spaces have already been escaped here, which causes issue #2337.
+			// If there was no label, generate one from the base and/or unescaped anchor.
 			if(linkText.isEmpty) {
 
 				// If the base was non-empty, generate it by combining the filename and the anchor.
