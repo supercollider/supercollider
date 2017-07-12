@@ -58,25 +58,25 @@ SCDocHTMLRenderer {
 		if(linkAnchor.size > 0) {
 			linkAnchor = this.escapeSpacesInAnchor(linkAnchor);
 		};
-		^if ("^[a-zA-Z]+://.+".matchRegexp(link) or: (link.first==$/)) {
-			if(linkText.size<1) {linkText=link};
-			c = if(linkAnchor.size>0) {n++"#"++linkAnchor} {n};
+		^if("^[a-zA-Z]+://.+".matchRegexp(link) or: (link.first == $/)) {
+			if(linkText.size < 1) {linkText = link};
+			c = if(linkAnchor.size > 0) {n ++ "#" ++ linkAnchor} {n};
 			if(escape) { linkText = this.escapeSpecialChars(linkText) };
-			"<a href=\""++c++"\">"++linkText++"</a>";
+			"<a href=\"" ++ c ++ "\">" ++ linkText ++ "</a>";
 		} {
 			if(n.size>0) {
-				c = baseDir+/+n;
+				c = baseDir +/+ n;
 				doc = SCDoc.documents[n];
 				// link to other doc (might not be rendered yet)
 				if(doc.notNil) {
 					c = c ++ ".html";
 				} {
 					// link to ready-made html (Search, Browse, etc)
-					if(File.exists(SCDoc.helpTargetDir+/+n++".html")) {
+					if(File.exists(SCDoc.helpTargetDir +/+ n ++ ".html")) {
 						c = c ++ ".html";
 					} {
 						// link to other file?
-						if(File.exists(SCDoc.helpTargetDir+/+n).not) {
+						if(File.exists(SCDoc.helpTargetDir +/+ n).not) {
 							"SCDoc: In %\n"
 							"  Broken link: '%'"
 							.format(currDoc.fullPath, link).warn;
@@ -86,19 +86,19 @@ SCDocHTMLRenderer {
 			} {
 				c = ""; // link inside same document
 			};
-			if(linkAnchor.size>0) { c = c ++ "#" ++ linkAnchor }; // add #anchor
-			if(linkText.size<1) { // no label
-				if(n.size>0) {
+			if(linkAnchor.size > 0) { c = c ++ "#" ++ linkAnchor }; // add #anchor
+			if(linkText.size < 1) { // no label
+				if(n.size > 0) {
 					linkText = if(doc.notNil) {doc.title} {n.basename};
-					if(linkAnchor.size>0) {
-						linkText = linkText++": "++linkAnchor;
+					if(linkAnchor.size > 0) {
+						linkText = linkText ++ ": " ++ linkAnchor;
 					}
 				} {
-					linkText = if(linkAnchor.size>0) {linkAnchor} {"(empty link)"};
+					linkText = if(linkAnchor.size > 0) {linkAnchor} {"(empty link)"};
 				};
 			};
 			if(escape) { linkText = this.escapeSpecialChars(linkText) };
-			"<a href=\""++c++"\">"++linkText++"</a>";
+			"<a href=\"" ++ c ++ "\">" ++ linkText ++ "</a>";
 		};
 	}
 
