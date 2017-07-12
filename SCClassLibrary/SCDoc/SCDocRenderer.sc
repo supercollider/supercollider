@@ -52,15 +52,15 @@ SCDocHTMLRenderer {
 	}
 
 	*htmlForLink {|link,escape=true|
-		var n, m, f, c, doc;
+		var n, linkAnchor, f, c, doc;
 		// FIXME: how slow is this? can we optimize
-		#n, m, f = link.split($#); // link, anchor, label
-		if(m.size > 0) {
-			m = this.escapeSpacesInAnchor(m);
+		#n, linkAnchor, f = link.split($#); // link, anchor, label
+		if(linkAnchor.size > 0) {
+			linkAnchor = this.escapeSpacesInAnchor(linkAnchor);
 		};
 		^if ("^[a-zA-Z]+://.+".matchRegexp(link) or: (link.first==$/)) {
 			if(f.size<1) {f=link};
-			c = if(m.size>0) {n++"#"++m} {n};
+			c = if(linkAnchor.size>0) {n++"#"++linkAnchor} {n};
 			if(escape) { f = this.escapeSpecialChars(f) };
 			"<a href=\""++c++"\">"++f++"</a>";
 		} {
@@ -86,15 +86,15 @@ SCDocHTMLRenderer {
 			} {
 				c = ""; // link inside same document
 			};
-			if(m.size>0) { c = c ++ "#" ++ m }; // add #anchor
+			if(linkAnchor.size>0) { c = c ++ "#" ++ linkAnchor }; // add #anchor
 			if(f.size<1) { // no label
 				if(n.size>0) {
 					f = if(doc.notNil) {doc.title} {n.basename};
-					if(m.size>0) {
-						f = f++": "++m;
+					if(linkAnchor.size>0) {
+						f = f++": "++linkAnchor;
 					}
 				} {
-					f = if(m.size>0) {m} {"(empty link)"};
+					f = if(linkAnchor.size>0) {linkAnchor} {"(empty link)"};
 				};
 			};
 			if(escape) { f = this.escapeSpecialChars(f) };
