@@ -51,6 +51,9 @@ SCDocHTMLRenderer {
 		^str.replace(" ", "%20")
 	}
 
+	// argument link: the raw link text from the schelp document
+	// argument escape: whether or not to escape special characters in the link text itself
+	// returns: the <a> tag HTML representation of the original `link`
 	*htmlForLink { |link, escape = true|
 		var n, linkAnchor, linkText, c, doc;
 		// FIXME: how slow is this? can we optimize
