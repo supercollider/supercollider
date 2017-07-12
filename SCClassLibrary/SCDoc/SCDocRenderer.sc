@@ -55,34 +55,34 @@ SCDocHTMLRenderer {
 	// argument escape: whether or not to escape special characters in the link text itself
 	// returns: the <a> tag HTML representation of the original `link`
 	*htmlForLink { |link, escape = true|
-		var n, linkAnchor, linkText, c, doc;
+		var linkBase, linkAnchor, linkText, c, doc;
 		// FIXME: how slow is this? can we optimize
-		#n, linkAnchor, linkText = link.split($#); // link, anchor, label
+		#linkBase, linkAnchor, linkText = link.split($#); // link, anchor, label
 		if(linkAnchor.size > 0) {
 			linkAnchor = this.escapeSpacesInAnchor(linkAnchor);
 		};
 
 		^if("^[a-zA-Z]+://.+".matchRegexp(link) or: (link.first == $/)) {
 			if(linkText.size < 1) {linkText = link};
-			c = if(linkAnchor.size > 0) {n ++ "#" ++ linkAnchor} {n};
+			c = if(linkAnchor.size > 0) {linkBase ++ "#" ++ linkAnchor} {linkBase};
 			if(escape) { linkText = this.escapeSpecialChars(linkText) };
 
 			"<a href=\"" ++ c ++ "\">" ++ linkText ++ "</a>";
 		} {
-			if(n.size>0) {
-				c = baseDir +/+ n;
-				doc = SCDoc.documents[n];
+			if(linkBase.size>0) {
+				c = baseDir +/+ linkBase;
+				doc = SCDoc.documents[linkBase];
 
 				// link to other doc (might not be rendered yet)
 				if(doc.notNil) {
 					c = c ++ ".html";
 				} {
 					// link to ready-made html (Search, Browse, etc)
-					if(File.exists(SCDoc.helpTargetDir +/+ n ++ ".html")) {
+					if(File.exists(SCDoc.helpTargetDir +/+ linkBase ++ ".html")) {
 						c = c ++ ".html";
 					} {
 						// link to other file?
-						if(File.exists(SCDoc.helpTargetDir +/+ n).not) {
+						if(File.exists(SCDoc.helpTargetDir +/+ linkBase).not) {
 							"SCDoc: In %\n"
 							"  Broken link: '%'"
 							.format(currDoc.fullPath, link).warn;
@@ -95,8 +95,8 @@ SCDocHTMLRenderer {
 
 			if(linkAnchor.size > 0) { c = c ++ "#" ++ linkAnchor }; // add #anchor
 			if(linkText.size < 1) { // no label
-				if(n.size > 0) {
-					linkText = if(doc.notNil) {doc.title} {n.basename};
+				if(linkBase.size > 0) {
+					linkText = if(doc.notNil) {doc.title} {linkBase.basename};
 					if(linkAnchor.size > 0) {
 						linkText = linkText ++ ": " ++ linkAnchor;
 					}
