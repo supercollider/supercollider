@@ -128,7 +128,7 @@ SCDocHTMLRenderer {
 			// If there was an anchor, add it to the link target
 			if(linkAnchor.size > 0) { linkTarget = linkTarget ++ "#" ++ linkAnchor };
 
-			// If there was no label, generate one from the anchor.
+			// If there was no label, generate one from the base and/or anchor.
 			// FIXME: the anchor's spaces have already been escaped here, which causes issue #2337.
 			if(linkText.size < 1) {
 
