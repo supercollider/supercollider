@@ -52,17 +52,17 @@ SCDocHTMLRenderer {
 	}
 
 	*htmlForLink {|link,escape=true|
-		var n, linkAnchor, f, c, doc;
+		var n, linkAnchor, linkText, c, doc;
 		// FIXME: how slow is this? can we optimize
-		#n, linkAnchor, f = link.split($#); // link, anchor, label
+		#n, linkAnchor, linkText = link.split($#); // link, anchor, label
 		if(linkAnchor.size > 0) {
 			linkAnchor = this.escapeSpacesInAnchor(linkAnchor);
 		};
 		^if ("^[a-zA-Z]+://.+".matchRegexp(link) or: (link.first==$/)) {
-			if(f.size<1) {f=link};
+			if(linkText.size<1) {linkText=link};
 			c = if(linkAnchor.size>0) {n++"#"++linkAnchor} {n};
-			if(escape) { f = this.escapeSpecialChars(f) };
-			"<a href=\""++c++"\">"++f++"</a>";
+			if(escape) { linkText = this.escapeSpecialChars(linkText) };
+			"<a href=\""++c++"\">"++linkText++"</a>";
 		} {
 			if(n.size>0) {
 				c = baseDir+/+n;
@@ -87,18 +87,18 @@ SCDocHTMLRenderer {
 				c = ""; // link inside same document
 			};
 			if(linkAnchor.size>0) { c = c ++ "#" ++ linkAnchor }; // add #anchor
-			if(f.size<1) { // no label
+			if(linkText.size<1) { // no label
 				if(n.size>0) {
-					f = if(doc.notNil) {doc.title} {n.basename};
+					linkText = if(doc.notNil) {doc.title} {n.basename};
 					if(linkAnchor.size>0) {
-						f = f++": "++linkAnchor;
+						linkText = linkText++": "++linkAnchor;
 					}
 				} {
-					f = if(linkAnchor.size>0) {linkAnchor} {"(empty link)"};
+					linkText = if(linkAnchor.size>0) {linkAnchor} {"(empty link)"};
 				};
 			};
-			if(escape) { f = this.escapeSpecialChars(f) };
-			"<a href=\""++c++"\">"++f++"</a>";
+			if(escape) { linkText = this.escapeSpecialChars(linkText) };
+			"<a href=\""++c++"\">"++linkText++"</a>";
 		};
 	}
 
