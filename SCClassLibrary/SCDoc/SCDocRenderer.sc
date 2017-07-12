@@ -55,7 +55,7 @@ SCDocHTMLRenderer {
 	// argument escape: whether or not to escape special characters in the link text itself
 	// returns: the <a> tag HTML representation of the original `link`
 	*htmlForLink { |link, escape = true|
-		var linkBase, linkAnchor, linkText, c, doc;
+		var linkBase, linkAnchor, linkText, linkDestination, doc;
 		// FIXME: how slow is this? can we optimize
 		#linkBase, linkAnchor, linkText = link.split($#); // link, anchor, label
 		if(linkAnchor.size > 0) {
@@ -64,22 +64,22 @@ SCDocHTMLRenderer {
 
 		^if("^[a-zA-Z]+://.+".matchRegexp(link) or: (link.first == $/)) {
 			if(linkText.size < 1) {linkText = link};
-			c = if(linkAnchor.size > 0) {linkBase ++ "#" ++ linkAnchor} {linkBase};
+			linkDestination = if(linkAnchor.size > 0) {linkBase ++ "#" ++ linkAnchor} {linkBase};
 			if(escape) { linkText = this.escapeSpecialChars(linkText) };
 
-			"<a href=\"" ++ c ++ "\">" ++ linkText ++ "</a>";
+			"<a href=\"" ++ linkDestination ++ "\">" ++ linkText ++ "</a>";
 		} {
 			if(linkBase.size>0) {
-				c = baseDir +/+ linkBase;
+				linkDestination = baseDir +/+ linkBase;
 				doc = SCDoc.documents[linkBase];
 
 				// link to other doc (might not be rendered yet)
 				if(doc.notNil) {
-					c = c ++ ".html";
+					linkDestination = linkDestination ++ ".html";
 				} {
 					// link to ready-made html (Search, Browse, etc)
 					if(File.exists(SCDoc.helpTargetDir +/+ linkBase ++ ".html")) {
-						c = c ++ ".html";
+						linkDestination = linkDestination ++ ".html";
 					} {
 						// link to other file?
 						if(File.exists(SCDoc.helpTargetDir +/+ linkBase).not) {
@@ -90,10 +90,10 @@ SCDocHTMLRenderer {
 					};
 				};
 			} {
-				c = ""; // link inside same document
+				linkDestination = ""; // link inside same document
 			};
 
-			if(linkAnchor.size > 0) { c = c ++ "#" ++ linkAnchor }; // add #anchor
+			if(linkAnchor.size > 0) { linkDestination = linkDestination ++ "#" ++ linkAnchor }; // add #anchor
 			if(linkText.size < 1) { // no label
 				if(linkBase.size > 0) {
 					linkText = if(doc.notNil) {doc.title} {linkBase.basename};
@@ -105,7 +105,7 @@ SCDocHTMLRenderer {
 				};
 			};
 			if(escape) { linkText = this.escapeSpecialChars(linkText) };
-			"<a href=\"" ++ c ++ "\">" ++ linkText ++ "</a>";
+			"<a href=\"" ++ linkDestination ++ "\">" ++ linkText ++ "</a>";
 		};
 	}
 
