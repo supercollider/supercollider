@@ -54,31 +54,59 @@ SCDocHTMLRenderer {
 	// argument link: the raw link text from the schelp document
 	// argument escape: whether or not to escape special characters in the link text itself
 	// returns: the <a> tag HTML representation of the original `link`
+	// Possible, non-exhaustive input types for `link`:
+	//   "#-decorator#decorator"
+	//   "#-addAction"
+	//   "Classes/View#-front#shown"
+	//   "Guides/GUI-Introduction#view"
+	//   "Classes/FlowLayout"
+	//   "#*currentDrag#drag&drop data"
+	//   "#Key actions"
+	//   "http://qt-project.org/doc/qt-4.8/qt.html#Key-enum"
 	*htmlForLink { |link, escape = true|
 		var linkBase, linkAnchor, linkText, linkTarget, doc;
 		// FIXME: how slow is this? can we optimize
 		#linkBase, linkAnchor, linkText = link.split($#); // link, anchor, label
+
 		if(linkAnchor.size > 0) {
 			linkAnchor = this.escapeSpacesInAnchor(linkAnchor);
 		};
 
-		^if("^[a-zA-Z]+://.+".matchRegexp(link) or: (link.first == $/)) {
+		// Check whether the link is a URL or a relative path (starts with a `/`),
+		// NOTE: the second condition is not triggered by anything in the core library's
+		// help system. I am not sure if it is safe to remove. - Brian H
+		if("^[a-zA-Z]+://.+".matchRegexp(link) or: (link.first == $/)) {
+			// Process a link that goes to a URL outside the help system
+
+			// If there was no link text, set it to be the same as the original link
 			if(linkText.size < 1) {linkText = link};
+
+			// Set the link target to be the link base plus its anchor, if there was one
 			linkTarget = if(linkAnchor.size > 0) {linkBase ++ "#" ++ linkAnchor} {linkBase};
 		} {
+		    // Process a link that goes to a URL within the help system
+
+			// If the link base is non-empty, it is a link to something in another document
 			if(linkBase.size>0) {
+
+			    // Compose the target as being relative to the help system base directory
 				linkTarget = baseDir +/+ linkBase;
+
+				// Find the document referred to by this link
 				doc = SCDoc.documents[linkBase];
 
-				// link to other doc (might not be rendered yet)
+				// If this is an existing document, just add .html to get the target
 				if(doc.notNil) {
 					linkTarget = linkTarget ++ ".html";
 				} {
-					// link to ready-made html (Search, Browse, etc)
+				    // If the document doesn't exist according to SCDoc, check the filesystem
+					// to see if the link target is present
 					if(File.exists(SCDoc.helpTargetDir +/+ linkBase ++ ".html")) {
 						linkTarget = linkTarget ++ ".html";
 					} {
-						// link to other file?
+					    // If the link target doesn't exist as an HTML file, check to see if the
+						// raw filepath exists. If it does, do nothing with it -- we're done. If
+						// it doesn't, then consider this a broken link.
 						if(File.exists(SCDoc.helpTargetDir +/+ linkBase).not) {
 							"SCDoc: In %\n"
 							"  Broken link: '%'"
@@ -87,11 +115,20 @@ SCDocHTMLRenderer {
 					};
 				};
 			} {
-				linkTarget = ""; // link inside same document
+			    // If the link base was empty, we're linking within the same document, so set
+				// the target to be empty. We add the anchor below.
+				linkTarget = "";
 			};
 
-			if(linkAnchor.size > 0) { linkTarget = linkTarget ++ "#" ++ linkAnchor }; // add #anchor
-			if(linkText.size < 1) { // no label
+			// If there was an anchor, add it to the link target
+			if(linkAnchor.size > 0) { linkTarget = linkTarget ++ "#" ++ linkAnchor };
+
+			// If there was no label, generate one from the anchor.
+			// FIXME: the anchor's spaces have already been escaped here, which causes issue #2337.
+			if(linkText.size < 1) {
+
+				// If the base was non-empty, generate it by combining the filename and the anchor.
+				// Otherwise, if there was an anchor, use that. Otherwise, use "(empty link)"
 				if(linkBase.size > 0) {
 					linkText = if(doc.notNil) {doc.title} {linkBase.basename};
 					if(linkAnchor.size > 0) {
@@ -103,7 +140,10 @@ SCDocHTMLRenderer {
 			};
 		};
 
+		// Escape special characters in the link text if requested
 		if(escape) { linkText = this.escapeSpecialChars(linkText) };
+
+		// Return a well-formatted <a> tag using the target and link text
 		^"<a href=\"" ++ linkTarget ++ "\">" ++ linkText ++ "</a>";
 	}
 
