@@ -61,15 +61,18 @@ SCDocHTMLRenderer {
 		if(linkAnchor.size > 0) {
 			linkAnchor = this.escapeSpacesInAnchor(linkAnchor);
 		};
+
 		^if("^[a-zA-Z]+://.+".matchRegexp(link) or: (link.first == $/)) {
 			if(linkText.size < 1) {linkText = link};
 			c = if(linkAnchor.size > 0) {n ++ "#" ++ linkAnchor} {n};
 			if(escape) { linkText = this.escapeSpecialChars(linkText) };
+
 			"<a href=\"" ++ c ++ "\">" ++ linkText ++ "</a>";
 		} {
 			if(n.size>0) {
 				c = baseDir +/+ n;
 				doc = SCDoc.documents[n];
+
 				// link to other doc (might not be rendered yet)
 				if(doc.notNil) {
 					c = c ++ ".html";
@@ -89,6 +92,7 @@ SCDocHTMLRenderer {
 			} {
 				c = ""; // link inside same document
 			};
+
 			if(linkAnchor.size > 0) { c = c ++ "#" ++ linkAnchor }; // add #anchor
 			if(linkText.size < 1) { // no label
 				if(n.size > 0) {
