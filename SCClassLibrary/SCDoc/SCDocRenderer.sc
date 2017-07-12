@@ -51,7 +51,7 @@ SCDocHTMLRenderer {
 		^str.replace(" ", "%20")
 	}
 
-	*htmlForLink {|link,escape=true|
+	*htmlForLink { |link, escape = true|
 		var n, linkAnchor, linkText, c, doc;
 		// FIXME: how slow is this? can we optimize
 		#n, linkAnchor, linkText = link.split($#); // link, anchor, label
