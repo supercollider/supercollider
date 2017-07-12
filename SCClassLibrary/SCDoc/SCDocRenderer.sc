@@ -64,7 +64,7 @@ SCDocHTMLRenderer {
 	//   "#Key actions"
 	//   "http://qt-project.org/doc/qt-4.8/qt.html#Key-enum"
 	*htmlForLink { |link, escape = true|
-		var linkBase, linkAnchor, linkText, linkTarget, doc;
+		var linkBase, linkAnchor, linkText, linkTarget;
 		// FIXME: how slow is this? can we optimize
 
 		// Get the link base, anchor, and text from the original string
@@ -88,14 +88,17 @@ SCDocHTMLRenderer {
 		} {
 		    // Process a link that goes to a URL within the help system
 
+			// The document referred to by this link
+			var doc = nil;
+
 			// If the link base is non-empty, it is a link to something in another document
 			if(linkBase.size>0) {
 
-				// Find the document referred to by this link
-				doc = SCDoc.documents[linkBase];
-
 				// Compose the target as being relative to the help system base directory
 				linkTarget = baseDir +/+ linkBase;
+
+				// Find the document referred to by this link
+				doc = SCDoc.documents[linkBase];
 
 				// If this is an existing document, just add .html to get the target
 				if(doc.notNil) {
