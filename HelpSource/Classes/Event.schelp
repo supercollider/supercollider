@@ -1,6 +1,6 @@
 CLASS::Event
 summary::an environment that represents an action
-related::Classes/Pattern, Classes/Environment, Classes/Dictionary
+related::Classes/Pattern, Classes/Environment, Classes/IdentityDictionary
 categories::Collections>Unordered, Streams-Patterns-Events>Events
 
 DESCRIPTION::
