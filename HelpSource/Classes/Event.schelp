@@ -6,6 +6,19 @@ categories::Collections>Unordered, Streams-Patterns-Events>Events
 DESCRIPTION::
 An Event specifies an action to be taken in response to a link::#-play:: message. Its key/value pairs specify the parameters of that action. Event inherits most of its methods from its superclasses, especially from link::Classes/Dictionary::. For the usage and meaning of the code::parent:: and code::proto:: events, see link::Classes/IdentityDictionary::.
 
+code::
+a = (x: 6, y: 7, play: { (~x * ~y).postln });
+a.play; // returns 6 * 7
+::
+
+The class Event provides a large library of default event instances and play functions, e.g. for pitch. By default, the play function, when an event is played, its link::#*addEventType#type:: is used to select a function and a parent event (by default, this is type code::\note::).
+
+code::
+(freq: 761).play // play a default synth sound with 761 Hz
+::
+
+
+
 CLASSMETHODS::
 
 private::initClass
@@ -13,9 +26,10 @@ private::initClass
 subsection::Class variables
 
 method::parentEvents
-An IdentityDictionary of useful parent events.
+An extendible IdentityDictionary of useful parent events.
+
 method::partialEvents
-An IdentityDictionary of Events that define the default values and functions for different aspects of note generation (timing, volume, pitch, server to use, etc).
+An extendible IdentityDictionary of Events that define the default values and functions for different aspects of note generation (timing, volume, pitch, server to use, etc).
 
 subsection::Creation methods
 
@@ -39,7 +53,7 @@ Returns an event that describes a pause of strong::dur:: duration.
 
 
 method::addEventType
-Event types define alternate play functions and parent events that are selected by the value of strong::~type::. Practically, this allows to augment the default parent event with key value pairs for this type only.
+Event types define alternate play functions and parent events that are selected by the value of strong::~type::.
 
 
 argument::type
