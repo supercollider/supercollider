@@ -432,7 +432,7 @@ Event : Environment {
 					server = ~server ? Server.default;
 
 					tempo = ~tempo;
-					tempo !? { thisThread.clock.tempo = tempo }
+					tempo !? { thisThread.clock.tempo = tempo };
 
 
 					if(currentEnvironment.isRest.not) {
