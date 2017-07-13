@@ -141,10 +141,10 @@ SCDocHTMLRenderer {
 			// Process a link that goes to a URL outside the help system
 
 			// If there was no link text, set it to be the same as the original link
-			if(linkText.isEmpty) {linkText = link};
+			if(linkText.isEmpty) { linkText = link };
 
 			// Set the link target to be the link base plus its anchor, if there was one
-			linkTarget = if(spaceEscapedAnchor.isEmpty) {linkBase} {linkBase ++ "#" ++ spaceEscapedAnchor};
+			linkTarget = if(spaceEscapedAnchor.isEmpty) { linkBase } { linkBase ++ "#" ++ spaceEscapedAnchor };
 		} {
 		    // Process a link that goes to a URL within the help system
 
