@@ -51,7 +51,8 @@ SCDocHTMLRenderer {
 		^str.replace(" ", "%20")
 	}
 
-	*linkTargetForLink { |linkBase, originalLink|
+	// Find the target (what goes after href=) for the given link.
+	*prLinkTargetForLink { |linkBase, originalLink|
 		if(linkBase.isEmpty) {
 			^""
 		} {
@@ -82,7 +83,8 @@ SCDocHTMLRenderer {
 		}
 	}
 
-	*linkTextForLink { |linkBase, linkAnchor|
+	// Find the text label for the given link.
+	*prLinkTextForLink { |linkBase, linkAnchor|
 		// If the base was non-empty, generate it by combining the filename and the anchor.
 		// Otherwise, if there was an anchor, use that. Otherwise, use "(empty link)"
 		var result;
@@ -142,13 +144,12 @@ SCDocHTMLRenderer {
 		} {
 		    // Process a link that goes to a URL within the help system
 
-			linkTarget = linkTargetForLink(linkBase, link);
+			linkTarget = this.prLinkTargetForLink(linkBase, link);
 
-			// If there was an anchor, add it to the link target
 			if(spaceEscapedAnchor.isEmpty.not) { linkTarget = linkTarget ++ "#" ++ spaceEscapedAnchor };
 
 			if(linkText.isEmpty) {
-				linkText = linkTextForLink(linkBase, linkAnchor);
+				linkText = this.prLinkTextForLink(linkBase, linkAnchor);
 			}
 		};
 
