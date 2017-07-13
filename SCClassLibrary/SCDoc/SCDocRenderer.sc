@@ -84,10 +84,14 @@ SCDocHTMLRenderer {
 	}
 
 	// Find the text label for the given link.
-	*prLinkTextForLink { |linkBase, linkAnchor|
+	*prLinkTextForLink { |linkBase, linkAnchor, linkText|
+		// Immediately return link text if available
+		if(linkText.isEmpty.not) {
+			^linkText
+		};
+
 		// If the base was non-empty, generate it by combining the filename and the anchor.
 		// Otherwise, if there was an anchor, use that. Otherwise, use "(empty link)"
-		var result;
 		if(linkBase.isEmpty) {
 			if(linkAnchor.isEmpty) {
 				^"(empty link)"
@@ -148,9 +152,7 @@ SCDocHTMLRenderer {
 
 			if(spaceEscapedAnchor.isEmpty.not) { linkTarget = linkTarget ++ "#" ++ spaceEscapedAnchor };
 
-			if(linkText.isEmpty) {
-				linkText = this.prLinkTextForLink(linkBase, linkAnchor);
-			}
+			linkText = this.prLinkTextForLink(linkBase, linkAnchor, linkText);
 		};
 
 		// Escape special characters in the link text if requested
