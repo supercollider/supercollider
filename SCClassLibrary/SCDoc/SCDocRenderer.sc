@@ -63,12 +63,12 @@ SCDocHTMLRenderer {
 
 			// If this is an existing document, just add .html to get the target
 			if(doc.notNil) {
-				^result ++ ".html"
+				result = result ++ ".html"
 			} {
 				// If the document doesn't exist according to SCDoc, check the filesystem
 				// to see if the link target is present
 				if(File.exists(SCDoc.helpTargetDir +/+ linkBase ++ ".html")) {
-					^result ++ ".html"
+					result = result ++ ".html"
 				} {
 					// If the link target doesn't exist as an HTML file, check to see if the
 					// raw filepath exists. If it does, do nothing with it -- we're done. If
