@@ -51,35 +51,41 @@ SCDocHTMLRenderer {
 		^str.replace(" ", "%20")
 	}
 
-	// Find the target (what goes after href=) for the given link.
+	// Find the target (what goes after href=) for a link that stays inside the hlp system
 	*prLinkTargetForLink { |linkBase, originalLink|
+		var result;
+
 		if(linkBase.isEmpty) {
-			^""
+			result = "";
 		} {
 			var doc = SCDoc.documents[linkBase];
-			var result = baseDir +/+ linkBase;
+			result = baseDir +/+ linkBase;
 
 			// If this is an existing document, just add .html to get the target
 			if(doc.notNil) {
 				^result ++ ".html"
+			} {
+				// If the document doesn't exist according to SCDoc, check the filesystem
+				// to see if the link target is present
+				if(File.exists(SCDoc.helpTargetDir +/+ linkBase ++ ".html")) {
+					^result ++ ".html"
+				} {
+					// If the link target doesn't exist as an HTML file, check to see if the
+					// raw filepath exists. If it does, do nothing with it -- we're done. If
+					// it doesn't, then consider this a broken link.
+					if(File.exists(SCDoc.helpTargetDir +/+ linkBase).not) {
+						"SCDoc: In %\n"
+						"  Broken link: '%'"
+						.format(currDoc.fullPath, originalLink).warn;
+					};
+				};
 			};
+		};
 
-			// If the document doesn't exist according to SCDoc, check the filesystem
-			// to see if the link target is present
-			if(File.exists(SCDoc.helpTargetDir +/+ linkBase ++ ".html")) {
-				^result ++ ".html"
-			};
-
-			// If the link target doesn't exist as an HTML file, check to see if the
-			// raw filepath exists. If it does, do nothing with it -- we're done. If
-			// it doesn't, then consider this a broken link.
-			if(File.exists(SCDoc.helpTargetDir +/+ linkBase).not) {
-				"SCDoc: In %\n"
-				"  Broken link: '%'"
-				.format(currDoc.fullPath, originalLink).warn;
-			};
-
-			^result
+		if(linkAnchor.isEmpty) {
+			^linkBase
+		} {
+			^linkBase ++ "#" ++ this.escapeSpacesInAnchor(linkAnchor);
 		}
 	}
 
@@ -92,8 +98,8 @@ SCDocHTMLRenderer {
 		}
 	}
 
-	// Find the text label for the given link.
-	*prLinkTextForLink { |linkBase, linkAnchor, linkText|
+	// Find the text label for the given link, which points inside the help system.
+	*prLinkTextForInternalLink { |linkBase, linkAnchor, linkText|
 		// Immediately return link text if available
 		if(linkText.isEmpty.not) {
 			^linkText
@@ -131,7 +137,7 @@ SCDocHTMLRenderer {
 	//   "#Key actions"
 	//   "http://qt-project.org/doc/qt-4.8/qt.html#Key-enum"
 	*htmlForLink { |link, escape = true|
-		var linkBase, spaceEscapedAnchor, linkAnchor, linkText, linkTarget;
+		var linkBase, linkAnchor, linkText, linkTarget;
 		// FIXME: how slow is this? can we optimize
 
 		// Get the link base, anchor, and text from the original string
@@ -141,8 +147,6 @@ SCDocHTMLRenderer {
 		linkAnchor = linkAnchor ? "";
 		linkText = linkText ? "";
 
-		spaceEscapedAnchor = this.escapeSpacesInAnchor(linkAnchor);
-
 		// Check whether the link is a URL or a relative path (starts with a `/`),
 		// NOTE: the second condition is not triggered by anything in the core library's
 		// help system. I am not sure if it is safe to remove. - Brian H
@@ -150,17 +154,12 @@ SCDocHTMLRenderer {
 			// Process a link that goes to a URL outside the help system
 
 			// If there was no link text, set it to be the same as the original link
-			if(linkText.isEmpty) { linkText = link };
-
+			linkText = if(linkText.isEmpty) { link } { linkText };
 			linkTarget = this.prLinkTargetForExternalLink(linkBase, linkAnchor);
 		} {
 		    // Process a link that goes to a URL within the help system
-
-			linkTarget = this.prLinkTargetForLink(linkBase, link);
-
-			if(spaceEscapedAnchor.isEmpty.not) { linkTarget = linkTarget ++ "#" ++ spaceEscapedAnchor };
-
-			linkText = this.prLinkTextForLink(linkBase, linkAnchor, linkText);
+			linkText = this.prLinkTextForInternalLink(linkBase, linkAnchor, linkText);
+			linkTarget = this.prLinkTargetForInternalLink(linkBase, linkAnchor, link);
 		};
 
 		// Escape special characters in the link text if requested
