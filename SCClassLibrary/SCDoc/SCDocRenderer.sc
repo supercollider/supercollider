@@ -52,7 +52,7 @@ SCDocHTMLRenderer {
 	}
 
 	// Find the target (what goes after href=) for a link that stays inside the hlp system
-	*prLinkTargetForLink { |linkBase, originalLink|
+	*prLinkTargetForInternalLink { |linkBase, linkAnchor, originalLink|
 		var result;
 
 		if(linkBase.isEmpty) {
