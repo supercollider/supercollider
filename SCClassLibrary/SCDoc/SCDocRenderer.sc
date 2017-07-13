@@ -83,6 +83,15 @@ SCDocHTMLRenderer {
 		}
 	}
 
+	// Creates a link target for a link that points outside of the help system
+	*prLinkTargetForExternalLink { |linkBase, linkAnchor|
+		if(linkAnchor.isEmpty) {
+			^linkBase
+		} {
+			^linkBase ++ "#" ++ this.escapeSpacesInAnchor(linkAnchor);
+		}
+	}
+
 	// Find the text label for the given link.
 	*prLinkTextForLink { |linkBase, linkAnchor, linkText|
 		// Immediately return link text if available
@@ -143,8 +152,7 @@ SCDocHTMLRenderer {
 			// If there was no link text, set it to be the same as the original link
 			if(linkText.isEmpty) { linkText = link };
 
-			// Set the link target to be the link base plus its anchor, if there was one
-			linkTarget = if(spaceEscapedAnchor.isEmpty) { linkBase } { linkBase ++ "#" ++ spaceEscapedAnchor };
+			linkTarget = this.prLinkTargetForExternalLink(linkBase, linkAnchor);
 		} {
 		    // Process a link that goes to a URL within the help system
 
