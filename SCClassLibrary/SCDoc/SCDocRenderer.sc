@@ -51,6 +51,58 @@ SCDocHTMLRenderer {
 		^str.replace(" ", "%20")
 	}
 
+	*linkTargetForLink { |linkBase, originalLink|
+		if(linkBase.isEmpty) {
+			^""
+		} {
+			var doc = SCDoc.documents[linkBase];
+			var result = baseDir +/+ linkBase;
+
+			// If this is an existing document, just add .html to get the target
+			if(doc.notNil) {
+				^result ++ ".html"
+			};
+
+			// If the document doesn't exist according to SCDoc, check the filesystem
+			// to see if the link target is present
+			if(File.exists(SCDoc.helpTargetDir +/+ linkBase ++ ".html")) {
+				^result ++ ".html"
+			};
+
+			// If the link target doesn't exist as an HTML file, check to see if the
+			// raw filepath exists. If it does, do nothing with it -- we're done. If
+			// it doesn't, then consider this a broken link.
+			if(File.exists(SCDoc.helpTargetDir +/+ linkBase).not) {
+				"SCDoc: In %\n"
+				"  Broken link: '%'"
+				.format(currDoc.fullPath, originalLink).warn;
+			};
+
+			^result
+		}
+	}
+
+	*linkTextForLink { |linkBase, linkAnchor|
+		// If the base was non-empty, generate it by combining the filename and the anchor.
+		// Otherwise, if there was an anchor, use that. Otherwise, use "(empty link)"
+		var result;
+		if(linkBase.isEmpty) {
+			if(linkAnchor.isEmpty) {
+				^"(empty link)"
+			} {
+				^linkAnchor
+			}
+		} {
+			var doc = SCDoc.documents[linkBase];
+			var result = doc !? _.title ? linkBase.basename;
+			if(linkAnchor.isEmpty) {
+				^result
+			} {
+				^result ++ ": " ++ linkAnchor
+			}
+		}
+	}
+
 	// argument link: the raw link text from the schelp document
 	// argument escape: whether or not to escape special characters in the link text itself
 	// returns: the <a> tag HTML representation of the original `link`
@@ -90,60 +142,14 @@ SCDocHTMLRenderer {
 		} {
 		    // Process a link that goes to a URL within the help system
 
-			// The document referred to by this link
-			var doc = nil;
-
-			// If the link base is non-empty, it is a link to something in another document
-			if(linkBase.isEmpty.not) {
-
-				// Compose the target as being relative to the help system base directory
-				linkTarget = baseDir +/+ linkBase;
-
-				// Find the document referred to by this link
-				doc = SCDoc.documents[linkBase];
-
-				// If this is an existing document, just add .html to get the target
-				if(doc.notNil) {
-					linkTarget = linkTarget ++ ".html";
-				} {
-				    // If the document doesn't exist according to SCDoc, check the filesystem
-					// to see if the link target is present
-					if(File.exists(SCDoc.helpTargetDir +/+ linkBase ++ ".html")) {
-						linkTarget = linkTarget ++ ".html";
-					} {
-						// If the link target doesn't exist as an HTML file, check to see if the
-						// raw filepath exists. If it does, do nothing with it -- we're done. If
-						// it doesn't, then consider this a broken link.
-						if(File.exists(SCDoc.helpTargetDir +/+ linkBase).not) {
-							"SCDoc: In %\n"
-							"  Broken link: '%'"
-							.format(currDoc.fullPath, link).warn;
-						};
-					};
-				};
-			} {
-			    // If the link base was empty, we're linking within the same document, so set
-				// the target to be empty. We add the anchor below.
-				linkTarget = "";
-			};
+			linkTarget = linkTargetForLink(linkBase, link);
 
 			// If there was an anchor, add it to the link target
 			if(spaceEscapedAnchor.isEmpty.not) { linkTarget = linkTarget ++ "#" ++ spaceEscapedAnchor };
 
-			// If there was no label, generate one from the base and/or unescaped anchor.
 			if(linkText.isEmpty) {
-
-				// If the base was non-empty, generate it by combining the filename and the anchor.
-				// Otherwise, if there was an anchor, use that. Otherwise, use "(empty link)"
-				if(linkBase.isEmpty.not) {
-					linkText = if(doc.notNil) {doc.title} {linkBase.basename};
-					if(linkAnchor.isEmpty.not) {
-						linkText = linkText ++ ": " ++ linkAnchor;
-					}
-				} {
-					linkText = if(linkAnchor.isEmpty) {"(empty link)"} {linkAnchor};
-				};
-			};
+				linkText = linkTextForLink(linkBase, linkAnchor);
+			}
 		};
 
 		// Escape special characters in the link text if requested
