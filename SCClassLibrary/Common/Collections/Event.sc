@@ -20,6 +20,8 @@ Event : Environment {
 		^inEvent
 	}
 
+	// event types
+
 	*addEventType { arg type, func, parentEvent;
 		partialEvents.playerEvent.eventTypes.put(type, func);
 		this.addParentType(parentEvent)
@@ -29,6 +31,16 @@ Event : Environment {
 		if(parentEvent.notNil and: { parentEvent.parent.isNil }) { parentEvent.parent = defaultParentEvent };
 		partialEvents.playerEvent.parentTypes.put(type, parentEvent)
 	}
+
+	*parentTypes {
+		^this.partialEvents.playerEvent.parentTypes
+	}
+
+	*eventTypes {
+		^this.partialEvents.playerEvent.eventTypes
+	}
+
+	// instance methods
 
 	next { arg inval; ^composeEvents(inval, this) }
 
