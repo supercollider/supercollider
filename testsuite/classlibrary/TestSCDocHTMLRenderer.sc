@@ -80,4 +80,18 @@ TestSCDocHTMLRenderer : UnitTest {
 		this.assert(result == expected, "Got %, expected %".format(result, expected));
 	}
 
+	// empty link
+	test_htmlForLink_emptyLink {
+		var result = SCDocHTMLRenderer.htmlForLink("");
+		var expected = "<a href=\"\">(empty link)</a>";
+		this.assert(result == expected, "Got %, expected %".format(result, expected));
+	}
+
+	// empty link, with empty anchor and text
+	test_htmlForLink_emptyLinkWithAnchorAndText {
+		var result = SCDocHTMLRenderer.htmlForLink("##");
+		var expected = "<a href=\"\">(empty link)</a>";
+		this.assert(result == expected, "Got %, expected %".format(result, expected));
+	}
+
 }
