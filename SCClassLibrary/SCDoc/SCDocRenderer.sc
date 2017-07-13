@@ -83,9 +83,9 @@ SCDocHTMLRenderer {
 		};
 
 		if(linkAnchor.isEmpty) {
-			^linkBase
+			^result
 		} {
-			^linkBase ++ "#" ++ this.escapeSpacesInAnchor(linkAnchor);
+			^result ++ "#" ++ this.escapeSpacesInAnchor(linkAnchor);
 		}
 	}
 
