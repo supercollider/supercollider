@@ -1,10 +1,23 @@
 CLASS::Event
 summary::an environment that represents an action
-related::Classes/Pattern
+related::Classes/Pattern, Classes/Environment, Classes/IdentityDictionary
 categories::Collections>Unordered, Streams-Patterns-Events>Events
 
 DESCRIPTION::
-An Event is an Environment that specifies an action to be taken in response to a link::#-play:: message. The key/value pairs within the Event specify the parameters of that action. Most methods, Event inherits from its superclasses, especially from link::Classes/Dictionary::.
+An Event specifies an action to be taken in response to a link::#-play:: message. Its key/value pairs specify the parameters of that action. Event inherits most of its methods from its superclasses, especially from link::Classes/Dictionary::. For the usage and meaning of the code::parent:: and code::proto:: events, see link::Classes/IdentityDictionary::.
+
+code::
+a = (x: 6, y: 7, play: { (~x * ~y).postln });
+a.play; // returns 6 * 7
+::
+
+The class Event provides a large library of default event instances and play functions, e.g. for pitch. By default, the play function, when an event is played, its link::#*addEventType#type:: is used to select a function and a parent event (by default, this is type code::\note::).
+
+code::
+(freq: 761).play // play a default synth sound with 761 Hz
+::
+
+
 
 CLASSMETHODS::
 
@@ -13,9 +26,10 @@ private::initClass
 subsection::Class variables
 
 method::parentEvents
-An IdentityDictionary of useful parent events.
+An extendible IdentityDictionary of useful parent events.
+
 method::partialEvents
-An IdentityDictionary of Events that define the default values and functions for different aspects of note generation (timing, volume, pitch, server to use, etc).
+An extendible IdentityDictionary of Events that define the default values and functions for different aspects of note generation (timing, volume, pitch, server to use, etc).
 
 subsection::Creation methods
 
@@ -36,19 +50,52 @@ Returns an empty event with link::#.defaultParentEvent:: as parent.
 method::silent
 Returns an event that describes a pause of strong::dur:: duration.
 
+
+
 method::addEventType
-Event types define alternate play functions that are selected by the value of strong::~type::.
+Event types define alternate play functions and parent events that are selected by the value of strong::~type::.
+
+
 argument::type
 A name (usually a symbol) for the event type, which can be used to select it
 
 argument::func
 A function which optionally takes the server as a first argument
 
+argument::parentEvent
+An event with default values which is used to override the parent event. If code::parentEvent:: in turn has no parent, its default parent event is set.
+
+discussion::
 code::
-Event.addEventType(\happyEvent, { ("I am so happy to be silent sometimes, says" + ~who).postln; });
+(
+Event.addEventType(\happyEvent, {
+	"I am so happy to be silent sometimes, says %.\n".postf(~who)
+})
+)
+(type: \happyEvent, who: "Alice").play;
+
+// using protoEvent
+(
+Event.addEventType(\happyEvent, {
+	"I am so happy to be silent sometimes, says %.\n".postf(~who)
+}, (who: "Alice"))
+)
+
+(type: \happyEvent).play; // use default
+(type: \happyEvent, who: "Eve").play; // overrride default
+
+// in a Pbind:
 Pbind(\type, \happyEvent, \who, Prand(["Alice", "Bob", "Eve"], inf), \dur, Pwhite(0.1, 1.0, inf)).play;
 
-// To a certain degree, it is possible to reuse some of another event type's functionality:
+// parent event type for indirect calls:
+Event.addEventType(\test, { ("x was" + ~x.value).postln }, (x: { ~y + 1 }, y: 0));
+
+(type: \test).play; // use defaults
+(type: \test, \y: 7).play; // set the value that x refers to
+(type: \test, \x: 10).play; // override x by a different one
+
+
+// It is possible to reuse some of another event type's functionality:
 (
 Event.addEventType(\happyEvent, { |server|
 	~octave = [5, 6, 7]; // always play three octaves
@@ -56,10 +103,41 @@ Event.addEventType(\happyEvent, { |server|
 	~type = \note; // now set type to a different one
 	currentEnvironment.play;
 });
+
 Pbind(\type, \happyEvent, \degree, Pseq([0, 1, 2, 3, 4, 4, 5, 5, 5, 5, 4, 2, 3, 2, 3, 1], inf), \dur, Pwhite(0.1, 1.0, inf)).play;
 );
 
 ::
+
+The event types and parent events are stored in a dictionary of the Event class, namely in code::partialEvents.playerEvent:::
+
+code::
+// eventTypes
+Event.partialEvents.playerEvent.eventTypes
+// parentTypes
+Event.partialEvents.playerEvent.parentTypes
+::
+
+
+method::addParentType
+Define an alternative parent that is chosen on the basis of strong::~type::. It allows you to change the defaults of an existing event type function.
+
+argument::type
+A name (usually a symbol) for the event type, which can be used to select it
+
+argument::parentEvent
+An event with default values which is used to override the parent event. If code::parentEvent:: in turn has no parent, its default parent event is set.
+
+discussion::
+code::
+Pbind(\type, \note, \degree, Pseq([0, 1, 2, 3, 4, 4, 5, 5, 5, 5, 4, 2, 3, 2, 3, 1], inf), \dur, 0.08).play;
+Event.addParentType(\note, (mtranspose: 2, root:5)); // set different defaults
+
+// note is the default type, this will also pick up the information:
+Pbind(\degree, Pseq([0, 1, 2, 3, 4, 4, 5, 5, 5, 5, 4, 2, 3, 2, 3, 1], inf), \dur, 0.08).play;
+
+::
+
 
 
 method::makeDefaultSynthDef
