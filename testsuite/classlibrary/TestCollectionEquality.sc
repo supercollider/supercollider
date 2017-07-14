@@ -68,6 +68,13 @@ TestCollectionEquality : UnitTest {
 		this.assert(a.hash != b.hash, "similar but unequal events should have unequal hash values");
 	}
 
+	test_unhash_event_size {
+		var a, b;
+		a = (x: 9, y: 10);
+		b = (x: 10, y: 10, z: 8);
+		this.assert(a.hash != b.hash, "similar but differently sized events should have unequal hash values");
+	}
+
 	test_unhash_event_parent {
 		var a, b;
 		a = (x: 9, y: 10);
