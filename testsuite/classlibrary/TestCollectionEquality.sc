@@ -44,6 +44,13 @@ TestCollectionEquality : UnitTest {
 		this.assert(a != b, "different dictionaries should be unequal");
 	}
 
+	test_unequal_dictionary_different_size {
+		var a, b;
+		a = Dictionary[\x -> 10, \y -> 9, \z -> 8];
+		b = Dictionary[\x -> 10, \y -> 9];
+		this.assert(a != b, "dictionaries of different size should be unequal");
+	}
+
 
 	// hash
 
