@@ -50,4 +50,18 @@ TestSequenceableCollection : UnitTest {
 		)
 	}
 
+
+	test_merge_keep_duplicates {
+		var list1, list2;
+		list1 = [1, 1, 5, 10, 1];
+		list2 = [0, 1, 3, 5, 6, 9, 11];
+		this.assertEquals(
+			list1.merge(list2),
+			[0, 1, 1, 3, 5, 6, 9, 11, 10, 1],
+			"merging should keep duplicate items in receiver"
+		)
+	}
+
+
+
 }
