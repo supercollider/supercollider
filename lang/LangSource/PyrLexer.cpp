@@ -1855,7 +1855,6 @@ static bool passOne_ShouldSkipDirectory(const bfs::path& dir)
  * should not be compiled according to the language configuration.
  *
  * \param dir : The directory to traverse, as a `path` object
- * \param level : Now obsolete. The level of recursion.
  * \returns `true` if processing was successful, `false` if it failed.
  *   See above for what constitutes success and failure conditions.
  */
