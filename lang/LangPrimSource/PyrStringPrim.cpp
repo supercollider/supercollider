@@ -846,33 +846,38 @@ int prString_FindBackwards(struct VMGlobals *g, int numArgsPushed)
 	} else return errWrongType;
 }
 
-// Expand `~` to home directory and resolve aliases
+/** \brief Expand `~` to home directory and resolve aliases
+ *
+ * Fails if the alias could not be resolved.
+ */
 int prString_StandardizePath(struct VMGlobals* g, int numArgsPushed);
 int prString_StandardizePath(struct VMGlobals* g, int /* numArgsPushed */)
 {
 	PyrSlot* arg = g->sp;
 	char ipath[PATH_MAX];
-	int err;
 
-	err = slotStrVal(arg, ipath, PATH_MAX);
-	if (err) return err;
+	int err = slotStrVal(arg, ipath, PATH_MAX);
+	if (err != errNone)
+		return err;
+	else
+		; // err = errNone
 
-	bool isAlias;
 	bfs::path p = SC_Codecvt::utf8_str_to_path(ipath);
 	p = SC_Filesystem::instance().expandTilde(p);
+	bool isAlias;
 	p = SC_Filesystem::resolveIfAlias(p, isAlias);
 
 	// Consider alias resolution a failure condition
 	if (isAlias && p.empty()) {
 		error("prString_StandardizePath: symlink resolution failed for '%s'\n", ipath);
-		return errFailed;
+		err = errFailed;
+	} else {
+		const std::string& utf8_str = SC_Codecvt::path_to_utf8_str(p);
+		PyrString* pyrString = newPyrString(g->gc, utf8_str.c_str(), 0, true);
+		SetObject(arg, pyrString);
 	}
 
-	const std::string& utf8_str = SC_Codecvt::path_to_utf8_str(p);
-	PyrString* pyrString = newPyrString(g->gc, utf8_str.c_str(), 0, true);
-	SetObject(arg, pyrString);
-
-	return errNone;
+	return err;
 }
 
 int prString_EscapeChar(struct VMGlobals* g, int numArgsPushed)
