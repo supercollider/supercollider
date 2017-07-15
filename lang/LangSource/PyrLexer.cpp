@@ -1911,12 +1911,13 @@ static bool passOne_ProcessDir(const bfs::path& dir)
 		// If the file is a directory, perform the same checks as above to see if we should
 		// skip compilation on it.
 		if (bfs::is_directory(path)) {
-			compiledDirectories.insert(path);
 
 			if (passOne_ShouldSkipDirectory(path)) {
 				rditer.no_push(); // don't "push" into the next level of the hierarchy
 			} else {
-				// Do nothing: by not calling no_push(), we allow the iterator to enter the directory
+				// Mark this directory as compiled.
+				// By not calling no_push(), we allow the iterator to enter the directory
+				compiledDirectories.insert(path);
 			}
 
 		} else { // ordinary file
