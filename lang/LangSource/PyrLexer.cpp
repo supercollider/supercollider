@@ -1938,9 +1938,7 @@ static bool passOne_ProcessDir(const bfs::path& dir, int level)
 					return false;
 				}
 			} else if (respath.empty()) {
-#ifdef DEBUG_SCFS
-				cout << "[SC_FS] Symlink resolution failed: " << SC_Codecvt::path_to_utf8_str(respath) << endl;
-#endif
+				error("Could not resolve symlink: %s\n", SC_Codecvt::path_to_utf8_str(respath).c_str());
 			} else if (!passOne_ProcessOneFile(respath, rditer.level())) {
 #ifdef DEBUG_SCFS
 				cout << "[SC_FS] Could not process " << SC_Codecvt::path_to_utf8_str(respath) << endl;
