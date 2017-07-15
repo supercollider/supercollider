@@ -1911,15 +1911,15 @@ static bool passOne_ProcessDir(const bfs::path& dir, int level)
 #ifdef DEBUG_SCFS
 			cout << "[SC_FS] Is a directory: " << SC_Codecvt::path_to_utf8_str(path) << endl;
 #endif
+			compiledDirectories.insert(path);
+
 			if (passOne_ShouldSkipDirectory(path)) {
 #ifdef DEBUG_SCFS
 				cout << "[SC_FS] Skipping directory" << endl;
 #endif
 				rditer.no_push(); // don't "push" into the next level of the hierarchy
 			} else {
-				// TODO: move this out of this condition
-				compiledDirectories.insert(path);
-				// Implied: by not calling no_push(), we allow the iterator to enter the directory
+				// Do nothing: by not calling no_push(), we allow the iterator to enter the directory
 			}
 
 		} else { // ordinary file
