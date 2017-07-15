@@ -859,8 +859,6 @@ int prString_StandardizePath(struct VMGlobals* g, int /* numArgsPushed */)
 	int err = slotStrVal(arg, ipath, PATH_MAX);
 	if (err != errNone)
 		return err;
-	else
-		; // err = errNone
 
 	bfs::path p = SC_Codecvt::utf8_str_to_path(ipath);
 	p = SC_Filesystem::instance().expandTilde(p);
@@ -870,14 +868,14 @@ int prString_StandardizePath(struct VMGlobals* g, int /* numArgsPushed */)
 	// Consider alias resolution a failure condition
 	if (isAlias && p.empty()) {
 		error("prString_StandardizePath: symlink resolution failed for '%s'\n", ipath);
-		err = errFailed;
-	} else {
-		const std::string& utf8_str = SC_Codecvt::path_to_utf8_str(p);
-		PyrString* pyrString = newPyrString(g->gc, utf8_str.c_str(), 0, true);
-		SetObject(arg, pyrString);
+		return errFailed;
 	}
 
-	return err;
+	const std::string& utf8_str = SC_Codecvt::path_to_utf8_str(p);
+	PyrString* pyrString = newPyrString(g->gc, utf8_str.c_str(), 0, true);
+	SetObject(arg, pyrString);
+
+	return errNone;
 }
 
 int prString_EscapeChar(struct VMGlobals* g, int numArgsPushed)
