@@ -112,12 +112,18 @@ Collection {
 	remove { ^this.subclassResponsibility(thisMethod) }
 	removeAll { | list | list.do { | item | this.remove(item) } }
 	removeEvery { | list | this.removeAllSuchThat(list.includes(_)) }
+
+	removeAllEqual { | list |
+		list.copy.do { | removing |
+			var index = this.detectIndex({ |item| item == removing });
+			if(index.notNil) { this.removeAt(index) }
+		};
+	}
 	removeAllSuchThat { | function |
 		var removedItems = this.class.new;
 		var copy = this.copy;
 		copy.do { | item, i |
-			if ( function.value(item, i) )
-			{
+			if (function.value(item, i)) {
 				this.remove(item);
 				removedItems = removedItems.add(item);
 			}
