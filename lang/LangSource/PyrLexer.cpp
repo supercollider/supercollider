@@ -1824,17 +1824,19 @@ bfs::path relativeToCompileDir(const bfs::path& p)
 	return bfs::relative(p, gCompileDir);
 }
 
+/** \brief Determines whether the directory should be skipped during compilation.
+ *
+ * \param dir : The directory to check, as a `path` object
+ * \returns `true` iff any of the following conditions is true:
+ * - the directory has already been compiled
+ * - the language configuration says this path is excluded
+ * - SC_Filesystem::shouldNotCompileDirectory(dir) returns `true`
+ */
 static bool passOne_ShouldSkipDirectory(const bfs::path& dir)
 {
-	if (compiledDirectories.find(dir) != compiledDirectories.end()) {
-		return true;
-	} else if (gLanguageConfig && gLanguageConfig->pathIsExcluded(dir)) {
-		return true;
-	} else if (SC_Filesystem::instance().shouldNotCompileDirectory(dir)) {
-		return true;
-	}
-
-	return false;
+	return (compiledDirectories.find(dir) != compiledDirectories.end()) ||
+		(gLanguageConfig && gLanguageConfig->pathIsExcluded(dir)) ||
+		(SC_Filesystem::instance().shouldNotCompileDirectory(dir));
 }
 
 /** \brief Compile the contents of a single directory
