@@ -1859,7 +1859,7 @@ static bool passOne_ShouldSkipDirectory(const bfs::path& dir)
  * \returns `true` if processing was successful, `false` if it failed.
  *   See above for what constitutes success and failure conditions.
  */
-static bool passOne_ProcessDir(const bfs::path& dir, int level)
+static bool passOne_ProcessDir(const bfs::path& dir)
 {
 #ifdef DEBUG_SCFS
 	cout << "[SC_FS] passOne_ProcessDir: begin: '" << SC_Codecvt::path_to_utf8_str(dir) << "'." << endl;
@@ -1931,7 +1931,7 @@ static bool passOne_ProcessDir(const bfs::path& dir, int level)
 			const bfs::path& respath = SC_Filesystem::resolveIfAlias(path, isAlias);
 			if (isAlias && bfs::is_directory(respath)) {
 				// If the resolved alias is a directory, recurse on it.
-				if (!passOne_ProcessDir(respath, rditer.level())) {
+				if (!passOne_ProcessDir(respath)) {
 #ifdef DEBUG_SCFS
 					cout << "[SC_FS] Could not process " << SC_Codecvt::path_to_utf8_str(respath) << endl;
 #endif

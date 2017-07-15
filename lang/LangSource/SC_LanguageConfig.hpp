@@ -52,7 +52,7 @@ public:
 	bool removeIncludedDirectory(const Path&); // false iff there was nothing to remove
 	bool removeExcludedDirectory(const Path&);
 
-	bool forEachIncludedDirectory(bool (*)(const Path&, int)) const;
+	bool forEachIncludedDirectory(bool (*)(const Path&)) const;
 
 	static bool readLibraryConfigYAML (const Path&, bool standalone);
 	static bool writeLibraryConfigYAML(const Path&);
