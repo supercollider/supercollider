@@ -1824,24 +1824,13 @@ bfs::path relativeToCompileDir(const bfs::path& p)
 	return bfs::relative(p, gCompileDir);
 }
 
-static bool passOne_ShouldSkipDirectory(const bfs::path& dir, std::string& reason)
+static bool passOne_ShouldSkipDirectory(const bfs::path& dir)
 {
-	static const std::string reason_excluded = "Directory excluded";
-	static const std::string reason_already_compiled = "Already compiled directory";
-#ifdef DEBUG_SCFS
-	static const std::string reason_filesystem_exclude = "(debug) SC_FS reason";
-#else
-	static const std::string reason_filesystem_exclude = ""; // hide filesystem exclusion reasons (for now)
-#endif // DEBUG_SCFS
-
 	if (compiledDirectories.find(dir) != compiledDirectories.end()) {
-		reason = reason_already_compiled;
 		return true;
 	} else if (gLanguageConfig && gLanguageConfig->pathIsExcluded(dir)) {
-		reason = reason_excluded;
 		return true;
 	} else if (SC_Filesystem::instance().shouldNotCompileDirectory(dir)) {
-		reason = reason_filesystem_exclude;
 		return true;
 	}
 
@@ -1877,7 +1866,6 @@ static bool passOne_ProcessDir(const bfs::path& dir, int level)
 #endif
 	boost::system::error_code ec;
 	bfs::recursive_directory_iterator rditer(dir, bfs::symlink_option::recurse, ec);
-	std::string skipReason;
 
 	// Check preconditions: are we able to access the file, and should we compile it according to
 	// the language configuration?
@@ -1901,10 +1889,8 @@ static bool passOne_ProcessDir(const bfs::path& dir, int level)
 
 			return false;
 		}
-	} else if (passOne_ShouldSkipDirectory(dir, skipReason)) {
+	} else if (passOne_ShouldSkipDirectory(dir)) {
 		// If we should skip the directory, just return success now.
-		if (!skipReason.empty())
-			post("\t%s: '%s'\n", skipReason.c_str(), SC_Codecvt::path_to_utf8_str(dir).c_str());
 		return true;
 	} else {
 		// Let the user know we are in fact compiling this directory.
@@ -1925,12 +1911,10 @@ static bool passOne_ProcessDir(const bfs::path& dir, int level)
 #ifdef DEBUG_SCFS
 			cout << "[SC_FS] Is a directory: " << SC_Codecvt::path_to_utf8_str(path) << endl;
 #endif
-			if (passOne_ShouldSkipDirectory(path, skipReason)) {
+			if (passOne_ShouldSkipDirectory(path)) {
 #ifdef DEBUG_SCFS
 				cout << "[SC_FS] Skipping directory" << endl;
 #endif
-				if (!skipReason.empty())
-					post("\t%s: '%s'\n", skipReason.c_str(), SC_Codecvt::path_to_utf8_str(path).c_str());
 				rditer.no_push(); // don't "push" into the next level of the hierarchy
 			} else {
 				// TODO: move this out of this condition
