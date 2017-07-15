@@ -74,7 +74,6 @@ private Q_SLOTS:
   void clipTimeout();
 private:
   const QColor valueColor(float value);
-  QColor _meterColor, _warningColor, _criticalColor;
   void paintEvent( QPaintEvent *e );
   float _value;
   float _warning;
@@ -87,6 +86,7 @@ private:
 	LevelIndicatorStyle _style;
   bool _clipped;
   QTimer *_clipTimer;
+  QColor _meterColor, _warningColor, _criticalColor;
 };
 
 #endif

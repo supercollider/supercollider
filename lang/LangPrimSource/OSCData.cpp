@@ -409,7 +409,7 @@ static int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
 
 static int prNetAddr_Disconnect(VMGlobals *g, int numArgsPushed)
 {
-	int err;
+	int err = errNone;
 
 	PyrSlot* netAddrSlot = g->sp;
 	PyrObject* netAddrObj = slotRawObject(netAddrSlot);

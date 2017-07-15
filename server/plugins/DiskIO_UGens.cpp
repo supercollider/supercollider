@@ -28,6 +28,7 @@
 
 #include <atomic>
 #include <new>
+#include <functional>
 #include <SC_Lock.h>
 
 #include <boost/lockfree/queue.hpp>

@@ -8,29 +8,6 @@ function toggle_visibility(e) {
     }
 }
 
-/*
-function createCookie(name,value,days) {
-    if (days) {
-        var date = new Date();
-        date.setTime(date.getTime()+(days*24*60*60*1000));
-        var expires = "; expires="+date.toGMTString();
-    }
-    else var expires = "";
-    document.cookie = name+"="+value+expires+"; path=/";
-}
-
-function readCookie(name) {
-    var nameEQ = name + "=";
-    var ca = document.cookie.split(';');
-    for(var i=0;i < ca.length;i++) {
-        var c = ca[i];
-        while (c.charAt(0)==' ') c = c.substring(1,c.length);
-        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-    }
-    return null;
-}
-*/
-
 var storage;
 var sidetoc;
 var toc;
@@ -503,13 +480,14 @@ function fixTOC() {
     var nav = ["SuperCollider " + scdoc_sc_version, "Browse", "Search"];
     var url = ["Help.html","Browse.html","Search.html"];
     var nav_item;
+    var a;
     for(var i=0;i<nav.length;i++) {
         nav_item = document.createElement("div");
         nav_item.className = "menuitem";
-        var a = document.createElement("a");
+        a = document.createElement("a");
         a.innerHTML = nav[i];
         a.setAttribute("href",helpRoot+"/"+url[i]);
-        a.className = "navLink";
+        a.className = "navlink";
         nav_item.appendChild(a);
         bar.appendChild(nav_item);
     }
