@@ -107,9 +107,12 @@ PbindProxy : Pattern {
 Pbindef : Pdef {
 
 	*new { | key ... pairs |
+		var pat, src;
 
-		var pat = super.new(key);
-		var src = pat.source;
+		if (pairs.size.odd, { Error("Pbindef should have an odd number of args.\n").throw });
+
+		pat = super.new(key);
+		src = pat.source;
 
 		if(pairs.isEmpty.not) {
 			if(src.isKindOf(PbindProxy)) {
