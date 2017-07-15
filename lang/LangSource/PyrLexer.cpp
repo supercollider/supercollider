@@ -1911,7 +1911,7 @@ static bool passOne_ProcessDir(const bfs::path& dir, int level)
 	// if resolving succeeds, call the appropriate function on that
 	// file. if not, treat it as a normal source file.
 	while (rditer != bfs::end(rditer)) {
-		const bfs::path& path = *rditer;
+		const bfs::path path = *rditer;
 
 		if (bfs::is_directory(path)) {
 #ifdef DEBUG_SCFS
