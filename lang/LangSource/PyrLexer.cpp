@@ -1876,18 +1876,27 @@ static bool passOne_ProcessDir(const bfs::path& dir, int level)
 	std::string skipReason;
 
 	if (ec) {
-		error("Could not open directory '%s': (%d) %s\n",
-			SC_Codecvt::path_to_utf8_str(dir).c_str(),
-			ec.value(),
-			ec.message().c_str()
-		);
-		// @TODO: is this the same as the old behavior?
+		// If we got an error, post a warning if it was because the target wasn't found, and return success.
+		// Otherwise, post the error and fail.
+		if (ec.default_error_condition().value() == boost::system::errc::no_such_file_or_directory) {
+			post("WARNING: Could not open directory: '%s'\n"
+				"\tTo resolve this, either create the directory or remove it from your compilation paths.",
+				SC_Codecvt::path_to_utf8_str(dir).c_str(),
+				ec.message().c_str()
+			);
 
-		if (ec.default_error_condition().value() == boost::system::errc::no_such_file_or_directory)
 			return true;
-		else
+		} else {
+			error("Could not open directory '%s': (%d) %s\n",
+				SC_Codecvt::path_to_utf8_str(dir).c_str(),
+				ec.value(),
+				ec.message().c_str()
+			);
+
 			return false;
+		}
 	} else if (passOne_ShouldSkipDirectory(dir, skipReason)) {
+		// If we should skip the directory, just return success now.
 		if (!skipReason.empty())
 			post("\t%s: '%s'\n", skipReason.c_str(), SC_Codecvt::path_to_utf8_str(dir).c_str());
 		return true;
