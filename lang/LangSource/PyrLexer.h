@@ -80,7 +80,7 @@ int yylex() ;
 void yyerror(const char *s) ;
 void fatal() ;
 bool isValidSourceFileName(const boost::filesystem::path& path);
-bool passOne_ProcessOneFile(const boost::filesystem::path& path, int level);
+bool passOne_ProcessOneFile(const boost::filesystem::path& path);
 
 boost::filesystem::path relativeToCompileDir(const boost::filesystem::path&);
 

@@ -1938,7 +1938,7 @@ static bool passOne_ProcessDir(const bfs::path& dir)
 				}
 			} else if (respath.empty()) {
 				error("Could not resolve symlink: %s\n", SC_Codecvt::path_to_utf8_str(respath).c_str());
-			} else if (!passOne_ProcessOneFile(respath, rditer.level())) {
+			} else if (!passOne_ProcessOneFile(respath)) {
 #ifdef DEBUG_SCFS
 				cout << "[SC_FS] Could not process " << SC_Codecvt::path_to_utf8_str(respath) << endl;
 #endif
@@ -1981,23 +1981,10 @@ bool isValidSourceFileName(const bfs::path& path)
 }
 
 // sekhar's replacement
-bool passOne_ProcessOneFile(const bfs::path& path, int level)
+bool passOne_ProcessOneFile(const bfs::path& path)
 {
 	bool success = true;
-
-//	bool isAlias = false;
-
-//	char filename[MAXPATHLEN];
-
-	// disallowing alias resolution for now
-	// @TODO: do alias resolution in processDir.
-	/*int status = sc_ResolveIfAlias(filenamearg, filename, isAlias, MAXPATHLEN);
-
-	if (status<0) {
-		printf("WARNING: skipping invalid symbolic link: %s\n", filenamearg);
-		return success;
-	}*/
-
+	
 	const std::string path_str = SC_Codecvt::path_to_utf8_str(path);
 	const char* path_c_str = path_str.c_str();
 	if (gLanguageConfig && gLanguageConfig->pathIsExcluded(path)) {
