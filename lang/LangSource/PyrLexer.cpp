@@ -1848,26 +1848,30 @@ static bool passOne_ShouldSkipDirectory(const bfs::path& dir, std::string& reaso
 	return false;
 }
 
+/** \brief Compile the contents of a single directory
+ *
+ * This method compiles any .sc files in a single directory, working
+ * via depth-first recursion. This routine is designed to fail gracefully,
+ * and only indicates failure if something truly unexpected happens. These
+ * conditions are:
+ * - an error occurred while trying to open a directory, other than the case
+ *    the case that the object doesn't exist.
+ * - an error occurred while calling `passOne_processOneFile` on a file
+ * - an error occurred in a recursive call of this routine on a macOS alias
+ * Otherwise, this method returns success, even if:
+ * - `dir` does not exist
+ * - Iterating to the next file fails for any reason at all
+ *
+ * This method returns with a success state immediately if the directory
+ * should not be compiled according to the language configuration.
+ *
+ * \param dir : The directory to traverse, as a `path` object
+ * \param level : Now obsolete. The level of recursion.
+ * \returns `true` if processing was successful, `false` if it failed.
+ *   See above for what constitutes success and failure conditions.
+ */
 static bool passOne_ProcessDir(const bfs::path& dir, int level)
 {
-	// @TODO: this doesn't do anything with aliases. good or bad?
-	// opens directory
-	// should use symlink version
-	// handles error
-
-	// recursing:
-	//   should skip the directory/file if:
-	//			- it's in the set of compiledDirectories
-	//			- it's in the list of excluded directories
-	//			-	sc_ReadDir would return false == SC_Filesystem::shouldNotCompileDirectory would return true
-
-	//	should return false immediately if:
-	//		  - any directory open failed
-	//			- any file processing failed
-
-	// reads directory, checks if it's a valid item or if it should skip
-	// if is directory, process
-	// recurse into symlinks (new behavior)
 #ifdef DEBUG_SCFS
 	cout << "[SC_FS] passOne_ProcessDir: begin: '" << SC_Codecvt::path_to_utf8_str(dir) << "'." << endl;
 #endif
@@ -1875,6 +1879,8 @@ static bool passOne_ProcessDir(const bfs::path& dir, int level)
 	bfs::recursive_directory_iterator rditer(dir, bfs::symlink_option::recurse, ec);
 	std::string skipReason;
 
+	// Check preconditions: are we able to access the file, and should we compile it according to
+	// the language configuration?
 	if (ec) {
 		// If we got an error, post a warning if it was because the target wasn't found, and return success.
 		// Otherwise, post the error and fail.
@@ -1901,18 +1907,20 @@ static bool passOne_ProcessDir(const bfs::path& dir, int level)
 			post("\t%s: '%s'\n", skipReason.c_str(), SC_Codecvt::path_to_utf8_str(dir).c_str());
 		return true;
 	} else {
+		// Let the user know we are in fact compiling this directory.
 		post("\tCompiling directory '%s'\n", SC_Codecvt::path_to_utf8_str(dir).c_str());
 	}
 
+	// Record that we have touched this directory already.
 	compiledDirectories.insert(dir);
 
-	// @TODO: try this with try{} instead of error codes
-	// @TODO: alias resolution. If not a directory, try resolving.
-	// if resolving succeeds, call the appropriate function on that
-	// file. if not, treat it as a normal source file.
+	// Invariant: we have processed (or begun to process) every directory or file already
+	// touched by the iterator.
 	while (rditer != bfs::end(rditer)) {
 		const bfs::path path = *rditer;
 
+		// If the file is a directory, perform the same checks as above to see if we should
+		// skip compilation on it.
 		if (bfs::is_directory(path)) {
 #ifdef DEBUG_SCFS
 			cout << "[SC_FS] Is a directory: " << SC_Codecvt::path_to_utf8_str(path) << endl;
@@ -1923,18 +1931,22 @@ static bool passOne_ProcessDir(const bfs::path& dir, int level)
 #endif
 				if (!skipReason.empty())
 					post("\t%s: '%s'\n", skipReason.c_str(), SC_Codecvt::path_to_utf8_str(path).c_str());
-				rditer.no_push();
+				rditer.no_push(); // don't "push" into the next level of the hierarchy
 			} else {
+				// TODO: move this out of this condition
 				compiledDirectories.insert(path);
+				// Implied: by not calling no_push(), we allow the iterator to enter the directory
 			}
 
 		} else { // ordinary file
-#ifdef DEBUG_SCFS
-			//cout << "Processing" << endl;
-#endif
 			bool isAlias = false;
+			// Try to resolve a potential alias. Possible outcomes:
+			// - it was an alias & is also a directory: try to recurse on it
+			// - resolution failed: returns empty path: let the user know
+			// - it was not an alias, or was an alias that wasn't a directory: try to process it as a source file
 			const bfs::path& respath = SC_Filesystem::resolveIfAlias(path, isAlias);
 			if (isAlias && bfs::is_directory(respath)) {
+				// If the resolved alias is a directory, recurse on it.
 				if (!passOne_ProcessDir(respath, rditer.level())) {
 #ifdef DEBUG_SCFS
 					cout << "[SC_FS] Could not process " << SC_Codecvt::path_to_utf8_str(respath) << endl;
