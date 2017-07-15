@@ -16,7 +16,7 @@ list::
 This document describes SynthDef2's format. See link::#Original SynthDef format:: for the differences between SynthDef and SynthDef2.
 
 section:: Basic types
-All data is stored big endian. All integers, unless otherwise noted, are signed. All data is packed, not padded or aligned.
+All data is stored big endian. All integers, unless otherwise noted, are unsigned. All data is packed, not padded or aligned.
 definitionlist::
 ## int32 || a 32 bit integer.
 ## int16 || a 16 bit integer.
@@ -59,30 +59,30 @@ list::
 a strong::ugen-spec:: is :
 list::
 ## pstring - the name of the SC unit generator class
-## int8 - calculation rate
+## signed int8 - calculation rate
 ## int32 - number of inputs (I)
 ## int32 - number of outputs (O)
-## int16 - special index
+## signed int16 - special index
 ## [ strong::input-spec:: ] * I
 ## [ strong::output-spec:: ] * O
 ::
 
 an strong::input-spec:: is :
 list::
-## int32 - index of unit generator or -1 for a constant
+## signed int32 - index of unit generator or -1 for a constant
 ## if (unit generator index == -1) :
 list::
-## int32 - index of constant
+## signed int32 - index of constant
 ::
 ## else :
 list::
-## int32 - index of unit generator output
+## signed int32 - index of unit generator output
 ::
 ::
 
 an strong::output-spec:: is :
 list::
-## int8 - calculation rate
+## signed int8 - calculation rate
 ::
 
 a strong::variant-spec:: is :
@@ -117,25 +117,25 @@ tree::
     ## [ strong::ugen-spec:: ] * U
         tree::
         ## pstring - the name of the SC unit generator class
-        ## int8 - calculation rate
+        ## signed int8 - calculation rate
         ## int32 - number of inputs (I)
         ## int32 - number of outputs (O)
-        ## int16 - special index
+        ## signed int16 - special index
         ## [ strong::input-spec:: ] * I
             tree::
-            ## int32 - index of unit generator or -1 for a constant
+            ## signed int32 - index of unit generator or -1 for a constant
             ## if (unit generator index == -1)
                 tree::
-                ## int32 - index of constant
+                ## signed int32 - index of constant
                 ::
             ## else
                 tree::
-                ## int32 - index of unit generator output
+                ## signed int32 - index of unit generator output
                 ::
             ::
         ## [ strong::output-spec:: ] * O
             tree::
-            ## int8 - calculation rate
+            ## signed int8 - calculation rate
             ::
         ::
     ## int16 - number of variants (V)
