@@ -1923,11 +1923,11 @@ static bool passOne_ProcessDir(const bfs::path& dir, int level)
 			}
 
 		} else { // ordinary file
-			bool isAlias = false;
 			// Try to resolve a potential alias. Possible outcomes:
 			// - it was an alias & is also a directory: try to recurse on it
 			// - resolution failed: returns empty path: let the user know
 			// - it was not an alias, or was an alias that wasn't a directory: try to process it as a source file
+			bool isAlias = false;
 			const bfs::path& respath = SC_Filesystem::resolveIfAlias(path, isAlias);
 			if (isAlias && bfs::is_directory(respath)) {
 				// If the resolved alias is a directory, recurse on it.
