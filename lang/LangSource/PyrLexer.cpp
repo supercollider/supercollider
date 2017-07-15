@@ -1955,8 +1955,9 @@ static bool passOne_ProcessDir(const bfs::path& dir, int level)
 
 		rditer.increment(ec);
 		if (ec) {
+			// If iteration failed, allow compilation to continue, but bail out of this directory.
 			error("Could not iterate on '%s': %s\n", SC_Codecvt::path_to_utf8_str(path).c_str(), ec.message().c_str());
-			return false;
+			return true;
 		}
 	}
 #ifdef DEBUG_SCFS
