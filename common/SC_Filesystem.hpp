@@ -169,12 +169,13 @@ public:
 	Path expandTilde(const Path& p)
 	{
 		static const Path tilde("~");
-		Path::const_iterator piter = p.begin();
-		if (piter != p.end() && *piter == tilde) {
-			Path expanded = getDirectory(DirName::UserHome);
-			while (++piter != p.end())
-				expanded /= *piter; // lexically_relative would expand "~" to "$HOME/." when we just want "$HOME"
-			return expanded;
+		if (!p.empty() && *p.begin() == tilde) {
+			// If the first element in the path is tilde, just concatenate the rest of the path onto it
+			const Path homeDir = getDirectory(DirName::UserHome);
+			const std::string homeDir_utf8 = SC_Codecvt::path_to_utf8_str(homeDir);
+			const std::string inPath_utf8 = SC_Codecvt::path_to_utf8_str(p);
+			const std::string result = homeDir_utf8 + inPath_utf8.substr(1);
+			return result;
 		} else {
 			return p;
 		}
