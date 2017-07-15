@@ -114,7 +114,7 @@ Collection {
 	removeEvery { | list | this.removeAllSuchThat(list.includes(_)) }
 
 	removeAllEqual { | list |
-		list.copy.do { | removing |
+		list.do { | removing |
 			var index = this.detectIndex({ |item| item == removing });
 			if(index.notNil) { this.removeAt(index) }
 		};
