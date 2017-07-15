@@ -1862,10 +1862,12 @@ static bool passOne_ShouldSkipDirectory(const bfs::path& dir)
  */
 static bool passOne_ProcessDir(const bfs::path& dir)
 {
-#ifdef DEBUG_SCFS
-	cout << "[SC_FS] passOne_ProcessDir: begin: '" << SC_Codecvt::path_to_utf8_str(dir) << "'." << endl;
-#endif
+	// Prefer non-throwing versions of filesystem functions, since they are actually not unexpected
+	// and because it's faster to use error codes.
 	boost::system::error_code ec;
+
+	// Using a recursive_directory_iterator is much faster than actually calling this function
+	// recursively. Speedup from the switch was about 1.5x. _Do_ recurse on symlinks.
 	bfs::recursive_directory_iterator rditer(dir, bfs::symlink_option::recurse, ec);
 
 	// Check preconditions: are we able to access the file, and should we compile it according to
@@ -1909,15 +1911,9 @@ static bool passOne_ProcessDir(const bfs::path& dir)
 		// If the file is a directory, perform the same checks as above to see if we should
 		// skip compilation on it.
 		if (bfs::is_directory(path)) {
-#ifdef DEBUG_SCFS
-			cout << "[SC_FS] Is a directory: " << SC_Codecvt::path_to_utf8_str(path) << endl;
-#endif
 			compiledDirectories.insert(path);
 
 			if (passOne_ShouldSkipDirectory(path)) {
-#ifdef DEBUG_SCFS
-				cout << "[SC_FS] Skipping directory" << endl;
-#endif
 				rditer.no_push(); // don't "push" into the next level of the hierarchy
 			} else {
 				// Do nothing: by not calling no_push(), we allow the iterator to enter the directory
@@ -1933,21 +1929,16 @@ static bool passOne_ProcessDir(const bfs::path& dir)
 			if (isAlias && bfs::is_directory(respath)) {
 				// If the resolved alias is a directory, recurse on it.
 				if (!passOne_ProcessDir(respath)) {
-#ifdef DEBUG_SCFS
-					cout << "[SC_FS] Could not process " << SC_Codecvt::path_to_utf8_str(respath) << endl;
-#endif
 					return false;
 				}
 			} else if (respath.empty()) {
 				error("Could not resolve symlink: %s\n", SC_Codecvt::path_to_utf8_str(respath).c_str());
 			} else if (!passOne_ProcessOneFile(respath)) {
-#ifdef DEBUG_SCFS
-				cout << "[SC_FS] Could not process " << SC_Codecvt::path_to_utf8_str(respath) << endl;
-#endif
 				return false;
 			}
 		}
 
+		// Error-code version of `++`
 		rditer.increment(ec);
 		if (ec) {
 			// If iteration failed, allow compilation to continue, but bail out of this directory.
@@ -1955,9 +1946,6 @@ static bool passOne_ProcessDir(const bfs::path& dir)
 			return true;
 		}
 	}
-#ifdef DEBUG_SCFS
-	cout << "[SC_FS] passOne_ProcessDir: end." << endl;
-#endif
 	return true;
 }
 
