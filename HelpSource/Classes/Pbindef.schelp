@@ -1,7 +1,7 @@
 class:: Pbindef
 summary:: incremental event pattern reference definition
 categories:: Libraries>JITLib>Patterns, Live Coding,  Streams-Patterns-Events>Patterns
-related:: Classes/Pdef, Classes/Pbind
+related:: Classes/Pdef, Classes/Pbind, Classes/PbindefCut
 
 description::
 Pbindef keeps a reference to a Pbind in which single keys can be replaced, combining link::Classes/PbindProxy:: and link::Classes/Pdef::. It plays on when the old stream ended and a new stream is set and schedules the changes to the beat.
@@ -23,7 +23,7 @@ Examples::
 
 code::
 (
-SynthDef("Pdefhelp", { arg out, freq, sustain=1, amp=1, pan;
+SynthDef(\Pdefhelp, { arg out, freq, sustain=1, amp=1, pan;
 	var env, u=1;
 	env = EnvGen.kr(Env.perc(0.01, sustain), 1, doneAction: Done.freeSelf);
 	5.do { var d; d = exprand(0.01, 1); u = SinOsc.ar(d * 300, u, rrand(0.1,1.2) * d, 1) };
