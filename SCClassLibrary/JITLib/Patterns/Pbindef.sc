@@ -45,6 +45,13 @@ PbindProxy : Pattern {
 		^nil
 	}
 
+	findButNot { |key, excluding|
+		pairs.pairsDo { |u, x, i|
+			if(u == key and: { excluding.includes(i).not }) { ^i }
+		};
+		^nil
+	}
+
 	at { |key|
 		var i = this.find(key);
 		^if(i.notNil) { pairs[i+1] } { nil }
@@ -56,7 +63,7 @@ PbindProxy : Pattern {
 
 	setPatternPairs { | newPairs, merge = true |
 		// newPairs are modified in place. If necessary, copy before passing it here.
-		var toRemove, toRemoveInArgs, changed = false;
+		var toRemove, toRemoveInArgs, proxy, found = IdentitySet.new, changed = false;
 		var quant = this.quant;
 
 
@@ -64,8 +71,9 @@ PbindProxy : Pattern {
 
 			var val = newPairs[i + 1];
 			var key = newPairs[i];
-			var j = this.find(key);
-			var proxy;
+			var j = this.findButNot(key, found);
+
+			if(j.notNil) { found.add(j) };
 
 			if(val.notNil) {
 				// find existing or make a new one
@@ -83,6 +91,7 @@ PbindProxy : Pattern {
 		// now remove all those which were nil
 		toRemove !? { changed = true; pairs = pairs.reject { |x, i| toRemove.includes(i) } };
 		toRemoveInArgs !? { newPairs = newPairs.reject { |x, i| toRemoveInArgs.includes(i) } };
+
 
 		// merge old pairs into new pairs
 		if(merge) { newPairs = newPairs.mergePairs(pairs) };
