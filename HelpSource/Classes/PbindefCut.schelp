@@ -4,15 +4,13 @@ categories:: Libraries>JITLib>Patterns, Live Coding,  Streams-Patterns-Events>Pa
 related:: Classes/Pdef, Classes/Pbind, Classes/Pbindef
 
 description::
-Like Pbindef, PbindefCut keeps a reference to a Pbind in which single keys can be replaced, combining link::Classes/PbindProxy:: and link::Classes/Pdef::. It plays on when the old stream ended and a new stream is set and schedules the changes to the beat.
 
-The difference to Pbindef is that it  doesn't keep any subpatterns that are not in the most current code.
+The only difference to link::Classes/Pbindef:: is that it only keeps  subpatterns that are passed to it with code::*new:: (see below).
 
-PbindefCut, Pbindef and Pdef use the same global collection, while Pdef and Pdefn use separate ones.
-
-PbindefCut inherits from link::Classes/Pbindef::
+PbindefCut and Pbindef use the same global collection, so they can be used as interfaces to the same pattern.
 
 
+examples::
 
 code::
 
