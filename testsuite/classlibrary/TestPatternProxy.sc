@@ -413,6 +413,18 @@ TestPatternProxy : UnitTest {
 		this.assertEquals(pairs[0,2..], [\y, \a, \x, \b, \c, \z], "Pbindef key order should correspond to interleaved argument order after insertion of new key-value pairs");
 	}
 
+	test_pbindef_keeps_multiples {
+		var pairs;
+
+		Pbindef(\test).clear;
+		Pbindef(\test, \x, 6, \x, 7, \y, 8);
+		Pbindef(\test, \a, 0, \y, 8, \y, 20, \x, 10);
+
+		pairs = Pbindef(\test).source.pairs;
+		(1,3..pairs.lastIndex).do { |i| pairs[i] = pairs[i].source };
+		this.assertEquals(pairs, [\a, 0, \y, 8,  \y, 20, \x, 10], "Pbindef should keep duplicate key with separate values");
+	}
+
 	test_pbindef_arg_order_fromPbind {
 		var pairs;
 
