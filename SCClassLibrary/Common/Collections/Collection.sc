@@ -578,7 +578,7 @@ Collection {
 			^if(class == this.class) { this } { this.as(class) }
 		};
 		res = class.new(this.size div: 2);
-		this.pairsDo { |key, val| res.add(key -> val) }
+		this.pairsDo { |key, val| res = res.add(key -> val) }
 		^res
 	}
 
