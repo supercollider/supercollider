@@ -262,7 +262,15 @@ SCDocEntry {
 	}
 
 	prAddCopyMethod {|node, list|
-		^list.add(node.text.split($ )[1].drop(1))
+		var classname, methodname;
+		#classname, methodname = node.text.split($ );
+		if(methodname.isNil) {
+			"missing argument in SCDocNode text: %".format(node.text).warn;
+		} {
+			methodname = methodname.drop(1);
+			list = list.add(methodname)
+		}
+		^list
 	}
 
 	prScanMethodsKeywords {|node|
