@@ -13,9 +13,6 @@ PbindefCut, Pbindef and Pdef use the same global collection, while Pdef and Pdef
 PbindefCut inherits from link::Classes/Pbindef::
 
 
-ClassMethods::
-
-copymethod::new
 
 code::
 
