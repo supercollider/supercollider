@@ -237,7 +237,7 @@ DeprecatedError : MethodError {
 			};
 			if(backtrace.notNil) { backtrace.tryPerform(\functionDef) };
 		};
-		var caller, string;
+		var caller, string, path;
 		if(protectedBacktrace.notNil) {
 			caller = searchForCaller.value(protectedBacktrace, method);
 		};
@@ -260,6 +260,9 @@ DeprecatedError : MethodError {
 		if(alternateMethod.notNil, {
 			string = string + "Use" + methodSignature.value(alternateMethod) + "instead.";
 		});
+
+		string = string ++ "\nThe definition of '%' is to be found here: '%'".format(method, method.filenameSymbol);
+
 		^string;
 	}
 
