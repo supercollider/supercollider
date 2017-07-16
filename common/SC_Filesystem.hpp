@@ -175,7 +175,7 @@ public:
 			const std::string homeDir_utf8 = SC_Codecvt::path_to_utf8_str(homeDir);
 			const std::string inPath_utf8 = SC_Codecvt::path_to_utf8_str(p);
 			const std::string result = homeDir_utf8 + inPath_utf8.substr(1);
-			return result;
+			return SC_Codecvt::utf8_str_to_path(result);
 		} else {
 			return p;
 		}
