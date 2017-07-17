@@ -263,8 +263,7 @@ Function : AbstractFunction {
 		^{ |... args| envir.use({ this.valueArray(args) }) }
 	}
 
-	// the buffer is passed as first argument to action
-	funcToBuffer { |duration = 0.01, server, action|
+	asBuffer { |duration = 0.01, server, action|
 		var buffer, def, synth, name, numChannels, rate;
 		server = server ? Server.default;
 
@@ -285,13 +284,17 @@ Function : AbstractFunction {
 			Line.perform(Line.methodSelectorForRate(rate), dur: duration, doneAction: 2);
 		});
 
+		buffer = Buffer.new(server);
+
 		Routine.run {
 			var numFrames, running;
 			running = server.serverRunning;
 			if(running.not) { server.bootSync; 1.wait };
 			numFrames = duration * server.sampleRate;
 			if(rate == \control) { numFrames = numFrames / server.options.blockSize };
-			buffer = Buffer.alloc(server, numFrames, numChannels);
+			buffer.numFrames = numFrames;
+			buffer.numChannels = numChannels;
+			buffer = buffer.alloc(numFrames, numChannels);
 			server.sync;
 			def.send(server);
 			server.sync;
@@ -300,13 +303,15 @@ Function : AbstractFunction {
 				action.value(buffer);
 				server.sendMsg("/d_free", name);
 			}, '/n_end', server.addr, nil, [synth.nodeID]).oneShot;
-		}
+		};
+
+		^buffer
 
 
 	}
 
 	loadToFloatArray { |duration = 0.01, server, action|
-		this.funcToBuffer(duration, server, { |buffer|
+		this.asBuffer(duration, server, { |buffer|
 			buffer.loadToFloatArray(action: { |array|
 				action.value(array, buffer);
 				buffer.free
