@@ -448,6 +448,20 @@ argument:: separately
 For multi channel signals, set whether to use separate value display ranges or not.
 a window to place the plot in. If nil, one will be created for you.
 
+
+method::asBuffer
+Calculates duration in seconds worth of the output of this function, and returns it in a link::Classes/Buffer:: of the number of channels. An action function is called when the process has finished.
+
+argument::duration
+The duration of the function to plot in seconds. The default is 0.01.
+
+argument::server
+The server on which the function is calculated.
+
+argument::action
+A function that is called when the buffer is filled. It is passed the buffer as argument.
+
+
 subsection::Conversion
 
 method::asSynthDef
