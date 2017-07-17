@@ -60,8 +60,13 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 	*hasMovedOn_ { |flag=true| current.hasMovedOn_(flag) }
 	*hasMovedOn  { ^current.hasMovedOn }
 
-	*play { |start=0, end, verbose=true| ^current.play(start, end, verbose) }
-	*stop { ^current.stop }
+	*play { |start=0, end, verbose=true|
+		^current.play(start, end, verbose)
+	}
+
+	*stop {
+		^current.stop
+	}
 
 	*enter { |lineStr, id=\me|
 		var dateNow, now;
@@ -92,13 +97,14 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 	*removeLast { current.removeLast }
 	*keep {|num| current.keep(num) }
 	*drop {|num| current.drop(num) }
+	*clear { current.clear }
 
 	// instance methods:
 	*new { |lines|
-		^super.new.init(lines);
+		^super.new.init(lines)
 	}
 
-	hasMovedOn_ { |flag=true| hasMovedOn = flag; }
+	hasMovedOn_ { |flag=true| hasMovedOn = flag }
 
 	lines_ { |inLines|
 		lines.array_(inLines);
@@ -112,7 +118,6 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		lineShorts = List[];
 		hasMovedOn = true;
 	}
-	*clear { current.clear }
 
 	init { |inLines|
 		keys = IdentitySet.new;
@@ -166,27 +171,38 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		};
 		keys.add(authID);
 	}
+
 	// simple editing
 	removeAt { |index|
-		if (index.isKindOf(Collection)) { index.sort.reverseDo (this.removeAt(_)); ^this };
+		if (index.isKindOf(Collection)) {
+			index.sort.reverseDo (this.removeAt(_));
+			^this
+		};
 
 		if (index < lines.size) { 	// ignore out of range indices, keep lists synced.
-			[lines, lineShorts].do(_.removeAt(index));		};
+			[lines, lineShorts].do(_.removeAt(index))
+		};
 		hasMovedOn = true;
 	}
+
 	removeLast { this.removeAt(lines.size - 1) }
+
 	keep { |num|
 		lines = lines.keep(num);
 		lineShorts = lineShorts.keep(num);
 		hasMovedOn = true;
 	}
+
 	drop { |num|
 		lines = lines.drop(num);
 		lineShorts = lineShorts.drop(num);
 		hasMovedOn = true;
 	}
+
 	// loading from and saving to files
+
 	*saveCS { |path, forward=false| current.saveCS(path, forward) }
+
 	saveCS { |path, forward=false|
 		var file, lines2write;
 
@@ -242,7 +258,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 			};
 			str = str ++ cmdLine ++ "\n\n";
 		};
-		^str;
+		^str
 	}
 
 	*saveStory { |path| current.saveStory(path) }
@@ -256,7 +272,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		file.close;
 	}
 
-	*formatTime { arg val;
+	*formatTime { |val|
 		var h, m, s;
 		h = val div: (60 * 60);
 		val = val - (h * 60 * 60);
@@ -265,7 +281,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		s = val;
 		^"%:%:%".format(h, m, s.round(0.01))
 	}
-	*unformatTime { arg str;
+	*unformatTime { |str|
 		var h, m, s;
 		#h, m, s = str.split($:).collect(_.interpret);
 		^h * 60 + m * 60 + s
@@ -281,7 +297,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 			endChar = str[lastCharIndex];
 		};
 		// [startIndex, lastCharIndex].postln;
-		^str.copyRange(startIndex, lastCharIndex);
+		^str.copyRange(startIndex, lastCharIndex)
 	}
 
 	// convert to shortline for gui
@@ -290,11 +306,11 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		#time, id, lineStr = line;
 		head = (this.formatTime(time) + "-" + id + "- ");
 		maxLength = maxLength ? maxShortLength;
-		^head ++ lineStr.keep(maxLength  - head.size);
+		^head ++ lineStr.keep(maxLength  - head.size)
 	}
 
 	// not used yet
-	*getTimeFromString { arg str;
+	*getTimeFromString { |str|
 		var ts, i;
 		if(str.beginsWith("// - ").not) { ^nil };
 		i = str.find(" - ", offset: 4);
@@ -303,7 +319,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		^ts[0] * (60 * 60) + (ts[1] * 60) + ts[2]
 	}
 	// not used yet
-	*asLines { arg str;
+	*asLines { |str|
 		var indices;
 		indices = str.findAll("// -");
 		^str.clumps(indices.differentiate)
@@ -311,41 +327,44 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 
 	/*
 	// problem: interpreter cancels backslashes etc.
-	*stream { arg str, func;
-	var lastTime=0, time;
-	func = func ?? {
-	{|str|
-	var dt = ~prev / str.size;
-	fork {
-	0.2.wait; // wait until result from last evaluation is printed
-	str.do {|char|
-	char.post;
-	dt.wait;
-	};
-	str.compile.value;
+	*stream { |str, func|
+		var lastTime=0, time;
+		func = func ?? {
+			{|str|
+				var dt = ~prev / str.size;
+				fork {
+					0.2.wait; // wait until result from last evaluation is printed
+					str.do {|char|
+						char.post;
+						dt.wait;
+					};
+					str.compile.value;
 
-	};
-	}
+				};
+			}
 
-	};
-	^Routine {
-	this.asLines(str).do { |line|
-	time = this.getTimeFromString(line) ? lastTime;
-	(prev:lastTime, delta: time - lastTime, play: { func.(line); }).yield;
-	lastTime = time;
+		};
+		^Routine {
+			this.asLines(str).do { |line|
+				time = this.getTimeFromString(line) ? lastTime;
+				(prev:lastTime, delta: time - lastTime, play: { func.(line); }).yield;
+				lastTime = time;
+			}
+		}
 	}
-	}
-	}
-	*play { arg str, clock;
-	str = str ? Document.current.string;
-	^this.stream(str).asEventStreamPlayer.play(clock);
+	*play { |str, clock|
+		str = str ? Document.current.string;
+		^this.stream(str).asEventStreamPlayer.play(clock);
 	}
 	*playDocument {
 
 	}
 	*/
 
-	*cmdPeriod { this.enter("// thisProcess.cmdPeriod"); }
+
+	*cmdPeriod {
+		this.enter("// thisProcess.cmdPeriod")
+	}
 
 	// log file support - global only
 	*makeLogFolder {
@@ -373,7 +392,12 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		if (logFile.isNil) { this.startLog };
 
 		isOpen = logFile.isOpen;
-		^if (isOpen.not) { this.startLog; ^logFile.isOpen } { true };
+		^if (isOpen.not) {
+			this.startLog;
+			logFile.isOpen
+		} {
+			true
+		}
 	}
 
 	*startLog {
@@ -385,9 +409,9 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		if (logFile.isOpen) {
 			logFile.write(format("// History, as it was on %.\n\n",
 				timeString) ++ "[\n" /*]*/ );
-			"// History.logFile opened.".postln;
+			"// History.logFile opened.".postln
 		} {
-			"// History: could not open logFile!".warn;
+			"// History: could not open logFile!".warn
 		};
 	}
 
@@ -397,17 +421,17 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 			try {
 				logFile.write(line.asCompileString ++ ",\n")
 			} {
-				"// History: could not write to logFile!".warn;
+				"// History: could not write to logFile!".warn
 			}
 		} {
-			warn("// History: logFile is not open!");
+			warn("// History: logFile is not open!")
 		};
 	}
 
 	*endLog {
 		// close file
 		try { logFile.write( /*[*/ "];") };
-		try { logFile.close; "// History.logFile closed.".postln; };
+		try { logFile.close; "// History.logFile closed.".postln };
 	}
 
 	*showLogFile { Document.open(this.logPath) }
@@ -428,10 +452,14 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 
 	matchString { |str, ignoreCase=true|
 		var indices = [];
-		if (str.notNil and: (str != "")) {
-			lines.do { |line, i| if (line[2].find(str, ignoreCase).notNil) { indices = indices.add(i) } };
-			^indices
-		} { ^nil }
+		^if (str.notNil and: (str != "")) {
+			lines.do { |line, i|
+				if (line[2].find(str, ignoreCase).notNil) {
+					indices = indices.add(i)
+				}
+			};
+			indices
+		} { nil }
 	}
 
 	indicesFor { |keys, string=""|
@@ -452,13 +480,13 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 
 	makeWin { |where, numItems=8|
 		var gui = HistoryGui(this, numItems);
-		if (where.notNil) { gui.moveTo(where.x, where.y); };
+		if (where.notNil) { gui.moveTo(where.x, where.y) };
 		^gui
 	}
 
 	*document { current.document }
 
-	document { arg title="";
+	document { |title = ""|
 		var docTitle = title ++ Date.getDate.format("%Y-%m-%e-%Hh%M-History");
 		Document.new(docTitle, this.storyString)
 		// path not working yet
@@ -497,18 +525,20 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 
 			codeStr = lineStrings.copyRange(lineIndex + 1, nextComIndex - 2).join;
 
-			[time, key, codeStr];
+			[time, key, codeStr]
 		};
 	}
+
 	*checkPath { |path|
 		var ext = path.splitext[1];
-		if ([\sc, \scd, \txt, \nil, \rtf].includes(ext.asSymbol)) {
-			^true
+		^if ([\sc, \scd, \txt, \nil, \rtf].includes(ext.asSymbol)) {
+			true
 		} {
 			warn("History: file format" + ext + "for story files likely not supported!				Please use .txt, .scd, or other text format.");
-			^false
-		};
+			false
+		}
 	}
+
 	// load file saved with saveStory
 	*loadStory { |path| current.loadStory(path) }
 
