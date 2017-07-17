@@ -176,7 +176,7 @@ void CodeEditorBox::onDocumentClosed(Document *doc)
             if (editor)
                 mLayout->setCurrentWidget(editor);
             setFocusProxy(editor);
-            emit currentChanged(editor);
+//            emit currentChanged(editor);
         }
     }
 }

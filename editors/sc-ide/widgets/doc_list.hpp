@@ -39,16 +39,19 @@ class DocumentListWidget : public QListWidget
 public:
 
     DocumentListWidget(DocumentManager *, QWidget * parent = 0);
+    QList<Document*> listDocuments();
+    void populateList( QList<Document*> );
 
 public Q_SLOTS:
 
     void setCurrent( Document * );
     void updateDockletOrder( int, int );
+    void reloadList( QList<Document*> );
 
 Q_SIGNALS:
 
     void clicked( Document * );
-    void updateTabsOrder( QList<Document*> );
+    void reloadAllLists( QList<Document*> );
 
 private Q_SLOTS:
 
@@ -76,7 +79,6 @@ private:
     };
 
     virtual void dropEvent( QDropEvent *);
-    QList<Document*> listDocuments();
 
     Item *addItemFor( Document * );
     Item *itemFor( Document * );

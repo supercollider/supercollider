@@ -302,16 +302,40 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
 {
     mTabs = new EditorTabBar;
 
+    DocumentManager *docManager = Main::documentManager();
+    QList<Document*> documentList = docManager->documents();
+
+    if(!documentList.isEmpty()) {
+        foreach ( Document * doc, documentList )
+            addTab(doc);
+    }
+
     mSplitter = new MultiSplitter(this);
     CodeEditorBox *defaultBox = newBox(mSplitter);
 
     mSplitter->addWidget(defaultBox);
+
+    mCmdLine = new CmdLine(tr("Command Line:"));
+    connect(mCmdLine, SIGNAL(invoked(QString, bool)),
+            main->scProcess(), SLOT(evaluateCode(QString, bool)));
+
+    mFindReplaceTool = new TextFindReplacePanel;
+    
+    mGoToLineTool = new GoToLineTool();
+    connect(mGoToLineTool, SIGNAL(activated(int)), this, SLOT(hideAllToolBoxes()));
+
+    mToolBox = new ToolBox;
+    mToolBox->addWidget(mCmdLine);
+    mToolBox->addWidget(mFindReplaceTool);
+    mToolBox->addWidget(mGoToLineTool);
+    mToolBox->hide();
 
     multiEditorLayout = new QVBoxLayout;
     multiEditorLayout->setContentsMargins(0,0,0,0);
     multiEditorLayout->setSpacing(0);
     multiEditorLayout->addWidget(mTabs);
     multiEditorLayout->addWidget(mSplitter);
+    multiEditorLayout->addWidget(mToolBox);
     setLayout(multiEditorLayout);
 
     makeSignalConnections();
@@ -321,12 +345,19 @@ MultiEditor::MultiEditor( Main *main, QWidget * parent ) :
     connect( main, SIGNAL(applySettingsRequest(Settings::Manager*)),
              this, SLOT(applySettings(Settings::Manager*)) );
 
+    connect( MainWindow::instance(), SIGNAL(reloadDocumentLists(QList<Document*>)),
+                this, SLOT(updateTabsOrder(QList<Document*>)));
+
+    connect(mToolBox->closeButton(), SIGNAL(clicked()), MainWindow::instance(), SLOT(hideToolBox()));
+
     createActions();
 
+    mCurrentEditorBox = 0;
     setCurrentBox( defaultBox ); // will updateActions();
 
     applySettings( main->settings() );
 }
+
 
 void MultiEditor::makeSignalConnections()
 {
@@ -352,12 +383,11 @@ void MultiEditor::makeSignalConnections()
 
     mBoxSigMux->connect(SIGNAL(currentChanged(GenericCodeEditor*)),
             this, SLOT(onCurrentEditorChanged(GenericCodeEditor*)));
-    
 }
 
 void MultiEditor::updateDocOrder(int from, int to)
 {
-    Q_EMIT( updateDockletOrder(from, to) );
+    Q_EMIT( tabsOrderChanged(from, to) );
 }
 
 void MultiEditor::breakSignalConnections()
@@ -645,6 +675,24 @@ void MultiEditor::createActions()
     connect(action, SIGNAL(triggered()), this, SLOT(switchDocument()));
     settings->addAction( action, "editor-document-switch", editorCategory);
 
+    mActions[NewWindow] = action = new QAction(tr("Open New Window"), this);
+    action->setStatusTip(tr("Open a new window"));
+    action->setShortcut( tr("Ctrl+Alt+N", "Open A New Window"));
+    connect(action, SIGNAL(triggered()), MainWindow::instance(), SLOT(newWindow()));
+    settings->addAction( action, "editor-new", editorCategory);
+
+    mActions[CloseWindow] = action = new QAction(tr("Close Current Window"), this);
+    action->setStatusTip(tr("Close the current window"));
+    action->setShortcut( tr("Ctrl+Alt+W", "Close The Current Window"));
+    connect(action, SIGNAL(triggered()), this, SIGNAL(closeWindow()));
+    settings->addAction( action, "editor-new", editorCategory);
+
+    mActions[SwitchEditor] = action = new QAction(tr("Switch Editor"), this);
+    action->setStatusTip(tr("Shows the editorList popup"));
+    action->setShortcut( tr("Ctrl+Alt+E", "Switch Editor"));
+    connect(action, SIGNAL(triggered()), MainWindow::instance(), SLOT(switchEditor()));
+    settings->addAction( action, "editor-switch", editorCategory);
+
     mActions[SplitHorizontally] = action = new QAction(tr("Split To Right"), this);
     //action->setShortcut( tr("Ctrl+P, 3", "Split To Right"));
     connect(action, SIGNAL(triggered()), this, SLOT(splitHorizontally()));
@@ -697,7 +745,7 @@ void MultiEditor::createActions()
     // at least to this widget, in order for the shortcuts to always respond:
     addAction(mActions[TriggerAutoCompletion]);
     addAction(mActions[TriggerMethodCallAid]);
-    addAction(mActions[SwitchDocument]);
+//    addAction(mActions[SwitchDocument]);    // This prevents the shortcut to work on restored SubWindows
 
     // These actions have to be added because to the widget because they have
     // Qt::WidgetWithChildrenShortcut context:
@@ -861,7 +909,7 @@ static QVariantMap saveSplitterState( QSplitter *splitter, const QList<Document*
     return splitterData;
 }
 
-void MultiEditor::saveSession( Session *session )
+QVariantMap MultiEditor::saveSession( Session *session )
 {
     QList<Document*> documentList;
 
@@ -878,7 +926,7 @@ void MultiEditor::saveSession( Session *session )
     session->setValue( "documents", QVariant::fromValue(tabsData) );
 
     session->remove( "editors" );
-    session->setValue( "editors", saveSplitterState(mSplitter, documentList) );
+    return saveSplitterState(mSplitter, documentList);
 }
 
 void MultiEditor::loadBoxState( CodeEditorBox *box,
@@ -920,7 +968,7 @@ void MultiEditor::loadSplitterState( MultiSplitter *splitter,
         qWarning("MultiEditor: could not restore splitter state!");
 }
 
-void MultiEditor::switchSession( Session *session )
+void MultiEditor::switchSession( Session *session, QVariant * splitterData = 0 )
 {
     ///// Going offline...
 
@@ -940,6 +988,7 @@ void MultiEditor::switchSession( Session *session )
 
     // remove all editors
     delete mSplitter;
+    layout()->removeWidget(mToolBox);
 
     documentList.clear();
 
@@ -962,9 +1011,8 @@ void MultiEditor::switchSession( Session *session )
             addTab(doc);
 
         // restore editors
-        if (session->contains("editors")) {
-            QVariantMap splitterData = session->value("editors").value<QVariantMap>();
-            loadSplitterState( mSplitter, splitterData, documentList );
+        if (session->contains("editors") || session->contains("windows")) {
+            loadSplitterState( mSplitter, splitterData->toMap(), documentList );
 
             if (mSplitter->count()) {
                 firstBox = mSplitter->findChild<CodeEditorBox>();
@@ -984,6 +1032,7 @@ void MultiEditor::switchSession( Session *session )
     }
 
     layout()->addWidget(mSplitter);
+    layout()->addWidget(mToolBox);
 
     makeSignalConnections();
 
@@ -997,6 +1046,67 @@ void MultiEditor::switchSession( Session *session )
         docManager->create();
 
     firstBox->setFocus(Qt::OtherFocusReason); // ensure focus
+
+    setMainComboBoxOption();
+    if (mSplitter->count()>1)
+        activateComboBoxWhenSplitting();
+    else
+        emit splitViewDeactivated();
+}
+
+void MultiEditor::restoreSubWindow( QVariant * splitterData )
+{
+    QList<Document*> documentList = Main::documentManager()->documents();
+
+    delete mTabs;
+    delete mSplitter;
+    delete multiEditorLayout;
+
+    mTabs = new EditorTabBar;
+
+    foreach ( Document * doc, documentList )
+        addTab(doc);
+
+    mSplitter = new MultiSplitter(this);
+    CodeEditorBox *firstBox = 0;
+
+    loadSplitterState( mSplitter, splitterData->toMap(), documentList );
+
+    if (mSplitter->count()) {
+        firstBox = mSplitter->findChild<CodeEditorBox>();
+        if (!firstBox) {
+            qWarning("Session seems to contain invalid editor split data!");
+            delete mSplitter;
+            mSplitter = new MultiSplitter(this);
+        }
+    }
+
+    if (!firstBox) {
+        // Restoring the session didn't result in any editor box, so create one:
+        firstBox = newBox(mSplitter);
+    }
+
+    mSplitter->addWidget(firstBox);
+
+    multiEditorLayout = new QVBoxLayout;
+    multiEditorLayout->setContentsMargins(0,0,0,0);
+    multiEditorLayout->setSpacing(0);
+    multiEditorLayout->addWidget(mTabs);
+    multiEditorLayout->addWidget(mSplitter);
+    multiEditorLayout->addWidget(mToolBox);
+    setLayout(multiEditorLayout);
+
+    makeSignalConnections();
+
+    connect( MainWindow::instance(), SIGNAL(reloadDocumentLists(QList<Document*>)),
+                this, SLOT(updateTabsOrder(QList<Document*>)));
+
+    createActions();
+
+    mCurrentEditorBox = 0;
+    setCurrentBox( firstBox ); // will updateActions();
+
+    applySettings( Main::instance()->settings() );
 
     setMainComboBoxOption();
     if (mSplitter->count()>1)
@@ -1081,8 +1191,10 @@ void MultiEditor::onOpen( Document *doc, int initialCursorPosition, int selectio
 {
     addTab(doc);
 
-    currentBox()->setDocument(doc, initialCursorPosition, selectionLength);
-    currentBox()->setFocus(Qt::OtherFocusReason);
+    if( MainWindow::instance()->currentMultiEditor() == this ) {
+        currentBox()->setDocument(doc, initialCursorPosition, selectionLength);
+        currentBox()->setFocus(Qt::OtherFocusReason);
+    }
 }
 
 void MultiEditor::onClose( Document *doc )
@@ -1152,11 +1264,13 @@ void MultiEditor::onCurrentTabChanged( int index )
 
 void MultiEditor::onCurrentEditorChanged(GenericCodeEditor *editor)
 {
+    MainWindow::instance()->setCurrentEditor(this);
     setCurrentEditor(editor);
 }
 
 void MultiEditor::onBoxActivated(CodeEditorBox *box)
 {
+    MainWindow::instance()->setCurrentEditor(this);
     setCurrentBox(box);
 }
 
@@ -1195,11 +1309,19 @@ void MultiEditor::setCurrentBox( CodeEditorBox * box )
     if (mCurrentEditorBox == box)
         return;
 
+    if (mCurrentEditorBox) {
+        GenericCodeEditor *editor = currentEditor();
+        if (editor) {
+            editor->clearSearchHighlighting();
+        }
+    }
+
     mCurrentEditorBox = box;
     mBoxSigMux->setCurrentObject(box);
     setCurrentEditor( box->currentEditor() );
 
     mCurrentEditorBox->setActive();
+    
 }
 
 void MultiEditor::setCurrentEditor( GenericCodeEditor * editor )
@@ -1216,7 +1338,16 @@ void MultiEditor::setCurrentEditor( GenericCodeEditor * editor )
     Document *currentDocument = editor ? editor->document() : 0;
     Main::documentManager()->setActiveDocument(currentDocument);
     emit currentDocumentChanged(currentDocument);
+    setEditorForToolBox( editor );
 }
+
+void MultiEditor::setEditorForToolBox( GenericCodeEditor * cgeditor )
+{
+    mFindReplaceTool->setEditor( cgeditor );
+    mGoToLineTool->setEditor( cgeditor );  
+    mFindReplaceTool->initiate();  
+}
+
 
 GenericCodeEditor *MultiEditor::currentEditor()
 {
@@ -1248,6 +1379,7 @@ void MultiEditor::removeCurrentSplit()
 
     CodeEditorBox *box = currentBox();
     mSplitter->removeWidget(box);
+    mCurrentEditorBox = 0;
 
     // switch current box to first box found:
     box = mSplitter->findChild<CodeEditorBox>();

@@ -34,6 +34,11 @@
 #include <QSplitter>
 #include <QSignalMapper>
 
+#include "find_replace_tool.hpp"
+#include "goto_line_tool.hpp"
+#include "tool_box.hpp"
+#include "cmd_line.hpp"
+
 namespace ScIDE {
 
 class CodeEditorBox;
@@ -92,7 +97,7 @@ public:
         CopyLineDown,
         MoveLineUp,
         MoveLineDown,
-	DeleteWord,
+	    DeleteWord,
 
         GotoPreviousBlock,
         GotoNextBlock,
@@ -118,6 +123,10 @@ public:
         NextDocument,
         PreviousDocument,
         SwitchDocument,
+
+        NewWindow,
+        CloseWindow,
+        SwitchEditor,
 
         SplitHorizontally,
         SplitVertically,
@@ -145,18 +154,28 @@ public:
     QAction * action( ActionRole role )
         { return mActions[role]; }
 
-    void saveSession( Session * );
-    void switchSession( Session * );
+    QVariantMap saveSession( Session * );
+    void switchSession( Session *, QVariant * );
+    void restoreSubWindow( QVariant * );
+
+    QTabBar * tabBar() { return mTabs; };
+
+    ToolBox * toolBox() { return mToolBox; }
+    CmdLine * cmdLine() { return mCmdLine; }
+    GoToLineTool * goToLineTool() { return mGoToLineTool; }
+    TextFindReplacePanel * textFindReplacePanel() { return mFindReplaceTool; }
 
 signals:
     void currentDocumentChanged( Document * );
     void splitViewActivated();
     void splitViewDeactivated();
-    void updateDockletOrder( int, int );
+    void tabsOrderChanged( int, int );
+    void closeWindow();
 
 public slots:
 
     void setCurrent( Document * );
+    void updateTabsOrder( QList<Document*> );
 
     void showNextDocument();
     void showPreviousDocument();
@@ -172,8 +191,6 @@ public slots:
 
     void setShowAutocompleteHelp(bool on);
 
-    void updateTabsOrder( QList<Document*> );
-
 private slots:
     void applySettings( Settings::Manager * );
     void onOpen( Document *, int initialCursorPosition, int selectionLength );
@@ -186,6 +203,7 @@ private slots:
     void onBoxActivated( CodeEditorBox * );
     void onDocModified( QObject * );
     void updateDocOrder( int, int);
+    void setEditorForToolBox( GenericCodeEditor * );
 
 private:
     void makeSignalConnections();
@@ -214,6 +232,11 @@ private:
     MultiSplitter *mSplitter;
     QIcon mDocModifiedIcon;
     QVBoxLayout *multiEditorLayout;
+
+    ToolBox *mToolBox;
+    CmdLine *mCmdLine;
+    GoToLineTool *mGoToLineTool;
+    TextFindReplacePanel *mFindReplaceTool;
 };
 
 } // namespace ScIDE

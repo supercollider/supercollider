@@ -26,20 +26,29 @@
 #include <QProcess>
 #include <QSignalMapper>
 #include <QStatusBar>
+#include <QList>
+#include <QCloseEvent>
+
+#include <QApplication>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QMenuBar>
+#include <QAction>
 
 #include "util/status_box.hpp"
+#include "multi_editor.hpp"
+#include "util/docklet.hpp"
+#include "doc_list.hpp"
+#include "../core/main.hpp"
+#include "editor_box.hpp"
 
 namespace ScIDE {
 
 class Main;
 class MultiEditor;
-class ToolBox;
-class TextFindReplacePanel;
-class GoToLineTool;
 class PostDocklet;
 class DocumentsDocklet;
 class HelpBrowserDocklet;
-class CmdLine;
 class Document;
 class DocumentsDialog;
 struct Session;
@@ -47,6 +56,8 @@ class ClockStatusBox;
 class ScServer;
 class ScProcess;
 class GenericCodeEditor;
+class DocumentListWidget;
+class SubWindow;
 
 namespace Settings { class Manager; }
 
@@ -61,6 +72,7 @@ public:
         Quit = 0,
         DocNew,
         DocOpen,
+        DocOpenRecent,
         DocOpenStartup,
         DocOpenSupportDir,
         DocSave,
@@ -110,6 +122,8 @@ public:
         ActionCount
     };
 
+    typedef QList< MultiEditor * > History;
+
     explicit MainWindow(Main *);
 
     QAction *action( ActionRole );
@@ -132,6 +146,12 @@ public:
     static bool reload( Document * );
 
     void restoreDocuments();
+    MultiEditor * currentMultiEditor();
+    QMenuBar *createMenus();
+    void updateMenuBar( QMenuBar * );
+
+    DocumentsDocklet *docDocklet() { return mDocumentsDocklet; }    
+    int docDockletWidth() { return mDocumentsDocklet->list()->width(); }
 
 public Q_SLOTS:
     void newSession();
@@ -159,9 +179,19 @@ public Q_SLOTS:
 
 signals:
     void evaluateCode( const QString &, bool silent = true );
+    void reloadDocumentLists( QList<Document*> );
+    void tabsOrderChanged(int, int);
+    void documentDockletUndocked();
+    void currentEditorChanged( Document * );
+    void closeSubWindows();
 
 public Q_SLOTS:
     void showStatusMessage( QString const & string );
+    void newWindow();
+    void closeWindow( MultiEditor * );
+    void setCurrentEditor( MultiEditor * );
+    void switchEditor();
+    void updateRecentDocsMenu();
 
 private Q_SLOTS:
     void openStartupFile();
@@ -174,7 +204,6 @@ private Q_SLOTS:
     void onCurrentDocumentChanged( Document * );
     void onDocumentChangedExternally( Document * );
     void onDocDialogFinished();
-    void updateRecentDocsMenu();
     void onOpenRecentDocument( QAction * );
     void onOpenSessionAction( QAction * );
     void updateWindowTitle();
@@ -194,7 +223,11 @@ private Q_SLOTS:
     void showAbout();
     void showAboutQT();
     void cmdLineForCursor();
-
+    void reloadAllLists( QList<Document*> );
+    void reloadAllLists( int, int );
+    void onDocumentDockletUndocked( bool );
+    void setCurrent( Document * );
+    
 protected:
     virtual void closeEvent(QCloseEvent *event);
     virtual void dragEnterEvent( QDragEnterEvent * );
@@ -203,7 +236,6 @@ protected:
 
 private:
     void createActions();
-    void createMenus();
     template <class T> void saveWindowState(T * settings);
     template <class T> void restoreWindowState(T * settings);
     void updateSessionsMenu();
@@ -212,8 +244,10 @@ private:
     bool checkFileExtension( const QString & fpath );
     void toggleInterpreterActions( bool enabled);
     void applyCursorBlinkingSettings( Settings::Manager * );
-    QString documentOpenPath() const;
+    QString documentOpenPath();
     QString documentSavePath( Document * ) const;
+    void createDocumentConnections();
+    void clearEditorList();
 
     Main *mMain;
 
@@ -222,12 +256,7 @@ private:
     QMenu * mSessionsMenu;
 
     MultiEditor *mEditors;
-
-    // Tools
-    ToolBox *mToolBox;
-    CmdLine *mCmdLine;
-    GoToLineTool *mGoToLineTool;
-    TextFindReplacePanel *mFindReplaceTool;
+    History mEditorList;
 
     // Status bar
     QStatusBar  *mStatusBar;
@@ -258,6 +287,183 @@ private:
     void timerEvent(QTimerEvent *);
     void updateTime();
     int mTimerId;
+};
+
+class SubWindow : public QWidget
+{
+    Q_OBJECT
+
+public:
+    explicit SubWindow( QVariant * splitterData = 0, QWidget * parent = 0 ):
+    QWidget(parent)
+    {
+        this->resize(640, 480);
+        this->show();
+        this->setWindowTitle(
+            QApplication::translate("toplevel", "Code Editor")
+        );
+
+        main = MainWindow::instance();
+
+        sEditors = new MultiEditor(Main::instance(), this);
+        if(splitterData)
+            sEditors->restoreSubWindow(splitterData);
+
+        QVBoxLayout *windowLayout = new QVBoxLayout;
+        windowLayout->setContentsMargins(0,0,0,0);
+        windowLayout->setSpacing(0);
+
+//#ifndef Q_OS_MAC
+        QMenuBar *newMenu = main->createMenus();
+        newMenu->setSizePolicy(QSizePolicy ::Expanding , QSizePolicy ::Fixed );
+        windowLayout->addWidget(newMenu);
+//#endif
+
+        QVBoxLayout *center_box = new QVBoxLayout;
+        center_box->setContentsMargins(0,0,0,0);
+        center_box->setSpacing(0);
+        center_box->addWidget(sEditors);
+
+        sEditorsDocklet = new QWidget;
+        sEditorsDocklet->setLayout(center_box);
+
+        documentsDocklet();
+
+        QSplitter * editors_layout = new QSplitter;
+        editors_layout->setOrientation(Qt::Horizontal);
+        editors_layout->addWidget(sDocumentsDocklet);
+        editors_layout->addWidget(sEditorsDocklet);
+
+        // We assume that all additional DocumentsDocklets' size must be as the current MainWindow's DocumentsDocklet's one 
+        QList<int> layoutInitialWidths;
+        layoutInitialWidths.append(main->docDockletWidth());
+        int editorWidth = editors_layout->size().width() - main->docDockletWidth();
+        layoutInitialWidths.append(editorWidth);
+        editors_layout->setSizes(layoutInitialWidths);
+
+        windowLayout->addWidget(editors_layout);
+        this->setLayout(windowLayout);
+
+        // loadDocuments
+        sDocumentListWidget->populateList(main->docDocklet()->list()->listDocuments());
+        sEditors->updateTabsOrder(sDocumentListWidget->listDocuments());
+
+        if( splitterData )
+           sDocumentListWidget->setCurrent(sEditors->currentBox()->currentDocument());
+
+        createDocumentConnections();
+
+        connect(main->docDocklet(), SIGNAL(dockletDetached(bool)),
+                this, SLOT(onDocumentDockletUndocked(bool)));
+
+        setDocDockletVisibility();
+        onDocumentDockletUndocked( main->docDocklet()->isDetached() );
+
+        this->setAttribute(Qt::WA_DeleteOnClose);
+        connect(sEditors, SIGNAL(closeWindow()), this, SLOT(close()));
+        connect(main, SIGNAL(closeSubWindows()), this, SLOT(close()));
+
+        connect(Main::documentManager(), SIGNAL(recentsChanged()),
+            main, SLOT(updateRecentDocsMenu()));
+
+        main->updateRecentDocsMenu();
+    }
+
+    MultiEditor * editor() { return sEditors; }
+    
+public Q_SLOTS:
+
+    void onDocumentDockletUndocked( bool undocked )
+    {
+        if( undocked ) {
+            connect(sEditors, SIGNAL(currentDocumentChanged(Document*)),
+                    main->docDocklet()->list(), SLOT(setCurrent(Document*)));
+            connect(main, SIGNAL(currentEditorChanged(Document*)),
+                    main->docDocklet()->list(), SLOT(setCurrent(Document*)));
+
+        } else {
+            disconnect(sEditors, SIGNAL(currentDocumentChanged(Document*)),
+                    main->docDocklet()->list(), SLOT(setCurrent(Document*)));
+            disconnect(main, SIGNAL(currentEditorChanged(Document*)),
+                    main->docDocklet()->list(), SLOT(setCurrent(Document*)));
+        }
+    }
+
+    void setDocDockletVisibility()
+    {
+        if (main->docDocklet()->isDetached()) {
+            sDocumentsDocklet->hide();
+        } else {
+            sDocumentsDocklet->setVisible(main->docDocklet()->isVisible());
+        }
+    }
+
+protected:
+
+    virtual void closeEvent(QCloseEvent* event)
+    {
+        main->closeWindow(sEditors);
+        event->accept();
+    }
+
+private:
+
+    void documentsDocklet()
+    {
+        DockletToolBar * documentsToolBar = new DockletToolBar("Documents");
+        sDocumentListWidget = new DocumentListWidget(Main::documentManager(), this);
+
+        QVBoxLayout * documentsDocklet_layout = new QVBoxLayout;
+        documentsDocklet_layout->setContentsMargins(0,0,0,0);
+        documentsDocklet_layout->setSpacing(0);
+        documentsDocklet_layout->addWidget(documentsToolBar);
+        documentsDocklet_layout->addWidget(sDocumentListWidget);
+        
+        sDocumentsDocklet = new QWidget;
+        sDocumentsDocklet->setLayout(documentsDocklet_layout);
+
+        QMenu *optionsMenu = documentsToolBar->optionsMenu();
+        optionsMenu->clear();
+
+        QAction *action;
+        action = optionsMenu->addAction(tr("Detach"));
+        connect(action, SIGNAL(triggered(bool)), 
+                main->docDocklet(), SLOT(toggleDetached()) );
+
+        action = optionsMenu->addAction(tr("Hide"));
+        connect(action, SIGNAL(triggered(bool)), 
+                sDocumentsDocklet, SLOT(setVisible(bool)) );
+        
+        action = optionsMenu->addAction(tr("Close all"));
+        connect(action, SIGNAL(triggered(bool)), 
+                main->docDocklet()->dockWidget(), SLOT(hide()) );
+
+        connect(main->docDocklet()->dockWidget(), SIGNAL(visibilityChanged(bool)), 
+                this, SLOT(setDocDockletVisibility()) );        
+    }
+
+    void createDocumentConnections()
+    {
+        // Editor-Document list interaction
+        connect(sDocumentListWidget, SIGNAL(clicked(Document*)),
+                sEditors, SLOT(setCurrent(Document*)));
+        connect(sEditors, SIGNAL(currentDocumentChanged(Document*)),
+                sDocumentListWidget, SLOT(setCurrent(Document*)),
+                Qt::QueuedConnection);
+
+        // General Document lists syncronization
+        connect(sDocumentListWidget, SIGNAL(reloadAllLists(QList<Document*>)),
+                main, SLOT(reloadAllLists(QList<Document*>)));
+        connect(sEditors, SIGNAL(tabsOrderChanged(int, int)),
+                main, SLOT(reloadAllLists(int, int)));
+    }
+
+    MultiEditor * sEditors;
+    QWidget * sDocumentsDocklet;
+    QWidget * sEditorsDocklet;
+    DocumentListWidget * sDocumentListWidget;
+    MainWindow * main;
+    bool docDockletVisibility;
 };
 
 } // namespace ScIDE

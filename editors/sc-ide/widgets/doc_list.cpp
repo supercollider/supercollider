@@ -20,6 +20,8 @@
 
 #include "doc_list.hpp"
 #include "../core/doc_manager.hpp"
+#include "main_window.hpp"
+#include "multi_editor.hpp"
 
 #include <QApplication>
 #include <QStyle>
@@ -39,8 +41,19 @@ DocumentListWidget::DocumentListWidget(DocumentManager *manager, QWidget * paren
             this, SLOT(onModificationChanged(QObject*)));
     connect(this, SIGNAL(itemPressed(QListWidgetItem*)),
             this, SLOT(onItemClicked(QListWidgetItem*)));
+    connect(MainWindow::instance(), SIGNAL(reloadDocumentLists(QList<Document*>)),
+            this, SLOT(reloadList(QList<Document*>)));
+    connect(MainWindow::instance(), SIGNAL(tabsOrderChanged(int, int)),
+            this, SLOT(updateDockletOrder(int, int)));
 
     setDragDropMode(QAbstractItemView::InternalMove);
+}
+
+void DocumentListWidget::populateList( QList<Document*> docList )
+{
+    foreach (Document * doc, docList) {
+        addItemFor(doc);
+    }
 }
 
 void DocumentListWidget::setCurrent( Document *doc )
@@ -59,7 +72,16 @@ void DocumentListWidget::dropEvent( QDropEvent *event )
     QListWidget::dropEvent(event);
     QList<Document*> tempDocumentList = listDocuments();
 
-    Q_EMIT( updateTabsOrder(tempDocumentList) );
+    Q_EMIT( reloadAllLists(tempDocumentList) );
+}
+
+void DocumentListWidget::reloadList( QList<Document*> docList )
+{
+    Document * refDoc = itemFor(currentItem())->mDoc;
+    foreach( Document * doc, listDocuments() )
+        delete itemFor(doc);
+    populateList(docList);
+    setCurrent(refDoc);
 }
 
 QList<Document*> DocumentListWidget::listDocuments() {
@@ -78,9 +100,10 @@ QList<Document*> DocumentListWidget::listDocuments() {
 
 void DocumentListWidget::updateDockletOrder(int from, int to) 
 {
-        QListWidgetItem *itemToMove = takeItem(to);
-        insertItem(from, itemToMove);
-        setCurrentRow(from);
+    Document * refDoc = itemFor(currentItem())->mDoc;
+    QListWidgetItem *itemToMove = takeItem(to);
+    insertItem(from, itemToMove);
+    setCurrent(refDoc);
 }
 
 void DocumentListWidget::onOpen( Document *doc, int, int )
