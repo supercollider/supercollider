@@ -9,23 +9,11 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 	var <lines, <lineShorts, <keys, <player, <hasMovedOn;
 
 	*timeStamp {
-		// hope it works on linux?
-		if (thisProcess.platform.isKindOf(UnixPlatform)) {
-			^Date.getDate.stamp
-		} {
-			// "// temporary kludge to fix Date's brokenness on windows".postln;
-			^Main.elapsedTime.round(0.01)
-		};
+		^Date.getDate.stamp
 	}
 
 	*dateString {
-		// hope it works on linux?
-		if (thisProcess.platform.isKindOf(UnixPlatform)) {
-			^Date.getDate.asString
-		} {
-			// temporary kludge to fix Date's brokenness on windows
-			^"__date_time_please__"
-		};
+		^Date.getDate.asString
 	}
 
 	*initClass {
@@ -470,21 +458,11 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 
 	*document { current.document }
 
-	document { arg title="";	// platform dependent ...
-		var docTitle;
-		Platform.case(
-			\windows, {
-				// not sure this works in 3.7.0?
-				this.storyString.newTextWindow("History_documented");
-			},
-			{
-				//
-				docTitle = title ++ Date.getDate.format("%Y-%m-%e-%Hh%M-History");
-				Document.new(docTitle, this.storyString)
-				// path not working yet
-				//	.path_(docTitle); // don't lose title.
-			}
-		)
+	document { arg title="";
+		var docTitle = title ++ Date.getDate.format("%Y-%m-%e-%Hh%M-History");
+		Document.new(docTitle, this.storyString)
+		// path not working yet
+		//.path_(docTitle); // don't lose title.
 	}
 
 	*readFromDoc { |path|
