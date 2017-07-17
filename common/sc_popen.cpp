@@ -47,8 +47,8 @@ sc_popen(const char *command, pid_t *pidp, const char *type)
 	std::vector<char> v2( str2.begin(), str2.end() );
 	v2.push_back('\0');
 	argv[2] = v2.data();
-	argv[3] = nullptr;	
-	
+	argv[3] = nullptr;
+
 	return sc_popen_argv(v0.data(), argv.data(), pidp, type);
 }
 
@@ -349,8 +349,7 @@ FILE *
 sc_popen_argv(const char *filename, char *const argv[], pid_t *pidp, const char *type)
 {
     printf("sc_popen_argv: not implemented\n");
-    return (nullptr);
-
+    return nullptr;
 }
 
 #endif
