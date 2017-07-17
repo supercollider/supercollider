@@ -166,6 +166,7 @@ static SC_Lock processlist_mutex;
 #define	THREAD_LOCK()	processlist_mutex.lock()
 #define	THREAD_UNLOCK()	processlist_mutex.unlock()
 
+// TODO: change first argument to `const wchar_t *`.
 FILE *
 sc_popen(const char *cmd, pid_t *pid, const char *mode)
 {
@@ -253,6 +254,7 @@ sc_popen(const char *cmd, pid_t *pid, const char *mode)
 	}
 
 	/* creating child process */
+	// TODO: change to CreateProcessW
 	if (CreateProcess(NULL,	/* pointer to name of executable module */
 					  new_cmd,	/* pointer to command line string */
 					  NULL,	/* pointer to process security attributes */
