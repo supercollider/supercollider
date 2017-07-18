@@ -309,8 +309,6 @@ Function : AbstractFunction {
 		};
 
 		^buffer
-
-
 	}
 
 	loadToFloatArray { |duration = 0.01, server, action|
@@ -321,7 +319,6 @@ Function : AbstractFunction {
 			})
 		})
 	}
-
 
 }
 
