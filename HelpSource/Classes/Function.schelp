@@ -462,7 +462,7 @@ argument::action
 A function that is called when the buffer is filled. It is passed the buffer as argument.
 
 argument::fadeTime
-A fade in and out time in seconds. Only when larger zero, an envelope is applied to the signal to avoid clicks (default: 0).
+A fade in and out time in seconds. Only when greater than zero, an envelope is applied to the signal to avoid clicks (default: 0).
 
 discussion::
 code::
