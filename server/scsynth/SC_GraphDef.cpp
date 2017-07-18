@@ -687,17 +687,14 @@ GraphDef* GraphDef_LoadDir(World *inWorld, const bfs::path& dirname, GraphDef *i
 		const bfs::path path = *rditer;
 
 		if (bfs::is_directory(path)) {
-			if (SC_Filesystem::instance().shouldNotCompileDirectory(path)) {
+			if (SC_Filesystem::instance().shouldNotCompileDirectory(path))
 				rditer.no_push();
-			} else {
-				// do nothing; recursion will happen automatically
-			}
-		} else { // ordinary file
-			if (path.extension() == ".scsyndef") {
-				inList = GraphDef_Load(inWorld, path, inList);
-			} else {
-				// ignore file, wasn't a synth def
-			}
+			else
+				; // do nothing; recursion will happen automatically
+		} else if (path.extension() == ".scsyndef") { // ordinary file
+			inList = GraphDef_Load(inWorld, path, inList);
+		} else {
+			// ignore file, wasn't a synth def
 		}
 
 		rditer.increment(ec);
