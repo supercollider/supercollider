@@ -1872,7 +1872,7 @@ static bool passOne_ProcessDir(const bfs::path& dir)
 		// Otherwise, post the error and fail.
 		if (ec.default_error_condition().value() == boost::system::errc::no_such_file_or_directory) {
 			post("WARNING: Could not open directory: '%s'\n"
-				"\tTo resolve this, either create the directory or remove it from your compilation paths.\n",
+				"\tTo resolve this, either create the directory or remove it from your compilation paths.\n\n",
 				SC_Codecvt::path_to_utf8_str(dir).c_str(),
 				ec.message().c_str()
 			);
