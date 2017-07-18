@@ -398,12 +398,8 @@ static bool PlugIn_LoadDir(const bfs::path& dir, bool reportError)
 				} else {
 				}
 
-			} else { // ordinary file
-				if (filename.extension() == SC_PLUGIN_EXT && !PlugIn_Load(path)) {
-#ifdef DEBUG_SCFS
-					cout << "[SC_FS] ERROR: Could not process " << path << endl;
-#endif
-				}
+			} else if (filename.extension() == SC_PLUGIN_EXT && !PlugIn_Load(path)) {
+				scprintf("*** ERROR: couldn't process '%s'", path.c_str());
 			}
 //		}
 
