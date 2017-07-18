@@ -393,19 +393,14 @@ static bool PlugIn_LoadDir(const bfs::path& dir, bool reportError)
 		const bfs::path path = *rditer;
 
 		const bfs::path& filename = path.filename();
-		// @TODO: maybe don't do it this way.. or at least only switch on directory names with .
-//		 skip directory or file starting with '.'
-//		if (filename.c_str()[0] != '.') {
-			if (bfs::is_directory(path)) {
-				if (SC_Filesystem::instance().shouldNotCompileDirectory(path)) {
-					rditer.no_push();
-				} else {
-				}
-
-			} else if (filename.extension() == SC_PLUGIN_EXT && !PlugIn_Load(path)) {
-				scprintf("*** ERROR: couldn't process '%s'", SC_Codecvt::path_to_utf8_str(path).c_str());
-			}
-//		}
+		if (bfs::is_directory(path)) {
+			if (SC_Filesystem::instance().shouldNotCompileDirectory(path))
+				rditer.no_push();
+			else
+				; // do nothing; recursion for free
+		} else if (filename.extension() == SC_PLUGIN_EXT && !PlugIn_Load(path)) {
+			scprintf("*** ERROR: couldn't process '%s'", SC_Codecvt::path_to_utf8_str(path).c_str());
+		}
 
 		rditer.increment(ec);
 		if (ec) {
