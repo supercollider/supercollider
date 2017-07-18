@@ -397,8 +397,12 @@ static bool PlugIn_LoadDir(const bfs::path& dir, bool reportError)
 				rditer.no_push();
 			else
 				; // do nothing; recursion for free
-		} else if (path.extension() == SC_PLUGIN_EXT && !PlugIn_Load(path)) {
-			scprintf("*** ERROR: couldn't process '%s'", SC_Codecvt::path_to_utf8_str(path).c_str());
+		} else if (path.extension() == SC_PLUGIN_EXT) {
+			bool success = PlugIn_Load(path);
+			if (!success)
+				scprintf("*** ERROR: couldn't process '%s'", SC_Codecvt::path_to_utf8_str(path).c_str());
+		} else {
+			// not a plugin, do nothing
 		}
 
 		rditer.increment(ec);
