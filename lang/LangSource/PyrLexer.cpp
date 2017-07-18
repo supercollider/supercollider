@@ -1947,14 +1947,10 @@ static bool passOne_ProcessDir(const bfs::path& dir)
 bool passOne()
 {
 	initPassOne();
+	bool success = gLanguageConfig->forEachIncludedDirectory(passOne_ProcessDir);
+	finiPassOne();
 
-	if (!gLanguageConfig->forEachIncludedDirectory(passOne_ProcessDir)) {
-		finiPassOne();
-		return false;
-	} else {
-		finiPassOne();
-		return true;
-	}
+	return success;
 }
 
 // true if filename ends in ".sc"
