@@ -379,7 +379,11 @@ static bool PlugIn_LoadDir(const bfs::path& dir, bool reportError)
 
 	if (ec) {
 		if (reportError) {
-			scprintf("*** ERROR: open directory failed '%s': %s\n", dir.c_str(), ec.message().c_str());
+			scprintf(
+				"*** ERROR: open directory failed '%s': %s\n",
+				SC_Codecvt::path_to_utf8_str(dir).c_str(),
+				ec.message().c_str()
+			);
 			fflush(stdout);
 		}
 		return false;
@@ -399,13 +403,17 @@ static bool PlugIn_LoadDir(const bfs::path& dir, bool reportError)
 				}
 
 			} else if (filename.extension() == SC_PLUGIN_EXT && !PlugIn_Load(path)) {
-				scprintf("*** ERROR: couldn't process '%s'", path.c_str());
+				scprintf("*** ERROR: couldn't process '%s'", SC_Codecvt::path_to_utf8_str(path).c_str());
 			}
 //		}
 
 		rditer.increment(ec);
 		if (ec) {
-			scprintf("ERROR: Could not iterate on directory '%s': %s\n", path.c_str(), ec.message().c_str());
+			scprintf(
+				"*** ERROR: Could not iterate on directory '%s': %s\n",
+				SC_Codecvt::path_to_utf8_str(path).c_str(),
+				ec.message().c_str()
+			);
 			return false;
 		}
 	}
