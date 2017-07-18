@@ -390,7 +390,7 @@ static bool PlugIn_LoadDir(const bfs::path& dir, bool reportError)
 	}
 
 	while (rditer != bfs::end(rditer)) {
-		const bfs::path& path = *rditer;
+		const bfs::path path = *rditer;
 
 		const bfs::path& filename = path.filename();
 		// @TODO: maybe don't do it this way.. or at least only switch on directory names with .
