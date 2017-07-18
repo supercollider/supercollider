@@ -62,12 +62,6 @@ extern "C" {
 char gTempVal;
 #endif // __APPLE__
 
-#ifdef DEBUG_SCFS
-#include <iostream>
-using std::cout;
-using std::endl;
-#endif
-
 namespace bfs = boost::filesystem;
 
 Malloc gMalloc;
@@ -380,9 +374,6 @@ static bool PlugIn_Load(const bfs::path& filename)
 
 static bool PlugIn_LoadDir(const bfs::path& dir, bool reportError)
 {
-#ifdef DEBUG_SCFS
-	cout << "[SC_FS] PlugIn_LoadDir: begin: " << dir << endl;
-#endif
 	boost::system::error_code ec;
 	bfs::recursive_directory_iterator rditer(dir, bfs::symlink_option::recurse, ec);
 
@@ -392,13 +383,8 @@ static bool PlugIn_LoadDir(const bfs::path& dir, bool reportError)
 			fflush(stdout);
 		}
 		return false;
-	} else {
-#ifdef DEBUG_SCFS
-		cout << "[SC_FS] Current directory: " << dir << endl;
-#endif
 	}
 
-	// @TODO: try this with try{} instead of error codes
 	while (rditer != bfs::end(rditer)) {
 		const bfs::path& path = *rditer;
 
@@ -407,18 +393,9 @@ static bool PlugIn_LoadDir(const bfs::path& dir, bool reportError)
 //		 skip directory or file starting with '.'
 //		if (filename.c_str()[0] != '.') {
 			if (bfs::is_directory(path)) {
-#ifdef DEBUG_SCFS
-				cout << "[SC_FS] Is a directory" << endl;
-#endif
 				if (SC_Filesystem::instance().shouldNotCompileDirectory(path)) {
-#ifdef DEBUG_SCFS
-					cout << "[SC_FS] Skipping directory (SC_FS reason)" << endl;
-#endif
 					rditer.no_push();
 				} else {
-#ifdef DEBUG_SCFS
-					cout << "[SC_FS] Using directory" << endl;
-#endif
 				}
 
 			} else { // ordinary file
@@ -436,8 +413,6 @@ static bool PlugIn_LoadDir(const bfs::path& dir, bool reportError)
 			return false;
 		}
 	}
-#ifdef DEBUG_SCFS
-	cout << "[SC_FS] PlugIn_LoadDir: end" << endl;
-#endif
+
 	return true;
 }

@@ -29,12 +29,6 @@
 
 #include "SC_Filesystem.hpp"
 
-#ifdef DEBUG_SCFS
-#include <iostream>
-using std::cout;
-using std::endl;
-#endif
-
 // system
 #include <glob.h> // ::glob, glob_t
 

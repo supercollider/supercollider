@@ -71,12 +71,6 @@
 #include "SC_Codecvt.hpp" // path_to_utf8_str
 #include "SC_TextUtils.hpp"
 
-#ifdef DEBUG_SCFS
-#include <iostream> // cout, endl
-using std::cout;
-using std::endl;
-#endif
-
 int yyparse();
 int processaccidental1(char *s);
 int processaccidental2(char *s);

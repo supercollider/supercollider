@@ -45,12 +45,6 @@
 #include <stdexcept>
 #include <string>
 
-#ifdef DEBUG_SCFS
-#include <iostream>
-using std::cout;
-using std::endl;
-#endif
-
 #include <boost/filesystem/operations.hpp> // recursive_directory_iterator
 #include <boost/filesystem/string_file.hpp> // load_string_file
 
@@ -678,9 +672,6 @@ GraphDef* GraphDef_Load(World *inWorld, const bfs::path& path, GraphDef *inList)
 
 GraphDef* GraphDef_LoadDir(World *inWorld, const bfs::path& dirname, GraphDef *inList)
 {
-#ifdef DEBUG_SCFS
-	cout << "[SC_FS] GraphDef_LoadDir: begin: " << dirname << endl;
-#endif
 	boost::system::error_code ec;
 	bfs::recursive_directory_iterator rditer(dirname, bfs::symlink_option::recurse, ec);
 
@@ -693,29 +684,16 @@ GraphDef* GraphDef_LoadDir(World *inWorld, const bfs::path& dirname, GraphDef *i
 		const bfs::path& path = *rditer;
 
 		if (bfs::is_directory(path)) {
-#ifdef DEBUG_SCFS
-			cout << "[SC_FS] Is a directory: " << path << endl;
-#endif
 			if (SC_Filesystem::instance().shouldNotCompileDirectory(path)) {
-#ifdef DEBUG_SCFS
-				cout << "[SC_FS] Skipping directory" << endl;
-#endif
 				rditer.no_push();
 			} else {
-#ifdef DEBUG_SCFS
-				cout << "[SC_FS] Working with directory" << endl;
-#endif
+				// do nothing; recursion will happen automatically
 			}
 		} else { // ordinary file
 			if (path.extension() == ".scsyndef") {
-#ifdef DEBUG_SCFS
-				cout << "[SC_FS] Processing" << endl;
-#endif
 				inList = GraphDef_Load(inWorld, path, inList);
 			} else {
-#ifdef DEBUG_SCFS
-				cout << "[SC_FS] File was not .scsyndef" << endl;
-#endif
+				// ignore file, wasn't a synth def
 			}
 		}
 
@@ -725,9 +703,7 @@ GraphDef* GraphDef_LoadDir(World *inWorld, const bfs::path& dirname, GraphDef *i
 			return inList;
 		}
 	}
-#ifdef DEBUG_SCFS
-	cout << "[SC_FS] GraphDef_LoadDir: end" << endl;
-#endif
+
 	return inList;
 }
 

@@ -30,12 +30,6 @@
 #include "SC_Filesystem.hpp"
 #include "SC_Codecvt.hpp"
 
-#ifdef DEBUG_SCFS
-#include <iostream>
-using std::cout;
-using std::endl;
-#endif
-
 // boost
 #include <boost/filesystem/operations.hpp> // is_directory
 
@@ -157,7 +151,6 @@ Path SC_Filesystem::defaultMyDocumentsDirectory()
 Path SC_Filesystem::defaultResourceDirectory()
 {
 	WCHAR buf[MAX_PATH];
-	// @TODO: error check? (none in original)
 	GetModuleFileNameW(nullptr, buf, MAX_PATH);
 	return Path(buf).parent_path();
 }

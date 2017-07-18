@@ -29,12 +29,6 @@
 
 #include "SC_Filesystem.hpp"
 
-#ifdef DEBUG_SCFS
-#include <iostream>
-using std::cout;
-using std::endl;
-#endif
-
 // boost
 #include <boost/filesystem/path.hpp> // path, parent_path()
 #include <boost/filesystem/operations.hpp> // canonical, current_path()
@@ -186,18 +180,12 @@ Path SC_Filesystem::defaultResourceDirectory()
 	Path ret;
 	CFStringEncoding encoding = kCFStringEncodingUTF8;
 
-#ifdef DEBUG_SCFS
-	cout << __func__ << ": searching for SCClassLibrary first." << endl;
-#endif
 	CFURLRef enablerURL = CFBundleCopyResourceURL (CFBundleGetMainBundle(),
 												   CFSTR("SCClassLibrary"),
 												   NULL,
 												   NULL
 												   );
 	if( !enablerURL ) {
-#ifdef DEBUG_SCFS
-		cout << __func__ << ": previous search failed, searching for sclang.app." << endl;
-#endif
 		enablerURL = CFBundleCopyResourceURL (CFBundleGetMainBundle(),
 											  CFSTR("sclang.app"),
 											  NULL,
@@ -205,9 +193,6 @@ Path SC_Filesystem::defaultResourceDirectory()
 											  );
 	}
 	if ( enablerURL ) {
-#ifdef DEBUG_SCFS
-		cout << __func__ << ": search succeeded, making relative path." << endl;
-#endif
 		// If sclang or SuperCollider binary is run within the .app bundle,
 		// this is how we find the Resources path.
 		char relDir[PATH_MAX];
@@ -218,42 +203,21 @@ Path SC_Filesystem::defaultResourceDirectory()
 		CFRelease( rawPath );
 		CFRelease( enablerURL );
 		ret = Path(relDir);
-#ifdef DEBUG_SCFS
-		cout << __func__ << ": relative path is " << ret << endl;
-#endif
 	} else {
 		// when sclang is run from a symlink, the resource URL above will not be found,
 		// so we need to find the path of the executable.
-#ifdef DEBUG_SCFS
-		cout << __func__ << ": search failed, looking for executable path." << endl;
-#endif
 		uint32_t bufsize = PATH_MAX;
 		char relDir[PATH_MAX];
 		if(_NSGetExecutablePath(relDir, &bufsize)==0) {
-#ifdef DEBUG_SCFS
-			cout << __func__ << ": search succeeded, resolving symlink: " << relDir << endl;
-#endif
 			ret = boost::filesystem::canonical(relDir); // resolve symlink
 			ret = ret.parent_path();
-#ifdef DEBUG_SCFS
-			cout << __func__ << ": resolved parent path: " << ret << endl;
-#endif
 		} else {
-#ifdef DEBUG_SCFS
-			cout << __func__ << ": search failed, getting cwd" << endl;
-#endif
 			// in case it failed, fall back to current directory
 			ret = boost::filesystem::current_path();
 
 		}
 	}
-#ifdef DEBUG_SCFS
-	cout << __func__ << ": final path before resolving is: " << ret << endl;
-#endif
 	ret = boost::filesystem::canonical(ret); // resolve lingering symlink
-#ifdef DEBUG_SCFS
-	cout << __func__ << ": final path after resolving is: " << ret << endl;
-#endif
 	return ret;
 }
 

@@ -29,12 +29,6 @@
 
 #include "SC_Filesystem.hpp"
 
-#ifdef DEBUG_SCFS
-#include <iostream>
-using std::cout;
-using std::endl;
-#endif
-
 // system
 #include <glob.h> // ::glob, glob_t
 
@@ -133,7 +127,7 @@ Path SC_Filesystem::defaultUserConfigDirectory()
 
 Path SC_Filesystem::defaultResourceDirectory()
 {
-#ifdef SC_DATA_DIR // @TODO: determine use of SC_DATA_DIR
+#ifdef SC_DATA_DIR
 	return Path(SC_DATA_DIR);
 #else
 	return ROOT_PATH / USER_DIR_NAME / SHARE_DIR_NAME / SC_FOLDERNAME_APPLICATION_NAME;
