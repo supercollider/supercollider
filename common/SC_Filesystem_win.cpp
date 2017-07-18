@@ -72,7 +72,7 @@ SC_Filesystem::Glob* SC_Filesystem::makeGlob(const char* pattern)
 
 	// remove a trailing backslash. Even if searching with 'foo/.', this will
 	// change to 'foo' harmlessly.
-	if (path.filename_is_dot())
+	if (path.filename_is_dot() && path.has_parent_path())
 		path = path.parent_path();
 
 	glob->mHandle = ::FindFirstFileW(path.wstring().c_str(), &glob->mEntry);
