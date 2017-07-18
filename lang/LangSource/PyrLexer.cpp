@@ -1953,12 +1953,12 @@ bool passOne()
 	return success;
 }
 
-// true if filename ends in ".sc"
+/// True if file doesn't begin with '.', and ends with either '.sc' or '.rtf'
 bool isValidSourceFileName(const bfs::path& path)
 {
-	if (path.filename().c_str()[0] == '.')
-		return false; // hidden filename
-	return (path.extension() == ".sc") || (path.extension() == ".rtf" && path.stem().extension() == ".sc");
+	const bfs::path& ext = path.extension();
+	return path.filename().c_str()[0] != '.' && // must not be hidden file
+		((ext == ".sc") || (ext == ".rtf" && path.stem().extension() == ".sc"));
 }
 
 // sekhar's replacement
