@@ -166,11 +166,9 @@ static SC_Lock processlist_mutex;
 #define	THREAD_LOCK()	processlist_mutex.lock()
 #define	THREAD_UNLOCK()	processlist_mutex.unlock()
 
-// TODO: change first argument to `const wchar_t *`.
 FILE *
-sc_popen(const char *cmd, pid_t *pid, const char *mode)
+sc_popen(const wchar_t *cmd, pid_t *pid, const char *mode)
 {
-	STARTUPINFO si;
 	PROCESS_INFORMATION pi;
 	FILE *f = NULL;
 	int fno;
@@ -179,7 +177,6 @@ sc_popen(const char *cmd, pid_t *pid, const char *mode)
 	HANDLE father_in_dup, father_out_dup;
 	HANDLE current_pid;
 	int binary_mode;
-	char *new_cmd = NULL;
 	struct process *cur;
 	BOOL read_mode, write_mode;
 
@@ -187,25 +184,28 @@ sc_popen(const char *cmd, pid_t *pid, const char *mode)
 		return NULL;
 	}
 
-	new_cmd = (char *)malloc(strlen(cmd) + 10);
-	sprintf(new_cmd, "cmd /c %s", cmd);
+	wchar_t * new_cmd = (wchar_t *)malloc(wcslen(cmd) + 10);
+	swprintf(new_cmd, L"cmd /c %s", cmd);
 
 	current_pid = GetCurrentProcess();
 
-	ZeroMemory( &si, sizeof(STARTUPINFO) );
-	si.cb = sizeof(STARTUPINFO);
+	STARTUPINFOW si;
+	ZeroMemory( &si, sizeof(STARTUPINFOW) );
+	si.cb = sizeof(STARTUPINFOW);
 	si.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
 	si.wShowWindow = SW_HIDE;
 	si.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
 	si.hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
 	si.hStdError = GetStdHandle(STD_ERROR_HANDLE);
 
+	// if the mode contains 'b', use binary mode
 	binary_mode = (strchr(mode, 'b') ? _O_BINARY : _O_TEXT);
 
+	// check whether the mode includes reading or writing
 	read_mode = (strchr(mode, 'r') != 0);
 	write_mode = (strchr(mode, 'w') != 0);
 
-	/* Opening the pipe for writing */
+	// Opening the pipe for writing
 	if (write_mode) {
 		binary_mode |= _O_WRONLY;
 		if (CreatePipe(&child_in, &father_out, NULL, 0) == FALSE) {
@@ -227,7 +227,7 @@ sc_popen(const char *cmd, pid_t *pid, const char *mode)
 		fno = _open_osfhandle((size_t)father_out, binary_mode);
 		f = _fdopen(fno, mode);
 	}
-	/* Opening the pipe for reading */
+	// Opening the pipe for reading
 	else if (read_mode) {
 		binary_mode |= _O_RDONLY;
 		if (CreatePipe(&father_in, &child_out, NULL, 0) == FALSE) {
@@ -253,9 +253,8 @@ sc_popen(const char *cmd, pid_t *pid, const char *mode)
 		return NULL;
 	}
 
-	/* creating child process */
-	// TODO: change to CreateProcessW
-	if (CreateProcess(NULL,	/* pointer to name of executable module */
+	// creating child process
+	if (CreateProcessW(NULL,	/* pointer to name of executable module */
 					  new_cmd,	/* pointer to command line string */
 					  NULL,	/* pointer to process security attributes */
 					  NULL,	/* pointer to thread security attributes */
@@ -263,7 +262,7 @@ sc_popen(const char *cmd, pid_t *pid, const char *mode)
 					  0,		/* creation flags */
 					  NULL,	/* pointer to environment */
 					  NULL,	/* pointer to current directory */
-					  &si,	/* pointer to STARTUPINFO */
+					  &si,	/* pointer to STARTUPINFOW */
 					  &pi		/* pointer to PROCESS_INFORMATION */
 					  ) == FALSE) {
 		fprintf(stderr, "popen: CreateProcess %x\n", GetLastError());
@@ -272,10 +271,10 @@ sc_popen(const char *cmd, pid_t *pid, const char *mode)
 		return NULL;
 	}
 
-	/* Only the process handle is needed, ignore errors */
+	// Only the process handle is needed, ignore errors
 	CloseHandle(pi.hThread);
 
-	/* Closing the unnecessary part of the pipe */
+	// Closing the unnecessary part of the pipe
 	if (read_mode)
 		CloseHandle(father_out_dup);
 	else if (write_mode)
