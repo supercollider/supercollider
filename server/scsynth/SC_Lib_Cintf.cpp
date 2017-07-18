@@ -392,13 +392,12 @@ static bool PlugIn_LoadDir(const bfs::path& dir, bool reportError)
 	while (rditer != bfs::end(rditer)) {
 		const bfs::path path = *rditer;
 
-		const bfs::path& filename = path.filename();
 		if (bfs::is_directory(path)) {
 			if (SC_Filesystem::instance().shouldNotCompileDirectory(path))
 				rditer.no_push();
 			else
 				; // do nothing; recursion for free
-		} else if (filename.extension() == SC_PLUGIN_EXT && !PlugIn_Load(path)) {
+		} else if (path.extension() == SC_PLUGIN_EXT && !PlugIn_Load(path)) {
 			scprintf("*** ERROR: couldn't process '%s'", SC_Codecvt::path_to_utf8_str(path).c_str());
 		}
 
