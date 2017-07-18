@@ -39,6 +39,7 @@
 #include "PyrPrimitive.h"
 #include "SC_Win32Utils.h"
 #include "SC_LanguageConfig.hpp"
+#include "SC_Codecvt.hpp"
 
 namespace bfs = boost::filesystem;
 
@@ -343,7 +344,7 @@ void PyrClassExtNode::compile(PyrSlot *result)
 		const bfs::path relpath = relativeToCompileDir(bfs::path(gCompilingFileSym->name));
 		error("Class extension for nonexistent class '%s'\n     In file:'%s'\n",
 			slotRawSymbol(&mClassName->mSlot)->name,
-			relpath.c_str()
+			SC_Codecvt::path_to_utf8_str(relpath).c_str()
 		);
 		return;
 	}
