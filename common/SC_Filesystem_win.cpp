@@ -66,7 +66,9 @@ struct SC_Filesystem::Glob
 SC_Filesystem::Glob* SC_Filesystem::makeGlob(const char* pattern)
 {
 	Glob* glob = new Glob;
-	boost::filesystem::path path = SC_Codecvt::utf8_str_to_path(pattern);
+
+	// use make_preferred() to change / -> \ on Windows
+	boost::filesystem::path path = SC_Codecvt::utf8_str_to_path(pattern).make_preferred();
 
 	// remove a trailing backslash. Even if searching with 'foo/.', this will
 	// change to 'foo' harmlessly.
