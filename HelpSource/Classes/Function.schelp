@@ -425,7 +425,7 @@ A zoom value for the scope's X axis. Larger values show more. The default is 1.
 
 method::plot
 
-Calculates duration in seconds worth of the output of this function, and plots it in a GUI window. Unlike play and scope it will not work with explicit Out Ugens, so your function should return a UGen or an Array of them. The plot will be calculated in realtime.
+Calculates duration in seconds worth of the output of this function asynchronously, and plots it in a GUI window. Unlike play and scope it will not work with explicit Out Ugens, so your function should return a UGen or an Array of them. The plot will be calculated in realtime.
 
 code::
 { SinOsc.ar(440) }.plot(0.01, bounds: Window.screenBounds);
@@ -450,7 +450,7 @@ a window to place the plot in. If nil, one will be created for you.
 
 
 method::asBuffer
-Calculates duration in seconds worth of the output of this function, and returns it in a link::Classes/Buffer:: of the number of channels. This method immediately returns a buffer, which takes code::duration:: seconds to become filled with data. Then the action function is called.
+Calculates duration in seconds worth of the output of this function asynchronously, and returns it in a link::Classes/Buffer:: of the number of channels. This method immediately returns a buffer, which takes code::duration:: seconds to become filled with data asynchronously. Then the action function is called.
 
 argument::duration
 The duration of the function to plot in seconds. The default is 0.01.
