@@ -263,7 +263,7 @@ Function : AbstractFunction {
 		^{ |... args| envir.use({ this.valueArray(args) }) }
 	}
 
-	asBuffer { |duration = 0.01, server, action, fadeTime|
+	asBuffer { |duration = 0.01, server, action, fadeTime = (0)|
 		var buffer, def, synth, name, numChannels, rate;
 		server = server ? Server.default;
 
@@ -280,7 +280,7 @@ Function : AbstractFunction {
 				val = val.collect { |x| if(x.rate != \audio) { K2A.ar(x) } { x } }
 			};
 			numChannels = val.size.max(1);
-			if(fadeTime.notNil) {
+			if(fadeTime > 0) {
 				val = val * EnvGen.kr(Env.linen(fadeTime, duration - (2 * fadeTime), fadeTime))
 			};
 			RecordBuf.perform(RecordBuf.methodSelectorForRate(rate), val, bufnum, loop: 0);
