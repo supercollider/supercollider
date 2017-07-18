@@ -1962,7 +1962,15 @@ bool isValidSourceFileName(const bfs::path& path)
 		((ext == ".sc") || (ext == ".rtf" && path.stem().extension() == ".sc"));
 }
 
-// sekhar's replacement
+/** \brief Attempt to parse a single SuperCollider source file
+ *
+ * Parsing is aborted if the file doesn't have a valid source file name,
+ * or if the file can't be opened.
+ * (Sekhar's replacement)
+ *
+ * \returns Whether parsing was successful. The only failure condition occurs
+ * when the file can't be opened.
+ */
 bool passOne_ProcessOneFile(const bfs::path& path)
 {
 	bool success = true;
