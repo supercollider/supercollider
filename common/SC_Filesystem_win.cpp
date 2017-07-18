@@ -104,8 +104,12 @@ Path SC_Filesystem::globNext(Glob* glob)
 			glob->mAtEnd = true;
 	} while (glob->mFilename.filename_is_dot() || glob->mFilename.filename_is_dot_dot());
 
-	// add preferred separator (L'\\') on Windows, to match behavior with POSIX globbing.
-	if (boost::filesystem::is_directory(glob->mFilename))
+	// add preferred separator (L'\\') for directories on Windows, to match
+	// POSIX globbing. boost::filesystem::is_directory won't work for this because
+	// in the case of input '.' and '..', the filename here is just a single folder,
+	// not a relative path, and so can't be correctly identified. Plus, it's faster
+	// to check the attributes than to make another system call.
+	if (glob->mEntry.dwFileAttributes && FILE_ATTRIBUTE_DIRECTORY)
 		glob->mFilename += boost::filesystem::path::preferred_separator;
 	return glob->mFilename;
 }
