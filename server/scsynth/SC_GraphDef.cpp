@@ -681,7 +681,7 @@ GraphDef* GraphDef_LoadDir(World *inWorld, const bfs::path& dirname, GraphDef *i
 	}
 
 	while (rditer != bfs::end(rditer)) {
-		const bfs::path& path = *rditer;
+		const bfs::path path = *rditer;
 
 		if (bfs::is_directory(path)) {
 			if (SC_Filesystem::instance().shouldNotCompileDirectory(path)) {
@@ -699,7 +699,7 @@ GraphDef* GraphDef_LoadDir(World *inWorld, const bfs::path& dirname, GraphDef *i
 
 		rditer.increment(ec);
 		if (ec) {
-			scprintf("Could not iterate on '%s': %s\n", SC_Codecvt::path_to_utf8_str(dirname).c_str(), ec.message().c_str());
+			scprintf("Could not iterate on '%s': %s\n", SC_Codecvt::path_to_utf8_str(path).c_str(), ec.message().c_str());
 			return inList;
 		}
 	}
