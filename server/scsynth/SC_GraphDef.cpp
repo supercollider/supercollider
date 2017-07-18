@@ -676,7 +676,10 @@ GraphDef* GraphDef_LoadDir(World *inWorld, const bfs::path& dirname, GraphDef *i
 	bfs::recursive_directory_iterator rditer(dirname, bfs::symlink_option::recurse, ec);
 
 	if (ec) {
-		scprintf("*** ERROR: open directory failed '%s'\n", SC_Codecvt::path_to_utf8_str(dirname).c_str());
+		scprintf(
+			"*** ERROR: open directory failed '%s'\n",
+			SC_Codecvt::path_to_utf8_str(dirname).c_str()
+		);
 		return inList;
 	}
 
@@ -699,7 +702,11 @@ GraphDef* GraphDef_LoadDir(World *inWorld, const bfs::path& dirname, GraphDef *i
 
 		rditer.increment(ec);
 		if (ec) {
-			scprintf("Could not iterate on '%s': %s\n", SC_Codecvt::path_to_utf8_str(path).c_str(), ec.message().c_str());
+			scprintf(
+				"*** ERROR: Could not iterate on '%s': %s\n",
+				SC_Codecvt::path_to_utf8_str(path).c_str(),
+				ec.message().c_str()
+			);
 			return inList;
 		}
 	}
