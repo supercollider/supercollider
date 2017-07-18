@@ -148,6 +148,7 @@ sc_pclose(FILE *iop, pid_t mPid)
 #include <fcntl.h>
 #include <io.h>
 #include "SC_Lock.h"
+#include "SC_Codecvt.hpp"
 
 /*	The process handle allows us to get the exit code after
 	the process has died. It must be closed in sc_pclose;
@@ -167,7 +168,7 @@ static SC_Lock processlist_mutex;
 #define	THREAD_UNLOCK()	processlist_mutex.unlock()
 
 FILE *
-sc_popen(const wchar_t *cmd, pid_t *pid, const char *mode)
+sc_popen(const char *utf8_cmd, pid_t *pid, const char *mode)
 {
 	PROCESS_INFORMATION pi;
 	FILE *f = NULL;
@@ -180,12 +181,11 @@ sc_popen(const wchar_t *cmd, pid_t *pid, const char *mode)
 	struct process *cur;
 	BOOL read_mode, write_mode;
 
-	if (cmd == NULL) {
+	if (utf8_cmd == NULL) {
 		return NULL;
 	}
 
-	wchar_t * new_cmd = (wchar_t *)malloc(wcslen(cmd) + 10);
-	swprintf(new_cmd, L"cmd /c %s", cmd);
+	std::wstring cmd = L"cmd /c " + SC_Codecvt::utf8_cstr_to_utf16_wstring(utf8_cmd);
 
 	current_pid = GetCurrentProcess();
 
@@ -210,7 +210,6 @@ sc_popen(const wchar_t *cmd, pid_t *pid, const char *mode)
 		binary_mode |= _O_WRONLY;
 		if (CreatePipe(&child_in, &father_out, NULL, 0) == FALSE) {
 			fprintf(stderr, "popen: error CreatePipe\n");
-			free(new_cmd);
 			return NULL;
 		}
 
@@ -218,7 +217,6 @@ sc_popen(const wchar_t *cmd, pid_t *pid, const char *mode)
 							current_pid, &father_in_dup,
 							0, TRUE, DUPLICATE_SAME_ACCESS) == FALSE) {
 			fprintf(stderr, "popen: error DuplicateHandle father_out\n");
-			free(new_cmd);
 			return NULL;
 		}
 		si.hStdInput = father_in_dup;
@@ -232,14 +230,12 @@ sc_popen(const wchar_t *cmd, pid_t *pid, const char *mode)
 		binary_mode |= _O_RDONLY;
 		if (CreatePipe(&father_in, &child_out, NULL, 0) == FALSE) {
 			fprintf(stderr, "popen: error CreatePipe\n");
-			free(new_cmd);
 			return NULL;
 		}
 		if (DuplicateHandle(current_pid, child_out,
 							current_pid, &father_out_dup,
 							0, TRUE, DUPLICATE_SAME_ACCESS) == FALSE) {
 			fprintf(stderr, "popen: error DuplicateHandle father_in\n");
-			free(new_cmd);
 			return NULL;
 		}
 		CloseHandle(child_out);
@@ -249,13 +245,12 @@ sc_popen(const wchar_t *cmd, pid_t *pid, const char *mode)
 	}
 	else {
 		fprintf(stderr, "popen: invalid mode %s\n", mode);
-		free(new_cmd);
 		return NULL;
 	}
 
 	// creating child process
 	if (CreateProcessW(NULL,	/* pointer to name of executable module */
-					  new_cmd,	/* pointer to command line string */
+					  &cmd[0],	/* pointer to command line string */
 					  NULL,	/* pointer to process security attributes */
 					  NULL,	/* pointer to thread security attributes */
 					  TRUE,	/* handle inheritance flag */
@@ -266,7 +261,6 @@ sc_popen(const wchar_t *cmd, pid_t *pid, const char *mode)
 					  &pi		/* pointer to PROCESS_INFORMATION */
 					  ) == FALSE) {
 		fprintf(stderr, "popen: CreateProcess %x\n", GetLastError());
-		free(new_cmd);
 		fclose(f);
 		return NULL;
 	}
@@ -281,7 +275,6 @@ sc_popen(const wchar_t *cmd, pid_t *pid, const char *mode)
 		CloseHandle(father_in_dup);
 
 	if ((cur = (struct process *)malloc(sizeof(struct process))) == NULL) {
-		free(new_cmd);
 		fclose(f);
 		CloseHandle(pi.hProcess);
 		return NULL;
@@ -293,8 +286,6 @@ sc_popen(const wchar_t *cmd, pid_t *pid, const char *mode)
 	cur->next = processlist;
 	processlist = cur;
 	THREAD_UNLOCK();
-
-	if (new_cmd) free(new_cmd);
 
 	*pid = pi.dwProcessId;
 

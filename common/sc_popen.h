@@ -26,19 +26,11 @@
 #define WTERMSIG(w)     (w)
 #endif
 
-#ifdef _WIN32
 /** \brief Opens a pipe to a separate process.
  *
- * The Windows version of this function takes a wide-char (Unicode) argument.
+ * This function assumes a UTF-8 encoded, narrow-char string.
  */
 FILE * sc_popen(const wchar_t *command, pid_t *pidp, const char *type);
-#else
-/** \brief Opens a pipe to a separate process.
- *
- * The POSIX version of this function takes a narrow-char (Unicode) argument.
- */
-FILE * sc_popen(const char *command, pid_t *pidp, const char *type);
-#endif
 
 FILE * sc_popen_argv(const char *filename, char *const argv[], pid_t *pidp, const char *type);
 int sc_pclose(FILE *iop, pid_t mPid);
