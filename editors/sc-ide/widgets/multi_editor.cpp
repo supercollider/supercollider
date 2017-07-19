@@ -254,7 +254,7 @@ void EditorTabBar::showContextMenu(QMouseEvent * event)
         menu->addAction(tr("Close Tabs to the Right"), this, SLOT(onCloseTabsToTheRight()));
     }
 
-    menu->popup(event->pos());
+    menu->popup(event->screenPos().toPoint());
 }
 
 void EditorTabBar::onCloseTab()
