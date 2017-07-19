@@ -487,7 +487,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 	*document { current.document }
 
 	document { |title = ""|
-		var docTitle = title ++ Date.getDate.format("%Y-%m-%e-%Hh%M-History");
+		var docTitle = title ++ Date.getDate.format("%Y-%m-%d-%Hh%M-History");
 		Document.new(docTitle, this.storyString)
 		// path not working yet
 		//.path_(docTitle); // don't lose title.
