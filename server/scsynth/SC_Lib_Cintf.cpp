@@ -202,7 +202,6 @@ void initialize_library(const char *uGensPluginPath)
 	}
 
 	// get extension directories
-    // @TODO: standalone logic goes here
 	if (loadUGensExtDirs) {
 		// load system extension plugins
 		const bfs::path sysExtDir = SC_Filesystem::instance().getDirectory(DirName::SystemExtension);

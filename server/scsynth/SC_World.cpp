@@ -284,12 +284,7 @@ void World_LoadGraphDefs(World* world)
 			GraphDef_Define(world, list);
 		}
 	}else{
-		bfs::path path;
-        // TODO: standalone logic goes here
-//		if(SC_Filesystem::isStandalone())
-//			path = SC_Filesystem::instance().getDirectory(DirName::Resource);
-//		else
-        path = SC_Filesystem::instance().getDirectory(DirName::UserAppSupport) / "synthdefs";
+		bfs::path path = SC_Filesystem::instance().getDirectory(DirName::UserAppSupport) / "synthdefs";
 		if(world->mVerbosity > 0)
 			scprintf("Loading synthdefs from default path: %s\n", SC_Codecvt::path_to_utf8_str(path).c_str());
 		list = GraphDef_LoadDir(world, path, list);

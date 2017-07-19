@@ -286,13 +286,7 @@ void load_synthdefs(nova_server & server, server_arguments const & args)
         if (env_synthdef_path) {
             boost::split(directories, env_synthdef_path, boost::is_any_of(pathSeparator));
         } else {
-            path synthdef_path;
-            // @TODO: this is always false, fix for standalone logic
-            /*if (SC_Filesystem::isStandalone())
-                synthdef_path = SC_Filesystem::instance().getDirectory(DirName::Resource);
-            else*/
-            synthdef_path = SC_Filesystem::instance().getDirectory(DirName::UserAppSupport);
-
+            path synthdef_path = SC_Filesystem::instance().getDirectory(DirName::UserAppSupport);
             directories.push_back(synthdef_path / "synthdefs");
         }
 
