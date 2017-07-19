@@ -126,7 +126,6 @@ void deinitialize_library()
 			(*unloadFunc)();
 		}
 	}
-	// @TODO: should this be uncommented? - BH
 	//FreeLibrary dlclose(handle);
 #else
 	for(void * handle : open_handles){
@@ -188,7 +187,6 @@ void initialize_library(const char *uGensPluginPath)
 	using DirName = SC_Filesystem::DirName;
 
 	if(loadUGensExtDirs) {
-		// @TODO: probably a better way to do this than through macro
 #ifdef SC_PLUGIN_DIR
 		// load globally installed plugins
 		if (bfs::is_directory(SC_PLUGIN_DIR)) {
