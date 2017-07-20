@@ -54,6 +54,7 @@
 #pragma clang diagnostic ignored "-Warray-bounds"
 #endif
 
+bool gMaxBackTraceDepth = 16;
 
 //void tellPlugInsAboutToRun();
 double timeNow();
@@ -2808,7 +2809,7 @@ void DumpSimpleBackTrace(VMGlobals *g)
 	// call graph
 	frame = g->frame;
 
-	for (i=0; i<16; ++i) {
+	for (i = 0; i < gMaxBackTraceDepth; ++i) {
 		char str[256];
 		slotOneWord(&frame->method, str);
 		post("%s ip %d\n", str, (char*)slotRawPtr(&frame->ip) - (char*)slotRawObject(&slotRawMethod(&frame->method)->code)->slots);
@@ -2829,7 +2830,7 @@ void DumpBackTrace(VMGlobals *g)
 	// call graph
 	frame = g->frame;
 
-	for (i=0; i<16; ++i) {
+	for (i = 0; i < gMaxBackTraceDepth; ++i) {
 		if (FrameSanity(frame, "DumpBackTrace")) {
 			post("FRAME CORRUPTED\n");
 			return;
@@ -2854,7 +2855,7 @@ void DumpDetailedBackTrace(VMGlobals *g)
 	// call graph
 	frame = g->frame;
 
-	for (i=0; i<16; ++i) {
+	for (i = 0; i < gMaxBackTraceDepth; ++i) {
 		if (FrameSanity(frame, "DumpDetailedBackTrace")) {
 			post("FRAME CORRUPTED\n");
 			return;

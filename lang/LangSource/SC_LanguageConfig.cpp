@@ -158,6 +158,8 @@ const char* SC_LanguageConfig::getCurrentConfigPath()
 }
 
 extern bool gPostInlineWarnings;
+extern bool gMaxBackTraceDepth; // PyrInterpreter.cpp
+
 bool SC_LanguageConfig::readLibraryConfigYAML(const char* fileName, bool standalone)
 {
 	freeLibraryConfig();
@@ -194,6 +196,15 @@ bool SC_LanguageConfig::readLibraryConfigYAML(const char* fileName, bool standal
 					gPostInlineWarnings = inlineWarnings.as<bool>();
 				} catch(...) {
 					postfl("Warning: Cannot parse config file entry \"postInlineWarnings\"\n");
+				}
+			}
+
+			const Node & maxBackTraceDepth = doc[ "maxBackTraceDepth" ];
+			if (maxBackTraceDepth) {
+				try {
+					gMaxBackTraceDepth = maxBackTraceDepth.as<int>();
+				} catch(...) {
+					postfl("Warning: Cannot parse config file entry \"maxBackTraceDepth\"\n");
 				}
 			}
 		}
