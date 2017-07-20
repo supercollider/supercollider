@@ -1928,7 +1928,7 @@ static bool passOne_ProcessDir(const bfs::path& dir)
 					return false;
 				}
 			} else if (respath.empty()) {
-				error("Could not resolve symlink: %s\n", SC_Codecvt::path_to_utf8_str(respath).c_str());
+				error("Could not resolve symlink: %s\n", SC_Codecvt::path_to_utf8_str(path).c_str());
 			} else if (!passOne_ProcessOneFile(respath)) {
 				return false;
 			}

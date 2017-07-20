@@ -79,7 +79,6 @@ Path SC_Filesystem::resolveIfAlias(const Path& p, bool& isAlias)
 			// does it actually lead to something?
 			if (isStale || resolvedURL == nullptr) {
 				// Return original path.
-				printf("Error: Target missing for alias at %s\n", p.c_str());
 				return Path();
 			}
 
