@@ -1021,11 +1021,7 @@ int MultiEditor::addTab( Document * doc )
         icon = mDocModifiedIcon;
 
     int currentIndex = mTabs->currentIndex();
-    if (currentIndex == -1) {
-      tabIdx = mTabs->addTab( icon, doc->title() );
-    } else {
-      tabIdx = mTabs->insertTab( currentIndex + 1, icon, doc->title() );
-    }
+    tabIdx = mTabs->insertTab( currentIndex + 1, icon, doc->title() );
     mTabs->setTabData( tabIdx, QVariant::fromValue<Document*>(doc) );
 
     mDocModifiedSigMap.setMapping(tdoc, doc);
