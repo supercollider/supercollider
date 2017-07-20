@@ -1,7 +1,7 @@
-[![Build Status](https://travis-ci.org/supercollider/supercollider.svg?branch=master)](https://travis-ci.org/supercollider/supercollider)
-
 Welcome to SuperCollider!
 =========================
+
+[![Build Status](https://img.shields.io/travis/supercollider/supercollider.svg)](https://travis-ci.org/supercollider/supercollider) [![Gitter](https://img.shields.io/gitter/room/supercollider/supercollider.svg)](https://gitter.im/supercollider/supercollider)
 
 **SuperCollider** is a platform for audio synthesis and algorithmic composition, used by musicians, artists, and researchers working with sound. It is free and open source software available for Windows, macOS, and Linux.
 
