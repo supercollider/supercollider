@@ -57,7 +57,7 @@
 #endif
 
 // Maximum depth of backtraces
-bool gMaxBackTraceDepth = 16;
+bool gBackTraceMaxDepth = 16;
 
 // Whether to include interpreter frames in the backtraces
 bool gBackTraceIncludeInterpreter = false;
@@ -2842,7 +2842,7 @@ void DumpSimpleBackTrace(VMGlobals *g)
 		frame = FilterBackTrace(frame, backTraceIgnoredTop);
 	}
 
-	for (int i = 0; i < gMaxBackTraceDepth; ++i) {
+	for (int i = 0; i < gBackTraceMaxDepth; ++i) {
 		char str[256];
 		slotOneWord(&frame->method, str);
 
@@ -2867,7 +2867,7 @@ void DumpBackTrace(VMGlobals *g)
 	}
 
 	post("CALL STACK:\n");
-	for (int i = 0; i < gMaxBackTraceDepth; ++i) {
+	for (int i = 0; i < gBackTraceMaxDepth; ++i) {
 		if (FrameSanity(frame, "DumpBackTrace")) {
 			post("frame corrupted\n");
 			return;
@@ -2896,7 +2896,7 @@ void DumpDetailedBackTrace(VMGlobals *g)
 	}
 
 	post("CALL STACK:\n");
-	for (int i = 0; i < gMaxBackTraceDepth; ++i) {
+	for (int i = 0; i < gBackTraceMaxDepth; ++i) {
 		if (FrameSanity(frame, "DumpDetailedBackTrace")) {
 			post("frame corrupted\n");
 			return;
