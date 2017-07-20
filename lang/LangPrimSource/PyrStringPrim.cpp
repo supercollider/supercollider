@@ -848,7 +848,7 @@ int prString_FindBackwards(struct VMGlobals *g, int numArgsPushed)
 
 /** \brief Expand `~` to home directory and resolve aliases
  *
- * Fails if the alias could not be resolved.
+ * Prints an error message if alias resolution failed.
  */
 int prString_StandardizePath(struct VMGlobals* g, int numArgsPushed);
 int prString_StandardizePath(struct VMGlobals* g, int /* numArgsPushed */)
@@ -865,11 +865,9 @@ int prString_StandardizePath(struct VMGlobals* g, int /* numArgsPushed */)
 	bool isAlias;
 	p = SC_Filesystem::resolveIfAlias(p, isAlias);
 
-	// Consider alias resolution a failure condition
-	if (isAlias && p.empty()) {
-		error("prString_StandardizePath: symlink resolution failed for '%s'\n", ipath);
-		return errFailed;
-	}
+	// Don't consider alias resolution a failure condition, but print an error
+	if (isAlias && p.empty())
+		error("standardizePath: symlink resolution failed for '%s'\n", ipath);
 
 	const std::string& utf8_str = SC_Codecvt::path_to_utf8_str(p);
 	PyrString* pyrString = newPyrString(g->gc, utf8_str.c_str(), 0, true);
