@@ -145,9 +145,9 @@ void HelpBrowser::applySettings( Settings::Manager *settings )
 {
     settings->beginGroup("IDE/shortcuts");
 
-    mWebView->pageAction(QWebPage::Back)->setShortcut( QKeySequence(QKeySequence::Back) );
+    mWebView->pageAction(QWebPage::Back)->setShortcut( QKeySequence::Back );
 
-    mWebView->pageAction(QWebPage::Forward)->setShortcut( QKeySequence(QKeySequence::Forward) );
+    mWebView->pageAction(QWebPage::Forward)->setShortcut( QKeySequence::Forward );
 
     mActions[DocClose]->setShortcut( settings->shortcut("ide-document-close") );
 
