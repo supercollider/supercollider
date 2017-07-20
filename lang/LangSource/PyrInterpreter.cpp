@@ -37,14 +37,16 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
-# include <signal.h>
+#include <signal.h>
+
+#include <vector>
+#include <string>
 
 #include <boost/chrono.hpp>
 
 #include <float.h>
 #define kBigBigFloat DBL_MAX
 #define kSmallSmallFloat DBL_MIN
-
 
 #include <new>
 #include "InitAlloc.h"
@@ -54,7 +56,11 @@
 #pragma clang diagnostic ignored "-Warray-bounds"
 #endif
 
+// Maximum depth of backtraces
 bool gMaxBackTraceDepth = 16;
+
+// Whether to include interpreter frames in the backtraces
+bool gBackTraceIncludeInterpreter = false;
 
 //void tellPlugInsAboutToRun();
 double timeNow();
@@ -2797,75 +2803,116 @@ HOT void Interpret(VMGlobals *g)
 #pragma GCC pop_options
 #endif
 
+// Methods that are ignored from the top of the backtrace
+std::vector<std::string> backTraceIgnoredTop = {
+	"DoesNotUnderstandError:reportError",
+	"Nil:handleError",
+	"Thread:handleError",
+	"Object:throw",
+};
+
+std::string backTraceInterpreterPrintFrame = "Interpreter:interpretPrintCmdLine";
+
+bool MethodNameMatches(PyrFrame* frame, const std::string& name) {
+	char str[256];
+	slotOneWord(&frame->method, str);
+	return strcmp(str, name.c_str()) == 0;
+}
+
+PyrFrame* FilterBackTrace(PyrFrame* frame, const std::vector<std::string>& filter) {
+	for (auto methodName : backTraceIgnoredTop) {
+		if (MethodNameMatches(frame, methodName)) {
+			PyrFrame *caller = slotRawFrame(&frame->caller);
+			if (!caller) return frame;
+			frame = caller;
+		} else {
+			return frame;
+		}
+	}
+	return frame;
+}
 
 void DumpSimpleBackTrace(VMGlobals *g);
 void DumpSimpleBackTrace(VMGlobals *g)
 {
-	int i;
-	PyrFrame *frame;
+	PyrFrame *frame = g->frame;
 
 	post("CALL STACK:\n");
-	// print the variables and arguments for the most recent frames in the
-	// call graph
-	frame = g->frame;
+	if (!gBackTraceIncludeInterpreter) {
+		frame = FilterBackTrace(frame, backTraceIgnoredTop);
+	}
 
-	for (i = 0; i < gMaxBackTraceDepth; ++i) {
+	for (int i = 0; i < gMaxBackTraceDepth; ++i) {
 		char str[256];
 		slotOneWord(&frame->method, str);
+
+		if (!gBackTraceIncludeInterpreter) {
+			if (strcmp(str, backTraceInterpreterPrintFrame.c_str()) == 0) {
+				return;
+			}
+		}
+
 		post("%s ip %d\n", str, (char*)slotRawPtr(&frame->ip) - (char*)slotRawObject(&slotRawMethod(&frame->method)->code)->slots);
 		frame = slotRawFrame(&frame->caller);
 		if (!frame) break;
 	}
 	if (frame) { post("...\n"); }
-	//DumpStack(g, g->sp);
 }
 
 void DumpBackTrace(VMGlobals *g)
 {
-	int i;
-	PyrFrame *frame;
+	PyrFrame *frame = g->frame;
+	if (!gBackTraceIncludeInterpreter) {
+		frame = FilterBackTrace(frame, backTraceIgnoredTop);
+	}
 
 	post("CALL STACK:\n");
-	// print the variables and arguments for the most recent frames in the
-	// call graph
-	frame = g->frame;
-
-	for (i = 0; i < gMaxBackTraceDepth; ++i) {
+	for (int i = 0; i < gMaxBackTraceDepth; ++i) {
 		if (FrameSanity(frame, "DumpBackTrace")) {
-			post("FRAME CORRUPTED\n");
+			post("frame corrupted\n");
 			return;
 		}
+
+		if (!gBackTraceIncludeInterpreter) {
+			if (MethodNameMatches(frame, backTraceInterpreterPrintFrame)) {
+				return;
+			}
+		}
+
 		DumpFrame(frame);
 		frame = slotRawFrame(&frame->caller);
 		if (!frame) break;
 	}
 	if (frame) { post("...\n"); }
-	//DumpStack(g, g->sp);
 }
 
 void DumpDetailedFrame(PyrFrame *frame);
 void DumpDetailedBackTrace(VMGlobals *g);
 void DumpDetailedBackTrace(VMGlobals *g)
 {
-	int i;
-	PyrFrame *frame;
+	PyrFrame *frame = g->frame;
+	if (!gBackTraceIncludeInterpreter) {
+		frame = FilterBackTrace(frame, backTraceIgnoredTop);
+	}
 
 	post("CALL STACK:\n");
-	// print the variables and arguments for the most recent frames in the
-	// call graph
-	frame = g->frame;
-
-	for (i = 0; i < gMaxBackTraceDepth; ++i) {
+	for (int i = 0; i < gMaxBackTraceDepth; ++i) {
 		if (FrameSanity(frame, "DumpDetailedBackTrace")) {
-			post("FRAME CORRUPTED\n");
+			post("frame corrupted\n");
 			return;
 		}
+
+		if (!gBackTraceIncludeInterpreter) {
+			if (MethodNameMatches(frame, backTraceInterpreterPrintFrame)) {
+				return;
+			}
+		}
+
 		DumpDetailedFrame(frame);
 		frame = slotRawFrame(&frame->caller);
 		if (!frame) break;
 	}
 	if (frame) { post("...\n"); }
-	//DumpStack(g, g->sp);
 }
 
 void DumpStack(VMGlobals *g, PyrSlot *sp)

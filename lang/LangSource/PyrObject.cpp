@@ -2249,7 +2249,7 @@ void DumpFrame(PyrFrame *frame)
 	PyrMethodRaw *methraw;
 
 	if (FrameSanity(frame, "DumpFrame")) {
-		post("FRAME CORRUPTED\n");
+		post("frame corrupted\n");
 		return;
 	}
 	slotOneWord(&frame->method, str);
@@ -2286,7 +2286,7 @@ void DumpDetailedFrame(PyrFrame *frame)
 	PyrMethodRaw *methraw;
 
 	if (FrameSanity(frame, "DumpDetailedFrame")) {
-		post("FRAME CORRUPTED\n");
+		post("frame corrupted\n");
 		return;
 	}
 	slotOneWord(&frame->method, mstr);
