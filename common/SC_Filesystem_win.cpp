@@ -89,11 +89,17 @@ void SC_Filesystem::freeGlob(Glob* glob)
 
 Path SC_Filesystem::globNext(Glob* glob)
 {
+	bool isDirectory = false;
+
 	// loop to ignore . and .. results
 	do {
 		if (glob->mAtEnd)
 			return Path();
 		glob->mFilename = glob->mFolder / glob->mEntry.cFileName;
+
+		// record whether it's a directory here, since we overwrite mEntry on the next step
+		isDirectory = (glob->mEntry.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) > 0;
+
 		if (!::FindNextFileW(glob->mHandle, &glob->mEntry))
 			glob->mAtEnd = true;
 	} while (glob->mFilename.filename_is_dot() || glob->mFilename.filename_is_dot_dot());
@@ -103,9 +109,8 @@ Path SC_Filesystem::globNext(Glob* glob)
 	// in the case of input '.' and '..', the filename here is just a single folder,
 	// not a relative path, and so can't be correctly identified. Plus, it's faster
 	// to check the attributes than to make another system call.
-	if (glob->mEntry.dwFileAttributes && FILE_ATTRIBUTE_DIRECTORY)
-		glob->mFilename += boost::filesystem::path::preferred_separator;
-	return glob->mFilename;
+	return isDirectory ? glob->mFilename += boost::filesystem::path::preferred_separator
+		: glob->mFilename;
 }
 
 //============= PRIVATE METHODS ==============//
