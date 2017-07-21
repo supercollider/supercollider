@@ -395,9 +395,10 @@ static bool PlugIn_LoadDir(const bfs::path& dir, bool reportError)
 			else
 				; // do nothing; recursion for free
 		} else if (path.extension() == SC_PLUGIN_EXT) {
-			bool success = PlugIn_Load(path);
-			if (!success)
-				scprintf("*** ERROR: couldn't process '%s'", SC_Codecvt::path_to_utf8_str(path).c_str());
+			// don't need to check result: PlugIn_Load does its own error handling and printing.
+			// A `false` return value here just means that loading didn't occur, which is not
+			// an error condition for us.
+			PlugIn_Load(path);
 		} else {
 			// not a plugin, do nothing
 		}
