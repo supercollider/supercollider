@@ -2811,7 +2811,7 @@ std::vector<std::string> backTraceIgnoredTop = {
 	"Object:throw",
 };
 
-std::string backTraceInterpreterPrintFrame = "Interpreter:interpretPrintCmdLine";
+std::string backTraceInterpreterPrintFrame = "Process:interpretPrintCmdLine";
 
 bool MethodNameMatches(PyrFrame* frame, const std::string& name) {
 	char str[256];
