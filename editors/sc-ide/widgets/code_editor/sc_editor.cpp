@@ -1092,15 +1092,6 @@ void ScCodeEditor::nextBracketPair( const TokenIterator & startIt, BracketPair &
     bracketPair = BracketPair();
 }
 
-inline static bool bracketPairContainsPosition( const BracketPair & bracketPair, int position )
-{
-    bool result =
-            bracketPair.first.isValid() && bracketPair.second.isValid()
-            && bracketPair.first.position() < position
-            && bracketPair.second.position() >= position;
-    return result;
-}
-
 void ScCodeEditor::gotoNextBlock()
 {
     QTextCursor cursor = textCursor();
