@@ -57,7 +57,7 @@
 #endif
 
 // Maximum depth of backtraces
-bool gBackTraceMaxDepth = 16;
+int gBackTraceMaxDepth = 16;
 
 // Whether to include interpreter frames in the backtraces
 bool gBackTraceIncludeInterpreter = false;
@@ -2803,14 +2803,7 @@ HOT void Interpret(VMGlobals *g)
 #pragma GCC pop_options
 #endif
 
-// Methods that are ignored from the top of the backtrace
-std::vector<std::string> backTraceIgnoredTop = {
-	"DoesNotUnderstandError:reportError",
-	"Nil:handleError",
-	"Thread:handleError",
-	"Object:throw",
-};
-
+std::string backTraceInterpreterThrowFrame = "Object:throw";
 std::string backTraceInterpreterPrintFrame = "Process:interpretPrintCmdLine";
 
 bool MethodNameMatches(PyrFrame* frame, const std::string& name) {
@@ -2819,18 +2812,17 @@ bool MethodNameMatches(PyrFrame* frame, const std::string& name) {
 	return strcmp(str, name.c_str()) == 0;
 }
 
-PyrFrame* FilterBackTrace(PyrFrame* frame, const std::vector<std::string>& filter) {
-	for (auto methodName : backTraceIgnoredTop) {
-		if (MethodNameMatches(frame, methodName)) {
-			PyrFrame *caller = slotRawFrame(&frame->caller);
-			if (!caller) return frame;
-			frame = caller;
-		} else {
-			return frame;
+// Traverses down the stack from the given frame until one with frameName is found
+PyrFrame* FindFrame(PyrFrame* frame, const std::string& frameName) {
+	while (!MethodNameMatches(frame, frameName)) {
+		frame = slotRawFrame(&frame->caller);
+		if (!frame) {
+			break;
 		}
 	}
 	return frame;
 }
+
 
 void DumpSimpleBackTrace(VMGlobals *g);
 void DumpSimpleBackTrace(VMGlobals *g)
@@ -2839,7 +2831,7 @@ void DumpSimpleBackTrace(VMGlobals *g)
 
 	post("CALL STACK:\n");
 	if (!gBackTraceIncludeInterpreter) {
-		frame = FilterBackTrace(frame, backTraceIgnoredTop);
+		frame = FindFrame(frame, backTraceInterpreterThrowFrame);
 	}
 
 	for (int i = 0; i < gBackTraceMaxDepth; ++i) {
@@ -2863,7 +2855,7 @@ void DumpBackTrace(VMGlobals *g)
 {
 	PyrFrame *frame = g->frame;
 	if (!gBackTraceIncludeInterpreter) {
-		frame = FilterBackTrace(frame, backTraceIgnoredTop);
+		frame = FindFrame(frame, backTraceInterpreterThrowFrame);
 	}
 
 	post("CALL STACK:\n");
@@ -2892,7 +2884,7 @@ void DumpDetailedBackTrace(VMGlobals *g)
 {
 	PyrFrame *frame = g->frame;
 	if (!gBackTraceIncludeInterpreter) {
-		frame = FilterBackTrace(frame, backTraceIgnoredTop);
+		frame = FindFrame(frame, backTraceInterpreterThrowFrame);
 	}
 
 	post("CALL STACK:\n");
