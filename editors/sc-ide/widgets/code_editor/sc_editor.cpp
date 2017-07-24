@@ -36,8 +36,6 @@
 
 namespace ScIDE {
 
-static void matchBracket( const TokenIterator & bracket, BracketPair & match );
-
 ScCodeEditor::ScCodeEditor( Document *doc, QWidget *parent ) :
     GenericCodeEditor( doc, parent ),
     mSpaceIndent(true),
@@ -1092,15 +1090,6 @@ void ScCodeEditor::nextBracketPair( const TokenIterator & startIt, BracketPair &
         ++it;
     }
     bracketPair = BracketPair();
-}
-
-inline static bool bracketPairContainsPosition( const BracketPair & bracketPair, int position )
-{
-    bool result =
-            bracketPair.first.isValid() && bracketPair.second.isValid()
-            && bracketPair.first.position() < position
-            && bracketPair.second.position() >= position;
-    return result;
 }
 
 void ScCodeEditor::gotoNextBlock()

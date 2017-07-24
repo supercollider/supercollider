@@ -131,7 +131,6 @@ bool CompletionMenu::eventFilter(QObject * obj, QEvent * ev)
 {
     if (isVisible() && obj == parentWidget() && ev->type() == QEvent::KeyPress)
     {
-        bool filtered = false;
         static int oldIndex = 0;
 
         QKeyEvent *kev = static_cast<QKeyEvent*>(ev);
