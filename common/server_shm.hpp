@@ -53,8 +53,6 @@ public:
 	typedef bi::vector<scope_buffer_ptr, scope_buffer_ptr_allocator> scope_buffer_vector;
 
 	server_shared_memory(managed_shared_memory & segment, int control_busses, int num_scope_buffers = 128):
-		num_control_busses(control_busses),
-
 		scope_buffers(scope_buffer_ptr_allocator(segment.get_segment_manager()))
 	{
 		control_busses_ = (float*)segment.allocate(control_busses * sizeof(float));
@@ -96,7 +94,6 @@ public:
 
 private:
 	string shmem_name;
-	int num_control_busses;
 	sh_float_ptr control_busses_; // control busses
 	scope_buffer_vector scope_buffers;
 };
