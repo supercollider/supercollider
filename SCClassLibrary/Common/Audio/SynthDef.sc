@@ -541,10 +541,10 @@ SynthDef {
 	}
 
 	// make SynthDef available to all servers
-	add { | libname = \global, completionMsg, keepDef = true |
+	add { | libname = \sendToEverything, completionMsg, keepDef = true |
 		var servers;
 		this.asSynthDesc(libname ? \global, keepDef);
-		if(libname.isNil || (libname == \global)) {
+		if(libname.isNil || (libname == \sendToEverything)) {
 			if (libname.isNil) {
 				"Provided server is nil, SynthDef may not be sent".warn;
 			};
