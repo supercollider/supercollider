@@ -1,10 +1,19 @@
 class::Class
 summary::A Class describes the structure and implementation of a set objects which are its instances.
 categories::Core>Kernel, Language>OOP
+related:: Guides/WritingClasses, Reference/Classes,
 
 ClassMethods::
 method:: allClasses
 returns:: an link::Classes/Array:: of all Classes
+
+
+method::initClassTree
+used in code::*initClass:: to assure the initialisation of code::aClass:: before using it.
+
+argument:: aClass
+the class to be initialised
+
 
 InstanceMethods::
 

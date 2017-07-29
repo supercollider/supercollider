@@ -145,7 +145,7 @@ MyClass {
 }
 ::
 
-For class initialization check code::initClass::.
+Initializations on class level (e.g. to set up code::classvar::s) can be implemented by overloading the code::*initClass{}:: method.
 
 section:: Overriding Methods (Overloading)
 
