@@ -231,6 +231,11 @@ Hyperbolic tangent.
 method:: distort
 Nonlinear distortion.
 discussion::
+The formula used is :
+code::
+x / (1 + abs(x))
+::
+Here is an example :
 code::
 (
 {
