@@ -40,24 +40,25 @@ See for example http://en.wikipedia.org/wiki/Audio_level_compression for a more 
 
 examples::
 
+Clean signal (for reference)
 code::
 (
-// signal (clean)
-x = {
+{
     Decay2.ar(
 		Impulse.ar(8, 0, LFSaw.kr(0.3, 1, -0.3, 0.3)),
 		0.001,
 		0.3
 	)
-	* Mix.ar(Pulse.ar([80,81], 0.3))
+	* Mix.ar(Pulse.ar([80, 81], 0.3))
 }.play;
 )
+::
 
-x.free;
+Noise gate
 
+code::
 (
-// noise gate
-x = {
+{
     var z;
 
 	// signal (clean)
@@ -66,24 +67,23 @@ x = {
 		0.001,
 		0.3
 	)
-	* Mix.ar(Pulse.ar([80,81], 0.3));
+	* Mix.ar(Pulse.ar([80, 81], 0.3));
 
 	// apply gate (mouse x sets treshold)
 	Compander.ar(z, z,
         thresh: MouseX.kr(0.001, 1),
         slopeBelow: 10,
-        slopeAbove: 1,
-        clampTime: 0.01,
-        relaxTime: 0.01
-    );
+        slopeAbove:  1,
+        clampTime:   0.01,
+        relaxTime:   0.01
+    )
 }.play;
 )
-
-x.free;
-
+::
+Compressor
+code::
 (
-// compressor
-x = {
+{
     var z;
 
 	// signal (clean)
@@ -92,24 +92,23 @@ x = {
 		0.001,
 		0.3
 	)
-	* Mix.ar(Pulse.ar([80,81], 0.3));
+	* Mix.ar(Pulse.ar([80, 81], 0.3));
 
 	// apply compression  (mouse x sets amount)
 	Compander.ar(z, z,
         thresh: MouseX.kr(0.01, 1),
         slopeBelow: 1,
         slopeAbove: 0.5,
-        clampTime: 0.01,
-        relaxTime: 0.01
-    );
+        clampTime:  0.01,
+        relaxTime:  0.01
+    )
 }.play;
 )
-
-x.free;
-
+::
+Limiter
+code::
 (
-// limiter
-x = {
+{
     var z;
 
 	// signal (clean)
@@ -118,7 +117,7 @@ x = {
 		0.001,
 		0.3
 	)
-	* Mix.ar(Pulse.ar([80,81], 0.3));
+	* Mix.ar(Pulse.ar([80, 81], 0.3));
 
 
 	// apply limiter (mouse x sets amount)
@@ -126,18 +125,17 @@ x = {
         thresh: MouseX.kr(0.01, 1),
         slopeBelow: 1,
         slopeAbove: 0.1,
-        clampTime: 0.01,
-        relaxTime: 0.01
-    );
+        clampTime:  0.01,
+        relaxTime:  0.01
+    )
 }.play;
 )
-
-x.free;
-
+::
+Sustainer
+code::
 (
-// sustainer
-// note pops at the beginning of signal due to lack of lookahead
-x = {
+// note the pops at the beginning of signal due to lack of lookahead
+{
     var z;
 
 	// signal (clean)
@@ -146,19 +144,16 @@ x = {
 		0.001,
 		0.3
 	)
-	* Mix.ar(Pulse.ar([80,81], 0.3));
-
+	* Mix.ar(Pulse.ar([80, 81], 0.3));
 
 	// apply sustainer
 	Compander.ar(z, z,
         thresh: MouseX.kr(0.1, 1),
         slopeBelow: 0.1,
         slopeAbove: 1,
-        clampTime: 0.01,
-        relaxTime: 0.01
-    )*0.1;
+        clampTime:  0.01,
+        relaxTime:  0.01
+    ) * 0.1
 }.play;
 )
-
-x.free
 ::
