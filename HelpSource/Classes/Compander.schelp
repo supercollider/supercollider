@@ -25,15 +25,15 @@ Slope of applied amplitude curve if control signal amplitude is above code::thre
 Values < 1.0 achieve compression (louder signals are attenuated) whereas values > 1.0 expand (louder signals are made even louder). A value of code::1/3:: achieves a 3:1 compression.
 
 argument::clampTime
-time it takes for the amplitude adjustment to kick in fully after the control signal is above code::thresh::. Usually a small value around 10ms (0.01), often set as low as 2ms (0.002).
+time (in seconds) it takes for the amplitude adjustment to kick in fully after the control signal is above code::thresh::. Usually a small value around 10ms (0.01), often set as low as 2ms (0.002).
 
 argument::relaxTime
-time for the amplitude adjustment to be released (control signal below code::thresh::). Usually longer than code::clampTime::; depending on the input and cntrol signal, setting both times too short results in (possibly unwanted) artifacts.
+time (in seconds) for the amplitude adjustment to be released (control signal below code::thresh::). Usually longer than code::clampTime::; depending on the input and control signal, setting both times too short results in (possibly unwanted) artifacts.
 
 argument::mul
-factor to multiply the UGen's output with.
+output is multiplied by this value.
 argument::add
-factor to add to the UGen's output.
+value added to the output.
 
 discussion::
 See for example http://en.wikipedia.org/wiki/Audio_level_compression for a more in-depth explanation.
@@ -44,7 +44,7 @@ Clean signal (for reference)
 code::
 (
 {
-    Decay2.ar(
+	Decay2.ar(
 		Impulse.ar(8, 0, LFSaw.kr(0.3, 1, -0.3, 0.3)),
 		0.001,
 		0.3
@@ -59,7 +59,7 @@ Noise gate
 code::
 (
 {
-    var z;
+	var z;
 
 	// signal (clean)
 	z = Decay2.ar(
@@ -71,12 +71,12 @@ code::
 
 	// apply gate (mouse x sets treshold)
 	Compander.ar(z, z,
-        thresh: MouseX.kr(0.001, 1),
-        slopeBelow: 10,
-        slopeAbove:  1,
-        clampTime:   0.01,
-        relaxTime:   0.01
-    )
+		thresh: MouseX.kr(0.001, 1),
+		slopeBelow: 10,
+		slopeAbove:  1,
+		clampTime:   0.01,
+		relaxTime:   0.01
+	)
 }.play;
 )
 ::
@@ -84,7 +84,7 @@ Compressor
 code::
 (
 {
-    var z;
+	var z;
 
 	// signal (clean)
 	z = Decay2.ar(
@@ -96,12 +96,12 @@ code::
 
 	// apply compression  (mouse x sets amount)
 	Compander.ar(z, z,
-        thresh: MouseX.kr(0.01, 1),
-        slopeBelow: 1,
-        slopeAbove: 0.5,
-        clampTime:  0.01,
-        relaxTime:  0.01
-    )
+		thresh: MouseX.kr(0.01, 1),
+		slopeBelow: 1,
+		slopeAbove: 0.5,
+		clampTime:  0.01,
+		relaxTime:  0.01
+	)
 }.play;
 )
 ::
@@ -109,7 +109,7 @@ Limiter
 code::
 (
 {
-    var z;
+	var z;
 
 	// signal (clean)
 	z = Decay2.ar(
@@ -122,12 +122,12 @@ code::
 
 	// apply limiter (mouse x sets amount)
 	Compander.ar(z, z,
-        thresh: MouseX.kr(0.01, 1),
-        slopeBelow: 1,
-        slopeAbove: 0.1,
-        clampTime:  0.01,
-        relaxTime:  0.01
-    )
+		thresh: MouseX.kr(0.01, 1),
+		slopeBelow: 1,
+		slopeAbove: 0.1,
+		clampTime:  0.01,
+		relaxTime:  0.01
+	)
 }.play;
 )
 ::
@@ -136,7 +136,7 @@ code::
 (
 // note the pops at the beginning of signal due to lack of lookahead
 {
-    var z;
+	var z;
 
 	// signal (clean)
 	z = Decay2.ar(
@@ -148,12 +148,12 @@ code::
 
 	// apply sustainer
 	Compander.ar(z, z,
-        thresh: MouseX.kr(0.1, 1),
-        slopeBelow: 0.1,
-        slopeAbove: 1,
-        clampTime:  0.01,
-        relaxTime:  0.01
-    ) * 0.1
+		thresh: MouseX.kr(0.1, 1),
+		slopeBelow: 0.1,
+		slopeAbove: 1,
+		clampTime:  0.01,
+		relaxTime:  0.01
+	) * 0.1
 }.play;
 )
 ::
