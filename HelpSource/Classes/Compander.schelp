@@ -1,7 +1,7 @@
 class:: Compander
 summary:: Compressor, expander, limiter, gate, ducker
 categories:: UGens>Dynamics
-related:: Classes/Normalizer, Classes/DualBandLim, Classes/Limiter
+related:: Classes/Normalizer, Classes/CompanderD, Classes/Limiter
 
 description::
 General purpose (hard-knee) dynamics processor.
