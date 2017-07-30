@@ -196,6 +196,11 @@ class QcGraph : public QWidget, QcHelper, QtCollider::Style::Client
     QVariantList value() const;
     QcGraphElement *currentElement() const;
     int index() const;
+
+    /** \brief The last node selected, regardless of current selection status.
+     *
+     * If no nodes have been selected yet, defaults to -1.
+     */
     int lastIndex() const { return _lastIndex; }
     QVariantList selectionIndexes() const;
     float currentX() const;
@@ -332,7 +337,7 @@ class QcGraph : public QWidget, QcHelper, QtCollider::Style::Client
       QPointF moveOrigin; // in data domain
     } _selection;
 
-    int _lastIndex;
+    int _lastIndex; ///< The last node selected, regardless of the current state of selection
 };
 
 #endif
