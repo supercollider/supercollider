@@ -318,7 +318,7 @@ SequenceableCollection : Collection {
 		^this[..index-1] ++ obj ++ this[index..]
 	}
 
-	merge { |aCollection| // can be parametrized in the future
+	mergeItems { |aCollection| // can be parametrized in the future
 		var i, j, coll, rest;
 		var indices = detectIndexInBoth(aCollection, this, { |a, b| a == b });
 
@@ -329,12 +329,12 @@ SequenceableCollection : Collection {
 			rest = aCollection.drop(i + 1);
 			coll = this.keep(j + 1);
 			rest.removeAllEqual(coll);
-			aCollection.keep(i) ++ coll ++ rest.merge(this.drop(j + 1))
+			aCollection.keep(i) ++ coll ++ rest.mergeItems(this.drop(j + 1))
 		}
 	}
 
 	mergePairs { |pairs|
-		^this.asAssociations.merge(pairs.asAssociations).asPairs
+		^this.asAssociations.mergeItems(pairs.asAssociations).asPairs
 	}
 
 	// compatibility with isolated objects
