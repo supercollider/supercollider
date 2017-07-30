@@ -276,7 +276,17 @@ class QcGraph : public QWidget, QcHelper, QtCollider::Style::Client
 
   private:
     void setAllDeselected();
+
+    /** \brief Sets a node as being either selected or unselected.
+     *
+     * \c update() is called at the end of the function.
+     *
+     * \param index the index of the node to update
+     * \param selected whether to mark it as selected or not
+     * \post \c lastIndex() returns \c index if the node was newly selected.
+     */
     void setIndexSelected( int index, bool selected );
+
     void restrictValue( QPointF & );
     void orderRestrictValue( QcGraphElement *, QPointF &, bool selected );
     void setValue( QcGraphElement *, const QPointF & );
