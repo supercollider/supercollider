@@ -189,11 +189,11 @@ void AudioControl_next_k(AudioControl *unit, int inNumSamples)
 	uint32 numChannels = unit->mNumOutputs;
 	float *prevVal = unit->prevVal;
 	float **mapin = unit->mParent->mMapControls + unit->mSpecialIndex;
-    World *world = unit->mWorld;
-    int32 bufCounter = world->mBufCounter;
-    
-    int32 *touched = world->mAudioBusTouched;
-    uint32 channelOffset = unit->mParent->mAudioBusOffset;
+	World *world = unit->mWorld;
+	int32 bufCounter = world->mBufCounter;
+	
+	int32 *touched = world->mAudioBusTouched;
+	uint32 channelOffset = unit->mParent->mAudioBusOffset;
 	for(uint32 i = 0; i < numChannels; ++i, mapin++){
 		float *out = OUT(i);
 		int *mapRatep;
@@ -240,10 +240,10 @@ void AudioControl_next_1(AudioControl *unit, int inNumSamples)
 	curVal = prevVal[0];
 	mapRatep = unit->mParent->mControlRates + unit->mSpecialIndex;
 	mapRate = mapRatep[0];
-    World *world = unit->mWorld;
-    int32 *touched = world->mAudioBusTouched;
-    int32 bufCounter = world->mBufCounter;
-    uint32 channelOffset = unit->mParent->mAudioBusOffset;
+	World *world = unit->mWorld;
+	int32 *touched = world->mAudioBusTouched;
+	int32 bufCounter = world->mBufCounter;
+	uint32 channelOffset = unit->mParent->mAudioBusOffset;
 
 	switch (mapRate) {
 		case 0 : {

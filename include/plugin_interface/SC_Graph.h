@@ -35,7 +35,7 @@ struct Graph
 	uint32 mNumControls;
 	float *mControls;
 	float **mMapControls;
-    uint32 mAudioBusOffset;
+	uint32 mAudioBusOffset;
 
 	// try this for setting the rate of a control
 	int *mControlRates;
