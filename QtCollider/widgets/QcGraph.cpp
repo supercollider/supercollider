@@ -444,19 +444,25 @@ void QcGraph::setIndexSelected( int index, bool select )
 {
   Q_ASSERT( index >= 0 && index < _model.elementCount() );
 
+  // exit early if the element's selection status is already correct
   QcGraphElement *e = _model.elementAt( index );
-  if( e->selected == select ) return;
+  if( e->selected == select )
+    return;
 
   if( select ) {
     e->selected = true;
-    int c = _model.elementCount();
-    int si = 0;
-    int i = 0;
-    while( i < index ) {
-      if( _model.elementAt(i)->selected ) ++si;
-      ++i;
+
+    // insert this node into the list of selected elements to the right
+    // of any already selected nodes
+    int numSelectedNodes = 0;
+    for ( int i = 0; i < index; ++i ) {
+      if( _model.elementAt(i)->selected )
+        ++numSelectedNodes;
     }
-    _selection.elems.insert( si, SelectedElement(e) );
+
+    _selection.elems.insert( numSelectedNodes, SelectedElement(e) );
+
+    // mark this as the last index selected
     _lastIndex = index;
   }
   else {
