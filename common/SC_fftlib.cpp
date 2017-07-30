@@ -300,7 +300,9 @@ scfft * scfft_create(size_t fullsize, size_t winsize, SCFFT_WindowFunction winty
 void scfft_ensurewindow(unsigned short log2_fullsize, unsigned short log2_winsize, short wintype)
 {
 	// Ensure we have enough space to do our calcs
+#if SC_FFT_FFTW
 	int old_log2n = largest_log2n;
+#endif
 	if(log2_fullsize > largest_log2n){
 		largest_log2n = log2_fullsize;
 		largest_fftsize = 1 << largest_log2n;
