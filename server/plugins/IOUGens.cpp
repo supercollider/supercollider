@@ -217,14 +217,13 @@ void AudioControl_next_k(AudioControl *unit, int inNumSamples)
 				}
 				unit->prevVal[i] = curVal;
 			} break;
-            case 2 : {
-                if(touched[channelOffset + i] == (bufCounter-1)){
-                    Copy(inNumSamples, out, *mapin);
-                } else {
-                    Fill(inNumSamples, out, 0.f);
-                }
-            }
-			break;
+			case 2 : {
+				if(touched[channelOffset + i] == (bufCounter-1)){
+					Copy(inNumSamples, out, *mapin);
+				} else {
+					Fill(inNumSamples, out, 0.f);
+				}
+			} break;
 		}
 	}
 }
@@ -258,18 +257,16 @@ void AudioControl_next_1(AudioControl *unit, int inNumSamples)
 			for(int i = 0; i < inNumSamples; i++){
 				out[i] = curVal;
 				curVal += valSlope;
-				}
+			}
 			unit->prevVal[0] = curVal;
 		} break;
-        case 2 : {
-            if(touched[channelOffset] == bufCounter){
-                Copy(inNumSamples, out, *mapin);
-            } else {
-                Fill(inNumSamples, out, 0.f);
-            }
-        }
-            
-		break;
+		case 2 : {
+			if(touched[channelOffset] == bufCounter){
+				Copy(inNumSamples, out, *mapin);
+			} else {
+				Fill(inNumSamples, out, 0.f);
+			}
+		} break;
 	}
 
 }
