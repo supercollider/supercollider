@@ -20,9 +20,10 @@ Each class will be initialized once, thus each class' code::initClass:: is calle
 
 method:: initClassTree
 
-used in link::#*initClass:: to assure the initialisation of code::aClass:: before using it.
+used in link::#*initClass:: to assure the initialisation of code::aClass:: before using it. Wherever necessary, it recursively initializes all classes required by code::aClass::.
 
 In some cases it is required that another class and its resources are initialized before you initialize your own. This can be accomplished by
+
 
 code::
 YourClass {
