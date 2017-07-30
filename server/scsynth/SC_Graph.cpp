@@ -619,10 +619,10 @@ void Graph_MapAudioControl(Graph* inGraph, uint32 inIndex, uint32 inBus)
 		inGraph->mControlRates[inIndex] = 0;
 		inGraph->mMapControls[inIndex] = inGraph->mControls + inIndex;
 	} else if (inBus < world->mNumAudioBusChannels) {
-	inGraph->mControlRates[inIndex] = 2;
-        if(inIndex == 0){
-            inGraph->mAudioBusOffset = inBus;
-        }
+		inGraph->mControlRates[inIndex] = 2;
+		if(inIndex == 0){
+			inGraph->mAudioBusOffset = inBus;
+		}
 		inGraph->mMapControls[inIndex] = world->mAudioBus + (inBus * world->mBufLength);
 	}
 }
