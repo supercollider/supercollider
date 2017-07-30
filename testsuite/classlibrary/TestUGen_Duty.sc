@@ -41,7 +41,7 @@ TestUGen_Duty : UnitTest {
 
 
 	test_ar_1_frame_demandrate_reset {
-		this.callAudioRateTestForFirstNFrames(1, { |dt, values| Duty.ar(dt, Dseq([0], inf), Dseq(values, 1)) })
+		this.callAudioRateTestForFirstNFrames(1, { |dt, values| Duty.ar(dt, Dseq([inf], inf), Dseq(values, 1)) })
 	}
 
 
