@@ -895,7 +895,6 @@ int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
 
 	array = slotRawObject(a);
 	const int format = slotRawObject(a)->obj_format;
-	const int tag = gFormatElemTag[format];
 
 	const int size = array->size;
 	int index = slotRawInt(b);
