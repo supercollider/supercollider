@@ -428,6 +428,8 @@ GraphDef* GraphDef_Read(World *inWorld, char*& buffer, GraphDef* inList, int32 i
 	graphDef->mMapControlRatesAllocSize = graphDef->mNumControls * sizeof(int*);
 	graphDef->mNodeDef.mAllocSize += graphDef->mMapControlRatesAllocSize;
 
+    graphDef->mAudioMapBusOffsetSize = graphDef->mNumControls * sizeof(int32*);
+    graphDef->mNodeDef.mAllocSize += graphDef->mAudioMapBusOffsetSize;
 
 	graphDef->mNext = inList;
 	graphDef->mRefCount = 1;

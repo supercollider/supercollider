@@ -193,7 +193,7 @@ void AudioControl_next_k(AudioControl *unit, int inNumSamples)
     int32 bufCounter = world->mBufCounter;
     
     int32 *touched = world->mAudioBusTouched;
-    uint32 channelOffset = unit->mParent->mAudioBusOffset;
+    int32 *channelOffsets = unit->mParent->mAudioBusOffsets;
 	for(uint32 i = 0; i < numChannels; ++i, mapin++){
 		float *out = OUT(i);
 		int *mapRatep;
@@ -218,7 +218,8 @@ void AudioControl_next_k(AudioControl *unit, int inNumSamples)
 				unit->prevVal[i] = curVal;
 			} break;
             case 2 : {
-                if(touched[channelOffset + i] == (bufCounter-1)){
+                int thisChannelOffset = channelOffsets[unit->mSpecialIndex + i];
+                if((thisChannelOffset >= 0) && (touched[thisChannelOffset] == bufCounter)){
                     Copy(inNumSamples, out, *mapin);
                 } else {
                     Fill(inNumSamples, out, 0.f);
@@ -244,7 +245,7 @@ void AudioControl_next_1(AudioControl *unit, int inNumSamples)
     World *world = unit->mWorld;
     int32 *touched = world->mAudioBusTouched;
     int32 bufCounter = world->mBufCounter;
-    uint32 channelOffset = unit->mParent->mAudioBusOffset;
+    int32 *channelOffsets = unit->mParent->mAudioBusOffsets;
 
 	switch (mapRate) {
 		case 0 : {
@@ -262,7 +263,8 @@ void AudioControl_next_1(AudioControl *unit, int inNumSamples)
 			unit->prevVal[0] = curVal;
 		} break;
         case 2 : {
-            if(touched[channelOffset] == bufCounter){
+            int thisChannelOffset = channelOffsets[unit->mSpecialIndex];
+            if((thisChannelOffset >= 0) && (touched[thisChannelOffset] == bufCounter)){
                 Copy(inNumSamples, out, *mapin);
             } else {
                 Fill(inNumSamples, out, 0.f);
