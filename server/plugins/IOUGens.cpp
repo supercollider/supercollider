@@ -194,6 +194,7 @@ void AudioControl_next_k(AudioControl *unit, int inNumSamples)
     
     int32 *touched = world->mAudioBusTouched;
     int32 *channelOffsets = unit->mParent->mAudioBusOffsets;
+
 	for(uint32 i = 0; i < numChannels; ++i, mapin++){
 		float *out = OUT(i);
 		int *mapRatep;
@@ -259,7 +260,7 @@ void AudioControl_next_1(AudioControl *unit, int inNumSamples)
 			for(int i = 0; i < inNumSamples; i++){
 				out[i] = curVal;
 				curVal += valSlope;
-				}
+			}
 			unit->prevVal[0] = curVal;
 		} break;
         case 2 : {
