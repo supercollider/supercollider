@@ -562,23 +562,26 @@ int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
 int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed);
 int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 {
-	//PyrSlot *a = g->sp - 2;
-	PyrSlot *b = g->sp - 1;
-	PyrSlot *c = g->sp;
+	PyrSlot *inputIndexSlot = g->sp - 1;
+	PyrSlot *uidSlot = g->sp;
 
 	int err, inputIndex, uid;
-	err = slotIntVal(b, &inputIndex);
-	if (err) return errWrongType;
-	if (inputIndex < 0 || inputIndex >= gNumMIDIInPorts) return errIndexOutOfRange;
 
-	err = slotIntVal(c, &uid);
-	if (err) return errWrongType;
+	err = slotIntVal(inputIndexSlot, &inputIndex);
+	if (err)
+		return errWrongType;
+	if (inputIndex < 0 || inputIndex >= gNumMIDIInPorts)
+		return errIndexOutOfRange;
 
+	err = slotIntVal(uidSlot, &uid);
+	if (err)
+		return errWrongType;
 
-	MIDIEndpointRef src=0;
+	MIDIEndpointRef src = 0;
 	MIDIObjectType mtype;
 	MIDIObjectFindByUniqueID(uid, &src, &mtype);
-	if (mtype != kMIDIObjectType_Source) return errFailed;
+	if (mtype != kMIDIObjectType_Source)
+		return errFailed;
 
 	// MIDIPortConnectSource's third parameter is just a unique value used to help
 	// identify the source. It expects a void*, so we reinterpret_cast from uid to
@@ -588,6 +591,7 @@ int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 
 	return errNone;
 }
+
 int prDisconnectMIDIIn(struct VMGlobals *g, int numArgsPushed);
 int prDisconnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 {
