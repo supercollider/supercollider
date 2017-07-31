@@ -236,7 +236,6 @@ void QcScopeShm::paint1D( bool overlapped, int chanCount, int maxFrames, int fra
   {
     int w = area.width();
     float fpp = frameCount / (float) w; // frames per x pixel
-    float ypix = yRatio != 0.f ? -1/yRatio : 0.f; // value per y pixel;
 
     for( int ch = 0; ch < chanCount; ch++ )
     {
