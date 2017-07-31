@@ -452,8 +452,8 @@ void QcGraph::setIndexSelected( int index, bool select )
   if( select ) {
     e->selected = true;
 
-    // insert this node into the list of selected elements to the right
-    // of any already selected nodes
+    // insert this node into the list of selected elements after selected
+    // nodes with lower indices. Maintains that the list is sorted.
     int numSelectedNodes = 0;
     for ( int i = 0; i < index; ++i ) {
       if( _model.elementAt(i)->selected )
