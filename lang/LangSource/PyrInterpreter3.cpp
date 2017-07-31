@@ -1878,7 +1878,6 @@ HOT void Interpret(VMGlobals *g)
 				}
 				case 21 : {
 					-- sp ; // Drop
-					PyrSlot * vars = g->frame->vars;
 					SetRaw(&g->frame->vars[2], slotRawFloat(&g->frame->vars[2]) - 1.0); // dec i
 					SetRaw(&g->frame->vars[3], slotRawFloat(&g->frame->vars[3]) - 1.0); // inc j
 					ip -= 4;
