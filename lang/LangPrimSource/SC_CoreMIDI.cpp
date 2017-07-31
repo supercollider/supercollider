@@ -580,9 +580,11 @@ int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 	MIDIObjectFindByUniqueID(uid, &src, &mtype);
 	if (mtype != kMIDIObjectType_Source) return errFailed;
 
-	//pass the uid to the midiReadProc to identify the src
-
-	MIDIPortConnectSource(gMIDIInPort[inputIndex], src, (void*)uid);
+	// MIDIPortConnectSource's third parameter is just a unique value used to help
+	// identify the source. It expects a void*, so we reinterpret_cast from uid to
+	// avoid a compiler warning.
+	// See: https://stackoverflow.com/questions/9051292/midireadproc-using-srcconnrefcon-to-listen-to-only-one-source
+	MIDIPortConnectSource(gMIDIInPort[inputIndex], src, reinterpret_cast<void*>(uid));
 
 	return errNone;
 }
