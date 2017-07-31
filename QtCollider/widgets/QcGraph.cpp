@@ -749,7 +749,6 @@ void QcGraph::addCurve( QPainterPath &path, QcGraphElement *e1, QcGraphElement *
 
     path.moveTo( pt1 );
 
-    float dx = (pt2.x() - pt1.x());
     float dy = (pt2.y() - pt1.y());
 
     // prevent NaN, optimize
