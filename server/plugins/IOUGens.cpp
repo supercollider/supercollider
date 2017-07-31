@@ -220,7 +220,10 @@ void AudioControl_next_k(AudioControl *unit, int inNumSamples)
 			} break;
             case 2 : {
                 int thisChannelOffset = channelOffsets[unit->mSpecialIndex + i];
-                if((thisChannelOffset >= 0) && (touched[thisChannelOffset] == bufCounter)){
+                if((thisChannelOffset >= 0) &&
+                   ((touched[thisChannelOffset] == bufCounter) ||
+                    (touched[thisChannelOffset] == bufCounter - 1)
+                    )){
                     Copy(inNumSamples, out, *mapin);
                 } else {
                     Fill(inNumSamples, out, 0.f);
@@ -265,7 +268,10 @@ void AudioControl_next_1(AudioControl *unit, int inNumSamples)
 		} break;
         case 2 : {
             int thisChannelOffset = channelOffsets[unit->mSpecialIndex];
-            if((thisChannelOffset >= 0) && (touched[thisChannelOffset] == bufCounter)){
+            if((thisChannelOffset >= 0) &&
+               ((touched[thisChannelOffset] == bufCounter) ||
+                (touched[thisChannelOffset] == bufCounter - 1)
+                )){
                 Copy(inNumSamples, out, *mapin);
             } else {
                 Fill(inNumSamples, out, 0.f);
