@@ -36,6 +36,7 @@ Inspector {
 		bounds = Rect(80, 80, 376, this.lineHeight * (this.numLines + 1) + 16);
 
 		window = Window.new(object.class.name.asString ++ " inspector", bounds);
+		if(Platform.keepWindowsOnTop) { window.alwaysOnTop_(true) };
 		window.onClose = Message(this, \didClose);
 	}
 	//numLines{^0}
