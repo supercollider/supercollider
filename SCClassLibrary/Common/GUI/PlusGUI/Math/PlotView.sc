@@ -390,6 +390,7 @@ Plotter {
 
 			interactionView.drawFunc = { this.draw };
 			parent.front;
+			if(Platform.keepWindowsOnTop) { parent.alwaysOnTop_(true) };
 			parent.onClose = { parent = nil };
 
 		} {

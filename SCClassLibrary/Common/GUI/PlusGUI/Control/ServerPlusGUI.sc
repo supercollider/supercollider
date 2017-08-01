@@ -25,7 +25,10 @@
 		var label, gui, font, volumeNum;
 		var buttonColor, faintGreen, faintRed;
 
-		if (window.notNil) { ^window.front };
+		if (window.notNil) {
+			if(Platform.keepWindowsOnTop) { window.alwaysOnTop_(true) };
+			^window.front
+		};
 
 		gui = GUI.current;
 		font = Font.sansSerif(10);
@@ -353,15 +356,19 @@
 	}
 
 	plotTree {|interval=0.5|
-		var onClose, window = Window.new(name.asString + "Node Tree",
-			Rect(128, 64, 400, 400),
+		var onClose, window;
+
+		window = Window(
+			name.asString + "Node Tree",
+			bounds: Rect(128, 64, 400, 400),
 			scroll:true
 		).front;
+
 		window.view.hasHorizontalScroller_(false).background_(Color.grey(0.9));
-		onClose = this.plotTreeView(interval, window.view, { defer {window.close}; });
-		window.onClose = {
-			onClose.value;
-		};
+		if(Platform.keepWindowsOnTop) { window.alwaysOnTop_(true) };
+
+		onClose = this.plotTreeView(interval, window.view, { defer { window.close } });
+		window.onClose = { onClose.value };
 	}
 
 	plotTreeView {|interval=0.5, parent, actionIfFail|
