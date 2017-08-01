@@ -25,10 +25,7 @@
 		var label, gui, font, volumeNum;
 		var buttonColor, faintGreen, faintRed;
 
-		if (window.notNil) {
-			if(Platform.keepWindowsOnTop) { window.alwaysOnTop_(true) };
-			^window.front
-		};
+		if (window.notNil) { ^window.front };
 
 		gui = GUI.current;
 		font = Font.sansSerif(10);
@@ -44,7 +41,8 @@
 
 		if(w.isNil) {
 			label = name.asString + "server";
-			w = window = gui.window.new(label, this.calculateViewBounds, resizable: false);
+			w = window = Window.new(label, this.calculateViewBounds, resizable: false);
+			if(Platform.keepWindowsOnTop) { w.alwaysOnTop_(true) };
 			w.view.decorator = FlowLayout(w.view.bounds);
 		} {
 			label = w.name
