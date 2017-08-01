@@ -1,4 +1,4 @@
-+SynthDesc {
++ SynthDesc {
 	makeWindow{
 		if (Platform.makeSynthDescWindowAction.notNil) {
 			^Platform.makeSynthDescWindowAction.value(this)
