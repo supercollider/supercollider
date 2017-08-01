@@ -263,9 +263,11 @@ Function : AbstractFunction {
 		^{ |... args| envir.use({ this.valueArray(args) }) }
 	}
 
-	asBuffer { |duration = 0.01, server, action, fadeTime = (0)|
-		var buffer, def, synth, name, numChannels, rate;
-		server = server ? Server.default;
+	asBuffer { |duration = 0.01, target, action, fadeTime = (0)|
+		var buffer, def, synth, name, numChannels, rate, server;
+		target = target.asTarget;
+		server = target.server;
+
 
 		name = this.hash.asString;
 		def = SynthDef(name, { |bufnum|
@@ -301,7 +303,7 @@ Function : AbstractFunction {
 			server.sync;
 			def.send(server);
 			server.sync;
-			synth = Synth(name, [\bufnum, buffer], server);
+			synth = Synth(name, [\bufnum, buffer], target, \addAfter);
 			OSCFunc({
 				action.value(buffer);
 				server.sendMsg("/d_free", name);
