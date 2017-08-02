@@ -543,15 +543,18 @@ SynthDef {
 	// make SynthDef available to all servers
 	add { | libname = \sendToEverything, completionMsg, keepDef = true |
 		var servers;
-		this.asSynthDesc(libname ? \global, keepDef);
-		if(libname.isNil || (libname == \sendToEverything)) {
+		if(libname == \sendToEverything) {
+			this.asSynthDesc(\global, keepDef);
+			servers = Server.allRunningServers
+		} else {
+			this.asSynthDesc(libname ? \global, keepDef);
 			if (libname.isNil) {
 				"Provided server is nil, SynthDef may not be sent".warn;
-			};
-			servers = Server.allRunningServers
-		} {
-			servers = SynthDescLib.getLib(libname).servers
-		};
+				servers = Server.allRunningServers
+			} else {
+				servers = SynthDescLib.getLib(libname).servers
+			}
+		}
 		servers.do { |each|
 			this.doSend(each.value, completionMsg.value(each))
 		}
