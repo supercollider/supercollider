@@ -114,9 +114,9 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 	graph->mNumControls = numControls;
 	graph->mControls = (float*)memory;
 	memory += inGraphDef->mControlAllocSize;
-    
-    graph->mAudioBusOffsets = (int32*)memory;
-    memory += inGraphDef->mAudioMapBusOffsetSize;
+
+	graph->mAudioBusOffsets = (int32*)memory;
+	memory += inGraphDef->mAudioMapBusOffsetSize;
 
 	graph->mMapControls = (float**)memory;
 	memory += inGraphDef->mMapControlsAllocSize;
@@ -135,7 +135,7 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 			graphMapControls[i] = graphControls;
 			/* add */
 			graphControlRates[i] = 0;  // init to 0 for now... control bus is 1, audio is 2
-            graph->mAudioBusOffsets[i] = -1;
+			graph->mAudioBusOffsets[i] = -1;
 		}
 	}
 
@@ -623,7 +623,7 @@ void Graph_MapAudioControl(Graph* inGraph, uint32 inIndex, uint32 inBus)
 		inGraph->mMapControls[inIndex] = inGraph->mControls + inIndex;
 	} else if (inBus < world->mNumAudioBusChannels) {
 	inGraph->mControlRates[inIndex] = 2;
-        inGraph->mAudioBusOffsets[inIndex] = inBus;
+		inGraph->mAudioBusOffsets[inIndex] = inBus;
 		inGraph->mMapControls[inIndex] = world->mAudioBus + (inBus * world->mBufLength);
 	}
 }
