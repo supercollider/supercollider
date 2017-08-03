@@ -4,7 +4,7 @@ categories:: Libraries>JITLib>NodeProxy, Live Coding
 related:: Classes/ProxySpace, Classes/Tdef
 
 description::
-Ndef can be used to build a synth of which the internals can be replaced while running. An Ndef can be manipulated through its key. An Ndef can be started and stopped programmatically. The old synth and its replacement can automatically crossfade and the replacement time can be quantized. 
+Ndef builds a synth, the internals of which can be replaced while playing. An Ndef can be started, stopped and manipulated through its key. The old synth and its replacement can automatically crossfade and the replacement time can be quantized.
 
 Ndef is a reference to a proxy, forms an alternative to link::Classes/ProxySpace::. All methods are inherited from link::Classes/NodeProxy::.
 
