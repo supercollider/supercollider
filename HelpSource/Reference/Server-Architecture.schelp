@@ -140,7 +140,7 @@ scsynth -N score.osc _ out.aiff 48000 AIFF int24
 
 section:: Binary Format of Messages
 
-Messages are similar in format to Open Sound Control messages, except that OSC #bundles may not be nested, and pattern matching of the command name is not performed. When streamed via TCP, Messages are each preceded by a 32 bit integer giving the length in bytes of the message. UDP datagrams contain this length information already.
+Messages are similar in format to Open Sound Control messages, except that pattern matching of the command name is not performed. When streamed via TCP, messages are each preceded by a 32 bit integer giving the length in bytes of the message. UDP datagrams contain this length information already.
 
 subsection:: Types
 All values are in network byte order.
