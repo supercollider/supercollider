@@ -343,8 +343,8 @@ Buffer {
 						startFrame = 0, leaveOpen = false, completionMessage;
 		if(bufnum.isNil) { Error("Cannot construct a % for a % that has been freed".format(thisMethod.name, this.class.name)).throw };
 		// doesn't change my path
-		^[\b_write, bufnum, path,
-				headerFormat, sampleFormat, numFrames, startFrame,
+		^["/b_write", bufnum, path,
+				headerFormat, sampleFormat, numFrames.asInteger, startFrame.asInteger,
 				leaveOpen.binaryValue, completionMessage.value(this)];
 	}
 
