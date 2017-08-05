@@ -335,6 +335,9 @@ Server {
 				^this
 			};
 		};
+
+		// set name to get readable posts from clientID set
+		name = argName.asSymbol;
 		// go thru setter to test validity
 		this.clientID = argClientID ? 0;
 
