@@ -4,19 +4,10 @@ CATEGORIES:: Guides
 related:: Classes/ServerOptions, Classes/Server
 KEYWORD:: server, multi-client
 
-Note::
-This describes the state after merging the topic branch server-fix-multiclient.
-Discussion and comparisons now moved to MultiClient_SetupsTEMP.scd!
-::
-
 section:: Multi client-server setups - discussion and tests
 
 OSC communication between SC and its sound server offers many options for network music: Multiple computers can run both supercollider and associated sound servers.
-Basic SC support for simple, symmetrical connection between these is currently buggy,
-and this topic branch proposes bug fixes and obvious little improvements.
-
-For clarity, the "server program" refers a running scsynth or supernova process.
-The "server object" AKA "client" is the server's representation in sclang, such as code::Server.local, s, Server(\elsewhere, NetAddr("123.234.56.78"))::.
+For clarity, the "server program" refers a running scsynth or supernova process. The "server object" AKA "client" is the server's representation in sclang, such as code::Server.local, s, Server(\elsewhere, NetAddr("123.234.56.78"))::.
 
 subsection:: What are clientIDs for, and how do servers get them?
 
@@ -57,6 +48,9 @@ s.clientID_(nil);
 s.clientID_("abc");
 s.clientID_(16);
 s.clientID_(-234);
+// reset to default:
+s.clientID_(0);
+
 
 // Recommended usage for fixed clientIDs - set clientID on creation.
 
