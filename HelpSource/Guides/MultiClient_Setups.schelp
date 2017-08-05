@@ -16,23 +16,23 @@ Basic SC support for simple, symmetrical connection between these is currently b
 and this topic branch proposes bug fixes and obvious little improvements.
 
 For clarity, the "server program" refers a running scsynth or supernova process.
-The "server object" AKA "client" is the server's representation in sclang, such as Server.local, s, Server(\elsewhere, NetAddr("123.234.34.56")).
+The "server object" AKA "client" is the server's representation in sclang, such as code::Server.local, s, Server(\elsewhere, NetAddr("123.234.56.78"))::.
 
 subsection:: What are clientIDs for, and how do servers get them?
 
 When more than one user plays on a given server,
-some resources need to be shared:
+some resources need to be shared between users/clients:
 list::
-## permanent and temp nodeIDs (handled by s.nodeAllocator),
-## internal control and audio bus channels (handled by s.audioBusAllocator, s.controlBusAllocator)
+## permanent and temporary nodeIDs (handled by s.nodeAllocator),
+## private control and audio bus channels (handled by s.audioBusAllocator, s.controlBusAllocator)
 ## buffer numbers (handled by s.bufferAllocator).
 ::
 
 In the simple default case, there is only a single user/client, who always gets clientID 0, and all the available resources (i.e. the full ranges of allocator numbers).
 
-When multiple clients login in, this is what happens:
+When multiple clients log in, this is what happens:
 list::
-## On startup, scsynth (the server program) gets a ficxed limit of maxLogins.
+## On startup, scsynth (the server program) gets a fixed limit of maxLogins.
 ## When a new local or remote server object/client registers on this scsynth process,
 scsynth sends back the next free clientID.
 ## Exception: If the server object was given a clientID on creation, it keeps that clientID, to allow fixed clientID distribution. (This variant may become deprecated in the future.)
@@ -51,17 +51,17 @@ s.options.maxLogins = 12;
 // these work and post info
 s.clientID_(1);
 s.clientID_(2);
-s.clientID_(15);
+s.clientID_(11);
 // guards against bad input - warns and keeps clientID
 s.clientID_(nil);
 s.clientID_("abc");
 s.clientID_(16);
 s.clientID_(-234);
 
-
-// Recommended usage for fixed clientID - set clientID on creation.
+// Recommended usage for fixed clientIDs - set clientID on creation.
 
 s.options.maxLogins = 12;
+
 z = Server(
 	\remote4,
 	// NetAddr("168.192.1.2", 57110), // netAddr of the other computer in my network
@@ -71,6 +71,7 @@ z = Server(
 );
 
 // now s knows it can change clientID from server login response
+// (because userSpecifiedClientID is false)
 s.userSpecifiedClientID;
 // and z knows to keep its clientID
 z.userSpecifiedClientID;
@@ -95,8 +96,7 @@ z.defaultGroupID; 	// 400000001
 z.defaultGroup;		// Group(400000001)
 z.options.maxLogins	// 12
 
-// s.defaultGroup is assumed to be 1 in many places in SC classes,
-// so here are some tests whether synth creation works everywhere:
+// s.defaultGroup is used often, and can be looked up in many ways:
 z.defaultGroup;
 z.defaultGroupID;
 z.asGroup;
@@ -106,8 +106,8 @@ z.asTarget;
 5.do { z.nextNodeID.postln };
 5.do { s.nextNodeID.postln };
 
-
-// test 4 ways of making sounds:
+// whenever an accessible sound process is created, it gets a nodeID;
+// here are four different ways to create sounds, and see their nodeIDs:
 z.boot;
 z.plotTree;
 
@@ -118,7 +118,7 @@ x = Synth(\default, nil);
 x.release;
 
 x = { Dust.ar(10!2).lag(0.002) }.play(z);
-x.release(2)
+x.release(2);
 
 (dur: 4, server: z).play;
 
@@ -128,7 +128,7 @@ Ndef(\x).play;
 Ndef(\x).filter(10, { |in| Ringz.ar(in, [600, 800], 0.03) }).play;
 Ndef(\x).end(3);
 
-// add more nodeID tests here...
+// add more nodeID usage examples here...
 
 ::
 
