@@ -280,15 +280,9 @@ Server {
 	var <pid, serverInterface;
 
 	*initClass {
-		// // orig	would be:
-		// nodeAllocClass = NodeIDAllocator;
-		// bufferAllocClass = ContiguousBlockAllocator;
-		// busAllocClass = ContiguousBlockAllocator;
-
-		// proposal:
 		nodeAllocClass = ReadableNodeIDAllocator;
-		bufferAllocClass = ContiguousBlockAllocatorWithOffset;
-		busAllocClass = ContiguousBlockAllocatorWithOffset;
+		bufferAllocClass = ContiguousBlockAllocator;
+		busAllocClass = ContiguousBlockAllocator;
 
 		Class.initClassTree(ServerOptions);
 		Class.initClassTree(NotificationCenter);
