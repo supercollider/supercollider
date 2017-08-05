@@ -370,6 +370,25 @@ Dictionary : Set {
 		^-2
 	}
 
+	== { arg that;
+		if(that.isKindOf(this.class).not) { ^false };
+		if(that.size != this.size) { ^false };
+		that.keysValuesDo { |key, val|
+			if(this.at(key) != val) { ^false }
+		};
+		^true
+	}
+
+	hash {
+		var hash = this.class.hash;
+		this.keysValuesDo { arg key, item;
+			hash = hash bitXor: item.hash;
+			hash = (hash << 1) bitXor: key.hash
+		};
+		^hash
+	}
+
+
 	storeItemsOn { arg stream, itemsPerLine = 5;
 		var itemsPerLinem1 = itemsPerLine - 1;
 		var last = this.size - 1;
@@ -491,6 +510,21 @@ IdentityDictionary : Dictionary {
 		if(insertionDepth > 0) { parent.insertParent(newParent, insertionDepth - 1, reverseInsertionDepth); ^this };
 		newParent.insertParent(parent, reverseInsertionDepth, inf); // insert current parent back into new parent
 		parent = newParent;
+	}
+
+	== { arg that;
+		^this.superPerform('==', that)
+		and: { parent == that.parent }
+		and: { proto == that.proto }
+		and: { know == that.know }
+	}
+
+	hash {
+		var hash = know.hash;
+		hash = (hash << 1) bitXor: parent.hash;
+		hash = (hash << 1) bitXor: proto.hash;
+		hash = (hash << 1) bitXor: super.hash;
+		^hash
 	}
 
 	storeItemsOn { arg stream, itemsPerLine = 5;

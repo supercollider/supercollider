@@ -200,7 +200,7 @@ static void dumpOSC(int mode, int size, char* inData)
 	if (mode & 2) hexdump(size, inData);
 }
 
-
+#if 0 // debugging code
 static void DumpReplyAddress(ReplyAddress *inReplyAddress)
 {
 	scprintf("mAddress %s\n", inReplyAddress->mAddress.to_string().c_str());
@@ -214,5 +214,6 @@ static void DumpReplyAddress(ReplyAddress *inReplyAddress)
 
 	scprintf("mReplyFunc %p\n", (void*)inReplyAddress->mReplyFunc);
 }
+#endif
 
 #endif // SC_OSCUTILS_HPP

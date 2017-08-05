@@ -211,7 +211,6 @@ private:
 	int32 mPartialScanSlot;
 	int32 mNumToScan;
 	int32 mNumGrey;
-	int32 mCurSet;
 
 	int32 mFlips, mCollects, mAllocTotal, mScans, mNumAllocs, mStackScans, mNumPartialScans, mSlotsScanned, mUncollectedAllocations;
 

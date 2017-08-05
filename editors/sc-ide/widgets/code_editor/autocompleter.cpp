@@ -559,7 +559,6 @@ CompletionMenu * AutoCompleter::menuForClassMethodCompletion(CompletionDescripti
                                                              ScCodeEditor * editor)
 {
     using namespace ScLanguage;
-    const Introspection & introspection = Main::scProcess()->introspection();
 
     const Class *klass = NULL;
 
@@ -826,7 +825,6 @@ void AutoCompleter::updateCompletionMenuInfo()
 void AutoCompleter::triggerMethodCallAid( bool explicitTrigger )
 {
     using namespace ScLanguage;
-    const Introspection & introspection = Main::scProcess()->introspection();
 
     if (!mMethodCall.menu.isNull()) {
         qDebug("Method call: disambiguation menu already shown. Aborting.");

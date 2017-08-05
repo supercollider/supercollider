@@ -254,7 +254,7 @@ METHOD:: index
 		An Integer.
 
 METHOD:: lastIndex
-    The last node selected, regardless of the current state of selection.
+    The last node selected, regardless of the current state of selection, or -1 if no node has yet been selected.
 
 
 METHOD:: selectIndex

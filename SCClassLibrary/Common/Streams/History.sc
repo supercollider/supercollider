@@ -9,23 +9,11 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 	var <lines, <lineShorts, <keys, <player, <hasMovedOn;
 
 	*timeStamp {
-			// hope it works on linux?
-		if (thisProcess.platform.isKindOf(UnixPlatform)) {
-			^Date.getDate.stamp
-		} {
-			// "// temporary kludge to fix Date's brokenness on windows".postln;
-			^Main.elapsedTime.round(0.01)
-		};
+		^Date.getDate.stamp
 	}
 
 	*dateString {
-			// hope it works on linux?
-		if (thisProcess.platform.isKindOf(UnixPlatform)) {
-			^Date.getDate.asString
-		} {
-			// temporary kludge to fix Date's brokenness on windows
-			^"__date_time_please__"
-		};
+		^Date.getDate.asString
 	}
 
 	*initClass {
@@ -35,20 +23,20 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 
 		listenFunc = { |str, val, func|
 			if ( func.notNil
-					and: { str.notEmpty }
-					and: { str != "\n" }
-					and: { str.keep(7) != "History" })
-				{
-					if (this.verbose, { [str, val, func].postcs });
-					if (this.recordLocally, {
-						this.enter(thisProcess.interpreter.cmdLine)
-					});
-					this.forwardFunc.value(str, val, func);
-				}
+				and: { str.notEmpty }
+				and: { str != "\n" }
+				and: { str.keep(7) != "History" })
+			{
+				if (this.verbose, { [str, val, func].postcs });
+				if (this.recordLocally, {
+					this.enter(thisProcess.interpreter.cmdLine)
+				});
+				this.forwardFunc.value(str, val, func);
+			}
 		};
 	}
 
-		// top level interface :
+	// top level interface :
 
 	*start {
 		var interp = thisProcess.interpreter;
@@ -72,8 +60,13 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 	*hasMovedOn_ { |flag=true| current.hasMovedOn_(flag) }
 	*hasMovedOn  { ^current.hasMovedOn }
 
-	*play { |start=0, end, verbose=true| ^current.play(start, end, verbose) }
-	*stop { ^current.stop }
+	*play { |start=0, end, verbose=true|
+		^current.play(start, end, verbose)
+	}
+
+	*stop {
+		^current.stop
+	}
 
 	*enter { |lineStr, id=\me|
 		var dateNow, now;
@@ -96,21 +89,22 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		current.addLine(now, id, lineStr);
 	}
 
-		// forward to current for backwards compat...
+	// forward to current for backwards compat...
 	*lines { ^current.lines }
 	*lineShorts { ^current.lineShorts }
-		// editing
+	// editing
 	*removeAt {|index| current.removeAt(index) }
 	*removeLast { current.removeLast }
 	*keep {|num| current.keep(num) }
 	*drop {|num| current.drop(num) }
+	*clear { current.clear }
 
-		// instance methods:
+	// instance methods:
 	*new { |lines|
-		^super.new.init(lines);
+		^super.new.init(lines)
 	}
 
-	hasMovedOn_ { |flag=true| hasMovedOn = flag; }
+	hasMovedOn_ { |flag=true| hasMovedOn = flag }
 
 	lines_ { |inLines|
 		lines.array_(inLines);
@@ -124,7 +118,6 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		lineShorts = List[];
 		hasMovedOn = true;
 	}
-	*clear { current.clear }
 
 	init { |inLines|
 		keys = IdentitySet.new;
@@ -157,7 +150,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 	isCurrent { ^this === History.current }
 
 	play { |start=0, end, verbose=true|	// line numbers;
-									// starting from past 0 may not work.
+		// starting from past 0 may not work.
 		start = start.clip(0, lines.lastIndex);
 		end = (end ? lines.lastIndex).clip(0, lines.lastIndex);
 
@@ -178,27 +171,38 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		};
 		keys.add(authID);
 	}
-		// simple editing
+
+	// simple editing
 	removeAt { |index|
-		if (index.isKindOf(Collection)) { index.sort.reverseDo (this.removeAt(_)); ^this };
+		if (index.isKindOf(Collection)) {
+			index.sort.reverseDo (this.removeAt(_));
+			^this
+		};
 
 		if (index < lines.size) { 	// ignore out of range indices, keep lists synced.
-			[lines, lineShorts].do(_.removeAt(index));		};
+			[lines, lineShorts].do(_.removeAt(index))
+		};
 		hasMovedOn = true;
 	}
+
 	removeLast { this.removeAt(lines.size - 1) }
+
 	keep { |num|
 		lines = lines.keep(num);
 		lineShorts = lineShorts.keep(num);
 		hasMovedOn = true;
 	}
+
 	drop { |num|
 		lines = lines.drop(num);
 		lineShorts = lineShorts.drop(num);
 		hasMovedOn = true;
 	}
-		// loading from and saving to files
+
+	// loading from and saving to files
+
 	*saveCS { |path, forward=false| current.saveCS(path, forward) }
+
 	saveCS { |path, forward=false|
 		var file, lines2write;
 
@@ -227,12 +231,12 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		};
 	}
 
-			// network setups support
+	// network setups support
 	*network { }
 	*localOn { recordLocally = true }
 	*localOff { recordLocally = false }
 
-			// string formatting utils
+	// string formatting utils
 	storyString {
 		var alone = lines.collectAs({ |line| line[1] }, IdentitySet).size == 1;
 		var str;
@@ -244,17 +248,17 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		lines.reverseDo { |x|
 			var now, id, cmdLine;
 			#now, id, cmdLine = x;
-				str = str ++
-				format("// - % - % \n",
-					this.class.formatTime(now),
-					if(alone) { "" } { "(" ++ id ++ ")" }
-				);
+			str = str ++
+			format("// - % - % \n",
+				this.class.formatTime(now),
+				if(alone) { "" } { "(" ++ id ++ ")" }
+			);
 			if(cmdLine.find("\n").notNil and: { cmdLine[0] != $( }) {
 				cmdLine = format("(\n%\n);", cmdLine)
 			};
 			str = str ++ cmdLine ++ "\n\n";
 		};
-		^str;
+		^str
 	}
 
 	*saveStory { |path| current.saveStory(path) }
@@ -268,19 +272,19 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		file.close;
 	}
 
-	*formatTime { arg val;
-			var h, m, s;
-			h = val div: (60 * 60);
-			val = val - (h * 60 * 60);
-			m = val div: 60;
-			val = val - (m * 60);
-			s = val;
-			^"%:%:%".format(h, m, s.round(0.01))
+	*formatTime { |val|
+		var h, m, s;
+		h = val div: (60 * 60);
+		val = val - (h * 60 * 60);
+		m = val div: 60;
+		val = val - (m * 60);
+		s = val;
+		^"%:%:%".format(h, m, s.round(0.01))
 	}
-	*unformatTime { arg str;
-			var h, m, s;
-			#h, m, s = str.split($:).collect(_.interpret);
-			^h * 60 + m * 60 + s
+	*unformatTime { |str|
+		var h, m, s;
+		#h, m, s = str.split($:).collect(_.interpret);
+		^h * 60 + m * 60 + s
 	}
 
 	*prettyString { |str|
@@ -293,20 +297,20 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 			endChar = str[lastCharIndex];
 		};
 		// [startIndex, lastCharIndex].postln;
-		^str.copyRange(startIndex, lastCharIndex);
+		^str.copyRange(startIndex, lastCharIndex)
 	}
 
-		// convert to shortline for gui
+	// convert to shortline for gui
 	*shorten { |line, maxLength|
 		var  time, id, lineStr, head, length;
 		#time, id, lineStr = line;
 		head = (this.formatTime(time) + "-" + id + "- ");
 		maxLength = maxLength ? maxShortLength;
-		^head ++ lineStr.keep(maxLength  - head.size);
+		^head ++ lineStr.keep(maxLength  - head.size)
 	}
 
-		// not used yet
-	*getTimeFromString { arg str;
+	// not used yet
+	*getTimeFromString { |str|
 		var ts, i;
 		if(str.beginsWith("// - ").not) { ^nil };
 		i = str.find(" - ", offset: 4);
@@ -314,8 +318,8 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		ts = str[5..i+2].postln.split($:).collect(_.asFloat);
 		^ts[0] * (60 * 60) + (ts[1] * 60) + ts[2]
 	}
-		// not used yet
-	*asLines { arg str;
+	// not used yet
+	*asLines { |str|
 		var indices;
 		indices = str.findAll("// -");
 		^str.clumps(indices.differentiate)
@@ -323,7 +327,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 
 	/*
 	// problem: interpreter cancels backslashes etc.
-	*stream { arg str, func;
+	*stream { |str, func|
 		var lastTime=0, time;
 		func = func ?? {
 			{|str|
@@ -348,7 +352,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 			}
 		}
 	}
-	*play { arg str, clock;
+	*play { |str, clock|
 		str = str ? Document.current.string;
 		^this.stream(str).asEventStreamPlayer.play(clock);
 	}
@@ -357,9 +361,12 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 	}
 	*/
 
-	*cmdPeriod { this.enter("// thisProcess.cmdPeriod"); }
 
-				// log file support - global only
+	*cmdPeriod {
+		this.enter("// thisProcess.cmdPeriod")
+	}
+
+	// log file support - global only
 	*makeLogFolder {
 		var supportDir = thisProcess.platform.userAppSupportDir;
 		var specialFolder = supportDir ++ "/HistoryLogs";
@@ -385,7 +392,12 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		if (logFile.isNil) { this.startLog };
 
 		isOpen = logFile.isOpen;
-		^if (isOpen.not) { this.startLog; ^logFile.isOpen } { true };
+		^if (isOpen.not) {
+			this.startLog;
+			logFile.isOpen
+		} {
+			true
+		}
 	}
 
 	*startLog {
@@ -397,9 +409,9 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		if (logFile.isOpen) {
 			logFile.write(format("// History, as it was on %.\n\n",
 				timeString) ++ "[\n" /*]*/ );
-			"// History.logFile opened.".postln;
+			"// History.logFile opened.".postln
 		} {
-			"// History: could not open logFile!".warn;
+			"// History: could not open logFile!".warn
 		};
 	}
 
@@ -409,17 +421,17 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 			try {
 				logFile.write(line.asCompileString ++ ",\n")
 			} {
-				"// History: could not write to logFile!".warn;
+				"// History: could not write to logFile!".warn
 			}
 		} {
-			warn("// History: logFile is not open!");
+			warn("// History: logFile is not open!")
 		};
 	}
 
 	*endLog {
 		// close file
 		try { logFile.write( /*[*/ "];") };
-		try { logFile.close; "// History.logFile closed.".postln; };
+		try { logFile.close; "// History.logFile closed.".postln };
 	}
 
 	*showLogFile { Document.open(this.logPath) }
@@ -429,7 +441,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		if (key == \all) { ^(0..lines.size - 1) };
 		if (key.isNil) { ^nil };
 
-			// list of keys:
+		// list of keys:
 		if (key.isArray) {
 			lines.do { |line, i| if (key.includes(line[1])) { indices = indices.add(i) } }
 		} {
@@ -440,17 +452,21 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 
 	matchString { |str, ignoreCase=true|
 		var indices = [];
-		if (str.notNil and: (str != "")) {
-			lines.do { |line, i| if (line[2].find(str, ignoreCase).notNil) { indices = indices.add(i) } };
-			^indices
-		} { ^nil }
+		^if (str.notNil and: (str != "")) {
+			lines.do { |line, i|
+				if (line[2].find(str, ignoreCase).notNil) {
+					indices = indices.add(i)
+				}
+			};
+			indices
+		} { nil }
 	}
 
 	indicesFor { |keys, string=""|
 		var indicesK, indicesS, indicesFound;
 		indicesK = this.matchKeys(keys);
 		indicesS = this.matchString(string);
-	//	[\indicesK, indicesK, \indicesS, indicesS].postln;
+		//	[\indicesK, indicesK, \indicesS, indicesS].postln;
 
 		indicesFound = if (indicesK.notNil) {
 			if (indicesS.notNil) { indicesK.sect(indicesS) } { indicesK }
@@ -464,27 +480,17 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 
 	makeWin { |where, numItems=8|
 		var gui = HistoryGui(this, numItems);
-		if (where.notNil) { gui.moveTo(where.x, where.y); };
+		if (where.notNil) { gui.moveTo(where.x, where.y) };
 		^gui
 	}
 
 	*document { current.document }
 
-	document { arg title="";	// platform dependent ...
-		var docTitle;
-		Platform.case(
-			\windows, {
-				// not sure this works in 3.7.0?
-				this.storyString.newTextWindow("History_documented");
-			},
-			{
-				//
-				docTitle = title ++ Date.getDate.format("%Y-%m-%e-%Hh%M-History");
-				Document.new(docTitle, this.storyString)
-				// path not working yet
-				//	.path_(docTitle); // don't lose title.
-			}
-		)
+	document { |title = ""|
+		var docTitle = title ++ Date.getDate.format("%Y-%m-%d-%Hh%M-History");
+		Document.new(docTitle, this.storyString)
+		// path not working yet
+		//.path_(docTitle); // don't lose title.
 	}
 
 	*readFromDoc { |path|
@@ -495,7 +501,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 			("History: file" + path + "not found!").warn;
 			^false
 		};
-			// read all lines, keep indices of commentlines
+		// read all lines, keep indices of commentlines
 		while { line = file.getLine; line.notNil } {
 			lineStrings = lineStrings.add(line);
 			if (line.beginsWith("// - ")) {
@@ -519,19 +525,21 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 
 			codeStr = lineStrings.copyRange(lineIndex + 1, nextComIndex - 2).join;
 
-			[time, key, codeStr];
+			[time, key, codeStr]
 		};
 	}
+
 	*checkPath { |path|
 		var ext = path.splitext[1];
-		if ([\sc, \scd, \txt, \nil, \rtf].includes(ext.asSymbol)) {
-			^true
+		^if ([\sc, \scd, \txt, \nil, \rtf].includes(ext.asSymbol)) {
+			true
 		} {
 			warn("History: file format" + ext + "for story files likely not supported!				Please use .txt, .scd, or other text format.");
-			^false
-		};
+			false
+		}
 	}
-		// load file saved with saveStory
+
+	// load file saved with saveStory
 	*loadStory { |path| current.loadStory(path) }
 
 	loadStory { |path|
