@@ -1,17 +1,11 @@
 class:: ContiguousBlockAllocator
 summary:: for better handling of dynamic allocation
-related:: Classes/Server, Classes/PowerOfTwoAllocator
+related:: Classes/Server, Classes/PowerOfTwoAllocator, Guides/MultiClient_Setups
 categories:: Control
 
 description::
 
-A more robust replacement for the default server block allocator, link::Classes/PowerOfTwoAllocator::. May be used in the link::Classes/Server:: class to allocate audio/control bus numbers and buffer numbers.
-
-To configure a server to use ContiguousBlockAllocator, execute the following:
-code::
-aServer.options.blockAllocClass = ContiguousBlockAllocator;
-::
-Normally you will not need to address the allocators directly. However, ContiguousBlockAllocator adds one feature not present in PowerOfTwoAllocator, namely the emphasis::reserve:: method.
+The default allocator used in servers to allocate bus numbers and buffer numbers. Compared to its predecessor, link::Classes/PowerOfTwoAllocator::, it can reserve a block of numbers at the beginning of its range, and it can offset its entire range of numbers to support multiple clientIDs.
 
 ClassMethods::
 
@@ -20,7 +14,16 @@ Create a new allocator with emphasis::size:: slots. You may block off the first 
 
 InstanceMethods::
 
-private::prReserve, prSplit
+private::prReserve, prSplit, addToFreed, blocks, findAvailable, findNext, findPrevious, removeFromFreed
+
+method::size
+	the number of id numbers it can allocate
+
+method::pos
+	the allocator's offset for a reserved block (e.g. for hardware input and output buses).
+
+method::addrOffset
+	the offset of the allocator's address range, which is used to accomodate multiple clientIDs.
 
 method::alloc
 Return the starting index of a free block that is emphasis::n:: slots wide. The default is 1 slot.
@@ -31,4 +34,6 @@ Free a previously allocated block starting at emphasis::address::.
 method::reserve
 Mark a specific range of addresses as used so that the alloc method will not return any addresses within that range.
 
+method::debug
+	post internal state of allocator for debugging.
 
