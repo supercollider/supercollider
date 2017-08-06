@@ -1,7 +1,7 @@
 /* make nodeIDs more humanly readable:
 10 ** 8 ids for 1 user, 10 ** 7 for < 21, 10 ** 6 for < 210
 
-for example, with 20 users, clientIDs would be
+for example, with 20 Clients, clientIDs would be
 clientID  defaultGroup  tempIDs
  1         10000001      120001000, 10001001, etc
  2         10000001      120001000, 10001001, etc
@@ -13,20 +13,20 @@ or s.queryAllNodes posts much easier to understand.
 
 ReadableNodeIDAllocator {
 
-	var <userID, <lowestTempID, <numUsers;
+	var <clientID, <lowestTempID, <numClients;
 	var <numIDs, <idOffset, <maxPermID;
 	var tempCount = -1, permCount = 1, permFreed;
 
-	*new { arg userID = 0, lowestTempID = 1000, numUsers = 32;
-		^super.newCopyArgs(userID, lowestTempID, numUsers).reset
+	*new { arg clientID = 0, lowestTempID = 1000, numClients = 32;
+		^super.newCopyArgs(clientID, lowestTempID, numClients).reset
 	}
 
 	reset {
-		var maxNumPerUser = (2 ** 31 / numUsers).trunc;
+		var maxNumPerUser = (2 ** 31 / numClients).trunc;
 		// go to next lower power of 10:
 		numIDs = (10 ** maxNumPerUser.log10.trunc).asInteger;
 
-		idOffset = numIDs * userID;
+		idOffset = numIDs * clientID;
 
 		permFreed = IdentitySet.new;
 		maxPermID = idOffset + lowestTempID - 1;
@@ -36,7 +36,7 @@ ReadableNodeIDAllocator {
 
 	alloc {
 		tempCount = tempCount + 1;
-		// wraps after 10**7 or so ids
+		// wraps after handing out (numIDs - lowestTempID) ids
 		^(lowestTempID + tempCount).wrap(lowestTempID, numIDs) + idOffset;
 	}
 

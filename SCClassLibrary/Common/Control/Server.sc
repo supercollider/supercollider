@@ -347,7 +347,7 @@ Server {
 
 	}
 
-	numUsers { ^options.maxLogins }
+	numClients { ^options.maxLogins }
 
 	addr_ { |netAddr|
 		addr = netAddr ?? { NetAddr("127.0.0.1", 57110) };
@@ -391,9 +391,9 @@ clientID is still %.";
 			failstr.format(name, val.cs, "less than minimum 0", clientID).warn;
 			^this
 		};
-		if (val >= this.numUsers) {
+		if (val >= this.numClients) {
 			failstr.format(name, val.cs,
-				"greater than server.numUsers % - 1 allows".format(this.numUsers), clientID
+				"greater than server.numClients % - 1 allows".format(this.numClients), clientID
 			).warn;
 			^this
 		};
@@ -413,31 +413,31 @@ clientID is still %.";
 
 	newNodeAllocators {
 		nodeAllocator = nodeAllocClass.new(clientID,
-			options.initialNodeID, this.numUsers)
+			options.initialNodeID, this.numClients)
 	}
 
 	newBusAllocators {
-		var numControlPerUser, numAudioPerUser;
+		var numControlPerClient, numAudioPerClient;
 		var controlReservedOffset, controlBusClientOffset;
 		var audioReservedOffset, audioBusClientOffset;
 
-		numControlPerUser = options.numControlBusChannels div: this.numUsers;
-		numAudioPerUser = options.numPrivateAudioBusChannels div: this.numUsers;
+		numControlPerClient = options.numControlBusChannels div: this.numClients;
+		numAudioPerClient = options.numPrivateAudioBusChannels div: this.numClients;
 
 		controlReservedOffset = options.reservedNumControlBusChannels;
-		controlBusClientOffset = numControlPerUser * clientID;
+		controlBusClientOffset = numControlPerClient * clientID;
 
 		audioReservedOffset = options.firstPrivateBus +
 			options.reservedNumAudioBusChannels;
-		audioBusClientOffset = numAudioPerUser * clientID;
+		audioBusClientOffset = numAudioPerClient * clientID;
 
 		controlBusAllocator = busAllocClass.new(
-			numControlPerUser,
+			numControlPerClient,
 			controlReservedOffset,
 			controlBusClientOffset
 		);
 		audioBusAllocator = busAllocClass.new(
-			numAudioPerUser,
+			numAudioPerClient,
 			audioReservedOffset,
 			audioBusClientOffset
 		);
@@ -445,12 +445,12 @@ clientID is still %.";
 
 
 	newBufferAllocators {
-		var numBuffersPerUser = options.numBuffers div: this.numUsers;
+		var numBuffersPerClient = options.numBuffers div: this.numClients;
 		var numReservedBuffers = options.reservedNumBuffers;
-		var bufferClientOffset = numBuffersPerUser * clientID;
+		var bufferClientOffset = numBuffersPerClient * clientID;
 
 		bufferAllocator = bufferAllocClass.new(
-			numBuffersPerUser,
+			numBuffersPerClient,
 			numReservedBuffers,
 			bufferClientOffset
 		);
