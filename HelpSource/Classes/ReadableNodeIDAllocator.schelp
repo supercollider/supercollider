@@ -1,0 +1,86 @@
+TITLE:: ReadableNodeIDAllocator
+summary:: an allocator for nodeIDs with human-readable ownership
+categories:: Control
+related:: Classes/Server, Guides/MultiClient_Setups
+
+DESCRIPTION::
+In multi-client setups, it is useful to know which client created which nodeIDs on a shared server. ReadableNodeIDAllocator provides that facility by using a decimal prefix based on the clientID.
+
+
+code::
+// default server uses a ReadableNodeIDAllocator
+s.nodeAllocator;
+s.nodeAllocator.userID; // its userID is
+s.clientID
+
+// which creates this defaultGroup 1
+s.defaultGroup;
+s.defaultGroupID;
+// and temp nodes begin with 1000 ...
+3.do { s.nextNodeID.postln };
+
+
+// make a dummy server with different clientID
+r = Server(\remote4, s.addr, s.options, clientID: 4);
+// defaultGroup begins with 400000 ... prefix and ends with 1
+r.defaultGroup;
+r.defaultGroupID;
+// and temp nodes begin with 400001000 ...
+3.do { r.nextNodeID.postln };
+::
+
+CLASSMETHODS::
+
+METHOD:: new
+make a new instance for given clientID, offset for lowest temporary id, and
+argument:: clientID
+the clientID for which to create an offset/prefix
+argument:: lowestTempID
+the offset for the lowest temporary id
+argument:: numClients
+the number of clients for which to split the number range
+
+code::
+// make an allocator with id 11
+a = ReadableNodeIDAllocator(11, 1000, 12);
+// begins with 1100000 ... prefix
+3.do { a.alloc.postln };
+::
+
+INSTANCEMETHODS::
+
+METHOD:: clientID
+the clientID for which to create an offset/prefix
+
+METHOD:: numClients
+the number of clients for which to split the number range
+
+METHOD:: lowestTempID
+the offset from where temporary nodeID begin
+
+METHOD:: idOffset
+the offset from where nodeID range begins
+
+METHOD:: maxPermID
+the highest permanent nodeID
+
+METHOD:: numIDs
+the number of IDs before the allocator will wrap
+
+METHOD:: alloc
+allocate next temporary nodeID
+
+METHOD:: allocPerm
+allocate next permanent nodeID
+
+METHOD:: freePerm
+free a permanent nodeID
+argument:: id
+
+METHOD:: isPerm
+test whether num is in the allocator's range of permanent numbers
+argument:: num
+
+METHOD:: reset
+reset allocator to initial state
+
