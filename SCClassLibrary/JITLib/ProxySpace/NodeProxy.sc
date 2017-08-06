@@ -97,7 +97,8 @@ NodeProxy : BusPlug {
 
 	parentGroup_ { | node |
 		if(node.isPlaying.not) {
-			"% : node not playing and registered: % \n".postf(thisMethod, node);
+			"% : cannot make non-playing node parentGroup: % \n"
+			.postf(thisMethod, node);
 			^this
 		};
 		parentGroup = node;

@@ -171,23 +171,3 @@ r.bufferAllocator.size;
 
 // more buffer alloc tests desirable here?
 ::
-
-
-Testing the clientID method by hand.
-
-Note:: Setting clientID_ by hand is generally not recommended, as it can lead to confusing state. Here it is only done for testing the method, and demonstrating the info posts.::
-
-::
-s.options.maxLogins = 12;
-// these work and post info
-s.clientID_(1);
-s.clientID_(2);
-s.clientID_(11);
-// guards against bad input - warns and keeps clientID
-s.clientID_(nil);
-s.clientID_("abc");
-s.clientID_(16);
-s.clientID_(-234);
-// reset to default:
-s.clientID_(0);
-::
