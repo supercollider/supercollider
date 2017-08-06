@@ -139,6 +139,34 @@ Reports the result of the test if code::true::.
 argument:: onFailure
 If not code::nil::, a failure stops the tests and evaluates this function.
 
+METHOD:: assertEquals
+
+Asserts that an expression code::a:: is equal to the value code::b::,
+where equality is determined according to code::a::'s implementation
+of code::==::.
+
+code::
+this.assertEquals(2 + 2, 4, "passes");
+this.assertEquals(2 + 2, 5, "fails");
+::
+
+argument:: a
+the experimentally produced value
+
+argument:: b
+the expected value
+
+argument:: message
+A message describing the purpose of the assertion, e.g.
+code::"Adding two numbers should return their sum."::.
+Posted if code::report:: is true.
+
+argument:: report
+Reports the result of the test if code::true:: (default is code::true::)
+
+argument:: onFailure
+If not code::nil::, a failure stops the tests and evaluates this function.
+
 METHOD:: assertFloatEquals
 
 Make sure that the two floats code::a:: and code::b:: equal within a given range (code::within::).
