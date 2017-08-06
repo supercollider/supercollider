@@ -193,11 +193,10 @@ ContiguousBlock {
 	printOn { |stream| this.storeOn(stream) }
 }
 
-// pos is offset for reserved numbers,
-// addrOffset is offset for clientID * size
 ContiguousBlockAllocator {
-
 	var	<size, array, freed, <pos, top, <addrOffset;
+	// pos is offset for reserved numbers,
+	// addrOffset is offset for clientID * size
 
 	*new { |size, pos = 0, addrOffset = 0|
 		var shiftedPos = pos + addrOffset;
