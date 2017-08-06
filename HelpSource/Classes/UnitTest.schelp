@@ -118,19 +118,26 @@ Make sure to implement the methods code::setUp:: and code::tearDown::. They will
 
 METHOD:: assert
 
-argument:: test
-Make sure that this returns a boolean, where code::true:: means that the test is passed.
+Asserts that an expression must be true.
+
+code::
+this.assert(2 == 2, "passes");
+this.assert(2 == 2.00001, "fails");
+::
+
+argument:: boolean
+A boolean, where code::true:: means that the test is passed.
 
 argument:: message
-posted if report is true.
+A message describing the purpose of the assertion, e.g. code::"foo
+should be less than bar"::.
+Posted if code::report:: is true.
+
+argument:: report
+Reports the result of the test if code::true::.
 
 argument:: onFailure
 If not code::nil::, a failure stops the tests and evaluates this function.
-
-code::
-UnitTest.new.assert(2 == 2, "Two does equal two.");
-UnitTest.new.assert(2 == 2.00001, "Two does equal two.");
-::
 
 METHOD:: assertFloatEquals
 
