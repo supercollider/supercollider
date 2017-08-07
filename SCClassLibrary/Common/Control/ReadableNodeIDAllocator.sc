@@ -17,7 +17,7 @@ ReadableNodeIDAllocator {
 	var <numIDs, <idOffset, <maxPermID;
 	var tempCount = -1, permCount = 1, permFreed;
 
-	*new { arg clientID = 0, lowestTempID = 1000, numClients = 32;
+	*new { |clientID = 0, lowestTempID = 1000, numClients = 32|
 		^super.newCopyArgs(clientID, lowestTempID, numClients).reset
 	}
 

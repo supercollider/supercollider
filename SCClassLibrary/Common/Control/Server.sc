@@ -392,8 +392,10 @@ clientID is still %.";
 			^this
 		};
 		if (val >= this.numClients) {
-			failstr.format(name, val.cs,
-				"greater than server.numClients % - 1 allows".format(this.numClients), clientID
+			failstr.format(name,
+				val.cs,
+				"greater than server.numClients % - 1 allows".format(this.numClients),
+				clientID
 			).warn;
 			^this
 		};
