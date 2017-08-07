@@ -421,15 +421,19 @@ clientID is still %.";
 	newBusAllocators {
 		var numControlPerClient, numAudioPerClient;
 		var controlReservedOffset, controlBusClientOffset;
-		var audioReservedOffset, audioBusClientOffset;
+		var audioReservedOffset = 0, audioBusClientOffset;
 
 		numControlPerClient = options.numControlBusChannels div: this.numClients;
-		numAudioPerClient = options.numPrivateAudioBusChannels div: this.numClients;
+		numAudioPerClient = options.numAudioBusChannels div: this.numClients;
 
 		controlReservedOffset = options.reservedNumControlBusChannels;
 		controlBusClientOffset = numControlPerClient * clientID;
 
-		audioReservedOffset = options.firstPrivateBus +
+		// only reserve hardware output chans on clientID 0
+		if (clientID == 0) {
+			audioReservedOffset = audioReservedOffset + options.firstPrivateBus;
+		};
+		audioReservedOffset = audioReservedOffset +
 			options.reservedNumAudioBusChannels;
 		audioBusClientOffset = numAudioPerClient * clientID;
 
