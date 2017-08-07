@@ -157,7 +157,7 @@ RingNumberAllocator {
 
 ContiguousBlock {
 
-	var     <start, <size, <>used = false;  // assume free; owner must say otherwise
+	var <start, <size, <>used = false;  // assume free; owner must say otherwise
 
 	*new { |start, size| ^super.newCopyArgs(start, size) }
 
@@ -196,8 +196,9 @@ ContiguousBlock {
 // pos is offset for reserved numbers,
 // addrOffset is offset for clientID * size
 ContiguousBlockAllocator {
-
-	var	<size, array, freed, <pos, top, <addrOffset;
+	var <size, array, freed, <pos, top, <addrOffset;
+	// pos is offset for reserved numbers,
+	// addrOffset is offset for clientID * size
 
 	*new { |size, pos = 0, addrOffset = 0|
 		var shiftedPos = pos + addrOffset;
@@ -208,14 +209,14 @@ ContiguousBlockAllocator {
 	}
 
 	alloc { |n = 1|
-		var	block;
+		var block;
 		(block = this.findAvailable(n)).notNil.if({
 			^this.prReserve(block.start, n, block).start
 		}, { ^nil });
 	}
 
 	reserve { |address, size = 1, warn = true|
-		var	block, new;
+		var block, new;
 		((block = array[address] ?? { this.findNext(address) }).notNil and:
 			{ block.used and:
 				{ address + size > block.start } }).if({
@@ -241,8 +242,7 @@ ContiguousBlockAllocator {
 	}
 
 	free { |address|
-		var	block,
-		prev, next, temp;
+		var block, prev, next, temp;
 		// this 'if' prevents an error if a Buffer object is freed twice
 		if(address.isNil) { ^this };
 		((block = array[address - addrOffset]).notNil and: { block.used }).if({
@@ -308,7 +308,7 @@ ContiguousBlockAllocator {
 	}
 
 	findNext { |address|
-		var	temp = array[address - addrOffset];
+		var temp = array[address - addrOffset];
 		if (temp.notNil) {
 			^array[temp.start + temp.size - addrOffset]
 		} {
@@ -320,7 +320,7 @@ ContiguousBlockAllocator {
 	}
 
 	prReserve { |address, size, availBlock, prevBlock|
-		var	new, leftover;
+		var new, leftover;
 		(availBlock.isNil and: { prevBlock.isNil }).if({
 			prevBlock = this.findPrevious(address);
 		});
@@ -333,7 +333,7 @@ ContiguousBlockAllocator {
 	}
 
 	prSplit { |availBlock, n, used = true|
-		var	new, leftover;
+		var new, leftover;
 		#new, leftover = availBlock.split(n);
 		new.used = used;
 		this.removeFromFreed(availBlock);
