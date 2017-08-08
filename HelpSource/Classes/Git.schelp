@@ -56,6 +56,9 @@ returns:: hash of the given tag
 METHOD:: isDirty
 returns:: code::true:: if there are local changes
 
+METHOD:: openRemote, openLocalPath
+open the local respectively remote urls with the OS
+
 
 
 subsection:: perform actions on remote
