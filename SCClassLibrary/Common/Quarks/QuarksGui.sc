@@ -380,6 +380,9 @@ QuarkDetailView {
 	openGithub {
 		var url = model.url;
 		if(url.notNil, {
+			if(url.beginsWith("git@github.com:"), {
+				url = "https://github.com/" ++ url.copyToEnd(15)
+			});
 			if(url.beginsWith("git:"), {
 				url = "https:" ++ url.copyToEnd(4)
 			});
