@@ -40,10 +40,10 @@ Volume {
 					ampSynth = nil;
 					if(persist) { this.updateSynth }
 				})
-			}
-		};
+			};
 
-		this.updateSynth
+			this.updateSynth
+		}
 	}
 
 	numChannels { ^numChannels ? server.options.numOutputBusChannels }
