@@ -32,6 +32,9 @@ subsection:: info
 METHOD:: remote, url
 returns:: url of the first remote that it finds.
 
+METHOD:: httpsString
+returns:: remote url formatted for code::https:: request
+
 METHOD:: remoteLatest
 returns:: hash of latest commit on the remote
 
@@ -55,9 +58,6 @@ returns:: hash of the given tag
 
 METHOD:: isDirty
 returns:: code::true:: if there are local changes
-
-METHOD:: openRemote, openLocalPath
-open the local respectively remote urls with the OS
 
 
 
