@@ -41,7 +41,9 @@ Volume {
 					if(persist) { this.updateSynth }
 				})
 			}
-		}
+		};
+
+		this.updateSynth
 	}
 
 	numChannels { ^numChannels ? server.options.numOutputBusChannels }
@@ -86,7 +88,10 @@ Volume {
 	}
 
 	free {
-		ampSynth.free;
+		ServerTree.remove(updateFunc);
+		updateFunc = nil;
+		ampSynth.release;
+		ampSynth = nil
 	}
 
 	// sets volume back to 1 - removes the synth
