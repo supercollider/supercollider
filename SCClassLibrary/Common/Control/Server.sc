@@ -867,7 +867,7 @@ Server {
 		sendQuit = nil;
 
 		if(scopeWindow.notNil) { scopeWindow.quit };
-		volume.free;
+		volume.freeSynth;
 		RootNode(this).freeAll;
 		this.newAllocators;
 	}
