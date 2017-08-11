@@ -70,11 +70,11 @@ s.reboot;
 (
 SynthDef(\longDelayLine, {
 	var in, delA, delB, delC, out;
-	in = SoundIn.ar(1);
-	delA=CombC.ar(in, 8, 8, 1, 0.3, 0);
-	delB=CombC.ar(in, 40, 40, 1, 0.3, 0);
-	delC=CombC.ar(in, 800, 800, 1, 0.3, 0);
-	out = in + delA + delB + delC;
+	in   = SoundIn.ar(1);
+	delA = CombC.ar(in, 8, 8, 1, 0.3, 0);
+	delB = CombC.ar(in, 40, 40, 1, 0.3, 0);
+	delC = CombC.ar(in, 800, 800, 1, 0.3, 0);
+	out  = in + delA + delB + delC;
 	Out.ar(0, out ! 2);
 }).add;
 )
