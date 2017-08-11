@@ -73,7 +73,7 @@ b = Button(w, Rect(0, 0, 150, 20))
 	.states_([["pick another QC file"]])
 	.action_({ File.openDialog("", { |path| m.path_(path) }) });
 m = QuartzComposerView(w, Rect(0,20,400, 260));
-m.path = Platform.helpDir +/+ "QC/Cells.qtz";
+m.path = Platform.userAppSupportDir +/+ "Help/QC/Cells.qtz";
 )
 m.start;
 m.stop;
@@ -82,7 +82,7 @@ m.stop;
 (
 w = Window("SCTV").front;
 m = QuartzComposerView(w, Rect(0,20,400, 260));
-m.path = Platform.helpDir +/+ "QC/SCQuartzComposerViewTest.qtz";
+m.path = Platform.userAppSupportDir +/+ "Help/QC/SCQuartzComposerViewTest.qtz";
 m.start;
 )
 
@@ -133,7 +133,7 @@ b = SCButton(w, Rect(0, 0, 150, 20))
 	.states_([["Close Me"]])
 	.action_({w.close});
 m = QuartzComposerView(w, Rect(0,20,360, 260));
-m.path = Platform.helpDir +/+ "QC/SCQuartzComposerViewTest.qtz";
+m.path = Platform.userAppSupportDir +/+ "Help/QC/SCQuartzComposerViewTest.qtz";
 
 m.resize = 5;
 m.start;
@@ -146,7 +146,7 @@ w.fullScreen;
 (
 w = Window("SCTV").front;
 m = QuartzComposerView(w, Rect(0,20,400, 260));
-m.path = Platform.helpDir +/+ "QC/SCQuartzComposerViewStructureTest.qtz";
+m.path = Platform.userAppSupportDir +/+ "Help/QC/SCQuartzComposerViewStructureTest.qtz";
 m.start;
 )
 
@@ -193,7 +193,7 @@ b = Button(w, Rect(0, 0, 150, 20))
     .states_([["pick another QC file"]])
     .action_({ File.openDialog("", { |path| m.path_(path) }) });
 m = QuartzComposerView(w, Rect(0,20,400, 260));
-m.path = Platform.helpDir +/+ "QC/ImageFilter.qtz"; // file missing
+m.path = Platform.userAppSupportDir +/+ "Help/QC/ImageFilter.qtz"; // file missing
 )
 m.start;
 m.stop;
@@ -210,7 +210,7 @@ m.setInputValue(\_protocolInput_Image, j);
 (
 w = Window("Stupid Pan Example", Rect(0,20,600, 150)).front;
 m = QuartzComposerView(w, Rect(0,20,600, 100));
-m.path = Platform.helpDir +/+ "QC/Stupid Pan.qtz";
+m.path = Platform.userAppSupportDir +/+ "Help/QC/Stupid Pan.qtz";
 m.resize = 5;
 m.start;
 )
@@ -232,7 +232,7 @@ loop({
 (
 w = Window("Sonogram", Rect(0,20,600, 300)).front;
 m = QuartzComposerView(w, Rect(0,20,600, 256));
-m.path = Platform.helpDir +/+ "QC/SCQCsonogramCount2.qtz";
+m.path = Platform.userAppSupportDir +/+ "Help/QC/SCQCsonogramCount2.qtz";
 m.start;
 m.setInputValue(\framesPerView, 300);
 m.setInputValue(\magnitudes, (0, 0.01..1));
@@ -279,8 +279,8 @@ w = Window("Level Meters", Rect(128, 64, 200, 400)).front;
 
 m = QuartzComposerView(w, Rect(20,20,50, 360));
 n = QuartzComposerView(w, Rect(130,20,50, 360));
-m.path = Platform.helpDir +/+ "QC/SCLevelMeter.qtz";
-n.path = Platform.helpDir +/+ "QC/SCLevelMeter.qtz";
+m.path = Platform.userAppSupportDir +/+ "Help/QC/SCLevelMeter.qtz";
+n.path = Platform.userAppSupportDir +/+ "Help/QC/SCLevelMeter.qtz";
 m.maxFPS_(20); n.maxFPS_(20);
 m.start; n.start;
 ~meters = [m, n];
@@ -323,7 +323,7 @@ Event.addEventType(\quartz, { |server|
 w = Window("Level Meters", Rect(128, 64, 200, 400)).front;
 
 m = QuartzComposerView(w, Rect(20,20,50, 360));
-m.path = "Help/GUI/Cocoa-GUI/QuartzComposerView/SCLevelMeter.qtz".standardizePath;
+m.path = "Platform.userAppSupportDir +/+ "Help/QCCocoa-GUI/QuartzComposerView/SCLevelMeter.qtz".standardizePath;
 m.maxFPS_(20);
 m.start;
 )
