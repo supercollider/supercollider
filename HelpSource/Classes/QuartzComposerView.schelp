@@ -317,26 +317,4 @@ Event.addEventType(\quartz, { |server|
 	var key = ~key, value = ~value;
 	AppClock.sched(latency, { view.postln; view.setInputValue(key, value) });
 });
-
-
-(
-w = Window("Level Meters", Rect(128, 64, 200, 400)).front;
-
-m = QuartzComposerView(w, Rect(20,20,50, 360));
-m.path = "Platform.userAppSupportDir +/+ "Help/QCCocoa-GUI/QuartzComposerView/SCLevelMeter.qtz".standardizePath;
-m.maxFPS_(20);
-m.start;
-)
-
-(
-Pbind(
-	\type, \quartz,
-	\view, m,
-	\key, \level,
-	\value, Pwhite(0, 1.0, inf).explin(0.01,1.01, 0, 1),
-	\dur, 0.1
-).play;
-)
-
-m.setInputValue(\level, 0.5);
 ::
