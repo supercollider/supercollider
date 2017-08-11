@@ -22,18 +22,19 @@ Volume {
 	}
 
 	sendSynthDef {
-
 		forkIfNeeded {
 			var synthNumChans = this.numChannels;
 			defName = (\volumeAmpControl ++ synthNumChans).asSymbol;
 			SynthDef(defName, { | volumeAmp = 1, volumeLag = 0.1, gate=1, bus |
-					XOut.ar(bus,
-						Linen.kr(gate, releaseTime: 0.05, doneAction:2),
-						In.ar(bus, synthNumChans) * Lag.kr(volumeAmp, volumeLag)
-					);
+				XOut.ar(bus,
+					Linen.kr(gate, releaseTime: 0.05, doneAction:2),
+					In.ar(bus, synthNumChans) * Lag.kr(volumeAmp, volumeLag)
+				);
 			}).send(server);
 
 			server.sync;
+
+			this.updateSynth;
 
 			if(updateFunc.isNil) {
 				ServerTree.add(updateFunc = {
@@ -83,6 +84,13 @@ Volume {
 			this.changed(\mute, false);
 			this.updateSynth;
 		}
+	}
+
+	freeSynth {
+		ServerTree.remove(updateFunc);
+		updateFunc = nil;
+		ampSynth.release;
+		ampSynth = nil
 	}
 
 	// sets volume back to 1 - removes the synth
