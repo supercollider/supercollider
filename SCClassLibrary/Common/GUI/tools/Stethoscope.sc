@@ -88,7 +88,9 @@ Stethoscope {
 			if( parent.isNil ) {
 				view = window = Window(
 					bounds: (smallSize).asRect.center_(Window.availableBounds.center)
-				).name_("Stethoscope");
+				)
+				.name_("Stethoscope");
+				if(Platform.keepWindowsOnTop) { window.alwaysOnTop_(true) };
 			}{
 				view = View( parent, Rect(0,0,250,250) );
 				window = nil;

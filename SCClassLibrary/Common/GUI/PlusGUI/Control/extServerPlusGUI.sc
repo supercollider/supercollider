@@ -41,7 +41,8 @@
 
 		if(w.isNil) {
 			label = name.asString + "server";
-			w = window = gui.window.new(label, this.calculateViewBounds, resizable: false);
+			w = window = Window.new(label, this.calculateViewBounds, resizable: false);
+			if(Platform.keepWindowsOnTop) { w.alwaysOnTop_(true) };
 			w.view.decorator = FlowLayout(w.view.bounds);
 		} {
 			label = w.name
@@ -353,15 +354,19 @@
 	}
 
 	plotTree {|interval=0.5|
-		var onClose, window = Window.new(name.asString + "Node Tree",
-			Rect(128, 64, 400, 400),
+		var onClose, window;
+
+		window = Window(
+			name.asString + "Node Tree",
+			bounds: Rect(128, 64, 400, 400),
 			scroll:true
 		).front;
+
 		window.view.hasHorizontalScroller_(false).background_(Color.grey(0.9));
-		onClose = this.plotTreeView(interval, window.view, { defer {window.close}; });
-		window.onClose = {
-			onClose.value;
-		};
+		if(Platform.keepWindowsOnTop) { window.alwaysOnTop_(true) };
+
+		onClose = this.plotTreeView(interval, window.view, { defer { window.close } });
+		window.onClose = { onClose.value };
 	}
 
 	plotTreeView {|interval=0.5, parent, actionIfFail|

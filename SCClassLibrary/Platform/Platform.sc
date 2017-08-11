@@ -3,6 +3,7 @@ Platform {
 
 	// IDE actions
 	classvar <>makeServerWindowAction, <>makeSynthDescWindowAction, <>openHelpFileAction, <>openHTMLFileAction;
+	classvar <>keepWindowsOnTop = true;
 
 	var <classLibraryDir, <helpDir, <>recordingsDir, features;
 	var <>devpath;
