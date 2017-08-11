@@ -23,7 +23,7 @@ Primitives for File i/o.
 
 */
 
-
+/* SuperCollider headers */
 #include "GC.h"
 #include "PyrKernel.h"
 #include "PyrPrimitive.h"
@@ -31,39 +31,52 @@ Primitives for File i/o.
 #include "PyrFilePrim.h"
 #include "ReadWriteMacros.h"
 #include "SCBase.h"
-#include "SC_DirUtils.h"
 #include "sc_popen.h"
 
+// on Windows, enable Windows libsndfile prototypes in order to access sf_wchar_open.
+// See sndfile.h, lines 739-752. Note that order matters: this has to be the first include of sndfile.h
+#ifndef NO_LIBSNDFILE
+#  ifdef _WIN32
+#    include <windows.h>
+#    define ENABLE_SNDFILE_WINDOWS_PROTOTYPES 1
+#  endif // _WIN32
+#  include <sndfile.h>
+#endif // NO_LIBSNDFILE
+
+/* SuperCollider newer headers*/
+#include "SC_SndFileHelpers.hpp"
+#include "SC_Filesystem.hpp" // resolveIfAlias
+#include "SC_Codecvt.hpp" // utf8_str_to_path, path_to_utf8_str
+
+/* C stdlib headers */
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
 #include <cerrno>
+#include <fcntl.h>
+#include <math.h>
 
-#include "../../common/SC_SndFileHelpers.hpp"
+/* boost headers */
+#include <boost/filesystem.hpp>
 
+/* system headers */
 #ifndef _WIN32
 # include <unistd.h>
 #else
 # include <direct.h>
 #endif
 
-#include <fcntl.h>
-#include <math.h>
-
-#include <boost/filesystem.hpp>
-
 #if defined(__APPLE__) || defined(SC_IPHONE)
-#ifndef _SC_StandAloneInfo_
-# include "SC_StandAloneInfo_Darwin.h"
-#endif
 # include <CoreFoundation/CFString.h>
 # include <CoreFoundation/CFBundle.h>
-#ifndef SC_IPHONE
-# include <CoreServices/CoreServices.h>
-#endif
+# ifndef SC_IPHONE
+#  include <CoreServices/CoreServices.h>
+# endif
 #endif
 
 #define DELIMITOR ':'
+
+namespace bfs = boost::filesystem;
 
 int prFileDelete(struct VMGlobals *g, int numArgsPushed)
 {
@@ -74,8 +87,9 @@ int prFileDelete(struct VMGlobals *g, int numArgsPushed)
 	if (error != errNone)
 		return error;
 
+	const bfs::path& p = SC_Codecvt::utf8_str_to_path(filename);
 	boost::system::error_code error_code;
-	boost::filesystem::remove(filename, error_code);
+	bfs::remove(p, error_code);
 
 	if (error_code)
 		SetFalse(a);
@@ -94,7 +108,8 @@ int prFileMTime(struct VMGlobals * g, int numArgsPushed)
 	if (error != errNone)
 		return error;
 
-	time_t mtime = boost::filesystem::last_write_time(filename);
+	const bfs::path& p = SC_Codecvt::utf8_str_to_path(filename);
+	time_t mtime = bfs::last_write_time(p);
 	SetInt(a, mtime);
 	return errNone;
 }
@@ -108,7 +123,8 @@ int prFileExists(struct VMGlobals * g, int numArgsPushed)
 	if (error != errNone)
 		return error;
 
-	bool res = boost::filesystem::exists(filename);
+	const bfs::path& p = SC_Codecvt::utf8_str_to_path(filename);
+	bool res = bfs::exists(p);
 	SetBool(a, res);
 	return errNone;
 }
@@ -121,30 +137,24 @@ int prFileRealPath(struct VMGlobals* g, int numArgsPushed )
 	int err;
 
 	err = slotStrVal(b, ipath, PATH_MAX);
-	if (err) return err;
+	if (err)
+		return err;
 
 	bool isAlias = false;
-	if(sc_ResolveIfAlias(ipath, opath, isAlias, PATH_MAX)!=0) {
+	bfs::path p = SC_Codecvt::utf8_str_to_path(ipath);
+	p = SC_Filesystem::resolveIfAlias(p, isAlias);
+	if (p.empty())
 		return errFailed;
-	}
 
 	boost::system::error_code error_code;
-	boost::filesystem::path p = boost::filesystem::canonical(opath,error_code);
+	p = bfs::canonical(p, error_code).make_preferred();
 	if(error_code) {
 		SetNil(a);
 		return errNone;
 	}
-	strcpy(opath,p.string().c_str());
 
-#if __APPLE__
-	CFStringRef cfstring =
-		CFStringCreateWithCString(NULL,
-								  opath,
-								  kCFStringEncodingUTF8);
-	err = !CFStringGetFileSystemRepresentation(cfstring, opath, PATH_MAX);
-	CFRelease(cfstring);
-	if (err) return errFailed;
-#endif // __APPLE__
+	strncpy(opath, SC_Codecvt::path_to_utf8_str(p).c_str(), PATH_MAX - 1);
+	opath[PATH_MAX-1] = '\0';
 
 	PyrString* pyrString = newPyrString(g->gc, opath, 0, true);
 	SetObject(a, pyrString);
@@ -162,9 +172,10 @@ int prFileMkDir(struct VMGlobals * g, int numArgsPushed)
 		return error;
 
 	boost::system::error_code error_code;
-	boost::filesystem::create_directories(filename, error_code);
+	const bfs::path& p = SC_Codecvt::utf8_str_to_path(filename);
+	bfs::create_directories(p, error_code);
 	if (error_code)
-		postfl("Warning: %s (\"%s\")\n", error_code.message().c_str(), filename);
+		postfl("Warning: %s (\"%s\")\n", error_code.message().c_str(), p.c_str());
 
 	return errNone;
 }
@@ -182,7 +193,9 @@ int prFileCopy(struct VMGlobals * g, int numArgsPushed)
 	if (error != errNone)
 		return error;
 
-	boost::filesystem::copy(filename1, filename2);
+	const bfs::path& p1 = SC_Codecvt::utf8_str_to_path(filename1);
+	const bfs::path& p2 = SC_Codecvt::utf8_str_to_path(filename2);
+	bfs::copy(p1, p2);
 	return errNone;
 }
 
@@ -195,7 +208,8 @@ int prFileType(struct VMGlobals * g, int numArgsPushed)
 	if (error != errNone)
 		return error;
 
-	boost::filesystem::file_status s(boost::filesystem::symlink_status(filename));
+	const bfs::path& p = SC_Codecvt::utf8_str_to_path(filename);
+	bfs::file_status s(bfs::symlink_status(p));
 	SetInt(a, s.type());
 	return errNone;
 }
@@ -209,7 +223,8 @@ int prFileSize(struct VMGlobals * g, int numArgsPushed)
 	if (error != errNone)
 		return error;
 
-	uintmax_t sz = boost::filesystem::file_size(filename);
+	const bfs::path& p = SC_Codecvt::utf8_str_to_path(filename);
+	uintmax_t sz = bfs::file_size(p);
 	SetInt(a, sz);
 	return errNone;
 }
@@ -219,7 +234,8 @@ int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a, *b, *c;
 	char filename[PATH_MAX];
-	char mode[12];
+	const size_t buf_size = 12;
+	char mode[buf_size];
 	PyrFile *pfile;
 	FILE *file;
 
@@ -229,25 +245,33 @@ int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 	if (NotObj(c) || !isKindOf(slotRawObject(c), class_string)
 		|| NotObj(b) || !isKindOf(slotRawObject(b), class_string))
 		return errWrongType;
-	if (slotRawObject(b)->size > PATH_MAX - 1) return errFailed;
-	if (slotRawObject(c)->size > 11) return errFailed;
+	if (slotRawObject(b)->size > PATH_MAX - 1)
+		return errFailed;
+	if (slotRawObject(c)->size > buf_size - 1)
+		return errFailed;
 	pfile = (PyrFile*)slotRawObject(a);
 
 	memcpy(filename, slotRawString(b)->s, slotRawObject(b)->size);
 	filename[slotRawString(b)->size] = 0;
+	const bfs::path& path = SC_Codecvt::utf8_str_to_path(filename);
 
 	memcpy(mode, slotRawString(c)->s, slotRawObject(c)->size);
 	mode[slotRawString(c)->size] = 0;
 
 #ifdef _WIN32
-	win32_ReplaceCharInString(filename,PATH_MAX,'/','\\');
 	if(strcmp(mode,"w") == 0)
-	strcpy(mode,"wb");
+		strcpy(mode,"wb");
 	if(strcmp(mode,"r") == 0)
-	strcpy(mode,"rb");
-#endif
-	//_WIN32
-	file = fopen(filename, mode);
+		strcpy(mode,"rb");
+
+	// use _wfopen on Windows for full Unicode compatibility
+	wchar_t wmode[buf_size];
+	size_t wmode_size = 0;
+	mbstowcs_s(&wmode_size, wmode, buf_size, mode, buf_size-1);
+	file = _wfopen(path.wstring().c_str(), wmode);
+#else
+	file = fopen(path.c_str(), mode);
+#endif //_WIN32
 	if (file) {
 		SetPtr(&pfile->fileptr, file);
 		SetTrue(a);
@@ -256,25 +280,25 @@ int prFileOpen(struct VMGlobals *g, int numArgsPushed)
 		// check if directory exisits
 		// create a temporary file (somewhere) for a handle
 		// the file is deleted automatically when closed
-		if (sc_DirectoryExists(filename)) {
+		if (bfs::is_directory(path)) {
 			int err;
-#ifdef _MSC_VER
+#    ifdef _MSC_VER
 			err = tmpfile_s(&file);
 			if (!err) {
 				SetPtr(&pfile->fileptr, file);
 				SetTrue(a);
 				return errNone;
 			}
-#elif defined(__MINGW32__)
+#    elif defined(__MINGW32__)
 			file = tmpfile();
 			if (file) {
 				SetPtr(&pfile->fileptr, file);
 				SetTrue(a);
 				return errNone;
 			}
-#else
-#error compiler unsupported
-#endif
+#    else
+#        error compiler unsupported
+#    endif
 		}
 #endif
 		SetNil(a);
@@ -1237,17 +1261,34 @@ int prFileGetcwd(struct VMGlobals *g, int numArgsPushed)
 
 	if (!isKindOfSlot(string, class_string))  return errWrongType;
 
-	char * cwd = getcwd(slotRawString(string)->s,255);
+#ifdef _WIN32
+	// use wide version, then convert to utf8
+	wchar_t buf[PATH_MAX];
+	wchar_t *wcwd = _wgetcwd(buf, PATH_MAX);
+	if (wcwd == nullptr) {
+		error(strerror(errno));
+		return errFailed;
+	}
+	const std::string cwd_str = SC_Codecvt::utf16_wcstr_to_utf8_string(wcwd);
+	const char *cwd = cwd_str.c_str();
+#else
+	char buf[PATH_MAX];
+	const char *cwd = getcwd(buf, PATH_MAX);
 	if (cwd == NULL) {
 		error(strerror(errno));
 		return errFailed;
 	}
+#endif
+
+	strcpy(slotRawString(string)->s, cwd);
 	slotRawString(string)->size = strlen(slotRawString(string)->s);
 
 	return errNone;
 }
 
-////////
+//----------------------------------------------------------------------------//
+// Pipe primitives
+//----------------------------------------------------------------------------//
 
 int prPipeOpen(struct VMGlobals *g, int numArgsPushed)
 {
@@ -1308,11 +1349,11 @@ int prPipeClose(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-////////
+//----------------------------------------------------------------------------//
+// SoundFile primitives
+//----------------------------------------------------------------------------//
 
 #ifndef NO_LIBSNDFILE
-#include <sndfile.h>
-
 
 int sampleFormatToString(struct SF_INFO *info, const char **string);
 int sampleFormatToString(struct SF_INFO *info, const char **string)
@@ -1466,8 +1507,12 @@ int prSFOpenRead(struct VMGlobals *g, int numArgsPushed)
 	filename[slotRawString(b)->size] = 0;
 
 	info.format = 0;
+#ifdef _WIN32
+	const std::wstring filename_w = SC_Codecvt::utf8_cstr_to_utf16_wstring(filename);
+	file = sf_wchar_open(filename_w.c_str(), SFM_READ, &info);
+#else
 	file = sf_open(filename, SFM_READ, &info);
-
+#endif // _WIN32
 
 	if (file) {
 		SetPtr(obj1->slots + 0, file);
@@ -1549,7 +1594,13 @@ int prSFOpenWrite(struct VMGlobals *g, int numArgsPushed)
 	slotIntVal(slotRawObject(a)->slots + 4, &info.channels);
 	slotIntVal(slotRawObject(a)->slots + 5, &info.samplerate);
 
+#ifdef _WIN32
+	const std::wstring filename_w = SC_Codecvt::utf8_cstr_to_utf16_wstring(filename);
+	file = sf_wchar_open(filename_w.c_str(), SFM_WRITE, &info);
+#else
 	file = sf_open(filename, SFM_WRITE, &info);
+#endif // _WIN32
+
 	sf_command(file, SFC_SET_CLIPPING, NULL, SF_TRUE);
 
 	if (file) {

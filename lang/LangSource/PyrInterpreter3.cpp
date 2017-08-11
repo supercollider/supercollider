@@ -337,8 +337,6 @@ bool initRuntime(VMGlobals *g, int poolSize, AllocPool *inPool)
 	// initialize process random number generator
 	g->rgen = (RGen*)(slotRawObject(&g->thread->randData)->slots);
 
-	//initUGenFuncs();
-	signal_init_globs();
 	initThreads();
 	initPatterns();
 	initUniqueMethods();

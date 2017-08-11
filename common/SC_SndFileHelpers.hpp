@@ -2,6 +2,7 @@
 //
 //  Copyright (c) 2002 James McCartney. All rights reserved.
 //  Copyright (C) 2012 Tim Blechmann
+//  Copyright (C) 2017 Brian Heim
 //
 //  This program is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -26,41 +27,44 @@
 #ifndef NO_LIBSNDFILE
 #include "sndfile.h"
 #include "string.h"
-#include "SC_DirUtils.h"
+
+#include <boost/algorithm/string/predicate.hpp> // iequals
+
+using boost::iequals;
 
 static inline int headerFormatFromString(const char *name)
 {
 	if (!name) return SF_FORMAT_AIFF;
-	if (stringCaseCompare(name, "AIFF"))  return SF_FORMAT_AIFF;
-	if (stringCaseCompare(name, "AIFC"))  return SF_FORMAT_AIFF;
-	if (stringCaseCompare(name, "RIFF"))  return SF_FORMAT_WAV;
-	if (stringCaseCompare(name, "WAVEX")) return SF_FORMAT_WAVEX;
-	if (stringCaseCompare(name, "WAVE"))  return SF_FORMAT_WAV;
-	if (stringCaseCompare(name, "WAV" ))  return SF_FORMAT_WAV;
-	if (stringCaseCompare(name, "Sun" ))  return SF_FORMAT_AU;
-	if (stringCaseCompare(name, "IRCAM")) return SF_FORMAT_IRCAM;
-	if (stringCaseCompare(name, "NeXT"))  return SF_FORMAT_AU;
-	if (stringCaseCompare(name, "raw"))   return SF_FORMAT_RAW;
-	if (stringCaseCompare(name, "MAT4"))  return SF_FORMAT_MAT4;
-	if (stringCaseCompare(name, "MAT5"))  return SF_FORMAT_MAT5;
-	if (stringCaseCompare(name, "PAF"))   return SF_FORMAT_PAF;
-	if (stringCaseCompare(name, "SVX"))   return SF_FORMAT_SVX;
-	if (stringCaseCompare(name, "NIST"))  return SF_FORMAT_NIST;
-	if (stringCaseCompare(name, "VOC"))   return SF_FORMAT_VOC;
-	if (stringCaseCompare(name, "W64"))   return SF_FORMAT_W64;
-	if (stringCaseCompare(name, "PVF"))   return SF_FORMAT_PVF;
-	if (stringCaseCompare(name, "XI"))    return SF_FORMAT_XI;
-	if (stringCaseCompare(name, "HTK"))   return SF_FORMAT_HTK;
-	if (stringCaseCompare(name, "SDS"))   return SF_FORMAT_SDS;
-	if (stringCaseCompare(name, "AVR"))   return SF_FORMAT_AVR;
-	if (stringCaseCompare(name, "SD2"))   return SF_FORMAT_SD2;
-	if (stringCaseCompare(name, "FLAC"))  return SF_FORMAT_FLAC;
+	if (iequals(name, "AIFF"))  return SF_FORMAT_AIFF;
+	if (iequals(name, "AIFC"))  return SF_FORMAT_AIFF;
+	if (iequals(name, "RIFF"))  return SF_FORMAT_WAV;
+	if (iequals(name, "WAVEX")) return SF_FORMAT_WAVEX;
+	if (iequals(name, "WAVE"))  return SF_FORMAT_WAV;
+	if (iequals(name, "WAV" ))  return SF_FORMAT_WAV;
+	if (iequals(name, "Sun" ))  return SF_FORMAT_AU;
+	if (iequals(name, "IRCAM")) return SF_FORMAT_IRCAM;
+	if (iequals(name, "NeXT"))  return SF_FORMAT_AU;
+	if (iequals(name, "raw"))   return SF_FORMAT_RAW;
+	if (iequals(name, "MAT4"))  return SF_FORMAT_MAT4;
+	if (iequals(name, "MAT5"))  return SF_FORMAT_MAT5;
+	if (iequals(name, "PAF"))   return SF_FORMAT_PAF;
+	if (iequals(name, "SVX"))   return SF_FORMAT_SVX;
+	if (iequals(name, "NIST"))  return SF_FORMAT_NIST;
+	if (iequals(name, "VOC"))   return SF_FORMAT_VOC;
+	if (iequals(name, "W64"))   return SF_FORMAT_W64;
+	if (iequals(name, "PVF"))   return SF_FORMAT_PVF;
+	if (iequals(name, "XI"))    return SF_FORMAT_XI;
+	if (iequals(name, "HTK"))   return SF_FORMAT_HTK;
+	if (iequals(name, "SDS"))   return SF_FORMAT_SDS;
+	if (iequals(name, "AVR"))   return SF_FORMAT_AVR;
+	if (iequals(name, "SD2"))   return SF_FORMAT_SD2;
+	if (iequals(name, "FLAC"))  return SF_FORMAT_FLAC;
 	// TODO allow other platforms to know vorbis once libsndfile 1.0.18 is established
 	#if defined(__APPLE__) || defined(_WIN32) || LIBSNDFILE_1018
-	if (stringCaseCompare(name, "vorbis")) return SF_FORMAT_VORBIS;
+	if (iequals(name, "vorbis")) return SF_FORMAT_VORBIS;
 	#endif
-	if (stringCaseCompare(name, "CAF"))   return SF_FORMAT_CAF;
-	if (stringCaseCompare(name, "RF64"))  return SF_FORMAT_RF64;
+	if (iequals(name, "CAF"))   return SF_FORMAT_CAF;
+	if (iequals(name, "RF64"))  return SF_FORMAT_RF64;
 	return 0;
 }
 
@@ -112,6 +116,6 @@ static inline int sndfileFormatInfoFromStrings(struct SF_INFO *info, const char 
 	return kSCErr_Failed;
 }
 
-#endif
+#endif /* NO_LIBSNDFILE */
 
 #endif /* SC_SNDFILEHELPERS_HPP_INCLUDED */

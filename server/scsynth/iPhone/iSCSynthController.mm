@@ -1,9 +1,10 @@
 //
-//  iSCSynthController.m
+//  iSCSynthController.mm
 //  iscsynth
 //
 //  Created by Axel Balley on 21/10/08.
 //  Copyright 2008 __MyCompanyName__. All rights reserved.
+//  Copyright (C) 2017 Brian Heim. All rights reserved.
 //
 
 #import <AudioToolbox/AudioToolbox.h>
@@ -14,7 +15,9 @@
 #include "SC_GraphDef.h"
 #include "SC_Prototypes.h"
 #include "SC_Node.h"
-#include "SC_DirUtils.h"
+#include "SC_Filesystem.hpp"
+
+#include <cstring>
 
 static iSCSynthController* theController = 0;
 
@@ -59,7 +62,7 @@ int vpost(const char *fmt, va_list ap)
 	
 	NSError *error; 
 	char supportpath[256];
-	sc_GetUserAppSupportDirectory(supportpath, 256);
+	strncpy(supportpath, SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::UserAppSupport).c_str(), 256);
 	NSString *support = [NSString stringWithCString:supportpath encoding:NSASCIIStringEncoding];
 	NSString *dir = [support stringByAppendingString:@"/synthdefs"];
 	if (![manager fileExistsAtPath:dir])

@@ -1255,7 +1255,8 @@ DocNode * AutoCompleter::parseHelpClass(QString file)
     if (file.isEmpty())
         return NULL;
 
-    return scdoc_parse_file(file.toStdString().c_str(), 0);
+    // note, toStdString() converts to UTF-8
+    return scdoc_parse_file(file.toStdString(), 0);
 }
 
 QString AutoCompleter::parseClassElement(DocNode *node, QString element)
