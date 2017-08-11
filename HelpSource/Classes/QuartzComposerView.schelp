@@ -82,7 +82,7 @@ m.stop;
 (
 w = Window("SCTV").front;
 m = QuartzComposerView(w, Rect(0,20,400, 260));
-m.path = Platform.helpDir +/+ "QC/QuartzComposerViewTest.qtz";
+m.path = Platform.helpDir +/+ "QC/SCQuartzComposerViewTest.qtz";
 m.start;
 )
 
@@ -133,7 +133,7 @@ b = SCButton(w, Rect(0, 0, 150, 20))
 	.states_([["Close Me"]])
 	.action_({w.close});
 m = QuartzComposerView(w, Rect(0,20,360, 260));
-m.path = Platform.helpDir +/+ "QC/QuartzComposerViewTest.qtz";
+m.path = Platform.helpDir +/+ "QC/SCQuartzComposerViewTest.qtz";
 
 m.resize = 5;
 m.start;
@@ -146,7 +146,7 @@ w.fullScreen;
 (
 w = Window("SCTV").front;
 m = QuartzComposerView(w, Rect(0,20,400, 260));
-m.path = Platform.helpDir +/+ "QC/QuartzComposerViewStructureTest.qtz";
+m.path = Platform.helpDir +/+ "QC/SCQuartzComposerViewStructureTest.qtz";
 m.start;
 )
 
@@ -193,7 +193,7 @@ b = Button(w, Rect(0, 0, 150, 20))
     .states_([["pick another QC file"]])
     .action_({ File.openDialog("", { |path| m.path_(path) }) });
 m = QuartzComposerView(w, Rect(0,20,400, 260));
-m.path = Platform.helpDir +/+ "QC/ImageFilter.qtz";
+m.path = Platform.helpDir +/+ "QC/ImageFilter.qtz"; // file missing
 )
 m.start;
 m.stop;
