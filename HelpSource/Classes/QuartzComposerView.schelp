@@ -72,7 +72,7 @@ code::
 var width= 1500, height= 1250; // use a resolution higher then the one of your screen
 w= Window("qc", Rect(100, 100, width, height)).front;
 m= QuartzComposerView(w, Rect(0, 0, width, height));
-m.path = Platform.helpDir +/+ "QC/Cells.qtz";
+m.path = Platform.userAppSupportDir +/+ "Help/QC/Cells.qtz";
 CmdPeriod.doOnce({w.close});
 m.start;
 m.inputKeys.postln;
