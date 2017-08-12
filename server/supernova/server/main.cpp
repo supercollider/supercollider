@@ -34,7 +34,7 @@
 #include "../sc/sc_synth_definition.hpp"
 #include "../utilities/utils.hpp"
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__FreeBSD__) || defined(__DragonFly__) || defined(__OpenBSD__) || defined(__NetBSD__)
 #include <wordexp.h>
 #include <sys/resource.h>
 #endif
