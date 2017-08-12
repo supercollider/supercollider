@@ -66,7 +66,26 @@ Open the currently loaded composition in Quartz Composer. You will need to reloa
 EXAMPLES::
 
 code::
-////////// Simple example
+
+////////// Simple example A (fullscreen)
+(
+var width= 1500, height= 1250; // use a resolution higher then the one of your screen
+w= Window("qc", Rect(100, 100, width, height)).front;
+m= QuartzComposerView(w, Rect(0, 0, width, height));
+m.path = Platform.helpDir +/+ "QC/Cells.qtz";
+CmdPeriod.doOnce({w.close});
+m.start;
+m.inputKeys.postln;
+w.fullScreen
+)
+
+r.stop;
+a.free;
+m.stop;
+w.close;
+
+
+////////// Simple example B
 (
 w = Window("Simple QC Test").front;
 b = Button(w, Rect(0, 0, 150, 20))
