@@ -204,26 +204,6 @@ y.postln;
 m.stringConcatIn = ["foo", "bar"]; // array in
 x = m.stringConcatOut; // String Out
 
-////////// Image Test
-
-(
-w = Window("Simple QC Test").front;
-b = Button(w, Rect(0, 0, 150, 20))
-    .states_([["pick another QC file"]])
-    .action_({ File.openDialog("", { |path| m.path_(path) }) });
-m = QuartzComposerView(w, Rect(0,20,400, 260));
-m.path = Platform.userAppSupportDir +/+ "Help/QC/ImageFilter.qtz"; // file missing
-)
-m.start;
-m.stop;
-i = m.getOutputValue(\_protocolOutput_Image)
-i.plot;
-
-j = Image.color(100, 100, Color.rand);
-j.plot;
-m.setInputValue(\_protocolInput_Image, j);
-
-
 ////////// Control some audio: Stupid Pan Example
 
 (
