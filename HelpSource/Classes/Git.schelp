@@ -32,7 +32,7 @@ subsection:: info
 METHOD:: remote, url
 returns:: url of the first remote that it finds.
 
-METHOD:: httpsString
+METHOD:: remoteAsHttpUrl
 returns:: remote url formatted for code::https:: request
 
 METHOD:: remoteLatest

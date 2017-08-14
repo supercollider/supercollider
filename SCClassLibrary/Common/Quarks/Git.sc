@@ -48,7 +48,7 @@ Git {
 		});
 		^nil
 	}
-	httpsString {
+	remoteAsHttpUrl {
 		var giturl = this.url;
 		var hosturl, path;
 
