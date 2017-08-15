@@ -1278,6 +1278,34 @@ void NotifyCmd::CallDestructor()
 	this->~NotifyCmd();
 }
 
+/** \brief Attempts to find and remove the requested \c id from \c availableIDs.
+ *
+ * If \c id is -1 or not in \c availableIDs, returns the first element in
+ * \c availableIDs. Otherwise, returns \c id.
+ */
+int popAvailableClientID(int const id, ClientIDs& availableIDs)
+{
+    int clientID = -1;
+    if(id == -1) {
+        // no requested clientID
+        clientID = availableIDs.front(); // pop an ID
+        availableIDs.pop_front();
+    } else {
+        // user ID requested
+        auto it = std::find(availableIDs.begin(), availableIDs.end(), id);
+        if (it != availableIDs.end()) { // return the requested ID if available
+            clientID = id;
+            availableIDs.erase(it);
+        } else {
+            // otherwise return the first free one
+            clientID = availableIDs.front();
+            availableIDs.pop_front();
+        }
+    }
+
+    return clientID;
+}
+
 bool NotifyCmd::Stage2()
 {
 	HiddenWorld *hw = mWorld->hw;
@@ -1297,28 +1325,14 @@ bool NotifyCmd::Stage2()
 			scprintf("too many users\n");
 			return false;
 		}
-		
-		int clientID;
-		
-		if(mID == -1) { // no requested clientID
-			clientID = hw->mAvailableClientIDs->front(); // pop an ID
-			hw->mAvailableClientIDs->pop_front();
-		} else { // user ID requested
-			ClientIDs::iterator it = std::find(hw->mAvailableClientIDs->begin(), hw->mAvailableClientIDs->end(), mID);
-			if (it != hw->mAvailableClientIDs->end()) { // return the requested ID if available
-				clientID = mID;
-				hw->mAvailableClientIDs->erase(it);
-			} else { // otherwise return the first free one
-				clientID = hw->mAvailableClientIDs->front();
-				hw->mAvailableClientIDs->pop_front();
-			}
-		}
-		
+
+		int const clientID = popAvailableClientID(mID, *hw->mAvailableClientIDs);
+
 		hw->mClientIDdict->insert(std::pair<ReplyAddress, uint32>(mReplyAddress,clientID));
 		hw->mUsers->insert(mReplyAddress);
 		SendDoneWithVarArgs(&mReplyAddress, "/notify", "ii", clientID, (int)hw->mMaxUsers);
-		
-	} else {
+
+    } else {
 		auto const it = std::find(hw->mUsers->begin(), hw->mUsers->end(), mReplyAddress);
 		if (it != hw->mUsers->end()) {
 			// remove from list
