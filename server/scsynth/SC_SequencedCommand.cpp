@@ -1328,7 +1328,7 @@ bool NotifyCmd::Stage2()
 
 		int const clientID = popAvailableClientID(mID, *hw->mAvailableClientIDs);
 
-		hw->mClientIDdict->insert(std::pair<ReplyAddress, uint32>(mReplyAddress,clientID));
+		hw->mClientIDdict->insert(std::make_pair(mReplyAddress,clientID));
 		hw->mUsers->insert(mReplyAddress);
 		SendDoneWithVarArgs(&mReplyAddress, "/notify", "ii", clientID, (int)hw->mMaxUsers);
 
