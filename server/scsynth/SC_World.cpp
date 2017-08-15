@@ -1157,11 +1157,8 @@ void TriggerMsg::Perform()
 	packet.addi(mTriggerID);
 	packet.addf(mValue);
 
-	Clients::iterator it;
-	for (it = mWorld->hw->mUsers->begin(); it != mWorld->hw->mUsers->end(); ++it){
-		ReplyAddress addr = *it;
+	for (auto addr : *mWorld->hw->mUsers)
 		SendReply(&addr, packet.data(), packet.size());
-	}
 }
 
 static void NodeReplyMsg_RTFree(FifoMsg* msg)
@@ -1185,11 +1182,8 @@ void NodeReplyMsg::Perform()
 		packet.addf(mValues[i]);
 	}
 
-	Clients::iterator it;
-	for (it = mWorld->hw->mUsers->begin(); it != mWorld->hw->mUsers->end(); ++it){
-		ReplyAddress addr = *it;
+	for (auto addr : *mWorld->hw->mUsers)
 		SendReply(&addr, packet.data(), packet.size());
-	}
 
 	// Free memory in realtime thread
 	FifoMsg msg;
@@ -1253,11 +1247,8 @@ void NodeEndMsg::Perform()
 		packet.addi(mIsGroup);
 	}
 
-	Clients::iterator it;
-	for (it = mWorld->hw->mUsers->begin(); it != mWorld->hw->mUsers->end(); ++it){
-		ReplyAddress addr = *it;
+	for (auto addr : *mWorld->hw->mUsers)
 		SendReply(&addr, packet.data(), packet.size());
-	}
 }
 
 void DeleteGraphDefMsg::Perform()
@@ -1271,11 +1262,8 @@ void NotifyNoArgs(World *inWorld, char *inString)
 	small_scpacket packet;
 	packet.adds(inString);
 
-	Clients::iterator it;
-	for (it = inWorld->hw->mUsers->begin(); it != inWorld->hw->mUsers->end(); ++it){
-		ReplyAddress addr = *it;
+	for (auto addr : *inWorld->hw->mUsers)
 		SendReply(&addr, packet.data(), packet.size());
-	}
 }
 
 
