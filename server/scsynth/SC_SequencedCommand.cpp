@@ -1283,9 +1283,7 @@ bool NotifyCmd::Stage2()
 	HiddenWorld *hw = mWorld->hw;
 
 	if (mOnOff) {
-		Clients::iterator it;
-		for (it = mWorld->hw->mUsers->begin(); it != mWorld->hw->mUsers->end(); ++it){
-			ReplyAddress addr = *it;
+		for (auto addr : *hw->mUsers) {
 			if (mReplyAddress == addr) {
 				// already in table - don't fail though..
 				SendFailureWithIntValue(&mReplyAddress, "/notify", "notify: already registered\n", hw->mClientIDdict->at(mReplyAddress));
@@ -1322,17 +1320,14 @@ bool NotifyCmd::Stage2()
 		
 		
 	} else {
-		Clients::iterator it;
-		for (it = mWorld->hw->mUsers->begin(); it != mWorld->hw->mUsers->end(); ++it){
-			ReplyAddress addr = *it;
-			if (mReplyAddress == addr) {
-				// remove from list
-				hw->mAvailableClientIDs->push_back(hw->mClientIDdict->at(mReplyAddress)); // push the freed ID
-				hw->mClientIDdict->erase(mReplyAddress);
-				hw->mUsers->erase(it);
-				SendDone("/notify");
-				return false;
-			}
+		auto const it = std::find(hw->mUsers->begin(), hw->mUsers->end(), mReplyAddress);
+		if (it != hw->mUsers->end()) {
+			// remove from list
+			hw->mAvailableClientIDs->push_back(hw->mClientIDdict->at(mReplyAddress)); // push the freed ID
+			hw->mClientIDdict->erase(mReplyAddress);
+			hw->mUsers->erase(it);
+			SendDone("/notify");
+			return false;
 		}
 
 		SendFailure(&mReplyAddress, "/notify", "not registered\n");
