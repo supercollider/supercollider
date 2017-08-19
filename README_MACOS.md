@@ -18,6 +18,7 @@ Table of contents
  * Diagnosing build problems
  * Frequently used cmake settings
  * Using cmake with Xcode or QtCreator
+ * Using ccache with Xcode
  * Building without Qt or the IDE
  * sclang and scynth executables
 
@@ -276,6 +277,12 @@ Qt Creator has very good `cmake` integration and can build `cmake` projects with
 
     brew linkapps qt5
 
+Using ccache with Xcode
+-----------------------
+
+Although cmake does not support using `ccache` with Xcode out of the box, this project is set up to
+allow it with the option `-DLAUNCH_RULE_COMPILE=ccache`. This can speed up build times
+significantly, even when the build directory has been cleared.
 
 Building without Qt or the IDE
 ------------------------------
