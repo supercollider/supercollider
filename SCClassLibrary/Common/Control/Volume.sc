@@ -13,12 +13,13 @@ Volume {
 
 	init {
 		if(server.serverRunning) { this.sendSynthDef };
-		if(initFunc.isNil) {
-			ServerBoot.add(initFunc = {
-				ampSynth = nil;
-				this.sendSynthDef;
-			}, server)
-		}
+
+		initFunc = {
+			ampSynth = nil;
+			this.sendSynthDef
+		};
+
+		ServerBoot.add(initFunc)
 	}
 
 	sendSynthDef {
@@ -34,14 +35,14 @@ Volume {
 
 			server.sync;
 
-			this.updateSynth;
+			updateFunc = {
+				ampSynth = nil;
+				if(persist) { this.updateSynth }
+			};
 
-			if(updateFunc.isNil) {
-				ServerTree.add(updateFunc = {
-					ampSynth = nil;
-					if(persist) { this.updateSynth }
-				})
-			}
+			ServerTree.add(updateFunc);
+
+			this.updateSynth
 		}
 	}
 
@@ -118,7 +119,6 @@ Volume {
 		clippedVolume = volume.clip(min, max);
 		if(clippedVolume != volume) { this.volume_(clippedVolume) }
 	}
-
 
 	gui { | window, bounds |
 		^VolumeGui(this, window, bounds)
