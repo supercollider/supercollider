@@ -1,5 +1,4 @@
-compiler:
- - gcc
+language: cpp
 
 matrix:
   fast_finish: true
@@ -19,8 +18,7 @@ matrix:
       env: QT=true
 
 cache:
- - apt
- - bundler
+ - ccache
 
 before_install:
  - $TRAVIS_BUILD_DIR/.travis/before-install-$TRAVIS_OS_NAME.sh --qt=$QT
