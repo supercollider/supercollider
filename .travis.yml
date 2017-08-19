@@ -17,6 +17,8 @@ matrix:
       osx_image: xcode7.3
       env: QT=true
 
+# use ccache to speed up build times. on osx,
+# we install it during the the before_install step
 cache:
  - ccache
 
