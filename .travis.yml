@@ -1,5 +1,4 @@
-compiler:
- - gcc
+language: cpp
 
 matrix:
   fast_finish: true
@@ -18,17 +17,18 @@ matrix:
       osx_image: xcode7.3
       env: QT=true
 
+# use ccache to speed up build times. on osx,
+# we install it during the the before_install step
+# with xcode, this requires an additional flag passed during the configuration phase.
+# see README_MACOS.md for details.
 cache:
- - apt
- - bundler
+ - ccache
 
 before_install:
  - $TRAVIS_BUILD_DIR/.travis/before-install-$TRAVIS_OS_NAME.sh --qt=$QT
 
 before_script:
  - mkdir BUILD && cd BUILD
- - if [[ $QT == true ]]; then export QT_PREFIX=$HOME/qt/gcc_64; fi
- - if [[ $QT == true ]]; then export QT_PLUGIN_PATH=$QT_PREFIX/plugins; fi
 
  - $TRAVIS_BUILD_DIR/.travis/before-script-$TRAVIS_OS_NAME.sh --qt=$QT
 # prep for testing
