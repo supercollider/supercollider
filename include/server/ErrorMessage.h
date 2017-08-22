@@ -45,6 +45,7 @@
 #include <string>
 #include <cassert>
 #include <sstream>
+#include <map>
 
 namespace ErrorMessage {
 
@@ -61,27 +62,32 @@ std::string const indent = "    ";
  * \param actualVersion the API version reported by the plugin
  * \returns A multiline string with info about how to correct the error.
  */
-std::string apiVersionMismatch(std::string utf8Filename, int expectedVersion, int actualVersion)
+std::string apiVersionMismatch(std::string const& utf8Filename, int const expectedVersion, int const actualVersion)
 {
     using namespace std;
     assert(expectedVersion != actualVersion);
 
-    string const scVersionRequiringAPIVersion3 = "3.9.0";
-    string const newer("a newer version");
-    string const older("an older version");
-    string const serverComparison = expectedVersion < actualVersion ? newer : older;
-    string const pluginComparison = expectedVersion > actualVersion ? newer : older;
+    // both 1 and 2 were introduced in 3.6
+    static map<int, string> const scVersionForAPIVersion = {
+        {1, "3.6.0"},
+        {2, "3.6.0"},
+        {3, "3.9.0"}
+    };
 
     stringstream message;
     message << "ERROR: API version mismatch: " << utf8Filename << "\n";
 
-    message << indent << "This plugin was compiled for " << serverComparison
-        << " of the plugin interface (" << actualVersion << ") than what you are currently using ("
-        << expectedVersion << ").\n";
-    message << indent << "Please use " << pluginComparison << " of this plugin, or "
-        << serverComparison << " of SuperCollider, which can be downloaded from http://supercollider.github.io/\n";
-    message << indent << "Note that plugin interface version numbers are separate from SuperCollider versioning.\n";
-    message << indent << "For example, an plugin interface version of 2 does not mean you need SuperCollider 2.\n";
+    try {
+        // actualVersion+1: the version that broke compatibility
+        string const& scVersion = scVersionForAPIVersion.at(actualVersion+1);
+        message << indent << "This plugin is not compatible with SuperCollider >="
+            << scVersion << "\n";
+        message << indent
+            << "The plugin has not been loaded; please find or compile a newer version.\n";
+    } catch (std::out_of_range const& exception) {
+        message << indent << "This plugin uses an unknown version of the interface.\n";
+        message << indent << "You may need to update SuperCollider in order to use it.\n";
+    }
 
     // if it looks like sc3-plugins, give specific info to help
     if (utf8Filename.find("SC3plugins") != string::npos) {
@@ -89,11 +95,8 @@ std::string apiVersionMismatch(std::string utf8Filename, int expectedVersion, in
             << "https://github.com/supercollider/sc3-plugins/releases\n";
     }
 
-    // let people know which version they should actually get
-    if (expectedVersion == 3 || actualVersion == 3) {
-        message << indent << "API version 3 was first required in SuperCollider "
-            << scVersionRequiringAPIVersion3 << ".\n";
-    }
+    message << indent << "(Plugin's API version: " << actualVersion << ". Expected: "
+        << expectedVersion << ")\n";
 
     return message.str();
 }
@@ -102,7 +105,7 @@ std::string apiVersionMismatch(std::string utf8Filename, int expectedVersion, in
 *
 * \param utf8Filename the filename of the plugin represented as a UTF-8 string.
 */
-std::string apiVersionNotFound(std::string utf8Filename)
+std::string apiVersionNotFound(std::string const& utf8Filename)
 {
     return "ERROR: API version not found: " + utf8Filename + "\n"
         + indent + "This file may not be a SuperCollider plugin.\n";
