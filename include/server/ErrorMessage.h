@@ -47,6 +47,8 @@
 #include <sstream>
 #include <map>
 
+namespace scsynth {
+
 namespace ErrorMessage {
 
 /// String used to indent all messages.
@@ -112,5 +114,7 @@ std::string apiVersionNotFound(std::string const& utf8Filename)
 }
 
 } // namespace ErrorMessage
+
+} // namespace scsynth
 
 #endif // COMMON_SERVER_ERRORMESSAGE_H_INCLUDED

@@ -268,6 +268,8 @@ typedef int (*InfoFunction)();
 bool checkAPIVersion(void * f, const char * filename)
 {
 	using namespace std;
+	using namespace scsynth;
+
 	if (f) {
 		InfoFunction fn = (InfoFunction)f;
 		int pluginVersion = (*fn)();

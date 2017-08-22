@@ -240,6 +240,7 @@ void sc_ugen_factory::load_plugin_folder (boost::filesystem::path const & path)
 static bool check_api_version( int (*api_version)(), std::string filename )
 {
     using namespace std;
+    using namespace scsynth;
 
     if (api_version) {
         int plugin_version = (*api_version)();
