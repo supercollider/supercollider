@@ -29,7 +29,9 @@
 #include "SC_StringParser.h"
 #include "SC_InterfaceTable.h"
 #include "SC_Filesystem.hpp"
+#include "ErrorMessage.h" // for apiVersionMismatch
 #include <stdexcept>
+#include <iostream>
 
 #ifndef _MSC_VER
 #  include <dirent.h>
@@ -265,12 +267,18 @@ typedef int (*InfoFunction)();
 
 bool checkAPIVersion(void * f, const char * filename)
 {
+	using namespace std;
 	if (f) {
 		InfoFunction fn = (InfoFunction)f;
-		if ((*fn)() == sc_api_version)
+		int pluginVersion = (*fn)();
+		if (pluginVersion == sc_api_version)
 			return true;
+		else
+			cout << ErrorMessage::apiVersionMismatch(filename, sc_api_version, pluginVersion) << endl;
+	} else {
+		cout << ErrorMessage::apiVersionNotFound(filename) << endl;
 	}
-	scprintf("*** ERROR: API Version Mismatch: %s\n", filename);
+
 	return false;
 }
 
