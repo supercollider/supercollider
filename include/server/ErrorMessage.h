@@ -78,9 +78,8 @@ std::string apiVersionMismatch(std::string utf8Filename, int expectedVersion, in
     message << indent << "This plugin was compiled for " << serverComparison
         << " of the plugin interface (" << actualVersion << ") than what you are currently using ("
         << expectedVersion << ").\n";
-    message << indent << "Please use " << serverComparison << " of SuperCollider,"
-        << " which can be obtained from http://supercollider.github.io/, or use "
-        << pluginComparison << " of this plugin.\n";
+    message << indent << "Please use " << pluginComparison << " of this plugin, or "
+        << serverComparison << " of SuperCollider, which can be downloaded from http://supercollider.github.io/\n";
     message << indent << "Note that plugin interface version numbers are separate from SuperCollider versioning.\n";
     message << indent << "For example, an plugin interface version of 2 does not mean you need SuperCollider 2.\n";
 
