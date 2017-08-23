@@ -29,7 +29,7 @@
 #include "SC_StringParser.h"
 #include "SC_InterfaceTable.h"
 #include "SC_Filesystem.hpp"
-#include "ErrorMessage.h" // for apiVersionMismatch, apiVersionMissing
+#include "ErrorMessage.hpp" // for apiVersionMismatch, apiVersionMissing
 #include <stdexcept>
 #include <iostream>
 

@@ -31,7 +31,7 @@
 
 #include "SC_World.h"
 #include "SC_Wire.h"
-#include "ErrorMessage.h"
+#include "ErrorMessage.hpp"
 
 namespace nova {
 
