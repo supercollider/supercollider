@@ -320,18 +320,19 @@ Server {
 		this.addr = argAddr;
 		options = argOptions ? ServerOptions.new;
 
+		// set name to get readable posts from clientID set
+		name = argName.asSymbol;
+
 		if(argClientID.notNil) {
 			userSpecifiedClientID = true;
 			if (argClientID >= options.maxLogins) {
 				warn("% : user-specified clientID % is greater than maxLogins!"
 					"\Adjust clientID or options.maxLogins."
-				);
+					.format(name, argClientID));
 				^this
 			};
 		};
 
-		// set name to get readable posts from clientID set
-		name = argName.asSymbol;
 		// go thru setter to test validity
 		this.clientID = argClientID ? 0;
 
