@@ -1,5 +1,9 @@
 TestFunction : UnitTest {
 
+	setUp {
+		CommonTestClass.initClass;
+	}
+
 	test_function_scope {
 		var generator, list, result, a;
 		generator = {
@@ -25,8 +29,6 @@ TestFunction : UnitTest {
 		func.value(42);
 		this.assert(obj.x == 42, "function should be able to set class variable");
 		this.assert(obj.y == 42, "function should be able to set class variable that has no setter");
-		// restore state of object for repeated test
-		obj.reset;
 	}
 
 	test_instancemethod_scope {
@@ -50,6 +52,8 @@ CommonTestClass {
 	var <>a, <b = 3;
 	classvar <>x, <y = 7;
 
+	*initClass { x = nil; y = 7; }
+
 	*returnLexicalScopeGetterFunc {
 		^{ [x, y] }
 	}
@@ -71,9 +75,6 @@ CommonTestClass {
 			b = val;
 		}
 	}
-
-	*reset { x = nil; y = 7; }
-	reset { a = nil; b = 3; }
 }
 
 
