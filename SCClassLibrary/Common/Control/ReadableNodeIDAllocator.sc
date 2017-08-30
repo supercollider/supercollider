@@ -41,7 +41,9 @@ ReadableNodeIDAllocator {
 	}
 
 	isPerm { |num|
-		// 0 and 1 are also permanent
+		// test whether num is a valid permanent nodeID for this client/allocator's range,
+		// which includes idOffset + 0 (for clientID 0, RootNode)
+		// and idOffset + 1, the defaultGroup for this allocator/client
 		^num.inclusivelyBetween(idOffset, maxPermID);
 	}
 
