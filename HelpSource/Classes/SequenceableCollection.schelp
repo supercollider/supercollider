@@ -327,7 +327,7 @@ a.insertAll(2, b); // [ 1, 2, 100, 200, 3, 4, 5, 6 ]
 ::
 
 method::mergeItems
-Return a new collection that has all items of the receiver, with elements from another collection inserted where not already present (test is strong::equality::). This is done in a way that preserves the orders of both collections if possible. If the argument collection has inversed order, the order of the receiver is kept.
+Return a new collection that contains all items of the receiver, with elements from another collection inserted, so that the orders of both collections are maintained as much as possible. Items are added only where not already present (test is strong::equality::).  If the collection passed as argument has inversed order, the order of the receiver is kept.
 
 argument::aCollection
 A sequenceable collection to be merged into the receiver.
@@ -346,7 +346,7 @@ A sequenceable collection of key-value-pairs to be merged into the receiver.
 
 discussion::
 code::
-[\freq, 300, \amp, 0.2].mergePairs([\freq, 200, \zz, 99]) // returns  [ \freq, 300, \amp, 0.2, 200, \zz, 99 ]
+[\freq, 300, \amp, 0.2].mergePairs([\freq, 200, \zz, 99]) // returns  [ freq, 300, amp, 0.2, zz, 99 ]
 ::
 
 

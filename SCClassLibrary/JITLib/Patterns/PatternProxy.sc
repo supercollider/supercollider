@@ -5,7 +5,7 @@ PatternProxy : Pattern {
 	var <source, <pattern, <>envir;
 	var >clock, quant, <>condition=true, reset;
 
-	// quant value for new pattern insertio can be an array, like [quant, phase, timingOffset]
+	// quant value for new pattern insertion can be an array, like [quant, phase, timingOffset]
 	// in EventPatternProxy it can be [quant, phase, timingOffset, onset]
 
 	classvar <>defaultQuant, defaultEnvir;
