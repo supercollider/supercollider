@@ -4,6 +4,8 @@ categories:: Libraries>JITLib>Patterns
 related:: Classes/Pdefn, Classes/PdefGui
 
 description::
+Pdef registers patterns by key. All accesses to the registered patterns go through the Pdef class via that key. Registered patterns can be replaced while running. The old pattern and its replacement can automatically crossfade and the time of replacement can be quantized.
+
 Pdef is a class that provides an interface to its superclass link::Classes/EventPatternProxy::, keeping a reference to a stream that can be replaced while playing. One pattern may be used in many streams in different places. A change in the pattern definition propagates through all streams.
 
 Pdef and Pdefn use separate global collections.

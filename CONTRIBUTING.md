@@ -22,6 +22,7 @@ Don't have time to contribute? No worries, here are some other ways to show your
 - Tweet your support for SuperCollider
 - Join the [Facebook group](https://www.facebook.com/groups/supercollider/)
 - Send a message on the [sc-dev](http://new-supercollider-mailing-lists-forums-use-these.2681727.n2.nabble.com/mailing_list/MailingListOptions.jtp?forum=2681767) mailing list
+- Join the [Slack team](https://slackin-apxbmqnfui.now.sh/)
 
 ## Getting Started
 

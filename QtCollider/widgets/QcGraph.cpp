@@ -61,6 +61,7 @@ void QcGraphModel::removeAt( int i ) {
 QcGraph::QcGraph() :
   QtCollider::Style::Client(this),
   _defaultThumbSize( QSize(18,18) ),
+  _gridOn( false ),
   _style(DotElements),
   _drawLines( true ),
   _drawRects( true ),
@@ -68,7 +69,6 @@ QcGraph::QcGraph() :
   _step( 0.01 ),
   _selectionForm( ElasticSelection ),
   _xOrder( NoOrder ),
-  _gridOn( false ),
   _geometryDirty( false ),
   _lastIndex(-1)
 {
@@ -444,19 +444,25 @@ void QcGraph::setIndexSelected( int index, bool select )
 {
   Q_ASSERT( index >= 0 && index < _model.elementCount() );
 
+  // exit early if the element's selection status is already correct
   QcGraphElement *e = _model.elementAt( index );
-  if( e->selected == select ) return;
+  if( e->selected == select )
+    return;
 
   if( select ) {
     e->selected = true;
-    int c = _model.elementCount();
-    int si = 0;
-    int i = 0;
-    while( i < index ) {
-      if( _model.elementAt(i)->selected ) ++si;
-      ++i;
+
+    // insert this node into the list of selected elements after selected
+    // nodes with lower indices. Maintains that the list is sorted.
+    int numSelectedNodes = 0;
+    for ( int i = 0; i < index; ++i ) {
+      if( _model.elementAt(i)->selected )
+        ++numSelectedNodes;
     }
-    _selection.elems.insert( si, SelectedElement(e) );
+
+    _selection.elems.insert( numSelectedNodes, SelectedElement(e) );
+
+    // mark this as the last index selected
     _lastIndex = index;
   }
   else {
@@ -743,7 +749,6 @@ void QcGraph::addCurve( QPainterPath &path, QcGraphElement *e1, QcGraphElement *
 
     path.moveTo( pt1 );
 
-    float dx = (pt2.x() - pt1.x());
     float dy = (pt2.y() - pt1.y());
 
     // prevent NaN, optimize

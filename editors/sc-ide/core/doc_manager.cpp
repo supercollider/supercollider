@@ -773,7 +773,7 @@ void DocumentManager::handleNewDocScRequest( const QString & data )
             Q_EMIT( opened(document, 0, 0) );
         }
     } catch (std::exception const& e) {
-        qWarning() << "DocumentManager::" << __func__ << ": could not handle request:" << e.what();
+        qWarning() << "DocumentManager::" << __FUNCTION__ << ": could not handle request:" << e.what();
         return;
     }
 }
@@ -795,7 +795,7 @@ void DocumentManager::handleOpenFileScRequest( const QString & data )
             open(QString(path.c_str()), position, selectionLength, true, id.c_str(), false);
         }
     } catch (std::exception const& e) {
-        qWarning() << "DocumentManager::" << __func__ << ": could not handle request:" << e.what() << endl;
+        qWarning() << "DocumentManager::" << __FUNCTION__ << ": could not handle request:" << e.what() << endl;
         return;
     }
 }
@@ -822,7 +822,7 @@ void DocumentManager::handleGetDocTextScRequest( const QString & data )
             }
         }
     } catch (std::exception const& e) {
-        qWarning() << "DocumentManager::" << __func__ << ": could not handle request:" << e.what() << endl;
+        qWarning() << "DocumentManager::" << __FUNCTION__ << ": could not handle request:" << e.what() << endl;
         return;
     }
 }
@@ -863,7 +863,7 @@ void DocumentManager::handleSetDocTextScRequest( const QString & data )
             }
         }
     } catch (std::exception const& e) {
-        qWarning() << "DocumentManager::" << __func__ << ": could not handle request:" << e.what();
+        qWarning() << "DocumentManager::" << __FUNCTION__ << ": could not handle request:" << e.what();
         return;
     }
 }
@@ -888,7 +888,7 @@ void DocumentManager::handleSetDocSelectionScRequest( const QString & data )
             }
         }
     } catch (std::exception const& e) {
-        qWarning() << "DocumentManager::" << __func__ << ": could not handle request:" << e.what();
+        qWarning() << "DocumentManager::" << __FUNCTION__ << ": could not handle request:" << e.what();
         return;
     }
 }
@@ -913,7 +913,7 @@ void DocumentManager::handleSetDocEditableScRequest( const QString & data )
             }
         }
     } catch (std::exception const& e) {
-        qWarning() << "DocumentManager::" << __func__ << ": could not handle request:" << e.what();
+        qWarning() << "DocumentManager::" << __FUNCTION__ << ": could not handle request:" << e.what();
         return;
     }
 }
@@ -935,7 +935,7 @@ void DocumentManager::handleSetDocPromptsToSaveScRequest( const QString & data )
             }
         }
     } catch (std::exception const& e) {
-        qWarning() << "DocumentManager::" << __func__ << ": could not handle request:" << e.what();
+        qWarning() << "DocumentManager::" << __FUNCTION__ << ": could not handle request:" << e.what();
         return;
     }
 }
@@ -955,7 +955,7 @@ void DocumentManager::handleSetCurrentDocScRequest( const QString & data )
                 Q_EMIT( showRequest(document) );
         }
     } catch (std::exception const& e) {
-        qWarning() << "DocumentManager::" << __func__ << ": could not handle request:" << e.what();
+        qWarning() << "DocumentManager::" << __FUNCTION__ << ": could not handle request:" << e.what();
         return;
     }
 }
@@ -978,7 +978,7 @@ void DocumentManager::handleRemoveDocUndoScRequest( const QString & data )
             }
         }
     } catch (std::exception const& e) {
-        qWarning() << "DocumentManager::" << __func__ << ": could not handle request:" << e.what();
+        qWarning() << "DocumentManager::" << __FUNCTION__ << ": could not handle request:" << e.what();
         return;
     }
 }
@@ -998,7 +998,7 @@ void DocumentManager::handleCloseDocScRequest( const QString & data )
             }
         }
     } catch (std::exception const& e) {
-        qWarning() << "DocumentManager::" << __func__ << ": could not handle request:" << e.what();
+        qWarning() << "DocumentManager::" << __FUNCTION__ << ": could not handle request:" << e.what();
         return;
     }
 }
@@ -1020,7 +1020,7 @@ void DocumentManager::handleSetDocTitleScRequest( const QString & data )
             }
         }
     } catch (std::exception const& e) {
-        qWarning() << "DocumentManager::" << __func__ << ": could not handle request:" << e.what();
+        qWarning() << "DocumentManager::" << __FUNCTION__ << ": could not handle request:" << e.what();
         return;
     }
 }
@@ -1042,7 +1042,7 @@ bool DocumentManager::parseActionEnabledRequest( const QString & data, std::stri
             return true;
         }
     } catch (std::exception const& e) {
-        qWarning() << "DocumentManager::" << __func__ << ": could not handle request:" << e.what();
+        qWarning() << "DocumentManager::" << __FUNCTION__ << ": could not handle request:" << e.what();
     }
     return false;
 }
@@ -1086,7 +1086,7 @@ void DocumentManager::handleEnableGlobalKeyDownScRequest( const QString & data )
             mGlobalKeyDownEnabled = enabled;
         }
     } catch (std::exception const& e) {
-        qWarning() << "DocumentManager::" << __func__ << ": could not handle request:" << e.what();
+        qWarning() << "DocumentManager::" << __FUNCTION__ << ": could not handle request:" << e.what();
     }
 }
 
@@ -1103,7 +1103,7 @@ void DocumentManager::handleEnableGlobalKeyUpScRequest( const QString & data )
             mGlobalKeyUpEnabled = enabled;
         }
     } catch (std::exception const& e) {
-        qWarning() << "DocumentManager::" << __func__ << ": could not handle request:" << e.what();
+        qWarning() << "DocumentManager::" << __FUNCTION__ << ": could not handle request:" << e.what();
     }
 }
 
@@ -1183,7 +1183,7 @@ void DocumentManager::handleEnableTextMirrorScRequest( const QString & data )
             }
         }
     } catch (std::exception const& e) {
-        qWarning() << "DocumentManager::" << __func__ << ": could not handle request:" << e.what();
+        qWarning() << "DocumentManager::" << __FUNCTION__ << ": could not handle request:" << e.what();
     }
 }
 

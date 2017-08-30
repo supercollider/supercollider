@@ -17,11 +17,11 @@ TestNoOps : UnitTest {
 			func.value(func.value(inval)) == inval
 		};
 
-		a = Array.rand(300, 0, 100);
+		a = Array.series(300, 0, 1);
 		b = a.clump(10);
 
-		r1 = b.size.rand;
-		r2 = b.size.rand;
+		r1 = 7;
+		r2 = 9;
 
 		this.assert(n.even, "for this test, array must have even number of elements");
 
@@ -51,25 +51,32 @@ TestNoOps : UnitTest {
 
 	test_numerical_homomorphisms {
 		var n = [
-				10.rand2, // integers
-				10.0.rand2, // floats
-				{ 100.rand2 }.dup(8), // arrays
-				{ 100.0.rand2 }.dup(8),
-				Complex(100.rand2, 100.rand2), // complex
-				{ 1 }, // function
-			];
+			10, // integers
+			10.0, // floats
+			{ |i| 2 + i }.dup(8), // arrays
+			{ |i| 100.0 + i }.dup(8),
+			Complex(100, 15), // complex
+			{ 1 }, // function
+			//{{ 2.0 } }.dup(4), // arrays of functions
+			Operand(1),
+			Maybe(2)
+		];
 		var numbers = n.dup(2).allTuples.flatten(1);
 		var test = { |name, f, h, a, b|
 			var x = f.(h.(a, b));
 			var y = h.(f.(a), f.(b));
 			this.assert(this.deepEval(x) == this.deepEval(y),
-				name + "should be a homomorphism for" + [a, b]);
+				name + "should be a homomorphism for % \n"
+				"returned:\n%\nand:\n%\n"
+				.format([a, b], x, y)
+			);
 		};
 		var c = 0.5;
 
 		numbers.pairsDo { |n1, n2|
 			test.value("add-mul", c * _, _ + _, n1, n2);
-			test.value("add-div", _ / c, _ + _, n1, n2);			test.value("bubble-mul", _.bubble, _ * _, n1, n2);
+			test.value("add-div", _ / c, _ + _, n1, n2);
+			test.value("bubble-mul", _.bubble, _ * _, n1, n2);
 		}
 
 	}
@@ -78,28 +85,34 @@ TestNoOps : UnitTest {
 		^if(item.isSequenceableCollection) {
 			item.collect(this.deepEval(_))
 		} {
-			item.value
+			item.value.value // for combinations of functions and Operands call value of the value
 		}
 
 	}
 
 	assertEqualValue { |a, b, comment, report = true, onFailure|
 		var diff, size;
-		a = a.value;
-		b = b.value;
+
+		"asserting equal value for % and %\n".postf(a, b);
+
+		a = this.deepEval(a);
+		b = this.deepEval(b);
+
 		diff = absdif(a, b).asArray.maxItem;
-		// faliures with 1e-13 in new build
+		// failures with 1e-13 in new build
 		^this.assert(diff < 1e-12, comment, report, { onFailure.value(diff) })
 	}
 
 	test_arithmetics {
 		var n = [
-				rrand(2, 4), // integers
-				1.0.rand + 2, // floats
-				{ rrand(2, 4) }.dup(4), // arrays
-				{ 1.0.rand + 2 }.dup(4),
-				{ 2.0 }, // function
-			];
+			2, // integers
+			3.0, // floats
+			{ |i| 2 + i }.dup(4), // arrays
+			{ |i| 2.0 + i }.dup(4),
+			{ 2.0 }, // function
+			//{{ 2.0 } }.dup(4), // arrays of functions
+			Maybe(2)
+		];
 		var numbers = n.dup(3).allTuples;
 		var farmulae = [
 				"{|a,b,c| (a ** b) * (a ** c) }", "{|a,b,c| a ** (b + c) }",
@@ -112,6 +125,7 @@ TestNoOps : UnitTest {
 		];
 
 		numbers.do { |triple|
+			("Function arguments:" + triple).postln;
 			farmulae.pairsDo { |a, b, i|
 				var x = a.interpret.value(*triple);
 				var y = b.interpret.value(*triple);

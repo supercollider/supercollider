@@ -47,9 +47,15 @@
 #include "PyrSched.h"
 #include "GC.h"
 #include "VMGlobals.h"
-#include "SC_DirUtils.h"
+#include "SC_Filesystem.hpp"
 #include "SCBase.h"
 #include "SC_StringBuffer.h"
+
+// only needed on linux to detect deprecated support directory (see initRuntime)
+#ifdef __linux__
+#    include <boost/filesystem/path.hpp>
+#    include <boost/filesystem/operations.hpp>
+#endif
 
 void closeAllGUIScreens();
 void initGUI();
@@ -109,17 +115,19 @@ void SC_LanguageClient::initRuntime(const Options& opt)
 	// start virtual machine
 	if (!mHiddenClient->mRunning) {
 #ifdef __linux__
-		char deprecatedSupportDirectory[PATH_MAX];
-		sc_GetUserHomeDirectory(deprecatedSupportDirectory, PATH_MAX);
-		sc_AppendToPath(deprecatedSupportDirectory, PATH_MAX, "share/SuperCollider");
+		using DirName = SC_Filesystem::DirName;
+		namespace bfs = boost::filesystem;
+		bfs::path deprecatedSupportDirectory = SC_Filesystem::instance().getDirectory(DirName::UserHome);
+		deprecatedSupportDirectory /= "share/SuperCollider";
 
-		if (sc_DirectoryExists(deprecatedSupportDirectory)) {
-			char supportDirectory[PATH_MAX];
-			sc_GetUserAppSupportDirectory(supportDirectory, PATH_MAX);
+		if (bfs::exists(deprecatedSupportDirectory)) {
+			bfs::path supportDirectory = SC_Filesystem::instance().getDirectory(DirName::UserAppSupport);
 			postfl("WARNING: Deprecated support directory detected: %s\n"
 				"Extensions and other contents in this directory will not be available until you move them to the new support directory:\n"
 				"%s\n"
-				"Quarks will need to be reinstalled due to broken symbolic links.\n\n", deprecatedSupportDirectory, supportDirectory);
+				"Quarks will need to be reinstalled due to broken symbolic links.\n\n",
+				deprecatedSupportDirectory.string().c_str(), // we can safely convert to c_str here because the POSIX filesystem uses UTF-8
+				supportDirectory.string().c_str());
 		}
 #endif
 

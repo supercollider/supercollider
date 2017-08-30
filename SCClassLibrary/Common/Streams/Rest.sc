@@ -1,56 +1,34 @@
-Rest {
-	var <>dur = 1;
-	*new { |dur(1)|
-		^super.newCopyArgs(dur)
+
+Rest : Operand  {
+
+	*new { |value = 1|
+		^super.newCopyArgs(value.dereferenceOperand).unwrapBoolean
 	}
-	// for use by Pfunc and Pfuncn
-	*processRest { |inval|
-		inval.put(\isRest, true);
-		^1
+
+	dur_ { |dt| value = dt }
+	dur { ^value.value }
+
+	// COMPARISONS JUST WORK
+	unwrapBoolean {
+		^if(value.isKindOf(Boolean)) { value } { this }
 	}
-	processRest { |inval|
-		inval.put(\isRest, true);
-		^dur.value(inval)
-	}
-	// for use e.g. in ListPatterns
-	*embedInStream { |inval|
-		^this.processRest(inval).yield;  // the actual return value is the next inval
-	}
-	embedInStream { |inval|
-		^this.processRest(inval).yield;
-	}
-	*asStream {
-		^Routine({ |inval|
-			loop {
-				inval = this.embedInStream(inval);
-			}
-		})
-	}
-	asStream {
-		^Routine({ |inval|
-			loop {
-				inval = this.embedInStream(inval);
-			}
-		})
-	}
-	*isRest { ^true }
+
+	// EVENT SUPPORT
+	asControlInput { ^value.asControlInput }
+	playAndDelta { ^value.value }
 	isRest { ^true }
-	value { ^dur }
-	storeOn { |stream| stream << "Rest(" << dur << ")" }
-}
 
-+ Object {
-	processRest { ^this }
-}
-
-+ Collection {
-	processRest { |inval|
-		^this.collect(_.processRest(inval))
+	// DEPRECATION
+	*embedInStream { |inval|
+		"Please use \"Rest()\" instances instead of the \"Rest\" class".warn;
+		^this.new.embedInStream(inval);
 	}
-}
 
-+ Event {
-	processRest { ^this }
+	*asStream {
+		"Please use \"Rest()\" instances instead of the \"Rest\" class".warn;
+		^this.new
+	}
+
 }
 
 + SimpleNumber {

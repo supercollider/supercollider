@@ -30,8 +30,10 @@ Primitives for String.
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <vector>
 #include "PyrLexer.h"
-#include "SC_DirUtils.h"
+#include "SC_Filesystem.hpp"
+#include "SC_Codecvt.hpp" // path_to_utf8_str
 #ifdef _WIN32
 # include <direct.h>
 # include "SC_Win32Utils.h"
@@ -42,14 +44,13 @@ Primitives for String.
 #include <boost/regex.hpp>
 #include <boost/intrusive/list.hpp>
 #include <boost/intrusive/unordered_set.hpp>
+#include <boost/filesystem/fstream.hpp> // ifstream
+#include <boost/filesystem/path.hpp> // path
 
-#include <fstream>
 #include <yaml-cpp/yaml.h>
 
-#include <string>
-#include <vector>
-
 using namespace std;
+namespace bfs = boost::filesystem;
 
 int prStringAsSymbol(struct VMGlobals *g, int numArgsPushed);
 int prStringAsSymbol(struct VMGlobals *g, int numArgsPushed)
@@ -538,122 +539,49 @@ int prStringHash(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
-#ifndef _WIN32
-#include <glob.h>
-
-int prStringPathMatch(struct VMGlobals *g, int numArgsPushed);
-int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
+int prString_PathMatch(struct VMGlobals *g, int numArgsPushed);
+int prString_PathMatch(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
+	char pattern[PATH_MAX];
+	int err = slotStrVal(a, pattern, PATH_MAX-1);
+	if (err)
+		return err;
 
-	char pattern[1024];
-	int err = slotStrVal(a, pattern, 1023);
-	if (err) return err;
+	SC_Filesystem::Glob* glob = SC_Filesystem::makeGlob(pattern);
 
-	glob_t pglob;
-
-	int gflags = GLOB_MARK | GLOB_TILDE;
-#ifdef __APPLE__
-	gflags |= GLOB_QUOTE;
-#endif
-
-	int gerr = glob(pattern, gflags, NULL, &pglob);
-	if (gerr) {
-		pglob.gl_pathc = 0;
+	// exit early with empty array if no matches found
+	if (!glob) {
+		SetObject(a, newPyrArray(g->gc, 0, 0, true));
+		return errNone;
 	}
-	PyrObject* array = newPyrArray(g->gc, pglob.gl_pathc, 0, true);
-	SetObject(a, array);
-	if (gerr) return errNone;
 
-	for (unsigned int i=0; i<pglob.gl_pathc; ++i) {
-		PyrObject *string = (PyrObject*)newPyrString(g->gc, pglob.gl_pathv[i], 0, true);
-		SetObject(array->slots+i, string);
+	// read all paths into a vector
+	std::vector<bfs::path> paths;
+	while (true) {
+		const bfs::path& matched_path = SC_Filesystem::globNext(glob);
+		if (matched_path.empty())
+			break;
+		else
+			paths.push_back(matched_path);
+	};
+
+	// create array with appropriate reserved size
+	PyrObject* array = newPyrArray(g->gc, paths.size(), 0, true);
+	SetObject(a, array);
+
+	// convert paths and copy into sclang array.
+	for (int i = 0; i < paths.size(); ++i) {
+		const std::string& matched_path_utf8 = SC_Codecvt::path_to_utf8_str(paths[i]);
+		PyrObject* string = (PyrObject*) newPyrString(g->gc, matched_path_utf8.c_str(), 0, true);
+		SetObject(array->slots + i, string);
 		g->gc->GCWriteNew(array, string); // we know string is white so we can use GCWriteNew
 		array->size++;
 	}
 
-	globfree(&pglob);
-
+	SC_Filesystem::freeGlob(glob);
 	return errNone;
 }
-#else //#ifndef _WIN32
-int prStringPathMatch(struct VMGlobals *g, int numArgsPushed);
-
-int prStringPathMatch(struct VMGlobals *g, int numArgsPushed)
-{
-  PyrSlot *a = g->sp;
-
-  char pattern[1024];
-  int err = slotStrVal(a, pattern, 1023);
-  if (err) return err;
-
-  win32_ReplaceCharInString(pattern,1024,'/','\\');
-  // Remove trailing slash if found, to allow folders to be matched
-  if(pattern[strlen(pattern)-1]=='\\'){
-    pattern[strlen(pattern)-1] = 0;
-  }
-  // extract the containing folder, including backslash
-  char folder[1024];
-  win32_ExtractContainingFolder(folder,pattern,1024);
-
-  ///////// PASS 1
-
-  WIN32_FIND_DATA findData;
-  HANDLE hFind;
-  int nbPaths = 0;
-
-  hFind = ::FindFirstFile(pattern, &findData);
-  if (hFind == INVALID_HANDLE_VALUE) {
-	nbPaths = 0;
-  }
-
-  if (hFind == INVALID_HANDLE_VALUE) {
-	// This is what happens when no matches. So we create an empty array to return.
-	PyrObject* array = newPyrArray(g->gc, 0, 0, true);
-	SetObject(a, array);
-	return errNone;
-  }
-
-  do {
-    if(strcmp(findData.cFileName, "..")!=0 && strcmp(findData.cFileName, "..")!=0){
-      nbPaths++;
-    }
-  } while( ::FindNextFile(hFind, &findData));
-  ::FindClose(hFind);
-
-  // PASS 2
-
-  hFind = ::FindFirstFile(pattern, &findData);
-  if (hFind == INVALID_HANDLE_VALUE) {
-    nbPaths = 0;
-  }
-
-  PyrObject* array = newPyrArray(g->gc, nbPaths , 0, true);
-  SetObject(a, array);
-  if (hFind == INVALID_HANDLE_VALUE) {
-    return errNone;
-  }
-
-  int i = 0;
-  do {
-    if(strcmp(findData.cFileName, "..")!=0 && strcmp(findData.cFileName, ".")!=0){
-      std::string strPath(folder);
-      strPath += std::string(findData.cFileName);
-      if(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY){
-        strPath += std::string("\\"); // Append trailing slash, to match behaviour on unix (used by sclang to detect folderness)
-      }
-      const char* fullPath = strPath.c_str();
-      PyrObject *string = (PyrObject*)newPyrString(g->gc, fullPath, 0, true);
-      SetObject(array->slots+i, string);
-      g->gc->GCWriteNew(array, string); // we know string is white so we can use GCWriteNew
-      array->size++;
-      i++;
-    }
-  } while( ::FindNextFile(hFind, &findData));
-  ::FindClose(hFind);
-  return errNone;
-}
-#endif //#ifndef _WIN32
 
 int prString_Getenv(struct VMGlobals* g, int numArgsPushed);
 int prString_Getenv(struct VMGlobals* g, int /* numArgsPushed */)
@@ -918,37 +846,31 @@ int prString_FindBackwards(struct VMGlobals *g, int numArgsPushed)
 	} else return errWrongType;
 }
 
-#if __APPLE__
-# include <CoreFoundation/CoreFoundation.h>
-#endif // __APPLE__
-
+/** \brief Expand `~` to home directory and resolve aliases
+ *
+ * Prints an error message if alias resolution failed.
+ */
 int prString_StandardizePath(struct VMGlobals* g, int numArgsPushed);
 int prString_StandardizePath(struct VMGlobals* g, int /* numArgsPushed */)
 {
 	PyrSlot* arg = g->sp;
 	char ipath[PATH_MAX];
-	char opathbuf[PATH_MAX];
-	char* opath = opathbuf;
-	int err;
 
-	err = slotStrVal(arg, ipath, PATH_MAX);
-	if (err) return err;
+	int err = slotStrVal(arg, ipath, PATH_MAX);
+	if (err != errNone)
+		return err;
 
-	if (!sc_StandardizePath(ipath, opath)) {
-		opath = ipath;
-	}
+	bfs::path p = SC_Codecvt::utf8_str_to_path(ipath);
+	p = SC_Filesystem::instance().expandTilde(p);
+	bool isAlias;
+	p = SC_Filesystem::resolveIfAlias(p, isAlias);
 
-#if __APPLE__
-	CFStringRef cfstring =
-		CFStringCreateWithCString(NULL,
-								  opath,
-								  kCFStringEncodingUTF8);
-	err = !CFStringGetFileSystemRepresentation(cfstring, opath, PATH_MAX);
-	CFRelease(cfstring);
-	if (err) return errFailed;
-#endif // __APPLE__
+	// Don't consider alias resolution a failure condition, but print an error
+	if (isAlias && p.empty())
+		error("standardizePath: symlink resolution failed for '%s'\n", ipath);
 
-	PyrString* pyrString = newPyrString(g->gc, opath, 0, true);
+	const std::string& utf8_str = SC_Codecvt::path_to_utf8_str(p);
+	PyrString* pyrString = newPyrString(g->gc, utf8_str.c_str(), 0, true);
 	SetObject(arg, pyrString);
 
 	return errNone;
@@ -1075,11 +997,13 @@ int prString_ParseYAMLFile(struct VMGlobals* g, int numArgsPushed)
 {
 	PyrSlot* arg = g->sp;
 
-	if (!isKindOfSlot(arg, class_string)) return errWrongType;
+	if (!isKindOfSlot(arg, class_string))
+		return errWrongType;
 
-	string str((const char*)slotRawString(arg)->s,slotRawString(arg)->size);
+	string str((const char*)slotRawString(arg)->s, slotRawString(arg)->size);
 
-	std::ifstream fin(str.c_str());
+	const bfs::path& path = SC_Codecvt::utf8_str_to_path(str);
+	bfs::ifstream fin(path);
 	YAML::Node doc = YAML::Load(fin);
 	yaml_traverse(g, doc, NULL, arg);
 
@@ -1095,7 +1019,7 @@ void initStringPrimitives()
 
 	definePrimitive(base, index++, "_StringCompare", prStringCompare, 3, 0);
 	definePrimitive(base, index++, "_StringHash", prStringHash, 1, 0);
-	definePrimitive(base, index++, "_StringPathMatch", prStringPathMatch, 1, 0);
+	definePrimitive(base, index++, "_StringPathMatch", prString_PathMatch, 1, 0);
 	definePrimitive(base, index++, "_StringAsSymbol", prStringAsSymbol, 1, 0);
 	definePrimitive(base, index++, "_String_AsInteger", prString_AsInteger, 1, 0);
 	definePrimitive(base, index++, "_String_AsFloat", prString_AsFloat, 1, 0);

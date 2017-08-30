@@ -51,55 +51,122 @@ SCDocHTMLRenderer {
 		^str.replace(" ", "%20")
 	}
 
-	*htmlForLink {|link,escape=true|
-		var n, m, f, c, doc;
-		// FIXME: how slow is this? can we optimize
-		#n, m, f = link.split($#); // link, anchor, label
-		if(m.size > 0) {
-			m = this.escapeSpacesInAnchor(m);
-		};
-		^if ("^[a-zA-Z]+://.+".matchRegexp(link) or: (link.first==$/)) {
-			if(f.size<1) {f=link};
-			c = if(m.size>0) {n++"#"++m} {n};
-			if(escape) { f = this.escapeSpecialChars(f) };
-			"<a href=\""++c++"\">"++f++"</a>";
+	// Find the target (what goes after href=) for a link that stays inside the hlp system
+	*prLinkTargetForInternalLink { |linkBase, linkAnchor, originalLink|
+		var result;
+
+		if(linkBase.isEmpty) {
+			result = "";
 		} {
-			if(n.size>0) {
-				c = baseDir+/+n;
-				doc = SCDoc.documents[n];
-				// link to other doc (might not be rendered yet)
-				if(doc.notNil) {
-					c = c ++ ".html";
+			var doc = SCDoc.documents[linkBase];
+			result = baseDir +/+ linkBase;
+
+			// If this is an existing document, just add .html to get the target
+			if(doc.notNil) {
+				result = result ++ ".html"
+			} {
+				// If the document doesn't exist according to SCDoc, check the filesystem
+				// to see if the link target is present
+				if(File.exists(SCDoc.helpTargetDir +/+ linkBase ++ ".html")) {
+					result = result ++ ".html"
 				} {
-					// link to ready-made html (Search, Browse, etc)
-					if(File.exists(SCDoc.helpTargetDir+/+n++".html")) {
-						c = c ++ ".html";
-					} {
-						// link to other file?
-						if(File.exists(SCDoc.helpTargetDir+/+n).not) {
-							"SCDoc: In %\n"
-							"  Broken link: '%'"
-							.format(currDoc.fullPath, link).warn;
-						};
+					// If the link target doesn't exist as an HTML file, check to see if the
+					// raw filepath exists. If it does, do nothing with it -- we're done. If
+					// it doesn't, then consider this a broken link.
+					if(File.exists(SCDoc.helpTargetDir +/+ linkBase).not) {
+						"SCDoc: In %\n"
+						"  Broken link: '%'"
+						.format(currDoc.fullPath, originalLink).warn;
 					};
 				};
-			} {
-				c = ""; // link inside same document
 			};
-			if(m.size>0) { c = c ++ "#" ++ m }; // add #anchor
-			if(f.size<1) { // no label
-				if(n.size>0) {
-					f = if(doc.notNil) {doc.title} {n.basename};
-					if(m.size>0) {
-						f = f++": "++m;
-					}
-				} {
-					f = if(m.size>0) {m} {"(empty link)"};
-				};
-			};
-			if(escape) { f = this.escapeSpecialChars(f) };
-			"<a href=\""++c++"\">"++f++"</a>";
 		};
+
+		if(linkAnchor.isEmpty) {
+			^result
+		} {
+			^result ++ "#" ++ this.escapeSpacesInAnchor(linkAnchor);
+		}
+	}
+
+	// Creates a link target for a link that points outside of the help system
+	*prLinkTargetForExternalLink { |linkBase, linkAnchor|
+		if(linkAnchor.isEmpty) {
+			^linkBase
+		} {
+			^linkBase ++ "#" ++ this.escapeSpacesInAnchor(linkAnchor);
+		}
+	}
+
+	// Find the text label for the given link, which points inside the help system.
+	*prLinkTextForInternalLink { |linkBase, linkAnchor, linkText|
+		// Immediately return link text if available
+		if(linkText.isEmpty.not) {
+			^linkText
+		};
+
+		// If the base was non-empty, generate it by combining the filename and the anchor.
+		// Otherwise, if there was an anchor, use that. Otherwise, use "(empty link)"
+		if(linkBase.isEmpty) {
+			if(linkAnchor.isEmpty) {
+				^"(empty link)"
+			} {
+				^linkAnchor
+			}
+		} {
+			var doc = SCDoc.documents[linkBase];
+			var result = doc !? _.title ? linkBase.basename;
+			if(linkAnchor.isEmpty) {
+				^result
+			} {
+				^result ++ ": " ++ linkAnchor
+			}
+		}
+	}
+
+	// argument link: the raw link text from the schelp document
+	// argument escape: whether or not to escape special characters in the link text itself
+	// returns: the <a> tag HTML representation of the original `link`
+	// Possible, non-exhaustive input types for `link`:
+	//   "#-decorator#decorator"
+	//   "#-addAction"
+	//   "Classes/View#-front#shown"
+	//   "Guides/GUI-Introduction#view"
+	//   "Classes/FlowLayout"
+	//   "#*currentDrag#drag&drop data"
+	//   "#Key actions"
+	//   "http://qt-project.org/doc/qt-4.8/qt.html#Key-enum"
+	*htmlForLink { |link, escape = true|
+		var linkBase, linkAnchor, linkText, linkTarget;
+		// FIXME: how slow is this? can we optimize
+
+		// Get the link base, anchor, and text from the original string
+		// Replace them with empty strings if any are nil
+		#linkBase, linkAnchor, linkText = link.split($#);
+		linkBase = linkBase ? "";
+		linkAnchor = linkAnchor ? "";
+		linkText = linkText ? "";
+
+		// Check whether the link is a URL or a relative path (starts with a `/`),
+		// NOTE: the second condition is not triggered by anything in the core library's
+		// help system. I am not sure if it is safe to remove. - Brian H
+		if("^[a-zA-Z]+://.+".matchRegexp(link) or: (link.first == $/)) {
+			// Process a link that goes to a URL outside the help system
+
+			// If there was no link text, set it to be the same as the original link
+			linkText = if(linkText.isEmpty) { link } { linkText };
+			linkTarget = this.prLinkTargetForExternalLink(linkBase, linkAnchor);
+		} {
+		    // Process a link that goes to a URL within the help system
+			linkText = this.prLinkTextForInternalLink(linkBase, linkAnchor, linkText);
+			linkTarget = this.prLinkTargetForInternalLink(linkBase, linkAnchor, link);
+		};
+
+		// Escape special characters in the link text if requested
+		if(escape) { linkText = this.escapeSpecialChars(linkText) };
+
+		// Return a well-formatted <a> tag using the target and link text
+		^"<a href=\"" ++ linkTarget ++ "\">" ++ linkText ++ "</a>";
 	}
 
 	*makeArgString {|m, par=true|

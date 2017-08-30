@@ -31,21 +31,6 @@ enum {
 	kSignalNextNode
 };
 
-#define FSINESIZE 8192.
-#define SINESIZE 8192
-#define SINEMASK 8191
-#define VERY_BIG_FLOAT (1.e10)
-extern float *sineCycle;
-extern float *invSineCycle;
-extern float *pmSineCycle;
-extern double phaseToSineIndex;
-extern double sineIndexToPhase;
-
-//#define FRACTABLESIZE 4096
-//#define FRACMASK 0x3FFC
-//extern float *gFracTable;
-
-
 PyrObject* newPyrSignal(VMGlobals *g, long size);
 
 #define UNROLL8_CODE(size,var,stmt)		\

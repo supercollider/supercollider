@@ -26,6 +26,11 @@
 #define WTERMSIG(w)     (w)
 #endif
 
+/** \brief Opens a pipe to a separate process.
+ *
+ * This function assumes a UTF-8 encoded, narrow-char string.
+ */
 FILE * sc_popen(const char *command, pid_t *pidp, const char *type);
+
 FILE * sc_popen_argv(const char *filename, char *const argv[], pid_t *pidp, const char *type);
 int sc_pclose(FILE *iop, pid_t mPid);

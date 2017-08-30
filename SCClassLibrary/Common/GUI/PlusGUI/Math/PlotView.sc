@@ -770,28 +770,28 @@ Plotter {
 
 + Function {
 	plot { |duration = 0.01, server, bounds, minval, maxval, separately = false|
+
 		var name = this.asCompileString, plotter;
 		if(name.size > 50 or: { name.includes(Char.nl) }) { name = "function plot" };
 		plotter = Plotter(name, bounds);
 		plotter.value = [0.0];
-		server = server ? Server.default;
-		server.waitForBoot {
-			this.loadToFloatArray(duration, server, { |array, buf|
-				var numChan = buf.numChannels;
-				{
-					plotter.setValue(
-						array.unlace(numChan).collect(_.drop(-1)),
-						findSpecs: true,
-						separately: separately,
-						refresh: false,
-						minval: minval,
-						maxval: maxval
-					);
-					plotter.domainSpecs = ControlSpec(0, duration, units: "s");
-					plotter.refresh;
-				}.defer
-			})
-		};
+
+		this.loadToFloatArray(duration, server, { |array, buf|
+			var numChan = buf.numChannels;
+			{
+				plotter.setValue(
+					array.unlace(numChan).collect(_.drop(-1)),
+					findSpecs: true,
+					separately: separately,
+					refresh: false,
+					minval: minval,
+					maxval: maxval
+				);
+				plotter.domainSpecs = ControlSpec(0, duration, units: "s");
+				plotter.refresh;
+			}.defer
+		})
+
 		^plotter
 	}
 

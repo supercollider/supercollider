@@ -36,6 +36,7 @@
 #include <termios.h>
 #include <unistd.h>
 #include <boost/atomic.hpp>
+#include <functional>
 
 #include <stdexcept>
 #include <sstream>

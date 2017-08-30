@@ -14,7 +14,7 @@ Most of a Server's options are controlled through its instance of ServerOptions.
 A server also holds an instance of a link::Classes/Recorder:: (for recording output into a file) and a link::Classes/Volume:: (master level).
 
 note::
-By default, there is always one default server, which is stored in the interpreter variable 's'. E.g. you can boot the defult server by calling code::s.boot::
+By default, there is always one default server, which is stored in the interpreter variable 's'. E.g. you can boot the default server by calling code::s.boot::
 ::
 
 code::
@@ -665,7 +665,7 @@ argument:: ... args
 one or more valid OSC messages.
 
 method:: sync
-Send a code::/sync:: message to the server, which will replie with the message code::/synced:: when all pending asynchronous commands have been completed.
+Send a code::/sync:: message to the server, which will reply with the message code::/synced:: when all pending asynchronous commands have been completed.
 argument:: condition
 an optional instance of link::Classes/Condition:: used for evaluating this.
 argument:: bundles

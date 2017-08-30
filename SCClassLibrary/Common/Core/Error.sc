@@ -257,10 +257,13 @@ DeprecatedError : MethodError {
 			caller,
 			methodSignature.value(method)
 		);
-		if(alternateMethod.notNil, {
+		if(alternateMethod.notNil) {
 			string = string + "Use" + methodSignature.value(alternateMethod) + "instead.";
-		});
-		^string;
+		};
+
+		string = string ++ "\nThe definition of '%' is to be found here: '%'".format(method, method.filenameSymbol);
+
+		^string
 	}
 
 	reportError {

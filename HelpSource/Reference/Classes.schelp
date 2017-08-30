@@ -1,7 +1,7 @@
 title:: Classes
 categories:: Language>OOP
 summary:: explaining classes
-related:: Classes/Class, Reference/Assignment, Guides/Intro-to-Objects, Reference/Messages, Guides/Polymorphism
+related:: Classes/Class, Reference/Assignment, Guides/Intro-to-Objects, Reference/Messages, Guides/Polymorphism, Guides/WritingClasses
 
 All objects in SuperCollider are members of a class that describes the objects' data and interface. The name of a class must begin with a capital letter. Class names are the only global values in the SC language. Since classes are themselves objects, the value of a class name identifier is the object representing that class.
 

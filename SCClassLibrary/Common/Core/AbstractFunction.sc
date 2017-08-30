@@ -358,3 +358,6 @@ FunctionList : AbstractFunction {
 	storeArgs { ^[array] }
 	copy { ^super.copy.array_(array.copy) }
 }
+
+
+
