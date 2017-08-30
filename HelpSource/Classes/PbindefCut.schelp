@@ -10,6 +10,10 @@ The only difference to link::Classes/Pbindef:: is that it only keeps  subpattern
 PbindefCut and Pbindef use the same global collection, so they can be used as interfaces to the same pattern.
 
 
+classmethods::
+
+PRIVATE::mergeNewPairs
+
 examples::
 
 code::
@@ -18,7 +22,7 @@ code::
 // for general examples, see Pbindef
 
 (
-SynthDef(\Pdefhelp, { arg out, freq, sustain=1, amp=1, pan;
+SynthDef(\Pdefhelp, { | out, freq, sustain=1, amp=1, pan |
 	var env, u=1;
 	env = EnvGen.kr(Env.perc(0.01, sustain), 1, doneAction: Done.freeSelf);
 	5.do { var d; d = exprand(0.01, 1); u = SinOsc.ar(d * 300, u, rrand(0.1,1.2) * d, 1) };
@@ -28,12 +32,15 @@ SynthDef(\Pdefhelp, { arg out, freq, sustain=1, amp=1, pan;
 s.boot;
 
 
+// you can move between PbindefCut and Pbindef, they point to the same pattern
+// but once stuff is cut away, it's gone (i.e. turning back to a Pbind does not resurface e.g. the choice of instrument from above).
+
 Pbindef(\a, \instrument, \Pdefhelp).play;
 Pbindef(\a, \degree, Pseq([0, 2, 5b, 1b], inf));
 Pbindef(\a, \dur, 0.1);
 
 
-PbindefCut(\a, \dur, 0.1); // now we have no degree pattern anymore.
+PbindefCut(\a, \instrument, \Pdefhelp, \dur, 0.1); // now we have no degree pattern anymore.
 
 // edit while running
 (
@@ -44,7 +51,6 @@ PbindefCut(\a,
 )
 )
 
-// you can move between PbindefCut and Pbindef, they point to the same pattern
 
 Pbindef(\a, \mtranspose, Pseq([0, 1], inf));
 
