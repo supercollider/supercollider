@@ -1,23 +1,25 @@
 TestUGen_Duty : UnitTest {
 
 	/*
-	func is called with dt and values.
+	func is called with dt (time between adjacent values) and the values as arguments.
 	*/
 
-	callAudioRateTestForFirstNFrames { |n, func|
+	callAudioRateTestForFirstNFrames { |numFrames, func|
 		var values;
 		var server = Server.default;
 		var dt, dur, action;
 
+		if(server.serverRunning.not) { "server should be running for this test".throw };
+
 		values = [1, 0.15, 1.1, 0.25, 2, 0.5];
 
-		dt = n / server.sampleRate;
+		dt = numFrames / server.sampleRate;
 		dur = values.size * dt;
 		action = { |ugenOutput|
 			this.assertArrayFloatEquals(
 				ugenOutput,
-				values.stutter(n),
-				"Duty should output exact values at audio rate. Tested with % frames per value".format(n)
+				values.stutter(numFrames),
+				"Duty should output exact values at audio rate. Tested with % frames per value".format(numFrames)
 			);
 		};
 		{ func.value(dt, values) }.loadToFloatArray(dur, server, action);
