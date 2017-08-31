@@ -1,76 +1,38 @@
 TITLE:: Pclump
-summary:: Clumps the pattern into arrays of size n.
-categories:: Streams-Patterns-Events>Patterns>Repetition
+summary:: Clumps the pattern into groups of size n.
+related:: Classes/SequenceableCollection#clump
+categories:: Streams-Patterns-Events>Patterns>List
 
 DESCRIPTION::
-Takes the source pattern and clumps it into arrays of size n, with the final element being the size of the remainder.
+Takes the source pattern into groupings whose size is given by integers in the pattern n.
 
-E.g. If the source pattern has 5 elements and you choose a clump size of 2, the new pattern will return two arrays of size 2, and a final array of size 1.
+E.g. If the source pattern has 5 elements and you choose a clump size of 2, the new pattern will return two groupings of size 2, and a final grouping of size 1.
 
 CLASSMETHODS::
 
 METHOD:: new
 
-ARGUMENT:: pattern
-pattern to be filtered
-
 ARGUMENT:: n
 a pattern that returns an integer. The returned value will determine the size of the next clump.
+
+ARGUMENT:: pattern
+pattern to be filtered
 
 EXAMPLES::
 
 code::
-Pclump(1, Pseq([1,2,3], 1))
-x.next;
-x.next;
-x.next;
-x.next;
-::
-will give you the following sequence: [1] [2] [3] nil
-
-code::
+// This will give you the sequence: [1, 2] [3] nil
+// Note that the last grouping is just the remainder of the pattern (in this case [3]).
 x = Pclump(2, Pseq([1,2,3], 1)).asStream;
 x.next;
 x.next;
 x.next;
 ::
 
-will give you the following sequence: [1, 2] [3] nil
-
-
+Play some random chords:
 code::
-(
-var x = Pclump(2, Pseq([1,2,3], 2)).asStream;
-x.next;
-x.next;
-x.next;
-x.next;
-)
-::
-will give you the following sequence: [1, 2] [3, 1] [2, 3] nil
-
-
-More complicated (and fun) patterns:
-code::
-(
-Pclump(Pseq([1, 2, 3, 4, 5], 6), Pseq([2, 1, 3, 2, 1, 2, 2, 3], inf)).asStream.nextN(10);
-)
-::
-
-
-Make some noise:
-code::
-(
-SynthDef(\help_sinegrain,
-	{ |out=0, freq=440, sustain=0.1|
-		var env;
-		env = EnvGen.kr(Env.perc(0.05, sustain, 0.2), doneAction: 2);
-		Out.ar(out, SinOsc.ar(freq, 0, env))
-	}).add;
 
 Pbind(
-  \instrument, \help_sinegrain,
   \degree, Pclump(Pseq([3, 3, 4, 2, 4, 2, 4], inf), Pseq([1, 3, 5, 7, 9], 8), inf),
   \dur, 1).play
-)
 ::
