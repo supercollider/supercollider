@@ -1,6 +1,6 @@
 TITLE:: Pclump
 summary:: Clumps the pattern into groups of size n.
-related:: Classes/SequenceableCollection#clump
+related:: Classes/SequenceableCollection#-clump
 categories:: Streams-Patterns-Events>Patterns>List
 
 DESCRIPTION::
