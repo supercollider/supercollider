@@ -4,7 +4,7 @@ Volume {
 
 	var <volume = 0.0, <lag = 0.1, <isMuted = false;
 
-	var ampSynth, defName, updateFunc, initFunc;
+	var <ampSynth, defName, updateFunc, initFunc;
 	var <>window;
 
 	*new { | server, startBus = 0, numChannels, min = -90, max = 6, persist = false |
