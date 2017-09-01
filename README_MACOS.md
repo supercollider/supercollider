@@ -36,13 +36,9 @@ Inside that application's folder (`SuperCollider.app/Contents/MacOS/`) are the t
 Prerequisites:
 -------------
 
-- **Xcode** can be installed free from the Apple App Store or downloaded from: http://developer.apple.com
-
-  - Xcode 5 may work
-  - Xcode 6 is known to work - it requires a Mac running macOS version 10.9.4 or later or 10.10
-  - Later versions should definitely work
-
-- **Xcode command line tools** must be installed - after installing Xcode, this can be done from the Xcode preferences or from the command line:
+- **Xcode** can be installed free from the Apple App Store or downloaded from: http://developer.apple.com.
+  Xcode >= 7 is recommended. Xcode 6 will work, but requires macOS >= 10.9.4.
+- If you don't have **Xcode command line tools** already, install them with:
   `xcode-select --install`
 - **homebrew** is recommended to install required libraries
   See http://brew.sh for installation instructions.
