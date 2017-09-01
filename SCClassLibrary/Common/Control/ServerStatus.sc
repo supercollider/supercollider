@@ -72,7 +72,7 @@ ServerStatusWatcher {
 						("% - userSpecifiedClientID % is not free!\n"
 						" Switching to free clientID obtained from scsynth: %.\n"
 						"If that is problematic, please set clientID by hand before booting.")
-						.format(server, newClientID).warn;
+						.format(server, server.clientID, newClientID).warn;
 						server.clientID = msg[2];
 					};
 				}

@@ -327,9 +327,9 @@ Server {
 			userSpecifiedClientID = true;
 			if (argClientID >= options.maxLogins) {
 				warn("% : user-specified clientID % is greater than maxLogins!"
-					"\Adjust clientID or options.maxLogins."
+					"\nPlease adjust clientID or options.maxLogins."
 					.format(name, argClientID));
-				^this
+				^nil
 			};
 		};
 
