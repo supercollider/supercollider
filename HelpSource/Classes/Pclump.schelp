@@ -1,12 +1,12 @@
 TITLE:: Pclump
-summary:: Clumps the pattern into groups of user-defined sizes.
+summary:: A pattern that takes another pattern and groups its values into arrays.
 related:: Classes/SequenceableCollection#-clump
 categories:: Streams-Patterns-Events>Patterns>List
 
 DESCRIPTION::
 Groups the source pattern into arrays whose size is given by n. Similar to LINK::Classes/SequenceableCollection#-clump::.
 
-E.g. If the source pattern has 5 elements and you choose a clump size of 2, the new pattern will return two groupings of size 2, and a final grouping of size 1.
+E.g. If the source pattern has 5 elements and you choose a clump size of 2, the new pattern will return two arrays with containing 2 elements, and a final array containing 1 element.
 
 CLASSMETHODS::
 
