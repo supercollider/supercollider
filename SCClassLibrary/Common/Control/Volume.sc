@@ -23,9 +23,8 @@ Volume {
 	}
 
 	sendSynthDef {
-		forkIfNeeded {
+		server.doWhenBooted({
 			var synthNumChans = this.numChannels;
-			server.sync;
 			defName = (\volumeAmpControl ++ synthNumChans).asSymbol;
 			SynthDef(defName, { | volumeAmp = 1, volumeLag = 0.1, gate=1, bus |
 				XOut.ar(bus,
@@ -44,7 +43,7 @@ Volume {
 			ServerTree.add(updateFunc);
 
 			this.updateSynth
-		}
+		})
 	}
 
 	numChannels { ^numChannels ? server.options.numOutputBusChannels }
