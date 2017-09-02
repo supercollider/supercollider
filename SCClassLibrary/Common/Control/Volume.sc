@@ -4,7 +4,7 @@ Volume {
 
 	var <volume = 0.0, <lag = 0.1, <isMuted = false;
 
-	var <ampSynth, defName, updateFunc, initFunc;
+	var <ampSynth, <numOutputChannels, defName, updateFunc, initFunc;
 	var <>window;
 
 	*new { | server, startBus = 0, numChannels, min = -90, max = 6, persist = false |
@@ -24,12 +24,12 @@ Volume {
 
 	sendSynthDef {
 		server.doWhenBooted({
-			var synthNumChans = this.numChannels;
-			defName = (\volumeAmpControl ++ synthNumChans).asSymbol;
+			numOutputChannels = this.numChannels;
+			defName = (\volumeAmpControl ++ numOutputChannels).asSymbol;
 			SynthDef(defName, { | volumeAmp = 1, volumeLag = 0.1, gate=1, bus |
 				XOut.ar(bus,
 					Linen.kr(gate, releaseTime: 0.05, doneAction:2),
-					In.ar(bus, synthNumChans) * Lag.kr(volumeAmp, volumeLag)
+					In.ar(bus, numOutputChannels) * Lag.kr(volumeAmp, volumeLag)
 				);
 			}).send(server);
 
