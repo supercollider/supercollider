@@ -99,7 +99,7 @@ code::
 		// we need a position change of 1 in PanAz:
 		PanAz.ar(2, DC.ar(1), Line.ar(0, 1, 0.1), orientation: 0)
 	].flat
-}.plot(0.1);
+}.plot(0.1)
 )
 ::
 
@@ -113,13 +113,13 @@ code::
 {
 	PanAz.ar(
 		numChans: 5,
-		in: ClipNoise.ar,
+		in: ClipNoise.ar(0.1),
 		pos: LFSaw.kr(MouseX.kr(0.2, 8, 'exponential')),
 		level: 0.5,
 		width: 3,
 		orientation: 0.5
 	);
-}.scope;
+}.scope
 )
 
 ::
