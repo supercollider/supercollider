@@ -130,9 +130,6 @@ MetaType *MetaType::find( PyrSlot *slot )
       else if( isKindOfSlot( slot, SC_CLASS(QCallback) ) ) {
         return metaType<QcCallback*>();
       }
-      else if( isKindOfSlot( slot, SC_CLASS(WebPage) ) ) {
-        return metaType<WebPage*>();
-      }
       else if( isKindOfSlot( slot, SC_CLASS(QObject) ) ) {
         return metaType<QObjectProxy*>();
       }
