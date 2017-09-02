@@ -91,4 +91,118 @@ TestClientAllocators : UnitTest {
 		s.options.maxLogins = 1; s.newAllocators;
 		Server.named.removeAt(s.name); Server.all.remove(s);
 	}
+
+	test_CBAllocator {
+		var alloc = ContiguousBlockAllocator(1024, 0, 1024 * 8);
+		var remaining = alloc.size, lastID;
+		var allIDs = List[], newID, maxPos;
+		var sizes = (1024 * (0.5 ** (1.. 1024.log2))).asInteger;
+
+		// sizes.sum = 1023, + [1, 1] goes over max by 1
+		(sizes.scramble ++ [1, 1]).do { |size|
+			newID = alloc.alloc(size);
+			allIDs.add(newID);
+		};
+
+		this.assert(
+			allIDs.drop(-1).every(_.isNumber) and: allIDs.last.isNil,
+			"ContiguousBlockAllocator hands out its full range for variable block sizes."
+		);
+
+		allIDs.size.do { allIDs.remove(allIDs.choose); };
+
+		this.assert(
+			alloc.pos == alloc.addrOffset,
+			"ContiguousBlockAllocator should reclaim its full range after all blocks are removed."
+		);
+
+		while {
+			// try removing first
+			if (0.5.coin) { allIDs.remove(allIDs.choose) };
+			// try allocating random block size
+			newID = alloc.alloc([1, 2, 3, 5, 8].choose);
+			// if random block too big, try single id
+			if (newID.isNil) { newID = alloc.alloc; };
+			newID.notNil;
+		} {
+			allIDs.add(newID);
+		};
+		this.assert(
+			alloc.top == (alloc.addrOffset + alloc.size - 1),
+			"ContiguousBlockAllocator should hand out its full range in mixed allocation/removal."
+		);
+
+		while {
+			allIDs.remove(allIDs.choose);
+			allIDs.notEmpty;
+		} {
+			if (0.5.coin) {
+				newID = alloc.alloc([1, 2, 3, 5, 8].choose);
+				// if random block too big, try single id
+				if (newID.isNil) { newID = alloc.alloc; };
+				if (newID.notNil) { allIDs.add(newID) };
+			};
+		};
+		this.assert(
+			alloc.top == (alloc.addrOffset + alloc.size - 1),
+			"ContiguousBlockAllocator should reclaim its full range after mixed allocation/removal.")
+	}
+
+	test_RNIDAllocator {
+		var alloc = ReadableNodeIDAllocator(8191, 1000, 8191);
+		var tempID, prevID = -1, count = 0;
+		var nextPermID, permIDs = List[], permIDToFree;
+
+		while {
+			tempID = alloc.alloc;
+			tempID > prevID
+		} {
+			count = count + 1;
+			prevID = tempID;
+		};
+		this.assert(
+			count == (alloc.numIDs - alloc.lowestTempID + 1)
+			and: tempID == (alloc.idOffset + alloc.lowestTempID),
+			"ReadableNodeIDAllocator should recycle tempIDs after its full range has been used."
+		);
+
+		this.assert(
+			alloc.isPerm(alloc.idOffset - 1).not
+			and: alloc.isPerm(alloc.idOffset)
+			and: alloc.isPerm(alloc.idOffset + alloc.lowestTempID - 1)
+			and: alloc.isPerm(alloc.idOffset + alloc.lowestTempID).not,
+			"ReadableNodeIDAllocator should identify its permanent IDs."
+		);
+		while {
+			if (0.5.coin and: { permIDs.size > 0 }) {
+				permIDToFree = permIDs.remove(permIDs.choose);
+				alloc.freePerm(permIDToFree);
+			};
+			nextPermID = alloc.allocPerm;
+			nextPermID.notNil;
+		} {
+			permIDs.add(nextPermID);
+		};
+		this.assert(
+			permIDs.size.postln == (alloc.lowestTempID - 2),
+			"ReadableNodeIDAllocator should hand out all permanent IDs in mixed alloc/free use."
+		);
+
+		while {
+			if (0.5.coin) {
+				nextPermID = alloc.allocPerm;
+				if (nextPermID.notNil) {
+					permIDs.add(nextPermID);
+				};
+			};
+			permIDs.size > 0;
+		} {
+			permIDToFree = permIDs.remove(permIDs.choose);
+			alloc.freePerm(permIDToFree);
+		};
+		this.assert(
+			alloc.allocPerm == (alloc.idOffset + 2),
+			"ReadableNodeIDAllocator should begin at first tempID after freeing all permanent IDs in mixed alloc/free use."
+		);
+	}
 }
