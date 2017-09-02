@@ -31,7 +31,7 @@ TestVolume : UnitTest {
 
 		this.bootServer;
 
-		this.assert(server.outputBus.numChannels == server.volume.numChannels, "volume synth has correct number of channels");
+		this.assert(server.outputBus.numChannels == server.volume.numOutputChannels, "volume synth has correct number of channels");
 
 		server.quit;
 		server.options.numOutputBusChannels = default_numChannels;
