@@ -4,8 +4,7 @@ categories:: Streams-Patterns-Events>Patterns>Filter
 related:: Classes/Pselect, Classes/Preject
 
 description::
-Modifies each value by passing it to the function.
-
+Modifies each value by passing it to the function. This is the pattern library's equivalent of link::Classes/Collection#-collect::.
 
 classmethods::
 
