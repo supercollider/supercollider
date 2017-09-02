@@ -1,4 +1,7 @@
 /*
+TestClientAllocators.run;
+UnitTest.gui;
+
 Tests for clientID and allocator mechanisms:
 * clientID should be impossible to set to nonsense data,
   it should always be between 0 and maxLogins - 1.
@@ -14,11 +17,6 @@ NOTE: All test cases currently have powerOfTwo numbers for maxLogins.
   If this server behavior changes to support non-powerOfTwo numbers of clients,
   the tests should also include irregular numbers for maxLogins, e.g. 1, 2, 3, 5, 8.
 
-TestClientAllocators.run;
-UnitTest.gui;
-Server.named;
-Server.all;
-s.free; // remove from Server.named and Server.all
 */
 
 TestClientAllocators : UnitTest {
