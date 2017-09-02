@@ -1,49 +1,40 @@
 TestVolume : UnitTest {
 
 	var server = Server.default;
-	var volume = Server.default.volume;
-	var level = Server.default.volume.volume;
-	var temp;
 
 	test_setVolume {
 
+		var serverVolume = server.volume.volume;
+		var ampSynthVolume;
+
 		this.bootServer;
 
-		this.assert(level == 0, "initial volume is 0 db");
-		level = -36;
+		this.assert(serverVolume == 0, "initial volume is 0 db");
 
+		serverVolume = -36;
 		server.sync;
 
-		this.assert(volume.ampSynth.notNil, "Server volume synth exists");
-		volume.ampSynth.get(\volumeAmp, { |val| temp = val});
-		this.assertFloatEquals(temp == level, "volume level correctly set");
+		this.assert(server.volume.ampSynth.notNil, "Server volume synth exists");
 
-		volume.reset;
+		server.volume.ampSynth.get(\volumeAmp, { |level| ampSynthVolume = level });
+		this.assertFloatEquals(ampSynthVolume == serverVolume, "volume level correctly set");
+
+		server.volume.reset;
 		server.quit;
-		temp = nil;
 	}
 
 	test_numOutputs {
 
-		temp = server.options.numOutputBusChannels;
+		var default_numChannels = server.options.numOutputBusChannels;
 
-		this.bootServer;
-
-		server.mute;
-		server.sync;
-
-		this.assert(server.outputBus.numChannels == volume.numChannels, "volume synth has correct number of channels");
-
-		server.quit;
 		server.options.numOutputBusChannels = 8;
 
 		this.bootServer;
 
-		this.assert(server.outputBus.numChannels == volume.numChannels, "volume synth numChannels properly set");
+		this.assert(server.outputBus.numChannels == server.volume.numChannels, "volume synth has correct number of channels");
 
 		server.quit;
-		server.options.numOutputBusChannels = temp;
-		temp = nil;
+		server.options.numOutputBusChannels = default_numChannels;
 	}
 
 }
