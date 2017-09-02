@@ -558,25 +558,31 @@ Collection {
 	asSet { ^Set.new(this.size).addAll(this) }
 	asSortedList { | function | ^SortedList.new(this.size, function).addAll(this) }
 
-	asAssociations {
+	asAssociations { |class|
 		var res;
-		if(this.isAssociationArray) { ^this };
-		res = Array.new(this.size div: 2);
-		this.pairsDo { |key, val| res.add(key -> val) }
+		class = class ? Array;
+		if(this.isAssociationArray) {
+			^if(class == this.class) { this } { this.as(class) }
+		};
+		res = class.new(this.size div: 2);
+		this.pairsDo { |key, val| res = res.add(key -> val) }
 		^res
 	}
 
-	asPairs {
+	asPairs { |class|
 		var res;
-		if(this.isAssociationArray.not) { ^this };
-		res = Array.new(this.size div: 2);
-		this.do { |assoc| res.add(assoc.key).add(assoc.value) }
+		class = class ? Array;
+		if(this.isAssociationArray.not) {
+			^if(class == this.class) { this } { this.as(class) }
+		};
+		res = class.new(this.size * 2);
+		this.do { |assoc| res = res.add(assoc.key).add(assoc.value) }
 		^res
 	}
 
-	asDict { |mergeFunc|
-		var res = IdentityDictionary.new; // another dispute: Dictionary would default to a very inefficient lookup.
-		if(mergeFunc.notNil) { ^this.asDictWith(mergeFunc) };
+	asDict { |mergeFunc, class|
+		var res = (class ? IdentityDictionary).new;
+		if(mergeFunc.notNil) { ^this.asDictWith(mergeFunc, class) };
 		if(this.isAssociationArray) {
 			this.do { |assoc|
 				res.put(assoc.key, assoc.value)
@@ -589,8 +595,8 @@ Collection {
 		^res
 	}
 
-	asDictWith { |mergeFunc|
-		var res = IdentityDictionary.new;
+	asDictWith { |mergeFunc, class|
+		var res = (class ? IdentityDictionary).new;
 		if(this.isAssociationArray) {
 			this.do { |assoc|
 				res.mergeItem(assoc.key, assoc.value, mergeFunc)
@@ -602,6 +608,9 @@ Collection {
 		};
 		^res
 	}
+
+	asEvent { |mergeFunc| ^this.asDict(mergeFunc, Event) }
+
 
 	powerset {
 		var species = this.species;
@@ -649,7 +658,7 @@ Collection {
 		};
 
 		if (outliers > 0) {
-			("histogram :" + outliers + "out of (histogram) range values in collection.").inform;
+			("histogram :" + outliers + "out of (histogram) range values in collection.").postln;
 		};
 
 		^freqs;

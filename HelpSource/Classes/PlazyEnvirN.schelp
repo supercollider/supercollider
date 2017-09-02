@@ -40,7 +40,7 @@ code::
 SynthDef(\help_sinegrain,
 	{ arg out=0, freq=440, sustain=0.05, pan=0;
 		var env;
-		env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction:2);
+		env = EnvGen.kr(Env.perc(0.01, sustain, 0.2), doneAction: Done.freeSelf);
 		Out.ar(out, Pan2.ar(SinOsc.ar(freq, 0, env), pan))
 	}).add;
 

@@ -94,6 +94,16 @@ MIDIClient {
 	*externalDestinations{
 		^destinations;
 	}
+
+	*getClientID {
+		if (thisProcess.platform.name != \linux) {
+			warn("% is only implemented in linux,"
+				"and should never be called directly in user code."
+				.format(thisMethod)
+			);
+		};
+		^nil
+	}
 }
 
 

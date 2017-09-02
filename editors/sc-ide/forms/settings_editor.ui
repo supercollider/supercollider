@@ -319,6 +319,20 @@
          </layout>
         </item>
         <item>
+         <widget class="QCheckBox" name="useComboBox">
+          <property name="text">
+           <string>Use a drop-down instead of tabs in the editor view</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="useComboBoxWhenSplitting">
+          <property name="text">
+           <string>Switch to drop-down mode when splitting the editor view</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <spacer name="verticalSpacer_2">
           <property name="orientation">
            <enum>Qt::Vertical</enum>

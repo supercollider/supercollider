@@ -4,6 +4,8 @@ categories:: Libraries>JITLib>Patterns
 related:: Classes/TaskProxy, Classes/Task, Classes/Routine
 
 description::
+Tdef registers tasks by key. All accesses to the registered tasks go through the Tdef class via that key. Registered tasks can be replaced with other tasks while playing. The old task and its replacement can automatically crossfade and the replacement time can be quantized.
+
 Tdef provides an interface to its superclass TaskProxy. Tdef keeps a reference to a task ( strong::time pattern:: ) that can be replaced while playing. It continues playing when the old stream ended and a new stream is set and schedules the changes to the beat. One Tdef may be used in many tasks in different places. A change in the task definition Tdef propagates through all tasks.
 
 code::
@@ -170,7 +172,7 @@ s.boot;
 SynthDef(\pdef_grainlet,
 	{ arg out=0, freq=440, sustain=0.05;
 		var env;
-		env = EnvGen.kr(Env.perc(0.01, sustain, 0.3), doneAction:2);
+		env = EnvGen.kr(Env.perc(0.01, sustain, 0.3), doneAction: Done.freeSelf);
 		Out.ar(out, SinOsc.ar(freq, 0, env))
 	}).add;
 )
@@ -305,7 +307,7 @@ s.boot;
 SynthDef("pdef_grainlet",
 	{ arg out=0, freq=440, sustain=0.05;
 		var env;
-		env = EnvGen.kr(Env.perc(0.01, sustain, 0.3), doneAction:2);
+		env = EnvGen.kr(Env.perc(0.01, sustain, 0.3), doneAction: Done.freeSelf);
 		Out.ar(out, SinOsc.ar(freq, 0, env))
 	}).add;
 )

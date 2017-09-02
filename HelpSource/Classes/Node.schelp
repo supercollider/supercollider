@@ -82,8 +82,9 @@ If this Node is a Group this will set the running state of all Nodes within the 
 code::
 s.boot;
 (
-x = SynthDef("help-node-set", {arg freq = 440, out = 0;
-	Out.ar(out, SinOsc.ar(freq, 0, 0.1));}).play(s);
+x = SynthDef("help-node-set", { |freq = 440, out = 0|
+	Out.ar(out, SinOsc.ar(freq, 0, 0.1))
+}).play
 )
 x.run(false);
 x.run; // default is true
@@ -97,10 +98,9 @@ Controls are defined in a SynthDef as args or instances of link::Classes/Control
 code::
 s.boot;
 (
-x = SynthDef("help-node-set", {| freq = 440, out = 0 |
-	Out.ar(out, SinOsc.ar(freq, 0, 0.1));
-});
-x = x.play(s);
+x = SynthDef("help-node-set", { |freq = 440, out = 0|
+	Out.ar(out, SinOsc.ar(freq, 0, 0.1))
+}).play
 )
 x.set(\freq, 880, \out, 1); // two pairs
 x.set(0, 660, 1, 0); // freq is the first argument, so it's index is 0. out is index 1.
@@ -110,13 +110,12 @@ Values that are arrays are sent using the OSC array type-tags ($[ and $]).  Thes
 code::
 s.boot;
 (
-x = SynthDef("help-node-set", {| freq = #[440, 450, 460], out = 0 |
-	Out.ar(out, Mix(SinOsc.ar(freq, 0, 0.1)));
-});
-x = x.play(s);
+x = SynthDef("help-node-set", { |freq = #[440, 450, 460], out = 0|
+	Out.ar(out, Mix(SinOsc.ar(freq, 0, 0.1)))
+}).play
 )
-x.set(\freq, [1,2,3] * 400 + [1,2,3], \out, 1); // two pairs
-x.set(\freq, [3] * 400 + [1,2,3], \out, 1); // two pairs
+x.set(\freq, [1,2,3] * 400 + [1, 2, 3], \out, 1); // two pairs
+x.set(\freq, [3] * 400 + [1, 2, 3], \out, 1); // two pairs
 x.set(0, [660, 680, 720], 1, 0); // freq is the first argument, so it's index is 0. out is index 1.
 x.free;
 ::
@@ -129,8 +128,9 @@ code::
 s.boot;
 (
 x = SynthDef("help-node-setn", {
-	arg freq1 = 440, freq2 = 440, freq3 = 440, amp1 = 0.05, amp2 = 0.05, amp3 = 0.05;
-	Out.ar(0, Mix(SinOsc.ar([freq1, freq2, freq3], 0, [amp1, amp2, amp3])));}).play(s);
+	arg out, freq1 = 440, freq2 = 440, freq3 = 440, amp1 = 0.05, amp2 = 0.05, amp3 = 0.05;
+	Out.ar(out, Mix(SinOsc.ar([freq1, freq2, freq3], 0, [amp1, amp2, amp3])))
+}).play;
 )
 // set 3 controls starting from \freq1, and 3 controls starting from \amp1
 x.setn(\freq1, [440, 880, 441], \amp1, [0.3, 0.1, 0.3]);
@@ -155,18 +155,22 @@ s.boot;
 (
 b = Bus.control(s, 1); b.set(880);
 c = Bus.control(s, 1);	c.set(884);
-x = SynthDef("help-Node-map", { arg freq1 = 440, freq2 = 440;
-	Out.ar(0, SinOsc.ar([freq1, freq2], 0, 0.1));
-}).play(s);)
+x = SynthDef("help-Node-map", { |out, freq1 = 440, freq2 = 440|
+	Out.ar(out, SinOsc.ar([freq1, freq2], 0, 0.1));
+}).play
+)
 x.map(\freq1, b, \freq2, c);
 x.free; b.free; c.free;
 
 // same as above with a multichannel Bus and Control
 (
-b = Bus.control(s, 2); b.set(880, 884);
-x = SynthDef("help-Node-map2", { arg freqs = #[440, 440];
-	Out.ar(0, SinOsc.ar(freqs, 0, 0.1));
-}).play(s);)
+b = Bus.control(s, 2); 
+b.set(880, 884);
+x = SynthDef("help-Node-map2", { |out, freqs = #[440, 440]|
+	Out.ar(out, SinOsc.ar(freqs, 0, 0.1));
+}).play
+)
+
 x.map(\freqs, b);
 x.free; b.free;
 ::
@@ -183,7 +187,7 @@ if not nil, it will override the envelope's decay or release time.
 discussion::
 If this Node is a Group this will release all Nodes within the Group.
 code::
-x = { arg gate=1; BrownNoise.ar(0.5) * EnvGen.kr(Env.cutoff(1), gate, doneAction:2) }.play;
+x = { arg gate=1; BrownNoise.ar(0.5) * EnvGen.kr(Env.cutoff(1), gate, doneAction: Done.freeSelf) }.play;
 x.release(5); // override the Env's specified 1 second release time
 ::
 
@@ -204,7 +208,7 @@ method:: trace
 Causes a synth to print out the values of the inputs and outputs of its unit generators for one control period to the post window. Causes a group to print the node IDs and names of each node in the group for one control period.
 code::
 g = Group.new;
-x = Synth.head(g, "default");
+x = Synth.head(g, \default);
 x.trace;
 g.trace;
 x.free; g.free;
@@ -218,9 +222,10 @@ code::
 (
 b = s.makeBundle(false, {
 	a = Group.new(s); //create a node object
-	a.register; // register before creating on the server
-});
+	a.register // register before creating on the server
+})
 )
+
 a.isPlaying;
 s.listSendBundle(nil, b); //start the node on the server
 a.isPlaying;
@@ -274,7 +279,7 @@ method:: onFree
 Evaluate function when this Node is freed.
 discussion::
 code::
-{PinkNoise.ar(1) * Line.kr(1,0,2,doneAction:2)}.play.onFree {"done".postln};
+{PinkNoise.ar(1) * Line.kr(1,0,2,doneAction: Done.freeSelf)}.play.onFree {"done".postln};
 ::
 
 method:: waitForFree
@@ -283,18 +288,18 @@ discussion::
 code::
 (
 fork {
-    {SinOsc.ar(440!2) * Line.kr(0,1,5,doneAction:2)}.play.waitForFree;
-    {PinkNoise.ar(1) * Line.kr(1,0,2,doneAction:2)}.play.onFree {"done".postln};
+    { SinOsc.ar(440 ! 2) * Line.kr(0, 1, 5, doneAction: Done.freeSelf) }.play.waitForFree;
+    { PinkNoise.ar(1) * Line.kr(1, 0, 2, doneAction: Done.freeSelf) }.play.onFree {"done".postln};
 }
 )
 ::
 
 code::
 (
-SynthDef(\help, {
+SynthDef(\help, { |out|
 	var mod = LFNoise2.kr(Rand(1, 6)) * 0.2;
 	var snd = mod * Blip.ar(Rand(200, 800) * (mod + 1));
-	Out.ar(0, snd);
+	Out.ar(out, snd);
 	FreeSelf.kr(mod < 0);
 }).add;
 )

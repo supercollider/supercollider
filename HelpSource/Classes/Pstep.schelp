@@ -1,16 +1,29 @@
 class:: Pstep
-summary:: timed embedding of values
+summary:: timed, sample-and-hold embedding of values
 related:: Classes/Pseg
 categories:: Streams-Patterns-Events>Patterns>Time
 
 description::
 
-Pstep is good for representing chord progressions, scale progressions, accent patterns, etc.
+Pstep is a "sample and hold" pattern: The value returned by teletype::next:: is held at each value in teletype::levels:: for the corresponding duration in teletype::durs::. This cycling is similar to link::Classes/Ptuple::, in that the current repeat ends when eiher pattern returns nil.
+
+Pstep measures elapsed time using the thread's logical time. That is, it assumes it will be evaluated only exactly when needed, not before.
+
+See link::Classes/Pseg:: for a pattern whose value changes like an link::Classes/Env::.
 
 ClassMethods::
 
 method::new
-Levelpattern can return individual values, arrays, or events. The value returned by levelpattern is returned for the duration returned by durpattern.
+Create an instance of Pstep.
+
+argument::levels
+A number, collection, or link::Classes/Pattern:: that returns the levels.
+
+argument::durs
+A number, collection, or link::Classes/Pattern:: that returns segments durations in beats.
+
+argument::repeats
+An integer, or teletype::inf::.
 
 Examples::
 
@@ -27,7 +40,7 @@ p = Pstep(
 );
 Ppar([p, p]).play;
 )
-// change degree independant of number of events that have been playing
+// change degree independently of number of events that have been playing
 
 (
 Pchain(
@@ -143,7 +156,7 @@ SynthDef(\pgrain,
 		window = Env.sine(sustain, amp);
 		Out.ar(out,
 			Pan2.ar(
-				SinOsc.ar(freq) * EnvGen.ar(window, doneAction:2),
+				SinOsc.ar(freq) * EnvGen.ar(window, doneAction: Done.freeSelf),
 				pan
 			)
 		)

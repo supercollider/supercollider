@@ -67,7 +67,7 @@ PyrSymbol* s_midiSMPTEAction;
 PyrSymbol * s_midiin;
 PyrSymbol * s_numMIDIDev;
 PyrSymbol * s_midiclient;
-const int kMaxMidiPorts = 16;
+const int kMaxMidiPorts = 128;
 MIDIClientRef gMIDIClient = 0;
 MIDIPortRef gMIDIInPort[kMaxMidiPorts], gMIDIOutPort[kMaxMidiPorts];
 int gNumMIDIInPorts = 0, gNumMIDIOutPorts = 0;
@@ -327,6 +327,8 @@ int initMIDI(int numIn, int numOut)
 	int enc = kCFStringEncodingMacRoman;
 
 	midiCleanUp();
+	if(numIn > kMaxMidiPorts) { printf("MIDI: note that maximum midi in ports is limited to %d.\n", kMaxMidiPorts); }
+	if(numOut > kMaxMidiPorts) { printf("MIDI: note that maximum midi out ports is limited to %d.\n", kMaxMidiPorts); }
 	numIn = sc_clip(numIn, 1, kMaxMidiPorts);
 	numOut = sc_clip(numOut, 1, kMaxMidiPorts);
 
@@ -560,30 +562,36 @@ int prListMIDIEndpoints(struct VMGlobals *g, int numArgsPushed)
 int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed);
 int prConnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 {
-	//PyrSlot *a = g->sp - 2;
-	PyrSlot *b = g->sp - 1;
-	PyrSlot *c = g->sp;
+	PyrSlot *inputIndexSlot = g->sp - 1;
+	PyrSlot *uidSlot = g->sp;
 
 	int err, inputIndex, uid;
-	err = slotIntVal(b, &inputIndex);
-	if (err) return errWrongType;
-	if (inputIndex < 0 || inputIndex >= gNumMIDIInPorts) return errIndexOutOfRange;
 
-	err = slotIntVal(c, &uid);
-	if (err) return errWrongType;
+	err = slotIntVal(inputIndexSlot, &inputIndex);
+	if (err)
+		return errWrongType;
+	if (inputIndex < 0 || inputIndex >= gNumMIDIInPorts)
+		return errIndexOutOfRange;
 
+	err = slotIntVal(uidSlot, &uid);
+	if (err)
+		return errWrongType;
 
-	MIDIEndpointRef src=0;
+	MIDIEndpointRef src = 0;
 	MIDIObjectType mtype;
 	MIDIObjectFindByUniqueID(uid, &src, &mtype);
-	if (mtype != kMIDIObjectType_Source) return errFailed;
+	if (mtype != kMIDIObjectType_Source)
+		return errFailed;
 
-	//pass the uid to the midiReadProc to identify the src
-
-	MIDIPortConnectSource(gMIDIInPort[inputIndex], src, (void*)uid);
+	// MIDIPortConnectSource's third parameter is just a unique value used to help
+	// identify the source. It expects a void*, so we reinterpret_cast from uid to
+	// avoid a compiler warning.
+	// See: https://stackoverflow.com/questions/9051292/midireadproc-using-srcconnrefcon-to-listen-to-only-one-source
+	MIDIPortConnectSource(gMIDIInPort[inputIndex], src, reinterpret_cast<void*>(uid));
 
 	return errNone;
 }
+
 int prDisconnectMIDIIn(struct VMGlobals *g, int numArgsPushed);
 int prDisconnectMIDIIn(struct VMGlobals *g, int numArgsPushed)
 {

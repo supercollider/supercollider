@@ -256,6 +256,7 @@ BusPlug : AbstractFunction {
 			^this
 		};
 		if(bus.rate == \control) { "Can't monitor a control rate bus.".warn; monitor.stop; ^this };
+		group = group ?? {this.homeServer.defaultGroup};
 		this.playToBundle(bundle, out, numChannels, group, multi, vol, fadeTime, addAction);
 		// homeServer: multi client support: monitor only locally
 		bundle.schedSend(this.homeServer, this.clock ? TempoClock.default, this.quant);
@@ -269,6 +270,7 @@ BusPlug : AbstractFunction {
 			^this
 		};
 		if(bus.rate == \control) { "Can't monitor a control rate bus.".warn; monitor.stop; ^this };
+		group = group ?? {this.homeServer.defaultGroup};
 		this.playNToBundle(bundle, outs, amps, ins, vol, fadeTime, group, addAction);
 		bundle.schedSend(this.homeServer, this.clock ? TempoClock.default, this.quant);
 		this.changed(\playN, [outs, amps, ins, vol, fadeTime, group, addAction]);
@@ -318,6 +320,7 @@ BusPlug : AbstractFunction {
 		};
 		this.newMonitorToBundle(bundle, numChannels);
 		group = group ?? { if(parentGroup.isPlaying) { parentGroup } };
+		out = out.asControlInput;
 		if(numChannels.notNil) { out = (0..numChannels-1) + (out ? 0) };
 		monitor.playNBusToBundle(bundle, out, nil, nil, bus, vol, fadeTime, group, addAction, multi);
 	}

@@ -20,7 +20,7 @@ Set/get the global function to be performed in addition to the item functions: c
 method:: items
 Set/get an link::Classes/Array:: of Associations including the labels and the item functions: code:: ['label' -> { arg listObj; value }, ] ::.
 discussion::
-In menus, the OS X graphics system gives special meanings to some characters. See link::Classes/PopUpMenu:: ; Or and link::Classes/Array:: link::Classes/Symbol::s (if you are only using code::globalAction::). link::Classes/Array::s of link::Classes/Symbol::s will get converted into and array of link::Classes/Association::s with and empty link::Classes/Function:: code:: ['label' -> {}, ] ::.
+In menus, the macOS graphics system gives special meanings to some characters. See link::Classes/PopUpMenu:: ; Or and link::Classes/Array:: link::Classes/Symbol::s (if you are only using code::globalAction::). link::Classes/Array::s of link::Classes/Symbol::s will get converted into and array of link::Classes/Association::s with and empty link::Classes/Function:: code:: ['label' -> {}, ] ::.
 
 method:: item
 Returns:: the item label of the current selection.

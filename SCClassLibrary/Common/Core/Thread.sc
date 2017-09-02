@@ -54,15 +54,19 @@ Thread : Stream {
 		_Thread_RandSeed
 		^this.primitiveFailed;
 	}
-	randData_ { arg data;
+	randData_ {
+		arg data;
 		_Thread_SetRandData
-		^this.primitiveFailed;
+		^this.primitiveFailed
 	}
 	randData {
 		_Thread_GetRandData
+		^this.primitiveFailed
 	}
-	failedPrimitiveName { _PrimName }
-
+	failedPrimitiveName {
+		_PrimName
+		^this.primitiveFailed
+	}
 	handleError { arg error;
 		(exceptionHandler ? parent).handleError(error)
 	}
@@ -72,8 +76,14 @@ Thread : Stream {
 	value { ^this }
 	valueArray { ^this }
 
-	*primitiveError { _PrimitiveError }
-	*primitiveErrorString { _PrimitiveErrorString; }
+	*primitiveError {
+		_PrimitiveError
+		^this.primitiveFailed
+	}
+	*primitiveErrorString {
+		_PrimitiveErrorString
+		^this.primitiveFailed
+	}
 
 	storeOn { arg stream; stream << "nil"; }
 	archiveAsCompileString { ^true }

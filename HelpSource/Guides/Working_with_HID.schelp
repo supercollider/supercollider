@@ -13,7 +13,7 @@ subsection:: What are HID devices?
 
 HID stands for Human Input Device, so in a sense saying HID device is saying Human Input Device device. Another confusion is that HID's are not merely input devices, they can also have outputs, e.g. the leds which indicate whether you have turned CapsLock or NumLock on, or force feedback (or vibration) in game devices.
 
-Nowadays most HID's use USB to connect to computers, although there are some HID's that use BlueTooth instead (but not all BlueTooth HID's adhere to the standard protocols, most notably the WiiMote does not). SuperCollider provides the means to access HID's in as far as they adhere to the standard protocols that have been created for them. In the implementation we have tried to make the use of HID's as much crossplatform compatible as possible, so that you do not have to change code when transferring to another platform (e.g. from OSX to Linux and vice versa). However, it may be that some HID's use special driver software, that make this impossible. Other incompatibilities may arise from the fact that although there is a standardisation on the device level, the different operating systems then provide software interfaces which vary, so in a way we have had to reverse engineer the differences that the operating systems introduce.
+Nowadays most HID's use USB to connect to computers, although there are some HID's that use BlueTooth instead (but not all BlueTooth HID's adhere to the standard protocols, most notably the WiiMote does not). SuperCollider provides the means to access HID's in as far as they adhere to the standard protocols that have been created for them. In the implementation we have tried to make the use of HID's as much crossplatform compatible as possible, so that you do not have to change code when transferring to another platform (e.g. from macOS to Linux and vice versa). However, it may be that some HID's use special driver software, that make this impossible. Other incompatibilities may arise from the fact that although there is a standardisation on the device level, the different operating systems then provide software interfaces which vary, so in a way we have had to reverse engineer the differences that the operating systems introduce.
 
 NOTE:: the backend for Windows has not been completed yet, so HID is not working yet on Windows.::
 
@@ -61,7 +61,7 @@ If you are using multiple of the same devices, you may want to adjust your setup
 
 NOTE:: if you have trouble opening a device, e.g. when you get the message code:: ERROR: HID: Could not open device::, please check the LINK::Guides/HID_permissions:: ::
 
-NOTE:: on OSX the internal devices of laptops are somewhat messed up - they show up multiple times and do not have unique paths, this makes it hard to open a specific one of them.::
+NOTE:: on macOS the internal devices of laptops are somewhat messed up - they show up multiple times and do not have unique paths, this makes it hard to open a specific one of them.::
 
 You can always check which devices have already been opened by SuperCollider with
 

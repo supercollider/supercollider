@@ -13,26 +13,10 @@
 #endif
 
 #include <boost/unordered/detail/buckets.hpp>
-#include <boost/unordered/detail/util.hpp>
-#include <boost/type_traits/aligned_storage.hpp>
-#include <boost/type_traits/alignment_of.hpp>
-#include <cmath>
 
 #if defined(BOOST_MSVC)
 #pragma warning(push)
 #pragma warning(disable:4127) // conditional expression is constant
-#endif
-
-#if defined(BOOST_UNORDERED_DEPRECATED_EQUALITY)
-
-#if defined(__EDG__)
-#elif defined(_MSC_VER) || defined(__BORLANDC__) || defined(__DMC__)
-#pragma message("Warning: BOOST_UNORDERED_DEPRECATED_EQUALITY is no longer supported.")
-#elif defined(__GNUC__) || defined(__HP_aCC) || \
-    defined(__SUNPRO_CC) || defined(__IBMCPP__)
-#warning "BOOST_UNORDERED_DEPRECATED_EQUALITY is no longer supported."
-#endif
-
 #endif
 
 namespace boost { namespace unordered { namespace detail {
@@ -80,70 +64,6 @@ namespace boost { namespace unordered { namespace detail {
         value_base& operator=(value_base const&);
     };
 
-    template <typename NodeAlloc>
-    struct copy_nodes
-    {
-        typedef boost::unordered::detail::allocator_traits<NodeAlloc>
-            node_allocator_traits;
-
-        node_constructor<NodeAlloc> constructor;
-
-        explicit copy_nodes(NodeAlloc& a) : constructor(a) {}
-
-        typename node_allocator_traits::pointer create(
-                typename node_allocator_traits::value_type::value_type const& v)
-        {
-            constructor.construct_with_value2(v);
-            return constructor.release();
-        }
-    };
-
-    template <typename NodeAlloc>
-    struct move_nodes
-    {
-        typedef boost::unordered::detail::allocator_traits<NodeAlloc>
-            node_allocator_traits;
-
-        node_constructor<NodeAlloc> constructor;
-
-        explicit move_nodes(NodeAlloc& a) : constructor(a) {}
-
-        typename node_allocator_traits::pointer create(
-                typename node_allocator_traits::value_type::value_type& v)
-        {
-            constructor.construct_with_value2(boost::move(v));
-            return constructor.release();
-        }
-    };
-
-    template <typename Buckets>
-    struct assign_nodes
-    {
-        node_holder<typename Buckets::node_allocator> holder;
-
-        explicit assign_nodes(Buckets& b) : holder(b) {}
-
-        typename Buckets::node_pointer create(
-                typename Buckets::value_type const& v)
-        {
-            return holder.copy_of(v);
-        }
-    };
-
-    template <typename Buckets>
-    struct move_assign_nodes
-    {
-        node_holder<typename Buckets::node_allocator> holder;
-
-        explicit move_assign_nodes(Buckets& b) : holder(b) {}
-
-        typename Buckets::node_pointer create(
-                typename Buckets::value_type& v)
-        {
-            return holder.move_copy_of(v);
-        }
-    };
-
     template <typename Types>
     struct table :
         boost::unordered::detail::functions<
@@ -164,6 +84,10 @@ namespace boost { namespace unordered { namespace detail {
         typedef typename Types::table table_impl;
         typedef typename Types::link_pointer link_pointer;
         typedef typename Types::policy policy;
+        typedef typename Types::iterator iterator;
+        typedef typename Types::c_iterator c_iterator;
+        typedef typename Types::l_iterator l_iterator;
+        typedef typename Types::cl_iterator cl_iterator;
 
         typedef boost::unordered::detail::functions<
             typename Types::hasher,
@@ -187,15 +111,8 @@ namespace boost { namespace unordered { namespace detail {
             bucket_pointer;
         typedef boost::unordered::detail::node_constructor<node_allocator>
             node_constructor;
-
-        typedef boost::unordered::iterator_detail::
-            iterator<node> iterator;
-        typedef boost::unordered::iterator_detail::
-            c_iterator<node> c_iterator;
-        typedef boost::unordered::iterator_detail::
-            l_iterator<node, policy> l_iterator;
-        typedef boost::unordered::iterator_detail::
-            cl_iterator<node, policy> cl_iterator;
+        typedef boost::unordered::detail::node_tmp<node_allocator>
+            node_tmp;
 
         ////////////////////////////////////////////////////////////////////////
         // Members
@@ -207,6 +124,13 @@ namespace boost { namespace unordered { namespace detail {
         float mlf_;
         std::size_t max_load_;
         bucket_pointer buckets_;
+
+        ////////////////////////////////////////////////////////////////////////
+        // Node functions
+
+        static inline node_pointer next_node(link_pointer n) {
+            return static_cast<node_pointer>(n->next_);
+        }
 
         ////////////////////////////////////////////////////////////////////////
         // Data access
@@ -254,16 +178,16 @@ namespace boost { namespace unordered { namespace detail {
             return get_bucket(bucket_index)->next_;
         }
 
-        iterator begin() const
+        node_pointer begin() const
         {
-            return size_ ? iterator(get_previous_start()->next_) : iterator();
+            return size_ ? next_node(get_previous_start()) : node_pointer();
         }
 
-        iterator begin(std::size_t bucket_index) const
+        node_pointer begin(std::size_t bucket_index) const
         {
-            if (!size_) return iterator();
+            if (!size_) return node_pointer();
             link_pointer prev = get_previous_start(bucket_index);
-            return prev ? iterator(prev->next_) : iterator();
+            return prev ? next_node(prev) : node_pointer();
         }
         
         std::size_t hash_to_bucket(std::size_t hash_value) const
@@ -280,14 +204,14 @@ namespace boost { namespace unordered { namespace detail {
 
         std::size_t bucket_size(std::size_t index) const
         {
-            iterator it = begin(index);
-            if (!it.node_) return 0;
+            node_pointer n = begin(index);
+            if (!n) return 0;
 
             std::size_t count = 0;
-            while(it.node_ && hash_to_bucket(it.node_->hash_) == index)
+            while(n && hash_to_bucket(n->hash_) == index)
             {
                 ++count;
-                ++it;
+                n = next_node(n);
             }
 
             return count;
@@ -403,9 +327,7 @@ namespace boost { namespace unordered { namespace detail {
         void init(table const& x)
         {
             if (x.size_) {
-                create_buckets(bucket_count_);
-                copy_nodes<node_allocator> node_creator(node_alloc());
-                table_impl::fill_buckets(x.begin(), *this, node_creator);
+                static_cast<table_impl*>(this)->copy_buckets(x);
             }
         }
 
@@ -416,11 +338,7 @@ namespace boost { namespace unordered { namespace detail {
             }
             else if(x.size_) {
                 // TODO: Could pick new bucket size?
-                create_buckets(bucket_count_);
-
-                move_nodes<node_allocator> node_creator(node_alloc());
-                node_holder<node_allocator> nodes(x);
-                table_impl::fill_buckets(nodes.begin(), *this, node_creator);
+                static_cast<table_impl*>(this)->move_buckets(x);
             }
         }
 
@@ -429,34 +347,53 @@ namespace boost { namespace unordered { namespace detail {
 
         void create_buckets(std::size_t new_count)
         {
-            boost::unordered::detail::array_constructor<bucket_allocator>
-                constructor(bucket_alloc());
-    
-            // Creates an extra bucket to act as the start node.
-            constructor.construct(bucket(), new_count + 1);
+            std::size_t length = new_count + 1;
+            bucket_pointer new_buckets = bucket_allocator_traits::allocate(
+                    bucket_alloc(), length);
+            bucket_pointer constructed = new_buckets;
 
-            if (buckets_)
-            {
-                // Copy the nodes to the new buckets, including the dummy
-                // node if there is one.
-                (constructor.get() +
-                    static_cast<std::ptrdiff_t>(new_count))->next_ =
-                        (buckets_ + static_cast<std::ptrdiff_t>(
-                            bucket_count_))->next_;
-                destroy_buckets();
-            }
-            else if (bucket::extra_node)
-            {
-                node_constructor a(node_alloc());
-                a.construct();
+            BOOST_TRY {
+                bucket_pointer end = new_buckets
+                    + static_cast<std::ptrdiff_t>(length);
+                for(; constructed != end; ++constructed) {
+                    new ((void*) boost::addressof(*constructed)) bucket();
+                }
 
-                (constructor.get() +
-                    static_cast<std::ptrdiff_t>(new_count))->next_ =
-                        a.release();
+                if (buckets_)
+                {
+                    // Copy the nodes to the new buckets, including the dummy
+                    // node if there is one.
+                    (new_buckets +
+                        static_cast<std::ptrdiff_t>(new_count))->next_ =
+                            (buckets_ + static_cast<std::ptrdiff_t>(
+                                bucket_count_))->next_;
+                    destroy_buckets();
+                }
+                else if (bucket::extra_node)
+                {
+                    node_constructor a(node_alloc());
+                    a.create_node();
+
+                    (new_buckets +
+                        static_cast<std::ptrdiff_t>(new_count))->next_ =
+                            a.release();
+                }
             }
+            BOOST_CATCH(...) {
+                for(bucket_pointer p = new_buckets; p != constructed; ++p) {
+                    boost::unordered::detail::func::destroy(
+                            boost::addressof(*p));
+                }
+
+                bucket_allocator_traits::deallocate(bucket_alloc(),
+                        new_buckets, length);
+
+                BOOST_RETHROW;
+            }
+            BOOST_CATCH_END
 
             bucket_count_ = new_count;
-            buckets_ = constructor.release();
+            buckets_ = new_buckets;
             recalculate_max_load();
         }
 
@@ -527,7 +464,7 @@ namespace boost { namespace unordered { namespace detail {
             node_pointer n = static_cast<node_pointer>(prev->next_);
             prev->next_ = n->next_;
 
-            boost::unordered::detail::func::destroy_value_impl(node_alloc(),
+            boost::unordered::detail::func::call_destroy(node_alloc(),
                 n->value_ptr());
             boost::unordered::detail::func::destroy(boost::addressof(*n));
             node_allocator_traits::deallocate(node_alloc(), n, 1);
@@ -649,11 +586,13 @@ namespace boost { namespace unordered { namespace detail {
         {
             // Strong exception safety.
             set_hash_functions new_func_this(*this, x);
-            new_func_this.commit();
             mlf_ = x.mlf_;
             recalculate_max_load();
 
-            if (!size_ && !x.size_) return;
+            if (!size_ && !x.size_) {
+                new_func_this.commit();
+                return;
+            }
 
             if (x.size_ >= max_load_) {
                 create_buckets(min_buckets_for_size(x.size_));
@@ -662,11 +601,8 @@ namespace boost { namespace unordered { namespace detail {
                 clear_buckets();
             }
 
-            // assign_nodes takes ownership of the container's elements,
-            // assigning to them if possible, and deleting any that are
-            // left over.
-            assign_nodes<table> node_creator(*this);
-            table_impl::fill_buckets(x.begin(), *this, node_creator);
+            new_func_this.commit();
+            static_cast<table_impl*>(this)->assign_buckets(x);
         }
 
         void assign(table const& x, true_type)
@@ -691,9 +627,7 @@ namespace boost { namespace unordered { namespace detail {
 
                 // Finally copy the elements.
                 if (x.size_) {
-                    create_buckets(bucket_count_);
-                    copy_nodes<node_allocator> node_creator(node_alloc());
-                    table_impl::fill_buckets(x.begin(), *this, node_creator);
+                    static_cast<table_impl*>(this)->copy_buckets(x);
                 }
             }
         }
@@ -734,11 +668,13 @@ namespace boost { namespace unordered { namespace detail {
             }
             else {
                 set_hash_functions new_func_this(*this, x);
-                new_func_this.commit();
                 mlf_ = x.mlf_;
                 recalculate_max_load();
 
-                if (!size_ && !x.size_) return;
+                if (!size_ && !x.size_) {
+                    new_func_this.commit();
+                    return;
+                }
 
                 if (x.size_ >= max_load_) {
                     create_buckets(min_buckets_for_size(x.size_));
@@ -747,12 +683,8 @@ namespace boost { namespace unordered { namespace detail {
                     clear_buckets();
                 }
 
-                // move_assign_nodes takes ownership of the container's
-                // elements, assigning to them if possible, and deleting
-                // any that are left over.
-                move_assign_nodes<table> node_creator(*this);
-                node_holder<node_allocator> nodes(x);
-                table_impl::fill_buckets(nodes.begin(), *this, node_creator);
+                new_func_this.commit();
+                static_cast<table_impl*>(this)->move_assign_buckets(x);
             }
         }
 
@@ -771,7 +703,7 @@ namespace boost { namespace unordered { namespace detail {
         // Find Node
 
         template <typename Key, typename Hash, typename Pred>
-        iterator generic_find_node(
+        node_pointer generic_find_node(
                 Key const& k,
                 Hash const& hf,
                 Pred const& eq) const
@@ -780,7 +712,7 @@ namespace boost { namespace unordered { namespace detail {
                 find_node_impl(policy::apply_hash(hf, k), k, eq);
         }
 
-        iterator find_node(
+        node_pointer find_node(
                 std::size_t key_hash,
                 key_type const& k) const
         {
@@ -788,21 +720,10 @@ namespace boost { namespace unordered { namespace detail {
                 find_node_impl(key_hash, k, this->key_eq());
         }
 
-        iterator find_node(key_type const& k) const
+        node_pointer find_node(key_type const& k) const
         {
             return static_cast<table_impl const*>(this)->
                 find_node_impl(hash(k), k, this->key_eq());
-        }
-
-        iterator find_matching_node(iterator n) const
-        {
-            // TODO: Does this apply to C++11?
-            //
-            // For some stupid reason, I decided to support equality comparison
-            // when different hash functions are used. So I can't use the hash
-            // value from the node here.
-    
-            return find_node(get_key(*n));
         }
 
         // Reserve and rehash

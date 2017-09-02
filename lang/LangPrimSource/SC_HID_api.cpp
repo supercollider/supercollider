@@ -348,16 +348,12 @@ SC_HID_APIManager::~SC_HID_APIManager()
 
 int SC_HID_APIManager::init()
 {
-	int result;
 	number_of_hids = 0;
 	mShouldBeRunning = true;
-	if ( !m_running ){
-		result = initialize_hidapi();
-	}
-	if ( !m_running ){
-		return errFailed;
-	}
-	return result;
+	if ( !m_running )
+		initialize_hidapi();
+
+	return m_running ? errNone : errFailed;
 }
 
 int SC_HID_APIManager::closeAll()
@@ -488,8 +484,6 @@ int prHID_API_BuildDeviceList(VMGlobals* g, int numArgsPushed){
 	PyrSlot *args = g->sp - numArgsPushed + 1;
 	PyrSlot *self = args + 0;
 	// no arguments
-
-	int err;
 
 	const char emptyString[] = "";
 
@@ -875,24 +869,23 @@ int prHID_API_GetElementInfo( VMGlobals* g, int numArgsPushed ){
 }
 
 int prHID_API_SetElementOutput( VMGlobals* g, int numArgsPushed ){
-	PyrSlot *args = g->sp - numArgsPushed + 1;
-	PyrSlot* self = args + 0;
-	PyrSlot* arg1  = args + 1;
-	PyrSlot* arg2  = args + 2;
-	PyrSlot* arg3  = args + 3;
+	PyrSlot * args = g->sp - numArgsPushed + 1;
+	PyrSlot * joyIdSlot     = args + 1;
+	PyrSlot * elementIdSlot = args + 2;
+	PyrSlot * valueSlot     = args + 3;
 
 	int err;
 	int joyid;
 	int elementid;
 	int value;
 
-	err = slotIntVal( arg1, &joyid );
+	err = slotIntVal( joyIdSlot, &joyid );
 	if ( err != errNone ) return err;
 
-	err = slotIntVal( arg2, &elementid );
+	err = slotIntVal( elementIdSlot, &elementid );
 	if ( err != errNone ) return err;
 
-	err = slotIntVal( arg3, &value );
+	err = slotIntVal( valueSlot, &value );
 	if ( err != errNone ) return err;
 
 	struct hid_dev_desc * devdesc = SC_HID_APIManager::instance().get_device( joyid );
@@ -918,24 +911,23 @@ int prHID_API_SetElementOutput( VMGlobals* g, int numArgsPushed ){
 }
 
 int prHID_API_SetElementRepeat( VMGlobals* g, int numArgsPushed ){
-	PyrSlot *args = g->sp - numArgsPushed + 1;
-	PyrSlot* self = args + 0;
-	PyrSlot* arg1  = args + 1;
-	PyrSlot* arg2  = args + 2;
-	PyrSlot* arg3  = args + 3;
+	PyrSlot * args = g->sp - numArgsPushed + 1;
+	PyrSlot * joyIdSlot     = args + 1;
+	PyrSlot * elementIdSlot = args + 2;
+	PyrSlot * valueSlot     = args + 3;
 
 	int err;
 	int joyid;
 	int elementid;
 	int value;
 
-	err = slotIntVal( arg1, &joyid );
+	err = slotIntVal( joyIdSlot, &joyid );
 	if ( err != errNone ) return err;
 
-	err = slotIntVal( arg2, &elementid );
+	err = slotIntVal( elementIdSlot, &elementid );
 	if ( err != errNone ) return err;
 
-	err = slotIntVal( arg3, &value );
+	err = slotIntVal( valueSlot, &value );
 	if ( err != errNone ) return err;
 
 	struct hid_dev_desc * devdesc = SC_HID_APIManager::instance().get_device( joyid );

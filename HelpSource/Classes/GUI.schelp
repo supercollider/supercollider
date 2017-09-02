@@ -1,119 +1,22 @@
 class:: GUI
 summary:: Factory abstraction for all GUI related core classes
 categories:: GUI>Kits
-related:: Overviews/GUI-Classes, Guides/GUI-Introduction, Classes/ViewRedirect
+related:: Overviews/GUI-Classes, Guides/GUI-Introduction
 
 
 description::
-SuperCollider currently supports three operating system platforms: Macintosh OSX, UNIX (Linux and FreeBSD) and Windows (with some limitations).
+SuperCollider currently supports three operating system platforms: macOS, UNIX (Linux and FreeBSD) and Windows (with some limitations).
 
-warning::The redirect system has been deprecated, please use the view classes directly.::
+Warning::The redirect system has been deprecated, please use the view classes directly. If you find old code that uses prefixes for the old GUI Kits (e.g. SCWindow for CocoaGUI, JSCWindow for SwingOSC), try dropping the prefixes to Window, Button etc. The Qt prefix Q, as e.g. in QWindow, is converted to Window automatically; still it is better style to simply write Window.::
 
-Graphical User Interface (GUI) code, for the most part, does not need to worry about which platform is executing the code because of the strong::view redirect:: system. At any time, one and only one strong::GUI kit:: is active. This determines which GUI classes will be used for rendering. These classes, the active views, have prefixes for the GUI kit that created the view object: SCWindow vs. JSCWindow vs. QWindow.
-
-table::
-## strong::GUI kit:: || strong::Code to activate:: || strong::Supported platform(s):: || strong::Framework:: || strong::Prefix::
-## Cocoa || code::GUI.cocoa:: || Mac OSX only || Cocoa || SC-
-## SwingOSC || code::GUI.swing:: || All || Java + Swing || JSC-
-## Qt || code::GUI.qt:: || All || Qt || Q-
-::
-
-In general, users should not concern themselves with the prefixes. Instead, work with the emphasis::redirect:: classes, which have no prefix: Window, Button, Slider, etc. The redirect class will ask the currently-selected kit which emphasis::implementation class:: should be used.
-
-The GUI kit (CocoaGUI, QtGUI, SwingGUI) maps the generic view names to the implementing classes: code::Window --> SCWindow, QWindow or JSCWindow::. These schemes are in turn used by link::Classes/ViewRedirect:: to provide a simple cross-platform gui syntax. The GUI class provides utilities for switching kits and other cross platform tasks.
-
-You can get your available schemes (depending on what you installed) with:
+Switching between GUI schemes is not needed anymore, as Qt runs well on all platforms.
+Still, you can get the available schemes with:
 code::
 GUI.schemes;
 ::
-For a complete list of gui classes and redirects, see link::Overviews/GUI-Classes::.
-
-
-subsection:: Switching and Referring to GUI Kits
-
-As of this writing, three GUI kits are available through the GUI class: link::Classes/QtGUI:: (Qt framework), link::Classes/CocoaGUI:: (Mac OS X native) and link::Classes/SwingGUI:: (Java). Note that link::Classes/SwingOSC:: is not part of every SuperCollider distribution, so you may have to install it separately.
-
-You can switch the GUI kit by calling one of the following class methods:
-code::
-GUI.qt;		// use Qt in subsequent GUI creation procedures
-GUI.cocoa;	// use cocoa in subsequent GUI creation procedures
-GUI.swing;	// use swing in subsequent GUI creation procedures
-		// NOTE: If you do not have SwingOSC installed, you get
-		// a warning only, and do not switch; so you cannot
-		// accidentally disable your gui system.
-::
-
-These methods return the new GUI kit implementation. The current implementation can be queried by calling
-code::
-GUI.current;	// returns the current GUI kit implementation
-::
-
-If you want to make a GUI kit specific switch (e.g. in a class), then you should use the following instead, as on non-OSX systems the class CocoaGUI is not in the class library path, and you cannot check for an undefined class:
-code::
-GUI.id;	// returns the current GUI kit implementation id; this is currently either \cocoa or \swing
-::
-
-For persistency, you can store the identifier of the kit implementation and recall the kit through the class method code::fromID:::
-code::
-x = GUI.cocoa;
-y = x.id;		// store the identifier of a kit implementation
-y.postln;		// the id could be stored in a preferences file for example
-GUI.swing;
-// now switch back to the kit implementation with identifier y
-GUI.fromID( y );
-GUI.current.id.postln;	// --> cocoa
-::
-
-The code::*use:: and code::*useID:: methods allow you to temporarily switch the kit, so as to use it only for a dedicated block of statements:
-code::
-GUI.cocoa;
-GUI.useID(\swing, { Array.rand( 1000, 0.0, 1.0 ).plot });
-GUI.current.id.postln;	// --> still cocoa
-::
-
-You can get a particular kit using the code::*get:: method. You can switch to a particular kit using the code::*set:: method:
-code::
-x = GUI.get( \swing );	// note: unlike *swing and *cocoa, this does not _switch_ the current kit!
-GUI.current.id.postln;	// --> still cocoa
-GUI.set( x );			// now we make SwingOSC the current kit
-GUI.window.viewPalette;
-::
-
-subsection:: Extending GUI Kits
-
-GUI Kits can be extended with custom classes by using their respective code::put:: methods:
-code::
-GUI.get( \cocoa ).put( \myText, SCStaticText );
-GUI.get( \swing ).put( \myText, JSCStaticText );
-
-GUI.cocoa;
-GUI.swing;
-(
-	w = GUI.window.new;
-	GUI.myText.new( w, w.view.bounds.insetBy( 20, 20 )).string_( "schoko" ).background_( Color.red );
-	w.front;
-)
-::
-
-If you intend to add extensions from within your own classes upon class library initialization time, the preferred way is to do this in the startup process:
-code::
-MyGUIExtension {
-	*initClass {
-		StartUp.add({
-			var scheme;
-
-			scheme = GUI.get( \cocoa );
-			if( scheme.notNil, {scheme.put( \myText, SCStaticText )});
-			scheme = GUI.get( \swing );
-			if( scheme.notNil, {scheme.put( \myText, JSCStaticText )});
-		});
-	}
-}
-::
+For a complete list of historical gui classes and their redirects, see link::Overviews/GUI-Classes::.
 
 classmethods::
-
-subsection:: Methods and Variables for GUI
 
 method:: new
 
@@ -133,11 +36,13 @@ margin: 2@2,
 buttonHeight: 16
 ::
 
-method:: cocoa
-Makes Cocoa (Mac OS X GUI) the current scheme and returns it. Subsequent GUI object calls to GUI are delegated to cocoa. Returns the current (cocoa) scheme.
+method:: add
+
+method:: qt
+Makes QtGUI the current scheme and returns it. Subsequent GUI object calls to GUI are delegated to Qt. Returns the current (Qt) scheme.
 
 method:: swing
-Makes Swing (Java GUI) the current scheme and returns it. Subsequent GUI object calls to GUI are delegated to swing. Returns the current (swing) scheme.
+If SwingOSC is installed, makes SwingGUI (Java GUI) the current scheme and returns it. Subsequent GUI object calls to GUI are delegated to swing. Returns the current (swing) scheme.
 
 method:: fromID
 Changes the current scheme and returns the new scheme.

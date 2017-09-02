@@ -30,20 +30,6 @@
 
 namespace ScIDE {
 
-static QString sessionFilePath( const QString & name )
-{
-    QDir dir(standardDirectory(ScConfigUserDir));
-
-    if (!dir.mkpath("sessions")) {
-        qWarning("The path to sessions does not exist and could not be created!");
-        return QString();
-    }
-
-    dir.cd("sessions");
-
-    return dir.filePath(name + ".yaml");
-}
-
 SessionManager::SessionManager( DocumentManager *docMng, QObject * parent ) :
     QObject(parent),
     mDocMng(docMng),

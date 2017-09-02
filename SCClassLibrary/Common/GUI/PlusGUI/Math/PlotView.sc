@@ -769,70 +769,29 @@ Plotter {
 
 
 + Function {
-	loadToFloatArray { arg duration = 0.01, server, action;
-		var buffer, def, synth, name, numChannels, val, rate;
-		server = server ? Server.default;
-		if(server.serverRunning.not) { "Server not running!".warn; ^nil };
-
-		name = this.hash.asString;
-		def = SynthDef(name, { |bufnum|
-			var	val = this.value;
-			if(val.isValidUGenInput.not) {
-				val.dump;
-				Error("loadToFloatArray failed: % is no valid UGen input".format(val)).throw
-			};
-			val = UGen.replaceZeroesWithSilence(val.asArray);
-			rate = val.rate;
-			if(rate == \audio) { // convert mixed rate outputs:
-				val = val.collect { |x| if(x.rate != \audio) { K2A.ar(x) } { x } }
-			};
-			if(val.size == 0) { numChannels = 1 } { numChannels = val.size };
-			RecordBuf.perform(RecordBuf.methodSelectorForRate(rate), val, bufnum, loop:0);
-			Line.perform(Line.methodSelectorForRate(rate), dur: duration, doneAction: 2);
-		});
-
-		Routine.run({
-			var c, numFrames;
-			c = Condition.new;
-			numFrames = duration * server.sampleRate;
-			if(rate == \control) { numFrames = numFrames / server.options.blockSize };
-			buffer = Buffer.new(server, numFrames, numChannels);
-			server.sendMsgSync(c, *buffer.allocMsg);
-			server.sendMsgSync(c, "/d_recv", def.asBytes);
-			synth = Synth(name, [\bufnum, buffer], server);
-			OSCFunc({
-				buffer.loadToFloatArray(action: { |array, buf|
-					action.value(array, buf);
-					buffer.free;
-					server.sendMsg("/d_free", name);
-				});
-			}, '/n_end', server.addr, nil, [synth.nodeID]).oneShot;
-		});
-	}
-
 	plot { |duration = 0.01, server, bounds, minval, maxval, separately = false|
+
 		var name = this.asCompileString, plotter;
 		if(name.size > 50 or: { name.includes(Char.nl) }) { name = "function plot" };
 		plotter = Plotter(name, bounds);
 		plotter.value = [0.0];
-		server = server ? Server.default;
-		server.waitForBoot {
-			this.loadToFloatArray(duration, server, { |array, buf|
-				var numChan = buf.numChannels;
-				{
-					plotter.setValue(
-						array.unlace(numChan).collect(_.drop(-1)),
-						findSpecs: true,
-						separately: separately,
-						refresh: false,
-						minval: minval,
-						maxval: maxval
-					);
-					plotter.domainSpecs = ControlSpec(0, duration, units: "s");
-					plotter.refresh;
-				}.defer
-			})
-		};
+
+		this.loadToFloatArray(duration, server, { |array, buf|
+			var numChan = buf.numChannels;
+			{
+				plotter.setValue(
+					array.unlace(numChan).collect(_.drop(-1)),
+					findSpecs: true,
+					separately: separately,
+					refresh: false,
+					minval: minval,
+					maxval: maxval
+				);
+				plotter.domainSpecs = ControlSpec(0, duration, units: "s");
+				plotter.refresh;
+			}.defer
+		})
+
 		^plotter
 	}
 
@@ -851,8 +810,8 @@ Plotter {
 }
 
 + Wavetable {
-	plot { |name, bounds, minval, maxval, separately = false|
-		^this.asSignal.plot(name, bounds, minval: minval, maxval: maxval, separately: separately)
+	plot { |name, bounds, minval, maxval|
+		^this.asSignal.plot(name, bounds, minval: minval, maxval: maxval)
 	}
 }
 

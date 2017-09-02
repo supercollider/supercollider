@@ -121,10 +121,15 @@ UnixFILE : IOStream {
 		this.putString(aString);
 		this.putInt8(0);
 	}
+
 	putPascalString { arg aString;
+		if(aString.size >= 256) {
+			Error("putPascalString: input string must be shorter than 256 chars: \"%\"".format(aString)).throw;
+		};
 		this.putInt8(aString.size);
 		this.putString(aString);
 	}
+
 	getPascalString {
 		var size, string;
 		size = this.getInt8;
@@ -132,6 +137,7 @@ UnixFILE : IOStream {
 		this.read(string);
 		^string
 	}
+
 	// PRIVATE
 	addOpenFile {
 		openFiles = openFiles.add(this);

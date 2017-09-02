@@ -8,6 +8,3 @@ RawArray is the abstract superclass of a group of array classes that hold raw da
 INSTANCEMETHODS::
 
 private::archiveAsCompileString, archiveAsObject
-
-method::write
-Writes the array as a file.

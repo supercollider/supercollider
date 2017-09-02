@@ -58,6 +58,61 @@ o.free;  // when done, you need to clean up the OSCFunc
 l.flat.plot(numChannels: 2);
 ::
 
+subsection:: Polling
+
+Polling allows you to debug a SynthDef by printing samples of a UGen's output to the post window. To do this, use the .poll method (a shorthand for the Poll UGen), which prints 10 times per second by default.
+
+code::
+{ LFNoise1.kr.poll; }.play;   // default poll
+::
+
+This can be too fast, so you can specify how many times per second the value should be printed.
+
+code::
+{ LFNoise1.kr.poll(3); }.play;  // poll more slowly
+::
+
+You can also poll arrays
+
+code::
+{ [LFNoise1.kr, LFNoise1.kr].poll; }.play;  // poll an array
+::
+
+For more than one value or array at once, poll can become unwieldy, because so many values are printed to the screen that it is difficult to tell which is which. Labels help with this.
+
+code::
+{ LFNoise1.kr.poll(3, "a value"); LFNoise1.kr.poll(5, "another value"); }.play;
+::
+
+Debugging triggers doesn't work with regular polling, because the trigger will mostly occur in between polling intervals. The output itself can be supplied instead of the number of polls per second. This way, the value is only printed when there is a trigger, rather than at a regular interval.
+
+code::
+{ var trig = Dust.kr; trig.poll(trig); }.play;
+::
+
+You can debug a value that changes infrequently in a similar way, using the Changed UGen. This only prints the value when it just changed.
+
+Note that it will skip changes that occur immediately after a previous change, because any trigger needs to revert back to zero before triggering again.
+
+code::
+{ var steps = LFNoise0.kr; steps.poll(Changed.kr(steps); }.play;
+::
+
+You can also use a seperate trigger. This is useful for having the most control over when a poll occurs.
+
+code::
+~synth={ arg t_trig; [LFNoise1.kr, LFNoise1.kr].poll(t_trig); }.play;
+
+// the t_ in t_trig is shorthand to cause ~synth.set(\t_trig, 1) to trigger instead of set permanently
+~synth.set(\t_trig, 1); // run this line a couple of times
+::
+
+All the examples above work the same for audio rate UGens.
+
+code::
+{ LFNoise1.ar.poll; }.play;
+::
+
 subsection:: Trace control signals using a control bus
 
 Another technique to watch control values is to output the signal to a control-rate bus. Then you can access the bus using link::Classes/Bus#-get:: or link::Classes/Bus#-getSynchronous::. Saving the values into an Array or List is a little more straightforward with getSynchronous.
@@ -98,11 +153,11 @@ It takes some practice to read a synthdef trace, but it's the ultimate source of
 For a concrete example, let's look at a synthdef that doesn't work. The intent is to generate a detuned sawtooth wave and run it through a set of parallel resonant filters whose cut-off frequencies are modulating randomly.
 We run the synth and generate the trace (reproduced below).
 code::
-SynthDef(\resonz, { |freq = 440|
+SynthDef(\resonz, { |out, freq = 440|
 	var	sig, ffreq;
 	sig = Saw.ar([freq, freq+1], 0.2);
 	ffreq = LFNoise1.kr(2, 1, 0.5);
-	Out.ar(0, Resonz.ar(sig, (800, 1000..1800) * ffreq, 0.1))
+	Out.ar(out, Resonz.ar(sig, (800, 1000..1800) * ffreq, 0.1))
 }).send(s);
 
 a = Synth(\resonz);
@@ -183,11 +238,11 @@ The resonance frequency derives from multiplying an array by a LFNoise1. Tracing
 
 If you look very carefully at the trace, you will see another problem relating to multichannel expansion. The two components of the detuned sawtooth go into alternate Resonz'es, where we expected both to go, combined, into every Resonz. To fix it, the sawtooths need to be mixed as well.
 code::
-SynthDef(\resonz, { |freq = 440|
+SynthDef(\resonz, { |out, freq = 440|
 	var	sig, ffreq;
 	sig = Mix.ar(Saw.ar([freq, freq+1], 0.2));
 	ffreq = LFNoise1.kr(2, 0.5, 1);
-	Out.ar(0, Mix.ar(Resonz.ar(sig, (800, 1000..1800) * ffreq, 0.1)))
+	Out.ar(out, Mix.ar(Resonz.ar(sig, (800, 1000..1800) * ffreq, 0.1)))
 }).send(s);
 
 a = Synth(\resonz);
@@ -343,7 +398,7 @@ f.value(f);
 ::
 Infinite recursion, on the other hand, is more likely to cause SuperCollider to quit unexpectedly when the execution stack runs out of space.
 
-In Mac OS X, inserting "post" or "debug" calls will not help with infinite loops or recursion, because posted output is held in a buffer until execution is complete. If execution never completes, you never see the output.
+In macOS, inserting "post" or "debug" calls will not help with infinite loops or recursion, because posted output is held in a buffer until execution is complete. If execution never completes, you never see the output.
 
 One useful approach is to insert statements that will cause execution to halt. The easiest is .halt, but it provides you with no information about where or how it stopped, or how it got there. If you want a more descriptive message, make up an error and throw it:
 code::

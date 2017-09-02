@@ -30,6 +30,12 @@
 #include <boost/atomic/detail/lockpool.hpp>
 #include <boost/atomic/detail/pause.hpp>
 
+#if defined(BOOST_MSVC)
+#pragma warning(push)
+// 'struct_name' : structure was padded due to __declspec(align())
+#pragma warning(disable: 4324)
+#endif
+
 namespace boost {
 namespace atomics {
 namespace detail {
@@ -149,3 +155,7 @@ BOOST_ATOMIC_DECL void lockpool::signal_fence() BOOST_NOEXCEPT
 } // namespace detail
 } // namespace atomics
 } // namespace boost
+
+#if defined(BOOST_MSVC)
+#pragma warning(pop)
+#endif

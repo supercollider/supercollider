@@ -29,7 +29,7 @@
 #include <QToolButton>
 #include <QLayout>
 #include <QDebug>
-#include <QWebView>
+#include <QWebEngineView>
 
 namespace ScIDE {
 
@@ -80,7 +80,7 @@ void Style::drawComplexControl
     // FIXME: this is a workaround for the WebKit bug #104116 (or a variation on it).
     case QStyle::CC_ScrollBar:
     {
-        if (qobject_cast<const QWebView*>(widget) != 0 && option->type == QStyleOption::SO_Slider)
+        if (qobject_cast<const QWebEngineView*>(widget) != 0 && option->type == QStyleOption::SO_Slider)
         {
             // WebKit tries to hide scrollbars, but mistakenly hides QWebView - NULL-ify styleObject to prevent.
             const QStyleOptionSlider *optSlider = static_cast<const QStyleOptionSlider*>(option);
@@ -200,7 +200,7 @@ void Style::drawControl
 
     switch(element) {
     case QStyle::CE_TabBarTab: {
-        const QStyleOptionTabV3 *tabOption = static_cast<const QStyleOptionTabV3*>(option);
+        const QStyleOptionTab *tabOption = static_cast<const QStyleOptionTab*>(option);
 
         painter->save();
 
@@ -284,9 +284,6 @@ void Style::drawPrimitive
     case QStyle::PE_FrameTabBarBase: {
         const QTabBar *tabBar = qobject_cast<const QTabBar*>(widget);
 
-        const QStyleOptionTabBarBase *tabBarBaseOption =
-                static_cast<const QStyleOptionTabBarBase*>(option);
-
         painter->save();
 
         painter->setPen(Qt::NoPen);
@@ -338,7 +335,7 @@ QRect Style::subElementRect
         return r;
     }
     case QStyle::SE_TabBarTabText: {
-        const QStyleOptionTabV3 *tabOption = static_cast<const QStyleOptionTabV3*>(option);
+        const QStyleOptionTab *tabOption = static_cast<const QStyleOptionTab*>(option);
 
         int lMargin = 5;
         if (tabOption->leftButtonSize.width() > 0)

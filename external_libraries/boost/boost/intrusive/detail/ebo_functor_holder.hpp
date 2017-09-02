@@ -259,7 +259,7 @@ class ebo_functor_holder<T, false>
    BOOST_INTRUSIVE_FORCEINLINE ebo_functor_holder& operator=(BOOST_COPY_ASSIGN_REF(ebo_functor_holder) x)
    {
       const ebo_functor_holder&r = x;
-      this->get() = x.get();
+      this->get() = r;
       return *this;
    }
 

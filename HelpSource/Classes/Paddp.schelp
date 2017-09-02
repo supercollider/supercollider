@@ -1,18 +1,21 @@
 class:: Paddp
-summary:: add each value of a pattern to value of a key in event stream
+summary:: add each value of a pattern to the value at a key in event stream
 related:: Classes/Padd, Classes/Pmulp
 categories:: Streams-Patterns-Events>Patterns>Math
 
 description::
 
-Adds a value in an event stream until it ends, repeats this with new values until the value stream ends.
+Adds a value to a named value in an event pattern or stream until it ends. Repeats this with new values until the value stream ends.
 
 ClassMethods::
 
 method::new
-
+argument::name
+the named value in the event pattern or stream to add to.
 argument::value
-can be a pattern, a stream or an array. The resulting stream ends when that incoming stream ends.
+The value, pattern, stream or array to add. The resulting stream ends when this incoming stream ends.
+argument::pattern
+The event pattern or stream within which to add the new values.
 
 Examples::
 
@@ -31,7 +34,7 @@ code::
 SynthDef(\sinegrain,
 	{ arg out=0, freq=440, sustain=0.02;
 		var env;
-		env = EnvGen.kr(Env.perc(0.001, sustain), 1, doneAction:2);
+		env = EnvGen.kr(Env.perc(0.001, sustain), 1, doneAction: Done.freeSelf);
 		Out.ar(out, SinOsc.ar(freq, 0, env * 0.1))
 	}).add;
 )

@@ -124,33 +124,16 @@ namespace boost { namespace unordered { namespace detail {
     ////////////////////////////////////////////////////////////////////////////
     // insert_size/initial_size
 
-#if !defined(BOOST_NO_STD_DISTANCE)
-
-    using ::std::distance;
-
-#else
-
-    template <class ForwardIterator>
-    inline std::size_t distance(ForwardIterator i, ForwardIterator j) {
-        std::size_t x;
-        std::distance(i, j, x);
-        return x;
-    }
-
-#endif
-
     template <class I>
-    inline typename
-        boost::unordered::detail::enable_if_forward<I, std::size_t>::type
-        insert_size(I i, I j)
+    inline std::size_t insert_size(I i, I j, typename
+        boost::unordered::detail::enable_if_forward<I, void*>::type = 0)
     {
-        return std::distance(i, j);
+        return static_cast<std::size_t>(std::distance(i, j));
     }
 
     template <class I>
-    inline typename
-        boost::unordered::detail::disable_if_forward<I, std::size_t>::type
-        insert_size(I, I)
+    inline std::size_t insert_size(I, I, typename
+        boost::unordered::detail::disable_if_forward<I, void*>::type = 0)
     {
         return 1;
     }

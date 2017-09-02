@@ -313,15 +313,67 @@ code::
 method::flat
 Returns a collection from which all nesting has been flattened.
 code::
-[[1, 2, 3], [[4, 5], [[6]]]].flat;
+[[1, 2, 3], [[4, 5], [[6]]]].flat; // [ 1, 2, 3, 4, 5, 6 ]
+[1, 2, [3, 4, [5, 6, [7, 8, [9, 0]]]]].flat; // [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 ]
 ::
 
 method::flatten
 Returns a collection from which strong::numLevels:: of nesting has been flattened.
+
+argument::numLevels
+Specifies how many levels downward (inward) to flatten. Zero returns the original.
+
 code::
-[[1, 2, 3], [[4, 5], [[6]]]].flatten(1).postcs;
-[[1, 2, 3], [[4, 5], [[6]]]].flatten(2).postcs;
+a = [1, 2, [3, 4, [5, 6, [7, 8, [9, 0]]]]];
+a.flatten(1); // [ 1, 2, [ 3, 4, [ 5, 6, [ 7, 8, [ 9, 0 ] ] ] ] ]
+a.flatten(2); // [ 1, 2, 3, 4, 5, 6, [ 7, 8, [ 9, 0 ] ] ]
+a.flatten(3); // [ 1, 2, 3, 4, 5, 6, 7, 8, [ 9, 0 ] ]
+a.flatten(4); // [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 ]
 ::
+
+
+method::flatten2
+A symmetric version of link::#-flatten::. For a negative code::numLevels::, it flattens starting from the innermost arrays.
+
+argument::numLevels
+Specifies how many levels downward (inward) or upward (outward) to flatten.
+
+code::
+a = [1, 2, [3, 4, [5, 6, [7, 8, [9, 0]]]]];
+a.flatten2(4);  // [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 ]
+a.flatten2(3);  // [ 1, 2, 3, 4, 5, 6, 7, 8, [ 9, 0 ] ]
+a.flatten2(2);  // [ 1, 2, 3, 4, 5, 6, [ 7, 8, [ 9, 0 ] ] ]
+a.flatten2(1);  // [ 1, 2, 3, 4, [ 5, 6, [ 7, 8, [ 9, 0 ] ] ] ]
+a.flatten2(0);  // [ 1, 2, [ 3, 4, [ 5, 6, [ 7, 8, [ 9, 0 ] ] ] ] ]
+a.flatten2(-1); // [ 1, 2, [ 3, 4, [ 5, 6, [ 7, 8, 9, 0 ] ] ] ]
+a.flatten2(-2); // [ 1, 2, [ 3, 4, [ 5, 6, 7, 8, 9, 0 ] ] ]
+a.flatten2(-3); // [ 1, 2, [ 3, 4, 5, 6, 7, 8, 9, 0 ] ]
+a.flatten2(-4); // [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 ]
+::
+
+
+
+method::flatBelow
+Flatten all subarrays deeper than strong::level::.
+
+argument::level
+Specifies from what level onward to flatten.
+level 0 is outermost, so flatBelow(0) is like flat.
+
+code::
+a = [1, 2, [3, 4, [5, 6, [7, 8, [9, 0]]]]];
+a.flatBelow(0); // [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 0 ]
+a.flatBelow(1); // [ 1, 2, [ 3, 4, 5, 6, 7, 8, 9, 0 ] ]
+a.flatBelow(2); // [ 1, 2, [ 3, 4, [ 5, 6, 7, 8, 9, 0 ] ] ]
+
+// to set the level below which to flatten from the deepest level up,
+// one can use coll.maxDepth. E.g. to flatten only the innermost level:
+a.flatBelow( (a.maxDepth - 1) - 1);
+// for lowest two levels:
+a.flatBelow( (a.maxDepth - 1) - 2);
+::
+
+
 
 method::flop
 Invert rows and columns in a two dimensional Collection (turn inside out). See also: link::Classes/Function::.
@@ -499,7 +551,7 @@ code::
 ::
 
 method::doAdjacentPairs
-Calls function for every adjacent pair of elements in the SequentialCollection. The function is passed the two adjacent elements and an index.
+Calls function for every adjacent pair of elements in the SequenceableCollection. The function is passed the two adjacent elements and an index.
 code::
 [1, 2, 3, 4, 5].doAdjacentPairs({ arg a, b; [a, b].postln; });
 ::
@@ -508,12 +560,6 @@ method::separate
 Separates the collection into sub-collections by calling the function for each adjacent pair of elements. If the function returns true, then a separation is made between the elements.
 code::
 [1, 2, 3, 5, 6, 8, 10].separate({ arg a, b; (b - a) > 1 }).postcs;
-::
-
-method::split
-Separates the collection into sub-collections at the separator element or subarray. The separator is a link::Classes/Collection::, or anything that can be converted into the class this method is called on. It is strong::not:: included in the output array. The default separator is $/, for the common use in link::Classes/String::.
-code::
-[1, 2, 1, 2, 3, 1, 2, 1, 3].split([2, 1])
 ::
 
 method::clump
@@ -547,15 +593,31 @@ code::
 ::
 
 method::reduce
-Applies the method named by operator to the first and second elements of the collection - then applies the method to the result and to the third element of the collection - then applies the method to the result and to the fourth element of the collection - and so on, until the end of the array.
+Applies the method named by operator to the first and second elements of the collection, and then applies the method to the result and to the third element of the collection, then applies the method to the result and to the fourth element of the collection, and so on, until the end of the array.
+
+If the collection contains only one element, it is returned as the result. If the collection is empty, returns code::nil::.
+
+argument::operator
+May be a link::Classes/Function:: (taking two or three arguments) or a link::Classes/Symbol:: (method selector).
+
+
 code::
 [3, 4, 5, 6].reduce('*'); // this is the same as [3, 4, 5, 6].product
 [3, 4, 5, 6].reduce(\lcm); // Lowest common multiple of the whole set of numbers
 ["d", "e", (0..9), "h"].reduce('++'); // concatenation
 [3, 4, 5, 6].reduce({ |a, b| sin(a) * sin(b) }); // product of sines
 ::
-argument::operator
-may be a link::Classes/Function:: or a link::Classes/Symbol::.
+
+
+argument::adverb
+An optional adverb to be used together with the operator (see link::Reference/Adverbs::). If the operator is a functions, the adverb is passed as a third argument.
+
+code::
+// compare:
+[1, 2] *.x [10, 20, 30]
+[[1, 2], [10, 20, 30]].reduce('*', 'x')
+[[1, 2], [10, 20, 30], [1000, 2000]].reduce('+', 'x') // but you can combine more
+::
 
 method::convertDigits
 Returns an integer resulting from interpreting the elements as digits to a given base (default 10). See also asDigits in link::Classes/Integer#asDigits:: for the complementary method.
@@ -591,7 +653,9 @@ subsection::Math Support - Binary Messages
 
 All of the following messages send the message link::#-performBinaryOp:: to the receiver with the binary message selector and the second operand as arguments.
 
-method::+, -, *, /, div, %, **, min, max, <, <=, >, >=, &, |, bitXor, lcm, gcd, round, trunc, atan2, hypot, >>, +>>, ring1, ring2, ring3, ring4, difsqr, sumsqr, sqrdif, absdif, amclip, scaleneg, clip2, excess, <!, rrand, exprand
+method:: +, -, *, /, div, min, max, <, <=, >, >=, bitXor, lcm, gcd, round, trunc, atan2, hypot, ring1, ring2, ring3, ring4, difsqr, sumsqr, sqrdif, absdif, amclip, scaleneg, clip2, excess, rrand, exprand
+
+method:: %, **, &, |, >>, +>>, <!
 
 method::performBinaryOp
 Creates a new collection of the results of applying the selector with the operand to all elements in the receiver. If the operand is a collection then elements of that collection are paired with elements of the receiver.

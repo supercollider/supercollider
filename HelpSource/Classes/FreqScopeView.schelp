@@ -21,14 +21,18 @@ w.front;
 
 ::
 
-
 classmethods::
+
+private::initClass
 
 method:: new
 argument:: parent
 The parent view.
 argument:: bounds
 An instance of link::Classes/Rect::, or a link::Classes/Point:: indicating code::width@height::.
+argument:: server
+The server to be shown in scope.
+
 discussion::
 Example:
 code::
@@ -85,12 +89,6 @@ subsection:: Subclassing and Internal Methods
 
 The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
 
-method:: initClass
-Sets the classvar, code::server = Server.default::.
-
-method:: server
-A classvar.
-
 instancemethods::
 
 method:: kill
@@ -122,32 +120,34 @@ Name of the link::Classes/SynthDef:: you wish to use.
 argument:: extraArgs
 Extra arguments that you may wish to pass to the synth.
 
+subsection:: instance variables
+method:: server
+the server that is freqscoped
+method:: synth
+the synth running the freqscope analysis
+method:: scope
+the scopeview that shows the running analysis
+method:: scopebuf
+the buffer used by the scope
 
-subsection:: Subclassing and Internal Methods
+subsection:: Internal Methods
 
-The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these as needed.
-
-method:: start
-
-method:: eventSeq
-
-method:: cmdPeriod
+The following methods are usually not used directly or are called by a primitive. Programmers can still call or override these in subclasses as needed.
 
 method:: initFreqScope
+initialize and show on parent view
+method:: doesNotUnderstand
+redirects methods to scope view variable
 
-method:: sendSynthDefs
-
+method:: start
 method:: allocBuffers
-
 method:: freeBuffers
-
-method:: node
-
-method:: scopebuf
-
-method:: fftbuf
-
 method:: bufSize
+method:: doOnServerQuit
+method:: doOnServerTree
+method:: shmScopeAvailable
+method:: specialSynthArgs
+method:: specialSynthDef
 
 examples::
 

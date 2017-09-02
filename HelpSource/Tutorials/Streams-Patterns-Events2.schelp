@@ -156,7 +156,7 @@ code::
 			LFNoise1.kr(1, 36, 110).midicps,
 			0.1
 		) * EnvGen.kr( Env.perc, levelScale: 0.3,
-			timeScale: sustain, doneAction: 2 );
+			timeScale: sustain, doneAction: Done.freeSelf );
 		//out = [out, DelayN.ar(out, 0.04, 0.04) ];
 		4.do({ out = AllpassN.ar(out, 0.05, [0.05.rand, 0.05.rand], 4) });
 		Out.ar( i_out, out );

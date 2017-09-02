@@ -1,3 +1,27 @@
+/*
+ ________________________________________
+/ HEY! If you make changes to SCDoc,     \
+| remember to increment SCDoc.version in |
+| this file so you force the docs to     |
+\ regenerate.                            /
+ ----------------------------------------
+    \                                  ___-------___
+     \                             _-~~             ~~-_
+      \                         _-~                    /~-_
+             /^\__/^\         /~  \                   /    \
+           /|  O|| O|        /      \_______________/        \
+          | |___||__|      /       /                \          \
+          |          \    /      /                    \          \
+          |   (_______) /______/                        \_________ \
+          |         / /         \                      /            \
+           \         \^\\         \                  /               \     /
+             \         ||           \______________/      _-_       //\__//
+               \       ||------_-~~-_ ------------- \ --/~   ~\    || __/
+                 ~-----||====/~     |==================|       |/~~~~~
+                  (_(__/  ./     /                    \_\      \.
+                         (_(___/                         \_____)_)
+*/
+
 SCDocEntry {
 
 	var <>path, // document "path" without basedir and extension, like "Classes/SinOsc"
@@ -360,7 +384,7 @@ SCDocNode {
 SCDoc {
 
 	// Increment this whenever we make a change to the SCDoc system so that all help-files should be processed again
-	classvar version = 56;
+	classvar version = 61;
 
 	classvar <helpTargetDir;
 	classvar <helpTargetUrl;

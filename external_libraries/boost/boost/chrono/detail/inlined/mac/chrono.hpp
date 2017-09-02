@@ -13,6 +13,7 @@
 
 #include <sys/time.h> //for gettimeofday and timeval
 #include <mach/mach_time.h>  // mach_absolute_time, mach_timebase_info_data_t
+#include <boost/assert.hpp>
 
 namespace boost
 {

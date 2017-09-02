@@ -28,11 +28,19 @@ QC_DECLARE_QWIDGET_FACTORY(QcLevelIndicator);
 
 QcLevelIndicator::QcLevelIndicator() :
   QtCollider::Style::Client(this),
-  _value( 0.f ), _warning(0.6), _critical(0.8),
-  _peak( 0.f ), _drawPeak( false ),
-  _ticks(0), _majorTicks(0), _stepWidth(10), _style(LevelIndicatorStyle::Continuous),
+  _value( 0.f ),
+  _warning(0.6),
+  _critical(0.8),
+  _peak( 0.f ),
+  _drawPeak( false ),
+  _ticks(0),
+  _majorTicks(0),
+  _stepWidth(10),
+  _style(LevelIndicatorStyle::Continuous),
   _clipped(false),
-  _meterColor(0, 255, 0), _warningColor(255, 255, 0), _criticalColor(255,100,0)
+  _meterColor(0, 255, 0),
+  _warningColor(255, 255, 0),
+  _criticalColor(255, 100, 0)
 {
   _clipTimer = new QTimer( this );
   _clipTimer->setSingleShot(true);

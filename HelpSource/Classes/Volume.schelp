@@ -3,7 +3,7 @@ summary:: Model for the global volume of the synthesis server
 categories:: Server
 
 description::
-Internally used by Server.
+Internally used by Server. When volume value != 0 dB or muted, a server's volume object will create a synth for controlling the volume on the main outputs for the number of channels given.
 
 classmethods::
 method:: new
@@ -13,7 +13,7 @@ argument:: server
 a server
 argument:: startBus
 start bus
-argument:: numChans
+argument:: numChannels
 number of channels
 argument:: min
 minimum volume in decibel
@@ -23,12 +23,6 @@ argument:: persist
 whether to persist a reset
 
 instancemethods::
-
-method:: play
-run the synth that controls the volume. If mute is true, mute the output. (default: false)
-
-method:: free
-free the synth that controls the volume.
 
 method:: mute
 mute output

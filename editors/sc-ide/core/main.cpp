@@ -30,8 +30,8 @@
 #include "../../../QtCollider/hacks/hacks_mac.hpp"
 #include "../primitives/localsocket_utils.hpp"
 
-#include "yaml-cpp/node.h"
-#include "yaml-cpp/parser.h"
+#include <yaml-cpp/node/node.h>
+#include <yaml-cpp/parser.h>
 
 #include <QAction>
 #include <QApplication>
@@ -48,7 +48,7 @@ using namespace ScIDE;
 int main( int argc, char *argv[] )
 {
     QApplication app(argc, argv);
-
+  
     QStringList arguments (QApplication::arguments());
     arguments.pop_front(); // application path
 
@@ -223,6 +223,10 @@ Main::Main(void) :
     mSessionManager( new SessionManager(mDocManager, this) )
 {
     new SyntaxHighlighterGlobals(this, mSettings);
+  
+#ifdef Q_OS_MAC
+    QtCollider::Mac::DisableWindowTabbing();
+#endif
 
     connect(mScProcess, SIGNAL(response(QString,QString)),
             mDocManager, SLOT(handleScLangMessage(QString,QString)));

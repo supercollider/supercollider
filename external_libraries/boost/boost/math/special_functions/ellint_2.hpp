@@ -94,10 +94,6 @@ T ellint_e_imp(T phi, T k, const Policy& pol)
           s = -1;
           rphi = constants::half_pi<T>() - rphi;
        }
-       T sinp = sin(rphi);
-       T cosp = cos(rphi);
-       T c = 1 / (sinp * sinp);
-       T cm1 = cosp * cosp / (sinp * sinp);  // c - 1
        T k2 = k * k;
        if(k2 > 1)
        {
@@ -111,6 +107,10 @@ T ellint_e_imp(T phi, T k, const Policy& pol)
        else
        {
           // http://dlmf.nist.gov/19.25#E10
+          T sinp = sin(rphi);
+          T cosp = cos(rphi);
+          T c = 1 / (sinp * sinp);
+          T cm1 = cosp * cosp / (sinp * sinp);  // c - 1
           result = s * ((1 - k2) * ellint_rf_imp(cm1, T(c - k2), c, pol) + k2 * (1 - k2) * ellint_rd(cm1, c, T(c - k2), pol) / 3 + k2 * sqrt(cm1 / (c * (c - k2))));
        }
        if(m != 0)

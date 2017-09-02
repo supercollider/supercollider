@@ -921,8 +921,8 @@ namespace detail
     friend BOOST_FILESYSTEM_DECL void detail::directory_iterator_increment(directory_iterator& it,
       system::error_code* ec);
 
-    // shared_ptr provides shallow-copy semantics required for InputIterators.
-    // m_imp.get()==0 indicates the end iterator.
+    // shared_ptr provides the shallow-copy semantics required for single pass iterators
+    // (i.e. InputIterators). The end iterator is indicated by !m_imp || !m_imp->handle
     boost::shared_ptr< detail::dir_itr_imp >  m_imp;
 
     friend class boost::iterator_core_access;
@@ -939,7 +939,11 @@ namespace detail
     void increment() { detail::directory_iterator_increment(*this, 0); }
 
     bool equal(const directory_iterator& rhs) const
-      { return m_imp == rhs.m_imp; }
+    { 
+      return m_imp == rhs.m_imp
+        || (!m_imp && rhs.m_imp && !rhs.m_imp->handle)
+        || (!rhs.m_imp && m_imp && !m_imp->handle);
+    }
 
   };  // directory_iterator
 
@@ -1029,41 +1033,43 @@ namespace filesystem
       //  taking symlinks and options into account.
 
       if ((m_options & symlink_option::_detail_no_push) == symlink_option::_detail_no_push)
-        m_options &= ~symlink_option::_detail_no_push;
-
-      else
       {
-        // Logic for following predicate was contributed by Daniel Aarno to handle cyclic
-        // symlinks correctly and efficiently, fixing ticket #5652.
-        //   if (((m_options & symlink_option::recurse) == symlink_option::recurse
-        //         || !is_symlink(m_stack.top()->symlink_status()))
-        //       && is_directory(m_stack.top()->status())) ...
-        // The predicate code has since been rewritten to pass error_code arguments,
-        // per ticket #5653.
+        m_options &= ~symlink_option::_detail_no_push;
+        return false;
+      }
 
-        file_status symlink_stat;
+      file_status symlink_stat;
 
-        if ((m_options & symlink_option::recurse) != symlink_option::recurse)
+      // if we are not recursing into symlinks, we are going to have to know if the
+      // stack top is a symlink, so get symlink_status and verify no error occurred 
+      if ((m_options & symlink_option::recurse) != symlink_option::recurse)
+      {
+        symlink_stat = m_stack.top()->symlink_status(ec);
+        if (ec)
+          return false;
+      }
+
+      // Logic for following predicate was contributed by Daniel Aarno to handle cyclic
+      // symlinks correctly and efficiently, fixing ticket #5652.
+      //   if (((m_options & symlink_option::recurse) == symlink_option::recurse
+      //         || !is_symlink(m_stack.top()->symlink_status()))
+      //       && is_directory(m_stack.top()->status())) ...
+      // The predicate code has since been rewritten to pass error_code arguments,
+      // per ticket #5653.
+
+      if ((m_options & symlink_option::recurse) == symlink_option::recurse
+        || !is_symlink(symlink_stat))
+      {
+        file_status stat = m_stack.top()->status(ec);
+        if (ec || !is_directory(stat))
+          return false;
+
+        directory_iterator next(m_stack.top()->path(), ec);
+        if (!ec && next != directory_iterator())
         {
-          symlink_stat = m_stack.top()->symlink_status(ec);
-          if (ec)
-            return false;
-        }
-
-        if ((m_options & symlink_option::recurse) == symlink_option::recurse
-          || !is_symlink(symlink_stat))
-        {
-          file_status stat = m_stack.top()->status(ec);
-          if (ec || !is_directory(stat))
-            return false;
-
-          directory_iterator next(m_stack.top()->path(), ec);
-          if (!ec && next != directory_iterator())
-          {
-            m_stack.push(next);
-            ++m_level;
-            return true;
-          }
+          m_stack.push(next);
+          ++m_level;
+          return true;
         }
       }
       return false;
@@ -1254,8 +1260,9 @@ namespace filesystem
 
   private:
 
-    // shared_ptr provides shallow-copy semantics required for InputIterators.
-    // m_imp.get()==0 indicates the end iterator.
+    // shared_ptr provides the shallow-copy semantics required for single pass iterators
+    // (i.e. InputIterators).
+    // The end iterator is indicated by !m_imp || m_imp->m_stack.empty()
     boost::shared_ptr< detail::recur_dir_itr_imp >  m_imp;
 
     friend class boost::iterator_core_access;
@@ -1281,7 +1288,11 @@ namespace filesystem
     }
 
     bool equal(const recursive_directory_iterator& rhs) const
-      { return m_imp == rhs.m_imp; }
+    {
+      return m_imp == rhs.m_imp
+        || (!m_imp && rhs.m_imp && rhs.m_imp->m_stack.empty())
+        || (!rhs.m_imp && m_imp && m_imp->m_stack.empty())        ;
+    }
 
   };  // recursive directory iterator
 

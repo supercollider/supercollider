@@ -1,6 +1,7 @@
 class:: Compander
 summary:: Compressor, expander, limiter, gate, ducker
 categories:: UGens>Dynamics
+related:: Classes/Normalizer, Classes/CompanderD, Classes/Limiter
 
 description::
 General purpose (hard-knee) dynamics processor.
@@ -14,113 +15,145 @@ argument::control
 The signal whose amplitude determines the gain applied to the input signal. Often the same as in (for standard gating or compression) but should be different for ducking.
 
 argument::thresh
-Control signal amplitude threshold, which determines the break point between slopeBelow and slopeAbove. Usually 0..1. The control signal amplitude is calculated using RMS.
+Usually between 0 and 1. Amplitude threshold of the control signal, which determines the break point between slopeBelow and slopeAbove. The control signal amplitude is calculated using RMS.
 
 argument::slopeBelow
-Slope of the amplitude curve below the threshold. If this slope > 1.0, the amplitude will drop off more quickly the softer the control signal gets; when the control signal is close to 0 amplitude, the output should be exactly zero -- hence, noise gating. Values < 1.0 are possible, but it means that a very low-level control signal will cause the input signal to be amplified, which would raise the noise floor.
+Slope of applied amplitude curve if control signal amplitude is below code::thresh::. If > 1.0, the amplitude drops off more quickly the softer the control signal gets; when the control signal is close to 0 amplitude, the output should be exactly zero -- hence, noise gating. Values < 1.0 are possible, but it means that a very low-level control signal will cause the input signal to be amplified, which would raise the noise floor.
 
 argument::slopeAbove
-Same thing, but above the threshold. Values < 1.0 achieve compression (louder signals are attenuated); > 1.0, you get expansion (louder signals are made even louder). For 3:1 compression, you would use a value of 1/3 here.
+Slope of applied amplitude curve if control signal amplitude is above code::thresh::.
+Values < 1.0 achieve compression (louder signals are attenuated) whereas values > 1.0 expand (louder signals are made even louder). A value of code::1/3:: achieves a 3:1 compression.
 
 argument::clampTime
-The amount of time it takes for the amplitude adjustment to kick in fully. This is usually pretty small, not much more than 10 milliseconds (the default value). I often set it as low as 2 milliseconds (0.002).
+time (in seconds) it takes for the amplitude adjustment to kick in fully after the control signal is above code::thresh::. Usually a small value around 10ms (0.01), often set as low as 2ms (0.002).
 
 argument::relaxTime
-The amount of time for the amplitude adjustment to be released. Usually a bit longer than clampTime; if both times are too short, you can get some (possibly unwanted) artifacts.
+time (in seconds) for the amplitude adjustment to be released (control signal below code::thresh::). Usually longer than code::clampTime::; depending on the input and control signal, setting both times too short results in (possibly unwanted) artifacts.
 
 argument::mul
-
+output is multiplied by this value.
 argument::add
+value added to the output.
 
 discussion::
-If any of this is confusing, see http://en.wikipedia.org/wiki/Audio_level_compression
+See for example http://en.wikipedia.org/wiki/Audio_level_compression for a more in-depth explanation.
 
 examples::
 
+Clean signal (for reference)
 code::
 (
-// example signal to process
-play({
-    var z;
-    z = Decay2.ar(
-        Impulse.ar(8, 0,LFSaw.kr(0.3, 0, -0.3, 0.3)),
-        0.001, 0.3, Mix.ar(Pulse.ar([80,81], 0.3)))
-})
+{
+	Decay2.ar(
+		Impulse.ar(8, 0, LFSaw.kr(0.3, 1, -0.3, 0.3)),
+		0.001,
+		0.3
+	)
+	* Mix.ar(Pulse.ar([80, 81], 0.3))
+}.play;
 )
 ::
 
-code::
-(
-// noise gate
-play({
-    var z;
-    z = Decay2.ar(
-        Impulse.ar(8, 0,LFSaw.kr(0.3, 0, -0.3, 0.3)),
-        0.001, 0.3, Mix.ar(Pulse.ar([80,81], 0.3)));
-    Compander.ar(z, z,
-        thresh: MouseX.kr(0.1, 1),
-        slopeBelow: 10,
-        slopeAbove: 1,
-        clampTime: 0.01,
-        relaxTime: 0.01
-    );
-})
-)
-::
+Noise gate
 
 code::
 (
-// compressor
-play({
-    var z;
-    z = Decay2.ar(
-        Impulse.ar(8, 0,LFSaw.kr(0.3, 0, -0.3, 0.3)),
-        0.001, 0.3, Mix.ar(Pulse.ar([80,81], 0.3)));
-    Compander.ar(z, z,
-        thresh: MouseX.kr(0.1, 1),
-        slopeBelow: 1,
-        slopeAbove: 0.5,
-        clampTime: 0.01,
-        relaxTime: 0.01
-    );
-})
+{
+	var z;
+
+	// signal (clean)
+	z = Decay2.ar(
+		Impulse.ar(8, 0, LFSaw.kr(0.3, 1, -0.3, 0.3)),
+		0.001,
+		0.3
+	)
+	* Mix.ar(Pulse.ar([80, 81], 0.3));
+
+	// apply gate (mouse x sets treshold)
+	Compander.ar(z, z,
+		thresh: MouseX.kr(0.001, 1),
+		slopeBelow: 10,
+		slopeAbove:  1,
+		clampTime:   0.01,
+		relaxTime:   0.01
+	)
+}.play;
 )
 ::
-
+Compressor
 code::
 (
-// limiter
-play({
-    var z;
-    z = Decay2.ar(
-        Impulse.ar(8, 0,LFSaw.kr(0.3, 0, -0.3, 0.3)),
-        0.001, 0.3, Mix.ar(Pulse.ar([80,81], 0.3)));
-    Compander.ar(z, z,
-        thresh: MouseX.kr(0.1, 1),
-        slopeBelow: 1,
-        slopeAbove: 0.1,
-        clampTime: 0.01,
-        relaxTime: 0.01
-    );
-})
+{
+	var z;
+
+	// signal (clean)
+	z = Decay2.ar(
+		Impulse.ar(8, 0, LFSaw.kr(0.3, 1, -0.3, 0.3)),
+		0.001,
+		0.3
+	)
+	* Mix.ar(Pulse.ar([80, 81], 0.3));
+
+	// apply compression  (mouse x sets amount)
+	Compander.ar(z, z,
+		thresh: MouseX.kr(0.01, 1),
+		slopeBelow: 1,
+		slopeAbove: 0.5,
+		clampTime:  0.01,
+		relaxTime:  0.01
+	)
+}.play;
 )
 ::
-
+Limiter
 code::
 (
-// sustainer
-play({
-    var z;
-    z = Decay2.ar(
-        Impulse.ar(8, 0,LFSaw.kr(0.3, 0, -0.3, 0.3)),
-        0.001, 0.3, Mix.ar(Pulse.ar([80,81], 0.3)));
-    Compander.ar(z, z,
-        thresh: MouseX.kr(0.1, 1),
-        slopeBelow: 0.1,
-        slopeAbove: 1,
-        clampTime: 0.01,
-        relaxTime: 0.01
-    )*0.1;
-})
+{
+	var z;
+
+	// signal (clean)
+	z = Decay2.ar(
+		Impulse.ar(8, 0, LFSaw.kr(0.3, 1, -0.3, 0.3)),
+		0.001,
+		0.3
+	)
+	* Mix.ar(Pulse.ar([80, 81], 0.3));
+
+
+	// apply limiter (mouse x sets amount)
+	Compander.ar(z, z,
+		thresh: MouseX.kr(0.01, 1),
+		slopeBelow: 1,
+		slopeAbove: 0.1,
+		clampTime:  0.01,
+		relaxTime:  0.01
+	)
+}.play;
+)
+::
+Sustainer
+code::
+(
+// note the pops at the beginning of signal due to lack of lookahead
+{
+	var z;
+
+	// signal (clean)
+	z = Decay2.ar(
+		Impulse.ar(8, 0, LFSaw.kr(0.3, 1, -0.3, 0.3)),
+		0.001,
+		0.3
+	)
+	* Mix.ar(Pulse.ar([80, 81], 0.3));
+
+	// apply sustainer
+	Compander.ar(z, z,
+		thresh: MouseX.kr(0.1, 1),
+		slopeBelow: 0.1,
+		slopeAbove: 1,
+		clampTime:  0.01,
+		relaxTime:  0.01
+	) * 0.1
+}.play;
 )
 ::

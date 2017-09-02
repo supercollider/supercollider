@@ -104,7 +104,7 @@ BOOST_FORCEINLINE typename boost::disable_if_c<!boost::is_member_pointer<To>::va
 
 template <class To, class From>
 BOOST_FORCEINLINE typename boost::disable_if_c<boost::is_member_pointer<To>::value || !boost::is_member_pointer<From>::value, To>::type
-    aggressive_ptr_cast(From v) BOOST_NOEXCEPT
+    aggressive_ptr_cast(From /* v */) BOOST_NOEXCEPT
 {
     BOOST_STATIC_ASSERT_MSG(
         boost::is_pointer<To>::value,

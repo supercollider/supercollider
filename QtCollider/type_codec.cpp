@@ -58,6 +58,27 @@ void TypeCodec<QString>::write( PyrSlot *slot, const QString & val )
 }
 
 
+QUrl TypeCodec<QUrl>::read( PyrSlot *slot )
+{
+  if( IsSym(slot) ) {
+    return QUrl(QString::fromUtf8( slotRawSymbol(slot)->name ));
+  }
+  else if( isKindOfSlot( slot, class_string ) ) {
+    int len = slotRawObject( slot )->size;
+    return QUrl(QString::fromUtf8( slotRawString(slot)->s, len ));
+  } else {
+    return QUrl();
+  }
+}
+
+
+void TypeCodec<QUrl>::write( PyrSlot *slot, const QUrl & val )
+{
+  PyrString *str = newPyrString( gMainVMGlobals->gc,
+                                val.toString(QUrl::None).toUtf8().constData(), 0, true );
+  SetObject( slot, str );
+}
+
 QPointF TypeCodec<QPointF>::read( PyrSlot *slot )
 {
   PyrSlot *slots = slotRawObject( slot )->slots;

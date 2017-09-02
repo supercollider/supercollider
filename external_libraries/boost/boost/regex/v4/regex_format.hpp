@@ -86,7 +86,7 @@ struct trivial_format_traits
    }
    int toi(const charT*& p1, const charT* p2, int radix)const
    {
-      return global_toi(p1, p2, radix, *this);
+      return (int)global_toi(p1, p2, radix, *this);
    }
 };
 
@@ -165,7 +165,7 @@ private:
          std::vector<char_type> v(i, j);
          const char_type* start = &v[0];
          const char_type* pos = start;
-         int r = m_traits.toi(pos, &v[0] + v.size(), base);
+         int r = (int)m_traits.toi(pos, &v[0] + v.size(), base);
          std::advance(i, pos - start);
          return r;
       }

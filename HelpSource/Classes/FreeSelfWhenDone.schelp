@@ -1,6 +1,6 @@
 class:: FreeSelfWhenDone
 summary:: Free the enclosing synth when a UGen is finished
-related:: Classes/Done, Classes/PauseSelfWhenDone, Reference/UGen-doneActions
+related:: Classes/Done, Classes/PauseSelfWhenDone, Classes/Done
 categories::  UGens>Synth control
 
 Description::
@@ -10,7 +10,7 @@ FreeSelfWhenDone will free the enclosing synth when this flag is set to true.
 
 See link::Classes/Done:: for a complete list of these UGens.
 
-Note that many of these UGens have doneActions, which are another way of accomplishing the same thing. See link::Reference/UGen-doneActions:: for more detail.
+Note that many of these UGens have doneActions, which are another way of accomplishing the same thing. See link::Classes/Done:: for more detail.
 
 note:: One must be careful when using binary operations on UGens with done flags, as these will return a link::Classes/BinaryOpUGen::, and thus prevent the done flag from being accessible. See example below. ::
 

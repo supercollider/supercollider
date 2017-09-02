@@ -13,6 +13,10 @@ the time for the mode to decay by 60 dB.
 
 Unlike  link::Classes/Klank::, all parameters in DynKlank can be changed in real-time after it has been started.
 
+Note::
+The amplitude of the resulting signal depends on the server's sample rate. See link::Classes/Ringz#Interaction with sample rate#Ringz: Interaction with sample rate:: for details.
+::
+
 
 classmethods::
 
@@ -52,7 +56,7 @@ code::
 
 { DynKlank.ar(`[[800, 1071, 1353, 1723], nil, [1, 1, 1, 1]], PinkNoise.ar(0.007)) }.play;
 
-{ DynKlank.ar(`[[200, 671, 1153, 1723], nil, [1, 1, 1, 1]], PinkNoise.ar([0.007,0.007])) }.play;
+{ DynKlank.ar(`[[200, 671, 1153, 1723], nil, [1, 1, 1, 1]], PinkNoise.ar([0.007, 0.007])) }.play;
 
 ::
 
@@ -69,12 +73,12 @@ code::
 
 (
 // set them from outside later:
-SynthDef('help-dynKlank', {
+SynthDef('help-dynKlank', { |out|
 	var freqs, ringtimes, signal;
 	freqs = Control.names([\freqs]).kr([800, 1071, 1153, 1723]);
 	ringtimes = Control.names([\ringtimes]).kr([1, 1, 1, 1]);
 	signal = DynKlank.ar(`[freqs, nil, ringtimes ], Impulse.ar(2, 0, 0.1));
-	Out.ar(0, signal);
+	Out.ar(out, signal);
 }).add;
 )
 
@@ -82,15 +86,16 @@ a = Synth('help-dynKlank');
 
 a.setn(\freqs, Array.rand(4, 500, 2000));
 a.setn(\ringtimes, Array.rand(4, 0.2, 4) );
+a.setn(\ringtimes, Array.rand(4, 0.02, 0.4) );
 
 // create multichannel controls directly with literal arrays:
 (
-SynthDef('help-dynKlank', {|
+SynthDef('help-dynKlank', { |out,
 	freqs (#[100, 200, 300, 400]),
 	amps (#[1, 0.3, 0.2, 0.05]),
 	rings (#[1, 1, 1, 2])|
 
-	Out.ar(0, DynKlank.ar(`[freqs, amps, rings], WhiteNoise.ar * 0.001))
+	Out.ar(out, DynKlank.ar(`[freqs, amps, rings], WhiteNoise.ar * 0.001))
 }).add
 )
 

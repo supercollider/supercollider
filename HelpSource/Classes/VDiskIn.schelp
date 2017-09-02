@@ -29,7 +29,10 @@ argument:: loop
 If loop is set to 1, the soundfile will loop.
 
 argument:: sendID
-If a sendID is given, the UGen sends an osc message with this id and the file position each time it reloads the buffer: code::['/diskin', nodeID, sendID, frame]::
+If a sendID is given, the UGen sends an OSC message with this ID and the frame index emphasis::relative to the onset of the Synth:: each time it reloads the buffer: code::['/diskin', nodeID, sendID, frame]::.
+The true frame index into the file is determined by the code::startFrame:: given when reading the initial buffer's worth of data, using link::Classes/Buffer#-cueSoundFile:: or link::Classes/Buffer#-read::.
+VDiskIn does not have access to the frame index used to cue the buffer. So, the frame index sent by OSC is always 0 at the start of the synth node.
+The user is responsible for adding the cue point: code::cueStartFrame + msg[3]::.
 
 discussion::
 This UGen will set the link::Classes/Done##'done' flag:: when finished playing.
@@ -51,8 +54,8 @@ x.free; b.close; b.free;
 
 // cue and play right away
 (
-SynthDef("help-VDiskin", { arg bufnum = 0;
-	Out.ar(0, VDiskIn.ar(1, bufnum, MouseX.kr(0.5, 2.0)));
+SynthDef("help-VDiskin", { |out, bufnum = 0|
+	Out.ar(out, VDiskIn.ar(1, bufnum, MouseX.kr(0.5, 2.0)));
 }).add;
 )
 (

@@ -1,4 +1,21 @@
 Done : UGen {
+	// aliases for UGen doneActions
+	const <none = 0;
+	const <pauseSelf = 1;
+	const <freeSelf = 2;
+	const <freeSelfAndPrev = 3;
+	const <freeSelfAndNext = 4;
+	const <freeSelfAndFreeAllInPrev = 5;
+	const <freeSelfAndFreeAllInNext = 6;
+	const <freeSelfToHead = 7;
+	const <freeSelfToTail = 8;
+	const <freeSelfPausePrev = 9;
+	const <freeSelfPauseNext = 10;
+	const <freeSelfAndDeepFreePrev = 11;
+	const <freeSelfAndDeepFreeNext = 12;
+	const <freeAllInGroup = 13;
+	const <freeGroup = 14;
+
 	*kr { arg src;
 		^this.multiNew('control', src)
 	}

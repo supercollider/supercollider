@@ -157,7 +157,7 @@ bool cpp_regex_traits_implementation<BOOST_REGEX_CHAR_T>::isctype(const BOOST_RE
 #endif
 } // namespace
 template BOOST_REGEX_DECL
-int cpp_regex_traits<BOOST_REGEX_CHAR_T>::toi(const BOOST_REGEX_CHAR_T*& first, const BOOST_REGEX_CHAR_T* last, int radix)const;
+boost::intmax_t cpp_regex_traits<BOOST_REGEX_CHAR_T>::toi(const BOOST_REGEX_CHAR_T*& first, const BOOST_REGEX_CHAR_T* last, int radix)const;
 template BOOST_REGEX_DECL
 std::string cpp_regex_traits<BOOST_REGEX_CHAR_T>::catalog_name(const std::string& name);
 template BOOST_REGEX_DECL

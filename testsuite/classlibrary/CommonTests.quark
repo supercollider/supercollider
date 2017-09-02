@@ -1,0 +1,7 @@
+(
+	\name: "CommonTests",
+	\path: "CommonTests", // path relative to the root Quarks folder
+	\summary: "UnitTests for the Common library",
+	\dependencies: ["UnitTesting"],
+	\author: "felix, dan s, jrhb"
+)

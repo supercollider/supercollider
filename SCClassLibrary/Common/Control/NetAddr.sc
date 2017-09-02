@@ -11,6 +11,7 @@ NetAddr {
 		addr = if (hostname.notNil,{ hostname.gethostbyname },{ 0 });
 		^super.newCopyArgs(addr, port, hostname);
 	}
+
 	*fromIP { arg addr, port;
 		^super.newCopyArgs(addr, port, addr.asIPString)
 	}
@@ -24,6 +25,7 @@ NetAddr {
 		_MatchLangIP
 		^this.primitiveFailed;
 	}
+
 	*localEndPoint {
 		^this.new(this.langIP, this.langPort)
 	}
@@ -31,25 +33,28 @@ NetAddr {
 	*localAddr {
 		^this.new("127.0.0.1", this.langPort)
 	}
+
 	*useDoubles_ { arg flag = false;
 		_NetAddr_UseDoubles
 		^this.primitiveFailed;
 	}
+
 	*broadcastFlag {
 		_NetAddr_GetBroadcastFlag
 		^this.primitiveFailed
 	}
+
 	*broadcastFlag_ { arg flag = true;
 		_NetAddr_SetBroadcastFlag
 		^this.primitiveFailed
 	}
 
 	*disconnectAll {
-		if(connections.notNil, {
-			connections.keys.do({ |netAddr|
+		if(connections.notNil) {
+			connections.keys.do { |netAddr|
 				netAddr.disconnect;
-			});
-		});
+			}
+		}
 	}
 
 	hostname_ { arg inHostname;
@@ -57,32 +62,35 @@ NetAddr {
 		addr = inHostname.gethostbyname;
 	}
 
-
 	sendRaw { arg rawArray;
 		_NetAddr_SendRaw
 		^this.primitiveFailed;
 	}
+
 	sendMsg { arg ... args;
 		_NetAddr_SendMsg
 		^this.primitiveFailed;
 	}
+
 	// warning: this primitive will fail to send if the bundle size is too large
 	// but it will not throw an error.  this needs to be fixed
 	sendBundle { arg time ... args;
 		_NetAddr_SendBundle
 		^this.primitiveFailed;
 	}
+
 	sendStatusMsg {
 		this.sendMsg("/status");
 	}
+
 	sendClumpedBundles { arg time ... args;
 		if(args.bundleSize > 65535) {// udp max size.
-				args.clumpBundles.do { |item|
-					if(time.notNil) { time = time + 1e-9 }; // make it a nanosecond later
-					this.sendBundle(time, *item)
-				};
-			} {
-				this.sendBundle(time, *args)
+			args.clumpBundles.do { |item|
+				if(time.notNil) { time = time + 1e-9 }; // make it a nanosecond later
+				this.sendBundle(time, *item)
+			};
+		} {
+			this.sendBundle(time, *args)
 		}
 	}
 
@@ -113,34 +121,74 @@ NetAddr {
 	}
 
 	makeSyncResponder { arg condition;
-			var id = UniqueID.next;
-			var resp;
-
-			resp = OSCFunc({|msg|
-				if (msg[1] == id) {
-					resp.free;
-					condition.test = true;
-					condition.signal;
-				};
-			}, '/synced', this);
-			condition.test = false;
-			^id
+		var id = UniqueID.next;
+		var resp = OSCFunc({|msg|
+			if (msg[1] == id) {
+				resp.free;
+				condition.test = true;
+				condition.signal;
+			};
+		}, '/synced', this);
+		condition.test = false;
+		^id
 	}
 
 	isConnected {
 		^socket.notNil
 	}
+
 	connect { | disconnectHandler |
 		if (this.isConnected.not) {
 			this.prConnect;
 			connections.put(this, disconnectHandler);
-		};
+		}
 	}
+
 	disconnect {
 		if (this.isConnected) {
 			this.prDisconnect;
 			this.prConnectionClosed;
 		};
+	}
+
+	tryConnectTCP { |onComplete, onFailure, maxAttempts = 10|
+		var func = { |attempts|
+			attempts = attempts - 1;
+			try {
+				this.connect
+			} { |err|
+				if(err.isKindOf(PrimitiveFailedError) and: { err.failedPrimitiveName == '_NetAddr_Connect'}) {
+					if(attempts > 0) {
+						0.2.wait;
+						func.value(onComplete, attempts)
+					} {
+						"Couldn't connect to TCP address %:%\n".format(hostname, port).warn;
+						onFailure.value(this)
+					}
+				} {
+					err.throw;
+				}
+			}
+		};
+		fork {
+			func.value(maxAttempts);
+			onComplete.value(this);
+		}
+	}
+
+	tryDisconnectTCP { |onComplete, onFailure|
+		try {
+			this.disconnect
+		} { |err|
+			if(err.isKindOf(PrimitiveFailedError) and: { err.failedPrimitiveName == '_NetAddr_SendMsg'}) {
+				"Couldn't disconnect from TCP address %:%\n".format(hostname, port).warn;
+				onFailure.value(this)
+			} {
+				err.throw;
+			}
+		};
+		this.disconnect;
+		onComplete.value(this);
 	}
 
 	== { arg that;
@@ -181,15 +229,18 @@ NetAddr {
 		_NetAddr_Connect
 		^this.primitiveFailed;
 	}
+
 	prDisconnect {
 		_NetAddr_Disconnect
 		^this.primitiveFailed;
 	}
+
 	prConnectionClosed {
 		// called when connection is closed either by sclang or by peer
 		socket = nil;
 		connections.removeAt(this).value(this);
 	}
+
 	recover { ^this }
 }
 
@@ -204,26 +255,30 @@ BundleNetAddr : NetAddr {
 	sendRaw { arg rawArray;
 		bundle = bundle.add( rawArray );
 	}
+
 	sendMsg { arg ... args;
 		bundle = bundle.add( args );
 	}
+
 	sendBundle { arg time ... args;
 		bundle = bundle.addAll( args );
 	}
+
 	sendClumpedBundles { arg time ... args;
 		bundle = bundle.addAll( args );
 	}
+
 	sendStatusMsg {} // ignore status messages
 
 	recover {
 		^saveAddr.recover
 	}
-	hasBundle { ^true }
 
+	hasBundle { ^true }
 
 	sync { arg condition, bundles, latency;
 		bundle = bundle.add([\syncFlag, bundles, latency]);
-			// not sure about condition. here we ignore it.
+		// not sure about condition. here we ignore it.
 		async = true;
 	}
 
@@ -236,13 +291,13 @@ BundleNetAddr : NetAddr {
 			};
 
 			forkIfNeeded {
-					bundleList = this.splitBundles(time);
-					lastBundles = bundleList.pop;
-					bundleList.do { |bundles|
-						var t = bundles.removeAt(0);
-						saveAddr.sync(nil, bundles, t); // make an independent condition.
-					};
-					saveAddr.sendClumpedBundles(*lastBundles);  // time ... args
+				bundleList = this.splitBundles(time);
+				lastBundles = bundleList.pop;
+				bundleList.do { |bundles|
+					var t = bundles.removeAt(0);
+					saveAddr.sync(nil, bundles, t); // make an independent condition.
+				};
+				saveAddr.sendClumpedBundles(*lastBundles);  // time ... args
 			}
 		};
 		^bundle

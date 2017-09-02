@@ -185,7 +185,7 @@ SynthDef("fm2", {
 
 	Out.ar(
 		bus,
-		car * EnvGen.kr(Env.sine(1), doneAction: 2, timeScale: ts)
+		car * EnvGen.kr(Env.sine(1), doneAction: Done.freeSelf, timeScale: ts)
 	)
 }).add;
 )

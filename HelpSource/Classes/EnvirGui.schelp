@@ -153,9 +153,17 @@ g.specs.clear; g.object_((freq: 200, iFrek: 20));
 g.close
 ::
 
-method::replaceKeys, addReplaceKey, removeReplaceKey, showKeyFor
-keys with technical names can be replaced in the display with clearer names.
+strong:: Keys with technical names can be replaced in the display with clearer names:
+method:: replaceKeys
+the current list of keys to replace
+method:: addReplaceKey
+add a key to replace and its replacer key
+method:: removeReplaceKey
+remove a replacer key
+method:: showKeyFor
+show
 
+code::
 e = (longFreq: 123, amp: 0.25);
 g = EnvirGui(e); g.parent.alwaysOnTop_(true);
 
@@ -169,15 +177,22 @@ e.put(\a, 34);
 
 g.replaceKeys
 g.removeReplaceKey(\longFreq)
+::
 
-method::highlight, unhighlight, colorizeArea
-methods for visually emphasizing areas.
+method::highlight
+highlight the paramview at a given index, by color and optional prefix
+code::
+g.highlight(0);
+g.highlight(0, ">>_");
+g.highlight(0, ">>_", Color.green(1, 0.6));
+::
 
-g.highlight(0, ">>_", Color.red(1, 0.5));
+method::unhighlight
+remove highlighting at an index
 g.unhighlight(0);
 
-subsection::Some internal methods
 
+subsection::Some internal methods
 
 method::setByKeys
 update the widgets for the current keys
@@ -191,7 +206,11 @@ set and get whether arrays of 2 number values should be displayed with EZRangers
 
 
 strong::methods that make gui elements: ::
-method::makeViews, makeNameView, makeOptionalViews, makeKnowBut, makeDocBut, makeClrBut, makeProtoBut, makeParentBut
+method:: makeViews
+method:: makeOptionalViews
+the method that makes all views specified in the options
+method:: makeNameView, makeKnowBut, makeDocBut, makeClrBut, makeProtoBut, makeParentBut
+the methods that make the individual elements as specified
 
 strong::standard JITGui methods: ::
 method::accepts, setDefaults, getState, checkUpdate, updateButtons

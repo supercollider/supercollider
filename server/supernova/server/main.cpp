@@ -50,7 +50,7 @@
 # include <sys/mman.h>
 #endif
 
-#include "SC_DirUtils.h"
+#include "SC_Filesystem.hpp"
 #ifndef _WIN32
     const char pathSeparator[] = ":";
 #else
@@ -59,6 +59,7 @@
 
 using namespace nova;
 using namespace std;
+using DirName = SC_Filesystem::DirName;
 
 namespace {
 
@@ -245,22 +246,16 @@ void set_plugin_paths(server_arguments const & args, nova::sc_ugen_factory * fac
         const path home = resolve_home();
         std::vector<path> folders = { "/usr/local/lib/SuperCollider/plugins",
                                       "/usr/lib/SuperCollider/plugins",
+                                      "/usr/lib64/SuperCollider/plugins",
                                       home / "/.local/share/SuperCollider/Extensions",
                                       home / "share/SuperCollider/plugins" };
 
         for (path const & folder : folders)
             factory->load_plugin_folder(folder);
 #else
-        char plugin_dir[MAXPATHLEN];
-        sc_GetResourceDirectory(plugin_dir, MAXPATHLEN);
-        factory->load_plugin_folder(path(plugin_dir) / "plugins");
-
-        char extension_dir[MAXPATHLEN];
-        sc_GetSystemExtensionDirectory(extension_dir, MAXPATHLEN);
-        factory->load_plugin_folder(path(extension_dir) / "plugins");
-
-        sc_GetUserExtensionDirectory(extension_dir, MAXPATHLEN);
-        factory->load_plugin_folder(path(extension_dir) / "plugins");
+        factory->load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::Resource) / "plugins");
+        factory->load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::SystemExtension) / "plugins");
+        factory->load_plugin_folder(SC_Filesystem::instance().getDirectory(DirName::UserExtension) / "plugins");
 #endif
     }
 
@@ -291,13 +286,8 @@ void load_synthdefs(nova_server & server, server_arguments const & args)
         if (env_synthdef_path) {
             boost::split(directories, env_synthdef_path, boost::is_any_of(pathSeparator));
         } else {
-            char resourceDir[MAXPATHLEN];
-            if(sc_IsStandAlone())
-                sc_GetResourceDirectory(resourceDir, MAXPATHLEN);
-            else
-                sc_GetUserAppSupportDirectory(resourceDir, MAXPATHLEN);
-
-            directories.push_back(path(resourceDir) / "synthdefs");
+            path synthdef_path = SC_Filesystem::instance().getDirectory(DirName::UserAppSupport);
+            directories.push_back(synthdef_path / "synthdefs");
         }
 
         for(path const & directory : directories)

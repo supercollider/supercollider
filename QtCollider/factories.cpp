@@ -59,6 +59,7 @@ static void doLoadFactories ()
   QC_ADD_FACTORY( QcToolBar );
   QC_ADD_FACTORY( QcAction );
   QC_ADD_FACTORY( QcWidgetAction );
+  QC_ADD_FACTORY( QcCallback );
   QC_ADD_FACTORY( WebView );
   QC_ADD_FACTORY( QcWindow );
   QC_ADD_FACTORY( QcScrollWindow );

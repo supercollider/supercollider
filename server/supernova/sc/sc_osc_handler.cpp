@@ -32,6 +32,7 @@
 #include "utilities/sized_array.hpp"
 
 #include "SC_OSC_Commands.h"
+#include "SC_Version.hpp"
 
 #ifdef _WIN32
 #include "malloc.h" // for alloca
@@ -1185,6 +1186,29 @@ void handle_error(ReceivedMessage const & message)
     int val = first_arg_as_int(message);
 
     instance->set_error_posting(val);     /* thread-safe */
+}
+
+template <bool realtime>
+void handle_version(endpoint_ptr const & endpoint_ref)
+{
+    cmd_dispatcher<realtime>::fire_io_callback( [ =, endpoint=endpoint_ptr(endpoint_ref) ] () {
+        if (unlikely(instance->quit_received))
+            return;
+
+        char buffer[4096];
+        typedef osc::int32 i32;
+
+        osc::OutboundPacketStream p(buffer, 4096);
+        p << osc::BeginMessage("/version.reply")
+          << "supernova"
+          << (i32)SC_VersionMajor
+          << (i32)SC_VersionMinor
+          << SC_VersionPatch
+          << SC_Branch
+          << SC_CommitHash
+          << osc::EndMessage;
+        endpoint->send(p.Data(), p.Size());
+    });
 }
 
 void handle_unhandled_message(ReceivedMessage const & msg)
@@ -3094,7 +3118,7 @@ void handle_d_load(ReceivedMessage const & msg,
     cmd_dispatcher<realtime>::fire_system_callback( [=, message=std::move(message),
                                                      path_string=std::move(path_string) ] () mutable {
 
-        /* TODO: we need to implment some file name pattern matching */
+        /* TODO: we need to implement some file name pattern matching */
         std::vector<sc_synth_definition_ptr> wrappedSynthdefs = wrapSynthdefs( sc_read_synthdefs_file( path_string.c_str() ) );
 
         cmd_dispatcher<realtime>::fire_rt_callback( [=, message=std::move(message),
@@ -3470,6 +3494,10 @@ void sc_osc_handler::handle_message_int_address(ReceivedMessage const & message,
 
     case cmd_cmd:
         handle_cmd(message, msg_size, endpoint, 4);
+        break;
+
+    case cmd_version:
+        handle_version<realtime>(endpoint);
         break;
 
     default:
@@ -3864,6 +3892,11 @@ void sc_osc_handler::handle_message_sym_address(ReceivedMessage const & message,
 
     if (strcmp(address+1, "cmd") == 0) {
         handle_cmd(message, msg_size, endpoint, 8);
+        return;
+    }
+
+    if (strcmp(address+1, "version") == 0) {
+        handle_version<realtime>(endpoint);
         return;
     }
 

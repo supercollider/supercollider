@@ -1,11 +1,11 @@
 class:: ApplicationStart
 summary:: register functions to be evaluated on Application start
 related:: Classes/StartUp, Classes/ServerBoot
-categories:: Control, Platform>OSX
+categories:: Control, Platform>macOS (OS X)
 
 description::
 
-Available in OSX SuperCollider.app only.
+Available in macOS SuperCollider.app only.
 
 ApplicationStart allows you to register functions or objects to perform an action only  on application start.
 The functions will be evaluated last; After the library has been compiled, the startup file has run and StartUp actions have been evaluated.

@@ -1,8 +1,8 @@
-title:: How-to-Use-the-Interpreter
+title:: How to Use the Interpreter
 summary:: Basic tutorial on how to run code
 categories:: Frontends, Tutorials
 
-This document is OSX (SCapp) specific in key commands, though the principles extend to all platforms. See the helpfile link::Reference/KeyboardShortcuts:: for key commands in other editors. For the emacs sclang interface please also see link::Reference/EmacsEditor:: specific documentation.
+This document is macOS (SCapp) specific in key commands, though the principles extend to all platforms. See the helpfile link::Reference/KeyboardShortcuts:: for key commands in other editors. For the emacs sclang interface please also see link::Reference/EmacsEditor:: specific documentation.
 
 You can execute any single line expression by clicking anywhere in that line and pressing the 'strong::Enter::' key.
 strong::Note that the 'Enter' key is not the same key as 'Return' ::. If you don't have an enter key, then you can use ctrl-Return, Ctrl-c, fn-Return (on Some Macs), or Shift-Return.
@@ -22,7 +22,7 @@ s.boot; // this boots the default Server. Watch the post window and server windo
 
 In the help files all executable fragments are written in the Monaco font.
 
-If an expression has multiple lines you can select all of the lines before typing 'Enter'. Note that this example uses link::Classes/GUI:: objects that are standard in Mac OSX. Windows and Linux platforms can run this using SwingOSC. SwingOSC is installed as part of the Windows package. Linux users might need to download SwingOSC for themselves. http://www.sciss.de/swingOSC/
+If an expression has multiple lines you can select all of the lines before typing 'Enter'. Note that this example uses link::Classes/GUI:: objects that are standard in macOS. Windows and Linux platforms can run this using SwingOSC. SwingOSC is installed as part of the Windows package. Linux users might need to download SwingOSC for themselves. http://www.sciss.de/swingOSC/
 
 code::
 // Select all 9 of the following lines and press 'Enter':

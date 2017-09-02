@@ -3,8 +3,10 @@
   <mime-type type="text/x-sc">
     <sub-class-of type="text/plain"/>
     <comment xml:lang="en">SuperCollider source code</comment>
+    <comment xml:lang="de">SuperCollider Quelltext</comment>
     <glob pattern="*.sc"/>
     <glob pattern="*.scd"/>
+    <glob pattern="*.schelp"/>
     <magic priority="30">
       <match value="/*" type="string" offset="0"/>
       <match value="//" type="string" offset="0"/>

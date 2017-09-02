@@ -24,11 +24,15 @@ set(libsupernova_src
     sc/sc_synth.cpp
     sc/sc_synthdef.cpp
     sc/sc_ugen_factory.cpp
+
+    ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp
+    ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_win.cpp
+    ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_unix.cpp
+    ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_iphone.cpp
+
     ${CMAKE_SOURCE_DIR}/common/Samp.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_fftlib.cpp
-    ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp
     ${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
-    ${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp
     server/buffer_manager.cpp
     server/memory_pool.cpp
     server/node_graph.cpp
@@ -39,7 +43,7 @@ set(libsupernova_src
 if(APPLE)
   list( APPEND libsupernova_src ${CMAKE_SOURCE_DIR}/common/SC_Apple.mm )
 
-  set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
+  set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
 endif()
 
 
@@ -98,7 +102,7 @@ if(DL)
     target_link_libraries(libsupernova ${DL})
 endif()
 
-if(APPLE)
+if(APPLE OR MSYS)
     find_package(Portaudio)
     if(NOT PORTAUDIO_FOUND)
         message(FATAL_ERROR "Portaudio missing")

@@ -3,7 +3,7 @@ summary:: view for rendering Quartz Composer Compositions
 categories:: GUI>Views
 
 DESCRIPTION::
-QuartzComposerView allows for the rendering of Quartz Composer Compositions within SC on OSX. Quartz Composer is a visual programming environment for processing and rendering graphical data, which is distributed free of charge as part of Apple's XCode Development Tools. QC is highly optimised to work with the OSX graphics system, and in general should be more efficient than Pen. For more information on QC see: https://developer.apple.com/library/mac/documentation/GraphicsImaging/Conceptual/QuartzComposerUserGuide/qc_intro/qc_intro.html and http://en.wikipedia.org/wiki/Quartz_Composer
+QuartzComposerView allows for the rendering of Quartz Composer Compositions within SC on macOS. Quartz Composer is a visual programming environment for processing and rendering graphical data, which is distributed free of charge as part of Apple's XCode Development Tools. QC is highly optimised to work with the macOS graphics system, and in general should be more efficient than Pen. For more information on QC see: https://developer.apple.com/library/mac/documentation/GraphicsImaging/Conceptual/QuartzComposerUserGuide/qc_intro/qc_intro.html and http://en.wikipedia.org/wiki/Quartz_Composer
 
 You can access input and output ports using the methods setInputValue, getInputValue and getOutputValue, or (do to a slight of hand in the implementation, using the port keys as getters and setters directly. The following two lines of code are thus equivalent:
 
@@ -220,7 +220,7 @@ s.boot;
 (
 {
 loop({
-{ Pan2.ar(Saw.ar(mul: 0.1) * EnvGen.ar(Env.perc, timeScale: 4, doneAction: 2), m.x_pos) }.play;
+{ Pan2.ar(Saw.ar(mul: 0.1) * EnvGen.ar(Env.perc, timeScale: 4, doneAction: Done.freeSelf), m.x_pos) }.play;
 1.wait;
 });
 }.fork(AppClock);

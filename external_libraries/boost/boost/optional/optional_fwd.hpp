@@ -16,7 +16,7 @@
 #ifndef BOOST_OPTIONAL_OPTIONAL_FWD_FLC_19NOV2002_HPP
 #define BOOST_OPTIONAL_OPTIONAL_FWD_FLC_19NOV2002_HPP
 
-#include <boost/config/suffix.hpp>
+#include <boost/config.hpp>
 
 namespace boost {
 

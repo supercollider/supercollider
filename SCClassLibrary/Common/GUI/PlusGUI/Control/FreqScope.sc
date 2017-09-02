@@ -224,11 +224,11 @@ FreqScopeView {
 		ServerQuit.remove(this, server);
 	}
 
-	active_ { arg activate;
-		if (activate) {
+	active_ { |bool|
+		if (bool) {
 			ServerTree.add(this, server);
 			if (server.serverRunning) {
-				active=activate;
+				active = bool;
 				this.doOnServerTree;
 				^this
 			}
@@ -240,7 +240,7 @@ FreqScopeView {
 				synth = nil;
 			};
 		};
-		active=activate;
+		active = bool;
 		^this
 	}
 
@@ -287,15 +287,15 @@ FreqScopeView {
 		}
 	}
 
-	special { |defname, extraargs|
+	special { |defname, extraArgs|
 		this.specialSynthDef_(defname);
-		this.specialSynthArgs_(extraargs);
+		this.specialSynthArgs_(extraArgs);
 		if(active, {
 			this.start;
 		});
 	}
 
-	*response{ |parent, bounds, bus1, bus2, freqMode=1|
+	*response { |parent, bounds, bus1, bus2, freqMode = 1|
 		var scope = this.new(parent, bounds, bus1.server).inBus_(bus1.index);
 		var synthDefName = "system_freqScope%_magresponse%".format(freqMode, if (scope.shmScopeAvailable) {"_shm"} {""});
 

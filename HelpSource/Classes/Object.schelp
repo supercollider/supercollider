@@ -5,21 +5,23 @@ categories:: Core>Kernel, Language>OOP
 related:: Classes/Class, Guides/Intro-to-Objects, Reference/Classes
 
 description::
-Object is the root class of all other classes. All objects are indirect instances of class Object.
-We call "receiver" the object the message is sent to: receiver.method(argument).
+Object is the root class of all other classes. All objects are indirect instances of class Object. We call the "receiver" the object the message is sent to: code::receiver.method(argument)::.
 
 
 classmethods::
-private:: prNewCopyArgs,prNew
+private:: prNewCopyArgs, prNew
+
 method::readArchive
 
-Read in an object from a text archive. pathname is a String containing the archive file's path.
-discussion::
+Read in an object from a text archive.
+
 code::
-a = Array.fill(100, { 100.0.rand });
+(
+a = Array.fill(100, { 100.rand });
 a.writeArchive(PathName.tmp ++ "myArray");
 b = Object.readArchive(PathName.tmp ++ "myArray");
-a == b // true
+a == b; // true
+)
 
 /////////
 
@@ -37,20 +39,25 @@ f.writeArchive(PathName.tmp ++ "myFunc"); // fails
 )
 ::
 
+argument::pathname
+A String containing the archive file's path.
+
 method::new
 
-Create a new instance. The creation of new instances of any Object actually happens in this method (or with newCopyArgs ) when it is called by a child class. see link::Guides/WritingClasses::
+Create a new instance. The creation of new instances of any Object actually happens in this method (or with code::newCopyArgs::) when it is called by a child class. See link::Guides/WritingClasses::.
 
 method::newCopyArgs
 
-Creates a new instance and copies the arguments to the instance variables in the order that the variables were defined.
+Creates a new instance and copies the arguments to the instance variables in the order that the variables were defined. If the superclass's code::new:: method requires arguments, the first arguments passed to code::newCopyArgs:: will be passed on to that method, and the following arguments will be copied to this class's instance variables. Class variables are ignored.
 
 code::
-MyClass{
-	var a,b,c;
+MyClass {
+	var a, b, c;
 
-	*new{ |arg1,arg2,arg3|
-		^super.newCopyArgs(arg1,arg2,arg3) //will copy arg1,arg2,arg3 to variables a,b,c
+	*new {
+		arg arg1, arg2, arg3;
+		// will copy arg1, arg2, arg3 to variables a, b, c
+		^super.newCopyArgs(arg1, arg2, arg3);
 	}
 }
 ::
@@ -70,18 +77,24 @@ code::
 
 method::respondsTo
 
-Answer a Boolean whether the receiver understands the message selector. selector must be a Symbol.
+Answer a link::Classes/Boolean:: whether the receiver understands the message selector.
 
 code::
-5.respondsTo('+');
+5.respondsTo('+'); // true
+5.respondsTo('indexOf'); // false
 ::
+
+
+argument::aSymbol
+A selector name. Must be a link::Classes/Symbol::.
 
 method::isKindOf
 
 Answer a Boolean indicating whether the receiver is a direct or indirect instance of aClass. Use of this message in code must be questioned, because it often indicates a missed opportunity to exploit object polymorphism.
 
 code::
-5.isKindOf(Magnitude);
+5.isKindOf(Number); // true
+5.isKindOf(String); // false
 ::
 
 method::isMemberOf
@@ -89,15 +102,15 @@ method::isMemberOf
 Answer a Boolean whether the receiver is a direct instance of aClass. Use of this message in code is almost always a design mistake.
 
 code::
-5.isMemberOf(Magnitude);
+5.isMemberOf(Number); // false
+5.isMemberOf(Integer); // true
 ::
 
 subsection::Accessing
 
 method::size
 
-Different classes interpret this message differently.  Object always returns 0.
-
+Different classes respond to this message differently. Object always returns 0.
 
 subsection::Copying
 
@@ -119,7 +132,7 @@ If object is immutable then return a shallow copy, else return receiver.
 
 subsection::Conversion
 
-To convert an object of a certain Class into a similar, Object provides a number of methods.
+To convert an object of a certain class into a similar object of another class, Object provides a number of methods.
 
 method::as
 
@@ -141,8 +154,7 @@ code::
 
 method::asCompileString
 
-Returns a String that can be interpreted to reconstruct a copy of the receiver.
-For the complementary method, see String interpret	.
+Returns a String that can be interpreted to reconstruct a copy of the receiver. For the complementary method, see link::Classes/String#-interpret::.
 
 code::
 a = { 10.do { 10.postln } };
@@ -152,26 +164,30 @@ a.postcs;
 
 method::cs
 
-shortcut for asCompileString
+Shorthand for link::#-asCompileString::.
 
 code::
 { 10.do { 10.postln } }.cs;
+"Strings don't post with surrounding quotes.".cs;
 ::
 
 subsection::Archiving
 
-Object implements methods for writing and retrieving objects from disk. Note that you cannot archive instances of Thread and its subclasses (i.e. Routine), or open Functions (i.e. a Function which refers to variables from outside its own scope).
+Object implements methods for writing and retrieving objects from disk. Note that you cannot archive instances of Thread and its subclasses (i.e. Routine), or open Functions (i.e., a Function which refers to variables from outside its own scope).
 
 method::writeArchive
 
-Write an object to disk as a text archive. pathname is a String containing the resulting file's path.
+Write an object to disk as a text archive.
+
+argument::pathname
+A String containing the resulting file's path.
 
 
 subsection::Equality and Identity
 
 method::==
 
-equality: Answer whether the receiver equals anotherObject. The definition of equality depends on the class of the receiver. The default implementation in Object is to answer if the two objects are identical (see below).
+Answer whether the receiver equals anotherObject. The definition of equality depends on the class of the receiver. The default implementation in Object is to answer if the two objects are identical.
 
 note:: Whenever == is overridden in a class, hash should be overridden as well.::
 
@@ -187,7 +203,7 @@ a === b; // not identical
 
 method::===
 
-identity: Answer whether the receiver is the exact same object as anotherObject.
+Answer whether the receiver is the exact same object as anotherObject.
 
 code::
 5.0 === 5; // false
@@ -197,11 +213,11 @@ code::
 
 method::!=
 
-non-equality: Answer whether the receiver does not equal anotherObject. The default implementation in Object is to answer if the two objects are not identical (see below).
+Answer whether the receiver does not equal anotherObject. The default implementation in Object is to answer if the two objects are not identical (see below).
 
 method::fuzzyEqual
 
-Returns the degree of equality (in the range from 0 to 1) between two objects with regard to a given precision. Objects to compare must support max, substraction and division.
+Returns the degree of equality between two objects with regard to a given precision. Objects to compare must support max, substraction, and division.
 
 code::
 5.0.fuzzyEqual(5.0, 0.5); // 1 - full equality
@@ -209,9 +225,11 @@ code::
 5.9.fuzzyEqual(5.0, 0.5); // 0 - no equality
 ::
 
+returns::A number in the range 0 to 1.
+
 method::compareObject
 
-Tests if two Objects (of the same class) are the same in a certain respect: It returns true if instVarNames are equal in both. If none are given, all instance variables are tested (see also: instVarHash)
+Tests if two Objects (of the same class) are the same in a certain respect: It returns true if instVarNames are equal in both. If none are given, all instance variables are tested (see also: link::#-instVarHash::)
 
 code::
 a = Pseq([1, 2, 3], inf); b = Pseq([100, 200, 300], inf);
@@ -241,7 +259,7 @@ b.identityHash;
 
 method::instVarHash
 
-Returns a combined hash value for the object's instance variables and the object's class. If none are given, all instance variables are tested (see also: compareObject).
+Returns a combined hash value for the object's instance variables and the object's class. If none are given, all instance variables are tested (see also: link::#-compareObject::).
 
 
 code::
@@ -406,6 +424,8 @@ method::perform
 
 The selector argument must be a Symbol. Sends the method named by the selector with the given arguments to the receiver.
 
+If the first argument is an Array or List, this method behaves like code::performMsg::. However, this usage is discouraged, and code::performMsg:: ought to be used instead.
+
 method::performList
 
 The selector argument must be a Symbol. Sends the method named by the selector with the given arguments to the receiver. If the last argument is a List or an Array, then its elements are unpacked and passed as arguments.
@@ -476,20 +496,19 @@ selector: A Symbol representing a method selector.
 args: Method arguments. If the last argument is a List or an Array, then its elements are unpacked and passed as arguments.
 
 method::multiChannelPerform
-Perform selector with multichannel-expansion.
+Perform selector with multichannel expansion. See also: link::Guides/Multichannel-Expansion::.
+
 argument:: selector
 A Symbol representing a method selector.
 argument:: ... args
-Method arguments, which if they contain an array, will call the method multiple times for each sub-element.
+Method arguments which, if they contain an array, will call the method multiple times for each sub-element.
 discussion::
-Example:
 code::
 a = { |a, b, c| format("% plus % times % is %", a, b, c, a + b * c).quote; };
 a.multiChannelPerform(\value, [1, 10, 100, 1000], [2, 7, 9], [3, 7]);
 
 ["foo","bar"].multiChannelPerform('++',["l","bro","t"]);
 ::
-See also link::Guides/Multichannel-Expansion::
 
 subsection::Unique Methods
 
@@ -569,13 +588,19 @@ Throws a ShouldNotImplementError. Use this to indicate that this inherited metho
 
 method::deprecated
 
-Throws a DeprecatedError. Use this to indicate that the enclosing method has been replaced by a better one (possibly in another class), and that it will likely be removed in the future. Unlike other errors, DeprecatedError only halts execution if Error.debug == true. In all cases it posts a warning indicating that the method is deprecated and what is the recommended alternative.
+Throws a DeprecatedError. Use this to indicate that the enclosing method has been replaced by a better one (possibly in another class), and that it will likely be removed in the future. Unlike other errors, DeprecatedError only halts execution if code::Error.debug == true::. In all cases it posts a warning indicating that the method is deprecated and what is the recommended alternative.
 
 discussion::
 code::
 foo {
 	this.deprecated(thisMethod, ThisOrSomeOtherObject.findMethod(\foo);
-	… // execution of this method will continue unless Error.debug == true
+	... // execution of this method will continue unless Error.debug == true
+}
+
+// For a class method:
+*bar {
+	this.deprecated(thisMethod, OtherClass.class.findMethod(\bar));
+	...
 }
 ::
 
@@ -642,10 +667,10 @@ Then for each size class: numer of black, white and free objects, total number o
 
 code::
 flips 241  collects 689096   nalloc 40173511   alloc 322496998   grey 346541
-	0  bwf t sz:    882      0 368573   369455    2955640
-	1  bwf t sz:   6197    122 5702377   5708696   91339136
+0  bwf t sz:    882      0 368573   369455    2955640
+1  bwf t sz:   6197    122 5702377   5708696   91339136
 2  bwf t sz:    947      4 1500009   1500960   48030720
-	3  bwf t sz:   8056  65201 301800   375057   24003648
+3  bwf t sz:   8056  65201 301800   375057   24003648
 4  bwf t sz:   4047    145   3457     7649     979072
 5  bwf t sz:    422      1    431      854     218624
 6  bwf t sz:    124      2     72      198     101376
@@ -660,13 +685,13 @@ tot bwf t sz: 174215  65476 7876722   8116413   341832120
 ::
 
 
-you can also query the amount of free memory with Object.totalFree and dump the currently grey objects with Object.dumpGrey. More memory status methods are: Object.largestFreeBlock, Object.gcDumpSet, and Object.gcSanity.
+You can also query the amount of free memory with code::Object.totalFree:: and dump the currently grey objects with code::Object.dumpGrey::. More memory status methods are: largestFreeBlock, gcDumpSet, and gcSanity.
 
 subsection::Iteration
 
 method::do
 
-Object evaluates the function with itself as an argument, returning the result. Different classes interpret this message differently.
+Object evaluates the function with itself as an argument, returning the result. Different classes respond to this message differently.
 discussion::
 code::
 f = { |x, i| [x, i].postln; };
@@ -682,7 +707,7 @@ This method is used internally by list comprehensions.
 
 method::dup
 
-Duplicates the receiver n times, returning an array of n copies. Different classes interpret this message differently.  The shortcut "!" can be used in place.
+Duplicates the receiver n times, returning an array of n copies. Different classes respond to this message differently.  The shortcut "!" can be used in place.
 discussion::
 code::
 8.dup(10);

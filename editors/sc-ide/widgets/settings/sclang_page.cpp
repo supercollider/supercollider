@@ -30,7 +30,7 @@
 #include "../../core/settings/manager.hpp"
 #include "../../core/util/standard_dirs.hpp"
 
-#include "yaml-cpp/yaml.h"
+#include <yaml-cpp/yaml.h>
 
 
 namespace ScIDE { namespace Settings {
@@ -158,48 +158,44 @@ void SclangPage::readLanguageConfig()
 
     using namespace YAML;
     try {
-        std::ifstream fin(configFile.toStdString().c_str());
-        Parser parser(fin);
-
-        Node doc;
-        while(parser.GetNextDocument(doc)) {
-            const Node * includePaths = doc.FindValue("includePaths");
-            if (includePaths && includePaths->Type() == NodeType::Sequence) {
+        std::ifstream fin(configFile.toStdString());
+        Node doc = YAML::Load( fin );
+        if( doc ) {
+            const Node & includePaths = doc[ "includePaths" ];
+            if (includePaths && includePaths.IsSequence()) {
                 ui->sclang_include_directories->clear();
-                for (Iterator it = includePaths->begin(); it != includePaths->end(); ++it) {
-                    Node const & pathNode = *it;
-                    if (pathNode.Type() != NodeType::Scalar)
+                for( Node const & pathNode : includePaths ) {
+                    if (!pathNode.IsScalar())
                         continue;
-                    std::string path;
-                    pathNode.GetScalar(path);
-                    ui->sclang_include_directories->addItem(QString(path.c_str()));
+                    std::string path = pathNode.as<std::string>();
+                    if( !path.empty() )
+                        ui->sclang_include_directories->addItem(QString(path.c_str()));
                 }
             }
 
-            const Node * excludePaths = doc.FindValue("excludePaths");
-            if (excludePaths && excludePaths->Type() == NodeType::Sequence) {
+            const Node & excludePaths = doc[ "excludePaths" ];
+            if (excludePaths && excludePaths.IsSequence()) {
                 ui->sclang_exclude_directories->clear();
-                for (Iterator it = excludePaths->begin(); it != excludePaths->end(); ++it) {
-                    Node const & pathNode = *it;
-                    if (pathNode.Type() != NodeType::Scalar)
+                for( Node const & pathNode : excludePaths ) {
+                    if (!pathNode.IsScalar())
                         continue;
-                    std::string path;
-                    pathNode.GetScalar(path);
-                    ui->sclang_exclude_directories->addItem(QString(path.c_str()));
+                    std::string path = pathNode.as<std::string>();
+                    if( !path.empty() )
+                        ui->sclang_exclude_directories->addItem(QString(path.c_str()));
                 }
             }
 
-            const Node * inlineWarnings = doc.FindValue("postInlineWarnings");
+            const Node & inlineWarnings = doc[ "postInlineWarnings" ];
             if (inlineWarnings) {
                 try {
-                    bool postInlineWarnings = inlineWarnings->to<bool>();
+                    bool postInlineWarnings = inlineWarnings.as<bool>();
                     ui->sclang_post_inline_warnings->setChecked(postInlineWarnings);
                 } catch(...) {
                     qDebug() << "Warning: Cannot parse config file entry \"postInlineWarnings\"";
                 }
             }
         }
-    } catch (std::exception & e) {
+    } catch (std::exception &) {
     }
 
     sclangConfigDirty = false;

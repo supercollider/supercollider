@@ -25,7 +25,7 @@ SynthDef(\pgrain,
 			Pan2.ar(
 				SinOsc.ar(freq),
 				pan
-			) * EnvGen.ar(window, doneAction:2)
+			) * EnvGen.ar(window, doneAction: Done.freeSelf)
 		)
 	}
 ).add;
@@ -38,7 +38,7 @@ SynthDef(\noiseGrain,
 			Pan2.ar(
 				Ringz.ar(PinkNoise.ar(0.1), freq, 2.6),
 				pan
-			) * EnvGen.ar(window, doneAction:2)
+			) * EnvGen.ar(window, doneAction: Done.freeSelf)
 		)
 	}
 ).add;
@@ -519,7 +519,7 @@ Pdef(\koch, { arg dur=1, degree=0;
 (
 SynthDef(\play_from_to, { arg out, bufnum, from=0.0, to=1.0, sustain=1.0;
 	var env;
-	env = EnvGen.ar(Env.linen(0.01, sustain, 0.01), 1, doneAction:2);
+	env = EnvGen.ar(Env.linen(0.01, sustain, 0.01), 1, doneAction: Done.freeSelf);
 	Out.ar(out,
 		BufRd.ar(1, bufnum,
 			Line.ar(from, to, sustain) * BufFrames.kr(bufnum)

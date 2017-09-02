@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface iscsynthAppDelegate : NSObject <UIApplicationDelegate> {
-    UIWindow *window;
+	UIWindow *window;
 	IBOutlet UITabBarController *tabBarController;
 	IBOutlet UITableViewController *tableViewController;
 }

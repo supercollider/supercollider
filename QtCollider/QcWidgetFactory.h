@@ -123,6 +123,9 @@ protected:
     return prox;
   }
 
+  // avoid overload of virtual initialize( QObjectProxy *, QWIDGET * )
+  using QcObjectFactory<QWIDGET>::initialize;
+
   virtual void initialize( QWidgetProxy *proxy, QWIDGET *obj ) {};
 };
 

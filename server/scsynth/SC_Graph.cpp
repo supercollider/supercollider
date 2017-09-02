@@ -71,7 +71,7 @@ void Graph_Dtor(Graph *inGraph)
 ////////////////////////////////////////////////////////////////////////////////
 
 int Graph_New(struct World *inWorld, struct GraphDef *inGraphDef, int32 inID,
-	      struct sc_msg_iter* args, Graph** outGraph,bool argtype)//true for normal args , false for setn type args
+              struct sc_msg_iter* args, Graph** outGraph,bool argtype)//true for normal args , false for setn type args
 {
 	Graph* graph;
 	int err = Node_New(inWorld, &inGraphDef->mNodeDef, inID, (Node**)&graph);
@@ -139,94 +139,93 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 	// set controls
 	//if argtype == true -> normal args as always
 	//if argtype == false -> setn type args
-    if(argtype) {
-	while( msg->remain()>=8) {
-	    int i = 0;
-	    int loop = 0;
-	    if (msg->nextTag('i') == 's') {
-		int32* name = msg->gets4();
-		int32 hash = Hash(name);
-		do {
-		    switch (msg->nextTag('f') ) {
-			case  'f' :
-			case  'i' :
-			{
-				float32 value = msg->getf();
-				Graph_SetControl(graph, hash, name, i, value);
-				break;
-			}
-			case 's' :
-			{
-				const char* string = msg->gets();
-				if ( *string == 'c') {
-					int bus = sc_atoi(string+1);
-					Graph_MapControl(graph, hash, name, i, bus);
-				} else {
-				    if (*string == 'a') {
-					int bus = sc_atoi(string+1);
-					Graph_MapAudioControl(graph, hash, name, i, bus);
-				    }
+	if(argtype) {
+		while( msg->remain()>=8) {
+			int i = 0;
+			int loop = 0;
+			if (msg->nextTag('i') == 's') {
+				int32* name = msg->gets4();
+				int32 hash = Hash(name);
+				do {
+					switch (msg->nextTag('f') ) {
+						case  'f' :
+						case  'i' :
+						{
+							float32 value = msg->getf();
+							Graph_SetControl(graph, hash, name, i, value);
+							break;
+						}
+						case 's' :
+						{
+							const char* string = msg->gets();
+							if ( *string == 'c') {
+								int bus = sc_atoi(string+1);
+								Graph_MapControl(graph, hash, name, i, bus);
+							} else {
+								if (*string == 'a') {
+									int bus = sc_atoi(string+1);
+									Graph_MapAudioControl(graph, hash, name, i, bus);
+								}
+							}
+							break;
+						}
+						case ']':
+							msg->count++;
+							loop -= 1;
+							break;
+						case '[':
+							msg->count++;
+							loop += 1;
+							i -= 1;
+							break;
+					}
+					++i;
 				}
-				break;
-			}
-			case ']':
-			    msg->count++;
-			    loop -= 1;
-			    break;
-			case '[':
-			    msg->count++;
-			    loop += 1;
-			    i -= 1;
-			    break;
-		    }
-		    ++i;
-		}
-		while (loop);
-	    } else {
-		int32 index = msg->geti();
-		do {
-		    switch (msg->nextTag('f') ) {
-			case  'f' :
-			case  'i' :
-			{
-				float32 value = msg->getf();
-				Graph_SetControl(graph, index + i, value);
-				break;
-			}
-			case 's' :
-			{
-				const char* string = msg->gets();
-				if ( *string == 'c') {
-					int bus = sc_atoi(string+1);
-					Graph_MapControl(graph, index + i, bus);
-				} else {
-				    if (*string == 'a') {
-					int bus = sc_atoi(string+1);
-					Graph_MapAudioControl(graph, index + i, bus);
-				    }
+				while (loop);
+			} else {
+				int32 index = msg->geti();
+				do {
+					switch (msg->nextTag('f') ) {
+						case  'f' :
+						case  'i' :
+						{
+							float32 value = msg->getf();
+							Graph_SetControl(graph, index + i, value);
+							break;
+						}
+						case 's' :
+						{
+							const char* string = msg->gets();
+							if ( *string == 'c') {
+								int bus = sc_atoi(string+1);
+								Graph_MapControl(graph, index + i, bus);
+							} else {
+								if (*string == 'a') {
+									int bus = sc_atoi(string+1);
+									Graph_MapAudioControl(graph, index + i, bus);
+								}
+							}
+							break;
+						}
+						case ']':
+							msg->count++;
+							loop -= 1;
+							break;
+						case '[':
+							msg->count++;
+							loop += 1;
+							i -= 1;
+							break;
+					}
+					++i;
 				}
-				break;
+				while (loop);
 			}
-			case ']':
-			    msg->count++;
-			    loop -= 1;
-			    break;
-			case '[':
-			    msg->count++;
-			    loop += 1;
-			    i -= 1;
-			    break;
-		    }
-		    ++i;
 		}
-		while (loop);
-	    }
 	}
 
-    }
 
-
-	    //{
+	//{
 //	    while( msg->remain()>=8) {
 //		int i = 0;
 //		int loop = 0;
@@ -286,55 +285,54 @@ void Graph_Ctor(World *inWorld, GraphDef *inGraphDef, Graph *graph, sc_msg_iter 
 //
 //	}
 	else{
-
-	  while (msg->remain()) {
-		if (msg->nextTag('i') == 's') {
-			int32* name = msg->gets4();
-			int32 hash = Hash(name);
-			int32 n = msg->geti();
-			for (int i=0; msg->remain() && i<n; ++i) {
-				if (msg->nextTag('f') == 's') {
-					const char* string = msg->gets();
-					if (*string == 'c') {
-						int bus = sc_atoi(string+1);
-						Graph_MapControl(graph, hash, name, i, bus);
-						//Node_MapControl(node, hash, name, i, bus);
-					} else {
-						if (*string == 'a') {
+		while (msg->remain()) {
+			if (msg->nextTag('i') == 's') {
+				int32* name = msg->gets4();
+				int32 hash = Hash(name);
+				int32 n = msg->geti();
+				for (int i=0; msg->remain() && i<n; ++i) {
+					if (msg->nextTag('f') == 's') {
+						const char* string = msg->gets();
+						if (*string == 'c') {
 							int bus = sc_atoi(string+1);
-							Graph_MapAudioControl(graph, hash, name, i, bus);
+							Graph_MapControl(graph, hash, name, i, bus);
+							//Node_MapControl(node, hash, name, i, bus);
+						} else {
+							if (*string == 'a') {
+								int bus = sc_atoi(string+1);
+								Graph_MapAudioControl(graph, hash, name, i, bus);
+							}
 						}
+					} else {
+						float32 value = msg->getf();
+						Graph_SetControl(graph, hash, name, i, value);
+						//Node_SetControl(node, hash, name, i, value);
 					}
-				} else {
-					float32 value = msg->getf();
-					Graph_SetControl(graph, hash, name, i, value);
-					//Node_SetControl(node, hash, name, i, value);
 				}
-			}
-		} else {
-			int32 index = msg->geti();
-			int32 n = msg->geti();
-			for (int i=0; msg->remain() && i<n; ++i) {
-				if (msg->nextTag('f') == 's') {
-					const char* string = msg->gets();
-					if (*string == 'c') {
-						int bus = sc_atoi(string+1);
-						Graph_MapControl(graph, index+i, bus);
-						//Node_MapControl(node, index+i, bus);
-					} else {
-						if (*string == 'a') {
+			} else {
+				int32 index = msg->geti();
+				int32 n = msg->geti();
+				for (int i=0; msg->remain() && i<n; ++i) {
+					if (msg->nextTag('f') == 's') {
+						const char* string = msg->gets();
+						if (*string == 'c') {
 							int bus = sc_atoi(string+1);
-							Graph_MapAudioControl(graph, index + i, bus);
+							Graph_MapControl(graph, index+i, bus);
+							//Node_MapControl(node, index+i, bus);
+						} else {
+							if (*string == 'a') {
+								int bus = sc_atoi(string+1);
+								Graph_MapAudioControl(graph, index + i, bus);
+							}
 						}
+					} else {
+						float32 value = msg->getf();
+						Graph_SetControl(graph, index+i, value);
+						//Node_SetControl(node, index+i, value);
 					}
-				} else {
-					float32 value = msg->getf();
-					Graph_SetControl(graph, index+i, value);
-					//Node_SetControl(node, index+i, value);
 				}
 			}
 		}
-	  }
 	}
 
 	// set up scalar values

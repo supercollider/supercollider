@@ -14,12 +14,12 @@
 		while { t.roundUp(tolerance) < by }
 		{
 			event = this.next(inevent.copy);
-			if(event.isNil) { ("end of stream. Time left:" + (by - t)).inform; ^t - by };
+			if(event.isNil) { ("end of stream. Time left:" + (by - t)).postln; ^t - by };
 
 			event = event.copy.put(\freq, \rest);
 			event.play;
 			delta = event.delta;
-			if(delta.isNil) { ("end of stream. Time left:" + (by - t)).inform; ^t - by };
+			if(delta.isNil) { ("end of stream. Time left:" + (by - t)).postln; ^t - by };
 
 			t = t + delta;
 

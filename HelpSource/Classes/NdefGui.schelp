@@ -16,8 +16,6 @@ list::
 Both link::Classes/NodeProxy:: and link::Classes/Ndef:: implement a strong::.gui:: message, which returns a NdefGui for that NodeProxy. Overview: link::Overviews/JITLib::.
 
 code::
-
-
 (
 s.boot;
 Ndef(\a, { |freq=300, dens=20, amp=0.1, pan|
@@ -52,7 +50,7 @@ a flag whether to create and start a link::Classes/SkipJack:: for auto-updating.
 argument::options
 an array of symbols for options of what to display. See list below.
 
-strong:: Preset options lists which can be used in *new: ::
+subsection:: Preset options lists which can be used in *new:
 
 method::big
 two lines of controls for a big NdefGui, usually in its own window
@@ -85,16 +83,15 @@ not a class var, but the method that inits buttonFuncs.
 
 InstanceMethods::
 
-subsection::Instance Variables
+subsection::Variables
 
-As in all JITGuis:
+See link::Classes/JITGui:: for more instance methods.
 
-... object, numItems, parent, bounds; zone, minSize, defPos, skin, font, skipjack ...
+Various views the NdefGui has if they were present in the options:
 
 method::nameView, typeView, monitorGui, paramGui, fadeBox, pauseBut, sendBut, edBut, wakeBut
-Various views the NdefGui has if they were present in the options.
 
-subsection::Instance Methods
+subsection::Basic Methods
 
 method::edits
 the paramGui's widgets (usually, EZSliders)
@@ -119,13 +116,19 @@ method::proxy
 an alias to method object, object_
 
 
-strong::Standard JITGui methods: ::
+subsection::Standard JITGui Methods
 
-method:: setDefaults, accepts, getState, checkUpdate
+method:: setDefaults
+method:: accepts
+method:: getState, checkUpdate
 
-strong:: Methods that make the various gui elements: ::
+subsection::GUI Element Creation
 
-method:: makeViews, makeNameView, makeTypeView, makeClrBut, makeWakeBut, makeResetBut, makeScopeBut, makeDocBut, makeEndBut, makeFadeBox, makeMonitor, makePauseBut, makeSendBut, makeEdBut, makeRipBut, makePollBut
+method:: makeViews
+creates all the views given in the options list. Internally this calls the following methods:
+
+method:: makeNameView, makeTypeView, makeClrBut, makeWakeBut, makeResetBut, makeScopeBut, makeDocBut, makeEndBut, makeFadeBox, makePauseBut, makeSendBut, makeEdBut, makeRipBut, makePollBut
+method:: makeMonitor
 
 
 Examples::

@@ -134,7 +134,7 @@ x = {
       [mags, phases].flop.clump(2).flop.flatten
   }, tobin: 250);
 
-  Out.ar(0, 0.5 * IFFT(chain).dup);
+  0.5 * IFFT(chain).dup
 }.play;
 )
 x.free; c.free;
@@ -152,7 +152,7 @@ The above may seem to work, but does not. It does result in two FFT UGens, but a
 When using multichannel expansion with FFT UGens it is necessary to ensure that each one writes to a different buffer. Here's an example of one way to do this:
 code::
 (
-SynthDef("help-multichannel FFT", { arg out=0; // bufnum is an array
+SynthDef("help-multichannel FFT", { |out=0| // bufnum is an array
 	var in, chain;
 	in = [SinOsc.ar(200, 0, 0.2), WhiteNoise.ar(0.2)];
 	chain = FFT(LocalBuf([2048, 2048]), in); // each FFT has a different buffer
@@ -167,7 +167,7 @@ SynthDef("help-multichannel FFT", { arg out=0; // bufnum is an array
 b = {Buffer.alloc(s,2048,1)}.dup;
 
 (
-SynthDef("help-multichannel FFT", { arg out=0, bufnum= #[0, 1]; // bufnum is an array
+SynthDef("help-multichannel FFT", { |out=0, bufnum= #[0, 1]| // bufnum is an array
 	var in, chain;
 	in = [SinOsc.ar(200, 0, 0.2), WhiteNoise.ar(0.2)];
 	chain = FFT(bufnum, in); // each FFT has a different buffer

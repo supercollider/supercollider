@@ -43,7 +43,7 @@ SynthDef("trig1",{ arg dur=0.125;
 		* EnvGen.kr(
 			Env([0,0.1,0.1,0],[0.01,1.0,0.01],[-4,4],2),
 			gate,
-			doneAction: 2)
+			doneAction: Done.freeSelf)
 	)
 }).add;
 
@@ -67,7 +67,7 @@ SynthDef("trig1",{
 		* EnvGen.kr(
 			Env([0,0.1,0.1,0],[0.01,1.0,0.01],[-4,4],2),
 			gate,
-			doneAction: 2)
+			doneAction: Done.freeSelf)
 	)
 }).add;
 

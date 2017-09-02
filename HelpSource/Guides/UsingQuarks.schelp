@@ -224,7 +224,7 @@ code::
 {quark name}.quark
 ::
 
-and is a supercollider file that returns an IdentifyDictionary
+and is a SuperCollider file that returns an IdentityDictionary
 
 code::
 (

@@ -43,6 +43,8 @@ namespace detail {
 
 struct windows_operations_base
 {
+    static BOOST_CONSTEXPR_OR_CONST bool is_always_lock_free = true;
+
     static BOOST_FORCEINLINE void hardware_full_fence() BOOST_NOEXCEPT
     {
         long tmp;

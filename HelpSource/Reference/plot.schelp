@@ -42,7 +42,7 @@ By default labels appear at the top left of the plot giving a data readout based
 discussion::
 If code::minval:: and/or code::maxval:: are set to code::nil:: (this is default, except for link::Classes/Buffer::s), they will be automatically calculated from the dataset minimum and/or maximum. For multi-channel data, code::minval:: and code::maxval:: may be arrays, specifying the range independently for each channel (including use of code::nil::, in which case the min/max will be calculated for the specific channel rather than for the overall dataset).
 
-Hitting the strong::L-key:: on the keyboard when the window is focussed toggles the lock, and the window can be used to edit the data.
+Hitting the strong::E-key:: on the keyboard when the window is focussed toggles the lock, and the window can be used to edit the data.
 
 section:: Examples
 

@@ -4,7 +4,7 @@ categories:: Libraries>JITLib>Patterns, Live Coding
 related:: Classes/Pdef, Classes/Tdef, Classes/Pdefn, Classes/Ndef
 
 description::
-Placeholder for functions to calculate with.
+Fdef is a placeholder for functions. Fdef allows dynamically replacing functions while they are being used.
 
 See also: link::Classes/Maybe:: and the link::Overviews/JITLib:: overview.
 
@@ -54,7 +54,7 @@ s.boot;
 SynthDef("gpdef",
 	{ arg out=0, freq=440, sustain=0.05, amp=0.1;
 		var env;
-		env = EnvGen.kr(Env.perc(0.01, sustain), doneAction:2) * amp;
+		env = EnvGen.kr(Env.perc(0.01, sustain), doneAction: Done.freeSelf) * amp;
 		Out.ar(out, SinOsc.ar(freq, 0, env))
 	}).add;
 )

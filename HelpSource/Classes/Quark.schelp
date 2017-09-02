@@ -13,6 +13,8 @@ METHOD:: new
 ARGUMENT:: name
 Quark name, git url or local path (absolute or relative)
 ARGUMENT:: refspec
+ARGUMENT:: url
+ARGUMENT:: localPath
 returns:: this
 
 METHOD:: fromLocalPath
@@ -23,14 +25,23 @@ returns:: this
 METHOD:: fromDirectoryEntry
 alternate constructor
 ARGUMENT:: name
-ARGUMENT:: quarkUrl
+ARGUMENT:: directoryEntry
 returns:: this
 
 METHOD:: parseQuarkName
 ARGUMENT:: name
 ARGUMENT:: refspec
+ARGUMENT:: url
+ARGUMENT:: localPath
 returns:: this
 
+METHOD:: parseDependency
+private
+ARGUMENT:: dep
+ARGUMENT:: forQuark
+returns:: this
+
+PRIVATE::prMakeDep
 
 INSTANCEMETHODS::
 
@@ -124,11 +135,6 @@ After un/installing or checking out, state is set to changed.
 code smell: this is for the gui
 returns:: Boolean
 
-METHOD:: parseDependency
-private
-ARGUMENT:: dep
-returns:: this
-
 METHOD:: printOn
 ARGUMENT:: stream
 returns:: this
@@ -136,3 +142,5 @@ returns:: this
 METHOD:: parseQuarkFile
 private
 returns:: this
+
+PRIVATE::prCollectDependencies

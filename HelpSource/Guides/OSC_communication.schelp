@@ -33,7 +33,7 @@ thisProcess.openPorts; // list all open ports
 To listen to incoming messages, an link::Classes/OSCFunc:: needs to be created in SuperCollider. If the sending application strong::has a fixed port it sends message from::, you can set the OSCFunc to listen only to messages coming from that IP and port:
 code::
 n = NetAddr.new("127.0.0.1", 7771);	// create the NetAddr
-// create the OSCresponderNode
+// create the OSCFunc
 o = OSCFunc({ arg msg, time, addr, recvPort; [msg, time, addr, recvPort].postln; }, '/goodbye', n);
 o.free;	// remove the OSCFunc when you are done.
 ::
@@ -43,8 +43,8 @@ section::Receiving from an application that is sending from a variable port
 
 Some applications (notably Pd and Max) do not send messages from a fixed port, but instead use a different port each time they send out a message, or each time a patch starts up it picks a random port. In that case the OSCFunc needs to be set up, so that it listens to messages coming from anywhere. You do this by passing nil as the srcID argument.
 code::
-o = OSCFunc({ arg msg, time, addr, recvPort; [msg, time, addr, recvPort].postln; }, '/goodbye'); // create the OSCresponderNode
-o.free;	// remove the OSCresponderNode when you are done.
+o = OSCFunc({ arg msg, time, addr, recvPort; [msg, time, addr, recvPort].postln; }, '/goodbye'); // create the OSCFunc
+o.free;	// remove the OSCFunc when you are done.
 ::
 
 section::Testing incoming traffic
@@ -73,3 +73,40 @@ thisProcess.addOSCRecvFunc(f);
 // stop posting.
 thisProcess.removeOSCRecvFunc(f);
 ::
+
+section::OSC type tags and sclang
+
+Inbound OSC messages must have type tags, or an error will be thrown.
+
+The following conversions are supported outbound:
+
+list::
+## Integers become "i". Both OSC and sclang use 32-bit signed integers.
+## Booleans become "i", with true translating to 1 and false translating to 0.
+## Nil becomes "i", translating to value 0.
+## Floats become "f" (32-bit float). sclang's Floats are 64-bit, so the conversion to OSC is lossy.
+## Strings and Symbols become "s" (string).
+## Int8Arrays become "b" (blob).
+## Chars are added as a raw type tag, appending no data to the OSC packet. This is needed to send code::$N:: (nil), code::$T:: (true), code::$F:: (false), code::$I:: (infinity/impulse). Be careful with this -- if the destination entity doesn't agree that the tag consumes zero bytes, the remaining part of the OSC message may be corrupted!
+::
+
+If code::NetAddr.useDoubles:: is set to true, then in outbound messages, sclang will use the "d" (double) type tag instead of "f". OSC doubles are 64-bit. It is up to you to ensure that the receiver understands "d".
+
+The following type tags are supported inbound:
+
+list::
+## "i" (32-bit signed integer) becomes Integer
+## "f" (32-bit float) becomes Float
+## "s" (string) becomes Symbol
+## "b" (blob) and "m" (4-byte MIDI message) becomes Int8Array
+## "d" (64-bit float) becomes Float
+## "T" (true) and "F" (false) become Booleans
+## "I" (infinity/impulse) becomes code::+inf::
+## "N" (nil) becomes code::nil::
+## "t" (64-bit big-endian fixed-point time tag) becomes Float
+## "c" (character) becomes Char
+::
+
+"r" (RGBA color), "S" (symbol), and "[" and "]" (array start and end) are not supported.
+
+If an unrecognized tag is encountered, sclang will make that unrecognized tag into a Char object and add that to the OSC message. It will then skip ahead in the OSC message as if it were reading a string -- it looks for the next null byte and then skips 0-3 bytes for 4-byte alignment.

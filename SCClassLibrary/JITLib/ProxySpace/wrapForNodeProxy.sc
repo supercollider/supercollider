@@ -96,12 +96,13 @@
 			channelOffset: channelOffset,
 			finish: #{
 				var proxy = ~proxy;
+				~array = ~array.wrapExtend(proxy.numChannels);
 				~out = proxy.index + ~channelOffset;
 				~group = proxy.group;
 				~rate = proxy.rate;
 				~numChannels = proxy.numChannels;
 				~fadeTime = proxy.fadeTime;
-				~curve = proxy.nodeMap.at(\curve);
+				~curve = proxy.nodeMap.at(\curve) ? 1.0;
 			}
 		)
 	}

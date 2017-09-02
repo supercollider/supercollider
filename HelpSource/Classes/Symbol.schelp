@@ -1,12 +1,18 @@
 class::Symbol
-summary::unique name
+summary::a unique name for something
 categories::Core
 
 description::
-A Symbol is a name that is guaranteed to be unique. They can be used to represent
-symbolic constant values, link::Classes/Dictionary:: keys, etc.
+A symbol, like a link::Classes/String::, is a sequence of characters. Unlike strings, two symbols
+with exactly the same characters will be the exact same object. Symbols are optimized for recreating
+the same symbol over and over again. In practice, this means that symbols are best used for
+identifiers or tags that are only meaningful within your program, whereas you should use a string
+when your characters are really processed as text data. Use symbols to name things, use strings for
+input and output.
 
-Symbols are represented syntactically as literals which are described in link::Reference/Literals::
+Good uses of symbols include symbolic constant values and link::Classes/Dictionary:: keys.
+
+Symbols are represented syntactically as literals which are described in link::Reference/Literals#Symbols::.
 
 subsection::Creating a Symbol
 
@@ -61,6 +67,19 @@ Answer whether the symbol is a valid primitive name
 code::
 '_SymbolIsClassName'.isPrimitiveName;
 ::
+
+method::isIdentifier
+
+Return true if the symbol is a valid variable name, or equivalently a valid method name in the two
+most common method call syntaxes (code::foo.bar():: and code::bar(foo)::). A valid identifier
+contains only alphanumeric characters and underscores, and the first character must be a lowercase
+letter.
+
+method::isBinaryOp
+
+Return true if the symbol is a valid binary operator. A valid binary operator contains only the
+symbols code::!@%&*-+=|<>?/::, does not start with 'code:://::' or 'code::/*::', and is not the
+string 'code::=::'.
 
 subsection::Conversion
 

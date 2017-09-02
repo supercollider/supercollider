@@ -95,8 +95,6 @@ argument::minval
 the minimum value in the plot. Defaults to the highest value in the data.
 argument::maxval
 the maximum value in the plot. Defaults to the lowest value in the data.
-argument::parent
-a window to place the plot in. If nil, one will be created for you.
 
 method::asSignal
 Convert the Wavetable into a Signal.

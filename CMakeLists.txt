@@ -58,8 +58,10 @@ if(WIN32)
 
     # might work with "SHARED" as well.
     set(PA_LIBRARY_TYPE "STATIC")
-    set(PORTAUDIO_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/external_libraries/portaudio_sc_org/include" CACHE PATH "Portaudio include directory" FORCE)
-    add_subdirectory("${CMAKE_SOURCE_DIR}/external_libraries/portaudio_sc_org")
+    if(NOT MSYS)
+      set(PORTAUDIO_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/external_libraries/portaudio_sc_org/include" CACHE PATH "Portaudio include directory" FORCE)
+      add_subdirectory("${CMAKE_SOURCE_DIR}/external_libraries/portaudio_sc_org")
+    endif(NOT MSYS)
 endif(WIN32)
 
 #############################################
@@ -208,6 +210,12 @@ option(SYSTEM_YAMLCPP "Use yaml-cpp library from system" OFF)
 
 option(FORTIFY "Define -D_FORTIFY_SOURCE=2 to check for programming errors" OFF)
 
+if(MINGW AND (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 5.3.0))
+    option(SC_HIDAPI "Build with HID support" OFF)
+else()
+    option(SC_HIDAPI "Build with HID support" ON)
+endif()
+
 #############################################
 # some default libraries
 
@@ -242,7 +250,7 @@ endif()
 if (CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
 	if (SSE)
 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}   -msse")
-		set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -msse")
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse")
 		if(NOT APPLE AND NOT CMAKE_COMPILER_IS_CLANG)
 			set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mfpmath=sse")
 			set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mfpmath=sse")
@@ -304,7 +312,9 @@ if(MSVC)
     set(${flag} "${${flag}} /wd4996") # The POSIX name for this item is deprecated.
   endforeach()
 
-  add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS)
+# _ENABLE_ATOMIC_ALIGNMENT_FIX prevents the build from breaking when VS2015 update 2 upwards are used
+# see http://boost.2283326.n4.nabble.com/lockfree-ENABLE-ATOMIC-ALIGNMENT-FIX-for-VS-2015-Update-2-td4685955.html
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -D_ENABLE_ATOMIC_ALIGNMENT_FIX)
 endif(MSVC)
 
 if (SC_MEMORY_DEBUGGING)
@@ -312,10 +322,13 @@ if (SC_MEMORY_DEBUGGING)
 	add_definitions(-DENABLE_MEMORY_CHECKS)
 endif()
 
-if(MINGW)
+if(MINGW AND (${CMAKE_CXX_COMPILER_VERSION} VERSION_GREATER 4.8.5) AND (${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 5.3.0))
 # no-strict-aliasing was introduced because of problems with MinGW/GCC 4.9.2
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mstackrealign -fno-strict-aliasing")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mstackrealign -fno-strict-aliasing")
+elseif(MINGW)
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mstackrealign")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mstackrealign")
 endif()
 
 # support for building on Raspberry Pi 1/2/3 and BBB
@@ -343,7 +356,6 @@ add_subdirectory(external_libraries)
 
 if(NOT YAMLCPP_FOUND)
   set(YAMLCPP_LIBRARY yaml)
-  set(YAMLCPP_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/external_libraries/yaml-cpp-0.3.0/include)
 endif()
 
 
@@ -447,7 +459,7 @@ if (WIN32)
 elseif(APPLE)
 	set( AdditionalInstallFiles
 		README.md
-		README_OS_X.md
+		README_MACOS.md
 		CHANGELOG.md
 		COPYING
 		AUTHORS
@@ -560,3 +572,4 @@ mark_as_advanced(JACK JACK_INCLUDE_DIR JACK_LIBRARY)
 mark_as_advanced(MATH_LIBRARY)
 mark_as_advanced(QT_QMAKE_EXECUTABLE)
 mark_as_advanced(SNDFILE SNDFILE_LIBRARY_DIR)
+mark_as_advanced(SC_HIDAPI)

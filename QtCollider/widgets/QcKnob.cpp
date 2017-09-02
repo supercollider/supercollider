@@ -33,8 +33,8 @@ QC_DECLARE_QWIDGET_FACTORY(QcKnob);
 QcKnob::QcKnob() :
   Style::Client(this),
   _value(0.f),
-  _mode(0),
   _step(0.01),
+  _mode(0),
   _centered(false)
 {
   setFocusPolicy( Qt::StrongFocus );

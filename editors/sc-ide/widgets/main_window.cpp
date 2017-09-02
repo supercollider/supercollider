@@ -191,6 +191,11 @@ MainWindow::MainWindow(Main * main) :
     connect(mEditors, SIGNAL(currentDocumentChanged(Document*)),
             mDocumentsDocklet->list(), SLOT(setCurrent(Document*)),
             Qt::QueuedConnection);
+    connect(mDocumentsDocklet->list(), SIGNAL(updateTabsOrder(QList<Document*>)),
+            mEditors, SLOT(updateTabsOrder(QList<Document*>)));
+    connect(mEditors, SIGNAL(updateDockletOrder(int, int)),
+            mDocumentsDocklet->list(), SLOT(updateDockletOrder(int, int)),
+            Qt::QueuedConnection);
 
     // Update actions on document change
     connect(mEditors, SIGNAL(currentDocumentChanged(Document*)),
@@ -637,8 +642,6 @@ void MainWindow::createMenus()
     menu->addAction( mEditors->action(MultiEditor::RemoveAllSplits) );
     menu->addSeparator();
     menu->addAction( mActions[FocusPostWindow] );
-    menu->addSeparator();
-    menu->addAction( mActions[ShowFullScreen] );
 
     menuBar->addMenu(menu);
 
@@ -649,6 +652,19 @@ void MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( mMain->scProcess()->action(ScProcess::ShowQuarks) );
     menu->addSeparator();
+    menu->addAction( mEditors->action(MultiEditor::EvaluateCurrentDocument) );
+    menu->addAction( mEditors->action(MultiEditor::EvaluateRegion) );
+    menu->addAction( mEditors->action(MultiEditor::EvaluateLine) );
+    menu->addAction( mMain->scProcess()->action(ScIDE::ScProcess::StopMain) );
+    menu->addSeparator();
+    menu->addAction( mActions[LookupImplementationForCursor] );
+    menu->addAction( mActions[LookupImplementation] );
+    menu->addAction( mActions[LookupReferencesForCursor] );
+    menu->addAction( mActions[LookupReferences] );
+
+    menuBar->addMenu(menu);
+
+    menu = new QMenu(tr("Se&rver"), this);
     menu->addAction( mMain->scServer()->action(ScServer::ToggleRunning) );
     menu->addAction( mMain->scServer()->action(ScServer::Reboot) );
     menu->addAction( mMain->scServer()->action(ScServer::KillAll) );
@@ -660,20 +676,12 @@ void MainWindow::createMenus()
     menu->addAction( mMain->scServer()->action(ScServer::DumpNodeTreeWithControls) );
     menu->addAction( mMain->scServer()->action(ScServer::PlotTree) );
     menu->addAction( mMain->scServer()->action(ScServer::DumpOSC) );
+    menu->addAction( mMain->scServer()->action(ScServer::Record) );
+    menu->addAction( mMain->scServer()->action(ScServer::PauseRecord) );
     menu->addAction( mMain->scServer()->action(ScServer::VolumeUp) );
     menu->addAction( mMain->scServer()->action(ScServer::VolumeDown) );
     menu->addAction( mMain->scServer()->action(ScServer::VolumeRestore) );
     menu->addAction( mMain->scServer()->action(ScServer::Mute) );
-    menu->addSeparator();
-    menu->addAction( mEditors->action(MultiEditor::EvaluateCurrentDocument) );
-    menu->addAction( mEditors->action(MultiEditor::EvaluateRegion) );
-    menu->addAction( mEditors->action(MultiEditor::EvaluateLine) );
-    menu->addAction( mMain->scProcess()->action(ScIDE::ScProcess::StopMain) );
-    menu->addSeparator();
-    menu->addAction( mActions[LookupImplementationForCursor] );
-    menu->addAction( mActions[LookupImplementation] );
-    menu->addAction( mActions[LookupReferencesForCursor] );
-    menu->addAction( mActions[LookupReferences] );
 
     menuBar->addMenu(menu);
 

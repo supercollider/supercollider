@@ -150,6 +150,9 @@ public:
 
 signals:
     void currentDocumentChanged( Document * );
+    void splitViewActivated();
+    void splitViewDeactivated();
+    void updateDockletOrder( int, int );
 
 public slots:
 
@@ -169,6 +172,8 @@ public slots:
 
     void setShowAutocompleteHelp(bool on);
 
+    void updateTabsOrder( QList<Document*> );
+
 private slots:
     void applySettings( Settings::Manager * );
     void onOpen( Document *, int initialCursorPosition, int selectionLength );
@@ -180,6 +185,7 @@ private slots:
     void onCurrentEditorChanged( GenericCodeEditor * );
     void onBoxActivated( CodeEditorBox * );
     void onDocModified( QObject * );
+    void updateDocOrder( int, int);
 
 private:
     void makeSignalConnections();
@@ -187,13 +193,16 @@ private:
     void createActions();
     void updateActions();
     int addTab( Document * );
-    CodeEditorBox *newBox();
+    CodeEditorBox *newBox( MultiSplitter * );
     void setCurrentBox( CodeEditorBox * );
     void setCurrentEditor( GenericCodeEditor * );
     void loadBoxState( CodeEditorBox *box, const QVariantList & data, const QList<Document *> & documentList );
-    void loadSplitterState( QSplitter *, const QVariantMap & data, const QList<Document *> & documentList );
+    void loadSplitterState( MultiSplitter *, const QVariantMap & data, const QList<Document *> & documentList );
+    void showEditorTabs( bool );
+    void activateComboBoxWhenSplitting();
+    void setMainComboBoxOption();
 
-    QAction *mActions[ActionRoleCount];
+    QAction *mActions[ActionRoleCount];                                                                                                                                                                                                                                             
 
     SignalMultiplexer * mEditorSigMux;
     SignalMultiplexer * mBoxSigMux;
@@ -204,6 +213,7 @@ private:
     CodeEditorBox *mCurrentEditorBox;
     MultiSplitter *mSplitter;
     QIcon mDocModifiedIcon;
+    QVBoxLayout *multiEditorLayout;
 };
 
 } // namespace ScIDE

@@ -44,6 +44,7 @@
 #include <QWidget>
 #include <QLayout>
 #include <QVector>
+#include <QUrl>
 #include <QVariantList>
 
 class QObjectProxy;
@@ -234,6 +235,18 @@ template <> struct TypeCodec<QString>
   }
 
   static void write( PyrSlot *slot, const QString & val );
+};
+
+template <> struct TypeCodec<QUrl>
+{
+  static QUrl read( PyrSlot *slot );
+  
+  static QUrl safeRead( PyrSlot *slot )
+  {
+    return read(slot);
+  }
+  
+  static void write( PyrSlot *slot, const QUrl & val );
 };
 
 template <> struct TypeCodec<QPointF>
@@ -495,6 +508,34 @@ template <> struct TypeCodec<QVariantList>
   }
 
   static void write( PyrSlot *slot, const QVariantList & );
+};
+
+template<typename QObjectT>
+struct TypeCodec<QObjectT, void>
+{
+  static QObjectT read( PyrSlot *slot )
+  {
+    return safeRead(slot);
+  }
+  
+  static QObjectT safeRead( PyrSlot *slot )
+  {
+    QObjectProxy* proxy = TypeCodec<QObjectProxy*>::safeRead(slot);
+    
+    if (proxy) {
+      QObjectT action = qobject_cast<QObjectT>(proxy->object());
+      return action;
+    } else {
+      return 0;
+    }
+  }
+  
+  static void write(PyrSlot * slot, QObjectT object)
+  {
+    QObject* qobject = qobject_cast<QObject*>(object);
+    TypeCodec<QObject*>::write(slot, qobject);
+  }
+  
 };
 
 } // namespace QtCollider

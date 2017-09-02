@@ -22,3 +22,11 @@
 #if !defined(__CUDACC_VER__) || (__CUDACC_VER__ < 70500)
 #   define BOOST_NO_CXX11_VARIADIC_TEMPLATES
 #endif
+// The same bug is back again in 8.0:
+#if (__CUDACC_VER__ > 80000) && (__CUDACC_VER__ < 80100)
+#   define BOOST_NO_CXX11_VARIADIC_TEMPLATES
+#endif
+// Most recent CUDA (8.0) has no constexpr support in msvc mode:
+#if defined(_MSC_VER)
+#  define BOOST_NO_CXX11_CONSTEXPR
+#endif

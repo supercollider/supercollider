@@ -9,6 +9,7 @@
 #ifndef BOOST_TT_HAS_TRIVIAL_ASSIGN_HPP_INCLUDED
 #define BOOST_TT_HAS_TRIVIAL_ASSIGN_HPP_INCLUDED
 
+#include <cstddef> // size_t
 #include <boost/type_traits/detail/config.hpp>
 #include <boost/type_traits/intrinsics.hpp>
 #include <boost/type_traits/integral_constant.hpp>

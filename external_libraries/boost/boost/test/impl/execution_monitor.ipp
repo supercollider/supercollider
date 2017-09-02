@@ -6,19 +6,16 @@
 
 //  See http://www.boost.org/libs/test for the library home page.
 //
-//  File        : $RCSfile$
-//
-//  Version     : $Revision$
-//
-//  Description : provides execution monitor implementation for all supported
-//  configurations, including Microsoft structured exception based, unix signals
-//  based and special workarounds for borland
-//
-//  Note that when testing requirements or user wishes preclude use of this
-//  file as a separate compilation unit, it may be included as a header file.
-//
-//  Header dependencies are deliberately restricted to reduce coupling to other
-//  boost libraries.
+///  @file
+///  Provides execution monitor implementation for all supported
+///  configurations, including Microsoft structured exception based, unix signals
+///  based and special workarounds for borland
+///
+///  Note that when testing requirements or user wishes preclude use of this
+///  file as a separate compilation unit, it may be included as a header file.
+///
+///  Header dependencies are deliberately restricted to reduce coupling to other
+///  boost libraries.
 // ***************************************************************************
 
 #ifndef BOOST_TEST_EXECUTION_MONITOR_IPP_012205GER
@@ -68,6 +65,7 @@ using std::va_list;
 // to use vsnprintf
 #if defined(__QNXNTO__)
 #  include <stdio.h>
+using std::va_list;
 #endif
 
 #ifdef BOOST_SEH_BASED_SIGNAL_HANDLING
@@ -155,8 +153,10 @@ namespace { void _set_se_translator( void* ) {} }
 #    include <android/api-level.h>
 #  endif
 
+// documentation of BOOST_TEST_DISABLE_ALT_STACK in execution_monitor.hpp
 #  if !defined(__CYGWIN__) && !defined(__QNXNTO__) && !defined(__bgq__) && \
-   (!defined(__ANDROID__) || __ANDROID_API__ >= 8)
+   (!defined(__ANDROID__) || __ANDROID_API__ >= 8) && \
+   !defined(BOOST_TEST_DISABLE_ALT_STACK)
 #    define BOOST_TEST_USE_ALT_STACK
 #  endif
 
@@ -182,8 +182,8 @@ namespace { void _set_se_translator( void* ) {} }
 #include <errno.h>
 #endif
 
-#if defined(__GNUC__) && !defined(BOOST_NO_TYPEID)
-#  include <cxxabi.h>
+#if !defined(BOOST_NO_TYPEID) && !defined(BOOST_NO_RTTI)
+#  include <boost/core/demangle.hpp>
 #endif
 
 #include <boost/test/detail/suppress_warnings.hpp>
@@ -288,39 +288,33 @@ struct fpe_except_guard {
     : m_detect_fpe( detect_fpe )
     {
         // prepare fp exceptions control
-        m_previosly_enabled = fpe::disable( fpe::BOOST_FPE_ALL );
-        if( m_previosly_enabled != fpe::BOOST_FPE_INV && detect_fpe != fpe::BOOST_FPE_OFF )
+        m_previously_enabled = fpe::disable( fpe::BOOST_FPE_ALL );
+        if( m_previously_enabled != fpe::BOOST_FPE_INV && detect_fpe != fpe::BOOST_FPE_OFF )
             fpe::enable( detect_fpe );
     }
     ~fpe_except_guard()
     {
         if( m_detect_fpe != fpe::BOOST_FPE_OFF )
             fpe::disable( m_detect_fpe );
-        if( m_previosly_enabled != fpe::BOOST_FPE_INV )
-            fpe::enable( m_previosly_enabled );
+        if( m_previously_enabled != fpe::BOOST_FPE_INV )
+            fpe::enable( m_previously_enabled );
     }
 
     unsigned m_detect_fpe;
-    unsigned m_previosly_enabled;
+    unsigned m_previously_enabled;
 };
 
-#ifndef BOOST_NO_TYPEID
 
 // ************************************************************************** //
 // **************                  typeid_name                 ************** //
 // ************************************************************************** //
 
+#if !defined(BOOST_NO_TYPEID) && !defined(BOOST_NO_RTTI)
 template<typename T>
-char const*
+std::string
 typeid_name( T const& t )
 {
-#ifdef __GNUC__
-    int status;
-
-    return abi::__cxa_demangle( typeid(t).name(), 0, 0, &status );
-#else
-    return typeid(t).name();
-#endif
+    return boost::core::demangle(typeid(t).name());
 }
 #endif
 
@@ -605,7 +599,7 @@ system_signal_exception::report() const
         break;
 
     default:
-        report_error( execution_exception::system_error, 
+        report_error( execution_exception::system_error,
                       "unrecognized signal %d", m_sig_info->si_signo );
     }
 }
@@ -1224,7 +1218,7 @@ execution_monitor::execute( boost::function<int ()> const& F )
                               "std::string: %s", ex.c_str() ); }
 
     //  std:: exceptions
-#ifdef BOOST_NO_TYPEID
+#if defined(BOOST_NO_TYPEID) || defined(BOOST_NO_RTTI)
 #define CATCH_AND_REPORT_STD_EXCEPTION( ex_name )                           \
     catch( ex_name const& ex )                                              \
        { detail::report_error( execution_exception::cpp_exception_error,    \
@@ -1236,7 +1230,7 @@ execution_monitor::execute( boost::function<int ()> const& F )
     catch( ex_name const& ex )                                              \
         { detail::report_error( execution_exception::cpp_exception_error,   \
                           current_exception_cast<boost::exception const>(), \
-                          "%s: %s", detail::typeid_name(ex), ex.what() ); } \
+                          "%s: %s", detail::typeid_name(ex).c_str(), ex.what() ); } \
 /**/
 #endif
 
@@ -1266,7 +1260,7 @@ execution_monitor::execute( boost::function<int ()> const& F )
     catch( boost::exception const& ex )
       { detail::report_error( execution_exception::cpp_exception_error,
                               &ex,
-#ifdef BOOST_NO_TYPEID
+#if defined(BOOST_NO_TYPEID) || defined(BOOST_NO_RTTI)
                               "unknown boost::exception" ); }
 #else
                               typeid(ex).name()          ); }
@@ -1363,7 +1357,7 @@ enable( unsigned mask )
 
 #if defined(UNDER_CE)
     /* Not Implemented in Windows CE */
-    return 0;
+    return BOOST_FPE_OFF;
 #elif defined(BOOST_SEH_BASED_SIGNAL_HANDLING)
     _clearfp();
 
@@ -1381,13 +1375,16 @@ enable( unsigned mask )
 #endif
 
     return ~old_cw & BOOST_FPE_ALL;
-#elif defined(__GLIBC__) && defined(__USE_GNU) && !defined(BOOST_CLANG) && !defined(BOOST_NO_FENV_H)
+#elif defined(__GLIBC__) && defined(__USE_GNU)
+    if (BOOST_FPE_ALL == BOOST_FPE_OFF)
+        /* Not Implemented */
+        return BOOST_FPE_OFF;
     feclearexcept(BOOST_FPE_ALL);
     int res = feenableexcept( mask );
     return res == -1 ? (unsigned)BOOST_FPE_INV : (unsigned)res;
 #else
     /* Not Implemented  */
-    return 0;
+    return BOOST_FPE_OFF;
 #endif
 }
 
@@ -1400,7 +1397,7 @@ disable( unsigned mask )
 
 #if defined(UNDER_CE)
     /* Not Implemented in Windows CE */
-    return 0;
+    return BOOST_FPE_INV;
 #elif defined(BOOST_SEH_BASED_SIGNAL_HANDLING)
     _clearfp();
 
@@ -1418,7 +1415,10 @@ disable( unsigned mask )
 #endif
 
     return ~old_cw & BOOST_FPE_ALL;
-#elif defined(__GLIBC__) && defined(__USE_GNU) && !defined(BOOST_CLANG) && !defined(BOOST_NO_FENV_H)
+#elif defined(__GLIBC__) && defined(__USE_GNU)
+    if (BOOST_FPE_ALL == BOOST_FPE_OFF)
+        /* Not Implemented */
+        return BOOST_FPE_INV;
     feclearexcept(BOOST_FPE_ALL);
     int res = fedisableexcept( mask );
     return res == -1 ? (unsigned)BOOST_FPE_INV : (unsigned)res;
@@ -1437,4 +1437,3 @@ disable( unsigned mask )
 #include <boost/test/detail/enable_warnings.hpp>
 
 #endif // BOOST_TEST_EXECUTION_MONITOR_IPP_012205GER
-

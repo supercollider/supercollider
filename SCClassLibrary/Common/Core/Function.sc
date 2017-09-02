@@ -67,7 +67,7 @@ Function : AbstractFunction {
 			var val = envir[name];
 			val !? { prototypeFrame[i] = val };
 		};
-	//	postf("argNames: % prototypeFrame: %\n", def.argNames, prototypeFrame);
+		//	postf("argNames: % prototypeFrame: %\n", def.argNames, prototypeFrame);
 
 		// evaluate a function, using arguments from the supplied environment
 		// slightly faster than valueEnvir and does not replace the currentEnvironment
@@ -104,19 +104,19 @@ Function : AbstractFunction {
 	block {
 		^this.value {|val| ^val };
 	}
-//	block {
-//		var result;
-//		try {
-//			result = this.value #{|val| Break(val).throw };
-//		}{|error|
-//			if (error.class == Break) {
-//				^error.value
-//			}{
-//				error.throw
-//			}
-//		}
-//		^result
-//	}
+	//	block {
+	//		var result;
+	//		try {
+	//			result = this.value #{|val| Break(val).throw };
+	//		}{|error|
+	//			if (error.class == Break) {
+	//				^error.value
+	//			}{
+	//				error.throw
+	//			}
+	//		}
+	//		^result
+	//	}
 
 	asRoutine {
 		^Routine.new(this)
@@ -192,12 +192,12 @@ Function : AbstractFunction {
 	try { arg handler;
 		var result = this.prTry;
 		if (result.isException) { ^handler.value(result); }
-			{ ^result }
+		{ ^result }
 	}
 	prTry {
 		var result, thread = thisThread;
 		var next = thread.exceptionHandler,
-			wasInProtectedFunc = Exception.inProtectedFunction;
+		wasInProtectedFunc = Exception.inProtectedFunction;
 		thread.exceptionHandler = {|error|
 			thread.exceptionHandler = next; // pop
 			^error
@@ -252,16 +252,74 @@ Function : AbstractFunction {
 		if(def.argNames.isNil) { ^this };
 
 		^interpret(
-				"#{ arg " ++ " " ++ def.argumentString(true) ++ "; "
-				++ "[ " ++ def.argumentString(false) ++ " ].flop };"
-				)
+			"#{ arg " ++ " " ++ def.argumentString(true) ++ "; "
+			++ "[ " ++ def.argumentString(false) ++ " ].flop };"
+		)
 	}
 
-		// attach the function to a specific environment
+	// attach the function to a specific environment
 	inEnvir { |envir|
 		envir ?? { envir = currentEnvironment };
 		^{ |... args| envir.use({ this.valueArray(args) }) }
 	}
+
+	asBuffer { |duration = 0.01, server, action, fadeTime = (0)|
+		var buffer, def, synth, name, numChannels, rate;
+		server = server ? Server.default;
+
+		name = this.hash.asString;
+		def = SynthDef(name, { |bufnum|
+			var	val = this.value;
+			if(val.isValidUGenInput.not) {
+				val.dump;
+				Error("loadToFloatArray failed: % is no valid UGen input".format(val)).throw
+			};
+			val = UGen.replaceZeroesWithSilence(val.asArray);
+			rate = val.rate;
+			if(rate == \audio) { // convert mixed rate outputs:
+				val = val.collect { |x| if(x.rate != \audio) { K2A.ar(x) } { x } }
+			};
+			numChannels = val.size.max(1);
+			if(fadeTime > 0) {
+				val = val * EnvGen.kr(Env.linen(fadeTime, duration - (2 * fadeTime), fadeTime))
+			};
+			RecordBuf.perform(RecordBuf.methodSelectorForRate(rate), val, bufnum, loop: 0);
+			Line.perform(Line.methodSelectorForRate(rate), dur: duration, doneAction: 2);
+		});
+
+		buffer = Buffer.new(server);
+
+		Routine.run {
+			var numFrames, running;
+			running = server.serverRunning;
+			if(running.not) { server.bootSync; 1.wait };
+			numFrames = duration * server.sampleRate;
+			if(rate == \control) { numFrames = numFrames / server.options.blockSize };
+			buffer.numFrames = numFrames;
+			buffer.numChannels = numChannels;
+			buffer = buffer.alloc(numFrames, numChannels);
+			server.sync;
+			def.send(server);
+			server.sync;
+			synth = Synth(name, [\bufnum, buffer], server);
+			OSCFunc({
+				action.value(buffer);
+				server.sendMsg("/d_free", name);
+			}, '/n_end', server.addr, nil, [synth.nodeID]).oneShot;
+		};
+
+		^buffer
+	}
+
+	loadToFloatArray { |duration = 0.01, server, action|
+		this.asBuffer(duration, server, { |buffer|
+			buffer.loadToFloatArray(action: { |array|
+				action.value(array, buffer);
+				buffer.free
+			})
+		})
+	}
+
 }
 
 Thunk : AbstractFunction {

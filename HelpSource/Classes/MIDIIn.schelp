@@ -278,15 +278,15 @@ MIDIIn.connect;
 s.boot;
 
 (
-SynthDef("sik-goo", { arg freq=440,formfreq=100,gate=0.0,bwfreq=800;
+SynthDef("sik-goo", { |out, freq = 440, formfreq = 100, gate = 0.0, bwfreq = 800|
 	var x;
 	x = Formant.ar(
 		SinOsc.kr(0.02, 0, 10, freq),
 		formfreq,
 		bwfreq
 	);
-	x = EnvGen.kr(Env.adsr, gate,Latch.kr(gate,gate)) * x;
-	Out.ar(0, x);
+	x = EnvGen.kr(Env.adsr, gate, Latch.kr(gate, gate)) * x;
+	Out.ar(out, x);
 }).add;
 )
 
@@ -330,12 +330,17 @@ code::
 s.boot;
 
 (
-SynthDef("moto-rev", { arg ffreq=100;
+SynthDef("moto-rev", { |out, ffreq = 100|
 	var x;
-	x = RLPF.ar(LFPulse.ar(SinOsc.kr(0.2, 0, 10, 21), [0,0.1], 0.1),
-		ffreq, 0.1)
-		.clip2(0.4);
-	Out.ar(0, x);
+	x = RLPF.ar(
+		LFPulse.ar(
+			SinOsc.kr(0.2, 0, 10, 21),
+			[0, 0.1],
+			0.1
+		),
+		ffreq, 0.1
+	).clip2(0.4);
+	Out.ar(out, x);
 }).add;
 )
 
@@ -382,10 +387,10 @@ code::
 
 s.boot;
 (
-SynthDef("funk",{ arg freq = 700, amp = 0.2, gate = 1, cutoff = 20000, rez = 1, lfospeed=0;
-	var e,x,env,range,filterfreq;
+SynthDef("funk",{ | out, freq = 700, amp = 0.2, gate = 1, cutoff = 20000, rez = 1, lfospeed = 0 |
+	var e, x, env, range, filterfreq;
 	e = Env.new([0, 0.1, 0.1, 0], [0, 0.1, 0.1], 'linear', 2);
-	env=Env.adsr(0.3,1,1,1);
+	env = Env.adsr(0.3,1,1,1);
 	range = cutoff -1;
 	filterfreq = SinOsc.kr(lfospeed,0, range, cutoff).abs;
 	x = RLPF.ar(Mix.ar([
@@ -394,18 +399,18 @@ SynthDef("funk",{ arg freq = 700, amp = 0.2, gate = 1, cutoff = 20000, rez = 1, 
 		]),
 		EnvGen.kr(env,gate)*filterfreq,
 		rez);
-	Out.ar([0,1],x * EnvGen.kr(e, gate, doneAction: 2))
+	Out.ar(out, x * EnvGen.kr(e, gate, doneAction: Done.freeSelf))
 }).add;
 
-SynthDef("strings",{ arg freq = 700, amp = 0.2, gate = 1;
-	var x,enve;
+SynthDef("strings", { |out, freq = 700, amp = 0.2, gate = 1|
+	var x, enve;
 	enve = Env.new([0, 0.1, 0.1, 0], [2, 0.1, 1], 'linear', 2);
 	x = RLPF.ar(Mix.ar([
 			Mix.arFill(2, {Saw.ar(freq +2.rand2,0.6)}),
 			Mix.arFill(2, {Saw.ar(freq *0.5 + 2.rand2,0.6)})
 		]),
 		6000,1);
-	Out.ar([0,1],x * EnvGen.kr(enve, gate, doneAction: 2))
+	Out.ar(out, x * EnvGen.kr(enve, gate, doneAction: Done.freeSelf))
 }).add;
 )
 

@@ -174,7 +174,7 @@
 
 		space = ProxySpace.findSpace(this);
 		spaceCS = try { space.asCode } {
-			inform("// <could not find a space for proxy: %!>".format(this.asCompileString));
+			postln("// <could not find a space for proxy: %!>".format(this.asCompileString));
 			""
 		};
 

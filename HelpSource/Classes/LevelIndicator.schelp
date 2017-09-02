@@ -23,7 +23,7 @@ returns:: A link::Classes/Float::
 
 METHOD:: warning
 METHOD:: critical
-Set the warning and critical thresholds. If meter value is above either threshold, link::#-warningColor or link::#-criticalColor will be shown, respectively (by default, yellow and red).
+Set the warning and critical thresholds. If meter value is above either threshold, link::#-warningColor:: or link::#-criticalColor:: will be shown, respectively (by default, yellow and red).
 If link::#-drawsPeak:: is true warning color will be displayed based on link::#-peakLevel:: rather than value.
 
 argument:: val

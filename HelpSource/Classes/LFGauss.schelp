@@ -24,7 +24,7 @@ argument:: loop
 if loop is > 0, UGen oscillates. Otherwise it calls doneAction after one cycle (default: 1)
 argument:: doneAction
 doneAction, which is evaluated after cycle completes (2 frees the synth, default: 0).
-See link::Reference/UGen-doneActions:: for more detail.
+See link::Classes/Done:: for more detail.
 
 
 instancemethods::
@@ -175,7 +175,7 @@ var width = 0.25;
 var dur = ncycles / freq;
 {
 
-	var env = LFGauss.ar(dur, width, loop: 0, doneAction: 2).range;
+	var env = LFGauss.ar(dur, width, loop: 0, doneAction: Done.freeSelf).range;
 	var son = FSinOsc.ar(freq, 0.5pi, env);
 	son
 }.plot(dur);
@@ -184,7 +184,7 @@ var dur = ncycles / freq;
 
 (
 SynthDef(\gabor, { |out, i_freq = 440, i_sustain = 1, i_pan = 1, i_amp = 0.1, i_width = 0.25 |
-	var env = LFGauss.ar(i_sustain, i_width, loop: 0, doneAction: 2).range;
+	var env = LFGauss.ar(i_sustain, i_width, loop: 0, doneAction: Done.freeSelf).range;
 	var son = FSinOsc.ar(i_freq, 0.5pi, env);
 	OffsetOut.ar(out, Pan2.ar(son, i_pan, i_amp));
 
@@ -220,7 +220,7 @@ Pdef(\x,
 // compare with sine grain.
 (
 SynthDef(\gabor, { |out, i_freq = 440, i_sustain = 1, i_pan = 1, i_amp = 0.1, i_width=0.25 |
-	var env = EnvGen.ar(Env.sine(i_sustain * i_width), doneAction: 2);
+	var env = EnvGen.ar(Env.sine(i_sustain * i_width), doneAction: Done.freeSelf);
 	var son = FSinOsc.ar(i_freq, 0.5pi, env);
 	OffsetOut.ar(out, Pan2.ar(son, i_pan, i_amp));
 

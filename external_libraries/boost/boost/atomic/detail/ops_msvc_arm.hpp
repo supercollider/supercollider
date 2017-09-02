@@ -53,6 +53,8 @@ namespace detail {
 
 struct msvc_arm_operations_base
 {
+    static BOOST_CONSTEXPR_OR_CONST bool is_always_lock_free = true;
+
     static BOOST_FORCEINLINE void hardware_full_fence() BOOST_NOEXCEPT
     {
         __dmb(0xB); // _ARM_BARRIER_ISH, see armintr.h from MSVC 11 and later

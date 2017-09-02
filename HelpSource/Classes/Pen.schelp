@@ -43,10 +43,10 @@ An instance of link::Classes/Point::
 
 method:: quadCurveTo
 Draws a quad bezier curve from the current position to point.
-strong::cpoint1:: is a control point determining the curve's curvature.
+strong::cpoint:: is a control point determining the curve's curvature.
 argument:: endPoint
 An instance of link::Classes/Point::
-argument:: cPoint1
+argument:: cPoint
 An instance of link::Classes/Point::
 
 method:: arcTo
@@ -1017,7 +1017,7 @@ subsection:: Blending modes
 code::
 /*
 different blend modes:
-OS X 10.4 and > Only
+macOS 10.4 and > Only
 --------------------
 0 - Normal
 1 - Multiply

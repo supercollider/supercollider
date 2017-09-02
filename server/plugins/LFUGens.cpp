@@ -34,7 +34,7 @@ struct Vibrato : public Unit
 	double mPhase, m_attackSlope, m_attackLevel;
 	float mFreqMul, m_scaleA, m_scaleB, mFreq;
 	int m_delay, m_attack;
-    float trig;
+	float trig;
 };
 
 struct LFPulse : public Unit
@@ -2817,7 +2817,7 @@ static inline bool check_gate_ar(EnvGen * unit, int i, float & prevGate, float *
 
 static inline bool EnvGen_nextSegment(EnvGen * unit, int & counter, double & level)
 {
-    //if (unit->m_stage == ENVGEN_NOT_STARTED) { return true; } // this fixes doneAction 14, but breaks with EnvGen_next_aa
+	//if (unit->m_stage == ENVGEN_NOT_STARTED) { return true; } // this fixes doneAction 14, but breaks with EnvGen_next_aa
 
 	//Print("stage %d rel %d\n", unit->m_stage, (int)ZIN0(kEnvGen_releaseNode));
 	int numstages = (int)ZIN0(kEnvGen_numStages);
@@ -3037,7 +3037,7 @@ static inline void EnvGen_perform(EnvGen * unit, float *& out, double & level, i
 				break;
 			ZXP(out) = level;
 			y1 += grow;
-            y1 = sc_max(y1,0);
+			y1 = sc_max(y1,0);
 			level = y1*y1*y1;
 		}
 		unit->m_y1 = y1;

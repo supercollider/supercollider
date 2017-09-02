@@ -29,8 +29,12 @@
 #include <QBasicTimer>
 #include <QTime>
 #include <QPalette>
+#include <QGLWidget>
 
-class QcCanvas : public QWidget
+//typedef QGLWidget QcCanvasBase;
+typedef QWidget QcCanvasBase;
+
+class QcCanvas : public QcCanvasBase
 {
   Q_PROPERTY( bool clearOnRefresh READ clearOnRefresh WRITE setClearOnRefresh );
   Q_PROPERTY( bool drawingEnabled READ drawingEnabled WRITE setDrawingEnabled );

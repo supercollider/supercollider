@@ -55,6 +55,13 @@ definitionList::
 ## \out || Generally used for the output bus of a link::Classes/Synth::. When using link::Classes/Pbus:: or link::Classes/Pfxb::, an audio bus is allocated to isolate the pattern's signal. All events from the pattern receive the new bus number in the code::\out:: slot, and SynthDefs being played should use an code::out:: argument for the target of output UGens, e.g., code::Out.ar(out, ...):: .
 ::
 
+subsection::User function hooks
+
+definitionList::
+## \finish || A function that will be executed after code::play:: has been called, but before event type processing. Use this to manipulate event data.
+## \callback || A function that will be executed after the Event has finished all its work. The code::callback:: may be used for bookkeeping. Finished Events are expected to store new node IDs under code::~id::; with the IDs, you can register functions to watch node status or set node controls, for instance. The function receives the finished event as its argument.
+::
+
 section::Event Types
 
 subsection::Node control
@@ -86,7 +93,6 @@ p.stop;
 ## on || Start a Synth node (or nodes) without releasing. The node ID(s) are in the event's code::~id:: variable. Those IDs can be used with the off, set and kill event types.
 definitionList::
 ## Standard Timing and Node control arguments ||
-## callback || A function that will be executed after creating the nodes. Use this for bookkeeping, to keep track of the node IDs for later use. The function receives the finished event as its argument.
 ## (sendGate and strum parameters are not used) ||
 ::
 
@@ -124,7 +130,7 @@ code::
 SynthDef(\event_set, { |freq = 440, gate = 1, amp = 0.1, lagTime = 0.1,
 		ffreq = 2000, detune = 1.005, out = 0|
 	var	sig = Saw.ar(Lag.kr(freq, lagTime) * [1, detune]).sum * amp
-			* EnvGen.kr(Env.adsr, gate, doneAction: 2);
+			* EnvGen.kr(Env.adsr, gate, doneAction: Done.freeSelf);
 	Out.ar(out, sig ! 2);
 }).add;
 )
@@ -248,7 +254,7 @@ code::
 // create a buffer
 b = (type: \allocRead, path: Platform.resourceDir +/+ "sounds/a11wlk01.wav").play;
 
-a = { PlayBuf.ar(1, b, doneAction: 2) }.play;
+a = { PlayBuf.ar(1, b, doneAction: Done.freeSelf) }.play;
 
 // remove buffer
 EventTypesWithCleanup.cleanup(b);

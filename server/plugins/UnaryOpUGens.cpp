@@ -276,6 +276,8 @@ inline F sc_not(F x)
 }
 
 DEFINE_UNARY_OP_FUNCS(not, sc_not)
+DEFINE_UNARY_OP_FUNCS(bitNot, sc_bitNot)
+
 
 void zero_a(UnaryOpUGen *unit, int inNumSamples)
 {
@@ -512,14 +514,14 @@ extern "C" void name##_a(UnaryOpUGen *unit, int inNumSamples)	\
 extern "C" void name##_1(UnaryOpUGen *unit, int inNumSamples)	\
 {													\
 	RGen& rgen = *unit->mParent->mRGen;				\
-    ZOUT0(0) = rgen.function() * ZIN0(0);			\
+	ZOUT0(0) = rgen.function() * ZIN0(0);				\
 }													\
 													\
 extern "C" void name##_d(UnaryOpUGen *unit, int inNumSamples)	\
 {													\
 	if (inNumSamples) {								\
 		float x = DEMANDINPUT_A(0, inNumSamples);	\
-        RGen& rgen = *unit->mParent->mRGen;				\
+		RGen& rgen = *unit->mParent->mRGen;			\
 		OUT0(0) = sc_isnan(x) ? NAN : (rgen.function() * x);	\
 	} else {										\
 		RESETINPUT(0);								\
@@ -539,7 +541,7 @@ void coin_a(UnaryOpUGen *unit, int inNumSamples)
 	float *a = ZIN(0);
 	RGen& rgen = *unit->mParent->mRGen;			
 	LOOP1(inNumSamples,
-		  ZXP(out) = (rgen.frand() < ZXP(a)) ? 1.f : 0.f;
+	      ZXP(out) = (rgen.frand() < ZXP(a)) ? 1.f : 0.f;
 	);
 }												
 												
@@ -547,7 +549,7 @@ void coin_1(UnaryOpUGen *unit, int inNumSamples)
 {
 	RGen& rgen = *unit->mParent->mRGen;
 	float x = ZIN0(0);
-    ZOUT0(0) = (rgen.frand() < x) ? 1.f : 0.f;
+	ZOUT0(0) = (rgen.frand() < x) ? 1.f : 0.f;
 }												
 												
 void coin_d(UnaryOpUGen *unit, int inNumSamples)
@@ -575,6 +577,7 @@ static UnaryOpFunc ChooseNormalFunc(UnaryOpUGen *unit)
 		case opThru : func = &thru_a; break;
 		case opNeg : func = &invert_a; break;
 		case opNot : func = &not_a; break;
+		case opBitNot : func = &bitNot_a; break;
 		case opAbs : func = &abs_a; break;
 		case opCeil : func = &ceil_a; break;
 		case opFloor : func = &floor_a; break;
@@ -639,6 +642,7 @@ static UnaryOpFunc ChooseOneFunc(UnaryOpUGen *unit)
 		case opThru : func = &thru_a; break;
 		case opNeg : func = &invert_1; break;
 		case opNot : func = &not_1; break;
+		case opBitNot : func = &bitNot_1; break;
 		case opAbs : func = &abs_1; break;
 		case opCeil : func = &ceil_1; break;
 		case opFloor : func = &floor_1; break;
@@ -704,6 +708,7 @@ static UnaryOpFunc ChooseDemandFunc(UnaryOpUGen *unit)
 		case opThru : func = &thru_d; break;
 		case opNeg : func = &invert_d; break;
 		case opNot : func = &not_d; break;
+		case opBitNot : func = &bitNot_d; break;
 		case opAbs : func = &abs_d; break;
 		case opCeil : func = &ceil_d; break;
 		case opFloor : func = &floor_d; break;
@@ -772,6 +777,7 @@ static UnaryOpFunc ChooseNovaSimdFunc(UnaryOpUGen *unit)
 		case opThru : func = &thru_nova; break;
 		case opNeg : return &invert_nova_64;
 		case opNot : func = &not_a; break;
+		case opBitNot : func = &bitNot_a; break;
 		case opAbs : return &abs_nova_64;
 		case opCeil : func = &ceil_nova_64; break;
 		case opFloor : func = &floor_nova_64; break;
@@ -830,6 +836,7 @@ static UnaryOpFunc ChooseNovaSimdFunc(UnaryOpUGen *unit)
 		case opThru : func = &thru_nova; break;
 		case opNeg : func = &invert_nova; break;
 		case opNot : func = &not_a; break;
+		case opBitNot : func = &bitNot_a; break;
 		case opAbs : func = &abs_nova; break;
 		case opCeil : func = &ceil_nova; break;
 		case opFloor : func = &floor_nova; break;

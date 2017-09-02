@@ -1,13 +1,13 @@
 title:: Aggregate Device
-categories:: Platform>OSX
-summary:: How to access the built-in soundcard on Mac OS X 10.4+
+categories:: Platform>macOS (OS X)
+summary:: How to access the built-in soundcard on macOS 10.4+
 related:: Classes/ServerOptions
 
 note::
 This information is slightly out-of-date. There is no longer a requirement to set up an aggregate device for making the built-in soundcard work. Although in some situations this feature might still be useful e.g. when combining multiple soundcards into a single device.
 ::
 
-Since Mac OS X 10.4 (Tiger), the built-in soundcard of the Mac is formally represented as separate input and output devices. On the MacBook for example, there are two input devices (named Built-in Microphone and Built-in Input) and a mutable output device (Built-in Output which appears under the names Line-Out or Internal Speakers in the sound preferences).
+Since macOS 10.4 (Tiger), the built-in soundcard of the Mac is formally represented as separate input and output devices. On the MacBook for example, there are two input devices (named Built-in Microphone and Built-in Input) and a mutable output device (Built-in Output which appears under the names Line-Out or Internal Speakers in the sound preferences).
 
 In SuperCollider, you specify your sound card in the device field of the link::Classes/ServerOptions::. However, you cannot distinguish between an input and an output device. Therefore, to use your built-in microphone for input and your built-in headphones for output, strong::you need to create a virtual "aggregate" device:: (a virtual device that wraps two or more other devices). If you create an aggregate of your microphone and headphones, you can use this single aggregate device as a soundcard for SuperCollider. You need to set up this aggregate device only once.
 

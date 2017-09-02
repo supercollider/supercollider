@@ -33,6 +33,7 @@
 #include "SC_Prototypes.h"
 #include "scsynthsend.h"
 #include "SC_WorldOptions.h"
+#include "SC_Version.hpp"
 
 extern int gMissingNodeID;
 
@@ -427,90 +428,88 @@ SCErr meth_n_mapan(World *inWorld, int inSize, char *inData, ReplyAddress* /*inR
 SCErr meth_n_set(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_n_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
-    sc_msg_iter msg(inSize, inData);
-    Node *node = Msg_GetNode(inWorld, msg);
-    if (!node) return kSCErr_NodeNotFound;
-    while( msg.remain()>=8) {
-	    int i = 0;
-	    int loop = 0;
-	    if (msg.nextTag('i') == 's') {
-		int32* name = msg.gets4();
-		int32 hash = Hash(name);
-		do {
-			switch (msg.nextTag('f') ) {
-			case  'f' :
-			case  'i' :
-			{
-				float32 value = msg.getf();
-				Node_SetControl(node, hash, name, i, value);
-				++i;
-				break;
-			}
-			case 's' :
-			{
-				const char* string = msg.gets();
-				if ( *string == 'c') {
-					int bus = sc_atoi(string+1);
-					Node_MapControl(node, hash, name, i, bus);
-					++i;
+	sc_msg_iter msg(inSize, inData);
+	Node *node = Msg_GetNode(inWorld, msg);
+	if (!node) return kSCErr_NodeNotFound;
+	while( msg.remain()>=8) {
+		int i = 0;
+		int loop = 0;
+		if (msg.nextTag('i') == 's') {
+			int32* name = msg.gets4();
+			int32 hash = Hash(name);
+			do {
+				switch (msg.nextTag('f') ) {
+					case  'f' :
+					case  'i' :
+					{
+						float32 value = msg.getf();
+						Node_SetControl(node, hash, name, i, value);
+						++i;
+						break;
+					}
+					case 's' :
+					{
+						const char* string = msg.gets();
+						if ( *string == 'c') {
+							int bus = sc_atoi(string+1);
+							Node_MapControl(node, hash, name, i, bus);
+							++i;
+						}
+						if ( *string == 'a') {
+							int bus = sc_atoi(string+1);
+							Node_MapAudioControl(node, hash, name, i, bus);
+							++i;
+						}
+						break;
+					}
+					case ']':
+						msg.count++;
+						loop--;
+						break;
+					case '[':
+						msg.count++;
+						loop++;
+						break;
 				}
-			    if ( *string == 'a') {
-				int bus = sc_atoi(string+1);
-				Node_MapAudioControl(node, hash, name, i, bus);
-				++i;
-			    }
-			    break;
-			}
-			case ']':
-			    msg.count++;
-			    loop--;
-			    break;
-			case '[':
-			    msg.count++;
-			    loop++;
-			    break;
-		    }
+			} while (loop);
+		} else {
+			int32 index = msg.geti();
+			do {
+				switch (msg.nextTag('f') ) {
+					case  'f' :
+					case  'i' :
+					{
+						float32 value = msg.getf();
+						Node_SetControl(node, index + i, value);
+						++i;
+						break;
+					}
+					case 's' :
+					{
+						const char* string = msg.gets();
+						if ( *string == 'c') {
+							int bus = sc_atoi(string+1);
+							Node_MapControl(node, index + i, bus);
+							++i;
+						}
+						if ( *string == 'a') {
+							int bus = sc_atoi(string+1);
+							Node_MapAudioControl(node, index + i, bus);
+							++i;
+						}
+						break;
+					}
+					case ']':
+						msg.count++;
+						loop--;
+						break;
+					case '[':
+						msg.count++;
+						loop++;
+						break;
+				}
+			} while (loop);
 		}
-		while (loop);
-	    } else {
-		int32 index = msg.geti();
-		do {
-		    switch (msg.nextTag('f') ) {
-			case  'f' :
-			case  'i' :
-			{
-				float32 value = msg.getf();
-				Node_SetControl(node, index + i, value);
-				++i;
-				break;
-			}
-			case 's' :
-			{
-				const char* string = msg.gets();
-				if ( *string == 'c') {
-				    int bus = sc_atoi(string+1);
-				    Node_MapControl(node, index + i, bus);
-				    ++i;
-				}
-				if ( *string == 'a') {
-				    int bus = sc_atoi(string+1);
-				    Node_MapAudioControl(node, index + i, bus);
-				    ++i;
-				}
-			    break;
-			}
-			case ']':
-			    msg.count++;
-			    loop--;
-			    break;
-			case '[':
-			    msg.count++;
-			    loop++;
-			    break;
-		    }
-		}
-		while (loop);
-	    }
 	}
 
 	//{
@@ -540,8 +539,7 @@ SCErr meth_n_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 //		    }
 //		}
 //		++i;
-//	    }
-//	    while (loop);
+//	    } while (loop);
 //	} else {
 //	    int32 index = msg.geti();
 //	    if (msg.nextTag('f') == '[' ) {
@@ -565,11 +563,10 @@ SCErr meth_n_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inRep
 //		    }
 //		}
 //		++i;
-//	    }
-//	    while (loop);
+//	    } while (loop);
 //	}
 //    }
-    return kSCErr_None;
+	return kSCErr_None;
 }
 
 SCErr meth_n_setn(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
@@ -1326,6 +1323,33 @@ SCErr meth_dumpOSC(World *inWorld, int inSize, char *inData, ReplyAddress *inRep
 	return kSCErr_None;
 }
 
+SCErr meth_version(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
+SCErr meth_version(World *inWorld, int inSize, char *inData, ReplyAddress* inReply)
+{
+	sc_msg_iter msg(inSize, inData);
+
+	small_scpacket packet;
+	packet.adds("/version.reply");
+	packet.maketags(7);
+	packet.addtag(',');
+	packet.addtag('s');
+	packet.adds("scsynth");
+	packet.addtag('i');
+	packet.addi(SC_VersionMajor);
+	packet.addtag('i');
+	packet.addi(SC_VersionMinor);
+	packet.addtag('s');
+	packet.adds(SC_VersionPatch);
+	packet.addtag('s');
+	packet.adds(SC_Branch);
+	packet.addtag('s');
+	packet.adds(SC_CommitHash);
+
+	CallSequencedCommand(SendReplyCmd, inWorld, packet.size(), packet.data(), inReply);
+
+	return kSCErr_None;
+}
+
 SCErr meth_b_set(World *inWorld, int inSize, char *inData, ReplyAddress *inReply);
 SCErr meth_b_set(World *inWorld, int inSize, char *inData, ReplyAddress* /*inReply*/)
 {
@@ -1862,6 +1886,7 @@ void initMiscCommands()
 	NEW_COMMAND(status);
 	NEW_COMMAND(quit);
 	NEW_COMMAND(clearSched);
+	NEW_COMMAND(version);
 
 	NEW_COMMAND(d_recv);
 	NEW_COMMAND(d_load);

@@ -88,7 +88,7 @@ code::
 
 
 
-// supercollider 'differential equations'
+// SuperCollider 'differential equations'
 
 ~out = { SinOsc.ar(Slope.ar(~out.ar) * MouseX.kr(1000, 18000, 1)) * 0.1 + SinOsc.ar(100, 0, 0.1) };
 
@@ -326,14 +326,14 @@ code::
 ~out = SynthDef("w", { arg out=0, gate=1.0;
 	Out.ar(out,
 		SinOsc.ar([Rand(430, 800), Rand(430, 800)], 0, 0.2)
-			* EnvGen.kr(Env.asr(1,1,1), gate, doneAction:2)
+			* EnvGen.kr(Env.asr(1,1,1), gate, doneAction: Done.freeSelf)
 	)
 	});
 )
 
 // once the SynthDef is sent, it can be assigned by name.
 // using this method, a gate argument should be
-// provided that releases the synth. (doneAction:2)
+// provided that releases the synth. (doneAction: Done.freeSelf)
 // this is very efficient, as the def is on the server already.
 
 // if the synth def is in the synthdesc lib (.add) its gate is detected.
@@ -342,7 +342,7 @@ code::
 SynthDef("staub", { arg out, gate=1;
 	Out.ar(out,
 		Ringz.ar(Dust.ar(15), Rand(1, 3) * 3000*[1,1], 0.001)
-			* EnvGen.kr(Env.asr, gate, doneAction:2)
+			* EnvGen.kr(Env.asr, gate, doneAction: Done.freeSelf)
 	)
 }).add;
 )
@@ -356,7 +356,7 @@ SynthDef("staub", { arg out, gate=1;
 ~out = SynthDef("w", { arg out, lfo, f0=430;
 	Out.ar(out,
 		SinOsc.ar([Rand(f0, 800), Rand(f0, 800)]+lfo, 0, 0.2)
-			* EnvGen.kr(Env.perc(0.01, 0.03), doneAction:2)
+			* EnvGen.kr(Env.perc(0.01, 0.03), doneAction: Done.freeSelf)
 	)
 	});
 )
@@ -394,7 +394,7 @@ SynthDef(\who, { arg amp=0.1, freq=440, detune=0, gate=1, out=0, ffreq=800;
 	var env;
 	env = Env.asr(0.01, amp, 0.5);
 	Out.ar(out, Pan2.ar(
-		Formant.ar(freq + detune, ffreq, 30, EnvGen.kr(env, gate, doneAction:2)), Rand(-1.0, 1.0))
+		Formant.ar(freq + detune, ffreq, 30, EnvGen.kr(env, gate, doneAction: Done.freeSelf)), Rand(-1.0, 1.0))
 	)
 }).add;
 
@@ -481,7 +481,7 @@ Instr(\test,
 
 (
 ~out = InstrSpawner({ arg freq=1900,env,pan;
-	Pan2.ar(SinOsc.ar(freq, 0.5pi, 0.3) * EnvGen.kr(env, doneAction: 2), pan)
+	Pan2.ar(SinOsc.ar(freq, 0.5pi, 0.3) * EnvGen.kr(env, doneAction: Done.freeSelf), pan)
 },[
 	Prand([1500, 700, 800, 3000] + 170.rand2, inf),
 	Env.perc(0.002,0.01),
@@ -513,7 +513,7 @@ code::
 (
 ~out = SynthDef("a", { arg out=0, freq=800, pmf=1.0, pan;
 		var env, u;
-		env = EnvGen.kr(Env.perc(0.001, 0.04, 0.4),doneAction:2); // envelope
+		env = EnvGen.kr(Env.perc(0.001, 0.04, 0.4),doneAction: Done.freeSelf); // envelope
 		u = SinOsc.ar(freq * Rand(0.9, 1.1), SinOsc.ar(pmf, 0, pi), env);
 		Out.ar(out, Pan2.ar(u, pan))
 	})
@@ -551,7 +551,7 @@ t.start;
 (
 ~out = SynthDef("a", { arg out, freq=800;
 		var env;
-		env = EnvGen.kr(Env.perc(0.01, 0.1, 0.3),doneAction:2);
+		env = EnvGen.kr(Env.perc(0.01, 0.1, 0.3),doneAction: Done.freeSelf);
 		Out.ar(out, Pulse.ar(freq * Rand([0.9,0.9], 1.1), 0.5, env) )
 	});
 )
@@ -573,7 +573,7 @@ code::
 (
 SynthDef("grain", { arg i_out = 0, pan;
 	var env;
-	env = EnvGen.kr(Env.perc(0.001, 0.003, 0.2),doneAction:2);
+	env = EnvGen.kr(Env.perc(0.001, 0.003, 0.2),doneAction: Done.freeSelf);
 	Out.ar(i_out, Pan2.ar(FSinOsc.ar(Rand(1000,10000)), pan) * env)
 }).send(s);
 )

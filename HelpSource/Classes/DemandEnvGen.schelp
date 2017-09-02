@@ -83,7 +83,7 @@ demand ugen returning time scaling values
 argument::doneAction
 
 A doneAction that is evaluated when level or duration stream
-ends. See link::Reference/UGen-doneActions::  for more detail.
+ends. See link::Classes/Done::  for more detail.
 
 
 Examples::
@@ -167,7 +167,7 @@ code::
 				0,
 				MouseX.kr > 0.5, // gate
 				MouseButton.kr > 0.5, // reset
-				doneAction:0
+				doneAction: Done.none
 			);
 		SinOsc.ar(freq * [1, 1.001]) * 0.1
 
@@ -187,7 +187,7 @@ code::
 				3, 0,
 				MouseX.kr > 0.5 - 0.1, // gate: sample and hold
 				MouseButton.kr > 0.5 * 2, // hard reset
-				doneAction: 0
+				doneAction: Done.none
 			);
 		SinOsc.ar(freq * [1, 1.001]) * 0.1
 
@@ -206,7 +206,7 @@ code::
 				Dseq([1300, 500, 800, 300, 400], 1),
 				0.2,
 				1,
-				doneAction:2
+				doneAction: Done.freeSelf
 			);
 		SinOsc.ar(freq * [1, 1.01]) * 0.1
 
@@ -221,7 +221,7 @@ code::
 				Dseq([1300, 500, 800, 300, 400], 1),
 				0.2,
 				0,
-				doneAction:2
+				doneAction: Done.freeSelf
 			);
 		SinOsc.ar(freq * [1, 1.01]) * 0.1
 

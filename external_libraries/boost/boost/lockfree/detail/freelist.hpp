@@ -49,6 +49,7 @@ class freelist_stack:
     typedef tagged_ptr<freelist_node> tagged_node_ptr;
 
 public:
+    typedef T *           index_t;
     typedef tagged_ptr<T> tagged_node_handle;
 
     template <typename Allocator>
@@ -254,7 +255,9 @@ private:
     atomic<tagged_node_ptr> pool_;
 };
 
-class tagged_index
+class
+BOOST_ALIGNMENT( 4 ) // workaround for bugs in MSVC
+tagged_index
 {
 public:
     typedef boost::uint16_t tag_t;
@@ -396,8 +399,6 @@ class fixed_size_freelist:
         tagged_index next;
     };
 
-    typedef tagged_index::index_t index_t;
-
     void initialize(void)
     {
         T * nodes = NodeStorage::nodes();
@@ -415,6 +416,7 @@ class fixed_size_freelist:
 
 public:
     typedef tagged_index tagged_node_handle;
+    typedef tagged_index::index_t index_t;
 
     template <typename Allocator>
     fixed_size_freelist (Allocator const & alloc, std::size_t count):

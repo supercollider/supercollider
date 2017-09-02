@@ -170,7 +170,7 @@ code::
 	SynthDef(\help_SPE1, { arg i_out=0, freq;
 		var out;
 		out = RLPF.ar(
-			LFSaw.ar( freq, mul: EnvGen.kr( Env.perc, levelScale: 0.3, doneAction: 2 )),
+			LFSaw.ar( freq, mul: EnvGen.kr( Env.perc, levelScale: 0.3, doneAction: Done.freeSelf )),
 			LFNoise1.kr(1, 36, 110).midicps,
 			0.1
 		);

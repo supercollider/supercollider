@@ -4,6 +4,8 @@ categories:: Libraries>JITLib>Patterns
 related:: Classes/Pdefn, Classes/PdefGui
 
 description::
+Pdef registers patterns by key. All accesses to the registered patterns go through the Pdef class via that key. Registered patterns can be replaced while running. The old pattern and its replacement can automatically crossfade and the time of replacement can be quantized.
+
 Pdef is a class that provides an interface to its superclass link::Classes/EventPatternProxy::, keeping a reference to a stream that can be replaced while playing. One pattern may be used in many streams in different places. A change in the pattern definition propagates through all streams.
 
 Pdef and Pdefn use separate global collections.
@@ -47,7 +49,7 @@ code::
 
 (
 SynthDef(\Pdefhelp, { arg out, freq, sustain=1, amp=1, pan;
-    var env = EnvGen.kr(Env.perc(0.01, sustain), 1, doneAction:2);
+    var env = EnvGen.kr(Env.perc(0.01, sustain), 1, doneAction: Done.freeSelf);
     Out.ar(out, Pan2.ar(SinOsc.ar(freq, 0.5pi, amp * env), pan));
 }).add;
 )
@@ -178,7 +180,7 @@ code::
 (
 SynthDef("Pdefhelp", { arg out, freq, sustain=1, amp=1, pan;
 	var env, u=1;
-	env = EnvGen.kr(Env.perc(0.03, sustain), 1, doneAction:2);
+	env = EnvGen.kr(Env.perc(0.03, sustain), 1, doneAction: Done.freeSelf);
 	3.do { var d; d = exprand(0.01, 1); u = SinOsc.ar(d * 300, u, rrand(0.1,1.2) * d, 1) };
 	Out.ar(out, Pan2.ar(SinOsc.ar(u + 1 * freq, 0, amp * env), pan));
 
@@ -261,7 +263,7 @@ s.boot;
 SynthDef("gpdef",
 	{ arg out=0, freq=440, sustain=0.05, amp=0.1, pan;
 		var env;
-		env = EnvGen.kr(Env.perc(0.01, sustain), doneAction:2) * amp;
+		env = EnvGen.kr(Env.perc(0.01, sustain), doneAction: Done.freeSelf) * amp;
 		Out.ar(out, Pan2.ar(SinOsc.ar(freq, 0, env), pan))
 	}).add;
 )

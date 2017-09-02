@@ -21,20 +21,44 @@ Object  {
 	}
 
 	// debugging and diagnostics
-	dump { _ObjectDump }
+	dump {
+		_ObjectDump
+		^this.primitiveFailed
+	}
 	post { this.asString.post }
 	postln { this.asString.postln; }
 	postc { this.asString.postc }
 	postcln { this.asString.postcln; }
 	postcs { this.asCompileString.postln }
-	totalFree { _TotalFree }
-	largestFreeBlock { _LargestFreeBlock }
-	gcDumpGrey { _GCDumpGrey }
-	gcDumpSet { arg set; _GCDumpSet }
-	gcInfo { _GCInfo }
-	gcSanity { _GCSanity }
-	canCallOS { _CanCallOS }
-
+	totalFree {
+		_TotalFree
+		^this.primitiveFailed
+	}
+	largestFreeBlock {
+		_LargestFreeBlock
+		^this.primitiveFailed
+	}
+	gcDumpGrey {
+		_GCDumpGrey
+		^this.primitiveFailed
+	}
+	gcDumpSet {
+		arg set;
+		_GCDumpSet
+		^this.primitiveFailed
+	}
+	gcInfo {
+		_GCInfo
+		^this.primitiveFailed
+	}
+	gcSanity {
+		_GCSanity
+		^this.primitiveFailed
+	}
+	canCallOS {
+		_CanCallOS
+		^this.primitiveFailed
+	}
 
 	//accessing
 	size { ^0 }
@@ -287,7 +311,10 @@ Object  {
 		OnError.run;
 		this.prHalt
 	}
-	prHalt { _Halt }
+	prHalt {
+		_Halt
+		^this.primitiveFailed
+	}
 	primitiveFailed {
 		PrimitiveFailedError(this).throw;
 	}
@@ -319,8 +346,14 @@ Object  {
 	mustBeBoolean { MustBeBooleanError(nil, this).throw; }
 	notYetImplemented { NotYetImplementedError(nil, this).throw; }
 
-	dumpBackTrace { _DumpBackTrace }
-	getBackTrace { _GetBackTrace }
+	dumpBackTrace {
+		_DumpBackTrace
+		^this.primitiveFailed
+	}
+	getBackTrace {
+		_GetBackTrace
+		^this.primitiveFailed
+	}
 	throw {
 		if (Error.handling) {
 			error("throw during error handling!\n");
@@ -389,6 +422,7 @@ Object  {
 	dereference { ^this } // see Ref::dereference
 	reference { ^Ref.new(this) }
 	asRef { ^Ref.new(this) }
+	dereferenceOperand { ^this }
 	// asArray { ^Array.with(this) }
 	asArray { ^this.asCollection.asArray }
 	asSequenceableCollection { ^this.asArray }
@@ -543,11 +577,23 @@ Object  {
 
 
 	// virtual machine debugging...
-	crash { _HostDebugger } // for serious problems..
-	stackDepth { _StackDepth }
-	dumpStack { _DumpStack }
-	dumpDetailedBackTrace { _DumpDetailedBackTrace }
-
+	crash {
+		// for serious problems..
+		_HostDebugger
+		^this.primitiveFailed
+	}
+	stackDepth {
+		_StackDepth
+		^this.primitiveFailed
+	}
+	dumpStack {
+		_DumpStack
+		^this.primitiveFailed
+	}
+	dumpDetailedBackTrace {
+		_DumpDetailedBackTrace
+		^this.primitiveFailed
+	}
 
 	freeze {
 		_ObjectDeepFreeze
@@ -894,12 +940,6 @@ Object  {
 		_AsArchive
 		^this.primitiveFailed;
 	}
-	// support for Gen
-	genNext { ^nil }
-	genCurrent { ^this }
-
-	// support for ViewRedirect
-	*classRedirect { ^this }
 
 	help {
 		this.class.asString.help

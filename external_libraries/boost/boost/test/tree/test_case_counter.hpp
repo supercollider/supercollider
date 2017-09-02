@@ -5,11 +5,8 @@
 
 //  See http://www.boost.org/libs/test for the library home page.
 //
-//  File        : $RCSfile$
-//
-//  Version     : $Revision: 74640 $
-//
-//  Description : defines test_case_counter
+/// @file
+/// Defines @ref test_case_counter
 // ***************************************************************************
 
 #ifndef BOOST_TEST_TREE_TEST_CASE_COUNTER_HPP_100211GER
@@ -33,6 +30,7 @@ namespace unit_test {
 // **************                test_case_counter             ************** //
 // ************************************************************************** //
 
+///! Counts the number of enabled test cases
 class test_case_counter : public test_tree_visitor {
 public:
     // Constructor

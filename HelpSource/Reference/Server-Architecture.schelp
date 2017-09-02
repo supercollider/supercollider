@@ -51,7 +51,7 @@ definitionlist::
 || a port number 0-65535
 
 ## -v verbosity
-|| Controls the verbosity of server messages. A value of 0 is normal behaviour, -1 suppresses informational messages, and -2 suppresses informational and many error messages.
+|| Controls the verbosity of server messages. A value of 0 is normal behaviour. -1 suppresses informational messages. -2 suppresses informational and many error messages, as well as messages from Poll. The default is 0.
 
 ## -a num-audio-bus-channels
 || number of audio bus channels (default = 1024). The space allocated for audio buses is: (numchannels * (blocksize + 1) * 4)
@@ -140,7 +140,7 @@ scsynth -N score.osc _ out.aiff 48000 AIFF int24
 
 section:: Binary Format of Messages
 
-Messages are similar in format to Open Sound Control messages, except that OSC #bundles may not be nested, and pattern matching of the command name is not performed. When streamed via TCP, Messages are each preceded by a 32 bit integer giving the length in bytes of the message. UDP datagrams contain this length information already.
+Messages are similar in format to Open Sound Control messages, except that pattern matching of the command name is not performed. When streamed via TCP, messages are each preceded by a 32 bit integer giving the length in bytes of the message. UDP datagrams contain this length information already.
 
 subsection:: Types
 All values are in network byte order.

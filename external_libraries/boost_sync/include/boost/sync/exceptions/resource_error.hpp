@@ -32,15 +32,17 @@ class BOOST_SYMBOL_VISIBLE resource_error :
     public runtime_exception
 {
 public:
-    explicit resource_error(int sys_err = 0) : runtime_exception(sys_err, "boost::sync::resource_error")
+    resource_error() : runtime_exception(0, "boost::sync::resource_error")
     {
     }
 
-    resource_error(int sys_err, const char* what) : runtime_exception(sys_err, what)
+    template <typename ErrorCode>
+    explicit resource_error(ErrorCode sys_err) : runtime_exception(static_cast<int>(sys_err), "boost::sync::resource_error")
     {
     }
 
-    resource_error(int sys_err, std::string const& what) : runtime_exception(sys_err, what)
+    template <typename ErrorCode, typename ArgString>
+    resource_error(ErrorCode sys_err, ArgString const& what) : runtime_exception(static_cast<int>(sys_err), what)
     {
     }
 

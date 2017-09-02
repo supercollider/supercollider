@@ -1,17 +1,29 @@
 class:: AllpassN
-summary:: All pass delay line with no interpolation.
+summary:: Schroeder allpass delay line with no interpolation.
 related:: Classes/AllpassC, Classes/AllpassL, Classes/BufAllpassN
 categories::  UGens>Delays
 
 
 Description::
 
-All pass delay line with no interpolation. See also
-link::Classes/AllpassL::  which uses linear interpolation, and
-link::Classes/AllpassC::  which uses cubic interpolation.
-Cubic interpolation is more computationally expensive than linear,
-but more accurate.
+A Schroeder allpass filter is given by the difference equations
 
+code::
+s(t) = x(t) + k * s(t - D)
+y(t) = -k * s(t) + s(t - D)
+::
+
+where code::x(t):: is the input signal, code::y(t):: is the output signal,
+code::D:: is the delay time, and code::k:: is the allpass coefficient.
+
+In this UGen, code::k:: is computed as
+code::k == 0.001 ** (delay / decay.abs) * decay.sign:: (0.001 is -60 dBFS).
+
+This UGen quantizes the delay time to the nearest sample period, and will
+produce aliasing artifacts if the delay time is modulated. If these
+are undesirable properties, the more CPU-expensive alternatives are
+link::Classes/AllpassL:: which uses linear interpolation, and
+link::Classes/AllpassC:: which uses cubic interpolation.
 
 classmethods::
 
@@ -27,7 +39,7 @@ argument::delaytime
 Delay time in seconds.
 
 argument::decaytime
-Time for the echoes to decay by 60 decibels. If this time is negative then the feedback coefficient will be negative, thus emphasizing only odd harmonics at an octave lower.
+Time for the echoes to decay by 60 decibels. If this time is negative, then the feedback coefficient will be negative, thus emphasizing only odd harmonics at an octave lower.
 
 argument::mul
 Output will be multiplied by this value.
@@ -42,7 +54,7 @@ code::
 // Since the allpass delay has no audible effect as a resonator on
 // steady state sound ...
 
-{ AllpassC.ar(WhiteNoise.ar(0.1), 0.01, XLine.kr(0.0001, 0.01, 20), 0.2) }.play;
+{ AllpassN.ar(WhiteNoise.ar(0.1), 0.01, XLine.kr(0.0001, 0.01, 20), 0.2) }.play;
 
 // ...these examples add the input to the effected sound and compare variants so that you can hear
 // the effect of the phase comb:

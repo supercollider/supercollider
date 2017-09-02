@@ -38,7 +38,7 @@ void disableAppNap ( )
 		uint64_t options = (0x00FFFFFFULL | (1ULL << 20)) | 0xFF00000000ULL;
 
 		// NSActivityLatencyCritical | NSActivityUserInitiated
-	    id activity = [[NSProcessInfo processInfo] beginActivityWithOptions: options reason:@"avoiding audio hiccups and reducing latency"];
+	    [[NSProcessInfo processInfo] beginActivityWithOptions: options reason:@"avoiding audio hiccups and reducing latency"];
 	}	
 }
 

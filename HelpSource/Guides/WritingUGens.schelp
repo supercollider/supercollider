@@ -60,7 +60,7 @@ C++, whose format is platform-dependent:
 list::
 ## code::*.so:: for *nix
 ## code::*.dll:: for Windows
-## code::*.scx:: for OS X
+## code::*.scx:: for macOS
 ::
 
 A plugin file can contain more than one UGen, and it can also define things other than UGens such as buffer fill

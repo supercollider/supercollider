@@ -1027,11 +1027,11 @@ public:
       return m_pimpl->isctype(c, f);
 #endif
    }
-   int toi(const charT*& p1, const charT* p2, int radix)const;
+   boost::intmax_t toi(const charT*& p1, const charT* p2, int radix)const;
    int value(charT c, int radix)const
    {
       const charT* pc = &c;
-      return toi(pc, pc + 1, radix);
+      return (int)toi(pc, pc + 1, radix);
    }
    locale_type imbue(locale_type l)
    {
@@ -1069,7 +1069,7 @@ private:
 
 
 template <class charT>
-int cpp_regex_traits<charT>::toi(const charT*& first, const charT* last, int radix)const
+boost::intmax_t cpp_regex_traits<charT>::toi(const charT*& first, const charT* last, int radix)const
 {
    BOOST_REGEX_DETAIL_NS::parser_buf<charT>   sbuf;            // buffer for parsing numbers.
    std::basic_istream<charT>      is(&sbuf);       // stream for parsing numbers.
@@ -1082,7 +1082,7 @@ int cpp_regex_traits<charT>::toi(const charT*& first, const charT* last, int rad
    if(std::abs(radix) == 16) is >> std::hex;
    else if(std::abs(radix) == 8) is >> std::oct;
    else is >> std::dec;
-   int val;
+   boost::intmax_t val;
    if(is >> val)
    {
       first = first + ((last - first) - sbuf.in_avail());

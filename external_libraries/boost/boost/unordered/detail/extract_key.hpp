@@ -51,7 +51,7 @@ namespace detail {
         typedef ValueType value_type;
         typedef ValueType key_type;
 
-        static key_type const& extract(key_type const& v)
+        static key_type const& extract(value_type const& v)
         {
             return v;
         }

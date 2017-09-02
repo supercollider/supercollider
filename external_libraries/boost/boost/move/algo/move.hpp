@@ -125,10 +125,10 @@ F uninitialized_move(I f, I l, F r
       }
    }
    BOOST_CATCH(...){
-	   for (; back != r; ++back){
+      for (; back != r; ++back){
          back->~input_value_type();
       }
-	   BOOST_RETHROW;
+      BOOST_RETHROW;
    }
    BOOST_CATCH_END
    return r;

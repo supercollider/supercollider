@@ -394,12 +394,6 @@ struct node_alloc_holder
    ICont &non_const_icont() const
    {  return const_cast<ICont&>(this->members_.m_icont);   }
 
-   ICont &icont()
-   {  return this->members_.m_icont;   }
-
-   const ICont &icont() const
-   {  return this->members_.m_icont;   }
-
    NodeAlloc &node_alloc()
    {  return static_cast<NodeAlloc &>(this->members_);   }
 
@@ -407,6 +401,13 @@ struct node_alloc_holder
    {  return static_cast<const NodeAlloc &>(this->members_);   }
 
    members_holder members_;
+
+   public:
+   ICont &icont()
+   {  return this->members_.m_icont;   }
+
+   const ICont &icont() const
+   {  return this->members_.m_icont;   }
 };
 
 }  //namespace container_detail {

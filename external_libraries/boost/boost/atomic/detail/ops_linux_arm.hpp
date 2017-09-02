@@ -57,6 +57,8 @@ namespace detail {
 
 struct linux_arm_cas_base
 {
+    static BOOST_CONSTEXPR_OR_CONST bool is_always_lock_free = true;
+
     static BOOST_FORCEINLINE void fence_before_store(memory_order order) BOOST_NOEXCEPT
     {
         if ((order & memory_order_release) != 0)

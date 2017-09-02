@@ -91,7 +91,7 @@ struct BeatTrack2 : Unit {
 	//or store all scores and resolve later?
 
 	int halftrig;
-    int q1trig;
+	int q1trig;
 	int q2trig;
 
 	SndBuf * m_tempoweights;

@@ -23,6 +23,7 @@
 #include <boost/test/utils/foreach.hpp>
 #include <boost/test/utils/algorithm.hpp>
 #include <boost/test/detail/throw_exception.hpp>
+#include <boost/test/detail/global_typedef.hpp>
 
 #include <boost/algorithm/cxx11/all_of.hpp> // !! ?? unnecessary after cxx11
 
@@ -254,7 +255,37 @@ public:
         return tr.remainder();
     }
 
-    // help/usage
+    // help/usage/version
+    void
+    version( std::ostream& ostr )
+    {
+       ostr << "Boost.Test module ";
+
+#if defined(BOOST_TEST_MODULE)
+       // we do not want to refer to the master test suite there
+       ostr << '\'' << BOOST_TEST_STRINGIZE( BOOST_TEST_MODULE ).trim( "\"" ) << "' ";
+#endif
+
+       ostr << "in executable '" << m_program_name << "'\n";
+       ostr << "Compiled from Boost version "
+            << BOOST_VERSION/100000      << "."
+            << BOOST_VERSION/100 % 1000  << "."
+            << BOOST_VERSION % 100       ;
+       ostr << " with ";
+#if defined(BOOST_TEST_INCLUDED)
+       ostr << "single header inclusion of";
+#elif defined(BOOST_TEST_DYN_LINK)
+       ostr << "dynamic linking to";
+#else
+       ostr << "static linking to";
+#endif
+       ostr << " Boost.Test\n";
+       ostr << "- Compiler: " << BOOST_COMPILER << '\n'
+            << "- Platform: " << BOOST_PLATFORM << '\n'
+            << "- STL     : " << BOOST_STDLIB;
+       ostr << std::endl;
+    }
+
     void
     usage( std::ostream& ostr, cstring param_name = cstring() )
     {

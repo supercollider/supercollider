@@ -168,7 +168,7 @@ returns:: A new instance of HIDdef which responds to a specific prototype elemen
 METHOD:: element
 Create a new, enabled HIDdef. If an HIDdef already exists at this key, its parameters will be replaced with the ones provided (args for which nil is passed will use the old values).
 
-A convenience method to filter an incoming HID value based on the index of its element. If the device is using something non-standard, or you want to access keyboard elements directly, then this method can be used to look for it. Note that the element index is not necessarily the same across different operating systems (i.e. it may vary between Linux and OSX and Windows).
+A convenience method to filter an incoming HID value based on the index of its element. If the device is using something non-standard, or you want to access keyboard elements directly, then this method can be used to look for it. Note that the element index is not necessarily the same across different operating systems (i.e. it may vary between Linux and macOS and Windows).
 
 ARGUMENT:: key
 The key at which to store this HIDdef in the global collection. Generally this will be a link::Classes/Symbol::.

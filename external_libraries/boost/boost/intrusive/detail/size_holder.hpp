@@ -51,6 +51,9 @@ struct size_holder
    BOOST_INTRUSIVE_FORCEINLINE void decrease(SizeType n)
    {  size_ -= n; }
 
+   BOOST_INTRUSIVE_FORCEINLINE void swap(size_holder &other)
+   {  SizeType tmp(size_); size_ = other.size_; other.size_ = tmp; }
+
    SizeType size_;
 };
 
@@ -77,6 +80,8 @@ struct size_holder<false, SizeType, Tag>
 
    BOOST_INTRUSIVE_FORCEINLINE void decrease(SizeType)
    {}
+
+   BOOST_INTRUSIVE_FORCEINLINE void swap(size_holder){}
 };
 
 }  //namespace detail{

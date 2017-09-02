@@ -304,13 +304,13 @@ int global_value(charT c)
    return -1;
 }
 template <class charT, class traits>
-int global_toi(const charT*& p1, const charT* p2, int radix, const traits& t)
+boost::intmax_t global_toi(const charT*& p1, const charT* p2, int radix, const traits& t)
 {
    (void)t; // warning suppression
-   int next_value = t.value(*p1, radix);
+   boost::intmax_t next_value = t.value(*p1, radix);
    if((p1 == p2) || (next_value < 0) || (next_value >= radix))
       return -1;
-   int result = 0;
+   boost::intmax_t result = 0;
    while(p1 != p2)
    {
       next_value = t.value(*p1, radix);

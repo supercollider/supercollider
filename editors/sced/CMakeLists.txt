@@ -14,10 +14,10 @@ if(NOT WIN32 AND SC_ED EQUAL 2)
             DESTINATION share/gtksourceview-2.0/language-specs)
 
     install(FILES data/sced.gedit-plugin
-            DESTINATION lib/gedit-2/plugins)
+            DESTINATION lib${LIB_SUFFIX}/gedit-2/plugins)
 
     install(DIRECTORY sced
-            DESTINATION lib/gedit-2/plugins)
+            DESTINATION lib${LIB_SUFFIX}/gedit-2/plugins)
 
 elseif(NOT WIN32 AND SC_ED EQUAL 3)
 
@@ -29,7 +29,7 @@ elseif(NOT WIN32 AND SC_ED EQUAL 3)
             DESTINATION share/gtksourceview-3.0/language-specs)
 
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sced3/supercollider.plugin sced3/supercollider.py
-            DESTINATION lib/gedit/plugins)
+            DESTINATION lib${LIB_SUFFIX}/gedit/plugins)
 
 elseif(WIN32)
 

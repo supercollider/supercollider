@@ -18,11 +18,11 @@ The src number may be the system UID (obtained from code:: MIDIClient.sources[in
 argument::chan
 An link::Classes/Integer:: between 0 and 15 that selects which MIDI channel to match. nil matches all. May also be a link::Classes/Function:: which will be evaluated to determine the match. eg: { |val| val < 2 }
 
-argument::num
+argument::value
 An link::Classes/Integer:: between 0 and 127 that selects which program change number to match. nil matches all. May also be a link::Classes/Function:: which will be evaluated to determine the match. eg: { |val| val >= 4 }
 
 argument::install
-If true, then if the midi event is matched, cease testing any further responders. Note that doing this will prevent any other responders of this type from responding, including ones added behind the scenes in classes. Note also that this functionality is sensitive to the order in which responders are added. 
+If true, then if the midi event is matched, cease testing any further responders. Note that doing this will prevent any other responders of this type from responding, including ones added behind the scenes in classes. Note also that this functionality is sensitive to the order in which responders are added.
 
 Examples::
 

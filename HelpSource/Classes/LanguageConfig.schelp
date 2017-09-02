@@ -55,3 +55,10 @@ subsection:: Compiler Warnings
 
 METHOD:: postInlineWarnings
 Get or set the compiler flag, whether warnings should be posted if a FunctionDef cannot be inlined.
+
+code::
+LanguageConfig.postInlineWarnings_(true) // warn
+if(0.5.coin) { var x; x = 10.rand; x + 1 } { 10 };
+LanguageConfig.postInlineWarnings_(false) // ignore it.
+if(0.5.coin) { var x; x = 10.rand; x + 1 } { 10 };
+::

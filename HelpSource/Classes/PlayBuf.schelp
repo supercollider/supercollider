@@ -40,7 +40,7 @@ argument::loop
 1 means true, 0 means false. This is modulateable.
 
 argument:: doneAction
-an integer representing an action to be executed when the buffer is finished playing. This can be used to free the enclosing synth, etc. See link::Reference/UGen-doneActions:: for more detail. code::doneAction:: is only evaluated if loop is 0.
+an integer representing an action to be executed when the buffer is finished playing. This can be used to free the enclosing synth, etc. See link::Classes/Done:: for more detail. code::doneAction:: is only evaluated if loop is 0.
 
 Examples::
 
@@ -53,12 +53,12 @@ b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav"); // remember 
 
 SynthDef(\help_PlayBuf, {| out = 0, bufnum = 0 |
 	Out.ar(out,
-		PlayBuf.ar(1, bufnum, BufRateScale.kr(bufnum), doneAction:2)
+		PlayBuf.ar(1, bufnum, BufRateScale.kr(bufnum), doneAction: Done.freeSelf)
 	)
 }).play(s, [\out, 0, \bufnum, b]);
 ::
 
-In the above example, note how the code::doneAction:2:: causes the synth to free itself when the buffer reaches its end.
+In the above example, note how the code::doneAction: Done.freeSelf:: causes the synth to free itself when the buffer reaches its end.
 
 Note again that the number of channels must be fixed for the SynthDef. It cannot vary depending on which buffer you use.
 

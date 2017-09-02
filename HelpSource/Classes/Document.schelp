@@ -7,7 +7,7 @@ related:: Classes/EmacsDocument, Classes/ScelDocument
 description::
 The Document class represents a text document within the context of your text editing environment. You can use the class to programmatically create, modify, and query these documents.
 
-Document used to be an abstract class, meaning it didn't provide all the functionality itself, but instead relied on subclasses to complete the functionality. One such subclass was CocoaDocument. Although CocoaDocument was available only to OS X and had an ad hoc interface, it possessed many additional features like code animation and rich text.
+Document used to be an abstract class, meaning it didn't provide all the functionality itself, but instead relied on subclasses to complete the functionality. One such subclass was CocoaDocument. Although CocoaDocument was available only to macOS and had an ad hoc interface, it possessed many additional features like code animation and rich text.
 
 In SuperCollider 3.6, Document changed a bit and now the "abstract class" descriptor is only partially true. The SuperCollider IDE provides its own version of the Document class. The Emacs editor still supplies link::Classes/ScelDocument:: (which links to link::Classes/EmacsDocument::) as a subclass of Document. As an unfortunate byproduct of the history of Document, there are inconsistencies in the APIs of SCIDE's Document and Emacs' ScelDocument. This help file describes that of SCIDE.
 
@@ -108,7 +108,7 @@ A class for implementing Document.
 
 subsection:: Path Utilities
 
-Utilities and settings for dealing with documents such as supercollider code files. By default the document directory is SuperCollider's application directory.
+Utilities and settings for dealing with documents such as SuperCollider code files. By default the document directory is SuperCollider's application directory.
 
 method:: dir
 Get/set the default document directory. The default is dependent on link::Classes/Document#implementationClass::.
@@ -124,7 +124,7 @@ method:: standardizePath
 argument:: p
 The file system path to the directory. An instance of link::Classes/String::.
 discussion::
-If it is a relative path, expand it to an absolute path relative to your document directory. Expand tildes in path (your home directory), resolve symbolic links (but not aliases). Also converts from OS9 macintosh path format. See PathName for more complex needs.
+If it is a relative path, expand it to an absolute path relative to your document directory. Expand tildes in path (your home directory), resolve symbolic links (but not aliases). Also converts from Mac OS 9 path format. See PathName for more complex needs.
 code::
 Document.standardizePath("~/"); // This will print your home directory
 
@@ -283,10 +283,10 @@ s.waitForBoot({
 		var char;
 		char = doc.rangeText(doc.selectionStart, 2);
 		if(char == "17",{
-			{EnvGen.kr(Env.perc, doneAction:2) * SinOsc.ar([600,720,300].choose, 0, 0.5)}.play;
+			{EnvGen.kr(Env.perc, doneAction: Done.freeSelf) * SinOsc.ar([600,720,300].choose, 0, 0.5)}.play;
 		});
 		if(char == "23",{
-			{EnvGen.kr(Env.perc, doneAction:2) * PinkNoise.ar(0.2)}.play;
+			{EnvGen.kr(Env.perc, doneAction: Done.freeSelf) * PinkNoise.ar(0.2)}.play;
 		});
 	})
 });
@@ -560,7 +560,7 @@ fork({
 )
 ::
 
-Changing the default look of documents can be done with the help of the link::#*initAction:: method. Run the following example once. Afterwards all newly created documents will have a dark grey background. To make this change happen every time you start supercollider, put the code inside your startup.scd file (and optionally wrap it in a code::{}.defer(0.1):: ).
+Changing the default look of documents can be done with the help of the link::#*initAction:: method. Run the following example once. Afterwards all newly created documents will have a dark grey background. To make this change happen every time you start SuperCollider, put the code inside your startup.scd file (and optionally wrap it in a code::{}.defer(0.1):: ).
 code::
 (
 Document.listener.background = Color.red;	//a special color for post document

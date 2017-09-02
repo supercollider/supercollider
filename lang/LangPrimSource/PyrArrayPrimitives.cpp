@@ -895,7 +895,6 @@ int prArrayInsert(struct VMGlobals *g, int numArgsPushed)
 
 	array = slotRawObject(a);
 	const int format = slotRawObject(a)->obj_format;
-	const int tag = gFormatElemTag[format];
 
 	const int size = array->size;
 	int index = slotRawInt(b);
@@ -1070,7 +1069,7 @@ int prArrayFill(struct VMGlobals *g, int numArgsPushed)
 	PyrObject *array;
 	PyrSymbol *sym;
 	int i;
-	int format, tag;
+	int format;
 	int err, ival;
 	double fval;
 
@@ -1080,8 +1079,8 @@ int prArrayFill(struct VMGlobals *g, int numArgsPushed)
 
 	array = slotRawObject(a);
 	format = slotRawObject(a)->obj_format;
-	tag = gFormatElemTag[format];
-	/*if (tag > 0) {
+	/*int tag = gFormatElemTag[format];
+	if (tag > 0) {
 		if (GetTag(b) != tag) return errWrongType;
 	} else if (tag == 0) {
 		if (NotFloat(b)) return errWrongType;

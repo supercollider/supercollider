@@ -42,7 +42,7 @@
 #pragma warning(disable: 4731)
 #endif
 
-#if defined(_MSC_VER) && (defined(_M_AMD64) || (defined(_M_IX86) && defined(_M_IX86_FP) && _M_IX86_FP >= 2))
+#if defined(BOOST_ATOMIC_DETAIL_X86_HAS_MFENCE)
 extern "C" void _mm_mfence(void);
 #if defined(BOOST_MSVC)
 #pragma intrinsic(_mm_mfence)
@@ -72,10 +72,11 @@ namespace detail {
 
 struct msvc_x86_operations_base
 {
+    static BOOST_CONSTEXPR_OR_CONST bool is_always_lock_free = true;
+
     static BOOST_FORCEINLINE void hardware_full_fence() BOOST_NOEXCEPT
     {
-#if defined(_MSC_VER) && (defined(_M_AMD64) || (defined(_M_IX86) && defined(_M_IX86_FP) && _M_IX86_FP >= 2))
-        // Use mfence only if SSE2 is available
+#if defined(BOOST_ATOMIC_DETAIL_X86_HAS_MFENCE)
         _mm_mfence();
 #else
         long tmp;
@@ -611,6 +612,8 @@ struct msvc_dcas_x86
     typedef typename make_storage_type< 8u, Signed >::type storage_type;
     typedef typename make_storage_type< 8u, Signed >::aligned aligned_storage_type;
 
+    static BOOST_CONSTEXPR_OR_CONST bool is_always_lock_free = true;
+
     // Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3A, 8.1.1. Guaranteed Atomic Operations:
     //
     // The Pentium processor (and newer processors since) guarantees that the following additional memory operations will always be carried out atomically:
@@ -769,7 +772,7 @@ struct msvc_dcas_x86
         return compare_exchange_strong(storage, expected, desired, success_order, failure_order);
     }
 
-    static BOOST_FORCEINLINE storage_type exchange(storage_type volatile& storage, storage_type v, memory_order order) BOOST_NOEXCEPT
+    static BOOST_FORCEINLINE storage_type exchange(storage_type volatile& storage, storage_type v, memory_order) BOOST_NOEXCEPT
     {
         BOOST_ATOMIC_DETAIL_COMPILER_BARRIER();
 
@@ -863,6 +866,8 @@ struct msvc_dcas_x86_64
 {
     typedef typename make_storage_type< 16u, Signed >::type storage_type;
     typedef typename make_storage_type< 16u, Signed >::aligned aligned_storage_type;
+
+    static BOOST_CONSTEXPR_OR_CONST bool is_always_lock_free = true;
 
     static BOOST_FORCEINLINE void store(storage_type volatile& storage, storage_type v, memory_order) BOOST_NOEXCEPT
     {

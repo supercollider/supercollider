@@ -242,7 +242,7 @@ s.waitForBoot({
 	var node, cmdPeriodFunc;
 
 	// define a synth
-	SynthDef("window-test", { arg note = 36, fc = 1000, rq = 0.25, bal=0, amp=0.4, gate = 1;
+	SynthDef("window-test", { |out, note = 36, fc = 1000, rq = 0.25, bal=0, amp=0.4, gate = 1|
 			var x;
 			x = Mix.fill(4, {
 				LFSaw.ar((note + {0.1.rand2}.dup).midicps, 0, 0.02)
@@ -250,8 +250,8 @@ s.waitForBoot({
 			x = RLPF.ar(x, fc, rq).softclip;
 			x = RLPF.ar(x, fc, rq, amp).softclip;
 			x = Balance2.ar(x[0], x[1], bal);
-			x = x * EnvGen.kr(Env.cutoff, gate, doneAction: 2);
-			Out.ar(0, x);
+			x = x * EnvGen.kr(Env.cutoff, gate, doneAction: Done.freeSelf);
+			Out.ar(out, x);
 		}, [0.1, 0.1, 0.1, 0.1, 0.1, 0]
 	).add;
 

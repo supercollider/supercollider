@@ -492,6 +492,8 @@ int prEvent_Delta(struct VMGlobals *g, int numArgsPushed)
 	PyrSlot *a, key, dur, stretch, delta;
 	double fdur, fstretch;
 	int err;
+	PyrClass *restClass = getsym("Rest")->u.classobj;
+	PyrSlot *slot;
 
 	a = g->sp;  // dict
 
@@ -499,31 +501,114 @@ int prEvent_Delta(struct VMGlobals *g, int numArgsPushed)
 	identDict_lookup(slotRawObject(a), &key, calcHash(&key), &delta);
 
 	if (NotNil(&delta)) {
-		slotCopy(a,&delta);
+		if (isKindOfSlot(&delta, restClass)) {
+			slot = slotRawObject(&delta)->slots;
+			err = slotDoubleVal(slot, &fdur);
+		} else {
+			err = slotDoubleVal(&delta, &fdur);
+		}
+		if (err) {
+			return err;
+		} else {
+			SetFloat(a, fdur);
+			return errNone;
+		}
 	} else {
 		SetSymbol(&key, s_dur);
 		identDict_lookup(slotRawObject(a), &key, calcHash(&key), &dur);
-
 		err = slotDoubleVal(&dur, &fdur);
 		if (err) {
-			if (NotNil(&dur)) return err;
-			SetNil(a);
-			return errNone;
+			if (IsNil(&dur)) {
+				SetNil(g->sp);
+				return errNone;
+			} else if (isKindOfSlot(&dur, restClass)) {
+				slot = slotRawObject(&dur)->slots;
+				err = slotDoubleVal(slot, &fdur);
+				if (err)
+					return err;
+			} else {
+				return errWrongType;
+			}
 		}
-
 		SetSymbol(&key, s_stretch);
 		identDict_lookup(slotRawObject(a), &key, calcHash(&key), &stretch);
 
 		err = slotDoubleVal(&stretch, &fstretch);
 		if (err) {
-			if (NotNil(&stretch)) return err;
-			SetFloat(a, fdur);
-			return errNone;
+			if (NotNil(&stretch)) {
+				if (isKindOfSlot(&stretch, restClass)) {
+					slot = slotRawObject(&stretch)->slots;
+					err = slotDoubleVal(slot, &fstretch);
+					if (err) return err;
+				} else {
+					return errWrongType;
+				}
+			} else {
+				SetFloat(a, fdur);
+				return errNone;
+			}
 		}
 
-		SetFloat(a, fdur * fstretch );
+		SetFloat(a, fdur * fstretch);
 	}
 
+	return errNone;
+}
+
+int prEvent_IsRest(struct VMGlobals *g, int numArgsPushed);
+int prEvent_IsRest(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *dictslots = slotRawObject(g->sp)->slots;
+	PyrSlot *arraySlot = dictslots + ivxIdentDict_array;
+
+	if (isKindOfSlot(arraySlot, class_array)) {
+		PyrSlot key, typeSlot;
+		static PyrSymbol *s_type = getsym("type");
+		static PyrSymbol *s_rest = getsym("rest");
+		PyrSymbol *typeSym;
+		// test 'this[\type] == \rest' first
+		SetSymbol(&key, s_type);
+		identDict_lookup(slotRawObject(g->sp), &key, calcHash(&key), &typeSlot);
+		if(!slotSymbolVal(&typeSlot, &typeSym) && typeSym == s_rest) {
+			SetBool(g->sp, 1);
+			return errNone;
+		} else {
+			PyrObject *array = slotRawObject(arraySlot);
+			PyrSymbol *slotSym;
+			static PyrSymbol *s_empty = getsym("");
+			static PyrSymbol *s_r = getsym("r");
+			static PyrClass *class_rest = getsym("Rest")->u.classobj;
+			static PyrClass *class_metarest = getsym("Meta_Rest")->u.classobj;
+			PyrSlot *slot;
+			int32 size = array->size;
+			int32 i;
+
+			slot = array->slots + 1;  // scan only the odd items
+
+			for (i = 1; i < size; i += 2, slot += 2) {
+				if (isKindOfSlot(slot, class_rest)
+				    || isKindOfSlot(slot, class_metarest)
+				) {
+					SetBool(g->sp, 1);
+					return errNone;
+				} else if(!slotSymbolVal(slot, &slotSym)) {
+					if(slotSym == s_empty
+						|| slotSym == s_r
+						|| slotSym == s_rest
+					) {
+						SetBool(g->sp, 1);
+						return errNone;
+					}
+				}  // why no 'else'?
+				// slotSymbolVal nonzero return = not a symbol;
+				// non-symbols don't indicate rests, so, ignore them.
+			}
+		}
+	} else {
+		return errWrongType;
+	}
+
+	SetBool(g->sp, 0);
 	return errNone;
 }
 
@@ -735,6 +820,7 @@ void initListPrimitives()
 	definePrimitive(base, index++, "_PriorityQueuePostpone", prPriorityQueuePostpone, 2, 0);
 
 	definePrimitive(base, index++, "_Event_Delta", prEvent_Delta, 1, 0);
+	definePrimitive(base, index++, "_Event_IsRest", prEvent_IsRest, 1, 0);
 }
 
 void initPatterns();
@@ -761,5 +847,4 @@ void initPatterns()
 	s_delta = getsym("delta");
 	s_dur = getsym("dur");
 	s_stretch = getsym("stretch");
-
 }

@@ -1,4 +1,4 @@
-title:: Non-Realtime Synthesis (NRT)
+ title:: Non-Realtime Synthesis (NRT)
 summary:: Non-realtime synthesis with binary files of OSC commands
 categories:: Server>NRT, External Control>OSC
 related:: Classes/Score
@@ -31,8 +31,8 @@ f.close;
 
 // the 'NRTsine' SynthDef
 (
-SynthDef("NRTsine",{ arg freq = 440;
-	Out.ar(0,
+SynthDef("NRTsine", { |out, freq = 440|
+	Out.ar(out,
 		 SinOsc.ar(freq, 0, 0.2)
 	)
 }).writeDefFile;
@@ -110,7 +110,7 @@ An NRT server may also be used to extract analytical data from a sound file. The
 
 DEFINITIONlIST::
 ## Suppressing audio file output
-|| In OSX and Linux environments, use teletype::/dev/null:: for the output file path. In Windows, use teletype::NUL::.
+|| In macOS and Linux environments, use teletype::/dev/null:: for the output file path. In Windows, use teletype::NUL::.
 ## Retrieving analytical data.
 || The easiest way is to allocate a buffer at the beginning of the NRT score, and use BufWr to fill the buffer. At the end of the score, write the buffer into a temporary file. Then you can use SoundFile on the language side to access the data. See the example.
 ::

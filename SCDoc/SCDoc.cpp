@@ -17,11 +17,16 @@
 *
 ************************************************************************/
 
+#include "SCDoc.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
-#include "SCDoc.h"
+
+#ifdef _WIN32
+#    include "SC_Codecvt.hpp" // utf8_cstr_to_utf16_wstring
+#endif // _WIN32
+
+extern void error(const char *fmt, ...); // for scdoc_parse_file
 
 DocNode * scdoc_parse_run(int partial);
 void scdocrestart (FILE *input_file);
@@ -46,7 +51,8 @@ char *strmerge(char *a, char *b) {
 
 static char *striptrailingws(char *s) {
     char *s2 = strchr(s,0);
-    while(--s2 > s && isspace(*s2)) {
+    // don't use isspace -- triggers assert with VS
+    while(--s2 > s && (*s2 == ' ' || *s2 == '\t' || *s2 == '\n' || *s2 == '\v' || *s2 == '\f' || *s2 == '\r')) {
         *s2 = 0;
     }
     return s;
@@ -70,18 +76,6 @@ DocNode * doc_node_add_child(DocNode *n, DocNode *child) {
     }
     return n;
 }
-
-// takes ownership of text
-/*DocNode * doc_node_add_text(DocNode *n, char *text) {
-    if(n->text) {
-        char *str = strmergefree(n->text,text);
-        n->text = str;
-        printf("NODE: Adding text '%s'\n",text);
-    } else {
-        n->text = text;
-    }
-    return n;
-}*/
 
 // moves the childs from src doc_node to n
 void doc_node_move_children(DocNode *n, DocNode *src) {
@@ -151,14 +145,14 @@ void doc_node_fixup_tree(DocNode *n) {
         int j = 0;
         for(i = 0; i < n->n_childs; i++) {
             if(n->children[i]) {
-               n->children[j++] = n->children[i];
+                n->children[j++] = n->children[i];
             }
         }
         n->n_childs = j;
     }
 }
 
-static void _doc_node_dump(DocNode *n, int level, int last) {
+static void doc_node_dump_recursive(DocNode *n, int level, int last) {
     int i;
     for(i=0;i<level;i++) {
         if(doc_node_dump_level_done[i])
@@ -176,27 +170,32 @@ static void _doc_node_dump(DocNode *n, int level, int last) {
     if(n->text) printf(" \"%s\"",n->text);
     printf("\n");
     for(i = 0; i < n->n_childs; i++) {
-        _doc_node_dump(n->children[i], level+1, i==n->n_childs-1);
+        doc_node_dump_recursive(n->children[i], level+1, i==n->n_childs-1);
     }
     doc_node_dump_level_done[level] = 0;
 }
 
 void doc_node_dump(DocNode *n) {
-    _doc_node_dump(n,0,1);
+    doc_node_dump_recursive(n, 0, 1);
 }
 
-extern void error(const char *fmt, ...);
-
-DocNode * scdoc_parse_file(const char *fn, int mode) {
+DocNode * scdoc_parse_file(const std::string& fn, int mode) {
     FILE *fp;
     DocNode *n;
 
-    fp = fopen(fn,"r");
-    if(!fp) {
-        error("scdoc_parse_file: could not open '%s'\n",fn);
-        return NULL;
+    // incoming fn is from QString.toStdString(), so it's UTF-8.
+#ifdef _WIN32
+    const std::wstring fn_w = SC_Codecvt::utf8_cstr_to_utf16_wstring(fn.c_str());
+    fp = _wfopen(fn_w.c_str(), L"r");
+#else
+    fp = fopen(fn.c_str(), "r");
+#endif // _WIN32
+
+    if (!fp) {
+        error("scdoc_parse_file: could not open '%s'\n", fn.c_str());
+        return nullptr;
     }
-    scdoc_current_file = fn;
+    scdoc_current_file = fn.c_str();
     scdocrestart(fp);
     n = scdoc_parse_run(mode);
     if(n) {

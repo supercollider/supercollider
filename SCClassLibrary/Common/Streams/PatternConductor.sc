@@ -12,7 +12,7 @@ PatternConductor  {
 	*new { |patterns, event, quant|
 		^super.new
 			.patterns_(patterns.asArray)
-			.event_(event ? Event.default)
+			.event_(event ?? { Event.default })
 			.quant_(quant ? 0).tempo_(1).defaultPauseTempo_(1e-8).defaultStopTempo_(1e+8);
 	}
 

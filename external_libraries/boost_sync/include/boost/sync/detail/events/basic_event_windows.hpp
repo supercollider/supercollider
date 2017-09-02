@@ -12,8 +12,10 @@
 
 #include <cstddef>
 #include <boost/assert.hpp>
-#include <boost/detail/winapi/GetLastError.hpp>
-#include <boost/detail/winapi/synchronization.hpp>
+#include <boost/detail/winapi/get_last_error.hpp>
+#include <boost/detail/winapi/event.hpp>
+#include <boost/detail/winapi/wait.hpp>
+#include <boost/detail/winapi/waitable_timer.hpp>
 #include <boost/detail/winapi/handles.hpp>
 #include <boost/sync/detail/config.hpp>
 #include <boost/sync/detail/time_units.hpp>

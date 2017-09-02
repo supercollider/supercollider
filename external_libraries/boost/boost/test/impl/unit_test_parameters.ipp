@@ -24,6 +24,7 @@
 #include <boost/test/utils/basic_cstring/basic_cstring.hpp>
 #include <boost/test/utils/basic_cstring/compare.hpp>
 #include <boost/test/utils/basic_cstring/io.hpp>
+#include <boost/test/utils/iterator/token_iterator.hpp>
 
 #include <boost/test/debug.hpp>
 #include <boost/test/framework.hpp>
@@ -69,7 +70,7 @@ namespace rt = boost::runtime;
 
 namespace runtime_config {
 
-// UTF parameters 
+// UTF parameters
 std::string AUTO_START_DBG    = "auto_start_dbg";
 std::string BREAK_EXEC_PATH   = "break_exec_path";
 std::string BUILD_INFO        = "build_info";
@@ -82,6 +83,7 @@ std::string LIST_LABELS       = "list_labels";
 std::string LOG_FORMAT        = "log_format";
 std::string LOG_LEVEL         = "log_level";
 std::string LOG_SINK          = "log_sink";
+std::string COMBINED_LOGGER   = "logger";
 std::string OUTPUT_FORMAT     = "output_format";
 std::string RANDOM_SEED       = "random";
 std::string REPORT_FORMAT     = "report_format";
@@ -97,6 +99,7 @@ std::string WAIT_FOR_DEBUGGER = "wait_for_debugger";
 
 std::string HELP              = "help";
 std::string USAGE             = "usage";
+std::string VERSION           = "version";
 
 //____________________________________________________________________________//
 
@@ -134,8 +137,10 @@ register_parameters( rt::parameters_store& store )
 #endif
     ));
 
-    break_exec_path.add_cla_id( "--", BREAK_EXEC_PATH, "=" );    
+    break_exec_path.add_cla_id( "--", BREAK_EXEC_PATH, "=" );
     store.add( break_exec_path );
+
+    ///////////////////////////////////////////////
 
     rt::option build_info( BUILD_INFO, (
         rt::description = "Displays library build information.",
@@ -144,12 +149,11 @@ register_parameters( rt::parameters_store& store )
                    "compiler, STL version and Boost version."
     ));
 
-    ///////////////////////////////////////////////
-
     build_info.add_cla_id( "--", BUILD_INFO, "=" );
     build_info.add_cla_id( "-", "i", " " );
     store.add( build_info );
 
+    ///////////////////////////////////////////////
 
     rt::option catch_sys_errors( CATCH_SYS_ERRORS, (
         rt::description = "Allows to switch between catching and ignoring system errors (signals).",
@@ -162,7 +166,7 @@ register_parameters( rt::parameters_store& store )
 #endif
         rt::help = "If option " + CATCH_SYS_ERRORS + " has value no the frameworks does not attempt to catch "
                    "asynchronous system failure events (signals on *NIX platforms or structured exceptions on Windows). "
-                   " Default value is " 
+                   " Default value is "
 #ifdef BOOST_TEST_DEFAULTS_TO_CORE_DUMP
                     "no."
 #else
@@ -226,8 +230,8 @@ register_parameters( rt::parameters_store& store )
         rt::env_var = "BOOST_TEST_LIST_CONTENT",
         rt::default_value = OF_INVALID,
         rt::optional_value = OF_CLF,
-        rt::enum_values<unit_test::output_format>::value = 
-#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST) && !defined(BOOST_NO_CXX11_UNIFIED_INITIALIZATION_SYNTAX)
+        rt::enum_values<unit_test::output_format>::value =
+#if defined(BOOST_TEST_CLA_NEW_API)
         {
             { "HRF", OF_CLF },
             { "DOT", OF_DOT }
@@ -266,17 +270,19 @@ register_parameters( rt::parameters_store& store )
         rt::env_var = "BOOST_TEST_LOG_FORMAT",
         rt::default_value = OF_CLF,
         rt::enum_values<unit_test::output_format>::value =
-#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST) && !defined(BOOST_NO_CXX11_UNIFIED_INITIALIZATION_SYNTAX)
+#if defined(BOOST_TEST_CLA_NEW_API)
         {
             { "HRF", OF_CLF },
             { "CLF", OF_CLF },
-            { "XML", OF_XML }
+            { "XML", OF_XML },
+            { "JUNIT", OF_JUNIT },
         },
 #else
         rt::enum_values_list<unit_test::output_format>()
             ( "HRF", OF_CLF )
             ( "CLF", OF_CLF )
             ( "XML", OF_XML )
+            ( "JUNIT", OF_JUNIT )
         ,
 #endif
         rt::help = "Parameter " + LOG_FORMAT + " allows to set the frameowrk's log format to one "
@@ -284,7 +290,7 @@ register_parameters( rt::parameters_store& store )
                    "parameter are the names of the output formats supplied by the framework. By "
                    "default the framework uses human readable format (HRF) for testing log. This "
                    "format is similar to compiler error format. Alternatively you can specify XML "
-                   "as log format. This format is easier to process by testing automation tools."
+                   "or JUNIT as log format, which are easier to process by testing automation tools."
     ));
 
     log_format.add_cla_id( "--", LOG_FORMAT, "=" );
@@ -298,7 +304,7 @@ register_parameters( rt::parameters_store& store )
         rt::env_var = "BOOST_TEST_LOG_LEVEL",
         rt::default_value = log_all_errors,
         rt::enum_values<unit_test::log_level>::value =
-#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST) && !defined(BOOST_NO_CXX11_UNIFIED_INITIALIZATION_SYNTAX)
+#if defined(BOOST_TEST_CLA_NEW_API)
         {
             { "all"           , log_successful_tests },
             { "success"       , log_successful_tests },
@@ -361,7 +367,7 @@ register_parameters( rt::parameters_store& store )
         rt::description = "Specifies output format (both log and report).",
         rt::env_var = "BOOST_TEST_OUTPUT_FORMAT",
         rt::enum_values<unit_test::output_format>::value =
-#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST) && !defined(BOOST_NO_CXX11_UNIFIED_INITIALIZATION_SYNTAX)
+#if defined(BOOST_TEST_CLA_NEW_API)
         {
             { "HRF", OF_CLF },
             { "CLF", OF_CLF },
@@ -374,7 +380,7 @@ register_parameters( rt::parameters_store& store )
             ( "XML", OF_XML )
         ,
 #endif
-        rt::help = "Parameter " + OUTPUT_FORMAT + " combines an effect of " + REPORT_FORMAT + 
+        rt::help = "Parameter " + OUTPUT_FORMAT + " combines an effect of " + REPORT_FORMAT +
                    " and " + LOG_FORMAT + " parameters. This parameter has higher priority "
                    "than either one of them. In other words if this parameter is specified "
                    "it overrides the value of other two parameters. This parameter does not "
@@ -386,6 +392,19 @@ register_parameters( rt::parameters_store& store )
     output_format.add_cla_id( "--", OUTPUT_FORMAT, "=" );
     output_format.add_cla_id( "-", "o", " " );
     store.add( output_format );
+
+    /////////////////////////////////////////////// combined logger option
+
+    rt::parameter<std::string,rt::REPEATABLE_PARAM> combined_logger( COMBINED_LOGGER, (
+        rt::description = "Specifies log level and sink for one or several log format",
+        rt::env_var = "BOOST_TEST_LOGGER",
+        rt::value_hint = "log_format:log_level:log_sink",
+        rt::help = "Parameter " + COMBINED_LOGGER + " allows to specify the logger type, level and sink\n"
+                   "in one command."
+    ));
+
+    combined_logger.add_cla_id( "--", COMBINED_LOGGER, "=" );
+    store.add( combined_logger );
 
     ///////////////////////////////////////////////
 
@@ -416,7 +435,7 @@ register_parameters( rt::parameters_store& store )
         rt::env_var = "BOOST_TEST_REPORT_FORMAT",
         rt::default_value = OF_CLF,
         rt::enum_values<unit_test::output_format>::value =
-#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST) && !defined(BOOST_NO_CXX11_UNIFIED_INITIALIZATION_SYNTAX)
+#if defined(BOOST_TEST_CLA_NEW_API)
         {
             { "HRF", OF_CLF },
             { "CLF", OF_CLF },
@@ -448,7 +467,7 @@ register_parameters( rt::parameters_store& store )
         rt::env_var = "BOOST_TEST_REPORT_LEVEL",
         rt::default_value = CONFIRMATION_REPORT,
         rt::enum_values<unit_test::report_level>::value =
-#if !defined(BOOST_NO_CXX11_HDR_INITIALIZER_LIST) && !defined(BOOST_NO_CXX11_UNIFIED_INITIALIZATION_SYNTAX)
+#if defined(BOOST_TEST_CLA_NEW_API)
         {
             { "confirm",  CONFIRMATION_REPORT },
             { "short",    SHORT_REPORT },
@@ -531,7 +550,7 @@ register_parameters( rt::parameters_store& store )
                    "filters', which allow to disable some test units. The __UTF__ also supports "
                    "enabling/disabling test units at compile time. These settings identify the default "
                    "set of test units to run. Parameter " + RUN_FILTERS + " is used to change this default. "
-                   "This parameter is repeatable, so you can specify more than one filter if necessary." 
+                   "This parameter is repeatable, so you can specify more than one filter if necessary."
     ));
 
     tests_to_run.add_cla_id( "--", RUN_FILTERS, "=" );
@@ -545,8 +564,8 @@ register_parameters( rt::parameters_store& store )
         rt::env_var = "BOOST_TEST_SAVE_PATTERN",
         rt::help = "Parameter " + SAVE_TEST_PATTERN + " facilitates switching mode of operation for "
                    "testing output streams.\n\nThis parameter serves no particular purpose within the "
-                   "framework itself. It can be used by test modules relying on output_test_stream to " 
-                   "implement testing logic. Default mode is 'match' (false)." 
+                   "framework itself. It can be used by test modules relying on output_test_stream to "
+                   "implement testing logic. Default mode is 'match' (false)."
     ));
 
     save_test_pattern.add_cla_id( "--", SAVE_TEST_PATTERN, "=" );
@@ -616,6 +635,14 @@ register_parameters( rt::parameters_store& store )
     ));
     usage.add_cla_id( "-", "?", " " );
     store.add( usage );
+
+    ///////////////////////////////////////////////
+
+    rt::option version( VERSION, (
+        rt::description = "Prints Boost.Test version and exits."
+    ));
+    version.add_cla_id( "--", VERSION, " " );
+    store.add( version );
 }
 
 static rt::arguments_store  s_arguments_store;
@@ -649,7 +676,11 @@ init( int& argc, char** argv )
         rt::finalize_arguments( s_parameters_store, s_arguments_store );
 
         // Report help if requested
-        if( runtime_config::get<bool>( USAGE ) ) {
+        if( runtime_config::get<bool>( VERSION ) ) {
+            parser->version( std::cerr );
+            BOOST_TEST_I_THROW( framework::nothing_to_test( boost::exit_success ) );
+        }
+        else if( runtime_config::get<bool>( USAGE ) ) {
             parser->usage( std::cerr );
             BOOST_TEST_I_THROW( framework::nothing_to_test( boost::exit_success ) );
         }
@@ -664,6 +695,7 @@ init( int& argc, char** argv )
             s_arguments_store.set( REPORT_FORMAT, of );
             s_arguments_store.set( LOG_FORMAT, of );
         }
+
     }
     BOOST_TEST_I_CATCH( rt::init_error, ex ) {
         BOOST_TEST_SETUP_ASSERT( false, ex.msg );
@@ -689,7 +721,7 @@ init( int& argc, char** argv )
             std::cerr << "\n";
             parser->usage( std::cerr );
         }
-        
+
         BOOST_TEST_I_THROW( framework::nothing_to_test( boost::exit_exception_failure ) );
     }
     BOOST_TEST_I_CATCH( rt::input_error, ex ) {
@@ -697,7 +729,7 @@ init( int& argc, char** argv )
 
         if( parser )
             parser->usage( std::cerr, ex.param_name );
-        
+
         BOOST_TEST_I_THROW( framework::nothing_to_test( boost::exit_exception_failure ) );
     }
 }

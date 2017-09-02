@@ -47,6 +47,7 @@ AudioStatusBox::AudioStatusBox(ScServer *server, QWidget *parent):
     setLayout(layout);
 
     server->action(ScServer::Record)->setProperty("keep_menu_open", true);
+    server->action(ScServer::PauseRecord)->setProperty("keep_menu_open", true);
     server->action(ScServer::VolumeRestore)->setProperty("keep_menu_open", true);
     server->action(ScServer::Mute)->setProperty("keep_menu_open", true);
     server->action(ScServer::DumpOSC)->setProperty("keep_menu_open", true);
@@ -64,6 +65,7 @@ AudioStatusBox::AudioStatusBox(ScServer *server, QWidget *parent):
     addAction( server->action(ScServer::DumpOSC) );
     addActionSeparator();
     addAction( server->action(ScServer::Record) );
+	addAction( server->action(ScServer::PauseRecord) );
     addActionSeparator();
     addAction( server->action(ScServer::VolumeRestore) );
     addAction( server->action(ScServer::Mute) );
@@ -95,6 +97,7 @@ AudioStatusBox::AudioStatusBox(ScServer *server, QWidget *parent):
 
 void AudioStatusBox::onServerRunningChanged(bool running, const QString &, int, bool unresponsive)
 {
+
     if (unresponsive) {
         mStatisticsLabel->setTextColor(Qt::yellow);
         mVolumeLabel->setTextColor(Qt::yellow);
@@ -105,9 +108,9 @@ void AudioStatusBox::onServerRunningChanged(bool running, const QString &, int, 
         mStatisticsLabel->setTextColor(Qt::white);
         mVolumeLabel->setTextColor(Qt::white);
     };
-
-    if (!running)
+	if (!running) {
         updateStatistics(0, 0, 0, 0, 0, 0);
+	}
 }
 
 void AudioStatusBox::wheelEvent(QWheelEvent * event)
@@ -150,5 +153,6 @@ void AudioStatusBox::updateRecordLabel( bool recording )
 {
     mRecordLabel->setTextColor( recording ? Qt::red : QColor(30,30,30) );
 }
+
 
 } // namespace ScIDE

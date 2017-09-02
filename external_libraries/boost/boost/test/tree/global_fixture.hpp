@@ -5,11 +5,8 @@
 
 //  See http://www.boost.org/libs/test for the library home page.
 //
-//  File        : $RCSfile$
-//
-//  Version     : $Revision: 74640 $
-//
-//  Description : defines global_fixture
+/// @file
+/// Defines global_fixture
 // ***************************************************************************
 
 #ifndef BOOST_TEST_TREE_GLOBAL_FIXTURE_HPP_091911GER

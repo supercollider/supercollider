@@ -7,8 +7,8 @@ Converts the FFT frames to their complex conjugate (i.e. reverses the sign of th
 
 classmethods::
 method:: new
-argument:: chain
-fft chain.
+argument:: buffer
+FFT chain.
 
 examples::
 code::

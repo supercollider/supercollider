@@ -43,7 +43,7 @@
 
 #define BOOST_ATOMIC_DETAIL_PLATFORM gcc_atomic
 
-#elif defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
+#elif (defined(__GNUC__) || defined(__SUNPRO_CC)) && (defined(__i386__) || defined(__x86_64__))
 
 #define BOOST_ATOMIC_DETAIL_PLATFORM gcc_x86
 
@@ -65,7 +65,7 @@
 
 #define BOOST_ATOMIC_DETAIL_PLATFORM gcc_arm
 
-#elif defined(__GNUC__) && defined(__sparc_v9__)
+#elif (defined(__GNUC__) || defined(__SUNPRO_CC)) && (defined(__sparcv8plus) || defined(__sparc_v9__))
 
 #define BOOST_ATOMIC_DETAIL_PLATFORM gcc_sparc
 

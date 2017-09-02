@@ -14,11 +14,12 @@ find_package(Qt5Qml)
 find_package(Qt5Quick)
 find_package(Qt5Sensors)
 find_package(Qt5Sql)
-find_package(Qt5WebKitWidgets)
+find_package(Qt5WebEngine)
+find_package(Qt5WebEngineWidgets)
 find_package(Qt5Widgets)
 
 set(QT_IDE_LIBRARIES
-    Qt5::Core Qt5::Concurrent Qt5::WebKitWidgets Qt5::OpenGL Qt5::PrintSupport Qt5::Sensors Qt5::Quick Qt5::Qml Qt5::Sql Qt5::Positioning)
+    Qt5::Core Qt5::Concurrent Qt5::WebEngineWidgets Qt5::OpenGL Qt5::PrintSupport Qt5::Sensors Qt5::Quick Qt5::Qml Qt5::Sql Qt5::Positioning)
 
 if(${CMAKE_COMPILER_IS_GNUCXX})
     add_definitions(-Wreorder)
@@ -100,8 +101,6 @@ set ( ide_moc_hdr
     widgets/util/volume_widget.hpp
 
     ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.hpp
-    ${CMAKE_SOURCE_DIR}/editors/sc-ide/primitives/localsocket_utils.cpp
-    ${CMAKE_SOURCE_DIR}/editors/sc-ide/primitives/localsocket_utils.hpp
 )
 
 file (GLOB_RECURSE all_hdr *hpp)
@@ -156,6 +155,11 @@ set ( ide_src
     ${CMAKE_SOURCE_DIR}/QtCollider/widgets/web_page.cpp
 
     ${CMAKE_SOURCE_DIR}/common/SC_TextUtils.cpp
+    ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp
+    ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_win.cpp
+    ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_unix.cpp
+    ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_iphone.cpp
+
     ${CMAKE_SOURCE_DIR}/editors/sc-ide/primitives/localsocket_utils.cpp
     ${CMAKE_SOURCE_DIR}/editors/sc-ide/primitives/localsocket_utils.hpp
 
@@ -180,14 +184,12 @@ list(APPEND ide_src
     ${CMAKE_SOURCE_DIR}/QtCollider/layouts/stack_layout.cpp
 )
 
-list(APPEND ide_src ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp)
 if(APPLE)
-	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
+	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
 endif()
 
 if(APPLE)
 	list(APPEND ide_src
-        ${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp
         ${CMAKE_SOURCE_DIR}/QtCollider/hacks/hacks_mac.mm
     )
 elseif(WIN32)
@@ -197,7 +199,6 @@ endif()
 include_directories(${CMAKE_SOURCE_DIR}/include/common)
 include_directories(${CMAKE_SOURCE_DIR}/common)
 include_directories(${CMAKE_SOURCE_DIR}/include/plugin_interface)
-include_directories(${YAMLCPP_INCLUDE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/external_libraries/boost)
 # For QtCollider headers:
 include_directories(${CMAKE_SOURCE_DIR})
@@ -273,15 +274,15 @@ endif()
 
 target_link_libraries( SuperCollider
     ${QT_IDE_LIBRARIES}
-    ${YAMLCPP_LIBRARY}
+    yaml
     oscpack
 )
 
 if(Boost_FOUND)
-    target_link_libraries( SuperCollider ${Boost_SYSTEM_LIBRARY} )
+    target_link_libraries( SuperCollider ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} )
 else()
     # in-house-built boost system
-    target_link_libraries( SuperCollider boost_system )
+    target_link_libraries( SuperCollider boost_system boost_filesystem )
 endif()
 
 if(APPLE)
@@ -327,8 +328,12 @@ if(APPLE)
     SET(MACOSX_BUNDLE_ICON_FILE ../../icons/SCcube.icns)
 
     install(TARGETS SuperCollider
-        DESTINATION ${scappbundlename}
-        )
+          DESTINATION ${scappbundlename})
+
+    set(QtWebEngineProcess
+        "${QT_INSTALL_DIR}/lib/QtWebEngineCore.framework/Helpers/QtWebEngineProcess.app" CACHE PATH "Path to the QtWebEngineProcess")
+    set(QtWebEngineProcessTarget
+        "${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Frameworks/QtWebEngineCore.framework/Helpers/")
 
     # for processing into the plist:
     set_property(TARGET SuperCollider
@@ -338,30 +343,70 @@ if(APPLE)
 
     include(InstallRequiredSystemLibraries)
 
-    include(DeployQt5)
-    install_qt5_executable("${scappbundlename}/${scappbundlename}.app" "" "" "${CMAKE_BINARY_DIR}/lang/sclang;${CMAKE_BINARY_DIR}/server/scsynth;${CMAKE_BINARY_DIR}/external_libraries")
-
-    # install Qt plugins (adapted from kvirc)
     set(plugin_dest_dir ${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Plugins)
     set(QT_PLUGINS_DIR "${Qt5Widgets_DIR}/../../../plugins")
-    install(DIRECTORY "${QT_PLUGINS_DIR}/" DESTINATION ${plugin_dest_dir} COMPONENT Runtime
-                       FILES_MATCHING REGEX "(platforms)/[^_]*\\.dylib")
 
-    install(CODE "
-           file(GLOB_RECURSE QTPLUGINS
-                  \"${plugin_dest_dir}/*.dylib\")
-           file(GLOB_RECURSE SCPLUGINS
-                  \"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/plugins/*.scx\")
-                include(BundleUtilities)
-                fixup_bundle(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\" \"\${QTPLUGINS};\${SCPLUGINS}\" \"${QT_LIBRARY_DIR}\")
-                #fixup_qt5_executable(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\")
-                " COMPONENT Runtime)
+    include(DeployQt5)
+    file(GLOB_RECURSE QTPLUGINS
+           "${plugin_dest_dir}/*.dylib")
+
+    # install Qt plugins (adapted from kvirc)
+    install(DIRECTORY "${QT_PLUGINS_DIR}/"
+            DESTINATION ${plugin_dest_dir}
+            COMPONENT Runtime
+            FILES_MATCHING REGEX "(platforms|imageformats|iconengines|printsupport)/[^_]*\\.dylib")
+
+    set(QtWebEngineCoreDir
+        "${CMAKE_PREFIX_PATH}/lib/QtWebEngineCore.framework/Versions/5" CACHE PATH "Path to the QtWebEngineProcess")
+    set(QtWebEngineProcessTarget
+        "${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Frameworks/QtWebEngineCore.framework/Helpers")
+
+    install(
+        DIRECTORY "${QtWebEngineCoreDir}/Helpers/QtWebEngineProcess.app"
+        DESTINATION ${QtWebEngineProcessTarget}
+        USE_SOURCE_PERMISSIONS)
+
+    install(
+        DIRECTORY "${QtWebEngineCoreDir}/Resources/"
+        DESTINATION "${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/"
+        COMPONENT Runtime
+        FILES_MATCHING PATTERN "*.*")
+
+    install(CODE
+        "
+            file(GLOB_RECURSE QTPLUGINS
+                \"${plugin_dest_dir}/*.dylib\")
+            file(GLOB_RECURSE SCPLUGINS
+                \"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app/Contents/Resources/plugins/*.scx\")
+            include(BundleUtilities)
+            set(BU_CHMOD_BUNDLE_ITEMS ON)
+            fixup_bundle(\"${QtWebEngineProcessTarget}/QtWebEngineProcess.app\"
+                \"${QtWebEngineProcessTarget}/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess\" \"\")
+            fixup_bundle(\"${CMAKE_INSTALL_PREFIX}/SuperCollider/SuperCollider.app\"
+                \"\${QTPLUGINS};\${SCPLUGINS}\" \"${QT_LIBRARY_DIR}\"
+                IGNORE_ITEM \"QtWebEngineProcess\")
+        "
+        COMPONENT Runtime)
 
 elseif(WIN32)
 
     if(NOT MSVC)
         set_target_properties(SuperCollider PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$<CONFIG>")
     endif(NOT MSVC)
+
+    if(MSYS)
+      add_custom_command(TARGET SuperCollider
+        POST_BUILD
+        COMMAND "${CMAKE_SOURCE_DIR}/platform/windows/junctions.sh" "create" "${CMAKE_SOURCE_DIR}" "$<TARGET_FILE_DIR:SuperCollider>"
+        COMMENT "Creating links to SCClassLibrary, HelpSource, examples and sounds"
+      )
+    else()
+      add_custom_command(TARGET SuperCollider
+        PRE_BUILD
+        COMMAND cmd /C ${CMAKE_SOURCE_DIR}/platform/windows/junctions.bat create \"$<TARGET_FILE_DIR:SuperCollider>\" \"${CMAKE_SOURCE_DIR}\"
+        COMMENT "Creating links to SCClassLibrary, HelpSource, examples and sounds"
+      )
+    endif()
 
     foreach(translation ${translations})
       add_custom_command(TARGET SuperCollider
