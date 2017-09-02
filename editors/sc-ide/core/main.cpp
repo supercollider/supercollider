@@ -223,6 +223,10 @@ Main::Main(void) :
     mSessionManager( new SessionManager(mDocManager, this) )
 {
     new SyntaxHighlighterGlobals(this, mSettings);
+  
+#ifdef Q_OS_MAC
+    QtCollider::Mac::DisableWindowTabbing();
+#endif
 
     connect(mScProcess, SIGNAL(response(QString,QString)),
             mDocManager, SLOT(handleScLangMessage(QString,QString)));
