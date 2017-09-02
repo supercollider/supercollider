@@ -147,12 +147,12 @@ public:
   void setUrl( const QString & );
 
   Q_PROPERTY( bool delegateReload READ delegateReload WRITE setDelegateReload );
-  bool delegateReload() const;
-  void setDelegateReload( bool );
+    bool delegateReload() const;
+    void setDelegateReload( bool );
 
   Q_PROPERTY( bool enterInterpretsSelection READ interpretSelection WRITE setInterpretSelection );
-  bool interpretSelection() const { return _interpretSelection; }
-  void setInterpretSelection( bool b ) { _interpretSelection = b; }
+    bool interpretSelection() const         { return _interpretSelection; }
+    void setInterpretSelection( bool b )    { _interpretSelection = b; }
 
   Q_PROPERTY( bool editable READ editable WRITE setEditable );
     bool editable() const { return _editable; }
