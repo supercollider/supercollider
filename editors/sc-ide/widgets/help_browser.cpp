@@ -46,16 +46,11 @@ namespace ScIDE {
 HelpWebPage::HelpWebPage(HelpBrowser* browser)
   : WebPage(browser), mBrowser(browser)
 {
-  connect( this, SIGNAL(linkClicked(const QUrl &, NavigationType, bool)),
-          browser, SLOT(onLinkClicked(const QUrl &, NavigationType, bool)) );
+  setDelegateNavigation(true);
+  connect( this, SIGNAL(navigationRequested(const QUrl &, QWebEnginePage::NavigationType, bool)),
+          browser, SLOT(onLinkClicked(const QUrl &, QWebEnginePage::NavigationType, bool)) );
 }
   
-bool HelpWebPage::acceptNavigationRequest(const QUrl &url, NavigationType type, bool isMainFrame)
-{
-  Q_EMIT(linkClicked(url, type, isMainFrame));
-  return true;
-}
-
 HelpBrowser::HelpBrowser( QWidget * parent ):
     QWidget(parent)
 {
@@ -188,7 +183,7 @@ void HelpBrowser::gotoHelpForMethod( const QString & className, const QString & 
     sendRequest(code);
 }
 
-void HelpBrowser::onLinkClicked( const QUrl & url, HelpWebPage::NavigationType type, bool isMainFrame )
+void HelpBrowser::onLinkClicked( const QUrl & url, QWebEnginePage::NavigationType type, bool isMainFrame )
 {
     qDebug() << "link clicked:" << url;
 

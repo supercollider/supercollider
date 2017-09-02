@@ -84,12 +84,6 @@ class HelpWebPage : public QtCollider::WebPage
 public:
   HelpWebPage(HelpBrowser* browser);
   
-signals:
-  void linkClicked( const QUrl &, NavigationType type, bool isMainFrame );
-
-protected:
-  virtual bool acceptNavigationRequest(const QUrl &url, NavigationType type, bool isMainFrame) override;
-  
 private:
   HelpBrowser* mBrowser;
 };
@@ -97,7 +91,7 @@ private:
 class HelpBrowser : public QWidget
 {
     Q_OBJECT
-
+  
 public:
     enum ActionRole {
         GoHome,
@@ -134,7 +128,7 @@ public slots:
     void openDefinition();
     void openCommandLine();
     void findReferences();
-    void onLinkClicked( const QUrl &, HelpWebPage::NavigationType type, bool isMainFrame );
+    void onLinkClicked( const QUrl &, QWebEnginePage::NavigationType type, bool isMainFrame );
 
 signals:
     void urlChanged();
