@@ -129,6 +129,11 @@ WebView : View {
 		^this.invokeMethod('resetWebAttribute', [QWebAttribute(attribute)]);
 	}
 
+	navigate {
+		|url|
+		^this.invokeMethod('navigate', [url]);
+	}
+
 	findText {
 		|text, reversed=false, cb=({})|
 		this.invokeMethod('findText', [text, reversed, cb.as(QCallback)]);
@@ -136,7 +141,7 @@ WebView : View {
 
 	onLinkActivated_ {
 		|func|
-		this.manageFunctionConnection( onLinkActivated, func, 'navigationRequested(QUrl, int, bool)' );
+		this.manageFunctionConnection( onLinkActivated, func, 'navigationRequested(QUrl,int,bool)', true);
 		onLinkActivated = func;
 	}
 
@@ -272,8 +277,8 @@ WebView : View {
 	audioMuted				{ 			^this.getProperty('audioMuted') }
 	audioMuted_				{ |muted| 	this.setProperty('audioMuted', muted) }
 
-	delegateNavigation		{ 			^this.getProperty('delegateNavigation') }
-	delegateNavigation_		{ |b| 		this.setProperty('delegateNavigation', b) }
+	overrideNavigation		{ 			^this.getProperty('overrideNavigation') }
+	overrideNavigation_		{ |b| 		this.setProperty('overrideNavigation', b) }
 
 	back 					{ this.triggerPageAction(\back) }
 	forward					{ this.triggerPageAction(\forward) }
