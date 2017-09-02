@@ -105,18 +105,18 @@ public:
   Q_INVOKABLE void setWebAttribute(int attr, bool on);
   Q_INVOKABLE bool testWebAttribute(int attr);
   Q_INVOKABLE void resetWebAttribute(int attr);
+  Q_INVOKABLE void navigate(const QString& url);
 
 public Q_SLOTS:
   void findText( const QString &searchText, bool reversed, QcCallback* cb);
 
 Q_SIGNALS:
-  void linkActivated( const QString & );
+  void linkActivated( const QString &, int, bool );
+  void jsConsoleMsg( const QString &, int, const QString & );
   void reloadTriggered( const QString & );
   void interpret( const QString & code );
-  void jsConsoleMsg( const QString &, int, const QString & );
   
   // QWebEnginePage forwards
-  
   void linkHovered(const QString &url);
   void geometryChangeRequested(const QRect& geom);
   void windowCloseRequested();
@@ -137,6 +137,10 @@ public:
   Q_PROPERTY( bool hasSelection READ hasSelection );
   Q_PROPERTY( QString selectedText READ selectedText );
   Q_PROPERTY( QString title READ title );
+  
+  Q_PROPERTY( bool overrideNavigation READ overrideNavigation WRITE setOverrideNavigation );
+    bool overrideNavigation() const;
+    void setOverrideNavigation(bool b);
   
   Q_PROPERTY( QString url READ url WRITE setUrl );
     QString url() const;
@@ -182,14 +186,14 @@ protected:
   virtual void keyPressEvent( QKeyEvent * );
   virtual void contextMenuEvent ( QContextMenuEvent * );
 
-private Q_SLOTS:
-  void onLinkClicked( const QUrl & );
+public Q_SLOTS:
   void onPageReload();
-  void onRenderProcessTerminated(QWebEnginePage::RenderProcessTerminationStatus status, int code);
-  void updateEditable(bool ok);
+  void onRenderProcessTerminated(QWebEnginePage::RenderProcessTerminationStatus, int);
+  void onLinkClicked(const QUrl &, QWebEnginePage::NavigationType, bool);
+  void updateEditable(bool);
 
 private:
-  void connectPage(QWebEnginePage* page);
+  void connectPage(QtCollider::WebPage* page);
   
   bool _interpretSelection;
   bool _editable;

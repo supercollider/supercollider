@@ -49,4 +49,15 @@ void WebPage::javaScriptConsoleMessage(JavaScriptConsoleMessageLevel level, cons
   Q_EMIT( jsConsoleMsg(message, lineNumber, sourceID) );
 }
 
+bool WebPage::acceptNavigationRequest(const QUrl &url, QWebEnginePage::NavigationType type, bool isMainFrame)
+{
+  if (_delegateNavigation && type == QWebEnginePage::NavigationTypeLinkClicked) {
+    Q_EMIT(navigationRequested(url, type, isMainFrame));
+    return false;
+  } else {
+    return QWebEnginePage::acceptNavigationRequest(url, type, isMainFrame);
+  }
+}
+
 } // namespace QtCollider
+

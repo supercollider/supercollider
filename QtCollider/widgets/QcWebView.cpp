@@ -64,14 +64,14 @@ WebView::WebView( QWidget *parent ) :
   
   connect( this, SIGNAL(loadFinished(bool)), this, SLOT(updateEditable(bool)) );
 }
-  
-void WebView::connectPage(QWebEnginePage* page)
+
+void WebView::connectPage(QtCollider::WebPage* page)
 {
   connect (page, SIGNAL(jsConsoleMsg(const QString&, int, const QString&)),
-          this, SIGNAL(jsConsoleMsg(const QString&, int, const QString&)));
+           this, SIGNAL(jsConsoleMsg(const QString&, int, const QString&)));
 
-  connect (page, SIGNAL(linkHovered(const QString &url)),
-           this, SIGNAL(linkHovered(const QString &url)));
+  connect (page, SIGNAL(linkHovered(const QString &)),
+           this, SIGNAL(linkHovered(const QString &)));
 
   connect (page, SIGNAL(geometryChangeRequested(const QRect&)),
            this, SIGNAL(geometryChangeRequested(const QRect&)));
@@ -90,13 +90,15 @@ void WebView::connectPage(QWebEnginePage* page)
 
   connect (page, SIGNAL(recentlyAudibleChanged(bool)),
            this, SIGNAL(recentlyAudibleChanged(bool)));
-  
+
+  connect (page, SIGNAL(navigationRequested(QUrl,QWebEnginePage::NavigationType,bool)),
+           this, SLOT(onLinkClicked(QUrl,QWebEnginePage::NavigationType,bool)));
+
   connect (page->action(QWebEnginePage::Reload), SIGNAL(triggered(bool)),
           this, SLOT(onPageReload()) );
 
   connect (page, SIGNAL(renderProcessTerminated(RenderProcessTerminationStatus, int)),
           this, SLOT(onRenderProcessTerminated(RenderProcessTerminationStatus, int)) );
-  
 }
   
 void WebView::onRenderProcessTerminated(QWebEnginePage::RenderProcessTerminationStatus status, int code)
@@ -222,6 +224,12 @@ void WebView::resetWebAttribute(int attr)
   }
 }
 
+void WebView::navigate(const QString& urlString)
+{
+  QUrl url(urlString);
+  this->load(url);
+}
+
 void WebView::findText( const QString &searchText, bool reversed, QcCallback* cb )
 {
   QWebEnginePage::FindFlags flags;
@@ -232,11 +240,6 @@ void WebView::findText( const QString &searchText, bool reversed, QcCallback* cb
   } else {
     QWebEngineView::findText(searchText, flags, cb->asFunctor());
   }
-}
-
-void WebView::onLinkClicked( const QUrl &url )
-{
-  Q_EMIT( linkActivated( url.toString() ) );
 }
 
 void WebView::onPageReload()
@@ -296,6 +299,29 @@ void WebView::updateEditable(bool ok) {
       page()->runJavaScript("document.documentElement.contentEditable = false");
     }
   }
+}
+  
+bool WebView::overrideNavigation() const
+{
+  WebPage* p = qobject_cast<WebPage*>(page());
+  if (p) {
+    return p->delegateNavigation();
+  } else {
+    return false;
+  }
+}
+
+void WebView::setOverrideNavigation(bool b)
+{
+  WebPage* p = qobject_cast<WebPage*>(page());
+  if (p) {
+    return p->setDelegateNavigation(b);
+  }
+}
+
+void WebView::onLinkClicked(const QUrl &url, QWebEnginePage::NavigationType type, bool isMainFrame)
+{
+  Q_EMIT(navigationRequested(url, (int)type, isMainFrame));
 }
 
 } // namespace QtCollider

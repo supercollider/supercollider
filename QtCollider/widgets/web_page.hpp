@@ -32,21 +32,28 @@ class WebPage : public QWebEnginePage
 
 public:
 
-  WebPage( QObject *parent ) : QWebEnginePage( parent ), _delegateReload(false) {}
+  WebPage( QObject *parent ) : QWebEnginePage( parent ), _delegateReload(false), _delegateNavigation(false) {}
   
   virtual void triggerAction ( WebAction action, bool checked = false ) override;
   
   virtual void javaScriptConsoleMessage(JavaScriptConsoleMessageLevel level, const QString& message, int lineNumber, const QString& sourceID) override;
   
-  bool delegateReload() const { return _delegateReload; }
-  void setDelegateReload( bool flag ) { _delegateReload = flag; }
+  bool delegateReload() const               { return _delegateReload; }
+  void setDelegateReload( bool flag )       { _delegateReload = flag; }
+
+  bool delegateNavigation() const           { return _delegateNavigation; }
+  void setDelegateNavigation( bool flag )   { _delegateNavigation = flag; }
+
+  bool acceptNavigationRequest(const QUrl &url, NavigationType type, bool isMainFrame) override;
 
 Q_SIGNALS:
   void jsConsoleMsg( const QString &, int, const QString & );
+  void navigationRequested(const QUrl &url, QWebEnginePage::NavigationType, bool);
 
 private:
 
   bool _delegateReload;
+  bool _delegateNavigation;
 };
 
 } // namespace QtCollider
