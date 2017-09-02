@@ -55,17 +55,53 @@ section::Comparison to Pan2
 Despite a certain similarity, link::Classes/Pan2:: and link::Classes/PanAz:: with 2 channels behave differently.
 
 code::
-// one full cycle for PanAz: from 0 to 2 
+// one full cycle for PanAz: from 0 to 2
 { PanAz.ar(2, DC.ar(1), Line.ar(0, 2, 0.1), orientation: 0) }.plot(0.1)
-// one full cycle for Pan2: from -1 to 1 and back to -1
+// comparing with Pan2
+{ Pan2.ar(DC.ar(1), Line.ar(0, 2, 0.1)) }.plot(0.1)
+// to create one full cycle for Pan2, move from -1 to 1 and back to -1
 { Pan2.ar(DC.ar(1), EnvGen.ar(Env([-1, 1, -1], [0.05, 0.05]))) }.plot(0.1)
+::
 
-// in other words, while Pan2 needs a position change of 2 from channel 0 to 1
+The same in one plot window:
+
+code::
+(
+{
+	[
+		// one full cycle for PanAz: from 0 to 2
+		PanAz.ar(2, DC.ar(1), Line.ar(0, 2, 0.1), orientation: 0),
+		// compare with Pan2
+		Pan2.ar(DC.ar(1), Line.ar(0, 2, 0.1)),
+		// to create one full cycle for Pan2, move from -1 to 1 and back to -1
+		Pan2.ar(DC.ar(1), EnvGen.ar(Env([-1, 1, -1], [0.05, 0.05])))
+	].flat;
+}.plot(0.1)
+)
+::
+
+In other words, while code::Pan2:: needs a position change of code::2:: from channel code::0:: to code::1::
+
+code::
 { Pan2.ar(DC.ar(1), Line.ar(-1, 1, 0.1)) }.plot(0.1)
 // we need a position change of 1 in PanAz:
 { PanAz.ar(2, DC.ar(1), Line.ar(0, 1, 0.1), orientation: 0) }.plot(0.1)
 ::
 
+In one plot window:
+
+code::
+(
+{
+	[
+		// in other words, while Pan2 needs a position change of 2 from channel 0 to 1
+		Pan2.ar(DC.ar(1), Line.ar(-1, 1, 0.1)),
+		// we need a position change of 1 in PanAz:
+		PanAz.ar(2, DC.ar(1), Line.ar(0, 1, 0.1), orientation: 0)
+	].flat
+}.plot(0.1);
+)
+::
 
 Examples::
 
