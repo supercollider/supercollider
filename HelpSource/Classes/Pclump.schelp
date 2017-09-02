@@ -6,7 +6,7 @@ categories:: Streams-Patterns-Events>Patterns>List
 DESCRIPTION::
 Groups the source pattern into arrays whose size is given by n. Similar to LINK::Classes/SequenceableCollection#-clump::.
 
-E.g. If the source pattern has 5 elements and you choose a clump size of 2, the new pattern will return two array containing 2 elements and a final array containing 1 element.
+E.g. If the source pattern has 5 elements and you choose a clump size of 2, the new pattern will return two arrays containing 2 elements and a final array containing 1 element.
 
 CLASSMETHODS::
 
