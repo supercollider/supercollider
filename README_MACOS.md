@@ -281,7 +281,7 @@ Using ccache with Xcode
 -----------------------
 
 Although cmake does not support using `ccache` with Xcode out of the box, this project is set up to
-allow it with the option `-DLAUNCH_RULE_COMPILE=ccache`. This can speed up build times
+allow it with the option `-DRULE_LAUNCH_COMPILE=ccache`. This can speed up build times
 significantly, even when the build directory has been cleared.
 
 Building without Qt or the IDE
