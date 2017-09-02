@@ -75,7 +75,7 @@ QUrl TypeCodec<QUrl>::read( PyrSlot *slot )
 void TypeCodec<QUrl>::write( PyrSlot *slot, const QUrl & val )
 {
   PyrString *str = newPyrString( gMainVMGlobals->gc,
-                                val.toString().toUtf8().constData(), 0, true );
+                                val.toString(QUrl::None).toUtf8().constData(), 0, true );
   SetObject( slot, str );
 }
 
