@@ -69,6 +69,6 @@ ReadableNodeIDAllocator {
 	}
 
 	freePerm { |id|
-		if (id.isPerm) { permFreed.add(id) }
+		if (this.isPerm(id)) { permFreed.add(id) }
 	}
 }
