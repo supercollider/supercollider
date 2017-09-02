@@ -194,7 +194,7 @@ ContiguousBlock {
 }
 
 ContiguousBlockAllocator {
-	var <size, array, freed, <pos, top, <addrOffset;
+	var <size, array, freed, <pos, <top, <addrOffset;
 	// pos is offset for reserved numbers,
 	// addrOffset is offset for clientID * size
 
