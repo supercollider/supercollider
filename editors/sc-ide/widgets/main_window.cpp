@@ -654,6 +654,19 @@ void MainWindow::createMenus()
     menu->addSeparator();
     menu->addAction( mMain->scProcess()->action(ScProcess::ShowQuarks) );
     menu->addSeparator();
+    menu->addAction( mEditors->action(MultiEditor::EvaluateCurrentDocument) );
+    menu->addAction( mEditors->action(MultiEditor::EvaluateRegion) );
+    menu->addAction( mEditors->action(MultiEditor::EvaluateLine) );
+    menu->addAction( mMain->scProcess()->action(ScIDE::ScProcess::StopMain) );
+    menu->addSeparator();
+    menu->addAction( mActions[LookupImplementationForCursor] );
+    menu->addAction( mActions[LookupImplementation] );
+    menu->addAction( mActions[LookupReferencesForCursor] );
+    menu->addAction( mActions[LookupReferences] );
+
+    menuBar->addMenu(menu);
+
+    menu = new QMenu(tr("Se&rver"), this);
     menu->addAction( mMain->scServer()->action(ScServer::ToggleRunning) );
     menu->addAction( mMain->scServer()->action(ScServer::Reboot) );
     menu->addAction( mMain->scServer()->action(ScServer::KillAll) );
@@ -671,16 +684,6 @@ void MainWindow::createMenus()
     menu->addAction( mMain->scServer()->action(ScServer::VolumeDown) );
     menu->addAction( mMain->scServer()->action(ScServer::VolumeRestore) );
     menu->addAction( mMain->scServer()->action(ScServer::Mute) );
-    menu->addSeparator();
-    menu->addAction( mEditors->action(MultiEditor::EvaluateCurrentDocument) );
-    menu->addAction( mEditors->action(MultiEditor::EvaluateRegion) );
-    menu->addAction( mEditors->action(MultiEditor::EvaluateLine) );
-    menu->addAction( mMain->scProcess()->action(ScIDE::ScProcess::StopMain) );
-    menu->addSeparator();
-    menu->addAction( mActions[LookupImplementationForCursor] );
-    menu->addAction( mActions[LookupImplementation] );
-    menu->addAction( mActions[LookupReferencesForCursor] );
-    menu->addAction( mActions[LookupReferences] );
 
     menuBar->addMenu(menu);
 

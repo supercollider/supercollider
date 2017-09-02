@@ -26,91 +26,83 @@ argument:: add
 
 examples::
 code::
-// preparation; essentially, allocate an impulse response buffer, then follow a special buffer preparation step to set up the data the plugin needs. Different options are provided commented out for loading impulse responses from soundfiles.
+
+// preparation; essentially, allocate an impulse response buffer, then
+// follow a special buffer preparation step to set up the data the plugin needs.
+// Different options are provided commented out for loading impulse responses from soundfiles.
 (
-~fftsize=2048; // also 4096 works on my machine; 1024 too often and amortisation too pushed, 8192 more high load FFT
 
-s.waitForBoot({
+ // also 4096 works on my machine; 1024 too often and amortisation too pushed, 8192 more high load FFT
+~fftsize = 2048;
 
-{
-var ir, irbuffer, bufsize;
+s.waitForBoot {
 
-	// // MONO ONLY
-	// pre-existing impulse response sound files
-	// (could also use any general soundfile too for cross-synthesis effects)
-	// irbuffer= Buffer.read(s, "/Volumes/data/audio/ir/ir2.wav");
-	// irbuffer= Buffer.read(s, "/Volumes/data/audio/ir/ir.wav");
-	// this is a two second long hall IR
-	// irbuffer= Buffer.read(s, "/Volumes/data/audio/ir/bighall2.wav");
+	{
+		var ir, irbuffer, bufsize;
 
+		// // MONO ONLY
+		// pre-existing impulse response sound files
+		// (could also use any general soundfile too for cross-synthesis effects)
+		// irbuffer = Buffer.read(s, "/Volumes/data/audio/ir/ir2.wav");
 
-	// synthesise the honourable 'Dan Stowell' impulse response
+		// synthesise the honourable 'Dan Stowell' impulse response
 
-	ir = ([1] ++0.dup(100) ++ ((1, 0.99998 .. 0).collect{|f| f =
-	f.squared.squared; f = if(f.coin){0}{f.squared}; f =
-	if(0.5.coin){0-f}{f} } * 0.1)).normalizeSum;
-	// ir.plot;
+		ir = [1] ++ 0.dup(100) ++ (
+			(1, 0.99998 .. 0)
+			.collect {|f|
+				f = f.squared.squared;
+				f = if(f.coin) { 0 }{ f.squared };
+				f = if(0.5.coin) { 0 - f } { f }
+			} * 0.1
+		);
+		ir = ir.normalizeSum;
 
-	irbuffer = Buffer.loadCollection(s, ir);
+		irbuffer = Buffer.loadCollection(s, ir);
 
-	s.sync;
+		s.sync;
 
-	bufsize= PartConv.calcBufSize(~fftsize, irbuffer);
+		bufsize = PartConv.calcBufSize(~fftsize, irbuffer);
 
-	// ~numpartitions= PartConv.calcNumPartitions(~fftsize, irbuffer);
+		// ~numpartitions= PartConv.calcNumPartitions(~fftsize, irbuffer);
 
-	~irspectrum= Buffer.alloc(s, bufsize, 1);
+		~irspectrum = Buffer.alloc(s, bufsize, 1);
+		~irspectrum.preparePartConv(irbuffer, ~fftsize);
 
-	~irspectrum.preparePartConv(irbuffer, ~fftsize);
+		s.sync;
 
-	s.sync;
+		irbuffer.free; // don't need time domain data anymore, just needed spectral version
+	}.fork;
 
-	irbuffer.free; // don't need time domain data anymore, just needed spectral version
-}.fork;
-
-});
-
+}
 )
 
 
 
-~target= Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
-// ~target= Buffer.read(s, "sounds/break");
+~target = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 (
-
-{ var input, kernel;
-
-input= PlayBuf.ar(1, ~target, loop:1);
-
-Out.ar(0, PartConv.ar(input, ~fftsize, ~irspectrum.bufnum, 0.5));
- }.play;
-
+{
+	var input = PlayBuf.ar(1, ~target, loop:1);
+	PartConv.ar(input, ~fftsize, ~irspectrum.bufnum, 0.5)
+}.play
 )
 
 
 // convolve with live input
 (
-
-{ var input, kernel;
-
-input= SoundIn.ar(0);
-
-Out.ar(0, PartConv.ar(input, ~fftsize, ~irspectrum.bufnum));
-}.play;
+{
+	var input = SoundIn.ar(0);
+	PartConv.ar(input, ~fftsize, ~irspectrum.bufnum)
+}.play
 )
 
 
 // should get back original impulse response (once every four seconds)
 (
-
-{ var input, kernel;
-
-input= Impulse.ar(0.25);
-
-Out.ar(0, PartConv.ar(input, ~fftsize, ~irspectrum.bufnum));
- }.play;
-
+{
+	var input = Impulse.ar(0.25);
+	PartConv.ar(input, ~fftsize, ~irspectrum.bufnum)
+}.play
 )
 
 

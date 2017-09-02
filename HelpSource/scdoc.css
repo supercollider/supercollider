@@ -15,10 +15,9 @@ html {
 }
 
 div.contents {
-    margin: 1em;
+    margin: 0 1em;
     padding-left: 0.3em;
     padding-right: 0.3em;
-    padding-top: 1.5em;
     padding-bottom: 0.5em;
 }
 
@@ -42,7 +41,7 @@ p {
     margin-bottom: 0.3em;
 }
 
-a:link, a:visited, a:hover {
+a:link, a:visited, a:link:hover {
     text-decoration: none;
     color: #449;
     /* add padding to work around "text-decoration: underline" not
@@ -50,7 +49,7 @@ a:link, a:visited, a:hover {
     padding-bottom: 1px;
 }
 
-a:hover {
+a:link:hover {
     text-decoration: underline;
 }
 
@@ -102,38 +101,61 @@ a.subclass_toggle:hover {
 
 #menubar {
     font-family: Arial, Helvetica, sans-serif;
+    text-indent: 0;
+    padding: 0;
     width: 100%;
-    position: fixed;
-/*    background: #555;*/
-    background: #eee;
-    top: 0px;
-    padding: 2px;
-    margin: 0px;
-    border-bottom: 1px solid #bbb;
-/*    border-bottom: 2px solid #999;*/
-    z-index: 30;
+    padding: 0.5em 0;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 1em;
 }
 
 #menubar .menuitem {
-    list-style: none;
-    float:left;
-    margin:0;
-    padding:0px;
+    margin: 0;
+    padding: 0px;
     padding-left: 0.75em;
     padding-right: 0.75em;
-/*    border-right: 1px solid #999;*/
     border-right: 1px solid #ddd;
     font-size: 10pt;
-    display: block;
+    display: inline-block;
+
+    /* This ensures that the logo isn't cut off. */
+    min-height: 1.5em;
+    /* This gets the text to vertically center. Discovered by accident. */
+    line-height: 1.5em;
+}
+
+#menubar .menuitem:first-child {
+    padding-left: 0;
+
+    /* It is better to make the logo a background image instead of an <img> because it is purely
+    decorative. */
+    background-image: url("images/SC_icon.png");
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: 1.5em;
+}
+
+#menubar .menuitem:first-child a {
+    /* The cube logo is actually *under* the <a>, but it shows through so that it looks like it
+    is part of the link. */
+    padding-left: 2em;
+}
+
+#menubar .menuitem:first-child a:hover {
+    /* Lighten the background image by adding a translucent white layer over it. */
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+#menubar .menuitem:last-child {
+    border-right: none;
 }
 
 .menuitem a {
-/*    color: #ddd;*/
     color: #666;
 }
 .menuitem a:hover {
     text-decoration: none;
-    color: black;
+    color: #999;
 }
 
 #topdoctitle {
@@ -178,31 +200,23 @@ a.subclass_toggle:hover {
     border: 1px solid #ddd;
 }
 
-a.navlink {
-/*    color: #fff;*/
-    color: #447;
-    font-weight: bold;
-}
-
 
 .header {
-  border-bottom: 2.5px solid #000; padding-bottom:0.18em;
+  padding-bottom: 0.18em;
 }
-#label, #label a {
-    font-weight: bold;
-    color: #999;
-    border-bottom: 1px solid #bbb;
+
+#label {
+    color: #666;
+    font-size: 0.9em;
 }
+
 #summary {
     font-weight: normal;
     font-size: 1.1em;
-}
-#categories {
-    color: #888;
-    font-size: 9pt;
+    font-style: italic;
+    color: #444;
 }
 #related {
-    text-align: right;
     font-weight: bold;
     margin-top: 0.5em;
 }
@@ -212,6 +226,12 @@ a.navlink {
 .headerimage {
     float: right;
     margin-right: 1ex;
+}
+
+#superclasses {
+    font-size: 9pt;
+    color: #444;
+    font-weight: normal;
 }
 
 .extension-indicator-ctr {
@@ -234,9 +254,9 @@ a.navlink {
 }
 
 .subheader {
-    text-align: right;
     font-size: 9pt;
     color: #444;
+    margin-top: 1em;
 }
 
 .jump {
@@ -277,7 +297,7 @@ h1 {
 }
 
 h2 {
-    border-bottom: 2px solid #ccc;
+    border-bottom: 1px solid #ddd;
     margin-top: 1.0em;
     text-align: left;
     margin-bottom: 2px;
@@ -288,7 +308,7 @@ h3 {
     margin-top: 2.0em;
     margin-bottom: 1px;
     text-align: left;
-    font-size: 1.2em;
+    font-size: 1.4em;
 }
 
 h4 {
@@ -296,7 +316,6 @@ h4 {
     margin-bottom: 0em;
     margin-left: 0em;
     color: #777;
-    border-bottom: 1px solid #ddd;
 }
 
 dt {
@@ -341,18 +360,19 @@ pre.code {
     margin-left: -1em;
 }
 
-.methodname, .imethodname, .cmethodname {
+.method-code {
     font-family: monospace;
-    font-size: 1em;
     font-weight: normal;
+    font-size: 1.05em !important;
     margin-bottom: 0em;
     margin-top: 0.75em;
     padding: 0.25em;
     border: none;
-    background: #e7ebe7;
+    padding-left: 4em;
+    text-indent: -4em;
 }
 
-.methodname a, .imethodname a, .cmethodname a {
+a.method-name {
     color: black;
     font-weight: bold;
 }
@@ -369,17 +389,13 @@ pre.code {
 .extmethod {
     font-size: 9pt;
     color: #444;
-    background: #fee;
     padding-left: 0.2em;
-    text-align: right;
 }
 
 .supmethod {
     font-size: 9pt;
     color: #444;
-    background: #ffe;
     padding-left: 0.2em;
-    text-align: right;
 }
 
 table.arguments {

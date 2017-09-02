@@ -231,6 +231,11 @@ Hyperbolic tangent.
 method:: distort
 Nonlinear distortion.
 discussion::
+The formula used is :
+code::
+x / (1 + abs(x))
+::
+Here is an example :
 code::
 (
 {
@@ -390,19 +395,17 @@ code::
 { // trigger an envelope
 	var trig;
 	trig = SinOsc.ar(1) > 0;
-	Out.ar(0,
-		EnvGen.kr(Env.perc, trig, doneAction: Done.none)
-			* SinOsc.ar(440,0,0.1)
-	)
+	EnvGen.kr(Env.perc, trig, doneAction: Done.none)
+			* SinOsc.ar(440, 0, 0.1)
 }.play
 )
 
 // trigger a synth
 (
-SynthDef("help-EnvGen",{ arg out=0;
+SynthDef("help-EnvGen", { arg out=0;
 	Out.ar(out,
 		EnvGen.kr(Env.perc,1.0,doneAction: Done.freeSelf)
-			* SinOsc.ar(440,0,0.1)
+			* SinOsc.ar(440, 0, 0.1)
 	)
 }).add;
 

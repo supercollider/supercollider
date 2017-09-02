@@ -1,4 +1,5 @@
 Event : Environment {
+
 	classvar defaultParentEvent;
 	classvar <parentEvents;
 	classvar <partialEvents;
@@ -10,17 +11,39 @@ Event : Environment {
 	*default {
 		^Event.new(8, nil, defaultParentEvent, true);
 	}
+
 	*silent { |dur(1.0), inEvent|
+		var delta;
 		if(inEvent.isNil) { inEvent = Event.new }
 		{ inEvent = inEvent.copy };
-		inEvent.put(\isRest, true).put(\dur, dur).put(\parent, defaultParentEvent)
-		.put(\delta, dur * (inEvent[\stretch] ? 1));
+		delta = dur * (inEvent[\stretch] ? 1);
+		if(dur.isRest.not) { dur = Rest(dur) };
+		inEvent.put(\dur, dur).put(\parent, defaultParentEvent)
+		.put(\delta, delta);
 		^inEvent
 	}
-	*addEventType { arg type, func;
-		var types = partialEvents.playerEvent.eventTypes;
-		types.put(type, func)
+
+	// event types
+
+	*addEventType { arg type, func, parentEvent;
+		partialEvents.playerEvent.eventTypes.put(type, func);
+		this.addParentType(parentEvent)
 	}
+
+	*addParentType { arg type, parentEvent;
+		if(parentEvent.notNil and: { parentEvent.parent.isNil }) { parentEvent.parent = defaultParentEvent };
+		partialEvents.playerEvent.parentTypes.put(type, parentEvent)
+	}
+
+	*parentTypes {
+		^this.partialEvents.playerEvent.parentTypes
+	}
+
+	*eventTypes {
+		^this.partialEvents.playerEvent.eventTypes
+	}
+
+	// instance methods
 
 	next { arg inval; ^composeEvents(inval, this) }
 
@@ -44,17 +67,10 @@ Event : Environment {
 		//		^this.delta
 	}
 
-	// this[\isRest] may be nil
 	isRest {
-		^this[\isRest] == true
-		or: { this[\type] == \rest
-			or: {
-				this.use {
-					parent ?? { parent = defaultParentEvent };
-					~detunedFreq.value.isRest
-				}
-			}
-		}
+		_Event_IsRest
+		// In theory, we should never get here unless the Event object is corrupted.
+		^this.primitiveFailed;
 	}
 
 	// node watcher interface
@@ -414,20 +430,28 @@ Event : Environment {
 				type: \note,
 
 				play: #{
-					var tempo, server;
+					var tempo, server, eventTypes, parentType;
+
+					parentType = ~parentTypes[~type];
+					parentType !? { currentEnvironment.parent = parentType };
 
 					~finish.value(currentEnvironment);
 
-					server = ~server ?? { Server.default };
+					server = ~server ? Server.default;
 
 					tempo = ~tempo;
-					if (tempo.notNil) {
-						thisThread.clock.tempo = tempo;
+					tempo !? { thisThread.clock.tempo = tempo };
+
+
+					if(currentEnvironment.isRest.not) {
+						eventTypes = ~eventTypes;
+						(eventTypes[~type] ?? { eventTypes[\note] }).value(server)
 					};
-					if(currentEnvironment.isRest.not) { ~eventTypes[~type].value(server) };
 
 					~callback.value(currentEnvironment);
 				},
+
+
 
 				// synth / node interface
 				// this may be better moved into the cleanup events, but for now
@@ -464,6 +488,8 @@ Event : Environment {
 
 
 				// the event types
+
+				parentTypes: (),
 
 				eventTypes: (
 

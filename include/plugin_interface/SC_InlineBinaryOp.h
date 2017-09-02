@@ -341,15 +341,17 @@ inline int sc_fold(int in, int lo, int hi)
 
 inline int sc_gcd(int a, int b)
 {
-	int t;
+		
+	if (a == 0)
+		return b;
+	
+	if (b == 0)
+		return a;
 	
 	const bool negative = (a <= 0 && b <= 0);
 	
 	a = sc_abs(a);
 	b = sc_abs(b);
-	
-	if (a == 0) return b;
-	if (b == 0) return a;
 	
 	if (a == 1 || b == 1) {
 		if(negative) {
@@ -359,12 +361,21 @@ inline int sc_gcd(int a, int b)
 		}
 	}
 
-	if (a < b) { t = a; a = b; b = t; }
+	if (a < b) {
+		int t = a;
+		a = b;
+		b = t;
+	}
+	
 	while (b > 0) {
-		t = a % b; a = b; b = t;
+		int t = a % b;
+		a = b;
+		b = t;
 	}
 
-	if(negative) { a = 0 - a; }
+	if(negative) {
+		a = 0 - a;
+	}
 
 	return a;
 }
@@ -381,30 +392,41 @@ inline int sc_lcm(int a, int b)
 
 inline long sc_gcd(long a, long b)
 {
-	long t;
+	
+	if (a == 0)
+		return b;
+	
+	if (b == 0)
+		return a;
 
 	const bool negative = (a <= 0 && b <= 0);
 
 	a = sc_abs(a);
 	b = sc_abs(b);
 
-	if (a == 0) return b;
-	if (b == 0) return a;
-
 	if (a == 1 || b == 1) {
 		if(negative) {
-			return (long)-1;
+			return (long) -1;
 		} else {
-			return (long)1;
+			return (long) 1;
 		}
 	}
 
-	if (a < b) { t = a; a = b; b = t; }
+	if (a < b) {
+		long t = a;
+		a = b;
+		b = t;
+	}
+	
 	while (b > 0) {
-		t = a % b; a = b; b = t;
+		long t = a % b;
+		a = b;
+		b = t;
 	}
 
-	if(negative) { a = 0 - a; }
+	if(negative) {
+		a = 0 - a;
+	}
 
 	return a;
 }

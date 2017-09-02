@@ -1,10 +1,62 @@
 class::Class
 summary::A Class describes the structure and implementation of a set objects which are its instances.
 categories::Core>Kernel, Language>OOP
+related:: Guides/WritingClasses, Reference/Classes
 
 ClassMethods::
 method:: allClasses
 returns:: an link::Classes/Array:: of all Classes
+
+
+method:: initClass
+
+When SuperCollider starts up, just after it has compiled the library, it initializes all the classes from Object down, a depth first traversal of subclasses.
+
+This method can be overloaded in any class that requires initialization of classvars or other resources.
+
+note::
+Each class will be initialized once, thus each class' code::initClass:: is called exactly once during the initialization phase.
+::
+
+method:: initClassTree
+
+used in link::#*initClass:: to assure the initialisation of code::aClass:: before using it. Wherever necessary, it recursively initializes all classes required by code::aClass::.
+
+In some cases it is required that another class and its resources are initialized before you initialize your own. This can be accomplished by
+
+
+code::
+YourClass {
+    *initClass {
+		// initialize OtherClass before continuing
+        Class.initClassTree(OtherClass);
+
+        ..
+
+        // use OtherClass
+
+        ..
+    }
+
+    ..
+
+}
+::
+
+Pre-initialized data such as link::Classes/SynthDef::s should be deferred to link::Classes/StartUp::
+
+code::
+YourClass {
+    *initClass {
+        StartUp.add {
+            ..
+        }
+    }
+
+    ..
+
+}
+::
 
 InstanceMethods::
 

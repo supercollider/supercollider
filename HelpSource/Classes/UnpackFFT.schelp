@@ -32,21 +32,16 @@ code::
 
 examples::
 code::
-(
-s.waitForBoot({
-	var fftsize = 1024;
-	b = Buffer.alloc(s, fftsize, 1);
-	c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
-})
-)
+
+c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 // This one just drags out various the values and posts them - a little bit pointless!
 (
 x = {
 	var sig, chain, unp;
-	sig = SinOsc.ar;
+	//sig = SinOsc.ar;
 	sig = PlayBuf.ar(1, c, BufRateScale.kr(c), loop: 1);
-	chain = FFT(b, sig);
+	chain = FFT(LocalBuf(1, 1024), sig);
 
 	// Using the frombin & tobin args makes it much more efficient, limiting analysis to the bins of interest
 	unp = UnpackFFT(chain, b.numFrames, frombin: 0, tobin: 4);
@@ -58,22 +53,23 @@ x = {
 		anunp.poll(chain>=0, if(index % 2 == 0,  "Magnitude", "Phase")+(index/2).floor);
 	};
 
-	(sig*0.1).dup;
-}.play(s);
+	(sig * 0.1).dup;
+}.play
 )
 x.free;
 
 // Now a simple frequency-domain manipulation, square-rooting the magnitudes AND phases.
 (
 x = {
-	var in, chain, magsphases;
-	in = PlayBuf.ar(1, c, BufRateScale.kr(c), loop: 1);
-	chain = FFT(b, in);
+	var sig, chain, magsphases, b;
+	b = LocalBuf(1, 1024);
+	sig = PlayBuf.ar(1, c, BufRateScale.kr(c), loop: 1);
+	chain = FFT(b, sig);
 	magsphases = UnpackFFT(chain, b.numFrames);
 	magsphases = magsphases.collect(_.sqrt);
 	PackFFT(chain, b.numFrames, magsphases);
 	Out.ar(0, 0.25 * IFFT(chain).dup);
-}.play(s);
+}.play
 )
 x.free;
 ::

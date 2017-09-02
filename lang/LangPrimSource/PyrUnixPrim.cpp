@@ -34,7 +34,7 @@ Primitives for Unix.
 #include "VMGlobals.h"
 #include "GC.h"
 #include "SC_RGen.h"
-#include "SC_DirUtils.h"
+#include "SC_Filesystem.hpp"
 #include "sc_popen.h"
 #include "SCBase.h"
 
@@ -49,7 +49,7 @@ Primitives for Unix.
 #include <libgen.h>
 #endif
 
-using namespace boost::filesystem;
+namespace bfs = boost::filesystem;
 
 extern bool compiledOK;
 PyrSymbol* s_unixCmdAction;
@@ -139,12 +139,10 @@ static void string_popen_thread_func(struct sc_process *process)
 	gLangMutex.lock();
 	if(compiledOK) {
 		VMGlobals *g = gMainVMGlobals;
-		g->canCallOS = true;
 		++g->sp;  SetObject(g->sp, class_string);
 		++g->sp; SetInt(g->sp, res);
 		++g->sp; SetInt(g->sp, pid);
 		runInterpreter(g, s_unixCmdAction, 3);
-		g->canCallOS = false;
 	}
 	gLangMutex.unlock();
 }
@@ -179,7 +177,7 @@ int prString_POpen(struct VMGlobals *g, int numArgsPushed)
 		return errFailed;
 	}
 
-	thread thread(std::bind(string_popen_thread_func, process));
+	SC_Thread thread(std::bind(string_popen_thread_func, process));
 	thread.detach();
 
 	SetInt(a, pid);
@@ -217,7 +215,7 @@ int prArrayPOpen(struct VMGlobals *g, int numArgsPushed)
 	
 	std::vector<char *> argv (obj->size + 1);
 	
-	path p;
+	bfs::path p;
 	p /= filename;
 	std::string filenameOnly = p.filename().string();
 	std::vector<char> vfilenameOnly(filenameOnly.begin(), filenameOnly.end());
@@ -249,7 +247,7 @@ int prArrayPOpen(struct VMGlobals *g, int numArgsPushed)
 		return errFailed;
 	}
 
-	thread thread(std::bind(string_popen_thread_func, process));
+	SC_Thread thread(std::bind(string_popen_thread_func, process));
 	thread.detach();
 
 	for (int i=1; i<obj->size; ++i) {

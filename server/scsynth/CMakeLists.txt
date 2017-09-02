@@ -30,6 +30,7 @@ message(STATUS "Audio API: ${AUDIOAPI}")
 
 if (NOT Boost_FOUND)
 	file(GLOB boost_system_sources ../../external_libraries/boost/libs/system/src/*cpp)
+	file(GLOB boost_filesystem_sources ../../external_libraries/boost/libs/filesystem/src/*cpp)
 endif()
 
 set(scsynth_sources
@@ -53,22 +54,26 @@ set(scsynth_sources
 	SC_World.cpp
 	Rendezvous.cpp
 
+	${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_Filesystem_win.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_Filesystem_unix.cpp
+	${CMAKE_SOURCE_DIR}/common/SC_Filesystem_iphone.cpp
+
 	${CMAKE_SOURCE_DIR}/common/SC_fftlib.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_AllocPool.cpp
-	${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_Errors.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_Reply.cpp
-	${CMAKE_SOURCE_DIR}/common/SC_StandAloneInfo_Darwin.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StringBuffer.cpp
 	${CMAKE_SOURCE_DIR}/common/SC_StringParser.cpp
 	${CMAKE_SOURCE_DIR}/common/Samp.cpp
 	${CMAKE_SOURCE_DIR}/common/sc_popen.cpp
 
 	${boost_system_sources}
+	${boost_filesystem_sources}
 )
 
 if(APPLE)
-	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_DirUtils.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
+	set_property(SOURCE ${CMAKE_SOURCE_DIR}/common/SC_Filesystem_macos.cpp PROPERTY COMPILE_FLAGS -xobjective-c++)
 
 	list(APPEND scsynth_sources
 		${CMAKE_SOURCE_DIR}/common/SC_Apple.mm
@@ -181,9 +186,9 @@ elseif(AUDIOAPI STREQUAL coreaudio)
 endif()
 
 if (Boost_FOUND)
-	target_link_libraries(libscsynth ${Boost_SYSTEM_LIBRARY})
+	target_link_libraries(libscsynth ${Boost_SYSTEM_LIBRARY} ${Boost_FILESYSTEM_LIBRARY} )
 else()
-	target_link_libraries(libscsynth boost_system)
+	target_link_libraries(libscsynth boost_system boost_filesystem)
 endif()
 
 if (WIN32)

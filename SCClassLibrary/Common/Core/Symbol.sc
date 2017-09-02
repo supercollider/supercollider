@@ -16,8 +16,9 @@ Symbol {
 	// the primitive fails to escape '
 	asCompileString { ^("'" ++ super.asString.escapeChar($') ++ "'") }
 	asClass {
-		_SymbolClass
 		// if Symbol represents a class name then return the class, else return nil.
+		_SymbolClass
+		^this.primitiveFailed
 	}
 	asSetter {
 		_SymbolAsSetter
@@ -60,10 +61,19 @@ Symbol {
 		^this.isPrimitiveName and: { this.primitiveIndex > 0 }
 	}
 	isMap {
-		_Symbol_IsMap
 		// returns true if symbol starts with 'a' or 'c' followed by a number
+		_Symbol_IsMap
+		^this.primitiveFailed
 	}
 	isRest { ^this.isMap.not }
+	isIdentifier {
+		_Symbol_IsIdentifier
+		^this.primitiveFailed;
+	}
+	isBinaryOp {
+		_Symbol_IsBinaryOp
+		^this.primitiveFailed;
+	}
 
 	// Environment support
 	// The compiler translates use of an Environment variable like ~myvar

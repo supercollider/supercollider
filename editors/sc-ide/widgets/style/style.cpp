@@ -284,9 +284,6 @@ void Style::drawPrimitive
     case QStyle::PE_FrameTabBarBase: {
         const QTabBar *tabBar = qobject_cast<const QTabBar*>(widget);
 
-        const QStyleOptionTabBarBase *tabBarBaseOption =
-                static_cast<const QStyleOptionTabBarBase*>(option);
-
         painter->save();
 
         painter->setPen(Qt::NoPen);

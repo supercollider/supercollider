@@ -236,7 +236,7 @@ foreach(plugin ${supernova_plugins})
 	endif()
 endforeach()
 
-if (CMAKE_SYSTEM_NAME MATCHES "Linux")
+if (CMAKE_SYSTEM_NAME MATCHES "Linux" OR CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
 	find_package(X11 REQUIRED)
 
 	if (NOT X11_Xt_FOUND)

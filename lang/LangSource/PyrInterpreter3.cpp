@@ -337,8 +337,6 @@ bool initRuntime(VMGlobals *g, int poolSize, AllocPool *inPool)
 	// initialize process random number generator
 	g->rgen = (RGen*)(slotRawObject(&g->thread->randData)->slots);
 
-	//initUGenFuncs();
-	signal_init_globs();
 	initThreads();
 	initPatterns();
 	initUniqueMethods();
@@ -1756,8 +1754,23 @@ HOT void Interpret(VMGlobals *g)
 				// Dictionary-keysValuesArrayDo
 				case 13 : {
 					PyrSlot * vars = g->frame->vars;
+					
+					if (IsNil(&vars[1])) {
+						error("Dictionary-keysValuesArrayDo: first argument should not be nil.\n");
+						
+						slotCopy(++sp, &g->receiver);
+						numArgsPushed = 0;
+						selector = gSpecialSelectors[opmPrimitiveFailed];
+						slot = sp;
+						
+						goto class_lookup;
+					}
+
 					int m = slotRawInt(&vars[3]);
 					PyrObject * obj = slotRawObject(&vars[1]);
+					
+					
+					
 					if ( m < obj->size ) {
 						slot = obj->slots + m;	// key
 						while (IsNil(slot)) {
@@ -1864,8 +1877,8 @@ HOT void Interpret(VMGlobals *g)
 				case 21 : {
 					-- sp ; // Drop
 					PyrSlot * vars = g->frame->vars;
-					SetRaw(&g->frame->vars[2], slotRawFloat(&g->frame->vars[2]) - 1.0); // dec i
-					SetRaw(&g->frame->vars[3], slotRawFloat(&g->frame->vars[3]) - 1.0); // inc j
+					SetRaw(&vars[2], slotRawFloat(&vars[2]) - 1.0); // dec i
+					SetRaw(&vars[3], slotRawFloat(&vars[3]) - 1.0); // inc j
 					ip -= 4;
 					dispatch_opcode;
 				}

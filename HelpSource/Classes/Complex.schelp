@@ -91,7 +91,8 @@ code::
 cubed(Complex(2, 1))
 ::
 
-method:: **, pow
+method:: **
+method:: pow
 Complex exponentiation
 discussion::
 not implemented for all combinations - some are mathematically ambiguous.
@@ -126,6 +127,14 @@ negation of both parts
 discussion::
 code::
 Complex(2, 9).neg
+::
+
+method:: reciprocal
+the reciprocal of a complex number
+discussion::
+code::
+Complex(3, 4).reciprocal
+1 / Complex(3, 4) // same, but less efficient
 ::
 
 method:: abs

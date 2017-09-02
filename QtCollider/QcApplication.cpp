@@ -27,6 +27,7 @@
 #include <PyrKernel.h>
 #include <PyrSlot.h>
 #include <GC.h>
+#include "SC_Filesystem.hpp"
 
 #include <QThread>
 #include <QFileOpenEvent>
@@ -38,7 +39,6 @@
 #endif
 
 extern bool compiledOK;
-extern const char * gIdeName;
 
 QcApplication * QcApplication::_instance = 0;
 QMutex QcApplication::_mutex;
@@ -88,8 +88,7 @@ QcApplication::QcApplication( int & argc, char ** argv )
   SC::Apple::disableAppNap();
 #endif
   
-
-  _handleCmdPeriod = strcmp(gIdeName, "scapp") != 0;
+  _handleCmdPeriod = SC_Filesystem::instance().getIdeName() != "scapp";
 }
 
 QcApplication::~QcApplication()

@@ -4,7 +4,7 @@ categories:: Libraries>JITLib>Patterns, Live Coding
 related:: Classes/Pdef, Classes/Tdef, Classes/Pdefn, Classes/Ndef
 
 description::
-Placeholder for functions to calculate with.
+Fdef is a placeholder for functions. Fdef allows dynamically replacing functions while they are being used.
 
 See also: link::Classes/Maybe:: and the link::Overviews/JITLib:: overview.
 

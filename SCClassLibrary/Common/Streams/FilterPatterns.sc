@@ -18,8 +18,8 @@ Pn : FilterPattern {
 			repeats.value(event).do { event = pattern.embedInStream(event) };
 		} {
 			repeats.value(event).do {
-				event = pattern.embedInStream(event);
 				event[key] = true;
+				event = pattern.embedInStream(event);
 			};
 			event[key] = false;
 		};
@@ -36,9 +36,9 @@ Pgate  : Pn {
 		var stream, output;
 		repeats.do {
 			stream = pattern.asStream;
-			output = stream.next(event);
+			output = nil;  // force new value for every repeat
 			while {
-				if (event[key] == true) { output = stream.next(event) };
+				if (event[key] == true or: { output.isNil }) { output = stream.next(event) };
 				output.notNil;
 			} {
 				event = output.copy.embedInStream(event)
@@ -64,11 +64,7 @@ Pcollect : FuncFilterPattern {
 		loop {
 			outval = stream.next(inval);
 			if (outval.isNil) { ^inval };
-			// NOTE: Normally we would expect 'stream' to do processRest.
-			// But the 'collect' func is not under control of the stream,
-			// so that's not a safe assumption here. The func may return
-			// a rest, so we have to 'processRest' the collect value.
-			inval = yield(func.value(outval, inval).processRest(inval));
+			inval = yield(func.value(outval, inval));
 		}
 	}
 	asStream {
@@ -575,7 +571,7 @@ Pbindf : FilterPattern {
 						^outevent
 					};
 					name.do { arg key, i;
-						outevent.put(key, streamout[i].processRest(outevent));
+						outevent.put(key, streamout[i]);
 					};
 				}{
 					outevent.put(name, streamout);

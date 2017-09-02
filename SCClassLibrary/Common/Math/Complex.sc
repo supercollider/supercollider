@@ -84,6 +84,16 @@ Complex : Number {
 	squared { ^this * this }
 	cubed { ^this * this * this }
 	exp { ^exp(real) * Complex.new(cos(imag), sin(imag)) }
+	reciprocal {
+		var denom;
+		// undefined cases (no extended exponential numbers defined yet)
+		if(real == inf or: { imag == inf } or: { real == -inf } or: { imag == -inf }) {
+			^Complex(0/0, 0/0)
+		};
+		// otherwise use the standard definition
+		denom = reciprocal(real.squared + imag.squared);
+		^Complex(real * denom, imag.neg * denom)
+	}
 
 	pow { arg aNumber; // return(this ** aNumber)
 

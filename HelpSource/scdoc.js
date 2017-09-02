@@ -8,29 +8,6 @@ function toggle_visibility(e) {
     }
 }
 
-/*
-function createCookie(name,value,days) {
-    if (days) {
-        var date = new Date();
-        date.setTime(date.getTime()+(days*24*60*60*1000));
-        var expires = "; expires="+date.toGMTString();
-    }
-    else var expires = "";
-    document.cookie = name+"="+value+expires+"; path=/";
-}
-
-function readCookie(name) {
-    var nameEQ = name + "=";
-    var ca = document.cookie.split(';');
-    for(var i=0;i < ca.length;i++) {
-        var c = ca[i];
-        while (c.charAt(0)==' ') c = c.substring(1,c.length);
-        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-    }
-    return null;
-}
-*/
-
 var storage;
 var sidetoc;
 var toc;
@@ -83,7 +60,7 @@ function resize_handler() {
 
 function addInheritedMethods() {
     if(! /\/Classes\/[^\/]+/.test(window.location.pathname)) return; // skip this if not a class doc
-    var doc = docmap["Classes/"+document.title];
+    var doc = docmap["Classes/" + scdoc_title];
     if(!doc) return;
     if(doc.implementor) {
         var sups = docmap["Classes/"+doc.implementor].superclasses;
@@ -500,21 +477,23 @@ function fixTOC() {
 // make header menu
     var bar = document.getElementById("menubar");
     menubar = bar;
-    var nav = ["Home","Browse","Search"];
+    var nav = ["SuperCollider " + scdoc_sc_version, "Browse", "Search"];
     var url = ["Help.html","Browse.html","Search.html"];
+    var nav_item;
+    var a;
     for(var i=0;i<nav.length;i++) {
-        var li = document.createElement("li");
-        li.className = "menuitem";
-        var a = document.createElement("a");
+        nav_item = document.createElement("div");
+        nav_item.className = "menuitem";
+        a = document.createElement("a");
         a.innerHTML = nav[i];
         a.setAttribute("href",helpRoot+"/"+url[i]);
-        a.className = "navLink";
-        li.appendChild(a);
-        bar.appendChild(li);
+        a.className = "navlink";
+        nav_item.appendChild(a);
+        bar.appendChild(nav_item);
     }
 
-    var li = document.createElement("li");
-    li.className = "menuitem";
+    nav_item = document.createElement("div");
+    nav_item.className = "menuitem";
     var a = document.createElement("a");
     a.innerHTML = "Indexes &#9660;";
     a.setAttribute("href","#");
@@ -532,21 +511,21 @@ function fixTOC() {
         b.innerHTML = nav[i];
         m1.appendChild(b);
     }
-    li.appendChild(a);
-    li.appendChild(m1);
-    bar.appendChild(li);
+    nav_item.appendChild(a);
+    nav_item.appendChild(m1);
+    bar.appendChild(nav_item);
 
-    var li = document.createElement("li");
-    li.className = "menuitem";
+    nav_item = document.createElement("div");
+    nav_item.className = "menuitem";
     var x = document.createElement("span");
     x.id = "topdoctitle";
-    x.appendChild(document.createTextNode(document.title));
+    x.appendChild(document.createTextNode(scdoc_title));
     x.onclick = function() {
         scroll(0,0);
         return false;
     }
-    li.appendChild(x)
-    bar.appendChild(li);
+    nav_item.appendChild(x)
+    bar.appendChild(nav_item);
 
     var t = document.getElementById("toc");
     toc = t;
@@ -570,13 +549,13 @@ function fixTOC() {
         var a = document.createElement("a");
         a.setAttribute("href","#");
         a.innerHTML = "Table of contents &#9660;";
-        li.appendChild(a);
+        nav_item.appendChild(a);
         a.onclick = function() {
             ts.focus();
             toggleMenu(t);
             return false;
         };
-        li.appendChild(t.parentNode.removeChild(t));
+        nav_item.appendChild(t.parentNode.removeChild(t));
         var p = document.createElement("a");
         p.setAttribute("href","#");
         p.className = "popoutlink";

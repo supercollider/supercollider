@@ -37,7 +37,7 @@ namespace QtCollider {
 
 class WebPage;
 class QcCallback;
-  
+
 class QcCallbackWeakFunctor
 {
 public:
@@ -55,7 +55,7 @@ private:
 class QcCallback : public QObject
 {
   Q_OBJECT
-  
+
 public:
   QcCallback() {}
   
@@ -95,7 +95,7 @@ public:
   Q_INVOKABLE void setFontFamily( int genericFontFamily, const QString & fontFamily );
   Q_INVOKABLE void triggerPageAction( int action, bool checked );
   Q_INVOKABLE QAction* pageAction( QWebEnginePage::WebAction ) const;
-  
+
   // QWebEnginePage forwards
   Q_INVOKABLE void setHtml(const QString& html, const QString& baseUrl);
   Q_INVOKABLE void setContent(const QVector<int>& data, const QString& mimeType, const QString& baseUrl);
@@ -115,7 +115,7 @@ Q_SIGNALS:
   void jsConsoleMsg( const QString &, int, const QString & );
   void reloadTriggered( const QString & );
   void interpret( const QString & code );
-  
+
   // QWebEnginePage forwards
   void linkHovered(const QString &url);
   void geometryChangeRequested(const QRect& geom);
@@ -143,25 +143,25 @@ public:
     void setOverrideNavigation(bool b);
   
   Q_PROPERTY( QString url READ url WRITE setUrl );
-    QString url() const;
-    void setUrl( const QString & );
+  QString url() const;
+  void setUrl( const QString & );
 
   Q_PROPERTY( bool delegateReload READ delegateReload WRITE setDelegateReload );
-    bool delegateReload() const;
-    void setDelegateReload( bool );
+  bool delegateReload() const;
+  void setDelegateReload( bool );
 
   Q_PROPERTY( bool enterInterpretsSelection READ interpretSelection WRITE setInterpretSelection );
-    bool interpretSelection() const         { return _interpretSelection; }
-    void setInterpretSelection( bool b )    { _interpretSelection = b; }
+  bool interpretSelection() const { return _interpretSelection; }
+  void setInterpretSelection( bool b ) { _interpretSelection = b; }
 
   Q_PROPERTY( bool editable READ editable WRITE setEditable );
     bool editable() const { return _editable; }
     void setEditable( bool b )              { _editable = b; updateEditable(true); }
-  
+
   // QWebEnginePage properties
   Q_PROPERTY(QString requestedUrl READ requestedUrl)
     QString requestedUrl() const            { return page() ? page()->requestedUrl().toString() : QString(); }
-  
+
   Q_PROPERTY(QColor backgroundColor READ backgroundColor WRITE setBackgroundColor)
     QColor backgroundColor() const          { return page() ? page()->backgroundColor() : QColor(); }
     void setBackgroundColor(QColor c)       { if (page()) page()->setBackgroundColor(c); }
@@ -198,7 +198,7 @@ private:
   bool _interpretSelection;
   bool _editable;
 };
-  
+
 } // namespace QtCollider
 
 using namespace QtCollider;

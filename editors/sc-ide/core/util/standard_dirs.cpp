@@ -20,45 +20,49 @@
 
 #include "standard_dirs.hpp"
 
-#include <SC_DirUtils.h>
+#include "SC_Filesystem.hpp" // getDirectory
+#include "SC_Codecvt.hpp" // path_to_utf8_str
+#include <boost/filesystem/path.hpp> // path
 
 namespace ScIDE {
 
 QString standardDirectory( StandardDirectory type )
 {
-    char path[PATH_MAX];
+    using DirName = SC_Filesystem::DirName;
+    DirName dn;
 
     switch(type)
     {
     case ScResourceDir:
-        sc_GetResourceDirectory(path, PATH_MAX);
+        dn = DirName::Resource;
         break;
 
     case ScAppDataSystemDir:
-        sc_GetSystemAppSupportDirectory(path, PATH_MAX);
+        dn = DirName::SystemAppSupport;
         break;
 
     case ScAppDataUserDir:
-        sc_GetUserAppSupportDirectory(path, PATH_MAX);
+        dn = DirName::UserAppSupport;
         break;
 
     case ScExtensionSystemDir:
-        sc_GetSystemExtensionDirectory(path, PATH_MAX);
+        dn = DirName::SystemExtension;
         break;
 
     case ScExtensionUserDir:
-        sc_GetUserExtensionDirectory(path, PATH_MAX);
+        dn = DirName::UserExtension;
         break;
 
     case ScConfigUserDir:
-        sc_GetUserConfigDirectory(path, PATH_MAX);
+        dn = DirName::UserConfig;
         break;
 
     default:
         return QString();
     }
 
-    return QString(path);
+    const boost::filesystem::path path = SC_Filesystem::instance().getDirectory(dn);
+    return QString(SC_Codecvt::path_to_utf8_str(path).c_str());
 }
 
-}
+} // ScIDE

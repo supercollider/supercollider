@@ -18,6 +18,26 @@ File : UnixFILE {
 		file = this.new(pathName, mode);
 		^{ function.value(file) }.protect({ file.close });
 	}
+	*readAllString { arg pathName;
+		var string;
+		this.use(pathName, "r", { |file| string = file.readAllString });
+		^string
+	}
+	*readAllSignal { arg pathName;
+		var string;
+		this.use(pathName, "r", { |file| string = file.readAllSignal });
+		^string
+	}
+	*readAllStringHTML { arg pathName;
+		var string;
+		this.use(pathName, "r", { |file| string = file.readAllStringHTML });
+		^string
+	}
+	*readAllStringRTF { arg pathName;
+		var string;
+		this.use(pathName, "r", { |file| string = file.readAllStringRTF });
+		^string
+	}
 	*delete { arg pathName;
 		_FileDelete
 		^this.primitiveFailed
@@ -63,12 +83,12 @@ File : UnixFILE {
 		_FileSize
 		^this.primitiveFailed
 	}
-
 	*getcwd {
 		var string;
 		this.prGetcwd(string = String.new(256));
 		^string
 	}
+
 	open { arg pathName, mode;
 		/* open the file. mode is a string passed
 			to fopen, so should be one of:

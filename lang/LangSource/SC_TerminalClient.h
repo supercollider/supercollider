@@ -66,16 +66,17 @@ public:
 			  mCallRun(false),
 			  mCallStop(false),
 			  mStandalone(false),
-			  mArgc(0), mArgv(0)
+			  mArgc(0),
+			  mArgv(0)
 		{ }
 
 		const char*		mLibraryConfigFile;
 		bool			mDaemon;
 		bool			mCallRun;
 		bool			mCallStop;
+		bool			mStandalone;
 		int				mArgc;
 		char**			mArgv;
-		bool			mStandalone;
 	};
 
 	SC_TerminalClient(const char* name);
@@ -166,7 +167,7 @@ private:
 
 	// input io service
 	boost::asio::io_service mInputService;
-	thread mInputThread;
+	SC_Thread mInputThread;
 	void inputThreadFn();
 
 	static const size_t inputBufferSize = 256;

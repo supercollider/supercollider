@@ -141,11 +141,11 @@ subsection::NRT Examples
 code::
 // A sample synthDef
 (
-SynthDef("helpscore",{ arg freq = 440;
-	Out.ar(0,
+SynthDef("helpscore", { |out, freq = 440|
+	Out.ar(out,
 		SinOsc.ar(freq, 0, 0.2) * Line.kr(1, 0, 0.5, doneAction: Done.freeSelf)
 	)
-}).add;
+}).add
 )
 
 // write a sample file for testing
@@ -197,11 +197,11 @@ s.boot; // boot the default server
 
 // A sample synthDef
 (
-SynthDef("helpscore",{ arg freq = 440;
-	Out.ar(0,
+SynthDef("helpscore", { |out, freq = 440|
+	Out.ar(out,
 		SinOsc.ar(freq, 0, 0.2) * Line.kr(1, 0, 0.5, doneAction: Done.freeSelf)
 	)
-}).add;
+}).add
 )
 
 // write a sample file for testing

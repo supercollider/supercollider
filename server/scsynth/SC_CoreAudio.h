@@ -168,7 +168,7 @@ protected:
 	EngineFifo mFromEngine, mToEngine;
 	EngineFifo mOscPacketsToEngine;
 	SC_SyncCondition mAudioSync;
-	thread mThread;
+	SC_Thread mThread;
 	bool mRunThreadFlag;
 	uint32 mSafetyOffset;
 	PriorityQueueT<SC_ScheduledEvent, 2048> mScheduler;

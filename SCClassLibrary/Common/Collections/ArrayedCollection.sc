@@ -11,9 +11,18 @@ ArrayedCollection : SequenceableCollection {
 	// ArrayedCollections are vectors which have a
 	// fixed maximum capacity.
 
-	indexedSize { _BasicSize }
-	size { _BasicSize }
-	maxSize { _BasicMaxSize }
+	indexedSize {
+		_BasicSize
+		^this.primitiveFailed
+	}
+	size {
+		_BasicSize
+		^this.primitiveFailed
+	}
+	maxSize {
+		_BasicMaxSize
+		^this.primitiveFailed
+	}
 
 	swap { arg i, j; var temp;
 		_BasicSwap;

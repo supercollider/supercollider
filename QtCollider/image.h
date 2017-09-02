@@ -41,9 +41,9 @@ class Image
 
 public:
     Image():
+        transformationMode(Qt::FastTransformation),
         m_state(Null),
-        m_painting(false),
-        transformationMode(Qt::FastTransformation)
+        m_painting(false)
     {
 
     }

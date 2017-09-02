@@ -14,8 +14,6 @@
 	White, Brown, Pink generators have no modulatable parameters
 	other than multiply and add inputs.
 
-	The chaos param for ChaosNoise should be from 1.0 to 2.0
-
 */
 
 RandSeed : WidthFirstUGen {
@@ -278,32 +276,3 @@ Dust2 : UGen {
 		^this.multiNew('control', density).madd(mul, add)
 	}
 }
-/* not installed
-LinCong : UGen {
-	var iseed, imul, iadd, imod;
-
-	*ar { arg iseed, imul, iadd, imod, mul = 1.0, add = 0.0;
-		^this.multiNew('audio', iseed, imul, iadd, imod).madd(mul, add)
-	}
-	*kr { arg iseed, imul, iadd, imod, mul = 1.0, add = 0.0;
-		^this.multiNew('control', iseed, imul, iadd, imod).madd(mul, add)
-	}
-	init { arg jseed, jmul, jadd, jmod ... theInputs;
-		inputs = theInputs;
-		iseed = jseed;
-		imul = jmul;
-		iadd = jadd;
-		imod = jmod;
-	}
-}
-*/
-//
-//Latoocarfian : UGen {
-//
-//	*ar { arg a, b, c, d, mul = 1.0, add = 0.0;
-//		^this.multiNew('audio', a, b, c, d).madd(mul, add)
-//	}
-//	*kr { arg a, b, c, d, mul = 1.0, add = 0.0;
-//		^this.multiNew('control', a, b, c, d).madd(mul, add)
-//	}
-//}

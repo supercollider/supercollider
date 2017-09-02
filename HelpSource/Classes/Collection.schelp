@@ -392,6 +392,32 @@ code::
 List[2, 1, 4, 3].asSortedList;
 ::
 
+method::asDict
+Answer a corresponding dictionary. This is part of the link::Reference/Key-Value-Pairs:: interface.
+argument::mergeFunc
+Use this function to decide what to do with duplicate keys.
+argument::class
+The class of the dictionary to be returned. By default this is an link::Classes/IdentityDictionary::.
+
+method::asAssociations
+Answer an array of link::Classes/Association::s. If the first item of the list is already an associiation, return itself.  This is part of the link::Reference/Key-Value-Pairs:: interface.
+argument::class
+The class of the collection to be returned. By default this is an link::Classes/Array::.
+
+method::asPairs
+Answer an array with alternating key value pairs, like code::[\freq, 1848, \amp, 0.2]::. This is part of the link::Reference/Key-Value-Pairs:: interface.
+argument::class
+The class of the collection to be returned. By default this is an link::Classes/Array::.
+
+
+method::asEvent
+Answer an link::Classes/Event::: with the key value pairs. See link::Reference/Key-Value-Pairs::.
+
+
+method::asDictWith
+used internally by code::asDict::.
+
+
 method::powerset
 Returns all possible combinations of the collection's elements.
 code::

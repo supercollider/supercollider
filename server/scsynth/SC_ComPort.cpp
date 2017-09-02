@@ -52,8 +52,6 @@ bool ProcessOSCPacket(World *inWorld, OSC_Packet *inPacket);
 
 namespace scsynth {
 
-const size_t kMaxUDPSize = 65535;
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -147,7 +145,7 @@ static bool UnrollOSCPacket(World *inWorld, int inSize, char *inData, OSC_Packet
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-thread gAsioThread;
+SC_Thread gAsioThread;
 boost::asio::io_service ioService;
 
 const int kTextBufSize = 65536;
@@ -205,7 +203,7 @@ class SC_UdpInPort
 	boost::asio::ip::udp::endpoint remoteEndpoint;
 
 #ifdef USE_RENDEZVOUS
-	thread mRendezvousThread;
+	SC_Thread mRendezvousThread;
 #endif
 
 	void handleReceivedUDP(const boost::system::error_code& error,
@@ -264,7 +262,7 @@ public:
 
 #ifdef USE_RENDEZVOUS
 		if (world->mRendezvous) {
-			thread thread( boost::bind( PublishPortToRendezvous, kSCRendezvous_UDP, sc_htons(mPortNum) ) );
+			SC_Thread thread( boost::bind( PublishPortToRendezvous, kSCRendezvous_UDP, sc_htons(mPortNum) ) );
 			mRendezvousThread = std::move(thread);
 		}
 #endif
@@ -399,7 +397,7 @@ class SC_TcpInPort
 	boost::asio::ip::tcp::acceptor acceptor;
 
 #ifdef USE_RENDEZVOUS
-	thread mRendezvousThread;
+	SC_Thread mRendezvousThread;
 #endif
 
 	std::atomic<int> mAvailableConnections;
@@ -415,7 +413,7 @@ public:
 
 #ifdef USE_RENDEZVOUS
 		if (world->mRendezvous) {
-			thread thread( boost::bind( PublishPortToRendezvous, kSCRendezvous_TCP, sc_htons(inPortNum) ) );
+			SC_Thread thread( boost::bind( PublishPortToRendezvous, kSCRendezvous_TCP, sc_htons(inPortNum) ) );
 			mRendezvousThread = std::move(thread);
 		}
 #endif
@@ -476,7 +474,7 @@ static void asioFunction()
 
 void startAsioThread()
 {
-	thread asioThread (&asioFunction);
+	SC_Thread asioThread (&asioFunction);
 	gAsioThread = std::move(asioThread);
 }
 

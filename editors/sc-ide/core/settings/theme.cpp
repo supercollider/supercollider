@@ -313,7 +313,6 @@ void Theme::remove()
     if (mLocked)
         return;
 
-    QMap<QString, QTextCharFormat *>::const_iterator i = mFormats.begin();
     QString key = QStringLiteral("IDE/editor/themes/").append(mName);
 
     mSettings->remove(key);

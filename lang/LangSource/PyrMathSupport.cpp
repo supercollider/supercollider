@@ -30,26 +30,6 @@
 # include <complex.h>
 #endif
 
-
-float centsRatio[128];
-float semitoneFreq[128];
-
-/* host function :  (move to separate file) */
-
-void pyrmath_init_globs();
-void pyrmath_init_globs()
-{
-	int i;
-
-	for (i=0; i<128; ++i) {
-		semitoneFreq[i] = 440. * pow(2., (i - 69)/12.);
-		centsRatio[i] = pow(2., i/(12. * 128.));
-	}
-}
-
-
-// 1/440 = 0.0022727272727     1/12 = 0.083333333333
-
 #define SQRT2M1 0.41421356f
 
 double hypotx(double x, double y);

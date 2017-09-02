@@ -14,7 +14,7 @@ Most of a Server's options are controlled through its instance of ServerOptions.
 A server also holds an instance of a link::Classes/Recorder:: (for recording output into a file) and a link::Classes/Volume:: (master level).
 
 note::
-By default, there is always one default server, which is stored in the interpreter variable 's'. E.g. you can boot the defult server by calling code::s.boot::
+By default, there is always one default server, which is stored in the interpreter variable 's'. E.g. you can boot the default server by calling code::s.boot::
 ::
 
 code::
@@ -574,11 +574,11 @@ s.boot; // start the server
 
 // something to record
 (
-SynthDef("bubbles", {
-	var f, zout;
+SynthDef("bubbles", { |out|
+	var f, sound;
 	f = LFSaw.kr(0.4, 0, 24, LFSaw.kr([8,7.23], 0, 3, 80)).midicps; // glissando function
-	zout = CombN.ar(SinOsc.ar(f, 0, 0.04), 0.2, 0.2, 4); // echoing sine wave
-	Out.ar(0, zout);
+	sound = CombN.ar(SinOsc.ar(f, 0, 0.04), 0.2, 0.2, 4); // echoing sine wave
+	Out.ar(out, sound);
 }).add;
 )
 
@@ -665,7 +665,7 @@ argument:: ... args
 one or more valid OSC messages.
 
 method:: sync
-Send a code::/sync:: message to the server, which will replie with the message code::/synced:: when all pending asynchronous commands have been completed.
+Send a code::/sync:: message to the server, which will reply with the message code::/synced:: when all pending asynchronous commands have been completed.
 argument:: condition
 an optional instance of link::Classes/Condition:: used for evaluating this.
 argument:: bundles

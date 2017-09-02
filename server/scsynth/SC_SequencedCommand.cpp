@@ -25,7 +25,7 @@
 #include "scsynthsend.h"
 #include "SC_Prototypes.h"
 #include "SC_HiddenWorld.h"
-#include "SC_DirUtils.h"
+#include "SC_Filesystem.hpp"
 #include "SC_StringParser.h"
 #include "../../common/SC_SndFileHelpers.hpp"
 #include "SC_WorldOptions.h"

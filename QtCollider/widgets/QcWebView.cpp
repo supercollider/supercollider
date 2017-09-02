@@ -61,15 +61,15 @@ WebView::WebView( QWidget *parent ) :
   connect( this, SIGNAL(interpret(QString)),
            qApp, SLOT(interpret(QString)),
            Qt::QueuedConnection );
-  
+
   connect( this, SIGNAL(loadFinished(bool)), this, SLOT(updateEditable(bool)) );
 }
 
 void WebView::connectPage(QtCollider::WebPage* page)
 {
-  connect (page, SIGNAL(jsConsoleMsg(const QString&, int, const QString&)),
-           this, SIGNAL(jsConsoleMsg(const QString&, int, const QString&)));
-
+  connect( page, SIGNAL(jsConsoleMsg(const QString&, int, const QString&)),
+           this, SIGNAL(jsConsoleMsg(const QString&, int, const QString&)) );
+    
   connect (page, SIGNAL(linkHovered(const QString &)),
            this, SIGNAL(linkHovered(const QString &)));
 
@@ -100,7 +100,7 @@ void WebView::connectPage(QtCollider::WebPage* page)
   connect (page, SIGNAL(renderProcessTerminated(RenderProcessTerminationStatus, int)),
           this, SLOT(onRenderProcessTerminated(RenderProcessTerminationStatus, int)) );
 }
-  
+
 void WebView::onRenderProcessTerminated(QWebEnginePage::RenderProcessTerminationStatus status, int code)
 {
   Q_EMIT(renderProcessTerminated((int)status, code));
@@ -145,13 +145,13 @@ QAction* WebView::pageAction( QWebEnginePage::WebAction action) const
   return QWebEngineView::pageAction(action);
 }
   
-void WebView::setHtml(const QString& html, const QString& baseUrl)
+void WebView::setHtml ( const QString &html, const QString &baseUrl )
 {
   if (page()) {
     page()->setHtml(html, baseUrl);
-  }
 }
-  
+}
+
 void WebView::setContent(const QVector<int>& data, const QString& mimeType, const QString& baseUrl)
 {
   if (page()) {
@@ -159,11 +159,11 @@ void WebView::setContent(const QVector<int>& data, const QString& mimeType, cons
     size_t i = 0;
     for (int val : data) {
       byteData.push_back((char)val);
-    }
+}
     page()->setContent(byteData, mimeType, baseUrl);
   }
 }
-  
+
 void WebView::toHtml(QcCallback* cb) const
 {
   if (page()) {
@@ -171,12 +171,12 @@ void WebView::toHtml(QcCallback* cb) const
       page()->toHtml(cb->asFunctor());
     } else {
       page()->toHtml([](const QString&){});
-    }
+}
   } else {
     cb->asFunctor()(QString());
   }
 }
-  
+
 void WebView::toPlainText(QcCallback* cb) const
 {
   if (page()) {
@@ -184,12 +184,12 @@ void WebView::toPlainText(QcCallback* cb) const
       page()->toPlainText(cb->asFunctor());
     } else {
       page()->toPlainText([](const QString&){});
-    }
+}
   } else {
     cb->asFunctor()(QString());
   }
 }
-  
+
 void WebView::runJavaScript(const QString& script, QcCallback* cb)
 {
   if (page()) {
@@ -197,17 +197,17 @@ void WebView::runJavaScript(const QString& script, QcCallback* cb)
       page()->runJavaScript(script, cb->asFunctor());
     } else {
       page()->runJavaScript(script, [](const QVariant&){});
-    }
+}
   } else {
     cb->asFunctor()(QString());
   }
 }
-  
+
 void WebView::setWebAttribute(int attr, bool on)
 {
   if (page()) {
     page()->settings()->setAttribute((QWebEngineSettings::WebAttribute)attr, on);
-  }
+}
 }
 
 bool WebView::testWebAttribute(int attr)
@@ -216,12 +216,12 @@ bool WebView::testWebAttribute(int attr)
     page()->settings()->testAttribute((QWebEngineSettings::WebAttribute)attr)
     : false;
 }
-  
+
 void WebView::resetWebAttribute(int attr)
 {
   if (page()) {
     page()->settings()->resetAttribute((QWebEngineSettings::WebAttribute)attr);
-  }
+}
 }
 
 void WebView::navigate(const QString& urlString)
@@ -239,7 +239,7 @@ void WebView::findText( const QString &searchText, bool reversed, QcCallback* cb
     QWebEngineView::findText(searchText, flags);
   } else {
     QWebEngineView::findText(searchText, flags, cb->asFunctor());
-  }
+}
 }
 
 void WebView::onPageReload()
@@ -249,48 +249,48 @@ void WebView::onPageReload()
 
 void WebView::contextMenuEvent ( QContextMenuEvent * event )
 {
-  QMenu menu;
+    QMenu menu;
 
   const QWebEngineContextMenuData& contextData = page()->contextMenuData();
 
   if (!contextData.linkUrl().isEmpty()) {
       menu.addAction( pageAction(QWebEnginePage::CopyLinkToClipboard) );
-      menu.addSeparator();
-  }
+        menu.addSeparator();
+    }
 
   if (contextData.isContentEditable() || !contextData.selectedText().isEmpty()) {
       menu.addAction( pageAction(QWebEnginePage::Copy) );
       if (contextData.isContentEditable())
           menu.addAction( pageAction(QWebEnginePage::Paste) );
-      menu.addSeparator();
-  }
+        menu.addSeparator();
+    }
 
   menu.addAction( pageAction(QWebEnginePage::Back) );
   menu.addAction( pageAction(QWebEnginePage::Forward) );
   menu.addAction( pageAction(QWebEnginePage::Reload) );
 
-  menu.exec( event->globalPos() );
+    menu.exec( event->globalPos() );
 }
 
 void WebView::keyPressEvent( QKeyEvent *e )
 {
-  int key = e->key();
-  int mods = e->modifiers();
-  
-  if( _interpretSelection &&
-     ( key == Qt::Key_Enter ||
-      ( key == Qt::Key_Return && mods & (Qt::ControlModifier|Qt::ShiftModifier) ) ) )
-  {
-    QString selection = selectedText();
-    if( !selection.isEmpty() ) {
-      Q_EMIT( interpret( selection ) );
-      return;
+    int key = e->key();
+    int mods = e->modifiers();
+
+    if( _interpretSelection &&
+            ( key == Qt::Key_Enter ||
+              ( key == Qt::Key_Return && mods & (Qt::ControlModifier|Qt::ShiftModifier) ) ) )
+    {
+        QString selection = selectedText();
+        if( !selection.isEmpty() ) {
+            Q_EMIT( interpret( selection ) );
+            return;
+        }
     }
-  }
-  
+
   QWebEngineView::keyPressEvent( e );
 }
-  
+
 void WebView::updateEditable(bool ok) {
   if (ok) {
     if (_editable) {

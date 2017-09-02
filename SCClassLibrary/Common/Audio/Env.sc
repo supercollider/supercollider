@@ -42,12 +42,12 @@ Env {
 		shapeNames.freeze;
 	}
 
-	kr { arg doneAction = 0, gate = 1.0, timeScale = 1.0, mul = 1.0, add = 0.0;
-		^EnvGen.kr(this, gate, mul, add, timeScale, doneAction)
+	kr { arg doneAction = 0, gate = 1.0, timeScale = 1.0, levelScale = 1.0, levelBias = 0.0;
+		^EnvGen.kr(this, gate, levelScale, levelBias, timeScale, doneAction)
 	}
 
-	ar { arg doneAction = 0, gate = 1.0, timeScale = 1.0, mul = 1.0, add = 0.0;
-		^EnvGen.ar(this, gate, mul, add, timeScale, doneAction)
+	ar { arg doneAction = 0, gate = 1.0, timeScale = 1.0, levelScale = 1.0, levelBias = 0.0;
+		^EnvGen.ar(this, gate, levelScale, levelBias, timeScale, doneAction)
 	}
 
 	levels_ { arg z;

@@ -1786,7 +1786,7 @@ void Pitch_Ctor(Pitch *unit)
 	int maxbins = (int)ZIN0(kPitchMaxBins);
 	unit->m_maxlog2bins = LOG2CEIL(maxbins);
 
-	unit->m_medianSize = sc_clip((int)ZIN0(0), 0, kMAXMEDIANSIZE);  // (int)ZIN0(kPitchMedian);
+	unit->m_medianSize = sc_clip((int)ZIN0(kPitchMedian), 0, kMAXMEDIANSIZE);
 	unit->m_ampthresh = ZIN0(kPitchAmpThreshold);
 	unit->m_peakthresh = ZIN0(kPitchPeakThreshold);
 
@@ -6216,11 +6216,11 @@ void TGrains_next(TGrains *unit, int inNumSamples)
 					pan = sc_clip(pan * 0.5f + 0.5f, 0.f, 1.f);
 					panangle = pan * pi2_f;
 				}
-				pan1 = grain->pan1 = cos(panangle);
-				pan2 = grain->pan2 = sin(panangle);
+				pan1 = grain->pan1 = amp * cos(panangle);
+				pan2 = grain->pan2 = amp * sin(panangle);
 			} else {
 				grain->chan = 0;
-				pan1 = grain->pan1 = 1.;
+				pan1 = grain->pan1 = amp;
 				pan2 = grain->pan2 = 0.;
 			}
 			double w = pi / counter;

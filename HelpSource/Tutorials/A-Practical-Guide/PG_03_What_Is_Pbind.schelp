@@ -251,11 +251,11 @@ One other subtle point about synth argument names. In a SynthDef, argument names
 
 code::
 (
-SynthDef(\trig_demo, { |freq, gate = 1, t_trig = 1|	// t_trig here
+SynthDef(\trig_demo, { |out, freq = 440, gate = 1, t_trig = 1|	// t_trig here
 	var	env = Decay2.kr(t_trig, 0.01, 0.1),
 		sig = SinOsc.ar(freq, 0, env)
 			* Linen.kr(gate, 0.01, 0.1, 0.1, doneAction: Done.freeSelf);
-	Out.ar(0, sig ! 2)
+	Out.ar(out, sig ! 2)
 }).add;
 )
 

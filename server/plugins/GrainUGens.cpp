@@ -1,5 +1,5 @@
 /*
- *  JoshUGens.cpp
+ *  GrainUGens.cpp
  *  xSC3plugins
  *
  *  Created by Josh Parmenter on 2/4/05.
@@ -34,8 +34,6 @@
 static InterfaceTable *ft;
 
 const int kMaxGrains = 64;
-
-const int kMaxSynthGrains = 512;
 
 struct GrainInG
 {

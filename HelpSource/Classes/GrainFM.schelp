@@ -60,7 +60,7 @@ var winenv;
 winenv = Env([0, 1, 0], [0.5, 0.5], [8, -8]);
 z = Buffer.sendCollection(s, winenv.discretize, 1);
 
-SynthDef(\fm_grain_test, {arg gate = 1, amp = 1, envbuf;
+SynthDef(\fm_grain_test, { |out, gate = 1, amp = 1, envbuf|
 	var pan, env, freqdev;
 	// use mouse x to control panning
 	pan = MouseX.kr(-1, 1);
@@ -71,10 +71,10 @@ SynthDef(\fm_grain_test, {arg gate = 1, amp = 1, envbuf;
 		gate,
 		levelScale: amp,
 		doneAction: Done.freeSelf);
-	Out.ar(0,
+	Out.ar(out,
 		GrainFM.ar(2, Impulse.kr(10), 0.1, 440 + freqdev, 200, LFNoise1.kr.range(1, 10),
 			pan, envbuf) * env)
-	}).add;
+}).add;
 
 )
 

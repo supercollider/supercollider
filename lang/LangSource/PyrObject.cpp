@@ -182,7 +182,7 @@ void initSymbols()
     s_curMethod = getsym("thisMethod");
     s_curBlock = getsym("thisFunctionDef");
     s_curClosure = getsym("thisFunction");
-    
+
     // classes
     s_object = getsym("Object");
     s_ref = getsym("Ref");
@@ -247,13 +247,13 @@ void initSymbols()
     // interpreter
     s_interpretCmdLine = getsym("interpretCmdLine");
     s_interpretPrintCmdLine = getsym("interpretPrintCmdLine");
-    
+
 	s_doesNotUnderstand = getsym("doesNotUnderstand");
-    
+
     s_startup = getsym("startup");
     s_awake = getsym("awake");
     s_shutdown = getsym("shutdown");
-    
+
     // methods
 	s_run = getsym("run");
 	s_stop = getsym("stop");
@@ -268,17 +268,17 @@ void initSymbols()
 	s_series = getsym("prSimpleNumberSeries");
 	s_copyseries = getsym("copySeries");
 	s_putseries = getsym("putSeries");
-    
+
 	s_envirGet = getsym("envirGet");
     s_envirPut = getsym("envirPut");
-    
+
     // set special value slots
     SetSymbol(&o_none, s_none);
 
 	SetNil(&o_nil);
 	SetFalse(&o_false);
 	SetTrue(&o_true);
-    
+
     SetInt(&o_negone, -1);
     SetInt(&o_zero, 0);
     SetInt(&o_one, 1);
@@ -294,12 +294,12 @@ void initSymbols()
 	slotCopy(&gSpecialValues[svNil], &o_nil);
 	slotCopy(&gSpecialValues[svFalse], &o_false);
 	slotCopy(&gSpecialValues[svTrue], &o_true);
-    
+
 	slotCopy(&gSpecialValues[svNegOne], &o_negone);
 	slotCopy(&gSpecialValues[svZero], &o_zero);
 	slotCopy(&gSpecialValues[svOne], &o_one);
 	slotCopy(&gSpecialValues[svTwo], &o_two);
-    
+
 	slotCopy(&gSpecialValues[svFHalf], &o_fhalf);
 	slotCopy(&gSpecialValues[svFNegOne], &o_fnegone);
 	slotCopy(&gSpecialValues[svFZero], &o_fzero);
@@ -307,7 +307,7 @@ void initSymbols()
 	slotCopy(&gSpecialValues[svFTwo], &o_ftwo);
 	slotCopy(&gSpecialValues[svInf], &o_inf);
 
-    
+
 	gFormatElemSize[obj_notindexed] = sizeof(PyrSlot);
 	gFormatElemSize[obj_slot  ] = sizeof(PyrSlot);
 	gFormatElemSize[obj_double] = sizeof(double);
@@ -1169,7 +1169,7 @@ void buildBigMethodMatrix()
 	double t0 = elapsedTime();
 #endif
 
-	const int hw_concurrency    = thread::hardware_concurrency();
+	const int hw_concurrency    = SC_Thread::hardware_concurrency();
 	const int cpuCount          = hw_concurrency > 0 ? hw_concurrency    : 1;
 	const int helperThreadCount = cpuCount       > 1 ? cpuCount - 1      : 1;
 	boost::basic_thread_pool pool( helperThreadCount );
@@ -1208,7 +1208,7 @@ void buildBigMethodMatrix()
 
 #ifndef _MSC_VER
 	pool.try_executing_one();
-#endif	
+#endif
 	filledClassIndices.wait();
 #ifdef _MSC_VER
 	size_t numentries = fillClassRows(class_object, bigTable);
@@ -2258,7 +2258,7 @@ void DumpFrame(PyrFrame *frame)
 	meth = slotRawMethod(&frame->method);
 	methraw = METHRAW(meth);
 	if (methraw->numtemps) {
-		post("\t%s   %p\n", str, frame);
+		post("\t%s\n", str);
 		numargs = methraw->numargs + methraw->varargs;
 		for (i=0; i<methraw->numtemps; ++i) {
 			slotOneWord(frame->vars + i, str);

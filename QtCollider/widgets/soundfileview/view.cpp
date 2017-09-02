@@ -49,8 +49,8 @@ QcWaveform::QcWaveform( QWidget * parent ) : QWidget( parent ),
   _curSel(0),
 
   _showCursor(false),
-  _cursorEditable(true),
   _cursorPos(0),
+  _cursorEditable(true),
 
   _showGrid(true),
   _gridResolution(1.0),
@@ -62,10 +62,10 @@ QcWaveform::QcWaveform( QWidget * parent ) : QWidget( parent ),
 
   pixmap(0),
   _bkgColor( QColor(0,0,0) ),
-  _cursorColor( QColor(255,0,0) ),
-  _gridColor( QColor(100,100,200) ),
   _peakColor( QColor(242,178,0) ),
   _rmsColor( QColor(255,255,0) ),
+  _cursorColor( QColor(255,0,0) ),
+  _gridColor( QColor(100,100,200) ),
   dirty(false),
   _drawWaveform(true)
 {
@@ -503,6 +503,38 @@ void QcWaveform::paintEvent( QPaintEvent *ev )
     dirty = false;
   }
 
+  // draw time grid
+
+  if( _showGrid && sfInfo.samplerate > 0 && _gridResolution > 0.f ) {
+    p.save();
+
+    // Since _gridResolution and _gridOffset are in seconds, scale using
+    // duration in seconds.
+    double dur_in_secs = _dur / sfInfo.samplerate;
+
+    p.setPen( Qt::NoPen );
+    p.setBrush( _gridColor );
+    p.scale( (double) width() / dur_in_secs, 1.0 );
+
+    // Wrap the offset to (-100%, 100%) of the grid resolution. Subtract by
+    // beg_in_secs to account for zoom+timeshift.
+    double beg_in_secs = _beg / sfInfo.samplerate;
+    double offset = std::fmod(_gridOffset - beg_in_secs, _gridResolution * 2);
+
+    // Catch the case where the grid is [50% - 100%) offset from the start
+    // in order to draw the portion off the left side of the view.
+    if (offset > _gridResolution)
+      offset -= _gridResolution * 2;
+
+    while( offset < dur_in_secs ) {
+      QRectF r( offset, 0, _gridResolution, height() );
+      p.drawRect( r );
+      offset += _gridResolution * 2;
+    }
+
+    p.restore();
+  }
+
   // draw selections
 
   p.save();
@@ -522,27 +554,6 @@ void QcWaveform::paintEvent( QPaintEvent *ev )
   }
 
   p.restore();
-
-  // draw time grid
-
-  if( _showGrid && sfInfo.samplerate > 0 && _gridResolution > 0.f ) {
-    p.save();
-
-    double durSecs = (double) _dur / sfInfo.samplerate;
-    double begSecs = (double) _beg / sfInfo.samplerate;
-
-    p.scale( width() / durSecs, 1.0 );
-    p.setPen( _gridColor );
-
-    double offset = _gridOffset - begSecs;
-    offset -= ( floor( offset / _gridResolution ) * _gridResolution );
-    while( offset <  durSecs ) {
-      p.drawLine( QLineF( offset, 0.0, offset, height() ) );
-      offset += _gridResolution;
-    }
-
-    p.restore();
-  }
 
   // paste the waveform pixmap on screen
 

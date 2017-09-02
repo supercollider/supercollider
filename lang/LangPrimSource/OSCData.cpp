@@ -89,7 +89,7 @@ inline bool IsBundle(char* ptr)
 
 const int ivxNetAddr_Hostaddr = 0;
 const int ivxNetAddr_PortID = 1;
-const int ivxNetAddr_Hostname = 2;
+// const int ivxNetAddr_Hostname = 2; // unused
 const int ivxNetAddr_Socket = 3;
 
 static int makeSynthMsgWithTags(big_scpacket *packet, PyrSlot *slots, int size);
@@ -409,7 +409,7 @@ static int prNetAddr_Connect(VMGlobals *g, int numArgsPushed)
 
 static int prNetAddr_Disconnect(VMGlobals *g, int numArgsPushed)
 {
-	int err = errFailed;
+	int err = errNone;
 
 	PyrSlot* netAddrSlot = g->sp;
 	PyrObject* netAddrObj = slotRawObject(netAddrSlot);
@@ -1090,7 +1090,7 @@ int prQuitInProcessServer(VMGlobals *g, int numArgsPushed)
 		World *world = gInternalSynthServer.mWorld;
 		gInternalSynthServer.mWorld = 0;
 
-		thread thread(std::bind(World_WaitForQuit, world, false));
+		SC_Thread thread(std::bind(World_WaitForQuit, world, false));
 
 		thread.detach();
 	}

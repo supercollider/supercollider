@@ -158,17 +158,18 @@ void SclangPage::readLanguageConfig()
 
     using namespace YAML;
     try {
-
-        Node doc = YAML::Load(configFile.toStdString());
+        std::ifstream fin(configFile.toStdString());
+        Node doc = YAML::Load( fin );
         if( doc ) {
             const Node & includePaths = doc[ "includePaths" ];
             if (includePaths && includePaths.IsSequence()) {
                 ui->sclang_include_directories->clear();
                 for( Node const & pathNode : includePaths ) {
-                    if (pathNode.IsScalar())
+                    if (!pathNode.IsScalar())
                         continue;
                     std::string path = pathNode.as<std::string>();
-                    ui->sclang_include_directories->addItem(QString(path.c_str()));
+                    if( !path.empty() )
+                        ui->sclang_include_directories->addItem(QString(path.c_str()));
                 }
             }
 
@@ -176,10 +177,11 @@ void SclangPage::readLanguageConfig()
             if (excludePaths && excludePaths.IsSequence()) {
                 ui->sclang_exclude_directories->clear();
                 for( Node const & pathNode : excludePaths ) {
-                    if (pathNode.IsScalar())
+                    if (!pathNode.IsScalar())
                         continue;
                     std::string path = pathNode.as<std::string>();
-                    ui->sclang_exclude_directories->addItem(QString(path.c_str()));
+                    if( !path.empty() )
+                        ui->sclang_exclude_directories->addItem(QString(path.c_str()));
                 }
             }
 
