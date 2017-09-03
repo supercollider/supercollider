@@ -397,37 +397,6 @@ template <> struct TypeCodec<QObject*>
 
 
 #define TYPE_IS_QOBJECT(type) std::is_convertible<QObjectT, QObject*>::value
-  
-//template<typename QObjectT>
-//  struct TypeCodec<QObjectT, typename std::enable_if<TYPE_IS_QOBJECT(QObjectT)>::value>
-template<typename QObjectT>
-  struct TypeCodec<QObjectT, void>
-{
-  static QObjectT read( PyrSlot *slot )
-  {
-    return safeRead(slot);
-  }
-
-  static QObjectT safeRead( PyrSlot *slot )
-  {
-    QObjectProxy* proxy = TypeCodec<QObjectProxy*>::safeRead(slot);
-    
-    if (proxy) {
-      QObjectT action = qobject_cast<QObjectT>(proxy->object());
-      return action;
-    } else {
-      return 0;
-    }
-  }
-  
-  static void write(PyrSlot * slot, QObjectT object)
-  {
-    QObject* qobject = qobject_cast<QObject*>(object);
-    TypeCodec<QObject*>::write(slot, qobject);
-  }
-
-};
-
 template <> struct TypeCodec<PyrObject*>
 {
   static PyrObject* read( PyrSlot * )
