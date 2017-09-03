@@ -29,10 +29,7 @@ before_install:
 
 before_script:
  - mkdir BUILD && cd BUILD
-
  - $TRAVIS_BUILD_DIR/.travis/before-script-$TRAVIS_OS_NAME.sh --qt=$QT
-# prep for testing
- - if [[ $QT == true ]]; then $TRAVIS_BUILD_DIR/.travis/qpm-prep.sh; fi
 
 script:
  - $TRAVIS_BUILD_DIR/.travis/script-$TRAVIS_OS_NAME.sh
