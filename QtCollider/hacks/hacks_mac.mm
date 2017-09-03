@@ -63,7 +63,7 @@ bool AlwaysShowScrollbars() {
     return ([NSScroller preferredScrollerStyle] == NSScrollerStyleLegacy);
 }
 
-void DisableWindowTabbing() {
+void DisableAutomaticWindowTabbing() {
     [NSWindow setAllowsAutomaticWindowTabbing: NO];
 }
 

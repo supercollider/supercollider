@@ -59,7 +59,6 @@ int main( int argc, char *argv[] )
         return 0;
 
     // Set up translations
-
     QTranslator qtTranslator;
     qtTranslator.load("qt_" + QLocale::system().name(), QLibraryInfo::location(QLibraryInfo::TranslationsPath));
     app.installTranslator(&qtTranslator);
@@ -82,14 +81,13 @@ int main( int argc, char *argv[] )
     app.installTranslator(&scideTranslator);
 
     // Set up style
-
     app.setStyle( new ScIDE::Style(app.style()) );
-
+  
     // Go...
-
     Main * main = Main::instance();
-
     MainWindow *win = new MainWindow(main);
+
+    app.setWindowIcon(QIcon("qrc:///icons/sc-ide-svg"));
 
     // NOTE: load session after GUI is created, so that GUI can respond
     Settings::Manager *settings = main->settings();
@@ -225,7 +223,7 @@ Main::Main(void) :
     new SyntaxHighlighterGlobals(this, mSettings);
   
 #ifdef Q_OS_MAC
-    QtCollider::Mac::DisableWindowTabbing();
+    QtCollider::Mac::DisableAutomaticWindowTabbing();
 #endif
 
     connect(mScProcess, SIGNAL(response(QString,QString)),
