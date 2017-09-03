@@ -25,10 +25,9 @@ code::
 // Use \step to change the octave randomly
 (
 Pbind(
-
-	\degree,	Pseq((0..7), inf),
+	\degree, Pseq((0..7), inf),
 	\step, Pseq([false, false, false, true, false, true, false], inf),
-	\octave,	Pgate(Pwhite(3,7), inf, \step),
+	\octave, Pgate(Pwhite(3,7), inf, \step),
 	\dur, 0.2
 ).play
 )
@@ -38,9 +37,8 @@ code::
 // Pn advances Pgate each time its subpattern is repeated
 (
 Pbind(
-
-	\degree,	Pn(Pseq((0..7)), inf, \step),
-	\mtranspose,	Pgate(Pwhite(0,5), inf, \step),
+	\degree, Pn(Pseq((0..7)), inf, \step),
+	\mtranspose, Pgate(Pwhite(0,5), inf, \step),
 	\dur, 0.2
 ).play
 )
@@ -50,13 +48,12 @@ Pbind(
 (
 Pbind(
 
-	\scale,		Scale.minor,
-
-	\foo,		Pn(Pseq((0..2)),inf,  \step1),
-	\degree,	Pn(Pseq((0..7).mirror), inf, \step),
-	\ctranspose,	Pgate(Pwhite(0,5), inf, \step) +
-				Pgate(Pseq([0,7,0,-7], inf), inf, \step1),
+	\scale,	Scale.minor,
+	\foo, Pn(Pseq((0..2)),inf,  \step1),
+	\degree, Pn(Pseq((0..7).mirror), inf, \step),
+	\ctranspose, Pgate(Pwhite(0,5), inf, \step) + Pgate(Pseq([0,7,0,-7], inf), inf, \step1),
 	\dur, 0.2
 ).play
 )
 ::
+
