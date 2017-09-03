@@ -160,6 +160,15 @@ SimpleNumber : Number {
 		}
 	}
 
+	snap { arg grid = 1.0, tolerance = 0.05, strength = 1.0;
+		var round = round(this, grid);
+		var diff = round - this;
+		if (abs(diff) > tolerance) {
+			^this + (strength * diff)
+		}{
+			^this
+		}
+	}
 
 	linlin { arg inMin, inMax, outMin, outMax, clip=\minmax;
 		// linear to linear mapping
