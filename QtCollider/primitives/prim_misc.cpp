@@ -349,6 +349,7 @@ void defineMiscPrimitives()
   definer.define<QWebView_ClearMemoryCaches>();
   definer.define<Qt_CursorPosition>();
   definer.define<Qt_SetUrlHandler>();
+  definer.define<Qt_SetAppMenus>();
 }
 
 } // namespace QtCollider
