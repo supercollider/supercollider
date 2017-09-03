@@ -1,5 +1,5 @@
 class:: Preject
-summary:: Reject values from a pattern.
+summary:: Filters a source pattern by rejecting particular values.
 categories:: Streams-Patterns-Events>Patterns>Filter
 related:: Classes/Pselect, Classes/Pcollect, Classes/Collection#-reject
 
