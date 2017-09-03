@@ -113,26 +113,34 @@ MainMenu {
 				menu.clear();
 				Server.all.do {
 					|s|
-					var running, options, default;
+					var running, restart, options, default;
+					var runningOrBooting = (s.serverRunning || s.serverBooting);
 
-					running = Action("Running");
-					running.checked = s.serverRunning;
+					running = Action(runningOrBooting.if("◼ Stop", "▶ Start"));
 					running.func = {
-						if (running.checked) {
+						if (runningOrBooting.not) {
 							s.boot;
 						} {
 							s.quit;
 						}
 					};
 
-					options = Action("Options...");
-					options.func_({
-						ServerOptionsGui(s);
-					});
+					if (s.serverRunning) {
+						restart = Action("↻ Restart");
+						restart.func = { s.restart };
+					};
 
-					menu.addAction(Action("◎" + s.name).font_(Font(italic:true)));
+					if (\ServerOptionsGui.asClass.notNil) {
+						options = Action("Options...");
+						options.func_({
+							\ServerOptionsGui.asClass.new(s);
+						});
+					};
+
+					menu.addAction(Action("  %  ".format(s.name)).font_(Font(italic:true)));
 					menu.addAction(running);
-					menu.addAction(options);
+					restart !? { menu.addAction(restart) };
+					options !? { menu.addAction(options) };
 					menu.addAction(Action.separator);
 				}
 			}
@@ -186,11 +194,15 @@ MainMenu {
 	}
 
 	*prUpdate {
-		var menus = registered.collect {
+		var registeredMenus = registered.collect {
 			|groups, name|
 			var menu = Menu().title_(name.asString);
-			groups.do {
-				|group, groupName|
+			var groupNames = groups.keys.asArray;
+			groupNames.remove(\none);
+			groupNames.addFirst(\none);
+			groupNames.do {
+				|groupName|
+				var group = groups[groupName];
 				menu.addAction(Action.separator.string_(groupName));
 				group.do {
 					|action|
@@ -199,7 +211,7 @@ MainMenu {
 			};
 			menu
 		};
-		var actualotherMenus = ([applicationMenu] ++ menus).asArray();
+		var actualotherMenus = ([applicationMenu] ++ otherMenus ++ registeredMenus).asArray();
 		this.prSetAppMenus(actualotherMenus);
 	}
 
