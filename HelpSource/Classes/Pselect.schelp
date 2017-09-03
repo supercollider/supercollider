@@ -1,5 +1,5 @@
 class:: Pselect
-summary:: Filters values from return by a source pattern.
+summary:: Filters values returned by a source pattern.
 categories:: Streams-Patterns-Events>Patterns>Filter
 related:: Classes/Pcollect, Classes/Preject, Classes/Collection#-select
 
@@ -8,7 +8,7 @@ This pattern will filter the source pattern using the supplied function strong::
 
 Values from the source pattern will be passed to strong::func::. Pselect will only return that value if the strong::func:: returns true.
 
-This is the pattern libraries equivalent of link::Classes/Collection#-select#select::.
+This is the pattern library's equivalent of link::Classes/Collection#-select#select::.
 
 classmethods::
 
