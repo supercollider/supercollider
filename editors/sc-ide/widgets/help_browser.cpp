@@ -138,7 +138,7 @@ void HelpBrowser::createActions()
     ovrAction->addToWidget(mWebView);
 
     mActions[Evaluate] = ovrAction = new OverridingAction(tr("Evaluate as Code"), this);
-    connect(ovrAction, SIGNAL(triggered()), this, SLOT(evaluateSelection()));
+    connect(ovrAction, SIGNAL(triggered()), this, SLOT(evaluateSelection(false)));
     ovrAction->addToWidget(mWebView);
 
     // For the sake of display:
@@ -249,6 +249,19 @@ void HelpBrowser::findText( const QString & text, bool backwards )
     if (backwards) flags |= QWebEnginePage::FindBackward;
     mWebView->findText( text, flags );
 }
+  
+bool HelpBrowser::helpBrowserHasFocus() const {
+    QWidget* focused = QApplication::focusWidget();
+    
+    while (focused != NULL) {
+        if (focused == mWebView) {
+            return true;
+        }
+        focused = qobject_cast<QWidget*>(focused->parent());
+    }
+    
+    return false;
+}
 
 bool HelpBrowser::eventFilter(QObject *object, QEvent *event)
 {
@@ -325,14 +338,22 @@ void HelpBrowser::onScResponse( const QString & command, const QString & data )
     emit urlChanged();
 }
 
-void HelpBrowser::evaluateSelection()
+void HelpBrowser::evaluateSelection(bool evaluateRegion)
 {
-    static const QString javaScript("selectLine()");
-    mWebView->page()->runJavaScript( javaScript );
-
-    QString code( mWebView->selectedText() );
-    if (!code.isEmpty())
-        Main::scProcess()->evaluateCode(code);
+    static const QString jsSelectLine("selectLine()");
+    static const QString jsSelectRegion("selectRegion()");
+    
+    QString selected = mWebView->selectedText();
+    if (!selected.isEmpty()) {
+        Main::scProcess()->evaluateCode(selected);
+    } {
+        mWebView->page()->runJavaScript( evaluateRegion ? jsSelectRegion : jsSelectLine, [this](QVariant res){
+            QString selectionResult = res.toString();
+            if (!selectionResult.isEmpty()) {
+                Main::scProcess()->evaluateCode(selectionResult);
+            }
+        });
+    }
 }
 
 void HelpBrowser::onJsConsoleMsg(const QString &arg1, int arg2, const QString & arg3 )

@@ -114,6 +114,8 @@ public:
     QWidget *loadProgressIndicator() { return mLoadProgressIndicator; }
 
     QUrl url() const { return mWebView->url(); }
+    
+    bool helpBrowserHasFocus() const;
 
 public slots:
     void applySettings( Settings::Manager * );
@@ -122,7 +124,7 @@ public slots:
     void zoomIn();
     void zoomOut();
     void resetZoom();
-    void evaluateSelection();
+    void evaluateSelection(bool region);
     void findText( const QString & text, bool backwards = false );
     bool openDocumentation();
     void openDefinition();
