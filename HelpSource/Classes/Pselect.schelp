@@ -1,19 +1,23 @@
 class:: Pselect
-summary:: Select values from a pattern
+summary:: Filters values returned by a source pattern.
 categories:: Streams-Patterns-Events>Patterns>Filter
-related:: Classes/Pcollect, Classes/Preject
+related:: Classes/Pcollect, Classes/Preject, Classes/Collection#-select
 
 description::
-Returns values for which the function returns true. The value is passed to the function.
+This pattern will filter the source pattern using the supplied function strong::func::.
 
+Values from the source pattern will be passed to strong::func::. Pselect will only return that value if the strong::func:: returns true.
+
+This is the pattern library's equivalent of link::Classes/Collection#-select#select::.
 
 classmethods::
 
 method:: new
 argument:: func
-A link::Classes/Function::. Receives values from code::pattern::.
+A link::Classes/Function:: that takes one parameter (the next value from strong::pattern::) and returns a boolean.
+
 argument:: pattern
-A link::Classes/Pattern::.
+The source link::Classes/Pattern::.
 
 
 examples::
