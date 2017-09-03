@@ -32,7 +32,7 @@ bool IsCmdPeriodKeyDown(void * event);
 bool isKeyWindow ( QWidget *w );
 bool AlwaysShowScrollbars();
 void activateApp ();
-void DisableWindowTabbing();
+void DisableAutomaticWindowTabbing();
 
 } // namespace Mac
 } // namespace QtCollider

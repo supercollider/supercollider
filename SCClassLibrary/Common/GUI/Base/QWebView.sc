@@ -46,8 +46,8 @@ WebView : View {
 	classvar urlHandlers;
 
 	var <onLoadFinished, <onLoadFailed, <onLoadProgress, <onLoadStarted, <onLinkActivated, <onLinkHovered, <onReloadTriggered, <onJavaScriptMsg,
-	<onSelectionChanged, <onTitleChanged, <onUrlChanged, <onScrollPositionChanged, <onContentsSizeChanged, <onAudioMutedChanged,
-	<onRecentlyAudibleChanged;
+		<onSelectionChanged, <onTitleChanged, <onUrlChanged, <onScrollPositionChanged, <onContentsSizeChanged, <onAudioMutedChanged,
+		<onRecentlyAudibleChanged;
 
 	*qtClass { ^'QtCollider::WebView'; }
 
@@ -247,6 +247,12 @@ WebView : View {
 		onRecentlyAudibleChanged = func;
 	}
 
+	onJavaScriptMsg_ {
+		|func|
+		this.manageFunctionConnection( onJavaScriptMsg, func, 'jsConsoleMsg(const QString&, int, const QString&)' );
+		onJavaScriptMsg = func;
+	}
+
 	zoom					{ 			^this.getProperty('zoom') }
 	zoom_					{ |zoom| 	this.setProperty('zoom', zoom) }
 
@@ -282,101 +288,41 @@ WebView : View {
 
 	back 					{ this.triggerPageAction(\back) }
 	forward					{ this.triggerPageAction(\forward) }
+	stop					{ this.triggerPageAction(\stop) }
+	reload					{ this.triggerPageAction(\reload) }
 
-	// url { ^this.getProperty( \url ); }
-	//
-	// url_ { arg address; this.setProperty( \url, address ); }
-	//
-	// title { ^this.getProperty( \title ); }
-	//
-	// // Get the displayed content in html form.
-	// html { ^this.getProperty( \html ); }
-	//
-	// // Set html content.
-	// html_ { arg htmlString;
-	// 	this.invokeMethod( \setHtml, htmlString );
-	// }
-	//
-	// selectedText { ^this.getProperty( \selectedText ); }
-	//
-	// // Try to extract plain text from html content and return it.
-	// plainText { ^this.getProperty( \plainText ); }
-	//
-	// reload { this.invokeMethod( 'reload' ); }
-	//
-	// back { this.invokeMethod( 'back' ); }
-	//
-	// forward { this.invokeMethod( 'forward' ); }
-	//
-	// findText { arg string, reverse = false;
-	// 	this.invokeMethod( \findText, [string, reverse] );
-	// }
-	//
-	// evaluateJavaScript { arg script;
-	// 	this.invokeMethod( \evaluateJavaScript, script );
-	// }
-	//
-	// // The given function will be evaluated when a page has loaded successfully.
-	// // The calling WebView object is passed to the function.
-	//
-	//
-	// // After this method is called with a function as an argument, WebView will not
-	// // handle links in any way. Instead, the given function will be evaluated whenever
-	// // the user activates (clicks) a link.
-	//
-	// // The argument passed to the function is the calling WebView object.
-	//
-	// // If this method is called with nil argument, WebView link handling will be
-	// // restored again.
-	//
-	//
-	// // After this method is called with an object as an argument, WebView will do
-	// // nothing when page reload is requested. Instead, the given object's 'value' method
-	// // will be called on such event.
-	//
-	// // The arguments passed to the 'value' method are this WebView instance and
-	// // a String for the requested URL to be reloaded.
-	//
-	// // If this method is called with nil argument, WebView's page reload handling will
-	// // be restored again.
-	//
-	// onReload_ { arg func;
-	// 	this.manageFunctionConnection( onReload, func, 'reloadTriggered(QString)' );
-	// 	this.setProperty( \delegateReload, func.notNil );
-	// 	onReload = func;
-	// }
-	//
-	// onJavaScriptMsg_ { arg func;
-	// 	this.manageFunctionConnection( onJavaScriptMsg, func,
-	// 	'jsConsoleMsg(const QString&, int, const QString&)' );
-	// 	onJavaScriptMsg = func;
-	// }
-	//
-	// enterInterpretsSelection { ^this.getProperty( \enterInterpretsSelection ); }
-	//
-	// enterInterpretsSelection_ { arg bool;
-	// 	this.setProperty( \enterInterpretsSelection, bool );
-	// }
-	//
-	// editable { ^this.getProperty( \editable ); }
-	//
-	// editable_ { arg bool;
-	// 	this.setProperty( \editable, bool );
-	// }
-	//
-	// // Set a specific font family to be used in place of a CSS-specified generic font family.
-	// // The 'generic' argument must be one of the following symbols:
-	// // \standard, \fixed, \serif, \sansSerif, \cursive, \fantasy
-	//
-	// setFontFamily { arg generic, specific;
-	// 	this.invokeMethod( \setFontFamily, [QWebFontFamily(generic), specific] )
-	// }
 
-	//---------------------------------- private --------------------------------------//
+	////////////////////////////////////////////////////////////////////////
+	// DEPRECATED
 
+	// Get the displayed content in html form.
+	html {
+		this.deprecated(thisMethod, this.class.findRespondingMethodFor(\toHtml));
+		^"";
+	}
+
+	// Set html content.
+	html_{
+		|htmlString|
+		this.deprecated(thisMethod, this.class.findRespondingMethodFor(\setHtml));
+		^this.setHtml(htmlString)
+	}
+
+	// Try to extract plain text from html content and return it.
+	plainText {
+		this.deprecated(thisMethod, this.class.findRespondingMethodFor(\toPlainText));
+		^"";
+	}
+
+	evaluateJavaScript {
+		|script|
+		this.deprecated(thisMethod, this.class.findRespondingMethodFor(\runJavaScript));
+		^this.invokeMethod(\runJavaScript, script);
+	}
+
+	onReload_ {
+		|func|
+		this.deprecated(thisMethod, this.class.findRespondingMethodFor(\onReloadTriggered));
+		^this.invokeMethod(\onReloadTriggered, func);
+	}
 }
-
-/*
-perhaps also:
-- history  // returning a string list of urls.
-*/

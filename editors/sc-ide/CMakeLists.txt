@@ -47,8 +47,8 @@ if(APPLE)
         set_source_files_properties(${file} PROPERTIES MACOSX_PACKAGE_LOCATION Resources/${PathInBundle})
     endforeach()
 
-    set( Icons ../../icons/SCcube.icns)
-    set_source_files_properties(../../icons/SCcube.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+    set( Icons ../../icons/sc_ide.icns)
+    set_source_files_properties(../../icons/sc_ide.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 
     set(AdditionalBundleSources ${ClassLibrary} ${HelpSource} ${BundleResources} ${Examples} ${Sounds} ${Icons})
 endif()
