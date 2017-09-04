@@ -19,4 +19,4 @@ r {
 		e.reportError;
 		1.exit;
 	}
-}.play(AppClock)
+}.play(AppClock);
