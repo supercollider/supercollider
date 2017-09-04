@@ -10,9 +10,9 @@ AbstractMenuAction : QObject {
 		this.menuRole = \noRole;
 	}
 
-	onChanged 	{ 		this.changed(\changed) }
+	onChanged 	{ this.changed(\changed) }
 	onTriggered	{ |b| 	this.changed(\triggered, b); action.value(this, b); }
-	onHovered 	{ 		this.changed(\hovered) }
+	onHovered 	{ this.changed(\hovered) }
 	onToggled 	{ |b|	this.changed(\toggled, b) }
 
 	menuRole 	{ 		^this.getProperty(\menuRole) }
@@ -95,7 +95,7 @@ CustomViewAction : AbstractMenuAction {
 	}
 
 	defaultView { 		^this.getProperty(\defaultWidget) }
-	defaultView_{ |b| 	^this.setProperty(\defaultWidget, b) }
+	defaultView_{ |v| 	^this.setProperty(\defaultWidget, v) }
 }
 
 MainMenu {
@@ -228,7 +228,7 @@ MainMenu {
 		};
 
 		^menu;
-	}
+					}
 
 	*prGetMenuGroup {
 		|menuName, groupName|
@@ -242,7 +242,7 @@ MainMenu {
 		} {
 			group = List();
 			menu.add(groupName -> group);
-		};
+				};
 
 		^group;
 	}
@@ -413,17 +413,17 @@ Menu : AbstractActionView {
 		^newMenu
 	}
 
-	title 			{ 			^this.getProperty(\title) }
+	title 			{ 		^this.getProperty(\title) }
 	title_ 			{ |title| 	^this.setProperty(\title, title) }
 
 	string			{ 			^this.title }
 	string_			{ |title| 	^this.title_(title) }
 
-	tearOff 		{ 			^this.getProperty(\tearOffEnabled) }
-	tearOff_ 		{ |b| 		^this.setProperty(\tearOffEnabled, b) }
+	tearOff 		{ 		^this.getProperty(\tearOffEnabled) }
+	tearOff_ 		{ |b| 	^this.setProperty(\tearOffEnabled, b) }
 
-	onShow 			{			this.changed(\aboutToShow) }
-	onHide			{ 			this.changed(\aboutToHide) }
+	onShow 			{		this.changed(\aboutToShow) }
+	onHide			{ 		this.changed(\aboutToHide) }
 	onTriggered 	{ |action| 	this.changed(\triggered, action) }
 	onHovered 		{ |action|	this.changed(\hovered, action) }
 
@@ -479,7 +479,7 @@ ToolBar : AbstractActionView {
 
 	floating 	{ 		^this.getProperty(\floating) }
 	floating_ 	{ |b| 	^this.setProperty(\floating, b) }
-}
+	}
 
 +View {
 	asAction {
