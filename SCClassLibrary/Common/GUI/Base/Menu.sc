@@ -151,22 +151,52 @@ MainMenu {
 			MenuAction("Quit", { 0.exit; }).shortcut_("Ctrl+Q")
 		).title_("SuperCollider");
 
-		registered = ();
+		registered = List();
 
 		this.clear();
 	}
 
 	*register {
 		|action, menu, group=\none|
-		menu = menu.asSymbol;
-		group = group.asSymbol;
+		var itemAssoc;
+		menu 		= this.prGetItem(menu.asSymbol, registered, List).value;
+		group 		= this.prGetItem(group.asSymbol, menu, List).value;
+		itemAssoc 	= this.prGetItem(action.asAction.string.asSymbol, group);
+		itemAssoc.value = action;
 
-		registered[menu] = registered[menu] ?? { () };
-		registered[menu][group] = registered[menu][group] ?? { () };
-		registered[menu][group][action.string.asSymbol] = action;
-
-		this.clear().prUpdate();
+		this.prUpdate();
 	}
+
+	*unregister {
+		|toRemove|
+		registered.do {
+			|menu|
+			menu.value.do {
+				|group|
+				group.value.removeAllSuchThat({
+					|assoc|
+					assoc.value == toRemove;
+				})
+			}
+		};
+
+		this.prUpdate();
+	}
+
+	*prGetItem {
+		|name, list, createClass|
+		var found;
+
+		found = list.select({ |item| item.key == name });
+		if (found.isEmpty) {
+			found = name -> (createClass !? { createClass.new });
+			list.add(found);
+			^found
+		} {
+			^found[0];
+		};
+	}
+
 
 	*clear {
 		otherMenus = [];
@@ -193,22 +223,35 @@ MainMenu {
 
 	*prUpdate {
 		var registeredMenus = registered.collect {
-			|groups, name|
-			var menu = Menu().title_(name.asString);
-			var groupNames = groups.keys.asArray;
-			groupNames.remove(\none);
-			groupNames.addFirst(\none);
-			groupNames.do {
-				|groupName|
-				var group = groups[groupName];
-				menu.addAction(Action.separator.string_(groupName));
-				group.do {
-					|action|
-					menu.addAction(action.asAction)
+			|groupsAssoc|
+			var menu, groups, firstGroup, otherGroups, lastGroup;
+
+			menu = Menu().title_(groupsAssoc.key);
+			groups = groupsAssoc.value;
+
+			firstGroup = groups.select({ |g| g.key == \none });
+			otherGroups = groups.reject({ |g| g.key == \none });
+
+			(firstGroup ++ otherGroups).do {
+				|itemsAssoc|
+				var name, items;
+				name = itemsAssoc.key;
+				items = itemsAssoc.value;
+
+				if (name != \none) {
+					menu.addAction(MenuAction.separator.string_(name))
+				};
+
+				menu.addAction(MenuAction.separator.string_(name));
+				items.do {
+					|actionAssoc|
+					menu.addAction(actionAssoc.value.asAction)
 				}
 			};
+
 			menu
 		};
+
 		var actualotherMenus = ([applicationMenu] ++ otherMenus ++ registeredMenus).asArray();
 		this.prSetAppMenus(actualotherMenus);
 	}
@@ -338,27 +381,21 @@ ToolBar : AbstractActionView {
 
 	init {}
 
-	// @TODO needs enum class
 	orientation { 		^this.getProperty(\orientation) }
-	orientation_{ |i| 	^this.setProperty(\orientation, i) }
+	orientation_{ |i| 	^this.setProperty(\orientation, QOrientation(i)) }
 
-	moveable 	{ 		^this.getProperty(\moveable) }
-	moveable_ 	{ |b| 	^this.setProperty(\moveable, b) }
+	toolButtonStyle { 		^this.getProperty(\toolButtonStyle) }
+	toolButtonStyle_{ |i| 	^this.setProperty(\toolButtonStyle, QToolButtonStyle(i)) }
 
-	// @TODO - do these work? how?
+	// These are not currently functional in an SC context
+	movable 	{ 		^this.getProperty(\movable) }
+	movable_ 	{ |b| 	^this.setProperty(\movable, b) }
+
 	floatable 	{ 		^this.getProperty(\floatable) }
 	floatable_ 	{ |b| 	^this.setProperty(\floatable, b) }
 
 	floating 	{ 		^this.getProperty(\floating) }
 	floating_ 	{ |b| 	^this.setProperty(\floating, b) }
-
-	attachView {
-		|action, view|
-		if (action.isNumber) {
-			action = this.actions[action];
-		};
-		this.invokeMethod('attachWidget', [action, view])
-	}
 }
 
 +View {
