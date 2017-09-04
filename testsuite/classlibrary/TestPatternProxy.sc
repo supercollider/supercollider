@@ -190,6 +190,10 @@ TestPatternProxy : UnitTest {
 		var assert = { |a, b, which|
 			//a = a.collect(removeCleanup);
 			//b = b.collect(removeCleanup);
+			// new equality method needs this:
+			a.do { |ev| if (ev.respondsTo(\parent_)) { ev.parent = nil } };
+			b.do { |ev| if (ev.respondsTo(\parent_)) { ev.parent = nil } };
+
 			this.assert(a == b, "testing '%' failed.".format(which), false)
 		};
 

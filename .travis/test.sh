@@ -8,6 +8,11 @@ fi
 
 if [[ $QT != true ]]; then $TRAVIS_BUILD_DIR/.travis/fix-non-Qt.sh; fi
 
-$TRAVIS_BUILD_DIR/testsuite/sclang/launch_test.py $SCLANG
+$TRAVIS_BUILD_DIR/testsuite/sclang/launch_test.py $SCLANG \
+	|| (echo "ERROR: Test launch failed." && exit 4)
 
-if [[ $QT == true ]]; then $TRAVIS_BUILD_DIR/.travis/qpm-test.sh; fi
+if [[ $QT == true ]]
+then
+	$TRAVIS_BUILD_DIR/.travis/run-sc-class-library-test-suite.sh \
+		|| (echo "ERROR: Class library unit tests failed." && exit 7)
+fi
