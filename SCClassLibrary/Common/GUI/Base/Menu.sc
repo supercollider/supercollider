@@ -1,5 +1,5 @@
-AbstractAction : QObject {
-	var <>func;
+AbstractMenuAction : QObject {
+	var <>action;
 
 	initConnections {
 		this.connectMethod('changed()', 'onChanged');
@@ -7,23 +7,19 @@ AbstractAction : QObject {
 		this.connectMethod('hovered()', 'onHovered');
 		this.connectMethod('toggled(bool)', 'onToggled');
 
-		this.menuRole = 0;
+		this.menuRole = \noRole;
 	}
 
-	onChanged 	{ this.changed(\changed) }
-	onTriggered	{ |b| this.changed(\triggered, b); func.value(this, b); }
-	onHovered 	{ this.changed(\hovered) }
-	onToggled 	{ this.changed(\toggled) }
+	onChanged 	{ 		this.changed(\changed) }
+	onTriggered	{ |b| 	this.changed(\triggered, b); action.value(this, b); }
+	onHovered 	{ 		this.changed(\hovered) }
+	onToggled 	{ |b|	this.changed(\toggled, b) }
 
-	// @TODO needs enum class
 	menuRole 	{ 		^this.getProperty(\menuRole) }
-	menuRole_ 	{ |b| 	^this.setProperty(\menuRole, b) }
+	menuRole_ 	{ |b| 	^this.setProperty(\menuRole, QMenuRole(b)) }
 
 	shortcut 	{ 		^this.getProperty(\shortcut) }
 	shortcut_ 	{ |str| ^this.setProperty(\shortcut, str) }
-
-	enabled 	{		^this.getProperty(\enabled) }
-	enabled_ 	{ |b| 	^this.setProperty(\enabled, b) }
 
 	string 		{ 		^this.getProperty(\text) }
 	string_	 	{ |str| ^this.setProperty(\text, str) }
@@ -34,17 +30,17 @@ AbstractAction : QObject {
 	asAction { ^this }
 }
 
-Action : AbstractAction {
+MenuAction : AbstractMenuAction {
 	*qtClass { ^'QcAction' }
 
 	*new {
 		|string, function|
-		^super.new.init().string_(string).func_(function);
+		^super.new.init().string_(string).action_(function);
 	}
 
 	*separator {
 		|string|
-		^Action().separator_(true).string_(string)
+		^MenuAction().separator_(true).string_(string)
 	}
 
 	init {
@@ -82,12 +78,14 @@ Action : AbstractAction {
 		this.menu = Menu().title_(this.string);
 		^this.menu;
 	}
+
+	printOn { arg stream; stream << this.class.name << "(\"" << (this.string ? "-")  << "\")" }
 }
 
-CustomViewAction : AbstractAction {
+CustomViewAction : AbstractMenuAction {
 	*new {
 		|view, function|
-		^super.new.init().defaultView_(view).func_(function)
+		^super.new.init().defaultView_(view).action_(function)
 	}
 
 	*qtClass { ^'QcWidgetAction' }
@@ -106,7 +104,7 @@ MainMenu {
 	classvar <registered;
 
 	*initClass {
-		var serversMenu = Menu(Action.separator).title_("Servers");
+		var serversMenu = Menu(MenuAction.separator).title_("Servers");
 		serversMenu.addDependant({
 			|menu, what|
 			if (what == \aboutToShow) {
@@ -116,8 +114,8 @@ MainMenu {
 					var running, restart, options, default;
 					var runningOrBooting = (s.serverRunning || s.serverBooting);
 
-					running = Action(runningOrBooting.if("◼ Stop", "▶ Start"));
-					running.func = {
+					running = MenuAction(runningOrBooting.if("◼ Stop", "▶ Start"));
+					running.action = {
 						if (runningOrBooting.not) {
 							s.boot;
 						} {
@@ -126,31 +124,31 @@ MainMenu {
 					};
 
 					if (s.serverRunning) {
-						restart = Action("↻ Restart");
-						restart.func = { s.restart };
+						restart = MenuAction("↻ Restart");
+						restart.action = { s.restart };
 					};
 
 					if (\ServerOptionsGui.asClass.notNil) {
-						options = Action("Options...");
-						options.func_({
+						options = MenuAction("Options...");
+						options.action_({
 							\ServerOptionsGui.asClass.new(s);
 						});
 					};
 
-					menu.addAction(Action("  %  ".format(s.name)).font_(Font(italic:true)));
+					menu.addAction(MenuAction("  %  ".format(s.name)).font_(Font(italic:true)));
 					menu.addAction(running);
 					restart !? { menu.addAction(restart) };
 					options !? { menu.addAction(options) };
-					menu.addAction(Action.separator);
+					menu.addAction(MenuAction.separator);
 				}
 			}
 		});
 
 		applicationMenu = Menu(
-			Action("Stop", { CmdPeriod.run; }).shortcut_("Ctrl+."),
+			MenuAction("Stop", { CmdPeriod.run; }).shortcut_("Ctrl+."),
 			serversMenu,
-			Action.separator,
-			Action("Quit", { 0.exit; }).shortcut_("Ctrl+Q")
+			MenuAction.separator,
+			MenuAction("Quit", { 0.exit; }).shortcut_("Ctrl+Q")
 		).title_("SuperCollider");
 
 		registered = ();
@@ -272,6 +270,7 @@ Menu : AbstractActionView {
 		this.connectMethod('triggered(QAction*)', 'onTriggered');
 		this.connectMethod('aboutToShow()', 'onShow' /*, true*/);   // @TODO - Is this safe? Deadlock potential?
 		this.connectMethod('aboutToHide()', 'onHide');
+		this.connectMethod('hovered(QAction*)', 'onHovered');
 	}
 
 	copy {
@@ -291,26 +290,26 @@ Menu : AbstractActionView {
 		^newMenu
 	}
 
-	title 			{ 		^this.getProperty(\title) }
-	title_ 			{ |b| 	^this.setProperty(\title, b) }
+	title 			{ 			^this.getProperty(\title) }
+	title_ 			{ |title| 	^this.setProperty(\title, title) }
 
-	tearOff 		{ 		^this.getProperty(\tearOffEnabled) }
-	tearOff_ 		{ |b| 	^this.setProperty(\tearOffEnabled, b) }
+	tearOff 		{ 			^this.getProperty(\tearOffEnabled) }
+	tearOff_ 		{ |b| 		^this.setProperty(\tearOffEnabled, b) }
 
-	onShow 			{		this.changed(\aboutToShow) }
-	onHide			{ 		this.changed(\aboutToHide) }
-	onTriggered 	{ |act| this.changed(\triggered, act) }
-	onHovered 		{ 		this.changed(\hovered) }
+	onShow 			{			this.changed(\aboutToShow) }
+	onHide			{ 			this.changed(\aboutToHide) }
+	onTriggered 	{ |action| 	this.changed(\triggered, action) }
+	onHovered 		{ |action|	this.changed(\hovered, action) }
 
 	front {
 		|point, action|
 		point = point ?? QtGUI.cursorPosition;
-		action = action ?? Action();
+		action = action ?? MenuAction();
 		this.invokeMethod(\popup, [point, action])
 	}
 
 	asAction {
-		^Action(this.title).menu_(this)
+		^MenuAction(this.title).menu_(this)
 	}
 
 	asMenu {
@@ -320,6 +319,8 @@ Menu : AbstractActionView {
 	remove {
 		// Don't destroy menus when they are closed - just hide them
 	}
+
+	printOn { arg stream; stream << this.class.name << "(\"" << (this.title ? "-")  << "\")" }
 }
 
 ToolBar : AbstractActionView {
@@ -369,13 +370,13 @@ ToolBar : AbstractActionView {
 
 +Function {
 	asAction {
-		^Action().func_(this)
+		^MenuAction().action_(this)
 	}
 }
 
 +String {
 	asAction {
-		^Action().string_(this)
+		^MenuAction().string_(this)
 	}
 }
 

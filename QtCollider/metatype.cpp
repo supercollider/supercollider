@@ -139,7 +139,7 @@ MetaType *MetaType::find( PyrSlot *slot )
       else if( isKindOfSlot( slot, SC_CLASS(QCallback) ) ) {
         return metaType<QcCallback*>();
       }
-      else if( isKindOfSlot( slot, SC_CLASS(AbstractAction) ) ) {
+      else if( isKindOfSlot( slot, SC_CLASS(AbstractMenuAction) ) ) {
         return metaType<QAction*>();
       }
       else if( isKindOfSlot( slot, SC_CLASS(Menu) ) ) {
