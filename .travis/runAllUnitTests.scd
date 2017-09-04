@@ -11,6 +11,9 @@
  * exits with a result of 1 (indicating failure).
  */
 
+"UnitTest subclasses: ".postln;
+UnitTest.allSubclasses.do(_.postln);
+
 r {
 	try {
 		UnitTest.runAll;
