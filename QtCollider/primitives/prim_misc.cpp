@@ -335,25 +335,28 @@ QC_LANG_PRIMITIVE( QView_AddActionToView, 3, PyrSlot *r, PyrSlot *a, VMGlobals *
   
   QObjectProxy* widgetObj = TypeCodec<QObjectProxy*>::safeRead(a);
   QObjectProxy* actionObj = TypeCodec<QObjectProxy*>::safeRead(a + 1);
+  QObjectProxy* beforeObj = TypeCodec<QObjectProxy*>::safeRead(a + 2);
   
   if (widgetObj && actionObj) {
     QWidget* widget = qobject_cast<QWidget*>(widgetObj->object());
     QAction* action = qobject_cast<QAction*>(actionObj->object());
-    QAction* beforeAction = 0;
+    QAction* beforeAction = beforeObj ? qobject_cast<QAction*>(beforeObj->object()) : 0;
     
-    PyrSlot* indexArg = a + 2;
+    if (!beforeAction) {
+      PyrSlot* indexArg = a + 2;
     
-    if (NotNil(indexArg)) {
-      if (IsInt(indexArg)) {
-        int index = std::min(slotRawInt(indexArg), 0);
-        
-        auto actions = widget->actions();
-        
-        if (index < actions.size()) {
-          beforeAction = actions[index];
+      if (NotNil(indexArg)) {
+        if (IsInt(indexArg)) {
+          int index = std::max(slotRawInt(indexArg), 0);
+          
+          auto actions = widget->actions();
+          
+          if (index < actions.size()) {
+            beforeAction = actions[index];
+          }
+        } else {
+          return errFailed;
         }
-      } else {
-        return errFailed;
       }
     }
     
