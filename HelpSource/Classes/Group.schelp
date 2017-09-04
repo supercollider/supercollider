@@ -135,7 +135,7 @@ method:: dumpTree
 Post a representation of this group's node subtree. (Sends a message of the type g_dumpTree.) If code::postControls:: is true, then the current Control (arg) values for any synths contained in this group will be posted as well. The default is false.
 
 method:: queryTree
-Queries the server for a message describing this group's node subtree. (Sends a message of the type g_queryTree.) This reply is passed to the action function as an argument. See g_queryTree in Server-Command-Reference or the example below for information on how the reply is structured.
+Post a representation of this group's node subtree. (Sends a message of the type g_queryTree.) Output is identical to that of dumpTree(postControls: false), but it is created in sclang from Server's response to g_queryTree message, while dumpTree's output is posted directly by the server. The source for this method is an example of how to parse the /g_queryTree.reply format documented in link::Reference/Server-Command-Reference::.
 
 
 Examples::
@@ -223,29 +223,6 @@ g.query;
 3.do({
 	// random freq for each synth, added to g at the head
 	Synth("help-Group-moto-rev",["out",0,"freq",rrand(10,1200)],g,\addToHead);
-});
-)
-
-// now query my tree and post a graph of it (duplicates dumpTree)
-// msg format is ['/g_querytree.reply', node1-ID, numChildren, defName, child1-ID, numChildren, ...]
-(
-g.queryTree({|msg|
-   var i = 1, tabs = 0, dumpFunc;
-   ("NODE TREE Group" + msg[1]).postln;
-   if(msg[2] > 0, {
-       dumpFunc = {|numChildren|
-           tabs = tabs + 1;
-           numChildren.do({
-               i = i + 3;
-               tabs.do({ "   ".post });
-               msg[i].post;
-               (" " ++ msg[i + 2]).postln;
-               if(msg[i + 1] > 0, { dumpFunc.value(msg[i + 1]) });
-           });
-           tabs = tabs - 1;
-       };
-       dumpFunc.value(msg[2]);
-   });
 });
 )
 
