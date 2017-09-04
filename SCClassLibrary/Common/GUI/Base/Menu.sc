@@ -101,48 +101,13 @@ CustomViewAction : AbstractMenuAction {
 MainMenu {
 	classvar <otherMenus;
 	classvar <applicationMenu;
+	classvar <serversMenu;
 	classvar <registered;
+	classvar systemMenus;
+	classvar <>buildAppMenusAction;
 
 	*initClass {
-		var serversMenu = Menu(MenuAction.separator).title_("Servers");
-		serversMenu.addDependant({
-			|menu, what|
-			if (what == \aboutToShow) {
-				menu.clear();
-				Server.all.do {
-					|s|
-					var running, restart, options, default;
-					var runningOrBooting = (s.serverRunning || s.serverBooting);
-
-					running = MenuAction(runningOrBooting.if("◼ Stop", "▶ Start"));
-					running.action = {
-						if (runningOrBooting.not) {
-							s.boot;
-						} {
-							s.quit;
-						}
-					};
-
-					if (s.serverRunning) {
-						restart = MenuAction("↻ Restart");
-						restart.action = { s.restart };
-					};
-
-					if (\ServerOptionsGui.asClass.notNil) {
-						options = MenuAction("Options...");
-						options.action_({
-							\ServerOptionsGui.asClass.new(s);
-						});
-					};
-
-					menu.addAction(MenuAction("  %  ".format(s.name)).font_(Font(italic:true)));
-					menu.addAction(running);
-					restart !? { menu.addAction(restart) };
-					options !? { menu.addAction(options) };
-					menu.addAction(MenuAction.separator);
-				}
-			}
-		});
+		serversMenu = Menu(MenuAction.separator).title_("Servers");
 
 		applicationMenu = Menu(
 			MenuAction("Stop", { CmdPeriod.run; }).shortcut_("Ctrl+."),
@@ -151,52 +116,77 @@ MainMenu {
 			MenuAction("Quit", { 0.exit; }).shortcut_("Ctrl+Q")
 		).title_("SuperCollider");
 
+		applicationMenu.addDependant({
+			|menu, what|
+			if (what == \aboutToShow) {
+				this.prUpdateServersMenu();
+			}
+		});
+		Server.all.do(_.addDependant({ this.prUpdateServersMenu() }));
+
 		registered = List();
 
+		systemMenus = [\SuperCollider, \File, \Edit, \Server, \Quarks, \Help];
+		systemMenus.do({ |systemMenu| this.prGetMenu(systemMenu) });
+
+		this.prUpdateServersMenu();
 		this.clear();
+		this.prUpdate();
 	}
 
 	*register {
 		|action, menu, group=\none|
-		var itemAssoc;
-		menu 		= this.prGetItem(menu.asSymbol, registered, List).value;
-		group 		= this.prGetItem(group.asSymbol, menu, List).value;
-		itemAssoc 	= this.prGetItem(action.asAction.string.asSymbol, group);
-		itemAssoc.value = action;
+		var menuList, existingIndex;
+
+		menu = menu.asSymbol;
+		group = group.asSymbol;
+
+		menuList = this.prGetMenuGroup(menu, group);
+		existingIndex = menuList.detectIndex({ |existing| existing.string == action.string });
+		if (existingIndex.notNil) {
+			"Menu item '%' replaced an existing menu".format(action.string).warn;
+			menuList[existingIndex] = action;
+		} {
+			menuList.add(action);
+		};
 
 		this.prUpdate();
 	}
 
 	*unregister {
-		|toRemove|
+		|removeAction|
 		registered.do {
-			|menu|
-			menu.value.do {
-				|group|
-				group.value.removeAllSuchThat({
-					|assoc|
-					assoc.value == toRemove;
-				})
+			|menuAssoc|
+			menuAssoc.value.do {
+				|groupAssoc|
+				groupAssoc.value.do {
+					|action, i|
+					if (removeAction == action) {
+						groupAssoc.value.removeAt(i);
+						^this.prUpdate();
+					}
+				}
 			}
+		}
+	}
+
+	*registerQuarkMenu {
+		|quarkName, menu|
+		menu.title = quarkName;
+		this.register(menu, \Quarks);
+	}
+
+	*unregisterQuarkMenu {
+		|quarkName|
+		var menuList, existingIndex;
+		menuList = this.prGetMenuGroup(\Quarks, \none);
+		existingIndex = menuList.detectIndex({ |existing| existing.string.asSymbol == quarkName.asSymbol });
+		if (existingIndex.notNil) {
+			menuList.removeAt(existingIndex)
 		};
 
 		this.prUpdate();
 	}
-
-	*prGetItem {
-		|name, list, createClass|
-		var found;
-
-		found = list.select({ |item| item.key == name });
-		if (found.isEmpty) {
-			found = name -> (createClass !? { createClass.new });
-			list.add(found);
-			^found
-		} {
-			^found[0];
-		};
-	}
-
 
 	*clear {
 		otherMenus = [];
@@ -221,38 +211,128 @@ MainMenu {
 		this.prUpdate();
 	}
 
-	*prUpdate {
-		var registeredMenus = registered.collect {
-			|groupsAssoc|
-			var menu, groups, firstGroup, otherGroups, lastGroup;
+	*prGetMenu {
+		|name|
+		var menu, insertIndex;
+		menu = registered.detect({ |m| m.isKindOf(Association) and: { m.key == name } });
 
-			menu = Menu().title_(groupsAssoc.key);
-			groups = groupsAssoc.value;
-
-			firstGroup = groups.select({ |g| g.key == \none });
-			otherGroups = groups.reject({ |g| g.key == \none });
-
-			(firstGroup ++ otherGroups).do {
-				|itemsAssoc|
-				var name, items;
-				name = itemsAssoc.key;
-				items = itemsAssoc.value;
-
-				if (name != \none) {
-					menu.addAction(MenuAction.separator.string_(name))
-				};
-
-				menu.addAction(MenuAction.separator.string_(name));
-				items.do {
-					|actionAssoc|
-					menu.addAction(actionAssoc.value.asAction)
-				}
+		if (menu.notNil) {
+			menu = menu.value;
+		} {
+			menu = List.newFrom([ \none -> List() ]);
+			insertIndex = systemMenus.detectIndex(_ == name);
+			if (insertIndex.isNil) {
+				insertIndex = registered.size();
 			};
-
-			menu
+			registered.insert(insertIndex, name -> menu);
 		};
 
-		var actualotherMenus = ([applicationMenu] ++ otherMenus ++ registeredMenus).asArray();
+		^menu;
+	}
+
+	*prGetMenuGroup {
+		|menuName, groupName|
+		var menu, group;
+
+		menu = this.prGetMenu(menuName);
+		group = menu.detect({ |g| g.isKindOf(Association) and: { g.key == groupName } });
+
+		if (group.notNil) {
+			group = group.value;
+		} {
+			group = List();
+			menu.add(groupName -> group);
+		};
+
+		^group;
+	}
+
+	*prUpdateServersMenu {
+		serversMenu.clear();
+		Server.all.do {
+			|s|
+			var running, options, kill, default;
+			var startString, runningString, defaultString;
+
+			startString = if (s.serverRunning, "Stop", "Boot");
+			runningString = if (s.serverRunning, "(running)", "(stopped)");
+			defaultString = if (s == Server.default, "◎", " ");
+
+			running = MenuAction(startString);
+			running.action = {
+				if (s.serverRunning) {
+					s.quit;
+				} {
+					s.boot;
+				}
+			};
+			if ((s == Server.default) && s.serverRunning.not) {
+				running.shortcut = "Ctrl+B";
+			};
+
+			kill = MenuAction("Kill");
+			kill.action = { s.kill };
+
+			options = MenuAction("Options...");
+			options.action_({
+				\ServerOptionsGui.asClass.new(s);
+			});
+
+			serversMenu.addAction(MenuAction(defaultString + s.name + runningString).font_(Font(italic:true)));
+			serversMenu.addAction(running);
+
+			if (s.serverRunning) {
+				serversMenu.addAction(kill)
+			};
+
+			if (\ServerOptionsGui.asClass.notNil) {
+				serversMenu.addAction(options);
+			};
+
+			serversMenu.addAction(MenuAction.separator);
+		};
+
+		serversMenu.addAction(MenuAction("Kill All", { Server.killAll; }));
+	}
+
+
+	*prBuildAppMenus {
+		if (buildAppMenusAction.notNil) {
+			^buildAppMenusAction.value(registered);
+		} {
+			^registered.collect {
+				|entry|
+				var menu, menuName, menuItems;
+
+				menuName = entry.key;
+				menuItems = entry.value;
+
+				menu = Menu().title_(menuName.asString);
+
+				menuItems.do {
+					|item, i|
+					var groupName, groupItems;
+					groupName = item.key;
+					groupItems = item.value;
+
+					if (i != 0) {
+						menu.addAction(MenuAction.separator.string_(groupName));
+					};
+
+					groupItems.do {
+						|groupItem|
+						menu.addAction(groupItem);
+					}
+				};
+
+				menu
+			};
+		}
+	}
+
+	*prUpdate {
+		var menus = this.prBuildAppMenus();
+		var actualotherMenus = ([applicationMenu] ++ otherMenus ++ menus).asArray();
 		this.prSetAppMenus(actualotherMenus);
 	}
 
@@ -335,6 +415,9 @@ Menu : AbstractActionView {
 
 	title 			{ 			^this.getProperty(\title) }
 	title_ 			{ |title| 	^this.setProperty(\title, title) }
+
+	string			{ 			^this.title }
+	string_			{ |title| 	^this.title_(title) }
 
 	tearOff 		{ 			^this.getProperty(\tearOffEnabled) }
 	tearOff_ 		{ |b| 		^this.setProperty(\tearOffEnabled, b) }

@@ -35,12 +35,37 @@ METHOD:: register
 
 		If you want to register menus for personal use, add the registration calls to your startup.scd file. This will ensure the menus are created automatically on launch.
 
-		If you're registering menu actions for a Quark or other component intended for distribution, be sure to be polite and thoughtful about how you're registering actions.
+		If you're registering menu actions for a Quark or other component intended for distribution, be sure to be polite and thoughtful about where you're registering actions.
 
-		Avoid creating new top-level menus if possible - instead, try to use paradigmatic or generic top-level menu names (e.g. "Edit", "Tools", "Quarks"), and use groups to separate your functionality from that of other components.
+		Avoid creating new top-level menus if possible - instead, try to use one of the following canonical menus to register your actions. Add your actions to a group to ensure you don't collide with actions from another component:
+		LIST::
+			## File
+			## Edit
+			## Server
+			## Quarks
+			## Help
+		::
 
-		If you do create a top-level menu, consider naming it after your Quark or component, so it's clear to users where it came from.
+		If registering menu items for a Quark, consider registering as a sub-menu of the Quarks menu. This can easily be done using the link::Classes/MainMenu#registerQuarkMenu:: method.
 
+METHOD:: registerQuarkMenu
+	Convenience method for registering a menu of functionality related to a Quark.
+	It will appear as a sub-menu under the main Quarks menu.
+
+	ARGUMENT:: quarkName
+		A String, the name of the quark
+	ARGUMENT:: menu
+		A link::Classes/Menu::, a menu.
+
+METHOD:: unregister
+	Remove a MenuAction that has been registered previously.
+	NOTE::
+		It is usually disruptive and confusing to add and remove menu items dynamically.
+		If you're registering a menu item that should only sometimes be available, consider disabling it using code::menuAction.enabled = false;:: rather than removing it.
+	::
+
+	ARGUMENT::
+		A MenuAction.
 
 METHOD:: otherMenus
 	A list of menus to append to the set of main application menus.
