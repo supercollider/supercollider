@@ -1,0 +1,75 @@
+TITLE:: MainMenu
+summary:: A manager for application-level menus.
+categories:: GUI
+related:: Classes/MenuAction, Classes/ToolBar, Classes/MainMenu
+
+DESCRIPTION::
+MainMenu is used to control items displayed in the application-level menu.
+
+CODE::
+(
+~testTone = MenuAction("Test Tone", {
+	{ SinOsc.ar(400) }.play;
+});
+
+MainMenu.register(~testTone, "Tests");
+
+// MainMenu.unregister(~testTone); // to remove
+)
+::
+
+CLASSMETHODS::
+
+METHOD:: register
+	Register a MenuAction to a main application menu. This menu item will exist for the duration of the app, or until .unregister is called for the action.
+
+	ARGUMENT:: action
+		A link::Classes/MenuAction::.
+	ARGUMENT:: menu
+		A String, representing the name of the top-level menu to contain the action.
+	ARGUMENT:: group
+		An optional string. Action will be placed in a section of the menu with other members of the same group, with a separator between items of other groups.
+
+	DISCUSSION::
+		MainMenu.register provides an easy way to register global menu items, in a way that helps avoid disrupting menus registered by other SuperCollider components.
+
+		If you want to register menus for personal use, add the registration calls to your startup.scd file. This will ensure the menus are created automatically on launch.
+
+		If you're registering menu actions for a Quark or other component intended for distribution, be sure to be polite and thoughtful about how you're registering actions.
+
+		Avoid creating new top-level menus if possible - instead, try to use paradigmatic or generic top-level menu names (e.g. "Edit", "Tools", "Quarks"), and use groups to separate your functionality from that of other components.
+
+		If you do create a top-level menu, consider naming it after your Quark or component, so it's clear to users where it came from.
+
+
+METHOD:: otherMenus
+	A list of menus to append to the set of main application menus.
+
+	WARNING::This is intended for standalone SuperCollider applications, and should not be used to register menus during normal SC usage.::
+
+METHOD:: applicationMenu
+	The main SuperCollider application menu.
+
+	WARNING::This is intended for standalone SuperCollider applications, and should not be used to register menus during normal SC usage.::
+
+EXAMPLES::
+
+code::
+(
+~show = MenuAction("Show Window", {
+	~window ?? {
+		~window = TextView().string_("Here it goes!").minSize_(300@200);
+		~window.onClose = { ~window = nil };
+		~window.front;
+	}
+});
+~hide = MenuAction("Hide Window", {
+	~window !? {
+		~window.close();
+		~window = nil;
+	}
+});
+
+MainMenu.register(Menu(~show, ~hide).title_("My Quark"), "Quarks", "My Quark")
+)
+::

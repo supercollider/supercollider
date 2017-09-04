@@ -1,7 +1,7 @@
 TITLE:: Menu
 summary:: Context and application-level menus
 categories:: GUI
-related:: Classes/MenuAction, Classes/ToolBar, Classes/MainMenu
+related:: Classes/MenuAction, Classes/CustomViewAction, Classes/ToolBar, Classes/MainMenu
 
 DESCRIPTION::
 The Menu class allows the creation and control of context menus and application-level menus.
@@ -89,7 +89,34 @@ m.front;
 )
 	::
 
-	EXAMPLES::
+SUBSECTION:: Context Menus
+	One or more MenuActions can be attached to any View object. The shortcut key combinations for these actions will become available, and the actions will appear in the context menu for that view.
+
+	See link::Classes/View#-setContextMenuActions::, link::Classes/View#-addMenuAction::, link::Classes/View#-removeMenuAction:: for more information.
+
+	CODE::
+(
+~view = View().layout_(HLayout(
+	~button = Button().states_([["Button"]]),
+	~number = NumberBox().minWidth_(100).value_(100)
+)).front;
+
+~button.setContextMenuActions(
+	MenuAction("Red", { ~button.states = [["Red", Color.red]] }),
+	MenuAction("Green", { ~button.states = [["Green", Color.green]] }),
+	MenuAction("Blue", { ~button.states = [["Blue", Color.blue]] })
+);
+
+~number.setContextMenuActions(
+	MenuAction("100", { ~number.value = 100 }),
+	MenuAction("200", { ~number.value = 200 }),
+	MenuAction("300", { ~number.value = 300 })
+);
+
+)
+	::
+
+EXAMPLES::
 
 	STRONG:: A more complex menu. ::
 	CODE::
