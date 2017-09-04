@@ -25,6 +25,7 @@ code::
 	in = WhiteNoise.ar(0.8);
 	chain = FFT(LocalBuf(2048), in);
 	chain = PV_RandComb(chain, 0.95, Impulse.kr(0.4));
+
 	IFFT(chain);
 }.play;
 )
@@ -38,6 +39,7 @@ code::
 	in = Ringz.ar(Impulse.ar([2, 3]), [700, 800], 0.1) * 5;
 	chain = FFT({ LocalBuf(2048) } ! 2, in);
 	chain = PV_RandComb(chain, 0.95, Impulse.kr(0.4));
+
 	IFFT(chain);
 }.play;
 )
@@ -54,6 +56,7 @@ code::
 	chainA = FFT(LocalBuf(2048), inA);
 	chainB = FFT(LocalBuf(2048), inB);
 	chain = PV_MagMul(chainA, chainB); // writes into bufferA
+
 	0.1 * IFFT(chain);
 }.play;
 )
@@ -73,6 +76,7 @@ d = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 	chainA = FFT(LocalBuf(2048), inA);
 	chainB = FFT(LocalBuf(2048), inB);
 	chain = PV_MagMul(chainA, chainB); // writes into bufferA
+
 	0.1 * IFFT(chain);
 }.play;
 )
@@ -85,11 +89,12 @@ As seen below, SuperCollider can create chains of PV processes, which alter the 
 code::
 (
 { var in, chain;
-    in = WhiteNoise.ar(0.8);
-    chain = FFT(LocalBuf(2048), in);
-    chain = PV_RandComb(chain, 0.95, Impulse.kr(0.4));
-	chain = PV_BrickWall(chain, SinOsc.kr(0.2));
-    IFFT(chain);
+	in = WhiteNoise.ar(0.8);
+ 	chain = FFT(LocalBuf(2048), in);
+ 	chain = PV_RandComb(chain, 0.95, Impulse.kr(0.4));
+ 	chain = PV_BrickWall(chain, SinOsc.kr(0.2));
+
+	IFFT(chain);
 }.play;
 )
 ::
@@ -100,10 +105,11 @@ code::
 
 (
 { var in, chain, chain0, chain1;
-    in = WhiteNoise.ar(0.8);
-    chain = FFT(LocalBuf(2048), in);
-    chain0 = PV_RandComb(chain, 0.95, Impulse.kr(0.4));
+	in = WhiteNoise.ar(0.8);
+	chain = FFT(LocalBuf(2048), in);
+	chain0 = PV_RandComb(chain, 0.95, Impulse.kr(0.4));
 	chain1 = PV_BrickWall(chain, SinOsc.kr(0.2));
+
 	[IFFT(chain0), IFFT(chain1)*0.1];
 }.play;
 )
@@ -135,16 +141,16 @@ c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 (
 x = {
-  var in, numFrames=2048, chain, v;
-  in = PlayBuf.ar(1, c, loop: 1);
-  chain = FFT(LocalBuf(numFrames), in);
+	var in, numFrames=2048, chain, v;
+	in = PlayBuf.ar(1, c, loop: 1);
+	chain = FFT(LocalBuf(numFrames), in);
 
-  chain = chain.pvcalc(numFrames, {|mags, phases|
-      /* Play with the mags and phases, then return them */
-      [mags, phases].flop.clump(2).flop.flatten
-  }, tobin: 250);
+	chain = chain.pvcalc(numFrames, {|mags, phases|
+		/* Play with the mags and phases, then return them */
+		[mags, phases].flop.clump(2).flop.flatten
+	}, tobin: 250);
 
-  0.5 * IFFT(chain).dup
+	0.5 * IFFT(chain).dup
 }.play;
 )
 x.free; c.free;
@@ -168,6 +174,7 @@ SynthDef("help-multichannel FFT", { |out=0| // bufnum is an array
 	chain = FFT(LocalBuf([2048, 2048]), in); // each FFT has a different buffer
 	// now we can multichannel expand as normal
 	chain = PV_BrickWall(chain, SinOsc.kr(-0.1));
+
 	Out.ar(out, IFFT(chain));
 }).play;
 )
@@ -183,6 +190,7 @@ SynthDef("help-multichannel FFT", { |out=0, bufnum= #[0, 1]| // bufnum is an arr
 	chain = FFT(bufnum, in); // each FFT has a different buffer
 	// now we can multichannel expand as normal
 	chain = PV_BrickWall(chain, SinOsc.kr(-0.1));
+
 	Out.ar(out, IFFT(chain));
 }).play(s,[\bufnum, b]);
 )
