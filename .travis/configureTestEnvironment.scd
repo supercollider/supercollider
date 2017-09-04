@@ -13,7 +13,7 @@ try {
 	LanguageConfig.addIncludePath(~travisBuildDir +/+ "testsuite/classlibrary");
 	LanguageConfig.addExcludePath(~travisBuildDir +/+ "testsuite/classlibrary/server");
 	LanguageConfig.addExcludePath(Quarks.folder +/+ "UnitTesting/tests");
-	LanguageConfig.store;
+	LanguageConfig.store(~travisBuildDir +/+ ".travis/sclang_conf.yaml");
 	0.exit;
 } { |e|
 	e.reportError;
