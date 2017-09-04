@@ -759,12 +759,12 @@ View : QObject {
 		this.setEventHandlerEnabled( 63, enabled );
 	}
 
-	showContextMenu_{
+	enableContextMenu_{
 		|bool|
 		this.setProperty('contextMenuPolicy', bool.if(2, 0));
 	}
 
-	showContextMenu {
+	enableContextMenu {
 		^(this.getProperty('contextMenuPolicy') == 2);
 	}
 
@@ -773,16 +773,16 @@ View : QObject {
 		this.removeAllMenuActions();
 
 		if ((actions.size > 0) && (actions != [nil])) {
-			this.showContextMenu = true;
-			actions.do({ |a| this.addMenuAction(a.asAction) });
+			this.enableContextMenu = true;
+			actions.do({ |a| this.insertMenuAction(a.asAction) });
 		} {
-			this.showContextMenu = false;
+			this.enableContextMenu = false;
 		}
 	}
 
-	addMenuAction {
-		|action|
-		^this.class.prAddMenuAction(this, action)
+	insertMenuAction {
+		|action, addBefore|
+		^this.class.prInsertMenuAction(this, action, addBefore)
 	}
 
 	removeMenuAction {
@@ -794,8 +794,8 @@ View : QObject {
 		^this.class.prRemoveAllMenuActions(this);
 	}
 
-	*prAddMenuAction {
-		|view, action, index|
+	*prInsertMenuAction {
+		|view, action, addBefore|
 		_QView_AddActionToView
 		^this.primitiveFailed;
 	}
