@@ -241,3 +241,15 @@ QLevelIndicatorStyle {
 
 	*new { arg style; ^style.isInteger.if(style, { this.perform(style) }) }
 }
+
+QToolButtonStyle {
+	classvar
+	iconOnly  =	0,
+	textOnly = 	1,
+	textBesideIcon = 2,
+	textUnderIcon = 3,
+	followStyle = 4
+	;
+
+	*new { arg style; ^style.isInteger.if(style, { this.perform(style) }) }
+}
