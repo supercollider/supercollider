@@ -31,14 +31,8 @@ sclang_path = sys.argv[1]
 assert os.path.exists(sclang_path)
 
 env = dict(os.environ)
-# linux build machine is headless, so we need to use xvfb so Qt doesn't barf.
-if sys.platform == 'linux2':
-	env['QT_PLATFORM_PLUGIN'] = 'offscreen'
-	env['DISPLAY'] = ':99.0'
-	subprocess.Popen('sh -e /etc/init.d/xvfb start', shell=True, env=env)
-	subprocess.Popen("/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16", shell=True, env=env)
 
-proc = subprocess.Popen([sclang_path, '-i' 'python'], 
+proc = subprocess.Popen([sclang_path, '-i' 'python'],
 	stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE,
 	env=env)
 
