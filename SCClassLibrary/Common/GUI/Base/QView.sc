@@ -759,6 +759,59 @@ View : QObject {
 		this.setEventHandlerEnabled( 63, enabled );
 	}
 
+	showContextMenu_{
+		|bool|
+		this.setProperty('contextMenuPolicy', bool.if(2, 0));
+	}
+
+	showContextMenu {
+		^(this.getProperty('contextMenuPolicy') == 2);
+	}
+
+	setContextMenuActions {
+		|...actions|
+		this.removeAllMenuActions();
+
+		if ((actions.size > 0) && (actions != [nil])) {
+			this.showContextMenu = true;
+			actions.do({ |a| this.addMenuAction(a.asAction) });
+		} {
+			this.showContextMenu = false;
+		}
+	}
+
+	addMenuAction {
+		|action|
+		^this.class.prAddMenuAction(this, action)
+	}
+
+	removeMenuAction {
+		|action|
+		^this.class.prRemoveMenuAction(this, action)
+	}
+
+	removeAllMenuActions {
+		^this.class.prRemoveAllMenuActions(this);
+	}
+
+	*prAddMenuAction {
+		|view, action, index|
+		_QView_AddActionToView
+		^this.primitiveFailed;
+	}
+
+	*prRemoveMenuAction {
+		|view, action|
+		_QView_RemoveActionFromView
+		^this.primitiveFailed;
+	}
+
+	*prRemoveAllMenuActions {
+		|view|
+		_QView_RemoveAllActionsFromView
+		^this.primitiveFailed;
+	}
+
 	prSetLayout { arg layout;
 		_QWidget_SetLayout
 		^this.primitiveFailed;
