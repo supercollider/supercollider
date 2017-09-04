@@ -80,27 +80,37 @@ d = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 d.free;
 ::
 
-Because each PV UGen overwrites the output of the previous one, it is necessary to copy the data to an additional buffer at the desired point in the chain in order to do parallel processing of input without using multiple FFT UGens. link::Classes/PV_Copy:: allows for this.
+As seen below, SuperCollider can create chains of PV processes, which alter the same FFT buffer in series. The PV Ugen writes the output of its process in place, and the effect of one process feeds into the next:
+
 code::
 (
-b = Buffer.alloc(s,2048,1); // use global buffers for plotting the data
-c = Buffer.alloc(s,2048,1);
-)
-
-//// proof of concept
-(
-x = { var inA, chainA, chainB;
-    inA = LFClipNoise.ar(100);
-    chainA = FFT(b, inA);
-    chainB = PV_Copy(chainA, c);
-    IFFT(chainA) - IFFT(chainB); // cancels to zero so silent!
+{ var in, chain;
+    in = WhiteNoise.ar(0.8);
+    chain = FFT(LocalBuf(2048), in);
+    chain = PV_RandComb(chain, 0.95, Impulse.kr(0.4));
+	chain = PV_BrickWall(chain, SinOsc.kr(0.2));
+    IFFT(chain);
 }.play;
 )
-x.free;
-// IFFTed frames contain the same windowed output data
-b.plot(\b, Rect(200, 430, 700, 300), nil, nil); c.plot(\c, Rect(200, 100, 700, 300), nil, nil);
-[b, c].do(_.free);
 ::
+
+PV processes can also share a single FFT ugen to process a signal in parallel. In the following example, 'chain0' and 'chain1' share the same FFT ugen. SuperCollider automatically copies the FFT data from 'chain' into hidden LocalBufs inside the Synth. The processes thus operate independently on the original FFT analysis:
+
+code::
+
+(
+{ var in, chain, chain0, chain1;
+    in = WhiteNoise.ar(0.8);
+    chain = FFT(LocalBuf(2048), in);
+    chain0 = PV_RandComb(chain, 0.95, Impulse.kr(0.4));
+	chain1 = PV_BrickWall(chain, SinOsc.kr(0.2));
+	[IFFT(chain0), IFFT(chain1)*0.1];
+}.play;
+)
+::
+
+note::Parallel processing was previously acheived using PV_Copy. PV_Copy code should continue to work, but new code should be written as it appears above.::
+
 
 Note that PV UGens convert as needed between cartesian (complex) and polar representations, therefore when using multiple PV UGens it may be impossible to know in which form the values will be at any given time. FFT produces complex output (see above), so while the following produces a reliable magnitude plot:
 code::
@@ -201,7 +211,6 @@ definitionlist::
 ## link::Classes/PV_BinWipe:: || combine low and high bins from two inputs
 ## link::Classes/PV_BrickWall:: || zero bins
 ## link::Classes/PV_ConformalMap:: || complex plane attack
-## link::Classes/PV_Copy:: || copy an FFT buffer
 ## link::Classes/PV_CopyPhase:: || copy magnitudes and phases
 ## link::Classes/PV_Diffuser:: || random phase shifting
 ## link::Classes/PV_HainsworthFoote:: || onset detection
