@@ -18,7 +18,7 @@ def non_block_read(output):
         return ""
 
 def sc_output_print(output):
-	sys.stdout.write("\t|  " + output) 
+	sys.stdout.write("\t|  " + output)
 
 def sc_input(proc, input):
 	print "\t|" + ("_" * 60)
@@ -66,12 +66,12 @@ while proc.poll() and time.time() < (start_time + timeout):
 	output = non_block_read(proc.stdout)
 	error = non_block_read(proc.stderr)
 
-	if error: 
+	if error:
 		# read the rest of the error
 		print "ERROR:\n" + error
 		sys.exit(error)
 	elif output:
-		sc_output_print(output) 
+		sc_output_print(output)
 
 	time.sleep(0.1)
 
