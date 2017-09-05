@@ -491,7 +491,8 @@ SimpleNumber : Number {
 		// min value of precision is 0.001; this ensures that we stick to 3 decimal places in the
 		// formatted string.
 		precision = max(precision, 0.001);
-		mseconds = (this.frac / precision).round(precision).asInteger.asString.padRight(3, "0");
+		mseconds = this.frac.round(precision) * 1000;
+		mseconds = mseconds.round.asString.padLeft(3, "0");
 		^days ++ hours ++ minutes ++ seconds ++ mseconds
 	}
 
