@@ -1,91 +1,87 @@
 {
   "tests": [
     {
-      "test": "*", 
-      "suite": "TestPlotter"
-    }, 
+      "test": "*",
+      "suite": "*"
+    },
     {
-      "test": "*", 
-      "suite": "TestUnitTest"
-    }, 
-    {
-      "test": "*", 
-      "suite": "TestEnv"
-    }, 
-    {
-      "test": "*", 
-      "suite": "TestArray"
-    }, 
-    {
-      "test": "*", 
-      "suite": "TestEvent"
-    }, 
-    {
-      "test": "*", 
-      "suite": "TestOSCBundle"
-    }, 
-    {
-      "test": "*", 
-      "suite": "TestNoOps"
-    }, 
-    {
-      "test": "*", 
-      "suite": "TestMixedBundleTester"
-    }, 
-    {
-      "test": "*", 
-      "suite": "TestFloat"
-    }, 
-    {
-      "test": "*", 
-      "suite": "TestNetAddr"
-    }, 
-    {
-      "test": "*", 
-      "suite": "TestCurveWarp"
-    }, 
-    {
-      "test": "*", 
-      "suite": "UnitTestScript"
-    }, 
-    {
-      "test": "*", 
-      "suite": "TestSignal"
-    }, 
-    {
-      "suite": "TestUnitTest", "test": "test_toreDown", 
-      "skip": true, "skipReason": "UnitTest bug"
-    }, 
-    {
-      "suite": "TestUnitTest", "test": "test_setUp2", 
-      "skip": true, "skipReason": "UnitTest bug"
-    }, 
-    {
-      "suite": "TestUnitTest", "test": "test_bootServer", 
+      "suite": "TestBuffer", "test": "*",
       "skip": true, "skipReason": "No server support on travis"
-    }, 
+    },
     {
-      "test": "test_sendBundle50", 
-      "suite": "TestNetAddr", 
-      "skipReason": "No server support on travis", 
+      "suite": "TestServer", "test": "*",
+      "skip": true, "skipReason": "No server support on travis"
+    },
+    {
+      "suite": "TestBus", "test": "*",
+      "skip": true, "skipReason": "No server support on travis"
+    },
+    {
+      "suite": "TestPV_ChainUGen", "test": "*",
+      "skip": true, "skipReason": "No server support on travis"
+    },
+    {
+      "suite": "TestCoreUGens", "test": "*",
+      "skip": true, "skipReason": "No server support on travis"
+    },
+    {
+      "suite": "TestFilterUGens", "test": "*",
+      "skip": true, "skipReason": "No server support on travis"
+    },
+    {
+      "suite": "TestMixedBundle", "test": "*",
+      "skip": true, "skipReason": "No server support on travis"
+    },
+    {
+      "suite": "TestNetAddr", "test": "*",
+      "skip": true, "skipReason": "No server support on travis"
+    },
+    {
+      "suite": "TestNodeProxy", "test": "*",
+      "skip": true, "skipReason": "No server support on travis"
+    },
+    {
+      "suite": "TestSanitize", "test": "*",
+      "skip": true, "skipReason": "No server support on travis"
+    },
+    {
+      "suite": "TestVolume", "test": "*",
+      "skip": true, "skipReason": "No server support on travis"
+    },
+    {
+      "suite": "TestUnitTest", "test": "test_toreDown",
+      "skip": true, "skipReason": "UnitTest bug"
+    },
+    {
+      "suite": "TestUnitTest", "test": "test_setUp2",
+      "skip": true, "skipReason": "UnitTest bug"
+    },
+    {
+      "suite": "TestUnitTest", "test": "test_bootServer",
+      "skip": true, "skipReason": "No server support on travis"
+    },
+    {
+      "test": "test_sendBundle50",
+      "suite": "TestNetAddr",
+      "skipReason": "No server support on travis",
       "skip": true
-    }, 
+    },
     {
-      "test": "test_send", 
-      "suite": "TestMixedBundleTester", 
-      "skipReason": "No server support on travis", 
+      "test": "test_send",
+      "suite": "TestMixedBundleTester",
+      "skipReason": "No server support on travis",
       "skip": true
-    }, 
+    },
     {
-      "test": "test_findPreparationMessage", 
-      "suite": "TestMixedBundleTester", 
-      "skipReason": "No server support on travis", 
+      "test": "test_findPreparationMessage",
+      "suite": "TestMixedBundleTester",
+      "skipReason": "No server support on travis",
       "skip": true
-    }, 
+    },
     {
-      "test": "test_prepare", 
-      "suite": "TestOSCBundle", 
-      "skipReason": "No server support on travis", 
+      "test": "test_prepare",
+      "suite": "TestOSCBundle",
+      "skipReason": "No server support on travis",
       "skip": true
     }
   ]
