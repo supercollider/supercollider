@@ -160,8 +160,8 @@ SimpleNumber : Number {
 		}
 	}
 
-	snap { arg grid = 1.0, tolerance = 0.05, strength = 1.0;
-		var round = round(this, grid);
+	snap { arg resolution = 1.0, tolerance = 0.05, strength = 1.0;
+		var round = round(this, resolution);
 		var diff = round - this;
 		if (abs(diff) > tolerance) {
 			^this + (strength * diff)
