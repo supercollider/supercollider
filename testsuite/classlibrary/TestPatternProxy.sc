@@ -70,7 +70,7 @@ TestPatternProxy : UnitTest {
 			b = Pevent(f.(proxy.source), Event.default).asStream;
 			resultA = Array.fill(n, { a.next }).collect(removeCleanup);
 			resultB = Array.fill(n, { b.next }).collect(removeCleanup);
-			errorString = "The function % should behave the same for a PatternProxy and its source:\n%\n".format(f.cs, source.cs);
+			errorString = "The function % should behave the same for a PatternProxy and its source:\n%\n".format(f.cs, source);
 			errorString = errorString ++ "\ncompare results:\n%\n%\n\n".format(resultA, resultB);
 
 			this.assert(resultA == resultB, errorString, false)
