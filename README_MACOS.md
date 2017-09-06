@@ -18,6 +18,7 @@ Table of contents
  * Diagnosing build problems
  * Frequently used cmake settings
  * Using cmake with Xcode or QtCreator
+ * Using ccache with Xcode
  * Building without Qt or the IDE
  * sclang and scynth executables
 
@@ -35,22 +36,18 @@ Inside that application's folder (`SuperCollider.app/Contents/MacOS/`) are the t
 Prerequisites:
 -------------
 
-- **Xcode** can be installed free from the Apple App Store or downloaded from: http://developer.apple.com
-
-  - Xcode 5 may work
-  - Xcode 6 is known to work - it requires a Mac running macOS version 10.9.4 or later or 10.10
-  - Later versions should definitely work
-
-- **Xcode command line tools** must be installed - after installing Xcode, this can be done from the Xcode preferences or from the command line:
+- **Xcode** can be installed free from the Apple App Store or downloaded from: http://developer.apple.com.
+  Xcode >= 7 is recommended. Xcode 6 will work, but requires macOS >= 10.9.4.
+- If you do not have the **Xcode command line tools** installed already, install them with:
   `xcode-select --install`
 - **homebrew** is recommended to install required libraries
   See http://brew.sh for installation instructions.
 - **git, cmake, libsndfile, readline, and qt5.5**, installed via homebrew:
   `brew install git cmake readline qt55`
 
-  *Note*: As of this writing the latest stable Qt is version 5.8. SC depends on Qt5WebKit, which was dropped from the binary distributions of Qt since version 5.6 (functionally replaced by Qt5WebEngine). Therefore you cannot simply install the latest Qt5 via homebrew and rely on the defaults. You can either install qt55 (accessed at /usr/local/opt/qt@55) and replace `brew --prefix qt5` by `brew --prefix qt55` in
-  the build instructions below, or install the current Qt version with the option `--with-qtwebkit`. As this is a non-standard install, brew will build qt5 locally (go drink a coffee).
-  If you already had Qt5, and and your build broke after an update, or if you need several Qt5 installs, you can set the version to be used by default with `brew switch`. (for example `brew switch qt5 5.5.1_2`, you can also "freeze" the Qt5 version with `brew pin`).
+
+  *Note*: SuperCollider depends on Qt5WebKit, which was dropped from Qt in 5.6. So make sure you request Qt5.5 (`qt55`) and not the latest version (`qt5`).
+  Use `brew info` to see the version of a package, and see `brew switch` or `brew pin` if you want to use Qt5.5 as your default version.
 
 Obtaining the source code
 -------------------------
@@ -73,7 +70,7 @@ Build instructions
     cd SuperCollider
     mkdir -p build
     cd build
-    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt5`  ..
+    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt55`  ..
     cmake --build . --target install --config RelWithDebInfo
 
 If successful this will build the application into `build/Install/SuperCollider/`
@@ -93,13 +90,12 @@ To install, you may move this to /Applications or use it in place from the build
 
 ##### Prepare for building by making a configuration file:
 
-    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt5`  ..
+    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt55`  ..
 
 (The `..` at the end is easy to miss. Don't forget it!)
 
-This specifies to cmake that we will be using Xcode to build. It also specifies the location of qt so that the complier/linker can find it
-(note that you might have to set `qt55` instead of `qt5`, depending on how you installed you qt5 version (see above, "Prerequisites")).
-`brew --prefix qt5` will be expanded to the path to current Qt5 when the command is run.
+This specifies to cmake that we will be using Xcode to build. It also specifies the location of qt so that the complier/linker can find it.
+Depending on your configuration, you might need to use `qt5` instead of `qt55`; use `brew info` to confirm you are referring to the correct version.
 
 If you are not using the Homebrew install then you should substitute the path to the parent folder of the bin/include/lib folders in that
 Qt tree.
@@ -276,6 +272,12 @@ Qt Creator has very good `cmake` integration and can build `cmake` projects with
 
     brew linkapps qt5
 
+Using ccache with Xcode
+-----------------------
+
+Although cmake does not support using `ccache` with Xcode out of the box, this project is set up to
+allow it with the option `-DRULE_LAUNCH_COMPILE=ccache`. This can speed up build times
+significantly, even when the build directory has been cleared.
 
 Building without Qt or the IDE
 ------------------------------

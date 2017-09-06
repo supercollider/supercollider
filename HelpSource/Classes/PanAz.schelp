@@ -25,13 +25,10 @@ The input signal.
 
 argument::pos
 
-pan position. Channels are evenly spaced over a cyclic period of
-2.0 in pos with 0.0 equal to channel zero and 2.0/numChans equal
-to channel 1, 4.0/numChans equal to channel 2, etc.
+pan position (code::kr:: or code::ar::). Channels are evenly spaced over a cyclic period of code::2.0:: in pos with code::0.0:: equal to channel zero and code::2.0/numChans:: equal to channel 1, code::4.0/numChans:: equal to channel 2, etc.
 
 
-Thus all channels will be cyclically panned through if a sawtooth
-wave from -1 to +1 is used to modulate the pos.
+Thus all channels will be cyclically panned through if a bipolar sawtooth wave from code::-1:: to code::+1:: is used to modulate the pos.
 
 
 argument::level
@@ -41,54 +38,83 @@ A control rate level input.
 
 argument::width
 
-The width of the panning envelope. Nominally this is 2.0 which
-pans between pairs of adjacent speakers. Width values greater
-than two will spread the pan over greater numbers of speakers.
-Width values less than one will leave silent gaps between
-speakers.
+The width of the panning envelope. Nominally this is code::2.0:: which pans between pairs of adjacent speakers.
+Values greater than code::2:: will spread the pan over greater numbers of speakers.
+Values less than code::1:: will leave silent gaps between speakers.
 
 
 argument::orientation
 
-Should be zero if the front is a vertex of the polygon. The first
-speaker will be directly in front. Should be 0.5 if the front
-bisects a side of the polygon. Then the first speaker will be the
-one left of center.
+Should be code::0:: if the front is a vertex of the spanning polygon.
+The first speaker will be directly in front. Should be code::0.5:: if the front
+bisects a side of the spanning polygon.
+Then the first speaker will be the one left of center.
 
 section::Comparison to Pan2
 
 Despite a certain similarity, link::Classes/Pan2:: and link::Classes/PanAz:: with 2 channels behave differently.
 
 code::
-// one full cycle for PanAz: from 0 to 1
-{ PanAz.ar(2, DC.ar(1), Line.ar(0, 1, 0.1)) }.plot(0.1)
-// one full cycle for Pan2: from -1 to 1 and back to -1
-{ Pan2.ar(DC.ar(1), EnvGen.kr(Env([-1, 1, -1], [0.05, 0.05]))) }.plot(0.1)
-
-// in other words, while Pan2 makes one full transition
+// one full cycle for PanAz: from -1 to 1
+{ PanAz.ar(2, DC.ar(1), Line.ar(-1, 1, 0.1), orientation: 0) }.plot(0.1)
+// comparing with Pan2
 { Pan2.ar(DC.ar(1), Line.ar(-1, 1, 0.1)) }.plot(0.1)
-// we need only a half one in PanAz:
-{ PanAz.ar(2, DC.ar(1), Line.ar(0, 1/2, 0.1)) }.plot(0.1)
+// to create one full cycle for Pan2, move from 1 to -1 and back to 1
+{ Pan2.ar(DC.ar(1), EnvGen.ar(Env([1, -1, 1], [0.05, 0.05]))) }.plot(0.1)
 ::
 
+The same in one plot window:
+
+code::
+(
+{
+	[
+		PanAz.ar(2, DC.ar(1), Line.ar(-1, 1, 0.1), orientation: 0),
+		Pan2.ar(DC.ar(1), Line.ar(-1, 1, 0.1)),
+		Pan2.ar(DC.ar(1), EnvGen.ar(Env([1, -1, 1], [0.05, 0.05])))
+	].flat;
+}.plot(0.1)
+)
+::
+
+In other words, while code::Pan2:: needs a position change of code::2:: from channel code::0:: to code::1::
+
+code::
+{ Pan2.ar(DC.ar(1), Line.ar(-1, 1, 0.1)) }.plot(0.1)
+// we need a position change of 1 in PanAz:
+{ PanAz.ar(2, DC.ar(1), Line.ar(0, 1, 0.1), orientation: 0) }.plot(0.1)
+::
+
+In one plot window:
+
+code::
+(
+{
+	[
+		Pan2.ar(DC.ar(1), Line.ar(-1, 1, 0.1)),
+		PanAz.ar(2, DC.ar(1), Line.ar(0, 1, 0.1), orientation: 0)
+	].flat
+}.plot(0.1)
+)
+::
 
 Examples::
 
+Five channel circular panning with first channel on the left
+
 code::
 
-// five channel circular panning
-s.boot;
 (
 {
 	PanAz.ar(
-		5, 				// numChans
-		ClipNoise.ar, 	// in
-		LFSaw.kr(MouseX.kr(0.2, 8, 'exponential')), // pos
-		0.5,			// level
-		3			// width
+		numChans: 5,
+		in: ClipNoise.ar(0.1),
+		pos: LFSaw.kr(MouseX.kr(0.2, 8, 'exponential')),
+		level: 0.5,
+		width: 3,
+		orientation: 0.5
 	);
-}.play;
-s.scope;
+}.scope
 )
 
 ::

@@ -34,7 +34,7 @@
 #include "../sc/sc_synth_definition.hpp"
 #include "../utilities/utils.hpp"
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__FreeBSD__) || defined(__DragonFly__) || defined(__OpenBSD__) || defined(__NetBSD__)
 #include <wordexp.h>
 #include <sys/resource.h>
 #endif
@@ -211,7 +211,7 @@ void start_audio_backend(server_arguments const & args)
 
 boost::filesystem::path resolve_home(void)
 {
-#ifdef __linux__
+#if defined(__linux__) || defined(__FreeBSD__) || defined(__DragonFly__) || defined(__OpenBSD__) || defined(__NetBSD__)
     wordexp_t wexp;
     int status = wordexp("~", &wexp, 0);
     if (status || wexp.we_wordc != 1)

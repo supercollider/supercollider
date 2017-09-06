@@ -1775,8 +1775,6 @@ bool parseOneClass(PyrSymbol *fileSym)
 
 void initPassOne()
 {
-	post("initPassOne started\n");
-
 	//dump_pool_histo(pyr_pool_runtime);
 	pyr_pool_runtime->FreeAllInternal();
 	//dump_pool_histo(pyr_pool_runtime);
@@ -1803,8 +1801,6 @@ void initPassOne()
 
 	// main class library folder: only used for relative path resolution
 	gCompileDir = SC_Filesystem::instance().getDirectory(DirName::Resource) / "SCClassLibrary";
-
-	post("initPassOne done\n");
 }
 
 void finiPassOne()
@@ -1974,7 +1970,7 @@ bool isValidSourceFileName(const bfs::path& path)
 bool passOne_ProcessOneFile(const bfs::path& path)
 {
 	bool success = true;
-	
+
 	const std::string path_str = SC_Codecvt::path_to_utf8_str(path);
 	const char* path_c_str = path_str.c_str();
 	if (gLanguageConfig && gLanguageConfig->pathIsExcluded(path)) {
@@ -2101,8 +2097,6 @@ SCLANG_DLLEXPORT_C bool compileLibrary(bool standalone)
 
 	bool res = passOne();
 	if (res) {
-
-		postfl("\tpass 1 done\n");
 
 		if (!compileErrors) {
 			buildDepTree();

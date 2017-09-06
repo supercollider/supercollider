@@ -32,6 +32,25 @@ subsection:: info
 METHOD:: remote, url
 returns:: url of the first remote that it finds.
 
+METHOD:: remoteAsHttpUrl
+Detects if the remote URI starts with code::"git@":: or code::"git:":: and remodels it to a valid code::"https":: URI. Otherwise, it returns the unaltered remote.
+
+code::
+// git-style remote URI's are transformed to https
+Git().url_("git@github.com:foo/bar.git").remoteAsHttpUrl;
+Git().url_("git://github.com/foo/bar").remoteAsHttpUrl;
+Git().url_("git@foo.net:foo/bar.git").remoteAsHttpUrl;
+
+// http and https are left untouched
+Git().url_("https://foo.org/bar").remoteAsHttpUrl;
+Git().url_("http://foo.org/bar").remoteAsHttpUrl;
+
+// unknown URI styles are left untouched
+Git().url_("fooBar").remoteAsHttpUrl;
+::
+
+returns:: remote URI formatted for code::http:: respectively code::https:: requests.
+
 METHOD:: remoteLatest
 returns:: hash of latest commit on the remote
 
