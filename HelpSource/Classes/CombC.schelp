@@ -63,21 +63,33 @@ code::
 // used as an echo.
 { CombN.ar(Decay.ar(Dust.ar(1,0.5), 0.2, WhiteNoise.ar), 0.2, 0.2, 3) }.play;
 
-// large delay lines
-(
-s.options.memSize= 8192*2;
-s.reboot;
-)
 ({
-	var in, del1, del2, del3, del4;
-	in = SoundIn.ar(0);
-	del1 = CombC.ar(in, 8, LFNoise2.kr(0.01).range(1, 8), 1);
-	del2 = CombC.ar(del1, 8, LFNoise2.kr(0.01).range(1, 8), 1);
-	del3 = CombC.ar(del2, 8, LFNoise2.kr(0.01).range(1, 8), 1);
-	del4 = CombC.ar(del3, 8, LFNoise2.kr(0.01).range(1, 8), 1);
-	(del1 + del2 + del3 + del4)!2;
-}.play;
-);
+ 	var in, del1, del2, del3, del4;
+ 	in = SoundIn.ar(0);
+ 	del1 = CombC.ar(in, 8, LFNoise2.kr(0.01).range(1, 8), 1);
+ 	del2 = CombC.ar(del1, 8, LFNoise2.kr(0.01).range(1, 8), 1);
+ 	del3 = CombC.ar(del2, 8, LFNoise2.kr(0.01).range(1, 8), 1);
+ 	del4 = CombC.ar(del3, 8, LFNoise2.kr(0.01).range(1, 8), 1);
+ 	(del1 + del2 + del3 + del4)!2;
+ }.play;
+ );
 
+// large delay lines
+o=s.options; o.memSize; o.memSize = 2.pow(21);
+s.reboot;
+
+(
+SynthDef(\longDelayLine, {
+	var in, delA, delB, delC, out;
+	in   = SoundIn.ar(1);
+	delA = CombC.ar(in, 8, 8, 1, 0.3, 0);
+	delB = CombC.ar(in, 40, 40, 1, 0.3, 0);
+	delC = CombC.ar(in, 800, 800, 1, 0.3, 0);
+	out  = in + delA + delB + delC;
+	Out.ar(0, out ! 2);
+}).add;
+)
+
+x = Synth(\longDelayLine);
 ::
 
