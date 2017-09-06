@@ -4,9 +4,11 @@ categories:: UGens>FFT
 
 description::
 
-Copies the spectral frame in bufferA to bufferB at that point in the chain of PV UGens. This allows for parallel processing of spectral data without the need for multiple FFT UGens, and to copy out data at that point in the chain for other purposes. bufferA and bufferB must be the same size.
+Copies the spectral frame in code::bufferA:: to code::bufferB::. This allows for parallel processing of spectral data without the need for multiple FFT UGens. Further it allows to extract data at a given point in the FFT chain e.g. for monitoring purposes. 
 
-note::As of SC 3.7 instances of PV_Copy are added automatically where necessary for parallel processing. This document is provided for legacy purposes only. (Existing code explicitly using PV_Copy should continue to work.)::
+note::As of SC 3.7 instances of PV_Copy are added automatically where necessary for parallel processing. Please see link::Guides/FFT-Overview:: for the current implementation. 
+
+This document is provided for legacy purposes only. Existing code explicitly using PV_Copy should continue to work.::
 
 classmethods::
 method:: new
@@ -15,43 +17,36 @@ source buffer.
 argument:: bufferB
 destination buffer.
 
+note:: 
+code::bufferA:: and code::bufferB:: must be the same size.
+::
+
 examples::
 code::
-(
-s.waitForBoot({
-	d = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
-})
-)
 
-
-//// crossfade between original and magmul-ed whitenoise
+//proof of concept - PV_Copy creates a duplicate
 (
-x = { var in, in2, chain, chainB, chainC;
-	in = PlayBuf.ar(1, d, BufRateScale.kr(d), loop: 1) * 2;
-	in2 = WhiteNoise.ar;
-	chain = FFT(LocalBuf(2048), in);
-	chainB = FFT(LocalBuf(2048), in2);
-	chainC = PV_Copy(chain, LocalBuf(2048));
-	chainB = PV_MagMul(chainB, chainC);
-	XFade2.ar(IFFT(chain), IFFT(chainB) * 0.1, SinOsc.kr(0.1, 1.5pi));
+x = { var inA, chainA, inB, chainB, chain;
+	inA = LFClipNoise.ar(100);
+	chainA = FFT(LocalBuf(1024), inA);
+	chainB = PV_Copy(chainA, LocalBuf(1024));
+
+	IFFT(chainA) - IFFT(chainB); // cancels to zero so silent!
 }.play(s);
 )
 x.free;
 
 
-
-
-//// as previous but with Blip for 'vocoder' cross synthesis effect
 (
-x = { var in, in2, chain, chainB, chainC;
-	in = PlayBuf.ar(1, d, BufRateScale.kr(d), loop: 1) * 2;
-	in2 = Blip.ar(100, 50);
+x = { var in, chain, chainB;
+	in = WhiteNoise.ar(0.8);
 	chain = FFT(LocalBuf(2048), in);
-	chainB = FFT(LocalBuf(2048), in2);
-	chainC = PV_Copy(chain, LocalBuf(2048));
-	chainB = PV_MagMul(chainB, chainC);
-	XFade2.ar(IFFT(chain), IFFT(chainB) * 0.1, SinOsc.ar(0.1));
-}.play(s);
+	chainB = PV_Copy(chain,LocalBuf(2048));  //copies the FFT analysis into a new buffer
+	chain = PV_RandComb(chain, 0.95, Impulse.kr(0.4));
+	chainB = PV_BrickWall(chainB, SinOsc.kr(0.2));
+
+	[IFFT(chain), IFFT(chainB)*0.1];
+}.play;
 )
 x.free;
 
@@ -59,85 +54,16 @@ x.free;
 //// Spectral 'pan'
 (
 x = { var in, chain, chainB, pan;
-	in = PlayBuf.ar(1, d, BufRateScale.kr(d), loop: 1);
+	in = BrownNoise.ar;
 	chain = FFT(LocalBuf(2048), in);
 	chainB = PV_Copy(chain, LocalBuf(2048));
 	pan = MouseX.kr(0.001, 1.001, 'exponential') - 0.001;
 	chain = PV_BrickWall(chain, pan);
 	chainB = PV_BrickWall(chainB, -1 + pan);
-	0.5 * IFFT([chain, chainB]);
+
+	0.1 * IFFT([chain, chainB]);
 }.play(s);
 )
 x.free;
-
-
-(
-s.waitForBoot({
-	b = Buffer.alloc(s,2048,1);
-	c = Buffer.alloc(s,2048,1);
-	d = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
-	e = Buffer.alloc(s,2048,1);
-	f = Buffer.alloc(s,2048,1);
-})
-)
-
-
-//// proof of concept
-(
-x = { var inA, chainA, inB, chainB, chain;
-	inA = LFClipNoise.ar(100);
-	chainA = FFT(b, inA);
-	chainB = PV_Copy(chainA, c);
-	IFFT(chainA) - IFFT(chainB); // cancels to zero so silent!
-}.play(s);
-)
-x.free;
-// IFFTed frames contain the same windowed output data
-b.plot(\b, Rect(200, 430, 700, 300)); c.plot(\c, Rect(200, 100, 700, 300));
-
-
-
-//// Multiple Magnitude plots
-(
-x = { var in, chain, chainB, chainC;
-	in = WhiteNoise.ar;
-	chain = FFT(b, in);
-	PV_Copy(chain, LocalBuf(2048)); // initial spectrum
-	chain = PV_RectComb(chain, 20, 0, 0.2);
-	PV_Copy(chain, LocalBuf(2048)); // after comb
-	2.do({chain = PV_MagSquared(chain)});
-	PV_Copy(chain, LocalBuf(2048)); // after magsquared
-	0.00001 * Pan2.ar(IFFT(chain));
-}.play(s);
-)
-x.free;
-
-(
-c.getToFloatArray(action: { arg array;
-	var z, x;
-	z = array.clump(2).flop;
-	// Initially data is in complex form
-	z = [Signal.newFrom(z[0]), Signal.newFrom(z[1])];
-	x = Complex(z[0], z[1]);
-	{x.magnitude.plot('Initial', Rect(200, 560, 700, 200))}.defer
-});
-e.getToFloatArray(action: { arg array;
-	var z, x;
-	z = array.clump(2).flop;
-	// RectComb doesn't convert, so it's still complex
-	z = [Signal.newFrom(z[0]), Signal.newFrom(z[1])];
-	x = Complex(z[0], z[1]);
-	{x.magnitude.plot('After RectComb', Rect(200, 330, 700, 200))}.defer
-});
-f.getToFloatArray(action: { arg array;
-	var z, x;
-	z = array.clump(2).flop;
-	// MagSquared converts to Polar
-	x = Signal.newFrom(z[0]); // magnitude first
-	{x.plot('After MagSquared', Rect(200, 100, 700, 200))}.defer
-})
-)
-
-[b, c, d, e, f].do(_.free); // free the buffers
 ::
 
