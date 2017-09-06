@@ -115,27 +115,45 @@ code::
 )
 ::
 
-note::Parallel processing was previously acheived using PV_Copy. PV_Copy code should continue to work, but new code should be written as it appears above.::
+note::Parallel processing was previously achieved using PV_Copy. PV_Copy code should continue to work, but new code should be written as it appears above.::
 
+section:: Accessing Frame Data
 
-Note that PV UGens convert as needed between cartesian (complex) and polar representations, therefore when using multiple PV UGens it may be impossible to know in which form the values will be at any given time. FFT produces complex output (see above), so while the following produces a reliable magnitude plot:
+FFT produces complex output, which can be accessed on each frame of the analysis. The following example plots the magnitude data on an analysis of WhiteNoise for three frames that are 0.1 seconds apart:
 code::
-b = Buffer.alloc(s,1024); // use global buffers for plotting the data
-a = { FFT(b, LFSaw.ar(4000)); 0.0 }.play;
-(
-b.getn(0, 1024, { arg buf;
-	var z, x;
-	z = buf.clump(2).flop;
-	z = [Signal.newFrom(z[0]), Signal.newFrom(z[1])];
-	x = Complex(z[0], z[1]);
-	{x.magnitude.plot}.defer
-})
-)
-a.free; b.free;
-::
-any Synth using PV UGens might not.
+c = Buffer.alloc(s,2048,1);
 
-It is possible to manipulate the FFT data directly within a synth graph (if there doesn't already exist a PV UGen which will do what you want), using the methods pvcalc, pvcalc2, pvcollect. Here's an example which uses the link::Classes/SequenceableCollection:: methods clump and flop to rearrange the order of the spectral bins:
+(
+x = { var in, chain, chainB, chainC;
+	in = WhiteNoise.ar;
+	chain = FFT(c, in);
+	0.01 * Pan2.ar(IFFT(chain));
+}.play(s);
+)
+
+(
+Routine({
+	3.do{arg i;
+		c.getToFloatArray(action: { arg array;
+			var z, x;
+			z = array.clump(2).flop;
+			// Initially data is in complex form
+			z = [Signal.newFrom(z[0]), Signal.newFrom(z[1])];
+			x = Complex(z[0], z[1]);
+			
+			{ x.magnitude.plot('Initial', Rect(200, 600-(200*i), 700, 200)) }.defer
+		});
+		0.1.wait;
+}}).play
+)
+
+x.free;
+::
+Note that PV UGens convert as needed between cartesian (complex) and polar representations, therefore when using multiple PV UGens it may be impossible to know in which form the values will be at any given time. So while the example above produces reliable amplitude plots, any Synth using PV UGens might not.
+
+section:: Manipulating FFT Data Directly (PV_ChainUGens)
+
+It is possible to manipulate the FFT data directly within a synth graph (if there doesn't already exist a PV UGen which will do what you want), using the methods pvcalc, pvcalc2, pvcollect (see link::Classes/PV_ChainUGen:: for more examples). Here's an example which uses the link::Classes/SequenceableCollection:: methods clump and flop to rearrange the order of the spectral bins:
 code::
 c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
