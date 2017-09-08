@@ -67,8 +67,61 @@ Greatest common divisor
 
 method:: round
 Round to multiple of aNumber
+
 method:: roundUp
-round up to a multiply of aNumber
+Round up to a multiply of aNumber. For roundDown use Link::Classes/SimpleNumber#-trunc#trunc::.
+
+method:: trunc
+Truncate to multiple of aNumber
+
+method:: softRound
+Rounds the value to a multiple of strong::resolution::. By using strong::tolerance:: and strong::strength:: you can control when values will be rounded, and by how much.
+
+Conceptually this is the equivalent of MIDI quantization in a DAW/MIDI sequencer.
+argument::resolution
+Round this value to a multiple of resolution. E.g. if you chose 1, then all values would be rounded to the nearest integer.
+argument::tolerance
+Values that are +-tolerance away from a strong::resolution:: value will be left as they are.
+
+E.g. if you chose a resolution value of 0.5 and a tolerance of 0.01, then the values 0.501 and 0.499 would be left as they are, but the value 0.502 would become 0.5.
+argument::strength
+Determines the degree to which this number will be changed.
+
+If strength is 1, then this function will return the nearest resolution. If it is 0, then value of this number will be left unchanged.
+
+E.g. If the resolution was 1 and strength was 0.5, then the value 0.6 would become 0.8.
+discussion::
+code::
+((0..10) / 5).collect { |num| [num, num.softRound(1, 0, 1)] };
+((0..10) / 5).collect { |num| [num, num.softRound(1, 0.3, 1)] };
+((0..10) / 5).collect { |num| [num, num.softRound(1, 0, 0.5)] };
+::
+
+method:: snap
+Rounds the values strong::tolerance:: distance from resolution to a multiple of resolution. By using strong::tolerance:: and strong::strength:: you can control when values will be rounded, and by how much.
+
+Conceptually this is the equivalent of 'snap' in a graphics program. Values a certain distance (strong::tolerance::) from a grid line are snapped to it. All other values are unchanged.
+
+argument::resolution
+Snap this value to a multiple of resolution. E.g. if you chose 1, then all values would be rounded to the nearest integer.
+
+argument::tolerance
+Only values that are +-strong::tolerance:: away from a strong::resolution:: value will be changed.
+
+E.g. if you chose a resolution value of 0.5 and a tolerance of 0.01, then the values 0.501 and 0.499 would be snapped to 0.5, but the value 0.502 would be unchanged.
+argument::strength
+Determines the degree to which this number will be changed.
+
+If strength is 1, then this function will return the nearest resolution. If it is 0, then value of this number will be left unchanged.
+
+E.g. If the resolution was 1 and strength was 0.5, then the value 0.6 would become 0.8.
+discussion::
+code::
+((0..10) / 5).collect { |num| [num, num.snap(1, 0, 1)] };
+((0..10) / 5).collect { |num| [num, num.snap(1, 0.3, 1)] };
+((0..10) / 5).collect { |num| [num, num.snap(1, 0, 0.5)] };
+::
+::
 
 method:: thresh
 
@@ -79,9 +132,6 @@ method:: max
 Maximum
 
 method:: wrap2
-
-method:: trunc
-Truncate to multiple of aNumber
 
 method:: atan2
 Arctangent of (this/aNumber)
@@ -566,31 +616,8 @@ code::
 
 ::
 
-method:: snap
-Rounds the value to a multiple of resolution. By using tolerance and strength you can control when values will be rounded, and by how much.
-
-Conceptually this is the equivalent of MIDI quantization in a DAW/MIDI sequencer.
-argument::resolution
-Round this value to a multiple of resolution. E.g. if you chose 1, then all values would be snapped to the nearest integer.
-argument::tolerance
-Values that are +-tolerance away from a strong::resolution:: value will be left as they are.
-
-E.g. if you chose a resolution value of 0.5 and a tolerance of 0.01, then the values 0.501 and 0.499 would be left as they are, but the value 0.502 would become 0.5.
-argument::strength
-Determines the degree to which this number will be changed.
-
-If strength is 1, then this function will return the nearest resolution. If it is 0, then value of this number will be left unchanged.
-
-E.g. If the resolution was 1 and strength was 0.5, then the value 0.6 would become 0.8.
-discussion::
-code::
-((0..10) / 5).collect { |num| [num, num.snap(1, 0, 1)] };
-((0..10) / 5).collect { |num| [num, num.snap(1, 0.3, 1)] };
-((0..10) / 5).collect { |num| [num, num.snap(1, 0, 0.5)] };
-::
-
 method:: quantize
-Deprecated. Round the receiver to the quantum. If you're looking for MIDI quantization type features use CODE::SimpleNumber#-snap::
+Deprecated. Round the receiver to the quantum. If you're looking for MIDI quantization type features use CODE::SimpleNumber#-softRound::
 argument::quantum
 amount.
 argument::tolerance
