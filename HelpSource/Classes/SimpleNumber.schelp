@@ -307,20 +307,27 @@ method:: asAudioRateInput
 Converts this into an audiorate input.
 
 method:: asTimeString
-Compile a time string.
+Produces a time string in the format code::ddd:hh:mm:ss.sss::, interpreting the receiver as time in
+seconds. See link::String#-asSecs:: for the inverse function.
 argument:: precision
-how accurate
+accuracy of the millisecond format; the string will always be formatted with 3 decimal places for
+milliseconds. Minimum value: 0.001.
 argument::maxDays
-the maximum number of days
+maximum number of days
 argument::dropDaysIfPossible
-a link::Classes/Boolean::
-returns:: a string corresponding to the hours:minutes:seconds based on the receiver as number of seconds
+a link::Classes/Boolean::. If set to code::true::, and the number of days in the formatted string
+would be 0, that section is instead ommitted and the string is formatted as code::hh:mm:ss.sss::.
 discussion::
 code::
 (
 var start;
 start = Main.elapsedTime;
-{ loop({(Main.elapsedTime - start).asTimeString.postln; 0.05.wait}) }.fork;
+{
+	loop {
+		(Main.elapsedTime - start).asTimeString.postln;
+		0.05.wait
+	}
+}.fork;
 )
 ::
 
