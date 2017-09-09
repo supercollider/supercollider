@@ -75,13 +75,13 @@ method:: trunc
 Truncate to multiple of aNumber
 
 method:: softRound
-Rounds the value to a multiple of strong::resolution::. By using strong::tolerance:: and strong::strength:: you can control when values will be rounded, and by how much.
+Rounds the value to a multiple of strong::resolution::. By using strong::tolerance:: and strong::strength:: you can control which values will be rounded, and by how much.
 
-Conceptually this is the equivalent of MIDI quantization in a DAW/MIDI sequencer.
+Conceptually this is the equivalent of MIDI quantization in a DAW/MIDI sequencer. In particular it allows a certain sloppiness close to the strong::resolution:: value.
 argument::resolution
 Round this value to a multiple of resolution. E.g. if you chose 1, then all values would be rounded to the nearest integer.
 argument::tolerance
-Values that are +-tolerance away from a strong::resolution:: value will be left as they are.
+Values that are within +-strong::tolerance:: from a multiple of strong::resolution:: will be left as they are.
 
 E.g. if you chose a resolution value of 0.5 and a tolerance of 0.01, then the values 0.501 and 0.499 would be left as they are, but the value 0.502 would become 0.5.
 argument::strength
@@ -100,13 +100,13 @@ code::
 method:: snap
 Rounds the values strong::tolerance:: distance from resolution to a multiple of resolution. By using strong::tolerance:: and strong::strength:: you can control when values will be rounded, and by how much.
 
-Conceptually this is the equivalent of 'snap' in a graphics program. Values a certain distance (strong::tolerance::) from a grid line are snapped to it. All other values are unchanged.
+Conceptually this is the equivalent of 'snap' in a graphics program. Values within a certain distance (strong::tolerance::) from a grid line are snapped to it. All other values are unchanged.
 
 argument::resolution
 Snap this value to a multiple of resolution. E.g. if you chose 1, then all values would be rounded to the nearest integer.
 
 argument::tolerance
-Only values that are +-strong::tolerance:: away from a strong::resolution:: value will be changed.
+Only values that are greater +-strong::tolerance:: from a multiple of strong::resolution:: value will be changed. Values that are less than strong::tolerance:: will be unchanged.
 
 E.g. if you chose a resolution value of 0.5 and a tolerance of 0.01, then the values 0.501 and 0.499 would be snapped to 0.5, but the value 0.502 would be unchanged.
 argument::strength
