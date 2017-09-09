@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // TestSimpleNumber.sc
 // Tests for the SimpleNumber class
 TestSimpleNumber : UnitTest {
@@ -101,6 +102,10 @@ TestSimpleNumber : UnitTest {
 		var actual = totalTime.asTimeString;
 		this.assert(actual == expected, "expected %, got %".format(expected, actual));
 	}
+=======
+
+TestSimpleNumber : UnitTest {
+>>>>>>> 0f37642e7399d691017d07ea8c64c2a0682078f3
 
 	test_snap {
 		var val = [ 0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2 ];
@@ -118,4 +123,8 @@ TestSimpleNumber : UnitTest {
 
 	}
 
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 0f37642e7399d691017d07ea8c64c2a0682078f3
