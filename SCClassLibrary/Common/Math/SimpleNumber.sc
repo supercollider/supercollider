@@ -155,28 +155,28 @@ SimpleNumber : Number {
 		var diff = round - this;
 		if (abs(diff) < tolerance) {
 			^this + (strength * diff)
-		}{
+		} {
 			^this
 		}
 	}
 
-	snap { arg resolution = 1.0, tolerance = 0.05, strength = 1.0;
+	snap { arg resolution = 1.0, margin = 0.05, strength = 1.0;
 		var round = round(this, resolution);
 		var diff = round - this;
-		if (abs(diff) < tolerance) {
+		if ( abs(diff) < margin ) {
 			^this + (strength * diff)
-		}{
+		} {
 			^this
 		}
 	}
 
 
-	softRound { arg resolution = 1.0, tolerance = 0.05, strength = 1.0;
+	softRound { arg resolution = 1.0, margin = 0.05, strength = 1.0;
 		var round = round(this, resolution);
 		var diff = round - this;
-		if (abs(diff) > tolerance) {
+		if (abs(diff) > margin) {
 			^this + (strength * diff)
-		}{
+		} {
 			^this
 		}
 	}
