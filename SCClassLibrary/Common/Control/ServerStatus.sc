@@ -99,7 +99,7 @@ ServerStatusWatcher {
 				.postf(server, newClientID);
 				server.clientID = newClientID;
 			} {
-				("% - userSpecifiedClientID % is not free!\n"
+				("% - userSpecifiedClientID % may not be free!\n"
 					" Switching to free clientID obtained from scsynth: %.\n"
 					"If that is problematic, please set clientID by hand before booting.")
 				.format(server, server.clientID, newClientID).warn;
@@ -113,7 +113,8 @@ ServerStatusWatcher {
 		// post info on some known error cases
 		case
 		{ failString.asString.contains("already registered") } {
-			"% - already registered with clientID %.\n".postf(server, msg[3])
+			"% - already registered with clientID %.\n".postf(server, msg[3]);
+			server.clientID_(msg[3]);
 		} { failString.asString.contains("not registered") } {
 			// unregister when already not registered:
 			"% - not registered.\n".postf(server)

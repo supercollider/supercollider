@@ -406,6 +406,7 @@ Server {
 		"% : setting clientID to %.\n".postf(this, val);
 		clientID = val;
 		this.newAllocators;
+		this.initTree;
 	}
 
 	newAllocators {
@@ -828,6 +829,8 @@ Server {
 			sendQuit = this.inProcess or: { this.isLocal };
 		};
 		this.connectSharedMemory;
+		// FIXME later: clientID_ may change from scsynth,
+		// so we may create the wrong defaultGroup here
 		this.initTree;
 	}
 
