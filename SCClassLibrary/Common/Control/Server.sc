@@ -945,7 +945,11 @@ Server {
 	}
 
 	freeAll {
-		this.sendMsg("/g_freeAll", 0);
+		if (clientID == 0) {
+			this.sendMsg("/g_freeAll", 0);
+		} {
+			this.sendMsg("/g_freeAll", this.defaultGroupID);
+		};
 		this.sendMsg("/clearSched");
 		this.initTree;
 	}
