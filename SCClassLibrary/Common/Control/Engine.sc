@@ -1,6 +1,7 @@
 
 NodeIDAllocator {
 	var <user, initTemp, temp, perm, mask, permFreed;
+	var <numIDs = 0x04000000; // 2 ** 26
 	// support 32 users
 
 	*new { arg user=0, initTemp = 1000;
@@ -196,7 +197,7 @@ ContiguousBlock {
 // pos is offset for reserved numbers,
 // addrOffset is offset for clientID * size
 ContiguousBlockAllocator {
-	var <size, array, freed, <pos, top, <addrOffset;
+	var <size, array, freed, <pos, <top, <addrOffset;
 	// pos is offset for reserved numbers,
 	// addrOffset is offset for clientID * size
 
