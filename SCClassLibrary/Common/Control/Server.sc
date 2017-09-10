@@ -286,7 +286,8 @@ Server {
 		named = IdentityDictionary.new;
 		all = Set.new;
 
-		nodeAllocClass = ReadableNodeIDAllocator;
+		nodeAllocClass = NodeIDAllocator;
+		// nodeAllocClass = ReadableNodeIDAllocator;
 		bufferAllocClass = ContiguousBlockAllocator;
 		busAllocClass = ContiguousBlockAllocator;
 
@@ -370,7 +371,7 @@ Server {
 
 	initTree {
 		this.newNodeAllocators;
-		this.sendMsg("/g_new", this.defaultGroupID, 0, 0);
+		this.sendMsg("/g_new", this.defaultGroup.nodeID, 0, 0);
 		tree.value(this);
 		ServerTree.run(this);
 	}
@@ -408,14 +409,14 @@ Server {
 	}
 
 	newAllocators {
-		this.newNodeAllocator;
+		this.newNodeAllocators;
 		this.newBusAllocators;
 		this.newBufferAllocators;
 		this.newScopeBufferAllocators;
 		NotificationCenter.notify(this, \newAllocators);
 	}
 
-	newNodeAllocator {
+	newNodeAllocators {
 		nodeAllocator = NodeIDAllocator(clientID, options.initialNodeID)
 	}
 
