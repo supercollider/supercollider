@@ -1,0 +1,211 @@
+TITLE:: MultiClient_Setups
+SUMMARY:: How to handle clientIDs and id allocation in multi-client/server setups
+CATEGORIES:: Guides
+related:: Classes/ServerOptions, Classes/Server
+KEYWORD:: server, multi-client
+
+section:: Multi client-server setups - discussion and tests
+
+OSC communication between SC and its sound server offers many options for network music: Multiple computers can run both supercollider and associated sound servers.
+For clarity, the "server process" refers to a running scsynth or supernova process. The "server object" AKA "client" is the server's representation in sclang, such as code::Server.local, s, Server(\elsewhere, NetAddr("163.234.56.78"))::.
+
+subsection:: What are clientIDs, and how do servers get them?
+
+When more than one user plays on a given server,
+some resources need to be shared between users/clients:
+list::
+## permanent and temporary nodeIDs (handled by Server:nodeAllocator),
+## private control and audio bus channels (handled by Server:audioBusAllocator, Server:controlBusAllocator)
+## buffer numbers (handled by Server:bufferAllocator).
+::
+
+This sharing is handled by declaring how many clients/users are expected to login (Server:numUsers), and giving a different clientID to each of them when the login happens.
+
+The most common case is that there is only a single user/client, who always gets clientID 0, and control of all available resources (i.e. the full number range of every allocator).
+
+When multiple clients log in, this is what happens:
+list::
+## On startup, scsynth (the server process) gets a fixed limit of maxLogins.
+## When a local or remote server object/client has no user-specified clientID,
+scsynth sends back the next free clientID, and the client uses it.
+## When a local or remote server object/client was created with a specific clientID,
+scsynth sends back that number if it was free, or the next free clientID if not; the client should use the free number, as the other may clash with a client already logged in.
+## [After the corresponding pull request is accepted,] scsynth also sends back the maxLogins value it was started with, so clients can adjust their internal allocator settings to it.
+::
+
+subsection:: Code examples and tests
+
+Recommended usage for multiple clients on the same server is to use identical options settings for all clients, and logging into the scsynth process from different sclang instances, which are typically on different laptops.
+
+code::
+// on the machine where scsynth runs, it can be the default server.
+// set the maximum number of client logins expected:
+s.options.maxLogins = 16;
+// now boot the server:
+s.boot;
+
+// from another sclang instance, log into scsynth:
+s.options.maxLogins = 16;
+// example NetAddr of the machine that runs scsynth on standard port
+s.addr = NetAddr("168.192.1.20", 57110);
+::
+
+When fixed clientIDs for multiclient setups are desired, the recommended usage is to set every clientID on creation.
+
+code::
+s.options.maxLogins = 16;
+
+r = Server(
+	\remote4,
+	// example NetAddr of the machine that runs scsynth on standard port
+	NetAddr("168.192.1.2", 57110),
+	s.options,		// make sure all remote servers use the same options
+	4				// and when desired, set fixed client by hand
+);
+
+// now s knows it can change clientID from server login response
+// (because userSpecifiedClientID is false)
+s.userSpecifiedClientID;
+// and z knows to keep its clientID
+r.userSpecifiedClientID;
+
+::
+
+subsection:: Separate defaultGroups and easy-to-trace nodeIDs
+
+Every client registering with a server has its own defaultGroup. All nodes belonging to one client are in its defaultGroup and can be specifically addressed, so e.g. freeAll can release only one's own nodes, and not those of other clients on this server.
+For details, see NodeIDAllocator and ReadableNodeIDAllocator class and help files.
+
+code::
+
+// NodeIDAllocator uses a fixed binary prefix of (2 ** 26) * clientID:
+Server.nodeAllocClass = NodeIDAllocator;
+s.newAllocators; r.newAllocators;  // remake allocators
+// clientID 0 has group 1:
+s.clientID;
+s.defaultGroup;
+s.defaultGroupID;
+
+// for server r:
+r.clientID; 		// 4
+r.nodeAllocator.idOffset; // lookup the offset: (2 ** 26 * 4)
+r.defaultGroup;		// Group(268435457) : idOffset + 1
+
+r.defaultGroupID; 	// 268435457
+r.options.maxLogins	// 16
+
+
+r.defaultGroupID mod: (2 ** 26); // 1 is the nodeID relative to idOffset relative ID
+r.defaultGroupID >> 26;
+r.nextNodeID ;   // begin at defaultGroupID + 1000
+r.nextNodeID >> 26; // get clientID from a long nodeID
+
+
+// ReadableNodeIDAllocator uses a decimal prefix - to demonstrate:
+Server.nodeAllocClass = ReadableNodeIDAllocator;
+s.newAllocators; r.newAllocators;  // remake allocators
+
+// for clientID 0, nothing changes:
+s.clientID;
+s.defaultGroup;
+s.defaultGroupID;
+
+// for server r:
+r.clientID; 		// 4
+r.nodeAllocator.idOffset;  // offset if decimal
+r.defaultGroupID; 	// 400000001 - easy to identify nodeID source
+r.defaultGroup;		// Group(400000001)
+r.options.maxLogins	// 16
+
+
+// s.defaultGroup is used often, and can be looked up in many ways:
+r.defaultGroup;
+r.defaultGroupID;
+r.asGroup;
+r.asTarget;
+
+// temp nodeIDs readably belong to clientID 4, starting with 4...1000
+5.do { r.nextNodeID.postln };
+5.do { s.nextNodeID.postln };
+
+
+// For demonstration, switch addr of r to point to local scsynth,
+// so we can test the allocator numbers on a single machine:
+r.addr = s.addr;
+// whenever an accessible sound process is created, it gets a nodeID;
+// here are four different ways to create sounds, and see their nodeIDs:
+r.boot;
+r.plotTree;
+Server.default = r;
+
+// Synth
+x = Synth(\default, nil);
+x.release;
+
+x = { Dust.ar(10!2).lag(0.002) }.play(r);
+x.release(2);
+
+(dur: 4, server: r).play;
+
+// JITLib nodeproxies
+Ndef(\x, { Dust.ar(10 ! 2) });
+Ndef(\x).play;
+Ndef(\x).filter(10, { |in| Ringz.ar(in, [600, 800], 0.03) }).play;
+Ndef(\x).end(3);
+
+// more nodeID examples needed here?
+
+::
+
+subsection:: Bus channel and buffer numbers
+The allocators for audio and control busses and for buffers split the full number range of scsynth evenly for the number of clients expected.
+
+code::
+// default value for clientID is 0 and maxLogins is 1
+Server.default = Server.local;
+s.clientID;   // should be 0
+s.options.maxLogins; // default 1
+
+// you can set maxLogins_ by hand - not recommended, only for testing here:
+s.options.maxLogins_(1); // default 1
+
+s.options.numAudioBusChannels;
+// use newAllocators method to create allocator ranges accordingly
+s.newBusAllocators;
+s.audioBusAllocator.size;
+
+// 1024 buses to allocate
+Bus.audio(s, 2);
+
+//  set maxLogins_ to 16 by hand - not recommended, only for demonstration here:
+s.options.maxLogins_(16);
+s.newBusAllocators; // 64 = 1024 / 16 buses to allocate per client.
+s.audioBusAllocator.size;
+3.collect { Bus.audio(s, 2) };
+// 1024 control buses to allocate, starting at 0
+s.controlBusAllocator.size;
+3.collect { Bus.control(s, 2) };
+
+r.newBusAllocators;
+// audio bus range starts at 256
+3.collect { Bus.audio(r, 2) }; //
+// control bus range starts at 4096: 1365 * 4
+3.collect { Bus.control(r, 2) };
+
+// more bus alloc examples desirable here?
+::
+
+
+Buffer allocation uses the same class, ContiguousBlockAllocator, and thus works the same way.
+
+code::
+// show buffer allocation
+Server.default = Server.local;
+s.bufferAllocator.size;
+3.collect { Buffer(s) }; // starts at 0
+
+r.bufferAllocator.size;
+3.collect { Buffer(r) }; // starts at 256
+
+// more buffer alloc examples desirable here?
+::
