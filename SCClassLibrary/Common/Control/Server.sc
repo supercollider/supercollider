@@ -121,8 +121,8 @@ ServerOptions {
 		if ((thisProcess.platform.name!=\osx) or: {inDevice == outDevice})
 		{
 			if (inDevice.notNil,
-			{
-				o = o ++ " -H %".format(inDevice.quote);
+				{
+					o = o ++ " -H %".format(inDevice.quote);
 			});
 		}
 		{
@@ -263,6 +263,7 @@ Server {
 
 	classvar <>local, <>internal, <default;
 	classvar <>named, <>all, <>program, <>sync_s = true;
+	classvar <>nodeAllocClass, <>bufferAllocClass, <>busAllocClass;
 
 	var <name, <addr, <clientID, <userSpecifiedClientID = false;
 	var <isLocal, <inProcess, <>sendQuit, <>remoteControlled;
@@ -284,6 +285,11 @@ Server {
 		Class.initClassTree(NotificationCenter);
 		named = IdentityDictionary.new;
 		all = Set.new;
+
+		nodeAllocClass = ReadableNodeIDAllocator;
+		bufferAllocClass = ContiguousBlockAllocator;
+		busAllocClass = ContiguousBlockAllocator;
+
 		default = local = Server.new(\localhost, NetAddr("127.0.0.1", 57110));
 		internal = Server.new(\internal, NetAddr.new);
 	}
@@ -314,10 +320,23 @@ Server {
 	init { |argName, argAddr, argOptions, argClientID|
 		this.addr = argAddr;
 		options = argOptions ? ServerOptions.new;
-		clientID = argClientID ? 0;
-		if(argClientID.notNil) { userSpecifiedClientID = true };
 
-		this.newAllocators;
+		// set name to get readable posts from clientID set
+		name = argName.asSymbol;
+
+		if(argClientID.notNil) {
+			userSpecifiedClientID = true;
+			if (argClientID >= options.maxLogins) {
+				warn("% : user-specified clientID % is greater than maxLogins!"
+					"\nPlease adjust clientID or options.maxLogins."
+					.format(name, argClientID));
+				^nil
+			};
+		};
+
+		// go thru setter to test validity
+		this.clientID = argClientID ? 0;
+
 
 		statusWatcher = ServerStatusWatcher(server: this);
 		volume = Volume(server: this, persist: true);
@@ -330,6 +349,8 @@ Server {
 		Server.changed(\serverAdded, this);
 
 	}
+
+	numClients { ^options.maxLogins }
 
 	addr_ { |netAddr|
 		addr = netAddr ?? { NetAddr("127.0.0.1", 57110) };
@@ -348,56 +369,82 @@ Server {
 	}
 
 	initTree {
-		nodeAllocator = NodeIDAllocator(clientID, options.initialNodeID);
-		this.sendMsg("/g_new", 1, 0, 0);
+		this.newNodeAllocators;
+		this.sendMsg("/g_new", this.defaultGroupID, 0, 0);
 		tree.value(this);
 		ServerTree.run(this);
 	}
 
 	/* id allocators */
 
+	// private, called from server notify response with next free clientID
 	clientID_ { |val|
-		if(val.isInteger.not) {
-			"Server % couldn't set client id to: %".format(name, val.asCompileString).warn;
+		var failstr = "Server % couldn't set client id to: % - %. clientID is still %.";
+
+		if(val == clientID) {
+			// no need to change
 			^this
 		};
-		if(clientID != val) {
-			clientID = val;
-			this.newAllocators;
-		}
+		if(val.isInteger.not) {
+			failstr.format(name, val.cs, "not an Integer", clientID).warn;
+			^this
+		};
+		if (val < 0) {
+			failstr.format(name, val.cs, "less than minimum 0", clientID).warn;
+			^this
+		};
+		if (val >= this.numClients) {
+			failstr.format(name,
+				val.cs,
+				"greater than server.numClients % minus 1 allows".format(this.numClients),
+				clientID
+			).warn;
+			^this
+		};
+
+		"% : setting clientID to %.\n".postf(this, val);
+		clientID = val;
+		this.newAllocators;
 	}
 
 	newAllocators {
-		this.newNodeAllocators;
+		this.newNodeAllocator;
 		this.newBusAllocators;
 		this.newBufferAllocators;
 		this.newScopeBufferAllocators;
 		NotificationCenter.notify(this, \newAllocators);
 	}
 
-	newNodeAllocators {
+	newNodeAllocator {
 		nodeAllocator = NodeIDAllocator(clientID, options.initialNodeID)
 	}
 
 	newBusAllocators {
-		var numControl, numAudio;
-		var controlBusOffset, audioBusOffset;
-		var offset = this.calcOffset;
-		var n = options.maxLogins ? 1;
+		var numControlPerClient, numAudioPerClient;
+		var controlReservedOffset, controlBusClientOffset;
+		var audioReservedOffset = 0, audioBusClientOffset;
 
-		numControl = options.numControlBusChannels div: n;
-		numAudio = options.numPrivateAudioBusChannels div: n;
+		numControlPerClient = options.numControlBusChannels div: this.numClients;
+		numAudioPerClient = options.numAudioBusChannels div: this.numClients;
 
-		controlBusOffset = numControl * offset + options.reservedNumControlBusChannels;
-		audioBusOffset = options.firstPrivateBus + (numAudio * offset) + options.reservedNumAudioBusChannels;
+		controlReservedOffset = options.reservedNumControlBusChannels;
+		controlBusClientOffset = numControlPerClient * clientID;
+
+		// only reserve hardware output chans on clientID 0
+		if (clientID == 0) {
+			audioReservedOffset = audioReservedOffset + options.firstPrivateBus;
+		};
+		audioReservedOffset = audioReservedOffset +
+			options.reservedNumAudioBusChannels;
+		audioBusClientOffset = numAudioPerClient * clientID;
 
 		controlBusAllocator = busAllocClass.new(
-			numControlPerUser,
+			numControlPerClient,
 			controlReservedOffset,
 			controlBusClientOffset
 		);
 		audioBusAllocator = busAllocClass.new(
-			numAudioPerUser,
+			numAudioPerClient,
 			audioReservedOffset,
 			audioBusClientOffset
 		);
@@ -405,12 +452,12 @@ Server {
 
 
 	newBufferAllocators {
-		var numBuffersPerUser = options.numBuffers div: numUsers;
+		var numBuffersPerClient = options.numBuffers div: this.numClients;
 		var numReservedBuffers = options.reservedNumBuffers;
-		var bufferClientOffset = numBuffersPerUser * clientID;
+		var bufferClientOffset = numBuffersPerClient * clientID;
 
 		bufferAllocator = bufferAllocClass.new(
-			numBuffersPerUser,
+			numBuffersPerClient,
 			numReservedBuffers,
 			bufferClientOffset
 		);
