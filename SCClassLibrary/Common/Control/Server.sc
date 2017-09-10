@@ -417,7 +417,11 @@ Server {
 	}
 
 	newNodeAllocators {
-		nodeAllocator = NodeIDAllocator(clientID, options.initialNodeID)
+		nodeAllocator = nodeAllocClass.new(
+			clientID,
+			options.initialNodeID,
+			options.maxLogins
+		);
 	}
 
 	newBusAllocators {
