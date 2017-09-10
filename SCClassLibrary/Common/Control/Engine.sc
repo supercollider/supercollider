@@ -8,6 +8,9 @@ NodeIDAllocator {
 		if (user > 31) { "NodeIDAllocator user id > 31".error; ^nil };
 		^super.newCopyArgs(user, initTemp).reset
 	}
+
+	idOffset { ^numIDs * user }
+
 	reset {
 		mask = user << 26;
 		temp = initTemp;

@@ -723,9 +723,11 @@ Server {
 		^Buffer.cachedBufferAt(this, bufnum)
 	}
 
-	defaultGroup {
-		^Group.basicNew(this, 1)
-	}
+	defaultGroupID { ^nodeAllocator.idOffset + 1 }
+
+ 	defaultGroup {
+		^Group.basicNew(this, nodeAllocator.idOffset + 1)
+ 	}
 
 	inputBus {
 		^Bus(\audio, this.options.numOutputBusChannels, this.options.numInputBusChannels, this)
