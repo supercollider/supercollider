@@ -153,7 +153,7 @@ SimpleNumber : Number {
 	quantize { arg quantum = 1.0, tolerance = 0.05, strength = 1.0;
 		var round = round(this, quantum);
 		var diff = round - this;
-		if (abs(diff) < tolerance) {
+		if(abs(diff) < tolerance) {
 			^this + (strength * diff)
 		} {
 			^this
@@ -163,7 +163,7 @@ SimpleNumber : Number {
 	snap { arg resolution = 1.0, margin = 0.05, strength = 1.0;
 		var round = round(this, resolution);
 		var diff = round - this;
-		if ( abs(diff) < margin ) {
+		if(abs(diff) < margin) {
 			^this + (strength * diff)
 		} {
 			^this
@@ -174,7 +174,7 @@ SimpleNumber : Number {
 	softRound { arg resolution = 1.0, margin = 0.05, strength = 1.0;
 		var round = round(this, resolution);
 		var diff = round - this;
-		if (abs(diff) > margin) {
+		if(abs(diff) > margin) {
 			^this + (strength * diff)
 		} {
 			^this
