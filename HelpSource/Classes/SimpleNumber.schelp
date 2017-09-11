@@ -78,12 +78,17 @@ method:: softRound
 Rounds the value to a multiple of strong::resolution::. By using strong::margin:: and strong::strength:: you can control which values will be rounded, and by how much.
 
 Conceptually this is the equivalent of MIDI quantization in a DAW/MIDI sequencer. In particular it allows a certain sloppiness close to the strong::resolution:: value.
+
+Note: this method expects values >= 0.
+
 argument::resolution
 Round this value to a multiple of resolution. E.g. if you chose 1, then all values would be rounded to the nearest integer.
 argument::margin
 Values that are within ±strong::margin:: from a multiple of strong::resolution:: will be left as they are.
 
 E.g. if you chose a resolution value of 0.5 and a margin of 0.01, then the values 0.501 and 0.499 would be left as they are, but the value 0.502 would become 0.5.
+
+This should be a value between 0 and strong::resolution::.
 argument::strength
 Determines the degree to which this number will be changed.
 
@@ -102,6 +107,8 @@ Rounds the values strong::margin:: distance from resolution to a multiple of res
 
 Conceptually this is the equivalent of 'snap' in a graphics program. Values within a certain distance (strong::margin::) from a grid line are snapped to it. All other values are unchanged.
 
+Note: this method expects values >= 0.
+
 argument::resolution
 Snap this value to a multiple of resolution. E.g. if you chose 1, then all values would be rounded to the nearest integer.
 
@@ -109,6 +116,9 @@ argument::margin
 Only values that are greater ±strong::margin:: from a multiple of strong::resolution:: value will be changed. Values that are less than strong::margin:: will be unchanged.
 
 E.g. if you chose a resolution value of 0.5 and a margin of 0.01, then the values 0.501 and 0.499 would be snapped to 0.5, but the value 0.502 would be unchanged.
+
+This should be a value between 0 and strong::resolution::.
+
 argument::strength
 Determines the degree to which this number will be changed.
 

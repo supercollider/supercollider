@@ -102,19 +102,69 @@ TestSimpleNumber : UnitTest {
 		this.assert(actual == expected, "expected %, got %".format(expected, actual));
 	}
 
-	test_snap {
-		var val = [ 0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2 ];
-		var testF = {|g, t, s| val.collect({|num| num.snap(g, t, s)})};
+	test_softRound {
+		var val;
+		var testF = {|vals, g, t, s| vals.collect({|num| num.softRound(g, t, s)})};
 
-		this.assertEquals(testF.(1,0,1), [ 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2 ], "Snap test 1 failed.");
+		val = [-1.3, -1, -0.7, -0.5, -0.3, 0, 0.2, 0.5, 0.7, 1, 1.2, 1.8, 2];
+		this.assertEquals(testF.(val, 1,0,1), [ -1, -1, -1, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2 ], "softRound test 1 failed.");
 
-		this.assertEquals(testF.(0.5,0,1), [ 0, 0, 0.5, 0.5, 1, 1, 1, 1.5, 1.5, 2, 2 ], "Snap test 2 failed.");
+		val = [-1, -0.7, -0.5, -0.3, -0.25, -0.2, 0, 0.2, 0.25, 0.3, 0.6, 0.8, 1];
+		this.assertEquals(testF.(val,0.5,0,1), [ -1, -0.5, -0.5, -0.5, 0, 0, 0, 0, 0.5, 0.5, 0.5, 1, 1 ], "softRound test 2 failed.");
 
-		this.assertEquals(testF.(1,0.3,1), [ 0, 0.2, 0, 1, 0.8, 1, 1.2, 1, 2, 1.8, 2 ], "Snap test 3 failed.");
+		val = [-0.8, -0.7, -0.6 -0.4, -0.3, -0.2, 0, 0.2, 0.3, 0.4, 0.6, 0.7, 0.8, 1];
+		this.assertEquals(testF.(val,1,0.3,1), [ -0.8, -1, -1, -0.3, -0.2, 0, 0.2, 0.3, 0, 1, 1, 0.8, 1 ], "softRound test 3 failed.");
 
-		this.assertEquals(testF.(1,0,0.5), [ 0, 0.1, 0.2, 0.8, 0.9, 1, 1.1, 1.2, 1.8, 1.9, 2 ], "Snap test 4 failed.");
+		val = [-1, -0.8, -0.2, 0, 0.2, 0.8, 1];
+		this.assertEquals(testF.(val,1,0,0.5), [ -1, -0.9, -0.1, 0, 0.1, 0.9, 1 ], "softRound test 4 failed.");
 
-		this.assertEquals(testF.(1,0.2,0.5), [ 0, 0.2, 0.2, 0.8, 0.8, 1, 1.2, 1.2, 1.8, 1.8, 2 ], "Snap test 5 failed.");
+		// Testing weird edge cases that are probably not typical use cases for backwards compatability purposes.
+		val = [-1, -0.5, 0, 1, 0.5, 1];
+		this.assertEquals(testF.(val,0,0,1), val, "softRound test 5 failed."); // resolution value of 0 leave the original array unchanged.
 
+		this.assertEquals(testF.(val,-1,0, 1), [1, -1, 0, 1, 0, 1], "softRound test 6 failed."); // negative resolution values result in very strange behavior...
+
+		val = [-1, -0.8, -0.7, -0.4, -0.1, 0, 0.2, 0.5, 0.9, 1];
+		this.assertEquals(testF.(val,1,-0.3,1),  [-1, -1, -1, 0, 0, 0, 0, 1, 1, 1] , "softRound test 7 failed."); // negative margin value also results in very strange behavior.
+
+		val = [-1, -0.5, 0, 1, 0.5, 1];
+		this.assertEquals(testF.(val,1,0,-0.5), [-1, -0.75, 0, 1, 0.25, 1], "softRound test 8 failed.");
+
+		this.assertEquals(testF.(val,1,0,0), val, "softRound test 10 failed.");
+		this.assertEquals(testF.(val,1,2,1), val, "softRound test 11 failed.");
+
+	}
+
+	test_Snap {
+		var val;
+		var testF = {|vals, g, t, s| vals.collect({|num| num.snap(g, t, s)})};
+
+		val = [-1.3, -1, -0.7, -0.5, -0.3, 0, 0.2, 0.5, 0.7, 1, 1.2, 1.8, 2];
+		this.assertEquals(testF.(val, 1,1,1), [-1, -1, -1, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2], "Snap test 1 failed.");
+
+		val = [-1, -0.7, -0.5, -0.3, -0.25, -0.2, 0, 0.2, 0.25, 0.3, 0.6, 0.8, 1];
+		this.assertEquals(testF.(val,0.5,1,1), [ -1, -0.5, -0.5, -0.5, 0, 0, 0, 0, 0.5, 0.5, 0.5, 1, 1 ], "Snap test 2 failed.");
+
+		val = [-0.8, -0.7, -0.6, -0.4, -0.3, -0.2, 0, 0.2, 0.3, 0.4, 0.6, 0.7, 0.8, 1];
+		this.assertEquals(testF.(val,1,0.3,1), [-1, -0.7, -0.6, -0.4, -0.3, 0, 0, 0, 0.3, 0.4, 0.6, 0.7, 1, 1], "Snap test 3 failed.");
+
+		val = [-1, -0.8, -0.2, 0, 0.2, 0.8, 1];
+		this.assertEquals(testF.(val,1,1,0.5), [-1, -0.9, -0.1, 0, 0.1, 0.9, 1], "Snap test 4 failed.");
+
+		// Testing edge cases that are strictly speaking not supported by this function.
+		val = [-1, -0.5, 0, 1, 0.5, 1];
+		this.assertEquals(testF.(val,0,1,1), val, "Snap test 5 failed."); // resolution value of 0 leave the original array unchanged.
+
+		this.assertEquals(testF.(val,-1,1, 1), [-1, -1, 0, 1, 0, 1], "Snap test 6 failed."); // negative resolution values result in very strange behavior...
+
+		val = [-1, -0.8, -0.7, -0.4, -0.1, 0, 0.2, 0.5, 0.9, 1];
+		this.assertEquals(testF.(val,1,-0.3,1),  val  , "Snap test 7 failed."); // negative margin value has no effect.
+
+		val = [-1, -0.5, 0, 1, 0.5, 1];
+		this.assertEquals(testF.(val,1,1,-0.5), [ -1, -0.75, 0, 1, 0.25, 1 ], "Snap test 8 failed.");
+
+		this.assertEquals(testF.(val,1,1,0), val, "Snap test 9 failed.");
+		this.assertEquals(testF.(val,1,0,1), val, "Snap test 10 failed.");
+		this.assertEquals(testF.(val,1,2,1), [ -1, 0, 0, 1, 1, 1 ] , "Snap test 11 failed.");
 	}
 }
