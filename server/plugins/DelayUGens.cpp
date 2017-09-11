@@ -5681,6 +5681,14 @@ void PitchShift_Ctor(PitchShift *unit)
 	pchratio = ZIN0(2);
 	winsize = ZIN0(1);
 
+	// If the window size is <= 2 samples, scsynth will freeze (presumably some
+	// infinite loop in the calc function). Nobody really needs windows that
+	// small.
+	float minimum_winsize = 3.f * SAMPLEDUR;
+	if (winsize < minimum_winsize) {
+		winsize = minimum_winsize;
+	}
+
 	delaybufsize = (long)ceil(winsize * SAMPLERATE * 3.f + 3.f);
 	fdelaylen = delaybufsize - 3;
 
