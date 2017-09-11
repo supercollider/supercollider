@@ -107,35 +107,35 @@ TestSimpleNumber : UnitTest {
 		var testF = {|vals, g, t, s| vals.collect({|num| num.softRound(g, t, s)})};
 
 		val = [-1.3, -1, -0.7, -0.5, -0.3, 0, 0.2, 0.5, 0.7, 1, 1.2, 1.8, 2];
-		this.assertEquals(testF.(val, 1,0,1), [ -1, -1, -1, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2 ], "softRound test 1 failed.");
+		this.assertEquals(testF.(val, 1,0,1), [ -1, -1, -1, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2 ], "Test 1: softRound(1, 0, 1)");
 
 		val = [-1, -0.7, -0.5, -0.3, -0.25, -0.2, 0, 0.2, 0.25, 0.3, 0.6, 0.8, 1];
-		this.assertEquals(testF.(val,0.5,0,1), [ -1, -0.5, -0.5, -0.5, 0, 0, 0, 0, 0.5, 0.5, 0.5, 1, 1 ], "softRound test 2 failed.");
+		this.assertEquals(testF.(val,0.5,0,1), [ -1, -0.5, -0.5, -0.5, 0, 0, 0, 0, 0.5, 0.5, 0.5, 1, 1 ], "Test 2: softRound(0.5, 0, 1)");
 
 		val = [-0.8, -0.7, -0.6 -0.4, -0.3, -0.2, 0, 0.2, 0.3, 0.4, 0.6, 0.7, 0.8, 1];
-		this.assertEquals(testF.(val,1,0.3,1), [ -0.8, -1, -1, -0.3, -0.2, 0, 0.2, 0.3, 0, 1, 1, 0.8, 1 ], "softRound test 3 failed.");
+		this.assertEquals(testF.(val,1,0.3,1), [ -0.8, -1, -1, -0.3, -0.2, 0, 0.2, 0.3, 0, 1, 1, 0.8, 1 ], "Test 3: softRound(1, 0.3, 1)");
 
 		val = [-1, -0.8, -0.2, 0, 0.2, 0.8, 1];
-		this.assertEquals(testF.(val,1,0,0.5), [ -1, -0.9, -0.1, 0, 0.1, 0.9, 1 ], "softRound test 4 failed.");
+		this.assertEquals(testF.(val,1,0,0.5), [ -1, -0.9, -0.1, 0, 0.1, 0.9, 1 ], "Test 4: softRound(1, 0, 0.5)");
 
 		// Testing weird edge cases that are probably not typical use cases for backwards compatability purposes.
 
 		// resolution value of 0 leave the original array unchanged.
 		val = [-1, -0.5, 0, 1, 0.5, 1];
-		this.assertEquals(testF.(val,0,0,1), val, "softRound test 5 failed.");
+		this.assertEquals(testF.(val,0,0,1), val, "Test 5 (edge case): softRound(0, 0, 1)");
 
 		// negative resolution values result in very strange behavior...
-		this.assertEquals(testF.(val,-1,0, 1), [1, -1, 0, 1, 0, 1], "softRound test 6 failed.");
+		this.assertEquals(testF.(val,-1,0,1), [1, -1, 0, 1, 0, 1], "Test 6 (edge case): softRound(-1, 0, 1)");
 
 		// negative margin value also results in very strange behavior.
 		val = [-1, -0.8, -0.7, -0.4, -0.1, 0, 0.2, 0.5, 0.9, 1];
-		this.assertEquals(testF.(val,1,-0.3,1),  [-1, -1, -1, 0, 0, 0, 0, 1, 1, 1] , "softRound test 7 failed.");
+		this.assertEquals(testF.(val,1,-0.3,1),  [-1, -1, -1, 0, 0, 0, 0, 1, 1, 1] , "Test 7 (edge case): softRound(1, -0.3, 1)");
 
 		val = [-1, -0.5, 0, 1, 0.5, 1];
-		this.assertEquals(testF.(val,1,0,-0.5), [-1, -0.75, 0, 1, 0.25, 1], "softRound test 8 failed.");
+		this.assertEquals(testF.(val,1,0,-0.5), [-1, -0.75, 0, 1, 0.25, 1], "Test 8 (edge case): softRound(1, 0, -0.5)");
 
-		this.assertEquals(testF.(val,1,0,0), val, "softRound test 10 failed.");
-		this.assertEquals(testF.(val,1,2,1), val, "softRound test 11 failed.");
+		this.assertEquals(testF.(val,1,0,0), val, "Test 9 (edge case): softRound(1, 0, 0)");
+		this.assertEquals(testF.(val,1,2,1), val, "Test 10 (edge case): softRound(1, 2, 1)");
 
 	}
 
@@ -144,34 +144,34 @@ TestSimpleNumber : UnitTest {
 		var testF = {|vals, g, t, s| vals.collect({|num| num.snap(g, t, s)})};
 
 		val = [-1.3, -1, -0.7, -0.5, -0.3, 0, 0.2, 0.5, 0.7, 1, 1.2, 1.8, 2];
-		this.assertEquals(testF.(val, 1,1,1), [-1, -1, -1, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2], "Snap test 1 failed.");
+		this.assertEquals(testF.(val, 1,1,1), [-1, -1, -1, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2], "Test 1: snap(1, 1, 1)");
 
 		val = [-1, -0.7, -0.5, -0.3, -0.25, -0.2, 0, 0.2, 0.25, 0.3, 0.6, 0.8, 1];
-		this.assertEquals(testF.(val,0.5,1,1), [ -1, -0.5, -0.5, -0.5, 0, 0, 0, 0, 0.5, 0.5, 0.5, 1, 1 ], "Snap test 2 failed.");
+		this.assertEquals(testF.(val,0.5,1,1), [ -1, -0.5, -0.5, -0.5, 0, 0, 0, 0, 0.5, 0.5, 0.5, 1, 1 ], "Test 2: snap(0.5, 1, 1)");
 
 		val = [-0.8, -0.7, -0.6, -0.4, -0.3, -0.2, 0, 0.2, 0.3, 0.4, 0.6, 0.7, 0.8, 1];
-		this.assertEquals(testF.(val,1,0.3,1), [-1, -0.7, -0.6, -0.4, -0.3, 0, 0, 0, 0.3, 0.4, 0.6, 0.7, 1, 1], "Snap test 3 failed.");
+		this.assertEquals(testF.(val,1,0.3,1), [-1, -0.7, -0.6, -0.4, -0.3, 0, 0, 0, 0.3, 0.4, 0.6, 0.7, 1, 1], "Test 3: snap(1, 0.3, 1)");
 
 		val = [-1, -0.8, -0.2, 0, 0.2, 0.8, 1];
-		this.assertEquals(testF.(val,1,1,0.5), [-1, -0.9, -0.1, 0, 0.1, 0.9, 1], "Snap test 4 failed.");
+		this.assertEquals(testF.(val,1,1,0.5), [-1, -0.9, -0.1, 0, 0.1, 0.9, 1], "Test 4: snap(1, 1, 0.5)");
 
 		// Testing edge cases that are strictly speaking not supported by this function.
 		val = [-1, -0.5, 0, 1, 0.5, 1];
 		// resolution value of 0 leave the original array unchanged.
-		this.assertEquals(testF.(val,0,1,1), val, "Snap test 5 failed.");
+		this.assertEquals(testF.(val,0,1,1), val, "Test 5 (edge case): snap(0, 1, 1)");
 
 		// negative resolution values result in very strange behavior...
-		this.assertEquals(testF.(val,-1,1, 1), [-1, -1, 0, 1, 0, 1], "Snap test 6 failed.");
+		this.assertEquals(testF.(val,-1,1, 1), [-1, -1, 0, 1, 0, 1], "Test 6 (edge case): snap(-1, 1, 1)");
 
 		val = [-1, -0.8, -0.7, -0.4, -0.1, 0, 0.2, 0.5, 0.9, 1];
 		// negative margin value has no effect.
-		this.assertEquals(testF.(val,1,-0.3,1),  val  , "Snap test 7 failed.");
+		this.assertEquals(testF.(val,1,-0.3,1),  val  , "Test 7 (edge case): snap(1, -0.3, 1)");
 
 		val = [-1, -0.5, 0, 1, 0.5, 1];
-		this.assertEquals(testF.(val,1,1,-0.5), [ -1, -0.75, 0, 1, 0.25, 1 ], "Snap test 8 failed.");
+		this.assertEquals(testF.(val,1,1,-0.5), [ -1, -0.75, 0, 1, 0.25, 1 ], "Test 8 (edge case): snap(1, 1, -0.5)");
 
-		this.assertEquals(testF.(val,1,1,0), val, "Snap test 9 failed.");
-		this.assertEquals(testF.(val,1,0,1), val, "Snap test 10 failed.");
-		this.assertEquals(testF.(val,1,2,1), [ -1, 0, 0, 1, 1, 1 ] , "Snap test 11 failed.");
+		this.assertEquals(testF.(val,1,1,0), val, "Test 9 (edge case): snap(1, 1, 0)");
+		this.assertEquals(testF.(val,1,0,1), val, "Test 10 (edge case): snap(1, 0, 1)");
+		this.assertEquals(testF.(val,1,2,1), [ -1, 0, 0, 1, 1, 1 ] , "Test 11 (edge case): snap(1, 2, 1)");
 	}
 }
