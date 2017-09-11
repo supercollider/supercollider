@@ -119,13 +119,17 @@ TestSimpleNumber : UnitTest {
 		this.assertEquals(testF.(val,1,0,0.5), [ -1, -0.9, -0.1, 0, 0.1, 0.9, 1 ], "softRound test 4 failed.");
 
 		// Testing weird edge cases that are probably not typical use cases for backwards compatability purposes.
+
+		// resolution value of 0 leave the original array unchanged.
 		val = [-1, -0.5, 0, 1, 0.5, 1];
-		this.assertEquals(testF.(val,0,0,1), val, "softRound test 5 failed."); // resolution value of 0 leave the original array unchanged.
+		this.assertEquals(testF.(val,0,0,1), val, "softRound test 5 failed.");
 
-		this.assertEquals(testF.(val,-1,0, 1), [1, -1, 0, 1, 0, 1], "softRound test 6 failed."); // negative resolution values result in very strange behavior...
+		// negative resolution values result in very strange behavior...
+		this.assertEquals(testF.(val,-1,0, 1), [1, -1, 0, 1, 0, 1], "softRound test 6 failed.");
 
+		// negative margin value also results in very strange behavior.
 		val = [-1, -0.8, -0.7, -0.4, -0.1, 0, 0.2, 0.5, 0.9, 1];
-		this.assertEquals(testF.(val,1,-0.3,1),  [-1, -1, -1, 0, 0, 0, 0, 1, 1, 1] , "softRound test 7 failed."); // negative margin value also results in very strange behavior.
+		this.assertEquals(testF.(val,1,-0.3,1),  [-1, -1, -1, 0, 0, 0, 0, 1, 1, 1] , "softRound test 7 failed.");
 
 		val = [-1, -0.5, 0, 1, 0.5, 1];
 		this.assertEquals(testF.(val,1,0,-0.5), [-1, -0.75, 0, 1, 0.25, 1], "softRound test 8 failed.");
@@ -135,7 +139,7 @@ TestSimpleNumber : UnitTest {
 
 	}
 
-	test_Snap {
+	test_snap {
 		var val;
 		var testF = {|vals, g, t, s| vals.collect({|num| num.snap(g, t, s)})};
 
@@ -153,12 +157,15 @@ TestSimpleNumber : UnitTest {
 
 		// Testing edge cases that are strictly speaking not supported by this function.
 		val = [-1, -0.5, 0, 1, 0.5, 1];
-		this.assertEquals(testF.(val,0,1,1), val, "Snap test 5 failed."); // resolution value of 0 leave the original array unchanged.
+		// resolution value of 0 leave the original array unchanged.
+		this.assertEquals(testF.(val,0,1,1), val, "Snap test 5 failed.");
 
-		this.assertEquals(testF.(val,-1,1, 1), [-1, -1, 0, 1, 0, 1], "Snap test 6 failed."); // negative resolution values result in very strange behavior...
+		// negative resolution values result in very strange behavior...
+		this.assertEquals(testF.(val,-1,1, 1), [-1, -1, 0, 1, 0, 1], "Snap test 6 failed.");
 
 		val = [-1, -0.8, -0.7, -0.4, -0.1, 0, 0.2, 0.5, 0.9, 1];
-		this.assertEquals(testF.(val,1,-0.3,1),  val  , "Snap test 7 failed."); // negative margin value has no effect.
+		// negative margin value has no effect.
+		this.assertEquals(testF.(val,1,-0.3,1),  val  , "Snap test 7 failed.");
 
 		val = [-1, -0.5, 0, 1, 0.5, 1];
 		this.assertEquals(testF.(val,1,1,-0.5), [ -1, -0.75, 0, 1, 0.25, 1 ], "Snap test 8 failed.");
