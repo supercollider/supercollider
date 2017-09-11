@@ -153,6 +153,7 @@ TestEvent : UnitTest {
 
 	nextNodeID { ^-1 }
 	latency { ^0.2 }
+	defaultGroupID { ^1 }
 
 }
 
