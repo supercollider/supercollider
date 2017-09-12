@@ -69,7 +69,8 @@ TestServer_clientID : UnitTest {
 			"for a single client, bufferAllocator should have full range."
 		);
 
-		s.options.maxLogins = 16; s.newAllocators;
+		s.options.maxLogins = 16;
+		s.newAllocators;
 
 		this.assert(
 			s.audioBusAllocator.size ==
