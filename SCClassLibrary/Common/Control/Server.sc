@@ -380,7 +380,7 @@ Server {
 
 	// private, called from server notify response with next free clientID
 	clientID_ { |val|
-		var failstr = "Server % couldn't set client id to: % - %. clientID is still %.";
+		var failstr = "Server % couldn't set clientID to: % - %. clientID is still %.";
 
 		if(val == clientID) {
 			// no need to change
