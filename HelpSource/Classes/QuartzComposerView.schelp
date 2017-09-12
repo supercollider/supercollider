@@ -66,14 +66,33 @@ Open the currently loaded composition in Quartz Composer. You will need to reloa
 EXAMPLES::
 
 code::
-////////// Simple example
+
+////////// Simple example A (fullscreen)
+(
+var width= 1500, height= 1250; // use a resolution higher then the one of your screen
+w= Window("qc", Rect(100, 100, width, height)).front;
+m= QuartzComposerView(w, Rect(0, 0, width, height));
+m.path = Platform.userAppSupportDir +/+ "Help/QC/Cells.qtz";
+CmdPeriod.doOnce({w.close});
+m.start;
+m.inputKeys.postln;
+w.fullScreen
+)
+
+r.stop;
+a.free;
+m.stop;
+w.close;
+
+
+////////// Simple example B
 (
 w = Window("Simple QC Test").front;
 b = Button(w, Rect(0, 0, 150, 20))
 	.states_([["pick another QC file"]])
 	.action_({ File.openDialog("", { |path| m.path_(path) }) });
 m = QuartzComposerView(w, Rect(0,20,400, 260));
-m.path = Platform.helpDir +/+ "QC/Cells.qtz";
+m.path = Platform.userAppSupportDir +/+ "Help/QC/Cells.qtz";
 )
 m.start;
 m.stop;
@@ -82,7 +101,7 @@ m.stop;
 (
 w = Window("SCTV").front;
 m = QuartzComposerView(w, Rect(0,20,400, 260));
-m.path = Platform.helpDir +/+ "QC/QuartzComposerViewTest.qtz";
+m.path = Platform.userAppSupportDir +/+ "Help/QC/SCQuartzComposerViewTest.qtz";
 m.start;
 )
 
@@ -133,7 +152,7 @@ b = SCButton(w, Rect(0, 0, 150, 20))
 	.states_([["Close Me"]])
 	.action_({w.close});
 m = QuartzComposerView(w, Rect(0,20,360, 260));
-m.path = Platform.helpDir +/+ "QC/QuartzComposerViewTest.qtz";
+m.path = Platform.userAppSupportDir +/+ "Help/QC/SCQuartzComposerViewTest.qtz";
 
 m.resize = 5;
 m.start;
@@ -146,7 +165,7 @@ w.fullScreen;
 (
 w = Window("SCTV").front;
 m = QuartzComposerView(w, Rect(0,20,400, 260));
-m.path = Platform.helpDir +/+ "QC/QuartzComposerViewStructureTest.qtz";
+m.path = Platform.userAppSupportDir +/+ "Help/QC/SCQuartzComposerViewStructureTest.qtz";
 m.start;
 )
 
@@ -185,32 +204,12 @@ y.postln;
 m.stringConcatIn = ["foo", "bar"]; // array in
 x = m.stringConcatOut; // String Out
 
-////////// Image Test
-
-(
-w = Window("Simple QC Test").front;
-b = Button(w, Rect(0, 0, 150, 20))
-    .states_([["pick another QC file"]])
-    .action_({ File.openDialog("", { |path| m.path_(path) }) });
-m = QuartzComposerView(w, Rect(0,20,400, 260));
-m.path = Platform.helpDir +/+ "QC/ImageFilter.qtz";
-)
-m.start;
-m.stop;
-i = m.getOutputValue(\_protocolOutput_Image)
-i.plot;
-
-j = Image.color(100, 100, Color.rand);
-j.plot;
-m.setInputValue(\_protocolInput_Image, j);
-
-
 ////////// Control some audio: Stupid Pan Example
 
 (
 w = Window("Stupid Pan Example", Rect(0,20,600, 150)).front;
 m = QuartzComposerView(w, Rect(0,20,600, 100));
-m.path = Platform.helpDir +/+ "QC/Stupid Pan.qtz";
+m.path = Platform.userAppSupportDir +/+ "Help/QC/Stupid Pan.qtz";
 m.resize = 5;
 m.start;
 )
@@ -232,7 +231,7 @@ loop({
 (
 w = Window("Sonogram", Rect(0,20,600, 300)).front;
 m = QuartzComposerView(w, Rect(0,20,600, 256));
-m.path = Platform.helpDir +/+ "QC/SCQCsonogramCount2.qtz";
+m.path = Platform.userAppSupportDir +/+ "Help/QC/SCQCsonogramCount2.qtz";
 m.start;
 m.setInputValue(\framesPerView, 300);
 m.setInputValue(\magnitudes, (0, 0.01..1));
@@ -279,8 +278,8 @@ w = Window("Level Meters", Rect(128, 64, 200, 400)).front;
 
 m = QuartzComposerView(w, Rect(20,20,50, 360));
 n = QuartzComposerView(w, Rect(130,20,50, 360));
-m.path = Platform.helpDir +/+ "QC/SCLevelMeter.qtz";
-n.path = Platform.helpDir +/+ "QC/SCLevelMeter.qtz";
+m.path = Platform.userAppSupportDir +/+ "Help/QC/SCLevelMeter.qtz";
+n.path = Platform.userAppSupportDir +/+ "Help/QC/SCLevelMeter.qtz";
 m.maxFPS_(20); n.maxFPS_(20);
 m.start; n.start;
 ~meters = [m, n];
@@ -317,26 +316,4 @@ Event.addEventType(\quartz, { |server|
 	var key = ~key, value = ~value;
 	AppClock.sched(latency, { view.postln; view.setInputValue(key, value) });
 });
-
-
-(
-w = Window("Level Meters", Rect(128, 64, 200, 400)).front;
-
-m = QuartzComposerView(w, Rect(20,20,50, 360));
-m.path = "Help/GUI/Cocoa-GUI/QuartzComposerView/SCLevelMeter.qtz".standardizePath;
-m.maxFPS_(20);
-m.start;
-)
-
-(
-Pbind(
-	\type, \quartz,
-	\view, m,
-	\key, \level,
-	\value, Pwhite(0, 1.0, inf).explin(0.01,1.01, 0, 1),
-	\dur, 0.1
-).play;
-)
-
-m.setInputValue(\level, 0.5);
 ::
