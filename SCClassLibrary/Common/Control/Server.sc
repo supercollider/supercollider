@@ -428,20 +428,17 @@ Server {
 	newBusAllocators {
 		var numControlPerClient, numAudioPerClient;
 		var controlReservedOffset, controlBusClientOffset;
-		var audioReservedOffset = 0, audioBusClientOffset;
+		var audioReservedOffset, audioBusClientOffset;
+
+		var audioBusIOOffset = options.firstPrivateBus;
 
 		numControlPerClient = options.numControlBusChannels div: this.numClients;
-		numAudioPerClient = options.numAudioBusChannels div: this.numClients;
+		numAudioPerClient = options.numAudioBusChannels - audioBusIOOffset div: this.numClients;
 
 		controlReservedOffset = options.reservedNumControlBusChannels;
 		controlBusClientOffset = numControlPerClient * clientID;
 
-		// only reserve hardware output chans on clientID 0
-		if (clientID == 0) {
-			audioReservedOffset = audioReservedOffset + options.firstPrivateBus;
-		};
-		audioReservedOffset = audioReservedOffset +
-			options.reservedNumAudioBusChannels;
+		audioReservedOffset = options.reservedNumAudioBusChannels;
 		audioBusClientOffset = numAudioPerClient * clientID;
 
 		controlBusAllocator = busAllocClass.new(
@@ -452,7 +449,7 @@ Server {
 		audioBusAllocator = busAllocClass.new(
 			numAudioPerClient,
 			audioReservedOffset,
-			audioBusClientOffset
+			audioBusClientOffset + audioBusIOOffset
 		);
 	}
 
