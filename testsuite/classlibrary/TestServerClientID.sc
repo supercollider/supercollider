@@ -1,5 +1,5 @@
 /*
-TestServerClientID.run;
+TestServer_clientID.run;
 UnitTest.gui;
 
 Tests for clientID, maxLogins and allocator creation based on these.
@@ -18,7 +18,7 @@ the tests should also include irregular numbers for maxLogins, e.g. 1, 2, 3, 5, 
 
 TestServer_clientID : UnitTest {
 	// these while server is off
-	test_ClientIDChecks {
+	test_clientIDChecks {
 		var s = Server(\testID);
 		this.assert(s.clientID == 0, "s.clientID should be 0 by default.");
 		// test checks for bad input
@@ -34,7 +34,7 @@ TestServer_clientID : UnitTest {
 		Server.named.removeAt(s.name); Server.all.remove(s);
 	}
 
-	test_UserSetClientID {
+	test_userSpecifiedClientID {
 		var options = ServerOptions.new;
 		var s = Server(\testserv, NetAddr("localhost", 57111), options, 1);
 		this.assert(s == nil, "Making a server with invalid clientID should be blocked.");
@@ -44,7 +44,7 @@ TestServer_clientID : UnitTest {
 		Server.named.removeAt(s.name); Server.all.remove(s);
 	}
 
-	test_AllocRanges {
+	test_allocatorRanges {
 		var s = Server(\testAlloc);
 		var prevClass = Server.nodeAllocClass;
 
@@ -52,22 +52,38 @@ TestServer_clientID : UnitTest {
 		s.options.maxLogins = 1; s.newAllocators;
 
 		this.assert(
-			(s.nodeAllocator.numIDs == (2 ** 26)),
+			s.nodeAllocator.numIDs == (2 ** 26),
 			"nodeAllocator should have its normal range."
+		);
+		this.assert(
+			s.audioBusAllocator.size == (s.options.numAudioBusChannels - s.options.firstPrivateBus),
+			"for a single client, audioBusAllocator should have full range minus hardware channels."
 		);
 
 		this.assert(
-			(s.audioBusAllocator.size == s.options.numAudioBusChannels) and:
-			(s.controlBusAllocator.size == s.options.numControlBusChannels) and:
-			(s.bufferAllocator.size == s.options.numBuffers),
-			"for a single client, bus and buffer allocators should have full range."
+			s.controlBusAllocator.size == s.options.numControlBusChannels,
+			"for a single client, controlBusAllocator should have full range."
 		);
-		s.options.maxLogins = 16; s.newAllocators;
 		this.assert(
-			(s.audioBusAllocator.size == (s.options.numAudioBusChannels div: 16)) and:
-			(s.controlBusAllocator.size == (s.options.numControlBusChannels div: 16)) and:
-			(s.bufferAllocator.size == (s.options.numBuffers div: 16)),
-			"for 16 clients, all allocators should divide range evenly."
+			s.bufferAllocator.size == s.options.numBuffers,
+			"for a single client, bufferAllocator should have full range."
+		);
+
+		s.options.maxLogins = 16; s.newAllocators;
+
+		this.assert(
+			s.audioBusAllocator.size ==
+			(s.options.numAudioBusChannels - s.options.firstPrivateBus div: 16),
+			"for 16 clients, controlBusAllocator should divide private bus range evenly."
+		);
+
+		this.assert(
+			s.controlBusAllocator.size == (s.options.numControlBusChannels div: 16),
+			"for 16 clients, controlBusAllocator should divide private bus range evenly."
+		);
+		this.assert(
+			s.bufferAllocator.size == (s.options.numBuffers div: 16),
+			"for 16 clients, bufferAllocator should divide range evenly."
 		);
 
 		Server.nodeAllocClass = prevClass;
