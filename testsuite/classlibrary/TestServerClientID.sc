@@ -31,7 +31,8 @@ TestServer_clientID : UnitTest {
 		this.assert(s.clientID == 0, "s.clientID should block number >= maxLogins.");
 		s.clientID = s.options.maxLogins - 1;
 		this.assert(s.clientID == 31, "s.clientID should be settable if valid.");
-		Server.named.removeAt(s.name); Server.all.remove(s);
+		Server.named.removeAt(s.name);
+		Server.all.remove(s);
 	}
 
 	test_userSpecifiedClientID {
@@ -41,7 +42,8 @@ TestServer_clientID : UnitTest {
 		options.maxLogins_(8);
 		s = Server(\testserv, NetAddr("localhost", 57111), options, 7);
 		this.assert(s.clientID == 7, "Making a server with valid nonzero clientID should work.");
-		Server.named.removeAt(s.name); Server.all.remove(s);
+		Server.named.removeAt(s.name);
+		Server.all.remove(s);
 	}
 
 	test_allocatorRanges {
@@ -49,7 +51,8 @@ TestServer_clientID : UnitTest {
 		var prevClass = Server.nodeAllocClass;
 
 		Server.nodeAllocClass = NodeIDAllocator;
-		s.options.maxLogins = 1; s.newAllocators;
+		s.options.maxLogins = 1;
+		s.newAllocators;
 
 		this.assert(
 			s.nodeAllocator.numIDs == (2 ** 26),
@@ -59,7 +62,6 @@ TestServer_clientID : UnitTest {
 			s.audioBusAllocator.size == (s.options.numAudioBusChannels - s.options.firstPrivateBus),
 			"for a single client, audioBusAllocator should have full range minus hardware channels."
 		);
-
 		this.assert(
 			s.controlBusAllocator.size == s.options.numControlBusChannels,
 			"for a single client, controlBusAllocator should have full range."
@@ -69,7 +71,8 @@ TestServer_clientID : UnitTest {
 			"for a single client, bufferAllocator should have full range."
 		);
 
-		s.options.maxLogins = 16; s.newAllocators;
+		s.options.maxLogins = 16;
+		s.newAllocators;
 
 		this.assert(
 			s.audioBusAllocator.size ==

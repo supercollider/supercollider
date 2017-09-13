@@ -92,36 +92,33 @@ ServerStatusWatcher {
 		if (newClientID == server.clientID) {
 			"%: keeping clientID % as confirmed from scsynth.\n"
 			.postf(server, newClientID);
-			server.clientID = newClientID;
 		} {
 			if (server.userSpecifiedClientID.not) {
 				"%: setting clientID to %, as obtained from scsynth.\n"
 				.postf(server, newClientID);
-				server.clientID = newClientID;
 			} {
 				("% - userSpecifiedClientID % may not be free!\n"
 					" Switching to free clientID obtained from scsynth: %.\n"
 					"If that is problematic, please set clientID by hand before booting.")
 				.format(server, server.clientID, newClientID).warn;
-				server.clientID = newClientID;
 			};
-		}
+		};
+		server.clientID = newClientID
 	}
 
 	prHandleNotifyFailString {|failString, msg|
 
-		// post info on some known error cases
+		// post info on some known harmless error cases
 		case
 		{ failString.asString.contains("already registered") } {
-			"% - already registered with clientID %.\n".postf(server, msg[3]);
-			server.clientID_(msg[3]);
+			"% - already registered with clientID %.\n".postf(server, msg[3])
 		} { failString.asString.contains("not registered") } {
 			// unregister when already not registered:
-			"% - not registered.\n".postf(server)
+			"% - was not registered.\n".postf(server)
 		} { failString.asString.contains("too many users") } {
 			"% - could not register, too many users.\n".postf(server)
 		} {
-			// throw error if unknown failure
+			// throw error only if unknown failure
 			Error(
 				"Failed to register with server '%' for notifications: %\n"
 				"To recover, please reboot the server.".format(server.name, msg)).throw;

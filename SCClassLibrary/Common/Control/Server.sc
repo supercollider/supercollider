@@ -380,7 +380,7 @@ Server {
 
 	// private, called from server notify response with next free clientID
 	clientID_ { |val|
-		var failstr = "Server % couldn't set client id to: % - %. clientID is still %.";
+		var failstr = "Server % couldn't set clientID to: % - %. clientID is still %.";
 
 		if(val == clientID) {
 			// no need to change
@@ -390,14 +390,10 @@ Server {
 			failstr.format(name, val.cs, "not an Integer", clientID).warn;
 			^this
 		};
-		if (val < 0) {
-			failstr.format(name, val.cs, "less than minimum 0", clientID).warn;
-			^this
-		};
-		if (val >= this.numClients) {
+		if (val < 0 or: { val >= this.numClients }) {
 			failstr.format(name,
 				val.cs,
-				"greater than server.numClients % minus 1 allows".format(this.numClients),
+				"outside of allowed server.numClients range of 0 - %".format(this.numClients),
 				clientID
 			).warn;
 			^this
