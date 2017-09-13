@@ -1,5 +1,9 @@
 TestFunction : UnitTest {
 
+	setUp {
+		CommonTestClass.init;
+	}
+
 	test_function_scope {
 		var generator, list, result, a;
 		generator = {
@@ -9,7 +13,7 @@ TestFunction : UnitTest {
 		list = 10.collect(generator);
 		result = list.collect { |each, i| each.value(i) };
 		this.assert(result == (0..9), "lexical function scope should be independent");
-		this.assert(a == 9, "outer lexical function scope should recieve side-effect");
+		this.assert(a == 9, "outer lexical function scope should receive side-effect");
 	}
 
 	test_classmethod_scope {
@@ -17,7 +21,9 @@ TestFunction : UnitTest {
 		obj = CommonTestClass;
 		obj.x = 5;
 		func = obj.returnLexicalScopeGetterFunc;
-		this.assert(func.value == [5, 7], "function scope should be able to access class variables");
+		func.value.postln;
+		this.assert(
+			func.value == [5, 7], "function scope should be able to access class variables");
 		func = obj.returnLexicalScopeSetterFunc;
 		func.value(42);
 		this.assert(obj.x == 42, "function should be able to set class variable");
@@ -44,6 +50,8 @@ CommonTestClass {
 	var <>a, <b = 3;
 	classvar <>x, <y = 7;
 
+	*init { x = nil; y = 7; }
+
 	*returnLexicalScopeGetterFunc {
 		^{ [x, y] }
 	}
@@ -65,7 +73,6 @@ CommonTestClass {
 			b = val;
 		}
 	}
-
 }
 
 

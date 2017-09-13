@@ -610,13 +610,12 @@ SCErr GraphDef_DeleteMsg(World *inWorld, GraphDef *inDef)
 	packet.addtag('s');
 	packet.adds((char*)inDef->mNodeDef.mName);
 
-	ReplyAddress *users = inWorld->hw->mUsers;
-	int numUsers = inWorld->hw->mNumUsers;
-	for (int i=0; i<numUsers; ++i) {
-		SCErr err = SendReplyCmd_d_removed(inWorld, packet.size(), packet.data(), users+i);
-		if(err!=kSCErr_None)
+	for (auto addr : *inWorld->hw->mUsers) {
+		SCErr const err = SendReplyCmd_d_removed(inWorld, packet.size(), packet.data(), &addr);
+		if (err != kSCErr_None)
 			return err;
 	}
+
 	return kSCErr_None;
 }
 

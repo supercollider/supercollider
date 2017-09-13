@@ -360,16 +360,16 @@ TestCoreUGens : UnitTest {
 	}
 
 	test_demand {
-		var nodesToFree, tests, s = this.s, testNaN;
+		var nodesToFree, tests, s = this.s, testNaN, endOSCFunc;
 
 		this.bootServer;
 		nodesToFree = [];
 
-		OSCFunc({ |message|
+		endOSCFunc = OSCFunc({ |message|
 			if(nodesToFree.indexOf(message[1]).notNil) {
 				nodesToFree.removeAt(nodesToFree.indexOf(message[1]))
 			};
-		}, \n_end, s.addr).oneShot;
+		}, \n_end, s.addr);
 
 		tests = [
 			{LPF.ar(LeakDC.ar(Duty.ar(0.1, 0, Dseq((1..8)), 2)))}
@@ -382,6 +382,8 @@ TestCoreUGens : UnitTest {
 
 		// The items should all have freed by now...
 		this.assert(nodesToFree.size == 0, "Duty should free itself after a limited sequence");
+
+		endOSCFunc.free;
 
 		// Test for nil - reference: "cmake build system: don't enable -ffast-math for gcc-4.0"
 		testNaN = false;
