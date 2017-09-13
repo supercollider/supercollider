@@ -11,7 +11,8 @@ TestServer_clientID_booted : UnitTest {
 		var s;
 		s = Server(\testserv1, NetAddr("localhost", 57111), options);
 
-		s.options.maxLogins = 4; s.clientID = 3;
+		s.options.maxLogins = 4;
+		s.clientID = 3;
 		this.bootServer(s);
 		s.sync;
 		1.wait;
