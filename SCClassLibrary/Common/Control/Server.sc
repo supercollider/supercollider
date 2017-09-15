@@ -278,7 +278,7 @@ Server {
 	var <window, <>scopeWindow, <emacsbuf;
 	var <volume, <recorder, <statusWatcher;
 	var <pid, serverInterface;
-
+	var <>freeAllFreesRootNode = true;
 
 	*initClass {
 		Class.initClassTree(ServerOptions);
@@ -357,7 +357,8 @@ Server {
 		addr = netAddr ?? { NetAddr("127.0.0.1", 57110) };
 		inProcess = addr.addr == 0;
 		isLocal = inProcess || { addr.isLocal };
-		remoteControlled = isLocal;
+		remoteControlled = isLocal.not;
+		freeAllFreesRootNode = isLocal;
 	}
 
 	name_ { |argName|
@@ -717,6 +718,14 @@ Server {
 		^Buffer.cachedBufferAt(this, bufnum)
 	}
 
+	defaultGroupIDForClientID { |id| ^nodeAllocator.numIDs * id + 1 }
+
+	sendDefaultGroupsFor { |ids|
+		ids.do { |id|
+			this.sendMsg("g_new", this.defaultGroupIDForClientID(id));
+		}
+	}
+
 	defaultGroupID { ^nodeAllocator.idOffset + 1 }
 
  	defaultGroup {
@@ -801,7 +810,7 @@ Server {
 			this.bootInit(recover);
 		}, onFailure: onFailure ? false);
 
-		if(remoteControlled.not) {
+		if(remoteControlled) {
 			"You will have to manually boot remote server.".postln;
 		} {
 			this.prPingApp({
@@ -941,10 +950,9 @@ Server {
 	}
 
 	freeAll {
-		if (clientID == 0) {
+		this.sendMsg("/g_freeAll", this.defaultGroupID);
+		if (freeAllFreesRootNode) {
 			this.sendMsg("/g_freeAll", 0);
-		} {
-			this.sendMsg("/g_freeAll", this.defaultGroupID);
 		};
 		this.sendMsg("/clearSched");
 		this.initTree;
