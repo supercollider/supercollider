@@ -1,0 +1,259 @@
+TITLE:: UnitTest
+summary:: a class for programmatic testing of classes
+categories:: Testing
+related:: Classes/UnitTestResult, Classes/UnitTestScript
+
+DESCRIPTION::
+In order to make sure a method works correctly, a test can be implemented that assures the correct behavior.
+
+It is a common practice to write tests to clarify how an object should respond, and it may avoid inconsistencies on the long run. A test is always a subclass of code::UnitTest::, implementing at least one method starting with code::test_::.
+
+note::
+UnitTests for the Common library classes are kept in the code::testsuite/classlibrary:: directory of the SuperCollider sources.
+
+To install, link::https://github.com/supercollider/supercollider##download the sources:: and add the directory to your code::sclang_conf.yaml::, either by editing it or via the ScIDE preferences.
+::
+
+
+CLASSMETHODS::
+
+PRIVATE:: allTestClasses, classesWithTests, classesWithoutTests, failures, findTestClass, findTestClasses, findTestMethods, findTestedClass, forkIfNeeded, listUntestedMethods, passes, report, reportPasses, reset, run, untestedMethods
+
+METHOD:: gui
+A graphical interface to run and browse all tests
+
+code::
+UnitTest.gui
+::
+
+METHOD:: runTest
+Run a single test for methodName.
+
+ARGUMENT:: methodName
+Should have the format code::"TestPolyPlayerPool:test_prepareChildrenToBundle"::
+
+code::
+UnitTest.reset;
+UnitTest.runTest("TestUnitTest:test_assert");
+::
+
+
+METHOD:: runAll
+runs all subclasses of UnitTest
+
+code::
+UnitTest.reset;
+UnitTest.runAll;
+::
+
+
+METHOD:: runTestClassForClass
+runs testclass for a class
+
+ARGUMENT:: class
+the class
+
+ARGUMENT:: reset
+reset UnitTest environment
+
+ARGUMENT:: report
+report on pass/fail
+
+
+
+
+
+
+INSTANCEMETHODS::
+
+METHOD:: run
+All method names that start with test_ are invoked.
+
+ARGUMENT:: reset
+(describe argument here)
+
+ARGUMENT:: report
+(describe argument here)
+
+returns:: (describe returnvalue here)
+
+code::
+TestUnitTest.new.run;
+::
+
+
+
+
+
+METHOD:: runTestMethod
+Run a single test method of this class
+
+ARGUMENT:: method
+the method to run
+
+code::
+TestUnitTest.new.runTestMethod(TestUnitTest.findMethod(\test_assert));
+::
+
+returns:: (describe returnvalue here)
+
+PRIVATE:: assert, assertArrayFloatEquals, asynchAssert, tearDown, setUp, assertEquals, failed, passed, assertFloatEquals, s, ifAsserts, findTestMethods, wait, bootServer
+
+
+SECTION:: Writing tests by subclassing UnitTest
+
+code::
+YourClass.test
+::
+Runs the test class for code::YourClass::, which is assumed to be named code::TestYourClass::.
+
+If no test class if found it politely declines.
+
+note::
+UnitTests for the Common library classes are kept in the CommonTests quark. 	This enables you to easily install and uninstall these tests.
+::
+
+
+Make sure to implement the methods code::setUp:: and code::tearDown::. They will be called before and after the test.
+
+METHOD:: assert
+
+argument:: test
+Make sure that this returns a boolean, where code::true:: means that the test is passed.
+
+argument:: message
+posted if report is true.
+
+argument:: onFailure
+If not code::nil::, a failure stops the tests and evaluates this function.
+
+code::
+UnitTest.new.assert(2 == 2, "Two does equal two.");
+UnitTest.new.assert(2 == 2.00001, "Two does equal two.");
+::
+
+METHOD:: assertFloatEquals
+
+Make sure that the two floats code::a:: and code::b:: equal within a given range (code::within::).
+
+
+argument:: a
+a float
+
+argument:: b
+a float
+
+argument:: message
+posted if report is true.
+
+argument:: onFailure
+If not code::nil::, a failure stops the tests and evaluates this function.
+
+
+
+code::
+UnitTest.new.assertFloatEquals(2, 2.00001, "Two does equal two.", 0.00001);
+UnitTest.new.assertFloatEquals(2, 2.001, "Two does equal two.", 0.0001);
+::
+
+method:: assertArrayFloatEquals
+Make sure that the two arrays of floats code::a:: and code::b:: equal within a given range (code::within::).
+
+argument:: a
+an code::Array:: of floats
+
+argument:: b
+an code::Array:: of floats
+
+argument:: message
+posted if report is true.
+
+argument:: onFailure
+If not code::nil::, a failure stops the tests and evaluates this function.
+
+code::
+UnitTest.new.assertArrayFloatEquals([2, 3], [2, 3] + 0.00001, "Same Floats", 0.000001);
+::
+
+METHOD:: ifAsserts
+Make a further assertion only if it passed, or only if it failed.
+
+code::
+(
+a = UnitTest.new;
+a.ifAsserts(2 == 3, "yes", { a.assert(2 == 4) }, { a.assert(1 == 1, "but this is correct") });
+)
+::
+
+method::wait
+Wait for a condition, consider failed after maxTime. Only valid within a test (or a routine).
+
+code::
+(
+{
+	s.reboot;
+	UnitTest.new.wait(s.serverRunning, "server failed to boot in time", 2);
+}.fork
+)
+::
+
+METHOD:: bootServer
+Wait for server boot until continued. Only valid within a test (or a routine).
+
+If already booted, then freeAll and create new allocators.
+
+code::
+(
+{
+	UnitTest.new.bootServer(s);
+}.fork
+)
+::
+
+METHOD:: failed
+call failure directly.
+
+code::
+UnitTest.new.passed(message: "this passed");
+::
+
+SUBSECTION:: UnitTest (sub)class  example.
+
+code::
+TestYourClass : UnitTest {
+	setUp {
+		// this will be called before each test
+	}
+	tearDown {
+		// this will be called after each test
+	}
+
+	test_yourMethod {
+
+		// every method named test_
+		// will be run
+
+		this.assert( 6 == 6, "6 should equal 6");
+
+		this.assertEquals( 9, 9, "9 should equal 9");
+
+		this.assertFloatEquals( 4.0 , 1.0 * 4.0 / 4.0  4.0,
+			"floating point math should be close to equal");
+
+		// we are inside a Routine, you may wait
+		1.0.wait;
+
+		// this will wait until the server is booted
+		this.bootServer;
+
+		// if the server is already booted it will free all nodes
+		// and create new allocators, giving you a clean slate
+		p = { SinOsc.ar };
+		p.play;
+		p.register;
+		// will wait until the condition is true
+		// will be considered a failure after 10 seconds
+		this.wait( { p.isPlaying }, "waiting for synth to play", 10);
+	}
+}
+::
