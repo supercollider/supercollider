@@ -1,4 +1,4 @@
-class:: AllpassC
+class:: AllpassC++
 summary:: Schroeder allpass delay line with cubic interpolation.
 related:: Classes/AllpassL, Classes/AllpassN, Classes/BufAllpassC
 categories::  UGens>Delays
