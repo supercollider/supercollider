@@ -351,6 +351,11 @@ Server {
 
 	}
 
+	remove {
+		all.remove(this);
+		named.removeAt(this.name);
+	}
+
 	numClients { ^options.maxLogins }
 
 	addr_ { |netAddr|
