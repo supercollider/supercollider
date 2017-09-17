@@ -58,6 +58,9 @@ HelpBrowser::HelpBrowser( QWidget * parent ):
     webPage->setDelegateReload(true);
     webPage->setLinkDelegationPolicy( QWebPage::DelegateAllLinks );
 
+    // Tell the web page to open external links in the desktop browser
+    webPage->setUsingDesktopBrowser(true);
+
     mWebView = new QWebView;
     mWebView->setPage( webPage );
     mWebView->settings()->setAttribute( QWebSettings::LocalStorageEnabled, true );
