@@ -7,7 +7,7 @@ description::
 
 The only difference to link::Classes/Pbindef:: is that it only keeps  subpatterns that are passed to it with code::*new:: (see below).
 
-PbindefCut and Pbindef use the same global collection, so they can be used as interfaces to the same pattern.
+code::PbindefCut:: and code::Pbindef:: use the same global collection, so they can be used as interfaces to the same pattern.
 
 
 classmethods::
@@ -34,6 +34,7 @@ s.boot;
 
 // you can move between PbindefCut and Pbindef, they point to the same pattern
 // but once stuff is cut away, it's gone (i.e. turning back to a Pbind does not resurface e.g. the choice of instrument from above).
+
 
 Pbindef(\a, \instrument, \Pdefhelp).play;
 Pbindef(\a, \degree, Pseq([0, 2, 5b, 1b], inf));

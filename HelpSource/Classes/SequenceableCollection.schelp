@@ -321,13 +321,13 @@ The obj to insert (usually a collection, but anything that responds to code::++:
 
 discussion::
 code::
-a = [1, 2, 3, 4, 5, 6];
-b = [100, 200];
-a.insertAll(2, b); // [ 1, 2, 100, 200, 3, 4, 5, 6 ]
+a = [\l, \m, \n, \o, \p, \r];
+b = [\X, \Y];
+a.insertAll(2, b); // [ \l, \m, \X, \Y, \n, \o, \p, \r ]
 ::
 
 method::mergeItems
-Return a new collection that contains all items of the receiver, with elements from another collection inserted, so that the orders of both collections are maintained as much as possible. Items are added only where not already present (test is strong::equality::).  If the collection passed as argument has inversed order, the order of the receiver is kept.
+Return a new collection that contains all items of the receiver, with elements from another collection inserted, so that the orders of both collections are maintained as much as possible. Items are added only where not already present (test is strong::equality:: / code::==::).  If the collection passed as argument has inversed order, the order of the receiver is kept.
 
 argument::aCollection
 A sequenceable collection to be merged into the receiver.
