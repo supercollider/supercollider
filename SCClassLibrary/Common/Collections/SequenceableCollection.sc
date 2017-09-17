@@ -328,7 +328,7 @@ SequenceableCollection : Collection {
 			#i, j = indices;
 			rest = aCollection.drop(i + 1);
 			coll = this.keep(j + 1);
-			rest.removeAllEqual(coll);
+			rest.removeEachEqual(coll);
 			aCollection.keep(i) ++ coll ++ rest.mergeItems(this.drop(j + 1))
 		}
 	}

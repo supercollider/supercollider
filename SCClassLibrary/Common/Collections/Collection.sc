@@ -113,7 +113,7 @@ Collection {
 	removeAll { | list | list.do { | item | this.remove(item) } }
 	removeEvery { | list | this.removeAllSuchThat(list.includes(_)) }
 
-	removeAllEqual { | list |
+	removeEachEqual { | list |
 		list.do { | removing |
 			var index = this.detectIndex({ |item| item == removing });
 			if(index.notNil) { this.removeAt(index) }
