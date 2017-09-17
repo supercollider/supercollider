@@ -23,6 +23,8 @@
 
 #include <QApplication>
 #include <QClipboard>
+#include <QDesktopServices>
+#include <QNetworkRequest>
 
 namespace QtCollider {
 
@@ -46,6 +48,22 @@ void WebPage::triggerAction ( WebAction action, bool checked )
 void WebPage::javaScriptConsoleMessage ( const QString & msg, int line, const QString & src )
 {
   Q_EMIT( jsConsoleMsg(msg,line,src) );
+}
+
+/**
+ * \brief Override of QWebPage::acceptNavigationRequest that can open external links in the OS
+ * browser.
+ */
+bool WebPage::acceptNavigationRequest (
+        QWebFrame * frame,
+        const QNetworkRequest& request,
+        NavigationType type
+        )
+{
+  if ( frame == nullptr && _usingDesktopBrowser )
+    return QDesktopServices::openUrl( request.url() );
+  else
+    return QWebPage::acceptNavigationRequest( frame, request, type );
 }
 
 } // namespace QtCollider
