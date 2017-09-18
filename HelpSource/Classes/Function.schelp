@@ -425,7 +425,7 @@ A zoom value for the scope's X axis. Larger values show more. The default is 1.
 
 method::plot
 
-Calculates duration in seconds worth of the output of this function, and plots it in a GUI window. Unlike play and scope it will not work with explicit Out Ugens, so your function should return a UGen or an Array of them. The plot will be calculated in realtime.
+Calculates duration in seconds worth of the output of this function asynchronously, and plots it in a GUI window. Unlike play and scope it will not work with explicit Out Ugens, so your function should return a UGen or an Array of them. The plot will be calculated in realtime.
 
 code::
 { SinOsc.ar(440) }.plot(0.01, bounds: Window.screenBounds);
@@ -447,6 +447,32 @@ the maximum value in the plot. Defaults to 1.0.
 argument:: separately
 For multi channel signals, set whether to use separate value display ranges or not.
 a window to place the plot in. If nil, one will be created for you.
+
+
+method::asBuffer
+Calculates duration in seconds worth of the output of this function asynchronously, and returns it in a link::Classes/Buffer:: of the number of channels. This method immediately returns a buffer, which takes code::duration:: seconds to become filled with data asynchronously. Then the action function is called.
+
+argument::duration
+The duration of the function to plot in seconds. The default is 0.01.
+
+argument::server
+The server on which the function is calculated. The default is code::Server.default::.
+
+argument::action
+A function that is called when the buffer is filled. It is passed the buffer as argument.
+
+argument::fadeTime
+A fade in and out time in seconds. Only when greater than zero, an envelope is applied to the signal to avoid clicks (default: 0).
+
+discussion::
+code::
+// record a buffer
+b = { Blip.ar(XLine.kr(10000, 4, 3) * [1, 1.2], 20) * 0.1 }.asBuffer(3, fadeTime:0.1)
+b.plot; // after 3 seconds, you can see it.
+// play the soundfile back
+{ PlayBuf.ar(b.numChannels, b, LFNoise2.kr(2 ! 8).exprange(0.15, 1), loop:1).sum }.play;
+::
+
 
 subsection::Conversion
 

@@ -45,8 +45,8 @@
 #include "PyrDeepFreezer.h"
 //#include "Wacom.h"
 #include "InitAlloc.h"
-#include "../LangSource/SC_LanguageConfig.hpp"
-#include "SC_DirUtils.h"
+#include "SC_LanguageConfig.hpp"
+#include "SC_Filesystem.hpp"
 #include "SC_Version.hpp"
 #include <map>
 
@@ -62,10 +62,13 @@
 
 #include "SCDocPrim.h"
 
+#include <boost/filesystem/path.hpp> // path
 
 #ifdef __clang__
 #pragma clang diagnostic ignored "-Warray-bounds"
 #endif
+
+namespace bfs = boost::filesystem;
 
 int yyparse();
 
@@ -324,7 +327,7 @@ int prPrimitiveErrorString(struct VMGlobals *g, int numArgsPushed)
 				try {
 					std::rethrow_exception(lastPrimitiveException);
 				} catch(const std::exception& e) {
-					
+
 					const char *errorString = e.what();
 					str = std::string("caught exception \'") + errorString + "\' in primitive in method " + lastPrimitiveExceptionClass + ":" + lastPrimitiveExceptionMethod;
 					break;
@@ -3493,7 +3496,7 @@ static int prLanguageConfig_getLibraryPaths(struct VMGlobals * g, int numArgsPus
 
 	typedef SC_LanguageConfig::DirVector DirVector;
 
-	DirVector const & dirVector = (pathType == includePaths) ? gLanguageConfig->includedDirectories()
+	const DirVector& dirVector = (pathType == includePaths) ? gLanguageConfig->includedDirectories()
 															 : gLanguageConfig->excludedDirectories();
 
 	size_t numberOfPaths = dirVector.size();
@@ -3501,7 +3504,8 @@ static int prLanguageConfig_getLibraryPaths(struct VMGlobals * g, int numArgsPus
 	SetObject(result, resultArray);
 
 	for (size_t i = 0; i != numberOfPaths; ++i) {
-		PyrString * pyrString = newPyrString(g->gc, dirVector[i].c_str(), 0, true);
+		const std::string& utf8_path = SC_Codecvt::path_to_utf8_str(dirVector[i]);
+		PyrString * pyrString = newPyrString(g->gc, utf8_path.c_str(), 0, true);
 		SetObject(resultArray->slots + i, pyrString);
 		g->gc->GCWriteNew( resultArray,  pyrString ); // we know pyrString is white so we can use GCWriteNew
 		resultArray->size++;
@@ -3528,10 +3532,11 @@ static int prLanguageConfig_addLibraryPath(struct VMGlobals * g, int numArgsPush
 	if (error)
 		return errWrongType;
 
+	const bfs::path& native_path = SC_Codecvt::utf8_str_to_path(path);
 	if (pathType == includePaths)
-		gLanguageConfig->addIncludedDirectory(path);
+		gLanguageConfig->addIncludedDirectory(native_path);
 	else
-		gLanguageConfig->addExcludedDirectory(path);
+		gLanguageConfig->addExcludedDirectory(native_path);
 	return errNone;
 }
 
@@ -3554,10 +3559,11 @@ static int prLanguageConfig_removeLibraryPath(struct VMGlobals * g, int numArgsP
 	if (error)
 		return errWrongType;
 
+	const bfs::path& native_path = SC_Codecvt::utf8_str_to_path(path);
 	if (pathType == includePaths)
-		gLanguageConfig->removeIncludedDirectory(path);
+		gLanguageConfig->removeIncludedDirectory(native_path);
 	else
-		gLanguageConfig->removeExcludedDirectory(path);
+		gLanguageConfig->removeExcludedDirectory(native_path);
 	return errNone;
 }
 
@@ -3574,7 +3580,8 @@ static int prLanguageConfig_removeExcludePath(struct VMGlobals * g, int numArgsP
 static int prLanguageConfig_getCurrentConfigPath(struct VMGlobals * g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	PyrString* str = newPyrString(g->gc, gLanguageConfig->getCurrentConfigPath(), 0, false);
+	const std::string& config_path = SC_Codecvt::path_to_utf8_str(gLanguageConfig->getConfigPath());
+	PyrString* str = newPyrString(g->gc, config_path.c_str(), 0, false);
     if(str->size == 0) {
         SetNil(a);
     } else {
@@ -3588,36 +3595,39 @@ static int prLanguageConfig_writeConfigFile(struct VMGlobals * g, int numArgsPus
 {
 	PyrSlot *fileString = g->sp;
 
-	char path[MAXPATHLEN];
 	if (NotNil(fileString)) {
+		char path[MAXPATHLEN];
 		bool error = slotStrVal(fileString, path, MAXPATHLEN);
 		if (error)
 			return errWrongType;
+
+		const bfs::path& config_path = SC_Codecvt::utf8_str_to_path(path);
+		gLanguageConfig->writeLibraryConfigYAML(config_path);
 	} else {
-		sc_GetUserConfigDirectory(path, PATH_MAX);
-		sc_AppendToPath(path, MAXPATHLEN, "sclang_conf.yaml");
+		const bfs::path& config_path =
+			SC_Filesystem::instance().getDirectory(SC_Filesystem::DirName::UserConfig)
+			/ "sclang_conf.yaml";
+		gLanguageConfig->writeLibraryConfigYAML(config_path);
 	}
 
-	gLanguageConfig->writeLibraryConfigYAML(path);
 	return errNone;
 }
 
-extern bool gPostInlineWarnings;
 static int prLanguageConfig_getPostInlineWarnings(struct VMGlobals * g, int numArgsPushed)
 {
 	PyrSlot *result = g->sp;
-	SetBool(result, gPostInlineWarnings);
+	SetBool(result, SC_LanguageConfig::getPostInlineWarnings());
 	return errNone;
 }
 
 static int prLanguageConfig_setPostInlineWarnings(struct VMGlobals * g, int numArgsPushed)
 {
-	PyrSlot *arg    = g->sp;
+	PyrSlot *arg = g->sp;
 
 	if (IsTrue(arg))
-		gPostInlineWarnings = true;
+		SC_LanguageConfig::setPostInlineWarnings(true);
 	else if (IsFalse(arg))
-		gPostInlineWarnings = false;
+		SC_LanguageConfig::setPostInlineWarnings(false);
 	else
 		return errWrongType;
 
@@ -4326,7 +4336,7 @@ void initOpenGLPrimitives();
 	initSCDocPrimitives();
 
 	s_recvmsg = getsym("receiveMsg");
-	post("\tNumPrimitives = %d\n", nextPrimitiveIndex());
+	post("\tFound %d primitives.\n", nextPrimitiveIndex());
 }
 
 void deinitPrimitives()

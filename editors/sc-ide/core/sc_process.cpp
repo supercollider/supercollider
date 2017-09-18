@@ -399,7 +399,7 @@ void ScProcess::updateTextMirrorForDocument ( Document * doc, int position, int 
     if (!mIpcSocket)
         return;
 
-    if (mIpcSocket->state() != QAbstractSocket::ConnectedState)
+    if (mIpcSocket->state() != QLocalSocket::ConnectedState)
         return;
 
     QVariantList argList;
@@ -424,7 +424,7 @@ void ScProcess::updateSelectionMirrorForDocument ( Document * doc, int start, in
     if (!mIpcSocket)
         return;
 
-    if (mIpcSocket->state() != QAbstractSocket::ConnectedState)
+    if (mIpcSocket->state() != QLocalSocket::ConnectedState)
         return;
 
     QVariantList argList;

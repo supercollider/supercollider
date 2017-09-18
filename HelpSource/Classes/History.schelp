@@ -27,7 +27,7 @@ method::enter
 add an entry by hand.
 
 method::document
-post the history in a new document (as story).
+post the history in a new document (as story). The document title is a string formatted as follows: code::"%Y-%m-%d-%Hh%M-History"::.
 
 method:: makeWin
 make a HistoryGui for History.current, at the point given, with the given textHeight.

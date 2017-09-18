@@ -565,7 +565,7 @@ Collection {
 			^if(class == this.class) { this } { this.as(class) }
 		};
 		res = class.new(this.size div: 2);
-		this.pairsDo { |key, val| res.add(key -> val) }
+		this.pairsDo { |key, val| res = res.add(key -> val) }
 		^res
 	}
 
@@ -575,8 +575,8 @@ Collection {
 		if(this.isAssociationArray.not) {
 			^if(class == this.class) { this } { this.as(class) }
 		};
-		res = class.new(this.size div: 2);
-		this.do { |assoc| res.add(assoc.key).add(assoc.value) }
+		res = class.new(this.size * 2);
+		this.do { |assoc| res = res.add(assoc.key).add(assoc.value) }
 		^res
 	}
 

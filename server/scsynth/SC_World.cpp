@@ -41,7 +41,7 @@
 #include "SC_Errors.h"
 #include <stdio.h>
 #include "SC_Prototypes.h"
-#include "SC_DirUtils.h"
+#include "SC_Filesystem.hpp"
 #include "SC_Lock.h"
 #include "SC_Lib_Cintf.h"
 #include "../../common/SC_SndFileHelpers.hpp"
@@ -68,6 +68,9 @@
 
 #include "server_shm.hpp"
 
+#include <boost/filesystem/path.hpp> // path
+
+namespace bfs = boost::filesystem;
 
 InterfaceTable gInterfaceTable;
 PrintFunc gPrint = 0;
@@ -268,6 +271,7 @@ static void World_LoadGraphDefs(World* world);
 void World_LoadGraphDefs(World* world)
 {
 	GraphDef *list = 0;
+	using DirName = SC_Filesystem::DirName;
 
 	if(getenv("SC_SYNTHDEF_PATH")){
 		if(world->mVerbosity > 0)
@@ -280,15 +284,10 @@ void World_LoadGraphDefs(World* world)
 			GraphDef_Define(world, list);
 		}
 	}else{
-		char resourceDir[MAXPATHLEN];
-		if(sc_IsStandAlone())
-			sc_GetResourceDirectory(resourceDir, MAXPATHLEN);
-		else
-			sc_GetUserAppSupportDirectory(resourceDir, MAXPATHLEN);
-		sc_AppendToPath(resourceDir, MAXPATHLEN, "synthdefs");
+		bfs::path path = SC_Filesystem::instance().getDirectory(DirName::UserAppSupport) / "synthdefs";
 		if(world->mVerbosity > 0)
-			scprintf("Loading synthdefs from default path: %s\n", resourceDir);
-		list = GraphDef_LoadDir(world, resourceDir, list);
+			scprintf("Loading synthdefs from default path: %s\n", SC_Codecvt::path_to_utf8_str(path).c_str());
+		list = GraphDef_LoadDir(world, path, list);
 		GraphDef_Define(world, list);
 	}
 

@@ -73,6 +73,7 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const & prototype):
     mNumControls = parameter_count;
     mControls     = allocator.alloc<float>(parameter_count);
     mControlRates = allocator.alloc<int>(parameter_count);
+    mAudioBusOffsets = allocator.alloc<int>(parameter_count);
     mMapControls  = allocator.alloc<float*>(parameter_count);
 
     /* initialize controls */
@@ -80,6 +81,7 @@ sc_synth::sc_synth(int node_id, sc_synth_definition_ptr const & prototype):
         mControls[i] = synthdef.parameters[i]; /* initial parameters */
         mMapControls[i] = &mControls[i];       /* map to control values */
         mControlRates[i] = 0;                  /* init to 0*/
+        mAudioBusOffsets[i] = -1;              /* init to -1: not mapped to an audio bus yet */
     }
 
     /* allocate constant wires */
@@ -219,6 +221,9 @@ void sc_synth::map_control_bus_audio (unsigned int slot_index, int audio_bus_ind
         mMapControls[slot_index] = mControls + slot_index;
     } else if (uint(audio_bus_index) < world->mNumAudioBusChannels) {
         mControlRates[slot_index] = 2;
+        // lets AudioControl know that we've been mapped into an audio bus, so we can
+        // zero the output when it's freed later.
+        mAudioBusOffsets[slot_index] = audio_bus_index;
         mMapControls[slot_index] = world->mAudioBus + (audio_bus_index * world->mBufLength);
     }
 }

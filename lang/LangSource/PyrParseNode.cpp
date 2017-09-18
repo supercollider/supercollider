@@ -38,6 +38,10 @@
 #include "SimpleStack.h"
 #include "PyrPrimitive.h"
 #include "SC_Win32Utils.h"
+#include "SC_LanguageConfig.hpp"
+#include "SC_Codecvt.hpp"
+
+namespace bfs = boost::filesystem;
 
 AdvancingAllocPool gParseNodePool;
 
@@ -78,8 +82,6 @@ std::string overwriteMsg;
 
 extern bool compilingCmdLine;
 extern int errLineOffset, errCharPosOffset;
-
-bool gPostInlineWarnings = false;
 
 const char* nodename[] = {
 	"ClassNode",
@@ -326,7 +328,6 @@ void PyrSlotNode::compile(PyrSlot *result)
 	}
 }
 
-
 PyrClassExtNode* newPyrClassExtNode(PyrSlotNode* className, PyrMethodNode* methods)
 {
 	PyrClassExtNode* node = ALLOCNODE(PyrClassExtNode);
@@ -340,11 +341,10 @@ void PyrClassExtNode::compile(PyrSlot *result)
 {
 	PyrClass *classobj = slotRawSymbol(&mClassName->mSlot)->u.classobj;
 	if (!classobj) {
-		char extPath[1024];
-		asRelativePath(gCompilingFileSym->name, extPath);
+		const bfs::path relpath = relativeToCompileDir(bfs::path(gCompilingFileSym->name));
 		error("Class extension for nonexistent class '%s'\n     In file:'%s'\n",
 			slotRawSymbol(&mClassName->mSlot)->name,
-			extPath
+			SC_Codecvt::path_to_utf8_str(relpath).c_str()
 		);
 		return;
 	}
@@ -2254,7 +2254,7 @@ bool isAnInlineableBlock(PyrParseNode *node)
 		if (IsPtr(&anode->mSlot)
 				&& (bnode = (PyrBlockNode*)(slotRawPtr(&anode->mSlot)))->mClassno == pn_BlockNode) {
 			if (bnode->mArglist || bnode->mVarlist) {
-				if (gPostInlineWarnings) {
+				if (SC_LanguageConfig::getPostInlineWarnings()) {
 					post("WARNING: FunctionDef contains variable declarations and so"
 					" will not be inlined.\n");
 					if (bnode->mArglist)
@@ -2279,7 +2279,7 @@ bool isAnInlineableAtomicLiteralBlock(PyrParseNode *node)
 		if (IsPtr(&anode->mSlot)
 				&& (bnode = (PyrBlockNode*)(slotRawPtr(&anode->mSlot)))->mClassno == pn_BlockNode) {
 			if (bnode->mArglist || bnode->mVarlist) {
-				if (gPostInlineWarnings) {
+				if (SC_LanguageConfig::getPostInlineWarnings()) {
 					post("WARNING: FunctionDef contains variable declarations and so"
 					" will not be inlined.\n");
 					if (bnode->mArglist)

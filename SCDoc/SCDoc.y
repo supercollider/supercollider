@@ -192,7 +192,13 @@ subsubsection: METHOD methnames optMETHODARGS eol methodbody
         doc_node_add_child($$, $5);
 //        doc_node_add_child($2, $3);
     }
-             | COPYMETHOD words eol { $$ = doc_node_make(
+             | COPYMETHOD words eol {
+                if ( !(strchr($2, ' ')) ) {
+                  yyerror("COPYMETHOD requires 2 arguments (class name and method name)");
+                  YYERROR;
+                }
+
+                $$ = doc_node_make(
                 stringEqual(method_type, "CMETHOD") ? "CCOPYMETHOD"
                                                     : (stringEqual(method_type, "IMETHOD") ? "ICOPYMETHOD"
                                                                                            : "COPYMETHOD"),

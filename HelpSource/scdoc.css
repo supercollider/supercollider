@@ -41,7 +41,7 @@ p {
     margin-bottom: 0.3em;
 }
 
-a:link, a:visited, a:hover {
+a:link, a:visited, a:link:hover {
     text-decoration: none;
     color: #449;
     /* add padding to work around "text-decoration: underline" not
@@ -49,7 +49,7 @@ a:link, a:visited, a:hover {
     padding-bottom: 1px;
 }
 
-a:hover {
+a:link:hover {
     text-decoration: underline;
 }
 

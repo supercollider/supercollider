@@ -48,6 +48,22 @@ Git {
 		});
 		^nil
 	}
+	remoteAsHttpUrl {
+		var giturl = this.url;
+		var hosturl, path;
+
+		if(giturl.notNil, {
+			if(giturl.beginsWith("git@"), {
+				#hosturl, path = giturl.split($:);
+				^"https://%/%".format(hosturl.split($@).last, path)
+			});
+			if(giturl.beginsWith("git:"), {
+				^("https:" ++ giturl.copyToEnd(4))
+			});
+			^giturl;
+		});
+		^nil
+	}
 	refspec {
 		^this.tag ?? { this.sha }
 	}

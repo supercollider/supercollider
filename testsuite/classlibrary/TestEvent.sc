@@ -34,6 +34,74 @@ TestEvent : UnitTest {
 
 	}
 
+	test_parent_proto {
+
+
+
+// This shows the order of precedence in an event (higher is overriding lower)
+// the tests below make sure the above precedence is valid
+
+
+/*
+
+                                       +----  (4)  proto of the proto (propro)
+                                      /
+                   +-- proto  (6) ---+
+                  /                   \
+                 /                     +----  (3)  parent of the proto (propa)
+                /
+  event (7) ---+
+                \
+                 \                     +---- (2)  proto of the parent (papro)
+                  \                   /
+                   +-- parent  (5) --+
+                                      \
+                                       +---- (1)  parent of the parent (papa)
+*/
+
+
+		var papa = (x:1);
+		var papro = (x:2);
+		var propa = (x:4);
+		var propro = (x:5);
+		var parent = (x:3);
+		var proto = (x:6);
+		var event = (x:7);
+
+		parent.parent = papa;
+		parent.proto = papro;
+		proto.parent = propa;
+		proto.proto = propro;
+		event.parent = parent;
+		event.proto = proto;
+
+		this.assert(event[\x] == 7, "value in instance should override value of parent and proto");
+		event[\x] = nil;
+
+		this.assert(event[\x] == 6, "value in proto should override value of parent");
+		event[\x] == 6;
+
+		proto[\x] = nil;
+		this.assert(event[\x] == 5, "value in proto's proto should override proto's parent");
+
+		propro[\x] = nil;
+		this.assert(event[\x] == 4, "value in proto's parent should override parent");
+
+
+		propa[\x] = nil;
+		this.assert(event[\x] == 3, "value in parent should override parent's parent and proto");
+
+		parent[\x] = nil;
+		this.assert(event[\x] == 2, "value in parent's proto should override value of parent's parent");
+
+		papro[\x] = nil;
+		this.assert(event[\x] == 1, "value in parent's parent should be accessible");
+
+		papa[\x] = nil;
+		this.assert(event[\x] == nil, "empty parent and proto structure should return nil");
+
+	}
+
 	test_server_messages {
 		// type note
 		var event = (

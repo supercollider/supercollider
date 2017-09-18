@@ -1,21 +1,44 @@
 class:: Pgate
-summary:: gated stream advances only when an event key is true
+summary:: A gated stream that only advances when a particular event key is true.
 related:: Classes/Pn
 categories:: Streams-Patterns-Events>Patterns>Repetition
-
 description::
 
-Pgate advances its subpattern whenever strong::key:: is true. Pgate must be used within an Event pattern.
+Pgate advances its subpattern whenever strong::key:: is true. Pgate must be used within an Event pattern. You can either set the key manually, or use LINK::Classes/Pn::.
+
+CLASSMETHODS::
+
+METHOD:: new
+
+ARGUMENT:: pattern
+The source pattern to be filtered.
+
+ARGUMENT::repeats
+Repeat the enclosed pattern strong::repeats:: times.
+
+ARGUMENT::key
+Pgate will only return the next value in the source pattern if the event that it belongs to has strong::key:: set to true. Otherwise it will keep returning the same value. This allows for a gated effect on streams.
 
 Examples::
+
+code::
+// Use \step to change the octave randomly
+(
+Pbind(
+	\degree, Pseq((0..7), inf),
+	\step, Pseq([false, false, false, true, false, true, false], inf),
+	\octave, Pgate(Pwhite(3,7), inf, \step),
+	\dur, 0.2
+).play
+)
+::
 
 code::
 // Pn advances Pgate each time its subpattern is repeated
 (
 Pbind(
-
-	\degree,	Pn(Pseq((0..7)), inf, \step),
-	\mtranspose,	Pgate(Pwhite(0,5), inf, \step),
+	\degree, Pn(Pseq((0..7)), inf, \step),
+	\mtranspose, Pgate(Pwhite(0,5), inf, \step),
 	\dur, 0.2
 ).play
 )
@@ -25,13 +48,12 @@ Pbind(
 (
 Pbind(
 
-	\scale,		Scale.minor,
-
-	\foo,		Pn(Pseq((0..2)),inf,  \step1),
-	\degree,	Pn(Pseq((0..7).mirror), inf, \step),
-	\ctranspose,	Pgate(Pwhite(0,5), inf, \step) +
-				Pgate(Pseq([0,7,0,-7], inf), inf, \step1),
+	\scale,	Scale.minor,
+	\foo, Pn(Pseq((0..2)),inf,  \step1),
+	\degree, Pn(Pseq((0..7).mirror), inf, \step),
+	\ctranspose, Pgate(Pwhite(0,5), inf, \step) + Pgate(Pseq([0,7,0,-7], inf), inf, \step1),
 	\dur, 0.2
 ).play
 )
 ::
+

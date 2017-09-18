@@ -4,7 +4,7 @@ Volume {
 
 	var <volume = 0.0, <lag = 0.1, <isMuted = false;
 
-	var ampSynth, defName, updateFunc, initFunc;
+	var <ampSynth, <numOutputChannels, defName, updateFunc, initFunc;
 	var <>window;
 
 	*new { | server, startBus = 0, numChannels, min = -90, max = 6, persist = false |
@@ -13,35 +13,37 @@ Volume {
 
 	init {
 		if(server.serverRunning) { this.sendSynthDef };
-		if(initFunc.isNil) {
-			ServerBoot.add(initFunc = {
-				ampSynth = nil;
-				this.sendSynthDef;
-			}, server)
-		}
+
+		initFunc = {
+			ampSynth = nil;
+			this.sendSynthDef
+		};
+
+		ServerBoot.add(initFunc)
 	}
 
 	sendSynthDef {
-
-		forkIfNeeded {
-			var synthNumChans = this.numChannels;
-			defName = (\volumeAmpControl ++ synthNumChans).asSymbol;
+		server.doWhenBooted({
+			numOutputChannels = this.numChannels;
+			defName = (\volumeAmpControl ++ numOutputChannels).asSymbol;
 			SynthDef(defName, { | volumeAmp = 1, volumeLag = 0.1, gate=1, bus |
-					XOut.ar(bus,
-						Linen.kr(gate, releaseTime: 0.05, doneAction:2),
-						In.ar(bus, synthNumChans) * Lag.kr(volumeAmp, volumeLag)
-					);
+				XOut.ar(bus,
+					Linen.kr(gate, releaseTime: 0.05, doneAction:2),
+					In.ar(bus, numOutputChannels) * Lag.kr(volumeAmp, volumeLag)
+				);
 			}).send(server);
 
 			server.sync;
 
-			if(updateFunc.isNil) {
-				ServerTree.add(updateFunc = {
-					ampSynth = nil;
-					if(persist) { this.updateSynth }
-				})
-			}
-		}
+			updateFunc = {
+				ampSynth = nil;
+				if(persist) { this.updateSynth }
+			};
+
+			ServerTree.add(updateFunc);
+
+			this.updateSynth
+		})
 	}
 
 	numChannels { ^numChannels ? server.options.numOutputBusChannels }
@@ -85,6 +87,13 @@ Volume {
 		}
 	}
 
+	freeSynth {
+		ServerTree.remove(updateFunc);
+		updateFunc = nil;
+		ampSynth.release;
+		ampSynth = nil
+	}
+
 	// sets volume back to 1 - removes the synth
 	reset {
 		isMuted = false;
@@ -110,7 +119,6 @@ Volume {
 		clippedVolume = volume.clip(min, max);
 		if(clippedVolume != volume) { this.volume_(clippedVolume) }
 	}
-
 
 	gui { | window, bounds |
 		^VolumeGui(this, window, bounds)

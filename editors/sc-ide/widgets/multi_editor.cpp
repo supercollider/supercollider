@@ -254,7 +254,7 @@ void EditorTabBar::showContextMenu(QMouseEvent * event)
         menu->addAction(tr("Close Tabs to the Right"), this, SLOT(onCloseTabsToTheRight()));
     }
 
-    menu->popup(event->pos());
+    menu->popup(event->screenPos().toPoint());
 }
 
 void EditorTabBar::onCloseTab()
@@ -1020,7 +1020,8 @@ int MultiEditor::addTab( Document * doc )
     if(tdoc->isModified())
         icon = mDocModifiedIcon;
 
-    tabIdx = mTabs->addTab( icon, doc->title() );
+    int currentIndex = mTabs->currentIndex();
+    tabIdx = mTabs->insertTab( currentIndex + 1, icon, doc->title() );
     mTabs->setTabData( tabIdx, QVariant::fromValue<Document*>(doc) );
 
     mDocModifiedSigMap.setMapping(tdoc, doc);

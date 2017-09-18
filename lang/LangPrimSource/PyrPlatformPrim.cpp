@@ -23,7 +23,9 @@ Primitives for platform dependent directories, constants etc.
 
 */
 
-#include "SC_DirUtils.h"
+#include "SC_Filesystem.hpp" // getDirectory
+#include "SC_Filesystem.hpp" // path_to_utf8_str
+#include "SC_LanguageConfig.hpp" // getIdeName
 #include "PyrPrimitive.h"
 #include "PyrKernel.h"
 #ifdef _WIN32
@@ -31,65 +33,66 @@ Primitives for platform dependent directories, constants etc.
 # include "Shlobj.h"
 #endif
 
-#define PATH_CONSTANT_PRIM_BODY(func) \
-	PyrSlot *a = g->sp; \
-	char path[PATH_MAX]; \
-	func(path, PATH_MAX); \
-	PyrString* string = newPyrString(g->gc, path, 0, true); \
-	SetObject(a, string); \
-	return errNone
+#include <boost/filesystem/path.hpp> // path
+
+namespace bfs = boost::filesystem;
+using DirName = SC_Filesystem::DirName;
+
+static inline int prPlatform_getDirectory(const struct VMGlobals *g, const DirName dirname)
+{
+	PyrSlot *a = g->sp;
+	const bfs::path& p = SC_Filesystem::instance().getDirectory(dirname);
+	PyrString* string = newPyrString(g->gc, SC_Codecvt::path_to_utf8_str(p).c_str(), 0, true);
+	SetObject(a, string);
+	return errNone;
+}
 
 static int prPlatform_userHomeDir(struct VMGlobals *g, int numArgsPushed)
 {
-	PATH_CONSTANT_PRIM_BODY(sc_GetUserHomeDirectory);
+	return prPlatform_getDirectory(g, DirName::UserHome);
 }
 
 static int prPlatform_systemAppSupportDir(struct VMGlobals *g, int numArgsPushed)
 {
-	PATH_CONSTANT_PRIM_BODY(sc_GetSystemAppSupportDirectory);
+	return prPlatform_getDirectory(g, DirName::SystemAppSupport);
 }
 
 static int prPlatform_userAppSupportDir(struct VMGlobals *g, int numArgsPushed)
 {
-	PATH_CONSTANT_PRIM_BODY(sc_GetUserAppSupportDirectory);
+	return prPlatform_getDirectory(g, DirName::UserAppSupport);
 }
 
 static int prPlatform_systemExtensionDir(struct VMGlobals *g, int numArgsPushed)
 {
-	PATH_CONSTANT_PRIM_BODY(sc_GetSystemExtensionDirectory);
+	return prPlatform_getDirectory(g, DirName::SystemExtension);
 }
 
 static int prPlatform_userExtensionDir(struct VMGlobals *g, int numArgsPushed)
 {
-	PATH_CONSTANT_PRIM_BODY(sc_GetUserExtensionDirectory);
+	return prPlatform_getDirectory(g, DirName::UserExtension);
 }
 
 static int prPlatform_userConfigDir(struct VMGlobals *g, int numArgsPushed)
 {
-	PATH_CONSTANT_PRIM_BODY(sc_GetUserConfigDirectory);
+	return prPlatform_getDirectory(g, DirName::UserConfig);
 }
 
 static int prPlatform_resourceDir(struct VMGlobals *g, int numArgsPushed)
 {
-    PATH_CONSTANT_PRIM_BODY(sc_GetResourceDirectory);
+	return prPlatform_getDirectory(g, DirName::Resource);
 }
 
 #ifdef _WIN32
 static int prWinPlatform_myDocumentsDir(struct VMGlobals *g, int numArgsPushed)
 {
-	PyrSlot *a = g->sp;
-	char path[PATH_MAX];
-	win32_GetKnownFolderPath(CSIDL_PERSONAL, path, PATH_MAX); \
-	PyrString* string = newPyrString(g->gc, path, 0, true); \
-	SetObject(a, string);
-	return errNone;
+	return prPlatform_getDirectory(g, DirName::MyDocuments);
 }
 #endif
 
 static int prPlatform_ideName(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
-	PyrString* string = newPyrString(g->gc, gIdeName, 0, true);
+	PyrString* string = newPyrString(g->gc, SC_Filesystem::instance().getIdeName().c_str(), 0, true);
 	SetObject(a, string);
 	return errNone;
 }

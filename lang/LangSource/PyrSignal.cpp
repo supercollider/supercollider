@@ -41,69 +41,6 @@
 #include "SCBase.h"
 #include "InitAlloc.h"
 
-float gSlopeFactor[32];
-long gWrapMask[32];
-
-float *sineCycle;
-float *invSineCycle;
-float *pmSineCycle;
-float *gFracTable;
-
-double phaseToSineIndex;
-double sineIndexToPhase;
-
-void signal_init_globs()
-{
-	int i;
-	double phaseoffset, d, pmf;
-	long sz, sz2;
-
-	/* setup slopes and wrap masks */
-	for (i=0; i<32; ++i) {
-		long length = 1L<<i;
-		gSlopeFactor[i] = 1./length;
-		gWrapMask[i] = length - 1;
-	}
-
-	/* fill sine wave */
-	// pyrmalloc:
-	// lifetime: forever. initialized at startup.
-	sineCycle    = (float*)pyr_pool_runtime->Alloc((SINESIZE+1) * sizeof(float));
-	MEMFAIL(sineCycle);
-	invSineCycle = (float*)pyr_pool_runtime->Alloc((SINESIZE+1) * sizeof(float));
-	MEMFAIL(invSineCycle);
-	pmSineCycle = (float*)pyr_pool_runtime->Alloc((SINESIZE+1) * sizeof(float));
-	MEMFAIL(pmSineCycle);
-	//gFracTable = (float*)pyr_pool_runtime->Alloc(FRACTABLESIZE * sizeof(float));
-	//MEMFAIL(gFracTable);
-
-	sineIndexToPhase = 2. * 3.1415926535897932384626433832795 / SINESIZE;
-	phaseToSineIndex = 1. / sineIndexToPhase;
-	phaseoffset = sineIndexToPhase * 0.5;
-	pmf = (1L << 29) / twopi;
-	for (i=0; i<=SINESIZE; ++i) {
-		double phase;
-		phase = i * sineIndexToPhase;
-		sineCycle[i] = d = sin(phase);
-		invSineCycle[i] = 1. / d;
-		pmSineCycle[i] = d * pmf;
-	}
-	// fix 1/0 values to a special large number
-	invSineCycle[0] = invSineCycle[SINESIZE/2] = invSineCycle[SINESIZE] = VERY_BIG_FLOAT;
-	sz = SINESIZE;
-	sz2 = sz>>1;
-	for (i=1; i<=8; ++i) {
-	//for (i=1; i<=0; ++i) { //ie. none
-		//postfl("%d %f %f\n", i, invSineCycle[i], sineCycle[i]);
-		invSineCycle[i] = invSineCycle[sz-i] = VERY_BIG_FLOAT;
-		invSineCycle[sz2-i] = invSineCycle[sz2+i] = VERY_BIG_FLOAT;
-	}
-	/*fracscale = 1./FRACTABLESIZE;
-	for (i=0; i<FRACTABLESIZE; ++i) {
-		gFracTable[i] = (double)i * fracscale;
-	}*/
-}
-
 PyrObject* newPyrSignal(VMGlobals *g, long size)
 {
 	PyrObject *signal;
