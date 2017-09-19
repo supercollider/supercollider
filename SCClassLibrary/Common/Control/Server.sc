@@ -278,7 +278,7 @@ Server {
 	var <window, <>scopeWindow, <emacsbuf;
 	var <volume, <recorder, <statusWatcher;
 	var <pid, serverInterface;
-	var <>freeAllFreesRootNode = true;
+	var <>freeAllFreesRootNode;
 
 	*initClass {
 		Class.initClassTree(ServerOptions);
@@ -363,7 +363,6 @@ Server {
 		inProcess = addr.addr == 0;
 		isLocal = inProcess || { addr.isLocal };
 		remoteControlled = isLocal.not;
-		freeAllFreesRootNode = isLocal;
 	}
 
 	name_ { |argName|
@@ -955,8 +954,9 @@ Server {
 	}
 
 	freeAll {
+		var freeRoot = freeAllFreesRootNode ?? { clientID == 0 };
 		this.sendMsg("/g_freeAll", this.defaultGroupID);
-		if (freeAllFreesRootNode) {
+		if (freeRoot) {
 			this.sendMsg("/g_freeAll", 0);
 		};
 		this.sendMsg("/clearSched");
