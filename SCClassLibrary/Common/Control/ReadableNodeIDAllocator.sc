@@ -3,8 +3,8 @@
 
 for example, with 20 Clients, clientIDs would be
 clientID  defaultGroup  tempIDs
- 1         10000001      120001000, 10001001, etc
- 2         10000001      120001000, 10001001, etc
+1         10000001      120001000, 10001001, etc
+2         10000001      120001000, 10001001, etc
 12        120000001      120001000, 10001001, etc
 
 In multi-client settings, this makes s.plotTree display
@@ -69,6 +69,18 @@ ReadableNodeIDAllocator {
 	}
 
 	freePerm { |id|
-		if (this.isPerm(id)) { permFreed.add(id) }
+		var topFreed;
+		if (this.isPerm(id).not) { ^this };
+
+		permFreed.add(id);
+		while {
+			permFreed.notEmpty and: {
+				topFreed = permFreed.maxItem;
+				topFreed == permCount;
+			}
+		} {
+			permFreed.remove(topFreed);
+			permCount = permCount - 1;
+		}
 	}
 }

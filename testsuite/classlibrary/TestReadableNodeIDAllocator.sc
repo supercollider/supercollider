@@ -5,25 +5,30 @@ TestReadableNodeIDAllocator : UnitTest {
 		var s = Server(\testRNIA);
 		var prevClass = Server.nodeAllocClass;
 		Server.nodeAllocClass = ReadableNodeIDAllocator;
-		s.options.maxLogins = 1; s.newAllocators;
-		// this.assert(
-		// 	(s.nodeAllocator.numIDs == (10 ** 8)),
-		// 	"for a single client, (readable) nodeAllocator has maximum range."
-		// );
-		// this.assert(
-		// 	(s.nodeAllocator.numIDs == (10 ** 7)),
-		// 	"for 16 clients, (readable) nodeAllocator has divided range."
-		// );
 
-		// same for ReadableNodeIDAllocator
-		// Server.nodeAllocClass = ReadableNodeIDAllocator;
-		Server.named.removeAt(s.name); Server.all.remove(s);
+		s.options.maxLogins = 1;
+		s.newAllocators;
+		this.assert(
+			(s.nodeAllocator.numIDs == (10 ** 9)),
+			"for a single client, (readable) nodeAllocator has maximum range."
+		);
+
+		s.options.maxLogins = 16;
+		s.newAllocators;
+		this.assert(
+			(s.nodeAllocator.numIDs == (10 ** 8)),
+			"for 16 clients, (readable) nodeAllocator has equally divided range."
+		);
+
+		s.remove;
 		Server.nodeAllocClass = prevClass;
 	}
 
 	test_permIDs {
 		var alloc = ReadableNodeIDAllocator(8191, 1000, 8191);
 		var nextPermID, permIDs = List[], permIDToFree;
+
+		thisThread.randSeed_(4711);
 
 		this.assert(
 			alloc.isPerm(alloc.idOffset - 1).not
