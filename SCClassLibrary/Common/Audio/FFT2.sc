@@ -95,12 +95,12 @@ RunningSum2 : UGen {
 	}
 
 	*avg { arg in, numsamp=40, maxsamp=400;
-		var r = switch(in.rate, \audio, {\ar}, \control, {\kr});
+		var r = UGen.methodSelectorForRate(in.rate);
 		^RunningSum2.perform(r, in, numsamp, maxsamp)*(numsamp.floor.reciprocal)
 	}
 
 	*rms { arg in, numsamp=40, maxsamp=400;
-		var r = switch(in.rate, \audio, {\ar}, \control, {\kr});
+		var r = UGen.methodSelectorForRate(in.rate);
 		^(RunningSum2.perform(r, in.squared, numsamp, maxsamp)*(numsamp.floor.reciprocal)).sqrt
 	}
 }

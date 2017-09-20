@@ -97,3 +97,4 @@ sv.waveColors = [Color.yellow, Color.red];
 [~noiBus, ~avgBus, ~noiSrc, ~rs, ~rs2].do(_.free);
 ~scp.quit;
 ::
+
