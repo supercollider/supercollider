@@ -19,46 +19,47 @@ examples::
 
 code::
 /*
-
 Compare the values of RunningSum vs. RunningSum2.
-
 */
 
 /* load synthdefs */
 (
-var maxWin = 1.0; // maximum summing/averaging window, in seconds.
+s.waitForBoot({
 
-// noise source: Pink Noise
-SynthDef(\noisrc, { |outbus|
-	Out.ar(outbus, PinkNoise.ar);
-}).send(s);
+	var maxWin = 1.0; // maximum summing/averaging window, in seconds.
 
-// RunningSum, averaged
-SynthDef(\rs_avg, { |outbus, inbus, samps=4410|
-	Out.kr( outbus,
-		A2K.kr(											// convert to control rate for scoping
-			RunningSum.ar(
-				In.ar(inbus),
-				samps
+	// noise source: Pink Noise
+	SynthDef(\noisrc, { |outbus|
+		Out.ar(outbus, PinkNoise.ar);
+	}).send(s);
+
+	// RunningSum, averaged
+	SynthDef(\rs_avg, { |outbus, inbus, samps=4410|
+		Out.kr( outbus,
+			A2K.kr(  // convert to control rate for scoping
+				RunningSum.ar(
+					In.ar(inbus),
+					samps
+				)
+				* samps.reciprocal  // take average
 			)
-			* samps.reciprocal				// take average
-		)
-	);
-}).send(s);
+		);
+	}).send(s);
 
-// RunningSum2, averaged with *avg method
-SynthDef(\rs2_avg, { |outbus, inbus, samps=4410|
-	Out.kr( outbus,
-		A2K.kr(											// convert to control rate for scoping
-			RunningSum2.avg(					// average method
-				In.ar(inbus),
-				samps,
-				SampleRate.ir * maxWin	// max window size, in samples, non-modulatable
+	// RunningSum2, averaged with *avg method
+	SynthDef(\rs2_avg, { |outbus, inbus, samps=4410|
+		Out.kr( outbus,
+			A2K.kr(  // convert to control rate for scoping
+				RunningSum2.avg(  // average method
+					In.ar(inbus),
+					samps,
+					SampleRate.ir * maxWin  // max window size, in samples, non-modulatable
+				)
 			)
-		)
-	);
-}).send(s);
+		);
+	}).send(s);
 
+})
 )
 
 /* play the synths */
