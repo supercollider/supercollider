@@ -111,10 +111,13 @@ ServerStatusWatcher {
 		// post info on some known harmless error cases
 		case
 		{ failString.asString.contains("already registered") } {
-			"% - already registered with clientID %.\n".postf(server, msg[3])
+			"% - already registered with clientID %.\n".postf(server, msg[3]);
+			// new client may assume clientID 0 by default,
+			// so set it from here to assure sync with scsynth:
+			server.clientID = msg[3];
 		} { failString.asString.contains("not registered") } {
-			// unregister when already not registered:
-			"% - was not registered.\n".postf(server)
+			// tried unregister when already not registered:
+			"% - client was not registered.\n".postf(server)
 		} { failString.asString.contains("too many users") } {
 			"% - could not register, too many users.\n".postf(server)
 		} {
