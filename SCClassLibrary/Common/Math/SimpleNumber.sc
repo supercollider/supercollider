@@ -150,16 +150,26 @@ SimpleNumber : Number {
 	nextPowerOfThree { ^pow(3, ceil(log(this) / log(3))) }
 	previousPowerOf { arg base; ^pow(base, ceil(log(this) / log(base)) - 1) }
 
-	quantize { arg quantum = 1.0, tolerance = 0.05, strength = 1.0;
-		var round = round(this, quantum);
+	snap { arg resolution = 1.0, margin = 0.05, strength = 1.0;
+		var round = round(this, resolution);
 		var diff = round - this;
-		if (abs(diff) < tolerance) {
+		if(abs(diff) < margin) {
 			^this + (strength * diff)
-		}{
+		} {
 			^this
 		}
 	}
 
+
+	softRound { arg resolution = 1.0, margin = 0.05, strength = 1.0;
+		var round = round(this, resolution);
+		var diff = round - this;
+		if(abs(diff) > margin) {
+			^this + (strength * diff)
+		} {
+			^this
+		}
+	}
 
 	linlin { arg inMin, inMax, outMin, outMax, clip=\minmax;
 		// linear to linear mapping
