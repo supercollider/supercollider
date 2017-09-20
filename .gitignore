@@ -25,3 +25,5 @@ cmake-build-*
 
 *~
 *.orig
+
+external_libraries/portaudio/
