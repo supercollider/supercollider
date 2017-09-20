@@ -313,8 +313,8 @@ Function : AbstractFunction {
 		^buffer
 	}
 
-	loadToFloatArray { |duration = 0.01, server, action|
-		this.asBuffer(duration, server, { |buffer|
+	loadToFloatArray { |duration = 0.01, target, action|
+		this.asBuffer(duration, target, { |buffer|
 			buffer.loadToFloatArray(action: { |array|
 				action.value(array, buffer);
 				buffer.free

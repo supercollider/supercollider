@@ -440,10 +440,13 @@ code::
 
 argument::duration
 The duration of the function to plot in seconds. The default is 0.01.
-argument::server
-The Server on which to calculate the plot. This must be running on your local machine, but does not need to be the internal server. If nil the default server will be used. This argument can also be a group or synth, it then is used as a target (see link::Reference/asTarget::):
+argument::target
+The target node on which to calculate the plot. See link::Reference/asTarget::. If it is a link::Classes/Server::, it must be running on your local machine, but does not need to be the internal server (see link::Classes/Buffer#-loadToFloatArray:: for details).
 code::
-var synth = { Out.ar(99, SinOsc.ar([300, 700])) }.play; { In.ar(99, 2) }.plot(0.02, synth);
+(
+var synth = { Out.ar(99, SinOsc.ar([300, 700])) }.play;
+{ In.ar(99, 2) }.plot(0.02, synth);
+)
 ::
 
 argument::bounds
