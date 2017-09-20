@@ -29,35 +29,35 @@ s.waitForBoot({
 	var maxWin = 1.0; // maximum summing/averaging window, in seconds.
 
 	// noise source: Pink Noise
-	SynthDef(\noisrc, { |outbus|
-		Out.ar(outbus, PinkNoise.ar);
-	}).send(s);
+	SynthDef(\noisrc, { |out|
+		Out.ar(out, PinkNoise.ar);
+	}).add;
 
 	// RunningSum, averaged
-	SynthDef(\rs_avg, { |outbus, inbus, samps=4410|
-		Out.kr( outbus,
+	SynthDef(\rs_avg, { |out, in, samps=4410|
+		Out.kr( out,
 			A2K.kr(  // convert to control rate for scoping
 				RunningSum.ar(
-					In.ar(inbus),
+					In.ar(in),
 					samps
 				)
 				* samps.reciprocal  // take average
 			)
 		);
-	}).send(s);
+	}).add;
 
 	// RunningSum2, averaged with *avg method
-	SynthDef(\rs2_avg, { |outbus, inbus, samps=4410|
-		Out.kr( outbus,
+	SynthDef(\rs2_avg, { |out, in, samps=4410|
+		Out.kr( out,
 			A2K.kr(  // convert to control rate for scoping
 				RunningSum2.avg(  // average method
-					In.ar(inbus),
+					In.ar(in),
 					samps,
 					SampleRate.ir * maxWin  // max window size, in samples, non-modulatable
 				)
 			)
 		);
-	}).send(s);
+	}).add;
 
 })
 )
@@ -68,10 +68,10 @@ s.waitForBoot({
 ~noiBus = Bus.audio(s, 1);
 ~avgBus = Bus.control(s, 2);
 
-~noiSrc = Synth(\noisrc,  [\outbus, ~noiBus.index]);
+~noiSrc = Synth(\noisrc,  [\out, ~noiBus.index]);
 
-~rs = Synth(\rs_avg,   [\outbus, ~avgBus.index, \inbus, ~noiBus.index, \samps, 4410], addAction: 'addToTail');
-~rs2 = Synth(\rs2_avg, [\outbus, ~avgBus.index+1, \inbus, ~noiBus.index, \samps, 4410], addAction: 'addToTail');
+~rs = Synth(\rs_avg,   [\out, ~avgBus.index, \in, ~noiBus.index, \samps, 4410], addAction: 'addToTail');
+~rs2 = Synth(\rs2_avg, [\out, ~avgBus.index+1, \in, ~noiBus.index, \samps, 4410], addAction: 'addToTail');
 )
 
 /* scope the results */
@@ -97,4 +97,3 @@ sv.waveColors = [Color.yellow, Color.red];
 [~noiBus, ~avgBus, ~noiSrc, ~rs, ~rs2].do(_.free);
 ~scp.quit;
 ::
-
