@@ -257,7 +257,7 @@ Event : Environment {
 
 				synthLib: nil,
 
-				group: { ~server.defaultGroupID },
+				group: { ~server.defaultGroup.nodeID },
 				out: 0,
 				addAction: 0,
 
@@ -373,7 +373,7 @@ Event : Environment {
 				delta: 0,
 
 				addAction: 0,
-				group: { ~server.defaultGroupID },
+				group: { ~server.defaultGroup.nodeID },
 				latency: 0.2,
 				instrument: \default,
 				hasGate: true,
