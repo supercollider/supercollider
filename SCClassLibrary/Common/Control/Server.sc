@@ -273,12 +273,12 @@ Server {
 	var <nodeAllocator, <controlBusAllocator, <audioBusAllocator, <bufferAllocator, <scopeBufferAllocator;
 
 	var <>tree;
+	var <defaultGroup, <defaultGroups;
 
 	var <syncThread, <syncTasks;
 	var <window, <>scopeWindow, <emacsbuf;
 	var <volume, <recorder, <statusWatcher;
 	var <pid, serverInterface;
-	var <>freeAllFreesRootNode = true;
 
 	*initClass {
 		Class.initClassTree(ServerOptions);
@@ -358,7 +358,6 @@ Server {
 		inProcess = addr.addr == 0;
 		isLocal = inProcess || { addr.isLocal };
 		remoteControlled = isLocal.not;
-		freeAllFreesRootNode = isLocal;
 	}
 
 	name_ { |argName|
@@ -372,7 +371,7 @@ Server {
 
 	initTree {
 		this.newNodeAllocators;
-		this.sendMsg("/g_new", this.defaultGroup.nodeID, 0, 0);
+		this.sendMsg("/g_new", defaultGroup.nodeID, 0, 0);
 		tree.value(this);
 		ServerTree.run(this);
 	}
@@ -423,6 +422,9 @@ Server {
 			options.initialNodeID,
 			options.maxLogins
 		);
+		// defaultGroup and defaultGroups depend on allocator,
+		// so always make them here:
+		this.makeDefaultGroups;
 	}
 
 	newBusAllocators {
@@ -724,19 +726,31 @@ Server {
 		^Buffer.cachedBufferAt(this, bufnum)
 	}
 
-	defaultGroupIDForClientID { |id| ^nodeAllocator.numIDs * id + 1 }
+	// defaultGroups for all clients on this server:
 
-	sendDefaultGroupsFor { |ids|
-		ids.do { |id|
-			this.sendMsg("g_new", this.defaultGroupIDForClientID(id));
-		}
+	allClientIDs { ^(0..options.maxLogins-1) }
+
+	// keep defaultGroups for all clients on this server:
+	makeDefaultGroups {
+		defaultGroups = this.allClientIDs.collect { |clientID|
+			Group.basicNew(this, nodeAllocator.numIDs * clientID + 1);
+		};
+		defaultGroup = defaultGroups[clientID];
 	}
 
-	defaultGroupID { ^nodeAllocator.idOffset + 1 }
+	defaultGroupID { ^defaultGroup.nodeID }
 
- 	defaultGroup {
-		^Group.basicNew(this, nodeAllocator.idOffset + 1)
- 	}
+	sendDefaultGroups {
+		defaultGroups.do { |defGrp|
+			this.sendMsg("/g_new", defGrp.nodeID.postln);
+		};
+	}
+
+	sendDefaultGroupsForIDs { |ids|
+		defaultGroups[ids].do { |defGrp|
+			this.sendMsg("/g_new", defGrp.nodeID.postln);
+		}
+	}
 
 	inputBus {
 		^Bus(\audio, this.options.numOutputBusChannels, this.options.numInputBusChannels, this)
@@ -954,12 +968,19 @@ Server {
 	}
 
 	freeAll {
-		this.sendMsg("/g_freeAll", this.defaultGroupID);
-		if (freeAllFreesRootNode) {
-			this.sendMsg("/g_freeAll", 0);
-		};
+		this.sendMsg("/g_freeAll", 0);
 		this.sendMsg("/clearSched");
 		this.initTree;
+	}
+
+	freeMyGroup {
+		this.sendMsg("/g_freeAll", defaultGroup.nodeID);
+	}
+
+	freeDefaultGroups {
+		defaultGroups.do { |group|
+			this.sendMsg("/g_freeAll", group.nodeID);
+		};
 	}
 
 	*freeAll { |evenRemote = false|
