@@ -1,0 +1,99 @@
+class:: RunningSum2
+summary:: Running sum over a variable number of frames.
+related:: Classes/RunningSum
+categories:: UGens>Analysis, UGens>Maths
+
+description::
+A running sum over a variable number of samples. Includes convenience methods for calculating a running average and RMS over the window.
+
+classmethods::
+method:: ar, kr
+argument::in
+An input signal.
+argument::numsamp
+Size of the summing window, in samples. Modulatable between 1 and strong::maxsamps::. Default: 40.
+argument::maxsamp
+Maximum size of the summing window. Pre-allocates memory up to this size and your strong::numsamp:: will be clipped at this value.
+
+examples::
+
+code::
+/*
+Compare the values of RunningSum vs. RunningSum2.
+*/
+
+/* load synthdefs */
+(
+s.waitForBoot({
+
+  var maxWin = 1.0; // maximum summing/averaging window, in seconds.
+
+  // noise source: Pink Noise
+  SynthDef(\noisrc, { |out|
+    Out.ar(out, PinkNoise.ar);
+  }).add;
+
+  // RunningSum, averaged
+  SynthDef(\rs_avg, { |out, in, samps=4410|
+    Out.kr( out,
+      A2K.kr(  // convert to control rate for scoping
+        RunningSum.ar(
+          In.ar(in),
+          samps
+        )
+        * samps.reciprocal  // take average
+      )
+    );
+  }).add;
+
+  // RunningSum2, averaged with *avg method
+  SynthDef(\rs2_avg, { |out, in, samps=4410|
+    Out.kr( out,
+      A2K.kr(  // convert to control rate for scoping
+        RunningSum2.avg(  // average method
+          In.ar(in),
+          samps,
+          SampleRate.ir * maxWin  // max window size, in samples, non-modulatable
+        )
+      )
+    );
+  }).add;
+
+})
+)
+
+/* play the synths */
+(
+// A bus for the noise source
+~noiBus = Bus.audio(s, 1);
+~avgBus = Bus.control(s, 2);
+
+~noiSrc = Synth(\noisrc,  [\out, ~noiBus.index]);
+
+~rs = Synth(\rs_avg,   [\out, ~avgBus.index,   \in, ~noiBus.index, \samps, 4410], addAction: 'addToTail');
+~rs2 = Synth(\rs2_avg, [\out, ~avgBus.index+1, \in, ~noiBus.index, \samps, 4410], addAction: 'addToTail');
+)
+
+/* scope the results */
+(
+var sv;
+~scp = s.scope(2, ~avgBus.index, rate:'control');
+~scp.style = 1; // overlay the busses to compare their values
+
+sv = ~scp.scopeView;
+
+sv.yZoom = 3; // zoom in to see values a bit better
+sv.fill = false;
+// discern different values by color: red is RunningSum2
+sv.waveColors = [Color.yellow, Color.red];
+)
+
+/* change window size */
+~rs2.set(\samps, 0.5 * s.sampleRate)  // 0.5s window size
+~rs2.set(\samps, 0.1 * s.sampleRate)  // 0.1s window size: identical to RunningSum fixed window size
+~rs2.set(\samps, 0.01 * s.sampleRate) // 0.01s window size
+
+/* cleanup */
+[~noiBus, ~avgBus, ~noiSrc, ~rs, ~rs2].do(_.free);
+~scp.quit;
+::
