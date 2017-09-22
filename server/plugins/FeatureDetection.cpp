@@ -434,10 +434,10 @@ void RunningSum_next_k( RunningSum *unit, int inNumSamples )
 void RunningSum2_Ctor( RunningSum2* unit )
 {
     if ((int) ZIN0(2) == 0) {
-        printf("RunningSum2 Error: maxsamps initialized to 0.\n");
-        SETCALC(*ClearUnitOutputs);
-        unit->mDone = true;
-        return;
+            printf("RunningSum2 Error: maxsamps initialized to 0.\n");
+            SETCALC(*ClearUnitOutputs);
+            unit->mDone = true;
+            return;
     }
 
     SETCALC(RunningSum2_next);
@@ -454,7 +454,7 @@ void RunningSum2_Ctor( RunningSum2* unit )
 
     //initialise to zeroes
     for (int i=0; i < unit->maxsamps; ++i)
-        unit->msquares[i] = 0.f;
+            unit->msquares[i] = 0.f;
 }
 
 void RunningSum2_Dtor(RunningSum2 *unit)
