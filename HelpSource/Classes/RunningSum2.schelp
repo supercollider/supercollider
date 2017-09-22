@@ -26,38 +26,38 @@ Compare the values of RunningSum vs. RunningSum2.
 (
 s.waitForBoot({
 
-  var maxWin = 1.0; // maximum summing/averaging window, in seconds.
+    var maxWin = 1.0; // maximum summing/averaging window, in seconds.
 
-  // noise source: Pink Noise
-  SynthDef(\noisrc, { |out|
-    Out.ar(out, PinkNoise.ar);
-  }).add;
+    // noise source: Pink Noise
+    SynthDef(\noisrc, { |out|
+        Out.ar(out, PinkNoise.ar);
+    }).add;
 
-  // RunningSum, averaged
-  SynthDef(\rs_avg, { |out, in, samps=4410|
-    Out.kr( out,
-      A2K.kr(  // convert to control rate for scoping
-        RunningSum.ar(
-          In.ar(in),
-          samps
-        )
-        * samps.reciprocal  // take average
-      )
-    );
-  }).add;
+    // RunningSum, averaged
+    SynthDef(\rs_avg, { |out, in, samps=4410|
+        Out.kr( out,
+            A2K.kr(  // convert to control rate for scoping
+                RunningSum.ar(
+                    In.ar(in),
+                    samps
+                )
+                * samps.reciprocal  // take average
+            )
+        );
+    }).add;
 
-  // RunningSum2, averaged with *avg method
-  SynthDef(\rs2_avg, { |out, in, samps=4410|
-    Out.kr( out,
-      A2K.kr(  // convert to control rate for scoping
-        RunningSum2.avg(  // average method
-          In.ar(in),
-          samps,
-          SampleRate.ir * maxWin  // max window size, in samples, non-modulatable
-        )
-      )
-    );
-  }).add;
+    // RunningSum2, averaged with *avg method
+    SynthDef(\rs2_avg, { |out, in, samps=4410|
+        Out.kr( out,
+            A2K.kr(  // convert to control rate for scoping
+                RunningSum2.avg(  // average method
+                    In.ar(in),
+                    samps,
+                    SampleRate.ir * maxWin  // max window size, in samples, non-modulatable
+                )
+            )
+        );
+    }).add;
 
 })
 )
