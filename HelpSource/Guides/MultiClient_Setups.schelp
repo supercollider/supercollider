@@ -72,6 +72,8 @@ r.userSpecifiedClientID;
 
 subsection:: Separate defaultGroups
 
+For info on what a default group is, see link::Reference/default_group::.
+
 Every client registering with a server has its own defaultGroup. All nodes belonging to one client are in its defaultGroup and can be specifically addressed, so that a client can release only one's own nodes, and leave those of other clients on this server untouched.
 
 A client also knows the defaultGroups of all other clients that may login, so it can reason about other clients, and be as sharing-friendly as desired, see below in subsection CmdPeriod behavior.
