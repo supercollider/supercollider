@@ -1,4 +1,4 @@
-TITLE:: MultiClient_Setups
+TITLE:: Multi-client Setups
 SUMMARY:: How to set up and shared servers for multiple clients in SuperCollider
 CATEGORIES:: Guides
 related:: Classes/ServerOptions, Classes/Server
@@ -315,6 +315,7 @@ CmdPeriod.remove(~freeMyGroupS); // cleanup
 s.freeAll;
 ::
 strong::More power to all::
+
 In a less polite symmetrical setup, CmdPeriod stops all sounds on all clients, but keeps all defaultGroups running.
 code::
 ~myserver = s; // s on home machine, remote client on others
