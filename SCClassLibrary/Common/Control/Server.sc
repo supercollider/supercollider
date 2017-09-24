@@ -742,13 +742,13 @@ Server {
 
 	sendDefaultGroups {
 		defaultGroups.do { |defGrp|
-			this.sendMsg("/g_new", defGrp.nodeID.postln);
+			this.sendMsg("/g_new", defGrp.nodeID);
 		};
 	}
 
-	sendDefaultGroupsForIDs { |ids|
-		defaultGroups[ids].do { |defGrp|
-			this.sendMsg("/g_new", defGrp.nodeID.postln);
+	sendDefaultGroupsForClientIDs { |clientIDs|
+		defaultGroups[clientIDs].do { |defGrp|
+			this.sendMsg("/g_new", defGrp.nodeID);
 		}
 	}
 
@@ -973,7 +973,7 @@ Server {
 		this.initTree;
 	}
 
-	freeMyGroup {
+	freeMyDefaultGroup {
 		this.sendMsg("/g_freeAll", defaultGroup.nodeID);
 	}
 
