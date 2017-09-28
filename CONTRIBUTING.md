@@ -95,14 +95,11 @@ Please be as descriptive as possible when creating an issue. Give us the informa
 In order to keep your fork up-to-date, you need to point it to the main SuperCollider repository. This is done by adding the main repository as another *remote*, usually called *upstream*. **Please note:** naming the main repository *upstream* is just a convention, not a requirement. If you already have a differently named remote pointing to the main SuperCollider repository, you can use that name instead of *upstream*.
 - If you have **not** yet created the *upstream* remote, create if first:
 	- Check the list of remotes: `git remote -v`. The output should look like this:
-
 			origin	https://github.com/your-name/supercollider.git (fetch)
 			origin	https://github.com/your-name/supercollider.git (push)
-
 	- Add a new remote called *upstream*, pointing to the SuperCollider repository:
 	`git remote add upstream https://github.com/your-name/supercollider.git`
 	- Check the list of remotes again: `git remote -v`. Now the output should look like this:
-
 			origin	https://github.com/your-name/supercollider.git (fetch)
 			origin	https://github.com/your-name/supercollider.git (push)
 			upstream	https://github.com/supercollider/supercollider (fetch)
@@ -110,11 +107,11 @@ In order to keep your fork up-to-date, you need to point it to the main SuperCol
 	- Now you can proceed to updating your fork (see below).
 - If you have already created the *upstream* remote, update your fork:
 	- **Be sure to have all local changes committed before doing this!**
-	- Checkout the `develop` branch:	`git checkout develop`
-	- Pull changes from *upstream*:	`git pull --rebase`
+	- Update from the *upstream* repository: `git fetch upstream`
+	- Checkout the `develop` branch: `git checkout develop`
+	- Pull changes into the `develop` branch: `git pull`
 	- If you have already created your topic branch:
-		- Update your branch with the changes in the `develop`:
-		`git rebase develop topic/branch-description`
+		- Update it with the changes in the `develop`: `git rebase develop topic/branch-description`
 	- If you have **not** yet created your topic branch, proceed to creating it as described in the [Pull Requests section](#before-making-changes)
 
 
