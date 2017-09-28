@@ -55,7 +55,7 @@ Please be as descriptive as possible when creating an issue. Give us the informa
 
 - Create a fork of the SuperCollider repository.
 - Clone the repo and its submodules locally: `git clone --recursive https://github.com/your-name/supercollider.git`.
-	- If you have created the fork before, bring it up-to-date with the SuperCollider repository. See [Updating your fork](#updating-your-fork) below for details.
+	- If you have created the fork before, bring it up-to-date with the SuperCollider repository. See [updating your fork](#updating-your-fork) below for details.
 - Create a topic branch from where you want to base your work.
 	- This is the `develop` branch.
 	- Our branch naming convention is `topic/branch-description`: for example, `topic/fix-sinosc` or `topic/document-object`.
@@ -92,7 +92,8 @@ Please be as descriptive as possible when creating an issue. Give us the informa
 - You may receive feedback and requests for changes. We expect changes to be made in a timely manner. We may close the pull request if it isn't showing any activity.
 
 ### Updating your fork
-- In order to keep your fork up-to-date, you need to create another *remote*, usually called *upstream*, pointing to the main SuperCollider repository. Please note, *this needs to be done only once.*
+In order to keep your fork up-to-date, you need to point it to the main SuperCollider repository. This is done by adding the main repository as another *remote*, usually called *upstream*. **Please note:** naming the main repository *upstream* is just a convention, not a requirement. If you already have a differently named remote pointing to the main SuperCollider repository, you can use that name instead of *upstream*.
+- If you have **not** yet created the *upstream* remote, create if first:
 	- Check the list of remotes: `git remote -v`. The output should look like this:
 
 			origin	https://github.com/your-name/supercollider.git (fetch)
@@ -106,13 +107,16 @@ Please be as descriptive as possible when creating an issue. Give us the informa
 			origin	https://github.com/your-name/supercollider.git (push)
 			upstream	https://github.com/supercollider/supercollider (fetch)
 			upstream	https://github.com/supercollider/supercollider (push)
+	- Now you can proceed to updating your fork (see below).
+- If you have already created the *upstream* remote, update your fork:
+	- **Be sure to have all local changes committed before doing this!**
+	- Checkout the `develop` branch:	`git checkout develop`
+	- Pull changes from *upstream*:	`git pull --rebase`
+	- If you have already created your topic branch:
+		- Update your branch with the changes in the `develop`:
+		`git rebase develop topic/branch-description`
+	- If you have **not** yet created your topic branch, proceed to creating it as described in the [Pull Requests section](#before-making-changes)
 
-- Update your fork:
-	- Be sure to have all local changes committed before doing this.
-	- Pull changes from *upstream*:	`git fetch upstream`
-	- Checkout your local `develop` branch:	`git checkout develop`
-	- If you have already created your topic branch, update it with the changes in the `develop`:
-	`git rebase develop topic/branch-description`
 
 
 ### Additional resources
