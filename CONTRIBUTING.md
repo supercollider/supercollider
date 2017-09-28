@@ -109,7 +109,7 @@ In order to keep your fork up-to-date, you need to point it to the main SuperCol
 	- **Be sure to have all local changes committed before doing this!**
 	- Update from the *upstream* repository: `git fetch upstream`
 	- Checkout the `develop` branch: `git checkout develop`
-	- Pull changes into the `develop` branch: `git pull`
+	- Pull changes into the `develop` branch: `git pull --rebase`
 	- If you have already created your topic branch:
 		- Update it with the changes in the `develop`: `git rebase develop topic/branch-description`
 	- If you have **not** yet created your topic branch, proceed to creating it as described in the [Pull Requests section](#before-making-changes)
