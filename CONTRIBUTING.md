@@ -114,8 +114,6 @@ In order to keep your fork up-to-date, you need to point it to the main SuperCol
 		- Update it with the changes in the `develop`: `git rebase develop topic/branch-description`
 	- If you have **not** yet created your topic branch, proceed to creating it as described in the [Pull Requests section](#before-making-changes)
 
-
-
 ### Additional resources
 More information can be found on the [git workflow wiki page](https://github.com/supercollider/supercollider/wiki/git-workflow-and-guidelines).
 
