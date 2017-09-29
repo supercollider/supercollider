@@ -95,15 +95,19 @@ Please be as descriptive as possible when creating an issue. Give us the informa
 In order to keep your fork up-to-date, you need to point it to the main SuperCollider repository. This is done by adding the main repository as another `remote`, usually called `upstream`. **Please note:** naming the main repository `upstream` is just a convention, not a requirement. If you already have a differently named `remote` pointing to the main SuperCollider repository, you can use that name instead of `upstream`.
 - If you have not yet created the `upstream` `remote`, create it first:
 	- Check the list of remotes: `git remote -v`. The output should look like this:
+
 			origin	https://github.com/your-name/supercollider.git (fetch)
 			origin	https://github.com/your-name/supercollider.git (push)
+
 	- Add a new remote called `upstream`, pointing to the SuperCollider repository:
 	`git remote add upstream https://github.com/your-name/supercollider.git`
 	- Check the list of remotes again: `git remote -v`. Now the output should look like this:
+
 			origin	https://github.com/your-name/supercollider.git (fetch)
 			origin	https://github.com/your-name/supercollider.git (push)
 			upstream	https://github.com/supercollider/supercollider (fetch)
 			upstream	https://github.com/supercollider/supercollider (push)
+			
 	- Now you can proceed to updating your fork (see below).
 - If you have already created the `upstream` `remote`, update your fork:
 	- Be sure to have all local changes committed before doing this!
