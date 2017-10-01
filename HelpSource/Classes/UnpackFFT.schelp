@@ -67,7 +67,7 @@ x = {
 	chain = FFT(b, sig);
 	magsphases = UnpackFFT(chain, b.numFrames);
 	magsphases = magsphases.collect(_.sqrt);
-	PackFFT(chain, b.numFrames, magsphases);
+	chain = PackFFT(chain, b.numFrames, magsphases);
 	Out.ar(0, 0.25 * IFFT(chain).dup);
 }.play
 )
