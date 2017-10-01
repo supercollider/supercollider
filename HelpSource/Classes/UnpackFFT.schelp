@@ -43,7 +43,7 @@ x = {
 	sig = PlayBuf.ar(1, c, BufRateScale.kr(c), loop: 1);
 	chain = FFT(LocalBuf(fftsize), sig);
 
-	// Using the frombin & tobin args makes it much more efficient, limiting analysis to the bins of interest
+  // Using the frombin & tobin args makes it much more efficient, limiting analysis to the bins of interest
 	unp = UnpackFFT(chain, fftsize, frombin: 0, tobin: 4);
 
 	// Demand some data from the unpacker.
