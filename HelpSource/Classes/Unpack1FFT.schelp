@@ -43,7 +43,7 @@ x = {
 	sig = PlayBuf.ar(1, c, BufRateScale.kr(c), loop: 1);
 	chain = FFT(LocalBuf(fftsize), sig);
 
-	unp = Unpack1FFT(chain, b.numFrames, 0, 0);
+	unp = Unpack1FFT(chain, fftsize, 0, 0);
 
 	// Demand some data from the unpacker
 	Demand.kr(chain>=0, 0, unp).poll(chain>=0, "unpacked value");

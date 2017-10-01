@@ -38,13 +38,13 @@ c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 // This one just drags out various the values and posts them - a little bit pointless!
 (
 x = {
-	var sig, chain, unp;
+	var sig, chain, unp, fftsize=1024;
 	//sig = SinOsc.ar;
 	sig = PlayBuf.ar(1, c, BufRateScale.kr(c), loop: 1);
-	chain = FFT(LocalBuf(1, 1024), sig);
+	chain = FFT(LocalBuf(fftsize), sig);
 
 	// Using the frombin & tobin args makes it much more efficient, limiting analysis to the bins of interest
-	unp = UnpackFFT(chain, b.numFrames, frombin: 0, tobin: 4);
+	unp = UnpackFFT(chain, fftsize, frombin: 0, tobin: 4);
 
 	// Demand some data from the unpacker.
 	// NOTE: At present, Demand.kr is unable to handle more than 32 inputs,
@@ -62,7 +62,7 @@ x.free;
 (
 x = {
 	var sig, chain, magsphases, b;
-	b = LocalBuf(1, 1024);
+	b = LocalBuf(1024);
 	sig = PlayBuf.ar(1, c, BufRateScale.kr(c), loop: 1);
 	chain = FFT(b, sig);
 	magsphases = UnpackFFT(chain, b.numFrames);
