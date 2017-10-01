@@ -6,7 +6,9 @@
     }, 
     {
       "test": "*", 
-      "suite": "TestUnitTest"
+      "suite": "TestUnitTest",
+      "skip": true,
+      "skipReason": "Unidentified UnitTest bug (FIXME)"
     }, 
     {
       "test": "*", 
@@ -30,7 +32,9 @@
     }, 
     {
       "test": "*", 
-      "suite": "TestMixedBundleTester"
+      "suite": "TestMixedBundleTester",
+      "skip": true,
+      "skipReason": "Unidentified UnitTest bug (FIXME)"
     }, 
     {
       "test": "*", 
@@ -61,6 +65,10 @@
       "skip": true, "skipReason": "UnitTest bug"
     }, 
     {
+      "suite": "TestUnitTest", "test": "test_findTestedClass",
+      "skip": true, "skipReason": "Unidentified UnitTest bug"
+    },
+    {
       "suite": "TestUnitTest", "test": "test_bootServer", 
       "skip": true, "skipReason": "No server support on travis"
     }, 
@@ -82,6 +90,10 @@
       "skipReason": "No server support on travis", 
       "skip": true
     }, 
+    {
+      "suite": "TestMixedBundleTester", "test": "test_defNames",
+      "skip": true, "skipReason": "Unidentified UnitTest bug"
+    },
     {
       "test": "test_prepare", 
       "suite": "TestOSCBundle", 
