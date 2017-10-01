@@ -66,7 +66,7 @@ The number of channels for the Buffer. The default is 1.
 argument:: completionMessage
 A valid OSC message or a Function which will return one. A Function will be passed this Buffer as an argument when evaluated.
 argument:: bufnum
-An explicitly specified buffer number. Generally this is not needed.
+An explicitly specified buffer number. Usage of this argument is highly dicouraged. It is not required that a bufnum be specified. A best practice is to let the buffer number allocator choose the next available bufnum. The bufnum specified here will not be reserved, and may get allocated elsewhere in the future with unintended results.
 discussion::
 code::
 // Allocate 8 second stereo buffer
