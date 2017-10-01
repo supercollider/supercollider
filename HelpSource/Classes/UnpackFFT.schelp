@@ -41,7 +41,7 @@ x = {
 	var sig, chain, unp;
 	//sig = SinOsc.ar;
 	sig = PlayBuf.ar(1, c, BufRateScale.kr(c), loop: 1);
-	chain = FFT(LocalBuf(1, 1024), sig);
+	chain = FFT(LocalBuf(1024), sig);
 
 	// Using the frombin & tobin args makes it much more efficient, limiting analysis to the bins of interest
 	unp = UnpackFFT(chain, b.numFrames, frombin: 0, tobin: 4);
@@ -62,7 +62,7 @@ x.free;
 (
 x = {
 	var sig, chain, magsphases, b;
-	b = LocalBuf(1, 1024);
+	b = LocalBuf(1024);
 	sig = PlayBuf.ar(1, c, BufRateScale.kr(c), loop: 1);
 	chain = FFT(b, sig);
 	magsphases = UnpackFFT(chain, b.numFrames);
