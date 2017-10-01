@@ -11,12 +11,19 @@ For more on the crucial distinction between client objects and server nodes, see
 
 N.B. Group is a subclass of Node, and thus many of its most useful and important methods are documented in the link::Classes/Node:: help file. Please refer to it for more information.
 
-subsection:: RootNode and the default group
+subsection:: RootNode and the default groups
 
-When a Server is booted there is a top level group with an ID of zero that defines the root of the tree. This is represented by a subclass of Group: link::Classes/RootNode::.
-If the Server was booted from within SCLang (as opposed to from the command line) then a default_group with an ID of 1 will be automatically created. This group is the default enclosing group for all Nodes, i.e. it's what you get if you don't specify.
-In general you should create new Nodes within the default group of a Server rather than in its RootNode.
-See link::Classes/Server::, link::Reference/default_group:: and link::Classes/RootNode:: for more detail.
+When a Server is booted, there is a top level group with an ID of 0 that
+defines the root of the tree. This is represented by a subclass of Group:
+link::Classes/RootNode::.
+
+sclang has the notion of a "default group," which is automatically created when
+the server is booted. This group is the default enclosing group for all Nodes,
+i.e. it's what you get if you don't specify. In general you should create new
+Nodes within the default group of a Server rather than in its RootNode.
+Multiclient setups may have different default groups for each client. See
+link::Reference/default_group::, link::Classes/Server::, and
+link::Classes/RootNode:: for more detail.
 
 subsection:: Bundling
 

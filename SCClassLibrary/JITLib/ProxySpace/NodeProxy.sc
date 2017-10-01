@@ -95,12 +95,15 @@ NodeProxy : BusPlug {
 	asNodeID { ^group.asNodeID }
 	nodeID { ^group.nodeID }
 
-	parentGroup_ { | node |
-		if(node.isPlaying.not) { "node not playing and registered: % \n".postf(node); ^this };
-		parentGroup = node;
-		if(group.isPlaying) { group.moveToHead(parentGroup) };
-	}
-
+ 	parentGroup_ { | node |
+		if(node.isPlaying.not) {
+			"% : cannot make non-playing node parentGroup: % \n"
+			.postf(thisMethod, node);
+			^this
+		};
+ 		parentGroup = node;
+ 		if(group.isPlaying) { group.moveToHead(parentGroup) };
+ 	}
 
 	// setting the source
 

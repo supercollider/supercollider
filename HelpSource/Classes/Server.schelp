@@ -262,7 +262,12 @@ method:: options
 Get or set this Server's link::Classes/ServerOptions:: object. Changes to options only take effect when the server is rebooted.
 
 method:: defaultGroup
-returns:: this Server's default group.
+Return the default group on this Server for this client ID. This will be the
+same object as code::server.defaultGroups[server.clientID]::.
+
+method:: defaultGroups
+Return an array mapping client IDs to their associated default groups as
+link::Classes/Group:: objects.
 
 method:: volume
 Get an instance of Volume that runs after the default group, or sets the Volume of the Server's output to level. Level is in db.
