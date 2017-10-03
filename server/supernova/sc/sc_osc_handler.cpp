@@ -1480,15 +1480,31 @@ void g_query_tree_fill_node(osc::OutboundPacketStream & p, bool flag, server_nod
         if (flag) {
             osc::int32 controls = scsynth.mNumControls;
             p << controls;
+            // log_printf("controls: %i\n", controls);
+            // log_printf("number_of_slots: %i\n", scsynth.number_of_slots());
 
-            for (int i = 0; i != controls; ++i) {
-                p << osc::int32(i); /** \todo later we can return symbols */
+            for (int i = 0; i < controls; ++i) {
+                const char * name_of_slot = scsynth.name_of_slot(i);
+                if(name_of_slot)
+                    p << name_of_slot;
+                else
+                    p << osc::int32(i);
 
+                // analogous place in scsynth: SC_Group.cpp: void Group_QueryTreeAndControls(Group* inGroup, big_scpacket *packet)
                 if (scsynth.mMapControls[i] != (scsynth.mControls+i)) {
                     /* we use a bus mapping */
-                    int bus = (scsynth.mMapControls[i]) - (scsynth.mNode.mWorld->mControlBus);
+                    int bus;
+                    // bus = (scsynth.mMapControls[i]) - (scsynth.mNode.mWorld->mControlBus);
                     char str[10];
-                    sprintf(str, "s%d", bus);
+                    // sprintf(str, "%c%d", 'c', bus);
+                    if (*scsynth.mMapControls[i] == 2) { //this doesn't work yet! always goes to control bus
+                        bus = (scsynth.mMapControls[i]) - (scsynth.mNode.mWorld->mAudioBus);
+                        bus = (int)((float)bus / scsynth.mNode.mWorld->mBufLength);
+                        sprintf(str, "%c%d", 'a', bus);
+                    } else {
+                        bus = (scsynth.mMapControls[i]) - (scsynth.mNode.mWorld->mControlBus);
+                        sprintf(str, "%c%d", 'c', bus);
+                    };
                     p << str;
                 }
                 else
