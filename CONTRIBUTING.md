@@ -107,13 +107,13 @@ In order to keep your fork up-to-date, you need to point it to the main SuperCol
 			origin	https://github.com/your-name/supercollider.git (push)
 			upstream	https://github.com/supercollider/supercollider (fetch)
 			upstream	https://github.com/supercollider/supercollider (push)
-			
+
 	- Now you can proceed to updating your fork (see below).
 - If you have already created the `upstream` `remote`, update your fork:
 	- Be sure to have all local changes committed before doing this!
 	- Update from the `upstream` repository: `git fetch upstream`
 	- Checkout the `develop` branch: `git checkout develop`
-	- Pull changes into the `develop` branch: `git pull --rebase`
+	- Pull changes into the `develop` branch: `git pull upstream develop`
 	- If you have already created your topic branch:
 		- Update it with the changes in the `develop`: `git rebase develop topic/branch-description`
 	- If you have not yet created your topic branch, proceed to creating it as described in the [Pull Requests section](#before-making-changes)
