@@ -441,7 +441,7 @@ code::
 argument::duration
 The duration of the function to plot in seconds. The default is 0.01.
 argument::target
-The target node on which to calculate the plot. See link::Reference/asTarget::.
+The server, synth or group where the signal is picked up. See link::Reference/asTarget::.
 code::
 (
 var synth = { Out.ar(99, SinOsc.ar([300, 700])) }.play;
