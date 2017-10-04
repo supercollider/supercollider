@@ -775,7 +775,7 @@ Plotter {
 		plotter = Plotter(name, bounds);
 		plotter.value = [0.0];
 
-		this.loadToFloatArray(duration, target, { |array, buf|
+		this.getToFloatArray(duration, target, { |array, buf|
 			var numChan = buf.numChannels;
 			{
 				plotter.setValue(

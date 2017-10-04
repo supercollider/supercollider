@@ -322,6 +322,15 @@ Function : AbstractFunction {
 		})
 	}
 
+	getToFloatArray { |duration = 0.01, target, action, wait = 0.01, timeout = 3|
+		this.asBuffer(duration, target, { |buffer|
+			buffer.getToFloatArray(0, wait: wait, action: { |array|
+				action.value(array, buffer);
+				buffer.free
+			})
+		})
+	}
+
 }
 
 Thunk : AbstractFunction {
