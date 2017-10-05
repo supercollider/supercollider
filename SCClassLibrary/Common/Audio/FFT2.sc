@@ -83,3 +83,25 @@ RunningSum : UGen {
 		^(RunningSum.ar(in.squared,numsamp)*(numsamp.reciprocal)).sqrt;
 	}
 }
+
+
+// A running sum over a variable window of time
+RunningSum2 : UGen {
+	*ar { arg in, numsamp=40, maxsamp=400;
+		^this.multiNew('audio', in, numsamp, maxsamp);
+	}
+
+	*kr { arg in, numsamp=40, maxsamp=400;
+		^this.multiNew('control', in, numsamp, maxsamp);
+	}
+
+	*avg { arg in, numsamp=40, maxsamp=400;
+		var r = UGen.methodSelectorForRate(in.rate);
+		^RunningSum2.perform(r, in, numsamp, maxsamp)*(numsamp.floor.reciprocal)
+	}
+
+	*rms { arg in, numsamp=40, maxsamp=400;
+		var r = UGen.methodSelectorForRate(in.rate);
+		^(RunningSum2.perform(r, in.squared, numsamp, maxsamp)*(numsamp.floor.reciprocal)).sqrt
+	}
+}
