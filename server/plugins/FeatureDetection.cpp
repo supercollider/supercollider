@@ -61,7 +61,6 @@ struct RunningSum : public Unit {
 	float* msquares;
 };
 
-
 // like RunningSum, but with variable size summing window. - mtmccrea
 struct RunningSum2 : public Unit {
     int nsamps, maxsamps, head, tail, resetcount;
@@ -86,6 +85,10 @@ extern "C"
 	void RunningSum_next_k(RunningSum *unit, int inNumSamples);
 	void RunningSum_Ctor(RunningSum* unit);
 	void RunningSum_Dtor(RunningSum* unit);
+
+    void RunningSum2_Ctor(RunningSum2 *unit);
+    void RunningSum2_Dtor(RunningSum2 *unit);
+    void RunningSum2_next(RunningSum2 *unit, int inNumSamples);
 }
 
 #define PV_FEAT_GET_BUF_UNLOCKED \
