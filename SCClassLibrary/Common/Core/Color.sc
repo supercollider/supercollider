@@ -109,6 +109,31 @@ Color {
 		^Color.hsv(b[0], b[1], blend(f[2], b[2], blend), alpha)
 	}
 
+	*ryb { arg red, yellow, blue, alpha=1;
+		var basis = #[
+			[1, 1, 1], // white
+			[1, 0, 0], // red
+			[1, 1, 0], // yellow:
+			[0.163, 0.373, 0.6], // blue
+			[0.5, 0, 0.5], // violet
+			[0, 0.66, 0.2], // green
+			[1, 0.5, 0], // orange
+			[0.2, 0.094, 0.0], // black
+		];
+		var coefficients = [
+			(1 - red) * (1 - blue) * (1 - yellow),
+			red * (1 - blue) * (1 - yellow),
+			(1 - red) * blue * (1 - yellow),
+			red * blue * (1 - yellow),
+			(1 - red) * (1 - blue) * yellow,
+			red * (1 - blue) * yellow,
+			(1 - red) * blue * yellow,
+			red * blue * yellow
+		];
+		var rgb = sum(basis * coefficients);
+		^this.fromArray(rgb ++ alpha)
+	}
+
 	*hsv { arg hue, sat, val, alpha=1;
 			var r, g, b, segment, fraction, t1, t2, t3;
 			hue = hue.linlin(0, 1, 0, 360);
