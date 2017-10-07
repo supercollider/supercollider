@@ -10,24 +10,24 @@ Color {
 	*fromArray { arg array;
 		^this.new(*array)
 	}
-	*black { ^Color.new(0.0, 0.0, 0.0) }
-	*white { ^Color.new(1.0, 1.0, 1.0) }
-	*red { arg val = 1.0, alpha = 1.0; ^Color.new(min(1,val), max(val-1,0), max(val-1,0), alpha) }
-	*green { arg val = 1.0, alpha = 1.0; ^Color.new(max(val-1,0), min(1,val), max(val-1,0), alpha) }
-	*blue { arg val = 1.0, alpha = 1.0; ^Color.new(max(val-1,0), max(val-1,0), min(1,val), alpha) }
-	*cyan { arg val = 1.0, alpha = 1.0; ^Color.new(max(val-1,0), min(1,val), min(1,val), alpha) }
-	*magenta { arg val = 1.0, alpha = 1.0; ^Color.new(min(1,val), max(val-1,0), min(1,val), alpha) }
-	*yellow { arg val = 1.0, alpha = 1.0; ^Color.new(min(1,val), min(1,val), max(val-1,0), alpha) }
-	*clear { ^Color.new(0.0, 0.0, 0.0, 0.0) }
+	*black { ^this.new(0.0, 0.0, 0.0) }
+	*white { ^this.new(1.0, 1.0, 1.0) }
+	*red { arg val = 1.0, alpha = 1.0; ^this.new(min(1,val), max(val-1,0), max(val-1,0), alpha) }
+	*green { arg val = 1.0, alpha = 1.0; ^this.new(max(val-1,0), min(1,val), max(val-1,0), alpha) }
+	*blue { arg val = 1.0, alpha = 1.0; ^this.new(max(val-1,0), max(val-1,0), min(1,val), alpha) }
+	*cyan { arg val = 1.0, alpha = 1.0; ^this.new(max(val-1,0), min(1,val), min(1,val), alpha) }
+	*magenta { arg val = 1.0, alpha = 1.0; ^this.new(min(1,val), max(val-1,0), min(1,val), alpha) }
+	*yellow { arg val = 1.0, alpha = 1.0; ^this.new(min(1,val), min(1,val), max(val-1,0), alpha) }
+	*clear { ^this.new(0.0, 0.0, 0.0, 0.0) }
 	*grey { arg grey = 0.5, alpha = 1.0;
-		^Color.new(grey, grey, grey, alpha);
+		^this.new(grey, grey, grey, alpha);
 	}
 	*gray { arg gray = 0.5, alpha = 1.0;
 		// synonym
-		^Color.grey(gray, alpha);
+		^this.grey(gray, alpha);
 	}
 
-	*rand { arg lo=0.3,hi=0.9; ^Color.new(rrand(lo,hi),rrand(lo,hi),rrand(lo,hi)) }
+	*rand { arg lo=0.3,hi=0.9; ^this.new(rrand(lo,hi),rrand(lo,hi),rrand(lo,hi)) }
 
 	== { arg that;
 		^this.compareObject(that, #[\red, \green, \blue, \alpha])
@@ -38,13 +38,13 @@ Color {
 	}
 
 	scaleByAlpha {
-		^Color.new(red * alpha, green * alpha, blue * alpha, 1.0)
+		^this.class.new(red * alpha, green * alpha, blue * alpha, 1.0)
 	}
 	blend { arg that, blend = 0.5;
-		^Color.fromArray(blend(this.asArray, that.asArray, blend));
+		^this.class.fromArray(blend(this.asArray, that.asArray, blend));
 	}
 	vary { arg val=0.1, lo=0.3, hi=0.9, alphaVal=0;
-		^Color.new(
+		^this.class.new(
 			(red + val.rand2).clip(lo,hi),
 			(green + val.rand2).clip(lo,hi),
 			(blue + val.rand2).clip(lo,hi),
@@ -52,61 +52,61 @@ Color {
 		)
 	}
 	round { arg val=0.01;
-		^Color.fromArray([red, green, blue].round(val) ++ alpha)
+		^this.class.fromArray([red, green, blue].round(val) ++ alpha)
 	}
 
 	complementary {
-		^Color.new(1.0 - red, 1.0 - green, 1.0 - blue, alpha)
+		^this.class.new(1.0 - red, 1.0 - green, 1.0 - blue, alpha)
 	}
 	multiply { arg aColor, opacity=1.0;
 		var vals = aColor.asArray;
-		^Color.fromArray(blend(vals, vals * this.asArray, opacity) ++ alpha)
+		^this.class.fromArray(blend(vals, vals * this.asArray, opacity) ++ alpha)
 	}
 	divide { arg aColor, opacity=1.0;
 		var vals = aColor.asArray, d=0.0001 ! 3;
-		^Color.fromArray(blend(vals, ((this.asArray + d) / vals).min(1.0), opacity) ++ alpha)
+		^this.class.fromArray(blend(vals, ((this.asArray + d) / vals).min(1.0), opacity) ++ alpha)
 	}
 	subtract { arg aColor, opacity=1.0;
 		var vals = aColor.asArray;
-		^Color.fromArray(blend(vals, (this.asArray - vals).max(0.0), opacity) ++ alpha)
+		^this.class.fromArray(blend(vals, (this.asArray - vals).max(0.0), opacity) ++ alpha)
 	}
 	add { arg aColor, opacity=1.0;
 		var vals = aColor.asArray;
-		^Color.fromArray(blend(vals, (vals + this.asArray).min(1.0), opacity) ++ alpha)
+		^this.class.fromArray(blend(vals, (vals + this.asArray).min(1.0), opacity) ++ alpha)
 	}
 	symmetricDifference { arg aColor, opacity=1.0;
 		var vals = aColor.asArray;
-		^Color.fromArray(blend(vals, abs(vals - this.asArray), opacity) ++ alpha)
+		^this.class.fromArray(blend(vals, abs(vals - this.asArray), opacity) ++ alpha)
 	}
 	screen { arg aColor, opacity=1.0;
 		var vals = aColor.asArray;
-		^Color.fromArray(blend(vals, (1-vals) * (1-this.asArray), opacity) ++ alpha)
+		^this.class.fromArray(blend(vals, (1-vals) * (1-this.asArray), opacity) ++ alpha)
 	}
 	lighten  { arg aColor, opacity=1.0;
 		var vals = aColor.asArray;
-		^Color.fromArray(blend(vals, max(vals, this.asArray), opacity) ++ alpha)
+		^this.class.fromArray(blend(vals, max(vals, this.asArray), opacity) ++ alpha)
 	}
 	darken { arg aColor, opacity=1.0;
 		var vals = aColor.asArray;
-		^Color.fromArray(blend(vals, min(vals, this.asArray), opacity) ++ alpha)
+		^this.class.fromArray(blend(vals, min(vals, this.asArray), opacity) ++ alpha)
 	}
 	hueBlend { arg aColor, blend=0.0;
 		var f, b;
 		f = this.asHSV;
 		b = aColor.asHSV;
-		^Color.hsv(blend(f[0], b[0], blend), b[1], b[2], alpha)
+		^this.class.hsv(blend(f[0], b[0], blend), b[1], b[2], alpha)
 	}
 	saturationBlend { arg aColor, blend=0.0;
 		var f, b;
 		f = this.asHSV;
 		b = aColor.asHSV;
-		^Color.hsv(b[0], blend(f[1], b[1], blend), b[2], alpha)
+		^this.class.hsv(b[0], blend(f[1], b[1], blend), b[2], alpha)
 	}
 	valueBlend { arg aColor, blend=0.0;
 		var f, b;
 		f = this.asHSV;
 		b = aColor.asHSV;
-		^Color.hsv(b[0], b[1], blend(f[2], b[2], blend), alpha)
+		^this.class.hsv(b[0], b[1], blend(f[2], b[2], blend), alpha)
 	}
 
 	*ryb { arg red, yellow, blue, alpha=1;
