@@ -216,13 +216,11 @@ Color {
 
 	*fromHexString {|string|
 		var red, green, blue;
-		if(string[0] == $#, { string = string.copyToEnd(1) });
-		if(string.size == 3, {
-			string = string[0] ++ string[0] ++ string[1] ++ string[1] ++ string[2] ++ string[2]
-		});
-		red = ("0x" ++ string.copyRange(0, 1)).interpret;
-		green = ("0x" ++ string.copyRange(2, 3)).interpret;
-		blue = ("0x" ++ string.copyRange(4, 5)).interpret;
+		if(string[0] == $#, { string = string[1..] });
+		if(string.size == 3, { string = string.as(Array).stutter(2).join });
+		red = ("0x" ++ string[0..1]).interpret;
+		green = ("0x" ++ string[2..3]).interpret;
+		blue = ("0x" ++ string[4..5]).interpret;
 		^this.new255(red, green, blue, 255)
 	}
 }
