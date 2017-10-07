@@ -19,6 +19,18 @@ An instance of link::Classes/Float:: between 0 and 1.
 argument:: alpha
 An instance of link::Classes/Float:: between 0 and 1.
 
+code::
+// random rgb colors
+(
+var colors, view;
+colors = { Color(1.0.rand, 1.0.rand, 1.0.rand) } ! 24;
+view = { |c| StaticText().background_(c).mouseDownAction_({ c.postln }) };
+Window(bounds:Rect(200,200,800,200)).layout_(
+	HLayout(*colors.collect(view)).spacing_(0)
+).front;
+)
+::
+
 method:: new255
 Create a new instance from 8-bit integer values between 0 and 255.
 argument:: red
@@ -29,6 +41,18 @@ argument:: blue
 An link::Classes/Integer:: between 0 and 255.
 argument:: alpha
 An link::Classes/Integer:: between 0 and 255.
+
+code::
+// random rgb255 colors
+(
+var colors, view;
+colors = { Color.new255(255.rand, 255.rand, 255.rand) } ! 24;
+view = { |c| StaticText().background_(c).mouseDownAction_({ c.postln }) };
+Window(bounds:Rect(200,200,800,200)).layout_(
+	HLayout(*colors.collect(view)).spacing_(0)
+).front;
+)
+::
 
 method:: fromArray
 Same as code::Color.new(*array)::.
@@ -41,6 +65,7 @@ argument:: string
 A link::Classes/String::.
 discussion::
 The string should be a 6 character web color, or a 3 character CSS style color. A preceding # is optional.
+
 code::
 Color.fromHexString("#FF6600");
 ::
@@ -93,6 +118,19 @@ link::Classes/Float:: between 0 and 1.
 argument:: alpha
 link::Classes/Float:: between 0 and 1.
 
+code::
+// random hsv colors
+(
+var colors, view;
+colors = { Color.hsv(1.0.rand, 1.0.rand, 1.0.rand) } ! 24;
+view = { |c| StaticText().background_(c).mouseDownAction_({ c.postln }) };
+
+Window(bounds:Rect(200,200,800,200)).layout_(
+	HLayout(*colors.collect(view)).spacing_(0)
+).front;
+)
+::
+
 
 method:: ryb
 Maps ryb (red–yellow–blue color model) and alpha values to rgb between 0 and 1.
@@ -104,6 +142,18 @@ argument:: blue
 link::Classes/Float:: between 0 and 1.
 argument:: alpha
 link::Classes/Float:: between 0 and 1.
+
+code::
+// random ryb colors
+(
+var colors, view;
+colors = { Color.ryb(1.0.rand, 1.0.rand, 1.0.rand) } ! 24;
+view = { |c| StaticText().background_(c).mouseDownAction_({ c.postln }) };
+Window(bounds:Rect(200,200,200,200)).layout_(
+	HLayout(*colors.collect(view)).spacing_(0)
+).front;
+)
+::
 
 instancemethods::
 private:: printOn, hash
@@ -150,6 +200,20 @@ argument:: hi
 High-clips the RGB variation here.
 argument:: alphaVal
 Varies the alpha value +/- this amount, and clips it between 0 and 1.
+
+code::
+// vary a random color
+(
+var color, colors, view;
+color = Color(1.0.rand, 1.0.rand, 1.0.rand);
+colors = { color.vary(0.3) } ! 24;
+view = { |c| StaticText().background_(c).mouseDownAction_({ c.postln }) };
+
+Window(bounds:Rect(200,200,800,200)).layout_(
+	HLayout(*colors.collect(view)).spacing_(0)
+).front;
+)
+::
 
 method:: complementary
 Returns the complementary color.
