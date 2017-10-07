@@ -1,35 +1,35 @@
 Color {
 	var <>red, <>green, <>blue, <>alpha;
 
-	*new { arg red=0.0, green=0.0, blue=0.0, alpha=1.0;
+	*new { | red = 0.0, green = 0.0, blue = 0.0, alpha = 1.0 |
 		^super.newCopyArgs(red, green, blue, alpha);
 	}
 
-	*new255 { arg red=0, green=0, blue=0, alpha=255;
+	*new255 { | red = 0, green = 0, blue = 0, alpha = 255 |
 		^super.newCopyArgs(red/255, green/255, blue/255, alpha/255);
 	}
 
-	*fromArray { arg array;
+	*fromArray { | array |
 		^this.new(*array)
 	}
 
 	*black { ^this.new(0.0, 0.0, 0.0) }
 	*white { ^this.new(1.0, 1.0, 1.0) }
-	*red { arg val = 1.0, alpha = 1.0; ^this.new(min(1,val), max(val-1,0), max(val-1,0), alpha) }
-	*green { arg val = 1.0, alpha = 1.0; ^this.new(max(val-1,0), min(1,val), max(val-1,0), alpha) }
-	*blue { arg val = 1.0, alpha = 1.0; ^this.new(max(val-1,0), max(val-1,0), min(1,val), alpha) }
-	*cyan { arg val = 1.0, alpha = 1.0; ^this.new(max(val-1,0), min(1,val), min(1,val), alpha) }
-	*magenta { arg val = 1.0, alpha = 1.0; ^this.new(min(1,val), max(val-1,0), min(1,val), alpha) }
-	*yellow { arg val = 1.0, alpha = 1.0; ^this.new(min(1,val), min(1,val), max(val-1,0), alpha) }
+	*red { | val = 1.0, alpha = 1.0 | ^this.new(min(1,val), max(val-1,0), max(val-1,0), alpha) }
+	*green { | val = 1.0, alpha = 1.0 | ^this.new(max(val-1,0), min(1,val), max(val-1,0), alpha) }
+	*blue { | val = 1.0, alpha = 1.0 | ^this.new(max(val-1,0), max(val-1,0), min(1,val), alpha) }
+	*cyan { | val = 1.0, alpha = 1.0 |  ^this.new(max(val-1,0), min(1,val), min(1,val), alpha) }
+	*magenta { | val = 1.0, alpha = 1.0 | ^this.new(min(1,val), max(val-1,0), min(1,val), alpha) }
+	*yellow { | val = 1.0, alpha = 1.0 | ^this.new(min(1,val), min(1,val), max(val-1,0), alpha) }
 	*clear { ^this.new(0.0, 0.0, 0.0, 0.0) }
-	*grey { arg grey = 0.5, alpha = 1.0; ^this.new(grey, grey, grey, alpha) }
-	*gray { arg gray = 0.5, alpha = 1.0; ^this.grey(gray, alpha) } // synonym
+	*grey { | grey = 0.5, alpha = 1.0 | ^this.new(grey, grey, grey, alpha) }
+	*gray { | gray = 0.5, alpha = 1.0 | ^this.grey(gray, alpha) } // synonym
 
-	*rand { arg lo=0.3,hi=0.9;
+	*rand { | lo = 0.3, hi = 0.9 |
 		^this.new(rrand(lo, hi), rrand(lo, hi), rrand(lo, hi))
 	}
 
-	== { arg that;
+	== { | that |
 		^this.compareObject(that, #[\red, \green, \blue, \alpha])
 	}
 
@@ -41,20 +41,20 @@ Color {
 		^this.class.new(red * alpha, green * alpha, blue * alpha, 1.0)
 	}
 
-	blend { arg that, blend = 0.5;
+	blend { | that, blend = 0.5 |
 		^this.class.fromArray(blend(this.asArray, that.asArray, blend))
 	}
 
-	vary { arg val=0.1, lo=0.3, hi=0.9, alphaVal=0;
+	vary { | val = 0.1, lo = 0.3, hi = 0.9, alphaVal = 0 |
 		^this.class.new(
-			(red + val.rand2).clip(lo,hi),
-			(green + val.rand2).clip(lo,hi),
-			(blue + val.rand2).clip(lo,hi),
-			(alpha + alphaVal.rand2).clip(0,1)
+			(red + val.rand2).clip(lo, hi),
+			(green + val.rand2).clip(lo, hi),
+			(blue + val.rand2).clip(lo, hi),
+			(alpha + alphaVal.rand2).clip(0, 1)
 		)
 	}
 
-	round { arg val=0.01;
+	round { | val = 0.01 |
 		^this.class.fromArray([red, green, blue].round(val) ++ alpha)
 	}
 
@@ -62,67 +62,67 @@ Color {
 		^this.class.new(1.0 - red, 1.0 - green, 1.0 - blue, alpha)
 	}
 
-	multiply { arg aColor, opacity=1.0;
+	multiply { | aColor, opacity = 1.0 |
 		var vals = aColor.asArray;
 		^this.class.fromArray(blend(vals, vals * this.asArray, opacity) ++ alpha)
 	}
 
-	divide { arg aColor, opacity=1.0;
+	divide { | aColor, opacity = 1.0 |
 		var vals = aColor.asArray, d=0.0001 ! 3;
 		^this.class.fromArray(blend(vals, ((this.asArray + d) / vals).min(1.0), opacity) ++ alpha)
 	}
 
-	subtract { arg aColor, opacity=1.0;
+	subtract { | aColor, opacity = 1.0 |
 		var vals = aColor.asArray;
 		^this.class.fromArray(blend(vals, (this.asArray - vals).max(0.0), opacity) ++ alpha)
 	}
 
-	add { arg aColor, opacity=1.0;
+	add { | aColor, opacity = 1.0 |
 		var vals = aColor.asArray;
 		^this.class.fromArray(blend(vals, (vals + this.asArray).min(1.0), opacity) ++ alpha)
 	}
 
-	symmetricDifference { arg aColor, opacity=1.0;
+	symmetricDifference { | aColor, opacity = 1.0 |
 		var vals = aColor.asArray;
 		^this.class.fromArray(blend(vals, abs(vals - this.asArray), opacity) ++ alpha)
 	}
 
-	screen { arg aColor, opacity=1.0;
+	screen { | aColor, opacity = 1.0 |
 		var vals = aColor.asArray;
 		^this.class.fromArray(blend(vals, (1-vals) * (1-this.asArray), opacity) ++ alpha)
 	}
 
-	lighten  { arg aColor, opacity=1.0;
+	lighten  { | aColor, opacity = 1.0 |
 		var vals = aColor.asArray;
 		^this.class.fromArray(blend(vals, max(vals, this.asArray), opacity) ++ alpha)
 	}
 
-	darken { arg aColor, opacity=1.0;
+	darken { | aColor, opacity = 1.0 |
 		var vals = aColor.asArray;
 		^this.class.fromArray(blend(vals, min(vals, this.asArray), opacity) ++ alpha)
 	}
 
-	hueBlend { arg aColor, blend=0.0;
+	hueBlend { | aColor, blend = 0.0 |
 		var f, b;
 		f = this.asHSV;
 		b = aColor.asHSV;
 		^this.class.hsv(blend(f[0], b[0], blend), b[1], b[2], alpha)
 	}
 
-	saturationBlend { arg aColor, blend=0.0;
+	saturationBlend { | aColor, blend = 0.0 |
 		var f, b;
 		f = this.asHSV;
 		b = aColor.asHSV;
 		^this.class.hsv(b[0], blend(f[1], b[1], blend), b[2], alpha)
 	}
-	valueBlend { arg aColor, blend=0.0;
+	valueBlend { | aColor, blend = 0.0 |
 		var f, b;
 		f = this.asHSV;
 		b = aColor.asHSV;
 		^this.class.hsv(b[0], b[1], blend(f[2], b[2], blend), alpha)
 	}
 
-	*ryb { arg red, yellow, blue, alpha=1;
+	*ryb { | red, yellow, blue, alpha = 1 |
 		var basis = #[
 			[1, 1, 1], // white
 			[1, 0, 0], // red
@@ -147,7 +147,7 @@ Color {
 		^this.fromArray(rgb ++ alpha)
 	}
 
-	*hsv { arg hue, sat, val, alpha=1;
+	*hsv { | hue, sat, val, alpha = 1 |
 		var r, g, b, segment, fraction, t1, t2, t3;
 		hue = hue.linlin(0, 1, 0, 360);
 		if( sat == 0 ) {
@@ -185,7 +185,7 @@ Color {
 
 	asArray { ^[red, green, blue, alpha] }
 
-	printOn { arg stream;
+	printOn { | stream |
 		var title;
 		stream << this.class.name;
 		this.storeParamsOn(stream);
@@ -214,7 +214,7 @@ Color {
 
 	}
 
-	*fromHexString {|string|
+	*fromHexString { | string |
 		var red, green, blue;
 		if(string[0] == $#, { string = string[1..] });
 		if(string.size == 3, { string = string.as(Array).stutter(2).join });
