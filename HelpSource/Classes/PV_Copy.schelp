@@ -20,7 +20,7 @@ examples::
 code::
 
 // read a sound file
-s.waitForBoot { d = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav") }
+d = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 
 // crossfade between original and magmul-ed whitenoise
@@ -71,14 +71,14 @@ x.free;
 
 
 (
-s.waitForBoot({
-	b = Buffer.alloc(s, 2048, 1);
-	c = Buffer.alloc(s, 2048, 1);
-	e = Buffer.alloc(s, 2048, 1);
-	f = Buffer.alloc(s, 2048, 1);
 
-	d = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
-})
+b = Buffer.alloc(s, 2048, 1);
+c = Buffer.alloc(s, 2048, 1);
+e = Buffer.alloc(s, 2048, 1);
+f = Buffer.alloc(s, 2048, 1);
+
+d = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
+
 )
 
 
