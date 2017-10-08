@@ -435,9 +435,9 @@ Event : Environment {
 					parentType = ~parentTypes[~type];
 					parentType !? { currentEnvironment.parent = parentType };
 
-					~finish.value(currentEnvironment);
+					server = ~server = ~server ? Server.default;
 
-					server = ~server ? Server.default;
+					~finish.value(currentEnvironment);
 
 					tempo = ~tempo;
 					tempo !? { thisThread.clock.tempo = tempo };
