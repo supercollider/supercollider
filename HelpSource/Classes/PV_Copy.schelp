@@ -16,15 +16,14 @@ argument:: bufferB
 destination buffer.
 
 examples::
+
 code::
-(
-s.waitForBoot({
-	d = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
-})
-)
+
+// read a sound file
+s.waitForBoot { d = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav") }
 
 
-//// crossfade between original and magmul-ed whitenoise
+// crossfade between original and magmul-ed whitenoise
 (
 x = { var in, in2, chain, chainB, chainC;
 	in = PlayBuf.ar(1, d, BufRateScale.kr(d), loop: 1) * 2;
@@ -41,7 +40,7 @@ x.free;
 
 
 
-//// as previous but with Blip for 'vocoder' cross synthesis effect
+// as previous but with Blip for 'vocoder' cross synthesis effect
 (
 x = { var in, in2, chain, chainB, chainC;
 	in = PlayBuf.ar(1, d, BufRateScale.kr(d), loop: 1) * 2;
@@ -56,7 +55,7 @@ x = { var in, in2, chain, chainB, chainC;
 x.free;
 
 
-//// Spectral 'pan'
+// Spectral 'pan'
 (
 x = { var in, chain, chainB, pan;
 	in = PlayBuf.ar(1, d, BufRateScale.kr(d), loop: 1);
@@ -73,31 +72,50 @@ x.free;
 
 (
 s.waitForBoot({
-	b = Buffer.alloc(s,2048,1);
-	c = Buffer.alloc(s,2048,1);
+	b = Buffer.alloc(s, 2048, 1);
+	c = Buffer.alloc(s, 2048, 1);
+	e = Buffer.alloc(s, 2048, 1);
+	f = Buffer.alloc(s, 2048, 1);
+
 	d = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
-	e = Buffer.alloc(s,2048,1);
-	f = Buffer.alloc(s,2048,1);
 })
 )
 
 
-//// proof of concept
+
+
+// proof of concept: copy has identical data
+// global buffers for plotting the data
 (
-x = { var inA, chainA, inB, chainB, chain;
-	inA = LFClipNoise.ar(100);
-	chainA = FFT(b, inA);
-	chainB = PV_Copy(chainA, c);
-	IFFT(chainA) - IFFT(chainB); // cancels to zero so silent!
-}.play(s);
+b = Buffer.alloc(s, 2048, 1);
+c = Buffer.alloc(s, 2048, 1);
+)
+
+//  silently record some FFT data into the buffers
+(
+x = {
+	var inA, chainA, chainB;
+    inA = LFClipNoise.ar(100);
+    chainA = FFT(b, inA);
+    chainB = PV_Copy(chainA, c);
+    IFFT(chainA) - IFFT(chainB); // proof of concept: cancels to zero
+}.play;
 )
 x.free;
+
 // IFFTed frames contain the same windowed output data
-b.plot(\b, Rect(200, 430, 700, 300)); c.plot(\c, Rect(200, 100, 700, 300));
+(
+b.plot(\b, Rect(200, 430, 700, 300));
+c.plot(\c, Rect(200, 100, 700, 300));
+)
+
+// free the buffers
+[b, c].do(_.free);
 
 
 
-//// Multiple Magnitude plots
+
+// Multiple Magnitude plots
 (
 x = { var in, chain, chainB, chainC;
 	in = WhiteNoise.ar;
@@ -139,5 +157,8 @@ f.getToFloatArray(action: { arg array;
 )
 
 [b, c, d, e, f].do(_.free); // free the buffers
+
+
+
 ::
 

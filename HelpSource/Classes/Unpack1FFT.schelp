@@ -1,7 +1,7 @@
 class:: Unpack1FFT
 summary:: Unpack a single value (magnitude or phase) from an FFT chain
 categories:: UGens>FFT
-related:: Classes/PackFFT, Classes/UnpackFFT
+related:: Classes/PackFFT, Classes/UnpackFFT, Guides/FFT-Overview
 
 
 Unpack1FFT(chain, bufsize, binindex, whichmeasure=0)
