@@ -273,12 +273,12 @@ Server {
 	var <nodeAllocator, <controlBusAllocator, <audioBusAllocator, <bufferAllocator, <scopeBufferAllocator;
 
 	var <>tree;
+	var <defaultGroup, <defaultGroups;
 
 	var <syncThread, <syncTasks;
 	var <window, <>scopeWindow, <emacsbuf;
 	var <volume, <recorder, <statusWatcher;
 	var <pid, serverInterface;
-
 
 	*initClass {
 		Class.initClassTree(ServerOptions);
@@ -351,13 +351,18 @@ Server {
 
 	}
 
+	remove {
+		all.remove(this);
+		named.removeAt(this.name);
+	}
+
 	numClients { ^options.maxLogins }
 
 	addr_ { |netAddr|
 		addr = netAddr ?? { NetAddr("127.0.0.1", 57110) };
 		inProcess = addr.addr == 0;
 		isLocal = inProcess || { addr.isLocal };
-		remoteControlled = isLocal;
+		remoteControlled = isLocal.not;
 	}
 
 	name_ { |argName|
@@ -371,7 +376,7 @@ Server {
 
 	initTree {
 		this.newNodeAllocators;
-		this.sendMsg("/g_new", this.defaultGroup.nodeID, 0, 0);
+		this.sendMsg("/g_new", defaultGroup.nodeID, 0, 0);
 		tree.value(this);
 		ServerTree.run(this);
 	}
@@ -413,7 +418,14 @@ Server {
 	}
 
 	newNodeAllocators {
-		nodeAllocator = NodeIDAllocator(clientID, options.initialNodeID)
+		nodeAllocator = nodeAllocClass.new(
+			clientID,
+			options.initialNodeID,
+			options.maxLogins
+		);
+		// defaultGroup and defaultGroups depend on allocator,
+		// so always make them here:
+		this.makeDefaultGroups;
 	}
 
 	newBusAllocators {
@@ -712,8 +724,30 @@ Server {
 		^Buffer.cachedBufferAt(this, bufnum)
 	}
 
-	defaultGroup {
-		^Group.basicNew(this, 1)
+	// defaultGroups for all clients on this server:
+
+	allClientIDs { ^(0..options.maxLogins-1) }
+
+	// keep defaultGroups for all clients on this server:
+	makeDefaultGroups {
+		defaultGroups = this.allClientIDs.collect { |clientID|
+			Group.basicNew(this, nodeAllocator.numIDs * clientID + 1);
+		};
+		defaultGroup = defaultGroups[clientID];
+	}
+
+	defaultGroupID { ^defaultGroup.nodeID }
+
+	sendDefaultGroups {
+		defaultGroups.do { |defGrp|
+			this.sendMsg("/g_new", defGrp.nodeID);
+		};
+	}
+
+	sendDefaultGroupsForClientIDs { |clientIDs|
+		defaultGroups[clientIDs].do { |defGrp|
+			this.sendMsg("/g_new", defGrp.nodeID);
+		}
 	}
 
 	inputBus {
@@ -794,7 +828,7 @@ Server {
 			this.bootInit(recover);
 		}, onFailure: onFailure ? false);
 
-		if(remoteControlled.not) {
+		if(remoteControlled) {
 			"You will have to manually boot remote server.".postln;
 		} {
 			this.prPingApp({
@@ -935,6 +969,16 @@ Server {
 		this.sendMsg("/g_freeAll", 0);
 		this.sendMsg("/clearSched");
 		this.initTree;
+	}
+
+	freeMyDefaultGroup {
+		this.sendMsg("/g_freeAll", defaultGroup.nodeID);
+	}
+
+	freeDefaultGroups {
+		defaultGroups.do { |group|
+			this.sendMsg("/g_freeAll", group.nodeID);
+		};
 	}
 
 	*freeAll { |evenRemote = false|

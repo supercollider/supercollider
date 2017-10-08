@@ -359,8 +359,12 @@ PauseStream : Stream {
 	}
 	reset { originalStream.reset }
 	stop {
+		var saveStream = this.stream;
 		this.prStop;
-		this.changed(\userStopped);
+ 		this.changed(\userStopped);
+		if(saveStream === thisThread) {
+			nil.alwaysYield
+		}
 	}
 	prStop {
 		stream = nil;
