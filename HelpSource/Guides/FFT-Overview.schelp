@@ -33,7 +33,8 @@ where code::f:: is the frequency corresponding to the window size, and code::N::
 The code::FFT:: UGen returns a signal (usually called strong::chain::) is constant at code::-1::, only when a new FFT window starts, the signal equals the buffer number. This is how subsequent FFT UGens can write to that buffer and know when to do this. The FFT information is not in the chain signal, but in the buffer.
 
 code::
-// the FFT return signal is -1, and for each starting window, it is the buffer number of the FFT buffer
+// the FFT return signal is -1, and for each starting window,
+// it is the FFT buffer number
 
 b = Buffer.alloc(s, 512); // allocate FFT buffer
 b.bufnum; // note the buffer number
@@ -41,7 +42,8 @@ b.bufnum; // note the buffer number
 (
 var dt = s.options.blockSize / s.sampleRate * 16; // plot 16 blocks
 var min = -2, max = b.bufnum + 4;
-{ FFT(b, SoundIn.ar) }.plot(dt, minval:min, maxval:max).plotMode_(\steps); // input is SoundIn, but we don't use this
+// input is SoundIn, but we don't see this signal
+{ FFT(b, SoundIn.ar) }.plot(dt, minval:min, maxval:max).plotMode_(\steps);
 )
 
 b.free; // free the buffer again
