@@ -12,11 +12,40 @@ chain = FFT(buffer, input)
 code::
 output = IFFT(chain)
 ::
-link::Classes/FFT:: stores spectral data in a buffer (a link::Classes/Buffer:: or link::Classes/LocalBuf::), in the following format: DC, nyquist, real 1f, imag 1f, real 2f, imag 2f, ... real (N-1)f, imag (N-1)f, where f is the frequency corresponding to the window size, and N is the window size / 2.
 
-The strong::buffer's size:: must correspond to a power of 2, and must also be a multiple of SC's link::Classes/ServerOptions#-blockSize#block size::. The window size is equivalent to the buffer size, and the window overlap defaults to 2. Both link::Classes/FFT:: and link::Classes/IFFT:: use a sine window by default, the combination of which (i.e. raised sine, that is, sine squared) is a Hanning window.
 
-The code::FFT:: UGen returns a signal (usually called strong::chain::) that combines the buffer number and a trigger. Subsequent FFT UGens write to that buffer when a trigger occurs. Normally, the signal is constant at code::-1::. When a trigger occurs, the signal is the buffer number.
+FFT requires a link::Classes/Buffer:: or link::Classes/LocalBuf::. The buffer's size must correspond to a power of 2, and must also be a multiple of SC's link::Classes/ServerOptions#-blockSize#block size::. The window size is equivalent to the buffer size, and the window overlap defaults to 2. Both link::Classes/FFT:: and link::Classes/IFFT:: use a sine window by default, the combination of which (i.e. raised sine, that is, sine squared) is a Hanning window.
+
+
+
+section::How FFT UGens communicate
+
+link::Classes/FFT:: stores spectral data in the buffer, in the following format:
+
+table::
+## DC || nyquist || real 1f || imag 1f || real 2f || imag 2f ||  ... || real (N-1)f ||  imag (N-1)f
+::
+
+where code::f:: is the frequency corresponding to the window size, and code::N:: is the window size / 2.
+
+
+
+The code::FFT:: UGen returns a signal (usually called strong::chain::) is constant at code::-1::, only when a new FFT window starts, the signal equals the buffer number. This is how subsequent FFT UGens can write to that buffer and know when to do this. The FFT information is not in the chain signal, but in the buffer.
+
+code::
+// the FFT return signal is -1, and for each starting window, it is the buffer number of the FFT buffer
+
+b = Buffer.alloc(s, 512); // allocate FFT buffer
+b.bufnum; // note the buffer number
+
+(
+var dt = s.options.blockSize / s.sampleRate * 16; // plot 16 blocks
+var min = -2, max = b.bufnum + 4;
+{ FFT(b, SoundIn.ar) }.plot(dt, minval:min, maxval:max).plotMode_(\steps); // input is SoundIn, but we don't use this
+)
+
+b.free; // free the buffer again
+::
 
 section:: Phase Vocoder UGens and Spectral Processing
 

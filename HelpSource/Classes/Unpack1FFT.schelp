@@ -1,6 +1,6 @@
 class:: Unpack1FFT
 summary:: Unpack a single value (magnitude or phase) from an FFT chain
-categories:: UGens>FFT
+categories:: UGens>FFT, UGens>Demand
 related:: Classes/PackFFT, Classes/UnpackFFT, Guides/FFT-Overview
 
 
@@ -27,31 +27,25 @@ the integer index of the bin you want to query
 argument:: whichmeasure
 0 for magnitude and 1 for phase. None of these arguments can be modulated.
 
-examples::
+discussion::
 code::
 
-c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
-
-
-// Let's extract the DC component - i.e. the magnitude at index zero.
+// Let's extract the DC component - i.e. the magnitude at binindex zero.
 (
 x = {
-	var fftsize = 1024;
-	var sig, chain, unp, trig, demand;
+	var sig, chain, stream, windowStarts, demand;
 
-	sig = PlayBuf.ar(1, c, BufRateScale.kr(c), loop: 1);
-	chain = FFT(LocalBuf(fftsize), sig);
+	sig = SinOsc.ar(LFDNoise3.kr(LFNoise0.kr(1) * 40 + 60) * 700 + 800);
 
-	unp = Unpack1FFT(chain, bufsize: fftsize, binindex: 0, whichmeasure: 0);
+	chain = FFT(LocalBuf(1024), sig);
+	stream = Unpack1FFT(chain, bufsize: fftsize, binindex: 0, whichmeasure: 0);
 
-	// Demand some data from the unpacker
-	trig = chain >= 0;
-	demand = Demand.kr(trig, 0, unp);
-	demand.poll(trig);
+	// each time an FFT window starts, the unpacker returns a new value
+	windowStarts = chain > -1;
+	demand = Demand.kr(windowStarts, 0, stream);
+	demand.poll(windowStarts);
 
-	(sig * 0.1).dup;
+	sig * 0.05
 }.play
 )
-x.free;
 ::
-
