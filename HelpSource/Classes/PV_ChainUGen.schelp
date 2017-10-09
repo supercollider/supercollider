@@ -5,44 +5,101 @@ categories:: UGens>FFT
 description::
 code::PV_ChainUGen:: is an abstract class, not used directly, but only its subclasses. It represents phase-vocoder UGens - i.e. UGens which apply some kind of transformation to the frequency-domain signal produced by link::Classes/FFT::.
 
-It encompasses all unit generators whose output is an FFT chain. This is why FFT is in this group but IFFT is not - the IFFT unit outputs ordinary time-domain audio.
+It encompasses all unit generators whose output is an FFT chain. This is why link::Classes/FFT:: is in this group but link::Classes/IFFT:: is not - the IFFT ugen outputs ordinary time-domain audio.
 
-For more info on using these unit generators, see link::Guides/FFT-Overview::.
+For more information on using these unit generators, see link::Guides/FFT-Overview::.
 
 classmethods::
 private:: categories
 
 instancemethods::
-method:: pvcalc
-Process the bins of an FFT chain
 
-discussion::
+private::addCopiesIfNeeded
+
+method::fftSize
+Returns the FFT chain buffer's size.
+
+code::
+{ var chain = FFT(LocalBuf(1024)); chain.fftSize.poll; 0.0 }.play;
+::
+
+
+method:: pvcalc
+pvcalc applies a function to the frequency-domain data of an FFT chain. See link::#-pvcollect:: below for discussion of efficiency considerations. See also link::#-pvcalc2:: below, and link::Classes/UnpackFFT::.
 
 code::
 chain = chain.pvcalc(numframes, func, frombin, tobin, zeroothers)
 ::
 
-pvcalc applies function code::func:: to the frequency-domain data of an FFT chain.
-code::func:: should be a function that takes two arrays as inputs (magnitude, and phase) and returns a resulting pair of arrays code::[magnitude, phase]::.
 
-frombin, tobin, and zeroothers are optional arguments which limit the processing to a specified integer range of FFT bins. If zeroothers is set to 1 then bins outside of the range being processed are silenced.
+argument::numframes
+Number of FFT frames to process
 
-See code::pvcollect:: below for discussion of efficiency considerations. See also code::pvcalc2:: below, and link::Classes/UnpackFFT::.
+argument::func
+The function that takes two arrays as inputs  (code::magnitude::, and code::phase::) and returns a resulting pair of arrays code::[magnitude, phase]::.
+code::
+// example function
+{ | magnitudes, phases |
+	[mags.reverse, phases.reverse] // e.g. upside-down spectrum
+}
+::
+
+argument::frombin
+
+Range start (optional)
+
+argument::tobin
+
+Range end (optional)
+
+argument::zeroothers
+
+If set to 1 then bins outside of the range being processed are silenced.
+
+
 
 method::pvcalc2
-Process the bins of two FFT chains
-
-discussion::
+The method pvcalc2 is just like link::#-pvcalc:: but can combine two FFT chains.
 
 code::
 chain = chain.pvcalc2(chain2, numframes, func, frombin, tobin, zeroothers)
 ::
-pvcalc2 is just like pvcalc but can combine two FFT chains together. See code::pvcalc:: above for more information.
 
-code::func:: should be a function that takes four arrays as inputs (magnitudes1, phases1, magnitudes2, phases2) and returns a resulting pair of arrays code::[magnitude, phase]::.
+argument::chain2
+The scond FFT chain.
+
+argument::numframes
+Number of FFT frames to process
+
+argument::func
+The function that takes four arrays as inputs (magnitudes1, phases1, magnitudes2, phases2) and returns a resulting pair of arrays code::[magnitude, phase]::.
+code::
+// example function
+{ | magnitudes1, phases1, magnitudes2, phases2 |
+	[magnitudes1, phases2] // e.g. use the magnitudes of one, ane the phases of the other
+}
+::
+
+argument::frombin
+
+Range start (optional)
+
+argument::tobin
+
+Range end (optional)
+
+argument::zeroothers
+
+If set to 1 then bins outside of the range being processed are silenced.
+
+
 
 method:: pvcollect
 Process each bin of an FFT chain, separately, by applying a function to each bin of an FFT chain.
+
+code::
+chain = chain.pvcollect(numframes, func, frombin, tobin, zeroothers)
+::
 
 argument::numframes
 Number of FFT frames to process
@@ -52,7 +109,7 @@ The function that processes each bin. It should be a function that takes code:: 
 code::
 // example function
 { | magnitude, phase, bin, index |
-	[mags.reverse, phases.reverse] // upside-down spectrum
+	[mags.reverse, phases.reverse] // e.g. upside-down spectrum
 }
 ::
 
@@ -73,9 +130,6 @@ If set to 1 then bins outside of the range being processed are silenced.
 
 discussion::
 
-code::
-chain = chain.pvcollect(numframes, func, frombin, tobin, zeroothers)
-::
 
 Note that this procedure can be relatively CPU-heavy, depending on how you use it.
 Using pvcollect (or its components, UnpackFFT & PackFFT) is usually less efficient than using a single "PV_" unit generator to process an FFT chain, because it involves the creation of quite a large graph of demand-rate unit generators.
@@ -93,14 +147,11 @@ Examples::
 
 subsection:: pvcalc
 code::
-(
-s.waitForBoot({
-	c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
-})
-)
+// a sound file
+c.free; c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 (
-x = {
+{
 	var in, chain, v;
 	in = PlayBuf.ar(1, c, BufRateScale.kr(c), loop: 1);
 	chain = FFT(LocalBuf(1024), in);
@@ -116,7 +167,6 @@ x = {
 	0.5 * IFFT(chain).dup
 }.play
 )
-x.free;
 ::
 
 subsection:: pvcalc2
