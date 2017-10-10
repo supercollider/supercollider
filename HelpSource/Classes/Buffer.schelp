@@ -18,7 +18,7 @@ subsection:: Buffer Numbers and Allocation
 
 Although the number of buffers on a server is set at the time it is booted, memory must still be allocated within the server app before they can hold values. (At boot time all buffers have a size of 0.)
 
-link::Classes/Server::-side buffers are identified by number, starting from 0. When using Buffer objects, buffer numbers are automatically allocated from the Server's bufferAllocator, unless you explicitly supply one. When you call code::.free:: on a Buffer object it will release the buffer's memory on the server, and free the buffer number for future reallocation. See link::Classes/ServerOptions:: for details on setting the number of available buffers.
+link::Classes/Server::-side buffers are identified by number, starting from 0. When using Buffer objects, buffer numbers are automatically allocated from the Server's bufferAllocator. When you call code::.free:: on a Buffer object it will release the buffer's memory on the server, and free the buffer number for future reallocation. See link::Classes/ServerOptions:: for details on setting the number of available buffers.
 
 Normally you should not need to supply a buffer number. You should only do so if you are sure you know what you are doing. Similarly, in normal use you should not need to access the buffer number, since instances of Buffer can be used directly as link::Classes/UGen:: inputs or link::Classes/Synth:: args.
 
