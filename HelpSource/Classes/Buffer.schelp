@@ -719,7 +719,7 @@ code::
 s.boot;
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 // same as Buffer.plot
-b.loadToFloatArray(action: { arg array; a = array; {a.plot;}.defer; "done".postln;});
+b.loadToFloatArray(action: { arg array; a = array; { a.plot }.defer; "done".postln });
 b.free;
 ::
 
@@ -741,7 +741,7 @@ code::
 s.boot;
 b = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 // like Buffer.plot
-b.getToFloatArray(wait:0.01,action:{arg array; a = array; {a.plot;}.defer;"done".postln;});
+b.getToFloatArray(wait:0.01,action:{arg array; a = array; { a.plot }.defer; "done".postln });
 b.free;
 ::
 
