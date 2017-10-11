@@ -14,7 +14,7 @@ output = IFFT(chain)
 ::
 
 
-FFT requires a link::Classes/Buffer:: or link::Classes/LocalBuf::. The buffer's size must correspond to a power of 2, and must also be a multiple of SC's link::Classes/ServerOptions#-blockSize#block size::. The window size is equivalent to the buffer size, and the window overlap defaults to 2. Both link::Classes/FFT:: and link::Classes/IFFT:: use a sine window by default, the combination of which (i.e. raised sine, that is, sine squared) is a Hanning window.
+FFT requires a link::Classes/Buffer:: or link::Classes/LocalBuf::. The buffer's size must correspond to a power of 2, and must also be a multiple of the server's current link::Classes/ServerOptions#-blockSize#block size::. The window size is equivalent to the buffer size, and the window link::Classes/FFT#*new#overlap defaults to 2 (hop = 0.5)::. Both link::Classes/FFT:: and link::Classes/IFFT:: use a sine window by default. Their combination  efficiently becomes a Hanning window (i.e. raised sine, that is, sine squared).
 
 
 
@@ -254,6 +254,8 @@ SynthDef("help-multichannel FFT", { |out=0, bufnum= #[0, 1]| // bufnum is an arr
 	Out.ar(out, IFFT(chain));
 }).play(s,[\bufnum, b]);
 )
+
+b.free;
 ::
 
 Note that dup on a UGen just makes a reference to that UGen, because UGen defines -copy to simply return the receiver. (See link::Classes/UGen:: for more detail.)

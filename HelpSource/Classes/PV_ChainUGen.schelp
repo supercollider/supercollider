@@ -3,7 +3,7 @@ summary:: Base class for UGens that operate on FFT chains
 categories:: UGens>FFT
 
 description::
-code::PV_ChainUGen:: is an abstract class, not used directly, but only its subclasses. It represents phase-vocoder UGens - i.e. UGens which apply some kind of transformation to the frequency-domain signal produced by link::Classes/FFT::.
+code::PV_ChainUGen:: is an abstract class, not used directly, but only its subclasses are. It represents phase-vocoder UGens - i.e. UGens which apply some kind of transformation to the frequency-domain signal produced by link::Classes/FFT::.
 
 It encompasses all unit generators whose output is an FFT chain. This is why link::Classes/FFT:: is in this group but link::Classes/IFFT:: is not - the IFFT ugen outputs ordinary time-domain audio.
 
@@ -20,7 +20,13 @@ method::fftSize
 Returns the FFT chain buffer's size.
 
 code::
-{ var chain = FFT(LocalBuf(1024)); chain.fftSize.poll; 0.0 }.play;
+(
+{
+	var chain = FFT(LocalBuf(1024));
+	chain.fftSize.poll;
+	0.0
+}.play;
+)
 ::
 
 
@@ -237,4 +243,5 @@ c.free; c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 	0.5 * IFFT(chain).dup
 }.play
 )
+
 ::
