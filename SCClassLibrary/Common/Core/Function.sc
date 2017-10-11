@@ -274,7 +274,7 @@ Function : AbstractFunction {
 			var	val = this.value;
 			if(val.isValidUGenInput.not) {
 				val.dump;
-				Error("loadToFloatArray failed: % is no valid UGen input".format(val)).throw
+				Error("reading signal failed: % is no valid UGen input".format(val)).throw
 			};
 			val = UGen.replaceZeroesWithSilence(val.asArray);
 			rate = val.rate;
