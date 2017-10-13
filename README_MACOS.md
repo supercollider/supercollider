@@ -45,9 +45,11 @@ Prerequisites:
 - **git, cmake, libsndfile, readline, and qt5.5**, installed via homebrew:
   `brew install git cmake readline qt55`
 
-
   *Note*: SuperCollider depends on Qt5WebKit, which was dropped from Qt in 5.6. So make sure you request Qt5.5 (`qt55`) and not the latest version (`qt5`).
   Use `brew info` to see the version of a package, and see `brew switch` or `brew pin` if you want to use Qt5.5 as your default version.
+
+- If you want to build with the *supernova* server, you need **portaudio** package, which can also be installed via homebrew:
+  `brew install portaudio`
 
 Obtaining the source code
 -------------------------
@@ -71,6 +73,8 @@ Build instructions
     mkdir -p build
     cd build
     cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt55`  ..
+    # or, if you want to build with supernova:
+    cmake -G Xcode -DCMAKE_PREFIX_PATH=`brew --prefix qt55` -DSUPERNOVA=ON ..
     cmake --build . --target install --config RelWithDebInfo
 
 If successful this will build the application into `build/Install/SuperCollider/`
@@ -78,6 +82,8 @@ If successful this will build the application into `build/Install/SuperCollider/
 You can see the available build options with ```cmake -LH```.
 
 To install, you may move this to /Applications or use it in place from the build directory.
+
+More info on *supernova* can be found in the section **Frequently used cmake settings** below.
 
 **Note**: You can also open the produced SuperCollider.xcodeproj in Xcode, and build the "Install" scheme in place of the last step. Do make sure you run the previous configuration steps.
 

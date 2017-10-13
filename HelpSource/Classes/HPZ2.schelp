@@ -46,8 +46,8 @@ code::
 (
 {
 	var changingSignal = LFNoise0.ar(1000);
-	var hpz1 = HPZ2.ar(changingSignal);
-	[hpz1, hpz1 > 0]
+	var hpz2 = HPZ2.ar(changingSignal);
+	[hpz2, hpz2 > 0]
 }.plot
 );
 ::

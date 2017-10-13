@@ -55,11 +55,13 @@ Please be as descriptive as possible when creating an issue. Give us the informa
 
 - Create a fork of the SuperCollider repository.
 - Clone the repo and its submodules locally: `git clone --recursive https://github.com/your-name/supercollider.git`.
+	- If you have created the fork before, bring it up-to-date with the SuperCollider repository. See [updating your fork](#updating-your-fork) below for details.
 - Create a topic branch from where you want to base your work.
-	- This is usually the `master` branch.
+	- This is the `develop` branch.
 	- Our branch naming convention is `topic/branch-description`: for example, `topic/fix-sinosc` or `topic/document-object`.
-	- To quickly create a topic branch based on master: `git checkout -b topic/my-fix master`.
-	- Please avoid working directly on the `master` branch.
+	- To quickly create a topic branch based on develop: `git checkout -b topic/my-fix develop`.
+	- Please avoid working directly on the `develop` branch.
+	- Please do not work off of the `master` branch, which is stable and only includes releases.
 
 ### Making changes
 
@@ -82,12 +84,44 @@ Please be as descriptive as possible when creating an issue. Give us the informa
 - Make sure you have added the necessary tests for your changes.
 - Make sure you have documented your changes, if necessary.
 
-### Submitting changes as pull Requests
+### Submitting changes as Pull Requests
 
 - Push your changes to a topic branch in the fork of your repository. If you are working locally, do this with `git push -u my-gh-repo topic/my-fix`. `my-gh-repo` is typically `origin`; check with `git remote -v`.
 - Submit a pull request to the SuperCollider repository.
 - The core team looks at pull requests on a regular basis in a weekly meeting that we hold in a public meeting. The hangout is announced in the weekly status updates that are sent to the sc-dev list.
 - You may receive feedback and requests for changes. We expect changes to be made in a timely manner. We may close the pull request if it isn't showing any activity.
+
+### Updating your fork
+In order to keep your fork up-to-date, you need to point it to the main SuperCollider repository. This is done by adding the main repository as another `remote`, usually called `upstream`. **Please note:** naming the main repository `upstream` is just a convention, not a requirement. If you already have a differently named `remote` pointing to the main SuperCollider repository, you can use that name instead of `upstream`.
+- If you have not yet created the `upstream` `remote`, create it first:
+	- Check the list of remotes: `git remote -v`. The output should look like this:
+
+			origin	https://github.com/your-name/supercollider.git (fetch)
+			origin	https://github.com/your-name/supercollider.git (push)
+
+	- Add a new remote called `upstream`, pointing to the SuperCollider repository:
+	`git remote add upstream https://github.com/your-name/supercollider.git`
+	- Check the list of remotes again: `git remote -v`. Now the output should look like this:
+
+			origin	https://github.com/your-name/supercollider.git (fetch)
+			origin	https://github.com/your-name/supercollider.git (push)
+			upstream	https://github.com/supercollider/supercollider (fetch)
+			upstream	https://github.com/supercollider/supercollider (push)
+
+	- Now you can proceed to updating your fork (see below).
+- If you have already created the `upstream` `remote`, update your fork:
+	- Be sure to have all local changes committed before doing this!
+	- Update from the `upstream` repository: `git fetch upstream`
+	- Checkout the `develop` branch: `git checkout develop`
+	- Pull changes into the `develop` branch: `git pull upstream develop`
+	- If you have already created your topic branch:
+		- Update it with the changes in the `develop`: `git rebase develop topic/branch-description`
+	- If you have not yet created your topic branch, proceed to creating it as described in the [Pull Requests section](#before-making-changes)
+
+### Additional resources
+More information can be found on the [git workflow wiki page](https://github.com/supercollider/supercollider/wiki/git-workflow-and-guidelines).
+
+You can also refer to Github's guide to [forking a repository](https://help.github.com/articles/fork-a-repo/) and [syncing a fork](https://help.github.com/articles/syncing-a-fork/).
 
 ## Above and beyond
 
