@@ -64,7 +64,7 @@ d = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 	pan = MouseX.kr(0.001, 1.001, 'exponential') - 0.001;
 	chain = PV_BrickWall(chain, pan);
 	chainB = PV_BrickWall(chainB, -1 + pan);
-	IFFT([chain, chainB]
+	IFFT([chain, chainB])
 }.play
 )
 
