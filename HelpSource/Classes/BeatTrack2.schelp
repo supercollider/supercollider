@@ -64,8 +64,8 @@ SynthDef(\help_beattrack2_1, { |out, vol=1.0, beepvol=1.0, lock=0, bufnum|
 	//in = SoundIn.ar(0);
 
 	//Create some features
-	fft = FFT(LocalBuf(1, 1024), in); //for sampling rates 44100 and 48000
-	//fft = FFT(LocalBuf(1, 2048), in); //for sampling rates 88200 and 96000
+	fft = FFT(LocalBuf(1024), in); //for sampling rates 44100 and 48000
+	//fft = FFT(LocalBuf(2048), in); //for sampling rates 88200 and 96000
 
 	feature1 = RunningSum.rms(in, 64);
 	feature2 = MFCC.kr(fft,2); //two coefficients
@@ -109,8 +109,8 @@ a= SynthDef(\help_beattrack2_1, { |out, vol=1.0, beepvol=1.0, lock=0, bufnum|
 	//in = SoundIn.ar(0);
 
 	//Create some features
-	fft = FFT(LocalBuf(1, 1024), in); // for sampling rates 44100 and 48000
-	//fft = FFT(LocalBuf(1, 2048), in); // for sampling rates 88200 and 96000
+	fft = FFT(LocalBuf(1024), in); // for sampling rates 44100 and 48000
+	//fft = FFT(LocalBuf(2048), in); // for sampling rates 88200 and 96000
 
 	feature1 = Onsets.kr(fft, odftype:\mkl, rawodf:1);
 

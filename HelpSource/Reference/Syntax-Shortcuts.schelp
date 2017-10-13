@@ -176,7 +176,7 @@ subsection:: accessing environment variables
 table::
 ## instead of writing: || you can write:
 ## code:: 'myName'.envirGet :: || code:: ~myName ::
-## code:: 'myName'.envirSet(9); :: || code:: ~myName = 9; ::
+## code:: 'myName'.envirPut(9); :: || code:: ~myName = 9; ::
 ::
 
 subsection:: shorthand for Symbols

@@ -1,5 +1,5 @@
-title:: default_group
-summary:: The default Group
+title:: Default Group
+summary:: An automatically created Group in sclang
 categories:: Server>Nodes
 related:: Classes/Group, Classes/RootNode, Classes/Node, Guides/NodeMessaging, Guides/Order-of-execution
 
@@ -10,18 +10,37 @@ tree::
 ::
 ::
 
-When a Server is booted there is a top level group with an ID of 0 that defines the root of the node tree. (This is represented by a subclass of Group: link::Classes/RootNode::.)
-If the Server was booted from within SCLang (as opposed to from the command line) a default group with an ID of 1 will be automatically created. footnote::
+When a Server is booted, there is a top level group with an ID of 0 that
+defines the root of the tree. This is represented by a subclass of Group:
+link::Classes/RootNode::.
+
+Separate from the root group is sclang's notion of a "default group," which is
+automatically created when the server is booted. You can access it with the
+method link::Classes/Server#-defaultGroup::. This group is the default
+enclosing group for all Nodes, i.e. it's what you get if you don't specify. In
+general, you should create new Nodes within the default group of a Server
+rather than in its RootNode. In a single-client setup, the default group will
+have an ID of 1.
+
+Keep in mind that default groups are a client-side concept, and you are
+responsible for creating them if you're running scsynth from the command line
+or NRT mode, or developing an alternate client. footnote::
 When booting the server from the command line, you can create the default group manually with:
 code::
 s.initTree;
 ::
 ::
-This is the default target for all Nodes when using object style and is what you will get if you supply a link::Classes/Server:: as a target. If you don't specify a target or pass in nil, you will get the default group of the default Server.
+
+This is the default target for all Nodes when using object style and is what
+you will get if you supply a link::Classes/Server:: as a target. If you don't
+specify a target or pass in nil, you will get the default group of the default
+Server.
 code::
 s.boot;
 a = Synth.new(\default); // creates a synth in the default group of the default Server
 a.group; // note the Group ID
+a.group == Server.default.defaultGroup;
+// -> true
 ::
 The default group serves an important purpose: It provides a predictable basic Node tree so that methods such as Server-scope, Server-record, etc. can function without running into order of execution problems. In the example below the scoping node will come after the default group.
 code::
@@ -71,3 +90,16 @@ tree::
 ## recording synth
 ::
 
+section:: Default groups in multi-client setups
+
+See link::Guides/MultiClient_Setups:: for more info.
+
+The default group mechanism is also used to separate clients in a multi-client
+setup. Every client registering with a server has its own individual default
+group. All nodes belonging to one client are in its default group and can be
+specifically addressed.
+
+This keeps nodes cleanly separated by default, but a client also knows the
+default groups of all other clients. This is accessible via the method
+link::Classes/Server#-defaultGroups::, which is an array mapping client IDs
+to default groups.

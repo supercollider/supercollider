@@ -64,7 +64,7 @@ namespace QtCollider {
         int mask = 0xFF;
         a = pixel >> 24 & mask;
         r = pixel >> 16 & mask;
-        g = pixel << 8 & mask;
+        g = pixel >> 8 & mask;
         b = pixel & mask;
         if ( a > 0 ) {
             qreal k = a > 0 ? 255.f / a : 0.f;

@@ -141,7 +141,7 @@ Scales the output of this UGen to be within the range of code::lo:: and code::hi
 discussion::
 Note that code::curverange:: expects the default output range, and thus should not be used in conjunction with mul and add arguments.
 code::
-{ SinOsc.ar(SinOsc.ar(0.3).curve(440, 660, -3), 0, 0.5) * 0.1 }.play;
+{ SinOsc.ar(SinOsc.ar(0.3).curverange(440, 660, -3), 0, 0.5) * 0.1 }.play;
 ::
 
 

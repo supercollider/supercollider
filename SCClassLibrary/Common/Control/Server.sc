@@ -38,7 +38,7 @@ ServerOptions {
 	var <>threads = nil; // for supernova
 	var <>useSystemClock = false;  // for supernova
 
-	var <numPrivateAudioBusChannels=112;
+	var <numPrivateAudioBusChannels=1020;
 
 	var <>reservedNumAudioBusChannels = 0;
 	var <>reservedNumControlBusChannels = 0;
@@ -121,8 +121,8 @@ ServerOptions {
 		if ((thisProcess.platform.name!=\osx) or: {inDevice == outDevice})
 		{
 			if (inDevice.notNil,
-			{
-				o = o ++ " -H %".format(inDevice.quote);
+				{
+					o = o ++ " -H %".format(inDevice.quote);
 			});
 		}
 		{
@@ -263,6 +263,7 @@ Server {
 
 	classvar <>local, <>internal, <default;
 	classvar <>named, <>all, <>program, <>sync_s = true;
+	classvar <>nodeAllocClass, <>bufferAllocClass, <>busAllocClass;
 
 	var <name, <addr, <clientID, <userSpecifiedClientID = false;
 	var <isLocal, <inProcess, <>sendQuit, <>remoteControlled;
@@ -272,18 +273,24 @@ Server {
 	var <nodeAllocator, <controlBusAllocator, <audioBusAllocator, <bufferAllocator, <scopeBufferAllocator;
 
 	var <>tree;
+	var <defaultGroup, <defaultGroups;
 
 	var <syncThread, <syncTasks;
 	var <window, <>scopeWindow, <emacsbuf;
 	var <volume, <recorder, <statusWatcher;
 	var <pid, serverInterface;
 
-
 	*initClass {
 		Class.initClassTree(ServerOptions);
 		Class.initClassTree(NotificationCenter);
 		named = IdentityDictionary.new;
 		all = Set.new;
+
+		nodeAllocClass = NodeIDAllocator;
+		// nodeAllocClass = ReadableNodeIDAllocator;
+		bufferAllocClass = ContiguousBlockAllocator;
+		busAllocClass = ContiguousBlockAllocator;
+
 		default = local = Server.new(\localhost, NetAddr("127.0.0.1", 57110));
 		internal = Server.new(\internal, NetAddr.new);
 	}
@@ -314,10 +321,23 @@ Server {
 	init { |argName, argAddr, argOptions, argClientID|
 		this.addr = argAddr;
 		options = argOptions ? ServerOptions.new;
-		clientID = argClientID ? 0;
-		if(argClientID.notNil) { userSpecifiedClientID = true };
 
-		this.newAllocators;
+		// set name to get readable posts from clientID set
+		name = argName.asSymbol;
+
+		if(argClientID.notNil) {
+			userSpecifiedClientID = true;
+			if (argClientID >= options.maxLogins) {
+				warn("% : user-specified clientID % is greater than maxLogins!"
+					"\nPlease adjust clientID or options.maxLogins."
+					.format(name, argClientID));
+				^nil
+			};
+		};
+
+		// go thru setter to test validity
+		this.clientID = argClientID ? 0;
+
 
 		statusWatcher = ServerStatusWatcher(server: this);
 		volume = Volume(server: this, persist: true);
@@ -331,11 +351,18 @@ Server {
 
 	}
 
+	remove {
+		all.remove(this);
+		named.removeAt(this.name);
+	}
+
+	numClients { ^options.maxLogins }
+
 	addr_ { |netAddr|
 		addr = netAddr ?? { NetAddr("127.0.0.1", 57110) };
 		inProcess = addr.addr == 0;
 		isLocal = inProcess || { addr.isLocal };
-		remoteControlled = isLocal;
+		remoteControlled = isLocal.not;
 	}
 
 	name_ { |argName|
@@ -348,23 +375,38 @@ Server {
 	}
 
 	initTree {
-		nodeAllocator = NodeIDAllocator(clientID, options.initialNodeID);
-		this.sendMsg("/g_new", 1, 0, 0);
+		this.newNodeAllocators;
+		this.sendMsg("/g_new", defaultGroup.nodeID, 0, 0);
 		tree.value(this);
 		ServerTree.run(this);
 	}
 
 	/* id allocators */
 
+	// private, called from server notify response with next free clientID
 	clientID_ { |val|
-		if(val.isInteger.not) {
-			"Server % couldn't set client id to: %".format(name, val.asCompileString).warn;
+		var failstr = "Server % couldn't set clientID to: % - %. clientID is still %.";
+
+		if(val == clientID) {
+			// no need to change
 			^this
 		};
-		if(clientID != val) {
-			clientID = val;
-			this.newAllocators;
-		}
+		if(val.isInteger.not) {
+			failstr.format(name, val.cs, "not an Integer", clientID).warn;
+			^this
+		};
+		if (val < 0 or: { val >= this.numClients }) {
+			failstr.format(name,
+				val.cs,
+				"outside of allowed server.numClients range of 0 - %".format(this.numClients),
+				clientID
+			).warn;
+			^this
+		};
+
+		"% : setting clientID to %.\n".postf(this, val);
+		clientID = val;
+		this.newAllocators;
 	}
 
 	newAllocators {
@@ -376,45 +418,55 @@ Server {
 	}
 
 	newNodeAllocators {
-		nodeAllocator = NodeIDAllocator(clientID, options.initialNodeID)
+		nodeAllocator = nodeAllocClass.new(
+			clientID,
+			options.initialNodeID,
+			options.maxLogins
+		);
+		// defaultGroup and defaultGroups depend on allocator,
+		// so always make them here:
+		this.makeDefaultGroups;
 	}
 
 	newBusAllocators {
-		var numControl, numAudio;
-		var controlBusOffset, audioBusOffset;
-		var offset = this.calcOffset;
-		var n = options.maxLogins ? 1;
+		var numControlPerClient, numAudioPerClient;
+		var controlReservedOffset, controlBusClientOffset;
+		var audioReservedOffset, audioBusClientOffset;
 
-		numControl = options.numControlBusChannels div: n;
-		numAudio = options.numPrivateAudioBusChannels div: n;
+		var audioBusIOOffset = options.firstPrivateBus;
 
-		controlBusOffset = numControl * offset + options.reservedNumControlBusChannels;
-		audioBusOffset = options.firstPrivateBus + (numAudio * offset) + options.reservedNumAudioBusChannels;
+		numControlPerClient = options.numControlBusChannels div: this.numClients;
+		numAudioPerClient = options.numAudioBusChannels - audioBusIOOffset div: this.numClients;
 
-		controlBusAllocator =
-		ContiguousBlockAllocator.new(numControl, controlBusOffset);
+		controlReservedOffset = options.reservedNumControlBusChannels;
+		controlBusClientOffset = numControlPerClient * clientID;
 
-		audioBusAllocator =
-		ContiguousBlockAllocator.new(numAudio, audioBusOffset);
+		audioReservedOffset = options.reservedNumAudioBusChannels;
+		audioBusClientOffset = numAudioPerClient * clientID;
+
+		controlBusAllocator = busAllocClass.new(
+			numControlPerClient,
+			controlReservedOffset,
+			controlBusClientOffset
+		);
+		audioBusAllocator = busAllocClass.new(
+			numAudioPerClient,
+			audioReservedOffset,
+			audioBusClientOffset + audioBusIOOffset
+		);
 	}
 
 
 	newBufferAllocators {
-		var bufferOffset;
-		var offset = this.calcOffset;
-		var n = options.maxLogins ? 1;
-		var numBuffers = options.numBuffers div: n;
-		bufferOffset = numBuffers * offset + options.reservedNumBuffers;
-		bufferAllocator =
-		ContiguousBlockAllocator.new(numBuffers, bufferOffset);
-	}
+		var numBuffersPerClient = options.numBuffers div: this.numClients;
+		var numReservedBuffers = options.reservedNumBuffers;
+		var bufferClientOffset = numBuffersPerClient * clientID;
 
-	calcOffset {
-		if(options.maxLogins.isNil) { ^0 };
-		if(clientID > (options.maxLogins - 1)) {
-			"Client ID exceeds maxLogins. Some buses and buffers may overlap for remote server: %".format(this).warn;
-		};
-		^clientID % options.maxLogins
+		bufferAllocator = bufferAllocClass.new(
+			numBuffersPerClient,
+			numReservedBuffers,
+			bufferClientOffset
+		);
 	}
 
 	newScopeBufferAllocators {
@@ -672,8 +724,30 @@ Server {
 		^Buffer.cachedBufferAt(this, bufnum)
 	}
 
-	defaultGroup {
-		^Group.basicNew(this, 1)
+	// defaultGroups for all clients on this server:
+
+	allClientIDs { ^(0..options.maxLogins-1) }
+
+	// keep defaultGroups for all clients on this server:
+	makeDefaultGroups {
+		defaultGroups = this.allClientIDs.collect { |clientID|
+			Group.basicNew(this, nodeAllocator.numIDs * clientID + 1);
+		};
+		defaultGroup = defaultGroups[clientID];
+	}
+
+	defaultGroupID { ^defaultGroup.nodeID }
+
+	sendDefaultGroups {
+		defaultGroups.do { |defGrp|
+			this.sendMsg("/g_new", defGrp.nodeID);
+		};
+	}
+
+	sendDefaultGroupsForClientIDs { |clientIDs|
+		defaultGroups[clientIDs].do { |defGrp|
+			this.sendMsg("/g_new", defGrp.nodeID);
+		}
 	}
 
 	inputBus {
@@ -754,7 +828,7 @@ Server {
 			this.bootInit(recover);
 		}, onFailure: onFailure ? false);
 
-		if(remoteControlled.not) {
+		if(remoteControlled) {
 			"You will have to manually boot remote server.".postln;
 		} {
 			this.prPingApp({
@@ -895,6 +969,16 @@ Server {
 		this.sendMsg("/g_freeAll", 0);
 		this.sendMsg("/clearSched");
 		this.initTree;
+	}
+
+	freeMyDefaultGroup {
+		this.sendMsg("/g_freeAll", defaultGroup.nodeID);
+	}
+
+	freeDefaultGroups {
+		defaultGroups.do { |group|
+			this.sendMsg("/g_freeAll", group.nodeID);
+		};
 	}
 
 	*freeAll { |evenRemote = false|

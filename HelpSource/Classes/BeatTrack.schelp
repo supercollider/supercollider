@@ -53,7 +53,7 @@ a = SynthDef(\help_beattrack, { |out, vol=1.0, beepvol=1.0, lock=0|
 	in = PlayBuf.ar(1,d, BufRateScale.kr(d),1,0,1);
 	//in = SoundIn.ar(0);
 
-	fft = FFT(LocalBuf(1, 1024), in); // for sampling rates 44100 and 48000
+	fft = FFT(LocalBuf(1024), in); // for sampling rates 44100 and 48000
 
 	#trackb, trackh, trackq, tempo = BeatTrack.kr(fft, lock);
 
@@ -85,7 +85,7 @@ SynthDef(\help_beattrack2, { |out|
 
 	source = SoundIn.ar(0);
 
-	#trackb, trackh, trackq, tempo = BeatTrack.kr(FFT(LocalBuf(1, 1024, source)));
+	#trackb, trackh, trackq, tempo = BeatTrack.kr(FFT(LocalBuf(1024)));
 
 	bsound = Pan2.ar(LPF.ar(WhiteNoise.ar * Decay.kr(trackb, 0.05), 1000), 0.0);
 
