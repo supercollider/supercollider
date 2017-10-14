@@ -273,12 +273,13 @@ Server {
 	var <nodeAllocator, <controlBusAllocator, <audioBusAllocator, <bufferAllocator, <scopeBufferAllocator;
 
 	var <>tree;
+	var <defaultGroup, <defaultGroups;
 
 	var <syncThread, <syncTasks;
 	var <window, <>scopeWindow, <emacsbuf;
 	var <volume, <recorder, <statusWatcher;
 	var <pid, serverInterface;
-	var <>freeAllFreesRootNode;
+
 
 	*initClass {
 		Class.initClassTree(ServerOptions);
@@ -376,7 +377,7 @@ Server {
 
 	initTree {
 		this.newNodeAllocators;
-		this.sendMsg("/g_new", this.defaultGroup.nodeID, 0, 0);
+		this.sendMsg("/g_new", defaultGroup.nodeID, 0, 0);
 		tree.value(this);
 		ServerTree.run(this);
 	}
@@ -424,6 +425,9 @@ Server {
 			options.initialNodeID,
 			options.maxLogins
 		);
+		// defaultGroup and defaultGroups depend on allocator,
+		// so always make them here:
+		this.makeDefaultGroups;
 	}
 
 	newBusAllocators {
@@ -722,11 +726,29 @@ Server {
 		^Buffer.cachedBufferAt(this, bufnum)
 	}
 
-	defaultGroupIDForClientID { |id| ^nodeAllocator.numIDs * id + 1 }
+	// defaultGroups for all clients on this server:
 
-	sendDefaultGroupsFor { |ids|
-		ids.do { |id|
-			this.sendMsg("g_new", this.defaultGroupIDForClientID(id));
+	allClientIDs { ^(0..options.maxLogins-1) }
+
+	// keep defaultGroups for all clients on this server:
+	makeDefaultGroups {
+		defaultGroups = this.allClientIDs.collect { |clientID|
+			Group.basicNew(this, nodeAllocator.numIDs * clientID + 1);
+		};
+		defaultGroup = defaultGroups[clientID];
+	}
+
+	defaultGroupID { ^defaultGroup.nodeID }
+
+	sendDefaultGroups {
+		defaultGroups.do { |defGrp|
+			this.sendMsg("/g_new", defGrp.nodeID);
+		};
+	}
+
+	sendDefaultGroupsForClientIDs { |clientIDs|
+		defaultGroups[clientIDs].do { |defGrp|
+			this.sendMsg("/g_new", defGrp.nodeID);
 		}
 	}
 
@@ -961,6 +983,16 @@ Server {
 		};
 		this.sendMsg("/clearSched");
 		this.initTree;
+	}
+
+	freeMyDefaultGroup {
+		this.sendMsg("/g_freeAll", defaultGroup.nodeID);
+	}
+
+	freeDefaultGroups {
+		defaultGroups.do { |group|
+			this.sendMsg("/g_freeAll", group.nodeID);
+		};
 	}
 
 	*freeAll { |evenRemote = false|

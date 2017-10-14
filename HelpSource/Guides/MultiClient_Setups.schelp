@@ -1,5 +1,5 @@
-TITLE:: MultiClient_Setups
-SUMMARY:: How to handle clientIDs and id allocation in multi-client/server setups
+TITLE:: Multi-client Setups
+SUMMARY:: How to set up and share servers for multiple clients in SuperCollider
 CATEGORIES:: Guides
 related:: Classes/ServerOptions, Classes/Server
 KEYWORD:: server, multi-client
@@ -19,18 +19,18 @@ list::
 ## buffer numbers (handled by Server:bufferAllocator).
 ::
 
-This sharing is handled by declaring how many clients/users are expected to login (Server:numUsers), and giving a different clientID to each of them when the login happens.
+This sharing is handled by declaring how many clients/users are expected to login - code::server.options.maxLogins:: - and scsynth will automatically give a different clientID to each client when it logs in.
 
 The most common case is that there is only a single user/client, who always gets clientID 0, and control of all available resources (i.e. the full number range of every allocator).
 
 When multiple clients log in, this is what happens:
 list::
-## On startup, scsynth (the server process) gets a fixed limit of maxLogins.
-## When a local or remote server object/client has no user-specified clientID,
-scsynth sends back the next free clientID, and the client uses it.
-## When a local or remote server object/client was created with a specific clientID,
-scsynth sends back that number if it was free, or the next free clientID if not; the client should use the free number, as the other may clash with a client already logged in.
-## [After the corresponding pull request is accepted,] scsynth also sends back the maxLogins value it was started with, so clients can adjust their internal allocator settings to it.
+
+## On startup, scsynth (the server process) is started with a fixed limit of maxLogins.
+## When a local or remote server object/client has no user-specified clientID, scsynth sends back the next free clientID, and the client uses that clientID.
+## When a local or remote server object/client was created with specific clientID, scsynth sends back that number if it was free, or the next free clientID if not; the client should use the free number in any case, as the other may clash with a client already logged in.
+## In case the client was already registered and tries to register again (after a reboot or network problem), scsynth sends back a failed message AND the clientID this client had earlier, and the client will use that clientID.
+## [After pull request #3181] scsynth also sends back the maxLogins value it was started with, so clients can also adjust their internal allocator settings to it.
 ::
 
 subsection:: Code examples and tests
@@ -40,12 +40,12 @@ Recommended usage for multiple clients on the same server is to use identical op
 code::
 // on the machine where scsynth runs, it can be the default server.
 // set the maximum number of client logins expected:
-s.options.maxLogins = 16;
-// now boot the server:
-s.boot;
+s.options.maxLogins = 8;
+// now reboot the server, so that it will have maxLogins
+s.reboot;
 
 // from another sclang instance, log into scsynth:
-s.options.maxLogins = 16;
+s.options.maxLogins = 8;
 // example NetAddr of the machine that runs scsynth on standard port
 s.addr = NetAddr("168.192.1.20", 57110);
 ::
@@ -53,7 +53,7 @@ s.addr = NetAddr("168.192.1.20", 57110);
 When fixed clientIDs for multiclient setups are desired, the recommended usage is to set every clientID on creation.
 
 code::
-s.options.maxLogins = 16;
+s.options.maxLogins = 8;
 
 r = Server(
 	\remote4,
@@ -71,20 +71,31 @@ r.userSpecifiedClientID;
 
 ::
 
-subsection:: Separate defaultGroups and easy-to-trace nodeIDs
+subsection:: Separate defaultGroups
 
-Every client registering with a server has its own defaultGroup. All nodes belonging to one client are in its defaultGroup and can be specifically addressed, so e.g. freeAll can release only one's own nodes, and not those of other clients on this server.
-For details, see NodeIDAllocator and ReadableNodeIDAllocator class and help files.
+For info on what a default group is, see link::Reference/default_group::.
+
+Every client registering with a server has its own defaultGroup. All nodes belonging to one client are in its defaultGroup and can be specifically addressed, so that a client can release only one's own nodes, and leave those of other clients on this server untouched.
+
+A client also knows the defaultGroups of all other clients that may login, so it can reason about other clients, and be as sharing-friendly as desired, see below in subsection CmdPeriod behavior.
+
+code::s.defaultGroups;::
+
+
+subsection:: Easy-to-trace nodeIDs
+
+For details on node allocation, see NodeIDAllocator and ReadableNodeIDAllocator class and help files.
+The scheme from NodeIDAllocator is also followed by many non-sclang clients allocation ranges; in networks with these, NodeIDAllocator will be the safe choice.
 
 code::
-
 // NodeIDAllocator uses a fixed binary prefix of (2 ** 26) * clientID:
 Server.nodeAllocClass = NodeIDAllocator;
-s.newAllocators; r.newAllocators;  // remake allocators
+s.newAllocators;
+r.newAllocators;  // remake allocators
 // clientID 0 has group 1:
-s.clientID;
-s.defaultGroup;
-s.defaultGroupID;
+s.clientID;		// 0
+s.defaultGroup;  // Group(1)
+s.defaultGroupID; // 1
 
 // for server r:
 r.clientID; 		// 4
@@ -92,9 +103,9 @@ r.nodeAllocator.idOffset; // lookup the offset: (2 ** 26 * 4)
 r.defaultGroup;		// Group(268435457) : idOffset + 1
 
 r.defaultGroupID; 	// 268435457
-r.options.maxLogins	// 16
+r.options.maxLogins	// 8
 
-
+// calculate backwards to which clientID a node belongs
 r.defaultGroupID mod: (2 ** 26); // 1 is the nodeID relative to idOffset relative ID
 r.defaultGroupID >> 26;
 r.nextNodeID ;   // begin at defaultGroupID + 1000
@@ -103,26 +114,27 @@ r.nextNodeID >> 26; // get clientID from a long nodeID
 
 // ReadableNodeIDAllocator uses a decimal prefix - to demonstrate:
 Server.nodeAllocClass = ReadableNodeIDAllocator;
-s.newAllocators; r.newAllocators;  // remake allocators
+
+s.newAllocators;
+r.newAllocators;  // remake allocators
 
 // for clientID 0, nothing changes:
-s.clientID;
-s.defaultGroup;
-s.defaultGroupID;
+s.clientID;       // 0
+s.defaultGroup;   // Group(1)
+s.defaultGroupID; // 1
 
 // for server r:
 r.clientID; 		// 4
-r.nodeAllocator.idOffset;  // offset if decimal
+r.nodeAllocator.idOffset;  // decimal offset so clientID is prefix
 r.defaultGroupID; 	// 400000001 - easy to identify nodeID source
 r.defaultGroup;		// Group(400000001)
-r.options.maxLogins	// 16
+r.options.maxLogins	// 8
 
-
-// s.defaultGroup is used often, and can be looked up in many ways:
-r.defaultGroup;
-r.defaultGroupID;
-r.asGroup;
-r.asTarget;
+// s.defaultGroup can be looked up in many ways:
+r.defaultGroupID;  // 400000001
+r.defaultGroup;    // Group(400000001)
+r.asGroup;         // Group(400000001)
+r.asTarget;        // Group(400000001)
 
 // temp nodeIDs readably belong to clientID 4, starting with 4...1000
 5.do { r.nextNodeID.postln };
@@ -134,7 +146,7 @@ r.asTarget;
 r.addr = s.addr;
 // whenever an accessible sound process is created, it gets a nodeID;
 // here are four different ways to create sounds, and see their nodeIDs:
-r.boot;
+r.reboot;
 r.plotTree;
 Server.default = r;
 
@@ -145,16 +157,13 @@ x.release;
 x = { Dust.ar(10!2).lag(0.002) }.play(r);
 x.release(2);
 
-(dur: 4, server: r).play;
+Pbind(\degree, Pseq((0..7).mirror), \dur, 0.15, \server, r).play;
 
 // JITLib nodeproxies
 Ndef(\x, { Dust.ar(10 ! 2) });
 Ndef(\x).play;
 Ndef(\x).filter(10, { |in| Ringz.ar(in, [600, 800], 0.03) }).play;
 Ndef(\x).end(3);
-
-// more nodeID examples needed here?
-
 ::
 
 subsection:: Bus channel and buffer numbers
@@ -163,7 +172,7 @@ The allocators for audio and control busses and for buffers split the full numbe
 code::
 // default value for clientID is 0 and maxLogins is 1
 Server.default = Server.local;
-s.clientID;   // should be 0
+s.clientID;   // 0
 s.options.maxLogins; // default 1
 
 // you can set maxLogins_ by hand - not recommended, only for testing here:
@@ -174,12 +183,12 @@ s.options.numAudioBusChannels;
 s.newBusAllocators;
 s.audioBusAllocator.size;
 
-// 1024 buses to allocate
+// 1024 buses to allocate, starting past the hardware IO buses.
 Bus.audio(s, 2);
 
-//  set maxLogins_ to 16 by hand - not recommended, only for demonstration here:
-s.options.maxLogins_(16);
-s.newBusAllocators; // 64 = 1024 / 16 buses to allocate per client.
+//  set maxLogins_ to 8 by hand - not recommended, only for demonstration here:
+s.options.maxLogins_(8);
+s.newBusAllocators; // 128 = 1024 / 8 buses to allocate per client.
 s.audioBusAllocator.size;
 3.collect { Bus.audio(s, 2) };
 // 1024 control buses to allocate, starting at 0
@@ -187,14 +196,11 @@ s.controlBusAllocator.size;
 3.collect { Bus.control(s, 2) };
 
 r.newBusAllocators;
-// audio bus range starts at 256
-3.collect { Bus.audio(r, 2) }; //
-// control bus range starts at 4096: 1365 * 4
+// audio bus range starts at 512 of 1024 total range
+3.collect { Bus.audio(r, 2) }; // 512, 514, 516
+// control bus range starts at 8192 of 16384 total range
 3.collect { Bus.control(r, 2) };
-
-// more bus alloc examples desirable here?
 ::
-
 
 Buffer allocation uses the same class, ContiguousBlockAllocator, and thus works the same way.
 
@@ -208,4 +214,117 @@ r.bufferAllocator.size;
 3.collect { Buffer(r) }; // starts at 256
 
 // more buffer alloc examples desirable here?
+::
+
+subsection:: Configuring CmdPeriod behavior
+
+In networked performances, it is useful that clients have well-chosen
+emergency access to 'their' sounds on a remote server; and it may make sense to give the local client more emergency power. Both can be configured easily.
+
+strong::Default behavior::
+
+By default, the local client will kill all sounds, and only reconstruct its defaultGroup; on remote clients, CmdPeriod does not affect remoter servers at all.
+
+code::
+// default - single client:
+s.options.maxLogins_(1);
+s.reboot;
+s.plotTree;		// watch to debug
+s.defaultGroup; // Group(1)
+s.defaultGroups; //  only one client, so this is [ Group(1) ]
+(dur: inf).play;  // play a test sound
+Group(0);   // make another group at root level
+s.freeAll;  // sound and added group die, only Group(1) remains
+
+// same with using CmdPeriod:
+(dur: inf).play;  // play a test sound
+Group(0);   // make another group at root level
+CmdPeriod.run; // simulate CmdPeriod key action
+
+
+// show behavior and support methods with a 4 client setup:
+s.options.maxLogins_(4);
+s.reboot;
+s.defaultGroups; // 4 default groups, 1 for every possible client.
+// send defaultGroups for specific clientIDs to scsynth : -> cf plotTree
+s.sendDefaultGroupsForIDs([0, 1]); // adds second defaultGroup
+
+// send all default groups
+s.sendDefaultGroups; // four groups in plotTree
+
+// s.tree gets evaluated after each CmdPeriod.
+// make sure we have nothing in s.tree:
+s.tree = nil;
+s.freeAll; // <- by default, frees other client's defaultGroups too.
+::
+
+strong::Remote-friendly local master setup::
+
+Now, all sounds on the server are gone, as desired.
+But the other clients cannot start new synths now,
+because their defaultGroups are gone too!
+
+Thus, the local client should reconstruct them,
+so the other clients can pick up playing again:
+code::
+// - easiest option:
+s.tree = { s.sendDefaultGroups; };
+(dur: inf).play;  // test sound
+Group(0);   // make second group at root level
+CmdPeriod.run; // simulate CmdPeriod key action
+// -> still stops all sounds, but then remakes all defaultGroups,
+// so the other clients can continue.
+::
+
+strong::Give remote clients control of their sounds::
+
+code::
+// create a fake remote server
+x = Server(\pseudoRem3, s.addr, s.options, 3);
+// method to
+~freeMyGroupX = { x.freeMyGroup };
+CmdPeriod.add(~freeMyGroupX);
+// fake playing a sound from it:
+(dur: 10, group: x.defaultGroup).play;
+(dur: 10, degree: 2).play; // and one on home client
+
+~freeMyGroupX.value; // only frees the one in \pseudoRem3
+
+CmdPeriod.remove(~freeMyGroupX);
+
+strong::Symmetrical / democratic setups::
+
+The home client on the machine where scsynth runs may want to be just like the others. It is simple to make the home client more polite:
+code::
+// first, disable general freeAll:
+CmdPeriod.freeServers = false;
+s.tree = nil;
+s.sendDefaultGroups;
+// and add a custom action to CmdPeriod:
+~freeMyGroupS = { s.freeMyGroup };
+CmdPeriod.add(~freeMyGroupS);
+(dur: inf).play;  // test sound
+// simulate second sound from a different client:
+(dur: inf, degree: 2, group: s.defaultGroups[3]).play;
+
+CmdPeriod.run; // simulate CmdPeriod key action
+// -> only stops s.defaultGroup, others continue untouched
+
+CmdPeriod.remove(~freeMyGroupS); // cleanup
+s.freeAll;
+::
+strong::More power to all::
+
+In a less polite symmetrical setup, CmdPeriod stops all sounds on all clients, but keeps all defaultGroups running.
+code::
+~myserver = s; // s on home machine, remote client on others
+~myserver.sendDefaultGroups;
+~freeDefaultGroups = { ~myserver.freeDefaultGroups };
+CmdPeriod.add(~freeDefaultGroups);
+(dur: inf).play;  // test sound
+// fake sound from  client 1:
+(dur: inf, degree: 2, group: s.defaultGroups[1].nodeID).play;
+
+CmdPeriod.run; // simulate CmdPeriod key action
+// -> all clients stop sound in all groups, groups remain.
 ::
