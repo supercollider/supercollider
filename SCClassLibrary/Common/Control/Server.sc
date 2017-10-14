@@ -942,9 +942,6 @@ Server {
 
 		if(scopeWindow.notNil) { scopeWindow.quit };
 		volume.freeSynth;
-
-		this.disconnectSharedMemory;
-
 		RootNode(this).freeAll;
 		this.newAllocators;
 	}
