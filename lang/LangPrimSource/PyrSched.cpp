@@ -37,6 +37,7 @@
 #include <string.h>
 #include <math.h>
 #include <limits>
+#include <functional>
 
 #if defined(__APPLE__) || defined(__linux__)
 # include <pthread.h>
