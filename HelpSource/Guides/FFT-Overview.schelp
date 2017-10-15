@@ -58,7 +58,8 @@ See link::#PV and FFT UGens in the Standard Library:: for a list of UGens.
 
 code::
 (
-{ var in, chain;
+{ 
+  var in, chain;
 	in = WhiteNoise.ar(0.8);
 	chain = FFT(LocalBuf(2048), in); // encode to frequency domain
 	chain = PV_RandComb(chain, 0.95, Impulse.kr(0.4)); // process
@@ -71,7 +72,8 @@ In order to expand PV UGens for a multichannel input signal, an appropriate arra
 
 code::
 (
-{ var in, chain;
+{ 
+  var in, chain;
 	in = Ringz.ar(Impulse.ar([2, 3]), [700, 800], 0.1) * 5; // stereo input
 	chain = FFT({ LocalBuf(2048) } ! 2, in); // array of two local buffers
 	chain = PV_RandComb(chain, 0.95, Impulse.kr(0.4));
@@ -88,7 +90,8 @@ PV Ugens write their output data emphasis:: in place ::, i.e. back into the same
 code::
 
 (
-{ var inA, chainA, inB, chainB, chain;
+{ 
+  var inA, chainA, inB, chainB, chain;
 	inA = LFSaw.ar(MouseY.kr(100, 1000, 1), 0, 0.2);
 	inB = Ringz.ar(Impulse.ar(MouseX.kr(1, 100, 1)), 700, 0.5);
 	// make two parallel chains
@@ -109,7 +112,8 @@ code::
 d = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 (
-{ var inA, chainA, inB, chainB, chain;
+{ 
+  var inA, chainA, inB, chainB, chain;
 	inA = LFSaw.ar(100, 0, 0.2);
 	inB = PlayBuf.ar(1, d, BufRateScale.kr(d), loop: 1);
 	chainA = FFT(LocalBuf(2048), inA);
@@ -122,15 +126,11 @@ d = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 d.free;
 ::
 
-
 subsection::Copying FFT chains
-
-
 
 Because each PV UGen overwrites the output of the previous one, it is necessary to copy the data to an additional buffer at the desired point in the chain in order to do parallel processing of input without using multiple FFT UGens. link::Classes/PV_Copy:: allows for this.
 
 note::As of SC 3.7 instances of PV_Copy are added automatically where necessary for parallel processing. Existing code explicitly using PV_Copy should continue to work.::
-
 
 code::
 
@@ -151,6 +151,11 @@ code::
 	);
 }.play
 )
+::
+
+PV processes can also share a single FFT ugen to process a signal in parallel. In the following example, 'chain0' and 'chain1' share the same FFT ugen. SuperCollider automatically copies the FFT data from 'chain' into hidden LocalBufs inside the Synth. The processes thus operate independently on the original FFT analysis:
+
+code::
 
 // now, this can be written without the copy:
 
@@ -178,38 +183,55 @@ subsection::Plotting magnitudes
 Note that PV UGens convert as needed between cartesian (complex) and polar representations, therefore when using multiple PV UGens it may be impossible to know in which form the values will be at any given time. FFT produces complex output (see above). The following, however, returns a reliable magnitude plot:
 
 code::
-b = Buffer.alloc(s,1024); // use global buffers for plotting the data
-a = { FFT(b, LFSaw.ar(4000)); 0.0 }.play;
+c = Buffer.alloc(s,2048,1);
+
 (
-b.getn(0, 1024, { arg buf;
-	var z, x;
-	z = buf.clump(2).flop;
-	z = [Signal.newFrom(z[0]), Signal.newFrom(z[1])];
-	x = Complex(z[0], z[1]);
-	{x.magnitude.plot}.defer
-})
+x = { var in, chain, chainB, chainC;
+	in = WhiteNoise.ar;
+	chain = FFT(c, in);
+	0.01 * Pan2.ar(IFFT(chain));
+}.play(s);
 )
-a.free; b.free;
+
+(
+Routine({
+	3.do{arg i;
+		c.getToFloatArray(action: { arg array;
+			var z, x;
+			z = array.clump(2).flop;
+			// Initially data is in complex form
+			z = [Signal.newFrom(z[0]), Signal.newFrom(z[1])];
+			x = Complex(z[0], z[1]);
+			
+			{ x.magnitude.plot('Initial', Rect(200, 600-(200*i), 700, 200)) }.defer
+		});
+		0.1.wait;
+}}).play
+)
+
+x.free;
 ::
+
 
 subsection::UGen access to FFT data
 
 It is possible to manipulate the FFT data directly within a synth graph (if there doesn't already exist a PV UGen which will do what you want), using the methods pvcalc, pvcalc2, pvcollect. Here's an example which uses the  methods link::Classes/SequenceableCollection#-clump:: and link::Classes/SequenceableCollection#-flop:: to rearrange the order of the spectral bins:
+
 code::
 c = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 
 (
 x = {
-  var in, numFrames=2048, chain, v;
-  in = PlayBuf.ar(1, c, loop: 1);
-  chain = FFT(LocalBuf(numFrames), in);
+	var in, numFrames=2048, chain, v;
+	in = PlayBuf.ar(1, c, loop: 1);
+	chain = FFT(LocalBuf(numFrames), in);
 
-  chain = chain.pvcalc(numFrames, {|mags, phases|
-      /* Play with the mags and phases, then return them */
-      [mags, phases].flop.clump(2).flop.flatten
-  }, tobin: 250);
+	chain = chain.pvcalc(numFrames, {|mags, phases|
+		/* Play with the mags and phases, then return them */
+		[mags, phases].flop.clump(2).flop.flatten
+	}, tobin: 250);
 
-  0.5 * IFFT(chain).dup
+	0.5 * IFFT(chain).dup
 }.play;
 )
 x.free; c.free;
@@ -236,6 +258,7 @@ SynthDef("help-multichannel FFT", { |out=0| // bufnum is an array
 	chain = FFT(LocalBuf([2048, 2048]), in); // each FFT has a different buffer
 	// now we can multichannel expand as normal
 	chain = PV_BrickWall(chain, SinOsc.kr(-0.1));
+
 	Out.ar(out, IFFT(chain));
 }).play;
 )
@@ -251,6 +274,7 @@ SynthDef("help-multichannel FFT", { |out=0, bufnum= #[0, 1]| // bufnum is an arr
 	chain = FFT(bufnum, in); // each FFT has a different buffer
 	// now we can multichannel expand as normal
 	chain = PV_BrickWall(chain, SinOsc.kr(-0.1));
+
 	Out.ar(out, IFFT(chain));
 }).play(s,[\bufnum, b]);
 )
@@ -281,7 +305,6 @@ definitionlist::
 ## link::Classes/PV_BinWipe:: || combine low and high bins from two inputs
 ## link::Classes/PV_BrickWall:: || zero bins
 ## link::Classes/PV_ConformalMap:: || complex plane attack
-## link::Classes/PV_Copy:: || copy an FFT buffer
 ## link::Classes/PV_CopyPhase:: || copy magnitudes and phases
 ## link::Classes/PV_Diffuser:: || random phase shifting
 ## link::Classes/PV_HainsworthFoote:: || onset detection

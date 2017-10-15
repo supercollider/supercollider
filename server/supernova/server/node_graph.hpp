@@ -290,7 +290,7 @@ private:
                                              boost::intrusive::power_2_buckets<true>
                                            > node_set_type;
 
-    uint32_t synth_count_ = 0, group_count_ = 0;
+    uint32_t synth_count_ = 0, group_count_ = 1;
 
     node_set_type::bucket_type node_buckets[node_set_bucket_count];
     node_set_type node_set;

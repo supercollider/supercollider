@@ -4,9 +4,11 @@ categories:: UGens>FFT
 
 description::
 
-Copies the spectral frame in bufferA to bufferB at that point in the chain of PV UGens. This allows for parallel processing of spectral data without the need for multiple FFT UGens, and to copy out data at that point in the chain for other purposes. bufferA and bufferB must be the same size.
+Copies the spectral frame in code::bufferA:: to code::bufferB::. This allows for parallel processing of spectral data without the need for multiple FFT UGens. Further it allows to extract data at a given point in the FFT chain e.g. for monitoring purposes. 
 
-note::As of SC 3.7 instances of PV_Copy are added automatically where necessary for parallel processing. This document is provided for legacy purposes only. (Existing code explicitly using PV_Copy should continue to work.)::
+note::As of SC 3.7 instances of PV_Copy are added automatically where necessary for parallel processing. Please see link::Guides/FFT-Overview:: for the current implementation. 
+
+This document is provided for legacy purposes only. Existing code explicitly using PV_Copy should continue to work.::
 
 classmethods::
 method:: new
@@ -14,6 +16,10 @@ argument:: bufferA
 source buffer.
 argument:: bufferB
 destination buffer.
+
+note:: 
+code::bufferA:: and code::bufferB:: must be the same size.
+::
 
 examples::
 
@@ -35,6 +41,7 @@ d = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 	chainB = PV_MagMul(chainB, chainC);
 	XFade2.ar(IFFT(chain), IFFT(chainB) * 0.1, SinOsc.kr(0.2, 1.5pi));
 }.play
+
 )
 
 
@@ -50,6 +57,7 @@ d = Buffer.read(s, Platform.resourceDir +/+ "sounds/a11wlk01.wav");
 	chainB = PV_MagMul(chainB, chainC);
 	XFade2.ar(IFFT(chain), IFFT(chainB) * 0.1, SinOsc.ar(0.2));
 }.play
+
 )
 
 
