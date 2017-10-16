@@ -82,6 +82,7 @@ TestPattern : UnitTest {
 		var eventStream = pattern.asStream;
 		eventStream.next;
 		eventStream.next;
+		eventStream.next;
 		this.assert(called.not, "Pcleanup should not call cleanup when its inner stream ends");
 	}
 
