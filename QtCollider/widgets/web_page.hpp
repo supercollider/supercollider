@@ -32,11 +32,23 @@ class WebPage : public QWebPage
 
 public:
 
-  WebPage( QObject *parent ) : QWebPage( parent ), _delegateReload(false) {}
+  WebPage( QObject *parent ) :
+    QWebPage( parent ),
+    _delegateReload(false),
+    _usingDesktopBrowser(false)
+  {}
+
   virtual void triggerAction ( WebAction action, bool checked = false );
   virtual void javaScriptConsoleMessage ( const QString &, int, const QString & );
   bool delegateReload() const { return _delegateReload; }
   void setDelegateReload( bool flag ) { _delegateReload = flag; }
+
+  bool usingDesktopBrowser() const { return _usingDesktopBrowser; }
+  void setUsingDesktopBrowser( bool flag ) { _usingDesktopBrowser = flag; }
+
+protected:
+  // from QWebPage::acceptNavigationRequest
+  virtual bool acceptNavigationRequest( QWebFrame*, const QNetworkRequest&, NavigationType );
 
 Q_SIGNALS:
   void jsConsoleMsg( const QString &, int, const QString & );
@@ -44,6 +56,7 @@ Q_SIGNALS:
 private:
 
   bool _delegateReload;
+  bool _usingDesktopBrowser; ///< If true, external links will open in the default desktop browser.
 };
 
 } // namespace QtCollider
