@@ -40,6 +40,21 @@ TestPattern : UnitTest {
 
 	}
 
+
+	test_pattern_pcleanup {
+		var called = false;
+		var cleanupPattern = Pcleanup({ called = true }, Pn(1, inf));
+		var pattern = Pevent(Pfin(1, cleanupPattern));
+		var eventStream = pattern.asStream;
+		eventStream.next;
+		this.assert(called.not, "Pcleanup should not call cleanup before end");
+		eventStream.next;
+		this.assert(called, "Pcleanup should call cleanup when its stream ends");
+		called = false;
+		eventStream.nextN(8);
+		this.assert(called.not, "Pcleanup should call cleanup only once");
+	}
+
 /*
 	test_storeArgs {
 		Pattern.allSubclasses.do({ |class|
