@@ -62,7 +62,6 @@ TestServer_clientID : UnitTest {
 			s.audioBusAllocator.size == (s.options.numAudioBusChannels - s.options.firstPrivateBus),
 			"for a single client, audioBusAllocator should have full range minus hardware channels."
 		);
-
 		this.assert(
 			s.controlBusAllocator.size == s.options.numControlBusChannels,
 			"for a single client, controlBusAllocator should have full range."

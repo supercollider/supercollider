@@ -155,6 +155,5 @@ TestEvent : UnitTest {
 	latency { ^0.2 }
 	defaultGroupID { ^1 }
 	defaultGroup { ^Group.basicNew(nil, 1) }
-
 }
 

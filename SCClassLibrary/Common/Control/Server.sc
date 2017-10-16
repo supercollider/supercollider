@@ -280,6 +280,7 @@ Server {
 	var <volume, <recorder, <statusWatcher;
 	var <pid, serverInterface;
 
+
 	*initClass {
 		Class.initClassTree(ServerOptions);
 		Class.initClassTree(NotificationCenter);
@@ -407,6 +408,7 @@ Server {
 		"% : setting clientID to %.\n".postf(this, val);
 		clientID = val;
 		this.newAllocators;
+		this.initTree;
 	}
 
 	newAllocators {
@@ -750,6 +752,12 @@ Server {
 		}
 	}
 
+	defaultGroupID { ^nodeAllocator.idOffset + 1 }
+
+ 	defaultGroup {
+		^Group.basicNew(this, nodeAllocator.idOffset + 1)
+ 	}
+
 	inputBus {
 		^Bus(\audio, this.options.numOutputBusChannels, this.options.numInputBusChannels, this)
 	}
@@ -849,6 +857,8 @@ Server {
 			sendQuit = this.inProcess or: { this.isLocal };
 		};
 		this.connectSharedMemory;
+		// FIXME later: clientID_ may change from scsynth,
+		// so we may create the wrong defaultGroup here
 		this.initTree;
 	}
 
@@ -966,7 +976,11 @@ Server {
 	}
 
 	freeAll {
-		this.sendMsg("/g_freeAll", 0);
+		var freeRoot = freeAllFreesRootNode ?? { clientID == 0 };
+		this.sendMsg("/g_freeAll", this.defaultGroupID);
+		if (freeRoot) {
+			this.sendMsg("/g_freeAll", 0);
+		};
 		this.sendMsg("/clearSched");
 		this.initTree;
 	}
