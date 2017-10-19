@@ -1331,9 +1331,10 @@ bool NotifyCmd::Stage2()
 		hw->mClientIDdict->insert(std::make_pair(mReplyAddress,clientID));
 		hw->mUsers->insert(mReplyAddress);
 		SendDoneWithVarArgs(&mReplyAddress, "/notify", "ii", clientID, (int)hw->mMaxUsers);
+		
+	} else {
 
-    } else {
-		auto const it = std::find(hw->mUsers->begin(), hw->mUsers->end(), mReplyAddress);
+        auto const it = std::find(hw->mUsers->begin(), hw->mUsers->end(), mReplyAddress);
 		if (it != hw->mUsers->end()) {
 			// remove from list
 			hw->mAvailableClientIDs->push_back(hw->mClientIDdict->at(mReplyAddress)); // push the freed ID
