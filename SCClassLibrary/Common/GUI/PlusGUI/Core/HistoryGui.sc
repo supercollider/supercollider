@@ -1,20 +1,3 @@
-/*
-
-// tests //
-
-History.start;
-h = HistoryGui(History.current);
-
-1 + 2;
-3 + 4;
-12 + 14;
-
-1 + 2; History.current.lines
-h.postDoc(1);
-h.alignDoc;
-h.docFlag = \newDoc; // not working yet.
-
-*/
 
 HistoryGui : JITGui {
 
@@ -47,8 +30,6 @@ HistoryGui : JITGui {
 			+ (skin.buttonHeight + (skin.margin.y * 2)) // buttonline
 			+ (numItems * skin.buttonHeight * 1.62).round(1)
 		);
-		//	"minSize: %\n".postf(minSize);
-		"minSize: %\n".postf(minSize); GUI.skins.jit.margin
 	}
 
 	makeViews { |options|
@@ -56,7 +37,7 @@ HistoryGui : JITGui {
 		var textViewHeight = numItems * skin.buttonHeight;
 		var listViewHeight = textViewHeight * 1.6;
 
-		font = Font("Osaka", 9);
+		font = Font(Font.defaultSansFace, 9);
 		flow = zone.addFlowLayout(2@2, 1@1);
 
 		zone.resize_(5);
@@ -79,7 +60,6 @@ HistoryGui : JITGui {
 		.string_("")
 		.enterInterpretsSelection_(false)
 		.keyDownAction_({ |txvw, char, mod, uni, keycode|
-			// char.postcs;
 			char !? {
 				if ([3, 13].includes(char.ascii)) {
 					this.rip(textV.string);
@@ -93,7 +73,6 @@ HistoryGui : JITGui {
 		.states_([ ["start"], ["end"]])
 		.canFocus_(false)
 		.action_({ |btn, mod|
-			mod.postln;
 			switch(btn.value,
 				0, {
 					if (object == History.current) {
@@ -167,7 +146,7 @@ HistoryGui : JITGui {
 		.action_({ |lview|
 			var index = lview.value;
 			if (lview.items.isEmpty) {
-				"no entries yet.".postln;
+				// 	"no entries yet.".postln;
 			} {
 				lastLineSelected = listV.items[index];
 				if (filtering.not) {
@@ -329,17 +308,17 @@ HistoryGui : JITGui {
 
 	postInlined { |index|
 		var line;
-		if (object.lines.isNil) { "no history lines yet.".postln; ^this };
+		if (object.lines.isNil) { ^this };
 		line = object.lines[index];
-		if (line.isNil) { "history: no line found!".postln; ^this };
+		if (line.isNil) { ^this };
 		textV.string_(line[2]);
 	}
 
 	postDoc { |index|
 		var line;
-		if (object.lines.isNil) { "no history lines yet.".postln; ^this };
+		if (object.lines.isNil) { ^this };
 		line = object.lines[index];
-		if (line.isNil) { "history: no line found!".postln; ^this };
+		if (line.isNil) { ^this };
 		this.setDocStr(line[2]);
 		doc.front;
 		try { this.alignDoc };
