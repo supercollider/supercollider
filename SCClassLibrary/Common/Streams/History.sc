@@ -325,6 +325,29 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		^str.clumps(indices.differentiate)
 	}
 
+	*evaluateLineAt { |index| current.evaluateLineAt(index) }
+
+	evaluateLineAt { |index|
+		var line, codeString, result;
+		if (index.isNil) { ^this };
+		line = lines[index];
+		if (line.isNil) { ^this };
+		codeString = line[2];
+		if (codeString.isNil) { ^this };
+
+		try {
+			result = codeString.interpret;
+			"// History code evaluated line: ".postln;
+			codeString.postcs;
+			"// result: ".postln;
+			result.postln;
+		} {
+			"// History code evaluation FAILED for line: ".postln;
+			codeString.postcs;
+		}
+	}
+
+
 	/*
 	// problem: interpreter cancels backslashes etc.
 	*stream { |str, func|

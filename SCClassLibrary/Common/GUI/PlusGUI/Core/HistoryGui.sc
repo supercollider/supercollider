@@ -159,12 +159,7 @@ HistoryGui : JITGui {
 		.enterKeyAction_({ |lview|
 			var index = lview.value;
 			if (filtering) { index = filteredIndices[index] };
-			try {
-				object.lines[index][2].postln.interpret.postln;
-				//	"did execute.".postln;
-			} {
-				"execute line from history failed.".postln;
-			};
+			object.evaluateLineAt(index);
 		});
 		this.checkUpdate;
 	}
