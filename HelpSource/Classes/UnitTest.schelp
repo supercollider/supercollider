@@ -173,8 +173,8 @@ Asserts that an expression code::a:: returning a float is within a
 given range (code::within::) of being equal to code::b::.
 
 code::
-UnitTest.new.assertFloatEquals(2, 2.00001, "Two does equal two.", 0.00001);
-UnitTest.new.assertFloatEquals(2, 2.001, "Two does equal two.", 0.0001);
+this.assertFloatEquals(2, 2.0001, "Pass since 2 is close enough to 2.0001.", 0.001);
+this.assertFloatEquals(2, 2.0001, "Fail since 2 isn't close enough to 2.0001.", 0.0001);
 ::
 
 argument:: a
@@ -203,7 +203,8 @@ METHOD:: assertArrayFloatEquals
 Make sure that the two arrays of floats code::a:: and code::b:: equal within a given range (code::within::).
 
 code::
-UnitTest.new.assertArrayFloatEquals([2, 3], [2, 3] + 0.00001, "Same Floats", 0.000001);
+this.assertArrayFloatEquals([2, 3] + 0.0001, [2, 3], "Pass since pairs of floats are close enough", 0.001);
+this.assertArrayFloatEquals([2, 3.0001], [2, 3], "Fail since pairs of floats aren't both close enough", 0.0001);
 ::
 
 argument:: a
