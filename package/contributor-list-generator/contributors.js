@@ -7,8 +7,6 @@ var _ = require('lodash');
 var ib = [];
 var pb = [];
 
-var milestone = '3.9';
-
 for (var i = 0; i < 10; i++) {
   var jsonPath = `./github-data/pulls-closed-${i}.json`;
   if (fs.existsSync(jsonPath)) {
@@ -40,7 +38,7 @@ function shouldIncludePull(pull) {
 
 function shouldIncludeIssue(issue) {
   // console.log({state: issue.state, milestone: issue.milestone && issue.milestone.title});
-  var status = (issue.state === 'closed' && issue.milestone && issue.milestone.title === milestone);
+  var status = (issue.state === 'closed');
   if (!status) {
     return false;
   }
@@ -81,16 +79,7 @@ _.each(issuesData, (pull) => {
   }
 });
 
-var contributors = _.reverse(_.sortBy(_.values(users), 'count'));
+users = Object.keys(users);
+users = _.sortBy(users, (user) => user.toLowerCase());
 
-// rendering
-console.log(`# Contributors ${milestone}`);
-console.log();
-
-function printUser(user) {
-  // console.log(`- []${user.
-  // name}](${user.url})`);
-  console.log(`- ${user.name}`);
-}
-
-_.each(contributors, printUser);
+console.log(users.join(", "));
