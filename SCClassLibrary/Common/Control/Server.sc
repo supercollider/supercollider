@@ -387,10 +387,6 @@ Server {
 	clientID_ { |val|
 		var failstr = "Server % couldn't set clientID to: % - %. clientID is still %.";
 
-		if(val == clientID) {
-			// no need to change
-			^this
-		};
 		if(val.isInteger.not) {
 			failstr.format(name, val.cs, "not an Integer", clientID).warn;
 			^this
@@ -404,9 +400,14 @@ Server {
 			^this
 		};
 
-		"% : setting clientID to %.\n".postf(this, val);
+		if (clientID != val) {
+			"% : setting clientID to %.\n".postf(this, val);
+		};
 		clientID = val;
 		this.newAllocators;
+		if (statusWatcher.notNil and: { this.serverRunning }) {
+			this.sendDefaultGroups;
+		};
 	}
 
 	newAllocators {
