@@ -5681,9 +5681,10 @@ void PitchShift_Ctor(PitchShift *unit)
 	pchratio = ZIN0(2);
 	winsize = ZIN0(1);
 
-	// If the window size is <= 2 samples, scsynth will freeze (presumably some
-	// infinite loop in the calc function). Nobody really needs windows that
-	// small.
+	// TODO: why does scsynth freeze if the window size is <= 2 samples?
+
+	// Nobody needs windows that small for pitch shifting anyway, so we will
+	// simply clamp the window size to 3.
 	float minimum_winsize = 3.f * SAMPLEDUR;
 	if (winsize < minimum_winsize) {
 		winsize = minimum_winsize;
