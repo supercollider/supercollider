@@ -350,14 +350,12 @@ World* World_New(WorldOptions *inOptions)
 		HiddenWorld *hw = world->hw;
 		hw->mGraphDefLib = new HashTable<struct GraphDef, Malloc>(&gMalloc, inOptions->mMaxGraphDefs, false);
 		hw->mNodeLib = new IntHashTable<Node, AllocPool>(hw->mAllocPool, inOptions->mMaxNodes, false);
-		hw->mUsers = (ReplyAddress*)zalloc(inOptions->mMaxLogins, sizeof(ReplyAddress));
-		hw->mNumUsers = 0;
+		hw->mUsers = new Clients();
 		hw->mMaxUsers = inOptions->mMaxLogins;
-		hw->mClientIDs = (uint32*)zalloc(inOptions->mMaxLogins, sizeof(uint32));
+		hw->mAvailableClientIDs = new ClientIDs();
 		for (int i = 0; i<hw->mMaxUsers; i++) {
-			hw->mClientIDs[i] = i;
+			hw->mAvailableClientIDs->push_back(i);
 		}
-		hw->mClientIDTop = 0;
 		hw->mClientIDdict = new ClientIDDict();
 		hw->mHiddenID = -8;
 		hw->mRecentID = -8;
@@ -1060,8 +1058,8 @@ void World_Cleanup(World *world, bool unload_plugins)
 		if (hw->mNRTOutputFile) sf_close(hw->mNRTOutputFile);
 		if (hw->mNRTCmdFile) fclose(hw->mNRTCmdFile);
 #endif
-		free_alig(hw->mUsers);
-		free_alig(hw->mClientIDs);
+		delete hw->mUsers;
+		delete hw->mAvailableClientIDs;
 		delete hw->mClientIDdict;
 		delete hw->mNodeLib;
 		delete hw->mGraphDefLib;
@@ -1159,11 +1157,8 @@ void TriggerMsg::Perform()
 	packet.addi(mTriggerID);
 	packet.addf(mValue);
 
-	ReplyAddress *users = mWorld->hw->mUsers;
-	int numUsers = mWorld->hw->mNumUsers;
-	for (int i=0; i<numUsers; ++i) {
-		SendReply(users+i, packet.data(), packet.size());
-	}
+	for (auto addr : *mWorld->hw->mUsers)
+		SendReply(&addr, packet.data(), packet.size());
 }
 
 static void NodeReplyMsg_RTFree(FifoMsg* msg)
@@ -1187,11 +1182,8 @@ void NodeReplyMsg::Perform()
 		packet.addf(mValues[i]);
 	}
 
-	ReplyAddress *users = mWorld->hw->mUsers;
-	int numUsers = mWorld->hw->mNumUsers;
-	for (int i=0; i<numUsers; ++i) {
-		SendReply(users+i, packet.data(), packet.size());
-	}
+	for (auto addr : *mWorld->hw->mUsers)
+		SendReply(&addr, packet.data(), packet.size());
 
 	// Free memory in realtime thread
 	FifoMsg msg;
@@ -1255,11 +1247,8 @@ void NodeEndMsg::Perform()
 		packet.addi(mIsGroup);
 	}
 
-	ReplyAddress *users = mWorld->hw->mUsers;
-	int numUsers = mWorld->hw->mNumUsers;
-	for (int i=0; i<numUsers; ++i) {
-		SendReply(users+i, packet.data(), packet.size());
-	}
+	for (auto addr : *mWorld->hw->mUsers)
+		SendReply(&addr, packet.data(), packet.size());
 }
 
 void DeleteGraphDefMsg::Perform()
@@ -1273,11 +1262,8 @@ void NotifyNoArgs(World *inWorld, char *inString)
 	small_scpacket packet;
 	packet.adds(inString);
 
-	ReplyAddress *users = inWorld->hw->mUsers;
-	int numUsers = inWorld->hw->mNumUsers;
-	for (int i=0; i<numUsers; ++i) {
-		SendReply(users+i, packet.data(), packet.size());
-	}
+	for (auto addr : *inWorld->hw->mUsers)
+		SendReply(&addr, packet.data(), packet.size());
 }
 
 
