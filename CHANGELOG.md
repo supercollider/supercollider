@@ -1,6 +1,6 @@
 # Change Log
 
-3.9.0-beta1 (2017-10-24)
+3.9.0-beta1 (2017-10-25)
 ========================
 
 We are proud to announce the arrival of SuperCollider 3.9.0-beta1! Apologies
