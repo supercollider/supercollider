@@ -356,16 +356,16 @@ int prDateFromString(struct VMGlobals *g, int numArgsPushed)
 	if (slotStrVal(formatSlot, formatString, len)) return errWrongType;
 
 	std::istringstream ss(timeString);
-	std::tm t{};
-	ss >> std::get_time(&t, formatString);
+	std::tm tm0{};
+	ss >> std::get_time(&tm0, formatString);
 	if (ss.fail()) {
 		error("time parsing failed\n");
 		return errFailed;
 	}
 	
-	t.tm_isdst = -1; // attempt to determine if Daylight Saving Time in effect
-	auto timePoint = std::chrono::system_clock::from_time_t(mktime(&t));
-	fillSlotsFromTime(dateObjectSlot, &t, timePoint);
+	tm0.tm_isdst = -1; // attempt to determine if Daylight Saving Time in effect
+	auto timePoint = std::chrono::system_clock::from_time_t(mktime(&tm0));
+	fillSlotsFromTime(dateObjectSlot, &tm0, timePoint);
 	return errNone;
 }
 
@@ -403,21 +403,13 @@ int prDateResolve(struct VMGlobals *g, int numArgsPushed)
 		return errFailed;
 	}
 	
-	// Fill in the missing weekday and rawSeconds fields
-	SetInt(slots+6, tm0.tm_wday);
-	SetFloat(slots+7, tt);
-	
-	// Also update the other fields, which may have changed if
+	// Fill in the missing weekday and rawSeconds fields.
+	// Also, update the other fields, which may have changed if
 	// they were previously outside valid ranges (this allows
 	// for simple date math, such as adding or subtracing day,
 	// years or months, then calling ResolveDate to revalidate).
-	SetInt(slots+0, tm0.tm_year + 1900);
-	SetInt(slots+1, tm0.tm_mon + 1); // 0 based month
-	SetInt(slots+2, tm0.tm_mday);
-	SetInt(slots+3, tm0.tm_hour);
-	SetInt(slots+4, tm0.tm_min);
-	SetInt(slots+5, tm0.tm_sec);
-
+	auto timePoint = std::chrono::system_clock::from_time_t(tt);
+	fillSlotsFromTime(a, &tm0, timePoint);
 	return errNone;
 }
 
