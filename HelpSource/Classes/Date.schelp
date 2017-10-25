@@ -6,7 +6,19 @@ categories:: Control
 ClassMethods::
 
 method::new
-Create a new date with the given properties (all numerical values). These arguments are also the names of instance variables of the date object.
+Create a new date with the given properties (all numerical values). These arguments are also the names of instance variables of the date object. The minimum required to specify is the year, month and day (hour/minute/second are optional and default to 0). If the teletype::dayOfWeek:: or teletype::rawSeconds:: are not given explicitly (normally, they shouldn't be), they will be computed from the other values.
+
+It is possible to specify dates with "out of range" values that will be resolved into a valid range -- this allows simple date offset calculations to be performed (see example below).
+
+code::
+(
+var a = Date(2017, 10, 25);
+[a.asString, a.dayOfWeek, a.rawSeconds].postln; // dayOfWeek and rawSeconds were computed
+
+("Party like it's" + Date(1999, 12, 31, 23, 59, 59)).postln;
+("One hundred days before Christmas:" + Date(2010, 12, 25 - 100).format("%B %d")).postln;
+)
+::
 
 method::getDate
 Get current date from system and create a date object from it.
@@ -141,7 +153,7 @@ definitionList::
 || Replaced by the locale's equivalent of either a.m. or p.m. [ tm_hour]
 
 ## %r
-|| Replaced by the time in a.m. and p.m. notation;  in the POSIX locale this shall be equivalent to %I :%M :%S%p. [ tm_hour, tm_min, tm_sec]
+|| Replaced by the time in a.m. and p.m. notation; in the POSIX locale this shall be equivalent to %I :%M :%S%p. [ tm_hour, tm_min, tm_sec]
 
 ## %R
 || Replaced by the time in 24-hour notation (%H : %M ). [ tm_hour, tm_min]
@@ -183,7 +195,7 @@ definitionList::
 || Replaced by the year as a decimal number (for example, 1997). [ tm_year]
 
 ## %z
-|| Replaced by the offset from UTC in the ISO 8601:2000 standard format ( +hhmm or -hhmm ), or by no characters if no timezone is determinable. For example, "-0430" means 4 hours 30 minutes behind UTC (west of Greenwich). If tm_isdst is zero, the standard time offset is used. If tm_isdst is greater than zero, the daylight savings time offset is used. If tm_isdst is negative, no characters are returned. [ tm_isdst]
+|| Replaced by the offset from UTC in the ISO 8601:2000 standard format ( +hhmm or -hhmm ), or by no characters if no timezone is determinable. For example, "-0430" means 4 hours 30 minutes behind UTC (west of Greenwich). If tm_isdst is zero, the standard time offset is used. If tm_isdst is greater than zero, the daylight savings time offset is used. If tm_isdst is negative, no characters are returned. [ tm_isdst]
 
 ## %Z
 || Replaced by the timezone name or abbreviation, or by no bytes if no timezone information exists. [ tm_isdst]
@@ -193,3 +205,15 @@ definitionList::
 ::
 
 If a conversion specification does not correspond to any of the above, the behavior is undefined.
+
+method::<
+Compare two Dates based on their rawSeconds.
+code::
+Date(1999, 12, 31, 23, 59, 59) < Date(2000, 1, 1, 0, 0, 0)
+::
+
+method::==
+Test whether two Dates are equal, basd on their rawSeconds.
+code::
+Date(2016, 11, 4) == Date(2016, 10, 4 + 31)
+::

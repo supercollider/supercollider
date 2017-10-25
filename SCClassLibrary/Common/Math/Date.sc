@@ -5,9 +5,13 @@ Date {
 	*getDate { ^this.localtime }
 	*localtime { ^this.new.localtime }
 	*gmtime { ^this.new.gmtime }
-	*new { arg year, month, day, hour, minute, second, dayOfWeek, rawSeconds;
-		^super.newCopyArgs(year, month, day, hour, minute, second, dayOfWeek,
-				rawSeconds);
+	*new { arg year, month, day, hour=0, minute=0, second=0, dayOfWeek, rawSeconds;
+		var instance = super.newCopyArgs(year, month, day, hour, minute, second, dayOfWeek,
+			rawSeconds);
+		if (dayOfWeek.isNil or: {rawSeconds.isNil}) {
+			instance.prResolveDate;
+		};
+		^instance;
 	}
 	storeArgs {
 		^[year, month, day, hour, minute, second, dayOfWeek, rawSeconds]
@@ -62,6 +66,10 @@ Date {
 		})
 	}
 
+	prResolveDate {
+		_ResolveDate
+		^this.primitiveFailed
+	}
 	asctime {
 		_AscTime
 		^this.primitiveFailed
@@ -73,5 +81,11 @@ Date {
 		arg format;
 		_prStrFTime;
 		^this.primitiveFailed
+	}
+	< { arg other;
+		^this.rawSeconds < other.rawSeconds
+	}
+	== { arg other;
+		^this.rawSeconds == other.rawSeconds
 	}
 }

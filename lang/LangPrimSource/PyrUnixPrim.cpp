@@ -341,6 +341,58 @@ int prGMTime(struct VMGlobals *g, int numArgsPushed)
 	return errNone;
 }
 
+// Given an incomplete Date structure (missing dayOfWeek and
+// rawSeconds), calculate and fill in those properties.
+int prResolveDate(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+	PyrSlot *slots = slotRawObject(a)->slots;
+	
+	if (IsNil(slots + 0)) {
+		SetNil(a);
+		return errNone;
+	}
+	if (!IsNil(slots+6) || !IsNil(slots+7)) {
+		error("dayOfWeek or rawSeconds are already defined");
+		return errFailed;
+	}
+	
+	struct tm tm0{};
+	
+	if (slotIntVal(slots+0, &tm0.tm_year)) return errWrongType;
+	tm0.tm_year -= 1900;
+	if (slotIntVal(slots+1, &tm0.tm_mon)) return errWrongType;
+	tm0.tm_mon -- ;
+	if (slotIntVal(slots+2, &tm0.tm_mday)) return errWrongType;
+	if (slotIntVal(slots+3, &tm0.tm_hour)) return errWrongType;
+	if (slotIntVal(slots+4, &tm0.tm_min)) return errWrongType;
+	if (slotIntVal(slots+5, &tm0.tm_sec)) return errWrongType;
+	tm0.tm_isdst = -1; // attempt to determine if Daylight Saving Time in effect
+	
+	time_t tt = mktime(&tm0);
+	if (tt == -1) {
+		error("no valid time");
+		return errFailed;
+	}
+	
+	// Fill in the missing weekday and rawSeconds fields
+	SetInt(slots+6, tm0.tm_wday);
+	SetFloat(slots+7, tt);
+	
+	// Also update the other fields, which may have changed if
+	// they were previously outside valid ranges (this allows
+	// for simple date math, such as adding or subtracing day,
+	// years or months, then calling ResolveDate to revalidate).
+	SetInt(slots+0, tm0.tm_year + 1900);
+	SetInt(slots+1, tm0.tm_mon + 1); // 0 based month
+	SetInt(slots+2, tm0.tm_mday);
+	SetInt(slots+3, tm0.tm_hour);
+	SetInt(slots+4, tm0.tm_min);
+	SetInt(slots+5, tm0.tm_sec);
+
+	return errNone;
+}
+
 int prAscTime(struct VMGlobals *g, int numArgsPushed);
 int prAscTime(struct VMGlobals *g, int numArgsPushed)
 {
@@ -458,6 +510,7 @@ void initUnixPrimitives()
 	definePrimitive(base, index++, "_Unix_Errno", prUnix_Errno, 1, 0);
 	definePrimitive(base, index++, "_LocalTime", prLocalTime, 1, 0);
 	definePrimitive(base, index++, "_GMTime", prGMTime, 1, 0);
+	definePrimitive(base, index++, "_ResolveDate", prResolveDate, 1, 0);
 	definePrimitive(base, index++, "_AscTime", prAscTime, 1, 0);
 	definePrimitive(base, index++, "_prStrFTime", prStrFTime, 2, 0);
 	definePrimitive(base, index++, "_TimeSeed", prTimeSeed, 1, 0);
