@@ -9,9 +9,12 @@ Date {
 		var instance = super.newCopyArgs(year, month, day, hour, minute, second, dayOfWeek,
 			rawSeconds);
 		if (dayOfWeek.isNil or: {rawSeconds.isNil}) {
-			instance.prResolveDate;
+			instance.prResolve;
 		};
 		^instance;
+	}
+	*newFromFormattedString { arg string, format;
+		^this.new.prFromString(string, format)
 	}
 	storeArgs {
 		^[year, month, day, hour, minute, second, dayOfWeek, rawSeconds]
@@ -66,8 +69,12 @@ Date {
 		})
 	}
 
-	prResolveDate {
-		_ResolveDate
+	prFromString { arg string, format;
+		_Date_FromString
+		^this.primitiveFailed
+	}
+	prResolve {
+		_Date_Resolve
 		^this.primitiveFailed
 	}
 	asctime {
@@ -84,6 +91,15 @@ Date {
 	}
 	< { arg other;
 		^this.rawSeconds < other.rawSeconds
+	}
+	<= { arg other;
+		^this.rawSeconds <= other.rawSeconds
+	}
+	> { arg other;
+		^this.rawSeconds > other.rawSeconds
+	}
+	>= { arg other;
+		^this.rawSeconds >= other.rawSeconds
 	}
 	== { arg other;
 		^this.rawSeconds == other.rawSeconds

@@ -16,9 +16,39 @@ var a = Date(2017, 10, 25);
 [a.asString, a.dayOfWeek, a.rawSeconds].postln; // dayOfWeek and rawSeconds were computed
 
 ("Party like it's" + Date(1999, 12, 31, 23, 59, 59)).postln;
+
+// Simple date/time offsetting can be performed:
 ("One hundred days before Christmas:" + Date(2010, 12, 25 - 100).format("%B %d")).postln;
+
+// Nnvalid dates are "corrected"
+Date(2017, 2, 29).postln; // March 1: 2017 was not a leap year!
 )
 ::
+
+method::newFromFormattedString
+Create a new Date object from a date/time string, which is parsed according to the provided format string.
+
+code::
+Date.newFromFormattedString("2017-10-25 13:25:55", "%F %T");
+Date.newFromFormattedString("1981.9.30 @ 5:33pm", "%Y.%m.%d @ %I:%M%p");
+
+(
+// It would be nicer if "stamp" used four digits for the year,
+// because the parsing code only works for two-digit years when
+// there is a separator (even when using two-digit %y or %C formats).
+// So here, we prepend "20" before the stamp string...
+var stampString = Date(2013, 5, 25, 10, 9, 8).stamp.post;
+" --> ".post;
+Date.newFromFormattedString("20" ++ stampString, "%y%m%d_%H%M%S").postln;
+)
+::
+
+argument:: string
+The date/time string to parse, for example teletype::"2017-10-25 13:25:55"::.
+
+argument:: format
+The format to use to parse the date string.  The '%' codes are the same as those used in link::#-format::.  For example, to parse the above string, you would use teletype::"%F %T"::.
+
 
 method::getDate
 Get current date from system and create a date object from it.
@@ -207,9 +237,15 @@ definitionList::
 If a conversion specification does not correspond to any of the above, the behavior is undefined.
 
 method::<
+method::<=
+method::>
+method::>=
 Compare two Dates based on their rawSeconds.
 code::
-Date(1999, 12, 31, 23, 59, 59) < Date(2000, 1, 1, 0, 0, 0)
+Date(1999, 12, 31, 23, 59, 59) < Date(2000, 1, 1, 0, 0, 0);
+Date(1999, 12, 31, 23, 59, 59) <= Date(2000, 1, 1, 0, 0, -1);
+Date(2005, 1, 1) > Date(2004, 1, 2);
+Date(2005, 2, 13) >= Date(2005, 2, 13);
 ::
 
 method::==
