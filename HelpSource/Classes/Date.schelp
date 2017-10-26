@@ -29,17 +29,14 @@ method::newFromFormattedString
 Create a new Date object from a date/time string, which is parsed according to the provided format string.
 
 code::
-Date.newFromFormattedString("2017-10-25 13:25:55", "%F %T");
-Date.newFromFormattedString("1981.9.30 @ 5:33pm", "%Y.%m.%d @ %I:%M%p");
+Date.newFromFormattedString("2017-10-25 [13:25:55]", "%Y-%m-%d [%H:%M:%S]");
+Date.newFromFormattedString("1981.9.30 @ 17:33", "%Y.%m.%d @ %H:%M");
 
 (
-// It would be nicer if "stamp" used four digits for the year,
-// because the parsing code only works for two-digit years when
-// there is a separator (even when using two-digit %y or %C formats).
-// So here, we prepend "20" before the stamp string...
-var stampString = Date(2013, 5, 25, 10, 9, 8).stamp.post;
-" --> ".post;
-Date.newFromFormattedString("20" ++ stampString, "%y%m%d_%H%M%S").postln;
+// Round-trip via string, using "stamp"
+var stampString = Date(2013, 5, 25, 10, 9, 8).stamp;
+var d = Date.newFromFormattedString(stampString, "%y%m%d_%H%M%S");
+(stampString + "-->" + d).postln;
 )
 ::
 
@@ -47,8 +44,9 @@ argument:: string
 The date/time string to parse, for example teletype::"2017-10-25 13:25:55"::.
 
 argument:: format
-The format to use to parse the date string.  The '%' codes are the same as those used in link::#-format::.  For example, to parse the above string, you would use teletype::"%F %T"::.
+The format to use to parse the date string. Note that the supported input formats are slightly differerent from those of the link::#-format:: (output) method. In particular, some of the "combined" formats (such as teletype::%F:: or teletype::%T::) are not supported for input, you must expand them out (teletype::"%F":: -> teletype::"%Y-%m-%d":: and teletype::"%T":: -> teletype::"%H:%M:%S"::).  The full list of supported input format flags may be found link::http://www.boost.org/doc/libs/1_63_0/doc/html/date_time/date_time_io.html##here::.
 
+To parse the above example string, you would use teletype::"%Y-%m-%d %H:%M:%S"::.
 
 method::getDate
 Get current date from system and create a date object from it.

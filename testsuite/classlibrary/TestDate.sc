@@ -29,7 +29,7 @@ TestDate : UnitTest {
 		this.assertEquals(Date(d.year, d.month, d.day, d.hour, d.minute, d.second, d.dayOfWeek, d.rawSeconds), d, "Creation from all properties");
 		this.assertEquals(Date(d.year, d.month, d.day, d.hour, d.minute, d.second).rawSeconds, d.rawSeconds.floor, "Creation from all properties except dayOfWeek and rawSeconds");
 
-		this.assertEquals(Date.newFromFormattedString("2017-10-25 13:25:55", "%F %T"),
+		this.assertEquals(Date.newFromFormattedString("2017-10-25 13:25:55", "%Y-%m-%d %H:%M:%S"),
 			Date(2017, 10, 25, 13, 25, 55), "newFromFormattedString");
 	}
 
@@ -65,12 +65,7 @@ TestDate : UnitTest {
 		// Try a roundtrip to/from string, using "stamp"
 		{
 			var d = Date(2013, 12, 11, 10, 9, 8);
-			// It would be nicer if "stamp" used four digits for year,
-			// because the parsing code only works for two-digit years when
-			// there is a separator (even when using two-digit %y or %C formats).
-			// Otherwise it keeps reading digits and gets it wrong. So here, we
-			// prepend "20" before the stamp string...
-			var d2 = Date.newFromFormattedString("20" ++ d.stamp, "%y%m%d_%H%M%S").postln;
+			var d2 = Date.newFromFormattedString(d.stamp, "%y%m%d_%H%M%S").postln;
 			this.assertEquals(d, d2, "roundtrip to/from string using stamp");
 		}.value;
 	}

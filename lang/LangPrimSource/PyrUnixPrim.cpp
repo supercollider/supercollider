@@ -26,8 +26,7 @@ Primitives for Unix.
 #include <cstring>
 #include <errno.h>
 #include <signal.h>
-#include <iomanip>
-#include <sstream>
+#include <boost/date_time/posix_time/posix_time_io.hpp>
 
 #include "PyrPrimitive.h"
 #include "PyrObject.h"
@@ -355,13 +354,17 @@ int prDateFromString(struct VMGlobals *g, int numArgsPushed)
 	char formatString[len];
 	if (slotStrVal(formatSlot, formatString, len)) return errWrongType;
 
+	using namespace boost::posix_time;
+	auto facet = new time_input_facet(); // will be owned/deleted by the locale
+	facet->format(formatString);
 	std::istringstream ss(timeString);
-	std::tm tm0{};
-	ss >> std::get_time(&tm0, formatString);
-	if (ss.fail()) {
+	ss.imbue(std::locale(ss.getloc(), facet));
+	ptime pt;
+	if (!(ss >> pt)) {
 		error("time parsing failed\n");
 		return errFailed;
 	}
+	auto tm0 = to_tm(pt);
 	
 	tm0.tm_isdst = -1; // attempt to determine if Daylight Saving Time in effect
 	auto timePoint = std::chrono::system_clock::from_time_t(mktime(&tm0));
