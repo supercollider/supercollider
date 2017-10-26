@@ -53,6 +53,10 @@
       "suite": "TestSignal"
     }, 
     {
+      "test": "*", 
+      "suite": "TestDate"
+    }, 
+    {
       "suite": "TestUnitTest", "test": "test_toreDown", 
       "skip": true, "skipReason": "UnitTest bug"
     }, 
