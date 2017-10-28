@@ -9,7 +9,7 @@ A class which allows you to draw custom graphics on a UserView or Window.
 The following methods must be called within a link::Classes/Window#-drawFunc:: or a link::Classes/UserView#-drawFunc:: function, and will only be visible once the window or the view is refreshed. Each call to link::Classes/Window#-refresh:: or link::Classes/UserView#-refresh:: will 'overwrite' all previous drawing by executing the currently defined function, unless link::Classes/UserView#-clearOnRefresh:: is set to code::false::
 
 classmethods::
-private:: key
+private:: prAddAnnularWedge, prAddArc, prDrawImage, prSetFont, prTileImage
 
 subsection:: Construct path
 The following methods define paths. You will need to call link::#*stroke:: or link::#*fill:: to actually draw them.
@@ -593,9 +593,9 @@ code::
 (
 w = Window.new.front;
 w.view.background_(Color.white);
-StaticText(w, Rect(0,0,180,20))
+StaticText(w, Rect(0,0,200,20))
     .string_(" Change Line Cap & Join Styles: ");
-y = PopUpMenu(w, Rect(180,0,130,20))
+y = PopUpMenu(w, Rect(200,0,130,20))
     .items_(["Butt - Miter", "Round - Round", "Square - Bevel"])
     .action_({w.refresh});
 w.drawFunc = {
@@ -632,12 +632,15 @@ Draw a bitmap image using the Image class.
 discussion::
 example:
 code::
+(
 w = Window.new.front;
 w.view.background = Color.red;
 i = Image.open(SCDoc.helpSourceDir +/+ "images/Swamp.png");
 w.drawFunc_({
 	Pen.drawImage( Point(140, 140), i, operation: 'sourceOver', opacity:1);
 });
+)
+::
 
 examples::
 Simple rotating and scaling:
@@ -1054,7 +1057,7 @@ OS 10.5 and > Only
 (
 	var blendMode=0, blendString="Normal";
 	w = Window.new.front;
-	m = SCPopUpMenu(w, Rect(10, w.view.bounds.height - 30, 150, 20));
+	m = PopUpMenu(w, Rect(10, w.view.bounds.height - 30, 150, 20));
 	m.items = [
 		"0 - Normal",
 		"1 - Multiply",

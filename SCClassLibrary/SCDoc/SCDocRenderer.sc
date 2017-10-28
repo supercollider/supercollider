@@ -53,12 +53,12 @@ SCDocHTMLRenderer {
 
 	// Find the target (what goes after href=) for a link that stays inside the hlp system
 	*prLinkTargetForInternalLink { |linkBase, linkAnchor, originalLink|
-		var result;
+		var doc, result;
 
 		if(linkBase.isEmpty) {
 			result = "";
 		} {
-			var doc = SCDoc.documents[linkBase];
+			doc = SCDoc.documents[linkBase];
 			result = baseDir +/+ linkBase;
 
 			// If this is an existing document, just add .html to get the target
@@ -100,6 +100,7 @@ SCDocHTMLRenderer {
 
 	// Find the text label for the given link, which points inside the help system.
 	*prLinkTextForInternalLink { |linkBase, linkAnchor, linkText|
+		var doc, result;
 		// Immediately return link text if available
 		if(linkText.isEmpty.not) {
 			^linkText
@@ -114,8 +115,8 @@ SCDocHTMLRenderer {
 				^linkAnchor
 			}
 		} {
-			var doc = SCDoc.documents[linkBase];
-			var result = doc !? _.title ? linkBase.basename;
+			doc = SCDoc.documents[linkBase];
+			result = doc !? _.title ? linkBase.basename;
 			if(linkAnchor.isEmpty) {
 				^result
 			} {
