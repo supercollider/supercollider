@@ -850,7 +850,6 @@ Server {
 			sendQuit = this.inProcess or: { this.isLocal };
 		};
 		this.connectSharedMemory;
-		this.initTree;
 	}
 
 	bootServerApp { |onComplete|
