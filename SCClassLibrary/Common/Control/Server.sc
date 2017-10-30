@@ -375,7 +375,7 @@ Server {
 	}
 
 	initTree {
-		this.newNodeAllocators;
+	//	this.newNodeAllocators;
 		this.sendDefaultGroups;
 		tree.value(this);
 		ServerTree.run(this);
