@@ -151,9 +151,9 @@ HistoryGui : JITGui {
 			} {
 				lastLineSelected = listV.items[index];
 				if (filtering.not) {
-					this.postInlined(index)
+					this.showLineAt(index)
 				} {
-					this.postInlined(filteredIndices[index])
+					this.showLineAt(filteredIndices[index])
 				}
 			}
 		})
@@ -230,7 +230,7 @@ HistoryGui : JITGui {
 		listV.value_(newIndex ? 0);
 		if(stickMode == 0) { listV.action.value(listV) };
 
-		this.postInlined(newIndex);
+		this.showLineAt(newIndex);
 	}
 
 	checkUpdate {
@@ -303,6 +303,13 @@ HistoryGui : JITGui {
 	}
 
 	postInlined { |index|
+		thisMethod.deprecated(
+			HistoryGui.methods.detect { |m| m.name == \showLineAt }
+		);
+		this.showLineAt(index);
+	}
+
+	showLineAt { |index|
 		var line;
 		if (object.lines.isNil) { ^this };
 		line = object.lines[index];
