@@ -99,7 +99,7 @@ HistoryGui : JITGui {
 		.items_([\all]).value_(0)
 		.action_({ |pop| this.setKeyFilter(pop.items[pop.value]) });
 
-		filTextV = TextView(zone, Rect(0,0, 88 + 12, 20)).string_("")
+		filTextV = TextView(zone, Rect(0,0, 80 + 12, 20)).string_("")
 		.enterInterpretsSelection_(false)
 		.resize_(2)
 		.keyDownAction_({ |txvw, char, mod, uni, keycode|
@@ -123,20 +123,21 @@ HistoryGui : JITGui {
 		.canFocus_(false)
 		.action_({ |btn| this.rip(textV.string) });
 
-		// // not sure that this still works in Qt as intended
-		// Button(zone, Rect(0,0, 16, 20))
-		// .states_([["v"], ["^"]])
-		// .resize_(3)
-		// .action_ { |btn|
-		// 	var views = zone.children;
-		// 	var resizes = [
-		// 		[2, 1, 1, 1, 2, 3, 3, 3, 5],
-		// 		[5, 7, 7, 7, 8, 9, 9, 9, 8]
-		// 	][btn.value.asInteger];
-		//
-		// 	views.postln.do { |v, i| v.resize_(resizes[i]) };
-		//
-		// };
+		// on resize, keep textview or listview at equal height:
+		Button(zone, Rect(0,0, 16, 20))
+		.states_([["v"], ["^"]])
+		.resize_(3)
+		.action_ { |btn|
+			var index = btn.value.asInteger;
+			var constView = ["textV", "listV"][index];
+			var views = zone.children;
+			var resizes = [
+				[2, 1, 1, 1, 2, 3, 3, 3, 5],
+				[5, 7, 7, 7, 8, 9, 9, 9, 8]
+			][index];
+			"% resize: keep % height constant.\n".postf(this, constView);
+			views.do { |v, i| v.resize_(resizes[i]) };
+		};
 
 		listV = ListView(zone, bounds.copy.insetBy(2).height_(listViewHeight))
 		.font_(font)
