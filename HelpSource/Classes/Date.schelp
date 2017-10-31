@@ -8,7 +8,7 @@ ClassMethods::
 method::new
 Create a new Date with the given properties (all are Integer values, except teletype::rawSeconds::, which is a Float). These arguments are also the names of instance variables of the Date object.
 
-The constructor offers several possibilities, which are evaluated in the following order of priority:
+The constructor initializes the instance in one of the following ways (in order of priority):
 
 numberedlist::
 ## If teletype::Date.new:: is called without any arguments, it will return the strong::current time::, the same as calling link::#*localtime::.
@@ -27,35 +27,19 @@ var d = Date.new.postln;
 var e = Date(rawSeconds: d.rawSeconds); // create a new Date with the same time
 d == e; // true
 )
-
-Date(2000, 1, 1, rawSeconds: 1234567890) != Date(2000, 1, 1); // true
-Date(2000, 1, 1, rawSeconds: 1234567890) == Date(rawSeconds: 1234567890); // true
 ::
 
-## Most properties have default values (teletype::month=1::, teletype::day=1::, teletype::hour=0::, teletype::minute=0::, teletype::second=0::). If no teletype::year:: is provided, an error is thrown (there is no default year). When teletype::rawSeconds:: is unspecified, it is computed based on the resulting date/time.
+## The most typical usage is to create a Date from a year/month/day and possibly hour/minute/second.  All of these properties (except teletype::year::) have default values (teletype::month=1::, teletype::day=1::, teletype::hour=0::, teletype::minute=0::, teletype::second=0::). teletype::rawSeconds:: is computed based on the other properties. There is no default year -- if no teletype::year:: is provided, an error is thrown.
 
 code::
 Date(1969, 7, 20, 20, 18); // -> Sun Jul 20 20:18:00 1969
 Date(2016); // -> Fri Jan  1 00:00:00 2016
-Date(2010, day: 15, minute: 30); // -> Fri Jan 15 00:30:00 2010
-try { Date(month: 7) } { |err| err.postln }; // ERROR: year must be a valid Integer
-(
-var d = Date(2017, 10, 25);
+d = Date(2010, day: 15, minute: 30); // -> Fri Jan 15 00:30:00 2010
 [d.asString, d.dayOfWeek, d.rawSeconds]; // dayOfWeek and rawSeconds were computed
-)
-::
-
-## The teletype::dayOfWeek:: argument is strong::always calculated:: and if it is specified explicitly, the value will be overwritten (it only remains a constructor argument for reasons of backward compatibility).
-
-code::
-// There is no point (but no harm) in specifying the dayOfWeek argument,
-// it will always be calculated:
-Date(2017, 10, 31, dayOfWeek: 0).dayOfWeek; // calculated to be 2 (Tuesday), not 0 (Sunday)
-"Party like it's" + Date(1999, 12, 31, 23, 59, 59);
 ::
 ::
 
-It is possible to specify dates with "out of range" values that will be resolved into a valid range -- this allows simple date offset calculations to be performed (see third example below).
+It is possible to specify dates with "out of range" values that will be resolved into a valid range -- this allows simple date offset calculations to be performed (see example below).
 
 code::
 (
@@ -67,17 +51,26 @@ Date(2017, 2, 29).postln; // March 1: 2017 was not a leap year!
 )
 ::
 
-method::newFromFormattedString
+note::The teletype::dayOfWeek:: argument is strong::always calculated::.  If it is specified, the value will be overwritten (it only remains a constructor argument for reasons of backward compatibility).
+
+code::
+// There is no point (but no harm) in specifying the dayOfWeek argument,
+// as it will always be calculated:
+Date(2017, 10, 31, dayOfWeek: 0).dayOfWeek; // calculated to be 2 (Tuesday), not 0 (Sunday)
+::
+::
+
+method::fromString
 Create a new Date object from a date/time string, which is parsed according to the provided format string.
 
 code::
-Date.newFromFormattedString("2017-10-25 [13:25:55]", "%Y-%m-%d [%H:%M:%S]");
-Date.newFromFormattedString("1981.9.30 @ 17:33", "%Y.%m.%d @ %H:%M");
+Date.fromString("2017-10-25 [13:25:55]", "%Y-%m-%d [%H:%M:%S]");
+Date.fromString("1981.9.30 @ 17:33", "%Y.%m.%d @ %H:%M");
 
 (
 // Round-trip via string, using "stamp"
 var stampString = Date(2013, 5, 25, 10, 9, 8).stamp;
-var d = Date.newFromFormattedString(stampString, "%y%m%d_%H%M%S");
+var d = Date.fromString(stampString, "%y%m%d_%H%M%S");
 (stampString + "-->" + d).postln;
 )
 ::
@@ -120,6 +113,22 @@ thisThread.randSeed = a;
 ::
 
 InstanceMethods::
+
+method::rawSeconds
+Get or set the receiver's raw time in seconds (relative to the "epoch" of January 1, 1970).
+
+If you modify this property, the other properties will not update. See note at link::#-resolve:: -- there is no "resolveFromRawSeconds" method, but you can generate a new self-consistent Date instance by passing the teletype::rawSeconds:: as an argument to link::#*new::.
+
+note::
+This value is not portable between machines, because of differences in the way the underlying time functions are implemented, and because of time zone differences.  To save/restore Date values between runs and on different platforms, it is recommended strong::not:: to use the rawSeconds value.  Instead, you should serialize the Date to a string, for example:
+::
+
+code::
+(
+var savedDateStr = Date.localtime.format("%Y%m%d_%H%M%S").postcs;
+var loadedDate = Date.fromString(savedDateStr, "%Y%m%d_%H%M%S").postln;
+)
+::
 
 method::localtime
 Set the receiver's time to current localtime.
@@ -167,7 +176,8 @@ d.resolve; // -> Tue Jan 30 00:50:00 2018
 [d.dayOfWeek, d.rawSeconds]; // -> [ 2, 1517269800 ]
 ::
 
-Note that there is no "resolveFromRawSeconds" method.  If you modify the teletype::rawSeconds:: property, the other properties strong::won't:: change to reflect it.  If you want to "resolve" in the other direction, simply create a new Date object using the teletype::rawSeconds:::
+note::
+There is no "resolveFromRawSeconds" method.  If you modify the teletype::rawSeconds:: property, the other properties strong::won't:: change to reflect it.  If you want to "resolve" in the other direction, simply create a new Date object using the teletype::rawSeconds:::
 
 code::
 d = Date(1999, 12, 31); // -> Fri Dec 31 00:00:00 1999
@@ -183,6 +193,7 @@ d.rawSeconds; // -> 947594800
 // rawSeconds, just create a new Date object:
 d = Date(rawSeconds: d.rawSeconds);
 // -> Tue Jan 11 13:46:40 2000
+::
 ::
 
 method::format

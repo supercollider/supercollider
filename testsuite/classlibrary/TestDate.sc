@@ -70,23 +70,23 @@ TestDate : UnitTest {
 			"invalid dates are corrected (not leap year)");
 
 		this.assertEquals(
-			Date.newFromFormattedString("2017-10-25 13:25:55", "%Y-%m-%d %H:%M:%S"),
+			Date.fromString("2017-10-25 13:25:55", "%Y-%m-%d %H:%M:%S"),
 			Date(2017, 10, 25, 13, 25, 55),
-			"newFromFormattedString");
+			"fromString");
 		this.assertEquals(
-			Date.newFromFormattedString("2017-10-25 [13:25:55]", "%Y-%m-%d [%H:%M:%S]"),
+			Date.fromString("2017-10-25 [13:25:55]", "%Y-%m-%d [%H:%M:%S]"),
 			Date(2017, 10, 25, 13, 25, 55),
-			"newFromFormattedString");
+			"fromString");
 		this.assertEquals(
-			Date.newFromFormattedString("1981.9.30 @ 17:33", "%Y.%m.%d @ %H:%M"),
+			Date.fromString("1981.9.30 @ 17:33", "%Y.%m.%d @ %H:%M"),
 			Date(1981, 9, 30, 17, 33),
-			"newFromFormattedString");
+			"fromString");
 
 		// Round-trip via string, using "stamp"
 		{
 			var orig = Date(2013, 5, 25, 10, 9, 8);
 			var stampString = orig.stamp;
-			var d = Date.newFromFormattedString(stampString, "%y%m%d_%H%M%S");
+			var d = Date.fromString(stampString, "%y%m%d_%H%M%S");
 			this.assertEquals(d, orig,
 				"round trip via string using 'stamp'");
 		}.value;
@@ -128,7 +128,7 @@ TestDate : UnitTest {
 		// Try a roundtrip to/from string, using "stamp"
 		{
 			var d = Date(2013, 12, 11, 10, 9, 8);
-			var d2 = Date.newFromFormattedString(d.stamp, "%y%m%d_%H%M%S").postln;
+			var d2 = Date.fromString(d.stamp, "%y%m%d_%H%M%S").postln;
 			this.assertEquals(d, d2,
 				"roundtrip to/from string using stamp");
 		}.value;

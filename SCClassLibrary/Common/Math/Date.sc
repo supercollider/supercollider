@@ -25,7 +25,7 @@ Date {
 
 		^instance;
 	}
-	*newFromFormattedString { arg string, format;
+	*fromString { arg string, format;
 		^this.new.prFromString(string, format)
 	}
 	storeArgs {
