@@ -156,6 +156,10 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 
 	play { |start=0, end, verbose=true|	// line numbers;
 		// starting from past 0 may not work.
+		if (lines.isEmpty) {
+			"History.current is empty, cannot play.".postln;
+			^this
+		};
 		start = start.clip(0, lines.lastIndex);
 		end = (end ? lines.lastIndex).clip(0, lines.lastIndex);
 
@@ -237,7 +241,6 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 	}
 
 	// network setups support
-	*network { }
 	*localOn { recordLocally = true }
 	*localOff { recordLocally = false }
 
@@ -553,10 +556,12 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 
 	*checkPath { |path|
 		var ext = path.splitext[1];
-		^if ([\sc, \scd, \txt, \nil, \rtf].includes(ext.asSymbol)) {
+		^if ([\scd, \txt, \nil].includes(ext.asSymbol)) {
 			true
 		} {
-			warn("History: file format" + ext + "for story files likely not supported!				Please use .txt, .scd, or other text format.");
+			warn(
+				"History: cannot use file format '." ++ ext ++ "' for story files!"
+				"\nPlease use .txt or .scd.");
 			false
 		}
 	}
