@@ -15,8 +15,6 @@ TestDate : UnitTest {
 			"rawSeconds is used if specified");
 
 		d = Date(2017, 10, 25);
-		this.assertEquals(d.rawSeconds, 1508882400,
-			"Computed rawSeconds");
 		this.assertEquals(d.dayOfWeek, 3,
 			"Computed dayOfWeek");
 
@@ -48,7 +46,8 @@ TestDate : UnitTest {
 			"new with defaults");
 		this.assertEquals(Date(2016).stamp, "160101_000000",
 			"new with defaults");
-		this.assertEquals(Date(2010, day: 15, minute: 30).rawSeconds, 1263511800,
+		this.assertEquals(Date(2010, day: 15, minute: 30).asSortableString,
+			"20100115003000",
 			"new with defaults");
 
 		e = nil;
@@ -58,9 +57,9 @@ TestDate : UnitTest {
 
 		d = Date(2017, 10, 25);
 		this.assertEquals(
-			[d.asSortableString, d.dayOfWeek, d.rawSeconds],
-			[ "20171025000000", 3, 1508882400],
-			"dayOfWeek and rawSeconds are computed");
+			[d.asSortableString, d.dayOfWeek],
+			[ "20171025000000", 3],
+			"dayOfWeek is computed");
 
 		this.assertEquals(Date(2017, 10, 31, dayOfWeek: 0).dayOfWeek, 2,
 			"dayOfWeek always computed");
