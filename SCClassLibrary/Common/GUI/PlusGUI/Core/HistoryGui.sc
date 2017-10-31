@@ -4,7 +4,7 @@ HistoryGui : JITGui {
 	classvar <>docTitle = "History repeats", <>docHeight=120;
 
 	var <textV;
-	var <startBut, <filtBut, <filTextV, <keyPop, <topBut, listV;
+	var <startBut, <filtBut, <filTextV, <keyPop, <topBut, <listV;
 	var <doc, <oldDocs, <docFlag = \sameDoc, <>stickMode=0;
 
 	var <filters, <filteredIndices, <filteredShorts, <filtering = false;

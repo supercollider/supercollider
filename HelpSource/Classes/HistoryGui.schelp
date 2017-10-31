@@ -19,6 +19,99 @@ DEFINITIONLIST::
 ## listview || shows either all code::lineShorts::, or the filtered code::lineShorts::; selecting them in listview makes them come appear in post-doc window.
 ::
 
+first example:
+code::
+(
+h = History.new.lines_([
+	[0, \me, "1+2"],
+	[1, \me, "3+5"], [1.234, \you, "q = q ? ();"],
+	[3, \her, "\"Herstory\".speak"]
+]);
+g = h.makeWin(0@20);
+g.findDoc;
+g.postDoc(2);
+)
+::
+
+ClassMethods::
+
+method::docHeight
+get and set height of textdoc/window opened by HistoryGui
+method::docTitle
+get and set title of textdoc/window opened by HistoryGui
+
+method::new
+create a new HistoryGui
+argument:: object
+the history
+argument:: numItems
+the number of lines in the textview above
+argument:: parent
+a parent window or view in which to place new HistoryGui
+argument:: bounds
+bounds for new HistoryGui, constrained by its minSize.
+argument:: makeSkip
+flag whether to create a skipjack for it.
+argument:: options
+options to set for the gui.
+
+
+InstanceMethods::
+
+private:: accepts, checkUpdate, getState, makeViews, setDefaults, postInlined
+private:: updateBinVal, updateFunc, updateLines, updateVal, alignDoc
+subsection:: views
+method::textV
+top: the textview for the selected line
+method::startBut, filtBut, keyPop, filTextV, topBut
+the line of buttons, popup and textview
+method::listV
+the listview for the history lines
+method::resetViews
+reset all views
+
+method::showLineAt
+put line at that index in textV
+
+subsection:: doc-related
+method::doc
+get or create a doc window to show code on
+
+method::findDoc
+find an open re-usable doc window
+method::oldDocs
+keep track of old docs
+method::postDoc
+method::setDocStr
+set string of current doc
+method::rip
+create a new doc with currently selected line
+
+method:: docFlag
+which doc strategy to use - sameDoc or multiple docs
+
+subsection:: filtering
+method::filtering
+flag whether filtering is on
+method::filterOn, filterOff
+convenience on/off methods
+
+method::filters
+keys and string fragments to filter for.
+e.g. [ 'all', "+" ] gets lines from all sources that contain the string "+".
+method::filterLines
+apply filtering to history lines
+method::filteredIndices
+the indices of the filtered lines
+method::filteredShorts
+the filtered short lines for gui display
+method:.setKeyFilter
+set the key(s) to filter for, and filter
+method::setStrFilter
+set the string to filter for, and filter
+method::stickMode
+stickMode 0 means top, i.e. select top when new lines come in;
+stickMode 1 means keep, i.e. keep current line selected after new lines come in.
 
 EXAMPLES::
 
@@ -29,7 +122,7 @@ h = History.new.lines_([
 	[1, \me, "3+5"], [1.234, \you, "q = q ? ();"],
 	[3, \her, "\"Herstory\".speak"]
 ]);
-g = h.makeWin;
+g = h.makeWin(0@20);
 g.findDoc;
 g.postDoc(2);
 )
@@ -49,6 +142,4 @@ g.setStrFilter("3");
 g.filteredIndices;
 g.filteredShorts;
 
-// to do: execute line on special key in listview;
-// window following?
 ::
