@@ -40,11 +40,14 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 
 	*start {
 		var interp = thisProcess.interpreter;
+
 		if(started.not) {
 			interp.codeDump = interp.codeDump.addFunc(listenFunc);
 			this.hasMovedOn_(true);
 			started = true;
 			this.startLog;
+			CmdPeriod.add(this);
+
 		} {
 			"History has started already.".postln;
 		}
@@ -55,6 +58,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 		this.endLog;
 		this.hasMovedOn_(true);
 		started = false;
+		CmdPeriod.remove(this);
 	}
 
 	*hasMovedOn_ { |flag=true| current.hasMovedOn_(flag) }
@@ -114,6 +118,7 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 	}
 
 	clear {
+		keys.clear;
 		lines = List[];
 		lineShorts = List[];
 		hasMovedOn = true;
@@ -384,9 +389,20 @@ History { 		// adc 2006, Birmingham; rewrite 2007.
 	}
 	*/
 
-
 	*cmdPeriod {
-		this.enter("// thisProcess.cmdPeriod")
+		if (History.started) {
+			// record cmdPeriod for replay:
+			this.enter("History.playCmdPeriod");
+		};
+	}
+
+	*playCmdPeriod {
+		var histPlayer =current.player;
+		if (histPlayer.isPlaying) {
+			histPlayer.pause;
+			CmdPeriod.doOnce({ histPlayer.resume });
+			CmdPeriod.run;
+		};
 	}
 
 	// log file support - global only
