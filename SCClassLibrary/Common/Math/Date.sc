@@ -5,12 +5,24 @@ Date {
 	*getDate { ^this.localtime }
 	*localtime { ^this.new.localtime }
 	*gmtime { ^this.new.gmtime }
-	*new { arg year, month, day, hour=0, minute=0, second=0, dayOfWeek, rawSeconds;
+	*new { arg year, month, day, hour, minute, second, dayOfWeek, rawSeconds;
 		var instance = super.newCopyArgs(year, month, day, hour, minute, second, dayOfWeek,
 			rawSeconds);
-		if (dayOfWeek.isNil or: {rawSeconds.isNil}) {
-			instance.prResolve;
+		case
+		{ [year, month, day, hour, minute, second, dayOfWeek, rawSeconds].every(_.isNil) } {
+			// All properties are nil: return current (local) time
+			instance.localtime;
+		}
+		{ rawSeconds.notNil } {
+			// rawSeconds was specified: use it to calculate all other properties
+			instance.prResolveFromRawSeconds;
+		}
+		{
+			// In all other cases, resolve dayOfWeek and rawSeconds from the other
+			// properties (YMD, HMS).  If no year is provided, will throw an error.
+			instance.resolve;
 		};
+
 		^instance;
 	}
 	*newFromFormattedString { arg string, format;
@@ -69,12 +81,16 @@ Date {
 		})
 	}
 
+	resolve {
+		_Date_Resolve
+		^this.primitiveFailed
+	}
 	prFromString { arg string, format;
 		_Date_FromString
 		^this.primitiveFailed
 	}
-	prResolve {
-		_Date_Resolve
+	prResolveFromRawSeconds {
+		_Date_ResolveFromRawSeconds
 		^this.primitiveFailed
 	}
 	asctime {
@@ -103,5 +119,8 @@ Date {
 	}
 	== { arg other;
 		^this.rawSeconds == other.rawSeconds
+	}
+	!= { arg other;
+		^this.rawSeconds != other.rawSeconds
 	}
 }

@@ -305,18 +305,31 @@ int prUnix_Errno(struct VMGlobals *g, int numArgsPushed)
 
 #include <time.h>
 
-static void fillSlotsFromTime(PyrSlot * result, struct tm* tm, std::chrono::system_clock::time_point const & now)
+// Set only Date members related to the tm struct: YMD, HMS and
+// weekday (not rawSeconds)
+static void fillSlotsFromTimeStruct(PyrSlot * result, struct tm* tm)
 {
 	PyrSlot *slots = slotRawObject(result)->slots;
 
 	SetInt(slots+0, tm->tm_year + 1900);
-	SetInt(slots+1, tm->tm_mon + 1); // 0 based month ??
+	SetInt(slots+1, tm->tm_mon + 1); // 0 based month
 	SetInt(slots+2, tm->tm_mday);
 	SetInt(slots+3, tm->tm_hour);
 	SetInt(slots+4, tm->tm_min);
 	SetInt(slots+5, tm->tm_sec);
 	SetInt(slots+6, tm->tm_wday);
-	SetFloat(slots+7, std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch()).count() * 1.0e-9);
+}
+
+// Set all Date members (including rawSeconds)
+static void fillAllSlotsFromTime(PyrSlot * result, struct tm* tm, std::chrono::system_clock::time_point const & now)
+{
+	fillSlotsFromTimeStruct(result, tm);
+	
+	PyrSlot *slots = slotRawObject(result)->slots;
+	
+	using namespace std::chrono;
+	auto const secondsPerTick = static_cast<double>(system_clock::period::num) / system_clock::period::den;
+	SetFloat(slots+7, duration_cast<system_clock::duration>(now.time_since_epoch()).count() * secondsPerTick);
 }
 
 int prLocalTime(struct VMGlobals *g, int numArgsPushed)
@@ -326,7 +339,7 @@ int prLocalTime(struct VMGlobals *g, int numArgsPushed)
 	time_t now_time_t = system_clock::to_time_t(now);
 	struct tm* tm = localtime(&now_time_t);
 
-	fillSlotsFromTime(g->sp, tm,  now);
+	fillAllSlotsFromTime(g->sp, tm,  now);
 
 	return errNone;
 }
@@ -338,7 +351,7 @@ int prGMTime(struct VMGlobals *g, int numArgsPushed)
 	time_t now_time_t = system_clock::to_time_t(now);
 	struct tm* tm = gmtime(&now_time_t);
 
-	fillSlotsFromTime(g->sp, tm, now);
+	fillAllSlotsFromTime(g->sp, tm, now);
 	return errNone;
 }
 
@@ -368,36 +381,45 @@ int prDateFromString(struct VMGlobals *g, int numArgsPushed)
 	
 	tm0.tm_isdst = -1; // attempt to determine if Daylight Saving Time in effect
 	auto timePoint = std::chrono::system_clock::from_time_t(mktime(&tm0));
-	fillSlotsFromTime(dateObjectSlot, &tm0, timePoint);
+	fillAllSlotsFromTime(dateObjectSlot, &tm0, timePoint);
 	return errNone;
 }
 
-// Given an incomplete Date structure (missing dayOfWeek and
-// rawSeconds), calculate and fill in those properties.
+// Given a Date structure, calculate and fill in any missing
+// or invalid properties, ignoring/overwriting the contents of
+// rawSeconds.  If some of the (MD, HMS) members are nil, give
+// them default values.  If year is nil, throw an error.
 int prDateResolve(struct VMGlobals *g, int numArgsPushed)
 {
 	PyrSlot *a = g->sp;
 	PyrSlot *slots = slotRawObject(a)->slots;
 	
-	if (IsNil(slots + 0)) {
-		SetNil(a);
-		return errNone;
-	}
-	if (!IsNil(slots+6) || !IsNil(slots+7)) {
-		error("dayOfWeek or rawSeconds are already defined\n");
-		return errFailed;
-	}
-	
 	struct tm tm0{};
 	
-	if (slotIntVal(slots+0, &tm0.tm_year)) return errWrongType;
-	tm0.tm_year -= 1900;
-	if (slotIntVal(slots+1, &tm0.tm_mon)) return errWrongType;
-	tm0.tm_mon -- ;
-	if (slotIntVal(slots+2, &tm0.tm_mday)) return errWrongType;
-	if (slotIntVal(slots+3, &tm0.tm_hour)) return errWrongType;
-	if (slotIntVal(slots+4, &tm0.tm_min)) return errWrongType;
-	if (slotIntVal(slots+5, &tm0.tm_sec)) return errWrongType;
+	if (slotIntVal(slots+0, &tm0.tm_year)) {
+		error("year must be a valid Integer\n");
+		return errWrongType;
+	}
+	tm0.tm_year -= 1900; // year in tm is relative to 1900
+	
+	if (slotIntVal(slots+1, &tm0.tm_mon)) {
+		tm0.tm_mon = 0; // default to January
+	}
+	else {
+		tm0.tm_mon--; // month in tm is 0-based
+	}
+	if (slotIntVal(slots+2, &tm0.tm_mday)) {
+		tm0.tm_mday = 1; // default to first of month
+	}
+	if (slotIntVal(slots+3, &tm0.tm_hour)) {
+		tm0.tm_hour = 0; // default to 0 hours
+	}
+	if (slotIntVal(slots+4, &tm0.tm_min)) {
+		tm0.tm_min = 0; // default to 0 minutes
+	}
+	if (slotIntVal(slots+5, &tm0.tm_sec)) {
+		tm0.tm_sec = 0; // default to 0 seconds
+	}
 	tm0.tm_isdst = -1; // attempt to determine if Daylight Saving Time in effect
 	
 	time_t tt = mktime(&tm0);
@@ -412,7 +434,34 @@ int prDateResolve(struct VMGlobals *g, int numArgsPushed)
 	// for simple date math, such as adding or subtracing day,
 	// years or months, then calling ResolveDate to revalidate).
 	auto timePoint = std::chrono::system_clock::from_time_t(tt);
-	fillSlotsFromTime(a, &tm0, timePoint);
+	fillAllSlotsFromTime(a, &tm0, timePoint);
+	return errNone;
+}
+
+// Given only the rawSeconds property in a Date structure, calculate
+// and fill in the rest of its properties (YMD, HMS and dayOfWeek).
+int prDateResolveFromRawSeconds(struct VMGlobals *g, int numArgsPushed)
+{
+	PyrSlot *a = g->sp;
+	PyrSlot *slots = slotRawObject(a)->slots;
+	
+	double rawSeconds{};
+	if (slotDoubleVal(slots+7, &rawSeconds)) return errWrongType;
+
+	using namespace std::chrono;
+	
+	// Perform the reverse operation of fillAllSlotsFromTime()
+	// to get the time_point from (double) seconds
+	auto const ticksPerSecond = static_cast<double>(system_clock::period::den) / system_clock::period::num;
+	auto elapsed = system_clock::duration(static_cast<system_clock::rep>(rawSeconds * ticksPerSecond));
+	auto epoch = system_clock::time_point();
+	auto timePoint = epoch + elapsed;
+	
+	auto tt = system_clock::to_time_t(timePoint);
+	auto tm = localtime(&tt);
+
+	// Set everything except rawSeconds
+	fillSlotsFromTimeStruct(a, tm);
 	return errNone;
 }
 
@@ -535,6 +584,7 @@ void initUnixPrimitives()
 	definePrimitive(base, index++, "_GMTime", prGMTime, 1, 0);
 	definePrimitive(base, index++, "_Date_FromString", prDateFromString, 3, 0);
 	definePrimitive(base, index++, "_Date_Resolve", prDateResolve, 1, 0);
+	definePrimitive(base, index++, "_Date_ResolveFromRawSeconds", prDateResolveFromRawSeconds, 1, 0);
 	definePrimitive(base, index++, "_AscTime", prAscTime, 1, 0);
 	definePrimitive(base, index++, "_prStrFTime", prStrFTime, 2, 0);
 	definePrimitive(base, index++, "_TimeSeed", prTimeSeed, 1, 0);
