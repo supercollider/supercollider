@@ -5,7 +5,7 @@ categories:: Streams-Patterns-Events
 
 description::
 
-History stores all code strings as they are being evaluated, in order to reuse code written earlier, to forward code to other players, or to store, reproduce, edit and analyse live-coded performances. It records every evaluated code string into a privileged instance of History - code::History.current::.
+History stores all code strings as they are being evaluated, in order to reuse code written earlier, to forward code to other players, or to store, reproduce, edit and analyse live-coded performances. It records every evaluated code string into a singleton instance of History - code::History.current::.
 
 First examples:
 code::
@@ -95,7 +95,7 @@ a point that sets left top of the HistoryGui window,
 argument: numItems
 the number of lines in the textview
 
-subsection:: configuring what to record and post
+subsection::Configuration
 
 method::keepsLog
 get and set flag whether to log History to a file.
@@ -113,7 +113,7 @@ method::forwardFunc
 a function to run on incoming new lines, can be used to send code by network.
 See the Utopia quark for examples of networking code history.
 
-subsection:: save and load history logs
+subsection::Save and load history logs
 
 method::showLogFolder
 open folder where logfiles are stored
@@ -144,7 +144,7 @@ method::readFromDoc
 read in a history from a code file created with .rewrite
 
 
-subsection:: editing history
+subsection:: Editing history
 method::clear
 remove all items from (current) history.
 
@@ -152,10 +152,10 @@ method::enter
 add an entry to (current) history by hand.
 
 method::drop
-drop the newest n lines from history. if n is negative, drop the oldest n lines.
+drop the newest num lines from history. if n is negative, drop the oldest n lines.
 
 method::keep
-keep only the newest n lines from history. if n is negative, keep the oldest n lines.
+keep only the newest num lines from history. if n is negative, keep the oldest n lines.
 
 method::removeAt
 remove a specific line
@@ -163,8 +163,9 @@ remove a specific line
 method::removeLast
 remove last line from history
 
-subsection:: repeating history
+subsection:: Repeating history
 method::evaluateLineAt
+evaluate the line at index in History.current.lines
 
 method::play
 play back current history from start to end line, per default verbose.
@@ -173,7 +174,7 @@ method::stop
 stop current history playback.
 
 
-subsection:: date, time, string functions
+subsection:: Date, time, string functions
 method::startTimeStamp
 method::formatTime
 method::unformatTime
@@ -183,8 +184,7 @@ method::prettyString
 private:: checkPath
 
 method::new
-create a new instance.
-
+create a new instance containing the lines given.
 
 InstanceMethods::
 
@@ -218,17 +218,17 @@ Examples::
 
 code::
 // same as first example:
-History.clear.end;		// clear to start over
-History.start; 			// starts recording, opens log file
+History.clear.end;      // clear to start over
+History.start;          // starts recording, opens log file
 
-				// execute these lines one by one
+// execute these lines one by one
 1 + 2;
 p = ProxySpace.push(s.boot);
 ~a = {Dust.ar([1,1] * 30 ) * 0.3 };
 ~a.play;
 ~a.end;
 
-History.end;		// History.end ends logging as well.
+History.end; // History.end ends logging as well.
 
 
 History.document; // create a document with all the changes
@@ -237,13 +237,14 @@ History.showLogFile; // open the log file as it was written.
 g = History.makeWin(0@20); // make a gui window, put it where you like
 g = History.makeWin(0@20, 5); // number of lines in textview
 
-History.play;			// posts lines by default
-History.play(verbose: false);	// just do it, no posting
+History.play;                  // posts lines by default
+History.play(verbose: false);  // just do it, no posting
 
-	// continue recording
+// continue recording
 History.start;
 
-10 + 200;			// enter 5 more lines
+// enter 5 more lines
+10 + 200;
 p.push;
 ~b = { |freq=500| LFDNoise3.ar(freq.dup(2)) * 0.2 };
 ~b.play;
@@ -252,61 +253,71 @@ p.push;
 
 History.end;
 
-
-	// save current history to a file.
+// save current history to a file.
 History.saveCS("~/Desktop/TestHist.scd");
 h = History.new.loadCS("~/Desktop/TestHist.scd");
 h.lines.printcsAll; "";
 
 // Many History methods are redirected to History.current:
 
-	// History.current is where new codelines always go.
+// History.current is where new codelines always go.
 h = History.current;
 h.lines.printcsAll; "";
-h.lineShorts.printcsAll; "";	// lineshorts are for gui display
 
-History.enter("2 + 2");		// make a simple entry by hand.
+// lineshorts are for gui display:
+h.lineShorts.printcsAll; "";
+
+// make a simple entry by hand.
+History.enter("2 + 2");
 h.lines.printcsAll; "";
 
-		// one can edit a history:
+// one can edit a history:
 History.drop(-1); // drop the oldest memory
 History.drop(1); // drop the newest memory
 
-h.keep(9); 		h.lines.printAll; "";
-h.drop(3); 		h.lines.printAll; "";
-h.removeLast;		h.lines.printAll;"";
-h.removeAt([3, 4]);	h.lines.printAll;"";
-
+h.keep(9); h.lines.printAll; "";
+h.drop(3); h.lines.printAll; "";
+h.removeLast;       h.lines.printAll;"";
+h.removeAt([3, 4]); h.lines.printAll;"";
 
 // more examples
 History.clear.start;
 
-1 + 2;			// code lines get stored
+1 + 2; // code lines get stored
 
-(nil + 2).postln;	// error lines are ignored
+(nil + 2).postln; // error lines are ignored
 
-	// comment-only line is kept, empty lines not:
+// comment-only line is kept, empty lines not:
+History.enter("// comment only");
+History.enter(" ");
 
-	// save and load as text files
 
+// save and load as text files
 
 History.saveCS; // save as compilestring for reloading.
-			// save with name, in forward time order.
+
+// save with name, in forward time order.
 History.saveCS("~/Desktop/testHist.scd", forward: true);
-			// load back in from file
+
+// load back in from file
 h = History.new.loadCS("~/Desktop/testHist.scd", forward: true);
 h.lines.postcs; "";
 
-	// save as human-readable/hand-playable story
-History.saveStory		// write all to time-stamped file in historical order
-History.saveStory("~/Desktop/myTestStory.scd");	// ... with given filename.
-History.loadStory("~/Desktop/myTestStory.scd");	// load from story format file
+// save as human-readable/hand-playable story
+// write all to time-stamped file in historical order:
+History.saveStory;
+
+// ... with given filename.
+History.saveStory("~/Desktop/myTestStory.scd");
+
+// load from story format file
+History.loadStory("~/Desktop/myTestStory.scd");
 
 Document.open("~/Desktop/myTestStory.scd");	// the story file is human-readable.
 
 
-	// Various Internals
-	// make a new instance of History by hand:
+// Various Internals
+// make a new instance of History by hand:
 h = History([
 	[0, \me, "1+2"],
 	[1.234, \me, "q = q ? ();"],
@@ -314,11 +325,11 @@ h = History([
 h.lines.printcsAll; "";
 h.lineShorts.printcsAll; "";
 
-h.play;	// play it
+h.play; // play it back
 h.stop;
 
 
-	// string formatting utils
+// string formatting utils
 h.storyString;
 History.formatTime(1234.56);
 History.unformatTime("0:20:34.56");
@@ -329,11 +340,13 @@ History.prettyString("
 /* removes line returns at start and end of code strings ... */
 
 ").postcs;
-)	// convert a line to a short string of n characters for gui display
+)
+
+// convert a line to a short string of n characters for gui display
 History.shorten(h.lines.first.postcs, 60).postcs;
 
 
-	// in networked setups, one may turn off local recording and rely on remote recording:
+// in networked setups, one may turn off local recording and rely on remote recording:
 History.recordLocally
 History.localOff
 History.recordLocally
@@ -341,25 +354,25 @@ History.localOn
 History.recordLocally
 
 
-	// by default, history always logs here (and makes the folder if not there yet):
+// by default, history always logs here (and makes the folder if not there yet):
 History.logFolder;
 History.showLogFolder;
 History.logPath;
-History.showLogFile;	// current logfile...
-	// todo: optionally, one should be able to turn logging off?
+History.showLogFile; // current logfile...
+// todo: optionally, one should be able to turn logging off?
 
-	// filtering lines, to get subsets of all lines by key and/or searchstring:
+// filtering lines, to get subsets of all lines by key and/or searchstring:
 
-	// get indices for specific keys
+// get indices for specific keys
 h = History([[0, \me, "a=1+2"], [1, \me, "3+5"], [1.234, \you, "q = q ? ();"], [3, \her, "\"Herstory ==== \".postln"]]);
 h.keys;
 h.matchKeys(\me);
 h.matchKeys(\you);
 h.matchKeys(\her);
-h.matchKeys; 		// nil if no test
-h.matchKeys(\all); 	// all keys match
+h.matchKeys;        // nil if no test
+h.matchKeys(\all);  // all keys match
 h.matchKeys([\me, \her])
-h.matchKeys(\isidor)	// empty array if no line found
+h.matchKeys(\isidor) // empty array if no line found for this key
 
 h.matchString("Herst");
 h.matchString("q");
@@ -369,8 +382,8 @@ h.matchString("herStory", true); // ignoreCase
 
 h.indicesFor([\me, \her], "=");	// indices for line written by \me or \her AND containing "=";
 
-	// searching is only an interface/access feature,
-	// so please read on at HistoryGui help ...
+// searching is only an interface/access feature,
+// so please read on at HistoryGui help ...
 h.makeWin;
 
 HistoryGui.help;

@@ -146,9 +146,7 @@ HistoryGui : JITGui {
 		.background_(Color.grey(0.62))
 		.action_({ |lview|
 			var index = lview.value;
-			if (lview.items.isEmpty) {
-				// 	"no entries yet.".postln;
-			} {
+			if (lview.items.notEmpty) {
 				lastLineSelected = listV.items[index];
 				if (filtering.not) {
 					this.showLineAt(index)
