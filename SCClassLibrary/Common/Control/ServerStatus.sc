@@ -126,7 +126,7 @@ ServerStatusWatcher {
 	}
 
 	doWhenBooted { |onComplete, limit = 100, onFailure|
-		var mBootNotifyFirst = bootNotifyFirst, postError = true;
+		var mBootNotifyFirst = bootNotifyFirst;
 		bootNotifyFirst = false;
 
 		^Routine {
@@ -142,18 +142,20 @@ ServerStatusWatcher {
 			} {
 				0.2.wait;
 			};
-			if(serverRunning.not, {
-				if(onFailure.notNil) {
-					postError = (onFailure.value(server) == false);
-				};
-				if(postError) {
-					"Server '%' on failed to start. You may need to kill all servers".format(server.name).error;
-				};
-				serverBooting = false;
-				server.changed(\serverRunning);
-			}, onComplete);
+			if(serverRunning, onComplete, { this.failedToBoot(onFailure) });
 
 		}.play(AppClock)
+	}
+
+	failedToBoot { |onFailure|
+		var postError = true;
+		if(onFailure.notNil) { postError = (onFailure.value(server) == false) };
+		if(postError) {
+			"Server '%' on failed to start. You may need to kill all servers yourself".format(server.name).error;
+		};
+		server.disconnectSharedMemory;
+		serverBooting = false;
+		server.changed(\serverRunning);
 	}
 
 
