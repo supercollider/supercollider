@@ -1,10 +1,43 @@
 class:: Pdict
 summary:: pattern that embeds patterns from a dictionary
 categories:: Libraries>JITLib>Patterns, Live Coding
-related:: Classes/Pbind
+related:: Classes/Pbind, link::Classes/Psym::
 
 description::
 A general purpose lookup stream.
+
+
+ClassMethods::
+method::new
+Return a new instance
+
+argument::dict
+A dictionary to be used as a lookup. The keys can be any kind of object (unlike link::Classes/Psym::). The values can be anthing that is to be embedded in the stream.
+
+argument::which
+A pattern or stream of keys for lookup. The keys can be any kind of object (unlike link::Classes/Psym::).
+
+argument::repeats
+How often to repeat the pattern after the key stream has ended.
+
+argument::default
+A default to embed if no entry is found in the dicetionary.
+
+
+InstanceMethods::
+
+method::dict
+get/set the dictionary
+
+method::which
+get/set the pattern of keys
+
+method::repeats
+get/set the repeats
+
+method::default
+get/set the default value
+
 
 Examples::
 

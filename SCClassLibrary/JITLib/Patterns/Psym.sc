@@ -1,19 +1,11 @@
 Psym : FilterPattern {
 	var <>dict;
 
-	*new { arg pattern, dict;
+	*new { |pattern, dict|
 		^super.new(pattern).dict_(dict)
 	}
 
-	storeArgs { ^[pattern,dict] }
-
-	lookupClass { ^Pdef }
-
-	lookUp { arg key;
-		^(dict ?? { this.lookupClass.all }).at(key.asSymbol) ?? { this.lookupClass.default }
-	}
-
-	embedInStream { arg inval;
+	embedInStream { |inval|
 		var str, outval, pat;
 		str = pattern.asStream;
 		while {
@@ -27,16 +19,26 @@ Psym : FilterPattern {
 
 	}
 
-	getPattern { arg key;
+	getPattern { |key|
 		^if(key.isSequenceableCollection) {
 			this.lookupClass.parallelise(
 				key.collect {|each|
 					this.lookUp(each)
 				}
-			);
+			)
 		} {
 			this.lookUp(key)
 		}
+	}
+
+	lookupClass { ^Pdef }
+
+	lookUp { |key|
+		^(dict ?? { this.lookupClass.all }).at(key.asSymbol) ?? { this.lookupClass.default }
+	}
+
+	storeArgs {
+		^[pattern, dict]
 	}
 
 }
@@ -48,13 +50,12 @@ Pnsym : Psym {
 Ptsym : Psym {
 	var <>quant, <>dur, <>tolerance;
 
-	*new { arg pattern, dict, quant, dur, tolerance = 0.001;
+	*new { |pattern, dict, quant, dur, tolerance = 0.001|
 		^super.newCopyArgs(pattern, dict, quant, dur, tolerance)
 	}
 
-	storeArgs { ^[ pattern, dict, quant, dur, tolerance ] }
+	embedInStream { |inval|
 
-	embedInStream { arg inval;
 		var outval, pat, quantVal, durVal;
 		var str = pattern.asStream;
 		var quantStr = quant.asStream;
@@ -67,16 +68,21 @@ Ptsym : Psym {
 			outval.notNil
 		} {
 			pat = Psync(this.getPattern(outval), quantVal, durVal, tolerance);
-			inval = pat.embedInStream(inval);
+			inval = pat.embedInStream(inval)
 		};
 		^inval
 
 	}
+
+	storeArgs {
+		^[pattern, dict, quant, dur, tolerance]
+	}
+
 }
 
 Pnsym1 : Pnsym {
 
-	embedInStream { arg inval;
+	embedInStream { |inval|
 
 		var which, outval, pat, currentStream;
 		var str = pattern.asStream;
@@ -103,7 +109,7 @@ Pnsym1 : Pnsym {
 
 Psym1 : Psym {
 
-	embedInStream { arg inval;
+	embedInStream { |inval|
 
 		var which, outval, pat, currentStream;
 		var str = pattern.asStream;
@@ -132,4 +138,33 @@ Psym1 : Psym {
 
 		^cleanup.exit(inval);
 	}
+}
+
+
+
+// general purpose lookup stream
+
+Pdict : Pattern {
+
+	var <>dict, <>which, <>repeats, <>default;
+
+	*new { |dict, which, repeats=inf, default|
+		^super.newCopyArgs(dict, which, repeats, default)
+	}
+
+	embedInStream { |inval|
+		var keyStream = which.asStream;
+		var key;
+		repeats.value(inval).do {
+			key = keyStream.next(inval);
+			if(key.isNil) { ^inval };
+			inval = (dict.at(key) ? default).embedInStream(inval);
+		};
+		^inval
+	}
+
+	storeArgs {
+		^[dict, which, repeats, default]
+	}
+
 }

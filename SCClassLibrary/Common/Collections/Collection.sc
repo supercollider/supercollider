@@ -112,12 +112,18 @@ Collection {
 	remove { ^this.subclassResponsibility(thisMethod) }
 	removeAll { | list | list.do { | item | this.remove(item) } }
 	removeEvery { | list | this.removeAllSuchThat(list.includes(_)) }
+
+	removeEachEqual { | list |
+		list.do { | removing |
+			var index = this.detectIndex({ |item| item == removing });
+			if(index.notNil) { this.removeAt(index) }
+		};
+	}
 	removeAllSuchThat { | function |
 		var removedItems = this.class.new;
 		var copy = this.copy;
 		copy.do { | item, i |
-			if ( function.value(item, i) )
-			{
+			if (function.value(item, i)) {
 				this.remove(item);
 				removedItems = removedItems.add(item);
 			}
@@ -195,6 +201,13 @@ Collection {
 	detectIndex { | function |
 		this.do {|elem, i| if (function.value(elem, i)) { ^i } }
 		^nil;
+	}
+	detectIndexInBoth { | aCollection, func |
+		this.do { |item, i|
+			var j = aCollection.detectIndex({ |elem, j| func.(item, elem, i, j) });
+			if(j.notNil) { ^[i, j] }
+		};
+		^nil
 	}
 	doMsg { | selector ... args |
 		this.do {| item | item.performList(selector, args) }

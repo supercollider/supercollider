@@ -140,6 +140,13 @@ a;
 )
 ::
 
+method::removeEachEqual
+Remove each item of aCollection from the receiver.
+code::
+[5, 5, 5, 3, 3].removeEachEqual([5, 3]) // [5, 5, 3]
+::
+
+
 method::putEach
 Put the values in the corresponding indices given by keys. If one of the two argument arrays is longer then it will wrap.
 code::

@@ -1,7 +1,7 @@
 class:: Psym
 summary:: use a pattern of symbols to embed Pdefs
 categories:: Libraries>JITLib>Patterns, Live Coding
-related:: Classes/Pdef
+related:: Classes/Pdef, Classes/Pdict
 
 description::
 for non-event patterns see link::Classes/Pnsym::. Overview: link::Overviews/JITLib::.
@@ -9,17 +9,25 @@ for non-event patterns see link::Classes/Pnsym::. Overview: link::Overviews/JITL
 ClassMethods::
 
 method::new
+Return a new instance.
 
 argument::pattern
-a pattern that returns symbols or characters. Arrays are converted to parallel patterns ( link::Classes/Ppar:: ).
+A pattern that returns symbols or characters. Arrays are converted to parallel patterns ( link::Classes/Ppar:: ).
 
 argument::dict
-the dictionary to be used for lookup. By default, this is code::Pdef.all::, so one can embed Pdefs by name.
+The dictionary to be used for lookup. By default, this is code::Pdef.all::, so one can embed Pdefs by name.
+
+note::Psym converts its keys to symbols. For arbirary keys in lookup, use link::Classes/Pdict:: instead.::
+
 
 InstanceMethods::
 
+PRIVATE::lookupClass, lookUp
+
 method::dict
-set the dictionary to be used.
+get / set the dictionary to be used.
+
+PRIVATE::getPattern
 
 Examples::
 

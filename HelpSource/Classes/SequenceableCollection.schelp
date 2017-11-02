@@ -310,6 +310,47 @@ code::
 "mississippi".split("i").postcs;
 ::
 
+method::insertAll
+Return a new collection of the same kind, with all elements of another collection or object inserted, starting from a given index.
+
+argument::index
+The index at which to start insertion. If too large or too small, append or prepend the object's items.
+
+argument::obj
+The obj to insert (usually a collection, but anything that responds to code::++::).
+
+discussion::
+code::
+a = [\l, \m, \n, \o, \p, \r];
+b = [\X, \Y];
+a.insertAll(2, b); // [ \l, \m, \X, \Y, \n, \o, \p, \r ]
+::
+
+method::mergeItems
+Return a new collection that contains all items of the receiver, with elements from another collection inserted, so that the orders of both collections are maintained as much as possible. Items are added only where not already present (test is strong::equality:: / code::==::).  If the collection passed as argument has inversed order, the order of the receiver is kept.
+
+argument::aCollection
+A sequenceable collection to be merged into the receiver.
+
+discussion::
+code::
+[1, 2, 3, 6, 7].mergeItems([3, 4, 5, 6]) // returns [1, 2, 3, 4, 5, 6, 7]
+[1, 2, 3, 6, 7].mergeItems([100, 3, 4, 5, 6, 200]) // returns [100, 1, 2, 3, 4, 5, 6, 200, 7]
+::
+
+method::mergePairs
+Like code::mergeItems::, but uses key-value-pairs.
+
+argument::pairs
+A sequenceable collection of key-value-pairs to be merged into the receiver.
+
+discussion::
+code::
+[\freq, 300, \amp, 0.2].mergePairs([\freq, 200, \zz, 99]) // returns  [ freq, 300, amp, 0.2, zz, 99 ]
+::
+
+
+
 method::flat
 Returns a collection from which all nesting has been flattened.
 code::
