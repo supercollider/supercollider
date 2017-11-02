@@ -94,6 +94,17 @@ argument:: alpha
 link::Classes/Float:: between 0 and 1.
 
 
+method:: ryb
+Maps ryb (red–yellow–blue color model) and alpha values to rgb between 0 and 1.
+argument:: red
+link::Classes/Float:: between 0 and 1.
+argument:: yellow
+link::Classes/Float:: between 0 and 1.
+argument:: blue
+link::Classes/Float:: between 0 and 1.
+argument:: alpha
+link::Classes/Float:: between 0 and 1.
+
 instancemethods::
 private:: printOn, hash
 
