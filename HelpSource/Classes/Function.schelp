@@ -452,9 +452,9 @@ var synth = { Out.ar(99, SinOsc.ar([300, 700])) }.play;
 argument::bounds
 An instance of Rect or Point indicating the bounds of the plot window.
 argument::minval
-the minimum value in the plot. If not specified, the signal's maximum is used.
+the minimum value in the plot. If not specified, the signal's minimum is used.
 argument::maxval
-the maximum value in the plot. If not specified, the signal's minimum is used.
+the maximum value in the plot. If not specified, the signal's maximum is used.
 argument:: separately
 If set to code::true::, for multichannel signals use separate value display ranges, unless minval or maxval is specified already.
 
