@@ -267,6 +267,7 @@ Server {
 
 	var <name, <addr, <clientID, <userSpecifiedClientID = false;
 	var <isLocal, <inProcess, <>sendQuit, <>remoteControlled;
+	var numClients; // maxLogins as sent from booted scsynth
 
 	var <>options, <>latency = 0.2, <dumpMode = 0;
 
@@ -325,9 +326,12 @@ Server {
 		// set name to get readable posts from clientID set
 		name = argName.asSymbol;
 
+		// make statusWatcher before clientID, so .serverRunning works
+		statusWatcher = ServerStatusWatcher(server: this);
+
 		if(argClientID.notNil) {
 			userSpecifiedClientID = true;
-			if (argClientID >= options.maxLogins) {
+			if (argClientID >= this.numClients) {
 				warn("% : user-specified clientID % is greater than maxLogins!"
 					"\nPlease adjust clientID or options.maxLogins."
 					.format(name, argClientID));
@@ -338,8 +342,6 @@ Server {
 		// go thru setter to test validity
 		this.clientID = argClientID ? 0;
 
-
-		statusWatcher = ServerStatusWatcher(server: this);
 		volume = Volume(server: this, persist: true);
 		recorder = Recorder(server: this);
 		recorder.notifyServer = true;
@@ -351,12 +353,12 @@ Server {
 
 	}
 
+	numClients { ^numClients ?? { options.maxLogins } }
+
 	remove {
 		all.remove(this);
 		named.removeAt(this.name);
 	}
-
-	numClients { ^options.maxLogins }
 
 	addr_ { |netAddr|
 		addr = netAddr ?? { NetAddr("127.0.0.1", 57110) };
@@ -375,7 +377,6 @@ Server {
 	}
 
 	initTree {
-		this.newNodeAllocators;
 		this.sendDefaultGroups;
 		tree.value(this);
 		ServerTree.run(this);
@@ -383,9 +384,19 @@ Server {
 
 	/* id allocators */
 
-	// private, called from server notify response with next free clientID
+	clientIDLocked { ^this.serverRunning and: this.notified }
+
+	// can be set while server is off,
+	// called from prHandleClientLoginInfoFromServer once after booting,
+	// is locked while server is on
 	clientID_ { |val|
 		var failstr = "Server % couldn't set clientID to: % - %. clientID is still %.";
+
+		if (this.clientIDLocked) {
+			"%: setting clientID is locked while server is running."
+			.postf(thisMethod);
+			^this
+		};
 
 		if(val.isInteger.not) {
 			failstr.format(name, val.cs, "not an Integer", clientID).warn;
@@ -410,6 +421,65 @@ Server {
 		};
 	}
 
+	prHandleClientLoginInfoFromServer { |newClientID, newMaxLogins|
+
+		// turn notified off to allow setting clientID
+		statusWatcher.notified = false;
+
+		if (newMaxLogins.notNil) {
+			if (newMaxLogins != options.maxLogins) {
+				"%: scsynth has maxLogins % - adjusting my options accordingly.\n"
+				.postf(this, newMaxLogins);
+			} {
+				"%: scsynth maxLogins % match with my options.\n"
+				.postf(this, newMaxLogins);
+			};
+			numClients = options.maxLogins = newMaxLogins;
+		} {
+			"%: no maxLogins info from scsynth.\n"
+			.postf(this, newMaxLogins);
+		};
+
+		if (newClientID == clientID) {
+			"%: keeping clientID % as confirmed from scsynth.\n"
+			.postf(this, newClientID);
+		} {
+			if (userSpecifiedClientID.not) {
+				"%: setting clientID to %, as obtained from scsynth.\n"
+				.postf(this, newClientID);
+			} {
+				("% - userSpecifiedClientID % is not free!\n"
+					" Switching to free clientID obtained from scsynth: %.\n"
+					"If that is problematic, please set clientID by hand before booting.")
+				.format(this, clientID, newClientID).warn;
+			};
+		};
+		this.clientID = newClientID;
+		statusWatcher.notified = true; // and lock again
+	}
+
+	prHandleNotifyFailString {|failString, msg|
+
+		// post info on some known error cases
+		case
+		{ failString.asString.contains("already registered") } {
+			"% - already registered with clientID %.\n".postf(this, msg[3]);
+			statusWatcher.notified = true;
+		} { failString.asString.contains("not registered") } {
+			// unregister when already not registered:
+			"% - not registered.\n".postf(this);
+			statusWatcher.notified = false;
+		} { failString.asString.contains("too many users") } {
+			"% - could not register, too many users.\n".postf(this);
+			statusWatcher.notified = false;
+		} {
+			// throw error if unknown failure
+			Error(
+				"Failed to register with server '%' for notifications: %\n"
+				"To recover, please reboot the server.".format(this, msg)).throw;
+		};
+	}
+
 	newAllocators {
 		this.newNodeAllocators;
 		this.newBusAllocators;
@@ -422,7 +492,7 @@ Server {
 		nodeAllocator = nodeAllocClass.new(
 			clientID,
 			options.initialNodeID,
-			options.maxLogins
+			this.numClients
 		);
 		// defaultGroup and defaultGroups depend on allocator,
 		// so always make them here:
@@ -456,7 +526,6 @@ Server {
 			audioBusClientOffset + audioBusIOOffset
 		);
 	}
-
 
 	newBufferAllocators {
 		var numBuffersPerClient = options.numBuffers div: this.numClients;
@@ -727,7 +796,7 @@ Server {
 
 	// defaultGroups for all clients on this server:
 
-	allClientIDs { ^(0..options.maxLogins-1) }
+	allClientIDs { ^(0..this.numClients-1) }
 
 	// keep defaultGroups for all clients on this server:
 	makeDefaultGroups {
@@ -939,6 +1008,7 @@ Server {
 
 		pid = nil;
 		sendQuit = nil;
+		numClients = nil;
 
 		if(scopeWindow.notNil) { scopeWindow.quit };
 		volume.freeSynth;
