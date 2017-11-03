@@ -376,7 +376,7 @@ Server {
 
 	initTree {
 		this.newNodeAllocators;
-		this.sendMsg("/g_new", defaultGroup.nodeID, 0, 0);
+		this.sendDefaultGroups;
 		tree.value(this);
 		ServerTree.run(this);
 	}
@@ -406,7 +406,7 @@ Server {
 		clientID = val;
 		this.newAllocators;
 		if (statusWatcher.notNil and: { this.serverRunning }) {
-			this.sendDefaultGroups;
+			this.initTree;
 		};
 	}
 
@@ -850,7 +850,6 @@ Server {
 			sendQuit = this.inProcess or: { this.isLocal };
 		};
 		this.connectSharedMemory;
-		this.initTree;
 	}
 
 	bootServerApp { |onComplete|
