@@ -44,8 +44,10 @@ TestServer_clientID_booted : UnitTest {
 		synth2 = Synth("default", [\freq, 330]);
 		this.assert(synth1.nodeID != synth2.nodeID,
 			"first nodeID after booting should not repeat nodeID created in ServerTree.");
+
+		0.5.wait;
+		ServerTree.remove( func, s );
 		s.quit;
 		s.remove;
-		ServerTree.remove( func, s );
 	}
 }
