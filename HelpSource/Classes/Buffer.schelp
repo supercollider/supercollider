@@ -66,7 +66,7 @@ The number of channels for the Buffer. The default is 1.
 argument:: completionMessage
 A valid OSC message or a Function which will return one. A Function will be passed this Buffer as an argument when evaluated.
 argument:: bufnum
-An explicitly specified buffer number. Use of this argument is highly discouraged, and unnecessary under normal usage. Providing a non-nil argument here will bypass the server's buffer allocator, which can lead to conflicts. The best practice is to leave this unset and let the buffer number allocator choose the next available bufnum.
+An explicitly specified buffer number. Supplying a number bypasses the server's buffer allocator, which can lead to conflicts. The best practice is to leave this unset and let the buffer number allocator choose the next available bufnum.
 discussion::
 code::
 // Allocate 8 second stereo buffer
@@ -88,7 +88,7 @@ The number of channels for each buffer. The default is 1.
 argument:: completionMessage
 A valid OSC message or a Function which will return one. A Function will be passed each Buffer and its index in the array as arguments when evaluated.
 argument:: bufnum
-An explicitly specified buffer number for the initial buffer. Use of this argument is highly discouraged, and unnecessary under normal usage (see link::Classes/Buffer#*alloc::).
+An explicitly specified buffer number. Supplying a number bypasses the server's buffer allocator, which can lead to conflicts. The best practice is to leave this unset and let the buffer number allocator choose the next available bufnum.
 discussion::
 N.B. You must treat the array of Buffers as a group. Freeing them individually or reusing them can result in allocation errors. You should free all Buffers in the array at the same time by iterating over it with do.
 code::
@@ -121,7 +121,7 @@ The number of frames to read. The default is -1, which will read the whole file.
 argument:: action
 A Function to be evaluated once the file has been read and this Buffer's instance variables have been updated. The function will be passed this Buffer as an argument.
 argument:: bufnum
-An explicitly specified buffer number. Use of this argument is highly discouraged, and unnecessary under normal usage (see link::Classes/Buffer#*alloc::).
+An explicitly specified buffer number. Supplying a number bypasses the server's buffer allocator, which can lead to conflicts. The best practice is to leave this unset and let the buffer number allocator choose the next available bufnum.
 discussion::
 N.B. You cannot rely on the buffer's instance variables being instantly updated, as there is a small amount of latency involved. action will be evaluated upon receipt of the reply to the query, so use this in cases where access to instance variables is needed.
 code::
@@ -167,7 +167,7 @@ An Array of channels to be read from the soundfile. Indices start from zero. The
 argument:: action
 A Function to be evaluated once the file has been read and this Buffer's instance variables have been updated. The function will be passed this Buffer as an argument.
 argument:: bufnum
-An explicitly specified buffer number. Use of this argument is highly discouraged, and unnecessary under normal usage (see link::Classes/Buffer#*alloc::).
+An explicitly specified buffer number. Supplying a number bypasses the server's buffer allocator, which can lead to conflicts. The best practice is to leave this unset and let the buffer number allocator choose the next available bufnum.
 discussion::
 code::
 s.boot;
@@ -204,7 +204,7 @@ The first frame of the soundfile to read. The default is 0, which is the beginni
 argument:: numFrames
 The number of frames to read. The default is -1, which will read the whole file.
 argument:: bufnum
-An explicitly specified buffer number. Use of this argument is highly discouraged, and unnecessary under normal usage (see link::Classes/Buffer#*alloc::).
+An explicitly specified buffer number. Supplying a number bypasses the server's buffer allocator, which can lead to conflicts. The best practice is to leave this unset and let the buffer number allocator choose the next available bufnum.
 argument:: completionMessage
 A valid OSC message or a Function which will return one. A Function will be passed this Buffer as an argument when evaluated.
 discussion::
@@ -344,7 +344,7 @@ The number of frames to read. The default is -1, which will read the whole file.
 argument:: action
 A Function to be evaluated once the file has been read and this Buffer's instance variables have been updated. The function will be passed this Buffer as an argument.
 argument:: bufnum
-An explicitly specified buffer number. Use of this argument is highly discouraged, and unnecessary under normal usage (see link::Classes/Buffer#*alloc::).
+An explicitly specified buffer number. Supplying a number bypasses the server's buffer allocator, which can lead to conflicts. The best practice is to leave this unset and let the buffer number allocator choose the next available bufnum.
 discussion::
 code::
 s.boot;
@@ -366,7 +366,7 @@ The number of frames to allocate. Actual memory use will correspond to numFrames
 argument:: numChannels
 The number of channels for the Buffer. The default is 1.
 argument:: bufnum
-An explicitly specified buffer number. Use of this argument is highly discouraged, and unnecessary under normal usage (see link::Classes/Buffer#*alloc::).
+An explicitly specified buffer number. Supplying a number bypasses the server's buffer allocator, which can lead to conflicts. The best practice is to leave this unset and let the buffer number allocator choose the next available bufnum.
 discussion::
 code::
 s.boot;
