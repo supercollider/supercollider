@@ -353,7 +353,7 @@ Server {
 
 	}
 
-	numClients { ^numClients ?? { options.maxLogins } }
+	numClients { ^numClients ? options.maxLogins }
 
 	remove {
 		all.remove(this);
@@ -384,11 +384,11 @@ Server {
 
 	/* id allocators */
 
-	clientIDLocked { ^this.serverRunning and: this.notified }
+	clientIDLocked { ^this.serverRunning and: { this.notified } }
 
-	// can be set while server is off,
-	// called from prHandleClientLoginInfoFromServer once after booting,
-	// is locked while server is on
+	// clientID can be set while server is off,
+	// and is called from prHandleClientLoginInfoFromServer once after booting,
+	// clientID is locked while the server is running
 	clientID_ { |val|
 		var failstr = "Server % couldn't set clientID to: % - %. clientID is still %.";
 
@@ -418,65 +418,6 @@ Server {
 		this.newAllocators;
 		if (statusWatcher.notNil and: { this.serverRunning }) {
 			this.initTree;
-		};
-	}
-
-	prHandleClientLoginInfoFromServer { |newClientID, newMaxLogins|
-
-		// turn notified off to allow setting clientID
-		statusWatcher.notified = false;
-
-		if (newMaxLogins.notNil) {
-			if (newMaxLogins != options.maxLogins) {
-				"%: scsynth has maxLogins % - adjusting my options accordingly.\n"
-				.postf(this, newMaxLogins);
-			} {
-				"%: scsynth maxLogins % match with my options.\n"
-				.postf(this, newMaxLogins);
-			};
-			options.maxLogins = numClients = newMaxLogins;
-		} {
-			"%: no maxLogins info from scsynth.\n"
-			.postf(this, newMaxLogins);
-		};
-
-		if (newClientID == clientID) {
-			"%: keeping clientID % as confirmed from scsynth.\n"
-			.postf(this, newClientID);
-		} {
-			if (userSpecifiedClientID.not) {
-				"%: setting clientID to %, as obtained from scsynth.\n"
-				.postf(this, newClientID);
-			} {
-				("% - userSpecifiedClientID % is not free!\n"
-					" Switching to free clientID obtained from scsynth: %.\n"
-					"If that is problematic, please set clientID by hand before booting.")
-				.format(this, clientID, newClientID).warn;
-			};
-		};
-		this.clientID = newClientID;
-		statusWatcher.notified = true; // and lock again
-	}
-
-	prHandleNotifyFailString {|failString, msg|
-
-		// post info on some known error cases
-		case
-		{ failString.asString.contains("already registered") } {
-			"% - already registered with clientID %.\n".postf(this, msg[3]);
-			statusWatcher.notified = true;
-		} { failString.asString.contains("not registered") } {
-			// unregister when already not registered:
-			"% - not registered.\n".postf(this);
-			statusWatcher.notified = false;
-		} { failString.asString.contains("too many users") } {
-			"% - could not register, too many users.\n".postf(this);
-			statusWatcher.notified = false;
-		} {
-			// throw error if unknown failure
-			Error(
-				"Failed to register with server '%' for notifications: %\n"
-				"To recover, please reboot the server.".format(this, msg)).throw;
 		};
 	}
 
@@ -580,6 +521,64 @@ Server {
 		^nodeAllocator.freePerm(id)
 	}
 
+	prHandleClientLoginInfoFromServer { |newClientID, newMaxLogins|
+
+		// turn notified off to allow setting clientID
+		statusWatcher.notified = false;
+
+		if (newMaxLogins.notNil) {
+			if (newMaxLogins != options.maxLogins) {
+				"%: scsynth has maxLogins % - adjusting my options accordingly.\n"
+				.postf(this, newMaxLogins);
+			} {
+				"%: scsynth maxLogins % match with my options.\n"
+				.postf(this, newMaxLogins);
+			};
+			options.maxLogins = numClients = newMaxLogins;
+		} {
+			"%: no maxLogins info from scsynth.\n"
+			.postf(this, newMaxLogins);
+		};
+
+		if (newClientID == clientID) {
+			"%: keeping clientID % as confirmed from scsynth.\n"
+			.postf(this, newClientID);
+		} {
+			if (userSpecifiedClientID.not) {
+				"%: setting clientID to %, as obtained from scsynth.\n"
+				.postf(this, newClientID);
+			} {
+				("% - userSpecifiedClientID % is not free!\n"
+					" Switching to free clientID obtained from scsynth: %.\n"
+					"If that is problematic, please set clientID by hand before booting.")
+				.format(this, clientID, newClientID).warn;
+			};
+		};
+		this.clientID = newClientID;
+		statusWatcher.notified = true; // and lock again
+	}
+
+	prHandleNotifyFailString {|failString, msg|
+
+		// post info on some known error cases
+		case
+		{ failString.asString.contains("already registered") } {
+			"% - already registered with clientID %.\n".postf(this, msg[3]);
+			statusWatcher.notified = true;
+		} { failString.asString.contains("not registered") } {
+			// unregister when already not registered:
+			"% - not registered.\n".postf(this);
+			statusWatcher.notified = false;
+		} { failString.asString.contains("too many users") } {
+			"% - could not register, too many users.\n".postf(this);
+			statusWatcher.notified = false;
+		} {
+			// throw error if unknown failure
+			Error(
+				"Failed to register with server '%' for notifications: %\n"
+				"To recover, please reboot the server.".format(this, msg)).throw;
+		};
+	}
 
 	/* network messages */
 
