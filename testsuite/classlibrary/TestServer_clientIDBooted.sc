@@ -34,8 +34,9 @@ TestServer_clientID_booted : UnitTest {
 	test_nodeIDAlloc_ServerTree {
 		var s = Server(\testserv3, NetAddr("localhost", 57111));
 		var synth1, synth2;
+		var func = { synth1 = Synth("default"); };
 
-		ServerTree.add( { synth1 = Synth("default"); });
+		ServerTree.add( func, s );
 		this.bootServer(s);
 
 		1.wait;
@@ -45,5 +46,6 @@ TestServer_clientID_booted : UnitTest {
 			"first nodeID after booting should not repeat nodeID created in ServerTree.");
 		s.quit;
 		s.remove;
+		ServerTree.remove( func, s );
 	}
 }
